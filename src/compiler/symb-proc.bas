@@ -2423,7 +2423,7 @@ private function hMangleFunctionPtr _
     		''   reused if fwd types were resolved and removed
     		'' - can't use only the param->id.name because UDT's with the same
     		''   name declared inside different namespaces
-    		id += symbMangleParam( param )
+			symbMangleParam( id, param )
     	end if
 
     	param = symbGetParamNext( param )
@@ -2435,7 +2435,7 @@ private function hMangleFunctionPtr _
 		id += hex( dtype )
 	else
 		'' see the notes above
-		id += symbMangleType( dtype, subtype )
+		symbMangleType( id, dtype, subtype )
 	end if
 
     symbMangleEndAbbrev( )

@@ -28,28 +28,16 @@ end type
 const FB_INITMANGARGS = 96
 
 
-declare function hDoCppMangling _
+declare function hDoCppMangling( byval sym as FBSYMBOL ptr ) as integer
+declare sub hMangleProc( byval sym as FBSYMBOL ptr )
+declare sub hMangleVariable( byval sym as FBSYMBOL ptr )
+declare sub hGetProcParamsTypeCode _
 	( _
+		byref mangled as string, _
 		byval sym as FBSYMBOL ptr _
-	) as integer
-
-declare function hMangleProc _
-	( _
-		byval sym as FBSYMBOL ptr _
-	) as zstring ptr
-
-declare function hMangleVariable _
-	( _
-		byval sym as FBSYMBOL ptr _
-	) as zstring ptr
-
-declare function hGetProcParamsTypeCode _
-	( _
-		byval sym as FBSYMBOL ptr _
-	) as string
+	)
 
 '' globals
-
 	dim shared as FB_MANGLECTX ctx
 
 	dim shared as zstring * 1+1 typecodeTB( 0 to FB_DATATYPES-1 ) => _
@@ -126,15 +114,9 @@ function symbMakeProfileLabelName( ) as zstring ptr
 	function = @ctx.tempstr
 end function
 
-'':::::
-function symbGetDBGName _
-	( _
-		byval sym as FBSYMBOL ptr _
-	) as zstring ptr
-
+function symbGetDBGName( byval sym as FBSYMBOL ptr ) as zstring ptr
     '' GDB will demangle the symbols automatically
 	if( hDoCppMangling( sym ) ) then
-
 		select case as const symbGetClass( sym )
 		'' but UDT's, they shouldn't include any mangling at all..
 		case FB_SYMBCLASS_ENUM, FB_SYMBCLASS_STRUCT, _
@@ -155,17 +137,10 @@ function symbGetDBGName _
 
 	'' no mangling, return as-is
 	function = sym->id.name
-
 end function
 
-'':::::
-sub symbSetName _
-	( _
-		byval s as FBSYMBOL ptr, _
-		byval name_ as zstring ptr _
-	) static
-
-	dim as integer slen
+sub symbSetName( byval s as FBSYMBOL ptr, byval name_ as zstring ptr )
+	dim as integer slen = any
 
 	'' assuming only params will change names, no mangling reseted
 
@@ -180,113 +155,83 @@ sub symbSetName _
 		s->id.name = poolNewItem( @symb.namepool, slen + 1 ) 'ZStrAllocate( slen )
 		*s->id.name = *name_
 	end if
-
 end sub
 
-'':::::
-private function hMangleCompType _
-	( _
-		byval sym as FBSYMBOL ptr _
-	) as zstring ptr
+private sub hMangleCompType( byval sym as FBSYMBOL ptr )
+	dim as zstring ptr id = any, p = any
+	dim as integer length = any
 
-    static as zstring ptr id_str, dst, id_alias
-    static as integer id_len
-
-    '' id
-    id_str = sym->id.alias
-    if( id_str = NULL ) then
-    	id_str = sym->id.name
-    end if
-
-    id_len = len( *id_str )
-
-	'' concat
-	id_alias = ZStrAllocate( id_len + 2 )
-
-	dst = id_alias
-
-	if( id_len < 10 ) then
-		*dst = CHAR_0 + id_len
-		dst += 1
-	else
-		*(dst+0) = CHAR_0 + (id_len \ 10)
-		*(dst+1) = CHAR_0 + (id_len mod 10)
-		dst += 2
+	id = sym->id.alias
+	if( id = NULL ) then
+		id = sym->id.name
 	end if
 
-	*dst = *id_str
+	length = len( *id )
 
-	function = id_alias
+	'' Store the mangled id into the symbol
+	p = ZStrAllocate( length + 2 )
+	sym->id.mangled = p
 
-end function
+	'' id length
+	if( length < 10 ) then
+		p[0] = asc( "0" ) + length
+		p += 1
+	else
+		p[0] = asc( "0" ) + (length \ 10)
+		p[1] = asc( "0" ) + (length mod 10)
+		p += 2
+	end if
 
-'':::::
-function symbGetMangledName _
-	( _
-		byval sym as FBSYMBOL ptr _
-	) as zstring ptr
+	'' id
+	*p = *id
+end sub
 
-	dim as zstring ptr id_mangled = any
-
+function symbGetMangledName( byval sym as FBSYMBOL ptr ) as zstring ptr
 	if( (sym->stats and FB_SYMBSTATS_MANGLED) <> 0 ) then
 		return sym->id.mangled
 	end if
 
-    select case as const symbGetClass( sym )
-    case FB_SYMBCLASS_PROC
-		id_mangled = hMangleProc( sym )
-
+	select case as const( symbGetClass( sym ) )
+	case FB_SYMBCLASS_PROC
+		hMangleProc( sym )
 	case FB_SYMBCLASS_ENUM, FB_SYMBCLASS_STRUCT, FB_SYMBCLASS_FWDREF, _
-		 FB_SYMBCLASS_CLASS, FB_SYMBCLASS_NAMESPACE
-    	id_mangled = hMangleCompType( sym )
-
+	     FB_SYMBCLASS_CLASS, FB_SYMBCLASS_NAMESPACE
+		hMangleCompType( sym )
 	case FB_SYMBCLASS_VAR
-    	id_mangled = hMangleVariable( sym )
-
+		hMangleVariable( sym )
 	case else
-    	return sym->id.alias
+		return sym->id.alias
 	end select
 
 	sym->stats or= FB_SYMBSTATS_MANGLED
 
-	sym->id.mangled = id_mangled
-
-	'' silly periods..
+	'' Periods in symbol names?  not allowed in C, must be replaced.
 	if( env.clopt.backend = FB_BACKEND_GCC ) then
 		if( fbLangOptIsSet( FB_LANG_OPT_PERIODS ) ) then
-			hReplaceChar( id_mangled, asc( "." ), asc( "$" ) )
+			hReplaceChar( sym->id.mangled, asc( "." ), asc( "$" ) )
 		end if
 	end if
 
-	function = id_mangled
-
+	function = sym->id.mangled
 end function
 
-'':::::
 sub symbMangleInitAbbrev( )
-
 	ctx.cnt = 0
-
 end sub
 
-'':::::
-sub symbMangleEndAbbrev( ) static
-
+sub symbMangleEndAbbrev( )
 	'' reset abbreviation list
 	flistReset( @ctx.flist )
-
 	ctx.cnt = 0
-
 end sub
 
-'':::::
 private function hAbbrevFind _
 	( _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr _
-	) as integer static
+	) as integer
 
-	dim as FB_MANGLEABBR ptr n
+	dim as FB_MANGLEABBR ptr n = any
 
 	if( ctx.cnt = 0 ) then
 		return -1
@@ -315,17 +260,15 @@ private function hAbbrevFind _
 	loop
 
 	function = -1
-
 end function
 
-'':::::
 private function hAbbrevAdd _
 	( _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr _
-	) as FB_MANGLEABBR ptr static
+	) as FB_MANGLEABBR ptr
 
-    dim as FB_MANGLEABBR ptr n
+	dim as FB_MANGLEABBR ptr n = any
 
     n = flistNewItem( @ctx.flist )
     n->idx = ctx.cnt
@@ -336,161 +279,137 @@ private function hAbbrevAdd _
     ctx.cnt += 1
 
     function = n
-
 end function
 
-'':::::
-private function hAbbrevGet _
-	( _
-		byval idx as integer _
-	) as zstring ptr static
+private sub hAbbrevGet( byref mangled as string, byval idx as integer )
+	mangled += "S"
 
-    static as string res
-
-    res = "S"
-
-    if( idx > 0 ) then
-    	if( idx <= 10 ) then
-    		res += chr( asc( "0" ) + (idx - 1) )
-
-    	elseif( idx <= 33 ) then
-    		res += chr( asc( "A" ) + (idx - 11) )
-
-    	else
-    		'' 2 digits are enough for 333 abbreviations
-    		res += chr( idx \ 33 )
-
-    		idx mod= 33
-    		if( idx <= 10 ) then
-    			res += chr( asc( "0" ) + (idx - 1) )
-    		elseif( idx <= 33 ) then
-    			res += chr( asc( "A" ) + (idx - 11) )
-    		end if
-    	end if
-    end if
-
-    res += "_"
-
-    function = strptr( res )
-
-end function
-
-'':::::
-function symbMangleType _
-	( _
-		byval dtype as integer, _
-		byval subtype as FBSYMBOL ptr _
-	) as string
-
-	dim as integer idx = hAbbrevFind( dtype, subtype )
-	if( idx <> -1 ) then
-		return *hAbbrevGet( idx )
+	if( idx > 0 ) then
+		if( idx <= 10 ) then
+			mangled += chr( asc( "0" ) + (idx - 1) )
+		elseif( idx <= 33 ) then
+			mangled += chr( asc( "A" ) + (idx - 11) )
+		else
+			'' 2 digits are enough for 333 abbreviations
+			mangled += chr( idx \ 33 )
+			idx mod= 33
+			if( idx <= 10 ) then
+				mangled += chr( asc( "0" ) + (idx - 1) )
+			elseif( idx <= 33 ) then
+				mangled += chr( asc( "A" ) + (idx - 11) )
+			end if
+		end if
 	end if
 
-	dim as string sig
+	mangled += "_"
+end sub
 
-    '' forward type?
-    if( typeGet( dtype ) = FB_DATATYPE_FWDREF ) then
-    	if( subtype = NULL ) then
-    		errReportEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
-    		dtype = FB_DATATYPE_VOID
-    	else
-    		dtype = typeJoin( dtype and (not FB_DATATYPE_INVALID), FB_DATATYPE_STRUCT )
-    	end if
-    end if
+sub symbMangleType _
+	( _
+		byref mangled as string, _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr _
+	)
 
-    select case as const dtype
-    case FB_DATATYPE_STRUCT, FB_DATATYPE_ENUM ', FB_DATATYPE_CLASS
-    	dim as FBSYMBOL ptr ns = symbGetNamespace( subtype )
-    	if( ns = @symbGetGlobalNamespc( ) ) then
-    		sig = *symbGetMangledName( subtype )
-    	else
-			sig = "N"
-    		sig += symbMangleType( symbGetFullType( ns ), ns )
-    		sig += *symbGetMangledName( subtype )
-    		sig += "E"
-    	end if
+	dim as FBSYMBOL ptr ns = any
 
-    case FB_DATATYPE_NAMESPC
-    	if( subtype = @symbGetGlobalNamespc( ) ) then
-    		return ""
-    	end if
+	'' Lookup abbreviation for this type/namespace (if the current procedure
+	'' name already contains the type somewhere, it can be referred to
+	'' through an index instead of by repeating the full name)
+	dim as integer idx = hAbbrevFind( dtype, subtype )
+	if( idx <> -1 ) then
+		hAbbrevGet( mangled, idx )
+		exit sub
+	end if
 
-    	dim as FBSYMBOL ptr ns = symbGetNamespace( subtype )
-    	if( ns = NULL ) then
-    		sig = ""
-    	else
-    		sig = symbMangleType( FB_DATATYPE_NAMESPC, ns )
-    	end if
+	'' forward type?
+	if( typeGet( dtype ) = FB_DATATYPE_FWDREF ) then
+		dtype = typeJoin( dtype and (not FB_DATATYPE_INVALID), FB_DATATYPE_STRUCT )
+	end if
 
-    	sig += *symbGetMangledName( subtype )
+	select case as const( dtype )
+	case FB_DATATYPE_STRUCT, FB_DATATYPE_ENUM ', FB_DATATYPE_CLASS
+		ns = symbGetNamespace( subtype )
+		if( ns = @symbGetGlobalNamespc( ) ) then
+			mangled += *symbGetMangledName( subtype )
+		else
+			mangled += "N"
+			symbMangleType( mangled, symbGetFullType( ns ), ns )
+			mangled += *symbGetMangledName( subtype )
+			mangled += "E"
+		end if
 
-    case FB_DATATYPE_FUNCTION
+	case FB_DATATYPE_NAMESPC
+		if( subtype = @symbGetGlobalNamespc( ) ) then
+			exit sub
+		end if
+
+		ns = symbGetNamespace( subtype )
+		if( ns ) then
+			symbMangleType( mangled, FB_DATATYPE_NAMESPC, ns )
+		end if
+		mangled += *symbGetMangledName( subtype )
+
+	case FB_DATATYPE_FUNCTION
 		'' F(return_type)(params - recursive, reuses hash)E
-		sig = "F"
-		sig += symbMangleType( symbGetFullType( subtype ), symbGetSubtype( subtype ) )
-		sig += hGetProcParamsTypeCode( subtype )
-		sig += "E"
+		mangled += "F"
+		symbMangleType( mangled, symbGetFullType( subtype ), symbGetSubtype( subtype ) )
+		hGetProcParamsTypeCode( mangled, subtype )
+		mangled += "E"
 
-    case FB_DATATYPE_STRING
-       	sig = "8FBSTRING"
+	case FB_DATATYPE_STRING
+		mangled += "8FBSTRING"
 
 	case else
 		'' builtin?
 		if( typeGet( dtype ) = dtype ) then
-			return typecodeTB( dtype )
+			mangled += typecodeTB( dtype )
+			exit sub
 		end if
 
 		'' reference?
 		if( typeIsRef( dtype ) ) then
 			'' const?
 			if( typeIsConst( dtype ) ) then
-				sig = "RK"
+				mangled += "RK"
 			else
-				sig = "R"
+				mangled + = "R"
 			end if
-			sig += symbMangleType( typeUnsetIsRef( dtype ), subtype )
+			symbMangleType( mangled, typeUnsetIsRef( dtype ), subtype )
 
 		'' array?
 		elseif( typeIsArray( dtype ) ) then
-			sig = "A"
-			sig += symbMangleType( typeUnsetIsArray( dtype ), subtype )
+			mangled += "A"
+			symbMangleType( mangled, typeUnsetIsArray( dtype ), subtype )
 
 		'' pointer? (must be checked/emitted before CONST)
 		elseif( typeIsPtr( dtype ) ) then
 			'' const?
 			if( typeIsConstAt( dtype, 1 ) ) then
-				sig = "PK"
+				mangled += "PK"
 			else
-				sig = "P"
+				mangled += "P"
 			end if
 
-			sig += symbMangleType( typeDeref( dtype ), subtype )
+			symbMangleType( mangled, typeDeref( dtype ), subtype )
 
 		'' const..
 		else
 			'' note: nothing is added (as in C++) because it's not a 'const ptr'
-			sig += symbMangleType( typeUnsetIsConst( dtype ), subtype )
-
+			symbMangleType( mangled, typeUnsetIsConst( dtype ), subtype )
 		end if
 
-    end select
+	end select
 
-    hAbbrevAdd( dtype, subtype )
+	hAbbrevAdd( dtype, subtype )
+end sub
 
-    function = sig
+sub symbMangleParam( byref mangled as string, byval param as FBSYMBOL ptr )
+	dim as integer dtype = any
 
-end function
+	dtype = symbGetFullType( param )
 
-''::::::
-function symbMangleParam _
-	( _
-		byval param as FBSYMBOL ptr _
-	) as string
-
-	dim as integer dtype = symbGetFullType( param )
-
-	select case as const symbGetParamMode( param )
+	select case as const( symbGetParamMode( param ) )
 	'' by reference (or descriptor)?
 	case FB_PARAMMODE_BYREF
 		dtype = typeSetIsRef( dtype )
@@ -500,46 +419,28 @@ function symbMangleParam _
 
        '' var arg?
 	case FB_PARAMMODE_VARARG
-		return "z"
+		mangled += "z"
+		exit sub
 
 	end select
 
-	return symbMangleType( dtype, symbGetSubtype( param ) )
+	symbMangleType( mangled, dtype, symbGetSubtype( param ) )
+end sub
 
-end function
-
-'':::::
-private function hAddUnderscore _
-	( _
-	) as integer static
-
-	static as integer inited = FALSE, res
-
-	if( inited = FALSE ) then
-		inited = TRUE
-
-		'' C backend? don't add anything..
-		if( env.clopt.backend = FB_BACKEND_GCC ) then
-			res = FALSE
-		else
-			res = ((env.target.options and FB_TARGETOPT_UNDERSCORE) <> 0)
-		end if
+private function hAddUnderscore( ) as integer
+	'' C backend? don't add underscores; gcc will already do it.
+	if( env.clopt.backend = FB_BACKEND_GCC ) then
+		function = FALSE
+	else
+		'' For ASM, add underscores if the target requires it
+		function = ((env.target.options and FB_TARGETOPT_UNDERSCORE) <> 0)
 	end if
-
-	function = res
-
 end function
 
-'':::::
 '' inside a namespace or class?
 #define hIsNested(s) (symbGetNamespace( s ) <> @symbGetGlobalNamespc( ))
 
-'':::::
-private function hDoCppMangling _
-	( _
-		byval sym as FBSYMBOL ptr _
-	) as integer
-
+private function hDoCppMangling( byval sym as FBSYMBOL ptr ) as integer
     '' C++?
     if( symbGetMangling( sym ) = FB_MANGLING_CPP ) then
     	return TRUE
@@ -564,31 +465,32 @@ private function hDoCppMangling _
     end if
 
 	function = FALSE
-
 end function
 
-'':::::
-private function hMangleNamespace _
+private sub hMangleNamespace _
 	( _
+		byref mangled as string, _
 		byval ns as FBSYMBOL ptr, _
-		byval dohashing as integer = TRUE, _
-		byval isconst as integer = FALSE _
-	) as zstring ptr static
+		byval dohashing as integer, _
+		byval isconst as integer _
+	)
 
-	static as string res
 	static as FBSYMBOL ptr nsStk(0 to FB_MAXNAMESPCRECLEVEL-1)
-	dim as integer tos
+	dim as integer tos = any
 
-   	if( ns = NULL ) then
-   		return NULL
-   	end if
+	if( ns = NULL ) then
+		exit sub
+	end if
 
 	if( ns = @symbGetGlobalNamespc( ) ) then
-		return NULL
+		exit sub
 	end if
 
 	if( dohashing ) then
-		res = symbMangleType( symbGetFullType( ns ), ns )
+		'' Just add the abbreviation for this if not yet done
+		if( hAbbrevFind( symbGetFullType( ns ), ns ) = -1 ) then
+			hAbbrevAdd( symbGetFullType( ns ), ns )
+		end if
 	end if
 
 	'' create a stack
@@ -597,106 +499,25 @@ private function hMangleNamespace _
 		tos += 1
 		nsStk(tos) = ns
 		ns = symbGetNamespace( ns )
-    loop until( ns = @symbGetGlobalNamespc( ) )
+	loop until( ns = @symbGetGlobalNamespc( ) )
 
 	'' return the chain starting from base parent
+	mangled += "N"
 	if( isconst ) then
-		res = "NK"
-	else
-		res = "N"
+		mangled += "K"
 	end if
 	do
 		ns = nsStk(tos)
-		res += *symbGetMangledName( ns )
+		mangled += *symbGetMangledName( ns )
 		tos -= 1
-    loop until( tos < 0 )
+	loop until( tos < 0 )
+end sub
 
-    function = strptr( res )
-
-end function
-
-'':::::
-private function hGetVarPrefix _
-	( _
-		byval sym as FBSYMBOL ptr, _
-		byval docpp as integer _
-	) as const zstring ptr
-
-	static as integer isimport = FALSE
-
-	'' not global or public? no prefix
-	if( (sym->attrib and (FB_SYMBATTRIB_PUBLIC or _
-			 		   	  FB_SYMBATTRIB_EXTERN or _
-			 			  FB_SYMBATTRIB_SHARED or _
-			 			  FB_SYMBATTRIB_COMMON or _
-			 			  FB_SYMBATTRIB_STATIC)) = 0 ) then
-		return NULL
-	end if
-
-	'' imported? Windows only..
-	if( env.clopt.backend = FB_BACKEND_GAS ) then
-		isimport = symbIsImport( sym )
-	end if
-
-	'' no C++? do nothing..
-	if( docpp = FALSE ) then
-		if( isimport ) then
-			function = @"__imp__"
-
-		else
-			if( hAddUnderscore( ) ) then
-				function = @"_"
-			else
-				function = NULL
-			end if
-		end if
-
-	else
-		'' Note: This adds the _Z prefix to all global variables,
-		'' unlike GCC, which does C++ mangling only for globals inside
-		'' namespaces, but not globals from the toplevel namespace.
-		if( isimport ) then
-			'' win32 import prefix + win32 underscore + C++ prefix
-			'' __imp_ + _ + _Z
-			function = @"__imp___Z"
-		else
-			if( hAddUnderscore( ) ) then
-				function = @"__Z"
-			else
-				function = @"_Z"
-			end if
-		end if
-	end if
-
-end function
-
-'':::::
-private function hGetVarIdentifier _
-	( _
-		byval sym as FBSYMBOL ptr, _
-		byval id as const zstring ptr, _
-		byref id_len as integer, _
-		byval suffix_len as integer _
-	) as zstring ptr static
-
-    static as string res
-
-    res = str( id_len + suffix_len )
-    id_len += len( res )
-    res += *id
-
-    function = strptr( res )
-
-end function
-
-'':::::
-private function hMangleVariable  _
-	( _
-		byval sym as FBSYMBOL ptr _
-	) as zstring ptr static
-
-    static as const zstring ptr prefix_str, nspc_str, id_str, suffix_str
-    static as integer prefix_len, nspc_len, id_len, suffix_len, docpp, isglobal
+private sub hMangleVariable( byval sym as FBSYMBOL ptr )
+	static as string id
+	dim as string mangled
+	dim as zstring ptr p = any
+	dim as integer docpp = any, isglobal = any
 
 	'' local? no mangling
 	if( sym->scope > FB_MAINSCOPE ) then
@@ -705,66 +526,67 @@ private function hMangleVariable  _
 		docpp = hDoCppMangling( sym )
 	end if
 
-    '' prefix
-    prefix_len = 0
-    prefix_str = hGetVarPrefix( sym, docpp )
-	if( prefix_str <> NULL ) then
-		prefix_len = len( *prefix_str )
+	'' prefix
+	'' public global/static?
+	if( sym->attrib and (FB_SYMBATTRIB_PUBLIC or FB_SYMBATTRIB_EXTERN or _
+	                     FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_COMMON or _
+	                     FB_SYMBATTRIB_STATIC) ) then
+		select case( env.clopt.target )
+		case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN
+			'' Win32 import? Don't add the prefix under the C backend; it will use
+			'' __declspec(dllimport) instead in order to let gcc do it.
+			if( (env.clopt.backend = FB_BACKEND_GAS) and symbIsImport( sym ) ) then
+				mangled += "__imp_"
+			end if
+		end select
+
+		'' Win32 underscore prefix
+		if( hAddUnderscore( ) ) then
+			mangled += "_"
+		end if
+
+		if( docpp ) then
+			'' Note: This adds the _Z prefix to all global variables,
+			'' unlike GCC, which does C++ mangling only for globals inside
+			'' namespaces, but not globals from the toplevel namespace.
+			mangled += "_Z"
+		end if
 	end if
 
-    '' namespace
-    nspc_len = 0
+	'' namespace
 	if( docpp ) then
-    	nspc_str = hMangleNamespace( symbGetNamespace( sym ), FALSE )
-    	if( nspc_str <> NULL ) then
-    		nspc_len = len( *nspc_str )
-    	end if
-    end if
+		hMangleNamespace( mangled, symbGetNamespace( sym ), FALSE, FALSE )
+	end if
 
-    '' class
-    ''class_str = hGetClass( sym )
+	'' class (once static member variables are added)
 
 	'' id
-	suffix_str = NULL
-	suffix_len = 0
-
-	'' alias explicitly given?
 	if( (sym->stats and FB_SYMBSTATS_HASALIAS) <> 0 ) then
-		id_str = sym->id.alias
+		'' Explicit var ALIAS given, overriding the default id
+		id = *sym->id.alias
 	else
 		'' shared, public, extern or inside a ns?
-		isglobal = (sym->attrib and (FB_SYMBATTRIB_PUBLIC or _
-			 			   	  		 FB_SYMBATTRIB_EXTERN or _
-			 				  		 FB_SYMBATTRIB_SHARED or _
-			 				  		 FB_SYMBATTRIB_COMMON)) <> 0
+		isglobal = ((sym->attrib and (FB_SYMBATTRIB_PUBLIC or FB_SYMBATTRIB_EXTERN or _
+		                              FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_COMMON)) <> 0)
 
 		if( isglobal or docpp ) then
-			suffix_len = 0
-
 			'' BASIC? use the upper-cased name
 			if( symbGetMangling( sym ) = FB_MANGLING_BASIC ) then
-				'' C backend?
+				id = *sym->id.name
 				if( env.clopt.backend = FB_BACKEND_GCC ) then
-					suffix_str = @"$"
-					suffix_len = 1
+					id += "$"
 				end if
-
-				id_str = sym->id.name
 			'' else, the case-sensitive name saved in the alias..
 			else
-				id_str = sym->id.alias
+				id = *sym->id.alias
 			end if
 
 			'' suffixed?
 			if( symbIsSuffixed( sym ) ) then
-				if( suffix_len = 0 ) then
-					suffix_str = @typecodeTB( symbGetType( sym ) )
-				else
-					static as string tmp
-					tmp = typecodeTB( symbGetType( sym ) ) + "$"
-					suffix_str = strptr( tmp )
+				id += typecodeTB( symbGetType( sym ) )
+				if( env.clopt.backend = FB_BACKEND_GCC ) then
+					id += "$"
 				end if
-				suffix_len += 1
 			end if
 		else
 			'' C backend?
@@ -774,23 +596,22 @@ private function hMangleVariable  _
 				'' still emitted locally, so they can keep their
 				'' own name, like other local vars.
 				if( symbIsStatic( sym ) and symbHasDtor( sym ) ) then
-					id_str = symbUniqueId( )
+					id = *symbUniqueId( )
 				else
-					'' BASIC? use the upper-cased name
 					if( symbGetMangling( sym ) = FB_MANGLING_BASIC ) then
-						id_str = sym->id.name
-
-						static as string tmp
+						'' BASIC mangling, use the upper-cased name
+						id = *sym->id.name
 
 						'' Using '$' to prevent collision with C keywords etc.
 						'' ('$' isn't allowed as part of FB ids)
-						tmp = "$"
+						id += "$"
 
 						'' Type suffix?
 						if( symbIsSuffixed( sym ) ) then
 							'' Encode the type to prevent collisions with other variables
 							'' using the same base id but different type suffix.
-							tmp += typecodeTB( symbGetType( sym ) ) + "$"
+							id += typecodeTB( symbGetType( sym ) )
+							id += "$"
 						end if
 
 						'' Append the scope level to prevent collisions with symbols
@@ -799,145 +620,52 @@ private function hMangleVariable  _
 						'' while locals from procedures start at level 1,
 						'' but that's ok as long as globals aren't suffixed with
 						'' a level at all.
-						tmp += str( sym->scope )
-
-						suffix_str = strptr( tmp )
-						suffix_len = len( tmp )
-
-					'' else, the case-sensitive name saved in the alias..
+						id += str( sym->scope )
 					else
-						id_str = sym->id.alias
+						'' Use the case-sensitive name saved in the alias
+						id = *sym->id.alias
 					end if
 				end if
 			else
 				'' static?
 				if( symbIsStatic( sym ) ) then
-					id_str = symbUniqueId( )
+					id = *symbUniqueId( )
 				'' local..
 				else
-					id_str = irProcGetFrameRegName( )
+					id = *irProcGetFrameRegName( )
 				end if
 			end if
 		end if
 	end if
 
-	id_len = len( *id_str )
+	'' id length (C++ only) followed by the id itself
+	if( docpp ) then
+		mangled += str( len( id ) )
+	end if
+	mangled += id
 
 	if( docpp ) then
-		id_str = hGetVarIdentifier( sym, id_str, id_len, suffix_len )
-	end if
-
-	'' concat
-	dim as zstring ptr dst, id_alias
-
-	id_alias = ZStrAllocate( prefix_len + nspc_len + _
-							 id_len + suffix_len + 1 ) '' +1 for the "E"
-
-	dst = id_alias
-	if( prefix_str <> NULL ) then
-		*dst = *prefix_str
-		dst += prefix_len
-	end if
-
-	if( nspc_len <> 0 ) then
-		*dst = *nspc_str
-		dst += nspc_len
-	end if
-
-	*dst = *id_str
-	dst += id_len
-
-	if( suffix_str <> NULL ) then
-		*dst = *suffix_str
-		dst += suffix_len
-	end if
-
-	'' nested? (namespace or class) close..
-	if(	nspc_len <> 0 ) then
-		dst[0] = asc( "E" )
-		dst[1] = 0
-	end if
-
-	function = id_alias
-
-end function
-
-'':::::
-private function hGetProcIdentifier _
-	( _
-		byval sym as FBSYMBOL ptr, _
-		byval id as const zstring ptr _
-	) as zstring ptr static
-
-    static as string res
-
-    res = str( len( *id ) )
-    res += *id
-
-    function = strptr( res )
-
-end function
-
-'':::::
-private function hGetProcPrefix _
-	( _
-		byval sym as FBSYMBOL ptr, _
-		byval docpp as integer _
-	) as const zstring ptr static
-
-	'' no C++? do nothing..
-	if( docpp = FALSE ) then
-		if( hAddUnderscore( ) ) then
-			function = @"_"
-		else
-			function = NULL
-		end if
-	else
-		if( hAddUnderscore( ) ) then
-			function = @"__Z"
-		else
-			function = @"_Z"
+		'' nested? (namespace or class)
+		if( hIsNested( sym ) ) then
+			mangled += "E"
 		end if
 	end if
 
-end function
+	'' Store the mangled id into the symbol
+	sym->id.mangled = ZStrAllocate( len( mangled ) )
+	*sym->id.mangled = mangled
+end sub
 
-'':::::
-private function hGetProcSuffix _
+private sub hGetProcParamsTypeCode _
 	( _
+		byref mangled as string, _
 		byval sym as FBSYMBOL ptr _
-	) as zstring ptr static
+	)
 
-	static as zstring * 1 + 10 + 1 suffix = "@"
-
-    '' Only add the @N suffix for STDCALL.
-	if( sym->proc.mode <> FB_FUNCMODE_STDCALL ) then
-		return NULL
-	end if
-
-	'' C backend? don't add anything..
-	if( env.clopt.backend = FB_BACKEND_GCC ) then
-		return NULL
-	end if
-
-	*(@suffix + 1) = str( sym->proc.lgt )
-
-	function = @suffix
-
-end function
-
-'':::::
-private function hGetProcParamsTypeCode _
-	( _
-		byval sym as FBSYMBOL ptr _
-	) as string
-
-    dim as FBSYMBOL ptr param = any
-    dim as string res
-    dim as integer dtype = any
+	dim as FBSYMBOL ptr param = any
+	dim as integer dtype = any
 
 	param = symbGetProcHeadParam( sym )
-
 	if( param <> NULL ) then
 		'' instance pointer? skip..
 		if( symbIsParamInstance( param ) ) then
@@ -948,50 +676,18 @@ private function hGetProcParamsTypeCode _
 	'' no params?
 	if( param = NULL ) then
 		'' void
-		res = "v"
-
-	else
-		res = ""
-
-    	do
-            res += symbMangleParam( param )
-
-    		'' next
-    		param = symbGetParamNext( param )
-    	loop while( param <> NULL )
-    end if
-
-    function = res
-
-end function
-
-'':::::
-private function hMangleProcParams _
-	( _
-		byval sym as FBSYMBOL ptr _
-	) as zstring ptr static
-
-    static as string res
-
-	'' nested? (namespace or class)
-	if( hIsNested( sym ) ) then
-		res = "E"
-		res += hGetProcParamsTypeCode( sym )
-
-	else
-		res = hGetProcParamsTypeCode( sym )
+		mangled += "v"
+		exit sub
 	end if
 
-	function = strptr( res )
+	'' for each param...
+	do
+		symbMangleParam( mangled, param )
+		param = symbGetParamNext( param )
+	loop while( param )
+end sub
 
-end function
-
-'':::::
-private function hGetOperatorName _
-	( _
-		byval proc as FBSYMBOL ptr _
-	) as const zstring ptr static
-
+private function hGetOperatorName( byval proc as FBSYMBOL ptr ) as const zstring ptr
 	''
 	'' Most operators follow the "Operator Encodings" section of the
 	'' Itanium C++ ABI.
@@ -1225,178 +921,107 @@ private function hGetOperatorName _
 			function = @"v14next"
 		end if
 
-	case AST_OP_CAST
-		static as string res
-
-		res = "cv"
-
-		'' mangle the return type
-		res += symbMangleType( symbGetFullType( proc ), symbGetSubtype( proc ) )
-
-		function = strptr( res )
-
 	end select
-
 end function
 
-'':::::
-private function hGetCtorName _
-	( _
-		byval sym as FBSYMBOL ptr _
-	) as const zstring ptr static
+private sub hMangleProc( byval sym as FBSYMBOL ptr )
+	dim as string mangled
+	dim as integer length = any, docpp = any
+	dim as zstring ptr id = any
 
-	'' !!!FIXME!!! g++ will emit two ctors/dtors if the base
-	'' class is virtual
+	docpp = hDoCppMangling( sym )
 
-	'' ctor?
-	if( symbIsConstructor( sym ) ) then
-		function = @"C1"
+	symbMangleInitAbbrev( )
 
-	'' dtor..
-	else
-		function = @"D1"
+	'' Win32 underscore prefix
+	if( hAddUnderscore( ) ) then
+		mangled += "_"
 	end if
 
-end function
-
-'':::::
-private function hMangleProc  _
-	( _
-		byval sym as FBSYMBOL ptr _
-	) as zstring ptr
-
-    dim as const zstring ptr prefix_str = any, nspc_str = any, id_str = any, param_str = any, suffix_str = any
-    dim as integer prefix_len = any, nspc_len = any, id_len = any, param_len = any, suffix_len = any, add_len = any
-    dim as integer docpp = any
-
-    docpp = hDoCppMangling( sym )
-
-    symbMangleInitAbbrev( )
-
-    '' prefix
-    prefix_len = 0
-    prefix_str = hGetProcPrefix( sym, docpp )
-	if( prefix_str <> NULL ) then
-		prefix_len = len( *prefix_str )
-	end if
-
-    '' namespace or class
-	nspc_len = 0
+	'' C++ prefix
 	if( docpp ) then
-    	nspc_str = hMangleNamespace( symbGetNamespace( sym ), , symbIsConstant( sym ) )
-    	if( nspc_str <> NULL ) then
-    		nspc_len = len( *nspc_str )
-    	end if
-    end if
+		mangled += "_Z"
+	end if
 
-    '' id
-    add_len = docpp
+	'' namespace or class
+	if( docpp ) then
+		hMangleNamespace( mangled, symbGetNamespace( sym ), TRUE, symbIsConstant( sym ) )
+	end if
 
-    '' alias explicitly given?
-    if( (sym->stats and FB_SYMBSTATS_HASALIAS) <> 0 ) then
-    	id_str = sym->id.alias
+	'' id
+	if( (sym->stats and FB_SYMBSTATS_HASALIAS) <> 0 ) then
+		'' Explicit proc ALIAS given, overriding the default id
+		'' (even for constructors, operators and properties)
+		'' id length (C++ only)
+		if( docpp ) then
+			mangled += str( len( *sym->id.alias ) )
+		end if
+		'' id
+		mangled += *sym->id.alias
+	elseif( symbIsOperator( sym ) ) then
+		if( symbGetProcOpOvl( sym ) = AST_OP_CAST ) then
+			mangled += "cv"
+			'' mangle the return type
+			symbMangleType( mangled, symbGetFullType( sym ), symbGetSubtype( sym ) )
+		else
+			mangled += *hGetOperatorName( sym )
+		end if
+	elseif( symbIsConstructor( sym ) ) then
+		mangled += "C1"
+	elseif( symbIsDestructor( sym ) ) then
+		mangled += "D1"
+	else
+		if( symbGetMangling( sym ) = FB_MANGLING_BASIC ) then
+			'' BASIC, use the upper-cased name
+			id = sym->id.name
+		else
+			'' use the case-sensitive name saved in the alias
+			id = sym->id.alias
+		end if
 
-    else
-    	'' operator?
-    	if( symbIsOperator( sym ) ) then
-            id_str = hGetOperatorName( sym )
-            add_len = FALSE
+		'' id length (C++ only)
+		if( docpp ) then
+			length = len( *id )
+			if( symbIsProperty( sym ) ) then
+				length += 7  '' __get__ or __set__ (see below)
+			end if
+			mangled += str( length )
+		end if
 
-    	else
-    		'' ctor/dtor?
-    		if( (symbGetAttrib( sym ) and (FB_SYMBATTRIB_CONSTRUCTOR or _
-    								   	   FB_SYMBATTRIB_DESTRUCTOR)) <> 0 ) then
-            	id_str = hGetCtorName( sym )
-            	add_len = FALSE
-
+		'' id
+		mangled += *id
+		if( symbIsProperty( sym ) ) then
+			'' custom property mangling,
+			'' since the base id is the same for setters/getters
+			'' GET?
+			if( symbGetType( sym ) = FB_DATATYPE_VOID ) then
+				mangled += "__set__"
 			else
-    			'' BASIC? use the upper-cased name
-    			if( symbGetMangling( sym ) = FB_MANGLING_BASIC ) then
-					id_str = sym->id.name
-				'' else, the case-sensitive name saved in the alias..
-				else
-	    			id_str = sym->id.alias
-				end if
-
-				'' property?
-				if( symbIsProperty( sym ) ) then
-					static as string tmp
-					tmp = *id_str
-
-					'' GET?
-					if( symbGetType( sym ) <> FB_DATATYPE_VOID ) then
-						tmp += "__get__"
-					else
-						tmp += "__set__"
-					end if
-
-					id_str = strptr( tmp )
-				end if
+				mangled += "__get__"
 			end if
 		end if
 	end if
 
-	if( add_len ) then
-		id_str = hGetProcIdentifier( sym, id_str )
-	end if
-
-	id_len = len( *id_str )
-
 	'' params
-	param_len = 0
 	if( docpp ) then
-		param_str = hMangleProcParams( sym )
-		if( param_str <> NULL ) then
-			param_len = len( *param_str )
+		'' nested? (namespace or class)
+		if( hIsNested( sym ) ) then
+			mangled += "E"
 		end if
-	else
-		param_str = NULL
+		hGetProcParamsTypeCode( mangled, sym )
 	end if
 
-    '' suffix
-    suffix_len = 0
-    suffix_str = hGetProcSuffix( sym )
-    if( suffix_str <> NULL ) then
-    	suffix_len = len( *suffix_str )
-    end if
-
-	'' concat
-	dim as zstring ptr dst = any, id_alias = any
-
-	var tlen = prefix_len + nspc_len + id_len + param_len + suffix_len
-	if tlen = 0 then
-		id_alias = NULL
-
-	else
-		id_alias = ZStrAllocate( tlen )
-
-		dst = id_alias
-		if( prefix_str <> NULL ) then
-			*dst = *prefix_str
-			dst += prefix_len
+	'' @N win32 stdcall suffix
+	if( sym->proc.mode = FB_FUNCMODE_STDCALL ) then
+		'' But not for the C backend, because gcc will do it already.
+		if( env.clopt.backend <> FB_BACKEND_GCC ) then
+			mangled += "@" + str( sym->proc.lgt )
 		end if
+	end if
 
-		if( nspc_len <> 0 ) then
-			*dst = *nspc_str
-			dst += nspc_len
-		end if
+	symbMangleEndAbbrev( )
 
-		*dst = *id_str
-		dst += id_len
-
-		if( param_str <> NULL ) then
-			*dst = *param_str
-			dst += param_len
-		end if
-
-		if( suffix_str <> NULL ) then
-			*dst = *suffix_str
-		end if
-    end if
-
-	function = id_alias
-
-   	symbMangleEndAbbrev( )
-
-end function
-
+	'' Store the mangled id into the symbol
+	sym->id.mangled = ZStrAllocate( len( mangled ) )
+	*sym->id.mangled = mangled
+end sub

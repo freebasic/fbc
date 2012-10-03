@@ -1580,41 +1580,18 @@ declare function symbCanDuplicate _
 declare function symbUniqueId( ) as zstring ptr
 declare function symbUniqueLabel( ) as zstring ptr
 declare function symbMakeProfileLabelName( ) as zstring ptr
-
-declare function symbGetMangledName _
+declare function symbGetMangledName( byval sym as FBSYMBOL ptr ) as zstring ptr
+declare function symbGetDBGName( byval sym as FBSYMBOL ptr ) as zstring ptr
+declare sub symbSetName( byval s as FBSYMBOL ptr, byval name_ as zstring ptr )
+declare sub symbMangleInitAbbrev( )
+declare sub symbMangleEndAbbrev( )
+declare sub symbMangleType _
 	( _
-		byval sym as FBSYMBOL ptr _
-	) as zstring ptr
-
-declare function symbGetDBGName _
-	( _
-		byval sym as FBSYMBOL ptr _
-	) as zstring ptr
-
-declare sub symbSetName _
-	( _
-		byval s as FBSYMBOL ptr, _
-		byval name_ as zstring ptr _
-	)
-
-declare sub symbMangleInitAbbrev _
-	( _
-	)
-
-declare sub symbMangleEndAbbrev	_
-	( _
-	)
-
-declare function symbMangleType _
-	( _
+		byref mangled as string, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr _
-	) as string
-
-declare function symbMangleParam _
-	( _
-		byval param as FBSYMBOL ptr _
-	) as string
+	)
+declare sub symbMangleParam( byref mangled as string, byval param as FBSYMBOL ptr )
 
 declare function symbDemangleFunctionPtr _
 	( _
