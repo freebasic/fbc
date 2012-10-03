@@ -1101,16 +1101,8 @@ function symbAddProcResult( byval proc as FBSYMBOL ptr ) as FBSYMBOL ptr
 		end if
 	end if
 
-	dim as const zstring ptr id = NULL
-	if( env.clopt.backend = FB_BACKEND_GCC ) then
-		id = @"fb$result"
-	end if
-
-	res = symbAddVarEx( id, NULL, _
-						proc->typ, proc->subtype, 0, _
-						0, dTB(), _
-					  	FB_SYMBATTRIB_FUNCRESULT, _
-					  	FB_SYMBOPT_PRESERVECASE )
+	res = symbAddVarEx( @"fb$result", NULL, proc->typ, proc->subtype, 0, _
+	                    0, dTB(), FB_SYMBATTRIB_FUNCRESULT, FB_SYMBOPT_PRESERVECASE )
 
 	if( proc->proc.ext = NULL ) then
 		proc->proc.ext = symbAllocProcExt( )
