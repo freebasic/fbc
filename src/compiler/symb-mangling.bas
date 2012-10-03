@@ -529,6 +529,11 @@ private sub hMangleVariable( byval sym as FBSYMBOL ptr )
 	if( sym->attrib and (FB_SYMBATTRIB_PUBLIC or FB_SYMBATTRIB_EXTERN or _
 	                     FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_COMMON or _
 	                     FB_SYMBATTRIB_STATIC) ) then
+		'' LLVM: @ prefix for global symbols
+		if( env.clopt.backend = FB_BACKEND_LLVM ) then
+			mangled += "@"
+		end if
+
 		select case( env.clopt.target )
 		case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN
 			'' Win32 import? Don't add the prefix under the C backend; it will use
@@ -548,6 +553,11 @@ private sub hMangleVariable( byval sym as FBSYMBOL ptr )
 			'' unlike GCC, which does C++ mangling only for globals inside
 			'' namespaces, but not globals from the toplevel namespace.
 			mangled += "_Z"
+		end if
+	else
+		'' LLVM: % prefix for local symbols
+		if( env.clopt.backend = FB_BACKEND_LLVM ) then
+			mangled += "%"
 		end if
 	end if
 
@@ -587,8 +597,8 @@ private sub hMangleVariable( byval sym as FBSYMBOL ptr )
 				end if
 			end if
 		else
-			'' C backend?
-			if( env.clopt.backend = FB_BACKEND_GCC ) then
+			select case( env.clopt.backend )
+			case FB_BACKEND_GCC
 				'' ir-hlc emits statics with dtors as globals,
 				'' so they need a unique name. Other statics are
 				'' still emitted locally, so they can keep their
@@ -624,15 +634,26 @@ private sub hMangleVariable( byval sym as FBSYMBOL ptr )
 						id = *sym->id.alias
 					end if
 				end if
-			else
-				'' static?
+			case FB_BACKEND_LLVM
+				if( symbGetMangling( sym ) = FB_MANGLING_BASIC ) then
+					'' BASIC mangling, use the upper-cased name
+					id = *sym->id.name
+
+					'' Type suffix?
+					if( symbIsSuffixed( sym ) ) then
+						id += typecodeTB( symbGetType( sym ) )
+					end if
+				else
+					'' Use the case-sensitive name saved in the alias
+					id = *sym->id.alias
+				end if
+			case else '' ASM backend
 				if( symbIsStatic( sym ) ) then
 					id = *symbUniqueId( )
-				'' local..
 				else
 					id = *irProcGetFrameRegName( )
 				end if
-			end if
+			end select
 		end if
 	end if
 
@@ -930,6 +951,11 @@ private sub hMangleProc( byval sym as FBSYMBOL ptr )
 	docpp = hDoCppMangling( sym )
 
 	symbMangleInitAbbrev( )
+
+	'' LLVM: @ prefix for global symbols
+	if( env.clopt.backend = FB_BACKEND_LLVM ) then
+		mangled += "@"
+	end if
 
 	'' Win32 underscore prefix
 	if( hAddUnderscore( ) ) then

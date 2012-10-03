@@ -146,8 +146,8 @@ private function hEmitProcHeader _
 
 	ln += " "
 
-	'' Identifier
-	ln += "@" + *symbGetMangledName( proc )
+	'' @id
+	ln += *symbGetMangledName( proc )
 
 	'' Parameter list
 	ln += "( "
@@ -208,7 +208,7 @@ private function hEmitProcHeader _
 			ln += hEmitType( dtype, subtype, type_options )
 
 			if( is_proto = FALSE ) then
-				ln += " %" + *symbGetMangledName( pvar )
+				ln += " " + *symbGetMangledName( pvar )
 			end if
 		end if
 
@@ -323,49 +323,22 @@ end function
 private sub hEmitVar( byval sym as FBSYMBOL ptr, byval varini as zstring ptr )
 	dim as string ln
 
-	'' Never used?
-	if( symbGetIsAccessed( sym ) = FALSE ) then
-		'' Extern?
-		if( symbIsExtern( sym ) ) then
-			return
-		end if
+	'' not a local?
+	if( symbGetAttrib( sym ) and (FB_SYMBATTRIB_COMMON or FB_SYMBATTRIB_PUBLIC or _
+	                              FB_SYMBATTRIB_EXTERN or FB_SYMBATTRIB_STATIC or _
+	                              FB_SYMBATTRIB_SHARED) ) then
+		exit sub
 	end if
 
-	'' Shared (not Local) or Static, but not Common/Public/Extern?
-	if( ((symbGetAttrib( sym ) and (FB_SYMBATTRIB_COMMON or FB_SYMBATTRIB_PUBLIC or FB_SYMBATTRIB_EXTERN)) = 0) and _
-	    ((not symbIsLocal( sym )) or symbIsStatic( sym )) ) then
-		ln += "static "
-	end if
-
+	'' %sym = alloca type
+	ln += *symbGetMangledName( sym ) + " = alloca "
 	ln += hEmitType( symbGetType( sym ), symbGetSubType( sym ) )
-	ln += " " + *symbGetMangledName( sym )
-	ln += hEmitArrayDecl( sym )
-
-	if( symbIsImport( sym ) ) then
-		ln += " __attribute__((dllimport))"
-	end if
-
-	'' allocation modifier
-	if( symbGetAttrib( sym ) and (FB_SYMBATTRIB_COMMON or FB_SYMBATTRIB_PUBLIC or FB_SYMBATTRIB_EXTERN) ) then
-		hWriteLine( "extern " + ln )
-		if( symbIsCommon( sym ) ) then
-			ln += " __attribute__((common))"
-		elseif( symbIsExtern( sym ) ) then
-			'' Just an Extern that's used but not allocated in this module
-			return
-		end if
-	end if
-
-	if( varini ) then
-		ln += " = " + *varini
-	end if
 
 	hWriteLine( ln )
 end sub
 
 private sub hEmitVariable( byval s as FBSYMBOL ptr )
-
-    '' already allocated?
+	'' already allocated?
 	if( symbGetVarIsAllocated( s ) ) then
 		return
 	end if
@@ -373,44 +346,41 @@ private sub hEmitVariable( byval s as FBSYMBOL ptr )
 	symbSetVarIsAllocated( s )
 
 	'' literal? don't emit..
-    if( symbGetIsLiteral( s ) ) then
-    	return
+	if( symbGetIsLiteral( s ) ) then
+		return
 	end if
 
 	'' initialized? only if not local or local and static
 	if( symbGetIsInitialized( s ) and (symbIsLocal( s ) = FALSE or symbIsStatic( s ))  ) then
-
 		'' extern or jump-tb?
-    	if( symbIsExtern( s ) ) then
+		if( symbIsExtern( s ) ) then
 			return
 		elseif( symbGetIsJumpTb( s ) ) then
 			return
 		end if
 
-    	'' never referenced?
-    	if( symbIsLocal( s ) = FALSE ) then
-    		if( symbGetIsAccessed( s ) = FALSE ) then
+		'' never referenced?
+		if( symbIsLocal( s ) = FALSE ) then
+			if( symbGetIsAccessed( s ) = FALSE ) then
 				'' not public?
-    	    	if( symbIsPublic( s ) = FALSE ) then
-    	    		return
-    	    	end if
+				if( symbIsPublic( s ) = FALSE ) then
+					return
+				end if
 			end if
 		end if
 
-		astTypeIniFlush( s->var_.initree, _
-						 s, _
-						 AST_INIOPT_ISINI or AST_INIOPT_ISSTATIC )
+		astTypeIniFlush( s->var_.initree, s, AST_INIOPT_ISINI or AST_INIOPT_ISSTATIC )
 
 		s->var_.initree = NULL
 		return
 	end if
 
-    '' dynamic? only the array descriptor is emitted
+	'' dynamic? only the array descriptor is emitted
 	if( symbGetIsDynamic( s ) ) then
 		return
 	end if
 
-    '' a string or array descriptor?
+	'' a string or array descriptor?
 	if( symbGetLen( s ) <= 0 ) then
 		return
 	end if
@@ -490,7 +460,7 @@ private sub hEmitStruct( byval s as FBSYMBOL ptr )
 	''
 	'' ... as long as the type will be fully declared before its first use
 	'' in a function/variable declaration etc. This makes UDT emitting
-	'' pretty easy when compared with the C backend.
+	'' pretty easy compared to the C backend.
 	''
 	if( symbGetIsBeingEmitted( s ) ) then
 		return
@@ -883,9 +853,7 @@ private function _procAllocLocal _
 	) as integer
 
 	hEmitVariable( sym )
-
 	function = 0
-
 end function
 
 private sub _scopeBegin( byval s as FBSYMBOL ptr )
@@ -1889,7 +1857,7 @@ private sub _emitMem _
 end sub
 
 private sub _emitDECL( byval sym as FBSYMBOL ptr )
-	'' Nothing to do - used by C backend
+	hEmitVariable( sym )
 end sub
 
 private sub _emitDBG _
