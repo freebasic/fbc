@@ -1181,7 +1181,7 @@ private function astSetBitfield _
 	''
 
 	s = l->subtype
-	assert( symbGetClass( s ) = FB_SYMBCLASS_BITFIELD )
+	assert( symbIsBitfield( s ) )
 
 	'' Remap type from bitfield to short/integer/etc., whichever was given
 	'' on the bitfield, to do a "full" field access.
@@ -1216,7 +1216,12 @@ end function
 private function astAccessBitfield( byval l as ASTNODE ptr ) as ASTNODE ptr
 	dim as FBSYMBOL ptr s = any
 
+	''    l<bitfield>
+	'' becomes:
+	''    (l<int> shr bitpos) and mask
+
 	s = l->subtype
+	assert( symbIsBitfield( s ) )
 
 	'' Remap type from bitfield to short/integer/etc, while keeping in
 	'' mind that the bitfield may have been casted, so the FIELD's type

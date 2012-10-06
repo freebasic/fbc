@@ -2006,6 +2006,8 @@ declare function symbGetUDTBaseLevel _
 
 #define symbIsField(s) (s->class = FB_SYMBCLASS_FIELD)
 
+#define symbIsBitfield( s ) ((s)->class = FB_SYMBCLASS_BITFIELD)
+
 #define symbIsTypedef(s) (s->class = FB_SYMBCLASS_TYPEDEF)
 
 #define symbIsFwdRef(s) (s->class = FB_SYMBCLASS_FWDREF)
