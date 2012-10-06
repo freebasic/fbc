@@ -2426,6 +2426,11 @@ declare function symbGetUDTBaseLevel _
 ''  symbTrace(a), "(replacing this)"
 ''  symbTrace(b), "(with this)"
 #define symbTrace( s ) print __FUNCTION__ + "(" & __LINE__ & "): " + symbDump( s )
+declare function typeDump _
+	( _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr _
+	) as string
 declare function symbDump( byval s as FBSYMBOL ptr ) as string
 #endif
 

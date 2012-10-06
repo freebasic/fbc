@@ -696,6 +696,7 @@ private sub astDumpTreeEx _
 	end if
 
 	dim as string s = hAstNodeToStr( n )
+	's += " " + typeDump( n->dtype, n->subtype )
 	dbg_astOutput( s, col, just, depth )
 
 	depth += 1

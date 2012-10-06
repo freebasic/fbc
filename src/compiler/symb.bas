@@ -2085,7 +2085,74 @@ function symbCheckConstAssign _
 end function
 
 #if __FB_DEBUG__
-'' For debugging
+function typeDump _
+	( _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr _
+	) as string
+
+	dim as string dump
+	dim as integer ok = any
+
+	dump = "["
+
+	if( dtype and FB_DATATYPE_INVALID ) then
+		dump += "invalid"
+	else
+		if( typeGetDtOnly( dtype ) = FB_DATATYPE_STRUCT ) then
+			dump += "struct"
+		else
+			dump += *symb_dtypeTB(typeGetDtOnly( dtype )).name
+		end if
+
+		for i as integer = 1 to abs( typeGetPtrCnt( dtype ) )
+			dump += " ptr"
+		next
+
+		'' Report unusual subtypes
+		if( subtype ) then
+			select case( typeGetDtOnly( dtype ) )
+			case FB_DATATYPE_STRUCT
+				ok = symbIsStruct( subtype )
+			case FB_DATATYPE_ENUM
+				ok = symbIsEnum( subtype )
+			case FB_DATATYPE_NAMESPC
+				ok = symbIsNamespace( subtype )
+			case FB_DATATYPE_BITFIELD
+				ok = symbIsBitfield( subtype )
+			case FB_DATATYPE_FUNCTION
+				ok = symbIsProc( subtype )
+			case FB_DATATYPE_FWDREF
+				ok = symbIsFwdref( subtype )
+			case else
+				ok = TRUE
+			end select
+		else
+			select case( typeGetDtOnly( dtype ) )
+			case FB_DATATYPE_STRUCT, FB_DATATYPE_ENUM, _
+			     FB_DATATYPE_NAMESPC, FB_DATATYPE_BITFIELD, _
+			     FB_DATATYPE_FUNCTION, FB_DATATYPE_FWDREF
+				ok = FALSE
+			case else
+				ok = TRUE
+			end select
+		end if
+
+		if( ok = FALSE ) then
+			dump += ", "
+			if( subtype ) then
+				dump += str( subtype->class )
+			else
+				dump += "NULL"
+			end if
+		end if
+	end if
+
+	dump += "]"
+
+	function = dump
+end function
+
 function symbDump( byval s as FBSYMBOL ptr ) as string
 	dim as string dump
 
