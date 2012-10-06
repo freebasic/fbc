@@ -2113,9 +2113,20 @@ private sub hExprFlush( byval n as EXPRNODE ptr, byval need_parens as integer )
 			ctx.exprtext += "-"
 		case AST_OP_NOT
 			ctx.exprtext += "~"
+		case else
+			assert( FALSE )
 		end select
 
+		'' Add parentheses around UOPs to avoid -(-(foo)) looking like
+		'' --foo which looks like the -- operator to gcc...
+		need_parens = (n->l->class = EXPRCLASS_UOP)
+		if( need_parens ) then
+			ctx.exprtext += "("
+		end if
 		hExprFlush( n->l, TRUE )
+		if( need_parens ) then
+			ctx.exprtext += ")"
+		end if
 
 	case EXPRCLASS_BOP
 		'' Add parentheses around BOPs if the parent needs it
