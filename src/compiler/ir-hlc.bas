@@ -1743,6 +1743,12 @@ private function typeCBop _
 		byval bsubtype as FBSYMBOL ptr _
 	) as integer
 
+	'' Result of relational/comparison operators is int
+	select case( op )
+	case AST_OP_EQ, AST_OP_NE, AST_OP_GT, AST_OP_LT, AST_OP_GE, AST_OP_LE
+		return FB_DATATYPE_INTEGER
+	end select
+
 	'' This tries to do C operand type promotion (and is probably not
 	'' 100% accurate), in order to figure out the result type of BOP/UOP
 	'' in the C output code, to allow the expression emitting decide
