@@ -80,6 +80,7 @@ Version 0.25.0:
 - Expressions like "@*cast(integer ptr, 123)", i.e. taking the address of a dereferenced type-casted constant, were rejected or caused parsing inconsistencies
 - FOR loops with ANY PTR counter used a zero step size or zero step size multiplier, instead of 1 as for BYTE PTR, generating an infinite loop
 - FOR loops with FWDREF PTR counters were allowed, despite the incomplete type, causing zero step size to be used (as above)
+- UDT methods (or other non-field members) declared in between bitfields interrupted bitfield packing
 
 
 Version 0.24.0:

@@ -288,10 +288,12 @@ function symbAddField _
 	if( bits > 0 ) then
 		'' last field was a bitfield too? try to merge..
 		if( parent->udt.bitpos > 0 ) then
-			'' TODO: this is broken, because the tail isn't always a field,
-			'' it can be a method too, or other nested stuff even?
+			'' Find the last field (skipping over methods etc.)
 			tail = parent->udt.ns.symtb.tail
-			assert( symbIsField( tail ) )
+			while( symbIsField( tail ) = FALSE )
+				tail = tail->prev
+			wend
+
 			assert( symbGetType( tail ) = FB_DATATYPE_BITFIELD )
 			prevbitfield = tail->subtype
 			assert( symbIsBitfield( prevbitfield ) )
