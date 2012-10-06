@@ -47,6 +47,48 @@ type SECTIONENTRY
 	indent		as integer '' current indendation level to be used when emitting lines into this section
 end type
 
+enum
+	EXPRCLASS_TEXT = 0
+	EXPRCLASS_IMM
+	EXPRCLASS_SYM
+	EXPRCLASS_CAST
+	EXPRCLASS_UOP
+	EXPRCLASS_BOP
+end enum
+
+type EXPRNODE
+	class		as integer  '' EXPRCLASS_*
+
+	'' This expression's type, to determine whether CASTs are needed or not
+	dtype		as integer
+	subtype		as FBSYMBOL ptr
+
+	l		as EXPRNODE ptr  '' CAST/UOP/BOP
+	r		as EXPRNODE ptr  '' BOP
+
+	union
+		text		as zstring ptr  '' TEXT
+		int		as integer      '' IMM
+		long		as longint      '' IMM
+		float		as double       '' IMM
+		sym		as FBSYMBOL ptr '' SYM
+		op		as integer      '' UOP/BOP
+	end union
+end type
+
+type EXPRCACHENODE
+	'' Each cache entry associates an expression tree with a vreg id,
+	'' allowing expressions to be looked up for certain vreg accesses,
+	'' instead of having to be emitted as #defines or temp vars.
+	''
+	'' Having a separate list for the cache is faster than cycling through
+	'' the whole ctx.exprnodes list. Often there will be only 1 (UOPs) or
+	'' 2 (BOPs) expression trees cached, since the AST usually accesses
+	'' expression results right when emitting the next expression/statement.
+	vregid		as integer
+	expr		as EXPRNODE ptr
+end type
+
 type IRHLCCTX
 	sections(0 to MAX_SECTIONS-1)	as SECTIONENTRY
 	section				as integer '' Current section to write to
@@ -65,6 +107,10 @@ type IRHLCCTX
 	asm_i				as integer '' next operand/symbol index
 	asm_output			as string  '' output constraints in gcc's syntax
 	asm_input			as string  '' input constraints in gcc's syntax
+
+	exprnodes			as TLIST   '' EXPRNODE
+	exprtext			as string  '' buffer used by exprFlush() to build the final text
+	exprcache			as TLIST   '' EXPRCACHENODE
 end type
 
 declare function hEmitType _
@@ -81,6 +127,10 @@ declare sub _emitDBG _
 		byval proc as FBSYMBOL ptr, _
 		byval ex as integer _
 	)
+
+#if __FB_DEBUG__
+declare sub exprDump( byval n as EXPRNODE ptr )
+#endif
 
 '' globals
 dim shared as IRHLCCTX ctx
@@ -114,15 +164,19 @@ dim shared as const zstring ptr dtypeName(0 to FB_DATATYPES-1) = _
     @"void *"     _ '' pointer
 }
 
-private sub _init(byval backend as FB_BACKEND)
+private sub _init( byval backend as FB_BACKEND )
 	flistInit( @ctx.vregTB, IR_INITVREGNODES, len( IRVREG ) )
 	listInit( @ctx.callargs, 32, sizeof(IRCALLARG), LIST_FLAGS_NOCLEAR )
+	listInit( @ctx.exprnodes, 32, sizeof( EXPRNODE ), LIST_FLAGS_CLEAR )
+	listInit( @ctx.exprcache, 8, sizeof( EXPRCACHENODE ), LIST_FLAGS_NOCLEAR )
 
 	irSetOption( IR_OPT_HIGHLEVEL or IR_OPT_FPUIMMEDIATES or _
 	             IR_OPT_NOINLINEOPS )
 end sub
 
-private sub _end()
+private sub _end( )
+	listEnd( @ctx.exprcache )
+	listEnd( @ctx.exprnodes )
 	listEnd( @ctx.callargs )
 	flistEnd( @ctx.vregTB )
 end sub
@@ -239,6 +293,8 @@ private sub hWriteLine _
 	sectionWriteLine( s )
 
 end sub
+
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
 enum EMITPROC_OPTIONS
 	EMITPROC_ISPROTO   = &h1
@@ -1427,12 +1483,7 @@ private sub _setVregDataType _
 
 end sub
 
-'':::::
-private sub hLoadVreg _
-	( _
-		byval vreg as IRVREG ptr _
-	)
-
+private sub hLoadVreg( byval vreg as IRVREG ptr )
 	if( vreg = NULL ) then
 		exit sub
 	end if
@@ -1451,7 +1502,6 @@ private sub hLoadVreg _
 	if( vreg->vidx <> NULL ) then
 		hLoadVreg( vreg->vidx )
 	end if
-
 end sub
 
 private function hEmitType _
@@ -1487,11 +1537,7 @@ private function hEmitType _
 		s = *dtypeName(dtype)
 
 	case FB_DATATYPE_BITFIELD
-		if( subtype ) then
-			s = *dtypeName(symbGetType( subtype ))
-		else
-			s = *dtypeName(FB_DATATYPE_INTEGER)
-		end if
+		s = *dtypeName(symbGetType( subtype ))
 
 	case else
 		s = *dtypeName(dtype)
@@ -1504,39 +1550,398 @@ private function hEmitType _
 	function = s
 end function
 
-private function hEmitInt( byval value as integer ) as string
-	dim as string s = str(value)
+private function exprNew _
+	( _
+		byval class_ as integer, _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr _
+	) as EXPRNODE ptr
 
-	if( value = -2147483648u ) then
-		'' Prevent GCC warnings for INT_MIN:
-		'' The '-' minus sign doesn't count as part of the number
-		'' literal, and 2147483648 is too big for an integer, so it
-		'' must be marked as unsigned.
-		s += "u"
+	dim as EXPRNODE ptr n = any
+
+	n = listNewNode( @ctx.exprnodes )
+	n->class = class_
+	n->dtype = dtype
+	n->subtype = subtype
+
+	function = n
+end function
+
+private sub exprFree( byval n as EXPRNODE ptr )
+	if( n->l ) then
+		exprFree( n->l )
+	end if
+	if( n->r ) then
+		exprFree( n->r )
+	end if
+	if( n->class = EXPRCLASS_TEXT ) then
+		ZstrFree( n->text )
+	end if
+	listDelNode( @ctx.exprnodes, n )
+end sub
+
+private function exprNewTEXT _
+	( _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr, _
+		byval s as zstring ptr _
+	) as EXPRNODE ptr
+
+	dim as EXPRNODE ptr n = any
+
+	n = exprNew( EXPRCLASS_TEXT, dtype, subtype )
+	n->text = ZstrDup( s )
+
+	function = n
+end function
+
+private function exprNewIMMi _
+	( _
+		byval i as integer, _
+		byval dtype as integer = FB_DATATYPE_INTEGER _
+	) as EXPRNODE ptr
+
+	dim as EXPRNODE ptr n = any
+
+	n = exprNew( EXPRCLASS_IMM, dtype, NULL )
+	n->int = i
+
+	function = n
+end function
+
+private function exprNewIMMl _
+	( _
+		byval l as longint, _
+		byval dtype as integer _
+	) as EXPRNODE ptr
+
+	dim as EXPRNODE ptr n = any
+
+	n = exprNew( EXPRCLASS_IMM, dtype, NULL )
+	n->long = l
+
+	function = n
+end function
+
+private function exprNewIMMf _
+	( _
+		byval f as double, _
+		byval dtype as integer _
+	) as EXPRNODE ptr
+
+	dim as EXPRNODE ptr n = any
+
+	n = exprNew( EXPRCLASS_IMM, dtype, NULL )
+	n->float = f
+
+	function = n
+end function
+
+private function symbIsCArray( byval sym as FBSYMBOL ptr ) as integer
+	'' No bydesc/byref, those are emitted as pointers...
+	if( symbIsParamBydescOrByref( sym ) ) then
+		return FALSE
+	end if
+
+	select case( symbGetClass( sym ) )
+	case FB_SYMBCLASS_VAR, FB_SYMBCLASS_FIELD
+		'' No dynamic arrays, they're just descriptor structs
+		if( symbGetIsDynamic( sym ) ) then
+			return FALSE
+		end if
+
+		if( symbGetArrayDimensions( sym ) <> 0 ) then
+			return TRUE
+		end if
+	end select
+
+	'' Fixed-length strings are emitted as arrays,
+	'' string literals are emitted as string literals,
+	'' both are pointers in C
+	select case( symbGetType( sym ) )
+	case FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
+		return TRUE
+	end select
+
+	return FALSE
+end function
+
+private function exprNewCAST _
+	( _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr, _
+		byval l as EXPRNODE ptr _
+	) as EXPRNODE ptr
+
+	dim as EXPRNODE ptr n = any
+
+	'' Don't add a CAST if l already has the desired type
+	if( (dtype = l->dtype) and (subtype = l->subtype) ) then
+		return l
+	end if
+
+	'' "(foo*)(bar*)"? Discard the bar* cast and cast only to foo*,
+	'' pointers are pointers, such double casts are useless.
+	if( l->class = EXPRCLASS_CAST ) then
+		if( (typeGetPtrCnt( dtype ) > 0) and (typeGetPtrCnt( l->dtype ) > 0) ) then
+			l->dtype = dtype
+			l->subtype = subtype
+			return l
+		end if
+	end if
+
+	n = exprNew( EXPRCLASS_CAST, dtype, subtype )
+	n->l = l
+
+	function = n
+end function
+
+private function exprNewSYM( byval sym as FBSYMBOL ptr ) as EXPRNODE ptr
+	dim as EXPRNODE ptr n = any
+	dim as integer dtype = any
+	dim as FBSYMBOL ptr subtype = any
+
+	if( symbIsLabel( sym ) ) then
+		'' &&label is a void* in GCC
+		'' This is handled as a single SYM instead of ADDROF( SYM ),
+		'' because a label is not a proper expression on its own.
+		dtype = typeAddrOf( FB_DATATYPE_VOID )
+		subtype = NULL
+	elseif( symbIsProc( sym ) ) then
+		'' &proc
+		'' Similar to labels above, this is only used to take the
+		'' address of functions, not to call them, so the '&' is
+		'' part of the SYM.
+		dtype = typeAddrOf( FB_DATATYPE_FUNCTION )
+		subtype = sym
+	elseif( symbIsCArray( sym ) ) then
+		dtype = FB_DATATYPE_INVALID
+		subtype = NULL
+	else
+		dtype = symbGetType( sym )
+		subtype = symbGetSubtype( sym )
+	end if
+
+	n = exprNew( EXPRCLASS_SYM, dtype, subtype )
+	n->sym = sym
+
+	'' Array? Add CAST to make it a pointer to the first element,
+	'' instead of a pointer to the array.
+	if( dtype = FB_DATATYPE_INVALID ) then
+		n = exprNewCAST( typeAddrOf( symbGetType( sym ) ), symbGetSubtype( sym ), n )
+	end if
+
+	function = n
+end function
+
+private function typeCBop _
+	( _
+		byval op as integer, _
+		byval a as integer, _
+		byval asubtype as FBSYMBOL ptr, _
+		byval b as integer, _
+		byval bsubtype as FBSYMBOL ptr _
+	) as integer
+
+	'' This tries to do C operand type promotion (and is probably not
+	'' 100% accurate), in order to figure out the result type of BOP/UOP
+	'' in the C output code, to allow the expression emitting decide
+	'' whether it needs to insert casts in the C output code or not.
+	''
+	'' This might only actually make a difference in rare cases;
+	'' it depends on what kind of BOPs the AST tries to emit.
+	''
+	'' 1. Operands < int/uint (i.e. byte, short) are promoted to int/uint.
+	'' 2. For operands >= int/uint, one operand is promoted to match the
+	''    other, if necessary. (except for bitshifts, where the rhs' type
+	''    isn't taken into account, unlike FB)
+
+	a = typeGet( a )
+	b = typeGet( b )
+
+	'' Float types take precedence (?)
+	if( (a = FB_DATATYPE_DOUBLE) or (b = FB_DATATYPE_DOUBLE) ) then
+		function = FB_DATATYPE_DOUBLE
+	elseif( (a = FB_DATATYPE_SINGLE) or (b = FB_DATATYPE_SINGLE) ) then
+		function = FB_DATATYPE_SINGLE
+	else
+		'' Remap to allow types to be compared as integer values
+		'' Note: C pointer becomes FB ulong (FB vs. C x86 assumption)
+		a = typeRemap( a, asubtype )
+		if( typeIsSigned( a ) ) then
+			if( a < FB_DATATYPE_INTEGER ) then
+				a = FB_DATATYPE_INTEGER
+			end if
+		else
+			if( a < FB_DATATYPE_UINT ) then
+				a = FB_DATATYPE_UINT
+			end if
+		end if
+
+		select case( op )
+		case AST_OP_SHL, AST_OP_SHR
+			return a
+		end select
+
+		b = typeRemap( b, bsubtype )
+		if( typeIsSigned( b ) ) then
+			if( b < FB_DATATYPE_INTEGER ) then
+				b = FB_DATATYPE_INTEGER
+			end if
+		else
+			if( b < FB_DATATYPE_UINT ) then
+				b = FB_DATATYPE_UINT
+			end if
+		end if
+
+		if( a > b ) then
+			function = a
+		else
+			function = b
+		end if
+	end if
+
+end function
+
+private function exprNewUOP _
+	( _
+		byval op as integer, _
+		byval l as EXPRNODE ptr _
+	) as EXPRNODE ptr
+
+	dim as EXPRNODE ptr n = any, ll = any
+	dim as integer dtype = any
+
+	'' Similar to BOPs, the C type promotion rules should be applied
+	'' to determine the UOP's result type.
+	select case( op )
+	case AST_OP_ADDROF
+		'' peep-hole optimization:
+		'' ADDROF( DEREF( x ) ) -> x
+		if( l->class = EXPRCLASS_UOP ) then
+			if( l->op = AST_OP_DEREF ) then
+				ll = l->l
+				l->l = NULL
+				exprFree( l )
+				return ll
+			end if
+		end if
+
+		dtype = l->dtype
+		dtype = typeAddrOf( dtype )
+
+	case AST_OP_DEREF
+		'' peep-hole optimization:
+		'' DEREF( ADDROF( x ) ) -> x
+		if( l->class = EXPRCLASS_UOP ) then
+			if( l->op = AST_OP_ADDROF ) then
+				ll = l->l
+				l->l = NULL
+				exprFree( l )
+				return ll
+			end if
+		end if
+
+		dtype = l->dtype
+		assert( typeGetPtrCnt( dtype ) > 0 )
+		dtype = typeDeref( dtype )
+
+	case else
+		dtype = typeCBop( op, l->dtype, l->subtype, FB_DATATYPE_INTEGER, NULL )
+	end select
+
+	n = exprNew( EXPRCLASS_UOP, dtype, l->subtype )
+	n->l = l
+	n->op = op
+
+	function = n
+end function
+
+private function exprNewBOP _
+	( _
+		byval op as integer, _
+		byval l as EXPRNODE ptr, _
+		byval r as EXPRNODE ptr _
+	) as EXPRNODE ptr
+
+	dim as EXPRNODE ptr n = any
+	dim as integer dtype = any
+
+	'' To find out the BOPs result type, apply C type promotion rules
+	dtype = typeCBop( op, l->dtype, l->subtype, r->dtype, r->subtype )
+
+	'' BOPs should only be done on simple int/float types,
+	'' and on pointers only after casting to ubyte* first,
+	'' so no subtype needs to be preserved here.
+
+	n = exprNew( EXPRCLASS_BOP, dtype, NULL )
+	n->l = l
+	n->r = r
+	n->op = op
+
+	function = n
+end function
+
+'' Add expression root node to cache list, with the corresponding vreg id,
+'' allowing it to be looked up later (when the AST accesses that vreg).
+private sub exprCache( byval vregid as integer, byval expr as EXPRNODE ptr )
+	dim as EXPRCACHENODE ptr entry = any
+	entry = listNewNode( @ctx.exprcache )
+	entry->vregid = vregid
+	entry->expr = expr
+end sub
+
+private function exprLookup( byval vregid as integer ) as EXPRNODE ptr
+	dim as EXPRCACHENODE ptr entry = any
+
+	'' Find the node corresponding to that vreg; it should always be there.
+	'' (the AST will never tell ir-hlc to access un-emitted vregs)
+	entry = listGetHead( @ctx.exprcache )
+	while( entry->vregid <> vregid )
+		entry = listGetNext( entry )
+	wend
+
+	function = entry->expr
+
+	listDelNode( @ctx.exprcache, entry )
+end function
+
+private function hEmitInt( byval dtype as integer, byval value as integer ) as string
+	dim as string s
+
+	if( typeIsSigned( dtype ) ) then
+		s = str( value )
+
+		if( value = -2147483648u ) then
+			'' Prevent GCC warnings for INT_MIN:
+			'' The '-' minus sign doesn't count as part of the number
+			'' literal, and 2147483648 is too big for an integer, so it
+			'' must be marked as unsigned.
+			s += "u"
+		end if
+
+		function = s
+	else
+		function = str( cuint( value ) ) + "u"
+	end if
+end function
+
+private function hEmitLong( byval dtype as integer, byval value as longint ) as string
+	dim as string s
+
+	if( typeIsSigned( dtype ) ) then
+		s = str( value )
+		if( value = -9223372036854775808ull ) then
+			'' Ditto, prevent warnings for LLONG_MIN
+			s += "u"
+		end if
+		s += "ll"
+	else
+		s = str( culngint( value ) )
+		s += "ull"
 	end if
 
 	return s
-end function
-
-private function hEmitUint( byval value as uinteger ) as string
-	return str(value) + "u"
-end function
-
-private function hEmitLong( byval value as longint ) as string
-	dim as string s = str(value)
-
-	if( value = -9223372036854775808ull ) then
-		'' Ditto, prevent warnings for LLONG_MIN
-		s += "u"
-	end if
-
-	s += "ll"
-
-	return s
-end function
-
-private function hEmitUlong( byval value as ulongint ) as string
-	return str(value) + "ull"
 end function
 
 private function hEmitFloat _
@@ -1604,81 +2009,252 @@ private function hEmitFloat _
 	function = s
 end function
 
-private function symbIsCArray( byval sym as FBSYMBOL ptr ) as integer
-	'' No bydesc/byref, those are emitted as pointers...
-	if( symbIsParamBydescOrByref( sym ) ) then
-		return FALSE
-	end if
-
-	select case( symbGetClass( sym ) )
-	case FB_SYMBCLASS_VAR, FB_SYMBCLASS_FIELD
-		'' No dynamic arrays, they're just descriptor structs
-		if( symbGetIsDynamic( sym ) ) then
-			return FALSE
-		end if
-
-		if( symbGetArrayDimensions( sym ) <> 0 ) then
-			return TRUE
-		end if
+private function hBopToStr( byval op as integer ) as zstring ptr
+	select case as const( op )
+	case AST_OP_ADD
+		function = @" + "
+	case AST_OP_SUB
+		function = @" - "
+	case AST_OP_MUL
+		function = @" * "
+	case AST_OP_DIV
+		function = @" / "
+	case AST_OP_INTDIV
+		function = @" / "
+	case AST_OP_MOD
+		function = @" % "
+	case AST_OP_SHL
+		function = @" << "
+	case AST_OP_SHR
+		function = @" >> "
+	case AST_OP_AND
+		function = @" & "
+	case AST_OP_OR
+		function = @" | "
+	case AST_OP_XOR
+		function = @" ^ "
+	case AST_OP_EQ
+		function = @" == "
+	case AST_OP_GT
+		function = @" > "
+	case AST_OP_LT
+		function = @" < "
+	case AST_OP_NE
+		function = @" != "
+	case AST_OP_GE
+		function = @" >= "
+	case AST_OP_LE
+		function = @" <= "
 	end select
-
-	'' Fixed-length strings are emitted as arrays
-	select case( symbGetType( sym ) )
-	case FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
-		return TRUE
-	end select
-
-	return FALSE
 end function
 
-private function hEmitOffset( byval sym as FBSYMBOL ptr, byval ofs as integer ) as string
-	dim as string s
-	dim as integer is_ptr = any
+'' Builds up final expression text, walking the EXPRNODE tree
+private sub hExprFlush( byval n as EXPRNODE ptr, byval need_parens as integer )
+	dim as EXPRNODE ptr l = any
+	dim as FBSYMBOL ptr sym = any
 
-	'' (for offset added below)
-	if( ofs <> 0 ) then
-		s += "((ubyte*)"
-	end if
+	select case as const( n->class )
+	case EXPRCLASS_TEXT
+		ctx.exprtext += *n->text
 
-	'' For literal strings, just emit as C string literal, not as label as in asm
-	if( symbGetIsLiteral( sym ) ) then
-		if( symbGetType( sym ) = FB_DATATYPE_WCHAR ) then
-			s += "L"""
-			s += hEscapeToHexW( symbGetVarLitTextW( sym ) )
-			s += """"
+	case EXPRCLASS_IMM
+		if( typeGetClass( n->dtype ) = FB_DATACLASS_FPOINT ) then
+			ctx.exprtext += hEmitFloat( n->dtype, n->float )
+		elseif( typeGetSize( n->dtype ) = 8 ) then
+			ctx.exprtext += hEmitLong( n->dtype, n->long )
 		else
-			s += """" + *hEscape( symbGetVarLitText( sym ) ) + """"
+			ctx.exprtext += hEmitInt( n->dtype, n->int )
 		end if
-	else
-		is_ptr = symbIsImport( sym ) or symbIsCArray( sym )
-		if( is_ptr = FALSE ) then
-			if( symbIsLabel( sym ) ) then
-				s += "&&"
+
+	case EXPRCLASS_SYM
+		sym = n->sym
+
+		'' String literal?
+		if( symbGetIsLiteral( sym ) ) then
+			if( symbGetType( sym ) = FB_DATATYPE_WCHAR ) then
+				ctx.exprtext += "L"""
+				ctx.exprtext += hEscapeToHexW( symbGetVarLitTextW( sym ) )
+				ctx.exprtext += """"
 			else
-				s += "&"
+				ctx.exprtext += """" + *hEscape( symbGetVarLitText( sym ) ) + """"
 			end if
+		else
+			if( symbIsLabel( sym ) ) then
+				ctx.exprtext += "&&"
+			elseif( symbIsProc( sym ) ) then
+				ctx.exprtext += "&"
+			end if
+			ctx.exprtext += *symbGetMangledName( sym )
 		end if
-		s += *symbGetMangledName( sym )
-	end if
 
-	'' Offset (in bytes)
-	if( ofs <> 0 ) then
-		s += " + " + str( ofs ) + ")"
-	end if
+	case EXPRCLASS_CAST
+		ctx.exprtext += "("
+		ctx.exprtext += hEmitType( n->dtype, n->subtype )
+		ctx.exprtext += ")"
+		hExprFlush( n->l, TRUE )
 
-	function = s
-end function
+	case EXPRCLASS_UOP
+		select case( n->op )
+		case AST_OP_ADDROF
+			ctx.exprtext += "&"
+		case AST_OP_DEREF
+			ctx.exprtext += "*"
+		case AST_OP_NEG
+			ctx.exprtext += "-"
+		case AST_OP_NOT
+			ctx.exprtext += "~"
+		end select
 
-private function hEmitVreg _
+		hExprFlush( n->l, TRUE )
+
+	case EXPRCLASS_BOP
+		'' Add parentheses around BOPs if the parent needs it
+		'' (looks like parentheses are unnecessary for all the other
+		'' expressions though, CAST/UOP should work fine without
+		'' parentheses around their operand)
+		if( need_parens ) then
+			ctx.exprtext += "("
+		end if
+		hExprFlush( n->l, TRUE )
+		ctx.exprtext += *hBopToStr( n->op )
+		hExprFlush( n->r, TRUE )
+		if( need_parens ) then
+			ctx.exprtext += ")"
+		end if
+
+	end select
+end sub
+
+private function exprFlush _
 	( _
-		byval vreg as IRVREG ptr, _
-		byval cast_ok as integer = TRUE _
+		byval n as EXPRNODE ptr, _
+		byval need_parens as integer _
 	) as string
 
-	dim as string s
-	dim as integer do_cast = any, have_offset = any
+	hExprFlush( n, need_parens )
 
-	do_cast = FALSE
+	function = ctx.exprtext
+	ctx.exprtext = ""
+
+	exprFree( n )
+end function
+
+#if __FB_DEBUG__
+private sub exprDump( byval n as EXPRNODE ptr )
+	static as integer level
+	dim as string s
+
+	level += 1
+
+	select case as const( n->class )
+	case EXPRCLASS_TEXT
+		s = "TEXT( " + *n->text + " )"
+
+	case EXPRCLASS_IMM
+		if( typeGetClass( n->dtype ) = FB_DATACLASS_FPOINT ) then
+			s = "IMM( " + hEmitFloat( n->dtype, n->float ) + " )"
+		elseif( typeGetSize( n->dtype ) = 8 ) then
+			s = "IMM( " + hEmitLong( n->dtype, n->long ) + " )"
+		else
+			s = "IMM( " + hEmitInt( n->dtype, n->int ) + " )"
+		end if
+
+	case EXPRCLASS_SYM
+		s = "SYM( "
+
+		'' String literal?
+		if( symbGetIsLiteral( n->sym ) ) then
+			if( symbGetType( n->sym ) = FB_DATATYPE_WCHAR ) then
+				s += "L"""
+				s += hEscapeToHexW( symbGetVarLitTextW( n->sym ) )
+				s += """"
+			else
+				s += """" + *hEscape( symbGetVarLitText( n->sym ) ) + """"
+			end if
+		else
+			if( symbIsLabel( n->sym ) ) then
+				s += "&&"
+			elseif( symbIsProc( n->sym ) ) then
+				s += "&"
+			end if
+			s += *symbGetMangledName( n->sym )
+		end if
+
+		s += " )"
+
+	case EXPRCLASS_CAST
+		s = "CAST( " + hEmitType( n->dtype, n->subtype ) + " )"
+
+	case EXPRCLASS_UOP
+		s = "UOP( "
+		select case( n->op )
+		case AST_OP_ADDROF
+			s += "&"
+		case AST_OP_DEREF
+			s += "*"
+		case AST_OP_NEG
+			s += "-"
+		case AST_OP_NOT
+			s += "~"
+		end select
+		s += " )"
+
+	case EXPRCLASS_BOP
+		s = "BOP( " + *hBopToStr( n->op ) + " )"
+
+	end select
+
+	s += " as " + *symbTypeToStr( n->dtype, n->subtype ) + ", " + hex( n->subtype, 8 )
+
+	print str( level ), string( level, " " ) + s
+
+	select case( n->class )
+	case EXPRCLASS_CAST, EXPRCLASS_UOP
+		exprDump( n->l )
+	case EXPRCLASS_BOP
+		exprDump( n->l )
+		exprDump( n->r )
+	end select
+
+	level -= 1
+end sub
+#endif
+
+private function exprNewOFFSET _
+	( _
+		byval sym as FBSYMBOL ptr, _
+		byval ofs as integer _
+	) as EXPRNODE ptr
+
+	dim as EXPRNODE ptr l = any
+
+	l = exprNewSYM( sym )
+
+	'' Add '&' for things that aren't pointers already
+	if( (symbIsImport( sym ) or symbIsCArray( sym ) or _
+	     symbIsProc( sym ) or symbIsLabel( sym )) = FALSE ) then
+		l = exprNewUOP( AST_OP_ADDROF, l )
+	end if
+
+	'' Add on the byte offset, if any
+	if( ofs <> 0 ) then
+		'' Cast to ubyte ptr to work around C's pointer arithmetic
+		l = exprNewCAST( typeAddrOf( FB_DATATYPE_UBYTE ), NULL, l )
+		l = exprNewBOP( AST_OP_ADD, l, exprNewIMMi( ofs ) )
+	end if
+
+	function = l
+end function
+
+private function exprNewVREG _
+	( _
+		byval vreg as IRVREG ptr, _
+		byval is_lvalue as integer = FALSE _
+	) as EXPRNODE ptr
+
+	dim as EXPRNODE ptr l = any
+	dim as integer dtype = any, have_offset = any
+	dim as FBSYMBOL ptr subtype = any
 
 	select case as const( vreg->typ )
 	case IR_VREGTYPE_VAR, IR_VREGTYPE_IDX, IR_VREGTYPE_PTR
@@ -1688,47 +2264,30 @@ private function hEmitVreg _
 			'' e.g. in derefs like *cptr(byte ptr, 0),
 			'' then there is neither a symbol nor vidx,
 			'' but just the "offset".
-			''    (*(vregtype*)offset)
-			''    (*(vregtype*)vidx)
-			''    (*(vregtype*)((ubyte*)vidx + offset))
-			s += "(*(" + hEmitType( typeAddrOf( vreg->dtype ), vreg->subtype ) + ")"
+			''    *(vregtype*)offset
+			''    *(vregtype*)vidx
+			''    *(vregtype*)((ubyte*)vidx + offset)
 
 			if( vreg->vidx ) then
-				have_offset = (vreg->ofs <> 0)
-
-				if( have_offset ) then
-					s += "((ubyte*)"
-				end if
-
 				'' recursion
-				s += hEmitVreg( vreg->vidx )
+				l = exprNewVREG( vreg->vidx )
 
-				if( have_offset ) then
-					s += " + " + str( vreg->ofs ) + ")"
+				if( vreg->ofs <> 0 ) then
+					'' Cast to ubyte ptr to work around C's pointer arithmetic
+					l = exprNewCAST( typeAddrOf( FB_DATATYPE_UBYTE ), NULL, l )
+					l = exprNewBOP( AST_OP_ADD, l, exprNewIMMi( vreg->ofs ) )
 				end if
 			else
-				s += str( vreg->ofs )
+				l = exprNewIMMi( vreg->ofs )
 			end if
 
-			s += ")"
-
+			l = exprNewCAST( typeAddrOf( vreg->dtype ), vreg->subtype, l )
+			l = exprNewUOP( AST_OP_DEREF, l )
 			exit select
 		end if
 
-		assert( symbIsProc( vreg->sym ) = FALSE )
-
-		'' Address of label?
-		if( symbIsLabel( vreg->sym ) ) then
-			'' Special case used by FB error handling code.
-			'' We return &label here; then _emitAddr() will add
-			'' another & to get &&label.
-			'' The VAR vreg dtype for the label access is useless,
-			'' the only thing that matters is the vreg type of the
-			'' ADDROF expression (see _emitAddr()).
-			do_cast = FALSE
-			s = "&" + *symbGetMangledName( vreg->sym )
-			exit select
-		end if
+		assert( symbIsProc( vreg->sym ) = FALSE )  '' should be an IR_VREGTYPE_OFS
+		assert( symbIsLabel( vreg->sym ) = FALSE ) '' should be handled in _emitAddr()
 
 		'' memory accesses - stack vars, arrays, UDT fields, ptr derefs
 		''
@@ -1746,13 +2305,13 @@ private function hEmitVreg _
 		''        sym
 		''        (vregtype)sym
 		'' ptr derefs:
-		''        (*(vregtype*)sym)
-		''        (*(vregtype*)((ubyte*)sym + offset))
+		''        *(vregtype*)sym
+		''        *(vregtype*)((ubyte*)sym + offset)
 		'' array accesses (idx):
-		''        (*(vregtype*)((ubyte*)sym + vidx + offset))
+		''        *(vregtype*)((ubyte*)sym + vidx + offset)
 		'' field accesses:
-		''        (*(vregtype*)&sym)
-		''        (*(vregtype*)((ubyte*)&sym + offset))
+		''        *(vregtype*)&sym
+		''        *(vregtype*)((ubyte*)&sym + offset)
 
 		have_offset = ((vreg->ofs <> 0) or (vreg->vidx <> NULL))
 
@@ -1766,18 +2325,18 @@ private function hEmitVreg _
 
 		dim as integer is_ptr = typeIsPtr( symbGetType( vreg->sym ) )
 		dim as integer symdtype = symbGetType( vreg->sym )
+		dim as FBSYMBOL ptr symsubtype = symbGetSubtype( vreg->sym )
 
 		'' Emitted as pointer?
 		if( symbIsParamByRef( vreg->sym ) or symbIsImport( vreg->sym ) or is_carray ) then
-			is_ptr or= TRUE
+			is_ptr = TRUE
 			symdtype = typeAddrOf( symdtype )
 		end if
 
-		'' Different types?
-		if( (vreg->dtype <> symdtype) or _
-		    (vreg->subtype <> symbGetSubType( vreg->sym )) ) then
-			do_cast = TRUE
+		l = exprNewSYM( vreg->sym )
 
+		'' Different types?
+		if( (vreg->dtype <> symdtype) or (vreg->subtype <> symsubtype) ) then
 			'' a) float <-> int: access raw bytes instead of converting
 			'' b) struct <-> any other: ensure valid C syntax
 
@@ -1797,121 +2356,86 @@ private function hEmitVreg _
 		end if
 
 		if( do_deref = FALSE ) then
-			'' Plain access
-			s += *symbGetMangledName( vreg->sym )
+			'' Plain access is enough
 			exit select
 		end if
 
 		'' Deref/addrof trick
-		do_cast = FALSE
 
-		s += "(*(" + hEmitType( typeAddrOf( vreg->dtype ), vreg->subtype ) + ")"
-
-		if( have_offset ) then
-			'' Cast to ubyte ptr to work around C's pointer arithmetic.
-			s += "((ubyte*)"
-		end if
-
-		'' The '&' is only needed for things that aren't pointers already
+		'' Add '&' for things that aren't pointers already
 		if( is_ptr = FALSE ) then
-			s += "&"
+			l = exprNewUOP( AST_OP_ADDROF, l )
 		end if
-
-		s += *symbGetMangledName( vreg->sym )
-
-		if( vreg->vidx <> NULL ) then
-			s += " + " + hEmitVreg( vreg->vidx )
-		end if
-		if( vreg->ofs <> 0 ) then
-			s += " + " + str( vreg->ofs )
-		end if
-
 		if( have_offset ) then
-			s += ")"
+			'' Cast to ubyte ptr to work around C's pointer arithmetic
+			l = exprNewCAST( typeAddrOf( FB_DATATYPE_UBYTE ), NULL, l )
+			if( vreg->vidx <> NULL ) then
+				l = exprNewBOP( AST_OP_ADD, l, exprNewVREG( vreg->vidx ) )
+			end if
+			if( vreg->ofs <> 0 ) then
+				l = exprNewBOP( AST_OP_ADD, l, exprNewIMMi( vreg->ofs ) )
+			end if
 		end if
-		s += ")"
+
+		'' cast to vregdtype*
+		l = exprNewCAST( typeAddrOf( vreg->dtype ), vreg->subtype, l )
+
+		'' deref to get vregdtype
+		l = exprNewUOP( AST_OP_DEREF, l )
 
 	case IR_VREGTYPE_OFS
 		'' Accessing a global, including string literals and function
 		'' symbols (used when taking address of functions).
-
-		'' In case of @func, both vreg->subtype and vreg->sym point to
-		'' the proc, not a funcptr signature symbol and a funcptr
-		'' variable. In this scenario symbGetType( vreg->sym ) is the
-		'' proc's return value type, not the funcptr type, so we can't
-		'' rely on it to detect type casting of funcptrs.
-		'' Taking address of a function?
-		if( (typeGetDtOnly( vreg->dtype ) = FB_DATATYPE_FUNCTION) and _
-		    symbIsProc( vreg->sym ) and _
-		    (symbGetIsFuncPtr( vreg->sym ) = FALSE) ) then
-			'' sym is a real proc. Unless the vreg is just a function pointer to it,
-			'' it was type-casted.
-			do_cast = (vreg->dtype <> typeAddrOf( FB_DATATYPE_FUNCTION )) or (vreg->subtype <> vreg->sym)
-		else
-			do_cast = (vreg->dtype <> symbGetType( vreg->sym )) or _
-				  (vreg->subtype <> symbGetSubType( vreg->sym ))
-		end if
-
-		s += hEmitOffset( vreg->sym, vreg->ofs )
+		l = exprNewOFFSET( vreg->sym, vreg->ofs )
 
 	case IR_VREGTYPE_IMM
+		static as string s
+
 		'' An immediate -- a constant value
-		select case( vreg->dtype )
-		case FB_DATATYPE_INTEGER, FB_DATATYPE_UINT, _
-		     FB_DATATYPE_LONG, FB_DATATYPE_ULONG, _
-		     FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT, _
-		     FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-			'' No cast needed for these cases, the number literal
-			'' type suffixes will take care of the typing
+		'' It should be cast to the vreg's type for cases like
+		''    "cptr(any ptr, 0)"
+		'' where the constant has some pointer type, and we'd like to
+		'' avoid gcc warnings about pointers...
 
-		case else
-			'' Handles casting int literals to byte/short (not sure
-			'' if that's ever needed, but oh well), and more
-			'' importantly casting number literals to pointer types
-			'' as in "cptr(any ptr, 0)" for example.
-			do_cast = TRUE
-		end select
+		dtype = vreg->dtype
 
-		select case as const( vreg->dtype )
-		case FB_DATATYPE_LONGINT
-			s += hEmitLong( vreg->value.long )
-		case FB_DATATYPE_ULONGINT
-			s += hEmitUlong( vreg->value.long )
+		select case as const( dtype )
+		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
+			l = exprNewIMMl( vreg->value.long, dtype )
 		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-			s += hEmitFloat( vreg->dtype, vreg->value.float )
+			l = exprNewIMMf( vreg->value.float, dtype )
 		case FB_DATATYPE_LONG
 			if( FB_LONGSIZE = len( integer ) ) then
-				s += hEmitInt( vreg->value.int )
+				l = exprNewIMMi( vreg->value.int, dtype )
 			else
-				s += hEmitLong( vreg->value.long )
+				l = exprNewIMMl( vreg->value.long, dtype )
 			end if
 		case FB_DATATYPE_ULONG
 			if( FB_LONGSIZE = len( integer ) ) then
-				s += hEmitUint( vreg->value.int )
+				l = exprNewIMMi( vreg->value.int, dtype )
 			else
-				s += hEmitUlong( vreg->value.long )
+				l = exprNewIMMl( vreg->value.long, dtype )
 			end if
 		case FB_DATATYPE_UINT
-			s += hEmitUint( vreg->value.int )
+			l = exprNewIMMi( vreg->value.int, dtype )
 		case else
-			s += hEmitInt( vreg->value.int )
+			'' integers, bytes, shorts, pointers, enums
+			'' Emit them as integer literals, then let the CAST
+			'' below take care of the rest if needed.
+			l = exprNewIMMi( vreg->value.int )
 		end select
 
 	case IR_VREGTYPE_REG
-		'' Accessing a vreg that was declared previously, for example
-		'' the result of a BOP. A cast is needed here in case the vreg
-		'' was type-casted after being declared, this can happen when
-		'' casting expressions like BOPs or calls.
-		do_cast = TRUE
-		s += "vr$" + str( vreg->reg )
+		'' Access to existing vreg (e.g. BOP result)
+		l = exprLookup( vreg->reg )
 
 	end select
 
-	if( do_cast and cast_ok ) then
-		s = "((" + hEmitType( vreg->dtype, vreg->subtype ) + ")(" + s + "))"
+	if( is_lvalue = FALSE ) then
+		l = exprNewCAST( vreg->dtype, vreg->subtype, l )
 	end if
 
-	function = s
+	function = l
 end function
 
 private sub _emitLabel( byval label as FBSYMBOL ptr )
@@ -1922,7 +2446,6 @@ private sub _emitLabel( byval label as FBSYMBOL ptr )
 	end if
 end sub
 
-''::::
 private sub _emitJmpTb _
 	( _
 		byval op as AST_JMPTB_OP, _
@@ -1947,163 +2470,78 @@ private sub _emitJmpTb _
 
 end sub
 
-private sub hEmitVregDecl _
+'' store an expression into a vreg
+private sub exprSTORE _
 	( _
 		byval vr as IRVREG ptr, _
-		byref expr as string, _
-		byval use_assign as integer = FALSE _
+		byval r as EXPRNODE ptr, _
+		byval has_sidefx as integer = FALSE _
 	)
 
-	dim as string ln
+	static as string ln, tempvar
+	dim as EXPRNODE ptr l = any
 
 	if( irIsREG( vr ) ) then
-		'' Declare vreg as new variable or #define
-		if( use_assign ) then
-			ln = hEmitType( vr->dtype, vr->subtype ) + " "
+		if( has_sidefx ) then
+			'' Expressions (REG) with side-effects (i.e. CALLs)
+			'' should be emitted immediately in-place, that's what
+			'' the AST expects, like with the ASM backend.
+			''  a) due to the side-effects
+			''  b) because sometimes it leaves the vreg dangling
+			''     and relies only on the side-effects, e.g. when
+			''     calling functions that return their UDT result
+			''     through a hidden parameter. The CALL expression
+			''     must be emitted, but the result vreg won't ever
+			''     be accessed.
+			'' 
+			'' -> Create a temp var and use that as the new vreg
+			'' expression, instead of the original expr itself:
+			''    type tempvar = expr;
+			'' (no cast needed, the assignment has the same effect)
+			tempvar = "vr$" + str( vr->reg )
+
+			ln = hEmitType( vr->dtype, vr->subtype )
+			ln += " " + tempvar + " = "
+			ln += exprFlush( r, FALSE )
+			ln += ";"
+
+			hWriteLine( ln )
+
+			r = exprNewTEXT( vr->dtype, vr->subtype, tempvar )
+		else
+			r = exprNewCAST( vr->dtype, vr->subtype, r )
 		end if
-	else
-		'' Assign to existing vreg
-		use_assign = TRUE
-	end if
 
-	if( use_assign ) then
-		'' The lvalue can't have cast at the toplevel as in
-		''    (type)foo = bar
-		'' it must be
-		''    foo = (type)bar
-		'' unless foo is just a var with proper type already.
-		ln += hEmitVreg( vr, FALSE ) + " = "
+		'' Put the expression on hold, it'll be used in the following
+		'' access to that vreg, instead of being emitted right here
+		'' as a #define or temp var.
+		exprCache( vr->reg, r )
 	else
-		assert( irIsREG( vr ) )
-		ln = "#define vr$" + str( vr->reg ) + " "
-	end if
+		'' Store into existing vreg (assign to var/deref, i.e. lvalue)
+		''    vreg = (vregtype)r;
+		'' FB allows noconv casts (no data class/size change) on the
+		'' lhs, but C does not, the rhs should be casted here instead,
+		'' although it probably doesn't matter much either way.
+		l = exprNewVREG( vr, TRUE )
 
-	ln += "(" + hEmitType( vr->dtype, vr->subtype ) + ")("
-	ln += expr
-	ln += ")"
-	if( use_assign ) then
+		'' 1st to the desired vreg type
+		r = exprNewCAST( vr->dtype, vr->subtype, r )
+
+		if( typeIsPtr( l->dtype ) or typeIsPtr( r->dtype ) ) then
+			'' 2nd to void* to avoid gcc ptr warnings
+			r = exprNewCAST( l->dtype, l->subtype, r )
+		end if
+
+		ln = exprFlush( l, FALSE )
+		ln += " = "
+		ln += exprFlush( r, FALSE )
 		ln += ";"
-	end if
 
-	hWriteLine( ln )
+		hWriteLine( ln )
+	end if
 
 end sub
 
-''::::
-private function hBOPToStr _
-	( _
-		byval op as integer _
-	) as string
-
-	select case as const op
-		case AST_OP_ADD
-			return " + "
-		case AST_OP_SUB
-			return " - "
-		case AST_OP_MUL
-			return " * "
-		case AST_OP_DIV
-			return " / "
-		case AST_OP_INTDIV
-			return " / "
-		case AST_OP_MOD
-			return " % "
-		case AST_OP_SHL
-			return " << "
-		case AST_OP_SHR
-			return " >> "
-		case AST_OP_AND
-			return " & "
-		case AST_OP_OR
-			return " | "
-		case AST_OP_XOR
-			return " ^ "
-		case AST_OP_EQ
-			return " == "
-		case AST_OP_GT
-			return " > "
-		case AST_OP_LT
-			return " < "
-		case AST_OP_NE
-			return " != "
-		case AST_OP_GE
-			return " >= "
-		case AST_OP_LE
-			return " <= "
-		case else
-			return "unknown_op"
-	end select
-
-end function
-
-'':::::
-private sub hWriteBOP _
-	( _
-		byval op as integer, _
-		byval vr as IRVREG ptr, _
-		byval v1 as IRVREG ptr, _
-		byval v2 as IRVREG ptr, _
-		byval is_comparison as integer _
-	)
-
-	dim as string bop
-
-	if( vr = NULL ) then
-		vr = v1
-	end if
-
-	dim as integer is_ptr_arith = ((op = AST_OP_ADD) or (op = AST_OP_SUB))
-	dim as integer lptr = (is_ptr_arith and typeIsPtr( v1->dtype ))
-	dim as integer rptr = (is_ptr_arith and typeIsPtr( v2->dtype ))
-
-	'' Must work-around C's boolean logic values and convert the "boolean"
-	'' 1 to -1 while 0 stays 0 to match FB.
-	if( is_comparison ) then
-		bop += "(-("
-	end if
-
-	'' After casting to ubyte ptr for the BOP, cast back to original type
-	if( lptr or rptr ) then
-		bop += "(" + hEmitType( vr->dtype, vr->subtype ) + ")("
-	end if
-
-	'' Left operand:
-	'' Cast to byte ptr to work around C's pointer arithmetic
-	if( lptr ) then
-		bop += "(ubyte*)"
-	end if
-	'' Ensure '/' means floating point divide by casting to double
-	'' For AST_OP_INTDIV this is not needed, since the AST will already
-	'' cast both operands to integer before doing the intdiv.
-	if( op = AST_OP_DIV ) then
-		bop += "(double)"
-	end if
-	bop += hEmitVreg( v1 )
-
-	'' Operation
-	bop += hBOPToStr( op )
-
-	'' Right operand - same checks as for left one above
-	if( rptr ) then
-		bop += "(ubyte*)"
-	end if
-	if( op = AST_OP_DIV ) then
-		bop += "(double)"
-	end if
-	bop += hEmitVreg( v2 )
-
-	if( lptr or rptr ) then
-		bop += ")"
-	end if
-	if( is_comparison ) then
-		bop += "))"
-	end if
-
-	hEmitVregDecl( vr, bop )
-
-end sub
-
-'':::::
 private sub _emitBop _
 	( _
 		byval op as integer, _
@@ -2113,71 +2551,76 @@ private sub _emitBop _
 		byval ex as FBSYMBOL ptr _
 	)
 
+	dim as EXPRNODE ptr l = any, r = any
+
 	hLoadVreg( v1 )
 	hLoadVreg( v2 )
 	hLoadVreg( vr )
 
-	select case as const op
-	case AST_OP_ADD, AST_OP_SUB, AST_OP_MUL, AST_OP_DIV, AST_OP_INTDIV, _
-		AST_OP_MOD, AST_OP_SHL, AST_OP_SHR, AST_OP_AND, AST_OP_OR, _
-		AST_OP_XOR
-		hWriteBOP( op, vr, v1, v2, FALSE )
+	l = exprNewVREG( v1 )
+	r = exprNewVREG( v2 )
 
-	case AST_OP_EQV
-		if( vr = NULL ) then
-			vr = v1
-		end if
-
-		'' vr = ~(v1 ^ v2)
-		hEmitVregDecl( vr, "~(" + hEmitVreg( v1 ) + "^" + hEmitVreg( v2 ) + ")" )
-
-	case AST_OP_IMP
-		if( vr = NULL ) then
-			vr = v1
-		end if
-
-		'' vr = ~v1 | v2
-		hEmitVregDecl( vr, "~" + hEmitVreg( v1 ) + "|" + hEmitVreg( v2 ) )
-
+	select case as const( op )
 	case AST_OP_EQ, AST_OP_NE, AST_OP_GT, AST_OP_LT, AST_OP_GE, AST_OP_LE
-		if( vr <> NULL ) then
-			'' Comparison expression
-			hWriteBOP( op, vr, v1, v2, TRUE )
-		else
+		if( vr = NULL ) then
 			'' Conditional branch
-			dim as string ln
-			ln += "if ("
-			ln += hEmitVreg( v1 )
-			ln += hBOPToStr( op )
-			ln += hEmitVreg( v2 )
-			ln += ") goto "
-			ln += *symbGetMangledName( ex )
-			ln += ";"
-			hWriteLine( ln )
+			static as string s
+			s = "if( "
+			s += exprFlush( exprNewBOP( op, l, r ), FALSE )
+			s += " ) goto "
+			s += *symbGetMangledName( ex )
+			s += ";"
+			hWriteLine( s )
+			exit sub
 		end if
-	case else
-		errReportEx( FB_ERRMSG_INTERNAL, "Unhandled bop." )
 	end select
-
-end sub
-
-'':::::
-private sub hWriteUOP _
-	( _
-		byref op as string, _
-		byval vr as IRVREG ptr, _
-		byval v1 as IRVREG ptr _
-	)
 
 	if( vr = NULL ) then
 		vr = v1
 	end if
 
-	hEmitVregDecl( vr, op + "(" + hEmitVreg( v1 ) + ")" )
+	select case as const( op )
+	case AST_OP_EQ, AST_OP_NE, AST_OP_GT, AST_OP_LT, AST_OP_GE, AST_OP_LE
+		'' Must work-around C's boolean logic values and convert the "boolean"
+		'' 1 to -1 while 0 stays 0 to match FB.
+		l = exprNewUOP( AST_OP_NEG, exprNewBOP( op, l, r ) )
 
+	case AST_OP_ADD, AST_OP_SUB, AST_OP_MUL, AST_OP_DIV, AST_OP_INTDIV, _
+	     AST_OP_MOD, AST_OP_SHL, AST_OP_SHR, AST_OP_AND, AST_OP_OR, _
+	     AST_OP_XOR
+		dim as integer is_ptr_arith = ((op = AST_OP_ADD) or (op = AST_OP_SUB))
+
+		'' Cast to byte ptr to work around C's pointer arithmetic
+		if( is_ptr_arith and typeIsPtr( v1->dtype ) ) then
+			l = exprNewCAST( typeAddrOf( FB_DATATYPE_UBYTE ), NULL, l )
+		end if
+		if( is_ptr_arith and typeIsPtr( v2->dtype ) ) then
+			r = exprNewCAST( typeAddrOf( FB_DATATYPE_UBYTE ), NULL, r )
+		end if
+
+		'' Ensure '/' means floating point divide by casting to double
+		'' For AST_OP_INTDIV this is not needed, since the AST will already
+		'' cast both operands to integer before doing the intdiv.
+		if( op = AST_OP_DIV ) then
+			l = exprNewCAST( FB_DATATYPE_DOUBLE, NULL, l )
+			r = exprNewCAST( FB_DATATYPE_DOUBLE, NULL, r )
+		end if
+
+		l = exprNewBOP( op, l, r )
+
+	case AST_OP_EQV
+		'' vr = ~(v1 ^ v2)
+		l = exprNewUOP( AST_OP_NOT, exprNewBOP( AST_OP_XOR, l, r ) )
+
+	case AST_OP_IMP
+		'' vr = ~v1 | v2
+		l = exprNewBOP( AST_OP_OR, exprNewUOP( AST_OP_NOT, l ), r )
+
+	end select
+
+	exprSTORE( vr, l )
 end sub
 
-'':::::
 private sub _emitUop _
 	( _
 		byval op as integer, _
@@ -2188,74 +2631,33 @@ private sub _emitUop _
 	hLoadVreg( v1 )
 	hLoadVreg( vr )
 
-	select case as const op
-	case AST_OP_NEG
-		hWriteUOP( "-", vr, v1 )
+	if( vr = NULL ) then
+		vr = v1
+	end if
 
-	case AST_OP_NOT
-		hWriteUOP( "~", vr, v1 )
-
-	case else
-		errReportEx( FB_ERRMSG_INTERNAL, "Unhandled uop." )
-
-	end select
+	exprSTORE( vr, exprNewUOP( op, exprNewVREG( v1 ) ) )
 
 end sub
 
 private sub _emitStore( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 	hLoadVreg( v1 )
 	hLoadVreg( v2 )
-	hEmitVregDecl( v1, hEmitVreg( v2 ) )
+	exprSTORE( v1, exprNewVREG( v2 ) )
 end sub
 
-'':::::
-private sub _emitSpillRegs _
-	( _
-	)
-
+private sub _emitSpillRegs( )
 	/' do nothing '/
-
 end sub
 
-'':::::
-private sub _emitLoad _
-	( _
-		byval v1 as IRVREG ptr _
-	)
-
+private sub _emitLoad( byval v1 as IRVREG ptr )
 	/' do nothing '/
-
 end sub
 
-'':::::
-private sub _emitLoadRes _
-	( _
-		byval v1 as IRVREG ptr, _
-		byval vr as IRVREG ptr _
-	)
-
+private sub _emitLoadRes( byval v1 as IRVREG ptr, byval vr as IRVREG ptr )
 	_emitStore( vr, v1 )
-	hWriteLine( "return " + hEmitVreg( vr ) + ";" )
-
+	hWriteLine( "return " + exprFlush( exprNewVREG( vr ), FALSE ) + ";" )
 end sub
 
-'':::::
-private sub _emitPushArg _
-    ( _
-        byval vr as IRVREG ptr, _
-        byval plen as integer, _
-        byval level as integer _
-    )
-
-    '' Remember for later, so during _emitCall[Ptr] we can emit the whole
-    '' call in one go
-    dim as IRCALLARG ptr arg = listNewNode( @ctx.callargs )
-    arg->vr = vr
-    arg->level = level
-
-end sub
-
-'':::::
 private sub _emitAddr _
 	( _
 		byval op as integer, _
@@ -2263,73 +2665,86 @@ private sub _emitAddr _
 		byval vr as IRVREG ptr _
 	)
 
+	static as string s
+	dim as EXPRNODE ptr l = NULL
+
 	hLoadVreg( v1 )
 	hLoadVreg( vr )
 
-	select case op
+	select case( op )
 	case AST_OP_ADDROF
-		'' Casts are disallowed here because '&' requires an lvalue,
-		'' and also in case of taking address of label.
-		'' (The AST does a VAR access with some dtype (byte or int)
-		''  but for the backends the only thing that matters is the
-		''  pointer type after taking the address of the label.
-		''  No real VAR access can be done, afterall a label is
-		''  nothing that's stored in memory.)
-		hEmitVregDecl( vr, "&" + hEmitVreg( v1, FALSE ) )
-
-	case AST_OP_DEREF
-		hEmitVregDecl( vr, hEmitVreg( v1 ) )
-
-	end select
-
-end sub
-
-private function hEmitCallArgs( byval level as integer ) as string
-	var ln = "( "
-
-	dim as IRCALLARG ptr arg = listGetTail( @ctx.callargs )
-	while( arg andalso (arg->level = level) )
-		dim as IRCALLARG ptr prev = listGetPrev( arg )
-
-		ln += hEmitVreg( arg->vr )
-
-		listDelNode( @ctx.callargs, arg )
-
-		if( prev ) then
-			if( prev->level = level ) then
-				ln += ", "
+		'' Taking address of label?
+		if( (v1->typ = IR_VREGTYPE_VAR) and (v1->sym <> NULL) ) then
+			if( symbIsLabel( v1->sym ) ) then
+				''
+				'' special case used by FB error handling code
+				''
+				'' The VAR vreg's dtype for the label access
+				'' is useless because 1) the AST is inconsistently
+				'' using integer or byte and 2) labels cannot be
+				'' casted anyways.
+				''
+				'' The only thing that matters is the dtype of the
+				'' result vreg (the type of the ADDROF expression).
+				''
+				l = exprNewSYM( v1->sym )
+				l = exprNewCAST( vr->dtype, vr->subtype, l )
+				exit select
 			end if
 		end if
 
-		arg = prev
-	wend
+		l = exprNewUOP( AST_OP_ADDROF, exprNewVREG( v1, TRUE /' lvalue '/ ) )
 
-	ln += " )"
+	case AST_OP_DEREF
+		'' Note: The deref is already done in the vreg itself; as in
+		'' the ASM backend, no explicit deref operation is needed.
+		l = exprNewVREG( v1 )
 
-	function = ln
-end function
+	end select
 
-'':::::
+	exprSTORE( vr, l )
+end sub
+
 private sub hDoCall _
 	( _
-		byval pname as zstring ptr, _
+		byref s as string, _
 		byval bytestopop as integer, _
 		byval vr as IRVREG ptr, _
 		byval level as integer _
 	)
 
-	var ln = hEmitCallArgs( level )
+	dim as IRCALLARG ptr arg = any
+
+	'' Flush argument list
+	s += "( "
+	arg = listGetTail( @ctx.callargs )
+	while( arg andalso (arg->level = level) )
+		dim as IRCALLARG ptr prev = listGetPrev( arg )
+
+		s += exprFlush( exprNewVREG( arg->vr ), FALSE )
+
+		listDelNode( @ctx.callargs, arg )
+
+		if( prev ) then
+			if( prev->level = level ) then
+				s += ", "
+			end if
+		end if
+
+		arg = prev
+	wend
+	s += " )"
 
 	if( vr = NULL ) then
-		hWriteLine( *pname + ln + ";" )
+		s += ";"
+		hWriteLine( s )
 	else
 		hLoadVreg( vr )
-		hEmitVregDecl( vr, *pname + ln, TRUE )
+		exprSTORE( vr, exprNewTEXT( vr->dtype, vr->subtype, s ), TRUE )
 	end if
 
 end sub
 
-'':::::
 private sub _emitCall _
 	( _
 		byval proc as FBSYMBOL ptr, _
@@ -2338,11 +2753,13 @@ private sub _emitCall _
 		byval level as integer _
 	)
 
-	hDoCall( symbGetMangledName( proc ), bytestopop, vr, level )
+	static as string s
+
+	s = *symbGetMangledName( proc )
+	hDoCall( s, bytestopop, vr, level )
 
 end sub
 
-'':::::
 private sub _emitCallPtr _
 	( _
 		byval v1 as IRVREG ptr, _
@@ -2351,12 +2768,15 @@ private sub _emitCallPtr _
 		byval level as integer _
 	)
 
-	hDoCall( "(" + hEmitVreg( v1 ) + ")", bytestopop, vr, level )
+	static as string s
+
+	s = "(" + exprFlush( exprNewVREG( v1 ), FALSE ) + ")"
+	hDoCall( s, bytestopop, vr, level )
 
 end sub
 
 private sub _emitJumpPtr( byval v1 as IRVREG ptr )
-	hWriteLine( "goto *" + hEmitVreg( v1 ) + ";" )
+	hWriteLine( "goto *" + exprFlush( exprNewVREG( v1 ), TRUE ) + ";" )
 end sub
 
 '':::::
@@ -2375,7 +2795,6 @@ private sub _emitBranch _
 
 end sub
 
-'':::::
 private sub _emitMem _
 	( _
 		byval op as integer, _
@@ -2386,9 +2805,9 @@ private sub _emitMem _
 
 	select case op
 	case AST_OP_MEMCLEAR
-		hWriteLine("__builtin_memset( " + hEmitVreg( v1 ) + ", 0, " + hEmitVreg( v2 ) + " );" )
+		hWriteLine("__builtin_memset( " + exprFlush( exprNewVREG( v1 ), FALSE ) + ", 0, " + exprFlush( exprNewVREG( v2 ), FALSE ) + " );" )
 	case AST_OP_MEMMOVE
-		hWriteLine("__builtin_memcpy( " + hEmitVreg( v1 ) + ", " + hEmitVreg( v2 ) + ", " + str( bytes ) + " );" )
+		hWriteLine("__builtin_memcpy( " + exprFlush( exprNewVREG( v1 ), FALSE ) + ", " + exprFlush( exprNewVREG( v2 ), FALSE ) + ", " + str( bytes ) + " );" )
 	end select
 
 end sub
@@ -2582,11 +3001,7 @@ private sub hVarIniSeparator( )
 end sub
 
 private sub _emitVarIniI( byval dtype as integer, byval value as integer )
-	if( typeIsSigned( dtype ) ) then
-		ctx.varini += hEmitInt( value )
-	else
-		ctx.varini += hEmitUint( value )
-	end if
+	ctx.varini += hEmitInt( dtype, value )
 	hVarIniSeparator( )
 end sub
 
@@ -2596,16 +3011,19 @@ private sub _emitVarIniF( byval dtype as integer, byval value as double )
 end sub
 
 private sub _emitVarIniI64( byval dtype as integer, byval value as longint )
-	if( typeIsSigned( dtype ) ) then
-		ctx.varini += hEmitLong( value )
-	else
-		ctx.varini += hEmitUlong( value )
-	end if
+	ctx.varini += hEmitLong( dtype, value )
 	hVarIniSeparator( )
 end sub
 
 private sub _emitVarIniOfs( byval sym as FBSYMBOL ptr, byval ofs as integer )
-	ctx.varini += "(void*)" + hEmitOffset( sym, ofs )
+	dim as EXPRNODE ptr l = any
+
+	l = exprNewOFFSET( sym, ofs )
+
+	'' Cast to void* to prevent gcc ptr warnings (FB should handle that)
+	l = exprNewCAST( typeAddrOf( FB_DATATYPE_VOID ), NULL, l )
+
+	ctx.varini += exprFlush( l, FALSE )
 	hVarIniSeparator( )
 end sub
 
@@ -2744,6 +3162,21 @@ private sub _emitProcEnd _
 	hWriteLine( "}", TRUE )
 
 	sectionEnd( )
+
+end sub
+
+private sub _emitPushArg _
+	( _
+		byval vr as IRVREG ptr, _
+		byval plen as integer, _
+		byval level as integer _
+	)
+
+	'' Remember for later, so during _emitCall[Ptr] we can emit the whole
+	'' call in one go
+	dim as IRCALLARG ptr arg = listNewNode( @ctx.callargs )
+	arg->vr = vr
+	arg->level = level
 
 end sub
 
