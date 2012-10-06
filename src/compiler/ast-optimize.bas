@@ -1192,9 +1192,7 @@ private function astSetBitfield _
 	l = astCloneTree( l )
 
 	'' Apply a mask to retrieve all bits but the bitfield's ones
-	l = astNewBOP( AST_OP_AND, l, _
-	               astNewCONSTi( not (ast_bitmaskTB(s->bitfld.bits) shl s->bitfld.bitpos), _
-	                             FB_DATATYPE_UINT ) )
+	l = astNewBOP( AST_OP_AND, l, astNewCONSTi( not (ast_bitmaskTB(s->bitfld.bits) shl s->bitfld.bitpos) ) )
 
 	'' This ensures the bitfield is zeroed & clean before the new value
 	'' is ORed in below. Since the new value may contain zeroes while the
@@ -1203,14 +1201,12 @@ private function astSetBitfield _
 
 	'' Truncate r if it's too big, ensuring the OR below won't touch any
 	'' other bits outside the target bitfield.
-	r = astNewBOP( AST_OP_AND, r, _
-	               astNewCONSTi( ast_bitmaskTB(s->bitfld.bits), FB_DATATYPE_UINT ) )
+	r = astNewBOP( AST_OP_AND, r, astNewCONSTi( ast_bitmaskTB(s->bitfld.bits) ) )
 
 	'' Move r into position if the bitfield doesn't lie at the beginning of
 	'' the accessed field.
 	if( s->bitfld.bitpos > 0 ) then
-		r = astNewBOP( AST_OP_SHL, r, _
-		               astNewCONSTi( s->bitfld.bitpos, FB_DATATYPE_UINT ) )
+		r = astNewBOP( AST_OP_SHL, r, astNewCONSTi( s->bitfld.bitpos ) )
 	end if
 
 	'' OR in the new bitfield value r
@@ -1218,22 +1214,23 @@ private function astSetBitfield _
 end function
 
 private function astAccessBitfield( byval l as ASTNODE ptr ) as ASTNODE ptr
-	dim as integer dtype = l->dtype
-	dim as FBSYMBOL ptr s = l->subtype
+	dim as FBSYMBOL ptr s = any
+
+	s = l->subtype
 
 	'' Remap type from bitfield to short/integer/etc, while keeping in
 	'' mind that the bitfield may have been casted, so the FIELD's type
 	'' can't just be discarded.
-	l->dtype = typeJoin( dtype, s->typ )
+	l->dtype = typeJoin( l->dtype, s->typ )
 	l->subtype = s->subtype
 
 	'' Shift into position, other bits to the right are shifted out
 	if( s->bitfld.bitpos > 0 ) then
-		l = astNewBOP( AST_OP_SHR, l, astNewCONSTi( s->bitfld.bitpos, dtype ) )
+		l = astNewBOP( AST_OP_SHR, l, astNewCONSTi( s->bitfld.bitpos ) )
 	end if
 
 	'' Mask out other bits to the left
-	return astNewBOP( AST_OP_AND, l, astNewCONSTi( ast_bitmaskTB(s->bitfld.bits), dtype ) )
+	return astNewBOP( AST_OP_AND, l, astNewCONSTi( ast_bitmaskTB(s->bitfld.bits) ) )
 end function
 
 private function hRemoveFIELDs( byval n as ASTNODE ptr ) as ASTNODE ptr
