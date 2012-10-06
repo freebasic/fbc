@@ -39,16 +39,16 @@
 
 #define FB_RTL_MKD                      "fb_MKD"
 #define FB_RTL_MKS                      "fb_MKS"
+#define FB_RTL_MKSHORT                  "fb_MKSHORT"
 #define FB_RTL_MKI                      "fb_MKI"
 #define FB_RTL_MKL                      "fb_MKL"
-#define FB_RTL_MKSHORT                  "fb_MKSHORT"
 #define FB_RTL_MKLONGINT                "fb_MKLONGINT"
 
 #define FB_RTL_CVD                      "fb_CVD"
 #define FB_RTL_CVS                      "fb_CVS"
+#define FB_RTL_CVSHORT                  "fb_CVSHORT"
 #define FB_RTL_CVI                      "fb_CVI"
 #define FB_RTL_CVL                      "fb_CVL"
-#define FB_RTL_CVSHORT                  "fb_CVSHORT"
 #define FB_RTL_CVLONGINT                "fb_CVLONGINT"
 
 #define FB_RTL_STRMID					"fb_StrMid"
