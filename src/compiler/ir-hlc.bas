@@ -67,21 +67,10 @@ type IRHLCCTX
 	asm_input			as string  '' input constraints in gcc's syntax
 end type
 
-enum EMITTYPE_OPTIONS
-	'' Used to turn string into string* on function results
-	EMITTYPE_ISRESULT = &h00000001
-
-	'' Adds an extra * for byref params and in some other places
-	'' (should be used instead of hEmitType( typeAddrOf( dtype ), ... )
-	'' because that could overflow the dtype's pointer count)
-	EMITTYPE_ADDPTR   = &h00000002
-end enum
-
 declare function hEmitType _
 	( _
 		byval dtype as integer, _
-		byval subtype as FBSYMBOL ptr, _
-		byval options as EMITTYPE_OPTIONS = 0 _
+		byval subtype as FBSYMBOL ptr _
 	) as string
 
 declare sub hEmitStruct( byval s as FBSYMBOL ptr, byval is_ptr as integer )
@@ -295,6 +284,7 @@ private function hEmitProcHeader _
 	) as string
 
 	dim as string ln, mangled
+	dim as integer dtype = any
 
 	if( options = 0 ) then
 		'' ctor/dtor flags on bodies
@@ -314,7 +304,14 @@ private function hEmitProcHeader _
 	end if
 
 	'' Function result type (is 'void' for subs)
-	ln += hEmitType( typeGetDtAndPtrOnly( symbGetProcRealType( proc ) ), symbGetSubType( proc ), EMITTYPE_ISRESULT )
+	dtype = typeGetDtAndPtrOnly( symbGetProcRealType( proc ) )
+	select case( dtype )
+	case FB_DATATYPE_STRING, FB_DATATYPE_WCHAR
+		'' STRING function results really are STRING PTRs
+		dtype = typeAddrOf( dtype )
+	end select
+
+	ln += hEmitType( dtype, symbGetSubType( proc ) )
 
 	''
 	'' Calling convention if needed (for function pointers it's usually not
@@ -354,10 +351,10 @@ private function hEmitProcHeader _
 		if( typeGetDtAndPtrOnly( symbGetProcRealType( proc ) ) = typeAddrOf( symbGetType( proc ) ) ) then
 			if( options and EMITPROC_ISPROTO ) then
 				hidden = symbGetSubType( proc )
-				ln += hEmitType( symbGetType( hidden ), hidden, EMITTYPE_ADDPTR )
+				ln += hEmitType( typeAddrOf( symbGetType( hidden ) ), hidden )
 			else
 				hidden = proc->proc.ext->res
-				ln += hEmitType( symbGetType( hidden ), symbGetSubtype( hidden ), EMITTYPE_ADDPTR )
+				ln += hEmitType( typeAddrOf( symbGetType( hidden ) ), symbGetSubtype( hidden ) )
 				ln += " " + *symbGetMangledName( hidden )
 			end if
 
@@ -380,33 +377,30 @@ private function hEmitProcHeader _
 			var pvar = iif( options and EMITPROC_ISPROTO, param, symbGetParamVar( param ) )
 			var dtype = symbGetType( pvar )
 			var subtype = symbGetSubType( pvar )
-			dim as EMITTYPE_OPTIONS type_options = 0
 
 			select case( param->param.mode )
 			case FB_PARAMMODE_BYVAL
 				select case( symbGetType( param ) )
 				'' byval string? it's actually an pointer to a zstring
 				case FB_DATATYPE_STRING
-					type_options = EMITTYPE_ADDPTR
-					dtype = typeJoin( dtype, FB_DATATYPE_CHAR )
+					dtype = typeAddrOf( typeJoin( dtype, FB_DATATYPE_CHAR ) )
 
 				case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
 					'' has a dtor, copy ctor or virtual methods? it's a copy..
 					if( symbCompIsTrivial( symbGetSubtype( param ) ) = FALSE ) then
-						type_options = EMITTYPE_ADDPTR
+						dtype = typeAddrOf( dtype )
 					end if
 				end select
 
 			case FB_PARAMMODE_BYREF
-				type_options = EMITTYPE_ADDPTR
+				dtype = typeAddrOf( dtype )
 
 			case FB_PARAMMODE_BYDESC
-				type_options = EMITTYPE_ADDPTR
-				dtype = FB_DATATYPE_STRUCT
+				dtype = typeAddrOf( FB_DATATYPE_STRUCT )
 				subtype = symb.arrdesctype
 			end select
 
-			ln += hEmitType( dtype, subtype, type_options )
+			ln += hEmitType( dtype, subtype )
 
 			if( (options and EMITPROC_ISPROTO) = 0 ) then
 				ln += " " + *symbGetMangledName( pvar )
@@ -894,9 +888,7 @@ private sub hEmitDataStmt( )
 	loop
 end sub
 
-'':::::
 private sub hEmitTypedefs( )
-
 	'' typedef's for debugging
 	hWriteLine( "typedef char byte;", TRUE )
 	hWriteLine( "typedef unsigned char ubyte;", TRUE )
@@ -926,7 +918,6 @@ private sub hEmitTypedefs( )
 		wchartype = "integer"
 	end select
 	hWriteLine( "typedef " + wchartype + " wchar;", TRUE )
-
 end sub
 
 private sub hWriteFTOI _
@@ -1466,23 +1457,19 @@ end sub
 private function hEmitType _
 	( _
 		byval dtype as integer, _
-		byval subtype as FBSYMBOL ptr, _
-		byval options as EMITTYPE_OPTIONS = 0 _
+		byval subtype as FBSYMBOL ptr _
 	) as string
 
 	dim as string s
-	dim as integer ptrcount_fb = typeGetPtrCnt( dtype )
-	dtype = typeGetDtOnly( dtype )
+	dim as integer ptrcount = any
 
-	dim as integer ptrcount_c = ptrcount_fb
-	if( options and EMITTYPE_ADDPTR ) then
-		ptrcount_c += 1
-	end if
+	ptrcount = typeGetPtrCnt( dtype )
+	dtype = typeGetDtOnly( dtype )
 
 	select case as const( dtype )
 	case FB_DATATYPE_STRUCT, FB_DATATYPE_ENUM
 		if( subtype ) then
-			hEmitUDT( subtype, (ptrcount_c > 0) )
+			hEmitUDT( subtype, (ptrcount > 0) )
 			s = hGetUDTName( subtype )
 		elseif( dtype = FB_DATATYPE_ENUM ) then
 			s = *dtypeName(FB_DATATYPE_INTEGER)
@@ -1491,17 +1478,13 @@ private function hEmitType _
 		end if
 
 	case FB_DATATYPE_FUNCTION
-		ptrcount_c -= 1
-		hEmitUDT( subtype, (ptrcount_c > 0) )
+		assert( ptrcount > 0 )
+		ptrcount -= 1
+		hEmitUDT( subtype, (ptrcount > 0) )
 		s = *symbGetMangledName( subtype )
 
 	case FB_DATATYPE_STRING, FB_DATATYPE_WCHAR
 		s = *dtypeName(dtype)
-		if( options and EMITTYPE_ISRESULT ) then
-			if( ptrcount_fb = 0 ) then
-				ptrcount_c += 1
-			end if
-		end if
 
 	case FB_DATATYPE_BITFIELD
 		if( subtype ) then
@@ -1514,8 +1497,8 @@ private function hEmitType _
 		s = *dtypeName(dtype)
 	end select
 
-	if( ptrcount_c > 0 ) then
-		s += string( ptrcount_c, "*" )
+	if( ptrcount > 0 ) then
+		s += string( ptrcount, "*" )
 	end if
 
 	function = s
@@ -1708,7 +1691,7 @@ private function hEmitVreg _
 			''    (*(vregtype*)offset)
 			''    (*(vregtype*)vidx)
 			''    (*(vregtype*)((ubyte*)vidx + offset))
-			s += "(*(" + hEmitType( vreg->dtype, vreg->subtype, EMITTYPE_ADDPTR ) + ")"
+			s += "(*(" + hEmitType( typeAddrOf( vreg->dtype ), vreg->subtype ) + ")"
 
 			if( vreg->vidx ) then
 				have_offset = (vreg->ofs <> 0)
@@ -1822,7 +1805,7 @@ private function hEmitVreg _
 		'' Deref/addrof trick
 		do_cast = FALSE
 
-		s += "(*(" + hEmitType( vreg->dtype, vreg->subtype, EMITTYPE_ADDPTR ) + ")"
+		s += "(*(" + hEmitType( typeAddrOf( vreg->dtype ), vreg->subtype ) + ")"
 
 		if( have_offset ) then
 			'' Cast to ubyte ptr to work around C's pointer arithmetic.
