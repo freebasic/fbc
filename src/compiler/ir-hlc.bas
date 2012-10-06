@@ -1815,8 +1815,10 @@ private function exprNewUOP _
 		byval l as EXPRNODE ptr _
 	) as EXPRNODE ptr
 
-	dim as EXPRNODE ptr n = any, ll = any
-	dim as integer dtype = any
+	dim as EXPRNODE ptr n = any
+	dim as integer dtype = any, solved_out = any
+
+	solved_out = FALSE
 
 	'' Similar to BOPs, the C type promotion rules should be applied
 	'' to determine the UOP's result type.
@@ -1825,12 +1827,7 @@ private function exprNewUOP _
 		'' peep-hole optimization:
 		'' ADDROF( DEREF( x ) ) -> x
 		if( l->class = EXPRCLASS_UOP ) then
-			if( l->op = AST_OP_DEREF ) then
-				ll = l->l
-				l->l = NULL
-				exprFree( l )
-				return ll
-			end if
+			solved_out = (l->op = AST_OP_DEREF)
 		end if
 
 		dtype = l->dtype
@@ -1840,21 +1837,33 @@ private function exprNewUOP _
 		'' peep-hole optimization:
 		'' DEREF( ADDROF( x ) ) -> x
 		if( l->class = EXPRCLASS_UOP ) then
-			if( l->op = AST_OP_ADDROF ) then
-				ll = l->l
-				l->l = NULL
-				exprFree( l )
-				return ll
-			end if
+			solved_out = (l->op = AST_OP_ADDROF)
 		end if
 
 		dtype = l->dtype
 		assert( typeGetPtrCnt( dtype ) > 0 )
 		dtype = typeDeref( dtype )
 
-	case else
+	case AST_OP_NEG, AST_OP_NOT
+		'' peep-hole optimization:
+		''    -(-(foo)) -> foo
+		''    ~(~(foo)) -> foo
+		if( l->class = EXPRCLASS_UOP ) then
+			solved_out = (l->op = op)
+		end if
+
 		dtype = typeCBop( op, l->dtype, l->subtype, FB_DATATYPE_INTEGER, NULL )
+
+	case else
+		assert( FALSE )
 	end select
+
+	if( solved_out ) then
+		n = l->l
+		l->l = NULL  '' don't let exprFree() free this recursively
+		exprFree( l )
+		return n
+	end if
 
 	n = exprNew( EXPRCLASS_UOP, dtype, l->subtype )
 	n->l = l
