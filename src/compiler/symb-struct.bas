@@ -272,7 +272,7 @@ function symbAddField _
 		byval bits as integer _
 	) as FBSYMBOL ptr static
 
-    dim as FBSYMBOL ptr sym, tail, base_parent
+	dim as FBSYMBOL ptr sym, tail, base_parent, prevbitfield
     dim as integer pad, updateudt, elen
     dim as FBHASHTB ptr hashtb
 
@@ -283,32 +283,51 @@ function symbAddField _
 		lgt	= symbCalcLen( dtype, subtype )
 	end if
 
-    '' check if the parent ofs must be updated
-    updateudt = TRUE
-    if( bits > 0 ) then
-    	'' last field was a bitfield too? try to merge..
-    	if( parent->udt.bitpos > 0 ) then
-    		tail = parent->udt.ns.symtb.tail
-    		'' does it fit? if not, start at a new pos..
-    		if( parent->udt.bitpos + bits > tail->lgt*8 ) then
-    			parent->udt.bitpos = 0
-    		else
-    			'' if it fits but len is different, make it the same
-    			if( lgt <> tail->lgt ) then
-    				dtype = tail->typ
-    				lgt = tail->lgt
-    			end if
-    		end if
-    	end if
+	'' check if the parent ofs must be updated
+	updateudt = TRUE
+	if( bits > 0 ) then
+		'' last field was a bitfield too? try to merge..
+		if( parent->udt.bitpos > 0 ) then
+			'' TODO: this is broken, because the tail isn't always a field,
+			'' it can be a method too, or other nested stuff even?
+			tail = parent->udt.ns.symtb.tail
+			assert( symbIsField( tail ) )
+			assert( symbGetType( tail ) = FB_DATATYPE_BITFIELD )
+			prevbitfield = tail->subtype
+			assert( symbIsBitfield( prevbitfield ) )
+
+			'' Too many bits to fit into previous bitfield container field?
+			if( parent->udt.bitpos + bits > prevbitfield->lgt*8 ) then
+				'' Start new container field, this bitfield will be at bitpos 0 in it
+				parent->udt.bitpos = 0
+			else
+				'' The previous container field still has enough
+				'' room to hold this new bitfield.
+
+				'' if it fits but len is different, make it the same
+				'' TODO: is this "right"? shouldn't the different
+				'' type trigger a new container field to be used?
+				'' look what gcc does, with/without -mms-bitfields
+				'' This for now allows merging bitfields if they
+				'' have a different length, but maybe then this
+				'' check shouldn't just be done for different lengths,
+				'' but always if the dtypes are different?
+				if( lgt <> prevbitfield->lgt ) then
+					dtype = symbGetType( prevbitfield )
+					lgt = prevbitfield->lgt
+				end if
+			end if
+		end if
 
 		'' don't update if there are enough bits left
 		if( parent->udt.bitpos <> 0 ) then
 			updateudt = FALSE
 		end if
-
-    else
-    	parent->udt.bitpos = 0
-    end if
+	else
+		'' Normal fields are not merged into bitfield containers,
+		'' so the bitfield merging is interrupted here.
+		parent->udt.bitpos = 0
+	end if
 
 	''
 	if( updateudt ) then
