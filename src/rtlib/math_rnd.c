@@ -113,11 +113,11 @@ static double hRnd_QB ( float n )
 		if( n < 0.0 ) {
 			ftoi.f = n;
 			uint32_t s = ftoi.i;
-			iseed = ( s & 0xFFFFFF ) + ( s >> 24 );
+			iseed = s + ( s >> 24 );
 		}
-		iseed = ( ( iseed * 16598013 ) + 12820163 ) & 0xFFFFFF;
+		iseed = ( ( iseed * 0xFD43FD ) + 0xC39EC3 ) & 0xFFFFFF;
 	}
-	return (double)iseed / (double)0x1000000;
+	return (float)iseed / (float)0x1000000;
 }
 
 #if defined HOST_WIN32 || defined HOST_LINUX
