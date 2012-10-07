@@ -749,7 +749,7 @@ decl_inner:		'' it's an anonymous inner UDT
 				end if
 
 				'' create a "temp" one
-				inner = hTypeAdd( s, NULL, NULL, isunion, align )
+				inner = hTypeAdd( s, symbUniqueId( ), NULL, isunion, align )
 				if( inner = NULL ) then
 					exit function
 				end if

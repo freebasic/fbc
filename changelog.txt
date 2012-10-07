@@ -83,6 +83,7 @@ Version 0.25.0:
 - UDT methods (or other non-field members) declared in between bitfields interrupted bitfield packing
 - C backend: FIELD = N with N > 1 didn't decrease field alignment in the C output
 - "RANDOMIZE , 1" was not always using a random seed
+- C backend: UDTs and functions with same names caused gcc errors
 
 
 Version 0.24.0:

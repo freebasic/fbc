@@ -495,36 +495,32 @@ private function hEmitProcHeader _
 	function = ln
 end function
 
-private function hGetUDTName _
-	( _
-        byval s as FBSYMBOL ptr, _
-        byval need_original_name as integer = FALSE _
-    ) as string
+private function hGetUDTName( byval sym as FBSYMBOL ptr ) as string
+	dim as FBSYMBOL ptr ns = any
+	dim as string id
 
-    dim as FBSYMBOL ptr ns = symbGetNamespace( s )
+	if( symbIsStruct( sym ) ) then
+		if( symbGetUDTIsUnion( sym ) ) then
+			id = "union "
+		else
+			id = "struct "
+		end if
+	end if
 
-    var sig = ""
-    do until( ns = @symbGetGlobalNamespc( ) )
-    	sig += *symbGetName( ns )
-    	sig += "$"
-    	ns = symbGetNamespace( ns )
-    loop
+	ns = symbGetNamespace( sym )
+	do until( ns = @symbGetGlobalNamespc( ) )
+		id += *symbGetName( ns )
+		id += "$"
+		ns = symbGetNamespace( ns )
+	loop
 
-    if( s->id.alias <> NULL ) then
-    	sig += *s->id.alias
-    else
-    	sig += *symbGetName( s )
-    EndIf
+	if( sym->id.alias ) then
+		id += *sym->id.alias
+	else
+		id += *symbGetName( sym )
+	end if
 
-    if( need_original_name = FALSE ) then
-        '' see the HACK in hEmitStruct()
-        if( symbGetIsAccessed( s ) ) then
-            sig += "$type"
-        end if
-    end if
-
-    function = sig
-
+	function = id
 end function
 
 private sub hEmitUDT( byval s as FBSYMBOL ptr, byval is_ptr as integer )
@@ -778,10 +774,7 @@ private sub hEmitStruct _
 	dim as integer skip = any, dtype = any, align = any
 	dim as FBSYMBOL ptr subtype = any
 
-	var tname = "struct"
-	if( symbGetUDTIsUnion( s ) ) then
-		tname = "union"
-	end if
+	id = hGetUDTName( s )
 
 	'' Already in the process of emitting this UDT?
 	if( symbGetIsBeingEmitted( s ) ) then
@@ -790,15 +783,11 @@ private sub hEmitStruct _
 		'' because UDTs cannot contain each-other, so this can always
 		'' be solved by using a forward reference.
 		if( is_ptr ) then
-			'' Emit a forward reference for this struct (if not yet done),
-			'' and remember it for emitting later.
+			'' Emit a forward reference for this struct (if not yet done).
 			'' HACK: reusing the accessed flag (that's used by variables only)
 			if( symbGetIsAccessed( s ) = FALSE ) then
 				symbSetIsAccessed( s )
-				ln = "typedef " + tname
-				ln += " _" + hGetUDTName( s, TRUE )
-				ln += " " + hGetUDTName( s, FALSE ) + ";"
-				hWriteLine( ln )
+				hWriteLine( id + ";" )
 			end if
 			exit sub
 		end if
@@ -822,14 +811,7 @@ private sub hEmitStruct _
 	'' Emit it now
 	symbSetIsEmitted( s )
 
-	'' UDT name
-	if( symbGetName( s ) = NULL ) then
-		id = *symbUniqueId( )
-	else
-		id = hGetUDTName( s, TRUE )
-	end if
-
-	hWriteLine( "typedef " + tname + " _" + id + " {", TRUE )
+	hWriteLine( id + " {", TRUE )
 
 	'' Write out the elements
 	sectionIndent( )
@@ -887,7 +869,7 @@ private sub hEmitStruct _
 
 	'' Close UDT body
 	sectionUnindent( )
-	hWriteLine( "} " + id + ";", TRUE )
+	hWriteLine( "};", TRUE )
 
 	symbResetIsBeingEmitted( s )
 
