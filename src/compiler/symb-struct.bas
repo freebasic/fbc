@@ -111,11 +111,6 @@ function typeCalcNaturalAlign _
 
 	dim as integer align = any
 
-	'' Assume FIELD = 1 under -lang qb, because QB didn't do any alignment
-	if( fbLangIsSet( FB_LANG_QB ) ) then
-		return 1
-	end if
-
 	select case as const( typeGet( dtype ) )
 	'' UDT? its natural alignment depends on the largest field
 	case FB_DATATYPE_STRUCT
@@ -157,6 +152,7 @@ private function hCalcPadding _
 
 	'' default?
 	if( align = 0 ) then
+		assert( fbLangIsSet( FB_LANG_QB ) = FALSE )
 		align = natalign
 	'' packed..
 	else
