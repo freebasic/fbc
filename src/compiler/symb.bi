@@ -424,7 +424,7 @@ type FBS_STRUCT
 	base			as FBSYMBOL_ ptr			'' base class
 	anonparent		as FBSYMBOL_ ptr
 	elements		as integer
-	lfldlen			as integer					'' largest field len
+	natalign		as integer					'' UDT's natural alignment based on largest natural field alignment
 	unpadlgt		as integer					'' unpadded len
 	options			as short					'' FB_UDTOPT
 	bitpos			as ubyte
@@ -1074,6 +1074,12 @@ declare function symbStructBegin _
 		byval base_ as FBSYMBOL ptr, _
 		byval attrib as integer _
 	) as FBSYMBOL ptr
+
+declare function typeCalcNaturalAlign _
+	( _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr _
+	) as integer
 
 declare function symbAddField _
 	( _
