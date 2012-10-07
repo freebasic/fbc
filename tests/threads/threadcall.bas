@@ -104,7 +104,7 @@ namespace fbc_tests.threads.threadcall_tests
         end sub
     end namespace
 
-    sub threadcall_test() 
+    sub threadcall_test cdecl( )
         dim thread as any ptr
         dim i as integer, ui as uinteger, l as longint, ul as ulongint
         dim d as double, strref as string
