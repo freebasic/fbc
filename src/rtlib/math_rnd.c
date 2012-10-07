@@ -218,7 +218,7 @@ FBCALL void fb_Randomize ( double seed, int algorithm )
 	switch( algorithm ) {
 	case RND_CRT:
 		rnd_func = hRnd_CRT;
-		srand( (int)seed );
+		srand( (unsigned int)seed );
 		rand( );
 		break;
 

@@ -82,6 +82,7 @@ Version 0.25.0:
 - FOR loops with FWDREF PTR counters were allowed, despite the incomplete type, causing zero step size to be used (as above)
 - UDT methods (or other non-field members) declared in between bitfields interrupted bitfield packing
 - C backend: FIELD = N with N > 1 didn't decrease field alignment in the C output
+- "RANDOMIZE , 1" was not always using a random seed
 
 
 Version 0.24.0:
