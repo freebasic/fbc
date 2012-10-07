@@ -671,7 +671,6 @@ private sub hEmitVariable( byval s as FBSYMBOL ptr )
 
 	'' initialized? only if not local or local and static
 	if( symbGetIsInitialized( s ) and (symbIsLocal( s ) = FALSE or symbIsStatic( s ))  ) then
-
 		'' extern or jump-tb?
 		if( symbIsExtern( s ) ) then
 			return
@@ -776,7 +775,8 @@ private sub hEmitStruct _
 	)
 
 	dim as string ln, id
-	dim as integer skip = any
+	dim as integer skip = any, dtype = any, align = any
+	dim as FBSYMBOL ptr subtype = any
 
 	var tname = "struct"
 	if( symbGetUDTIsUnion( s ) ) then
@@ -831,16 +831,6 @@ private sub hEmitStruct _
 
 	hWriteLine( "typedef " + tname + " _" + id + " {", TRUE )
 
-	'' Alignment (field = N)
-	var attrib = ""
-	if( s->udt.align > 0 ) then
-		if( s->udt.align = 1 ) then
-			attrib = " __attribute__((packed))"
-		else
-			attrib = " __attribute__((aligned (" & s->udt.align & ")))"
-		end if
-	end if
-
 	'' Write out the elements
 	sectionIndent( )
 	e = symbGetUDTFirstElm( s )
@@ -862,10 +852,32 @@ private sub hEmitStruct _
 		end if
 
 		if( skip = FALSE ) then
-			ln = hEmitType( symbGetType( e ), symbGetSubtype( e ) )
+			dtype = symbGetType( e )
+			subtype = symbGetSubtype( e )
+			ln = hEmitType( dtype, subtype )
 			ln += " " + *symbGetName( e )
 			ln += hEmitArrayDecl( e )
-			ln += attrib
+
+			'' Field alignment (FIELD = N)?
+			align = symbGetUDTAlign( s )
+			if( align > 0 ) then
+				'' The aligned(N) attribute alone increases the alignment,
+				'' together with packed it decreases it.
+				'' FIELD = N in FB only decreases alignment, but never increases it.
+				skip = (align >= typeCalcNaturalAlign( dtype, subtype ))
+
+				'' Don't add unnecessary attributes on nested structures
+				'' that are already packed to the same alignment,
+				'' gcc would show a warning in that case.
+				if( typeGet( dtype ) = FB_DATATYPE_STRUCT ) then
+					skip or= (align >= symbGetUDTAlign( subtype ))
+				end if
+
+				if( skip = FALSE ) then
+					ln += " __attribute__((packed, aligned(" + str( align ) + ")))"
+				end if
+			end if
+
 			ln += ";"
 			hWriteLine( ln, TRUE )
 		end if
