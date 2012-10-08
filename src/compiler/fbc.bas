@@ -42,6 +42,7 @@ type FBCCTX
 	keepobj				as integer
 	verbose				as integer
 	showversion			as integer
+	showhelp			as integer
 
 	'' Command line input
 	modules				as TLIST '' FBCIOFILE's for input .bas files
@@ -1077,6 +1078,7 @@ enum
 	OPT_FPU
 	OPT_G
 	OPT_GEN
+	OPT_HELP
 	OPT_I
 	OPT_INCLUDE
 	OPT_L
@@ -1135,6 +1137,7 @@ dim shared as integer option_takes_argument(0 to (OPT__COUNT - 1)) = _
 	TRUE , _ '' OPT_FPU
 	FALSE, _ '' OPT_G
 	TRUE , _ '' OPT_GEN
+	FALSE, _ '' OPT_HELP
 	TRUE , _ '' OPT_I
 	TRUE , _ '' OPT_INCLUDE
 	TRUE , _ '' OPT_L
@@ -1312,6 +1315,9 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 		end select
 
 		fbSetOption( FB_COMPOPT_BACKEND, value )
+
+	case OPT_HELP
+		fbc.showhelp = TRUE
 
 	case OPT_I
 		fbAddIncludePath(pathStripDiv(arg))
@@ -1591,6 +1597,9 @@ private function parseOption(byval opt as zstring ptr) as integer
 		ONECHAR(OPT_G)
 		CHECK("gen", OPT_GEN)
 
+	case asc( "h" )
+		CHECK( "help", OPT_HELP )
+
 	case asc("i")
 		ONECHAR(OPT_I)
 		CHECK("include", OPT_INCLUDE)
@@ -1657,6 +1666,10 @@ private function parseOption(byval opt as zstring ptr) as integer
 
 	case asc("z")
 		ONECHAR(OPT_Z)
+
+	case asc( "-" )
+		CHECK( "-version", OPT_VERSION )
+		CHECK( "-help", OPT_HELP )
 
 	end select
 
@@ -2655,6 +2668,7 @@ private sub hPrintOptions( )
 	print "  -fpu x87|sse     Set target FPU"
 	print "  -g               Add debug info"
 	print "  -gen gas|gcc     Select code generation backend"
+	print "  [-]-help         Show this help output"
 	print "  -i <path>        Add an include file search path"
 	print "  -include <file>  Pre-#include a file for each input .bas"
 	print "  -l <name>        Link in a library"
@@ -2683,7 +2697,7 @@ private sub hPrintOptions( )
 	print "  -title <name>    Set XBE display title (xbox)"
 	print "  -v               Be verbose"
 	print "  -vec <n>         Automatic vectorization level (default: 0)"
-	print "  -version         Show compiler version"
+	print "  [-]-version      Show compiler version"
 	print "  -w all|pedantic|<n>  Set min warning level: all, pedantic or a value"
 	print "  -Wa <a,b,c>      Pass options to GAS"
 	print "  -Wc <a,b,c>      Pass options to GCC (with -gen gcc)"
@@ -2743,10 +2757,13 @@ end sub
 		fbcEnd( 0 )
 	end if
 
-	if( (listGetHead(@fbc.modules) = NULL) and _
-	    (listGetHead(@fbc.objlist) = NULL) and _
-	    (listGetHead(@fbc.libs.list) = NULL) and _
-	    (listGetHead(@fbc.libfiles) = NULL) ) then
+	'' Show help if --help was given, or if there are no input files
+	fbc.showhelp or= ((listGetHead(@fbc.modules) = NULL) and _
+	                  (listGetHead(@fbc.objlist) = NULL) and _
+	                  (listGetHead(@fbc.libs.list) = NULL) and _
+	                  (listGetHead(@fbc.libfiles) = NULL))
+
+	if( fbc.showhelp ) then
 		hPrintOptions( )
 		fbcEnd( 1 )
 	end if
