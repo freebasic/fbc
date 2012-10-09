@@ -20,12 +20,6 @@ type FB_CALLBACK_ADDOPTION as sub _
 		byval objName as zstring ptr _
 	)
 
-declare function fbObjInfoWriteObj _
-	( _
-		byval libs as TLIST ptr, _
-		byval libpaths as TLIST ptr _
-	) as integer
-
 declare function fbObjInfoReadObj _
 	( _
 		byval objName as zstring ptr, _

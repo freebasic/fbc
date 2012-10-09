@@ -327,6 +327,11 @@ const FB_DEFAULT_TARGET     = FB_COMPTARGET_NETBSD
 const FB_INFOSEC_VERSION = &h10
 const FB_INFOSEC_NAME = "fbctinf"
 const FB_INFOSEC_OBJNAME = "__fb_ct.inf"
+#ifdef __FB_DOS__
+	const FB_INFOSEC_BASNAME = "__fb_ct.bas"
+#else
+	const FB_INFOSEC_BASNAME = "__fb_ct.inf.bas"
+#endif
 
 enum IR_INFOSEC
 	FB_INFOSEC_EOL = 0
