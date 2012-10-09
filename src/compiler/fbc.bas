@@ -2273,7 +2273,7 @@ private function hCompileXpm( ) as integer
 	fbc.xpm.srcfile &= ".bas"
 
 	if( fbc.verbose ) then
-		print "compiling xpm: ", xpmfile & " -o " & fbc.xpm.srcfile
+		print "parsing xpm: ", xpmfile & " -o " & fbc.xpm.srcfile
 	end if
 
 	if( hParseXpm( xpmfile, code ) = FALSE ) then
@@ -2380,7 +2380,7 @@ private sub hCompileStage2Modules( )
 	wend
 end sub
 
-private function hAssembleBas( byval module as FBCIOFILE ptr ) as integer
+private function hAssembleModule( byval module as FBCIOFILE ptr ) as integer
 	dim as string ln
 
 	ln = "--32 "  '' we're 32bit only for now, this helps on 64bit systems
@@ -2405,7 +2405,7 @@ end function
 private sub hAssembleModules( )
 	dim as FBCIOFILE ptr module = listGetHead( @fbc.modules )
 	while( module )
-		if( hAssembleBas( module ) = FALSE ) then
+		if( hAssembleModule( module ) = FALSE ) then
 			fbcEnd( 1 )
 		end if
 		module = listGetNext( module )
@@ -2484,7 +2484,10 @@ end sub
 
 private sub hAssembleXpm( )
 	if( len( fbc.xpm.srcfile ) > 0 ) then
-		if( hAssembleBas( @fbc.xpm ) = FALSE ) then
+		if( fbGetOption( FB_COMPOPT_BACKEND ) <> FB_BACKEND_GAS ) then
+			hCompileStage2Module( @fbc.xpm )
+		end if
+		if( hAssembleModule( @fbc.xpm ) = FALSE ) then
 			fbcEnd( 1 )
 		end if
 	end if
@@ -2518,7 +2521,10 @@ private function hCompileFbctinf( ) as integer
 	end if
 
 	hCompileBas( @fbctinf, FALSE, TRUE )
-	function = hAssembleBas( @fbctinf )
+	if( fbGetOption( FB_COMPOPT_BACKEND ) <> FB_BACKEND_GAS ) then
+		hCompileStage2Module( @fbctinf )
+	end if
+	function = hAssembleModule( @fbctinf )
 end function
 
 private function hArchiveFiles( ) as integer
