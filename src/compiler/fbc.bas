@@ -856,6 +856,13 @@ private sub hCollectObjInfo( )
 		end if
 		i = listGetNext( i )
 	wend
+
+	'' Search libs given as *.a input files instead of -l or #inclib
+	s = listGetHead( @fbc.libfiles )
+	while( s )
+		fbObjInfoReadLibfile( *s, @_addLibCb, @_addPathCb, @_addOption )
+		s = listGetNext( s )
+	wend
 end sub
 
 #endif ''ndef DISABLE_OBJINFO

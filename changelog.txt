@@ -11,6 +11,7 @@ Version 0.25.0:
 - Doing "udtvar.constructor( ... )" or "udtvar.destructor( )" won't automatically add a constructor/destructor anymore, but instead show an error
 - The C backend now emits expressions in-line instead of using #defines, and also avoids many unnecessary casts, producing much nicer C code
 - fbc now uses a custom COFF/ELF32 reader instead of libbfd for the objinfo feature
+- fbc will now also read out compile-time information from libs passed as libfoo.a instead of -l foo or #inclib "foo"
 
 [added]
 - Updated headers for caca 0.99.beta18 (caca.bi = new API, caca0.bi = old API)

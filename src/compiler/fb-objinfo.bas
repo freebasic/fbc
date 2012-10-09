@@ -486,6 +486,34 @@ sub fbObjInfoReadObj _
 
 end sub
 
+sub fbObjInfoReadLibfile _
+	( _
+		byref libfile as string, _
+		byval addLib as FB_CALLBACK_ADDLIB, _
+		byval addLibPath as FB_CALLBACK_ADDLIBPATH, _
+		byval addOption as FB_CALLBACK_ADDOPTION _
+	)
+
+	INFO( "reading archive: " + libfile )
+	hLoadFile( libfile, @ardata )
+	if( ardata.size = 0 ) then
+		exit sub
+	end if
+
+	hLoadObjFromAr( )
+	if( objdata.size = 0 ) then
+		INFO( "fbctinf object not found" )
+		exit sub
+	end if
+
+	hProcessObject( libfile, addLib, addLibPath, addOption )
+
+	deallocate( ardata.p )
+	ardata.p = NULL
+	ardata.size = 0
+
+end sub
+
 sub fbObjInfoReadLib _
 	( _
 		byref libname as string, _
@@ -518,23 +546,7 @@ sub fbObjInfoReadLib _
 		exit sub
 	end if
 
-	INFO( "reading archive: " + libfile )
-	hLoadFile( libfile, @ardata )
-	if( ardata.size = 0 ) then
-		exit sub
-	end if
-
-	hLoadObjFromAr( )
-	if( objdata.size = 0 ) then
-		INFO( "fbctinf object not found" )
-		exit sub
-	end if
-
-	hProcessObject( libname, addLib, addLibPath, addOption )
-
-	deallocate( ardata.p )
-	ardata.p = NULL
-	ardata.size = 0
+	fbObjInfoReadLibfile( libfile, addLib, addLibPath, addOption )
 end sub
 
 '':::::
