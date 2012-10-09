@@ -18,8 +18,6 @@
 ''    found libraries etc. by using the callbacks.
 ''
 
-#ifndef DISABLE_OBJINFO
-
 #include once "fb.bi"
 #include once "fbint.bi"
 #include once "list.bi"
@@ -712,5 +710,3 @@ private sub hProcessObject _
 
 	loop
 end sub
-
-#endif

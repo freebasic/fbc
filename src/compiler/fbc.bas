@@ -497,11 +497,9 @@ private function hLinkFiles( ) as integer
 		'' fbrt0's c/dtor be the first/last respectively.
 		'' (needed until binutils' default DJGPP ldscripts are fixed)
 		ldcline += " -T """ + fbc.libpath + (FB_HOST_PATHDIV + "i386go32.x""")
-#ifndef DISABLE_OBJINFO
 	else
 		'' Supplementary ld script to drop the fbctinf objinfo section
 		ldcline += " """ + fbc.libpath + (FB_HOST_PATHDIV + "fbextra.x""")
-#endif
 	end if
 
 	select case as const fbGetOption( FB_COMPOPT_TARGET )
@@ -785,8 +783,6 @@ private function hLinkFiles( ) as integer
 
 end function
 
-#ifndef DISABLE_OBJINFO
-
 private sub _addLibCb( byval libname as zstring ptr )
 	strsetAdd( @fbc.finallibs, *libname, FALSE )
 end sub
@@ -864,8 +860,6 @@ private sub hCollectObjInfo( )
 		s = listGetNext( s )
 	wend
 end sub
-
-#endif ''ndef DISABLE_OBJINFO
 
 private sub hFatalInvalidOption( byref arg as string )
 	errReportEx( FB_ERRMSG_INVALIDCMDOPTION, QUOTE + arg + QUOTE, -1 )
@@ -2525,7 +2519,6 @@ private function hArchiveFiles( ) as integer
 
 	dim as string ln = "-rsc " + QUOTE + fbc.outname + (QUOTE + " ")
 
-#ifndef DISABLE_OBJINFO
 	if( fbIsCrossComp( ) = FALSE ) then
 		if( hCompileFbctinf( ) ) then
 			'' The objinfo reader expects the fbctinf object to be
@@ -2535,7 +2528,6 @@ private function hArchiveFiles( ) as integer
 		end if
 		fbcAddTemp( FB_INFOSEC_OBJNAME )
 	end if
-#endif
 
 	dim as string ptr objfile = listGetHead( @fbc.objlist )
 	while( objfile )
@@ -2780,12 +2772,6 @@ private sub hPrintVersion( )
 		hAppendConfigInfo( config, "prefix: '" + ENABLE_PREFIX + "'" )
 	#endif
 
-	#ifndef DISABLE_OBJINFO
-		hAppendConfigInfo( config, "objinfo enabled" )
-	#else
-		hAppendConfigInfo( config, "objinfo disabled" )
-	#endif
-
 	if( len( config ) > 0 ) then
 		print config
 	end if
@@ -2861,14 +2847,12 @@ end sub
 	'' Set the default lib paths before scanning for other libs
 	hSetDefaultLibPaths( )
 
-#ifndef DISABLE_OBJINFO
 	'' Scan objects and libraries for more libraries and paths,
 	'' before adding the default libs, which don't need to be searched,
 	'' because they don't contain objinfo anyways.
 	if( fbIsCrossComp( ) = FALSE ) then
 		hCollectObjInfo( )
 	end if
-#endif
 
 	if( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_STATICLIB ) then
 		if( hArchiveFiles( ) = FALSE ) then

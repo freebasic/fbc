@@ -48,14 +48,12 @@
 #   FBC, CC, AR      fbc, gcc, ar programs (TARGET may be prefixed to CC/AR)
 #   V=1              to see full command lines
 #   ENABLE_STANDALONE=1    build source tree into self-contained FB installation
-#   DISABLE_OBJINFO=1      use "-d DISABLE_OBJINFO"
 #   ENABLE_PREFIX=1        use "-d ENABLE_PREFIX=$(prefix)"
 #   ENABLE_SUFFIX=-0.24    append a string like "-0.24" to fbc/FB dir names,
 #                          and use "-d ENABLE_SUFFIX=$(ENABLE_SUFFIX)" (non-standalone only)
 #
 # compiler source code configuration (FBCFLAGS):
 #   -d ENABLE_STANDALONE     build for a self-contained installation
-#   -d DISABLE_OBJINFO       disable the objinfo feature
 #   -d ENABLE_TDMGCC         build for TDM-GCC instead of MinGW.org setup
 #   -d ENABLE_SUFFIX=-0.24   assume FB's lib dir uses the given suffix (non-standalone only)
 #   -d ENABLE_PREFIX=/some/path   hard-code specific $(prefix) into fbc
@@ -335,9 +333,6 @@ endif
 # Pass the configuration defines on to the compiler source code
 ifdef ENABLE_STANDALONE
   ALLFBCFLAGS += -d ENABLE_STANDALONE
-endif
-ifdef DISABLE_OBJINFO
-  ALLFBCFLAGS += -d DISABLE_OBJINFO
 endif
 ifdef ENABLE_SUFFIX
   ALLFBCFLAGS += -d 'ENABLE_SUFFIX="$(ENABLE_SUFFIX)"'
