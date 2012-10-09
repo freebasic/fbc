@@ -10,6 +10,7 @@ Version 0.25.0:
 - Constant conversions to DOUBLE are not checked for overflows anymore, since DOUBLE can hold all SINGLE/INTEGER/LONGINT values (although, with varying precision)
 - Doing "udtvar.constructor( ... )" or "udtvar.destructor( )" won't automatically add a constructor/destructor anymore, but instead show an error
 - The C backend now emits expressions in-line instead of using #defines, and also avoids many unnecessary casts, producing much nicer C code
+- fbc now uses a custom COFF/ELF32 reader instead of libbfd for the objinfo feature
 
 [added]
 - Updated headers for caca 0.99.beta18 (caca.bi = new API, caca0.bi = old API)

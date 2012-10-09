@@ -787,34 +787,19 @@ end function
 
 #ifndef DISABLE_OBJINFO
 
-'':::::
-private sub objinf_addLibCb _
-	( _
-		byval libName as zstring ptr, _
-		byval objName as zstring ptr _
-	)
-
-	strsetAdd(@fbc.finallibs, *libName, FALSE)
-
+private sub _addLibCb( byval libname as zstring ptr )
+	strsetAdd( @fbc.finallibs, *libname, FALSE )
 end sub
 
-'':::::
-private sub objinf_addPathCb _
-	( _
-		byval pathName as zstring ptr, _
-		byval objName as zstring ptr _
-	)
-
-	strsetAdd(@fbc.finallibpaths, *pathName, FALSE)
-
+private sub _addPathCb( byval libpath as zstring ptr )
+	strsetAdd( @fbc.finallibpaths, *libpath, FALSE )
 end sub
 
-'':::::
-private sub objinf_addOption _
+private sub _addOption _
 	( _
 		byval opt as FB_COMPOPT, _
 		byval value as zstring ptr, _
-		byval objName as zstring ptr _
+		byref objName as string _
 	)
 
 #macro hReportErr( num )
@@ -851,32 +836,26 @@ private sub objinf_addOption _
 end sub
 
 private sub hCollectObjInfo( )
-	scope
-		'' for each object passed in the cmd-line
-		dim as string ptr obj = listGetHead( @fbc.objlist )
-		do while( obj <> NULL )
-			fbObjInfoReadObj( *obj, _
-							  @objinf_addLibCb, _
-							  @objinf_addPathCb, _
-							  @objinf_addOption )
-			obj = listGetNext( obj )
-		loop
-	end scope
+	dim as string ptr s = any
+	dim as TSTRSETITEM ptr i = any
 
-	scope
-		'' for each library found (must be done after processing all objects)
-		dim as TSTRSETITEM ptr i = listGetHead(@fbc.finallibs.list)
-		while (i)
-			'' Not default?
-			if (i->userdata = FALSE) then
-				fbObjInfoReadLib(i->s, @objinf_addLibCb, _
-				                       @objinf_addPathCb, _
-				                       @objinf_addOption, _
-				                       @fbc.finallibpaths.list)
-			end if
-			i = listGetNext(i)
-		wend
-	end scope
+	'' for each object passed in the cmd-line
+	s = listGetHead( @fbc.objlist )
+	while( s )
+		fbObjInfoReadObj( *s, @_addLibCb, @_addPathCb, @_addOption )
+		s = listGetNext( s )
+	wend
+
+	'' for each library found (must be done after processing all objects)
+	i = listGetHead( @fbc.finallibs.list )
+	while( i )
+		'' Not default?
+		if( i->userdata = FALSE ) then
+			fbObjInfoReadLib( i->s, @_addLibCb, @_addPathCb, _
+			                  @_addOption, @fbc.finallibpaths.list )
+		end if
+		i = listGetNext( i )
+	wend
 end sub
 
 #endif ''ndef DISABLE_OBJINFO
@@ -2795,11 +2774,7 @@ private sub hPrintVersion( )
 	#endif
 
 	#ifndef DISABLE_OBJINFO
-		#ifdef ENABLE_FBBFD
-			hAppendConfigInfo( config, "objinfo (libbfd " + str( ENABLE_FBBFD ) + ")" )
-		#else
-			hAppendConfigInfo( config, "objinfo (system's libbfd)" )
-		#endif
+		hAppendConfigInfo( config, "objinfo enabled" )
 	#else
 		hAppendConfigInfo( config, "objinfo disabled" )
 	#endif

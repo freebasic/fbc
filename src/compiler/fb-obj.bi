@@ -1,40 +1,30 @@
 #ifndef DISABLE_OBJINFO
 
-'' callbcks used when scanning object files for libraries
-type FB_CALLBACK_ADDLIB as sub _
-	( _
-		byval libName as zstring ptr, _
-		byval objName as zstring ptr _
-	)
-
-type FB_CALLBACK_ADDLIBPATH as sub _
-	( _
-		byval pathName as zstring ptr, _
-		byval objName as zstring ptr _
-	)
-
+'' callbacks used when scanning object files for libraries
+type FB_CALLBACK_ADDLIB as sub( byval libname as zstring ptr )
+type FB_CALLBACK_ADDLIBPATH as sub( byval libpath as zstring ptr )
 type FB_CALLBACK_ADDOPTION as sub _
 	( _
 		byval opt as FB_COMPOPT, _
 		byval value as zstring ptr, _
-		byval objName as zstring ptr _
+		byref objName as string _
 	)
 
-declare function fbObjInfoReadObj _
+declare sub fbObjInfoReadObj _
 	( _
-		byval objName as zstring ptr, _
+		byref objfile as string, _
 		byval addLib as FB_CALLBACK_ADDLIB, _
 		byval addLibPath as FB_CALLBACK_ADDLIBPATH, _
 		byval addOption as FB_CALLBACK_ADDOPTION _
-	) as integer
+	)
 
-declare function fbObjInfoReadLib _
+declare sub fbObjInfoReadLib _
 	( _
-		byval libName as zstring ptr, _
+		byref libname as string, _
 		byval addLib as FB_CALLBACK_ADDLIB, _
 		byval addLibPath as FB_CALLBACK_ADDLIBPATH, _
 		byval addOption as FB_CALLBACK_ADDOPTION, _
 		byval libpaths as TLIST ptr _
-	) as integer
+	)
 
 #endif
