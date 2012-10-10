@@ -8,6 +8,7 @@
 #include once "hlp.bi"
 #include once "hash.bi"
 #include once "list.bi"
+#include once "objinfo.bi"
 
 #if defined( ENABLE_STANDALONE ) and defined( __FB_WIN32__ )
 	#define ENABLE_GORC
@@ -21,7 +22,9 @@ end type
 
 type FBCIOFILE
 	srcfile		as string     '' input file
-	objfile		as string ptr '' output .o file (points to node from fbc.objlist)
+	objfile		as string ptr '' output .o file
+			              '' (for modules from the command line
+			              '' this points to a node from fbc.objlist)
 end type
 
 type FBC_OBJINF
@@ -42,6 +45,7 @@ type FBCCTX
 	keepobj				as integer
 	verbose				as integer
 	showversion			as integer
+	showhelp			as integer
 
 	'' Command line input
 	modules				as TLIST '' FBCIOFILE's for input .bas files
@@ -164,7 +168,7 @@ private function hCanDeleteAsm( byval stage as integer ) as integer
 	if( stage = 1 ) then
 		'' Stage 1 output (the FB backend output, which also happens to
 		'' be the final asm for -gen gas) can be preserved by -R,
-		'' or with -RR under -gen gas.
+		'' and additionally for -gen gas with -RR aswell.
 		function = ((not fbc.keepasm) and _
 		            ((fbGetOption( FB_COMPOPT_BACKEND ) <> FB_BACKEND_GAS) or _
 		             (not fbc.keepfinalasm)))
@@ -173,40 +177,6 @@ private function hCanDeleteAsm( byval stage as integer ) as integer
 		'' preserved with -RR only.
 		function = (not fbc.keepfinalasm)
 	end if
-end function
-
-private function hArchiveFiles( ) as integer
-	'' Determine the output archive's name if not given via -x
-	if (len(fbc.outname) = 0) then
-		fbc.outname = hStripFilename(fbc.mainname) + _
-		              "lib" + hStripPath(fbc.mainname) + ".a"
-	end if
-
-	'' Remove lib*.a if it already exists, because ar doesn't overwrite
-	safeKill( fbc.outname )
-
-	dim as string ln = "-rsc " + QUOTE + fbc.outname + (QUOTE + " ")
-
-#ifndef DISABLE_OBJINFO
-	if( fbIsCrossComp( ) = FALSE ) then
-		if( fbObjInfoWriteObj( @fbc.finallibs.list, @fbc.finallibpaths.list ) ) then
-			'' The objinfo reader expects the fbctinf object to be
-			'' the first object file in libraries, so it must be
-			'' specified first on the archiver command line:
-			ln += QUOTE + FB_INFOSEC_OBJNAME + QUOTE + " "
-		end if
-		fbcAddTemp( FB_INFOSEC_OBJNAME )
-	end if
-#endif
-
-	dim as string ptr objfile = listGetHead( @fbc.objlist )
-	while( objfile )
-		ln += """" + *objfile + """ "
-		objfile = listGetNext( objfile )
-	wend
-
-	'' invoke ar
-	function = fbcRunBin( "archiving", FBCTOOL_AR, ln )
 end function
 
 '' Find a file in our lib/ or in the system somewhere
@@ -529,11 +499,9 @@ private function hLinkFiles( ) as integer
 		'' fbrt0's c/dtor be the first/last respectively.
 		'' (needed until binutils' default DJGPP ldscripts are fixed)
 		ldcline += " -T """ + fbc.libpath + (FB_HOST_PATHDIV + "i386go32.x""")
-#ifndef DISABLE_OBJINFO
 	else
 		'' Supplementary ld script to drop the fbctinf objinfo section
 		ldcline += " """ + fbc.libpath + (FB_HOST_PATHDIV + "fbextra.x""")
-#endif
 	end if
 
 	select case as const fbGetOption( FB_COMPOPT_TARGET )
@@ -817,101 +785,83 @@ private function hLinkFiles( ) as integer
 
 end function
 
-#ifndef DISABLE_OBJINFO
+private sub hReadObjinfo( )
+	dim as string dat
+	dim as integer lang = any
 
-'':::::
-private sub objinf_addLibCb _
-	( _
-		byval libName as zstring ptr, _
-		byval objName as zstring ptr _
-	)
+	#macro hReportErr( num )
+		errReportWarnEx( num, objinfoGetFilename( ), -1 )
+	#endmacro
 
-	strsetAdd(@fbc.finallibs, *libName, FALSE)
+	do
+		select case as const( objinfoReadNext( dat ) )
+		case OBJINFO_LIB
+			strsetAdd( @fbc.finallibs, dat, FALSE )
 
-end sub
+		case OBJINFO_LIBPATH
+			strsetAdd( @fbc.finallibpaths, dat, FALSE )
 
-'':::::
-private sub objinf_addPathCb _
-	( _
-		byval pathName as zstring ptr, _
-		byval objName as zstring ptr _
-	)
+		case OBJINFO_MT
+			if( fbc.objinf.mt = FALSE ) then
+				hReportErr( FB_WARNINGMSG_MIXINGMTMODES )
 
-	strsetAdd(@fbc.finallibpaths, *pathName, FALSE)
-
-end sub
-
-'':::::
-private sub objinf_addOption _
-	( _
-		byval opt as FB_COMPOPT, _
-		byval value as zstring ptr, _
-		byval objName as zstring ptr _
-	)
-
-#macro hReportErr( num )
-	errReportWarnEx( num, objName, -1 )
-#endmacro
-
-	select case opt
-	case FB_COMPOPT_MULTITHREADED
-		if( fbc.objinf.mt = FALSE ) then
-			hReportErr( FB_WARNINGMSG_MIXINGMTMODES )
-
-			fbc.objinf.mt = TRUE
-			fbSetOption( FB_COMPOPT_MULTITHREADED, TRUE )
-		end if
-
-	case FB_COMPOPT_LANG
-		dim as FB_LANG id = any
-
-		id = fbGetLangId( value )
-
-		'' bad objinfo value?
-		if( id = FB_LANG_INVALID ) then
-			id = FB_LANG_FB
-		end if
-
-		if( id <> fbc.objinf.lang ) then
-			hReportErr( FB_WARNINGMSG_MIXINGLANGMODES )
-
-			fbc.objinf.lang = id
-			fbSetOption( FB_COMPOPT_LANG, id )
-		end if
-	end select
-
-end sub
-
-private sub hCollectObjInfo( )
-	scope
-		'' for each object passed in the cmd-line
-		dim as string ptr obj = listGetHead( @fbc.objlist )
-		do while( obj <> NULL )
-			fbObjInfoReadObj( *obj, _
-							  @objinf_addLibCb, _
-							  @objinf_addPathCb, _
-							  @objinf_addOption )
-			obj = listGetNext( obj )
-		loop
-	end scope
-
-	scope
-		'' for each library found (must be done after processing all objects)
-		dim as TSTRSETITEM ptr i = listGetHead(@fbc.finallibs.list)
-		while (i)
-			'' Not default?
-			if (i->userdata = FALSE) then
-				fbObjInfoReadLib(i->s, @objinf_addLibCb, _
-				                       @objinf_addPathCb, _
-				                       @objinf_addOption, _
-				                       @fbc.finallibpaths.list)
+				fbc.objinf.mt = TRUE
+				fbSetOption( FB_COMPOPT_MULTITHREADED, TRUE )
 			end if
-			i = listGetNext(i)
-		wend
-	end scope
+
+		case OBJINFO_LANG
+			lang = fbGetLangId( dat )
+
+			'' bad objinfo value?
+			if( lang = FB_LANG_INVALID ) then
+				lang = FB_LANG_FB
+			end if
+
+			if( lang <> fbc.objinf.lang ) then
+				hReportErr( FB_WARNINGMSG_MIXINGLANGMODES )
+				fbc.objinf.lang = lang
+				fbSetOption( FB_COMPOPT_LANG, lang )
+			end if
+
+		case else
+			exit do
+		end select
+	loop
+
+	objinfoReadEnd( )
 end sub
 
-#endif ''ndef DISABLE_OBJINFO
+private sub hCollectObjinfo( )
+	dim as string ptr s = any
+ 	dim as TSTRSETITEM ptr i = any
+
+	'' for each object passed in the cmd-line
+	s = listGetHead( @fbc.objlist )
+	while( s )
+		objinfoReadObj( *s )
+		hReadObjinfo( )
+		s = listGetNext( s )
+	wend
+
+	'' for each library found (must be done after processing all objects)
+	i = listGetHead( @fbc.finallibs.list )
+	while( i )
+		'' Not default?
+		if( i->userdata = FALSE ) then
+			objinfoReadLib( i->s, @fbc.finallibpaths.list )
+			hReadObjinfo( )
+		end if
+		i = listGetNext( i )
+	wend
+
+	'' Search libs given as *.a input files instead of -l or #inclib
+	s = listGetHead( @fbc.libfiles )
+	while( s )
+		objinfoReadLibfile( *s )
+		hReadObjinfo( )
+		s = listGetNext( s )
+	wend
+end sub
 
 private sub hFatalInvalidOption( byref arg as string )
 	errReportEx( FB_ERRMSG_INVALIDCMDOPTION, QUOTE + arg + QUOTE, -1 )
@@ -1078,6 +1028,7 @@ enum
 	OPT_FPU
 	OPT_G
 	OPT_GEN
+	OPT_HELP
 	OPT_I
 	OPT_INCLUDE
 	OPT_L
@@ -1136,6 +1087,7 @@ dim shared as integer option_takes_argument(0 to (OPT__COUNT - 1)) = _
 	TRUE , _ '' OPT_FPU
 	FALSE, _ '' OPT_G
 	TRUE , _ '' OPT_GEN
+	FALSE, _ '' OPT_HELP
 	TRUE , _ '' OPT_I
 	TRUE , _ '' OPT_INCLUDE
 	TRUE , _ '' OPT_L
@@ -1315,6 +1267,9 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 		end select
 
 		fbSetOption( FB_COMPOPT_BACKEND, value )
+
+	case OPT_HELP
+		fbc.showhelp = TRUE
 
 	case OPT_I
 		fbAddIncludePath(pathStripDiv(arg))
@@ -1594,6 +1549,9 @@ private function parseOption(byval opt as zstring ptr) as integer
 		ONECHAR(OPT_G)
 		CHECK("gen", OPT_GEN)
 
+	case asc( "h" )
+		CHECK( "help", OPT_HELP )
+
 	case asc("i")
 		ONECHAR(OPT_I)
 		CHECK("include", OPT_INCLUDE)
@@ -1660,6 +1618,10 @@ private function parseOption(byval opt as zstring ptr) as integer
 
 	case asc("z")
 		ONECHAR(OPT_Z)
+
+	case asc( "-" )
+		CHECK( "-version", OPT_VERSION )
+		CHECK( "-help", OPT_HELP )
 
 	end select
 
@@ -2066,45 +2028,68 @@ end function
 private sub hCompileBas _
 	( _
 		byval module as FBCIOFILE ptr, _
-		byval ismain as integer _
+		byval is_main as integer, _
+		byval is_fbctinf as integer _
 	)
 
-	dim as string asmfile = hGetAsmName( module, 1 )
+	dim as integer prevlang = any, prevouttype = any, restarts = any
+	dim as string asmfile
+
+	asmfile = hGetAsmName( module, 1 )
 	if( hCanDeleteAsm( 1 ) ) then
 		fbcAddTemp( asmfile )
 	end if
 
 	if( fbc.verbose ) then
 		print "compiling: ", module->srcfile; " -o "; asmfile;
-		if (ismain) then
+		if( is_main ) then
 			print " (main module)";
+		elseif( is_fbctinf ) then
+			print " (FB compile-time info)";
 		end if
 		print
 	end if
 
-	'' preserve orginal lang id, we may have to restore it.
-	dim as FB_LANG prevlangid = fbGetOption(FB_COMPOPT_LANG)
+	restarts = 0
+	'' preserve orginal values that might have to restored
+	'' (e.g. -lang mode could be overwritten while parsing due to #lang,
+	'' but that shouldn't affect other modules)
+	prevlang = fbGetOption( FB_COMPOPT_LANG )
+	prevouttype = fbGetOption( FB_COMPOPT_OUTTYPE )
 
-	dim as integer restarts = 0
+
+	if( is_fbctinf ) then
+		'' Switch to -c mode temporarily to get the compiler to write objinfo
+		fbSetOption( FB_COMPOPT_OUTTYPE, FB_OUTTYPE_OBJECT )
+	end if
 
 	do
 		'' init the parser
-		fbInit(ismain, restarts)
+		fbInit( is_main, restarts )
 
-		'' add the libs and paths passed in the cmd-line, so the
-		'' compiler can add them to the module's objinfo section
-		fbSetLibs(@fbc.libs, @fbc.libpaths)
+		if( is_fbctinf ) then
+			'' Let the compiler know about all libs collected so far,
+			'' so the fbctinf module represents all the other modules
+			'' compiled/included in this fbc invocation.
+			fbSetLibs( @fbc.finallibs, @fbc.finallibpaths )
+		else
+			'' Add only the libs and paths passed on the command line,
+			'' so this module will only include objinfo for those libs
+			'' and the ones found while parsing it, but not unrelated
+			'' libs from other modules.
+			fbSetLibs( @fbc.libs, @fbc.libpaths )
+		end if
 
-		fbCompile(module->srcfile, asmfile, ismain)
+		fbCompile( module->srcfile, asmfile, is_main )
 
 		'' If there were any errors during parsing, just exit without
 		'' doing anything else.
-		if (errGetCount() > 0) then
-			fbcEnd(1)
+		if( errGetCount( ) > 0 ) then
+			fbcEnd( 1 )
 		end if
 
 		'' Don't restart unless asked for
-		if (fbShouldRestart() = FALSE) then
+		if( fbShouldRestart( ) = FALSE ) then
 			exit do
 		end if
 
@@ -2112,17 +2097,21 @@ private sub hCompileBas _
 		restarts += 1
 
 		'' Shutdown the parser before restarting
-		fbEnd()
+		fbEnd( )
 	loop
 
-	'' Update the list of libs and paths, with the ones found when parsing
-	fbGetLibs(@fbc.finallibs, @fbc.finallibpaths)
+	'' (unnecessary for the empty fbctinf module, it won't add anything new)
+	if( is_fbctinf = FALSE ) then
+		'' Update the list of libs and paths with the ones found when parsing
+		fbGetLibs( @fbc.finallibs, @fbc.finallibpaths )
+	end if
 
 	'' Shutdown the parser
-	fbEnd()
+	fbEnd( )
 
-	'' Restore original lang
-	fbSetOption( FB_COMPOPT_LANG, prevlangid )
+	'' Restore original options
+	fbSetOption( FB_COMPOPT_OUTTYPE, prevouttype )
+	fbSetOption( FB_COMPOPT_LANG, prevlang )
 end sub
 
 private sub hCompileModules( )
@@ -2168,7 +2157,7 @@ private sub hCompileModules( )
 			/'checkmain = not ismain'/
 		end if
 
-		hCompileBas( module, ismain )
+		hCompileBas( module, ismain, FALSE )
 
 		module = listGetNext( module )
 	wend
@@ -2274,7 +2263,7 @@ private function hCompileXpm( ) as integer
 	fbc.xpm.srcfile &= ".bas"
 
 	if( fbc.verbose ) then
-		print "compiling xpm: ", xpmfile & " -o " & fbc.xpm.srcfile
+		print "parsing xpm: ", xpmfile & " -o " & fbc.xpm.srcfile
 	end if
 
 	if( hParseXpm( xpmfile, code ) = FALSE ) then
@@ -2295,7 +2284,7 @@ private function hCompileXpm( ) as integer
 		fbcAddTemp( fbc.xpm.srcfile )
 	end if
 
-	hCompileBas( @fbc.xpm, FALSE )
+	hCompileBas( @fbc.xpm, FALSE, FALSE )
 	function = TRUE
 end function
 
@@ -2393,7 +2382,7 @@ private sub hCompileStage2Modules( )
 	wend
 end sub
 
-private function hAssembleBas( byval module as FBCIOFILE ptr ) as integer
+private function hAssembleModule( byval module as FBCIOFILE ptr ) as integer
 	dim as string ln
 
 	ln = "--32 "  '' we're 32bit only for now, this helps on 64bit systems
@@ -2418,7 +2407,7 @@ end function
 private sub hAssembleModules( )
 	dim as FBCIOFILE ptr module = listGetHead( @fbc.modules )
 	while( module )
-		if( hAssembleBas( module ) = FALSE ) then
+		if( hAssembleModule( module ) = FALSE ) then
 			fbcEnd( 1 )
 		end if
 		module = listGetNext( module )
@@ -2497,11 +2486,80 @@ end sub
 
 private sub hAssembleXpm( )
 	if( len( fbc.xpm.srcfile ) > 0 ) then
-		if( hAssembleBas( @fbc.xpm ) = FALSE ) then
+		if( fbGetOption( FB_COMPOPT_BACKEND ) <> FB_BACKEND_GAS ) then
+			hCompileStage2Module( @fbc.xpm )
+		end if
+		if( hAssembleModule( @fbc.xpm ) = FALSE ) then
 			fbcEnd( 1 )
 		end if
 	end if
 end sub
+
+private function hCompileFbctinf( ) as integer
+	dim as FBCIOFILE fbctinf
+	dim as string objfile
+	dim as integer fo = any
+
+	'' Compile an empty .bas into the fbctinf object file
+	'' (it will contain only objinfo)
+	fbctinf.srcfile = FB_INFOSEC_BASNAME
+	objfile = FB_INFOSEC_OBJNAME
+	fbctinf.objfile = @objfile
+
+	if( fbc.verbose ) then
+		print "creating: ", fbctinf.srcfile
+	end if
+
+	'' Create the empty .bas file
+	fo = freefile( )
+	if( open( fbctinf.srcfile, for output, as #fo ) ) then
+		exit function
+	end if
+	close #fo
+
+	'' Clean up the temp .bas too
+	if( hCanDeleteAsm( 1 ) ) then
+		fbcAddTemp( fbctinf.srcfile )
+	end if
+
+	hCompileBas( @fbctinf, FALSE, TRUE )
+	if( fbGetOption( FB_COMPOPT_BACKEND ) <> FB_BACKEND_GAS ) then
+		hCompileStage2Module( @fbctinf )
+	end if
+	function = hAssembleModule( @fbctinf )
+end function
+
+private function hArchiveFiles( ) as integer
+	'' Determine the output archive's name if not given via -x
+	if (len(fbc.outname) = 0) then
+		fbc.outname = hStripFilename(fbc.mainname) + _
+		              "lib" + hStripPath(fbc.mainname) + ".a"
+	end if
+
+	'' Remove lib*.a if it already exists, because ar doesn't overwrite
+	safeKill( fbc.outname )
+
+	dim as string ln = "-rsc " + QUOTE + fbc.outname + (QUOTE + " ")
+
+	if( fbIsCrossComp( ) = FALSE ) then
+		if( hCompileFbctinf( ) ) then
+			'' The objinfo reader expects the fbctinf object to be
+			'' the first object file in libraries, so it must be
+			'' specified first on the archiver command line:
+			ln += QUOTE + FB_INFOSEC_OBJNAME + QUOTE + " "
+		end if
+		fbcAddTemp( FB_INFOSEC_OBJNAME )
+	end if
+
+	dim as string ptr objfile = listGetHead( @fbc.objlist )
+	while( objfile )
+		ln += """" + *objfile + """ "
+		objfile = listGetNext( objfile )
+	wend
+
+	'' invoke ar
+	function = fbcRunBin( "archiving", FBCTOOL_AR, ln )
+end function
 
 private sub hSetDefaultLibPaths( )
 	'' compiler's lib/
@@ -2676,6 +2734,7 @@ private sub hPrintOptions( )
 	print "  -fpu x87|sse     Set target FPU"
 	print "  -g               Add debug info"
 	print "  -gen gas|gcc|llvm  Select code generation backend"
+	print "  [-]-help         Show this help output"
 	print "  -i <path>        Add an include file search path"
 	print "  -include <file>  Pre-#include a file for each input .bas"
 	print "  -l <name>        Link in a library"
@@ -2704,7 +2763,7 @@ private sub hPrintOptions( )
 	print "  -title <name>    Set XBE display title (xbox)"
 	print "  -v               Be verbose"
 	print "  -vec <n>         Automatic vectorization level (default: 0)"
-	print "  -version         Show compiler version"
+	print "  [-]-version      Show compiler version"
 	print "  -w all|pedantic|<n>  Set min warning level: all, pedantic or a value"
 	print "  -Wa <a,b,c>      Pass options to 'as' (-gen gas or -gen llvm)"
 	print "  -Wc <a,b,c>      Pass options to 'gcc' (-gen gcc) or 'llc' (-gen llvm)"
@@ -2735,16 +2794,6 @@ private sub hPrintVersion( )
 		hAppendConfigInfo( config, "prefix: '" + ENABLE_PREFIX + "'" )
 	#endif
 
-	#ifndef DISABLE_OBJINFO
-		#ifdef ENABLE_FBBFD
-			hAppendConfigInfo( config, "objinfo (libbfd " + str( ENABLE_FBBFD ) + ")" )
-		#else
-			hAppendConfigInfo( config, "objinfo (system's libbfd)" )
-		#endif
-	#else
-		hAppendConfigInfo( config, "objinfo disabled" )
-	#endif
-
 	if( len( config ) > 0 ) then
 		print config
 	end if
@@ -2764,10 +2813,13 @@ end sub
 		fbcEnd( 0 )
 	end if
 
-	if( (listGetHead(@fbc.modules) = NULL) and _
-	    (listGetHead(@fbc.objlist) = NULL) and _
-	    (listGetHead(@fbc.libs.list) = NULL) and _
-	    (listGetHead(@fbc.libfiles) = NULL) ) then
+	'' Show help if --help was given, or if there are no input files
+	fbc.showhelp or= ((listGetHead(@fbc.modules) = NULL) and _
+	                  (listGetHead(@fbc.objlist) = NULL) and _
+	                  (listGetHead(@fbc.libs.list) = NULL) and _
+	                  (listGetHead(@fbc.libfiles) = NULL))
+
+	if( fbc.showhelp ) then
 		hPrintOptions( )
 		fbcEnd( 1 )
 	end if
@@ -2817,14 +2869,12 @@ end sub
 	'' Set the default lib paths before scanning for other libs
 	hSetDefaultLibPaths( )
 
-#ifndef DISABLE_OBJINFO
 	'' Scan objects and libraries for more libraries and paths,
 	'' before adding the default libs, which don't need to be searched,
 	'' because they don't contain objinfo anyways.
 	if( fbIsCrossComp( ) = FALSE ) then
-		hCollectObjInfo( )
+		hCollectObjinfo( )
 	end if
-#endif
 
 	if( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_STATICLIB ) then
 		if( hArchiveFiles( ) = FALSE ) then

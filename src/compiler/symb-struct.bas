@@ -15,7 +15,6 @@
 '' add
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-'':::::
 function symbStructBegin _
 	( _
 		byval symtb as FBSYMBOLTB ptr, _
@@ -67,13 +66,16 @@ function symbStructBegin _
 
 	''
 	s->ofs = 0
+
+	'' Assume FIELD = 1 under -lang qb, because QB didn't do any alignment
 	if( fbLangIsSet( FB_LANG_QB ) ) then
 		if( align = 0 ) then
 			align = 1
 		end if
 	end if
+
 	s->udt.align = align
-	s->udt.lfldlen = 0
+	s->udt.natalign = 1
 	s->udt.bitpos = 0
 	s->udt.unpadlgt	= 0
 
@@ -101,87 +103,70 @@ function symbStructBegin _
 	function = s
 end function
 
-'':::::
-private function hGetRealLen _
+function typeCalcNaturalAlign _
 	( _
-		byval orglen as integer, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr _
 	) as integer
 
-	select case as const typeGet( dtype )
-	'' UDT? return its largest field len
-	case FB_DATATYPE_STRUCT
-		function = subtype->udt.lfldlen
+	dim as integer align = any
 
-	'' zstring/wstring/fixlen string? use the character size
-	case FB_DATATYPE_CHAR, FB_DATATYPE_FIXSTR, FB_DATATYPE_WCHAR
-		function = typeGetSize( dtype )
+	select case as const( typeGet( dtype ) )
+	'' UDT? its natural alignment depends on the largest field
+	case FB_DATATYPE_STRUCT
+		align = subtype->udt.natalign
 
 	'' var-len string: largest field is the pointer at the front
 	case FB_DATATYPE_STRING
-		function = FB_POINTERSIZE
+		align = FB_POINTERSIZE
 
 	case else
-		function = orglen
+		'' Anything else (including zstring/wstring/fixlen strings)
+		'' use the base type's size (e.g. character size of strings)
+		align = typeGetSize( dtype )
 	end select
 
+	if( align = 8 ) then
+		'' LONGINT/DOUBLE are 4-byte aligned on Unix (x86 assumption)
+		if( env.clopt.target <> FB_COMPTARGET_WIN32 ) then
+			align = 4
+		end if
+	end if
+
+	assert( (align >= 1) and (align <= 8) )
+
+	function = align
 end function
 
-'':::::
-private function hCalcAlign _
+private function hCalcPadding _
 	( _
-		byval lgt as integer, _
 		byval ofs as integer, _
 		byval align as integer, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr _
-	) as integer static
+	) as integer
 
-	'' do align?
-	if( align = 1 ) then
-		return 0
-	end if
+	dim as integer natalign = any
 
-	'' handle special types
-	lgt = hGetRealLen( lgt, dtype, subtype )
+	natalign = typeCalcNaturalAlign( dtype, subtype )
 
 	'' default?
 	if( align = 0 ) then
-
-	    '' qb didn't do any alignment...
-	    if( fbLangIsSet( FB_LANG_QB ) ) then
-	    	exit function
-	    end if
-
-		select case as const lgt
-		'' align byte, short, int, float, double and long long to the natural boundary
-		case 1
-			exit function
-		case 2
-			function = (2 - (ofs and (2-1))) and (2-1)
-		case 4
-			function = (4 - (ofs and (4-1))) and (4-1)
-		case 8
-			if( env.clopt.target = FB_COMPTARGET_WIN32 ) then
-				function = (8 - (ofs and (8-1))) and (8-1)
-			else
-				function = (4 - (ofs and (4-1))) and (4-1)
-			end if
-		'' anything else (shouldn't happen), align to sizeof(int)
-		case else
-			function = (FB_INTEGERSIZE - (ofs and (FB_INTEGERSIZE-1))) and (FB_INTEGERSIZE-1)
-		end select
-
+		assert( fbLangIsSet( FB_LANG_QB ) = FALSE )
+		align = natalign
 	'' packed..
 	else
-		if( lgt < align ) then
-			align = lgt
+		'' Field is ok with smaller alignment than what's given for FIELD=N?
+		'' Then the field's alignment takes precedence, i.e. FIELD=N can
+		'' only decrease the alignment but not increase it.
+		if( align > natalign ) then
+			align = natalign
 		end if
-
-		function = (align - (ofs and (align - 1))) and (align-1)
 	end if
 
+	'' Calculate the padding bytes needed to align the current offset,
+	'' so that offset mod align = 0.
+	function = (align - (ofs and (align - 1))) and (align - 1)
 end function
 
 private function hCheckUDTSize _
@@ -272,9 +257,9 @@ function symbAddField _
 		byval bits as integer _
 	) as FBSYMBOL ptr static
 
-    dim as FBSYMBOL ptr sym, tail, base_parent
-    dim as integer pad, updateudt, elen
-    dim as FBHASHTB ptr hashtb
+	dim as FBSYMBOL ptr sym = any, tail = any, base_parent = any, prevbitfield = any
+	dim as integer pad = any, updateudt = any, elen = any
+	dim as FBHASHTB ptr hashtb
 
     function = NULL
 
@@ -283,36 +268,57 @@ function symbAddField _
 		lgt	= symbCalcLen( dtype, subtype )
 	end if
 
-    '' check if the parent ofs must be updated
-    updateudt = TRUE
-    if( bits > 0 ) then
-    	'' last field was a bitfield too? try to merge..
-    	if( parent->udt.bitpos > 0 ) then
-    		tail = parent->udt.ns.symtb.tail
-    		'' does it fit? if not, start at a new pos..
-    		if( parent->udt.bitpos + bits > tail->lgt*8 ) then
-    			parent->udt.bitpos = 0
-    		else
-    			'' if it fits but len is different, make it the same
-    			if( lgt <> tail->lgt ) then
-    				dtype = tail->typ
-    				lgt = tail->lgt
-    			end if
-    		end if
-    	end if
+	'' check if the parent ofs must be updated
+	updateudt = TRUE
+	if( bits > 0 ) then
+		'' last field was a bitfield too? try to merge..
+		if( parent->udt.bitpos > 0 ) then
+			'' Find the last field (skipping over methods etc.)
+			tail = parent->udt.ns.symtb.tail
+			while( symbIsField( tail ) = FALSE )
+				tail = tail->prev
+			wend
+
+			assert( symbGetType( tail ) = FB_DATATYPE_BITFIELD )
+			prevbitfield = tail->subtype
+			assert( symbIsBitfield( prevbitfield ) )
+
+			'' Too many bits to fit into previous bitfield container field?
+			if( parent->udt.bitpos + bits > prevbitfield->lgt*8 ) then
+				'' Start new container field, this bitfield will be at bitpos 0 in it
+				parent->udt.bitpos = 0
+			else
+				'' The previous container field still has enough
+				'' room to hold this new bitfield.
+
+				'' if it fits but len is different, make it the same
+				'' TODO: is this "right"? shouldn't the different
+				'' type trigger a new container field to be used?
+				'' look what gcc does, with/without -mms-bitfields
+				'' This for now allows merging bitfields if they
+				'' have a different length, but maybe then this
+				'' check shouldn't just be done for different lengths,
+				'' but always if the dtypes are different?
+				if( lgt <> prevbitfield->lgt ) then
+					dtype = symbGetType( prevbitfield )
+					lgt = prevbitfield->lgt
+				end if
+			end if
+		end if
 
 		'' don't update if there are enough bits left
 		if( parent->udt.bitpos <> 0 ) then
 			updateudt = FALSE
 		end if
-
-    else
-    	parent->udt.bitpos = 0
-    end if
+	else
+		'' Normal fields are not merged into bitfield containers,
+		'' so the bitfield merging is interrupted here.
+		parent->udt.bitpos = 0
+	end if
 
 	''
 	if( updateudt ) then
-		pad = hCalcAlign( lgt, parent->ofs, parent->udt.align, dtype, subtype )
+		pad = hCalcPadding( parent->ofs, parent->udt.align, dtype, subtype )
 		if( pad > 0 ) then
 
 			'' bitfield?
@@ -358,11 +364,10 @@ function symbAddField _
 		end if
 
 		'' update largest field len
-		elen = hGetRealLen( lgt, dtype, subtype )
-
+		elen = typeCalcNaturalAlign( dtype, subtype )
 		'' larger?
-		if( elen > parent->udt.lfldlen ) then
-			parent->udt.lfldlen = elen
+		if( elen > parent->udt.natalign ) then
+			parent->udt.natalign = elen
 		end if
 	end if
 
@@ -506,20 +511,19 @@ function symbAddField _
 
 end function
 
-'':::::
 sub symbInsertInnerUDT _
 	( _
 		byval parent as FBSYMBOL ptr, _
 		byval inner as FBSYMBOL ptr _
-	) static
+	)
 
-    dim as FBSYMBOL ptr fld
-    dim as FBSYMBOLTB ptr symtb
-    dim as integer pad
+	dim as FBSYMBOL ptr fld = any
+	dim as FBSYMBOLTB ptr symtb = any
+	dim as integer pad = any
 
 	if( (parent->udt.options and FB_UDTOPT_ISUNION) = 0 ) then
 		'' calc padding (should be aligned like if an UDT field was being added)
-		pad = hCalcAlign( 0, parent->ofs, parent->udt.align, FB_DATATYPE_STRUCT, inner )
+		pad = hCalcPadding( parent->ofs, parent->udt.align, FB_DATATYPE_STRUCT, inner )
 		if( hCheckUDTSize( parent->ofs, 0, pad ) ) then
 			parent->ofs += pad
 		end if
@@ -546,22 +550,16 @@ sub symbInsertInnerUDT _
     	'' link to parent
     	do while( fld <> NULL )
     		fld->symtb = symtb
-
-			''
 			symbSetIsUnionField( fld )
-
     		'' next
     		fld = fld->next
     	loop
-
     else
     	'' link to parent
     	do while( fld <> NULL )
     		fld->symtb = symtb
-
 			'' update the offset
 			fld->ofs += parent->ofs
-
     		'' next
     		fld = fld->next
     	loop
@@ -576,7 +574,6 @@ sub symbInsertInnerUDT _
 	if( (parent->udt.options and FB_UDTOPT_ISUNION) = 0 ) then
 		parent->ofs += inner->lgt
 		parent->lgt = parent->ofs
-
 	'' union.. update len, if bigger
 	else
 		parent->ofs = 0
@@ -585,9 +582,9 @@ sub symbInsertInnerUDT _
 		end if
 	end if
 
-	'' update the largest field len
-	if( inner->udt.lfldlen > parent->udt.lfldlen ) then
-		parent->udt.lfldlen = inner->udt.lfldlen
+	'' update the natural alignment
+	if( inner->udt.natalign > parent->udt.natalign ) then
+		parent->udt.natalign = inner->udt.natalign
 	end if
 
     '' reset bitfield
@@ -601,12 +598,7 @@ sub symbInsertInnerUDT _
 
 end sub
 
-'':::::
-private function hGetReturnType _
-	( _
-		byval sym as FBSYMBOL ptr _
-	) as integer
-
+private function hGetReturnType( byval sym as FBSYMBOL ptr ) as integer
 	var dtype = symbGetFullType( sym )
 	var res = FB_DATATYPE_VOID
 
@@ -634,7 +626,6 @@ private function hGetReturnType _
 		end if
 
 	case FB_INTEGERSIZE
-
 		'' return in ST(0) if there's only one element and it's a SINGLE
 		if( sym->udt.elements = 1 ) then
 			do
@@ -660,7 +651,6 @@ private function hGetReturnType _
 		end if
 
 	case FB_INTEGERSIZE + 1, FB_INTEGERSIZE + 2, FB_INTEGERSIZE + 3
-
 		'' return as longint only if first is a int
 		if( symbGetUDTFirstElm( sym )->lgt = FB_INTEGERSIZE ) then
 			'' and if the struct is not packed
@@ -670,7 +660,6 @@ private function hGetReturnType _
 		end if
 
 	case FB_INTEGERSIZE*2
-
 		'' return in ST(0) if there's only one element and it's a DOUBLE
 		if( sym->udt.elements = 1 ) then
 			do
@@ -710,17 +699,15 @@ private function hGetReturnType _
 	end if
 
 	function = res
-
 end function
 
-'':::::
 sub symbStructEnd _
 	( _
 		byval sym as FBSYMBOL ptr, _
 		byval isnested as integer _
-	) static
+	)
 
-    dim as integer pad
+	dim as integer pad = any
 
 	'' end nesting?
 	if( isnested ) then
@@ -730,13 +717,11 @@ sub symbStructEnd _
 	'' save length without the tail padding added below
 	sym->udt.unpadlgt = sym->lgt
 
-	'' do round?
-	if( sym->udt.align <> 1 ) then
-		'' plus the largest scalar field size (GCC 3.x ABI)
-		pad = hCalcAlign( 0, sym->lgt, sym->udt.align, FB_DATATYPE_STRUCT, sym )
-		if( hCheckUDTSize( sym->lgt, 0, pad ) ) then
-			sym->lgt += pad
-		end if
+	'' Add tail padding bytes, i.e. round up the structure size to match
+	'' the alignment of the largest natural field.
+	pad = hCalcPadding( sym->lgt, sym->udt.align, FB_DATATYPE_STRUCT, sym )
+	if( hCheckUDTSize( sym->lgt, 0, pad ) ) then
+		sym->lgt += pad
 	end if
 
 	'' set the real data type used to return this struct from procs

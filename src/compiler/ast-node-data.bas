@@ -256,7 +256,7 @@ function astDataStmtAdd _
 	end if
 
 	sym = symbAddVarEx( id, symbUniqueLabel( ), _
-	                    FB_DATATYPE_STRUCT, ast.data.desc, sizeof( FB_DATADESC ), _
+	                    FB_DATATYPE_STRUCT, ast.data.desc, 0, _
 	                    1, dTB(), _
 	                    FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_STATIC, _
 	                    FB_SYMBOPT_MOVETOGLOB or FB_SYMBOPT_PRESERVECASE )
@@ -270,6 +270,7 @@ end function
 private sub hCreateDataDesc( )
 	static as FBARRAYDIM dTB(0)
 
+	'' Using FIELD = 1, to pack it as done by the rtlib
 	ast.data.desc = symbStructBegin( NULL, NULL, "__FB_DATADESC$", NULL, FALSE, 1, NULL, 0 )
 
 	'' type	as short

@@ -10,14 +10,8 @@
 #
 #   1) the compiler - this requires a working FB installation, because it's
 #      written in FB itself.
-#          src/compiler/*.bas and possibly src/compiler/bfd-wrapper.c,
+#          src/compiler/*.bas,
 #          compiled into fbc-new[.exe]
-#
-#          Beware of the libbfd pitfall! By default, the compiler source code
-#          uses the system's bfd.h header through bfd-wrapper.c, but it is
-#          linked against whichever libbfd binary is seen by the host FB setup.
-#          Please ensure the used libbfd binary matches the used headers!
-#          See also the configuration options below.
 #
 #   2) the rtlib
 #          all *.c and *.s files in src/rtlib/, src/rtlib/$(TARGET_OS),
@@ -54,16 +48,12 @@
 #   FBC, CC, AR      fbc, gcc, ar programs (TARGET may be prefixed to CC/AR)
 #   V=1              to see full command lines
 #   ENABLE_STANDALONE=1    build source tree into self-contained FB installation
-#   DISABLE_OBJINFO=1      use "-d DISABLE_OBJINFO" and don't compile in bfd-wrapper.c
-#   ENABLE_FBBFD=217       use "-d ENABLE_FBBFD=$(ENABLE_FBBFD)" and don't compile in bfd-wrapper.c
 #   ENABLE_PREFIX=1        use "-d ENABLE_PREFIX=$(prefix)"
 #   ENABLE_SUFFIX=-0.24    append a string like "-0.24" to fbc/FB dir names,
 #                          and use "-d ENABLE_SUFFIX=$(ENABLE_SUFFIX)" (non-standalone only)
 #
 # compiler source code configuration (FBCFLAGS):
 #   -d ENABLE_STANDALONE     build for a self-contained installation
-#   -d DISABLE_OBJINFO       do not use libbfd at all
-#   -d ENABLE_FBBFD=217      use specific bfd.bi instead of bfd.h wrapper
 #   -d ENABLE_TDMGCC         build for TDM-GCC instead of MinGW.org setup
 #   -d ENABLE_SUFFIX=-0.24   assume FB's lib dir uses the given suffix (non-standalone only)
 #   -d ENABLE_PREFIX=/some/path   hard-code specific $(prefix) into fbc
@@ -344,12 +334,6 @@ endif
 ifdef ENABLE_STANDALONE
   ALLFBCFLAGS += -d ENABLE_STANDALONE
 endif
-ifdef DISABLE_OBJINFO
-  ALLFBCFLAGS += -d DISABLE_OBJINFO
-endif
-ifdef ENABLE_FBBFD
-  ALLFBCFLAGS += -d ENABLE_FBBFD=$(ENABLE_FBBFD)
-endif
 ifdef ENABLE_SUFFIX
   ALLFBCFLAGS += -d 'ENABLE_SUFFIX="$(ENABLE_SUFFIX)"'
 endif
@@ -365,29 +349,6 @@ ALLCFLAGS += $(CFLAGS)
 FBC_BI  := $(wildcard $(srcdir)/compiler/*.bi)
 FBC_BAS := $(wildcard $(srcdir)/compiler/*.bas)
 FBC_BAS := $(sort $(patsubst $(srcdir)/compiler/%.bas,$(newcompiler)/%.o,$(FBC_BAS)))
-
-ifndef DISABLE_OBJINFO
-  ifndef ENABLE_FBBFD
-    FBC_BFDWRAPPER := $(newcompiler)/bfd-wrapper.o
-  endif
-
-  ALLFBLFLAGS += -l bfd -l iberty
-  ifeq ($(TARGET_OS),cygwin)
-    ALLFBLFLAGS += -l intl
-  endif
-  ifeq ($(TARGET_OS),dos)
-    ALLFBLFLAGS += -l intl -l z
-  endif
-  ifeq ($(TARGET_OS),freebsd)
-    ALLFBLFLAGS += -l intl
-  endif
-  ifeq ($(TARGET_OS),openbsd)
-    ALLFBLFLAGS += -l intl
-  endif
-  ifeq ($(TARGET_OS),win32)
-    ALLFBLFLAGS += -l intl -l user32
-  endif
-endif
 
 # rtlib/gfxlib2 headers and modules
 RTLIB_DIRS := $(srcdir)/rtlib $(srcdir)/rtlib/$(TARGET_OS) $(srcdir)/rtlib/$(TARGET_ARCH)
@@ -443,14 +404,11 @@ compiler: bin
 endif
 compiler: $(newcompiler) $(FBC_EXE)
 
-$(FBC_EXE): $(FBC_BAS) $(FBC_BFDWRAPPER)
+$(FBC_EXE): $(FBC_BAS)
 	$(QUIET_LINK)$(FBC) $(ALLFBLFLAGS) -x $@ $^
 
 $(FBC_BAS): $(newcompiler)/%.o: %.bas $(FBC_BI)
 	$(QUIET_FBC)$(FBC) $(ALLFBCFLAGS) -c $< -o $@
-
-$(newcompiler)/bfd-wrapper.o: bfd-wrapper.c
-	$(QUIET_CC)$(CC) -Wall -O2 -c $< -o $@
 
 .PHONY: rtlib
 rtlib: lib $(libdir) src src/rtlib $(newlibfb)

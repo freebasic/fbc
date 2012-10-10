@@ -32,7 +32,7 @@ sub test3 cdecl ()
 	CU_ASSERT_EQUAL( dst, &hFFFFFFFF )
 end sub
 
-sub floatToInt( )
+sub floatToInt cdecl( )
 	'' Some float-to-int casting to ensure it compiles fine, including the
 	'' regression test for bug #3310595.
 	dim as single f = 123

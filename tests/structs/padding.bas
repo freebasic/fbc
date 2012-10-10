@@ -1160,8 +1160,169 @@ private sub bug2828675 cdecl()
 	#endif
 end sub
 
-private sub ctor () constructor
+private sub testGccAlign cdecl( )
+	'' -gen gcc regression test
+	type UDT1 field = 1
+		a	as short
+		b	as integer
+	end type
 
+	static x1 as UDT1 = ( &h1122, &hAABBCCDD )
+
+	CU_ASSERT( x1.a = &h1122 )
+	CU_ASSERT( x1.b = &hAABBCCDD )
+
+	type UDT2 field = 2
+		a	as short
+		b	as integer
+	end type
+
+	static x2 as UDT2 = ( &h1122, &hAABBCCDD )
+
+	CU_ASSERT( x2.a = &h1122 )
+	CU_ASSERT( x2.b = &hAABBCCDD )
+
+	type UDT4 field = 4
+		a	as short
+		b	as integer
+	end type
+
+	static x4 as UDT4 = ( &h1122, &hAABBCCDD )
+
+	CU_ASSERT( x4.a = &h1122 )
+	CU_ASSERT( x4.b = &hAABBCCDD )
+
+	type BigUDT1 field = 1
+		a as byte
+		b as short
+		c as integer
+		d as longint
+		e as zstring * 5
+		f(0 to 2) as byte
+		g(0 to 2) as short
+		h(0 to 2) as integer
+		i(0 to 2) as longint
+	end type
+
+	static bigx1 as BigUDT1 = _
+	( _
+		&h12, _
+		&h1122, _
+		&h11223344, _
+		&h1122334455667788ll, _
+		"1122", _
+		{ &h11, &h22, &h33 }, _
+		{ &h1122, &h2233, &h3344 }, _
+		{ &h11112222, &h22223333, &h33334444 }, _
+		{ &h1111222211112222ll, &h2222333322223333ll, &h3333444433334444ll } _
+	)
+
+	CU_ASSERT( bigx1.a = &h12 )
+	CU_ASSERT( bigx1.b = &h1122 )
+	CU_ASSERT( bigx1.c = &h11223344 )
+	CU_ASSERT( bigx1.d = &h1122334455667788ll )
+	CU_ASSERT( bigx1.e = "1122" )
+	CU_ASSERT( bigx1.f(0) = &h11 )
+	CU_ASSERT( bigx1.f(1) = &h22 )
+	CU_ASSERT( bigx1.f(2) = &h33 )
+	CU_ASSERT( bigx1.g(0) = &h1122 )
+	CU_ASSERT( bigx1.g(1) = &h2233 )
+	CU_ASSERT( bigx1.g(2) = &h3344 )
+	CU_ASSERT( bigx1.h(0) = &h11112222 )
+	CU_ASSERT( bigx1.h(1) = &h22223333 )
+	CU_ASSERT( bigx1.h(2) = &h33334444 )
+	CU_ASSERT( bigx1.i(0) = &h1111222211112222ll )
+	CU_ASSERT( bigx1.i(1) = &h2222333322223333ll )
+	CU_ASSERT( bigx1.i(2) = &h3333444433334444ll )
+
+	type BigUDT2 field = 2
+		a as byte
+		b as short
+		c as integer
+		d as longint
+		e as zstring * 5
+		f(0 to 2) as byte
+		g(0 to 2) as short
+		h(0 to 2) as integer
+		i(0 to 2) as longint
+	end type
+
+	static bigx2 as BigUDT2 = _
+	( _
+		&h12, _
+		&h1122, _
+		&h11223344, _
+		&h1122334455667788ll, _
+		"1122", _
+		{ &h11, &h22, &h33 }, _
+		{ &h1122, &h2233, &h3344 }, _
+		{ &h11112222, &h22223333, &h33334444 }, _
+		{ &h1111222211112222ll, &h2222333322223333ll, &h3333444433334444ll } _
+	)
+
+	CU_ASSERT( bigx2.a = &h12 )
+	CU_ASSERT( bigx2.b = &h1122 )
+	CU_ASSERT( bigx2.c = &h11223344 )
+	CU_ASSERT( bigx2.d = &h1122334455667788ll )
+	CU_ASSERT( bigx2.e = "1122" )
+	CU_ASSERT( bigx2.f(0) = &h11 )
+	CU_ASSERT( bigx2.f(1) = &h22 )
+	CU_ASSERT( bigx2.f(2) = &h33 )
+	CU_ASSERT( bigx2.g(0) = &h1122 )
+	CU_ASSERT( bigx2.g(1) = &h2233 )
+	CU_ASSERT( bigx2.g(2) = &h3344 )
+	CU_ASSERT( bigx2.h(0) = &h11112222 )
+	CU_ASSERT( bigx2.h(1) = &h22223333 )
+	CU_ASSERT( bigx2.h(2) = &h33334444 )
+	CU_ASSERT( bigx2.i(0) = &h1111222211112222ll )
+	CU_ASSERT( bigx2.i(1) = &h2222333322223333ll )
+	CU_ASSERT( bigx2.i(2) = &h3333444433334444ll )
+
+	type BigUDT4 field = 4
+		a as byte
+		b as short
+		c as integer
+		d as longint
+		e as zstring * 5
+		f(0 to 2) as byte
+		g(0 to 2) as short
+		h(0 to 2) as integer
+		i(0 to 2) as longint
+	end type
+
+	static bigx4 as BigUDT4 = _
+	( _
+		&h12, _
+		&h1122, _
+		&h11223344, _
+		&h1122334455667788ll, _
+		"1122", _
+		{ &h11, &h22, &h33 }, _
+		{ &h1122, &h2233, &h3344 }, _
+		{ &h11112222, &h22223333, &h33334444 }, _
+		{ &h1111222211112222ll, &h2222333322223333ll, &h3333444433334444ll } _
+	)
+
+	CU_ASSERT( bigx4.a = &h12 )
+	CU_ASSERT( bigx4.b = &h1122 )
+	CU_ASSERT( bigx4.c = &h11223344 )
+	CU_ASSERT( bigx4.d = &h1122334455667788ll )
+	CU_ASSERT( bigx4.e = "1122" )
+	CU_ASSERT( bigx4.f(0) = &h11 )
+	CU_ASSERT( bigx4.f(1) = &h22 )
+	CU_ASSERT( bigx4.f(2) = &h33 )
+	CU_ASSERT( bigx4.g(0) = &h1122 )
+	CU_ASSERT( bigx4.g(1) = &h2233 )
+	CU_ASSERT( bigx4.g(2) = &h3344 )
+	CU_ASSERT( bigx4.h(0) = &h11112222 )
+	CU_ASSERT( bigx4.h(1) = &h22223333 )
+	CU_ASSERT( bigx4.h(2) = &h33334444 )
+	CU_ASSERT( bigx4.i(0) = &h1111222211112222ll )
+	CU_ASSERT( bigx4.i(1) = &h2222333322223333ll )
+	CU_ASSERT( bigx4.i(2) = &h3333444433334444ll )
+end sub
+
+private sub ctor( ) constructor
 	fbcu.add_suite("tests/structs/padding")
 	fbcu.add_test("size1", @test_size1)
 	fbcu.add_test("size2", @test_size2)
@@ -1170,7 +1331,7 @@ private sub ctor () constructor
 	fbcu.add_test("default mod 4 padding", @testDefaultPad4)
 	fbcu.add_test("default mod 8 padding", @testDefaultPad8)
 	fbcu.add_test("bug #2828675 regression test", @bug2828675)
-
+	fbcu.add_test( "-gen gcc field alignment", @testGccAlign )
 end sub
 
 end namespace

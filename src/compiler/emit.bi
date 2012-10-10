@@ -823,7 +823,7 @@ declare sub emitWriteStr _
 		byval addtab as integer = FALSE _
 	)
 
-declare sub emitWriteInfoSection _
+declare sub emitWriteObjinfo _
 	( _
 		byval liblist as TLIST ptr, _
 		byval libpathlist as TLIST ptr _

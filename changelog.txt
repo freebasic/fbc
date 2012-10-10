@@ -9,6 +9,9 @@ Version 0.25.0:
 - Overflows in constant conversions to SINGLE will now trigger "overflow in constant conversion" warnings, like conversions to integer types do
 - Constant conversions to DOUBLE are not checked for overflows anymore, since DOUBLE can hold all SINGLE/INTEGER/LONGINT values (although, with varying precision)
 - Doing "udtvar.constructor( ... )" or "udtvar.destructor( )" won't automatically add a constructor/destructor anymore, but instead show an error
+- The C backend now emits expressions in-line instead of using #defines, and also avoids many unnecessary casts, producing much nicer C code
+- fbc now uses a custom COFF/ELF32 reader instead of libbfd for the objinfo feature
+- fbc will now also read out compile-time information from libs passed as libfoo.a instead of -l foo or #inclib "foo"
 - Property methods using an explicit ALIAS now respect that alias and do not append __get__ or __set__ anymore
 
 [added]
@@ -22,6 +25,7 @@ Version 0.25.0:
 - Constant overflow warnings for array boundaries, array/pointer/string indexing, CONST declarations
 - NAKED support for the C backend, using GCC inline asm
 - ALIAS "" or LIB "" will now result in a compiler error
+- fbc now recognizes --version and [-]-help command line options
 
 [fixed]
 - libzip headers: zip_stat struct was unnecessarily named zip_stat_, breaking the libzip example
@@ -51,7 +55,7 @@ Version 0.25.0:
 - internal error in ThreadCall parser, potentially causing compiler crashes or miscompilation
 - Warnings could still be shown even after the "Too many errors, exiting" message
 - ASM backend: Unsigned integer multiplications did not preserve EDX in some cases
-- ASM backend: DOUBLEs being cast to SINGLE will now be truncated to SINGLE, as if an assignment to a SINGLE variable was made
+- ASM/C backend: DOUBLEs being cast to SINGLE will now be truncated to SINGLE, as if an assignment to a SINGLE variable was made
 - Multiple run-time library symbols have been removed from the global FB namespace: __main, mcount, _monstartup, rename, __divdi3, __udivdi3, __moddi3, __umoddi3, __fixunsdfdi
 - Fixed-size arrays/UDTs > 2 GiB will now result in a compile-time error, instead of causing internal integer overflows
 - SSE emitter: float2int conversions using movss/movlpd could generate illegal ASM
@@ -80,6 +84,10 @@ Version 0.25.0:
 - Expressions like "@*cast(integer ptr, 123)", i.e. taking the address of a dereferenced type-casted constant, were rejected or caused parsing inconsistencies
 - FOR loops with ANY PTR counter used a zero step size or zero step size multiplier, instead of 1 as for BYTE PTR, generating an infinite loop
 - FOR loops with FWDREF PTR counters were allowed, despite the incomplete type, causing zero step size to be used (as above)
+- UDT methods (or other non-field members) declared in between bitfields interrupted bitfield packing
+- C backend: FIELD = N with N > 1 didn't decrease field alignment in the C output
+- "RANDOMIZE , 1" was not always using a random seed
+- C backend: UDTs and functions with same names caused gcc errors
 - C++ mangling of IMPORTed namespaced global variables (win32) was different from MinGW
 
 

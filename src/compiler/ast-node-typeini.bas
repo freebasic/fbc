@@ -457,7 +457,7 @@ private function hFlushTree _
 						'' Bitfield?
 						if( astGetDataType( lside ) = FB_DATATYPE_BITFIELD ) then
 							bitfield = astGetSubType( lside )
-							assert( symbGetClass( bitfield ) = FB_SYMBCLASS_BITFIELD )
+							assert( symbIsBitfield( bitfield ) )
 							assert( typeGetClass( symbGetType( bitfield ) ) = FB_DATACLASS_INTEGER )
 
 							'' Beginning of a field containing one or more bitfields?

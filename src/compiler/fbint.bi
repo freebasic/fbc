@@ -41,6 +41,7 @@ const FB_LONGSIZE			= FB_POINTERSIZE
 '' These cannot be hard coded since we have -target and -arch options
 
 '' array descriptor
+'' x86 assumption
 type FB_ARRAYDESC
     data			as any ptr
 	ptr				as any ptr
@@ -53,6 +54,7 @@ const FB_ARRAYDESCLEN		= len( FB_ARRAYDESC )
 
 const FB_ARRAYDESC_DATAOFFS = offsetof( FB_ARRAYDESC, data )
 
+'' x86 assumption
 type FB_ARRAYDESCDIM
 	elements		as integer
 	lbound			as integer
@@ -64,6 +66,7 @@ const FB_ARRAYDESC_LBOUNDOFS= offsetof( FB_ARRAYDESCDIM, lbound )
 const FB_ARRAYDESC_UBOUNDOFS= offsetof( FB_ARRAYDESCDIM, ubound )
 
 '' string descriptor
+'' x86 assumption
 type FB_STRDESC
 	data			as zstring ptr
 	len				as integer
@@ -82,16 +85,6 @@ enum FB_DATASTMT_ID
 	FB_DATASTMT_ID_ZSTR		= &h0001				'' used by AST only
 	FB_DATASTMT_ID_CONST	= &h0002				'' /
 end enum
-
-type FB_DATADESC
-	id				as short
-	union
-		zstr 		as zstring ptr
-		wstr 		as wstring ptr
-		sym			as any ptr
-		next 		as FB_DATADESC ptr
-	end union
-end type
 
 const FB_DATASTMT_PREFIX	= "_{fbdata}_"
 

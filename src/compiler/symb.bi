@@ -425,7 +425,7 @@ type FBS_STRUCT
 	base			as FBSYMBOL_ ptr			'' base class
 	anonparent		as FBSYMBOL_ ptr
 	elements		as integer
-	lfldlen			as integer					'' largest field len
+	natalign		as integer					'' UDT's natural alignment based on largest natural field alignment
 	unpadlgt		as integer					'' unpadded len
 	options			as short					'' FB_UDTOPT
 	bitpos			as ubyte
@@ -1075,6 +1075,12 @@ declare function symbStructBegin _
 		byval base_ as FBSYMBOL ptr, _
 		byval attrib as integer _
 	) as FBSYMBOL ptr
+
+declare function typeCalcNaturalAlign _
+	( _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr _
+	) as integer
 
 declare function symbAddField _
 	( _
@@ -1984,6 +1990,8 @@ declare function symbGetUDTBaseLevel _
 
 #define symbIsField(s) (s->class = FB_SYMBCLASS_FIELD)
 
+#define symbIsBitfield( s ) ((s)->class = FB_SYMBCLASS_BITFIELD)
+
 #define symbIsTypedef(s) (s->class = FB_SYMBCLASS_TYPEDEF)
 
 #define symbIsFwdRef(s) (s->class = FB_SYMBCLASS_FWDREF)
@@ -2400,6 +2408,11 @@ declare function symbGetUDTBaseLevel _
 #define	typeSetIsRefAndArray( dt ) (dt or (FB_DATATYPE_REFERENCE or FB_DATATYPE_ARRAY))
 
 #if __FB_DEBUG__
+declare function typeDump _
+	( _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr _
+	) as string
 '' For debugging, e.g. use like this:
 ''  symbTrace(a), "(replacing this)"
 ''  symbTrace(b), "(with this)"
