@@ -1474,115 +1474,73 @@ private sub hEmitVregExpr _
 
 end sub
 
-private function hBOPToStr( byval op as integer ) as string
+private function hGetBopCode _
+	( _
+		byval op as integer, _
+		byval is_float as integer _
+	) as zstring ptr
 
-	select case as const op
-		case AST_OP_ADD
-			return " + "
-		case AST_OP_SUB
-			return " - "
-		case AST_OP_MUL
-			return " * "
-		case AST_OP_DIV
-			return " / "
-		case AST_OP_INTDIV
-			return " / "
-		case AST_OP_MOD
-			return " % "
-		case AST_OP_SHL
-			return " << "
-		case AST_OP_SHR
-			return " >> "
-		case AST_OP_AND
-			return " & "
-		case AST_OP_OR
-			return " | "
-		case AST_OP_XOR
-			return " ^ "
-		case AST_OP_EQ
-			return " == "
-		case AST_OP_GT
-			return " > "
-		case AST_OP_LT
-			return " < "
-		case AST_OP_NE
-			return " != "
-		case AST_OP_GE
-			return " >= "
-		case AST_OP_LE
-			return " <= "
-		case else
-			return "unknown_op"
+	select case as const( op )
+	case AST_OP_ADD
+		if( is_float ) then
+			function = @"fadd"
+		else
+			function = @"add"
+		end if
+	case AST_OP_SUB
+		if( is_float ) then
+			function = @"fsub"
+		else
+			function = @"sub"
+		end if
+	case AST_OP_MUL
+		if( is_float ) then
+			function = @"fmul"
+		else
+			function = @"mul"
+		end if
+	case AST_OP_DIV
+		function = @"fdiv"
+	case AST_OP_INTDIV
+		function = @"sdiv"
+	case AST_OP_MOD
+		if( is_float ) then
+			function = @"frem"
+		else
+			function = @"srem"
+		end if
+	case AST_OP_SHL
+		function = @"shl"
+	case AST_OP_SHR
+		function = @"ashr"
+	case AST_OP_AND
+		function = @"and"
+	case AST_OP_OR
+		function = @"or"
+	case AST_OP_XOR
+		function = @"xor"
+	case AST_OP_EQ
+		function = @"icmp eq"
+	case AST_OP_NE
+		function = @"icmp ne"
+	case AST_OP_GT
+		function = @"icmp sgt"
+	case AST_OP_LT
+		function = @"icmp slt"
+	case AST_OP_GE
+		function = @"icmp sge"
+	case AST_OP_LE
+		function = @"icmp sle"
+	case AST_OP_EQV
+		'' TODO: vr = not (v1 xor v2)
+		function = @"eqv"
+	case AST_OP_IMP
+		'' TODO: vr =  (not v1) or v2
+		function = @"imp"
+
 	end select
 
 end function
-
-private sub hWriteBOP _
-	( _
-		byval op as integer, _
-		byval vr as IRVREG ptr, _
-		byval v1 as IRVREG ptr, _
-		byval v2 as IRVREG ptr, _
-		byval is_comparison as integer _
-	)
-
-	dim as string bop
-
-	if( vr = NULL ) then
-		vr = v1
-	end if
-
-	dim as integer is_ptr_arith = ((op = AST_OP_ADD) or (op = AST_OP_SUB))
-	dim as integer lptr = (is_ptr_arith and typeIsPtr( v1->dtype ))
-	dim as integer rptr = (is_ptr_arith and typeIsPtr( v2->dtype ))
-
-	'' Must work-around C's boolean logic values and convert the "boolean"
-	'' 1 to -1 while 0 stays 0 to match FB.
-	if( is_comparison ) then
-		bop += "(-("
-	end if
-
-	'' After casting to ubyte ptr for the BOP, cast back to original type
-	if( lptr or rptr ) then
-		bop += "(" + hEmitType( vr->dtype, vr->subtype ) + ")("
-	end if
-
-	'' Left operand:
-	'' Cast to byte ptr to work around C's pointer arithmetic
-	if( lptr ) then
-		bop += "(ubyte *)"
-	end if
-	'' Ensure '/' means floating point divide by casting to float
-	'' For AST_OP_INTDIV this is not needed, since the AST will already
-	'' cast both operands to integer before doing the intdiv.
-	if( op = AST_OP_DIV ) then
-		bop += "(double)"
-	end if
-	bop += hVregToStr( v1 )
-
-	'' Operation
-	bop += hBOPToStr( op )
-
-	'' Right operand - same checks as for left one above
-	if( rptr ) then
-		bop += "(ubyte *)"
-	end if
-	if( op = AST_OP_DIV ) then
-		bop += "(double)"
-	end if
-	bop += hVregToStr( v2 )
-
-	'' Close parentheses from above
-	if( lptr or rptr ) then
-		bop += ")"
-	end if
-	if( is_comparison ) then
-		bop += "))"
-	end if
-
-	hEmitVregExpr( vr, bop )
-
-end sub
 
 private sub _emitBop _
 	( _
@@ -1593,66 +1551,43 @@ private sub _emitBop _
 		byval ex as FBSYMBOL ptr _
 	)
 
+	dim as string ln
+
 	hLoadVreg( v1 )
 	hLoadVreg( v2 )
 	hLoadVreg( vr )
 
-	select case as const op
-	case AST_OP_ADD, AST_OP_SUB, AST_OP_MUL, AST_OP_DIV, AST_OP_INTDIV, _
-		AST_OP_MOD, AST_OP_SHL, AST_OP_SHR, AST_OP_AND, AST_OP_OR, _
-		AST_OP_XOR
-		hWriteBOP( op, vr, v1, v2, FALSE )
-
-	case AST_OP_EQV
-		if( vr = NULL ) then
-			vr = v1
-		end if
-
-		'' vr = ~(v1 ^ v2)
-        hEmitVregExpr( vr, "~(" & hVregToStr( v1 ) & "^" & hVregToStr( v2 ) & ")" )
-
-	case AST_OP_IMP
-		if( vr = NULL ) then
-			vr = v1
-		end if
-
-		'' vr = ~v1 | v2
-        hEmitVregExpr( vr, "~" & hVregToStr( v1 ) & "|" & hVregToStr( v2 ) )
-
+	'' Conditional branch?
+	select case as const( op )
 	case AST_OP_EQ, AST_OP_NE, AST_OP_GT, AST_OP_LT, AST_OP_GE, AST_OP_LE
-		if( vr <> NULL ) then
-			'' Comparison expression
-			hWriteBOP( op, vr, v1, v2, TRUE )
-		else
-			'' Conditional branch
-			dim as string ln
+		if( vr = NULL ) then
 			ln += "if ("
 			ln += hVregToStr( v1 )
-			ln += hBOPToStr( op )
+			ln += *hGetBopCode( op, FALSE )
 			ln += hVregToStr( v2 )
 			ln += ") goto "
 			ln += *symbGetMangledName( ex )
 			hWriteLine( ln )
+			exit sub
 		end if
-	case else
-		errReportEx( FB_ERRMSG_INTERNAL, "Unhandled bop." )
 	end select
 
-end sub
+	'' The BOP result must be a REG for now, no VAR/PTR/IDX
+	'' (it can only be stored into memory in a separate instruction)
+	assert( vr )
+	assert( irIsREG( vr ) )
 
-private sub hWriteUOP _
-	( _
-		byref op as string, _
-		byval vr as IRVREG ptr, _
-		byval v1 as IRVREG ptr _
-	)
+	ln = hVregToStr( vr )
+	ln += " = "
+	ln += *hGetBopCode( op, (typeGetClass( vr->dtype ) = FB_DATACLASS_FPOINT) )
+	ln += " "
+	ln += hEmitType( vr->dtype, vr->subtype )
+	ln += " "
+	ln += hVregToStr( v1 )
+	ln += ", "
+	ln += hVregToStr( v2 )
 
-	if( vr = NULL ) then
-		vr = v1
-	end if
-
-    hEmitVregExpr( vr, op & "(" & hVregToStr( v1 ) & ")" )
-
+	hWriteLine( ln )
 end sub
 
 private sub _emitUop _

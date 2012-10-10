@@ -1,17 +1,29 @@
-  o LLVM backend
-    - Unions: LLVM IR doesn't have Unions, so a struct containing the biggest
-      member needs to be emitted instead
-    - Local/global variables (looks like scopes won't need to be preserved)
-    - Expressions
-    - Branches, calls, returns, jump tables
-    - Debugging metadata
-    - Special mangling ($ etc.) isn't needed, LLVM IR has id prefixes:
-      @globals, %locals (should be fully handled in ir-llvm, if possible)
-    - Check IR options, especially irGetOption( IR_OPT_HIGHLEVEL ),
-      may need to be changed to mean ir-hlc only
-    - Inline ASM = inline LLVM IR? It'd be possible to allow x86 asm though,
-      llc even has -x86-asm-syntax=intel (should find out how well it works)
-    - va_arg: Same issue as with C backend
+o LLVM backend
+  - structs should be emitted as byte arrays, to let the FB side handle
+    packing/alignment, unless the fields must be emitted individually as with
+    the C backend due to global varinis with procptrs that can't be emitted in
+    form of raw bytes since they're not literal numbers/constants.
+     - LLVM has "type <{ fields... }>" for packed structs, but that's just
+       FIELD = 1, there is no direct way to do FIELD = 2 or 4.
+       clang uses a packed struct and then inserts padding fields (i8) manually.
+     - getelementptr can't be used anyways, since the AST lowers field accesses
+       to deref/bop/addrof, plus it doesn't work with bitfields anyways.
+       For now it should be ok to use bops and inttoptr/ptrtoint instructions,
+       to let the AST do address calculations, as with the C/ASM backends.
+     - LLVM doesn't have unions, it'd be easier to emit them as byte arrays
+       (instead of a struct containing the biggest member only)
+  - Expressions/operations:
+    - LLVM IR must be SSA, i.e. no self-BOPs
+      (AST should be adjusted to allocate new result vregs instead of reusing)
+    - all operands must be the same type, does the AST handle that already?
+    - the result must be a REG vreg, no VAR/PTR/IDX, it can only be stored
+      somewhere in a separate LLVM instruction, does/can the AST handle that?
+  - stack variables can be allocated with the "alloca" insn, there are no scopes
+  - Branches, calls, returns, jump tables
+  - Debugging metadata
+  - Inline ASM = inline LLVM IR? It'd be possible to allow x86 asm though,
+    llc even has -x86-asm-syntax=intel (should find out how well it works)
+  - va_arg: Same issue as with C backend
 
 [ ] add a C backend
 	- MinGW gcc doesn't have STDCALL_MS or PASCAL; we could use 'asm("<alias>")' to
