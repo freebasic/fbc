@@ -8,6 +8,7 @@
 #include once "hlp.bi"
 #include once "hash.bi"
 #include once "list.bi"
+#include once "objinfo.bi"
 
 #if defined( ENABLE_STANDALONE ) and defined( __FB_WIN32__ )
 	#define ENABLE_GORC
@@ -783,62 +784,61 @@ private function hLinkFiles( ) as integer
 
 end function
 
-private sub _addLibCb( byval libname as zstring ptr )
-	strsetAdd( @fbc.finallibs, *libname, FALSE )
+private sub hReadObjinfo( )
+	dim as string dat
+	dim as integer lang = any
+
+	#macro hReportErr( num )
+		errReportWarnEx( num, objinfoGetFilename( ), -1 )
+	#endmacro
+
+	do
+		select case as const( objinfoReadNext( dat ) )
+		case OBJINFO_LIB
+			strsetAdd( @fbc.finallibs, dat, FALSE )
+
+		case OBJINFO_LIBPATH
+			strsetAdd( @fbc.finallibpaths, dat, FALSE )
+
+		case OBJINFO_MT
+			if( fbc.objinf.mt = FALSE ) then
+				hReportErr( FB_WARNINGMSG_MIXINGMTMODES )
+
+				fbc.objinf.mt = TRUE
+				fbSetOption( FB_COMPOPT_MULTITHREADED, TRUE )
+			end if
+
+		case OBJINFO_LANG
+			lang = fbGetLangId( dat )
+
+			'' bad objinfo value?
+			if( lang = FB_LANG_INVALID ) then
+				lang = FB_LANG_FB
+			end if
+
+			if( lang <> fbc.objinf.lang ) then
+				hReportErr( FB_WARNINGMSG_MIXINGLANGMODES )
+				fbc.objinf.lang = lang
+				fbSetOption( FB_COMPOPT_LANG, lang )
+			end if
+
+		case else
+			exit do
+		end select
+	loop
+
+	objinfoReadEnd( )
 end sub
 
-private sub _addPathCb( byval libpath as zstring ptr )
-	strsetAdd( @fbc.finallibpaths, *libpath, FALSE )
-end sub
-
-private sub _addOption _
-	( _
-		byval opt as FB_COMPOPT, _
-		byval value as zstring ptr, _
-		byref objName as string _
-	)
-
-#macro hReportErr( num )
-	errReportWarnEx( num, objName, -1 )
-#endmacro
-
-	select case opt
-	case FB_COMPOPT_MULTITHREADED
-		if( fbc.objinf.mt = FALSE ) then
-			hReportErr( FB_WARNINGMSG_MIXINGMTMODES )
-
-			fbc.objinf.mt = TRUE
-			fbSetOption( FB_COMPOPT_MULTITHREADED, TRUE )
-		end if
-
-	case FB_COMPOPT_LANG
-		dim as FB_LANG id = any
-
-		id = fbGetLangId( value )
-
-		'' bad objinfo value?
-		if( id = FB_LANG_INVALID ) then
-			id = FB_LANG_FB
-		end if
-
-		if( id <> fbc.objinf.lang ) then
-			hReportErr( FB_WARNINGMSG_MIXINGLANGMODES )
-
-			fbc.objinf.lang = id
-			fbSetOption( FB_COMPOPT_LANG, id )
-		end if
-	end select
-
-end sub
-
-private sub hCollectObjInfo( )
+private sub hCollectObjinfo( )
 	dim as string ptr s = any
-	dim as TSTRSETITEM ptr i = any
+ 	dim as TSTRSETITEM ptr i = any
 
 	'' for each object passed in the cmd-line
 	s = listGetHead( @fbc.objlist )
 	while( s )
-		fbObjInfoReadObj( *s, @_addLibCb, @_addPathCb, @_addOption )
+		objinfoReadObj( *s )
+		hReadObjinfo( )
 		s = listGetNext( s )
 	wend
 
@@ -847,8 +847,8 @@ private sub hCollectObjInfo( )
 	while( i )
 		'' Not default?
 		if( i->userdata = FALSE ) then
-			fbObjInfoReadLib( i->s, @_addLibCb, @_addPathCb, _
-			                  @_addOption, @fbc.finallibpaths.list )
+			objinfoReadLib( i->s, @fbc.finallibpaths.list )
+			hReadObjinfo( )
 		end if
 		i = listGetNext( i )
 	wend
@@ -856,7 +856,8 @@ private sub hCollectObjInfo( )
 	'' Search libs given as *.a input files instead of -l or #inclib
 	s = listGetHead( @fbc.libfiles )
 	while( s )
-		fbObjInfoReadLibfile( *s, @_addLibCb, @_addPathCb, @_addOption )
+		objinfoReadLibfile( *s )
+		hReadObjinfo( )
 		s = listGetNext( s )
 	wend
 end sub
@@ -2851,7 +2852,7 @@ end sub
 	'' before adding the default libs, which don't need to be searched,
 	'' because they don't contain objinfo anyways.
 	if( fbIsCrossComp( ) = FALSE ) then
-		hCollectObjInfo( )
+		hCollectObjinfo( )
 	end if
 
 	if( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_STATICLIB ) then

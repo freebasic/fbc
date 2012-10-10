@@ -1,16 +1,45 @@
 ''
 '' FB compile time information section (.fbctinf) reader
 ''
-'' fbObjInfoReadLib():
+'' The .fbctinf section's content is a string similar to the fbc command line,
+'' except the strings (options/arguments) are each null-terminated on their own,
+'' instead of being separated with spaces and only having a null at the end.
+'' This prevents us from having to worry about escaping any special chars.
+''
+'' For example:
+''    -l\0mylib\0-p\0mylibpath\0-mt\0-lang\0qb\0
+''
+'' The following "entries" can be encoded:
+''   -l     followed by a library name
+''   -p     followed by a library search path
+''   -mt    this can be included or left out (boolean)
+''   -lang  followed by the -lang mode (fb/fblite/qb/...) used for this object
+''
+'' Technically it's ok for all entries to appear multiple times,
+'' although it only makes sense for -l and -p.
+''
+'' The FB backends can add that section containing the data to the output
+'' files they generate. There is no unified writer interface at the moment,
+'' since it's different for each backend, that's why it's best to keep the
+'' format simple.
+''
+'' The fbc frontend uses the reading interface to extract the objinfo data
+'' from the .fbctinf sections of object files it's going to link together.
+''
+'' objinfoReadObj():
+''    reads in an .o file,
+''    then calls hLoadFbctinfFromObj().
+''
+'' objinfoReadLibfile():
 ''    reads in a lib*.a archive file,
 ''    looks for the fbctinf object file added to static libraries by fbc -lib,
-''    and if found, calls hProcessObject().
+''    and if found, calls hLoadFbctinfFromObj().
 ''
-'' fbObjInfoReadObj():
-''    reads in an .o file,
-''    then calls hProcessObject().
+'' objinfoReadLib():
+''    searches a libfile for the given libname in the given libpaths,
+''    then calls objinfoReadLibfile().
 ''
-'' hProcessObject():
+'' hLoadFbctinfFromObj():
 ''    reads the currently loaded object file,
 ''    using either the COFF (Win32, DOS) or ELF32 (Linux, *BSD) format.
 ''    looks for the .fbctinf section,
@@ -18,9 +47,9 @@
 ''    found libraries etc. by using the callbacks.
 ''
 
+#include once "objinfo.bi"
 #include once "fb.bi"
-#include once "fbint.bi"
-#include once "list.bi"
+#include once "hlp.bi"
 
 '#define DEBUG_OBJINFO
 
@@ -39,6 +68,16 @@ dim shared as DATABUFFER _
 	ardata, _   '' current .a file content (if any)
 	objdata, _  '' current .o file content (can point into ardata)
 	fbctinf     '' .fbctinf section content, points into objdata
+
+type OBJINFOPARSERCTX
+	i         as integer
+	filename  as string
+end type
+
+dim shared as OBJINFOPARSERCTX parser
+
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'' archive/object reading code
 
 dim shared as zstring * 9 fbctinfname = ".fbctinf"
 
@@ -150,8 +189,6 @@ private sub hLoadFbctinfFromELF32( )
 	dim as ELF32_SH ptr sh = any, nametb = any
 	dim as zstring ptr sectionname = any
 
-	INFO( "reading ELF32 object" )
-
 	fbctinf.p = NULL
 	fbctinf.size = 0
 
@@ -255,8 +292,6 @@ end type
 private sub hLoadFbctinfFromCOFF( )
 	dim as COFF_H ptr h = any
 	dim as COFF_SH ptr sh = any, shbase = any
-
-	INFO( "reading COFF object" )
 
 	fbctinf.p = NULL
 	fbctinf.size = 0
@@ -454,45 +489,61 @@ private sub hLoadFile _
 	close #f
 end sub
 
-declare sub hProcessObject _
-	( _
-		byref objName as string, _
-		byval addLib as FB_CALLBACK_ADDLIB, _
-		byval addLibPath as FB_CALLBACK_ADDLIBPATH, _
-		byval addOption as FB_CALLBACK_ADDOPTION _
-	)
+private sub hLoadFbctinfFromObj( )
+	select case as const( fbGetOption( FB_COMPOPT_TARGET ) )
+	case FB_COMPTARGET_CYGWIN, FB_COMPTARGET_DOS, _
+	     FB_COMPTARGET_WIN32, FB_COMPTARGET_XBOX
+		INFO( "reading COFF: " + parser.filename )
+		hLoadFbctinfFromCOFF( )
 
-sub fbObjInfoReadObj _
-	( _
-		byref objfile as string, _
-		byval addLib as FB_CALLBACK_ADDLIB, _
-		byval addLibPath as FB_CALLBACK_ADDLIBPATH, _
-		byval addOption as FB_CALLBACK_ADDOPTION _
-	)
+	case FB_COMPTARGET_DARWIN, FB_COMPTARGET_FREEBSD, _
+	     FB_COMPTARGET_LINUX, FB_COMPTARGET_NETBSD, _
+	     FB_COMPTARGET_OPENBSD
+		INFO( "reading ELF32: " + parser.filename )
+		hLoadFbctinfFromELF32( )
 
-	INFO( "reading object: " + objfile )
+	end select
+
+	if( fbctinf.size = 0 ) then
+		INFO( "no .fbctinf found" )
+		exit sub
+	end if
+
+	INFO( "found .fbctinf (" + str( fbctinf.size ) + " bytes)" )
+end sub
+
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'' objinfo parsing interface
+
+type ENTRYINFO
+	text       as zstring ptr
+	has_param  as integer
+end type
+
+dim shared as ENTRYINFO entries(0 to (OBJINFO__COUNT - 1)) = _
+{ _
+	( @"-l"   , TRUE  ), _
+	( @"-p"   , TRUE  ), _
+	( @"-mt"  , FALSE ), _
+	( @"-lang", TRUE  )  _
+}
+
+sub objinfoReadObj( byref objfile as string )
+	parser.i = 0
+	parser.filename = objfile
+
 	hLoadFile( objfile, @objdata )
 	if( objdata.size = 0 ) then
 		exit sub
 	end if
 
-	hProcessObject( objfile, addLib, addLibPath, addOption )
-
-	deallocate( objdata.p )
-	objdata.p = NULL
-	objdata.size = 0
-
+	hLoadFbctinfFromObj( )
 end sub
 
-sub fbObjInfoReadLibfile _
-	( _
-		byref libfile as string, _
-		byval addLib as FB_CALLBACK_ADDLIB, _
-		byval addLibPath as FB_CALLBACK_ADDLIBPATH, _
-		byval addOption as FB_CALLBACK_ADDOPTION _
-	)
+sub objinfoReadLibfile( byref libfile as string )
+	parser.i = 0
+	parser.filename = libfile
 
-	INFO( "reading archive: " + libfile )
 	hLoadFile( libfile, @ardata )
 	if( ardata.size = 0 ) then
 		exit sub
@@ -500,27 +551,13 @@ sub fbObjInfoReadLibfile _
 
 	hLoadObjFromAr( )
 	if( objdata.size = 0 ) then
-		INFO( "fbctinf object not found" )
 		exit sub
 	end if
 
-	hProcessObject( libfile, addLib, addLibPath, addOption )
-
-	deallocate( ardata.p )
-	ardata.p = NULL
-	ardata.size = 0
-
+	hLoadFbctinfFromObj( )
 end sub
 
-sub fbObjInfoReadLib _
-	( _
-		byref libname as string, _
-		byval addLib as FB_CALLBACK_ADDLIB, _
-		byval addLibPath as FB_CALLBACK_ADDLIBPATH, _
-		byval addOption as FB_CALLBACK_ADDOPTION, _
-		byval libpaths as TLIST ptr _
-	)
-
+sub objinfoReadLib( byref libname as string, byval libpaths as TLIST ptr )
 	static as string libfile
 	static as string filename
 
@@ -544,169 +581,64 @@ sub fbObjInfoReadLib _
 		exit sub
 	end if
 
-	fbObjInfoReadLibfile( libfile, addLib, addLibPath, addOption )
+	objinfoReadLibfile( libfile )
 end sub
 
-'':::::
-function hProcessLibList _
-	( _
-		byval buf_ini as byte ptr, _
-		byval buf_end as byte ptr, _
-		byval addLib as FB_CALLBACK_ADDLIB _
-	) as integer
+private function hGetNextString( ) as zstring ptr
+	if( parser.i < fbctinf.size ) then
+		function = fbctinf.p + parser.i
 
-	dim as byte ptr p = buf_ini
+		'' Skip over the string
+		while( fbctinf.p[parser.i] <> 0 )
+			parser.i += 1
+		wend
 
-	'' for each entry..
-	do while( p < buf_end )
-		dim as integer lgt = *p
-	  	p += 1
-
-	  	if( lgt = 0 ) then
-	  		exit do
-		end if
-
-		INFO( "fbctinf: found lib '" + *cast( zstring ptr, p ) + "'" )
-		addLib( cast( zstring ptr, p ) )
-
-	  	p += lgt + 1
-	loop
-
-	'' return the list length
-	function = p - buf_ini
-
-end function
-
-'':::::
-function hProcessLibPathList _
-	( _
-		byval buf_ini as byte ptr, _
-		byval buf_end as byte ptr, _
-		byval addLibPath as FB_CALLBACK_ADDLIBPATH _
-	) as integer
-
-	dim as byte ptr p = buf_ini
-
-	'' for each entry..
-	do while( p < buf_end )
-		dim as integer lgt = *p
-	  	p += 1
-
-	  	if( lgt = 0 ) then
-	  		exit do
-		end if
-        
-		INFO( "fbctinf: found libpath '" + *cast( zstring ptr, p ) + "'" )
-		addLibPath( cast( zstring ptr, p ) )
-
-	  	p += lgt + 1
-	loop
-
-	'' return the list length
-	function = p - buf_ini
-
-end function
-
-'':::::
-function hProcessCmdList _
-	( _
-		byval buf_ini as byte ptr, _
-		byval buf_end as byte ptr, _
-		byval addOption as FB_CALLBACK_ADDOPTION, _
-		byref objName as string _
-	) as integer
-
-	dim as byte ptr p = buf_ini
-
-	'' for each entry..
-	do while( p < buf_end )
-		dim as integer lgt = *p
-	  	p += 1
-
-	  	if( lgt = 0 ) then
-	  		exit do
-		end if
-
-		select case *cast( zstring ptr, p )
-		case "-mt"
-			INFO( "fbctinf: found -mt" )
-			addOption( FB_COMPOPT_MULTITHREADED, NULL, objName )
-
-		case "-lang"
-			INFO( "fbctinf: found -lang" )
-			dim as zstring ptr value = p + len( "-lang" ) + 1
-			lgt += len( *value ) + 1
-			addOption( FB_COMPOPT_LANG, value, objName )
-		end select
-
-	  	p += lgt + 1
-	loop
-
-	'' return the list length
-	function = p - buf_ini
-
-end function
-
-private sub hProcessObject _
-	( _
-		byref objName as string, _
-		byval addLib as FB_CALLBACK_ADDLIB, _
-		byval addLibPath as FB_CALLBACK_ADDLIB, _
-		byval addOption as FB_CALLBACK_ADDOPTION _
-	)
-
-	select case as const( fbGetOption( FB_COMPOPT_TARGET ) )
-	case FB_COMPTARGET_CYGWIN, FB_COMPTARGET_DOS, _
-	     FB_COMPTARGET_WIN32, FB_COMPTARGET_XBOX
-		hLoadFbctinfFromCOFF( )
-
-	case FB_COMPTARGET_DARWIN, FB_COMPTARGET_FREEBSD, _
-	     FB_COMPTARGET_LINUX, FB_COMPTARGET_NETBSD, _
-	     FB_COMPTARGET_OPENBSD
-		hLoadFbctinfFromELF32( )
-
-	end select
-
-	if( fbctinf.size = 0 ) then
-		INFO( "failed to extract .fbctinf section" )
-		exit sub
+		'' and the null terminator
+		parser.i += 1
+	else
+		function = @""
 	end if
+end function
 
-	INFO( "found .fbctinf section, " + str( fbctinf.size ) + " bytes" )
+function objinfoReadNext( byref dat as string ) as integer
+	if( fbctinf.size > 0 ) then
+		'' Parse the objinfo data (multiple null-terminated strings)
+		dat = *hGetNextString( )
 
-	dim as byte ptr buf_end = fbctinf.p + fbctinf.size
-	dim as byte ptr p = fbctinf.p
+		for i as integer = 0 to (OBJINFO__COUNT - 1)
+			if( dat = *entries(i).text ) then
+				if( entries(i).has_param ) then
+					dat = *hGetNextString( )
+					INFO( *entries(i).text + " " + dat )
+				else
+					INFO( dat )
+				end if
+				return i
+			end if
+		next
+	end if
+	function = -1
+end function
 
-  	'' check version
-  	if( *p <> FB_INFOSEC_VERSION ) then
-		exit sub
-  	end if
+function objinfoGetFilename( ) as zstring ptr
+	function = strptr( parser.filename )
+end function
 
-  	p += 1
-
-  	'' for each entry in the section..
-  	do while( p < buf_end )
-  		dim as integer id = *p
-  		if( id = FB_INFOSEC_EOL ) then
-  			exit do
-  		end if
-
-  		p += 1
-
-      	'' dump the entries
-      	select case as const id
-      	case FB_INFOSEC_LIB
-			p += hProcessLibList( p, buf_end, addLib )
-
-      	case FB_INFOSEC_PTH
-			p += hProcessLibPathList( p, buf_end, addLibPath )
-
-      	case FB_INFOSEC_CMD
-	  		p += hProcessCmdList( p, buf_end, addOption, objName )
-
-	  	case else
-	  		exit do
-	  	end select
-
-	loop
+sub objinfoReadEnd( )
+	if( ardata.p ) then
+		'' Archive buffer was allocated, the others point into it
+		deallocate( ardata.p )
+		ardata.p = NULL
+		ardata.size = 0
+	elseif( objdata.p ) then
+		'' Object buffer was allocated, fbctinf points into it,
+		'' archive buffer is unused
+		deallocate( objdata.p )
+		objdata.p = NULL
+		objdata.size = 0
+	end if
 end sub
+
+function objinfoEncode( byval entry as integer ) as zstring ptr
+	function = entries(entry).text
+end function

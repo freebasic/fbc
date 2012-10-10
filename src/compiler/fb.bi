@@ -341,7 +341,6 @@ enum IR_INFOSEC
 end enum
 
 #include once "error.bi"
-#include once "fb-obj.bi"
 
 declare sub fbInit(byval ismain as integer, byval restarts as integer)
 declare sub fbEnd()
