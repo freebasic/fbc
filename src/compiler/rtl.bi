@@ -51,6 +51,11 @@
 #define FB_RTL_CVL                      "fb_CVL"
 #define FB_RTL_CVLONGINT                "fb_CVLONGINT"
 
+#define FB_RTL_CVDFROMLONGINT           "fb_CVDFROMLONGINT"
+#define FB_RTL_CVSFROML                 "fb_CVSFROML"
+#define FB_RTL_CVLFROMS                 "fb_CVLFROMS"
+#define FB_RTL_CVLONGINTFROMD           "fb_CVLONGINTFROMD"
+
 #define FB_RTL_STRMID					"fb_StrMid"
 #define FB_RTL_STRASSIGNMID				"fb_StrAssignMid"
 #define FB_RTL_STRFILL1					"fb_StrFill1"
@@ -444,6 +449,11 @@ enum FB_RTL_IDX
 	FB_RTL_IDX_CVL
 	FB_RTL_IDX_CVSHORT
 	FB_RTL_IDX_CVLONGINT
+
+	FB_RTL_IDX_CVDFROMLONGINT
+	FB_RTL_IDX_CVSFROML
+	FB_RTL_IDX_CVLFROMS
+	FB_RTL_IDX_CVLONGINTFROMD
 
 	FB_RTL_IDX_STRMID
 	FB_RTL_IDX_STRASSIGNMID

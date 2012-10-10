@@ -361,9 +361,13 @@ function cCVXFunct(byval tk as FB_TOKEN) as ASTNODE ptr
 
 	'' constant? evaluate at compile-time
 	dim as FBSYMBOL ptr litsym = NULL
+	dim as integer is_str = FALSE
 	select case astGetDataType( expr1 )
 	case FB_DATATYPE_CHAR
 		litsym = astGetStrLitSymbol( expr1 )
+		is_str = TRUE
+	case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, FB_DATATYPE_WCHAR
+		is_str = TRUE
 	end select
 
 	dim as integer allowconst = TRUE
@@ -400,37 +404,57 @@ function cCVXFunct(byval tk as FB_TOKEN) as ASTNODE ptr
 	end if
 
 	dim as ASTNODE ptr funcexpr = NULL
-	if( zslen >= typeGetSize( functype ) ) then
-		select case as const functype
-		case FB_DATATYPE_DOUBLE
-			funcexpr = astNewCONSTf( cvd( *zs ), FB_DATATYPE_DOUBLE )
-		case FB_DATATYPE_SINGLE
-			funcexpr = astNewCONSTf( cvs( *zs ), FB_DATATYPE_SINGLE )
-		case FB_DATATYPE_INTEGER, FB_DATATYPE_LONG
-			funcexpr = astNewCONSTi( cvl( *zs ), FB_DATATYPE_INTEGER )
-		case FB_DATATYPE_SHORT
-			funcexpr = astNewCONSTi( cvshort( *zs ), FB_DATATYPE_SHORT )
-		case FB_DATATYPE_LONGINT
-			funcexpr = astNewCONSTl( cvlongint( *zs ), FB_DATATYPE_LONGINT )
-		end select
-		astDelNode( expr1 )
+	if( is_str ) then
+		if( zslen >= typeGetSize( functype ) ) then
+			select case as const functype
+			case FB_DATATYPE_DOUBLE
+				funcexpr = astNewCONSTf( cvd( *zs ), FB_DATATYPE_DOUBLE )
+			case FB_DATATYPE_SINGLE
+				funcexpr = astNewCONSTf( cvs( *zs ), FB_DATATYPE_SINGLE )
+			case FB_DATATYPE_INTEGER, FB_DATATYPE_LONG
+				funcexpr = astNewCONSTi( cvl( *zs ), FB_DATATYPE_INTEGER )
+			case FB_DATATYPE_SHORT
+				funcexpr = astNewCONSTi( cvshort( *zs ), FB_DATATYPE_SHORT )
+			case FB_DATATYPE_LONGINT
+				funcexpr = astNewCONSTl( cvlongint( *zs ), FB_DATATYPE_LONGINT )
+			end select
+			astDelNode( expr1 )
+		else
+			select case as const functype
+			case FB_DATATYPE_DOUBLE
+				funcexpr = astNewCALL( PROCLOOKUP( CVD ) )
+			case FB_DATATYPE_SINGLE
+				funcexpr = astNewCALL( PROCLOOKUP( CVS ) )
+			case FB_DATATYPE_INTEGER, FB_DATATYPE_LONG
+				funcexpr = astNewCALL( PROCLOOKUP( CVL ) )
+			case FB_DATATYPE_SHORT
+				funcexpr = astNewCALL( PROCLOOKUP( CVSHORT ) )
+			case FB_DATATYPE_LONGINT
+				funcexpr = astNewCALL( PROCLOOKUP( CVLONGINT ) )
+			end select
+
+			'' byref expr as string
+			if( astNewARG( funcexpr, expr1 ) = NULL ) then
+				funcexpr = NULL
+			end if
+		end if
 	else
 		select case as const functype
 		case FB_DATATYPE_DOUBLE
-			funcexpr = astNewCALL( PROCLOOKUP( CVD ) )
+			funcexpr = astNewCALL( PROCLOOKUP( CVDFROMLONGINT ) )
 		case FB_DATATYPE_SINGLE
-			funcexpr = astNewCALL( PROCLOOKUP( CVS ) )
+			funcexpr = astNewCALL( PROCLOOKUP( CVSFROML ) )
 		case FB_DATATYPE_INTEGER, FB_DATATYPE_LONG
-			funcexpr = astNewCALL( PROCLOOKUP( CVL ) )
-		case FB_DATATYPE_SHORT
-			funcexpr = astNewCALL( PROCLOOKUP( CVSHORT ) )
+			funcexpr = astNewCALL( PROCLOOKUP( CVLFROMS ) )
 		case FB_DATATYPE_LONGINT
-			funcexpr = astNewCALL( PROCLOOKUP( CVLONGINT ) )
+			funcexpr = astNewCALL( PROCLOOKUP( CVLONGINTFROMD ) )
 		end select
 
-		'' byref expr as string
-		if( astNewARG( funcexpr, expr1 ) = NULL ) then
-			funcexpr = NULL
+		if( funcexpr <> NULL ) then
+			'' byref expr as numtype
+			if( astNewARG( funcexpr, expr1 ) = NULL ) then
+				funcexpr = NULL
+			end if
 		end if
 	end if
 

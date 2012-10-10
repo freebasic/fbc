@@ -2489,6 +2489,54 @@
 	 			) _
 	 		} _
 	 	), _
+		/' fb_CVDFROMLONGINT( byval num as longint ) as double '/ _
+		( _
+			@FB_RTL_CVDFROMLONGINT, @"fb_CVDFROMLONGINT", _
+			FB_DATATYPE_DOUBLE, FB_USE_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_NOQB, _
+			1, _
+			{ _
+				( _
+					FB_DATATYPE_LONGINT, FB_PARAMMODE_BYVAL, FALSE _
+				) _
+			} _
+		), _
+		/' fb_CVSFROML( byref num as long ) as single '/ _
+		( _
+			@FB_RTL_CVSFROML, @"fb_CVSFROML", _
+			FB_DATATYPE_SINGLE, FB_USE_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_NOQB, _
+			1, _
+			{ _
+				( _
+					FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE _
+				) _
+			} _
+		), _
+		/' fb_CVLFROMS( byval num as single ) as long '/ _
+		( _
+			@FB_RTL_CVLFROMS, @"fb_CVLFROMS", _
+			FB_DATATYPE_LONG, FB_USE_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_NOQB, _
+			1, _
+			{ _
+				( _
+					FB_DATATYPE_SINGLE, FB_PARAMMODE_BYVAL, FALSE _
+				) _
+			} _
+		), _
+		/' fb_CVLONGINTFROMD( byval num as double ) as longint '/ _
+		( _
+			@FB_RTL_CVLONGINTFROMD, @"fb_CVLONGINTFROMD", _
+			FB_DATATYPE_LONGINT, FB_USE_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_NOQB, _
+			1, _
+			{ _
+				( _
+					FB_DATATYPE_DOUBLE, FB_PARAMMODE_BYVAL, FALSE _
+	 			) _
+	 		} _
+	 	), _
 	 	/' EOL '/ _
 	 	( _
 	 		NULL _

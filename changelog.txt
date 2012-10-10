@@ -31,6 +31,7 @@ Version 0.25.0:
 - IIF now accepts strings (yetifoot/dkl)
 - win/initguid.bi win32 header
 - -exx NULL pointer checks for procedure pointer calls
+- CVD(longint), CVS(integer), CVL(single), CVLONGINT(double), for reinterpreting directly between floating-point and integer representations without using strings
 
 [fixed]
 - libzip headers: zip_stat struct was unnecessarily named zip_stat_, breaking the libzip example
