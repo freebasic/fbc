@@ -18,6 +18,8 @@ o LLVM backend
     - all operands must be the same type, does the AST handle that already?
     - the result must be a REG vreg, no VAR/PTR/IDX, it can only be stored
       somewhere in a separate LLVM instruction, does/can the AST handle that?
+    - need explicit load instructions to access vars etc.
+      (the alloca instruction returns just the pointer)
   - stack variables can be allocated with the "alloca" insn, there are no scopes
   - Branches, calls, returns, jump tables
   - Debugging metadata
@@ -25,58 +27,25 @@ o LLVM backend
     llc even has -x86-asm-syntax=intel (should find out how well it works)
   - va_arg: Same issue as with C backend
 
-[ ] add a C backend
-	- MinGW gcc doesn't have STDCALL_MS or PASCAL; we could use 'asm("<alias>")' to
-	  rename symbols, however that doesn't work with DLL export tables:
-	  gcc inserts the full <alias> into '.ascii " -export:<alias>"', without stripping
-	  the leading underscore, causing ld errors
-	[x] address of labels (used by the error trapping) must be emitted with 2 "&"'s
-	[x] the forward typedefs can't have a temp name or the g++ mangling will be wrong
-	[x] functions that return structs -- ABI-dependent, because the non-trivial UDT must be handled by FB
-	[x] SWAP
-	[x] UTF literal strings
-	[x] debugging support
-	[x] jump-tables (used in select as const)
-	[x] unitialized static and global vars must be zeroed (gas does that automatically because .comm is used)
-	[x] structs
-	    [x] can't change type of functions that return structs in registers, they must be handled by GCC
-	    [x] bitfields - note: ABI-dependent
-	    [x] non exported or extern vars should have an suffix ($) to not clash with gcc symbols
-	    	and to support structs with the same name
-	    [x] method protos must be emitted
-	    [x] handle forward references -- test the abstract (void *) ones
-	    [x] handle function pointers
-	    [x] emit only the used UDTs (hard to do, because func protos and other structs could set the flag)
-	    Note: field access is stills done by pointers, what is ABI-dependent (ie: fails on x64)
-	[x] the va_* macros/quirk-func must be passed to AST, each ABI has different way to access varargs
-	    - they are incompatible with C (va_next() doesn't exist), so disable the va_* in -gen gcc mode
-        [x] stdcall names shouldn't be mangled, but anything else should - at least
-            the g++ mangling uses no special characters
-	[x] how to handle VARINI###? pass it as a tree plus a callback?
-	[x] DATA arrays must be emitted in the inverse order because the forward ref links
-        [x] only accept inline asm in GCC format, pass as-is
-	[x] how to acccess fields?
-	  	foo.bar.baz would become:
-	  	*((typeof(bar.baz) *)((char *)&foo + offsetof(foo, bar) + offsetof(bar, baz))
-	  	but offsetof() is resolved at FBC compile-time, making the access ABI-dependent
-	  	even if structs are fully emitted
-	  	- (not so simple) solution: let the AST do it
-        [x] function calls must be passed complete to IR, with params
-	[x] can't use casting from fpoint to int type directly because C won't do rounding,
-	    use inline functions instead (inline ASM if x86)
-	[x] shared/module-level vars must be emitted before any proc
-	[x] scopes must be preserved or local vars won't work
-	[x] use GCC as a high-level assembler, no headers, nothing
-	[x] linking should still be done by us
-	[ ] if everything is solved, it would become much simpler to add a LLVM back-end as
-	    it's essentially a high-level ASM with virtual-regs
-
-[ ] CONST qualifier
-    [x] ptr checking must be updated
-    [x] must check assignment
-    [x] must check overloading resolution and the proc dup check
-    [x] CONST member procedures ( declare CONST function|sub proc()... )
-    [ ] check consts with IIF
+o C backend
+  - MinGW gcc doesn't have STDCALL_MS or PASCAL; we could use 'asm("<alias>")' to
+    rename symbols, however that doesn't work with DLL export tables:
+    gcc inserts the full <alias> into '.ascii " -export:<alias>"', without stripping
+    the leading underscore, causing ld errors
+  - field accesses, pointer indexing, struct layout/field alignment, etc. is all
+    still calculated on the FB side
+     - i.e. the generated C code is ABI-dependant.
+     - sizeof()/offsetof() are evaluated purely on the FB side,
+       impossible to pass all constant expressions on to the C backend...
+       (constants, array bounds, fixstr lengths, multi-dim indexing, ...)
+  - va_* is too hard to translate to C:
+     - FB has    p = va_first( )   always returns pointer to head
+                 v = va_arg( p )   always returns arg value for given pointer
+                 p = va_next( p )  returns pointer to next arg
+     - C has     va_start( );      init
+                 v = va_arg( );    returns current arg value and moves to next
+                 va_end( );        end
+     - FB allows va_* to be used like a linked list, that's not possible in C
 
 [ ] ctor/dtor
     - add 'function foo (...) as SomeObj = any', so #1682972 could be fixed AND when

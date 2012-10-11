@@ -1597,19 +1597,19 @@ private sub _emitUop _
 		byval vr as IRVREG ptr _
 	)
 
-	hLoadVreg( v1 )
-	hLoadVreg( vr )
+	dim as IRVREG ptr v2 = any
 
-	select case as const op
+	'' LLVM IR doesn't have unary operations,
+	'' corresponding BOPs are supposed to be used instead
+	select case( op )
 	case AST_OP_NEG
-		hWriteUOP( "-", vr, v1 )
-
+		'' vr = 0 - v1
+		v2 = _allocVrImm( FB_DATATYPE_INTEGER, NULL, 0 )
+		_emitBop( AST_OP_SUB, v2, v1, vr, NULL )
 	case AST_OP_NOT
-		hWriteUOP( "~", vr, v1 )
-
-	case else
-		errReportEx( FB_ERRMSG_INTERNAL, "Unhandled uop." )
-
+		'' vr = v1 xor -1
+		v2 = _allocVrImm( FB_DATATYPE_INTEGER, NULL, -1 )
+		_emitBop( AST_OP_XOR, v1, v2, vr, NULL )
 	end select
 
 end sub
