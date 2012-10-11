@@ -1,4 +1,5 @@
-'' IR backend emitting LLVM IR to output file
+''
+'' IR backend for emitting LLVM IR to output file
 ''
 '' For comparison, see
 ''    - LLVM IR language reference: http://llvm.org/docs/LangRef.html
@@ -1718,33 +1719,6 @@ private sub _emitAddr _
 
 end sub
 
-private function hEmitCallArgs( byval level as integer ) as string
-
-    var ln = "( "
-
-    dim as IRCALLARG ptr arg = listGetTail( @ctx.callargs )
-    while( arg andalso (arg->level = level) )
-        dim as IRCALLARG ptr prev = listGetPrev( arg )
-
-        ln += hVregToStr( arg->vr )
-
-        listDelNode( @ctx.callargs, arg )
-
-        if( prev ) then
-            if( prev->level = level ) then
-                ln += ", "
-            end if
-        end if
-
-        arg = prev
-    wend
-
-    ln += " )"
-
-    return ln
-
-end function
-
 private sub hDoCall _
 	( _
 		byval pname as zstring ptr, _
@@ -1753,15 +1727,49 @@ private sub hDoCall _
 		byval level as integer _
 	)
 
-	var ln = hEmitCallArgs( level )
+	dim as string ln
+	dim as IRCALLARG ptr arg = any, prev = any
 
-	if( vr = NULL ) then
-		hWriteLine( *pname & ln )
-	else
+	if( vr ) then
 		hLoadVreg( vr )
-        hEmitVregExpr( vr, *pname & ln, TRUE )
+		ln = hVregToStr( vr )
 	end if
 
+	ln += "call "
+
+	if( vr = NULL ) then
+		ln += "void"
+	else
+		ln += hEmitType( vr->dtype, vr->subtype )
+	end if
+
+	ln += " "
+	ln += *pname
+	ln += "( "
+
+	'' args
+	arg = listGetTail( @ctx.callargs )
+	while( arg andalso (arg->level = level) )
+		prev = listGetPrev( arg )
+
+		ln += hEmitType( arg->vr->dtype, arg->vr->subtype )
+		ln += " "
+		ln += hVregToStr( arg->vr )
+
+		listDelNode( @ctx.callargs, arg )
+
+		if( prev ) then
+			if( prev->level = level ) then
+				ln += ", "
+			end if
+		end if
+
+		arg = prev
+	wend
+
+	ln += " )"
+
+	hWriteLine( ln )
 end sub
 
 private sub _emitCall _
@@ -1784,7 +1792,7 @@ private sub _emitCallPtr _
 		byval level as integer _
 	)
 
-	hDoCall( "(" & hVregToStr( v1 ) & ")", bytestopop, vr, level )
+	hDoCall( hVregToStr( v1 ), bytestopop, vr, level )
 
 end sub
 
