@@ -54,17 +54,23 @@ sub cLibAttribute( )
 	end if
 end sub
 
-sub cConstOrStaticAttribute( byval pattrib as integer ptr )
-	select case( lexGetToken( ) )
+sub cMethodAttributes( byval pattrib as integer ptr )
 	'' STATIC?
-	case FB_TK_STATIC
-		lexSkipToken( )
+	if( hMatch( FB_TK_STATIC ) ) then
 		*pattrib or= FB_SYMBATTRIB_STATIC
+		'' STATIC methods can't be CONST or VIRTUAL too
+		exit sub
+	end if
+
 	'' CONST?
-	case FB_TK_CONST
-		lexSkipToken( )
+	if( hMatch( FB_TK_CONST ) ) then
 		*pattrib or= FB_SYMBATTRIB_CONST
-	end select
+	end if
+
+	'' VIRTUAL?
+	if( hMatch( FB_TK_VIRTUAL ) ) then
+		*pattrib or= FB_SYMBATTRIB_VIRTUAL
+	end if
 end sub
 
 '':::::
@@ -2062,7 +2068,7 @@ function cProcStmtBegin( byval attrib as FB_SYMBATTRIB ) as integer
 		end if
 	end if
 
-	cConstOrStaticAttribute( @attrib )
+	cMethodAttributes( @attrib )
 
 	'' SUB | FUNCTION
 	tkn = lexGetToken( )

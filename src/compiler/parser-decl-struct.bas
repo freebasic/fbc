@@ -69,7 +69,7 @@ private function hTypeProtoDecl _
 	'' DECLARE
 	lexSkipToken( )
 
-	cConstOrStaticAttribute( @attrib )
+	cMethodAttributes( @attrib )
 
 	res = TRUE
 
