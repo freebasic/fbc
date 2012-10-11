@@ -16,10 +16,8 @@ o LLVM backend
     - LLVM IR must be SSA, i.e. no self-BOPs
       (AST should be adjusted to allocate new result vregs instead of reusing)
     - all operands must be the same type, does the AST handle that already?
-    - the result must be a REG vreg, no VAR/PTR/IDX, it can only be stored
-      somewhere in a separate LLVM instruction, does/can the AST handle that?
-    - need explicit load instructions to access vars etc.
-      (the alloca instruction returns just the pointer)
+    - operands & result must be a REG vreg, no VAR/PTR/IDX, it can only be
+      loaded/stored in a separate step, can the AST handle that?
   - stack variables can be allocated with the "alloca" insn, there are no scopes
   - Branches, calls, returns, jump tables
   - Debugging metadata

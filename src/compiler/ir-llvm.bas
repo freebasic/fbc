@@ -1402,7 +1402,7 @@ private function hVregToStr _
         return s
 
 	case IR_VREGTYPE_REG
-		return "vr$" & vreg->reg
+		return "%" + str( vreg->reg )
 
 	case else
 		errReportEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
@@ -1436,41 +1436,6 @@ private sub _emitJmpTb _
 	case AST_JMPTB_LABEL
 		hWriteLine( "&&" & *symbGetMangledName( label ) & "," )
 	end select
-
-end sub
-
-private sub hEmitVregExpr _
-	( _
-		byval vr as IRVREG ptr, _
-		byref expr as string, _
-		byval is_call as integer = FALSE, _
-		byval add_cast as integer = TRUE _
-	)
-
-	if( irIsREG( vr ) ) then
-		var ln = ""
-		var id = hVregToStr( vr )
-
-		if( add_cast = FALSE ) then
-			if( is_call ) then
-				errReportEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
-			else
-				ln = "#define " & id & " ((" & expr & "))"
-			end if
-		else
-			var typ = hEmitType( vr->dtype, vr->subtype )
-
-			if( is_call ) then
-				ln = typ & " " & id & " = (" & typ & ")(" & expr & ");"
-			else
-				ln = "#define " & id & " ((" & typ & ")(" & expr & "))"
-			end if
-		end if
-
-		hWriteLine( ln )
-	else
-		hWriteLine( hVregToStr( vr ) & " = (" & expr & ")" )
-	end if
 
 end sub
 
@@ -1615,24 +1580,88 @@ private sub _emitUop _
 end sub
 
 private sub _emitConvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
+	dim as string ln
+	dim as integer ldtype = any, rdtype = any
+
 	hLoadVreg( v1 )
 	hLoadVreg( v2 )
-	var add_cast = typeGet( v1->dtype ) <> FB_DATATYPE_STRUCT
-	hEmitVregExpr( v1, hVregToStr( v2, add_cast ), FALSE, add_cast )
+
+	ldtype = v1->dtype
+	rdtype = v2->dtype
+	assert( (ldtype <> rdtype) or (v1->subtype <> v2->subtype) )
+
+	ln = hVregToStr( v1 ) + " = "
+
+	select case( typeGetClass( ldtype ) )
+	case FB_DATACLASS_FPOINT
+		select case( typeGetClass( rdtype ) )
+		case FB_DATACLASS_FPOINT
+			if( typeGetSize( ldtype ) < typeGetSize( rdtype ) ) then
+				ln += "fptrunc"
+			elseif( typeGetSize( ldtype ) > typeGetSize( rdtype ) ) then
+				ln += "fpext"
+			end if
+		case FB_DATACLASS_INTEGER
+			if( typeIsSigned( rdtype ) ) then
+				ln += "sitofp"
+			else
+				ln += "uitofp"
+			end if
+		end select
+
+	case FB_DATACLASS_INTEGER
+		select case( typeGetClass( rdtype ) )
+		case FB_DATACLASS_FPOINT
+			if( typeIsSigned( ldtype ) ) then
+				ln += "fptosi"
+			else
+				ln += "fptoui"
+			end if
+		case FB_DATACLASS_INTEGER
+			if( typeIsPtr( ldtype ) and not typeIsPtr( rdtype ) ) then
+				ln += "inttoptr"
+			elseif( (not typeIsPtr( ldtype )) and typeIsPtr( rdtype ) ) then
+				ln += "ptrtoint"
+			elseif( typeGetSize( ldtype ) < typeGetSize( rdtype ) ) then
+				ln += "trunc"
+			else
+				if( typeIsSigned( ldtype ) ) then
+					ln += "sext"
+				else
+					ln += "zext"
+				end if
+			end if
+
+		end select
+	end select
+
+	ln += hEmitType( v2->dtype, v2->subtype )
+	ln += hVregToStr( v2 )
+	ln += " to "
+	ln += hEmitType( v1->dtype, v1->subtype )
+
+	hWriteLine( ln )
 end sub
 
 private sub _emitStore( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
-	if( v1 <> v2 ) then
-		'' casting needed?
-		if( (v1->dtype <> v2->dtype) or (v1->subtype <> v2->subtype) ) then
-			_emitConvert( v1, v2 )
-		else
-			hLoadVreg( v1 )
-			hLoadVreg( v2 )
+	dim as string ln
+	assert( v1 <> v2 )
+	assert( v1->dtype = v2->dtype )
+	assert( v1->subtype = v2->subtype )
 
-            hEmitVregExpr( v1, hVregToStr( v2 ) )
-		end if
-	end if
+	hLoadVreg( v1 )
+	hLoadVreg( v2 )
+
+	ln = "store "
+	ln += hEmitType( v1->dtype, v1->subtype )
+	ln += " "
+	ln += hVregToStr( v1 )
+	ln += ", "
+	ln += hEmitType( v2->dtype, v2->subtype )
+	ln += " "
+	ln += hVregToStr( v2 )
+
+	hWriteLine( ln )
 end sub
 
 private sub _emitSpillRegs( )
@@ -1679,13 +1708,12 @@ private sub _emitAddr _
 	hLoadVreg( v1 )
 	hLoadVreg( vr )
 
-	select case op
+	select case( op )
 	case AST_OP_ADDROF
-        hEmitVregExpr( vr, "&" + hVregToStr( v1, FALSE ) )
-
+		*vr = *v1
+		''hWriteLine( hVregToStr( vr ) + " = " + hVregToStr( v1 ) )
 	case AST_OP_DEREF
-        hEmitVregExpr( vr, hVregToStr( v1 ) )
-
+		hWriteLine( "TODO: deref" )
 	end select
 
 end sub
