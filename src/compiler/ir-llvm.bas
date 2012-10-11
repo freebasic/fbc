@@ -1817,14 +1817,26 @@ private sub _emitMem _
 		byval bytes as integer _
 	)
 
+	dim as string ln
 
-	select case op
+	ln = "call void "
+
+	select case( op )
 	case AST_OP_MEMCLEAR
-		hWriteLine("__builtin_memset( " & hVregToStr( v1 ) & ", 0, " & hVregToStr( v2 ) & " )" )
+		ln += "@llvm.memset.p0i8.i32( "
+		ln += "i8* " + hVregToStr( v1 ) + ", "
+		ln += "i8 0, "
+		ln += "i32 " + hVregToStr( v2 ) + ", "
 	case AST_OP_MEMMOVE
-		hWriteLine("__builtin_memcpy( " & hVregToStr( v1 ) & ", " & hVregToStr( v2 ) & ", " & bytes & " )" )
+		ln += "@llvm.memmove.p0i8.p0i8.i32( "
+		ln += "i8* " + hVregToStr( v1 ) + ", "
+		ln += "i8* " + hVregToStr( v2 ) + ", "
+		ln += "i32 " + str( bytes ) + ", "
 	end select
 
+	ln += "i32 1, i1 false )"
+
+	hWriteLine( ln )
 end sub
 
 private sub _emitDECL( byval sym as FBSYMBOL ptr )
