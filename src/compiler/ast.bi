@@ -911,18 +911,6 @@ declare sub astTypeIniEnd _
 		byval is_initializer as integer _
 	)
 
-declare function astTypeIniScopeBegin _
-	( _
-		byval tree as ASTNODE ptr, _
-		byval sym as FBSYMBOL ptr _
-	) as ASTNODE ptr
-
-declare function astTypeIniScopeEnd _
-	( _
-		byval tree as ASTNODE ptr, _
-		byval sym as FBSYMBOL ptr _
-	) as ASTNODE ptr
-
 declare function astTypeIniAddPad _
 	( _
 		byval tree as ASTNODE ptr, _
@@ -949,6 +937,32 @@ declare function astTypeIniAddCtorList _
 		byval sym as FBSYMBOL ptr, _
 		byval elements as integer _
 	) as ASTNODE ptr
+
+declare function astTypeIniScopeBegin _
+	( _
+		byval tree as ASTNODE ptr, _
+		byval sym as FBSYMBOL ptr _
+	) as ASTNODE ptr
+
+declare function astTypeIniScopeEnd _
+	( _
+		byval tree as ASTNODE ptr, _
+		byval sym as FBSYMBOL ptr _
+	) as ASTNODE ptr
+
+declare sub astTypeIniAddTypeIniElements _
+	( _
+		byval tree as ASTNODE ptr, _
+		byval source as ASTNODE ptr, _
+		byval beginindex as integer _
+	)
+
+declare sub astTypeIniReplaceElement _
+	( _
+		byval tree as ASTNODE ptr, _
+		byval element as integer, _
+		byval expr as ASTNODE ptr _
+	)
 
 declare function astTypeIniFlush _
 	( _

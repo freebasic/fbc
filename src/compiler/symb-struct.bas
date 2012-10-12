@@ -87,7 +87,7 @@ function symbStructBegin _
 	if( base_ <> NULL ) then
 		static as FBARRAYDIM dTB(0 to 0)
 
-		s->udt.base = symbAddField( s, "$fb_base", 0, dTB(), FB_DATATYPE_STRUCT, base_, symbGetLen( base_ ), 0 )
+		s->udt.base = symbAddField( s, "$base", 0, dTB(), FB_DATATYPE_STRUCT, base_, 0, 0 )
 
 		symbSetIsUnique( s )
 		symbNestBegin( s, FALSE )
@@ -95,6 +95,14 @@ function symbStructBegin _
 
 		if( symbGetHasRTTI( base_ ) ) then
 			symbSetHasRTTI( s )
+		end if
+
+		'' inherit the vtable elements count
+		if( base_->udt.ext ) then
+			if( base_->udt.ext->vtableelements > 0 ) then
+				symbUdtAllocExt( s )
+				s->udt.ext->vtableelements = base_->udt.ext->vtableelements
+			end if
 		end if
 	else
 		s->udt.base = NULL

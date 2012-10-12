@@ -568,7 +568,7 @@ private function hSetupProc _
 	) as FBSYMBOL ptr
 
     dim as integer stats = any, preserve_case = any
-	dim as FBSYMBOL ptr proc = any, head_proc = any
+	dim as FBSYMBOL ptr proc = any, head_proc = any, overridden = any
 
     function = NULL
 
@@ -596,6 +596,9 @@ private function hSetupProc _
     end if
 
 	head_proc = NULL
+
+	'' Procs nested inside UDTs are supposed to be marked as methods
+	assert( iif( symbIsStruct( parent ), attrib and FB_SYMBATTRIB_METHOD, TRUE ) )
 
 	'' ctor/dtor?
 	if( (attrib and (FB_SYMBATTRIB_CONSTRUCTOR or _
@@ -807,8 +810,37 @@ add_proc:
 	'proc->proc.returnMethod = returnMethod
 #endif
 
-	function = proc
+	'' Adding method to UDT?
+	if( symbIsMethod( proc ) ) then
+		assert( symbIsStruct( parent ) )
 
+		'' virtual?
+		if( symbIsVirtual( proc ) ) then
+			'' Update parent & set vtable index
+			symbProcAllocExt( proc )
+			proc->proc.ext->vtableindex = symbCompAddVirtual( parent )
+		end if
+
+		'' Check whether this method overrides a method from the base
+		'' or base's base, etc. (-> searching NSIMPORTs)
+		if( parent->udt.base ) then
+			overridden = symbLookupByNameAndClass( _
+				parent->udt.base->subtype, _
+				id, FB_SYMBCLASS_PROC, _
+				((options and FB_SYMBOPT_PRESERVECASE) <> 0), _
+				TRUE )  '' search NSIMPORTs (bases)
+
+			if( overridden ) then
+				'' Store index of the virtual that's being overridden
+				if( symbIsVirtual( overridden ) ) then
+					symbProcAllocExt( proc )
+					proc->proc.ext->vtableindex = overridden->proc.ext->vtableindex
+				end if
+			end if
+		end if
+	end if
+
+	function = proc
 end function
 
 function symbAddProc _

@@ -225,7 +225,6 @@
       declared as zstring ptr, what will need more changes in users' code, because
       the non-implicit pointer deref
 
-*** *** *** *** ***
 [ ] proc def:
     - when checking the prototype, the access modifiers must be checked too: PUBLIC, PRIVATE
     - to support params > 64k, "ret" can't be used
@@ -246,37 +245,19 @@
     - add dynamic arrays - couldn't get GDB to use Fortran-like arrays
     - each overloaded function will show the locals of *ALL* functions
 
-[X] AndAlso and OrElse, short-circuit versions of And and Or
-    - pay attention to register spills if functions or complex expressions are
-      used in left or right sides
-
 [ ] inline functions
     - better than macros as they can be "turned off" when debugged
     - too hard to be added now due the register spills, IR must handle inter blocks and
       keep track of live vregs
 
-[ ] classes
-    - *MUST* follow the GCC 3.x ABI to make it easier to reuse C++ libs compiled by GCC
-    - Java/Php5-ish syntax: CLASS INTERFACE EXTENDS IMPLEMENTS THROWS ABSTRACT
-    [x] single inheritance (EXTENDS)
-	[ ] abstract classes and methods
-	[ ] interfaces (INTERFACE, IMPLEMENTS (or reuse EXTENDS?))
-    [ ] pure virtual methods
-    [ ] some support for RTTI
-		[ ] base IS some_derived 
-    [ ] down casting
-		[ ] static (base to derived)
-		[ ] dynamic (polymorphic) 
-    [ ] exceptions - with stack unwind support
+o classes
+  - what should CLASS keyword do? struct vs. class as in C++?
 
-	
----------------------------------------------------------------------------------
-
-G++ 4.x RTTI and VT formats in Win32:
-
-- dynamic_cast<toType>(ptr) is converted to: ptr = (ptr != NULL? __dynamic_cast(void *ptr, RTTI *fromType, RTTI *toType, void *nullPtr): NULL);
-
-- all structs are emited with: 
+  - vtables are emitted in each module in read-only data section, so duplicates
+    should be discarded by the linker; on win32 it seems like we need to use
+    the .linkonce directive to do that, is it done automatically on Linux?
+    (.linkonce would require one read-only section per vtable, since .linkonce
+    sets the current section properties, not just those of a single symbol)
 	.globl [struct name]
 	.section rdata$[struct name],"dr" 
 	.linkonce same_size
@@ -293,103 +274,39 @@ G++ 4.x RTTI and VT formats in Win32:
 		... virtual methods function pointers in the order they were found (including methods in the base classes first) ...
 	};
 
-- every class with virtual methods will have a hidden pointer to the VT, that is initialized by the constructor:
+  - virtual method calls
+     based on the vtableindex stored in the proc symbol, but -2, since the
+     vptr stored in objects already skipped the first two vtable elements
 
-	struct or class SomeBaseClass  {
-		
-		VT[mangled class name] *vtp;
-		
-		SomeBaseClass()
-		{
-			vtp = __ZTV13SomeBaseClass+8;		-- hidden assignment, +8 to skip the two pointers at the beginning
-		}
-		
-		virtual void PrintMe(int i)
-		{
-		};
-	};
-	
-- example:
+  - virtuals can override other virtuals, but statics can't be virtual,
+    should statics be allowed to shadow virtuals or should it be an error?
+    Note: normal methods (non-virtuals) can be shadowed, no error
 
-	struct VT13SomeBaseClass 
-	{
-		void *null_pointer;
-		RTTI *rtti;
-		void (PrintMe *)(int i);
-	};
-	
-	class SomeBaseClass
-	{
-		VT13SomeBaseClass *vtp;
-		
-		SomeBaseClass()
-		{
-			vtp = __ZTV13SomeBaseClass+8;
-		}
-		
-		virtual void PrintMe(int i)
-		{
-		};
-	};
+  - explicit OVERRIDE to show an error in case there is no virtual to override?
 
-	RTTI __ZTI13SomeBaseClass = 
-	{
-		__ZTVN10__cxxabiv117__class_type_infoE+8,
-		"13SomeBaseClass",
-		NULL
-	};
-	
-	VT13SomeBaseClass __ZTV13SomeBaseClass =
-	{
-		NULL,
-		__ZTI13SomeBaseClass,
-		13SomeBaseClass7PrintMei
-	};
-	
-	struct VT12SomeExtClass {
-		void *null_pointer;
-		RTTI *rtti;
-		void (PrintMe *)(int i);
-		void (OnlyInExt *)();
-	};
-	
-	class SomeExtClass : SomeBaseClass 
-	{
-		SomeExtClass()
-		{
-			SomeBaseClass();
-			vtp = (void *)__ZTV12SomeExtClass+8;
-		}
-		
-		virtual void PrintMe(int i)
-		{
-		};
+  - pure-virtual methods, reusing the INTERFACE keyword?
+		type Foo
+			declare interface sub bar( )
+			dummy as integer
+		end type
+     - if unimplemented, should it be a NULL ptr deref crash, no-op, or runtime error?
 
-		virtual void OnlyInExt()
-		{
-		};
-	};
+  - interfaces
+      - could be structs internally, but allowing only pure-virtual methods,
+        no fields or normal methods
+      - all declared methods would automatically be pure-virtual
+		interface Foo
+			'' INTERFACE would be redundant here:
+			declare [interface] sub bar( )
+		end interface
+      - IMPLEMENTS:
+		type Child [extends Parent] [implements A, B, C]
+        or allow just one interface?
+		type Child extends A
 
-	RTTI __ZTI12SomeExtClass = 
-	{
-		__ZTVN10__cxxabiv120__class_type_infoE+8,
-		"12SomeExtClass",
-		NULL
-	};
-	
-	VT12SomeExtClass __ZTV12SomeExtClass =
-	{
-		NULL,
-		__ZTI12SomeExtClass,
-		12SomeExtClass7PrintMei,
-		9OnlyInExtv
-	};
+  - Down casting
+     - static (base to derived)
+     - dynamic (polymorphic)
+	- dynamic_cast<toType>(ptr) is converted to: ptr = (ptr != NULL? __dynamic_cast(void *ptr, RTTI *fromType, RTTI *toType, void *nullPtr): NULL);
 
-    int main()
-	{
-		SomeBaseClass *sbc = new SomeExtClass();
-	
-		sbc->PrintMe( 1234 ); ==> sbc->vtp->PrintMe( 1234 )
-	}
-	
-	
+  - exceptions - with stack unwind support?

@@ -136,7 +136,7 @@ enum FB_SYMBATTRIB
 	FB_SYMBATTRIB_EXPORT		= &h00000100
 	FB_SYMBATTRIB_IMPORT		= &h00000200
 	FB_SYMBATTRIB_OVERLOADED	= &h00000400
-	FB_SYMBATTRIB_METHOD		= &h00000800
+	FB_SYMBATTRIB_METHOD		= &h00000800  '' marks UDT member procs
     FB_SYMBATTRIB_CONSTRUCTOR   = &h00001000	'' methods only
     FB_SYMBATTRIB_DESTRUCTOR    = &h00002000	'' /
     FB_SYMBATTRIB_OPERATOR    	= &h00004000
@@ -413,6 +413,7 @@ type FB_STRUCTEXT
 	dtor			as FBSYMBOL_ ptr			'' destructor or NULL
 	clone			as FBSYMBOL_ ptr			'' LET overload proc or NULL
 	opovlTb(0 to AST_OP_SELFOPS-1) as FBSYMBOL_ ptr
+	vtableelements		as integer				'' vtable elements counter
 	vtable			as FBSYMBOL_ ptr			'' virtual-functions table struct
 	rtti			as FBSYMBOL_ ptr			'' Run-Time Type Info struct
 end type
@@ -531,6 +532,16 @@ type FB_PROCEXT
 	priority		as integer
 	gosub			as FB_PROCGSB
 	base_initree		as ASTNODE_ ptr  '' base() ctorcall/initializer given in constructor bodies
+
+	'' virtual methods:
+	''    vtable array index, location of the procptr in the vtbl
+	'' normal methods that override a virtual method:
+	''    vtable index of the virtual method that's overridden by this one
+	'' other methods:
+	''    0
+	'' A valid index must be >= 2 since the first two vtable elements are
+	'' the null pointer and the rtti pointer.
+	vtableindex		as integer
 end type
 
 type FB_PROCRTL
@@ -1679,6 +1690,7 @@ declare sub symbSetCompOpOvlHead _
 		byval proc as FBSYMBOL ptr _
 	)
 
+declare function symbCompAddVirtual( byval udt as FBSYMBOL ptr ) as integer
 
 declare function symbAddGlobalCtor( byval proc as FBSYMBOL ptr ) as FB_GLOBCTORLIST_ITEM ptr
 declare function symbAddGlobalDtor( byval proc as FBSYMBOL ptr ) as FB_GLOBCTORLIST_ITEM ptr

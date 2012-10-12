@@ -295,6 +295,75 @@ function astTypeIniScopeEnd _
 
 end function
 
+'' Takes an array elements initializer and adds the same TYPEINI_ASSIGN's to
+'' the new typeini tree (duplicating the expressions),
+'' but not the TYPEINI_SCOPEINI/TYPEINI_SCOPEEND,
+'' and assuming there are only TYPEINI_ASSIGN's and no ctorcalls or padding etc.
+'' "beginindex" is the index of the first TYPEINI_ASSIGN that should be copied,
+'' this allows to skip some array elements at the front.
+sub astTypeIniAddTypeIniElements _
+	( _
+		byval tree as ASTNODE ptr, _
+		byval source as ASTNODE ptr, _
+		byval beginindex as integer _
+	)
+
+	dim as integer i = any
+
+	assert( source->class = AST_NODECLASS_TYPEINI )
+	source = source->l
+
+	assert( source->class = AST_NODECLASS_TYPEINI_SCOPEINI )
+	source = source->r
+
+	i = 0
+	while( source->class = AST_NODECLASS_TYPEINI_ASSIGN )
+		if( i >= beginindex ) then
+			astTypeIniAddAssign( tree, astCloneTree( source->l ), source->sym )
+		end if
+		source = source->r
+		i += 1
+	wend
+
+	assert( source->class = AST_NODECLASS_TYPEINI_SCOPEEND )
+end sub
+
+sub astTypeIniReplaceElement _
+	( _
+		byval tree as ASTNODE ptr, _
+		byval element as integer, _
+		byval expr as ASTNODE ptr _
+	)
+
+	'' Walk through the TYPEINI tree until the assign at index "element"
+	'' is reached, then replace the expression.
+	'' assumptions:
+	''    - tree is an array initializer,
+	''    - there are only TYPEINI_ASSIGN's, no ctorcalls/padding
+
+	dim as integer i = any
+
+	assert( tree->class = AST_NODECLASS_TYPEINI )
+	tree = tree->l
+
+	assert( tree->class = AST_NODECLASS_TYPEINI_SCOPEINI )
+	tree = tree->r
+
+	i = 0
+	while( tree->class = AST_NODECLASS_TYPEINI_ASSIGN )
+		if( i = element ) then
+			astDelTree( tree->l )
+			tree->l = expr
+			exit sub
+		end if
+		tree = tree->r
+		i += 1
+	wend
+
+	'' should always be found
+	assert( FALSE )
+end sub
+
 '':::::
 private function hCallCtor _
 	( _
