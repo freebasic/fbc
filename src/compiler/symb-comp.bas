@@ -9,8 +9,6 @@
 #include once "list.bi"
 #include once "ir.bi"
 
-declare sub symbUdtAllocExt( byval sym as FBSYMBOL ptr )
-
 type FB_SYMBNEST
 	sym				as FBSYMBOL ptr
 	symtb			as FBSYMBOLTB ptr			'' prev symbol tb
@@ -36,6 +34,13 @@ sub symbCompEnd
 
 	stackFree( @symb.neststk )
 
+end sub
+
+sub symbUdtAllocExt( byval udt as FBSYMBOL ptr )
+	assert( symbIsStruct( udt ) )
+	if( udt->udt.ext = NULL ) then
+		udt->udt.ext = xcallocate( sizeof( FB_STRUCTEXT ) )
+	end if
 end sub
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -511,13 +516,6 @@ function symbCompIsTrivial( byval sym as FBSYMBOL ptr ) as integer
 	            (symbGetCompDtor( sym ) = NULL) and _
 	            (not symbGetHasRTTI( sym )))
 end function
-
-private sub symbUdtAllocExt( byval sym as FBSYMBOL ptr )
-	assert( symbIsStruct( sym ) )
-	if( sym->udt.ext = NULL ) then
-		sym->udt.ext = xcallocate( sizeof( FB_STRUCTEXT ) )
-	end if
-end sub
 
 sub symbSetCompCtorHead( byval sym as FBSYMBOL ptr, byval proc as FBSYMBOL ptr )
 	if( symbIsStruct( sym ) ) then

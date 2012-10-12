@@ -416,9 +416,7 @@ sub astProcBegin( byval sym as FBSYMBOL ptr, byval ismain as integer )
 
 	symbSymbTbInit( sym->proc.symtb, sym )
 
-	if( sym->proc.ext = NULL ) then
-		sym->proc.ext = symbAllocProcExt( )
-	end if
+	symbProcAllocExt( sym )
 
 	'' File name where the procedure body was found
 	sym->proc.ext->dbg.incfile = env.inf.incfile

@@ -30,9 +30,7 @@ sub astGosubAddInit( byval proc as FBSYMBOL ptr )
 	dim as ASTNODE ptr var_decl = any
 	dim as integer dtype = any
 
-	if( proc->proc.ext = NULL ) then
-		proc->proc.ext = symbAllocProcExt( )
-	end if
+	symbProcAllocExt( proc )
 
 	if( symbGetProcStatGosub( proc ) ) then
 		exit sub

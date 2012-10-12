@@ -1199,6 +1199,9 @@ declare sub symbAddProcInstancePtr _
 		byval proc as FBSYMBOL ptr _
 	)
 
+declare sub symbProcAllocExt( byval proc as FBSYMBOL ptr )
+declare sub symbProcFreeExt( byval proc as FBSYMBOL ptr )
+
 declare function symbCalcProcParamLen _
 	( _
 		byval dtype as integer, _
@@ -1651,6 +1654,8 @@ declare sub symbSetDefType _
 		byval typ as integer _
 	)
 
+declare sub symbUdtAllocExt( byval udt as FBSYMBOL ptr )
+declare sub symbCompAddDefMembers( byval sym as FBSYMBOL ptr )
 declare function symbCompIsTrivial( byval sym as FBSYMBOL ptr ) as integer
 declare sub symbSetCompCtorHead( byval sym as FBSYMBOL ptr, byval proc as FBSYMBOL ptr )
 declare sub symbCheckCompCtor( byval sym as FBSYMBOL ptr, byval proc as FBSYMBOL ptr )
@@ -1674,10 +1679,6 @@ declare sub symbSetCompOpOvlHead _
 		byval proc as FBSYMBOL ptr _
 	)
 
-declare sub symbCompAddDefMembers _
-	( _
-		byval sym as FBSYMBOL ptr _
-	)
 
 declare function symbAddGlobalCtor( byval proc as FBSYMBOL ptr ) as FB_GLOBCTORLIST_ITEM ptr
 declare function symbAddGlobalDtor( byval proc as FBSYMBOL ptr ) as FB_GLOBCTORLIST_ITEM ptr
@@ -2225,10 +2226,6 @@ declare function symbGetUDTBaseLevel _
 
 #define symbGetProcOvlNext(f) f->proc.ovl.next
 
-#define symbAllocProcExt() xcallocate( len( FB_PROCEXT ) )
-
-#define symbFreeProcExt(f) deallocate( f->proc.ext )
-
 #define symbGetProcStatReturnUsed(f) ((f->proc.ext->stats and FB_PROCSTATS_RETURNUSED) <> 0)
 #define symbSetProcStatReturnUsed(f) f->proc.ext->stats or= FB_PROCSTATS_RETURNUSED
 
@@ -2238,9 +2235,7 @@ declare function symbGetUDTBaseLevel _
 #define symbGetProcPriority(f) f->proc.ext->priority
 
 #macro symbSetProcPriority(f,p)
-	if( f->proc.ext = NULL ) then
-		f->proc.ext = symbAllocProcExt( )
-	end if
+	symbProcAllocExt( f )
 	f->proc.ext->priority = p
 #endmacro
 
@@ -2256,9 +2251,7 @@ declare function symbGetUDTBaseLevel _
 #define symbGetProcOpOvl(f) f->proc.ext->opovl.op
 
 #macro symbSetProcOpOvl(f, op_)
-	if( f->proc.ext = NULL ) then
-		f->proc.ext = symbAllocProcExt( )
-	end if
+	symbProcAllocExt( f )
 	f->proc.ext->opovl.op = op_
 #endmacro
 

@@ -53,6 +53,20 @@ end sub
 '' add
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
+sub symbProcAllocExt( byval proc as FBSYMBOL ptr )
+	assert( symbIsProc( proc ) )
+	if( proc->proc.ext = NULL ) then
+		proc->proc.ext = xcallocate( sizeof( FB_PROCEXT ) )
+	end if
+end sub
+
+sub symbProcFreeExt( byval proc as FBSYMBOL ptr )
+	if( proc->proc.ext ) then
+		deallocate( proc->proc.ext )
+		proc->proc.ext = NULL
+	end if
+end sub
+
 '':::::
 function symbCalcProcParamLen _
 	( _
@@ -839,14 +853,12 @@ function symbAddOperator _
 
 	dim as FBSYMBOL ptr sym = any
 
-	if( proc->proc.ext = NULL ) then
-		proc->proc.ext = symbAllocProcExt( )
-	end if
+	symbProcAllocExt( proc )
 	proc->proc.ext->opovl.op = op
 
 	sym = symbAddProc( proc, NULL, id_alias, dtype, subtype, attrib, mode, options )
 	if( sym = NULL ) then
-		symbFreeProcExt( proc )
+		symbProcFreeExt( proc )
 		exit function
 	end if
 
@@ -1078,10 +1090,7 @@ function symbAddProcResultParam( byval proc as FBSYMBOL ptr ) as FBSYMBOL ptr
 	s = symbAddVarEx( id, NULL, FB_DATATYPE_STRUCT, proc->subtype, FB_POINTERSIZE, _
 	                  0, dTB(), FB_SYMBATTRIB_PARAMBYREF, FB_SYMBOPT_PRESERVECASE )
 
-	if( proc->proc.ext = NULL ) then
-		proc->proc.ext = symbAllocProcExt( )
-	end if
-
+	symbProcAllocExt( proc )
 	proc->proc.ext->res = s
 
 	symbSetIsDeclared( s )
@@ -1112,10 +1121,7 @@ function symbAddProcResult( byval proc as FBSYMBOL ptr ) as FBSYMBOL ptr
 					  	FB_SYMBATTRIB_FUNCRESULT, _
 					  	FB_SYMBOPT_PRESERVECASE )
 
-	if( proc->proc.ext = NULL ) then
-		proc->proc.ext = symbAllocProcExt( )
-	end if
-
+	symbProcAllocExt( proc )
 	proc->proc.ext->res = res
 
 	'' clear up the result
@@ -2298,11 +2304,7 @@ sub symbDelPrototype _
 		hDelParams( s )
 	end if
 
-    ''
-    if( s->proc.ext <> NULL ) then
-    	symbFreeProcExt( s )
-    	s->proc.ext = NULL
-    end if
+	symbProcFreeExt( s )
 
     symbFreeSymbol( s )
 
