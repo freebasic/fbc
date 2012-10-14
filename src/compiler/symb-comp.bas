@@ -746,7 +746,9 @@ end sub
 
 '' Returns vtable index for new virtual method
 function symbCompAddVirtual( byval udt as FBSYMBOL ptr ) as integer
-	symbSetHasRTTI( udt )
+	'' Virtuals require the vptr, i.e. the UDT must extend OBJECT
+	assert( symbGetHasRTTI( udt ) )
+
 	symbUdtAllocExt( udt )
 	if( udt->udt.ext->vtableelements = 0 ) then
 		'' (the 2 default entries + the first procptr at index 2)

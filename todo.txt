@@ -252,7 +252,6 @@
 
 o classes
   - what should CLASS keyword do? struct vs. class as in C++?
-  - UDTs must extend OBJECT in order to get the vptr for VIRTUAL (and RTTI)
   - vtable lookups must also be emitted for virtual constructors etc.,
     i.e. some astNewCALL() calls must be changed to astBuildMethodCall().
     cannot do it from astNewCALL() because the THIS ptr isn't available.

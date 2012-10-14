@@ -54,7 +54,12 @@ sub cLibAttribute( )
 	end if
 end sub
 
-sub cMethodAttributes( byval pattrib as integer ptr )
+sub cMethodAttributes _
+	( _
+		byval parent as FBSYMBOL ptr, _
+		byval pattrib as integer ptr _
+	)
+
 	'' STATIC?
 	if( hMatch( FB_TK_STATIC ) ) then
 		*pattrib or= FB_SYMBATTRIB_STATIC
@@ -70,6 +75,14 @@ sub cMethodAttributes( byval pattrib as integer ptr )
 	'' VIRTUAL?
 	if( hMatch( FB_TK_VIRTUAL ) ) then
 		*pattrib or= FB_SYMBATTRIB_VIRTUAL
+		if( parent ) then
+			'' Must extend OBJECT, in order to get the vtable ptr,
+			'' to make virtuals possible
+			if( symbGetHasRTTI( parent ) = FALSE ) then
+				errReport( FB_ERRMSG_VIRTUALWITHOUTRTTI )
+				*pattrib and= not FB_SYMBATTRIB_VIRTUAL
+			end if
+		end if
 	end if
 end sub
 
@@ -2076,7 +2089,7 @@ function cProcStmtBegin( byval attrib as FB_SYMBATTRIB ) as integer
 		end if
 	end if
 
-	cMethodAttributes( @attrib )
+	cMethodAttributes( NULL, @attrib )
 
 	'' SUB | FUNCTION
 	tkn = lexGetToken( )

@@ -742,7 +742,11 @@ declare function cAsmBlock _
 
 declare function cAliasAttribute( ) as zstring ptr
 declare sub cLibAttribute( )
-declare sub cMethodAttributes( byval pattrib as integer ptr )
+declare sub cMethodAttributes _
+	( _
+		byval parent as FBSYMBOL ptr, _
+		byval pattrib as integer ptr _
+	)
 
 declare function cProcReturnMethod _
 	( _

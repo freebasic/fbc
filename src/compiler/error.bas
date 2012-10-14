@@ -265,6 +265,7 @@ end type
 		@"The function prototype wasn't declared as STATIC", _
 		@"The function prototype wasn't declared as CONST", _
 		@"The function prototype wasn't declared as VIRTUAL", _
+		@"VIRTUAL used, but UDT does not extend OBJECT", _
 		@"This operator cannot be STATIC", _
 		@"Parameter must be an integer", _
 		@"Parameter must be a pointer", _
