@@ -75,11 +75,7 @@ declare sub _setSection _
 		byval priority as integer _
 	)
 
-declare function _getTypeString _
-	( _
-		byval dtype as integer _
-	) as const zstring ptr
-
+declare function _getTypeString( byval dtype as integer ) as const zstring ptr
 
 '' from emit_SSE.bas
 declare function _init_opFnTB_SSE _
@@ -6956,49 +6952,33 @@ private sub _setSection _
 
 end sub
 
-'':::::
-private function _getTypeString _
-	( _
-		byval dtype as integer _
-	) as const zstring ptr
-
+private function _getTypeString( byval dtype as integer ) as const zstring ptr
 	select case as const typeGet( dtype )
-    case FB_DATATYPE_UBYTE, FB_DATATYPE_BYTE
-    	function = @".byte"
-
-    case FB_DATATYPE_USHORT, FB_DATATYPE_SHORT
-    	function = @".short"
-
-    case FB_DATATYPE_INTEGER, FB_DATATYPE_UINT, FB_DATATYPE_ENUM
-    	function = @".int"
-
-    case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
-    	function = @".long"
-
-    case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-    	function = @".quad"
-
-    case FB_DATATYPE_SINGLE
-		function = @".float"
-
-	case FB_DATATYPE_DOUBLE
-    	function = @".double"
-
+	case FB_DATATYPE_UBYTE, FB_DATATYPE_BYTE
+		function = @".byte"
+	case FB_DATATYPE_USHORT, FB_DATATYPE_SHORT
+		function = @".short"
+	case FB_DATATYPE_INTEGER, FB_DATATYPE_UINT, FB_DATATYPE_ENUM
+		function = @".int"
+	case FB_DATATYPE_LONG, FB_DATATYPE_ULONG, FB_DATATYPE_SINGLE
+		'' SINGLE: emitted as raw bytes in form of .long 0x...,
+		'' instead of .float 1.234...,
+		'' to allow the exact bytes to be emitted by hFloatToStr(),
+		'' instead of a str() approximation.
+		function = @".long"
+	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT, FB_DATATYPE_DOUBLE
+		'' DOUBLE: ditto, instead of .double
+		function = @".quad"
 	case FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
 		'' wchar stills the same as it is emitted as escape sequences
-    	function = @".ascii"
-
+		function = @".ascii"
 	case FB_DATATYPE_STRING, FB_DATATYPE_STRUCT
 		function = @".INVALID"
-
-    case FB_DATATYPE_POINTER
-    	function = @".long"
-
-    case else
-    	function = @".INVALID"
-
+	case FB_DATATYPE_POINTER
+		function = @".long"
+	case else
+		function = @".INVALID"
 	end select
-
 end function
 
 '':::::

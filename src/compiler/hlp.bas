@@ -81,14 +81,14 @@ function hHexUInt _
 
 end function
 
-'':::::
 function hFloatToStr _
 	( _
 		byval value as double, _
 		byref typ as integer _
-	) as string static
+	) as string
 
-    dim as integer expval
+	dim as integer expval
+	dim as single singlevalue
 
 	'' x86 little-endian assumption
 	expval = cast( integer ptr, @value )[1]
@@ -131,10 +131,12 @@ function hFloatToStr _
 		end if
 
 	case else
+		'' Emit the raw bytes that make up the float
 		if( typ = FB_DATATYPE_DOUBLE ) then
-			function = str( value )
+			function = "0x" + hex( *cptr( ulongint ptr, @value ), 16 )
 		else
-			function = str( csng( value ) )
+			singlevalue = value
+			function = "0x" + hex( *cptr( uinteger ptr, @singlevalue ), 8 )
 		end if
 	end select
 
