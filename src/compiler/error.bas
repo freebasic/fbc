@@ -264,6 +264,7 @@ end type
 		@"The PRIVATE and PUBLIC attributes are not allowed with REDIM, COMMON or EXTERN", _
 		@"The function prototype wasn't declared as STATIC", _
 		@"The function prototype wasn't declared as CONST", _
+		@"The function prototype wasn't declared as VIRTUAL", _
 		@"This operator cannot be STATIC", _
 		@"Parameter must be an integer", _
 		@"Parameter must be a pointer", _

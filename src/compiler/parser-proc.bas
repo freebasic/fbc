@@ -216,6 +216,14 @@ private sub hCheckAttribs _
 		end if
 	end if
 
+	'' same for VIRTUAL
+	if( (attrib and FB_SYMBATTRIB_VIRTUAL) <> 0 ) then
+		if( symbIsVirtual( proto ) = FALSE ) then
+			errReport( FB_ERRMSG_PROCPROTOTYPENOTVIRTUAL )
+			return
+		end if
+	end if
+
 	symbGetAttrib( proto ) or= attrib
 end sub
 
