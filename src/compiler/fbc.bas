@@ -2357,6 +2357,9 @@ private function hCompileStage2Module( byval module as FBCIOFILE ptr ) as intege
 
 	case FB_BACKEND_LLVM
 		ln += "-O" + str( fbGetOption( FB_COMPOPT_OPTIMIZELEVEL ) ) + " "
+		if( fbGetOption( FB_COMPOPT_ASMSYNTAX ) = FB_ASMSYNTAX_INTEL ) then
+			ln += "--x86-asm-syntax=intel "
+		end if
 
 	end select
 
