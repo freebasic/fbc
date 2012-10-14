@@ -657,6 +657,12 @@ declare function astNewDEREF _
 		byval ofs as integer = 0 _
 	) as ASTNODE ptr
 
+declare function astBuildMethodCall _
+	( _
+		byval proc as FBSYMBOL ptr, _
+		byval instptr as ASTNODE ptr _
+	) as ASTNODE ptr
+
 declare function astNewCALL _
 	( _
 		byval sym as FBSYMBOL ptr, _

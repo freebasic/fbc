@@ -1080,7 +1080,7 @@ private function hCallBaseCtor _
 	function = hCallFieldCtor( this_, base_ )
 end function
 
-private function hInitVtable _
+private function hInitVptr _
 	( _
 		byval parent as FBSYMBOL ptr, _
 		byval proc as FBSYMBOL ptr _
@@ -1090,13 +1090,11 @@ private function hInitVtable _
 		exit function
 	end if
 
-	if( parent->udt.ext = NULL ) then
-		exit function
-	end if
-
 	var this_ = symbGetParamVar( symbGetProcHeadParam( proc ) )
 
-	'' this.pvt = cast( any ptr, (cast(byte ptr, @vtable) + sizeof(void *) * 2) ) 
+	'' this.vptr = cast( any ptr, (cast(byte ptr, @vtable) + sizeof(void *) * 2) )
+	'' assuming that everything with a vptr extends fb_Object
+	'' Also, x86 assumption
 	function = astNewASSIGN( _ 
 		astBuildInstPtr( this_, symbGetUDTFirstElm( symb.rtti.fb_object ) ), _
 		astNewCONV( typeAddrOf( FB_DATATYPE_VOID ), NULL, _
@@ -1116,7 +1114,7 @@ private sub hCallCtors( byval n as ASTNODE ptr, byval sym as FBSYMBOL ptr )
 	tree = astNewLINK( tree, hCallFieldCtors( parent, sym ) )
 
 	'' 3rd) setup the vtable ptr
-	tree = astNewLINK( tree, hInitVtable( parent, sym ) )
+	tree = astNewLINK( tree, hInitVptr( parent, sym ) )
 
 	'' Find the first statement that is executable code,
 	'' and insert the constructor calls above it.

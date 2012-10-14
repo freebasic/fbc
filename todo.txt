@@ -252,6 +252,16 @@
 
 o classes
   - what should CLASS keyword do? struct vs. class as in C++?
+  - VIRTUAL SUB UDT.foo( )  does not work
+  - UDTs must extend OBJECT in order to get the vptr for VIRTUAL (and RTTI)
+  - vtable lookups must also be emitted for virtual constructors etc.,
+    i.e. some astNewCALL() calls must be changed to astBuildMethodCall().
+    cannot do it from astNewCALL() because the THIS ptr isn't available.
+  - virtual overriding should be based also on the exact proc signature,
+    not just the id (due to overloading, virtuals and non-virtuals can have the
+    same id)
+  - should methods overriding virtuals become virtual themselves?
+    and even re-use the same vtable slot?
 
   - vtables are emitted in each module in read-only data section, so duplicates
     should be discarded by the linker; on win32 it seems like we need to use
@@ -274,6 +284,8 @@ o classes
 		... virtual methods function pointers in the order they were found (including methods in the base classes first) ...
 	};
 
+	see also http://gcc.gnu.org/onlinedocs/gcc/Vague-Linkage.html
+
   - virtual method calls
      based on the vtableindex stored in the proc symbol, but -2, since the
      vptr stored in objects already skipped the first two vtable elements
@@ -290,6 +302,7 @@ o classes
 			dummy as integer
 		end type
      - if unimplemented, should it be a NULL ptr deref crash, no-op, or runtime error?
+       call __cxa_pure_virtual() like GCC? wouldn't that require an extra branch (overhead on each call)?
 
   - interfaces
       - could be structs internally, but allowing only pure-virtual methods,

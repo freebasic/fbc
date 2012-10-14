@@ -823,7 +823,7 @@ add_proc:
 
 		'' Check whether this method overrides a method from the base
 		'' or base's base, etc. (-> searching NSIMPORTs)
-		if( parent->udt.base ) then
+		if( (parent->udt.base <> NULL) and (id <> NULL) ) then
 			overridden = symbLookupByNameAndClass( _
 				parent->udt.base->subtype, _
 				id, FB_SYMBCLASS_PROC, _

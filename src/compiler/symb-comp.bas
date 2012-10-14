@@ -226,11 +226,17 @@ private sub hBuildVtable( byval udt as FBSYMBOL ptr )
 	basevtableinitree = NULL
 	basefield = udt->udt.base
 	if( basefield ) then
+		assert( symbIsField( basefield ) )
+		assert( symbGetType( basefield ) = FB_DATATYPE_STRUCT )
 		basetype = basefield->subtype
+		assert( symbIsStruct( basetype ) )
 		if( basetype->udt.ext ) then
-			basevtable = basetype->udt.ext->vtable
 			basevtableelements = basetype->udt.ext->vtableelements
-			basevtableinitree = basevtable->var_.initree
+			if( basevtableelements > 0 ) then
+				basevtable = basetype->udt.ext->vtable
+				assert( symbIsVar( basevtable ) )
+				basevtableinitree = basevtable->var_.initree
+			end if
 		end if
 	end if
 
