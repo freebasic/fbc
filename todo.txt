@@ -252,7 +252,6 @@
 
 o classes
   - what should CLASS keyword do? struct vs. class as in C++?
-  - VIRTUAL SUB UDT.foo( )  does not work
   - UDTs must extend OBJECT in order to get the vptr for VIRTUAL (and RTTI)
   - vtable lookups must also be emitted for virtual constructors etc.,
     i.e. some astNewCALL() calls must be changed to astBuildMethodCall().
@@ -285,10 +284,6 @@ o classes
 	};
 
 	see also http://gcc.gnu.org/onlinedocs/gcc/Vague-Linkage.html
-
-  - virtual method calls
-     based on the vtableindex stored in the proc symbol, but -2, since the
-     vptr stored in objects already skipped the first two vtable elements
 
   - virtuals can override other virtuals, but statics can't be virtual,
     should statics be allowed to shadow virtuals or should it be an error?
