@@ -88,6 +88,7 @@ Version 0.25.0:
 - C backend: FIELD = N with N > 1 didn't decrease field alignment in the C output
 - "RANDOMIZE , 1" was not always using a random seed
 - C backend: UDTs and functions with same names caused gcc errors
+- BASS import library was using @N suffixes, even though bass.bi doesn't use them anymore
 
 
 Version 0.24.0:
