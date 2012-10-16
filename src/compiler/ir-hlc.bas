@@ -128,6 +128,7 @@ declare sub _emitDBG _
 		byval ex as integer _
 	)
 
+declare sub exprFreeNode( byval n as EXPRNODE ptr )
 #if __FB_DEBUG__
 declare sub exprDump( byval n as EXPRNODE ptr )
 #endif
@@ -1137,7 +1138,6 @@ private function _emitBegin( ) as integer
 
 	ctx.section = -1
 	ctx.sectiongosublevel = 0
-
 	ctx.regcnt = 0
 	ctx.linenum = 0
 
@@ -1161,6 +1161,8 @@ end function
 
 private sub _emitEnd( byval tottime as double )
 	dim as integer section = any
+	dim as EXPRCACHENODE ptr cachenode = any
+	dim as EXPRNODE ptr node = any
 
 	'' Switch to header section temporarily
 	section = sectionGosub( 0 )
@@ -1200,15 +1202,29 @@ private sub _emitEnd( byval tottime as double )
 	end if
 	sectionEnd( )
 
-	''
 	if( close( #env.outf.num ) <> 0 ) then
 		'' ...
 	end if
-
 	env.outf.num = 0
 
 	assert( ctx.sectiongosublevel = 0 )
 	assert( ctx.section = -1 )
+
+	do
+		cachenode = listGetHead( @ctx.exprcache )
+		if( cachenode = NULL ) then
+			exit do
+		end if
+		listDelNode( @ctx.exprcache, cachenode )
+	loop
+
+	do
+		node = listGetHead( @ctx.exprnodes )
+		if( node = NULL ) then
+			exit do
+		end if
+		exprFreeNode( node )
+	loop
 end sub
 
 '':::::
@@ -1561,17 +1577,21 @@ private function exprNew _
 	function = n
 end function
 
-private sub exprFree( byval n as EXPRNODE ptr )
-	if( n->l ) then
-		exprFree( n->l )
-	end if
-	if( n->r ) then
-		exprFree( n->r )
-	end if
+private sub exprFreeNode( byval n as EXPRNODE ptr )
 	if( n->class = EXPRCLASS_TEXT ) then
 		ZstrFree( n->text )
 	end if
 	listDelNode( @ctx.exprnodes, n )
+end sub
+
+private sub exprFreeTree( byval n as EXPRNODE ptr )
+	if( n->l ) then
+		exprFreeTree( n->l )
+	end if
+	if( n->r ) then
+		exprFreeTree( n->r )
+	end if
+	exprFreeNode( n )
 end sub
 
 private function exprNewTEXT _
@@ -1854,8 +1874,7 @@ private function exprNewUOP _
 
 	if( solved_out ) then
 		n = l->l
-		l->l = NULL  '' don't let exprFree() free this recursively
-		exprFree( l )
+		exprFreeNode( l )
 		return n
 	end if
 
@@ -2160,7 +2179,7 @@ private function exprFlush _
 	function = ctx.exprtext
 	ctx.exprtext = ""
 
-	exprFree( n )
+	exprFreeTree( n )
 end function
 
 #if __FB_DEBUG__
