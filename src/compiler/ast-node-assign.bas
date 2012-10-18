@@ -522,7 +522,7 @@ function astNewASSIGN _
 				'' !!FIXME!! can't be used with complex l-hand side expressions
 				if( t->class = AST_NODECLASS_VAR ) then
 					'' no double assign, just flush the tree
-					return astTypeIniFlush( r, l->sym, AST_INIOPT_NONE )
+					return astTypeIniFlush( r, t->sym, AST_INIOPT_NONE )
 				end if
 			end if
 
