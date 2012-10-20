@@ -95,6 +95,9 @@ type IRHLCCTX
 	head_txt			as string
 	body_txt			as string
 	foot_txt			as string
+
+	memset_used			as integer
+	memmove_used			as integer
 end type
 
 enum EMITTYPE_OPTIONS
@@ -810,8 +813,9 @@ private function _emitBegin( ) as integer
 	ctx.body_txt = ""
 	ctx.foot_txt = ""
 	ctx.linenum = 0
-
 	ctx.section = SECTION_HEAD
+	ctx.memset_used = FALSE
+	ctx.memmove_used = FALSE
 
 	if( env.clopt.debug ) then
 		_emitDBG( AST_OP_DBG_LINEINI, NULL, 0 )
@@ -842,6 +846,13 @@ end function
 private sub _emitEnd( byval tottime as double )
 	' Add the decls on the end of the header
 	ctx.section = SECTION_HEAD
+
+	if( ctx.memset_used ) then
+		hWriteLine( "declare void @llvm.memset.p0i8.i32(i8*, i8, i32, i32, i1)" )
+	end if
+	if( ctx.memmove_used ) then
+		hWriteLine( "declare void @llvm.memmove.p0i8.p0i8.i32(i8*, i8*, i32, i32, i1)" )
+	end if
 
 	hEmitFTOIBuiltins( )
 
@@ -1899,23 +1910,31 @@ private sub _emitMem _
 
 	select case( op )
 	case AST_OP_MEMCLEAR
+		ctx.memset_used = TRUE
+
 		hLoadVreg( v1 )
 		hLoadVreg( v2 )
 		_setVregDataType( v1, typeAddrOf( FB_DATATYPE_BYTE ), NULL )
 		_setVregDataType( v2, FB_DATATYPE_INTEGER, NULL )
+
 		ln += "@llvm.memset.p0i8.i32( "
 		ln += "i8* " + hVregToStr( v1 ) + ", "
 		ln += "i8 0, "
 		ln += "i32 " + hVregToStr( v2 ) + ", "
+
 	case AST_OP_MEMMOVE
+		ctx.memmove_used = TRUE
+
 		hLoadVreg( v1 )
 		hLoadVreg( v2 )
 		_setVregDataType( v1, typeAddrOf( FB_DATATYPE_BYTE ), NULL )
 		_setVregDataType( v2, typeAddrOf( FB_DATATYPE_BYTE ), NULL )
+
 		ln += "@llvm.memmove.p0i8.p0i8.i32( "
 		ln += "i8* " + hVregToStr( v1 ) + ", "
 		ln += "i8* " + hVregToStr( v2 ) + ", "
 		ln += "i32 " + str( bytes ) + ", "
+
 	end select
 
 	ln += "i32 1, i1 false )"
