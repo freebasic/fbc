@@ -1747,8 +1747,10 @@ private sub _emitLoadRes _
 		byval vr as IRVREG ptr _
 	)
 
-	_emitStore( vr, v1 )
-	hWriteLine( "ret " + hEmitType( vr->dtype, vr->subtype ) + " " + hVregToStr( vr ) )
+	hLoadVreg( v1 )
+	_setVregDataType( v1, vr->dtype, vr->subtype )
+
+	hWriteLine( "ret " + hEmitType( vr->dtype, vr->subtype ) + " " + hVregToStr( v1 ) )
 
 end sub
 
