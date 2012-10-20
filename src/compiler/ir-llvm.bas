@@ -1726,10 +1726,10 @@ private sub _emitStore( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 	end select
 
 	ln = "store "
-	ln += hEmitType( typeAddrOf( dtype ), subtype ) + " "
-	ln += hVregToStr( v1 ) + ", "
 	ln += hEmitType( dtype, subtype ) + " "
-	ln += hVregToStr( v2 )
+	ln += hVregToStr( v2 ) + ", "
+	ln += hEmitType( typeAddrOf( dtype ), subtype ) + " "
+	ln += hVregToStr( v1 )
 	hWriteLine( ln )
 end sub
 
