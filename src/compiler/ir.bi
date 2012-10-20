@@ -6,7 +6,7 @@ const IR_INITVREGNODES		= IR_INITADDRNODES*3
 
 const IR_MAXDIST			= 2147483647
 
-''
+'' when changing, update vregDump():vregtypes()
 enum IRVREGTYPE_ENUM
 	IR_VREGTYPE_IMM
 	IR_VREGTYPE_VAR
@@ -460,6 +460,9 @@ extern as IR_VTBL irhlc_vtbl
 extern as IR_VTBL irllvm_vtbl
 declare sub irInit( )
 declare sub irEnd( )
+#if __FB_DEBUG__
+declare function vregDump( byval v as IRVREG ptr ) as string
+#endif
 
 ''
 '' macros
