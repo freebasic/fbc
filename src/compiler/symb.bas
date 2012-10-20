@@ -2154,12 +2154,14 @@ function typeDump _
 	function = dump
 end function
 
-sub symbDump_( byval s as FBSYMBOL ptr )
-	dim as integer oldcolor
+function symbDump( byval sym as FBSYMBOL ptr ) as string
+	dim as string s
+
+	if( sym = NULL ) then
+		return "<NULL>"
+	end if
 
 #if 1
-	oldcolor = color( 2 )
-
 	static as zstring ptr classnames(FB_SYMBCLASS_VAR to FB_SYMBCLASS_NSIMPORT) = _
 	{ _
 		@"var"      , _
@@ -2181,17 +2183,13 @@ sub symbDump_( byval s as FBSYMBOL ptr )
 		@"nsimport"   _
 	}
 
-	print *classnames(s->class);" ";
-
-	color oldcolor
+	s += *classnames(sym->class) + " "
 #endif
 
 #if 1
-	oldcolor = color( 1 )
-
 	#macro checkAttrib( ID )
-		if( s->attrib and FB_SYMBATTRIB_##ID ) then
-			print lcase( #ID );" ";
+		if( sym->attrib and FB_SYMBATTRIB_##ID ) then
+			s += lcase( #ID ) + " "
 		end if
 	#endmacro
 
@@ -2206,7 +2204,7 @@ sub symbDump_( byval s as FBSYMBOL ptr )
 	checkAttrib( EXPORT )
 	checkAttrib( IMPORT )
 	checkAttrib( OVERLOADED )
-	if( symbIsProc( s ) ) then
+	if( symbIsProc( sym ) ) then
 		checkAttrib( METHOD )
 	else
 		checkAttrib( PARAMINSTANCE )
@@ -2220,7 +2218,7 @@ sub symbDump_( byval s as FBSYMBOL ptr )
 	checkAttrib( PARAMBYREF )
 	checkAttrib( LITERAL )
 	checkAttrib( CONST )
-	if( symbIsProc( s ) ) then
+	if( symbIsProc( sym ) ) then
 		checkAttrib( STATICLOCALS )
 	else
 		checkAttrib( OPTIONAL )
@@ -2230,34 +2228,24 @@ sub symbDump_( byval s as FBSYMBOL ptr )
 	checkAttrib( FUNCRESULT )
 	checkAttrib( VIS_PRIVATE )
 	checkAttrib( VIS_PROTECTED )
-	if( symbIsProc( s ) ) then
+	if( symbIsProc( sym ) ) then
 		checkAttrib( NAKED )
 	else
 		checkAttrib( SUFFIXED )
 	end if
 	checkAttrib( ABSTRACT )
 	checkAttrib( VIRTUAL )
-
-	color oldcolor
 #endif
 
-	if( s = NULL ) then
-		print "<NULL>";
-		exit sub
-	end if
-
-	dim as zstring ptr id = s->id.name
+	dim as zstring ptr id = sym->id.name
 	if( id = NULL ) then
 		id = @"<unnamed>"
 	end if
-	print *id;
+	s += *id
 
 #if 1
-	if( s->id.alias ) then
-		oldcolor = color( 1 )
-		print " alias ";
-		color oldcolor
-		print """";*s->id.alias;"""";
+	if( sym->id.alias ) then
+		s += " alias """ + *sym->id.alias + """"
 	end if
 #endif
 
@@ -2265,39 +2253,36 @@ sub symbDump_( byval s as FBSYMBOL ptr )
 	'' Note: symbGetMangledName() will mangle the proc and set the
 	'' "mangled" flag. If this is done too early though, before the proc is
 	'' setup properly, then the mangled name will be empty or wrong.
-	oldcolor = color( 1 )
-	print " mangled ";
-	color oldcolor
-	print """";*symbGetMangledName( s );"""";
+	s += " mangled """ + *symbGetMangledName( sym ) + """"
 #endif
 
-	oldcolor = color( 1 )
-	print " as ";
-	color oldcolor
+	s += " as "
 
-	if( s->typ and FB_DATATYPE_INVALID ) then
-		if( s->class = FB_SYMBCLASS_KEYWORD ) then
-			print "<keyword>";
+	if( sym->typ and FB_DATATYPE_INVALID ) then
+		if( sym->class = FB_SYMBCLASS_KEYWORD ) then
+			s += "<keyword>"
 		else
-			print "<invalid>";
+			s += "<invalid>"
 		end if
 	else
 		'' UDTs themselves are FB_DATATYPE_STRUCT, but with NULL subtype,
 		'' so treat that as special case, so symbTypeToStr() doesn't crash.
-		if( s->subtype = NULL ) then
-			select case as const s->typ
+		if( sym->subtype = NULL ) then
+			select case as const( sym->typ )
 			case FB_DATATYPE_FWDREF
-				print "<fwdref>";
+				s += "<fwdref>"
 			case FB_DATATYPE_STRUCT
-				print "<struct>";
+				s += "<struct>"
 			case FB_DATATYPE_ENUM
-				print "<enum>";
+				s += "<enum>"
 			case else
-				print *symbTypeToStr( s->typ, NULL, s->lgt );
+				s += *symbTypeToStr( sym->typ, NULL, sym->lgt )
 			end select
 		else
-			print *symbTypeToStr( s->typ, s->subtype, s->lgt );
+			s += *symbTypeToStr( sym->typ, sym->subtype, sym->lgt )
 		end if
 	end if
-end sub
+
+	function = s
+end function
 #endif

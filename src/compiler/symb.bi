@@ -2416,9 +2416,8 @@ declare function typeDump _
 '' For debugging, e.g. use like this:
 ''  symbTrace(a), "(replacing this)"
 ''  symbTrace(b), "(with this)"
-#define symbDump( s ) symbDump_( s ) : print
-#define symbTrace( s ) print __FUNCTION__ + "(" & __LINE__ & "): "; : symbDump( s )
-declare sub symbDump_( byval s as FBSYMBOL ptr )
+#define symbTrace( s ) print __FUNCTION__ + "(" & __LINE__ & "): "; symbDump( s )
+declare function symbDump( byval s as FBSYMBOL ptr ) as string
 #endif
 
 ''
