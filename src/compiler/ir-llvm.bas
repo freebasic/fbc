@@ -6,21 +6,47 @@
 ''    - clang output:   $ clang -Wall -emit-llvm -S test.c -o test.ll
 ''    - llc compiler:   $ llc -O2 test.ll -o test.asm
 ''
-'' LLVM IR instructions look like this:
+'' LLVM IR instructions inside procedures look like this:
 ''
-''    %var = alloca i32            ; dim var as integer ptr = alloca( sizeof( integer ) )
-''    store %i32 123, i32* %var    ; *var = 123
-''    %temp0 = load %i32* %var     ; temp0 = *var
-''    %temp1 = add i32 %temp0, 1   ; temp1 = temp0 + 1
+''    %var = alloca i32          ; dim var as integer ptr = alloca( sizeof( integer ) )
+''    store %i32 0, i32* %var    ; *var = 0
+''  loop:
+''    %temp0 = load %i32* %var               ; temp0 = *var
+''    %temp1 = add i32 %temp0, 1             ; temp1 = temp0 + 1
+''    store %i32 %temp1, i32* %var           ; *var = temp1
+''    %temp2 = load %i32* %var               ; temp2 = *var
+''    %cond = icmp lt i32 %temp2, 10         ; condition = (temp2 < 10)
+''    br i1 %cond, label %loop, label %exit  ; if condition then goto loop else goto exit
+''  exit:
 ''
-'' - All operations must be in SSA form. Each can be assigned to a %name,
-''   allowing it to be referenced by following operations.
+'' - Operations must be in SSA form, there are no self-ops. Operations that
+''   don't return void can be assigned to a %name which can be referenced in
+''   following operations. The result values can only be stored into memory
+''   by separate/explicit store ops.
 ''
-'' - Operations without name are given an implicit one, based on the position
-''   of the operation: %N numbers like %0 (first), %1 (second), %2 (third), etc.
-''   (clang relies on this; but with the IR vregs it's easier to use names like
-''    %vr0, %vr1, etc. that don't collide, because the allocation order of
-''    IR vregs doesn't represent the order of emitted operations)
+'' - Operations without name implicitly use the %N naming scheme: %1, %2, %3 ...
+''   For fbc it seems better to emit proper names though and not rely on the
+''   implicit position-based names, because the IR vreg allocation order does
+''   not match the order of emitted operations.
+''
+'' - Labels begin basic blocks, certain operations (ret, br, ...) end them.
+''   Basic blocks without a name/label are given a default name/label similar
+''   to the default naming for operations.
+''
+'' - Labels are not allowed to appear consecutively (a basic block can only
+''   have one name), and labels are not allowed in the middle of basic blocks
+''   (only after an end operation like ret or br).
+''   Both situations can happen in FB code easily (empty scope blocks, GOTO...),
+''   so _emitLabel() needs to work around that by inserting no-ops or branches.
+''   (a more complex solution would be to remove duplicate labels from the AST,
+''    and redirect all uses of the removed label to the label that was kept)
+''
+'' - Operand types are always emitted explicitly; they are not guessed or
+''   automatically derived from the actual operand.
+''
+'' - All types must match exactly, or llc will complain.
+''   Since the AST does not always call irSetVregDataType() or irEmitConvert(),
+''   the operations emitting ensures to emit casts if needed.
 ''
 '' - Local variables are allocated from stack using "alloca",
 ''   the returned value is a pointer to the memory.
@@ -38,12 +64,10 @@
 #include once "flist.bi"
 #include once "lex.bi"
 
-'' flags that are stored in ctx to know what part of the output hWriteFile
-'' should write to
-enum section_e
-	SECTION_HEAD
-	SECTION_BODY
-	SECTION_FOOT
+enum
+	SECTION_HEAD  '' global declarations
+	SECTION_BODY  '' procedure bodies
+	SECTION_FOOT  '' debugging meta data
 end enum
 
 type IRCALLARG
@@ -67,10 +91,10 @@ type IRHLCCTX
 
 	asm_line			as string  '' line of inline asm built up by _emitAsm*()
 
-	section				as section_e   ' current section to write to
-	head_txt			as string      ' buffer for header text
-	body_txt			as string      ' buffer for body text
-	foot_txt			as string      ' buffer for footer text
+	section				as integer  '' current section to write to
+	head_txt			as string
+	body_txt			as string
+	foot_txt			as string
 end type
 
 enum EMITTYPE_OPTIONS
@@ -1418,7 +1442,13 @@ private function hVregToStr( byval vreg as IRVREG ptr ) as string
 end function
 
 private sub _emitLabel( byval label as FBSYMBOL ptr )
+	'' end current basic block
+	hWriteLine( "br label %" + *symbGetMangledName( label ) )
+
+	'' and start the next one
+	ctx.identcnt -= 1
 	hWriteLine( *symbGetMangledName( label ) + ":" )
+	ctx.identcnt += 1
 end sub
 
 private sub _emitJmpTb _
