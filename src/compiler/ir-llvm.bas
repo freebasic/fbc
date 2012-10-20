@@ -848,10 +848,10 @@ private sub _emitEnd( byval tottime as double )
 	ctx.section = SECTION_HEAD
 
 	if( ctx.memset_used ) then
-		hWriteLine( "declare void @llvm.memset.p0i8.i32(i8*, i8, i32, i32, i1)" )
+		hWriteLine( "declare void @llvm.memset.p0i8.i32(i8*, i8, i32, i32, i1) nounwind" )
 	end if
 	if( ctx.memmove_used ) then
-		hWriteLine( "declare void @llvm.memmove.p0i8.p0i8.i32(i8*, i8*, i32, i32, i1)" )
+		hWriteLine( "declare void @llvm.memmove.p0i8.p0i8.i32(i8*, i8*, i32, i32, i1) nounwind" )
 	end if
 
 	hEmitFTOIBuiltins( )
