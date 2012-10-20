@@ -28,6 +28,7 @@
 '' - Procedure parameters are passed as values, not pointers, so if the
 ''   function wants to take the address of a parameter,
 ''   it has to alloca a stack variable to hold the parameter value.
+''   (that's what clang does)
 ''
 
 #include once "fb.bi"
@@ -149,6 +150,10 @@ private sub hWriteLine( byref ln as string )
 	end select
 end sub
 
+private function hEmitParamName( byval sym as FBSYMBOL ptr ) as string
+	function = *symbGetMangledName( sym ) + "$"
+end function
+
 private function hEmitProcHeader _
 	( _
 		byval proc as FBSYMBOL ptr, _
@@ -193,7 +198,7 @@ private function hEmitProcHeader _
 			else
 				hidden = proc->proc.ext->res
 				ln += hEmitType( symbGetType( hidden ), symbGetSubtype( hidden ), EMITTYPE_ADDPTR )
-				ln += " " + *symbGetMangledName( hidden )
+				ln += " " + hEmitParamName( hidden )
 			end if
 
 			if( symbGetProcParams( proc ) > 0 ) then
@@ -239,7 +244,7 @@ private function hEmitProcHeader _
 			ln += hEmitType( dtype, subtype, type_options )
 
 			if( is_proto = FALSE ) then
-				ln += " " + *symbGetMangledName( pvar )
+				ln += " " + hEmitParamName( pvar )
 			end if
 		end if
 
@@ -351,15 +356,8 @@ private function hEmitArrayDecl( byval sym as FBSYMBOL ptr ) as string
 	function = s
 end function
 
-private sub hEmitVar( byval sym as FBSYMBOL ptr, byval varini as zstring ptr )
+private sub hEmitAlloca( byval sym as FBSYMBOL ptr )
 	dim as string ln
-
-	'' not a local?
-	if( symbGetAttrib( sym ) and (FB_SYMBATTRIB_COMMON or FB_SYMBATTRIB_PUBLIC or _
-	                              FB_SYMBATTRIB_EXTERN or FB_SYMBATTRIB_STATIC or _
-	                              FB_SYMBATTRIB_SHARED) ) then
-		exit sub
-	end if
 
 	'' %sym = alloca type
 	ln += *symbGetMangledName( sym ) + " = alloca "
@@ -416,7 +414,14 @@ private sub hEmitVariable( byval s as FBSYMBOL ptr )
 		return
 	end if
 
-	hEmitVar( s, NULL )
+	'' not a local?
+	if( symbGetAttrib( s ) and (FB_SYMBATTRIB_COMMON or FB_SYMBATTRIB_PUBLIC or _
+	                            FB_SYMBATTRIB_EXTERN or FB_SYMBATTRIB_STATIC or _
+	                            FB_SYMBATTRIB_SHARED) ) then
+		exit sub
+	end if
+
+	hEmitAlloca( s )
 
 end sub
 
@@ -872,7 +877,33 @@ private function _procAllocArg _
 		byval lgt as integer _
 	) as integer
 
-	/' do nothing '/
+	dim as string ln
+	dim as integer dtype = any
+	dim as FBSYMBOL ptr subtype = any
+
+	''
+	'' Load the parameter values into local stack vars, to support taking
+	'' the address of the parameters on stack.
+	''
+	'' This means there are two symbols per parameter:
+	''    - the parameter value in the procedure header
+	''    - the alloca operation representing the stack var
+	'' they must use different names to avoid collision.
+	''
+
+	'' %myparam = alloca type
+	hEmitAlloca( sym )
+
+	dtype = symbGetType( sym )
+	subtype = symbGetSubtype( sym )
+
+	'' store type %myparam$, type* %myparam
+	ln = "store "
+	ln += hEmitType( dtype, subtype ) + " " + hEmitParamName( sym )
+	ln += ", "
+	ln += hEmitType( typeAddrOf( dtype ), subtype ) + " " + *symbGetMangledName( sym )
+	hWriteLine( ln )
+
 	function = 0
 end function
 
@@ -1909,7 +1940,7 @@ private sub _emitVarIniBegin( byval sym as FBSYMBOL ptr )
 end sub
 
 private sub _emitVarIniEnd( byval sym as FBSYMBOL ptr )
-	hEmitVar( sym, ctx.varini )
+	hWriteLine( "TODO varini " + ctx.varini )
 	ctx.varini = ""
 end sub
 
