@@ -1200,9 +1200,6 @@ private sub hLoadVreg( byval vreg as IRVREG ptr )
 		''    %3 = bitcast i8* %2 to foo*
 		''    %v1 = load %3
 
-		'print vreg->typ, typeDump( vreg->dtype, vreg->subtype )
-		'symbTrace( vreg->sym )
-
 		select case( vreg->typ )
 		case IR_VREGTYPE_PTR
 			assert( typeGetPtrCnt( vreg->dtype ) > 0 )
@@ -1447,7 +1444,13 @@ private function hVregToStr( byval vreg as IRVREG ptr ) as string
 		end select
 
 	case IR_VREGTYPE_REG
-		function = "%vr" + str( vreg->reg )
+		if( vreg->sym ) then
+			'' _emitAddr() uses IR_VREGTYPE_REG with symbol instead
+			'' or reg to implement AST_OP_ADDROF
+			function = *symbGetMangledName( vreg->sym )
+		else
+			function = "%vr" + str( vreg->reg )
+		end if
 
 	end select
 end function
@@ -1724,8 +1727,6 @@ private sub _emitStore( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 	hLoadVreg( v2 )
 	_setVregDataType( v2, v1->dtype, v1->subtype )
 
-	'print v1->typ, typeDump( v1->dtype, v1->subtype )
-
 	select case( v1->typ )
 	case IR_VREGTYPE_VAR, IR_VREGTYPE_IDX
 		assert( typeGetPtrCnt( v1->dtype ) > 0 )
@@ -1787,10 +1788,42 @@ private sub _emitAddr _
 		byval vr as IRVREG ptr _
 	)
 
+	dim as string ln
+
 	select case( op )
 	case AST_OP_ADDROF
-		_setVregDataType( v1, vr->dtype, vr->subtype )
-		*vr = *v1
+		'' There is no address-of operator in LLVM, because it only
+		'' uses addresses to access memory, i.e. everything is a
+		'' pointer already.
+		''
+		'' If a different type is wanted we can do a bitcast,
+		'' but without loading the vreg, and if it's the same type
+		'' the expression can be re-used as-is.
+
+		assert( irIsREG( vr ) )
+
+		'' Treat memory access as address - turn it into a REG
+		'' Note: we do not allocate a v1->reg value like _allocVreg()
+		'' would do, but instead leave v1->sym set, to be able to
+		'' access that LLVM value.
+		assert( v1->typ = IR_VREGTYPE_VAR )
+		assert( v1->ofs = 0 )
+		assert( v1->vidx = NULL )
+		v1->typ = IR_VREGTYPE_REG
+		v1->dtype = typeAddrOf( v1->dtype )
+		v1->reg = INVALID
+
+		'' Add bitcast if types differ
+		if( (vr->dtype <> v1->dtype) or (vr->subtype <> v1->subtype) ) then
+			ln = hVregToStr( vr ) + " = bitcast "
+			ln += hEmitType( v1->dtype, v1->subtype )
+			ln += " " + hVregToStr( v1 ) + " to "
+			ln += hEmitType( vr->dtype, vr->subtype )
+			hWriteLine( ln )
+		else
+			*vr = *v1
+		end if
+
 	case AST_OP_DEREF
 		hWriteLine( "TODO: deref" )
 	end select
