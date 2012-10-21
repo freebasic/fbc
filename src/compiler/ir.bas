@@ -40,7 +40,8 @@ function vregDump( byval v as IRVREG ptr ) as string
 
 	s += *vregtypes(v->typ)
 
-	if( v->typ = IR_VREGTYPE_IMM ) then
+	select case( v->typ )
+	case IR_VREGTYPE_IMM
 		s += " "
 		select case as const( v->dtype )
 		case FB_DATATYPE_LONGINT
@@ -68,7 +69,10 @@ function vregDump( byval v as IRVREG ptr ) as string
 		case else
 			s += str( v->value.int )
 		end select
-	end if
+
+	case IR_VREGTYPE_REG
+		s += " reg=" + str( v->reg )
+	end select
 
 	if( v->ofs ) then
 		s += " ofs=" + str( v->ofs )
