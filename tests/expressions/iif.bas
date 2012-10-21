@@ -164,6 +164,36 @@ sub test_7 cdecl ()
 
 end sub
 
+sub test_8 cdecl ()
+	dim TEST1 as string * 5 = "1234"
+	dim TEST2 as string * 5 = "5678"
+
+	dim as string * 5 res
+	dim as integer q
+
+	q = 1
+	res = iif (q, TEST1, TEST2)
+
+	CU_ASSERT_EQUAL( res, TEST1 )
+
+	q = 0
+	res = iif (q, TEST1, TEST2)
+
+	CU_ASSERT_EQUAL( res, TEST2 )
+
+end sub
+
+sub test_9 cdecl ()
+	dim as integer q
+
+	q = 1
+	CU_ASSERT_EQUAL( iif (q, "1234", "5678"), "1234" )
+
+	q = 0
+	CU_ASSERT_EQUAL( iif (q, "1234", "5678"), "5678" )
+
+end sub
+
 sub ctor () constructor
 
 	fbcu.add_suite("fbc-tests-expressions-iif")
@@ -174,6 +204,8 @@ sub ctor () constructor
 	fbcu.add_test("test 5", @test_5)
 	fbcu.add_test("test 6", @test_6)
 	fbcu.add_test("test 7", @test_7)
+	fbcu.add_test("test 8", @test_8)
+	fbcu.add_test("test 9", @test_9)
 
 end sub
 
