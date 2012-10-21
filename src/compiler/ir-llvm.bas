@@ -1870,12 +1870,12 @@ private sub hDoCall _
 		end if
 
 		ln = hVregToStr( v0 ) + " = call "
-		ln += hEmitType( v0->dtype, v0->subtype )
+		ln += hEmitType( v0->dtype, v0->subtype ) + " "
 	else
-		ln = "call void"
+		ln = "call void "
 	end if
 
-	ln += " " + *pname + "( "
+	ln += *pname + "( "
 
 	'' args
 	arg = listGetTail( @ctx.callargs )

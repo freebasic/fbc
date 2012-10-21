@@ -799,12 +799,15 @@ private sub hLoadProcResult _
 			n = astNewLOAD( n, dtype, TRUE )
 		end if
 
-	'' UDT? use the real type
+	'' UDT? use the real type (UDT ptr when returning on stack, or integer etc. when returning in regs)
 	case FB_DATATYPE_STRUCT
 		dtype = symbGetProcRealType( proc )
-	    if( dtype <> FB_DATATYPE_STRUCT ) then
-	    	subtype = NULL
-	    end if
+
+		'' integers shouldn't have subtype set to anything,
+		'' but it must be kept for struct ptrs
+		if( typeGetDtOnly( dtype ) <> FB_DATATYPE_STRUCT ) then
+			subtype = NULL
+		end if
 
 	end select
 
