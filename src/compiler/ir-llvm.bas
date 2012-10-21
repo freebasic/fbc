@@ -1566,6 +1566,7 @@ private sub _emitBop _
 	)
 
 	dim as string ln
+	dim as IRVREG ptr v0 = any
 
 	'' Conditional branch?
 	select case as const( op )
@@ -1582,25 +1583,39 @@ private sub _emitBop _
 		end if
 	end select
 
-	'' The BOP result must be a REG for now, no VAR/PTR/IDX
-	'' (it can only be stored into memory in a separate instruction)
-	assert( vr )
-	assert( irIsREG( vr ) )
+	'' If it's a self-bop, we need to allocate a result REG and then
+	'' store that into v1 later.
+	if( vr ) then
+		'' vr = v1 bop b2
+		assert( irIsREG( vr ) )
+		v0 = vr
+	else
+		'' v1 bop= b2
+		v0 = _allocVreg( v1->dtype, v1->subtype )
+	end if
 
 	hLoadVreg( v1 )
 	hLoadVreg( v2 )
-	_setVregDataType( v1, vr->dtype, vr->subtype )
-	_setVregDataType( v2, vr->dtype, vr->subtype )
+	_setVregDataType( v1, v0->dtype, v0->subtype )
+	_setVregDataType( v2, v0->dtype, v0->subtype )
 
-	ln = hVregToStr( vr )
+	ln = hVregToStr( v0 )
 	ln += " = "
-	ln += *hGetBopCode( op, (typeGetClass( vr->dtype ) = FB_DATACLASS_FPOINT) )
+	ln += *hGetBopCode( op, (typeGetClass( v0->dtype ) = FB_DATACLASS_FPOINT) )
 	ln += " "
-	ln += hEmitType( vr->dtype, vr->subtype )
+	ln += hEmitType( v0->dtype, v0->subtype )
 	ln += " "
 	ln += hVregToStr( v1 )
 	ln += ", "
 	ln += hVregToStr( v2 )
+
+	if( vr = NULL ) then
+		if( irIsREG( v1 ) ) then
+			*v1 = *v0
+		else
+			_emitStore( v1, v0 )
+		end if
+	end if
 
 	hWriteLine( ln )
 end sub
