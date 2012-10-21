@@ -100,21 +100,11 @@ type IRHLCCTX
 	memmove_used			as integer
 end type
 
-enum EMITTYPE_OPTIONS
-	'' Used to turn string into string* on function results
-	EMITTYPE_ISRESULT = &h00000001
-
-	'' Adds an extra * for byref params and in some other places
-	'' (should be used instead of hEmitType( typeAddrOf( dtype ), ... )
-	'' because that could overflow the dtype's pointer count)
-	EMITTYPE_ADDPTR   = &h00000002
-end enum
-
 declare function hEmitType _
 	( _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
-		byval options as EMITTYPE_OPTIONS = 0 _
+		byval is_result as integer = FALSE _
 	) as string
 
 declare sub hEmitStruct( byval s as FBSYMBOL ptr )
@@ -256,7 +246,7 @@ private function hEmitProcHeader _
 	ln += hEmitProcCallConv( proc )
 
 	'' Function result type (is 'void' for subs)
-	ln += hEmitType( typeGetDtAndPtrOnly( symbGetProcRealType( proc ) ), symbGetSubType( proc ), EMITTYPE_ISRESULT )
+	ln += hEmitType( typeGetDtAndPtrOnly( symbGetProcRealType( proc ) ), symbGetSubType( proc ), TRUE )
 
 	ln += " "
 
@@ -272,10 +262,10 @@ private function hEmitProcHeader _
 		if( typeGetDtAndPtrOnly( symbGetProcRealType( proc ) ) = typeAddrOf( symbGetType( proc ) ) ) then
 			if( is_proto ) then
 				hidden = symbGetSubType( proc )
-				ln += hEmitType( symbGetType( hidden ), hidden, EMITTYPE_ADDPTR )
+				ln += hEmitType( typeAddrOf( symbGetType( hidden ) ), hidden )
 			else
 				hidden = proc->proc.ext->res
-				ln += hEmitType( symbGetType( hidden ), symbGetSubtype( hidden ), EMITTYPE_ADDPTR )
+				ln += hEmitType( typeAddrOf( symbGetType( hidden ) ), symbGetSubtype( hidden ) )
 				ln += " " + hEmitParamName( hidden )
 			end if
 
@@ -1265,7 +1255,7 @@ private function hEmitType _
 	( _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
-		byval options as EMITTYPE_OPTIONS = 0 _
+		byval is_result as integer _
 	) as string
 
 	'' same order as FB_DATATYPE
@@ -1298,13 +1288,8 @@ private function hEmitType _
 	}
 
 	dim as string s
-	dim as integer ptrcount_fb = typeGetPtrCnt( dtype )
+	dim as integer ptrcount = typeGetPtrCnt( dtype )
 	dtype = typeGetDtOnly( dtype )
-
-	dim as integer ptrcount_c = ptrcount_fb
-	if( options and EMITTYPE_ADDPTR ) then
-		ptrcount_c += 1
-	end if
 
 	select case as const( dtype )
 	case FB_DATATYPE_STRUCT, FB_DATATYPE_ENUM
@@ -1318,14 +1303,14 @@ private function hEmitType _
 		end if
 
 	case FB_DATATYPE_FUNCTION
-		ptrcount_c -= 1
+		ptrcount -= 1
 		hEmitUDT( subtype )
 		s = *symbGetMangledName( subtype )
 
 	case FB_DATATYPE_STRING, FB_DATATYPE_WCHAR
-		if( options and EMITTYPE_ISRESULT ) then
-			if( ptrcount_fb = 0 ) then
-				ptrcount_c += 1
+		if( is_result ) then
+			if( ptrcount = 0 ) then
+				ptrcount = 1
 			end if
 		end if
 
@@ -1340,7 +1325,7 @@ private function hEmitType _
 		'' void* isn't allowed in LLVM IR, i8* can be used instead,
 		'' that's why %any is aliased to i8. "void" will almost never
 		'' be used, except for subs.
-		if( ptrcount_c = 0 ) then
+		if( ptrcount = 0 ) then
 			s = "void"
 		end if
 
@@ -1350,8 +1335,8 @@ private function hEmitType _
 		s = *dtypeName(dtype)
 	end if
 
-	if( ptrcount_c > 0 ) then
-		s += string( ptrcount_c, "*" )
+	if( ptrcount > 0 ) then
+		s += string( ptrcount, "*" )
 	end if
 
 	function = s
