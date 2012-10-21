@@ -181,6 +181,47 @@ private function hEmitParamName( byval sym as FBSYMBOL ptr ) as string
 	function = *symbGetMangledName( sym ) + "$"
 end function
 
+private sub hGetRealParamType _
+	( _
+		byval sym as FBSYMBOL ptr, _
+		byval parammode as integer, _
+		byref dtype as integer, _
+		byref subtype as FBSYMBOL ptr _
+	)
+
+	'' Either it's a param symbol or a paramvar
+	assert( (sym->class = FB_SYMBCLASS_PARAM) or _
+	        (symbIsVar( sym ) and symbIsParam( sym )) )
+
+	dtype = symbGetType( sym )
+	subtype = symbGetSubtype( sym )
+
+	'' Remap type for byref parameters etc.
+	select case( parammode )
+	case FB_PARAMMODE_BYVAL
+		select case( symbGetType( sym ) )
+		'' byval string? it's actually an pointer to a zstring
+		case FB_DATATYPE_STRING
+			dtype = typeAddrOf( FB_DATATYPE_CHAR )
+
+		case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
+			'' byval struct with dtor/copy ctor/virtuals? it's really byref.
+			if( symbCompIsTrivial( symbGetSubtype( sym ) ) = FALSE ) then
+				dtype = typeAddrOf( dtype )
+			end if
+		end select
+
+	case FB_PARAMMODE_BYREF
+		dtype = typeAddrOf( dtype )
+
+	case FB_PARAMMODE_BYDESC
+		dtype = typeAddrOf( FB_DATATYPE_STRUCT )
+		subtype = symb.arrdesctype
+
+	end select
+
+end sub
+
 private function hEmitProcHeader _
 	( _
 		byval proc as FBSYMBOL ptr, _
@@ -188,6 +229,8 @@ private function hEmitProcHeader _
 	) as string
 
 	dim as string ln
+	dim as integer dtype = any
+	dim as FBSYMBOL ptr subtype = any, paramvar = any
 
 	''
 	'' Calling convention (default if none specified is Cdecl as in C)
@@ -239,39 +282,13 @@ private function hEmitProcHeader _
 		if( symbGetParamMode( param ) = FB_PARAMMODE_VARARG ) then
 			ln += "..."
 		else
-			var pvar = iif( is_proto, param, symbGetParamVar( param ) )
-			var dtype = symbGetType( pvar )
-			var subtype = symbGetSubType( pvar )
-			dim as EMITTYPE_OPTIONS type_options = 0
-
-			select case( param->param.mode )
-			case FB_PARAMMODE_BYVAL
-				select case( symbGetType( param ) )
-				'' byval string? it's actually an pointer to a zstring
-				case FB_DATATYPE_STRING
-					type_options = EMITTYPE_ADDPTR
-					dtype = typeJoin( dtype, FB_DATATYPE_CHAR )
-
-				case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-					'' has a dtor, copy ctor or virtual methods? it's a copy..
-					if( symbCompIsTrivial( symbGetSubtype( param ) ) = FALSE ) then
-						type_options = EMITTYPE_ADDPTR
-					end if
-				end select
-
-			case FB_PARAMMODE_BYREF
-				type_options = EMITTYPE_ADDPTR
-
-			case FB_PARAMMODE_BYDESC
-				type_options = EMITTYPE_ADDPTR
-				dtype = FB_DATATYPE_STRUCT
-				subtype = symb.arrdesctype
-			end select
-
-			ln += hEmitType( dtype, subtype, type_options )
+			hGetRealParamType( param, param->param.mode, dtype, subtype )
+			ln += hEmitType( dtype, subtype )
 
 			if( is_proto = FALSE ) then
-				ln += " " + hEmitParamName( pvar )
+				'' Proc body? Emit the mangled name of the param var
+				'' (the param itself isn't mangled)
+				ln += " " + hEmitParamName( symbGetParamVar( param ) )
 			end if
 		end if
 
@@ -383,72 +400,64 @@ private function hEmitArrayDecl( byval sym as FBSYMBOL ptr ) as string
 	function = s
 end function
 
-private sub hEmitAlloca( byval sym as FBSYMBOL ptr )
+private sub hEmitVariable( byval sym as FBSYMBOL ptr )
 	dim as string ln
 
-	'' %sym = alloca type
-	ln += *symbGetMangledName( sym ) + " = alloca "
-	ln += hEmitType( symbGetType( sym ), symbGetSubType( sym ) )
-
-	hWriteLine( ln )
-end sub
-
-private sub hEmitVariable( byval s as FBSYMBOL ptr )
 	'' already allocated?
-	if( symbGetVarIsAllocated( s ) ) then
-		return
+	if( symbGetVarIsAllocated( sym ) ) then
+		exit sub
 	end if
 
-	symbSetVarIsAllocated( s )
+	symbSetVarIsAllocated( sym )
 
 	'' literal? don't emit..
-	if( symbGetIsLiteral( s ) ) then
-		return
+	if( symbGetIsLiteral( sym ) ) then
+		exit sub
 	end if
 
 	'' initialized? only if not local or local and static
-	if( symbGetIsInitialized( s ) and (symbIsLocal( s ) = FALSE or symbIsStatic( s ))  ) then
+	if( symbGetIsInitialized( sym ) and (symbIsLocal( sym ) = FALSE or symbIsStatic( sym )) ) then
 		'' extern or jump-tb?
-		if( symbIsExtern( s ) ) then
-			return
-		elseif( symbGetIsJumpTb( s ) ) then
-			return
+		if( symbIsExtern( sym ) or symbGetIsJumpTb( sym ) ) then
+			exit sub
 		end if
 
 		'' never referenced?
-		if( symbIsLocal( s ) = FALSE ) then
-			if( symbGetIsAccessed( s ) = FALSE ) then
+		if( symbIsLocal( sym ) = FALSE ) then
+			if( symbGetIsAccessed( sym ) = FALSE ) then
 				'' not public?
-				if( symbIsPublic( s ) = FALSE ) then
-					return
+				if( symbIsPublic( sym ) = FALSE ) then
+					exit sub
 				end if
 			end if
 		end if
 
-		astTypeIniFlush( s->var_.initree, s, AST_INIOPT_ISINI or AST_INIOPT_ISSTATIC )
-
-		s->var_.initree = NULL
-		return
-	end if
-
-	'' dynamic? only the array descriptor is emitted
-	if( symbGetIsDynamic( s ) ) then
-		return
-	end if
-
-	'' a string or array descriptor?
-	if( symbGetLen( s ) <= 0 ) then
-		return
-	end if
-
-	'' not a local?
-	if( symbGetAttrib( s ) and (FB_SYMBATTRIB_COMMON or FB_SYMBATTRIB_PUBLIC or _
-	                            FB_SYMBATTRIB_EXTERN or FB_SYMBATTRIB_STATIC or _
-	                            FB_SYMBATTRIB_SHARED) ) then
+		astTypeIniFlush( sym->var_.initree, sym, AST_INIOPT_ISINI or AST_INIOPT_ISSTATIC )
+		sym->var_.initree = NULL
 		exit sub
 	end if
 
-	hEmitAlloca( s )
+	'' dynamic? only the array descriptor is emitted
+	if( symbGetIsDynamic( sym ) ) then
+		exit sub
+	end if
+
+	'' a string or array descriptor?
+	if( symbGetLen( sym ) <= 0 ) then
+		exit sub
+	end if
+
+	'' not a local?
+	if( symbGetAttrib( sym ) and (FB_SYMBATTRIB_COMMON or FB_SYMBATTRIB_PUBLIC or _
+	                              FB_SYMBATTRIB_EXTERN or FB_SYMBATTRIB_STATIC or _
+	                              FB_SYMBATTRIB_SHARED) ) then
+		exit sub
+	end if
+
+	'' %sym = alloca type
+	ln += *symbGetMangledName( sym ) + " = alloca "
+	ln += hEmitType( symbGetType( sym ), symbGetSubType( sym ) )
+	hWriteLine( ln )
 
 end sub
 
@@ -913,7 +922,7 @@ private function _procAllocArg _
 	) as integer
 
 	dim as string ln
-	dim as integer dtype = any
+	dim as integer dtype = any, parammode = any
 	dim as FBSYMBOL ptr subtype = any
 
 	''
@@ -926,11 +935,21 @@ private function _procAllocArg _
 	'' they must use different names to avoid collision.
 	''
 
-	'' %myparam = alloca type
-	hEmitAlloca( sym )
+	if( symbIsParamByref( sym ) ) then
+		parammode = FB_PARAMMODE_BYREF
+	elseif( symbIsParamBydesc( sym ) ) then
+		parammode = FB_PARAMMODE_BYDESC
+	else
+		assert( symbIsParamByval( sym ) )
+		parammode = FB_PARAMMODE_BYVAL
+	end if
 
-	dtype = symbGetType( sym )
-	subtype = symbGetSubtype( sym )
+	hGetRealParamType( sym, parammode, dtype, subtype )
+
+	'' %myparam = alloca type
+	ln = *symbGetMangledName( sym ) + " = alloca "
+	ln += hEmitType( dtype, subtype )
+	hWriteLine( ln )
 
 	'' store type %myparam$, type* %myparam
 	ln = "store "
