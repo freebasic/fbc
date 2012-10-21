@@ -222,6 +222,25 @@ private sub hGetRealParamType _
 
 end sub
 
+private function hEmitProcCallConv( byval proc as FBSYMBOL ptr ) as string
+	'' Calling convention
+	'' - default if none specified is Cdecl as in C
+	'' - must be given on the declaration, on the body,
+	''   and on each CALL instruction
+	''
+	'' Note: Pascal is like Stdcall (callee cleans up stack), except that
+	'' arguments are pushed left-to-right (same order as written in code,
+	'' not reversed like Cdecl/Stdcall).
+	'' The symbGetProc*Param() macros take care of changing the order when
+	'' cycling through parameters of Pascal functions. Together with Stdcall
+	'' this results in a double-reverse resulting in the proper ABI.
+
+	select case as const( symbGetProcMode( proc ) )
+	case FB_FUNCMODE_STDCALL, FB_FUNCMODE_STDCALL_MS, FB_FUNCMODE_PASCAL
+		function = "x86_stdcallcc "
+	end select
+end function
+
 private function hEmitProcHeader _
 	( _
 		byval proc as FBSYMBOL ptr, _
@@ -232,20 +251,9 @@ private function hEmitProcHeader _
 	dim as integer dtype = any
 	dim as FBSYMBOL ptr subtype = any, paramvar = any
 
-	''
-	'' Calling convention (default if none specified is Cdecl as in C)
-	''
-	'' Note: Pascal is like Stdcall (callee cleans up stack), except that
-	'' arguments are pushed left-to-right (same order as written in code,
-	'' not reversed like Cdecl/Stdcall).
-	'' The symbGetProc*Param() macros take care of changing the order when
-	'' cycling through parameters of Pascal functions. Together with Stdcall
-	'' this results in a double-reverse resulting in the proper ABI.
-	''
-	select case as const( symbGetProcMode( proc ) )
-	case FB_FUNCMODE_STDCALL, FB_FUNCMODE_STDCALL_MS, FB_FUNCMODE_PASCAL
-		ln += "x86_stdcallcc "
-	end select
+	assert( symbIsProc( proc ) )
+
+	ln += hEmitProcCallConv( proc )
 
 	'' Function result type (is 'void' for subs)
 	ln += hEmitType( typeGetDtAndPtrOnly( symbGetProcRealType( proc ) ), symbGetSubType( proc ), EMITTYPE_ISRESULT )
@@ -1853,6 +1861,7 @@ end sub
 private sub hDoCall _
 	( _
 		byval pname as zstring ptr, _
+		byval proc as FBSYMBOL ptr, _
 		byval bytestopop as integer, _
 		byval vr as IRVREG ptr, _
 		byval level as integer _
@@ -1862,6 +1871,8 @@ private sub hDoCall _
 	dim as IRCALLARG ptr arg = any, prev = any
 	dim as IRVREG ptr varg = any, v0 = any
 
+	assert( symbIsProc( proc ) )
+
 	if( vr ) then
 		if( irIsREG( vr ) ) then
 			v0 = vr
@@ -1870,9 +1881,10 @@ private sub hDoCall _
 		end if
 
 		ln = hVregToStr( v0 ) + " = call "
+		ln += hEmitProcCallConv( proc )
 		ln += hEmitType( v0->dtype, v0->subtype ) + " "
 	else
-		ln = "call void "
+		ln = "call " + hEmitProcCallConv( proc ) + "void "
 	end if
 
 	ln += *pname + "( "
@@ -1918,7 +1930,7 @@ private sub _emitCall _
 		byval level as integer _
 	)
 
-	hDoCall( symbGetMangledName( proc ), bytestopop, vr, level )
+	hDoCall( symbGetMangledName( proc ), proc, bytestopop, vr, level )
 
 end sub
 
@@ -1930,8 +1942,13 @@ private sub _emitCallPtr _
 		byval level as integer _
 	)
 
+	dim as FBSYMBOL ptr proc = any
+
+	assert( v1->dtype = typeAddrOf( FB_DATATYPE_FUNCTION ) )
+	proc = v1->subtype
+
 	hLoadVreg( v1 )
-	hDoCall( hVregToStr( v1 ), bytestopop, vr, level )
+	hDoCall( hVregToStr( v1 ), proc, bytestopop, vr, level )
 
 end sub
 
