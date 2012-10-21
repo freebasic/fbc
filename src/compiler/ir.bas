@@ -29,17 +29,52 @@ end sub
 function vregDump( byval v as IRVREG ptr ) as string
 	dim as string s
 
+	if( v = NULL ) then
+		return "<NULL>"
+	end if
+
 	static as zstring ptr vregtypes(IR_VREGTYPE_IMM to IR_VREGTYPE_OFS) = _
 	{ _
 		@"imm", @"var", @"idx", @"ptr", @"reg", @"ofs" _
 	}
 
 	s += *vregtypes(v->typ)
+
+	if( v->typ = IR_VREGTYPE_IMM ) then
+		s += " "
+		select case as const( v->dtype )
+		case FB_DATATYPE_LONGINT
+			s += str( v->value.long )
+		case FB_DATATYPE_ULONGINT
+			s += str( v->value.long )
+		case FB_DATATYPE_SINGLE
+			s += str( v->value.float )
+		case FB_DATATYPE_DOUBLE
+			s += str( v->value.float )
+		case FB_DATATYPE_LONG
+			if( FB_LONGSIZE = len( integer ) ) then
+				s += str( v->value.int )
+			else
+				s += str( v->value.long )
+			end if
+		case FB_DATATYPE_ULONG
+			if( FB_LONGSIZE = len( integer ) ) then
+				s += str( v->value.int )
+			else
+				s += str( v->value.long )
+			end if
+		case FB_DATATYPE_UINT
+			s += str( v->value.int )
+		case else
+			s += str( v->value.int )
+		end select
+	end if
+
 	if( v->ofs ) then
-		s += " offset=" + str( v->ofs )
+		s += " ofs=" + str( v->ofs )
 	end if
 	if( v->mult ) then
-		s += " multiplier=" + str( v->mult )
+		s += " mult=" + str( v->mult )
 	end if
 	s += " " + typeDump( v->dtype, v->subtype )
 

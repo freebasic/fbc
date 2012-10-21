@@ -1200,15 +1200,8 @@ private sub hLoadVreg( byval vreg as IRVREG ptr )
 		''    %3 = bitcast i8* %2 to foo*
 		''    %v1 = load %3
 
-		select case( vreg->typ )
-		case IR_VREGTYPE_PTR
-			assert( typeGetPtrCnt( vreg->dtype ) > 0 )
-			dtype = typeDeref( vreg->dtype )
-			subtype = vreg->subtype
-		case else
-			dtype = vreg->dtype
-			subtype = vreg->subtype
-		end select
+		dtype = vreg->dtype
+		subtype = vreg->subtype
 
 		if( (vreg->vidx <> NULL) or (vreg->ofs <> 0) ) then
 			'' v0 = ptrtoint vreg
@@ -1445,8 +1438,6 @@ private function hVregToStr( byval vreg as IRVREG ptr ) as string
 
 	case IR_VREGTYPE_REG
 		if( vreg->sym ) then
-			'' _emitAddr() uses IR_VREGTYPE_REG with symbol instead
-			'' or reg to implement AST_OP_ADDROF
 			function = *symbGetMangledName( vreg->sym )
 		else
 			function = "%vr" + str( vreg->reg )
@@ -1733,30 +1724,59 @@ private sub _emitConvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 	end if
 end sub
 
-private sub _emitStore( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
+private sub _emitStore( byval l as IRVREG ptr, byval r as IRVREG ptr )
 	dim as string ln
 	dim as integer dtype = any
 	dim as FBSYMBOL ptr subtype = any
+	dim as IRVREG ptr v0 = any
 
-	hLoadVreg( v1 )
-	hLoadVreg( v2 )
-	_setVregDataType( v2, v1->dtype, v1->subtype )
+	hLoadVreg( r )
+	_setVregDataType( r, l->dtype, l->subtype )
 
-	select case( v1->typ )
-	case IR_VREGTYPE_VAR, IR_VREGTYPE_IDX
-		assert( typeGetPtrCnt( v1->dtype ) > 0 )
-		dtype = typeDeref( v1->dtype )
-		subtype = v1->subtype
-	case else
-		dtype = v1->dtype
-		subtype = v1->subtype
-	end select
+	assert( (l->typ = IR_VREGTYPE_VAR) or _
+	        (l->typ = IR_VREGTYPE_IDX) or _
+	        (l->typ = IR_VREGTYPE_PTR) )
+	assert( (l->mult = 0) or (l->mult = 1) )
+
+	'' Treat memory access as address - turn it into a REG.
+	'' If there is an offset or index, it must be added on top of the
+	'' base address.
+	dtype = l->dtype
+	subtype = l->subtype
+	l->typ = IR_VREGTYPE_REG
+	l->dtype = typeAddrOf( l->dtype )
+	l->reg = INVALID
+	l->mult = 0
+
+	if( (l->vidx <> NULL) or (l->ofs <> 0) ) then
+		'' v0 = ptrtoint l
+		v0 = _allocVreg( FB_DATATYPE_INTEGER, NULL )
+		_emitConvert( v0, l )
+
+		if( l->vidx <> NULL ) then
+			'' v0 = add v0, vidx
+			_emitBop( AST_OP_ADD, v0, l->vidx, NULL, NULL )
+		end if
+
+		if( l->ofs <> 0 ) then
+			'' v0 = add v0, <offset>
+			_emitBop( AST_OP_ADD, v0, _allocVrImm( FB_DATATYPE_INTEGER, NULL, l->ofs ), NULL, NULL )
+		end if
+
+		'' v0 = inttoptr v0
+		_setVregDataType( v0, typeAddrOf( dtype ), subtype )
+	else
+		v0 = l
+	end if
+
+	l->vidx = NULL
+	l->ofs = 0
 
 	ln = "store "
 	ln += hEmitType( dtype, subtype ) + " "
-	ln += hVregToStr( v2 ) + ", "
+	ln += hVregToStr( r ) + ", "
 	ln += hEmitType( typeAddrOf( dtype ), subtype ) + " "
-	ln += hVregToStr( v1 )
+	ln += hVregToStr( v0 )
 	hWriteLine( ln )
 end sub
 
