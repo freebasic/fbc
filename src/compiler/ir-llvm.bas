@@ -1860,7 +1860,10 @@ private sub _emitAddr _
 		end if
 
 	case AST_OP_DEREF
-		hWriteLine( "TODO: deref" )
+		hLoadVreg( v1 )
+		assert( irIsREG( vr ) and irIsREG( v1 ) )
+		*vr = *v1
+
 	end select
 
 end sub
