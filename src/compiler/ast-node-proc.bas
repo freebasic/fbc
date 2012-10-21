@@ -756,7 +756,7 @@ private function hDeclProcParams( byval proc as FBSYMBOL ptr ) as integer
 	p = symbGetProcLastParam( proc )
 	do while( p <> NULL )
 		if( p->param.mode <> FB_PARAMMODE_VARARG ) then
-			p->param.var = symbAddParam( symbGetName( p ), p )
+			p->param.var = symbAddVarForParam( p )
 			if( p->param.var = NULL ) then
 				errReportParam( proc, i, NULL, FB_ERRMSG_DUPDEFINITION )
 				exit function

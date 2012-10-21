@@ -991,13 +991,7 @@ function symbPreAddProc _
 
 end function
 
-'':::::
-function symbAddParam _
-	( _
-		byval symbol as zstring ptr, _
-		byval param as FBSYMBOL ptr _
-	) as FBSYMBOL ptr
-
+function symbAddVarForParam( byval param as FBSYMBOL ptr ) as FBSYMBOL ptr
     dim as FBARRAYDIM dTB(0) = any
     dim as FBSYMBOL ptr s = any
     dim as integer attrib = any, dtype = any
@@ -1043,9 +1037,9 @@ function symbAddParam _
 		attrib or= FB_SYMBATTRIB_SUFFIXED
 	end if
 
-	s = symbAddVarEx( symbol, NULL, dtype, param->subtype, 0, 0, dTB(), attrib )
+	s = symbAddVarEx( symbGetName( param ), NULL, dtype, param->subtype, 0, 0, dTB(), attrib )
 	if( s = NULL ) then
-		return NULL
+		exit function
 	end if
 
     '' declare it or arrays passed by descriptor will be initialized when REDIM'd
@@ -1056,7 +1050,6 @@ function symbAddParam _
     end if
 
 	function = s
-
 end function
 
 function symbAddProcResultParam( byval proc as FBSYMBOL ptr ) as FBSYMBOL ptr

@@ -1187,12 +1187,7 @@ declare function symbPreAddProc _
 	) as FBSYMBOL ptr
 
 declare function symbAddProcResult( byval f as FBSYMBOL ptr ) as FBSYMBOL ptr
-
-declare function symbAddParam _
-	( _
-		byval id as zstring ptr, _
-		byval param as FBSYMBOL ptr _
-	) as FBSYMBOL ptr
+declare function symbAddVarForParam( byval param as FBSYMBOL ptr ) as FBSYMBOL ptr
 
 declare sub symbAddProcInstancePtr _
 	( _
