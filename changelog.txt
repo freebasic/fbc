@@ -13,6 +13,7 @@ Version 0.25.0:
 - fbc now uses a custom COFF/ELF32 reader instead of libbfd for the objinfo feature
 - fbc will now also read out compile-time information from libs passed as libfoo.a instead of -l foo or #inclib "foo"
 - ASM backend: Floating point constants are now emitted in form of their raw byte representation, for better precision than when using STR() to emit them as rounded floating point number literals
+- crt/stdio.bi now declares rename() instead of rename_()
 
 [added]
 - Updated headers for caca 0.99.beta18 (caca.bi = new API, caca0.bi = old API)
