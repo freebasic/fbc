@@ -28,6 +28,7 @@ Version 0.25.0:
 - ALIAS "" or LIB "" will now result in a compiler error
 - fbc now recognizes --version and [-]-help command line options
 - IIF now accepts strings (yetifoot/dkl)
+- win/initguid.bi win32 header
 
 [fixed]
 - libzip headers: zip_stat struct was unnecessarily named zip_stat_, breaking the libzip example
