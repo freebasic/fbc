@@ -3702,9 +3702,8 @@ private sub hSHIFTL _
 	) static
 
 	dim as string dst1, dst2, src, label, mnemonic32, mnemonic64
-	dim as integer tmpreg
+	dim as integer tmpreg, tmpisfree
 	dim as string tmpregname
-	dim as integer preserveeax, preserveecx, preserveebx, preserveedx
 	dim as string a, b
 	dim as IRVREG ptr av, bv
 
@@ -3753,8 +3752,7 @@ private sub hSHIFTL _
 				outp "mov " + a + ", 0"
 			end if
 		elseif( svreg->value.int >= 32 ) then
-			preserveeax = FALSE
-
+			tmpisfree = TRUE
 			if( (bv->typ = IR_VREGTYPE_REG) or (av->typ = IR_VREGTYPE_REG) ) then
 				'' a or b is a reg
 				outp "mov " + a + ", " + b
@@ -3762,11 +3760,15 @@ private sub hSHIFTL _
 				'' neither is a reg; get a temp
 				tmpreg = hFindFreeReg( FB_DATACLASS_INTEGER )
 				if( tmpreg = INVALID ) then
-					tmpreg = EMIT_REG_EAX
-					hPUSH( "eax" )
-					preserveeax = TRUE
+					'' Can only use a temp reg that isn't used in the dest vreg,
+					'' because the code generated below doesn't handle that case.
+					tmpreg = hFindRegNotInVreg( dvreg )
+					tmpisfree = FALSE
 				end if
 				tmpregname = *hGetRegName( FB_DATATYPE_INTEGER, tmpreg )
+				if( tmpisfree = FALSE ) then
+					hPUSH( tmpregname )
+				end if
 				outp "mov " + tmpregname + ", " + b
 				outp "mov " + a + ", " + tmpregname
 			end if
@@ -3784,8 +3786,8 @@ private sub hSHIFTL _
 				outp mnemonic32 + a + ", " + src
 			end if
 
-			if( preserveeax ) then
-				hPOP( "eax" )
+			if( tmpisfree = FALSE ) then
+				hPOP( tmpregname )
 			end if
 
 		else '' src < 32
@@ -3798,27 +3800,28 @@ private sub hSHIFTL _
 				outp mnemonic32 + a + ", " + src
 				outp "xchg " + a + ", " + b
 			else
-				preserveeax = FALSE
-
 				tmpreg = hFindFreeReg( FB_DATACLASS_INTEGER )
 				if( tmpreg = INVALID ) then
-					tmpreg = EMIT_REG_EAX
-					hPUSH( "eax" )
-					preserveeax = TRUE
+					'' Can only use a temp reg that isn't used in the dest vreg,
+					'' because the code generated below doesn't handle that case.
+					tmpreg = hFindRegNotInVreg( dvreg )
+					tmpisfree = FALSE
+				else
+					tmpisfree = TRUE
 				end if
 				tmpregname = *hGetRegName( FB_DATATYPE_INTEGER, tmpreg )
+				if( tmpisfree = FALSE ) then
+					hPUSH( tmpregname )
+				end if
 				outp "mov " + tmpregname + ", " + b
 				outp mnemonic64 + a + ", " + tmpregname + ", " + src
 				outp mnemonic32 + tmpregname + ", " + src
 				outp "mov " + b + ", " + tmpregname
-
-				if( preserveeax ) then
+				if( tmpisfree = FALSE ) then
 					hPOP( "eax" )
 				end if
 			end if
-
 		end if
-
 	else
 		'' if src is not an imm, use cl and check for the x86 glitches
 
@@ -5414,18 +5417,20 @@ private sub hFpuChangeRC( byref regname as string, byval mode as zstring ptr )
 end sub
 
 private sub hEmitFloatFunc( byval func as integer )
-	dim as integer reg, preservereg
+	dim as integer reg = any, isregfree = any
 	dim as string regname
 
 	reg = hFindFreeReg( FB_DATACLASS_INTEGER )
 	if( reg = INVALID ) then
 		reg = EMIT_REG_EAX
-		preservereg = TRUE
+		isregfree = FALSE
+	else
+		isregfree = TRUE
 	end if
 
 	regname = *hGetRegName( FB_DATATYPE_INTEGER, reg )
 
-	if( preservereg ) then
+	if( isregfree = FALSE ) then
 		hPUSH( regname )
 	end if
 
@@ -5453,7 +5458,7 @@ private sub hEmitFloatFunc( byval func as integer )
 	outp( "fldcw [esp]" )
 	outp( "add esp, 4" )
 
-	if( preservereg ) then
+	if( isregfree = FALSE ) then
 		hPOP( regname )
 	end if
 end sub
@@ -5682,7 +5687,6 @@ private sub _emitPOPI _
 			assert( (dsize = 1) or (dsize = 2) )
 
 			reg = hFindRegNotInVreg( dvreg )
-			assert( reg <> INVALID )
 
 			aux8  = *hGetRegName( FB_DATATYPE_BYTE, reg )
 			aux16 = *hGetRegName( FB_DATATYPE_SHORT, reg )
