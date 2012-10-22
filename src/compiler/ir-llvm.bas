@@ -2028,12 +2028,14 @@ private sub _emitJumpPtr( byval v1 as IRVREG ptr )
 end sub
 
 private sub _emitBranch( byval op as integer, byval label as FBSYMBOL ptr )
-	select case op
-	case AST_OP_JMP
-		hWriteLine( "goto " & *symbGetMangledName( label ) )
-	case else
-		errReportEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
-	end select
+	'' GOTO label
+	assert( op = AST_OP_JMP )
+
+	'' The jump ends the current basic block...
+	hWriteLine( "br label %" + *symbGetMangledName( label ) )
+
+	'' so, we need to add a dummy label afterwards (starts new basic block)
+	hWriteLabel( symbUniqueLabel( ) )
 end sub
 
 private sub _emitMem _
