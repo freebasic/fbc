@@ -2,7 +2,7 @@
 Does a binary copy from a ##[[KeyPgLong long]]## variable to a ##[[KeyPgString string]]##, setting its length to 4 bytes
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Mkl** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgString string]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Mkl** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgLong long]] ) [[KeyPgAs as]] [[KeyPgString string]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Mkl**( //number// )

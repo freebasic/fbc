@@ -2,24 +2,15 @@
 Specifies a //cdecl//-style calling convention in a procedure declaration
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare Declare]] [[[KeyPgStatic Static]]] [[KeyPgSub Sub]] //procedure_name// **Cdecl** [[[KeyPgOverload Overload]]] [[[KeyPgAlias Alias]] //"""external_name"""//] [([//parameter_list//])] [[[KeyPgModuleConstructor Constructor]] [//priority//]] [[[KeyPgStatic Static]]] [[[KeyPgExport Export]]]
-
-	[[KeyPgDeclare Declare]] [[[KeyPgStatic Static]]] [[KeyPgFunction Function]] //procedure_name// **Cdecl** [[[KeyPgOverload Overload]]] [[[KeyPgAlias Alias]] //"""external_name"""//] [([//parameter_list//])] [[KeyPgAs as]] //return_type// [[[KeyPgStatic Static]]] [[[KeyPgExport Export]]]
-
-	[[[KeyPgPublic Public]]|[[KeyPgPrivate Private]]] [[KeyPgSub Sub]] //procedure_name// **Cdecl** [[[KeyPgOverload Overload]]] [[[KeyPgAlias Alias]] //"""external_name"""//] [([//parameter_list//])] [[[KeyPgModuleConstructor Constructor]] [//priority//]] [[[KeyPgStatic Static]]] [[[KeyPgExport Export]]]
-		//..procedure body..//
-	[[KeyPgEnd End]] [[KeyPgSub Sub]]
-	
-	[[[KeyPgPublic Public]]|[[KeyPgPrivate Private]]] [[KeyPgFunction Function]] //procedure_name// **Cdecl** [[[KeyPgOverload Overload]]] [[[KeyPgAlias Alias]] //"""external_name"""//] [([//parameter_list//])] [[KeyPgAs as]] //return_type//  [[[KeyPgStatic Static]]] [[[KeyPgExport Export]]]
-		//..procedure body..//
-	[[KeyPgEnd End]] [[KeyPgFunction Function]]
+	[[KeyPgSub Sub]] //name// **Cdecl** [[[KeyPgOverload Overload]]] [[[KeyPgAlias Alias]] //"""alias"""//] ( //parameters// )
+	[[KeyPgFunction Function]] //name// **Cdecl** [[[KeyPgOverload Overload]]] [[[KeyPgAlias Alias]] //"""alias"""//] ( //parameters// ) [[KeyPgAs as]] //return_type//
 ##
 {{fbdoc item="desc"}}
-	In procedure declarations, ##**Cdecl**## specifies that a procedure will use the ##**cdecl**## calling convention. In the ##**cdecl**## calling convention, any parameters are to be passed (pushed onto the stack) in the reverse order in which they are listed, that is, from right to left. The procedures need not preserve the ##EAX##, ##ECX## or ##EDX## registers, and must not clean up the stack (pop any parameters) before it returns - that is left to the calling code.
+	In procedure declarations, ##**Cdecl**## specifies that a procedure will use the //cdecl// calling convention. In the //cdecl// calling convention, any parameters are to be passed (pushed onto the stack) in the reverse order in which they are listed, that is, from right to left. The procedures need not preserve the ##EAX##, ##ECX## or ##EDX## registers, and must not clean up the stack (pop any parameters) before it returns - that is left to the calling code.
 	
 	##**Cdecl**## is allowed to be used with variadic procedure declarations (those with the last parameter listed as "##[[KeyPgDots ...]]##").
 
-	//cdecl// is the default calling convention on Linux, the *BSDs, and DOS, unless another calling convention is explicitly specified or implied by one of the [[KeyPgExternBlock EXTERN blocks]]. ##**cdecl**## is typically the default calling convention for C compilers, and it's used almost exclusively on Unix-like systems.
+	//cdecl// is the default calling convention on Linux, the *BSDs, and DOS, unless another calling convention is explicitly specified or implied by one of the [[KeyPgExternBlock EXTERN blocks]]. //cdecl// is typically the default calling convention for C compilers, and it's used almost exclusively on Unix-like systems.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/procs/cdecl.bas"}}%%(freebasic)

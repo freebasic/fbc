@@ -45,7 +45,7 @@ function calc_hash( byval filename as string, byval algo as CRYPT_ALGO_TYPE ) as
 
 	'' convert to hexadecimal
 	dim as string result = ""
-	for i as integer = 0 to length-1
+	for i as integer = 0 to buffersize-1
 		result += hex( buffer(i) )
 	next
 	

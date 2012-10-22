@@ -23,7 +23,7 @@ Declaration specifier for a static member procedure.
 {{fbdoc item="filename" value="examples/manual/udt/static.bas"}}%%(freebasic)
 '' Example showing how the actual procedure invoked by a member can be set at runtime.
 '' using static member procedures.
-type Object
+type _Object
 
   enum handlertype
 	ht_default
@@ -36,47 +36,47 @@ type Object
   declare sub handler()
 
 private:
-  declare static sub handler_default( byref obj as Object )
-  declare static sub handler_A( byref obj as Object )
-  declare static sub handler_B( byref obj as Object )
-  handler_func as sub( byref obj as Object )
+  declare static sub handler_default( byref obj as _Object )
+  declare static sub handler_A( byref obj as _Object )
+  declare static sub handler_B( byref obj as _Object )
+  handler_func as sub( byref obj as _Object )
 
 end type
 
-constructor Object( byval ht as handlertype )
+constructor _Object( byval ht as handlertype )
   select case ht
   case ht_A
-	handler_func = @Object.handler_A
+	handler_func = @_Object.handler_A
   case ht_B
-	handler_func = @Object.handler_B
+	handler_func = @_Object.handler_B
   case else
-	handler_func = @Object.handler_default
+	handler_func = @_Object.handler_default
   end select
 end constructor
 
-sub Object.handler()
+sub _Object.handler()
   handler_func(this)
 end sub
 
-sub Object.handler_default( byref obj as Object )
+sub _Object.handler_default( byref obj as _Object )
   print "Handling using default method"
 end sub
 
-sub Object.handler_A( byref obj as Object )
+sub _Object.handler_A( byref obj as _Object )
   print "Handling using method A"
 end sub
 
-sub Object.handler_B( byref obj as Object )
+sub _Object.handler_B( byref obj as _Object )
   print "Handling using method B"
 end sub
 
-dim objects(1 to 4) as Object => _
+dim objects(1 to 4) as _Object => _
   { _
-	Object.handlertype.ht_B, _
-	Object.handlertype.ht_default, _
-	Object.handlertype.ht_A _
+	_Object.handlertype.ht_B, _
+	_Object.handlertype.ht_default, _
+	_Object.handlertype.ht_A _
   }
-  '' 4th array item will be Object.handlertype.ht_default
+  '' 4th array item will be _Object.handlertype.ht_default
 
 for i as integer = 1 to 4
   print i,

@@ -27,6 +27,6 @@ Intrinsic define (macro value) set by the compiler
 
 {{fbdoc item="see"}} 
 	- ##[[KeyPgOptiongosub Option Gosub]]##
-	- ##[[KeyPgOptionnogosub Option Noosub]]##
+	- ##[[KeyPgOptionnogosub Option Nogosub]]##
 
 {{fbdoc item="back" value="CatPgDddefines|Intrinsic Defines"}}
