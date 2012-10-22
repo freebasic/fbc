@@ -247,23 +247,26 @@ function hIsRegFree _
 
 end function
 
-'':::::
+'' This will always find a reg that is not used by the given vreg,
+'' because a single vreg can only use 2 regs at most (longints),
+'' and x86 has more regs than that.
+'' Free regs are preferred; however, if all regs are used, the returned reg
+'' won't be free.
 function hFindRegNotInVreg _
 	( _
 		byval vreg as IRVREG ptr, _
 		byval noSIDI as integer = FALSE _
-	) as integer static
+	) as integer
 
-    dim as integer r, reg, reg2, regs
+	dim as integer r = any, reg = any, reg2 = any, regs = any
 
-	function = INVALID
+	function = INVALID '' shouldn't ever happen, getMaxRegs() should be > 0
 
 	reg = INVALID
 
 	select case vreg->typ
 	case IR_VREGTYPE_REG
 		reg = vreg->reg
-
 	case IR_VREGTYPE_IDX, IR_VREGTYPE_PTR
 		if( vreg->vidx <> NULL ) then
 			if( vreg->vidx->typ = IR_VREGTYPE_REG ) then
@@ -282,90 +285,70 @@ function hFindRegNotInVreg _
 
 	regs = emit.regTB(FB_DATACLASS_INTEGER)->getMaxRegs( emit.regTB(FB_DATACLASS_INTEGER) )
 
-	''
 	if( reg2 = INVALID ) then
-
 		if( noSIDI = FALSE ) then
-
-			for r = regs-1 to 0 step -1
+			for r as integer = regs-1 to 0 step -1
 				if( r <> reg ) then
 					function = r
 					if( hIsRegFree( FB_DATACLASS_INTEGER, r ) ) then
-						exit function
+						exit for
 					end if
 				end if
 			next
-
 		'' SI/DI as byte..
 		else
-
-			for r = regs-1 to 0 step -1
+			for r as integer = regs-1 to 0 step -1
 				if( r <> reg ) then
 					if( r <> EMIT_REG_ESI ) then
 						if( r <> EMIT_REG_EDI ) then
 							function = r
 							if( hIsRegFree( FB_DATACLASS_INTEGER, r ) ) then
-								exit function
+								exit for
 							end if
 						end if
 					end if
 				end if
 			next
-
 		end if
-
 	'' longints..
 	else
-
 		if( noSIDI = FALSE ) then
-
-			for r = regs-1 to 0 step -1
+			for r as integer = regs-1 to 0 step -1
 				if( (r <> reg) and (r <> reg2) ) then
 					function = r
 					if( hIsRegFree( FB_DATACLASS_INTEGER, r ) ) then
-						exit function
+						exit for
 					end if
 				end if
 			next
-
 		'' SI/DI as byte..
 		else
-
 			for r = regs-1 to 0 step -1
 				if( (r <> reg) and (r <> reg2) ) then
 					if( r <> EMIT_REG_ESI ) then
 						if( r <> EMIT_REG_EDI ) then
 							function = r
 							if( hIsRegFree( FB_DATACLASS_INTEGER, r ) ) then
-								exit function
+								exit for
 							end if
 						end if
 					end if
 				end if
 			next
-
 		end if
-
 	end if
 
 end function
 
-'':::::
-function hFindFreeReg _
-	( _
-		byval dclass as integer _
-	) as integer static
-    dim as integer r
-
+'' Returns a free reg or INVALID if there are no free regs
+function hFindFreeReg( byval dclass as integer ) as integer
 	function = INVALID
 
-	for r = emit.regTB(dclass)->getMaxRegs( emit.regTB(dclass) )-1 to 0 step -1
-		function = r
+	for r as integer = emit.regTB(dclass)->getMaxRegs( emit.regTB(dclass) )-1 to 0 step -1
 		if( hIsRegFree( dclass, r ) ) then
-			exit function
+			return r
 		end if
 	next
-
 end function
 
 '':::::
