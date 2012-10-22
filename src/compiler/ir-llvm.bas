@@ -167,6 +167,12 @@ private sub hWriteLine( byref ln as string )
 	end select
 end sub
 
+private sub hWriteLabel( byval id as zstring ptr )
+	ctx.identcnt -= 1
+	hWriteLine( *id + ":" )
+	ctx.identcnt += 1
+end sub
+
 private function hEmitParamName( byval sym as FBSYMBOL ptr ) as string
 	function = *symbGetMangledName( sym ) + "$"
 end function
@@ -1522,9 +1528,7 @@ private sub _emitLabel( byval label as FBSYMBOL ptr )
 	hWriteLine( "br label %" + *symbGetMangledName( label ) )
 
 	'' and start the next one
-	ctx.identcnt -= 1
-	hWriteLine( *symbGetMangledName( label ) + ":" )
-	ctx.identcnt += 1
+	hWriteLabel( symbGetMangledName( label ) )
 end sub
 
 private sub _emitJmpTb _
@@ -1553,24 +1557,24 @@ end sub
 private function hGetBopCode _
 	( _
 		byval op as integer, _
-		byval is_float as integer _
+		byval dtype as integer _
 	) as zstring ptr
 
 	select case as const( op )
 	case AST_OP_ADD
-		if( is_float ) then
+		if( typeGetClass( dtype ) = FB_DATACLASS_FPOINT ) then
 			function = @"fadd"
 		else
 			function = @"add"
 		end if
 	case AST_OP_SUB
-		if( is_float ) then
+		if( typeGetClass( dtype ) = FB_DATACLASS_FPOINT ) then
 			function = @"fsub"
 		else
 			function = @"sub"
 		end if
 	case AST_OP_MUL
-		if( is_float ) then
+		if( typeGetClass( dtype ) = FB_DATACLASS_FPOINT ) then
 			function = @"fmul"
 		else
 			function = @"mul"
@@ -1580,7 +1584,7 @@ private function hGetBopCode _
 	case AST_OP_INTDIV
 		function = @"sdiv"
 	case AST_OP_MOD
-		if( is_float ) then
+		if( typeGetClass( dtype ) = FB_DATACLASS_FPOINT ) then
 			function = @"frem"
 		else
 			function = @"srem"
@@ -1627,20 +1631,45 @@ private sub _emitBop _
 		byval ex as FBSYMBOL ptr _
 	)
 
-	dim as string ln
+	dim as string ln, falselabel
 	dim as IRVREG ptr v0 = any
 
 	'' Conditional branch?
 	select case as const( op )
 	case AST_OP_EQ, AST_OP_NE, AST_OP_GT, AST_OP_LT, AST_OP_GE, AST_OP_LE
 		if( vr = NULL ) then
-			ln += "if ("
-			'ln += hVregToStr( v1 )
-			ln += *hGetBopCode( op, FALSE )
-			'ln += hVregToStr( v2 )
-			ln += ") goto "
-			ln += *symbGetMangledName( ex )
+			hLoadVreg( v1 )
+			hLoadVreg( v2 )
+			v0 = _allocVreg( FB_DATATYPE_INTEGER, NULL )
+
+			'' condition = comparison expression
+			ln = hVregToStr( v0 ) + " = "
+			ln += *hGetBopCode( op, v1->dtype )
+			ln += " "
+			ln += hEmitType( v1->dtype, v1->subtype )
+			ln += " "
+			ln += hVregToStr( v1 )
+			ln += ", "
+			ln += hVregToStr( v2 )
 			hWriteLine( ln )
+
+			'' The conditional branch in LLVM always needs both
+			'' true and false labels, to keep the proper basic
+			'' block semantics up.
+			'' true label = the label given through the BOP,
+			'' false label = the code right behind the branch
+
+			'' branch condition, truelabel, falselabel
+			falselabel = *symbUniqueLabel( )
+			ln = "br i1 " + hVregToStr( v0 )
+			ln += ", "
+			ln += "label %" + *symbGetMangledName( ex )
+			ln += ", "
+			ln += "label %" + falselabel
+			hWriteLine( ln )
+
+			'' falselabel:
+			hWriteLabel( falselabel )
 			exit sub
 		end if
 	end select
@@ -1663,7 +1692,7 @@ private sub _emitBop _
 
 	ln = hVregToStr( v0 )
 	ln += " = "
-	ln += *hGetBopCode( op, (typeGetClass( v0->dtype ) = FB_DATACLASS_FPOINT) )
+	ln += *hGetBopCode( op, v0->dtype )
 	ln += " "
 	ln += hEmitType( v0->dtype, v0->subtype )
 	ln += " "
