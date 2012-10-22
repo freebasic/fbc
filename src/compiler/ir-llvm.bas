@@ -398,8 +398,88 @@ private function hEmitArrayDecl( byval sym as FBSYMBOL ptr ) as string
 	function = s
 end function
 
+private sub hBuildStrLit _
+	( _
+		byref ln as string, _
+		byval z as zstring ptr, _
+		byval length as integer _
+	)
+
+	dim as integer ch = any
+
+	'' Convert the string to LLVM IR format
+	'' (assuming internal escape sequences have already been solved out
+	'' using hUnescape())
+	''
+	'' clang turns
+	''    "a\0\\\n"
+	'' into
+	''    [5 x i8] c"a\00\5C\0A\00", align 1
+	''
+	'' \0 doesn't work, it must be two digits as in \00.
+
+	for i as integer = 0 to length - 1
+		ch = (*z)[i]
+		'' chars like a-zA-Z0-9 can be emitted literally,
+		'' but special chars (including '\') should be encoded in hex
+		if( (ch >= 32) and (ch < 127) and (ch <> asc( $"\" )) ) then
+			ln += chr( ch )
+		else
+			ln += $"\" + hex( ch, 2 )
+		end if
+	next
+end sub
+
+private sub hBuildWstrLit _
+	( _
+		byref ln as string, _
+		byval w as wstring ptr, _
+		byval length as integer _
+	)
+
+	dim as uinteger ch = any, wcharsize = any
+
+	'' (ditto)
+	''
+	'' clang turns
+	''    L"a\0\\\n"
+	'' into
+	''    [20 x i8] c"a\00\00\00\00\00\00\00\5C\00\00\00\0A\00\00\00\00\00\00\00", align 4
+	'' (with Linux 4-byte wchar_t)
+
+	wcharsize = typeGetSize( FB_DATATYPE_WCHAR )
+
+	for i as integer = 0 to (length \ wcharsize) - 1
+		ch = (*w)[i]
+		'' (ditto)
+		if( (ch >= 32) and (ch < 127) and (ch <> asc( $"\" )) ) then
+			ln += chr( ch )
+			'' Pad up to wchar_t size
+			for j as integer = 2 to wcharsize
+				ln += $"\00"
+			next
+		else
+			if( wcharsize >= 1 ) then
+				ln += $"\" + hex( (ch       ) and &hFF, 2 )
+			end if
+			if( wcharsize >= 2 ) then
+				ln += $"\" + hex( (ch shr  8) and &hFF, 2 )
+			end if
+			if( wcharsize >= 4 ) then
+				ln += $"\" + hex( (ch shr 16) and &hFF, 2 )
+				ln += $"\" + hex( (ch shr 24) and &hFF, 2 )
+			end if
+		end if
+	next
+end sub
+
+private function hEmitStrLitType( byval sym as FBSYMBOL ptr ) as string
+	function = "[" + str( symbGetLen( sym ) ) + " x i8]"
+end function
+
 private sub hEmitVariable( byval sym as FBSYMBOL ptr )
 	dim as string ln
+	dim as integer dtype = any
 
 	'' already allocated?
 	if( symbGetVarIsAllocated( sym ) ) then
@@ -408,8 +488,35 @@ private sub hEmitVariable( byval sym as FBSYMBOL ptr )
 
 	symbSetVarIsAllocated( sym )
 
-	'' literal? don't emit..
+	'' literal?
 	if( symbGetIsLiteral( sym ) ) then
+		if( symbGetIsAccessed( sym ) = FALSE ) then
+			exit sub
+		end if
+
+		dtype = symbGetType( sym )
+
+		select case( dtype )
+		case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
+			'' string literals are emitted as global char arrays,
+			'' this also means a bitcast to char pointer is needed
+			'' on every use of the global symbol.
+			ln = *symbGetMangledName( sym ) + " = "
+			ln += "private constant "
+			ln += hEmitStrLitType( sym )
+			ln += " c"""
+			if( dtype = FB_DATATYPE_WCHAR ) then
+				hBuildWstrLit( ln, hUnescapeW( symbGetVarLitTextW( sym ) ), symbGetLen( sym ) )
+			else
+				hBuildStrLit( ln, hUnescape( symbGetVarLitText( sym ) ), symbGetLen( sym ) )
+			end if
+			ln += """"
+			hWriteLine( ln )
+		case else
+			'' float constants are handled as "literals",
+			'' at least under the ASM backend
+		end select
+
 		exit sub
 	end if
 
@@ -843,7 +950,7 @@ private function _emitBegin( ) as integer
 	hWriteLine( "%string = type { i8*, i32, i32 }" )
 	hWriteLine( "%fixstr = type i8" )
 	hWriteLine( "%char = type i8" )
-	hWriteLine( "%wchar = type i" + str( typeGetBits( env.target.wchar ) ) )
+	hWriteLine( "%wchar = type i" + str( typeGetBits( FB_DATATYPE_WCHAR ) ) )
 
 	ctx.section = SECTION_BODY
 
@@ -1408,57 +1515,68 @@ private function hEmitDouble( byval value as double ) as string
 end function
 
 private function hVregToStr( byval v as IRVREG ptr ) as string
+	dim as string s
+	dim as FBSYMBOL ptr sym = any
+
 	select case as const( v->typ )
 	case IR_VREGTYPE_VAR, IR_VREGTYPE_IDX, IR_VREGTYPE_PTR
-		if( v->sym ) then
-			function = *symbGetMangledName( v->sym )
-		else
-			assert( FALSE )
-		end if
+		s = *symbGetMangledName( v->sym )
 
 	case IR_VREGTYPE_OFS
-		if( v->ofs <> 0 ) then
-			assert( FALSE )
+		assert( v->ofs = 0 ) '' TODO
+
+		sym = v->sym
+		if( symbGetIsLiteral( sym ) ) then
+			'' Use an inline bitcast operation to convert from
+			'' the char array pointer type to just a char pointer
+			s = "bitcast ("
+			s += hEmitStrLitType( sym ) + "* "
+			s += *symbGetMangledName( sym )
+			s += " to "
+			s += hEmitType( typeAddrOf( symbGetType( sym ) ), NULL )
+			s += ")"
 		else
-			function = *symbGetMangledName( v->sym )
+			s = *symbGetMangledName( sym )
 		end if
 
 	case IR_VREGTYPE_IMM
 		select case as const( v->dtype )
 		case FB_DATATYPE_LONGINT
-			function = hEmitLong( v->value.long )
+			s = hEmitLong( v->value.long )
 		case FB_DATATYPE_ULONGINT
-			function = hEmitUlong( v->value.long )
+			s = hEmitUlong( v->value.long )
 		case FB_DATATYPE_SINGLE
-			function = hEmitSingle( v->value.float )
+			s = hEmitSingle( v->value.float )
 		case FB_DATATYPE_DOUBLE
-			function = hEmitDouble( v->value.float )
+			s = hEmitDouble( v->value.float )
   		case FB_DATATYPE_LONG
 			if( FB_LONGSIZE = len( integer ) ) then
-				function = hEmitInt( v->value.int )
+				s = hEmitInt( v->value.int )
 			else
-				function = hEmitLong( v->value.long )
+				s = hEmitLong( v->value.long )
 			end if
 		case FB_DATATYPE_ULONG
 			if( FB_LONGSIZE = len( integer ) ) then
-				function = hEmitUint( v->value.int )
+				s = hEmitUint( v->value.int )
 			else
-				function = hEmitUlong( v->value.long )
+				s = hEmitUlong( v->value.long )
 			end if
 		case FB_DATATYPE_UINT
-			function = hEmitUint( v->value.int )
+			s = hEmitUint( v->value.int )
 		case else
-			function = hEmitInt( v->value.int )
+			s = hEmitInt( v->value.int )
 		end select
 
 	case IR_VREGTYPE_REG
 		if( v->sym ) then
-			function = *symbGetMangledName( v->sym )
+			s = *symbGetMangledName( v->sym )
 		else
-			function = "%vr" + str( v->reg )
+			s = "%vr" + str( v->reg )
 		end if
 
 	end select
+
+	function = s
 end function
 
 private sub _emitLabel( byval label as FBSYMBOL ptr )
