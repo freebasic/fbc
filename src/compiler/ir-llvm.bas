@@ -1449,69 +1449,19 @@ private function hEmitType _
 	function = s
 end function
 
-private function hEmitInt( byval value as integer ) as string
-	dim as string s = str(value)
-
-	if( value = -2147483648u ) then
-		'' Prevent GCC warnings for INT_MIN:
-		'' The '-' minus sign doesn't count as part of the number
-		'' literal, and 2147483648 is too big for an integer, so it
-		'' must be marked as unsigned.
-		s += "u"
-	end if
-
-	return s
+private function hEmitInt( byval value as ulongint ) as string
+	'' TODO: does LLVM allow negative constants, or should they all be
+	'' emitted as unsigned?
+	function = str( value )
 end function
 
-private function hEmitUint( byval value as uinteger ) as string
-	return str(value) + "u"
-end function
-
-private function hEmitLong( byval value as longint ) as string
-	dim as string s = str(value)
-
-	if( value = -9223372036854775808ull ) then
-		'' Ditto, prevent warnings for LLONG_MIN
-		s += "u"
-	end if
-
-	s += "ll"
-
-	return s
-end function
-
-private function hEmitUlong( byval value as ulongint ) as string
-	return str(value) + "ull"
-end function
-
-private function hEmitSingle( byval value as single ) as string
-	dim as string s = str( value )
-
-	'' Same considerations as for doubles (see below), and besides,
-	'' apparently the 'f' suffix cannot be used unless the literal
-	'' really looks like a float, i.e. has a dot or exponent.
-
-	if( instr( s, any "e." ) = 0 ) then
-		s += ".0"
-	end if
-
-	return s & "f"
-end function
-
-private function hEmitDouble( byval value as double ) as string
-	dim as string s = str( value )
-
-	'' This can be something like '1', '0.1, or '1e-100'.
-	'' We want to make sure gcc always treats it as a double;
-	'' unfortunately there is no double type suffix, so we add '.0'
-	'' to prevent it from being treated as integer (that would cause
-	'' problems with doubles bigger than the int range allows).
-
-	if( instr( s, any "e." ) = 0 ) then
-		s += ".0"
-	end if
-
-	return s
+private function hEmitFloat( byval value as double ) as string
+	'' Single/double float constants can be emitted as decimals or
+	'' as raw bytes in 0x hex notation with 16 digits (even singles must
+	'' be emitted as doubles, i.e. 16 hex digits, according to the LangRef).
+	'' We always use the raw hex form, that avoids any rounding issues
+	'' or errors with the decimals...
+	function = "0x" + hex( *cptr( ulongint ptr, @value ), 16 )
 end function
 
 private function hVregToStr( byval v as IRVREG ptr ) as string
@@ -1541,28 +1491,16 @@ private function hVregToStr( byval v as IRVREG ptr ) as string
 
 	case IR_VREGTYPE_IMM
 		select case as const( v->dtype )
-		case FB_DATATYPE_LONGINT
-			s = hEmitLong( v->value.long )
-		case FB_DATATYPE_ULONGINT
-			s = hEmitUlong( v->value.long )
-		case FB_DATATYPE_SINGLE
-			s = hEmitSingle( v->value.float )
-		case FB_DATATYPE_DOUBLE
-			s = hEmitDouble( v->value.float )
-  		case FB_DATATYPE_LONG
+		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
+			s = hEmitInt( v->value.long )
+		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
+			s = hEmitFloat( v->value.float )
+		case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
 			if( FB_LONGSIZE = len( integer ) ) then
 				s = hEmitInt( v->value.int )
 			else
-				s = hEmitLong( v->value.long )
+				s = hEmitInt( v->value.long )
 			end if
-		case FB_DATATYPE_ULONG
-			if( FB_LONGSIZE = len( integer ) ) then
-				s = hEmitUint( v->value.int )
-			else
-				s = hEmitUlong( v->value.long )
-			end if
-		case FB_DATATYPE_UINT
-			s = hEmitUint( v->value.int )
 		case else
 			s = hEmitInt( v->value.int )
 		end select
@@ -2175,29 +2113,17 @@ private sub hVarIniSeparator( )
 end sub
 
 private sub _emitVarIniI( byval dtype as integer, byval value as integer )
-	if( typeIsSigned( dtype ) ) then
-		ctx.varini += hEmitInt( value )
-	else
-		ctx.varini += hEmitUint( value )
-	end if
+	ctx.varini += hEmitInt( value )
 	hVarIniSeparator( )
 end sub
 
 private sub _emitVarIniF( byval dtype as integer, byval value as double )
-	if( dtype = FB_DATATYPE_SINGLE ) then
-		ctx.varini += hEmitSingle( value )
-	else
-		ctx.varini += hEmitDouble( value )
-	end if
+	ctx.varini += hEmitFloat( value )
 	hVarIniSeparator( )
 end sub
 
 private sub _emitVarIniI64( byval dtype as integer, byval value as longint )
-	if( typeIsSigned( dtype ) ) then
-		ctx.varini += hEmitLong( value )
-	else
-		ctx.varini += hEmitUlong( value )
-	end if
+	ctx.varini += hEmitInt( value )
 	hVarIniSeparator( )
 end sub
 
