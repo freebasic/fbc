@@ -3753,6 +3753,8 @@ private sub hSHIFTL _
 				outp "mov " + a + ", 0"
 			end if
 		elseif( svreg->value.int >= 32 ) then
+			preserveeax = FALSE
+
 			if( (bv->typ = IR_VREGTYPE_REG) or (av->typ = IR_VREGTYPE_REG) ) then
 				'' a or b is a reg
 				outp "mov " + a + ", " + b
@@ -3796,6 +3798,8 @@ private sub hSHIFTL _
 				outp mnemonic32 + a + ", " + src
 				outp "xchg " + a + ", " + b
 			else
+				preserveeax = FALSE
+
 				tmpreg = hFindFreeReg( FB_DATACLASS_INTEGER )
 				if( tmpreg = INVALID ) then
 					tmpreg = EMIT_REG_EAX
