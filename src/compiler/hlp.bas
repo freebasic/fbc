@@ -81,65 +81,22 @@ function hHexUInt _
 
 end function
 
-function hFloatToStr _
+function hFloatToHex _
 	( _
 		byval value as double, _
-		byref typ as integer _
+		byval dtype as integer _
 	) as string
 
-	dim as integer expval
-	dim as single singlevalue
+	dim as single singlevalue = any
 
+	'' Emit the raw bytes that make up the float
 	'' x86 little-endian assumption
-	expval = cast( integer ptr, @value )[1]
-
-	select case expval
-	'' -|+ infinite?
-	case &h7FF00000UL, &hFFF00000UL
-		if( typ = FB_DATATYPE_DOUBLE ) then
-			typ = FB_DATATYPE_LONGINT
-			if( expval and &h80000000 ) then
-				function = "0xFFF0000000000000"
-			else
-				function = "0x7FF0000000000000"
-			end if
-		else
-			typ = FB_DATATYPE_INTEGER
-			if( expval and &h80000000 ) then
-				function = "0xFF800000"
-			else
-				function = "0x7F800000"
-			end if
-		end if
-
-	'' -|+ NaN? Quiet-NaN's only
-	case &h7FF80000UL, &hFFF80000UL
-		if( typ = FB_DATATYPE_DOUBLE ) then
-			typ = FB_DATATYPE_LONGINT
-			if( expval and &h80000000 ) then
-				function = "0xFFF8000000000000"
-			else
-				function = "0x7FF8000000000000"
-			end if
-		else
-			typ = FB_DATATYPE_INTEGER
-			if( expval and &h80000000 ) then
-				function = "0xFFC00000"
-			else
-				function = "0x7FC00000"
-			end if
-		end if
-
-	case else
-		'' Emit the raw bytes that make up the float
-		if( typ = FB_DATATYPE_DOUBLE ) then
-			function = "0x" + hex( *cptr( ulongint ptr, @value ), 16 )
-		else
-			singlevalue = value
-			function = "0x" + hex( *cptr( uinteger ptr, @singlevalue ), 8 )
-		end if
-	end select
-
+	if( typeGet( dtype ) = FB_DATATYPE_DOUBLE ) then
+		function = "0x" + hex( *cptr( ulongint ptr, @value ), 16 )
+	else
+		singlevalue = value
+		function = "0x" + hex( *cptr( uinteger ptr, @singlevalue ), 8 )
+	end if
 end function
 
 '':::::

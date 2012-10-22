@@ -54,7 +54,7 @@ function symbAllocFloatConst _
 	function = NULL
 
 	'' can't use STR() because GAS doesn't support the 1.#INF notation
-	dim as string svalue = hFloatToStr( value, dtype )
+	dim as string svalue = hFloatToHex( value, dtype )
 
 	id = "{fbnc}"
 	id += svalue

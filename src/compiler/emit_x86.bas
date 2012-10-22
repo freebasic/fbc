@@ -6330,7 +6330,7 @@ end sub
 
 sub emitVARINIf( byval dtype as integer, byval value as double )
 	'' can't use STR() because GAS doesn't support the 1.#INF notation
-	outEx( *_getTypeString( dtype ) + " " + hFloatToStr( value, dtype ) + NEWLINE )
+	outEx( *_getTypeString( dtype ) + " " + hFloatToHex( value, dtype ) + NEWLINE )
 end sub
 
 sub emitVARINI64( byval dtype as integer, byval value as longint )
@@ -6963,7 +6963,7 @@ private function _getTypeString( byval dtype as integer ) as const zstring ptr
 	case FB_DATATYPE_LONG, FB_DATATYPE_ULONG, FB_DATATYPE_SINGLE
 		'' SINGLE: emitted as raw bytes in form of .long 0x...,
 		'' instead of .float 1.234...,
-		'' to allow the exact bytes to be emitted by hFloatToStr(),
+		'' to allow the exact bytes to be emitted by hFloatToHex(),
 		'' instead of a str() approximation.
 		function = @".long"
 	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT, FB_DATATYPE_DOUBLE
