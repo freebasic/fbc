@@ -2308,13 +2308,9 @@ private sub _emitProcEnd _
 end sub
 
 private sub _emitScopeBegin( byval s as FBSYMBOL ptr )
-	hWriteLine( "{" )
-	ctx.identcnt += 1
 end sub
 
 private sub _emitScopeEnd( byval s as FBSYMBOL ptr )
-	ctx.identcnt -= 1
-	hWriteLine( "}" )
 end sub
 
 static as IR_VTBL irllvm_vtbl = _
