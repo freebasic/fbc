@@ -1,25 +1,13 @@
-/* erase function for dynamic arrays */
+/* ERASE for dynamic arrays: free the array */
 
 #include "fb.h"
 
-/*:::::*/
-FBCALL int fb_ArrayErase
-	( 
-		FBARRAY *array, 
-		int isvarlen 
-	)
+FBCALL void fb_ArrayErase( FBARRAY *array )
 {
-    /* not an error, see fb_ArrayEraseObj() */
-    if( array->ptr == NULL )
-    	return fb_ErrorSetNum( FB_RTERROR_OK );
-    
-    if( isvarlen != 0 )
-    	fb_hArrayDtorStr( array, NULL, 0 );
-
-    free( array->ptr );
-    fb_ArrayResetDesc( array );
-
-    return fb_ErrorSetNum( FB_RTERROR_OK );
+	/* ptr can be NULL, for global dynamic arrays that were never allocated,
+	   but will still be destroyed on program exit */
+	if( array->ptr ) {
+		free( array->ptr );
+		fb_ArrayResetDesc( array );
+	}
 }
-
-
