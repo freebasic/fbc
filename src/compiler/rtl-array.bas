@@ -616,15 +616,22 @@ function rtlArrayClear _
 			exit function
 		end if
 	else
-		hCheckDefCtor( ctor, check_access, TRUE )
-		hCheckDtor( dtor, check_access, TRUE )
+		if( dofill ) then
+			hCheckDefCtor( ctor, check_access, TRUE )
 
-		'' byval ctor as sub cdecl( )
-		if( astNewARG( proc, hBuildProcPtr( ctor ) ) = NULL ) then
-			exit function
+			'' byval ctor as sub cdecl( )
+			if( astNewARG( proc, hBuildProcPtr( ctor ) ) = NULL ) then
+				exit function
+			end if
+		else
+			'' byval ctor as sub cdecl( )
+			if( astNewARG( proc, astNewCONSTi( 0 ) ) = NULL ) then
+				exit function
+			end if
 		end if
 
 		'' byval dtor as sub cdecl( )
+		hCheckDtor( dtor, check_access, TRUE )
 		if( astNewARG( proc, hBuildProcPtr( dtor ) ) = NULL ) then
 			exit function
 		end if
