@@ -38,7 +38,10 @@ FBCALL void fb_ArrayClearObj( FBARRAY *array, FB_DEFCTOR ctor, FB_DEFCTOR dtor )
 		fb_ArrayDestructObj( array, dtor );
 
 	/* re-initialize (ctor can be NULL if there only is a dtor) */
-	fb_ArrayClear( array );
 	if( ctor )
+		/* if a ctor exists, it should handle the whole initialization */
 		fb_hArrayCtorObj( array, ctor, 0 );
+	else
+		/* otherwise, just clear */
+		fb_ArrayClear( array );
 }
