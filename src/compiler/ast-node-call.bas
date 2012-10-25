@@ -27,26 +27,6 @@ sub astCallEnd
 
 end sub
 
-private sub hAllocTempStruct _
-	( _
-		byval n as ASTNODE ptr, _
-		byval sym as FBSYMBOL ptr _
-	)
-
-	n->call.tmpres = NULL
-
-	'' follow GCC 3.x's ABI
-	if( symbProcReturnsUdtOnStack( sym ) ) then
-		'' create a temp struct (can't be static, could be an object)
-		n->call.tmpres = symbAddTempVar( FB_DATATYPE_STRUCT, symbGetSubtype( sym ), FALSE )
-
-		if( symbHasDtor( sym ) ) then
-			astDtorListAdd( n->call.tmpres )
-		end if
-	end if
-
-end sub
-
 '':::::
 function astNewCALL _
 	( _
@@ -91,8 +71,17 @@ function astNewCALL _
 
 	n->call.strtail = NULL
 
-	'' handle functions that return structs
-	hAllocTempStruct( n, sym )
+	'' follow GCC 3.x's ABI
+	if( symbProcReturnsUdtOnStack( sym ) ) then
+		'' create a temp struct (can't be static, could be an object)
+		n->call.tmpres = symbAddTempVar( FB_DATATYPE_STRUCT, symbGetSubtype( sym ), FALSE )
+
+		if( symbHasDtor( sym ) ) then
+			astDtorListAdd( n->call.tmpres )
+		end if
+	else
+		n->call.tmpres = NULL
+	end if
 
 end function
 
@@ -116,91 +105,7 @@ function astNewCALLCTOR _
 
 end function
 
-'':::::
-private function hCallProc _
-	( _
-		byval n as ASTNODE ptr, _
-		byval sym as FBSYMBOL ptr, _
-		byval mode as integer, _
-		byval bytestopop as integer, _
-		byval bytesaligned as integer, _
-		byval reclevel as integer _
-	) as IRVREG ptr
-
-    dim as IRVREG ptr vreg = any, vr = any
-    dim as ASTNODE ptr p = any
-    dim as integer dtype = any
-    dim as FBSYMBOL ptr subtype
-
-	dtype = astGetDataType( n )
-	subtype = n->subtype
-
-	select case as const dtype
-	'' returning a string? it's actually a pointer to a string descriptor
-	case FB_DATATYPE_STRING, FB_DATATYPE_WCHAR
-		dtype = typeAddrOf( dtype )
-		subtype = NULL
-
-	'' UDT's can be returned in regs or as a pointer to the hidden param passed
-	case FB_DATATYPE_STRUCT
-		dtype = typeGet( symbGetUDTRetType( n->subtype ) )
-		if( dtype <> FB_DATATYPE_STRUCT ) then
-			subtype = NULL
-		end if
-
-	'case FB_DATATYPE_CLASS
-		' ...
-	end select
-
-	if( ast.doemit ) then
-		vreg = NULL
-		if( dtype <> FB_DATATYPE_VOID ) then
-			vreg = irAllocVREG( dtype, subtype )
-			if( sym->proc.returnMethod <> FB_RETURN_SSE ) then
-				vreg->regFamily = IR_REG_FPU_STACK
-			end if
-		end if
-	end if
-
-    if( mode = FB_FUNCMODE_CDECL ) then
-        bytestopop += bytesaligned
-        bytesaligned = 0
-    else
-        bytestopop = 0
-    end if
-
-	'' function?
-	p = n->l
-	if( p = NULL ) then
-		if( ast.doemit ) then
-			irEmitCALLFUNCT( sym, bytestopop, vreg, reclevel )
-		end if
-
-	'' ptr..
-	else
-		vr = astLoad( p )
-		astDelNode( p )
-		if( ast.doemit ) then
-			irEmitCALLPTR( vr, vreg, bytestopop, reclevel )
-		end if
-	end if
-
-	if( bytesaligned > 0 ) then
-		if( ast.doemit ) then
-			irEmitSTACKALIGN( -bytesaligned )
-		end if
-	end if
-
-	function = vreg
-
-end function
-
-'':::::
-private sub hCheckTmpStrings _
-	( _
-		byval f as ASTNODE ptr _
-	)
-
+private sub hCheckTmpStrings( byval f as ASTNODE ptr )
     dim as ASTNODE ptr t = any
     dim as AST_TMPSTRLIST_ITEM ptr n = any, p = any
 
@@ -226,52 +131,17 @@ private sub hCheckTmpStrings _
 		listDelNode( @ast.call.tmpstrlist, n )
 		n = p
 	loop
-
 end sub
 
-
-'':::::
-private sub hCheckTempStruct _
-	( _
-		byval n as ASTNODE ptr, _
-		byval sym as FBSYMBOL ptr, _
-		byval reclevel as integer _
-	)
-
-	dim as IRVREG ptr vr = any
-
-	if( ast.doemit = FALSE ) then
-		exit sub
-	end if
-
-	'' follow GCC 3.x's ABI
-	if( symbProcReturnsUdtOnStack( sym ) ) then
-    	'' pass the address of the temp struct (it must be cleared if it
-    	'' includes string fields)
-    	vr = astLoad( astNewADDROF( astNewVAR( n->call.tmpres, _
-    							 			   0, _
-    							 			   FB_DATATYPE_STRUCT, _
-    							 			   symbGetSubtype( sym ), _
-    							 			   TRUE ) ) )
-
-        irEmitPUSHARG( vr, 0, reclevel )
-	end if
-
-end sub
-
-'':::::
-function astLoadCALL _
-	( _
-		byval n as ASTNODE ptr _
-	) as IRVREG ptr
-
+function astLoadCALL( byval n as ASTNODE ptr ) as IRVREG ptr
     static as integer reclevel = 0
-
     dim as ASTNODE ptr arg = any, next_arg = any, l = any
     dim as FBSYMBOL ptr sym = any, param = any, last_param = any
-    dim as integer mode = any, topop = any, toalign = any
+	dim as FBSYMBOL ptr subtype = any
+	dim as integer dtype = any
+    dim as integer mode = any, bytestopop = any, bytestoalign = any
     dim as integer params = any, inc = any, args = any
-    dim as IRVREG ptr vr = any
+	dim as IRVREG ptr vr = any, v1 = any
 
     reclevel += 1
 
@@ -286,8 +156,8 @@ function astLoadCALL _
 		inc = -1
 	end if
 
-	topop = symbGetProcParamsLen( sym )
-	toalign = 0
+	bytestopop = symbGetProcParamsLen( sym )
+	bytestoalign = 0
 
 	''
 	params = symbGetProcParams( sym )
@@ -303,11 +173,11 @@ function astLoadCALL _
 
 		else
 #ifdef DO_STACK_ALIGN
-			toalign = ((FB_INTEGERSIZE*4) - _
-					  (topop and (FB_INTEGERSIZE*4-1))) and (FB_INTEGERSIZE*4-1)
-			if( toalign > 0 ) then
+			bytestoalign = ((FB_INTEGERSIZE*4) - _
+					  (bytestopop and (FB_INTEGERSIZE*4-1))) and (FB_INTEGERSIZE*4-1)
+			if( bytestoalign > 0 ) then
 				if( ast.doemit ) then
-					irEmitSTACKALIGN( toalign )
+					irEmitSTACKALIGN( bytestoalign )
 				end if
 			end if
 #endif
@@ -327,7 +197,7 @@ function astLoadCALL _
 		''
 		if( param = last_param ) then
 			if( symbGetParamMode( param ) = FB_PARAMMODE_VARARG ) then
-				topop += FB_ROUNDLEN( symbCalcLen( astGetDataType( l ), NULL ) )
+				bytestopop += FB_ROUNDLEN( symbCalcLen( astGetDataType( l ), NULL ) )
 			end if
 		end if
 
@@ -336,11 +206,11 @@ function astLoadCALL _
 		end if
 
 		'' flush the arg expression
-		vr = astLoad( l )
+		v1 = astLoad( l )
 		astDelNode( l )
 
 		if( ast.doemit ) then
-			irEmitPUSHARG( vr, arg->arg.lgt, reclevel )
+			irEmitPUSHARG( v1, arg->arg.lgt, reclevel )
 		end if
 
 		astDelNode( arg )
@@ -353,11 +223,73 @@ function astLoadCALL _
 		arg = next_arg
 	loop
 
-	'' handle functions returning structs
-	hCheckTempStruct( n, sym, reclevel )
+	if( symbProcReturnsUdtOnStack( sym ) ) then
+		if( ast.doemit ) then
+			'' pass the address of the temp struct (it must be cleared if it
+			'' includes string fields)
+			l = astNewVAR( n->call.tmpres, 0, FB_DATATYPE_STRUCT, symbGetSubtype( sym ), TRUE )
+			l = astNewADDROF( l )
+			v1 = astLoad( l )
+			irEmitPUSHARG( v1, 0, reclevel )
+		end if
+	end if
 
-	'' invoke
-	vr = hCallProc( n, sym, mode, topop, toalign, reclevel )
+	dtype = astGetDataType( n )
+	subtype = n->subtype
+
+	select case as const dtype
+	'' returning a string? it's actually a pointer to a string descriptor
+	case FB_DATATYPE_STRING, FB_DATATYPE_WCHAR
+		dtype = typeAddrOf( dtype )
+		subtype = NULL
+
+	'' UDT's can be returned in regs or as a pointer to the hidden param passed
+	case FB_DATATYPE_STRUCT
+		dtype = typeGet( symbGetUDTRetType( n->subtype ) )
+		if( dtype <> FB_DATATYPE_STRUCT ) then
+			subtype = NULL
+		end if
+
+	'case FB_DATATYPE_CLASS
+		' ...
+	end select
+
+	if( ast.doemit ) then
+		vr = NULL
+		if( dtype <> FB_DATATYPE_VOID ) then
+			vr = irAllocVREG( dtype, subtype )
+			if( sym->proc.returnMethod <> FB_RETURN_SSE ) then
+				vr->regFamily = IR_REG_FPU_STACK
+			end if
+		end if
+	end if
+
+	if( mode = FB_FUNCMODE_CDECL ) then
+		bytestopop += bytestoalign
+		bytestoalign = 0
+	else
+		bytestopop = 0
+	end if
+
+	'' function pointer?
+	l = n->l
+	if( l ) then
+		v1 = astLoad( l )
+		astDelNode( l )
+		if( ast.doemit ) then
+			irEmitCALLPTR( v1, vr, bytestopop, reclevel )
+		end if
+	else
+		if( ast.doemit ) then
+			irEmitCALLFUNCT( sym, bytestopop, vr, reclevel )
+		end if
+	end if
+
+	if( bytestoalign > 0 ) then
+		if( ast.doemit ) then
+			irEmitSTACKALIGN( -bytestoalign )
+		end if
+	end if
 
 	'' del temp strings and copy back if needed
 	hCheckTmpStrings( n )
@@ -365,7 +297,6 @@ function astLoadCALL _
     reclevel -= 1
 
     function = vr
-
 end function
 
 function astLoadCALLCTOR( byval n as ASTNODE ptr ) as IRVREG ptr
