@@ -1198,6 +1198,8 @@ declare sub symbAddProcInstancePtr _
 		byval proc as FBSYMBOL ptr _
 	)
 
+declare function symbProcReturnsUdtOnStack( byval proc as FBSYMBOL ptr ) as integer
+
 declare function symbCalcProcParamLen _
 	( _
 		byval dtype as integer, _
@@ -2142,9 +2144,6 @@ declare function symbGetUDTBaseLevel _
 #define symbGetUDTRetType(s) s->udt.ret_dtype
 
 #define symbGetUDTOpOvlTb(s) s->udt.ext->opovlTb
-
-#define symbGetUDTInRegister(s) iif( symbGetType( sym ) = FB_DATATYPE_STRUCT, _
-									 typeGetDtAndPtrOnly( symbGetProcRealType( sym ) ) <> typeAddrOf( FB_DATATYPE_STRUCT ), TRUE )
 
 #define symbGetEnumSymbTbHead(s) s->enum_.ns.symtb.head
 

@@ -53,6 +53,12 @@ end sub
 '' add
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
+function symbProcReturnsUdtOnStack( byval proc as FBSYMBOL ptr ) as integer
+	if( symbGetType( proc ) = FB_DATATYPE_STRUCT ) then
+		function = (typeGetDtAndPtrOnly( symbGetProcRealType( proc ) ) = typeAddrOf( FB_DATATYPE_STRUCT ))
+	end if
+end function
+
 '':::::
 function symbCalcProcParamLen _
 	( _
@@ -114,10 +120,8 @@ function symbCalcProcParamsLen _
 	loop
 
     '' if proc returns an UDT, add the hidden pointer passed as the 1st arg
-    if( symbGetType( proc ) = FB_DATATYPE_STRUCT ) then
-    	if( typeGetDtAndPtrOnly( symbGetProcRealType( proc ) ) = typeAddrOf( FB_DATATYPE_STRUCT ) ) then
+	if( symbProcReturnsUdtOnStack( proc ) ) then
     		lgt += FB_POINTERSIZE
-    	end if
     end if
 
 	function = lgt
@@ -1064,13 +1068,7 @@ function symbAddProcResultParam( byval proc as FBSYMBOL ptr ) as FBSYMBOL ptr
     dim as FBSYMBOL ptr s = any
     static as string id
 
-	'' UDT?
-	if( proc->typ <> FB_DATATYPE_STRUCT ) then
-		return NULL
-	end if
-
-	'' returns in a reg?
-	if( typeGetDtAndPtrOnly( proc->proc.real_dtype ) <> typeAddrOf( FB_DATATYPE_STRUCT ) ) then
+	if( symbProcReturnsUdtOnStack( proc ) = FALSE ) then
 		return NULL
 	end if
 

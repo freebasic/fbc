@@ -36,7 +36,7 @@ private sub hAllocTempStruct _
 	n->call.tmpres = NULL
 
 	'' follow GCC 3.x's ABI
-	if( symbGetUDTInRegister( sym ) = FALSE ) then
+	if( symbProcReturnsUdtOnStack( sym ) ) then
 		'' create a temp struct (can't be static, could be an object)
 		n->call.tmpres = symbAddTempVar( FB_DATATYPE_STRUCT, symbGetSubtype( sym ), FALSE )
 
@@ -245,8 +245,7 @@ private sub hCheckTempStruct _
 	end if
 
 	'' follow GCC 3.x's ABI
-	if( symbGetUDTInRegister( sym ) = FALSE ) then
-
+	if( symbProcReturnsUdtOnStack( sym ) ) then
     	'' pass the address of the temp struct (it must be cleared if it
     	'' includes string fields)
     	vr = astLoad( astNewADDROF( astNewVAR( n->call.tmpres, _
@@ -256,7 +255,6 @@ private sub hCheckTempStruct _
     							 			   TRUE ) ) )
 
         irEmitPUSHARG( vr, 0, reclevel )
-
 	end if
 
 end sub
