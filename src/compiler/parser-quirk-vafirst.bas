@@ -19,7 +19,7 @@ function cVAFunct() as ASTNODE ptr
 	end if
 
 	dim as FBSYMBOL ptr proc = parser.currproc
-	if( proc->proc.mode <> FB_FUNCMODE_CDECL ) then
+	if( symbGetProcMode( proc ) <> FB_FUNCMODE_CDECL ) then
 		exit function
 	end if
 

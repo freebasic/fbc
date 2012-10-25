@@ -1130,7 +1130,7 @@ function astNewARG _
 	t = parent->r
 
 	'' pascal mode, first param added will be the first pushed
-	if( sym->proc.mode = FB_FUNCMODE_PASCAL ) then
+	if( symbGetProcMode( sym ) = FB_FUNCMODE_PASCAL ) then
 		if( t = NULL ) then
 			parent->r = n
 		else

@@ -277,8 +277,7 @@ function astLoadCALL _
 
 	sym = n->sym
 
-    ''
-    mode = sym->proc.mode
+	mode = symbGetProcMode( sym )
 	if( mode = FB_FUNCMODE_PASCAL ) then
 		args = 0
 		inc = 1
