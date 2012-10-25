@@ -369,17 +369,8 @@ function astLoadCALL _
 
 end function
 
-'':::::
-function astLoadCALLCTOR _
-	( _
-		byval n as ASTNODE ptr _
-	) as IRVREG ptr
-
+function astLoadCALLCTOR( byval n as ASTNODE ptr ) as IRVREG ptr
 	dim as IRVREG ptr vr = any
-
-	if( n = NULL ) then
-		return NULL
-	end if
 
 	'' flush the ctor CALL to initialize the temp var
 	astLoad( n->l )
@@ -390,7 +381,6 @@ function astLoadCALLCTOR _
 	astDelNode( n->r )
 
 	function = vr
-
 end function
 
 '':::::
