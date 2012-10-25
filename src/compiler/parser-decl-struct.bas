@@ -8,10 +8,7 @@
 #include once "parser.bi"
 #include once "ast.bi"
 
-declare function hTypeBody _
-	( _
-		byval s as FBSYMBOL ptr _
-	) as integer
+declare function hTypeBody( byval s as FBSYMBOL ptr ) as integer
 
 declare sub hPatchByvalParamsToSelf _
 	( _
@@ -575,7 +572,6 @@ private function hTypeAdd _
 	
 	'' TypeBody
 	dim as integer res = hTypeBody( s )
-
 	if( res = FALSE ) then
 		exit function
 	end if
@@ -654,11 +650,7 @@ end function
 ''                  | ElementDecl
 ''				    | AS AsElementDecl )+ .
 ''
-private function hTypeBody _
-	( _
-		byval s as FBSYMBOL ptr _
-	) as integer
-
+private function hTypeBody( byval s as FBSYMBOL ptr ) as integer
 	dim as integer isunion = any
 	dim as FB_SYMBATTRIB attrib = FB_SYMBATTRIB_NONE
 	dim as FBSYMBOL ptr inner = any
@@ -839,16 +831,17 @@ decl_inner:		'' it's an anonymous inner UDT
 		end if
 	loop
 
-	'' nothing added?
-	if( symbGetUDTElements( s ) = 0 ) then
+	'' no fields added?
+	if( symbUdtGetFirstField( s ) = NULL ) then
 		errReport( FB_ERRMSG_NOELEMENTSDEFINED )
 	end if
 
-    function = TRUE
-
+	function = TRUE
 end function
 
 private sub hCheckForCDtorOrMethods(byval sym as FBSYMBOL ptr)
+	dim as FBSYMBOL ptr member = any
+
 	'' Not at module level?
 	if( parser.scope > FB_MAINSCOPE ) then
 		'' we can't allow objects (or their children) with c/dtor
@@ -857,13 +850,13 @@ private sub hCheckForCDtorOrMethods(byval sym as FBSYMBOL ptr)
 		end if
 
 		'' can't allow methods either...
-		dim as FBSYMBOL ptr walk = symbGetUDTFirstElm( sym )
-		do while( walk <> NULL )
-			if( symbIsMethod( walk ) ) then
-				errReportEx( FB_ERRMSG_NOOOPINFUNCTIONS, symbGetName( walk ) )
+		member = symbGetCompSymbTb( sym ).head
+		while( member )
+			if( symbIsMethod( member ) ) then
+				errReportEx( FB_ERRMSG_NOOOPINFUNCTIONS, symbGetName( member ) )
 			end if
-			walk = walk->next
-		loop
+			member = member->next
+		wend
 	end if
 end sub
 

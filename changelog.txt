@@ -95,6 +95,8 @@ Version 0.25.0:
 - ASM backend: Some operations could trash registers without preserving them, if there were no free registers available
 - An irrelevant "missing parameter-less constructor" error could be shown when destructing an array of objects
 - #626: Visibility checks for calls of NEW/DELETE operator overloads were missing
+- #609: UDT initializers didn't work properly with derived UDTs
+- Unions could cause bad UDT initializer behaviour in some cases
 
 
 Version 0.24.0:

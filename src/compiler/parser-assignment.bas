@@ -568,6 +568,7 @@ function cAssignmentOrPtrCall _
 
 	dim as integer ismult = FALSE
 	dim as ASTNODE ptr expr = any
+	dim as FBSYMBOL ptr fld = any
 
 	function = FALSE
 
@@ -715,7 +716,7 @@ function cAssignmentOrPtrCall _
 		tree = astBuildVarAssign( tmp, astNewADDROF( expr ) )
 	end if
 
-    dim as FBSYMBOL ptr fld = symbGetUDTFirstElm( astGetSubtype( expr ) )
+	fld = symbUdtGetFirstField( astGetSubtype( expr ) )
     exprcnt = 0
     do
     	dim as FB_LETSTMT_NODE ptr node = listGetHead( @parser.stmt.let.list )
@@ -738,7 +739,7 @@ function cAssignmentOrPtrCall _
         		tree = astNewLINK( tree, expr )
         	end if
 
-        	fld = symbGetUDTNextElm( fld )
+			fld = symbUdtGetNextField( fld )
         end if
 
         listDelNode( @parser.stmt.let.list, node )
@@ -749,5 +750,4 @@ function cAssignmentOrPtrCall _
 	astAdd( tree )
 
 	function = TRUE
-
 end function

@@ -47,7 +47,6 @@ function symbStructBegin _
 	end if
 
 	s->udt.options = iif( isunion, FB_UDTOPT_ISUNION, 0 )
-	s->udt.elements = 0
 
 	symbSymbTbInit( s->udt.ns.symtb, s )
 
@@ -399,9 +398,6 @@ function symbAddField _
     	exit function
     end if
 
-	'' add to parent's linked-list
-    parent->udt.elements += 1
-
 	sym->lgt = lgt
 
 	if( updateudt or ((parent->udt.options and FB_UDTOPT_ISUNION) <> 0) ) then
@@ -502,7 +498,6 @@ function symbAddField _
 		end if
 
 		'' bit position doesn't change in a union
-
 	end if
 
     function = sym
@@ -567,9 +562,6 @@ sub symbInsertInnerUDT _
 
     parent->udt.ns.symtb.tail = inner->udt.ns.symtb.tail
 
-    '' update elements
-    parent->udt.elements += inner->udt.elements
-
 	'' struct? update ofs + len
 	if( (parent->udt.options and FB_UDTOPT_ISUNION) = 0 ) then
 		parent->ofs += inner->lgt
@@ -599,6 +591,8 @@ sub symbInsertInnerUDT _
 end sub
 
 private function hGetReturnType( byval sym as FBSYMBOL ptr ) as integer
+	dim as FBSYMBOL ptr fld = any
+
 	var dtype = symbGetFullType( sym )
 	var res = FB_DATATYPE_VOID
 
@@ -618,7 +612,8 @@ private function hGetReturnType( byval sym as FBSYMBOL ptr ) as integer
 
 	case 3
 		'' return as int only if first is a short
-		if( symbGetUDTFirstElm( sym )->lgt = 2 ) then
+		fld = symbUdtGetFirstField( sym )
+		if( fld->lgt = 2 ) then
 			'' and if the struct is not packed
 			if( sym->lgt >= FB_INTEGERSIZE ) then
 				res = FB_DATATYPE_INTEGER
@@ -627,24 +622,24 @@ private function hGetReturnType( byval sym as FBSYMBOL ptr ) as integer
 
 	case FB_INTEGERSIZE
 		'' return in ST(0) if there's only one element and it's a SINGLE
-		if( sym->udt.elements = 1 ) then
-			do
-				dim as FBSYMBOL ptr s = symbGetUDTFirstElm( sym )
-				if( s->typ = FB_DATATYPE_SINGLE ) then
-					res = FB_DATATYPE_SINGLE
-				end if
+		do
+			fld = symbUdtGetFirstField( sym )
 
-				if( typeGet( s->typ ) <> FB_DATATYPE_STRUCT ) then
-					exit do
-				end if
+			'' second field?
+			if( symbUdtGetNextField( fld ) ) then
+				exit do
+			end if
 
-				sym = s->subtype
+			if( fld->typ = FB_DATATYPE_SINGLE ) then
+				res = FB_DATATYPE_SINGLE
+			end if
 
-				if( sym->udt.elements <> 1 ) then
-					exit do
-				end if
-			loop
-		end if
+			if( typeGet( fld->typ ) <> FB_DATATYPE_STRUCT ) then
+				exit do
+			end if
+
+			sym = fld->subtype
+		loop
 
 		if( res = FB_DATATYPE_VOID ) then
 			res = FB_DATATYPE_INTEGER
@@ -652,7 +647,8 @@ private function hGetReturnType( byval sym as FBSYMBOL ptr ) as integer
 
 	case FB_INTEGERSIZE + 1, FB_INTEGERSIZE + 2, FB_INTEGERSIZE + 3
 		'' return as longint only if first is a int
-		if( symbGetUDTFirstElm( sym )->lgt = FB_INTEGERSIZE ) then
+		fld = symbUdtGetFirstField( sym )
+		if( fld->lgt = FB_INTEGERSIZE ) then
 			'' and if the struct is not packed
 			if( sym->lgt >= FB_INTEGERSIZE*2 ) then
 				res = FB_DATATYPE_LONGINT
@@ -661,24 +657,24 @@ private function hGetReturnType( byval sym as FBSYMBOL ptr ) as integer
 
 	case FB_INTEGERSIZE*2
 		'' return in ST(0) if there's only one element and it's a DOUBLE
-		if( sym->udt.elements = 1 ) then
-			do
-				dim as FBSYMBOL ptr s = symbGetUDTFirstElm( sym )
-				if( s->typ = FB_DATATYPE_DOUBLE ) then
-					res = FB_DATATYPE_DOUBLE
-				end if
+		do
+			fld = symbUdtGetFirstField( sym )
 
-				if( s->typ <> FB_DATATYPE_STRUCT ) then
-					exit do
-				end if
+			'' second field?
+			if( symbUdtGetNextField( fld ) ) then
+				exit do
+			end if
 
-				sym = s->subtype
+			if( fld->typ = FB_DATATYPE_DOUBLE ) then
+				res = FB_DATATYPE_DOUBLE
+			end if
 
-				if( sym->udt.elements <> 1 ) then
-					exit do
-				end if
-			loop
-		end if
+			if( fld->typ <> FB_DATATYPE_STRUCT ) then
+				exit do
+			end if
+
+			sym = fld->subtype
+		loop
 
 		if( res = FB_DATATYPE_VOID ) then
 			res = FB_DATATYPE_LONGINT
@@ -833,181 +829,115 @@ end sub
 '' misc
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-'':::::
-function symbGetUDTFirstElm _
-	( _
-		byval parent as FBSYMBOL ptr _
-	) as FBSYMBOL ptr
-
-	dim as FBSYMBOL ptr sym = symbGetUDTSymbTbHead( parent )
-
-	'' find the first field
-	do while( sym <> NULL )
+private function hSkipToField( byval sym as FBSYMBOL ptr ) as FBSYMBOL ptr
+	'' Skip over anything that isn't a field,
+	'' e.g. PROCs (methods) or NSIMPORTs (in derived UDTs)
+	while( sym )
 		if( symbIsField( sym ) ) then
-			return sym
+			exit while
 		end if
 		sym = sym->next
-	loop
+	wend
+	function = sym
+end function
+
+function symbUdtGetFirstField( byval parent as FBSYMBOL ptr ) as FBSYMBOL ptr
+	'' Get first member that is a field
+	function = hSkipToField( symbGetUDTSymbTbHead( parent ) )
+end function
+
+function symbUdtGetNextField( byval sym as FBSYMBOL ptr ) as FBSYMBOL ptr
+	function = hSkipToField( sym->next )
+end function
+
+private function hFindCommonParent _
+	( _
+		byval a as FBSYMBOL ptr, _
+		byval b as FBSYMBOL ptr _
+	) as FBSYMBOL ptr
+
+	dim as FBSYMBOL ptr originalb = any
+
+	originalb = b
+
+	'' For a and each parent of a,
+	'' check whether it matches b or one of b's parents.
+	while( a )
+		b = originalb
+		while( b )
+			if( a = b ) then
+				return a
+			end if
+			b = b->parent
+		wend
+		a = a->parent
+	wend
 
 	function = NULL
-
 end function
 
+function symbUdtGetNextInitableField( byval sym as FBSYMBOL ptr ) as FBSYMBOL ptr
+	dim as FBSYMBOL ptr original = any, parent = any
 
-'':::::
-function symbIsDeeper _
-	( _
-		byval sym as FBSYMBOL ptr, _
-		byval next_ as FBSYMBOL ptr _
-	) as integer
+	''
+	'' Move to the next field that should be initialized.
+	'' Unions are special cases: only their first field can be initialized,
+	'' so if <sym> is from a union, the remaining fields in the union
+	'' must be skipped.
+	''
+	'' Example:
+	''
+	''    type
+	''        a as integer            '' reached
+	''        union
+	''            b as integer        '' reached
+	''            c as integer        '' skipped
+	''        end union
+	''        union
+	''            d as integer        '' reached
+	''        end union
+	''        e as integer            '' reached
+	''        union
+	''            type
+	''                f as integer    '' reached
+	''                g as integer    '' reached
+	''            end type
+	''            h as integer        '' skipped
+	''            type
+	''                i as integer    '' skipped
+	''                j as integer    '' skipped
+	''            end type
+	''            k as integer        '' skipped
+	''        end union
+	''        l as integer            '' reached
+	''    end type
+	''
 
-	function = FALSE
+	original = sym
 
-	if( next_ = NULL ) then
-		exit function
-	end if
-
-	next_ = next_->parent
-
-	do while( next_ )
-		if( next_ = sym ) then
-			return TRUE
+	do
+		'' Move to next field, if any
+		sym = symbUdtGetNextField( sym )
+		if( sym = NULL ) then
+			exit do
 		end if
-		next_ = next_->parent
+
+		'' If the greatest common parent of the reached field and the
+		'' original field is a union (not a struct), then the reached
+		'' field must be skipped.
+		parent = hFindCommonParent( original, sym )
+		if( parent = NULL ) then
+			exit do
+		end if
+		if( symbGetUDTIsUnion( parent ) = FALSE ) then
+			exit do
+		end if
 	loop
 
+	function = sym
 end function
 
-'':::::
-function symbGetUnionParent _
-	( _
-		byval sym as FBSYMBOL ptr _
-	) as FBSYMBOL ptr
-
-	function = FALSE
-
-	'' if element's parent is an anonymous non-union struct...
-	select case symbGetType( sym )
-	case FB_DATATYPE_STRUCT', FB_DATATYPE_CLASS
-		if( symbGetUDTIsUnion( sym ) = FALSE ) then
-			if( symbGetUDTIsAnon( sym ) ) then
-
-				'' then we use its parent
-				if( sym->parent ) then
-					if( symbGetUDTIsUnion( sym->parent ) ) then
-						function = sym->parent
-					end if
-				end if
-			end if
-		else
-
-			'' otherwise, the immediate parent
-			function = sym
-		end if
-	end select
-
-end function
-
-'':::::
-function symbGetUDTNextElm _
-	( _
-		byval sym as FBSYMBOL ptr, _
-		byval check_union as integer, _
-		byref elms as integer = 0 _
-	) as FBSYMBOL ptr
-
-	dim as integer skip_next = FALSE
-
-	'' check for unions
-	if( check_union ) then
-
-		dim as FBSYMBOL ptr union_parent = symbGetUnionParent( sym->parent )
-		dim as integer skip_the_rest = FALSE
-
-		'' union initialization
-		if( union_parent ) then
-
-			'' if the next var isn't a child of this one's parent
-			if( sym->next ) then
-				if( symbIsDeeper( sym->parent, sym->next ) = FALSE ) then
-					skip_the_rest = TRUE
-				end if
-
-				'' immediate parent is a union
-				if( symbGetUDTIsUnion( sym->parent ) ) then
-
-					'' same parent as next
-					if( sym->parent = sym->next->parent ) then
-						skip_the_rest = TRUE
-					end if
-				end if
-			end if
-
-			''
-			if( skip_the_rest = TRUE ) then
-
-				'' disable auto increment
-				skip_next = TRUE
-
-				dim as integer keep_skipping = any
-				do
-					keep_skipping = FALSE
-
-					'' skip symbols until their parent is no longer the union parent
-					do while( iif( sym, symbIsDeeper( union_parent, sym ), FALSE ) )
-						sym = sym->next
-						elms += 1
-					loop
-
-					'' if the previous var is from another struct
-					if( sym ) then
-						if( sym->prev ) then
-							if( sym->parent ) then
-								if( sym->parent <> sym->prev->parent ) then
-
-									'' immediately in a union
-									if( symbGetUDTIsUnion( sym->parent ) ) then
-
-										'' recalibrate the parent
-										union_parent = symbGetUnionParent( sym->parent )
-
-										'' keep skipping if the previous var is in our same union
-										if( symbIsDeeper( union_parent, sym->prev ) ) then
-											keep_skipping = TRUE
-										end if
-									end if
-								end if
-							end if
-						end if
-					end if
-				loop while( keep_skipping = TRUE )
-			end if
-		end if
-	end if
-
-	'' find the next field
-	if( skip_next = FALSE ) then
-		sym = sym->next
-		elms += 1
-	end if
-	do while( sym <> NULL )
-		if( symbIsField( sym ) ) then
-			return sym
-		end if
-		sym = sym->next
-		elms += 1
-	loop
-
-	function = NULL
-
-end function
-
-''::::::
-function symbIsUDTReturnedInRegs _
-	( _
-		byval s as FBSYMBOL ptr _
-	) as integer
-
+function symbIsUDTReturnedInRegs( byval s as FBSYMBOL ptr ) as integer
 	select case typeGetDtAndPtrOnly( symbGetUDTRetType( s ) )
     case typeAddrOf( FB_DATATYPE_STRUCT ), FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
     	return FALSE
@@ -1015,7 +945,6 @@ function symbIsUDTReturnedInRegs _
     case else
     	return TRUE
     end select
-
 end function
 
 '':::::

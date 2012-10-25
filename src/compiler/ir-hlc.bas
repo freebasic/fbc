@@ -773,7 +773,7 @@ private sub hEmitStruct _
 
 	dim as string ln, id
 	dim as integer skip = any, dtype = any, align = any
-	dim as FBSYMBOL ptr subtype = any
+	dim as FBSYMBOL ptr subtype = any, fld = any, member = any
 
 	id = hGetUDTName( s )
 
@@ -797,11 +797,11 @@ private sub hEmitStruct _
 	symbSetIsBeingEmitted( s )
 
 	'' Emit types of fields
-	var e = symbGetUDTFirstElm( s )
-	do while( e <> NULL )
-		hEmitUDT( symbGetSubtype( e ), typeIsPtr( symbGetType( e ) ) )
-		e = symbGetUDTNextElm( e )
-	loop
+	fld = symbUdtGetFirstField( s )
+	while( fld )
+		hEmitUDT( symbGetSubtype( fld ), typeIsPtr( symbGetType( fld ) ) )
+		fld = symbUdtGetNextField( fld )
+	wend
 
 	'' Has this UDT been emitted in the mean time?
 	'' (due to one of the fields causing a circular dependency)
@@ -816,8 +816,8 @@ private sub hEmitStruct _
 
 	'' Write out the elements
 	sectionIndent( )
-	e = symbGetUDTFirstElm( s )
-	while( e )
+	fld = symbUdtGetFirstField( s )
+	while( fld )
 		''
 		'' For bitfields, emit only the container field, not the
 		'' individual bitfields (bitfields are merged into a "container"
@@ -828,18 +828,18 @@ private sub hEmitStruct _
 		'' but that would depend on gcc's ABI and we'd have to emit
 		'' things like __attribute__((ms_struct)) too for msbitfields...
 		''
-		if( symbGetType( e ) = FB_DATATYPE_BITFIELD ) then
-			skip = (symbGetSubtype( e )->bitfld.bitpos <> 0)
+		if( symbGetType( fld ) = FB_DATATYPE_BITFIELD ) then
+			skip = (symbGetSubtype( fld )->bitfld.bitpos <> 0)
 		else
 			skip = FALSE
 		end if
 
 		if( skip = FALSE ) then
-			dtype = symbGetType( e )
-			subtype = symbGetSubtype( e )
+			dtype = symbGetType( fld )
+			subtype = symbGetSubtype( fld )
 			ln = hEmitType( dtype, subtype )
-			ln += " " + *symbGetName( e )
-			ln += hEmitArrayDecl( e )
+			ln += " " + *symbGetName( fld )
+			ln += hEmitArrayDecl( fld )
 
 			'' Field alignment (FIELD = N)?
 			align = symbGetUDTAlign( s )
@@ -865,7 +865,7 @@ private sub hEmitStruct _
 			hWriteLine( ln, TRUE )
 		end if
 
-		e = symbGetUDTNextElm( e )
+		fld = symbUdtGetNextField( fld )
 	wend
 
 	'' Close UDT body
@@ -879,16 +879,16 @@ private sub hEmitStruct _
 	'' not check UDT methods.
 	'' The method declarations are not part of the struct anymore,
 	'' but they will include references to it (the THIS pointer).
-	e = symbGetCompSymbTb( s ).head
-	do while( e <> NULL )
+	member = symbGetCompSymbTb( s ).head
+	do
 		'' method?
-		if( symbIsProc( e ) ) then
-			if( symbGetIsFuncPtr( e ) = FALSE ) then
-				hEmitFuncProto( e, FALSE )
+		if( symbIsProc( member ) ) then
+			if( symbGetIsFuncPtr( member ) = FALSE ) then
+				hEmitFuncProto( member, FALSE )
 			end if
 		end if
-		e = e->next
-	loop
+		member = member->next
+	loop while( member )
 
 end sub
 

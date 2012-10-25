@@ -68,12 +68,12 @@ private function hThreadCallMapType _
             if symbGetUDTAlign( stype ) <> 0 then 
                 exit function
             end if
-            
+
             '' FB transforms type with 1 element to that element's type
-            dim elems as integer = cint( symbGetUDTElements( stype ) )
-            if elems = 1 then
-                dim as FBSYMBOL ptr elem = symbGetUDTFirstElm( stype )
-                function = hThreadCallMapType( elem, TRUE )
+            dim as FBSYMBOL ptr first = symbUdtGetFirstField( stype )
+            '' no second field?
+            if( symbUdtGetNextField( first ) = NULL ) then
+                function = hThreadCallMapType( first, TRUE )
             else
                 function = FB_RTL_TCTYPES_TYPE
             end if
@@ -83,37 +83,40 @@ private function hThreadCallMapType _
         
 end function
 
-'':::::
 private function hThreadCallPushStruct _
-    ( _
-        byval funcexpr as ASTNODE ptr, _
-        byval struct as FBSYMBOL ptr _
-    ) as integer
+	( _
+		byval funcexpr as ASTNODE ptr, _
+		byval struct as FBSYMBOL ptr _
+	) as integer
+
+	dim as FBSYMBOL ptr fld = any
+	dim as integer count = any
+
+	'' count number of elements
+	count = 0
+	fld = symbUdtGetFirstField( struct )
+	do
+		count += 1
+		fld = symbUdtGetNextField( fld )
+	loop while( fld )
+
+	'' push number of elements
+	if( astNewArg( funcexpr, astNewCONSTi( count ) ) = NULL ) then
+		exit function
+	end if
     
-    function = false
-    
-    '' push number of elements
-    dim as integer elems
-    dim as ASTNODE ptr elemexpr
-    elems = symbGetUDTElements( struct )
-    elemexpr = astNewCONSTi( elems, FB_DATATYPE_INTEGER )
-    if( astNewArg( funcexpr, elemexpr ) = NULL ) then
-        exit function
-    end if
-    
-    '' push each element
-    dim as FBSYMBOL PTR elem 
-    elem = symbGetUDTFirstElm( struct )
-    for i as integer = 1 to elems
-        dim as FB_RTL_TCTYPES tctype = hThreadCallMapType( elem, TRUE )
-        dim as FBSYMBOL ptr stype = symbGetSubType( elem )        
-        if hThreadCallPushType( funcexpr, tctype, stype ) = FALSE then
-            exit  function
-        end if
-        elem = symbGetUDTNextElm( elem, FALSE )
-    next i
-    
-    function = true
+	'' push each element
+	fld = symbUdtGetFirstField( struct )
+	do
+		if( hThreadCallPushType( funcexpr, _
+		                         hThreadCallMapType( fld, TRUE ), _
+		                         symbGetSubType( fld ) ) = FALSE ) then
+			exit  function
+		end if
+		fld = symbUdtGetNextField( fld )
+	loop while( fld )
+
+	function = TRUE
 end function
     
 '':::::

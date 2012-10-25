@@ -423,7 +423,6 @@ type FBS_STRUCT
 	
 	base			as FBSYMBOL_ ptr			'' base class
 	anonparent		as FBSYMBOL_ ptr
-	elements		as integer
 	natalign		as integer					'' UDT's natural alignment based on largest natural field alignment
 	unpadlgt		as integer					'' unpadded len
 	options			as short					'' FB_UDTOPT
@@ -1707,17 +1706,9 @@ declare function symbGetFullProcName _
 		byval proc as FBSYMBOL ptr _
 	) as zstring ptr
 
-declare function symbGetUDTFirstElm _
-	( _
-		byval parent as FBSYMBOL ptr _
-	) as FBSYMBOL ptr
-
-declare function symbGetUDTNextElm _
-	( _
-		byval sym as FBSYMBOL ptr, _
-		byval check_union as integer = FALSE, _
-		byref elms as integer = 0 _
-	) as FBSYMBOL ptr
+declare function symbUdtGetFirstField( byval parent as FBSYMBOL ptr ) as FBSYMBOL ptr
+declare function symbUdtGetNextField( byval sym as FBSYMBOL ptr ) as FBSYMBOL ptr
+declare function symbUdtGetNextInitableField( byval sym as FBSYMBOL ptr ) as FBSYMBOL ptr
 
 declare function symbGetEnumFirstElm _
 	( _
@@ -2139,8 +2130,6 @@ declare function symbGetUDTBaseLevel _
 #define symbGetUDTHasInitedField( s ) (((s)->udt.options and FB_UDTOPT_HASINITEDFIELD) <> 0)
 
 #define symbGetUDTAlign(s) s->udt.align
-
-#define symbGetUDTElements(s) s->udt.elements
 
 #define symbGetUDTUnpadLen(s) s->udt.unpadlgt
 
