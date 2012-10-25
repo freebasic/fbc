@@ -1436,19 +1436,6 @@ private sub _emitLIT( byval s as zstring ptr )
 end sub
 
 '':::::
-private sub _emitALIGN _
-	( _
-		byval vreg as IRVREG ptr _
-	) static
-
-    dim ostr as string
-
-    ostr = ".balign " + str( vreg->value.int )
-	outp( ostr )
-
-end sub
-
-'':::::
 private sub _emitSTKALIGN _
 	( _
 		byval vreg as IRVREG ptr _
@@ -6432,7 +6419,6 @@ end sub
 		EMIT_CBENTRY(FLOOR), _
 		EMIT_CBENTRY(XCHGTOS), _
         _
-		EMIT_CBENTRY(ALIGN), _
 		EMIT_CBENTRY(STKALIGN), _
         _
 		EMIT_CBENTRY(PUSHI), EMIT_CBENTRY(PUSHF), EMIT_CBENTRY(PUSHL), _

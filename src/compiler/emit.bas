@@ -1423,21 +1423,6 @@ sub emitASM( byval text as zstring ptr )
 end sub
 
 '':::::
-function emitALIGN _
-	( _
-		byval bytes as integer _
-	) as EMIT_NODE ptr static
-
-    static as IRVREG vr
-
-	vr.typ = IR_VREGTYPE_IMM
-	vr.value.int = bytes
-
-	function = hNewUOP( EMIT_OP_ALIGN, @vr )
-
-end function
-
-'':::::
 function emitSTACKALIGN _
 	( _
 		byval bytes as integer _

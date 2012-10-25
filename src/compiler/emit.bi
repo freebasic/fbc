@@ -81,7 +81,6 @@ enum EMIT_NODEOP
 	EMIT_OP_FLOOR
 	EMIT_OP_XCHGTOS
 
-	EMIT_OP_ALIGN
 	EMIT_OP_STKALIGN
 
 	EMIT_OP_PUSHI, EMIT_OP_PUSHF, EMIT_OP_PUSHL
@@ -421,11 +420,6 @@ declare function emitJMPTB _
 		byval op as AST_JMPTB_OP, _
 		byval dtype as integer, _
 		byval text as zstring ptr _
-	) as EMIT_NODE ptr
-
-declare function emitALIGN _
-	( _
-		byval bytes as integer _
 	) as EMIT_NODE ptr
 
 declare function emitSTACKALIGN _
