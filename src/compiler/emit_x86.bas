@@ -1436,24 +1436,6 @@ private sub _emitLIT( byval s as zstring ptr )
 end sub
 
 '':::::
-private sub _emitSTKALIGN _
-	( _
-		byval vreg as IRVREG ptr _
-	) static
-
-    dim ostr as string
-
-    if( vreg->value.int > 0 ) then
-    	ostr = "sub esp, " + str( vreg->value.int )
-    else
-    	ostr = "add esp, " + str( -vreg->value.int )
-    end if
-
-	outp( ostr )
-
-end sub
-
-'':::::
 private sub _emitJMPTB _
 	( _
 		byval op as AST_JMPTB_OP, _
@@ -5495,6 +5477,14 @@ end sub
 '' stack
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
+private sub _emitSTACKALIGN( byval vreg as IRVREG ptr, byval unused as integer )
+	if( vreg->value.int > 0 ) then
+		outp( "sub esp, " + str( vreg->value.int ) )
+	else
+		outp( "add esp, " + str( -vreg->value.int ) )
+	end if
+end sub
+
 '':::::
 private sub _emitPUSHL _
 	( _
@@ -6419,8 +6409,7 @@ end sub
 		EMIT_CBENTRY(FLOOR), _
 		EMIT_CBENTRY(XCHGTOS), _
         _
-		EMIT_CBENTRY(STKALIGN), _
-        _
+		EMIT_CBENTRY(STACKALIGN), _
 		EMIT_CBENTRY(PUSHI), EMIT_CBENTRY(PUSHF), EMIT_CBENTRY(PUSHL), _
 		EMIT_CBENTRY(POPI), EMIT_CBENTRY(POPF), EMIT_CBENTRY(POPL), _
 		EMIT_CBENTRY(PUSHUDT), _

@@ -81,8 +81,7 @@ enum EMIT_NODEOP
 	EMIT_OP_FLOOR
 	EMIT_OP_XCHGTOS
 
-	EMIT_OP_STKALIGN
-
+	EMIT_OP_STACKALIGN
 	EMIT_OP_PUSHI, EMIT_OP_PUSHF, EMIT_OP_PUSHL
 	EMIT_OP_POPI, EMIT_OP_POPF, EMIT_OP_POPL
 	EMIT_OP_PUSHUDT
@@ -422,11 +421,6 @@ declare function emitJMPTB _
 		byval text as zstring ptr _
 	) as EMIT_NODE ptr
 
-declare function emitSTACKALIGN _
-	( _
-		byval bytes as integer _
-	) as EMIT_NODE ptr
-
 declare function emitCALL _
 	( _
 		byval label as FBSYMBOL ptr, _
@@ -744,6 +738,8 @@ declare function emitFLOOR _
 	( _
 		byval dvreg as IRVREG ptr _
 	) as EMIT_NODE ptr
+
+declare function emitSTACKALIGN( byval bytes as integer ) as EMIT_NODE ptr
 
 declare function emitPUSH _
 	( _
