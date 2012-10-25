@@ -2925,7 +2925,7 @@ private function hGetMangledNameForASM( byval sym as FBSYMBOL ptr ) as string
 		if( symbGetProcMode( sym ) = FB_FUNCMODE_STDCALL ) then
 			'' Add the @N suffix for STDCALL
 			mangled += "@"
-			mangled += str( symbGetProcParamsLen( sym ) )
+			mangled += str( symbCalcProcParamsLen( sym ) )
 		end if
 	end if
 

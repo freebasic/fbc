@@ -472,7 +472,7 @@ private sub _emitProcEnd _
 	if( symbGetProcMode( proc ) = FB_FUNCMODE_CDECL ) then
 		bytestopop = 0
 	else
-		bytestopop = symbGetProcParamsLen( proc )
+		bytestopop = symbCalcProcParamsLen( proc )
 	end if
 
 	emitProcFooter( proc, bytestopop, initlabel, exitlabel )
@@ -1474,7 +1474,7 @@ private sub hFlushCALL _
 		case FB_FUNCMODE_CDECL
 			'' if this func is VARARG, astCALL() already set the size
 			if( bytestopop = 0 ) then
-				bytestopop = symbGetProcParamsLen( proc )
+				bytestopop = symbCalcProcParamsLen( proc )
 			end if
 
 		'' stdcall/pascal etc.. nothing to pop

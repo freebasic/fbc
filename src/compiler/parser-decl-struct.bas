@@ -1038,14 +1038,11 @@ private sub hPatchByvalParamsToSelf _
 	) static
 
 	dim as FBSYMBOL ptr sym, param
-	dim as integer do_recalc
 
 	'' for each method..
 	sym = symbGetUDTSymbtb( parent ).head
 	do while( sym <> NULL )
 		if( symbIsProc( sym ) ) then
-			do_recalc = FALSE
-
 			'' for each param..
 			param = symbGetProcHeadParam( sym )
 			do while( param <> NULL )
@@ -1055,17 +1052,11 @@ private sub hPatchByvalParamsToSelf _
 						param->lgt = symbCalcProcParamLen( FB_DATATYPE_STRUCT, _
 														   parent, _
 														   FB_PARAMMODE_BYVAL )
-						do_recalc = TRUE
 					end if
 				end if
 
 				param = param->next
 			loop
-
-			'' recalc total len?
-			if( do_recalc ) then
-            	symbGetProcParamsLen( sym ) = symbCalcProcParamsLen( sym )
-			end if
 		end if
 
 		sym = sym->next
@@ -1080,23 +1071,16 @@ private sub hPatchByvalResultToSelf _
 	) static
 
 	dim as FBSYMBOL ptr sym
-	dim as integer do_recalc
 
 	'' for each method..
 	sym = symbGetUDTSymbtb( parent ).head
 	do while( sym <> NULL )
 		if( symbIsProc( sym ) ) then
-
 			'' byval result to self? reset..
 			if( symbGetSubtype( sym ) = parent ) then
 				'' follow the GCC 3.x ABI
 				symbGetProcRealType( sym ) = symbGetUDTRetType( parent )
-
-            	'' recalc params len (we don't know if the hidden param was added or
-            	'' not in the time it was parsed, so we can't do any assumption here)
-            	symbGetProcParamsLen( sym ) = symbCalcProcParamsLen( sym )
 			end if
-
 		end if
 
 		sym = sym->next

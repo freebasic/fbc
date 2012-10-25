@@ -156,7 +156,7 @@ function astLoadCALL( byval n as ASTNODE ptr ) as IRVREG ptr
 		inc = -1
 	end if
 
-	bytestopop = symbGetProcParamsLen( sym )
+	bytestopop = symbCalcProcParamsLen( sym )
 	bytestoalign = 0
 
 	''

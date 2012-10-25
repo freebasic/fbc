@@ -550,7 +550,6 @@ type FBS_PROC
 	paramtb			as FBSYMBOLTB				'' parameters symbol tb
 	mode			as FB_FUNCMODE				'' calling convention
 	real_dtype		as FB_DATATYPE				'' used with STRING and UDT functions
-	lgt				as integer					'' parameters length (in bytes)
 	returnMethod	as FB_PROC_RETURN_METHOD
 	rtl				as FB_PROCRTL
 	ovl				as FB_PROCOVL				'' overloading
@@ -2175,8 +2174,6 @@ declare function symbGetUDTBaseLevel _
 #define symbGetLabelStmt(s) s->lbl.stmtnum
 
 #define symbGetProcParams(f) f->proc.params
-
-#define symbGetProcParamsLen(f) f->proc.lgt
 
 #define symbGetProcOptParams(f) f->proc.optparams
 

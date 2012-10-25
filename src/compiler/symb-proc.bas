@@ -750,9 +750,6 @@ add_proc:
 
 	proc->proc.real_dtype = hGetProcRealType( dtype, subtype )
 
-	'' note: symbCalcProcParamsLen() depends on proc.realtype to be set
-	proc->proc.lgt = symbCalcProcParamsLen( sym )
-
 	if( (options and FB_SYMBOPT_DECLARING) <> 0 ) then
 		stats or= FB_SYMBSTATS_DECLARED
 	end if

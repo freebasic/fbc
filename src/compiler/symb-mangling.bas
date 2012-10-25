@@ -931,7 +931,7 @@ private function hGetProcSuffix _
 		return NULL
 	end if
 
-	*(@suffix + 1) = str( sym->proc.lgt )
+	*(@suffix + 1) = str( symbCalcProcParamsLen( sym ) )
 
 	function = @suffix
 
