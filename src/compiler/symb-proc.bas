@@ -755,11 +755,6 @@ add_proc:
 
 	if( (options and FB_SYMBOPT_DECLARING) <> 0 ) then
 		stats or= FB_SYMBSTATS_DECLARED
-
-    	'' param list too large?
-    	if( proc->proc.lgt > 256 ) then
-	    	errReportWarn( FB_WARNINGMSG_PARAMLISTSIZETOOBIG, id )
-    	end if
 	end if
 
 	proc->proc.rtl.callback = NULL

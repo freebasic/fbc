@@ -31,10 +31,15 @@ sub cParameters _
 		byval isproto as integer _
 	)
 
+	dim as integer length = any
+
+	length = 0
+
 	'' method? add the instance pointer (must be done here
 	'' to check for dups)
 	if( symbIsMethod( proc ) ) then
 		symbAddProcInstancePtr( parent, proc )
+		length += typeGetSize( typeAddrOf( FB_DATATYPE_VOID ) )
 	end if
 
 	'' '('?
@@ -56,6 +61,8 @@ sub cParameters _
 			exit do
 		end if
 
+		length += symbCalcProcParamLen( symbGetType( param ), symbGetSubtype( param ), symbGetParamMode( param ) )
+
 		'' vararg?
 		if( param->param.mode = FB_PARAMMODE_VARARG ) then
 			exit do
@@ -76,6 +83,11 @@ sub cParameters _
 		hSkipUntil( CHAR_RPRNT, TRUE )
 	else
 		lexSkipToken( )
+	end if
+
+	'' param list too large?
+	if( length > 256 ) then
+		errReportWarn( FB_WARNINGMSG_PARAMLISTSIZETOOBIG, symbGetName( proc ) )
 	end if
 end sub
 
