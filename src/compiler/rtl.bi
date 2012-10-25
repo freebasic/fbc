@@ -1242,7 +1242,7 @@ declare function rtlMemCopyClear _
 
 declare function rtlMemNewOp _
 	( _
-		byval is_vector as integer, _
+		byval op as integer, _
 		byval len_expr as ASTNODE ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr _
@@ -1250,7 +1250,7 @@ declare function rtlMemNewOp _
 
 declare function rtlMemDeleteOp _
 	( _
-		byval is_vector as integer, _
+		byval op as integer, _
 		byval ptr_expr as ASTNODE ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr _
