@@ -51,6 +51,12 @@
     [x] CONST member procedures ( declare CONST function|sub proc()... )
     [ ] check consts with IIF
 
+o ABI
+  - MinGW GCC 4.7 C++ defaults to __thiscall for methods like MSVC,
+    instead of __cdecl as on Linux, even though GCC doesn't use MSVC's name
+    mangling [yet].
+    - FB can probably support __thiscall with C/LLVM backends pretty easily
+
 [ ] ctor/dtor
     - add 'function foo (...) as SomeObj = any', so #1682972 could be fixed AND when
       speed is important, the temporary result instance won't be cleared

@@ -193,7 +193,10 @@ function astLoadCALL( byval n as ASTNODE ptr ) as IRVREG ptr
 
 	'' Hidden param for functions returning big structs on stack
 	if( symbProcReturnsUdtOnStack( proc ) ) then
-		if( symbGetProcMode( proc ) = FB_FUNCMODE_CDECL ) then
+		'' Pop hidden ptr if cdecl and target doesn't want the callee
+		'' to do it, despite it being cdecl.
+		if( (symbGetProcMode( proc ) = FB_FUNCMODE_CDECL) and _
+		    ((env.target.options and FB_TARGETOPT_CALLEEPOPSHIDDENPTR) = 0) ) then
 			bytestopop += typeGetSize( typeAddrOf( FB_DATATYPE_VOID ) )
 		end if
 		if( ast.doemit ) then

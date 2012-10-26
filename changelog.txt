@@ -98,6 +98,7 @@ Version 0.25.0:
 - #609: UDT initializers didn't work properly with derived UDTs
 - Unions could cause bad UDT initializer behaviour in some cases
 - For stdcall functions returning UDTs on stack, the hidden pointer parameter will no longer be calculated into the @N stdcall suffix, following GCC and MSVC.
+- For functions returning UDTs on stack on Linux/DOS/*BSD targets, the callee now always pops the hidden pointer parameter, even when the function is cdecl, to follow the GCC ABI.
 
 
 Version 0.24.0:
