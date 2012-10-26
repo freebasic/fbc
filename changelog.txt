@@ -97,6 +97,7 @@ Version 0.25.0:
 - #626: Visibility checks for calls of NEW/DELETE operator overloads were missing
 - #609: UDT initializers didn't work properly with derived UDTs
 - Unions could cause bad UDT initializer behaviour in some cases
+- For stdcall functions returning UDTs on stack, the hidden pointer parameter will no longer be calculated into the @N stdcall suffix, following GCC and MSVC.
 
 
 Version 0.24.0:

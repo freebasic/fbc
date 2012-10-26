@@ -94,38 +94,31 @@ function symbCalcProcParamLen _
 
 end function
 
-'':::::
-function symbCalcProcParamsLen _
-	( _
-		byval proc as FBSYMBOL ptr _
-	) as integer
-
-	dim as integer lgt = any
+function symbCalcProcParamsLen( byval proc as FBSYMBOL ptr ) as integer
+	dim as integer length = any
 	dim as FBSYMBOL ptr param = any
 
+	'' Calculate the sum of the sizes of all "normal" parameters,
+	'' - ignoring any vararg param,
+	'' - including THIS param,
+	'' - excluding the hidden struct result param, if any,
+	''   instead it's handled separately where needed.
+
 	param = symbGetProcTailParam( proc )
+	length = 0
 
-	lgt	= 0
-
-	do while( param <> NULL )
-		select case param->param.mode
+	while( param )
+		select case( param->param.mode )
 		case FB_PARAMMODE_BYVAL
-			lgt	+= FB_ROUNDLEN( param->lgt )
-
+			length += FB_ROUNDLEN( param->lgt )
 		case FB_PARAMMODE_BYREF, FB_PARAMMODE_BYDESC
-			lgt	+= FB_POINTERSIZE
+			length += FB_POINTERSIZE
 		end select
 
 		param = param->prev
-	loop
+	wend
 
-    '' if proc returns an UDT, add the hidden pointer passed as the 1st arg
-	if( symbProcReturnsUdtOnStack( proc ) ) then
-    		lgt += FB_POINTERSIZE
-    end if
-
-	function = lgt
-
+	function = length
 end function
 
 '':::::

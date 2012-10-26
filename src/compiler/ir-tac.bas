@@ -457,22 +457,25 @@ private sub _emitProcBegin _
 
 end sub
 
-'':::::
 private sub _emitProcEnd _
 	( _
 		byval proc as FBSYMBOL ptr, _
 		byval initlabel as FBSYMBOL ptr, _
 		byval exitlabel as FBSYMBOL ptr _
-	) static
+	)
 
-	dim as integer bytestopop
+	dim as integer bytestopop = any
 
 	_flush( )
 
+	'' Get the size for the callee's stack clean up (at end of procedure)
 	if( symbGetProcMode( proc ) = FB_FUNCMODE_CDECL ) then
 		bytestopop = 0
 	else
 		bytestopop = symbCalcProcParamsLen( proc )
+		if( symbProcReturnsUdtOnStack( proc ) ) then
+			bytestopop += typeGetSize( typeAddrOf( FB_DATATYPE_VOID ) )
+		end if
 	end if
 
 	emitProcFooter( proc, bytestopop, initlabel, exitlabel )

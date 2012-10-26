@@ -1206,10 +1206,7 @@ declare function symbCalcProcParamLen _
 		byval mode as FB_PARAMMODE _
 	) as integer
 
-declare function symbCalcProcParamsLen _
-	( _
-		byval proc as FBSYMBOL ptr _
-	) as integer
+declare function symbCalcProcParamsLen( byval proc as FBSYMBOL ptr ) as integer
 
 declare function symbAddScope _
 	( _
