@@ -1315,14 +1315,12 @@ private sub _flush static
 
 end sub
 
-'':::::
 private sub hFlushBRANCH _
 	( _
 		byval op as integer, _
 		byval label as FBSYMBOL ptr _
-	) static
+	)
 
-	''
 	select case as const op
 	case AST_OP_LABEL
 		emitLABEL( label )
@@ -1469,19 +1467,6 @@ private sub hFlushCALL _
 
 	'' function?
 	if( proc <> NULL ) then
-		'' pop up the stack if needed
-		select case symbGetProcMode( proc )
-		case FB_FUNCMODE_CDECL
-			'' if this func is VARARG, astCALL() already set the size
-			if( bytestopop = 0 ) then
-				bytestopop = symbCalcProcParamsLen( proc )
-			end if
-
-		'' stdcall/pascal etc.. nothing to pop
-		case else
-			bytestopop = 0
-		end select
-
 		'' save used registers and free the FPU stack
 		hPreserveRegs( )
 
@@ -1489,7 +1474,6 @@ private sub hFlushCALL _
 
 	'' call or jump to pointer..
 	else
-
 		'' if it's a CALL, save used registers and free the FPU stack
 		if( op = AST_OP_CALLPTR ) then
 			hPreserveRegs( v1 )

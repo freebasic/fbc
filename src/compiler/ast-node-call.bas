@@ -11,20 +11,12 @@
 #include once "rtl.bi"
 #include once "ast.bi"
 
-'''''#define DO_STACK_ALIGN
-
-'':::::
 sub astCallInit
-
 	listInit( @ast.call.tmpstrlist, 32, len( AST_TMPSTRLIST_ITEM ), LIST_FLAGS_NOCLEAR )
-
 end sub
 
-'':::::
 sub astCallEnd
-
 	listEnd( @ast.call.tmpstrlist )
-
 end sub
 
 '':::::
@@ -71,7 +63,7 @@ function astNewCALL _
 
 	n->call.strtail = NULL
 
-	'' follow GCC 3.x's ABI
+	'' Allocate temp struct result if needed
 	if( symbProcReturnsUdtOnStack( sym ) ) then
 		'' create a temp struct (can't be static, could be an object)
 		n->call.tmpres = symbAddTempVar( FB_DATATYPE_STRUCT, symbGetSubtype( sym ), FALSE )
@@ -102,7 +94,6 @@ function astNewCALLCTOR _
 	n->r = instptr
 
 	function = n
-
 end function
 
 private sub hCheckTmpStrings( byval f as ASTNODE ptr )
@@ -134,71 +125,54 @@ private sub hCheckTmpStrings( byval f as ASTNODE ptr )
 end sub
 
 function astLoadCALL( byval n as ASTNODE ptr ) as IRVREG ptr
-    static as integer reclevel = 0
-    dim as ASTNODE ptr arg = any, next_arg = any, l = any
-    dim as FBSYMBOL ptr sym = any, param = any, last_param = any
+	static as integer reclevel = 0
+	dim as ASTNODE ptr arg = any, nextarg = any, l = any
+	dim as FBSYMBOL ptr proc = any
 	dim as FBSYMBOL ptr subtype = any
 	dim as integer dtype = any
-    dim as integer mode = any, bytestopop = any, bytestoalign = any
-    dim as integer params = any, inc = any, args = any
+	dim as integer bytestopop = any, bytestoalign = any
 	dim as IRVREG ptr vr = any, v1 = any
 
-    reclevel += 1
+	'' ARGs can contain CALLs themselves, then astLoadCALL() will recurse
+	reclevel += 1
 
-	sym = n->sym
+	proc = n->sym
 
-	mode = symbGetProcMode( sym )
-	if( mode = FB_FUNCMODE_PASCAL ) then
-		args = 0
-		inc = 1
-	else
-		args = n->call.args
-		inc = -1
-	end if
-
-	bytestopop = symbCalcProcParamsLen( sym )
+#if 1
 	bytestoalign = 0
-
-	''
-	params = symbGetProcParams( sym )
-	last_param = symbGetProcTailParam( sym )
-
-	if( args <= params ) then
-		param = symbGetProcFirstParam( sym )
-		'' vararg and param not passed?
-		if( args < params ) then
-			if( mode <> FB_FUNCMODE_PASCAL ) then
-				param = symbGetProcNextParam( sym, param )
-			end if
-
-		else
-#ifdef DO_STACK_ALIGN
-			bytestoalign = ((FB_INTEGERSIZE*4) - _
-					  (bytestopop and (FB_INTEGERSIZE*4-1))) and (FB_INTEGERSIZE*4-1)
-			if( bytestoalign > 0 ) then
-				if( ast.doemit ) then
-					irEmitSTACKALIGN( bytestoalign )
-				end if
-			end if
-#endif
-		end if
-	'' vararg
-	else
-		param = last_param
-	end if
-
-	'' for each argument..
+#else
+	'' Add extra stack alignment to ensure the stack pointer will be
+	'' aligned to a multiple of 16 after the arguments were pushed,
+	'' assuming our current stack pointer already is aligned that way.
+	bytestopop = 0
 	arg = n->r
-	do while( arg <> NULL )
-		next_arg = arg->r
+	while( arg )
+		l = arg->l
+		bytestopop += FB_ROUNDLEN( symbCalcParamLen( l->dtype, l->subtype, arg->arg.mode ) )
+		arg = arg->r
+	wend
 
+	bytestoalign = (16 - (bytestopop and (16-1))) and (16-1)
+	if( bytestoalign > 0 ) then
+		if( ast.doemit ) then
+			irEmitSTACKALIGN( bytestoalign )
+		end if
+	end if
+#endif
+
+	'' Count up the size for the caller's stack clean up (after the call)
+	bytestopop = 0
+
+	'' Push each argument
+	arg = n->r
+	while( arg )
+		nextarg = arg->r
 		l = arg->l
 
-		''
-		if( param = last_param ) then
-			if( symbGetParamMode( param ) = FB_PARAMMODE_VARARG ) then
-				bytestopop += FB_ROUNDLEN( symbCalcLen( astGetDataType( l ), NULL ) )
-			end if
+		'' cdecl: pushed arguments must be popped by caller
+		'' pascal/stdcall: callee does it instead
+		if( symbGetProcMode( proc ) = FB_FUNCMODE_CDECL ) then
+			bytestopop += FB_ROUNDLEN( symbCalcParamLen( l->dtype, l->subtype, arg->arg.mode ) )
 		end if
 
 		if( l->class = AST_NODECLASS_CONV ) then
@@ -214,20 +188,18 @@ function astLoadCALL( byval n as ASTNODE ptr ) as IRVREG ptr
 		end if
 
 		astDelNode( arg )
+		arg = nextarg
+	wend
 
-		args += inc
-		if( args < params ) then
-			param = symbGetProcNextParam( sym, param )
+	'' Hidden param for functions returning big structs on stack
+	if( symbProcReturnsUdtOnStack( proc ) ) then
+		if( symbGetProcMode( proc ) = FB_FUNCMODE_CDECL ) then
+			bytestopop += typeGetSize( typeAddrOf( FB_DATATYPE_VOID ) )
 		end if
-
-		arg = next_arg
-	loop
-
-	if( symbProcReturnsUdtOnStack( sym ) ) then
 		if( ast.doemit ) then
-			'' pass the address of the temp struct (it must be cleared if it
-			'' includes string fields)
-			l = astNewVAR( n->call.tmpres, 0, FB_DATATYPE_STRUCT, symbGetSubtype( sym ), TRUE )
+			'' Pass the address of the temp result struct
+			'' Note: the struct must be cleared in case it includes string fields.
+			l = astNewVAR( n->call.tmpres, 0, FB_DATATYPE_STRUCT, symbGetSubtype( proc ), TRUE )
 			l = astNewADDROF( l )
 			v1 = astLoad( l )
 			irEmitPUSHARG( v1, 0, reclevel )
@@ -237,7 +209,7 @@ function astLoadCALL( byval n as ASTNODE ptr ) as IRVREG ptr
 	dtype = astGetDataType( n )
 	subtype = n->subtype
 
-	select case as const dtype
+	select case( dtype )
 	'' returning a string? it's actually a pointer to a string descriptor
 	case FB_DATATYPE_STRING, FB_DATATYPE_WCHAR
 		dtype = typeAddrOf( dtype )
@@ -249,27 +221,21 @@ function astLoadCALL( byval n as ASTNODE ptr ) as IRVREG ptr
 		if( dtype <> FB_DATATYPE_STRUCT ) then
 			subtype = NULL
 		end if
-
-	'case FB_DATATYPE_CLASS
-		' ...
 	end select
 
 	if( ast.doemit ) then
 		vr = NULL
 		if( dtype <> FB_DATATYPE_VOID ) then
 			vr = irAllocVREG( dtype, subtype )
-			if( sym->proc.returnMethod <> FB_RETURN_SSE ) then
+			if( proc->proc.returnMethod <> FB_RETURN_SSE ) then
 				vr->regFamily = IR_REG_FPU_STACK
 			end if
 		end if
 	end if
 
-	if( mode = FB_FUNCMODE_CDECL ) then
-		bytestopop += bytestoalign
-		bytestoalign = 0
-	else
-		bytestopop = 0
-	end if
+	'' caller always has to undo any stack alignment it did
+	bytestopop += bytestoalign
+	bytestoalign = 0
 
 	'' function pointer?
 	l = n->l
@@ -281,22 +247,16 @@ function astLoadCALL( byval n as ASTNODE ptr ) as IRVREG ptr
 		end if
 	else
 		if( ast.doemit ) then
-			irEmitCALLFUNCT( sym, bytestopop, vr, reclevel )
-		end if
-	end if
-
-	if( bytestoalign > 0 ) then
-		if( ast.doemit ) then
-			irEmitSTACKALIGN( -bytestoalign )
+			irEmitCALLFUNCT( proc, bytestopop, vr, reclevel )
 		end if
 	end if
 
 	'' del temp strings and copy back if needed
 	hCheckTmpStrings( n )
 
-    reclevel -= 1
+	reclevel -= 1
 
-    function = vr
+	function = vr
 end function
 
 function astLoadCALLCTOR( byval n as ASTNODE ptr ) as IRVREG ptr
