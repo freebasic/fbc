@@ -5505,33 +5505,60 @@ private sub _emitPUSHL _
 
 end sub
 
-'':::::
-private sub _emitPUSHI _
-	( _
-		byval svreg as IRVREG ptr, _
-		byval unused as integer _
-	) static
-
-    dim src as string, sdsize as integer
-    dim ostr as string
+private sub _emitPUSHI( byval svreg as IRVREG ptr, byval unused as integer )
+	dim as string src, tmp32
+	dim as integer sdsize = any, tmpreg = any, istmpfree = any
 
 	hPrepOperand( svreg, src )
 
 	sdsize = typeGetSize( svreg->dtype )
 
-	if( svreg->typ = IR_VREGTYPE_REG ) then
-		if( sdsize < FB_INTEGERSIZE ) then
+	'' PUSH only supports 4-byte operands, if it's smaller we need to
+	'' work-around/load into 4-byte location first.
+
+	select case( svreg->typ )
+	case IR_VREGTYPE_REG
+		if( sdsize < 4 ) then
+			'' Use eax instead of al etc., this can pull in "random"
+			'' values from the unused part of the register,
+			'' but should be ok.
 			src = *hGetRegName( FB_DATATYPE_INTEGER, svreg->reg )
 		end if
-	else
-		if( sdsize < FB_INTEGERSIZE ) then
-			'' !!!FIXME!!! assuming it's okay to push over the var if's not dword aligned
-			hPrepOperand( svreg, src, FB_DATATYPE_INTEGER )
-		end if
-	end if
+		outp( "push " + src )
 
-	ostr = "push " + src
-	outp ostr
+	case IR_VREGTYPE_IMM
+		outp( "push " + src )
+
+	case else
+		if( sdsize < 4 ) then
+			'' Load into 4-byte reg first - it's not safe to assume
+			'' we can just use DWORD PTR instead of BYTE PTR or
+			'' WORD PTR (possible buffer overrun).
+
+			tmpreg = hFindRegNotInVreg( svreg )
+			istmpfree = hIsRegFree( FB_DATACLASS_INTEGER, tmpreg )
+			tmp32 = *hGetRegName( FB_DATATYPE_INTEGER, tmpreg )
+
+			if( istmpfree = FALSE ) then
+				hPUSH( tmp32 )
+			end if
+
+			'' mov tmp, [src]
+			'' (zero-extending, because e.g. &hFF should become
+			'' &h000000FF, and not &hFFFFFFFF)
+			outp( "movzx " + tmp32 + ", " + src )
+
+			'' push tmp
+			outp( "push " + tmp32 )
+
+			if( istmpfree = FALSE ) then
+				hPOP( tmp32 )
+			end if
+		else
+			assert( sdsize = 4 )
+			outp( "push " + src )
+		end if
+	end select
 
 end sub
 
