@@ -661,13 +661,14 @@ private sub hUDTPassByval _
 
 		'' udt? push byte by byte to stack
 		if( is_udt ) then
-			n->arg.lgt = FB_ROUNDLEN( symbGetLen( symbGetSubtype( param ) ) )
+			'' (Note: no rounding, ASM backend must handle any
+			'' remainder manually to prevent an overrun)
+			n->arg.lgt = symbGetLen( symbGetSubtype( param ) )
 
 			'' call and returning a pointer? use the hidden call arg
 			if( astIsCALL( arg ) and typeIsPtr( symbGetUDTRetType( subtype ) ) ) then
 				n->l = astBuildCallHiddenResVar( arg )
 			end if
-
 		else
 			'' patch the type
 			astSetType( arg, symbGetUDTRetType( subtype ), NULL )

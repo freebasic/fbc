@@ -5562,7 +5562,6 @@ private sub _emitPUSHI( byval svreg as IRVREG ptr, byval unused as integer )
 
 end sub
 
-
 '':::::
 private sub _emitPUSHF _
 	( _
@@ -5600,28 +5599,118 @@ private sub _emitPUSHF _
 
 end sub
 
-'':::::
-private sub _emitPUSHUDT _
-	( _
-		byval svreg as IRVREG ptr, _
-		byval sdsize as integer _
-	) static
+private sub _emitPUSHUDT( byval svreg as IRVREG ptr, byval sdsize as integer )
+	dim as string src, tmp32, tmp16
+	dim as integer ofs = any, tmpreg = any, istmpfree = any, remainder = any
 
-    dim as integer ofs
-    dim as string ostr, src
+	'' The UDT should be pushed byte-by-byte, it must end up in the same
+	'' order on stack as it is originally layed out in memory.
+	''
+	'' For example, this sequence of bytes in memory (the UDT to push):
+	''    &hAA &hBB &hCC &hDD &hEE &hFF
+	''
+	'' It's 6 bytes, i.e. not a multiple of 8, i.e. there is a remainder:
+	''                        &hEE &hFF
+	'' The two bytes are read with a WORD PTR, zero extended, then pushed:
+	''    offset = sdsize - 2
+	''    &h0000FFEE <- word ptr [svreg + offset]
+	''    push &h0000FFEE
+	'' producing on stack:
+	''                        &hEE &hFF &h00 &h00
+	''
+	'' Then there are 4 bytes left to handle:
+	''    &hAA &hBB &hCC &hDD
+	'' They're read out using a DWORD PTR, then pushed:
+	''    offset = 0
+	''    push dword ptr [svreg + offset]
+	'' producing on stack:
+	''    &hAA &hBB &hCC &hDD &hEE &hFF &h00 &h00
+	''
+	'' which is the desired "copy".
 
-	'' !!!FIXME!!! assuming it's okay to push over the UDT if's not dword aligned
-	if( sdsize < FB_INTEGERSIZE ) then
-		sdsize = FB_INTEGERSIZE
+	'' Push remainder (last 1/2/3 bytes of the struct, located in memory
+	'' at src + length - N)
+	remainder = sdsize and (4-1)
+	if( remainder > 0 ) then
+		'' Load into 4-byte reg first - it's not safe to assume
+		'' we can just use DWORD PTR instead of BYTE PTR or
+		'' WORD PTR (possible buffer overrun).
+
+		tmpreg = hFindRegNotInVreg( svreg )
+		istmpfree = hIsRegFree( FB_DATACLASS_INTEGER, tmpreg )
+		tmp32 = *hGetRegName( FB_DATATYPE_INTEGER, tmpreg )
+
+		if( istmpfree = FALSE ) then
+			hPUSH( tmp32 )
+		end if
+
+		select case( remainder )
+		case 3
+			'' 3-byte remainder:
+			''        &h11 &h22 &h33
+			'' It's probably best to access them as &h2211 WORD
+			'' and &h33 BYTE. &h11 has a good chance of having
+			'' 4-byte alignment, since the whole UDT will typically
+			'' start at 4-byte boundary; at least for stack vars...
+
+			'' 1. load 3rd byte:
+			''        &h00000033 <- byte ptr [src + length - 1]
+			hPrepOperand( svreg, src, FB_DATATYPE_BYTE, sdsize - 1 )
+			outp( "movzx " + tmp32 + ", " + src )
+
+			'' 2. shl
+			''        &h00221100 <- &h00002211 shl 8
+			outp( "shl " + tmp32 + ", 8" )
+
+			'' 3. load first two bytes into the lower 16 bits
+			''    of the register:
+			''        &h00002211 <- word ptr [src + length - 3]
+			''        &h00332211 <- &h00330000, &h00002211
+			tmp16 = *hGetRegName( FB_DATATYPE_SHORT, tmpreg )
+			hPrepOperand( svreg, src, FB_DATATYPE_SHORT, sdsize - 3 )
+			outp( "mov " + tmp16 + ", " + src )
+
+			'' 4. push
+			''        push &h00332211
+			'' producing on stack:
+			''        &h11 &h22 &h33 &h00
+
+		case 2
+			'' mov tmp, word ptr [src + length - 2]
+			'' (zero-extending, because e.g. &hFFFF should become
+			'' &h0000FFFF, and not &hFFFFFFFF)
+			ofs = sdsize - 2
+			hPrepOperand( svreg, src, FB_DATATYPE_SHORT, ofs )
+			outp( "movzx " + tmp32 + ", " + src )
+
+		case 1
+			'' mov tmp, byte ptr [src + length - 1]
+			'' (zero-extending, ditto)
+			ofs = sdsize - 1
+			hPrepOperand( svreg, src, FB_DATATYPE_BYTE, ofs )
+			outp( "movzx " + tmp32 + ", " + src )
+
+		end select
+
+		'' push tmp
+		'' &h0000FFFF becomes &hFF &hFF &h00 &h00 on stack
+		outp( "push " + tmp32 )
+
+		if( istmpfree = FALSE ) then
+			hPOP( tmp32 )
+		end if
+
+		sdsize -= remainder
 	end if
 
-	ofs = sdsize - FB_INTEGERSIZE
-	do while( ofs >= 0 )
+	'' Push whole dwords, backwards (from high address to low address,
+	'' since the stack grows downwards)
+	ofs = sdsize - 4
+	while( ofs >= 0 )
 		hPrepOperand( svreg, src, FB_DATATYPE_INTEGER, ofs )
-		ostr = "push " + src
-		outp( ostr )
-		ofs -= FB_INTEGERSIZE
-	loop
+		outp( "push " + src )
+		ofs -= 4
+	wend
 
 end sub
 
