@@ -5659,8 +5659,8 @@ private sub _emitPUSHUDT( byval svreg as IRVREG ptr, byval sdsize as integer )
 			outp( "movzx " + tmp32 + ", " + src )
 
 			'' 2. shl
-			''        &h00221100 <- &h00002211 shl 8
-			outp( "shl " + tmp32 + ", 8" )
+			''        &h00330000 <- &h00000033 shl 16
+			outp( "shl " + tmp32 + ", 16" )
 
 			'' 3. load first two bytes into the lower 16 bits
 			''    of the register:
