@@ -938,6 +938,8 @@ declare function symbFindCtorProc _
 		byval proc as FBSYMBOL ptr _
 	) as FBSYMBOL ptr
 
+declare sub symbProcSetVtableIndex( byval proc as FBSYMBOL ptr, byval i as integer )
+declare function symbProcGetVtableIndex( byval proc as FBSYMBOL ptr ) as integer
 declare function symbGetProcResult( byval proc as FBSYMBOL ptr ) as FBSYMBOL ptr
 
 declare function symbGetConstValueAsStr _

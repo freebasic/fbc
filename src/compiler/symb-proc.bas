@@ -817,8 +817,7 @@ add_proc:
 		'' virtual?
 		if( symbIsVirtual( proc ) ) then
 			'' Update parent & set vtable index
-			symbProcAllocExt( proc )
-			proc->proc.ext->vtableindex = symbCompAddVirtual( parent )
+			symbProcSetVtableIndex( proc, symbCompAddVirtual( parent ) )
 		end if
 
 		if( (parent->udt.base <> NULL) and (id <> NULL) ) then
@@ -839,8 +838,8 @@ add_proc:
 			if( overridden ) then
 				'' Is that overload really a virtual?
 				if( symbIsVirtual( overridden ) ) then
-					symbProcAllocExt( proc )
-					proc->proc.ext->vtableindex = overridden->proc.ext->vtableindex
+					'' Store index of the virtual that's being overridden
+					symbProcSetVtableIndex( proc, symbProcGetVtableIndex( overridden ) )
 				end if
 			end if
 		end if
@@ -2397,6 +2396,19 @@ end function
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' misc
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+sub symbProcSetVtableIndex( byval proc as FBSYMBOL ptr, byval i as integer )
+	symbProcAllocExt( proc )
+	proc->proc.ext->vtableindex = i
+end sub
+
+function symbProcGetVtableIndex( byval proc as FBSYMBOL ptr ) as integer
+	if( proc->proc.ext ) then
+		function = proc->proc.ext->vtableindex
+	else
+		function = 0
+	end if
+end function
 
 function symbGetProcResult( byval proc as FBSYMBOL ptr ) as FBSYMBOL ptr
 	if( proc->proc.ext ) then

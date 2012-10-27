@@ -287,7 +287,7 @@ private sub hBuildVtable( byval udt as FBSYMBOL ptr )
 	while( member )
 		'' procedure?
 		if( symbIsProc( member ) ) then
-			i = member->proc.ext->vtableindex
+			i = symbProcGetVtableIndex( member )
 			if( i > 0 ) then
 				astTypeIniReplaceElement( initree, i, astBuildProcAddrof( member ) )
 			end if

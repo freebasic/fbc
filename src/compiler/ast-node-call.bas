@@ -36,10 +36,7 @@ function astBuildMethodCall _
 	dim as ASTNODE ptr p = any
 	dim as integer vtableindex = any
 
-	vtableindex = 0
-	if( proc->proc.ext ) then
-		vtableindex = proc->proc.ext->vtableindex
-	end if
+	vtableindex = symbProcGetVtableIndex( proc )
 
 	if( vtableindex > 0 ) then
 		'' calling virtual method
