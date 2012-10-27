@@ -821,17 +821,23 @@ add_proc:
 			proc->proc.ext->vtableindex = symbCompAddVirtual( parent )
 		end if
 
-		'' Check whether this method overrides a method from the base
-		'' or base's base, etc. (-> searching NSIMPORTs)
 		if( (parent->udt.base <> NULL) and (id <> NULL) ) then
+			'' If this method has the same id and signature as
+			'' a virtual derived from some base, it overrides that
+			'' virtual, by being assigned the same vtable index.
+
+			'' Find a method in the base with the same name
 			overridden = symbLookupByNameAndClass( _
 				parent->udt.base->subtype, _
 				id, FB_SYMBCLASS_PROC, _
 				((options and FB_SYMBOPT_PRESERVECASE) <> 0), _
 				TRUE )  '' search NSIMPORTs (bases)
 
+			'' Find the overload with the exact same signature
+			overridden = symbFindOverloadProc( overridden, proc )
+
 			if( overridden ) then
-				'' Store index of the virtual that's being overridden
+				'' Is that overload really a virtual?
 				if( symbIsVirtual( overridden ) ) then
 					symbProcAllocExt( proc )
 					proc->proc.ext->vtableindex = overridden->proc.ext->vtableindex
