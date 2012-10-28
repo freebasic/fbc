@@ -100,6 +100,7 @@ Version 0.25.0:
 - For stdcall functions returning UDTs on stack, the hidden pointer parameter will no longer be calculated into the @N stdcall suffix, following GCC and MSVC.
 - For functions returning UDTs on stack on Linux/DOS/*BSD targets, the callee now always pops the hidden pointer parameter, even when the function is cdecl, to follow the GCC ABI.
 - ASM backend used dword reads to push bytes/words from memory, potentially causing buffer overruns
+- ScreenInfo() crash under X11 gfxlib2 driver when RandR extension is unavailable
 
 
 Version 0.24.0:
