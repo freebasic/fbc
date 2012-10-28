@@ -2394,7 +2394,6 @@ declare function symbGetUDTBaseLevel _
 
 #define	typeIsConstAt( dt, at ) ((dt and (1 shl (FB_DT_CONSTPOS + at))) <> 0)
 #define	typeIsConst( dt ) typeIsConstAt(dt, 0)
-#define	typeIsPtrToConst( dt ) (typeIsConst(dt) and typeIsPtr(dt))
 #define	typeSetIsConst( dt ) (dt or (1 shl FB_DT_CONSTPOS))
 #define	typeUnsetIsConst( dt ) (dt and not (1 shl FB_DT_CONSTPOS))
 #define	typeGetConstMask( dt ) (dt and FB_DT_CONSTMASK)
