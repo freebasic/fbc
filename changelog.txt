@@ -101,6 +101,7 @@ Version 0.25.0:
 - For functions returning UDTs on stack on Linux/DOS/*BSD targets, the callee now always pops the hidden pointer parameter, even when the function is cdecl, to follow the GCC ABI.
 - ASM backend used dword reads to push bytes/words from memory, potentially causing buffer overruns
 - ScreenInfo() crash under X11 gfxlib2 driver when RandR extension is unavailable
+- DELETE and DELETE[] were allowed to be used on forward references
 
 
 Version 0.24.0:

@@ -908,13 +908,8 @@ declare function cVAFunct() as ASTNODE ptr
 declare function cScreenFunct() as ASTNODE ptr
 declare function cAnonUDT() as ASTNODE ptr
 declare sub cConstExprValue(byref value as integer)
-
-declare function cOperatorNew _
-	( _
-		_
-	) as ASTNODE ptr
-
-declare sub cOperatorDelete()
+declare function cOperatorNew( ) as ASTNODE ptr
+declare sub cOperatorDelete( )
 
 declare sub hSkipUntil _
 	( _

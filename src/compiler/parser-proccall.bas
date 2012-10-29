@@ -878,12 +878,10 @@ function cProcCallOrAssign _
 		end select
 
   	case FB_TKCLASS_OPERATOR
-
-  		select case lexGetToken( )
-  		case FB_TK_DELETE
-			cOperatorDelete()
-  			return TRUE
-  		end select
+		if( lexGetToken( ) = FB_TK_DELETE ) then
+			cOperatorDelete( )
+			return TRUE
+		end if
 
 	case FB_TKCLASS_DELIMITER
 

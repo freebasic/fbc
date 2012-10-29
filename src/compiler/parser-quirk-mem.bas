@@ -12,11 +12,7 @@
 ''cOperatorNew =     NEW DataType|Constructor()
 ''			   |	 NEW DataType[Expr] .
 ''
-function cOperatorNew _
-	( _
-		_
-	) as ASTNODE ptr
-
+function cOperatorNew( ) as ASTNODE ptr
 	dim as integer dtype = any, lgt = any
 	dim as FBSYMBOL ptr subtype = any, tmp = any
 	dim as integer has_ctor = any, has_defctor = any, do_clear = any
@@ -211,11 +207,10 @@ function cOperatorNew _
 	                                        0, _
 	                                        typeAddrOf( dtype ), _
 	                                        subtype ), FALSE )
-
 end function
 
 '' DELETE ['[]'] expr
-sub cOperatorDelete()
+sub cOperatorDelete( )
 	dim as AST_OP op = any
 	dim as ASTNODE ptr expr = any, ptr_expr = any
 
@@ -255,10 +250,16 @@ sub cOperatorDelete()
 
 	dtype = typeDeref( dtype )
 
-	'' check for ANY ptr
-	if( typeGet( dtype ) = FB_DATATYPE_VOID ) then
+	select case( typeGet( dtype ) )
+	case FB_DATATYPE_VOID
+		'' Warn about ANY PTR
 		errReportWarn( FB_WARNINGMSG_DELETEANYPTR )
-	end if
+	case FB_DATATYPE_FWDREF
+		'' Disallow DELETE on forward reference ptrs
+		'' (don't know whether the real type will have a dtor or not)
+		errReport( FB_ERRMSG_INCOMPLETETYPE, TRUE )
+		dtype = FB_DATATYPE_BYTE
+	end select
 
 	'' check visibility
 	if( typeHasDtor( dtype, subtype ) ) then
