@@ -7,7 +7,7 @@
 const AST_INITNODES				= 8192
 const AST_INITPROCNODES			= 128
 
-'' if changed, update ast_classTB at ast.bas
+'' when changing, update ast.bas:ast_loadcallbacks() and ast-node-misc.bas:dbg_astNodeClassNames()
 enum AST_NODECLASS
 	AST_NODECLASS_NOP
 
@@ -18,6 +18,7 @@ enum AST_NODECLASS
 	AST_NODECLASS_CONV
 	AST_NODECLASS_ADDROF
 	AST_NODECLASS_BRANCH
+	AST_NODECLASS_JMPTB
 	AST_NODECLASS_CALL
 	AST_NODECLASS_CALLCTOR
 	AST_NODECLASS_STACK
@@ -42,7 +43,6 @@ enum AST_NODECLASS
 	AST_NODECLASS_IIF
 	AST_NODECLASS_LIT
 	AST_NODECLASS_ASM
-	AST_NODECLASS_JMPTB
 	AST_NODECLASS_DATASTMT
 	AST_NODECLASS_DBG
 
@@ -171,8 +171,14 @@ type AST_NODE_OFFS
 end type
 
 type AST_NODE_JMPTB
-	label			as FBSYMBOL ptr
-	op				as AST_JMPTB_OP
+	'' Dynamically allocated buffer holding the jmptb's value/label pairs
+	values				as uinteger ptr
+	labels				as FBSYMBOL ptr ptr
+	labelcount			as integer
+
+	deflabel			as FBSYMBOL ptr
+	minval				as uinteger
+	maxval				as uinteger
 end type
 
 type AST_NODE_DBG
@@ -714,6 +720,17 @@ declare function astNewBRANCH _
 		byval l as ASTNODE ptr = NULL _
 	) as ASTNODE ptr
 
+declare function astBuildJMPTB _
+	( _
+		byval tempvar as FBSYMBOL ptr, _
+		byval values1 as uinteger ptr, _
+		byval labels1 as FBSYMBOL ptr ptr, _
+		byval labelcount as integer, _
+		byval deflabel as FBSYMBOL ptr, _
+		byval minval as uinteger, _
+		byval maxval as uinteger _
+	) as ASTNODE ptr
+
 declare function astNewIIF _
 	( _
 		byval condexpr as ASTNODE ptr, _
@@ -758,22 +775,6 @@ declare function astAsmAppendSymb _
 	) as ASTASMTOK ptr
 
 declare function astNewASM( byval asmtokhead as ASTASMTOK ptr ) as ASTNODE ptr
-
-declare function astNewJMPTB_Label _
-	( _
-		byval dtype as integer, _
-		byval label as FBSYMBOL ptr _
-	) as ASTNODE ptr
-
-declare function astNewJMPTB_Begin _
-	( _
-		byval s as FBSYMBOL ptr _
-	) as ASTNODE ptr
-
-declare function astNewJMPTB_End _
-	( _
-		byval s as FBSYMBOL ptr _
-	) as ASTNODE ptr
 
 declare function astNewDBG _
 	( _

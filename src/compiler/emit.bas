@@ -187,11 +187,13 @@ sub emitFlush( )
 			ZstrFree( n->lit.text )
 
 		case EMIT_NODECLASS_JTB
-			cast( EMIT_JTBCB, emit.opFnTb[EMIT_OP_JMPTB] )( n->jtb.op, _
-															n->jtb.dtype, _
-													   		n->jtb.text )
+			cast( EMIT_JTBCB, emit.opFnTb[EMIT_OP_JMPTB] )( n->jtb.tbsym, _
+				n->jtb.values, n->jtb.labels, _
+				n->jtb.labelcount, n->jtb.deflabel, _
+				n->jtb.minval, n->jtb.maxval )
 
-			ZstrFree( n->jtb.text )
+			deallocate( n->jtb.values )
+			deallocate( n->jtb.labels )
 
 		case EMIT_NODECLASS_MEM
 			cast( EMIT_MEMCB, emit.opFnTb[n->mem.op] )( n->mem.dvreg, _
@@ -423,27 +425,6 @@ private sub hNewLIT( byval text as zstring ptr, byval isasm as integer )
 	n->lit.text = ZstrAllocate( len( *text ) )
 	*n->lit.text = *text
 end sub
-
-'':::::
-private function hNewJMPTB _
-	( _
-		byval op as AST_JMPTB_OP, _
-		byval dtype as integer, _
-		byval text as zstring ptr _
-	) as EMIT_NODE ptr static
-
-	dim as EMIT_NODE ptr n
-
-	n = hNewNode( EMIT_NODECLASS_JTB, FALSE )
-
-	n->jtb.op = op
-	n->jtb.dtype = dtype
-	n->jtb.text = ZstrAllocate( len( *text ) )
-	*n->jtb.text = *text
-
-	function = n
-
-end function
 
 '':::::
 private function hNewMEM _
@@ -1428,16 +1409,40 @@ function emitSTACKALIGN _
 
 end function
 
-'':::::
 function emitJMPTB _
 	( _
-		byval op as AST_JMPTB_OP, _
-		byval dtype as integer, _
-		byval text as zstring ptr _
-	) as EMIT_NODE ptr static
+		byval tbsym as FBSYMBOL ptr, _
+		byval values1 as uinteger ptr, _
+		byval labels1 as FBSYMBOL ptr ptr, _
+		byval labelcount as integer, _
+		byval deflabel as FBSYMBOL ptr, _
+		byval minval as uinteger, _
+		byval maxval as uinteger _
+	) as EMIT_NODE ptr
 
-	function = hNewJMPTB( op, dtype, text )
+	dim as EMIT_NODE ptr n = any
+	dim as uinteger ptr values = any
+	dim as FBSYMBOL ptr ptr labels = any
 
+	'' Duplicate the values/labels arrays
+	values = callocate( sizeof( uinteger ) * labelcount )
+	labels = callocate( sizeof( FBSYMBOL ptr ) * labelcount )
+	for i as integer = 0 to labelcount - 1
+		values[i] = values1[i]
+		labels[i] = labels1[i]
+	next
+
+	n = hNewNode( EMIT_NODECLASS_JTB, FALSE )
+
+	n->jtb.tbsym = tbsym
+	n->jtb.values = values
+	n->jtb.labels = labels
+	n->jtb.labelcount = labelcount
+	n->jtb.deflabel = deflabel
+	n->jtb.minval = minval
+	n->jtb.maxval = maxval
+
+	function = n
 end function
 
 '':::::

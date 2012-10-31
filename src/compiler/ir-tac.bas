@@ -499,20 +499,6 @@ private sub _emitScopeEnd _
 
 end sub
 
-''::::
-private sub _emitJmpTb _
-	( _
-		byval op as AST_JMPTB_OP, _
-		byval dtype as integer, _
-		byval label as FBSYMBOL ptr _
-	) static
-
-	_flush( )
-
-	emitJMPTB( op, dtype, symbGetMangledName( label ) )
-
-end sub
-
 '':::::
 private sub _emitBop _
 	( _
@@ -678,24 +664,28 @@ private sub _emitStackAlign _
 
 end sub
 
-'':::::
-private sub _emitJumpPtr _
-	( _
-		byval v1 as IRVREG ptr _
-	)
-
+private sub _emitJumpPtr( byval v1 as IRVREG ptr )
 	_emit( AST_OP_JUMPPTR, v1, NULL, NULL, NULL )
-
 end sub
 
-'':::::
-private sub _emitBranch _
+private sub _emitBranch( byval op as integer, byval label as FBSYMBOL ptr )
+	_emit( op, NULL, NULL, NULL, label )
+end sub
+
+private sub _emitJmpTb _
 	( _
-		byval op as integer, _
-		byval label as FBSYMBOL ptr _
+		byval v1 as IRVREG ptr, _
+		byval tbsym as FBSYMBOL ptr, _
+		byval values as uinteger ptr, _
+		byval labels as FBSYMBOL ptr ptr, _
+		byval labelcount as integer, _
+		byval deflabel as FBSYMBOL ptr, _
+		byval minval as uinteger, _
+		byval maxval as uinteger _
 	)
 
-	_emit( op, NULL, NULL, NULL, label )
+	_flush( )
+	emitJMPTB( tbsym, values, labels, labelcount, deflabel, minval, maxval )
 
 end sub
 
@@ -2673,7 +2663,6 @@ dim shared as IR_VTBL irtac_vtbl = _
 	@_emitAsmSymb, _
 	@_emitAsmEnd, _
 	@_emitComment, _
-	@_emitJmpTb, _
 	@_emitBop, _
 	@_emitUop, _
 	@_emitStore, _
@@ -2688,6 +2677,7 @@ dim shared as IR_VTBL irtac_vtbl = _
 	@_emitStackAlign, _
 	@_emitJumpPtr, _
 	@_emitBranch, _
+	@_emitJmpTb, _
 	@_emitMem, _
 	@_emitScopeBegin, _
 	@_emitScopeEnd, _

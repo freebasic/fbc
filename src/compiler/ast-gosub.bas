@@ -108,7 +108,7 @@ end sub
 sub astGosubAddJumpPtr _
 	( _
 		byval proc as FBSYMBOL ptr, _
-		byval expr as ASTNODE ptr, _
+		byval jumptb as ASTNODE ptr, _
 		byval exitlabel as FBSYMBOL ptr _
 	)
 
@@ -124,7 +124,8 @@ sub astGosubAddJumpPtr _
 		astAdd( astNewSTACK( AST_OP_PUSH, _
 						 astNewADDROF( astNewVAR( exitlabel ) ) ) )
 
-		astAdd( astNewBranch( AST_OP_JUMPPTR, NULL, expr ) )
+		'' goto table[expr]
+		astAdd( jumptb )
 	else
 		'' make sure gosub-ctx var is declared
 		astGosubAddInit( proc )
@@ -142,8 +143,8 @@ sub astGosubAddJumpPtr _
 			  label, _
 			  FALSE ) )
 
-		'' goto [expr]
-		astAdd( astNewBRANCH( AST_OP_JUMPPTR, NULL, expr ) )
+		'' goto table[expr]
+		astAdd( jumptb )
 
 		'' end if
 		astAdd( astNewLABEL( label ) )

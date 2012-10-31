@@ -12,11 +12,6 @@ o LLVM backend
        to let the AST do address calculations, as with the C/ASM backends.
      - LLVM doesn't have unions, it'd be easier to emit them as byte arrays
        (instead of a struct containing the biggest member only)
-  - Expressions/operations:
-    - LLVM IR must be SSA, i.e. no self-BOPs
-      (AST should be adjusted to allocate new result vregs instead of reusing)
-    - all operands must be the same type, does the AST handle that already?
-  - Branches, calls, returns, jump tables
   - Debugging metadata
   - Inline ASM = inline LLVM IR? It'd be possible to allow x86 asm though,
     llc even has -x86-asm-syntax=intel (should find out how well it works)

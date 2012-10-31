@@ -83,7 +83,6 @@ type IRHLCCTX
 	vregTB				as TFLIST
 	forwardlist			as TFLIST
 	callargs			as TLIST        '' IRCALLARG's during emitPushArg/emitCall[Ptr]
-	jmptbsym			as FBSYMBOL ptr
 	linenum				as integer
 
 	varini				as string
@@ -528,8 +527,8 @@ private sub hEmitVariable( byval sym as FBSYMBOL ptr )
 
 	'' initialized? only if not local or local and static
 	if( symbGetIsInitialized( sym ) and (symbIsLocal( sym ) = FALSE or symbIsStatic( sym )) ) then
-		'' extern or jump-tb?
-		if( symbIsExtern( sym ) or symbGetIsJumpTb( sym ) ) then
+		'' extern?
+		if( symbIsExtern( sym ) ) then
 			exit sub
 		end if
 
@@ -1531,29 +1530,6 @@ private sub _emitLabel( byval label as FBSYMBOL ptr )
 	hWriteLabel( symbGetMangledName( label ) )
 end sub
 
-private sub _emitJmpTb _
-	( _
-		byval op as AST_JMPTB_OP, _
-		byval dtype as integer, _
-		byval label as FBSYMBOL ptr _
-	)
-
-	select case op
-	case AST_JMPTB_BEGIN
-		ctx.jmptbsym = label
-		hWriteLine( "static const void * " & *symbGetMangledName( label ) & "[] = {" )
-		ctx.identcnt += 1
-
-	case AST_JMPTB_END
-		ctx.identcnt -= 1
-		hWriteLine( "(void *)0 }" )
-
-	case AST_JMPTB_LABEL
-		hWriteLine( "&&" & *symbGetMangledName( label ) & "," )
-	end select
-
-end sub
-
 private function hGetBopCode _
 	( _
 		byval op as integer, _
@@ -2038,6 +2014,41 @@ private sub _emitBranch( byval op as integer, byval label as FBSYMBOL ptr )
 	hWriteLabel( symbUniqueLabel( ) )
 end sub
 
+private sub _emitJmpTb _
+	( _
+		byval v1 as IRVREG ptr, _
+		byval tbsym as FBSYMBOL ptr, _
+		byval values as uinteger ptr, _
+		byval labels as FBSYMBOL ptr ptr, _
+		byval labelcount as integer, _
+		byval deflabel as FBSYMBOL ptr, _
+		byval minval as uinteger, _
+		byval maxval as uinteger _
+	)
+
+	dim as string ln
+
+	hLoadVreg( v1 )
+
+	ln = "switch "
+	ln += hEmitType( v1->dtype, v1->subtype ) + " "
+	ln += hVregToStr( v1 ) + ", "
+	ln += "label %" + *symbGetMangledName( deflabel ) + " "
+	ln += "["
+	hWriteLine( ln )
+
+	ctx.identcnt += 1
+	for i as integer = 0 to labelcount - 1
+		ln = "%integer " + str( values[i] ) + ", "
+		ln += "label %" + *symbGetMangledName( labels[i] )
+		hWriteLine( ln )
+	next
+	ctx.identcnt -= 1
+
+	hWriteLine( "]" )
+
+end sub
+
 private sub _emitMem _
 	( _
 		byval op as integer, _
@@ -2297,7 +2308,6 @@ static as IR_VTBL irllvm_vtbl = _
 	@_emitAsmSymb, _
 	@_emitAsmEnd, _
 	@_emitComment, _
-	@_emitJmpTb, _
 	@_emitBop, _
 	@_emitUop, _
 	@_emitStore, _
@@ -2312,6 +2322,7 @@ static as IR_VTBL irllvm_vtbl = _
 	NULL, _
 	@_emitJumpPtr, _
 	@_emitBranch, _
+	@_emitJmpTb, _
 	@_emitMem, _
 	@_emitScopeBegin, _
 	@_emitScopeEnd, _

@@ -145,12 +145,4 @@ end enum
 const AST_OP_SELFBASE = AST_OP_ASSIGN
 const AST_OP_SELFOPS  = (AST_OP_CAST - AST_OP_SELFBASE) + 1
 
-
-enum AST_JMPTB_OP
-	AST_JMPTB_LABEL
-	AST_JMPTB_BEGIN
-	AST_JMPTB_END
-end enum
-
-
 #endif '' __AST_OP_BI__

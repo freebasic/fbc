@@ -174,9 +174,16 @@ type EMIT_LITNODE
 end type
 
 type EMIT_JTBNODE
-	op			as AST_JMPTB_OP
-	dtype		as integer
-	text		as zstring ptr
+	tbsym				as FBSYMBOL ptr
+
+	'' Dynamically allocated buffer holding the jmptb's value/label pairs
+	values				as uinteger ptr
+	labels				as FBSYMBOL ptr ptr
+	labelcount			as integer
+
+	deflabel			as FBSYMBOL ptr
+	minval				as uinteger
+	maxval				as uinteger
 end type
 
 type EMIT_MEMNODE
@@ -235,9 +242,16 @@ type EMIT_SOPCB as sub( byval sym as FBSYMBOL ptr )
 
 type EMIT_LITCB as sub( byval text as zstring ptr )
 
-type EMIT_JTBCB as sub( byval op as AST_JMPTB_OP, _
-						byval dtype as integer, _
-						byval text as zstring ptr )
+type EMIT_JTBCB as sub _
+	( _
+		byval tbsym as FBSYMBOL ptr, _
+		byval values1 as uinteger ptr, _
+		byval labels1 as FBSYMBOL ptr ptr, _
+		byval labelcount as integer, _
+		byval deflabel as FBSYMBOL ptr, _
+		byval minval as uinteger, _
+		byval maxval as uinteger _
+	)
 
 type EMIT_MEMCB as sub( byval dvreg as IRVREG ptr, _
 						byval svreg as IRVREG ptr, _
@@ -411,9 +425,13 @@ declare sub emitASM( byval text as zstring ptr )
 
 declare function emitJMPTB _
 	( _
-		byval op as AST_JMPTB_OP, _
-		byval dtype as integer, _
-		byval text as zstring ptr _
+		byval tbsym as FBSYMBOL ptr, _
+		byval values1 as uinteger ptr, _
+		byval labels1 as FBSYMBOL ptr ptr, _
+		byval labelcount as integer, _
+		byval deflabel as FBSYMBOL ptr, _
+		byval minval as uinteger, _
+		byval maxval as uinteger _
 	) as EMIT_NODE ptr
 
 declare function emitALIGN _

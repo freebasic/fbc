@@ -197,13 +197,6 @@ type IR_VTBL
 		byval text as zstring ptr _
 	)
 
-	emitJmpTb as sub _
-	( _
-		byval op as AST_JMPTB_OP, _
-		byval dtype as integer, _
-		byval label as FBSYMBOL ptr _
-	)
-
 	emitBop as sub _
 	( _
 		byval op as integer, _
@@ -277,15 +270,19 @@ type IR_VTBL
 		byval bytes as integer _
 	)
 
-	emitJumpPtr as sub _
-	( _
-		byval v1 as IRVREG ptr _
-	)
+	emitJumpPtr as sub( byval v1 as IRVREG ptr )
+	emitBranch as sub( byval op as integer, byval label as FBSYMBOL ptr )
 
-	emitBranch as sub _
+	emitJmpTb as sub _
 	( _
-		byval op as integer, _
-		byval label as FBSYMBOL ptr _
+		byval v1 as IRVREG ptr, _
+		byval tbsym as FBSYMBOL ptr, _
+		byval values as uinteger ptr, _
+		byval labels as FBSYMBOL ptr ptr, _
+		byval labelcount as integer, _
+		byval deflabel as FBSYMBOL ptr, _
+		byval minval as uinteger, _
+		byval maxval as uinteger _
 	)
 
 	emitMem as sub _
@@ -552,7 +549,7 @@ declare function vregDump( byval v as IRVREG ptr ) as string
 
 #define irEmitCOMMENT(text) ir.vtbl.emitComment( text )
 
-#define irEmitJMPTB(op, dtype, label) ir.vtbl.emitJmpTb( op, dtype, label )
+#define irEmitJMPTB( v1, tbsym, values, labels, labelcount, deflabel, minval, maxval ) ir.vtbl.emitJmpTb( v1, tbsym, values, labels, labelcount, deflabel, minval, maxval )
 
 #define irGetDistance(vreg) ir.vtbl.getDistance( vreg )
 

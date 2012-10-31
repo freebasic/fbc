@@ -30,6 +30,7 @@ dim shared as AST_LOADCALLBACK ast_loadcallbacks( 0 to AST_CLASSES-1 ) => _
 	@astLoadCONV          , _    '' AST_NODECLASS_CONV
 	@astLoadADDROF        , _    '' AST_NODECLASS_ADDROF
 	@astLoadBRANCH        , _    '' AST_NODECLASS_BRANCH
+	@astLoadJMPTB         , _    '' AST_NODECLASS_JMPTB
 	@astLoadCALL          , _    '' AST_NODECLASS_CALL
 	@astLoadCALLCTOR      , _    '' AST_NODECLASS_CALLCTOR
 	@astLoadSTACK         , _    '' AST_NODECLASS_STACK
@@ -49,7 +50,6 @@ dim shared as AST_LOADCALLBACK ast_loadcallbacks( 0 to AST_CLASSES-1 ) => _
 	@astLoadIIF           , _    '' AST_NODECLASS_IIF
 	@astLoadLIT           , _    '' AST_NODECLASS_LIT
 	@astLoadASM           , _    '' AST_NODECLASS_ASM
-	@astLoadJMPTB         , _    '' AST_NODECLASS_JMPTB
 	@astLoadNOP           , _    '' AST_NODECLASS_DATASTMT
 	@astLoadDBG           , _    '' AST_NODECLASS_DBG
 	@astLoadBOUNDCHK      , _    '' AST_NODECLASS_BOUNDCHK

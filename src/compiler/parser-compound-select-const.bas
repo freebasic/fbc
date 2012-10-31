@@ -12,30 +12,19 @@
 const FB_MAXSWTCASEEXPR = 8192
 const FB_MAXSWTCASERANGE= 4096
 
-type FBCASECTX
-	label		as FBSYMBOL ptr
-	value		as uinteger
-end type
-
-type FBCTX
+type SELECTCTX
 	base		as integer
-	caseTB(0 to FB_MAXSWTCASEEXPR-1) as FBCASECTX
+	casevalues(0 to FB_MAXSWTCASEEXPR-1) as uinteger
+	caselabels(0 to FB_MAXSWTCASEEXPR-1) as FBSYMBOL ptr
 end type
 
-'' globals
-	dim shared ctx as FBCTX
+dim shared ctx as SELECTCTX
 
-'':::::
 sub parserSelConstStmtInit( )
-
 	ctx.base = 0
-
 end sub
 
-'':::::
 sub parserSelConstStmtEnd( )
-
-
 end sub
 
 '':::::
@@ -139,13 +128,11 @@ private function hSelConstAddCase _
 
 	do while( high - low > 1 )
 		probe = cunsg(high + low) \ 2
-		v = ctx.caseTB(swtbase+probe).value
+		v = ctx.casevalues(swtbase+probe)
 		if( v < value ) then
 			low = probe
-
 		elseif( v > value ) then
 			high = probe
-
 		else
 			exit function
 		end if
@@ -153,12 +140,13 @@ private function hSelConstAddCase _
 
 	'' move up
 	for i = ctx.base+1 to swtbase+high+1 step -1
-		ctx.caseTB(i) = ctx.caseTB(i-1)
+		ctx.casevalues(i) = ctx.casevalues(i-1)
+		ctx.caselabels(i) = ctx.caselabels(i-1)
 	next
 
 	'' insert new item
-	ctx.caseTB(swtbase+high).value = value
-	ctx.caseTB(swtbase+high).label = label
+	ctx.casevalues(swtbase+high) = value
+	ctx.caselabels(swtbase+high) = label
 	ctx.base += 1
 
 	function = TRUE
@@ -319,14 +307,10 @@ sub cSelConstStmtNext(byval stk as FB_CMPSTMTSTK ptr)
 	stk->select.casecnt += 1
 end sub
 
-'':::::
-''SelConstStmtEnd =   END SELECT .
-''
-sub cSelConstStmtEnd(byval stk as FB_CMPSTMTSTK ptr)
-	dim as uinteger minval, maxval, value
-	dim as FBSYMBOL ptr deflabel, tbsym
-	dim as ASTNODE ptr expr, idxexpr
-	dim as integer i
+'' SelConstStmtEnd =   END SELECT .
+sub cSelConstStmtEnd( byval stk as FB_CMPSTMTSTK ptr )
+	dim as uinteger minval = any, maxval = any
+	dim as FBSYMBOL ptr deflabel = any
 
     minval = stk->select.const_.minval
     maxval = stk->select.const_.maxval
@@ -351,61 +335,13 @@ sub cSelConstStmtEnd(byval stk as FB_CMPSTMTSTK ptr)
     '' emit comp label
     astAdd( astNewLABEL( stk->select.cmplabel ) )
 
-	'' check min val
-	if( minval > 0 ) then
-		expr = astNewBOP( AST_OP_LT, _
-						  astNewVAR( stk->select.sym, 0, FB_DATATYPE_UINT ), _
-						  astNewCONSTi( minval, FB_DATATYPE_UINT ), _
-						  deflabel, _
-						  AST_OPOPT_NONE )
-		astAdd( expr )
-	end if
-
-	'' check max val
-	expr = astNewBOP( AST_OP_GT, _
-					  astNewVAR( stk->select.sym, 0, FB_DATATYPE_UINT ), _
-					  astNewCONSTi( maxval, FB_DATATYPE_UINT ), _
-					  deflabel, _
-					  AST_OPOPT_NONE )
-	astAdd( expr )
-
-    '' jump to table[idx]
-    tbsym = hJumpTbAllocSym( )
-
-	idxexpr = astNewBOP( AST_OP_MUL, _
-						 astNewVAR( stk->select.sym, 0, FB_DATATYPE_UINT ), _
-    				  	 astNewCONSTi( FB_POINTERSIZE, FB_DATATYPE_UINT ) )
-
-    expr = astNewIDX( astNewVAR( tbsym, -minval * FB_POINTERSIZE, typeAddrOf( FB_DATATYPE_VOID ) ), _
-    				  idxexpr, typeAddrOf( FB_DATATYPE_VOID ), NULL )
-
-	'' ASM backend? emit the jump before the table
-	if( env.clopt.backend = FB_BACKEND_GAS ) then
-		astAdd( astNewBRANCH( AST_OP_JUMPPTR, NULL, expr ) )
-	end if
-
-    '' emit table
-    astAdd( astNewJMPTB_Begin( tbsym ) )
-
-    ''
-    i = stk->select.const_.base
-    for value = minval to maxval
-    	if( value = ctx.caseTB(i).value ) then
-    		astAdd( astNewJMPTB_Label( FB_DATATYPE_UINT, ctx.caseTB(i).label ) )
-    		i += 1
-    	else
-    		astAdd( astNewJMPTB_Label( FB_DATATYPE_UINT, deflabel ) )
-    	end if
-    next
+	astAdd( astBuildJMPTB( stk->select.sym, _
+	                       @ctx.casevalues(stk->select.const_.base), _
+	                       @ctx.caselabels(stk->select.const_.base), _
+	                       ctx.base - stk->select.const_.base, _
+	                       deflabel, minval, maxval ) )
 
     ctx.base = stk->select.const_.base
-
-    astAdd( astNewJMPTB_End( tbsym ) )
-
-	'' high-level IR? emit the jump after the table
-	if( env.clopt.backend = FB_BACKEND_GCC ) then
-		astAdd( astNewBRANCH( AST_OP_JUMPPTR, NULL, expr ) )
-	end if
 
     '' emit exit label
     astAdd( astNewLABEL( stk->select.endlabel ) )
