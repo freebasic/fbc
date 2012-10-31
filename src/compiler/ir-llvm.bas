@@ -1615,83 +1615,102 @@ private sub _emitBop _
 	)
 
 	dim as string ln, falselabel
-	dim as IRVREG ptr v0 = any
+	dim as IRVREG ptr vresult = any, vtemp = any
+	dim as integer is_comparison = any
 
 	'' Conditional branch?
-	select case as const( op )
+	select case( op )
 	case AST_OP_EQ, AST_OP_NE, AST_OP_GT, AST_OP_LT, AST_OP_GE, AST_OP_LE
-		if( vr = NULL ) then
-			hLoadVreg( v1 )
-			hLoadVreg( v2 )
-			v0 = _allocVreg( FB_DATATYPE_INTEGER, NULL )
-
-			'' condition = comparison expression
-			ln = hVregToStr( v0 ) + " = "
-			ln += *hGetBopCode( op, v1->dtype )
-			ln += " "
-			ln += hEmitType( v1->dtype, v1->subtype )
-			ln += " "
-			ln += hVregToStr( v1 )
-			ln += ", "
-			ln += hVregToStr( v2 )
-			hWriteLine( ln )
-
-			'' The conditional branch in LLVM always needs both
-			'' true and false labels, to keep the proper basic
-			'' block semantics up.
-			'' true label = the label given through the BOP,
-			'' false label = the code right behind the branch
-
-			'' branch condition, truelabel, falselabel
-			falselabel = *symbUniqueLabel( )
-			ln = "br i1 " + hVregToStr( v0 )
-			ln += ", "
-			ln += "label %" + *symbGetMangledName( ex )
-			ln += ", "
-			ln += "label %" + falselabel
-			hWriteLine( ln )
-
-			'' falselabel:
-			hWriteLabel( falselabel )
-			exit sub
-		end if
+		is_comparison = TRUE
+	case else
+		is_comparison = FALSE
 	end select
+
+	'' Conditional branch?
+	if( is_comparison and (vr = NULL) ) then
+		hLoadVreg( v1 )
+		hLoadVreg( v2 )
+		vresult = _allocVreg( FB_DATATYPE_INTEGER, NULL )
+
+		'' condition = comparison expression
+		ln = hVregToStr( vresult ) + " = "
+		ln += *hGetBopCode( op, v1->dtype )
+		ln += " "
+		ln += hEmitType( v1->dtype, v1->subtype )
+		ln += " "
+		ln += hVregToStr( v1 )
+		ln += ", "
+		ln += hVregToStr( v2 )
+		hWriteLine( ln )
+
+		'' The conditional branch in LLVM always needs both
+		'' true and false labels, to keep the proper basic
+		'' block semantics up.
+		'' true label = the label given through the BOP,
+		'' false label = the code right behind the branch
+
+		'' branch condition, truelabel, falselabel
+		falselabel = *symbUniqueLabel( )
+		ln = "br i1 " + hVregToStr( vresult )
+		ln += ", "
+		ln += "label %" + *symbGetMangledName( ex )
+		ln += ", "
+		ln += "label %" + falselabel
+		hWriteLine( ln )
+
+		'' falselabel:
+		hWriteLabel( falselabel )
+		exit sub
+	end if
 
 	'' If it's a self-bop, we need to allocate a result REG and then
 	'' store that into v1 later.
 	if( vr ) then
 		'' vr = v1 bop b2
 		assert( irIsREG( vr ) )
-		v0 = vr
+		vresult = vr
 	else
 		'' v1 bop= b2
-		v0 = _allocVreg( v1->dtype, v1->subtype )
+		vresult = _allocVreg( v1->dtype, v1->subtype )
 	end if
 
 	hLoadVreg( v1 )
 	hLoadVreg( v2 )
-	_setVregDataType( v1, v0->dtype, v0->subtype )
-	_setVregDataType( v2, v0->dtype, v0->subtype )
+	_setVregDataType( v1, vresult->dtype, vresult->subtype )
+	_setVregDataType( v2, vresult->dtype, vresult->subtype )
 
-	ln = hVregToStr( v0 )
+	ln = hVregToStr( vresult )
 	ln += " = "
-	ln += *hGetBopCode( op, v0->dtype )
+	ln += *hGetBopCode( op, vresult->dtype )
 	ln += " "
-	ln += hEmitType( v0->dtype, v0->subtype )
+	ln += hEmitType( vresult->dtype, vresult->subtype )
 	ln += " "
 	ln += hVregToStr( v1 )
 	ln += ", "
 	ln += hVregToStr( v2 )
+	hWriteLine( ln )
 
-	if( vr = NULL ) then
-		if( irIsREG( v1 ) ) then
-			*v1 = *v0
-		else
-			_emitStore( v1, v0 )
-		end if
+	'' LLVM comparison ops return i1, but we usually want i32,
+	'' so do an sign-extending cast (i1 -1 to i32 -1).
+	if( is_comparison ) then
+		vtemp = _allocVreg( vresult->dtype, vresult->subtype )
+		ln = hVregToStr( vtemp )
+		ln += " = sext "
+		ln += "i1 " + hVregToStr( vresult )
+		ln += " to "
+		ln += hEmitType( vresult->dtype, vresult->subtype )
+		hWriteLine( ln )
+		*vresult = *vtemp
 	end if
 
-	hWriteLine( ln )
+	'' self-bop? (see above)
+	if( vr = NULL ) then
+		if( irIsREG( v1 ) ) then
+			*v1 = *vresult
+		else
+			_emitStore( v1, vresult )
+		end if
+	end if
 end sub
 
 private sub _emitUop _
