@@ -1461,10 +1461,38 @@ private function hEmitType _
 	function = s
 end function
 
-private function hEmitInt( byval value as integer ) as string
-	'' It seems like llc doesn't care whether we emit -1 or 4294967295,
-	'' it's the bit pattern that matters.
-	function = str( value )
+private function hEmitInt _
+	( _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr, _
+		byval value as integer _
+	) as string
+
+	dim as string s
+
+	select case( dtype )
+	case FB_DATATYPE_INTEGER, FB_DATATYPE_UINT, _
+	     FB_DATATYPE_LONG, FB_DATATYPE_ULONG, _
+	     FB_DATATYPE_ENUM
+		'' It seems like llc doesn't care whether we emit -1 or
+		'' 4294967295, it's the bit pattern that matters.
+		s = str( value )
+
+	case else
+		'' cast the i32 constant to pointer/byte/short type
+		'' <castop> (i32 <n> to <type>)
+		if( typeIsPtr( dtype ) ) then
+			s = "inttoptr "
+		else
+			s = "trunc "
+		end if
+		s += "("
+		s += hEmitType( FB_DATATYPE_INTEGER, NULL ) + " " + str( value )
+		s += " to " + hEmitType( dtype, subtype )
+		s += ")"
+	end select
+
+	function = s
 end function
 
 private function hEmitLong( byval value as longint ) as string
@@ -1513,12 +1541,12 @@ private function hVregToStr( byval v as IRVREG ptr ) as string
 			s = hEmitFloat( v->value.float )
 		case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
 			if( FB_LONGSIZE = len( integer ) ) then
-				s = hEmitInt( v->value.int )
+				s = hEmitInt( v->dtype, v->subtype, v->value.int )
 			else
 				s = hEmitLong( v->value.long )
 			end if
 		case else
-			s = hEmitInt( v->value.int )
+			s = hEmitInt( v->dtype, v->subtype, v->value.int )
 		end select
 
 	case IR_VREGTYPE_REG
@@ -2185,7 +2213,7 @@ private sub hVarIniSeparator( )
 end sub
 
 private sub _emitVarIniI( byval dtype as integer, byval value as integer )
-	ctx.varini += hEmitInt( value )
+	ctx.varini += hEmitInt( dtype, NULL, value )
 	hVarIniSeparator( )
 end sub
 
