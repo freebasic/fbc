@@ -425,9 +425,13 @@ private sub hBuildStrLit _
 		ch = (*z)[i]
 		'' chars like a-zA-Z0-9 can be emitted literally,
 		'' but special chars (including '\') should be encoded in hex
-		if( (ch >= 32) and (ch < 127) and (ch <> asc( $"\" )) ) then
+		if( (ch >= 32) and (ch < 127) and _
+		    (ch <> asc( $"\" )) and _  '' backslashes must be escaped
+		    (ch <> asc( """" )) ) then '' double quotes too
+			'' emit as-is
 			ln += chr( ch )
 		else
+			'' emit in \XX escape form
 			ln += $"\" + hex( ch, 2 )
 		end if
 	next
@@ -455,7 +459,9 @@ private sub hBuildWstrLit _
 	for i as integer = 0 to (length \ wcharsize) - 1
 		ch = (*w)[i]
 		'' (ditto)
-		if( (ch >= 32) and (ch < 127) and (ch <> asc( $"\" )) ) then
+		if( (ch >= 32) and (ch < 127) and _
+		    (ch <> asc( $"\" )) and _
+		    (ch <> asc( """" )) ) then
 			ln += chr( ch )
 			'' Pad up to wchar_t size
 			for j as integer = 2 to wcharsize
