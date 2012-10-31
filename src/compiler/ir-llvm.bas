@@ -1461,9 +1461,13 @@ private function hEmitType _
 	function = s
 end function
 
-private function hEmitInt( byval value as ulongint ) as string
-	'' TODO: does LLVM allow negative constants, or should they all be
-	'' emitted as unsigned?
+private function hEmitInt( byval value as integer ) as string
+	'' It seems like llc doesn't care whether we emit -1 or 4294967295,
+	'' it's the bit pattern that matters.
+	function = str( value )
+end function
+
+private function hEmitLong( byval value as longint ) as string
 	function = str( value )
 end function
 
@@ -1504,14 +1508,14 @@ private function hVregToStr( byval v as IRVREG ptr ) as string
 	case IR_VREGTYPE_IMM
 		select case as const( v->dtype )
 		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-			s = hEmitInt( v->value.long )
+			s = hEmitLong( v->value.long )
 		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 			s = hEmitFloat( v->value.float )
 		case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
 			if( FB_LONGSIZE = len( integer ) ) then
 				s = hEmitInt( v->value.int )
 			else
-				s = hEmitInt( v->value.long )
+				s = hEmitLong( v->value.long )
 			end if
 		case else
 			s = hEmitInt( v->value.int )
@@ -2191,7 +2195,7 @@ private sub _emitVarIniF( byval dtype as integer, byval value as double )
 end sub
 
 private sub _emitVarIniI64( byval dtype as integer, byval value as longint )
-	ctx.varini += hEmitInt( value )
+	ctx.varini += hEmitLong( value )
 	hVarIniSeparator( )
 end sub
 
