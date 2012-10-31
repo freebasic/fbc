@@ -1,22 +1,10 @@
-/* ERASE function for static arrays */
+/* ERASE for static arrays: clear the elements */
+/* (for FBSTRING arrays, fb_ArrayEraseStr() should be used instead */
 
 #include "fb.h"
 
-/*:::::*/
-FBCALL int fb_ArrayClear
-	( 
-		FBARRAY *array, 
-		int isvarlen 
-	)
+FBCALL void fb_ArrayClear( FBARRAY *array )
 {
-    /* not an error, see fb_ArrayEraseObj() */
-    if( array->ptr == NULL )
-    	return fb_ErrorSetNum( FB_RTERROR_OK );
-    
-	if( isvarlen == FB_FALSE )
+	if( array->ptr )
 		memset( array->ptr, 0, array->size );
-	else
-    	fb_hArrayDtorStr( array, NULL, 0 );
-
-   	return fb_ErrorSetNum( FB_RTERROR_OK );
 }

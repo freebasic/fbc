@@ -296,7 +296,7 @@ private function hGetMode _
 
 			arg3 = symbGetParamNext( arg2 )
 
-			if( s->proc.mode = FB_FUNCMODE_PASCAL ) then
+			if( symbGetProcMode( s ) = FB_FUNCMODE_PASCAL ) then
 				swap arg1, arg3
 			end if
 

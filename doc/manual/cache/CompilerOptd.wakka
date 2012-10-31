@@ -3,12 +3,13 @@ Add a preprocessor definition
 
 {{fbdoc item="syntax"}}##
 	**-d** < //name//=//value// >
+	**-d** < //name// >
 ##
 {{fbdoc item="param"}}
 	##//name//##
-		Name of the preprocessor macro to define.
+		Name of the preprocessor macro to define.  No parameters are allowed.
 	##//value//##
-		Value to give to the macro.
+		Value to give to the macro.  If omitted, it will be defined as 1
 
 {{fbdoc item="desc"}}
 	The ##-d## compiler option adds a preprocessor macro to all source files. The same as using the preprocessor directive ##[[KeyPgPpdefine #define]]## or ##[[KeyPgPpmacro #macro]]##.

@@ -42,13 +42,13 @@ function cEraseStmt() as integer
 					errReport( FB_ERRMSG_CONSTANTCANTBECHANGED )
 				end if
 
+				'' ERASE frees dynamic arrays (destruct only),
+				'' but re-initializes static arrays (destruct and construct).
 				if( symbGetIsDynamic( s ) ) then
-					expr = rtlArrayErase( expr, TRUE )
+					astAdd( rtlArrayErase( expr, TRUE, TRUE ) )
 				else
-					expr = rtlArrayClear( expr, TRUE, TRUE )
+					astAdd( rtlArrayClear( expr, TRUE ) )
 				end if
-
-				astAdd( expr )
 			end if
 		end if
 

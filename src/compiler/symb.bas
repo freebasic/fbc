@@ -2272,7 +2272,15 @@ function symbDump( byval sym as FBSYMBOL ptr ) as string
 			case FB_DATATYPE_FWDREF
 				s += "<fwdref>"
 			case FB_DATATYPE_STRUCT
-				s += "<struct>"
+				if( symbIsStruct( sym ) ) then
+					if( symbGetUDTIsUnion( sym ) ) then
+						s += "<union>"
+					else
+						s += "<struct>"
+					end if
+				else
+					s += "<struct>"
+				end if
 			case FB_DATATYPE_ENUM
 				s += "<enum>"
 			case else

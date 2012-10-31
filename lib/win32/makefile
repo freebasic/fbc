@@ -7,8 +7,6 @@ all: $(LIBS)
 
 # Some libraries need extra dlltool flags
 libFreeImage.dll.a:    DTFLAGS := --add-stdcall-underscore
-libbass.dll.a:         DTFLAGS := --kill-at
-libbassmod.dll.a:      DTFLAGS := --kill-at
 libcrypt.dll.a:        DTFLAGS := --kill-at
 libglut32.dll.a:       DTFLAGS := --kill-at
 libglut.dll.a:         DTFLAGS := --kill-at

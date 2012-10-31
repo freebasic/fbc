@@ -26,6 +26,8 @@ Raises a numeric expression to some power
 	
 	This operator can be overloaded for user-defined types.
 
+	Note: This operator exists in C/""C++"" with a different meaning - there it performs a Bitwise ##[[KeyPgOpXor Xor]]##.
+
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/operator/exponent.bas"}}%%(freebasic)
 DIM AS DOUBLE n

@@ -151,7 +151,7 @@ private function hNewOp _
 	if( placement_expr ) then
 		new_expr = placement_expr
 	else
-		new_expr = rtlMemNewOp( op = AST_OP_NEW_VEC, len_expr, typeGet( dtype ), subtype )
+		new_expr = rtlMemNewOp( op, len_expr, dtype, subtype )
 		if( new_expr = NULL ) then
 			return NULL
 		end if
@@ -358,7 +358,7 @@ private function hDelOp _
 	'' delete( ptr )
 	dim as ASTNODE ptr del_expr = any
 
-	del_expr = rtlMemDeleteOp( op = AST_OP_DEL_VEC, ptr_expr, typeGet( dtype ), subtype )
+	del_expr = rtlMemDeleteOp( op, ptr_expr, dtype, subtype )
 	if( del_expr = NULL ) then
 		return NULL
 	end if

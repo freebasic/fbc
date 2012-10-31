@@ -132,9 +132,25 @@ sub test cdecl()
 	checkPtrT3(@x3_local)
 end sub
 
+type Byte1
+	dim b1 as byte
+end type
+
+type Byte2 extends Byte1
+end type
+
+private sub testDerivedLvalueCast cdecl( )
+	'' crash regression test
+	'' As long as lvalue casting like this is allowed,
+	'' this should not crash the compiler.
+	dim i2 as Byte2
+	cast(Byte1, i2) = type<Byte1>(2)
+end sub
+
 private sub ctor() constructor
 	fbcu.add_suite("tests/structs/derived_cast")
 	fbcu.add_test("upcasting derived UDT vars", @test)
+	fbcu.add_test("derived lvalue cast + anon assign", @testDerivedLvalueCast)
 end sub
 
 end namespace

@@ -91,12 +91,13 @@
 
 {{fbdoc item="section" value="Miscellaneous"}}
 
-	{{fbdoc item="keyword" value="ObsoletedKwds|Obsoleted Keywords"}}
+	{{fbdoc item="keyword" value="ObsoletedKwds|Obsolete Keywords"}}
 	{{fbdoc item="keyword" value="GlossaryIndex|Glossary"}}
 	{{fbdoc item="keyword" value="CatPgMisc|Miscellaneous Keywords"}}
 	{{fbdoc item="keyword" value="ProPgCruntime|C Standard Library Functions"}}
 	{{fbdoc item="keyword" value="CptAscii|ASCII Character Codes"}}
 	{{fbdoc item="keyword" value="TblRuntimeErrors|Runtime Error Codes"}}
+	{{fbdoc item="keyword" value="TblComparisonC|C/C++ vs. FreeBASIC comparison"}}
 
 {{fbdoc item="section" value="Hacking on FreeBASIC"}}
 
@@ -105,4 +106,3 @@
 >>::c::
 
 {{fbdoc item="back" value="FBWiki|Main Page"}}
-   

@@ -1310,6 +1310,15 @@ end function
 '' STK
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
+function emitSTACKALIGN( byval bytes as integer ) as EMIT_NODE ptr
+	static as IRVREG vr
+
+	vr.typ = IR_VREGTYPE_IMM
+	vr.value.int = bytes
+
+	function = hNewSTK( EMIT_OP_STACKALIGN, @vr )
+end function
+
 '':::::
 function emitPUSH _
 	( _
@@ -1379,35 +1388,6 @@ sub emitASM( byval text as zstring ptr )
 		EMIT_REGTRASHALL( c )						'' can't check the reg usage
 	next
 end sub
-
-'':::::
-function emitALIGN _
-	( _
-		byval bytes as integer _
-	) as EMIT_NODE ptr static
-
-    static as IRVREG vr
-
-	vr.typ = IR_VREGTYPE_IMM
-	vr.value.int = bytes
-
-	function = hNewUOP( EMIT_OP_ALIGN, @vr )
-
-end function
-
-'':::::
-function emitSTACKALIGN _
-	( _
-		byval bytes as integer _
-	) as EMIT_NODE ptr static
-    static as IRVREG vr
-
-	vr.typ = IR_VREGTYPE_IMM
-	vr.value.int = bytes
-
-	function = hNewUOP( EMIT_OP_STKALIGN, @vr )
-
-end function
 
 function emitJMPTB _
 	( _

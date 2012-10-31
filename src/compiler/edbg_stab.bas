@@ -917,14 +917,9 @@ private function hGetDataType _
 
 end function
 
-'':::::
-private sub hDeclUDT _
-	( _
-		byval sym as FBSYMBOL ptr _
-	)
-
-    dim as FBSYMBOL ptr e
-    dim as string desc
+private sub hDeclUDT( byval sym as FBSYMBOL ptr )
+	dim as FBSYMBOL ptr fld = any
+	dim as string desc
 
 	sym->udt.dbg.typenum = ctx.typecnt
 	ctx.typecnt += 1
@@ -933,20 +928,18 @@ private sub hDeclUDT _
 
 	desc += ":Tt" + str( sym->udt.dbg.typenum ) + "=s" + str( symbGetUDTUnpadLen( sym ) )
 
-	e = symbGetUDTFirstElm( sym )
-	do while( e <> NULL )
-        desc += *symbGetName( e ) + ":" + hGetDataType( e )
-
-        desc += "," + str( symbGetUDTElmBitOfs( e ) ) + "," + _
-        			  str( symbGetUDTElmBitLen( e ) ) + ";"
-
-		e = symbGetUDTNextElm( e )
-	loop
+	fld = symbUdtGetFirstField( sym )
+	while( fld )
+		desc += *symbGetName( fld ) + ":" + hGetDataType( fld )
+		desc += "," + str( symbGetUDTElmBitOfs( fld ) )
+		desc += "," + str( symbGetUDTElmBitLen( fld ) )
+		desc += ";"
+		fld = symbUdtGetNextField( fld )
+	wend
 
 	desc += ";"
 
 	hEmitSTABS( STAB_TYPE_LSYM, desc, 0, 0, "0" )
-
 end sub
 
 '':::::

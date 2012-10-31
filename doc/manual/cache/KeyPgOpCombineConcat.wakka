@@ -25,6 +25,9 @@ Appends and assigns a string onto another string
 
 	This operator can be overloaded for user-defined types.
 
+	Note: This operator exists in C/""C++"" with a different meaning - there it performs a bitwise ##[[KeyPgOpCombineAnd And=]]##.
+
+
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/operator/concat-assign.bas"}}%%(freebasic)
 dim s as string = "Hello, "

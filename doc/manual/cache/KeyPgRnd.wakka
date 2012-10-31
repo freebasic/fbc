@@ -8,8 +8,8 @@ Returns a random [[KeyPgDouble double]] precision number in the range ##[0, 1)##
 	//result// = **Rnd**( //seed// )
 ##
 {{fbdoc item="param"}}
-	##//number//##
-		Optional ##[[KeyPgSingle single]]## argument. If ##//seed//## has a value of zero, the last random number generated is repeated, for any other number a new random number is returned. With the QB-compatible algorithm, a negative number fully reseeds the generator.  The default for no argument is to return a new random number.
+	##//seed//##
+		Optional ##[[KeyPgSingle single]]## argument. If ##//seed//## has a value of zero (##0.0##), the last random number generated is repeate.  For any other number a new random number is returned. With the QB-compatible algorithm, a negative number fully reseeds the generator.  The default for no argument is to return a new random number.
 
 {{fbdoc item="ret"}}
 	Returns the random number generated.

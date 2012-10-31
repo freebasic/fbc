@@ -1039,7 +1039,7 @@ private sub hMangleProc( byval sym as FBSYMBOL ptr )
 	if( sym->proc.mode = FB_FUNCMODE_STDCALL ) then
 		'' But not for the C backend, because gcc will do it already.
 		if( env.clopt.backend <> FB_BACKEND_GCC ) then
-			mangled += "@" + str( sym->proc.lgt )
+			mangled += "@" + str( symbCalcProcParamsLen( sym ) )
 		end if
 	end if
 

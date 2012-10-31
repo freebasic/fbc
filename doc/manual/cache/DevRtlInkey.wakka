@@ -1,0 +1,78 @@
+{{fbdoc item="title" value="Keyboard Input"}}----
+
+{{fbdoc item="section" value="Basics"}}
+
+	Using FB's built-in functionality, there are four ways of getting keyboard input:
+	
+		- ##[[KeyPgInkey inkey()]]## returns a string containing an ASCII char corresponding to the key pressed by the user, or a 2-byte FB extended keycode for some special keys, such as the Arrow keys or Page Up/Down. It works pretty much like it did in QB.
+		
+		- ##[[KeyPgGetkey getkey()]]## returns the same information as ##inkey()##, but in form of an integer instead of a string. ##inkey()## and ##getkey()## belong together: They use the same code and they are located in the same modules.
+		
+		- ##[[KeyPgMultikey multikey()]]## takes an [[GfxScancodes FB scancode (SC_*)]] and checks whether that key is pressed at this moment.
+		
+		- ##[[KeyPgScreenevent screenevent()]]## returns key presses in form of EVENT_KEY_PRESS events (and others for key release or repeat). It returns the [[GfxScancodes FB scancode]] in the [[KeyPgEvent EVENT.scancode field]], and the ASCII char value or 0 in the EVENT.ascii field. EVENT.ascii does not use FB extended keycodes; the EVENT.scancode field can be checked instead in order to handle extended keys.
+	
+	[[GfxScancodes "scancode"]] refers to the SC_* #defines which are more or less matching the DOS keyboard scancodes. The values are not made up, they themselves correspond to certain ASCII chars, for example: SC_HOME = asc( "G" ) = &h47. They're also the same values that you get under DOS/DJGPP or from the Linux kernel as part of extended key code sequences. Besides their use in ##multikey()## or ##screenevent()##, scancodes are used in various places internally, for example when translating between different kinds of key codes, as an easy-to-use and portable representation of keycodes.
+	
+	"key" refers to an ASCII char, or a 2-byte extended keycode string for other keys as returned by ##inkey()##. The rtlib has several KEY_* #defines for the available 2-byte extended keycodes, in form of integers. These are used internally and also match the values returned by ##getkey()##.
+	
+	FB's 2-byte extended keycodes consist of a &hFF byte followed by a byte containing the SC_* scancode value corresponding to the keypress. Checking for SC_HOME returned by ##inkey()## could look like:
+		##if( inkey( ) = chr( 255 ) + "G" ) then ...##
+	Checking for SC_HOME returned by getkey():
+		##if( getkey() = &h47FF ) then ...##
+		##if( getkey() = ((SC_HOME shl 8) or &hFF) ) then ...##
+	
+	##inkey()##, ##getkey()## and ##multikey()## use wrapper functions that call ...
+		- the console-mode versions fb_ConsoleInkey(), fb_ConsoleGetkey(), fb_ConsoleMultikey() by default,
+		- or the gfxlib versions fb_GfxInkey(), fb_GfxGetkey(), fb_GfxMultikey() if a graphics SCREEN is active,
+	by using function pointer hooks.
+
+{{fbdoc item="section" value="rtlib"}}
+
+	The rtlib has separate console-mode implementations of the above functions, for each platform:
+	
+	- DOS
+		##fb_ConsoleInkey()## and ##fb_ConsoleGetkey()## use DJGPP's ##getch()## function to retrieve input characters anytime they're called. ##getch()## returns ASCII chars, but also 2-byte sequences for special keys, which are easy to handle because they match the SC_* scancodes.
+					
+		##fb_ConsoleMultikey()## installs an interrupt handler that uses port I/O to read keyboard information and updates a key state table which is checked by multikey().
+	
+	- ""Win32""
+		##fb_ConsoleInkey()## and ##fb_ConsoleGetkey()## (indirectly) use the ""Win32 API"" functions ##""PeekConsoleInput()""## and ##""ReadConsoleInput()""## to get queued key press/release events whenever needed. All currently pending events are handled during a call, and after very complex internal translation involving ##""MapVirtualKey()""##, the keys are put into a buffer, from where ##fb_ConsoleInkey()## and ##fb_ConsoleGetkey()## read the keys they return.
+		
+		##""SetConsoleCtrlHandler()""## is used to listen for console close/system shutdown events to provide ##SC_CLOSE## events for console-mode (the win32 port of the rtlib might be the only one going this far).
+		
+		##fb_ConsoleMultikey()## uses a ##""FindWindow()""##/##""GetForegroundWindow()""## hack to determine whether the console window is focused, and if yes, simply uses ##""GetAsyncKeyState()""##.
+	
+	- Linux, *BSD
+		The Unix port of the rtlib runs a console keyboard handler (and a console mouse handler) in a background thread, in order to provide input for ##multikey()## (and ##getmouse()##).
+		
+		##fb_ConsoleInkey()## and ##fb_ConsoleGetkey()## read input bytes through the ##""__fb_con.keyboard_getch()""## hook. By default, ##""__fb_con.keyboard_getch()""## points to a simple function that just uses ##fgetc()## on ##/dev/tty## (indirectly; the Unix rtlib initialization code opens the handle, and changes I/O settings etc., not only for the purpose of keyboard input, but mostly).
+		
+		The terminal returns ASCII chars for simple key presses, and special escape sequences for extended keys. On the first call, various termcap lookups (via ##tgetstr()##) are done to determine these terminal-specific escape sequences for certain key press events, and they are put into a lookup tree to allow easy & fast translation to the corresponding FB extended keycodes. By doing the termcap query the Unix rtlib can support all the different terminals (e.g. ##xterm## vs. ##linux##) quite well, although there still are some keys not working here and there.
+		
+		Only one "event" (ASCII char or escape sequence) is read at a time, the resulting key is added to a key buffer, from where ##fb_ConsoleInkey()## and ##fb_ConsoleGetkey()## can read it.
+		
+		##fb_ConsoleMultikey()## is currently implemented for the Linux port only, not under *BSD though. In console-input mode (used under 'console'/'linux' terminals), it ##dup()##licates the rtlib's ##/dev/tty## handle, and switches it over into medium raw mode. Then it overrides the background thread's ##""__fb_con.keyboard_handler()""## hook to a function that ##read()##s kernel key codes from the duplicated ##/dev/tty## handle.
+				
+		Called from the background thread, it reads a fixed amount of input at once, whenever it arrives. After somewhat complex translation, a key state table is updated to reflect the state of pressed/released keys, to be checked by fb_ConsoleMultikey() at any time, and the keys are added to a key buffer from where an overridden ##""__fb_con.keyboard_getch()""## reads them, whenever called by fb_ConsoleInkey() or fb_ConsoleGetkey() [why is this done?]. Furthermore, the keys are sent to the Linux fbdev gfxlib2 driver, if it's active.
+			
+		In X11 mode (used under 'xterm' terminal), ##fb_ConsoleMultikey()## sets the background thread's ##""__fb_con.keyboard_handler()""## to a function that checks whether the xterm has input focus (##""XGetInputFocus()""##) and if yes, simply uses ##""XQueryKeymap()""## to update the key state table for ##fb_ConsoleMultikey()##.
+
+{{fbdoc item="section" value="gfxlib2"}}
+
+	In the gfxlib, ##fb_GfxInkey()## and ##fb_GfxGetkey()## use one key buffer (same code on all platforms), to which the different/platform-specific gfx drivers post keys to. Similar to that, there is a single key state table for ##fb_GfxMultikey()##, and it is also updated by the gfx drivers. Whether or not the gfx drivers actually do post keys or update key states is up to them though.
+	
+	- DOS
+		The DOS gfxlib2 port (for all DOS gfx drivers) sets a hook/callback that's called by the same keyboard interrupt handler used by the DOS ##fb_ConsoleMultikey()##.
+	
+	- ""Win32"" driver
+		The gfx window thread listens to ##WM_KEYDOWN##, ##WM_CHAR## and ##WM_CLOSE##, translates the keys, and then updates the key state table, posts them to the ##fb_GfxInkey()##/##fb_GfxGetkey()## buffer, and fills in & posts the corresponding ##EVENT## for ##screenevent()##.
+	
+	- X11 driver
+		The gfx window thread listens to ##""KeyPress""## and other ##XEvent##'s, translates the keys, then posts them etc., just like the ""Win32"" driver.
+	
+	- Linux fbdev driver
+		As mentioned above, the fbdev driver gets its input from the same keyboard handler code that's used by the Linux ##fb_ConsoleMultikey()##.
+
+{{fbdoc item="back" value="DevToc|FreeBASIC Developer Information"}}
+{{fbdoc item="back" value="DocToc|Table of Contents"}}

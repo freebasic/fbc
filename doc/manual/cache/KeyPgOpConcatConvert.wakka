@@ -24,6 +24,8 @@ Concatenates two strings, converting non-strings to strings as needed
 
 	If either of the expressions is a ##[[KeyPgWstring Wstring]]##, a ##[[KeyPgWstring Wstring]]## is returned, otherwise a ##[[KeyPgString String]]## is returned.
 
+	Note: This operator exists in C/""C++"" with a different meaning - there it performs a bitwise [[KeyPgOpAnd And]].
+
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/operator/concat.bas"}}%%(freebasic)
 DIM AS STRING A,C

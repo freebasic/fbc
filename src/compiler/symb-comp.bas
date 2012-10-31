@@ -157,7 +157,8 @@ private sub hAddRTTI _
 	( _
 		byval sym as FBSYMBOL ptr _ 
 	)
-	
+
+	dim as FBSYMBOL ptr fld = any
 	static as FBARRAYDIM dTB(0)
 
 	var mname = *symbGetMangledName( sym )
@@ -188,16 +189,16 @@ private sub hAddRTTI _
 		astTypeIniScopeBegin( initree, rtti )
 	
 			'' stdlistVT = NULL
-			var elm = symbGetUDTFirstElm( symb.rtti.fb_rtti )
-			astTypeIniAddAssign( initree, astNewCONSTi( 0, typeAddrOf( FB_DATATYPE_VOID ), NULL ), elm )
+			fld = symbUdtGetFirstField( symb.rtti.fb_rtti )
+			astTypeIniAddAssign( initree, astNewCONSTi( 0, typeAddrOf( FB_DATATYPE_VOID ), NULL ), fld )
 			
 			'' id = @"mangled name"
-			elm = symbGetUDTNextElm( elm, FALSE )
-			astTypeIniAddAssign( initree, astNewADDROF( astNewVAR( symbAllocStrConst( mname, len( mname ) ), 0, FB_DATATYPE_CHAR ) ), elm )
+			fld = symbUdtGetNextInitableField( fld )
+			astTypeIniAddAssign( initree, astNewADDROF( astNewVAR( symbAllocStrConst( mname, len( mname ) ), 0, FB_DATATYPE_CHAR ) ), fld )
 			
 			'' pRTTIBase = @base's RTTI struct
-			elm = symbGetUDTNextElm( elm, FALSE )
-			astTypeIniAddAssign( initree, astNewADDROF( astNewVAR( symbGetSubtype( sym->udt.base )->udt.ext->rtti, 0 ) ), elm )
+			fld = symbUdtGetNextInitableField( fld )
+			astTypeIniAddAssign( initree, astNewADDROF( astNewVAR( symbGetSubtype( sym->udt.base )->udt.ext->rtti, 0 ) ), fld )
 	
 		astTypeIniScopeEnd( initree, rtti )
 	astTypeIniEnd( initree, TRUE ) 
@@ -224,12 +225,12 @@ private sub hAddRTTI _
 			astTypeIniScopeBegin( initree, vtable )
 		
 				'' base.nullPtr = NULL	
-				elm = symbGetUDTFirstElm( symb.rtti.fb_baseVT )
-				astTypeIniAddAssign( initree, astNewCONSTi( 0, typeAddrOf( FB_DATATYPE_VOID ), NULL ), elm )
+				fld = symbUdtGetFirstField( symb.rtti.fb_baseVT )
+				astTypeIniAddAssign( initree, astNewCONSTi( 0, typeAddrOf( FB_DATATYPE_VOID ), NULL ), fld )
 			
 				'' base.pRTTI = @rtti
-				elm = symbGetUDTNextElm( elm, FALSE )
-				astTypeIniAddAssign( initree, astNewADDROF( astNewVAR( rtti, 0 ) ), elm )
+				fld = symbUdtGetNextInitableField( fld )
+				astTypeIniAddAssign( initree, astNewADDROF( astNewVAR( rtti, 0 ) ), fld )
 
 			astTypeIniScopeEnd( initree, vtable )
 		astTypeIniScopeEnd( initree, vtable )

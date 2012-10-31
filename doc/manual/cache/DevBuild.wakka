@@ -33,8 +33,8 @@ On Windows, ""MinGW""/""MSYS"" is used to compile ""FreeBASIC"". Linux users wil
 
 	The current source (""FreeBASIC"" 0.24 [versions after September 20, 2011]) is available from these Git repositories:
 		- main repository at Sourceforge:
-			Git clone URL: ##""git://fbc.git.sourceforge.net/gitroot/fbc/fbc""##
-			Web view: http://fbc.git.sourceforge.net/git/gitweb.cgi?p=fbc/fbc;a=summary
+			Git clone URL: ##""git://git.code.sf.net/p/fbc/code""##
+			Web view: http://sourceforge.net/p/fbc/code/
 		- Github mirror:
 			Git clone URL: ##""https://github.com/freebasic/fbc.git""##
 			Web view: https://github.com/freebasic/fbc
@@ -55,11 +55,9 @@ On Windows, ""MinGW""/""MSYS"" is used to compile ""FreeBASIC"". Linux users wil
 		- ##fileutils## (##fil*.zip##)
 		- ##gcc## (##gcc*b.zip##)
 		- ##gpp## (##gpp*b.zip##)
-		- ##gettext## (##gtxt*b.zip##) - //libintl, for libbfd//
 		- ##make## (##mak*b.zip##)
 		- ##shellutils## (##shl*b.zip##)
 		- ##textutils## (##txt*b.zip##)
-		- ##zlib## (##zlib*b.zip##) - //zlib, for libbfd, from the ##[[http://www.delorie.com/pub/djgpp/current/v2tk/ current/v2tk/]]## directory//
 	
 		It can be useful (especially when working in parallel with ""MinGW"") to use a batch script to launch a terminal with the DJGPP tools in its PATH environment variable, instead of modifying the system's global PATH environment variable:
 		
@@ -80,15 +78,9 @@ warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 	1) The traditional FB-dos setup is a standalone setup, so we will use ENABLE_STANDALONE for the new build.
 	
 	
-		Additionally, if and only if you are bootstrapping the compiler using an unmodified FB-dos release, use ENABLE_FBBFD=217, because FB-dos releases come with a libbfd.a 2.17. Otherwise, when using DJGPP's libbfd, leave out ENABLE_FBBFD. This happens for example when you're already using a self-built fbc that's using DJGPP's libbfd. If you want to avoid having to worry about which libbfd to link the new compiler against, then use DISABLE_OBJINFO.
-		
 		Assuming the ""FreeBASIC"" sources are located at ##""C:\fbc-dos""##, create a ##""C:\fbc-dos\config.mk""## file containing something like the following:
 		
 		%%ENABLE_STANDALONE := YesPlease
-ENABLE_FBBFD := 217
-
-# (commented out)
-# DISABLE_OBJINFO := YesPlease
 %%
 	1) Then, run "make" from a cmd.exe prompt and let it compile FB:
 	
@@ -105,7 +97,6 @@ ENABLE_FBBFD := 217
 		-##""C:\DJGPP\lib\{crt0,gcrt0}.o""##
 		-##""C:\DJGPP\lib\lib{emu,m}.a""##
 		-##""C:\DJGPP\lib\gcc\djgpp\version\lib{gcc,supcxx}.a""##, and rename ##libsupcxx.a## to ##libsupcx.a## (8.3 file name)
-		-##""C:\DJGPP\lib\lib{bfd,iberty,intl,z}.a""## //(DJGPP's libbfd, for recompiling ""FreeBASIC"" using this tree)//
 		-##""C:\FBDOS\lib\dos\libc.a""## //- this should be the modified ##libc.a## from the latest ""FreeBASIC"" release. To use the libc.a from DJGPP, the _main.o it contains needs to be replaced with the one compiled from ##""contrib/djgpp/libc/crt0/_main.c""## from the fbc source code, to fix a bug in the original version from DJGPP.//
 		-and any additional libraries you want to use
 	
@@ -133,7 +124,6 @@ $ sudo ./install.sh -i
 		- ##gcc##
 		- ##""g++""## (##""gcc-c++""##)
 		- ##binutils##
-		- ##binutils-dev## (##binutils-devel## or ##binutils-static##) - //libbfd for fbc's objinfo feature//
 		- ##make##
 		- ##libncurses5-dev## (##ncurses-devel##)
 		- ##libx11-dev## (##libX11-devel##)
@@ -145,15 +135,9 @@ $ sudo ./install.sh -i
 		- ##libgl1-mesa-dev##, ##libglu1-mesa-dev## (##Mesa-devel##) - //""OpenGL"" development files//
 		- ##libffi-dev## (##ffi-devel##) - //foreign function interface for ##[[KeyPgThreadcall ThreadCall]]##//
 	
-	1) The traditional FB-linux setup is a normal FB setup that uses the system's tools and libraries.
+	1) The traditional FB-linux setup is a normal FB setup that uses the system's tools and libraries. Usually it's not necessary to put anything inside config.mk.
 	
 	
-		Usually it's not necessary to put anything inside config.mk, unless you know you need it. For example, if your fbc is using its own libbfd.a 2.17 (for example because it is a FB-linux-standalone release) then you have to use ENABLE_FBBFD=217, but if you're using the usual FB-linux release, then your fbc should be using the system's libbfd, and nothing needs to be done. To be safe, you can use DISABLE_OBJINFO.
-		
-		%%# (commented out)
-# prefix := /usr/local
-# DISABLE_OBJINFO := YesPlease
-%%
 	1) Assuming the ""FreeBASIC"" sources are located at ##""~/fbc""##, run "make" there and let it compile FB:
 	
 	
@@ -200,9 +184,8 @@ $ sudo ./install.sh -i
 	
 		%%CC := gcc -m32
 TARGET_ARCH := x86
-DISABLE_OBJINFO := YesPlease
 %%
-		This tells the FB makefile to use ##gcc -m32## instead of ##gcc##, which causes all C code to be compiled for x86 rather than x86_64. Furthermore, explicitly setting the TARGET_ARCH to x86 is necessary to get the makefile to select the proper x86 rtlib/gfxlib2 modules, because otherwise the makefile would rely on the output of ##uname -m##, which happens to be x86_64. But since we want to compile for 32bit, we need to override that. DISABLE_OBJINFO is used here to avoid libbfd problems - for example, a precompiled 32bit libbfd may not be available at all on 64bit GNU/Linux.
+		This tells the FB makefile to use ##gcc -m32## instead of ##gcc##, which causes all C code to be compiled for x86 rather than x86_64. Furthermore, explicitly setting the TARGET_ARCH to x86 is necessary to get the makefile to select the proper x86 rtlib/gfxlib2 modules, because otherwise the makefile would rely on the output of ##uname -m##, which happens to be x86_64. But since we want to compile for 32bit, we need to override that.
 	
 	1) Run "make" and let it compile FB:
 	
@@ -246,8 +229,6 @@ C:\TDM-GCC\msys\1.0\msys.bat
 	1) The traditional FB-win32 setup is a standalone setup, so we will use ENABLE_STANDALONE for the new build.
 	
 	
-		Additionally, if and only if you are bootstrapping the compiler using an unmodified FB-win32 release, use ENABLE_FBBFD=217, because FB-win32 releases come with a libbfd.a 2.17. Otherwise, when using TDM-GCC's libbfd, leave out ENABLE_FBBFD. This happens for example when you're already using a self-built fbc that's using TDM-GCC's libbfd. If you want to avoid having to worry about which libbfd to link the new compiler against, then use DISABLE_OBJINFO.
-		
 		Assuming the ""FreeBASIC"" sources are located at ##""C:\fbc""##, create a ##""C:\fbc\config.mk""## file containing something like the following:
 		
 		%%# FB-win32 typically is built as standalone
@@ -255,15 +236,6 @@ ENABLE_STANDALONE := YesPlease
 
 # For TDM-GCC which doesn't have libgcc_eh, unlike MinGW.org
 FBCFLAGS := -d ENABLE_TDMGCC
-
-# Only when using TDM-GCC's libbfd, if needed to satisfy its dependencies
-# FBLFLAGS := -l iconv -l advapi32
-
-# Only when using libbfd 2.17
-ENABLE_FBBFD := 217
-
-# To avoid worrying about libbfd, uncomment this:
-# DISABLE_OBJINFO := YesPlease
 %%
 	1) Run "make" (from inside the MSYS bash) and let it compile FB:
 	
@@ -281,7 +253,6 @@ $ make
 		- ##""C:\TDM-GCC\lib\gcc\mingw32\version\{crtbegin,crtend}.o""##
 		- ##""C:\TDM-GCC\lib\gcc\mingw32\version\lib{gcc,supc++}.a""##
 		- ##""C:\TDM-GCC\lib\lib{advapi32,gdi32,kernel32,msvcrt,user32,winmm,winspool}.a""## //(rename to ##lib*.dll.a##)//
-		- ##""C:\TDM-GCC\lib\lib{bfd,iberty,intl,iconv}.a""## //(For recompiling ""FreeBASIC"" using this tree)//
 		- and any additional libraries you want to use
 	
 	1) Rename ##""C:\fbc\fbc-new.exe""## to ##""C:\fbc\fbc.exe""##, if wanted
@@ -308,10 +279,9 @@ $ make
 	
 		- ##[[http://sourceforge.net/projects/mingw/files/MinGW/Base/gcc/Version4/ gcc-core]]##
 		- ##[[http://sourceforge.net/projects/mingw/files/MinGW/Base/gcc/Version4/ gcc-g++]]## (only needed to get ""libsupc++.a"")
-		- ##[[http://sourceforge.net/projects/mingw/files/MinGW/Base/binutils/ binutils]]## (binutils, and binutils-dev for libbfd)
+		- ##[[http://sourceforge.net/projects/mingw/files/MinGW/Base/binutils/ binutils]]##
 		- ##[[http://sourceforge.net/projects/mingw/files/MinGW/Base/mingw-rt/ mingwrt]]##
 		- ##[[http://sourceforge.net/projects/mingw/files/MinGW/Base/w32api/ w32api]]##
-		- ##[[http://sourceforge.net/projects/mingw/files/MinGW/Base/gettext/ gettext-dev]]## (libintl for libbfd)
 		- ##[[http://sourceforge.net/projects/mingw/files/MSYS/Base/msys-core/ msys-core]]##
 		- ##[[http://sourceforge.net/projects/mingw/files/MSYS/Base/bash/ bash]]## (terminal/shell)
 		- ##[[http://sourceforge.net/projects/mingw/files/MSYS/Base/coreutils/ msys-coreutils]]##
@@ -330,20 +300,12 @@ C:\MinGW\msys\1.0\msys.bat
 	1) In order to compile ""FreeBASIC""'s gfxlib2, ""DirectX"" headers are needed in ##""C:\MinGW\include""##, specifically ##ddraw.h## and ##dinput.h##. You can get the headers from here: [[http://alleg.sourceforge.net/files/dx80_mgw.zip]]
 	
 	
-	1) This fbc build for ""MinGW"" will be a normal build, with the same directory structure as on Linux.
+	1) This fbc build for ""MinGW"" will be a normal build, with the same directory structure as on Linux. Normally it is not necessary to put anything into config.mk, except perhaps the proper ##prefix## setting.
 	
 	
-		If and only if you are bootstrapping the compiler using an unmodified FB-win32 release, use ENABLE_FBBFD=217, because FB-win32 releases come with a libbfd.a 2.17. Otherwise, when using ""MinGW's"" libbfd, leave out ENABLE_FBBFD. This happens for example when you're already using a self-built fbc that's using ""MinGW's"" libbfd. If you want to avoid having to worry about which libbfd to link the new compiler against, then use DISABLE_OBJINFO.
-		
 		Assuming the ""FreeBASIC"" sources are located at ##""C:\fbc""##, create a ##""C:\fbc\config.mk""## file containing something like the following:
 		
 		%%prefix := C:/MinGW
-
-# Only when using libbfd 2.17
-ENABLE_FBBFD := 217
-
-# To avoid worrying about libbfd, uncomment this:
-# DISABLE_OBJINFO := YesPlease
 %%
 	1) Run "make" (from inside the MSYS bash) and let it compile FB:
 	
@@ -420,7 +382,6 @@ CFLAGS := -g -O0 -DDEBUG
 	
 	- ##CFLAGS##
 		Extra gcc flags to be used when compiling rtlib and gfxlib2
-		These do not affect the compilation of the compiler's bfd-wrapper.c module.
 	
 	- ##prefix##
 		Changes the /usr/local prefix to something else. Note: MSYS maps ##/usr/local## to ##C:\msys\1.0\local##.
@@ -452,19 +413,13 @@ make install-rtlib install-gfxlib2 TARGET=i686-w64-mingw32
 			- ##""make FBC=~/FreeBASIC-0.23.0-linux/fbc""##
 			- ##make CC="gcc -m32"##
 		
-		##FBC## affects the ##compiler## source code only, while ##CC## and ##AR## are used for ##rtlib## and ##gfxlib2##. ##CC## is additionally used for the compilation of the compiler's bfd-wrapper.c module.
+		##FBC## affects the ##compiler## source code only, while ##CC## and ##AR## are used for ##rtlib## and ##gfxlib2##.
 	
 	- ##V##
 		##V## for verbose. By default, the makefile does not display the full command lines used during compilation, but just prints out the latest tool and file name combination to give a better visual indication of the build progress. It also makes warnings and errors stand out more in the console window. If the variable ##V## is set, the echoing tricks are disabled and full command lines will be shown, as GNU make normally does.
 	
 	- ##ENABLE_STANDALONE=1##
 		Build a standalone FB setup instead of the normal Unix-style setup, see also: [[DevNormalVsStandalone the standalone vs. normal comparison]]. This causes the makefile to use the standalone directory layout and to use ##-d ENABLE_STANDALONE## when building the compiler.
-	
-	- ##DISABLE_OBJINFO=1##
-		This causes the makefile to use ##-d DISABLE_OBJINFO## when building the compiler, and additionally not to build the compiler's bfd-wrapper.c module.
-	
-	- ##ENABLE_FBBFD=217##
-		This causes the makefile to use ##-d ENABLE_FBBFD=217## when building the compiler, and additionally not to build the compiler's bfd-wrapper.c module.
 	
 	- ##ENABLE_PREFIX=1##
 		This causes the makefile to use ##-d ENABLE_PREFIX=$(prefix)## when building the compiler.
@@ -479,14 +434,8 @@ make install-rtlib install-gfxlib2 TARGET=i686-w64-mingw32
 	- ##-d ENABLE_STANDALONE##
 		This makes the compiler behave as a standalone tool that cannot rely on the system to have certain programs or libraries. See [[DevNormalVsStandalone the normal vs. standalone comparison]] for more information.
 	
-	- ##-d DISABLE_OBJINFO##
-		This disables [[DevObjinfo the compiler's objinfo]] feature, and thus removes the need for libbfd. This is especially useful to avoid problems with libbfd; see the {{anchor name="KnownProblems|libbfd pitfall section under Known Problems"}} for more information.
-	
-	- ##-d ENABLE_FBBFD=217##
-		This causes the compiler to use FB headers for libbfd, instead of using the bfd-wrapper.c module. This is what's done at least for FB releases. Please see the {{anchor name="KnownProblems|libbfd pitfall section under Known Problems"}} for more information.
-	
 	- ##-d ENABLE_TDMGCC##
-		This makes the compiler work with TDM-GCC libraries instead of MinGW.org libraries. Currently the only difference is that under MinGW.org, the compiler has to link in libgcc_eh to satisfy dependencies, while this is not needed under TDM-GCC, which does not even have this library. The difference is caused by the exception handling mechanisms the toolchains are configured to use: TDM-GCC with SJLJ, MinGW.org with DW2.
+		This makes the compiler work with TDM-GCC libraries instead of ""MinGW.org"" libraries. Currently the only difference is that under ""MinGW.org"", the compiler has to link in libgcc_eh to satisfy dependencies, while this is not needed under TDM-GCC, which does not even have this library. The difference is caused by the exception handling mechanisms the toolchains are configured to use: TDM-GCC with SJLJ, ""MinGW.org"" with DW2.
 	
 	- ##-d ENABLE_SUFFIX=foo##
 		This makes the compiler append the given suffix to the lib/freebasic/ directory name when searching for its own lib/freebasic/ directory. For example, ##-d ENABLE_SUFFIX=-0.24## causes it to look for lib/freebasic-0.24/ instead of lib/freebasic/. This is only supported for the normal (non-standalone) build.
@@ -500,32 +449,16 @@ make install-rtlib install-gfxlib2 TARGET=i686-w64-mingw32
 		With this, the Unix rtlib/gfxlib2 will not use X11 headers, disabling gfxlib2's X11 graphics driver and some of the rtlib's Linux console functionality (affects multikey() and console mouse handling)
 	
 	- ##-DDISABLE_GPM##
-		With this, the Linux rtlib will not use General Purpose Mouse headers (gpm.h), disabling the Linux GetMouse functionality.
+		With this, the Linux rtlib will not use General Purpose Mouse headers (gpm.h), disabling the Linux [[KeyPgGetmouse GetMouse]] functionality.
 	
 	- ##-DDISABLE_FFI##
-		With this, the rtlib will not use libffi headers (ffi.h), disabling the ThreadCall functionality.
+		With this, the rtlib will not use libffi headers (ffi.h), disabling the [[KeyPgThreadcall ThreadCall]] functionality.
 	
 	- ##-DDISABLE_OPENGL##
-		With this, the gfxlib2 will not use OpenGL headers, disabling the OpenGL graphics drivers.
+		With this, the gfxlib2 will not use ""OpenGL"" headers, disabling the ""OpenGL"" graphics drivers.
 
 {{anchor name="KnownProblems"}}{{fbdoc item="section" value="Known problems and pitfalls"}}
 
-	{{fbdoc item="subsect" value="libbfd pitfall"}}
-	
-		By default the compiler uses bfd-wrapper.c to access libbfd through the bfd.h found by gcc. You have to make sure to link against the proper corresponding libbfd.a/.so, not another one! (due to the unstable libbfd API)
-		
-		If you know the specific libbfd version the compiler will be linked against, you can use ENABLE_FBBFD=version. Then the makefile will build the compiler with ##-d ENABLE_FBBFD=version##, causing it to use FB libbfd headers for that version, instead of compiling in the version agnostic bfd-wrapper.c.
-		
-		Careful: the official FB standalone (linux/win32/dos) setups contain a libbfd.a 2.17, which will typically not match the bfd.h/libbfd.a/.so on the system. When boostrapping/building the compiler with such an FB setup you should use ENABLE_FBBFD=217. Here, using the default bfd-wrapper.c (compiling against bfd.h, but linking with an incompatible libbfd.a) is wrong. As an alternative it's possible to overwrite FB's libbfd.a with the one from the system, to make the libbfd.a against which the compiler will be linked match bfd.h.
-		
-		Normally though, when building the compiler with an FB setup that does not come with its own libbfd.a, it's preferable to use the bfd-wrapper.c to use the system's libbfd. This is the case when bootstrapping/building the compiler using the normal non-standalone FB setup.
-		
-		The way to avoid all the libbfd trouble is to use DISABLE_OBJINFO.
-	
-	{{fbdoc item="subsect" value="Newly built fbc crashes inside a bfd_*() function from libbfd"}}
-	
-		This is typically caused by libbfd header/library version mismatches, see above.
-	
 	{{fbdoc item="subsect" value="Win32 rtlib compilation error: _controlfp, _PC_64 undeclared"}}
 	
 		%%CC src/rtlib/obj/hinit.o
@@ -546,21 +479,17 @@ src/rtlib/win32/hinit.c:21:17: error: '_PC_64' undeclared (first use in this fun
 			- http://gcc.gnu.org/ml/gcc-patches/2010-01/msg01034.html
 			- https://sourceforge.net/mailarchive/message.php?msg_id=28122574
 	
-	{{fbdoc item="subsect" value="Warning: .drectve ... unrecognized when linking fbc"}}
-		
-		%%CC src/compiler/obj/bfd-wrapper.o
-LINK bin/fbc-new.exe
-Warning: .drectve `-aligncomm:"_FB_bfd_format",2 ' 
-Warning: .drectve `-aligncomm:"_FB_bfd_architecture",2' unrecognized
-%%
-		
-		This happens when fbc's C libbfd wrapper module (##bfd-wrapper.c##) is used and compiled with a modern GCC (such as GCC 4.5.x, 2010), and the new fbc.exe is being linked by the old ld 2.15 (2005) from the current ""FreeBASIC-win32"" releases. The old ld complains about not knowing some sections that were added to later binutils. 
-		
-		This is not known to cause any issue besides the warning, and can be solved by replacing the old ld.exe in the ""FreeBASIC-win32"" installation by a newer one from ""MinGW"".
-	
 	{{fbdoc item="subsect" value="MinGW binutils ld versions 2.18 to 2.21"}}
 	
 		fbc triggers a bug (ld/12614) in the mentioned linker versions causing it to produce broken binaries. It's fixed in binutils 2.21.1 and up.
+	
+	{{fbdoc item="subsect" value="MinGW GCC 4.7.0  __attribute__((packed)) broken"}}
+	
+		The FB rtlib's FB_DATADESC structure which uses ""__attribute__((packed))"" is miscompiled by default under ""MinGW"" GCC 4.7.0, due to the -mms-bitfields option being enabled by default since gcc 4.7.0. See also [[http://gcc.gnu.org/bugzilla/show_bug.cgi?id=52991 GCC bug 52991]] and [[http://www.freebasic.net/forum/viewtopic.php?f=6&t=20233 this FB forum thread]]. The work-around for now is to compile the rtlib with -mno-ms-bitfields, for example with this in config.mk:
+		
+		%%# work around new gcc 4.7 default (see gcc bug 52991)
+CFLAGS := -O2 -mno-ms-bitfields
+%%
 	
 	{{fbdoc item="subsect" value="-lXpm not found on Debian x86_64"}}
 	

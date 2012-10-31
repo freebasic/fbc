@@ -1,30 +1,29 @@
-LIBRARY     BASSMOD.DLL
-
+LIBRARY BASSMOD.dll
 EXPORTS
-BASSMOD_GetVersion@0 = BASSMOD_GetVersion
-BASSMOD_ErrorGetCode@0 = BASSMOD_ErrorGetCode
-BASSMOD_GetDeviceDescription@4 = BASSMOD_GetDeviceDescription
-BASSMOD_Init@12 = BASSMOD_Init
-BASSMOD_Free@0 = BASSMOD_Free
-BASSMOD_GetCPU@0 = BASSMOD_GetCPU
-BASSMOD_SetVolume@4 = BASSMOD_SetVolume
-BASSMOD_GetVolume@0 = BASSMOD_GetVolume
-BASSMOD_MusicLoad@20 = BASSMOD_MusicLoad
-BASSMOD_MusicFree@0 = BASSMOD_MusicFree
-BASSMOD_MusicGetName@0 = BASSMOD_MusicGetName
-BASSMOD_MusicGetLength@4 = BASSMOD_MusicGetLength
-BASSMOD_MusicPlay@0 = BASSMOD_MusicPlay
-BASSMOD_MusicPlayEx@12 = BASSMOD_MusicPlayEx
-BASSMOD_MusicDecode@8 = BASSMOD_MusicDecode
-BASSMOD_MusicSetAmplify@4 = BASSMOD_MusicSetAmplify
-BASSMOD_MusicSetPanSep@4 = BASSMOD_MusicSetPanSep
-BASSMOD_MusicSetPositionScaler@4 = BASSMOD_MusicSetPositionScaler
-BASSMOD_MusicSetVolume@8 = BASSMOD_MusicSetVolume
-BASSMOD_MusicGetVolume@4 = BASSMOD_MusicGetVolume
-BASSMOD_MusicIsActive@0 = BASSMOD_MusicIsActive
-BASSMOD_MusicStop@0 = BASSMOD_MusicStop
-BASSMOD_MusicPause@0 = BASSMOD_MusicPause
-BASSMOD_MusicSetPosition@4 = BASSMOD_MusicSetPosition
-BASSMOD_MusicGetPosition@0 = BASSMOD_MusicGetPosition
-BASSMOD_MusicSetSync@16 = BASSMOD_MusicSetSync
-BASSMOD_MusicRemoveSync@4 = BASSMOD_MusicRemoveSync
+BASSMOD_ErrorGetCode DATA
+BASSMOD_Free
+BASSMOD_GetCPU
+BASSMOD_GetDeviceDescription DATA
+BASSMOD_GetVersion DATA
+BASSMOD_GetVolume
+BASSMOD_Init
+BASSMOD_MusicDecode DATA
+BASSMOD_MusicFree DATA
+BASSMOD_MusicGetLength DATA
+BASSMOD_MusicGetName DATA
+BASSMOD_MusicGetPosition DATA
+BASSMOD_MusicGetVolume DATA
+BASSMOD_MusicIsActive
+BASSMOD_MusicLoad DATA
+BASSMOD_MusicPause
+BASSMOD_MusicPlay DATA
+BASSMOD_MusicPlayEx DATA
+BASSMOD_MusicRemoveSync DATA
+BASSMOD_MusicSetAmplify DATA
+BASSMOD_MusicSetPanSep DATA
+BASSMOD_MusicSetPosition DATA
+BASSMOD_MusicSetPositionScaler DATA
+BASSMOD_MusicSetSync DATA
+BASSMOD_MusicSetVolume DATA
+BASSMOD_MusicStop
+BASSMOD_SetVolume

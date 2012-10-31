@@ -624,6 +624,8 @@ private sub hEmitFuncProto _
 end sub
 
 private sub hEmitStruct( byval s as FBSYMBOL ptr )
+	dim as FBSYMBOL ptr fld = any, member = any
+
 	''
 	'' Already emitting this UDT currently? This means there is a circular
 	'' dependency between this UDT and one (or multiple) other UDT(s).
@@ -651,10 +653,10 @@ private sub hEmitStruct( byval s as FBSYMBOL ptr )
 	symbSetIsBeingEmitted( s )
 
 	'' Check every field for non-emitted subtypes
-	var e = symbGetUDTFirstElm( s )
-	while( e )
-		hEmitUDT( symbGetSubtype( e ) )
-		e = symbGetUDTNextElm( e )
+	fld = symbUdtGetFirstField( s )
+	while( fld )
+		hEmitUDT( symbGetSubtype( fld ) )
+		fld = symbUdtGetNextField( fld )
 	wend
 
 	'' Was it emitted in the mean time? (maybe one of the fields did that)
@@ -687,14 +689,14 @@ private sub hEmitStruct( byval s as FBSYMBOL ptr )
 	end if
 
 	'' Write out the elements
-	e = symbGetUDTFirstElm( s )
-	while( e )
-		ln += hEmitType( symbGetType( e ), symbGetSubtype( e ) )
-		ln += hEmitArrayDecl( e )
+	fld = symbUdtGetFirstField( s )
+	while( fld )
+		ln += hEmitType( symbGetType( fld ), symbGetSubtype( fld ) )
+		ln += hEmitArrayDecl( fld )
 		ln += attrib
 
-		e = symbGetUDTNextElm( e )
-		if( e ) then
+		fld = symbUdtGetNextField( fld )
+		if( fld ) then
 			ln += ", "
 		end if
 	wend
@@ -708,16 +710,16 @@ private sub hEmitStruct( byval s as FBSYMBOL ptr )
 
 	'' Emit methods (not part of the struct anymore, but they will include
 	'' references to self (this))
-	e = symbGetCompSymbTb( s ).head
-	do while( e <> NULL )
+	member = symbGetCompSymbTb( s ).head
+	while( member )
 		'' method?
-		if( symbIsProc( e ) ) then
-			if( symbGetIsFuncPtr( e ) = FALSE ) then
-				hEmitFuncProto( e, FALSE )
+		if( symbIsProc( member ) ) then
+			if( symbGetIsFuncPtr( member ) = FALSE ) then
+				hEmitFuncProto( member, FALSE )
 			end if
 		end if
-		e = e->next
-	loop
+		member = member->next
+	wend
 
 end sub
 

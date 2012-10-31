@@ -470,7 +470,7 @@ function cSymbolType _
 			end if
 
 			if( is_const ) then
-				dtype = typeSetIsConst( NULL )
+				dtype = typeSetIsConst( FB_DATATYPE_VOID )
 			end if
 
 			return FALSE

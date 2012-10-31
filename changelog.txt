@@ -12,6 +12,8 @@ Version 0.25.0:
 - The C backend now emits expressions in-line instead of using #defines, and also avoids many unnecessary casts, producing much nicer C code
 - fbc now uses a custom COFF/ELF32 reader instead of libbfd for the objinfo feature
 - fbc will now also read out compile-time information from libs passed as libfoo.a instead of -l foo or #inclib "foo"
+- ASM backend: Floating point constants are now emitted in form of their raw byte representation, for better precision than when using STR() to emit them as rounded floating point number literals
+- crt/stdio.bi now declares rename() instead of rename_()
 - Property methods using an explicit ALIAS now respect that alias and do not append __get__ or __set__ anymore
 
 [added]
@@ -26,6 +28,8 @@ Version 0.25.0:
 - NAKED support for the C backend, using GCC inline asm
 - ALIAS "" or LIB "" will now result in a compiler error
 - fbc now recognizes --version and [-]-help command line options
+- IIF now accepts strings (yetifoot/dkl)
+- win/initguid.bi win32 header
 
 [fixed]
 - libzip headers: zip_stat struct was unnecessarily named zip_stat_, breaking the libzip example
@@ -88,6 +92,17 @@ Version 0.25.0:
 - C backend: FIELD = N with N > 1 didn't decrease field alignment in the C output
 - "RANDOMIZE , 1" was not always using a random seed
 - C backend: UDTs and functions with same names caused gcc errors
+- BASS import library was using @N suffixes, even though bass.bi doesn't use them anymore
+- ASM backend: Some operations could trash registers without preserving them, if there were no free registers available
+- An irrelevant "missing parameter-less constructor" error could be shown when destructing an array of objects
+- #626: Visibility checks for calls of NEW/DELETE operator overloads were missing
+- #609: UDT initializers didn't work properly with derived UDTs
+- Unions could cause bad UDT initializer behaviour in some cases
+- For stdcall functions returning UDTs on stack, the hidden pointer parameter will no longer be calculated into the @N stdcall suffix, following GCC and MSVC.
+- For functions returning UDTs on stack on Linux/DOS/*BSD targets, the callee now always pops the hidden pointer parameter, even when the function is cdecl, to follow the GCC ABI.
+- ASM backend used dword reads to push bytes/words from memory, potentially causing buffer overruns
+- ScreenInfo() crash under X11 gfxlib2 driver when RandR extension is unavailable
+- DELETE and DELETE[] were allowed to be used on forward references
 - C++ mangling of IMPORTed namespaced global variables (win32) was different from MinGW
 
 

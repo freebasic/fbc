@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="SCREENPTR"}}----
-Returns a pointer to the current work page's framebuffer
+Returns a pointer to the current work page's frame buffer
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Screenptr** ( ) [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]]
@@ -8,17 +8,17 @@ Returns a pointer to the current work page's framebuffer
 	//result// = **Screenptr**
 ##
 {{fbdoc item="ret"}}
-	a pointer to the current work page framebuffer memory, or NULL (0) if no graphics mode is set.
+	a pointer to the current work page frame buffer memory, or NULL (##0##) if no graphics mode is set.
 
 {{fbdoc item="desc"}}
-	##**Screenptr**## provides a way to directly read/write the working page's framebuffer. ##[[KeyPgScreenlock Screenlock]]## should be used before any read or writes are attempted. The pointer returned is valid up until any subsequent call to ##[[KeyPgScreengraphics Screen]]## or ##[[KeyPgScreenres Screenres]]##, which invalidates it.
+	##**Screenptr**## provides a way to directly read/write the working page's frame buffer. ##[[KeyPgScreenlock Screenlock]]## should be used before any read or writes are attempted. The pointer returned is valid up until any subsequent call to ##[[KeyPgScreengraphics Screen]]## or ##[[KeyPgScreenres Screenres]]##, which invalidates it.
 	
-	##**Screenptr**## can also be used to test if a call to ##[[KeyPgScreengraphics Screen]]## or ##[[KeyPgScreenres Screenres]]## was successful, indicated by a non-NULL (<> 0) return value.
+	##**Screenptr**## can also be used to test if a call to ##[[KeyPgScreengraphics Screen]]## or ##[[KeyPgScreenres Screenres]]## was successful, indicated by a non-NULL (##<> 0##) return value.
 
-	In order to access a pixel in the screen buffer, you will need to know the screen's width, height, bytes per pixel and pitch (bytes per row).  This information can be found out using ##[[KeyPgScreeninfo Screeninfo]]##.
+	In order to access a pixel in the screen buffer, you will need to know the screen's bytes per pixel and pitch (bytes per row), and also the width and height to avoid going out of bounds.  This information can be found out using ##[[KeyPgScreeninfo Screeninfo]]##.
 	Each row in the frame buffer is ##//pitch//## bytes long.  The frame buffer consists of ##//height//## rows, stored in order of their position on the screen, running from top to bottom, left to right.
 
-	Because of the design of ""FreeBasic"" graphics library, ##**Screenptr**## (if non-ZERO) will always point to the backbuffer, and never to actual video RAM.
+	Because of the design of ""FreeBASIC"" graphics library, ##**Screenptr**## (if non-NULL) will always point to the backbuffer, and never to actual video RAM.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/gfx/screenptr.bas"}}%%(freebasic)
@@ -40,7 +40,7 @@ If (buffer = 0) Then
 	End -1
 End If
 
-'' Lock the screen to allow direct framebuffer access
+'' Lock the screen to allow direct frame buffer access
 Screenlock()
 	
 	'' Find the address of the pixel in the centre of the screen
@@ -77,7 +77,7 @@ If (buffer = 0) Then
 	End -1
 End If
 
-'' Lock the screen to allow direct framebuffer access
+'' Lock the screen to allow direct frame buffer access
 ScreenLock()
 	
 	'' Set row address to the start of the buffer

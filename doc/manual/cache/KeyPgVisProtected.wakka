@@ -20,7 +20,7 @@ Specifies protected member access control in a ##[[KeyPgType Type]]## or ##[[Key
 
 	Members in a ##[[KeyPgType Type]]## declaration are ##**Public:**## by default if no member access control specifier is given.
 
-	NOTE: This keyword is supported in the latest fbc compiler, however, its usefulness is limited since classes and inheritance are **Not** yet supported.
+	NOTE: This keyword is useful only since fbc version 0.24 because inheritance is then supported.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/udt/protected.bas"}}%%(freebasic)

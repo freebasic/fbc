@@ -5,7 +5,7 @@ These operators return references to members of objects, given an object or its 
 
 <<=={{fbdoc item="keyword" value="KeyPgOpMemberAccess|Operator . (Member access)"}}==
 	Returns a reference to a member.
-<<>>=={{fbdoc item="keyword" value="KeyPgOpPtrMemberAccess|Operator -> (Pointer to member access)"}}==
+=={{fbdoc item="keyword" value="KeyPgOpPtrMemberAccess|Operator -> (Pointer to member access)"}}==
 	Returns a reference to a member from a pointer.
 <<>>=={{fbdoc item="keyword" value="KeyPgOpIs|Operator Is (Run-time type information)"}}==
 	Checks whether an object is compatible to a type derived from its runtime-type.

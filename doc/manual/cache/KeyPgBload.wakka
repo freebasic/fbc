@@ -67,8 +67,24 @@ imagedestroy( myImage )
 sleep
 %%
 
-{{anchor name="bmp_load"}}
 {{fbdoc item="filename" value="examples/manual/gfx/bload3.bas"}}%%(freebasic)
+screenres 640, 480, 8 '' 8-bit palette graphics mode
+dim pal(0 to 256-1) as integer '' 32-bit integer array with room for 256 colors
+
+'' load bitmap to screen, put palette into pal() array
+bload "picture.bmp", , @pal(0)
+
+windowtitle "Old palette"
+sleep
+
+'' set new palette from pal() array
+palette using pal(0)
+
+windowtitle "New palette"
+sleep%%
+
+{{anchor name="bmp_load"}}
+{{fbdoc item="filename" value="examples/manual/gfx/bload4.bas"}}%%(freebasic)
 '' A function that creates an image buffer with the same 
 '' dimensions as a BMP image, and loads a file into it.
 

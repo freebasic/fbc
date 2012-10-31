@@ -1,0 +1,18 @@
+{{fbdoc item="title" value="Compiler Option: -rr"}}----
+Compile into asm file(s) only, do not assemble or link
+
+{{fbdoc item="syntax"}}##
+	**-rr**
+##
+{{fbdoc item="desc"}}
+	The ##**-rr**## option specifies that any source files listed are to be compiled to asm files, and not compiled or linked into an executable. When using [[CompilerOptgen -gen gcc]], the ##*.asm## files produced by gcc are kept, and not the ##*.c## files (unless specified with "-R"). When using the "-rr" switch, "-m" must be specified when compiling a main source file.
+
+{{fbdoc item="see"}}
+	- [[CompilerOptc Compiler Option: -c]]
+	- [[CompilerOptr Compiler Option: -r]]
+	- [[CompilerOptrupp Compiler Option: -R]]
+	- [[CompilerOptrrupp Compiler Option: -RR]]
+	- [[CompilerOptm Compiler Option: -m]]
+	- [[CompilerCmdLine Using the Command Line]]
+
+{{fbdoc item="back" value="CatPgCompOpt|Compiler Options"}}

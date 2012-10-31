@@ -963,7 +963,7 @@ sub testDifferentLengths cdecl( )
 
 	scope
 		dim as wstring * 1 w
-		dim as wstring ptr pw = callocate( sizeof(zstring) * 1 )
+		dim as wstring ptr pw = callocate( sizeof(wstring) * 1 )
 
 		swap w, *pw
 		CU_ASSERT( len(w) = 0 )
