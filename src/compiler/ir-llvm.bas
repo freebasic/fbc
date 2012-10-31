@@ -1282,17 +1282,18 @@ private sub hPrepareAddress( byval v as IRVREG ptr )
 	ofs = v->ofs
 	vidx = v->vidx
 
-	if( vidx ) then
+	select case( v->typ )
+	case IR_VREGTYPE_PTR
 		assert( vidx->dtype = typeAddrOf( v->dtype ) )
 		assert( irIsREG( vidx ) )
 		*v = *vidx
-	else
+	case else
 		v->typ = IR_VREGTYPE_REG
 		v->dtype = typeAddrOf( v->dtype )
 		v->reg = INVALID
 		v->mult = 0
 		v->ofs = 0
-	end if
+	end select
 
 	if( (vidx <> NULL) or (ofs <> 0) ) then
 		'' temp0 = ptrtoint l
