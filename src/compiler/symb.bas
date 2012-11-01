@@ -2085,6 +2085,27 @@ function symbCheckConstAssign _
 end function
 
 #if __FB_DEBUG__
+static shared as zstring ptr classnames(FB_SYMBCLASS_VAR to FB_SYMBCLASS_NSIMPORT) = _
+{ _
+	@"var"      , _
+	@"const"    , _
+	@"proc"     , _
+	@"param"    , _
+	@"define"   , _
+	@"keyword"  , _
+	@"label"    , _
+	@"namespace", _
+	@"enum"     , _
+	@"struct"   , _
+	@"class"    , _
+	@"field"    , _
+	@"bitfield" , _
+	@"typedef"  , _
+	@"fwdref"   , _
+	@"scope"    , _
+	@"nsimport"   _
+}
+
 '' For debugging
 function typeDump _
 	( _
@@ -2099,6 +2120,7 @@ function typeDump _
 
 	if( dtype and FB_DATATYPE_INVALID ) then
 		dump += "invalid"
+		ok = (subtype = NULL)
 	else
 		if( typeGetDtOnly( dtype ) = FB_DATATYPE_STRUCT ) then
 			dump += "struct"
@@ -2126,7 +2148,7 @@ function typeDump _
 			case FB_DATATYPE_FWDREF
 				ok = symbIsFwdref( subtype )
 			case else
-				ok = TRUE
+				ok = FALSE
 			end select
 		else
 			select case( typeGetDtOnly( dtype ) )
@@ -2138,14 +2160,19 @@ function typeDump _
 				ok = TRUE
 			end select
 		end if
+	end if
 
-		if( ok = FALSE ) then
-			dump += ", "
-			if( subtype ) then
-				dump += str( subtype->class )
+	if( ok = FALSE ) then
+		dump += ", "
+		if( subtype ) then
+			if( (subtype->class >= FB_SYMBCLASS_VAR) and _
+			    (subtype->class <  FB_SYMBCLASS_NSIMPORT) ) then
+				dump += *classnames(subtype->class)
 			else
-				dump += "NULL"
+				dump += str( subtype->class )
 			end if
+		else
+			dump += "NULL"
 		end if
 	end if
 
@@ -2162,27 +2189,6 @@ function symbDump( byval sym as FBSYMBOL ptr ) as string
 	end if
 
 #if 1
-	static as zstring ptr classnames(FB_SYMBCLASS_VAR to FB_SYMBCLASS_NSIMPORT) = _
-	{ _
-		@"var"      , _
-		@"const"    , _
-		@"proc"     , _
-		@"param"    , _
-		@"define"   , _
-		@"keyword"  , _
-		@"label"    , _
-		@"namespace", _
-		@"enum"     , _
-		@"struct"   , _
-		@"class"    , _
-		@"field"    , _
-		@"bitfield" , _
-		@"typedef"  , _
-		@"fwdref"   , _
-		@"scope"    , _
-		@"nsimport"   _
-	}
-
 	s += *classnames(sym->class) + " "
 #endif
 
