@@ -2330,8 +2330,15 @@ private sub _emitProcEnd _
 		byval initlabel as FBSYMBOL ptr, _
 		byval exitlabel as FBSYMBOL ptr _
 	)
+
+	'' Sub? Add ret manually, the AST doesn't do a LOAD[RES] for this
+	if( symbGetType( proc ) = FB_DATATYPE_VOID ) then
+		hWriteLine( "ret void" )
+	end if
+
 	ctx.identcnt -= 1
 	hWriteLine( "}" )
+
 end sub
 
 private sub _emitScopeBegin( byval s as FBSYMBOL ptr )
