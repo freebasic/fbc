@@ -161,14 +161,11 @@ function astNewIIF _
 	end if
 
 	' Special treatment for fixed-len/zstrings, promote to real FBSTRING
-	if typeGetClass( true_dtype ) = FB_DATACLASS_INTEGER then
-		select case typeGet( true_dtype )
-		'' fixed-len or zstring? temp will be a var-len string..
-		case FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR
-			true_dtype  = FB_DATATYPE_STRING
-			false_dtype = FB_DATATYPE_STRING
-		end select
-	end if
+	select case typeGet( true_dtype )
+	case FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR
+		true_dtype  = FB_DATATYPE_STRING
+		false_dtype = FB_DATATYPE_STRING
+	end select
 
 	'' alloc new node
 	n = astNewNode( AST_NODECLASS_IIF, true_dtype, truexpr->subtype )
