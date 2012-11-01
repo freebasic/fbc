@@ -513,6 +513,7 @@ end sub
 
 private sub hMangleVariable( byval sym as FBSYMBOL ptr )
 	static as string id
+	static as integer varcounter
 	dim as string mangled
 	dim as zstring ptr p = any
 	dim as integer docpp = any, isglobal = any
@@ -643,6 +644,12 @@ private sub hMangleVariable( byval sym as FBSYMBOL ptr )
 					if( symbIsSuffixed( sym ) ) then
 						id += typecodeTB( symbGetType( sym ) )
 					end if
+
+					'' Make the symbol unique - LLVM IR doesn't have scopes.
+					'' (appending the scope level wouldn't be enough due to
+					'' conflicts between sibling scopes)
+					id += "." + str( varcounter )
+					varcounter += 1
 				else
 					'' Use the case-sensitive name saved in the alias
 					id = *sym->id.alias
