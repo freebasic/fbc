@@ -1662,6 +1662,7 @@ private sub _emitBop _
 	if( is_comparison and (vr = NULL) ) then
 		hLoadVreg( v1 )
 		hLoadVreg( v2 )
+		_setVregDataType( v2, v1->dtype, v1->subtype )
 		vresult = _allocVreg( FB_DATATYPE_INTEGER, NULL )
 
 		'' condition = comparison expression
