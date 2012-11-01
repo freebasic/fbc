@@ -1069,12 +1069,10 @@ function symbAddProcResult( byval proc as FBSYMBOL ptr ) as FBSYMBOL ptr
 	dim as FBARRAYDIM dTB(0) = any
 	dim as FBSYMBOL ptr res = any
 
-	'' UDT?
-	if( proc->typ = FB_DATATYPE_STRUCT ) then
-		'' returning a ptr? result is at the hidden arg
-		if( typeGetDtAndPtrOnly( proc->proc.real_dtype ) = typeAddrOf( FB_DATATYPE_STRUCT ) ) then
-			return symbGetProcResult( proc )
-		end if
+	'' UDT on stack? No local result var needs to be added;
+	'' the hidden result param is used instead.
+	if( symbProcReturnsUdtOnStack( proc ) ) then
+		return symbGetProcResult( proc )
 	end if
 
 	res = symbAddVarEx( @"fb$result", NULL, proc->typ, proc->subtype, 0, _
