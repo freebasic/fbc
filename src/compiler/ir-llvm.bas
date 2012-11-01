@@ -1978,6 +1978,14 @@ private sub hDoCall _
 
 	assert( symbIsProc( proc ) )
 
+	if( vr = NULL ) then
+		'' Result discarded? Not allowed in LLVM, so assign to a
+		'' temporary result vreg that will be unused.
+		if( symbGetType( proc ) <> FB_DATATYPE_VOID ) then
+			vr = _allocVreg( typeGetDtAndPtrOnly( symbGetProcRealType( proc ) ), symbGetSubType( proc ) )
+		end if
+	end if
+
 	if( vr ) then
 		if( irIsREG( vr ) ) then
 			v0 = vr
