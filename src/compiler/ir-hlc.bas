@@ -1515,7 +1515,7 @@ private function hEmitType _
 		NULL        , _ '' struct
 		NULL        , _ '' namespace
 		NULL        , _ '' function
-		NULL        , _ '' fwd-ref
+		@"void"     , _ '' fwd-ref (needed for any un-resolved fwdrefs)
 		NULL          _ '' pointer
 	}
 
