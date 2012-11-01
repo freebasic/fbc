@@ -359,20 +359,24 @@ private sub hStrArgToStrPtrParam _
 	end if
 end sub
 
-
-'':::::
-#macro hBuildByrefArg( n_, arg_ )
-
-	n_->l = astNewADDROF( arg_ )
-	n_->arg.mode = FB_PARAMMODE_BYVAL
-
-#endmacro
-
-'':::::
-private sub hCheckByRefArg _
+sub hBuildByrefArg _
 	( _
-		byval dtype as integer, _
-		byval subtype as FBSYMBOL ptr, _
+		byval param as FBSYMBOL ptr, _
+		byval n as ASTNODE ptr, _
+		byval arg as ASTNODE ptr _
+	)
+
+	arg = astNewADDROF( arg )
+	arg = astNewCONV( typeAddrOf( symbGetFullType( param ) ), symbGetSubtype( param ), arg )
+
+	n->l = arg
+	n->arg.mode = FB_PARAMMODE_BYVAL
+
+end sub
+
+private sub hCheckByrefParam _
+	( _
+		byval param as FBSYMBOL ptr, _
 		byval n as ASTNODE ptr _
 	)
 
@@ -393,7 +397,7 @@ private sub hCheckByRefArg _
 
 	case else
 		'' string? do nothing (ie: functions returning var-len string's)
-		select case as const typeGet( dtype )
+		select case as const( astGetDataType( arg ) )
 		case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, _
 			 FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
 			return
@@ -402,14 +406,16 @@ private sub hCheckByRefArg _
 		case FB_DATATYPE_STRUCT
 
 		case else
-			'' scalars: store param to a temp var and pass it
-			arg = astNewASSIGN( astNewVAR( symbAddTempVar( dtype, subtype, FALSE ), 0, dtype, subtype ), arg, AST_OPOPT_DONTCHKPTR )
+			'' scalars: store arg to a temp var and pass it
+			arg = astNewASSIGN( astNewVAR( symbAddTempVar( arg->dtype, arg->subtype, FALSE ), _
+			                               0, arg->dtype, arg->subtype ), _
+			                    arg, AST_OPOPT_DONTCHKPTR )
 		end select
 
 	end select
 
 	'' take the address of
-    hBuildByrefArg( n, arg )
+	hBuildByrefArg( param, n, arg )
 end sub
 
 '':::::
@@ -574,8 +580,7 @@ private sub hCheckVoidParam _
 	end if
 
 	'' pass BYREF, check if a temp param isn't needed
-	'' use the arg type, not the param one (as it's VOID)
-	hCheckByRefArg( astGetFullType( arg ), arg->subtype, n )
+	hCheckByrefParam( param, n )
 end sub
 
 '':::::
@@ -647,16 +652,15 @@ private sub hUDTPassByval _
 		byval n as ASTNODE ptr _
 	)
 
+	dim as FBSYMBOL ptr tmp = any
 	dim as ASTNODE ptr arg = n->l
 
 	'' no dtor, copy-ctor or virtual members?
 	if( symbCompIsTrivial( symbGetSubtype( param ) ) ) then
-		dim as FBSYMBOL ptr subtype = arg->subtype
-
 		'' not returned in registers?
 		dim as integer is_udt = TRUE
 		if( astIsCALL( arg ) ) then
-			is_udt = (symbIsUDTReturnedInRegs( subtype ) = FALSE)
+			is_udt = (symbIsUDTReturnedInRegs( arg->subtype ) = FALSE)
 		end if
 
 		'' udt? push byte by byte to stack
@@ -666,25 +670,24 @@ private sub hUDTPassByval _
 			n->arg.lgt = symbGetLen( symbGetSubtype( param ) )
 
 			'' call and returning a pointer? use the hidden call arg
-			if( astIsCALL( arg ) and typeIsPtr( symbGetUDTRetType( subtype ) ) ) then
+			if( astIsCALL( arg ) and typeIsPtr( symbGetUDTRetType( arg->subtype ) ) ) then
 				n->l = astBuildCallHiddenResVar( arg )
 			end if
 		else
 			'' patch the type
-			astSetType( arg, symbGetUDTRetType( subtype ), NULL )
+			astSetType( arg, symbGetUDTRetType( arg->subtype ), NULL )
 		end if
 
 		exit sub
 	end if
 
 	'' non-trivial type, pass a pointer to a temp copy
-	dim as FBSYMBOL ptr tmp = any
 	tmp = symbAddTempVar( symbGetFullType( param ), symbGetSubtype( param ), FALSE )
 
 	arg = astNewCALLCTOR( astBuildCopyCtorCall( astBuildVarField( tmp ), arg ), _
 						  astBuildVarField( tmp ) )
 
-	hBuildByrefArg( n, arg )
+	hBuildByrefArg( param, n, arg )
 
 	if( symbHasDtor( param ) ) then
 		astDtorListAdd( tmp )
@@ -723,14 +726,14 @@ private function hImplicitCtor _
 		exit function
 	end if
 
-	tmp = symbAddTempVar( symbGetType( param ), symbGetSubtype( param ), FALSE )
+	tmp = symbAddTempVar( symbGetFullType( param ), symbGetSubtype( param ), FALSE )
 
 	n->l = astNewCALLCTOR( astPatchCtorCall( arg, astBuildVarField( tmp ) ), astBuildVarField( tmp ) )
 
 	if( symbGetParamMode( param ) = FB_PARAMMODE_BYVAL ) then
 		hUDTPassByval( parent, param, n )
 	else
-		hBuildByrefArg( n, n->l )
+		hBuildByrefArg( param, n, n->l )
 	end if
 
 	if( symbHasDtor( param ) ) then
@@ -749,10 +752,9 @@ private function hCheckUDTParam _
 	) as integer
 
 	dim as ASTNODE ptr arg = n->l
-	dim as integer arg_dtype = astGetDatatype( arg )
 
 	'' not another UDT?
-	if( arg_dtype <> FB_DATATYPE_STRUCT ) then
+	if( astGetDatatype( arg ) <> FB_DATATYPE_STRUCT ) then
 		if( hImplicitCtor( parent, param, n ) = FALSE ) then
 			hParamError( parent )
 			return FALSE
@@ -761,7 +763,7 @@ private function hCheckUDTParam _
 	end if
 
     '' check for invalid UDT's (different subtypes)
-	if( symbGetSubtype( param ) <> arg->subtype ) then
+	if( arg->subtype <> symbGetSubtype( param ) ) then
 		'' param is not a base type of arg?
 		if( symbGetUDTBaseLevel( arg->subtype, symbGetSubtype( param ) ) = 0 ) then
 			'' no ctor in the param's type?
@@ -795,7 +797,7 @@ private function hCheckUDTParam _
 				dim as FBSYMBOL ptr tmp = any
 
 				'' (note: if it's being returned in regs, there's no DTOR)
-				tmp = symbAddTempVar( FB_DATATYPE_STRUCT, arg->subtype, FALSE )
+				tmp = symbAddTempVar( astGetDatatype( arg ), arg->subtype, FALSE )
 
 				n->l = astNewLink( astNewADDROF( astBuildVarField( tmp ) ), _
 								   astNewASSIGN( astBuildVarField( tmp ), _
@@ -806,8 +808,7 @@ private function hCheckUDTParam _
 			end if
 		end if
 
-		''
-		hBuildByrefArg( n, arg )
+		hBuildByrefArg( param, n, arg )
 
 	'' set the length if it's being passed by value
 	case FB_PARAMMODE_BYVAL
@@ -816,7 +817,6 @@ private function hCheckUDTParam _
 	end select
 
 	function = TRUE
-
 end function
 
 '':::::
@@ -1041,7 +1041,7 @@ private function hCheckParam _
 
 	'' byref arg? check if a temp param isn't needed
 	if( symbGetParamMode( param ) = FB_PARAMMODE_BYREF ) then
-		hCheckByRefArg( symbGetFullType( param ), symbGetSubtype( param ), n )
+		hCheckByrefParam( param, n )
         '' it's an implicit pointer
 	end if
 
