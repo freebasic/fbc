@@ -301,7 +301,7 @@ end function
 '' and assuming there are only TYPEINI_ASSIGN's and no ctorcalls or padding etc.
 '' "beginindex" is the index of the first TYPEINI_ASSIGN that should be copied,
 '' this allows to skip some array elements at the front.
-sub astTypeIniAddTypeIniElements _
+sub astTypeIniCopyElements _
 	( _
 		byval tree as ASTNODE ptr, _
 		byval source as ASTNODE ptr, _

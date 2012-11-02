@@ -956,7 +956,7 @@ declare function astTypeIniScopeEnd _
 		byval sym as FBSYMBOL ptr _
 	) as ASTNODE ptr
 
-declare sub astTypeIniAddTypeIniElements _
+declare sub astTypeIniCopyElements _
 	( _
 		byval tree as ASTNODE ptr, _
 		byval source as ASTNODE ptr, _

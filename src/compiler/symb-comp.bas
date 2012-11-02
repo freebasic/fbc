@@ -253,12 +253,11 @@ private sub hBuildVtable( byval udt as FBSYMBOL ptr )
 
 	'' initialize inherited procptrs, to the same expression as in the
 	'' base vtable's initializer
-
 	i = 2
 	if( basevtableinitree ) then
 		'' Copy the typeini assigns from the base vtable's initializer,
 		'' except the first 2 (they are set above already)
-		astTypeIniAddTypeIniElements( initree, basevtableinitree, 2 )
+		astTypeIniCopyElements( initree, basevtableinitree, 2 )
 		i += (basevtableelements - 2)
 	end if
 
