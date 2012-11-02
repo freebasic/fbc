@@ -488,7 +488,7 @@ end function
 
 private sub hEmitVariable( byval sym as FBSYMBOL ptr )
 	dim as string ln
-	dim as integer dtype = any
+	dim as integer dtype = any, is_global = any
 
 	'' already allocated?
 	if( symbGetVarIsAllocated( sym ) ) then
@@ -561,16 +561,27 @@ private sub hEmitVariable( byval sym as FBSYMBOL ptr )
 		exit sub
 	end if
 
-	'' not a local?
-	if( symbGetAttrib( sym ) and (FB_SYMBATTRIB_COMMON or FB_SYMBATTRIB_PUBLIC or _
-	                              FB_SYMBATTRIB_EXTERN or FB_SYMBATTRIB_STATIC or _
-	                              FB_SYMBATTRIB_SHARED) ) then
-		exit sub
-	end if
+	is_global = symbGetAttrib( sym ) and _
+			(FB_SYMBATTRIB_COMMON or FB_SYMBATTRIB_PUBLIC or _
+			FB_SYMBATTRIB_EXTERN or FB_SYMBATTRIB_STATIC or _
+			FB_SYMBATTRIB_SHARED)
 
-	'' %sym = alloca type
-	ln += *symbGetMangledName( sym ) + " = alloca "
-	ln += hEmitType( symbGetType( sym ), symbGetSubType( sym ) )
+	'' Global var:
+	''    @sym = global <type> <initvalue>
+	'' Stack var:
+	''    %sym = alloca <type>
+	ln = *symbGetMangledName( sym )
+	ln += " = "
+	if( is_global ) then
+		ln += "global"
+	else
+		ln += "alloca"
+	end if
+	ln += " " + hEmitType( symbGetType( sym ), symbGetSubType( sym ) )
+	if( is_global ) then
+		'' Globals without initializer are zeroed in FB
+		ln += " zeroinitializer"
+	end if
 	hWriteLine( ln )
 
 end sub
