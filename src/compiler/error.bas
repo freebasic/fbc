@@ -262,10 +262,10 @@ end type
 		@"Member isn't static", _
 		@"Only static members can be accessed from static functions", _
 		@"The PRIVATE and PUBLIC attributes are not allowed with REDIM, COMMON or EXTERN", _
-		@"The function prototype wasn't declared as STATIC", _
-		@"The function prototype wasn't declared as CONST", _
-		@"The function prototype wasn't declared as VIRTUAL", _
-		@"VIRTUAL used, but UDT does not extend OBJECT", _
+		@"STATIC used here, but not the in the DECLARE statement", _
+		@"CONST used here, but not the in the DECLARE statement", _
+		@"VIRTUAL used here, but not the in the DECLARE statement", _
+		@"Method declared VIRTUAL, but UDT does not extend OBJECT", _
 		@"This operator cannot be STATIC", _
 		@"Parameter must be an integer", _
 		@"Parameter must be a pointer", _
