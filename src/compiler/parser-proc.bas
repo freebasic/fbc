@@ -517,10 +517,10 @@ private function hDoNesting _
 
 end function
 
-private sub cNakedAttribute( byval pattrib as integer ptr )
+private sub cNakedAttribute( byref attrib as integer )
 	if( ucase( *lexGetText( ) ) = "NAKED" ) then
 		lexSkipToken( )
-		*pattrib or= FB_SYMBATTRIB_NAKED
+		attrib or= FB_SYMBATTRIB_NAKED
 	end if
 end sub
 
@@ -582,7 +582,7 @@ function cProcHeader _
 	stats = 0
 
 	'' [NAKED]
-	cNakedAttribute(@attrib)
+	cNakedAttribute( attrib )
 
 	'' CallConvention?
 	dim as FB_FUNCMODE mode = cProcCallingConv( )
@@ -1312,7 +1312,7 @@ function cOperatorHeader _
 	subtype = NULL
 
 	'' [NAKED]
-	cNakedAttribute(@attrib)
+	cNakedAttribute( attrib )
 
 	'' CallConvention?
 	dim as FB_FUNCMODE mode = cProcCallingConv( )
@@ -1684,7 +1684,7 @@ function cPropertyHeader _
 	stats = 0
 
 	'' [NAKED]
-	cNakedAttribute(@attrib)
+	cNakedAttribute( attrib )
 
 	'' CallConvention?
 	dim as FB_FUNCMODE mode = cProcCallingConv( )
@@ -1909,7 +1909,7 @@ function cCtorHeader _
 	end if
 
 	'' [NAKED]
-	cNakedAttribute(@attrib)
+	cNakedAttribute( attrib )
 
 	'' CallConvention?
 	'' ctors and dtors must be always CDECL if passed to REDIM
