@@ -745,7 +745,7 @@ declare sub cLibAttribute( )
 declare sub cMethodAttributes _
 	( _
 		byval parent as FBSYMBOL ptr, _
-		byval pattrib as integer ptr _
+		byref attrib as integer _
 	)
 
 declare function cProcReturnMethod _

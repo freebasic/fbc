@@ -258,54 +258,37 @@ o classes
   - should methods overriding virtuals become virtual themselves?
     and even re-use the same vtable slot?
 
-  - vtables are emitted in each module in read-only data section, so duplicates
-    should be discarded by the linker; on win32 it seems like we need to use
-    the .linkonce directive to do that, is it done automatically on Linux?
-    (.linkonce would require one read-only section per vtable, since .linkonce
-    sets the current section properties, not just those of a single symbol)
-	.globl [struct name]
-	.section rdata$[struct name],"dr" 
-	.linkonce same_size
-
-	struct RTTI {
-		void *stdlib_virtual_table;	-- __ZTVN10__cxxabiv117__class_type_infoE+8 if it's a base class; __ZTVN10__cxxabiv120__si_class_type_infoE+8 otherwise
-		char *mangled_class_name;
-		RTTI *base_class_RTTI;
-	};
-	
-	struct VT[mangled class name] {
-		void *null_pointer;
-		RTTI *rtti;
-		... virtual methods function pointers in the order they were found (including methods in the base classes first) ...
-	};
-
-	see also http://gcc.gnu.org/onlinedocs/gcc/Vague-Linkage.html
-
   - virtuals can override other virtuals, but statics can't be virtual,
     should statics be allowed to shadow virtuals or should it be an error?
     Note: normal methods (non-virtuals) can be shadowed, no error
 
   - explicit OVERRIDE to show an error in case there is no virtual to override?
 
-  - pure-virtual methods using ABSTRACT
-		type Foo extends object
-			declare abstract sub bar( )
-		end type
-     - vtable entry points to __cxa_pure_virtual() at first, until overridden
+  - ABSTRACT: set vtable entry to __cxa_pure_virtual() at first, until overridden
 
   - interfaces
       - could be structs internally, but allowing only pure-virtual methods,
         no fields or normal methods
-      - all declared methods would automatically be pure-virtual
+      - all declared methods would automatically be ABSTRACT
 		interface Foo
-			'' INTERFACE would be redundant here:
-			declare [interface] sub bar( )
+			declare [abstract] sub bar( )
 		end interface
       - IMPLEMENTS:
 		type Child [extends Parent] [implements A, B, C]
         or allow just one interface?
 		type Child extends A
-      - multiple interfaces comes down to multiple inheritance (too hard), doesn't it?
+      - multiple interfaces comes down to multiple inheritance (too hard?)
+
+  - vtables must be emitted either
+     a) as private globals, or
+     b) like GCC in one read-only section per vtable using .linkonce same_size (Win32)
+        or .section ....,comdat (Linux), so duplicates are discarded by the linker
+            http://gcc.gnu.org/onlinedocs/gcc/Vague-Linkage.html
+            http://sourceware.org/binutils/docs-2.23/as/Section.html#Section
+
+  - g++/clang++ emit implicit class members (ctor, copyctor, dtor, let)
+    into ".linkonce discard"/comdat sections too, similar to vtables.
+    fbc makes them PRIVATE currently; should it be changed to reduce .exe size?
 
   - Down casting
      - static (base to derived)

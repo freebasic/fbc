@@ -57,33 +57,52 @@ end sub
 sub cMethodAttributes _
 	( _
 		byval parent as FBSYMBOL ptr, _
-		byval pattrib as integer ptr _
+		byref attrib as integer _
 	)
 
 	'' STATIC?
 	if( hMatch( FB_TK_STATIC ) ) then
-		*pattrib or= FB_SYMBATTRIB_STATIC
-		'' STATIC methods can't be CONST or VIRTUAL too
+		attrib or= FB_SYMBATTRIB_STATIC
+		'' STATIC methods can't be any of the below
 		exit sub
 	end if
 
 	'' CONST?
 	if( hMatch( FB_TK_CONST ) ) then
-		*pattrib or= FB_SYMBATTRIB_CONST
+		attrib or= FB_SYMBATTRIB_CONST
 	end if
 
-	'' VIRTUAL?
-	if( hMatch( FB_TK_VIRTUAL ) ) then
-		*pattrib or= FB_SYMBATTRIB_VIRTUAL
+	'' (ABSTRACT|VIRTUAL)?
+	select case( lexGetToken( ) )
+	case FB_TK_ABSTRACT
+		attrib or= FB_SYMBATTRIB_VIRTUAL or FB_SYMBATTRIB_ABSTRACT
+
+		'' Abstracts can only be allowed in UDTs that extend OBJECT,
+		'' because that is what provides the needed vtable ptr.
 		if( parent ) then
-			'' Must extend OBJECT, in order to get the vtable ptr,
-			'' to make virtuals possible
 			if( symbGetHasRTTI( parent ) = FALSE ) then
-				errReport( FB_ERRMSG_VIRTUALWITHOUTRTTI )
-				*pattrib and= not FB_SYMBATTRIB_VIRTUAL
+				errReport( FB_ERRMSG_ABSTRACTWITHOUTRTTI )
+				attrib and= not (FB_SYMBATTRIB_VIRTUAL or FB_SYMBATTRIB_ABSTRACT)
 			end if
 		end if
-	end if
+
+		lexSkipToken( )
+
+	case FB_TK_VIRTUAL
+		attrib or= FB_SYMBATTRIB_VIRTUAL
+
+		'' ditto for virtuals
+		if( parent ) then
+			if( symbGetHasRTTI( parent ) = FALSE ) then
+				errReport( FB_ERRMSG_VIRTUALWITHOUTRTTI )
+				attrib and= not FB_SYMBATTRIB_VIRTUAL
+			end if
+		end if
+
+		lexSkipToken( )
+
+	end select
+
 end sub
 
 '':::::
@@ -2089,7 +2108,7 @@ function cProcStmtBegin( byval attrib as FB_SYMBATTRIB ) as integer
 		end if
 	end if
 
-	cMethodAttributes( NULL, @attrib )
+	cMethodAttributes( NULL, attrib )
 
 	'' SUB | FUNCTION
 	tkn = lexGetToken( )
@@ -2174,6 +2193,11 @@ function cProcStmtBegin( byval attrib as FB_SYMBATTRIB ) as integer
 			errReport( FB_ERRMSG_ONLYMEMBERFUNCTIONSCANBECONST, TRUE )
 			symbGetAttrib( proc ) and= not FB_SYMBATTRIB_CONST
 		end if
+	end if
+
+	'' ABSTRACTs shouldn't have a body implemented, VIRTUAL should be used instead
+	if( symbIsAbstract( proc ) ) then
+		errReport( FB_ERRMSG_ABSTRACTBODY )
 	end if
 
 	'' emit proc setup

@@ -56,10 +56,15 @@ function cDeclaration _
 	tk = lexGetToken( )
 
 	select case as const( tk )
-	case FB_TK_STATIC, FB_TK_CONST, FB_TK_VIRTUAL
+	case FB_TK_STATIC, FB_TK_CONST, FB_TK_VIRTUAL, FB_TK_ABSTRACT
+		'' STATIC? SUB|FUNCTION|...
+		'' CONST? (ABSTRACT|VIRTUAL)? SUB|FUNCTION|...
+		'' Note: ABSTRACT doesn't make sense on bodies, but it's still
+		'' allowed here to let cProcStmtBegin() show a nice error.
 		select case as const lexGetLookAhead( 1 )
 		case FB_TK_FUNCTION, FB_TK_SUB, FB_TK_OPERATOR, _
-		     FB_TK_CONSTRUCTOR, FB_TK_DESTRUCTOR, FB_TK_PROPERTY
+		     FB_TK_CONSTRUCTOR, FB_TK_DESTRUCTOR, FB_TK_PROPERTY, _
+		     FB_TK_VIRTUAL, FB_TK_ABSTRACT
 			function = cProcStmtBegin( attrib )
 		case else
 			select case( tk )
