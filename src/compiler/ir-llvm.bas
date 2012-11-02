@@ -2217,13 +2217,22 @@ private sub _emitAsmEnd( )
 end sub
 
 private sub _emitVarIniBegin( byval sym as FBSYMBOL ptr )
-	ctx.varini = ""
+	ctx.varini = *symbGetMangledName( sym )
+	ctx.varini += " = global "
+	ctx.varini += hEmitType( symbGetType( sym ), symbGetSubType( sym ) )
+	ctx.varini += " "
 	ctx.variniscopelevel = 0
 end sub
 
 private sub _emitVarIniEnd( byval sym as FBSYMBOL ptr )
-	hWriteLine( "TODO varini " + ctx.varini )
+	hWriteLine( ctx.varini )
 	ctx.varini = ""
+end sub
+
+private sub hVarIniElementType( byval dtype as integer )
+	if( ctx.variniscopelevel > 0 ) then
+		ctx.varini += hEmitType( dtype, NULL ) + " "
+	end if
 end sub
 
 private sub hVarIniSeparator( )
@@ -2233,16 +2242,19 @@ private sub hVarIniSeparator( )
 end sub
 
 private sub _emitVarIniI( byval dtype as integer, byval value as integer )
+	hVarIniElementType( dtype )
 	ctx.varini += hEmitInt( dtype, NULL, value )
 	hVarIniSeparator( )
 end sub
 
 private sub _emitVarIniF( byval dtype as integer, byval value as double )
+	hVarIniElementType( dtype )
 	ctx.varini += hEmitFloat( value )
 	hVarIniSeparator( )
 end sub
 
 private sub _emitVarIniI64( byval dtype as integer, byval value as longint )
+	hVarIniElementType( dtype )
 	ctx.varini += hEmitLong( value )
 	hVarIniSeparator( )
 end sub
