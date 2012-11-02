@@ -2182,11 +2182,23 @@ function cProcStmtBegin( byval attrib as FB_SYMBATTRIB ) as integer
 	'' STATIC or CONST can only be used with member functions
 	if( symbGetClass( symbGetNamespace( proc ) ) = FB_SYMBCLASS_NAMESPACE ) then
 		if( symbIsStatic( proc ) ) then
-			errReport( FB_ERRMSG_ONLYMEMBERFUNCTIONSCANBESTATIC, TRUE )
+			errReport( FB_ERRMSG_STATICNONMEMBERPROC, TRUE )
 			symbGetAttrib( proc ) and= not FB_SYMBATTRIB_STATIC
-		elseif( symbIsConstant( proc ) ) then
-			errReport( FB_ERRMSG_ONLYMEMBERFUNCTIONSCANBECONST, TRUE )
+		end if
+
+		if( symbIsConstant( proc ) ) then
+			errReport( FB_ERRMSG_CONSTNONMEMBERPROC, TRUE )
 			symbGetAttrib( proc ) and= not FB_SYMBATTRIB_CONST
+		end if
+
+		if( symbIsAbstract( proc ) ) then
+			errReport( FB_ERRMSG_ABSTRACTNONMEMBERPROC, TRUE )
+			symbGetAttrib( proc ) and= not FB_SYMBATTRIB_ABSTRACT
+		end if
+
+		if( symbIsVirtual( proc ) ) then
+			errReport( FB_ERRMSG_VIRTUALNONMEMBERPROC, TRUE )
+			symbGetAttrib( proc ) and= not FB_SYMBATTRIB_VIRTUAL
 		end if
 	end if
 
