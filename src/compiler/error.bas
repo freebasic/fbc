@@ -265,6 +265,7 @@ end type
 		@"STATIC used here, but not the in the DECLARE statement", _
 		@"CONST used here, but not the in the DECLARE statement", _
 		@"VIRTUAL used here, but not the in the DECLARE statement", _
+		@"ABSTRACT used here, but not the in the DECLARE statement", _
 		@"Method declared VIRTUAL, but UDT does not extend OBJECT", _
 		@"Method declared ABSTRACT, but UDT does not extend OBJECT", _
 		@"Implemented body for an ABSTRACT method", _

@@ -233,30 +233,25 @@ private sub hCheckAttribs _
 	)
 
 	'' the body can only be STATIC if the proto is too
-	if( (attrib and FB_SYMBATTRIB_STATIC) <> 0 ) then
-		if( symbIsStatic( proto ) = FALSE ) then
-			errReport( FB_ERRMSG_PROCPROTOTYPENOTSTATIC )
-			return
-		end if
+	if( (attrib and FB_SYMBATTRIB_STATIC) and (not symbIsStatic( proto )) ) then
+		errReport( FB_ERRMSG_PROCPROTOTYPENOTSTATIC )
 	end if
 
 	'' same for CONST
-	if( (attrib and FB_SYMBATTRIB_CONST) <> 0 ) then
-		if( symbIsConstant( proto ) = FALSE ) then
-			errReport( FB_ERRMSG_PROCPROTOTYPENOTCONST )
-			return
-		end if
+	if( (attrib and FB_SYMBATTRIB_CONST) and (not symbIsConstant( proto )) ) then
+		errReport( FB_ERRMSG_PROCPROTOTYPENOTCONST )
 	end if
 
-	'' same for VIRTUAL
-	if( (attrib and FB_SYMBATTRIB_VIRTUAL) <> 0 ) then
-		if( symbIsVirtual( proto ) = FALSE ) then
-			errReport( FB_ERRMSG_PROCPROTOTYPENOTVIRTUAL )
-			return
-		end if
+	'' and ABSTRACT (abstracts are VIRTUAL too, so checking them first)
+	if( (attrib and FB_SYMBATTRIB_ABSTRACT) and (not symbIsAbstract( proto )) ) then
+		errReport( FB_ERRMSG_PROCPROTOTYPENOTABSTRACT )
+	'' and VIRTUAL
+	elseif( (attrib and FB_SYMBATTRIB_VIRTUAL) and (not symbIsVirtual( proto )) ) then
+		errReport( FB_ERRMSG_PROCPROTOTYPENOTVIRTUAL )
 	end if
 
 	symbGetAttrib( proto ) or= attrib
+
 end sub
 
 '':::::
