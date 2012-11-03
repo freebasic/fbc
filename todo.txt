@@ -264,13 +264,10 @@ o classes
 
   - explicit OVERRIDE to show an error in case there is no virtual to override?
 
-  - ABSTRACT: set vtable entry to __cxa_pure_virtual() at first, until overridden
-
-  - interfaces
-      - could be structs internally, but allowing only pure-virtual methods,
-        no fields or normal methods
-      - all declared methods would automatically be ABSTRACT
-		interface Foo
+  - INTERFACE ... END INTERFACE
+      - structs extending OBJECT, not allowing any fields, only methods
+      - all methods automatically are ABSTRACT
+		interface A
 			declare [abstract] sub bar( )
 		end interface
       - IMPLEMENTS:

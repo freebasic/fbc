@@ -5,9 +5,6 @@
 
 #include once "fb.bi"
 #include once "fbint.bi"
-#include once "hash.bi"
-#include once "list.bi"
-#include once "ir.bi"
 
 type FB_SYMBNEST
 	sym				as FBSYMBOL ptr
@@ -202,10 +199,8 @@ end sub
 private sub hBuildVtable( byval udt as FBSYMBOL ptr )
 	static as FBARRAYDIM dTB(0)
 	dim as ASTNODE ptr initree = any, basevtableinitree = any
-	dim as FBSYMBOL ptr member = any, elm = any, rtti = any, _
-		vtable = any, vtabletype = any, _
-		basefield = any, basetype = any, _
-		basevtable = any, basevtabletype = any
+	dim as FBSYMBOL ptr member = any, rtti = any, vtable = any, _
+		basefield = any, basetype = any, basevtable = any
 	dim as integer i = any, basevtableelements = any
 	dim as string id
 
@@ -222,6 +217,9 @@ private sub hBuildVtable( byval udt as FBSYMBOL ptr )
 	                       FB_SYMBATTRIB_CONST or FB_SYMBATTRIB_STATIC or FB_SYMBATTRIB_SHARED, _
 	                       FB_SYMBOPT_PRESERVECASE )
 
+	'' Find information about the base UDT's vtable:
+	''    the number of elements,
+	''    and the initree (so it can be copied into the new vtable)
 	basevtableelements = 0
 	basevtableinitree = NULL
 	basefield = udt->udt.base
@@ -261,8 +259,11 @@ private sub hBuildVtable( byval udt as FBSYMBOL ptr )
 		i += (basevtableelements - 2)
 	end if
 
-	'' Fill new vtable entries with NULLs first
-	'' (to be safe, and also to support pure-virtuals)
+	'' Fill new vtable entries with NULLs first, to be safe, and also to
+	'' initialize any new unimplemented pure-virtual slots.
+	'' We could let them point to __cxa_pure_virtual() like gcc,
+	'' but with a NULL pointer crash instead of the abort() we'll actually
+	'' get a more useful run-time error under -exx.
 	while( i <= dTB(0).upper )
 		astTypeIniAddAssign( initree, astNewCONSTi( 0, typeAddrOf( FB_DATATYPE_VOID ) ), vtable )
 		i += 1
@@ -275,11 +276,15 @@ private sub hBuildVtable( byval udt as FBSYMBOL ptr )
 	symbSetTypeIniTree( vtable, initree )
 	symbSetIsInitialized( vtable )
 
-	'' 1. new entries for virtuals (added for this UDT, not inherited ones)
-	''    must be set to point to the original virtuals for now (they have
-	''    not been overridden yet).
-	'' 2. any entries for inherited virtuals that were overridden by a
-	''    normal method must be updated to point to the normal method.
+	'' 1. new (and not inherited) entries for ...
+	''  - virtuals: must be set to point to their bodies for now.
+	''    (not yet overridden)
+	''  - abstracts: are set to point to fb_AbstractStub() (our version
+	''    of GCC's __cxa_pure_virtual()), which will show a run-time
+	''    error message and abort the program.
+	''
+	'' 2. any entries for inherited virtuals/abstracts that were overridden
+	''    by a normal method must be updated to point to the normal method.
 
 	'' For each member of this UDT (does not include inherited members)
 	member = symbGetCompSymbTb( udt ).head
@@ -287,7 +292,7 @@ private sub hBuildVtable( byval udt as FBSYMBOL ptr )
 		'' procedure?
 		if( symbIsProc( member ) ) then
 			i = symbProcGetVtableIndex( member )
-			if( i > 0 ) then
+			if( (i > 0) and (not symbIsAbstract( member )) ) then
 				astTypeIniReplaceElement( initree, i, astBuildProcAddrof( member ) )
 			end if
 		end if
