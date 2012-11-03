@@ -404,8 +404,9 @@ end function
 private sub hBuildStrLit _
 	( _
 		byref ln as string, _
+		byval wantedlength as integer, _ '' including null terminator
 		byval z as zstring ptr, _
-		byval length as integer _
+		byval length as integer _        '' ditto
 	)
 
 	dim as integer ch = any
@@ -421,6 +422,12 @@ private sub hBuildStrLit _
 	''
 	'' \0 doesn't work, it must be two digits as in \00.
 
+	'' String literal too long?
+	if( length > wantedlength ) then
+		'' Cut off; may be empty afterwards
+		length = wantedlength
+	end if
+
 	for i as integer = 0 to length - 1
 		ch = (*z)[i]
 		'' chars like a-zA-Z0-9 can be emitted literally,
@@ -435,13 +442,20 @@ private sub hBuildStrLit _
 			ln += $"\" + hex( ch, 2 )
 		end if
 	next
+
+	'' Pad with zeroes if string literal too short
+	while( length < wantedlength )
+		ln += $"\00"
+		length += 1
+	wend
 end sub
 
 private sub hBuildWstrLit _
 	( _
 		byref ln as string, _
+		byval wantedlength as integer, _  '' including null terminator
 		byval w as wstring ptr, _
-		byval length as integer _
+		byval length as integer _         '' ditto
 	)
 
 	dim as uinteger ch = any, wcharsize = any
@@ -456,7 +470,13 @@ private sub hBuildWstrLit _
 
 	wcharsize = typeGetSize( FB_DATATYPE_WCHAR )
 
-	for i as integer = 0 to (length \ wcharsize) - 1
+	'' String literal too long?
+	if( length > wantedlength ) then
+		'' Cut off; may be empty afterwards
+		length = wantedlength
+	end if
+
+	for i as integer = 0 to length - 1
 		ch = (*w)[i]
 		'' (ditto)
 		if( (ch >= 32) and (ch < 127) and _
@@ -480,15 +500,33 @@ private sub hBuildWstrLit _
 			end if
 		end if
 	next
+
+	'' Pad with zeroes if string literal too short
+	while( length < wantedlength )
+		'' Pad up to wchar_t size
+		for j as integer = 1 to wcharsize
+			ln += $"\00"
+		next
+		length += 1
+	wend
 end sub
 
-private function hEmitStrLitType( byval sym as FBSYMBOL ptr ) as string
-	function = "[" + str( symbGetLen( sym ) ) + " x i8]"
+private function hEmitStrLitType( byval length as integer ) as string
+	function = "[" + str( length ) + " x i8]"
+end function
+
+private function hEmitSymType( byval sym as FBSYMBOL ptr ) as string
+	select case( symbGetType( sym ) )
+	case FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
+		function = hEmitStrLitType( symbGetLen( sym ) )
+	case else
+		function = hEmitType( symbGetType( sym ), symbGetSubtype( sym ) )
+	end select
 end function
 
 private sub hEmitVariable( byval sym as FBSYMBOL ptr )
 	dim as string ln
-	dim as integer dtype = any, is_global = any
+	dim as integer is_global = any, length = any
 
 	'' already allocated?
 	if( symbGetVarIsAllocated( sym ) ) then
@@ -503,21 +541,21 @@ private sub hEmitVariable( byval sym as FBSYMBOL ptr )
 			exit sub
 		end if
 
-		dtype = symbGetType( sym )
-
-		select case( dtype )
+		select case( symbGetType( sym ) )
 		case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
 			'' string literals are emitted as global char arrays,
 			'' this also means a bitcast to char pointer is needed
 			'' on every use of the global symbol.
 			ln = *symbGetMangledName( sym ) + " = "
 			ln += "private constant "
-			ln += hEmitStrLitType( sym )
+			ln += hEmitSymType( sym )
 			ln += " c"""
-			if( dtype = FB_DATATYPE_WCHAR ) then
-				hBuildWstrLit( ln, hUnescapeW( symbGetVarLitTextW( sym ) ), symbGetLen( sym ) )
+			if( symbGetType( sym ) = FB_DATATYPE_WCHAR ) then
+				length = symbGetWstrLen( sym )
+				hBuildWstrLit( ln, length, hUnescapeW( symbGetVarLitTextW( sym ) ), length )
 			else
-				hBuildStrLit( ln, hUnescape( symbGetVarLitText( sym ) ), symbGetLen( sym ) )
+				length = symbGetStrLen( sym )
+				hBuildStrLit( ln, length, hUnescape( symbGetVarLitText( sym ) ), length )
 			end if
 			ln += """"
 			hWriteLine( ln )
@@ -577,7 +615,7 @@ private sub hEmitVariable( byval sym as FBSYMBOL ptr )
 	else
 		ln += "alloca"
 	end if
-	ln += " " + hEmitType( symbGetType( sym ), symbGetSubType( sym ) )
+	ln += " " + hEmitSymType( sym )
 	if( is_global ) then
 		'' Globals without initializer are zeroed in FB
 		ln += " zeroinitializer"
@@ -706,7 +744,7 @@ private sub hEmitStruct( byval s as FBSYMBOL ptr )
 	'' Write out the elements
 	fld = symbUdtGetFirstField( s )
 	while( fld )
-		ln += hEmitType( symbGetType( fld ), symbGetSubtype( fld ) )
+		ln += hEmitSymType( fld )
 		ln += hEmitArrayDecl( fld )
 		ln += attrib
 
@@ -1535,7 +1573,7 @@ private function hVregToStr( byval v as IRVREG ptr ) as string
 			'' Use an inline bitcast operation to convert from
 			'' the char array pointer type to just a char pointer
 			s = "bitcast ("
-			s += hEmitStrLitType( sym ) + "* "
+			s += hEmitSymType( sym ) + "* "
 			s += *symbGetMangledName( sym )
 			s += " to "
 			s += hEmitType( typeAddrOf( symbGetType( sym ) ), NULL )
@@ -2219,7 +2257,7 @@ end sub
 private sub _emitVarIniBegin( byval sym as FBSYMBOL ptr )
 	ctx.varini = *symbGetMangledName( sym )
 	ctx.varini += " = global "
-	ctx.varini += hEmitType( symbGetType( sym ), symbGetSubType( sym ) )
+	ctx.varini += hEmitSymType( sym )
 	ctx.varini += " "
 	ctx.variniscopelevel = 0
 end sub
@@ -2264,46 +2302,45 @@ private sub _emitVarIniOfs( byval sym as FBSYMBOL ptr, byval ofs as integer )
 	hVarIniSeparator( )
 end sub
 
-private sub hEmitVarIniStr _
+'private sub hEmitVarIniStr( byval varlength as integer, byref s as string )
+'end sub
+
+private sub _emitVarIniStr _
 	( _
-		byval totlgt as integer, _
-		byref litstr as const zstring ptr, _
-		byval litlgt as integer _
+		byval varlength as integer, _
+		byval literal as zstring ptr, _
+		byval litlength as integer _
 	)
 
-	dim as string s = *litstr
+	dim as string s
 
-	'' String literal too long? (GCC would show a warning)
-	if( totlgt < litlgt ) then
-		'' Cut off; may be empty afterwards
-		s = left( s, totlgt )
-	''elseif( totlgt > litlgt ) then
-		'' Too short, remaining space will be filled with 0's by GCC
+	hBuildStrLit( s, varlength + 1, hUnescape( literal ), litlength + 1 )
+
+	if( ctx.variniscopelevel > 0 ) then
+		ctx.varini += hEmitStrLitType( varlength ) + " "
 	end if
-
-	'' Simple fixed-length string initialized from string literal
-	ctx.varini += """" + s + """"
+	ctx.varini += "c""" + s + """"
 	hVarIniSeparator( )
 
 end sub
 
-private sub _emitVarIniStr _
-	( _
-		byval totlgt as integer, _
-		byval litstr as zstring ptr, _
-		byval litlgt as integer _
-	)
-	hEmitVarIniStr( totlgt, hEscape( litstr ), litlgt )
-end sub
-
 private sub _emitVarIniWstr _
 	( _
-		byval totlgt as integer, _
-		byval litstr as wstring ptr, _
-		byval litlgt as integer _
+		byval varlength as integer, _
+		byval literal as wstring ptr, _
+		byval litlength as integer _
 	)
-	ctx.varini += "L"
-	hEmitVarIniStr( totlgt, hEscapeToHexW( litstr ), litlgt )
+
+	dim as string s
+
+	hBuildWstrLit( s, varlength + 1, hUnescapeW( literal ), litlength + 1 )
+
+	if( ctx.variniscopelevel > 0 ) then
+		ctx.varini += hEmitStrLitType( varlength ) + " "
+	end if
+	ctx.varini += "c""" + s + """"
+	hVarIniSeparator( )
+
 end sub
 
 private sub _emitVarIniPad( byval bytes as integer )
