@@ -329,6 +329,14 @@ function astBuildMethodCall _
 
 		'' Cast to proper procptr type
 		p = astNewCONV( typeAddrOf( FB_DATATYPE_FUNCTION ), symbAddProcPtrFromFunction( proc ), p )
+
+		'' null pointer checking for ABSTRACTs
+		'' (in case it wasn't overridden)
+		if( env.clopt.extraerrchk ) then
+			if( symbIsAbstract( proc ) ) then
+				p = astNewPTRCHK( p, lexLineNum( ) )
+			end if
+		end if
 	else
 		'' calling non-virtual method
 		p = NULL
