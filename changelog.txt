@@ -25,6 +25,7 @@ Version 0.25.0:
 - NAKED support for the C backend, using GCC inline asm
 - ALIAS "" or LIB "" will now result in a compiler error
 - fbc now recognizes --version and [-]-help command line options
+- -exx NULL pointer checks for procedure pointer calls
 
 [fixed]
 - libzip headers: zip_stat struct was unnecessarily named zip_stat_, breaking the libzip example
