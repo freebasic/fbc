@@ -776,15 +776,14 @@ function cProcHeader _
 
 end function
 
-'':::::
 private function hCheckOpOvlParams _
 	( _
 		byval parent as FBSYMBOL ptr, _
 		byval op as integer, _
-		byval proc as FBSYMBOL ptr, _
-		byval options as FB_PROCOPT _
+		byval proc as FBSYMBOL ptr _
 	) as integer
 
+	dim as integer found_mismatch = any
     dim as integer is_method = symbIsMethod( proc )
 
 #macro hCheckParam( proc, param, num )
@@ -799,11 +798,11 @@ private function hCheckOpOvlParams _
 		hParamError( proc, num, FB_ERRMSG_PARAMCANTBEOPTIONAL )
 		exit function
 	end if
-	#endmacro
+#endmacro
 
 	function = FALSE
 
-	'' 1st) check the number of params
+	'' check the number of params
 	dim as integer min_params = any, max_params = any
 	select case as const astGetOpClass( op )
 	case AST_NODECLASS_UOP, AST_NODECLASS_ADDROF
@@ -846,42 +845,8 @@ private function hCheckOpOvlParams _
 	   	exit function
 	end if
 
-	'' 2nd) check method-only ops
-	select case as const astGetOpClass( op )
-	case AST_NODECLASS_CONV, AST_NODECLASS_ASSIGN
-		if( is_method = FALSE ) then
-			if( (options and FB_PROCOPT_ISPROTO) <> 0 ) then
-				errReport( FB_ERRMSG_OPMUSTBEAMETHOD, TRUE )
-			end if
-		end if
-
-	case AST_NODECLASS_BOP, AST_NODECLASS_ADDROF
-		if( is_method or astGetOpIsSelf( op ) ) then
-			if( parent = NULL ) then
-				errReport( FB_ERRMSG_OPMUSTBEAMETHOD, TRUE )
-			end if
-		else
-			if( parent <> NULL ) then
-				errReport( FB_ERRMSG_OPCANNOTBEAMETHOD, TRUE )
-			end if
-		end if
-
-	case AST_NODECLASS_MEM, AST_NODECLASS_COMP
-		if astGetOpIsSelf( op ) then
-			if( parent = NULL ) then
-				errReport( FB_ERRMSG_OPMUSTBEAMETHOD, TRUE )
-			end if
-		end if
-
-	case else
-		if( is_method ) then
-			errReport( FB_ERRMSG_OPCANNOTBEAMETHOD, TRUE )
-		end if
-	end select
-
 	if( params > 0 ) then
-		'' 3rd) check the params, at least one param must be an
-		''      user-defined type (struct, enum or class)
+		'' check the params, at least one param must be an UDT
 		dim as FBSYMBOL ptr param = symbGetProcHeadParam( proc )
 
 		hCheckParam( proc, param, 1 )
@@ -900,7 +865,6 @@ private function hCheckOpOvlParams _
 
 		'' binary?
 		case AST_NODECLASS_BOP
-
 			if( params > 1 ) then
 				dim as FBSYMBOL ptr nxtparam = param->next
 
@@ -924,7 +888,6 @@ private function hCheckOpOvlParams _
 
 		'' NEW or DELETE?
 		case AST_NODECLASS_MEM
-
 			select case op
 			case AST_OP_NEW_SELF, AST_OP_NEW_VEC_SELF
 				'' must be an integer
@@ -962,37 +925,34 @@ private function hCheckOpOvlParams _
 
 		'' FOR, STEP or NEXT?
 		case AST_NODECLASS_COMP
-
 			if( astGetOpIsSelf( op ) ) then
 				if( params > 1 ) then
+					'' skip the instance ptr
+					if( is_method ) then
+						param = param->next
+					end if
 
-				'' skip the instance ptr
-				if( is_method ) then
-					param = param->next
+					'' must be of the same type as parent
+					if( (param = NULL) or (parent = NULL) ) then
+						hParamError( proc, 1, FB_ERRMSG_PARAMTYPEINCOMPATIBLEWITHPARENT )
+						exit function
+					end if
+
+					hCheckParam( proc, param, 1 )
+
+					'' same type?
+					if( (symbGetType( param ) <> symbGetType( parent )) or _
+					    (symbGetSubtype( param ) <> parent) ) then
+						hParamError( proc, 1, FB_ERRMSG_PARAMTYPEINCOMPATIBLEWITHPARENT )
+						exit function
+					end if
 				end if
-
-				'' must be of the same type as parent
-				if( (param = NULL) or (parent = NULL) ) then
-					hParamError( proc, 1, FB_ERRMSG_PARAMTYPEINCOMPATIBLEWITHPARENT )
-					exit function
-				end if
-
-				hCheckParam( proc, param, 1 )
-
-				'' same type?
-				if( (symbGetType( param ) <> symbGetType( parent )) or _
-					(symbGetSubtype( param ) <> parent) ) then
-					hParamError( proc, 1, FB_ERRMSG_PARAMTYPEINCOMPATIBLEWITHPARENT )
-					exit function
-				end if
-
 			end if
-		end if
 
 		end select
 	end if
 
-	'' 4th) check the result
+	'' check the result
 	found_mismatch = FALSE
 
 	select case astGetOpClass( op )
@@ -1153,7 +1113,7 @@ function cOperatorHeader _
 		byval options as FB_PROCOPT _
 	) as FBSYMBOL ptr
 
-    dim as integer is_extern = any
+	dim as integer is_extern = any, is_memberproc = any
     dim as FBSYMBOL ptr proc = any, parent = any
 
 	is_nested = FALSE
@@ -1183,7 +1143,17 @@ function cOperatorHeader _
 				errReport( FB_ERRMSG_DECLOUTSIDECLASS )
 			end if
 			is_extern = TRUE
+		else
+			if( symbGetCurrentNamespc( ) <> @symbGetGlobalNamespc( ) ) then
+				parent = symbGetCurrentNamespc( )
+			end if
 		end if
+	end if
+
+	if( parent ) then
+		is_memberproc = symbIsStruct( parent )
+	else
+		is_memberproc = FALSE
 	end if
 
 	'' Operator
@@ -1198,37 +1168,32 @@ function cOperatorHeader _
 		op = AST_OP_ADD
 	end select
 
-
-	select case as const op
-	'' self ops?
-	case AST_OP_ASSIGN to AST_OP_CAST
-		'' no parent?
-		if( parent = NULL ) then
-			'' fake it...
-			if( astGetOpIsSelf( op ) ) then
-				errReport( FB_ERRMSG_OPMUSTBEAMETHOD, TRUE )
-				op = AST_OP_ADD
-			end if
+	'' self-op?
+	if( astGetOpIsSelf( op ) ) then
+		'' Must always be a member procedure
+		if( is_memberproc = FALSE ) then
+			errReport( FB_ERRMSG_OPMUSTBEAMETHOD, TRUE )
+			'' error recovery: Change to a non-self op
+			op = AST_OP_ADD
 		end if
-
-	case else
+	else
 		'' non-self op in a type declaration... !!WRITEME!! static global operators should be allowed?
-		if( (options and FB_PROCOPT_HASPARENT) <> 0 ) then
+		if( is_memberproc ) then
 			errReport( FB_ERRMSG_OPCANNOTBEAMETHOD, TRUE, " (TODO)" )
 		end if
-	end select
+	end if
 
-    '' check if method should be static or not
-    select case as const op
-    case AST_OP_NEW_SELF, AST_OP_NEW_VEC_SELF, _
-    	 AST_OP_DEL_SELF, AST_OP_DEL_VEC_SELF
+	'' check if method should be static or not
+	select case as const op
+	case AST_OP_NEW_SELF, AST_OP_NEW_VEC_SELF, _
+	     AST_OP_DEL_SELF, AST_OP_DEL_VEC_SELF
+		'' These ops are made STATIC implicitly
+		attrib or= FB_SYMBATTRIB_STATIC
+		attrib and= not FB_SYMBATTRIB_METHOD
 
-    	 attrib or= FB_SYMBATTRIB_STATIC
-    	 attrib and= not FB_SYMBATTRIB_METHOD
-
-    case else
-    	if( (options and FB_PROCOPT_HASPARENT) <> 0 ) then
-    		if( (attrib and FB_SYMBATTRIB_STATIC) <> 0 ) then
+	case else
+		if( is_memberproc ) then
+			if( attrib and FB_SYMBATTRIB_STATIC ) then
 				errReport( FB_ERRMSG_OPERATORCANTBESTATIC, TRUE )
 				attrib and= not FB_SYMBATTRIB_STATIC
 			end if
@@ -1336,7 +1301,7 @@ function cOperatorHeader _
 
 	if( (options and FB_PROCOPT_ISPROTO) <> 0 ) then
 		'' check params
-		hCheckOpOvlParams( parent, op, proc, options )
+		hCheckOpOvlParams( parent, op, proc )
 		proc = symbAddOperator( proc, op, palias, dtype, subtype, attrib, mode )
 		if( proc = NULL ) then
 			errReport( FB_ERRMSG_DUPDEFINITION )
@@ -1357,7 +1322,7 @@ function cOperatorHeader _
 		end if
 
 		'' check params
-		if( hCheckOpOvlParams( parent, op, proc, options ) = FALSE ) then
+		if( hCheckOpOvlParams( parent, op, proc ) = FALSE ) then
 			'' error recovery: skip the whole compound stmt
 			hSkipCompound( FB_TK_OPERATOR )
 			exit function
@@ -1387,7 +1352,7 @@ function cOperatorHeader _
 			end if
 
 			'' check params
-			if( hCheckOpOvlParams( parent, op, proc, options ) = FALSE ) then
+			if( hCheckOpOvlParams( parent, op, proc ) = FALSE ) then
 				'' error recovery: skip the whole compound stmt
 				hSkipCompound( FB_TK_OPERATOR )
 				exit function
@@ -1413,7 +1378,7 @@ function cOperatorHeader _
 			end if
 
 			'' check params
-			if( hCheckOpOvlParams( parent, op, proc, options ) = FALSE ) then
+			if( hCheckOpOvlParams( parent, op, proc ) = FALSE ) then
 				'' error recovery: skip the whole compound stmt
 				hSkipCompound( FB_TK_OPERATOR )
 				exit function

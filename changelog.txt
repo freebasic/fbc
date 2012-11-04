@@ -103,6 +103,7 @@ Version 0.25.0:
 - ScreenInfo() crash under X11 gfxlib2 driver when RandR extension is unavailable
 - DELETE and DELETE[] were allowed to be used on forward references
 - The wrong error message was shown for methods declared inside anonymous TYPE declarations
+- Operators declared inside namespaces can now be implemented outside of the namespace, provided the namespace prefix is used, just like with normal procedures
 
 
 Version 0.24.0:
