@@ -91,7 +91,7 @@ enum FB_SYMBSTATS
     FB_SYMBSTATS_PARSED       = &h00000080
     FB_SYMBSTATS_MANGLED      = &h00000100
     FB_SYMBSTATS_HASALIAS     = &h00000200
-    FB_SYMBSTATS_MOCK         = &h00000400
+                            ''= &h00000400
     FB_SYMBSTATS_DONTINIT     = &h00000800
     FB_SYMBSTATS_MAINPROC     = &H00001000
     FB_SYMBSTATS_MODLEVELPROC = &h00002000
@@ -1882,8 +1882,6 @@ declare function symbGetUDTBaseLevel _
 
 #define symbGetIsParsed(s) ((s->stats and FB_SYMBSTATS_PARSED) <> 0)
 #define symbSetIsParsed(s) s->stats or= FB_SYMBSTATS_PARSED
-
-#define symbSetIsMock(s) s->stats or= FB_SYMBSTATS_MOCK
 
 #define symbSetDontInit(s) s->stats or= FB_SYMBSTATS_DONTINIT
 #define symbGetDontInit(s) ((s->stats and FB_SYMBSTATS_DONTINIT) <> 0)

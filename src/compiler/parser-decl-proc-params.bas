@@ -215,8 +215,6 @@ private function hMockParam _
 
 	s = symbAddProcParam( proc, NULL, dtype, NULL, plen, pmode, 0, NULL )
 
-	symbSetIsMock( s )
-
 	function = s
 
 end function
