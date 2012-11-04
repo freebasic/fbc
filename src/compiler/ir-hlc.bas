@@ -128,6 +128,7 @@ declare sub _emitDBG _
 		byval ex as integer _
 	)
 
+declare sub exprFreeNode( byval n as EXPRNODE ptr )
 #if __FB_DEBUG__
 declare sub exprDump( byval n as EXPRNODE ptr )
 #endif
@@ -403,20 +404,18 @@ private function hEmitProcHeader _
 
 	'' If returning a struct, there's an extra parameter
 	dim as FBSYMBOL ptr hidden = NULL
-	if( symbGetType( proc ) = FB_DATATYPE_STRUCT ) then
-		if( typeGetDtAndPtrOnly( symbGetProcRealType( proc ) ) = typeAddrOf( symbGetType( proc ) ) ) then
-			if( options and EMITPROC_ISPROTO ) then
-				hidden = symbGetSubType( proc )
-				ln += hEmitType( typeAddrOf( symbGetType( hidden ) ), hidden )
-			else
-				hidden = proc->proc.ext->res
-				ln += hEmitType( typeAddrOf( symbGetType( hidden ) ), symbGetSubtype( hidden ) )
-				ln += " " + *symbGetMangledName( hidden )
-			end if
+	if( symbProcReturnsUdtOnStack( proc ) ) then
+		if( options and EMITPROC_ISPROTO ) then
+			hidden = symbGetSubType( proc )
+			ln += hEmitType( typeAddrOf( symbGetType( hidden ) ), hidden )
+		else
+			hidden = proc->proc.ext->res
+			ln += hEmitType( typeAddrOf( symbGetType( hidden ) ), symbGetSubtype( hidden ) )
+			ln += " " + *symbGetMangledName( hidden )
+		end if
 
-			if( symbGetProcParams( proc ) > 0 ) then
-				ln += ", "
-			end if
+		if( symbGetProcParams( proc ) > 0 ) then
+			ln += ", "
 		end if
 	end if
 
@@ -772,7 +771,7 @@ private sub hEmitStruct _
 
 	dim as string ln, id
 	dim as integer skip = any, dtype = any, align = any
-	dim as FBSYMBOL ptr subtype = any
+	dim as FBSYMBOL ptr subtype = any, fld = any, member = any
 
 	id = hGetUDTName( s )
 
@@ -796,11 +795,11 @@ private sub hEmitStruct _
 	symbSetIsBeingEmitted( s )
 
 	'' Emit types of fields
-	var e = symbGetUDTFirstElm( s )
-	do while( e <> NULL )
-		hEmitUDT( symbGetSubtype( e ), typeIsPtr( symbGetType( e ) ) )
-		e = symbGetUDTNextElm( e )
-	loop
+	fld = symbUdtGetFirstField( s )
+	while( fld )
+		hEmitUDT( symbGetSubtype( fld ), typeIsPtr( symbGetType( fld ) ) )
+		fld = symbUdtGetNextField( fld )
+	wend
 
 	'' Has this UDT been emitted in the mean time?
 	'' (due to one of the fields causing a circular dependency)
@@ -815,8 +814,8 @@ private sub hEmitStruct _
 
 	'' Write out the elements
 	sectionIndent( )
-	e = symbGetUDTFirstElm( s )
-	while( e )
+	fld = symbUdtGetFirstField( s )
+	while( fld )
 		''
 		'' For bitfields, emit only the container field, not the
 		'' individual bitfields (bitfields are merged into a "container"
@@ -827,18 +826,18 @@ private sub hEmitStruct _
 		'' but that would depend on gcc's ABI and we'd have to emit
 		'' things like __attribute__((ms_struct)) too for msbitfields...
 		''
-		if( symbGetType( e ) = FB_DATATYPE_BITFIELD ) then
-			skip = (symbGetSubtype( e )->bitfld.bitpos <> 0)
+		if( symbGetType( fld ) = FB_DATATYPE_BITFIELD ) then
+			skip = (symbGetSubtype( fld )->bitfld.bitpos <> 0)
 		else
 			skip = FALSE
 		end if
 
 		if( skip = FALSE ) then
-			dtype = symbGetType( e )
-			subtype = symbGetSubtype( e )
+			dtype = symbGetType( fld )
+			subtype = symbGetSubtype( fld )
 			ln = hEmitType( dtype, subtype )
-			ln += " " + *symbGetName( e )
-			ln += hEmitArrayDecl( e )
+			ln += " " + *symbGetName( fld )
+			ln += hEmitArrayDecl( fld )
 
 			'' Field alignment (FIELD = N)?
 			align = symbGetUDTAlign( s )
@@ -864,7 +863,7 @@ private sub hEmitStruct _
 			hWriteLine( ln, TRUE )
 		end if
 
-		e = symbGetUDTNextElm( e )
+		fld = symbUdtGetNextField( fld )
 	wend
 
 	'' Close UDT body
@@ -878,16 +877,16 @@ private sub hEmitStruct _
 	'' not check UDT methods.
 	'' The method declarations are not part of the struct anymore,
 	'' but they will include references to it (the THIS pointer).
-	e = symbGetCompSymbTb( s ).head
-	do while( e <> NULL )
+	member = symbGetCompSymbTb( s ).head
+	do
 		'' method?
-		if( symbIsProc( e ) ) then
-			if( symbGetIsFuncPtr( e ) = FALSE ) then
-				hEmitFuncProto( e, FALSE )
+		if( symbIsProc( member ) ) then
+			if( symbGetIsFuncPtr( member ) = FALSE ) then
+				hEmitFuncProto( member, FALSE )
 			end if
 		end if
-		e = e->next
-	loop
+		member = member->next
+	loop while( member )
 
 end sub
 
@@ -1137,7 +1136,6 @@ private function _emitBegin( ) as integer
 
 	ctx.section = -1
 	ctx.sectiongosublevel = 0
-
 	ctx.regcnt = 0
 	ctx.linenum = 0
 
@@ -1161,6 +1159,8 @@ end function
 
 private sub _emitEnd( byval tottime as double )
 	dim as integer section = any
+	dim as EXPRCACHENODE ptr cachenode = any
+	dim as EXPRNODE ptr node = any
 
 	'' Switch to header section temporarily
 	section = sectionGosub( 0 )
@@ -1200,15 +1200,29 @@ private sub _emitEnd( byval tottime as double )
 	end if
 	sectionEnd( )
 
-	''
 	if( close( #env.outf.num ) <> 0 ) then
 		'' ...
 	end if
-
 	env.outf.num = 0
 
 	assert( ctx.sectiongosublevel = 0 )
 	assert( ctx.section = -1 )
+
+	do
+		cachenode = listGetHead( @ctx.exprcache )
+		if( cachenode = NULL ) then
+			exit do
+		end if
+		listDelNode( @ctx.exprcache, cachenode )
+	loop
+
+	do
+		node = listGetHead( @ctx.exprnodes )
+		if( node = NULL ) then
+			exit do
+		end if
+		exprFreeNode( node )
+	loop
 end sub
 
 '':::::
@@ -1561,17 +1575,21 @@ private function exprNew _
 	function = n
 end function
 
-private sub exprFree( byval n as EXPRNODE ptr )
-	if( n->l ) then
-		exprFree( n->l )
-	end if
-	if( n->r ) then
-		exprFree( n->r )
-	end if
+private sub exprFreeNode( byval n as EXPRNODE ptr )
 	if( n->class = EXPRCLASS_TEXT ) then
 		ZstrFree( n->text )
 	end if
 	listDelNode( @ctx.exprnodes, n )
+end sub
+
+private sub exprFreeTree( byval n as EXPRNODE ptr )
+	if( n->l ) then
+		exprFreeTree( n->l )
+	end if
+	if( n->r ) then
+		exprFreeTree( n->r )
+	end if
+	exprFreeNode( n )
 end sub
 
 private function exprNewTEXT _
@@ -1854,8 +1872,7 @@ private function exprNewUOP _
 
 	if( solved_out ) then
 		n = l->l
-		l->l = NULL  '' don't let exprFree() free this recursively
-		exprFree( l )
+		exprFreeNode( l )
 		return n
 	end if
 
@@ -2160,7 +2177,7 @@ private function exprFlush _
 	function = ctx.exprtext
 	ctx.exprtext = ""
 
-	exprFree( n )
+	exprFreeTree( n )
 end function
 
 #if __FB_DEBUG__
@@ -2908,7 +2925,7 @@ private function hGetMangledNameForASM( byval sym as FBSYMBOL ptr ) as string
 		if( symbGetProcMode( sym ) = FB_FUNCMODE_STDCALL ) then
 			'' Add the @N suffix for STDCALL
 			mangled += "@"
-			mangled += str( symbGetProcParamsLen( sym ) )
+			mangled += str( symbCalcProcParamsLen( sym ) )
 		end if
 	end if
 

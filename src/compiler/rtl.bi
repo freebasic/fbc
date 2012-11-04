@@ -125,19 +125,21 @@
 #define FB_RTL_ULONGINTMOD				"fb___umoddi3"
 #define FB_RTL_DBL2ULONGINT				"fb___fixunsdfdi"
 
-#define FB_RTL_ARRAYREDIM				"fb_ArrayRedimEx"
-#define FB_RTL_ARRAYREDIM_OBJ			"fb_ArrayRedimObj"
-#define FB_RTL_ARRAYREDIMPRESV			"fb_ArrayRedimPresvEx"
-#define FB_RTL_ARRAYREDIMPRESV_OBJ		"fb_ArrayRedimPresvObj"
-#define FB_RTL_ARRAYERASE				"fb_ArrayErase"
-#define FB_RTL_ARRAYERASE_OBJ			"fb_ArrayEraseObj"
+#define FB_RTL_ARRAYDESTRUCTOBJ				"fb_ArrayDestructObj"
+#define FB_RTL_ARRAYDESTRUCTSTR				"fb_ArrayDestructStr"
 #define FB_RTL_ARRAYCLEAR				"fb_ArrayClear"
-#define FB_RTL_ARRAYCLEAR_OBJ			"fb_ArrayClearObj"
+#define FB_RTL_ARRAYCLEAROBJ				"fb_ArrayClearObj"
+#define FB_RTL_ARRAYERASE				"fb_ArrayErase"
+#define FB_RTL_ARRAYERASEOBJ				"fb_ArrayEraseObj"
+#define FB_RTL_ARRAYERASESTR				"fb_ArrayEraseStr"
+#define FB_RTL_ARRAYREDIM				"fb_ArrayRedimEx"
+#define FB_RTL_ARRAYREDIM_OBJ				"fb_ArrayRedimObj"
+#define FB_RTL_ARRAYREDIMPRESV				"fb_ArrayRedimPresvEx"
+#define FB_RTL_ARRAYREDIMPRESV_OBJ			"fb_ArrayRedimPresvObj"
 #define FB_RTL_ARRAYLBOUND				"fb_ArrayLBound"
 #define FB_RTL_ARRAYUBOUND				"fb_ArrayUBound"
-#define FB_RTL_ARRAYSTRERASE			"fb_ArrayStrErase"
-#define FB_RTL_ARRAYSNGBOUNDCHK			"fb_ArraySngBoundChk"
-#define FB_RTL_ARRAYBOUNDCHK			"fb_ArrayBoundChk"
+#define FB_RTL_ARRAYSNGBOUNDCHK				"fb_ArraySngBoundChk"
+#define FB_RTL_ARRAYBOUNDCHK				"fb_ArrayBoundChk"
 
 #define FB_RTL_NULLPTRCHK				"fb_NullPtrChk"
 
@@ -517,17 +519,19 @@ enum FB_RTL_IDX
 	FB_RTL_IDX_ULONGINTMOD
 	FB_RTL_IDX_DBL2ULONGINT
 
+	FB_RTL_IDX_ARRAYDESTRUCTOBJ
+	FB_RTL_IDX_ARRAYDESTRUCTSTR
+	FB_RTL_IDX_ARRAYCLEAR
+	FB_RTL_IDX_ARRAYCLEAROBJ
+	FB_RTL_IDX_ARRAYERASE
+	FB_RTL_IDX_ARRAYERASEOBJ
+	FB_RTL_IDX_ARRAYERASESTR
 	FB_RTL_IDX_ARRAYREDIM
 	FB_RTL_IDX_ARRAYREDIM_OBJ
 	FB_RTL_IDX_ARRAYREDIMPRESV
 	FB_RTL_IDX_ARRAYREDIMPRESV_OBJ
-	FB_RTL_IDX_ARRAYERASE
-	FB_RTL_IDX_ARRAYERASE_OBJ
-	FB_RTL_IDX_ARRAYCLEAR
-	FB_RTL_IDX_ARRAYCLEAR_OBJ
 	FB_RTL_IDX_ARRAYLBOUND
 	FB_RTL_IDX_ARRAYUBOUND
-	FB_RTL_IDX_ARRAYSTRERASE
 	FB_RTL_IDX_ARRAYSNGBOUNDCHK
 	FB_RTL_IDX_ARRAYBOUNDCHK
 
@@ -1059,6 +1063,19 @@ declare function rtlStrLTrim _
 		byval is_any as integer _
 	) as ASTNODE ptr
 
+declare function rtlArrayClear _
+	( _
+		byval arrayexpr as ASTNODE ptr, _
+		byval check_access as integer _
+	) as ASTNODE ptr
+
+declare function rtlArrayErase _
+	( _
+		byval arrayexpr as ASTNODE ptr, _
+		byval is_dynamic as integer, _
+		byval check_access as integer _
+	) as ASTNODE ptr
+
 declare function rtlArrayRedim _
 	( _
 		byval s as FBSYMBOL ptr, _
@@ -1069,29 +1086,11 @@ declare function rtlArrayRedim _
 		byval doclear as integer _
 	) as integer
 
-declare function rtlArrayErase _
-	( _
-		byval arrayexpr as ASTNODE ptr, _
-		byval check_access as integer _
-	) as ASTNODE ptr
-
-declare function rtlArrayClear _
-	( _
-		byval arrayexpr as ASTNODE ptr, _
-		byval dofill as integer, _
-		byval check_access as integer _
-	) as ASTNODE ptr
-
 declare function rtlArrayBound _
 	( _
 		byval sexpr as ASTNODE ptr, _
 		byval dimexpr as ASTNODE ptr, _
 		byval islbound as integer _
-	) as ASTNODE ptr
-
-declare function rtlArrayStrErase _
-	( _
-		byval arrayexpr as ASTNODE ptr _
 	) as ASTNODE ptr
 
 declare function rtlArrayBoundsCheck _
@@ -1243,7 +1242,7 @@ declare function rtlMemCopyClear _
 
 declare function rtlMemNewOp _
 	( _
-		byval is_vector as integer, _
+		byval op as integer, _
 		byval len_expr as ASTNODE ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr _
@@ -1251,7 +1250,7 @@ declare function rtlMemNewOp _
 
 declare function rtlMemDeleteOp _
 	( _
-		byval is_vector as integer, _
+		byval op as integer, _
 		byval ptr_expr as ASTNODE ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr _

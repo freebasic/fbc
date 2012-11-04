@@ -354,9 +354,9 @@ private function hUDTInit _
 
 	static as integer rec_cnt
 
-	dim as integer elements = any, elm_cnt = any, elm_ofs = any
+	dim as integer elm_cnt = any
 	dim as integer lgt = any, baseofs = any, pad_lgt = any, dtype = any
-    dim as FBSYMBOL ptr elm = any, subtype = any
+	dim as FBSYMBOL ptr fld = any, first = any, subtype = any
     dim as FB_INITCTX old_ctx = any
 
     function = FALSE
@@ -426,17 +426,14 @@ private function hUDTInit _
 		lexSkipToken( )
 	end if
 
-	''
 	dtype = symbGetType( ctx.sym )
 	subtype = symbGetSubtype( ctx.sym )
 	if( (ctx.options and FB_INIOPT_DODEREF) <> 0 ) then
 		dtype = typeDeref( dtype )
 	end if
 
-	''
-	elm = symbGetUDTFirstElm( subtype )
-	elements = symbGetUDTElements( subtype )
-	elm_cnt = 0
+	first = symbUdtGetFirstField( subtype )
+	fld = first
 
 	lgt = 0
 	baseofs = astTypeIniGetOfs( ctx.tree )
@@ -444,72 +441,63 @@ private function hUDTInit _
 	'' save parent
 	old_ctx = ctx
 
-	''
 	ctx.options and= not FB_INIOPT_DODEREF
 	ctx.dim_ = NULL
 	ctx.dimcnt = 0
 
-	'' for each UDT element..
-	elm_cnt = 1
+	'' for each initializable UDT field...
+	'' (for unions, only the first field can be initialized)
 	do
-		if( elm_cnt > elements ) then
+		if( fld = NULL ) then
 			errReport( FB_ERRMSG_TOOMANYEXPRESSIONS )
 			'' error recovery: jump out
 			exit do
 		end if
 
-		elm_ofs = elm->ofs
 		if( lgt > 0 ) then
 			'' Padding between fields (due to structure layout)
-			pad_lgt = elm_ofs - lgt
+			'' (this also clears uninited parts of unions)
+			pad_lgt = fld->ofs - lgt
 			if( pad_lgt > 0 ) then
 				astTypeIniAddPad( ctx.tree, pad_lgt )
 				lgt += pad_lgt
 			end if
 		end if
 
-		astTypeIniGetOfs( ctx.tree ) = baseofs + elm_ofs
+		astTypeIniGetOfs( ctx.tree ) = baseofs + fld->ofs
 
-		if( symbCheckAccess( elm ) = FALSE ) then
+		if( symbCheckAccess( fld ) = FALSE ) then
 			errReport( FB_ERRMSG_ILLEGALMEMBERACCESS )
 		end if
-		ctx.sym = elm
+		ctx.sym = fld
 
 		'' has ctor?
 		ctx.options and= not FB_INIOPT_ISOBJ
-		if( symbHasCtor( elm ) ) then
+		if( symbHasCtor( fld ) ) then
 			ctx.options or= FB_INIOPT_ISOBJ
 		end if
 
 		'' element assignment failed?
-        if( hArrayInit( ctx, TRUE ) = FALSE ) then
-
-        	'' must be first...
-        	if( elm_cnt > 1 ) then
-        		errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE )
-        		rec_cnt -= 1
-        		exit function
-        	end if
-
-    		'' nothing passed back...
-    		if( ctx.init_expr = NULL ) then
-    			errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE )
-    			rec_cnt -= 1
-    			exit function
-    		end if
+		if( hArrayInit( ctx, TRUE ) = FALSE ) then
+			'' not first or nothing passed back?
+			if( (fld <> first) or (ctx.init_expr = NULL) ) then
+				errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE )
+				rec_cnt -= 1
+				exit function
+			end if
 
 			'' try to assign the expression to the parent
-	    	dim as integer is_ctorcall = any
+			dim as integer is_ctorcall = any
 			dim as FB_PARAMMODE arg_mode = INVALID
 			dim as ASTNODE ptr expr = ctx.init_expr
 
 			ctx = old_ctx
 
-	    	expr = astBuildImplicitCtorCallEx( ctx.sym, expr, arg_mode, is_ctorcall )
-	        if( expr = NULL ) then
-	        	rec_cnt -= 1
-	        	exit function
-	        end if
+			expr = astBuildImplicitCtorCallEx( ctx.sym, expr, arg_mode, is_ctorcall )
+			if( expr = NULL ) then
+				rec_cnt -= 1
+				exit function
+			end if
 
 			'' ')'
 			if( parenth ) then
@@ -521,34 +509,31 @@ private function hUDTInit _
 				lexSkipToken( )
 			end if
 
-	    	rec_cnt -= 1
+			rec_cnt -= 1
 
-	    	if( is_ctorcall ) then
-	    		return astTypeIniAddCtorCall( ctx.tree, ctx.sym, expr ) <> NULL
-	    	else
-	    		'' try to assign it (do a shallow copy)
-	        	return hDoAssign( ctx, expr )
-	        end if
+			if( is_ctorcall ) then
+				return astTypeIniAddCtorCall( ctx.tree, ctx.sym, expr ) <> NULL
+			else
+				'' try to assign it (do a shallow copy)
+				return hDoAssign( ctx, expr )
+			end if
+		end if
 
-        end if
-
-        lgt += symbGetLen( elm ) * symbGetArrayElements( elm )
+		lgt += symbGetLen( fld ) * symbGetArrayElements( fld )
 
 		'' next
-		elm = symbGetUDTNextElm( elm, TRUE, elm_cnt )
+		fld = symbUdtGetNextInitableField( fld )
 
 		'' if we're not top level,
 		if( rec_cnt > 1 ) then
-
 			'' if there's a comma at the end, we have to leave it for
 			'' the parent UDT initializer, to signal that we completed
 			'' initializing this UDT, and the next field should be assigned.
-		    if( comma = TRUE ) then
-		    	if( elm_cnt > elements ) then
-		    		exit do
-		    	end if
-		    end if
-
+			if( comma ) then
+				if( fld = NULL ) then
+					exit do
+				end if
+			end if
 		end if
 
 		'' ','
@@ -573,7 +558,7 @@ private function hUDTInit _
 	ctx = old_ctx
 
 	'' Padding at the end of the UDT -- this zeroes tail padding bytes,
-	'' and also any uninitialized fields.
+	'' and also any uninited fields and/or uninited parts of unions.
 	dim as integer sym_len = symbCalcLen( dtype, subtype )
 	pad_lgt = sym_len - lgt
 	if( pad_lgt > 0 ) then
@@ -584,7 +569,6 @@ private function hUDTInit _
 	rec_cnt -= 1
 
 	function = TRUE
-
 end function
 
 '':::::

@@ -158,7 +158,7 @@ end sub
 private sub hBuildRtti( byval udt as FBSYMBOL ptr )
 	static as FBARRAYDIM dTB(0)
 	dim as ASTNODE ptr initree = any, rttibase = any
-	dim as FBSYMBOL ptr rtti = any, elm = any
+	dim as FBSYMBOL ptr rtti = any, fld = any
 	dim as string id
 
 	'' static shared id as $fb_RTTI
@@ -173,21 +173,21 @@ private sub hBuildRtti( byval udt as FBSYMBOL ptr )
 	astTypeIniScopeBegin( initree, rtti )
 
 		'' stdlibvtable = NULL
-		elm = symbGetUDTFirstElm( symb.rtti.fb_rtti )
-		astTypeIniAddAssign( initree, astNewCONSTi( 0, typeAddrOf( FB_DATATYPE_VOID ), NULL ), elm )
+		fld = symbUdtGetFirstField( symb.rtti.fb_rtti )
+		astTypeIniAddAssign( initree, astNewCONSTi( 0, typeAddrOf( FB_DATATYPE_VOID ), NULL ), fld )
 
 		'' id = @"mangled name"
-		elm = symbGetUDTNextElm( elm, FALSE )
-		astTypeIniAddAssign( initree, astNewADDROF( astNewVAR( symbAllocStrConst( symbGetMangledName( udt ), -1 ), 0, FB_DATATYPE_CHAR ) ), elm )
+		fld = symbUdtGetNextInitableField( fld )
+		astTypeIniAddAssign( initree, astNewADDROF( astNewVAR( symbAllocStrConst( symbGetMangledName( udt ), -1 ), 0, FB_DATATYPE_CHAR ) ), fld )
 
 		'' rttibase = @(base's RTTI data) or NULL if there is no base
-		elm = symbGetUDTNextElm( elm, FALSE )
+		fld = symbUdtGetNextInitableField( fld )
 		if( udt->udt.base ) then
 			rttibase = astNewADDROF( astNewVAR( udt->udt.base->subtype->udt.ext->rtti, 0 ) )
 		else
 			rttibase = astNewCONSTi( 0, typeAddrOf( FB_DATATYPE_VOID ) )
 		end if
-		astTypeIniAddAssign( initree, rttibase, elm )
+		astTypeIniAddAssign( initree, rttibase, fld )
 
 	astTypeIniScopeEnd( initree, rtti )
 	astTypeIniEnd( initree, TRUE )

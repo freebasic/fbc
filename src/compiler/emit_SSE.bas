@@ -49,15 +49,12 @@ declare function hFindRegNotInVreg _
 		byval noSIDI as integer = FALSE _
 	) as integer
 
+declare function hFindFreeReg( byval dclass as integer ) as integer
+
 declare function hIsRegFree _
 	( _
 		byval dclass as integer, _
 		byval reg as integer _
-	) as integer
-
-declare function hFindFreeReg _
-	( _
-		byval dclass as integer _
 	) as integer
 
 declare function hIsRegInVreg _
@@ -2027,9 +2024,13 @@ private sub _emitSINCOS_FAST_SSE _
 	end if
 
 	reg(2) = hFindFreeReg( FB_DATACLASS_FPOINT )
+	if( reg(2) = INVALID ) then
+		reg(2) = EMIT_REG_FP0
+		isFree(2) = FALSE
+	else
+		isFree(2) = TRUE
+	end if
 
-	isFree(2) = hIsRegFree( FB_DATACLASS_FPOINT, reg(2) )
-	
 	stackSize += (4 * (isFree(0) And 1))
 	stackSize += (4 * (isFree(1) And 1))
 	stackSize += (4 * (isFree(2) And 1))

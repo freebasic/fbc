@@ -67,6 +67,12 @@ sub symbProcFreeExt( byval proc as FBSYMBOL ptr )
 	end if
 end sub
 
+function symbProcReturnsUdtOnStack( byval proc as FBSYMBOL ptr ) as integer
+	if( symbGetType( proc ) = FB_DATATYPE_STRUCT ) then
+		function = (typeGetDtAndPtrOnly( symbGetProcRealType( proc ) ) = typeAddrOf( FB_DATATYPE_STRUCT ))
+	end if
+end function
+
 '':::::
 function symbCalcProcParamLen _
 	( _
@@ -102,40 +108,31 @@ function symbCalcProcParamLen _
 
 end function
 
-'':::::
-function symbCalcProcParamsLen _
-	( _
-		byval proc as FBSYMBOL ptr _
-	) as integer
-
-	dim as integer lgt = any
+function symbCalcProcParamsLen( byval proc as FBSYMBOL ptr ) as integer
+	dim as integer length = any
 	dim as FBSYMBOL ptr param = any
 
+	'' Calculate the sum of the sizes of all "normal" parameters,
+	'' - ignoring any vararg param,
+	'' - including THIS param,
+	'' - excluding the hidden struct result param, if any,
+	''   instead it's handled separately where needed.
+
 	param = symbGetProcTailParam( proc )
+	length = 0
 
-	lgt	= 0
-
-	do while( param <> NULL )
-		select case param->param.mode
+	while( param )
+		select case( param->param.mode )
 		case FB_PARAMMODE_BYVAL
-			lgt	+= FB_ROUNDLEN( param->lgt )
-
+			length += FB_ROUNDLEN( param->lgt )
 		case FB_PARAMMODE_BYREF, FB_PARAMMODE_BYDESC
-			lgt	+= FB_POINTERSIZE
+			length += FB_POINTERSIZE
 		end select
 
 		param = param->prev
-	loop
+	wend
 
-    '' if proc returns an UDT, add the hidden pointer passed as the 1st arg
-    if( symbGetType( proc ) = FB_DATATYPE_STRUCT ) then
-    	if( typeGetDtAndPtrOnly( symbGetProcRealType( proc ) ) = typeAddrOf( FB_DATATYPE_STRUCT ) ) then
-    		lgt += FB_POINTERSIZE
-    	end if
-    end if
-
-	function = lgt
-
+	function = length
 end function
 
 '':::::
@@ -763,16 +760,8 @@ add_proc:
 
 	proc->proc.real_dtype = hGetProcRealType( dtype, subtype )
 
-	'' note: symbCalcProcParamsLen() depends on proc.realtype to be set
-	proc->proc.lgt = symbCalcProcParamsLen( sym )
-
 	if( (options and FB_SYMBOPT_DECLARING) <> 0 ) then
 		stats or= FB_SYMBSTATS_DECLARED
-
-    	'' param list too large?
-    	if( proc->proc.lgt > 256 ) then
-	    	errReportWarn( FB_WARNINGMSG_PARAMLISTSIZETOOBIG, id )
-    	end if
 	end if
 
 	proc->proc.rtl.callback = NULL
@@ -1113,13 +1102,7 @@ function symbAddProcResultParam( byval proc as FBSYMBOL ptr ) as FBSYMBOL ptr
     dim as FBSYMBOL ptr s = any
     static as string id
 
-	'' UDT?
-	if( proc->typ <> FB_DATATYPE_STRUCT ) then
-		return NULL
-	end if
-
-	'' returns in a reg?
-	if( typeGetDtAndPtrOnly( proc->proc.real_dtype ) <> typeAddrOf( FB_DATATYPE_STRUCT ) ) then
+	if( symbProcReturnsUdtOnStack( proc ) = FALSE ) then
 		return NULL
 	end if
 
@@ -1139,12 +1122,10 @@ function symbAddProcResult( byval proc as FBSYMBOL ptr ) as FBSYMBOL ptr
 	dim as FBARRAYDIM dTB(0) = any
 	dim as FBSYMBOL ptr res = any
 
-	'' UDT?
-	if( proc->typ = FB_DATATYPE_STRUCT ) then
-		'' returning a ptr? result is at the hidden arg
-		if( typeGetDtAndPtrOnly( proc->proc.real_dtype ) = typeAddrOf( FB_DATATYPE_STRUCT ) ) then
-			return symbGetProcResult( proc )
-		end if
+	'' UDT on stack? No local result var needs to be added;
+	'' the hidden result param is used instead.
+	if( symbProcReturnsUdtOnStack( proc ) ) then
+		return symbGetProcResult( proc )
 	end if
 
 	dim as const zstring ptr id = NULL

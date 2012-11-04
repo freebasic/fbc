@@ -457,22 +457,32 @@ private sub _emitProcBegin _
 
 end sub
 
-'':::::
 private sub _emitProcEnd _
 	( _
 		byval proc as FBSYMBOL ptr, _
 		byval initlabel as FBSYMBOL ptr, _
 		byval exitlabel as FBSYMBOL ptr _
-	) static
+	)
 
-	dim as integer bytestopop
+	dim as integer bytestopop = any
 
 	_flush( )
 
+	'' Get the size for the callee's stack clean up (at end of procedure)
 	if( symbGetProcMode( proc ) = FB_FUNCMODE_CDECL ) then
 		bytestopop = 0
 	else
-		bytestopop = symbGetProcParamsLen( proc )
+		bytestopop = symbCalcProcParamsLen( proc )
+	end if
+
+	'' Additionally pop the hidden ptr (symbCalcProcParamsLen() doesn't
+	'' include it), if it's stdcall/pascal, or the target wants us to
+	'' always pop it, even under cdecl.
+	if( symbProcReturnsUdtOnStack( proc ) ) then
+		if( (symbGetProcMode( proc ) <> FB_FUNCMODE_CDECL) or _
+		    (env.target.options and FB_TARGETOPT_CALLEEPOPSHIDDENPTR) ) then
+			bytestopop += typeGetSize( typeAddrOf( FB_DATATYPE_VOID ) )
+		end if
 	end if
 
 	emitProcFooter( proc, bytestopop, initlabel, exitlabel )
@@ -1315,14 +1325,12 @@ private sub _flush static
 
 end sub
 
-'':::::
 private sub hFlushBRANCH _
 	( _
 		byval op as integer, _
 		byval label as FBSYMBOL ptr _
-	) static
+	)
 
-	''
 	select case as const op
 	case AST_OP_LABEL
 		emitLABEL( label )
@@ -1469,19 +1477,6 @@ private sub hFlushCALL _
 
 	'' function?
 	if( proc <> NULL ) then
-		'' pop up the stack if needed
-		select case symbGetProcMode( proc )
-		case FB_FUNCMODE_CDECL
-			'' if this func is VARARG, astCALL() already set the size
-			if( bytestopop = 0 ) then
-				bytestopop = symbGetProcParamsLen( proc )
-			end if
-
-		'' stdcall/pascal etc.. nothing to pop
-		case else
-			bytestopop = 0
-		end select
-
 		'' save used registers and free the FPU stack
 		hPreserveRegs( )
 
@@ -1489,7 +1484,6 @@ private sub hFlushCALL _
 
 	'' call or jump to pointer..
 	else
-
 		'' if it's a CALL, save used registers and free the FPU stack
 		if( op = AST_OP_CALLPTR ) then
 			hPreserveRegs( v1 )

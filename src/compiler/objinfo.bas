@@ -528,9 +528,23 @@ dim shared as ENTRYINFO entries(0 to (OBJINFO__COUNT - 1)) = _
 	( @"-lang", TRUE  )  _
 }
 
-sub objinfoReadObj( byref objfile as string )
+private sub hResetBuffers( )
+	ardata.p = NULL
+	ardata.size = 0
+	objdata.p = NULL
+	objdata.size = 0
+	fbctinf.p = NULL
+	fbctinf.size = 0
+end sub
+
+private sub objinfoInit( byref filename as string )
+	hResetBuffers( )
 	parser.i = 0
-	parser.filename = objfile
+	parser.filename = filename
+end sub
+
+sub objinfoReadObj( byref objfile as string )
+	objinfoInit( objfile )
 
 	hLoadFile( objfile, @objdata )
 	if( objdata.size = 0 ) then
@@ -541,8 +555,7 @@ sub objinfoReadObj( byref objfile as string )
 end sub
 
 sub objinfoReadLibfile( byref libfile as string )
-	parser.i = 0
-	parser.filename = libfile
+	objinfoInit( libfile )
 
 	hLoadFile( libfile, @ardata )
 	if( ardata.size = 0 ) then
@@ -628,15 +641,13 @@ sub objinfoReadEnd( )
 	if( ardata.p ) then
 		'' Archive buffer was allocated, the others point into it
 		deallocate( ardata.p )
-		ardata.p = NULL
-		ardata.size = 0
 	elseif( objdata.p ) then
 		'' Object buffer was allocated, fbctinf points into it,
 		'' archive buffer is unused
 		deallocate( objdata.p )
-		objdata.p = NULL
-		objdata.size = 0
 	end if
+
+	hResetBuffers( )
 end sub
 
 function objinfoEncode( byval entry as integer ) as zstring ptr

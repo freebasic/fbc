@@ -75,11 +75,7 @@ declare sub _setSection _
 		byval priority as integer _
 	)
 
-declare function _getTypeString _
-	( _
-		byval dtype as integer _
-	) as const zstring ptr
-
+declare function _getTypeString( byval dtype as integer ) as const zstring ptr
 
 '' from emit_SSE.bas
 declare function _init_opFnTB_SSE _
@@ -251,23 +247,26 @@ function hIsRegFree _
 
 end function
 
-'':::::
+'' This will always find a reg that is not used by the given vreg,
+'' because a single vreg can only use 2 regs at most (longints),
+'' and x86 has more regs than that.
+'' Free regs are preferred; however, if all regs are used, the returned reg
+'' won't be free.
 function hFindRegNotInVreg _
 	( _
 		byval vreg as IRVREG ptr, _
 		byval noSIDI as integer = FALSE _
-	) as integer static
+	) as integer
 
-    dim as integer r, reg, reg2, regs
+	dim as integer r = any, reg = any, reg2 = any, regs = any
 
-	function = INVALID
+	function = INVALID '' shouldn't ever happen, getMaxRegs() should be > 0
 
 	reg = INVALID
 
 	select case vreg->typ
 	case IR_VREGTYPE_REG
 		reg = vreg->reg
-
 	case IR_VREGTYPE_IDX, IR_VREGTYPE_PTR
 		if( vreg->vidx <> NULL ) then
 			if( vreg->vidx->typ = IR_VREGTYPE_REG ) then
@@ -286,90 +285,70 @@ function hFindRegNotInVreg _
 
 	regs = emit.regTB(FB_DATACLASS_INTEGER)->getMaxRegs( emit.regTB(FB_DATACLASS_INTEGER) )
 
-	''
 	if( reg2 = INVALID ) then
-
 		if( noSIDI = FALSE ) then
-
-			for r = regs-1 to 0 step -1
+			for r as integer = regs-1 to 0 step -1
 				if( r <> reg ) then
 					function = r
 					if( hIsRegFree( FB_DATACLASS_INTEGER, r ) ) then
-						exit function
+						exit for
 					end if
 				end if
 			next
-
 		'' SI/DI as byte..
 		else
-
-			for r = regs-1 to 0 step -1
+			for r as integer = regs-1 to 0 step -1
 				if( r <> reg ) then
 					if( r <> EMIT_REG_ESI ) then
 						if( r <> EMIT_REG_EDI ) then
 							function = r
 							if( hIsRegFree( FB_DATACLASS_INTEGER, r ) ) then
-								exit function
+								exit for
 							end if
 						end if
 					end if
 				end if
 			next
-
 		end if
-
 	'' longints..
 	else
-
 		if( noSIDI = FALSE ) then
-
-			for r = regs-1 to 0 step -1
+			for r as integer = regs-1 to 0 step -1
 				if( (r <> reg) and (r <> reg2) ) then
 					function = r
 					if( hIsRegFree( FB_DATACLASS_INTEGER, r ) ) then
-						exit function
+						exit for
 					end if
 				end if
 			next
-
 		'' SI/DI as byte..
 		else
-
 			for r = regs-1 to 0 step -1
 				if( (r <> reg) and (r <> reg2) ) then
 					if( r <> EMIT_REG_ESI ) then
 						if( r <> EMIT_REG_EDI ) then
 							function = r
 							if( hIsRegFree( FB_DATACLASS_INTEGER, r ) ) then
-								exit function
+								exit for
 							end if
 						end if
 					end if
 				end if
 			next
-
 		end if
-
 	end if
 
 end function
 
-'':::::
-function hFindFreeReg _
-	( _
-		byval dclass as integer _
-	) as integer static
-    dim as integer r
-
+'' Returns a free reg or INVALID if there are no free regs
+function hFindFreeReg( byval dclass as integer ) as integer
 	function = INVALID
 
-	for r = emit.regTB(dclass)->getMaxRegs( emit.regTB(dclass) )-1 to 0 step -1
-		function = r
+	for r as integer = emit.regTB(dclass)->getMaxRegs( emit.regTB(dclass) )-1 to 0 step -1
 		if( hIsRegFree( dclass, r ) ) then
-			exit function
+			return r
 		end if
 	next
-
 end function
 
 '':::::
@@ -1454,37 +1433,6 @@ private sub _emitLIT( byval s as zstring ptr )
 	dim ostr as string
 	ostr = *s + NEWLINE
 	outEX( ostr )
-end sub
-
-'':::::
-private sub _emitALIGN _
-	( _
-		byval vreg as IRVREG ptr _
-	) static
-
-    dim ostr as string
-
-    ostr = ".balign " + str( vreg->value.int )
-	outp( ostr )
-
-end sub
-
-'':::::
-private sub _emitSTKALIGN _
-	( _
-		byval vreg as IRVREG ptr _
-	) static
-
-    dim ostr as string
-
-    if( vreg->value.int > 0 ) then
-    	ostr = "sub esp, " + str( vreg->value.int )
-    else
-    	ostr = "add esp, " + str( -vreg->value.int )
-    end if
-
-	outp( ostr )
-
 end sub
 
 '':::::
@@ -3723,9 +3671,8 @@ private sub hSHIFTL _
 	) static
 
 	dim as string dst1, dst2, src, label, mnemonic32, mnemonic64
-	dim as integer tmpreg
+	dim as integer tmpreg, tmpisfree
 	dim as string tmpregname
-	dim as integer preserveeax, preserveecx, preserveebx, preserveedx
 	dim as string a, b
 	dim as IRVREG ptr av, bv
 
@@ -3774,6 +3721,7 @@ private sub hSHIFTL _
 				outp "mov " + a + ", 0"
 			end if
 		elseif( svreg->value.int >= 32 ) then
+			tmpisfree = TRUE
 			if( (bv->typ = IR_VREGTYPE_REG) or (av->typ = IR_VREGTYPE_REG) ) then
 				'' a or b is a reg
 				outp "mov " + a + ", " + b
@@ -3781,11 +3729,15 @@ private sub hSHIFTL _
 				'' neither is a reg; get a temp
 				tmpreg = hFindFreeReg( FB_DATACLASS_INTEGER )
 				if( tmpreg = INVALID ) then
-					tmpreg = EMIT_REG_EAX
-					hPUSH( "eax" )
-					preserveeax = TRUE
+					'' Can only use a temp reg that isn't used in the dest vreg,
+					'' because the code generated below doesn't handle that case.
+					tmpreg = hFindRegNotInVreg( dvreg )
+					tmpisfree = FALSE
 				end if
 				tmpregname = *hGetRegName( FB_DATATYPE_INTEGER, tmpreg )
+				if( tmpisfree = FALSE ) then
+					hPUSH( tmpregname )
+				end if
 				outp "mov " + tmpregname + ", " + b
 				outp "mov " + a + ", " + tmpregname
 			end if
@@ -3803,8 +3755,8 @@ private sub hSHIFTL _
 				outp mnemonic32 + a + ", " + src
 			end if
 
-			if( preserveeax ) then
-				hPOP( "eax" )
+			if( tmpisfree = FALSE ) then
+				hPOP( tmpregname )
 			end if
 
 		else '' src < 32
@@ -3819,23 +3771,26 @@ private sub hSHIFTL _
 			else
 				tmpreg = hFindFreeReg( FB_DATACLASS_INTEGER )
 				if( tmpreg = INVALID ) then
-					tmpreg = EMIT_REG_EAX
-					hPUSH( "eax" )
-					preserveeax = TRUE
+					'' Can only use a temp reg that isn't used in the dest vreg,
+					'' because the code generated below doesn't handle that case.
+					tmpreg = hFindRegNotInVreg( dvreg )
+					tmpisfree = FALSE
+				else
+					tmpisfree = TRUE
 				end if
 				tmpregname = *hGetRegName( FB_DATATYPE_INTEGER, tmpreg )
+				if( tmpisfree = FALSE ) then
+					hPUSH( tmpregname )
+				end if
 				outp "mov " + tmpregname + ", " + b
 				outp mnemonic64 + a + ", " + tmpregname + ", " + src
 				outp mnemonic32 + tmpregname + ", " + src
 				outp "mov " + b + ", " + tmpregname
-
-				if( preserveeax ) then
+				if( tmpisfree = FALSE ) then
 					hPOP( "eax" )
 				end if
 			end if
-
 		end if
-
 	else
 		'' if src is not an imm, use cl and check for the x86 glitches
 
@@ -5431,18 +5386,20 @@ private sub hFpuChangeRC( byref regname as string, byval mode as zstring ptr )
 end sub
 
 private sub hEmitFloatFunc( byval func as integer )
-	dim as integer reg, preservereg
+	dim as integer reg = any, isregfree = any
 	dim as string regname
 
 	reg = hFindFreeReg( FB_DATACLASS_INTEGER )
 	if( reg = INVALID ) then
 		reg = EMIT_REG_EAX
-		preservereg = TRUE
+		isregfree = FALSE
+	else
+		isregfree = TRUE
 	end if
 
 	regname = *hGetRegName( FB_DATATYPE_INTEGER, reg )
 
-	if( preservereg ) then
+	if( isregfree = FALSE ) then
 		hPUSH( regname )
 	end if
 
@@ -5470,7 +5427,7 @@ private sub hEmitFloatFunc( byval func as integer )
 	outp( "fldcw [esp]" )
 	outp( "add esp, 4" )
 
-	if( preservereg ) then
+	if( isregfree = FALSE ) then
 		hPOP( regname )
 	end if
 end sub
@@ -5520,6 +5477,14 @@ end sub
 '' stack
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
+private sub _emitSTACKALIGN( byval vreg as IRVREG ptr, byval unused as integer )
+	if( vreg->value.int > 0 ) then
+		outp( "sub esp, " + str( vreg->value.int ) )
+	else
+		outp( "add esp, " + str( -vreg->value.int ) )
+	end if
+end sub
+
 '':::::
 private sub _emitPUSHL _
 	( _
@@ -5540,36 +5505,62 @@ private sub _emitPUSHL _
 
 end sub
 
-'':::::
-private sub _emitPUSHI _
-	( _
-		byval svreg as IRVREG ptr, _
-		byval unused as integer _
-	) static
-
-    dim src as string, sdsize as integer
-    dim ostr as string
+private sub _emitPUSHI( byval svreg as IRVREG ptr, byval unused as integer )
+	dim as string src, tmp32
+	dim as integer sdsize = any, tmpreg = any, istmpfree = any
 
 	hPrepOperand( svreg, src )
 
 	sdsize = typeGetSize( svreg->dtype )
 
-	if( svreg->typ = IR_VREGTYPE_REG ) then
-		if( sdsize < FB_INTEGERSIZE ) then
+	'' PUSH only supports 4-byte operands, if it's smaller we need to
+	'' work-around/load into 4-byte location first.
+
+	select case( svreg->typ )
+	case IR_VREGTYPE_REG
+		if( sdsize < 4 ) then
+			'' Use eax instead of al etc., this can pull in "random"
+			'' values from the unused part of the register,
+			'' but should be ok.
 			src = *hGetRegName( FB_DATATYPE_INTEGER, svreg->reg )
 		end if
-	else
-		if( sdsize < FB_INTEGERSIZE ) then
-			'' !!!FIXME!!! assuming it's okay to push over the var if's not dword aligned
-			hPrepOperand( svreg, src, FB_DATATYPE_INTEGER )
-		end if
-	end if
+		outp( "push " + src )
 
-	ostr = "push " + src
-	outp ostr
+	case IR_VREGTYPE_IMM
+		outp( "push " + src )
+
+	case else
+		if( sdsize < 4 ) then
+			'' Load into 4-byte reg first - it's not safe to assume
+			'' we can just use DWORD PTR instead of BYTE PTR or
+			'' WORD PTR (possible buffer overrun).
+
+			tmpreg = hFindRegNotInVreg( svreg )
+			istmpfree = hIsRegFree( FB_DATACLASS_INTEGER, tmpreg )
+			tmp32 = *hGetRegName( FB_DATATYPE_INTEGER, tmpreg )
+
+			if( istmpfree = FALSE ) then
+				hPUSH( tmp32 )
+			end if
+
+			'' mov tmp, [src]
+			'' (zero-extending, because e.g. &hFF should become
+			'' &h000000FF, and not &hFFFFFFFF)
+			outp( "movzx " + tmp32 + ", " + src )
+
+			'' push tmp
+			outp( "push " + tmp32 )
+
+			if( istmpfree = FALSE ) then
+				hPOP( tmp32 )
+			end if
+		else
+			assert( sdsize = 4 )
+			outp( "push " + src )
+		end if
+	end select
 
 end sub
-
 
 '':::::
 private sub _emitPUSHF _
@@ -5608,28 +5599,118 @@ private sub _emitPUSHF _
 
 end sub
 
-'':::::
-private sub _emitPUSHUDT _
-	( _
-		byval svreg as IRVREG ptr, _
-		byval sdsize as integer _
-	) static
+private sub _emitPUSHUDT( byval svreg as IRVREG ptr, byval sdsize as integer )
+	dim as string src, tmp32, tmp16
+	dim as integer ofs = any, tmpreg = any, istmpfree = any, remainder = any
 
-    dim as integer ofs
-    dim as string ostr, src
+	'' The UDT should be pushed byte-by-byte, it must end up in the same
+	'' order on stack as it is originally layed out in memory.
+	''
+	'' For example, this sequence of bytes in memory (the UDT to push):
+	''    &hAA &hBB &hCC &hDD &hEE &hFF
+	''
+	'' It's 6 bytes, i.e. not a multiple of 8, i.e. there is a remainder:
+	''                        &hEE &hFF
+	'' The two bytes are read with a WORD PTR, zero extended, then pushed:
+	''    offset = sdsize - 2
+	''    &h0000FFEE <- word ptr [svreg + offset]
+	''    push &h0000FFEE
+	'' producing on stack:
+	''                        &hEE &hFF &h00 &h00
+	''
+	'' Then there are 4 bytes left to handle:
+	''    &hAA &hBB &hCC &hDD
+	'' They're read out using a DWORD PTR, then pushed:
+	''    offset = 0
+	''    push dword ptr [svreg + offset]
+	'' producing on stack:
+	''    &hAA &hBB &hCC &hDD &hEE &hFF &h00 &h00
+	''
+	'' which is the desired "copy".
 
-	'' !!!FIXME!!! assuming it's okay to push over the UDT if's not dword aligned
-	if( sdsize < FB_INTEGERSIZE ) then
-		sdsize = FB_INTEGERSIZE
+	'' Push remainder (last 1/2/3 bytes of the struct, located in memory
+	'' at src + length - N)
+	remainder = sdsize and (4-1)
+	if( remainder > 0 ) then
+		'' Load into 4-byte reg first - it's not safe to assume
+		'' we can just use DWORD PTR instead of BYTE PTR or
+		'' WORD PTR (possible buffer overrun).
+
+		tmpreg = hFindRegNotInVreg( svreg )
+		istmpfree = hIsRegFree( FB_DATACLASS_INTEGER, tmpreg )
+		tmp32 = *hGetRegName( FB_DATATYPE_INTEGER, tmpreg )
+
+		if( istmpfree = FALSE ) then
+			hPUSH( tmp32 )
+		end if
+
+		select case( remainder )
+		case 3
+			'' 3-byte remainder:
+			''        &h11 &h22 &h33
+			'' It's probably best to access them as &h2211 WORD
+			'' and &h33 BYTE. &h11 has a good chance of having
+			'' 4-byte alignment, since the whole UDT will typically
+			'' start at 4-byte boundary; at least for stack vars...
+
+			'' 1. load 3rd byte:
+			''        &h00000033 <- byte ptr [src + length - 1]
+			hPrepOperand( svreg, src, FB_DATATYPE_BYTE, sdsize - 1 )
+			outp( "movzx " + tmp32 + ", " + src )
+
+			'' 2. shl
+			''        &h00330000 <- &h00000033 shl 16
+			outp( "shl " + tmp32 + ", 16" )
+
+			'' 3. load first two bytes into the lower 16 bits
+			''    of the register:
+			''        &h00002211 <- word ptr [src + length - 3]
+			''        &h00332211 <- &h00330000, &h00002211
+			tmp16 = *hGetRegName( FB_DATATYPE_SHORT, tmpreg )
+			hPrepOperand( svreg, src, FB_DATATYPE_SHORT, sdsize - 3 )
+			outp( "mov " + tmp16 + ", " + src )
+
+			'' 4. push
+			''        push &h00332211
+			'' producing on stack:
+			''        &h11 &h22 &h33 &h00
+
+		case 2
+			'' mov tmp, word ptr [src + length - 2]
+			'' (zero-extending, because e.g. &hFFFF should become
+			'' &h0000FFFF, and not &hFFFFFFFF)
+			ofs = sdsize - 2
+			hPrepOperand( svreg, src, FB_DATATYPE_SHORT, ofs )
+			outp( "movzx " + tmp32 + ", " + src )
+
+		case 1
+			'' mov tmp, byte ptr [src + length - 1]
+			'' (zero-extending, ditto)
+			ofs = sdsize - 1
+			hPrepOperand( svreg, src, FB_DATATYPE_BYTE, ofs )
+			outp( "movzx " + tmp32 + ", " + src )
+
+		end select
+
+		'' push tmp
+		'' &h0000FFFF becomes &hFF &hFF &h00 &h00 on stack
+		outp( "push " + tmp32 )
+
+		if( istmpfree = FALSE ) then
+			hPOP( tmp32 )
+		end if
+
+		sdsize -= remainder
 	end if
 
-	ofs = sdsize - FB_INTEGERSIZE
-	do while( ofs >= 0 )
+	'' Push whole dwords, backwards (from high address to low address,
+	'' since the stack grows downwards)
+	ofs = sdsize - 4
+	while( ofs >= 0 )
 		hPrepOperand( svreg, src, FB_DATATYPE_INTEGER, ofs )
-		ostr = "push " + src
-		outp( ostr )
-		ofs -= FB_INTEGERSIZE
-	loop
+		outp( "push " + src )
+		ofs -= 4
+	wend
 
 end sub
 
@@ -5699,7 +5780,6 @@ private sub _emitPOPI _
 			assert( (dsize = 1) or (dsize = 2) )
 
 			reg = hFindRegNotInVreg( dvreg )
-			assert( reg <> INVALID )
 
 			aux8  = *hGetRegName( FB_DATATYPE_BYTE, reg )
 			aux16 = *hGetRegName( FB_DATATYPE_SHORT, reg )
@@ -6334,7 +6414,7 @@ end sub
 
 sub emitVARINIf( byval dtype as integer, byval value as double )
 	'' can't use STR() because GAS doesn't support the 1.#INF notation
-	outEx( *_getTypeString( dtype ) + " " + hFloatToStr( value, dtype ) + NEWLINE )
+	outEx( *_getTypeString( dtype ) + " " + hFloatToHex( value, dtype ) + NEWLINE )
 end sub
 
 sub emitVARINI64( byval dtype as integer, byval value as longint )
@@ -6445,9 +6525,7 @@ end sub
 		EMIT_CBENTRY(FLOOR), _
 		EMIT_CBENTRY(XCHGTOS), _
         _
-		EMIT_CBENTRY(ALIGN), _
-		EMIT_CBENTRY(STKALIGN), _
-        _
+		EMIT_CBENTRY(STACKALIGN), _
 		EMIT_CBENTRY(PUSHI), EMIT_CBENTRY(PUSHF), EMIT_CBENTRY(PUSHL), _
 		EMIT_CBENTRY(POPI), EMIT_CBENTRY(POPF), EMIT_CBENTRY(POPL), _
 		EMIT_CBENTRY(PUSHUDT), _
@@ -6956,49 +7034,33 @@ private sub _setSection _
 
 end sub
 
-'':::::
-private function _getTypeString _
-	( _
-		byval dtype as integer _
-	) as const zstring ptr
-
+private function _getTypeString( byval dtype as integer ) as const zstring ptr
 	select case as const typeGet( dtype )
-    case FB_DATATYPE_UBYTE, FB_DATATYPE_BYTE
-    	function = @".byte"
-
-    case FB_DATATYPE_USHORT, FB_DATATYPE_SHORT
-    	function = @".short"
-
-    case FB_DATATYPE_INTEGER, FB_DATATYPE_UINT, FB_DATATYPE_ENUM
-    	function = @".int"
-
-    case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
-    	function = @".long"
-
-    case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-    	function = @".quad"
-
-    case FB_DATATYPE_SINGLE
-		function = @".float"
-
-	case FB_DATATYPE_DOUBLE
-    	function = @".double"
-
+	case FB_DATATYPE_UBYTE, FB_DATATYPE_BYTE
+		function = @".byte"
+	case FB_DATATYPE_USHORT, FB_DATATYPE_SHORT
+		function = @".short"
+	case FB_DATATYPE_INTEGER, FB_DATATYPE_UINT, FB_DATATYPE_ENUM
+		function = @".int"
+	case FB_DATATYPE_LONG, FB_DATATYPE_ULONG, FB_DATATYPE_SINGLE
+		'' SINGLE: emitted as raw bytes in form of .long 0x...,
+		'' instead of .float 1.234...,
+		'' to allow the exact bytes to be emitted by hFloatToHex(),
+		'' instead of a str() approximation.
+		function = @".long"
+	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT, FB_DATATYPE_DOUBLE
+		'' DOUBLE: ditto, instead of .double
+		function = @".quad"
 	case FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
 		'' wchar stills the same as it is emitted as escape sequences
-    	function = @".ascii"
-
+		function = @".ascii"
 	case FB_DATATYPE_STRING, FB_DATATYPE_STRUCT
 		function = @".INVALID"
-
-    case FB_DATATYPE_POINTER
-    	function = @".long"
-
-    case else
-    	function = @".INVALID"
-
+	case FB_DATATYPE_POINTER
+		function = @".long"
+	case else
+		function = @".INVALID"
 	end select
-
 end function
 
 '':::::

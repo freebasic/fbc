@@ -3,9 +3,9 @@ A colour ASCII art library.
 
 Website: http://libcaca.zoy.org/
 Platforms supported: ""Win32"", Linux, DOS
-Headers to include: caca.bi
-Header version: 0.99 beta17
-Example Usage: yes, in examples/libraries/caca/
+Headers to include: caca.bi (new API) or caca0.bi (old API)
+Header version: 0.99.beta18
+Example Usage: yes, in examples/console/caca/
 
 
 {{fbdoc item="back" value="ExtLibTOC|External Library Table of Contents"}}

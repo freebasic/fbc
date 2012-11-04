@@ -25,7 +25,7 @@ Converts numeric or string expression to 64-bit unsigned integer (##[[KeyPgUlong
 	A ##[[KeyPgUlongint Ulongint]]## value.
 
 {{fbdoc item="desc"}}
-	The ##**Culngint**## function rounds off the decimal part and returns a 64-bit ##[[KeyPgUlongint Ulongint]]## value.  The function does not check for an overflow, and results are undefined for values which are less than ##0## or larger than ##18## ##446## ##744## ##073## ##709## ##551## ##615##.  Additionally, casts from floating-point expressions are currently not guaranteed to work for values higher than ##2^63## (##-9## ##223## ##372## ##036## ##854## ##775## ##808##).
+	The ##**Culngint**## function rounds off the decimal part and returns a 64-bit ##[[KeyPgUlongint Ulongint]]## value.  The function does not check for an overflow, and results are undefined for values which are less than ##0## or larger than ##18## ##446## ##744## ##073## ##709## ##551## ##615##.  Additionally, casts from floating-point expressions are currently not guaranteed to work for values higher than ##2^63## (##9## ##223## ##372## ##036## ##854## ##775## ##808##).
 
 
 	The name can be explained as 'Convert to Unsigned ""LoNG INTeger""'.

@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="FIELD"}}----
-Specifies alignment.
+Specifies field alignment.
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgType Type]] //typename// **Field** = { 1 | 2 | 4 }
@@ -7,10 +7,25 @@ Specifies alignment.
 	End [[KeyPgType Type]]
 ##
 {{fbdoc item="desc"}}
-~&//Note: The following information is not complete, FB follows the GCC padding rules, which these next sentences do not fully describe. The source file symb-struct.bas of the compiler shows the exact method.//
+	##**Field**## can be used to pack ##[[KeyPgType Types]]## or ##[[KeyPgUnion Unions]]## more tightly than the default layout. The most commonly used value is ##**Field = 1**##, which causes the ##Type## or ##Union## to be packed as tightly as possible, without any padding bytes being added between the fields or at the end of the ##Type##. ##**Field**## can only be used to decrease field alignment, but it cannot be used to increase it. In order to add padding bytes, a ##Union## with appropriate members could be used instead.
+	
+	The default layout of ##Type## and ##Union## structures in ""FreeBASIC"" follows the GCC ABI. This allows for compatibility with other compilers or languages such as C.
 
-	A ##[[KeyPgType Type]]## variable has its fields aligned depending on complex rules. ##**Field**## modifies the default padding byte limit for data fields alignment to one byte (##**Field**## 1) or two bytes (##**Field**## 2) or four bytes (##**Field**## 4). The data fields are aligned by the compiler at their natural boundaries, and it does this through padding, inserting as much bytes as necessary up to the padding limit.
-	This helps ""FreeBASIC"" maintain compatibility with structures created in other languages.
+	By default, fields are aligned to their natural boundaries, which are: 
+		- A multiple of 1 for 1-byte data types
+		- A multiple of 2 for 2-byte data types
+		- A multiple of 4 for 4-byte data types
+		- A multiple of 4 for 8-byte data types (Linux & other non-""Win32"" systems only)
+		- A multiple of 8 for 8-byte data types (""Win32"" only)
+		- The largest natural boundary of the fields of ##Type##/##Union## data types
+	Dynamic string descriptors are handled as ##Type## structures with the data pointer field being the one with the largest natural alignment.
+	Fixed-length strings are aligned according to the alignment required for the character size.
+	Static arrays are aligned according to the alignment required for the element data type.
+	
+	The compiler aligns fields by inserting padding bytes in front of them in order to move them to an offset that corresponds to their natural boundary, or to a multiple of the value given with ##**Field**##, if it is smaller than the field's natural alignment. On the x86 architecture, such proper alignment is not required but can result in better performance when accessing the fields. Other architectures might actually require proper alignment.
+	
+	In addition, the whole structure's size is rounded up to a multiple of the largest natural alignment of its fields, by adding padding bytes at the end of the structure. This ensures that in an array of ##Type##s, each individual one is properly aligned as required by the fields.
+
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/udt/field.bas"}}%%(freebasic)
@@ -50,12 +65,13 @@ sleep
 %%
 
 {{fbdoc item="lang"}}
-	-In the //[[CompilerOptlang -lang qb]]// dialect, the ##**Field**## alignment is always one, no padding is ever done, as in QB.
+	-In the //[[CompilerOptlang -lang qb]]// dialect, the compiler assumes ##**Field = 1**## by default, if no other ##**Field**## was specified, causing all structures to be tightly packed, without added padding, as in QB.
 
 {{fbdoc item="diff"}}
-	- In QB ##**Field**##  was used to define fields in a file buffer at run time. This feature is not implemented in FB, so the keyword has been redefined. To define fields in a file buffer, ##**[[KeyPgType Type]]s**## must be used.
+	- In QB ##**Field**## was used to define fields in a file buffer at run time. This feature is not implemented in FB, so the keyword has been redefined. To define fields in a file buffer, ##**[[KeyPgType Type]]s**## must be used.
 	
 {{fbdoc item="see"}}
 	- ##[[KeyPgType Type]]##
+	- ##[[KeyPgUnion Union]]##
 
 {{fbdoc item="back" value="CatPgUserDefTypes|User Defined Types"}}

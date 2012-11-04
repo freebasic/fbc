@@ -831,9 +831,14 @@ int fb_hX11ScreenInfo(int *width, int *height, int *depth, int *refresh)
 	*depth = XDefaultDepth(dpy, XDefaultScreen(dpy));
 	if (XRRQueryExtension(dpy, &dummy, &dummy) &&
 	    XRRQueryVersion(dpy, &version, &dummy) && (version >= 1)) {
-	    cfg = XRRGetScreenInfo(dpy, XDefaultRootWindow(dpy));
-		*refresh = XRRConfigCurrentRate(cfg);
-		XRRFreeScreenConfigInfo(cfg);
+		/* XRRGetScreenInfo() will fail if RandR extension isn't available */
+		cfg = XRRGetScreenInfo(dpy, XDefaultRootWindow(dpy));
+		if( cfg ) {
+			*refresh = XRRConfigCurrentRate(cfg);
+			XRRFreeScreenConfigInfo(cfg);
+		} else {
+			*refresh = 0;
+		}
 	} else {
 		*refresh = 0;
 	}

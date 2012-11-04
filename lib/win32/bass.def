@@ -1,100 +1,100 @@
 LIBRARY BASS.dll
 EXPORTS
-BASS_Apply3D@0 DATA
-BASS_ChannelBytes2Seconds@8 DATA
-BASS_ChannelFlags@12 DATA
-BASS_ChannelGet3DAttributes@28 DATA
-BASS_ChannelGet3DPosition@16 DATA
-BASS_ChannelGetAttribute@12 DATA
-BASS_ChannelGetData@12 DATA
-BASS_ChannelGetDevice@4 DATA
-BASS_ChannelGetInfo@8 DATA
-BASS_ChannelGetLength@8 DATA
-BASS_ChannelGetLevel@4 DATA
-BASS_ChannelGetPosition@8 DATA
-BASS_ChannelGetTags@8 DATA
-BASS_ChannelIsActive@4 DATA
-BASS_ChannelIsSliding@8 DATA
-BASS_ChannelLock@8 DATA
-BASS_ChannelPause@4 DATA
-BASS_ChannelPlay@8 DATA
-BASS_ChannelRemoveDSP@8 DATA
-BASS_ChannelRemoveFX@8 DATA
-BASS_ChannelRemoveLink@8 DATA
-BASS_ChannelRemoveSync@8 DATA
-BASS_ChannelSeconds2Bytes@8 DATA
-BASS_ChannelSet3DAttributes@28 DATA
-BASS_ChannelSet3DPosition@16 DATA
-BASS_ChannelSetAttribute@12 DATA
-BASS_ChannelSetDSP@16 DATA
-BASS_ChannelSetDevice@8 DATA
-BASS_ChannelSetFX@12 DATA
-BASS_ChannelSetLink@8 DATA
-BASS_ChannelSetPosition@12 DATA
-BASS_ChannelSetSync@20 DATA
-BASS_ChannelSlideAttribute@16 DATA
-BASS_ChannelStop@4 DATA
-BASS_ChannelUpdate@8 DATA
-BASS_ErrorGetCode@0 DATA
-BASS_FXGetParameters@8 DATA
-BASS_FXReset@4 DATA
-BASS_FXSetParameters@8 DATA
-BASS_Free@0 DATA
-BASS_Get3DFactors@12 DATA
-BASS_Get3DPosition@16 DATA
-BASS_GetCPU@0
-BASS_GetConfig@4 DATA
-BASS_GetConfigPtr@4 DATA
-BASS_GetDSoundObject@4 DATA
-BASS_GetDevice@0 DATA
-BASS_GetDeviceInfo@8 DATA
-BASS_GetEAXParameters@16 DATA
-BASS_GetInfo@4 DATA
-BASS_GetVersion@0 DATA
-BASS_GetVolume@0 DATA
-BASS_Init@20 DATA
-BASS_MusicFree@4 DATA
-BASS_MusicLoad@24 DATA
-BASS_Pause@0 DATA
-BASS_PluginFree@4 DATA
-BASS_PluginGetInfo@4 DATA
-BASS_PluginLoad@8 DATA
-BASS_RecordFree@0 DATA
-BASS_RecordGetDevice@0 DATA
-BASS_RecordGetDeviceInfo@8 DATA
-BASS_RecordGetInfo@4 DATA
-BASS_RecordGetInput@8 DATA
-BASS_RecordGetInputName@4 DATA
-BASS_RecordInit@4 DATA
-BASS_RecordSetDevice@4 DATA
-BASS_RecordSetInput@12 DATA
-BASS_RecordStart@20 DATA
-BASS_SampleCreate@20
-BASS_SampleFree@4
-BASS_SampleGetChannel@8
-BASS_SampleGetChannels@8
-BASS_SampleGetData@8
-BASS_SampleGetInfo@8
-BASS_SampleLoad@24
-BASS_SampleSetData@8
-BASS_SampleSetInfo@8
-BASS_SampleStop@4
-BASS_Set3DFactors@12 DATA
-BASS_Set3DPosition@16 DATA
-BASS_SetConfig@8 DATA
-BASS_SetConfigPtr@8 DATA
-BASS_SetDevice@4 DATA
-BASS_SetEAXParameters@16 DATA
-BASS_SetVolume@4 DATA
-BASS_Start@0 DATA
-BASS_Stop@0 DATA
-BASS_StreamCreate@20 DATA
-BASS_StreamCreateFile@20
-BASS_StreamCreateFileUser@16 DATA
-BASS_StreamCreateURL@20 DATA
-BASS_StreamFree@4 DATA
-BASS_StreamGetFilePosition@8 DATA
-BASS_StreamPutData@12 DATA
-BASS_StreamPutFileData@12 DATA
-BASS_Update@4
+BASS_Apply3D DATA
+BASS_ChannelBytes2Seconds DATA
+BASS_ChannelFlags DATA
+BASS_ChannelGet3DAttributes DATA
+BASS_ChannelGet3DPosition DATA
+BASS_ChannelGetAttribute DATA
+BASS_ChannelGetData DATA
+BASS_ChannelGetDevice DATA
+BASS_ChannelGetInfo DATA
+BASS_ChannelGetLength DATA
+BASS_ChannelGetLevel DATA
+BASS_ChannelGetPosition DATA
+BASS_ChannelGetTags DATA
+BASS_ChannelIsActive DATA
+BASS_ChannelIsSliding DATA
+BASS_ChannelLock DATA
+BASS_ChannelPause DATA
+BASS_ChannelPlay DATA
+BASS_ChannelRemoveDSP DATA
+BASS_ChannelRemoveFX DATA
+BASS_ChannelRemoveLink DATA
+BASS_ChannelRemoveSync DATA
+BASS_ChannelSeconds2Bytes DATA
+BASS_ChannelSet3DAttributes DATA
+BASS_ChannelSet3DPosition DATA
+BASS_ChannelSetAttribute DATA
+BASS_ChannelSetDSP DATA
+BASS_ChannelSetDevice DATA
+BASS_ChannelSetFX DATA
+BASS_ChannelSetLink DATA
+BASS_ChannelSetPosition DATA
+BASS_ChannelSetSync DATA
+BASS_ChannelSlideAttribute DATA
+BASS_ChannelStop DATA
+BASS_ChannelUpdate DATA
+BASS_ErrorGetCode DATA
+BASS_FXGetParameters DATA
+BASS_FXReset DATA
+BASS_FXSetParameters DATA
+BASS_Free DATA
+BASS_Get3DFactors DATA
+BASS_Get3DPosition DATA
+BASS_GetCPU
+BASS_GetConfig DATA
+BASS_GetConfigPtr DATA
+BASS_GetDSoundObject DATA
+BASS_GetDevice DATA
+BASS_GetDeviceInfo DATA
+BASS_GetEAXParameters DATA
+BASS_GetInfo DATA
+BASS_GetVersion DATA
+BASS_GetVolume DATA
+BASS_Init DATA
+BASS_MusicFree DATA
+BASS_MusicLoad DATA
+BASS_Pause DATA
+BASS_PluginFree DATA
+BASS_PluginGetInfo DATA
+BASS_PluginLoad DATA
+BASS_RecordFree DATA
+BASS_RecordGetDevice DATA
+BASS_RecordGetDeviceInfo DATA
+BASS_RecordGetInfo DATA
+BASS_RecordGetInput DATA
+BASS_RecordGetInputName DATA
+BASS_RecordInit DATA
+BASS_RecordSetDevice DATA
+BASS_RecordSetInput DATA
+BASS_RecordStart DATA
+BASS_SampleCreate
+BASS_SampleFree
+BASS_SampleGetChannel
+BASS_SampleGetChannels
+BASS_SampleGetData
+BASS_SampleGetInfo
+BASS_SampleLoad
+BASS_SampleSetData
+BASS_SampleSetInfo
+BASS_SampleStop
+BASS_Set3DFactors DATA
+BASS_Set3DPosition DATA
+BASS_SetConfig DATA
+BASS_SetConfigPtr DATA
+BASS_SetDevice DATA
+BASS_SetEAXParameters DATA
+BASS_SetVolume DATA
+BASS_Start DATA
+BASS_Stop DATA
+BASS_StreamCreate DATA
+BASS_StreamCreateFile
+BASS_StreamCreateFileUser DATA
+BASS_StreamCreateURL DATA
+BASS_StreamFree DATA
+BASS_StreamGetFilePosition DATA
+BASS_StreamPutData DATA
+BASS_StreamPutFileData DATA
+BASS_Update
 _ DATA

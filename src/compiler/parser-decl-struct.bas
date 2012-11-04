@@ -8,10 +8,7 @@
 #include once "parser.bi"
 #include once "ast.bi"
 
-declare function hTypeBody _
-	( _
-		byval s as FBSYMBOL ptr _
-	) as integer
+declare function hTypeBody( byval s as FBSYMBOL ptr ) as integer
 
 declare sub hPatchByvalParamsToSelf _
 	( _
@@ -569,7 +566,6 @@ private function hTypeAdd _
 	
 	'' TypeBody
 	dim as integer res = hTypeBody( s )
-
 	if( res = FALSE ) then
 		exit function
 	end if
@@ -648,11 +644,7 @@ end function
 ''                  | ElementDecl
 ''				    | AS AsElementDecl )+ .
 ''
-private function hTypeBody _
-	( _
-		byval s as FBSYMBOL ptr _
-	) as integer
-
+private function hTypeBody( byval s as FBSYMBOL ptr ) as integer
 	dim as integer isunion = any
 	dim as FB_SYMBATTRIB attrib = FB_SYMBATTRIB_NONE
 	dim as FBSYMBOL ptr inner = any
@@ -833,16 +825,17 @@ decl_inner:		'' it's an anonymous inner UDT
 		end if
 	loop
 
-	'' nothing added?
-	if( symbGetUDTElements( s ) = 0 ) then
+	'' no fields added?
+	if( symbUdtGetFirstField( s ) = NULL ) then
 		errReport( FB_ERRMSG_NOELEMENTSDEFINED )
 	end if
 
-    function = TRUE
-
+	function = TRUE
 end function
 
 private sub hCheckForCDtorOrMethods(byval sym as FBSYMBOL ptr)
+	dim as FBSYMBOL ptr member = any
+
 	'' Not at module level?
 	if( parser.scope > FB_MAINSCOPE ) then
 		'' we can't allow objects (or their children) with c/dtor
@@ -851,13 +844,13 @@ private sub hCheckForCDtorOrMethods(byval sym as FBSYMBOL ptr)
 		end if
 
 		'' can't allow methods either...
-		dim as FBSYMBOL ptr walk = symbGetUDTFirstElm( sym )
-		do while( walk <> NULL )
-			if( symbIsMethod( walk ) ) then
-				errReportEx( FB_ERRMSG_NOOOPINFUNCTIONS, symbGetName( walk ) )
+		member = symbGetCompSymbTb( sym ).head
+		while( member )
+			if( symbIsMethod( member ) ) then
+				errReportEx( FB_ERRMSG_NOOOPINFUNCTIONS, symbGetName( member ) )
 			end if
-			walk = walk->next
-		loop
+			member = member->next
+		wend
 	end if
 end sub
 
@@ -1039,14 +1032,11 @@ private sub hPatchByvalParamsToSelf _
 	) static
 
 	dim as FBSYMBOL ptr sym, param
-	dim as integer do_recalc
 
 	'' for each method..
 	sym = symbGetUDTSymbtb( parent ).head
 	do while( sym <> NULL )
 		if( symbIsProc( sym ) ) then
-			do_recalc = FALSE
-
 			'' for each param..
 			param = symbGetProcHeadParam( sym )
 			do while( param <> NULL )
@@ -1056,17 +1046,11 @@ private sub hPatchByvalParamsToSelf _
 						param->lgt = symbCalcProcParamLen( FB_DATATYPE_STRUCT, _
 														   parent, _
 														   FB_PARAMMODE_BYVAL )
-						do_recalc = TRUE
 					end if
 				end if
 
 				param = param->next
 			loop
-
-			'' recalc total len?
-			if( do_recalc ) then
-            	symbGetProcParamsLen( sym ) = symbCalcProcParamsLen( sym )
-			end if
 		end if
 
 		sym = sym->next
@@ -1081,23 +1065,16 @@ private sub hPatchByvalResultToSelf _
 	) static
 
 	dim as FBSYMBOL ptr sym
-	dim as integer do_recalc
 
 	'' for each method..
 	sym = symbGetUDTSymbtb( parent ).head
 	do while( sym <> NULL )
 		if( symbIsProc( sym ) ) then
-
 			'' byval result to self? reset..
 			if( symbGetSubtype( sym ) = parent ) then
 				'' follow the GCC 3.x ABI
 				symbGetProcRealType( sym ) = symbGetUDTRetType( parent )
-
-            	'' recalc params len (we don't know if the hidden param was added or
-            	'' not in the time it was parsed, so we can't do any assumption here)
-            	symbGetProcParamsLen( sym ) = symbCalcProcParamsLen( sym )
 			end if
-
 		end if
 
 		sym = sym->next

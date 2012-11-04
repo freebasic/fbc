@@ -1,0 +1,126 @@
+{{fbdoc item="title" value="Select Case"}}----
+
+{{fbdoc item="section" value="Basic implementation"}}
+
+	%%
+dim i as integer		dim i as integer
+
+				scope
+select case i + 123			dim temp as integer = any
+					temp = i + 123
+
+case 1					if( temp <> 1 ) then goto cmplabel1
+					scope
+	print "1"				print "1"
+					end scope
+					goto endlabel
+
+case 2					cmplabel1:
+					if( temp <> 2 ) then goto cmplabel2
+					scope
+	print "2"				print "2"
+					end scope
+					goto endlabel
+
+case else				cmplabel2:
+					scope
+	print "else"				print "else"
+					end scope
+
+end select				cmplabel3:    '' unused only because in this example the last CASE is not conditional
+					endlabel:
+				end scope
+%%
+
+	- SELECT CASE
+		- opens the implicit outer scope
+		- declares the temp var
+			- when inside a procedure with STATIC, the temp var will be made STATIC
+			- the FB_SYMBATTRIB_TEMP is removed from the temp var, because it lives longer than just one statement
+		- emits the assignment
+		- declares the end label
+	- each CASE
+		- if there was a previous CASE
+			- closes the previous CASE's scope
+			- emits a jump to the end label
+		- emits the label for this CASE
+		- emits a conditional branch that jumps to the next CASE if the CASE condition is not met
+		- opens the CASE's scope
+		- CASE ELSE does not emit a conditional branch
+		- once CASE ELSE was used, no further CASE blocks are allowed
+	- END SELECT
+		- closes the previous CASE's scope
+		- emits an extra CASE label at the end (There is no CASE coming anymore, but this allows the last CASE to jump to the end, if it is a conditional CASE. The last CASE could jump to the SELECT's end label instead, but that would require some special case handling code.)
+		- emits the end label
+	- any EXIT SELECTs jump immediately to the end label
+
+
+{{fbdoc item="section" value="SELECT CASE on strings/zstrings/fixstrs"}}
+
+	%%
+dim s as string			dim s as string
+
+				scope
+select case s + "1"			dim temp as string
+
+					fb_StrAssign( temp, s )
+					fb_StrConcatAssign( temp, "1" )
+
+case "1"				if( fb_StrCompare( temp, "1" ) <> 0 ) then goto cmplabel1
+					scope
+	print "1"				print "1"
+					end scope
+					goto endlabel
+
+					cmplabel1:
+end select				endlabel:
+					fb_StrDelete( temp )    '' destroying the temp var at scope end
+				end scope
+
+				fb_StrDelete( s )
+%%
+
+	- SELECT CASE on string/zstring/fixstr expressions uses a string temp var
+		- probably because that's easiest
+		- knowing the string length will potentially speed up the following comparisons
+		- the dynamic memory allocation can be a slow down too
+	- the string temp var is destroyed at scope end or scope breaks (e.g. reaching END SELECT, or EXIT FUNCTION from within a CASE block)
+
+{{fbdoc item="section" value="SELECT CASE on wstrings"}}
+
+	%%
+dim w as wstring * 10			dim w as wstring * 10
+
+					scope
+select case w + wstr( "1" )			dim temp as wstring ptr
+
+						dim tempexpr as wstring ptr = w + wstr( "1" )
+						temp = fb_WstrAlloc( fb_WstrLen( tempexpr ) )
+						fb_WstrAssign( temp, tempexpr )
+
+case wstr( "1" )				if( fb_WstrCompare( temp, wstr( "1" ) ) <> 0 ) then goto cmplabel1
+						scope
+	print "1"					print "1"
+						end scope
+						goto endlabel
+
+						cmplabel1:
+end select					endlabel:
+						fb_WstrDelete( temp )    '' destroying the temp var at scope end
+					end scope
+%%
+
+	- similar to SELECT CASE on zstrings, for wstring expressions a wstring is dynamically allocated
+	- the temp wstring is treated much like a dynamic wstring object would be
+		- it is a VAR symbol with type WCHAR PTR
+		- marked with FB_SYMBSTATS_WSTRING
+		- this allows ctor/dtor checks to recognize it and give it the needed treatment
+	- this way, the temp wstring is destroyed at scope end or scope breaks
+
+
+{{fbdoc item="section" value="SELECT CASE without temp var"}}
+
+	When given a variable (instead of a more complex expression), SELECT CASE won't use a temp var, but instead defer the symbol from the given expression and access that in the CASE comparison expressions.
+
+{{fbdoc item="back" value="DevToc|FreeBASIC Developer Information"}}
+{{fbdoc item="back" value="DocToc|Table of Contents"}}

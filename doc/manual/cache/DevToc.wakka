@@ -26,9 +26,14 @@ This area of the Wiki is for documenting everything about the compiler and the r
 		{{fbdoc item="keyword" value="DevFbcParserToplevel|Top level parsing process"}}
 		{{fbdoc item="keyword" value="DevFbcParserSymbols|Symbols"}}
 		{{fbdoc item="keyword" value="DevFbcTypes|Representation of data types"}}
+	
+	{{fbdoc item="keyword" value="DevSelectCase|SELECT CASE"}}
+	{{fbdoc item="keyword" value="ProPgProfiling|Profiling FB programs"}}
+	{{fbdoc item="keyword" value="KeyPgField|Structure packing/field alignment"}}
 
-{{fbdoc item="section" value="Graphics Library"}}
+{{fbdoc item="section" value="Run-time (rtlib) and Graphics (gfxlib2) Libraries"}}
 
+	{{fbdoc item="keyword" value="DevRtlInkey|Keyboard input: inkey(), multikey(), etc."}}
 	{{fbdoc item="keyword" value="GfxLib|Overview of drivers (backends)"}}
 	{{fbdoc item="keyword" value="GfxInternalFormats|Pixel formats"}}
 

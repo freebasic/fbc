@@ -1096,7 +1096,7 @@ private function hInitVptr _
 	'' assuming that everything with a vptr extends fb_Object
 	'' Also, x86 assumption
 	function = astNewASSIGN( _ 
-		astBuildInstPtr( this_, symbGetUDTFirstElm( symb.rtti.fb_object ) ), _
+		astBuildInstPtr( this_, symbUdtGetFirstField( symb.rtti.fb_object ) ), _
 		astNewCONV( typeAddrOf( FB_DATATYPE_VOID ), NULL, _
 			astNewADDROF( astNewVAR( parent->udt.ext->vtable, FB_POINTERSIZE*2 ) ) ) )
 end function
@@ -1134,12 +1134,14 @@ private sub hCallFieldDtor _
 	if( symbGetType( fld ) = FB_DATATYPE_STRING ) then
 		var fldexpr = astBuildInstPtr( this_, fld )
 
+		'' assuming fields cannot be dynamic arrays
+
 		'' not an array?
 		if( (symbGetArrayDimensions( fld ) = 0) or _
 		    (symbGetArrayElements( fld ) = 1) ) then
 			astAdd( rtlStrDelete( fldexpr ) )
 		else
-			astAdd( rtlArrayStrErase( fldexpr ) )
+			astAdd( rtlArrayErase( fldexpr, FALSE, FALSE ) )
 		end if
 	else
 		'' UDT field with dtor?
@@ -1244,8 +1246,7 @@ private sub hCallStaticCtor _
 
 	'' dynamic?
 	if( symbIsDynamic( sym ) ) then
-		'' call ERASE..
-		astAdd( rtlArrayErase( astBuildVarField( sym, NULL, 0 ), FALSE ) )
+		astAdd( rtlArrayErase( astBuildVarField( sym, NULL, 0 ), TRUE, FALSE ) )
 	else
 		'' not an array?
 		if( (symbGetArrayDimensions( sym ) = 0) or _

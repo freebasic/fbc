@@ -583,6 +583,13 @@ enum FB_TARGETOPT
 	FB_TARGETOPT_UNIX       = &h00000001  '' Unix?
 	FB_TARGETOPT_UNDERSCORE = &h00000002  '' Underscore prefix for symbols?
 	FB_TARGETOPT_EXPORT     = &h00000004  '' Support for exporting symbols from DLLs?
+
+	'' Whether callee always pops the hidden struct result ptr
+	'' GCC ABI (MinGW GCC 4.6, Linux, DJGPP, etc.):
+	''    callee always pops hidden param, even for cdecl ("hybrid")
+	'' MinGW GCC 4.7, MSVC ABI:
+	''    hidden param is popped according to calling convention
+	FB_TARGETOPT_CALLEEPOPSHIDDENPTR = &h00000008
 end enum
 
 type FBTARGET

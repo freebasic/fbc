@@ -91,7 +91,7 @@ enum FB_SYMBSTATS
     FB_SYMBSTATS_PARSED       = &h00000080
     FB_SYMBSTATS_MANGLED      = &h00000100
     FB_SYMBSTATS_HASALIAS     = &h00000200
-    FB_SYMBSTATS_MOCK         = &h00000400
+                            ''= &h00000400
     FB_SYMBSTATS_DONTINIT     = &h00000800
     FB_SYMBSTATS_MAINPROC     = &H00001000
     FB_SYMBSTATS_MODLEVELPROC = &h00002000
@@ -424,7 +424,6 @@ type FBS_STRUCT
 	
 	base			as FBSYMBOL_ ptr			'' base class
 	anonparent		as FBSYMBOL_ ptr
-	elements		as integer
 	natalign		as integer					'' UDT's natural alignment based on largest natural field alignment
 	unpadlgt		as integer					'' unpadded len
 	options			as short					'' FB_UDTOPT
@@ -562,7 +561,6 @@ type FBS_PROC
 	paramtb			as FBSYMBOLTB				'' parameters symbol tb
 	mode			as FB_FUNCMODE				'' calling convention
 	real_dtype		as FB_DATATYPE				'' used with STRING and UDT functions
-	lgt				as integer					'' parameters length (in bytes)
 	returnMethod	as FB_PROC_RETURN_METHOD
 	rtl				as FB_PROCRTL
 	ovl				as FB_PROCOVL				'' overloading
@@ -1214,6 +1212,7 @@ declare sub symbAddProcInstancePtr _
 
 declare sub symbProcAllocExt( byval proc as FBSYMBOL ptr )
 declare sub symbProcFreeExt( byval proc as FBSYMBOL ptr )
+declare function symbProcReturnsUdtOnStack( byval proc as FBSYMBOL ptr ) as integer
 
 declare function symbCalcProcParamLen _
 	( _
@@ -1222,10 +1221,7 @@ declare function symbCalcProcParamLen _
 		byval mode as FB_PARAMMODE _
 	) as integer
 
-declare function symbCalcProcParamsLen _
-	( _
-		byval proc as FBSYMBOL ptr _
-	) as integer
+declare function symbCalcProcParamsLen( byval proc as FBSYMBOL ptr ) as integer
 
 declare function symbAddScope _
 	( _
@@ -1722,17 +1718,9 @@ declare function symbGetFullProcName _
 		byval proc as FBSYMBOL ptr _
 	) as zstring ptr
 
-declare function symbGetUDTFirstElm _
-	( _
-		byval parent as FBSYMBOL ptr _
-	) as FBSYMBOL ptr
-
-declare function symbGetUDTNextElm _
-	( _
-		byval sym as FBSYMBOL ptr, _
-		byval check_union as integer = FALSE, _
-		byref elms as integer = 0 _
-	) as FBSYMBOL ptr
+declare function symbUdtGetFirstField( byval parent as FBSYMBOL ptr ) as FBSYMBOL ptr
+declare function symbUdtGetNextField( byval sym as FBSYMBOL ptr ) as FBSYMBOL ptr
+declare function symbUdtGetNextInitableField( byval sym as FBSYMBOL ptr ) as FBSYMBOL ptr
 
 declare function symbGetEnumFirstElm _
 	( _
@@ -1908,8 +1896,6 @@ declare function symbGetUDTBaseLevel _
 
 #define symbGetIsParsed(s) ((s->stats and FB_SYMBSTATS_PARSED) <> 0)
 #define symbSetIsParsed(s) s->stats or= FB_SYMBSTATS_PARSED
-
-#define symbSetIsMock(s) s->stats or= FB_SYMBSTATS_MOCK
 
 #define symbSetDontInit(s) s->stats or= FB_SYMBSTATS_DONTINIT
 #define symbGetDontInit(s) ((s->stats and FB_SYMBSTATS_DONTINIT) <> 0)
@@ -2155,8 +2141,6 @@ declare function symbGetUDTBaseLevel _
 
 #define symbGetUDTAlign(s) s->udt.align
 
-#define symbGetUDTElements(s) s->udt.elements
-
 #define symbGetUDTUnpadLen(s) s->udt.unpadlgt
 
 #define symbGetUDTSymbTb(s) s->udt.ns.symtb
@@ -2168,9 +2152,6 @@ declare function symbGetUDTBaseLevel _
 #define symbGetUDTRetType(s) s->udt.ret_dtype
 
 #define symbGetUDTOpOvlTb(s) s->udt.ext->opovlTb
-
-#define symbGetUDTInRegister(s) iif( symbGetType( sym ) = FB_DATATYPE_STRUCT, _
-									 typeGetDtAndPtrOnly( symbGetProcRealType( sym ) ) <> typeAddrOf( FB_DATATYPE_STRUCT ), TRUE )
 
 #define symbGetEnumSymbTbHead(s) s->enum_.ns.symtb.head
 
@@ -2202,8 +2183,6 @@ declare function symbGetUDTBaseLevel _
 #define symbGetLabelStmt(s) s->lbl.stmtnum
 
 #define symbGetProcParams(f) f->proc.params
-
-#define symbGetProcParamsLen(f) f->proc.lgt
 
 #define symbGetProcOptParams(f) f->proc.optparams
 
@@ -2419,7 +2398,6 @@ declare function symbGetUDTBaseLevel _
 
 #define	typeIsConstAt( dt, at ) ((dt and (1 shl (FB_DT_CONSTPOS + at))) <> 0)
 #define	typeIsConst( dt ) typeIsConstAt(dt, 0)
-#define	typeIsPtrToConst( dt ) (typeIsConst(dt) and typeIsPtr(dt))
 #define	typeSetIsConst( dt ) (dt or (1 shl FB_DT_CONSTPOS))
 #define	typeUnsetIsConst( dt ) (dt and not (1 shl FB_DT_CONSTPOS))
 #define	typeGetConstMask( dt ) (dt and FB_DT_CONSTMASK)

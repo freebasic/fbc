@@ -114,33 +114,14 @@ function astBuildVarDtorCall _
 		byval check_access as integer _
 	) as ASTNODE ptr
 
-	dim as integer do_free = any
-	dim as ASTNODE ptr expr = any
-
 	'' assuming conditions were checked already
 	function = NULL
 
 	'' array? dims can be -1 with "DIM foo()" arrays..
 	if( symbGetArrayDimensions( s ) <> 0 ) then
-		'' dynamic?
-		if( symbIsDynamic( s ) ) then
-			do_free = TRUE
-		else
-			'' has dtor?
-			do_free = symbHasDtor( s )
-		end if
-
-		if( do_free ) then
-			expr = astNewVAR( s, 0, symbGetFullType( s ), symbGetSubtype( s ) )
-			if( symbIsDynamic( s ) ) then
-				function = rtlArrayErase( expr, check_access )
-			else
-				function = rtlArrayClear( expr, FALSE, check_access )
-			end if
-		'' array of dyn strings?
-		elseif( symbGetType( s ) = FB_DATATYPE_STRING ) then
-			function = rtlArrayStrErase( astNewVAR( s, 0, FB_DATATYPE_STRING ) )
-		end if
+		'' destruct and/or free array, if needed
+		function = rtlArrayErase( astNewVAR( s, 0, symbGetFullType( s ), symbGetSubtype( s ) ), _
+		                          symbIsDynamic( s ), check_access )
 	else
 		select case symbGetType( s )
 		'' dyn string?
@@ -562,8 +543,7 @@ function astBuildProcResultVar _
 	) as ASTNODE ptr
 
 	'' proc returns UDT in hidden byref UDT param?
-	if( (symbGetType( proc ) = FB_DATATYPE_STRUCT) and _
-	    typeGetDtAndPtrOnly( symbGetProcRealType( proc ) ) = typeAddrOf( FB_DATATYPE_STRUCT ) ) then
+	if( symbProcReturnsUdtOnStack( proc ) ) then
 		function = astNewDEREF( astNewVAR( res, 0, typeAddrOf( FB_DATATYPE_STRUCT ), symbGetSubtype( res ) ) )
 	else
 		function = astNewVAR( res, 0, symbGetFullType( res ), symbGetSubtype( res ) )

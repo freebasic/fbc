@@ -81,10 +81,10 @@ declare function hToPow2 _
 
 declare function hJumpTbAllocSym( ) as any ptr
 
-declare function hFloatToStr _
+declare function hFloatToHex _
 	( _
 		byval value as double, _
-		byref typ as integer _
+		byval dtype as integer _
 	) as string
 
 declare function hCheckFileFormat _
