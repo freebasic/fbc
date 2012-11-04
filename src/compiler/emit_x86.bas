@@ -125,7 +125,7 @@ declare function _init_opFnTB_SSE _
 		( FB_DATACLASS_INTEGER, FB_INTEGERSIZE  , 2, "dword ptr" ), _	'' function
 		( FB_DATACLASS_INTEGER, 1			    , 0, "byte ptr"  ), _	'' fwd-ref
 		( FB_DATACLASS_INTEGER, FB_POINTERSIZE  , 2, "dword ptr" ), _	'' pointer
-		( FB_DATACLASS_INTEGER, 16              , 3, "xmmword ptr" ) _	'' 128-bit 
+		( FB_DATACLASS_INTEGER, 16              , 3, "xmmword ptr" ) _	'' 128-bit
 	}
 
 const EMIT_MAXKEYWORDS = 600
@@ -2311,32 +2311,63 @@ private sub _emitLOADF2L _
 	hPrepOperand64( dvreg, dst, aux )
 
 	'' signed?
-	'' (handle ULONGINT here too - workaround for #2082801)
-	if( typeIsSigned( dvreg->dtype ) orelse (dvreg->dtype = FB_DATATYPE_ULONGINT) ) then
+	if( typeIsSigned( dvreg->dtype ) ) then
 
 		outp "sub esp, 8"
 
 		ostr = "fistp " + dtypeTB(dvreg->dtype).mname + " [esp]"
 		outp ostr
 
+		hPOP( dst )
+		hPOP( aux )
+
 	'' unsigned.. try a bigger type
 	else
-		outp "fld st(0)"
-		'' UWtype hi = (UWtype)(a / Wtype_MAXp1_F)
-		outp "push 0x4f800000"
-		outp "fdiv dword ptr [esp]"
-		outp "fistp dword ptr [esp]"
-		'' UWtype lo = (UWtype)(a - ((DFtype)hi) * Wtype_MAXp1_F)
-		outp "fild dword ptr [esp]"
-		outp "push 0x4f800000"
-		outp "fmul dword ptr [esp]"
-		outp "fsubp"
-		outp "fistp dword ptr [esp]"
-		'' ((UDWtype) hi << W_TYPE_SIZE) | lo
-	end if
+		dim as string label_geq, label_done
+		dim as integer iseaxfree = any
 
-	hPOP( dst )
-	hPOP( aux )
+		label_geq = *symbUniqueLabel( )
+		label_done = *symbUniqueLabel( )
+
+		'' eax free, or only used in dest?
+		iseaxfree = hIsRegFree( FB_DATACLASS_INTEGER, EMIT_REG_EAX )
+		iseaxfree orelse= hIsRegInVreg( dvreg, EMIT_REG_EAX )
+
+		outp "sub esp, 8"
+        outp "mov dword ptr [esp], 0x5F000000" '' 2^63
+        outp "fcom dword ptr [esp]"
+
+		if( iseaxfree ) then
+			outp "fnstsw ax"
+			outp "test ah, 1"
+		else
+			hPUSH( "eax" )
+			outp "fnstsw ax"
+			outp "test ah, 1"
+			hPOP( "eax" )
+		end if
+
+		hBRANCH( "jz", label_geq )
+
+		'' if x < 2^63
+        outp "fistp qword ptr [esp]"
+		hPOP( dst )
+		hPOP( aux )
+
+		'' elseif x >= 2^63
+		hBRANCH( "jmp", label_done )
+		hLABEL( label_geq )
+
+        outp "fsub dword ptr [esp]"
+        outp "fistp qword ptr [esp]"
+		hPOP( dst )
+		hPOP( aux )
+        outp "xor " + aux + ", 0x80000000"
+
+		'' endif
+		hLABEL( label_done )
+
+	end if
 
 end sub
 
@@ -5410,12 +5441,12 @@ private sub hEmitFloatFunc( byval func as integer )
 		hFpuChangeRC( regname, "01" )
 		outp( "frndint" )
 	case 2
-		'' st(0) = floor( abs( st(0) ) ) * sng( st(0) )
+		'' st(0) = fix( st(0) ) = floor( abs( st(0) ) ) * sng( st(0) )
 		'' chop truncating toward 0
 		hFpuChangeRC( regname, "11" )
 		outp( "frndint" )
 	case 3
-		'' st(0) = st(0) - floor( st(0) )
+		'' st(0) = st(0) - fix( st(0) )
 		'' chop truncating toward 0
 		hFpuChangeRC( regname, "11" )
 		outp( "fld st(0)" )

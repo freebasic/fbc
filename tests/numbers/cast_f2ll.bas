@@ -1,29 +1,83 @@
 # include "fbcu.bi"
-
+#undef CU_ASSERT_EQUAL
+#define CU_ASSERT_EQUAL(a, b) if (a) <> (b) then print (a), (b) end if: CU_ASSERT( (a) = (b) )
 namespace fbc_tests.numbers.cast_f2ll
 
-	const c as ulongint = 1ll shl 31
+	sub checkcast(byval x as double, byval ull as ulongint)
 
-	sub test_cast_ull cdecl()
+		'' 64 bit
+		CU_ASSERT_EQUAL( culngint( x ), ull )
 
-		dim as ulongint n = 1ull
-		dim as double x = 1.0
+		if( ull > 1ull shl 63 ) then return
+		CU_ASSERT_EQUAL( clngint( -x ), clngint( -ull ) )
 
-		for i as integer = 0 to 62
+		if( ull > (1ull shl 63) - 1 ) then return
+		CU_ASSERT_EQUAL( clngint( x ), clngint( ull ) )
 
-			cu_assert_equal( culngint(x), n )
-			cu_assert_equal( culngint(x + c), n + c )
-			if n >= c then
-				cu_assert_equal( culngint(x - c), n - c )
+		'' 32 bit
+		if( ull > 1ull shl 32 ) then return
+		CU_ASSERT_EQUAL( cuint( x ), cuint( ull ) )
+
+		if( ull > 1ull shl 31 ) then return
+		CU_ASSERT_EQUAL( cint( -x ), cint( -ull ) )
+		CU_ASSERT_EQUAL( clng( -x ), clng( -ull ) )
+
+		if( ull > (1ull shl 31) - 1 ) then return
+		CU_ASSERT_EQUAL( cint( x ), cint( ull ) )
+		CU_ASSERT_EQUAL( clng( x ), clng( ull ) )
+
+		if( ull > (1ull shl 31) - 1 ) then return
+		CU_ASSERT_EQUAL( cint( x ), cint( ull ) )
+		CU_ASSERT_EQUAL( clng( x ), clng( ull ) )
+
+		'' 16 bit
+		if( ull > 65535 ) then return
+		CU_ASSERT_EQUAL( cushort( x ), cushort( ull ) )
+
+		if( ull > 32768 ) then return
+		CU_ASSERT_EQUAL( cshort( -x ), cshort( -ull ) )
+
+		if( ull > 32767 ) then return
+		CU_ASSERT_EQUAL( cshort( x ), cshort( ull ) )
+
+		'' 8 bit
+		if( ull > 255 ) then return
+		CU_ASSERT_EQUAL( cubyte( x ), cubyte( ull ) )
+
+		if( ull > 128 ) then return
+		CU_ASSERT_EQUAL( cbyte( -x ), cbyte( -ull ) )
+
+		if( ull > 127 ) then return
+		CU_ASSERT_EQUAL( cbyte( x ), cbyte( ull ) )
+
+	end sub
+
+	sub testnum( byval n as ulongint )
+
+		'' only run when n has <= 53 significant bits
+		if( n and -((n and -n) shl 53) ) then return
+
+		dim x as double = cdbl(n)
+
+		checkcast( x, n )
+
+		if( n < 1ull shl 63 ) then
+
+			'' make sure that cdbl(ll) concurs with cdbl(ull)
+			CU_ASSERT_EQUAL( x, cdbl(clngint(n)) )
+
+
+			if( n < 1ull shl 52 ) then
+				checkcast( x + 0.5, n + (n and 1) )
+				checkcast( x - 0.5, n - (n and 1) )
 			end if
-			if( i <= 52) then
-				cu_assert_equal( culngint(x + 1.0), n + 1 )
-				cu_assert_equal( culngint(x - 1.0), n - 1 )
+
+			if( n < 1ull shl 51 ) then
+				checkcast( x + 0.25, n )
+				checkcast( x - 0.25, n )
 			end if
 
-			n shl= 1: x *= 2.0
-
-		next
+		end if
 
 	end sub
 
@@ -32,19 +86,27 @@ namespace fbc_tests.numbers.cast_f2ll
 		dim as longint n = 1ll
 		dim as double x = 1.0
 
-		for i as integer = 0 to 62
+		dim as integer i, j, k, l
 
-			cu_assert_equal( clngint(x), n )
-			cu_assert_equal( clngint(x + c), n + c )
-			cu_assert_equal( clngint(x - c), n - c )
-			if( i <= 52) then
-				cu_assert_equal( clngint(x + 1.0), n + 1 )
-				cu_assert_equal( clngint(x - 1.0), n - 1 )
-			end if
+		'' test powers of 2
+		for i = 0 to 63
+			testnum( 1ull shl i )
+		next i
 
-			n shl= 1: x *= 2.0
-
-		next
+		'' test various bit combinations
+		for i = 0 to 63-52
+			for j = iif(i=0, 0, 52) to 52
+				for k = 0 to j-2
+					for l = 0 to k-1
+						'' try to cover various different bit patterns
+						testnum( (j + k + l) shl i )
+						testnum( (j + k - l) shl i )
+						testnum( (j - k + l) shl i )
+						testnum( (j - k - l) shl i )
+					next l
+				next k
+			next j
+		next i
 
 	end sub
 
@@ -52,7 +114,6 @@ namespace fbc_tests.numbers.cast_f2ll
 
 		fbcu.add_suite("fbc_tests.numbers.cast_f2ll")
 		fbcu.add_test("test_cast_ll",  @test_cast_ll)
-		fbcu.add_test("test_cast_ull", @test_cast_ull)
 
 	end sub
 

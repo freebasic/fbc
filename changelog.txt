@@ -102,6 +102,7 @@ Version 0.25.0:
 - ASM backend used dword reads to push bytes/words from memory, potentially causing buffer overruns
 - ScreenInfo() crash under X11 gfxlib2 driver when RandR extension is unavailable
 - DELETE and DELETE[] were allowed to be used on forward references
+- Casting floating-point to unsigned longint now works as expected for values over 2^63
 
 
 Version 0.24.0:
