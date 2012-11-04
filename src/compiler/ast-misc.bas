@@ -689,7 +689,8 @@ function astCheckConst _
 	) as integer
 
 	dim as integer result = any
-	dim as double dval = any, dmin = any, dmax = any
+	dim as double dval = any
+	dim as single sval = any
 	dim as longint lval = any
 
 	result = TRUE
@@ -719,18 +720,26 @@ function astCheckConst _
 
 	case FB_DATATYPE_SINGLE
 		'' anything to SINGLE: show warning when out of SINGLE limits
-		dmin = 1.401298e-45
-		dmax = 3.402823e+38
+		'' min = 1.401298e-45
+		'' max = 3.402823e+38
 
-		'' using abs() because limits apply regardless of sign
-		dval = abs( astGetValueAsDouble( n ) )
+		dval = astGetValueAsDouble( n )
 
-		'' checking against zero because it's the only integral number
-		'' that is < dmin after abs(), and it shouldn't cause an
-		'' overflow warning.
-		if( dval <> 0 ) then
-			result = ((dval >= dmin) and (dval <= dmax))
-		end if
+		select case abs( dval )
+		case 0.0, 2e-45 to 3e+38 '' definitely no overflow: comfortably within SINGLE bounds
+			result = TRUE
+		case else '' might overflow - slower/more thorough test
+			
+			sval = csng( dval )
+
+		  	#define IS_INFINITY_OR_ZERO(x) ( (x) + (x) = (x) )
+			'' if sval is infinity or 0, then dval must also have been otherwise there was an overflow/underflow
+			if IS_INFINITY_OR_ZERO( sval ) then
+				result = IS_INFINITY_OR_ZERO( dval )
+			else
+				result = TRUE
+			end if
+		end select
 
 	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT, _
 	     FB_DATATYPE_INTEGER, FB_DATATYPE_UINT, FB_DATATYPE_ENUM, _
