@@ -504,6 +504,7 @@ declare sub cSelConstStmtBegin()
 declare sub cSelConstStmtNext(byval stk as FB_CMPSTMTSTK ptr)
 declare sub cSelConstStmtEnd(byval stk as FB_CMPSTMTSTK ptr)
 declare sub hDisallowStaticAttrib( byref attrib as integer )
+declare sub hDisallowVirtualAttrib( byref attrib as integer )
 declare function cProcStmtBegin( byval attrib as FB_SYMBATTRIB = FB_SYMBATTRIB_NONE ) as integer
 declare function cProcStmtEnd( ) as integer
 declare sub cExitStatement()

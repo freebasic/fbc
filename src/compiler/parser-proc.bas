@@ -2086,6 +2086,19 @@ sub hDisallowStaticAttrib( byref attrib as integer )
 	end if
 end sub
 
+sub hDisallowVirtualAttrib( byref attrib as integer )
+	'' Constructors cannot be virtual (they initialize the vptr
+	'' needed for virtual calls, chicken-egg problem)
+	if( attrib and (FB_SYMBATTRIB_ABSTRACT or FB_SYMBATTRIB_VIRTUAL) ) then
+		if( attrib and FB_SYMBATTRIB_ABSTRACT ) then
+			errReport( FB_ERRMSG_ABSTRACTCTOR )
+		else
+			errReport( FB_ERRMSG_VIRTUALCTOR )
+		end if
+		attrib and= not (FB_SYMBATTRIB_ABSTRACT or FB_ERRMSG_VIRTUALCTOR)
+	end if
+end sub
+
 '' ProcStmtBegin  =  (PRIVATE|PUBLIC)? STATIC?
 ''                   (SUB|FUNCTION|CONSTRUCTOR|DESTRUCTOR|OPERATOR) ProcHeader .
 function cProcStmtBegin( byval attrib as FB_SYMBATTRIB ) as integer
@@ -2118,6 +2131,7 @@ function cProcStmtBegin( byval attrib as FB_SYMBATTRIB ) as integer
 		end if
 
 		hDisallowStaticAttrib( attrib )
+		hDisallowVirtualAttrib( attrib )
 
 	case FB_TK_DESTRUCTOR
 		if( fbLangOptIsSet( FB_LANG_OPT_CLASS ) = FALSE ) then

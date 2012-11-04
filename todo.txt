@@ -252,9 +252,11 @@
 
 o classes
   - what should CLASS keyword do? struct vs. class as in C++?
-  - vtable lookups must also be emitted for virtual constructors etc.,
+
+  - vtable lookups must also be emitted for virtual destructors etc.,
     i.e. some astNewCALL() calls must be changed to astBuildMethodCall().
     cannot do it from astNewCALL() because the THIS ptr isn't available.
+
   - should methods overriding virtuals become virtual themselves?
     and even re-use the same vtable slot?
 
