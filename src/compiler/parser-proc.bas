@@ -2079,6 +2079,13 @@ function cCtorHeader _
 
 end function
 
+sub hDisallowStaticAttrib( byref attrib as integer )
+	if( (attrib and FB_SYMBATTRIB_STATIC) <> 0 ) then
+		errReport( FB_ERRMSG_MEMBERCANTBESTATIC )
+		attrib and= not FB_SYMBATTRIB_STATIC
+	end if
+end sub
+
 '' ProcStmtBegin  =  (PRIVATE|PUBLIC)? STATIC?
 ''                   (SUB|FUNCTION|CONSTRUCTOR|DESTRUCTOR|OPERATOR) ProcHeader .
 function cProcStmtBegin( byval attrib as FB_SYMBATTRIB ) as integer
@@ -2087,13 +2094,6 @@ function cProcStmtBegin( byval attrib as FB_SYMBATTRIB ) as integer
     dim as FB_CMPSTMTSTK ptr stk = any
 
 	function = FALSE
-
-#macro hCheckStatic( attrib )
-	if( (attrib and FB_SYMBATTRIB_STATIC) <> 0 ) then
-		errReport( FB_ERRMSG_MEMBERCANTBESTATIC )
-		attrib and= not FB_SYMBATTRIB_STATIC
-	end if
-#endmacro
 
 	if( (attrib and (FB_SYMBATTRIB_PUBLIC or FB_SYMBATTRIB_PRIVATE)) = 0 ) then
 		if( env.opt.procpublic ) then
@@ -2117,7 +2117,7 @@ function cProcStmtBegin( byval attrib as FB_SYMBATTRIB ) as integer
 			attrib or= FB_SYMBATTRIB_CONSTRUCTOR
 		end if
 
-		hCheckStatic( attrib )
+		hDisallowStaticAttrib( attrib )
 
 	case FB_TK_DESTRUCTOR
 		if( fbLangOptIsSet( FB_LANG_OPT_CLASS ) = FALSE ) then
@@ -2126,7 +2126,7 @@ function cProcStmtBegin( byval attrib as FB_SYMBATTRIB ) as integer
 			attrib or= FB_SYMBATTRIB_DESTRUCTOR
 		end if
 
-		hCheckStatic( attrib )
+		hDisallowStaticAttrib( attrib )
 
 	case FB_TK_OPERATOR
 		if( fbLangOptIsSet( FB_LANG_OPT_OPEROVL ) = FALSE ) then
@@ -2142,7 +2142,7 @@ function cProcStmtBegin( byval attrib as FB_SYMBATTRIB ) as integer
 			attrib or= FB_SYMBATTRIB_PROPERTY or FB_SYMBATTRIB_OVERLOADED
 		end if
 
-		hCheckStatic( attrib )
+		hDisallowStaticAttrib( attrib )
 
 	case else
 		errReport( FB_ERRMSG_SYNTAXERROR )
