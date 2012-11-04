@@ -284,6 +284,59 @@ function astBuildCall _
 
 end function
 
+function astBuildMethodCall _
+	( _
+		byval proc as FBSYMBOL ptr, _
+		byval instptr as ASTNODE ptr _
+	) as ASTNODE ptr
+
+	dim as ASTNODE ptr p = any
+	dim as integer vtableindex = any
+
+	vtableindex = symbProcGetVtableIndex( proc )
+
+	if( vtableindex > 0 ) then
+		'' calling virtual method
+		''    method( this )
+		'' becomes
+		''    (*(this.vptr[vtableindex]))( this )
+		'' i.e. the procptr must be read out from the vtable based on
+		'' the vtable index of this method, and then it is called.
+		''
+		'' The this.vptr points to the 3rd element of the vtable,
+		'' but the vtable index actually is absolute, not relative to
+		'' the 3rd element, so it actually should be:
+		''    (*(this.vptr[vtableindex-2]))( this )
+		''
+		'' Also, the vptr always is at the top of the object,
+		'' so we can just do:
+		''    (*((*cptr( any ptr ptr ptr, @this ))[vtableindex-2]))( this )
+
+		'' Get the vtable pointer of type ANY PTR PTR
+		'' (casting to any ptr first to avoid issues with derived UDT ptrs)
+		p = astCloneTree( instptr )
+		p = astNewADDROF( p )
+		p = astNewCONV( typeAddrOf( FB_DATATYPE_VOID ), NULL, p )
+		p = astNewCONV( typeMultAddrOf( FB_DATATYPE_VOID, 3 ), NULL, p )
+		p = astNewDEREF( p )
+
+		'' Apply the index
+		p = astNewBOP( AST_OP_ADD, p, astNewCONSTi( vtableindex - 2 ), _
+		               NULL, AST_OPOPT_DEFAULT or AST_OPOPT_DOPTRARITH )
+
+		'' Deref to get the procptr stored in that vtable slot
+		p = astNewDEREF( p )
+
+		'' Cast to proper procptr type
+		p = astNewCONV( typeAddrOf( FB_DATATYPE_FUNCTION ), symbAddProcPtrFromFunction( proc ), p )
+	else
+		'' calling non-virtual method
+		p = NULL
+	end if
+
+	function = astNewCALL( proc, p )
+end function
+
 '':::::
 function astBuildCtorCall _
 	( _
