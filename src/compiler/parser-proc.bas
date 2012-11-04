@@ -993,6 +993,7 @@ private function hCheckOpOvlParams _
 	end if
 
 	'' 4th) check the result
+	found_mismatch = FALSE
 
 	select case astGetOpClass( op )
 	case AST_NODECLASS_CONV
@@ -1003,52 +1004,34 @@ private function hCheckOpOvlParams _
 		end if
 
 		'' return type can't be a void
-		if( symbGetType( proc ) = FB_DATATYPE_VOID ) then
-			errReport( FB_ERRMSG_INVALIDRESULTTYPEFORTHISOP, TRUE )
-			exit function
-		end if
+		found_mismatch = (symbGetType( proc ) = FB_DATATYPE_VOID)
 
 	'' unary?
 	case AST_NODECLASS_UOP
 		'' return type can't be a void
-		if( symbGetType( proc ) = FB_DATATYPE_VOID ) then
-			errReport( FB_ERRMSG_INVALIDRESULTTYPEFORTHISOP, TRUE )
-			exit function
-		end if
+		found_mismatch = (symbGetType( proc ) = FB_DATATYPE_VOID)
 
 	'' assignment?
 	case AST_NODECLASS_ASSIGN
 		'' it must be a SUB
-		if( symbGetType( proc ) <> FB_DATATYPE_VOID ) then
-			errReport( FB_ERRMSG_INVALIDRESULTTYPEFORTHISOP, TRUE )
-			exit function
-		end if
+		found_mismatch = (symbGetType( proc ) <> FB_DATATYPE_VOID)
 
 	'' addressing?
 	case AST_NODECLASS_ADDROF
-		'' return type can't be a void
-		if( symbGetType( proc ) = FB_DATATYPE_VOID ) then
-			errReport( FB_ERRMSG_INVALIDRESULTTYPEFORTHISOP, TRUE )
-			exit function
-		end if
-
 		select case op
 		case AST_OP_ADDROF
 			'' return type must be a pointer
-			if( typeIsPtr( symbGetType( proc ) ) = FALSE ) then
-				errReport( FB_ERRMSG_INVALIDRESULTTYPEFORTHISOP, TRUE )
-				exit function
-			end if
+			found_mismatch = not typeIsPtr( symbGetType( proc ) )
 
 		case AST_OP_FLDDEREF
 			'' return type must be an UDT
-			select case symbGetType( proc )
-			case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
+			found_mismatch = (symbGetType( proc ) <> FB_DATATYPE_STRUCT)
 
-			case else
-				errReport( FB_ERRMSG_INVALIDRESULTTYPEFORTHISOP, TRUE )
-				exit function
-			end select
+		case else
+			assert( op = AST_OP_DEREF )
+			'' return type can't be a void
+			found_mismatch = (symbGetType( proc ) = FB_DATATYPE_VOID)
+
 		end select
 
 	'' mem?
@@ -1056,78 +1039,51 @@ private function hCheckOpOvlParams _
 		select case op
 		case AST_OP_NEW_SELF, AST_OP_NEW_VEC_SELF
 			'' should return a pointer
-			if( typeIsPtr( symbGetType( proc ) ) = FALSE ) then
-				errReport( FB_ERRMSG_INVALIDRESULTTYPEFORTHISOP, TRUE )
-				exit function
-			end if
+			found_mismatch = not typeIsPtr( symbGetType( proc ) )
 
 		case else
 			'' should not return anything
-			if( symbGetType( proc ) <> FB_DATATYPE_VOID ) then
-				errReport( FB_ERRMSG_INVALIDRESULTTYPEFORTHISOP, TRUE )
-				exit function
-			end if
+			found_mismatch = (symbGetType( proc ) <> FB_DATATYPE_VOID)
 		end select
 
 	'' binary?
 	case AST_NODECLASS_BOP
-
 		select case as const op
 		'' relational? it must return an integer
 		case AST_OP_EQ, AST_OP_NE, AST_OP_GT, AST_OP_LT, AST_OP_GE, AST_OP_LE
-			if( symbGetType( proc ) <> FB_DATATYPE_INTEGER ) then
-				errReport( FB_ERRMSG_INVALIDRESULTTYPEFORTHISOP, TRUE )
-				exit function
-			end if
-
-		'' self? must be a SUB
+			found_mismatch = (symbGetType( proc ) <> FB_DATATYPE_INTEGER)
 		case else
+			'' self? must be a SUB
 			if( astGetOpIsSelf( op ) ) then
-				if( symbGetType( proc ) <> FB_DATATYPE_VOID ) then
-					errReport( FB_ERRMSG_INVALIDRESULTTYPEFORTHISOP, TRUE )
-					exit function
-				end if
-
+				found_mismatch = (symbGetType( proc ) <> FB_DATATYPE_VOID)
 			'' anything else, it can't be a void
 			else
-				if( symbGetType( proc ) = FB_DATATYPE_VOID ) then
-					errReport( FB_ERRMSG_INVALIDRESULTTYPEFORTHISOP, TRUE )
-					exit function
-				end if
-
+				found_mismatch = (symbGetType( proc ) = FB_DATATYPE_VOID)
 			end if
 		end select
 
 	case AST_NODECLASS_COMP
-
 		'' FOR, STEP or NEXT?
 		if( astGetOpIsSelf( op ) ) then
 			'' it must return an integer (if NEXT) or void otherwise
-			dim as integer valid_op = TRUE
 			if( op = AST_OP_NEXT ) then
-				valid_op = ( symbGetType( proc ) = FB_DATATYPE_INTEGER )
+				found_mismatch = (symbGetType( proc ) <> FB_DATATYPE_INTEGER)
 			else
-				valid_op = ( symbGetType( proc ) = FB_DATATYPE_VOID )
+				found_mismatch = (symbGetType( proc ) <> FB_DATATYPE_VOID)
 			end if
-
-			if( valid_op = FALSE ) then
-				errReport( FB_ERRMSG_INVALIDRESULTTYPEFORTHISOP, TRUE )
-				exit function
-			end if
-
 		'' anything else, it can't be a void
 		else
-			if( symbGetType( proc ) = FB_DATATYPE_VOID ) then
-				errReport( FB_ERRMSG_INVALIDRESULTTYPEFORTHISOP, TRUE )
-				exit function
-			end if
-
+			found_mismatch = (symbGetType( proc ) = FB_DATATYPE_VOID)
 		end if
 
 	end select
 
-	function = TRUE
+	if( found_mismatch ) then
+		errReport( FB_ERRMSG_INVALIDRESULTTYPEFORTHISOP, TRUE )
+		exit function
+	end if
 
+	function = TRUE
 end function
 
 '':::::
