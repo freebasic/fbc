@@ -1430,17 +1430,6 @@ private function hCheckParent _
 		exit function
 	end if
 
-	if( symbGetParent( parent ) <> symbGetCurrentNamespc( ) ) then
-		errReport( FB_ERRMSG_DECLOUTSIDENAMESPC )
-		'' error recovery: skip the whole statement
-		if( is_prototype ) then
-			hSkipStmt( )
-		else
-			hSkipCompound( tk )
-		end if
-		exit function
-	end if
-
 	'' ns used in a prototype?
 	if( is_prototype ) then
 		errReport( FB_ERRMSG_DECLOUTSIDECLASS )

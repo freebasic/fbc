@@ -105,6 +105,7 @@ Version 0.25.0:
 - Casting floating-point to unsigned longint now works as expected for values over 2^63
 - The wrong error message was shown for methods declared inside anonymous TYPE declarations
 - Operators declared inside namespaces can now be implemented outside of the namespace, provided the namespace prefix is used, just like with normal procedures
+- Constructors, destructors and properties can now be implemented outside of the namespace their parent UDT was originally declared in, provided the namespace prefix is used
 
 
 Version 0.24.0:
