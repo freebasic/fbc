@@ -1069,10 +1069,10 @@ declare function astBuildCall _
 		byval arg2 as ASTNODE ptr _
 	) as ASTNODE ptr
 
-declare function astBuildMethodCall _
+declare function astBuildVtableLookup _
 	( _
 		byval proc as FBSYMBOL ptr, _
-		byval instptr as ASTNODE ptr _
+		byval thisexpr as ASTNODE ptr _
 	) as ASTNODE ptr
 
 declare function astBuildCtorCall _
@@ -1084,7 +1084,8 @@ declare function astBuildCtorCall _
 declare function astBuildDtorCall _
 	( _
 		byval sym as FBSYMBOL ptr, _
-		byval thisexpr as ASTNODE ptr _
+		byval thisexpr as ASTNODE ptr, _
+		byval ignore_virtual as integer = FALSE _
 	) as ASTNODE ptr
 
 declare function astBuildCopyCtorCall _

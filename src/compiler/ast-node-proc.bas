@@ -1192,7 +1192,7 @@ private sub hCallBaseDtor _
 		byval proc as FBSYMBOL ptr _
 	)
 
-	dim as FBSYMBOL ptr base_ = any, dtor = any
+	dim as FBSYMBOL ptr base_ = any, dtor = any, this_ = any
 
 	base_ = parent->udt.base
 
@@ -1202,15 +1202,35 @@ private sub hCallBaseDtor _
 	end if
 
 	'' Call its dtor, if there is any.
+	''
+	'' Note: As in C++, the base class' destructor implementation is called
+	'' from this derived class destructor, and no vtable lookup is done
+	'' for this (it would just result in infinite recursion anyways).
+	''
+	'' Just like derived classes are not responsible for initializing their
+	'' base class, they shouldn't be made responsible for cleaning it up.
+
 	dtor = symbGetCompDtor( symbGetSubtype( base_ ) )
-	if( dtor ) then
-		'' Check access here, because (unlike fields) it's not done
-		'' during the TYPE compound parsing
-		if( symbCheckAccess( dtor ) = FALSE ) then
-			errReport( FB_ERRMSG_NOACCESSTOBASEDTOR )
-		end if
-		hCallFieldDtor( symbGetParamVar( symbGetProcHeadParam( proc ) ), base_ )
+	if( dtor = NULL ) then
+		exit sub
 	end if
+
+	'' Check access here, because (unlike fields) it's not done
+	'' during the TYPE compound parsing
+	if( symbCheckAccess( dtor ) = FALSE ) then
+		errReport( FB_ERRMSG_NOACCESSTOBASEDTOR )
+	end if
+
+	'' The only exception is if the base class' destructor is ABSTRACT,
+	'' then there is no implementation to call.
+	if( symbIsAbstract( dtor ) ) then
+		exit sub
+	end if
+
+	this_ = symbGetParamVar( symbGetProcHeadParam( proc ) )
+	astAdd( astBuildDtorCall( symbGetSubtype( base_ ), _
+				astBuildInstPtr( this_, base_ ), _
+				TRUE ) )
 end sub
 
 '':::::
@@ -1226,7 +1246,7 @@ private sub hCallDtors _
 	'' 1st) fields dtors
     hCallFieldDtors( parent, proc )
 
-	'' 2nd) base dtors
+	'' 2nd) base dtor
 	hCallBaseDtor( parent, proc )
 
 end sub

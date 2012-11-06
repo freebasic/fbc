@@ -594,12 +594,11 @@ private function hSetupProc _
 
 	head_proc = NULL
 
-	'' Procs nested inside UDTs are supposed to be marked as methods
-	assert( iif( symbIsStruct( parent ), attrib and FB_SYMBATTRIB_METHOD, TRUE ) )
-
 	'' ctor/dtor?
 	if( (attrib and (FB_SYMBATTRIB_CONSTRUCTOR or _
 					 FB_SYMBATTRIB_DESTRUCTOR)) <> 0 ) then
+
+		assert( attrib and FB_SYMBATTRIB_METHOD )
 
 		'' ctor?
 		if( (attrib and FB_SYMBATTRIB_CONSTRUCTOR) <> 0 ) then
@@ -809,20 +808,30 @@ add_proc:
 			symbProcSetVtableIndex( proc, symbCompAddVirtual( parent ) )
 		end if
 
-		if( (parent->udt.base <> NULL) and (id <> NULL) ) then
-			'' If this method has the same id and signature as
-			'' a virtual derived from some base, it overrides that
-			'' virtual, by being assigned the same vtable index.
+		'' Only check if this really is a derived UDT
+		if( parent->udt.base ) then
+			'' Destructor?
+			if( symbIsDestructor( proc ) ) then
+				'' There can always only be one, so there is no
+				'' need to do a lookup and/or overload checks.
+				overridden = symbGetCompDtor( parent->udt.base->subtype )
+			elseif( id ) then
+				'' If this method has the same id and signature as
+				'' a virtual derived from some base, it overrides that
+				'' virtual, by being assigned the same vtable index.
 
-			'' Find a method in the base with the same name
-			overridden = symbLookupByNameAndClass( _
-				parent->udt.base->subtype, _
-				id, FB_SYMBCLASS_PROC, _
-				((options and FB_SYMBOPT_PRESERVECASE) <> 0), _
-				TRUE )  '' search NSIMPORTs (bases)
+				'' Find a method in the base with the same name
+				overridden = symbLookupByNameAndClass( _
+					parent->udt.base->subtype, _
+					id, FB_SYMBCLASS_PROC, _
+					((options and FB_SYMBOPT_PRESERVECASE) <> 0), _
+					TRUE )  '' search NSIMPORTs (bases)
 
-			'' Find the overload with the exact same signature
-			overridden = symbFindOverloadProc( overridden, proc )
+				'' Find the overload with the exact same signature
+				overridden = symbFindOverloadProc( overridden, proc )
+			else
+				overridden = NULL
+			end if
 
 			if( overridden ) then
 				'' Is that overload really a virtual?

@@ -415,7 +415,9 @@ function cProcArgList _
 								symbGetProcHeadParam( parser.currproc ) ) )
 			arg->mode = INVALID
 		end if
-		procexpr = astBuildMethodCall( proc, arg_list->head->expr )
+
+		assert( ptrexpr = NULL )
+		ptrexpr = astBuildVtableLookup( proc, arg_list->head->expr )
 	else
 		'' remove the instance ptr
 		if( (options and FB_PARSEROPT_HASINSTPTR) <> 0 ) then
@@ -424,8 +426,9 @@ function cProcArgList _
 			astDelTree( arg->expr )
 			symbFreeOvlCallArg( @parser.ovlarglist, arg )
 		end if
-		procexpr = astNewCALL( proc, ptrexpr )
 	end if
+
+	procexpr = astNewCALL( proc, ptrexpr )
 
 	params = symbGetProcParams( proc )
 

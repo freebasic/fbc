@@ -265,10 +265,10 @@ function astBuildCall _
 
 end function
 
-function astBuildMethodCall _
+function astBuildVtableLookup _
 	( _
 		byval proc as FBSYMBOL ptr, _
-		byval instptr as ASTNODE ptr _
+		byval thisexpr as ASTNODE ptr _
 	) as ASTNODE ptr
 
 	dim as ASTNODE ptr p = any
@@ -295,7 +295,7 @@ function astBuildMethodCall _
 
 		'' Get the vtable pointer of type ANY PTR PTR
 		'' (casting to any ptr first to avoid issues with derived UDT ptrs)
-		p = astCloneTree( instptr )
+		p = astCloneTree( thisexpr )
 		p = astNewADDROF( p )
 		p = astNewCONV( typeAddrOf( FB_DATATYPE_VOID ), NULL, p )
 		p = astNewCONV( typeMultAddrOf( FB_DATATYPE_VOID, 3 ), NULL, p )
@@ -309,6 +309,7 @@ function astBuildMethodCall _
 		p = astNewDEREF( p )
 
 		'' Cast to proper procptr type
+		'' (this is important for C/LLVM backends, which are pretty strict about types)
 		p = astNewCONV( typeAddrOf( FB_DATATYPE_FUNCTION ), symbAddProcPtrFromFunction( proc ), p )
 
 		'' null pointer checking for ABSTRACTs
@@ -319,11 +320,11 @@ function astBuildMethodCall _
 			end if
 		end if
 	else
-		'' calling non-virtual method
+		'' Calling normal non-virtual method, nothing to do
 		p = NULL
 	end if
 
-	function = astNewCALL( proc, p )
+	function = p
 end function
 
 '':::::
@@ -357,21 +358,27 @@ function astBuildCtorCall _
 
 end function
 
-'':::::
 function astBuildDtorCall _
 	( _
 		byval sym as FBSYMBOL ptr, _
-		byval thisexpr as ASTNODE ptr _
+		byval thisexpr as ASTNODE ptr, _
+		byval ignore_virtual as integer _
 	) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc = any
+	dim as FBSYMBOL ptr dtor = any
+	dim as ASTNODE ptr callexpr = any
 
-    proc = astNewCALL( symbGetCompDtor( sym ) )
+	'' Can be virtual
+	dtor = symbGetCompDtor( sym )
+	if( ignore_virtual ) then
+		callexpr = astNewCALL( dtor )
+	else
+		callexpr = astNewCALL( dtor, astBuildVtableLookup( dtor, thisexpr ) )
+	end if
 
-    astNewARG( proc, thisexpr )
+	astNewARG( callexpr, thisexpr )
 
-    function = proc
-
+	function = callexpr
 end function
 
 '':::::
@@ -407,6 +414,11 @@ function astPatchCtorCall _
 		byval procexpr as ASTNODE ptr, _
 		byval thisexpr as ASTNODE ptr _
 	) as ASTNODE ptr
+
+	'' Note: ctors cannot be virtual, so there's no need to worry about
+	'' updating any vtable lookup here (which would use the thisexpr too)
+	assert( astIsCALL( procexpr ) )
+	assert( symbProcGetVtableIndex( procexpr->sym ) = 0 )
 
 	if( procexpr <> NULL ) then
 		'' replace the instance pointer
