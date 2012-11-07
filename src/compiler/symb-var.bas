@@ -139,7 +139,7 @@ function symbAddArrayDesc _
 	function = NULL
 
 	'' don't add if it's a jump table
-	if( symbGetIsJumpTb( array ) ) then
+	if( (env.clopt.backend = FB_BACKEND_GAS) and symbGetIsJumpTb( array ) ) then
 		exit function
 	end if
 

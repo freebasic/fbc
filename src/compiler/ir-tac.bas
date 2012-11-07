@@ -148,21 +148,21 @@ declare sub _flush _
 
 	dim shared regTB(0 to EMIT_REGCLASSES-1) as REGCLASS ptr
 
-private sub _init(byval backend as FB_BACKEND)
+private sub _init( )
 	ctx.tacidx = NULL
 	ctx.taccnt = 0
 
 	flistInit( @ctx.tacTB, IR_INITADDRNODES, len( IRTAC ) )
 	flistInit( @ctx.vregTB, IR_INITVREGNODES, len( IRVREG ) )
 
-	emitInit( backend )
+	emitInit( )
 
 	for i as integer = 0 to EMIT_REGCLASSES-1
 		regTB(i) = emitGetRegClass( i )
 	next
 end sub
 
-private sub _end()
+private sub _end( )
 	emitEnd( )
 
 	flistEnd( @ctx.vregTB )
@@ -509,20 +509,6 @@ private sub _emitScopeEnd _
 
 end sub
 
-''::::
-private sub _emitJmpTb _
-	( _
-		byval op as AST_JMPTB_OP, _
-		byval dtype as integer, _
-		byval label as FBSYMBOL ptr _
-	) static
-
-	_flush( )
-
-	emitJMPTB( op, dtype, symbGetMangledName( label ) )
-
-end sub
-
 '':::::
 private sub _emitBop _
 	( _
@@ -688,24 +674,28 @@ private sub _emitStackAlign _
 
 end sub
 
-'':::::
-private sub _emitJumpPtr _
-	( _
-		byval v1 as IRVREG ptr _
-	)
-
+private sub _emitJumpPtr( byval v1 as IRVREG ptr )
 	_emit( AST_OP_JUMPPTR, v1, NULL, NULL, NULL )
-
 end sub
 
-'':::::
-private sub _emitBranch _
+private sub _emitBranch( byval op as integer, byval label as FBSYMBOL ptr )
+	_emit( op, NULL, NULL, NULL, label )
+end sub
+
+private sub _emitJmpTb _
 	( _
-		byval op as integer, _
-		byval label as FBSYMBOL ptr _
+		byval v1 as IRVREG ptr, _
+		byval tbsym as FBSYMBOL ptr, _
+		byval values as uinteger ptr, _
+		byval labels as FBSYMBOL ptr ptr, _
+		byval labelcount as integer, _
+		byval deflabel as FBSYMBOL ptr, _
+		byval minval as uinteger, _
+		byval maxval as uinteger _
 	)
 
-	_emit( op, NULL, NULL, NULL, label )
+	_flush( )
+	emitJMPTB( tbsym, values, labels, labelcount, deflabel, minval, maxval )
 
 end sub
 
@@ -2640,79 +2630,75 @@ end sub
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-sub irTAC_ctor()
-	static as IR_VTBL _vtbl = _
-	( _
-		@_init, _
-		@_end, _
-		@_emitBegin, _
-		@_emitEnd, _
-		@_getOptionValue, _
-		@_procBegin, _
-		@_procEnd, _
-		@_procAllocArg, _
-		@_procAllocLocal, _
-		@_procGetFrameRegName, _
-		@_scopeBegin, _
-		@_scopeEnd, _
-		@_procAllocStaticVars, _
-		@_emitConvert, _
-		@_emitLabel, _
-		@_emitLabelNF, _
-		@_emitReturn, _
-		@_emitProcBegin, _
-		@_emitProcEnd, _
-		@_emitPushArg, _
-		@_emitAsmBegin, _
-		@_emitAsmText, _
-		@_emitAsmSymb, _
-		@_emitAsmEnd, _
-		@_emitComment, _
-		@_emitJmpTb, _
-		@_emitBop, _
-		@_emitUop, _
-		@_emitStore, _
-		@_emitSpillRegs, _
-		@_emitLoad, _
-		@_emitLoadRes, _
-		@_emitStack, _
-		@_emitPushUDT, _
-		@_emitAddr, _
-		@_emitCall, _
-		@_emitCallPtr, _
-		@_emitStackAlign, _
-		@_emitJumpPtr, _
-		@_emitBranch, _
-		@_emitMem, _
-		@_emitScopeBegin, _
-		@_emitScopeEnd, _
-		@_emitDECL, _
-		@_emitDBG, _
-		@_emitVarIniBegin, _
-		@_emitVarIniEnd, _
-		@_emitVarIniI, _
-		@_emitVarIniF, _
-		@_emitVarIniI64, _
-		@_emitVarIniOfs, _
-		@_emitVarIniStr, _
-		@_emitVarIniWstr, _
-		@_emitVarIniPad, _
-		@_emitVarIniScopeBegin, _
-		@_emitVarIniScopeEnd, _
-		@_allocVreg, _
-		@_allocVrImm, _
-		@_allocVrImm64, _
-		@_allocVrImmF, _
-		@_allocVrVar, _
-		@_allocVrIdx, _
-		@_allocVrPtr, _
-		@_allocVrOfs, _
-		@_setVregDataType, _
-		@_getDistance, _
-		@_loadVr, _
-		@_storeVr, _
-		@_xchgTOS _
-	)
-
-	ir.vtbl = _vtbl
-end sub
+dim shared as IR_VTBL irtac_vtbl = _
+( _
+	@_init, _
+	@_end, _
+	@_emitBegin, _
+	@_emitEnd, _
+	@_getOptionValue, _
+	@_procBegin, _
+	@_procEnd, _
+	@_procAllocArg, _
+	@_procAllocLocal, _
+	@_procGetFrameRegName, _
+	@_scopeBegin, _
+	@_scopeEnd, _
+	@_procAllocStaticVars, _
+	@_emitConvert, _
+	@_emitLabel, _
+	@_emitLabelNF, _
+	@_emitReturn, _
+	@_emitProcBegin, _
+	@_emitProcEnd, _
+	@_emitPushArg, _
+	@_emitAsmBegin, _
+	@_emitAsmText, _
+	@_emitAsmSymb, _
+	@_emitAsmEnd, _
+	@_emitComment, _
+	@_emitBop, _
+	@_emitUop, _
+	@_emitStore, _
+	@_emitSpillRegs, _
+	@_emitLoad, _
+	@_emitLoadRes, _
+	@_emitStack, _
+	@_emitPushUDT, _
+	@_emitAddr, _
+	@_emitCall, _
+	@_emitCallPtr, _
+	@_emitStackAlign, _
+	@_emitJumpPtr, _
+	@_emitBranch, _
+	@_emitJmpTb, _
+	@_emitMem, _
+	@_emitScopeBegin, _
+	@_emitScopeEnd, _
+	@_emitDECL, _
+	@_emitDBG, _
+	@_emitVarIniBegin, _
+	@_emitVarIniEnd, _
+	@_emitVarIniI, _
+	@_emitVarIniF, _
+	@_emitVarIniI64, _
+	@_emitVarIniOfs, _
+	@_emitVarIniStr, _
+	@_emitVarIniWstr, _
+	@_emitVarIniPad, _
+	@_emitVarIniScopeBegin, _
+	@_emitVarIniScopeEnd, _
+	@_allocVreg, _
+	@_allocVrImm, _
+	@_allocVrImm64, _
+	@_allocVrImmF, _
+	@_allocVrVar, _
+	@_allocVrIdx, _
+	@_allocVrPtr, _
+	@_allocVrOfs, _
+	@_setVregDataType, _
+	@_getDistance, _
+	@_loadVr, _
+	@_storeVr, _
+	@_xchgTOS _
+)

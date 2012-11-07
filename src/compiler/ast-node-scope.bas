@@ -637,7 +637,7 @@ sub astScopeAllocLocals( byval symtbhead as FBSYMBOL ptr )
 	'' Emit/allocate variables local to a procedure or scope block
 
 	s = symtbhead
-	if( irGetOption( IR_OPT_HIGHLEVEL ) ) then
+	if( env.clopt.backend = FB_BACKEND_GCC ) then
 		''
 		'' C backend: Most locals (including statics) are emitted from
 		'' astLoadDECL(), assuming they have DECL nodes, so they will

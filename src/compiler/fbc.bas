@@ -92,6 +92,7 @@ enum
 	FBCTOOL_AR
 	FBCTOOL_LD
 	FBCTOOL_GCC
+	FBCTOOL_LLC
 	FBCTOOL_DLLTOOL
 	FBCTOOL_GORC
 	FBCTOOL_WINDRES
@@ -101,7 +102,7 @@ end enum
 
 static shared as zstring * 8 toolnames(0 to FBCTOOL__COUNT-1) = _
 { _
-	"as", "ar", "ld", "gcc", "dlltool", "GoRC", "windres", "cxbe" _
+	"as", "ar", "ld", "gcc", "llc", "dlltool", "GoRC", "windres", "cxbe" _
 }
 
 declare function fbcFindBin( byval tool as integer, byref path as string ) as integer
@@ -1259,6 +1260,8 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 			value = FB_BACKEND_GAS
 		case "gcc"
 			value = FB_BACKEND_GCC
+		case "llvm"
+			value = FB_BACKEND_LLVM
 		case else
 			hFatalInvalidOption( arg )
 		end select
@@ -2000,18 +2003,24 @@ private function hGetAsmName _
 		byval stage as integer _
 	) as string
 
-	'' Based on the objfile name so it's also affected by -o
-	dim as string asmfile = hStripExt( *module->objfile )
+	dim as zstring ptr ext = any
+	dim as string asmfile
 
-	if( fbGetOption( FB_COMPOPT_BACKEND ) = FB_BACKEND_GAS ) then
-		asmfile += ".asm"
-	else
-		if( stage = 1 ) then
-			asmfile += ".c"
-		else
-			asmfile += ".asm"
-		end if
+	'' Based on the objfile name so it's also affected by -o
+	asmfile = hStripExt( *module->objfile )
+
+	ext = @".asm"
+
+	if( stage = 1 ) then
+		select case( fbGetOption( FB_COMPOPT_BACKEND ) )
+		case FB_BACKEND_GCC
+			ext = @".c"
+		case FB_BACKEND_LLVM
+			ext = @".ll"
+		end select
 	end if
+
+	asmfile += *ext
 
 	function = asmfile
 end function
@@ -2305,50 +2314,65 @@ private function hCompileStage2Module( byval module as FBCIOFILE ptr ) as intege
 		fbcAddTemp( asmfile )
 	end if
 
-	ln += "-S -nostdlib -nostdinc "
-	ln += "-Wall -Wno-unused-label -Wno-unused-function -Wno-unused-variable "
+	select case( fbGetOption( FB_COMPOPT_BACKEND ) )
+	case FB_BACKEND_GCC
+		ln += "-S -nostdlib -nostdinc -Wall -Wno-unused-label " + _
+		      "-Wno-unused-function -Wno-unused-variable "
 
-	'' helps finding ir-hlc bugs
-	ln += "-Werror-implicit-function-declaration "
+		'' helps finding ir-hlc bugs
+		ln += "-Werror-implicit-function-declaration "
 
-	ln += "-O" + str( fbGetOption( FB_COMPOPT_OPTIMIZELEVEL ) ) + " "
+		ln += "-O" + str( fbGetOption( FB_COMPOPT_OPTIMIZELEVEL ) ) + " "
 
-	'' Do not let gcc make assumptions about pointers; FB isn't strict about it.
-	ln += "-fno-strict-aliasing "
+		'' Do not let gcc make assumptions about pointers; FB isn't strict about it.
+		ln += "-fno-strict-aliasing "
 
-	'' The rtlib sets its own rounding mode, don't let gcc make assumptions.
-	ln += "-frounding-math "
+		'' The rtlib sets its own rounding mode, don't let gcc make assumptions.
+		ln += "-frounding-math "
 
-	'' ?
-	ln += "-fno-math-errno "
+		'' ?
+		ln += "-fno-math-errno "
 
-	'' Note: we shouldn't use some options like e.g. -ffast-math, because
-	'' they cause incompatibilities with the ASM backend. For example:
-	''    dim as double d = INF
-	''    print d - d
-	'' prints -NaN (IND) under the ASM backend because the FPU does the
-	'' subtraction, however with the C backend with, gcc -ffast-math
-	'' optimizes out the subtraction (even under -O0) and inserts 0 instead.
+		'' Note: we shouldn't use some options like e.g. -ffast-math, because
+		'' they cause incompatibilities with the ASM backend. For example:
+		''    dim as double d = INF
+		''    print d - d
+		'' prints -NaN (IND) under the ASM backend because the FPU does the
+		'' subtraction, however with the C backend with, gcc -ffast-math
+		'' optimizes out the subtraction (even under -O0) and inserts 0 instead.
 
-	if( fbGetOption( FB_COMPOPT_DEBUG ) ) then
-		ln += "-g "
-	end if
+		if( fbGetOption( FB_COMPOPT_DEBUG ) ) then
+			ln += "-g "
+		end if
 
-	ln += "-mtune=" + *gcc_architectures(fbGetOption( FB_COMPOPT_CPUTYPE )) + " "
+		ln += "-mtune=" + *gcc_architectures(fbGetOption( FB_COMPOPT_CPUTYPE )) + " "
 
-	if( fbGetOption( FB_COMPOPT_FPUTYPE ) = FB_FPUTYPE_SSE ) then
-		ln += "-mfpmath=sse -msse2 "
-	end if
+		if( fbGetOption( FB_COMPOPT_FPUTYPE ) = FB_FPUTYPE_SSE ) then
+			ln += "-mfpmath=sse -msse2 "
+		end if
 
-	if( fbGetOption( FB_COMPOPT_ASMSYNTAX ) = FB_ASMSYNTAX_INTEL ) then
-		ln += "-masm=intel "
-	end if
+		if( fbGetOption( FB_COMPOPT_ASMSYNTAX ) = FB_ASMSYNTAX_INTEL ) then
+			ln += "-masm=intel "
+		end if
+
+	case FB_BACKEND_LLVM
+		ln += "-O" + str( fbGetOption( FB_COMPOPT_OPTIMIZELEVEL ) ) + " "
+		if( fbGetOption( FB_COMPOPT_ASMSYNTAX ) = FB_ASMSYNTAX_INTEL ) then
+			ln += "--x86-asm-syntax=intel "
+		end if
+
+	end select
 
 	ln += """" + hGetAsmName( module, 1 ) + """ "
 	ln += "-o """ + asmfile + """"
 	ln += fbc.extopt.gcc
 
-	function = fbcRunBin( "compiling C", FBCTOOL_GCC, ln )
+	select case( fbGetOption( FB_COMPOPT_BACKEND ) )
+	case FB_BACKEND_GCC
+		function = fbcRunBin( "compiling C", FBCTOOL_GCC, ln )
+	case FB_BACKEND_LLVM
+		function = fbcRunBin( "compiling LLVM IR", FBCTOOL_LLC, ln )
+	end select
 end function
 
 private sub hCompileStage2Modules( )
@@ -2712,7 +2736,7 @@ private sub hPrintOptions( )
 	print "  -fpmode fast|precise  Select floating-point math accuracy/speed"
 	print "  -fpu x87|sse     Set target FPU"
 	print "  -g               Add debug info"
-	print "  -gen gas|gcc     Select code generation backend"
+	print "  -gen gas|gcc|llvm  Select code generation backend"
 	print "  [-]-help         Show this help output"
 	print "  -i <path>        Add an include file search path"
 	print "  -include <file>  Pre-#include a file for each input .bas"
@@ -2744,9 +2768,9 @@ private sub hPrintOptions( )
 	print "  -vec <n>         Automatic vectorization level (default: 0)"
 	print "  [-]-version      Show compiler version"
 	print "  -w all|pedantic|<n>  Set min warning level: all, pedantic or a value"
-	print "  -Wa <a,b,c>      Pass options to GAS"
-	print "  -Wc <a,b,c>      Pass options to GCC (with -gen gcc)"
-	print "  -Wl <a,b,c>      Pass options to LD"
+	print "  -Wa <a,b,c>      Pass options to 'as' (-gen gas or -gen llvm)"
+	print "  -Wc <a,b,c>      Pass options to 'gcc' (-gen gcc) or 'llc' (-gen llvm)"
+	print "  -Wl <a,b,c>      Pass options to 'ld'"
 	print "  -x <file>        Set output executable/library file name"
 	print "  -z gosub-setjmp  Use setjmp/longjmp to implement GOSUB"
 end sub

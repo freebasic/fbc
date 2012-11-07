@@ -1435,25 +1435,49 @@ private sub _emitLIT( byval s as zstring ptr )
 	outEX( ostr )
 end sub
 
-'':::::
 private sub _emitJMPTB _
 	( _
-		byval op as AST_JMPTB_OP, _
-		byval dtype as integer, _
-		byval label as zstring ptr _
-	) static
+		byval tbsym as FBSYMBOL ptr, _
+		byval values1 as uinteger ptr, _
+		byval labels1 as FBSYMBOL ptr ptr, _
+		byval labelcount as integer, _
+		byval deflabel as FBSYMBOL ptr, _
+		byval minval as uinteger, _
+		byval maxval as uinteger _
+	)
 
-    dim ostr as string
+	dim as FBSYMBOL ptr label = any
+	dim as string deflabelname, tb
+	dim as integer i = any
 
-	select case op
-	case AST_JMPTB_LABEL
-		ostr = *_getTypeString( dtype ) + " " + *label
-		outp( ostr )
-	case AST_JMPTB_BEGIN
-		ostr = *label
-		ostr += ":" + NEWLINE
-		outEx( ostr )
-	end select
+	deflabelname = *symbGetMangledName( deflabel )
+	tb = *symbGetMangledName( tbsym )
+
+	''
+	'' Emit entries for each value from minval to maxval.
+	'' Each value that is in the values1 array uses the corresponding label
+	'' from the labels1 array; all other values use the default label.
+	''
+	'' table:
+	'' .int labelforvalue1
+	'' .int labelforvalue2
+	'' .int deflabel
+	'' .int labelforvalue4
+	'' ...
+	''
+
+	outEx( tb + ":" + NEWLINE )
+	i = 0
+	for value as uinteger = minval to maxval
+		assert( i < labelcount )
+		if( value = values1[i] ) then
+			label = labels1[i]
+			i += 1
+		else
+			label = deflabel
+		end if
+		outp( *_getTypeString( FB_DATATYPE_UINT ) + " " + *symbGetMangledName( label ) )
+	next
 
 end sub
 

@@ -97,7 +97,6 @@ type IRHLCCTX
 	regcnt				as integer      '' register counter used to name vregs
 	vregTB				as TFLIST
 	callargs			as TLIST        '' IRCALLARG's during emitPushArg/emitCall[Ptr]
-	jmptbsym			as FBSYMBOL ptr
 	linenum				as integer
 
 	varini				as string
@@ -136,43 +135,12 @@ declare sub exprDump( byval n as EXPRNODE ptr )
 '' globals
 dim shared as IRHLCCTX ctx
 
-'' same order as FB_DATATYPE
-dim shared as const zstring ptr dtypeName(0 to FB_DATATYPES-1) = _
-{ _
-    @"void"     , _ '' void
-    @"byte"     , _ '' byte
-    @"ubyte"    , _ '' ubyte
-    @"char"     , _ '' char
-    @"short"    , _ '' short
-    @"ushort"   , _ '' ushort
-    @"wchar"    , _ '' wchar
-    @"integer"  , _ '' int
-    @"uinteger" , _ '' uint
-    @"integer"  , _ '' enum
-    @"integer"  , _ '' bitfield
-    @"long"     , _ '' long
-    @"ulong"    , _ '' ulong
-    @"longint"  , _ '' longint
-    @"ulongint" , _ '' ulongint
-    @"single"   , _ '' single
-    @"double"   , _ '' double
-    @"string"   , _ '' string
-    @"fixstr"   , _ '' fix-len string
-    @""         , _ '' struct
-    @""         , _ '' namespace
-    @""         , _ '' function
-    @"void"     , _ '' fwd-ref
-    @"void *"     _ '' pointer
-}
-
-private sub _init( byval backend as FB_BACKEND )
+private sub _init( )
 	flistInit( @ctx.vregTB, IR_INITVREGNODES, len( IRVREG ) )
 	listInit( @ctx.callargs, 32, sizeof(IRCALLARG), LIST_FLAGS_NOCLEAR )
 	listInit( @ctx.exprnodes, 32, sizeof( EXPRNODE ), LIST_FLAGS_CLEAR )
 	listInit( @ctx.exprcache, 8, sizeof( EXPRCACHENODE ), LIST_FLAGS_NOCLEAR )
-
-	irSetOption( IR_OPT_HIGHLEVEL or IR_OPT_FPUIMMEDIATES or _
-	             IR_OPT_NOINLINEOPS )
+	irSetOption( IR_OPT_FPUIMMEDIATES or IR_OPT_NOINLINEOPS )
 end sub
 
 private sub _end( )
@@ -617,6 +585,14 @@ end function
 private sub hEmitVar( byval sym as FBSYMBOL ptr, byval varini as zstring ptr )
 	dim as string ln
 
+	'' Never used?
+	if( symbGetIsAccessed( sym ) = FALSE ) then
+		'' Extern?
+		if( symbIsExtern( sym ) ) then
+			return
+		end if
+	end if
+
 	'' Shared (not Local) or Static, but not Common/Public/Extern?
 	if( ((symbGetAttrib( sym ) and (FB_SYMBATTRIB_COMMON or FB_SYMBATTRIB_PUBLIC or FB_SYMBATTRIB_EXTERN)) = 0) and _
 	    ((not symbIsLocal( sym )) or symbIsStatic( sym )) ) then
@@ -632,14 +608,12 @@ private sub hEmitVar( byval sym as FBSYMBOL ptr, byval varini as zstring ptr )
 	end if
 
 	'' allocation modifier
-	if( symbIsCommon( sym ) ) then
+	if( symbGetAttrib( sym ) and (FB_SYMBATTRIB_COMMON or FB_SYMBATTRIB_PUBLIC or FB_SYMBATTRIB_EXTERN) ) then
 		hWriteLine( "extern " + ln + ";" )
-		ln += " __attribute__((common))"
-	elseif( symbGetAttrib( sym ) and (FB_SYMBATTRIB_PUBLIC or FB_SYMBATTRIB_EXTERN) ) then
-		hWriteLine( "extern " + ln + ";" )
-
-		'' just an extern that was never allocated? exit..
-		if( symbIsExtern( sym ) ) then
+		if( symbIsCommon( sym ) ) then
+			ln += " __attribute__((common))"
+		elseif( symbIsExtern( sym ) ) then
+			'' Just an Extern that's used but not allocated in this module
 			return
 		end if
 	end if
@@ -666,10 +640,8 @@ private sub hEmitVariable( byval s as FBSYMBOL ptr )
 
 	'' initialized? only if not local or local and static
 	if( symbGetIsInitialized( s ) and (symbIsLocal( s ) = FALSE or symbIsStatic( s ))  ) then
-		'' extern or jump-tb?
+		'' extern?
 		if( symbIsExtern( s ) ) then
-			return
-		elseif( symbGetIsJumpTb( s ) ) then
 			return
 		end if
 
@@ -1518,6 +1490,35 @@ private function hEmitType _
 		byval subtype as FBSYMBOL ptr _
 	) as string
 
+	'' same order as FB_DATATYPE
+	static as const zstring ptr dtypeName(0 to FB_DATATYPES-1) = _
+	{ _
+		@"void"     , _ '' void
+		@"byte"     , _ '' byte
+		@"ubyte"    , _ '' ubyte
+		@"char"     , _ '' char
+		@"short"    , _ '' short
+		@"ushort"   , _ '' ushort
+		@"wchar"    , _ '' wchar
+		@"integer"  , _ '' int
+		@"uinteger" , _ '' uint
+		NULL        , _ '' enum
+		NULL        , _ '' bitfield
+		@"long"     , _ '' long
+		@"ulong"    , _ '' ulong
+		@"longint"  , _ '' longint
+		@"ulongint" , _ '' ulongint
+		@"single"   , _ '' single
+		@"double"   , _ '' double
+		@"string"   , _ '' string
+		@"fixstr"   , _ '' fix-len string
+		NULL        , _ '' struct
+		NULL        , _ '' namespace
+		NULL        , _ '' function
+		@"void"     , _ '' fwd-ref (needed for any un-resolved fwdrefs)
+		NULL          _ '' pointer
+	}
+
 	dim as string s
 	dim as integer ptrcount = any
 
@@ -1532,7 +1533,7 @@ private function hEmitType _
 		elseif( dtype = FB_DATATYPE_ENUM ) then
 			s = *dtypeName(FB_DATATYPE_INTEGER)
 		else
-			s = "void"
+			s = *dtypeName(FB_DATATYPE_VOID)
 		end if
 
 	case FB_DATATYPE_FUNCTION
@@ -2169,7 +2170,7 @@ end sub
 private function exprFlush _
 	( _
 		byval n as EXPRNODE ptr, _
-		byval need_parens as integer _
+		byval need_parens as integer = FALSE _
 	) as string
 
 	hExprFlush( n, need_parens )
@@ -2487,30 +2488,6 @@ private sub _emitLabel( byval label as FBSYMBOL ptr )
 	end if
 end sub
 
-private sub _emitJmpTb _
-	( _
-		byval op as AST_JMPTB_OP, _
-		byval dtype as integer, _
-		byval label as FBSYMBOL ptr _
-	)
-
-	select case op
-	case AST_JMPTB_BEGIN
-		ctx.jmptbsym = label
-		hWriteLine( "static const void* " + *symbGetMangledName( label ) + "[] = {", TRUE )
-		sectionIndent( )
-
-	case AST_JMPTB_END
-		hWriteLine( "(void*)0", TRUE )
-		sectionUnindent( )
-		hWriteLine( "};", TRUE )
-
-	case AST_JMPTB_LABEL
-		hWriteLine( "&&" + *symbGetMangledName( label ) + ",", TRUE )
-	end select
-
-end sub
-
 '' store an expression into a vreg
 private sub exprSTORE _
 	( _
@@ -2543,7 +2520,7 @@ private sub exprSTORE _
 
 			ln = hEmitType( vr->dtype, vr->subtype )
 			ln += " " + tempvar + " = "
-			ln += exprFlush( r, FALSE )
+			ln += exprFlush( r )
 			ln += ";"
 
 			hWriteLine( ln )
@@ -2573,9 +2550,9 @@ private sub exprSTORE _
 			r = exprNewCAST( l->dtype, l->subtype, r )
 		end if
 
-		ln = exprFlush( l, FALSE )
+		ln = exprFlush( l )
 		ln += " = "
-		ln += exprFlush( r, FALSE )
+		ln += exprFlush( r )
 		ln += ";"
 
 		hWriteLine( ln )
@@ -2607,7 +2584,7 @@ private sub _emitBop _
 			'' Conditional branch
 			static as string s
 			s = "if( "
-			s += exprFlush( exprNewBOP( op, l, r ), FALSE )
+			s += exprFlush( exprNewBOP( op, l, r ) )
 			s += " ) goto "
 			s += *symbGetMangledName( ex )
 			s += ";"
@@ -2696,7 +2673,7 @@ end sub
 
 private sub _emitLoadRes( byval v1 as IRVREG ptr, byval vr as IRVREG ptr )
 	_emitStore( vr, v1 )
-	hWriteLine( "return " + exprFlush( exprNewVREG( vr ), FALSE ) + ";" )
+	hWriteLine( "return " + exprFlush( exprNewVREG( vr ) ) + ";" )
 end sub
 
 private sub _emitAddr _
@@ -2762,7 +2739,7 @@ private sub hDoCall _
 	while( arg andalso (arg->level = level) )
 		dim as IRCALLARG ptr prev = listGetPrev( arg )
 
-		s += exprFlush( exprNewVREG( arg->vr ), FALSE )
+		s += exprFlush( exprNewVREG( arg->vr ) )
 
 		listDelNode( @ctx.callargs, arg )
 
@@ -2811,7 +2788,7 @@ private sub _emitCallPtr _
 
 	static as string s
 
-	s = "(" + exprFlush( exprNewVREG( v1 ), FALSE ) + ")"
+	s = "(" + exprFlush( exprNewVREG( v1 ) ) + ")"
 	hDoCall( s, bytestopop, vr, level )
 
 end sub
@@ -2820,19 +2797,70 @@ private sub _emitJumpPtr( byval v1 as IRVREG ptr )
 	hWriteLine( "goto *" + exprFlush( exprNewVREG( v1 ), TRUE ) + ";" )
 end sub
 
-'':::::
-private sub _emitBranch _
+private sub _emitBranch( byval op as integer, byval label as FBSYMBOL ptr )
+	assert( op = AST_OP_JMP )
+	hWriteLine( "goto " + *symbGetMangledName( label ) + ";" )
+end sub
+
+private sub _emitJmpTb _
 	( _
-		byval op as integer, _
-		byval label as FBSYMBOL ptr _
+		byval v1 as IRVREG ptr, _
+		byval tbsym as FBSYMBOL ptr, _
+		byval values as uinteger ptr, _
+		byval labels as FBSYMBOL ptr ptr, _
+		byval labelcount as integer, _
+		byval deflabel as FBSYMBOL ptr, _
+		byval minval as uinteger, _
+		byval maxval as uinteger _
 	)
 
-	select case op
-	case AST_OP_JMP
-		hWriteLine( "goto " + *symbGetMangledName( label ) + ";" )
-	case else
-		errReportEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
-	end select
+	dim as string tb, temp, ln
+	dim as FBSYMBOL ptr label = any
+	dim as EXPRNODE ptr l = any
+	dim as integer i = any
+
+	tb = *symbUniqueId( )
+	temp = *symbUniqueId( )
+
+	l = exprNewIMMi( maxval - minval + 1 )
+	hWriteLine( "static const void* " + tb + "[" + exprFlush( l ) + "] = {", TRUE )
+	sectionIndent( )
+
+	i = 0
+	for value as uinteger = minval to maxval
+		assert( i < labelcount )
+		if( value = values[i] ) then
+			label = labels[i]
+			i += 1
+		else
+			label = deflabel
+		end if
+		hWriteLine( "&&" + *symbGetMangledName( label ) + ",", TRUE )
+	next
+
+	sectionUnindent( )
+	hWriteLine( "};", TRUE )
+
+	'' uinteger temp = expr;
+	l = exprNewVREG( v1 )
+	hWriteLine( "uinteger " + temp + " = " + exprFlush( l ) + ";", TRUE )
+
+	if( minval > 0 ) then
+		'' if( temp < minval ) goto deflabel
+		l = exprNewTEXT( FB_DATATYPE_UINT, NULL, temp )
+		l = exprNewBOP( AST_OP_LT, l, exprNewIMMi( minval ) )
+		hWriteLine( "if( " + exprFlush( l ) + " ) goto " + *symbGetMangledName( deflabel ) + ";", TRUE )
+	end if
+
+	'' if( temp > maxval ) then goto deflabel
+	l = exprNewTEXT( FB_DATATYPE_UINT, NULL, temp )
+	l = exprNewBOP( AST_OP_GT, l, exprNewIMMi( maxval ) )
+	hWriteLine( "if( " + exprFlush( l ) + " ) goto " + *symbGetMangledName( deflabel ) + ";", TRUE )
+
+	'' l = jumptable[l - minval]
+	l = exprNewTEXT( FB_DATATYPE_UINT, NULL, temp )
+	l = exprNewBOP( AST_OP_SUB, l, exprNewIMMi( minval ) )
+	hWriteLine( "goto *" + tb + "[" + exprFlush( l ) + "];", TRUE )
 
 end sub
 
@@ -2846,9 +2874,9 @@ private sub _emitMem _
 
 	select case op
 	case AST_OP_MEMCLEAR
-		hWriteLine("__builtin_memset( " + exprFlush( exprNewVREG( v1 ), FALSE ) + ", 0, " + exprFlush( exprNewVREG( v2 ), FALSE ) + " );" )
+		hWriteLine("__builtin_memset( " + exprFlush( exprNewVREG( v1 ) ) + ", 0, " + exprFlush( exprNewVREG( v2 ) ) + " );" )
 	case AST_OP_MEMMOVE
-		hWriteLine("__builtin_memcpy( " + exprFlush( exprNewVREG( v1 ), FALSE ) + ", " + exprFlush( exprNewVREG( v2 ), FALSE ) + ", " + str( bytes ) + " );" )
+		hWriteLine("__builtin_memcpy( " + exprFlush( exprNewVREG( v1 ) ) + ", " + exprFlush( exprNewVREG( v2 ) ) + ", " + str( bytes ) + " );" )
 	end select
 
 end sub
@@ -3064,7 +3092,7 @@ private sub _emitVarIniOfs( byval sym as FBSYMBOL ptr, byval ofs as integer )
 	'' Cast to void* to prevent gcc ptr warnings (FB should handle that)
 	l = exprNewCAST( typeAddrOf( FB_DATATYPE_VOID ), NULL, l )
 
-	ctx.varini += exprFlush( l, FALSE )
+	ctx.varini += exprFlush( l )
 	hVarIniSeparator( )
 end sub
 
@@ -3235,79 +3263,75 @@ end sub
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-sub irHLC_ctor()
-	static as IR_VTBL _vtbl = _
-	( _
-		@_init, _
-		@_end, _
-		@_emitBegin, _
-		@_emitEnd, _
-		@_getOptionValue, _
-		@_procBegin, _
-		@_procEnd, _
-		NULL, _
-		NULL, _
-		NULL, _
-		@_scopeBegin, _
-		@_scopeEnd, _
-		@_procAllocStaticVars, _
-		@_emitStore, _
-		@_emitLabel, _
-		@_emitLabel, _
-		NULL, _
-		@_emitProcBegin, _
-		@_emitProcEnd, _
-		@_emitPushArg, _
-		@_emitAsmBegin, _
-		@_emitAsmText, _
-		@_emitAsmSymb, _
-		@_emitAsmEnd, _
-		@_emitComment, _
-		@_emitJmpTb, _
-		@_emitBop, _
-		@_emitUop, _
-		@_emitStore, _
-		@_emitSpillRegs, _
-		@_emitLoad, _
-		@_emitLoadRes, _
-		NULL, _
-		NULL, _
-		@_emitAddr, _
-		@_emitCall, _
-		@_emitCallPtr, _
-		NULL, _
-		@_emitJumpPtr, _
-		@_emitBranch, _
-		@_emitMem, _
-		@_emitScopeBegin, _
-		@_emitScopeEnd, _
-		@_emitDECL, _
-		@_emitDBG, _
-		@_emitVarIniBegin, _
-		@_emitVarIniEnd, _
-		@_emitVarIniI, _
-		@_emitVarIniF, _
-		@_emitVarIniI64, _
-		@_emitVarIniOfs, _
-		@_emitVarIniStr, _
-		@_emitVarIniWstr, _
-		@_emitVarIniPad, _
-		@_emitVarIniScopeBegin, _
-		@_emitVarIniScopeEnd, _
-		@_allocVreg, _
-		@_allocVrImm, _
-		@_allocVrImm64, _
-		@_allocVrImmF, _
-		@_allocVrVar, _
-		@_allocVrIdx, _
-		@_allocVrPtr, _
-		@_allocVrOfs, _
-		@_setVregDataType, _
-		NULL, _
-		NULL, _
-		NULL, _
-		NULL _
-	)
-
-	ir.vtbl = _vtbl
-end sub
+dim shared as IR_VTBL irhlc_vtbl = _
+( _
+	@_init, _
+	@_end, _
+	@_emitBegin, _
+	@_emitEnd, _
+	@_getOptionValue, _
+	@_procBegin, _
+	@_procEnd, _
+	NULL, _
+	NULL, _
+	NULL, _
+	@_scopeBegin, _
+	@_scopeEnd, _
+	@_procAllocStaticVars, _
+	@_emitStore, _
+	@_emitLabel, _
+	@_emitLabel, _
+	NULL, _
+	@_emitProcBegin, _
+	@_emitProcEnd, _
+	@_emitPushArg, _
+	@_emitAsmBegin, _
+	@_emitAsmText, _
+	@_emitAsmSymb, _
+	@_emitAsmEnd, _
+	@_emitComment, _
+	@_emitBop, _
+	@_emitUop, _
+	@_emitStore, _
+	@_emitSpillRegs, _
+	@_emitLoad, _
+	@_emitLoadRes, _
+	NULL, _
+	NULL, _
+	@_emitAddr, _
+	@_emitCall, _
+	@_emitCallPtr, _
+	NULL, _
+	@_emitJumpPtr, _
+	@_emitBranch, _
+	@_emitJmpTb, _
+	@_emitMem, _
+	@_emitScopeBegin, _
+	@_emitScopeEnd, _
+	@_emitDECL, _
+	@_emitDBG, _
+	@_emitVarIniBegin, _
+	@_emitVarIniEnd, _
+	@_emitVarIniI, _
+	@_emitVarIniF, _
+	@_emitVarIniI64, _
+	@_emitVarIniOfs, _
+	@_emitVarIniStr, _
+	@_emitVarIniWstr, _
+	@_emitVarIniPad, _
+	@_emitVarIniScopeBegin, _
+	@_emitVarIniScopeEnd, _
+	@_allocVreg, _
+	@_allocVrImm, _
+	@_allocVrImm64, _
+	@_allocVrImmF, _
+	@_allocVrVar, _
+	@_allocVrIdx, _
+	@_allocVrPtr, _
+	@_allocVrOfs, _
+	@_setVregDataType, _
+	NULL, _
+	NULL, _
+	NULL, _
+	NULL _
+)

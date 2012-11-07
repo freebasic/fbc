@@ -754,7 +754,7 @@ private function hDeclProcParams( byval proc as FBSYMBOL ptr ) as integer
 	p = symbGetProcLastParam( proc )
 	do while( p <> NULL )
 		if( p->param.mode <> FB_PARAMMODE_VARARG ) then
-			p->param.var = symbAddParam( symbGetName( p ), p )
+			p->param.var = symbAddVarForParam( p )
 			if( p->param.var = NULL ) then
 				errReportParam( proc, i, NULL, FB_ERRMSG_DUPDEFINITION )
 				exit function
@@ -793,16 +793,19 @@ private sub hLoadProcResult _
 	case FB_DATATYPE_STRING
 		n = rtlStrAllocTmpResult( astNewVAR( s, 0, FB_DATATYPE_STRING ) )
 
-		if( irGetOption( IR_OPT_HIGHLEVEL ) ) then
+		if( env.clopt.backend = FB_BACKEND_GCC ) then
 			n = astNewLOAD( n, dtype, TRUE )
 		end if
 
-	'' UDT? use the real type
+	'' UDT? use the real type (UDT ptr when returning on stack, or integer etc. when returning in regs)
 	case FB_DATATYPE_STRUCT
 		dtype = symbGetProcRealType( proc )
-	    if( dtype <> FB_DATATYPE_STRUCT ) then
-	    	subtype = NULL
-	    end if
+
+		'' integers shouldn't have subtype set to anything,
+		'' but it must be kept for struct ptrs
+		if( typeGetDtOnly( dtype ) <> FB_DATATYPE_STRUCT ) then
+			subtype = NULL
+		end if
 
 	end select
 

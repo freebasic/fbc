@@ -625,7 +625,7 @@ function astNewASSIGN _
 			'' let the fpu do the conversion if any operand
 			'' is a float (unless a special case must be handled)
 			dim as integer doconv = TRUE
-			if( irGetOption( IR_OPT_HIGHLEVEL ) = FALSE ) then
+			if( env.clopt.backend = FB_BACKEND_GAS ) then
 				if( (ldclass = FB_DATACLASS_FPOINT) or (rdclass = FB_DATACLASS_FPOINT) ) then
 					if( ldtype <> FB_DATATYPE_ULONGINT ) then
 						doconv = irGetOption( IR_OPT_FPUCONV )

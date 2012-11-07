@@ -6,7 +6,7 @@ const IR_INITVREGNODES		= IR_INITADDRNODES*3
 
 const IR_MAXDIST			= 2147483647
 
-''
+'' when changing, update vregDump():vregtypes()
 enum IRVREGTYPE_ENUM
 	IR_VREGTYPE_IMM
 	IR_VREGTYPE_VAR
@@ -93,8 +93,8 @@ end type
 
 '' if changed, update the _vtbl symbols at ir-*.bas::*_ctor
 type IR_VTBL
-	init as sub(byval backend as FB_BACKEND)
-	end as sub()
+	init as sub( )
+	end as sub( )
 
 	emitBegin as function _
 	( _
@@ -197,13 +197,6 @@ type IR_VTBL
 		byval text as zstring ptr _
 	)
 
-	emitJmpTb as sub _
-	( _
-		byval op as AST_JMPTB_OP, _
-		byval dtype as integer, _
-		byval label as FBSYMBOL ptr _
-	)
-
 	emitBop as sub _
 	( _
 		byval op as integer, _
@@ -277,15 +270,19 @@ type IR_VTBL
 		byval bytes as integer _
 	)
 
-	emitJumpPtr as sub _
-	( _
-		byval v1 as IRVREG ptr _
-	)
+	emitJumpPtr as sub( byval v1 as IRVREG ptr )
+	emitBranch as sub( byval op as integer, byval label as FBSYMBOL ptr )
 
-	emitBranch as sub _
+	emitJmpTb as sub _
 	( _
-		byval op as integer, _
-		byval label as FBSYMBOL ptr _
+		byval v1 as IRVREG ptr, _
+		byval tbsym as FBSYMBOL ptr, _
+		byval values as uinteger ptr, _
+		byval labels as FBSYMBOL ptr ptr, _
+		byval labelcount as integer, _
+		byval deflabel as FBSYMBOL ptr, _
+		byval minval as uinteger, _
+		byval maxval as uinteger _
 	)
 
 	emitMem as sub _
@@ -444,7 +441,6 @@ enum IR_OPT
 
 	IR_OPT_ADDRCISC      = &h00010000  '' complex addressing modes (base+idx*disp)
 	IR_OPT_NOINLINEOPS   = &h00020000  '' "Complex" math operators unavailable?
-	IR_OPT_HIGHLEVEL     = &h00040000  '' Preserve the high level constructions?
 end enum
 
 type IRCTX
@@ -456,10 +452,14 @@ end type
 ''
 ''
 ''
-declare sub irTAC_ctor()
-declare sub irHLC_ctor()
-declare sub irInit(byval backend as FB_BACKEND)
-declare sub irEnd()
+extern as IR_VTBL irtac_vtbl
+extern as IR_VTBL irhlc_vtbl
+extern as IR_VTBL irllvm_vtbl
+declare sub irInit( )
+declare sub irEnd( )
+#if __FB_DEBUG__
+declare function vregDump( byval v as IRVREG ptr ) as string
+#endif
 
 ''
 '' macros
@@ -549,7 +549,7 @@ declare sub irEnd()
 
 #define irEmitCOMMENT(text) ir.vtbl.emitComment( text )
 
-#define irEmitJMPTB(op, dtype, label) ir.vtbl.emitJmpTb( op, dtype, label )
+#define irEmitJMPTB( v1, tbsym, values, labels, labelcount, deflabel, minval, maxval ) ir.vtbl.emitJmpTb( v1, tbsym, values, labels, labelcount, deflabel, minval, maxval )
 
 #define irGetDistance(vreg) ir.vtbl.getDistance( vreg )
 

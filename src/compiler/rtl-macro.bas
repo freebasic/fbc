@@ -578,13 +578,13 @@ private sub addIntrinsicMacros(byval macdef as FB_RTL_MACRODEF ptr)
     		end if
     	end if
 
-    	'' not supported in high-level IR?
-    	if( (macdef->options and FB_RTL_OPT_NOGCC) <> 0 ) then
-    		if( irGetOption( IR_OPT_HIGHLEVEL ) ) then
-    			addbody = FALSE
-                flags or= FB_DEFINE_FLAGS_NOGCC
-    		end if
-    	end if
+		'' not supported by the C backend?
+		if( (macdef->options and FB_RTL_OPT_NOGCC) <> 0 ) then
+			if( env.clopt.backend = FB_BACKEND_GCC ) then
+				addbody = FALSE
+				flags or= FB_DEFINE_FLAGS_NOGCC
+			end if
+		end if
 
     	if( addbody ) then
 			tok = NULL

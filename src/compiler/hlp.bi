@@ -79,8 +79,6 @@ declare function hToPow2 _
 		byval value as uinteger _
 	) as uinteger
 
-declare function hJumpTbAllocSym( ) as any ptr
-
 declare function hFloatToHex _
 	( _
 		byval value as double, _

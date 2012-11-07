@@ -59,6 +59,7 @@ const FB_DT_CONSTPOS		= FB_DT_PTRPOS + 4
 
 
 '' symbol classes
+'' When changing, update symb.bas:symbDump():classnames
 enum FB_SYMBCLASS
 	FB_SYMBCLASS_VAR			= 1
 	FB_SYMBCLASS_CONST
@@ -89,14 +90,14 @@ enum FB_SYMBSTATS
     FB_SYMBSTATS_RTL          = &h00000020
     FB_SYMBSTATS_THROWABLE    = &h00000040
     FB_SYMBSTATS_PARSED       = &h00000080
-    FB_SYMBSTATS_MANGLED      = &h00000100
+                            ''= &h00000100
     FB_SYMBSTATS_HASALIAS     = &h00000200
                             ''= &h00000400
     FB_SYMBSTATS_DONTINIT     = &h00000800
     FB_SYMBSTATS_MAINPROC     = &H00001000
     FB_SYMBSTATS_MODLEVELPROC = &h00002000
     FB_SYMBSTATS_FUNCPTR      = &h00004000    '' needed to demangle
-    FB_SYMBSTATS_JUMPTB       = &h00008000
+    FB_SYMBSTATS_JUMPTB       = &h00008000    '' ASM backend's fake jumptb vars only
     FB_SYMBSTATS_GLOBALCTOR   = &h00010000
     FB_SYMBSTATS_GLOBALDTOR   = &h00020000
     FB_SYMBSTATS_CANTDUP      = &h00040000
@@ -1197,12 +1198,7 @@ declare function symbPreAddProc _
 	) as FBSYMBOL ptr
 
 declare function symbAddProcResult( byval f as FBSYMBOL ptr ) as FBSYMBOL ptr
-
-declare function symbAddParam _
-	( _
-		byval id as zstring ptr, _
-		byval param as FBSYMBOL ptr _
-	) as FBSYMBOL ptr
+declare function symbAddVarForParam( byval param as FBSYMBOL ptr ) as FBSYMBOL ptr
 
 declare sub symbAddProcInstancePtr _
 	( _
@@ -1597,41 +1593,18 @@ declare function symbCanDuplicate _
 declare function symbUniqueId( ) as zstring ptr
 declare function symbUniqueLabel( ) as zstring ptr
 declare function symbMakeProfileLabelName( ) as zstring ptr
-
-declare function symbGetMangledName _
+declare function symbGetMangledName( byval sym as FBSYMBOL ptr ) as zstring ptr
+declare function symbGetDBGName( byval sym as FBSYMBOL ptr ) as zstring ptr
+declare sub symbSetName( byval s as FBSYMBOL ptr, byval name_ as zstring ptr )
+declare sub symbMangleInitAbbrev( )
+declare sub symbMangleEndAbbrev( )
+declare sub symbMangleType _
 	( _
-		byval sym as FBSYMBOL ptr _
-	) as zstring ptr
-
-declare function symbGetDBGName _
-	( _
-		byval sym as FBSYMBOL ptr _
-	) as zstring ptr
-
-declare sub symbSetName _
-	( _
-		byval s as FBSYMBOL ptr, _
-		byval name_ as zstring ptr _
-	)
-
-declare sub symbMangleInitAbbrev _
-	( _
-	)
-
-declare sub symbMangleEndAbbrev	_
-	( _
-	)
-
-declare function symbMangleType _
-	( _
+		byref mangled as string, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr _
-	) as string
-
-declare function symbMangleParam _
-	( _
-		byval param as FBSYMBOL ptr _
-	) as string
+	)
+declare sub symbMangleParam( byref mangled as string, byval param as FBSYMBOL ptr )
 
 declare function symbDemangleFunctionPtr _
 	( _
@@ -2415,15 +2388,15 @@ declare function symbGetUDTBaseLevel _
 #define	typeSetIsRefAndArray( dt ) (dt or (FB_DATATYPE_REFERENCE or FB_DATATYPE_ARRAY))
 
 #if __FB_DEBUG__
-'' For debugging, e.g. use like this:
-''  symbTrace(a), "(replacing this)"
-''  symbTrace(b), "(with this)"
-#define symbTrace( s ) print __FUNCTION__ + "(" & __LINE__ & "): " + symbDump( s )
 declare function typeDump _
 	( _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr _
 	) as string
+'' For debugging, e.g. use like this:
+''  symbTrace(a), "(replacing this)"
+''  symbTrace(b), "(with this)"
+#define symbTrace( s ) print __FUNCTION__ + "(" & __LINE__ & "): "; symbDump( s )
 declare function symbDump( byval s as FBSYMBOL ptr ) as string
 #endif
 

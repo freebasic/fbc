@@ -1541,8 +1541,8 @@ function astNewBOP _
 	n->op.ex = ex
 	n->op.op = op
 
-	'' always alloc the result VR if it's a HL IR
-	if( irGetOption( IR_OPT_HIGHLEVEL ) ) then
+	'' always alloc the result VR for the C backend
+	if( env.clopt.backend = FB_BACKEND_GCC ) then
 		options or= AST_OPOPT_ALLOCRES
 	end if
 

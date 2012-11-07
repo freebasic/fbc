@@ -14,6 +14,7 @@ Version 0.25.0:
 - fbc will now also read out compile-time information from libs passed as libfoo.a instead of -l foo or #inclib "foo"
 - ASM backend: Floating point constants are now emitted in form of their raw byte representation, for better precision than when using STR() to emit them as rounded floating point number literals
 - crt/stdio.bi now declares rename() instead of rename_()
+- Property methods using an explicit ALIAS now respect that alias and do not append __get__ or __set__ anymore
 
 [added]
 - VIRTUAL and ABSTRACT methods (including virtual destructors) in UDTs extending OBJECT, which can be overridden by methods in derived UDTs, provided the same method name and signature is used
@@ -105,6 +106,7 @@ Version 0.25.0:
 - ASM backend used dword reads to push bytes/words from memory, potentially causing buffer overruns
 - ScreenInfo() crash under X11 gfxlib2 driver when RandR extension is unavailable
 - DELETE and DELETE[] were allowed to be used on forward references
+- C++ mangling of IMPORTed namespaced global variables (win32) was different from MinGW
 - Casting floating-point to unsigned longint now works as expected for values over 2^63
 - The wrong error message was shown for methods declared inside anonymous TYPE declarations
 - Operators declared inside namespaces can now be implemented outside of the namespace, provided the namespace prefix is used, just like with normal procedures

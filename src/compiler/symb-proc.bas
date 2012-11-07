@@ -1038,13 +1038,7 @@ function symbPreAddProc _
 
 end function
 
-'':::::
-function symbAddParam _
-	( _
-		byval symbol as zstring ptr, _
-		byval param as FBSYMBOL ptr _
-	) as FBSYMBOL ptr
-
+function symbAddVarForParam( byval param as FBSYMBOL ptr ) as FBSYMBOL ptr
     dim as FBARRAYDIM dTB(0) = any
     dim as FBSYMBOL ptr s = any
     dim as integer attrib = any, dtype = any
@@ -1090,9 +1084,9 @@ function symbAddParam _
 		attrib or= FB_SYMBATTRIB_SUFFIXED
 	end if
 
-	s = symbAddVarEx( symbol, NULL, dtype, param->subtype, 0, 0, dTB(), attrib )
+	s = symbAddVarEx( symbGetName( param ), NULL, dtype, param->subtype, 0, 0, dTB(), attrib )
 	if( s = NULL ) then
-		return NULL
+		exit function
 	end if
 
     '' declare it or arrays passed by descriptor will be initialized when REDIM'd
@@ -1103,7 +1097,6 @@ function symbAddParam _
     end if
 
 	function = s
-
 end function
 
 function symbAddProcResultParam( byval proc as FBSYMBOL ptr ) as FBSYMBOL ptr
@@ -1137,16 +1130,8 @@ function symbAddProcResult( byval proc as FBSYMBOL ptr ) as FBSYMBOL ptr
 		return symbGetProcResult( proc )
 	end if
 
-	dim as const zstring ptr id = NULL
-	if( irGetOption( IR_OPT_HIGHLEVEL ) ) then
-		id = @"fb$result"
-	end if
-
-	res = symbAddVarEx( id, NULL, _
-						proc->typ, proc->subtype, 0, _
-						0, dTB(), _
-					  	FB_SYMBATTRIB_FUNCRESULT, _
-					  	FB_SYMBOPT_PRESERVECASE )
+	res = symbAddVarEx( @"fb$result", NULL, proc->typ, proc->subtype, 0, _
+	                    0, dTB(), FB_SYMBATTRIB_FUNCRESULT, FB_SYMBOPT_PRESERVECASE )
 
 	symbProcAllocExt( proc )
 	proc->proc.ext->res = res
@@ -2465,7 +2450,7 @@ private function hMangleFunctionPtr _
     		''   reused if fwd types were resolved and removed
     		'' - can't use only the param->id.name because UDT's with the same
     		''   name declared inside different namespaces
-    		id += symbMangleParam( param )
+			symbMangleParam( id, param )
     	end if
 
     	param = symbGetParamNext( param )
@@ -2477,7 +2462,7 @@ private function hMangleFunctionPtr _
 		id += hex( dtype )
 	else
 		'' see the notes above
-		id += symbMangleType( dtype, subtype )
+		symbMangleType( id, dtype, subtype )
 	end if
 
     symbMangleEndAbbrev( )

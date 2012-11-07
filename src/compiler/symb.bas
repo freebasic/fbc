@@ -2087,6 +2087,28 @@ function symbCheckConstAssign _
 end function
 
 #if __FB_DEBUG__
+static shared as zstring ptr classnames(FB_SYMBCLASS_VAR to FB_SYMBCLASS_NSIMPORT) = _
+{ _
+	@"var"      , _
+	@"const"    , _
+	@"proc"     , _
+	@"param"    , _
+	@"define"   , _
+	@"keyword"  , _
+	@"label"    , _
+	@"namespace", _
+	@"enum"     , _
+	@"struct"   , _
+	@"class"    , _
+	@"field"    , _
+	@"bitfield" , _
+	@"typedef"  , _
+	@"fwdref"   , _
+	@"scope"    , _
+	@"nsimport"   _
+}
+
+'' For debugging
 function typeDump _
 	( _
 		byval dtype as integer, _
@@ -2100,6 +2122,7 @@ function typeDump _
 
 	if( dtype and FB_DATATYPE_INVALID ) then
 		dump += "invalid"
+		ok = (subtype = NULL)
 	else
 		select case( typeGetDtOnly( dtype ) )
 		case FB_DATATYPE_STRUCT
@@ -2130,7 +2153,7 @@ function typeDump _
 			case FB_DATATYPE_FWDREF
 				ok = symbIsFwdref( subtype )
 			case else
-				ok = TRUE
+				ok = FALSE
 			end select
 		else
 			select case( typeGetDtOnly( dtype ) )
@@ -2142,14 +2165,19 @@ function typeDump _
 				ok = TRUE
 			end select
 		end if
+	end if
 
-		if( ok = FALSE ) then
-			dump += ", "
-			if( subtype ) then
-				dump += str( subtype->class )
+	if( ok = FALSE ) then
+		dump += ", "
+		if( subtype ) then
+			if( (subtype->class >= FB_SYMBCLASS_VAR) and _
+			    (subtype->class <  FB_SYMBCLASS_NSIMPORT) ) then
+				dump += *classnames(subtype->class)
 			else
-				dump += "NULL"
+				dump += str( subtype->class )
 			end if
+		else
+			dump += "NULL"
 		end if
 	end if
 
@@ -2158,32 +2186,83 @@ function typeDump _
 	function = dump
 end function
 
-function symbDump( byval s as FBSYMBOL ptr ) as string
-	dim as string dump
+function symbDump( byval sym as FBSYMBOL ptr ) as string
+	dim as string s
 
-	if( s = NULL ) then
+	if( sym = NULL ) then
 		return "<NULL>"
 	end if
 
-	if( s->class = FB_SYMBCLASS_NSIMPORT ) then
-		dump += "NSIMPORT: "
-		dump += symbDump( s->nsimp.imp_ns )
-		return dump
+#if 1
+	s += *classnames(sym->class) + " "
+#endif
+
+#if 1
+	#macro checkAttrib( ID )
+		if( sym->attrib and FB_SYMBATTRIB_##ID ) then
+			s += lcase( #ID ) + " "
+		end if
+	#endmacro
+
+	checkAttrib( SHARED )
+	checkAttrib( STATIC )
+	checkAttrib( DYNAMIC )
+	checkAttrib( COMMON )
+	checkAttrib( EXTERN )
+	checkAttrib( PUBLIC )
+	checkAttrib( PRIVATE )
+	checkAttrib( LOCAL )
+	checkAttrib( EXPORT )
+	checkAttrib( IMPORT )
+	checkAttrib( OVERLOADED )
+	if( symbIsProc( sym ) ) then
+		checkAttrib( METHOD )
+	else
+		checkAttrib( PARAMINSTANCE )
+	end if
+	checkAttrib( CONSTRUCTOR )
+	checkAttrib( DESTRUCTOR )
+	checkAttrib( OPERATOR )
+	checkAttrib( PROPERTY )
+	checkAttrib( PARAMBYDESC )
+	checkAttrib( PARAMBYVAL )
+	checkAttrib( PARAMBYREF )
+	checkAttrib( LITERAL )
+	checkAttrib( CONST )
+	if( symbIsProc( sym ) ) then
+		checkAttrib( STATICLOCALS )
+	else
+		checkAttrib( OPTIONAL )
+	end if
+	checkAttrib( TEMP )
+	checkAttrib( DESCRIPTOR )
+	checkAttrib( FUNCRESULT )
+	checkAttrib( VIS_PRIVATE )
+	checkAttrib( VIS_PROTECTED )
+	if( symbIsProc( sym ) ) then
+		checkAttrib( NAKED )
+	else
+		checkAttrib( SUFFIXED )
+	end if
+	checkAttrib( ABSTRACT )
+	checkAttrib( VIRTUAL )
+#endif
+
+	if( sym->class = FB_SYMBCLASS_NSIMPORT ) then
+		s += "from: "
+		s += symbDump( sym->nsimp.imp_ns )
+		return s
 	end if
 
-	dim as zstring ptr id = s->id.name
+	dim as zstring ptr id = sym->id.name
 	if( id = NULL ) then
 		id = @"<unnamed>"
 	end if
-
-#if 0
-	dump += "[" + hex(s) + "] "
-#endif
-	dump += *id
+	s += *id
 
 #if 1
-	if( s->id.alias ) then
-		dump += " alias """ + *s->id.alias + """"
+	if( sym->id.alias ) then
+		s += " alias """ + *sym->id.alias + """"
 	end if
 #endif
 
@@ -2191,49 +2270,44 @@ function symbDump( byval s as FBSYMBOL ptr ) as string
 	'' Note: symbGetMangledName() will mangle the proc and set the
 	'' "mangled" flag. If this is done too early though, before the proc is
 	'' setup properly, then the mangled name will be empty or wrong.
-	dim as zstring ptr mangled = symbGetMangledName( s )
-	dump += " mangled """
-	if( mangled ) then
-		dump += *mangled
-	end if
-	dump += """"
+	s += " mangled """ + *symbGetMangledName( sym ) + """"
 #endif
 
-	dump += " as "
+	s += " as "
 
-	if( s->typ and FB_DATATYPE_INVALID ) then
-		if( s->class = FB_SYMBCLASS_KEYWORD ) then
-			dump += "<keyword>"
+	if( sym->typ and FB_DATATYPE_INVALID ) then
+		if( sym->class = FB_SYMBCLASS_KEYWORD ) then
+			s += "<keyword>"
 		else
-			dump += "<invalid>"
+			s += "<invalid>"
 		end if
 	else
 		'' UDTs themselves are FB_DATATYPE_STRUCT, but with NULL subtype,
 		'' so treat that as special case, so symbTypeToStr() doesn't crash.
-		if( s->subtype = NULL ) then
-			select case as const s->typ
+		if( sym->subtype = NULL ) then
+			select case as const( sym->typ )
 			case FB_DATATYPE_FWDREF
-				dump += "<fwdref>"
+				s += "<fwdref>"
 			case FB_DATATYPE_STRUCT
-				if( symbIsStruct( s ) ) then
-					if( symbGetUDTIsUnion( s ) ) then
-						dump += "<union>"
+				if( symbIsStruct( sym ) ) then
+					if( symbGetUDTIsUnion( sym ) ) then
+						s += "<union>"
 					else
-						dump += "<struct>"
+						s += "<struct>"
 					end if
 				else
-					dump += "<struct>"
+					s += "<struct>"
 				end if
 			case FB_DATATYPE_ENUM
-				dump += "<enum>"
+				s += "<enum>"
 			case else
-				dump += *symbTypeToStr( s->typ, NULL, s->lgt )
+				s += *symbTypeToStr( sym->typ, NULL, sym->lgt )
 			end select
 		else
-			dump += *symbTypeToStr( s->typ, s->subtype, s->lgt )
+			s += *symbTypeToStr( sym->typ, sym->subtype, sym->lgt )
 		end if
 	end if
 
-	function = dump
+	function = s
 end function
 #endif

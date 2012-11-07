@@ -481,20 +481,6 @@ conv_int:
 
 end sub
 
-function hJumpTbAllocSym( ) as any ptr
-	static as FBARRAYDIM dTB(0)
-	dim as FBSYMBOL ptr s = any
-
-	s = symbAddVarEx( symbUniqueLabel( ), NULL, _
-	                  typeAddrOf( FB_DATATYPE_VOID ), NULL, FB_POINTERSIZE, _
-	                  1, dTB(), FB_SYMBATTRIB_SHARED )
-
-	symbSetIsJumpTb( s )
-	symbSetIsInitialized( s )
-
-	function = s
-end function
-
 '':::::
 function hCheckFileFormat _
 	( _

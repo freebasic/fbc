@@ -220,8 +220,11 @@ function astLoadCALL( byval n as ASTNODE ptr ) as IRVREG ptr
 
 	'' UDT's can be returned in regs or as a pointer to the hidden param passed
 	case FB_DATATYPE_STRUCT
-		dtype = typeGet( symbGetUDTRetType( n->subtype ) )
-		if( dtype <> FB_DATATYPE_STRUCT ) then
+		dtype = symbGetUDTRetType( n->subtype )
+
+		'' integers shouldn't have subtype set to anything,
+		'' but it must be kept for struct ptrs
+		if( typeGetDtOnly( dtype ) <> FB_DATATYPE_STRUCT ) then
 			subtype = NULL
 		end if
 	end select
