@@ -16,6 +16,7 @@ Version 0.25.0:
 - crt/stdio.bi now declares rename() instead of rename_()
 
 [added]
+- VIRTUAL and ABSTRACT methods (including virtual destructors) in UDTs extending OBJECT, which can be overridden by methods in derived UDTs, provided the same method name and signature is used
 - Updated headers for caca 0.99.beta18 (caca.bi = new API, caca0.bi = old API)
 - Updated header for libzip 0.10.1
 - fbc -asm att|intel option (affects -gen gcc only)

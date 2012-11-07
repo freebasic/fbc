@@ -259,6 +259,8 @@ o ABI
 o classes
   - what should CLASS keyword do? struct vs. class as in C++?
 
+  - vtable lookup should handle THIS expression with side-effects
+
   - should methods overriding virtuals become virtual themselves?
     and even re-use the same vtable slot?
 
@@ -279,6 +281,13 @@ o classes
         or allow just one interface?
 		type Child extends A
       - multiple interfaces comes down to multiple inheritance (too hard?)
+
+  - obvious calls to ABSTRACTs should be disallowed, i.e. if the THIS expression
+    is a stack/global object that cannot have overridden the ABSTRACT,
+    in contrast to a object pointer or byref object
+
+  - classes with ABSTRACT destructor shouldn't be allowed to be DIM'ed or DELETE'd,
+    since the implicit dtor call will just be a NULL pointer deref
 
   - vtables must be emitted either
      a) as private globals, or
