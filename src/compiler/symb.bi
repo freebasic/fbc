@@ -136,7 +136,7 @@ enum FB_SYMBATTRIB
 	FB_SYMBATTRIB_EXPORT		= &h00000100
 	FB_SYMBATTRIB_IMPORT		= &h00000200
 	FB_SYMBATTRIB_OVERLOADED	= &h00000400
-	FB_SYMBATTRIB_METHOD		= &h00000800
+	FB_SYMBATTRIB_METHOD		= &h00000800  '' marks UDT member procs
     FB_SYMBATTRIB_CONSTRUCTOR   = &h00001000	'' methods only
     FB_SYMBATTRIB_DESTRUCTOR    = &h00002000	'' /
     FB_SYMBATTRIB_OPERATOR    	= &h00004000
@@ -154,8 +154,8 @@ enum FB_SYMBATTRIB
 	FB_SYMBATTRIB_VIS_PRIVATE	= &h04000000    '' UDT members only
 	FB_SYMBATTRIB_VIS_PROTECTED	= &h08000000    '' ditto
 	FB_SYMBATTRIB_NAKED         = &h10000000  '' procedures only
-	FB_SYMBATTRIB_ABSTRACT      = &h20000000
-	FB_SYMBATTRIB_VIRTUAL       = &h40000000
+	FB_SYMBATTRIB_VIRTUAL       = &h20000000  '' methods only: all virtuals (normal and pure)
+	FB_SYMBATTRIB_ABSTRACT      = &h40000000  '' methods only: pure virtuals (only)
 
 	FB_SYMBATTRIB_LITCONST		= FB_SYMBATTRIB_CONST or FB_SYMBATTRIB_LITERAL
 
@@ -413,6 +413,7 @@ type FB_STRUCTEXT
 	dtor			as FBSYMBOL_ ptr			'' destructor or NULL
 	clone			as FBSYMBOL_ ptr			'' LET overload proc or NULL
 	opovlTb(0 to AST_OP_SELFOPS-1) as FBSYMBOL_ ptr
+	vtableelements		as integer				'' vtable elements counter
 	vtable			as FBSYMBOL_ ptr			'' virtual-functions table struct
 	rtti			as FBSYMBOL_ ptr			'' Run-Time Type Info struct
 end type
@@ -530,6 +531,16 @@ type FB_PROCEXT
 	priority		as integer
 	gosub			as FB_PROCGSB
 	base_initree		as ASTNODE_ ptr  '' base() ctorcall/initializer given in constructor bodies
+
+	'' virtual methods:
+	''    vtable array index, location of the procptr in the vtbl
+	'' normal methods that override a virtual method:
+	''    vtable index of the virtual method that's overridden by this one
+	'' other methods:
+	''    0
+	'' A valid index must be >= 2 since the first two vtable elements are
+	'' the null pointer and the rtti pointer.
+	vtableindex		as integer
 end type
 
 type FB_PROCRTL
@@ -925,6 +936,8 @@ declare function symbFindCtorProc _
 		byval proc as FBSYMBOL ptr _
 	) as FBSYMBOL ptr
 
+declare sub symbProcSetVtableIndex( byval proc as FBSYMBOL ptr, byval i as integer )
+declare function symbProcGetVtableIndex( byval proc as FBSYMBOL ptr ) as integer
 declare function symbGetProcResult( byval proc as FBSYMBOL ptr ) as FBSYMBOL ptr
 
 declare function symbGetConstValueAsStr _
@@ -1197,6 +1210,8 @@ declare sub symbAddProcInstancePtr _
 		byval proc as FBSYMBOL ptr _
 	)
 
+declare sub symbProcAllocExt( byval proc as FBSYMBOL ptr )
+declare sub symbProcFreeExt( byval proc as FBSYMBOL ptr )
 declare function symbProcReturnsUdtOnStack( byval proc as FBSYMBOL ptr ) as integer
 
 declare function symbCalcProcParamLen _
@@ -1648,6 +1663,8 @@ declare sub symbSetDefType _
 		byval typ as integer _
 	)
 
+declare sub symbUdtAllocExt( byval udt as FBSYMBOL ptr )
+declare sub symbCompAddDefMembers( byval sym as FBSYMBOL ptr )
 declare function symbCompIsTrivial( byval sym as FBSYMBOL ptr ) as integer
 declare sub symbSetCompCtorHead( byval sym as FBSYMBOL ptr, byval proc as FBSYMBOL ptr )
 declare sub symbCheckCompCtor( byval sym as FBSYMBOL ptr, byval proc as FBSYMBOL ptr )
@@ -1671,10 +1688,7 @@ declare sub symbSetCompOpOvlHead _
 		byval proc as FBSYMBOL ptr _
 	)
 
-declare sub symbCompAddDefMembers _
-	( _
-		byval sym as FBSYMBOL ptr _
-	)
+declare function symbCompAddVirtual( byval udt as FBSYMBOL ptr ) as integer
 
 declare function symbAddGlobalCtor( byval proc as FBSYMBOL ptr ) as FB_GLOBCTORLIST_ITEM ptr
 declare function symbAddGlobalDtor( byval proc as FBSYMBOL ptr ) as FB_GLOBCTORLIST_ITEM ptr
@@ -2205,10 +2219,6 @@ declare function symbGetUDTBaseLevel _
 
 #define symbGetProcOvlNext(f) f->proc.ovl.next
 
-#define symbAllocProcExt() xcallocate( len( FB_PROCEXT ) )
-
-#define symbFreeProcExt(f) deallocate( f->proc.ext )
-
 #define symbGetProcStatReturnUsed(f) ((f->proc.ext->stats and FB_PROCSTATS_RETURNUSED) <> 0)
 #define symbSetProcStatReturnUsed(f) f->proc.ext->stats or= FB_PROCSTATS_RETURNUSED
 
@@ -2218,9 +2228,7 @@ declare function symbGetUDTBaseLevel _
 #define symbGetProcPriority(f) f->proc.ext->priority
 
 #macro symbSetProcPriority(f,p)
-	if( f->proc.ext = NULL ) then
-		f->proc.ext = symbAllocProcExt( )
-	end if
+	symbProcAllocExt( f )
 	f->proc.ext->priority = p
 #endmacro
 
@@ -2236,9 +2244,7 @@ declare function symbGetUDTBaseLevel _
 #define symbGetProcOpOvl(f) f->proc.ext->opovl.op
 
 #macro symbSetProcOpOvl(f, op_)
-	if( f->proc.ext = NULL ) then
-		f->proc.ext = symbAllocProcExt( )
-	end if
+	symbProcAllocExt( f )
 	f->proc.ext->opovl.op = op_
 #endmacro
 

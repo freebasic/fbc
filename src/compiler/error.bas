@@ -258,12 +258,19 @@ end type
 		@"Accessing base UDT's private default constructor", _
 		@"Accessing base UDT's private destructor", _
 		@"Illegal non-static member access", _
+		@"Constructor declared ABSTRACT", _
+		@"Constructor declared VIRTUAL", _
 		@"Member cannot be static", _
 		@"Member isn't static", _
 		@"Only static members can be accessed from static functions", _
 		@"The PRIVATE and PUBLIC attributes are not allowed with REDIM, COMMON or EXTERN", _
-		@"The function prototype wasn't declared as STATIC", _
-		@"The function prototype wasn't declared as CONST", _
+		@"STATIC used here, but not the in the DECLARE statement", _
+		@"CONST used here, but not the in the DECLARE statement", _
+		@"VIRTUAL used here, but not the in the DECLARE statement", _
+		@"ABSTRACT used here, but not the in the DECLARE statement", _
+		@"Method declared VIRTUAL, but UDT does not extend OBJECT", _
+		@"Method declared ABSTRACT, but UDT does not extend OBJECT", _
+		@"Implemented body for an ABSTRACT method", _
 		@"This operator cannot be STATIC", _
 		@"Parameter must be an integer", _
 		@"Parameter must be a pointer", _
@@ -288,8 +295,10 @@ end type
 		@"Ambiguous symbol access, explicit scope resolution required", _
 		@"An ENUM, TYPE or UNION cannot be empty", _
 		@"ENUM's declared inside EXTERN .. END EXTERN blocks don't open new scopes", _
-		@"Only member functions can be static", _
-		@"Only member functions can be const", _
+		@"STATIC used on non-member procedure", _
+		@"CONST used on non-member procedure", _
+		@"ABSTRACT used on non-member procedure", _
+		@"VIRTUAL used on non-member procedure", _
 		@"Invalid initializer", _
 		@"Objects with default [con|de]structors or methods are only allowed in the module level", _
 		@"Symbol not a CLASS, ENUM, TYPE or UNION type", _

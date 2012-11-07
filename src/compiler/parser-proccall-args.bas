@@ -400,7 +400,6 @@ function cProcArgList _
 	if( symbIsMethod( proc ) ) then
 		'' calling a method without the instance ptr?
 		if( (options and FB_PARSEROPT_HASINSTPTR) = 0 ) then
-
 			'' is this really a static access or just a method call from
 			'' another method in the same class?
 			if( (base_parent <> NULL) or (symbIsMethod( parser.currproc ) = FALSE) ) then
@@ -416,6 +415,9 @@ function cProcArgList _
 								symbGetProcHeadParam( parser.currproc ) ) )
 			arg->mode = INVALID
 		end if
+
+		assert( ptrexpr = NULL )
+		ptrexpr = astBuildVtableLookup( proc, arg_list->head->expr )
 	else
 		'' remove the instance ptr
 		if( (options and FB_PARSEROPT_HASINSTPTR) <> 0 ) then
@@ -426,7 +428,7 @@ function cProcArgList _
 		end if
 	end if
 
-    procexpr = astNewCALL( proc, ptrexpr )
+	procexpr = astNewCALL( proc, ptrexpr )
 
 	params = symbGetProcParams( proc )
 

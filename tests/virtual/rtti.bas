@@ -1,6 +1,6 @@
 # include "fbcu.bi"
 
-namespace fbc_tests.structs.rtti
+namespace fbc_tests.virt.rtti
 
 const DOG_ACTION = "rub belly"
 const CAT_ACTION = "sleep"
@@ -51,7 +51,7 @@ sub test cdecl( )
 end sub
 
 private sub ctor( ) constructor
-	fbcu.add_suite( "tests/structs/rtti" )
+	fbcu.add_suite( "tests/virtual/rtti" )
 	fbcu.add_test( "Is operator", @test )
 end sub
 

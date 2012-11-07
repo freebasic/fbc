@@ -15,6 +15,7 @@ function cDeclaration _
 	) as integer
 
 	dim as FB_SYMBATTRIB attrib = FB_SYMBATTRIB_NONE
+	dim as integer tk = any
 
     '' QB mode?
     if( env.clopt.lang = FB_LANG_QB ) then
@@ -52,15 +53,28 @@ function cDeclaration _
 
 	end select
 
-	select case as const lexGetToken( )
-	case FB_TK_STATIC
+	tk = lexGetToken( )
+
+	select case as const( tk )
+	case FB_TK_STATIC, FB_TK_CONST, FB_TK_VIRTUAL, FB_TK_ABSTRACT
+		'' STATIC? SUB|FUNCTION|...
+		'' CONST? (ABSTRACT|VIRTUAL)? SUB|FUNCTION|...
+		'' Note: ABSTRACT doesn't make sense on bodies, but it's still
+		'' allowed here to let cProcStmtBegin() show a nice error.
 		select case as const lexGetLookAhead( 1 )
 		case FB_TK_FUNCTION, FB_TK_SUB, FB_TK_OPERATOR, _
-			 FB_TK_CONSTRUCTOR, FB_TK_DESTRUCTOR, FB_TK_PROPERTY
+		     FB_TK_CONSTRUCTOR, FB_TK_DESTRUCTOR, FB_TK_PROPERTY, _
+		     FB_TK_VIRTUAL, FB_TK_ABSTRACT
 			function = cProcStmtBegin( attrib )
-
 		case else
-			function = cVariableDecl( attrib )
+			select case( tk )
+			case FB_TK_CONST
+				function = cConstDecl( attrib )
+			case FB_TK_STATIC
+				function = cVariableDecl( attrib )
+			case else
+				errReport( FB_ERRMSG_SYNTAXERROR )
+			end select
 		end select
 
 	case FB_TK_FUNCTION, FB_TK_SUB, FB_TK_DESTRUCTOR, FB_TK_PROPERTY
@@ -97,16 +111,6 @@ function cDeclaration _
 				end if
 			end if
 		end if
-
-	case FB_TK_CONST
-		select case as const lexGetLookAhead( 1 )
-		case FB_TK_FUNCTION, FB_TK_SUB, FB_TK_OPERATOR, _
-		     FB_TK_CONSTRUCTOR, FB_TK_DESTRUCTOR, FB_TK_PROPERTY
-			function = cProcStmtBegin( attrib )
-
-		case else
-			function = cConstDecl( attrib )
-		end select
 
 	case FB_TK_TYPE, FB_TK_UNION
 		function = cTypeDecl( attrib )

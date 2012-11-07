@@ -999,6 +999,8 @@ function symbLookupAt _
 
     static as zstring * FB_MAXNAMELEN+1 sname
 
+	assert( symbIsStruct( ns ) or symbIsNamespace( ns ) or symbIsEnum( ns ) )
+
     if( preserve_case = FALSE ) then
     	hUcase( *id, sname )
     	id = @sname
@@ -2161,6 +2163,12 @@ function symbDump( byval s as FBSYMBOL ptr ) as string
 
 	if( s = NULL ) then
 		return "<NULL>"
+	end if
+
+	if( s->class = FB_SYMBCLASS_NSIMPORT ) then
+		dump += "NSIMPORT: "
+		dump += symbDump( s->nsimp.imp_ns )
+		return dump
 	end if
 
 	dim as zstring ptr id = s->id.name

@@ -265,6 +265,68 @@ function astBuildCall _
 
 end function
 
+function astBuildVtableLookup _
+	( _
+		byval proc as FBSYMBOL ptr, _
+		byval thisexpr as ASTNODE ptr _
+	) as ASTNODE ptr
+
+	dim as ASTNODE ptr p = any
+	dim as integer vtableindex = any
+
+	vtableindex = symbProcGetVtableIndex( proc )
+
+	if( vtableindex > 0 ) then
+		'' calling virtual method
+		''    method( this )
+		'' becomes
+		''    (*(this.vptr[vtableindex]))( this )
+		'' i.e. the procptr must be read out from the vtable based on
+		'' the vtable index of this method, and then it is called.
+		''
+		'' The this.vptr points to the 3rd element of the vtable,
+		'' but the vtable index actually is absolute, not relative to
+		'' the 3rd element, so it actually should be:
+		''    (*(this.vptr[vtableindex-2]))( this )
+		''
+		'' Also, the vptr always is at the top of the object,
+		'' so we can just do:
+		''    (*((*cptr( any ptr ptr ptr, @this ))[vtableindex-2]))( this )
+
+		'' Get the vtable pointer of type ANY PTR PTR
+		'' (casting to any ptr first to avoid issues with derived UDT ptrs)
+		p = astCloneTree( thisexpr )
+		p = astNewADDROF( p )
+		p = astNewCONV( typeAddrOf( FB_DATATYPE_VOID ), NULL, p )
+		p = astNewCONV( typeMultAddrOf( FB_DATATYPE_VOID, 3 ), NULL, p )
+		p = astNewDEREF( p )
+
+		'' Apply the index
+		p = astNewBOP( AST_OP_ADD, p, astNewCONSTi( vtableindex - 2 ), _
+		               NULL, AST_OPOPT_DEFAULT or AST_OPOPT_DOPTRARITH )
+
+		'' Deref to get the procptr stored in that vtable slot
+		p = astNewDEREF( p )
+
+		'' Cast to proper procptr type
+		'' (this is important for C/LLVM backends, which are pretty strict about types)
+		p = astNewCONV( typeAddrOf( FB_DATATYPE_FUNCTION ), symbAddProcPtrFromFunction( proc ), p )
+
+		'' null pointer checking for ABSTRACTs
+		'' (in case it wasn't overridden)
+		if( env.clopt.extraerrchk ) then
+			if( symbIsAbstract( proc ) ) then
+				p = astNewPTRCHK( p, lexLineNum( ) )
+			end if
+		end if
+	else
+		'' Calling normal non-virtual method, nothing to do
+		p = NULL
+	end if
+
+	function = p
+end function
+
 '':::::
 function astBuildCtorCall _
 	( _
@@ -296,21 +358,27 @@ function astBuildCtorCall _
 
 end function
 
-'':::::
 function astBuildDtorCall _
 	( _
 		byval sym as FBSYMBOL ptr, _
-		byval thisexpr as ASTNODE ptr _
+		byval thisexpr as ASTNODE ptr, _
+		byval ignore_virtual as integer _
 	) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc = any
+	dim as FBSYMBOL ptr dtor = any
+	dim as ASTNODE ptr callexpr = any
 
-    proc = astNewCALL( symbGetCompDtor( sym ) )
+	'' Can be virtual
+	dtor = symbGetCompDtor( sym )
+	if( ignore_virtual ) then
+		callexpr = astNewCALL( dtor )
+	else
+		callexpr = astNewCALL( dtor, astBuildVtableLookup( dtor, thisexpr ) )
+	end if
 
-    astNewARG( proc, thisexpr )
+	astNewARG( callexpr, thisexpr )
 
-    function = proc
-
+	function = callexpr
 end function
 
 '':::::
@@ -346,6 +414,11 @@ function astPatchCtorCall _
 		byval procexpr as ASTNODE ptr, _
 		byval thisexpr as ASTNODE ptr _
 	) as ASTNODE ptr
+
+	'' Note: ctors cannot be virtual, so there's no need to worry about
+	'' updating any vtable lookup here (which would use the thisexpr too)
+	assert( astIsCALL( procexpr ) )
+	assert( symbProcGetVtableIndex( procexpr->sym ) = 0 )
 
 	if( procexpr <> NULL ) then
 		'' replace the instance pointer

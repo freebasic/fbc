@@ -770,6 +770,11 @@ function cFuncPtrOrMemberDeref _
 		return expr
 	end if
 
+	'' null pointer checking
+	if( env.clopt.extraerrchk ) then
+		expr = astNewPTRCHK( expr, lexLineNum( ) )
+	end if
+
 	'' function?
 	if( symbGetType( subtype ) <> FB_DATATYPE_VOID ) then
 		expr = cFunctionCall( NULL, subtype, expr )

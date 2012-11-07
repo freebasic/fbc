@@ -32,6 +32,7 @@ structs \
 swap \
 threads \
 typedef \
+virtual \
 visibility \
 wstring
 

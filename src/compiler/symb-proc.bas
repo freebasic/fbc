@@ -53,6 +53,20 @@ end sub
 '' add
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
+sub symbProcAllocExt( byval proc as FBSYMBOL ptr )
+	assert( symbIsProc( proc ) )
+	if( proc->proc.ext = NULL ) then
+		proc->proc.ext = xcallocate( sizeof( FB_PROCEXT ) )
+	end if
+end sub
+
+sub symbProcFreeExt( byval proc as FBSYMBOL ptr )
+	if( proc->proc.ext ) then
+		deallocate( proc->proc.ext )
+		proc->proc.ext = NULL
+	end if
+end sub
+
 function symbProcReturnsUdtOnStack( byval proc as FBSYMBOL ptr ) as integer
 	if( symbGetType( proc ) = FB_DATATYPE_STRUCT ) then
 		function = (typeGetDtAndPtrOnly( symbGetProcRealType( proc ) ) = typeAddrOf( FB_DATATYPE_STRUCT ))
@@ -551,7 +565,7 @@ private function hSetupProc _
 	) as FBSYMBOL ptr
 
     dim as integer stats = any, preserve_case = any
-	dim as FBSYMBOL ptr proc = any, head_proc = any
+	dim as FBSYMBOL ptr proc = any, head_proc = any, overridden = any
 
     function = NULL
 
@@ -583,6 +597,8 @@ private function hSetupProc _
 	'' ctor/dtor?
 	if( (attrib and (FB_SYMBATTRIB_CONSTRUCTOR or _
 					 FB_SYMBATTRIB_DESTRUCTOR)) <> 0 ) then
+
+		assert( attrib and FB_SYMBATTRIB_METHOD )
 
 		'' ctor?
 		if( (attrib and FB_SYMBATTRIB_CONSTRUCTOR) <> 0 ) then
@@ -782,8 +798,52 @@ add_proc:
 	'proc->proc.returnMethod = returnMethod
 #endif
 
-	function = proc
+	'' Adding method to UDT?
+	if( symbIsMethod( proc ) ) then
+		assert( symbIsStruct( parent ) )
 
+		'' virtual?
+		if( symbIsVirtual( proc ) ) then
+			'' Update parent & set vtable index
+			symbProcSetVtableIndex( proc, symbCompAddVirtual( parent ) )
+		end if
+
+		'' Only check if this really is a derived UDT
+		if( parent->udt.base ) then
+			'' Destructor?
+			if( symbIsDestructor( proc ) ) then
+				'' There can always only be one, so there is no
+				'' need to do a lookup and/or overload checks.
+				overridden = symbGetCompDtor( parent->udt.base->subtype )
+			elseif( id ) then
+				'' If this method has the same id and signature as
+				'' a virtual derived from some base, it overrides that
+				'' virtual, by being assigned the same vtable index.
+
+				'' Find a method in the base with the same name
+				overridden = symbLookupByNameAndClass( _
+					parent->udt.base->subtype, _
+					id, FB_SYMBCLASS_PROC, _
+					((options and FB_SYMBOPT_PRESERVECASE) <> 0), _
+					TRUE )  '' search NSIMPORTs (bases)
+
+				'' Find the overload with the exact same signature
+				overridden = symbFindOverloadProc( overridden, proc )
+			else
+				overridden = NULL
+			end if
+
+			if( overridden ) then
+				'' Is that overload really a virtual?
+				if( symbIsVirtual( overridden ) ) then
+					'' Store index of the virtual that's being overridden
+					symbProcSetVtableIndex( proc, symbProcGetVtableIndex( overridden ) )
+				end if
+			end if
+		end if
+	end if
+
+	function = proc
 end function
 
 function symbAddProc _
@@ -828,14 +888,12 @@ function symbAddOperator _
 
 	dim as FBSYMBOL ptr sym = any
 
-	if( proc->proc.ext = NULL ) then
-		proc->proc.ext = symbAllocProcExt( )
-	end if
+	symbProcAllocExt( proc )
 	proc->proc.ext->opovl.op = op
 
 	sym = symbAddProc( proc, NULL, id_alias, dtype, subtype, attrib, mode, options )
 	if( sym = NULL ) then
-		symbFreeProcExt( proc )
+		symbProcFreeExt( proc )
 		exit function
 	end if
 
@@ -1061,10 +1119,7 @@ function symbAddProcResultParam( byval proc as FBSYMBOL ptr ) as FBSYMBOL ptr
 	s = symbAddVarEx( id, NULL, FB_DATATYPE_STRUCT, proc->subtype, FB_POINTERSIZE, _
 	                  0, dTB(), FB_SYMBATTRIB_PARAMBYREF, FB_SYMBOPT_PRESERVECASE )
 
-	if( proc->proc.ext = NULL ) then
-		proc->proc.ext = symbAllocProcExt( )
-	end if
-
+	symbProcAllocExt( proc )
 	proc->proc.ext->res = s
 
 	symbSetIsDeclared( s )
@@ -1093,10 +1148,7 @@ function symbAddProcResult( byval proc as FBSYMBOL ptr ) as FBSYMBOL ptr
 					  	FB_SYMBATTRIB_FUNCRESULT, _
 					  	FB_SYMBOPT_PRESERVECASE )
 
-	if( proc->proc.ext = NULL ) then
-		proc->proc.ext = symbAllocProcExt( )
-	end if
-
+	symbProcAllocExt( proc )
 	proc->proc.ext->res = res
 
 	'' clear up the result
@@ -2279,11 +2331,7 @@ sub symbDelPrototype _
 		hDelParams( s )
 	end if
 
-    ''
-    if( s->proc.ext <> NULL ) then
-    	symbFreeProcExt( s )
-    	s->proc.ext = NULL
-    end if
+	symbProcFreeExt( s )
 
     symbFreeSymbol( s )
 
@@ -2338,6 +2386,19 @@ end function
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' misc
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+sub symbProcSetVtableIndex( byval proc as FBSYMBOL ptr, byval i as integer )
+	symbProcAllocExt( proc )
+	proc->proc.ext->vtableindex = i
+end sub
+
+function symbProcGetVtableIndex( byval proc as FBSYMBOL ptr ) as integer
+	if( proc->proc.ext ) then
+		function = proc->proc.ext->vtableindex
+	else
+		function = 0
+	end if
+end function
 
 function symbGetProcResult( byval proc as FBSYMBOL ptr ) as FBSYMBOL ptr
 	if( proc->proc.ext ) then

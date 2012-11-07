@@ -35,13 +35,6 @@ private function hTypeProtoDecl _
 
 	dim as integer res = any, is_nested = any
 
-#macro hCheckStatic( attrib )
-	if( (attrib and FB_SYMBATTRIB_STATIC) <> 0 ) then
-		errReport( FB_ERRMSG_MEMBERCANTBESTATIC )
-		attrib and= not FB_SYMBATTRIB_STATIC
-	end if
-#endmacro
-
 	'' anon?
 	if( symbGetUDTIsAnon( parent ) ) then
 		errReport( FB_ERRMSG_METHODINANONUDT )
@@ -66,13 +59,14 @@ private function hTypeProtoDecl _
 	'' DECLARE
 	lexSkipToken( )
 
-	cConstOrStaticAttribute( @attrib )
+	cMethodAttributes( parent, attrib )
 
 	res = TRUE
 
 	select case as const lexGetToken( )
 	case FB_TK_CONSTRUCTOR
-        hCheckStatic( attrib )
+		hDisallowStaticAttrib( attrib )
+		hDisallowVirtualAttrib( attrib )
 
 		lexSkipToken( )
 
@@ -83,7 +77,7 @@ private function hTypeProtoDecl _
 		end if
 
 	case FB_TK_DESTRUCTOR
-        hCheckStatic( attrib )
+		hDisallowStaticAttrib( attrib )
 
 		lexSkipToken( )
 
@@ -103,7 +97,7 @@ private function hTypeProtoDecl _
 		end if
 
 	case FB_TK_PROPERTY
-        hCheckStatic( attrib )
+		hDisallowStaticAttrib( attrib )
 
 		lexSkipToken( )
 

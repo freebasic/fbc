@@ -54,17 +54,55 @@ sub cLibAttribute( )
 	end if
 end sub
 
-sub cConstOrStaticAttribute( byval pattrib as integer ptr )
-	select case( lexGetToken( ) )
+sub cMethodAttributes _
+	( _
+		byval parent as FBSYMBOL ptr, _
+		byref attrib as integer _
+	)
+
 	'' STATIC?
-	case FB_TK_STATIC
-		lexSkipToken( )
-		*pattrib or= FB_SYMBATTRIB_STATIC
+	if( hMatch( FB_TK_STATIC ) ) then
+		attrib or= FB_SYMBATTRIB_STATIC
+		'' STATIC methods can't be any of the below
+		exit sub
+	end if
+
 	'' CONST?
-	case FB_TK_CONST
+	if( hMatch( FB_TK_CONST ) ) then
+		attrib or= FB_SYMBATTRIB_CONST
+	end if
+
+	'' (ABSTRACT|VIRTUAL)?
+	select case( lexGetToken( ) )
+	case FB_TK_ABSTRACT
+		attrib or= FB_SYMBATTRIB_VIRTUAL or FB_SYMBATTRIB_ABSTRACT
+
+		'' Abstracts can only be allowed in UDTs that extend OBJECT,
+		'' because that is what provides the needed vtable ptr.
+		if( parent ) then
+			if( symbGetHasRTTI( parent ) = FALSE ) then
+				errReport( FB_ERRMSG_ABSTRACTWITHOUTRTTI )
+				attrib and= not (FB_SYMBATTRIB_VIRTUAL or FB_SYMBATTRIB_ABSTRACT)
+			end if
+		end if
+
 		lexSkipToken( )
-		*pattrib or= FB_SYMBATTRIB_CONST
+
+	case FB_TK_VIRTUAL
+		attrib or= FB_SYMBATTRIB_VIRTUAL
+
+		'' ditto for virtuals
+		if( parent ) then
+			if( symbGetHasRTTI( parent ) = FALSE ) then
+				errReport( FB_ERRMSG_VIRTUALWITHOUTRTTI )
+				attrib and= not FB_SYMBATTRIB_VIRTUAL
+			end if
+		end if
+
+		lexSkipToken( )
+
 	end select
+
 end sub
 
 '':::::
@@ -195,22 +233,25 @@ private sub hCheckAttribs _
 	)
 
 	'' the body can only be STATIC if the proto is too
-	if( (attrib and FB_SYMBATTRIB_STATIC) <> 0 ) then
-		if( symbIsStatic( proto ) = FALSE ) then
-			errReport( FB_ERRMSG_PROCPROTOTYPENOTSTATIC )
-			return
-		end if
+	if( (attrib and FB_SYMBATTRIB_STATIC) and (not symbIsStatic( proto )) ) then
+		errReport( FB_ERRMSG_PROCPROTOTYPENOTSTATIC )
 	end if
 
 	'' same for CONST
-	if( (attrib and FB_SYMBATTRIB_CONST) <> 0 ) then
-		if( symbIsConstant( proto ) = FALSE ) then
-			errReport( FB_ERRMSG_PROCPROTOTYPENOTCONST )
-			return
-		end if
+	if( (attrib and FB_SYMBATTRIB_CONST) and (not symbIsConstant( proto )) ) then
+		errReport( FB_ERRMSG_PROCPROTOTYPENOTCONST )
+	end if
+
+	'' and ABSTRACT (abstracts are VIRTUAL too, so checking them first)
+	if( (attrib and FB_SYMBATTRIB_ABSTRACT) and (not symbIsAbstract( proto )) ) then
+		errReport( FB_ERRMSG_PROCPROTOTYPENOTABSTRACT )
+	'' and VIRTUAL
+	elseif( (attrib and FB_SYMBATTRIB_VIRTUAL) and (not symbIsVirtual( proto )) ) then
+		errReport( FB_ERRMSG_PROCPROTOTYPENOTVIRTUAL )
 	end if
 
 	symbGetAttrib( proto ) or= attrib
+
 end sub
 
 '':::::
@@ -490,10 +531,10 @@ private function hDoNesting _
 
 end function
 
-private sub cNakedAttribute( byval pattrib as integer ptr )
+private sub cNakedAttribute( byref attrib as integer )
 	if( ucase( *lexGetText( ) ) = "NAKED" ) then
 		lexSkipToken( )
-		*pattrib or= FB_SYMBATTRIB_NAKED
+		attrib or= FB_SYMBATTRIB_NAKED
 	end if
 end sub
 
@@ -555,7 +596,7 @@ function cProcHeader _
 	stats = 0
 
 	'' [NAKED]
-	cNakedAttribute(@attrib)
+	cNakedAttribute( attrib )
 
 	'' CallConvention?
 	dim as FB_FUNCMODE mode = cProcCallingConv( )
@@ -1206,7 +1247,7 @@ function cOperatorHeader _
 	subtype = NULL
 
 	'' [NAKED]
-	cNakedAttribute(@attrib)
+	cNakedAttribute( attrib )
 
 	'' CallConvention?
 	dim as FB_FUNCMODE mode = cProcCallingConv( )
@@ -1567,7 +1608,7 @@ function cPropertyHeader _
 	stats = 0
 
 	'' [NAKED]
-	cNakedAttribute(@attrib)
+	cNakedAttribute( attrib )
 
 	'' CallConvention?
 	dim as FB_FUNCMODE mode = cProcCallingConv( )
@@ -1792,7 +1833,7 @@ function cCtorHeader _
 	end if
 
 	'' [NAKED]
-	cNakedAttribute(@attrib)
+	cNakedAttribute( attrib )
 
 	'' CallConvention?
 	'' ctors and dtors must be always CDECL if passed to REDIM
@@ -1948,6 +1989,26 @@ function cCtorHeader _
 
 end function
 
+sub hDisallowStaticAttrib( byref attrib as integer )
+	if( (attrib and FB_SYMBATTRIB_STATIC) <> 0 ) then
+		errReport( FB_ERRMSG_MEMBERCANTBESTATIC )
+		attrib and= not FB_SYMBATTRIB_STATIC
+	end if
+end sub
+
+sub hDisallowVirtualAttrib( byref attrib as integer )
+	'' Constructors cannot be virtual (they initialize the vptr
+	'' needed for virtual calls, chicken-egg problem)
+	if( attrib and (FB_SYMBATTRIB_ABSTRACT or FB_SYMBATTRIB_VIRTUAL) ) then
+		if( attrib and FB_SYMBATTRIB_ABSTRACT ) then
+			errReport( FB_ERRMSG_ABSTRACTCTOR )
+		else
+			errReport( FB_ERRMSG_VIRTUALCTOR )
+		end if
+		attrib and= not (FB_SYMBATTRIB_ABSTRACT or FB_ERRMSG_VIRTUALCTOR)
+	end if
+end sub
+
 '' ProcStmtBegin  =  (PRIVATE|PUBLIC)? STATIC?
 ''                   (SUB|FUNCTION|CONSTRUCTOR|DESTRUCTOR|OPERATOR) ProcHeader .
 function cProcStmtBegin( byval attrib as FB_SYMBATTRIB ) as integer
@@ -1957,13 +2018,6 @@ function cProcStmtBegin( byval attrib as FB_SYMBATTRIB ) as integer
 
 	function = FALSE
 
-#macro hCheckStatic( attrib )
-	if( (attrib and FB_SYMBATTRIB_STATIC) <> 0 ) then
-		errReport( FB_ERRMSG_MEMBERCANTBESTATIC )
-		attrib and= not FB_SYMBATTRIB_STATIC
-	end if
-#endmacro
-
 	if( (attrib and (FB_SYMBATTRIB_PUBLIC or FB_SYMBATTRIB_PRIVATE)) = 0 ) then
 		if( env.opt.procpublic ) then
 			attrib or= FB_SYMBATTRIB_PUBLIC
@@ -1972,7 +2026,7 @@ function cProcStmtBegin( byval attrib as FB_SYMBATTRIB ) as integer
 		end if
 	end if
 
-	cConstOrStaticAttribute( @attrib )
+	cMethodAttributes( NULL, attrib )
 
 	'' SUB | FUNCTION
 	tkn = lexGetToken( )
@@ -1986,7 +2040,8 @@ function cProcStmtBegin( byval attrib as FB_SYMBATTRIB ) as integer
 			attrib or= FB_SYMBATTRIB_CONSTRUCTOR
 		end if
 
-		hCheckStatic( attrib )
+		hDisallowStaticAttrib( attrib )
+		hDisallowVirtualAttrib( attrib )
 
 	case FB_TK_DESTRUCTOR
 		if( fbLangOptIsSet( FB_LANG_OPT_CLASS ) = FALSE ) then
@@ -1995,7 +2050,7 @@ function cProcStmtBegin( byval attrib as FB_SYMBATTRIB ) as integer
 			attrib or= FB_SYMBATTRIB_DESTRUCTOR
 		end if
 
-		hCheckStatic( attrib )
+		hDisallowStaticAttrib( attrib )
 
 	case FB_TK_OPERATOR
 		if( fbLangOptIsSet( FB_LANG_OPT_OPEROVL ) = FALSE ) then
@@ -2011,7 +2066,7 @@ function cProcStmtBegin( byval attrib as FB_SYMBATTRIB ) as integer
 			attrib or= FB_SYMBATTRIB_PROPERTY or FB_SYMBATTRIB_OVERLOADED
 		end if
 
-		hCheckStatic( attrib )
+		hDisallowStaticAttrib( attrib )
 
 	case else
 		errReport( FB_ERRMSG_SYNTAXERROR )
@@ -2051,12 +2106,29 @@ function cProcStmtBegin( byval attrib as FB_SYMBATTRIB ) as integer
 	'' STATIC or CONST can only be used with member functions
 	if( symbGetClass( symbGetNamespace( proc ) ) = FB_SYMBCLASS_NAMESPACE ) then
 		if( symbIsStatic( proc ) ) then
-			errReport( FB_ERRMSG_ONLYMEMBERFUNCTIONSCANBESTATIC, TRUE )
+			errReport( FB_ERRMSG_STATICNONMEMBERPROC, TRUE )
 			symbGetAttrib( proc ) and= not FB_SYMBATTRIB_STATIC
-		elseif( symbIsConstant( proc ) ) then
-			errReport( FB_ERRMSG_ONLYMEMBERFUNCTIONSCANBECONST, TRUE )
+		end if
+
+		if( symbIsConstant( proc ) ) then
+			errReport( FB_ERRMSG_CONSTNONMEMBERPROC, TRUE )
 			symbGetAttrib( proc ) and= not FB_SYMBATTRIB_CONST
 		end if
+
+		if( symbIsAbstract( proc ) ) then
+			errReport( FB_ERRMSG_ABSTRACTNONMEMBERPROC, TRUE )
+			symbGetAttrib( proc ) and= not FB_SYMBATTRIB_ABSTRACT
+		end if
+
+		if( symbIsVirtual( proc ) ) then
+			errReport( FB_ERRMSG_VIRTUALNONMEMBERPROC, TRUE )
+			symbGetAttrib( proc ) and= not FB_SYMBATTRIB_VIRTUAL
+		end if
+	end if
+
+	'' ABSTRACTs shouldn't have a body implemented, VIRTUAL should be used instead
+	if( symbIsAbstract( proc ) ) then
+		errReport( FB_ERRMSG_ABSTRACTBODY )
 	end if
 
 	'' emit proc setup
