@@ -2099,11 +2099,14 @@ function typeDump _
 	if( dtype and FB_DATATYPE_INVALID ) then
 		dump += "invalid"
 	else
-		if( typeGetDtOnly( dtype ) = FB_DATATYPE_STRUCT ) then
+		select case( typeGetDtOnly( dtype ) )
+		case FB_DATATYPE_STRUCT
 			dump += "struct"
-		else
+		case FB_DATATYPE_WCHAR
+			dump += "wchar"
+		case else
 			dump += *symb_dtypeTB(typeGetDtOnly( dtype )).name
-		end if
+		end select
 
 		for i as integer = 1 to abs( typeGetPtrCnt( dtype ) )
 			dump += " ptr"
