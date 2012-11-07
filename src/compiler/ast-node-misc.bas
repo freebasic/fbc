@@ -665,7 +665,10 @@ private function hAstNodeToStr _
 		end select
 
 	case AST_NODECLASS_VAR
-		return """" & *symbGetName( n->sym ) & """"
+		return "VAR( " & *symbGetName( n->sym ) & " )"
+
+	case AST_NODECLASS_CALL
+		return "CALL( " & *symbGetName( n->sym ) & " )"
 
 	case AST_NODECLASS_LABEL
 		return "LABEL: " & hSymbToStr( n->sym )
