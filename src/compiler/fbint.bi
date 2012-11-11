@@ -580,16 +580,22 @@ type FBFILE
 end type
 
 enum FB_TARGETOPT
-	FB_TARGETOPT_UNIX       = &h00000001  '' Unix?
+	FB_TARGETOPT_UNIX       = &h00000001  '' Unix-like system? (for __FB_UNIX__ #define)
 	FB_TARGETOPT_UNDERSCORE = &h00000002  '' Underscore prefix for symbols?
 	FB_TARGETOPT_EXPORT     = &h00000004  '' Support for exporting symbols from DLLs?
 
 	'' Whether callee always pops the hidden struct result ptr
-	'' GCC ABI (MinGW GCC 4.6, Linux, DJGPP, etc.):
+	'' i386 SysV ABI (MinGW GCC 4.6, Linux, DJGPP, etc.):
 	''    callee always pops hidden param, even for cdecl ("hybrid")
 	'' MinGW GCC 4.7, MSVC ABI:
 	''    hidden param is popped according to calling convention
 	FB_TARGETOPT_CALLEEPOPSHIDDENPTR = &h00000008
+
+	'' Returning structures in registers only exists on Win32, and
+	'' - neither Linux GCC (following the i386 SysV ABI),
+	'' - nor DJGPP
+	'' do it. TODO: what about the BSDs and Darwin/MacOSX?
+	FB_TARGETOPT_RETURNINREGS        = &h00000010
 end enum
 
 type FBTARGET

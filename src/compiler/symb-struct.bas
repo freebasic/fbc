@@ -607,6 +607,11 @@ private function hGetReturnType( byval sym as FBSYMBOL ptr ) as integer
 		return typeAddrOf( dtype )
 	end if
 
+	'' On Linux & co structures are never returned in registers
+	if( (env.target.options and FB_TARGETOPT_RETURNINREGS) = 0 ) then
+		return typeAddrOf( dtype )
+	end if
+
 	'' use the un-padded UDT len
 	select case as const symbGetUDTUnpadLen( sym )
 	case 1
