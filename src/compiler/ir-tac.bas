@@ -999,6 +999,8 @@ private function _allocVrVar _
 
 	dim as IRVREG ptr vr = any, va = any
 
+	assert( symbol )
+
 	vr = hNewVR( dtype, subtype, IR_VREGTYPE_VAR )
 
 	vr->sym = symbol

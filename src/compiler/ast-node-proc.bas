@@ -1089,9 +1089,13 @@ private function hInitVptr _
 		byval proc as FBSYMBOL ptr _
 	) as ASTNODE ptr
 
+	'' Only if there is a vptr
 	if( symbGetHasRTTI( parent ) = FALSE ) then
 		exit function
 	end if
+
+	'' The vtable must be present/known for this
+	assert( parent->udt.ext->vtable )
 
 	var this_ = symbGetParamVar( symbGetProcHeadParam( proc ) )
 

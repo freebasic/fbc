@@ -50,9 +50,28 @@ sub test cdecl( )
 	CU_ASSERT( getAction( tom ) = CAT_ACTION )
 end sub
 
+'' 1. Anything with a vptr must have a vtable, even if the vtable is "empty"
+'' 2. An "empty" vtable means it has only the first two entries,
+''    but no slots for virtuals
+'' This is also a -gen gcc regression test, where the vtable was emitted with
+'' zero size but an initialzer with 2 elements, causing gcc to warn.
+type UDTWithEmptyVtable extends object
+	declare function test( ) as integer
+end type
+
+function UDTWithEmptyVtable.test( ) as integer
+	function = 123
+end function
+
+sub testEmptyVtable cdecl( )
+	dim x as UDTWithEmptyVtable
+	CU_ASSERT( x.test( ) = 123 )
+end sub
+
 private sub ctor( ) constructor
 	fbcu.add_suite( "tests/virtual/rtti" )
 	fbcu.add_test( "Is operator", @test )
+	fbcu.add_test( "empty vtable", @testEmptyVtable )
 end sub
 
 end namespace

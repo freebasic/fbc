@@ -94,14 +94,11 @@ function symbStructBegin _
 
 		if( symbGetHasRTTI( base_ ) ) then
 			symbSetHasRTTI( s )
-		end if
 
-		'' inherit the vtable elements count
-		if( base_->udt.ext ) then
-			if( base_->udt.ext->vtableelements > 0 ) then
-				symbUdtAllocExt( s )
-				s->udt.ext->vtableelements = base_->udt.ext->vtableelements
-			end if
+			'' inherit the vtable elements count
+			assert( base_->udt.ext->vtableelements >= 2 )
+			symbUdtAllocExt( s )
+			s->udt.ext->vtableelements = base_->udt.ext->vtableelements
 		end if
 	else
 		s->udt.base = NULL

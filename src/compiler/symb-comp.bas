@@ -196,11 +196,25 @@ private sub hBuildRtti( byval udt as FBSYMBOL ptr )
 	symbSetIsInitialized( rtti )
 end sub
 
+private sub hSetMinimumVtableSize( byval udt as FBSYMBOL ptr )
+	'' vtables always have at least 2 elements (following GCC):
+	''    index 0: a NULL pointer
+	''    index 1: the pointer to this type's RTTI table
+	'' Slots for the pointers for virtual methods start at index 2.
+	''
+	'' Note: A vtable must be generated even if there are no virtuals,
+	'' to support RTTI. In that case it will only have the first two
+	'' elements (null and rtti pointers).
+
+	if( udt->udt.ext->vtableelements = 0 ) then
+		udt->udt.ext->vtableelements = 2
+	end if
+end sub
+
 private sub hBuildVtable( byval udt as FBSYMBOL ptr )
 	static as FBARRAYDIM dTB(0)
 	dim as ASTNODE ptr initree = any, basevtableinitree = any
-	dim as FBSYMBOL ptr member = any, rtti = any, vtable = any, _
-		basefield = any, basetype = any, basevtable = any
+	dim as FBSYMBOL ptr member = any, rtti = any, vtable = any
 	dim as integer i = any, basevtableelements = any
 	dim as string id
 
@@ -209,6 +223,8 @@ private sub hBuildVtable( byval udt as FBSYMBOL ptr )
 	''    1. rtti pointer
 	''    2. and following: procptrs corresponding to virtual methods
 	''                      in the order they were parsed.
+
+	assert( udt->udt.ext->vtableelements >= 2 )
 
 	'' static shared vtable(0 to elements-1) as any ptr
 	id = "_ZTV" + *symbGetMangledName( udt )
@@ -220,22 +236,22 @@ private sub hBuildVtable( byval udt as FBSYMBOL ptr )
 	'' Find information about the base UDT's vtable:
 	''    the number of elements,
 	''    and the initree (so it can be copied into the new vtable)
-	basevtableelements = 0
-	basevtableinitree = NULL
-	basefield = udt->udt.base
-	if( basefield ) then
-		assert( symbIsField( basefield ) )
-		assert( symbGetType( basefield ) = FB_DATATYPE_STRUCT )
-		basetype = basefield->subtype
-		assert( symbIsStruct( basetype ) )
-		if( basetype->udt.ext ) then
-			basevtableelements = basetype->udt.ext->vtableelements
-			if( basevtableelements > 0 ) then
-				basevtable = basetype->udt.ext->vtable
-				assert( symbIsVar( basevtable ) )
-				basevtableinitree = basevtable->var_.initree
-			end if
-		end if
+	''
+	'' - If the base has no virtuals, vtableelements will be 2
+	''   (due to hSetMinimumVtableSize())
+	'' - If the base is OBJECT, the vtable is hidden in the rtlib,
+	''   thus there is no initree for us to use. Luckily we don't need it
+	''   anyways, since OBJECT doesn't have any virtuals.
+	assert( symbIsField( udt->udt.base ) )
+	assert( symbGetType( udt->udt.base ) = FB_DATATYPE_STRUCT )
+	assert( symbIsStruct( udt->udt.base->subtype ) )
+	basevtableelements = udt->udt.base->subtype->udt.ext->vtableelements
+	'' Any virtuals (more than the default 2 elements)?
+	if( basevtableelements > 2 ) then
+		assert( symbIsVar( udt->udt.base->subtype->udt.ext->vtable ) )
+		basevtableinitree = udt->udt.base->subtype->udt.ext->vtable->var_.initree
+	else
+		basevtableinitree = NULL
 	end if
 
 	'' {
@@ -256,6 +272,7 @@ private sub hBuildVtable( byval udt as FBSYMBOL ptr )
 		'' Copy the typeini assigns from the base vtable's initializer,
 		'' except the first 2 (they are set above already)
 		astTypeIniCopyElements( initree, basevtableinitree, 2 )
+		assert( basevtableelements > 2 )
 		i += (basevtableelements - 2)
 	end if
 
@@ -440,10 +457,12 @@ sub symbCompAddDefMembers( byval sym as FBSYMBOL ptr )
 
 	'' RTTI?
 	if( symbGetHasRTTI( sym ) ) then
-		'' only if it isn't FB's own Object base super class
-		if( sym <> symb.rtti.fb_object ) then
-			symbUdtAllocExt( sym )
+		symbUdtAllocExt( sym )
+		hSetMinimumVtableSize( sym )
 
+		'' only if it isn't FB's own Object base super class
+		'' (for which the rtlib already contains these declarations)
+		if( sym <> symb.rtti.fb_object ) then
 			'' vtable & rtti globals - vtable depends on the rtti,
 			'' since it includes a pointer to the rtti var.
 			hBuildRtti( sym )
@@ -754,14 +773,11 @@ function symbCompAddVirtual( byval udt as FBSYMBOL ptr ) as integer
 	assert( symbGetHasRTTI( udt ) )
 
 	symbUdtAllocExt( udt )
-	if( udt->udt.ext->vtableelements = 0 ) then
-		'' (the 2 default entries + the first procptr at index 2)
-		function = 2
-		udt->udt.ext->vtableelements = 3
-	else
-		function = udt->udt.ext->vtableelements
-		udt->udt.ext->vtableelements += 1
-	end if
+
+	hSetMinimumVtableSize( udt )
+
+	function = udt->udt.ext->vtableelements
+	udt->udt.ext->vtableelements += 1
 end function
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
