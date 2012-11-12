@@ -8,6 +8,7 @@
 #include once "ir.bi"
 #include once "rtl.bi"
 #include once "ast.bi"
+#include once "hlp.bi"
 
 declare sub astReplaceSymbolOnCALL _
 	( _
@@ -579,7 +580,7 @@ function astGetValueAsULongInt _
   	    function = astGetValLong( n )
 
   	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-  		function = culngint( astGetValFloat( n ) )
+  		function = hCastFloatToULongint( astGetValFloat( n ) )
 
   	case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
   	    if( FB_LONGSIZE = len( integer ) ) then

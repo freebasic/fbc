@@ -228,7 +228,7 @@ private sub hCONVConstEval64 _
 		if( to_dtype = FB_DATATYPE_LONGINT ) then
 			v->con.val.long = clngint( v->con.val.float )
 		else
-			v->con.val.long = culngint( v->con.val.float )
+			v->con.val.long = hCastFloatToULongint( v->con.val.float )
 		end if
 
 	case FB_DATATYPE_LONG

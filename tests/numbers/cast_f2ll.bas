@@ -54,8 +54,10 @@ namespace fbc_tests.numbers.cast_f2ll
 
 	sub testnum( byval n as ulongint )
 
+		#define lsb(n) ((n) and -(n)) '' keep only least significant bit
+
 		'' only run when n has <= 53 significant bits
-		if( n and -((n and -n) shl 53) ) then return
+		if( n and -(lsb(n) shl 53) ) then return
 
 		dim x as double = cdbl(n)
 
@@ -97,6 +99,8 @@ namespace fbc_tests.numbers.cast_f2ll
 		for i = 0 to 63-52
 			for j = iif(i=0, 0, 52) to 52
 				for k = 0 to j-2
+
+				#if 0 '' Too slow?  Results in millions of asserts
 					for l = 0 to k-1
 						'' try to cover various different bit patterns
 						testnum( (j + k + l) shl i )
@@ -104,9 +108,38 @@ namespace fbc_tests.numbers.cast_f2ll
 						testnum( (j - k + l) shl i )
 						testnum( (j - k - l) shl i )
 					next l
+				#else
+					testnum( (j + k) shl i )
+					testnum( (j - k) shl i )
+				#endif
+
 				next k
 			next j
 		next i
+
+	end sub
+
+	sub test_cast_hiconst_ull cdecl()
+		#macro test(dval, ullval)
+		scope
+			const as double d = dval
+			const as ulongint ull = ullval
+			CU_ASSERT_EQUAL( culngint( d ), ull )
+			if( ull < 1ull shl 63 ) then
+				CU_ASSERT_EQUAL( clngint( d ), clngint( ull ) )
+			end if
+		end scope
+		#endmacro
+
+		'' sanity checks
+		test( 1.5, 2 )
+		test( 2^32, &H100000000ull )
+
+		'' numbers over 2^63 can't be converted properly with just clngint()
+		test( 2^63,               &H8000000000000000ull )
+		test( 2^63 * 1.5,         &HC000000000000000ull )
+		test( 2^63 + 2^(63 - 52), &H8000000000000800ull )
+		test( 2^64 - 2^(63 - 52), &HFFFFFFFFFFFFF800ull )
 
 	end sub
 
@@ -114,6 +147,7 @@ namespace fbc_tests.numbers.cast_f2ll
 
 		fbcu.add_suite("fbc_tests.numbers.cast_f2ll")
 		fbcu.add_test("test_cast_ll",  @test_cast_ll)
+		fbcu.add_test("test_cast_hiconst_ull",  @test_cast_hiconst_ull)
 
 	end sub
 

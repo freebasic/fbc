@@ -108,4 +108,7 @@ declare function strUnquote(byref s as string) as string
 #define hIsChar(_c) ( hIsCharLower(_c) orelse hIsCharUpper(_c) )
 #define hIsCharNumeric(_c) ( (_c <= asc("9")) andalso (_c >= asc("0")) )
 
+'' ensure float values over 2^63 are converted correctly
+#define hCastFloatToULongint(f) cunsg( iif( (f) >= 1.e+16, clngint( (f) * 0.5 ) shl 1, clngint( f ) ) )
+
 #endif ''__HELP_BI__

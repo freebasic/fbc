@@ -8,6 +8,7 @@
 #include once "ir.bi"
 #include once "rtl.bi"
 #include once "ast.bi"
+#include once "hlp.bi"
 
 
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -93,7 +94,7 @@ private sub hConvDataType _
 		    '' no conversion
 
 		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-			v->long = culngint( v->float )
+			v->long = hCastFloatToULongint( v->float )
 
 		case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
 		    if( FB_LONGSIZE <> len( integer ) ) then
@@ -173,7 +174,7 @@ private sub hConvDataType _
 			if( FB_LONGSIZE = len( integer ) ) then
 				v->int = cuint( v->float )
 			else
-				v->long = culngint( v->float )
+				v->long = hCastFloatToULongint( v->float )
 			end if
 
 		case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
@@ -770,7 +771,7 @@ mul_ulong:				select case as const astGetDataType( r )
 							v.val.long *= cunsg( r->con.val.long )
 
 						case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-							v.val.long *= culngint( r->con.val.float )
+							v.val.long *= hCastFloatToULongint( r->con.val.float )
 
 						case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
 							if( FB_LONGSIZE = len( integer ) ) then
