@@ -1996,7 +1996,7 @@ sub hDisallowStaticAttrib( byref attrib as integer )
 	end if
 end sub
 
-sub hDisallowVirtualAttrib( byref attrib as integer )
+sub hDisallowVirtualCtor( byref attrib as integer )
 	'' Constructors cannot be virtual (they initialize the vptr
 	'' needed for virtual calls, chicken-egg problem)
 	if( attrib and (FB_SYMBATTRIB_ABSTRACT or FB_SYMBATTRIB_VIRTUAL) ) then
@@ -2009,7 +2009,16 @@ sub hDisallowVirtualAttrib( byref attrib as integer )
 	end if
 end sub
 
-'' ProcStmtBegin  =  (PRIVATE|PUBLIC)? STATIC?
+sub hDisallowAbstractDtor( byref attrib as integer )
+	'' Destructors cannot be abstract; they need to have a body to ensure
+	'' that base and field destructors are called.
+	if( attrib and FB_SYMBATTRIB_ABSTRACT ) then
+		errReport( FB_ERRMSG_ABSTRACTDTOR )
+		attrib and= not FB_SYMBATTRIB_ABSTRACT
+	end if
+end sub
+
+'' ProcStmtBegin  =  (PRIVATE|PUBLIC)? (STATIC? | CONST? VIRTUAL?)
 ''                   (SUB|FUNCTION|CONSTRUCTOR|DESTRUCTOR|OPERATOR) ProcHeader .
 function cProcStmtBegin( byval attrib as FB_SYMBATTRIB ) as integer
 	dim as integer tkn = any, is_nested = any
@@ -2041,7 +2050,7 @@ function cProcStmtBegin( byval attrib as FB_SYMBATTRIB ) as integer
 		end if
 
 		hDisallowStaticAttrib( attrib )
-		hDisallowVirtualAttrib( attrib )
+		hDisallowVirtualCtor( attrib )
 
 	case FB_TK_DESTRUCTOR
 		if( fbLangOptIsSet( FB_LANG_OPT_CLASS ) = FALSE ) then
@@ -2051,6 +2060,7 @@ function cProcStmtBegin( byval attrib as FB_SYMBATTRIB ) as integer
 		end if
 
 		hDisallowStaticAttrib( attrib )
+		hDisallowAbstractDtor( attrib )
 
 	case FB_TK_OPERATOR
 		if( fbLangOptIsSet( FB_LANG_OPT_OPEROVL ) = FALSE ) then

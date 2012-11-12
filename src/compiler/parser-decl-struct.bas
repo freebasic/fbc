@@ -66,7 +66,7 @@ private function hTypeProtoDecl _
 	select case as const lexGetToken( )
 	case FB_TK_CONSTRUCTOR
 		hDisallowStaticAttrib( attrib )
-		hDisallowVirtualAttrib( attrib )
+		hDisallowVirtualCtor( attrib )
 
 		lexSkipToken( )
 
@@ -78,6 +78,7 @@ private function hTypeProtoDecl _
 
 	case FB_TK_DESTRUCTOR
 		hDisallowStaticAttrib( attrib )
+		hDisallowAbstractDtor( attrib )
 
 		lexSkipToken( )
 

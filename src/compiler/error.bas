@@ -260,6 +260,7 @@ end type
 		@"Illegal non-static member access", _
 		@"Constructor declared ABSTRACT", _
 		@"Constructor declared VIRTUAL", _
+		@"Destructor declared ABSTRACT", _
 		@"Member cannot be static", _
 		@"Member isn't static", _
 		@"Only static members can be accessed from static functions", _

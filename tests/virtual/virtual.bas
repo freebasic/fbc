@@ -229,7 +229,7 @@ namespace differentSignatureIsntOverridden
 	end sub
 end namespace
 
-namespace virtualDestructor
+namespace virtualDtor
 	dim shared as integer callsA, callsB
 
 	type A extends object
@@ -284,41 +284,115 @@ namespace virtualDestructor
 	end sub
 end namespace
 
-namespace abstractDestructor
-	dim shared as integer calls
+namespace virtualDtorDestructsField
+	dim shared as integer callsA, callsFA, callsB
+
+	type FA
+		dummy as integer
+		declare destructor( )
+	end type
+
+	destructor FA( )
+		callsFA += 1
+	end destructor
 
 	type A extends object
-		declare abstract destructor( )
+		f as FA
+		declare virtual destructor( )
 	end type
+
+	destructor A( )
+		callsA += 1
+	end destructor
 
 	type B extends A
 		declare destructor( )
 	end type
 
 	destructor B( )
-		calls += 1
+		callsB += 1
 	end destructor
 
 	sub test cdecl( )
-		calls = 0
-		scope
-			dim x as B
-		end scope
-		CU_ASSERT( calls = 1 )
+		#macro check( stmt, expectedA, expectedFA, expectedB )
+			callsA = 0
+			callsFA = 0
+			callsB = 0
+			scope
+				stmt
+			end scope
+			CU_ASSERT( callsA = expectedA )
+			CU_ASSERT( callsFA = expectedFA )
+			CU_ASSERT( callsB = expectedB )
+		#endmacro
 
-		calls = 0
-		scope
-			dim p as B ptr = new B
-			delete p
-		end scope
-		CU_ASSERT( calls = 1 )
+		check( dim x as A, 1, 1, 0 )
+		check( dim x as B, 1, 1, 1 )
+		check( dim p as A ptr = new A : delete p, 1, 1, 0 )
+		check( dim p as B ptr = new B : delete p, 1, 1, 1 )
 
-		calls = 0
-		scope
-			dim p as A ptr = new B
-			delete p
-		end scope
-		CU_ASSERT( calls = 1 )
+		'' A.dtor is virtual, so B.dtor will be called,
+		'' and that in turn calls A.dtor
+		check( dim p as A ptr = new B : delete p, 1, 1, 1 )
+	end sub
+end namespace
+
+namespace virtualDtorDestructsBase
+	dim shared as integer callsA, callsB, callsC
+
+	type A extends object
+		declare destructor( )
+	end type
+
+	destructor A( )
+		callsA += 1
+	end destructor
+
+	type B extends A
+		declare virtual destructor( )
+	end type
+
+	destructor B( )
+		callsB += 1
+	end destructor
+
+	type C extends B
+		declare destructor( )
+	end type
+
+	destructor C( )
+		callsC += 1
+	end destructor
+
+	sub test cdecl( )
+		#macro check( stmt, expectedA, expectedB, expectedC )
+			callsA = 0
+			callsB = 0
+			callsC = 0
+			scope
+				stmt
+			end scope
+			CU_ASSERT( callsA = expectedA )
+			CU_ASSERT( callsB = expectedB )
+			CU_ASSERT( callsC = expectedC )
+		#endmacro
+
+		check( dim x as A, 1, 0, 0 )
+		check( dim x as B, 1, 1, 0 )
+		check( dim x as C, 1, 1, 1 )
+		check( dim p as A ptr = new A : delete p, 1, 0, 0 )
+		check( dim p as B ptr = new B : delete p, 1, 1, 0 )
+		check( dim p as C ptr = new C : delete p, 1, 1, 1 )
+
+		'' B.dtor won't be called since A.dtor is not virtual
+		check( dim p as A ptr = new B : delete p, 1, 0, 0 )
+
+		'' ditto, B.dtor and C.dtor not called
+		check( dim p as A ptr = new C : delete p, 1, 0, 0 )
+
+		'' B.dtor is virtual, so C.dtor will be called instead;
+		'' it in turn calls B.dtor, and that calls A.dtor
+		check( dim p as B ptr = new C : delete p, 1, 1, 1 )
 	end sub
 end namespace
 
@@ -328,8 +402,9 @@ private sub ctor( ) constructor
 	fbcu.add_test( "basic overriding", @overridingWorks.test )
 	fbcu.add_test( "Overriding vs. shadowing", @overridingVsShadowing.test )
 	fbcu.add_test( "Methods with a different signature are not overridden", @differentSignatureIsntOverridden.test )
-	fbcu.add_test( "VIRTUAL destructor", @virtualDestructor.test )
-	fbcu.add_test( "ABSTRACT destructor", @abstractDestructor.test )
+	fbcu.add_test( "VIRTUAL dtor", @virtualDtor.test )
+	fbcu.add_test( "VIRTUAL dtor still calls field dtor", @virtualDtorDestructsField.test )
+	fbcu.add_test( "VIRTUAL dtor still calls base dtor", @virtualDtorDestructsBase.test )
 end sub
 
 end namespace
