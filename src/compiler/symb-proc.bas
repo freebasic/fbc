@@ -802,13 +802,8 @@ add_proc:
 	if( symbIsMethod( proc ) ) then
 		assert( symbIsStruct( parent ) )
 
-		'' virtual?
-		if( symbIsVirtual( proc ) ) then
-			'' Update parent & set vtable index
-			symbProcSetVtableIndex( proc, symbCompAddVirtual( parent ) )
-		end if
-
 		'' Only check if this really is a derived UDT
+		overridden = NULL
 		if( parent->udt.base ) then
 			'' Destructor?
 			if( symbIsDestructor( proc ) ) then
@@ -829,16 +824,25 @@ add_proc:
 
 				'' Find the overload with the exact same signature
 				overridden = symbFindOverloadProc( overridden, proc )
-			else
-				overridden = NULL
 			end if
 
+			'' Found anything?
 			if( overridden ) then
-				'' Is that overload really a virtual?
-				if( symbIsVirtual( overridden ) ) then
-					'' Store index of the virtual that's being overridden
-					symbProcSetVtableIndex( proc, symbProcGetVtableIndex( overridden ) )
+				'' Only override if the found overload really is a virtual
+				if( symbIsVirtual( overridden ) = FALSE ) then
+					overridden = NULL
 				end if
+			end if
+		end if
+
+		if( overridden ) then
+			'' Use the same vtable slot as the virtual that's being overridden
+			symbProcSetVtableIndex( proc, symbProcGetVtableIndex( overridden ) )
+		else
+			'' Allocate a new vtable slot, but only if this is a virtual,
+			'' and it didn't override anything.
+			if( symbIsVirtual( proc ) ) then
+				symbProcSetVtableIndex( proc, symbCompAddVirtual( parent ) )
 			end if
 		end if
 	end if

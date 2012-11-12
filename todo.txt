@@ -248,13 +248,16 @@ o classes
   - vtable lookup should handle THIS expression with side-effects
 
   - should methods overriding virtuals become virtual themselves?
-    and even re-use the same vtable slot?
 
   - virtuals can override other virtuals, but statics can't be virtual,
     should statics be allowed to shadow virtuals or should it be an error?
     Note: normal methods (non-virtuals) can be shadowed, no error
 
   - explicit OVERRIDE to show an error in case there is no virtual to override?
+
+  - obvious calls to unimplemented ABSTRACTs should be disallowed,
+    i.e. if the THIS expression is a stack/global object that cannot have
+    overridden the ABSTRACT, in contrast to a object pointer or byref object
 
   - INTERFACE ... END INTERFACE
       - structs extending OBJECT, not allowing any fields, only methods
@@ -268,22 +271,10 @@ o classes
 		type Child extends A
       - multiple interfaces comes down to multiple inheritance (too hard?)
 
-  - obvious calls to ABSTRACTs should be disallowed, i.e. if the THIS expression
-    is a stack/global object that cannot have overridden the ABSTRACT,
-    in contrast to a object pointer or byref object
-
-  - classes with ABSTRACT destructor shouldn't be allowed to be DIM'ed or DELETE'd,
-    since the implicit dtor call will just be a NULL pointer deref
-
-  - vtables must be emitted either
-     a) as private globals, or
-     b) like GCC in one read-only section per vtable using .linkonce same_size (Win32)
-        or .section ....,comdat (Linux), so duplicates are discarded by the linker
-            http://gcc.gnu.org/onlinedocs/gcc/Vague-Linkage.html
-            http://sourceware.org/binutils/docs-2.23/as/Section.html#Section
-
-  - g++/clang++ emit implicit class members (ctor, copyctor, dtor, let)
-    into ".linkonce discard"/comdat sections too, similar to vtables.
+  - g++/clang++ emit vtables and implicit ctor/copyctor/dtor/let into one
+    section each allowing the linker to merge/discard duplicates:
+        .linkonce (COFF: http://sourceware.org/binutils/docs/as/Linkonce.html)
+        .section ...,comdat (ELF COMDAT groups: http://sourceware.org/binutils/docs-2.23/as/Section.html#Section)
     fbc makes them PRIVATE currently; should it be changed to reduce .exe size?
 
   - Down casting
