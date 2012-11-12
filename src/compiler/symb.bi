@@ -1637,7 +1637,7 @@ declare sub symbSetDefType _
 	)
 
 declare sub symbUdtAllocExt( byval udt as FBSYMBOL ptr )
-declare sub symbCompAddDefMembers( byval sym as FBSYMBOL ptr )
+declare sub symbUdtAddDefaultMembers( byval sym as FBSYMBOL ptr )
 declare function symbCompIsTrivial( byval sym as FBSYMBOL ptr ) as integer
 declare sub symbSetCompCtorHead( byval sym as FBSYMBOL ptr, byval proc as FBSYMBOL ptr )
 declare sub symbCheckCompCtor( byval sym as FBSYMBOL ptr, byval proc as FBSYMBOL ptr )

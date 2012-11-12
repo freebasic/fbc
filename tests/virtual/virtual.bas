@@ -396,6 +396,63 @@ namespace virtualDtorDestructsBase
 	end sub
 end namespace
 
+namespace implicitDtorOverrides
+	dim shared as integer callsA, callsFB
+
+	type A extends object
+		declare virtual destructor( )
+	end type
+
+	destructor A( )
+		callsA += 1
+	end destructor
+
+	type FB
+		dummy as integer
+		declare destructor( )
+	end type
+
+	destructor FB( )
+		callsFB += 1
+	end destructor
+
+	type B extends A
+		f as FB
+		'' B has a field with a dtor, but B has no explicit dtor,
+		'' so an implicit dtor will be generated.
+		'' Since A's dtor is virtual, B's implicit dtor should
+		'' override it.
+	end type
+
+	sub test cdecl( )
+		callsA = 0
+		callsFB = 0
+		scope
+			dim x as B
+		end scope
+		CU_ASSERT( callsA = 1 )
+		CU_ASSERT( callsFB = 1 )
+
+		callsA = 0
+		callsFB = 0
+		scope
+			dim as B ptr p = new B
+			delete p
+		end scope
+		CU_ASSERT( callsA = 1 )
+		CU_ASSERT( callsFB = 1 )
+
+		callsA = 0
+		callsFB = 0
+		scope
+			dim as A ptr p = new B
+			delete p
+		end scope
+		CU_ASSERT( callsA = 1 )
+		CU_ASSERT( callsFB = 1 )
+	end sub
+end namespace
+
 namespace vtableSlotsReused
 	type A extends object
 		declare virtual  function f1( ) as integer
@@ -480,6 +537,7 @@ private sub ctor( ) constructor
 	fbcu.add_test( "VIRTUAL dtor", @virtualDtor.test )
 	fbcu.add_test( "VIRTUAL dtor still calls field dtor", @virtualDtorDestructsField.test )
 	fbcu.add_test( "VIRTUAL dtor still calls base dtor", @virtualDtorDestructsBase.test )
+	fbcu.add_test( "implicit dtor also overrides", @implicitDtorOverrides.test )
 	fbcu.add_test( "virtuals overriding virtuals reuse the vtable slots", @vtableSlotsReused.test )
 end sub
 

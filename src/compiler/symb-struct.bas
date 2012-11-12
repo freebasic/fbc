@@ -733,8 +733,8 @@ sub symbStructEnd _
 	'' set the real data type used to return this struct from procs
 	sym->udt.ret_dtype = hGetReturnType( sym )
 
-	'' generate the default members
-	symbCompAddDefMembers( sym )
+	'' Declare & add any implicit members
+	symbUdtAddDefaultMembers( sym )
 
 	'' check for forward references
 	if( symb.fwdrefcnt > 0 ) then
