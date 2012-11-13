@@ -888,7 +888,7 @@ private sub hSetIofile _
 	if( o_option_not_used_yet ) then
 		'' Choose default *.o name based on input file name
 		if( is_rc ) then
-#if ENABLE_GORC
+#ifdef ENABLE_GORC
 			'' GoRC only accepts *.obj
 			'' foo.rc -> foo.obj, so there is no collision with foo.bas' foo.o
 			fbc.objfile += hStripExt( srcfile ) + ".obj"
@@ -2418,7 +2418,7 @@ private sub hAssembleModules( )
 end sub
 
 private function hAssembleRc( byval rc as FBCIOFILE ptr ) as integer
-#if ENABLE_GORC
+#ifdef ENABLE_GORC
 	'' Using GoRC for the classical native win32 standalone build
 	'' Note: GoRC /fo doesn't accept anything except *.obj, not even *.o,
 	'' so we need to make it *.obj and then rename it afterwards.
