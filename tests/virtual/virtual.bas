@@ -202,6 +202,58 @@ namespace overridingVsShadowing
 	end sub
 end namespace
 
+namespace overridingOverloadedMethods
+	type A extends object
+		declare virtual function f(            ) as integer
+		declare virtual function f( as integer ) as integer
+		declare virtual function f( as longint ) as integer
+	end type
+
+	type B extends A
+		declare function f( as integer ) as integer
+		declare function f( as longint ) as integer
+		declare function f(            ) as integer
+	end type
+
+	function A.f(              ) as integer
+		function = &hA1
+	end function
+
+	function A.f( i as integer ) as integer
+		function = &hA2
+	end function
+
+	function A.f( i as longint ) as integer
+		function = &hA3
+	end function
+
+	function B.f(              ) as integer
+		function = &hB1
+	end function
+
+	function B.f( i as integer ) as integer
+		function = &hB2
+	end function
+
+	function B.f( i as longint ) as integer
+		function = &hB3
+	end function
+
+	sub test cdecl( )
+		dim pa as A ptr
+
+		pa = new A
+		CU_ASSERT( pa->f(              ) = &hA1 )
+		CU_ASSERT( pa->f(          1   ) = &hA2 )
+		CU_ASSERT( pa->f( clngint( 1 ) ) = &hA3 )
+
+		pa = new B
+		CU_ASSERT( pa->f(              ) = &hB1 )
+		CU_ASSERT( pa->f(          1   ) = &hB2 )
+		CU_ASSERT( pa->f( clngint( 1 ) ) = &hB3 )
+	end sub
+end namespace
+
 namespace differentSignatureIsntOverridden
 	type A extends object
 		declare virtual function f1( ) as integer
@@ -534,6 +586,7 @@ private sub ctor( ) constructor
 	fbcu.add_test( "basic overriding", @overridingWorks.test )
 	fbcu.add_test( "Overriding vs. shadowing", @overridingVsShadowing.test )
 	fbcu.add_test( "Methods with a different signature are not overridden", @differentSignatureIsntOverridden.test )
+	fbcu.add_test( "Overriding overloaded methods", @overridingOverloadedMethods.test )
 	fbcu.add_test( "VIRTUAL dtor", @virtualDtor.test )
 	fbcu.add_test( "VIRTUAL dtor still calls field dtor", @virtualDtorDestructsField.test )
 	fbcu.add_test( "VIRTUAL dtor still calls base dtor", @virtualDtorDestructsBase.test )

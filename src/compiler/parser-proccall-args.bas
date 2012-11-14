@@ -313,6 +313,8 @@ private function hOvlProcArgList _
 
 		'' re-add the instance ptr
 		args += 1
+
+		procexpr = astBuildVtableLookup( proc, arg_list->head->expr )
 	else
 		'' remove the instance ptr
 		if( (options and FB_PARSEROPT_HASINSTPTR) <> 0 ) then
@@ -321,9 +323,10 @@ private function hOvlProcArgList _
 			astDelTree( arg->expr )
 			symbFreeOvlCallArg( @parser.ovlarglist, arg )
 		end if
+		procexpr = NULL
 	end if
 
-	procexpr = astNewCALL( proc, NULL )
+	procexpr = astNewCALL( proc, procexpr )
 
     '' add to tree
 	param = symbGetProcLastParam( proc )
