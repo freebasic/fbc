@@ -254,6 +254,66 @@ namespace overridingOverloadedMethods
 	end sub
 end namespace
 
+namespace overridingProperties
+	dim shared as integer Agets, Asets, Bgets, Bsets
+
+	type A extends object
+		declare virtual property f(            ) as integer
+		declare virtual property f( as integer )
+	end type
+
+	type B extends A
+		declare property f(            ) as integer
+		declare property f( as integer )
+	end type
+
+	property A.f(              ) as integer
+		Agets += 1
+		property = &hA
+	end property
+
+	property A.f( i as integer )
+		Asets += 1
+	end property
+
+	property B.f(              ) as integer
+		Bgets += 1
+		property = &hB
+	end property
+
+	property B.f( i as integer )
+		Bsets += 1
+	end property
+
+	sub test cdecl( )
+		dim pa as A ptr
+
+		Agets = 0
+		Asets = 0
+		Bgets = 0
+		Bsets = 0
+		pa = new A
+		CU_ASSERT( pa->f = &hA )
+		pa->f = 123
+		CU_ASSERT( Agets = 1 )
+		CU_ASSERT( Asets = 1 )
+		CU_ASSERT( Bgets = 0 )
+		CU_ASSERT( Bsets = 0 )
+
+		Agets = 0
+		Asets = 0
+		Bgets = 0
+		Bsets = 0
+		pa = new B
+		CU_ASSERT( pa->f = &hB )
+		pa->f = 123
+		CU_ASSERT( Agets = 0 )
+		CU_ASSERT( Asets = 0 )
+		CU_ASSERT( Bgets = 1 )
+		CU_ASSERT( Bsets = 1 )
+	end sub
+end namespace
+
 namespace differentSignatureIsntOverridden
 	type A extends object
 		declare virtual function f1( ) as integer
@@ -587,6 +647,7 @@ private sub ctor( ) constructor
 	fbcu.add_test( "Overriding vs. shadowing", @overridingVsShadowing.test )
 	fbcu.add_test( "Methods with a different signature are not overridden", @differentSignatureIsntOverridden.test )
 	fbcu.add_test( "Overriding overloaded methods", @overridingOverloadedMethods.test )
+	fbcu.add_test( "Overriding properties", @overridingProperties.test )
 	fbcu.add_test( "VIRTUAL dtor", @virtualDtor.test )
 	fbcu.add_test( "VIRTUAL dtor still calls field dtor", @virtualDtorDestructsField.test )
 	fbcu.add_test( "VIRTUAL dtor still calls base dtor", @virtualDtorDestructsBase.test )

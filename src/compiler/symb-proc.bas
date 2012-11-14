@@ -564,7 +564,7 @@ private function hSetupProc _
 		byval options as FB_SYMBOPT _
 	) as FBSYMBOL ptr
 
-    dim as integer stats = any, preserve_case = any
+	dim as integer stats = any, preserve_case = any, lookupoptions = any
 	dim as FBSYMBOL ptr proc = any, head_proc = any, overridden = any
 
     function = NULL
@@ -822,8 +822,18 @@ add_proc:
 					((options and FB_SYMBOPT_PRESERVECASE) <> 0), _
 					TRUE )  '' search NSIMPORTs (bases)
 
+				'' Property getters need this special flag to be looked up
+				lookupoptions = 0
+				if( symbIsProperty( proc ) ) then
+					'' Not a sub?
+					if( symbGetType( proc ) <> FB_DATATYPE_VOID ) then
+						'' then it's a getter
+						lookupoptions = FB_SYMBLOOKUPOPT_PROPGET
+					end if
+				end if
+
 				'' Find the overload with the exact same signature
-				overridden = symbFindOverloadProc( overridden, proc )
+				overridden = symbFindOverloadProc( overridden, proc, lookupoptions )
 			end if
 
 			'' Found anything?
