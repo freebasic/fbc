@@ -92,6 +92,7 @@
 FBC := fbc
 CFLAGS := -Wfatal-errors -O2
 FBFLAGS := -maxerr 1
+AS = $(TARGET_PREFIX)as
 AR = $(TARGET_PREFIX)ar
 CC = $(TARGET_PREFIX)gcc
 prefix := /usr/local
@@ -346,9 +347,11 @@ ALLFBLFLAGS += $(FBLFLAGS) $(FBFLAGS)
 ALLCFLAGS += $(CFLAGS)
 
 # compiler headers and modules
-FBC_BI  := $(wildcard $(srcdir)/compiler/*.bi)
-FBC_BAS := $(wildcard $(srcdir)/compiler/*.bas)
-FBC_BAS := $(sort $(patsubst $(srcdir)/compiler/%.bas,$(newcompiler)/%.o,$(FBC_BAS)))
+FBC_BI  :=        $(wildcard $(srcdir)/compiler/*.bi)
+FBC_BAS := $(sort $(wildcard $(srcdir)/compiler/*.bas))
+FBC_ASM := $(patsubst %.bas,%.asm,$(FBC_BAS))
+FBC_C   := $(patsubst %.bas,%.c,$(FBC_BAS))
+FBC_BAS := $(patsubst $(srcdir)/compiler/%.bas,$(newcompiler)/%.o,$(FBC_BAS))
 
 # rtlib/gfxlib2 headers and modules
 RTLIB_DIRS := $(srcdir)/rtlib $(srcdir)/rtlib/$(TARGET_OS) $(srcdir)/rtlib/$(TARGET_ARCH)
@@ -376,18 +379,21 @@ LIBFBGFX_S := $(sort $(foreach i,$(GFXLIB2_DIRS),$(patsubst $(i)/%.s,$(newlibfbg
 # Build rules
 #
 
-VPATH = $(srcdir)/compiler $(RTLIB_DIRS) $(GFXLIB2_DIRS)
+VPATH = $(RTLIB_DIRS) $(GFXLIB2_DIRS)
 
 # We don't want to use any of make's built-in suffixes/rules
 .SUFFIXES:
 
 ifndef V
+  QUIET_AS    = @echo "AS $@";
   QUIET_FBC   = @echo "FBC $@";
   QUIET_LINK  = @echo "LINK $@";
   QUIET_CC    = @echo "CC $@";
   QUIET_CPPAS = @echo "CPPAS $@";
   QUIET_AR    = @echo "AR $@";
 endif
+
+################################################################################
 
 .PHONY: all
 all: compiler rtlib gfxlib2
@@ -396,6 +402,8 @@ src src/compiler src/rtlib src/gfxlib2 bin lib \
 $(newcompiler) $(newlibfb) $(newlibfbmt) $(newlibfbgfx) $(libdir) \
 $(prefix) $(prefix)/bin $(prefix)/inc $(prefix)/include $(prefix)/include/$(FB_NAME) $(prefix)/lib $(prefixlib):
 	mkdir $@
+
+################################################################################
 
 .PHONY: compiler
 compiler: src src/compiler
@@ -407,8 +415,34 @@ compiler: $(newcompiler) $(FBC_EXE)
 $(FBC_EXE): $(FBC_BAS)
 	$(QUIET_LINK)$(FBC) $(ALLFBLFLAGS) -x $@ $^
 
-$(FBC_BAS): $(newcompiler)/%.o: %.bas $(FBC_BI)
+ifeq (,$(ENABLE_ASM_BOOTSTRAP)$(ENABLE_C_BOOTSTRAP))
+$(FBC_BAS): $(newcompiler)/%.o: $(srcdir)/compiler/%.bas $(FBC_BI)
 	$(QUIET_FBC)$(FBC) $(ALLFBCFLAGS) -c $< -o $@
+endif
+
+ifdef ENABLE_ASM_BOOTSTRAP
+
+# (ditto, same as below)
+GEN_GAS_ASFLAGS := --32 --strip-local-absolute
+
+$(FBC_BAS): $(newcompiler)/%.o: $(srcdir)/compiler/%.asm $(FBC_BI)
+	$(QUIET_AS)$(AS) $(GEN_GAS_ASFLAGS) $< -o $@
+
+endif
+
+ifdef ENABLE_C_BOOTSTRAP
+
+# Basically the same flags as would be used by "fbc -gen gcc",
+# at least the important ones
+GEN_GCC_CFLAGS := -nostdlib -nostdinc
+GEN_GCC_CFLAGS += -fno-strict-aliasing -frounding-math -fno-math-errno
+
+$(FBC_BAS): $(newcompiler)/%.o: $(srcdir)/compiler/%.c $(FBC_BI)
+	$(QUIET_CC)$(CC) $(GEN_GCC_CFLAGS) -c $< -o $@
+
+endif
+
+################################################################################
 
 .PHONY: rtlib
 rtlib: lib $(libdir) src src/rtlib $(newlibfb)
@@ -450,6 +484,8 @@ $(LIBFBMT_C): $(newlibfbmt)/%.o: %.c $(LIBFB_H)
 $(LIBFBMT_S): $(newlibfbmt)/%.o: %.s $(LIBFB_H)
 	$(QUIET_CPPAS)$(CC) -x assembler-with-cpp -DENABLE_MT $(ALLCFLAGS) -c $< -o $@
 
+################################################################################
+
 .PHONY: gfxlib2
 gfxlib2: lib $(libdir) src src/gfxlib2
 gfxlib2: $(newlibfbgfx) $(libdir)/libfbgfx.a
@@ -462,6 +498,8 @@ $(LIBFBGFX_C): $(newlibfbgfx)/%.o: %.c $(LIBFBGFX_H)
 
 $(LIBFBGFX_S): $(newlibfbgfx)/%.o: %.s $(LIBFBGFX_H)
 	$(QUIET_CPPAS)$(CC) -x assembler-with-cpp $(ALLCFLAGS) -c $< -o $@
+
+################################################################################
 
 .PHONY: install install-compiler install-includes install-rtlib install-gfxlib2
 install:        install-compiler install-includes install-rtlib install-gfxlib2
@@ -489,6 +527,8 @@ install-rtlib: $(prefix)/lib $(prefixlib)
 install-gfxlib2: $(prefix)/lib $(prefixlib)
 	$(INSTALL_FILE) $(libdir)/libfbgfx.a $(prefixlib)/
 
+################################################################################
+
 .PHONY: uninstall uninstall-compiler uninstall-includes uninstall-rtlib uninstall-gfxlib2
 uninstall:        uninstall-compiler uninstall-includes uninstall-rtlib uninstall-gfxlib2
 	-rmdir $(prefixlib)
@@ -508,6 +548,8 @@ uninstall-rtlib:
 uninstall-gfxlib2:
 	rm -f $(prefixlib)/libfbgfx.a
 
+################################################################################
+
 .PHONY: clean clean-compiler clean-rtlib clean-gfxlib2
 clean:        clean-compiler clean-rtlib clean-gfxlib2
 
@@ -525,6 +567,29 @@ clean-rtlib:
 clean-gfxlib2:
 	rm -f $(libdir)/libfbgfx.a $(newlibfbgfx)/*.o
 	-rmdir $(newlibfbgfx)
+
+################################################################################
+# 1. make prepare-*-bootstrap
+# turns the compiler's *.bas source files into corresponding *.asm or *.c files
+#
+# 2. make ENABLE_*_BOOTSTRAP=1
+# builds the compiler using the pre-built *.asm or *.c files
+# (The rtlib/gfxlib2 C/ASM sources are built normally)
+#
+# The source tree resulting from step 1 could be packaged up, and via step 2
+# be built into a new fbc by using only GAS or GCC, but not a host fbc.
+
+$(FBC_ASM): $(srcdir)/compiler/%.asm: $(srcdir)/compiler/%.bas $(FBC_BI)
+	$(QUIET_FBC)$(FBC) $(ALLFBCFLAGS) -gen gas -r $<
+
+$(FBC_C): $(srcdir)/compiler/%.c: $(srcdir)/compiler/%.bas $(FBC_BI)
+	$(QUIET_FBC)$(FBC) $(ALLFBCFLAGS) -gen gcc -r $<
+
+.PHONY: prepare-asm-bootstrap prepare-c-bootstrap
+prepare-asm-bootstrap: $(FBC_ASM)
+prepare-c-bootstrap: $(FBC_C)
+
+################################################################################
 
 .PHONY: help
 help:
