@@ -115,6 +115,7 @@ Version 0.25.0:
 - Constructors, destructors and properties can now be implemented outside of the namespace their parent UDT was originally declared in, provided the namespace prefix is used
 - C backend: Nested anonymous structures/unions were not emitted, only their fields
 - On Win32, functions returning structures containing only one CONST SINGLE or one CONST DOUBLE field returned them in EAX or EAX:EDX instead of ST(0)
+- Let() = udtvar assignments and ThreadCall disallowed Union types already, but not yet Types with nested anonymous unions
 
 
 Version 0.24.0:

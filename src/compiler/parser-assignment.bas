@@ -520,18 +520,6 @@ private function hAssignFromField _
 		return astNewNOP()
 	end if
 
-	/'' valid data type?
-    select case typeGet( symbGetType( fld ) )
-    case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-		if( symbGetUDTIsUnion( fld ) then
-			hReportLetError( FB_ERRMSG_UNIONSNOTALLOWED, num )
-			'' error recovery
-			astDelTree( lhs )
-			return astNewNOP()
-		end if
-	end select
-	'/
-
 	if( symbGetArrayDimensions( fld ) <> 0 ) then
 		hReportLetError( FB_ERRMSG_ARRAYSNOTALLOWED, num )
 		'' error recovery
@@ -671,7 +659,8 @@ function cAssignmentOrPtrCall _
 	if( expr <> NULL ) then
 		select case astGetDataType( expr )
 		case FB_DATATYPE_STRUCT
-			if( symbGetUDTIsUnion( astGetSubtype( expr ) ) ) then
+			if( symbGetUDTIsUnion( astGetSubtype( expr ) ) or _
+			    symbGetUDTHasAnonUnion( astGetSubtype( expr ) ) ) then
 				errReport( FB_ERRMSG_UNIONSNOTALLOWED )
 				'' error recovery:
 				astDelTree( expr )

@@ -62,7 +62,7 @@ private function hThreadCallMapType _
             function = iif( udt = TRUE, -1, FB_RTL_TCTYPES_PTR )
         case FB_DATATYPE_STRUCT
             '' restrictions to simplify life
-            if symbGetUDTIsUnion( stype ) then 
+            if( symbGetUDTIsUnion( stype ) or symbGetUDTHasAnonUnion( stype ) ) then
                 exit function
             end if
             if symbGetUDTAlign( stype ) <> 0 then 

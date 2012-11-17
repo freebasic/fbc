@@ -734,6 +734,7 @@ decl_inner:		'' it's an anonymous inner UDT
 
 				if( isunion ) then
 					symbSetUDTIsUnion( inner )
+					symbSetUDTHasAnonUnion( s )
 				end if
 
 				'' walk through all the anon UDT's symbols, and
