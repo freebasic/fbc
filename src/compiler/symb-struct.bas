@@ -640,11 +640,11 @@ private function hGetReturnType( byval sym as FBSYMBOL ptr ) as integer
 				exit do
 			end if
 
-			if( fld->typ = FB_DATATYPE_SINGLE ) then
+			if( typeGetDtAndPtrOnly( fld->typ ) = FB_DATATYPE_SINGLE ) then
 				res = FB_DATATYPE_SINGLE
 			end if
 
-			if( typeGet( fld->typ ) <> FB_DATATYPE_STRUCT ) then
+			if( typeGetDtAndPtrOnly( fld->typ ) <> FB_DATATYPE_STRUCT ) then
 				exit do
 			end if
 
@@ -675,11 +675,11 @@ private function hGetReturnType( byval sym as FBSYMBOL ptr ) as integer
 				exit do
 			end if
 
-			if( fld->typ = FB_DATATYPE_DOUBLE ) then
+			if( typeGetDtAndPtrOnly( fld->typ ) = FB_DATATYPE_DOUBLE ) then
 				res = FB_DATATYPE_DOUBLE
 			end if
 
-			if( fld->typ <> FB_DATATYPE_STRUCT ) then
+			if( typeGetDtAndPtrOnly( fld->typ ) <> FB_DATATYPE_STRUCT ) then
 				exit do
 			end if
 
