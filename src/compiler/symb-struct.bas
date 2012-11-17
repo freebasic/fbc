@@ -405,7 +405,7 @@ function symbAddField _
 
 	sym->lgt = lgt
 
-	if( updateudt or ((parent->udt.options and FB_UDTOPT_ISUNION) <> 0) ) then
+	if( updateudt or symbGetUDTIsUnion( parent ) ) then
 		sym->ofs = parent->ofs
 	else
 		sym->ofs = parent->ofs - lgt
@@ -479,7 +479,7 @@ function symbAddField _
 	end if
 
 	'' struct?
-	if( (parent->udt.options and FB_UDTOPT_ISUNION) = 0 ) then
+	if( symbGetUDTIsUnion( parent ) = FALSE ) then
 		if( updateudt ) then
 			parent->ofs += lgt
 			parent->lgt = parent->ofs
@@ -520,7 +520,7 @@ sub symbInsertInnerUDT _
 	dim as FBSYMBOLTB ptr symtb = any
 	dim as integer pad = any
 
-	if( (parent->udt.options and FB_UDTOPT_ISUNION) = 0 ) then
+	if( symbGetUDTIsUnion( parent ) = FALSE ) then
 		'' calc padding (should be aligned like if an UDT field was being added)
 		pad = hCalcPadding( parent->ofs, parent->udt.align, FB_DATATYPE_STRUCT, inner )
 		if( hCheckUDTSize( parent->ofs, 0, pad ) ) then
@@ -545,7 +545,7 @@ sub symbInsertInnerUDT _
 
     symtb = @parent->udt.ns.symtb
 
-    if( (parent->udt.options and FB_UDTOPT_ISUNION) <> 0 ) then
+	if( symbGetUDTIsUnion( parent ) ) then
     	'' link to parent
     	do while( fld <> NULL )
     		fld->symtb = symtb
@@ -567,7 +567,7 @@ sub symbInsertInnerUDT _
     parent->udt.ns.symtb.tail = inner->udt.ns.symtb.tail
 
 	'' struct? update ofs + len
-	if( (parent->udt.options and FB_UDTOPT_ISUNION) = 0 ) then
+	if( symbGetUDTIsUnion( parent ) = FALSE ) then
 		parent->ofs += inner->lgt
 		parent->lgt = parent->ofs
 	'' union.. update len, if bigger
@@ -750,7 +750,7 @@ function symbCloneStruct( byval sym as FBSYMBOL ptr ) as FBSYMBOL ptr
 	'' created by symbAddArrayDesc())
 
 	clone = symbStructBegin( NULL, NULL, symbUniqueId( ), NULL, _
-	                         (sym->udt.options and FB_UDTOPT_ISUNION) <> 0, _
+	                         symbGetUDTIsUnion( sym ), _
 	                         sym->udt.align, NULL, 0 )
 
 	fld = sym->udt.ns.symtb.head

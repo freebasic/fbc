@@ -712,18 +712,10 @@ private function hTypeBody( byval s as FBSYMBOL ptr ) as integer
 
 decl_inner:		'' it's an anonymous inner UDT
 				isunion = lexGetToken( ) = FB_TK_UNION
-				if( isunion = FALSE ) then
-					if( symbGetUDTIsUnion( s ) = FALSE ) then
-						errReport( FB_ERRMSG_SYNTAXERROR )
-						'' error recovery: fake type
-						isunion = TRUE
-					end if
-				else
-					if( symbGetUDTIsUnion( s ) ) then
-						errReport( FB_ERRMSG_SYNTAXERROR )
-						'' error recovery: fake type
-						isunion = FALSE
-					end if
+				if( symbGetUDTIsUnion( s ) = isunion ) then
+					errReport( FB_ERRMSG_SYNTAXERROR )
+					'' error recovery: fake type
+					isunion = not isunion
 				end if
 
 				lexSkipToken( )
