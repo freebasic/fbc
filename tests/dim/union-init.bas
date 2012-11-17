@@ -2599,6 +2599,47 @@ end sub
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
+private sub testGenGccAnonUnion cdecl( )
+	'' -gen gcc regression test: it should properly emit the nested
+	'' anonymous type, to ensure the variable on stack will be 12 bytes
+	'' (a union of 4 and 12), not just 4 bytes (a union of 4*4).
+
+	union UDT
+		a as integer
+		type
+			b as integer
+			c as integer
+			d as integer
+		end type
+	end union
+
+	dim a as integer = 111
+	dim x as UDT
+	dim b as integer = 222
+
+	CU_ASSERT( a = 111 )
+	CU_ASSERT( x.a = 0 )
+	CU_ASSERT( x.b = 0 )
+	CU_ASSERT( x.c = 0 )
+	CU_ASSERT( x.d = 0 )
+	CU_ASSERT( b = 222 )
+
+	'' this should not trash other variables on the stack
+	x.a = 1
+	x.b = 2
+	x.c = 3
+	x.d = 4
+
+	CU_ASSERT( a = 111 )
+	CU_ASSERT( x.a = 2 )
+	CU_ASSERT( x.b = 2 )
+	CU_ASSERT( x.c = 3 )
+	CU_ASSERT( x.d = 4 )
+	CU_ASSERT( b = 222 )
+end sub
+
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+
 private sub ctor( ) constructor
 	fbcu.add_suite( "tests/structs/union-init" )
 	fbcu.add_test( "test1", @test1 )
@@ -2737,6 +2778,7 @@ private sub ctor( ) constructor
 	fbcu.add_test( "derived81", @derived81 )
 	fbcu.add_test( "derived82", @derived82 )
 	fbcu.add_test( "derived83", @derived83 )
+	fbcu.add_test( "-gen gcc anonymous union", @testGenGccAnonUnion )
 end sub
 
 end namespace

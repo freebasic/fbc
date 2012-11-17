@@ -99,6 +99,8 @@ type IRHLCCTX
 	callargs			as TLIST        '' IRCALLARG's during emitPushArg/emitCall[Ptr]
 	linenum				as integer
 
+	anonstack			as TLIST  '' stack of nested anonymous structs/unions in a struct/union
+
 	varini				as string
 	variniscopelevel		as integer
 
@@ -138,6 +140,7 @@ dim shared as IRHLCCTX ctx
 private sub _init( )
 	flistInit( @ctx.vregTB, IR_INITVREGNODES, len( IRVREG ) )
 	listInit( @ctx.callargs, 32, sizeof(IRCALLARG), LIST_FLAGS_NOCLEAR )
+	listInit( @ctx.anonstack, 8, sizeof( FBSYMBOL ptr ), LIST_FLAGS_NOCLEAR )
 	listInit( @ctx.exprnodes, 32, sizeof( EXPRNODE ), LIST_FLAGS_CLEAR )
 	listInit( @ctx.exprcache, 8, sizeof( EXPRCACHENODE ), LIST_FLAGS_NOCLEAR )
 	irSetOption( IR_OPT_FPUIMMEDIATES or IR_OPT_NOINLINEOPS )
@@ -146,6 +149,7 @@ end sub
 private sub _end( )
 	listEnd( @ctx.exprcache )
 	listEnd( @ctx.exprnodes )
+	listEnd( @ctx.anonstack )
 	listEnd( @ctx.callargs )
 	flistEnd( @ctx.vregTB )
 end sub
@@ -735,6 +739,39 @@ private sub hEmitFuncProto _
 
 end sub
 
+private sub hPushAnonParents _
+	( _
+		byval baseparent as FBSYMBOL ptr, _
+		byval parent as FBSYMBOL ptr _
+	)
+
+	if( parent = baseparent ) then
+		exit sub
+	end if
+
+	'' Recurse
+	hPushAnonParents( baseparent, parent->parent )
+
+	'' Push parents in top-down order
+	assert( symbIsStruct( parent ) )
+	if( symbGetUDTIsUnion( parent ) ) then
+		hWriteLine( "union {", TRUE )
+	else
+		hWriteLine( "struct {", TRUE )
+	end if
+	sectionIndent( )
+	*cptr( FBSYMBOL ptr ptr, listNewNode( @ctx.anonstack ) ) = parent
+
+end sub
+
+private sub hPopAnonParents( byval anonnode as FBSYMBOL ptr ptr )
+	while( listGetTail( @ctx.anonstack ) <> anonnode )
+		sectionUnindent( )
+		hWriteLine( "};", TRUE )
+		listDelNode( @ctx.anonstack, listGetTail( @ctx.anonstack ) )
+	wend
+end sub
+
 private sub hEmitStruct _
 	( _
 		byval s as FBSYMBOL ptr, _
@@ -744,6 +781,7 @@ private sub hEmitStruct _
 	dim as string ln, id
 	dim as integer skip = any, dtype = any, align = any
 	dim as FBSYMBOL ptr subtype = any, fld = any, member = any
+	dim as FBSYMBOL ptr ptr anonnode = any
 
 	id = hGetUDTName( s )
 
@@ -783,12 +821,40 @@ private sub hEmitStruct _
 	symbSetIsEmitted( s )
 
 	hWriteLine( id + " {", TRUE )
+	sectionIndent( )
 
 	'' Write out the elements
-	sectionIndent( )
 	fld = symbUdtGetFirstField( s )
 	while( fld )
-		''
+		if( fld->parent = s ) then
+			'' Field from main UDT
+			hPopAnonParents( NULL )
+		else
+			'' Field from a nested anonymous union/struct
+			'' Check the stack to decide whether we have to start
+			'' nesting further, or instead go upwards, or stay at
+			'' the current level.
+
+			'' Already on stack?
+			anonnode = listGetTail( @ctx.anonstack )
+			while( anonnode )
+				if( *anonnode = fld->parent ) then
+					exit while
+				end if
+				anonnode = listGetPrev( anonnode )
+			wend
+
+			if( anonnode ) then
+				'' Already on stack, i.e. we go upwards
+				'' Pop the stack until we reach the proper level
+				hPopAnonParents( anonnode )
+			else
+				'' Not yet on stack, i.e. deeper nesting
+				'' Push each new nested struct/union onto the stack
+				hPushAnonParents( s, fld->parent )
+			end if
+		end if
+
 		'' For bitfields, emit only the container field, not the
 		'' individual bitfields (bitfields are merged into a "container"
 		'' given by the type of the first bitfield; if further bitfields
@@ -797,7 +863,6 @@ private sub hEmitStruct _
 		'' Alternatively we could emit bitfields explicitly via ": N",
 		'' but that would depend on gcc's ABI and we'd have to emit
 		'' things like __attribute__((ms_struct)) too for msbitfields...
-		''
 		if( symbGetType( fld ) = FB_DATATYPE_BITFIELD ) then
 			skip = (symbGetSubtype( fld )->bitfld.bitpos <> 0)
 		else
@@ -838,7 +903,11 @@ private sub hEmitStruct _
 		fld = symbUdtGetNextField( fld )
 	wend
 
+	'' Close any remaining nested anonymous structs/unions
+	hPopAnonParents( NULL )
+
 	'' Close UDT body
+	assert( listGetHead( @ctx.anonstack ) = NULL )
 	sectionUnindent( )
 	hWriteLine( "};", TRUE )
 

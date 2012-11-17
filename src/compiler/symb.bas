@@ -2194,7 +2194,11 @@ function symbDump( byval sym as FBSYMBOL ptr ) as string
 	end if
 
 #if 1
-	s += *classnames(sym->class) + " "
+	if( (sym->class < FB_SYMBCLASS_VAR) or (sym->class > FB_SYMBCLASS_NSIMPORT) ) then
+		s += "<bad class " + str( sym->class ) + "> "
+	else
+		s += *classnames(sym->class) + " "
+	end if
 #endif
 
 #if 1
