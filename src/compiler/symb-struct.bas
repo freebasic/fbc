@@ -436,9 +436,8 @@ function symbAddField _
 	select case as const typeGet( dtype )
 	'' var-len string fields? must add a ctor, copyctor and dtor
 	case FB_DATATYPE_STRING
-		'' if it's an anon udt, it or parent is an UNION
-		if( (parent->udt.options and (FB_UDTOPT_ISUNION or _
-									  FB_UDTOPT_ISANON)) <> 0 ) then
+		'' not allowed inside unions or anonymous nested structs/unions
+		if( symbGetUDTIsUnionOrAnon( parent ) ) then
 			errReport( FB_ERRMSG_VARLENSTRINGINUNION )
 		else
 			symbSetUDTHasCtorField( parent )
@@ -455,8 +454,8 @@ function symbAddField _
 		end if
 
 		if( symbGetCompCtorHead( subtype ) ) then
-			'' if it's an anon udt, it or parent is an UNION
-			if( (parent->udt.options and (FB_UDTOPT_ISUNION or FB_UDTOPT_ISANON)) <> 0 ) then
+			'' not allowed inside unions or anonymous nested structs/unions
+			if( symbGetUDTIsUnionOrAnon( parent ) ) then
 				errReport( FB_ERRMSG_CTORINUNION )
 			else
 				symbSetUDTHasCtorField( parent )
@@ -464,8 +463,8 @@ function symbAddField _
 		end if
 
 		if( symbGetCompDtor( subtype ) ) then
-			'' if it's an anon udt, it or parent is an UNION
-			if( (parent->udt.options and (FB_UDTOPT_ISUNION or FB_UDTOPT_ISANON)) <> 0 ) then
+			'' not allowed inside unions or anonymous nested structs/unions
+			if( symbGetUDTIsUnionOrAnon( parent ) ) then
 				errReport( FB_ERRMSG_DTORINUNION )
 			else
 				symbSetUDTHasDtorField( parent )

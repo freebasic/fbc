@@ -2112,6 +2112,8 @@ declare function symbGetUDTBaseLevel _
 #define symbSetUDTHasInitedField( s ) (s)->udt.options or= FB_UDTOPT_HASINITEDFIELD
 #define symbGetUDTHasInitedField( s ) (((s)->udt.options and FB_UDTOPT_HASINITEDFIELD) <> 0)
 
+#define symbGetUDTIsUnionOrAnon(s) (((s)->udt.options and (FB_UDTOPT_ISUNION or FB_UDTOPT_ISANON)) <> 0)
+
 #define symbGetUDTAlign(s) s->udt.align
 
 #define symbGetUDTUnpadLen(s) s->udt.unpadlgt

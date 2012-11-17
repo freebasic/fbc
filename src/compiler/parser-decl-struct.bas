@@ -232,8 +232,7 @@ private sub hFieldInit( byval parent as FBSYMBOL ptr, byval sym as FBSYMBOL ptr 
 
 	if( sym <> NULL ) then
 		'' union or anon?
-		if( (parent->udt.options and (FB_UDTOPT_ISUNION or _
-									  FB_UDTOPT_ISANON)) <> 0 ) then
+		if( symbGetUDTIsUnionOrAnon( parent ) ) then
 			errReport( FB_ERRMSG_CTORINUNION )
 			'' error recovery: skip
 			hSkipUntil( FB_TK_EOL )
