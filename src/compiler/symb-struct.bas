@@ -46,19 +46,21 @@ function symbStructBegin _
 		exit function
 	end if
 
-	s->udt.options = iif( isunion, FB_UDTOPT_ISUNION, 0 )
+	s->udt.options = 0
+	if( isunion ) then
+		symbSetUDTIsUnion( s )
+	end if
 
 	symbSymbTbInit( s->udt.ns.symtb, s )
 
-    '' not anon? create a new hash tb
-    if( parent = NULL ) then
-    	symbHashTbInit( s->udt.ns.hashtb, s, FB_INITFIELDNODES )
-
-    '' anonymous, use the parent's hash tb..
-    else
-    	s->udt.anonparent = parent
-    	s->udt.options or= FB_UDTOPT_ISANON
-    end if
+	'' not anon? create a new hash tb
+	if( parent = NULL ) then
+		symbHashTbInit( s->udt.ns.hashtb, s, FB_INITFIELDNODES )
+	'' anonymous, use the parent's hash tb..
+	else
+		s->udt.anonparent = parent
+		symbSetUDTIsAnon( s )
+	end if
 
     '' unused (while mixins aren't supported)
     s->udt.ns.ext = NULL
@@ -824,8 +826,7 @@ sub symbDelStruct _
 		s->udt.ns.ext = NULL
 	end if
 
-	''
-	if( (s->udt.options and FB_UDTOPT_ISANON) = 0 ) then
+	if( symbGetUDTIsAnon( s ) = FALSE ) then
 		hashEnd( @s->udt.ns.hashtb.tb )
 	end if
 

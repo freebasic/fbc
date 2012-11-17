@@ -2075,10 +2075,11 @@ declare function symbGetUDTBaseLevel _
 									e->subtype->bitfld.bits, _
 									e->lgt * e->var_.array.elms * 8 )
 
+#define symbSetUDTIsUnion(s) (s)->udt.options or= FB_UDTOPT_ISUNION
 #define symbGetUDTIsUnion(s) ((s->udt.options and FB_UDTOPT_ISUNION) <> 0)
 
-#define symbGetUDTHasPtrField(s) ((s->udt.options and FB_UDTOPT_HASPTRFIELD) <> 0)
 #define symbSetUDTHasPtrField(s) s->udt.options or= FB_UDTOPT_HASPTRFIELD
+#define symbGetUDTHasPtrField(s) ((s->udt.options and FB_UDTOPT_HASPTRFIELD) <> 0)
 
 #define symbSetUDTHasCtorField(s) s->udt.options or= FB_UDTOPT_HASCTORFIELD
 #define symbGetUDTHasCtorField(s) ((s->udt.options and FB_UDTOPT_HASCTORFIELD) <> 0)
@@ -2086,6 +2087,7 @@ declare function symbGetUDTBaseLevel _
 #define symbSetUDTHasDtorField(s) s->udt.options or= FB_UDTOPT_HASDTORFIELD
 #define symbGetUDTHasDtorField(s) ((s->udt.options and FB_UDTOPT_HASDTORFIELD) <> 0)
 
+#define symbSetUDTIsAnon(s) (s)->udt.options or= FB_UDTOPT_ISANON
 #define symbGetUDTIsAnon(s) ((s->udt.options and FB_UDTOPT_ISANON) <> 0)
 
 #define symbGetUDTHasRecByvalParam(s) ((s->udt.options and FB_UDTOPT_HASRECBYVALPARAM) <> 0)
