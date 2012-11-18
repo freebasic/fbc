@@ -160,8 +160,12 @@ function cNumLiteral _
 	case FB_DATATYPE_ULONGINT
 		function = astNewCONSTl( valulng( *lexGetText( ) ), dtype )
 
-  	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
+  	case FB_DATATYPE_DOUBLE
 		function = astNewCONSTf( val( *lexGetText( ) ), dtype )
+
+  	case FB_DATATYPE_SINGLE
+		dim fval as single = val( *lexGetText( ) )
+		function = astNewCONSTf( fval , dtype )
 
 	case FB_DATATYPE_UINT
 		function = astNewCONSTi( valuint( *lexGetText( ) ), dtype )
