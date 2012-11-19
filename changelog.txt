@@ -116,6 +116,7 @@ Version 0.25.0:
 - C backend: Nested anonymous structures/unions were not emitted, only their fields
 - On Win32, functions returning structures containing only one CONST SINGLE or one CONST DOUBLE field returned them in EAX or EAX:EDX instead of ST(0)
 - Let() = udtvar assignments and ThreadCall disallowed Union types already, but not yet Types with nested anonymous unions
+- codepage-specific zstring to Unicode wstring conversions are now working, by default using the locale set when an FB program is started
 
 
 Version 0.24.0:

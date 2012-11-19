@@ -1,6 +1,7 @@
 /* libfb initialization */
 
 #include "fb.h"
+#include <locale.h>
 
 FB_RTLIB_CTX __fb_ctx /* not initialized */;
 static int __fb_is_inicnt = 0;
@@ -22,6 +23,16 @@ void fb_hRtInit( void )
 #ifdef ENABLE_MT
 	fb_TlsInit( );
 #endif
+
+	/**
+	 * With the default "C" locale (which is just plain 7-bit ASCII),
+	 * our mbstowcs() (from fb_wstr_ConvFromA()) fail to convert zstrings
+	 * specific to the user's locale to wstring. To fix this we must tell
+	 * the CRT to use the user's locale setting, i.e. the locale given by
+	 * LC_* or LANG environment variables.
+	 */
+	setlocale( LC_ALL, "" );
+
 }
 
 /* called from fbrt0 */
