@@ -242,6 +242,18 @@ o ABI
     - too hard to be added now due the register spills, IR must handle inter blocks and
       keep track of live vregs
 
+o rtlib
+  - The decimal separator used/recognized by the CRT float <-> string conversion
+    functions (strtod, wcstod, sprintf, swprintf) depends on the CRT's locale
+    setting (setlocale()), i.e. STR()/VAL() and other internal users of these
+    functions will break if anyone calls setlocale() for LC_NUMERIC or LC_ALL
+    and changes away from the '.' decimal separator (e.g. gtk_init() sets LC_ALL).
+    However FB should always use '.' for portability.
+    We'd need our own float <-> string routines (PRINT USING/FORMAT may have one
+    part of that already) to really fix this.
+    
+    
+
 o classes
   - what should CLASS keyword do? struct vs. class as in C++?
 

@@ -26,12 +26,18 @@ void fb_hRtInit( void )
 
 	/**
 	 * With the default "C" locale (which is just plain 7-bit ASCII),
-	 * our mbstowcs() (from fb_wstr_ConvFromA()) fail to convert zstrings
-	 * specific to the user's locale to wstring. To fix this we must tell
-	 * the CRT to use the user's locale setting, i.e. the locale given by
-	 * LC_* or LANG environment variables.
+	 * our mbstowcs() calls (from fb_wstr_ConvFromA()) fail to convert
+	 * zstrings specific to the user's locale to Unicode wstrings.
+	 *
+	 * To fix this we must tell the CRT to use the user's locale setting,
+	 * i.e. the locale given by LC_* or LANG environment variables.
+	 *
+	 * We should change the LC_CTYPE setting only, to affect the behaviour
+	 * of the codepage <-> Unicode conversion functions, but not for
+	 * example LC_NUMERIC, which would affect things like the decimal
+	 * separator used by float <-> string conversion functions.
 	 */
-	setlocale( LC_ALL, "" );
+	setlocale( LC_CTYPE, "" );
 
 }
 
