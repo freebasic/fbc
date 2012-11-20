@@ -962,6 +962,12 @@ private sub hMangleProc( byval sym as FBSYMBOL ptr )
 	'' LLVM: @ prefix for global symbols
 	if( env.clopt.backend = FB_BACKEND_LLVM ) then
 		mangled += "@"
+
+		'' Going to add @N stdcall suffix below?
+		if( sym->proc.mode = FB_FUNCMODE_STDCALL ) then
+			'' In LLVM, @ is a special char, identifiers using it must be quoted
+			mangled += """"
+		end if
 	end if
 
 	'' Win32 underscore prefix
@@ -1047,6 +1053,11 @@ private sub hMangleProc( byval sym as FBSYMBOL ptr )
 		'' But not for the C backend, because gcc will do it already.
 		if( env.clopt.backend <> FB_BACKEND_GCC ) then
 			mangled += "@" + str( symbCalcProcParamsLen( sym ) )
+		end if
+
+		if( env.clopt.backend = FB_BACKEND_LLVM ) then
+			'' In LLVM, @ is a special char, identifiers using it must be quoted
+			mangled += """"
 		end if
 	end if
 
