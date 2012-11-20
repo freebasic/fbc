@@ -58,4 +58,16 @@
 	#define HOST_POWERPC64
 #endif
 
+#if defined HOST_MINGW && defined HOST_X86
+	/* work around gcc bug 52991 */
+	/* Since GCC 4.7 -mms-bitfields was made the default for mingw32,
+	   causing structs to be "ms_struct" by default, but "packed" seems
+	   to be broken in combination with that. Using "gcc_struct" (the old
+	   default) helps.
+	   Note that "gcc_struct" isn't recognized for *all* targets though. */
+	#define FBPACKED __attribute__((gcc_struct, packed))
+#else
+	#define FBPACKED __attribute__((packed))
+#endif
+
 #endif

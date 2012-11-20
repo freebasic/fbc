@@ -186,7 +186,8 @@ struct _EVENT {
 		int z;
 		int w;
 	};
-} __attribute__((__packed__));
+} FBPACKED;
+
 typedef struct _EVENT EVENT;
 
 typedef struct FB_GFXCTX {
@@ -435,7 +436,7 @@ struct _PUT_HEADER {
 	unsigned int tex;
 	char _reserved[8];
 	unsigned char data[0];
-} __attribute__((__packed__));
+} FBPACKED;
 typedef struct _PUT_HEADER PUT_HEADER;
 
 /* Global variables */

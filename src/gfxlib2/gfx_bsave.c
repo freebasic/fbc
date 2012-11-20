@@ -7,23 +7,23 @@
 
 typedef struct BMP_HEADER
 {
-	unsigned short bfType			__attribute__((packed));
-	unsigned int   bfSize			__attribute__((packed));
-	unsigned short bfReserved1		__attribute__((packed));
-	unsigned short bfReserved2		__attribute__((packed));
-	unsigned int   bfOffBits		__attribute__((packed));
-	unsigned int   biSize			__attribute__((packed));
-	unsigned int   biWidth			__attribute__((packed));
-	unsigned int   biHeight			__attribute__((packed));
-	unsigned short biPlanes			__attribute__((packed));
-	unsigned short biBitCount		__attribute__((packed));
-	unsigned int   biCompression		__attribute__((packed));
-	unsigned int   biSizeImage		__attribute__((packed));
-	unsigned int   biXPelsPerMeter		__attribute__((packed));
-	unsigned int   biYPelsPerMeter		__attribute__((packed));
-	unsigned int   biClrUsed		__attribute__((packed));
-	unsigned int   biClrImportant		__attribute__((packed));
-} BMP_HEADER;
+	unsigned short bfType;
+	unsigned int   bfSize;
+	unsigned short bfReserved1;
+	unsigned short bfReserved2;
+	unsigned int   bfOffBits;
+	unsigned int   biSize;
+	unsigned int   biWidth;
+	unsigned int   biHeight;
+	unsigned short biPlanes;
+	unsigned short biBitCount;
+	unsigned int   biCompression;
+	unsigned int   biSizeImage;
+	unsigned int   biXPelsPerMeter;
+	unsigned int   biYPelsPerMeter;
+	unsigned int   biClrUsed;
+	unsigned int   biClrImportant;
+} FBPACKED BMP_HEADER;
 
 
 /*:::::*/
