@@ -7,6 +7,7 @@
 #include once "fbint.bi"
 #include once "parser.bi"
 #include once "ast.bi"
+#include once "symb.bi"
 
 enum FOR_FLAGS
     FOR_ISUDT			= &h0001
@@ -541,11 +542,16 @@ private sub hForTo _
 
 end sub
 
-private function hStepIsPositive _
+private function hStepIsNonNegative _
 	( _
 		byval dtype as integer, _
 		byval expr as ASTNODE ptr _
 	) as integer
+
+	'' don't test unsigned values for non-negativity
+	if( typeIsSigned( dtype ) = FALSE ) then
+		return TRUE
+	end if
 
 	select case as const typeGet( dtype )
 	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
@@ -602,6 +608,15 @@ private sub hForStep _
 			expr = astNewCONSTi( 1, FB_DATATYPE_INTEGER )
 		end if
 
+		if( (flags and FOR_ISUDT) = 0) then
+			'' keep signed-ness of expr type, so negative steps will work properly
+			if( typeIsSigned( astGetFullType( expr ) ) ) then
+				dtype = typeToSigned( dtype )
+			else
+				dtype = typeToUnsigned( dtype )
+			end if
+		end if
+
 		'' store step into a temp var
 
 		'' non-UDT constant?
@@ -614,7 +629,7 @@ private sub hForStep _
 			end if
 
 			'' get step's positivity
-			stk->for.ispos.value.int = hStepIsPositive( dtype, expr )
+			stk->for.ispos.value.int = hStepIsNonNegative( dtype, expr )
 
 			'' get constant step
 			stk->for.stp.sym = NULL
@@ -664,11 +679,20 @@ private sub hForStep _
 		end if
 	end if
 
-    '' if STEP's sign is unknown, we have to check for that
-    if( iscomplex and ((flags and FOR_ISUDT) = 0) ) then
-    	dim as FB_CMPSTMT_FORELM cmp = any
+	if( typeIsSigned( dtype ) = FALSE and ((flags and FOR_ISUDT) = 0) ) then
 
-    	cmp.dtype = stk->for.stp.dtype
+		'' step is unsigned, so non-negative
+		stk->for.ispos.sym = NULL
+		stk->for.ispos.dtype = FB_DATATYPE_INTEGER
+		stk->for.ispos.value.int = TRUE
+
+    '' if STEP's sign is unknown, we have to check for that
+    elseif( iscomplex and ((flags and FOR_ISUDT) = 0) ) then
+
+
+		dim as FB_CMPSTMT_FORELM cmp = any
+
+		cmp.dtype = stk->for.stp.dtype
 		cmp.sym = NULL
 
 		select case as const cmp.dtype
