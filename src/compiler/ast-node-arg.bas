@@ -653,7 +653,9 @@ private sub hUDTPassByval _
 	)
 
 	dim as FBSYMBOL ptr tmp = any
-	dim as ASTNODE ptr arg = n->l
+	dim as ASTNODE ptr arg = any, callexpr = any
+
+	arg = n->l
 
 	'' no dtor, copy-ctor or virtual members?
 	if( symbCompIsTrivial( symbGetSubtype( param ) ) ) then
@@ -684,8 +686,12 @@ private sub hUDTPassByval _
 	'' non-trivial type, pass a pointer to a temp copy
 	tmp = symbAddTempVar( symbGetFullType( param ), symbGetSubtype( param ), FALSE )
 
-	arg = astNewCALLCTOR( astBuildCopyCtorCall( astBuildVarField( tmp ), arg ), _
-						  astBuildVarField( tmp ) )
+	callexpr = astBuildCopyCtorCall( astBuildVarField( tmp ), arg )
+	if( callexpr = NULL ) then
+		exit sub
+	end if
+
+	arg = astNewCALLCTOR( callexpr, astBuildVarField( tmp ) )
 
 	hBuildByrefArg( param, n, arg )
 

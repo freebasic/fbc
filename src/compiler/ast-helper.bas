@@ -398,6 +398,11 @@ function astBuildCopyCtorCall _
     	return astNewASSIGN( dst, src, AST_OPOPT_DONTCHKPTR )
     end if
 
+	if( symbCheckAccess( copyctor ) = FALSE ) then
+		errReport( FB_ERRMSG_NOACCESSTOCTOR )
+		return NULL
+	end if
+
     '' call the copy ctor
     proc = astNewCALL( copyctor )
 

@@ -118,6 +118,7 @@ Version 0.25.0:
 - Let() = udtvar assignments and ThreadCall disallowed Union types already, but not yet Types with nested anonymous unions
 - codepage-specific zstring to Unicode wstring conversions are now working, by default using the locale set when an FB program is started
 - FOR now retains the signedness of the step value, so that negative steps may be used on unsigned counters of any size
+- Visibility checks for copy constructor calls for BYVAL arguments were missing
 
 
 Version 0.24.0:
