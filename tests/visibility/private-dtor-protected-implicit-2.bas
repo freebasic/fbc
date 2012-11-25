@@ -6,9 +6,6 @@ type Parent
 	declare destructor( )
 end type
 
-constructor Parent( )
-end constructor
-
 type Child extends Parent
 	declare destructor( )
 end type
