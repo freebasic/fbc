@@ -1,8 +1,8 @@
-/* read stmt for strings */
+/* read stmt for wstring's */
 
 #include "fb.h"
 
-FBCALL void fb_DataReadStr( void *dst, int dst_size, int fillrem )
+FBCALL void fb_DataReadWstr( FB_WCHAR *dst, int dst_size )
 {
 	FB_LOCK();
 
@@ -10,13 +10,13 @@ FBCALL void fb_DataReadStr( void *dst, int dst_size, int fillrem )
 		if( __fb_data_ptr->len == FB_DATATYPE_OFS ) {
 			/* !!!WRITEME!!! */
 		} else if( __fb_data_ptr->len & FB_DATATYPE_WSTR ) {
-			fb_WstrAssignToA( dst, dst_size, __fb_data_ptr->wstr, fillrem );
+			fb_WstrAssign( dst, dst_size, __fb_data_ptr->wstr );
 		} else {
-			fb_StrAssign( dst, dst_size, (void *)__fb_data_ptr->zstr, 0, fillrem );
+			fb_WstrAssignFromA( dst, dst_size, __fb_data_ptr->zstr, __fb_data_ptr->len );
 		}
 	} else {
 		/* no more DATA, return empty string */
-		fb_StrAssign( dst, dst_size, "", 0, fillrem );
+		fb_WstrAssign( dst, dst_size, _LC("") );
 	}
 
 	fb_DataNext( );
