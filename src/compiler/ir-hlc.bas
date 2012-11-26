@@ -1990,16 +1990,21 @@ end sub
 private function exprLookup( byval vregid as integer ) as EXPRNODE ptr
 	dim as EXPRCACHENODE ptr entry = any
 
-	'' Find the node corresponding to that vreg; it should always be there.
-	'' (the AST will never tell ir-hlc to access un-emitted vregs)
+	'' Find the node corresponding to that vreg, if any.
 	entry = listGetHead( @ctx.exprcache )
-	while( entry->vregid <> vregid )
+	while( entry )
+		if( entry->vregid = vregid ) then
+			exit while
+		end if
 		entry = listGetNext( entry )
 	wend
 
-	function = entry->expr
-
-	listDelNode( @ctx.exprcache, entry )
+	if( entry ) then
+		function = entry->expr
+		listDelNode( @ctx.exprcache, entry )
+	else
+		function = NULL
+	end if
 end function
 
 private function hEmitInt( byval dtype as integer, byval value as integer ) as string
@@ -2539,6 +2544,15 @@ private function exprNewVREG _
 	case IR_VREGTYPE_REG
 		'' Access to existing vreg (e.g. BOP result)
 		l = exprLookup( vreg->reg )
+		if( l = NULL ) then
+			'' Accessing a previous vreg a second time
+			'' This currently should only happen with -exx pointer
+			'' or array checking function calls, where the AST is
+			'' reusing the function result vreg. Since the vreg is
+			'' a call result, the C backend will have emitted a
+			'' temp var, allowing this reuse to work.
+			l = exprNewTEXT( vreg->dtype, vreg->subtype, "vr$" + str( vreg->reg ) )
+		end if
 
 	end select
 
