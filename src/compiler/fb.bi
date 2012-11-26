@@ -329,7 +329,6 @@ const FB_DEFAULT_TARGET     = FB_COMPTARGET_NETBSD
 #endif
 
 '' info section
-const FB_INFOSEC_VERSION = &h10
 const FB_INFOSEC_NAME = "fbctinf"
 const FB_INFOSEC_OBJNAME = "__fb_ct.inf"
 #ifdef __FB_DOS__

@@ -14,7 +14,6 @@
 #include once "emitdbg.bi"
 #include once "hash.bi"
 #include once "symb.bi"
-#include once "objinfo.bi"
 
 const EMIT_MEMBLOCK_MAXLEN	= 16				'' when to use memblk clear/move (needed by AST)
 
@@ -191,8 +190,6 @@ const EMIT_MAXKEYWORDS = 600
 		@"pmulhrw", @"pswapw", @"femms", @"prefetch", @"prefetchw", @"pfnacc", @"pfpnacc", @"pswapd", @"pmulhuw", _
 		NULL _
 	}
-
-dim shared as integer fbctinf_started
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' helper functions
@@ -6509,6 +6506,21 @@ sub emitVARINIPAD( byval bytes as integer )
 	outEx( ".skip " + str( bytes ) + ",0" + NEWLINE )
 end sub
 
+sub emitFBCTINFBEGIN( )
+	_setSection( IR_SECTION_INFO, 0 )
+end sub
+
+sub emitFBCTINFSTRING( byval s as zstring ptr )
+	static as string ln
+	ln = *emit.vtbl.getTypeString( FB_DATATYPE_CHAR )
+	ln += " """ + *s + $"\0"""
+	emitWriteStr( ln )
+end sub
+
+sub emitFBCTINFEND( )
+	emitWriteStr( "" )
+end sub
+
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' functions table
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -6701,63 +6713,6 @@ private function _open _
 
 end function
 
-private sub hAppendFbctinf( byval value as zstring ptr )
-	static as string s
-
-	if( fbctinf_started = FALSE ) then
-		fbctinf_started = TRUE
-		'' Switch to .fbctinf if not yet done
-		_setSection( IR_SECTION_INFO, 0 )
-	end if
-
-	s = *emit.vtbl.getTypeString( FB_DATATYPE_CHAR )
-	s += " """ + *value + $"\0"""
-	emitWriteStr( s )
-end sub
-
-private sub hWriteObjinfo( )
-	dim as TSTRSETITEM ptr i = any
-
-	'' This must follow the format used by objinfo.bas:objinfoRead*()
-
-	'' Emit .section .fbctinf only if there is anything to put into it
-	fbctinf_started = FALSE
-
-	'' libs
-	i = listGetHead( @env.libs.list )
-	while( i )
-		'' Not default?
-		if( i->userdata = FALSE ) then
-			hAppendFbctinf( objinfoEncode( OBJINFO_LIB ) )
-			hAppendFbctinf( i->s )
-		end if
-		i = listGetNext( i )
-	wend
-
-	'' libpaths
-	i = listGetHead( @env.libpaths.list )
-	while( i )
-		'' Not default?
-		if( i->userdata = FALSE ) then
-			hAppendFbctinf( objinfoEncode( OBJINFO_LIBPATH ) )
-			hAppendFbctinf( *hEscape( i->s ) )
-		end if
-		i = listGetNext( i )
-	wend
-
-	'' -mt
-	if( env.clopt.multithreaded ) then
-		hAppendFbctinf( objinfoEncode( OBJINFO_MT ) )
-	end if
-
-	'' -lang
-	'' not the default -lang mode?
-	if( env.clopt.lang <> FB_LANG_FB ) then
-		hAppendFbctinf( objinfoEncode( OBJINFO_LANG ) )
-		hAppendFbctinf( fbGetLangName( env.clopt.lang ) )
-	end if
-end sub
-
 '':::::
 private sub _close _
 	( _
@@ -6784,15 +6739,6 @@ private sub _close _
 	''
 	hWriteCtor( symbGetGlobCtorListHead( ), TRUE )
 	hWriteCtor( symbGetGlobDtorListHead( ), FALSE )
-
-	'' not cross-compiling?
-	if( fbIsCrossComp( ) = FALSE ) then
-		'' compiling only?
-		if( env.clopt.outtype = FB_OUTTYPE_OBJECT ) then
-			'' store libs, paths and cmd-line options in the obj
-			hWriteObjinfo( )
-		end if
-	end if
 
 	''
 	edbgEmitFooter( )

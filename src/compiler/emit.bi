@@ -824,6 +824,9 @@ declare sub emitVARINIOFS( byval sname as zstring ptr, byval ofs as integer )
 declare sub emitVARINISTR( byval s as const zstring ptr )
 declare sub emitVARINIWSTR( byval s as zstring ptr )
 declare sub emitVARINIPAD( byval bytes as integer )
+declare sub emitFBCTINFBEGIN( )
+declare sub emitFBCTINFSTRING( byval s as zstring ptr )
+declare sub emitFBCTINFEND( )
 
 declare sub emitWriteStr _
 	( _

@@ -681,6 +681,8 @@ type FBENV
 	'' Lists to collect #inclibs and #libpaths
 	libs			as TSTRSET
 	libpaths		as TSTRSET
+
+	fbctinf_started		as integer
 end type
 
 #include once "hlp.bi"

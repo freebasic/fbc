@@ -121,6 +121,7 @@ Version 0.25.0:
 - Visibility checks for copy constructor calls for BYVAL arguments were missing
 - #591: READing further strings/wstrings after already having READ the last DATA statement caused a crash
 - Intermediate .asm/.c files will now use the native EOL char, not always CRLF
+- The C backend now supports objinfo, just like the ASM backend
 
 
 Version 0.24.0:

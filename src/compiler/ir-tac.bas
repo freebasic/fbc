@@ -859,6 +859,18 @@ private sub _emitVarIniScopeEnd( )
 	'' Used by C-emitter only
 end sub
 
+private sub _emitFbctinfBegin( )
+	emitFBCTINFBEGIN( )
+end sub
+
+private sub _emitFbctinfString( byval s as zstring ptr )
+	emitFBCTINFSTRING( s )
+end sub
+
+private sub _emitFbctinfEnd( )
+	emitFBCTINFEND( )
+end sub
+
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
@@ -2690,6 +2702,9 @@ dim shared as IR_VTBL irtac_vtbl = _
 	@_emitVarIniPad, _
 	@_emitVarIniScopeBegin, _
 	@_emitVarIniScopeEnd, _
+	@_emitFbctinfBegin, _
+	@_emitFbctinfString, _
+	@_emitFbctinfEnd, _
 	@_allocVreg, _
 	@_allocVrImm, _
 	@_allocVrImm64, _

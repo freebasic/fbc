@@ -104,6 +104,8 @@ type IRHLCCTX
 	varini				as string
 	variniscopelevel		as integer
 
+	fbctinf				as string
+
 	asm_line			as string  '' line of inline asm built up by _emitAsm*()
 	asm_i				as integer '' next operand/symbol index
 	asm_output			as string  '' output constraints in gcc's syntax
@@ -3258,6 +3260,34 @@ private sub _emitVarIniScopeEnd( )
 	hVarIniSeparator( )
 end sub
 
+private sub _emitFbctinfBegin( )
+	hWriteLine( "", TRUE )
+
+	'' static         - should not be a public symbol
+	'' const          - read-only
+	'' char[]         - a string
+	'' used attribute - prevent removal due to optimizations
+	'' section attribute - This global must be put into a custom .fbctinf
+	''                     section, as done by the ASM backend.
+	ctx.fbctinf = "static const char "
+	ctx.fbctinf += "__attribute__((used, section(""." + FB_INFOSEC_NAME + """))) "
+	ctx.fbctinf += "__fbctinf[] = """
+end sub
+
+private sub _emitFbctinfString( byval s as zstring ptr )
+	ctx.fbctinf += *s + $"\0"
+end sub
+
+private sub _emitFbctinfEnd( )
+	'' Cut off unnecessary \0 at the end; gcc will add it automatically,
+	'' since it's a string literal...
+	if( right( ctx.fbctinf, 2 ) = $"\0" ) then
+		ctx.fbctinf = left( ctx.fbctinf, len( ctx.fbctinf ) - 2 )
+	end if
+	ctx.fbctinf += """;"
+	hWriteLine( ctx.fbctinf, TRUE )
+end sub
+
 private sub _emitProcBegin _
 	( _
 		byval proc as FBSYMBOL ptr, _
@@ -3416,6 +3446,9 @@ dim shared as IR_VTBL irhlc_vtbl = _
 	@_emitVarIniPad, _
 	@_emitVarIniScopeBegin, _
 	@_emitVarIniScopeEnd, _
+	@_emitFbctinfBegin, _
+	@_emitFbctinfString, _
+	@_emitFbctinfEnd, _
 	@_allocVreg, _
 	@_allocVrImm, _
 	@_allocVrImm64, _

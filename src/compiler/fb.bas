@@ -10,6 +10,7 @@
 #include once "rtl.bi"
 #include once "ast.bi"
 #include once "ir.bi"
+#include once "objinfo.bi"
 
 type FB_LANG_INFO
 	name		as const zstring ptr
@@ -314,6 +315,8 @@ sub fbInit( byval ismain as integer, byval restarts as integer )
 	env.opt.gosub = (env.clopt.lang = FB_LANG_QB)
 
 	env.wchar_doconv = (sizeof( wstring ) = typeGetSize( env.target.wchar ))
+
+	env.fbctinf_started = FALSE
 
 	parserSetCtx( )
 	symbInit( ismain )
@@ -687,6 +690,64 @@ private sub fbParsePreIncludes()
 	wend
 end sub
 
+private sub hAppendFbctinf( byval value as zstring ptr )
+	static as string s
+
+	if( env.fbctinf_started = FALSE ) then
+		env.fbctinf_started = TRUE
+		irEmitFBCTINFBEGIN( )
+	end if
+
+	irEmitFBCTINFSTRING( value )
+end sub
+
+private sub hEmitObjinfo( )
+	dim as TSTRSETITEM ptr i = any
+
+	'' This must follow the format used by objinfo.bas:objinfoRead*().
+	'' We want to emit the .fbctinf section only if there is any meta data
+	'' to put into it.
+	assert( env.fbctinf_started = FALSE )
+
+	'' libs
+	i = listGetHead( @env.libs.list )
+	while( i )
+		'' Not default?
+		if( i->userdata = FALSE ) then
+			hAppendFbctinf( objinfoEncode( OBJINFO_LIB ) )
+			hAppendFbctinf( i->s )
+		end if
+		i = listGetNext( i )
+	wend
+
+	'' libpaths
+	i = listGetHead( @env.libpaths.list )
+	while( i )
+		'' Not default?
+		if( i->userdata = FALSE ) then
+			hAppendFbctinf( objinfoEncode( OBJINFO_LIBPATH ) )
+			hAppendFbctinf( *hEscape( i->s ) )
+		end if
+		i = listGetNext( i )
+	wend
+
+	'' -mt
+	if( env.clopt.multithreaded ) then
+		hAppendFbctinf( objinfoEncode( OBJINFO_MT ) )
+	end if
+
+	'' -lang
+	'' not the default -lang mode?
+	if( env.clopt.lang <> FB_LANG_FB ) then
+		hAppendFbctinf( objinfoEncode( OBJINFO_LANG ) )
+		hAppendFbctinf( fbGetLangName( env.clopt.lang ) )
+	end if
+
+	if( env.fbctinf_started ) then
+		irEmitFBCTINFEND( )
+	end if
+end sub
+
 sub fbCompile _
 	( _
 		byval infname as zstring ptr, _
@@ -748,6 +809,15 @@ sub fbCompile _
 	tmr = timer( ) - tmr
 
 	fbMainEnd( )
+
+	'' not cross-compiling?
+	if( fbIsCrossComp( ) = FALSE ) then
+		'' compiling only?
+		if( env.clopt.outtype = FB_OUTTYPE_OBJECT ) then
+			'' store libs, paths and cmd-line options in the obj
+			hEmitObjinfo( )
+		end if
+	end if
 
 	'' save
 	irEmitEnd( tmr )

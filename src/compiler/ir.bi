@@ -337,6 +337,10 @@ type IR_VTBL
 	emitVarIniScopeBegin as sub( )
 	emitVarIniScopeEnd as sub( )
 
+	emitFbctinfBegin as sub( )
+	emitFbctinfString as sub( byval s as zstring ptr )
+	emitFbctinfEnd as sub( )
+
 	allocVreg as function _
 	( _
 		byval dtype as integer, _
@@ -533,6 +537,10 @@ declare function vregDump( byval v as IRVREG ptr ) as string
 #define irEmitVARINISCOPEBEGIN( ) ir.vtbl.emitVarIniScopeBegin( )
 
 #define irEmitVARINISCOPEEND( ) ir.vtbl.emitVarIniScopeEnd( )
+
+#define irEmitFBCTINFBEGIN( )    ir.vtbl.emitFbctinfBegin( )
+#define irEmitFBCTINFSTRING( s ) ir.vtbl.emitFbctinfString( s )
+#define irEmitFBCTINFEND( )      ir.vtbl.emitFbctinfEnd( )
 
 #define irEmitCONVERT( v1, v2 ) ir.vtbl.emitConvert( v1, v2 )
 
