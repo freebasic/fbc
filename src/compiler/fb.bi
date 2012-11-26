@@ -7,7 +7,11 @@ const FB_VER_PATCH          = 0
 
 
 #define QUOTE !"\""
-#define NEWLINE !"\r\n"
+#if defined( __FB_WIN32__ ) or defined( __FB_CYGWIN__ ) or defined( __FB_DOS__ )
+	#define NEWLINE !"\r\n"
+#else
+	#define NEWLINE !"\n"
+#endif
 #define RSLASH !"\\"
 #define TABCHAR !"\t"
 #define ESCCHAR !"\27"
