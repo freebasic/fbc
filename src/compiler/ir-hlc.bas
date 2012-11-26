@@ -820,7 +820,19 @@ private sub hEmitStruct _
 	'' Emit it now
 	symbSetIsEmitted( s )
 
-	hWriteLine( id + " {", TRUE )
+	'' Header: struct|union id {
+	ln = id
+
+	'' Work-around mingw32 gcc bug 52991; packing is broken for ms_struct
+	'' stucts, which is the default under -mms-bitfields, which is on by
+	'' default in mingw32 gcc 4.7.
+	if( (env.clopt.target = FB_COMPTARGET_WIN32) and _
+	    (symbGetUDTAlign( s ) > 0) ) then
+		ln += " __attribute__((gcc_struct))"
+	end if
+
+	ln += " {"
+	hWriteLine( ln, TRUE )
 	sectionIndent( )
 
 	'' Write out the elements
