@@ -181,7 +181,7 @@ sub ppPragma()
 
 		if( value = FALSE ) then
 			'' expr
-			cConstExprValue( value )
+			value = cConstIntExpr( cExpression( ) )
 		end if
 	end if
 

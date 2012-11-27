@@ -9,28 +9,30 @@
 #include once "ast.bi"
 #include once "rtl.bi"
 
-sub cConstExprValue(byref value as integer)
-	dim as ASTNODE ptr expr = any
+function cConstIntExpr( byval expr as ASTNODE ptr ) as integer
+	dim as integer v = any
 
-	expr = cEqInParentsOnlyExpr( )
 	if( expr = NULL ) then
 		errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
-		'' error recovery: fake an value
-		value = 0
-		return
+		expr = astNewCONSTi( 0 )
 	end if
 
 	if( astIsCONST( expr ) = FALSE ) then
 		errReport( FB_ERRMSG_EXPECTEDCONST )
-		'' error recovery: fake an value
 		astDelTree( expr )
-		value = 0
-		return
+		expr = astNewCONSTi( 0 )
 	end if
 
-	value = astGetValueAsInt( expr )
-	astDelNode( expr )
-end sub
+	'' Expecting an integer constant, show overflow warning if it's too big
+	if( astCheckConst( FB_DATATYPE_INTEGER, expr, TRUE ) = FALSE ) then
+		expr = astNewCONV( FB_DATATYPE_INTEGER, NULL, expr )
+	end if
+
+	v = astGetValueAsInt( expr )
+	astDelTree( expr )
+
+	function = v
+end function
 
 '':::::
 function cSymbolTypeFuncPtr _
@@ -506,7 +508,7 @@ function cSymbolType _
 		lexSkipToken( )
 
 		'' expr
-		cConstExprValue( lgt )
+		lgt = cConstIntExpr( cEqInParentsOnlyExpr( ) )
 
 		select case as const typeGet( dtype )
 		case FB_DATATYPE_STRING

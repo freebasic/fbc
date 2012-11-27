@@ -427,6 +427,8 @@ function astGetValueAsInt _
 		byval n as ASTNODE ptr _
 	) as integer
 
+	assert( astIsCONST( n ) )
+
   	select case as const astGetDataType( n )
   	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
   	    function = cint( astGetValLong( n ) )
@@ -452,6 +454,8 @@ function astGetValueAsStr _
 	( _
 		byval n as ASTNODE ptr _
 	) as string
+
+	assert( astIsCONST( n ) )
 
   	select case as const astGetDataType( n )
   	case FB_DATATYPE_LONGINT
@@ -497,6 +501,8 @@ function astGetValueAsWstr _
 
     static as wstring * 64+1 res
 
+	assert( astIsCONST( n ) )
+
   	select case as const astGetDataType( n )
   	case FB_DATATYPE_LONGINT
 		res = wstr( astGetValLong( n ) )
@@ -541,6 +547,8 @@ function astGetValueAsLongInt _
 		byval n as ASTNODE ptr _
 	) as longint
 
+	assert( astIsCONST( n ) )
+
   	select case as const astGetDataType( n )
   	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
   	    function = astGetValLong( n )
@@ -575,6 +583,8 @@ function astGetValueAsULongInt _
 		byval n as ASTNODE ptr _
 	) as ulongint
 
+	assert( astIsCONST( n ) )
+
   	select case as const astGetDataType( n )
   	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
   	    function = astGetValLong( n )
@@ -596,6 +606,8 @@ function astGetValueAsULongInt _
 end function
 
 function astGetValueAsDouble( byval n as ASTNODE ptr ) as double
+	assert( astIsCONST( n ) )
+
 	select case as const( astGetDataType( n ) )
 	case FB_DATATYPE_ULONGINT
 		'' without cunsg(), &hFFFFFFFFFFFFFFFFull would be seen as -1,
