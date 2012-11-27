@@ -27,6 +27,7 @@ Version 0.25.0:
 - SC_CLEAR constant for FB scancode &h4C (numpad 5, a.k.a. clear key) in fbgfx.bi
 - SC_ALTGR constant (&h64) in fbgfx.bi, corresponding to the rtlib
 - Constant overflow warnings for array boundaries, array/pointer/string indexing, CONST declarations, fixed-length string * N declarations
+- Huge variable on stack warning
 - NAKED support for the C backend, using GCC inline asm
 - ALIAS "" or LIB "" will now result in a compiler error
 - fbc now recognizes --version and [-]-help command line options

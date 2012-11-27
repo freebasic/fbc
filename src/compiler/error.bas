@@ -51,6 +51,7 @@ end type
 		( 2, @"Object files or libraries with mixed language (-lang) options" ), _
 		( 0, @"Deleting ANY pointers is undefined" ), _
 		( 2, @"Array too large for stack, consider making it var-len or SHARED" ), _
+		( 2, @"Variable too large for stack, consider making it SHARED" ), _
 		( 0, @"Overflow in constant conversion" ), _
 		( 0, @"Variable following NEXT is meaningless" ), _
 		( 0, @"Cast to non-pointer" ), _

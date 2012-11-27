@@ -1280,23 +1280,23 @@ function hVarDeclEx _
 
 		sym = hLookupVar( parent, chain_, dtype, is_typeless, _
 		                  (suffix <> FB_DATATYPE_INVALID), options )
-    	if( sym = NULL ) then
-    		'' no symbol was found, check if an explicit namespace was given
-    		if( parent <> NULL ) then
-    			if( parent <> symbGetCurrentNamespc( ) ) then
+		if( sym = NULL ) then
+			'' no symbol was found, check if an explicit namespace was given
+			if( parent <> NULL ) then
+				if( parent <> symbGetCurrentNamespc( ) ) then
 					errReport( FB_ERRMSG_DECLOUTSIDENAMESPC, TRUE )
-    			end if
-    		end if
-    	end if
+				end if
+			end if
+		end if
 
 		if( dimensions > 0 ) then
 			'' QB quirk: when the symbol was defined already by a preceeding COMMON
-        	'' statement, then a DIM will work the same way as a REDIM
-        	if( token = FB_TK_DIM ) then
+			'' statement, then a DIM will work the same way as a REDIM
+			if( token = FB_TK_DIM ) then
 				if( is_dynamic = FALSE ) then
-            		if( sym <> NULL ) then
+					if( sym <> NULL ) then
 						if( symbIsCommon( sym ) ) then
-                    		is_dynamic = (symbGetArrayDimensions( sym ) <> 0)
+							is_dynamic = (symbGetArrayDimensions( sym ) <> 0)
 						end if
 					end if
 				end if
@@ -1314,7 +1314,7 @@ function hVarDeclEx _
 				end if
 			end if
 
-			'' "array too big" check
+			'' "array too big/huge array on stack" check
 			if( is_dynamic = FALSE ) then
 				if( symbCheckArraySize( dimensions, dTB(), lgt, _
 				                        ((attrib and (FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_STATIC)) = 0), _
@@ -1325,6 +1325,12 @@ function hVarDeclEx _
 					dTB(0).lower = 0
 					dTB(0).upper = 0
 				end if
+			end if
+		elseif( dimensions = 0 ) then
+			'' "huge variable on stack" check
+			if( ((attrib and (FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_STATIC)) = 0) and _
+			    (lgt > env.clopt.stacksize) ) then
+				errReportWarn( FB_WARNINGMSG_HUGEVARONSTACK )
 			end if
 		end if
 
