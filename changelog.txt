@@ -15,6 +15,7 @@ Version 0.25.0:
 - ASM backend: Floating point constants are now emitted in form of their raw byte representation, for better precision than when using STR() to emit them as rounded floating point number literals
 - crt/stdio.bi now declares rename() instead of rename_()
 - Property methods using an explicit ALIAS now respect that alias and do not append __get__ or __set__ anymore
+- #637: Assert[Warn]() messages go to stderr now, rather than to the FB screen (because that might be about to be closed)
 
 [added]
 - VIRTUAL and ABSTRACT methods (including virtual destructors) in UDTs extending OBJECT, which can be overridden by methods in derived UDTs, provided the same method name and signature is used
