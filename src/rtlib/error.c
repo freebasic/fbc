@@ -2,9 +2,6 @@
 
 #include "fb.h"
 
-#define FB_ERROR_MESSAGE_SIZE		1024
-
-static char error_buffer[FB_ERROR_MESSAGE_SIZE];
 static const char *error_msg[] = {
 	"",                                     /* FB_RTERROR_OK */
 	"illegal function call",                /* FB_RTERROR_ILLEGALFUNCTIONCALL */
@@ -26,7 +23,6 @@ static const char *error_msg[] = {
 	"end of file"                           /* FB_RTERROR_ENDOFFILE */
 };
 
-/*:::::*/
 static void fb_Die
 	( 
 		int err_num, 
@@ -35,35 +31,41 @@ static void fb_Die
 		const char *fun_name
 	)
 {
+	#define FB_ERROR_MESSAGE_SIZE 1024
+	char errmsg[FB_ERROR_MESSAGE_SIZE];
 	int pos = 0;
-	
-	pos += snprintf( &error_buffer[pos], FB_ERROR_MESSAGE_SIZE - pos,
+
+	pos += snprintf( &errmsg[pos], FB_ERROR_MESSAGE_SIZE - pos,
 	                 "\nAborting due to runtime error %d", err_num );
 
 	if( (err_num >= 0) && (err_num < FB_RTERROR_MAX) )
-		pos += snprintf( &error_buffer[pos], FB_ERROR_MESSAGE_SIZE - pos,
+		pos += snprintf( &errmsg[pos], FB_ERROR_MESSAGE_SIZE - pos,
 						 " (%s)", error_msg[err_num] );
 
 	if( line_num > 0 )
-		pos += snprintf( &error_buffer[pos], FB_ERROR_MESSAGE_SIZE - pos,
+		pos += snprintf( &errmsg[pos], FB_ERROR_MESSAGE_SIZE - pos,
 						 " at line %d", line_num );
 
 	if( mod_name != NULL )
 		if( fun_name != NULL )
-			pos += snprintf( &error_buffer[pos], FB_ERROR_MESSAGE_SIZE - pos,
+			pos += snprintf( &errmsg[pos], FB_ERROR_MESSAGE_SIZE - pos,
 			                 " %s %s::%s()\n\n", (char *)(line_num > 0? &"of" : &"in"),
 			                 (char *)mod_name, (char *)fun_name );
 		else
-			pos += snprintf( &error_buffer[pos], FB_ERROR_MESSAGE_SIZE - pos,
+			pos += snprintf( &errmsg[pos], FB_ERROR_MESSAGE_SIZE - pos,
 			                 " %s %s()\n\n", (char *)(line_num > 0? &"of" : &"in"),
 			                 (char *)mod_name );
 	else
-		pos += snprintf( &error_buffer[pos], FB_ERROR_MESSAGE_SIZE - pos, "\n\n" );
-	
-	error_buffer[FB_ERROR_MESSAGE_SIZE-1] = '\0';
-	
-	/* save buffer so we can show message after console is cleaned up */
-	__fb_ctx.error_msg = error_buffer;
+		pos += snprintf( &errmsg[pos], FB_ERROR_MESSAGE_SIZE - pos, "\n\n" );
+
+	errmsg[FB_ERROR_MESSAGE_SIZE-1] = '\0';
+
+	/* Printing to stderr should allow the message to be seen when in
+	   console mode but also when in graphics mode, at least on program
+	   exit.
+	   In any case, printing to screen like PRINT would do is not good here
+	   in case its a graphics screen that is about to be closed... */
+	fputs( errmsg, stderr );
 
 	fb_End( err_num );
 }

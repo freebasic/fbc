@@ -444,7 +444,6 @@ typedef struct FB_RTLIB_CTX_ {
 	int             argc;
 	char          **argv;
 	FBSTRING        null_desc;
-	char           *error_msg;
 	FB_HOOKSTB      hooks;
 	FB_FILE         fileTB[FB_MAX_FILES];
 	int             do_file_reset;

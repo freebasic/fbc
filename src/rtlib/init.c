@@ -60,10 +60,6 @@ void fb_hRtExit( void )
 #ifdef ENABLE_MT
 	fb_TlsExit( );
 #endif
-
-	/* if an error has to be displayed, do it now */
-	if( __fb_ctx.error_msg )
-		fputs( __fb_ctx.error_msg, stderr );
 }
 
 /* called by FB program */
