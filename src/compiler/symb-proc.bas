@@ -2387,6 +2387,51 @@ end function
 '' misc
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
+sub symbProcCheckOverridden _
+	( _
+		byval proc as FBSYMBOL ptr, _
+		byval is_implicit as integer _
+	)
+
+	dim as FBSYMBOL ptr overridden = any
+	dim as integer errmsg = any
+
+	overridden = symbProcGetOverridden( proc )
+
+	'' Overriding anything?
+	if( overridden ) then
+		'' Check whether override and overridden have different
+		'' return type or calling convention, this must be disallowed
+		'' (unlike with overloading) because the function signatures
+		'' aren't really compatible.
+		if( symbGetType( proc ) <> symbGetType( overridden ) ) then
+			'' This won't happen with destructors/LET overloads
+			assert( is_implicit = FALSE )
+			errReport( FB_ERRMSG_OVERRIDERETTYPEDIFFERS )
+		end if
+
+		if( symbGetProcMode( proc ) <> symbGetProcMode( overridden ) ) then
+			if( is_implicit ) then
+				'' symbUdtAddDefaultMembers() uses this to check
+				'' implicit dtors and LET overloads. Since they
+				'' are not visible in the original code,
+				'' the error message must have more info.
+				if( symbIsDestructor( proc ) ) then
+					errmsg = FB_ERRMSG_IMPLICITDTOROVERRIDECALLCONVDIFFERS
+				else
+					errmsg = FB_ERRMSG_IMPLICITLETOVERRIDECALLCONVDIFFERS
+				end if
+			else
+				'' Normal error message that will be shown on
+				'' the problematic method declaration.
+				errmsg = FB_ERRMSG_OVERRIDECALLCONVDIFFERS
+			end if
+			errReport( errmsg )
+		end if
+	end if
+
+end sub
+
 sub symbProcSetVtableIndex( byval proc as FBSYMBOL ptr, byval i as integer )
 	symbProcAllocExt( proc )
 	proc->proc.ext->vtableindex = i

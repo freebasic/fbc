@@ -540,6 +540,9 @@ end sub
 
 '' OVERRIDE?
 private sub cOverrideAttribute( byval proc as FBSYMBOL ptr )
+	'' Check that this method really is allowed to override the overridden method
+	symbProcCheckOverridden( proc, FALSE )
+
 	'' Don't bother doing the text comparisons below if at EOL (common case)
 	if( lexGetToken( ) = FB_TK_EOL ) then
 		exit sub

@@ -942,6 +942,11 @@ declare function symbFindCtorProc _
 		byval proc as FBSYMBOL ptr _
 	) as FBSYMBOL ptr
 
+declare sub symbProcCheckOverridden _
+	( _
+		byval proc as FBSYMBOL ptr, _
+		byval is_implicit as integer _
+	)
 declare sub symbProcSetVtableIndex( byval proc as FBSYMBOL ptr, byval i as integer )
 declare function symbProcGetVtableIndex( byval proc as FBSYMBOL ptr ) as integer
 declare function symbProcGetOverridden( byval proc as FBSYMBOL ptr ) as FBSYMBOL ptr

@@ -460,6 +460,9 @@ sub symbUdtAddDefaultMembers( byval udt as FBSYMBOL ptr )
 		'' Let operator (must be defined before the copy ctor)
 		if( symbGetCompCloneProc( udt ) = NULL ) then
 			letop = hDeclareProc( udt, AST_OP_ASSIGN, TRUE, FB_SYMBATTRIB_OVERLOADED or FB_SYMBATTRIB_OPERATOR )
+
+			'' Don't allow the implicit LET to override a FINAL LET from the base
+			symbProcCheckOverridden( letop, TRUE )
 		end if
 
 		'' Copy ctor
@@ -480,6 +483,9 @@ sub symbUdtAddDefaultMembers( byval udt as FBSYMBOL ptr )
 		if( symbGetCompDtor( udt ) = NULL ) then
 			'' Dtor
 			dtor = hDeclareProc( udt, INVALID, FALSE, FB_SYMBATTRIB_DESTRUCTOR )
+
+			'' Don't allow the implicit dtor to override a FINAL dtor from the base
+			symbProcCheckOverridden( dtor, TRUE )
 		end if
 	end if
 

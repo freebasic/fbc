@@ -274,6 +274,10 @@ end type
 		@"Method declared ABSTRACT, but UDT does not extend OBJECT", _
 		@"Not overriding any virtual method", _
 		@"Implemented body for an ABSTRACT method", _
+		@"Override has different return type than overridden method", _
+		@"Override has different calling convention than overridden method", _
+		@"Implicit destructor override would have different calling convention", _
+		@"Implicit LET operator override would have different calling convention", _
 		@"This operator cannot be STATIC", _
 		@"Parameter must be an integer", _
 		@"Parameter must be a pointer", _
