@@ -274,9 +274,10 @@ function astBuildVtableLookup _
 	dim as ASTNODE ptr p = any
 	dim as integer vtableindex = any
 
-	vtableindex = symbProcGetVtableIndex( proc )
+	if( symbIsVirtual( proc ) ) then
+		vtableindex = symbProcGetVtableIndex( proc )
+		assert( vtableindex > 0 )
 
-	if( vtableindex > 0 ) then
 		'' calling virtual method
 		''    method( this )
 		'' becomes

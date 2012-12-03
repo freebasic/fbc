@@ -850,8 +850,8 @@ add_proc:
 			symbProcSetVtableIndex( proc, symbProcGetVtableIndex( overridden ) )
 			proc->proc.ext->overridden = overridden
 		else
-			'' Allocate a new vtable slot, but only if this is a virtual,
-			'' and it didn't override anything.
+			'' Allocate a *new* vtable slot, but only if this is a virtual,
+			'' and it didn't override anything (thus doesn't reuse a vtable slot).
 			if( symbIsVirtual( proc ) ) then
 				symbProcSetVtableIndex( proc, symbCompAddVirtual( parent ) )
 			end if

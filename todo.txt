@@ -257,10 +257,6 @@ o rtlib
 o classes
   - vtable lookup should handle THIS expression with side-effects
 
-  - should methods overriding virtuals become virtual themselves as in C++?
-    should static methods "overriding"/shadowing virtuals be an error as in C++?
-    Note: normal methods (non-virtuals) can be shadowed, no error
-
   - obvious calls to unimplemented ABSTRACTs should be disallowed,
     i.e. if the THIS expression is a stack/global object that cannot have
     overridden the ABSTRACT, in contrast to a object pointer or byref object
