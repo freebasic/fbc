@@ -536,13 +536,17 @@ type FB_PROCEXT
 
 	'' virtual methods:
 	''    vtable array index, location of the procptr in the vtbl
-	'' normal methods that override a virtual method:
+	'' methods that override a virtual method:
 	''    vtable index of the virtual method that's overridden by this one
 	'' other methods:
 	''    0
 	'' A valid index must be >= 2 since the first two vtable elements are
 	'' the null pointer and the rtti pointer.
 	vtableindex		as integer
+
+	'' For methods that override a virtual method: the method that's
+	'' overridden (if any); or else NULL.
+	overridden		as FBSYMBOL_ ptr
 end type
 
 type FB_PROCRTL
@@ -940,6 +944,7 @@ declare function symbFindCtorProc _
 
 declare sub symbProcSetVtableIndex( byval proc as FBSYMBOL ptr, byval i as integer )
 declare function symbProcGetVtableIndex( byval proc as FBSYMBOL ptr ) as integer
+declare function symbProcGetOverridden( byval proc as FBSYMBOL ptr ) as FBSYMBOL ptr
 declare function symbGetProcResult( byval proc as FBSYMBOL ptr ) as FBSYMBOL ptr
 
 declare function symbGetConstValueAsStr _

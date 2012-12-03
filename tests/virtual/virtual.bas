@@ -17,6 +17,25 @@ namespace declarations
 		declare	const	abstract	function f11( ) as integer
 		declare	const	abstract	function f12( ) as integer
 		declare	const	abstract	function f13( ) as integer
+
+		declare				sub s01( )
+		declare		virtual		sub s02( )
+		declare		virtual		sub s03( )
+		declare	const	virtual		sub s04( )
+		declare	const	virtual		sub s05( )
+		declare	const	virtual		sub s06( )
+		declare	const	virtual		sub s07( )
+		declare		abstract	sub s08( )
+		declare		abstract	sub s09( )
+		declare	const	abstract	sub s10( )
+		declare	const	abstract	sub s11( )
+		declare	const	abstract	sub s12( )
+		declare	const	abstract	sub s13( )
+
+		declare		virtual		function fOverrideMe1( ) as integer
+		declare		abstract	function fOverrideMe2( ) as integer
+		declare		virtual		sub sOverrideMe1( )
+		declare		abstract	sub sOverrideMe2( )
 	end type
 
 				function A.f01( ) as integer : function = 1 : end function
@@ -26,6 +45,29 @@ namespace declarations
 	const			function A.f05( ) as integer : function = 5 : end function
 		virtual		function A.f06( ) as integer : function = 6 : end function
 	const	virtual		function A.f07( ) as integer : function = 7 : end function
+
+				sub A.s01( ) : end sub
+				sub A.s02( ) : end sub
+		virtual		sub A.s03( ) : end sub
+				sub A.s04( ) : end sub
+	const			sub A.s05( ) : end sub
+		virtual		sub A.s06( ) : end sub
+	const	virtual		sub A.s07( ) : end sub
+
+	function A.fOverrideMe1( ) as integer : function = 1 : end function
+	sub A.sOverrideMe1( ) : end sub
+
+	type B extends A
+		declare function fOverrideMe1( ) as integer override
+		declare function fOverrideMe2( ) as integer override
+		declare sub sOverrideMe1( ) override
+		declare sub sOverrideMe2( ) override
+	end type
+
+	function B.fOverrideMe1( ) as integer : function = 1 : end function
+	function B.fOverrideMe2( ) as integer : function = 2 : end function
+	sub B.sOverrideMe1( ) : end sub
+	sub B.sOverrideMe2( ) : end sub
 
 	sub test cdecl( )
 		dim x as A

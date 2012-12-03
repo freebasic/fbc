@@ -272,6 +272,7 @@ end type
 		@"ABSTRACT used here, but not the in the DECLARE statement", _
 		@"Method declared VIRTUAL, but UDT does not extend OBJECT", _
 		@"Method declared ABSTRACT, but UDT does not extend OBJECT", _
+		@"Not overriding any virtual method", _
 		@"Implemented body for an ABSTRACT method", _
 		@"This operator cannot be STATIC", _
 		@"Parameter must be an integer", _

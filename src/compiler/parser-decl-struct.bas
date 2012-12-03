@@ -20,12 +20,16 @@ declare sub hPatchByvalResultToSelf _
 		byval parent as FBSYMBOL ptr _
 	)
 
-'':::::
-''TypeProtoDecl 	=	DECLARE ( CONSTRUCTOR Params
-''								| DESTRUCTOR
-''								| OPERATOR Op Params
-''								| PROPERTY Params
-''								| (STATIC|CONST)? SUB|FUNCTION Params ) .
+''
+'' TypeProtoDecl =
+''    DECLARE
+''    (STATIC?
+''      | CONST? (VIRTUAL|ABSTRACT)?)
+''    (CONSTRUCTOR|DESTRUCTOR CtorHeader
+''      | OPERATOR OperatorHeader
+''      | PROPERTY PropertyHeader
+''      | SUB|FUNCTION ProcHeader)
+''    .
 ''
 private function hTypeProtoDecl _
 	( _
@@ -136,7 +140,6 @@ private function hTypeProtoDecl _
 	end select
 
 	function = res
-
 end function
 
 '':::::

@@ -538,6 +538,22 @@ private sub cNakedAttribute( byref attrib as integer )
 	end if
 end sub
 
+'' OVERRIDE?
+private sub cOverrideAttribute( byval proc as FBSYMBOL ptr )
+	'' Don't bother doing the text comparisons below if at EOL (common case)
+	if( lexGetToken( ) = FB_TK_EOL ) then
+		exit sub
+	end if
+
+	'' OVERRIDE?
+	if( ucase( *lexGetText( ) ) = "OVERRIDE" ) then
+		if( symbProcGetOverridden( proc ) = NULL ) then
+			errReport( FB_ERRMSG_OVERRIDINGNOTHING )
+		end if
+		lexSkipToken( )
+	end if
+end sub
+
 '':::::
 ''ProcHeader   		=  ID CallConvention? OVERLOAD? (ALIAS LIT_STRING)?
 ''                     Parameters? ((AS SymbolType)? | CONSTRUCTOR|DESTRUCTOR)?
@@ -714,7 +730,15 @@ function cProcHeader _
 		proc = symbAddProc( proc, @id, palias, dtype, subtype, attrib, mode, FB_SYMBOPT_NONE )
 		if( proc = NULL ) then
 			errReport( FB_ERRMSG_DUPDEFINITION )
+			exit function
 		end if
+
+		'' Inside a TYPE compound block?
+		if( options and FB_PROCOPT_HASPARENT ) then
+			'' OVERRIDE?
+			cOverrideAttribute( proc )
+		end if
+
 		return proc
 	end if
 
@@ -1343,10 +1367,19 @@ function cOperatorHeader _
 	if( (options and FB_PROCOPT_ISPROTO) <> 0 ) then
 		'' check params
 		hCheckOpOvlParams( parent, op, proc )
+
 		proc = symbAddOperator( proc, op, palias, dtype, subtype, attrib, mode )
 		if( proc = NULL ) then
 			errReport( FB_ERRMSG_DUPDEFINITION )
+			exit function
 		end if
+
+		'' Inside a TYPE compound block?
+		if( options and FB_PROCOPT_HASPARENT ) then
+			'' OVERRIDE?
+			cOverrideAttribute( proc )
+		end if
+
 		return proc
 	end if
 
@@ -1693,7 +1726,11 @@ function cPropertyHeader _
 		proc = symbAddProc( proc, @id, palias, dtype, subtype, attrib, mode, FB_SYMBOPT_NONE )
 		if( proc = NULL ) then
 			errReport( FB_ERRMSG_DUPDEFINITION )
+			exit function
 		end if
+
+		'' OVERRIDE?
+		cOverrideAttribute( proc )
 
 		setUdtPropertyFlags(parent, is_indexed, is_get)
 		return proc
@@ -1897,12 +1934,20 @@ function cCtorHeader _
 	end if
 
 	if( is_prototype ) then
-    	proc = symbAddCtor( proc, palias, attrib, mode )
-    	if( proc = NULL ) then
-    		errReport( FB_ERRMSG_DUPDEFINITION )
-    	end if
+		proc = symbAddCtor( proc, palias, attrib, mode )
+		if( proc = NULL ) then
+			errReport( FB_ERRMSG_DUPDEFINITION )
+			exit function
+		end if
 
-    	return proc
+		'' Only dtors can be virtual, so don't bother allowing
+		'' OVERRIDE on ctors.
+		if( symbIsDestructor( proc ) ) then
+			'' OVERRIDE?
+			cOverrideAttribute( proc )
+		end if
+
+		return proc
 	end if
 
 	hParseAttributes( attrib, 0, 0 )

@@ -848,6 +848,7 @@ add_proc:
 		if( overridden ) then
 			'' Use the same vtable slot as the virtual that's being overridden
 			symbProcSetVtableIndex( proc, symbProcGetVtableIndex( overridden ) )
+			proc->proc.ext->overridden = overridden
 		else
 			'' Allocate a new vtable slot, but only if this is a virtual,
 			'' and it didn't override anything.
@@ -2394,8 +2395,12 @@ end sub
 function symbProcGetVtableIndex( byval proc as FBSYMBOL ptr ) as integer
 	if( proc->proc.ext ) then
 		function = proc->proc.ext->vtableindex
-	else
-		function = 0
+	end if
+end function
+
+function symbProcGetOverridden( byval proc as FBSYMBOL ptr ) as FBSYMBOL ptr
+	if( proc->proc.ext ) then
+		function = proc->proc.ext->overridden
 	end if
 end function
 

@@ -255,17 +255,11 @@ o rtlib
     
 
 o classes
-  - what should CLASS keyword do? struct vs. class as in C++?
-
   - vtable lookup should handle THIS expression with side-effects
 
-  - should methods overriding virtuals become virtual themselves?
-
-  - virtuals can override other virtuals, but statics can't be virtual,
-    should statics be allowed to shadow virtuals or should it be an error?
+  - should methods overriding virtuals become virtual themselves as in C++?
+    should static methods "overriding"/shadowing virtuals be an error as in C++?
     Note: normal methods (non-virtuals) can be shadowed, no error
-
-  - explicit OVERRIDE to show an error in case there is no virtual to override?
 
   - obvious calls to unimplemented ABSTRACTs should be disallowed,
     i.e. if the THIS expression is a stack/global object that cannot have
@@ -288,6 +282,8 @@ o classes
         .linkonce (COFF: http://sourceware.org/binutils/docs/as/Linkonce.html)
         .section ...,comdat (ELF COMDAT groups: http://sourceware.org/binutils/docs-2.23/as/Section.html#Section)
     fbc makes them PRIVATE currently; should it be changed to reduce .exe size?
+
+  - what should CLASS keyword do? struct vs. class as in C++?
 
   - Down casting
      - static (base to derived)
