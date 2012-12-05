@@ -315,6 +315,9 @@ private sub hTypeMultElementDecl _
 	'' SymbolType
 	hSymbolType( dtype, subtype, lgt )
 
+	'' Disallow creating objects of abstract classes
+	hComplainIfAbstractClass( dtype, subtype )
+
 	do
 		'' allow keywords as field names
 		select case as const lexGetClass( )
@@ -483,6 +486,9 @@ private sub hTypeElementDecl _
 
 	'' SymbolType
 	hSymbolType( dtype, subtype, lgt )
+
+	'' Disallow creating objects of abstract classes
+	hComplainIfAbstractClass( dtype, subtype )
 
 	'' array?
 	if( dims > 0 ) then

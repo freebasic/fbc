@@ -145,6 +145,9 @@ function cAnonUDT( ) as ASTNODE ptr
 			subtype = NULL
 		end if
 
+		'' Disallow creating objects of abstract classes
+		hComplainIfAbstractClass( dtype, subtype )
+
 		'' '>'
 		if( lexGetToken( ) <> FB_TK_GT ) then
 			errReport( FB_ERRMSG_SYNTAXERROR )

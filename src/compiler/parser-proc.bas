@@ -357,6 +357,9 @@ private sub hCheckRetType(byref dtype as integer, byref subtype as FBSYMBOL ptr)
 		dtype = typeAddrOf( dtype )
 		subtype = NULL
 	end select
+
+	'' Disallow BYVAL return of objects of abstract classes
+	hComplainIfAbstractClass( dtype, subtype )
 end sub
 
 private sub hParseAttributes _

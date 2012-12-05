@@ -47,6 +47,9 @@ function cOperatorNew( ) as ASTNODE ptr
 		return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 	end select
 
+	'' Disallow creating objects of abstract classes
+	hComplainIfAbstractClass( dtype, subtype )
+
 	has_ctor = typeHasCtor( dtype, subtype )
 	has_defctor = typeHasDefCtor( dtype, subtype )
 

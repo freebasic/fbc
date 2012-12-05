@@ -779,6 +779,13 @@ function symbCompAddVirtual( byval udt as FBSYMBOL ptr ) as integer
 	udt->udt.ext->vtableelements += 1
 end function
 
+function symbCompGetAbstractCount( byval udt as FBSYMBOL ptr ) as integer
+	assert( symbIsStruct( udt ) )
+	if( udt->udt.ext ) then
+		function = udt->udt.ext->abstractcount
+	end if
+end function
+
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' nesting
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::

@@ -393,6 +393,12 @@ private function hParamDecl _
 			subtype = NULL
 			doskip = TRUE
 		end if
+
+		if( mode = FB_PARAMMODE_BYVAL ) then
+			'' Disallow BYVAL passing of objects of abstract classes
+			hComplainIfAbstractClass( dtype, subtype )
+		end if
+
 		reclevel -= 1
 	else
 		if( fbLangOptIsSet( FB_LANG_OPT_DEFTYPE ) = FALSE ) then

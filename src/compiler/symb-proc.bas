@@ -802,6 +802,11 @@ add_proc:
 	if( symbIsMethod( proc ) ) then
 		assert( symbIsStruct( parent ) )
 
+		'' Adding an ABSTRACT? Increase ABSTRACT count
+		if( symbIsAbstract( proc ) ) then
+			parent->udt.ext->abstractcount += 1
+		end if
+
 		'' Only check if this really is a derived UDT
 		overridden = NULL
 		if( parent->udt.base ) then
@@ -846,6 +851,11 @@ add_proc:
 		end if
 
 		if( overridden ) then
+			'' Overriding an ABSTRACT? Decrease ABSTRACT count
+			if( symbIsAbstract( overridden ) ) then
+				parent->udt.ext->abstractcount -= 1
+			end if
+
 			'' Use the same vtable slot as the virtual that's being overridden
 			symbProcSetVtableIndex( proc, symbProcGetVtableIndex( overridden ) )
 			proc->proc.ext->overridden = overridden

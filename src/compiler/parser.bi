@@ -945,6 +945,12 @@ declare function hVarDeclEx _
         byval is_fordecl as integer _
 	) as FBSYMBOL ptr
 
+declare sub hComplainIfAbstractClass _
+	( _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr _
+	)
+
 declare sub hSymbolType _
 	( _
 		byref dtype as integer, _

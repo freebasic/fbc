@@ -9,6 +9,20 @@
 #include once "rtl.bi"
 #include once "ast.bi"
 
+sub hComplainIfAbstractClass _
+	( _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr _
+	)
+
+	if( typeGetDtAndPtrOnly( dtype ) = FB_DATATYPE_STRUCT ) then
+		if( symbCompGetAbstractCount( subtype ) > 0 ) then
+			errReport( FB_ERRMSG_OBJECTOFABSTRACTCLASS )
+		end if
+	end if
+
+end sub
+
 '':::::
 #define hVarDecl( attrib, dopreserve, token ) _
 	(hVarDeclEx( attrib, dopreserve, token, FALSE ) <> NULL)
@@ -37,6 +51,7 @@ sub hSymbolType _
 		subtype = NULL
 		lgt = FB_POINTERSIZE
 	end if
+
 end sub
 
 function hCheckScope() as integer
@@ -1114,17 +1129,20 @@ function hVarDeclEx _
 		end if
 	end if
 
-    '' (AS SymbolType)?
-    is_multdecl = FALSE
-    if( lexGetToken( ) = FB_TK_AS ) then
-    	lexSkipToken( )
+	'' (AS SymbolType)?
+	is_multdecl = FALSE
+	if( lexGetToken( ) = FB_TK_AS ) then
+		lexSkipToken( )
 
-        '' parse the symbol type (INTEGER, STRING, etc...)
-        hSymbolType( dtype, subtype, lgt )
+		'' parse the symbol type (INTEGER, STRING, etc...)
+		hSymbolType( dtype, subtype, lgt )
 
-    	addsuffix = FALSE
-    	is_multdecl = TRUE
-    end if
+		'' Disallow creating objects of abstract classes
+		hComplainIfAbstractClass( dtype, subtype )
+
+		addsuffix = FALSE
+		is_multdecl = TRUE
+	end if
 
     dim as FB_IDOPT options = FB_IDOPT_DEFAULT
 
@@ -1243,20 +1261,23 @@ function hVarDeclEx _
 			palias = cAliasAttribute()
 		end if
 
-    	if( is_multdecl = FALSE ) then
-    		'' (AS SymbolType)?
-    		if( lexGetToken( ) = FB_TK_AS ) then
-    			if( dtype <> FB_DATATYPE_INVALID ) then
+		if( is_multdecl = FALSE ) then
+			'' (AS SymbolType)?
+			if( lexGetToken( ) = FB_TK_AS ) then
+				if( dtype <> FB_DATATYPE_INVALID ) then
 					errReport( FB_ERRMSG_SYNTAXERROR )
 					dtype = FB_DATATYPE_INVALID
-    			end if
+				end if
 
-    			lexSkipToken( )
+				lexSkipToken( )
 
-		        '' parse the symbol type (INTEGER, STRING, etc...)
-		        hSymbolType( dtype, subtype, lgt )
+				'' parse the symbol type (INTEGER, STRING, etc...)
+				hSymbolType( dtype, subtype, lgt )
 
-    			addsuffix = FALSE
+				'' Disallow creating objects of abstract classes
+				hComplainIfAbstractClass( dtype, subtype )
+
+				addsuffix = FALSE
 
 			'' no explicit type..
 			else

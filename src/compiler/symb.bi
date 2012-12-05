@@ -418,6 +418,7 @@ type FB_STRUCTEXT
 	vtableelements		as integer				'' vtable elements counter
 	vtable			as FBSYMBOL_ ptr			'' virtual-functions table struct
 	rtti			as FBSYMBOL_ ptr			'' Run-Time Type Info struct
+	abstractcount		as integer				'' ABSTRACT method counter (to determine abstract classes, which aren't allowed to be instantiated)
 end type
 
 type FBS_STRUCT
@@ -1673,7 +1674,7 @@ declare sub symbSetCompOpOvlHead _
 	)
 
 declare function symbCompAddVirtual( byval udt as FBSYMBOL ptr ) as integer
-
+declare function symbCompGetAbstractCount( byval udt as FBSYMBOL ptr ) as integer
 declare function symbAddGlobalCtor( byval proc as FBSYMBOL ptr ) as FB_GLOBCTORLIST_ITEM ptr
 declare function symbAddGlobalDtor( byval proc as FBSYMBOL ptr ) as FB_GLOBCTORLIST_ITEM ptr
 

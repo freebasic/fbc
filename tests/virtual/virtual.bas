@@ -68,24 +68,13 @@ namespace declarations
 	function B.fOverrideMe2( ) as integer : function = 2 : end function
 	sub B.sOverrideMe1( ) : end sub
 	sub B.sOverrideMe2( ) : end sub
-
-	sub test cdecl( )
-		dim x as A
-		CU_ASSERT( x.f01( ) = 1 )
-		CU_ASSERT( x.f02( ) = 2 )
-		CU_ASSERT( x.f03( ) = 3 )
-		CU_ASSERT( x.f04( ) = 4 )
-		CU_ASSERT( x.f05( ) = 5 )
-		CU_ASSERT( x.f06( ) = 6 )
-		CU_ASSERT( x.f07( ) = 7 )
-	end sub
 end namespace
 
 namespace overridingWorks
 	type A extends object
 		i as integer
 		declare constructor( byval j as integer )
-		declare abstract sub add( byval j as integer )
+		declare virtual sub add( byval j as integer )
 		declare virtual sub subtract( byval j as integer )
 		declare virtual function toString( ) as string
 	end type
@@ -93,6 +82,9 @@ namespace overridingWorks
 	constructor A( byval j as integer )
 		this.i = j
 	end constructor
+
+	sub A.add( byval j as integer )
+	end sub
 
 	sub A.subtract( byval j as integer )
 		this.i -= j
@@ -607,7 +599,10 @@ namespace implicitDtorOverrides
 	end sub
 end namespace
 
-namespace vtableSlotsReused
+namespace vtableSlotsReused1
+	'' Both ABSTRACTs and VIRTUALs, the overrides should use the same vtable
+	'' slots like the overridden methods, no matter what nesting level...
+
 	type A extends object
 		declare virtual  function f1( ) as integer
 		declare abstract function f2( ) as integer
@@ -626,34 +621,77 @@ namespace vtableSlotsReused
 		declare function f3( ) as integer
 	end type
 
-	function A.f1( ) as integer
-		function = &hA1
-	end function
+	function A.f1( ) as integer : function = &hA1 : end function
+	function B.f1( ) as integer : function = &hB1 : end function
+	function B.f2( ) as integer : function = &hB2 : end function
+	function C.f1( ) as integer : function = &hC1 : end function
+	function C.f2( ) as integer : function = &hC2 : end function
+	function C.f3( ) as integer : function = &hC3 : end function
 
-	function B.f1( ) as integer
-		function = &hB1
-	end function
+	sub test cdecl( )
+		scope
+			dim p as A ptr = new C
+			CU_ASSERT( p->f1( ) = &hC1 )
+			CU_ASSERT( p->f2( ) = &hC2 )
+			CU_ASSERT( p->f3( ) = &hC3 )
+			delete p
+		end scope
 
-	function B.f2( ) as integer
-		function = &hB2
-	end function
+		scope
+			dim p as B ptr = new C
+			CU_ASSERT( p->f1( ) = &hC1 )
+			CU_ASSERT( p->f2( ) = &hC2 )
+			CU_ASSERT( p->f3( ) = &hC3 )
+			delete p
+		end scope
 
-	function C.f1( ) as integer
-		function = &hC1
-	end function
+		scope
+			dim p as C ptr = new C
+			CU_ASSERT( p->f1( ) = &hC1 )
+			CU_ASSERT( p->f2( ) = &hC2 )
+			CU_ASSERT( p->f3( ) = &hC3 )
+			delete p
+		end scope
+	end sub
+end namespace
 
-	function C.f2( ) as integer
-		function = &hC2
-	end function
+namespace vtableSlotsReused2
+	'' Same test but only with VIRTUALs
 
-	function C.f3( ) as integer
-		function = &hC3
-	end function
+	type A extends object
+		declare virtual function f1( ) as integer
+		declare virtual function f2( ) as integer
+		declare virtual function f3( ) as integer
+	end type
+
+	type B extends A
+		declare virtual function f1( ) as integer
+		declare virtual function f2( ) as integer
+		declare virtual function f3( ) as integer
+	end type
+
+	type C extends B
+		declare function f1( ) as integer
+		declare function f2( ) as integer
+		declare function f3( ) as integer
+	end type
+
+	function A.f1( ) as integer : function = &hA1 : end function
+	function A.f2( ) as integer : function = &hA2 : end function
+	function A.f3( ) as integer : function = &hA3 : end function
+	function B.f1( ) as integer : function = &hB1 : end function
+	function B.f2( ) as integer : function = &hB2 : end function
+	function B.f3( ) as integer : function = &hB3 : end function
+	function C.f1( ) as integer : function = &hC1 : end function
+	function C.f2( ) as integer : function = &hC2 : end function
+	function C.f3( ) as integer : function = &hC3 : end function
 
 	sub test cdecl( )
 		scope
 			dim p as A ptr = new A
 			CU_ASSERT( p->f1( ) = &hA1 )
+			CU_ASSERT( p->f2( ) = &hA2 )
+			CU_ASSERT( p->f3( ) = &hA3 )
 			delete p
 		end scope
 
@@ -661,6 +699,7 @@ namespace vtableSlotsReused
 			dim p as A ptr = new B
 			CU_ASSERT( p->f1( ) = &hB1 )
 			CU_ASSERT( p->f2( ) = &hB2 )
+			CU_ASSERT( p->f3( ) = &hB3 )
 			delete p
 		end scope
 
@@ -673,7 +712,23 @@ namespace vtableSlotsReused
 		end scope
 
 		scope
+			dim p as B ptr = new B
+			CU_ASSERT( p->f1( ) = &hB1 )
+			CU_ASSERT( p->f2( ) = &hB2 )
+			CU_ASSERT( p->f3( ) = &hB3 )
+			delete p
+		end scope
+
+		scope
 			dim p as B ptr = new C
+			CU_ASSERT( p->f1( ) = &hC1 )
+			CU_ASSERT( p->f2( ) = &hC2 )
+			CU_ASSERT( p->f3( ) = &hC3 )
+			delete p
+		end scope
+
+		scope
+			dim p as C ptr = new C
 			CU_ASSERT( p->f1( ) = &hC1 )
 			CU_ASSERT( p->f2( ) = &hC2 )
 			CU_ASSERT( p->f3( ) = &hC3 )
@@ -684,58 +739,53 @@ end namespace
 
 namespace noImplicitVirtual
 	type A extends object
-		declare virtual  function f1( ) as integer
-		declare abstract function f2( ) as integer
+		'' new ABSTRACT
+		declare abstract function f1( ) as integer
 	end type
 
 	type B extends A
-		declare function f1( ) as integer
-		declare function f2( ) as integer
+		'' overrides the ABSTRACT, but should not become ABSTRACT/VIRTUAL itself implicitly
+		declare          function f1( ) as integer
+
+		'' new VIRTUAL
+		declare virtual  function f2( ) as integer
 	end type
 
 	type C extends B
+		'' shadows B.f1() but shouldn't become VIRTUAL implicitly
 		declare function f1( ) as integer
+
+		'' overrides B.f2() but shouldn't become VIRTUAL implicitly
 		declare function f2( ) as integer
 	end type
 
-	function A.f1( ) as integer
-		function = &hA1
-	end function
+	type D extends C
+		'' shadows C.f2() but shouldn't become VIRTUAL implicitly
+		declare function f2( ) as integer
+	end type
 
-	function B.f1( ) as integer
-		function = &hB1
-	end function
-
-	function B.f2( ) as integer
-		function = &hB2
-	end function
-
-	function C.f1( ) as integer
-		function = &hC1
-	end function
-
-	function C.f2( ) as integer
-		function = &hC2
-	end function
+	function B.f1( ) as integer : function = &hB1 : end function
+	function B.f2( ) as integer : function = &hB2 : end function
+	function C.f1( ) as integer : function = &hC1 : end function
+	function C.f2( ) as integer : function = &hC2 : end function
+	function D.f2( ) as integer : function = &hD2 : end function
 
 	sub test cdecl( )
 		scope
-			dim p as A ptr = new A
-			CU_ASSERT( p->f1( ) = &hA1 )
-			delete p
-		end scope
-
-		scope
 			dim p as A ptr = new B
-			CU_ASSERT( p->f1( ) = &hB1 )
-			CU_ASSERT( p->f2( ) = &hB2 )
+			CU_ASSERT( p->f1( ) = &hB1 ) '' A.f1() is overridden by B.f1()
 			delete p
 		end scope
 
 		scope
 			dim p as A ptr = new C
-			CU_ASSERT( p->f1( ) = &hB1 )
-			CU_ASSERT( p->f2( ) = &hB2 )
+			CU_ASSERT( p->f1( ) = &hB1 ) '' A.f1() is overridden by B.f1(), but not C.f1() since B.f1() isn't VIRTUAL
+			delete p
+		end scope
+
+		scope
+			dim p as A ptr = new D
+			CU_ASSERT( p->f1( ) = &hB1 ) '' ditto
 			delete p
 		end scope
 
@@ -748,8 +798,15 @@ namespace noImplicitVirtual
 
 		scope
 			dim p as B ptr = new C
+			CU_ASSERT( p->f1( ) = &hB1 ) '' B.f1() isn't VIRTUAL, so not overridden by C.f1()
+			CU_ASSERT( p->f2( ) = &hC2 ) '' B.f2() is VIRTUAL though, and overridden by C.f2()
+			delete p
+		end scope
+
+		scope
+			dim p as B ptr = new D
 			CU_ASSERT( p->f1( ) = &hB1 )
-			CU_ASSERT( p->f2( ) = &hB2 )
+			CU_ASSERT( p->f2( ) = &hC2 ) '' B.f2() is overridden by C.f2(), but not D.f2() (since C.f2() isn't VIRTUAL)
 			delete p
 		end scope
 
@@ -759,16 +816,29 @@ namespace noImplicitVirtual
 			CU_ASSERT( p->f2( ) = &hC2 )
 			delete p
 		end scope
+
+		scope
+			dim p as C ptr = new D
+			CU_ASSERT( p->f1( ) = &hC1 )
+			CU_ASSERT( p->f2( ) = &hC2 ) '' C.f2() isn't VIRTUAL, so not overridden by D.f2()
+			delete p
+		end scope
+
+		scope
+			dim p as D ptr = new D
+			CU_ASSERT( p->f1( ) = &hC1 )
+			CU_ASSERT( p->f2( ) = &hD2 )
+			delete p
+		end scope
 	end sub
 end namespace
 
-namespace virtualsAreInherited
+namespace virtualsAreInherited1
 	'' With a class hierarchy like A>B>C, C should be able to override A's
 	'' virtuals even if B does not.
 
 	type A extends object
-		declare virtual  function f1( ) as integer
-		declare abstract function f2( ) as integer
+		declare virtual function f1( ) as integer
 	end type
 
 	type B extends A
@@ -777,20 +847,10 @@ namespace virtualsAreInherited
 
 	type C extends B
 		declare function f1( ) as integer
-		declare function f2( ) as integer
 	end type
 
-	function A.f1( ) as integer
-		function = &hA1
-	end function
-
-	function C.f1( ) as integer
-		function = &hC1
-	end function
-
-	function C.f2( ) as integer
-		function = &hC2
-	end function
+	function A.f1( ) as integer : function = &hA1 : end function
+	function C.f1( ) as integer : function = &hC1 : end function
 
 	sub test cdecl( )
 		scope
@@ -808,7 +868,6 @@ namespace virtualsAreInherited
 		scope
 			dim p as A ptr = new C
 			CU_ASSERT( p->f1( ) = &hC1 )
-			CU_ASSERT( p->f2( ) = &hC2 )
 			delete p
 		end scope
 
@@ -821,14 +880,50 @@ namespace virtualsAreInherited
 		scope
 			dim p as B ptr = new C
 			CU_ASSERT( p->f1( ) = &hC1 )
-			CU_ASSERT( p->f2( ) = &hC2 )
 			delete p
 		end scope
 
 		scope
 			dim p as C ptr = new C
 			CU_ASSERT( p->f1( ) = &hC1 )
-			CU_ASSERT( p->f2( ) = &hC2 )
+			delete p
+		end scope
+	end sub
+end namespace
+
+namespace virtualsAreInherited2
+	'' same with an ABSTRACT
+
+	type A extends object
+		declare abstract function f1( ) as integer
+	end type
+
+	type B extends A
+		'' not overriding anything
+	end type
+
+	type C extends B
+		declare function f1( ) as integer
+	end type
+
+	function C.f1( ) as integer : function = &hC1 : end function
+
+	sub test cdecl( )
+		scope
+			dim p as A ptr = new C
+			CU_ASSERT( p->f1( ) = &hC1 ) '' should not crash because it should have been overridden
+			delete p
+		end scope
+
+		scope
+			dim p as B ptr = new C
+			CU_ASSERT( p->f1( ) = &hC1 ) '' ditto
+			delete p
+		end scope
+
+		scope
+			dim p as C ptr = new C
+			CU_ASSERT( p->f1( ) = &hC1 )
 			delete p
 		end scope
 	end sub
@@ -836,7 +931,6 @@ end namespace
 
 private sub ctor( ) constructor
 	fbcu.add_suite( "tests/virtual/virtual" )
-	fbcu.add_test( "VIRTUAL/ABSTRACT declarations", @declarations.test )
 	fbcu.add_test( "basic overriding", @overridingWorks.test )
 	fbcu.add_test( "Overriding vs. shadowing", @overridingVsShadowing.test )
 	fbcu.add_test( "Methods with a different signature are not overridden", @differentSignatureIsntOverridden.test )
@@ -846,9 +940,11 @@ private sub ctor( ) constructor
 	fbcu.add_test( "VIRTUAL dtor still calls field dtor", @virtualDtorDestructsField.test )
 	fbcu.add_test( "VIRTUAL dtor still calls base dtor", @virtualDtorDestructsBase.test )
 	fbcu.add_test( "implicit dtor also overrides", @implicitDtorOverrides.test )
-	fbcu.add_test( "virtuals overriding virtuals reuse the vtable slots", @vtableSlotsReused.test )
+	fbcu.add_test( "virtuals overriding virtuals reuse the vtable slots #1", @vtableSlotsReused1.test )
+	fbcu.add_test( "virtuals overriding virtuals reuse the vtable slots #2", @vtableSlotsReused2.test )
 	fbcu.add_test( "overrides are not made virtual automatically", @noImplicitVirtual.test )
-	fbcu.add_test( "VIRTUALs are inherited even if not overridden", @virtualsAreInherited.test )
+	fbcu.add_test( "VIRTUALs are inherited even if not overridden #1", @virtualsAreInherited1.test )
+	fbcu.add_test( "VIRTUALs are inherited even if not overridden #2", @virtualsAreInherited2.test )
 end sub
 
 end namespace
