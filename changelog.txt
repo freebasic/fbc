@@ -125,6 +125,7 @@ Version 0.25.0:
 - Intermediate .asm/.c files will now use the native EOL char, not always CRLF
 - The C backend now supports objinfo, just like the ASM backend
 - Buffer overrun in gfxlib2's X11 driver
+- Preprocessor's macro parameter stringize operator # now produces an empty string ("") if the macro argument was empty, instead of producing nothing
 
 
 Version 0.24.0:

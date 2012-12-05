@@ -243,6 +243,9 @@ private function hLoadMacro _
 					text += "$" + QUOTE
 					text += hReplace( argtext, QUOTE, QUOTE + QUOTE )
 					text += QUOTE
+				else
+					'' If it's empty, produce an empty string ("")
+					text += """"""
 				end if
 
 			'' ordinary text..

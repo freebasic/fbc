@@ -47,3 +47,10 @@ f3(,,)
 
 #define f4(a,b,c) a b c
 f4(,,)
+
+#define m( s ) "a" + #s + "b"
+scope
+	dim s1 as string = m()
+	dim s2 as string = m( )
+	dim s3 as string = m(  /'foo'/    )
+end scope
