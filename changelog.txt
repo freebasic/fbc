@@ -36,6 +36,7 @@ Version 0.25.0:
 - win/initguid.bi win32 header
 - -exx NULL pointer checks for procedure pointer calls
 - CVD(longint), CVS(integer), CVL(single), CVLONGINT(double), for reinterpreting directly between floating-point and integer representations without using strings
+- In procedure prototypes, identifiers of array parameters (as in "array() as type") can now be omitted (as in "() as type"), as for non-array parameters
 
 [fixed]
 - libzip headers: zip_stat struct was unnecessarily named zip_stat_, breaking the libzip example

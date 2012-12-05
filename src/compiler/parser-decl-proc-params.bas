@@ -288,35 +288,44 @@ private function hParamDecl _
 		mode = INVALID
 	end select
 
-	'' only allow keywords as param names on prototypes
-	readid = TRUE
-	if( lexGetClass( ) <> FB_TKCLASS_IDENTIFIER ) then
+	'' Check whether a param ID was given or not
+	'' In prototypes they can be omitted, and in fact we even allow
+	'' keywords there and use them as parameter ID, probably to make
+	'' translating C headers easier, except for AS of course because that
+	'' indicates the parameter type.
+	select case( lexGetClass( ) )
+	case FB_TKCLASS_IDENTIFIER
+		'' ID (most common case)
+		readid = TRUE
 
-		select case lexGetClass( )
-		case FB_TKCLASS_KEYWORD, FB_TKCLASS_QUIRKWD
-			if( isproto = FALSE ) then
-				hParamError( proc, lexGetText( ) )
-				'' error recovery: skip until next ',' or ')' and return a mock param
-				hSkipUntil( CHAR_COMMA )
-				return hMockParam( proc, mode )
-			else
-				'' AS?
-				if( lexGetToken( ) = FB_TK_AS ) then
-					readid = FALSE
-				end if
-			end if
+	case FB_TKCLASS_KEYWORD, FB_TKCLASS_QUIRKWD
+		'' Keyword
 
-		case else
-			if( symbGetProcParams( proc ) > 0 ) then
-				hParamError( proc, lexGetText( ) )
-				'' error recovery: skip until next ',' or ')' and return a mock param
-				hSkipUntil( CHAR_COMMA )
-				return hMockParam( proc, mode )
-			end if
-			exit function
-		end select
+		'' Only allow keywords in prototypes, but not in bodies
+		if( isproto = FALSE ) then
+			hParamError( proc, lexGetText( ) )
+			'' error recovery: skip until next ',' or ')' and return a mock param
+			hSkipUntil( CHAR_COMMA )
+			return hMockParam( proc, mode )
+		end if
 
-	end if
+		'' AS? (the only keyword that cannot be ignored/treated as ID here)
+		readid = (lexGetToken( ) <> FB_TK_AS)
+
+	case else
+		'' It's no ID and no keyword; the only other thing that's
+		'' allowed here is an '(' as in '()' array parameter without id,
+		'' in prototypes only of course (only there can param IDs be omitted).
+		if( (lexGetToken( ) <> CHAR_LPRNT) or (isproto = FALSE) ) then
+			hParamError( proc, lexGetText( ) )
+			'' error recovery: skip until next ',' or ')' and return a mock param
+			hSkipUntil( CHAR_COMMA )
+			return hMockParam( proc, mode )
+		end if
+
+		readid = FALSE
+
+	end select
 
 	''
 	if( reclevel >= FB_MAXARGRECLEVEL ) then
@@ -329,9 +338,8 @@ private function hParamDecl _
 	id = @idTB(reclevel)
 	*id = ""
 
-	''
+	'' ID (or keyword used as ID)
 	if( readid ) then
-		'' ID
 		*id = *lexGetText( )
 		dotpos = lexGetPeriodPos( )
 
@@ -339,21 +347,20 @@ private function hParamDecl _
 		hCheckSuffix( dtype )
 
 		lexSkipToken( )
-
-		'' ('('')')
-		if( lexGetToken( ) = CHAR_LPRNT ) then
-			lexSkipToken( )
-			if( (mode <> INVALID) or _
-				(hMatch( CHAR_RPRNT ) = FALSE) ) then
-				hParamError( proc, id )
-			end if
-
-			mode = FB_PARAMMODE_BYDESC
-		end if
-
-	'' no id
 	else
+		'' no id
 		dtype  = FB_DATATYPE_INVALID
+	end if
+
+	'' '()' array parentheses, '('?
+	if( lexGetToken( ) = CHAR_LPRNT ) then
+		lexSkipToken( )
+		'' Must be followed by ')', and BYVAL/BYREF cannot be used
+		'' (array() parameters always implicitly are BYDESC)
+		if( (mode <> INVALID) or (hMatch( CHAR_RPRNT ) = FALSE) ) then
+			hParamError( proc, id )
+		end if
+		mode = FB_PARAMMODE_BYDESC
 	end if
 
 	use_default = FALSE
