@@ -127,6 +127,7 @@ Version 0.25.0:
 - The C backend now supports objinfo, just like the ASM backend
 - Buffer overrun in gfxlib2's X11 driver
 - Preprocessor's macro parameter stringize operator # now produces an empty string ("") if the macro argument was empty, instead of producing nothing
+- Make pointer subtraction perform signed integer division (instead of unsigned) and return a signed integer
 
 
 Version 0.24.0:

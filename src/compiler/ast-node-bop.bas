@@ -670,9 +670,9 @@ private function hDoPointerArith _
     			exit function
     		end if
 
-    		'' convert to uint or BOP will complain..
-    		p = astNewCONV( FB_DATATYPE_UINT, NULL, p )
-    		e = astNewCONV( FB_DATATYPE_UINT, NULL, e )
+    		'' convert to int or BOP will complain..
+    		p = astNewCONV( FB_DATATYPE_INTEGER, NULL, p )
+    		e = astNewCONV( FB_DATATYPE_INTEGER, NULL, e )
 
  			'' subtract..
  			e = astNewBOP( AST_OP_SUB, p, e )
