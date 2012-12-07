@@ -992,11 +992,6 @@ declare sub astTypeIniUpdCnt _
 		byval tree as ASTNODE ptr _
 	)
 
-declare function astTypeIniGetHead _
-	( _
-		byval tree as ASTNODE ptr _
-	) as ASTNODE ptr
-
 declare function astTypeIniClone _
 	( _
 		byval tree as ASTNODE ptr _

@@ -1088,17 +1088,6 @@ sub astTypeIniUpdCnt _
 end sub
 
 '':::::
-function astTypeIniGetHead _
-	( _
-		byval tree as ASTNODE ptr _
-	) as ASTNODE ptr
-
-	'' head node will be always an EXPR
-	function = tree->l->l
-
-end function
-
-'':::::
 function astTypeIniClone _
 	( _
 		byval tree as ASTNODE ptr _
