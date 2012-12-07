@@ -81,7 +81,7 @@ namespace test2
 		doTest( localarray() )
 	end sub
 
-	dim shared as double glob_arr(ARRAY_LB1 to ARRAY_UB1, ARRAY_LB2 to ARRAY_UB2)
+	dim shared as double globalarray(ARRAY_LB1 to ARRAY_UB1, ARRAY_LB2 to ARRAY_UB2)
 
 	sub testGlobal cdecl( )
 		doTest( globalarray() )
@@ -188,13 +188,13 @@ namespace stringArrayField
 		field2 as integer
 	end type
 
-	sub doTest( array() as integer )
+	sub doTest( array() as string )
 		for i as integer = ARRAY_LB to ARRAY_UB
 			CU_ASSERT( array(i) = str( i ) )
 		next
 	end sub
 
-	sub fillArray( array() as integer )
+	sub fillArray( array() as string )
 		for i as integer = ARRAY_LB to ARRAY_UB
 			array(i) = str( i )
 		next
