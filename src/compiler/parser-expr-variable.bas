@@ -38,6 +38,22 @@ private function hCheckIndex( byval expr as ASTNODE ptr ) as ASTNODE ptr
 	function = expr
 end function
 
+private function hStaticArrayBoundChk _
+	( _
+		byval dimexpr as ASTNODE ptr, _
+		byval d as FBVARDIM ptr _
+	) as ASTNODE ptr
+
+	dimexpr = astBuildBOUNDCHK( dimexpr, astNewCONSTi( d->lower ), astNewCONSTi( d->upper ) )
+	if( dimexpr = NULL ) then
+		errReport( FB_ERRMSG_ARRAYOUTOFBOUNDS )
+		'' error recovery: fake an expr
+		dimexpr = astNewCONSTi( d->lower, FB_DATATYPE_INTEGER )
+	end if
+
+	function = dimexpr
+end function
+
 '':::::
 ''FieldArray    =   '(' Expression (',' Expression)* ')' .
 ''
@@ -79,12 +95,7 @@ private function hFieldArray _
 
 		'' bounds checking
 		if( env.clopt.extraerrchk ) then
-			dimexpr = astBuildBOUNDCHK( dimexpr, astNewCONSTi( d->lower ), astNewCONSTi( d->upper ) )
-			if( dimexpr = NULL ) then
-				errReport( FB_ERRMSG_ARRAYOUTOFBOUNDS )
-				'' error recovery: fake an expr
-				dimexpr = astNewCONSTi( d->lower, FB_DATATYPE_INTEGER )
-			end if
+			dimexpr = hStaticArrayBoundChk( dimexpr, d )
 		end if
 
     	''
@@ -923,11 +934,7 @@ end function
 '':::::
 ''ArgArrayIdx     =   '(' Expression (',' Expression)* ')' .
 ''
-function cArgArrayIdx _
-	( _
-		byval sym as FBSYMBOL ptr _
-	) as ASTNODE ptr
-
+private function cArgArrayIdx( byval sym as FBSYMBOL ptr ) as ASTNODE ptr
     dim as ASTNODE ptr expr = any, dimexpr = any
     dim as integer i = any
 
@@ -990,17 +997,12 @@ function cArgArrayIdx _
     					   			   FB_DATATYPE_INTEGER, _
     					   			   NULL, _
     					   			   FB_ARRAYDESC_DATAOFFS ) )
-
 end function
 
 '':::::
 ''ArrayIdx        =   '(' Expression (',' Expression)* ')' .
 ''
-function cArrayIdx _
-	( _
-		byval sym as FBSYMBOL ptr _
-	) as ASTNODE ptr
-
+private function cArrayIdx( byval sym as FBSYMBOL ptr ) as ASTNODE ptr
     dim as FBVARDIM ptr d = any
     dim as integer dtype = any, dims = any, maxdims = any
     dim as ASTNODE ptr expr = any, dimexpr = any, varexpr = any
@@ -1041,12 +1043,7 @@ function cArrayIdx _
 
 		'' bounds checking
 		if( env.clopt.extraerrchk ) then
-			dimexpr = astBuildBOUNDCHK( dimexpr, astNewCONSTi( d->lower ), astNewCONSTi( d->upper ) )
-			if( dimexpr = NULL ) then
-				errReport( FB_ERRMSG_ARRAYOUTOFBOUNDS )
-				'' error recovery: fake an expr
-				dimexpr = astNewCONSTi( d->lower, FB_DATATYPE_INTEGER )
-			end if
+			dimexpr = hStaticArrayBoundChk( dimexpr, d )
 		end if
 
     	''
@@ -1085,7 +1082,6 @@ function cArrayIdx _
 	function = astNewBOP( AST_OP_MUL, _
 					  	  expr, _
 					  	  astNewCONSTi( symbGetLen( sym ) ) )
-
 end function
 
 '':::::
