@@ -35,36 +35,36 @@ dim shared as AST_LOADCALLBACK ast_loadcallbacks( 0 to AST_CLASSES-1 ) => _
 	@astLoadCALLCTOR      , _    '' AST_NODECLASS_CALLCTOR
 	@astLoadSTACK         , _    '' AST_NODECLASS_STACK
 	@astLoadMEM           , _    '' AST_NODECLASS_MEM
-	@astLoadNOP           , _    '' AST_NODECLASS_COMP
+	NULL                  , _    '' AST_NODECLASS_COMP
 	@astLoadLINK          , _    '' AST_NODECLASS_LINK
 	@astLoadCONST         , _    '' AST_NODECLASS_CONST
 	@astLoadVAR           , _    '' AST_NODECLASS_VAR
 	@astLoadIDX           , _    '' AST_NODECLASS_IDX
-	@astLoadNOP           , _    '' AST_NODECLASS_FIELD
+	NULL                  , _    '' AST_NODECLASS_FIELD
 	@astLoadDEREF         , _    '' AST_NODECLASS_DEREF
 	@astLoadLABEL         , _    '' AST_NODECLASS_LABEL
-	@astLoadNOP           , _    '' AST_NODECLASS_ARG
+	NULL                  , _    '' AST_NODECLASS_ARG
 	@astLoadOFFSET        , _    '' AST_NODECLASS_OFFSET
 	@astLoadDECL          , _    '' AST_NODECLASS_DECL
 	@astLoadNIDXARRAY     , _    '' AST_NODECLASS_NIDXARRAY
 	@astLoadIIF           , _    '' AST_NODECLASS_IIF
 	@astLoadLIT           , _    '' AST_NODECLASS_LIT
 	@astLoadASM           , _    '' AST_NODECLASS_ASM
-	@astLoadNOP           , _    '' AST_NODECLASS_DATASTMT
+	NULL                  , _    '' AST_NODECLASS_DATASTMT
 	@astLoadDBG           , _    '' AST_NODECLASS_DBG
 	@astLoadBOUNDCHK      , _    '' AST_NODECLASS_BOUNDCHK
 	@astLoadPTRCHK        , _    '' AST_NODECLASS_PTRCHK
 	@astLoadSCOPEBEGIN    , _    '' AST_NODECLASS_SCOPEBEGIN
 	@astLoadSCOPEEND      , _    '' AST_NODECLASS_SCOPEEND
-	@astLoadNOP           , _    '' AST_NODECLASS_SCOPE_BREAK
-	@astLoadNOP           , _    '' AST_NODECLASS_TYPEINI
-	@astLoadNOP           , _    '' AST_NODECLASS_TYPEINI_PAD
-	@astLoadNOP           , _    '' AST_NODECLASS_TYPEINI_ASSIGN
-	@astLoadNOP           , _    '' AST_NODECLASS_TYPEINI_CTORCALL
-	@astLoadNOP           , _    '' AST_NODECLASS_TYPEINI_CTORLIST
-	@astLoadNOP           , _    '' AST_NODECLASS_TYPEINI_SCOPEINI
-	@astLoadNOP           , _    '' AST_NODECLASS_TYPEINI_SCOPEEND
-	@astLoadNOP             _    '' AST_NODECLASS_PROC
+	NULL                  , _    '' AST_NODECLASS_SCOPE_BREAK
+	NULL                  , _    '' AST_NODECLASS_TYPEINI
+	NULL                  , _    '' AST_NODECLASS_TYPEINI_PAD
+	NULL                  , _    '' AST_NODECLASS_TYPEINI_ASSIGN
+	NULL                  , _    '' AST_NODECLASS_TYPEINI_CTORCALL
+	NULL                  , _    '' AST_NODECLASS_TYPEINI_CTORLIST
+	NULL                  , _    '' AST_NODECLASS_TYPEINI_SCOPEINI
+	NULL                  , _    '' AST_NODECLASS_TYPEINI_SCOPEEND
+	NULL                    _    '' AST_NODECLASS_PROC
 }
 
 '' same order as AST_OP
