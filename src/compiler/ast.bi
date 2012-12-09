@@ -813,8 +813,11 @@ declare function astNewBOUNDCHK _
 declare function astNewPTRCHK _
 	( _
 		byval l as ASTNODE ptr, _
-		byval linenum as integer _
+		byval linenum as integer, _
+		byval filename as zstring ptr _
 	) as ASTNODE ptr
+
+declare function astBuildPTRCHK( byval expr as ASTNODE ptr ) as ASTNODE ptr
 
 declare function astNewDECL _
 	( _

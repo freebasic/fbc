@@ -317,7 +317,7 @@ function astBuildVtableLookup _
 		'' (in case it wasn't overridden)
 		if( env.clopt.extraerrchk ) then
 			if( symbIsAbstract( proc ) ) then
-				p = astNewPTRCHK( p, lexLineNum( ) )
+				p = astBuildPTRCHK( p )
 			end if
 		end if
 	else
@@ -772,7 +772,7 @@ function astBuildMultiDeref _
 
 			'' null pointer checking
 			if( env.clopt.extraerrchk ) then
-				expr = astNewPTRCHK( expr, lexLineNum( ) )
+				expr = astBuildPTRCHK( expr )
 			end if
 
 			expr = astNewDEREF( expr, dtype, subtype )

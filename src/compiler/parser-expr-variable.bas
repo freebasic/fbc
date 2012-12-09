@@ -509,7 +509,7 @@ private function hStrIndexing _
 
 	'' null pointer checking
 	if( env.clopt.extraerrchk ) then
-		varexpr = astNewPTRCHK( varexpr, lexLineNum( ) )
+		varexpr = astBuildPTRCHK( varexpr )
 	end if
 
 	varexpr = astNewBOP( AST_OP_ADD, varexpr, idxexpr )
@@ -685,7 +685,7 @@ function cMemberDeref _
 
 		'' null pointer checking
 		if( env.clopt.extraerrchk ) then
-			varexpr = astNewPTRCHK( varexpr, lexLineNum( ) )
+			varexpr = astBuildPTRCHK( varexpr )
 		end if
 
 		''
@@ -772,7 +772,7 @@ function cFuncPtrOrMemberDeref _
 
 	'' null pointer checking
 	if( env.clopt.extraerrchk ) then
-		expr = astNewPTRCHK( expr, lexLineNum( ) )
+		expr = astBuildPTRCHK( expr )
 	end if
 
 	'' function?

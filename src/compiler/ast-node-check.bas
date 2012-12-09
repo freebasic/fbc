@@ -8,6 +8,7 @@
 #include once "ir.bi"
 #include once "rtl.bi"
 #include once "ast.bi"
+#include once "lex.bi"
 
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' Bounds checking (l = index; r = call to checking func(lb, ub))
@@ -128,11 +129,11 @@ end function
 '' null pointer checking (l = index; r = call to checking func)
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-'':::::
 function astNewPTRCHK _
 	( _
 		byval l as ASTNODE ptr, _
-		byval linenum as integer _
+		byval linenum as integer, _
+		byval filename as zstring ptr _
 	) as ASTNODE ptr
 
     dim as ASTNODE ptr n = any
@@ -156,8 +157,7 @@ function astNewPTRCHK _
 
     '' check must be done using a function, see bounds checking
     n->r = rtlNullPtrCheck( astNewVAR( n->sym, 0, dtype, subtype ), _
-    					 	linenum, _
-    					 	env.inf.name )
+				linenum, filename )
 
 end function
 
@@ -211,3 +211,6 @@ function astLoadPTRCHK _
 
 end function
 
+function astBuildPTRCHK( byval expr as ASTNODE ptr ) as ASTNODE ptr
+	function = astNewPTRCHK( expr, lexLineNum( ), env.inf.name )
+end function
