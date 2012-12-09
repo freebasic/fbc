@@ -807,7 +807,15 @@ declare function astNewBOUNDCHK _
 		byval l as ASTNODE ptr, _
 		byval lb as ASTNODE ptr, _
 		byval ub as ASTNODE ptr, _
-		byval linenum as integer _
+		byval linenum as integer, _
+		byval filename as zstring ptr _
+	) as ASTNODE ptr
+
+declare function astBuildBOUNDCHK _
+	( _
+		byval expr as ASTNODE ptr, _
+		byval lb as ASTNODE ptr, _
+		byval ub as ASTNODE ptr _
 	) as ASTNODE ptr
 
 declare function astNewPTRCHK _

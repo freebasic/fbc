@@ -77,19 +77,15 @@ private function hFieldArray _
 		'' convert index if needed
 		dimexpr = hCheckIndex( dimexpr )
 
-    	'' bounds checking
-    	if( env.clopt.extraerrchk ) then
-    		dimexpr = astNewBOUNDCHK( dimexpr, _
-    								  astNewCONSTi( d->lower, FB_DATATYPE_INTEGER ), _
-    								  astNewCONSTi( d->upper, FB_DATATYPE_INTEGER ), _
-    								  lexLineNum( ) )
-
+		'' bounds checking
+		if( env.clopt.extraerrchk ) then
+			dimexpr = astBuildBOUNDCHK( dimexpr, astNewCONSTi( d->lower ), astNewCONSTi( d->upper ) )
 			if( dimexpr = NULL ) then
 				errReport( FB_ERRMSG_ARRAYOUTOFBOUNDS )
 				'' error recovery: fake an expr
 				dimexpr = astNewCONSTi( d->lower, FB_DATATYPE_INTEGER )
 			end if
-    	end if
+		end if
 
     	''
     	if( expr = NULL ) then
@@ -797,7 +793,6 @@ function cFuncPtrOrMemberDeref _
 
 end function
 
-'':::::
 private function hDynArrayBoundChk _
 	( _
 		byval expr as ASTNODE ptr, _
@@ -805,14 +800,9 @@ private function hDynArrayBoundChk _
 		byval idx as integer _
 	) as ASTNODE ptr
 
-    function = astNewBOUNDCHK( expr, _
-    						   astNewVAR( desc, _
-    								  	  FB_ARRAYDESCLEN + idx*FB_ARRAYDESC_DIMLEN + FB_ARRAYDESC_LBOUNDOFS, _
-    								  	  FB_DATATYPE_INTEGER ), _
-    						   astNewVAR( desc, _
-    								  	  FB_ARRAYDESCLEN + idx*FB_ARRAYDESC_DIMLEN + FB_ARRAYDESC_UBOUNDOFS, _
-    								  	  FB_DATATYPE_INTEGER ), _
-    						   lexLineNum( ) )
+	function = astBuildBOUNDCHK( expr, _
+			astNewVAR( desc, FB_ARRAYDESCLEN + idx*FB_ARRAYDESC_DIMLEN + FB_ARRAYDESC_LBOUNDOFS, FB_DATATYPE_INTEGER ), _
+			astNewVAR( desc, FB_ARRAYDESCLEN + idx*FB_ARRAYDESC_DIMLEN + FB_ARRAYDESC_UBOUNDOFS, FB_DATATYPE_INTEGER ) )
 
 end function
 
@@ -912,7 +902,6 @@ function cDynArrayIdx _
 
 end function
 
-'':::::
 private function hArgArrayBoundChk _
 	( _
 		byval expr as ASTNODE ptr, _
@@ -920,16 +909,13 @@ private function hArgArrayBoundChk _
 		byval idx as integer _
 	) as ASTNODE ptr
 
-    function = astNewBOUNDCHK( expr, _
-    						   astNewDEREF( astNewVAR( desc, 0, FB_DATATYPE_INTEGER ), _
-    								  	    FB_DATATYPE_INTEGER, _
-    								  	    NULL, _
-    								  	    FB_ARRAYDESCLEN + idx*FB_ARRAYDESC_DIMLEN + FB_ARRAYDESC_LBOUNDOFS ), _
-    						   astNewDEREF( astNewVAR( desc, 0, FB_DATATYPE_INTEGER ), _
-    								  	    FB_DATATYPE_INTEGER, _
-    								  	    NULL, _
-    								  	    FB_ARRAYDESCLEN + idx*FB_ARRAYDESC_DIMLEN + FB_ARRAYDESC_UBOUNDOFS ), _
-    						   lexLineNum( ) )
+	function = astBuildBOUNDCHK( expr, _
+			astNewDEREF( astNewVAR( desc, 0, FB_DATATYPE_INTEGER ), _
+				FB_DATATYPE_INTEGER, NULL, _
+				FB_ARRAYDESCLEN + idx*FB_ARRAYDESC_DIMLEN + FB_ARRAYDESC_LBOUNDOFS ), _
+			astNewDEREF( astNewVAR( desc, 0, FB_DATATYPE_INTEGER ), _
+				FB_DATATYPE_INTEGER, NULL, _
+				FB_ARRAYDESCLEN + idx*FB_ARRAYDESC_DIMLEN + FB_ARRAYDESC_UBOUNDOFS ) )
 
 
 end function
@@ -1053,18 +1039,15 @@ function cArrayIdx _
 		'' convert index if needed
 		dimexpr = hCheckIndex( dimexpr )
 
-    	'' bounds checking
-    	if( env.clopt.extraerrchk ) then
-    		dimexpr = astNewBOUNDCHK( dimexpr, _
-    								  astNewCONSTi( d->lower, FB_DATATYPE_INTEGER ), _
-    								  astNewCONSTi( d->upper, FB_DATATYPE_INTEGER ), _
-    								  lexLineNum( ) )
+		'' bounds checking
+		if( env.clopt.extraerrchk ) then
+			dimexpr = astBuildBOUNDCHK( dimexpr, astNewCONSTi( d->lower ), astNewCONSTi( d->upper ) )
 			if( dimexpr = NULL ) then
 				errReport( FB_ERRMSG_ARRAYOUTOFBOUNDS )
 				'' error recovery: fake an expr
 				dimexpr = astNewCONSTi( d->lower, FB_DATATYPE_INTEGER )
 			end if
-    	end if
+		end if
 
     	''
     	if( expr = NULL ) then

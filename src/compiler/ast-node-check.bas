@@ -14,13 +14,13 @@
 '' Bounds checking (l = index; r = call to checking func(lb, ub))
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-'':::::
 function astNewBOUNDCHK _
 	( _
 		byval l as ASTNODE ptr, _
 		byval lb as ASTNODE ptr, _
 		byval ub as ASTNODE ptr, _
-		byval linenum as integer _
+		byval linenum as integer, _
+		byval filename as zstring ptr _
 	) as ASTNODE ptr
 
     dim as ASTNODE ptr n = any
@@ -64,14 +64,8 @@ function astNewBOUNDCHK _
     '' check must be done using a function because calling ErrorThrow
     '' would spill used regs only if it was called, causing wrong
     '' assumptions after the branches
-	n->r = rtlArrayBoundsCheck( astNewVAR( n->sym, _
-    									   0, _
-    									   FB_DATATYPE_INTEGER, _
-    									   NULL ), _
-    						 	lb, _
-    						 	ub, _
-    						 	linenum, _
-    						 	env.inf.name )
+	n->r = rtlArrayBoundsCheck( astNewVAR( n->sym, 0, FB_DATATYPE_INTEGER, NULL ), _
+					lb, ub, linenum, filename )
 
 end function
 
@@ -123,6 +117,15 @@ function astLoadBOUNDCHK _
 	function = astLoad( t )
 	astDelNode( t )
 
+end function
+
+function astBuildBOUNDCHK _
+	( _
+		byval expr as ASTNODE ptr, _
+		byval lb as ASTNODE ptr, _
+		byval ub as ASTNODE ptr _
+	) as ASTNODE ptr
+	function = astNewBOUNDCHK( expr, lb, ub, lexLineNum( ), env.inf.name )
 end function
 
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
