@@ -2,6 +2,8 @@
 
 #include "fb.h"
 
+#define BUFFER_LENGTH 511
+
 FBCALL void fb_AssertW( char *filename, int linenum, char *funcname, FB_WCHAR *expression )
 {
 	fb_AssertWarnW( filename, linenum, funcname, expression );
@@ -10,7 +12,16 @@ FBCALL void fb_AssertW( char *filename, int linenum, char *funcname, FB_WCHAR *e
 
 FBCALL void fb_AssertWarnW( char *filename, int linenum, char *funcname, FB_WCHAR *expression )
 {
-	/* Printing to stderr, like fb_Die() */
-	fwprintf( stderr, _LC("%S(%d): assertion failed at %S: %s\n"),
-	          filename, linenum, funcname, expression );
+	char buffer[BUFFER_LENGTH+1];
+
+	/* Convert expression wstring to zstring */
+	fb_wstr_ConvToA( buffer, expression, BUFFER_LENGTH );
+	buffer[BUFFER_LENGTH] = 0; /* null terminator */
+
+	/* then let the zstring version print it */
+	fb_AssertWarn( filename, linenum, funcname, buffer );
+
+	/* This way we don't need to bother using fwprintf() or similar,
+	   which would only make things unnecessarily complex,
+	   especially since it doesn't exist on DJGPP. */
 }
