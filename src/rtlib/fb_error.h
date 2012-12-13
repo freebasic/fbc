@@ -32,6 +32,9 @@ typedef struct _FB_ERRORCTX {
 	void         *resnxt_lbl;
 } FB_ERRORCTX;
 
+#define FB_ERRMSG_SIZE 1024
+extern char __fb_errmsg[FB_ERRMSG_SIZE];
+
 FBCALL void          fb_Assert          ( char *filename, int linenum, char *funcname, char *expression );
 FBCALL void          fb_AssertWarn      ( char *filename, int linenum, char *funcname, char *expression );
 FBCALL void          fb_AssertW         ( char *filename, int linenum, char *funcname, FB_WCHAR *expression );

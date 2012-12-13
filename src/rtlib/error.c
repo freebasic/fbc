@@ -2,10 +2,6 @@
 
 #include "fb.h"
 
-#define FB_ERRMSG_SIZE 1024
-
-static char errmsg[FB_ERRMSG_SIZE];
-
 static const char *messages[] = {
 	"",                                     /* FB_RTERROR_OK */
 	"illegal function call",                /* FB_RTERROR_ILLEGALFUNCTIONCALL */
@@ -37,33 +33,33 @@ static void fb_Die
 {
 	int pos = 0;
 
-	pos += snprintf( &errmsg[pos], FB_ERRMSG_SIZE - pos,
+	pos += snprintf( &__fb_errmsg[pos], FB_ERRMSG_SIZE - pos,
 	                 "\nAborting due to runtime error %d", err_num );
 
 	if( (err_num >= 0) && (err_num < FB_RTERROR_MAX) )
-		pos += snprintf( &errmsg[pos], FB_ERRMSG_SIZE - pos,
+		pos += snprintf( &__fb_errmsg[pos], FB_ERRMSG_SIZE - pos,
 						 " (%s)", messages[err_num] );
 
 	if( line_num > 0 )
-		pos += snprintf( &errmsg[pos], FB_ERRMSG_SIZE - pos,
+		pos += snprintf( &__fb_errmsg[pos], FB_ERRMSG_SIZE - pos,
 						 " at line %d", line_num );
 
 	if( mod_name != NULL )
 		if( fun_name != NULL )
-			pos += snprintf( &errmsg[pos], FB_ERRMSG_SIZE - pos,
+			pos += snprintf( &__fb_errmsg[pos], FB_ERRMSG_SIZE - pos,
 			                 " %s %s::%s()\n\n", (char *)(line_num > 0? &"of" : &"in"),
 			                 (char *)mod_name, (char *)fun_name );
 		else
-			pos += snprintf( &errmsg[pos], FB_ERRMSG_SIZE - pos,
+			pos += snprintf( &__fb_errmsg[pos], FB_ERRMSG_SIZE - pos,
 			                 " %s %s()\n\n", (char *)(line_num > 0? &"of" : &"in"),
 			                 (char *)mod_name );
 	else
-		pos += snprintf( &errmsg[pos], FB_ERRMSG_SIZE - pos, "\n\n" );
+		pos += snprintf( &__fb_errmsg[pos], FB_ERRMSG_SIZE - pos, "\n\n" );
 
-	errmsg[FB_ERRMSG_SIZE-1] = '\0';
+	__fb_errmsg[FB_ERRMSG_SIZE-1] = '\0';
 
-	/* save buffer so we can show message after console is cleaned up */
-	__fb_ctx.errmsg = errmsg;
+	/* Let fb_hRtExit() show the message */
+	__fb_ctx.errmsg = __fb_errmsg;
 
 	fb_End( err_num );
 }
