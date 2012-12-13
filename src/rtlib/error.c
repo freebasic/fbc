@@ -2,10 +2,7 @@
 
 #include "fb.h"
 
-#define FB_ERROR_MESSAGE_SIZE		1024
-
-static char error_buffer[FB_ERROR_MESSAGE_SIZE];
-static const char *error_msg[] = {
+static const char *messages[] = {
 	"",                                     /* FB_RTERROR_OK */
 	"illegal function call",                /* FB_RTERROR_ILLEGALFUNCTIONCALL */
 	"file not found",                       /* FB_RTERROR_FILENOTFOUND */
@@ -26,7 +23,6 @@ static const char *error_msg[] = {
 	"end of file"                           /* FB_RTERROR_ENDOFFILE */
 };
 
-/*:::::*/
 static void fb_Die
 	( 
 		int err_num, 
@@ -36,39 +32,38 @@ static void fb_Die
 	)
 {
 	int pos = 0;
-	
-	pos += snprintf( &error_buffer[pos], FB_ERROR_MESSAGE_SIZE - pos,
+
+	pos += snprintf( &__fb_errmsg[pos], FB_ERRMSG_SIZE - pos,
 	                 "\nAborting due to runtime error %d", err_num );
 
 	if( (err_num >= 0) && (err_num < FB_RTERROR_MAX) )
-		pos += snprintf( &error_buffer[pos], FB_ERROR_MESSAGE_SIZE - pos,
-						 " (%s)", error_msg[err_num] );
+		pos += snprintf( &__fb_errmsg[pos], FB_ERRMSG_SIZE - pos,
+						 " (%s)", messages[err_num] );
 
 	if( line_num > 0 )
-		pos += snprintf( &error_buffer[pos], FB_ERROR_MESSAGE_SIZE - pos,
+		pos += snprintf( &__fb_errmsg[pos], FB_ERRMSG_SIZE - pos,
 						 " at line %d", line_num );
 
 	if( mod_name != NULL )
 		if( fun_name != NULL )
-			pos += snprintf( &error_buffer[pos], FB_ERROR_MESSAGE_SIZE - pos,
+			pos += snprintf( &__fb_errmsg[pos], FB_ERRMSG_SIZE - pos,
 			                 " %s %s::%s()\n\n", (char *)(line_num > 0? &"of" : &"in"),
 			                 (char *)mod_name, (char *)fun_name );
 		else
-			pos += snprintf( &error_buffer[pos], FB_ERROR_MESSAGE_SIZE - pos,
+			pos += snprintf( &__fb_errmsg[pos], FB_ERRMSG_SIZE - pos,
 			                 " %s %s()\n\n", (char *)(line_num > 0? &"of" : &"in"),
 			                 (char *)mod_name );
 	else
-		pos += snprintf( &error_buffer[pos], FB_ERROR_MESSAGE_SIZE - pos, "\n\n" );
-	
-	error_buffer[FB_ERROR_MESSAGE_SIZE-1] = '\0';
-	
-	/* save buffer so we can show message after console is cleaned up */
-	__fb_ctx.error_msg = error_buffer;
+		pos += snprintf( &__fb_errmsg[pos], FB_ERRMSG_SIZE - pos, "\n\n" );
+
+	__fb_errmsg[FB_ERRMSG_SIZE-1] = '\0';
+
+	/* Let fb_hRtExit() show the message */
+	__fb_ctx.errmsg = __fb_errmsg;
 
 	fb_End( err_num );
 }
 
-/*:::::*/
 FB_ERRHANDLER fb_ErrorThrowEx 
 	( 
 		int err_num, 
@@ -101,7 +96,6 @@ FB_ERRHANDLER fb_ErrorThrowEx
 	return NULL;
 }
 
-/*:::::*/
 FB_ERRHANDLER fb_ErrorThrowAt 
 	( 
 		int line_num, 
@@ -116,11 +110,7 @@ FB_ERRHANDLER fb_ErrorThrowAt
 
 }
 
-/*:::::*/
-FBCALL FB_ERRHANDLER fb_ErrorSetHandler 
-	( 
-		FB_ERRHANDLER newhandler 
-	)
+FBCALL FB_ERRHANDLER fb_ErrorSetHandler( FB_ERRHANDLER newhandler )
 {
 	FB_ERRORCTX *ctx = FB_TLSGETCTX( ERROR );
 	FB_ERRHANDLER oldhandler;
@@ -132,11 +122,7 @@ FBCALL FB_ERRHANDLER fb_ErrorSetHandler
 	return oldhandler;
 }
 
-/*:::::*/
-void *fb_ErrorResume 
-	( 
-		void 
-	)
+void *fb_ErrorResume( void )
 {
     FB_ERRORCTX *ctx = FB_TLSGETCTX( ERROR );
     void *label = ctx->res_lbl;
@@ -152,11 +138,7 @@ void *fb_ErrorResume
 	return label;
 }
 
-/*:::::*/
-void *fb_ErrorResumeNext 
-	( 
-		void 
-	)
+void *fb_ErrorResumeNext( void )
 {
     FB_ERRORCTX *ctx = FB_TLSGETCTX( ERROR );
     void *label = ctx->resnxt_lbl;
@@ -171,4 +153,3 @@ void *fb_ErrorResumeNext
 
 	return label;
 }
-
