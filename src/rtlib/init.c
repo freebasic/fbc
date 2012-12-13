@@ -60,6 +60,13 @@ void fb_hRtExit( void )
 #ifdef ENABLE_MT
 	fb_TlsExit( );
 #endif
+
+	/* If an error message was stored, print it now, after the console was
+	   cleaned up. At least the DOS gfxlib clears the console on exit,
+	   thus any error messages must be printed after that or they would
+	   not be visible. */
+	if( __fb_ctx.errmsg )
+		fputs( __fb_ctx.errmsg, stderr );
 }
 
 /* called by FB program */
