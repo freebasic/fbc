@@ -521,25 +521,35 @@ end function
 #define CREATEFAKEID( proc ) _
 	symbAddProc( proc, symbUniqueLabel( ), NULL, dtype, subtype, attrib, mode, FB_SYMBOPT_DECLARING )
 
-'':::::
-private function hDoNesting _
+private sub hBeginNestingIfNeeded _
 	( _
-		byval ns as FBSYMBOL ptr _
-	) as integer static
+		byval parent as FBSYMBOL ptr, _
+		byref is_nested as integer, _
+		byval is_proto as integer _
+	)
 
-	'' proc body can be declared outside the original namespace
-	'' if the prototype was declared inside one (as in C++), so
-	'' change the hashtb too
+	'' If this is a proc body (not a proto), then we'll open a new scope
+	'' with astProcBegin(), and additionally we may have to re-open the
+	'' proc's namespace, in case it's being declared outside the original
+	'' namespace where we found the prototype.
+	''
+	'' This ensures the proc and code in it behaves as if it was written
+	'' in the original namespace to begin with. For example, it must be
+	'' possible to access symbols from that namespace without using the
+	'' namespace prefix explicitly, even if the body is written outside
+	'' the namespace block that contains the prototype.
+	''
+	'' Note: Even parameter initializers are affected, thus this must be
+	'' done even before parsing the parameter list.
 
-	if( ns = symbGetCurrentNamespc( ) ) then
-		return FALSE
+	if( (not is_proto) and (parent <> NULL) ) then
+		if( parent <> symbGetCurrentNamespc( ) ) then
+			symbNestBegin( parent, TRUE )
+			is_nested = TRUE
+		end if
 	end if
 
-	symbNestBegin( ns, TRUE )
-
-	function = TRUE
-
-end function
+end sub
 
 private sub cNakedAttribute( byref attrib as integer )
 	if( ucase( *lexGetText( ) ) = "NAKED" ) then
@@ -646,13 +656,7 @@ function cProcHeader _
 
 	proc = symbPreAddProc( @id )
 
-	'' extern implementation?
-	if( (options and FB_PROCOPT_ISPROTO) = 0 ) then
-		'' must be done before parsing the params
-		if( parent <> NULL ) then
-			is_nested = hDoNesting( parent )
-		end if
-	end if
+	hBeginNestingIfNeeded( parent, is_nested, ((options and FB_PROCOPT_ISPROTO) <> 0) )
 
 	symbGetAttrib( proc ) = attrib
 
@@ -1302,13 +1306,7 @@ function cOperatorHeader _
 
 	proc = symbPreAddProc( NULL )
 
-	'' extern implementation?
-	if( (options and FB_PROCOPT_ISPROTO) = 0 ) then
-		'' must be done before parsing the params
-		if( parent <> NULL ) then
-			is_nested = hDoNesting( parent )
-		end if
-	end if
+	hBeginNestingIfNeeded( parent, is_nested, ((options and FB_PROCOPT_ISPROTO) <> 0) )
 
     symbGetAttrib( proc ) = attrib
 
@@ -1668,13 +1666,7 @@ function cPropertyHeader _
 
 	proc = symbPreAddProc( @id )
 
-	'' extern implementation?
-	if( is_prototype = FALSE ) then
-		'' must be done before parsing the params
-		if( parent <> NULL ) then
-			is_nested = hDoNesting( parent )
-		end if
-	end if
+	hBeginNestingIfNeeded( parent, is_nested, is_prototype )
 
 	symbGetAttrib( proc ) = attrib
 
@@ -1898,13 +1890,7 @@ function cCtorHeader _
 
 	proc = symbPreAddProc( NULL )
 
-	'' extern implementation?
-	if( is_prototype = FALSE ) then
-		'' must be done before parsing the params
-		if( parent <> NULL ) then
-			is_nested = hDoNesting( parent )
-		end if
-	end if
+	hBeginNestingIfNeeded( parent, is_nested, is_prototype )
 
 	symbGetAttrib( proc ) = attrib
 
