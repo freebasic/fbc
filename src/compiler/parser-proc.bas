@@ -675,29 +675,22 @@ function cProcHeader _
     select case as const lexGetToken( )
     '' (CONSTRUCTOR | DESTRUCTOR)?
     case FB_TK_CONSTRUCTOR, FB_TK_DESTRUCTOR
-
-        '' method?
-        if( (attrib and FB_SYMBATTRIB_METHOD) <> 0) then
+		'' A module ctor/dtor must be a sub with no params,
+		'' it cannot be a method or function.
+		if( ((attrib and FB_SYMBATTRIB_METHOD) <> 0) or _
+		    ((options and FB_PROCOPT_ISSUB) = 0) ) then
 			errReport( FB_ERRMSG_SYNTAXERROR, TRUE )
-        else
-        	'' not a sub?
-        	if( (options and FB_PROCOPT_ISSUB) = 0 ) then
-				errReport( FB_ERRMSG_SYNTAXERROR, TRUE )
-        	end if
-
-        	'' not argless?
-        	if( symbGetProcParams( proc ) <> 0 ) then
-				errReport( FB_ERRMSG_ARGCNTMISMATCH, TRUE )
-        	end if
-
+		elseif( symbGetProcParams( proc ) <> 0 ) then
+			errReport( FB_ERRMSG_ARGCNTMISMATCH, TRUE )
+		else
 			if( lexGetToken( ) = FB_TK_CONSTRUCTOR ) then
 				stats or= FB_SYMBSTATS_GLOBALCTOR
 			else
 				stats or= FB_SYMBSTATS_GLOBALDTOR
 			end if
-
-			lexSkipToken( )
 		end if
+
+		lexSkipToken( )
 
     '' (AS SymbolType)?
     case FB_TK_AS
