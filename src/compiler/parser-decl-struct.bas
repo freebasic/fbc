@@ -837,20 +837,18 @@ decl_inner:		'' it's an anonymous inner UDT
 	function = TRUE
 end function
 
-private sub hCheckForCDtorOrMethods(byval sym as FBSYMBOL ptr)
+private sub hCheckForCDtorOrMethods( byval sym as FBSYMBOL ptr )
 	dim as FBSYMBOL ptr member = any
-
 	'' Not at module level?
 	if( parser.scope > FB_MAINSCOPE ) then
-		'' we can't allow objects (or their children) with c/dtor
-		if( symbGetUDTHasCtorField( sym ) ) then
-			errReportEx( FB_ERRMSG_NOOOPINFUNCTIONS, symbGetName( sym ) )
-		end if
-
-		'' can't allow methods either...
+		'' Shouldn't allow any member procedures - they couldn't be
+		'' implemented since we don't allow nested procedures.
+		'' (Note: assuming symbStructEnd() was already called,
+		'' thus any implicit members were already added by
+		'' symbUdtAddDefaultMembers())
 		member = symbGetCompSymbTb( sym ).head
 		while( member )
-			if( symbIsMethod( member ) ) then
+			if( symbIsProc( member ) ) then
 				errReportEx( FB_ERRMSG_NOOOPINFUNCTIONS, symbGetName( member ) )
 			end if
 			member = member->next
@@ -981,7 +979,7 @@ function cTypeDecl _
 	parser.currblock = currblocksym
 	parser.scope = scope_depth
 
-	hCheckForCDtorOrMethods(sym)
+	hCheckForCDtorOrMethods( sym )
 
 	'' end the compound
 	stk = cCompStmtGetTOS( FB_TK_TYPE )
