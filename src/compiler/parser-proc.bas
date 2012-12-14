@@ -340,6 +340,9 @@ private function hGetId _
 		end if
 	end if
 
+	'' Check whether type suffix is allowed by the -lang mode
+	hCheckSuffix( *dtype )
+
 	'' ID
 	lexSkipToken( )
 
@@ -613,8 +616,6 @@ function cProcHeader _
 
 	dtype = FB_DATATYPE_INVALID
 	head_proc = hGetId( parent, @id, @dtype, (options and FB_PROCOPT_ISSUB) <> 0 )
-
-	hCheckSuffix( dtype )
 
 	subtype = NULL
 	stats = 0
@@ -1640,8 +1641,6 @@ function cPropertyHeader _
 	'' id
 	dtype = FB_DATATYPE_INVALID
 	head_proc = hGetId( parent, @id, @dtype, TRUE )
-
-	hCheckSuffix( dtype )
 
 	subtype = NULL
 	stats = 0
