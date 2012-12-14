@@ -254,36 +254,10 @@ private sub hCheckAttribs _
 
 end sub
 
-'':::::
-private function hGetId _
-	( _
-		byval parent as FBSYMBOL ptr, _
-		byval id as zstring ptr, _
-		byval dtype as integer ptr, _
-		byval is_sub as integer _
-	) as FBSYMBOL ptr
+private function hCheckIdToken( byval has_parent as integer ) as integer
+	function = FALSE
 
-	dim as FBSYMCHAIN ptr chain_ = any
-	dim as FBSYMBOL ptr sym = any
-
-	function = NULL
-
-	'' no parent? read as-is
-	if( parent = NULL ) then
-		chain_ = lexGetSymChain( )
-    else
-		chain_ = symbLookupAt( parent, lexGetText( ), FALSE, FALSE )
-	end if
-
-    '' any symbol found?
-    if( chain_ <> NULL ) then
-    	'' same class?
-    	sym = symbFindByClass( chain_, FB_SYMBCLASS_PROC )
-    else
-    	sym = NULL
-    end if
-
-	select case as const lexGetClass( )
+	select case as const( lexGetClass( ) )
 	case FB_TKCLASS_IDENTIFIER
 		if( fbLangOptIsSet( FB_LANG_OPT_PERIODS ) ) then
 			'' if inside a namespace, symbols can't contain periods (.)'s
@@ -297,38 +271,68 @@ private function hGetId _
 	case FB_TKCLASS_QUIRKWD
 		if( env.clopt.lang <> FB_LANG_QB ) then
 			'' only if inside a ns and if not local
-			if( (parent = NULL) or (parser.scope > FB_MAINSCOPE) ) then
+			if( (not has_parent) or (parser.scope > FB_MAINSCOPE) ) then
 				errReport( FB_ERRMSG_DUPDEFINITION )
-				'' error recovery: fake an id, skip until next '('
-				*id = *symbUniqueLabel( )
-				*dtype = FB_DATATYPE_INVALID
-				hSkipUntil( CHAR_LPRNT )
-				return NULL
+				exit function
 			end if
 		end if
 
 	case FB_TKCLASS_KEYWORD, FB_TKCLASS_OPERATOR
 		if( env.clopt.lang <> FB_LANG_QB ) then
 			errReport( FB_ERRMSG_DUPDEFINITION )
-			'' error recovery: fake an id, skip until next '('
-			*id = *symbUniqueLabel( )
-			*dtype = FB_DATATYPE_INVALID
-			hSkipUntil( CHAR_LPRNT )
-			return NULL
+			exit function
 		end if
 
 	case else
 		errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
+		exit function
+	end select
+
+	function = TRUE
+end function
+
+private function hGetId _
+	( _
+		byval parent as FBSYMBOL ptr, _
+		byval id as zstring ptr, _
+		byval dtype as integer ptr, _
+		byval is_sub as integer _
+	) as FBSYMBOL ptr
+
+	dim as FBSYMCHAIN ptr chain_ = any
+	dim as FBSYMBOL ptr sym = any
+
+	function = NULL
+
+	'' No parent?
+	if( parent = NULL ) then
+		'' Read as-is
+		chain_ = lexGetSymChain( )
+	else
+		'' Otherwise, lookup in that namespace
+		chain_ = symbLookupAt( parent, lexGetText( ), FALSE, FALSE )
+	end if
+
+	'' Any symbol found?
+	if( chain_ ) then
+		'' same class?
+		sym = symbFindByClass( chain_, FB_SYMBCLASS_PROC )
+	else
+		sym = NULL
+	end if
+
+	if( hCheckIdToken( (parent <> NULL) ) = FALSE ) then
 		'' error recovery: fake an id, skip until next '('
 		*id = *symbUniqueLabel( )
 		*dtype = FB_DATATYPE_INVALID
 		hSkipUntil( CHAR_LPRNT )
-		return NULL
-	end select
+		exit function
+	end if
 
 	*id = *lexGetText( )
 	*dtype = lexGetType( )
 
+	'' Disallow type suffix on SUBs
 	if( is_sub ) then
 		if( *dtype <> FB_DATATYPE_INVALID ) then
 			errReport( FB_ERRMSG_INVALIDCHARACTER )
@@ -336,10 +340,10 @@ private function hGetId _
 		end if
 	end if
 
+	'' ID
 	lexSkipToken( )
 
 	function = sym
-
 end function
 
 private sub hCheckRetType(byref dtype as integer, byref subtype as FBSYMBOL ptr)
@@ -573,8 +577,9 @@ function cProcHeader _
 	) as FBSYMBOL ptr
 
     static as zstring * FB_MAXNAMELEN+1 id
-    dim as FBSYMBOL ptr proc = any, parent = any
-    dim as integer is_extern = any
+	dim as integer is_extern = any, dtype = any, lgt = any
+	dim as FBSYMBOL ptr head_proc = any, proc = any, parent = any, subtype = any
+	dim as FB_SYMBSTATS stats = any
 
 	is_nested = FALSE
 	is_extern = FALSE
@@ -606,10 +611,7 @@ function cProcHeader _
 		end if
 	end if
 
-	dim as integer dtype = any, lgt = any
-	dim as FBSYMBOL ptr head_proc = any, subtype = any
-	dim as FB_SYMBSTATS stats = any
-
+	dtype = FB_DATATYPE_INVALID
 	head_proc = hGetId( parent, @id, @dtype, (options and FB_PROCOPT_ISSUB) <> 0 )
 
 	hCheckSuffix( dtype )
@@ -1606,8 +1608,9 @@ function cPropertyHeader _
 	) as FBSYMBOL ptr
 
     static as zstring * FB_MAXNAMELEN+1 id
-    dim as FBSYMBOL ptr proc = any, parent = any
-    dim as integer is_extern = any
+	dim as integer is_extern = any, dtype = any, lgt = any
+	dim as FBSYMBOL ptr head_proc = any, proc = any, parent = any, subtype = any
+	dim as FB_SYMBSTATS stats = any
 
 	function = NULL
 
@@ -1635,10 +1638,7 @@ function cPropertyHeader _
 	end if
 
 	'' id
-	dim as integer dtype = any, lgt = any
-	dim as FBSYMBOL ptr head_proc = any, subtype = any
-	dim as FB_SYMBSTATS stats = any
-
+	dtype = FB_DATATYPE_INVALID
 	head_proc = hGetId( parent, @id, @dtype, TRUE )
 
 	hCheckSuffix( dtype )
