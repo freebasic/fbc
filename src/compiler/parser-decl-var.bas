@@ -1591,10 +1591,7 @@ function hVarDeclEx _
 end function
 
 '' look for ... followed by ')', ',' or TO
-function hMatchEllipsis _
-	( _
-	) as integer
-
+private function hMatchEllipsis( ) as integer
 	function = FALSE
 
 	if( lexGetToken( ) = CHAR_DOT ) then
