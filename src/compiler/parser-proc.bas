@@ -1835,16 +1835,17 @@ function cCtorHeader _
 	#define CREATEFAKE() symbAddProc( proc, symbUniqueLabel( ), NULL, FB_DATATYPE_VOID, NULL, _
 	                                  attrib, mode, FB_SYMBOPT_DECLARING )
 
-    dim as integer lgt = any, is_extern = any, is_ctor = any
-    dim as FBSYMBOL ptr proc = any, parent = any
+	dim as integer lgt = any, is_extern = any
+	dim as FBSYMBOL ptr head_proc = any, proc = any, parent = any
 
 	function = NULL
 
 	is_nested = FALSE
-	is_ctor = (attrib and FB_SYMBATTRIB_CONSTRUCTOR) <> 0
 	is_extern = FALSE
 
-	if( is_ctor ) then
+	'' Ctors always are overloaded,
+	'' dtors are not (they cannot have params anyways)
+	if( attrib and FB_SYMBATTRIB_CONSTRUCTOR ) then
 		attrib or= FB_SYMBATTRIB_OVERLOADED
 	end if
 
@@ -1898,7 +1899,7 @@ function cCtorHeader _
 	cParameters( parent, proc, mode, is_prototype )
 
 	'' dtor?
-	if( is_ctor = FALSE ) then
+	if( attrib and FB_SYMBATTRIB_DESTRUCTOR ) then
 		if( symbGetProcParams( proc ) > 1 ) then
 			errReport( FB_ERRMSG_DTORCANTCONTAINPARAMS )
 		end if
@@ -1943,14 +1944,12 @@ function cCtorHeader _
 
 	hParseAttributes( attrib, 0, 0 )
 
-    dim as FBSYMBOL ptr head_proc
-
-    '' no preview proc or proto?
-    if( is_ctor ) then
-    	head_proc = symbGetCompCtorHead( parent )
-    else
-    	head_proc = symbGetCompDtor( parent )
-    end if
+	'' no preview proc or proto?
+	if( attrib and FB_SYMBATTRIB_CONSTRUCTOR ) then
+		head_proc = symbGetCompCtorHead( parent )
+	else
+		head_proc = symbGetCompDtor( parent )
+	end if
 
     if( head_proc = NULL ) then
     	'' extern decl but no prototype?
