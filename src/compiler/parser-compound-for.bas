@@ -740,12 +740,9 @@ end sub
 '':::::
 ''ForStmtBegin    =   FOR ID (AS DataType)? '=' Expression TO Expression (STEP Expression)? .
 ''
-function cForStmtBegin _
-	( _
-		_
-	) as integer
-
+function cForStmtBegin( ) as integer
 	dim as FOR_FLAGS flags = 0
+	dim as FBSYMBOL ptr sym = any
 
 	function = FALSE
 
@@ -768,10 +765,7 @@ function cForStmtBegin _
 
     '' new variable?
 	if( lexGetLookAhead( 1 ) = FB_TK_AS ) then
-		dim as FBSYMBOL ptr sym = hVarDeclEx( FB_SYMBATTRIB_NONE, _
-											  FALSE, _
-											  lexGetToken( ), _
-											  TRUE )
+		sym = cVarDecl( FB_SYMBATTRIB_NONE, FALSE, lexGetToken( ), TRUE )
 		if( sym = NULL ) then
 			'' error recovery: fake a var
 			idexpr = CREATEFAKEID( )
@@ -902,7 +896,6 @@ function cForStmtBegin _
 	stk->for.cmplabel = cl
 
 	function = TRUE
-
 end function
 
 '':::::

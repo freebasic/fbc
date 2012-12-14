@@ -23,10 +23,6 @@ sub hComplainIfAbstractClass _
 
 end sub
 
-'':::::
-#define hVarDecl( attrib, dopreserve, token ) _
-	(hVarDeclEx( attrib, dopreserve, token, FALSE ) <> NULL)
-
 sub hSymbolType _
 	( _
 		byref dtype as integer, _
@@ -72,11 +68,7 @@ end function
 ''				  |   EXTERN IMPORT? SymbolDef ALIAS STR_LIT
 ''                |   STATIC SymbolDef .
 ''
-function cVariableDecl _
-	( _
-		byval attrib as FB_SYMBATTRIB _
-	) as integer
-
+function cVariableDecl( byval attrib as FB_SYMBATTRIB ) as integer
 	dim as integer dopreserve = any, tk = any
 
 	function = FALSE
@@ -206,9 +198,7 @@ function cVariableDecl _
 		end if
 	end if
 
-	''
-	function = hVarDecl( attrib, dopreserve, tk )
-
+	function = (cVarDecl( attrib, dopreserve, tk, FALSE ) <> NULL)
 end function
 
 '':::::
@@ -1097,12 +1087,12 @@ end function
 ''VarDecl         =   ID ('(' ArrayDecl? ')')? (AS SymbolType)? ('=' VarInitializer)?
 ''                       (',' SymbolDef)* .
 ''
-function hVarDeclEx _
+function cVarDecl _
 	( _
 		byval attrib as integer, _
 		byval dopreserve as integer, _
-        byval token as integer, _
-        byval is_fordecl as integer _
+		byval token as integer, _
+		byval is_fordecl as integer _
 	) as FBSYMBOL ptr
 
     static as zstring * FB_MAXNAMELEN+1 id
@@ -1608,7 +1598,6 @@ private function hMatchEllipsis( ) as integer
 			end if
 		end if
 	end if
-
 end function
 
 private function hIntConstExprValue( byval defaultvalue as integer ) as integer
@@ -1861,7 +1850,6 @@ function cArrayDecl _
 	function = TRUE
 
 end function
-
 
 '':::::
 ''AutoVarDecl    =   VAR SHARED? SymbolDef '=' VarInitializer

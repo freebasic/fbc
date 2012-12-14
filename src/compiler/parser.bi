@@ -937,12 +937,12 @@ declare function hMatchExpr _
 		byval dtype as integer _
 	) as ASTNODE ptr
 
-declare function hVarDeclEx _
+declare function cVarDecl _
 	( _
 		byval attrib as integer, _
 		byval dopreserve as integer, _
-        byval token as integer, _
-        byval is_fordecl as integer _
+		byval token as integer, _
+		byval is_fordecl as integer _
 	) as FBSYMBOL ptr
 
 declare sub hComplainIfAbstractClass _
