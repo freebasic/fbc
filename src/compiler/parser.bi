@@ -382,14 +382,14 @@ declare function cCtorHeader _
 	( _
 		byval attrib as FB_SYMBATTRIB, _
 		byref is_nested as integer, _
-		byval is_prototype as integer _
+		byval options as FB_PROCOPT _
 	) as FBSYMBOL ptr
 
 declare function cPropertyHeader _
 	( _
 		byval attrib as FB_SYMBATTRIB, _
 		byref is_nested as integer, _
-		byval is_prototype as integer _
+		byval options as FB_PROCOPT _
 	) as FBSYMBOL ptr
 
 declare sub cParameters _

@@ -67,6 +67,8 @@ private function hTypeProtoDecl _
 
 	res = TRUE
 
+	const PROCOPTS = FB_PROCOPT_ISPROTO or FB_PROCOPT_HASPARENT
+
 	select case as const lexGetToken( )
 	case FB_TK_CONSTRUCTOR
 		hDisallowStaticAttrib( attrib )
@@ -74,11 +76,9 @@ private function hTypeProtoDecl _
 
 		lexSkipToken( )
 
-		if( cCtorHeader( attrib or FB_SYMBATTRIB_METHOD or FB_SYMBATTRIB_CONSTRUCTOR, _
-						 is_nested, _
-						 TRUE ) = NULL ) then
-			res = FALSE
-		end if
+		attrib or= FB_SYMBATTRIB_CONSTRUCTOR
+
+		res = (cCtorHeader( attrib, is_nested, PROCOPTS ) <> NULL)
 
 	case FB_TK_DESTRUCTOR
 		hDisallowStaticAttrib( attrib )
@@ -86,31 +86,21 @@ private function hTypeProtoDecl _
 
 		lexSkipToken( )
 
-		if( cCtorHeader( attrib or FB_SYMBATTRIB_METHOD or FB_SYMBATTRIB_DESTRUCTOR, _
-						 is_nested, _
-						 TRUE ) = NULL ) then
-			res = FALSE
-		end if
+		attrib or= FB_SYMBATTRIB_DESTRUCTOR
+
+		res = (cCtorHeader( attrib, is_nested, PROCOPTS ) <> NULL)
 
 	case FB_TK_OPERATOR
 		lexSkipToken( )
 
-		if( cOperatorHeader( attrib or FB_SYMBATTRIB_METHOD, _
-							 is_nested, _
-							 FB_PROCOPT_ISPROTO or FB_PROCOPT_HASPARENT ) = NULL ) then
-			res = FALSE
-		end if
+		res = (cOperatorHeader( attrib, is_nested, PROCOPTS ) <> NULL)
 
 	case FB_TK_PROPERTY
 		hDisallowStaticAttrib( attrib )
 
 		lexSkipToken( )
 
-		if( cPropertyHeader( attrib or FB_SYMBATTRIB_METHOD, _
-						 	 is_nested, _
-						 	 TRUE ) = NULL ) then
-			res = FALSE
-		end if
+		res = (cPropertyHeader( attrib, is_nested, PROCOPTS ) <> NULL)
 
 	case FB_TK_SUB
 		lexSkipToken( )
@@ -119,9 +109,7 @@ private function hTypeProtoDecl _
 			attrib or= FB_SYMBATTRIB_METHOD
 		end if
 
-		cProcHeader( attrib, is_nested, _
-		             FB_PROCOPT_ISPROTO or FB_PROCOPT_HASPARENT or _
-		             FB_PROCOPT_ISSUB )
+		res = (cProcHeader( attrib, is_nested, PROCOPTS or FB_PROCOPT_ISSUB ) <> NULL)
 
 	case FB_TK_FUNCTION
 		lexSkipToken( )
@@ -130,8 +118,7 @@ private function hTypeProtoDecl _
 			attrib or= FB_SYMBATTRIB_METHOD
 		end if
 
-		cProcHeader( attrib, is_nested, _
-		             FB_PROCOPT_ISPROTO or FB_PROCOPT_HASPARENT )
+		res = (cProcHeader( attrib, is_nested, PROCOPTS ) <> NULL)
 
 	case else
 		errReport( FB_ERRMSG_SYNTAXERROR )

@@ -573,7 +573,23 @@ private function hSetupProc _
 	'dim as integer returnMethod = sym->proc.returnMethod
 #endif
 
+	'' Procedures are always "globals"
 	attrib or= FB_SYMBATTRIB_SHARED
+
+#if __FB_DEBUG__
+	'' Member procs generally must have either STATIC or METHOD attributes,
+	'' and cannot have both, but there can be proc symbols added to an
+	'' UDT namespace that have neither, for example proc symbols backing
+	'' procptrs or the dtor call wrapper procs created for static vars
+	'' declared inside methods.
+	if( attrib and FB_SYMBATTRIB_METHOD ) then
+		assert( (attrib and FB_SYMBATTRIB_STATIC) = 0 )
+		assert( symbIsStruct( parent ) )
+	elseif( attrib and FB_SYMBATTRIB_STATIC ) then
+		assert( (attrib and FB_SYMBATTRIB_METHOD) = 0 )
+		assert( symbIsStruct( parent ) )
+	end if
+#endif
 
 	''
 	if( dtype = FB_DATATYPE_INVALID ) then
