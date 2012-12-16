@@ -228,8 +228,9 @@ end function
 ''
 function cArrayFunct(byval tk as FB_TOKEN) as ASTNODE ptr
 	dim as ASTNODE ptr arrayexpr = any, dimexpr = any
-	dim as integer is_lbound = any
+	dim as integer is_lbound = any, dimension = any, bound = any
 	dim as FBSYMBOL ptr s = any
+	dim as FBVARDIM ptr d = any
 
 	function = NULL
 
@@ -284,6 +285,39 @@ function cArrayFunct(byval tk as FB_TOKEN) as ASTNODE ptr
 		'' ')'
 		hMatchRPRNT( )
 
-		function = rtlArrayBound( arrayexpr, dimexpr, is_lbound )
+		'' If it's a fixed-size array and the dimension arg is constant,
+		'' evaluate at compile-time.
+		if( (symbIsDynamic( s ) = FALSE) and _
+		    (symbIsParamBydesc( s ) = FALSE) and _
+		    astIsCONST( dimexpr ) ) then
+			'' dimension is 1-based
+			dimension = astGetValueAsInt( dimexpr )
+
+			'' Find the referenced dimension
+			if( dimension >= 1 ) then
+				d = s->var_.array.dimhead
+				while( (d <> NULL) and (dimension > 1) )
+					dimension -= 1
+					d = d->next
+				wend
+			else
+				d = NULL
+			end if
+
+			if( d ) then
+				if( is_lbound ) then
+					bound = d->lower
+				else
+					bound = d->upper
+				end if
+			else
+				errReport( FB_ERRMSG_DIMENSIONOUTOFBOUNDS )
+				bound = 0
+			end if
+
+			function = astNewCONSTi( bound )
+		else
+			function = rtlArrayBound( arrayexpr, dimexpr, is_lbound )
+		end if
 	end select
 end function

@@ -39,6 +39,7 @@ Version 0.25.0:
 - -exx NULL pointer checks for procedure pointer calls
 - CVD(longint), CVS(integer), CVL(single), CVLONGINT(double), for reinterpreting directly between floating-point and integer representations without using strings
 - In procedure prototypes, identifiers of array parameters (as in "array() as type") can now be omitted (as in "() as type"), as for non-array parameters
+- LBound/UBound() on fixed-size arrays with constant dimension argument (or none at all) will now be compile-time constants
 
 [fixed]
 - libzip headers: zip_stat struct was unnecessarily named zip_stat_, breaking the libzip example
