@@ -2429,8 +2429,10 @@ sub symbProcCheckOverridden _
 		'' Check whether override and overridden have different
 		'' return type or calling convention, this must be disallowed
 		'' (unlike with overloading) because the function signatures
-		'' aren't really compatible.
-		if( symbGetType( proc ) <> symbGetType( overridden ) ) then
+		'' aren't really compatible (e.g. return on stack vs. return
+		'' in registers).
+		if( (   symbGetType( proc ) <>    symbGetType( overridden )) or _
+		    (symbGetSubtype( proc ) <> symbGetSubtype( overridden ))      ) then
 			'' This won't happen with destructors/LET overloads
 			assert( is_implicit = FALSE )
 			errReport( FB_ERRMSG_OVERRIDERETTYPEDIFFERS )
