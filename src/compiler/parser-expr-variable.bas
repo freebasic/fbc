@@ -208,18 +208,6 @@ private function hUdtDataMember _
 end function
 
 '':::::
-private function hUdtStaticMember _
-	( _
-		byval fld as FBSYMBOL ptr, _
-		byval checkarray as integer _
-	) as ASTNODE ptr
-
-	'' !!!WRITEME!!!!
-	return NULL
-
-end function
-
-'':::::
 private function hUdtConstMember _
 	( _
 		byval fld as FBSYMBOL ptr _
@@ -420,11 +408,8 @@ function cUdtMember _
 
 		'' static var?
 		case FB_SYMBCLASS_VAR
-			lexSkipToken( )
-
-			astDeltree(	varexpr	)
-
-			varexpr	= hUdtStaticMember(	fld, check_array )
+			astDelTree( varexpr )
+			varexpr = cVariableEx( fld, check_array )
 
 			'' make sure the field inherits the parent's constant mask
 			dtype =	symbGetFullType( fld ) or mask
