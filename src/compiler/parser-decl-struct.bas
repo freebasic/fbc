@@ -31,20 +31,20 @@ declare sub hPatchByvalResultToSelf _
 ''      | SUB|FUNCTION ProcHeader)
 ''    .
 ''
-private function hTypeProtoDecl _
+private sub hTypeProtoDecl _
 	( _
 		byval parent as FBSYMBOL ptr, _
 		byval attrib as FB_SYMBATTRIB _
-	) as integer
+	)
 
-	dim as integer res = any, is_nested = any
+	dim as integer is_nested = any, tk = any
 
 	'' anon?
 	if( symbGetUDTIsAnon( parent ) ) then
 		errReport( FB_ERRMSG_METHODINANONUDT )
 		'' error recovery: skip stmt
 		hSkipStmt( )
-		return TRUE
+		exit sub
 	end if
 
 	'' methods not allowed?
@@ -65,69 +65,33 @@ private function hTypeProtoDecl _
 
 	cMethodAttributes( parent, attrib )
 
-	res = TRUE
-
-	const PROCOPTS = FB_PROCOPT_ISPROTO or FB_PROCOPT_HASPARENT
-
-	select case as const lexGetToken( )
+	tk = lexGetToken( )
+	select case( tk )
 	case FB_TK_CONSTRUCTOR
 		hDisallowStaticAttrib( attrib )
 		hDisallowVirtualCtor( attrib )
-
-		lexSkipToken( )
-
-		attrib or= FB_SYMBATTRIB_CONSTRUCTOR
-
-		res = (cCtorHeader( attrib, is_nested, PROCOPTS ) <> NULL)
-
 	case FB_TK_DESTRUCTOR
 		hDisallowStaticAttrib( attrib )
 		hDisallowAbstractDtor( attrib )
-
-		lexSkipToken( )
-
-		attrib or= FB_SYMBATTRIB_DESTRUCTOR
-
-		res = (cCtorHeader( attrib, is_nested, PROCOPTS ) <> NULL)
-
-	case FB_TK_OPERATOR
-		lexSkipToken( )
-
-		res = (cOperatorHeader( attrib, is_nested, PROCOPTS ) <> NULL)
-
 	case FB_TK_PROPERTY
 		hDisallowStaticAttrib( attrib )
+	end select
 
+	select case( tk )
+	case FB_TK_SUB, FB_TK_FUNCTION, _
+	     FB_TK_CONSTRUCTOR, FB_TK_DESTRUCTOR, _
+	     FB_TK_OPERATOR, FB_TK_PROPERTY
 		lexSkipToken( )
 
-		res = (cPropertyHeader( attrib, is_nested, PROCOPTS ) <> NULL)
-
-	case FB_TK_SUB
-		lexSkipToken( )
-
-		if( (attrib and FB_SYMBATTRIB_STATIC) = 0 ) then
-			attrib or= FB_SYMBATTRIB_METHOD
-		end if
-
-		res = (cProcHeader( attrib, is_nested, PROCOPTS or FB_PROCOPT_ISSUB ) <> NULL)
-
-	case FB_TK_FUNCTION
-		lexSkipToken( )
-
-		if( (attrib and FB_SYMBATTRIB_STATIC) = 0 ) then
-			attrib or= FB_SYMBATTRIB_METHOD
-		end if
-
-		res = (cProcHeader( attrib, is_nested, PROCOPTS ) <> NULL)
+		cProcHeader( attrib, is_nested, _
+				FB_PROCOPT_ISPROTO or FB_PROCOPT_HASPARENT, tk )
 
 	case else
 		errReport( FB_ERRMSG_SYNTAXERROR )
 		'' error recovery: skip stmt
 		hSkipStmt( )
 	end select
-
-	function = res
-end function
+end sub
 
 '':::::
 ''TypeEnumDecl 	=	ENUM|CONST ...
@@ -767,9 +731,7 @@ decl_inner:		'' it's an anonymous inner UDT
 			hTypeMultElementDecl( s, attrib )
 
 		case FB_TK_DECLARE
-			if( hTypeProtoDecl( s, attrib ) = FALSE ) then
-				hSkipStmt( )
-			end if
+			hTypeProtoDecl( s, attrib )
 
 		case FB_TK_ENUM
 			if( hTypeEnumDecl( s, FALSE, attrib ) = FALSE ) then

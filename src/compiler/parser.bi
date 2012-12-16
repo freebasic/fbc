@@ -231,13 +231,11 @@ enum FB_INIOPT
 	FB_INIOPT_ISOBJ             = &h00000004
 end enum
 
-'' cProcHead flags
+'' cProcHeader() flags
 enum FB_PROCOPT
-	FB_PROCOPT_NONE				= &h00000000
-
-	FB_PROCOPT_ISSUB			= &h00000001
-	FB_PROCOPT_ISPROTO			= &h00000002
-	FB_PROCOPT_HASPARENT		= &h00000004
+	FB_PROCOPT_NONE			= &h00000000
+	FB_PROCOPT_ISPROTO		= &h00000001
+	FB_PROCOPT_HASPARENT		= &h00000002
 end enum
 
 '' cVarOrDeref flags
@@ -357,39 +355,15 @@ declare function cParentId _
 		byval options as FB_IDOPT = FB_IDOPT_NONE _
 	) as FBSYMBOL ptr
 
-declare sub cCurrentParentId()
-
-declare function cProcDecl _
-	( _
-		_
-	) as integer
+declare sub cCurrentParentId( )
+declare function cProcDecl( ) as integer
 
 declare function cProcHeader _
 	( _
 		byval attrib as FB_SYMBATTRIB, _
 		byref is_nested as integer, _
-		byval options as FB_PROCOPT _
-	) as FBSYMBOL ptr
-
-declare function cOperatorHeader _
-	( _
-		byval attrib as FB_SYMBATTRIB, _
-		byref is_nested as integer, _
-		byval options as FB_PROCOPT _
-	) as FBSYMBOL ptr
-
-declare function cCtorHeader _
-	( _
-		byval attrib as FB_SYMBATTRIB, _
-		byref is_nested as integer, _
-		byval options as FB_PROCOPT _
-	) as FBSYMBOL ptr
-
-declare function cPropertyHeader _
-	( _
-		byval attrib as FB_SYMBATTRIB, _
-		byref is_nested as integer, _
-		byval options as FB_PROCOPT _
+		byval options as FB_PROCOPT, _
+		byval tk as integer _
 	) as FBSYMBOL ptr
 
 declare sub cParameters _
