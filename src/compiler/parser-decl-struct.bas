@@ -20,6 +20,16 @@ declare sub hPatchByvalResultToSelf _
 		byval parent as FBSYMBOL ptr _
 	)
 
+private sub hBeginNesting( byval parent as FBSYMBOL ptr )
+	if( symbGetIsUnique( parent ) = FALSE ) then
+		'' must be unique
+		symbSetIsUnique( parent )
+
+		'' start nesting
+		symbNestBegin( parent, FALSE )
+	end if
+end sub
+
 ''
 '' TypeProtoDecl =
 ''    DECLARE
@@ -52,13 +62,7 @@ private sub hTypeProtoDecl _
 		errReportNotAllowed( FB_LANG_OPT_CLASS )
 	end if
 
-	if( symbGetIsUnique( parent ) = FALSE ) then
-		'' must be unique
-		symbSetIsUnique( parent )
-
-		'' start nesting
-		symbNestBegin( parent, FALSE )
-	end if
+	hBeginNesting( parent )
 
 	'' DECLARE
 	lexSkipToken( )
@@ -113,13 +117,7 @@ private function hTypeEnumDecl _
 		return TRUE
 	end if
 
-	if( symbGetIsUnique( parent ) = FALSE ) then
-		'' must be unique
-		symbSetIsUnique( parent )
-
-		'' start nesting
-		symbNestBegin( parent, FALSE )
-	end if
+	hBeginNesting( parent )
 
 	if( is_const ) then
 		res = cConstDecl( attrib )
@@ -215,13 +213,7 @@ private sub hFieldInit( byval parent as FBSYMBOL ptr, byval sym as FBSYMBOL ptr 
 		exit sub
 	end if
 
-	if( symbGetIsUnique( parent ) = FALSE ) then
-		'' must be unique
-		symbSetIsUnique( parent )
-
-		'' start nesting
-		symbNestBegin( parent, FALSE )
-	end if
+	hBeginNesting( parent )
 
 	dim as ASTNODE ptr initree = cInitializer( sym, FB_INIOPT_ISINI )
 	if( initree ) then
