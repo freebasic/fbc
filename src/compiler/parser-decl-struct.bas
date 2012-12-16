@@ -482,6 +482,33 @@ private sub hTypeElementDecl _
 	hFieldInit( parent, sym )
 end sub
 
+sub hTypeStaticVarDecl _
+	( _
+		byval parent as FBSYMBOL ptr, _
+		byval attrib as integer _
+	)
+
+	'' The UDT becomes a "class"
+	hBeginNesting( parent )
+
+	'' Static member variables are really EXTERNs,
+	'' the corresponding DIM must be present in one (and only one) module.
+	''
+	'' This is necessary to avoid duplicating the static var in every
+	'' module that sees the UDT declaration, otherwise the static var
+	'' wouldn't be shared between different modules, and each had its own.
+	''
+	'' Unfortunately this means the static var cannot be initialized
+	'' at its declaration in the TYPE compound, only at the DIM later.
+
+	attrib or= FB_SYMBATTRIB_EXTERN or _
+			FB_SYMBATTRIB_SHARED or _
+			FB_SYMBATTRIB_STATIC
+
+	cVarDecl( attrib, FALSE, FB_TK_EXTERN, FALSE )
+
+end sub
+
 '':::::
 private function hTypeAdd _
 	( _
@@ -598,10 +625,11 @@ end function
 ''
 private function hTypeBody( byval s as FBSYMBOL ptr ) as integer
 	dim as integer isunion = any
-	dim as FB_SYMBATTRIB attrib = FB_SYMBATTRIB_NONE
+	dim as FB_SYMBATTRIB attrib = any
 	dim as FBSYMBOL ptr inner = any
 
 	function = FALSE
+	attrib = FB_SYMBATTRIB_NONE  '' Used to hold visibility attributes
 
 	do
 		select case as const lexGetToken( )
@@ -736,6 +764,7 @@ decl_inner:		'' it's an anonymous inner UDT
 			end if
 
 		case FB_TK_DIM
+			'' Field(s) with explicit DIM
 			lexSkipToken( )
 
 			'' multi-decl?
@@ -747,9 +776,10 @@ decl_inner:		'' it's an anonymous inner UDT
 			end if
 
 		case FB_TK_STATIC
+			'' Static member variable
 			lexSkipToken( )
 
-			'' !!!WRITEME!! it's var, but it can't be initialized
+			hTypeStaticVarDecl( s, attrib )
 
 		'' anything else, must be a field
 		case else
