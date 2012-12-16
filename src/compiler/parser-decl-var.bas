@@ -1108,6 +1108,7 @@ function cVarDecl _
     dim as ASTNODE ptr assign_initree = any
 	dim as integer doassign = any
 	dim as integer has_ellipsis = FALSE
+	dim as FB_IDOPT options = any
 
     function = NULL
 
@@ -1134,8 +1135,7 @@ function cVarDecl _
 		is_multdecl = TRUE
 	end if
 
-    dim as FB_IDOPT options = FB_IDOPT_DEFAULT
-
+	options = FB_IDOPT_DEFAULT or FB_IDOPT_ALLOWSTRUCT
     '' it's a declaration if it's not a REDIM,
     '' or if it is, then it's a REDIM SHARED.
     if( (token <> FB_TK_REDIM) or (options and FB_SYMBATTRIB_SHARED) ) then
