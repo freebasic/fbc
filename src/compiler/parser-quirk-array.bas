@@ -278,7 +278,7 @@ function cArrayFunct(byval tk as FB_TOKEN) as ASTNODE ptr
 		if( hMatch( CHAR_COMMA ) ) then
 			hMatchExpressionEx( dimexpr, FB_DATATYPE_INTEGER )
 		else
-			dimexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+			dimexpr = astNewCONSTi( 1 )
 		end if
 
 		'' ')'

@@ -4,8 +4,7 @@
 
 FBCALL int fb_ArrayLBound( FBARRAY *array, int dimension )
 {
-	if( dimension > 0 )
-		--dimension;
+	dimension -= 1;
 
 	if( (dimension < 0) || (dimension >= array->dimensions) ) {
 		return 0;
