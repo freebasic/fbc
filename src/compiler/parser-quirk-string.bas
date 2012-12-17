@@ -404,7 +404,8 @@ function cCVXFunct(byval tk as FB_TOKEN) as ASTNODE ptr
 	end if
 
 	dim as ASTNODE ptr funcexpr = NULL
-	if( is_str ) then
+	'' string parameter, or CVSHORT (which can only take strings)
+	if( is_str orelse (functype = FB_DATATYPE_SHORT) ) then
 		if( zslen >= typeGetSize( functype ) ) then
 			select case as const functype
 			case FB_DATATYPE_DOUBLE
@@ -462,6 +463,11 @@ function cCVXFunct(byval tk as FB_TOKEN) as ASTNODE ptr
 		funcexpr = astNewCONV( functype, NULL, funcexpr )
 	end if
 
+	if( funcexpr = NULL ) then
+		'' miscellaneous problem, this message should be roughly appropriate
+		errReport( FB_ERRMSG_INVALIDDATATYPES )
+	end if
+
 	function = funcexpr
 end function
 
@@ -474,6 +480,7 @@ end function
 '' 				|   MKLONGINT '(' Expression{longint} ')'
 ''
 function cMKXFunct(byval tk as FB_TOKEN) as ASTNODE ptr
+	'' MKD | MKS | MKI | MKL | MKSHORT | MKLONGINT
 	lexSkipToken( )
 
 	hMatchLPRNT( )
@@ -549,6 +556,11 @@ function cMKXFunct(byval tk as FB_TOKEN) as ASTNODE ptr
 		if( astNewARG( funcexpr, expr1 ) = NULL ) then
 			funcexpr = NULL
 		end if
+	end if
+
+	if( funcexpr = NULL ) then
+		'' miscellaneous problem, this message should be roughly appropriate
+		errReport( FB_ERRMSG_INVALIDDATATYPES )
 	end if
 
 	function = funcexpr
