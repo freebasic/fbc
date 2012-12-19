@@ -229,10 +229,10 @@ private sub hVarExtToPub _
 		byval attrib as FB_SYMBATTRIB _
 	)
 
-	'' remove the extern (or it won't be emitted), make it public (and shared for safety)
-	symbSetAttrib( sym, (attrib and (not FB_SYMBATTRIB_EXTERN)) or _
-    		            FB_SYMBATTRIB_PUBLIC or _
-    			        FB_SYMBATTRIB_SHARED )
+	'' Remove EXTERN (or it won't be emitted), add PUBLIC (and SHARED
+	'' for safety), and preserve visibility attributes.
+	symbSetAttrib( sym, (symbGetAttrib( sym ) and (not FB_SYMBATTRIB_EXTERN)) or _
+				FB_SYMBATTRIB_PUBLIC or FB_SYMBATTRIB_SHARED )
 
     '' array? update the descriptor attributes too
     if( symbGetArrayDimensions( sym ) <> 0 ) then
