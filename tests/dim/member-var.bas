@@ -11,6 +11,7 @@ namespace integers
 
 		static a as integer
 		static as integer b, c, d, e, f, g
+		static as integer h, i
 	end type
 
 	dim UDT.a as integer
@@ -19,6 +20,8 @@ namespace integers
 	dim shared UDT.e as integer
 	static UDT.f as integer
 	static shared UDT.g as integer
+	var UDT.h = 123
+	var UDT.i = 456
 
 	sub test cdecl( )
 		CU_ASSERT( UDT.a = 0 )
@@ -28,6 +31,8 @@ namespace integers
 		CU_ASSERT( UDT.e = 0 )
 		CU_ASSERT( UDT.f = 0 )
 		CU_ASSERT( UDT.g = 0 )
+		CU_ASSERT( UDT.h = 123 )
+		CU_ASSERT( UDT.i = 456 )
 
 		UDT.a = 5
 		UDT.b = UDT.a
@@ -43,6 +48,8 @@ namespace integers
 		CU_ASSERT( x.e = 0 )
 		CU_ASSERT( x.f = 0 )
 		CU_ASSERT( x.g = 0 )
+		CU_ASSERT( x.h = 123 )
+		CU_ASSERT( x.i = 456 )
 
 		x.a = 10
 		x.b = x.a

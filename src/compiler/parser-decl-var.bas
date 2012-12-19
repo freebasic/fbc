@@ -1863,7 +1863,7 @@ end function
 sub cAutoVarDecl(byval attrib as FB_SYMBATTRIB)
 	static as FBARRAYDIM dTB(0 to FB_MAXARRAYDIMS-1) '' needed for hDeclStaticVar()
 	static as zstring * FB_MAXNAMELEN+1 id
-	dim as FBSYMBOL ptr sym = any
+	dim as FBSYMBOL ptr parent = any, sym = any
 
 	'' allowed?
 	if( fbLangOptIsSet( FB_LANG_OPT_AUTOVAR ) = FALSE ) then
@@ -1905,7 +1905,7 @@ sub cAutoVarDecl(byval attrib as FB_SYMBATTRIB)
 
 	do
 		'' id.id? if not, NULL
-		dim as FBSYMBOL ptr parent = cParentId( FB_IDOPT_ISDECL )
+		parent = cParentId( FB_IDOPT_DEFAULT or FB_IDOPT_ISDECL or FB_IDOPT_ALLOWSTRUCT )
 
 		'' get id
 		dim as integer suffix = any

@@ -44,7 +44,6 @@ o ABI
     - FB can probably support __thiscall with C/LLVM backends pretty easily
 
 o static member vars
-  - allow VAR instead of DIM to declare static member var bodies
   - allow STATIC IMPORT, like EXTERN IMPORT (extract common code from cVariableDecl())
   - visibility checks missing
   - the varexpr used to access (if any) is discarded since it's a static access
