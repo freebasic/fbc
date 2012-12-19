@@ -45,7 +45,6 @@ o ABI
 
 o static member vars
   - allow STATIC IMPORT, like EXTERN IMPORT (extract common code from cVariableDecl())
-  - visibility checks missing
   - the varexpr used to access (if any) is discarded since it's a static access
     for which no specific instance is needed; currently this will even discard
     function calls with side effects, this should be fixed, the same happens

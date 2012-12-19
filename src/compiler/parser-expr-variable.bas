@@ -279,16 +279,13 @@ private function hMemberId( byval parent as FBSYMBOL ptr ) as FBSYMBOL ptr
 		do
 			if( symbGetScope( sym ) = symbGetScope( parent ) ) then
 				select case as const symbGetClass( sym )
-				'' field? or const or enum elements?
-				case FB_SYMBCLASS_FIELD, FB_SYMBCLASS_CONST, FB_SYMBCLASS_ENUM
+				'' field or static members?
+				case FB_SYMBCLASS_FIELD, FB_SYMBCLASS_VAR, _
+				     FB_SYMBCLASS_CONST, FB_SYMBCLASS_ENUM
 					'' check visibility
 					if( symbCheckAccess( sym ) = FALSE ) then
 						errReport( FB_ERRMSG_ILLEGALMEMBERACCESS )
 					end if
-
-				'' static var?
-				case FB_SYMBCLASS_VAR
-					'' ... handle array access, it can be a dyn array too ...
 
 				'' method?
 				case FB_SYMBCLASS_PROC
@@ -1188,6 +1185,11 @@ function cVariableEx overload _
 	dim as integer is_byref = any, is_funcptr = any, is_array = any
 
 	function = NULL
+
+	'' check visibility
+	if( symbCheckAccess( sym ) = FALSE ) then
+		errReport( FB_ERRMSG_ILLEGALMEMBERACCESS )
+	end if
 
 	'' ID
 	lexSkipToken( )
