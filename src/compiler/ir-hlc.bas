@@ -927,21 +927,24 @@ private sub hEmitStruct _
 
 	symbResetIsBeingEmitted( s )
 
-	'' Emit method declarations for this UDT from here, because hEmitDecls()
-	'' that is usually used to emit declarations of called procedures does
-	'' not check UDT methods.
-	'' The method declarations are not part of the struct anymore,
-	'' but they will include references to it (the THIS pointer).
+	'' Emit method declarations for this UDT from here,
+	'' because hEmitDecls() (which normally takes care of declarations for
+	'' called procedures) does not check UDT methods.
 	member = symbGetCompSymbTb( s ).head
-	do
-		'' method?
-		if( symbIsProc( member ) ) then
+	while( member )
+		select case( symbGetClass( member ) )
+		case FB_SYMBCLASS_PROC
 			if( symbGetIsFuncPtr( member ) = FALSE ) then
 				hEmitFuncProto( member, FALSE )
 			end if
-		end if
+
+		case FB_SYMBCLASS_VAR
+			hEmitVariable( member )
+
+		end select
+
 		member = member->next
-	loop while( member )
+	wend
 
 end sub
 

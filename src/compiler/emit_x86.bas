@@ -980,6 +980,13 @@ private sub hWriteBss( byval s as FBSYMBOL ptr )
 		case FB_SYMBCLASS_NAMESPACE
 			hWriteBss( symbGetNamespaceTbHead( s ) )
 
+		'' UDT namespace? (static member vars)
+		case FB_SYMBCLASS_STRUCT
+			'' "Class"?
+			if( symbGetIsUnique( s ) ) then
+				hWriteBss( symbGetCompSymbTb( s ).head )
+			end if
+
 		'' scope block?
 		case FB_SYMBCLASS_SCOPE
 			hWriteBss( symbGetScopeSymbTbHead( s ) )
@@ -1049,6 +1056,13 @@ private sub hWriteConst( byval s as FBSYMBOL ptr )
 		case FB_SYMBCLASS_NAMESPACE
 			hWriteConst( symbGetNamespaceTbHead( s ) )
 
+		'' UDT namespace? (static member vars)
+		case FB_SYMBCLASS_STRUCT
+			'' "Class"?
+			if( symbGetIsUnique( s ) ) then
+				hWriteConst( symbGetCompSymbTb( s ).head )
+			end if
+
 		'' scope block?
 		case FB_SYMBCLASS_SCOPE
 			hWriteConst( symbGetScopeSymbTbHead( s ) )
@@ -1068,6 +1082,13 @@ private sub hWriteData( byval s as FBSYMBOL ptr )
 		'' name space?
 		case FB_SYMBCLASS_NAMESPACE
 			hWriteData( symbGetNamespaceTbHead( s ) )
+
+		'' UDT namespace? (static member vars)
+		case FB_SYMBCLASS_STRUCT
+			'' "Class"?
+			if( symbGetIsUnique( s ) ) then
+				hWriteData( symbGetCompSymbTb( s ).head )
+			end if
 
 		'' scope block?
 		case FB_SYMBCLASS_SCOPE

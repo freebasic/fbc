@@ -208,18 +208,6 @@ private function hUdtDataMember _
 end function
 
 '':::::
-private function hUdtStaticMember _
-	( _
-		byval fld as FBSYMBOL ptr, _
-		byval checkarray as integer _
-	) as ASTNODE ptr
-
-	'' !!!WRITEME!!!!
-	return NULL
-
-end function
-
-'':::::
 private function hUdtConstMember _
 	( _
 		byval fld as FBSYMBOL ptr _
@@ -291,16 +279,13 @@ private function hMemberId( byval parent as FBSYMBOL ptr ) as FBSYMBOL ptr
 		do
 			if( symbGetScope( sym ) = symbGetScope( parent ) ) then
 				select case as const symbGetClass( sym )
-				'' field? or const or enum elements?
-				case FB_SYMBCLASS_FIELD, FB_SYMBCLASS_CONST, FB_SYMBCLASS_ENUM
+				'' field or static members?
+				case FB_SYMBCLASS_FIELD, FB_SYMBCLASS_VAR, _
+				     FB_SYMBCLASS_CONST, FB_SYMBCLASS_ENUM
 					'' check visibility
 					if( symbCheckAccess( sym ) = FALSE ) then
 						errReport( FB_ERRMSG_ILLEGALMEMBERACCESS )
 					end if
-
-				'' static var?
-				case FB_SYMBCLASS_VAR
-					'' ... handle array access, it can be a dyn array too ...
 
 				'' method?
 				case FB_SYMBCLASS_PROC
@@ -420,11 +405,8 @@ function cUdtMember _
 
 		'' static var?
 		case FB_SYMBCLASS_VAR
-			lexSkipToken( )
-
-			astDeltree(	varexpr	)
-
-			varexpr	= hUdtStaticMember(	fld, check_array )
+			astDelTree( varexpr )
+			varexpr = cVariableEx( fld, check_array )
 
 			'' make sure the field inherits the parent's constant mask
 			dtype =	symbGetFullType( fld ) or mask
@@ -1203,6 +1185,11 @@ function cVariableEx overload _
 	dim as integer is_byref = any, is_funcptr = any, is_array = any
 
 	function = NULL
+
+	'' check visibility
+	if( symbCheckAccess( sym ) = FALSE ) then
+		errReport( FB_ERRMSG_ILLEGALMEMBERACCESS )
+	end if
 
 	'' ID
 	lexSkipToken( )

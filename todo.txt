@@ -43,6 +43,27 @@ o ABI
     mangling [yet].
     - FB can probably support __thiscall with C/LLVM backends pretty easily
 
+o static member vars
+  - allow STATIC IMPORT, like EXTERN IMPORT (extract common code from cVariableDecl())
+  - the varexpr used to access (if any) is discarded since it's a static access
+    for which no specific instance is needed; currently this will even discard
+    function calls with side effects, this should be fixed, the same happens
+    with other static accesses, i.e. constants/enums.
+	type UDT
+		static i as integer
+		dummy as integer
+	end type
+
+	dim UDT.i as integer
+
+	function f( ) as UDT
+		dim x as UDT
+		print "called"
+		function = x
+	end function
+
+	print f( ).i
+
 [ ] ctor/dtor
     - add 'function foo (...) as SomeObj = any', so #1682972 could be fixed AND when
       speed is important, the temporary result instance won't be cleared
@@ -59,7 +80,6 @@ o ABI
     - properties may need a __get/__set suffix
 
 [ ] STATIC
-    - add static data members, they must be initialized outside the TYPE|CLASS
     - allow all global operators to be declared as static methods so the private
       members could be accessed
 

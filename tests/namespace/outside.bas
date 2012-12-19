@@ -1,11 +1,132 @@
 #include "fbcu.bi"
 
-namespace fbc_tests.ns.outside
-
 '' Outside-of-namespace declarations should be allowed, as long as a prototype
 '' was declared in the original namespace, and the proper namespace id is
 '' used in the body's header.
 '' (this is mostly a compile/link-time test)
+
+#macro hProcTest( )
+	namespace procA
+		declare function f1( ) as integer
+
+		namespace procB
+			declare function f1( ) as integer
+			declare function f2( ) as integer
+			declare function f3( ) as integer
+		end namespace
+
+		private function procB.f2( ) as integer
+			function = &hABF2
+		end function
+
+		declare function f2( ) as integer
+		declare function f3( ) as integer
+
+		private function procB.f3( ) as integer
+			function = &hABF3
+		end function
+	end namespace
+
+	private function procA.f1( ) as integer
+		function = &hAF1
+	end function
+
+	private function procA.procB.f1( ) as integer
+		function = &hABF1
+	end function
+
+	private function procA.f2( ) as integer
+		function = &hAF2
+	end function
+
+	private function procA.f3( ) as integer
+		function = &hAF3
+	end function
+#endmacro
+
+#macro hVarTest( )
+	namespace varA
+		extern dup1 as integer
+
+		namespace varB
+			extern dup1 as integer
+
+			extern i1 as integer
+			extern i2 as integer
+			extern i3 as integer
+
+			dim i1 as integer
+
+			extern j1 as integer
+
+			dim array1() as integer
+		end namespace
+
+		extern i4 as integer
+		extern i5 as integer
+
+		dim varB.i2 as integer
+		dim i4 as integer
+
+		extern j2 as integer
+	end namespace
+
+	dim varA.varB.i3 as integer
+	dim varA.i5 as integer
+	dim shared i6 as integer
+
+	dim as integer varA.varB.j1, varA.j2
+
+	dim as integer varA.dup1 = 1, varA.varB.dup1 = 2
+#endmacro
+
+'' Same tests as below but in the toplevel namespace
+hProcTest( )
+hVarTest( )
+
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+
+namespace fbc_tests.ns.outside
+
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+
+namespace procs
+	hProcTest( )
+
+	sub test cdecl( )
+		'' outside-of-original namespace REDIM should be allowed,
+		'' it's not really declaration but code, but it happens to
+		'' be handled by the same parser...
+		redim varA.varB.array1(0 to 1)
+
+		CU_ASSERT( procA.procB.f1( ) = &hABF1 )
+		CU_ASSERT( procA.procB.f2( ) = &hABF2 )
+		CU_ASSERT( procA.procB.f3( ) = &hABF3 )
+		CU_ASSERT( procA.f1( ) = &hAF1 )
+		CU_ASSERT( procA.f2( ) = &hAF2 )
+		CU_ASSERT( procA.f3( ) = &hAF3 )
+	end sub
+end namespace
+
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+
+namespace vars
+	hVarTest( )
+
+	sub test cdecl( )
+		CU_ASSERT( varA.varB.i1 = 0 )
+		CU_ASSERT( varA.varB.i2 = 0 )
+		CU_ASSERT( varA.varB.i3 = 0 )
+		CU_ASSERT( varA.i4 = 0 )
+		CU_ASSERT( varA.i5 = 0 )
+		CU_ASSERT( i6 = 0 )
+		CU_ASSERT( varA.varB.j1 = 0 )
+		CU_ASSERT( varA.j2 = 0 )
+
+		CU_ASSERT( varA.dup1 = 1 )
+		CU_ASSERT( varA.varB.dup1 = 2 )
+	end sub
+end namespace
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
@@ -250,6 +371,8 @@ end sub
 
 private sub modctor( ) constructor
 	fbcu.add_suite( "tests/namespace/outside" )
+	fbcu.add_test( "normal procedures", @procs.test )
+	fbcu.add_test( "variables", @vars.test )
 	fbcu.add_test( "operator", @testOp )
 	fbcu.add_test( "constructor", @testCtor )
 	fbcu.add_test( "destructor", @testDtor )

@@ -764,16 +764,22 @@ private sub hEmitStruct( byval s as FBSYMBOL ptr )
 
 	symbResetIsBeingEmitted( s )
 
-	'' Emit methods (not part of the struct anymore, but they will include
-	'' references to self (this))
+	'' Emit method declarations for this UDT from here,
+	'' because hEmitDecls() (which normally takes care of declarations for
+	'' called procedures) does not check UDT methods.
 	member = symbGetCompSymbTb( s ).head
 	while( member )
-		'' method?
-		if( symbIsProc( member ) ) then
+		select case( symbGetClass( member ) )
+		case FB_SYMBCLASS_PROC
 			if( symbGetIsFuncPtr( member ) = FALSE ) then
 				hEmitFuncProto( member, FALSE )
 			end if
-		end if
+
+		case FB_SYMBCLASS_VAR
+			hEmitVariable( member )
+
+		end select
+
 		member = member->next
 	wend
 
