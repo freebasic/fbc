@@ -622,71 +622,84 @@ private function hGetId _
 
 end function
 
-'':::::
 private function hLookupVar _
+	( _
+		byval chain_ as FBSYMCHAIN ptr, _
+		byval dtype as integer, _
+		byval is_typeless as integer, _
+		byval has_suffix as integer _
+	) as FBSYMBOL ptr
+
+	dim as FBSYMBOL ptr sym = any
+
+	if( chain_ = NULL ) then
+		exit function
+	end if
+
+	if( is_typeless ) then
+		if( fbLangOptIsSet( FB_LANG_OPT_DEFTYPE ) ) then
+			sym = symbFindVarByDefType( chain_, dtype )
+		else
+			sym = symbFindByClass( chain_, FB_SYMBCLASS_VAR )
+		end if
+	elseif( has_suffix ) then
+		sym = symbFindVarBySuffix( chain_, dtype )
+	else
+		sym = symbFindVarByType( chain_, dtype )
+	end if
+
+	function = sym
+end function
+
+private function hLookupVarAndCheckParent _
 	( _
 		byval parent as FBSYMBOL ptr, _
 		byval chain_ as FBSYMCHAIN ptr, _
 		byval dtype as integer, _
 		byval is_typeless as integer, _
 		byval has_suffix as integer, _
-		byval options as FB_IDOPT _
+		byval is_decl as integer _
 	) as FBSYMBOL ptr
 
 	dim as FBSYMBOL ptr sym = any
 
-    if( chain_ = NULL ) then
-    	return NULL
-    end if
+	sym = hLookupVar( chain_, dtype, is_typeless, has_suffix )
 
-    if( is_typeless ) then
-    	if( fbLangOptIsSet( FB_LANG_OPT_DEFTYPE ) ) then
-    		sym = symbFindVarByDefType( chain_, dtype )
-    	else
-    		sym = symbFindByClass( chain_, FB_SYMBCLASS_VAR )
-    	end if
-    elseif( has_suffix ) then
-    	sym = symbFindVarBySuffix( chain_, dtype )
+	'' Namespace prefix explicitly given?
+	if( parent ) then
+		if( sym ) then
+			'' "DIM Parent.foo" is only allowed if there was an
+			'' "EXTERN foo" in the Parent namespace, or if it's a
+			'' "REDIM Parent.foo" redimming an array declared in
+			'' the Parent namespace.
+			'' No EXTERN, or different parent, and not REDIM?
+			if( ((symbIsExtern( sym ) = FALSE) or _
+			     (symbGetNamespace( sym ) <> parent)) and _
+			    is_decl ) then
+				errReport( FB_ERRMSG_DECLOUTSIDECLASS )
+			end if
+		else
+			'' Symbol not found in the specified parent namespace
+			errReport( FB_ERRMSG_DECLOUTSIDENAMESPC, TRUE )
+		end if
 	else
-    	sym = symbFindVarByType( chain_, dtype )
-    end if
+		'' The looked up symbol may be an existing var. If it's from
+		'' another namespace, then we ignore it, so that this new
+		'' declaration declares a new var in the current namespace,
+		'' i.e. a duplicate. However if it's from the current namespace
+		'' already, then we cannot allow declaring a second variable
+		'' with that name. Unless this is a REDIM, of course.
+		if( sym ) then
+			if( (symbGetNamespace( sym ) <> symbGetCurrentNamespc( )) and _
+			    is_decl ) then
+				sym = NULL
+			end if
+		end if
+	end if
 
-    if( sym = NULL ) then
-    	return NULL
-    end if
-
-    '' different namespaces?
-    if( symbGetNamespace( sym ) <> symbGetCurrentNamespc( ) ) then
-    	'' redim? anything allowed..
-    	if( (options and FB_IDOPT_ISDECL) = 0 ) then
-    		return sym
-    	end if
-
-    	'' currently in the global ns?
-    	if( symbIsGlobalNamespc( ) ) then
-    		'' parent explicitly passed?
-    		if( parent <> NULL ) then
-    			'' not extern?
-    			if( symbIsExtern( sym ) = FALSE ) then
-					errReport( FB_ERRMSG_DECLOUTSIDENAMESPC )
-    			end if
-
-    		'' allow dups..
-    		else
-    			return NULL
-    		end if
-
-    	'' inside another ns, allow dups..
-    	else
-    		return NULL
-    	end if
-    end if
-
-    function = sym
-
+	function = sym
 end function
 
-''::::
 private sub hMakeArrayDimTB _
 	( _
 		byval dimensions as integer, _
@@ -1289,16 +1302,9 @@ function cVarDecl _
     		end if
     	end if
 
-		sym = hLookupVar( parent, chain_, dtype, is_typeless, _
-		                  (suffix <> FB_DATATYPE_INVALID), options )
-		if( sym = NULL ) then
-			'' no symbol was found, check if an explicit namespace was given
-			if( parent <> NULL ) then
-				if( parent <> symbGetCurrentNamespc( ) ) then
-					errReport( FB_ERRMSG_DECLOUTSIDENAMESPC, TRUE )
-				end if
-			end if
-		end if
+		sym = hLookupVarAndCheckParent( parent, chain_, dtype, is_typeless, _
+						(suffix <> FB_DATATYPE_INVALID), _
+						((options and FB_IDOPT_ISDECL) <> 0) )
 
 		if( dimensions > 0 ) then
 			'' QB quirk: when the symbol was defined already by a preceeding COMMON
@@ -1857,6 +1863,7 @@ end function
 sub cAutoVarDecl(byval attrib as FB_SYMBATTRIB)
 	static as FBARRAYDIM dTB(0 to FB_MAXARRAYDIMS-1) '' needed for hDeclStaticVar()
 	static as zstring * FB_MAXNAMELEN+1 id
+	dim as FBSYMBOL ptr sym = any
 
 	'' allowed?
 	if( fbLangOptIsSet( FB_LANG_OPT_AUTOVAR ) = FALSE ) then
@@ -1915,24 +1922,8 @@ sub cAutoVarDecl(byval attrib as FB_SYMBATTRIB)
 			hSkipUntil( CHAR_RPRNT, TRUE )
 		end if
 
-		''
-		dim as FBSYMBOL ptr sym = any
-
-		sym = hLookupVar( parent, _
-						  chain_, _
-						  FB_DATATYPE_INVALID, _
-						  TRUE, _
-						  FALSE, _
-						  FB_IDOPT_ISDECL )
-
-		if( sym = NULL ) then
-			'' no symbol was found, check if an explicit namespace was given
-			if( parent <> NULL ) then
-				if( parent <> symbGetCurrentNamespc( ) ) then
-					errReport( FB_ERRMSG_DECLOUTSIDENAMESPC, TRUE )
-				end if
-			end if
-		end if
+		sym = hLookupVarAndCheckParent( parent, chain_, FB_DATATYPE_INVALID, _
+						TRUE, FALSE, TRUE )
 
 		'' '=' | '=>' ?
 		select case lexGetToken( )
