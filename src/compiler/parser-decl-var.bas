@@ -1149,11 +1149,13 @@ function cVarDecl _
 	end if
 
 	options = FB_IDOPT_DEFAULT or FB_IDOPT_ALLOWSTRUCT
-    '' it's a declaration if it's not a REDIM,
-    '' or if it is, then it's a REDIM SHARED.
-    if( (token <> FB_TK_REDIM) or (options and FB_SYMBATTRIB_SHARED) ) then
-    	options or= FB_IDOPT_ISDECL
-    end if
+
+	'' It's a declaration unless it's a REDIM (REDIMs are code,
+	'' not declarations), except when it's SHARED, because a REDIM SHARED
+	'' is always a declaration and never a code REDIM.
+	if( (token <> FB_TK_REDIM) or ((attrib and FB_SYMBATTRIB_SHARED) <> 0) ) then
+		options or= FB_IDOPT_ISDECL
+	end if
 
     do
 		dim as FBSYMBOL ptr parent = cParentId( options )
