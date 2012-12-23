@@ -23,7 +23,7 @@ function cConstant( byval sym as FBSYMBOL ptr ) as ASTNODE ptr
 	dtype = symbGetFullType( sym )
 	subtype = symbGetSubType( sym )
 
-  	select case as const dtype
+	select case as const( typeGetDtAndPtrOnly( dtype ) )
   	case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
   		return astNewVAR( symbGetConstValStr( sym ), 0, dtype )
 

@@ -132,6 +132,7 @@ Version 0.25.0:
 - Preprocessor's macro parameter stringize operator # now produces an empty string ("") if the macro argument was empty, instead of producing nothing
 - Make pointer subtraction perform signed integer division (instead of unsigned) and return a signed integer
 - Static member procedures were allowed to be DECLAREd in UDT declarations nested inside procedures or scope blocks, even though procedures cannot be nested, and methods were already disallowed
+- Constants with CONST bits were treated as INTEGER constants even if they were LONGINT or STRING
 
 
 Version 0.24.0:
