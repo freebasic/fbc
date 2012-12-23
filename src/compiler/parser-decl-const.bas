@@ -2,13 +2,11 @@
 ''
 '' chng: sep/2004 written [v1ctor]
 
-
 #include once "fb.bi"
 #include once "fbint.bi"
 #include once "parser.bi"
 #include once "ast.bi"
 
-''::::
 private function hGetType _
 	( _
 		byref dtype as integer, _
@@ -45,26 +43,21 @@ private function hGetType _
 			'' error recovery: discard type
 			dtype = FB_DATATYPE_INVALID
 			subtype = NULL
-
 		end select
-
 	else
 		dtype = FB_DATATYPE_INVALID
 		subtype = NULL
 	end if
 
 	function = TRUE
-
 end function
 
-'':::
-''ConstAssign     =   ID (AS SymbolType)? '=' ConstExpression .
-''
-function cConstAssign _
+'' ConstAssign  =  ID (AS SymbolType)? '=' ConstExpression .
+private function cConstAssign _
 	( _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
-		byval attrib as FB_SYMBATTRIB = FB_SYMBATTRIB_NONE _
+		byval attrib as FB_SYMBATTRIB _
 	) as integer
 
     static as zstring * FB_MAXNAMELEN+1 id
@@ -172,7 +165,7 @@ function cConstAssign _
 	if( litsym <> NULL ) then
 		if( dtype <> FB_DATATYPE_INVALID ) then
 			'' not a string?
-			if( dtype <> FB_DATATYPE_STRING ) then
+			if( typeGetDtAndPtrOnly( dtype ) <> FB_DATATYPE_STRING ) then
 				errReportEx( FB_ERRMSG_INVALIDDATATYPES, id )
 			end if
 		end if
@@ -247,17 +240,10 @@ function cConstAssign _
 	end if
 
 	function = TRUE
-
 end function
 
-'':::::
-''ConstDecl       =   CONST (AS SymbolType)? ConstAssign (DECL_SEPARATOR ConstAssign)* .
-''
-function cConstDecl _
-	( _
-		byval attrib as FB_SYMBATTRIB = FB_SYMBATTRIB_NONE _
-	) as integer
-
+'' ConstDecl  =  CONST (AS SymbolType)? ConstAssign (DECL_SEPARATOR ConstAssign)* .
+function cConstDecl( byval attrib as FB_SYMBATTRIB ) as integer
     dim as integer dtype = any
     dim as FBSYMBOL ptr subtype = any
 
@@ -286,7 +272,4 @@ function cConstDecl _
 	loop
 
 	function = TRUE
-
 end function
-
-
