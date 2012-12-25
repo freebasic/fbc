@@ -290,9 +290,6 @@ private sub hCheckExternArrayDimensions _
 		i += 1
 	wend
 
-	'' set dims
-	symbSetArrayDimTb( sym, dimensions, dTB() )
-
 end sub
 
 private function hDeclExternVar _
