@@ -148,7 +148,6 @@ end type
 		@"Identifier cannot include periods", _
 		@"Executable not found", _
 		@"Array out-of-bounds", _
-		@"Dimension out-of-bounds", _
 		@"Missing command-line option for", _
 		@"Expected 'ANY'", _
 		@"Expected 'END SCOPE'", _

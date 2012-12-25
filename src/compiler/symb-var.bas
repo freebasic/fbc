@@ -105,6 +105,7 @@ private function hCreateDescType _
 	symbAddField( sym, "dimensions", 0, dTB(), _
 	              FB_DATATYPE_INTEGER, NULL, FB_INTEGERSIZE, 0 )
 
+	'' If the dimension count is unknown, reserve room for the max amount
 	if( dims = -1 ) then
 		dims = FB_MAXARRAYDIMS
 	end if

@@ -16,7 +16,7 @@ Version 0.25.0:
 - crt/stdio.bi now declares rename() instead of rename_()
 - Property methods using an explicit ALIAS now respect that alias and do not append __get__ or __set__ anymore
 - #637: Assert[Warn]() messages go to stderr now, rather than to the FB screen (because that might be about to be closed)
-- LBound/UBound( array, 0 ) is no longer the same as LBound/UBound( array, 1 ), since the dimension count is 1-based, 0 is out-of-bounds
+- LBound/UBound( array, 0 ) now returns 1 and the dimension count, it is no longer the same as LBound/UBound( array, 1 )
 
 [added]
 - VIRTUAL and ABSTRACT methods (including virtual destructors) in UDTs extending OBJECT, which can be overridden by methods in derived UDTs, provided the same method name and signature is used
@@ -132,7 +132,7 @@ Version 0.25.0:
 - Preprocessor's macro parameter stringize operator # now produces an empty string ("") if the macro argument was empty, instead of producing nothing
 - Make pointer subtraction perform signed integer division (instead of unsigned) and return a signed integer
 - Static member procedures were allowed to be DECLAREd in UDT declarations nested inside procedures or scope blocks, even though procedures cannot be nested, and methods were already disallowed
-- LBound/UBound( array, dimension ) with an out-of-bounds dimension argument will return 0 instead of crashing
+- LBound/UBound( array, dimension ) with an out-of-bounds dimension argument (except for 0) will return 1 and 0 instead of crashing
 
 
 Version 0.24.0:

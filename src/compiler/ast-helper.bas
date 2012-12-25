@@ -813,11 +813,6 @@ function astBuildArrayDescIniTree _
     subtype = symbGetSubType( array )
     dims = symbGetArrayDimensions( array )
 
-	'' unknown dimensions? use max..
-	if( dims = -1 ) then
-		dims = FB_MAXARRAYDIMS
-	end if
-
 	'' note: assuming the arrays descriptors won't be objects with methods
 	elm = symbGetUDTSymbTbHead( symbGetSubtype( desc ) )
 
@@ -865,11 +860,10 @@ function astBuildArrayDescIniTree _
 
     elm = symbGetNext( elm )
 
-    '' .dimensions = dims( array )
-    astTypeIniAddAssign( tree, _
-    				   	 astNewCONSTi( dims, _
-    				   				   FB_DATATYPE_INTEGER ), _
-    				   	 elm )
+	'' .dimensions = dims( array )
+	'' If the dimension count is unknown, store 0 as dimension count,
+	'' since it's an unallocated dynamic array.
+	astTypeIniAddAssign( tree, astNewCONSTi( iif( dims = -1, 0, dims ) ), elm )
 
     elm = symbGetNext( elm )
 
@@ -880,6 +874,8 @@ function astBuildArrayDescIniTree _
 
     '' static array?
     if( symbGetIsDynamic( array ) = FALSE ) then
+		assert( dims <> -1 )
+
     	dim as FBVARDIM ptr d
 
     	d = symbGetArrayFirstDim( array )
@@ -915,11 +911,17 @@ function astBuildArrayDescIniTree _
 			d = d->next
     	loop
 
-    '' dynamic..
-    else
-        '' just fill with 0's
-        astTypeIniAddPad( tree, dims * len( FB_ARRAYDESCDIM ) )
-    end if
+	'' dynamic..
+	else
+		'' If the dimension count is unknown, we actually reserved room
+		'' for the max amount
+		if( dims = -1 ) then
+			dims = FB_MAXARRAYDIMS
+		end if
+
+		'' Clear all dimTB entries
+		astTypeIniAddPad( tree, dims * len( FB_ARRAYDESCDIM ) )
+	end if
 
     astTypeIniScopeEnd( tree, NULL )
 

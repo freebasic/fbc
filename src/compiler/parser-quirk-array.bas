@@ -295,7 +295,7 @@ function cArrayFunct(byval tk as FB_TOKEN) as ASTNODE ptr
 
 			'' Find the referenced dimension
 			if( dimension >= 1 ) then
-				d = s->var_.array.dimhead
+				d = symbGetArrayFirstDim( s )
 				while( (d <> NULL) and (dimension > 1) )
 					dimension -= 1
 					d = d->next
@@ -305,14 +305,18 @@ function cArrayFunct(byval tk as FB_TOKEN) as ASTNODE ptr
 			end if
 
 			if( d ) then
-				if( is_lbound ) then
-					bound = d->lower
-				else
-					bound = d->upper
-				end if
+				bound = iif( is_lbound, d->lower, d->upper )
 			else
-				errReport( FB_ERRMSG_DIMENSIONOUTOFBOUNDS )
-				bound = 0
+				'' Out-of-bounds dimension argument
+				'' For dimension = 0 we return l/ubound of
+				'' the array's dimTB, with lbound=1 and
+				'' ubound=dimensions.
+				'' For other out-of-bound dimension values,
+				'' we return lbound=1 and ubound=0.
+				bound = iif( is_lbound, 1, _
+				             iif( dimension = 0, _
+				                  symbGetArrayDimensions( s ), _
+				                  0 ) )
 			end if
 
 			function = astNewCONSTi( bound )
