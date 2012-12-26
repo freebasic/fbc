@@ -342,6 +342,8 @@ private function hDeclExternVar _
 		end if
 	end if
 
+	hCheckExternArrayDimensions( sym, id, dimensions, dTB() )
+
     '' dup extern?
     if( (attrib and FB_SYMBATTRIB_EXTERN) <> 0 ) then
     	return sym
@@ -351,8 +353,6 @@ private function hDeclExternVar _
     if( setattrib ) then
     	hVarExtToPub( sym, attrib )
 	end if
-
-	hCheckExternArrayDimensions( sym, id, dimensions, dTB() )
 
     function = sym
 end function
