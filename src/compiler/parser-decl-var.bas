@@ -253,7 +253,46 @@ private sub hVarExtToPub _
 
 end sub
 
-'':::::
+private sub hCheckExternArrayDimensions _
+	( _
+		byval sym as FBSYMBOL ptr, _
+		byval id as zstring ptr, _
+		byval dimensions as integer, _
+		dTB() as FBARRAYDIM _
+	)
+
+	dim as FBVARDIM ptr d = any
+	dim as integer i = any
+
+	'' Not an array?
+	if( symbGetArrayDimensions( sym ) = 0 ) then
+		exit sub
+	end if
+
+	'' Different dimension count?
+	if( dimensions <> symbGetArrayDimensions( sym ) ) then
+		errReportEx( FB_ERRMSG_WRONGDIMENSIONS, *id )
+		exit sub
+	end if
+
+	'' Same lbound/ubound for each dimension?
+	d = symbGetArrayFirstDim( sym )
+	i = 0
+	while( d )
+
+		if( ((d->lower <> dTB(i).lower) or _
+		     (d->upper <> dTB(i).upper)      ) and _
+		    (dTB(i).upper <> FB_ARRAYDIM_UNKNOWN)    ) then
+			errReportEx( FB_ERRMSG_BOUNDSDIFFERFROMEXTERN, *id )
+			exit sub
+		end if
+
+		d = d->next
+		i += 1
+	wend
+
+end sub
+
 private function hDeclExternVar _
 	( _
 		byval sym as FBSYMBOL ptr, _
@@ -304,6 +343,8 @@ private function hDeclExternVar _
 		end if
 	end if
 
+	hCheckExternArrayDimensions( sym, id, dimensions, dTB() )
+
     '' dup extern?
     if( (attrib and FB_SYMBATTRIB_EXTERN) <> 0 ) then
     	return sym
@@ -314,18 +355,7 @@ private function hDeclExternVar _
     	hVarExtToPub( sym, attrib )
 	end if
 
-	'' check dimensions
-	if( symbGetArrayDimensions( sym ) <> 0 ) then
-		if( dimensions <> symbGetArrayDimensions( sym ) ) then
-			errReportEx( FB_ERRMSG_WRONGDIMENSIONS, *id )
-		else
-			'' set dims
-			symbSetArrayDimTb( sym, dimensions, dTB() )
-		end if
-	end if
-
     function = sym
-
 end function
 
 '':::::

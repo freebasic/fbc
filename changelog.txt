@@ -17,6 +17,7 @@ Version 0.25.0:
 - Property methods using an explicit ALIAS now respect that alias and do not append __get__ or __set__ anymore
 - #637: Assert[Warn]() messages go to stderr now, rather than to the FB screen (because that might be about to be closed)
 - Class UDTs can no longer be used as variable names, due to the parsing ambiguity with static member variables
+- LBound/UBound( array, 0 ) now returns 1 and the dimension count, it is no longer the same as LBound/UBound( array, 1 )
 
 [added]
 - VIRTUAL and ABSTRACT methods (including virtual destructors) in UDTs extending OBJECT, which can be overridden by methods in derived UDTs, provided the same method name and signature is used
@@ -40,6 +41,7 @@ Version 0.25.0:
 - -exx NULL pointer checks for procedure pointer calls
 - CVD(longint), CVS(integer), CVL(single), CVLONGINT(double), for reinterpreting directly between floating-point and integer representations without using strings
 - In procedure prototypes, identifiers of array parameters (as in "array() as type") can now be omitted (as in "() as type"), as for non-array parameters
+- LBound/UBound() on fixed-size arrays with constant dimension argument (or none at all) will now be compile-time constants
 
 [fixed]
 - libzip headers: zip_stat struct was unnecessarily named zip_stat_, breaking the libzip example
@@ -134,6 +136,9 @@ Version 0.25.0:
 - Static member procedures were allowed to be DECLAREd in UDT declarations nested inside procedures or scope blocks, even though procedures cannot be nested, and methods were already disallowed
 - Constants with CONST bits were treated as INTEGER constants even if they were LONGINT or STRING
 - Constants could not be declared as CONST STRING
+- LBound/UBound( array, dimension ) with an out-of-bounds dimension argument (except for 0) will return 1 and 0 instead of crashing
+- When DIM'ing an EXTERN array, the DIM statement must now have the same lbounds/ubounds as the previous EXTERN statement, otherwise a compiler error will be shown (previously, only the number of dimensions was checked)
+- Duplicate EXTERN statements declaring the same array but with different lbounds/ubounds will now result in an error
 
 
 Version 0.24.0:

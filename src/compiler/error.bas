@@ -102,6 +102,7 @@ end type
 		@"Expected 'CASE'", _
 		@"Expected 'END SELECT'", _
 		@"Wrong number of dimensions", _
+		@"Array boundaries do not match the original EXTERN declaration", _
 		@"'SUB' or 'FUNCTION' without 'END SUB' or 'END FUNCTION'", _
 		@"Expected 'END SUB' or 'END FUNCTION'", _
 		@"Illegal parameter specification", _

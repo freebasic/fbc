@@ -655,40 +655,32 @@ function rtlArrayRedim _
 
 end function
 
-'':::::
 function rtlArrayBound _
 	( _
-		byval sexpr as ASTNODE ptr, _
+		byval arrayexpr as ASTNODE ptr, _
 		byval dimexpr as ASTNODE ptr, _
 		byval islbound as integer _
 	) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc = any
-    dim as FBSYMBOL ptr f = any
+	dim as ASTNODE ptr proc = any
 
 	function = NULL
 
-	''
-	if( islbound ) then
-		f = PROCLOOKUP( ARRAYLBOUND )
-	else
-		f = PROCLOOKUP( ARRAYUBOUND )
-	end if
-    proc = astNewCALL( f )
+	proc = astNewCALL( iif( islbound, _
+				PROCLOOKUP( ARRAYLBOUND ), _
+				PROCLOOKUP( ARRAYUBOUND ) ) )
 
-    '' array() as ANY
-    if( astNewARG( proc, sexpr ) = NULL ) then
-    	exit function
-    end if
+	'' array() as ANY
+	if( astNewARG( proc, arrayexpr ) = NULL ) then
+		exit function
+	end if
 
 	'' byval dimension as integer
 	if( astNewARG( proc, dimexpr ) = NULL ) then
 		exit function
 	end if
 
-    ''
-    function = proc
-
+	function = proc
 end function
 
 '':::::

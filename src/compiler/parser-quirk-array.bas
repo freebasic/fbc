@@ -228,8 +228,9 @@ end function
 ''
 function cArrayFunct(byval tk as FB_TOKEN) as ASTNODE ptr
 	dim as ASTNODE ptr arrayexpr = any, dimexpr = any
-	dim as integer is_lbound = any
+	dim as integer is_lbound = any, dimension = any, bound = any
 	dim as FBSYMBOL ptr s = any
+	dim as FBVARDIM ptr d = any
 
 	function = NULL
 
@@ -278,12 +279,49 @@ function cArrayFunct(byval tk as FB_TOKEN) as ASTNODE ptr
 		if( hMatch( CHAR_COMMA ) ) then
 			hMatchExpressionEx( dimexpr, FB_DATATYPE_INTEGER )
 		else
-			dimexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+			dimexpr = astNewCONSTi( 1 )
 		end if
 
 		'' ')'
 		hMatchRPRNT( )
 
-		function = rtlArrayBound( arrayexpr, dimexpr, is_lbound )
+		'' If it's a fixed-size array and the dimension arg is constant,
+		'' evaluate at compile-time.
+		if( (symbIsDynamic( s ) = FALSE) and _
+		    (symbIsParamBydesc( s ) = FALSE) and _
+		    astIsCONST( dimexpr ) ) then
+			'' dimension is 1-based
+			dimension = astGetValueAsInt( dimexpr )
+
+			'' Find the referenced dimension
+			if( dimension >= 1 ) then
+				d = symbGetArrayFirstDim( s )
+				while( (d <> NULL) and (dimension > 1) )
+					dimension -= 1
+					d = d->next
+				wend
+			else
+				d = NULL
+			end if
+
+			if( d ) then
+				bound = iif( is_lbound, d->lower, d->upper )
+			else
+				'' Out-of-bounds dimension argument
+				'' For dimension = 0 we return l/ubound of
+				'' the array's dimTB, with lbound=1 and
+				'' ubound=dimensions.
+				'' For other out-of-bound dimension values,
+				'' we return lbound=1 and ubound=0.
+				bound = iif( is_lbound, 1, _
+				             iif( dimension = 0, _
+				                  symbGetArrayDimensions( s ), _
+				                  0 ) )
+			end if
+
+			function = astNewCONSTi( bound )
+		else
+			function = rtlArrayBound( arrayexpr, dimexpr, is_lbound )
+		end if
 	end select
 end function

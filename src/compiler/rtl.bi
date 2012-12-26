@@ -1094,7 +1094,7 @@ declare function rtlArrayRedim _
 
 declare function rtlArrayBound _
 	( _
-		byval sexpr as ASTNODE ptr, _
+		byval arrayexpr as ASTNODE ptr, _
 		byval dimexpr as ASTNODE ptr, _
 		byval islbound as integer _
 	) as ASTNODE ptr
