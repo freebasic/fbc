@@ -314,6 +314,8 @@ private function hOvlProcArgList _
 		'' re-add the instance ptr
 		args += 1
 
+		'' Build vtable lookup (function pointer access to be used
+		'' by the CALL), if needed
 		procexpr = astBuildVtableLookup( proc, arg_list->head->expr )
 	else
 		'' remove the instance ptr
@@ -419,7 +421,13 @@ function cProcArgList _
 			arg->mode = INVALID
 		end if
 
+		'' Assuming there is no existing function pointer access,
+		'' since we cannot CALL on two function pointer expressions...
+		'' (i.e. no virtual method pointers for now)
 		assert( ptrexpr = NULL )
+
+		'' Build vtable lookup (function pointer access to be used
+		'' by the CALL), if needed
 		ptrexpr = astBuildVtableLookup( proc, arg_list->head->expr )
 	else
 		'' remove the instance ptr

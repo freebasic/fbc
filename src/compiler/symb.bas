@@ -2186,6 +2186,19 @@ function typeDump _
 	function = dump
 end function
 
+private function hGetNamespacePrefix( byval sym as FBSYMBOL ptr ) as string
+	dim as FBSYMBOL ptr ns = any
+	dim as string s
+
+	ns = symbGetNamespace( sym )
+	while( ns <> @symbGetGlobalNamespc( ) )
+		s = *symbGetName( ns ) + "." + s
+		ns = symbGetNamespace( ns )
+	wend
+
+	function = s
+end function
+
 function symbDump( byval sym as FBSYMBOL ptr ) as string
 	dim as string s
 
@@ -2258,11 +2271,19 @@ function symbDump( byval sym as FBSYMBOL ptr ) as string
 		return s
 	end if
 
-	dim as zstring ptr id = sym->id.name
-	if( id = NULL ) then
-		id = @"<unnamed>"
+#if 1
+	s += hGetNamespacePrefix( sym )
+#endif
+
+	if( symbIsProc( sym ) and symbIsOperator( sym ) ) then
+		s += *astGetOpId( symbGetProcOpOvl( sym ) )
+	else
+		if( sym->id.name ) then
+			s += *sym->id.name
+		else
+			s += "<unnamed>"
+		end if
 	end if
-	s += *id
 
 #if 1
 	if( sym->id.alias ) then

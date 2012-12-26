@@ -238,33 +238,6 @@ end function
 '' calls
 ''
 
-'':::::
-function astBuildCall _
-	( _
-		byval proc as FBSYMBOL ptr, _
-		byval arg1 as ASTNODE ptr, _
-		byval arg2 as ASTNODE ptr _
-	) as ASTNODE ptr
-
-    dim as ASTNODE ptr p = any
-
-    p = astNewCALL( proc )
-
-	if( arg1 ) then
-		if( astNewARG( p, arg1 ) = NULL ) then
-			return NULL
-		end if
-	end if
-	if( arg2 ) then
-		if( astNewARG( p, arg2 ) = NULL ) then
-			return NULL
-		end if
-	end if
-
-    function = p
-
-end function
-
 function astBuildVtableLookup _
 	( _
 		byval proc as FBSYMBOL ptr, _
@@ -328,7 +301,45 @@ function astBuildVtableLookup _
 	function = p
 end function
 
-'':::::
+function astBuildCall _
+	( _
+		byval proc as FBSYMBOL ptr, _
+		byval arg1 as ASTNODE ptr, _
+		byval arg2 as ASTNODE ptr _
+	) as ASTNODE ptr
+
+	dim as ASTNODE ptr p = any, ptrexpr = any
+
+	'' astBuildCall() is used to call operator overloads - they can be
+	'' virtual methods, at least for self-ops.
+	if( symbIsVirtual( proc ) ) then
+		'' The first arg should be the THIS ptr
+		assert( symbIsMethod( proc ) )
+		assert( astGetDataType( arg1 ) = FB_DATATYPE_STRUCT )
+		assert( astGetSubtype( arg1 ) = symbGetNamespace( proc ) )
+
+		ptrexpr = astBuildVtableLookup( proc, arg1 )
+	else
+		ptrexpr = NULL
+	end if
+
+	p = astNewCALL( proc, ptrexpr )
+
+	if( arg1 ) then
+		if( astNewARG( p, arg1 ) = NULL ) then
+			return NULL
+		end if
+	end if
+
+	if( arg2 ) then
+		if( astNewARG( p, arg2 ) = NULL ) then
+			return NULL
+		end if
+	end if
+
+	function = p
+end function
+
 function astBuildCtorCall _
 	( _
 		byval sym as FBSYMBOL ptr, _

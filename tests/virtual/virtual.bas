@@ -288,7 +288,7 @@ namespace overridingOverloadedMethods
 	end sub
 end namespace
 
-namespace overridingProperties
+namespace virtualProperties
 	dim shared as integer Agets, Asets, Bgets, Bsets
 
 	type A extends object
@@ -301,23 +301,10 @@ namespace overridingProperties
 		declare property f( as integer )
 	end type
 
-	property A.f(              ) as integer
-		Agets += 1
-		property = &hA
-	end property
-
-	property A.f( i as integer )
-		Asets += 1
-	end property
-
-	property B.f(              ) as integer
-		Bgets += 1
-		property = &hB
-	end property
-
-	property B.f( i as integer )
-		Bsets += 1
-	end property
+	property A.f(              ) as integer : Agets += 1 : property = &hA : end property
+	property A.f( i as integer )            : Asets += 1 :                : end property
+	property B.f(              ) as integer : Bgets += 1 : property = &hB : end property
+	property B.f( i as integer )            : Bsets += 1 :                : end property
 
 	sub test cdecl( )
 		dim pa as A ptr
@@ -345,6 +332,110 @@ namespace overridingProperties
 		CU_ASSERT( Asets = 0 )
 		CU_ASSERT( Bgets = 1 )
 		CU_ASSERT( Bsets = 1 )
+	end sub
+end namespace
+
+namespace virtualOperators
+	dim shared as integer Alets, Blets
+
+	type UDT1
+		a as integer
+	end type
+
+	type A extends object
+		declare virtual operator let( as UDT1 )
+		declare virtual operator cast( ) as string
+		declare virtual operator cast( ) as integer
+		declare virtual operator @( ) as any ptr
+	end type
+
+	type B extends A
+		declare operator let( as UDT1 ) override
+		declare operator cast( ) as string override
+		declare operator cast( ) as integer override
+		declare operator @( ) as any ptr override
+	end type
+
+	operator A.let( rhs as UDT1 ) : Alets += 1 : end operator
+	operator B.let( rhs as UDT1 ) : Blets += 1 : end operator
+
+	operator A.cast( ) as string : operator = "A" : end operator
+	operator B.cast( ) as string : operator = "B" : end operator
+
+	operator A.cast( ) as integer : operator = &hA : end operator
+	operator B.cast( ) as integer : operator = &hB : end operator
+
+	operator A.@( ) as any ptr : operator = cptr( any ptr, &hA ) : end operator
+	operator B.@( ) as any ptr : operator = cptr( any ptr, &hB ) : end operator
+
+	sub test cdecl( )
+		dim s as string, i as integer, x1 as UDT1
+
+		scope
+			dim pa as A ptr = new A
+
+			Alets = 0 : Blets =  0
+			*pa = x1
+			CU_ASSERT( Alets = 1 ) : CU_ASSERT( Blets = 0 )
+
+			s = ""
+			s = *pa
+			CU_ASSERT( s = "A" )
+			CU_ASSERT( *pa = "A" )
+
+			i = 0
+			i = *pa
+			CU_ASSERT( i = &hA )
+			CU_ASSERT( cint( *pa ) = &hA )
+
+			CU_ASSERT( @*pa = &hA )
+
+			delete pa
+		end scope
+
+		scope
+			dim pa as A ptr = new B
+
+			Alets = 0 : Blets =  0
+			*pa = x1
+			CU_ASSERT( Alets = 0 ) : CU_ASSERT( Blets = 1 )
+
+			s = ""
+			s = *pa
+			CU_ASSERT( s = "B" )
+			CU_ASSERT( *pa = "B" )
+
+			i = 0
+			i = *pa
+			CU_ASSERT( i = &hB )
+			CU_ASSERT( cint( *pa ) = &hB )
+
+			CU_ASSERT( @*pa = &hB )
+
+			delete pa
+		end scope
+
+		scope
+			dim pb as B ptr = new B
+
+			Alets = 0 : Blets =  0
+			*pb = x1
+			CU_ASSERT( Alets = 0 ) : CU_ASSERT( Blets = 1 )
+
+			s = ""
+			s = *pb
+			CU_ASSERT( s = "B" )
+			CU_ASSERT( *pb = "B" )
+
+			i = 0
+			i = *pb
+			CU_ASSERT( i = &hB )
+			CU_ASSERT( cint( *pb ) = &hB )
+
+			CU_ASSERT( @*pb = &hB )
+
+			delete pb
+		end scope
 	end sub
 end namespace
 
@@ -600,8 +691,9 @@ namespace implicitDtorOverrides
 end namespace
 
 namespace vtableSlotsReused1
-	'' Both ABSTRACTs and VIRTUALs, the overrides should use the same vtable
-	'' slots like the overridden methods, no matter what nesting level...
+	'' For both ABSTRACTs and VIRTUALs, the overrides should use the same
+	'' vtable slots like the overridden methods,
+	'' no matter what nesting level...
 
 	type A extends object
 		declare virtual  function f1( ) as integer
@@ -656,7 +748,9 @@ namespace vtableSlotsReused1
 end namespace
 
 namespace vtableSlotsReused2
-	'' Same test but only with VIRTUALs
+	'' Same test but only with VIRTUALs, allowing for more extensive
+	'' testing since there are no ABSTRACTs preventing their parent UDT
+	'' from being instantiated...
 
 	type A extends object
 		declare virtual function f1( ) as integer
@@ -734,6 +828,178 @@ namespace vtableSlotsReused2
 			CU_ASSERT( p->f3( ) = &hC3 )
 			delete p
 		end scope
+	end sub
+end namespace
+
+namespace vtableSlotsReusedProperties
+	dim shared as integer Agets, Asets, Bgets, Bsets, Cgets, Csets
+
+	type A extends object
+		declare virtual property f(            ) as integer
+		declare virtual property f( as integer )
+	end type
+
+	type B extends A
+		declare virtual property f(            ) as integer override
+		declare virtual property f( as integer )            override
+	end type
+
+	type C extends B
+		declare property f(            ) as integer override
+		declare property f( as integer )            override
+	end type
+
+	property A.f(              ) as integer : Agets += 1 : property = &hA : end property
+	property A.f( i as integer )            : Asets += 1 :                : end property
+	property B.f(              ) as integer : Bgets += 1 : property = &hB : end property
+	property B.f( i as integer )            : Bsets += 1 :                : end property
+	property C.f(              ) as integer : Cgets += 1 : property = &hC : end property
+	property C.f( i as integer )            : Csets += 1 :                : end property
+
+	sub test cdecl( )
+		#macro resetCounts( )
+			Agets = 0 : Asets = 0
+			Bgets = 0 : Bsets = 0
+			Cgets = 0 : Csets = 0
+		#endmacro
+
+		#macro expect( Aget, Aset, Bget, Bset, Cget, Cset )
+			CU_ASSERT( Agets = Aget ) : CU_ASSERT( Asets = Aset )
+			CU_ASSERT( Bgets = Bget ) : CU_ASSERT( Bsets = Bset )
+			CU_ASSERT( Cgets = Cget ) : CU_ASSERT( Csets = Cset )
+		#endmacro
+
+		scope
+			resetCounts( )
+			dim pa as A ptr = new A
+			CU_ASSERT( pa->f = &hA )
+			pa->f = 123
+			delete pa
+			expect( 1, 1, 0, 0, 0, 0 )
+		end scope
+
+		scope
+			resetCounts( )
+			dim pa as A ptr = new B
+			CU_ASSERT( pa->f = &hB )
+			pa->f = 123
+			delete pa
+			expect( 0, 0, 1, 1, 0, 0 )
+		end scope
+
+		scope
+			resetCounts( )
+			dim pa as A ptr = new C
+			CU_ASSERT( pa->f = &hC )
+			pa->f = 123
+			delete pa
+			expect( 0, 0, 0, 0, 1, 1 )
+		end scope
+
+		scope
+			resetCounts( )
+			dim pb as B ptr = new B
+			CU_ASSERT( pb->f = &hB )
+			pb->f = 123
+			delete pb
+			expect( 0, 0, 1, 1, 0, 0 )
+		end scope
+
+		scope
+			resetCounts( )
+			dim pb as B ptr = new C
+			CU_ASSERT( pb->f = &hC )
+			pb->f = 123
+			delete pb
+			expect( 0, 0, 0, 0, 1, 1 )
+		end scope
+	end sub
+end namespace
+
+namespace vtableSlotsReusedOperators
+	dim shared as integer Alets, Blets, Clets
+
+	type A extends object
+		declare virtual operator let( as integer )
+	end type
+
+	type B extends A
+		declare virtual operator let( as integer ) override
+	end type
+
+	type C extends B
+		declare operator let( as integer ) override
+	end type
+
+	operator A.let( rhs as integer ) : Alets += 1 : end operator
+	operator B.let( rhs as integer ) : Blets += 1 : end operator
+	operator C.let( rhs as integer ) : Clets += 1 : end operator
+
+	sub test cdecl( )
+		#macro check( Tpointer, Tobject, Alets_, Blets_, Clets_ )
+			Alets = 0
+			Blets = 0
+			Clets = 0
+
+			scope
+				dim p as Tpointer ptr = new Tobject
+				*p = 123
+				delete p
+			end scope
+
+			CU_ASSERT( Alets = Alets_ )
+			CU_ASSERT( Blets = Blets_ )
+			CU_ASSERT( Clets = Clets_ )
+		#endmacro
+
+		check( A, A, 1, 0, 0 )
+		check( A, B, 0, 1, 0 )
+		check( A, C, 0, 0, 1 )
+		check( B, B, 0, 1, 0 )
+		check( B, C, 0, 0, 1 )
+		check( C, C, 0, 0, 1 )
+	end sub
+end namespace
+
+namespace vtableSlotsReusedDtor
+	dim shared as integer callsA, callsB, callsC
+
+	type A extends object
+		declare virtual destructor( )
+	end type
+
+	type B extends A
+		declare virtual destructor( ) override
+	end type
+
+	type C extends B
+		declare destructor( ) override
+	end type
+
+	destructor A( ) : callsA += 1 : end destructor
+	destructor B( ) : callsB += 1 : end destructor
+	destructor C( ) : callsC += 1 : end destructor
+
+	sub test cdecl( )
+		#macro check( Tpointer, Tobject, callsA_, callsB_, callsC_ )
+			callsA = 0
+			callsB = 0
+			callsC = 0
+			scope
+				dim p as Tpointer ptr = new Tobject
+				delete p
+			end scope
+			CU_ASSERT( callsA = callsA_ )
+			CU_ASSERT( callsB = callsB_ )
+			CU_ASSERT( callsC = callsC_ )
+		#endmacro
+
+		check( A, A, 1, 0, 0 )
+		check( A, B, 1, 1, 0 )
+		check( A, C, 1, 1, 1 )
+		check( B, B, 1, 1, 0 )
+		check( B, C, 1, 1, 1 )
+		check( C, C, 1, 1, 1 )
 	end sub
 end namespace
 
@@ -935,13 +1201,17 @@ private sub ctor( ) constructor
 	fbcu.add_test( "Overriding vs. shadowing", @overridingVsShadowing.test )
 	fbcu.add_test( "Methods with a different signature are not overridden", @differentSignatureIsntOverridden.test )
 	fbcu.add_test( "Overriding overloaded methods", @overridingOverloadedMethods.test )
-	fbcu.add_test( "Overriding properties", @overridingProperties.test )
+	fbcu.add_test( "VIRTUAL properties", @virtualProperties.test )
+	fbcu.add_test( "VIRTUAL operators", @virtualOperators.test )
 	fbcu.add_test( "VIRTUAL dtor", @virtualDtor.test )
 	fbcu.add_test( "VIRTUAL dtor still calls field dtor", @virtualDtorDestructsField.test )
 	fbcu.add_test( "VIRTUAL dtor still calls base dtor", @virtualDtorDestructsBase.test )
 	fbcu.add_test( "implicit dtor also overrides", @implicitDtorOverrides.test )
-	fbcu.add_test( "virtuals overriding virtuals reuse the vtable slots #1", @vtableSlotsReused1.test )
-	fbcu.add_test( "virtuals overriding virtuals reuse the vtable slots #2", @vtableSlotsReused2.test )
+	fbcu.add_test( "virtuals reuse vtable slots #1", @vtableSlotsReused1.test )
+	fbcu.add_test( "virtuals reuse vtable slots #2", @vtableSlotsReused2.test )
+	fbcu.add_test( "virtual properties reuse vtable slots", @vtableSlotsReusedProperties.test )
+	fbcu.add_test( "virtual operators reuse vtable slots", @vtableSlotsReusedOperators.test )
+	fbcu.add_test( "virtual dtors reuse vtable slots", @vtableSlotsReusedDtor.test )
 	fbcu.add_test( "overrides are not made virtual automatically", @noImplicitVirtual.test )
 	fbcu.add_test( "VIRTUALs are inherited even if not overridden #1", @virtualsAreInherited1.test )
 	fbcu.add_test( "VIRTUALs are inherited even if not overridden #2", @virtualsAreInherited2.test )

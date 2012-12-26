@@ -831,6 +831,14 @@ add_proc:
 				'' There can always only be one, so there is no
 				'' need to do a lookup and/or overload checks.
 				overridden = symbGetCompDtor( parent->udt.base->subtype )
+			elseif( symbIsOperator( proc ) ) then
+				'' Get the corresponding operator from the base
+				'' (actually a chain of overloads for that particular operator)
+				overridden = symbGetCompOpOvlHead( parent->udt.base->subtype, _
+				                                   symbGetProcOpOvl( proc ) )
+
+				'' Find the overload with the exact same signature
+				overridden = symbFindOpOvlProc( symbGetProcOpOvl( proc ), overridden, proc )
 			elseif( id ) then
 				'' If this method has the same id and signature as
 				'' a virtual derived from some base, it overrides that
