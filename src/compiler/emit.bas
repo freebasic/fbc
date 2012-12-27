@@ -681,11 +681,7 @@ function emitMUL _
 		function = hNewBOP( EMIT_OP_MULF, dvreg, svreg )
 
 	case else
-		if( typeIsSigned( dvreg->dtype ) ) then
-			function = hNewBOP( EMIT_OP_SMULI, dvreg, svreg )
-		else
-			function = hNewBOP( EMIT_OP_MULI, dvreg, svreg )
-		end if
+		function = hNewBOP( EMIT_OP_MULI, dvreg, svreg )
 	end select
 
 end function

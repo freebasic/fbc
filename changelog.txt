@@ -70,7 +70,7 @@ Version 0.25.0:
 - Win32 cond*() functions won't crash anymore when given NULL arguments; Unix condwait() won't crash anymore when given NULL instead of a valid mutex pointer
 - internal error in ThreadCall parser, potentially causing compiler crashes or miscompilation
 - Warnings could still be shown even after the "Too many errors, exiting" message
-- ASM backend: Unsigned integer multiplications did not preserve EDX in some cases
+- ASM backend: Unsigned integer multiplications did not preserve EDX in some cases due to buggy MUL code generation; now the simpler IMUL is used instead
 - ASM/C backend: DOUBLEs being cast to SINGLE will now be truncated to SINGLE, as if an assignment to a SINGLE variable was made
 - Multiple run-time library symbols have been removed from the global FB namespace: __main, mcount, _monstartup, rename, __divdi3, __udivdi3, __moddi3, __umoddi3, __fixunsdfdi
 - Fixed-size arrays/UDTs > 2 GiB will now result in a compile-time error, instead of causing internal integer overflows
