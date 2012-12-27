@@ -1742,44 +1742,54 @@ function symbIsEqual _
 
 end function
 
-'':::::
 function symbTypeToStr _
 	( _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
-		byval lgt as integer _
+		byval length as integer _
 	) as zstring ptr
 
 	static as string res
-	dim as integer dtype_np = any, ptrcnt = any
+	dim as integer dtypeonly = any, ptrcount = any
     
 	if( dtype = FB_DATATYPE_INVALID ) then
 		return NULL
 	end if
 
-    ptrcnt = typeGetPtrCnt( dtype )
-	if( typeIsConstAt( dtype, ptrcnt ) ) then
+	ptrcount = typeGetPtrCnt( dtype )
+	if( typeIsConstAt( dtype, ptrcount ) ) then
 		res = "const "
 	else
 		res = ""
 	end if
-	
-	dtype_np = typeGetDtOnly( dtype )
 
-	select case as const dtype_np
+	dtypeonly = typeGetDtOnly( dtype )
+
+	select case as const( dtypeonly )
 	case FB_DATATYPE_FWDREF, FB_DATATYPE_STRUCT, FB_DATATYPE_ENUM
 		res += *symbGetName( subtype )
 
-	case else
-		res += *symb_dtypeTB(dtype_np).name
-		if( dtype_np = FB_DATATYPE_FIXSTR ) then
-			if( lgt > 0 ) then
-				res += " " + str(lgt-1)
-			end if
+	case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR, FB_DATATYPE_FIXSTR
+		res += *symb_dtypeTB(dtypeonly).name
+		if( length > 0 ) then
+			select case( dtypeonly )
+			case FB_DATATYPE_FIXSTR
+				'' For STRING*N the null terminator is
+				'' implicitly added, the length actually is N+1,
+				'' unlike Z/WSTRING*N where N includes it.
+				length -= 1
+			case FB_DATATYPE_WCHAR
+				'' Convert bytes back to chars
+				length \= typeGetSize( FB_DATATYPE_WCHAR )
+			end select
+			res += " * " + str( length )
 		end if
+
+	case else
+		res += *symb_dtypeTB(dtypeonly).name
 	end select
 
-	for i as integer = ptrcnt-1 to 0 step -1
+	for i as integer = ptrcount-1 to 0 step -1
 		if( typeIsConstAt( dtype, i ) ) then
 			res += " const"
 		end if
@@ -1787,7 +1797,6 @@ function symbTypeToStr _
 	next
 
 	function = strptr( res )
-
 end function
 
 '':::::
