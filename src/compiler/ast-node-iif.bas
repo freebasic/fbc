@@ -16,7 +16,7 @@ private sub hPrepareWstring _
 		byref falsexpr as ASTNODE ptr _
 	)
 
-	dim as ASTNODE ptr l, r
+	dim as ASTNODE ptr tree = any
 
 	'' the wstring must be allocated() but size
 	'' is unknown at compile-time, do:
@@ -38,35 +38,47 @@ private sub hPrepareWstring _
 
 	astAdd( astNewDECL( n->sym, NULL ) )
 
+	tree = NULL
+
 	'' side-effect?
 	if( astIsClassOnTree( AST_NODECLASS_CALL, truexpr ) <> NULL ) then
-		astAdd( astRemSideFx( truexpr ) )
+		tree = astNewLINK( tree, astRemSideFx( truexpr ), FALSE )
 	end if
 
 	'' tmp = WstrAlloc( len( expr ) )
-	l = astNewASSIGN( astNewVAR( n->sym, 0, typeAddrOf( FB_DATATYPE_WCHAR ) ), _
-				rtlWstrAlloc( rtlMathLen( astCloneTree( truexpr ), TRUE ) ) )
+	tree = astNewLINK( tree, _
+		astNewASSIGN( astNewVAR( n->sym, 0, typeAddrOf( FB_DATATYPE_WCHAR ) ), _
+			rtlWstrAlloc( rtlMathLen( astCloneTree( truexpr ), TRUE ) ) ), _
+		FALSE )
 
 	'' *tmp = expr
-	r = astNewASSIGN( astNewDEREF( astNewVAR( n->sym, 0, typeAddrOf( FB_DATATYPE_WCHAR ) ) ), _
-				truexpr, AST_OPOPT_ISINI )
+	tree = astNewLINK( tree, _
+		astNewASSIGN( astNewDEREF( astNewVAR( n->sym, 0, typeAddrOf( FB_DATATYPE_WCHAR ) ) ), _
+			truexpr, AST_OPOPT_ISINI ), _
+		FALSE )
 
-	truexpr = astNewLink( l, r )
+	truexpr = tree
+
+	tree = NULL
 
 	'' side-effect?
 	if( astIsClassOnTree( AST_NODECLASS_CALL, falsexpr ) <> NULL ) then
-		astAdd( astRemSideFx( falsexpr ) )
+		tree = astNewLINK( tree, astRemSideFx( falsexpr ), FALSE )
 	end if
 
 	'' tmp = WstrAlloc( len( expr ) )
-	l =  astNewASSIGN( astNewVAR( n->sym, 0, typeAddrOf( FB_DATATYPE_WCHAR ) ), _
-				rtlWstrAlloc( rtlMathLen( astCloneTree( falsexpr ), TRUE ) ) )
+	tree = astNewLINK( tree, _
+		astNewASSIGN( astNewVAR( n->sym, 0, typeAddrOf( FB_DATATYPE_WCHAR ) ), _
+			rtlWstrAlloc( rtlMathLen( astCloneTree( falsexpr ), TRUE ) ) ), _
+		FALSE )
 
 	'' *tmp = expr
-	r = astNewASSIGN( astNewDEREF( astNewVAR( n->sym, 0, typeAddrOf( FB_DATATYPE_WCHAR ) ) ), _
-				falsexpr, AST_OPOPT_ISINI )
+	tree = astNewLINK( tree, _
+		astNewASSIGN( astNewDEREF( astNewVAR( n->sym, 0, typeAddrOf( FB_DATATYPE_WCHAR ) ) ), _
+			falsexpr, AST_OPOPT_ISINI ), _
+		FALSE )
 
-	falsexpr = astNewLink( l, r )
+	falsexpr = tree
 
 end sub
 

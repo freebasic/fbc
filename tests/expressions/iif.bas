@@ -251,6 +251,91 @@ sub testNested cdecl( )
 	checkNested( integer ptr, @xa, @xb, @xc )
 end sub
 
+dim shared as integer fint1calls, fint2calls
+dim shared as integer fstr1calls, fstr2calls
+dim shared as integer fzstr1calls, fzstr2calls
+dim shared as integer fwstr1calls, fwstr2calls
+
+function fint1( ) as integer
+	fint1calls += 1
+	function = 1
+end function
+
+function fint2( ) as integer
+	fint2calls += 1
+	function = 2
+end function
+
+function fstr1( ) as string
+	fstr1calls += 1
+	function = "1"
+end function
+
+function fstr2( ) as string
+	fstr2calls += 1
+	function = "2"
+end function
+
+function fzstr1( ) as zstring ptr
+	static as zstring * 32+1 z = "1"
+	fzstr1calls += 1
+	function = @z
+end function
+
+function fzstr2( ) as zstring ptr
+	static as zstring * 32+1 z = "2"
+	fzstr2calls += 1
+	function = @z
+end function
+
+function fwstr1( ) as wstring ptr
+	static as wstring * 32+1 w = wstr( "1" )
+	fwstr1calls += 1
+	function = @w
+end function
+
+function fwstr2( ) as wstring ptr
+	static as wstring * 32+1 w = wstr( "2" )
+	fwstr2calls += 1
+	function = @w
+end function
+
+sub testSideFx cdecl( )
+	#macro check( T, f1, f2, f1calls, f2calls, N1, N2 )
+		scope
+			dim as T a
+
+			CU_ASSERT( f1calls = 0 )
+			CU_ASSERT( f2calls = 0 )
+
+			a = iif(         0, f1( ), f2( ) )
+			CU_ASSERT( a = N2 )
+			CU_ASSERT( f1calls = 0 )
+			CU_ASSERT( f2calls = 1 )
+
+			a = iif(        -1, f1( ), f2( ) )
+			CU_ASSERT( a = N1 )
+			CU_ASSERT( f1calls = 1 )
+			CU_ASSERT( f2calls = 1 )
+
+			a = iif( condfalse, f1( ), f2( ) )
+			CU_ASSERT( a = N2 )
+			CU_ASSERT( f1calls = 1 )
+			CU_ASSERT( f2calls = 2 )
+
+			a = iif(  condtrue, f1( ), f2( ) )
+			CU_ASSERT( a = N1 )
+			CU_ASSERT( f1calls = 2 )
+			CU_ASSERT( f2calls = 2 )
+		end scope
+	#endmacro
+
+	check(        integer,   fint1,   fint2,  fint1calls,  fint2calls,   1,   2 )
+	check(         string,   fstr1,   fstr2,  fstr1calls,  fstr2calls, "1", "2" )
+	check( zstring * 32+1, *fzstr1, *fzstr2, fzstr1calls, fzstr2calls, "1", "2" )
+	check( wstring * 32+1, *fwstr1, *fwstr2, fwstr1calls, fwstr2calls, wstr( "1" ), wstr( "2" ) )
+end sub
+
 sub testConstness cdecl( )
 	#macro check( ConstT, T, NA, NB )
 		scope
@@ -387,6 +472,7 @@ sub ctor( ) constructor
 	fbcu.add_test( "float BOP", @testFloatBop )
 	fbcu.add_test( "string IIF", @testStrings )
 	fbcu.add_test( "nested IIFs", @testNested )
+	fbcu.add_test( "side effects", @testSideFx )
 	fbcu.add_test( "CONSTness", @testConstness )
 	fbcu.add_test( "different types", @testDifferentTypes )
 end sub
