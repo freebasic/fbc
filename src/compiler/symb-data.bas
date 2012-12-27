@@ -38,7 +38,13 @@
 
 sub symbDataInit( )
 	'' Remap wchar to target-specific type
-	symb_dtypeTB(FB_DATATYPE_WCHAR) = symb_dtypeTB(env.target.wchar)
+	'' (all fields except the name, so symbTypeToStr() returns WSTRING
+	'' instead of USHORT/UINTEGER...)
+	symb_dtypeTB(FB_DATATYPE_WCHAR).class     = symb_dtypeTB(env.target.wchar).class
+	symb_dtypeTB(FB_DATATYPE_WCHAR).size      = symb_dtypeTB(env.target.wchar).size
+	symb_dtypeTB(FB_DATATYPE_WCHAR).bits      = symb_dtypeTB(env.target.wchar).bits
+	symb_dtypeTB(FB_DATATYPE_WCHAR).signed    = symb_dtypeTB(env.target.wchar).signed
+	symb_dtypeTB(FB_DATATYPE_WCHAR).remaptype = symb_dtypeTB(env.target.wchar).remaptype
 end sub
 
 function typeMax _

@@ -140,6 +140,7 @@ Version 0.25.0:
 - LBound/UBound( array, dimension ) with an out-of-bounds dimension argument (except for 0) will return 1 and 0 instead of crashing
 - When DIM'ing an EXTERN array, the DIM statement must now have the same lbounds/ubounds as the previous EXTERN statement, otherwise a compiler error will be shown (previously, only the number of dimensions was checked)
 - Duplicate EXTERN statements declaring the same array but with different lbounds/ubounds will now result in an error
+- #print typeof() and error reports including data types will now display wstrings as "WSTRING" instead of "UBYTE"/"USHORT"/"UINTEGER"
 
 
 Version 0.24.0:
