@@ -1,212 +1,394 @@
 # include once "fbcu.bi"
 
-
-
-
 namespace fbc_tests.expressions.iif_tests
 
-sub test_1 cdecl ()
+dim shared as integer condtrue = -1, condfalse = 0
+
+sub testIntBop cdecl( )
 	const TEST1 = 1234
 	const TEST2 = 5678
-
 	dim as integer res
 
-	res = (TEST1 xor iif (CU_TRUE, TEST1, TEST2)) or (iif (CU_FALSE, TEST2, TEST1) xor TEST1)
-
+	res = (TEST1 xor iif( condtrue, TEST1, TEST2 )) or (iif( condfalse, TEST2, TEST1 ) xor TEST1)
 	CU_ASSERT_EQUAL( res, 0 )
 
-	res = (TEST2 xor iif (CU_FALSE, TEST1, TEST2)) or (iif (CU_TRUE, TEST2, TEST1) xor TEST2)
-
+	res = (TEST2 xor iif( condfalse, TEST1, TEST2 )) or (iif( condtrue, TEST2, TEST1 ) xor TEST2)
 	CU_ASSERT_EQUAL( res, 0 )
 
+
+	const TEST_VAL as integer = 1234
+
+	dim value as integer = TEST_VAL
+	dim test as integer = 0
+
+	value += iif (test > 5, 10, -10) + iif (test < 5, 10, -10)
+	CU_ASSERT_EQUAL( value, TEST_VAL )
+
+	value += iif (test > -5, 10, -10) + iif (test < -5, 10, -10)
+	CU_ASSERT_EQUAL( value, TEST_VAL )
 end sub
 
-sub test_2 cdecl ()
+sub testFloatBop cdecl( )
 	const TEST1 as double = 1234.0
 	const TEST2 as double = 5678.0
 
 	dim as double res
 
-	res = iif (CU_TRUE, TEST1, 0.0 ) * iif (CU_FALSE, 0.0, TEST2)
-
+	res = iif( condtrue, TEST1, 0.0 ) * iif( condfalse, 0.0, TEST2 )
 	CU_ASSERT_EQUAL( res, TEST1 * TEST2 )
-
 end sub
 
-sub test_3 cdecl ()
-	dim TEST1 as string = "1234"
-	dim TEST2 as string = "5678"
+#macro checkStr( a, b, c, EMPTY, hex )
+	c = iif( -1, a, b )
+	CU_ASSERT( c = a )
 
-	dim as string res
-	dim as integer q
+	c = iif( -1, a + b, EMPTY )
+	CU_ASSERT( c = a + b )
 
-	q = 1
-	res = iif (q, TEST1, TEST2)
+	c = iif( -1, EMPTY, a + b )
+	CU_ASSERT( c = EMPTY )
 
-	CU_ASSERT_EQUAL( res, TEST1 )
+	c = iif( -1, hex( 123 ), hex( 456 ) )
+	CU_ASSERT( c = hex( 123 ) )
 
-	q = 0
-	res = iif (q, TEST1, TEST2)
 
-	CU_ASSERT_EQUAL( res, TEST2 )
+	c = iif( 0, a, b )
+	CU_ASSERT( c = b )
 
+	c = iif( 0, a + b, EMPTY )
+	CU_ASSERT( c = EMPTY )
+
+	c = iif( 0, EMPTY, a + b )
+	CU_ASSERT( c = a + b )
+
+	c = iif( 0, hex( 123 ), hex( 456 ) )
+	CU_ASSERT( c = hex( 456 ) )
+
+
+	c = iif( condtrue, a, b )
+	CU_ASSERT( c = a )
+
+	c = iif( condtrue, a + b, EMPTY )
+	CU_ASSERT( c = a + b )
+
+	c = iif( condtrue, EMPTY, a + b )
+	CU_ASSERT( c = EMPTY )
+
+	c = iif( condtrue, hex( 123 ), hex( 456 ) )
+	CU_ASSERT( c = hex( 123 ) )
+
+
+	c = iif( condfalse, a, b )
+	CU_ASSERT( c = b )
+
+	c = iif( condfalse, a + b, EMPTY )
+	CU_ASSERT( c = EMPTY )
+
+	c = iif( condfalse, EMPTY, a + b )
+	CU_ASSERT( c = a + b )
+
+	c = iif( condfalse, hex( 123 ), hex( 456 ) )
+	CU_ASSERT( c = hex( 456 ) )
+#endmacro
+
+#macro hStringChecks( a, b, c )
+	a = "1234"      : b = "5678"     : checkStr(          a,          b, c, "", hex )
+	a = ""          : b = "5678"     : checkStr(     "1234",          b, c, "", hex )
+	a = "1234"      : b = ""         : checkStr(          a,     "5678", c, "", hex )
+
+	a = "aaaaaaaa"  : b = "b"        : checkStr(          a,          b, c, "", hex )
+	a = ""          : b = "b"        : checkStr( "aaaaaaaa",          b, c, "", hex )
+	a = "aaaaaaaa"  : b = ""         : checkStr(          a,        "b", c, "", hex )
+
+	a = "a"         : b = "bbbbbbbb" : checkStr(          a,          b, c, "", hex )
+	a = ""          : b = "bbbbbbbb" : checkStr(        "a",          b, c, "", hex )
+	a = "a"         : b = ""         : checkStr(          a, "bbbbbbbb", c, "", hex )
+
+	a = ""          : b = ""         : checkStr(          a,          b, c, "", hex )
+	a = ""          : b = ""         : checkStr(         "",          b, c, "", hex )
+	a = ""          : b = ""         : checkStr(          a,         "", c, "", hex )
+#endmacro
+
+#macro hWstringChecks( a, b, c )
+	a = wstr( "1234"     ) : b = wstr( "5678"     ) : checkStr(                  a,                  b, c, wstr( "" ), whex )
+	a = wstr( ""         ) : b = wstr( "5678"     ) : checkStr(     wstr( "1234" ),                  b, c, wstr( "" ), whex )
+	a = wstr( "1234"     ) : b = wstr( ""         ) : checkStr(                  a,     wstr( "5678" ), c, wstr( "" ), whex )
+	a = wstr( "aaaaaaaa" ) : b = wstr( "b"        ) : checkStr(                  a,                  b, c, wstr( "" ), whex )
+	a = wstr( ""         ) : b = wstr( "b"        ) : checkStr( wstr( "aaaaaaaa" ),                  b, c, wstr( "" ), whex )
+	a = wstr( "aaaaaaaa" ) : b = wstr( ""         ) : checkStr(                  a,        wstr( "b" ), c, wstr( "" ), whex )
+	a = wstr( "a"        ) : b = wstr( "bbbbbbbb" ) : checkStr(                  a,                  b, c, wstr( "" ), whex )
+	a = wstr( ""         ) : b = wstr( "bbbbbbbb" ) : checkStr(        wstr( "a" ),                  b, c, wstr( "" ), whex )
+	a = wstr( "a"        ) : b = wstr( ""         ) : checkStr(                  a, wstr( "bbbbbbbb" ), c, wstr( "" ), whex )
+	a = wstr( ""         ) : b = wstr( ""         ) : checkStr(                  a,                  b, c, wstr( "" ), whex )
+	a = wstr( ""         ) : b = wstr( ""         ) : checkStr(         wstr( "" ),                  b, c, wstr( "" ), whex )
+	a = wstr( ""         ) : b = wstr( ""         ) : checkStr(                  a,         wstr( "" ), c, wstr( "" ), whex )
+#endmacro
+
+private sub hCheckByrefStrings( byref a as string, byref b as string, byref c as string )
+	hStringChecks( a, b, c )
 end sub
 
-sub test_4 cdecl ()
-	dim TEST1 as zstring * 5 = "1234"
-	dim TEST2 as zstring * 5 = "5678"
-
-	dim as zstring * 5 res
-	dim as integer q
-
-	q = 1
-	res = iif (q, TEST1, TEST2)
-
-	CU_ASSERT_EQUAL( res, TEST1 )
-
-	q = 0
-	res = iif (q, TEST1, TEST2)
-
-	CU_ASSERT_EQUAL( res, TEST2 )
-
+private sub hCheckByrefWstrings( byref a as wstring, byref b as wstring, byref c as wstring )
+	hWstringChecks( a, b, c )
 end sub
 
-sub test_5 cdecl ()
-	dim TEST1 as wstring * 5 = "1234"
-	dim TEST2 as wstring * 5 = "5678"
+sub testStrings cdecl( )
+	scope
+		dim as string a, b, c
+		hStringChecks( a, b, c )
+	end scope
 
-	dim as wstring * 5 res
-	dim as integer q
+	scope
+		dim as string * 33 a, b, c
+		hStringChecks( a, b, c )
+	end scope
 
-	q = 1
-	res = iif (q, TEST1, TEST2)
+	scope
+		dim as zstring * 32+1 a, b, c
+		hStringChecks( a, b, c )
+	end scope
 
-	CU_ASSERT_EQUAL( res, TEST1 )
+	scope
+		dim as wstring * 32+1 a, b, c
+		hWstringChecks( a, b, c )
+	end scope
 
-	q = 0
-	res = iif (q, TEST1, TEST2)
+	scope
+		dim as string aa, bb, cc
+		dim as string ptr pa, pb, pc
+		pa = @aa
+		pb = @bb
+		pc = @cc
 
-	CU_ASSERT_EQUAL( res, TEST2 )
+		hStringChecks( *pa, *pb, *pc )
+	end scope
 
+	scope
+		dim as zstring * 32+1 aa, bb, cc
+		dim as zstring ptr pa, pb, pc
+		pa = @aa
+		pb = @bb
+		pc = @cc
+
+		hStringChecks( *pa, *pb, *pc )
+	end scope
+
+	scope
+		dim as wstring * 32+1 aa, bb, cc
+		dim as wstring ptr pa, pb, pc
+		pa = @aa
+		pb = @bb
+		pc = @cc
+
+		hWstringChecks( *pa, *pb, *pc )
+	end scope
+
+	scope
+		dim as string a, b, c
+		hCheckByrefStrings( a, b, c )
+	end scope
+
+	scope
+		dim as wstring * 32+1 a, b, c
+		hCheckByrefWstrings( a, b, c )
+	end scope
 end sub
 
-sub test_6 cdecl ()
-	dim TEST1 as string = "1234"
-	dim TEST2 as string = "5678"
-	dim TEST3 as string = "abcd"
+sub testNested cdecl( )
+	#macro checkNested( T, NA, NB, NC )
+		scope
+			dim as T a, b, c, d
 
-	dim as string res
-	dim as integer q1, q2
+			a = NA
+			b = NB
+			c = NC
 
-	q1 = 0
-	q2 = 0
-	res = iif (q1, TEST1, iif (q2, TEST2, TEST3))
+			d = iif(         0, a, b ) : CU_ASSERT( d = b )
+			d = iif(        -1, a, b ) : CU_ASSERT( d = a )
+			d = iif( condfalse, a, b ) : CU_ASSERT( d = b )
+			d = iif(  condtrue, a, b ) : CU_ASSERT( d = a )
 
-	CU_ASSERT_EQUAL( res, TEST3 )
+			d = iif(  0, iif(  0, a, b ), c ) : CU_ASSERT( d = c )
+			d = iif(  0, iif( -1, a, b ), c ) : CU_ASSERT( d = c )
+			d = iif( -1, iif(  0, a, b ), c ) : CU_ASSERT( d = b )
+			d = iif( -1, iif( -1, a, b ), c ) : CU_ASSERT( d = a )
 
-	q1 = 0
-	q2 = 1
-	res = iif (q1, TEST1, iif (q2, TEST2, TEST3))
+			d = iif(  0, a, iif(  0, b, c ) ) : CU_ASSERT( d = c )
+			d = iif(  0, a, iif( -1, b, c ) ) : CU_ASSERT( d = b )
+			d = iif( -1, a, iif(  0, b, c ) ) : CU_ASSERT( d = a )
+			d = iif( -1, a, iif( -1, b, c ) ) : CU_ASSERT( d = a )
 
-	CU_ASSERT_EQUAL( res, TEST2 )
+			d = iif( condfalse, iif( condfalse, a, b ), c ) : CU_ASSERT( d = c )
+			d = iif( condfalse, iif(  condtrue, a, b ), c ) : CU_ASSERT( d = c )
+			d = iif(  condtrue, iif( condfalse, a, b ), c ) : CU_ASSERT( d = b )
+			d = iif(  condtrue, iif(  condtrue, a, b ), c ) : CU_ASSERT( d = a )
 
-	q1 = 1
-	q2 = 0
-	res = iif (q1, TEST1, iif (q2, TEST2, TEST3))
+			d = iif( condfalse, a, iif( condfalse, b, c ) ) : CU_ASSERT( d = c )
+			d = iif( condfalse, a, iif(  condtrue, b, c ) ) : CU_ASSERT( d = b )
+			d = iif(  condtrue, a, iif( condfalse, b, c ) ) : CU_ASSERT( d = a )
+			d = iif(  condtrue, a, iif(  condtrue, b, c ) ) : CU_ASSERT( d = a )
+		end scope
+	#endmacro
 
-	CU_ASSERT_EQUAL( res, TEST1 )
+	checkNested(  byte, 1, 2, 3 )
+	checkNested( ubyte, 1, 2, 3 )
+	checkNested(  short, 1111, 2222, 3333 )
+	checkNested( ushort, 1111, 2222, 3333 )
+	checkNested(  integer, 111111, 222222, 333333 )
+	checkNested( uinteger, 111111u, 222222u, 333333u )
+	checkNested(  longint, 111111111111ll, 222222222222ll, 333333333333ll )
+	checkNested( ulongint, 111111111111ull, 222222222222ull, 333333333333ull )
+	checkNested( string,    "",    "",    "" )
+	checkNested( string,   "a",   "b",   "c" )
+	checkNested( string, "aaa",   "b",   "c" )
+	checkNested( string,   "a", "bbb",   "c" )
+	checkNested( string,   "a",   "b", "ccc" )
+	checkNested( string,    "",   "b",   "c" )
+	checkNested( string,   "a",    "",   "c" )
+	checkNested( string,   "a",   "b",    "" )
 
+	dim as integer xa, xb, xc
+	checkNested( integer ptr, @xa, @xb, @xc )
 end sub
 
-sub test_7_inner1(byval TEST1 as string, byval TEST2 as string)
+sub testConstness cdecl( )
+	#macro check( ConstT, T, NA, NB )
+		scope
+			dim as ConstT a = NA, b = NB
+			dim as T c
 
-	dim as string res
-	dim as integer q
+			c = iif(         0, a, b ) : CU_ASSERT( c = b )
+			c = iif(        -1, a, b ) : CU_ASSERT( c = a )
+			c = iif( condfalse, a, b ) : CU_ASSERT( c = b )
+			c = iif(  condtrue, a, b ) : CU_ASSERT( c = a )
+		end scope
+	#endmacro
 
-	q = 1
-	res = iif (q, TEST1, TEST2)
+	check( const     byte,     byte, 1, 2 )
+	check( const    ubyte,    ubyte, 1, 2 )
+	check( const    short,    short, 1, 2 )
+	check( const   ushort,   ushort, 1, 2 )
+	check( const  integer,  integer, 1, 2 )
+	check( const uinteger, uinteger, 1, 2 )
+	check( const  longint,  longint, 1, 2 )
+	check( const ulongint, ulongint, 1, 2 )
+	check( const   string,   string, "1", "2" )
 
-	CU_ASSERT_EQUAL( res, TEST1 )
+	scope
+		dim as integer xa, xb
+		check(     any const ptr,     any ptr, @xa, @xb )
+		check( integer const ptr, integer ptr, @xa, @xb )
+	end scope
 
-	q = 0
-	res = iif (q, TEST1, TEST2)
-
-	CU_ASSERT_EQUAL( res, TEST2 )
-
+	scope
+		dim as zstring * 32+1 z1, z2
+		check( zstring const ptr, zstring ptr, @z1, @z2 )
+	end scope
 end sub
 
-sub test_7_inner2(byref TEST1 as string, byref TEST2 as string)
+sub testDifferentTypes cdecl( )
+	#macro check( TA, NA, TB, RA )
+		scope
+			dim as TA a = NA
+			dim as TB b = 0
+			CU_ASSERT( iif(  condtrue, a, b ) = RA )
+			CU_ASSERT( iif( condfalse, a, b ) = 0 )
+			CU_ASSERT( iif(  condtrue, b, a ) = 0 )
+			CU_ASSERT( iif( condfalse, b, a ) = RA )
+		end scope
+	#endmacro
 
-	dim as string res
-	dim as integer q
+	check( byte, -1,     byte,   -1 )
+	check( byte, -1,    ubyte, &hFF )
+	check( byte, -1,    short,   -1 )
+	check( byte, -1,   ushort, &hFFFF )
+	check( byte, -1,  integer,   -1 )
+	check( byte, -1, uinteger, &hFFFFFFFFu )
+	check( byte, -1,  longint,   -1 )
+	check( byte, -1, ulongint, &hFFFFFFFFFFFFFFFFull )
 
-	q = 1
-	res = iif (q, TEST1, TEST2)
+	check( ubyte, &hFF,     byte, &hFF )
+	check( ubyte, &hFF,    ubyte, &hFF )
+	check( ubyte, &hFF,    short, &hFF )
+	check( ubyte, &hFF,   ushort, &hFF )
+	check( ubyte, &hFF,  integer, &hFF )
+	check( ubyte, &hFF, uinteger, &hFF )
+	check( ubyte, &hFF,  longint, &hFF )
+	check( ubyte, &hFF, ulongint, &hFF )
 
-	CU_ASSERT_EQUAL( res, TEST1 )
+	check( short, -1,     byte,     -1 )
+	check( short, -1,    ubyte,     -1 )
+	check( short, -1,    short,     -1 )
+	check( short, -1,   ushort, &hFFFF )
+	check( short, -1,  integer,     -1 )
+	check( short, -1, uinteger, &hFFFFFFFFu )
+	check( short, -1,  longint,     -1 )
+	check( short, -1, ulongint, &hFFFFFFFFFFFFFFFFull )
 
-	q = 0
-	res = iif (q, TEST1, TEST2)
+	check( ushort, &hFFFF,     byte, &hFFFF )
+	check( ushort, &hFFFF,    ubyte, &hFFFF )
+	check( ushort, &hFFFF,    short, &hFFFF )
+	check( ushort, &hFFFF,   ushort, &hFFFF )
+	check( ushort, &hFFFF,  integer, &hFFFF )
+	check( ushort, &hFFFF, uinteger, &hFFFF )
+	check( ushort, &hFFFF,  longint, &hFFFF )
+	check( ushort, &hFFFF, ulongint, &hFFFF )
 
-	CU_ASSERT_EQUAL( res, TEST2 )
+	check( integer, -1,     byte,     -1 )
+	check( integer, -1,    ubyte,     -1 )
+	check( integer, -1,    short,     -1 )
+	check( integer, -1,   ushort,     -1 )
+	check( integer, -1,  integer,     -1 )
+	check( integer, -1, uinteger, &hFFFFFFFFu )
+	check( integer, -1,  longint,     -1 )
+	check( integer, -1, ulongint, &hFFFFFFFFFFFFFFFFull )
 
+	check( uinteger, &hFFFFFFFFu,     byte, &hFFFFFFFFu )
+	check( uinteger, &hFFFFFFFFu,    ubyte, &hFFFFFFFFu )
+	check( uinteger, &hFFFFFFFFu,    short, &hFFFFFFFFu )
+	check( uinteger, &hFFFFFFFFu,   ushort, &hFFFFFFFFu )
+	check( uinteger, &hFFFFFFFFu,  integer, &hFFFFFFFFu )
+	check( uinteger, &hFFFFFFFFu, uinteger, &hFFFFFFFFu )
+	check( uinteger, &hFFFFFFFFu,  longint, &hFFFFFFFFu )
+	check( uinteger, &hFFFFFFFFu, ulongint, &hFFFFFFFFu )
+
+	check( longint, -1,     byte,     -1 )
+	check( longint, -1,    ubyte,     -1 )
+	check( longint, -1,    short,     -1 )
+	check( longint, -1,   ushort,     -1 )
+	check( longint, -1,  integer,     -1 )
+	check( longint, -1, uinteger,     -1 )
+	check( longint, -1,  longint,     -1 )
+	check( longint, -1, ulongint, &hFFFFFFFFFFFFFFFFull )
+
+	check( ulongint, &hFFFFFFFFFFFFFFFFull,     byte, &hFFFFFFFFFFFFFFFFull )
+	check( ulongint, &hFFFFFFFFFFFFFFFFull,    ubyte, &hFFFFFFFFFFFFFFFFull )
+	check( ulongint, &hFFFFFFFFFFFFFFFFull,    short, &hFFFFFFFFFFFFFFFFull )
+	check( ulongint, &hFFFFFFFFFFFFFFFFull,   ushort, &hFFFFFFFFFFFFFFFFull )
+	check( ulongint, &hFFFFFFFFFFFFFFFFull,  integer, &hFFFFFFFFFFFFFFFFull )
+	check( ulongint, &hFFFFFFFFFFFFFFFFull, uinteger, &hFFFFFFFFFFFFFFFFull )
+	check( ulongint, &hFFFFFFFFFFFFFFFFull,  longint, &hFFFFFFFFFFFFFFFFull )
+	check( ulongint, &hFFFFFFFFFFFFFFFFull, ulongint, &hFFFFFFFFFFFFFFFFull )
+
+	CU_ASSERT( iif(  condtrue, csng( 1.0 ),       2.0   ) = 1.0 )
+	CU_ASSERT( iif(  condtrue,       1.0  , csng( 2.0 ) ) = 1.0 )
+	CU_ASSERT( iif( condfalse, csng( 1.0 ),       2.0   ) = 2.0 )
+	CU_ASSERT( iif( condfalse,       1.0  , csng( 2.0 ) ) = 2.0 )
+
+	CU_ASSERT( iif(  condtrue, cptr( integer ptr, 0 ), 1 ) = cptr( integer ptr, 0 ) )
+	CU_ASSERT( iif( condfalse, cptr( integer ptr, 0 ), 1 ) = cptr( integer ptr, 1 ) )
+	CU_ASSERT( iif(  condtrue, 0, cptr( integer ptr, 1 ) ) = cptr( integer ptr, 0 ) )
+	CU_ASSERT( iif( condfalse, 0, cptr( integer ptr, 1 ) ) = cptr( integer ptr, 1 ) )
 end sub
 
-sub test_7 cdecl ()
-	dim TEST1 as string = "1234"
-	dim TEST2 as string = "5678"
-
-	test_7_inner1(TEST1, TEST2)
-	test_7_inner2(TEST1, TEST2)
-
-	test_7_inner1("1234", "5678")
-	test_7_inner2("1234", "5678")
-
-end sub
-
-sub test_8 cdecl ()
-	dim TEST1 as string * 5 = "1234"
-	dim TEST2 as string * 5 = "5678"
-
-	dim as string * 5 res
-	dim as integer q
-
-	q = 1
-	res = iif (q, TEST1, TEST2)
-
-	CU_ASSERT_EQUAL( res, TEST1 )
-
-	q = 0
-	res = iif (q, TEST1, TEST2)
-
-	CU_ASSERT_EQUAL( res, TEST2 )
-
-end sub
-
-sub test_9 cdecl ()
-	dim as integer q
-
-	q = 1
-	CU_ASSERT_EQUAL( iif (q, "1234", "5678"), "1234" )
-
-	q = 0
-	CU_ASSERT_EQUAL( iif (q, "1234", "5678"), "5678" )
-
-end sub
-
-sub ctor () constructor
-
-	fbcu.add_suite("fbc-tests-expressions-iif")
-	fbcu.add_test("test 1", @test_1)
-	fbcu.add_test("test 2", @test_2)
-	fbcu.add_test("test 3", @test_3)
-	fbcu.add_test("test 4", @test_4)
-	fbcu.add_test("test 5", @test_5)
-	fbcu.add_test("test 6", @test_6)
-	fbcu.add_test("test 7", @test_7)
-	fbcu.add_test("test 8", @test_8)
-	fbcu.add_test("test 9", @test_9)
-
+sub ctor( ) constructor
+	fbcu.add_suite( "tests/expressions/iif" )
+	fbcu.add_test( "int BOP", @testIntBop )
+	fbcu.add_test( "float BOP", @testFloatBop )
+	fbcu.add_test( "string IIF", @testStrings )
+	fbcu.add_test( "nested IIFs", @testNested )
+	fbcu.add_test( "CONSTness", @testConstness )
+	fbcu.add_test( "different types", @testDifferentTypes )
 end sub
 
 end namespace

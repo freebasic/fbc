@@ -66,14 +66,21 @@ sub test_str cdecl
 	CU_ASSERT_EQUAL( len(s5), 6 )
 end sub
 
-private sub ctor () constructor
+sub testIif cdecl( )
+	'' This shouldn't make x a CONST INTEGER, just INTEGER
+	dim as integer condtrue = -1
+	var x = iif( condtrue, 1, 2 )
+	CU_ASSERT( x = 1 )
+	x = 3
+	CU_ASSERT( x = 3 )
+end sub
 
+private sub ctor( ) constructor
 	fbcu.add_suite("fbc_tests.dim.auto_var")
 	fbcu.add_test("signed", @test_signed)
 	fbcu.add_test("unsigned", @test_unsigned)
 	fbcu.add_test("string", @test_str)
-
+	fbcu.add_test( "var x = iif()", @testIif )
 end sub
 
 end namespace
-	

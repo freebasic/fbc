@@ -99,6 +99,160 @@ private sub hPrepareString _
 
 end sub
 
+function hCheckTypes _
+	( _
+		byval ldtype as integer, _
+		byval lsubtype as FBSYMBOL ptr, _
+		byval rdtype as integer, _
+		byval rsubtype as FBSYMBOL ptr, _
+		byref dtype as integer, _
+		byref subtype as FBSYMBOL ptr _
+	) as integer
+
+	dim as integer lmatch = any, rmatch = any, otherdtype = any
+
+	function = FALSE
+
+	'' Disallow UDTs
+	if( (typeGet( ldtype ) = FB_DATATYPE_STRUCT) or _
+	    (typeGet( rdtype ) = FB_DATATYPE_STRUCT) ) then
+		exit function
+	end if
+
+	'' Any pointers?
+	lmatch = typeIsPtr( ldtype )
+	rmatch = typeIsPtr( rdtype )
+	if( lmatch or rmatch ) then
+		'' If both are pointers, it must be the same pointer type,
+		'' otherwise we can't know which one to prefer, and an implicit
+		'' conversion to a common type like ANY PTR seems useless...
+
+		if( lmatch and rmatch ) then
+			if( (typeGetDtAndPtrOnly( ldtype ) <> typeGetDtAndPtrOnly( rdtype )) or _
+			    (lsubtype <> rsubtype) ) then
+				exit function
+			end if
+			dtype = ldtype
+			subtype = lsubtype
+		else
+			'' If only one is a ptr, use the ptr type as result,
+			'' and allow only integers on the other side.
+			'' At least something like
+			''    #define NULL 0
+			''    iif( cond, someptr, NULL )
+			'' should work... allowing floats seems useless though.
+			if( lmatch ) then
+				dtype = ldtype
+				subtype = lsubtype
+				otherdtype = rdtype
+			else
+				dtype = rdtype
+				subtype = rsubtype
+				otherdtype = ldtype
+			end if
+
+			if( typeGetClass( otherdtype ) <> FB_DATACLASS_INTEGER ) then
+				exit function
+			end if
+
+			'' no char/wchar though (they're also treated as
+			'' FB_DATACLASS_INTEGER), they are strings in iif().
+			select case( typeGetDtOnly( otherdtype ) )
+			case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
+				exit function
+			end select
+		end if
+
+		return TRUE
+	end if
+
+	'' Any strings?
+	lmatch = (typeGetDtOnly( ldtype ) = FB_DATATYPE_STRING) or _
+	         (typeGetDtOnly( ldtype ) = FB_DATATYPE_FIXSTR) or _
+	         (typeGetDtOnly( ldtype ) = FB_DATATYPE_CHAR  )
+	rmatch = (typeGetDtOnly( rdtype ) = FB_DATATYPE_STRING) or _
+	         (typeGetDtOnly( rdtype ) = FB_DATATYPE_FIXSTR) or _
+	         (typeGetDtOnly( rdtype ) = FB_DATATYPE_CHAR  )
+	if( lmatch or rmatch ) then
+		'' If one is, both must be
+		if( lmatch <> rmatch ) then
+			exit function
+		end if
+		dtype = FB_DATATYPE_STRING
+		subtype = NULL
+		return TRUE
+	end if
+
+	'' Any wstrings?
+	lmatch = (typeGetDtOnly( ldtype ) = FB_DATATYPE_WCHAR)
+	rmatch = (typeGetDtOnly( rdtype ) = FB_DATATYPE_WCHAR)
+	if( lmatch or rmatch ) then
+		'' If one is, both must be
+		if( lmatch <> rmatch ) then
+			exit function
+		end if
+		dtype = FB_DATATYPE_WCHAR
+		subtype = NULL
+		return TRUE
+	end if
+
+	'' Any enums?
+	lmatch = (typeGetDtOnly( ldtype ) = FB_DATATYPE_ENUM)
+	rmatch = (typeGetDtOnly( rdtype ) = FB_DATATYPE_ENUM)
+	if( lmatch or rmatch ) then
+		'' Both sides are enums?
+		if( lmatch and rmatch ) then
+			if( lsubtype = rsubtype ) then
+				'' Both sides are the same enum, preserve the enum type.
+				dtype = FB_DATATYPE_ENUM
+				subtype = lsubtype
+			else
+				'' Different enum, make result a generic integer,
+				'' since we don't know which enum to prefer.
+				dtype = FB_DATATYPE_INTEGER
+				subtype = NULL
+			end if
+			return TRUE
+		end if
+
+		'' Only one side is an enum: it should be treated as integer
+		'' and then be combined with the other side as usual (max).
+		if( lmatch ) then
+			ldtype = FB_DATATYPE_INTEGER
+			lsubtype = NULL
+		else
+			rdtype = FB_DATATYPE_INTEGER
+			rsubtype = NULL
+		end if
+	end if
+
+	'' Use the "max" of both types, like BOPs
+	dtype = typeMax( ldtype, rdtype )
+	if( dtype = FB_DATATYPE_INVALID ) then
+		if( typeGetClass( ldtype ) = FB_DATACLASS_FPOINT ) then
+			'' SINGLE, SINGLE -> SINGLE
+			'' everything else -> DOUBLE
+			if( (typeGetDtOnly( ldtype ) = FB_DATATYPE_SINGLE) and _
+			    (typeGetDtOnly( rdtype ) = FB_DATATYPE_SINGLE) ) then
+				dtype = FB_DATATYPE_SINGLE
+			else
+				dtype = FB_DATATYPE_DOUBLE
+			end if
+		else
+			'' typeMax() returns FB_DATATYPE_INVALID also
+			'' for INT vs. UINT, so prefer the unsigned one.
+			if( typeIsSigned( ldtype ) ) then
+				dtype = rdtype
+			else
+				dtype = ldtype
+			end if
+		end if
+	end if
+	subtype = NULL
+
+	function = TRUE
+end function
+
 function astNewIIF _
 	( _
 		byval condexpr as ASTNODE ptr, _
@@ -107,8 +261,8 @@ function astNewIIF _
 	) as ASTNODE ptr
 
 	dim as ASTNODE ptr n = any
-	dim as integer true_dtype = any, false_dtype = any
-	dim as FBSYMBOL ptr falselabel = any
+	dim as integer dtype = any
+	dim as FBSYMBOL ptr falselabel = any, subtype = any
 
 	function = NULL
 
@@ -118,6 +272,11 @@ function astNewIIF _
 
 	'' Constant condition?
 	if( astIsCONST( condexpr ) ) then
+		'' Note: maybe the type checks should be done for this too,
+		'' but then what result type should something like
+		''    iif( 0, mystr, myfixstr )
+		'' produce? myfixstr is a fix-len string, it cannot just be
+		'' treated as a var-len string, and there is no temp var...
 		if( astCONSTIsTrue( condexpr ) ) then
 			astDelTree( falsexpr )
 			function = truexpr
@@ -129,29 +288,20 @@ function astNewIIF _
 		exit function
 	end if
 
-	true_dtype = astGetFullType( truexpr )
-	false_dtype = astGetFullType( falsexpr )
+	dtype = FB_DATATYPE_INVALID
+	subtype = NULL
 
-	'' UDT's? ditto
-	if( typeGet( true_dtype ) = FB_DATATYPE_STRUCT ) then
+	'' check types & find the iif() result type
+	if( hCheckTypes( truexpr->dtype, truexpr->subtype, _
+	                 falsexpr->dtype, falsexpr->subtype, _
+	                 dtype, subtype ) = FALSE ) then
 		exit function
 	end if
 
-	if( typeGet( false_dtype ) = FB_DATATYPE_STRUCT ) then
-		exit function
-	end if
-
-	'' are the data types different?
-	if( true_dtype <> false_dtype ) then
-		'' throw different consts away
-		if( typeGetConstMask( true_dtype ) <> typeGetConstMask( false_dtype ) ) then
-			exit function
-		end if
-
-		if( typeMax( true_dtype, false_dtype ) <> FB_DATATYPE_INVALID ) then
-			exit function
-		end if
-	end if
+	'' Merge CONST bits
+	''    byte ptr, const byte ptr  ->  const byte ptr
+	dtype or= typeGetConstMask( truexpr->dtype ) or _
+	          typeGetConstMask( falsexpr->dtype )
 
 	falselabel = symbAddLabel( NULL )
 
@@ -161,25 +311,25 @@ function astNewIIF _
 	end if
 
 	' Special treatment for fixed-len/zstrings, promote to real FBSTRING
-	select case typeGet( true_dtype )
+	select case( typeGetDtAndPtrOnly( dtype ) )
 	case FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR
-		true_dtype  = FB_DATATYPE_STRING
-		false_dtype = FB_DATATYPE_STRING
+		dtype  = FB_DATATYPE_STRING
 	end select
 
 	'' alloc new node
-	n = astNewNode( AST_NODECLASS_IIF, true_dtype, truexpr->subtype )
+	n = astNewNode( AST_NODECLASS_IIF, dtype, subtype )
 	function = n
 
 	n->l = condexpr
 
-	if( typeGet( true_dtype ) = FB_DATATYPE_WCHAR ) then
+	if( typeGetDtAndPtrOnly( dtype ) = FB_DATATYPE_WCHAR ) then
 		hPrepareWstring( n, truexpr, falsexpr )
-	elseif typeGetClass( true_dtype ) = FB_DATACLASS_STRING then
-		n->sym = symbAddTempVar( true_dtype, truexpr->subtype, FALSE )
+	elseif( typeGetClass( dtype ) = FB_DATACLASS_STRING ) then
+		n->sym = symbAddTempVar( dtype, subtype, FALSE )
 		hPrepareString( n, truexpr, falsexpr )
 	else
-		n->sym = symbAddTempVar( true_dtype, truexpr->subtype, FALSE )
+		n->sym = symbAddTempVar( dtype, subtype, FALSE )
+
 		'' assign true to temp
 		truexpr = astNewASSIGN( astNewVAR( n->sym, _
 						0, _

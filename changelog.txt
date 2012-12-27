@@ -42,6 +42,7 @@ Version 0.25.0:
 - CVD(longint), CVS(integer), CVL(single), CVLONGINT(double), for reinterpreting directly between floating-point and integer representations without using strings
 - In procedure prototypes, identifiers of array parameters (as in "array() as type") can now be omitted (as in "() as type"), as for non-array parameters
 - LBound/UBound() on fixed-size arrays with constant dimension argument (or none at all) will now be compile-time constants
+- IIF now allows different types to be mixed, for example iif( condition, mybyte, myinteger ), the result type is the bigger type
 
 [fixed]
 - libzip headers: zip_stat struct was unnecessarily named zip_stat_, breaking the libzip example
