@@ -857,7 +857,7 @@ function rtlMathLen _
 		'' anything else..
 		case else
 type_size:
-			lgt = rtlCalcExprLen( expr, FALSE )
+			lgt = rtlCalcExprLen( expr )
 
 			'' handle fix-len strings (evaluated at compile-time)
 			if( dtype = FB_DATATYPE_FIXSTR ) then
@@ -870,7 +870,7 @@ type_size:
 
 	'' SIZEOF()
 	else
-		lgt = rtlCalcExprLen( expr, FALSE )
+		lgt = rtlCalcExprLen( expr )
 
 		'' wstring? multiply by sizeof(wchar) to get the
 		'' number of bytes, not of chars

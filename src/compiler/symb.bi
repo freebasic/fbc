@@ -1383,8 +1383,7 @@ declare sub symbAddArrayDim _
 declare function symbCalcLen _
 	( _
 		byval dtype as integer, _
-		byval subtype as FBSYMBOL ptr, _
-		byval unpadlen as integer = FALSE _
+		byval subtype as FBSYMBOL ptr _
 	) as integer
 
 declare function symbCalcDerefLen _

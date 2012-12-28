@@ -880,11 +880,7 @@ declare function rtlOvlProcCall _
 		byval param2 as ASTNODE ptr = NULL _
 	) as ASTNODE ptr
 
-declare function rtlCalcExprLen _
-	( _
-		byval expr as ASTNODE ptr, _
-		byval unpadlen as integer _
-	) as integer
+declare function rtlCalcExprLen( byval expr as ASTNODE ptr ) as integer
 
 declare function rtlCalcStrLen _
 	( _

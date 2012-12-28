@@ -419,34 +419,18 @@ end function
 '':::::
 '' note: this function must be called *before* astNewARG(e) because the
 ''       expression 'e' can be changed inside the former (address-of string's etc)
-function rtlCalcExprLen _
-	( _
-		byval expr as ASTNODE ptr, _
-		byval unpadlen as integer _
-	) as integer
-
+function rtlCalcExprLen( byval expr as ASTNODE ptr ) as integer
 	dim as FBSYMBOL ptr s = any
 	dim as integer dtype = any
-
-	function = -1
 
 	dtype = astGetDataType( expr )
 	select case as const dtype
 	case FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
 		function = rtlCalcStrLen( expr, dtype )
 
-	case FB_DATATYPE_STRUCT
-		s = astGetSubtype( expr )
-		if( s <> NULL ) then
-			function = symbCalcLen( dtype, s, unpadlen )
-		else
-			function = 0
-		end if
-
 	case else
-		function = symbCalcLen( dtype, NULL )
+		function = symbCalcLen( dtype, astGetSubtype( expr ) )
 	end select
-
 end function
 
 '':::::

@@ -1863,12 +1863,10 @@ sub symbSetDefType _
 
 end sub
 
-'':::::
 function symbCalcLen _
 	( _
 		byval dtype as integer, _
-		byval subtype as FBSYMBOL ptr, _
-		byval unpadlen as integer _
+		byval subtype as FBSYMBOL ptr _
 	) as integer
 
 	dtype = typeGet( dtype )
@@ -1877,19 +1875,11 @@ function symbCalcLen _
 	case FB_DATATYPE_FIXSTR
 		function = 0  '' zero-length literal-strings
 
-	case FB_DATATYPE_STRUCT
-		if( unpadlen ) then
-			function = subtype->udt.unpadlgt
-		else
-			function = subtype->lgt
-		end if
-
-	case FB_DATATYPE_BITFIELD
+	case FB_DATATYPE_STRUCT, FB_DATATYPE_BITFIELD
 		function = subtype->lgt
 
 	case else
 		function = typeGetSize( dtype )
-
 	end select
 
 end function
