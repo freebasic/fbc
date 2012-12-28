@@ -1019,6 +1019,9 @@ declare function rtlWstrFill _
 		byval expr2 as ASTNODE ptr _
 	) as ASTNODE ptr
 
+declare function rtlStrLen( byval expr as ASTNODE ptr ) as ASTNODE ptr
+declare function rtlWstrLen( byval expr as ASTNODE ptr ) as ASTNODE ptr
+
 declare function rtlStrAsc _
 	( _
 		byval expr as ASTNODE ptr, _

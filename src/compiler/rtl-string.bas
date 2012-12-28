@@ -3873,6 +3873,45 @@ function rtlWstrFill _
 
 end function
 
+function rtlStrLen( byval expr as ASTNODE ptr ) as ASTNODE ptr
+	dim as ASTNODE ptr proc = any
+	dim as integer length = any
+
+	function = NULL
+
+	proc = astNewCALL( PROCLOOKUP( STRLEN ) )
+
+	'' always calc len before pushing the param
+	length = rtlCalcStrLen( expr, astGetDataType( expr ) )
+
+	'' str as any
+	if( astNewARG( proc, expr, FB_DATATYPE_STRING ) = NULL ) then
+		exit function
+	end if
+
+	'' byval strlen as integer
+	if( astNewARG( proc, astNewCONSTi( length ) ) = NULL ) then
+		exit function
+	end if
+
+	function = proc
+end function
+
+function rtlWstrLen( byval expr as ASTNODE ptr ) as ASTNODE ptr
+	dim as ASTNODE ptr proc = any
+
+	function = NULL
+
+	proc = astNewCALL( PROCLOOKUP( WSTRLEN ) )
+
+	'' byval str as wchar ptr
+	if( astNewARG( proc, expr ) = NULL ) then
+		exit function
+	end if
+
+	function = proc
+end function
+
 '':::::
 function rtlStrAsc _
 	( _

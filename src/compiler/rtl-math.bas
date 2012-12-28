@@ -839,24 +839,7 @@ function rtlMathLen _
     		end if
 
     		if( litsym = NULL ) then
-    			proc = astNewCALL( PROCLOOKUP( STRLEN ) )
-
-    			'' always calc len before pushing the param
-    			lgt = rtlCalcStrLen( expr, dtype )
-
-    			'' str as any
-    			if( astNewARG( proc, expr, FB_DATATYPE_STRING ) = NULL ) then
- 					exit function
- 				end if
-
-    			'' byval strlen as integer
-				if( astNewARG( proc, _
-							   astNewCONSTi( lgt, FB_DATATYPE_INTEGER ), _
-							   FB_DATATYPE_INTEGER ) = NULL ) then
- 					exit function
- 				end if
-
-				return proc
+				return rtlStrLen( expr )
 			end if
 
 		'' wstring?
@@ -868,14 +851,7 @@ function rtlMathLen _
     			lgt = symbGetWstrLen( litsym ) - 1
 
     		else
-    			proc = astNewCALL( PROCLOOKUP( WSTRLEN ) )
-
-    			'' byval str as wchar ptr
-    			if( astNewARG( proc, expr ) = NULL ) then
- 					exit function
- 				end if
-
- 				return proc
+				return rtlWstrLen( expr )
  			end if
 
 		'' anything else..
