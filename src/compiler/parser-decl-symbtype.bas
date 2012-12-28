@@ -193,60 +193,25 @@ sub cTypeOf _
 		exit sub
 	end if
 
-	'' Check the expression
-	if( astIsCONST( expr ) ) then
-		lgt 	= rtlCalcExprLen( expr, FALSE )
-		dtype	= astGetDataType( expr )
-		subtype = astGetSubType( expr )
-	else
-		'' ugly hack to deal with arrays w/o indexes
-		if( astIsNIDXARRAY( expr ) ) then
-			dim as ASTNODE ptr temp_node = expr
-			expr = astGetLeft( expr )
-			astDelNode( temp_node )
-		end if
-
-		dim as integer derefs = 0
-		dim as ASTNODE ptr walk = expr
-		dim as FBSYMBOL ptr sym = astGetSymbol( expr )
-		if( sym = NULL ) then
-			dtype	= astGetFullType( expr )
-			subtype = astGetSubtype( expr )
-            lgt = symbCalcLen( dtype, subtype )
-		else
-			while( walk <> NULL )
-				select case as const astGetClass( walk )
-				case AST_NODECLASS_FIELD, AST_NODECLASS_IDX
-					'' if it's a field, get this node's type,
-					'' don't "solve" the tree
-					sym = astGetSymbol( walk )
-					exit while
-
-				case AST_NODECLASS_DEREF
-					'' count derefs
-					derefs += 1
-
-				end select
-
-				'' update/walk
-				sym = astGetSymbol( walk )
-				walk = astGetLeft( walk )
-			wend
-			lgt 	= symbGetLen( sym )
-			dtype	= symbGetFullType( sym )
-			subtype = symbGetSubtype( sym )
-		end if
-
-		'' byref args have a deref,
-		'' but they maintain their type
-		if( typeIsPtr( dtype ) ) then
-			if( derefs > 0 ) then
-				'' balance it
-				dtype = typeMultDeref( dtype, derefs )
-			end if
-		end if
-
+	'' ugly hack to deal with arrays w/o indexes
+	if( astIsNIDXARRAY( expr ) ) then
+		dim as ASTNODE ptr temp_node = expr
+		expr = astGetLeft( expr )
+		astDelNode( temp_node )
 	end if
+
+	dtype   = astGetFullType( expr )
+	subtype = astGetSubtype( expr )
+	lgt     = symbCalcLen( dtype, subtype )
+
+	'' If it's a STRING * N, we must get the real length from the
+	'' associated symbol, since the N isn't encoded in the dtype/subtype.
+	select case( typeGetDtAndPtrOnly( dtype ) )
+	case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR, FB_DATATYPE_FIXSTR
+		if( expr->sym ) then
+			lgt = symbGetLen( expr->sym )
+		end if
+	end select
 
 	astDelTree( expr )
 end sub

@@ -142,6 +142,7 @@ Version 0.25.0:
 - Duplicate EXTERN statements declaring the same array but with different lbounds/ubounds will now result in an error
 - #print typeof() and error reports including data types will now include the "* N" for Z/WSTRING (as for "STRING * N") and display wstrings as "WSTRING" instead of UBYTE/USHORT/UINTEGER
 - UDT SWAPs/assignments/LSets now include the structure's tail padding (if any) in the operation
+- typeof() returned the wrong type for some expressions, for example function pointer calls, or iif()
 
 
 Version 0.24.0:
