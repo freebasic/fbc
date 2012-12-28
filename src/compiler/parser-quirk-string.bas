@@ -172,8 +172,8 @@ function cLRSetStmt(byval tk as FB_TOKEN) as integer
 			return TRUE
 		end if
 
-		function = rtlMemCopyClear( dstexpr, symbGetUDTUnpadLen( dst->subtype ), _
-									srcexpr, symbGetUDTUnpadLen( src->subtype ) )
+		function = rtlMemCopyClear( dstexpr, symbGetLen( dst->subtype ), _
+		                            srcexpr, symbGetLen( src->subtype ) )
 	else
 		function = rtlStrLRSet( dstexpr, srcexpr, is_rset )
 	end if

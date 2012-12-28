@@ -342,7 +342,7 @@ function rtlMemSwap _
 	dim as ASTNODE ptr proc = astNewCALL( PROCLOOKUP( MEMSWAP ) )
 
 	'' always calc len before pushing the param
-	dim as integer bytes = rtlCalcExprLen( dst, TRUE )
+	dim as integer bytes = rtlCalcExprLen( dst, FALSE )
 
 	'' dst as any
 	if( astNewARG( proc, dst ) = NULL ) then

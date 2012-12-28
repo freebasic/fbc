@@ -539,10 +539,7 @@ function astNewASSIGN _
 			end if
 
 			if( do_move ) then
-				return astNewMEM( AST_OP_MEMMOVE, _
-							  	l, _
-							  	r, _
-							  	symbGetUDTUnpadLen( l->subtype ) )
+				return astNewMEM( AST_OP_MEMMOVE, l, r, symbGetLen( l->subtype ) )
 			end if
 
 		'' r is function returning an UDT on registers
