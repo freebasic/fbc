@@ -1002,6 +1002,13 @@ private function hConstBound _
 		if( is_lbound ) then
 			bound = d->lower
 		else
+			'' Ellipsis ubound? can happen if ubound() is used in
+			'' an array initializer, when the ubound isn't fully
+			'' known yet, e.g. in this case:
+			''    dim array(0 to ...) as integer = { 1, ubound( array ), 3 }
+			if( d->upper = FB_ARRAYDIM_UNKNOWN ) then
+				exit function
+			end if
 			bound = d->upper
 		end if
 	else

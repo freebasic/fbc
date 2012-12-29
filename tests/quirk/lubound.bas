@@ -9,6 +9,15 @@ dim shared array4(-25 to 25) as integer
 dim shared array5(10 to 11, 20 to 21, 30 to 31) as integer
 dim shared array6() as integer
 
+'' lbound() is known here, so this should be allowed
+'' (although ubound() would not be known in the same location)
+dim shared array9(11 to ...) as integer = { 1, lbound( array9 ), 3 }
+
+'' ubound() is known to be 33 here, thanks to the EXTERN, despite the ellipsis
+'' in the DIM, so this should work (by being evaluated at compile-time).
+extern array10(31 to 33) as integer
+dim shared array10(31 to ...) as integer = { 1, ubound( array10 ), 3 }
+
 '' lbound/ubound on fixed-size array should be evaluated as constants
 const ARRAY1_L = lbound( array1 )
 const ARRAY1_U = ubound( array1 )
@@ -24,6 +33,18 @@ const ARRAY52_L = lbound( array5, 2 )
 const ARRAY52_U = ubound( array5, 2 )
 const ARRAY53_L = lbound( array5, 3 )
 const ARRAY53_U = ubound( array5, 3 )
+
+sub hCheckBydesc _
+	( _
+		array() as integer, _
+		byval expectedlbound as integer, _
+		byval expectedubound as integer _
+	)
+
+	CU_ASSERT( lbound( array ) = expectedlbound )
+	CU_ASSERT( ubound( array ) = expectedubound )
+
+end sub
 
 sub test1 cdecl( )
 	CU_ASSERT( ARRAY1_L = 0 )
@@ -118,6 +139,25 @@ sub test1 cdecl( )
 	CU_ASSERT( ubound( array8, 2 ) = 21 )
 	CU_ASSERT( lbound( array8, 123 ) = 1 )
 	CU_ASSERT( ubound( array8, 123 ) = 0 )
+
+	CU_ASSERT( lbound( array9 ) = 11 )
+	CU_ASSERT( ubound( array9 ) = 13 )
+	CU_ASSERT( array9(11) = 1 )
+	CU_ASSERT( array9(12) = 11 )
+	CU_ASSERT( array9(13) = 3 )
+
+	CU_ASSERT( lbound( array10 ) = 31 )
+	CU_ASSERT( ubound( array10 ) = 33 )
+	CU_ASSERT( array10(31) = 1 )
+	CU_ASSERT( array10(32) = 31 )
+	CU_ASSERT( array10(33) = 3 )
+
+	hCheckBydesc( array1, 0, 1 )
+	hCheckBydesc( array2, 123, 456 )
+	hCheckBydesc( array6, 10, 11 )
+	hCheckBydesc( array7, 10, 11 )
+	hCheckBydesc( array9, 10, 13 )
+	hCheckBydesc( array10, 31, 33 )
 end sub
 
 private sub ctor( ) constructor
