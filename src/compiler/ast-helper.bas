@@ -948,6 +948,98 @@ function astBuildArrayDescIniTree _
 
 end function
 
+private function hConstBound _
+	( _
+		byval arrayexpr as ASTNODE ptr, _
+		byval dimexpr as ASTNODE ptr, _
+		byval is_lbound as integer _
+	) as ASTNODE ptr
+
+	dim as FBSYMBOL ptr array = any
+	dim as FBVARDIM ptr d = any
+	dim as integer dimension = any, bound = any
+
+	function = NULL
+
+	'' We must know the array symbol, it's carrying the bounds information
+	select case( arrayexpr->class )
+	case AST_NODECLASS_VAR, AST_NODECLASS_FIELD
+
+	case else
+		exit function
+	end select
+
+	array = arrayexpr->sym
+	if( array = NULL ) then
+		exit function
+	end if
+
+	'' It must be a fixed-size array
+	if( symbIsDynamic( array ) or symbIsParamBydesc( array ) ) then
+		exit function
+	end if
+
+	'' The dimension argument must be constant
+	if( astIsCONST( dimexpr ) = FALSE ) then
+		exit function
+	end if
+
+	'' dimension is 1-based
+	dimension = astGetValueAsInt( dimexpr )
+
+	'' Find the referenced dimension
+	if( dimension >= 1 ) then
+		d = symbGetArrayFirstDim( array )
+		while( (d <> NULL) and (dimension > 1) )
+			dimension -= 1
+			d = d->next
+		wend
+	else
+		d = NULL
+	end if
+
+	if( d ) then
+		if( is_lbound ) then
+			bound = d->lower
+		else
+			bound = d->upper
+		end if
+	else
+		'' Out-of-bounds dimension argument: For dimension = 0 we
+		'' return l/ubound of the array's dimTB, with lbound=1 and
+		'' ubound=dimensions. For other out-of-bound dimension values,
+		'' we return lbound=1 and ubound=0.
+		bound = iif( is_lbound, 1, _
+		             iif( dimension = 0, _
+		                  symbGetArrayDimensions( array ), _
+		                  0 ) )
+	end if
+
+	function = astNewCONSTi( bound )
+end function
+
+function astBuildArrayBound _
+	( _
+		byval arrayexpr as ASTNODE ptr, _
+		byval dimexpr as ASTNODE ptr, _
+		byval is_lbound as integer _
+	) as ASTNODE ptr
+
+	dim as ASTNODE ptr expr = any
+
+	'' Try to evaluate l/ubound( array, dimension ) at compile-time
+	expr = hConstBound( arrayexpr, dimexpr, is_lbound )
+
+	if( expr = NULL ) then
+		'' Fall back to run-time ubound(), that will work for array
+		'' declarations that can have non-const initializers, and cause
+		'' an error if a constant initializer was expected.
+		expr = rtlArrayBound( arrayexpr, dimexpr, is_lbound )
+	end if
+
+	function = expr
+end function
+
 ''
 '' strings
 ''

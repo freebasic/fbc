@@ -1190,6 +1190,13 @@ declare function astBuildArrayDescIniTree _
 		byval array_expr as ASTNODE ptr _
 	) as ASTNODE ptr
 
+declare function astBuildArrayBound _
+	( _
+		byval arrayexpr as ASTNODE ptr, _
+		byval dimexpr as ASTNODE ptr, _
+		byval is_lbound as integer _
+	) as ASTNODE ptr
+
 declare function astBuildStrPtr _
 	( _
 		byval lhs as ASTNODE ptr _
