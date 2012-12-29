@@ -856,8 +856,7 @@ function rtlMathLen _
 
 		'' anything else..
 		case else
-type_size:
-			lgt = rtlCalcExprLen( expr )
+			lgt = astSizeOf( expr )
 
 			'' handle fix-len strings (evaluated at compile-time)
 			if( dtype = FB_DATATYPE_FIXSTR ) then
@@ -865,19 +864,11 @@ type_size:
 					lgt -= 1						'' less the null-term
 				end if
 			end if
-
 		end select
 
 	'' SIZEOF()
 	else
-		lgt = rtlCalcExprLen( expr )
-
-		'' wstring? multiply by sizeof(wchar) to get the
-		'' number of bytes, not of chars
-		if( dtype = FB_DATATYPE_WCHAR ) then
-			lgt *= typeGetSize( FB_DATATYPE_WCHAR )
-		end if
-
+		lgt = astSizeOf( expr )
 	end if
 
 	''

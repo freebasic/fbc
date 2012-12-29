@@ -1267,4 +1267,15 @@ sub astSetType _
 
 end sub
 
+function astSizeOf( byval n as ASTNODE ptr ) as integer
+	function = symbCalcLen( n->dtype, n->subtype )
 
+	'' If it's a STRING * N, we must get the real length from the
+	'' associated symbol, since the N isn't encoded in the dtype/subtype.
+	select case( typeGetDtAndPtrOnly( n->dtype ) )
+	case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR, FB_DATATYPE_FIXSTR
+		if( n->sym ) then
+			function = symbGetLen( n->sym )
+		end if
+	end select
+end function

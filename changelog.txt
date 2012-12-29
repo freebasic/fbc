@@ -143,6 +143,7 @@ Version 0.25.0:
 - #print typeof() and error reports including data types will now include the "* N" for Z/WSTRING (as for "STRING * N") and display wstrings as "WSTRING" instead of UBYTE/USHORT/UINTEGER
 - UDT SWAPs/assignments/LSets now include the structure's tail padding (if any) in the operation
 - typeof() returned the wrong type for some expressions, for example function pointer calls, or iif()
+- sizeof( *z/wstringptr ) returned 0 instead of sizeof( z/wstring )
 
 
 Version 0.24.0:

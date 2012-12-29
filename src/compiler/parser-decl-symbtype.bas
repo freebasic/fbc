@@ -202,16 +202,7 @@ sub cTypeOf _
 
 	dtype   = astGetFullType( expr )
 	subtype = astGetSubtype( expr )
-	lgt     = symbCalcLen( dtype, subtype )
-
-	'' If it's a STRING * N, we must get the real length from the
-	'' associated symbol, since the N isn't encoded in the dtype/subtype.
-	select case( typeGetDtAndPtrOnly( dtype ) )
-	case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR, FB_DATATYPE_FIXSTR
-		if( expr->sym ) then
-			lgt = symbGetLen( expr->sym )
-		end if
-	end select
+	lgt     = astSizeOf( expr )
 
 	astDelTree( expr )
 end sub
