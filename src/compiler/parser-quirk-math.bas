@@ -98,7 +98,12 @@ private function hLenSizeof _
 	end if
 
 	if( expr <> NULL ) then
-		function = rtlMathLen( expr, is_len )
+		if( is_len ) then
+			function = rtlMathLen( expr )
+		else
+			function = astNewCONSTi( astSizeOf( expr ) )
+			astDelTree( expr )
+		end if
 	else
 		function = astNewCONSTi( lgt, FB_DATATYPE_INTEGER )
 	end if

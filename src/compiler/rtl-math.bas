@@ -807,75 +807,49 @@ function rtlMathPow	_
 
 end function
 
-'':::::
-function rtlMathLen _
-	( _
-		byval expr as ASTNODE ptr, _
-		byval islen as integer = TRUE _
-	) as ASTNODE ptr
-
-    dim as ASTNODE ptr proc = any
-    dim as integer dtype = any, lgt = any
-    dim as FBSYMBOL ptr litsym = any
+function rtlMathLen( byval expr as ASTNODE ptr ) as ASTNODE ptr
+	dim as ASTNODE ptr proc = any
+	dim as integer length = any
+	dim as FBSYMBOL ptr litsym = any
 
 	function = NULL
 
-	dtype = astGetDataType( expr )
+	select case( astGetDataType( expr ) )
+	case FB_DATATYPE_STRING
+		return rtlStrLen( expr )
 
-	'' LEN()?
-	if( islen ) then
-		select case as const dtype
-		'' dyn-len or zstring?
-		case FB_DATATYPE_STRING, FB_DATATYPE_CHAR
+	case FB_DATATYPE_CHAR
+		litsym = astGetStrLitSymbol( expr )
+		if( litsym = NULL ) then
+			return rtlStrLen( expr )
+		end if
 
-    		'' literal? evaluate at compile-time..
-    		if( dtype = FB_DATATYPE_CHAR ) then
-    			litsym = astGetStrLitSymbol( expr )
-    			if( litsym <> NULL ) then
-    				lgt = symbGetStrLen( litsym ) - 1
-    			end if
-    		else
-    			litsym = NULL
-    		end if
+		'' String literal, evaluate at compile-time
+		length = symbGetStrLen( litsym ) - 1
 
-    		if( litsym = NULL ) then
-				return rtlStrLen( expr )
-			end if
+	case FB_DATATYPE_WCHAR
+		litsym = astGetStrLitSymbol( expr )
+		if( litsym = NULL ) then
+			return rtlWstrLen( expr )
+		end if
 
-		'' wstring?
-		case FB_DATATYPE_WCHAR
+		'' String literal, evaluate at compile-time
+		length = symbGetWstrLen( litsym ) - 1
 
-    		'' literal? evaluate at compile-time..
-    		litsym = astGetStrLitSymbol( expr )
-    		if( litsym <> NULL ) then
-    			lgt = symbGetWstrLen( litsym ) - 1
+	case FB_DATATYPE_FIXSTR
+		'' len( fixstr ) returns the N from STRING * N, i.e. it works
+		'' like sizeof() - 1 (-1 for the implicit null terminator),
+		'' it does not return the length of the stored string data.
+		length = astSizeOf( expr ) - 1
+		assert( length >= 0 )
 
-    		else
-				return rtlWstrLen( expr )
- 			end if
+	'' For anything else, len() means sizeof()
+	case else
+		length = astSizeOf( expr )
+	end select
 
-		'' anything else..
-		case else
-			lgt = astSizeOf( expr )
-
-			'' handle fix-len strings (evaluated at compile-time)
-			if( dtype = FB_DATATYPE_FIXSTR ) then
-				if( lgt > 0 ) then
-					lgt -= 1						'' less the null-term
-				end if
-			end if
-		end select
-
-	'' SIZEOF()
-	else
-		lgt = astSizeOf( expr )
-	end if
-
-	''
 	astDelTree( expr )
-
-	function = astNewCONSTi( lgt, FB_DATATYPE_INTEGER )
-
+	function = astNewCONSTi( length )
 end function
 
 '':::::

@@ -164,7 +164,7 @@ sub cSelectStmtBegin()
 
 			'' tmp = WstrAlloc( len( expr ) )
 			astAdd( astNewASSIGN( astNewVAR( sym, 0, typeAddrOf( FB_DATATYPE_WCHAR ) ), _
-			                      rtlWstrAlloc( rtlMathLen( astCloneTree( expr ), TRUE ) ) ) )
+			                      rtlWstrAlloc( rtlMathLen( astCloneTree( expr ) ) ) ) )
 
 			'' *tmp = expr
 			astAdd( astNewASSIGN( astNewDEREF( astNewVAR( sym, 0, typeAddrOf( FB_DATATYPE_WCHAR ) ) ), _

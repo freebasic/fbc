@@ -48,7 +48,7 @@ private sub hPrepareWstring _
 	'' tmp = WstrAlloc( len( expr ) )
 	tree = astNewLINK( tree, _
 		astNewASSIGN( astNewVAR( n->sym, 0, typeAddrOf( FB_DATATYPE_WCHAR ) ), _
-			rtlWstrAlloc( rtlMathLen( astCloneTree( truexpr ), TRUE ) ) ), _
+			rtlWstrAlloc( rtlMathLen( astCloneTree( truexpr ) ) ) ), _
 		FALSE )
 
 	'' *tmp = expr
@@ -69,7 +69,7 @@ private sub hPrepareWstring _
 	'' tmp = WstrAlloc( len( expr ) )
 	tree = astNewLINK( tree, _
 		astNewASSIGN( astNewVAR( n->sym, 0, typeAddrOf( FB_DATATYPE_WCHAR ) ), _
-			rtlWstrAlloc( rtlMathLen( astCloneTree( falsexpr ), TRUE ) ) ), _
+			rtlWstrAlloc( rtlMathLen( astCloneTree( falsexpr ) ) ) ), _
 		FALSE )
 
 	'' *tmp = expr
