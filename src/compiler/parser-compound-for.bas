@@ -669,7 +669,7 @@ private sub hForStep _
 		if( stk->for.explicit_step ) then
 			'' generate a symbol using the expression's type
 			stk->for.stp.sym = hAllocTemp( dtype, subtype )
-			stk->for.stp.dtype = symbGetType( stk->for.end.sym )
+			stk->for.stp.dtype = symbGetType( stk->for.stp.sym )
 
 			'' build constructor call
 			if( hCallCtor( stk->for.stp.sym ) = FALSE ) then
