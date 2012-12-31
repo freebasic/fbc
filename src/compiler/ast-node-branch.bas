@@ -190,23 +190,23 @@ function astBuildJMPTB _
 		if( minval > 0 ) then
 			'' if( expr < minval ) then goto deflabel
 			tree = astNewLINK( tree, _
-				astNewBOP( AST_OP_LT, astNewVAR( tempvar, 0, FB_DATATYPE_UINT ), _
+				astNewBOP( AST_OP_LT, astNewVAR( tempvar ), _
 					astNewCONSTi( minval, FB_DATATYPE_UINT ), _
 					deflabel, AST_OPOPT_NONE ) )
 		end if
 
 		'' if( expr > maxval ) then goto deflabel
 		tree = astNewLINK( tree, _
-			astNewBOP( AST_OP_GT, astNewVAR( tempvar, 0, FB_DATATYPE_UINT ), _
+			astNewBOP( AST_OP_GT, astNewVAR( tempvar ), _
 				astNewCONSTi( maxval, FB_DATATYPE_UINT ), _
 				deflabel, AST_OPOPT_NONE ) )
 
 		'' goto table[expr - minval]
 		tree = astNewLINK( tree, _
 			astNewBRANCH( AST_OP_JUMPPTR, NULL, _
-				astNewIDX( astNewVAR( tbsym, -minval * FB_POINTERSIZE, typeAddrOf( FB_DATATYPE_VOID ) ), _
+				astNewIDX( astNewVAR( tbsym, -minval * FB_POINTERSIZE ), _
 					astNewBOP( AST_OP_MUL, _
-						astNewVAR( tempvar, 0, FB_DATATYPE_UINT ), _
+						astNewVAR( tempvar ), _
 						astNewCONSTi( FB_POINTERSIZE, FB_DATATYPE_UINT ) ), _
 					typeAddrOf( FB_DATATYPE_VOID ), NULL ) ) )
 	else
@@ -214,7 +214,7 @@ function astBuildJMPTB _
 	end if
 
 	tree = astNewLINK( tree, _
-		astNewJMPTB( astNewVAR( tempvar, 0, FB_DATATYPE_UINT ), tbsym, _
+		astNewJMPTB( astNewVAR( tempvar ), tbsym, _
 			values1, labels1, labelcount, deflabel, minval, maxval ) )
 
 	function = tree

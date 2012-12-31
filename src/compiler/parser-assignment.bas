@@ -529,7 +529,7 @@ private function hAssignFromField _
 
 	'' build field access
 	dim as ASTNODE ptr expr = any
-	expr = astNewVAR( rhs, 0, symbGetFullType( rhs ), symbGetSubtype( rhs ) )
+	expr = astNewVAR( rhs )
 	expr = astNewBOP( AST_OP_ADD, expr, astNewCONSTi( symbGetOfs( fld ), FB_DATATYPE_INTEGER ) )
 	expr = astNewDEREF( expr, symbGetFullType( fld ), symbGetSubType( fld ) )
 	expr = astNewFIELD( expr, fld, symbGetFullType( fld ), symbGetSubType( fld ) )

@@ -64,8 +64,7 @@ function astNewBOUNDCHK _
     '' check must be done using a function because calling ErrorThrow
     '' would spill used regs only if it was called, causing wrong
     '' assumptions after the branches
-	n->r = rtlArrayBoundsCheck( astNewVAR( n->sym, 0, l->dtype, l->subtype ), _
-					lb, ub, linenum, filename )
+	n->r = rtlArrayBoundsCheck( astNewVAR( n->sym ), lb, ub, linenum, filename )
 
 end function
 
@@ -88,7 +87,7 @@ function astLoadBOUNDCHK _
 
 	'' assign to a temp, can't reuse the same vreg or registers could
 	'' be spilled as IR can't handle inter-blocks
-	t = astNewASSIGN( astNewVAR( n->sym, 0, symbGetFullType( n->sym ), symbGetSubtype( n->sym ) ), l )
+	t = astNewASSIGN( astNewVAR( n->sym ), l )
 	astLoad( t )
 	astDelNode( t )
 
@@ -109,7 +108,7 @@ function astLoadBOUNDCHK _
 
 	''
 	'' re-load, see above
-	t = astNewVAR( n->sym, 0, symbGetFullType( n->sym ), symbGetSubtype( n->sym ) )
+	t = astNewVAR( n->sym )
 	function = astLoad( t )
 	astDelNode( t )
 
@@ -154,9 +153,8 @@ function astNewPTRCHK _
 
 	n->sym = symbAddTempVar( dtype, subtype, FALSE )
 
-    '' check must be done using a function, see bounds checking
-    n->r = rtlNullPtrCheck( astNewVAR( n->sym, 0, dtype, subtype ), _
-				linenum, filename )
+	'' check must be done using a function, see bounds checking
+	n->r = rtlNullPtrCheck( astNewVAR( n->sym ), linenum, filename )
 
 end function
 
@@ -179,11 +177,7 @@ function astLoadPTRCHK _
 
 	'' assign to a temp, can't reuse the same vreg or registers could
 	'' be spilled as IR can't handle inter-blocks
-	t = astNewASSIGN( astNewVAR( n->sym, _
-								 0, _
-								 symbGetFullType( n->sym ), _
-								 symbGetSubType( n->sym ) ), _
-					  l )
+	t = astNewASSIGN( astNewVAR( n->sym ), l )
 	astLoad( t )
 	astDelNode( t )
 
@@ -204,7 +198,7 @@ function astLoadPTRCHK _
     end if
 
 	'' re-load, see above
-	t = astNewVAR( n->sym, 0, symbGetFullType( n->sym ), symbGetSubType( n->sym ) )
+	t = astNewVAR( n->sym )
 	function = astLoad( t )
 	astDelNode( t )
 

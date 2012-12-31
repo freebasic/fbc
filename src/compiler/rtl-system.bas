@@ -655,10 +655,7 @@ private function rtlCpuCheck( ) as integer
 
 	'' print "This program requires at least a <cpu> to run."
 	s = symbAllocStrConst( "This program requires at least a " & env.clopt.cputype & "86 to run.", -1 )
-	rtlPrint( astNewCONSTi( 0, FB_DATATYPE_INTEGER ), _
-			  FALSE, _
-			  FALSE, _
-			  astNewVAR( s, 0, FB_DATATYPE_CHAR ) )
+	rtlPrint( astNewCONSTi( 0, FB_DATATYPE_INTEGER ), FALSE, FALSE, astNewVAR( s ) )
 
 	'' end 1
 	proc = astNewCALL( PROCLOOKUP( END ), NULL )
@@ -686,10 +683,8 @@ private function rtlCpuCheck( ) as integer
 
 		'' print "This program requires SSE and SSE2 instructions to run."
 		s = symbAllocStrConst( "This program requires SSE and SSE2 instructions to run.", -1 )
-		rtlPrint( astNewCONSTi( 0, FB_DATATYPE_INTEGER ), _
-					  FALSE, _
-					  FALSE, _
-					astNewVAR( s, 0, FB_DATATYPE_CHAR ) )
+		rtlPrint( astNewCONSTi( 0, FB_DATATYPE_INTEGER ), FALSE, FALSE, astNewVAR( s ) )
+
 		'' end 1
 		proc = astNewCALL( PROCLOOKUP( END ), NULL )
 		if( astNewARG( proc, astNewCONSTi( 1, FB_DATATYPE_INTEGER ) ) = NULL ) then

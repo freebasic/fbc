@@ -189,27 +189,15 @@ function cOperatorNew( ) as ASTNODE ptr
 	''
 	dim as ASTNODE ptr expr = any
 
-	expr = astNewMEM( op, _
-					  astNewVAR( tmp, _
-						  		 0, _
-						  		 typeAddrOf( dtype ), _
-						  		 subtype ), _
-					  elmts_expr, _
-					  ctor_expr, _
-					  dtype, _
-					  subtype, _
-					  do_clear, _
-					  placement_expr )
+	expr = astNewMEM( op, astNewVAR( tmp ), elmts_expr, ctor_expr, _
+			dtype, subtype, do_clear, placement_expr )
 
 	if( expr = NULL ) then
 		errReport( FB_ERRMSG_INVALIDDATATYPES )
 	end if
 
 	'' return the pointer
-	function = astNewLINK( expr, astNewVAR( tmp, _
-	                                        0, _
-	                                        typeAddrOf( dtype ), _
-	                                        subtype ), FALSE )
+	function = astNewLINK( expr, astNewVAR( tmp ), FALSE )
 end function
 
 '' DELETE ['[]'] expr

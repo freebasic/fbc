@@ -68,7 +68,7 @@ function cMidStmt _
 end function
 
 #define CREATEFAKEID() _
-	astNewVAR( symbAddTempVar( FB_DATATYPE_STRING ), 0, FB_DATATYPE_STRING )
+	astNewVAR( symbAddTempVar( FB_DATATYPE_STRING ) )
 
 '':::::
 '' LRsetStmt		=	LSET|RSET String|UDT (','|'=') Expression|UDT
@@ -260,9 +260,9 @@ private function cStrCHR(byval is_wstr as integer) as ASTNODE ptr
 		next
 
 		if( is_wstr = FALSE ) then
-			function = astNewVAR( symbAllocStrConst( zs, cnt ), 0, FB_DATATYPE_CHAR )
+			function = astNewVAR( symbAllocStrConst( zs, cnt ) )
 		else
-			function = astNewVAR( symbAllocWstrConst( ws, cnt ), 0, FB_DATATYPE_WCHAR )
+			function = astNewVAR( symbAllocWstrConst( ws, cnt ) )
 		end if
 	else
 		function = rtlStrChr( cnt, exprtb(), is_wstr )

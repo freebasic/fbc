@@ -47,13 +47,13 @@ private sub hPrepareWstring _
 
 	'' tmp = WstrAlloc( len( expr ) )
 	tree = astNewLINK( tree, _
-		astNewASSIGN( astNewVAR( n->sym, 0, typeAddrOf( FB_DATATYPE_WCHAR ) ), _
+		astNewASSIGN( astNewVAR( n->sym ), _
 			rtlWstrAlloc( rtlMathLen( astCloneTree( truexpr ) ) ) ), _
 		FALSE )
 
 	'' *tmp = expr
 	tree = astNewLINK( tree, _
-		astNewASSIGN( astNewDEREF( astNewVAR( n->sym, 0, typeAddrOf( FB_DATATYPE_WCHAR ) ) ), _
+		astNewASSIGN( astNewDEREF( astNewVAR( n->sym ) ), _
 			truexpr, AST_OPOPT_ISINI ), _
 		FALSE )
 
@@ -68,13 +68,13 @@ private sub hPrepareWstring _
 
 	'' tmp = WstrAlloc( len( expr ) )
 	tree = astNewLINK( tree, _
-		astNewASSIGN( astNewVAR( n->sym, 0, typeAddrOf( FB_DATATYPE_WCHAR ) ), _
+		astNewASSIGN( astNewVAR( n->sym ), _
 			rtlWstrAlloc( rtlMathLen( astCloneTree( falsexpr ) ) ) ), _
 		FALSE )
 
 	'' *tmp = expr
 	tree = astNewLINK( tree, _
-		astNewASSIGN( astNewDEREF( astNewVAR( n->sym, 0, typeAddrOf( FB_DATATYPE_WCHAR ) ) ), _
+		astNewASSIGN( astNewDEREF( astNewVAR( n->sym ) ), _
 			falsexpr, AST_OPOPT_ISINI ), _
 		FALSE )
 
@@ -96,18 +96,10 @@ private sub hPrepareString _
 	astAdd( astNewDECL( n->sym, NULL ) )
 
 	'' assign true to temp
-	truexpr = astNewASSIGN( astNewVAR( n->sym, _
-					0, _
-					symbGetFullType( n->sym ), _
-					symbGetSubType( n->sym ) ), _
-				truexpr, AST_OPOPT_ISINI )
+	truexpr = astNewASSIGN( astNewVAR( n->sym ), truexpr, AST_OPOPT_ISINI )
 
 	'' assign false to temp
-	falsexpr = astNewASSIGN( astNewVAR( n->sym, _
-					0, _
-					symbGetFullType( n->sym ), _
-					symbGetSubType( n->sym ) ), _
-				falsexpr, AST_OPOPT_ISINI )
+	falsexpr = astNewASSIGN( astNewVAR( n->sym ), falsexpr, AST_OPOPT_ISINI )
 
 end sub
 
@@ -343,18 +335,10 @@ function astNewIIF _
 		n->sym = symbAddTempVar( dtype, subtype, FALSE )
 
 		'' assign true to temp
-		truexpr = astNewASSIGN( astNewVAR( n->sym, _
-						0, _
-						symbGetFullType( n->sym ), _
-						symbGetSubType( n->sym ) ), _
-					truexpr )
+		truexpr = astNewASSIGN( astNewVAR( n->sym ), truexpr )
 
 		'' assign false to temp
-		falsexpr = astNewASSIGN( astNewVAR( n->sym, _
-						0, _
-						symbGetFullType( n->sym ), _
-						symbGetSubType( n->sym ) ), _
-					falsexpr )
+		falsexpr = astNewASSIGN( astNewVAR( n->sym ), falsexpr )
 	end if
 
 	n->r = astNewLINK( truexpr, falsexpr )
@@ -422,10 +406,10 @@ function astLoadIIF _
 		irEmitLABELNF( exitlabel )
 	end if
 
+	t = astNewVAR( n->sym )
+
 	if( symbGetIsWstring( n->sym ) ) then
-		t = astNewDEREF( astNewVAR( n->sym, 0, typeAddrOf( FB_DATATYPE_WCHAR ) ) )
-	else
-		t = astNewVAR( n->sym, 0, symbGetFullType( n->sym ), symbGetSubType( n->sym ) )
+		t = astNewDEREF( t )
 	end if
 
 	' If assigning to a string, it needs to be forced to an address of string

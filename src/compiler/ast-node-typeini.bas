@@ -508,8 +508,7 @@ private function hFlushTree _
 						dtype = typeDeref( dtype )
 					end if
 
-					lside = astNewDEREF( astNewVAR( basesym, 0, symbGetFullType( basesym ), symbGetSubtype( basesym ) ), _
-					                     dtype, n->subtype, n->typeini.ofs )
+					lside = astNewDEREF( astNewVAR( basesym ), dtype, n->subtype, n->typeini.ofs )
 				else
 					'' Assigning to object directly
 					'' Note: n->sym may be NULL (from a astReplaceSymbolOnTree(), so n's dtype/subtype are used instead.
@@ -558,11 +557,10 @@ private function hFlushTree _
 				if( do_deref ) then
 					'' through a pointer
 					assert( typeIsPtr( dtype ) )
-					lside = astNewDEREF( astNewVAR( basesym, 0, dtype, symbGetSubtype( basesym ) ), _
-					                     typeDeref( dtype ), symbGetSubtype( basesym ), n->typeini.ofs )
+					lside = astNewDEREF( astNewVAR( basesym ), typeDeref( dtype ), symbGetSubtype( basesym ), n->typeini.ofs )
 				else
 					'' directly
-					lside = astNewVAR( basesym, n->typeini.ofs, dtype, symbGetSubtype( basesym ) )
+					lside = astNewVAR( basesym, n->typeini.ofs )
 				end if
 			end if
 
@@ -1041,7 +1039,7 @@ private function hWalk _
 		'' temporary variable, instead of the TYPEINI. (it could be an
 		'' ASSIGN, ADDROF, ARG, etc...)
 		if( parent ) then
-			expr = astNewVAR( sym, 0, astGetFullType( n ), n->subtype )
+			expr = astNewVAR( sym )
 			if( parent->l = n ) then
 				parent->l = expr
 			else

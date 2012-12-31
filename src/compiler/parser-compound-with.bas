@@ -8,7 +8,6 @@
 #include once "parser.bi"
 #include once "ast.bi"
 
-'':::::
 private function hAllocWithVar( ) as FBSYMBOL ptr
     static as FBARRAYDIM dTB(0)
     dim as FBSYMBOL ptr sym = any, subtype = any
@@ -22,8 +21,7 @@ private function hAllocWithVar( ) as FBSYMBOL ptr
 	if( expr = NULL ) then
 		errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
 		'' error recovery: fake a var
-		expr = astNewVAR( symbAddTempVar( FB_DATATYPE_INTEGER ), _
-		                  0, FB_DATATYPE_INTEGER )
+		expr = astNewVAR( symbAddTempVar( FB_DATATYPE_INTEGER ) )
 	else
 		'' not an UDT?
 		dtype = astGetFullType( expr )
@@ -38,12 +36,10 @@ private function hAllocWithVar( ) as FBSYMBOL ptr
 
     sym = symbAddTempVar( dtype, subtype )
 
-    '' load with the address of expr (sym = @expr)
-    astAdd( astNewASSIGN( astNewVAR( sym, 0, dtype, subtype ), _
-    			  		  astNewADDROF( expr ) ) )
+	'' load with the address of expr (sym = @expr)
+	astAdd( astNewASSIGN( astNewVAR( sym ), astNewADDROF( expr ) ) )
 
 	function = sym
-
 end function
 
 '':::::

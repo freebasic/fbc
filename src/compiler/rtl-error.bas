@@ -437,7 +437,7 @@ sub rtlErrorSetHandler _
     		with parser.currproc->proc.ext->err
     			if( .lasthnd = NULL ) then
 					.lasthnd = symbAddTempVar( typeAddrOf( FB_DATATYPE_VOID ) )
-                	expr = astNewVAR( .lasthnd, 0, typeAddrOf( FB_DATATYPE_VOID ) )
+					expr = astNewVAR( .lasthnd )
                 	astAdd( astNewASSIGN( expr, proc ) )
     			end if
     		end with
@@ -526,7 +526,7 @@ function rtlErrorSetModName _
     if( sym <> NULL ) then
     	with sym->proc.ext->err
 			.lastmod = symbAddTempVar( typeAddrOf( FB_DATATYPE_CHAR ) )
-           	expr = astNewVAR( .lastmod, 0, typeAddrOf( FB_DATATYPE_CHAR ) )
+			expr = astNewVAR( .lastmod )
           	function = astNewASSIGN( expr, proc )
     	end with
     else
@@ -554,7 +554,7 @@ function rtlErrorSetFuncName _
     if( sym <> NULL ) then
     	with sym->proc.ext->err
 			.lastfun = symbAddTempVar( typeAddrOf( FB_DATATYPE_CHAR ) )
-            expr = astNewVAR( .lastfun, 0, typeAddrOf( FB_DATATYPE_CHAR ) )
+			expr = astNewVAR( .lastfun )
             function = astNewASSIGN( expr, proc )
     	end with
     else

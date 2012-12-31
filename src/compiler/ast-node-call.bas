@@ -107,14 +107,13 @@ private sub hCheckTmpStrings( byval f as ASTNODE ptr )
 
 		'' copy back if needed
 		if( n->srctree <> NULL ) then
-			t = rtlStrAssign( n->srctree, _
-							  astNewVAR( n->sym, 0, FB_DATATYPE_STRING ) )
+			t = rtlStrAssign( n->srctree, astNewVAR( n->sym ) )
 			astLoad( t )
 			astDelNode( t )
 		end if
 
 		'' delete the temp string (or wstring)
-		t = rtlStrDelete( astNewVAR( n->sym, 0, symbGetFullType( n->sym ) ) )
+		t = rtlStrDelete( astNewVAR( n->sym ) )
 		astLoad( t )
 		astDelNode( t )
 
@@ -209,7 +208,7 @@ function astLoadCALL( byval n as ASTNODE ptr ) as IRVREG ptr
 			end if
 
 			'' Pass the address of the temp result struct
-			l = astNewVAR( n->call.tmpres, 0, FB_DATATYPE_STRUCT, symbGetSubtype( proc ) )
+			l = astNewVAR( n->call.tmpres )
 			l = astNewADDROF( l )
 			v1 = astLoad( l )
 			irEmitPUSHARG( v1, 0, reclevel )

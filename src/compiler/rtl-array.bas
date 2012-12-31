@@ -574,11 +574,10 @@ function rtlArrayRedim _
 
     proc = astNewCALL( f )
 
-    '' array() as ANY
-	expr = astNewVAR( s, 0, dtype )
-    if( astNewARG( proc, expr, dtype ) = NULL ) then
-    	exit function
-    end if
+	'' array() as ANY
+	if( astNewARG( proc, astNewVAR( s ) ) = NULL ) then
+		exit function
+	end if
 
 	'' byval element_len as integer
 	expr = astNewCONSTi( elementlen, FB_DATATYPE_INTEGER )

@@ -83,7 +83,7 @@ sub cSelConstStmtBegin()
 	'' store expression into a temp var
 	sym = symbAddTempVar( FB_DATATYPE_UINT )
 
-	expr = astNewASSIGN( astNewVAR( sym, 0, FB_DATATYPE_UINT ), expr )
+	expr = astNewASSIGN( astNewVAR( sym ), expr )
 	if( expr <> NULL ) then
 		astAdd( expr )
 	end if

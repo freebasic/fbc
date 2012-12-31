@@ -16,7 +16,7 @@ enum FOR_FLAGS
 end enum
 
 #define CREATEFAKEID( ) _
-	astNewVAR( symbAddTempVar( FB_DATATYPE_INTEGER ), 0, FB_DATATYPE_INTEGER )
+	astNewVAR( symbAddTempVar( FB_DATATYPE_INTEGER ) )
 
 declare function hUdtCallOpOvl _
 	( _
@@ -57,7 +57,7 @@ private function hElmToExpr _
 
 	'' if there's an embedded symbol, use it
 	if( v->sym <> NULL ) then
-		function = astNewVAR( v->sym, 0, v->dtype, symbGetSubType( v->sym ) )
+		function = astNewVAR( v->sym )
 
 	'' make a constant...
 	else
@@ -241,7 +241,7 @@ private function hStoreTemp _
 	dim as FBSYMBOL ptr s = hAllocTemp( dtype, subtype )
 
     '' expr is assigned into the symbol
-	expr = astNewASSIGN( astNewVAR( s, 0, dtype, subtype ), expr )
+	expr = astNewASSIGN( astNewVAR( s ), expr )
 
 	'' couldn't assign?
 	if( expr = NULL ) then
@@ -369,10 +369,9 @@ private sub hFlushSelfBOP _
 	'' This sub handles the creation of the '+=' expression.
 
 	dim as ASTNODE ptr lhs_expr = any, rhs_expr = any, expr = any
-	dim as FBSYMBOL ptr lhs_subtype = symbGetSubtype( lhs->sym )
 
-	lhs_expr = astNewVAR( lhs->sym, 0, lhs->dtype, lhs_subtype )
-	rhs_expr = hStepExpression( lhs->dtype, lhs_subtype, rhs )
+	lhs_expr = astNewVAR( lhs->sym )
+	rhs_expr = hStepExpression( lhs->dtype, symbGetSubtype( lhs->sym ), rhs )
 
 	'' attept to create the '+=' expression
 	expr = astNewSelfBOP( op, lhs_expr, rhs_expr )
@@ -729,7 +728,7 @@ private sub hForStep _
 		end if
 
 		'' is_positive = rhs
-		astAdd( astNewASSIGN( astNewVAR( stk->for.ispos.sym, 0, FB_DATATYPE_INTEGER ), rhs ) )
+		astAdd( astNewASSIGN( astNewVAR( stk->for.ispos.sym ), rhs ) )
 
     '' no need for a sign check
 	else
@@ -771,10 +770,7 @@ function cForStmtBegin( ) as integer
 			idexpr = CREATEFAKEID( )
 		else
 			flags or= FOR_ISLOCAL
-			idexpr = astNewVAR( sym, _
-								0, _
-								symbGetFullType( sym ), _
-								symbGetSubtype( sym ) )
+			idexpr = astNewVAR( sym )
 		end if
 
 	'' tried array...

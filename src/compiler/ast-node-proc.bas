@@ -477,8 +477,8 @@ sub astProcBegin( byval sym as FBSYMBOL ptr, byval ismain as integer )
 		'' fb_Init( argc, argv )
 		'' (plus some other calls depending on -exx etc.)
 		env.main.initnode = rtlInitApp( _
-			astNewVAR( symbGetParamVar( argc ), 0, symbGetFullType( argc ) ), _
-			astNewVAR( symbGetParamVar( argv ), 0, symbGetFullType( argv ) ) )
+			astNewVAR( symbGetParamVar( argc ) ), _
+			astNewVAR( symbGetParamVar( argv ) ) )
 	end if
 
 	'' Label at beginning of lexical block, used by debug stabs output
@@ -506,27 +506,17 @@ private function hCheckErrHnd _
 
 	with sym->proc.ext->err
 		if( .lastfun <> NULL ) then
-           	astAdd( rtlErrorSetFuncName( NULL, _
-           								 astNewVAR( .lastfun, _
-           						   		 0, _
-           						   		 typeAddrOf( FB_DATATYPE_CHAR ) ) ) )
+			astAdd( rtlErrorSetFuncName( NULL, astNewVAR( .lastfun ) ) )
            	.lastfun = NULL
 		end if
 
 		if( .lastmod <> NULL ) then
-           	astAdd( rtlErrorSetModName( NULL, _
-           								astNewVAR( .lastmod, _
-           						   		0, _
-           						   		typeAddrOf( FB_DATATYPE_CHAR ) ) ) )
-
+			astAdd( rtlErrorSetModName( NULL, astNewVAR( .lastmod ) ) )
 			.lastmod = NULL
 		end if
 
 		if( .lasthnd <> NULL ) then
-       		rtlErrorSetHandler( astNewVAR( .lasthnd, _
-       					  	  			   0, _
-       					  	  			   typeAddrOf( FB_DATATYPE_VOID ) ), _
-       							FALSE )
+			rtlErrorSetHandler( astNewVAR( .lasthnd ), FALSE )
 			.lasthnd = NULL
 		end if
 	end with
@@ -791,7 +781,7 @@ private sub hLoadProcResult _
 	'' set as temp, so any assignment or when passed as parameter to another proc
 	'' will deallocate this string)
 	case FB_DATATYPE_STRING
-		n = rtlStrAllocTmpResult( astNewVAR( s, 0, FB_DATATYPE_STRING ) )
+		n = rtlStrAllocTmpResult( astNewVAR( s ) )
 
 		if( env.clopt.backend = FB_BACKEND_GCC ) then
 			n = astNewLOAD( n, dtype, TRUE )
@@ -1105,7 +1095,7 @@ private function hInitVptr _
 	function = astNewASSIGN( _ 
 		astBuildInstPtr( this_, symbUdtGetFirstField( symb.rtti.fb_object ) ), _
 		astNewCONV( typeAddrOf( FB_DATATYPE_VOID ), NULL, _
-			astNewADDROF( astNewVAR( parent->udt.ext->vtable, FB_POINTERSIZE*2 ) ) ) )
+			astNewADDROF( astNewVAR( parent->udt.ext->vtable, FB_POINTERSIZE*2, FB_DATATYPE_INTEGER ) ) ) )
 end function
 
 private sub hCallCtors( byval n as ASTNODE ptr, byval sym as FBSYMBOL ptr )

@@ -207,26 +207,16 @@ private function hUdtDataMember _
 
 end function
 
-'':::::
-private function hUdtConstMember _
-	( _
-		byval fld as FBSYMBOL ptr _
-	) as ASTNODE ptr
-
-  	'' string constant?
-  	select case symbGetType( fld )
-  	case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
-  		function = astNewVAR( symbGetConstValStr( fld ), _
-  							  0, _
-  							  symbGetFullType( fld ) )
-
+private function hUdtConstMember( byval fld as FBSYMBOL ptr ) as ASTNODE ptr
+	'' string constant?
+	select case symbGetType( fld )
+	case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
+		function = astNewVAR( symbGetConstValStr( fld ) )
 	case else
 		function = astNewCONST( @symbGetConstVal( fld ), _
 								symbGetFullType( fld ), _
 								symbGetSubType( fld ) )
-
 	end select
-
 end function
 
 '':::::
@@ -1428,13 +1418,12 @@ private function hImpField _
 		byval check_array as integer _
 	) as ASTNODE ptr
 
-   	dim as ASTNODE ptr varexpr = cUdtMember( dtype, _
-   											 subtype, _
-   											 astNewVAR( this_, _
-   											 			0, _
-   											 			typeAddrOf( dtype ), _
-   											 			subtype ), _
-   											 check_array )
+	dim as ASTNODE ptr varexpr = any
+
+	varexpr = cUdtMember( dtype, subtype, _
+		astNewVAR( this_, , typeAddrOf( dtype ), subtype ), _
+		check_array )
+
    	if( varexpr = NULL ) then
    		return NULL
    	end if

@@ -61,7 +61,7 @@ end function
 private function hMakeRef _
 	( _
 		byval t as ASTNODE ptr, _
-		byval pexpr as ASTNODE ptr ptr _
+		byref expr as ASTNODE ptr _
 	) as ASTNODE ptr
 
 	'' This is similar to astRemSideFx(), it creates a temp var, assigns the
@@ -74,17 +74,16 @@ private function hMakeRef _
 	'' not the actual data. This also means LINK nodes must be used,
 	'' because we don't support references across statements...
 
-	var dtype = typeAddrof( astGetFullType( (*pexpr) ) )
-	var subtype = astGetSubType( (*pexpr) )
-
 	'' var ref
-	var ref = symbAddTempVar( dtype, subtype, FALSE )
+	var ref = symbAddTempVar( typeAddrOf( astGetFullType( expr ) ), _
+				astGetSubtype( expr ), FALSE )
 
 	'' ref = @expr
-	function = astNewLINK( t, astNewASSIGN( astNewVAR( ref, , dtype, subtype ), astNewADDROF( *pexpr ) ) )
+	function = astNewLINK( t, _
+		astNewASSIGN( astNewVAR( ref ), astNewADDROF( expr ) ) )
 
 	'' Use *ref instead of the original expr
-	*pexpr = astNewDEREF( astNewVAR( ref, , dtype, subtype ) )
+	expr = astNewDEREF( astNewVAR( ref ) )
 
 end function
 
@@ -187,11 +186,11 @@ function cSwapStmt() as integer
 
 	'' Side effects? Then use references to be able to read/write...
 	if( astIsClassOnTree( AST_NODECLASS_CALL, l ) <> NULL ) then
-		t = hMakeRef( t, @l )
+		t = hMakeRef( t, l )
 	end if
 
 	if( astIsClassOnTree( AST_NODECLASS_CALL, r ) <> NULL ) then
-		t = hMakeRef( t, @r )
+		t = hMakeRef( t, r )
 	end if
 
 	if( use_pushpop ) then
@@ -204,18 +203,15 @@ function cSwapStmt() as integer
 		'' pop r
 		t = astNewLINK( t, astNewSTACK( AST_OP_POP, r ) )
 	else
-		var lfulldtype = astGetFullType( l )
-		var lsubtype = astGetSubType( l )
-
 		'' var temp = clone( l )
-		var temp = symbAddTempVar( lfulldtype, lsubtype, FALSE )
-		t = astNewLINK( t, astNewASSIGN( astNewVAR( temp, , lfulldtype, lsubtype ), astCloneTree( l ) ) )
+		var temp = symbAddTempVar( astGetFullType( l ), astGetSubtype( l ), FALSE )
+		t = astNewLINK( t, astNewASSIGN( astNewVAR( temp ), astCloneTree( l ) ) )
 
 		'' l = clone( r )
 		t = astNewLINK( t, astNewASSIGN( l, astCloneTree( r ) ) )
 
 		'' r = temp
-		t = astNewLINK( t, astNewASSIGN( r, astNewVAR( temp, , lfulldtype, lsubtype ) ) )
+		t = astNewLINK( t, astNewASSIGN( r, astNewVAR( temp ) ) )
 	end if
 
 	astAdd( t )

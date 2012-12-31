@@ -135,7 +135,7 @@ sub cSelectStmtBegin()
 
 			astAdd( astNewDECL( sym, NULL ) )
 
-			astAdd( astNewASSIGN( astNewVAR( sym, 0, dtype, subtype ), expr ) )
+			astAdd( astNewASSIGN( astNewVAR( sym ), expr ) )
 		else
 			'' the wstring must be allocated() but size
 			'' is unknown at compile-time, do:
@@ -163,12 +163,10 @@ sub cSelectStmtBegin()
 			end if
 
 			'' tmp = WstrAlloc( len( expr ) )
-			astAdd( astNewASSIGN( astNewVAR( sym, 0, typeAddrOf( FB_DATATYPE_WCHAR ) ), _
-			                      rtlWstrAlloc( rtlMathLen( astCloneTree( expr ) ) ) ) )
+			astAdd( astNewASSIGN( astNewVAR( sym ), rtlWstrAlloc( rtlMathLen( astCloneTree( expr ) ) ) ) )
 
 			'' *tmp = expr
-			astAdd( astNewASSIGN( astNewDEREF( astNewVAR( sym, 0, typeAddrOf( FB_DATATYPE_WCHAR ) ) ), _
-			                      expr ) )
+			astAdd( astNewASSIGN( astNewDEREF( astNewVAR( sym ) ), expr ) )
 		end if
 	end if
 
@@ -236,7 +234,6 @@ private function hFlushCaseExpr _
 	( _
 		byref casectx as FBCASECTX, _
 		byval sym as FBSYMBOL ptr, _
-		byval dtype as integer, _
 		byval inilabel as FBSYMBOL ptr, _
 		byval nxtlabel as FBSYMBOL ptr, _
 		byval islast as integer _
@@ -245,12 +242,12 @@ private function hFlushCaseExpr _
 	dim as ASTNODE ptr expr = any
 
 	'' if it's the fake "dynamic wstring", do "if *tmp op expr"
-	#define NEWCASEVAR( symbol, dtype ) _
-		iif( symbGetIsWstring( symbol ), _
-		     astNewDEREF( astNewVAR( symbol, 0, typeAddrOf( FB_DATATYPE_WCHAR ) ) ), _
-		     astNewVAR( symbol, 0, dtype ) )
+	#define NEWCASEVAR( sym ) _
+		iif( symbGetIsWstring( sym ), _
+		     astNewDEREF( astNewVAR( sym ) ), _
+		     astNewVAR( sym ) )
 
-	expr = NEWCASEVAR( sym, dtype )
+	expr = NEWCASEVAR( sym )
 
 	if( casectx.typ <> FB_CASETYPE_RANGE ) then
 		if( islast ) then
@@ -268,7 +265,7 @@ private function hFlushCaseExpr _
 
 		astAdd( expr )
 
-		expr = NEWCASEVAR( sym, dtype )
+		expr = NEWCASEVAR( sym )
 		if( islast ) then
 			expr = astNewBOP( AST_OP_GT, expr, casectx.expr2, nxtlabel, AST_OPOPT_NONE )
 		else
@@ -374,7 +371,7 @@ function cSelectStmtNext( ) as integer
 
 		if( ctx.caseTB(cntbase+i).typ <> FB_CASETYPE_ELSE ) then
 			if( hFlushCaseExpr( ctx.caseTB(cntbase+i), stk->select.sym, _
-			                    stk->select.dtype, il, nl, i = cnt-1 ) = FALSE ) then
+			                    il, nl, i = cnt-1 ) = FALSE ) then
 				errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE )
 			end if
 		end if

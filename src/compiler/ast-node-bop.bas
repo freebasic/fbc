@@ -27,7 +27,7 @@ private function hStrLiteralConcat _
 	s = symbAllocStrConst( *symbGetVarLitText( ls ) + *symbGetVarLitText( rs ), _
 						   symbGetStrLen( ls ) - 1 + symbGetStrLen( rs ) - 1 )
 
-	function = astNewVAR( s, 0, FB_DATATYPE_CHAR )
+	function = astNewVAR( s )
 
 	astDelNode( r )
 	astDelNode( l )
@@ -60,7 +60,7 @@ private function hWstrLiteralConcat _
 						    	symbGetWstrLen( ls ) - 1 + symbGetWstrLen( rs ) - 1 )
     end if
 
-	function = astNewVAR( s, 0, FB_DATATYPE_WCHAR )
+	function = astNewVAR( s )
 
 	astDelNode( r )
 	astDelNode( l )
@@ -1605,30 +1605,17 @@ function astNewSelfBOP _
 		tmp = symbAddTempVar( typeAddrOf( dtype ), subtype, FALSE )
 
 		'' tmp = @lvalue
-		ll = astNewASSIGN( astNewVAR( tmp, 0, typeAddrOf( dtype ), subtype ), _
-					   	   astNewADDROF( l ) )
-
+		ll = astNewASSIGN( astNewVAR( tmp ), astNewADDROF( l ) )
 		if( ll = NULL ) then
 			exit function
 		end if
 
 		'' *tmp = *tmp op expr
-		lr = astNewASSIGN( astNewDEREF( astNewVAR( tmp, _
-				   		   			   			   0, _
-				   		   			   			   typeAddrOf( dtype ), _
-				   		   			   			   subtype ),_
-				   		   			    dtype, _
-				   		   			    subtype ), _
-						   astNewBOP( op, _
-				   		   			  astNewDEREF( astNewVAR( tmp, _
-				   		   			   			  			  0, _
-				   		   			   			  			  typeAddrOf( dtype ), _
-				   		   			   			  			  subtype ), _
-				   		   			   			   dtype, _
-				   		   			   			   subtype ), _
-					   	   			  r, _
-					   	   			  ex, _
-					   	   			  options or AST_OPOPT_ALLOCRES ) )
+		lr = astNewASSIGN( _
+			astNewDEREF( astNewVAR( tmp ), dtype, subtype ), _
+			astNewBOP( op, _
+				astNewDEREF( astNewVAR( tmp ), dtype, subtype ), _
+				r, ex, options or AST_OPOPT_ALLOCRES ) )
 
 		if( lr = NULL ) then
 			exit function

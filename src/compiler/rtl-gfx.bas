@@ -2035,7 +2035,7 @@ function rtlGfxPaint _
  			exit function
  		end if
 	else
-    	if( astNewARG( proc, astNewVAR( symbAllocStrConst( "", 0 ), 0, FB_DATATYPE_CHAR ) ) = NULL ) then
+		if( astNewARG( proc, astNewVAR( symbAllocStrConst( "", 0 ) ) ) = NULL ) then
  			exit function
  		end if
 		if( astNewARG( proc, astNewCONSTi( 0, FB_DATATYPE_INTEGER ) ) = NULL ) then
@@ -2646,8 +2646,7 @@ function rtlGfxGet _
 		argmode = INVALID
 
 		if( astIsFIELD( arrayexpr ) = FALSE ) then
-			descexpr = astNewVAR( symbol, 0, symbGetFullType( symbol ) )
-
+			descexpr = astNewVAR( symbol )
 		else
 			'' side-effect?
 			if( astIsClassOnTree( AST_NODECLASS_CALL, arrayexpr ) <> NULL ) then

@@ -985,15 +985,11 @@ private function hCallStaticCtor _
 	'' if flag = 0 then
 	label = symbAddLabel( NULL )
 
-    tree = astNewLINK( tree, _
-    				   astUpdComp2Branch( astNewBOP( AST_OP_EQ, _
-    									  			 astNewVAR( flag, _
-            										 			0, _
-            										 			FB_DATATYPE_INTEGER ), _
-            							  			 astNewCONSTi( 0, _
-            													   FB_DATATYPE_INTEGER ) ), _
-            				   			  label, _
-            				   			  FALSE ) )
+	tree = astNewLINK( tree, _
+		astUpdComp2Branch( astNewBOP( AST_OP_EQ, _
+			astNewVAR( flag ), _
+			astNewCONSTi( 0, FB_DATATYPE_INTEGER ) ), _
+			label, FALSE ) )
 
 	'' flag = 1
 	tree = astNewLINK( tree, _

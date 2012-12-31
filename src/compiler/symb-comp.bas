@@ -118,12 +118,12 @@ private sub hBuildRtti( byval udt as FBSYMBOL ptr )
 
 		'' id = @"mangled name"
 		fld = symbUdtGetNextInitableField( fld )
-		astTypeIniAddAssign( initree, astNewADDROF( astNewVAR( symbAllocStrConst( symbGetMangledName( udt ), -1 ), 0, FB_DATATYPE_CHAR ) ), fld )
+		astTypeIniAddAssign( initree, astNewADDROF( astNewVAR( symbAllocStrConst( symbGetMangledName( udt ), -1 ) ) ), fld )
 
 		'' rttibase = @(base's RTTI data) or NULL if there is no base
 		fld = symbUdtGetNextInitableField( fld )
 		if( udt->udt.base ) then
-			rttibase = astNewADDROF( astNewVAR( udt->udt.base->subtype->udt.ext->rtti, 0 ) )
+			rttibase = astNewADDROF( astNewVAR( udt->udt.base->subtype->udt.ext->rtti, , FB_DATATYPE_INTEGER ) )
 		else
 			rttibase = astNewCONSTi( 0, typeAddrOf( FB_DATATYPE_VOID ) )
 		end if
@@ -188,7 +188,7 @@ private sub hBuildVtable( byval udt as FBSYMBOL ptr )
 
 	'' 1. rtti pointer = @rtti
 	rtti = udt->udt.ext->rtti
-	astTypeIniAddAssign( initree, astNewADDROF( astNewVAR( rtti, 0, symbGetFullType( rtti ), symbGetSubtype( rtti ) ) ), vtable )
+	astTypeIniAddAssign( initree, astNewADDROF( astNewVAR( rtti ) ), vtable )
 
 	'' initialize inherited procptrs, to the same expression as in the
 	'' base vtable's initializer

@@ -56,8 +56,7 @@ function cVAFunct() as ASTNODE ptr
 		function = astNewCONSTi( 0 )
 	else
 		'' @param
-		dim as ASTNODE ptr expr = astNewVAR( sym, 0, symbGetFullType( sym ), symbGetSubType( sym ) )
-		expr = astNewADDROF( expr )
+		var expr = astNewADDROF( astNewVAR( sym ) )
 
 		'' Cast to ANY PTR to hide that it's based on the parameter
 		expr = astNewCONV( typeAddrOf( FB_DATATYPE_VOID ), NULL, expr )

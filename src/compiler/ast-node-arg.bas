@@ -116,9 +116,9 @@ private function hAllocTmpString _
 	function = astNewLINK( _
 		astNewLINK( _
 			astBuildTempVarClear( t->sym ), _
-			rtlStrAssign( astNewVAR( t->sym, 0, FB_DATATYPE_STRING ), n ), _
+			rtlStrAssign( astNewVAR( t->sym ), n ), _
 			FALSE ), _
-		astNewVAR( t->sym, 0, FB_DATATYPE_STRING ), _
+		astNewVAR( t->sym ), _
 		FALSE )
 
 end function
@@ -140,7 +140,7 @@ private function hAllocTmpWstrPtr _
 	astSetType( n, typeAddrOf( FB_DATATYPE_WCHAR ), NULL )
 
 	'' temp string = src string
-	function = astNewASSIGN( astNewVAR( t->sym, 0, typeAddrOf( FB_DATATYPE_WCHAR ) ), n )
+	function = astNewASSIGN( astNewVAR( t->sym ), n )
 end function
 
 '':::::
@@ -398,8 +398,7 @@ private sub hCheckByrefParam _
 
 		case else
 			'' scalars: store arg to a temp var and pass it
-			arg = astNewASSIGN( astNewVAR( symbAddTempVar( arg->dtype, arg->subtype, FALSE ), _
-			                               0, arg->dtype, arg->subtype ), _
+			arg = astNewASSIGN( astNewVAR( symbAddTempVar( arg->dtype, arg->subtype, FALSE ) ), _
 			                    arg, AST_OPOPT_DONTCHKPTR )
 		end select
 
@@ -486,14 +485,11 @@ private function hCheckByDescParam _
     	astDelTree( arg )
     end if
 
-    '' create a new
-    n->l = astNewLINK( astNewCONV( typeAddrOf( FB_DATATYPE_VOID ), _
-    							   NULL, _
-    				   			   astNewADDROF( astNewVAR( desc, _
-        					   	  			  				0, _
-        					   	  			  				FB_DATATYPE_STRUCT, _
-        					   	  			  				symb.arrdesctype ) ) ), _
-        			   desc_tree )
+	'' create a new
+	n->l = astNewLINK( _
+		astNewCONV( typeAddrOf( FB_DATATYPE_VOID ), NULL, _
+			astNewADDROF( astNewVAR( desc ) ) ), _
+		desc_tree )
 
     function = TRUE
 

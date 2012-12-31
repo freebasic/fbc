@@ -185,11 +185,8 @@ sub astDataStmtEnd( byval tree as ASTNODE ptr )
     	'' del the NULL expr
     	astDelNode( tn->l )
 
-    	'' replace the node
-    	tn->l = astNewADDROF( astNewVAR( array, _
-    									 0, _
-    									 FB_DATATYPE_STRUCT, _
-    									 ast.data.desc ) )
+		'' replace the node
+		tn->l = astNewADDROF( astNewVAR( array ) )
 	end if
 
 	'' datadesc arrays can reference the next datadesc array (link to next

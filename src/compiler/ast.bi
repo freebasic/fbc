@@ -625,7 +625,7 @@ declare function astNewVAR _
 	( _
 		byval sym as FBSYMBOL ptr, _
 		byval ofs as integer = 0, _
-		byval dtype as integer = FB_DATATYPE_INTEGER, _
+		byval dtype as integer = FB_DATATYPE_INVALID, _
 		byval subtype as FBSYMBOL ptr = NULL _
 	) as ASTNODE ptr
 
@@ -1033,15 +1033,8 @@ declare function astRemSideFx _
 		byref n as ASTNODE ptr _
 	) as ASTNODE ptr
 
-declare function astBuildVarAddrof _
-	( _
-		byval sym as FBSYMBOL ptr _
-	) as ASTNODE ptr
-
-declare function astBuildVarDeref _
-	( _
-		byval sym as FBSYMBOL ptr _
-	) as ASTNODE ptr
+declare function astBuildVarDeref( byval sym as FBSYMBOL ptr ) as ASTNODE ptr
+declare function astBuildVarAddrof( byval sym as FBSYMBOL ptr ) as ASTNODE ptr
 
 declare function astBuildVarInc _
 	( _

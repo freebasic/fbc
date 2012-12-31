@@ -165,29 +165,22 @@ private function hNewOp _
 
 		'' *ptr = elmts
 		tree = astNewLINK( tree, _
-						   astNewASSIGN( astNewDEREF( astNewVAR( ptr_sym, _
-						   									     0, _
-						   									     typeAddrOf( FB_DATATYPE_INTEGER ), _
-						   									     NULL ), _
-                                                      FB_DATATYPE_INTEGER, _
-                                                      NULL ), _
-						  	iif( do_init and (op = AST_OP_NEW_VEC), _
-						  	   	 astCloneTree( elmts_expr ), _
-						  	   	 elmts_expr ) ) )
+			astNewASSIGN( _
+				astNewDEREF( astNewVAR( ptr_sym, , typeAddrOf( FB_DATATYPE_INTEGER ) ), _
+					FB_DATATYPE_INTEGER, NULL ), _
+				iif( do_init and (op = AST_OP_NEW_VEC), _
+					astCloneTree( elmts_expr ), _
+					elmts_expr ) ) )
 
 		'' ptr += len( integer )
 		tree = astNewLINK( tree, _
-						   astNewSelfBOP( AST_OP_ADD_SELF, _
-						   	  			  astNewVAR( ptr_sym, _
-						   	  			 			 0, _
-						   	  			 			 typeAddrOf( FB_DATATYPE_VOID ), _
-						   	  			 			 NULL ), _
-            			   	  			  astNewCONSTi( FB_INTEGERSIZE, FB_DATATYPE_INTEGER ), _
-            			   	  			  NULL ) )
+			astNewSelfBOP( AST_OP_ADD_SELF, _
+				astNewVAR( ptr_sym, , typeAddrOf( FB_DATATYPE_VOID ) ), _
+				astNewCONSTi( FB_INTEGERSIZE, FB_DATATYPE_INTEGER ), _
+				NULL ) )
 
 		astDelTree( ptr_expr )
-		ptr_expr = astNewVAR( ptr_sym, 0, typeAddrOf( FB_DATATYPE_VOID ), NULL )
-
+		ptr_expr = astNewVAR( ptr_sym, , typeAddrOf( FB_DATATYPE_VOID ) )
     else
 		'' ptr = new( len )
 		tree = astNewLINK( tree, astNewASSIGN( astCloneTree( ptr_expr ), new_expr ) )
@@ -283,11 +276,8 @@ private function hCallDtorList _
 	tree = astBuildVarAssign( elmts, expr )
 
 	'' iter = @vector[elmts]
-	ptr_expr = astNewBOP( AST_OP_ADD, _
-					  	  ptr_expr, _
-					  	  astNewVAR( elmts, 0, FB_DATATYPE_INTEGER, NULL ), _
-					  	  NULL, _
-					  	  AST_OPOPT_DEFAULT or AST_OPOPT_DOPTRARITH )
+	ptr_expr = astNewBOP( AST_OP_ADD, ptr_expr, astNewVAR( elmts ), NULL, _
+				AST_OPOPT_DEFAULT or AST_OPOPT_DOPTRARITH )
 
 	tree = astNewLINK( tree, astBuildVarAssign( iter, ptr_expr ) )
 
@@ -301,10 +291,9 @@ private function hCallDtorList _
 	tree = astNewLINK( tree, astBuildDtorCall( subtype, astBuildVarDeref( iter ) ) )
 
 	'' next
-	tree = astBuildForEnd( tree, cnt, label, 1, astNewVAR( elmts, 0, FB_DATATYPE_INTEGER, NULL ) )
+	tree = astBuildForEnd( tree, cnt, label, 1, astNewVAR( elmts ) )
 
 	function = tree
-
 end function
 
 '':::::

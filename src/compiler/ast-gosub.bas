@@ -87,9 +87,7 @@ sub astGosubAddJmp _
 
 		astAdd( astUpdComp2Branch( astNewBOP( AST_OP_EQ, _
 					rtlSetJmp( rtlGosubPush( _
-						astNewAddrOf( astNewVar( symbGetProcGosubSym( proc ), _
-							0, _
-							symbGetType( symbGetProcGosubSym( proc ) ) ) ) _
+						astNewADDROF( astNewVAR( symbGetProcGosubSym( proc ) ) ) _
 					) ), _
 					astNewCONSTi( 0, FB_DATATYPE_INTEGER ) ), _
 			  label, _
@@ -120,7 +118,7 @@ sub astGosubAddJumpPtr _
 		astAdd( astBuildVarInc( symbGetProcGosubSym( proc ), 1 ) )
 
 		astAdd( astNewSTACK( AST_OP_PUSH, _
-						 astNewADDROF( astNewVAR( exitlabel ) ) ) )
+				astNewADDROF( astNewVAR( exitlabel, , FB_DATATYPE_INTEGER ) ) ) )
 
 		'' goto table[expr]
 		astAdd( jumptb )
@@ -133,9 +131,7 @@ sub astGosubAddJumpPtr _
 
 		astAdd( astUpdComp2Branch( astNewBOP( AST_OP_EQ, _
 					rtlSetJmp( rtlGosubPush( _
-						astNewAddrOf( astNewVar( symbGetProcGosubSym( proc ), _
-							0, _
-							symbGetType( symbGetProcGosubSym( proc ) ) ) ) _
+						astNewADDROF( astNewVAR( symbGetProcGosubSym( proc ) ) ) _
 					) ), _
 					astNewCONSTi( 0, FB_DATATYPE_INTEGER ) ), _
 			  label, _
@@ -170,7 +166,7 @@ function astGosubAddReturn _
 		label = symbAddLabel( NULL )
 
 		astAdd( astUpdComp2Branch( astNewBOP( AST_OP_NE, _
-					astNewVar( symbGetProcGosubSym( proc ), 0, symbGetType( symbGetProcGosubSym( proc ) ) ), _
+					astNewVAR( symbGetProcGosubSym( proc ) ), _
 					astNewCONSTi( 0, FB_DATATYPE_INTEGER ) ), _
 			  label, _
 			  FALSE ) )
@@ -212,9 +208,9 @@ function astGosubAddReturn _
 
 		'' RETURN
 		if( l = NULL ) then
-	
+
 			'' fb_GosubReturn( @ctx )
-			function = ( NULL <> rtlGosubReturn( astNewAddrOf( astNewVar( symbGetProcGosubSym( proc ), 0, symbGetType( symbGetProcGosubSym( proc ) ) ) ) ) )
+			function = (NULL <> rtlGosubReturn( astNewADDROF( astNewVAR( symbGetProcGosubSym( proc ) ) ) ))
 
 		'' RETURN [label]
 		else
@@ -224,9 +220,7 @@ function astGosubAddReturn _
 
 			astAdd( astUpdComp2Branch( astNewBOP( AST_OP_EQ, _
 						rtlGosubPop( _
-							astNewAddrOf( astNewVar( symbGetProcGosubSym( proc ), _
-								0, _
-								symbGetType( symbGetProcGosubSym( proc ) ) ) ) _
+							astNewADDROF( astNewVAR( symbGetProcGosubSym( proc ) ) ) _
 						), _
 						astNewCONSTi( 0, FB_DATATYPE_INTEGER ) ), _
 				  label, _
@@ -258,9 +252,7 @@ end function
 sub astGosubAddExit(byval proc as FBSYMBOL ptr)
 	if( symbGetProcStatGosub( proc ) ) then
 		if( AsmBackend() = FALSE ) then
-			astAdd( rtlGosubExit( astNewAddrOf( astNewVar( symbGetProcGosubSym( proc ), _
-				0, _
-				symbGetType( symbGetProcGosubSym( proc ) ) ) ) ) )
+			astAdd( rtlGosubExit( astNewADDROF( astNewVAR( symbGetProcGosubSym( proc ) ) ) ) )
 		end if
 	end if
 end sub

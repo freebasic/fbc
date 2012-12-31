@@ -50,14 +50,14 @@ private sub hBuildDllMainWin32( )
 	astProcBegin( proc, FALSE )
 
 	'' function = TRUE
-	astAdd( astNewASSIGN( astNewVAR( symbGetProcResult( proc ), 0, symbGetFullType( proc ) ), _
+	astAdd( astNewASSIGN( astNewVAR( symbGetProcResult( proc ) ), _
 	                      astNewCONSTi( 1, symbGetType( proc ) ) ) )
 
 	'' if( reason = DLL_PROCESS_ATTACH ) then
 	param = symbGetParamVar( param )
 	label = symbAddLabel( NULL )
 	astAdd( astNewBOP( AST_OP_NE, _
-			astNewVAR( param, 0, symbGetFullType( param ) ), _
+			astNewVAR( param ), _
 			astNewCONSTi( 1, FB_DATATYPE_UINT ), _
 			label, AST_OPOPT_NONE ) )
 

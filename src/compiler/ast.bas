@@ -287,35 +287,26 @@ function astRemSideFx _
 		tmp = symbAddTempVar( typeAddrOf( dtype ), subtype, FALSE )
 
 		'' tmp = @b
-		t = astNewASSIGN( astNewVAR( tmp, 0, typeAddrOf( dtype ), subtype ), _
-				   	  	  astNewADDROF( n ) )
+		t = astNewASSIGN( astNewVAR( tmp ), astNewADDROF( n ) )
 
 		'' return *tmp
-		function = astNewLINK( t, _
-						   	   astNewDEREF( astNewVAR( tmp, _
-			   		   			   			  	 	   0, _
-			   		   			   			  	 	   typeAddrOf( dtype ), _
-			   		   			   			  	 	   subtype ),_
-			   		   			   	  	  	dtype, _
-			   		   			   	  	  	subtype ) )
+		function = astNewLINK( t, astNewDEREF( astNewVAR( tmp ), dtype, subtype ) )
 
 		'' repatch node
-		n = astNewDEREF( astNewVAR( tmp, 0, typeAddrOf( dtype ), subtype ), _
-			   		   	 dtype, _
-			   		   	 subtype )
+		n = astNewDEREF( astNewVAR( tmp ), dtype, subtype )
 
 	'' simple type..
 	case else
 		tmp = symbAddTempVar( dtype, subtype, FALSE )
 
 		'' tmp = n
-		t = astNewASSIGN( astNewVAR( tmp, 0, dtype, subtype ), n )
+		t = astNewASSIGN( astNewVAR( tmp ), n )
 
 		'' return tmp
-		function = astNewLINK( t, astNewVAR( tmp, 0, dtype, subtype ) )
+		function = astNewLINK( t, astNewVAR( tmp ) )
 
 		'' repatch node
-		n = astNewVAR( tmp, 0, dtype, subtype )
+		n = astNewVAR( tmp )
 
 	end select
 

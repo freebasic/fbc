@@ -384,8 +384,7 @@ function cInputStmt _
     	'' STRING_LIT?
     	if( lexGetClass( ) = FB_TKCLASS_STRLITERAL ) then
 			lgt = lexGetTextLen( )
-			filestrexpr = astNewVAR( symbAllocStrConst( *lexGetText( ), lgt ), _
-									 0, FB_DATATYPE_CHAR )
+			filestrexpr = astNewVAR( symbAllocStrConst( *lexGetText( ), lgt ) )
 			lexSkipToken( )
     	else
     		filestrexpr = NULL

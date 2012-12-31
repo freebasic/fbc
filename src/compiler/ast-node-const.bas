@@ -45,7 +45,7 @@ function astNewCONSTstr _
     	exit function
     end if
 
-	function = astNewVAR( tc, 0, FB_DATATYPE_CHAR )
+	function = astNewVAR( tc )
 
 end function
 
@@ -63,7 +63,7 @@ function astNewCONSTwstr _
     	exit function
     end if
 
-	function = astNewVAR( tc, 0, FB_DATATYPE_WCHAR )
+	function = astNewVAR( tc )
 
 end function
 

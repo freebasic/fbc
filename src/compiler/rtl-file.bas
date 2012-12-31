@@ -2009,7 +2009,7 @@ function rtlFileLineInput _
 
     '' "byval filenum as integer" or "text as string "
     if( (isfile = FALSE) and (expr = NULL) ) then
-		expr = astNewVAR( symbAllocStrConst( "", 0 ), 0, FB_DATATYPE_CHAR )
+		expr = astNewVAR( symbAllocStrConst( "", 0 ) )
 	end if
 
     if( astNewARG( proc, expr ) = NULL ) then
@@ -2082,7 +2082,7 @@ function rtlFileLineInputWstr _
 
     '' "byval filenum as integer" or "byval text as wstring ptr"
     if( (isfile = FALSE) and (expr = NULL) ) then
-		expr = astNewVAR( symbAllocWStrConst( "", 0 ), 0, FB_DATATYPE_WCHAR )
+		expr = astNewVAR( symbAllocWStrConst( "", 0 ) )
 	end if
 
     if( astNewARG( proc, expr ) = NULL ) then
@@ -2149,7 +2149,7 @@ function rtlFileInput _
 
     '' "byval filenum as integer" or "text as string "
     if( (isfile = FALSE) and (expr = NULL) ) then
-		expr = astNewVAR( symbAllocStrConst( "", 0 ), 0, FB_DATATYPE_CHAR )
+		expr = astNewVAR( symbAllocStrConst( "", 0 ) )
 	end if
 
 	if( astNewARG( proc, expr ) = NULL ) then

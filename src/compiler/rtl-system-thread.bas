@@ -162,16 +162,13 @@ private function hGetExprRef( byval expr as ASTNODE ptr ) as ASTNODE ptr
 		function = astNewADDROF( expr )
 	else
 		'' copy expression to a variable, and get the address
-		dtype = astGetDataType( expr )
-		subtype = astGetSubType( expr )
-		tmpvar = symbAddTempVar( dtype, subtype, FALSE )
+		tmpvar = symbAddTempVar( astGetDataType( expr ), astGetSubType( expr ), FALSE )
 
 		'' tmpvar = expr
-		astAdd( astNewASSIGN( astNewVAR( tmpvar, 0, dtype, subtype ), _
-		                      expr, AST_OPOPT_DONTCHKPTR ) )
+		astAdd( astNewASSIGN( astNewVAR( tmpvar ), expr, AST_OPOPT_DONTCHKPTR ) )
 
 		'' @tmpvar
-		function = astNewADDROF( astNewVAR( tmpvar, 0, dtype, subtype ) )
+		function = astNewADDROF( astNewVAR( tmpvar ) )
 	end if
 end function
 

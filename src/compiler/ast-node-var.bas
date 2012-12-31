@@ -14,6 +14,11 @@ function astNewVAR _
 
     dim as ASTNODE ptr n = any
 
+	if( dtype = FB_DATATYPE_INVALID ) then
+		dtype = symbGetFullType( sym )
+		subtype = symbGetSubtype( sym )
+	end if
+
 	'' alloc new node
 	n = astNewNode( AST_NODECLASS_VAR, dtype, subtype )
 

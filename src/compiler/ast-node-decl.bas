@@ -24,9 +24,7 @@ private function hCtorList _
 	this_ = symbAddTempVar( typeAddrOf( symbGetType( sym ) ), subtype, FALSE )
 
 	'' fld = @sym(0)
-	tree = astNewLINK( tree, _
-		astBuildVarAssign( this_, _
-			astNewADDROF( astNewVAR( sym, 0, symbGetFullType( sym ), subtype ) ) ) )
+	tree = astNewLINK( tree, astBuildVarAssign( this_, astNewADDROF( astNewVAR( sym ) ) ) )
 
 	'' for cnt = 0 to symbGetArrayElements( sym )-1
 	tree = astBuildForBegin( tree, cnt, label, 0 )
@@ -82,7 +80,7 @@ private function hCallCtor _
 		if( (symbGetArrayDimensions( sym ) = 0) or _
 		    (symbGetArrayElements( sym ) = 1) ) then
 			'' sym.constructor( )
-			function = astBuildCtorCall( symbGetSubtype( sym ), astNewVAR( sym, 0, symbGetFullType( sym ), symbGetSubtype( sym ) ) )
+			function = astBuildCtorCall( symbGetSubtype( sym ), astNewVAR( sym ) )
 		'' array..
 		else
 			function = hCtorList( sym )
@@ -91,8 +89,7 @@ private function hCallCtor _
 		exit function
 	end if
 
-	function = astNewMEM( AST_OP_MEMCLEAR, _
-	                      astNewVAR( sym, 0, symbGetFullType( sym ), symbGetSubtype( sym ) ), _
+	function = astNewMEM( AST_OP_MEMCLEAR, astNewVAR( sym ), _
 	                      astNewCONSTi( symbGetLen( sym ) * symbGetArrayElements( sym ) ) )
 end function
 

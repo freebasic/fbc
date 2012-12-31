@@ -372,7 +372,7 @@ function cIsExpression _
 	end if
 	
 	'' point to the RTTI table
-	var expr = astNewVAR( subtype->udt.ext->rtti )
+	var expr = astNewVAR( subtype->udt.ext->rtti, , FB_DATATYPE_INTEGER )
 	
 	'' do operation
 	isexpr = astNewBOP( AST_OP_IS, isexpr, expr )

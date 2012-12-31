@@ -331,7 +331,6 @@ function rtlDataRead _
 
 end function
 
-'':::::
 function rtlDataRestore _
 	( _
 		byval label as FBSYMBOL ptr, _
@@ -363,12 +362,10 @@ function rtlDataRestore _
 		sym = astDataStmtAdd( label, 0 )
 	end if
 
-    expr = astNewADDROF( astNewVAR( sym, 0, FB_DATATYPE_BYTE ) )
-    if( astNewARG( proc, expr ) = NULL ) then
- 		exit function
- 	end if
+	if( astNewARG( proc, astNewADDROF( astNewVAR( sym, , FB_DATATYPE_BYTE ) ) ) = NULL ) then
+		exit function
+	end if
 
-	''
 	if( afternode = NULL ) then
 		astAdd( proc )
 	else
@@ -376,6 +373,4 @@ function rtlDataRestore _
 	end if
 
 	function = TRUE
-
 end function
-

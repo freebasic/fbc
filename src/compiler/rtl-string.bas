@@ -2656,7 +2656,7 @@ function rtlStrConcat _
 
 	if( astNewARG( proc, _
 		astNewLINK( astBuildTempVarClear( tmp ), _
-			astNewVAR( tmp, 0, FB_DATATYPE_STRING ), _
+			astNewVAR( tmp ), _
 			FALSE ) ) = NULL ) then
 		exit function
 	end if
@@ -3367,7 +3367,7 @@ function rtlToStr _
 				litsym = symbAllocStrConst( str( *symbGetVarLitTextW( litsym ) ), _
 							   	   	   		symbGetWstrLen( litsym ) - 1 )
 
-				return astNewVAR( litsym, 0, FB_DATATYPE_CHAR )
+				return astNewVAR( litsym )
     		end if
     	end if
     end if
@@ -3504,8 +3504,8 @@ function rtlToWstr _
 			if( env.wchar_doconv ) then
 				litsym = symbAllocWstrConst( wstr( *symbGetVarLitText( litsym ) ), _
 							 			     symbGetStrLen( litsym ) - 1 )
-    			return astNewVAR( litsym, 0, FB_DATATYPE_WCHAR )
-    		end if
+				return astNewVAR( litsym )
+			end if
     	end if
     end if
 
