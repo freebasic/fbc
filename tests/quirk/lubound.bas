@@ -149,15 +149,15 @@ sub test1 cdecl( )
 	CU_ASSERT( lbound( array10 ) = 31 )
 	CU_ASSERT( ubound( array10 ) = 33 )
 	CU_ASSERT( array10(31) = 1 )
-	CU_ASSERT( array10(32) = 31 )
+	CU_ASSERT( array10(32) = 33 )
 	CU_ASSERT( array10(33) = 3 )
 
-	hCheckBydesc( array1, 0, 1 )
-	hCheckBydesc( array2, 123, 456 )
-	hCheckBydesc( array6, 10, 11 )
-	hCheckBydesc( array7, 10, 11 )
-	hCheckBydesc( array9, 10, 13 )
-	hCheckBydesc( array10, 31, 33 )
+	hCheckBydesc( array1(), 0, 1 )
+	hCheckBydesc( array2(), 123, 456 )
+	hCheckBydesc( array6(), 10, 11 )
+	hCheckBydesc( array7(), 10, 11 )
+	hCheckBydesc( array9(), 11, 13 )
+	hCheckBydesc( array10(), 31, 33 )
 end sub
 
 private sub ctor( ) constructor
