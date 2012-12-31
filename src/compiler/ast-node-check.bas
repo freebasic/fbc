@@ -54,17 +54,17 @@ function astNewBOUNDCHK _
 	end if
 
 	'' alloc new node
-	n = astNewNode( AST_NODECLASS_BOUNDCHK, FB_DATATYPE_INTEGER, NULL )
+	n = astNewNode( AST_NODECLASS_BOUNDCHK, l->dtype, l->subtype )
 	function = n
 
 	n->l = l
 
-	n->sym = symbAddTempVar( astGetDataType( l ), l->subtype, FALSE )
+	n->sym = symbAddTempVar( l->dtype, l->subtype, FALSE )
 
     '' check must be done using a function because calling ErrorThrow
     '' would spill used regs only if it was called, causing wrong
     '' assumptions after the branches
-	n->r = rtlArrayBoundsCheck( astNewVAR( n->sym, 0, FB_DATATYPE_INTEGER, NULL ), _
+	n->r = rtlArrayBoundsCheck( astNewVAR( n->sym, 0, l->dtype, l->subtype ), _
 					lb, ub, linenum, filename )
 
 end function
@@ -88,11 +88,7 @@ function astLoadBOUNDCHK _
 
 	'' assign to a temp, can't reuse the same vreg or registers could
 	'' be spilled as IR can't handle inter-blocks
-	t = astNewASSIGN( astNewVAR( n->sym, _
-								 0, _
-								 FB_DATATYPE_INTEGER, _
-								 NULL ), _
-					  l )
+	t = astNewASSIGN( astNewVAR( n->sym, 0, symbGetFullType( n->sym ), symbGetSubtype( n->sym ) ), l )
 	astLoad( t )
 	astDelNode( t )
 
@@ -113,7 +109,7 @@ function astLoadBOUNDCHK _
 
 	''
 	'' re-load, see above
-	t = astNewVAR( n->sym, 0, FB_DATATYPE_INTEGER, NULL )
+	t = astNewVAR( n->sym, 0, symbGetFullType( n->sym ), symbGetSubtype( n->sym ) )
 	function = astLoad( t )
 	astDelNode( t )
 
