@@ -1256,6 +1256,7 @@ declare function astGetOFFSETChildOfs _
 		byval l as ASTNODE ptr _
 	) as integer
 
+declare function astIsCALLReturnInReg( byval expr as ASTNODE ptr ) as integer
 declare function astGetCALLResUDT(byval expr as ASTNODE ptr) as ASTNODE ptr
 
 declare function astFindLocalSymbol _

@@ -502,13 +502,8 @@ function astNewASSIGN _
 			exit function
 		end if
 
-        dim as integer is_udt = TRUE
-        if( astIsCALL( r ) ) then
-        	is_udt = (symbIsUDTReturnedInRegs( r->subtype ) = FALSE)
-        end if
-
         '' is r an UDT too?
-		if( is_udt ) then
+		if( astIsCALLReturnInReg( r ) = FALSE ) then
 			'' type ini tree?
 			if( r->class = AST_NODECLASS_TYPEINI ) then
 				'' skip any casting if they won't do any conversion

@@ -659,14 +659,8 @@ private sub hUDTPassByval _
 
 	'' no dtor, copy-ctor or virtual members?
 	if( symbCompIsTrivial( symbGetSubtype( param ) ) ) then
-		'' not returned in registers?
-		dim as integer is_udt = TRUE
-		if( astIsCALL( arg ) ) then
-			is_udt = (symbIsUDTReturnedInRegs( arg->subtype ) = FALSE)
-		end if
-
 		'' udt? push byte by byte to stack
-		if( is_udt ) then
+		if( astIsCALLReturnInReg( arg ) = FALSE ) then
 			'' (Note: no rounding, ASM backend must handle any
 			'' remainder manually to prevent an overrun)
 			n->arg.lgt = symbGetLen( symbGetSubtype( param ) )
@@ -796,22 +790,17 @@ private function hCheckUDTParam _
 	'' byref param?
 	case FB_PARAMMODE_BYREF
 		'' it's a proc call, but was it originally returning an UDT?
-    	if( astIsCALL( arg ) ) then
-			if( symbIsUDTReturnedInRegs( arg->subtype ) ) then
+		if( astIsCALLReturnInReg( arg ) ) then
+			'' create a temporary UDT and pass it..
+			dim as FBSYMBOL ptr tmp = any
 
-				'' create a temporary UDT and pass it..
-				dim as FBSYMBOL ptr tmp = any
+			'' (note: if it's being returned in regs, there's no DTOR)
+			tmp = symbAddTempVar( astGetDatatype( arg ), arg->subtype, FALSE )
 
-				'' (note: if it's being returned in regs, there's no DTOR)
-				tmp = symbAddTempVar( astGetDatatype( arg ), arg->subtype, FALSE )
-
-				n->l = astNewLink( astNewADDROF( astBuildVarField( tmp ) ), _
-								   astNewASSIGN( astBuildVarField( tmp ), _
-								   			     arg, _
-									   			 AST_OPOPT_DONTCHKOPOVL ) )
-				n->arg.mode = FB_PARAMMODE_BYVAL
-				return TRUE
-			end if
+			n->l = astNewLINK( astNewADDROF( astBuildVarField( tmp ) ), _
+					astNewASSIGN( astBuildVarField( tmp ), arg, AST_OPOPT_DONTCHKOPOVL ) )
+			n->arg.mode = FB_PARAMMODE_BYVAL
+			return TRUE
 		end if
 
 		hBuildByrefArg( param, n, arg )

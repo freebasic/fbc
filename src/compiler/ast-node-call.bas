@@ -364,6 +364,14 @@ sub astReplaceSymbolOnCALL _
 
 end sub
 
+function astIsCALLReturnInReg( byval expr as ASTNODE ptr ) as integer
+	if( astIsCALL( expr ) ) then
+		function = symbIsUDTReturnedInRegs( expr->subtype )
+	else
+		function = FALSE
+	end if
+end function
+
 '':::::
 function astGetCALLResUDT(byval expr as ASTNODE ptr) as ASTNODE ptr
 	var subtype = astGetSubtype( expr )
