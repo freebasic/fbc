@@ -2654,11 +2654,12 @@ function rtlStrConcat _
     '' byref dst as string (must be cleaned up due the rtlib assumptions about destine)
     tmp = symbAddTempVar( FB_DATATYPE_STRING )
 
-    if( astNewARG( proc, _
-    			   astNewVAR( tmp, 0, FB_DATATYPE_STRING, NULL, TRUE ), _
-    			   FB_DATATYPE_STRING ) = NULL ) then
-    	exit function
-    end if
+	if( astNewARG( proc, _
+		astNewLINK( astBuildTempVarClear( tmp ), _
+			astNewVAR( tmp, 0, FB_DATATYPE_STRING ), _
+			FALSE ) ) = NULL ) then
+		exit function
+	end if
 
    	'' always calc len before pushing the param
    	str1len = rtlCalcStrLen( str1, sdtype1 )

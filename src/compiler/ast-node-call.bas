@@ -200,9 +200,19 @@ function astLoadCALL( byval n as ASTNODE ptr ) as IRVREG ptr
 			bytestopop += typeGetSize( typeAddrOf( FB_DATATYPE_VOID ) )
 		end if
 		if( ast.doemit ) then
+			'' Clear the temp struct (so the function can safely
+			'' do assignments to it in case it includes STRINGs),
+			'' unless it has a constructor (which the function will
+			'' call anyways).
+			''if( symbHasCtor( n->call.tmpres ) = FALSE ) then
+
+			if( symbGetUDTHasCtorField( symbGetSubtype( n->call.tmpres ) ) or _
+			    (symbIsUDTReturnedInRegs( symbGetSubtype( n->call.tmpres ) ) = FALSE) ) then
+				astLoad( astBuildTempVarClear( n->call.tmpres ) )
+			end if
+
 			'' Pass the address of the temp result struct
-			'' Note: the struct must be cleared in case it includes string fields.
-			l = astNewVAR( n->call.tmpres, 0, FB_DATATYPE_STRUCT, symbGetSubtype( proc ), TRUE )
+			l = astNewVAR( n->call.tmpres, 0, FB_DATATYPE_STRUCT, symbGetSubtype( proc ) )
 			l = astNewADDROF( l )
 			v1 = astLoad( l )
 			irEmitPUSHARG( v1, 0, reclevel )

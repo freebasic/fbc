@@ -188,6 +188,24 @@ function astBuildVarField _
 
 end function
 
+function astBuildTempVarClear( byval sym as FBSYMBOL ptr ) as ASTNODE ptr
+	'' Don't need to clear if it's a STATIC, it will be initialized on
+	'' startup, and e.g. we should definitely not overwrite a string var
+	'' that was already initialized/used (which could happen with a STATIC),
+	'' because then we'd leak the string memory if any was allocated.
+	if( symbIsStatic( sym ) ) then
+		return NULL
+	end if
+
+	assert( symbIsShared( sym ) = FALSE )
+	assert( symbIsTemp( sym ) )
+
+	'' Clear variable's memory
+	function = astNewMEM( AST_OP_MEMCLEAR, _
+			astNewVAR( sym, 0, symbGetFullType( sym ), symbGetSubtype( sym ) ), _
+			astNewCONSTi( symbCalcLen( symbGetFullType( sym ), symbGetSubtype( sym ) ) ) )
+end function
+
 ''
 '' loops
 ''

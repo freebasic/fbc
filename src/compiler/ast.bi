@@ -626,8 +626,7 @@ declare function astNewVAR _
 		byval sym as FBSYMBOL ptr, _
 		byval ofs as integer = 0, _
 		byval dtype as integer = FB_DATATYPE_INTEGER, _
-		byval subtype as FBSYMBOL ptr = NULL, _
-		byval clean_up as integer = FALSE _
+		byval subtype as FBSYMBOL ptr = NULL _
 	) as ASTNODE ptr
 
 declare sub astBuildVAR _
@@ -1068,6 +1067,8 @@ declare function astBuildVarField _
 		byval fld as FBSYMBOL ptr = NULL, _
 		byval ofs as integer = 0 _
 	) as ASTNODE ptr
+
+declare function astBuildTempVarClear( byval sym as FBSYMBOL ptr ) as ASTNODE ptr
 
 declare function astBuildCall _
 	( _

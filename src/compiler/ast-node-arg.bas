@@ -113,16 +113,13 @@ private function hAllocTmpString _
 	t = hTmpStrListAdd( parent, n, FB_DATATYPE_STRING, copyback )
 
 	'' temp string = src string
-	function = astNewLINK( astNewVAR( t->sym, _
-									  0, _
-									  FB_DATATYPE_STRING, _
-									  NULL, _
-									  TRUE ), _
-						   rtlStrAssign( astNewVAR( t->sym, _
-												 	0, _
-												 	FB_DATATYPE_STRING, _
-												 	NULL ), _
-						 			  	  n ) )
+	function = astNewLINK( _
+		astNewLINK( _
+			astBuildTempVarClear( t->sym ), _
+			rtlStrAssign( astNewVAR( t->sym, 0, FB_DATATYPE_STRING ), n ), _
+			FALSE ), _
+		astNewVAR( t->sym, 0, FB_DATATYPE_STRING ), _
+		FALSE )
 
 end function
 
@@ -143,13 +140,7 @@ private function hAllocTmpWstrPtr _
 	astSetType( n, typeAddrOf( FB_DATATYPE_WCHAR ), NULL )
 
 	'' temp string = src string
-	return astNewASSIGN( astNewVAR( t->sym, _
-									0, _
-									typeAddrOf( FB_DATATYPE_WCHAR ), _
-									NULL, _
-									TRUE ), _
-						 n )
-
+	function = astNewASSIGN( astNewVAR( t->sym, 0, typeAddrOf( FB_DATATYPE_WCHAR ) ), n )
 end function
 
 '':::::
