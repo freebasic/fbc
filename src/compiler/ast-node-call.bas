@@ -206,8 +206,7 @@ function astLoadCALL( byval n as ASTNODE ptr ) as IRVREG ptr
 			'' call anyways).
 			''if( symbHasCtor( n->call.tmpres ) = FALSE ) then
 
-			if( symbGetUDTHasCtorField( symbGetSubtype( n->call.tmpres ) ) or _
-			    (symbIsUDTReturnedInRegs( symbGetSubtype( n->call.tmpres ) ) = FALSE) ) then
+			if( TRUE ) then
 				astLoad( astBuildTempVarClear( n->call.tmpres ) )
 			end if
 
