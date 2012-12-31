@@ -144,6 +144,7 @@ Version 0.25.0:
 - UDT SWAPs/assignments/LSets now include the structure's tail padding (if any) in the operation
 - typeof() returned the wrong type for some expressions, for example function pointer calls, or iif()
 - sizeof( *z/wstringptr ) returned 0 instead of sizeof( z/wstring )
+- Temp vars for functions returning UDTs on stack won't be unnecessarily cleared anymore if the UDT has a constructor that's going to be called anyways
 
 
 Version 0.24.0:

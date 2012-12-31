@@ -204,9 +204,7 @@ function astLoadCALL( byval n as ASTNODE ptr ) as IRVREG ptr
 			'' do assignments to it in case it includes STRINGs),
 			'' unless it has a constructor (which the function will
 			'' call anyways).
-			''if( symbHasCtor( n->call.tmpres ) = FALSE ) then
-
-			if( TRUE ) then
+			if( symbHasCtor( n->call.tmpres ) = FALSE ) then
 				astLoad( astBuildTempVarClear( n->call.tmpres ) )
 			end if
 
