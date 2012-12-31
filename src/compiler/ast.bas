@@ -290,10 +290,10 @@ function astRemSideFx _
 		t = astNewASSIGN( astNewVAR( tmp ), astNewADDROF( n ) )
 
 		'' return *tmp
-		function = astNewLINK( t, astNewDEREF( astNewVAR( tmp ), dtype, subtype ) )
+		function = astNewLINK( t, astNewDEREF( astNewVAR( tmp ) ) )
 
 		'' repatch node
-		n = astNewDEREF( astNewVAR( tmp ), dtype, subtype )
+		n = astNewDEREF( astNewVAR( tmp ) )
 
 	'' simple type..
 	case else

@@ -1612,9 +1612,9 @@ function astNewSelfBOP _
 
 		'' *tmp = *tmp op expr
 		lr = astNewASSIGN( _
-			astNewDEREF( astNewVAR( tmp ), dtype, subtype ), _
+			astNewDEREF( astNewVAR( tmp ) ), _
 			astNewBOP( op, _
-				astNewDEREF( astNewVAR( tmp ), dtype, subtype ), _
+				astNewDEREF( astNewVAR( tmp ) ), _
 				r, ex, options or AST_OPOPT_ALLOCRES ) )
 
 		if( lr = NULL ) then

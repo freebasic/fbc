@@ -62,8 +62,7 @@ function astBuildVarInc _
 end function
 
 function astBuildVarDeref( byval sym as FBSYMBOL ptr ) as ASTNODE ptr
-	function = astNewDEREF( astNewVAR( sym ), _
-			typeDeref( symbGetType( sym ) ), symbGetSubtype( sym ) )
+	function = astNewDEREF( astNewVAR( sym ) )
 end function
 
 function astBuildVarAddrof( byval sym as FBSYMBOL ptr ) as ASTNODE ptr
@@ -128,13 +127,10 @@ function astBuildVarField _
 
 	'' byref or import?
 	if( symbIsParamByRef( sym ) or symbIsImport( sym ) ) then
-		expr = astNewDEREF( astNewVAR( sym, _
-						    		   0, _
-						    		   typeAddrOf( symbGetFullType( sym ) ), _
-						    		   symbGetSubtype( sym ) ), _
-						    symbGetFullType( sym ), _
-						    symbGetSubtype( sym ), _
-						    ofs )
+		expr = astNewDEREF( _
+			astNewVAR( sym, , typeAddrOf( symbGetFullType( sym ) ), _
+				symbGetSubtype( sym ) ), _
+			, , ofs )
 	else
 		expr = astNewVAR( sym, ofs )
 	end if
@@ -1024,22 +1020,13 @@ end function
 '' strings
 ''
 
-'':::::
-function astBuildStrPtr _
-	( _
-		byval lhs as ASTNODE ptr _
-	) as ASTNODE ptr
-
+function astBuildStrPtr( byval lhs as ASTNODE ptr ) as ASTNODE ptr
 	'' note: only var-len strings expressions should be passed
-
 	dim as ASTNODE ptr expr = any
 
 	'' *cast( zstring ptr ptr, @lhs )
-	expr = astNewDEREF( astNewCONV( typeMultAddrOf( FB_DATATYPE_CHAR, 2 ), _
-	                                NULL, _
-	                                astNewADDROF( lhs ) ), _
-	                                typeAddrOf( FB_DATATYPE_CHAR ), _
-	                    NULL )
+	expr = astNewDEREF( astNewCONV( typeMultAddrOf( FB_DATATYPE_CHAR, 2 ), NULL, _
+	                                astNewADDROF( lhs ) ) )
 
 	'' HACK: make it return an immutable value by returning (expr + 0)
 	'' in order to prevent things like STRPTR(s) = 0
@@ -1050,7 +1037,4 @@ function astBuildStrPtr _
 	                  NULL )
 
 	return expr
-
 end function
-
-

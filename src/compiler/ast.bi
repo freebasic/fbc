@@ -1191,10 +1191,7 @@ declare function astBuildArrayBound _
 		byval is_lbound as integer _
 	) as ASTNODE ptr
 
-declare function astBuildStrPtr _
-	( _
-		byval lhs as ASTNODE ptr _
-	) as ASTNODE ptr
+declare function astBuildStrPtr( byval lhs as ASTNODE ptr ) as ASTNODE ptr
 
 declare function astBuildMultiDeref _
 	( _

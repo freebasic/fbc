@@ -552,12 +552,10 @@ private function hFlushTree _
 				'' through THIS pointer
 				lside = astBuildInstPtrAtOffset( basesym, NULL, n->typeini.ofs )
 			else
-				dtype = symbGetFullType( basesym )
-
 				if( do_deref ) then
 					'' through a pointer
-					assert( typeIsPtr( dtype ) )
-					lside = astNewDEREF( astNewVAR( basesym ), typeDeref( dtype ), symbGetSubtype( basesym ), n->typeini.ofs )
+					assert( typeIsPtr( symbGetFullType( basesym ) ) )
+					lside = astNewDEREF( astNewVAR( basesym ), , , n->typeini.ofs )
 				else
 					'' directly
 					lside = astNewVAR( basesym, n->typeini.ofs )

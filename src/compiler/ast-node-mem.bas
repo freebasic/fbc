@@ -166,8 +166,7 @@ private function hNewOp _
 		'' *ptr = elmts
 		tree = astNewLINK( tree, _
 			astNewASSIGN( _
-				astNewDEREF( astNewVAR( ptr_sym, , typeAddrOf( FB_DATATYPE_INTEGER ) ), _
-					FB_DATATYPE_INTEGER, NULL ), _
+				astNewDEREF( astNewVAR( ptr_sym, , typeAddrOf( FB_DATATYPE_INTEGER ) ) ), _
 				iif( do_init and (op = AST_OP_NEW_VEC), _
 					astCloneTree( elmts_expr ), _
 					elmts_expr ) ) )
@@ -270,8 +269,7 @@ private function hCallDtorList _
 			astNewBOP( AST_OP_ADD, _
 				astNewCONV( typeAddrOf( FB_DATATYPE_VOID ), NULL, _
 					astCloneTree( ptr_expr ) ), _
-				astNewCONSTi( -FB_INTEGERSIZE, FB_DATATYPE_INTEGER ) ) ), _
-		FB_DATATYPE_INTEGER, NULL )
+				astNewCONSTi( -FB_INTEGERSIZE, FB_DATATYPE_INTEGER ) ) ) )
 
 	tree = astBuildVarAssign( elmts, expr )
 
