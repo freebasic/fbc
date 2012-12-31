@@ -44,7 +44,7 @@ function cIIFFunct() as ASTNODE ptr
 	if( funcexpr = NULL ) then
 		errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE )
 		'' error recovery: fake an expr
-		funcexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+		funcexpr = astNewCONSTi( 0 )
 	end if
 
 	function = funcexpr

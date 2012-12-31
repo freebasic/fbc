@@ -182,7 +182,7 @@ function cProcCall _
 			if( expr = NULL ) then
 				errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
 				'' error recovery: fake an expr
-				expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+				expr = astNewCONSTi( 0 )
 			end if
 
 			dim as FB_CALL_ARG ptr arg = symbAllocOvlCallArg( @parser.ovlarglist, @arg_list, FALSE )

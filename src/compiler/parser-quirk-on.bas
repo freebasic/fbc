@@ -157,7 +157,7 @@ function cOnStmt _
 		if( expr = NULL ) then
 			errReport( FB_ERRMSG_SYNTAXERROR )
 			'' error recovery: fake an expr
-			expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+			expr = astNewCONSTi( 0 )
 		end if
 
 		if( fbLangOptIsSet( FB_LANG_OPT_GOSUB ) = FALSE ) then

@@ -1102,10 +1102,9 @@ function rtlPrint _
 		mask or= FB_PRINTMASK_NEWLINE
 	end if
 
-	expr = astNewCONSTi( mask, FB_DATATYPE_INTEGER )
-    if( astNewARG( proc, expr, FB_DATATYPE_INTEGER ) = NULL ) then
- 		exit function
- 	end if
+	if( astNewARG( proc, astNewCONSTi( mask ) ) = NULL ) then
+		exit function
+	end if
 
     ''
     astAdd( proc )
@@ -1301,11 +1300,9 @@ function rtlWrite _
 		mask or= FB_PRINTMASK_NEWLINE
 	end if
 
-    if( astNewARG( proc, _
-    			   astNewCONSTi( mask, FB_DATATYPE_INTEGER ), _
-    			   FB_DATATYPE_INTEGER ) = NULL ) then
- 		exit function
- 	end if
+	if( astNewARG( proc, astNewCONSTi( mask ) ) = NULL ) then
+		exit function
+	end if
 
     ''
     astAdd( proc )
@@ -1465,11 +1462,9 @@ function rtlPrintUsing _
 		mask = FB_PRINTMASK_NEWLINE or FB_PRINTMASK_ISLAST
 	end if
 
-    if( astNewARG( proc, _
-    			   astNewCONSTi( mask, FB_DATATYPE_INTEGER ), _
-    			   FB_DATATYPE_INTEGER ) = NULL ) then
- 		exit function
- 	end if
+	if( astNewARG( proc, astNewCONSTi( mask ) ) = NULL ) then
+		exit function
+	end if
 
     ''
     astAdd( proc )

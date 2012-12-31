@@ -429,7 +429,7 @@ private sub hForAssign _
 		if( expr = NULL ) then
 			errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
 			'' error recovery: fake an expr
-			expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+			expr = astNewCONSTi( 0 )
 		end if
 
 		'' initial condition is a non-UDT constant?
@@ -439,7 +439,7 @@ private sub hForAssign _
 			if( expr = NULL ) then
 				errReport( FB_ERRMSG_INVALIDDATATYPES )
 				'' error recovery: fake an expr
-				expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+				expr = astNewCONSTi( 0 )
 			end if
 
 			'' take the constant value
@@ -496,7 +496,7 @@ private sub hForTo _
 		if( expr = NULL ) then
 			errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
 			'' error recovery: fake an expr
-			expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+			expr = astNewCONSTi( 0 )
 		end if
 
 		'' EndCondition is a non-UDT constant?
@@ -505,7 +505,7 @@ private sub hForTo _
 			if( expr = NULL ) then
 				errReport( FB_ERRMSG_INVALIDDATATYPES )
 				'' error recovery: fake an expr
-				expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+				expr = astNewCONSTi( 0 )
 			end if
 
 			'' remove any symbol, and
@@ -599,12 +599,12 @@ private sub hForStep _
 			if( expr = NULL ) then
 				errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
 				'' error recovery: fake an expr
-				expr = astNewCONSTi( 1, FB_DATATYPE_INTEGER )
+				expr = astNewCONSTi( 1 )
 			end if
 		else
 			'' no STEP was specified, so it's 1
 			'' (the step's type will be converted below)
-			expr = astNewCONSTi( 1, FB_DATATYPE_INTEGER )
+			expr = astNewCONSTi( 1 )
 		end if
 
 		if( (flags and FOR_ISUDT) = 0) then
@@ -624,7 +624,7 @@ private sub hForStep _
 			if( expr = NULL ) then
 				errReport( FB_ERRMSG_INVALIDDATATYPES )
 				'' error recovery: fake an expr
-				expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+				expr = astNewCONSTi( 0 )
 			end if
 
 			'' get step's positivity
@@ -724,7 +724,7 @@ private sub hForStep _
 		if( rhs = NULL ) then
 			errReport( FB_ERRMSG_INVALIDDATATYPES )
 			'' fake it
-			rhs = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+			rhs = astNewCONSTi( 0 )
 		end if
 
 		'' is_positive = rhs

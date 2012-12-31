@@ -67,7 +67,7 @@ function cParentExpression _
 		errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
 		'' error recovery: skip until next ')', fake an expr
 		hSkipUntil( CHAR_RPRNT, TRUE )
-		return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+		return astNewCONSTi( 0 )
     end if
 
   	'' ')'

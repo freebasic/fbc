@@ -32,7 +32,7 @@ function cNegNotExpression _
 		if( negexpr = NULL ) then
 			errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
 			'' error recovery: fake a new node
-			negexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+			negexpr = astNewCONSTi( 0 )
 		else
 			negexpr = astNewUOP( AST_OP_NEG, negexpr )
 		end if
@@ -40,7 +40,7 @@ function cNegNotExpression _
     	if( negexpr = NULL ) Then
 			errReport( FB_ERRMSG_TYPEMISMATCH )
 			'' error recovery: fake a new node
-			negexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+			negexpr = astNewCONSTi( 0 )
     	end if
 
 		return negexpr
@@ -54,7 +54,7 @@ function cNegNotExpression _
 		if( negexpr = NULL ) then
 			errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
 			'' error recovery: fake a new node
-			negexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+			negexpr = astNewCONSTi( 0 )
 		else
 			negexpr = astNewUOP( AST_OP_PLUS, negexpr )
 		end if
@@ -62,7 +62,7 @@ function cNegNotExpression _
     	if( negexpr = NULL ) Then
 			errReport( FB_ERRMSG_TYPEMISMATCH )
 			'' error recovery: fake a new node
-			negexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+			negexpr = astNewCONSTi( 0 )
     	end if
 
     	return negexpr
@@ -76,7 +76,7 @@ function cNegNotExpression _
 		if( negexpr = NULL ) then
 			errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
 			'' error recovery: fake a new node
-			negexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+			negexpr = astNewCONSTi( 0 )
 		else
 			negexpr = astNewUOP( AST_OP_NOT, negexpr )
 		end if
@@ -84,7 +84,7 @@ function cNegNotExpression _
     	if( negexpr = NULL ) Then
 			errReport( FB_ERRMSG_TYPEMISMATCH )
 			'' error recovery: fake a new node
-			negexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+			negexpr = astNewCONSTi( 0 )
     	end if
 
 		return negexpr
@@ -262,7 +262,7 @@ private function hCast( byval options as AST_CONVOPT ) as ASTNODE ptr
 		errReport( FB_ERRMSG_EXPECTEDLPRNT )
 		'' error recovery: skip until ')', fake a node
 		hSkipUntil( CHAR_RPRNT, TRUE )
-		return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+		return astNewCONSTi( 0 )
 	end if
 	lexSkipToken( )
 
@@ -380,7 +380,7 @@ function cDerefExpression( ) as ASTNODE ptr
 	if( expr = NULL ) then
 		errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
 		'' error recovery: fake a node
-		return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+		return astNewCONSTi( 0 )
 	end if
 
 	function = astBuildMultiDeref( derefcnt, expr, astGetFullType( expr ), astGetSubType( expr ) )
@@ -548,7 +548,7 @@ function cAddrOfExpression( ) as ASTNODE ptr
 			errReport( FB_ERRMSG_EXPECTEDLPRNT )
 			'' error recovery: skip until ')' and fake a node
 			hSkipUntil( CHAR_RPRNT, TRUE )
-			return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+			return astNewCONSTi( 0 )
 		end if
 
 		expr = hVarPtrBody( NULL, NULL )
@@ -569,7 +569,7 @@ function cAddrOfExpression( ) as ASTNODE ptr
 			errReport( FB_ERRMSG_EXPECTEDLPRNT )
 			'' error recovery: skip until ')' and fake a node
 			hSkipUntil( CHAR_RPRNT, TRUE )
-			return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+			return astNewCONSTi( 0 )
 		end if
 
 		'' proc?
@@ -583,7 +583,7 @@ function cAddrOfExpression( ) as ASTNODE ptr
 			errReport( FB_ERRMSG_UNDEFINEDSYMBOL )
 			'' error recovery: skip until ')' and fake a node
 			hSkipUntil( CHAR_RPRNT, TRUE )
-			return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+			return astNewCONSTi( 0 )
 		else
 			lexSkipToken( )
 		end if
@@ -606,7 +606,7 @@ function cAddrOfExpression( ) as ASTNODE ptr
 			errReport( FB_ERRMSG_EXPECTEDLPRNT )
 			'' error recovery: skip until ')' and fake a node
 			hSkipUntil( CHAR_RPRNT, TRUE )
-			return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+			return astNewCONSTi( 0 )
 		end if
 
 		expr = cHighestPrecExpr( NULL, NULL )
@@ -614,7 +614,7 @@ function cAddrOfExpression( ) as ASTNODE ptr
 			errReport( FB_ERRMSG_INVALIDDATATYPES )
 			'' error recovery: skip until ')' and fake a node
 			hSkipUntil( CHAR_RPRNT, TRUE )
-			return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+			return astNewCONSTi( 0 )
 		end if
 
 		dim as integer dtype = astGetDataType( expr )
@@ -624,7 +624,7 @@ function cAddrOfExpression( ) as ASTNODE ptr
 			'' error recovery: skip until ')' and fake a node
 			hSkipUntil( CHAR_RPRNT, TRUE )
 			astDelTree( expr )
-			return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+			return astNewCONSTi( 0 )
 		end if
 
 		'' check for invalid classes (functions, etc)

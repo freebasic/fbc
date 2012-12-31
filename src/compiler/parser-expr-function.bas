@@ -112,7 +112,7 @@ function cFunctionCall _
 		errReport( FB_ERRMSG_SYNTAXERROR )
 		'' error recovery: remove the SUB call, return a fake node
 		astDelTree( funcexpr )
-		return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+		return astNewCONSTi( 0 )
 	end if
 
 	''

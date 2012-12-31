@@ -137,7 +137,7 @@ private function hThreadCallPushType _
     
     '' push argument on stack
     dim as ASTNODE ptr typeexpr
-    typeexpr = astNewCONSTi( tctype, FB_DATATYPE_INTEGER )
+    typeexpr = astNewCONSTi( tctype )
     if( astNewARG( funcexpr, typeexpr ) = NULL ) then
         exit function
     end if
@@ -226,19 +226,19 @@ function rtlThreadCall(byval callexpr as ASTNODE ptr) as ASTNODE ptr
     end if
 
     '' push calling convention
-    procmodeexpr = astNewCONSTi( procmode, FB_DATATYPE_INTEGER )
+    procmodeexpr = astNewCONSTi( procmode )
     if( astNewARG( expr, procmodeexpr ) = NULL ) then
         exit function
     end if
     
     '' push stack size (not in syntax)
-    stacksizeexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+    stacksizeexpr = astNewCONSTi( 0 )
     if( astNewARG( expr, stacksizeexpr ) = NULL ) then
         exit function
     end if
     
     '' push number of arguments
-    argsexpr = astNewCONSTi( args, FB_DATATYPE_INTEGER )
+    argsexpr = astNewCONSTi( args )
     if( astNewARG( expr, argsexpr ) = NULL ) then
         exit function
     end if

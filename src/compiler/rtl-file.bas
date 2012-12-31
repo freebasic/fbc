@@ -1591,9 +1591,9 @@ function rtlFilePut _
 	dtype    = astGetDataType( src )
 	isstring = symbIsString( dtype )
 
-    if( offset = NULL ) then
-    	offset = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-    end if
+	if( offset = NULL ) then
+		offset = astNewCONSTi( 0 )
+	end if
 	o_dtype  = astGetDataType( offset )
 
 	select case as const o_dtype
@@ -1641,11 +1641,11 @@ function rtlFilePut _
 		lgt = rtlCalcExprLen( src )
     end if
 
-    if( elements = NULL ) then
-    	bytes = astNewCONSTi( lgt, FB_DATATYPE_INTEGER )
-    else
-    	bytes = astNewBOP( AST_OP_MUL, elements, astNewCONSTi( lgt, FB_DATATYPE_INTEGER ) )
-    end if
+	if( elements = NULL ) then
+		bytes = astNewCONSTi( lgt )
+	else
+		bytes = astNewBOP( AST_OP_MUL, elements, astNewCONSTi( lgt ) )
+	end if
 
     '' any pointer fields?
     if( astGetDataType( src ) = FB_DATATYPE_STRUCT ) then
@@ -1689,9 +1689,9 @@ function rtlFilePutArray _
 
     function = NULL
 
-    if( offset = NULL ) then
-    	offset = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-    end if
+	if( offset = NULL ) then
+		offset = astNewCONSTi( 0 )
+	end if
     o_dtype  = astGetDataType( offset )
 
 	select case as const o_dtype
@@ -1766,9 +1766,9 @@ function rtlFileGet _
 	dtype = astGetDataType( dst )
 	isstring = symbIsString( dtype )
 
-    if( offset = NULL ) then
-    	offset = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-    end if
+	if( offset = NULL ) then
+		offset = astNewCONSTi( 0 )
+	end if
    	o_dtype  = astGetDataType( offset )
 
 	select case as const o_dtype
@@ -1831,11 +1831,11 @@ function rtlFileGet _
 		lgt = rtlCalcExprLen( dst )
     end if
 
-    if( elements = NULL ) then
-    	bytes = astNewCONSTi( lgt, FB_DATATYPE_INTEGER )
-    else
-    	bytes = astNewBOP( AST_OP_MUL, elements, astNewCONSTi( lgt, FB_DATATYPE_INTEGER ) )
-    end if
+	if( elements = NULL ) then
+		bytes = astNewCONSTi( lgt )
+	else
+		bytes = astNewBOP( AST_OP_MUL, elements, astNewCONSTi( lgt ) )
+	end if
 
     '' any pointer fields?
     if( dtype = FB_DATATYPE_STRUCT ) then
@@ -1887,9 +1887,9 @@ function rtlFileGetArray _
 
 	function = NULL
 
-    if( offset = NULL ) then
-    	offset = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-    end if
+	if( offset = NULL ) then
+		offset = astNewCONSTi( 0 )
+	end if
 	o_dtype  = astGetDataType( offset )
 
 	select case as const o_dtype
@@ -2026,26 +2026,26 @@ function rtlFileLineInput _
  	end if
 
 	'' byval dstlen as integer
-	if( astNewARG( proc, astNewCONSTi( lgt, FB_DATATYPE_INTEGER ), FB_DATATYPE_INTEGER ) = NULL ) then
- 		exit function
- 	end if
+	if( astNewARG( proc, astNewCONSTi( lgt ) ) = NULL ) then
+		exit function
+	end if
 
 	'' byval fillrem as integer
-	if( astNewARG( proc, astNewCONSTi( dtype = FB_DATATYPE_FIXSTR, FB_DATATYPE_INTEGER ), FB_DATATYPE_INTEGER ) = NULL ) then
-    	exit function
-    end if
+	if( astNewARG( proc, astNewCONSTi( dtype = FB_DATATYPE_FIXSTR ) ) = NULL ) then
+		exit function
+	end if
 
-    if( args = 6 ) then
-    	'' byval addquestion as integer
- 		if( astNewARG( proc, astNewCONSTi( addquestion, FB_DATATYPE_INTEGER ) ) = NULL ) then
- 			exit function
- 		end if
+	if( args = 6 ) then
+		'' byval addquestion as integer
+		if( astNewARG( proc, astNewCONSTi( addquestion ) ) = NULL ) then
+			exit function
+		end if
 
-    	'' byval addnewline as integer
-    	if( astNewARG( proc, astNewCONSTi( addnewline, FB_DATATYPE_INTEGER ) ) = NULL ) then
- 			exit function
- 		end if
-    end if
+		'' byval addnewline as integer
+		if( astNewARG( proc, astNewCONSTi( addnewline ) ) = NULL ) then
+			exit function
+		end if
+	end if
 
     astAdd( proc )
 
@@ -2099,21 +2099,21 @@ function rtlFileLineInputWstr _
  	end if
 
 	'' byval max_chars as integer
-	if( astNewARG( proc, astNewCONSTi( lgt, FB_DATATYPE_INTEGER ), FB_DATATYPE_INTEGER ) = NULL ) then
- 		exit function
- 	end if
+	if( astNewARG( proc, astNewCONSTi( lgt ) ) = NULL ) then
+		exit function
+	end if
 
-    if( args = 5 ) then
-    	'' byval addquestion as integer
- 		if( astNewARG( proc, astNewCONSTi( addquestion, FB_DATATYPE_INTEGER ) ) = NULL ) then
- 			exit function
- 		end if
+	if( args = 5 ) then
+		'' byval addquestion as integer
+		if( astNewARG( proc, astNewCONSTi( addquestion ) ) = NULL ) then
+			exit function
+		end if
 
-    	'' byval addnewline as integer
-    	if( astNewARG( proc, astNewCONSTi( addnewline, FB_DATATYPE_INTEGER ) ) = NULL ) then
- 			exit function
- 		end if
-    end if
+		'' byval addnewline as integer
+		if( astNewARG( proc, astNewCONSTi( addnewline ) ) = NULL ) then
+			exit function
+		end if
+	end if
 
     astAdd( proc )
 
@@ -2156,17 +2156,17 @@ function rtlFileInput _
  		exit function
  	end if
 
-    if( args = 3 ) then
-    	'' byval addquestion as integer
-    	if( astNewARG( proc, astNewCONSTi( addquestion, FB_DATATYPE_INTEGER ) ) = NULL ) then
- 			exit function
- 		end if
+	if( args = 3 ) then
+		'' byval addquestion as integer
+		if( astNewARG( proc, astNewCONSTi( addquestion ) ) = NULL ) then
+			exit function
+		end if
 
-    	'' byval addnewline as integer
-    	if( astNewARG( proc, astNewCONSTi( addnewline, FB_DATATYPE_INTEGER ) ) = NULL ) then
- 			exit function
- 		end if
-    end if
+		'' byval addnewline as integer
+		if( astNewARG( proc, astNewCONSTi( addnewline ) ) = NULL ) then
+			exit function
+		end if
+	end if
 
     astAdd( proc )
 
@@ -2260,19 +2260,19 @@ function rtlFileInputGet _
  		exit function
  	end if
 
-    if( args > 1 ) then
+	if( args > 1 ) then
 		'' byval dstlen as integer
-		if( astNewARG( proc, astNewCONSTi( lgt, FB_DATATYPE_INTEGER ), FB_DATATYPE_INTEGER ) = NULL ) then
- 			exit function
- 		end if
+		if( astNewARG( proc, astNewCONSTi( lgt ) ) = NULL ) then
+			exit function
+		end if
 
 		if( args > 2 ) then
 			'' byval fillrem as integer
-			if( astNewARG( proc, astNewCONSTi( dtype = FB_DATATYPE_FIXSTR, FB_DATATYPE_INTEGER ), FB_DATATYPE_INTEGER ) = NULL ) then
-    			exit function
-    		end if
-    	end if
-    end if
+			if( astNewARG( proc, astNewCONSTi( dtype = FB_DATATYPE_FIXSTR ) ) = NULL ) then
+				exit function
+			end if
+		end if
+	end if
 
     astAdd( proc )
 

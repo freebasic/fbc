@@ -175,7 +175,7 @@ private function hNewOp _
 		tree = astNewLINK( tree, _
 			astNewSelfBOP( AST_OP_ADD_SELF, _
 				astNewVAR( ptr_sym, , typeAddrOf( FB_DATATYPE_VOID ) ), _
-				astNewCONSTi( FB_INTEGERSIZE, FB_DATATYPE_INTEGER ), _
+				astNewCONSTi( FB_INTEGERSIZE ), _
 				NULL ) )
 
 		astDelTree( ptr_expr )
@@ -269,7 +269,7 @@ private function hCallDtorList _
 			astNewBOP( AST_OP_ADD, _
 				astNewCONV( typeAddrOf( FB_DATATYPE_VOID ), NULL, _
 					astCloneTree( ptr_expr ) ), _
-				astNewCONSTi( -FB_INTEGERSIZE, FB_DATATYPE_INTEGER ) ) ) )
+				astNewCONSTi( -FB_INTEGERSIZE ) ) ) )
 
 	tree = astBuildVarAssign( elmts, expr )
 
@@ -313,11 +313,10 @@ private function hDelOp _
 	'' if ptr <> NULL then
 	dim as FBSYMBOL ptr blk_label = symbAddLabel( NULL )
 	tree = astNewLINK( tree, _
-					   astNewBOP( AST_OP_EQ, _
-					   			  astCloneTree( ptr_expr ), _
-					   			  astNewCONSTi( 0, FB_DATATYPE_INTEGER ), _
-					   			  blk_label, _
-					   			  AST_OPOPT_NONE ) )
+		astNewBOP( AST_OP_EQ, _
+			astCloneTree( ptr_expr ), _
+			astNewCONSTi( 0 ), _
+			blk_label, AST_OPOPT_NONE ) )
 
 	'' call dtors?
 	if( typeHasDtor( dtype, subtype ) ) then
@@ -328,10 +327,7 @@ private function hDelOp _
 									   		  subtype ) )
 
 			'' ptr -= len( integer )
-			ptr_expr = astNewBOP( AST_OP_SUB, _
-								  ptr_expr, _
-            			   	  	  astNewCONSTi( FB_INTEGERSIZE, _
-            			   	  			  	  	FB_DATATYPE_INTEGER ) )
+			ptr_expr = astNewBOP( AST_OP_SUB, ptr_expr, astNewCONSTi( FB_INTEGERSIZE ) )
 
 		'' not a vector..
 		else

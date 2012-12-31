@@ -147,7 +147,7 @@ function cPeekFunct( ) as ASTNODE ptr
 	end select
 
 	if( expr = NULL ) then
-		expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+		expr = astNewCONSTi( 0 )
 	end if
 
 	'' ('.' UdtMember)?

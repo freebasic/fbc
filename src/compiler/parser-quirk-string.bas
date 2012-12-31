@@ -52,7 +52,7 @@ function cMidStmt _
 	if( hMatch( CHAR_COMMA ) ) then
 		hMatchExpressionEx( expr3, FB_DATATYPE_INTEGER )
 	else
-		expr3 = astNewCONSTi( -1, FB_DATATYPE_INTEGER )
+		expr3 = astNewCONSTi( -1 )
 	end if
 
 	hMatchRPRNT( )
@@ -614,7 +614,7 @@ function cStringFunct(byval tk as FB_TOKEN) as ASTNODE ptr
 		if( hMatch( CHAR_COMMA ) ) then
 			hMatchExpressionEx( expr3, FB_DATATYPE_INTEGER )
 		else
-			expr3 = astNewCONSTi( -1, FB_DATATYPE_INTEGER )
+			expr3 = astNewCONSTi( -1 )
 		end if
 		hMatchRPRNT( )
 
@@ -680,7 +680,7 @@ function cStringFunct(byval tk as FB_TOKEN) as ASTNODE ptr
 		if( expr3 = NULL ) then
 			expr3 = expr2
 			expr2 = expr1
-			expr1 = astNewCONSTi( 1, FB_DATATYPE_INTEGER )
+			expr1 = astNewCONSTi( 1 )
 		end if
 		hMatchRPRNT( )
 
@@ -703,7 +703,7 @@ function cStringFunct(byval tk as FB_TOKEN) as ASTNODE ptr
 		if( hMatch( CHAR_COMMA ) ) then
 			hMatchExpressionEx( expr3, FB_DATATYPE_INTEGER )
 		else
-			expr3 = astNewCONSTi( -1, FB_DATATYPE_INTEGER )
+			expr3 = astNewCONSTi( -1 )
 		end if
 		hMatchRPRNT( )
 

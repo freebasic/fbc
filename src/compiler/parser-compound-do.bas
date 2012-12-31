@@ -46,7 +46,7 @@ sub cDoStmtBegin()
 		if( expr = NULL ) then
 			errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
 			'' error recovery: fake a node
-			expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+			expr = astNewCONSTi( 0 )
 		end if
 
 		'' branch
@@ -126,7 +126,7 @@ function cDoStmtEnd as integer
 		if( expr = NULL ) then
 			errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
 			'' error recovery: fake a node
-			expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+			expr = astNewCONSTi( 0 )
 		end if
 
 		'' branch

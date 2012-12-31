@@ -89,7 +89,7 @@ sub astGosubAddJmp _
 					rtlSetJmp( rtlGosubPush( _
 						astNewADDROF( astNewVAR( symbGetProcGosubSym( proc ) ) ) _
 					) ), _
-					astNewCONSTi( 0, FB_DATATYPE_INTEGER ) ), _
+					astNewCONSTi( 0 ) ), _
 			  label, _
 			  FALSE ) )
 
@@ -133,7 +133,7 @@ sub astGosubAddJumpPtr _
 					rtlSetJmp( rtlGosubPush( _
 						astNewADDROF( astNewVAR( symbGetProcGosubSym( proc ) ) ) _
 					) ), _
-					astNewCONSTi( 0, FB_DATATYPE_INTEGER ) ), _
+					astNewCONSTi( 0 ) ), _
 			  label, _
 			  FALSE ) )
 
@@ -167,7 +167,7 @@ function astGosubAddReturn _
 
 		astAdd( astUpdComp2Branch( astNewBOP( AST_OP_NE, _
 					astNewVAR( symbGetProcGosubSym( proc ) ), _
-					astNewCONSTi( 0, FB_DATATYPE_INTEGER ) ), _
+					astNewCONSTi( 0 ) ), _
 			  label, _
 			  FALSE ) )
 
@@ -183,7 +183,7 @@ function astGosubAddReturn _
 			'' pop return address from the stack.  Uses "POP immed" which will be
 			'' handled specially in emit_x86.bas::_emitPOPI()
 			astAdd( astNewSTACK( AST_OP_POP, _
-				astNewCONSTi( typeGetSize( FB_DATATYPE_POINTER ), FB_DATATYPE_INTEGER ) ) )
+				astNewCONSTi( typeGetSize( FB_DATATYPE_POINTER ) ) ) )
 
 			'' GOTO label
 			astAdd( astNewBRANCH( AST_OP_JMP, l ) )
@@ -194,9 +194,9 @@ function astGosubAddReturn _
 		astAdd( astNewLABEL( label ) )
 
 		'' set/throw error
-		rtlErrorSetNum( astNewCONSTi( FB_RTERROR_RETURNWITHOUTGOSUB, FB_DATATYPE_INTEGER ) )
+		rtlErrorSetNum( astNewCONSTi( FB_RTERROR_RETURNWITHOUTGOSUB ) )
 		if( env.clopt.errorcheck ) then
-			rtlErrorThrow( astNewCONSTi( FB_RTERROR_RETURNWITHOUTGOSUB, FB_DATATYPE_INTEGER ), _
+			rtlErrorThrow( astNewCONSTi( FB_RTERROR_RETURNWITHOUTGOSUB ), _
 								lexLineNum( ), env.inf.name )
 		end if
 
@@ -222,7 +222,7 @@ function astGosubAddReturn _
 						rtlGosubPop( _
 							astNewADDROF( astNewVAR( symbGetProcGosubSym( proc ) ) ) _
 						), _
-						astNewCONSTi( 0, FB_DATATYPE_INTEGER ) ), _
+						astNewCONSTi( 0 ) ), _
 				  label, _
 				  FALSE ) )
 
@@ -233,9 +233,9 @@ function astGosubAddReturn _
 			astAdd( astNewLABEL( label ) )
 
 			'' set/throw error
-			rtlErrorSetNum( astNewCONSTi( FB_RTERROR_RETURNWITHOUTGOSUB, FB_DATATYPE_INTEGER ) )
+			rtlErrorSetNum( astNewCONSTi( FB_RTERROR_RETURNWITHOUTGOSUB ) )
 			if( env.clopt.errorcheck ) then
-				rtlErrorThrow( astNewCONSTi( FB_RTERROR_RETURNWITHOUTGOSUB, FB_DATATYPE_INTEGER ), _
+				rtlErrorThrow( astNewCONSTi( FB_RTERROR_RETURNWITHOUTGOSUB ), _
 									lexLineNum( ), env.inf.name )
 			end if
 

@@ -137,7 +137,7 @@ sub astDataStmtEnd( byval tree as ASTNODE ptr )
 			expr = astNewADDROF( astNewCONSTstr( littext ) )
 
 		case FB_DATASTMT_ID_NULL, FB_DATASTMT_ID_LINK
-			expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+			expr = astNewCONSTi( 0 )
 
 		end select
 

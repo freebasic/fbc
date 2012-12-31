@@ -319,7 +319,7 @@ end sub
 
 private function hBuildProcPtr(byval proc as FBSYMBOL ptr) as ASTNODE ptr
 	if( proc = NULL ) then
-		return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+		return astNewCONSTi( 0 )
 	end if
 	function = astBuildProcAddrof(proc)
 end function
@@ -580,27 +580,21 @@ function rtlArrayRedim _
 	end if
 
 	'' byval element_len as integer
-	expr = astNewCONSTi( elementlen, FB_DATATYPE_INTEGER )
-	if( astNewARG( proc, expr, FB_DATATYPE_INTEGER ) = NULL ) then
-    	exit function
-    end if
+	if( astNewARG( proc, astNewCONSTi( elementlen ) ) = NULL ) then
+		exit function
+	end if
 
 	if( (ctor = NULL) and (dtor = NULL) ) then
 		'' byval doclear as integer
-		if( astNewARG( proc, _
-					   astNewCONSTi( doclear, FB_DATATYPE_INTEGER ), _
-					   FB_DATATYPE_INTEGER ) = NULL ) then
-    		exit function
-    	end if
+		if( astNewARG( proc, astNewCONSTi( doclear ) ) = NULL ) then
+			exit function
+		end if
 
 		'' byval isvarlen as integer
-		if( astNewARG( proc, _
-					   astNewCONSTi( (dtype = FB_DATATYPE_STRING), _
-									 FB_DATATYPE_INTEGER ), _
-					   FB_DATATYPE_INTEGER ) = NULL ) then
-    		exit function
-    	end if
-    else
+		if( astNewARG( proc, astNewCONSTi( (dtype = FB_DATATYPE_STRING) ) ) = NULL ) then
+			exit function
+		end if
+	else
 		hCheckDefCtor( ctor, FALSE, FALSE )
 		hCheckDtor( dtor, FALSE, FALSE )
 
@@ -613,18 +607,15 @@ function rtlArrayRedim _
 		if( astNewARG( proc, hBuildProcPtr( dtor ) ) = NULL ) then
 			exit function
 		end if
-    end if
+	end if
 
 	'' byval dimensions as integer
-	if( astNewARG( proc, _
-				   astNewCONSTi( dimensions, FB_DATATYPE_INTEGER ), _
-				   FB_DATATYPE_INTEGER ) = NULL ) then
-    	exit function
-    end if
+	if( astNewARG( proc, astNewCONSTi( dimensions ) ) = NULL ) then
+		exit function
+	end if
 
 	'' ...
 	for i as integer = 0 to dimensions-1
-
 		'' lbound
 		expr = exprTB(i, 0)
 
@@ -633,9 +624,9 @@ function rtlArrayRedim _
     		expr = astNewCONV( FB_DATATYPE_INTEGER, NULL, expr )
     	end if
 
-		if( astNewARG( proc, expr, FB_DATATYPE_INTEGER ) = NULL ) then
-    		exit function
-    	end if
+		if( astNewARG( proc, expr ) = NULL ) then
+			exit function
+		end if
 
 		'' ubound
 		expr = exprTB(i, 1)
@@ -645,13 +636,12 @@ function rtlArrayRedim _
     		expr = astNewCONV( FB_DATATYPE_INTEGER, NULL, expr )
     	end if
 
-		if( astNewARG( proc, expr, FB_DATATYPE_INTEGER ) = NULL ) then
-    		exit function
-    	end if
+		if( astNewARG( proc, expr ) = NULL ) then
+			exit function
+		end if
 	next
 
 	function = rtlErrorCheck( proc )
-
 end function
 
 function rtlArrayBound _
@@ -707,9 +697,7 @@ function rtlArrayBoundsCheck _
    	proc = astNewCALL( f )
 
 	'' idx
-	if( astNewARG( proc, _
-					 astNewCONV( FB_DATATYPE_INTEGER, NULL, idx ), _
-					 FB_DATATYPE_INTEGER ) = NULL ) then
+	if( astNewARG( proc, astNewCONV( FB_DATATYPE_INTEGER, NULL, idx ) ) = NULL ) then
 		exit function
 	end if
 
@@ -726,9 +714,9 @@ function rtlArrayBoundsCheck _
 	end if
 
 	'' linenum
-	if( astNewARG( proc, astNewCONSTi( linenum, FB_DATATYPE_INTEGER ), FB_DATATYPE_INTEGER ) = NULL ) then
-    	exit function
-    end if
+	if( astNewARG( proc, astNewCONSTi( linenum ) ) = NULL ) then
+		exit function
+	end if
 
     '' module
 	if( astNewARG( proc, astNewCONSTstr( module ) ) = NULL ) then

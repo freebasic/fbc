@@ -19,7 +19,7 @@ private function hMathOp(byval op as AST_OP) as ASTNODE ptr
 	expr = astNewUOP( op, expr )
 	if( expr = NULL ) then
 		errReport( FB_ERRMSG_INVALIDDATATYPES )
-		expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+		expr = astNewCONSTi( 0 )
 	end if
 
 	function = expr
@@ -39,7 +39,7 @@ private function hAtan2() as ASTNODE ptr
 	expr = astNewBOP( AST_OP_ATAN2, expr, expr2 )
 	if( expr = NULL ) then
 		errReport( FB_ERRMSG_INVALIDDATATYPES )
-		expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+		expr = astNewCONSTi( 0 )
 	end if
 
 	function = expr
@@ -81,7 +81,7 @@ private function hLenSizeof _
 					errReport( FB_ERRMSG_EXPECTEDIDENTIFIER, TRUE )
 					'' error recovery: fake an expr
 					astDelTree( expr )
-					expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+					expr = astNewCONSTi( 0 )
 				end if
 			end if
 		end if
@@ -105,7 +105,7 @@ private function hLenSizeof _
 			astDelTree( expr )
 		end if
 	else
-		function = astNewCONSTi( lgt, FB_DATATYPE_INTEGER )
+		function = astNewCONSTi( lgt )
 	end if
 end function
 

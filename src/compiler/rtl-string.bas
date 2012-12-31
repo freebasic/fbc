@@ -2583,24 +2583,20 @@ function rtlStrCompare _
     	exit function
     end if
 
-    '' byval str1_len as integer
-    if( astNewARG( proc, _
-    				 astNewCONSTi( str1len, FB_DATATYPE_INTEGER ), _
-    				 FB_DATATYPE_INTEGER ) = NULL ) then
-    	exit function
-    end if
+	'' byval str1_len as integer
+	if( astNewARG( proc, astNewCONSTi( str1len ) ) = NULL ) then
+		exit function
+	end if
 
     '' byref str2 as any
     if( astNewARG( proc, str2, sdtype2 ) = NULL ) then
     	exit function
     end if
 
-    '' byval str2_len as integer
-    if( astNewARG( proc, _
-    				 astNewCONSTi( str2len, FB_DATATYPE_INTEGER ), _
-    				 FB_DATATYPE_INTEGER ) = NULL ) then
-    	exit function
-    end if
+	'' byval str2_len as integer
+	if( astNewARG( proc, astNewCONSTi( str2len ) ) = NULL ) then
+		exit function
+	end if
 
     function = proc
 
@@ -2670,27 +2666,22 @@ function rtlStrConcat _
     	exit function
     end if
 
-    '' byval str1_len as integer
-    if( astNewARG( proc, _
-    			   astNewCONSTi( str1len, FB_DATATYPE_INTEGER ), _
-    			   FB_DATATYPE_INTEGER ) = NULL ) then
-    	exit function
-    end if
+	'' byval str1_len as integer
+	if( astNewARG( proc, astNewCONSTi( str1len ) ) = NULL ) then
+		exit function
+	end if
 
     '' byref str2 as any
     if( astNewARG( proc, str2, sdtype2 ) = NULL ) then
     	exit function
     end if
 
-    '' byval str2_len as integer
-    if( astNewARG( proc, _
-    			   astNewCONSTi( str2len, FB_DATATYPE_INTEGER ), _
-    			   FB_DATATYPE_INTEGER ) = NULL ) then
-    	exit function
-    end if
+	'' byval str2_len as integer
+	if( astNewARG( proc, astNewCONSTi( str2len ) ) = NULL ) then
+		exit function
+	end if
 
     function = proc
-
 end function
 
 '':::::
@@ -2721,12 +2712,10 @@ function rtlWstrConcatWA _
     	exit function
     end if
 
-    '' byval str2_len as integer
-    if( astNewARG( proc, _
-    				 astNewCONSTi( str2len, FB_DATATYPE_INTEGER ), _
-    				 FB_DATATYPE_INTEGER ) = NULL ) then
-    	exit function
-    end if
+	'' byval str2_len as integer
+	if( astNewARG( proc, astNewCONSTi( str2len ) ) = NULL ) then
+		exit function
+	end if
 
     function = proc
 
@@ -2755,12 +2744,10 @@ function rtlWstrConcatAW _
     	exit function
     end if
 
-    '' byval str1_len as integer
-    if( astNewARG( proc, _
-    				 astNewCONSTi( str1len, FB_DATATYPE_INTEGER ), _
-    				 FB_DATATYPE_INTEGER ) = NULL ) then
-    	exit function
-    end if
+	'' byval str1_len as integer
+	if( astNewARG( proc, astNewCONSTi( str1len ) ) = NULL ) then
+		exit function
+	end if
 
     '' byval str2 as wstring ptr
     if( astNewARG( proc, str2 ) = NULL ) then
@@ -2838,11 +2825,9 @@ function rtlStrConcatAssign _
     end if
 
 	'' byval dstlen as integer
-	if( astNewARG( proc, _
-					 astNewCONSTi( lgt, FB_DATATYPE_INTEGER ), _
-					 FB_DATATYPE_INTEGER ) = NULL ) then
-    	exit function
-    end if
+	if( astNewARG( proc, astNewCONSTi( lgt ) ) = NULL ) then
+		exit function
+	end if
 
    	'' always calc len before pushing the param
    	sdtype = astGetDataType( src )
@@ -2853,19 +2838,15 @@ function rtlStrConcatAssign _
     	exit function
     end if
 
-    '' byval srclen as integer
-	if( astNewARG( proc, _
-					 astNewCONSTi( lgt, FB_DATATYPE_INTEGER ), _
-					 FB_DATATYPE_INTEGER ) = NULL ) then
-    	exit function
-    end if
+	'' byval srclen as integer
+	if( astNewARG( proc, astNewCONSTi( lgt ) ) = NULL ) then
+		exit function
+	end if
 
 	'' byval fillrem as integer
-	if( astNewARG( proc, _
-					 astNewCONSTi( ddtype = FB_DATATYPE_FIXSTR, FB_DATATYPE_INTEGER ), _
-					 FB_DATATYPE_INTEGER ) = NULL ) then
-    	exit function
-    end if
+	if( astNewARG( proc, astNewCONSTi( ddtype = FB_DATATYPE_FIXSTR ) ) = NULL ) then
+		exit function
+	end if
 
 	''
 	function = proc
@@ -2895,11 +2876,9 @@ function rtlWstrConcatAssign _
     end if
 
 	'' byval dstlen as integer
-	if( astNewARG( proc, _
-					 astNewCONSTi( lgt, FB_DATATYPE_INTEGER ), _
-					 FB_DATATYPE_INTEGER ) = NULL ) then
-    	exit function
-    end if
+	if( astNewARG( proc, astNewCONSTi( lgt ) ) = NULL ) then
+		exit function
+	end if
 
 	'' byval src as wstring ptr
 	if( astNewARG( proc, src ) = NULL ) then
@@ -2936,11 +2915,9 @@ function rtlWstrAssignWA _
     end if
 
 	'' byval dstlen as integer
-	if( astNewARG( proc, _
-					 astNewCONSTi( dstlen, FB_DATATYPE_INTEGER ), _
-					 FB_DATATYPE_INTEGER ) = NULL ) then
-    	exit function
-    end if
+	if( astNewARG( proc, astNewCONSTi( dstlen ) ) = NULL ) then
+		exit function
+	end if
 
     '' byref src as any
     if( astNewARG( proc, src ) = NULL ) then
@@ -2948,11 +2925,9 @@ function rtlWstrAssignWA _
     end if
 
 	'' byval srclen as integer
-	if( astNewARG( proc, _
-					 astNewCONSTi( srclen, FB_DATATYPE_INTEGER ), _
-					 FB_DATATYPE_INTEGER ) = NULL ) then
-    	exit function
-    end if
+	if( astNewARG( proc, astNewCONSTi( srclen ) ) = NULL ) then
+		exit function
+	end if
 
     function = proc
 
@@ -2985,11 +2960,9 @@ function rtlWstrAssignAW _
     end if
 
 	'' byval dstlen as integer
-	if( astNewARG( proc, _
-					 astNewCONSTi( lgt, FB_DATATYPE_INTEGER ), _
-					 FB_DATATYPE_INTEGER ) = NULL ) then
-    	exit function
-    end if
+	if( astNewARG( proc, astNewCONSTi( lgt ) ) = NULL ) then
+		exit function
+	end if
 
     '' byval src as wstring ptr
     if( astNewARG( proc, src ) = NULL ) then
@@ -2997,11 +2970,9 @@ function rtlWstrAssignAW _
     end if
 
 	'' byval fillrem as integer
-	if( astNewARG( proc, _
-					 astNewCONSTi( ddtype = FB_DATATYPE_FIXSTR, FB_DATATYPE_INTEGER ), _
-					 FB_DATATYPE_INTEGER ) = NULL ) then
-    	exit function
-    end if
+	if( astNewARG( proc, astNewCONSTi( ddtype = FB_DATATYPE_FIXSTR ) ) = NULL ) then
+		exit function
+	end if
 
     function = proc
 
@@ -3047,11 +3018,9 @@ function rtlStrAssign _
     end if
 
 	'' byval dstlen as integer
-	if( astNewARG( proc, _
-					 astNewCONSTi( lgt, FB_DATATYPE_INTEGER ), _
-					 FB_DATATYPE_INTEGER ) = NULL ) then
-    	exit function
-    end if
+	if( astNewARG( proc, astNewCONSTi( lgt ) ) = NULL ) then
+		exit function
+	end if
 
    	'' always calc len before pushing the param
 	lgt = rtlCalcStrLen( src, sdtype )
@@ -3062,18 +3031,14 @@ function rtlStrAssign _
     end if
 
 	'' byval srclen as integer
-	if( astNewARG( proc, _
-					 astNewCONSTi( lgt, FB_DATATYPE_INTEGER ), _
-					 FB_DATATYPE_INTEGER ) = NULL ) then
-    	exit function
-    end if
+	if( astNewARG( proc, astNewCONSTi( lgt ) ) = NULL ) then
+		exit function
+	end if
 
 	'' byval fillrem as integer
-	if( astNewARG( proc, _
-					 astNewCONSTi( ddtype = FB_DATATYPE_FIXSTR, FB_DATATYPE_INTEGER ), _
-					 FB_DATATYPE_INTEGER ) = NULL ) then
-    	exit function
-    end if
+	if( astNewARG( proc, astNewCONSTi( ddtype = FB_DATATYPE_FIXSTR ) ) = NULL ) then
+		exit function
+	end if
 
 	''
 	function = proc
@@ -3119,11 +3084,9 @@ function rtlWstrAssign _
     end if
 
 	'' byval dstlen as integer
-	if( astNewARG( proc, _
-					 astNewCONSTi( lgt, FB_DATATYPE_INTEGER ), _
-					 FB_DATATYPE_INTEGER ) = NULL ) then
-    	exit function
-    end if
+	if( astNewARG( proc, astNewCONSTi( lgt ) ) = NULL ) then
+		exit function
+	end if
 
     '' byval src as wstring ptr
     if( astNewARG( proc, src ) = NULL ) then
@@ -3232,12 +3195,10 @@ function rtlStrAllocTmpDesc	_
     	if( litsym <> NULL ) then
     		lgt = symbGetStrLen( litsym ) - 1	'' less the null-term
 
-            '' byval len as integer
-    		if( astNewARG( proc, _
-    						 astNewCONSTi( lgt, FB_DATATYPE_INTEGER ), _
-    						 FB_DATATYPE_INTEGER ) = NULL ) then
-    			exit function
-    		end if
+			'' byval len as integer
+			if( astNewARG( proc, astNewCONSTi( lgt ) ) = NULL ) then
+				exit function
+			end if
     	end if
 
 	case FB_DATATYPE_FIXSTR
@@ -3252,11 +3213,9 @@ function rtlStrAllocTmpDesc	_
     	end if
 
 		'' byval strlen as integer
-		if( astNewARG( proc, _
-						 astNewCONSTi( lgt, FB_DATATYPE_INTEGER ), _
-						 FB_DATATYPE_INTEGER ) = NULL ) then
-    		exit function
-    	end if
+		if( astNewARG( proc, astNewCONSTi( lgt ) ) = NULL ) then
+			exit function
+		end if
 
     end select
 
@@ -3742,10 +3701,9 @@ function rtlStrAssignMid _
 
     ''
     if( dst_len <> -1 ) then
-    	if( astNewARG( proc, _
-    					 astNewCONSTi( dst_len, FB_DATATYPE_INTEGER ) ) = NULL ) then
-    		exit function
-    	end if
+		if( astNewARG( proc, astNewCONSTi( dst_len ) ) = NULL ) then
+			exit function
+		end if
     end if
 
     if( astNewARG( proc, expr2 ) = NULL ) then
@@ -3938,7 +3896,7 @@ function rtlStrAsc _
 
     '' byval pos as integer
     if( posexpr = NULL ) then
-    	posexpr = astNewCONSTi( 1, FB_DATATYPE_INTEGER )
+		posexpr = astNewCONSTi( 1 )
     end if
 
     if( astNewARG( proc, posexpr ) = NULL ) then
@@ -3968,10 +3926,10 @@ function rtlStrChr _
     	proc = astNewCALL( PROCLOOKUP( WSTRCHR ) )
     end if
 
-    '' byval args as integer
-    if( astNewARG( proc, astNewCONSTi( args, FB_DATATYPE_INTEGER ) ) = NULL ) then
-    	exit function
-    end if
+	'' byval args as integer
+	if( astNewARG( proc, astNewCONSTi( args ) ) = NULL ) then
+		exit function
+	end if
 
     '' ...
     for i as integer = 0 to args-1

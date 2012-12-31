@@ -1551,7 +1551,7 @@ private sub hDivToShift_Signed _
 					l_cpy, _
 					astNewBOP( AST_OP_SHR, _
 						astNewCONV( typeToUnsigned( dtype ), NULL, l, AST_CONVOPT_SIGNCONV ), _
-						astNewCONSTi( bits, FB_DATATYPE_INTEGER ) ) ), _
+						astNewCONSTi( bits ) ) ), _
 				AST_CONVOPT_SIGNCONV )
 	else
 		'' n + ( (n shr bits) and (1 shl const_val - 1) )
@@ -1561,8 +1561,8 @@ private sub hDivToShift_Signed _
 					astNewBOP( AST_OP_AND, _
 						astNewBOP( AST_OP_SHR, _
 							l, _
-							astNewCONSTi( bits, FB_DATATYPE_INTEGER ) ), _
-						astNewCONSTi( 1 shl const_val - 1, FB_DATATYPE_INTEGER ) ) ), _
+							astNewCONSTi( bits ) ), _
+						astNewCONSTi( 1 shl const_val - 1 ) ) ), _
 				AST_CONVOPT_SIGNCONV )
 	end if
 

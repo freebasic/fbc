@@ -16,7 +16,7 @@ private sub hCallMain( )
 
 	'' main( 0, NULL )
 	main = astNewCALL( env.main.proc )
-	astNewARG( main, astNewCONSTi( 0, FB_DATATYPE_INTEGER ) )
+	astNewARG( main, astNewCONSTi( 0 ) )
 	astNewARG( main, astNewCONSTi( NULL, typeAddrOf( FB_DATATYPE_VOID ) ) )
 
 	'' tell the emitter to not allocate a result

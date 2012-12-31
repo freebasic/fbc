@@ -47,7 +47,7 @@ sub cSelConstStmtBegin()
 	if( expr = NULL ) then
 		errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
 		'' error recovery: fake an expr
-		expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+		expr = astNewCONSTi( 0 )
 	end if
 
 	if( astGetDataClass( expr ) <> FB_DATACLASS_INTEGER ) then
@@ -69,7 +69,7 @@ sub cSelConstStmtBegin()
 	if( expr = NULL ) then
 		errReport( FB_ERRMSG_INVALIDDATATYPES )
 		'' error recovery: fake an expr
-		expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+		expr = astNewCONSTi( 0 )
 	end if
 
 	if( astGetDataType( expr ) <> FB_DATATYPE_UINT ) then
@@ -201,7 +201,7 @@ sub cSelConstStmtNext(byval stk as FB_CMPSTMTSTK ptr)
 		if( expr1 = NULL ) then
 			errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
 			'' error recovery: fake an expr
-			expr1 = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+			expr1 = astNewCONSTi( 0 )
 		end if
 
 		if( astIsCONST( expr1 ) = FALSE ) then
@@ -211,7 +211,7 @@ sub cSelConstStmtNext(byval stk as FB_CMPSTMTSTK ptr)
 				hSkipUntil( CHAR_COMMA )
 			end if
 			astDelTree( expr1 )
-			expr1 = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+			expr1 = astNewCONSTi( 0 )
 		end if
 
 		value = astGetValueAsInt( expr1 )
@@ -229,14 +229,14 @@ sub cSelConstStmtNext(byval stk as FB_CMPSTMTSTK ptr)
 				errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
 				'' error recovery: skip until next ',' and fake an expr
 				hSkipUntil( CHAR_COMMA )
-				expr2 = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+				expr2 = astNewCONSTi( 0 )
 			end if
 
 			if( astIsCONST( expr2 ) = FALSE ) then
 				errReport( FB_ERRMSG_EXPECTEDCONST )
 				'' error recovery: fake an expr
 				astDelTree( expr2 )
-				expr2 = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+				expr2 = astNewCONSTi( 0 )
 			end if
 
 			tovalue = astGetValueAsInt( expr2 )

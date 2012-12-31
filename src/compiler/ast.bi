@@ -1126,10 +1126,7 @@ declare function astBuildInstPtrAtOffset _
 		byval ofs as integer = 0 _
 	) as ASTNODE ptr
 
-declare function astBuildMockInstPtr _
-	( _
-		byval sym as FBSYMBOL ptr _
-	) as ASTNODE ptr
+declare function astBuildMockInstPtr( byval sym as FBSYMBOL ptr ) as ASTNODE ptr
 
 declare function astBuildVarDtorCall _
 	( _

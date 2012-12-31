@@ -305,24 +305,19 @@ function rtlDataRead _
  		exit function
  	end if
 
-    if( args > 1 ) then
+	if( args > 1 ) then
 		'' byval dst_size as integer
-		if( astNewARG( proc, _
-					   astNewCONSTi( lgt, FB_DATATYPE_INTEGER ), _
-					   FB_DATATYPE_INTEGER ) = NULL ) then
- 			exit function
- 		end if
+		if( astNewARG( proc, astNewCONSTi( lgt ) ) = NULL ) then
+			exit function
+		end if
 
 		if( args > 2 ) then
 			'' byval fillrem as integer
-			if( astNewARG( proc, _
-						   astNewCONSTi( dtype = FB_DATATYPE_FIXSTR, _
-										 FB_DATATYPE_INTEGER ), _
-						   FB_DATATYPE_INTEGER ) = NULL ) then
-    			exit function
-    		end if
-    	end if
-    end if
+			if( astNewARG( proc, astNewCONSTi( dtype = FB_DATATYPE_FIXSTR ) ) = NULL ) then
+				exit function
+			end if
+		end if
+	end if
 
     ''
     astAdd( proc )

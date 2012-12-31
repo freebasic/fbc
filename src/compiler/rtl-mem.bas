@@ -280,11 +280,9 @@ function rtlNullPtrCheck _
 	end if
 
 	'' linenum
-	if( astNewARG( proc, _
-				   astNewCONSTi( linenum, FB_DATATYPE_INTEGER ), _
-				   FB_DATATYPE_INTEGER ) = NULL ) then
-    	exit function
-    end if
+	if( astNewARG( proc, astNewCONSTi( linenum ) ) = NULL ) then
+		exit function
+	end if
 
     '' module
 	if( astNewARG( proc, astNewCONSTstr( module ) ) = NULL ) then
@@ -320,10 +318,10 @@ function rtlMemCopy _
     	exit function
     end if
 
-    '' byval bytes as integer
-    if( astNewARG( proc, astNewCONSTi( bytes, FB_DATATYPE_INTEGER ) ) = NULL ) then
-    	exit function
-    end if
+	'' byval bytes as integer
+	if( astNewARG( proc, astNewCONSTi( bytes ) ) = NULL ) then
+		exit function
+	end if
 
     ''
     function = proc
@@ -355,7 +353,7 @@ function rtlMemSwap _
 	end if
 
 	'' byval bytes as integer
-	if( astNewARG( proc, astNewCONSTi( bytes, FB_DATATYPE_INTEGER ) ) = NULL ) then
+	if( astNewARG( proc, astNewCONSTi( bytes ) ) = NULL ) then
 		exit function
 	end if
 
@@ -385,20 +383,20 @@ function rtlMemCopyClear _
     	exit function
     end if
 
-    '' byval dstlen as integer
-    if( astNewARG( proc, astNewCONSTi( dstlen, FB_DATATYPE_INTEGER ) ) = NULL ) then
-    	exit function
-    end if
+	'' byval dstlen as integer
+	if( astNewARG( proc, astNewCONSTi( dstlen ) ) = NULL ) then
+		exit function
+	end if
 
     '' src as any
     if( astNewARG( proc, srcexpr ) = NULL ) then
     	exit function
     end if
 
-    '' byval srclen as integer
-    if( astNewARG( proc, astNewCONSTi( srclen, FB_DATATYPE_INTEGER ) ) = NULL ) then
-    	exit function
-    end if
+	'' byval srclen as integer
+	if( astNewARG( proc, astNewCONSTi( srclen ) ) = NULL ) then
+		exit function
+	end if
 
     ''
     astAdd( proc )

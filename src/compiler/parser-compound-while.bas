@@ -31,7 +31,7 @@ sub cWhileStmtBegin()
 	if( expr = NULL ) then
 		errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
 		'' error recovery: fake an expr
-		expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+		expr = astNewCONSTi( 0 )
 	end if
 
 	'' branch

@@ -96,7 +96,7 @@ private function hStrLiteralCompare _
    		res = (*ltext.data >= *rtext.data)
    	end select
 
-	function = astNewCONSTi( res, FB_DATATYPE_INTEGER )
+	function = astNewCONSTi( res )
 
 	astDelNode( r )
 	astDelNode( l )
@@ -181,7 +181,7 @@ private function hWStrLiteralCompare _
 
    	end if
 
-	function = astNewCONSTi( res, FB_DATATYPE_INTEGER )
+	function = astNewCONSTi( res )
 
 	astDelNode( r )
 	astDelNode( l )
@@ -678,7 +678,7 @@ private function hDoPointerArith _
  			e = astNewBOP( AST_OP_SUB, p, e )
 
  			'' and divide by length
- 			function = astNewBOP( AST_OP_INTDIV, e, astNewCONSTi( lgt, FB_DATATYPE_INTEGER ) )
+			function = astNewBOP( AST_OP_INTDIV, e, astNewCONSTi( lgt ) )
     	end if
 
     	exit function
@@ -1029,7 +1029,7 @@ function astNewBOP _
 
 				'' convert to: wstrcmp(l,r) op 0
 				l = rtlWstrCompare( l, r )
-				r = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+				r = astNewCONSTi( 0 )
 
 				ldtype = typeJoin( ldtype, astGetFullType( l ) )
 				rdtype = typeJoin( rdtype, astGetFullType( r ) )
@@ -1114,7 +1114,7 @@ function astNewBOP _
 
 			'' convert to: strcmp(l,r) op 0
 			l = rtlStrCompare( l, ldtype, r, rdtype )
-			r = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+			r = astNewCONSTi( 0 )
 
 			ldtype = typeJoin( ldtype, astGetFullType( l ) )
 			ldclass = FB_DATACLASS_INTEGER
@@ -1512,8 +1512,8 @@ function astNewBOP _
 			cmp_constl = astNewConstf(0.0, FB_DATATYPE_SINGLE)
 			cmp_constr = astNewConstf(0.0, FB_DATATYPE_SINGLE)
 		else
-			cmp_constl = astNewConstI(0, FB_DATATYPE_INTEGER)
-			cmp_constr = astNewConstI(0, FB_DATATYPE_INTEGER)
+			cmp_constl = astNewCONSTi( 0 )
+			cmp_constr = astNewCONSTi( 0 )
 		end if
 
 		if op = AST_OP_ANDALSO then
@@ -1526,9 +1526,9 @@ function astNewBOP _
 		r = astNewBOP( AST_OP_NE, r, cmp_constr )
 
 		if op = AST_OP_ANDALSO then
-			return astNewIIF( l, r, astNewConstI(0, FB_DATATYPE_INTEGER) )
+			return astNewIIF( l, r, astNewCONSTi( 0 ) )
 		else
-			return astNewIIF( l, r, astNewConstI(-1, FB_DATATYPE_INTEGER) )
+			return astNewIIF( l, r, astNewCONSTi( -1 ) )
 		end if
 	end if
 

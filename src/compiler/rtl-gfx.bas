@@ -1685,7 +1685,7 @@ function rtlGfxPset _
 
  	'' byref target as any
  	if( target = NULL ) then
- 		target = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+		target = astNewCONSTi( 0 )
  		targetmode = FB_PARAMMODE_BYVAL
  	else
 		if( targetisptr ) then
@@ -1714,12 +1714,12 @@ function rtlGfxPset _
  	end if
 
  	'' byval coordtype as integer
- 	if( astNewARG( proc, astNewCONSTi( coordtype, FB_DATATYPE_INTEGER ) ) = NULL ) then
+	if( astNewARG( proc, astNewCONSTi( coordtype ) ) = NULL ) then
  		exit function
  	end if
 
  	'' byval ispreset as integer
- 	if( astNewARG( proc, astNewCONSTi( ispreset, FB_DATATYPE_INTEGER ) ) = NULL ) then
+	if( astNewARG( proc, astNewCONSTi( ispreset ) ) = NULL ) then
  		exit function
  	end if
 
@@ -1748,7 +1748,7 @@ function rtlGfxPoint _
 
 	'' byref target as any
 	if( target = NULL ) then
- 		target = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+		target = astNewCONSTi( 0 )
  		targetmode = FB_PARAMMODE_BYVAL
  	else
 		if( targetisptr ) then
@@ -1802,7 +1802,7 @@ function rtlGfxLine _
 
  	'' byref target as any
  	if( target = NULL ) then
- 		target = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+		target = astNewCONSTi( 0 )
  		targetmode = FB_PARAMMODE_BYVAL
  	else
 		if( targetisptr ) then
@@ -1841,7 +1841,7 @@ function rtlGfxLine _
  	end if
 
  	'' byval linetype as integer
- 	if( astNewARG( proc, astNewCONSTi( linetype, FB_DATATYPE_INTEGER ) ) = NULL ) then
+	if( astNewARG( proc, astNewCONSTi( linetype ) ) = NULL ) then
  		exit function
  	end if
 
@@ -1854,7 +1854,7 @@ function rtlGfxLine _
  	end if
 
  	'' byval coordtype as integer
- 	if( astNewARG( proc, astNewCONSTi( coordtype, FB_DATATYPE_INTEGER ) ) = NULL ) then
+	if( astNewARG( proc, astNewCONSTi( coordtype ) ) = NULL ) then
  		exit function
  	end if
 
@@ -1890,7 +1890,7 @@ function rtlGfxCircle _
 
  	'' byref target as any
  	if( target = NULL ) then
- 		target = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+		target = astNewCONSTi( 0 )
  		targetmode = FB_PARAMMODE_BYVAL
  	else
 		if( targetisptr ) then
@@ -1948,12 +1948,12 @@ function rtlGfxCircle _
  	end if
 
  	'' byval fillflag as integer
- 	if( astNewARG( proc, astNewCONSTi( fillflag, FB_DATATYPE_INTEGER ) ) = NULL ) then
+	if( astNewARG( proc, astNewCONSTi( fillflag ) ) = NULL ) then
  		exit function
  	end if
 
  	'' byval coordtype as integer
- 	if( astNewARG( proc, astNewCONSTi( coordtype, FB_DATATYPE_INTEGER ) ) = NULL ) then
+	if( astNewARG( proc, astNewCONSTi( coordtype ) ) = NULL ) then
  		exit function
  	end if
 
@@ -1985,7 +1985,7 @@ function rtlGfxPaint _
 
  	'' byref target as any
  	if( target = NULL ) then
- 		target = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+		target = astNewCONSTi( 0 )
  		targetmode = FB_PARAMMODE_BYVAL
  	else
 		if( targetisptr ) then
@@ -2011,7 +2011,7 @@ function rtlGfxPaint _
 	'' byval color as uinteger
 	if( symbIsString( astGetDataType( pexpr ) ) ) then
 		pattern = TRUE
-		if( astNewARG( proc, astNewCONSTi( &hFFFF0000, FB_DATATYPE_INTEGER ) ) = NULL ) then
+		if( astNewARG( proc, astNewCONSTi( &hFFFF0000 ) ) = NULL ) then
  			exit function
  		end if
 	else
@@ -2031,20 +2031,20 @@ function rtlGfxPaint _
 		if( astNewARG( proc, pexpr ) = NULL ) then
  			exit function
  		end if
-		if( astNewARG( proc, astNewCONSTi( 1, FB_DATATYPE_INTEGER ) ) = NULL ) then
+		if( astNewARG( proc, astNewCONSTi( 1 ) ) = NULL ) then
  			exit function
  		end if
 	else
 		if( astNewARG( proc, astNewVAR( symbAllocStrConst( "", 0 ) ) ) = NULL ) then
  			exit function
  		end if
-		if( astNewARG( proc, astNewCONSTi( 0, FB_DATATYPE_INTEGER ) ) = NULL ) then
+		if( astNewARG( proc, astNewCONSTi( 0 ) ) = NULL ) then
  			exit function
  		end if
 	end if
 
 	'' byval coord_type as integer
-	if( astNewARG( proc, astNewCONSTi( coord_type, FB_DATATYPE_INTEGER ) ) = NULL ) then
+	if( astNewARG( proc, astNewCONSTi( coord_type ) ) = NULL ) then
  		exit function
  	end if
 
@@ -2072,7 +2072,7 @@ function rtlGfxDraw _
 
  	'' byref target as any
  	if( target = NULL ) then
- 		target = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+		target = astNewCONSTi( 0 )
  		targetmode = FB_PARAMMODE_BYVAL
  	else
 		if( targetisptr ) then
@@ -2124,7 +2124,7 @@ function rtlGfxDrawString _
 
  	'' byref target as any
  	if( target = NULL ) then
- 		target = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+		target = astNewCONSTi( 0 )
  		targetmode = FB_PARAMMODE_BYVAL
  	else
 		if( targetisptr ) then
@@ -2148,7 +2148,7 @@ function rtlGfxDrawString _
  	end if
 
 	'' byval coord_type as integer
-	if( astNewARG( proc, astNewCONSTi( coord_type, FB_DATATYPE_INTEGER ) ) = NULL ) then
+	if( astNewARG( proc, astNewCONSTi( coord_type ) ) = NULL ) then
  		exit function
  	end if
 
@@ -2167,9 +2167,9 @@ function rtlGfxDrawString _
 
  	'' byref font as any
  	if( fexpr = NULL ) then
- 		fexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+		fexpr = astNewCONSTi( 0 )
  		targetmode = FB_PARAMMODE_BYVAL
- 		putter = astNewCONSTi( 0, FB_DATATYPE_INTEGER)
+		putter = astNewCONSTi( 0 )
  	else
 		if( fisptr ) then
 			targetmode = FB_PARAMMODE_BYVAL
@@ -2183,7 +2183,7 @@ function rtlGfxDrawString _
  	end if
 
  	'' byval mode as integer
- 	if( astNewARG( proc, astNewCONSTi( mode, FB_DATATYPE_INTEGER ) ) = NULL ) then
+	if( astNewARG( proc, astNewCONSTi( mode ) ) = NULL ) then
  		exit function
  	end if
 
@@ -2194,7 +2194,7 @@ function rtlGfxDrawString _
 
  	'' byval func as function( src as uinteger, dest as uinteger ) as uinteger
  	if( funcexpr = NULL ) then
- 		funcexpr = astNewCONSTi(0, FB_DATATYPE_INTEGER )
+		funcexpr = astNewCONSTi( 0 )
  	end if
  	if( astNewARG( proc, funcexpr ) = NULL ) then
  		exit function
@@ -2202,7 +2202,7 @@ function rtlGfxDrawString _
 
  	'' byval param as any ptr
  	if( paramexpr = NULL ) then
- 		paramexpr = astNewCONSTi(0, FB_DATATYPE_INTEGER )
+		paramexpr = astNewCONSTi( 0 )
  	end if
  	if( astNewARG( proc, paramexpr ) = NULL ) then
  		exit function
@@ -2232,7 +2232,7 @@ function rtlGfxView _
 
  	'' byval x1 as integer
  	if( x1expr = NULL ) then
-        x1expr = astNewCONSTi( -32768, FB_DATATYPE_INTEGER )
+		x1expr = astNewCONSTi( -32768 )
     end if
  	if( astNewARG( proc, x1expr ) = NULL ) then
  		exit function
@@ -2240,7 +2240,7 @@ function rtlGfxView _
 
  	'' byval y1 as integer
  	if( y1expr = NULL ) then
-        y1expr = astNewCONSTi( -32768, FB_DATATYPE_INTEGER )
+		y1expr = astNewCONSTi( -32768 )
     end if
  	if( astNewARG( proc, y1expr ) = NULL ) then
  		exit function
@@ -2248,7 +2248,7 @@ function rtlGfxView _
 
  	'' byval x2 as integer
  	if( x2expr = NULL ) then
-        x2expr = astNewCONSTi( -32768, FB_DATATYPE_INTEGER )
+		x2expr = astNewCONSTi( -32768 )
     end if
  	if( astNewARG( proc, x2expr ) = NULL ) then
  		exit function
@@ -2256,7 +2256,7 @@ function rtlGfxView _
 
  	'' byval y2 as integer
  	if( y2expr = NULL ) then
-        y2expr = astNewCONSTi( -32768, FB_DATATYPE_INTEGER )
+		y2expr = astNewCONSTi( -32768 )
     end if
  	if( astNewARG( proc, y2expr ) = NULL ) then
  		exit function
@@ -2279,7 +2279,7 @@ function rtlGfxView _
  	end if
 
  	'' byval screenflag as integer
- 	if( astNewARG( proc, astNewCONSTi( screenflag, FB_DATATYPE_INTEGER ) ) = NULL ) then
+	if( astNewARG( proc, astNewCONSTi( screenflag ) ) = NULL ) then
  		exit function
  	end if
 
@@ -2339,7 +2339,7 @@ function rtlGfxWindow _
  	end if
 
  	'' byval screenflag as integer
- 	if( astNewARG( proc, astNewCONSTi( screenflag, FB_DATATYPE_INTEGER ) ) = NULL ) then
+	if( astNewARG( proc, astNewCONSTi( screenflag ) ) = NULL ) then
  		exit function
  	end if
 
@@ -2383,7 +2383,7 @@ function rtlGfxPalette  _
 
  	'' byval attr as integer
  	if( attexpr = NULL ) then
-        attexpr = astNewCONSTi( -1, FB_DATATYPE_INTEGER )
+		attexpr = astNewCONSTi( -1 )
     end if
  	if( astNewARG( proc, attexpr ) = NULL ) then
  		exit function
@@ -2391,7 +2391,7 @@ function rtlGfxPalette  _
 
  	'' byval r as integer
  	if( rexpr = NULL ) then
-        rexpr = astNewCONSTi( -1, FB_DATATYPE_INTEGER )
+		rexpr = astNewCONSTi( -1 )
     end if
  	if( astNewARG( proc, rexpr ) = NULL ) then
  		exit function
@@ -2400,7 +2400,7 @@ function rtlGfxPalette  _
  	'' byval g as integer
  	if( gexpr = NULL ) then
  		targetmode = FB_PARAMMODE_BYVAL
-        gexpr = astNewCONSTi( defval, FB_DATATYPE_INTEGER )
+		gexpr = astNewCONSTi( defval )
     end if
  	if( astNewARG( proc, gexpr, FB_DATATYPE_INVALID, targetmode ) = NULL ) then
  		exit function
@@ -2408,7 +2408,7 @@ function rtlGfxPalette  _
 
  	'' byval b as integer
  	if( bexpr = NULL ) then
-        bexpr = astNewCONSTi( defval, FB_DATATYPE_INTEGER )
+		bexpr = astNewCONSTi( defval )
     end if
  	if( astNewARG( proc, bexpr, FB_DATATYPE_INVALID, targetmode ) = NULL ) then
  		exit function
@@ -2484,7 +2484,7 @@ function rtlGfxPut _
 
  	'' byref target as any
  	if( target = NULL ) then
- 		target = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+		target = astNewCONSTi( 0 )
  		targetmode = FB_PARAMMODE_BYVAL
  	else
 		if( targetisptr ) then
@@ -2519,10 +2519,10 @@ function rtlGfxPut _
 
  	'' area coordinates, if any
  	if( x1expr = NULL ) then
- 		x1expr = astNewCONSTi( &hFFFF0000, FB_DATATYPE_INTEGER )
- 		x2expr = astNewCONSTi( &hFFFF0000, FB_DATATYPE_INTEGER )
- 		y1expr = astNewCONSTi( &hFFFF0000, FB_DATATYPE_INTEGER )
- 		y2expr = astNewCONSTi( &hFFFF0000, FB_DATATYPE_INTEGER )
+		x1expr = astNewCONSTi( &hFFFF0000 )
+		x2expr = astNewCONSTi( &hFFFF0000 )
+		y1expr = astNewCONSTi( &hFFFF0000 )
+		y2expr = astNewCONSTi( &hFFFF0000 )
  	end if
   	if( astNewARG( proc, x1expr ) = NULL ) then
  		exit function
@@ -2538,12 +2538,12 @@ function rtlGfxPut _
  	end if
 
  	'' byval coordtype as integer
- 	if( astNewARG( proc, astNewCONSTi( coordtype, FB_DATATYPE_INTEGER ) ) = NULL ) then
+	if( astNewARG( proc, astNewCONSTi( coordtype ) ) = NULL ) then
  		exit function
  	end if
 
  	'' byval mode as integer
- 	if( astNewARG( proc, astNewCONSTi( mode, FB_DATATYPE_INTEGER ) ) = NULL ) then
+	if( astNewARG( proc, astNewCONSTi( mode ) ) = NULL ) then
  		exit function
  	end if
 
@@ -2554,7 +2554,7 @@ function rtlGfxPut _
 
 	'' byval alpha as integer
 	if( alphaexpr = NULL ) then
-		alphaexpr = astNewCONSTi( -1, FB_DATATYPE_INTEGER )
+		alphaexpr = astNewCONSTi( -1 )
 	end if
  	if( astNewARG( proc, alphaexpr ) = NULL ) then
  		exit function
@@ -2562,7 +2562,7 @@ function rtlGfxPut _
 
  	'' byval func as function( src as uinteger, dest as uinteger ) as uinteger
  	if( funcexpr = NULL ) then
- 		funcexpr = astNewCONSTi(0, FB_DATATYPE_INTEGER )
+		funcexpr = astNewCONSTi( 0 )
  	end if
  	if( astNewARG( proc, funcexpr ) = NULL ) then
  		exit function
@@ -2570,7 +2570,7 @@ function rtlGfxPut _
 
  	'' byval param as any ptr
  	if( paramexpr = NULL ) then
- 		paramexpr = astNewCONSTi(0, FB_DATATYPE_INTEGER )
+		paramexpr = astNewCONSTi( 0 )
  	end if
  	if( astNewARG( proc, paramexpr ) = NULL ) then
  		exit function
@@ -2605,7 +2605,7 @@ function rtlGfxGet _
 
  	'' byref target as any
  	if( target = NULL ) then
- 		target = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+		target = astNewCONSTi( 0 )
  		targetmode = FB_PARAMMODE_BYVAL
  	else
 		if( targetisptr ) then
@@ -2662,7 +2662,7 @@ function rtlGfxGet _
  	end if
 
  	'' byval coordtype as integer
- 	if( astNewARG( proc, astNewCONSTi( coordtype, FB_DATATYPE_INTEGER ) ) = NULL ) then
+	if( astNewARG( proc, astNewCONSTi( coordtype ) ) = NULL ) then
  		exit function
  	end if
 
@@ -2711,7 +2711,7 @@ function rtlGfxScreenSet _
 
  	'' byval d as integer
  	if( dexpr = NULL ) then
- 		dexpr = astNewCONSTi( 8, FB_DATATYPE_INTEGER )
+		dexpr = astNewCONSTi( 8 )
  	end if
  	if( astNewARG( proc, dexpr ) = NULL ) then
  		exit function
@@ -2719,7 +2719,7 @@ function rtlGfxScreenSet _
 
  	'' byval depth as integer
  	if( pexpr = NULL ) then
- 		pexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+		pexpr = astNewCONSTi( 0 )
  	end if
  	if( astNewARG( proc, pexpr ) = NULL ) then
  		exit function
@@ -2727,7 +2727,7 @@ function rtlGfxScreenSet _
 
  	'' byval flags as integer
  	if( fexpr = NULL ) then
- 		fexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+		fexpr = astNewCONSTi( 0 )
  	end if
  	if( astNewARG( proc, fexpr ) = NULL ) then
  		exit function
@@ -2735,7 +2735,7 @@ function rtlGfxScreenSet _
 
 	'' byval refresh_rate as integer
 	if( rexpr = NULL ) then
-		rexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+		rexpr = astNewCONSTi( 0 )
 	end if
  	if( astNewARG( proc, rexpr ) = NULL ) then
  		exit function
@@ -2766,7 +2766,7 @@ function rtlGfxScreenSetQB _
 
  	'' byval active as integer
  	if( active = NULL ) then
- 		active = astNewCONSTi( -1, FB_DATATYPE_INTEGER )
+		active = astNewCONSTi( -1 )
  	end if
  	if( astNewARG( proc, active ) = NULL ) then
  		exit function
@@ -2774,7 +2774,7 @@ function rtlGfxScreenSetQB _
 
  	'' byval visible as integer
  	if( visible = NULL ) then
- 		visible = astNewCONSTi( -1, FB_DATATYPE_INTEGER )
+		visible = astNewCONSTi( -1 )
  	end if
  	if( astNewARG( proc, visible ) = NULL ) then
  		exit function
@@ -2835,4 +2835,3 @@ function rtlGfxImageCreate _
 	function = proc
 
 end function
-

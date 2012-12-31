@@ -245,7 +245,7 @@ function cArrayFunct(byval tk as FB_TOKEN) as ASTNODE ptr
 			errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
 			'' error recovery: skip until next ')' and fake an expr
 			hSkipUntil( CHAR_RPRNT, TRUE )
-			return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+			return astNewCONSTi( 0 )
 		end if
 
 		'' ugly hack to deal with arrays w/o indexes
@@ -267,7 +267,7 @@ function cArrayFunct(byval tk as FB_TOKEN) as ASTNODE ptr
 			errReport( FB_ERRMSG_EXPECTEDARRAY, TRUE )
 			'' error recovery: skip until next ')' and fake an expr
 			hSkipUntil( CHAR_RPRNT, TRUE )
-			return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+			return astNewCONSTi( 0 )
 		end if
 
 		'' (',' Expression)?

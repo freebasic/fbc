@@ -84,7 +84,7 @@ function cTypeConvExpr _
 	expr = cExpression( )
 	if( expr = NULL ) then
 		errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
-		expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+		expr = astNewCONSTi( 0 )
 	end if
 
 	select case op
@@ -101,7 +101,7 @@ function cTypeConvExpr _
 		end if
 		errReport( errmsg, TRUE )
 
-		expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+		expr = astNewCONSTi( 0 )
 	end if
 
 	'' ')'
@@ -173,13 +173,13 @@ function cAnonUDT( ) as ASTNODE ptr
 			if( subtype = NULL ) then
 				errReport( FB_ERRMSG_SYNTAXERROR, TRUE )
 				'' error recovery: fake a node
-				return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+				return astNewCONSTi( 0 )
 			end if
 
 			if( symbIsStruct( subtype ) = FALSE ) then
 				errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE )
 				'' error recovery: fake a node
-				return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+				return astNewCONSTi( 0 )
 			end if
 		end if
 	end if

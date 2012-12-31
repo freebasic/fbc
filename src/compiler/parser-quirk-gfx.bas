@@ -96,8 +96,7 @@ private function hMakeArrayIndex _
     else
 
       idxexpr = astNewBOP( AST_OP_MUL, _
-                           astNewCONSTi( symbGetArrayFirstDim( sym )->lower, _
-                           				 FB_DATATYPE_INTEGER ), _
+                           astNewCONSTi( symbGetArrayFirstDim( sym )->lower ), _
                            astNewCONSTi( symbCalcLen( astGetDataType( varexpr ), _
                            				 astGetSubType( varexpr ) ), FB_DATATYPE_UINT ) )
 

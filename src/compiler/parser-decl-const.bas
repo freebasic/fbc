@@ -182,7 +182,7 @@ private function cConstAssign _
 			errReportEx( FB_ERRMSG_EXPECTEDCONST, id )
 			'' error recovery: create a fake node
 			astDelTree( expr )
-			expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+			expr = astNewCONSTi( 0 )
 			exprdtype = FB_DATATYPE_INTEGER
 		end if
 
@@ -208,7 +208,7 @@ private function cConstAssign _
 				if( expr = NULL ) then
 					errReportEx( FB_ERRMSG_INVALIDDATATYPES, id )
 					'' error recovery: create a fake node
-					expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+					expr = astNewCONSTi( 0 )
 					dtype = FB_DATATYPE_INTEGER
 					subtype = NULL
 				end if

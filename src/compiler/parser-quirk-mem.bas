@@ -44,7 +44,7 @@ function cOperatorNew( ) as ASTNODE ptr
 		errReport( FB_ERRMSG_NEWCANTBEUSEDWITHSTRINGS, TRUE )
 		'' error recovery: fake an expr
 		hSkipStmt( )
-		return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+		return astNewCONSTi( 0 )
 	end select
 
 	'' Disallow creating objects of abstract classes

@@ -48,8 +48,8 @@ function cViewStmt(byval is_func as integer) as ASTNODE ptr
 			hMatchLPRNT( )
 			hMatchRPRNT( )
 		end if
-		expr1 = astNewCONSTi( default_view_value, FB_DATATYPE_INTEGER )
-		expr2 = astNewCONSTi( default_view_value, FB_DATATYPE_INTEGER )
+		expr1 = astNewCONSTi( default_view_value )
+		expr2 = astNewCONSTi( default_view_value )
 	end if
 
 	expr1 = rtlConsoleView( expr1, expr2 )
@@ -101,14 +101,14 @@ function cWidthStmt(byval isfunc as integer) as ASTNODE ptr
         if( hMatch( CHAR_COMMA ) ) then
         	hMatchExpressionEx( width_arg, FB_DATATYPE_INTEGER )
 		else
-        	width_arg = astNewCONSTi( -1, FB_DATATYPE_INTEGER )
+			width_arg = astNewCONSTi( -1 )
 		end if
 
         function = rtlWidthFile( fnum, width_arg, isfunc )
 
 	elseif( hMatch( CHAR_COMMA ) ) then
     	' fb_WidthScreen
-        width_arg = astNewCONSTi( -1, FB_DATATYPE_INTEGER )
+		width_arg = astNewCONSTi( -1 )
         hMatchExpressionEx( height_arg, FB_DATATYPE_INTEGER )
         function = rtlWidthScreen( width_arg, height_arg, isfunc )
 
@@ -119,7 +119,7 @@ function cWidthStmt(byval isfunc as integer) as ASTNODE ptr
         	if( hMatch( CHAR_COMMA ) ) then
             	hMatchExpressionEx( width_arg, FB_DATATYPE_INTEGER )
 			else
-            	width_arg = astNewCONSTi( -1, FB_DATATYPE_INTEGER )
+				width_arg = astNewCONSTi( -1 )
 			end if
             function = rtlWidthDev( dev_name, width_arg, isfunc )
 
@@ -131,7 +131,7 @@ function cWidthStmt(byval isfunc as integer) as ASTNODE ptr
             if( hMatch( CHAR_COMMA ) ) then
             	hMatchExpressionEx( height_arg, FB_DATATYPE_INTEGER )
 			else
-            	height_arg = astNewCONSTi( -1, FB_DATATYPE_INTEGER )
+				height_arg = astNewCONSTi( -1 )
 			end if
             function = rtlWidthScreen( width_arg, height_arg, isfunc )
 

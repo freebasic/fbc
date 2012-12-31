@@ -20,7 +20,7 @@ function astBuildVarAssign _
 		byval rhs as integer _
 	) as ASTNODE ptr
 
-	function = astNewASSIGN( astNewVAR( lhs ), astNewCONSTi( rhs, FB_DATATYPE_INTEGER ) )
+	function = astNewASSIGN( astNewVAR( lhs ), astNewCONSTi( rhs ) )
 
 end function
 
@@ -57,7 +57,7 @@ function astBuildVarInc _
 	end if
 
 	function = astNewSelfBOP( op, astNewVAR( lhs ), _
-		astNewCONSTi( rhs, FB_DATATYPE_INTEGER ), NULL, options )
+		astNewCONSTi( rhs ), NULL, options )
 
 end function
 
@@ -595,20 +595,15 @@ function astBuildInstPtr _
 
 		ofs = symbGetOfs( fld )
 		if( ofs <> 0 ) then
-			expr = astNewBOP( AST_OP_ADD, _
-							  expr, _
-							  astNewCONSTi( ofs, FB_DATATYPE_INTEGER ) )
+			expr = astNewBOP( AST_OP_ADD, expr, astNewCONSTi( ofs ) )
 		end if
 
 		'' array access?
 		if( idxexpr <> NULL ) then
 			'' times length
-			expr = astNewBOP( AST_OP_ADD, _
-							  expr, _
-							  astNewBOP( AST_OP_MUL, _
-										 idxexpr, _
-										 astNewCONSTi( symbGetLen( fld ), _
-													   FB_DATATYPE_INTEGER ) ) )
+			expr = astNewBOP( AST_OP_ADD, expr, _
+				astNewBOP( AST_OP_MUL, idxexpr, _
+					astNewCONSTi( symbGetLen( fld ) ) ) )
 		end if
 
 	end if
@@ -648,9 +643,7 @@ function astBuildInstPtrAtOffset _
 	end if
 
 	if( ofs <> 0 ) then
-		expr = astNewBOP( AST_OP_ADD, _
-						  expr, _
-						  astNewCONSTi( ofs, FB_DATATYPE_INTEGER ) )
+		expr = astNewBOP( AST_OP_ADD, expr, astNewCONSTi( ofs ) )
 	end if
 
 	expr = astNewDEREF( expr, dtype, subtype )
@@ -663,16 +656,8 @@ function astBuildInstPtrAtOffset _
 
 end function
 
-'':::::
-function astBuildMockInstPtr _
-	( _
-		byval sym as FBSYMBOL ptr _
-	) as ASTNODE ptr
-
-	function = astNewCONSTi( 0, _
-							 typeAddrOf( symbGetType( sym ) ), _
-							 sym )
-
+function astBuildMockInstPtr( byval sym as FBSYMBOL ptr ) as ASTNODE ptr
+	function = astNewCONSTi( 0, typeAddrOf( symbGetType( sym ) ), sym )
 end function
 
 ''
@@ -811,11 +796,9 @@ function astBuildArrayDescIniTree _
 
     '' .data = @array(0) + diff
 	astTypeIniAddAssign( tree, _
-					   	 astNewBOP( AST_OP_ADD, _
-								  	astCloneTree( array_expr ), _
-					   			  	astNewCONSTi( symbGetArrayOffset( array ), _
-					   			  				  FB_DATATYPE_INTEGER ) ), _
-					   	 elm )
+		astNewBOP( AST_OP_ADD, astCloneTree( array_expr ), _
+			astNewCONSTi( symbGetArrayOffset( array ) ) ), _
+		elm )
 
 	elm = symbGetNext( elm )
 
@@ -825,18 +808,14 @@ function astBuildArrayDescIniTree _
     elm = symbGetNext( elm )
 
     '' .size = len( array ) * elements( array )
-    astTypeIniAddAssign( tree, _
-    				   	 astNewCONSTi( symbGetLen( array ) * symbGetArrayElements( array ), _
-    				   				   FB_DATATYPE_INTEGER ), _
-    				   	 elm )
+	astTypeIniAddAssign( tree, _
+		astNewCONSTi( symbGetLen( array ) * symbGetArrayElements( array ) ), _
+		elm )
 
     elm = symbGetNext( elm )
 
     '' .element_len	= len( array )
-    astTypeIniAddAssign( tree, _
-    				   	 astNewCONSTi( symbGetLen( array ), _
-    				   				   FB_DATATYPE_INTEGER ), _
-    				   	 elm )
+	astTypeIniAddAssign( tree, astNewCONSTi( symbGetLen( array ) ), elm )
 
     elm = symbGetNext( elm )
 
@@ -865,26 +844,17 @@ function astBuildArrayDescIniTree _
 			astTypeIniScopeBegin( tree, NULL )
 
 			'' .elements = (ubound( array, d ) - lbound( array, d )) + 1
-    		astTypeIniAddAssign( tree, _
-    				   		     astNewCONSTi( d->upper - d->lower + 1, _
-    				   				 		   FB_DATATYPE_INTEGER ), _
-    				   		     elm )
+			astTypeIniAddAssign( tree, astNewCONSTi( d->upper - d->lower + 1 ), elm )
 
 			elm = symbGetNext( elm )
 
 			'' .lbound = lbound( array, d )
-    		astTypeIniAddAssign( tree, _
-    				   		     astNewCONSTi( d->lower, _
-    				   				 		   FB_DATATYPE_INTEGER ), _
-    				   		     elm )
+			astTypeIniAddAssign( tree, astNewCONSTi( d->lower ), elm )
 
 			elm = symbGetNext( elm )
 
 			'' .ubound = ubound( array, d )
-    		astTypeIniAddAssign( tree, _
-    				   		     astNewCONSTi( d->upper, _
-    				   				 		   FB_DATATYPE_INTEGER ), _
-    				   		     elm )
+			astTypeIniAddAssign( tree, astNewCONSTi( d->upper ), elm )
 
 			astTypeIniScopeEnd( tree, NULL )
 
@@ -1031,10 +1001,7 @@ function astBuildStrPtr( byval lhs as ASTNODE ptr ) as ASTNODE ptr
 	'' HACK: make it return an immutable value by returning (expr + 0)
 	'' in order to prevent things like STRPTR(s) = 0
 	'' (TODO: find a better way of doing this?)
-	expr = astNewBOP( AST_OP_ADD, _
-	                  expr, _
-	                  astNewCONSTi( 0, FB_DATATYPE_INTEGER ), _
-	                  NULL )
+	expr = astNewBOP( AST_OP_ADD, expr, astNewCONSTi( 0 ), NULL )
 
 	return expr
 end function

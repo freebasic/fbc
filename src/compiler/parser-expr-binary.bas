@@ -87,7 +87,7 @@ function cBoolExpression _
         if( logexpr = NULL ) then
 			errReport( FB_ERRMSG_TYPEMISMATCH )
 			'' error recovery: fake a node
-			logexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+			logexpr = astNewCONSTi( 0 )
         end if
 
     loop
@@ -142,7 +142,7 @@ function cLogExpression _
         if( logexpr = NULL ) then
 			errReport( FB_ERRMSG_TYPEMISMATCH )
 			'' error recovery: fake a node
-			logexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+			logexpr = astNewCONSTi( 0 )
         end if
 
     loop
@@ -189,7 +189,7 @@ function cLogOrExpression _
         if( logexpr = NULL ) then
 			errReport( FB_ERRMSG_TYPEMISMATCH )
 			'' error recovery: fake a node
-			logexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+			logexpr = astNewCONSTi( 0 )
         end if
 
     loop
@@ -236,7 +236,7 @@ function cLogAndExpression _
         if( logexpr = NULL ) then
 			errReport( FB_ERRMSG_TYPEMISMATCH )
 			'' error recovery: fake a node
-			logexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+			logexpr = astNewCONSTi( 0 )
         end if
 
     loop
@@ -303,7 +303,7 @@ function cRelExpression _
     	if( relexpr = NULL ) Then
 			errReport( FB_ERRMSG_TYPEMISMATCH )
 			'' error recovery: fake a node
-			relexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+			relexpr = astNewCONSTi( 0 )
     	end if
     loop
 
@@ -335,12 +335,12 @@ function cIsExpression _
 		if( symbGetHasRTTI( astGetSubtype( isexpr ) ) = FALSE ) then
 			errReport( FB_ERRMSG_TYPEHASNORTTI )
 			'' error recovery: fake a node
-			isexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+			isexpr = astNewCONSTi( 0 )
 		end if
 	else
 		errReport( FB_ERRMSG_TYPEMUSTBEAUDT )
 		'' error recovery: fake a node
-		isexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+		isexpr = astNewCONSTi( 0 )
 	end if
 
 	lexSkipToken( )
@@ -358,17 +358,17 @@ function cIsExpression _
 		if( symbGetHasRTTI( subtype ) = FALSE ) then
 			errReport( FB_ERRMSG_TYPEHASNORTTI )
 			'' error recovery: fake a node
-			return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+			return astNewCONSTi( 0 )
 		
 		elseif( symbGetUDTBaseLevel( subtype, astGetSubtype( isexpr ) ) = 0 ) then
 			errReport( FB_ERRMSG_TYPESARENOTRELATED )
 			'' error recovery: fake a node
-			return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+			return astNewCONSTi( 0 )
 		end if
 	else
 		errReport( FB_ERRMSG_TYPEMUSTBEAUDT )
 		'' error recovery: fake a node
-		return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+		return astNewCONSTi( 0 )
 	end if
 	
 	'' point to the RTTI table
@@ -380,7 +380,7 @@ function cIsExpression _
 	if( isexpr = NULL ) Then
 		errReport( FB_ERRMSG_TYPEMISMATCH )
 		'' error recovery: fake a node
-		isexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+		isexpr = astNewCONSTi( 0 )
 	end if
 
     function = isexpr
@@ -481,7 +481,7 @@ function cAddExpression _
     	if( addexpr = NULL ) Then
 			errReport( FB_ERRMSG_TYPEMISMATCH )
 			'' error recovery: fake a node
-			addexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+			addexpr = astNewCONSTi( 0 )
     	end if
     loop
 
@@ -533,7 +533,7 @@ function cShiftExpression _
     	if( shiftexpr = NULL ) Then
 			errReport( FB_ERRMSG_TYPEMISMATCH )
 			'' error recovery: fake a node
-			shiftexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+			shiftexpr = astNewCONSTi( 0 )
     	end if
     loop
 
@@ -579,7 +579,7 @@ function cModExpression _
     	if( modexpr = NULL ) Then
 			errReport( FB_ERRMSG_TYPEMISMATCH )
 			'' error recovery: fake a node
-			modexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+			modexpr = astNewCONSTi( 0 )
     	end if
     loop
 
@@ -625,7 +625,7 @@ function cIntDivExpression _
     	if( idivexpr = NULL ) Then
 			errReport( FB_ERRMSG_TYPEMISMATCH )
 			'' error recovery: fake a node
-			idivexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+			idivexpr = astNewCONSTi( 0 )
     	end if
     loop
 
@@ -677,7 +677,7 @@ function cMultExpression _
     	if( mulexpr = NULL ) Then
 			errReport( FB_ERRMSG_TYPEMISMATCH )
 			'' error recovery: fake a node
-			mulexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+			mulexpr = astNewCONSTi( 0 )
     	end if
     loop
 

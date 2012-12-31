@@ -19,7 +19,7 @@ private function hCheckIndex( byval expr as ASTNODE ptr ) as ASTNODE ptr
 		'' to integer fine, but we don't want to allow pointers as indices.
 		errReport( FB_ERRMSG_INVALIDARRAYINDEX, TRUE )
 		'' error recovery: fake an expr
-		expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+		expr = astNewCONSTi( 0 )
 
 	case else
 		'' Show overflow warning for big constant -> integer conversion
@@ -31,7 +31,7 @@ private function hCheckIndex( byval expr as ASTNODE ptr ) as ASTNODE ptr
 		if( expr = NULL ) then
 			errReport( FB_ERRMSG_INVALIDARRAYINDEX, TRUE )
 			'' error recovery: fake an expr
-			expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+			expr = astNewCONSTi( 0 )
 		end if
 	end select
 
@@ -48,7 +48,7 @@ private function hStaticArrayBoundChk _
 	if( dimexpr = NULL ) then
 		errReport( FB_ERRMSG_ARRAYOUTOFBOUNDS )
 		'' error recovery: fake an expr
-		dimexpr = astNewCONSTi( d->lower, FB_DATATYPE_INTEGER )
+		dimexpr = astNewCONSTi( d->lower )
 	end if
 
 	function = dimexpr
@@ -79,7 +79,7 @@ private function hFieldArray _
     	if( dims > maxdims ) then
 			errReport( FB_ERRMSG_WRONGDIMENSIONS )
 			'' error recovery: fake an expr
-			return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+			return astNewCONSTi( 0 )
     	end if
 
     	'' Expression
@@ -87,7 +87,7 @@ private function hFieldArray _
 		if( dimexpr = NULL ) then
 			errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
 			'' error recovery: fake an expr
-			dimexpr = astNewCONSTi( d->lower, FB_DATATYPE_INTEGER )
+			dimexpr = astNewCONSTi( d->lower )
 		end if
 
 		'' convert index if needed
@@ -152,7 +152,9 @@ private function hUdtDataMember _
 		byval checkarray as integer _
 	) as ASTNODE ptr
 
-    dim as ASTNODE ptr expr = astNewCONSTi( symbGetOfs( fld ), FB_DATATYPE_INTEGER )
+	dim as ASTNODE ptr expr = any
+
+	expr = astNewCONSTi( symbGetOfs( fld ) )
 
 	'' '('?
 	if( lexGetToken( ) = CHAR_LPRNT ) then
@@ -195,7 +197,7 @@ private function hUdtDataMember _
 			else
 				'' don't let the offset expr be NULL
 				if( expr = NULL ) then
-					expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+					expr = astNewCONSTi( 0 )
 				end if
 
 				expr = astNewNIDXARRAY( expr )
@@ -480,10 +482,8 @@ private function hStrIndexing _
 	'' add index
 	if( typeGet( dtype ) = FB_DATATYPE_WCHAR ) then
 		'' times sizeof( wchar ) if it's wstring
-		idxexpr = astNewBOP( AST_OP_SHL, _
-				   			 idxexpr, _
-				   			 astNewCONSTi( hToPow2( typeGetSize( FB_DATATYPE_WCHAR ) ), _
-				   				 		   FB_DATATYPE_INTEGER ) )
+		idxexpr = astNewBOP( AST_OP_SHL, idxexpr, _
+			astNewCONSTi( hToPow2( typeGetSize( FB_DATATYPE_WCHAR ) ) ) )
 	end if
 
 	'' null pointer checking
@@ -591,7 +591,7 @@ function cMemberDeref _
 			if( idxexpr = NULL ) then
 				errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
 				'' error recovery: faken an expr
-				idxexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+				idxexpr = astNewCONSTi( 0 )
 			end if
 
 			'' convert index if needed
@@ -629,7 +629,7 @@ function cMemberDeref _
 				lgt = 1
 			end if
 
-			idxexpr = astNewBOP( AST_OP_MUL, idxexpr, astNewCONSTi( lgt, FB_DATATYPE_INTEGER ) )
+			idxexpr = astNewBOP( AST_OP_MUL, idxexpr, astNewCONSTi( lgt ) )
 			dtype = typeDeref( dtype )
 
 			'' '.'?
@@ -768,7 +768,7 @@ function cFuncPtrOrMemberDeref _
 		else
 			errReport( FB_ERRMSG_SYNTAXERROR )
 			'' error recovery: fake an expr
-			expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+			expr = astNewCONSTi( 0 )
 		end if
 	end if
 
@@ -829,7 +829,7 @@ function cDynArrayIdx _
 		if( dimexpr = NULL ) then
 			errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
 			'' error recovery: fake an expr
-			dimexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+			dimexpr = astNewCONSTi( 0 )
 		end if
 
 		'' convert index if needed
@@ -867,9 +867,7 @@ function cDynArrayIdx _
 	loop
 
 	'' times length
-	expr = astNewBOP( AST_OP_MUL, _
-					  expr, _
-					  astNewCONSTi( symbGetLen( sym ), FB_DATATYPE_INTEGER ) )
+	expr = astNewBOP( AST_OP_MUL, expr, astNewCONSTi( symbGetLen( sym ) ) )
 
     '' check dimensions, if not common
     if( maxdims <> -1 ) then
@@ -919,7 +917,7 @@ private function cArgArrayIdx( byval sym as FBSYMBOL ptr ) as ASTNODE ptr
 		if( dimexpr = NULL ) then
 			errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
 			'' error recovery: fake an expr
-			dimexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+			dimexpr = astNewCONSTi( 0 )
 		end if
 
 		'' convert index if needed
@@ -1007,7 +1005,7 @@ private function cArrayIdx( byval sym as FBSYMBOL ptr ) as ASTNODE ptr
 		if( dimexpr = NULL ) then
 			errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
 			'' error recovery: fake an expr
-			dimexpr = astNewCONSTi( d->lower, FB_DATATYPE_INTEGER )
+			dimexpr = astNewCONSTi( d->lower )
 		end if
 
 		'' convert index if needed
@@ -1039,9 +1037,7 @@ private function cArrayIdx( byval sym as FBSYMBOL ptr ) as ASTNODE ptr
 			exit do
     	end if
 
-    	expr = astNewBOP( AST_OP_MUL, _
-    					  expr, _
-    					  astNewCONSTi( (d->upper - d->lower) + 1 ) )
+    	expr = astNewBOP( AST_OP_MUL, expr, astNewCONSTi( (d->upper - d->lower) + 1 ) )
 	loop
 
     ''
@@ -1051,9 +1047,7 @@ private function cArrayIdx( byval sym as FBSYMBOL ptr ) as ASTNODE ptr
 
 	'' times length (this will be optimized if len < 10 and there are
 	'' no arrays on following fields)
-	function = astNewBOP( AST_OP_MUL, _
-					  	  expr, _
-					  	  astNewCONSTi( symbGetLen( sym ) ) )
+	function = astNewBOP( AST_OP_MUL, expr, astNewCONSTi( symbGetLen( sym ) ) )
 end function
 
 '':::::
@@ -1155,8 +1149,7 @@ private function hMakeArrayIdx _
     end if
 
     '' static array, return lbound( array )
-    function = astNewCONSTi( symbGetArrayFirstDim( sym )->lower, _
-    						 FB_DATATYPE_INTEGER )
+    function = astNewCONSTi( symbGetArrayFirstDim( sym )->lower )
 
 end function
 

@@ -908,7 +908,7 @@ private function hVarInit _
 	initree = cInitializer( sym, FB_INIOPT_ISINI )
 	if( initree = NULL ) then
 		'' fake an expression
-		initree = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+		initree = astNewCONSTi( 0 )
 	end if
 
 	'' static or shared?
@@ -986,9 +986,8 @@ private function hCallStaticCtor _
 	label = symbAddLabel( NULL )
 
 	tree = astNewLINK( tree, _
-		astUpdComp2Branch( astNewBOP( AST_OP_EQ, _
-			astNewVAR( flag ), _
-			astNewCONSTi( 0, FB_DATATYPE_INTEGER ) ), _
+		astUpdComp2Branch( _
+			astNewBOP( AST_OP_EQ, astNewVAR( flag ), astNewCONSTi( 0 ) ), _
 			label, FALSE ) )
 
 	'' flag = 1
@@ -1860,7 +1859,7 @@ function cArrayDecl _
 			end if
 		else
 			exprTB(i,1) = exprTB(i,0)
-			exprTB(i,0) = astNewCONSTi( env.opt.base, FB_DATATYPE_INTEGER )
+			exprTB(i,0) = astNewCONSTi( env.opt.base )
 		end if
 
 		dimensions += 1

@@ -84,7 +84,7 @@ sub cSelectStmtBegin()
 	if( expr = NULL ) then
 		errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
 		'' error recovery: fake an expr
-		expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+		expr = astNewCONSTi( 0 )
 	end if
 
 	'' can't be an UDT
@@ -92,7 +92,7 @@ sub cSelectStmtBegin()
 		errReport( FB_ERRMSG_INVALIDDATATYPES )
 		astDelTree( expr )
 		'' error recovery: fake an expr
-		expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+		expr = astNewCONSTi( 0 )
 	end if
 
 	'' add exit label

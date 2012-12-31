@@ -288,25 +288,21 @@ function rtlErrorCheck(byval resexpr as ASTNODE ptr) as integer
 	nxtlabel = symbAddLabel( NULL )
 
 	'' result >= FB_RTERROR_OK? skip..
-	resexpr = astNewBOP( AST_OP_EQ, _
-						 resexpr, _
-						 astNewCONSTi( 0, FB_DATATYPE_INTEGER ), _
-						 nxtlabel, _
-						 AST_OPOPT_NONE )
+	resexpr = astNewBOP( AST_OP_EQ, resexpr, astNewCONSTi( 0 ), nxtlabel, AST_OPOPT_NONE )
 
 	astAdd( resexpr )
 
 	'' else, fb_ErrorThrow( linenum, module, reslabel, resnxtlabel ); -- CDECL
 
-    '' linenum
-	if( astNewARG( proc, astNewCONSTi( lexLineNum(), FB_DATATYPE_INTEGER ), FB_DATATYPE_INTEGER ) = NULL ) then
-    	exit function
-    end if
+	'' linenum
+	if( astNewARG( proc, astNewCONSTi( lexLineNum() ) ) = NULL ) then
+		exit function
+	end if
 
-    '' module
+	'' module
 	if( astNewARG( proc, astNewCONSTstr( env.inf.name ) ) = NULL ) then
-    	exit function
-    end if
+		exit function
+	end if
 
 	'' reslabel
 	if( reslabel <> NULL ) then
@@ -370,15 +366,15 @@ sub rtlErrorThrow _
 		exit sub
 	end if
 
-    '' linenum
-	if( astNewARG( proc, astNewCONSTi( linenum, FB_DATATYPE_INTEGER ), FB_DATATYPE_INTEGER ) = NULL ) then
-    	exit sub
-    end if
+	'' linenum
+	if( astNewARG( proc, astNewCONSTi( linenum ) ) = NULL ) then
+		exit sub
+	end if
 
-    '' module
+	'' module
 	if( astNewARG( proc, astNewCONSTstr( module ) ) = NULL ) then
-    	exit sub
-    end if
+		exit sub
+	end if
 
 	'' reslabel
 	if( env.clopt.resumeerr ) then

@@ -592,14 +592,14 @@ private function cFieldAlignmentAttribute( ) as integer
 	if( expr = NULL ) then
 		errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
 		'' error recovery: fake an expr
-		expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+		expr = astNewCONSTi( 0 )
 	end if
 
 	if( astIsCONST( expr ) = FALSE ) then
 		errReport( FB_ERRMSG_EXPECTEDCONST )
 		'' error recovery: fake an expr
 		astDelTree( expr )
-		expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+		expr = astNewCONSTi( 0 )
 	end if
 
 	'' follow the GCC 3.x ABI
