@@ -146,6 +146,7 @@ Version 0.25.0:
 - sizeof( *z/wstringptr ) returned 0 instead of sizeof( z/wstring )
 - Temp vars for functions returning UDTs on stack won't be unnecessarily cleared anymore if the UDT has a constructor that's going to be called anyways
 - #644: C backend: Local variables from unused PRIVATE procedures could be falsely emitted as globals
+- Static variables from unused PRIVATE procedures could still be emitted even though the procedure was not
 
 
 Version 0.24.0:

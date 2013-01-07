@@ -19,6 +19,7 @@
 ''
 
 dim shared s as string
+dim shared c as integer
 
 private sub f1( )
 	scope
@@ -42,4 +43,33 @@ private sub f2( )
 		end select
 		print iif( c, 1, 2 )
 	end scope
+end sub
+
+''
+'' Similar case for STATIC vars, with and without dtors
+''
+
+type UDT3
+	dummy as integer
+	declare destructor( )
+end type
+
+destructor UDT3( )
+end destructor
+
+private sub f3( )
+	static i as integer
+	static x3 as UDT3
+	scope
+		static x3 as UDT3
+		scope
+			static x3 as UDT3
+			scope
+				static i as double
+				static x3 as double
+			end scope
+		end scope
+		static y3 as UDT3
+	end scope
+	static y3 as UDT3
 end sub

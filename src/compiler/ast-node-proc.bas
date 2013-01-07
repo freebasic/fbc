@@ -176,10 +176,10 @@ private sub hProcFlush _
     '' emit footer
     if( ast.doemit ) then
     	irEmitPROCEND( sym, p->block.initlabel, p->block.exitlabel )
-    end if
 
-	'' Emit static local variables
-	irProcAllocStaticVars( symbGetProcSymbTbHead( sym ) )
+		'' Emit static local variables
+		irProcAllocStaticVars( symbGetProcSymbTbHead( sym ) )
+    end if
 
     '' del symbols from hash and symbol tb's
     symbDelSymbolTb( @sym->proc.symtb, FALSE )
