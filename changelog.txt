@@ -145,6 +145,7 @@ Version 0.25.0:
 - typeof() returned the wrong type for some expressions, for example function pointer calls, or iif()
 - sizeof( *z/wstringptr ) returned 0 instead of sizeof( z/wstring )
 - Temp vars for functions returning UDTs on stack won't be unnecessarily cleared anymore if the UDT has a constructor that's going to be called anyways
+- #644: C backend: Local variables from unused PRIVATE procedures could be falsely emitted as globals
 
 
 Version 0.24.0:

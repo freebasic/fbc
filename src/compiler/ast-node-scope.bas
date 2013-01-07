@@ -635,6 +635,7 @@ sub astScopeAllocLocals( byval symtbhead as FBSYMBOL ptr )
 	dim as FBSYMBOL ptr s = any
 
 	'' Emit/allocate variables local to a procedure or scope block
+	assert( ast.doemit )
 
 	s = symtbhead
 	if( env.clopt.backend = FB_BACKEND_GCC ) then
@@ -700,9 +701,8 @@ function astLoadSCOPEBEGIN _
 
 	if( ast.doemit ) then
 		irEmitSCOPEBEGIN( s )
+		astScopeAllocLocals( symbGetScopeSymbTbHead( s ) )
 	end if
-
-	astScopeAllocLocals(symbGetScopeSymbTbHead(s))
 
 	function = NULL
 
