@@ -965,7 +965,7 @@ int fb_SerialOpen
 	*/
 }
 
-int fb_SerialGetRemaining( FB_FILE *handle, void *pvHandle, long *pLength )
+int fb_SerialGetRemaining( FB_FILE *handle, void *pvHandle, fb_off_t *pLength )
 {
 	int bytes;
 	DOS_SERIAL_INFO *pInfo = (DOS_SERIAL_INFO *) pvHandle;

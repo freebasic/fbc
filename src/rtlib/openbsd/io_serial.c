@@ -14,7 +14,7 @@ int fb_SerialOpen
     return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 }
 
-int fb_SerialGetRemaining( FB_FILE *handle, void *pvHandle, long *pLength )
+int fb_SerialGetRemaining( FB_FILE *handle, void *pvHandle, fb_off_t *pLength )
 {
     return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 }
