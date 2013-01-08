@@ -72,12 +72,14 @@ int fb_hTermQuery( int code, int *val1, int *val2 )
 	if( fb_hTermOut( code, 0, 0 ) == FALSE )
 		return FALSE;
 
+#ifdef HOST_LINUX
 	switch( code ) {
 	case SEQ_QUERY_WINDOW:
 		return (fscanf( stdin, "\e[8;%d;%dt", val1, val2 ) == 2);
 	case SEQ_QUERY_CURSOR:
 		return (fscanf( stdin, "\e[%d;%dR", val1, val2 ) == 2);
 	}
+#endif
 
 	return FALSE;
 }
