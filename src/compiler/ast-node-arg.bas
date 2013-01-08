@@ -1044,7 +1044,7 @@ private function hCreateOptArg _
 	end if
 
 	'' make a clone
-	if( tree->class = AST_NODECLASS_TYPEINI ) then
+	if( astIsTYPEINI( tree ) ) then
 		tree = astTypeIniClone( tree )
 	else
 		tree = astCloneTree( tree )

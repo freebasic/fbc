@@ -34,7 +34,7 @@ function astTypeIniBegin _
 	dim as integer add_scope = FALSE
 	if( is_local = FALSE ) then
 		if( symbIsScope( parser.currblock ) ) then
-			add_scope = astGetClass( parser.currblock->scp.backnode ) <> AST_NODECLASS_TYPEINI
+			add_scope = not astIsTYPEINI( parser.currblock->scp.backnode )
 		else
 		    add_scope = TRUE
 		end if
@@ -85,7 +85,7 @@ sub astTypeIniEnd _
     	if( n->class = AST_NODECLASS_TYPEINI_ASSIGN ) then
 			l = n->l
 			'' is it an ini tree too?
-			if( l->class = AST_NODECLASS_TYPEINI ) then
+			if( astIsTYPEINI( l ) ) then
 				ast.typeinicnt -= 1
 
     			ofs = n->typeini.ofs
@@ -310,7 +310,7 @@ sub astTypeIniCopyElements _
 
 	dim as integer i = any
 
-	assert( source->class = AST_NODECLASS_TYPEINI )
+	assert( astIsTYPEINI( source ) )
 	source = source->l
 
 	assert( source->class = AST_NODECLASS_TYPEINI_SCOPEINI )
@@ -343,7 +343,7 @@ sub astTypeIniReplaceElement _
 
 	dim as integer i = any
 
-	assert( tree->class = AST_NODECLASS_TYPEINI )
+	assert( astIsTYPEINI( tree ) )
 	tree = tree->l
 
 	assert( tree->class = AST_NODECLASS_TYPEINI_SCOPEINI )
@@ -1028,7 +1028,7 @@ private function hWalk _
 		return NULL
 	end if
 
-	if( n->class = AST_NODECLASS_TYPEINI ) then
+	if( astIsTYPEINI( n ) ) then
 		'' Create a temporary variable which is initialized by the
 		'' astTypeIniFlush() below.
 		sym = symbAddTempVar( astGetFullType( n ), n->subtype, FALSE )
@@ -1068,7 +1068,7 @@ sub astTypeIniUpdCnt _
 		byval tree as ASTNODE ptr _
 	)
 
-	if( tree->class = AST_NODECLASS_TYPEINI ) then
+	if( astIsTYPEINI( tree ) ) then
 		ast.typeinicnt += 1
 	end if
 

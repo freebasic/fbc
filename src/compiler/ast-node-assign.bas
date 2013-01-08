@@ -505,7 +505,7 @@ function astNewASSIGN _
         '' is r an UDT too?
 		if( astIsCALLReturnInReg( r ) = FALSE ) then
 			'' type ini tree?
-			if( r->class = AST_NODECLASS_TYPEINI ) then
+			if( astIsTYPEINI( r ) ) then
 				'' skip any casting if they won't do any conversion
 				dim as ASTNODE ptr t = l
 				if( l->class = AST_NODECLASS_CONV ) then
