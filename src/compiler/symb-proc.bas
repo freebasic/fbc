@@ -144,8 +144,7 @@ function symbAddProcParam _
 		byval subtype as FBSYMBOL ptr, _
 		byval lgt as integer, _
 		byval mode as integer, _
-		byval attrib as FB_SYMBATTRIB, _
-		byval optexpr as ASTNODE ptr _
+		byval attrib as FB_SYMBATTRIB _
 	) as FBSYMBOL ptr
 
     dim as FBSYMBOL ptr param = any
@@ -161,14 +160,10 @@ function symbAddProcParam _
     end if
 
 	proc->proc.params += 1
-	if( optexpr <> NULL ) then
-		proc->proc.optparams += 1
-	end if
 
-	''
 	param->lgt = lgt
 	param->param.mode = mode
-	param->param.optexpr = optexpr
+	param->param.optexpr = NULL
 
 	'' for UDTs, check if not including a byval param to self
 	if( typeGet( dtype ) = FB_DATATYPE_STRUCT ) then
@@ -180,8 +175,27 @@ function symbAddProcParam _
 	end if
 
     function = param
-
 end function
+
+sub symbMakeParamOptional _
+	( _
+		byval proc as FBSYMBOL ptr, _
+		byval param as FBSYMBOL ptr, _
+		byval optexpr as ASTNODE ptr _
+	)
+
+	assert( symbIsProc( proc ) )
+	assert( param->class = FB_SYMBCLASS_PARAM )
+
+	if( optexpr = NULL ) then
+		exit sub
+	end if
+
+	param->attrib or= FB_SYMBATTRIB_OPTIONAL
+	param->param.optexpr = optexpr
+	proc->proc.optparams += 1
+
+end sub
 
 '':::::
 function symbIsProcOverloadOf _
@@ -1041,12 +1055,13 @@ function symbAddProcPtrFromFunction _
 		                          symbGetSubtype( param ), _
 		                          symbGetLen( param ), _
 		                          symbGetParamMode( param ), _
-		                          symbGetAttrib( param ), _
-		                          param->param.optexpr )
+		                          symbGetAttrib( param ) )
 
 		if( symbGetDontInit( param ) ) then
 			symbSetDontInit( p )
 		end if
+
+		symbMakeParamOptional( proc, p, param->param.optexpr )
 
 		param = param->next
     loop
@@ -1214,7 +1229,7 @@ sub symbAddProcInstancePtr _
 
 	symbAddProcParam( proc, FB_INSTANCEPTR, dtype, parent, _
 	                  FB_POINTERSIZE, FB_PARAMMODE_BYREF, _
-	                  FB_SYMBATTRIB_PARAMINSTANCE, NULL )
+	                  FB_SYMBATTRIB_PARAMINSTANCE )
 end sub
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::

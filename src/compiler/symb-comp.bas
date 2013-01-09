@@ -58,7 +58,7 @@ private function hDeclareProc _
 	if( add_rhs ) then
 		assert( symbIsStruct( udt ) )
 		symbAddProcParam( proc, "__FB_RHS__", FB_DATATYPE_STRUCT, udt, FB_POINTERSIZE, _
-		                  FB_PARAMMODE_BYREF, FB_SYMBATTRIB_NONE, NULL )
+		                  FB_PARAMMODE_BYREF, FB_SYMBATTRIB_NONE )
 	end if
 
 	attrib or= FB_SYMBATTRIB_METHOD

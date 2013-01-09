@@ -1152,9 +1152,15 @@ declare function symbAddProcParam _
 		byval subtype as FBSYMBOL ptr, _
 		byval lgt as integer, _
 		byval mode as integer, _
-		byval attrib as FB_SYMBATTRIB, _
-		byval optexpr as ASTNODE ptr _
+		byval attrib as FB_SYMBATTRIB _
 	) as FBSYMBOL ptr
+
+declare sub symbMakeParamOptional _
+	( _
+		byval proc as FBSYMBOL ptr, _
+		byval param as FBSYMBOL ptr, _
+		byval optexpr as ASTNODE ptr _
+	)
 
 declare function symbAddProcResultParam( byval proc as FBSYMBOL ptr ) as FBSYMBOL ptr
 

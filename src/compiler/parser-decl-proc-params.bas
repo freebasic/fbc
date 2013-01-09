@@ -115,14 +115,11 @@ private sub hParamWarning _
 
 end sub
 
-'':::::
 private function hOptionalExpr _
 	( _
 		byval proc as FBSYMBOL ptr, _
 		byval pid as zstring ptr, _
-		byval mode as FB_PARAMMODE, _
-		byval dtype as FB_DATATYPE, _
-		byval subtype as FBSYMBOL ptr _
+		byval param as FBSYMBOL ptr _
 	) as ASTNODE ptr
 
     dim as ASTNODE ptr expr = any
@@ -130,17 +127,18 @@ private function hOptionalExpr _
 
     function = NULL
 
-    '' not byval or byref?
-    if( mode <> FB_PARAMMODE_BYVAL ) then
-    	if( mode <> FB_PARAMMODE_BYREF ) then
+	'' Must be BYVAL/BYREF in order to allow an optional expression
+	'' (not BYDESC nor VARARG)
+	if( symbGetParamMode( param ) <> FB_PARAMMODE_BYVAL ) then
+		if( symbGetParamMode( param ) <> FB_PARAMMODE_BYREF ) then
     		exit function
     	end if
     end if
 
-    select case as const typeGet( dtype )
+	select case as const( symbGetType( param ) )
     '' UDT? let SymbolInit() build a tree..
     case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-		sym = symbAddTempVar( dtype, subtype, FALSE )
+		sym = symbAddTempVar( symbGetType( param ), symbGetSubtype( param ), FALSE )
 
     	expr = cInitializer( sym, FB_INIOPT_ISINI )
     	if( expr = NULL ) then
@@ -159,7 +157,7 @@ private function hOptionalExpr _
 		end if
 
 		'' check for invalid types
-		if( astCheckASSIGNToType( dtype, subtype, expr ) = FALSE ) then
+		if( astCheckASSIGNToType( symbGetType( param ), symbGetSubtype( param ), expr ) = FALSE ) then
 			exit function
 		end if
 
@@ -178,10 +176,8 @@ private function hOptionalExpr _
     end if
 
 	function = expr
-
 end function
 
-'':::::
 private function hMockParam _
 	( _
 		byval proc as FBSYMBOL ptr, _
@@ -212,7 +208,7 @@ private function hMockParam _
     	plen = 0
     end select
 
-	function = symbAddProcParam( proc, NULL, dtype, NULL, plen, pmode, 0, NULL )
+	function = symbAddProcParam( proc, NULL, dtype, NULL, plen, pmode, 0 )
 end function
 
 '':::::
@@ -228,11 +224,11 @@ private function hParamDecl _
 	static as zstring * FB_MAXNAMELEN+1 idTB(0 to FB_MAXARGRECLEVEL-1)
 	static as integer reclevel = 0
 	dim as zstring ptr id = any
-	dim as ASTNODE ptr optval = any
+	dim as ASTNODE ptr optexpr = any
 	dim as integer dtype = any, mode = any, param_len = any
 	dim as integer attrib = any
 	dim as integer readid = any, dotpos = any, doskip = any, dontinit = any, use_default = any
-	dim as FBSYMBOL ptr subtype = any, s = any
+	dim as FBSYMBOL ptr subtype = any, param = any
 
 	function = NULL
 
@@ -261,7 +257,7 @@ private function hParamDecl _
 			end if
 
 			return symbAddProcParam( proc, NULL, FB_DATATYPE_INVALID, NULL, 0, _
-			                         FB_PARAMMODE_VARARG, 0, NULL )
+			                         FB_PARAMMODE_VARARG, 0 )
 
 		'' syntax error..
 		else
@@ -420,13 +416,11 @@ private function hParamDecl _
 
 	'' in lang FB,
 	if( fbLangIsSet( FB_LANG_FB ) ) then
-
 		'' we have to delay the true default until now, since
 		'' byval/byref depends on the symbol type
 		if( use_default ) then
 			mode = symbGetDefaultCallConv( typeGet( dtype ), subtype )
 		end if
-
 	end if
 
     '' QB def-by-letter hax
@@ -489,58 +483,48 @@ private function hParamDecl _
    		end if
    	end if
 
-    '' default values
-   	optval = NULL
-   	dontinit = FALSE
+	'' default values
+	optexpr = NULL
+	dontinit = FALSE
 
-    '' ('=' (expr | ANY))?
-    if( lexGetToken( ) = FB_TK_ASSIGN ) then
-    	lexSkipToken( )
+	'' Add new param
+	param = symbAddProcParam( proc, iif( isproto, cptr( zstring ptr, NULL ), id ), _
+	                          dtype, subtype, param_len, mode, attrib )
+	if( param = NULL ) then
+		exit function
+	end if
 
-    	if( mode = FB_PARAMMODE_BYDESC ) then
-    		'' ANY?
-    		if( lexGetToken( ) = FB_TK_ANY ) then
-            	lexSkipToken( )
+	'' ('=' (expr | ANY))?
+	if( lexGetToken( ) = FB_TK_ASSIGN ) then
+		lexSkipToken( )
 
+		if( mode = FB_PARAMMODE_BYDESC ) then
+			'' ANY?
+			if( lexGetToken( ) = FB_TK_ANY ) then
+				lexSkipToken( )
 				dontinit = TRUE
-
-    		else
+			else
 				hParamError( proc, id )
 				'' error recovery: skip until next ',' or ')'
 				hSkipUntil( CHAR_COMMA )
-    		end if
-
-    	else
-        	attrib or= FB_SYMBATTRIB_OPTIONAL
-			optval = hOptionalExpr( proc, id, mode, dtype, subtype )
-
-			if( optval = NULL ) then
+			end if
+		else
+			optexpr = hOptionalExpr( proc, id, param )
+			if( optexpr = NULL ) then
 				hParamError( proc, id )
-				'' error recovery: skip until next ',' or ')' and create a def value
+				'' error recovery: skip until next ',' or ')'
 				hSkipUntil( CHAR_COMMA )
-				if( dtype <> FB_DATATYPE_STRUCT ) then
-					optval = astNewCONSTz( dtype )
-				else
-					attrib and= not FB_SYMBATTRIB_OPTIONAL
-				end if
- 	   		end if
-    	end if
-
-    end if
-
-    if( isproto ) then
-    	id = NULL
-    end if
-
-	s = symbAddProcParam( proc, id, dtype, subtype, param_len, mode, attrib, optval )
-
-	if( s <> NULL ) then
-		if( dontinit ) then
-			symbSetDontInit( s )
+			end if
 		end if
 	end if
 
-	function = s
+	if( dontinit ) then
+		symbSetDontInit( param )
+	end if
 
+	if( optexpr ) then
+		symbMakeParamOptional( proc, param, optexpr )
+	end if
+
+	function = param
 end function
-

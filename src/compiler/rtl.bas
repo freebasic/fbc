@@ -106,6 +106,7 @@ sub rtlAddIntrinsicProcs _
 		byval procdef as FB_RTL_PROCDEF ptr _
 	)
 
+	dim as FBSYMBOL ptr param = any
     dim as integer callconv = any
 
 	'' for each proc..
@@ -195,8 +196,8 @@ sub rtlAddIntrinsicProcs _
 										inner_param_len = FB_POINTERSIZE
 									end if
 
-									symbAddProcParam( inner_proc, NULL, .dtype, NULL, inner_param_len, _
-									                  .mode, inner_attrib, inner_param_optval )
+									param = symbAddProcParam( inner_proc, NULL, .dtype, NULL, inner_param_len, .mode, inner_attrib )
+									symbMakeParamOptional( inner_proc, param, inner_param_optval )
 								end with
 							next
 
@@ -237,13 +238,13 @@ sub rtlAddIntrinsicProcs _
 						.dtype = typeAddrOf( FB_DATATYPE_VOID )
 					end if
 
-					var parm = symbAddProcParam( proc, NULL, .dtype, subtype, lgt, _
-					                             .mode, attrib, param_optval )
+					param = symbAddProcParam( proc, NULL, .dtype, subtype, lgt, .mode, attrib )
 
 					if( .check_const ) then
-						symbSetIsRTLConst( parm )
+						symbSetIsRTLConst( param )
 					end if
 
+					symbMakeParamOptional( proc, param, param_optval )
 				end with
 			next
 

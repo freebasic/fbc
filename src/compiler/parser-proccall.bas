@@ -1133,10 +1133,9 @@ function hForwardCall( ) as integer
 			 dtype = FB_DATATYPE_STRING
 		end select
 
-        ''
 		if( symbAddProcParam( proc, NULL, dtype, NULL, _
 		                      symbCalcProcParamLen( typeGet( dtype ), NULL, mode ), _
-		                      mode, 0, NULL ) = NULL ) then
+		                      mode, 0 ) = NULL ) then
 			exit do
 		end if
 
