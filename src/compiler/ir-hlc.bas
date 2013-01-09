@@ -468,17 +468,19 @@ private function hEmitProcHeader _
 	function = ln
 end function
 
-private function hGetUDTName( byval sym as FBSYMBOL ptr ) as string
-	dim as FBSYMBOL ptr ns = any
-	dim as string id
-
+private function hGetUdtTag( byval sym as FBSYMBOL ptr ) as string
 	if( symbIsStruct( sym ) ) then
 		if( symbGetUDTIsUnion( sym ) ) then
-			id = "union "
+			function = "union "
 		else
-			id = "struct "
+			function = "struct "
 		end if
 	end if
+end function
+
+private function hGetUdtId( byval sym as FBSYMBOL ptr ) as string
+	dim as FBSYMBOL ptr ns = any
+	dim as string id
 
 	ns = symbGetNamespace( sym )
 	do until( ns = @symbGetGlobalNamespc( ) )
@@ -494,6 +496,10 @@ private function hGetUDTName( byval sym as FBSYMBOL ptr ) as string
 	end if
 
 	function = id
+end function
+
+private function hGetUdtName( byval sym as FBSYMBOL ptr ) as string
+	function = hGetUdtTag( sym ) + hGetUdtId( sym )
 end function
 
 private sub hEmitUDT( byval s as FBSYMBOL ptr, byval is_ptr as integer )
@@ -536,7 +542,7 @@ private sub hEmitUDT( byval s as FBSYMBOL ptr, byval is_ptr as integer )
 	select case as const symbGetClass( s )
 	case FB_SYMBCLASS_ENUM
 		symbSetIsEmitted( s )
-		hWriteLine( "typedef int " + hGetUDTName( s ) + ";" )
+		hWriteLine( "typedef int " + hGetUdtName( s ) + ";" )
 
 	case FB_SYMBCLASS_STRUCT
 		hEmitStruct( s, is_ptr )
@@ -780,12 +786,10 @@ private sub hEmitStruct _
 		byval is_ptr as integer _
 	)
 
-	dim as string ln, id
+	dim as string ln
 	dim as integer skip = any, dtype = any, align = any
 	dim as FBSYMBOL ptr subtype = any, fld = any, member = any
 	dim as FBSYMBOL ptr ptr anonnode = any
-
-	id = hGetUDTName( s )
 
 	'' Already in the process of emitting this UDT?
 	if( symbGetIsBeingEmitted( s ) ) then
@@ -798,7 +802,7 @@ private sub hEmitStruct _
 			'' HACK: reusing the accessed flag (that's used by variables only)
 			if( symbGetIsAccessed( s ) = FALSE ) then
 				symbSetIsAccessed( s )
-				hWriteLine( id + ";" )
+				hWriteLine( hGetUdtName( s ) + ";" )
 			end if
 			exit sub
 		end if
@@ -822,17 +826,18 @@ private sub hEmitStruct _
 	'' Emit it now
 	symbSetIsEmitted( s )
 
-	'' Header: struct|union id {
-	ln = id
+	'' Header: struct|union [attributes...] id {
+	ln = hGetUdtTag( s )
 
 	'' Work-around mingw32 gcc bug 52991; packing is broken for ms_struct
 	'' stucts, which is the default under -mms-bitfields, which is on by
 	'' default in mingw32 gcc 4.7.
 	if( (env.clopt.target = FB_COMPTARGET_WIN32) and _
 	    (symbGetUDTAlign( s ) > 0) ) then
-		ln += " __attribute__((gcc_struct))"
+		ln += "__attribute__((gcc_struct)) "
 	end if
 
+	ln += hGetUdtId( s )
 	ln += " {"
 	hWriteLine( ln, TRUE )
 	sectionIndent( )
@@ -1615,7 +1620,7 @@ private function hEmitType _
 	case FB_DATATYPE_STRUCT, FB_DATATYPE_ENUM
 		if( subtype ) then
 			hEmitUDT( subtype, (ptrcount > 0) )
-			s = hGetUDTName( subtype )
+			s = hGetUdtName( subtype )
 		elseif( dtype = FB_DATATYPE_ENUM ) then
 			s = *dtypeName(FB_DATATYPE_INTEGER)
 		else
