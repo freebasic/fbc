@@ -188,7 +188,6 @@ private function hMockParam _
 		byval pmode as integer = INVALID _
 	) as FBSYMBOL ptr
 
-	dim as FBSYMBOL ptr s
 	dim as integer dtype, plen
 
 	if( pmode = INVALID ) then
@@ -213,10 +212,7 @@ private function hMockParam _
     	plen = 0
     end select
 
-	s = symbAddProcParam( proc, NULL, dtype, NULL, plen, pmode, 0, NULL )
-
-	function = s
-
+	function = symbAddProcParam( proc, NULL, dtype, NULL, plen, pmode, 0, NULL )
 end function
 
 '':::::
