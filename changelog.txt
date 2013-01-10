@@ -147,6 +147,7 @@ Version 0.25.0:
 - Temp vars for functions returning UDTs on stack won't be unnecessarily cleared anymore if the UDT has a constructor that's going to be called anyways
 - #644: C backend: Local variables from unused PRIVATE procedures could be falsely emitted as globals
 - Static variables from unused PRIVATE procedures could still be emitted even though the procedure was not
+- Any temporary variables used in UDT parameter initializers were only allocated in the main() scope, instead of being duplicated into each scope context where the initializer expression was used
 
 
 Version 0.24.0:
