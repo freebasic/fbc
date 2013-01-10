@@ -138,16 +138,10 @@ private function hOptionalExpr _
 	select case as const( symbGetType( param ) )
     '' UDT? let SymbolInit() build a tree..
     case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-		sym = symbAddTempVar( symbGetType( param ), symbGetSubtype( param ), FALSE )
-
-    	expr = cInitializer( sym, FB_INIOPT_ISINI )
+		expr = cInitializer( param, FB_INIOPT_ISINI )
     	if( expr = NULL ) then
     		exit function
     	end if
-
-    	'' del temp var
-    	astReplaceSymbolOnTree( expr, sym, NULL )
-    	symbDelVar( sym )
 
     '' anything else..
 	case else
