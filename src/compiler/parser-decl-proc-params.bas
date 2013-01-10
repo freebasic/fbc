@@ -123,7 +123,6 @@ private function hOptionalExpr _
 	) as ASTNODE ptr
 
     dim as ASTNODE ptr expr = any
-    dim as FBSYMBOL ptr sym = any
 
     function = NULL
 
@@ -161,13 +160,12 @@ private function hOptionalExpr _
 	astDtorListClear( )
 
     '' don't allow references to local symbols
-    sym = astFindLocalSymbol( expr )
-    if( sym <> NULL ) then
+	if( astFindLocalSymbol( expr ) <> NULL ) then
 		hParamError( proc, pid, FB_ERRMSG_INVALIDREFERENCETOLOCAL )
 		'' no error recovery, caller will take care
 		astDelTree( expr )
 		expr = NULL
-    end if
+	end if
 
 	function = expr
 end function
