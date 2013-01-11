@@ -152,3 +152,35 @@ namespace boundchk
 
 	hScopeChecks( tester( ) )
 end namespace
+
+namespace ctors1
+	type UDT1
+		i as integer
+		declare constructor( PARAM_MODE i as integer = 0 )
+	end type
+
+	constructor UDT1( PARAM_MODE i as integer )
+		this.i = i
+	end constructor
+
+	type UDT2
+		x1 as UDT1
+		declare constructor( PARAM_MODE x1 as UDT1 = UDT1( 0 ) )
+	end type
+
+	constructor UDT2( PARAM_MODE x1 as UDT1 )
+		this.x1 = x1
+	end constructor
+
+	type UDT3
+		x2 as UDT2
+		declare constructor( PARAM_MODE x2 as UDT2 = UDT2( UDT1( 0 ) ) )
+	end type
+
+	constructor UDT3( PARAM_MODE x2 as UDT2 )
+		this.x2 = x2
+	end constructor
+
+	dim shared p as UDT3 ptr
+	hScopeChecks( p = new UDT3 : delete p : p = NULL )
+end namespace

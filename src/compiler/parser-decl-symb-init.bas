@@ -127,6 +127,10 @@ private function hArrayInit _
 
 	function = FALSE
 
+	'' We're accessing FBSYMBOL.var_.* fields below,
+	'' so it must be a VAR or FIELD
+	assert( symbIsVar( ctx.sym ) or symbIsField( ctx.sym ) )
+
 	''
 	'' Nested "{ a, b, c }" array initializer parser
 	''
@@ -578,7 +582,7 @@ function cInitializer _
 		byval options as FB_INIOPT _
 	) as ASTNODE ptr
 
-    dim as integer is_local = any, dtype = any
+	dim as integer is_local = any, dtype = any, ok = any
     dim as FBSYMBOL ptr subtype = any
     dim as FB_INITCTX ctx = any
 
@@ -624,16 +628,23 @@ function cInitializer _
 		ctx.options or= FB_INIOPT_ISOBJ
 	end if
 
-	dim as integer res = hArrayInit( ctx )
+	'' If it can be an array, start with hArrayInit()
+	if( symbIsVar( ctx.sym ) or symbIsField( ctx.sym ) ) then
+		ok = hArrayInit( ctx )
+	else
+		'' Everything else (e.g. params)
+		if( dtype = FB_DATATYPE_STRUCT ) then
+			ok = hUDTInit( ctx )
+		else
+			ok = hElmInit( ctx )
+		end if
+	end if
 
 	astTypeIniEnd( ctx.tree, (options and FB_INIOPT_ISINI) <> 0 )
 
-	''
 	if( symbIsVar( ctx.sym ) ) then
 		symbSetIsInitialized( ctx.sym )
 	end if
 
-	''
-	function = iif( res, ctx.tree, NULL )
-
+	function = iif( ok, ctx.tree, NULL )
 end function
