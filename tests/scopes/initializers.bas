@@ -117,6 +117,9 @@ private sub ctor( ) constructor
 	fbcu.add_test( "109", @paramUdtByref.ptrchk                       .test )
 	fbcu.add_test( "110", @paramUdtByref.boundchk                     .test )
 	fbcu.add_test( "111", @paramUdtByref.ctors1                       .test )
+	fbcu.add_test( "112", @paramUdtByref.ctors2                       .test )
+	fbcu.add_test( "113", @paramUdtByref.ctors3                       .test )
+	fbcu.add_test( "114", @paramUdtByref.ctors4                       .test )
 
 	fbcu.add_test( "201", @paramUdtByval.callResultUdt                .test )
 	fbcu.add_test( "202", @paramUdtByval.callArgIif                   .test )
@@ -129,6 +132,9 @@ private sub ctor( ) constructor
 	fbcu.add_test( "209", @paramUdtByval.ptrchk                       .test )
 	fbcu.add_test( "210", @paramUdtByval.boundchk                     .test )
 	fbcu.add_test( "211", @paramUdtByval.ctors1                       .test )
+	fbcu.add_test( "212", @paramUdtByval.ctors2                       .test )
+	fbcu.add_test( "213", @paramUdtByval.ctors3                       .test )
+	fbcu.add_test( "214", @paramUdtByval.ctors4                       .test )
 end sub
 
 end namespace

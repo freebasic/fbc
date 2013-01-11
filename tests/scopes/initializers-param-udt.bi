@@ -156,31 +156,184 @@ end namespace
 namespace ctors1
 	type UDT1
 		i as integer
-		declare constructor( PARAM_MODE i as integer = 0 )
+		declare constructor( PARAM_MODE i as integer = 123 )
 	end type
 
 	constructor UDT1( PARAM_MODE i as integer )
+		CU_ASSERT( this.i = 0 )
 		this.i = i
+		CU_ASSERT( (this.i = 123) or (this.i = 456) or (this.i = 789) )
 	end constructor
 
 	type UDT2
 		x1 as UDT1
-		declare constructor( PARAM_MODE x1 as UDT1 = UDT1( 0 ) )
+		declare constructor( PARAM_MODE x1 as UDT1 = UDT1( 456 ) )
 	end type
 
 	constructor UDT2( PARAM_MODE x1 as UDT1 )
+		CU_ASSERT( this.x1.i = 123 )
 		this.x1 = x1
+		CU_ASSERT( (this.x1.i = 456) or (this.x1.i = 789) )
 	end constructor
 
 	type UDT3
 		x2 as UDT2
-		declare constructor( PARAM_MODE x2 as UDT2 = UDT2( UDT1( 0 ) ) )
+		declare constructor( PARAM_MODE x2 as UDT2 = UDT2( UDT1( 789 ) ) )
 	end type
 
 	constructor UDT3( PARAM_MODE x2 as UDT2 )
+		CU_ASSERT( this.x2.x1.i = 456 )
 		this.x2 = x2
+		CU_ASSERT( this.x2.x1.i = 789 )
 	end constructor
 
 	dim shared p as UDT3 ptr
-	hScopeChecks( p = new UDT3 : delete p : p = NULL )
+	hScopeChecks( p = new UDT3 : CU_ASSERT( p->x2.x1.i = 789 ) : delete p : p = NULL )
+end namespace
+
+namespace ctors2
+	'' Same as ctors1 but with the param initializer expressions on both
+	'' ctor declarations and bodies
+
+	type UDT1
+		i as integer
+		declare constructor( PARAM_MODE i as integer = 123 )
+	end type
+
+	constructor UDT1( PARAM_MODE i as integer = 123 )
+		CU_ASSERT( this.i = 0 )
+		this.i = i
+		CU_ASSERT( (this.i = 123) or (this.i = 456) or (this.i = 789) )
+	end constructor
+
+	type UDT2
+		x1 as UDT1
+		declare constructor( PARAM_MODE x1 as UDT1 = UDT1( 456 ) )
+	end type
+
+	constructor UDT2( PARAM_MODE x1 as UDT1 = UDT1( 456 ) )
+		CU_ASSERT( this.x1.i = 123 )
+		this.x1 = x1
+		CU_ASSERT( (this.x1.i = 456) or (this.x1.i = 789) )
+	end constructor
+
+	type UDT3
+		x2 as UDT2
+		declare constructor( PARAM_MODE x2 as UDT2 = UDT2( UDT1( 789 ) ) )
+	end type
+
+	constructor UDT3( PARAM_MODE x2 as UDT2 = UDT2( UDT1( 789 ) ) )
+		CU_ASSERT( this.x2.x1.i = 456 )
+		this.x2 = x2
+		CU_ASSERT( this.x2.x1.i = 789 )
+	end constructor
+
+	dim shared p as UDT3 ptr
+	hScopeChecks( p = new UDT3 : CU_ASSERT( p->x2.x1.i = 789 ) : delete p : p = NULL )
+end namespace
+
+namespace ctors3
+	'' Same as ctors1 but with "pure" default constructors added
+
+	type UDT1
+		i as integer
+		declare constructor( )
+		declare constructor( PARAM_MODE i as integer = 123 )
+	end type
+
+	constructor UDT1( )
+		i = 321
+	end constructor
+
+	constructor UDT1( PARAM_MODE i as integer )
+		CU_ASSERT( this.i = 0 )
+		this.i = i
+		CU_ASSERT( (this.i = 123) or (this.i = 456) or (this.i = 789) )
+	end constructor
+
+	type UDT2
+		x1 as UDT1
+		declare constructor( )
+		declare constructor( PARAM_MODE x1 as UDT1 = UDT1( 456 ) )
+	end type
+
+	constructor UDT2( )
+	end constructor
+
+	constructor UDT2( PARAM_MODE x1 as UDT1 )
+		CU_ASSERT( this.x1.i = 123 )
+		this.x1 = x1
+		CU_ASSERT( (this.x1.i = 456) or (this.x1.i = 789) )
+	end constructor
+
+	type UDT3
+		x2 as UDT2
+		declare constructor( )
+		declare constructor( PARAM_MODE x2 as UDT2 = UDT2( UDT1( 789 ) ) )
+	end type
+
+	constructor UDT3( )
+	end constructor
+
+	constructor UDT3( PARAM_MODE x2 as UDT2 )
+		CU_ASSERT( this.x2.x1.i = 456 )
+		this.x2 = x2
+		CU_ASSERT( this.x2.x1.i = 789 )
+	end constructor
+
+	dim shared p as UDT3 ptr
+	hScopeChecks( p = new UDT3 : CU_ASSERT( p->x2.x1.i = 321 ) : delete p : p = NULL )
+end namespace
+
+namespace ctors4
+	'' Same as ctors2 but with "pure" default constructors added
+
+	type UDT1
+		i as integer
+		declare constructor( )
+		declare constructor( PARAM_MODE i as integer = 123 )
+	end type
+
+	constructor UDT1( )
+		i = 321
+	end constructor
+
+	constructor UDT1( PARAM_MODE i as integer = 123 )
+		CU_ASSERT( this.i = 0 )
+		this.i = i
+		CU_ASSERT( (this.i = 123) or (this.i = 456) or (this.i = 789) )
+	end constructor
+
+	type UDT2
+		x1 as UDT1
+		declare constructor( )
+		declare constructor( PARAM_MODE x1 as UDT1 = UDT1( 456 ) )
+	end type
+
+	constructor UDT2( )
+	end constructor
+
+	constructor UDT2( PARAM_MODE x1 as UDT1 = UDT1( 456 ) )
+		CU_ASSERT( this.x1.i = 123 )
+		this.x1 = x1
+		CU_ASSERT( (this.x1.i = 456) or (this.x1.i = 789) )
+	end constructor
+
+	type UDT3
+		x2 as UDT2
+		declare constructor( )
+		declare constructor( PARAM_MODE x2 as UDT2 = UDT2( UDT1( 789 ) ) )
+	end type
+
+	constructor UDT3( )
+	end constructor
+
+	constructor UDT3( PARAM_MODE x2 as UDT2 = UDT2( UDT1( 789 ) ) )
+		CU_ASSERT( this.x2.x1.i = 456 )
+		this.x2 = x2
+		CU_ASSERT( this.x2.x1.i = 789 )
+	end constructor
+
+	dim shared p as UDT3 ptr
+	hScopeChecks( p = new UDT3 : CU_ASSERT( p->x2.x1.i = 321 ) : delete p : p = NULL )
 end namespace
