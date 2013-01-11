@@ -960,19 +960,6 @@ private sub hWriteHeader( ) static
 
 end sub
 
-'':::::
-private sub hWriteFooter _
-	( _
-		byval tottime as double _
-	) static
-
-	hCOMMENT( env.inf.name + "' compilation took " + str( tottime ) + " secs" )
-
-	''
-	edbgIncludeEnd( )
-
-end sub
-
 private sub hWriteBss( byval s as FBSYMBOL ptr )
 	while( s )
 		select case( symbGetClass( s ) )
@@ -6573,8 +6560,11 @@ private sub _close _
 		byval tottime as double _
 	)
 
-    ''
-    hWriteFooter( tottime )
+	hCOMMENT( env.inf.name + "' compilation took " + str( tottime ) + " secs" )
+
+	'' Close any STABS #include block (and return to the toplevel .bas
+	'' file name) before emitting the global vars
+	edbgInclude( NULL )
 
 	'' const
 	hWriteConst( symbGetGlobalTbHead( ) )

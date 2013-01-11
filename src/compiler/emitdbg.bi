@@ -101,14 +101,4 @@ declare sub edbgEmitLocalVar _
 		byval isstatic as integer _
 	)
 
-declare sub edbgIncludeBegin _
-	( _
-		byval incname as zstring ptr, _
-		byval incfile as zstring ptr _
-	)
-
-declare sub edbgIncludeEnd _
-	( _
-	)
-
-
+declare sub edbgInclude( byval incfile as zstring ptr )
