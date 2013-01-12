@@ -162,7 +162,6 @@ sub rtlAddIntrinsicProcs _
 						'' function pointers need a symbol built so they can check matches
 						case typeAddrOf( FB_DATATYPE_FUNCTION )
 							dim as integer inner_attrib = any, func_arg = any
-							dim as integer inner_param_len = any
 							dim as ASTNODE ptr inner_param_optval = any
 							dim as FBSYMBOL ptr inner_proc = any
 
@@ -190,13 +189,7 @@ sub rtlAddIntrinsicProcs _
 										inner_attrib = 0
 									end if
 
-									if( .dtype <> FB_DATATYPE_INVALID ) then
-										inner_param_len = symbCalcParamLen( .dtype, NULL, .mode )
-									else
-										inner_param_len = FB_POINTERSIZE
-									end if
-
-									param = symbAddProcParam( inner_proc, NULL, .dtype, NULL, inner_param_len, .mode, inner_attrib )
+									param = symbAddProcParam( inner_proc, NULL, .dtype, NULL, .mode, inner_attrib )
 									symbMakeParamOptional( inner_proc, param, inner_param_optval )
 								end with
 							next
@@ -231,14 +224,11 @@ sub rtlAddIntrinsicProcs _
 						param_optval = NULL
 					end if
 
-					dim as integer lgt = FB_POINTERSIZE
-					if( .dtype <> FB_DATATYPE_INVALID ) then
-						lgt = symbCalcParamLen( .dtype, subtype, .mode )
-					else
+					if( .dtype = FB_DATATYPE_INVALID ) then
 						.dtype = typeAddrOf( FB_DATATYPE_VOID )
 					end if
 
-					param = symbAddProcParam( proc, NULL, .dtype, subtype, lgt, .mode, attrib )
+					param = symbAddProcParam( proc, NULL, .dtype, subtype, .mode, attrib )
 
 					if( .check_const ) then
 						symbSetIsRTLConst( param )

@@ -81,7 +81,7 @@ function symbCalcProcParamLen _
 		byval mode as FB_PARAMMODE _
 	) as integer
 
-	'' assumes dtype has const info stripped
+	dtype = typeGetDtAndPtrOnly( dtype )
 
 	select case as const( mode )
 	case FB_PARAMMODE_BYREF, FB_PARAMMODE_BYDESC
@@ -142,7 +142,6 @@ function symbAddProcParam _
 		byval id as zstring ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
-		byval lgt as integer, _
 		byval mode as integer, _
 		byval attrib as FB_SYMBATTRIB _
 	) as FBSYMBOL ptr
@@ -161,7 +160,7 @@ function symbAddProcParam _
 
 	proc->proc.params += 1
 
-	param->lgt = lgt
+	param->lgt = symbCalcProcParamLen( dtype, subtype, mode )
 	param->param.mode = mode
 	param->param.optexpr = NULL
 
@@ -1053,7 +1052,6 @@ function symbAddProcPtrFromFunction _
 		var p = symbAddProcParam( proc, NULL, _
 		                          symbGetFullType( param ), _
 		                          symbGetSubtype( param ), _
-		                          symbGetLen( param ), _
 		                          symbGetParamMode( param ), _
 		                          symbGetAttrib( param ) )
 
@@ -1228,8 +1226,7 @@ sub symbAddProcInstancePtr _
 	end if
 
 	symbAddProcParam( proc, FB_INSTANCEPTR, dtype, parent, _
-	                  FB_POINTERSIZE, FB_PARAMMODE_BYREF, _
-	                  FB_SYMBATTRIB_PARAMINSTANCE )
+	                  FB_PARAMMODE_BYREF, FB_SYMBATTRIB_PARAMINSTANCE )
 end sub
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::

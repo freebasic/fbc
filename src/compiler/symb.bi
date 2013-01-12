@@ -1150,7 +1150,6 @@ declare function symbAddProcParam _
 		byval id as zstring ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
-		byval lgt as integer, _
 		byval mode as integer, _
 		byval attrib as FB_SYMBATTRIB _
 	) as FBSYMBOL ptr

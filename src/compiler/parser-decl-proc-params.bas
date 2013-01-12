@@ -176,31 +176,19 @@ private function hMockParam _
 		byval pmode as integer = INVALID _
 	) as FBSYMBOL ptr
 
-	dim as integer dtype, plen
+	dim as integer dtype = any
 
 	if( pmode = INVALID ) then
 		pmode = env.opt.parammode
 	end if
 
-    dtype = FB_DATATYPE_INTEGER
+	if( pmode = FB_PARAMMODE_VARARG ) then
+		dtype = FB_DATATYPE_INVALID
+	else
+		dtype = FB_DATATYPE_INTEGER
+	end if
 
-    select case pmode
-    case FB_PARAMMODE_BYREF, FB_PARAMMODE_BYDESC
-    	plen = FB_POINTERSIZE
-
-    case FB_PARAMMODE_BYVAL
-    	if( dtype = FB_DATATYPE_STRING ) then
-    		plen = FB_POINTERSIZE
-    	else
-    		plen = symbCalcLen( dtype, NULL )
-    	end if
-
-    case FB_PARAMMODE_VARARG
-    	dtype = FB_DATATYPE_INVALID
-    	plen = 0
-    end select
-
-	function = symbAddProcParam( proc, NULL, dtype, NULL, plen, pmode, 0 )
+	function = symbAddProcParam( proc, NULL, dtype, NULL, pmode, 0 )
 end function
 
 '':::::
@@ -217,7 +205,7 @@ private function hParamDecl _
 	static as integer reclevel = 0
 	dim as zstring ptr id = any
 	dim as ASTNODE ptr optexpr = any
-	dim as integer dtype = any, mode = any, param_len = any
+	dim as integer dtype = any, mode = any, lgt = any
 	dim as integer attrib = any
 	dim as integer readid = any, dotpos = any, doskip = any, dontinit = any, use_default = any
 	dim as FBSYMBOL ptr subtype = any, param = any
@@ -248,7 +236,7 @@ private function hParamDecl _
 				return hMockParam( proc, FB_PARAMMODE_VARARG )
 			end if
 
-			return symbAddProcParam( proc, NULL, FB_DATATYPE_INVALID, NULL, 0, _
+			return symbAddProcParam( proc, NULL, FB_DATATYPE_INVALID, NULL, _
 			                         FB_PARAMMODE_VARARG, 0 )
 
 		'' syntax error..
@@ -377,7 +365,7 @@ private function hParamDecl _
 			options and= not FB_SYMBTYPEOPT_CHECKSTRPTR
 		end if
 
-		if( cSymbolType( dtype, subtype, param_len, options ) = FALSE ) then
+		if( cSymbolType( dtype, subtype, lgt, options ) = FALSE ) then
 			hParamError( proc, id )
 			'' error recovery: fake type
 			dtype = FB_DATATYPE_INTEGER
@@ -465,25 +453,23 @@ private function hParamDecl _
 
     end select
 
-    '' calc len
-   	param_len = symbCalcProcParamLen( typeGet( dtype ), subtype, mode )
-   	if( isproto = FALSE ) then
-   		if( param_len > (FB_INTEGERSIZE * 4) ) then
-   			if( fbPdCheckIsSet( FB_PDCHECK_PARAMSIZE ) ) then
-   				hParamWarning( proc, id, FB_WARNINGMSG_PARAMSIZETOOBIG )
-   			end if
-   		end if
-   	end if
-
 	'' default values
 	optexpr = NULL
 	dontinit = FALSE
 
 	'' Add new param
 	param = symbAddProcParam( proc, iif( isproto, cptr( zstring ptr, NULL ), id ), _
-	                          dtype, subtype, param_len, mode, attrib )
+	                          dtype, subtype, mode, attrib )
 	if( param = NULL ) then
 		exit function
+	end if
+
+	if( isproto = FALSE ) then
+		if( symbGetLen( param ) > (FB_INTEGERSIZE * 4) ) then
+			if( fbPdCheckIsSet( FB_PDCHECK_PARAMSIZE ) ) then
+				hParamWarning( proc, id, FB_WARNINGMSG_PARAMSIZETOOBIG )
+			end if
+		end if
 	end if
 
 	'' ('=' (expr | ANY))?
