@@ -1694,7 +1694,7 @@ function rtlGfxPset _
 			targetmode = INVALID
 		end if
 	end if
-	if( astNewARG( proc, target, FB_DATATYPE_INVALID, targetmode ) = NULL ) then
+	if( astNewARG( proc, target, , targetmode ) = NULL ) then
  		exit function
  	end if
 
@@ -1757,7 +1757,7 @@ function rtlGfxPoint _
 			targetmode = INVALID
 		end if
 	end if
-	if( astNewARG( proc, target, FB_DATATYPE_INVALID, targetmode ) = NULL ) then
+	if( astNewARG( proc, target, , targetmode ) = NULL ) then
  		exit function
  	end if
 
@@ -1811,7 +1811,7 @@ function rtlGfxLine _
 			targetmode = INVALID
 		end if
 	end if
-	if( astNewARG( proc, target, FB_DATATYPE_INVALID, targetmode ) = NULL ) then
+	if( astNewARG( proc, target, , targetmode ) = NULL ) then
  		exit function
  	end if
 
@@ -1899,7 +1899,7 @@ function rtlGfxCircle _
 			targetmode = INVALID
 		end if
 	end if
-	if( astNewARG( proc, target, FB_DATATYPE_INVALID, targetmode ) = NULL ) then
+	if( astNewARG( proc, target, , targetmode ) = NULL ) then
  		exit function
  	end if
 
@@ -1994,7 +1994,7 @@ function rtlGfxPaint _
 			targetmode = INVALID
 		end if
 	end if
-	if( astNewARG( proc, target, FB_DATATYPE_INVALID, targetmode ) = NULL ) then
+	if( astNewARG( proc, target, , targetmode ) = NULL ) then
  		exit function
  	end if
 
@@ -2081,7 +2081,7 @@ function rtlGfxDraw _
 			targetmode = INVALID
 		end if
 	end if
-	if( astNewARG( proc, target, FB_DATATYPE_INVALID, targetmode ) = NULL ) then
+	if( astNewARG( proc, target, , targetmode ) = NULL ) then
  		exit function
  	end if
 
@@ -2133,7 +2133,7 @@ function rtlGfxDrawString _
 			targetmode = INVALID
 		end if
 	end if
-	if( astNewARG( proc, target, FB_DATATYPE_INVALID, targetmode ) = NULL ) then
+	if( astNewARG( proc, target, , targetmode ) = NULL ) then
  		exit function
  	end if
 
@@ -2178,7 +2178,7 @@ function rtlGfxDrawString _
 		end if
 		putter = hGetPutter( mode )
 	end if
-	if( astNewARG( proc, fexpr, FB_DATATYPE_INVALID, targetmode ) = NULL ) then
+	if( astNewARG( proc, fexpr, , targetmode ) = NULL ) then
  		exit function
  	end if
 
@@ -2402,7 +2402,7 @@ function rtlGfxPalette  _
  		targetmode = FB_PARAMMODE_BYVAL
 		gexpr = astNewCONSTi( defval )
     end if
- 	if( astNewARG( proc, gexpr, FB_DATATYPE_INVALID, targetmode ) = NULL ) then
+	if( astNewARG( proc, gexpr, , targetmode ) = NULL ) then
  		exit function
  	end if
 
@@ -2410,7 +2410,7 @@ function rtlGfxPalette  _
  	if( bexpr = NULL ) then
 		bexpr = astNewCONSTi( defval )
     end if
- 	if( astNewARG( proc, bexpr, FB_DATATYPE_INVALID, targetmode ) = NULL ) then
+	if( astNewARG( proc, bexpr, , targetmode ) = NULL ) then
  		exit function
  	end if
 
@@ -2444,7 +2444,7 @@ function rtlGfxPaletteUsing  _
 
  	'' byref array as integer
  	mode = iif( isptr, FB_PARAMMODE_BYVAL, INVALID )
- 	if( astNewARG( proc, arrayexpr, FB_DATATYPE_INVALID, mode ) = NULL ) then
+	if( astNewARG( proc, arrayexpr, , mode ) = NULL ) then
  		exit function
  	end if
 
@@ -2493,7 +2493,7 @@ function rtlGfxPut _
 			targetmode = INVALID
 		end if
 	end if
-	if( astNewARG( proc, target, FB_DATATYPE_INVALID, targetmode ) = NULL ) then
+	if( astNewARG( proc, target, , targetmode ) = NULL ) then
  		exit function
  	end if
 
@@ -2513,7 +2513,7 @@ function rtlGfxPut _
 	else
 		argmode = INVALID
 	end if
- 	if( astNewARG( proc, arrayexpr, FB_DATATYPE_INVALID, argmode ) = NULL ) then
+	if( astNewARG( proc, arrayexpr, , argmode ) = NULL ) then
  		exit function
  	end if
 
@@ -2614,7 +2614,7 @@ function rtlGfxGet _
 			targetmode = INVALID
 		end if
 	end if
-	if( astNewARG( proc, target, FB_DATATYPE_INVALID, targetmode ) = NULL ) then
+	if( astNewARG( proc, target, , targetmode ) = NULL ) then
  		exit function
  	end if
 
@@ -2657,7 +2657,7 @@ function rtlGfxGet _
 		end if
 	end if
 
- 	if( astNewARG( proc, arrayexpr, FB_DATATYPE_INVALID, argmode ) = NULL ) then
+	if( astNewARG( proc, arrayexpr, , argmode ) = NULL ) then
  		exit function
  	end if
 
@@ -2667,7 +2667,7 @@ function rtlGfxGet _
  	end if
 
  	'' array() as any
- 	if( astNewARG( proc, descexpr, FB_DATATYPE_INVALID, argmode ) = NULL ) then
+	if( astNewARG( proc, descexpr, , argmode ) = NULL ) then
  		exit function
  	end if
 

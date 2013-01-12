@@ -483,9 +483,9 @@ function astBuildImplicitCtorCall _
     dim as ASTNODE ptr procexpr = astNewCALL( proc )
 
     '' push the mock instance ptr
-    astNewARG( procexpr, astBuildMockInstPtr( subtype ), FB_DATATYPE_INVALID, FB_PARAMMODE_BYVAL )
+    astNewARG( procexpr, astBuildMockInstPtr( subtype ), , FB_PARAMMODE_BYVAL )
 
-    astNewARG( procexpr, expr, FB_DATATYPE_INVALID, arg_mode )
+    astNewARG( procexpr, expr, , arg_mode )
 
     '' add the optional params, if any
     dim as integer params = symbGetProcParams( proc ) - 2

@@ -403,7 +403,7 @@ function rtlOvlProcCall _
 	do while( arg <> NULL )
         var nxt = arg->next
 
-		if( astNewARG( procexpr, arg->expr, FB_DATATYPE_INVALID, arg->mode ) = NULL ) then
+		if( astNewARG( procexpr, arg->expr, , arg->mode ) = NULL ) then
 			return NULL
 		end if
 

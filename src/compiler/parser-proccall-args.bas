@@ -336,7 +336,7 @@ private function hOvlProcArgList _
 	for i = 0 to args-1
         nxt = arg->next
 
-		if( astNewARG( procexpr, arg->expr, FB_DATATYPE_INVALID, arg->mode ) = NULL ) then
+		if( astNewARG( procexpr, arg->expr, , arg->mode ) = NULL ) then
 			errReport( FB_ERRMSG_PARAMTYPEMISMATCH )
 			'' error recovery: fake an expr (don't try to fake an arg,
 			'' different modes and param types like "as any" would break AST)
@@ -353,7 +353,7 @@ private function hOvlProcArgList _
 	'' add the end-of-list optional args, if any
 	params = symbGetProcParams( proc )
     do while( args < params )
-		astNewARG( procexpr, NULL, FB_DATATYPE_INVALID, INVALID )
+		astNewARG( procexpr, NULL )
 
 		'' next
 		args += 1
@@ -450,10 +450,7 @@ function cProcArgList _
 	do while( arg <> NULL )
 		dim as FB_CALL_ARG ptr nxt = arg->next
 
-		if( astNewARG( procexpr, _
-					   arg->expr, _
-					   FB_DATATYPE_INVALID, _
-					   arg->mode ) = NULL ) then
+		if( astNewARG( procexpr, arg->expr, , arg->mode ) = NULL ) then
 			exit function
 		end if
 
@@ -511,7 +508,7 @@ function cProcArgList _
 			end if
 
 			'' add to tree
-			if( astNewARG( procexpr, expr, FB_DATATYPE_INVALID, mode ) = NULL ) then
+			if( astNewARG( procexpr, expr, , mode ) = NULL ) then
 				'' error recovery: skip until next stmt or ')'
 				if( (options and FB_PARSEROPT_ISFUNC) <> 0 ) then
 					hSkipUntil( CHAR_RPRNT )
@@ -551,7 +548,7 @@ function cProcArgList _
 		end if
 
 		'' add to tree
-		if( astNewARG( procexpr, NULL, FB_DATATYPE_INVALID, INVALID ) = NULL ) then
+		if( astNewARG( procexpr, NULL ) = NULL ) then
 			exit function
 		end if
 
