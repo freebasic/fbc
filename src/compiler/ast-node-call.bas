@@ -147,7 +147,7 @@ function astLoadCALL( byval n as ASTNODE ptr ) as IRVREG ptr
 	arg = n->r
 	while( arg )
 		l = arg->l
-		bytestopop += FB_ROUNDLEN( symbCalcParamLen( l->dtype, l->subtype, arg->arg.mode ) )
+		bytestopop += symbCalcParamLen( l->dtype, l->subtype, arg->arg.mode )
 		arg = arg->r
 	wend
 
@@ -171,7 +171,7 @@ function astLoadCALL( byval n as ASTNODE ptr ) as IRVREG ptr
 		'' cdecl: pushed arguments must be popped by caller
 		'' pascal/stdcall: callee does it instead
 		if( symbGetProcMode( proc ) = FB_FUNCMODE_CDECL ) then
-			bytestopop += FB_ROUNDLEN( symbCalcParamLen( l->dtype, l->subtype, arg->arg.mode ) )
+			bytestopop += symbCalcParamLen( l->dtype, l->subtype, arg->arg.mode )
 		end if
 
 		if( l->class = AST_NODECLASS_CONV ) then

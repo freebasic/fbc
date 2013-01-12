@@ -2503,7 +2503,6 @@ function symbGetProcResult( byval proc as FBSYMBOL ptr ) as FBSYMBOL ptr
 	end if
 end function
 
-'':::::
 function symbCalcParamLen _
 	( _
 		byval dtype as integer, _
@@ -2520,12 +2519,11 @@ function symbCalcParamLen _
 		if( typeGet( dtype ) = FB_DATATYPE_STRING ) then
 			lgt = FB_POINTERSIZE
 		else
-			lgt = symbCalcLen( dtype, subtype )
+			lgt = FB_ROUNDLEN( symbCalcLen( dtype, subtype ) )
 		end if
 	end select
 
 	function = lgt
-
 end function
 
 '':::::
