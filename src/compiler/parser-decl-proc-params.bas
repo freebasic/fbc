@@ -61,7 +61,7 @@ sub cParameters _
 			exit do
 		end if
 
-		length += symbCalcProcParamLen( symbGetType( param ), symbGetSubtype( param ), symbGetParamMode( param ) )
+		length += symbGetLen( param )
 
 		'' vararg?
 		if( param->param.mode = FB_PARAMMODE_VARARG ) then
