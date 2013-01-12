@@ -126,7 +126,7 @@ private sub hModLevelBegin( )
 	env.main.proc = symbAddProc( symbPreAddProc( NULL ), "{modlevel}", fbGetModuleEntry( ), FB_DATATYPE_VOID, NULL, _
 	                             FB_SYMBATTRIB_PRIVATE, FB_FUNCMODE_CDECL, FB_SYMBOPT_DECLARING )
 	symbAddGlobalCtor( env.main.proc )
-	symbSetIsCalled( env.main.proc )
+	symbSetIsAccessed( env.main.proc )
 	symbSetIsModLevelProc( env.main.proc )
 
 	astProcBegin( env.main.proc, TRUE )

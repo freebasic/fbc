@@ -531,7 +531,7 @@ end function
 ''
 
 function astBuildProcAddrof(byval proc as FBSYMBOL ptr) as ASTNODE ptr
-	symbSetIsCalled(proc)
+	symbSetIsAccessed( proc )
 	function = astNewADDROF(astNewVAR(proc, 0, FB_DATATYPE_FUNCTION, proc))
 end function
 

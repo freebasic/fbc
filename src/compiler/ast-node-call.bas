@@ -38,7 +38,7 @@ function astNewCALL _
 	subtype = symbGetSubType( sym )
 
 	''
-	symbSetIsCalled( sym )
+	symbSetIsAccessed( sym )
 
 	'' alloc new node
 	n = astNewNode( AST_NODECLASS_CALL, dtype, subtype )

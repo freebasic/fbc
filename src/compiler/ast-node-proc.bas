@@ -223,7 +223,7 @@ private sub hProcFlushAll _
 			'' private?
 			if( symbIsPrivate( sym ) ) then
 				'' never called? skip
-				if( symbGetIsCalled( sym ) = FALSE ) then
+				if( symbGetIsAccessed( sym ) = FALSE ) then
 					doemit = FALSE
 
 				'' module-level?
@@ -1399,7 +1399,7 @@ private sub hGlobCtorBegin( byval is_ctor as integer )
 	else
 		symbAddGlobalDtor( proc )
 	end if
-	symbSetIsCalled( proc )
+	symbSetIsAccessed( proc )
 	symbSetIsParsed( proc )
 
 	astProcBegin( proc, FALSE )

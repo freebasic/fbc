@@ -719,7 +719,7 @@ private sub hEmitFuncProto _
 
 	dim as integer section = any
 
-	if( checkcalled and not symbGetIsCalled( s ) ) then
+	if( checkcalled and not symbGetIsAccessed( s ) ) then
 		return
 	end if
 
@@ -1108,80 +1108,80 @@ private sub hEmitFTOIBuiltins( )
 	'' same problem, see emit_x86.bas:_emitLOADF2I() & co.
 
 	'' single
-	if( symbGetIsCalled( PROCLOOKUP( FTOSL ) ) or _
-	    symbGetIsCalled( PROCLOOKUP( FTOUL ) ) or _
-	    symbGetIsCalled( PROCLOOKUP( FTOUI ) ) ) then
+	if( symbGetIsAccessed( PROCLOOKUP( FTOSL ) ) or _
+	    symbGetIsAccessed( PROCLOOKUP( FTOUL ) ) or _
+	    symbGetIsAccessed( PROCLOOKUP( FTOUI ) ) ) then
 		hWriteFTOI( "ftosl", FB_DATATYPE_LONGINT, FB_DATATYPE_SINGLE )
 	end if
 
-	if( symbGetIsCalled( PROCLOOKUP( FTOUL ) ) ) then
+	if( symbGetIsAccessed( PROCLOOKUP( FTOUL ) ) ) then
 		hWriteLine( "#define fb_ftoul( v ) (ulongint)fb_ftosl( v )", TRUE )
 	end if
 
-	if( symbGetIsCalled( PROCLOOKUP( FTOUI ) ) ) then
+	if( symbGetIsAccessed( PROCLOOKUP( FTOUI ) ) ) then
 		hWriteLine( "#define fb_ftoui( v ) (uinteger)fb_ftosl( v )", TRUE )
 	end if
 
-	if( symbGetIsCalled( PROCLOOKUP( FTOSI ) ) or _
-	    symbGetIsCalled( PROCLOOKUP( FTOSS ) ) or _
-	    symbGetIsCalled( PROCLOOKUP( FTOUS ) ) or _
-	    symbGetIsCalled( PROCLOOKUP( FTOSB ) ) or _
-	    symbGetIsCalled( PROCLOOKUP( FTOUB ) ) ) then
+	if( symbGetIsAccessed( PROCLOOKUP( FTOSI ) ) or _
+	    symbGetIsAccessed( PROCLOOKUP( FTOSS ) ) or _
+	    symbGetIsAccessed( PROCLOOKUP( FTOUS ) ) or _
+	    symbGetIsAccessed( PROCLOOKUP( FTOSB ) ) or _
+	    symbGetIsAccessed( PROCLOOKUP( FTOUB ) ) ) then
 		hWriteFTOI( "ftosi", FB_DATATYPE_INTEGER, FB_DATATYPE_SINGLE )
 	end if
 
-	if( symbGetIsCalled( PROCLOOKUP( FTOSS ) ) ) then
+	if( symbGetIsAccessed( PROCLOOKUP( FTOSS ) ) ) then
 		hWriteLine( "#define fb_ftoss( v ) (short)fb_ftosi( v )", TRUE )
 	end if
 
-	if( symbGetIsCalled( PROCLOOKUP( FTOUS ) ) ) then
+	if( symbGetIsAccessed( PROCLOOKUP( FTOUS ) ) ) then
 		hWriteLine( "#define fb_ftous( v ) (ushort)fb_ftosi( v )", TRUE )
 	end if
 
-	if( symbGetIsCalled( PROCLOOKUP( FTOSB ) ) ) then
+	if( symbGetIsAccessed( PROCLOOKUP( FTOSB ) ) ) then
 		hWriteLine( "#define fb_ftosb( v ) (byte)fb_ftosi( v )", TRUE )
 	end if
 
-	if( symbGetIsCalled( PROCLOOKUP( FTOUB ) ) ) then
+	if( symbGetIsAccessed( PROCLOOKUP( FTOUB ) ) ) then
 		hWriteLine( "#define fb_ftoub( v ) (ubyte)fb_ftosi( v )", TRUE )
 	end if
 
 	'' double
-	if( symbGetIsCalled( PROCLOOKUP( DTOSL ) ) or _
-	    symbGetIsCalled( PROCLOOKUP( DTOUL ) ) or _
-	    symbGetIsCalled( PROCLOOKUP( DTOUI ) ) ) then
+	if( symbGetIsAccessed( PROCLOOKUP( DTOSL ) ) or _
+	    symbGetIsAccessed( PROCLOOKUP( DTOUL ) ) or _
+	    symbGetIsAccessed( PROCLOOKUP( DTOUI ) ) ) then
 		hWriteFTOI( "dtosl", FB_DATATYPE_LONGINT, FB_DATATYPE_DOUBLE )
 	end if
 
-	if( symbGetIsCalled( PROCLOOKUP( DTOUL ) ) ) then
+	if( symbGetIsAccessed( PROCLOOKUP( DTOUL ) ) ) then
 		hWriteLine( "#define fb_dtoul( v ) (ulongint)fb_dtosl( v )", TRUE )
 	end if
 
-	if( symbGetIsCalled( PROCLOOKUP( DTOUI ) ) ) then
+	if( symbGetIsAccessed( PROCLOOKUP( DTOUI ) ) ) then
 		hWriteLine( "#define fb_dtoui( v ) (uinteger)fb_dtosl( v )", TRUE )
 	end if
 
-	if( symbGetIsCalled( PROCLOOKUP( DTOSI ) ) or _
-	    symbGetIsCalled( PROCLOOKUP( DTOSS ) ) or _
-	    symbGetIsCalled( PROCLOOKUP( DTOUS ) ) or _
-	    symbGetIsCalled( PROCLOOKUP( DTOSB ) ) or _
-	    symbGetIsCalled( PROCLOOKUP( DTOUB ) ) ) then
+	if( symbGetIsAccessed( PROCLOOKUP( DTOSI ) ) or _
+	    symbGetIsAccessed( PROCLOOKUP( DTOSS ) ) or _
+	    symbGetIsAccessed( PROCLOOKUP( DTOUS ) ) or _
+	    symbGetIsAccessed( PROCLOOKUP( DTOSB ) ) or _
+	    symbGetIsAccessed( PROCLOOKUP( DTOUB ) ) ) then
 		hWriteFTOI( "dtosi", FB_DATATYPE_INTEGER, FB_DATATYPE_DOUBLE )
 	end if
 
-	if( symbGetIsCalled( PROCLOOKUP( DTOSS ) ) ) then
+	if( symbGetIsAccessed( PROCLOOKUP( DTOSS ) ) ) then
 		hWriteLine( "#define fb_dtoss( v ) (short)fb_dtosi( v )", TRUE )
 	end if
 
-	if( symbGetIsCalled( PROCLOOKUP( DTOUS ) ) ) then
+	if( symbGetIsAccessed( PROCLOOKUP( DTOUS ) ) ) then
 		hWriteLine( "#define fb_dtous( v ) (ushort)fb_dtosi( v )", TRUE )
 	end if
 
-	if( symbGetIsCalled( PROCLOOKUP( DTOSB ) ) ) then
+	if( symbGetIsAccessed( PROCLOOKUP( DTOSB ) ) ) then
 		hWriteLine( "#define fb_dtosb( v ) (byte)fb_dtosi( v )", TRUE )
 	end if
 
-	if( symbGetIsCalled( PROCLOOKUP( DTOUB ) ) ) then
+	if( symbGetIsAccessed( PROCLOOKUP( DTOUB ) ) ) then
 		hWriteLine( "#define fb_dtoub( v ) (ubyte)fb_dtosi( v )", TRUE )
 	end if
 

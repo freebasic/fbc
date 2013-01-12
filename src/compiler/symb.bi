@@ -86,7 +86,7 @@ enum FB_SYMBSTATS
     FB_SYMBSTATS_ACCESSED     = &h00000002
     FB_SYMBSTATS_INITIALIZED  = &h00000004
     FB_SYMBSTATS_DECLARED     = &h00000008
-    FB_SYMBSTATS_CALLED       = &h00000010
+                            ''= &h00000010
     FB_SYMBSTATS_RTL          = &h00000020
     FB_SYMBSTATS_THROWABLE    = &h00000040
     FB_SYMBSTATS_PARSED       = &h00000080
@@ -1876,9 +1876,6 @@ declare function symbGetUDTBaseLevel _
 #define symbGetIsDeclared(s) ((s->stats and FB_SYMBSTATS_DECLARED) <> 0)
 #define symbSetIsDeclared(s) s->stats or= FB_SYMBSTATS_DECLARED
 
-#define symbGetIsCalled(s) ((s->stats and FB_SYMBSTATS_CALLED) <> 0)
-#define symbSetIsCalled(s) s->stats or= FB_SYMBSTATS_CALLED
-
 #define symbGetIsRTL(s) ((s->stats and FB_SYMBSTATS_RTL) <> 0)
 
 #define symbGetIsThrowable(s) ((s->stats and FB_SYMBSTATS_THROWABLE) <> 0)
@@ -1909,10 +1906,10 @@ declare function symbGetUDTBaseLevel _
 #define symbSetHasRTTI(s) s->stats or= FB_SYMBSTATS_HASRTTI
 
 #define symbGetIsGlobalCtor(s) ((s->stats and FB_SYMBSTATS_GLOBALCTOR) <> 0)
-#define symbSetIsGlobalCtor( s ) s->stats or= FB_SYMBSTATS_GLOBALCTOR or FB_SYMBSTATS_CALLED
+#define symbSetIsGlobalCtor( s ) s->stats or= FB_SYMBSTATS_GLOBALCTOR or FB_SYMBSTATS_ACCESSED
 
 #define symbGetIsGlobalDtor(s) ((s->stats and FB_SYMBSTATS_GLOBALDTOR) <> 0)
-#define symbSetIsGlobalDtor( s ) s->stats or= FB_SYMBSTATS_GLOBALDTOR or FB_SYMBSTATS_CALLED
+#define symbSetIsGlobalDtor( s ) s->stats or= FB_SYMBSTATS_GLOBALDTOR or FB_SYMBSTATS_ACCESSED
 
 #define symbGetIsCtorInited(s) ((s->stats and FB_SYMBSTATS_CTORINITED) <> 0)
 #define symbSetIsCtorInited(s) s->stats or= FB_SYMBSTATS_CTORINITED
