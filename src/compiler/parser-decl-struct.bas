@@ -1016,9 +1016,7 @@ private sub hPatchByvalParamsToSelf _
 				'' byval to self? recalc..
 				if( symbGetSubtype( param ) = parent ) then
 					if( symbGetParamMode( param ) = FB_PARAMMODE_BYVAL ) then
-						param->lgt = symbCalcProcParamLen( FB_DATATYPE_STRUCT, _
-														   parent, _
-														   FB_PARAMMODE_BYVAL )
+						param->lgt = FB_ROUNDLEN( symbCalcProcParamLen( FB_DATATYPE_STRUCT, parent, FB_PARAMMODE_BYVAL ) )
 					end if
 				end if
 

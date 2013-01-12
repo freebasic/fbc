@@ -124,7 +124,7 @@ function symbCalcProcParamsLen( byval proc as FBSYMBOL ptr ) as integer
 	while( param )
 		select case( param->param.mode )
 		case FB_PARAMMODE_BYVAL
-			length += FB_ROUNDLEN( param->lgt )
+			length += param->lgt
 		case FB_PARAMMODE_BYREF, FB_PARAMMODE_BYDESC
 			length += FB_POINTERSIZE
 		end select
@@ -160,7 +160,7 @@ function symbAddProcParam _
 
 	proc->proc.params += 1
 
-	param->lgt = symbCalcProcParamLen( dtype, subtype, mode )
+	param->lgt = FB_ROUNDLEN( symbCalcProcParamLen( dtype, subtype, mode ) )
 	param->param.mode = mode
 	param->param.optexpr = NULL
 

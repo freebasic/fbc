@@ -61,9 +61,7 @@ function cVAFunct() as ASTNODE ptr
 		'' Cast to ANY PTR to hide that it's based on the parameter
 		expr = astNewCONV( typeAddrOf( FB_DATATYPE_VOID ), NULL, expr )
 
-		'' + FB_ROUNDLEN( paramlen( param ) )
-		function = astNewBOP( AST_OP_ADD, expr, _
-		                      astNewCONSTi( FB_ROUNDLEN( symbGetLen( param ) ), _
-		                                    FB_DATATYPE_UINT ) )
+		'' + paramlen( param )
+		function = astNewBOP( AST_OP_ADD, expr, astNewCONSTi( symbGetLen( param ), FB_DATATYPE_UINT ) )
 	end if
 end function
