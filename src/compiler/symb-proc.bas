@@ -73,38 +73,48 @@ function symbProcReturnsUdtOnStack( byval proc as FBSYMBOL ptr ) as integer
 	end if
 end function
 
-'':::::
-function symbCalcProcParamLen _
+function symbCalcArgLen _
+	( _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr, _
+		byval mode as integer _
+	) as integer
+
+	select case( mode )
+	case FB_PARAMMODE_BYREF, FB_PARAMMODE_BYDESC
+		return FB_POINTERSIZE
+	end select
+
+	'' BYVAL/VARARG
+
+	select case( typeGetDtAndPtrOnly( dtype ) )
+	case FB_DATATYPE_STRING
+		'' BYVAL strings passed as pointer instead
+		return FB_POINTERSIZE
+	case FB_DATATYPE_STRUCT
+		'' BYVAL non-trivial UDTs passed BYREF implicitly
+		if( symbCompIsTrivial( subtype ) = FALSE ) then
+			return FB_POINTERSIZE
+		end if
+	end select
+
+	function = FB_ROUNDLEN( symbCalcLen( dtype, subtype ) )
+end function
+
+function symbCalcParamLen _
 	( _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
 		byval mode as FB_PARAMMODE _
 	) as integer
 
-	dtype = typeGetDtAndPtrOnly( dtype )
-
-	select case as const( mode )
-	case FB_PARAMMODE_BYREF, FB_PARAMMODE_BYDESC
-		function = FB_POINTERSIZE
-
-	case FB_PARAMMODE_BYVAL
-		select case( dtype )
-		case FB_DATATYPE_STRING
-			return FB_POINTERSIZE
-
-		case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-			'' has a dtor, copy ctor or virtual methods? pass a copy..
-			if( symbCompIsTrivial( subtype ) = FALSE ) then
-				return FB_POINTERSIZE
-			end if
-		end select
-
-		function = FB_ROUNDLEN( symbCalcLen( dtype, subtype ) )
-
-	case else
+	'' VARARG params have 0 length for now,
+	'' only the VARARG args later have > 0 length...
+	if( mode = FB_PARAMMODE_VARARG ) then
 		function = 0
-
-	end select
+	else
+		function = symbCalcArgLen( dtype, subtype, mode )
+	end if
 
 end function
 
@@ -160,7 +170,7 @@ function symbAddProcParam _
 
 	proc->proc.params += 1
 
-	param->lgt = symbCalcProcParamLen( dtype, subtype, mode )
+	param->lgt = symbCalcParamLen( dtype, subtype, mode )
 	param->param.mode = mode
 	param->param.optexpr = NULL
 
@@ -2501,29 +2511,6 @@ function symbGetProcResult( byval proc as FBSYMBOL ptr ) as FBSYMBOL ptr
 	if( proc->proc.ext ) then
 		function = proc->proc.ext->res
 	end if
-end function
-
-function symbCalcParamLen _
-	( _
-		byval dtype as integer, _
-		byval subtype as FBSYMBOL ptr, _
-		byval mode as integer _
-	) as integer
-
-    dim as integer lgt = any
-
-	select case mode
-	case FB_PARAMMODE_BYREF, FB_PARAMMODE_BYDESC
-		lgt = FB_POINTERSIZE
-	case else
-		if( typeGet( dtype ) = FB_DATATYPE_STRING ) then
-			lgt = FB_POINTERSIZE
-		else
-			lgt = FB_ROUNDLEN( symbCalcLen( dtype, subtype ) )
-		end if
-	end select
-
-	function = lgt
 end function
 
 '':::::

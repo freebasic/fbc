@@ -958,13 +958,6 @@ declare function symbGetConstValueAsStr _
 		byval s as FBSYMBOL ptr _
 	) as string
 
-declare function symbCalcParamLen _
-	( _
-		byval dtype as integer, _
-		byval subtype as FBSYMBOL ptr, _
-		byval mode as integer _
-	) as integer
-
 declare function symbAddKeyword _
 	( _
 		byval symbol as const zstring ptr, _
@@ -1227,7 +1220,14 @@ declare sub symbProcAllocExt( byval proc as FBSYMBOL ptr )
 declare sub symbProcFreeExt( byval proc as FBSYMBOL ptr )
 declare function symbProcReturnsUdtOnStack( byval proc as FBSYMBOL ptr ) as integer
 
-declare function symbCalcProcParamLen _
+declare function symbCalcArgLen _
+	( _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr, _
+		byval mode as integer _
+	) as integer
+
+declare function symbCalcParamLen _
 	( _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
