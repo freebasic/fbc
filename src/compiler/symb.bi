@@ -1943,7 +1943,7 @@ declare function symbGetUDTBaseLevel _
 
 #define symbGetStats(s) s->stats
 
-#define symbGetLen(s) iif( s <> NULL, s->lgt, 0 )
+#define symbGetLen( s ) (s)->lgt
 
 #define symbGetStrLen(s) symbGetLen(s)
 
