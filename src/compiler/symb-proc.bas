@@ -99,7 +99,7 @@ function symbCalcProcParamLen _
 			end if
 		end select
 
-		function = symbCalcLen( dtype, subtype )
+		function = FB_ROUNDLEN( symbCalcLen( dtype, subtype ) )
 
 	case else
 		function = 0
@@ -160,7 +160,7 @@ function symbAddProcParam _
 
 	proc->proc.params += 1
 
-	param->lgt = FB_ROUNDLEN( symbCalcProcParamLen( dtype, subtype, mode ) )
+	param->lgt = symbCalcProcParamLen( dtype, subtype, mode )
 	param->param.mode = mode
 	param->param.optexpr = NULL
 
