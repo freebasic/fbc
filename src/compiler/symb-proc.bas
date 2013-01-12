@@ -132,12 +132,11 @@ function symbCalcProcParamsLen( byval proc as FBSYMBOL ptr ) as integer
 	length = 0
 
 	while( param )
-		select case( param->param.mode )
-		case FB_PARAMMODE_BYVAL
-			length += param->lgt
-		case FB_PARAMMODE_BYREF, FB_PARAMMODE_BYDESC
-			length += FB_POINTERSIZE
-		end select
+		'' VARARG params will have 0 (unknown) length,
+		'' thus they do not affect the sum.
+		assert( iif( symbGetParamMode( param ) = FB_PARAMMODE_VARARG, symbGetLen( param ) = 0, TRUE ) )
+
+		length += symbGetLen( param )
 
 		param = param->prev
 	wend
