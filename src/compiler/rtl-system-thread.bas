@@ -178,7 +178,7 @@ function rtlThreadCall(byval callexpr as ASTNODE ptr) as ASTNODE ptr
     function = NULL
 
     dim as FBSYMBOL ptr proc, param
-    dim as ASTNODE ptr procvarexpr, procvarptrexpr, procmodeexpr
+    dim as ASTNODE ptr procmodeexpr
     dim as ASTNODE ptr stacksizeexpr, argsexpr, ptrexpr
     
     proc = callexpr->sym
@@ -205,9 +205,7 @@ function rtlThreadCall(byval callexpr as ASTNODE ptr) as ASTNODE ptr
     dim as ASTNODE ptr expr = astNewCall( PROCLOOKUP( THREADCALL ) )
 
     '' push function argument
-    procvarexpr = astNewVAR( proc, 0, FB_DATATYPE_FUNCTION, proc )
-    procvarptrexpr = astNewADDROF( procvarexpr )
-    if( astNewARG( expr, procvarptrexpr ) = NULL ) then
+    if( astNewARG( expr, astBuildProcAddrOf( proc ) ) = NULL ) then
         exit function
     end if
 
