@@ -1863,6 +1863,15 @@ sub symbSetDefType _
 
 end sub
 
+'' Recalculate the length, to be used after the symbol's type was set/changed
+sub symbRecalcLen( byval sym as FBSYMBOL ptr )
+	if( sym->class = FB_SYMBCLASS_PARAM ) then
+		sym->lgt = symbCalcParamLen( sym->typ, sym->subtype, sym->param.mode )
+	else
+		sym->lgt = symbCalcLen( sym->typ, sym->subtype )
+	end if
+end sub
+
 function symbCalcLen _
 	( _
 		byval dtype as integer, _

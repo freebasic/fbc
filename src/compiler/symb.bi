@@ -1385,6 +1385,8 @@ declare sub symbAddArrayDim _
 		byval upper as integer _
 	)
 
+declare sub symbRecalcLen( byval sym as FBSYMBOL ptr )
+
 declare function symbCalcLen _
 	( _
 		byval dtype as integer, _

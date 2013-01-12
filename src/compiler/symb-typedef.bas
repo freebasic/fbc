@@ -114,7 +114,7 @@ private sub symbReplaceForwardRef _
     '' subtype
     symbGetSubtype( s ) = subtype
 
-    s->lgt = symbCalcLen( symbGetType( s ), subtype )
+	symbRecalcLen( s )
 
     '' We might have substituted the fwdref by another fwdref, and then this
     '' symbol must be patched again.

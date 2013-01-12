@@ -998,34 +998,30 @@ function cTypeDecl _
 
 end function
 
-'':::::
-private sub hPatchByvalParamsToSelf _
-	( _
-		byval parent as FBSYMBOL ptr _
-	) static
+private sub hPatchByvalParamsToSelf( byval parent as FBSYMBOL ptr )
+	dim as FBSYMBOL ptr sym = any, param = any
 
-	dim as FBSYMBOL ptr sym, param
-
-	'' for each method..
+	'' For each method...
 	sym = symbGetUDTSymbtb( parent ).head
-	do while( sym <> NULL )
+	while( sym )
 		if( symbIsProc( sym ) ) then
-			'' for each param..
+			'' For each param...
 			param = symbGetProcHeadParam( sym )
-			do while( param <> NULL )
-				'' byval to self? recalc..
-				if( symbGetSubtype( param ) = parent ) then
+			while( param )
+				'' BYVAL AS ParentUDT?
+				if( (symbGetType( param ) = FB_DATATYPE_STRUCT) and _
+				    (symbGetSubtype( param ) = parent)                ) then
 					if( symbGetParamMode( param ) = FB_PARAMMODE_BYVAL ) then
-						param->lgt = symbCalcParamLen( FB_DATATYPE_STRUCT, parent, FB_PARAMMODE_BYVAL )
+						symbRecalcLen( param )
 					end if
 				end if
 
 				param = param->next
-			loop
+			wend
 		end if
 
 		sym = sym->next
-	loop
+	wend
 
 end sub
 
