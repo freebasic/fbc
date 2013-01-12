@@ -101,14 +101,14 @@ sub test_1 cdecl ()
 		   b, ub, s, us, i, ui, l, ul, f, d, vs, z )
 end sub
 
-sub testVaFirstBehindByte cdecl(byval n as byte, ...)
+sub hVaFirstBehindByte cdecl( byval n as byte, ... )
     '' va_first() was returning @n + 1, but it should do @n + 4 in this case,
     '' because 4 bytes are pushed for 'n'.
     dim as integer ptr p = va_first()
     CU_ASSERT( *p = &hAABBCCDD )
 end sub
 
-sub testVaFirstBehindShort cdecl(byval n as short, ...)
+sub hVaFirstBehindShort cdecl( byval n as short, ... )
     '' sizeof(n) = 2, but 4 bytes pushed...
     dim as integer ptr p = va_first()
     CU_ASSERT( *p = &h44332211 )
@@ -119,19 +119,62 @@ type T field = 1
     as byte b
 end type
 
-sub testVaFirstBehindUdt cdecl(byval n as T, ...)
+sub hVaFirstBehindUdt cdecl( byval n as T, ... )
     '' sizeof(n) = 5, but 8 bytes pushed...
     dim as integer ptr p = va_first()
     CU_ASSERT( *p = &hFF006622 )
 end sub
 
-sub testVaFirstBehindAlignedParams cdecl ()
-    testVaFirstBehindByte(-1, &hAABBCCDD)
-    testVaFirstBehindShort(-1, &h44332211)
-    testVaFirstBehindUdt(type<T>(-1, -1), &hFF006622)
+type NonTrivialUDT
+	'' Huge field so that the param will be much bigger than an ANY PTR,
+	'' so if va_first() assumes passing BYVAL when it's actually BYREF,
+	'' we notice the difference, because then va_first() and thus the
+	'' va_arg() will be way off...
+	array(0 to 64-1) as integer
+	declare constructor( )
+	declare constructor( byref as NonTrivialUDT )
+	declare destructor( )
+end type
+
+constructor NonTrivialUDT( )
+end constructor
+
+constructor NonTrivialUDT( byref rhs as NonTrivialUDT )
+end constructor
+
+destructor NonTrivialUDT( )
+end destructor
+
+function hVaFirstBehindByvalNonTrivialUdt cdecl _
+	( _
+		byval x as NonTrivialUDT, _
+		... _
+	) as integer
+
+	dim arg as any ptr = any
+
+	arg = va_first( )
+	CU_ASSERT( va_arg( arg, integer ) = 123 )
+
+	arg = va_next( arg, integer )
+	CU_ASSERT( va_arg( arg, integer ) = 456 )
+
+	arg = va_next( arg, integer )
+	CU_ASSERT( va_arg( arg, integer ) = 789 )
+
+	function = 321
+end function
+
+sub testVaFirst cdecl( )
+	hVaFirstBehindByte( -1, &hAABBCCDD )
+	hVaFirstBehindShort( -1, &h44332211 )
+	hVaFirstBehindUdt( type<T>( -1, -1 ), &hFF006622 )
+
+	dim x as NonTrivialUDT
+	CU_ASSERT( hVaFirstBehindByvalNonTrivialUdt( x, 123, 456, 789 ) = 321 )
 end sub
 
-sub testVaNext cdecl(byval n as integer, ...)
+sub hVaNext cdecl( byval n as integer, ... )
 	#macro case_T(T) _
 	case sizeof(T)
 		CU_ASSERT_EQUAL(*cptr(T ptr, p), i)
@@ -154,25 +197,25 @@ sub testVaNext cdecl(byval n as integer, ...)
 	next
 end sub
 
-sub testVaNextArgs cdecl ()
-	testVaNext( 4, _
+sub testVaNext cdecl( )
+	hVaNext( 4, _
 		sizeof(byte), cbyte(1), _
 		sizeof(short), cshort(2), _
 		sizeof(integer), cint(3), _
 		sizeof(longint), clngint(4) )
 
-	testVaNext( 4, _
+	hVaNext( 4, _
 		sizeof(ulongint), culngint(1), _
 		sizeof(uinteger), cuint(2), _
 		sizeof(ushort), cushort(3), _
 		sizeof(ubyte), cubyte(4) )
 end sub
 
-sub ctor () constructor
-	fbcu.add_suite("fbc_tests.functions.var_args")
-	fbcu.add_test("test_1", @test_1)
-	fbcu.add_test("testVaFirstBehindAlignedParams", @testVaFirstBehindAlignedParams)
-	fbcu.add_test("testVaNextArgs", @testVaNextArgs)
+private sub ctor( ) constructor
+	fbcu.add_suite( "tests/functions/var_args" )
+	fbcu.add_test( "test_1", @test_1 )
+	fbcu.add_test( "va_first()", @testVaFirst )
+	fbcu.add_test( "va_next()", @testVaNext )
 end sub
 
 end namespace

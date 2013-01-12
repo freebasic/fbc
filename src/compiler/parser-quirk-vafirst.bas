@@ -63,7 +63,7 @@ function cVAFunct() as ASTNODE ptr
 
 		'' + FB_ROUNDLEN( paramlen( param ) )
 		function = astNewBOP( AST_OP_ADD, expr, _
-		                      astNewCONSTi( FB_ROUNDLEN( symbCalcParamLen( param->typ, param->subtype, param->param.mode ) ), _
+		                      astNewCONSTi( FB_ROUNDLEN( symbGetLen( param ) ), _
 		                                    FB_DATATYPE_UINT ) )
 	end if
 end function
