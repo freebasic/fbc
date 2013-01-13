@@ -96,10 +96,14 @@ private sub hParamError _
 	( _
 		byval proc as FBSYMBOL ptr, _
 		byval pid as zstring ptr, _
-		byval msgnum as FB_ERRMSG = FB_ERRMSG_ILLEGALPARAMSPECAT _
+		byval msgnum as FB_ERRMSG = FB_ERRMSG_ILLEGALPARAMSPECAT, _
+		byval delta as integer = 1 _
 	)
 
-	errReportParam( proc, symbGetProcParams( proc )+1, pid, msgnum )
+	'' (This can be called before or after adding the parameter, so "delta"
+	'' should be used to ensure we report the proper parameter index)
+
+	errReportParam( proc, symbGetProcParams( proc ) + delta, pid, msgnum )
 
 end sub
 
@@ -108,10 +112,13 @@ private sub hParamWarning _
 	( _
 		byval proc as FBSYMBOL ptr, _
 		byval pid as zstring ptr, _
-		byval msgnum as FB_ERRMSG _
+		byval msgnum as FB_ERRMSG, _
+		byval delta as integer = 1 _
 	)
 
-	errReportParamWarn( proc, symbGetProcParams( proc )+1, pid, msgnum )
+	'' (ditto)
+
+	errReportParamWarn( proc, symbGetProcParams( proc ) + delta, pid, msgnum )
 
 end sub
 
@@ -144,7 +151,7 @@ private function hOptionalExpr _
 
     '' don't allow references to local symbols
 	if( astFindLocalSymbol( expr ) <> NULL ) then
-		hParamError( proc, pid, FB_ERRMSG_INVALIDREFERENCETOLOCAL )
+		hParamError( proc, pid, FB_ERRMSG_INVALIDREFERENCETOLOCAL, 0 )
 		'' no error recovery, caller will take care
 		astDelTree( expr )
 		expr = NULL
@@ -450,7 +457,7 @@ private function hParamDecl _
 	if( isproto = FALSE ) then
 		if( symbGetLen( param ) > (FB_INTEGERSIZE * 4) ) then
 			if( fbPdCheckIsSet( FB_PDCHECK_PARAMSIZE ) ) then
-				hParamWarning( proc, id, FB_WARNINGMSG_PARAMSIZETOOBIG )
+				hParamWarning( proc, id, FB_WARNINGMSG_PARAMSIZETOOBIG, 0 )
 			end if
 		end if
 	end if
@@ -465,14 +472,14 @@ private function hParamDecl _
 				lexSkipToken( )
 				dontinit = TRUE
 			else
-				hParamError( proc, id )
+				hParamError( proc, id, , 0 )
 				'' error recovery: skip until next ',' or ')'
 				hSkipUntil( CHAR_COMMA )
 			end if
 		else
 			optexpr = hOptionalExpr( proc, id, param )
 			if( optexpr = NULL ) then
-				hParamError( proc, id )
+				hParamError( proc, id, , 0 )
 				'' error recovery: skip until next ',' or ')'
 				hSkipUntil( CHAR_COMMA )
 			end if
