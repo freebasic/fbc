@@ -1202,6 +1202,8 @@ end function
 function symbAddProcResult( byval proc as FBSYMBOL ptr ) as FBSYMBOL ptr
 	dim as FBARRAYDIM dTB(0) = any
 	dim as FBSYMBOL ptr res = any
+	dim as integer dtype = any
+	dim as const zstring ptr id = any
 
 	'' UDT on stack? No local result var needs to be added;
 	'' the hidden result param is used instead.
@@ -1209,10 +1211,18 @@ function symbAddProcResult( byval proc as FBSYMBOL ptr ) as FBSYMBOL ptr
 		return symbGetProcResult( proc )
 	end if
 
-	res = symbAddVarEx( @"fb$result", NULL, proc->typ, proc->subtype, 0, _
+	dtype = proc->typ
+
+	'' Returning byref? Then the implicit result var is actually a pointer.
+	if( symbProcReturnsByref( proc ) ) then
+		dtype = typeAddrOf( dtype )
+	end if
+
+	res = symbAddVarEx( @"fb$result", NULL, dtype, proc->subtype, 0, _
 	                    0, dTB(), FB_SYMBATTRIB_FUNCRESULT, FB_SYMBOPT_PRESERVECASE )
 
 	symbProcAllocExt( proc )
+
 	proc->proc.ext->res = res
 
 	'' clear up the result
