@@ -57,7 +57,19 @@ function cAssignFunctResult( byval is_return as integer ) as integer
 	parser.ctx_dtype = symbGetType( parser.currproc )
 
 	'' Expression
-	rhs = cExpression( )
+	if( symbProcReturnsByref( parser.currproc ) ) then
+		'' BYREF return, must be able to do addrof on the expression
+		'' (this disallows expressions like constants, BOPs, @ UOP, ...)
+		rhs = cVarOrDeref( FB_VAREXPROPT_ISEXPR )
+
+		if( rhs ) then
+			'' Implicit addrof due to BYREF
+			rhs = astNewADDROF( rhs )
+		end if
+	else
+		rhs = cExpression( )
+	end if
+
 	if( rhs = NULL ) then
 		parser.ctxsym    = NULL
 		parser.ctx_dtype = FB_DATATYPE_INVALID
