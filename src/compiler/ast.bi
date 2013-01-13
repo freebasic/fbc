@@ -1246,6 +1246,10 @@ declare function astGetOFFSETChildOfs _
 
 declare function astIsCALLReturnInReg( byval expr as ASTNODE ptr ) as integer
 declare function astGetCALLResUDT(byval expr as ASTNODE ptr) as ASTNODE ptr
+declare function astBuildByrefResultDeref _
+	( _
+		byval callexpr as ASTNODE ptr _
+	) as ASTNODE ptr
 
 declare sub astGosubAddInit( byval proc as FBSYMBOL ptr )
 

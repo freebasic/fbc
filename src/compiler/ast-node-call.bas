@@ -218,12 +218,9 @@ function astLoadCALL( byval n as ASTNODE ptr ) as IRVREG ptr
 	dtype = astGetDataType( n )
 	subtype = n->subtype
 
-	'' Returning BYREF? Use the real type
-	if( symbProcReturnsByref( proc ) ) then
-		dtype = symbGetProcRealType( proc )
-		'' It will really be a pointer; subtype can stay the same
-		assert( dtype = typeAddrOf( symbGetType( proc ) ) )
-	end if
+	'' Returning BYREF? The type should already have been remapped,
+	'' using astBuildByrefResultDeref()
+	assert( iif( symbProcReturnsByref( proc ), dtype = symbGetProcRealType( proc ), TRUE ) )
 
 	select case( dtype )
 	'' returning a string? it's actually a pointer to a string descriptor
@@ -385,7 +382,6 @@ function astIsCALLReturnInReg( byval expr as ASTNODE ptr ) as integer
 	end if
 end function
 
-'':::::
 function astGetCALLResUDT(byval expr as ASTNODE ptr) as ASTNODE ptr
 	var subtype = astGetSubtype( expr )
 
@@ -402,4 +398,20 @@ function astGetCALLResUDT(byval expr as ASTNODE ptr) as ASTNODE ptr
 		'' returning result in a hidden arg
 		function = astBuildCallHiddenResVar( expr )
 	end if
+end function
+
+function astBuildByrefResultDeref _
+	( _
+		byval callexpr as ASTNODE ptr _
+	) as ASTNODE ptr
+
+	assert( astIsCALL( callexpr ) and symbIsProc( callexpr->sym ) )
+
+	'' Do an implicit DEREF with the function's type, and then
+	'' remap the CALL node's type to the pointer, so the AST is
+	'' consistent even if that DEREF gets optimized out.
+	astSetType( callexpr, symbGetProcRealType( callexpr->sym ), symbGetSubtype( callexpr->sym ) )
+	callexpr = astNewDEREF( callexpr )
+
+	function = callexpr
 end function

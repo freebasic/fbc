@@ -359,6 +359,7 @@ sub hBuildByrefArg _
 
 	arg = astNewADDROF( arg )
 	arg = astNewCONV( typeAddrOf( symbGetFullType( param ) ), symbGetSubtype( param ), arg )
+	assert( arg )
 
 	n->l = arg
 	n->arg.mode = FB_PARAMMODE_BYVAL
