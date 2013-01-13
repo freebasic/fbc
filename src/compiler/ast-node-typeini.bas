@@ -1097,6 +1097,7 @@ function astTypeIniClone _
 
 	dim as ASTNODE ptr clone_tree = astCloneTree( tree )
 
+	assert( astIsTYPEINI( clone_tree ) )
 	clone_tree->typeini.scp = NULL
 
 	hRelinkTemps( tree, clone_tree )

@@ -134,27 +134,10 @@ private function hOptionalExpr _
     	end if
     end if
 
-	select case as const( symbGetType( param ) )
-    '' UDT? let SymbolInit() build a tree..
-    case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-		expr = cInitializer( param, FB_INIOPT_ISINI )
-    	if( expr = NULL ) then
-    		exit function
-    	end if
-
-    '' anything else..
-	case else
-		expr = cExpression( )
-		if( expr = NULL ) then
-			exit function
-		end if
-
-		'' check for invalid types
-		if( astCheckASSIGNToType( symbGetType( param ), symbGetSubtype( param ), expr ) = FALSE ) then
-			exit function
-		end if
-
-    end select
+	expr = cInitializer( param, FB_INIOPT_ISINI )
+	if( expr = NULL ) then
+		exit function
+	end if
 
 	'' remove the temps from the dtors list if any was added
 	astDtorListClear( )

@@ -1044,17 +1044,16 @@ private function hCreateOptArg _
 	end if
 
 	'' make a clone
+	'' Note: Cannot assume TYPEINI here, because of RTL functions with
+	'' other initializer expressions
 	if( astIsTYPEINI( tree ) ) then
 		tree = astTypeIniClone( tree )
 	else
 		tree = astCloneTree( tree )
 	end if
 
-	'' UDT?
-	if( symbGetType( param ) = FB_DATATYPE_STRUCT ) then
-		'' update the counters
-		astTypeIniUpdCnt( tree )
-	end if
+	'' update the counters
+	astTypeIniUpdCnt( tree )
 
 	function = tree
 

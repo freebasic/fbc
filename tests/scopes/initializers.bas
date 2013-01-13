@@ -103,6 +103,28 @@ namespace paramUdtByval
 	#undef PARAM_MODE
 end namespace
 
+namespace paramIntByref
+	#define PARAM_MODE byref
+	#include "initializers-param-int.bi"
+	#undef PARAM_MODE
+end namespace
+
+namespace paramIntByval
+	#define PARAM_MODE byval
+	#include "initializers-param-int.bi"
+	#undef PARAM_MODE
+end namespace
+
+namespace paramStrings
+	namespace byrefLiteral
+		sub tester( byref s as string = "abc" )
+			CU_ASSERT( s = "abc" )
+		end sub
+
+		hScopeChecks( tester( ) )
+	end namespace
+end namespace
+
 private sub ctor( ) constructor
 	fbcu.add_suite( "tests/scopes/initializers" )
 
@@ -137,6 +159,32 @@ private sub ctor( ) constructor
 	fbcu.add_test( "213", @paramUdtByval.ctors3                       .test )
 	fbcu.add_test( "214", @paramUdtByval.ctors4                       .test )
 	fbcu.add_test( "215", @paramUdtByval.ctors5                       .test )
+
+	fbcu.add_test( "301", @paramIntByref.constant                     .test )
+	fbcu.add_test( "302", @paramIntByref.iif_                         .test )
+	fbcu.add_test( "303", @paramIntByref.callArgBigResultUdtToByref   .test )
+	fbcu.add_test( "304", @paramIntByref.callArgBigResultUdtToByval   .test )
+	fbcu.add_test( "305", @paramIntByref.callArgByvalNonTrivialUDT    .test )
+	fbcu.add_test( "306", @paramIntByref.callArgBydesc                .test )
+	fbcu.add_test( "307", @paramIntByref.callArgStringLiteral         .test )
+	fbcu.add_test( "308", @paramIntByref.callArgIntResultInRegsToByref.test )
+	fbcu.add_test( "309", @paramIntByref.callArgUdtResultInRegsToByref.test )
+	fbcu.add_test( "310", @paramIntByref.ptrchk                       .test )
+	fbcu.add_test( "311", @paramIntByref.boundchk                     .test )
+
+	fbcu.add_test( "401", @paramIntByref.constant                     .test )
+	fbcu.add_test( "402", @paramIntByref.iif_                         .test )
+	fbcu.add_test( "403", @paramIntByref.callArgBigResultUdtToByref   .test )
+	fbcu.add_test( "404", @paramIntByref.callArgBigResultUdtToByval   .test )
+	fbcu.add_test( "405", @paramIntByref.callArgByvalNonTrivialUDT    .test )
+	fbcu.add_test( "406", @paramIntByref.callArgBydesc                .test )
+	fbcu.add_test( "407", @paramIntByref.callArgStringLiteral         .test )
+	fbcu.add_test( "408", @paramIntByref.callArgIntResultInRegsToByref.test )
+	fbcu.add_test( "409", @paramIntByref.callArgUdtResultInRegsToByref.test )
+	fbcu.add_test( "410", @paramIntByref.ptrchk                       .test )
+	fbcu.add_test( "411", @paramIntByref.boundchk                     .test )
+
+	fbcu.add_test( "strings", @paramStrings.byrefLiteral              .test )
 end sub
 
 end namespace
