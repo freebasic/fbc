@@ -969,50 +969,52 @@ function astTypeIniIsConst _
 
 end function
 
-'':::::
-function astTypeIniCheckScope _
+function astTypeIniUsesLocals _
 	( _
-		byval n as ASTNODE ptr _
+		byval n as ASTNODE ptr, _
+		byval ignoreattrib as integer _
 	) as integer
 
-	dim as FBSYMBOL ptr sym = any
-
-	function = FALSE
-
-	if( n <> NULL ) then
-
-    	select case n->class
-		case AST_NODECLASS_VAR, AST_NODECLASS_CONST
-
-			sym = astGetSymbol( n )
-			if( sym <> NULL ) then
-
-				if( ((symbGetAttrib( sym ) and (FB_SYMBATTRIB_SHARED or _
-				 						   FB_SYMBATTRIB_COMMON or _
-				 						   FB_SYMBATTRIB_STATIC or _
-										   FB_SYMBATTRIB_DESCRIPTOR or _
-				 						   FB_SYMBATTRIB_TEMP)) = 0) ) then
-					return TRUE
-				end if
-
-			end if
-
-		end select
-
-		if( n->l <> NULL ) then
-			if( astTypeIniCheckScope( n->l ) ) then
-				return TRUE
-			end if
-		end if
-
-		if( n->r <> NULL ) then
-			if( astTypeIniCheckScope( n->r ) ) then
-				return TRUE
-			end if
-		end if
-
+	if( n = NULL ) then
+		return FALSE
 	end if
 
+	#if __FB_DEBUG__
+		static as integer reclevel
+		if( reclevel = 0 ) then
+			assert( astIsTYPEINI( n ) )
+		end if
+	#endif
+
+	'' Some TYPEINI expressions (like param/field initializers) can not
+	'' reference local vars because they may be duplicated into other scope
+	'' contexts, where those locals do not exist.
+	''
+	'' Temp vars/descriptors however can be allowed, because they're
+	'' handled by the TYPEINI's implicit scope.
+	'' Local STATICs can be allowed too, because they're not allocated on
+	'' stack but instead as globals.
+	''
+	'' ignoreattrib = these attributes a LOCAL must have to be ignored here
+
+	if( astIsVAR( n ) ) then
+		if( symbIsLocal( n->sym ) and _
+		    ((symbGetAttrib( n->sym ) and ignoreattrib) = 0) ) then
+			return TRUE
+		end if
+	end if
+
+	#if __FB_DEBUG__
+		reclevel += 1
+	#endif
+
+	'' walk
+	function = astTypeIniUsesLocals( n->l, ignoreattrib ) or _
+	           astTypeIniUsesLocals( n->r, ignoreattrib )
+
+	#if __FB_DEBUG__
+		reclevel -= 1
+	#endif
 end function
 
 private function hWalk _

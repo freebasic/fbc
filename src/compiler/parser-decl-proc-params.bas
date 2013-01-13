@@ -149,8 +149,8 @@ private function hOptionalExpr _
 	'' remove the temps from the dtors list if any was added
 	astDtorListClear( )
 
-    '' don't allow references to local symbols
-	if( astFindLocalSymbol( expr ) <> NULL ) then
+	'' Disallow references to local vars, except for temp vars/descriptors
+	if( astTypeIniUsesLocals( expr, FB_SYMBATTRIB_TEMP or FB_SYMBATTRIB_DESCRIPTOR ) ) then
 		hParamError( proc, pid, FB_ERRMSG_INVALIDREFERENCETOLOCAL, 0 )
 		'' no error recovery, caller will take care
 		astDelTree( expr )

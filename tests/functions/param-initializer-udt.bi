@@ -1,6 +1,34 @@
 '' UDT params (because they are/were treated differently than non-UDT params
 '' by the initializer expression parser)
 
+namespace anon
+	sub tester( PARAM_MODE x as UDT = type<UDT>( 123 ) )
+		CU_ASSERT( x.i = 123 )
+	end sub
+
+	hScopeChecks( tester( ) )
+end namespace
+
+namespace global
+	dim shared globalx as UDT = ( 123 )
+
+	sub tester( PARAM_MODE x as UDT = globalx )
+		CU_ASSERT( x.i = 123 )
+	end sub
+
+	hScopeChecks( tester( ) )
+end namespace
+
+namespace addrofGlobal
+	dim shared globalx as UDT = ( 456 )
+
+	sub tester( PARAM_MODE px as UDT ptr = @globalx )
+		CU_ASSERT( px->i = 456 )
+	end sub
+
+	hScopeChecks( tester( ) )
+end namespace
+
 namespace callResultUdt
 	'' UDT result temp var (function returns result on stack)
 
@@ -60,7 +88,7 @@ namespace callArgByvalNonTrivialUDT
 	hScopeChecks( tester( ) )
 end namespace
 
-namespace callArgBydesc
+namespace callArgBydescStatic
 	'' temp array descriptor when passing static array BYDESC
 	dim shared as integer globalarray(0 to 3) = { 1, 2, 3, 4 }
 
@@ -70,6 +98,26 @@ namespace callArgBydesc
 
 	sub tester( PARAM_MODE x as UDT = f( globalarray() ) )
 		CU_ASSERT( x.i = 4 )
+	end sub
+
+	hScopeChecks( tester( ) )
+end namespace
+
+namespace callArgBydescField
+	'' temp array descriptor when passing field array BYDESC
+
+	type ArrayFieldUDT
+		array(0 to 3) as integer
+	end type
+
+	dim shared as ArrayFieldUDT global1 = ( { 123, 456, 789, 321 } )
+
+	function f( array() as integer ) as UDT
+		function = type( array(2) )
+	end function
+
+	sub tester( PARAM_MODE x as UDT = f( global1.array() ) )
+		CU_ASSERT( x.i = 789 )
 	end sub
 
 	hScopeChecks( tester( ) )
@@ -359,6 +407,29 @@ namespace ctors5
 
 	sub tester( PARAM_MODE x as UDT = f( ) )
 		CU_ASSERT( x.dummy = 123 )
+	end sub
+
+	hScopeChecks( tester( ) )
+end namespace
+
+namespace ctorTempArrayDesc
+	type BydescCtorUDT
+		declare constructor( array() as integer )
+		dummy as integer
+	end type
+	 
+	constructor BydescCtorUDT( array() as integer )
+		this.dummy = array(3)
+	end constructor
+	 
+	type ArrayFieldUDT
+		array(0 to 3) as integer
+	end type
+
+	dim shared as ArrayFieldUDT global1 = ( { 123, 456, 789, 321 } )
+
+	sub tester( PARAM_MODE x as BydescCtorUDT = BydescCtorUDT( global1.array() ) )
+		CU_ASSERT( x.dummy = 321 )
 	end sub
 
 	hScopeChecks( tester( ) )

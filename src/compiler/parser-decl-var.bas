@@ -924,8 +924,10 @@ private function hVarInit _
 			end if
 		'' if it is an object, don't allow local references
 		else
-			if( astTypeIniCheckScope( initree ) = TRUE ) then
-				errReport( FB_ERRMSG_INVALIDINITIALIZER )
+			if( astTypeIniUsesLocals( initree, FB_SYMBATTRIB_TEMP or _
+							FB_SYMBATTRIB_STATIC or _
+							FB_SYMBATTRIB_DESCRIPTOR ) ) then
+				errReport( FB_ERRMSG_INVALIDREFERENCETOLOCAL )
 				'' error recovery: discard the tree
 				astDelTree( initree )
 				initree = NULL

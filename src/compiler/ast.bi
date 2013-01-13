@@ -988,9 +988,10 @@ declare function astTypeIniIsConst _
 		byval tree as ASTNODE ptr _
 	) as integer
 
-declare function astTypeIniCheckScope _
+declare function astTypeIniUsesLocals _
 	( _
-		byval tree as ASTNODE ptr _
+		byval n as ASTNODE ptr, _
+		byval ignoreattrib as integer _
 	) as integer
 
 declare function astTypeIniUpdate _
@@ -1245,11 +1246,6 @@ declare function astGetOFFSETChildOfs _
 
 declare function astIsCALLReturnInReg( byval expr as ASTNODE ptr ) as integer
 declare function astGetCALLResUDT(byval expr as ASTNODE ptr) as ASTNODE ptr
-
-declare function astFindLocalSymbol _
-	( _
-		byval n as ASTNODE ptr _
-	) as FBSYMBOL ptr
 
 declare sub astGosubAddInit( byval proc as FBSYMBOL ptr )
 

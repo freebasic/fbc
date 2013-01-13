@@ -8,10 +8,42 @@ namespace constant
 	hScopeChecks( tester( ) )
 end namespace
 
+namespace global
+	dim shared globali as integer = 456
+
+	sub tester( PARAM_MODE i as integer = globali )
+		CU_ASSERT( i = 456 )
+	end sub
+
+	hScopeChecks( tester( ) )
+end namespace
+
 namespace iif_
 	'' iif() temp var
 	sub tester( PARAM_MODE i as integer = iif( cond, 1, 2 ) )
 		CU_ASSERT( i = 2 )
+	end sub
+
+	hScopeChecks( tester( ) )
+end namespace
+
+namespace intResult
+	function f( ) as integer
+		function = 123
+	end function
+
+	sub tester( PARAM_MODE i as integer = f( ) )
+		CU_ASSERT( i = 123 )
+	end sub
+
+	hScopeChecks( tester( ) )
+end namespace
+
+namespace addrofGlobal
+	dim shared globali as integer = 456
+
+	sub tester( PARAM_MODE pi as integer ptr = @globali )
+		CU_ASSERT( *pi = 456 )
 	end sub
 
 	hScopeChecks( tester( ) )
@@ -72,7 +104,7 @@ namespace callArgByvalNonTrivialUDT
 	hScopeChecks( tester( ) )
 end namespace
 
-namespace callArgBydesc
+namespace callArgBydescStatic
 	'' temp array descriptor when passing static array BYDESC
 	dim shared as integer globalarray(0 to 3) = { 1, 2, 3, 4 }
 
@@ -82,6 +114,26 @@ namespace callArgBydesc
 
 	sub tester( PARAM_MODE i as integer = f( globalarray() ) )
 		CU_ASSERT( i = 4 )
+	end sub
+
+	hScopeChecks( tester( ) )
+end namespace
+
+namespace callArgBydescField
+	'' temp array descriptor when passing field array BYDESC
+
+	type ArrayFieldUDT
+		array(0 to 3) as integer
+	end type
+
+	dim shared as ArrayFieldUDT global1 = ( { 123, 456, 789, 321 } )
+
+	function f( array() as integer ) as integer
+		function = array(2)
+	end function
+
+	sub tester( PARAM_MODE i as integer = f( global1.array() ) )
+		CU_ASSERT( i = 789 )
 	end sub
 
 	hScopeChecks( tester( ) )
