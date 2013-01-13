@@ -115,6 +115,16 @@ function cFunctionCall _
 		return astNewCONSTi( 0 )
 	end if
 
+	'' Function returns BYREF?
+	if( symbProcReturnsByref( sym ) ) then
+		'' Do an implicit DEREF with the function's type
+		'' Note: currently the CALL node will use the same type,
+		'' astLoadCALL() has special handling instead though.
+		assert( symbGetFullType( sym ) = astGetFullType( funcexpr ) )
+		assert( symbGetSubtype ( sym ) = astGetSubtype ( funcexpr ) )
+		funcexpr = astNewDEREF( funcexpr, astGetFullType( funcexpr ), astGetSubtype( funcexpr ) )
+	end if
+
 	''
 	function = cStrIdxOrMemberDeref( funcexpr )
 

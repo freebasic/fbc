@@ -803,7 +803,11 @@ add_proc:
 		end if
 	end if
 
-	proc->proc.real_dtype = hGetProcRealType( dtype, subtype )
+	if( symbProcReturnsByref( proc ) ) then
+		proc->proc.real_dtype = typeAddrOf( symbGetType( proc ) )
+	else
+		proc->proc.real_dtype = hGetProcRealType( dtype, subtype )
+	end if
 
 	if( (options and FB_SYMBOPT_DECLARING) <> 0 ) then
 		stats or= FB_SYMBSTATS_DECLARED

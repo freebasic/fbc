@@ -92,10 +92,8 @@ o -exx should catch...
     - OPERATOR foo.() ( lb1, lb2, ..... ) AS TYPE -- array indexing, not functor
 
 o BYREF function results
-  - the real proctype will be a pointer
   - function result assignments:
       - disallow local vars
-  - caller must do an implicit astNewDEREF() after the astNewLOAD()
   - support "FUNCTION = BYVAL ptrexpr", like BYVAL args passed to BYREF params
 
 [ ] quirks:

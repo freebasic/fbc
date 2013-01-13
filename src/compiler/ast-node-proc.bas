@@ -774,6 +774,13 @@ private sub hLoadProcResult _
 	subtype = symbGetSubtype( proc )
     n = NULL
 
+	'' Returning BYREF? Use the real type
+	if( symbProcReturnsByref( proc ) ) then
+		dtype = symbGetProcRealType( proc )
+		'' It will really be a pointer; subtype can stay the same
+		assert( dtype = typeAddrOf( symbGetType( proc ) ) )
+	end if
+
 	select case typeGet( dtype )
 
 	'' if result is a string, a temp descriptor is needed, as the current one (on stack)

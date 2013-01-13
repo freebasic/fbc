@@ -218,6 +218,13 @@ function astLoadCALL( byval n as ASTNODE ptr ) as IRVREG ptr
 	dtype = astGetDataType( n )
 	subtype = n->subtype
 
+	'' Returning BYREF? Use the real type
+	if( symbProcReturnsByref( proc ) ) then
+		dtype = symbGetProcRealType( proc )
+		'' It will really be a pointer; subtype can stay the same
+		assert( dtype = typeAddrOf( symbGetType( proc ) ) )
+	end if
+
 	select case( dtype )
 	'' returning a string? it's actually a pointer to a string descriptor
 	case FB_DATATYPE_STRING, FB_DATATYPE_WCHAR
