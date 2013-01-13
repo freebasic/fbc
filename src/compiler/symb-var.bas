@@ -751,6 +751,7 @@ function symbCloneVar( byval sym as FBSYMBOL ptr ) as FBSYMBOL ptr
 		'' no need to dup desc.initree, it was flushed in newARG() and
 		'' should be fixed up with the new symbol in TypeIniFlush()
 	else
+		assert( symbIsTemp( sym ) )
 		function = symbAddTempVar( symbGetType( sym ), symbGetSubType( sym ), FALSE )
 	end if
 end function

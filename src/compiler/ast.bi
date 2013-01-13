@@ -697,7 +697,8 @@ declare function astReplaceARG _
 	( _
 		byval parent as ASTNODE ptr, _
 		byval argnum as integer, _
-		byval expr as ASTNODE ptr _
+		byval expr as ASTNODE ptr, _
+		byval mode as integer = INVALID _
 	) as ASTNODE ptr
 
 declare function astNewADDROF _
@@ -987,9 +988,10 @@ declare function astTypeIniIsConst _
 		byval tree as ASTNODE ptr _
 	) as integer
 
-declare function astTypeIniCheckScope _
+declare function astTypeIniUsesLocals _
 	( _
-		byval tree as ASTNODE ptr _
+		byval n as ASTNODE ptr, _
+		byval ignoreattrib as integer _
 	) as integer
 
 declare function astTypeIniUpdate _
@@ -1126,8 +1128,6 @@ declare function astBuildInstPtrAtOffset _
 		byval ofs as integer = 0 _
 	) as ASTNODE ptr
 
-declare function astBuildMockInstPtr( byval sym as FBSYMBOL ptr ) as ASTNODE ptr
-
 declare function astBuildVarDtorCall _
 	( _
 		byval s as FBSYMBOL ptr, _
@@ -1246,11 +1246,6 @@ declare function astGetOFFSETChildOfs _
 
 declare function astIsCALLReturnInReg( byval expr as ASTNODE ptr ) as integer
 declare function astGetCALLResUDT(byval expr as ASTNODE ptr) as ASTNODE ptr
-
-declare function astFindLocalSymbol _
-	( _
-		byval n as ASTNODE ptr _
-	) as FBSYMBOL ptr
 
 declare sub astGosubAddInit( byval proc as FBSYMBOL ptr )
 

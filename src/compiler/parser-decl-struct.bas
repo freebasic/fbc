@@ -217,9 +217,8 @@ private sub hFieldInit( byval parent as FBSYMBOL ptr, byval sym as FBSYMBOL ptr 
 
 	dim as ASTNODE ptr initree = cInitializer( sym, FB_INIOPT_ISINI )
 	if( initree ) then
-		'' don't allow references to local symbols
-		dim as FBSYMBOL ptr s = astFindLocalSymbol( initree )
-		if( s <> NULL ) then
+		'' Disallow references to local vars, except for temp vars/descriptors
+		if( astTypeIniUsesLocals( initree, FB_SYMBATTRIB_TEMP or FB_SYMBATTRIB_DESCRIPTOR ) ) then
 			errReport( FB_ERRMSG_INVALIDREFERENCETOLOCAL, TRUE )
 			'' error recovery
 			astDelTree( initree )

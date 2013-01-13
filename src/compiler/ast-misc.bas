@@ -367,41 +367,6 @@ sub astReplaceSymbolOnTree _
 
 end sub
 
-''::::
-function astFindLocalSymbol _
-	( _
-		byval n as ASTNODE ptr _
-	) as FBSYMBOL ptr
-
-	if( n = NULL ) then
-		return NULL
-	end if
-
-	if( n->sym <> NULL ) then
-		if( symbIsLocal( n->sym ) ) then
-			'' temps will be moved to global in typeIni()
-			if( symbIsTemp( n->sym ) = FALSE ) then
-				return n->sym
-			end if
-		end if
-	end if
-
-	'' walk
-	if( n->l <> NULL ) then
-		dim as FBSYMBOL ptr s = astFindLocalSymbol( n->l )
-		if( s <> NULL ) then
-			return s
-		end if
-	end if
-
-	if( n->r <> NULL ) then
-		function = astFindLocalSymbol( n->r )
-	else
-		function = NULL
-	end if
-
-end function
-
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' const helpers
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
