@@ -68,7 +68,15 @@ sub symbProcFreeExt( byval proc as FBSYMBOL ptr )
 end sub
 
 function symbProcReturnsUdtOnStack( byval proc as FBSYMBOL ptr ) as integer
+	'' BYREF result never is on stack
+	if( symbProcReturnsByref( proc ) ) then
+		exit function
+	end if
+
+	'' UDT result?
 	if( symbGetType( proc ) = FB_DATATYPE_STRUCT ) then
+		'' Real type is an UDT pointer (instead of INTEGER/LONGINT)?
+		'' Then it's returned on stack (instead of in registers)
 		function = (typeGetDtAndPtrOnly( symbGetProcRealType( proc ) ) = typeAddrOf( FB_DATATYPE_STRUCT ))
 	end if
 end function
