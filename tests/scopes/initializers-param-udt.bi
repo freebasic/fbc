@@ -337,3 +337,29 @@ namespace ctors4
 	dim shared p as UDT3 ptr
 	hScopeChecks( p = new UDT3 : CU_ASSERT( p->x2.x1.i = 321 ) : delete p : p = NULL )
 end namespace
+
+namespace ctors5
+	type UDT
+		dummy as integer
+		declare constructor( )
+		declare constructor( byref as UDT )
+	end type
+
+	constructor UDT( )
+		this.dummy = 123
+	end constructor
+
+	constructor UDT( byref rhs as UDT )
+		this.dummy = rhs.dummy
+	end constructor
+
+	function f( byval x as UDT = UDT( ) ) as UDT
+		function = x
+	end function
+
+	sub tester( PARAM_MODE x as UDT = f( ) )
+		CU_ASSERT( x.dummy = 123 )
+	end sub
+
+	hScopeChecks( tester( ) )
+end namespace

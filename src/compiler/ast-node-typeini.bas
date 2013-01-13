@@ -1045,7 +1045,13 @@ private function hWalk _
 			end if
 		end if
 
-		return astTypeIniFlush( n, sym, AST_INIOPT_NONE )
+		'' Turn this TYPEINI into real code
+		n = astTypeIniFlush( n, sym, AST_INIOPT_NONE )
+
+		'' Also update any nested TYPEINIs, for example this can be a
+		'' TYPEINI CTORCALL, which carries a CALL with ARGs that can
+		'' have TYPEINIs themselves.
+		return astTypeIniUpdate( n )
 	end if
 
 	'' walk
