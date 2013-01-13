@@ -151,7 +151,7 @@ enum FB_SYMBATTRIB
 	FB_SYMBATTRIB_TEMP			= &h00400000
     FB_SYMBATTRIB_DESCRIPTOR	= &h00800000
 	FB_SYMBATTRIB_FUNCRESULT	= &h01000000
-					''= &h02000000
+	FB_SYMBATTRIB_RETURNSBYREF	= &h02000000    '' procedures only
 	FB_SYMBATTRIB_VIS_PRIVATE	= &h04000000    '' UDT members only
 	FB_SYMBATTRIB_VIS_PROTECTED	= &h08000000    '' ditto
 	FB_SYMBATTRIB_NAKED         = &h10000000  '' procedures only
@@ -2323,6 +2323,8 @@ declare function symbGetUDTBaseLevel _
 #define symbGetIsOptional(s) ((s->attrib and FB_SYMBATTRIB_OPTIONAL) <> 0)
 
 #define symbIsLiteralConst(s) ((s->attrib and FB_SYMBATTRIB_LITCONST) <> 0)
+
+#define symbProcReturnsByref(s) ((s->attrib and FB_SYMBATTRIB_RETURNSBYREF) <> 0)
 
 #define symbIsNaked( s ) (((s)->attrib and FB_SYMBATTRIB_NAKED) <> 0)
 

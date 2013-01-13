@@ -560,6 +560,17 @@ private sub cOverrideAttribute( byval proc as FBSYMBOL ptr )
 	end if
 end sub
 
+private sub cByrefAttribute( byref attrib as integer, byval is_sub as integer )
+	'' BYREF?
+	if( lexGetToken( ) = FB_TK_BYREF ) then
+		if( is_sub ) then
+			errReport( FB_ERRMSG_SYNTAXERROR )
+		end if
+		lexSkipToken( )
+		attrib or= FB_SYMBATTRIB_RETURNSBYREF
+	end if
+end sub
+
 private sub hCheckAttrib _
 	( _
 		byref attrib as integer, _
@@ -961,7 +972,7 @@ end sub
 
 '' ProcHeader  =
 ''    ParentID? (ID|Operator)? CallConvention? OVERLOAD? (ALIAS LIT_STRING)?
-''    Parameters? (AS SymbolType)?
+''    Parameters? BYREF? (AS SymbolType)?
 ''    (CONSTRUCTOR|DESTRUCTOR)? Priority? STATIC? EXPORT?
 function cProcHeader _
 	( _
@@ -1268,6 +1279,9 @@ function cProcHeader _
 		if( astGetOpNoResult( op ) ) then
 			dtype = FB_DATATYPE_VOID
 		else
+			'' BYREF?
+			cByrefAttribute( attrib, FALSE )
+
 			'' AS SymbolType
 			if( lexGetToken( ) = FB_TK_AS ) then
 				cProcRetType( proc, dtype, subtype, lgt )
@@ -1295,12 +1309,21 @@ function cProcHeader _
 		hCheckOpOvlParams( parent, op, proc )
 
 	case FB_TK_PROPERTY
+		'' BYREF?
+		cByrefAttribute( attrib, FALSE )
+
 		'' (AS SymbolType)?
 		if( lexGetToken( ) = FB_TK_AS ) then
 			cProcRetType( proc, dtype, subtype, lgt )
 			is_indexed = (symbGetProcParams( proc ) = 1+1)
 			is_get = TRUE
 		else
+			'' found BYREF before?
+			if( attrib and FB_SYMBATTRIB_RETURNSBYREF ) then
+				errReport( FB_ERRMSG_EXPECTEDRESTYPE )
+				'' error recovery: remove BYREF attribute and treat as setter
+				attrib and= not FB_SYMBATTRIB_RETURNSBYREF
+			end if
 			dtype = FB_DATATYPE_VOID
 			is_indexed = (symbGetProcParams( proc ) = 1+2)
 		end if
@@ -1317,6 +1340,9 @@ function cProcHeader _
 				attrib or= FB_SYMBATTRIB_OVERLOADED
 			end if
 		end if
+
+		'' BYREF?
+		cByrefAttribute( attrib, (tk = FB_TK_SUB) )
 
 		'' (AS SymbolType)?
 		if( lexGetToken( ) = FB_TK_AS ) then

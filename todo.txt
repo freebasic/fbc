@@ -89,10 +89,21 @@ o -exx should catch...
 
 [ ] operator overloading:
     - add 'operator []' (or string-ish classes won't allow 'direct' char access)
-    - add support for functions returning references (reuse "BYREF") or the
-      '->' operator will be useless for UDT's with copy-ctors or dtors
-      as returning byval will make a deep copy
     - OPERATOR foo.() ( lb1, lb2, ..... ) AS TYPE -- array indexing, not functor
+
+o BYREF function results
+  - The real proctype will be a pointer
+  - There is no special handling as in UDTs returned on stack or in registers
+	- change symbProcReturnsUdtOnStack() to always return FALSE if symbProcReturnsByref()
+	- that will prevent a hidden param to be allocated/used
+	- don't allocate a result var if symbProcReturnsByref()
+  - Function result assignments do an implicit astNewADDROF(), like BYREF args
+	- disallow assignments local var accesses, since it's never safe to use a local var
+	- disallow assignments from constants, a temp var like with BYREF args cannot be used,
+	  since it would be a local
+  - caller must do an implicit astNewDEREF() after the astNewLOAD()
+	(can we DEREF on a LOAD?)
+  - support "FUNCTION = BYVAL ptrexpr", like BYVAL args passed to BYREF params
 
 [ ] quirks:
     [ ] OPEN ... FOR is not checking for mode
