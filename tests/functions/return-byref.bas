@@ -264,6 +264,25 @@ namespace toByrefParam
 	end sub
 end namespace
 
+namespace operators
+	type UDT
+		i as integer
+	end type
+
+	operator *( byref x as UDT ) byref as integer
+		operator = x.i
+	end operator
+
+	sub test cdecl( )
+		dim x as UDT = ( 123 )
+		CU_ASSERT( x.i = 123 )
+		CU_ASSERT( *x = 123 )
+		*x = 456
+		CU_ASSERT( x.i = 456 )
+		CU_ASSERT( *x = 456 )
+	end sub
+end namespace
+
 private sub ctor( ) constructor
 	fbcu.add_suite( "tests/functions/return-byref" )
 	fbcu.add_test( "returning globals", @returnGlobal.test )
@@ -277,6 +296,7 @@ private sub ctor( ) constructor
 	fbcu.add_test( "procptr", @returnProcptr.test )
 	fbcu.add_test( "byref result -> byval param", @toByvalParam.test )
 	fbcu.add_test( "byref result -> byref param", @toByrefParam.test )
+	fbcu.add_test( "operators", @operators.test )
 end sub
 
 end namespace
