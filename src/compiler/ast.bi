@@ -697,7 +697,8 @@ declare function astReplaceARG _
 	( _
 		byval parent as ASTNODE ptr, _
 		byval argnum as integer, _
-		byval expr as ASTNODE ptr _
+		byval expr as ASTNODE ptr, _
+		byval mode as integer = INVALID _
 	) as ASTNODE ptr
 
 declare function astNewADDROF _
@@ -1125,8 +1126,6 @@ declare function astBuildInstPtrAtOffset _
 		byval fld as FBSYMBOL ptr = NULL, _
 		byval ofs as integer = 0 _
 	) as ASTNODE ptr
-
-declare function astBuildMockInstPtr( byval sym as FBSYMBOL ptr ) as ASTNODE ptr
 
 declare function astBuildVarDtorCall _
 	( _

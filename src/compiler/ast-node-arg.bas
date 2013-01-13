@@ -1144,18 +1144,19 @@ function astNewARG _
 
 end function
 
-'':::::
 function astReplaceARG _
 	( _
 		byval parent as ASTNODE ptr, _
 		byval argnum as integer, _
-		byval expr as ASTNODE ptr _
+		byval expr as ASTNODE ptr, _
+		byval mode as integer _
 	) as ASTNODE ptr
 
 	dim as FBSYMBOL ptr sym = any, param = any
 	dim as integer cnt = any
 	dim as ASTNODE ptr n = any
 
+	assert( astIsCALL( parent ) )
 	sym = parent->sym
 
 	'' find the argument (assuming argnum is valid)
@@ -1177,10 +1178,11 @@ function astReplaceARG _
 		return NULL
 	end if
 
+	'' Delete the old argument expression
 	astDelTree( n->l )
 
 	n->l = expr
-	n->arg.mode = INVALID
+	n->arg.mode = mode
 	n->arg.lgt = 0
 
 	if( hCheckParam( parent, param, n ) = FALSE ) then
@@ -1188,5 +1190,4 @@ function astReplaceARG _
 	end if
 
 	function = n
-
 end function

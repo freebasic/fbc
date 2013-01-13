@@ -395,7 +395,11 @@ function astBuildCopyCtorCall _
 
 end function
 
-'':::::
+private function astFakeInstPtr( byval subtype as FBSYMBOL ptr ) as ASTNODE ptr
+	assert( symbIsStruct( subtype ) )
+	function = astNewCONSTi( 0, typeAddrOf( FB_DATATYPE_STRUCT ), subtype )
+end function
+
 function astPatchCtorCall _
 	( _
 		byval procexpr as ASTNODE ptr, _
@@ -407,16 +411,12 @@ function astPatchCtorCall _
 	assert( astIsCALL( procexpr ) )
 	assert( symbProcGetVtableIndex( procexpr->sym ) = 0 )
 
-	if( procexpr <> NULL ) then
-		'' replace the instance pointer
-		astReplaceARG( procexpr, 0, thisexpr )
-	end if
+	'' replace the instance pointer
+	astReplaceARG( procexpr, 0, thisexpr )
 
 	function = procexpr
-
 end function
 
-'':::::
 function astCALLCTORToCALL _
 	( _
 		byval n as ASTNODE ptr _
@@ -425,12 +425,19 @@ function astCALLCTORToCALL _
 	dim as FBSYMBOL ptr sym = any
 	dim as ASTNODE ptr procexpr = any
 
+	assert( astIsCALLCTOR( n ) )
+
 	sym = astGetSymbol( n->r )
 
 	'' the function call is in the left leaf
 	procexpr = n->l
 
-	'' remove right leaf
+	'' Update the CALL: Replace the old THIS ptr ARG with a NULL ptr (given
+	'' BYVAL to the BYREF THIS param), since the temp var will be deleted.
+	assert( symbGetType( sym ) = FB_DATATYPE_STRUCT )
+	astReplaceARG( procexpr, 0, astFakeInstPtr( symbGetSubtype( sym ) ), FB_PARAMMODE_BYVAL )
+
+	'' remove right leaf (the VAR access on the temp var)
 	astDelTree( n->r )
 
 	'' remove anon symbol
@@ -440,16 +447,15 @@ function astCALLCTORToCALL _
 		astDtorListDel( sym )
 	end if
 
+	'' Delete the temp var itself
 	symbDelSymbol( sym )
 
-	'' remove the node
+	'' remove the CALLCTOR node
 	astDelNode( n )
 
 	function = procexpr
-
 end function
 
-''::::
 function astBuildImplicitCtorCall _
 	( _
 		byval subtype as FBSYMBOL ptr, _
@@ -482,8 +488,9 @@ function astBuildImplicitCtorCall _
     '' build a ctor call
     dim as ASTNODE ptr procexpr = astNewCALL( proc )
 
-    '' push the mock instance ptr
-    astNewARG( procexpr, astBuildMockInstPtr( subtype ), , FB_PARAMMODE_BYVAL )
+	'' Use a fake THIS ptr for now,
+	'' a NULL ptr given BYVAL to the BYREF THIS param
+	astNewARG( procexpr, astFakeInstPtr( subtype ), , FB_PARAMMODE_BYVAL )
 
     astNewARG( procexpr, expr, , arg_mode )
 
@@ -654,10 +661,6 @@ function astBuildInstPtrAtOffset _
 
 	function = expr
 
-end function
-
-function astBuildMockInstPtr( byval sym as FBSYMBOL ptr ) as ASTNODE ptr
-	function = astNewCONSTi( 0, typeAddrOf( symbGetType( sym ) ), sym )
 end function
 
 ''
