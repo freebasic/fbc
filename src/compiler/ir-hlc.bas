@@ -357,7 +357,14 @@ private function hEmitProcHeader _
 	''
 	select case( symbGetProcMode( proc ) )
 	case FB_FUNCMODE_STDCALL, FB_FUNCMODE_STDCALL_MS, FB_FUNCMODE_PASCAL
-		ln += " __attribute__((stdcall))"
+		select case( env.clopt.target )
+		case FB_COMPTARGET_WIN32, FB_COMPTARGET_XBOX
+			'' MinGW recognizes this shorter & prettier version
+			ln += " __stdcall"
+		case else
+			'' Linux GCC only accepts this
+			ln += " __attribute__((stdcall))"
+		end select
 	end select
 
 	ln += " "
