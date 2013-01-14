@@ -12,6 +12,9 @@ namespace returnGlobal
 		function = b
 	end function
 
+	'' should work with DECLARE too
+	declare function f2( ) byref as integer
+
 	function f2( ) byref as integer
 		i = 34
 		function = i
@@ -264,6 +267,32 @@ namespace toByrefParam
 	end sub
 end namespace
 
+namespace properties
+	type UDT
+		i as integer
+		declare property f( ) byref as integer
+		declare property f( byval as integer )
+	end type
+
+	property UDT.f( ) byref as integer
+		return this.i
+	end property
+
+	property UDT.f( byval j as integer )
+		this.i = j
+	end property
+
+	sub test cdecl( )
+		dim x as UDT
+		x.i = 123
+		CU_ASSERT( x.f = 123 )
+		CU_ASSERT( @x.f = @x.i )
+		x.f = 124
+		CU_ASSERT( x.i = 124 )
+		CU_ASSERT( x.f = 124 )
+	end sub
+end namespace
+
 namespace operators
 	type UDT
 		i as integer
@@ -296,6 +325,7 @@ private sub ctor( ) constructor
 	fbcu.add_test( "procptr", @returnProcptr.test )
 	fbcu.add_test( "byref result -> byval param", @toByvalParam.test )
 	fbcu.add_test( "byref result -> byref param", @toByrefParam.test )
+	fbcu.add_test( "properties", @properties.test )
 	fbcu.add_test( "operators", @operators.test )
 end sub
 

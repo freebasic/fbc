@@ -92,8 +92,15 @@ o -exx should catch...
     - OPERATOR foo.() ( lb1, lb2, ..... ) AS TYPE -- array indexing, not functor
 
 o BYREF function results
-  - function result assignments:
-      - disallow local vars
+  - Disallow local/temp vars to be returned BYREF
+      - but still allow things like "globalarray(localindex)", so cannot
+        generally disallow trees referencing LOCALs
+      - also any CALLs can not be allowed unless they return BYREF themselves
+  - hPatchByvalResultToSelf() should probably check symbProcReturnsByref() now
+  - allow BYREF return of ABSTRACT UDTs
+  - allow BYREF results to be ignored
+  - allow BYREF AS Z|WSTRING as result type, just like parameters like that
+  - test BYREF result on procptrs, does cSymbolType() need to be updated to handle BYREF?
   - support "FUNCTION = BYVAL ptrexpr", like BYVAL args passed to BYREF params
 
 [ ] quirks:
