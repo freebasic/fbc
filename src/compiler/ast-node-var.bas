@@ -28,22 +28,6 @@ function astNewVAR _
 	function = n
 end function
 
-sub astBuildVAR _
-	( _
-		byval n as ASTNODE ptr, _
-		byval sym as FBSYMBOL ptr, _
-		byval ofs as integer, _
-		byval dtype as integer, _
-		byval subtype as FBSYMBOL ptr = NULL _
-	)
-
-	astInitNode( n, AST_NODECLASS_VAR, dtype, subtype )
-
-	n->sym = sym
-	n->var_.ofs = ofs
-
-end sub
-
 function astLoadVAR( byval n as ASTNODE ptr ) as IRVREG ptr
     dim as FBSYMBOL ptr s = any
     dim as integer ofs = any

@@ -629,15 +629,6 @@ declare function astNewVAR _
 		byval subtype as FBSYMBOL ptr = NULL _
 	) as ASTNODE ptr
 
-declare sub astBuildVAR _
-	( _
-		byval n as ASTNODE ptr, _
-		byval sym as FBSYMBOL ptr, _
-		byval ofs as integer, _
-		byval dtype as integer, _
-		byval subtype as FBSYMBOL ptr = NULL _
-	)
-
 declare function astNewIDX _
 	( _
 		byval v as ASTNODE ptr, _
