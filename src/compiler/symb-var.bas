@@ -480,37 +480,27 @@ function symbAddVar _
 
 end function
 
-'':::::
 function symbAddTempVar _
 	( _
 		byval dtype as integer, _
-		byval subtype as FBSYMBOL ptr, _
-		byval checkstatic as integer _
+		byval subtype as FBSYMBOL ptr _
 	) as FBSYMBOL ptr
 
-	static as zstring * FB_MAXNAMELEN+1 id
 	static as FBARRAYDIM dTB(0)
-	dim as integer attrib = any
 	dim as FB_SYMBOPT options = FB_SYMBOPT_NONE
-
-	'' With the unique id, creating the var should always succeed
-	id = *symbUniqueId( )
-
-	attrib = FB_SYMBATTRIB_TEMP
-	if( checkstatic ) then
-		if( fbIsModLevel( ) = FALSE ) then
-			if( symbGetProcStaticLocals( parser.currproc ) ) then
-				attrib or= FB_SYMBATTRIB_STATIC
-			end if
-		end if
-	end if
 
 	if( fbLangOptIsSet( FB_LANG_OPT_SCOPE ) = FALSE ) then
 		options or= FB_SYMBOPT_UNSCOPE
 	end if
 
-	function = symbAddVarEx( id, NULL, dtype, subtype, 0, 0, _
-	                         dTB(), attrib, options )
+	'' - Using a unique id, so creating the var should always succeed.
+	'' - Temp vars should never be made STATIC automatically, e.g. due to
+	''   symbGetProcStaticLocals(), because they are hidden to the user,
+	''   and making them STATIC could cause hidden bugs with recursion or
+	''   multi-threading.
+
+	function = symbAddVarEx( symbUniqueId( ), NULL, dtype, subtype, 0, 0, _
+	                         dTB(), FB_SYMBATTRIB_TEMP, options )
 end function
 
 function symbAddAndAllocateTempVar( byval dtype as integer ) as FBSYMBOL ptr
@@ -518,14 +508,9 @@ function symbAddAndAllocateTempVar( byval dtype as integer ) as FBSYMBOL ptr
 
 	s = symbAddTempVar( dtype )
 
-	'' Allocate as local unless it's static
-	'' (ASM backend assumption, under C backend statics are also allocated
-	''  locally, see also astScopeAllocLocals(), but the C backend doesn't
-	''  use this in the first place)
 	assert( env.clopt.backend = FB_BACKEND_GAS )
-	if( symbIsStatic( s ) = FALSE ) then
-		s->ofs = irProcAllocLocal( parser.currproc, s, s->lgt )
-	end if
+
+	s->ofs = irProcAllocLocal( parser.currproc, s, s->lgt )
 
 	function = s
 end function
@@ -752,7 +737,7 @@ function symbCloneVar( byval sym as FBSYMBOL ptr ) as FBSYMBOL ptr
 		'' should be fixed up with the new symbol in TypeIniFlush()
 	else
 		assert( symbIsTemp( sym ) )
-		function = symbAddTempVar( symbGetType( sym ), symbGetSubType( sym ), FALSE )
+		function = symbAddTempVar( symbGetType( sym ), symbGetSubType( sym ) )
 	end if
 end function
 

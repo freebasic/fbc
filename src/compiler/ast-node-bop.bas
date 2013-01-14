@@ -1596,13 +1596,10 @@ function astNewSelfBOP _
 
 	'' if there's a function call in lvalue, convert to tmp = @lvalue, *tmp = *tmp op rhs:
 	if( astIsClassOnTree( AST_NODECLASS_CALL, l ) ) then
-		dim as FBSYMBOL ptr tmp = any, subtype = any
-		dim as integer dtype = any
+		dim as FBSYMBOL ptr tmp = any
 		dim as ASTNODE ptr ll = any, lr = any
 
-		dtype = astGetFullType( l )
-		subtype = astGetSubType( l )
-		tmp = symbAddTempVar( typeAddrOf( dtype ), subtype, FALSE )
+		tmp = symbAddTempVar( typeAddrOf( astGetFullType( l ) ), astGetSubType( l ) )
 
 		'' tmp = @lvalue
 		ll = astNewASSIGN( astNewVAR( tmp ), astNewADDROF( l ) )

@@ -177,7 +177,7 @@ function cCtorCall _
 	dim as FB_CALL_ARG_LIST arg_list = ( 0, NULL, NULL )
 
 	'' alloc temp var
-	tmp = symbAddTempVar( symbGetType( sym ), sym, FALSE )
+	tmp = symbAddTempVar( symbGetType( sym ), sym )
 
 	'' '('?
 	if( lexGetToken( ) = CHAR_LPRNT ) then

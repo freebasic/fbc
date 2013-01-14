@@ -66,7 +66,7 @@ function astNewCALL _
 	'' Allocate temp struct result if needed
 	if( symbProcReturnsUdtOnStack( sym ) ) then
 		'' create a temp struct (can't be static, could be an object)
-		n->call.tmpres = symbAddTempVar( FB_DATATYPE_STRUCT, symbGetSubtype( sym ), FALSE )
+		n->call.tmpres = symbAddTempVar( FB_DATATYPE_STRUCT, symbGetSubtype( sym ) )
 
 		if( symbHasDtor( sym ) ) then
 			astDtorListAdd( n->call.tmpres )
@@ -388,7 +388,7 @@ function astGetCALLResUDT(byval expr as ASTNODE ptr) as ASTNODE ptr
 	    (typeIsPtr( symbGetUDTRetType( subtype ) ) = FALSE) ) then
 		'' move to a temp var
 		'' (note: if it's being returned in regs, there's no DTOR)
-		dim as FBSYMBOL ptr tmp = symbAddTempVar( FB_DATATYPE_STRUCT, subtype, FALSE )
+		dim as FBSYMBOL ptr tmp = symbAddTempVar( FB_DATATYPE_STRUCT, subtype )
 		expr = astNewASSIGN( astBuildVarField( tmp ), expr, AST_OPOPT_DONTCHKOPOVL )
 		function = astNewLINK( astBuildVarField( tmp ), expr )
 	else

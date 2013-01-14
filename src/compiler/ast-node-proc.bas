@@ -866,9 +866,9 @@ private function hCallCtorList _
 		elements = symbGetArrayElements( this_ )
 	end if
 
-	cnt = symbAddTempVar( FB_DATATYPE_INTEGER, NULL, FALSE )
+	cnt = symbAddTempVar( FB_DATATYPE_INTEGER )
 	label = symbAddLabel( NULL )
-	iter = symbAddTempVar( typeAddrOf( dtype ), subtype, FALSE )
+	iter = symbAddTempVar( typeAddrOf( dtype ), subtype )
 
 	'' Instance?
 	if( fld <> NULL ) then

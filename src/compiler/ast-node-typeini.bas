@@ -427,9 +427,9 @@ private function hCallCtorList _
 	if( elements > 1 ) then
 		dim as FBSYMBOL ptr cnt, label, iter
 
-		cnt = symbAddTempVar( FB_DATATYPE_INTEGER, NULL, FALSE )
+		cnt = symbAddTempVar( FB_DATATYPE_INTEGER )
 		label = symbAddLabel( NULL )
-		iter = symbAddTempVar( typeAddrOf( dtype ), subtype, FALSE )
+		iter = symbAddTempVar( typeAddrOf( dtype ), subtype )
 
 		flush_tree = astNewLINK( flush_tree, astBuildVarAssign( iter, astNewADDROF( fldexpr ) ) )
 
@@ -1033,7 +1033,7 @@ private function hWalk _
 	if( astIsTYPEINI( n ) ) then
 		'' Create a temporary variable which is initialized by the
 		'' astTypeIniFlush() below.
-		sym = symbAddTempVar( astGetFullType( n ), n->subtype, FALSE )
+		sym = symbAddTempVar( astGetFullType( n ), n->subtype )
 
 		'' Update the parent node in the original tree to access the
 		'' temporary variable, instead of the TYPEINI. (it could be an

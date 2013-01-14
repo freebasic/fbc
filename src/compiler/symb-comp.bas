@@ -294,7 +294,7 @@ private sub hAssignList _
 
 	subtype = symbGetSubtype( fld )
 
-    cnt = symbAddTempVar( FB_DATATYPE_INTEGER, NULL )
+	cnt = symbAddTempVar( FB_DATATYPE_INTEGER )
     label = symbAddLabel( NULL )
     dst = symbAddTempVar( typeAddrOf( symbGetType( fld ) ), subtype )
     src = symbAddTempVar( typeAddrOf( symbGetType( fld ) ), subtype )

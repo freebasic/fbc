@@ -192,7 +192,5 @@ function cAnonUDT( ) as ASTNODE ptr
 	end if
 
 	'' alloc temp var and then parse the rest as var initializer
-	function = cInitializer( symbAddTempVar( dtype, subtype, FALSE ), _
-	                         FB_INIOPT_NONE )
-
+	function = cInitializer( symbAddTempVar( dtype, subtype ), FB_INIOPT_NONE )
 end function

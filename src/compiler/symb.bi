@@ -1059,8 +1059,7 @@ declare function symbAddVarEx _
 declare function symbAddTempVar _
 	( _
 		byval dtype as integer, _
-		byval subtype as FBSYMBOL ptr = NULL, _
-		byval checkstatic as integer = TRUE _
+		byval subtype as FBSYMBOL ptr = NULL _
 	) as FBSYMBOL ptr
 
 declare function symbAddAndAllocateTempVar( byval dtype as integer ) as FBSYMBOL ptr

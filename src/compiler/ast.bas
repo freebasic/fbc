@@ -284,7 +284,7 @@ function astRemSideFx _
 	case FB_DATATYPE_STRUCT, _ ' FB_DATATYPE_CLASS
 		 FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
 
-		tmp = symbAddTempVar( typeAddrOf( dtype ), subtype, FALSE )
+		tmp = symbAddTempVar( typeAddrOf( dtype ), subtype )
 
 		'' tmp = @b
 		t = astNewASSIGN( astNewVAR( tmp ), astNewADDROF( n ) )
@@ -297,7 +297,7 @@ function astRemSideFx _
 
 	'' simple type..
 	case else
-		tmp = symbAddTempVar( dtype, subtype, FALSE )
+		tmp = symbAddTempVar( dtype, subtype )
 
 		'' tmp = n
 		t = astNewASSIGN( astNewVAR( tmp ), n )

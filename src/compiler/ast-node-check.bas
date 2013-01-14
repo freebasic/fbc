@@ -59,7 +59,7 @@ function astNewBOUNDCHK _
 
 	n->l = l
 
-	n->sym = symbAddTempVar( l->dtype, l->subtype, FALSE )
+	n->sym = symbAddTempVar( l->dtype, l->subtype )
 
     '' check must be done using a function because calling ErrorThrow
     '' would spill used regs only if it was called, causing wrong
@@ -151,7 +151,7 @@ function astNewPTRCHK _
 
 	n->l = l
 
-	n->sym = symbAddTempVar( dtype, subtype, FALSE )
+	n->sym = symbAddTempVar( dtype, subtype )
 
 	'' check must be done using a function, see bounds checking
 	n->r = rtlNullPtrCheck( astNewVAR( n->sym ), linenum, filename )

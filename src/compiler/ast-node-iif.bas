@@ -329,10 +329,10 @@ function astNewIIF _
 	if( typeGetDtAndPtrOnly( dtype ) = FB_DATATYPE_WCHAR ) then
 		hPrepareWstring( n, truexpr, falsexpr )
 	elseif( typeGetClass( dtype ) = FB_DATACLASS_STRING ) then
-		n->sym = symbAddTempVar( dtype, subtype, FALSE )
+		n->sym = symbAddTempVar( dtype, subtype )
 		hPrepareString( n, truexpr, falsexpr )
 	else
-		n->sym = symbAddTempVar( dtype, subtype, FALSE )
+		n->sym = symbAddTempVar( dtype, subtype )
 
 		'' assign true to temp
 		truexpr = astNewASSIGN( astNewVAR( n->sym ), truexpr )

@@ -76,7 +76,7 @@ private function hMakeRef _
 
 	'' var ref
 	var ref = symbAddTempVar( typeAddrOf( astGetFullType( expr ) ), _
-				astGetSubtype( expr ), FALSE )
+				astGetSubtype( expr ) )
 
 	'' ref = @expr
 	function = astNewLINK( t, _
@@ -204,7 +204,7 @@ function cSwapStmt() as integer
 		t = astNewLINK( t, astNewSTACK( AST_OP_POP, r ) )
 	else
 		'' var temp = clone( l )
-		var temp = symbAddTempVar( astGetFullType( l ), astGetSubtype( l ), FALSE )
+		var temp = symbAddTempVar( astGetFullType( l ), astGetSubtype( l ) )
 		t = astNewLINK( t, astNewASSIGN( astNewVAR( temp ), astCloneTree( l ) ) )
 
 		'' l = clone( r )

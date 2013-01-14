@@ -113,7 +113,7 @@ function cOperatorNew( ) as ASTNODE ptr
 	end if
 
 	'' temp pointer
-	tmp = symbAddTempVar( typeAddrOf( dtype ), subtype, FALSE )
+	tmp = symbAddTempVar( typeAddrOf( dtype ), subtype )
 
 	'' Constructor?
 	dim as ASTNODE ptr ctor_expr = NULL
