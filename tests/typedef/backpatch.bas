@@ -80,6 +80,7 @@ sub funcPtr cdecl ()
 
 end sub
 
+#if __FB_BACKEND__ = "gas"
 namespace byrefFwdrefParamLength
 	type UDT as FWDREF
 
@@ -111,6 +112,7 @@ namespace byrefFwdrefParamLength
 		CU_ASSERT( f1( x, 123, 456, 789 ) = 123 + 456 + 789 )
 	end sub
 end namespace
+#endif
 
 private sub ctor () constructor
 	fbcu.add_suite("fbc_tests.typedef.backpatch")
@@ -118,7 +120,9 @@ private sub ctor () constructor
 	fbcu.add_test("patchFwdrefWithFwdref2", @patchFwdrefWithFwdref2)
 	fbcu.add_test("preservePtrs", @preservePtrs)
 	fbcu.add_test("funcPtr", @funcPtr)
+#if __FB_BACKEND__ = "gas"
 	fbcu.add_test( "BYREF AS FWDREF param length", @byrefFwdrefParamLength.test )
+#endif
 end sub
 
 end namespace
