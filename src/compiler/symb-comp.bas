@@ -123,7 +123,7 @@ private sub hBuildRtti( byval udt as FBSYMBOL ptr )
 		'' rttibase = @(base's RTTI data) or NULL if there is no base
 		fld = symbUdtGetNextInitableField( fld )
 		if( udt->udt.base ) then
-			rttibase = astNewADDROF( astNewVAR( udt->udt.base->subtype->udt.ext->rtti, , FB_DATATYPE_INTEGER ) )
+			rttibase = astNewADDROF( astNewVAR( udt->udt.base->subtype->udt.ext->rtti ) )
 		else
 			rttibase = astNewCONSTi( 0, typeAddrOf( FB_DATATYPE_VOID ) )
 		end if

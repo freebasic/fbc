@@ -357,7 +357,7 @@ function rtlDataRestore _
 		sym = astDataStmtAdd( label, 0 )
 	end if
 
-	if( astNewARG( proc, astNewADDROF( astNewVAR( sym, , FB_DATATYPE_BYTE ) ) ) = NULL ) then
+	if( astNewARG( proc, astNewADDROF( astNewVAR( sym ) ) ) = NULL ) then
 		exit function
 	end if
 
