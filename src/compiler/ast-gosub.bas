@@ -118,7 +118,7 @@ sub astGosubAddJumpPtr _
 		astAdd( astBuildVarInc( symbGetProcGosubSym( proc ), 1 ) )
 
 		astAdd( astNewSTACK( AST_OP_PUSH, _
-				astNewADDROF( astNewVAR( exitlabel, , FB_DATATYPE_INTEGER ) ) ) )
+				astNewADDROF( astNewVAR( exitlabel ) ) ) )
 
 		'' goto table[expr]
 		astAdd( jumptb )

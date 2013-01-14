@@ -206,7 +206,7 @@ function cOnStmt _
 
 			lexSkipToken( )
 
-			expr = astNewADDROF( astNewVAR( label, 0, FB_DATATYPE_UINT ) )
+			expr = astNewADDROF( astNewVAR( label ) )
 			rtlErrorSetHandler( expr, (islocal = TRUE) )
 
 		else

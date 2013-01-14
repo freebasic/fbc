@@ -9,14 +9,23 @@ function astNewVAR _
 		byval sym as FBSYMBOL ptr, _
 		byval ofs as integer, _
 		byval dtype as integer, _
-		byval subtype as FBSYMBOL ptr = NULL _
+		byval subtype as FBSYMBOL ptr _
 	) as ASTNODE ptr
 
     dim as ASTNODE ptr n = any
 
 	if( dtype = FB_DATATYPE_INVALID ) then
-		dtype = symbGetFullType( sym )
-		subtype = symbGetSubtype( sym )
+		select case( symbGetClass( sym ) )
+		case FB_SYMBCLASS_LABEL
+			dtype = FB_DATATYPE_VOID
+			subtype = NULL
+		case FB_SYMBCLASS_PROC
+			dtype = FB_DATATYPE_FUNCTION
+			subtype = sym
+		case else
+			dtype = symbGetFullType( sym )
+			subtype = symbGetSubtype( sym )
+		end select
 	end if
 
 	'' alloc new node

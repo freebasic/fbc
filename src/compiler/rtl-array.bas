@@ -321,7 +321,7 @@ private function hBuildProcPtr(byval proc as FBSYMBOL ptr) as ASTNODE ptr
 	if( proc = NULL ) then
 		return astNewCONSTi( 0 )
 	end if
-	function = astBuildProcAddrof(proc)
+	function = astBuildProcAddrof( proc )
 end function
 
 private sub hCheckDefCtor _

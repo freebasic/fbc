@@ -1661,7 +1661,7 @@ private function hGetPutter _
 		proc = PROCLOOKUP( GFXPUTCUSTOM )
 	end select
 
-	function = astBuildProcAddrof(proc)
+	function = astBuildProcAddrof( proc )
 end function
 
 '':::::

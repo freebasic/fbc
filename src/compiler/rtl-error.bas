@@ -306,7 +306,7 @@ function rtlErrorCheck(byval resexpr as ASTNODE ptr) as integer
 
 	'' reslabel
 	if( reslabel <> NULL ) then
-		param = astNewADDROF( astNewVAR( reslabel, 0, FB_DATATYPE_BYTE ) )
+		param = astNewADDROF( astNewVAR( reslabel ) )
 	else
 		param = astNewCONSTi( NULL, FB_DATATYPE_UINT )
 	end if
@@ -316,7 +316,7 @@ function rtlErrorCheck(byval resexpr as ASTNODE ptr) as integer
 
 	'' resnxtlabel
 	if( env.clopt.resumeerr ) then
-		param = astNewADDROF( astNewVAR( nxtlabel, 0, FB_DATATYPE_BYTE ) )
+		param = astNewADDROF( astNewVAR( nxtlabel ) )
 	else
 		param = astNewCONSTi( NULL, FB_DATATYPE_UINT )
 	end if
@@ -378,7 +378,7 @@ sub rtlErrorThrow _
 
 	'' reslabel
 	if( env.clopt.resumeerr ) then
-		param = astNewADDROF( astNewVAR( reslabel, 0, FB_DATATYPE_BYTE ) )
+		param = astNewADDROF( astNewVAR( reslabel ) )
 	else
 		param = astNewCONSTi( NULL, FB_DATATYPE_UINT )
 	end if
@@ -388,7 +388,7 @@ sub rtlErrorThrow _
 
 	'' resnxtlabel
 	if( env.clopt.resumeerr ) then
-		param = astNewADDROF( astNewVAR( nxtlabel, 0, FB_DATATYPE_BYTE ) )
+		param = astNewADDROF( astNewVAR( nxtlabel ) )
 	else
 		param = astNewCONSTi( NULL, FB_DATATYPE_UINT )
 	end if
