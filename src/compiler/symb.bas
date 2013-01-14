@@ -1919,12 +1919,13 @@ function symbCalcDerefLen _
 end function
 
 function symbCheckAccess( byval sym as FBSYMBOL ptr ) as integer
+	dim as FBSYMBOL ptr parent = any, context = any
+
 	'' Neither private nor protected? Always ok.
 	if( (sym->attrib and (FB_SYMBATTRIB_VIS_PRIVATE or FB_SYMBATTRIB_VIS_PROTECTED)) = 0 ) then
 		return TRUE
 	end if
 
-	''
 	'' Notes:
 	''  - Only UDT members will have visibility flags
 	''  - Private/protected members can *only* be accessed from inside
@@ -1935,40 +1936,26 @@ function symbCheckAccess( byval sym as FBSYMBOL ptr ) as integer
 	''  - UDTs may contain nested namespaces whose members should be
 	''    affected by visibility too (e.g. named enums)
 	''  - There are no nested procedures
-	''
+	''  - All UDTs are also namespaces
 
-	''
-	'' Find the symbol's real parent UDT
-	''
-	'' 1) Get the real parent where the symbol was declared
-	''    (could be the UDT already, or an enum inside one)
-	''    Using the symbol's namespace is not enough, because that
-	''    would falsely match
-	''
-	'' 2) Walk upwards if it's not the UDT yet
-	''    (an UDT must be there, or else the visibility flags
-	''     wouldn't be set)
-	''
-	dim as FBSYMBOL ptr parent = symbGetParent( sym )
-	while( not symbIsStruct( parent ) )
+	'' Walk upwards the symbol's parent namespaces until we find the
+	'' symbol's parent UDT. (Usually it's the first parent, but e.g. with
+	'' named enums inside UDTs there can be another namespace in between)
+	parent = sym
+	do
 		assert( parent <> @symbGetGlobalNamespc( ) )
 		parent = symbGetNamespace( parent )
-	wend
+	loop while( not symbIsStruct( parent ) )
 
-	''
-	'' Check it against the current context:
-	''
-	'' To allow Private access, we must be inside the symbol's
-	'' real parent namespace, i.e. the UDT body, a method, or a namespace
-	'' nested inside one of those.
-	''
-	'' To allow Protected access, we must be inside the namespace
-	'' of an UDT that was derived from the symbol's real parent UDT.
-	''
+	'' Check against the current context, only allowing...
+	'' - private access from inside the symbol's parent UDT namespace,
+	''   i.e. the UDT body, a method, or a namespace nested inside either.
+	'' - protected access from inside the namespace of an UDT that was
+	''   derived from the symbol's real parent UDT.
 
 	'' For all nested namespaces in the current parsing context,
 	'' from the current namespace up to the toplevel one...
-	dim as FBSYMBOL ptr context = symbGetCurrentNamespc( )
+	context = symbGetCurrentNamespc( )
 	while( context <> @symbGetGlobalNamespc( ) )
 
 		'' Is it an UDT namespace? (i.e. a method or UDT body?)
