@@ -624,16 +624,10 @@ private sub hEmitVariable( byval sym as FBSYMBOL ptr )
 		ln += " zeroinitializer"
 	end if
 	hWriteLine( ln )
-
 end sub
 
-private sub hEmitFuncProto _
-	( _
-		byval s as FBSYMBOL ptr, _
-		byval checkcalled as integer = TRUE _
-	)
-
-	if( checkcalled and not symbGetIsAccessed( s ) ) then
+private sub hEmitFuncProto( byval s as FBSYMBOL ptr )
+	if( symbGetIsAccessed( s ) = FALSE ) then
 		return
 	end if
 
@@ -676,11 +670,10 @@ private sub hEmitFuncProto _
 	end if
 
 	ctx.section = oldsection
-
 end sub
 
 private sub hEmitStruct( byval s as FBSYMBOL ptr )
-	dim as FBSYMBOL ptr fld = any, member = any
+	dim as FBSYMBOL ptr fld = any
 
 	''
 	'' Already emitting this UDT currently? This means there is a circular
@@ -763,26 +756,6 @@ private sub hEmitStruct( byval s as FBSYMBOL ptr )
 	hWriteLine( ln )
 
 	symbResetIsBeingEmitted( s )
-
-	'' Emit method declarations for this UDT from here,
-	'' because hEmitDecls() (which normally takes care of declarations for
-	'' called procedures) does not check UDT methods.
-	member = symbGetCompSymbTb( s ).head
-	while( member )
-		select case( symbGetClass( member ) )
-		case FB_SYMBCLASS_PROC
-			if( symbGetIsFuncPtr( member ) = FALSE ) then
-				hEmitFuncProto( member, FALSE )
-			end if
-
-		case FB_SYMBCLASS_VAR
-			hEmitVariable( member )
-
-		end select
-
-		member = member->next
-	wend
-
 end sub
 
 private sub hEmitDecls( byval s as FBSYMBOL ptr, byval procs as integer = FALSE )
@@ -790,6 +763,9 @@ private sub hEmitDecls( byval s as FBSYMBOL ptr, byval procs as integer = FALSE 
 		select case as const( symbGetClass( s ) )
 		case FB_SYMBCLASS_NAMESPACE
 			hEmitDecls( symbGetNamespaceTbHead( s ), procs )
+
+		case FB_SYMBCLASS_STRUCT
+			hEmitDecls( symbGetCompSymbTb( s ).head, procs )
 
 		case FB_SYMBCLASS_SCOPE
 			hEmitDecls( symbGetScopeSymbTbHead( s ), procs )

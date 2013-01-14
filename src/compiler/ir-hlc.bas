@@ -684,7 +684,6 @@ private sub hEmitVariable( byval s as FBSYMBOL ptr )
 	end if
 
 	hEmitVar( s, NULL )
-
 end sub
 
 private sub hEmitGccBuiltinWrapper( byval sym as FBSYMBOL ptr )
@@ -711,15 +710,10 @@ private sub hEmitGccBuiltinWrapper( byval sym as FBSYMBOL ptr )
 	hWriteLine( "#define " + params + " __builtin_" + params, TRUE )
 end sub
 
-private sub hEmitFuncProto _
-	( _
-		byval s as FBSYMBOL ptr, _
-		byval checkcalled as integer = TRUE _
-	)
-
+private sub hEmitFuncProto( byval s as FBSYMBOL ptr )
 	dim as integer section = any
 
-	if( checkcalled and not symbGetIsAccessed( s ) ) then
+	if( symbGetIsAccessed( s ) = FALSE ) then
 		return
 	end if
 
@@ -744,7 +738,6 @@ private sub hEmitFuncProto _
 	end if
 
 	sectionReturn( section )
-
 end sub
 
 private sub hPushAnonParents _
@@ -788,7 +781,7 @@ private sub hEmitStruct _
 
 	dim as string ln
 	dim as integer skip = any, dtype = any, align = any
-	dim as FBSYMBOL ptr subtype = any, fld = any, member = any
+	dim as FBSYMBOL ptr subtype = any, fld = any
 	dim as FBSYMBOL ptr ptr anonnode = any
 
 	'' Already in the process of emitting this UDT?
@@ -932,25 +925,6 @@ private sub hEmitStruct _
 
 	symbResetIsBeingEmitted( s )
 
-	'' Emit method declarations for this UDT from here,
-	'' because hEmitDecls() (which normally takes care of declarations for
-	'' called procedures) does not check UDT methods.
-	member = symbGetCompSymbTb( s ).head
-	while( member )
-		select case( symbGetClass( member ) )
-		case FB_SYMBCLASS_PROC
-			if( symbGetIsFuncPtr( member ) = FALSE ) then
-				hEmitFuncProto( member, FALSE )
-			end if
-
-		case FB_SYMBCLASS_VAR
-			hEmitVariable( member )
-
-		end select
-
-		member = member->next
-	wend
-
 end sub
 
 private sub hEmitDecls( byval s as FBSYMBOL ptr, byval procs as integer )
@@ -958,6 +932,9 @@ private sub hEmitDecls( byval s as FBSYMBOL ptr, byval procs as integer )
 		select case as const( symbGetClass( s ) )
 		case FB_SYMBCLASS_NAMESPACE
 			hEmitDecls( symbGetNamespaceTbHead( s ), procs )
+
+		case FB_SYMBCLASS_STRUCT
+			hEmitDecls( symbGetCompSymbTb( s ).head, procs )
 
 		case FB_SYMBCLASS_SCOPE
 			hEmitDecls( symbGetScopeSymbTbHead( s ), procs )
