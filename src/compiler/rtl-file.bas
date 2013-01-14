@@ -797,16 +797,16 @@
 		( _
 			@FB_RTL_FILESTRINPUT, NULL, _
 			FB_DATATYPE_STRING, FB_USE_FUNCMODE_FBCALL, _
-	 		@rtlMultinput_cb, FB_RTL_OPT_NONE, _
+			@rtlMultinput_cb, FB_RTL_OPT_NONE, _
 			2, _
-	 		{ _
-	 			( _
+			{ _
+				( _
 					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-	 			), _
-	 			( _
+				), _
+				( _
 					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, 0 _
-	 			) _
-	 		} _
+				) _
+			} _
 		), _
 		/' fb_FileLineInput ( byval filenum as integer, _
 							  byref dst as any, byval dstlen as integer,
@@ -1183,18 +1183,18 @@
 		), _
 		/' fb_FileWstrInput ( byval chars as integer, byval filenum as integer = 0 ) as wstring '/ _
 		( _
-			@"winput", @"fb_FileWstrInput", _
+			@FB_RTL_FILEWSTRINPUT, NULL, _
 			FB_DATATYPE_WCHAR, FB_USE_FUNCMODE_FBCALL, _
-	 		@rtlMultinput_cb, FB_RTL_OPT_NOQB, _
+			@rtlMultinput_cb, FB_RTL_OPT_NONE, _
 			2, _
-	 		{ _
-	 			( _
+			{ _
+				( _
 					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-	 			), _
-	 			( _
+				), _
+				( _
 					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, 0 _
-	 			) _
-	 		} _
+				) _
+			} _
 		), _
 		/' fb_FileFree ( ) as integer '/ _
 		( _
@@ -1951,19 +1951,20 @@ function rtlFileGetArray _
 	end if
 end function
 
-'':::::
 function rtlFileStrInput _
 	( _
 		byval bytesexpr as ASTNODE ptr, _
-		byval filenum as ASTNODE ptr _
+		byval filenum as ASTNODE ptr, _
+		byval tk as integer _
 	) as ASTNODE ptr
 
     dim as ASTNODE ptr proc = any
 
     function = NULL
 
-	''
-    proc = astNewCALL( PROCLOOKUP( FILESTRINPUT ) )
+	proc = astNewCALL( iif( tk = FB_TK_WINPUT, _
+				PROCLOOKUP( FILEWSTRINPUT ), _
+				PROCLOOKUP( FILESTRINPUT ) ) )
 
     '' byval bytes as integer
     if( astNewARG( proc, bytesexpr ) = NULL ) then
@@ -1975,9 +1976,7 @@ function rtlFileStrInput _
  		exit function
  	end if
 
-    ''
     function = proc
-
 end function
 
 '':::::

@@ -174,7 +174,7 @@ function cQuirkFunction(byval sym as FBSYMBOL ptr) as ASTNODE ptr
 	case FB_TK_LBOUND, FB_TK_UBOUND
 		funcexpr = cArrayFunct(tk)
 
-	case FB_TK_SEEK, FB_TK_INPUT, FB_TK_OPEN, FB_TK_CLOSE, _
+	case FB_TK_SEEK, FB_TK_INPUT, FB_TK_WINPUT, FB_TK_OPEN, FB_TK_CLOSE, _
 	     FB_TK_GET, FB_TK_PUT, FB_TK_NAME
 		funcexpr = cFileFunct(tk)
 

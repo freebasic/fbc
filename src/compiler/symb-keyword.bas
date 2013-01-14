@@ -231,6 +231,7 @@ dim shared kwdTb( 0 to FB_TOKENS-1 ) as SYMBKWD => _
 	( @"WRITE"      , FB_TK_WRITE       , FB_TKCLASS_QUIRKWD ), _
 	( @"LOCK"       , FB_TK_LOCK        , FB_TKCLASS_QUIRKWD ), _
 	( @"INPUT"      , FB_TK_INPUT       , FB_TKCLASS_QUIRKWD ), _
+	( @"WINPUT"     , FB_TK_WINPUT      , FB_TKCLASS_QUIRKWD , KWD_OPTION_NO_QB ), _
 	( @"OUTPUT"     , FB_TK_OUTPUT      , FB_TKCLASS_QUIRKWD ), _
 	( @"BINARY"     , FB_TK_BINARY      , FB_TKCLASS_QUIRKWD ), _
 	( @"RANDOM"     , FB_TK_RANDOM      , FB_TKCLASS_QUIRKWD ), _

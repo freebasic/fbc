@@ -1244,8 +1244,8 @@ function cFileFunct(byval tk as FB_TOKEN) as ASTNODE ptr
 		hMatchRPRNT( )
 		function = rtlFileTell( filenum )
 
-	'' INPUT '(' Expr (',' '#'? Expr)? ')'
-	case FB_TK_INPUT
+	'' INPUT|WINPUT '(' Expr (',' '#'? Expr)? ')'
+	case FB_TK_INPUT, FB_TK_WINPUT
 		lexSkipToken( )
 		hMatchLPRNT( )
 		hMatchExpressionEx( expr, FB_DATATYPE_INTEGER )
@@ -1256,7 +1256,7 @@ function cFileFunct(byval tk as FB_TOKEN) as ASTNODE ptr
 			filenum = astNewCONSTi( 0 )
 		end if
 		hMatchRPRNT( )
-		function = rtlFileStrInput( expr, filenum )
+		function = rtlFileStrInput( expr, filenum, tk )
 
 	'' OPEN '(' ... ')'
 	case FB_TK_OPEN

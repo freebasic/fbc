@@ -282,6 +282,7 @@
 #define FB_RTL_FILESEEKLARGE 			"fb_FileSeekLarge"
 
 #define FB_RTL_FILESTRINPUT 			"fb_FileStrInput"
+#define FB_RTL_FILEWSTRINPUT			"fb_FileWstrInput"
 #define FB_RTL_FILELINEINPUT 			"fb_FileLineInput"
 #define FB_RTL_FILELINEINPUTWSTR		"fb_FileLineInputWstr"
 #define FB_RTL_CONSOLELINEINPUT 		"fb_LineInput"
@@ -681,6 +682,7 @@ enum FB_RTL_IDX
 	FB_RTL_IDX_FILESEEKLARGE
 
 	FB_RTL_IDX_FILESTRINPUT
+	FB_RTL_IDX_FILEWSTRINPUT
 	FB_RTL_IDX_FILELINEINPUT
 	FB_RTL_IDX_FILELINEINPUTWSTR
 	FB_RTL_IDX_CONSOLELINEINPUT
@@ -1436,7 +1438,8 @@ declare function rtlFileGetArray _
 declare function rtlFileStrInput _
 	( _
 		byval bytesexpr as ASTNODE ptr, _
-		byval filenum as ASTNODE ptr _
+		byval filenum as ASTNODE ptr, _
+		byval tk as integer _
 	) as ASTNODE ptr
 
 declare function rtlFileLineInput _

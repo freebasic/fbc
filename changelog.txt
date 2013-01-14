@@ -152,6 +152,7 @@ Version 0.25.0:
 - va_first() on a BYVAL non-trivial UDT parameter (which is implicitly passed BYREF) could return the wrong pointer (it assumed BYVAL but implicitly it was BYREF)
 - Compiler crash on some cases of nested type initializers
 - Hidden temporary variables could be made STATIC in procedures marked STATIC (making all locals STATIC), leading to hidden bugs with multi-threading or recursion. Affected constructs: SELECT CASE, SELECT CASE AS CONST, WITH blocks, QB-style error handling, string concatenation, ON ... GOTO, FOR loops, temporary variables used by the ASM backend when spilling registers
+- WINPUT() did not allow a # like INPUT() does, as in [W]INPUT( bytes, #filenum )
 
 
 Version 0.24.0:
