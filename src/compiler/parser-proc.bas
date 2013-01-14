@@ -232,6 +232,18 @@ private sub hCheckAttribs _
 		byval attrib as FB_SYMBATTRIB _
 	)
 
+	'' if one returns BYREF, the other must too
+	if( ((attrib and FB_SYMBATTRIB_RETURNSBYREF) <> 0) <> symbProcReturnsByref( proto ) ) then
+		errReport( FB_ERRMSG_TYPEMISMATCH, TRUE )
+		'' Error recovery: if the proto had BYREF, add it for the body
+		'' too, otherwise remove it from the body
+		if( symbProcReturnsByref( proto ) ) then
+			attrib or= FB_SYMBATTRIB_RETURNSBYREF
+		else
+			attrib and= not FB_SYMBATTRIB_RETURNSBYREF
+		end if
+	end if
+
 	'' the body can only be STATIC if the proto is too
 	if( (attrib and FB_SYMBATTRIB_STATIC) and (not symbIsStatic( proto )) ) then
 		errReport( FB_ERRMSG_PROCPROTOTYPENOTSTATIC )
