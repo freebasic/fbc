@@ -2287,9 +2287,6 @@ private sub _emitVarIniOfs( byval sym as FBSYMBOL ptr, byval ofs as integer )
 	hVarIniSeparator( )
 end sub
 
-'private sub hEmitVarIniStr( byval varlength as integer, byref s as string )
-'end sub
-
 private sub _emitVarIniStr _
 	( _
 		byval varlength as integer, _
@@ -2297,14 +2294,12 @@ private sub _emitVarIniStr _
 		byval litlength as integer _
 	)
 
-	dim as string s
-
-	hBuildStrLit( s, varlength + 1, hUnescape( literal ), litlength + 1 )
-
 	if( ctx.variniscopelevel > 0 ) then
 		ctx.varini += hEmitStrLitType( varlength ) + " "
 	end if
-	ctx.varini += "c""" + s + """"
+	ctx.varini += "c"""
+	hBuildStrLit( ctx.varini, varlength + 1, hUnescape( literal ), litlength + 1 )
+	ctx.varini += """"
 	hVarIniSeparator( )
 
 end sub
@@ -2316,14 +2311,12 @@ private sub _emitVarIniWstr _
 		byval litlength as integer _
 	)
 
-	dim as string s
-
-	hBuildWstrLit( s, varlength + 1, hUnescapeW( literal ), litlength + 1 )
-
 	if( ctx.variniscopelevel > 0 ) then
 		ctx.varini += hEmitStrLitType( varlength ) + " "
 	end if
-	ctx.varini += "c""" + s + """"
+	ctx.varini += "c"""
+	hBuildWstrLit( ctx.varini, varlength + 1, hUnescapeW( literal ), litlength + 1 )
+	ctx.varini += """"
 	hVarIniSeparator( )
 
 end sub
