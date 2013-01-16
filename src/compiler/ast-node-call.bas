@@ -64,7 +64,7 @@ function astNewCALL _
 	n->call.strtail = NULL
 
 	'' Allocate temp struct result if needed
-	if( symbProcReturnsUdtOnStack( sym ) ) then
+	if( symbProcReturnsOnStack( sym ) ) then
 		'' create a temp struct (can't be static, could be an object)
 		n->call.tmpres = symbAddTempVar( FB_DATATYPE_STRUCT, symbGetSubtype( sym ), FALSE )
 
@@ -191,7 +191,7 @@ function astLoadCALL( byval n as ASTNODE ptr ) as IRVREG ptr
 	wend
 
 	'' Hidden param for functions returning big structs on stack
-	if( symbProcReturnsUdtOnStack( proc ) ) then
+	if( symbProcReturnsOnStack( proc ) ) then
 		'' Pop hidden ptr if cdecl and target doesn't want the callee
 		'' to do it, despite it being cdecl.
 		if( (symbGetProcMode( proc ) = FB_FUNCMODE_CDECL) and _

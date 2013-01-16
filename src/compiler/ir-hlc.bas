@@ -378,7 +378,7 @@ private function hEmitProcHeader _
 
 	'' If returning a struct, there's an extra parameter
 	dim as FBSYMBOL ptr hidden = NULL
-	if( symbProcReturnsUdtOnStack( proc ) ) then
+	if( symbProcReturnsOnStack( proc ) ) then
 		if( options and EMITPROC_ISPROTO ) then
 			hidden = symbGetSubType( proc )
 			ln += hEmitType( typeAddrOf( symbGetType( hidden ) ), hidden )

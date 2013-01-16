@@ -1218,7 +1218,7 @@ declare sub symbAddProcInstancePtr _
 
 declare sub symbProcAllocExt( byval proc as FBSYMBOL ptr )
 declare sub symbProcFreeExt( byval proc as FBSYMBOL ptr )
-declare function symbProcReturnsUdtOnStack( byval proc as FBSYMBOL ptr ) as integer
+declare function symbProcReturnsOnStack( byval proc as FBSYMBOL ptr ) as integer
 
 declare function symbCalcArgLen _
 	( _

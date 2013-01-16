@@ -553,7 +553,7 @@ function astBuildProcResultVar _
 	) as ASTNODE ptr
 
 	'' proc returns UDT in hidden byref UDT param?
-	if( symbProcReturnsUdtOnStack( proc ) ) then
+	if( symbProcReturnsOnStack( proc ) ) then
 		function = astNewDEREF( astNewVAR( res, 0, typeAddrOf( FB_DATATYPE_STRUCT ), symbGetSubtype( res ) ) )
 	else
 		function = astNewVAR( res )

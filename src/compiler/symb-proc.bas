@@ -67,8 +67,9 @@ sub symbProcFreeExt( byval proc as FBSYMBOL ptr )
 	end if
 end sub
 
-function symbProcReturnsUdtOnStack( byval proc as FBSYMBOL ptr ) as integer
-	'' BYREF result never is on stack
+function symbProcReturnsOnStack( byval proc as FBSYMBOL ptr ) as integer
+	'' BYREF result never is on stack, instead it's always a pointer,
+	'' which will always be returned in registers
 	if( symbProcReturnsByref( proc ) ) then
 		exit function
 	end if
@@ -1187,7 +1188,7 @@ function symbAddProcResultParam( byval proc as FBSYMBOL ptr ) as FBSYMBOL ptr
     dim as FBSYMBOL ptr s = any
     static as string id
 
-	if( symbProcReturnsUdtOnStack( proc ) = FALSE ) then
+	if( symbProcReturnsOnStack( proc ) = FALSE ) then
 		return NULL
 	end if
 
@@ -1211,7 +1212,7 @@ function symbAddProcResult( byval proc as FBSYMBOL ptr ) as FBSYMBOL ptr
 
 	'' UDT on stack? No local result var needs to be added;
 	'' the hidden result param is used instead.
-	if( symbProcReturnsUdtOnStack( proc ) ) then
+	if( symbProcReturnsOnStack( proc ) ) then
 		return symbGetProcResult( proc )
 	end if
 
