@@ -569,6 +569,7 @@ function cSymbolType _
 			select case as const typeGet( dtype )
 			case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
 				'' LEN() and SIZEOF() allow Z|WSTRING to be used w/o PTR
+				'' (and also BYREF parameters/results)
 				if( (options and FB_SYMBTYPEOPT_CHECKSTRPTR) <> 0 ) then
 					errReport( FB_ERRMSG_EXPECTEDPOINTER )
 					'' error recovery: make pointer

@@ -6,6 +6,8 @@ namespace returnGlobal
 	dim shared as byte b
 	dim shared as integer i, j
 	dim shared as string s
+	dim shared as zstring * 32 z = "testing"
+	dim shared as wstring * 32 w = wstr( "testing" )
 
 	function f1( ) byref as byte
 		b = 12
@@ -31,6 +33,22 @@ namespace returnGlobal
 		j = 90
 	end function
 
+	function f5( ) byref as zstring
+		function = z
+	end function
+
+	function f6( ) byref as zstring
+		function = "also good"
+	end function
+
+	function f7( ) byref as wstring
+		function = w
+	end function
+
+	function f8( ) byref as wstring
+		function = wstr( "also good" )
+	end function
+
 	sub test cdecl( )
 		CU_ASSERT( b = 0 )
 		CU_ASSERT( f1( ) = 12 )
@@ -51,6 +69,13 @@ namespace returnGlobal
 		CU_ASSERT( f4( ) = 90 )
 		CU_ASSERT( f4( ) = j )
 		CU_ASSERT( j = 90 )
+
+		CU_ASSERT( f5( ) = z )
+		CU_ASSERT( f5( ) = "testing" )
+		CU_ASSERT( f6( ) = "also good" )
+		CU_ASSERT( f7( ) = w )
+		CU_ASSERT( f7( ) = wstr( "testing" ) )
+		CU_ASSERT( f8( ) = wstr( "also good" ) )
 	end sub
 end namespace
 
@@ -71,10 +96,22 @@ namespace returnStatic
 		function = s
 	end function
 
+	function f4( ) byref as zstring
+		static as zstring * 32 z = "testing"
+		function = z
+	end function
+
+	function f5( ) byref as wstring
+		static as wstring * 32 w = wstr( "testing" )
+		function = w
+	end function
+
 	sub test cdecl( )
 		CU_ASSERT( f1( ) = 12 )
 		CU_ASSERT( f2( ) = 34 )
 		CU_ASSERT( f3( ) = "56" )
+		CU_ASSERT( f4( ) = "testing" )
+		CU_ASSERT( f5( ) = wstr( "testing" ) )
 	end sub
 end namespace
 
