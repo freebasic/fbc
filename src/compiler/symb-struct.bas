@@ -948,16 +948,6 @@ function symbUdtGetNextInitableField( byval sym as FBSYMBOL ptr ) as FBSYMBOL pt
 	function = sym
 end function
 
-function symbIsUDTReturnedInRegs( byval s as FBSYMBOL ptr ) as integer
-	select case typeGetDtAndPtrOnly( symbGetUDTRetType( s ) )
-    case typeAddrOf( FB_DATATYPE_STRUCT ), FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-    	return FALSE
-
-    case else
-    	return TRUE
-    end select
-end function
-
 '':::::
 function symbGetUDTBaseLevel _
 	( _

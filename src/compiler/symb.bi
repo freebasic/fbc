@@ -1772,11 +1772,6 @@ declare sub symbFreeOvlCallArgs _
 		byval arg_list as FB_CALL_ARG_LIST ptr _
 	)
 
-declare function symbIsUDTReturnedInRegs _
-	( _
-		byval s as FBSYMBOL ptr _
-	) as integer
-
 declare function symbGetUDTBaseLevel _
 	( _
 		byval s as FBSYMBOL ptr, _
