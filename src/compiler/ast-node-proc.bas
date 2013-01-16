@@ -525,13 +525,33 @@ private function hCheckErrHnd _
 
 end function
 
-private function hCallResultCtor _
+private function hMaybeCallResultCtor _
 	( _
 		byval head_node as ASTNODE ptr, _
 		byval sym as FBSYMBOL ptr _
 	) as ASTNODE ptr
 
 	dim as FBSYMBOL ptr res = any, defctor = any
+
+	'' Not returning BYVAL, or BYVAL but not an UDT?
+	if( symbProcReturnsByref( sym ) or _
+	    (symbGetType( sym ) <> FB_DATATYPE_STRUCT) ) then
+		return head_node
+	end if
+
+	'' Add result ctor call to the top of the function,
+	''    a) if FUNCTION= (and/or EXIT FUNCTION) was used,
+	''    b) or if neither FUNCTION= nor RETURN was used,
+	'' but not if RETURN was used, because that already calls the copy
+	'' ctor at every RETURN.
+	''
+	'' This way the result will be constructed properly,
+	'' even if nothing was explicitly returned.
+
+	'' only RETURN used?
+	if( (not symbGetProcStatAssignUsed( sym )) and symbGetProcStatReturnUsed( sym ) ) then
+		return head_node
+	end if
 
 	'' UDT with default ctor? (if there is none, nothing needs to be done)
 	defctor = symbGetCompDefCtor( symbGetSubtype( sym ) )
@@ -647,22 +667,8 @@ function astProcEnd( byval callrtexit as integer ) as integer
 		if( enable_implicit_code ) then
 			'' if it's a function, load result
 			if( symbGetType( sym ) <> FB_DATATYPE_VOID ) then
-				select case symbGetType( sym )
-				case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-					'' Add result ctor call to the top of the function,
-					'' a) if FUNCTION= (and/or EXIT FUNCTION) was used,
-					'' b) or if neither FUNCTION= nor RETURN was used,
-					'' but not if RETURN was used, because that already
-					'' calls the copy ctor at every RETURN.
-					'' This way the result will be constructed properly,
-					'' even if nothing was explicitly returned.
-					if( symbGetProcStatAssignUsed( sym ) or _
-					    (not symbGetProcStatReturnUsed( sym )) ) then
-						head_node = hCallResultCtor( head_node, sym )
-					end if
-				end select
-
-        		hLoadProcResult( sym )
+				head_node = hMaybeCallResultCtor( head_node, sym )
+				hLoadProcResult( sym )
 			end if
 		end if
 	end if

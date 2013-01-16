@@ -365,6 +365,48 @@ namespace ignoreResult
 	end sub
 end namespace
 
+namespace ctorDtorUdt
+	dim shared as integer ctorcalls, dtorcalls
+
+	type UDT
+		dummy as integer
+		declare constructor( )
+		declare constructor( byref as UDT )
+		declare destructor( )
+	end type
+
+	constructor UDT( )
+		dummy = 123
+		ctorcalls += 1
+	end constructor
+
+	constructor UDT( byref rhs as UDT )
+		dummy = 0
+		ctorcalls += 1
+	end constructor
+
+	destructor UDT( )
+		dtorcalls += 1
+	end destructor
+
+	dim shared x as UDT
+
+	function f( ) byref as UDT
+		CU_ASSERT( ctorcalls = 1 )
+		function = x
+	end function
+
+	sub test cdecl( )
+		CU_ASSERT( ctorcalls = 1 )
+		scope  '' scope to capture any temp vars, just in case
+			CU_ASSERT( f( ).dummy = 123 )
+			x = f( )
+		end scope
+		CU_ASSERT( ctorcalls = 1 )
+		CU_ASSERT( dtorcalls = 0 )
+	end sub
+end namespace
+
 private sub ctor( ) constructor
 	fbcu.add_suite( "tests/functions/return-byref" )
 	fbcu.add_test( "returning globals", @returnGlobal.test )
@@ -381,6 +423,7 @@ private sub ctor( ) constructor
 	fbcu.add_test( "properties", @properties.test )
 	fbcu.add_test( "operators", @operators.test )
 	fbcu.add_test( "ignore result", @ignoreResult.test )
+	fbcu.add_test( "UDT with ctor/dtor", @ctorDtorUdt.test )
 end sub
 
 end namespace

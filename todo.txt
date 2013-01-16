@@ -92,6 +92,7 @@ o -exx should catch...
     - OPERATOR foo.() ( lb1, lb2, ..... ) AS TYPE -- array indexing, not functor
 
 o BYREF function results
+  - All code dealing with return-on-stack or return-in-regs should check for BYREF
   - Disallow local/temp vars to be returned BYREF
       - but still allow things like "globalarray(localindex)", so cannot
         generally disallow trees referencing LOCALs
