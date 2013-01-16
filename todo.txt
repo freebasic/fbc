@@ -100,7 +100,6 @@ o BYREF function results
       - BYREF AS STRING cannot return string literals, since a temp string
         would need to be created?!
   - hPatchByvalResultToSelf() should probably check symbProcReturnsByref() now
-  - allow BYREF return of ABSTRACT UDTs
   - test BYREF result on procptrs, does cSymbolType() need to be updated to handle BYREF?
   - support "FUNCTION = BYVAL ptrexpr", like BYVAL args passed to BYREF params
 

@@ -411,8 +411,10 @@ sub cProcRetType _
 			subtype = NULL
 		end select
 
-		'' Disallow BYVAL return of objects of abstract classes
-		hComplainIfAbstractClass( dtype, subtype )
+		if( (attrib and FB_SYMBATTRIB_RETURNSBYREF) = 0 ) then
+			'' Disallow BYVAL return of objects of abstract classes
+			hComplainIfAbstractClass( dtype, subtype )
+		end if
 	end if
 
 	proc->proc.returnMethod = cProcReturnMethod( dtype )
