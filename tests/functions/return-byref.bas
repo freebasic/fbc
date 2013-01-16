@@ -312,6 +312,22 @@ namespace operators
 	end sub
 end namespace
 
+namespace ignoreResult
+	dim shared as integer calls
+
+	function f( ) byref as integer
+		calls += 1
+		static i as integer = 3344
+		function = i
+	end function
+
+	sub test cdecl( )
+		CU_ASSERT( calls = 0 )
+		f( )
+		CU_ASSERT( calls = 1 )
+	end sub
+end namespace
+
 private sub ctor( ) constructor
 	fbcu.add_suite( "tests/functions/return-byref" )
 	fbcu.add_test( "returning globals", @returnGlobal.test )
@@ -327,6 +343,7 @@ private sub ctor( ) constructor
 	fbcu.add_test( "byref result -> byref param", @toByrefParam.test )
 	fbcu.add_test( "properties", @properties.test )
 	fbcu.add_test( "operators", @operators.test )
+	fbcu.add_test( "ignore result", @ignoreResult.test )
 end sub
 
 end namespace

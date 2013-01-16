@@ -219,8 +219,15 @@ function astLoadCALL( byval n as ASTNODE ptr ) as IRVREG ptr
 	subtype = n->subtype
 
 	'' Returning BYREF? The type should already have been remapped,
-	'' using astBuildByrefResultDeref()
-	assert( iif( symbProcReturnsByref( proc ), dtype = symbGetProcRealType( proc ), TRUE ) )
+	'' using astBuildByrefResultDeref(), unless it's VOID (if the result
+	'' was ignored)
+	#if __FB_DEBUG__
+		if( symbProcReturnsByref( proc ) ) then
+			if( dtype <> FB_DATATYPE_VOID ) then
+				assert( dtype = symbGetProcRealType( proc ) )
+			end if
+		end if
+	#endif
 
 	select case( dtype )
 	'' returning a string? it's actually a pointer to a string descriptor
