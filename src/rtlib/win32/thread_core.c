@@ -32,9 +32,13 @@ FBCALL FBTHREAD *fb_ThreadCreate( FB_THREADPROC proc, void *param, int stack_siz
 	thread->param = param;
 
 #ifdef HOST_MINGW
-	thread->id = (HANDLE)_beginthreadex( NULL, stack_size, threadproc, (void *)thread, 0, NULL );
+	/* Note: _beginthreadex()'s last parameter cannot be NULL,
+	   or else the function fails on Windows 9x */
+	unsigned int thrdaddr;
+	thread->id = (HANDLE)_beginthreadex( NULL, stack_size, threadproc, (void *)thread, 0, &thrdaddr );
 #else
-	thread->id = CreateThread( NULL, stack_size, threadproc, (void*)thread, 0, NULL );
+	DWORD dwThreadId;
+	thread->id = CreateThread( NULL, stack_size, threadproc, (void*)thread, 0, &dwThreadId );
 #endif
 
 	if( thread->id == NULL ) {

@@ -153,6 +153,7 @@ Version 0.25.0:
 - Compiler crash on some cases of nested type initializers
 - Hidden temporary variables could be made STATIC in procedures marked STATIC (making all locals STATIC), leading to hidden bugs with multi-threading or recursion. Affected constructs: SELECT CASE, SELECT CASE AS CONST, WITH blocks, QB-style error handling, string concatenation, ON ... GOTO, FOR loops, temporary variables used by the ASM backend when spilling registers
 - WINPUT() did not allow a # like INPUT() does, as in [W]INPUT( bytes, #filenum )
+- Screen[Res] and ThreadCreate() no longer worked on Windows 9x since 0.24, because they called msvcrt's _beginthreadex() with the last parameter being NULL
 
 
 Version 0.24.0:

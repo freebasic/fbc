@@ -566,9 +566,13 @@ int fb_hWin32Init(char *title, int w, int h, int depth, int refresh_rate, int fl
 		}
 
 #ifdef HOST_MINGW
-		events[1] = (HANDLE)_beginthreadex( NULL, 0, fb_win32.thread, events[0], 0, NULL );
+		/* Note: _beginthreadex()'s last parameter cannot be NULL,
+		   or else the function fails on Windows 9x */
+		unsigned int thrdaddr;
+		events[1] = (HANDLE)_beginthreadex( NULL, 0, fb_win32.thread, events[0], 0, &thrdaddr );
 #else
-		events[1] = CreateThread( NULL, 0, fb_win32.thread, events[0], 0, NULL );
+		DWORD dwThreadId;
+		events[1] = CreateThread( NULL, 0, fb_win32.thread, events[0], 0, &dwThreadId );
 #endif
 		if( events[1] == NULL ) {
 			CloseHandle(events[0]);
