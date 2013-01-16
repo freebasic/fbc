@@ -526,7 +526,7 @@ function astNewASSIGN _
 			'' call and returning a pointer? deref the hidden arg (the result)
 			var do_move = TRUE
 			if( astIsCALL( r ) ) then
-				if( typeIsPtr( symbGetUDTRetType( r->subtype ) ) ) then
+				if( symbProcReturnsOnStack( r->sym ) ) then
 					r = astBuildCallHiddenResVar( r )
 				else
 					do_move = FALSE

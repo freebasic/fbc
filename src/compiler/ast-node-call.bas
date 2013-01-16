@@ -383,27 +383,22 @@ end sub
 
 function astIsCALLReturnInReg( byval expr as ASTNODE ptr ) as integer
 	if( astIsCALL( expr ) ) then
-		function = symbIsUDTReturnedInRegs( expr->subtype )
+		function = (not symbProcReturnsOnStack( expr->sym ))
 	else
 		function = FALSE
 	end if
 end function
 
 function astGetCALLResUDT(byval expr as ASTNODE ptr) as ASTNODE ptr
-	var subtype = astGetSubtype( expr )
-
-	'' returning an UDT in registers or as-is, i.e. not as a hidden arg?
-	'' (the latter is an exception made for the C emitter)
-	if( symbIsUDTReturnedInRegs( subtype ) or _
-	    (typeIsPtr( symbGetUDTRetType( subtype ) ) = FALSE) ) then
-		'' move to a temp var
-		'' (note: if it's being returned in regs, there's no DTOR)
-		dim as FBSYMBOL ptr tmp = symbAddTempVar( FB_DATATYPE_STRUCT, subtype, FALSE )
-		expr = astNewASSIGN( astBuildVarField( tmp ), expr, AST_OPOPT_DONTCHKOPOVL )
-		function = astNewLINK( astBuildVarField( tmp ), expr )
-	else
+	if( symbProcReturnsOnStack( expr->sym ) ) then
 		'' returning result in a hidden arg
 		function = astBuildCallHiddenResVar( expr )
+	else
+		'' move to a temp var
+		'' (note: if it's being returned in regs, there's no DTOR)
+		dim as FBSYMBOL ptr tmp = symbAddTempVar( FB_DATATYPE_STRUCT, astGetSubtype( expr ), FALSE )
+		expr = astNewASSIGN( astBuildVarField( tmp ), expr, AST_OPOPT_DONTCHKOPOVL )
+		function = astNewLINK( astBuildVarField( tmp ), expr )
 	end if
 end function
 

@@ -654,8 +654,10 @@ private sub hUDTPassByval _
 			n->arg.lgt = symbGetLen( symbGetSubtype( param ) )
 
 			'' call and returning a pointer? use the hidden call arg
-			if( astIsCALL( arg ) and typeIsPtr( symbGetUDTRetType( arg->subtype ) ) ) then
-				n->l = astBuildCallHiddenResVar( arg )
+			if( astIsCALL( arg ) ) then
+				if( symbProcReturnsOnStack( arg->sym ) ) then
+					n->l = astBuildCallHiddenResVar( arg )
+				end if
 			end if
 		else
 			'' patch the type
