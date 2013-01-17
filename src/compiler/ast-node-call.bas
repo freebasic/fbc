@@ -399,16 +399,24 @@ function astBuildCallResultVar( byval expr as ASTNODE ptr ) as ASTNODE ptr
 		FALSE ) '' CALL first, but return the VAR
 end function
 
-function astGetCALLResUDT(byval expr as ASTNODE ptr) as ASTNODE ptr
+'' For storing UDT CALL results into a temp var and accessing it
+function astBuildCallResultUdt( byval expr as ASTNODE ptr ) as ASTNODE ptr
+	dim as FBSYMBOL ptr tmp = any
+
+	assert( astIsCALL( expr ) )
+	assert( astGetDataType( expr ) = FB_DATATYPE_STRUCT )
+
 	if( symbProcReturnsOnStack( expr->sym ) ) then
-		'' returning result in a hidden arg
+		'' UDT returned in temp var already, just access that one
 		function = astBuildCallResultVar( expr )
 	else
-		'' move to a temp var
+		'' UDT returned in registers, copy to a temp var to allow field accesses etc.
 		'' (note: if it's being returned in regs, there's no DTOR)
-		dim as FBSYMBOL ptr tmp = symbAddTempVar( FB_DATATYPE_STRUCT, astGetSubtype( expr ), FALSE )
+		tmp = symbAddTempVar( FB_DATATYPE_STRUCT, expr->subtype, FALSE )
 		expr = astNewASSIGN( astBuildVarField( tmp ), expr, AST_OPOPT_DONTCHKOPOVL )
-		function = astNewLINK( astBuildVarField( tmp ), expr )
+		function = astNewLINK( expr, _
+			astBuildVarField( tmp ), _
+			FALSE ) '' ASSIGN first, but return the field access
 	end if
 end function
 

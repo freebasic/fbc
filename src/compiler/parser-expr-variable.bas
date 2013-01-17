@@ -446,7 +446,7 @@ function cMemberAccess _
 
 	'' proc call?
 	if( astIsCALL( expr ) ) then
-		expr = astGetCALLResUDT( expr )
+		expr = astBuildCallResultUdt( expr )
 	end if
 
  	'' build: cast( udt ptr, (cast( byte ptr, @udt) + fldexpr))->field
