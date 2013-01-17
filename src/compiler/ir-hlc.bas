@@ -342,7 +342,7 @@ private function hEmitProcHeader _
 		dtype = typeAddrOf( dtype )
 	end select
 
-	ln += hEmitType( dtype, symbGetSubType( proc ) )
+	ln += hEmitType( dtype, symbGetProcRealSubtype( proc ) )
 
 	''
 	'' Calling convention if needed (for function pointers it's usually not

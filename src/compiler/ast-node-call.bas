@@ -422,7 +422,8 @@ function astBuildByrefResultDeref _
 	'' Do an implicit DEREF with the function's type, and then
 	'' remap the CALL node's type to the pointer, so the AST is
 	'' consistent even if that DEREF gets optimized out.
-	astSetType( callexpr, symbGetProcRealType( callexpr->sym ), symbGetSubtype( callexpr->sym ) )
+	astSetType( callexpr, symbGetProcRealType( callexpr->sym ), _
+				symbGetProcRealSubtype( callexpr->sym ) )
 	callexpr = astNewDEREF( callexpr )
 
 	function = callexpr

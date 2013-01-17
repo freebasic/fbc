@@ -534,14 +534,14 @@ function astNewASSIGN _
 				'' Returning in registers, patch the types and do a normal ASSIGN
 				ldfull = symbGetProcRealType( r->sym )
 				ldtype = typeGet( ldfull )
-				lsubtype = NULL
+				lsubtype = symbGetProcRealSubtype( r->sym )
 				ldclass = typeGetClass( ldtype )
-				astSetType( l, ldfull, NULL )
+				astSetType( l, ldfull, lsubtype )
 
 				rdfull = ldfull
 				rdtype = ldtype
 				rdclass = ldclass
-				astSetType( r, rdfull, NULL )
+				astSetType( r, rdfull, lsubtype )
 			end if
 		else
 			'' Not a CALL, it must be an UDT in memory, copy from that

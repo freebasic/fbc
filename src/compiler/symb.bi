@@ -2202,6 +2202,7 @@ declare function symbGetUDTBaseLevel _
 #define symbGetProcIncFile(f) f->proc.ext->dbg.incfile
 
 #define symbGetProcRealType(f) f->proc.real_dtype
+declare function symbGetProcRealSubtype( byval proc as FBSYMBOL ptr ) as FBSYMBOL ptr
 
 #define symbGetProcSymbTb(f) f->proc.symtb
 

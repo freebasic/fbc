@@ -254,7 +254,8 @@ private function hEmitProcHeader _
 	ln += hEmitProcCallConv( proc )
 
 	'' Function result type (is 'void' for subs)
-	ln += hEmitType( typeGetDtAndPtrOnly( symbGetProcRealType( proc ) ), symbGetSubType( proc ), TRUE )
+	ln += hEmitType( typeGetDtAndPtrOnly( symbGetProcRealType( proc ) ), _
+				symbGetProcRealSubtype( proc ), TRUE )
 
 	ln += " "
 
@@ -2040,7 +2041,8 @@ private sub hDoCall _
 		'' Result discarded? Not allowed in LLVM, so assign to a
 		'' temporary result vreg that will be unused.
 		if( symbGetType( proc ) <> FB_DATATYPE_VOID ) then
-			vr = _allocVreg( typeGetDtAndPtrOnly( symbGetProcRealType( proc ) ), symbGetSubType( proc ) )
+			vr = _allocVreg( typeGetDtAndPtrOnly( symbGetProcRealType( proc ) ), _
+						symbGetProcRealSubtype( proc ) )
 		end if
 	end if
 

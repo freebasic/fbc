@@ -661,7 +661,8 @@ private sub hUDTPassByval _
 				hByteByByte( param, n )
 			else
 				'' CALL with result in registers, patch the type
-				astSetType( arg, symbGetProcRealType( arg->sym ), NULL )
+				astSetType( arg, symbGetProcRealType( arg->sym ), _
+						symbGetProcRealSubtype( arg->sym ) )
 			end if
 		else
 			'' not a CALL, so it must be an UDT in memory
