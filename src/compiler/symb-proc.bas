@@ -68,6 +68,8 @@ sub symbProcFreeExt( byval proc as FBSYMBOL ptr )
 end sub
 
 function symbProcReturnsOnStack( byval proc as FBSYMBOL ptr ) as integer
+	assert( symbIsProc( proc ) )
+
 	'' BYREF result never is on stack, instead it's always a pointer,
 	'' which will always be returned in registers
 	if( symbProcReturnsByref( proc ) ) then
@@ -255,35 +257,31 @@ function symbIsProcOverloadOf _
 
 end function
 
-'':::::
 private function hGetProcRealType _
 	( _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr _
 	) as integer
 
-    select case typeGet( dtype )
-    '' string? it's actually a pointer to a string descriptor
-    case FB_DATATYPE_STRING
-    	 return typeAddrOf( FB_DATATYPE_STRING )
+	select case( typeGetDtAndPtrOnly( dtype ) )
+	'' string?
+	case FB_DATATYPE_STRING, FB_DATATYPE_WCHAR
+		'' It's actually a pointer to a string descriptor,
+		'' or in case of wstring, a pointer to a wchar buffer.
+		dtype = typeAddrOf( dtype )
 
-    '' UDT? follow GCC 3.x's ABI
-    case FB_DATATYPE_STRUCT
-
+	'' UDT? follow GCC 3.x's ABI
+	case FB_DATATYPE_STRUCT
 		'' still parsing the struct? patch it later..
 		if( subtype = symbGetCurrentNamespc( ) ) then
 			symbSetUdtHasRecByvalRes( subtype )
-			return dtype
+		else
+			dtype = symbGetUDTRetType( subtype )
 		end if
-
-		return symbGetUDTRetType( subtype )
-
-	'' type is the same
-	case else
-    	return dtype
 
 	end select
 
+	function = dtype
 end function
 
 '':::::
