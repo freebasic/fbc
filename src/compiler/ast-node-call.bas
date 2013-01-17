@@ -389,10 +389,20 @@ function astIsCALLReturnInReg( byval expr as ASTNODE ptr ) as integer
 	end if
 end function
 
+'' For accessing the temp result var allocated by CALLs that return on stack
+function astBuildCallResultVar( byval expr as ASTNODE ptr ) as ASTNODE ptr
+	assert( astIsCALL( expr ) )
+	assert( symbProcReturnsOnStack( expr->sym ) )
+
+	function = astNewLINK( expr, _
+		astNewVAR( expr->call.tmpres, 0, astGetFullType( expr ), astGetSubtype( expr ) ), _
+		FALSE ) '' CALL first, but return the VAR
+end function
+
 function astGetCALLResUDT(byval expr as ASTNODE ptr) as ASTNODE ptr
 	if( symbProcReturnsOnStack( expr->sym ) ) then
 		'' returning result in a hidden arg
-		function = astBuildCallHiddenResVar( expr )
+		function = astBuildCallResultVar( expr )
 	else
 		'' move to a temp var
 		'' (note: if it's being returned in regs, there's no DTOR)

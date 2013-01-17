@@ -656,7 +656,7 @@ private sub hUDTPassByval _
 			'' call and returning a pointer? use the hidden call arg
 			if( astIsCALL( arg ) ) then
 				if( symbProcReturnsOnStack( arg->sym ) ) then
-					n->l = astBuildCallHiddenResVar( arg )
+					n->l = astBuildCallResultVar( arg )
 				end if
 			end if
 		else

@@ -546,6 +546,7 @@ function astBuildProcAddrof(byval proc as FBSYMBOL ptr) as ASTNODE ptr
 	function = astNewADDROF(astNewVAR(proc, 0, FB_DATATYPE_FUNCTION, proc))
 end function
 
+'' For accessing the function result from within the function
 function astBuildProcResultVar _
 	( _
 		byval proc as FBSYMBOL ptr, _
@@ -558,21 +559,6 @@ function astBuildProcResultVar _
 	else
 		function = astNewVAR( res )
 	end if
-
-end function
-
-'':::::
-function astBuildCallHiddenResVar _
-	( _
-		byval callexpr as ASTNODE ptr _
-	) as ASTNODE ptr
-
-    function = astNewLINK( callexpr, _
-						   astNewVAR( callexpr->call.tmpres, _
-        							  0, _
-        							  astGetFullType( callexpr ), _
-        							  astGetSubtype( callexpr ) ), _
-        				   FALSE )
 
 end function
 

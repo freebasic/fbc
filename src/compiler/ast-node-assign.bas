@@ -527,7 +527,7 @@ function astNewASSIGN _
 			var do_move = TRUE
 			if( astIsCALL( r ) ) then
 				if( symbProcReturnsOnStack( r->sym ) ) then
-					r = astBuildCallHiddenResVar( r )
+					r = astBuildCallResultVar( r )
 				else
 					do_move = FALSE
 				end if
