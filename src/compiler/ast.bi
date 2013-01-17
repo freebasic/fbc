@@ -1239,7 +1239,6 @@ declare function astGetOFFSETChildOfs _
 		byval l as ASTNODE ptr _
 	) as integer
 
-declare function astIsCALLReturnInReg( byval expr as ASTNODE ptr ) as integer
 declare function astBuildCallResultVar( byval expr as ASTNODE ptr ) as ASTNODE ptr
 declare function astBuildCallResultUdt( byval expr as ASTNODE ptr ) as ASTNODE ptr
 declare function astBuildByrefResultDeref _

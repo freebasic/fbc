@@ -381,14 +381,6 @@ sub astReplaceSymbolOnCALL _
 
 end sub
 
-function astIsCALLReturnInReg( byval expr as ASTNODE ptr ) as integer
-	if( astIsCALL( expr ) ) then
-		function = (not symbProcReturnsOnStack( expr->sym ))
-	else
-		function = FALSE
-	end if
-end function
-
 '' For accessing the temp result var allocated by CALLs that return on stack
 function astBuildCallResultVar( byval expr as ASTNODE ptr ) as ASTNODE ptr
 	assert( astIsCALL( expr ) )
