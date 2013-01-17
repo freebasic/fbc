@@ -257,11 +257,16 @@ function symbIsProcOverloadOf _
 
 end function
 
-private function hGetProcRealType _
-	( _
-		byval dtype as integer, _
-		byval subtype as FBSYMBOL ptr _
-	) as integer
+sub symbProcSetRealType( byval proc as FBSYMBOL ptr )
+	dim as integer dtype = any
+	dim as FBSYMBOL ptr subtype = any
+
+	dtype = symbGetFullType( proc )
+	subtype = symbGetSubtype( proc )
+
+	if( symbProcReturnsByref( proc ) ) then
+		dtype = typeAddrOf( dtype )
+	end if
 
 	select case( typeGetDtAndPtrOnly( dtype ) )
 	'' string?
@@ -277,12 +282,19 @@ private function hGetProcRealType _
 			symbSetUdtHasRecByvalRes( subtype )
 		else
 			dtype = symbGetUDTRetType( subtype )
+
+			'' If it became an integer or float, forget the subtype,
+			'' that should only be preserved for UDTs and UDT ptrs.
+			if( typeGetDtOnly( dtype ) <> FB_DATATYPE_STRUCT ) then
+				subtype = NULL
+			end if
 		end if
 
 	end select
 
-	function = dtype
-end function
+	proc->proc.realdtype   = dtype
+	proc->proc.realsubtype = subtype
+end sub
 
 '':::::
 private function hCanOverload _
@@ -802,11 +814,7 @@ add_proc:
 		end if
 	end if
 
-	if( symbProcReturnsByref( proc ) ) then
-		proc->proc.real_dtype = typeAddrOf( symbGetType( proc ) )
-	else
-		proc->proc.real_dtype = hGetProcRealType( dtype, subtype )
-	end if
+	symbProcSetRealType( proc )
 
 	if( (options and FB_SYMBOPT_DECLARING) <> 0 ) then
 		stats or= FB_SYMBSTATS_DECLARED

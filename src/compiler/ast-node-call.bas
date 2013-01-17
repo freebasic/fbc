@@ -127,8 +127,6 @@ function astLoadCALL( byval n as ASTNODE ptr ) as IRVREG ptr
 	static as integer reclevel = 0
 	dim as ASTNODE ptr arg = any, nextarg = any, l = any
 	dim as FBSYMBOL ptr proc = any
-	dim as FBSYMBOL ptr subtype = any
-	dim as integer dtype = any
 	dim as integer bytestopop = any, bytestoalign = any
 	dim as IRVREG ptr vr = any, v1 = any
 
@@ -215,41 +213,14 @@ function astLoadCALL( byval n as ASTNODE ptr ) as IRVREG ptr
 		end if
 	end if
 
-	dtype = astGetDataType( n )
-	subtype = n->subtype
-
-	'' Returning BYREF? The type should already have been remapped,
-	'' using astBuildByrefResultDeref(), unless it's VOID (if the result
-	'' was ignored)
-	#if __FB_DEBUG__
-		if( symbProcReturnsByref( proc ) ) then
-			if( dtype <> FB_DATATYPE_VOID ) then
-				assert( dtype = symbGetProcRealType( proc ) )
-			end if
-		end if
-	#endif
-
-	select case( dtype )
-	'' returning a string? it's actually a pointer to a string descriptor
-	case FB_DATATYPE_STRING, FB_DATATYPE_WCHAR
-		dtype = typeAddrOf( dtype )
-		subtype = NULL
-
-	'' UDT's can be returned in regs or as a pointer to the hidden param passed
-	case FB_DATATYPE_STRUCT
-		dtype = symbGetUDTRetType( n->subtype )
-
-		'' integers shouldn't have subtype set to anything,
-		'' but it must be kept for struct ptrs
-		if( typeGetDtOnly( dtype ) <> FB_DATATYPE_STRUCT ) then
-			subtype = NULL
-		end if
-	end select
-
 	if( ast.doemit ) then
-		vr = NULL
-		if( dtype <> FB_DATATYPE_VOID ) then
-			vr = irAllocVREG( dtype, subtype )
+		'' SUB or function result ignored?
+		if( astGetDataType( n ) = FB_DATATYPE_VOID ) then
+			vr = NULL
+		else
+			vr = irAllocVREG( typeGetDtAndPtrOnly( symbGetProcRealType( proc ) ), _
+							symbGetProcRealSubtype( proc ) )
+
 			if( proc->proc.returnMethod <> FB_RETURN_SSE ) then
 				vr->regFamily = IR_REG_FPU_STACK
 			end if
@@ -412,19 +383,13 @@ function astBuildCallResultUdt( byval expr as ASTNODE ptr ) as ASTNODE ptr
 	end if
 end function
 
-function astBuildByrefResultDeref _
-	( _
-		byval callexpr as ASTNODE ptr _
-	) as ASTNODE ptr
+function astBuildByrefResultDeref( byval expr as ASTNODE ptr ) as ASTNODE ptr
+	assert( astIsCALL( expr ) and symbIsProc( expr->sym ) )
 
-	assert( astIsCALL( callexpr ) and symbIsProc( callexpr->sym ) )
-
-	'' Do an implicit DEREF with the function's type, and then
-	'' remap the CALL node's type to the pointer, so the AST is
-	'' consistent even if that DEREF gets optimized out.
-	astSetType( callexpr, symbGetProcRealType( callexpr->sym ), _
-				symbGetProcRealSubtype( callexpr->sym ) )
-	callexpr = astNewDEREF( callexpr )
-
-	function = callexpr
+	'' Do an implicit DEREF with the function's type, and remap the CALL
+	'' node's type to the pointer, so the AST is consistent even if that
+	'' DEREF gets optimized out.
+	astSetType( expr, symbGetProcRealType( expr->sym ), _
+				symbGetProcRealSubtype( expr->sym ) )
+	function = astNewDEREF( expr )
 end function

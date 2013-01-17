@@ -599,20 +599,28 @@ end sub
 
 private function hGetReturnType( byval sym as FBSYMBOL ptr ) as integer
 	dim as FBSYMBOL ptr fld = any
+	dim as integer res = any
 
-	var dtype = symbGetFullType( sym )
-	var res = FB_DATATYPE_VOID
-
-	'' udt has a dtor, copy-ctor or virtual methods? it's never
-	'' returned in registers
+	'' UDT has a dtor, copy-ctor or virtual methods?
 	if( symbCompIsTrivial( sym ) = FALSE ) then
-		return typeAddrOf( dtype )
+		'' It's always returned through a hidden param on stack
+		return typeAddrOf( FB_DATATYPE_STRUCT )
 	end if
 
 	'' On Linux & co structures are never returned in registers
 	if( (env.target.options and FB_TARGETOPT_RETURNINREGS) = 0 ) then
-		return typeAddrOf( dtype )
+		return typeAddrOf( FB_DATATYPE_STRUCT )
 	end if
+
+	'' C backend? Leave the type as-is instead of lowering to the real
+	'' "return-in-regs" type, this means we can generate nicer C code,
+	'' since UDT vars also use the original type, they can be used with
+	'' RETURN in C without needing a cast.
+	if( env.clopt.backend = FB_BACKEND_GCC ) then
+		return FB_DATATYPE_STRUCT
+	end if
+
+	res = FB_DATATYPE_VOID
 
 	'' use the un-padded UDT len
 	select case as const symbGetUDTUnpadLen( sym )
@@ -694,16 +702,10 @@ private function hGetReturnType( byval sym as FBSYMBOL ptr ) as integer
 
 	end select
 
-	res = typeJoin( dtype, res )
-
-	'' if nothing matched, it's the pointer that was passed as the 1st arg
+	'' Nothing matched?
 	if( res = FB_DATATYPE_VOID ) then
-		res = typeAddrOf( dtype )
-	else
-		'' C backend? don't change anything
-		if( env.clopt.backend = FB_BACKEND_GCC ) then
-			res = dtype
-		end if
+		'' Then it's returned through a hidden param on stack
+		res = typeAddrOf( FB_DATATYPE_STRUCT )
 	end if
 
 	function = res
@@ -733,7 +735,7 @@ sub symbStructEnd _
 	end if
 
 	'' set the real data type used to return this struct from procs
-	sym->udt.ret_dtype = hGetReturnType( sym )
+	sym->udt.retdtype = hGetReturnType( sym )
 
 	'' Declare & add any implicit members
 	symbUdtAddDefaultMembers( sym )

@@ -432,7 +432,10 @@ type FBS_STRUCT
 	options			as short					'' FB_UDTOPT
 	bitpos			as ubyte
 	align			as ubyte
-	ret_dtype		as FB_DATATYPE				'' the type this struct is returned from procs
+
+	'' real type used to return this UDT from functions
+	retdtype		as FB_DATATYPE
+
 	dbg				as FB_STRUCT_DBG
 	ext				as FB_STRUCTEXT ptr
 end type
@@ -567,7 +570,11 @@ type FBS_PROC
 	optparams		as short					'' number of optional/default params
 	paramtb			as FBSYMBOLTB				'' parameters symbol tb
 	mode			as FB_FUNCMODE				'' calling convention
-	real_dtype		as FB_DATATYPE				'' used with STRING and UDT functions
+
+	'' result type remapped to what it will be emitted as, including CONSTs
+	realdtype		as FB_DATATYPE
+	realsubtype		as FBSYMBOL_ ptr
+
 	returnMethod	as FB_PROC_RETURN_METHOD
 	rtl				as FB_PROCRTL
 	ovl				as FB_PROCOVL				'' overloading
@@ -2139,7 +2146,7 @@ declare function symbGetUDTBaseLevel _
 
 #define symbGetUDTAnonParent(s) s->udt.anonparent
 
-#define symbGetUDTRetType(s) s->udt.ret_dtype
+#define symbGetUDTRetType(s) s->udt.retdtype
 
 #define symbGetUDTOpOvlTb(s) s->udt.ext->opovlTb
 
@@ -2201,8 +2208,9 @@ declare function symbGetUDTBaseLevel _
 
 #define symbGetProcIncFile(f) f->proc.ext->dbg.incfile
 
-#define symbGetProcRealType(f) f->proc.real_dtype
-declare function symbGetProcRealSubtype( byval proc as FBSYMBOL ptr ) as FBSYMBOL ptr
+#define symbGetProcRealType( sym )    (sym)->proc.realdtype
+#define symbGetProcRealSubtype( sym ) (sym)->proc.realsubtype
+declare sub symbProcSetRealType( byval proc as FBSYMBOL ptr )
 
 #define symbGetProcSymbTb(f) f->proc.symtb
 

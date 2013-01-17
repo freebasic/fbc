@@ -764,55 +764,31 @@ private function hDeclProcParams( byval proc as FBSYMBOL ptr ) as integer
 	function = TRUE
 end function
 
-'':::::
-private sub hLoadProcResult _
-	( _
-		byval proc as FBSYMBOL ptr _
-	)
-
+private sub hLoadProcResult( byval proc as FBSYMBOL ptr )
     dim as FBSYMBOL ptr s = any
     dim as ASTNODE ptr n = any
-    dim as integer dtype = any
-    dim as FBSYMBOL ptr subtype = any
 
 	s = symbGetProcResult( proc )
-	dtype = symbGetFullType( proc )
-	subtype = symbGetSubtype( proc )
-    n = NULL
-
-	'' Returning BYREF? Use the real type
-	if( symbProcReturnsByref( proc ) ) then
-		dtype = symbGetProcRealType( proc )
-		'' It will really be a pointer; subtype can stay the same
-		assert( dtype = typeAddrOf( symbGetType( proc ) ) )
-	end if
-
-	select case typeGet( dtype )
 
 	'' if result is a string, a temp descriptor is needed, as the current one (on stack)
 	'' will be trashed when the function returns (also, the string returned will be
 	'' set as temp, so any assignment or when passed as parameter to another proc
 	'' will deallocate this string)
-	case FB_DATATYPE_STRING
+	if( (symbGetType( proc ) = FB_DATATYPE_STRING) and _
+	    (not symbProcReturnsByref( proc )) ) then
 		n = rtlStrAllocTmpResult( astNewVAR( s ) )
 
 		if( env.clopt.backend = FB_BACKEND_GCC ) then
-			n = astNewLOAD( n, dtype, TRUE )
+			n = astNewLOAD( n, symbGetFullType( proc ), TRUE )
 		end if
-
-	'' UDT? use the real type (UDT ptr when returning on stack, or integer etc. when returning in regs)
-	case FB_DATATYPE_STRUCT
-		dtype = symbGetProcRealType( proc )
-		subtype = symbGetProcRealSubtype( proc )
-
-	end select
-
-	if( n = NULL ) then
-		n = astNewLOAD( astNewVAR( s, 0, dtype, subtype ), dtype, TRUE )
+	else
+		'' Use the real type, in case it's BYREF return or a UDT result
+		n = astNewLOAD( astNewVAR( s, 0, symbGetProcRealType( proc ), _
+					symbGetProcRealSubtype( proc ) ), _
+				symbGetProcRealType( proc ), TRUE )
 	end if
 
 	astAdd( n )
-
 end sub
 
 ''::::
