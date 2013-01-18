@@ -1233,6 +1233,7 @@ declare sub astSetType _
 	)
 
 declare function astSizeOf( byval n as ASTNODE ptr ) as integer
+declare function astIsAccessToLocal( byval expr as ASTNODE ptr ) as integer
 
 declare function astGetOFFSETChildOfs _
 	( _

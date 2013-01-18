@@ -63,6 +63,10 @@ function cAssignFunctResult( byval is_return as integer ) as integer
 		rhs = cVarOrDeref( FB_VAREXPROPT_ISEXPR )
 
 		if( rhs ) then
+			if( astIsAccessToLocal( rhs ) ) then
+				errReport( FB_ERRMSG_INVALIDREFERENCETOLOCAL )
+			end if
+
 			'' Implicit addrof due to BYREF
 			rhs = astNewADDROF( rhs )
 		end if

@@ -92,12 +92,8 @@ o -exx should catch...
     - OPERATOR foo.() ( lb1, lb2, ..... ) AS TYPE -- array indexing, not functor
 
 o BYREF function results
-  - Disallow local/temp vars to be returned BYREF
-      - but still allow things like "globalarray(localindex)", so cannot
-        generally disallow trees referencing LOCALs
-      - also any CALLs can not be allowed unless they return BYREF themselves
-      - BYREF AS STRING cannot return string literals, since a temp string
-        would need to be created?!
+  - BYREF AS STRING cannot return string literals, since a temp string
+    would need to be created?!
   - hPatchByvalResultToSelf() should probably check symbProcReturnsByref() now
   - support "FUNCTION = BYVAL ptrexpr", like BYVAL args passed to BYREF params
 

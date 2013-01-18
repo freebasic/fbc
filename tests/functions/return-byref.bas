@@ -3,11 +3,23 @@
 namespace fbc_tests.functions.return_byref
 
 namespace returnGlobal
+	'' UDT that fits into registers
+	type UDT1
+		i as integer
+	end type
+
+	'' UDT that will always be returned on stack
+	type UDT2
+		a(0 to 63) as integer
+	end type
+
 	dim shared as byte b
 	dim shared as integer i, j
 	dim shared as string s
 	dim shared as zstring * 32 z = "testing"
 	dim shared as wstring * 32 w = wstr( "testing" )
+	dim shared as UDT1 x1 = ( 12 )
+	dim shared as UDT2 x2 = ( { 34 } )
 
 	function f1( ) byref as byte
 		b = 12
@@ -49,6 +61,22 @@ namespace returnGlobal
 		function = wstr( "also good" )
 	end function
 
+	function f9( ) byref as UDT1
+		function = x1
+	end function
+
+	function f10( ) byref as UDT2
+		function = x2
+	end function
+
+	function f11( ) byref as integer
+		function = x1.i
+	end function
+
+	function f12( ) byref as integer
+		function = x2.a(0)
+	end function
+
 	sub test cdecl( )
 		CU_ASSERT( b = 0 )
 		CU_ASSERT( f1( ) = 12 )
@@ -76,6 +104,11 @@ namespace returnGlobal
 		CU_ASSERT( f7( ) = w )
 		CU_ASSERT( f7( ) = wstr( "testing" ) )
 		CU_ASSERT( f8( ) = wstr( "also good" ) )
+
+		CU_ASSERT( f9( ).i = 12 )
+		CU_ASSERT( f10( ).a(0) = 34 )
+		CU_ASSERT( f11( ) = 12 )
+		CU_ASSERT( f12( ) = 34 )
 	end sub
 end namespace
 
@@ -432,6 +465,84 @@ namespace funcptr
 	end sub
 end namespace
 
+namespace byrefToByref
+	function f1( byref i as integer ) byref as integer
+		function = i
+	end function
+
+	function f2( ) byref as integer
+		static i as integer = 789
+		function = i
+	end function
+
+	function f3( ) byref as integer
+		function = f2( )
+	end function
+
+	function f4( byref i as integer ) as integer
+		function = i
+	end function
+
+	sub test cdecl( )
+		dim i as integer = 456
+		CU_ASSERT( f1( 123 ) = 123 )
+		CU_ASSERT( f1( i ) = i )
+		CU_ASSERT( f1( i ) = 456 )
+		CU_ASSERT( f1( f1( i ) ) = 456 )
+		CU_ASSERT( @(f1( i )) = @i )
+		CU_ASSERT( @(f1( f1( i ) )) = @i )
+
+		CU_ASSERT( f3( ) = 789 )
+
+		CU_ASSERT( f4( f2( ) ) = 789 )
+	end sub
+end namespace
+
+namespace referenceToTreeUsingLocals
+	'' Some expression trees can include/use locals without really being
+	'' references to locals themselves; thus they should be allowed
+
+	type UDT
+		a(0 to 1) as integer
+	end type
+
+	dim shared as integer globalarray(0 to 1) = { 12, 34 }
+	dim shared as UDT globalx = ( { 56, 78 } )
+
+	function f1( ) byref as integer
+		dim i as integer
+		function = globalarray(i)
+	end function
+
+	function f2( ) byref as integer
+		dim i as integer = 1
+		function = globalx.a(i)
+	end function
+
+	function f3( ) byref as integer
+		dim i as integer = 1
+		dim x as UDT = ( { 1, 0 } )
+		function = globalx.a(x.a(i))
+	end function
+
+	function f( ) as integer
+		function = 1
+	end function
+
+	function f4( ) byref as integer
+		function = globalarray(f( ))
+	end function
+
+	sub test cdecl( )
+		CU_ASSERT( f1( ) = 12 )
+		CU_ASSERT( @(f1( )) = @globalarray(0) )
+		CU_ASSERT( f2( ) = 78 )
+		CU_ASSERT( @(f2( )) = @globalx.a(1) )
+		CU_ASSERT( f3( ) = 56 )
+		CU_ASSERT( f4( ) = 34 )
+	end sub
+end namespace
+
 private sub ctor( ) constructor
 	fbcu.add_suite( "tests/functions/return-byref" )
 	fbcu.add_test( "returning globals", @returnGlobal.test )
@@ -450,6 +561,8 @@ private sub ctor( ) constructor
 	fbcu.add_test( "ignore result", @ignoreResult.test )
 	fbcu.add_test( "UDT with ctor/dtor", @ctorDtorUdt.test )
 	fbcu.add_test( "function ptr", @funcptr.test )
+	fbcu.add_test( "BYREF to BYREF", @byrefToByref.test )
+	fbcu.add_test( "tree using locals", @referenceToTreeUsingLocals.test )
 end sub
 
 end namespace

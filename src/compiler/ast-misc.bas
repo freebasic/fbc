@@ -1244,3 +1244,32 @@ function astSizeOf( byval n as ASTNODE ptr ) as integer
 		end if
 	end select
 end function
+
+function astIsAccessToLocal( byval expr as ASTNODE ptr ) as integer
+	function = FALSE
+
+	select case( astGetClass( expr ) )
+	case AST_NODECLASS_VAR, AST_NODECLASS_IDX
+		'' Disallow local vars/arrays
+		function = symbIsLocal( expr->sym ) and (not symbIsStatic( expr->sym ))
+
+	case AST_NODECLASS_CALL
+		'' No CALLs can be allowed - either their result
+		'' is in registers or in a local temp var.
+		'' Note: functions returning BYREF are ok,
+		'' they appear here as DEREFs.
+		function = TRUE
+
+	case AST_NODECLASS_FIELD
+		if( astIsDEREF( expr->l ) ) then
+			if( astIsBOP( expr->l->l, AST_OP_ADD ) ) then
+				if( astGetClass( expr->l->l->l ) = AST_NODECLASS_ADDROF ) then
+					'' will be a VAR/FIELD again
+					function = astIsAccessToLocal( expr->l->l->l->l )
+				end if
+			end if
+		end if
+
+	end select
+
+end function
