@@ -407,6 +407,31 @@ namespace ctorDtorUdt
 	end sub
 end namespace
 
+namespace funcptr
+	dim shared as integer x1 = 123, x2 = 789
+
+	function f1( ) byref as integer
+		function = x1
+	end function
+
+	function f2( ) byref as integer
+		function = x2
+	end function
+
+	sub test cdecl( )
+		dim p as function( ) byref as integer = @f1
+		CU_ASSERT( f1( ) = 123 )
+		CU_ASSERT(  p( ) = 123 )
+		CU_ASSERT( @(f1( )) = @(p( )) )
+		x1 = 456
+		CU_ASSERT(  p( ) = 456 )
+		CU_ASSERT( f1( ) = 456 )
+		p = @f2
+		CU_ASSERT(  p( ) = 789 )
+		CU_ASSERT( f2( ) = 789 )
+	end sub
+end namespace
+
 private sub ctor( ) constructor
 	fbcu.add_suite( "tests/functions/return-byref" )
 	fbcu.add_test( "returning globals", @returnGlobal.test )
@@ -424,6 +449,7 @@ private sub ctor( ) constructor
 	fbcu.add_test( "operators", @operators.test )
 	fbcu.add_test( "ignore result", @ignoreResult.test )
 	fbcu.add_test( "UDT with ctor/dtor", @ctorDtorUdt.test )
+	fbcu.add_test( "function ptr", @funcptr.test )
 end sub
 
 end namespace

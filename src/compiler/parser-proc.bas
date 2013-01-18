@@ -583,10 +583,10 @@ private sub cOverrideAttribute( byval proc as FBSYMBOL ptr )
 	end if
 end sub
 
-private sub cByrefAttribute( byref attrib as integer, byval is_sub as integer )
+sub cByrefAttribute( byref attrib as integer, byval is_func as integer )
 	'' BYREF?
 	if( lexGetToken( ) = FB_TK_BYREF ) then
-		if( is_sub ) then
+		if( is_func = FALSE ) then
 			errReport( FB_ERRMSG_SYNTAXERROR )
 		end if
 		lexSkipToken( )
@@ -1303,7 +1303,7 @@ function cProcHeader _
 			dtype = FB_DATATYPE_VOID
 		else
 			'' BYREF?
-			cByrefAttribute( attrib, FALSE )
+			cByrefAttribute( attrib, TRUE )
 
 			'' AS SymbolType
 			if( lexGetToken( ) = FB_TK_AS ) then
@@ -1333,7 +1333,7 @@ function cProcHeader _
 
 	case FB_TK_PROPERTY
 		'' BYREF?
-		cByrefAttribute( attrib, FALSE )
+		cByrefAttribute( attrib, TRUE )
 
 		'' (AS SymbolType)?
 		if( lexGetToken( ) = FB_TK_AS ) then
@@ -1365,7 +1365,7 @@ function cProcHeader _
 		end if
 
 		'' BYREF?
-		cByrefAttribute( attrib, (tk = FB_TK_SUB) )
+		cByrefAttribute( attrib, (tk = FB_TK_FUNCTION) )
 
 		'' (AS SymbolType)?
 		if( lexGetToken( ) = FB_TK_AS ) then

@@ -1006,6 +1006,7 @@ function symbAddProcPtr _
 		byval proc as FBSYMBOL ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
+		byval attrib as integer, _
 		byval mode as integer _
 	) as FBSYMBOL ptr
 
@@ -1054,7 +1055,7 @@ function symbAddProcPtr _
 
 	'' create a new prototype
 	sym = hSetupProc( proc, parent, symtb, hashtb, id, symbUniqueId( ), _
-	                  dtype, subtype, 0, mode, _
+	                  dtype, subtype, attrib, mode, _
 	                  FB_SYMBOPT_DECLARING or FB_SYMBOPT_PRESERVECASE )
 
 	if( sym <> NULL ) then
@@ -1093,9 +1094,9 @@ function symbAddProcPtrFromFunction _
     loop
 
 	function = symbAddProcPtr( proc, _
-							   symbGetFullType( base_proc ), _
-							   symbGetSubtype( base_proc ), _
-							   symbGetProcMode( base_proc ) )
+			symbGetFullType( base_proc ), symbGetSubtype( base_proc ), _
+			base_proc->attrib and FB_SYMBATTRIB_RETURNSBYREF, _  '' preserve RETURNSBYREF
+			symbGetProcMode( base_proc ) )
 
 end function
 

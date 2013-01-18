@@ -34,16 +34,13 @@ function cConstIntExpr( byval expr as ASTNODE ptr ) as integer
 	function = v
 end function
 
-'':::::
-function cSymbolTypeFuncPtr _
-	( _
-		byval isfunction as integer _
-	) as FBSYMBOL ptr
-
-	dim as integer dtype = any, lgt = any, mode = any
+private function cSymbolTypeFuncPtr( byval is_func as integer ) as FBSYMBOL ptr
+	dim as integer dtype = any, lgt = any, mode = any, attrib = any
 	dim as FBSYMBOL ptr proc = any, subtype = any
 
 	function = NULL
+	attrib = 0
+	subtype = NULL
 
 	' no need for naked check here, naked only effects the way a function
 	' is emitted, not the way it's called
@@ -56,59 +53,30 @@ function cSymbolTypeFuncPtr _
 	'' Parameters?
 	cParameters( NULL, proc, mode, TRUE )
 
+	'' BYREF?
+	cByrefAttribute( attrib, is_func )
+
 	'' (AS SymbolType)?
 	if( lexGetToken( ) = FB_TK_AS ) then
-
 		'' if it was SUB, don't allow a return type
-		if( isfunction = FALSE ) then
+		if( is_func = FALSE ) then
 			errReport( FB_ERRMSG_SYNTAXERROR )
 			dtype = FB_DATATYPE_VOID
-			subtype = NULL
-		
-		'' it's a function
 		else
-
-			lexSkipToken( )
-
-			if( cSymbolType( dtype, subtype, lgt ) = FALSE ) then
-				errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
-				'' error recovery: fake a type
-				dtype = FB_DATATYPE_INTEGER
-				subtype = NULL
-			end if
-
-			'' check for invalid types
-			select case as const typeGet( dtype )
-			case FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
-				errReport( FB_ERRMSG_CANNOTRETURNFIXLENFROMFUNCTS )
-				'' error recovery: fake a type
-				dtype = FB_DATATYPE_INTEGER
-				subtype = NULL
-
-			case FB_DATATYPE_VOID
-				errReport( FB_ERRMSG_INVALIDDATATYPES )
-				'' error recovery: fake a type
-				dtype = typeAddrOf( dtype )
-				subtype = NULL
-			end select
-
-			proc->proc.returnMethod = cProcReturnMethod( dtype )
+			cProcRetType( attrib, proc, dtype, subtype, lgt )
 		end if
 	else
 		'' if it's a function and type was not given, it can't be guessed
-		if( isfunction ) then
+		if( is_func ) then
 			errReport( FB_ERRMSG_EXPECTEDRESTYPE )
 			'' error recovery: fake a type
 			dtype = FB_DATATYPE_INTEGER
-			subtype = NULL
 		else
 			dtype = FB_DATATYPE_VOID
-			subtype = NULL
 		end if
 	end if
 
-	function = symbAddProcPtr( proc, dtype, subtype, mode )
-
+	function = symbAddProcPtr( proc, dtype, subtype, attrib, mode )
 end function
 
 function cTypeOrExpression _
