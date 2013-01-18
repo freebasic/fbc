@@ -93,7 +93,6 @@ o -exx should catch...
 
 o BYREF function results
   - hPatchByvalResultToSelf() should probably check symbProcReturnsByref() now
-  - support "FUNCTION = BYVAL ptrexpr", like BYVAL args passed to BYREF params
 
 [ ] quirks:
     [ ] OPEN ... FOR is not checking for mode

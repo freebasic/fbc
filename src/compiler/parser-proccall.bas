@@ -57,7 +57,15 @@ function cAssignFunctResult( byval is_return as integer ) as integer
 	parser.ctx_dtype = symbGetType( parser.currproc )
 
 	'' Expression
-	if( symbProcReturnsByref( parser.currproc ) ) then
+	''
+	'' Any Expression is allowed in "FUNCTION = expr" or "RETURN expr",
+	'' as long as the type matches, unless the function returns BYREF,
+	'' then it must be a variable/deref (since we do an implicit ADDROF).
+	'' However if BYVAL is explicitly given then any pointer expression
+	'' is allowed, no implicit ADDROF is done, just like with BYREF params.
+
+	'' Returning BYREF and no explicit BYVAL given?
+	if( symbProcReturnsByref( parser.currproc ) and (not hMatch( FB_TK_BYVAL )) ) then
 		'' BYREF return, must be able to do addrof on the expression
 		'' (this disallows expressions like constants, BOPs, @ UOP, ...)
 		rhs = cVarOrDeref( FB_VAREXPROPT_ISEXPR )

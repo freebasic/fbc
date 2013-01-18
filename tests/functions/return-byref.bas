@@ -543,6 +543,25 @@ namespace referenceToTreeUsingLocals
 	end sub
 end namespace
 
+namespace explicitByval
+	dim shared i as integer = 123
+
+	function f1( ) byref as integer
+		dim pi as integer ptr = @i
+		function = byval pi
+	end function
+
+	function f2( ) byref as integer
+		dim pi as integer ptr = @i
+		return byval pi
+	end function
+
+	sub test cdecl( )
+		CU_ASSERT( f1( ) = 123 )
+		CU_ASSERT( f2( ) = 123 )
+	end sub
+end namespace
+
 private sub ctor( ) constructor
 	fbcu.add_suite( "tests/functions/return-byref" )
 	fbcu.add_test( "returning globals", @returnGlobal.test )
@@ -563,6 +582,7 @@ private sub ctor( ) constructor
 	fbcu.add_test( "function ptr", @funcptr.test )
 	fbcu.add_test( "BYREF to BYREF", @byrefToByref.test )
 	fbcu.add_test( "tree using locals", @referenceToTreeUsingLocals.test )
+	fbcu.add_test( "explicit BYVAL", @explicitByval.test )
 end sub
 
 end namespace
