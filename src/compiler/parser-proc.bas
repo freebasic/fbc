@@ -232,6 +232,18 @@ private sub hCheckAttribs _
 		byval attrib as FB_SYMBATTRIB _
 	)
 
+	'' if one returns BYREF, the other must too
+	if( ((attrib and FB_SYMBATTRIB_RETURNSBYREF) <> 0) <> symbProcReturnsByref( proto ) ) then
+		errReport( FB_ERRMSG_TYPEMISMATCH, TRUE )
+		'' Error recovery: if the proto had BYREF, add it for the body
+		'' too, otherwise remove it from the body
+		if( symbProcReturnsByref( proto ) ) then
+			attrib or= FB_SYMBATTRIB_RETURNSBYREF
+		else
+			attrib and= not FB_SYMBATTRIB_RETURNSBYREF
+		end if
+	end if
+
 	'' the body can only be STATIC if the proto is too
 	if( (attrib and FB_SYMBATTRIB_STATIC) and (not symbIsStatic( proto )) ) then
 		errReport( FB_ERRMSG_PROCPROTOTYPENOTSTATIC )
@@ -349,49 +361,60 @@ private function hGetId _
 	function = sym
 end function
 
-private sub hCheckRetType _
-	( _
-		byref dtype as integer, _
-		byref subtype as FBSYMBOL ptr _
-	)
-
-	'' check for invalid types
-	select case as const typeGet( dtype )
-	case FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
-		errReport( FB_ERRMSG_CANNOTRETURNFIXLENFROMFUNCTS )
-		'' error recovery: fake a type
-		dtype = FB_DATATYPE_STRING
-		subtype = NULL
-
-	case FB_DATATYPE_VOID
-		errReport( FB_ERRMSG_INVALIDDATATYPES )
-		'' error recovery: fake a type
-		dtype = typeAddrOf( dtype )
-		subtype = NULL
-	end select
-
-	'' Disallow BYVAL return of objects of abstract classes
-	hComplainIfAbstractClass( dtype, subtype )
-
-end sub
-
 sub cProcRetType _
 	( _
+		byval attrib as integer, _
 		byval proc as FBSYMBOL ptr, _
 		byref dtype as integer, _
 		byref subtype as FBSYMBOL ptr, _
 		byref lgt as integer _
 	)
 
+	dim as integer options = any
+
+	'' AS
 	lexSkipToken( )
 
-	if( cSymbolType( dtype, subtype, lgt ) = FALSE ) then
+	options = FB_SYMBTYPEOPT_DEFAULT
+
+	'' Returns BYREF?
+	if( attrib and FB_SYMBATTRIB_RETURNSBYREF ) then
+		'' Then allow BYREF AS Z/WSTRING as the type
+		options and= not FB_SYMBTYPEOPT_CHECKSTRPTR
+	end if
+
+	if( cSymbolType( dtype, subtype, lgt, options ) = FALSE ) then
 		errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
 		'' error recovery: fake a type
 		dtype = FB_DATATYPE_INTEGER
 		subtype = NULL
 	else
-		hCheckRetType( dtype, subtype )
+		'' check for invalid types
+		select case( typeGetDtAndPtrOnly( dtype ) )
+		case FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
+			'' FIXSTR is never allowed; ZSTRING/WSTRING only if BYREF
+			if( ((attrib and FB_SYMBATTRIB_RETURNSBYREF) = 0) or _
+			    (typeGetDtAndPtrOnly( dtype ) = FB_DATATYPE_FIXSTR) ) then
+				errReport( FB_ERRMSG_CANNOTRETURNFIXLENFROMFUNCTS )
+				'' error recovery: fake a type
+				dtype = FB_DATATYPE_STRING
+				subtype = NULL
+			end if
+
+		case FB_DATATYPE_VOID
+			'' Not even allowed when returning BYREF, because of
+			'' the implicit DEREF on the CALL, but we cannot DEREF
+			'' an ANY PTR...
+			errReport( FB_ERRMSG_INVALIDDATATYPES )
+			'' error recovery: fake a type
+			dtype = typeAddrOf( dtype )
+			subtype = NULL
+		end select
+
+		if( (attrib and FB_SYMBATTRIB_RETURNSBYREF) = 0 ) then
+			'' Disallow BYVAL return of objects of abstract classes
+			hComplainIfAbstractClass( dtype, subtype )
+		end if
 	end if
 
 	proc->proc.returnMethod = cProcReturnMethod( dtype )
@@ -557,6 +580,17 @@ private sub cOverrideAttribute( byval proc as FBSYMBOL ptr )
 			errReport( FB_ERRMSG_OVERRIDINGNOTHING )
 		end if
 		lexSkipToken( )
+	end if
+end sub
+
+sub cByrefAttribute( byref attrib as integer, byval is_func as integer )
+	'' BYREF?
+	if( lexGetToken( ) = FB_TK_BYREF ) then
+		if( is_func = FALSE ) then
+			errReport( FB_ERRMSG_SYNTAXERROR )
+		end if
+		lexSkipToken( )
+		attrib or= FB_SYMBATTRIB_RETURNSBYREF
 	end if
 end sub
 
@@ -961,7 +995,7 @@ end sub
 
 '' ProcHeader  =
 ''    ParentID? (ID|Operator)? CallConvention? OVERLOAD? (ALIAS LIT_STRING)?
-''    Parameters? (AS SymbolType)?
+''    Parameters? BYREF? (AS SymbolType)?
 ''    (CONSTRUCTOR|DESTRUCTOR)? Priority? STATIC? EXPORT?
 function cProcHeader _
 	( _
@@ -1268,9 +1302,12 @@ function cProcHeader _
 		if( astGetOpNoResult( op ) ) then
 			dtype = FB_DATATYPE_VOID
 		else
+			'' BYREF?
+			cByrefAttribute( attrib, TRUE )
+
 			'' AS SymbolType
 			if( lexGetToken( ) = FB_TK_AS ) then
-				cProcRetType( proc, dtype, subtype, lgt )
+				cProcRetType( attrib, proc, dtype, subtype, lgt )
 			else
 				errReport( FB_ERRMSG_EXPECTEDRESTYPE )
 				'' error recovery: fake a type
@@ -1295,12 +1332,21 @@ function cProcHeader _
 		hCheckOpOvlParams( parent, op, proc )
 
 	case FB_TK_PROPERTY
+		'' BYREF?
+		cByrefAttribute( attrib, TRUE )
+
 		'' (AS SymbolType)?
 		if( lexGetToken( ) = FB_TK_AS ) then
-			cProcRetType( proc, dtype, subtype, lgt )
+			cProcRetType( attrib, proc, dtype, subtype, lgt )
 			is_indexed = (symbGetProcParams( proc ) = 1+1)
 			is_get = TRUE
 		else
+			'' found BYREF before?
+			if( attrib and FB_SYMBATTRIB_RETURNSBYREF ) then
+				errReport( FB_ERRMSG_EXPECTEDRESTYPE )
+				'' error recovery: remove BYREF attribute and treat as setter
+				attrib and= not FB_SYMBATTRIB_RETURNSBYREF
+			end if
 			dtype = FB_DATATYPE_VOID
 			is_indexed = (symbGetProcParams( proc ) = 1+2)
 		end if
@@ -1318,12 +1364,15 @@ function cProcHeader _
 			end if
 		end if
 
+		'' BYREF?
+		cByrefAttribute( attrib, (tk = FB_TK_FUNCTION) )
+
 		'' (AS SymbolType)?
 		if( lexGetToken( ) = FB_TK_AS ) then
 			if( (dtype <> FB_DATATYPE_INVALID) or (tk = FB_TK_SUB) ) then
 				errReport( FB_ERRMSG_SYNTAXERROR )
 			end if
-			cProcRetType( proc, dtype, subtype, lgt )
+			cProcRetType( attrib, proc, dtype, subtype, lgt )
 		else
 			if( tk = FB_TK_FUNCTION ) then
 				if( fbLangOptIsSet( FB_LANG_OPT_DEFTYPE ) ) then

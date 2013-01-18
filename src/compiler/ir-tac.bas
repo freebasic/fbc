@@ -478,7 +478,7 @@ private sub _emitProcEnd _
 	'' Additionally pop the hidden ptr (symbCalcProcParamsLen() doesn't
 	'' include it), if it's stdcall/pascal, or the target wants us to
 	'' always pop it, even under cdecl.
-	if( symbProcReturnsUdtOnStack( proc ) ) then
+	if( symbProcReturnsOnStack( proc ) ) then
 		if( (symbGetProcMode( proc ) <> FB_FUNCMODE_CDECL) or _
 		    (env.target.options and FB_TARGETOPT_CALLEEPOPSHIDDENPTR) ) then
 			bytestopop += typeGetSize( typeAddrOf( FB_DATATYPE_VOID ) )

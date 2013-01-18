@@ -115,6 +115,12 @@ function cFunctionCall _
 		return astNewCONSTi( 0 )
 	end if
 
+	'' Function returns BYREF?
+	if( symbProcReturnsByref( sym ) ) then
+		'' Add implicit DEREF
+		funcexpr = astBuildByrefResultDeref( funcexpr )
+	end if
+
 	''
 	function = cStrIdxOrMemberDeref( funcexpr )
 

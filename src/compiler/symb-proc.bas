@@ -67,8 +67,19 @@ sub symbProcFreeExt( byval proc as FBSYMBOL ptr )
 	end if
 end sub
 
-function symbProcReturnsUdtOnStack( byval proc as FBSYMBOL ptr ) as integer
+function symbProcReturnsOnStack( byval proc as FBSYMBOL ptr ) as integer
+	assert( symbIsProc( proc ) )
+
+	'' BYREF result never is on stack, instead it's always a pointer,
+	'' which will always be returned in registers
+	if( symbProcReturnsByref( proc ) ) then
+		exit function
+	end if
+
+	'' UDT result?
 	if( symbGetType( proc ) = FB_DATATYPE_STRUCT ) then
+		'' Real type is an UDT pointer (instead of INTEGER/LONGINT)?
+		'' Then it's returned on stack (instead of in registers)
 		function = (typeGetDtAndPtrOnly( symbGetProcRealType( proc ) ) = typeAddrOf( FB_DATATYPE_STRUCT ))
 	end if
 end function
@@ -246,36 +257,44 @@ function symbIsProcOverloadOf _
 
 end function
 
-'':::::
-private function hGetProcRealType _
-	( _
-		byval dtype as integer, _
-		byval subtype as FBSYMBOL ptr _
-	) as integer
+sub symbProcSetRealType( byval proc as FBSYMBOL ptr )
+	dim as integer dtype = any
+	dim as FBSYMBOL ptr subtype = any
 
-    select case typeGet( dtype )
-    '' string? it's actually a pointer to a string descriptor
-    case FB_DATATYPE_STRING
-    	 return typeAddrOf( FB_DATATYPE_STRING )
+	dtype = symbGetFullType( proc )
+	subtype = symbGetSubtype( proc )
 
-    '' UDT? follow GCC 3.x's ABI
-    case FB_DATATYPE_STRUCT
+	if( symbProcReturnsByref( proc ) ) then
+		dtype = typeAddrOf( dtype )
+	end if
 
+	select case( typeGetDtAndPtrOnly( dtype ) )
+	'' string?
+	case FB_DATATYPE_STRING, FB_DATATYPE_WCHAR
+		'' It's actually a pointer to a string descriptor,
+		'' or in case of wstring, a pointer to a wchar buffer.
+		dtype = typeAddrOf( dtype )
+
+	'' UDT? follow GCC 3.x's ABI
+	case FB_DATATYPE_STRUCT
 		'' still parsing the struct? patch it later..
 		if( subtype = symbGetCurrentNamespc( ) ) then
 			symbSetUdtHasRecByvalRes( subtype )
-			return dtype
+		else
+			dtype = symbGetUDTRetType( subtype )
+
+			'' If it became an integer or float, forget the subtype,
+			'' that should only be preserved for UDTs and UDT ptrs.
+			if( typeGetDtOnly( dtype ) <> FB_DATATYPE_STRUCT ) then
+				subtype = NULL
+			end if
 		end if
-
-		return symbGetUDTRetType( subtype )
-
-	'' type is the same
-	case else
-    	return dtype
 
 	end select
 
-end function
+	proc->proc.realdtype   = dtype
+	proc->proc.realsubtype = subtype
+end sub
 
 '':::::
 private function hCanOverload _
@@ -795,7 +814,7 @@ add_proc:
 		end if
 	end if
 
-	proc->proc.real_dtype = hGetProcRealType( dtype, subtype )
+	symbProcSetRealType( proc )
 
 	if( (options and FB_SYMBOPT_DECLARING) <> 0 ) then
 		stats or= FB_SYMBSTATS_DECLARED
@@ -987,6 +1006,7 @@ function symbAddProcPtr _
 		byval proc as FBSYMBOL ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
+		byval attrib as integer, _
 		byval mode as integer _
 	) as FBSYMBOL ptr
 
@@ -1035,7 +1055,7 @@ function symbAddProcPtr _
 
 	'' create a new prototype
 	sym = hSetupProc( proc, parent, symtb, hashtb, id, symbUniqueId( ), _
-	                  dtype, subtype, 0, mode, _
+	                  dtype, subtype, attrib, mode, _
 	                  FB_SYMBOPT_DECLARING or FB_SYMBOPT_PRESERVECASE )
 
 	if( sym <> NULL ) then
@@ -1074,9 +1094,9 @@ function symbAddProcPtrFromFunction _
     loop
 
 	function = symbAddProcPtr( proc, _
-							   symbGetFullType( base_proc ), _
-							   symbGetSubtype( base_proc ), _
-							   symbGetProcMode( base_proc ) )
+			symbGetFullType( base_proc ), symbGetSubtype( base_proc ), _
+			base_proc->attrib and FB_SYMBATTRIB_RETURNSBYREF, _  '' preserve RETURNSBYREF
+			symbGetProcMode( base_proc ) )
 
 end function
 
@@ -1175,7 +1195,7 @@ function symbAddProcResultParam( byval proc as FBSYMBOL ptr ) as FBSYMBOL ptr
     dim as FBSYMBOL ptr s = any
     static as string id
 
-	if( symbProcReturnsUdtOnStack( proc ) = FALSE ) then
+	if( symbProcReturnsOnStack( proc ) = FALSE ) then
 		return NULL
 	end if
 
@@ -1194,17 +1214,27 @@ end function
 function symbAddProcResult( byval proc as FBSYMBOL ptr ) as FBSYMBOL ptr
 	dim as FBARRAYDIM dTB(0) = any
 	dim as FBSYMBOL ptr res = any
+	dim as integer dtype = any
+	dim as const zstring ptr id = any
 
 	'' UDT on stack? No local result var needs to be added;
 	'' the hidden result param is used instead.
-	if( symbProcReturnsUdtOnStack( proc ) ) then
+	if( symbProcReturnsOnStack( proc ) ) then
 		return symbGetProcResult( proc )
 	end if
 
-	res = symbAddVarEx( @"fb$result", NULL, proc->typ, proc->subtype, 0, _
+	dtype = proc->typ
+
+	'' Returning byref? Then the implicit result var is actually a pointer.
+	if( symbProcReturnsByref( proc ) ) then
+		dtype = typeAddrOf( dtype )
+	end if
+
+	res = symbAddVarEx( @"fb$result", NULL, dtype, proc->subtype, 0, _
 	                    0, dTB(), FB_SYMBATTRIB_FUNCRESULT, FB_SYMBOPT_PRESERVECASE )
 
 	symbProcAllocExt( proc )
+
 	proc->proc.ext->res = res
 
 	'' clear up the result

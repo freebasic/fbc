@@ -89,10 +89,11 @@ o -exx should catch...
 
 [ ] operator overloading:
     - add 'operator []' (or string-ish classes won't allow 'direct' char access)
-    - add support for functions returning references (reuse "BYREF") or the
-      '->' operator will be useless for UDT's with copy-ctors or dtors
-      as returning byval will make a deep copy
     - OPERATOR foo.() ( lb1, lb2, ..... ) AS TYPE -- array indexing, not functor
+
+o BYREF function results
+  - hPatchByvalResultToSelf() should probably check symbProcReturnsByref() now
+  - support "FUNCTION = BYVAL ptrexpr", like BYVAL args passed to BYREF params
 
 [ ] quirks:
     [ ] OPEN ... FOR is not checking for mode

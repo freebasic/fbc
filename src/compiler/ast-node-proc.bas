@@ -525,13 +525,33 @@ private function hCheckErrHnd _
 
 end function
 
-private function hCallResultCtor _
+private function hMaybeCallResultCtor _
 	( _
 		byval head_node as ASTNODE ptr, _
 		byval sym as FBSYMBOL ptr _
 	) as ASTNODE ptr
 
 	dim as FBSYMBOL ptr res = any, defctor = any
+
+	'' Not returning BYVAL, or BYVAL but not an UDT?
+	if( symbProcReturnsByref( sym ) or _
+	    (symbGetType( sym ) <> FB_DATATYPE_STRUCT) ) then
+		return head_node
+	end if
+
+	'' Add result ctor call to the top of the function,
+	''    a) if FUNCTION= (and/or EXIT FUNCTION) was used,
+	''    b) or if neither FUNCTION= nor RETURN was used,
+	'' but not if RETURN was used, because that already calls the copy
+	'' ctor at every RETURN.
+	''
+	'' This way the result will be constructed properly,
+	'' even if nothing was explicitly returned.
+
+	'' only RETURN used?
+	if( (not symbGetProcStatAssignUsed( sym )) and symbGetProcStatReturnUsed( sym ) ) then
+		return head_node
+	end if
 
 	'' UDT with default ctor? (if there is none, nothing needs to be done)
 	defctor = symbGetCompDefCtor( symbGetSubtype( sym ) )
@@ -647,22 +667,8 @@ function astProcEnd( byval callrtexit as integer ) as integer
 		if( enable_implicit_code ) then
 			'' if it's a function, load result
 			if( symbGetType( sym ) <> FB_DATATYPE_VOID ) then
-				select case symbGetType( sym )
-				case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-					'' Add result ctor call to the top of the function,
-					'' a) if FUNCTION= (and/or EXIT FUNCTION) was used,
-					'' b) or if neither FUNCTION= nor RETURN was used,
-					'' but not if RETURN was used, because that already
-					'' calls the copy ctor at every RETURN.
-					'' This way the result will be constructed properly,
-					'' even if nothing was explicitly returned.
-					if( symbGetProcStatAssignUsed( sym ) or _
-					    (not symbGetProcStatReturnUsed( sym )) ) then
-						head_node = hCallResultCtor( head_node, sym )
-					end if
-				end select
-
-        		hLoadProcResult( sym )
+				head_node = hMaybeCallResultCtor( head_node, sym )
+				hLoadProcResult( sym )
 			end if
 		end if
 	end if
@@ -758,53 +764,31 @@ private function hDeclProcParams( byval proc as FBSYMBOL ptr ) as integer
 	function = TRUE
 end function
 
-'':::::
-private sub hLoadProcResult _
-	( _
-		byval proc as FBSYMBOL ptr _
-	)
-
+private sub hLoadProcResult( byval proc as FBSYMBOL ptr )
     dim as FBSYMBOL ptr s = any
     dim as ASTNODE ptr n = any
-    dim as integer dtype = any
-    dim as FBSYMBOL ptr subtype = any
 
 	s = symbGetProcResult( proc )
-	dtype = symbGetFullType( proc )
-	subtype = symbGetSubtype( proc )
-    n = NULL
-
-	select case typeGet( dtype )
 
 	'' if result is a string, a temp descriptor is needed, as the current one (on stack)
 	'' will be trashed when the function returns (also, the string returned will be
 	'' set as temp, so any assignment or when passed as parameter to another proc
 	'' will deallocate this string)
-	case FB_DATATYPE_STRING
+	if( (symbGetType( proc ) = FB_DATATYPE_STRING) and _
+	    (not symbProcReturnsByref( proc )) ) then
 		n = rtlStrAllocTmpResult( astNewVAR( s ) )
 
 		if( env.clopt.backend = FB_BACKEND_GCC ) then
-			n = astNewLOAD( n, dtype, TRUE )
+			n = astNewLOAD( n, symbGetFullType( proc ), TRUE )
 		end if
-
-	'' UDT? use the real type (UDT ptr when returning on stack, or integer etc. when returning in regs)
-	case FB_DATATYPE_STRUCT
-		dtype = symbGetProcRealType( proc )
-
-		'' integers shouldn't have subtype set to anything,
-		'' but it must be kept for struct ptrs
-		if( typeGetDtOnly( dtype ) <> FB_DATATYPE_STRUCT ) then
-			subtype = NULL
-		end if
-
-	end select
-
-	if( n = NULL ) then
-		n = astNewLOAD( astNewVAR( s, 0, dtype, subtype ), dtype, TRUE )
+	else
+		'' Use the real type, in case it's BYREF return or a UDT result
+		n = astNewLOAD( astNewVAR( s, 0, symbGetProcRealType( proc ), _
+					symbGetProcRealSubtype( proc ) ), _
+				symbGetProcRealType( proc ), TRUE )
 	end if
 
 	astAdd( n )
-
 end sub
 
 ''::::

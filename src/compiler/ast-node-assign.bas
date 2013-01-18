@@ -381,6 +381,7 @@ function astNewASSIGN _
     dim as FB_DATACLASS ldclass = any, rdclass = any
     dim as FBSYMBOL ptr lsubtype = any, proc = any
 	dim as FB_ERRMSG err_num = any
+	dim as integer do_move = any
 
 	function = NULL
 
@@ -502,54 +503,53 @@ function astNewASSIGN _
 			exit function
 		end if
 
-        '' is r an UDT too?
-		if( astIsCALLReturnInReg( r ) = FALSE ) then
-			'' type ini tree?
-			if( astIsTYPEINI( r ) ) then
-				'' skip any casting if they won't do any conversion
-				dim as ASTNODE ptr t = l
-				if( l->class = AST_NODECLASS_CONV ) then
-					if( l->cast.doconv = FALSE ) then
-						t = l->l
-					end if
-				end if
-
-				'' !!FIXME!! can't be used with complex l-hand side expressions
-				if( t->class = AST_NODECLASS_VAR ) then
-					'' no double assign, just flush the tree
-					return astTypeIniFlush( r, t->sym, AST_INIOPT_NONE )
+		'' type ini tree?
+		if( astIsTYPEINI( r ) ) then
+			'' skip any casting if they won't do any conversion
+			dim as ASTNODE ptr t = l
+			if( l->class = AST_NODECLASS_CONV ) then
+				if( l->cast.doconv = FALSE ) then
+					t = l->l
 				end if
 			end if
 
-			'' do a shallow copy..
-
-			'' call and returning a pointer? deref the hidden arg (the result)
-			var do_move = TRUE
-			if( astIsCALL( r ) ) then
-				if( typeIsPtr( symbGetUDTRetType( r->subtype ) ) ) then
-					r = astBuildCallHiddenResVar( r )
-				else
-					do_move = FALSE
-				end if
+			'' Initialize the lhs with the TYPEINI directly,
+			'' instead of using a temp var and then copying that.
+			'' FIXME: This currently only works with VAR on the lhs,
+			'' because astTypeIniFlush() takes a symbol, not an expression...
+			if( t->class = AST_NODECLASS_VAR ) then
+				'' no double assign, just flush the tree
+				return astTypeIniFlush( r, t->sym, AST_INIOPT_NONE )
 			end if
+		end if
 
+		'' Do a shallow copy
+
+		if( astIsCALL( r ) ) then
+			do_move = symbProcReturnsOnStack( r->sym )
 			if( do_move ) then
-				return astNewMEM( AST_OP_MEMMOVE, l, r, symbGetLen( l->subtype ) )
+				'' Returning on stack, copy from the temp result var
+				r = astBuildCallResultVar( r )
+			else
+				'' Returning in registers, patch the types and do a normal ASSIGN
+				ldfull = symbGetProcRealType( r->sym )
+				ldtype = typeGet( ldfull )
+				lsubtype = symbGetProcRealSubtype( r->sym )
+				ldclass = typeGetClass( ldtype )
+				astSetType( l, ldfull, lsubtype )
+
+				rdfull = ldfull
+				rdtype = ldtype
+				rdclass = ldclass
+				astSetType( r, rdfull, lsubtype )
 			end if
-
-		'' r is function returning an UDT on registers
 		else
-            '' patch both type
-            ldfull = symbGetUDTRetType( r->subtype )
-            ldtype = typeGet( ldfull )
-            lsubtype = NULL
-            ldclass = typeGetClass( ldtype )
-            astSetType( l, ldfull, NULL )
+			'' Not a CALL, it must be an UDT in memory, copy from that
+			do_move = TRUE
+		end if
 
-            rdfull = ldfull
-            rdtype = ldtype
-            rdclass = ldclass
-            astSetType( r, rdfull, NULL )
+		if( do_move ) then
+			return astNewMEM( AST_OP_MEMMOVE, l, r, symbGetLen( l->subtype ) )
 		end if
 
     '' wstrings?

@@ -203,7 +203,7 @@ sub rtlAddIntrinsicProcs _
 								'' Must match the function's declaration in the
 								'' rtlib. Currently only fb_ThreadCreate() is
 								'' affected.
-								subtype = symbAddProcPtr( inner_proc, .dtype, NULL, env.target.fbcall )
+								subtype = symbAddProcPtr( inner_proc, .dtype, NULL, 0, env.target.fbcall )
 
 								'' due to the ambiguity (need to say it's optional to
 								'' even get to this point), the symbol's return type will

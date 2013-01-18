@@ -1195,6 +1195,31 @@ namespace virtualsAreInherited2
 	end sub
 end namespace
 
+namespace returnByrefAbstract
+	'' abstract UDT
+	type A extends object
+		declare abstract function f( ) as integer
+	end type
+
+	'' non-abstract UDT
+	type B extends A
+		declare function f( ) as integer
+	end type
+
+	function B.f( ) as integer
+		function = 123
+	end function
+
+	function f( ) byref as A
+		static x as B
+		function = x
+	end function
+
+	sub test cdecl( )
+		CU_ASSERT( f( ).f( ) = 123 )
+	end sub
+end namespace
+
 private sub ctor( ) constructor
 	fbcu.add_suite( "tests/virtual/virtual" )
 	fbcu.add_test( "basic overriding", @overridingWorks.test )
@@ -1215,6 +1240,7 @@ private sub ctor( ) constructor
 	fbcu.add_test( "overrides are not made virtual automatically", @noImplicitVirtual.test )
 	fbcu.add_test( "VIRTUALs are inherited even if not overridden #1", @virtualsAreInherited1.test )
 	fbcu.add_test( "VIRTUALs are inherited even if not overridden #2", @virtualsAreInherited2.test )
+	fbcu.add_test( "BYREF return of abstract UDT", @returnByrefAbstract.test )
 end sub
 
 end namespace

@@ -57,18 +57,42 @@ function cAssignFunctResult( byval is_return as integer ) as integer
 	parser.ctx_dtype = symbGetType( parser.currproc )
 
 	'' Expression
-	rhs = cExpression( )
+	if( symbProcReturnsByref( parser.currproc ) ) then
+		'' BYREF return, must be able to do addrof on the expression
+		'' (this disallows expressions like constants, BOPs, @ UOP, ...)
+		rhs = cVarOrDeref( FB_VAREXPROPT_ISEXPR )
+
+		if( rhs ) then
+			if( astIsAccessToLocal( rhs ) ) then
+				errReport( FB_ERRMSG_INVALIDREFERENCETOLOCAL )
+			end if
+
+			'' BYREF AS STRING and expression is a string literal?
+			if( (symbGetType( parser.currproc ) = FB_DATATYPE_STRING) and _
+			    (astGetStrLitSymbol( rhs ) <> NULL) ) then
+				'' Cannot be allowed, since a string literal is not
+				'' an FBSTRING descriptor...
+				errReport( FB_ERRMSG_INVALIDDATATYPES )
+				astDelTree( rhs )
+				rhs = NULL
+			else
+				'' Implicit addrof due to BYREF
+				rhs = astNewADDROF( rhs )
+			end if
+		end if
+	else
+		rhs = cExpression( )
+	end if
+
+	parser.ctxsym    = NULL
+	parser.ctx_dtype = FB_DATATYPE_INVALID
+
 	if( rhs = NULL ) then
-		parser.ctxsym    = NULL
-		parser.ctx_dtype = FB_DATATYPE_INVALID
 		errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
 		'' error recovery: skip stmt, return
 		hSkipStmt( )
 		return TRUE
 	end if
-
-	parser.ctxsym    = NULL
-	parser.ctx_dtype = FB_DATATYPE_INVALID
 
 	'' set accessed flag here, as proc will be ended before AST is flushed
 	symbSetIsAccessed( res )

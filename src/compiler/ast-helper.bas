@@ -307,6 +307,10 @@ function astBuildCall _
 		end if
 	end if
 
+	if( symbProcReturnsByref( proc ) ) then
+		p = astBuildByrefResultDeref( p )
+	end if
+
 	function = p
 end function
 
@@ -542,6 +546,7 @@ function astBuildProcAddrof( byval proc as FBSYMBOL ptr ) as ASTNODE ptr
 	function = astNewADDROF( astNewVAR( proc ) )
 end function
 
+'' For accessing the function result from within the function
 function astBuildProcResultVar _
 	( _
 		byval proc as FBSYMBOL ptr, _
@@ -549,26 +554,11 @@ function astBuildProcResultVar _
 	) as ASTNODE ptr
 
 	'' proc returns UDT in hidden byref UDT param?
-	if( symbProcReturnsUdtOnStack( proc ) ) then
+	if( symbProcReturnsOnStack( proc ) ) then
 		function = astNewDEREF( astNewVAR( res, 0, typeAddrOf( FB_DATATYPE_STRUCT ), symbGetSubtype( res ) ) )
 	else
 		function = astNewVAR( res )
 	end if
-
-end function
-
-'':::::
-function astBuildCallHiddenResVar _
-	( _
-		byval callexpr as ASTNODE ptr _
-	) as ASTNODE ptr
-
-    function = astNewLINK( callexpr, _
-						   astNewVAR( callexpr->call.tmpres, _
-        							  0, _
-        							  astGetFullType( callexpr ), _
-        							  astGetSubtype( callexpr ) ), _
-        				   FALSE )
 
 end function
 

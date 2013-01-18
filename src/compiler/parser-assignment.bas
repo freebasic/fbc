@@ -690,10 +690,9 @@ function cAssignmentOrPtrCall _
         exit function
 	end if
 
-
 	'' proc call?
 	if( astIsCALL( expr ) ) then
-		expr = astGetCALLResUDT( expr )
+		expr = astBuildCallResultUdt( expr )
 	end if
 
 	dim as FBSYMBOL ptr tmp = NULL

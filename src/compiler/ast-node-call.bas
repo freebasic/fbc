@@ -64,7 +64,7 @@ function astNewCALL _
 	n->call.strtail = NULL
 
 	'' Allocate temp struct result if needed
-	if( symbProcReturnsUdtOnStack( sym ) ) then
+	if( symbProcReturnsOnStack( sym ) ) then
 		'' create a temp struct (can't be static, could be an object)
 		n->call.tmpres = symbAddTempVar( FB_DATATYPE_STRUCT, symbGetSubtype( sym ) )
 
@@ -127,8 +127,6 @@ function astLoadCALL( byval n as ASTNODE ptr ) as IRVREG ptr
 	static as integer reclevel = 0
 	dim as ASTNODE ptr arg = any, nextarg = any, l = any
 	dim as FBSYMBOL ptr proc = any
-	dim as FBSYMBOL ptr subtype = any
-	dim as integer dtype = any
 	dim as integer bytestopop = any, bytestoalign = any
 	dim as IRVREG ptr vr = any, v1 = any
 
@@ -191,7 +189,7 @@ function astLoadCALL( byval n as ASTNODE ptr ) as IRVREG ptr
 	wend
 
 	'' Hidden param for functions returning big structs on stack
-	if( symbProcReturnsUdtOnStack( proc ) ) then
+	if( symbProcReturnsOnStack( proc ) ) then
 		'' Pop hidden ptr if cdecl and target doesn't want the callee
 		'' to do it, despite it being cdecl.
 		if( (symbGetProcMode( proc ) = FB_FUNCMODE_CDECL) and _
@@ -215,30 +213,14 @@ function astLoadCALL( byval n as ASTNODE ptr ) as IRVREG ptr
 		end if
 	end if
 
-	dtype = astGetDataType( n )
-	subtype = n->subtype
-
-	select case( dtype )
-	'' returning a string? it's actually a pointer to a string descriptor
-	case FB_DATATYPE_STRING, FB_DATATYPE_WCHAR
-		dtype = typeAddrOf( dtype )
-		subtype = NULL
-
-	'' UDT's can be returned in regs or as a pointer to the hidden param passed
-	case FB_DATATYPE_STRUCT
-		dtype = symbGetUDTRetType( n->subtype )
-
-		'' integers shouldn't have subtype set to anything,
-		'' but it must be kept for struct ptrs
-		if( typeGetDtOnly( dtype ) <> FB_DATATYPE_STRUCT ) then
-			subtype = NULL
-		end if
-	end select
-
 	if( ast.doemit ) then
-		vr = NULL
-		if( dtype <> FB_DATATYPE_VOID ) then
-			vr = irAllocVREG( dtype, subtype )
+		'' SUB or function result ignored?
+		if( astGetDataType( n ) = FB_DATATYPE_VOID ) then
+			vr = NULL
+		else
+			vr = irAllocVREG( typeGetDtAndPtrOnly( symbGetProcRealType( proc ) ), _
+							symbGetProcRealSubtype( proc ) )
+
 			if( proc->proc.returnMethod <> FB_RETURN_SSE ) then
 				vr->regFamily = IR_REG_FPU_STACK
 			end if
@@ -370,29 +352,44 @@ sub astReplaceSymbolOnCALL _
 
 end sub
 
-function astIsCALLReturnInReg( byval expr as ASTNODE ptr ) as integer
-	if( astIsCALL( expr ) ) then
-		function = symbIsUDTReturnedInRegs( expr->subtype )
+'' For accessing the temp result var allocated by CALLs that return on stack
+function astBuildCallResultVar( byval expr as ASTNODE ptr ) as ASTNODE ptr
+	assert( astIsCALL( expr ) )
+	assert( symbProcReturnsOnStack( expr->sym ) )
+
+	function = astNewLINK( expr, _
+		astNewVAR( expr->call.tmpres, 0, astGetFullType( expr ), astGetSubtype( expr ) ), _
+		FALSE ) '' CALL first, but return the VAR
+end function
+
+'' For storing UDT CALL results into a temp var and accessing it
+function astBuildCallResultUdt( byval expr as ASTNODE ptr ) as ASTNODE ptr
+	dim as FBSYMBOL ptr tmp = any
+
+	assert( astIsCALL( expr ) )
+	assert( astGetDataType( expr ) = FB_DATATYPE_STRUCT )
+
+	if( symbProcReturnsOnStack( expr->sym ) ) then
+		'' UDT returned in temp var already, just access that one
+		function = astBuildCallResultVar( expr )
 	else
-		function = FALSE
+		'' UDT returned in registers, copy to a temp var to allow field accesses etc.
+		'' (note: if it's being returned in regs, there's no DTOR)
+		tmp = symbAddTempVar( FB_DATATYPE_STRUCT, expr->subtype )
+		expr = astNewASSIGN( astBuildVarField( tmp ), expr, AST_OPOPT_DONTCHKOPOVL )
+		function = astNewLINK( expr, _
+			astBuildVarField( tmp ), _
+			FALSE ) '' ASSIGN first, but return the field access
 	end if
 end function
 
-'':::::
-function astGetCALLResUDT(byval expr as ASTNODE ptr) as ASTNODE ptr
-	var subtype = astGetSubtype( expr )
+function astBuildByrefResultDeref( byval expr as ASTNODE ptr ) as ASTNODE ptr
+	assert( astIsCALL( expr ) and symbIsProc( expr->sym ) )
 
-	'' returning an UDT in registers or as-is, i.e. not as a hidden arg?
-	'' (the latter is an exception made for the C emitter)
-	if( symbIsUDTReturnedInRegs( subtype ) or _
-	    (typeIsPtr( symbGetUDTRetType( subtype ) ) = FALSE) ) then
-		'' move to a temp var
-		'' (note: if it's being returned in regs, there's no DTOR)
-		dim as FBSYMBOL ptr tmp = symbAddTempVar( FB_DATATYPE_STRUCT, subtype )
-		expr = astNewASSIGN( astBuildVarField( tmp ), expr, AST_OPOPT_DONTCHKOPOVL )
-		function = astNewLINK( astBuildVarField( tmp ), expr )
-	else
-		'' returning result in a hidden arg
-		function = astBuildCallHiddenResVar( expr )
-	end if
+	'' Do an implicit DEREF with the function's type, and remap the CALL
+	'' node's type to the pointer, so the AST is consistent even if that
+	'' DEREF gets optimized out.
+	astSetType( expr, symbGetProcRealType( expr->sym ), _
+				symbGetProcRealSubtype( expr->sym ) )
+	function = astNewDEREF( expr )
 end function

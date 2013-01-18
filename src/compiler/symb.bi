@@ -151,7 +151,7 @@ enum FB_SYMBATTRIB
 	FB_SYMBATTRIB_TEMP			= &h00400000
     FB_SYMBATTRIB_DESCRIPTOR	= &h00800000
 	FB_SYMBATTRIB_FUNCRESULT	= &h01000000
-					''= &h02000000
+	FB_SYMBATTRIB_RETURNSBYREF	= &h02000000    '' procedures only
 	FB_SYMBATTRIB_VIS_PRIVATE	= &h04000000    '' UDT members only
 	FB_SYMBATTRIB_VIS_PROTECTED	= &h08000000    '' ditto
 	FB_SYMBATTRIB_NAKED         = &h10000000  '' procedures only
@@ -432,7 +432,10 @@ type FBS_STRUCT
 	options			as short					'' FB_UDTOPT
 	bitpos			as ubyte
 	align			as ubyte
-	ret_dtype		as FB_DATATYPE				'' the type this struct is returned from procs
+
+	'' real type used to return this UDT from functions
+	retdtype		as FB_DATATYPE
+
 	dbg				as FB_STRUCT_DBG
 	ext				as FB_STRUCTEXT ptr
 end type
@@ -567,7 +570,11 @@ type FBS_PROC
 	optparams		as short					'' number of optional/default params
 	paramtb			as FBSYMBOLTB				'' parameters symbol tb
 	mode			as FB_FUNCMODE				'' calling convention
-	real_dtype		as FB_DATATYPE				'' used with STRING and UDT functions
+
+	'' result type remapped to what it will be emitted as, including CONSTs
+	realdtype		as FB_DATATYPE
+	realsubtype		as FBSYMBOL_ ptr
+
 	returnMethod	as FB_PROC_RETURN_METHOD
 	rtl				as FB_PROCRTL
 	ovl				as FB_PROCOVL				'' overloading
@@ -1193,6 +1200,7 @@ declare function symbAddProcPtr _
 		byval proc as FBSYMBOL ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
+		byval attrib as integer, _
 		byval mode as integer _
 	) as FBSYMBOL ptr
 
@@ -1217,7 +1225,7 @@ declare sub symbAddProcInstancePtr _
 
 declare sub symbProcAllocExt( byval proc as FBSYMBOL ptr )
 declare sub symbProcFreeExt( byval proc as FBSYMBOL ptr )
-declare function symbProcReturnsUdtOnStack( byval proc as FBSYMBOL ptr ) as integer
+declare function symbProcReturnsOnStack( byval proc as FBSYMBOL ptr ) as integer
 
 declare function symbCalcArgLen _
 	( _
@@ -1771,11 +1779,6 @@ declare sub symbFreeOvlCallArgs _
 		byval arg_list as FB_CALL_ARG_LIST ptr _
 	)
 
-declare function symbIsUDTReturnedInRegs _
-	( _
-		byval s as FBSYMBOL ptr _
-	) as integer
-
 declare function symbGetUDTBaseLevel _
 	( _
 		byval s as FBSYMBOL ptr, _
@@ -2143,7 +2146,7 @@ declare function symbGetUDTBaseLevel _
 
 #define symbGetUDTAnonParent(s) s->udt.anonparent
 
-#define symbGetUDTRetType(s) s->udt.ret_dtype
+#define symbGetUDTRetType(s) s->udt.retdtype
 
 #define symbGetUDTOpOvlTb(s) s->udt.ext->opovlTb
 
@@ -2205,7 +2208,9 @@ declare function symbGetUDTBaseLevel _
 
 #define symbGetProcIncFile(f) f->proc.ext->dbg.incfile
 
-#define symbGetProcRealType(f) f->proc.real_dtype
+#define symbGetProcRealType( sym )    (sym)->proc.realdtype
+#define symbGetProcRealSubtype( sym ) (sym)->proc.realsubtype
+declare sub symbProcSetRealType( byval proc as FBSYMBOL ptr )
 
 #define symbGetProcSymbTb(f) f->proc.symtb
 
@@ -2322,6 +2327,8 @@ declare function symbGetUDTBaseLevel _
 #define symbGetIsOptional(s) ((s->attrib and FB_SYMBATTRIB_OPTIONAL) <> 0)
 
 #define symbIsLiteralConst(s) ((s->attrib and FB_SYMBATTRIB_LITCONST) <> 0)
+
+#define symbProcReturnsByref(s) ((s->attrib and FB_SYMBATTRIB_RETURNSBYREF) <> 0)
 
 #define symbIsNaked( s ) (((s)->attrib and FB_SYMBATTRIB_NAKED) <> 0)
 

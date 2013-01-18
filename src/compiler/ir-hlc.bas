@@ -315,7 +315,6 @@ private function hEmitProcHeader _
 	) as string
 
 	dim as string ln, mangled
-	dim as integer dtype = any
 
 	if( options = 0 ) then
 		'' ctor/dtor flags on bodies
@@ -335,14 +334,8 @@ private function hEmitProcHeader _
 	end if
 
 	'' Function result type (is 'void' for subs)
-	dtype = typeGetDtAndPtrOnly( symbGetProcRealType( proc ) )
-	select case( dtype )
-	case FB_DATATYPE_STRING, FB_DATATYPE_WCHAR
-		'' STRING function results really are STRING PTRs
-		dtype = typeAddrOf( dtype )
-	end select
-
-	ln += hEmitType( dtype, symbGetSubType( proc ) )
+	ln += hEmitType( typeGetDtAndPtrOnly( symbGetProcRealType( proc ) ), _
+					symbGetProcRealSubtype( proc ) )
 
 	''
 	'' Calling convention if needed (for function pointers it's usually not
@@ -385,7 +378,7 @@ private function hEmitProcHeader _
 
 	'' If returning a struct, there's an extra parameter
 	dim as FBSYMBOL ptr hidden = NULL
-	if( symbProcReturnsUdtOnStack( proc ) ) then
+	if( symbProcReturnsOnStack( proc ) ) then
 		if( options and EMITPROC_ISPROTO ) then
 			hidden = symbGetSubType( proc )
 			ln += hEmitType( typeAddrOf( symbGetType( hidden ) ), hidden )

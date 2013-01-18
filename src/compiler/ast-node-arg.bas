@@ -359,6 +359,7 @@ sub hBuildByrefArg _
 
 	arg = astNewADDROF( arg )
 	arg = astNewCONV( typeAddrOf( symbGetFullType( param ) ), symbGetSubtype( param ), arg )
+	assert( arg )
 
 	n->l = arg
 	n->arg.mode = FB_PARAMMODE_BYVAL
@@ -631,6 +632,13 @@ private function hCheckStrParam _
 
 end function
 
+private sub hByteByByte( byval param as FBSYMBOL ptr, byval n as ASTNODE ptr )
+	'' UDT in memory, push byte-by-byte, by setting ASTNODE.arg.lgt,
+	'' telling irEmitPUSHARG() to push this arg to stack byte-by-byte.
+	'' Note: No rounding, to prevent overruns in the ASM
+	n->arg.lgt = symbGetLen( symbGetSubtype( param ) )
+end sub
+
 '':::::
 private sub hUDTPassByval _
 	( _
@@ -646,19 +654,19 @@ private sub hUDTPassByval _
 
 	'' no dtor, copy-ctor or virtual members?
 	if( symbCompIsTrivial( symbGetSubtype( param ) ) ) then
-		'' udt? push byte by byte to stack
-		if( astIsCALLReturnInReg( arg ) = FALSE ) then
-			'' (Note: no rounding, ASM backend must handle any
-			'' remainder manually to prevent an overrun)
-			n->arg.lgt = symbGetLen( symbGetSubtype( param ) )
-
-			'' call and returning a pointer? use the hidden call arg
-			if( astIsCALL( arg ) and typeIsPtr( symbGetUDTRetType( arg->subtype ) ) ) then
-				n->l = astBuildCallHiddenResVar( arg )
+		if( astIsCALL( arg ) ) then
+			if( symbProcReturnsOnStack( arg->sym ) ) then
+				'' Returning on stack, access the temp result var
+				n->l = astBuildCallResultVar( arg )
+				hByteByByte( param, n )
+			else
+				'' CALL with result in registers, patch the type
+				astSetType( arg, symbGetProcRealType( arg->sym ), _
+						symbGetProcRealSubtype( arg->sym ) )
 			end if
 		else
-			'' patch the type
-			astSetType( arg, symbGetUDTRetType( arg->subtype ), NULL )
+			'' not a CALL, so it must be an UDT in memory
+			hByteByByte( param, n )
 		end if
 
 		exit sub
@@ -738,6 +746,7 @@ private function hCheckUDTParam _
 		byval n as ASTNODE ptr _
 	) as integer
 
+	dim as FBSYMBOL ptr tmp = any
 	dim as ASTNODE ptr arg = n->l
 
 	'' not another UDT?
@@ -776,19 +785,19 @@ private function hCheckUDTParam _
 	select case symbGetParamMode( param )
 	'' byref param?
 	case FB_PARAMMODE_BYREF
-		'' it's a proc call, but was it originally returning an UDT?
-		if( astIsCALLReturnInReg( arg ) ) then
-			'' create a temporary UDT and pass it..
-			dim as FBSYMBOL ptr tmp = any
+		if( astIsCALL( arg ) ) then
+			if( symbProcReturnsOnStack( arg->sym ) = FALSE ) then
+				'' Returning in registers, passed to a BYREF param
+				'' Create a temp var and pass that
+				tmp = symbAddTempVar( astGetDatatype( arg ), arg->subtype )
 
-			'' (note: if it's being returned in regs, there's no DTOR)
-			tmp = symbAddTempVar( astGetDatatype( arg ), arg->subtype )
-
-			n->l = astNewLINK( astNewADDROF( astBuildVarField( tmp ) ), _
-					astNewASSIGN( astBuildVarField( tmp ), arg, AST_OPOPT_DONTCHKOPOVL ) )
-			n->arg.mode = FB_PARAMMODE_BYVAL
-			return TRUE
+				n->l = astNewLINK( astNewADDROF( astBuildVarField( tmp ) ), _
+						astNewASSIGN( astBuildVarField( tmp ), arg, AST_OPOPT_DONTCHKOPOVL ) )
+				n->arg.mode = FB_PARAMMODE_BYVAL
+				return TRUE
+			end if
 		end if
+
 
 		hBuildByrefArg( param, n, arg )
 

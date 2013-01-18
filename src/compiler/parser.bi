@@ -715,6 +715,15 @@ declare sub cMethodAttributes _
 		byref attrib as integer _
 	)
 
+declare sub cProcRetType _
+	( _
+		byval attrib as integer, _
+		byval proc as FBSYMBOL ptr, _
+		byref dtype as integer, _
+		byref subtype as FBSYMBOL ptr, _
+		byref lgt as integer _
+	)
+
 declare function cProcReturnMethod _
 	( _
 		byval dtype as FB_DATATYPE _
@@ -724,6 +733,8 @@ declare function cProcCallingConv _
 	( _
 		byval default as FB_FUNCMODE = FB_USE_FUNCMODE_FBCALL _
 	) as FB_FUNCMODE
+
+declare sub cByrefAttribute( byref attrib as integer, byval is_func as integer )
 
 declare function cFunctionCall _
 	( _

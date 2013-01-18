@@ -1189,11 +1189,6 @@ declare function astBuildMultiDeref _
 		byval subtype as FBSYMBOL ptr _
 	) as ASTNODE ptr
 
-declare function astBuildCallHiddenResVar _
-	( _
-		byval callexpr as ASTNODE ptr _
-	) as ASTNODE ptr
-
 declare sub astReplaceSymbolOnTree _
 	( _
 		byval n as ASTNODE ptr, _
@@ -1229,14 +1224,16 @@ declare sub astSetType _
 	)
 
 declare function astSizeOf( byval n as ASTNODE ptr ) as integer
+declare function astIsAccessToLocal( byval expr as ASTNODE ptr ) as integer
 
 declare function astGetOFFSETChildOfs _
 	( _
 		byval l as ASTNODE ptr _
 	) as integer
 
-declare function astIsCALLReturnInReg( byval expr as ASTNODE ptr ) as integer
-declare function astGetCALLResUDT(byval expr as ASTNODE ptr) as ASTNODE ptr
+declare function astBuildCallResultVar( byval expr as ASTNODE ptr ) as ASTNODE ptr
+declare function astBuildCallResultUdt( byval expr as ASTNODE ptr ) as ASTNODE ptr
+declare function astBuildByrefResultDeref( byval expr as ASTNODE ptr ) as ASTNODE ptr
 
 declare sub astGosubAddInit( byval proc as FBSYMBOL ptr )
 
