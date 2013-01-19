@@ -531,6 +531,8 @@ function astNewASSIGN _
 				'' Returning on stack, copy from the temp result var
 				r = astBuildCallResultVar( r )
 			else
+				assert( symbProcReturnsByref( r->sym ) = FALSE )
+
 				'' Returning in registers, patch the types and do a normal ASSIGN
 				ldfull = symbGetProcRealType( r->sym )
 				ldtype = typeGet( ldfull )

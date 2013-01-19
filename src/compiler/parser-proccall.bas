@@ -322,22 +322,45 @@ function cProcCall _
 
 	fbSetPrntOptional( FALSE )
 
-	'' StrIdxOrMemberDeref?
 	if( is_propset = FALSE ) then
+		'' Function returns BYREF?
+		if( symbProcReturnsByref( sym ) ) then
+			procexpr = astBuildByrefResultDeref( procexpr )
+		end if
+
+		'' StrIdxOrMemberDeref?
 		procexpr = cStrIdxOrMemberDeref( procexpr )
-	end if
 
-	'' if it's a SUB, the expr will be NULL
-	if( procexpr = NULL ) then
-		exit function
+		'' if it's a SUB, the expr will be NULL
+		if( procexpr = NULL ) then
+			exit function
+		end if
 	end if
-
-	dtype = astGetDataType( procexpr )
 
 	'' not a function? (because StrIdxOrMemberDeref())
 	if( astIsCALL( procexpr ) = FALSE ) then
-		return procexpr
+		'' And not a DEREF( CALL( function-with-byref-result ) ) either?
+		if( astIsByrefResultDeref( procexpr ) = FALSE ) then
+			'' Cannot ignore this
+			return procexpr
+		end if
+
+		select case( lexGetToken( ) )
+		case FB_TK_STMTSEP, FB_TK_EOL, FB_TK_EOF, _
+		     FB_TK_COMMENT, FB_TK_REM
+			'' It seems like the result is being ignored,
+			'' i.e. no assignment following
+
+		case else
+			return procexpr
+		end select
+
+		'' Remove the DEREF and turn it into a plain CALL,
+		'' whose result can be ignored.
+		procexpr = astRemoveByrefResultDeref( procexpr )
 	end if
+
+	dtype = astGetDataType( procexpr )
 
 	'' can proc's result be skipped?
 	if( dtype <> FB_DATATYPE_VOID ) then

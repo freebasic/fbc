@@ -394,7 +394,11 @@ namespace ignoreResult
 	sub test cdecl( )
 		CU_ASSERT( calls = 0 )
 		f( )
-		CU_ASSERT( calls = 1 )
+		f( ) 'comment
+		f( ) rem rem
+		f( ) : 'stmtsep
+		f( ) : f( ) 'stmtsep
+		CU_ASSERT( calls = 6 )
 	end sub
 end namespace
 
@@ -559,6 +563,99 @@ namespace explicitByval
 	sub test cdecl( )
 		CU_ASSERT( f1( ) = 123 )
 		CU_ASSERT( f2( ) = 123 )
+	end sub
+end namespace
+
+namespace byrefResultAsLvalue
+	type UDT
+		as integer a, b
+	end type
+
+	dim shared dat(0 to 2) as zstring * 32 = { "a", "b", "c" }
+	dim shared i as integer
+
+	function f1( ) byref as zstring
+		function = dat( i )
+	end function
+
+	function f2( byval j as integer ) byref as zstring
+		function = dat( j )
+	end function
+
+	function f3( ) byref as UDT
+		static as UDT x1 = ( 12, 34 ), x2 = ( 56, 78 )
+		if( i ) then
+			return x1
+		end if
+		function = x2
+	end function
+
+	function f4( byval j as integer ) byref as UDT
+		static as UDT x1 = ( 12, 34 ), x2 = ( 56, 78 )
+		if( j ) then
+			return x1
+		end if
+		function = x2
+	end function
+
+	sub test cdecl( )
+		i = 0 : CU_ASSERT( f1( ) = "a" )
+		i = 1 : CU_ASSERT( f1( ) = "b" )
+		i = 2 : CU_ASSERT( f1( ) = "c" )
+		i = 1 : f1( ) = "y"  '' Note: must be careful; it's like *pzstr = "foo", the length is unchecked
+		i = 0 : CU_ASSERT( f1( ) = "a" )
+		i = 1 : CU_ASSERT( f1( ) = "y" )
+		i = 2 : CU_ASSERT( f1( ) = "c" )
+		i = 0 : f1( ) = "x"
+		i = 2 : f1( ) = "z"
+		i = 0 : CU_ASSERT( f1( ) = "x" )
+		i = 1 : CU_ASSERT( f1( ) = "y" )
+		i = 2 : CU_ASSERT( f1( ) = "z" )
+
+		CU_ASSERT( f2( 0 ) = "a" )
+		CU_ASSERT( f2( 1 ) = "b" )
+		CU_ASSERT( f2( 2 ) = "c" )
+		(f2( 1 )) = "y"
+		CU_ASSERT( f2( 0 ) = "a" )
+		CU_ASSERT( f2( 1 ) = "y" )
+		CU_ASSERT( f2( 2 ) = "c" )
+		(f2( 0 )) = "x"
+		(f2( 2 )) = "z"
+		CU_ASSERT( f2( 0 ) = "x" )
+		CU_ASSERT( f2( 1 ) = "y" )
+		CU_ASSERT( f2( 2 ) = "z" )
+
+		i = 1 : CU_ASSERT( f3( ).a = 12 )
+		i = 1 : CU_ASSERT( f3( ).b = 34 )
+		i = 0 : CU_ASSERT( f3( ).a = 56 )
+		i = 0 : CU_ASSERT( f3( ).b = 78 )
+		i = 1 : f3( ).a = 0
+		i = 0 : f3( ).b = 0
+		i = 1 : CU_ASSERT( f3( ).a = 0 )
+		i = 1 : CU_ASSERT( f3( ).b = 34 )
+		i = 0 : CU_ASSERT( f3( ).a = 56 )
+		i = 0 : CU_ASSERT( f3( ).b = 0 )
+		i = 0 : f3( ) = type<UDT>( 22, 33 )
+		i = 1 : CU_ASSERT( f3( ).a = 0 )
+		i = 1 : CU_ASSERT( f3( ).b = 34 )
+		i = 0 : CU_ASSERT( f3( ).a = 22 )
+		i = 0 : CU_ASSERT( f3( ).b = 33 )
+
+		CU_ASSERT( f4( 1 ).a = 12 )
+		CU_ASSERT( f4( 1 ).b = 34 )
+		CU_ASSERT( f4( 0 ).a = 56 )
+		CU_ASSERT( f4( 0 ).b = 78 )
+		(f4( 1 ).a) = 0
+		(f4( 0 )).b = 0
+		CU_ASSERT( f4( 1 ).a = 0 )
+		CU_ASSERT( f4( 1 ).b = 34 )
+		CU_ASSERT( f4( 0 ).a = 56 )
+		CU_ASSERT( f4( 0 ).b = 0 )
+		(f4( 0 )) = type<UDT>( 22, 33 )
+		CU_ASSERT( f4( 1 ).a = 0 )
+		CU_ASSERT( f4( 1 ).b = 34 )
+		CU_ASSERT( f4( 0 ).a = 22 )
+		CU_ASSERT( f4( 0 ).b = 33 )
 	end sub
 end namespace
 

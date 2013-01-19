@@ -1234,6 +1234,8 @@ declare function astGetOFFSETChildOfs _
 declare function astBuildCallResultVar( byval expr as ASTNODE ptr ) as ASTNODE ptr
 declare function astBuildCallResultUdt( byval expr as ASTNODE ptr ) as ASTNODE ptr
 declare function astBuildByrefResultDeref( byval expr as ASTNODE ptr ) as ASTNODE ptr
+declare function astIsByrefResultDeref( byval expr as ASTNODE ptr ) as integer
+declare function astRemoveByrefResultDeref( byval expr as ASTNODE ptr ) as ASTNODE ptr
 
 declare sub astGosubAddInit( byval proc as FBSYMBOL ptr )
 

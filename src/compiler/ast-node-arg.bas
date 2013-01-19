@@ -660,6 +660,7 @@ private sub hUDTPassByval _
 				n->l = astBuildCallResultVar( arg )
 				hByteByByte( param, n )
 			else
+				assert( symbProcReturnsByref( arg->sym ) = FALSE )
 				'' CALL with result in registers, patch the type
 				astSetType( arg, symbGetProcRealType( arg->sym ), _
 						symbGetProcRealSubtype( arg->sym ) )
@@ -787,6 +788,8 @@ private function hCheckUDTParam _
 	case FB_PARAMMODE_BYREF
 		if( astIsCALL( arg ) ) then
 			if( symbProcReturnsOnStack( arg->sym ) = FALSE ) then
+				assert( symbProcReturnsByref( arg->sym ) = FALSE )
+
 				'' Returning in registers, passed to a BYREF param
 				'' Create a temp var and pass that
 				tmp = symbAddTempVar( astGetDatatype( arg ), arg->subtype )

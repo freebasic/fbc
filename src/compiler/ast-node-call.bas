@@ -218,6 +218,12 @@ function astLoadCALL( byval n as ASTNODE ptr ) as IRVREG ptr
 		if( astGetDataType( n ) = FB_DATATYPE_VOID ) then
 			vr = NULL
 		else
+			'' When returning BYREF the CALL's dtype should have
+			'' been remapped by astBuildByrefResultDeref()
+			assert( iif( symbProcReturnsByref( proc ), _
+					astGetDataType( n ) = typeGetDtAndPtrOnly( symbGetProcRealType( proc ) ), _
+					TRUE ) )
+
 			vr = irAllocVREG( typeGetDtAndPtrOnly( symbGetProcRealType( proc ) ), _
 							symbGetProcRealSubtype( proc ) )
 
@@ -368,6 +374,7 @@ function astBuildCallResultUdt( byval expr as ASTNODE ptr ) as ASTNODE ptr
 
 	assert( astIsCALL( expr ) )
 	assert( astGetDataType( expr ) = FB_DATATYPE_STRUCT )
+	assert( symbProcReturnsByref( expr->sym ) = FALSE )
 
 	if( symbProcReturnsOnStack( expr->sym ) ) then
 		'' UDT returned in temp var already, just access that one
@@ -384,12 +391,29 @@ function astBuildCallResultUdt( byval expr as ASTNODE ptr ) as ASTNODE ptr
 end function
 
 function astBuildByrefResultDeref( byval expr as ASTNODE ptr ) as ASTNODE ptr
-	assert( astIsCALL( expr ) and symbIsProc( expr->sym ) )
+	assert( astIsCALL( expr ) )
+	assert( symbProcReturnsByref( expr->sym ) )
 
 	'' Do an implicit DEREF with the function's type, and remap the CALL
 	'' node's type to the pointer, so the AST is consistent even if that
 	'' DEREF gets optimized out.
 	astSetType( expr, symbGetProcRealType( expr->sym ), _
 				symbGetProcRealSubtype( expr->sym ) )
+
 	function = astNewDEREF( expr )
+end function
+
+function astIsByrefResultDeref( byval expr as ASTNODE ptr ) as integer
+	function = FALSE
+	if( astIsDEREF( expr ) ) then
+		if( astIsCALL( expr->l ) ) then
+			function = symbProcReturnsByref( expr->l->sym )
+		end if
+	end if
+end function
+
+function astRemoveByrefResultDeref( byval expr as ASTNODE ptr ) as ASTNODE ptr
+	assert( astIsByrefResultDeref( expr ) )
+	function = expr->l
+	astDelNode( expr )
 end function
