@@ -1313,7 +1313,6 @@ private sub hPrepareAddress( byval v as IRVREG ptr )
 	assert( (v->typ = IR_VREGTYPE_VAR) or _
 		(v->typ = IR_VREGTYPE_IDX) or _
 		(v->typ = IR_VREGTYPE_PTR) )
-	assert( (v->mult = 0) or (v->mult = 1) )
 
 	'' Treat memory access as address - turn it into a REG.
 	'' If there is an offset or index, it must be added on top of the
