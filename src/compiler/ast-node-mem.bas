@@ -10,7 +10,6 @@
 #include once "ast.bi"
 #include once "rtl.bi"
 
-'':::::
 function astNewMEM _
 	( _
 		byval op as integer, _
@@ -54,11 +53,10 @@ function astNewMEM _
 
 end function
 
-'':::::
 private function hCallCtorList _
 	( _
-		byval ptr_expr as ASTNODE ptr, _
-		byval elmts_expr as ASTNODE ptr, _
+		byval tmp as FBSYMBOL ptr, _
+		byval elementsexpr as ASTNODE ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr _
 	) as ASTNODE ptr
@@ -71,7 +69,7 @@ private function hCallCtorList _
 	iter = symbAddTempVar( typeAddrOf( dtype ), subtype )
 
 	'' iter = @vector[0]
-	tree = astBuildVarAssign( iter, ptr_expr )
+	tree = astBuildVarAssign( iter, astNewVAR( tmp ) )
 
 	'' for cnt = 0 to elements-1
 	tree = astBuildForBegin( tree, cnt, label, 0 )
@@ -83,33 +81,30 @@ private function hCallCtorList _
 	tree = astNewLINK( tree, astBuildVarInc( iter, 1 ) )
 
 	'' next
-	tree = astBuildForEnd( tree, cnt, label, 1, elmts_expr )
+	tree = astBuildForEnd( tree, cnt, label, 1, elementsexpr )
 
 	function = tree
-
 end function
 
-'':::::
-private function hNewOp _
+function astBuildNewOp _
 	( _
 		byval op as AST_OP, _
-		byval ptr_expr as ASTNODE ptr, _
-		byval elmts_expr as ASTNODE ptr, _
-		byval init_expr as ASTNODE ptr, _
+		byval tmp as FBSYMBOL ptr, _
+		byval elementsexpr as ASTNODE ptr, _
+		byval initexpr as ASTNODE ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
 		byval do_clear as integer, _
-		byval placement_expr as ASTNODE ptr _
+		byval placementexpr as ASTNODE ptr _
 	) as ASTNODE ptr
 
-	dim as FBSYMBOL ptr ptr_sym = any
-	dim as ASTNODE ptr new_expr = any, len_expr = any, tree = any
+	dim as ASTNODE ptr newexpr = any, lenexpr = any, bytesexpr = any, tree = any
 	dim as integer do_init = any, save_elmts = any, clone_elmts = any
 
 	'' note: assuming ptr_expr will be an ordinary temp var
-	ptr_sym = astGetSymbol( ptr_expr )
 	tree = NULL
-	do_init = (init_expr <> NULL)
+	bytesexpr = NULL
+	do_init = (initexpr <> NULL)
 	save_elmts = FALSE
 	clone_elmts = FALSE
 
@@ -125,129 +120,100 @@ private function hNewOp _
 	'' elms *= sizeof( typeof( expr ) )
 	if( save_elmts or (do_init and (op = AST_OP_NEW_VEC)) ) then
 		'' side-effect?
-		if( astIsClassOnTree( AST_NODECLASS_CALL, elmts_expr ) <> NULL ) then
-			tree = astRemSideFx( elmts_expr )
+		if( astIsClassOnTree( AST_NODECLASS_CALL, elementsexpr ) ) then
+			tree = astRemSideFx( elementsexpr )
 		end if
 		clone_elmts = TRUE
 	end if
 
-	len_expr = astNewBOP( AST_OP_MUL, _
-						  iif( clone_elmts, astCloneTree( elmts_expr ), elmts_expr ), _
-						  astNewCONSTi( symbCalcLen( dtype, subtype ), FB_DATATYPE_UINT ) )
-
-	dim as ASTNODE ptr bytes_expr = NULL
+	lenexpr = astNewBOP( AST_OP_MUL, _
+			iif( clone_elmts, astCloneTree( elementsexpr ), elementsexpr ), _
+			astNewCONSTi( symbCalcLen( dtype, subtype ), FB_DATATYPE_UINT ) )
 
 	if( (do_init = FALSE) and do_clear ) then
-		bytes_expr = astCloneTree( len_expr )
+		bytesexpr = astCloneTree( lenexpr )
 	end if
 
 	if( save_elmts ) then
-		len_expr = astNewBOP( AST_OP_ADD, _
-							  len_expr, _
-							  astNewCONSTi( FB_INTEGERSIZE, FB_DATATYPE_UINT ) )
+		lenexpr = astNewBOP( AST_OP_ADD, lenexpr, _
+				astNewCONSTi( FB_INTEGERSIZE, FB_DATATYPE_UINT ) )
 	end if
 
-	''
-	if( placement_expr ) then
-		new_expr = placement_expr
+	if( placementexpr ) then
+		newexpr = placementexpr
 	else
-		new_expr = rtlMemNewOp( op, len_expr, dtype, subtype )
-		if( new_expr = NULL ) then
+		newexpr = rtlMemNewOp( op, lenexpr, dtype, subtype )
+		if( newexpr = NULL ) then
 			return NULL
 		end if
 	end if
 
 	'' save elements count?
 	if( save_elmts ) then
-    	'' ptr = new( len )
-		tree = astNewLINK( tree, _
-						   astBuildVarAssign( ptr_sym, new_expr ) )
+		'' tempptr = new( len )
+		tree = astNewLINK( tree, astBuildVarAssign( tmp, newexpr ) )
 
-		'' *ptr = elmts
+		'' *tempptr = elements
 		tree = astNewLINK( tree, _
 			astNewASSIGN( _
-				astNewDEREF( astNewVAR( ptr_sym, , typeAddrOf( FB_DATATYPE_INTEGER ) ) ), _
+				astNewDEREF( astNewVAR( tmp, , typeAddrOf( FB_DATATYPE_INTEGER ) ) ), _
 				iif( do_init and (op = AST_OP_NEW_VEC), _
-					astCloneTree( elmts_expr ), _
-					elmts_expr ) ) )
+					astCloneTree( elementsexpr ), _
+					elementsexpr ) ) )
 
-		'' ptr += len( integer )
+		'' tempptr += len( integer )
 		tree = astNewLINK( tree, _
 			astNewSelfBOP( AST_OP_ADD_SELF, _
-				astNewVAR( ptr_sym, , typeAddrOf( FB_DATATYPE_VOID ) ), _
+				astNewVAR( tmp, , typeAddrOf( FB_DATATYPE_VOID ) ), _
 				astNewCONSTi( FB_INTEGERSIZE ), _
 				NULL ) )
-
-		astDelTree( ptr_expr )
-		ptr_expr = astNewVAR( ptr_sym, , typeAddrOf( FB_DATATYPE_VOID ) )
-    else
-		'' ptr = new( len )
-		tree = astNewLINK( tree, astNewASSIGN( astCloneTree( ptr_expr ), new_expr ) )
+	else
+		'' tempptr = new( len )
+		tree = astNewLINK( tree, astNewASSIGN( astNewVAR( tmp ), newexpr ) )
 	end if
 
-    '' no initialization?
-    if( do_init = FALSE ) then
-    	'' initialize buffer to 0's?
-    	if( do_clear = FALSE ) then
-    		astDelTree( ptr_expr )
-    		return tree
-    	else
-    		return astNewLINK( tree, _
-    					   	   astNewMEM( AST_OP_MEMCLEAR, _
-    								  	  astNewDEREF( ptr_expr ), _
-    								  	  astNewCONV( FB_DATATYPE_UINT, _
-    								  			  	  NULL, _
-    								  			  	  bytes_expr ) ) )
+	'' no initialization?
+	if( do_init = FALSE ) then
+		'' initialize buffer to 0's?
+		if( do_clear ) then
+			tree = astNewLINK( tree, _
+				astNewMEM( AST_OP_MEMCLEAR, _
+					astNewDEREF( astNewVAR( tmp ) ), _
+					astNewCONV( FB_DATATYPE_UINT, NULL, bytesexpr ) ) )
 		end if
-    end if
+		return tree
+	end if
 
 	'' just a init-tree?
 	if( typeHasCtor( dtype, subtype ) = FALSE ) then
-		astDelTree( ptr_expr )
-
-		return astNewLINK( tree, _
-						   astTypeIniFlush( init_expr, _
-						   					ptr_sym, _
-						   					AST_INIOPT_ISINI or AST_INIOPT_DODEREF ) )
+		return astNewLINK( tree, astTypeIniFlush( initexpr, tmp, AST_INIOPT_ISINI or AST_INIOPT_DODEREF ) )
 	end if
 
 	'' ctors..
 
-	'' note: ptr_expr is never a complex node, no need to check for side-effects
-
 	if( op = AST_OP_NEW_VEC ) then
-		init_expr = hCallCtorList( ptr_expr, _
-								   elmts_expr, _
-								   dtype, _
-								   subtype )
-
-	'' not a vector..
+		initexpr = hCallCtorList( tmp, elementsexpr, dtype, subtype )
 	else
 		'' call default ctor?
-		if( init_expr = NULL ) then
-			init_expr = astBuildCtorCall( subtype, _
-								  		  astNewDEREF( ptr_expr ) )
-
+		if( initexpr = NULL ) then
+			initexpr = astBuildCtorCall( subtype, astNewDEREF( astNewVAR( tmp ) ) )
 		'' explicit ctor call, patch it..
 		else
-            '' check if a ctor call (because error recovery)..
-			if( astIsCALLCTOR( init_expr ) ) then
-               	init_expr = astPatchCtorCall( astCALLCTORToCALL( init_expr ), _
-               						  		  astNewDEREF( ptr_expr ) )
-            end if
+			'' check if a ctor call (because error recovery)..
+			if( astIsCALLCTOR( initexpr ) ) then
+				initexpr = astPatchCtorCall( astCALLCTORToCALL( initexpr ), astNewDEREF( astNewVAR( tmp ) ) )
+			end if
 		end if
 	end if
 
-	tree = astNewLINK( tree, init_expr )
+	tree = astNewLINK( tree, initexpr )
 
 	function = tree
-
 end function
 
-'':::::
 private function hCallDtorList _
 	( _
-		byval ptr_expr as ASTNODE ptr, _
+		byval ptrexpr as ASTNODE ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr _
 	) as ASTNODE ptr
@@ -264,20 +230,17 @@ private function hCallDtorList _
 
 	'' elmts = *cast( integer ptr, cast( any ptr, vector ) + -sizeof( integer ) )
 	'' (casting to ANY PTR first to support derived UDT pointers)
-	expr = astNewDEREF( _
+	tree = astBuildVarAssign( elmts, astNewDEREF( _
 		astNewCONV( typeAddrOf( FB_DATATYPE_INTEGER ), NULL, _
 			astNewBOP( AST_OP_ADD, _
 				astNewCONV( typeAddrOf( FB_DATATYPE_VOID ), NULL, _
-					astCloneTree( ptr_expr ) ), _
-				astNewCONSTi( -FB_INTEGERSIZE ) ) ) )
-
-	tree = astBuildVarAssign( elmts, expr )
+					astCloneTree( ptrexpr ) ), _
+				astNewCONSTi( -FB_INTEGERSIZE ) ) ) ) )
 
 	'' iter = @vector[elmts]
-	ptr_expr = astNewBOP( AST_OP_ADD, ptr_expr, astNewVAR( elmts ), NULL, _
-				AST_OPOPT_DEFAULT or AST_OPOPT_DOPTRARITH )
-
-	tree = astNewLINK( tree, astBuildVarAssign( iter, ptr_expr ) )
+	tree = astNewLINK( tree, astBuildVarAssign( iter, _
+		astNewBOP( AST_OP_ADD, ptrexpr, astNewVAR( elmts ), NULL, _
+				AST_OPOPT_DEFAULT or AST_OPOPT_DOPTRARITH ) ) )
 
 	'' for cnt = 0 to elmts-1
 	tree = astBuildForBegin( tree, cnt, label, 0 )
@@ -294,103 +257,53 @@ private function hCallDtorList _
 	function = tree
 end function
 
-'':::::
-private function hDelOp _
+function astBuildDeleteOp _
 	( _
 		byval op as AST_OP, _
-		byval ptr_expr as ASTNODE ptr, _
+		byval ptrexpr as ASTNODE ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr _
 	) as ASTNODE ptr
 
-	dim as ASTNODE ptr tree = NULL
+	dim as ASTNODE ptr tree = any
+	dim as FBSYMBOL ptr label = any
+
+	tree = NULL
 
 	'' side-effect?
-	if( astIsClassOnTree( AST_NODECLASS_CALL, ptr_expr ) <> NULL ) then
-		tree = astRemSideFx( ptr_expr )
+	if( astIsClassOnTree( AST_NODECLASS_CALL, ptrexpr ) ) then
+		tree = astRemSideFx( ptrexpr )
 	end if
 
 	'' if ptr <> NULL then
-	dim as FBSYMBOL ptr blk_label = symbAddLabel( NULL )
+	label = symbAddLabel( NULL )
 	tree = astNewLINK( tree, _
 		astNewBOP( AST_OP_EQ, _
-			astCloneTree( ptr_expr ), _
+			astCloneTree( ptrexpr ), _
 			astNewCONSTi( 0 ), _
-			blk_label, AST_OPOPT_NONE ) )
+			label, AST_OPOPT_NONE ) )
 
 	'' call dtors?
 	if( typeHasDtor( dtype, subtype ) ) then
 		if( op = AST_OP_DEL_VEC ) then
-			tree = astNewLINK( tree, _
-							   hCallDtorList( astCloneTree( ptr_expr ), _
-									   		  dtype, _
-									   		  subtype ) )
-
+			tree = astNewLINK( tree, hCallDtorList( astCloneTree( ptrexpr ), dtype, subtype ) )
 			'' ptr -= len( integer )
-			ptr_expr = astNewBOP( AST_OP_SUB, ptr_expr, astNewCONSTi( FB_INTEGERSIZE ) )
-
-		'' not a vector..
+			ptrexpr = astNewBOP( AST_OP_SUB, ptrexpr, astNewCONSTi( FB_INTEGERSIZE ) )
 		else
-			tree = astNewLINK( tree, _
-							   astBuildDtorCall( subtype, _
-								  	astNewDEREF( astCloneTree( ptr_expr ) ) ) )
+			tree = astNewLINK( tree, astBuildDtorCall( subtype, astNewDEREF( astCloneTree( ptrexpr ) ) ) )
 		end if
-
 	end if
 
 	'' delete( ptr )
-	dim as ASTNODE ptr del_expr = any
-
-	del_expr = rtlMemDeleteOp( op, ptr_expr, dtype, subtype )
-	if( del_expr = NULL ) then
-		return NULL
-	end if
-
-	tree = astNewLINK( tree, del_expr )
+	tree = astNewLINK( tree, rtlMemDeleteOp( op, ptrexpr, dtype, subtype ) )
 
 	'' end if
-	tree = astNewLINK( tree, astNewLABEL( blk_label ) )
+	tree = astNewLINK( tree, astNewLABEL( label ) )
 
 	function = tree
-
 end function
 
-'':::::
-function astNewMEM _
-	( _
-		byval op as integer, _
-		byval l as ASTNODE ptr, _
-		byval r as ASTNODE ptr, _
-		byval ex as ASTNODE ptr, _
-		byval dtype as integer, _
-		byval subtype as FBSYMBOL ptr, _
-		byval do_clear as integer, _
-		byval placement_expr as ASTNODE ptr _
-	) as ASTNODE ptr
-
-    dim as ASTNODE ptr n = any
-
-	select case as const op
-	case AST_OP_NEW, AST_OP_NEW_VEC
-		n = hNewOp( op, l, r, ex, dtype, subtype, do_clear, placement_expr )
-
-	case AST_OP_DEL, AST_OP_DEL_VEC
-		n = hDelOp( op, l, dtype, subtype )
-
-	case else
-		n = astNewMEM( op, l, r, 0 )
-	end select
-
-	function = n
-
-end function
-
-'':::::
-function astLoadMEM _
-	( _
-		byval n as ASTNODE ptr _
-	) as IRVREG ptr
-
+function astLoadMEM( byval n as ASTNODE ptr ) as IRVREG ptr
     dim as ASTNODE ptr l = any, r = any
     dim as IRVREG ptr v1 = any, v2 = any
 
@@ -416,6 +329,4 @@ function astLoadMEM _
 	end if
 
 	function = NULL
-
 end function
-

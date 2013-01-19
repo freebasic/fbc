@@ -16,20 +16,24 @@ function cOperatorNew( ) as ASTNODE ptr
 	dim as integer dtype = any, lgt = any
 	dim as FBSYMBOL ptr subtype = any, tmp = any
 	dim as integer has_ctor = any, has_defctor = any, do_clear = any
+	dim as ASTNODE ptr initexpr = any, elementsexpr = any, placementexpr = any
+	dim as ASTNODE ptr expr = any
+	dim as AST_OP op = any
 
 	do_clear = TRUE
+	op = AST_OP_NEW
+	elementsexpr = NULL
+	initexpr = NULL
+	placementexpr = NULL
 
 	'' NEW
 	lexSkipToken( )
 
-	dim as AST_OP op = AST_OP_NEW
-	dim as ASTNODE ptr elmts_expr = NULL, placement_expr = NULL, i_expr = NULL
-
 	'' '('?
 	if( lexGetToken( ) = CHAR_LPRNT ) then
 		'' placement new
-		placement_expr = cExpression( )
-		if( placement_expr = NULL ) then
+		placementexpr = cExpression( )
+		if( placementexpr = NULL ) then
 			return NULL
 		end if
 	end if
@@ -57,12 +61,12 @@ function cOperatorNew( ) as ASTNODE ptr
     if( lexGetToken( ) = CHAR_LBRACKET ) then
         lexSkipToken( )
 
-        elmts_expr = cExpression(  )
-        if( elmts_expr = NULL ) then
+		elementsexpr = cExpression(  )
+		if( elementsexpr = NULL ) then
 			errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
-        else
-        	op = AST_OP_NEW_VEC
-        end if
+		else
+			op = AST_OP_NEW_VEC
+		end if
 
         '' ']'
         if( lexGetToken( ) <> CHAR_RBRACKET ) then
@@ -99,16 +103,14 @@ function cOperatorNew( ) as ASTNODE ptr
 	end if
 
 	'' not a vector?
-	if( elmts_expr = NULL ) then
-		elmts_expr = astNewCONSTi( 1, FB_DATATYPE_UINT )
+	if( elementsexpr = NULL ) then
+		elementsexpr = astNewCONSTi( 1, FB_DATATYPE_UINT )
 	else
 		'' hack(?): make sure it's a uinteger, otherwise it may crash later, fixes bug #2533376 (counting_pine)
-		i_expr = astNewCONV( FB_DATATYPE_UINT, NULL, elmts_expr )
-		if( i_expr <> NULL ) Then
-			elmts_expr = i_expr
-		else
+		elementsexpr = astNewCONV( FB_DATATYPE_UINT, NULL, elementsexpr )
+		if( elementsexpr = NULL ) then
 			errReport( FB_ERRMSG_TYPEMISMATCH, TRUE )
-			elmts_expr = astNewCONSTi( 1, FB_DATATYPE_UINT )
+			elementsexpr = astNewCONSTi( 1, FB_DATATYPE_UINT )
 		end if
 	end if
 
@@ -116,8 +118,6 @@ function cOperatorNew( ) as ASTNODE ptr
 	tmp = symbAddTempVar( typeAddrOf( dtype ), subtype )
 
 	'' Constructor?
-	dim as ASTNODE ptr ctor_expr = NULL
-
 	if( has_ctor ) then
 		'' '('?
 		if( lexGetToken( ) = CHAR_LPRNT ) then
@@ -125,8 +125,8 @@ function cOperatorNew( ) as ASTNODE ptr
 			if( op = AST_OP_NEW_VEC ) then
 				errReport( FB_ERRMSG_EXPLICITCTORCALLINVECTOR, TRUE )
 			else
-				ctor_expr = cCtorCall( subtype )
-				if( ctor_expr = NULL ) then
+				initexpr = cCtorCall( subtype )
+				if( initexpr = NULL ) then
 					return NULL
 				end if
 			end if
@@ -138,8 +138,8 @@ function cOperatorNew( ) as ASTNODE ptr
 			else
 				'' only if not a vector
 				if( op <> AST_OP_NEW_VEC ) then
-					ctor_expr = cCtorCall( subtype )
-					if( ctor_expr = NULL ) then
+					initexpr = cCtorCall( subtype )
+					if( initexpr = NULL ) then
 						return NULL
 					end if
 				else
@@ -174,23 +174,19 @@ function cOperatorNew( ) as ASTNODE ptr
 					lexSkipToken( )
 				end if
 			else
-				ctor_expr = cInitializer( tmp, FB_INIOPT_ISINI or FB_INIOPT_DODEREF )
+				initexpr = cInitializer( tmp, FB_INIOPT_ISINI or FB_INIOPT_DODEREF )
 
         		symbGetStats( tmp ) and= not FB_SYMBSTATS_INITIALIZED
 
-        		if( ctor_expr = NULL ) then
+				if( initexpr = NULL ) then
 					errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
-        		end if
-        	end if
-        end if
-
+				end if
+			end if
+		end if
 	end if
 
-	''
-	dim as ASTNODE ptr expr = any
-
-	expr = astNewMEM( op, astNewVAR( tmp ), elmts_expr, ctor_expr, _
-			dtype, subtype, do_clear, placement_expr )
+	expr = astBuildNewOp( op, tmp, elementsexpr, initexpr, _
+			dtype, subtype, do_clear, placementexpr )
 
 	if( expr = NULL ) then
 		errReport( FB_ERRMSG_INVALIDDATATYPES )
@@ -202,8 +198,9 @@ end function
 
 '' DELETE ['[]'] expr
 sub cOperatorDelete( )
-	dim as AST_OP op = any
-	dim as ASTNODE ptr expr = any, ptr_expr = any
+	dim as ASTNODE ptr ptrexpr = any
+	dim as integer dtype = any, op = any
+	dim as FBSYMBOL ptr subtype = any
 
 	'' DELETE
 	lexSkipToken( )
@@ -222,15 +219,15 @@ sub cOperatorDelete( )
 		lexSkipToken( )
 	end if
 
-	ptr_expr = cVarOrDeref( FB_VAREXPROPT_ISEXPR )
-	if( ptr_expr = NULL ) then
+	ptrexpr = cVarOrDeref( FB_VAREXPROPT_ISEXPR )
+	if( ptrexpr = NULL ) then
 		errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
 		hSkipStmt( )
 		return
 	end if
 
-	dim as integer dtype = astGetFullType( ptr_expr )
-	dim as FBSYMBOL ptr subtype = astGetSubType( ptr_expr )
+	dtype = astGetFullType( ptrexpr )
+	subtype = astGetSubType( ptrexpr )
 
 	'' not a ptr?
 	if( typeIsPtr( dtype ) = FALSE ) then
@@ -241,7 +238,7 @@ sub cOperatorDelete( )
 
 	dtype = typeDeref( dtype )
 
-	select case( typeGet( dtype ) )
+	select case( typeGetDtAndPtrOnly( dtype ) )
 	case FB_DATATYPE_VOID
 		'' Warn about ANY PTR
 		errReportWarn( FB_WARNINGMSG_DELETEANYPTR )
@@ -259,17 +256,5 @@ sub cOperatorDelete( )
 		end if
 	end if
 
-	expr = astNewMEM( op, _
-					  ptr_expr, _
-					  NULL, _
-					  NULL, _
-					  dtype, _
-					  subtype, _
-					  FALSE )
-
-	if( expr = NULL ) then
-		errReport( FB_ERRMSG_INVALIDDATATYPES )
-	end if
-
-	astAdd( expr )
+	astAdd( astBuildDeleteOp( op, ptrexpr, dtype, subtype ) )
 end sub

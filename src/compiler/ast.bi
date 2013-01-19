@@ -773,7 +773,7 @@ declare function astNewDBG _
 		byval ex as integer = 0 _
 	) as ASTNODE ptr
 
-declare function astNewMEM overload _
+declare function astNewMEM _
 	( _
 		byval op as integer, _
 		byval l as ASTNODE ptr, _
@@ -781,16 +781,24 @@ declare function astNewMEM overload _
 		byval bytes as integer = 0 _
 	) as ASTNODE ptr
 
-declare function astNewMEM _
+declare function astBuildNewOp _
 	( _
-		byval op as integer, _
-		byval l as ASTNODE ptr, _
-		byval r as ASTNODE ptr, _
-		byval ex as ASTNODE ptr, _
+		byval op as AST_OP, _
+		byval tmp as FBSYMBOL ptr, _
+		byval elementsexpr as ASTNODE ptr, _
+		byval initexpr as ASTNODE ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
 		byval do_clear as integer, _
-		byval placement_expr as ASTNODE ptr = NULL _
+		byval placementexpr as ASTNODE ptr _
+	) as ASTNODE ptr
+
+declare function astBuildDeleteOp _
+	( _
+		byval op as AST_OP, _
+		byval ptrexpr as ASTNODE ptr, _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr _
 	) as ASTNODE ptr
 
 declare function astNewBOUNDCHK _
