@@ -1472,7 +1472,6 @@ private function _allocVrIdx _
 
 	vr->sym = symbol
 	vr->ofs = ofs
-	vr->mult = mult
 	vr->vidx = vidx
 
 	function = vr
@@ -1491,7 +1490,6 @@ private function _allocVrPtr _
 	dim as IRVREG ptr vr = hNewVR( dtype, subtype, IR_VREGTYPE_PTR )
 
 	vr->ofs = ofs
-	vr->mult = 1
 	vr->vidx = vidx
 
 	function = vr

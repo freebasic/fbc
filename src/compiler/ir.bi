@@ -81,7 +81,7 @@ type IRVREG
 
 	sym			as FBSYMBOL ptr					'' symbol
 	ofs			as integer						'' +offset
-	mult		as integer						'' multipler
+	mult		as integer						'' multipler, only valid for IDX and PTR under ir-tac
 
 	vidx		as IRVREG ptr					'' index vreg
 	vaux		as IRVREG ptr					'' aux vreg (used with longint's)

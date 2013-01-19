@@ -1246,7 +1246,6 @@ private function _allocVrIdx _
 
 	vr->sym = symbol
 	vr->ofs = ofs
-	vr->mult = mult
 	vr->vidx = vidx
 
 	function = vr
@@ -1264,7 +1263,6 @@ private function _allocVrPtr _
 	dim as IRVREG ptr vr = hNewVR( dtype, subtype, IR_VREGTYPE_PTR )
 
 	vr->ofs = ofs
-	vr->mult = 1
 	vr->vidx = vidx
 
 	function = vr
@@ -1331,7 +1329,6 @@ private sub hPrepareAddress( byval v as IRVREG ptr )
 		v->typ = IR_VREGTYPE_REG
 		v->dtype = typeAddrOf( v->dtype )
 		v->reg = INVALID
-		v->mult = 0
 		v->ofs = 0
 	end select
 
