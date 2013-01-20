@@ -790,7 +790,7 @@ declare function astBuildNewOp _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
 		byval do_clear as integer, _
-		byval placementexpr as ASTNODE ptr _
+		byval newexpr as ASTNODE ptr _
 	) as ASTNODE ptr
 
 declare function astBuildDeleteOp _

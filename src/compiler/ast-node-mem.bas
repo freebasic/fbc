@@ -86,6 +86,23 @@ private function hCallCtorList _
 	function = tree
 end function
 
+private function hElements _
+	( _
+		byval elementsexpr as ASTNODE ptr, _
+		byref elementstreecount as integer _
+	) as ASTNODE ptr
+
+	if( elementstreecount > 1 ) then
+		function = astCloneTree( elementsexpr )
+	else
+		function = elementsexpr
+	end if
+
+	elementstreecount -= 1
+	assert( elementstreecount >= 0 )
+
+end function
+
 function astBuildNewOp _
 	( _
 		byval op as AST_OP, _
@@ -95,71 +112,102 @@ function astBuildNewOp _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
 		byval do_clear as integer, _
-		byval placementexpr as ASTNODE ptr _
+		byval newexpr as ASTNODE ptr _
 	) as ASTNODE ptr
 
-	dim as ASTNODE ptr newexpr = any, lenexpr = any, bytesexpr = any, tree = any
-	dim as integer do_init = any, save_elmts = any, clone_elmts = any
+	enum
+		INIT_TYPEINI = 0
+		INIT_CTORCALL
+		INIT_DEFCTOR
+		INIT_DEFCTORLIST
+		INIT_CLEAR
+		INIT_NONE
+	end enum
 
-	'' note: assuming ptr_expr will be an ordinary temp var
+	dim as ASTNODE ptr lenexpr = any, tree = any
+	dim as integer save_elmts = any, init = any, elementstreecount = any
+
+	init = INIT_NONE
 	tree = NULL
-	bytesexpr = NULL
-	do_init = (initexpr <> NULL)
 	save_elmts = FALSE
-	clone_elmts = FALSE
+	elementstreecount = 0
 
-	'' still initialize if no explicit ctor call was given,
-	'' in case it has a default ctor.
-	do_init or= ((not do_init) and typeHasDefCtor( dtype, subtype ))
+	'' explicit initialization?
+	if( initexpr ) then
+		'' Just an UDT initializer?
+		if( typeHasCtor( dtype, subtype ) = FALSE ) then
+			init = INIT_TYPEINI
+		'' really a CTORCALL? (check due to error recovery)
+		elseif( astIsCALLCTOR( initexpr ) ) then
+			'' Explicit ctor call
+			init = INIT_CTORCALL
+		end if
+	else
+		'' If there is a default constructor, call it
+		if( typeHasDefCtor( dtype, subtype ) ) then
+			if( op = AST_OP_NEW_VEC ) then
+				init = INIT_DEFCTORLIST
+				elementstreecount += 1
+			else
+				init = INIT_DEFCTOR
+			end if
+		'' Zero-initialize the buffer?
+		elseif( do_clear ) then
+			init = INIT_CLEAR
+			elementstreecount += 1
+		end if
+	end if
 
-	'' save elements count?
+	'' new[] stores the element count, if there is a destructor,
+	'' so delete[] knows how many objects to destroy
 	if( op = AST_OP_NEW_VEC ) then
 		save_elmts = typeHasDtor( dtype, subtype )
 	end if
 
-	'' elms *= sizeof( typeof( expr ) )
-	if( save_elmts or (do_init and (op = AST_OP_NEW_VEC)) ) then
+	if( newexpr = NULL ) then
+		elementstreecount += 1
+	end if
+
+	if( save_elmts ) then
+		elementstreecount += 1
+	end if
+
+	'' If the elementsexpr will be cloned, take care of side-effects
+	if( elementstreecount > 1 ) then
 		'' side-effect?
 		if( astIsClassOnTree( AST_NODECLASS_CALL, elementsexpr ) ) then
 			tree = astRemSideFx( elementsexpr )
 		end if
-		clone_elmts = TRUE
 	end if
 
-	lenexpr = astNewBOP( AST_OP_MUL, _
-			iif( clone_elmts, astCloneTree( elementsexpr ), elementsexpr ), _
-			astNewCONSTi( symbCalcLen( dtype, subtype ), FB_DATATYPE_UINT ) )
+	'' address not already given? (placement new)
+	if( newexpr = NULL ) then
+		'' elements * sizeof( type )
+		lenexpr = astNewBOP( AST_OP_MUL, hElements( elementsexpr, elementstreecount ), _
+				astNewCONSTi( symbCalcLen( dtype, subtype ), FB_DATATYPE_UINT ) )
 
-	if( (do_init = FALSE) and do_clear ) then
-		bytesexpr = astCloneTree( lenexpr )
-	end if
+		if( save_elmts ) then
+			'' length + sizeof( integer )   (to store the vector size)
+			lenexpr = astNewBOP( AST_OP_ADD, lenexpr, _
+					astNewCONSTi( FB_INTEGERSIZE, FB_DATATYPE_UINT ) )
+		end if
 
-	if( save_elmts ) then
-		lenexpr = astNewBOP( AST_OP_ADD, lenexpr, _
-				astNewCONSTi( FB_INTEGERSIZE, FB_DATATYPE_UINT ) )
-	end if
-
-	if( placementexpr ) then
-		newexpr = placementexpr
-	else
 		newexpr = rtlMemNewOp( op, lenexpr, dtype, subtype )
 		if( newexpr = NULL ) then
 			return NULL
 		end if
 	end if
 
+	'' tempptr = new( len )
+	tree = astNewLINK( tree, astBuildVarAssign( tmp, newexpr ) )
+
 	'' save elements count?
 	if( save_elmts ) then
-		'' tempptr = new( len )
-		tree = astNewLINK( tree, astBuildVarAssign( tmp, newexpr ) )
-
 		'' *tempptr = elements
 		tree = astNewLINK( tree, _
 			astNewASSIGN( _
 				astNewDEREF( astNewVAR( tmp, , typeAddrOf( FB_DATATYPE_INTEGER ) ) ), _
-				iif( do_init and (op = AST_OP_NEW_VEC), _
-					astCloneTree( elementsexpr ), _
-					elementsexpr ) ) )
+				hElements( elementsexpr, elementstreecount ) ) )
 
 		'' tempptr += len( integer )
 		tree = astNewLINK( tree, _
@@ -167,48 +215,39 @@ function astBuildNewOp _
 				astNewVAR( tmp, , typeAddrOf( FB_DATATYPE_VOID ) ), _
 				astNewCONSTi( FB_INTEGERSIZE ), _
 				NULL ) )
-	else
-		'' tempptr = new( len )
-		tree = astNewLINK( tree, astNewASSIGN( astNewVAR( tmp ), newexpr ) )
 	end if
 
-	'' no initialization?
-	if( do_init = FALSE ) then
-		'' initialize buffer to 0's?
-		if( do_clear ) then
-			tree = astNewLINK( tree, _
-				astNewMEM( AST_OP_MEMCLEAR, _
-					astNewDEREF( astNewVAR( tmp ) ), _
-					astNewCONV( FB_DATATYPE_UINT, NULL, bytesexpr ) ) )
-		end if
-		return tree
-	end if
+	select case as const( init )
+	case INIT_TYPEINI
+		assert( astIsTYPEINI( initexpr ) )
+		initexpr = astTypeIniFlush( initexpr, tmp, _
+				AST_INIOPT_ISINI or AST_INIOPT_DODEREF )
 
-	'' just a init-tree?
-	if( typeHasCtor( dtype, subtype ) = FALSE ) then
-		return astNewLINK( tree, astTypeIniFlush( initexpr, tmp, AST_INIOPT_ISINI or AST_INIOPT_DODEREF ) )
-	end if
+	case INIT_CTORCALL
+		initexpr = astPatchCtorCall( astCALLCTORToCALL( initexpr ), _
+				astNewDEREF( astNewVAR( tmp ) ) )
 
-	'' ctors..
+	case INIT_DEFCTOR
+		initexpr = astBuildCtorCall( subtype, astNewDEREF( astNewVAR( tmp ) ) )
 
-	if( op = AST_OP_NEW_VEC ) then
-		initexpr = hCallCtorList( tmp, elementsexpr, dtype, subtype )
-	else
-		'' call default ctor?
-		if( initexpr = NULL ) then
-			initexpr = astBuildCtorCall( subtype, astNewDEREF( astNewVAR( tmp ) ) )
-		'' explicit ctor call, patch it..
-		else
-			'' check if a ctor call (because error recovery)..
-			if( astIsCALLCTOR( initexpr ) ) then
-				initexpr = astPatchCtorCall( astCALLCTORToCALL( initexpr ), astNewDEREF( astNewVAR( tmp ) ) )
-			end if
-		end if
-	end if
+	case INIT_DEFCTORLIST
+		initexpr = hCallCtorList( tmp, hElements( elementsexpr, elementstreecount ), dtype, subtype )
 
-	tree = astNewLINK( tree, initexpr )
+	case INIT_CLEAR
+		'' elements * sizeof( type )
+		lenexpr = astNewBOP( AST_OP_MUL, hElements( elementsexpr, elementstreecount ), _
+				astNewCONSTi( symbCalcLen( dtype, subtype ), FB_DATATYPE_UINT ) )
 
-	function = tree
+		initexpr = astNewMEM( AST_OP_MEMCLEAR, _
+				astNewDEREF( astNewVAR( tmp ) ), _
+				astNewCONV( FB_DATATYPE_UINT, NULL, lenexpr ) )
+
+	case else
+		initexpr = NULL
+
+	end select
+
+	function = astNewLINK( tree, initexpr )
 end function
 
 private function hCallDtorList _

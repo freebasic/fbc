@@ -156,6 +156,7 @@ Version 0.25.0:
 - WINPUT() did not allow a # like INPUT() does, as in [W]INPUT( bytes, #filenum )
 - Screen[Res] and ThreadCreate() no longer worked on Windows 9x since 0.24, because they called msvcrt's _beginthreadex() with the last parameter being NULL
 - Placement "NEW(a)" didn't require the expression to be in parentheses, allowing "NEW (a) + b" etc.
+- "new[expr] UDT" evaluated "expr" multiple times even if contained function calls, if the memory buffer was just being cleared (i.e. UDT had no default constructor and "{ ANY }" wasn't used)
 
 
 Version 0.24.0:
