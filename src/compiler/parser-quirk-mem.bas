@@ -30,11 +30,16 @@ function cOperatorNew( ) as ASTNODE ptr
 	lexSkipToken( )
 
 	'' '('?
-	if( lexGetToken( ) = CHAR_LPRNT ) then
+	if( hMatch( CHAR_LPRNT ) ) then
 		'' placement new
 		placementexpr = cExpression( )
 		if( placementexpr = NULL ) then
-			return NULL
+			errReport( FB_ERRMSG_EXPECTEDEXPRESSION, TRUE )
+		end if
+
+		'' ')'
+		if( hMatch( CHAR_RPRNT ) = FALSE ) then
+			errReport( FB_ERRMSG_EXPECTEDRPRNT )
 		end if
 	end if
 
