@@ -334,6 +334,12 @@ sub testSideFx cdecl( )
 	check(         string,   fstr1,   fstr2,  fstr1calls,  fstr2calls, "1", "2" )
 	check( zstring * 32+1, *fzstr1, *fzstr2, fzstr1calls, fzstr2calls, "1", "2" )
 	check( wstring * 32+1, *fwstr1, *fwstr2, fwstr1calls, fwstr2calls, wstr( "1" ), wstr( "2" ) )
+
+	scope
+		dim as string a = "a", b = "b"
+		CU_ASSERT( iif( condtrue , a + b, b + a ) = "ab" )
+		CU_ASSERT( iif( condfalse, a + b, b + a ) = "ba" )
+	end scope
 end sub
 
 sub testConstness cdecl( )

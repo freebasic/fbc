@@ -275,6 +275,11 @@ function astRemSideFx _
 	dim as integer dtype = any
 	dim as ASTNODE ptr t = any
 
+	'' Handle string concatenation here. Since the expression will be taken
+	'' out of its original context (e.g. string ASSIGN or ARG), we are now
+	'' responsible for doing this.
+	n = astUpdStrConcat( n )
+
 	dtype = astGetFullType( n )
 	subtype = astGetSubType( n )
 

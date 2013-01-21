@@ -396,30 +396,107 @@ private sub testExpressions cdecl( )
 	end scope
 end sub
 
-dim shared as integer wstringcalls, integercalls
+dim shared as integer intcalls, strcalls, strptrcalls, zstrcalls, wstrcalls
+dim shared globalstr as string
 
-private function sidefxInteger( ) as integer
-	integercalls += 1
+private function sidefxInt( ) as integer
+	intcalls += 1
 	function = 123
 end function
 
-private function sidefxWstring( ) as wstring ptr
-	static w as wstring * 10
+private function sidefxStr( ) as string
+	strcalls += 1
+	function = globalstr
+end function
 
-	wstringcalls += 1
-	w = wstr( "123" )
+private function sidefxStrPtr( ) as string ptr
+	strptrcalls += 1
+	function = @globalstr
+end function
 
+private function sidefxZstr( ) as zstring ptr
+	static z as zstring * 10 = "123"
+	zstrcalls += 1
+	function = @z
+end function
+
+private function sidefxWstr( ) as wstring ptr
+	static w as wstring * 10 = wstr( "123" )
+	wstrcalls += 1
 	function = @w
 end function
 
 private sub testSidefx cdecl( )
-	CU_ASSERT( integercalls = 0 )
-	check( sidefxInteger( ), 123 )
-	CU_ASSERT( integercalls = 1 )
+	CU_ASSERT( intcalls = 0 )
+	check( sidefxInt( ), 123 )
+	CU_ASSERT( intcalls = 1 )
+	intcalls = 0
 
-	CU_ASSERT( wstringcalls = 0 )
-	check( *sidefxWstring( ), wstr( "123" ) )
-	CU_ASSERT( wstringcalls = 1 )
+	CU_ASSERT( intcalls = 0 )
+	check( 123, sidefxInt( ) )
+	CU_ASSERT( intcalls = 1 )
+	intcalls = 0
+
+	#macro checkStr( expr, expectedexpr )
+		CU_ASSERT( strcalls = 0 )
+		check( expr, expectedexpr )
+		CU_ASSERT( strcalls = 1 )
+		strcalls = 0
+	#endmacro
+
+	#macro checkStrPtr( expr, expectedexpr )
+		CU_ASSERT( strptrcalls = 0 )
+		check( expr, expectedexpr )
+		CU_ASSERT( strptrcalls = 1 )
+		strptrcalls = 0
+	#endmacro
+
+	#macro checkZstr( expr, expectedexpr )
+		CU_ASSERT( zstrcalls = 0 )
+		check( expr, expectedexpr )
+		CU_ASSERT( zstrcalls = 1 )
+		zstrcalls = 0
+	#endmacro
+
+	#macro checkWstr( expr, expectedexpr )
+		CU_ASSERT( wstrcalls = 0 )
+		check( expr, expectedexpr )
+		CU_ASSERT( wstrcalls = 1 )
+		wstrcalls = 0
+	#endmacro
+
+	#macro checkStrings( checkMacro, f, var, lit )
+		checkMacro( f      , lit       )
+		checkMacro( f + var, lit + lit )
+		checkMacro( f + lit, lit + lit )
+		checkMacro( f      , var       )
+		checkMacro( f + var, var + lit )
+		checkMacro( f + lit, var + lit )
+		checkMacro( f + var, var + var )
+		checkMacro( f + lit, var + var )
+
+		checkMacro( lit      , f       )
+		checkMacro( lit + lit, f + var )
+		checkMacro( lit + lit, f + lit )
+		checkMacro( var      , f       )
+		checkMacro( var + lit, f + var )
+		checkMacro( var + lit, f + lit )
+		checkMacro( var + var, f + var )
+		checkMacro( var + var, f + lit )
+	#endmacro
+
+	globalstr = "123"
+	dim s as string = "123"
+	dim i as integer = 123
+	dim z as zstring * 4 = "123"
+	dim w as wstring * 4 = wstr( "123" )
+
+	checkStrings( checkStr   , sidefxStr( )    , s, "123" )
+	checkStrings( checkStrPtr, *sidefxStrPtr( ), s, "123" )
+	checkStrings( check      , str( i )        , s, "123" )
+	checkStrings( checkZstr  , *sidefxZstr( )  , z, "123" )
+	checkStrings( checkWstr  , *sidefxWstr( )  , w, wstr( "123" ) )
+	checkStrings( check      , wstr( i )       , w, wstr( "123" ) )
 end sub
 
 sub ctor( ) constructor
