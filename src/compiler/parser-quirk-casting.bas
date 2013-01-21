@@ -120,10 +120,9 @@ end function
 
 '' AnonUDT  =  TYPE ('<' SymbolType '>')? '(' ... ')'
 function cAnonUDT( ) as ASTNODE ptr
+	dim as ASTNODE ptr initree = any
 	dim as FBSYMBOL ptr sym = any, subtype = any
 	dim as integer dtype = any, lgt = any
-
-	function = NULL
 
 	'' TYPE
 	lexSkipToken( )
@@ -190,8 +189,17 @@ function cAnonUDT( ) as ASTNODE ptr
 		end if
 	end if
 
-	'' alloc temp var and then parse the rest as var initializer
+	'' Use temp var so the rest can be parsed as var initializer,
+	'' then delete the temp var again, similar to astCALLCTORToCALL()
 	sym = symbAddTempVar( dtype, subtype )
-	astDtorListAdd( sym )
-	function = cInitializer( sym, FB_INIOPT_NONE )
+	initree = cInitializer( sym, FB_INIOPT_NONE )
+	astReplaceSymbolOnTree( initree, sym, NULL )
+	symbDelSymbol( sym )
+
+	'' This gives us a clean TYPEINI tree (like a parameter initializer),
+	'' allowing astNewASSIGN() to optimize it by initializing the lhs
+	'' directly instead of using a temp var, and if that does not happen,
+	'' then astTypeIniUpdate() will take care of it.
+
+	function = initree
 end function
