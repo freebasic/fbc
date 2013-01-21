@@ -34,6 +34,42 @@ function astBuildVarAssign _
 
 end function
 
+function astBuildFakeWstringAccess( byval sym as FBSYMBOL ptr ) as ASTNODE ptr
+	assert( symbGetIsWstring( sym ) )
+	function = astNewDEREF( astNewVAR( sym ) )
+end function
+
+function astBuildFakeWstringAssign _
+	( _
+		byval sym as FBSYMBOL ptr, _
+		byval expr as ASTNODE ptr _
+	) as ASTNODE ptr
+
+	dim as ASTNODE ptr t = any
+
+	assert( symbGetIsWstring( sym ) )
+	t = NULL
+
+	'' side-effect?
+	if( astIsClassOnTree( AST_NODECLASS_CALL, expr ) <> NULL ) then
+		t = astNewLINK( t, astRemSideFx( expr ), FALSE )
+	end if
+
+	'' wcharptr = WstrAlloc( len( expr ) )
+	t = astNewLINK( t, _
+		astBuildVarAssign( sym, rtlWstrAlloc( rtlMathLen( astCloneTree( expr ) ) ) ), _
+		FALSE )
+
+	'' *wcharptr = expr
+	'' Using AST_OPOPT_ISINI to get a WstrAssign() immediately, because this
+	'' can be nested in an IIF node, causing astOptAssignment() to miss it
+	t = astNewLINK( t, _
+		astNewASSIGN( astBuildFakeWstringAccess( sym ), expr, AST_OPOPT_ISINI ), _
+		FALSE )
+
+	function = t
+end function
+
 '':::::
 function astBuildVarInc _
 	( _

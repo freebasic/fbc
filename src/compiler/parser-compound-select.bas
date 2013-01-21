@@ -135,7 +135,7 @@ sub cSelectStmtBegin()
 
 			astAdd( astNewDECL( sym, NULL ) )
 
-			astAdd( astNewASSIGN( astNewVAR( sym ), expr ) )
+			astAdd( astBuildVarAssign( sym, expr ) )
 		else
 			'' the wstring must be allocated() but size
 			'' is unknown at compile-time, do:
@@ -157,16 +157,7 @@ sub cSelectStmtBegin()
 
 			astAdd( astNewDECL( sym, NULL ) )
 
-			'' side-effect?
-			if( astIsClassOnTree( AST_NODECLASS_CALL, expr ) <> NULL ) then
-				astAdd( astRemSideFx( expr ) )
-			end if
-
-			'' tmp = WstrAlloc( len( expr ) )
-			astAdd( astNewASSIGN( astNewVAR( sym ), rtlWstrAlloc( rtlMathLen( astCloneTree( expr ) ) ) ) )
-
-			'' *tmp = expr
-			astAdd( astNewASSIGN( astNewDEREF( astNewVAR( sym ) ), expr ) )
+			astAdd( astBuildFakeWstringAssign( sym, expr ) )
 		end if
 	end if
 
@@ -250,7 +241,7 @@ private function hFlushCaseExpr _
 	'' if it's the fake "dynamic wstring", do "if *tmp op expr"
 	#define NEWCASEVAR( sym ) _
 		iif( symbGetIsWstring( sym ), _
-		     astNewDEREF( astNewVAR( sym ) ), _
+		     astBuildFakeWstringAccess( sym ), _
 		     astNewVAR( sym ) )
 
 	expr = NEWCASEVAR( sym )

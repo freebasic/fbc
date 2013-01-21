@@ -11,12 +11,10 @@
 
 private sub hPrepareWstring _
 	( _
-		byref n       as ASTNODE ptr, _
+		byval n       as ASTNODE ptr, _
 		byref truexpr as ASTNODE ptr, _
 		byref falsexpr as ASTNODE ptr _
 	)
-
-	dim as ASTNODE ptr tree = any
 
 	'' the wstring must be allocated() but size
 	'' is unknown at compile-time, do:
@@ -38,68 +36,8 @@ private sub hPrepareWstring _
 
 	astAdd( astNewDECL( n->sym, NULL ) )
 
-	tree = NULL
-
-	'' side-effect?
-	if( astIsClassOnTree( AST_NODECLASS_CALL, truexpr ) <> NULL ) then
-		tree = astNewLINK( tree, astRemSideFx( truexpr ), FALSE )
-	end if
-
-	'' tmp = WstrAlloc( len( expr ) )
-	tree = astNewLINK( tree, _
-		astNewASSIGN( astNewVAR( n->sym ), _
-			rtlWstrAlloc( rtlMathLen( astCloneTree( truexpr ) ) ) ), _
-		FALSE )
-
-	'' *tmp = expr
-	tree = astNewLINK( tree, _
-		astNewASSIGN( astNewDEREF( astNewVAR( n->sym ) ), _
-			truexpr, AST_OPOPT_ISINI ), _
-		FALSE )
-
-	truexpr = tree
-
-	tree = NULL
-
-	'' side-effect?
-	if( astIsClassOnTree( AST_NODECLASS_CALL, falsexpr ) <> NULL ) then
-		tree = astNewLINK( tree, astRemSideFx( falsexpr ), FALSE )
-	end if
-
-	'' tmp = WstrAlloc( len( expr ) )
-	tree = astNewLINK( tree, _
-		astNewASSIGN( astNewVAR( n->sym ), _
-			rtlWstrAlloc( rtlMathLen( astCloneTree( falsexpr ) ) ) ), _
-		FALSE )
-
-	'' *tmp = expr
-	tree = astNewLINK( tree, _
-		astNewASSIGN( astNewDEREF( astNewVAR( n->sym ) ), _
-			falsexpr, AST_OPOPT_ISINI ), _
-		FALSE )
-
-	falsexpr = tree
-
-end sub
-
-private sub hPrepareString _
-	( _
-		byref n       as ASTNODE ptr, _
-		byref truexpr as ASTNODE ptr, _
-		byref falsexpr as ASTNODE ptr _
-	)
-
-	'' Remove temp flag to have its dtor called at scope breaks/end
-	'' (needed when the temporary is a string)
-	symbUnsetIsTemp( n->sym )
-
-	astAdd( astNewDECL( n->sym, NULL ) )
-
-	'' assign true to temp
-	truexpr = astNewASSIGN( astNewVAR( n->sym ), truexpr, AST_OPOPT_ISINI )
-
-	'' assign false to temp
-	falsexpr = astNewASSIGN( astNewVAR( n->sym ), falsexpr, AST_OPOPT_ISINI )
+	truexpr  = astBuildFakeWstringAssign( n->sym, truexpr )
+	falsexpr = astBuildFakeWstringAssign( n->sym, falsexpr )
 
 end sub
 
@@ -328,17 +266,20 @@ function astNewIIF _
 
 	if( typeGetDtAndPtrOnly( dtype ) = FB_DATATYPE_WCHAR ) then
 		hPrepareWstring( n, truexpr, falsexpr )
-	elseif( typeGetClass( dtype ) = FB_DATACLASS_STRING ) then
-		n->sym = symbAddTempVar( dtype, subtype )
-		hPrepareString( n, truexpr, falsexpr )
 	else
 		n->sym = symbAddTempVar( dtype, subtype )
 
-		'' assign true to temp
-		truexpr = astNewASSIGN( astNewVAR( n->sym ), truexpr )
+		if( typeGetClass( dtype ) = FB_DATACLASS_STRING ) then
+			'' Remove temp flag to have its dtor called at scope breaks/end
+			'' (needed when the temporary is a string)
+			symbUnsetIsTemp( n->sym )
+			astAdd( astNewDECL( n->sym, NULL ) )
+		end if
 
-		'' assign false to temp
-		falsexpr = astNewASSIGN( astNewVAR( n->sym ), falsexpr )
+		'' Using AST_OPOPT_ISINI to get a StrAssign() immediately for strings,
+		'' because this is nested in an IIF node, causing astOptAssignment() to miss it
+		truexpr  = astNewASSIGN( astNewVAR( n->sym ), truexpr , AST_OPOPT_ISINI )
+		falsexpr = astNewASSIGN( astNewVAR( n->sym ), falsexpr, AST_OPOPT_ISINI )
 	end if
 
 	n->r = astNewLINK( truexpr, falsexpr )
@@ -347,12 +288,7 @@ function astNewIIF _
 
 end function
 
-'':::::
-function astLoadIIF _
-	( _
-		byval n as ASTNODE ptr _
-	) as IRVREG ptr
-
+function astLoadIIF( byval n as ASTNODE ptr ) as IRVREG ptr
 	dim as ASTNODE ptr l = any, r = any, t = any
 	dim as FBSYMBOL ptr exitlabel = any
 
@@ -406,10 +342,10 @@ function astLoadIIF _
 		irEmitLABELNF( exitlabel )
 	end if
 
-	t = astNewVAR( n->sym )
-
 	if( symbGetIsWstring( n->sym ) ) then
-		t = astNewDEREF( t )
+		t = astBuildFakeWstringAccess( n->sym )
+	else
+		t = astNewVAR( n->sym )
 	end if
 
 	' If assigning to a string, it needs to be forced to an address of string
@@ -423,5 +359,4 @@ function astLoadIIF _
 	astDelNode( r->l )
 	astDelNode( r->r )
 	astDelNode( r )
-
 end function
