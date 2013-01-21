@@ -67,10 +67,7 @@ function astNewCALL _
 	if( symbProcReturnsOnStack( sym ) ) then
 		'' create a temp struct (can't be static, could be an object)
 		n->call.tmpres = symbAddTempVar( FB_DATATYPE_STRUCT, symbGetSubtype( sym ) )
-
-		if( symbHasDtor( sym ) ) then
-			astDtorListAdd( n->call.tmpres )
-		end if
+		astDtorListAdd( n->call.tmpres )
 	else
 		n->call.tmpres = NULL
 	end if
@@ -334,11 +331,6 @@ sub astReplaceSymbolOnCALL _
 	'' check temp res
 	if( n->call.tmpres = old_sym ) then
 		n->call.tmpres = new_sym
-
-		'' add to temp dtor list?
-		if( symbHasDtor( new_sym ) ) then
-			astDtorListAdd( new_sym )
-		end if
 	end if
 
 	'' temp strings list
@@ -381,9 +373,13 @@ function astBuildCallResultUdt( byval expr as ASTNODE ptr ) as ASTNODE ptr
 		function = astBuildCallResultVar( expr )
 	else
 		'' UDT returned in registers, copy to a temp var to allow field accesses etc.
-		'' (note: if it's being returned in regs, there's no DTOR)
 		tmp = symbAddTempVar( FB_DATATYPE_STRUCT, expr->subtype )
+
+		'' No need to bother doing astDtorListAdd()
+		assert( symbHasDtor( tmp ) = FALSE )
+
 		expr = astNewASSIGN( astBuildVarField( tmp ), expr, AST_OPOPT_DONTCHKOPOVL )
+
 		function = astNewLINK( expr, _
 			astBuildVarField( tmp ), _
 			FALSE ) '' ASSIGN first, but return the field access

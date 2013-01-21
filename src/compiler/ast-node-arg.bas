@@ -675,6 +675,7 @@ private sub hUDTPassByval _
 
 	'' non-trivial type, pass a pointer to a temp copy
 	tmp = symbAddTempVar( symbGetFullType( param ), symbGetSubtype( param ) )
+	astDtorListAdd( tmp )
 
 	callexpr = astBuildCopyCtorCall( astBuildVarField( tmp ), arg )
 	if( callexpr = NULL ) then
@@ -684,10 +685,6 @@ private sub hUDTPassByval _
 	arg = astNewCALLCTOR( callexpr, astBuildVarField( tmp ) )
 
 	hBuildByrefArg( param, n, arg )
-
-	if( symbHasDtor( param ) ) then
-		astDtorListAdd( tmp )
-	end if
 
 end sub
 
@@ -723,6 +720,7 @@ private function hImplicitCtor _
 	end if
 
 	tmp = symbAddTempVar( symbGetFullType( param ), symbGetSubtype( param ) )
+	astDtorListAdd( tmp )
 
 	n->l = astNewCALLCTOR( astPatchCtorCall( arg, astBuildVarField( tmp ) ), astBuildVarField( tmp ) )
 
@@ -730,10 +728,6 @@ private function hImplicitCtor _
 		hUDTPassByval( parent, param, n )
 	else
 		hBuildByrefArg( param, n, n->l )
-	end if
-
-	if( symbHasDtor( param ) ) then
-		astDtorListAdd( tmp )
 	end if
 
 	function = TRUE
@@ -793,6 +787,9 @@ private function hCheckUDTParam _
 				'' Returning in registers, passed to a BYREF param
 				'' Create a temp var and pass that
 				tmp = symbAddTempVar( astGetDatatype( arg ), arg->subtype )
+
+				'' No need to bother doing astDtorListAdd()
+				assert( symbHasDtor( tmp ) = FALSE )
 
 				n->l = astNewLINK( astNewADDROF( astBuildVarField( tmp ) ), _
 						astNewASSIGN( astBuildVarField( tmp ), arg, AST_OPOPT_DONTCHKOPOVL ) )

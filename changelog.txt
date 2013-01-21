@@ -159,6 +159,8 @@ Version 0.25.0:
 - "new[expr] UDT" evaluated "expr" multiple times even if contained function calls, if the memory buffer was just being cleared (i.e. UDT had no default constructor and "{ ANY }" wasn't used)
 - Bad code generation for new[]'s default constructor calling loop, when the new[] expression was duplicated, for example when it was part of a parameter initializer
 - Bad code generation for wstring concatenation in a SELECT CASE expression, when it contained function calls
+- Missing destructor calls for temporary variables in parameter initializer expressions
+- Missing destructor calls for the temporary variable produced by type<UDT>( )
 
 
 Version 0.24.0:

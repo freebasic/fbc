@@ -184,6 +184,7 @@ function cCtorCall _
 
 	'' alloc temp var
 	tmp = symbAddTempVar( symbGetType( sym ), sym )
+	astDtorListAdd( tmp )
 
 	'' '('?
 	if( lexGetToken( ) = CHAR_LPRNT ) then
@@ -224,10 +225,6 @@ function cCtorCall _
 
 	'' check if it's a call (because error recovery)..
 	if( astIsCALL( procexpr ) ) then
-		if( symbGetCompDtor( sym ) ) then
-			astDtorListAdd( tmp )
-		end if
-
 		function = astNewCALLCTOR( procexpr, astBuildVarField( tmp ) )
 	else
 		function = procexpr

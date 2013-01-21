@@ -1104,21 +1104,16 @@ end function
 '' temp destructors handling
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-'':::::
-function astDtorListAdd _
-	( _
-		byval sym as FBSYMBOL ptr _
-	) as AST_DTORLIST_ITEM ptr
-
+sub astDtorListAdd( byval sym as FBSYMBOL ptr )
 	dim as AST_DTORLIST_ITEM ptr n = any
 
-	n = listNewNode( @ast.dtorlist )
+	assert( symbIsVar( sym ) )
 
-	n->sym = sym
-
-	function = n
-
-end function
+	if( symbHasDtor( sym ) ) then
+		n = listNewNode( @ast.dtorlist )
+		n->sym = sym
+	end if
+end sub
 
 '':::::
 function astDtorListFlush _

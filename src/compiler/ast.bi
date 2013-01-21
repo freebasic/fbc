@@ -1216,10 +1216,7 @@ declare sub astReplaceSymbolOnTree _
 		byval new_sym as FBSYMBOL ptr _
 	)
 
-declare function astDtorListAdd _
-	( _
-		byval sym as FBSYMBOL ptr _
-	) as AST_DTORLIST_ITEM ptr
+declare sub astDtorListAdd( byval sym as FBSYMBOL ptr )
 
 declare sub astDtorListDel _
 	( _

@@ -120,8 +120,7 @@ end function
 
 '' AnonUDT  =  TYPE ('<' SymbolType '>')? '(' ... ')'
 function cAnonUDT( ) as ASTNODE ptr
-
-	dim as FBSYMBOL ptr subtype = any
+	dim as FBSYMBOL ptr sym = any, subtype = any
 	dim as integer dtype = any, lgt = any
 
 	function = NULL
@@ -192,5 +191,7 @@ function cAnonUDT( ) as ASTNODE ptr
 	end if
 
 	'' alloc temp var and then parse the rest as var initializer
-	function = cInitializer( symbAddTempVar( dtype, subtype ), FB_INIOPT_NONE )
+	sym = symbAddTempVar( dtype, subtype )
+	astDtorListAdd( sym )
+	function = cInitializer( sym, FB_INIOPT_NONE )
 end function

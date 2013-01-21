@@ -750,13 +750,22 @@ private sub hRelinkTemps _
 		exit sub
 	end if
 
-	dim as FBSYMBOL ptr sym = any
+	dim as FBSYMBOL ptr sym = any, clonesym = any
 
 	'' different trees?
 	if( clone_tree <> NULL ) then
 		sym = symbGetScopeSymbTbHead( tree->typeini.scp )
 		do while( sym <> NULL )
-			astReplaceSymbolOnTree( clone_tree, sym, symbCloneSymbol( sym ) )
+			clonesym = symbCloneSymbol( sym )
+			astReplaceSymbolOnTree( clone_tree, sym, clonesym )
+
+			'' Re-register temp var dtors
+			'' (They were removed via astDtorListClear() after
+			'' parsing the original expression, and must be re-added
+			'' everytime the initializer expression is instantiated)
+			if( symbIsVar( clonesym ) ) then
+				astDtorListAdd( clonesym )
+			end if
 
 			sym = sym->next
 		loop
@@ -769,7 +778,14 @@ private sub hRelinkTemps _
 		do while( sym <> NULL )
 			nxt = sym->next
 
-			astReplaceSymbolOnTree( tree, sym, symbCloneSymbol( sym ) )
+			clonesym = symbCloneSymbol( sym )
+			astReplaceSymbolOnTree( tree, sym, clonesym )
+
+			'' Re-register temp var dtors
+			'' (ditto)
+			if( symbIsVar( clonesym ) ) then
+				astDtorListAdd( clonesym )
+			end if
 
 			symbFreeSymbol_RemOnly( sym )
 
@@ -1034,6 +1050,7 @@ private function hWalk _
 		'' Create a temporary variable which is initialized by the
 		'' astTypeIniFlush() below.
 		sym = symbAddTempVar( astGetFullType( n ), n->subtype )
+		astDtorListAdd( sym )
 
 		'' Update the parent node in the original tree to access the
 		'' temporary variable, instead of the TYPEINI. (it could be an
