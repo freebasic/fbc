@@ -79,7 +79,6 @@ end type
 type FB_CMPSTMT_SELECT
 	isconst			as integer
 	sym				as FBSYMBOL ptr
-	dtype			as FB_DATATYPE
 	casecnt			as integer
 	const_			as FB_CMPSTMT_SELCONST
 	cmplabel		as FBSYMBOL ptr

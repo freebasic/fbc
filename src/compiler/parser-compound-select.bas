@@ -175,7 +175,6 @@ sub cSelectStmtBegin()
 						 FB_CMPSTMT_MASK_NOTHING ) '' nothing allowed but CASE's
 	stk->select.isconst = FALSE
 	stk->select.sym = sym
-	stk->select.dtype = dtype
 	stk->select.casecnt = 0
 	stk->select.cmplabel = symbAddLabel( NULL, FB_SYMBOPT_NONE )
 	stk->select.endlabel = el
@@ -186,7 +185,12 @@ end sub
 ''CaseExpression  =   (Expression (TO Expression)?)?
 ''				  |   (IS REL_OP Expression)? .
 ''
-private sub hCaseExpression( byval dtype as integer, byref casectx as FBCASECTX )
+private sub hCaseExpression _
+	( _
+		byref casectx as FBCASECTX, _
+		byval sym as FBSYMBOL ptr _
+	)
+
 	casectx.op = AST_OP_EQ
 
 	'' IS REL_OP Expression
@@ -204,7 +208,9 @@ private sub hCaseExpression( byval dtype as integer, byref casectx as FBCASECTX 
 	if( casectx.expr1 = NULL ) then
 		errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
 		'' error recovery: fake an expr
-		casectx.expr1 = astNewCONSTz( dtype )
+		casectx.expr1 = astNewCONSTz( iif( symbGetIsWstring( sym ), _
+							FB_DATATYPE_WCHAR, _
+							symbGetType( sym ) ) )
 	end if
 
 	'' TO Expression
@@ -346,7 +352,7 @@ function cSelectStmtNext( ) as integer
 	cntbase = ctx.base
 
 	do
-		hCaseExpression( stk->select.dtype, ctx.caseTB(cntbase + cnt) )
+		hCaseExpression( ctx.caseTB(cntbase + cnt), stk->select.sym )
 		cnt += 1
 
 		if( lexGetToken( ) <> CHAR_COMMA ) then
