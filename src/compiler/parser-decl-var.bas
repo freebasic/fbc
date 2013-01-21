@@ -1511,31 +1511,15 @@ function cVarDecl _
 
 							'' bydesc array params have no descriptor
 							if( desc <> NULL ) then
-
-								if( fbLangOptIsSet( FB_LANG_OPT_SCOPE ) ) then
-									astAdd( astNewLINK( var_decl, _
-														astTypeIniFlush( symbGetTypeIniTree( desc ), _
-											 	 		 				 desc, _
-											  	 		 				 AST_INIOPT_ISINI ) ) )
-								else
-									astAddUnscoped( astNewLINK( var_decl, _
-														astTypeIniFlush( symbGetTypeIniTree( desc ), _
-											 	 		 				 desc, _
-											  	 		 				 AST_INIOPT_ISINI ) ) )
-								end if
-
+								var_decl = astNewLINK( var_decl, astTypeIniFlush( symbGetTypeIniTree( desc ), desc, AST_INIOPT_ISINI ) )
 								symbSetTypeIniTree( desc, NULL )
-
-							else
-
-								if( fbLangOptIsSet( FB_LANG_OPT_SCOPE ) ) then
-									astAdd( var_decl )
-								else
-									astAddUnscoped( var_decl )
-								end if
-
 							end if
 
+							if( fbLangOptIsSet( FB_LANG_OPT_SCOPE ) ) then
+								astAdd( var_decl )
+							else
+								astAddUnscoped( var_decl )
+							end if
 							var_decl = NULL
 						end if
 					end if
@@ -1566,13 +1550,11 @@ function cVarDecl _
 
 					'' unscoped
 					else
-
 						'' flush the init tree (must be done after adding the decl node)
 						astAddUnscoped( hFlushInitializer( sym, var_decl, initree, has_dtor ) )
 
 						'' initializer as assignment?
 						if( doassign ) then
-
 							dim as ASTNODE ptr assign_vardecl = any
 
 							'' clear it before it's initialized?
