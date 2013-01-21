@@ -264,11 +264,7 @@ function astCloneTree( byval n as ASTNODE ptr ) as ASTNODE ptr
 end function
 
 '':::::
-function astRemSideFx _
-	( _
-		byref n as ASTNODE ptr _
-	) as ASTNODE ptr
-
+function astRemSideFx( byref n as ASTNODE ptr ) as ASTNODE ptr
 	'' note: this should only be done with VAR, IDX, PTR and FIELD nodes
 
 	dim as FBSYMBOL ptr tmp = any, subtype = any
@@ -291,12 +287,9 @@ function astRemSideFx _
 		tmp = symbAddTempVar( typeAddrOf( dtype ), subtype )
 
 		'' tmp = @b
-		t = astNewASSIGN( astNewVAR( tmp ), astNewADDROF( n ) )
+		function = astNewASSIGN( astNewVAR( tmp ), astNewADDROF( n ) )
 
-		'' return *tmp
-		function = astNewLINK( t, astNewDEREF( astNewVAR( tmp ) ) )
-
-		'' repatch node
+		'' repatch original expression to just *tmp
 		n = astNewDEREF( astNewVAR( tmp ) )
 
 	'' simple type..
@@ -304,16 +297,12 @@ function astRemSideFx _
 		tmp = symbAddTempVar( dtype, subtype )
 
 		'' tmp = n
-		t = astNewASSIGN( astNewVAR( tmp ), n )
+		function = astNewASSIGN( astNewVAR( tmp ), n )
 
-		'' return tmp
-		function = astNewLINK( t, astNewVAR( tmp ) )
-
-		'' repatch node
+		'' repatch original expression to just access the temp var
 		n = astNewVAR( tmp )
 
 	end select
-
 end function
 
 '':::::

@@ -1039,10 +1039,7 @@ declare function astGetInverseLogOp _
 		byval op as integer _
 	) as integer
 
-declare function astRemSideFx _
-	( _
-		byref n as ASTNODE ptr _
-	) as ASTNODE ptr
+declare function astRemSideFx( byref n as ASTNODE ptr ) as ASTNODE ptr
 
 declare function astBuildVarDeref( byval sym as FBSYMBOL ptr ) as ASTNODE ptr
 declare function astBuildVarAddrof( byval sym as FBSYMBOL ptr ) as ASTNODE ptr
