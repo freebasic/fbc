@@ -896,10 +896,7 @@ declare function astCheckCONV _
 		byval l as ASTNODE ptr _
 	) as integer
 
-declare function astUpdStrConcat _
-	( _
-		byval n as ASTNODE ptr _
-	) as ASTNODE ptr
+declare function astUpdStrConcat( byval n as ASTNODE ptr ) as ASTNODE ptr
 
 declare function astIsClassOnTree _
 	( _

@@ -834,13 +834,8 @@ end function
 '' node type update
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-'':::::
-function astUpdStrConcat _
-	( _
-		byval n as ASTNODE ptr _
-	) as ASTNODE ptr
-
-	static as ASTNODE ptr l, r
+function astUpdStrConcat( byval n as ASTNODE ptr ) as ASTNODE ptr
+	dim as ASTNODE ptr l = any, r = any
 
 	function = n
 
@@ -848,9 +843,6 @@ function astUpdStrConcat _
 		exit function
 	end if
 
-	'' this proc will be called for each function param, same
-	'' with assignment -- assuming here that IIF won't
-	'' support strings
 	select case as const astGetDataType( n )
 	case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, _
 		 FB_DATATYPE_WCHAR
