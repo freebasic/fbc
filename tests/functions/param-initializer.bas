@@ -236,6 +236,7 @@ private sub ctor( ) constructor
 	fbcu.add_test( "118", @udtByref.ctors4                       .test )
 	fbcu.add_test( "119", @udtByref.ctors5                       .test )
 	fbcu.add_test( "120", @udtByref.ctorTempArrayDesc            .test )
+	fbcu.add_test( "121", @udtByref.vectorNewCtorList            .test )
 
 	fbcu.add_test( "201", @udtByval.anon                         .test )
 	fbcu.add_test( "202", @udtByval.global                       .test )
@@ -257,6 +258,7 @@ private sub ctor( ) constructor
 	fbcu.add_test( "218", @udtByval.ctors4                       .test )
 	fbcu.add_test( "219", @udtByval.ctors5                       .test )
 	fbcu.add_test( "220", @udtByval.ctorTempArrayDesc            .test )
+	fbcu.add_test( "221", @udtByval.vectorNewCtorList            .test )
 
 	fbcu.add_test( "301", @intByref.constant                     .test )
 	fbcu.add_test( "302", @intByref.global                       .test )

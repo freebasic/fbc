@@ -1111,7 +1111,8 @@ declare function astBuildForBegin _
 		byval tree as ASTNODE ptr, _
 		byval cnt as FBSYMBOL ptr, _
 		byval label as FBSYMBOL ptr, _
-		byval inivalue as integer _
+		byval inivalue as integer, _
+		byval flush_label as integer = TRUE _
 	) as ASTNODE ptr
 
 declare function astBuildForEnd _

@@ -169,14 +169,15 @@ function astBuildForBegin _
 		byval tree as ASTNODE ptr, _
 		byval cnt as FBSYMBOL ptr, _
 		byval label as FBSYMBOL ptr, _
-		byval inivalue as integer _
+		byval inivalue as integer, _
+		byval flush_label as integer _
 	) as ASTNODE ptr
 
 	'' cnt = 0
 	tree = astNewLINK( tree, astBuildVarAssign( cnt, inivalue ) )
 
 	'' do
-	tree = astNewLINK( tree, astNewLABEL( label ) )
+	tree = astNewLINK( tree, astNewLABEL( label, flush_label ) )
 
 	function = tree
 end function

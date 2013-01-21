@@ -443,6 +443,32 @@ namespace vectorNewSideFx
 	end sub
 end namespace
 
+namespace vectorNewCtorList
+	type UDT
+		i as integer
+	end type
+
+	type ClassUDT
+		i as integer
+		declare constructor( )
+	end type
+
+	constructor ClassUDT( )
+		this.i = 123
+	end constructor
+
+	function f( byval p as ClassUDT ptr ) as UDT
+		function = type( p->i )
+	end function
+
+	sub test cdecl( )
+		dim x as UDT
+		CU_ASSERT( x.i = 0 )
+		x = f( new ClassUDT[1] )
+		CU_ASSERT( x.i = 123 )
+	end sub
+end namespace
+
 '' #3509495 regression test
 namespace deleteDerivedPtr
 	type Parent

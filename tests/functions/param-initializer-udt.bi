@@ -434,3 +434,23 @@ namespace ctorTempArrayDesc
 
 	hScopeChecks( tester( ) )
 end namespace
+
+namespace vectorNewCtorList
+	dim shared as integer calls
+
+	function sidefx( ) as integer
+		calls += 1
+		function = 4
+	end function
+
+	function f( byval p as ClassUDT ptr ) as UDT
+		function = type( p[0].i )
+		delete[] p
+	end function
+
+	sub tester( PARAM_MODE x as UDT = f( new ClassUDT[sidefx( )] ) )
+		CU_ASSERT( x.i = 123 )
+	end sub
+
+	hScopeChecks( CU_ASSERT( calls = 0 ) : tester( ) : CU_ASSERT( calls = 1 ) : calls = 0 )
+end namespace

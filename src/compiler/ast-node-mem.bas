@@ -72,7 +72,9 @@ private function hCallCtorList _
 	tree = astBuildVarAssign( iter, astNewVAR( tmp ) )
 
 	'' for cnt = 0 to elements-1
-	tree = astBuildForBegin( tree, cnt, label, 0 )
+	'' Note: Using a non-flushing LABEL here because the LABEL node will
+	'' end up as part of an expression tree, not as a "standalone statement"
+	tree = astBuildForBegin( tree, cnt, label, 0, FALSE /' non-flushing '/ )
 
 	'' ctor( *iter )
 	tree = astNewLINK( tree, astBuildCtorCall( subtype, astBuildVarDeref( iter ) ) )
@@ -83,6 +85,9 @@ private function hCallCtorList _
 	'' next
 	tree = astBuildForEnd( tree, cnt, label, 1, elementsexpr )
 
+	'' Wrap into LOOP node so astCloneTree() can clone the label and update
+	'' the loop code, because it's part of the new[] expression, and not
+	'' a standalone statement.
 	function = astNewLOOP( label, tree )
 end function
 
