@@ -514,12 +514,15 @@ function astNewASSIGN _
 			end if
 
 			'' Initialize the lhs with the TYPEINI directly,
-			'' instead of using a temp var and then copying that.
+			'' instead of using a temp var and then copying that,
+			'' unless there are ctors/dtors (let/cast overloads were
+			'' already handled above).
 			'' FIXME: This currently only works with VAR on the lhs,
 			'' because astTypeIniFlush() takes a symbol, not an expression...
 			if( t->class = AST_NODECLASS_VAR ) then
-				'' no double assign, just flush the tree
-				return astTypeIniFlush( r, t->sym, AST_INIOPT_NONE )
+				if( (symbHasCtor( t->sym ) or symbHasDtor( t->sym )) = FALSE ) then
+					return astTypeIniFlush( r, t->sym, AST_INIOPT_NONE )
+				end if
 			end if
 		end if
 
