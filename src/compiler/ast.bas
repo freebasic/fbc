@@ -258,6 +258,13 @@ function astCloneTree( byval n as ASTNODE ptr ) as ASTNODE ptr
 	case AST_NODECLASS_LOOP
 		astReplaceSymbolOnTree( c, c->op.ex, symbAddLabel( NULL ) )
 
+#if __FB_DEBUG__
+	case AST_NODECLASS_LIT, AST_NODECLASS_JMPTB
+		'' These nodes contain dynamically allocated memory,
+		'' which currently isn't handled here
+		assert( FALSE )
+#endif
+
 	end select
 
 	function = c
