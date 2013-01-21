@@ -80,13 +80,9 @@ sub cSelConstStmtBegin()
 	el = symbAddLabel( NULL, FB_SYMBOPT_NONE )
 	cl = symbAddLabel( NULL, FB_SYMBOPT_NONE )
 
-	'' store expression into a temp var
+	'' temp = expr
 	sym = symbAddTempVar( FB_DATATYPE_UINT )
-
-	expr = astNewASSIGN( astNewVAR( sym ), expr )
-	if( expr <> NULL ) then
-		astAdd( expr )
-	end if
+	astAdd( astBuildVarAssign( sym, expr ) )
 
 	'' skip the statements
 	astAdd( astNewBRANCH( AST_OP_JMP, cl ) )
