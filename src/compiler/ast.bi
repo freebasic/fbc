@@ -24,6 +24,13 @@ enum AST_NODECLASS
 	AST_NODECLASS_STACK
 	AST_NODECLASS_MEM
 
+	'' LOOP nodes, used to wrap loop code (e.g. new[]'s defctor calling)
+	'' that needs to be LINKed into expression trees, because it isn't
+	'' immediately astAdd()'ed, thus may be cloned. The LOOP wrapper node
+	'' allows astCloneTree() to duplicate the loop's LABEL and also update
+	'' the corresponding BRANCH.
+	AST_NODECLASS_LOOP
+
 	'' Only used to classify comparison operators, there are no COMP nodes.
 	AST_NODECLASS_COMP
 
@@ -385,10 +392,7 @@ declare sub astDelNode _
 		byval n as ASTNODE ptr _
 	)
 
-declare function astCloneTree _
-	( _
-		byval n as ASTNODE ptr _
-	) as ASTNODE ptr
+declare function astCloneTree( byval n as ASTNODE ptr ) as ASTNODE ptr
 
 declare sub astDelTree _
 	( _
@@ -720,6 +724,12 @@ declare function astBuildJMPTB _
 		byval deflabel as FBSYMBOL ptr, _
 		byval minval as uinteger, _
 		byval maxval as uinteger _
+	) as ASTNODE ptr
+
+declare function astNewLOOP _
+	( _
+		byval label as FBSYMBOL ptr, _
+		byval tree as ASTNODE ptr _
 	) as ASTNODE ptr
 
 declare function astNewIIF _
@@ -1296,6 +1306,7 @@ declare function astLoadLABEL( byval n as ASTNODE ptr ) as IRVREG ptr
 declare function astLoadLIT( byval n as ASTNODE ptr ) as IRVREG ptr
 declare function astLoadASM( byval n as ASTNODE ptr ) as IRVREG ptr
 declare function astLoadJMPTB( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function astLoadLOOP( byval n as ASTNODE ptr ) as IRVREG ptr
 declare function astLoadDBG( byval n as ASTNODE ptr ) as IRVREG ptr
 declare function astLoadMEM( byval n as ASTNODE ptr ) as IRVREG ptr
 declare function astLoadBOUNDCHK( byval n as ASTNODE ptr ) as IRVREG ptr

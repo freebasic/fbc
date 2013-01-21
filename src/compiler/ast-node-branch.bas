@@ -219,3 +219,30 @@ function astBuildJMPTB _
 
 	function = tree
 end function
+
+function astNewLOOP _
+	( _
+		byval label as FBSYMBOL ptr, _
+		byval tree as ASTNODE ptr _
+	) as ASTNODE ptr
+
+	dim as ASTNODE ptr n = any
+
+	n = astNewNode( AST_NODECLASS_LOOP, FB_DATATYPE_INVALID )
+	function = n
+
+	n->l = tree
+	n->op.ex = label
+
+	'' just faking something, so it's safe to handle LOOPs in the same
+	'' context like BRANCH nodes
+	n->op.op = AST_OP_FOR
+	n->op.options = 0
+
+end function
+
+function astLoadLOOP( byval n as ASTNODE ptr ) as IRVREG ptr
+	astLoad( n->l )
+	astDelNode( n->l )
+	function = NULL
+end function

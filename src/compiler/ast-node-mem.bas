@@ -83,7 +83,7 @@ private function hCallCtorList _
 	'' next
 	tree = astBuildForEnd( tree, cnt, label, 1, elementsexpr )
 
-	function = tree
+	function = astNewLOOP( label, tree )
 end function
 
 private function hElements _

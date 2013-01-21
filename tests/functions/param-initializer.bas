@@ -184,6 +184,35 @@ namespace strings
 	end namespace
 end namespace
 
+namespace vectorNewCtorList
+	dim shared as integer calls
+
+	type UDT
+		i as integer
+		declare constructor( )
+	end type
+
+	constructor UDT( )
+		i = 123
+		calls += 1
+	end constructor
+
+	sub tester( byval p as UDT ptr = new UDT[2] )
+		calls += 1
+		CU_ASSERT( p[0].i = 123 )
+		CU_ASSERT( p[1].i = 123 )
+		delete[] p
+	end sub
+
+	sub test cdecl( )
+		CU_ASSERT( calls = 0 )
+		tester( )
+		CU_ASSERT( calls = 3 )
+		tester( )
+		CU_ASSERT( calls = 6 )
+	end sub
+end namespace
+
 private sub ctor( ) constructor
 	fbcu.add_suite( "tests/functions/param-initializer" )
 
@@ -268,6 +297,8 @@ private sub ctor( ) constructor
 	fbcu.add_test( "strings 05", @strings.addrofZstrGlobal       .test )
 	fbcu.add_test( "strings 06", @strings.addrofWstrLiteral      .test )
 	fbcu.add_test( "strings 07", @strings.addrofWstrGlobal       .test )
+
+	fbcu.add_test( "new[] ctorlist", @vectorNewCtorList          .test )
 end sub
 
 end namespace

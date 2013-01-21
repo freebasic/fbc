@@ -340,7 +340,8 @@ sub astReplaceSymbolOnTree _
 	'' tree (TypeIniTree's won't have blocks, breaks, etc)
 
 	select case as const n->class
-	case AST_NODECLASS_BOP, AST_NODECLASS_UOP
+	case AST_NODECLASS_BOP, AST_NODECLASS_UOP, _
+	     AST_NODECLASS_BRANCH, AST_NODECLASS_LOOP
 		if( n->op.ex = old_sym ) then
 			n->op.ex = new_sym
 		end if

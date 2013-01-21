@@ -2325,7 +2325,7 @@ function astOptAssignment _
 	case AST_NODECLASS_ASSIGN
 
 	'' SelfBOP and TypeIniFlush will create links to emit trees
-	case AST_NODECLASS_LINK
+	case AST_NODECLASS_LINK, AST_NODECLASS_LOOP
 		n->l = astOptAssignment( n->l )
 		n->r = astOptAssignment( n->r )
 		exit function

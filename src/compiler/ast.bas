@@ -35,6 +35,7 @@ dim shared as AST_LOADCALLBACK ast_loadcallbacks( 0 to AST_CLASSES-1 ) => _
 	@astLoadCALLCTOR      , _    '' AST_NODECLASS_CALLCTOR
 	@astLoadSTACK         , _    '' AST_NODECLASS_STACK
 	@astLoadMEM           , _    '' AST_NODECLASS_MEM
+	@astLoadLOOP          , _    '' AST_NODECLASS_LOOP
 	NULL                  , _    '' AST_NODECLASS_COMP
 	@astLoadLINK          , _    '' AST_NODECLASS_LINK
 	@astLoadCONST         , _    '' AST_NODECLASS_CONST
@@ -218,12 +219,7 @@ sub astEnd( )
 	listEnd( @ast.astTB )
 end sub
 
-'':::::
-function astCloneTree _
-	( _
-		byval n as ASTNODE ptr _
-	) as ASTNODE ptr
-
+function astCloneTree( byval n as ASTNODE ptr ) as ASTNODE ptr
 	'' note: never clone a tree with side-effects (ie: function call nodes)
 
 	dim as ASTNODE ptr c = any, t = any
@@ -248,20 +244,23 @@ function astCloneTree _
 		c->r = astCloneTree( t )
 	end if
 
+	select case( n->class )
 	'' call nodes are too complex, let a helper function clone it
-	if( n->class = AST_NODECLASS_CALL ) then
+	case AST_NODECLASS_CALL
 		astCloneCALL( n, c )
-	end if
 
 	'' IIF nodes have labels, that can't be just cloned or you get dupes
 	'' at the assembler.
-	if( n->class = AST_NODECLASS_IIF ) then
+	case AST_NODECLASS_IIF
 		c->iif.falselabel = symbAddLabel( NULL )
 		c->l->op.ex = c->iif.falselabel
-	end if
+
+	case AST_NODECLASS_LOOP
+		astReplaceSymbolOnTree( c, c->op.ex, symbAddLabel( NULL ) )
+
+	end select
 
 	function = c
-
 end function
 
 '':::::
