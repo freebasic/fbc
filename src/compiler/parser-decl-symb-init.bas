@@ -33,16 +33,18 @@ private function hDoAssign _
 	) as integer
 
 	dim as integer dtype = any
+	dim as FBSYMBOL ptr subtype = any
 
 	dtype = symbGetFullType( ctx.sym )
+	subtype = symbGetSubtype( ctx.sym )
 
 	if( (ctx.options and FB_INIOPT_DODEREF) <> 0 ) then
 		dtype = typeDeref( dtype )
 	end if
 
-	if( astCheckASSIGNToType( dtype, symbGetSubtype( ctx.sym ), expr ) = FALSE ) then
+	if( astCheckASSIGNToType( dtype, subtype, expr ) = FALSE ) then
 		'' check if it's a cast
-		expr = astNewCONV( dtype, symbGetSubtype( ctx.sym ), expr )
+		expr = astNewCONV( dtype, subtype, expr )
 		if( expr = NULL ) then
 			'' hand it back...
 			'' (used with UDTs; if an UDT var is given in an UDT initializer,
@@ -55,7 +57,7 @@ private function hDoAssign _
 			errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE )
 			'' error recovery: create a fake expression
 			astDelTree( expr )
-			expr = astNewCONSTz( dtype )
+			expr = astNewCONSTz( dtype, subtype )
 		end if
 	end if
 
@@ -98,7 +100,7 @@ private function hElmInit _
 		if( (ctx.options and FB_INIOPT_DODEREF) <> 0 ) then
 			dtype = typeDeref( dtype )
 		end if
-		expr = astNewCONSTz( dtype )
+		expr = astNewCONSTz( dtype, symbGetSubtype( ctx.sym ) )
 	end if
 
 	'' to hand it back if necessary

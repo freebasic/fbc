@@ -150,7 +150,7 @@ private function cConstAssign _
 		errReportEx( FB_ERRMSG_EXPECTEDCONST, id )
 		doskip = TRUE
 		'' error recovery: create a fake node
-		expr = astNewCONSTz( dtype )
+		expr = astNewCONSTz( dtype, subtype )
 	end if
 
 	'' check if it's an string

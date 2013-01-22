@@ -178,31 +178,48 @@ function astNewCONST _
 
 end function
 
-'':::::
 function astNewCONSTz _
 	( _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr _
-	) as ASTNODE ptr static
+	) as ASTNODE ptr
 
-    select case as const typeGet( dtype )
-    case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR
-    	function = astNewCONSTstr( NULL )
+	dim as ASTNODE ptr tree = any
+	dim as FBSYMBOL ptr fld = any
 
-    case FB_DATATYPE_WCHAR
-    	function = astNewCONSTwstr( NULL )
+	select case as const( typeGetDtAndPtrOnly( dtype ) )
+	case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR
+		function = astNewCONSTstr( NULL )
 
-    case FB_DATATYPE_STRUCT
-    	function = astNewCONST( NULL, typeAddrOf( dtype ), subtype )
+	case FB_DATATYPE_WCHAR
+		function = astNewCONSTwstr( NULL )
 
-    case else
-    	if( dtype = FB_DATATYPE_INVALID ) then
-    		dtype = FB_DATATYPE_INTEGER
-    	end if
+	case FB_DATATYPE_STRUCT
+		'' Build a TYPEINI tree for this struct, with a CONST( 0 )
+		'' initializer for each member
+		tree = astTypeIniBegin( FB_DATATYPE_STRUCT, subtype, TRUE )
+		astTypeIniScopeBegin( tree, NULL )
 
-    	function = astNewCONST( NULL, dtype, subtype )
+		fld = symbUdtGetFirstField( subtype )
+		while( fld )
+			'' field = CONST( 0 )
+			astTypeIniAddAssign( tree, astNewCONSTz( symbGetFullType( fld ), symbGetSubtype( fld ) ), fld )
+			fld = symbUdtGetNextInitableField( fld )
+		wend
 
-    end select
+		astTypeIniScopeEnd( tree, NULL )
+		astTypeIniEnd( tree, FALSE )
+
+		function = tree
+
+	case else
+		if( dtype = FB_DATATYPE_INVALID ) then
+			dtype = FB_DATATYPE_INTEGER
+		end if
+
+		function = astNewCONST( NULL, dtype, subtype )
+
+	end select
 
 end function
 
