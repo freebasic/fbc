@@ -729,15 +729,31 @@ function symbGetVarHasDtor( byval s as FBSYMBOL ptr ) as integer
 end function
 
 function symbCloneVar( byval sym as FBSYMBOL ptr ) as FBSYMBOL ptr
+	static as FBARRAYDIM dTB(0 to FB_MAXARRAYDIMS-1)
+	dim as FBVARDIM ptr d = any
+	dim as integer dimensions = any
+
 	'' assuming only temp vars or temp array descs will be cloned
 	if( symbIsDescriptor( sym ) ) then
 		function = symbAddArrayDesc( sym->var_.desc.array, _
 				symbGetArrayDimensions( sym->var_.desc.array ) )
 		'' no need to dup desc.initree, it was flushed in newARG() and
 		'' should be fixed up with the new symbol in TypeIniFlush()
-	else
-		assert( symbIsTemp( sym ) )
+	elseif( symbIsTemp( sym ) ) then
 		function = symbAddTempVar( symbGetType( sym ), symbGetSubType( sym ) )
+	else
+		'' Fill the dTB() with the array's dimensions, if any
+		dimensions = symbGetArrayDimensions( sym )
+		d = symbGetArrayFirstDim( sym )
+		for i as integer = 0 to dimensions-1
+			dTB(i).lower = d->lower
+			dTB(i).upper = d->upper
+			d = d->next
+		next
+
+		function = symbAddVarEx( symbGetName( sym ), NULL, _
+				symbGetType( sym ), symbGetSubType( sym ), 0, _
+				dimensions, dTB(), symbGetAttrib( sym ), 0 )
 	end if
 end function
 
