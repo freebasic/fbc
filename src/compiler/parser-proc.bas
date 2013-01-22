@@ -1093,19 +1093,18 @@ function cProcHeader _
 
 	if( parent ) then
 		'' Parent namespace is a UDT?
-		if( symbIsStruct( parent ) ) then
-			'' prototypes inside UDTs that are not STATIC are METHODs
-			'' (for bodies it depends on the attributes inherited
-			'' from the corresponding prototype)
-			if( ((options and FB_PROCOPT_ISPROTO) <> 0) and _
-			    ((attrib and FB_SYMBATTRIB_STATIC) = 0)       ) then
-				attrib or= FB_SYMBATTRIB_METHOD
-			end if
-			is_memberproc = TRUE
-		end if
+		is_memberproc = symbIsStruct( parent )
 	end if
 
-	if( is_memberproc = FALSE ) then
+	if( is_memberproc ) then
+		'' prototypes inside UDTs that are not STATIC are METHODs
+		'' (for bodies it depends on the attributes inherited
+		'' from the corresponding prototype)
+		if( ((options and FB_PROCOPT_ISPROTO) <> 0) and _
+		    ((attrib and FB_SYMBATTRIB_STATIC) = 0)       ) then
+			attrib or= FB_SYMBATTRIB_METHOD
+		end if
+	else
 		'' Ctors/dtors/properties must always have an UDT parent
 		select case( tk )
 		case FB_TK_CONSTRUCTOR, FB_TK_DESTRUCTOR, FB_TK_PROPERTY
@@ -1163,7 +1162,6 @@ function cProcHeader _
 			end if
 		end if
 
-		'' check if method should be static or not
 		select case as const( op )
 		case AST_OP_NEW_SELF, AST_OP_NEW_VEC_SELF, _
 		     AST_OP_DEL_SELF, AST_OP_DEL_VEC_SELF
@@ -1172,9 +1170,13 @@ function cProcHeader _
 			attrib and= not FB_SYMBATTRIB_METHOD
 
 		case else
-			if( is_memberproc and ((attrib and FB_SYMBATTRIB_STATIC) <> 0) ) then
-				errReport( FB_ERRMSG_OPERATORCANTBESTATIC, TRUE )
-				attrib and= not FB_SYMBATTRIB_STATIC
+			if( is_memberproc ) then
+				if( attrib and FB_SYMBATTRIB_STATIC ) then
+					errReport( FB_ERRMSG_OPERATORCANTBESTATIC, TRUE )
+					attrib and= not FB_SYMBATTRIB_STATIC
+				end if
+				'' Then it must be a method
+				attrib or= FB_SYMBATTRIB_METHOD
 			end if
 		end select
 
