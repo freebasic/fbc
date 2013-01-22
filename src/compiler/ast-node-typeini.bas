@@ -489,9 +489,12 @@ private function hFlushTree _
 				'' Assigning to object through THIS pointer, a DEREF is done.
 				lside = astBuildInstPtrAtOffset( basesym, n->sym, n->typeini.ofs )
 			else
+				'' Note: n->sym may be NULL from a astReplaceSymbolOnTree(),
+				'' so n's dtype/subtype are used instead.
+
 				if( do_deref ) then
 					'' Assigning to object through pointer, a DEREF is done.
-					assert( n->sym )
+					assert( typeIsPtr( symbGetType( basesym ) ) )
 
 					''
 					'' Must make sure to have the proper type on the DEREF,
@@ -511,7 +514,6 @@ private function hFlushTree _
 					lside = astNewDEREF( astNewVAR( basesym ), dtype, n->subtype, n->typeini.ofs )
 				else
 					'' Assigning to object directly
-					'' Note: n->sym may be NULL (from a astReplaceSymbolOnTree(), so n's dtype/subtype are used instead.
 					lside = astNewVAR( basesym, n->typeini.ofs, astGetFullType( n ), n->subtype )
 				end if
 
