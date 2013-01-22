@@ -2037,7 +2037,7 @@ sub cAutoVarDecl(byval attrib as FB_SYMBATTRIB)
 					if( astTypeIniIsConst( initree ) = FALSE ) then
 						'' error recovery: discard the tree
 						astDelTree( expr )
-						expr = astNewCONSTi( 0 )
+						expr = astNewCONSTz( dtype, subtype )
 		    	    	dtype = FB_DATATYPE_INTEGER
 		    	    	subtype = NULL
 						has_dtor = FALSE
