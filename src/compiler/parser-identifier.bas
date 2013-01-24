@@ -119,6 +119,21 @@ end function
 
 #endmacro
 
+private function hIsStructAllowed _
+	( _
+		byval sym as FBSYMBOL ptr, _
+		byval options as FB_IDOPT _
+	) as integer
+
+	if( (options and FB_IDOPT_ALLOWSTRUCT) = 0 ) then
+		return FALSE
+	end if
+
+	'' Ordinary/non-class struct? Won't ever be used as namespace prefix,
+	'' since it doesn't have any methods/static member vars
+	function = symbGetIsUnique( sym )
+end function
+
 '':::::
 '' Identifier	= (ID{namespace|class} '.')* ID
 ''				|  ID ('.' ID)* .
@@ -170,36 +185,26 @@ function cIdentifier _
     	case FB_SYMBCLASS_NAMESPACE, FB_SYMBCLASS_CLASS, FB_SYMBCLASS_ENUM
 
     	case FB_SYMBCLASS_STRUCT
-    		if( (options and FB_IDOPT_ALLOWSTRUCT) = 0 ) then
-    			exit do
-    		end if
-
-    		'' ordinary struct?
-    		if( symbGetIsUnique( sym ) = FALSE ) then
-    			exit do
-    		end if
+			if( hIsStructAllowed( sym, options ) = FALSE ) then
+				exit do
+			end if
 
     	case FB_SYMBCLASS_TYPEDEF
-            '' typedef of a TYPE/CLASS?
-            select case as const symbGetType( sym )
-            case FB_DATATYPE_STRUCT
-    			if( (options and FB_IDOPT_ALLOWSTRUCT) = 0 ) then
-    				exit do
-    			end if
+			'' typedef of a TYPE/CLASS?
+			select case( symbGetType( sym ) )
+			case FB_DATATYPE_STRUCT
+				sym = symbGetSubtype( sym )
 
-            	sym = symbGetSubtype( sym )
-
-    			'' ordinary struct?
-    			if( symbGetIsUnique( sym ) = FALSE ) then
-    				exit do
-    			end if
+				if( hIsStructAllowed( sym, options ) = FALSE ) then
+					exit do
+				end if
 
 			case FB_DATATYPE_ENUM ', FB_DATATYPE_CLASS
 				sym = symbGetSubtype( sym )
 
-            case else
-            	exit do
-            end select
+			case else
+				exit do
+			end select
 
     	case else
     		exit do
@@ -359,42 +364,29 @@ function cParentId _
     	case FB_SYMBCLASS_NAMESPACE, FB_SYMBCLASS_CLASS, FB_SYMBCLASS_ENUM
 
     	case FB_SYMBCLASS_STRUCT
-    		if( (options and FB_IDOPT_ALLOWSTRUCT) = 0 ) then
-    			sym = parent
-    			exit do
-    		end if
-
-    		'' ordinary struct?
-    		if( symbGetIsUnique( sym ) = FALSE ) then
-    			sym = parent
-    			exit do
-    		end if
+			if( hIsStructAllowed( sym, options ) = FALSE ) then
+				sym = parent
+				exit do
+			end if
 
     	case FB_SYMBCLASS_TYPEDEF
+			'' typedef of a TYPE/CLASS?
+			select case( symbGetType( sym ) )
+			case FB_DATATYPE_STRUCT
+				sym = symbGetSubtype( sym )
 
-            '' typedef of a TYPE/CLASS?
-            select case as const symbGetType( sym )
-            case FB_DATATYPE_STRUCT
-    			if( (options and FB_IDOPT_ALLOWSTRUCT) = 0 ) then
-    				sym = parent
-    				exit do
-    			end if
-
-    			sym = symbGetSubtype( sym )
-
-    			'' ordinary struct?
-    			if( symbGetIsUnique( sym ) = FALSE ) then
-    				sym = parent
-    				exit do
-    			end if
+				if( hIsStructAllowed( sym, options ) = FALSE ) then
+					sym = parent
+					exit do
+				end if
 
 			case FB_DATATYPE_ENUM ', FB_DATATYPE_CLASS
-    			sym = symbGetSubtype( sym )
+				sym = symbGetSubtype( sym )
 
-    		case else
-    			sym = parent
-    			exit do
-    		end select
+			case else
+				sym = parent
+				exit do
+			end select
 
     	case else
     		sym = parent
