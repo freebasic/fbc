@@ -16,7 +16,6 @@ Version 0.25.0:
 - crt/stdio.bi now declares rename() instead of rename_()
 - Property methods using an explicit ALIAS now respect that alias and do not append __get__ or __set__ anymore
 - #637: Assert[Warn]() messages go to stderr now, rather than to the FB screen (because that might be about to be closed)
-- Class UDTs can no longer be used as variable names, due to the parsing ambiguity with static member variables
 - LBound/UBound( array, 0 ) now returns 1 and the dimension count, it is no longer the same as LBound/UBound( array, 1 )
 
 [added]
