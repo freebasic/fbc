@@ -131,7 +131,18 @@ private function hIsStructAllowed _
 
 	'' Ordinary/non-class struct? Won't ever be used as namespace prefix,
 	'' since it doesn't have any methods/static member vars
-	function = symbGetIsUnique( sym )
+	if( symbGetIsUnique( sym ) = FALSE ) then
+		return FALSE
+	end if
+
+	'' If it's a variable declaration, then the UDT must have STATIC member
+	'' vars, otherwise it couldn't be used as namespace prefix here.
+	'' (this allows any other UDTs to be used as var names)
+	if( options and FB_IDOPT_ISVAR ) then
+		return symbGetUdtHasStaticVar( sym )
+	end if
+
+	function = TRUE
 end function
 
 '':::::

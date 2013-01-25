@@ -1175,7 +1175,7 @@ function cVarDecl _
 		is_multdecl = TRUE
 	end if
 
-	options = FB_IDOPT_DEFAULT or FB_IDOPT_ALLOWSTRUCT
+	options = FB_IDOPT_DEFAULT or FB_IDOPT_ALLOWSTRUCT or FB_IDOPT_ISVAR
 
 	'' It's a declaration unless it's a REDIM (REDIMs are code,
 	'' not declarations), except when it's SHARED, because a REDIM SHARED
@@ -1916,7 +1916,8 @@ sub cAutoVarDecl(byval attrib as FB_SYMBATTRIB)
 
 	do
 		'' id.id? if not, NULL
-		parent = cParentId( FB_IDOPT_DEFAULT or FB_IDOPT_ISDECL or FB_IDOPT_ALLOWSTRUCT )
+		parent = cParentId( FB_IDOPT_DEFAULT or FB_IDOPT_ISDECL or _
+					FB_IDOPT_ALLOWSTRUCT or FB_IDOPT_ISVAR )
 
 		'' get id
 		dim as integer suffix = any

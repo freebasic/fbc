@@ -490,6 +490,8 @@ sub hTypeStaticVarDecl _
 	'' The UDT becomes a "class"
 	hBeginNesting( parent )
 
+	symbSetUdtHasStaticVar( parent )
+
 	'' Static member variables are really EXTERNs,
 	'' the corresponding DIM must be present in one (and only one) module.
 	''

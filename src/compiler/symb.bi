@@ -402,6 +402,7 @@ enum FB_UDTOPT
 	FB_UDTOPT_HASKWDFIELD		= &h0800
 	FB_UDTOPT_HASINITEDFIELD        = &h1000
 	FB_UDTOPT_HASANONUNION          = &h2000
+	FB_UDTOPT_HASSTATICVAR          = &h4000
 end enum
 
 type FB_STRUCT_DBG
@@ -2133,6 +2134,9 @@ declare function symbGetUDTBaseLevel _
 
 #define symbSetUDTHasAnonUnion( s ) (s)->udt.options or= FB_UDTOPT_HASANONUNION
 #define symbGetUDTHasAnonUnion( s ) ((s->udt.options and FB_UDTOPT_HASANONUNION) <> 0)
+
+#define symbSetUdtHasStaticVar( s )   (s)->udt.options or= FB_UDTOPT_HASSTATICVAR
+#define symbGetUdtHasStaticVar( s ) (((s)->udt.options and FB_UDTOPT_HASSTATICVAR) <> 0)
 
 #define symbGetUDTIsUnionOrAnon(s) (((s)->udt.options and (FB_UDTOPT_ISUNION or FB_UDTOPT_ISANON)) <> 0)
 
