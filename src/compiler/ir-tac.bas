@@ -1446,11 +1446,36 @@ private sub hPreserveRegs _
 
         			'' else, copy it to a preserved reg
         			else
-    					dim as IRVREG tr
+						dim as IRVREG src, dst
 
-        				tr = *vr
-        				vr->reg = regTB(vr_dclass)->allocateReg( regTB(vr_dclass), freg, vr )
-        				emitMOV( vr, @tr )
+						'' The original vr probably needs to be preserved (?),
+						'' only its IRVREG->reg field must be updated to the new
+						'' register it was moved to.
+						''
+						'' Special care must be taken with LONGINTs (x86 assumption),
+						'' because they will use a second vreg (through IRVREG->vaux),
+						'' and we don't want the MOV to touch that, since it's
+						'' a different register. So, to prevent the MOV emitting from
+						'' thinking it should mov both vregs, the type must be remapped.
+						'' The vaux vreg will be handled implicitly by another iteration
+						'' of this loop, if it uses any reg that needs to be preserved...
+
+						'' src = the vreg using the current reg
+						'' dst = the vreg using the newly allocated reg
+						assert( irIsREG( vr ) )
+						src = *vr
+						vr->reg = regTB(vr_dclass)->allocateReg( regTB(vr_dclass), freg, vr )
+						dst = *vr
+
+						if( ISLONGINT( vr->dtype ) ) then
+							'' Remap type and forget the vaux vreg
+							src.dtype = FB_DATATYPE_INTEGER
+							src.vaux = NULL
+							dst.dtype = FB_DATATYPE_INTEGER
+							dst.vaux = NULL
+						end if
+
+						emitMOV( @dst, @src )
         			end if
 
         			'' free reg

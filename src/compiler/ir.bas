@@ -38,6 +38,10 @@ function vregDump( byval v as IRVREG ptr ) as string
 		@"imm", @"var", @"idx", @"ptr", @"reg", @"ofs" _
 	}
 
+	#if 1
+		s += "[" + hex( v, 8 ) + "] "
+	#endif
+
 	s += *vregtypes(v->typ)
 
 	select case( v->typ )
@@ -84,6 +88,10 @@ function vregDump( byval v as IRVREG ptr ) as string
 
 	if( v->vidx ) then
 		s += " vidx=<" + vregDump( v->vidx ) + ">"
+	end if
+
+	if( v->vaux ) then
+		s += " vaux=<" + vregDump( v->vaux ) + ">"
 	end if
 
 	function = s
