@@ -135,7 +135,8 @@ declare sub hDump _
 		byval op as integer, _
 		byval v1 as IRVREG ptr, _
 		byval v2 as IRVREG ptr, _
-		byval vr as IRVREG ptr _
+		byval vr as IRVREG ptr, _
+		byval wrapline as integer = FALSE _
 	)
 
 declare sub _flush _
@@ -1124,6 +1125,66 @@ private sub _setVregDataType _
 end sub
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+#if __FB_DEBUG__
+private sub hDump _
+	( _
+		byval op as integer, _
+		byval v1 as IRVREG ptr, _
+		byval v2 as IRVREG ptr, _
+		byval vr as IRVREG ptr, _
+		byval wrapline as integer = FALSE _
+	)
+
+	dim s as string
+
+	if( astGetOpId( op ) <> NULL ) then
+		s = *astGetOpId( op )
+	else
+		s = str( op )
+	end if
+
+	const MAXLEN = 4
+	select case( len( s ) )
+	case is > MAXLEN
+		s = left( s, MAXLEN )
+	case is < MAXLEN
+		s += space( MAXLEN - len( s ) )
+	end select
+	s = "[" + s + "]"
+
+	#macro hDumpVr( id, v )
+		if( v <> NULL ) then
+			if( wrapline ) then
+				s += !"\t"
+			else
+				s += " "
+			end if
+			s += id + " = " + vregDump( v )
+			if( wrapline ) then
+				s += NEWLINE
+			else
+				s += !"\t"
+			end if
+		end if
+	#endmacro
+
+	hDumpVr( "d", vr )
+	hDumpVr( "l", v1 )
+	hDumpVr( "r", v2 )
+
+	if( wrapline = FALSE ) then
+		s += NEWLINE
+	end if
+
+	if( (wrapline = FALSE) and (len( s ) > 79) ) then
+		hDump( op, v1, v2, vr, TRUE )
+	else
+		print s;
+	end if
+
+end sub
+#endif
 
 '':::::
 private sub hRename _
@@ -2634,38 +2695,6 @@ private sub _xchgTOS _
 	emitXchgTOS( @rvreg )
 
 end sub
-
-/'':::::
-private sub hDump _
-	( _
-		byval op as integer, _
-		byval v1 as IRVREG ptr, _
-		byval v2 as IRVREG ptr, _
-		byval vr as IRVREG ptr _
-	) static
-
-#macro hDumpVr( id, v )
-	if( v <> NULL ) then
-		print " " id ":" & hex( v ) & "(" & irGetVRType( v ) & ";";
-		print using "##"; irGetVRDataType( v );
-		print "," & typeGetClass( irGetVRDataType( v ) ) & ")";
-	end if
-#endmacro
-
-	if( astGetOpId( op ) <> NULL ) then
-		print using "[\  \]"; *astGetOpId( op );
-	else
-		print using "[####]"; op;
-	end if
-
-	hDumpVr( "d", vr )
-	hDumpVr( "l", v1 )
-	hDumpVr( "r", v2 )
-
-	print
-
-end sub
-'/
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
