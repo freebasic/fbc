@@ -9,7 +9,18 @@
 #include once "parser.bi"
 #include once "ast.bi"
 
-private function hCheckIndex( byval expr as ASTNODE ptr ) as ASTNODE ptr
+private function hIndexExpr( ) as ASTNODE ptr
+	dim as ASTNODE ptr expr = any
+
+	fbSetCheckArray( TRUE )
+	expr = cExpression( )
+	fbSetCheckArray( FALSE )
+	if( expr = NULL ) then
+		errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
+		'' error recovery: faken an expr
+		expr = astNewCONSTi( 0 )
+	end if
+
 	'' if index isn't an integer, convert
 	select case( typeGet( astGetDataType( expr ) ) )
 	case FB_DATATYPE_INTEGER
@@ -82,16 +93,8 @@ private function hFieldArray _
 			return astNewCONSTi( 0 )
     	end if
 
-    	'' Expression
-		dimexpr = cExpression( )
-		if( dimexpr = NULL ) then
-			errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
-			'' error recovery: fake an expr
-			dimexpr = astNewCONSTi( d->lower )
-		end if
-
-		'' convert index if needed
-		dimexpr = hCheckIndex( dimexpr )
+		'' Expression
+		dimexpr = hIndexExpr( )
 
 		'' bounds checking
 		if( env.clopt.extraerrchk ) then
@@ -587,15 +590,7 @@ function cMemberDeref _
 			lexSkipToken( )
 
 			'' Expression
-			idxexpr = cExpression( )
-			if( idxexpr = NULL ) then
-				errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
-				'' error recovery: faken an expr
-				idxexpr = astNewCONSTi( 0 )
-			end if
-
-			'' convert index if needed
-			idxexpr = hCheckIndex( idxexpr )
+			idxexpr = hIndexExpr( )
 
 			'' ']'
 			if( lexGetToken( ) <> CHAR_RBRACKET ) then
@@ -792,11 +787,7 @@ end function
 '':::::
 ''DynArrayIdx     =   '(' Expression (',' Expression)* ')' .
 ''
-function cDynArrayIdx _
-	( _
-		byval sym as FBSYMBOL ptr _
-	) as ASTNODE ptr
-
+private function cDynArrayIdx( byval sym as FBSYMBOL ptr ) as ASTNODE ptr
     dim as integer i = any, dims = any, maxdims = any
     dim as ASTNODE ptr expr = any, dimexpr = any
     dim as FBSYMBOL ptr desc = any
@@ -824,16 +815,8 @@ function cDynArrayIdx _
     		end if
     	end if
 
-    	'' Expression
-		dimexpr = cExpression( )
-		if( dimexpr = NULL ) then
-			errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
-			'' error recovery: fake an expr
-			dimexpr = astNewCONSTi( 0 )
-		end if
-
-		'' convert index if needed
-		dimexpr = hCheckIndex( dimexpr )
+		'' Expression
+		dimexpr = hIndexExpr( )
 
     	'' bounds checking
     	if( env.clopt.extraerrchk ) then
@@ -880,7 +863,6 @@ function cDynArrayIdx _
     function = astNewBOP( AST_OP_ADD, _
     				  	  expr, _
     				  	  astNewVAR( desc, FB_ARRAYDESC_DATAOFFS, FB_DATATYPE_INTEGER ) )
-
 end function
 
 private function hArgArrayBoundChk _
@@ -912,16 +894,8 @@ private function cArgArrayIdx( byval sym as FBSYMBOL ptr ) as ASTNODE ptr
     i = 0
     expr = NULL
     do
-    	'' Expression
-		dimexpr = cExpression( )
-		if( dimexpr = NULL ) then
-			errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
-			'' error recovery: fake an expr
-			dimexpr = astNewCONSTi( 0 )
-		end if
-
-		'' convert index if needed
-		dimexpr = hCheckIndex( dimexpr )
+		'' Expression
+		dimexpr = hIndexExpr( )
 
     	'' bounds checking
     	if( env.clopt.extraerrchk ) then
@@ -1000,16 +974,8 @@ private function cArrayIdx( byval sym as FBSYMBOL ptr ) as ASTNODE ptr
 			return NULL
     	end if
 
-    	'' Expression
-		dimexpr = cExpression( )
-		if( dimexpr = NULL ) then
-			errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
-			'' error recovery: fake an expr
-			dimexpr = astNewCONSTi( d->lower )
-		end if
-
-		'' convert index if needed
-		dimexpr = hCheckIndex( dimexpr )
+		'' Expression
+		dimexpr = hIndexExpr( )
 
 		'' bounds checking
 		if( env.clopt.extraerrchk ) then
