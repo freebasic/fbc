@@ -26,8 +26,12 @@ sub irEnd( )
 end sub
 
 #if __FB_DEBUG__
+#include once "reg.bi"
+#include once "emit-private.bi"
+
 function vregDump( byval v as IRVREG ptr ) as string
 	dim as string s
+	dim as zstring ptr regname = any
 
 	if( v = NULL ) then
 		return "<NULL>"
@@ -38,7 +42,7 @@ function vregDump( byval v as IRVREG ptr ) as string
 		@"imm", @"var", @"idx", @"ptr", @"reg", @"ofs" _
 	}
 
-	#if 1
+	#if 0
 		s += "[" + hex( v, 8 ) + "] "
 	#endif
 
@@ -75,22 +79,41 @@ function vregDump( byval v as IRVREG ptr ) as string
 		end select
 
 	case IR_VREGTYPE_REG
-		s += " reg=" + str( v->reg )
+		if( env.clopt.backend = FB_BACKEND_GAS ) then
+			regname = hGetRegName( v->dtype, v->reg )
+			if( len( *regname ) > 0 ) then
+				s += " " + ucase( *regname )
+			else
+				s += " " + str( v->reg )
+			end if
+		else
+			''s += " reg="
+			s += " " + str( v->reg )
+		end if
 	end select
 
-	if( v->ofs ) then
-		s += " ofs=" + str( v->ofs )
+	if( v->typ <> IR_VREGTYPE_REG ) then
+		if( v->ofs ) then
+			if( (env.clopt.backend = FB_BACKEND_GAS) and (v->sym <> NULL) ) then
+				s += " """ + *symbGetName( v->sym ) + """ [" + *symbGetMangledName( v->sym ) + str( v->ofs ) + "]"
+			else
+				s += " ofs=" + str( v->ofs )
+			end if
+		end if
+		if( v->mult ) then
+			s += " mult=" + str( v->mult )
+		end if
 	end if
-	if( v->mult ) then
-		s += " mult=" + str( v->mult )
-	end if
+
 	s += " " + typeDump( v->dtype, v->subtype )
 
-	if( v->vidx ) then
-		s += " vidx=<" + vregDump( v->vidx ) + ">"
+	if( v->typ <> IR_VREGTYPE_REG ) then
+		if( v->vidx ) then
+			s += " vidx=<" + vregDump( v->vidx ) + ">"
+		end if
 	end if
 
-	if( v->vaux ) then
+	if( ISLONGINT( v->dtype ) ) then
 		s += " vaux=<" + vregDump( v->vaux ) + ">"
 	end if
 
