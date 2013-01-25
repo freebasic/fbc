@@ -1678,10 +1678,10 @@ function symbIsEqual _
     '' symbol than funptr, but both can have the same signature
     case FB_SYMBCLASS_PROC
 
-    	'' check calling convention
-    	if( symbGetProcMode( sym1 ) <> symbGetProcMode( sym2 ) ) then
-    		exit function
-    	end if
+		'' check calling convention
+		if( symbAreProcModesEqual( sym1, sym2 ) = FALSE ) then
+			exit function
+		end if
 
     	'' not the same number of args?
     	if( symbGetProcParams( sym1 ) <> symbGetProcParams( sym2 ) ) then

@@ -1220,6 +1220,114 @@ namespace returnByrefAbstract
 	end sub
 end namespace
 
+namespace externC
+	extern "c" '' cdecl + case-preserving alias
+		type A extends object
+			declare virtual function foo( byval i as integer ) as integer
+		end type
+
+		function A.foo( byval i as integer ) as integer
+			function = &hA
+		end function
+	end extern
+
+	type B extends A
+		declare function foo cdecl( byval i as integer ) as integer override
+	end type
+
+	function B.foo cdecl( byval i as integer ) as integer
+		function = &hB
+	end function
+
+	sub test cdecl( )
+		dim p as A ptr = new B
+		CU_ASSERT( p->foo( 123 ) = &hB )
+		delete p
+	end sub
+end namespace
+
+namespace externCxx
+	extern "c++" '' cdecl + C++ mangling (member procedures have that already anyways though)
+		type A extends object
+			declare virtual function foo( byval i as integer ) as integer
+		end type
+
+		function A.foo( byval i as integer ) as integer
+			function = &hA
+		end function
+	end extern
+
+	type B extends A
+		declare function foo cdecl( byval i as integer ) as integer override
+	end type
+
+	function B.foo cdecl( byval i as integer ) as integer
+		function = &hB
+	end function
+
+	sub test cdecl( )
+		dim p as A ptr = new B
+		CU_ASSERT( p->foo( 123 ) = &hB )
+		delete p
+	end sub
+end namespace
+
+namespace externWindows
+	extern "windows" '' stdcall + @N suffix + case-preserving alias
+		type A extends object
+			declare virtual function foo( byval i as integer ) as integer
+		end type
+
+		function A.foo( byval i as integer ) as integer
+			function = &hA
+		end function
+	end extern
+
+	type B extends A
+		declare function foo stdcall( byval i as integer ) as integer override
+	end type
+
+	function B.foo stdcall( byval i as integer ) as integer
+		function = &hB
+	end function
+
+	sub test cdecl( )
+		dim p as A ptr = new B
+		CU_ASSERT( p->foo( 123 ) = &hB )
+		delete p
+	end sub
+end namespace
+
+namespace externWindowsMs
+	'' It should be ok to override a virtual STDCALL_MS method with an
+	'' STDCALL override; their calling convention is compatible,
+	'' only their mangling is different.
+
+	extern "windows-ms"  '' stdcall + case-preserving alias but no @N suffix
+		type A extends object
+			declare virtual function foo( byval i as integer ) as integer
+		end type
+
+		function A.foo( byval i as integer ) as integer
+			function = &hA
+		end function
+	end extern
+
+	type B extends A
+		declare function foo stdcall( byval i as integer ) as integer override
+	end type
+
+	function B.foo stdcall( byval i as integer ) as integer
+		function = &hB
+	end function
+
+	sub test cdecl( )
+		dim p as A ptr = new B
+		CU_ASSERT( p->foo( 123 ) = &hB )
+		delete p
+	end sub
+end namespace
+
 private sub ctor( ) constructor
 	fbcu.add_suite( "tests/virtual/virtual" )
 	fbcu.add_test( "basic overriding", @overridingWorks.test )
@@ -1241,6 +1349,10 @@ private sub ctor( ) constructor
 	fbcu.add_test( "VIRTUALs are inherited even if not overridden #1", @virtualsAreInherited1.test )
 	fbcu.add_test( "VIRTUALs are inherited even if not overridden #2", @virtualsAreInherited2.test )
 	fbcu.add_test( "BYREF return of abstract UDT", @returnByrefAbstract.test )
+	fbcu.add_test( "overriding an EXTERN C method", @externC.test )
+	fbcu.add_test( "overriding an EXTERN C++ method", @externCxx.test )
+	fbcu.add_test( "overriding an EXTERN Windows method", @externWindows.test )
+	fbcu.add_test( "overriding an EXTERN Windows-MS method", @externWindowsMs.test )
 end sub
 
 end namespace

@@ -2497,7 +2497,7 @@ sub symbProcCheckOverridden _
 			errReport( FB_ERRMSG_OVERRIDERETTYPEDIFFERS )
 		end if
 
-		if( symbGetProcMode( proc ) <> symbGetProcMode( overridden ) ) then
+		if( symbAreProcModesEqual( proc, overridden ) = FALSE ) then
 			if( is_implicit ) then
 				'' symbUdtAddDefaultMembers() uses this to check
 				'' implicit dtors and LET overloads. Since they
@@ -2778,6 +2778,30 @@ function symbGetDefaultCallConv _
 
 end function
 
+'' Check whether the procedures' calling conventions are compatible
+function symbAreProcModesEqual _
+	( _
+		byval proca as FBSYMBOL ptr, _
+		byval procb as FBSYMBOL ptr _
+	) as integer
+
+	dim as integer a = any, b = any
+
+	a = symbGetProcMode( proca )
+	b = symbGetProcMode( procb )
+
+	'' STDCALL and STDCALL_MS are technically compatible, only the mangling
+	'' is different - but that doesn't concern function pointers.
+	select case( a )
+	case FB_FUNCMODE_STDCALL, FB_FUNCMODE_STDCALL_MS
+		select case( b )
+		case FB_FUNCMODE_STDCALL, FB_FUNCMODE_STDCALL_MS
+			return TRUE
+		end select
+	end select
+
+	function = (a = b)
+end function
 
 '':::::
 function symbAllocOvlCallArg _

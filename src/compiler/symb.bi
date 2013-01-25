@@ -961,6 +961,12 @@ declare function symbProcGetVtableIndex( byval proc as FBSYMBOL ptr ) as integer
 declare function symbProcGetOverridden( byval proc as FBSYMBOL ptr ) as FBSYMBOL ptr
 declare function symbGetProcResult( byval proc as FBSYMBOL ptr ) as FBSYMBOL ptr
 
+declare function symbAreProcModesEqual _
+	( _
+		byval proca as FBSYMBOL ptr, _
+		byval procb as FBSYMBOL ptr _
+	) as integer
+
 declare function symbGetConstValueAsStr _
 	( _
 		byval s as FBSYMBOL ptr _

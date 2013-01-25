@@ -161,6 +161,7 @@ Version 0.25.0:
 - Missing destructor calls for temporary variables in parameter initializer expressions
 - Missing destructor calls for the temporary variable produced by type<UDT>( )
 - type<UDT>() expressions could use an extra unused temporary variable
+- Win32: Procedures declared inside EXTERN "Windows-MS" blocks were treated as having a different calling convention than STDCALL or EXTERN "Windows" procedures, even though they all use STDCALL (only Windows-MS won't add the @N suffix, but that does not matter for function pointers)
 
 
 Version 0.24.0:
