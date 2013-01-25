@@ -14,48 +14,7 @@
 #include once "emitdbg.bi"
 #include once "hash.bi"
 #include once "symb.bi"
-
-const EMIT_MEMBLOCK_MAXLEN	= 16				'' when to use memblk clear/move (needed by AST)
-
-''
-type EMITDATATYPE
-	class			as integer
-	size			as integer
-	rnametb			as integer
-	mname			as zstring * 11+1
-end type
-
-const EMIT_MAXRNAMES  = REG_MAXREGS
-const EMIT_MAXRTABLES = 4				'' 8-bit, 16-bit, 32-bit, fpoint
-
-''
-const EMIT_LOCSTART 	= 0
-const EMIT_ARGSTART 	= FB_POINTERSIZE + FB_INTEGERSIZE '' skip return address + saved ebp
-
-''
-enum EMITREG_ENUM
-	EMIT_REG_FP0	= 0
-	EMIT_REG_FP1
-	EMIT_REG_FP2
-	EMIT_REG_FP3
-	EMIT_REG_FP4
-	EMIT_REG_FP5
-	EMIT_REG_FP6
-	EMIT_REG_FP7
-
-	EMIT_REG_EDX	= EMIT_REG_FP0				'' aliased
-	EMIT_REG_EDI
-	EMIT_REG_ESI
-	EMIT_REG_ECX
-	EMIT_REG_EBX
-	EMIT_REG_EAX
-	EMIT_REG_EBP
-	EMIT_REG_ESP
-end enum
-
-
-const COMMA   = ", "
-
+#include once "emit-private.bi"
 
 declare sub hDeclVariable _
 	( _
@@ -76,13 +35,6 @@ declare sub _setSection _
 
 declare function _getTypeString( byval dtype as integer ) as const zstring ptr
 
-'' from emit_SSE.bas
-declare function _init_opFnTB_SSE _
-	( _
-		byval _opFnTB_SSE as any ptr ptr _
-	) as integer
-
-
 ''globals
 
 	'' same order as EMITREG_ENUM
@@ -95,9 +47,6 @@ declare function _init_opFnTB_SSE _
 	}
 
 	'' same order as FB_DATATYPE
-
-	extern dtypeTB(0 to FB_DATATYPES-1) as EMITDATATYPE
-
 	dim shared dtypeTB(0 to FB_DATATYPES-1) as EMITDATATYPE => _
 	{ _
 		( FB_DATACLASS_INTEGER, 0 			    , 0, "void ptr"  ), _	'' void
