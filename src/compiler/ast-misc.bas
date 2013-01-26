@@ -1216,6 +1216,14 @@ sub astSetType _
 		'' UDT var is optimized out, causing the CALLCTOR expression to
 		'' be changed over to the field's dtype for a "direct" access.
 
+#if __FB_DEBUG__
+	case AST_NODECLASS_TYPEINI
+		'' TYPEINI types shouldn't be changed by optimizations,
+		'' it would cause astTypeIniUpdate() to use the wrong type
+		'' for the temp var.
+		assert( FALSE )
+#endif
+
 	end select
 
 end sub

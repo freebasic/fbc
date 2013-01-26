@@ -1041,10 +1041,10 @@ private function hOptDerefAddr( byval n as ASTNODE ptr ) as ASTNODE ptr
 	'' If the deref uses an <> 0 offset then try to include that into
 	'' any child var/idx/deref nodes. If that's not possible, then this
 	'' optimization can't be done.
-	if( ofs <> 0 ) then
-		if( astIncOffset( l->l, ofs ) = FALSE ) then
-			return n
-		end if
+	'' Note: we must do this even if ofs = 0, to ensure it's ok to
+	'' do the astSetType() below.
+	if( astIncOffset( l->l, ofs ) = FALSE ) then
+		return n
 	end if
 
 	dim as integer dtype = astGetFullType( n )
