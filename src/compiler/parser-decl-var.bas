@@ -988,7 +988,7 @@ private function hCallStaticCtor _
 	label = symbAddLabel( NULL )
 
 	tree = astNewLINK( tree, _
-		astUpdComp2Branch( _
+		astBuildBranch( _
 			astNewBOP( AST_OP_EQ, astNewVAR( flag ), astNewCONSTi( 0 ) ), _
 			label, FALSE ) )
 

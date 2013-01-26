@@ -247,7 +247,7 @@ function astNewIIF _
 
 	falselabel = symbAddLabel( NULL )
 
-	condexpr = astUpdComp2Branch( condexpr, falselabel, FALSE )
+	condexpr = astBuildBranch( condexpr, falselabel, FALSE )
 	if( condexpr = NULL ) then
 		exit function
 	end if

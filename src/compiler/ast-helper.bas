@@ -234,7 +234,7 @@ function astBuildForEnd _
 	''     goto label
 	'' end if
 	tree = astNewLINK( tree, _
-		astUpdComp2Branch( _
+		astBuildBranch( _
 			astNewBOP( AST_OP_EQ, astNewVAR( cnt ), endvalue ), _
 			label, FALSE ) )
 

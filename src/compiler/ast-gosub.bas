@@ -85,7 +85,8 @@ sub astGosubAddJmp _
 		'' if ( setjmp( fb_GosubPush( @ctx ) ) ) = 0 ) then
 		label = symbAddLabel( NULL )
 
-		astAdd( astUpdComp2Branch( astNewBOP( AST_OP_EQ, _
+		astAdd( astBuildBranch( _
+				astNewBOP( AST_OP_EQ, _
 					rtlSetJmp( rtlGosubPush( _
 						astNewADDROF( astNewVAR( symbGetProcGosubSym( proc ) ) ) _
 					) ), _
@@ -129,7 +130,8 @@ sub astGosubAddJumpPtr _
 		'' if ( setjmp( fb_GosubPush( @ctx ) ) ) = 0 ) then
 		label = symbAddLabel( NULL )
 
-		astAdd( astUpdComp2Branch( astNewBOP( AST_OP_EQ, _
+		astAdd( astBuildBranch( _
+				astNewBOP( AST_OP_EQ, _
 					rtlSetJmp( rtlGosubPush( _
 						astNewADDROF( astNewVAR( symbGetProcGosubSym( proc ) ) ) _
 					) ), _
@@ -165,7 +167,8 @@ function astGosubAddReturn _
 		'' if( ctx <> 0 ) then
 		label = symbAddLabel( NULL )
 
-		astAdd( astUpdComp2Branch( astNewBOP( AST_OP_NE, _
+		astAdd( astBuildBranch( _
+				astNewBOP( AST_OP_NE, _
 					astNewVAR( symbGetProcGosubSym( proc ) ), _
 					astNewCONSTi( 0 ) ), _
 			  label, _
@@ -218,7 +221,8 @@ function astGosubAddReturn _
 			'' if( fb_GosubPop( @ctx ) = 0 ) then
 			label = symbAddLabel( NULL )
 
-			astAdd( astUpdComp2Branch( astNewBOP( AST_OP_EQ, _
+			astAdd( astBuildBranch( _
+					astNewBOP( AST_OP_EQ, _
 						rtlGosubPop( _
 							astNewADDROF( astNewVAR( symbGetProcGosubSym( proc ) ) ) _
 						), _

@@ -109,7 +109,7 @@ sub cIfStmtBegin()
 	nl = symbAddLabel( NULL, FB_SYMBOPT_NONE )
 
 	'' branch
-	expr = astUpdComp2Branch( expr, nl, FALSE )
+	expr = astBuildBranch( expr, nl, FALSE )
 	if( expr = NULL ) then
 		errReport( FB_ERRMSG_INVALIDDATATYPES )
 	else
@@ -226,7 +226,7 @@ function cIfStmtNext(  ) as integer
 		end if
 
 		'' branch
-		expr = astUpdComp2Branch( expr, stk->if.nxtlabel, FALSE )
+		expr = astBuildBranch( expr, stk->if.nxtlabel, FALSE )
 		if( expr = NULL ) then
 			errReport( FB_ERRMSG_INVALIDDATATYPES )
 		else

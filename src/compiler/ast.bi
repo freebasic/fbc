@@ -501,7 +501,7 @@ declare sub astAddUnscoped _
 
 declare function astFindFirstCode( byval proc as ASTNODE ptr ) as ASTNODE ptr
 
-declare function astUpdComp2Branch _
+declare function astBuildBranch _
 	( _
 		byval n as ASTNODE ptr, _
 		byval label as FBSYMBOL ptr, _

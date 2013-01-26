@@ -50,7 +50,7 @@ sub cDoStmtBegin()
 		end if
 
 		'' branch
-		expr = astUpdComp2Branch( expr, el, (not iswhile) )
+		expr = astBuildBranch( expr, el, (not iswhile) )
 		if( expr = NULL ) then
 			errReport( FB_ERRMSG_INVALIDDATATYPES )
 			'' error recovery: fake a node
@@ -130,7 +130,7 @@ function cDoStmtEnd as integer
 		end if
 
 		'' branch
-		expr = astUpdComp2Branch( expr, stk->do.inilabel, iswhile )
+		expr = astBuildBranch( expr, stk->do.inilabel, iswhile )
 		if( expr = NULL ) then
 			errReport( FB_ERRMSG_INVALIDDATATYPES )
 			'' error recovery: fake a node

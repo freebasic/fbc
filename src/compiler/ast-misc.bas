@@ -879,8 +879,9 @@ function astUpdStrConcat( byval n as ASTNODE ptr ) as ASTNODE ptr
 
 end function
 
-'':::::
-function astUpdComp2Branch _
+'' Turn a comparison expression (or anything that can be compared = 0)
+'' into a (conditional) branch
+function astBuildBranch _
 	( _
 		byval n as ASTNODE ptr, _
 		byval label as FBSYMBOL ptr, _

@@ -35,7 +35,7 @@ sub cWhileStmtBegin()
 	end if
 
 	'' branch
-	expr = astUpdComp2Branch( expr, el, FALSE )
+	expr = astBuildBranch( expr, el, FALSE )
 	if( expr = NULL ) then
 		errReport( FB_ERRMSG_INVALIDDATATYPES )
 	else

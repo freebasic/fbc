@@ -294,7 +294,7 @@ private sub hFlushBOP _
 	'' UDT?
 	if( lhs->dtype = FB_DATATYPE_STRUCT ) then
 		'' handle dtors, etc
-		expr = astUpdComp2Branch( expr, ex, TRUE )
+		expr = astBuildBranch( expr, ex, TRUE )
 
 		'' fail?
 		if( expr = NULL ) then
