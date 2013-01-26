@@ -1400,6 +1400,8 @@ function emitJMPTB _
 	dim as uinteger ptr values = any
 	dim as FBSYMBOL ptr ptr labels = any
 
+	assert( labelcount > 0 )
+
 	'' Duplicate the values/labels arrays
 	values = callocate( sizeof( uinteger ) * labelcount )
 	labels = callocate( sizeof( FBSYMBOL ptr ) * labelcount )

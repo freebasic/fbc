@@ -2899,8 +2899,20 @@ private sub _emitJmpTb _
 	dim as EXPRNODE ptr l = any
 	dim as integer i = any
 
+	'' SELECT CASE AS CONST always uses a temp var, no need to worry about side effects
+	assert( v1->typ = IR_VREGTYPE_VAR )
+	temp = exprFlush( exprNewVREG( v1 ) )
+
+	if( labelcount <= 0 ) then
+		'' Empty jump table, just jump directly to the ELSE block or END SELECT
+		hWriteLine( "goto " + *symbGetMangledName( deflabel ) + ";", TRUE )
+
+		'' Silence gcc warning about the unused temp var
+		hWriteLine( "(void)" + temp + ";", TRUE )
+		exit sub
+	end if
+
 	tb = *symbUniqueId( )
-	temp = *symbUniqueId( )
 
 	l = exprNewIMMi( maxval - minval + 1 )
 	hWriteLine( "static const void* " + tb + "[" + exprFlush( l ) + "] = {", TRUE )
@@ -2920,10 +2932,6 @@ private sub _emitJmpTb _
 
 	sectionUnindent( )
 	hWriteLine( "};", TRUE )
-
-	'' uinteger temp = expr;
-	l = exprNewVREG( v1 )
-	hWriteLine( "uinteger " + temp + " = " + exprFlush( l ) + ";", TRUE )
 
 	if( minval > 0 ) then
 		'' if( temp < minval ) goto deflabel

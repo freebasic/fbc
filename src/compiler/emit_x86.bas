@@ -1405,6 +1405,9 @@ private sub _emitJMPTB _
 	dim as integer i = any
 
 	deflabelname = *symbGetMangledName( deflabel )
+
+	assert( labelcount > 0 )
+
 	tb = *symbGetMangledName( tbsym )
 
 	''

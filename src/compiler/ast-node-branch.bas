@@ -101,16 +101,23 @@ private function astNewJMPTB _
 	dim as uinteger ptr values = any
 	dim as FBSYMBOL ptr ptr labels = any
 
-	assert( labelcount > 0 )
 	tree = NULL
 
-	'' Duplicate the values/labels arrays
-	values = callocate( sizeof( uinteger ) * labelcount )
-	labels = callocate( sizeof( FBSYMBOL ptr ) * labelcount )
-	for i as integer = 0 to labelcount - 1
-		values[i] = values1[i]
-		labels[i] = labels1[i]
-	next
+	'' The jump table can be empty, in case of a SELECT CASE AS CONST
+	'' with only a CASE ELSE. (it's not worth it to "optimize" that useless
+	'' case, but it must still be handled without crashing the compiler...)
+	if( labelcount > 0 ) then
+		'' Duplicate the values/labels arrays
+		values = callocate( sizeof( uinteger ) * labelcount )
+		labels = callocate( sizeof( FBSYMBOL ptr ) * labelcount )
+		for i as integer = 0 to labelcount - 1
+			values[i] = values1[i]
+			labels[i] = labels1[i]
+		next
+	else
+		values = NULL
+		labels = NULL
+	end if
 
 	n = astNewNode( AST_NODECLASS_JMPTB, FB_DATATYPE_INVALID )
 
@@ -162,6 +169,15 @@ function astBuildJMPTB _
 	assert( symbGetType( tempvar ) = FB_DATATYPE_UINT )
 
 	tree = NULL
+
+	'' Empty jump table? Just jump to the ELSE block or the END SELECT
+	'' (GAS/LLVM backends only, the GCC backend handles this case manually)
+	select case( env.clopt.backend )
+	case FB_BACKEND_GAS, FB_BACKEND_LLVM
+		if( labelcount <= 0 ) then
+			return astNewBRANCH( AST_OP_JMP, deflabel )
+		end if
+	end select
 
 	''
 	'' For the ASM backend, the checks and the jump are emitted separately,

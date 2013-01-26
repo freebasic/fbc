@@ -2127,6 +2127,8 @@ private sub _emitJmpTb _
 
 	dim as string ln
 
+	assert( labelcount > 0 )
+
 	hLoadVreg( v1 )
 
 	ln = "switch "
