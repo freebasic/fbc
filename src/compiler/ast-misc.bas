@@ -910,9 +910,9 @@ function astUpdComp2Branch _
 					   AST_OPOPT_NONE )
 
 		'' do the dtor calls and branch, and also emit the next label
-		n = astNewLINK( astNewLINK( astDTorListFlush( n, FALSE ), _
-									astNewBRANCH( AST_OP_JMP, label, NULL ) ), _
-    					astNewLABEL( next_label ) )
+		n = astNewLINK( n, astDtorListFlush( FALSE ) )
+		n = astNewLINK( n, astNewBRANCH( AST_OP_JMP, label, NULL ) )
+		n = astNewLINK( n, astNewLABEL( next_label ) )
 	end if
 #endmacro
 
@@ -1005,8 +1005,8 @@ function astUpdComp2Branch _
 
 			if( istrue ) then
 				astDelNode( n )
-				n = astNewLINK( astDTorListFlush( NULL, FALSE ), _
-				                astNewBRANCH( AST_OP_JMP, label, NULL ) )
+				n = astDtorListFlush( FALSE )
+				n = astNewLINK( n, astNewBRANCH( AST_OP_JMP, label, NULL ) )
 			end if
 		else
 			'' otherwise, check if zero (ie= FALSE)
@@ -1048,9 +1048,9 @@ function astUpdComp2Branch _
 			n->op.ex = next_label
 
 			'' do the dtor calls and branch, and also emit the next label
-			n = astNewLINK( astNewLINK( astDTorListFlush( n, FALSE ), _
-										astNewBRANCH( AST_OP_JMP, label, NULL ) ), _
-    						astNewLABEL( next_label ) )
+			n = astNewLINK( n, astDtorListFlush( FALSE ) )
+			n = astNewLINK( n, astNewBRANCH( AST_OP_JMP, label, NULL ) )
+			n = astNewLINK( n, astNewLABEL( next_label ) )
 		end if
 
 		return n
@@ -1115,40 +1115,27 @@ sub astDtorListAdd( byval sym as FBSYMBOL ptr )
 	end if
 end sub
 
-'':::::
-function astDtorListFlush _
-	( _
-		byval expr as ASTNODE ptr, _
-		byval del_nodes as integer _
-	) as ASTNODE ptr
-
+function astDtorListFlush( byval del_nodes as integer ) as ASTNODE ptr
     dim as AST_DTORLIST_ITEM ptr n = any, p = any
-    dim as ASTNODE ptr dtorexpr = NULL
+	dim as ASTNODE ptr t = any
 
 	'' call the dtors in the reverse order
+	t = NULL
 	n = listGetTail( @ast.dtorlist )
-	do while( n <> NULL )
-        dtorexpr = astNewLINK( dtorexpr, astBuildVarDtorCall( n->sym ) )
+	while( n )
+		t = astNewLINK( t, astBuildVarDtorCall( n->sym ) )
 
 		p = listGetPrev( n )
-
 		if( del_nodes ) then
 			listDelNode( @ast.dtorlist, n )
 		end if
-
 		n = p
-    loop
+	wend
 
-    '' the current node should be the first to be flushed
-    function = astNewLINK( expr, dtorexpr )
-
+	function = t
 end function
 
-'':::::
-sub astDtorListClear _
-	( _
-	)
-
+sub astDtorListClear( )
     dim as AST_DTORLIST_ITEM ptr n = any, p = any
 
 	n = listGetTail( @ast.dtorlist )
@@ -1157,15 +1144,9 @@ sub astDtorListClear _
 		listDelNode( @ast.dtorlist, n )
 		n = p
     loop
-
 end sub
 
-'':::::
-sub astDtorListDel _
-	( _
-		byval sym as FBSYMBOL ptr _
-	)
-
+sub astDtorListDel( byval sym as FBSYMBOL ptr )
     dim as AST_DTORLIST_ITEM ptr n = any
 
 	n = listGetTail( @ast.dtorlist )
@@ -1177,7 +1158,6 @@ sub astDtorListDel _
 
 		n = listGetPrev( n )
     loop
-
 end sub
 
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::

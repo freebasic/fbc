@@ -1217,21 +1217,9 @@ declare sub astReplaceSymbolOnTree _
 	)
 
 declare sub astDtorListAdd( byval sym as FBSYMBOL ptr )
-
-declare sub astDtorListDel _
-	( _
-		byval sym as FBSYMBOL ptr _
-	)
-
-declare function astDtorListFlush _
-	( _
-		byval expr as ASTNODE ptr, _
-		byval del_nodes as integer _
-	) as ASTNODE ptr
-
-declare sub astDtorListClear _
-	( _
-	)
+declare function astDtorListFlush( byval del_nodes as integer ) as ASTNODE ptr
+declare sub astDtorListClear( )
+declare sub astDtorListDel( byval sym as FBSYMBOL ptr )
 
 declare sub astSetType _
 	( _
