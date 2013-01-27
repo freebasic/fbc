@@ -252,8 +252,7 @@ function astCloneTree( byval n as ASTNODE ptr ) as ASTNODE ptr
 	'' IIF nodes have labels, that can't be just cloned or you get dupes
 	'' at the assembler.
 	case AST_NODECLASS_IIF
-		c->iif.falselabel = symbAddLabel( NULL )
-		c->l->op.ex = c->iif.falselabel
+		astReplaceSymbolOnTree( c, c->iif.falselabel, symbAddLabel( NULL ) )
 
 	case AST_NODECLASS_LOOP
 		astReplaceSymbolOnTree( c, c->op.ex, symbAddLabel( NULL ) )

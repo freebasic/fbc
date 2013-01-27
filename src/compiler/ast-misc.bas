@@ -885,38 +885,13 @@ function astBuildBranch _
 	( _
 		byval n as ASTNODE ptr, _
 		byval label as FBSYMBOL ptr, _
-		byval isinverse as integer _
+		byval is_inverse as integer, _
+		byval is_iif as integer _
 	) as ASTNODE ptr
 
-	dim as ASTNODE ptr l = any, expr = any
-	dim as integer dtype = any, istrue = any
-
-#macro hDoBranch( )
-	'' no dtors to call? do an ordinary branch
-	if( call_dtors = FALSE ) then
-		n = astNewBOP( iif( isinverse, AST_OP_NE, AST_OP_EQ ), _
-					   n, _
-					   expr, _
-					   label, _
-					   AST_OPOPT_NONE )
-
-	'' otherwise..
-	else
-		dim as FBSYMBOL ptr next_label = symbAddLabel( NULL )
-		'' branch over the dtor calls
-		n = astNewBOP( iif( isinverse, AST_OP_EQ, AST_OP_NE ), _
-					   n, _
-					   expr, _
-					   next_label, _
-					   AST_OPOPT_NONE )
-
-		'' do the dtor calls and branch, and also emit the next label
-		n = astNewLINK( n, astDtorListFlush( FALSE ) )
-		n = astNewLINK( n, astNewBRANCH( AST_OP_JMP, label, NULL ) )
-		n = astNewLINK( n, astNewLABEL( next_label ) )
-	end if
-#endmacro
-
+	dim as ASTNODE ptr expr = any
+	dim as integer dtype = any, call_dtors = any
+	dim as FBSYMBOL ptr temp = any
 
 	if( n = NULL ) then
 		return NULL
@@ -977,132 +952,127 @@ function astBuildBranch _
 
 	end select
 
-	'' if there's any temp instance, we can't branch without calling the dtors
-	dim as integer call_dtors = (astDTorListIsEmpty( ) = FALSE)
+	'' If the condition expression uses temp vars, we may have to call their
+	'' dtors before branching (or instead insert the dtor calls at the two
+	'' possible code blocks reached after the conditional branch).
+	''
+	'' For iif(), it's better to call the temp var dtors later, because
+	'' we're still in the middle of an expression. A manual call to
+	'' astDtorListFlush() may accidentally emit dtor calls for temp vars
+	'' outside the iif(), e.g. in a statement like:
+	''    foo = returnUdt( ).field + iif( returnUdt.field = 0, 1, 2 )
+	''
+	'' If it's a statement though (IF blocks, WHILE/UNTIL loops), we must
+	'' call the temp var dtors manually (instead of letting astAdd() do it)
+	'' in front of the branch, or else astAdd() would insert them behind
+	'' the branch, where they would be unreachable dead code.
+	''
+	'' This only affects astBuildBranch() calls that may use a condition
+	'' expression with temp vars, and are not immediately astAdd()'ed,
+	'' but LINKed together with something instead.
+	call_dtors = not (is_iif or astDTorListIsEmpty( ))
 
-	'' shortcut "exp logop exp" if it's at top of tree (used to optimize IF/ELSEIF/WHILE/UNTIL)
-	if( n->class <> AST_NODECLASS_BOP ) then
-#if 0
-		'' UOP? check if it's a NOT
-		if( n->class = AST_NODECLASS_UOP ) then
-			if( n->op.op = AST_OP_NOT ) then
-				l = astUpdComp2Branch( n->l, label, isinverse = FALSE )
-				astDelNode( n )
-				return l
-			end if
-		end if
-#endif
+	select case( n->class )
+	case AST_NODECLASS_CONST
+		'' Note: a CONST expression will never use temp vars.
+		'' Although the AST may have dtors registered from other parts
+		'' of the expression if it's an iif(), iif() will (currently)
+		'' optimize out itself when the condition is CONST, so this
+		'' case never happens.
+		assert( is_iif = FALSE )
+		assert( call_dtors = FALSE )
 
-		'' CONST?
-		if( astIsCONST( n ) ) then
-			istrue = astCONSTIsTrue( n )
-
-			'' If inversed, branch if true.
-			'' If not inversed, branch if false.
-			'' (always the opposite, to branch over the if body)
-			if( isinverse = FALSE ) then
-				istrue = not istrue
-			end if
-
-			if( istrue ) then
-				astDelNode( n )
-				n = astDtorListFlush( FALSE )
-				n = astNewLINK( n, astNewBRANCH( AST_OP_JMP, label, NULL ) )
-			end if
+		'' If the condition is...
+		'' a) false (or true but inverted), emit a simple jump to jump
+		''    over the IF block.
+		'' b) true (or false but inverted), don't emit a jump at all,
+		''    but fall trough to the IF block.
+		if( astCONSTIsTrue( n ) = is_inverse ) then
+			function = astNewBRANCH( AST_OP_JMP, label, NULL )
 		else
-			'' otherwise, check if zero (ie= FALSE)
-
-			'' zstring? astNewBOP will think both are zstrings..
-			select case as const dtype
-			case FB_DATATYPE_CHAR
-				dtype = FB_DATATYPE_UINT
-			case FB_DATATYPE_WCHAR
-				dtype = env.target.wchar
-			end select
-
-			'' Constant 0 of matching type
-			expr = astNewCONST( NULL, dtype, astGetSubtype( n ) )
-
-			hDoBranch( )
+			function = astNewNOP( )
 		end if
 
-		'' exit
-		return n
-	end if
+		astDelNode( n )
+		exit function
 
-	'' relational operator?
-	select case as const n->op.op
-	case AST_OP_EQ, AST_OP_NE, AST_OP_GT, AST_OP_LT, AST_OP_GE, AST_OP_LE
-
-		if( call_dtors = FALSE ) then
-			'' tell IR that the destine label is already set
-			n->op.ex = label
-
-			'' invert it
-			if( isinverse = FALSE ) then
-				n->op.op = astGetInverseLogOp( n->op.op )
+	case AST_NODECLASS_BOP
+		'' relational operator?
+		select case as const( n->op.op )
+		case AST_OP_EQ, AST_OP_NE, AST_OP_GT, _
+		     AST_OP_LT, AST_OP_GE, AST_OP_LE
+			if( call_dtors = FALSE ) then
+				'' Directly update this BOP to do the branch itself
+				n->op.ex = label
+				if( is_inverse = FALSE ) then
+					n->op.op = astGetInverseLogOp( n->op.op )
+				end if
+				return n
 			end if
 
-		else
-			dim as FBSYMBOL ptr next_label = symbAddLabel( NULL )
+		'' BOP that sets x86 flags?
+		case AST_OP_ADD, AST_OP_SUB, AST_OP_SHL, AST_OP_SHR, _
+		     AST_OP_AND, AST_OP_OR, AST_OP_XOR, AST_OP_IMP
+		     ''AST_OP_EQV -- NOT doesn't set any flags, so EQV can't be optimized (x86 assumption)
 
-			n->op.ex = next_label
+			'' Can't optimize if dtors have be called, they'd trash the flags
+			if( call_dtors = FALSE ) then
+				dim as integer doopt = any
 
-			if( isinverse ) then
-				n->op.op = astGetInverseLogOp( n->op.op )
-			end if
-
-			'' do the dtor calls and branch, and also emit the next label
-			n = astNewLINK( n, astDtorListFlush( FALSE ) )
-			n = astNewLINK( n, astNewBRANCH( AST_OP_JMP, label, NULL ) )
-			n = astNewLINK( n, astNewLABEL( next_label ) )
-		end if
-
-		return n
-
-	'' binary op that sets the flags?
-	case AST_OP_ADD, AST_OP_SUB, AST_OP_SHL, AST_OP_SHR, _
-		 AST_OP_AND, AST_OP_OR, AST_OP_XOR, AST_OP_IMP
-		 ', AST_OP_EQV -- NOT doesn't set any flags, so EQV can't be optimized (x86 assumption)
-
-		'' can't optimize if dtors have be called
-		if( call_dtors = FALSE ) then
-			dim as integer doopt = any
-
-			if( typeGetClass( dtype ) = FB_DATACLASS_INTEGER ) then
-				doopt = irGetOption( IR_OPT_CPUBOPFLAGS )
-
-				if( doopt ) then
-					select case as const dtype
-					case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-						'' can't be done with longints either, as flag is set twice
-						doopt = irGetOption( IR_OPT_64BITCPUREGS )
-					end select
+				if( typeGetClass( dtype ) = FB_DATACLASS_INTEGER ) then
+					doopt = irGetOption( IR_OPT_CPUBOPFLAGS )
+					if( doopt ) then
+						select case as const dtype
+						case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
+							'' can't be done with longints either, as flag is set twice
+							doopt = irGetOption( IR_OPT_64BITCPUREGS )
+						end select
+					end if
+				else
+					doopt = irGetOption( IR_OPT_FPUBOPFLAGS )
 				end if
 
-			else
-				doopt = irGetOption( IR_OPT_FPUBOPFLAGS )
+				if( doopt ) then
+					'' Check against zero (= FALSE), relying on the flags set by the BOP;
+					'' so it must not be removed by later astAdd() optimizations.
+					return astNewBRANCH( iif( is_inverse, AST_OP_JNE, AST_OP_JEQ ), label, n )
+				end if
 			end if
 
-			if( doopt ) then
-				'' check if zero (ie= FALSE)
-				'' (relying on the flags set by the BOP; so it must
-				'' not be removed by later astAdd() optimizations)
-				return astNewBRANCH( iif( isinverse, AST_OP_JNE, AST_OP_JEQ ), label, n )
-			end if
-		end if
+		end select
 
 	end select
 
-	'' if no optimization could be done, check if zero (ie= FALSE)
+	'' No optimization could be done, check expression against zero
+	expr = n
+	n = NULL
 
-	'' Constant 0 of matching type
-	expr = astNewCONST( NULL, dtype, astGetSubtype( n ) )
+	'' Remap zstring/wstring types, we don't want the temp var to be a
+	'' string, or the comparison against zero to be a string comparison...
+	select case( dtype )
+	case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
+		dtype = typeRemap( dtype, expr->subtype )
+	end select
 
-	hDoBranch( )
+	if( call_dtors ) then
+		'' 1. assign the condition to a temp var
+		temp = symbAddTempVar( dtype, expr->subtype )
+		n = astBuildVarAssign( temp, expr )
+
+		'' 2. call dtors
+		n = astNewLINK( n, astDtorListFlush( TRUE ) )
+
+		'' 3. branch if tempvar = zero
+		expr = astNewVAR( temp )
+	end if
+
+	'' Check expression against zero (= FALSE)
+	n = astNewLINK( n, _
+		astNewBOP( iif( is_inverse, AST_OP_NE, AST_OP_EQ ), _
+			expr, astNewCONSTz( dtype, expr->subtype ), _
+			label, AST_OPOPT_NONE ) )
 
 	function = n
-
 end function
 
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::

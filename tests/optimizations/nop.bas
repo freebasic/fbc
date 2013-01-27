@@ -19,6 +19,49 @@ private sub testBranch cdecl( )
 		x = 333
 	end if
 	CU_ASSERT( x = 333 )
+
+	x = 0
+	CU_ASSERT( x = 0 )
+	if i = i then
+		x = 1
+	else
+		x = 2
+	end if
+	CU_ASSERT( x = 1 )
+
+	x = 0
+	CU_ASSERT( x = 0 )
+	if i <> i then
+		x = 1
+	else
+		x = 2
+	end if
+	CU_ASSERT( x = 2 )
+
+	x = 0
+	CU_ASSERT( x = 0 )
+	if 1 then
+		x = 1
+	else
+		x = 2
+	end if
+	CU_ASSERT( x = 1 )
+
+	x = 0
+	CU_ASSERT( x = 0 )
+	if 0 then
+		x = 1
+	else
+		x = 2
+	end if
+	CU_ASSERT( x = 2 )
+
+	x = 0
+	CU_ASSERT( x = 0 )
+	if 1 then
+		x = 1
+	end if
+	CU_ASSERT( x = 1 )
 end sub
 
 private sub testDoubleUops cdecl( )

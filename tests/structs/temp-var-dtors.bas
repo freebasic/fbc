@@ -154,6 +154,182 @@ namespace classlikeIntegerUdt
 		function = x
 	end function
 
+	sub testIfBranch cdecl( )
+		begin( )
+			dim i as integer = 0
+			if( f2( 1 ).i ) then
+				i = 1
+			end if
+			CU_ASSERT( i = 1 )
+		check( 2, 0, 2 )
+
+		begin( )
+			dim i as integer = 0
+			if( f2( 0 ).i ) then
+				i = 1
+			end if
+			CU_ASSERT( i = 0 )
+		check( 2, 0, 2 )
+
+		begin( )
+			dim i as integer = 0
+			if( f2( 1 ).i ) then
+				i = 1
+			else
+				i = 2
+			end if
+			CU_ASSERT( i = 1 )
+		check( 2, 0, 2 )
+
+		begin( )
+			dim i as integer = 0
+			if( f2( 0 ).i ) then
+				i = 1
+			else
+				i = 2
+			end if
+			CU_ASSERT( i = 2 )
+		check( 2, 0, 2 )
+
+		begin( )
+			dim i as integer = 0
+			if( f2( 123 ).i = 123 ) then
+				i = 1
+			end if
+			CU_ASSERT( i = 1 )
+		check( 2, 0, 2 )
+
+		begin( )
+			dim i as integer = 0
+			if( f2( 123 ).i <> 123 ) then
+				i = 1
+			end if
+			CU_ASSERT( i = 0 )
+		check( 2, 0, 2 )
+
+		begin( )
+			dim i as integer = 0
+			if( f2( 123 ).i = 123 ) then
+				i = 1
+			else
+				i = 2
+			end if
+			CU_ASSERT( i = 1 )
+		check( 2, 0, 2 )
+
+		begin( )
+			dim i as integer = 0
+			if( f2( 123 ).i <> 123 ) then
+				i = 1
+			else
+				i = 2
+			end if
+			CU_ASSERT( i = 2 )
+		check( 2, 0, 2 )
+
+		begin( )
+			dim x as ClassUdt
+			dim i as integer = 0
+			x.i = 123
+			if( x.i = f2( 123 ).i ) then
+				i = 1
+			end if
+			CU_ASSERT( i = 1 )
+		check( 3, 0, 3 )
+
+		begin( )
+			dim x as ClassUdt
+			dim i as integer = 0
+			x.i = 123
+			if( x.i = f2( 456 ).i ) then
+				i = 1
+			end if
+			CU_ASSERT( i = 0 )
+		check( 3, 0, 3 )
+
+		begin( )
+			dim x as ClassUdt
+			dim i as integer = 0
+			x.i = 123
+			if( x.i = f2( 123 ).i ) then
+				i = 1
+			else
+				i = 2
+			end if
+			CU_ASSERT( i = 1 )
+		check( 3, 0, 3 )
+
+		begin( )
+			dim x as ClassUdt
+			dim i as integer = 0
+			x.i = 123
+			if( x.i = f2( 456 ).i ) then
+				i = 1
+			else
+				i = 2
+			end if
+			CU_ASSERT( i = 2 )
+		check( 3, 0, 3 )
+
+		begin( )
+			dim x as ClassUdt
+			dim i as integer = 0
+			x.i = 123
+			if( x.i <> f2( 123 ).i ) then
+				i = 1
+			else
+				i = 2
+			end if
+			CU_ASSERT( i = 2 )
+		check( 3, 0, 3 )
+
+		begin( )
+			dim x as ClassUdt
+			dim i as integer = 0
+			x.i = 123
+			if( x.i <> f2( 456 ).i ) then
+				i = 1
+			else
+				i = 2
+			end if
+			CU_ASSERT( i = 1 )
+		check( 3, 0, 3 )
+	end sub
+
+	sub testIifBranch cdecl( )
+		begin( )
+			CU_ASSERT( iif( f2( 1 ).i, 1, 2 ) = 1 )
+		check( 2, 0, 2 )
+
+		begin( )
+			CU_ASSERT( iif( f2( 0 ).i, 1, 2 ) = 2 )
+		check( 2, 0, 2 )
+
+		begin( )
+			dim x as ClassUdt
+			x.i = 123
+			CU_ASSERT( iif( x.i = f2( 123 ).i, 1, 2 ) = 1 )
+		check( 3, 0, 3 )
+
+		begin( )
+			dim x as ClassUdt
+			x.i = 123
+			CU_ASSERT( iif( x.i = f2( 456 ).i, 1, 2 ) = 2 )
+		check( 3, 0, 3 )
+
+		begin( )
+			dim x as ClassUdt
+			x.i = 123
+			CU_ASSERT( iif( x.i <> f2( 123 ).i, 1, 2 ) = 2 )
+		check( 3, 0, 3 )
+
+		begin( )
+			dim x as ClassUdt
+			x.i = 123
+			CU_ASSERT( iif( x.i <> f2( 456 ).i, 1, 2 ) = 1 )
+		check( 3, 0, 3 )
+	end sub
+
 	sub testWhileBranch cdecl( )
 		begin( )
 			dim as integer i = 5
@@ -383,6 +559,182 @@ namespace classlikeDoubleIntUdt
 		function = x
 	end function
 
+	sub testIfBranch cdecl( )
+		begin( )
+			dim i as integer = 0
+			if( f2( 1 ).i ) then
+				i = 1
+			end if
+			CU_ASSERT( i = 1 )
+		check( 2, 0, 2 )
+
+		begin( )
+			dim i as integer = 0
+			if( f2( 0 ).i ) then
+				i = 1
+			end if
+			CU_ASSERT( i = 0 )
+		check( 2, 0, 2 )
+
+		begin( )
+			dim i as integer = 0
+			if( f2( 1 ).i ) then
+				i = 1
+			else
+				i = 2
+			end if
+			CU_ASSERT( i = 1 )
+		check( 2, 0, 2 )
+
+		begin( )
+			dim i as integer = 0
+			if( f2( 0 ).i ) then
+				i = 1
+			else
+				i = 2
+			end if
+			CU_ASSERT( i = 2 )
+		check( 2, 0, 2 )
+
+		begin( )
+			dim i as integer = 0
+			if( f2( 123 ).i = 123 ) then
+				i = 1
+			end if
+			CU_ASSERT( i = 1 )
+		check( 2, 0, 2 )
+
+		begin( )
+			dim i as integer = 0
+			if( f2( 123 ).i <> 123 ) then
+				i = 1
+			end if
+			CU_ASSERT( i = 0 )
+		check( 2, 0, 2 )
+
+		begin( )
+			dim i as integer = 0
+			if( f2( 123 ).i = 123 ) then
+				i = 1
+			else
+				i = 2
+			end if
+			CU_ASSERT( i = 1 )
+		check( 2, 0, 2 )
+
+		begin( )
+			dim i as integer = 0
+			if( f2( 123 ).i <> 123 ) then
+				i = 1
+			else
+				i = 2
+			end if
+			CU_ASSERT( i = 2 )
+		check( 2, 0, 2 )
+
+		begin( )
+			dim x as ClassUdt
+			dim i as integer = 0
+			x.i = 123
+			if( x.i = f2( 123 ).i ) then
+				i = 1
+			end if
+			CU_ASSERT( i = 1 )
+		check( 3, 0, 3 )
+
+		begin( )
+			dim x as ClassUdt
+			dim i as integer = 0
+			x.i = 123
+			if( x.i = f2( 456 ).i ) then
+				i = 1
+			end if
+			CU_ASSERT( i = 0 )
+		check( 3, 0, 3 )
+
+		begin( )
+			dim x as ClassUdt
+			dim i as integer = 0
+			x.i = 123
+			if( x.i = f2( 123 ).i ) then
+				i = 1
+			else
+				i = 2
+			end if
+			CU_ASSERT( i = 1 )
+		check( 3, 0, 3 )
+
+		begin( )
+			dim x as ClassUdt
+			dim i as integer = 0
+			x.i = 123
+			if( x.i = f2( 456 ).i ) then
+				i = 1
+			else
+				i = 2
+			end if
+			CU_ASSERT( i = 2 )
+		check( 3, 0, 3 )
+
+		begin( )
+			dim x as ClassUdt
+			dim i as integer = 0
+			x.i = 123
+			if( x.i <> f2( 123 ).i ) then
+				i = 1
+			else
+				i = 2
+			end if
+			CU_ASSERT( i = 2 )
+		check( 3, 0, 3 )
+
+		begin( )
+			dim x as ClassUdt
+			dim i as integer = 0
+			x.i = 123
+			if( x.i <> f2( 456 ).i ) then
+				i = 1
+			else
+				i = 2
+			end if
+			CU_ASSERT( i = 1 )
+		check( 3, 0, 3 )
+	end sub
+
+	sub testIifBranch cdecl( )
+		begin( )
+			CU_ASSERT( iif( f2( 1 ).i, 1, 2 ) = 1 )
+		check( 2, 0, 2 )
+
+		begin( )
+			CU_ASSERT( iif( f2( 0 ).i, 1, 2 ) = 2 )
+		check( 2, 0, 2 )
+
+		begin( )
+			dim x as ClassUdt
+			x.i = 123
+			CU_ASSERT( iif( x.i = f2( 123 ).i, 1, 2 ) = 1 )
+		check( 3, 0, 3 )
+
+		begin( )
+			dim x as ClassUdt
+			x.i = 123
+			CU_ASSERT( iif( x.i = f2( 456 ).i, 1, 2 ) = 2 )
+		check( 3, 0, 3 )
+
+		begin( )
+			dim x as ClassUdt
+			x.i = 123
+			CU_ASSERT( iif( x.i <> f2( 123 ).i, 1, 2 ) = 2 )
+		check( 3, 0, 3 )
+
+		begin( )
+			dim x as ClassUdt
+			x.i = 123
+			CU_ASSERT( iif( x.i <> f2( 456 ).i, 1, 2 ) = 1 )
+		check( 3, 0, 3 )
+	end sub
+
 	sub testWhileBranch cdecl( )
 		begin( )
 			dim as integer i = 5
@@ -584,6 +936,182 @@ namespace dtorOnlyIntegerUdt
 	function f2( byval i as integer ) as DtorUdt
 		function = type( i )
 	end function
+
+	sub testIfBranch cdecl( )
+		begin( )
+			dim i as integer = 0
+			if( f2( 1 ).i ) then
+				i = 1
+			end if
+			CU_ASSERT( i = 1 )
+		check( 2, 0, 2 )
+
+		begin( )
+			dim i as integer = 0
+			if( f2( 0 ).i ) then
+				i = 1
+			end if
+			CU_ASSERT( i = 0 )
+		check( 2, 0, 2 )
+
+		begin( )
+			dim i as integer = 0
+			if( f2( 1 ).i ) then
+				i = 1
+			else
+				i = 2
+			end if
+			CU_ASSERT( i = 1 )
+		check( 2, 0, 2 )
+
+		begin( )
+			dim i as integer = 0
+			if( f2( 0 ).i ) then
+				i = 1
+			else
+				i = 2
+			end if
+			CU_ASSERT( i = 2 )
+		check( 2, 0, 2 )
+
+		begin( )
+			dim i as integer = 0
+			if( f2( 123 ).i = 123 ) then
+				i = 1
+			end if
+			CU_ASSERT( i = 1 )
+		check( 2, 0, 2 )
+
+		begin( )
+			dim i as integer = 0
+			if( f2( 123 ).i <> 123 ) then
+				i = 1
+			end if
+			CU_ASSERT( i = 0 )
+		check( 2, 0, 2 )
+
+		begin( )
+			dim i as integer = 0
+			if( f2( 123 ).i = 123 ) then
+				i = 1
+			else
+				i = 2
+			end if
+			CU_ASSERT( i = 1 )
+		check( 2, 0, 2 )
+
+		begin( )
+			dim i as integer = 0
+			if( f2( 123 ).i <> 123 ) then
+				i = 1
+			else
+				i = 2
+			end if
+			CU_ASSERT( i = 2 )
+		check( 2, 0, 2 )
+
+		begin( )
+			dim x as DtorUdt
+			dim i as integer = 0
+			x.i = 123
+			if( x.i = f2( 123 ).i ) then
+				i = 1
+			end if
+			CU_ASSERT( i = 1 )
+		check( 3, 0, 3 )
+
+		begin( )
+			dim x as DtorUdt
+			dim i as integer = 0
+			x.i = 123
+			if( x.i = f2( 456 ).i ) then
+				i = 1
+			end if
+			CU_ASSERT( i = 0 )
+		check( 3, 0, 3 )
+
+		begin( )
+			dim x as DtorUdt
+			dim i as integer = 0
+			x.i = 123
+			if( x.i = f2( 123 ).i ) then
+				i = 1
+			else
+				i = 2
+			end if
+			CU_ASSERT( i = 1 )
+		check( 3, 0, 3 )
+
+		begin( )
+			dim x as DtorUdt
+			dim i as integer = 0
+			x.i = 123
+			if( x.i = f2( 456 ).i ) then
+				i = 1
+			else
+				i = 2
+			end if
+			CU_ASSERT( i = 2 )
+		check( 3, 0, 3 )
+
+		begin( )
+			dim x as DtorUdt
+			dim i as integer = 0
+			x.i = 123
+			if( x.i <> f2( 123 ).i ) then
+				i = 1
+			else
+				i = 2
+			end if
+			CU_ASSERT( i = 2 )
+		check( 3, 0, 3 )
+
+		begin( )
+			dim x as DtorUdt
+			dim i as integer = 0
+			x.i = 123
+			if( x.i <> f2( 456 ).i ) then
+				i = 1
+			else
+				i = 2
+			end if
+			CU_ASSERT( i = 1 )
+		check( 3, 0, 3 )
+	end sub
+
+	sub testIifBranch cdecl( )
+		begin( )
+			CU_ASSERT( iif( f2( 1 ).i, 1, 2 ) = 1 )
+		check( 2, 0, 2 )
+
+		begin( )
+			CU_ASSERT( iif( f2( 0 ).i, 1, 2 ) = 2 )
+		check( 2, 0, 2 )
+
+		begin( )
+			dim x as DtorUdt
+			x.i = 123
+			CU_ASSERT( iif( x.i = f2( 123 ).i, 1, 2 ) = 1 )
+		check( 3, 0, 3 )
+
+		begin( )
+			dim x as DtorUdt
+			x.i = 123
+			CU_ASSERT( iif( x.i = f2( 456 ).i, 1, 2 ) = 2 )
+		check( 3, 0, 3 )
+
+		begin( )
+			dim x as DtorUdt
+			x.i = 123
+			CU_ASSERT( iif( x.i <> f2( 123 ).i, 1, 2 ) = 2 )
+		check( 3, 0, 3 )
+
+		begin( )
+			dim x as DtorUdt
+			x.i = 123
+			CU_ASSERT( iif( x.i <> f2( 456 ).i, 1, 2 ) = 1 )
+		check( 3, 0, 3 )
+	end sub
 
 	sub testWhileBranch cdecl( )
 		begin( )
@@ -794,6 +1322,182 @@ namespace dtorOnlyDoubleIntUdt
 		function = type( i )
 	end function
 
+	sub testIfBranch cdecl( )
+		begin( )
+			dim i as integer = 0
+			if( f2( 1 ).i ) then
+				i = 1
+			end if
+			CU_ASSERT( i = 1 )
+		check( 2, 0, 2 )
+
+		begin( )
+			dim i as integer = 0
+			if( f2( 0 ).i ) then
+				i = 1
+			end if
+			CU_ASSERT( i = 0 )
+		check( 2, 0, 2 )
+
+		begin( )
+			dim i as integer = 0
+			if( f2( 1 ).i ) then
+				i = 1
+			else
+				i = 2
+			end if
+			CU_ASSERT( i = 1 )
+		check( 2, 0, 2 )
+
+		begin( )
+			dim i as integer = 0
+			if( f2( 0 ).i ) then
+				i = 1
+			else
+				i = 2
+			end if
+			CU_ASSERT( i = 2 )
+		check( 2, 0, 2 )
+
+		begin( )
+			dim i as integer = 0
+			if( f2( 123 ).i = 123 ) then
+				i = 1
+			end if
+			CU_ASSERT( i = 1 )
+		check( 2, 0, 2 )
+
+		begin( )
+			dim i as integer = 0
+			if( f2( 123 ).i <> 123 ) then
+				i = 1
+			end if
+			CU_ASSERT( i = 0 )
+		check( 2, 0, 2 )
+
+		begin( )
+			dim i as integer = 0
+			if( f2( 123 ).i = 123 ) then
+				i = 1
+			else
+				i = 2
+			end if
+			CU_ASSERT( i = 1 )
+		check( 2, 0, 2 )
+
+		begin( )
+			dim i as integer = 0
+			if( f2( 123 ).i <> 123 ) then
+				i = 1
+			else
+				i = 2
+			end if
+			CU_ASSERT( i = 2 )
+		check( 2, 0, 2 )
+
+		begin( )
+			dim x as DtorUdt
+			dim i as integer = 0
+			x.i = 123
+			if( x.i = f2( 123 ).i ) then
+				i = 1
+			end if
+			CU_ASSERT( i = 1 )
+		check( 3, 0, 3 )
+
+		begin( )
+			dim x as DtorUdt
+			dim i as integer = 0
+			x.i = 123
+			if( x.i = f2( 456 ).i ) then
+				i = 1
+			end if
+			CU_ASSERT( i = 0 )
+		check( 3, 0, 3 )
+
+		begin( )
+			dim x as DtorUdt
+			dim i as integer = 0
+			x.i = 123
+			if( x.i = f2( 123 ).i ) then
+				i = 1
+			else
+				i = 2
+			end if
+			CU_ASSERT( i = 1 )
+		check( 3, 0, 3 )
+
+		begin( )
+			dim x as DtorUdt
+			dim i as integer = 0
+			x.i = 123
+			if( x.i = f2( 456 ).i ) then
+				i = 1
+			else
+				i = 2
+			end if
+			CU_ASSERT( i = 2 )
+		check( 3, 0, 3 )
+
+		begin( )
+			dim x as DtorUdt
+			dim i as integer = 0
+			x.i = 123
+			if( x.i <> f2( 123 ).i ) then
+				i = 1
+			else
+				i = 2
+			end if
+			CU_ASSERT( i = 2 )
+		check( 3, 0, 3 )
+
+		begin( )
+			dim x as DtorUdt
+			dim i as integer = 0
+			x.i = 123
+			if( x.i <> f2( 456 ).i ) then
+				i = 1
+			else
+				i = 2
+			end if
+			CU_ASSERT( i = 1 )
+		check( 3, 0, 3 )
+	end sub
+
+	sub testIifBranch cdecl( )
+		begin( )
+			CU_ASSERT( iif( f2( 1 ).i, 1, 2 ) = 1 )
+		check( 2, 0, 2 )
+
+		begin( )
+			CU_ASSERT( iif( f2( 0 ).i, 1, 2 ) = 2 )
+		check( 2, 0, 2 )
+
+		begin( )
+			dim x as DtorUdt
+			x.i = 123
+			CU_ASSERT( iif( x.i = f2( 123 ).i, 1, 2 ) = 1 )
+		check( 3, 0, 3 )
+
+		begin( )
+			dim x as DtorUdt
+			x.i = 123
+			CU_ASSERT( iif( x.i = f2( 456 ).i, 1, 2 ) = 2 )
+		check( 3, 0, 3 )
+
+		begin( )
+			dim x as DtorUdt
+			x.i = 123
+			CU_ASSERT( iif( x.i <> f2( 123 ).i, 1, 2 ) = 2 )
+		check( 3, 0, 3 )
+
+		begin( )
+			dim x as DtorUdt
+			x.i = 123
+			CU_ASSERT( iif( x.i <> f2( 456 ).i, 1, 2 ) = 1 )
+		check( 3, 0, 3 )
+	end sub
+
 	sub testWhileBranch cdecl( )
 		begin( )
 			dim as integer i = 5
@@ -930,24 +1634,32 @@ private sub ctor( ) constructor
 	fbcu.add_test( "11", @classlikeIntegerUdt.testParamInit )
 	fbcu.add_test( "12", @classlikeIntegerUdt.testAnon )
 	fbcu.add_test( "13", @classlikeIntegerUdt.testResult )
+	fbcu.add_test( "14", @classlikeIntegerUdt.testIfBranch )
+	fbcu.add_test( "15", @classlikeIntegerUdt.testIifBranch )
 	fbcu.add_test( "16", @classlikeIntegerUdt.testWhileBranch )
 	fbcu.add_test( "17", @classlikeIntegerUdt.testUntilBranch )
 
 	fbcu.add_test( "21", @classlikeDoubleIntUdt.testParamInit )
 	fbcu.add_test( "22", @classlikeDoubleIntUdt.testAnon )
 	fbcu.add_test( "23", @classlikeDoubleIntUdt.testResult )
+	fbcu.add_test( "24", @classlikeDoubleIntUdt.testIfBranch )
+	fbcu.add_test( "25", @classlikeDoubleIntUdt.testIifBranch )
 	fbcu.add_test( "26", @classlikeDoubleIntUdt.testWhileBranch )
 	fbcu.add_test( "27", @classlikeDoubleIntUdt.testUntilBranch )
 
 	fbcu.add_test( "31", @dtorOnlyIntegerUdt.testParamInit )
 	fbcu.add_test( "32", @dtorOnlyIntegerUdt.testAnon )
 	fbcu.add_test( "33", @dtorOnlyIntegerUdt.testResult )
+	fbcu.add_test( "34", @dtorOnlyIntegerUdt.testIfBranch )
+	fbcu.add_test( "35", @dtorOnlyIntegerUdt.testIifBranch )
 	fbcu.add_test( "36", @dtorOnlyIntegerUdt.testWhileBranch )
 	fbcu.add_test( "37", @dtorOnlyIntegerUdt.testUntilBranch )
 
 	fbcu.add_test( "41", @dtorOnlyDoubleIntUdt.testParamInit )
 	fbcu.add_test( "42", @dtorOnlyDoubleIntUdt.testAnon )
 	fbcu.add_test( "43", @dtorOnlyDoubleIntUdt.testResult )
+	fbcu.add_test( "44", @dtorOnlyDoubleIntUdt.testIfBranch )
+	fbcu.add_test( "45", @dtorOnlyDoubleIntUdt.testIifBranch )
 	fbcu.add_test( "46", @dtorOnlyDoubleIntUdt.testWhileBranch )
 	fbcu.add_test( "47", @dtorOnlyDoubleIntUdt.testUntilBranch )
 end sub

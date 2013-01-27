@@ -505,7 +505,8 @@ declare function astBuildBranch _
 	( _
 		byval n as ASTNODE ptr, _
 		byval label as FBSYMBOL ptr, _
-		byval isinverse as integer _
+		byval is_inverse as integer, _
+		byval is_iif as integer = FALSE _
 	) as ASTNODE ptr
 
 declare function astPtrCheck _

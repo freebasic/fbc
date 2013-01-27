@@ -164,6 +164,7 @@ Version 0.25.0:
 - Win32: Procedures declared inside EXTERN "Windows-MS" blocks were treated as having a different calling convention than STDCALL or EXTERN "Windows" procedures, even though they all use STDCALL (only Windows-MS won't add the @N suffix, but that does not matter for function pointers)
 - #627: ICE instead of error message on array access without index (or ()'s) nested inside the index of another array access
 - Bad conditional jumps when temporary variable destructors had to be called
+- Double destructor calls for temporary variables from iif() condition expressions
 
 
 Version 0.24.0:
