@@ -4,14 +4,9 @@ namespace fbc_tests.structs.temp_var_dtors
 
 type ObjStatus
 	instance	as any ptr
-	ctors		as integer
-	copyctors	as integer
-	dtors		as integer
+	refcount	as integer
 end type
 
-'' Assuming the exact number of temp objects created cannot be
-'' predicted accurately, but 10 slots should be enough for the
-'' test code below...
 dim shared as ObjStatus status(0 to 9)
 dim shared as integer totalctors, totalcopyctors, totaldtors
 
@@ -24,59 +19,43 @@ function hFindSlot( byval instance as any ptr ) as integer
 		end if
 	next
 
-	'' Dtor called but object entry not found? Add new instead
-	if( instance ) then
-		i = hFindSlot( 0 )
-		status(i).instance = instance
-		return i
-	end if
+	'' Not found? Add new instead
+	for i = lbound( status ) to ubound( status )
+		if( status(i).instance = 0 ) then
+			status(i).instance = instance
+			return i
+		end if
+	next
 
-	CU_FAIL( "more objects than expected" )
+	CU_FAIL( "more objects than expected, please increase the status() array's size" )
 	function = 0
 end function
 
-#macro hClearStatus( )
+#macro begin( )
+	'' Reset everything
 	clear( status(0), 0, sizeof( status(0) ) * (ubound( status ) - lbound( status ) + 1) )
-
-	'' Everything should be zero
-	for i as integer = lbound( status ) to ubound( status )
-		with( status(i) )
-			CU_ASSERT( .instance = 0 )
-			CU_ASSERT( .ctors = 0 )
-			CU_ASSERT( .copyctors = 0 )
-			CU_ASSERT( .dtors = 0 )
-		end with
-	next
-
 	totalctors = 0
 	totalcopyctors = 0
 	totaldtors = 0
+
+	scope
 #endmacro
 
-#macro hCheckStatus( minctors, mincopyctors, mindtors )
+#macro check( expectctors, expectcopyctors, expectdtors )
+	end scope
+
 	'' Every registered object must always have either 1 ctorcall
 	'' or 1 copyctorcall, and always 1 dtorcall.
 	for i as integer = lbound( status ) to ubound( status )
 		with( status(i) )
-			if( .instance ) then
-				if( .copyctors ) then
-					CU_ASSERT( .copyctors = 1 )
-				else
-					CU_ASSERT( .ctors = 1 )
-				end if
-				CU_ASSERT( .dtors = 1 )
-			else
-				CU_ASSERT( .ctors = 0 )
-				CU_ASSERT( .copyctors = 0 )
-				CU_ASSERT( .dtors = 0 )
-			end if
+			CU_ASSERT( .refcount = 0 )
 		end with
 	next
 
 	CU_ASSERT( (totalctors + totalcopyctors) = totaldtors )
-	CU_ASSERT( totalctors >= minctors )
-	CU_ASSERT( totalcopyctors >= mincopyctors )
-	CU_ASSERT( totaldtors >= mindtors )
+	CU_ASSERT( totalctors = (expectctors) )
+	CU_ASSERT( totalcopyctors = (expectcopyctors) )
+	CU_ASSERT( totaldtors = (expectdtors) )
 #endmacro
 
 namespace classlikeIntegerUdt
@@ -90,25 +69,28 @@ namespace classlikeIntegerUdt
 	constructor ClassUdt( )
 		this.i = 123
 		totalctors += 1
-		with( status(hFindSlot( 0 )) )
+		with( status(hFindSlot( @this )) )
 			.instance = @this
-			.ctors += 1
+			CU_ASSERT( .refcount = 0 )
+			.refcount += 1
 		end with
 	end constructor
 
 	constructor ClassUdt( byref rhs as ClassUdt )
 		this.i = rhs.i
 		totalcopyctors += 1
-		with( status(hFindSlot( 0 )) )
+		with( status(hFindSlot( @this )) )
 			.instance = @this
-			.copyctors += 1
+			CU_ASSERT( .refcount = 0 )
+			.refcount += 1
 		end with
 	end constructor
 
 	destructor ClassUdt( )
 		totaldtors += 1
 		with( status(hFindSlot( @this )) )
-			.dtors += 1
+			CU_ASSERT( .refcount = 1 )
+			.refcount -= 1
 		end with
 	end destructor
 
@@ -120,64 +102,185 @@ namespace classlikeIntegerUdt
 	end sub
 
 	sub testParamInit cdecl( )
-		hClearStatus( )
-		scope
+		begin( )
 			test2( )
-		end scope
-		hCheckStatus( 1, 1, 2 )
+		check( 2, 3, 5 )
 
-		hClearStatus( )
-		scope
+		begin( )
 			dim x as ClassUdt = test1( ClassUdt( ) )
-		end scope
-		hCheckStatus( 1, 1, 2 )
+		check( 2, 2, 4 )
 	end sub
 
 	sub testAnon cdecl( )
-		hClearStatus( )
-		scope
+		begin( )
 			CU_ASSERT( (type<ClassUdt>( )).i = 123 )
-		end scope
-		hCheckStatus( 1, 0, 1 )
+		check( 1, 0, 1 )
 
-		hClearStatus( )
-		scope
+		begin( )
 			dim x as ClassUdt
 			CU_ASSERT( x.i = 123 )
 			x.i = 11111
 			x = type<ClassUdt>( )
 			CU_ASSERT( x.i = 123 )
-		end scope
-		hCheckStatus( 2, 0, 2 )
+		check( 2, 0, 2 )
 
-		hClearStatus( )
-		scope
+		begin( )
 			dim x as ClassUdt
 			CU_ASSERT( x.i = 123 )
 			x.i = 11111
 			x = type( )
 			CU_ASSERT( x.i = 123 )
-		end scope
-		hCheckStatus( 2, 0, 2 )
+		check( 2, 0, 2 )
 
-		hClearStatus( )
-		scope
+		begin( )
 			dim x as ClassUdt
 			CU_ASSERT( iif( x.i = (type<ClassUdt>( )).i, 1, 2 ) = 1 )  '' field at offset 0
-		end scope
-		hCheckStatus( 2, 0, 2 )
+		check( 2, 0, 2 )
 	end sub
 
-	function f( ) as ClassUdt
+	function f1( ) as ClassUdt
 		function = type( )
 	end function
 
 	sub testResult cdecl( )
-		hClearStatus( )
-		scope
-			CU_ASSERT( f( ).i = 123 )
-		end scope
-		hCheckStatus( 2, 0, 2 )
+		begin( )
+			CU_ASSERT( f1( ).i = 123 )
+		check( 2, 0, 2 )
+	end sub
+
+	function f2( byval i as integer ) as ClassUdt
+		dim x as ClassUdt
+		x.i = i
+		function = x
+	end function
+
+	sub testWhileBranch cdecl( )
+		begin( )
+			dim as integer i = 5
+			while( f2( i ).i )
+				i -= 1
+			wend
+		check( 6*2, 0, 6*2 )
+
+		begin( )
+			dim x as ClassUdt
+			dim as integer i = 1
+			x.i = 1
+			while( x.i = f2( i ).i )
+				i += 1
+			wend
+		check( 2*2 + 1, 0, 2*2 + 1 )
+
+		begin( )
+			dim x as ClassUdt
+			dim as integer i = 1
+			x.i = 5
+			while( x.i <> f2( i ).i )
+				i += 1
+			wend
+		check( 5*2 + 1, 0, 5*2 + 1 )
+
+		begin( )
+			dim as integer i = 5
+			do while( f2( i ).i )
+				i -= 1
+			loop
+		check( 6*2, 0, 6*2 )
+
+		begin( )
+			dim x as ClassUdt
+			dim as integer i = 1
+			x.i = 1
+			do while( x.i = f2( i ).i )
+				i += 1
+			loop
+		check( 2*2 + 1, 0, 2*2 + 1 )
+
+		begin( )
+			dim x as ClassUdt
+			dim as integer i = 1
+			x.i = 5
+			do while( x.i <> f2( i ).i )
+				i += 1
+			loop
+		check( 5*2 + 1, 0, 5*2 + 1 )
+
+		begin( )
+			dim as integer i = 5
+			do
+				i -= 1
+			loop while( f2( i ).i )
+		check( 5*2, 0, 5*2 )
+
+		begin( )
+			dim x as ClassUdt
+			dim as integer i = 1
+			x.i = 1
+			do
+				i += 1
+			loop while( x.i = f2( i ).i )
+		check( 1*2 + 1, 0, 1*2 + 1 )
+
+		begin( )
+			dim x as ClassUdt
+			dim as integer i = 5
+			x.i = 1
+			do
+				i -= 1
+			loop while( x.i <> f2( i ).i )
+		check( 4*2 + 1, 0, 4*2 + 1 )
+	end sub
+
+	sub testUntilBranch cdecl( )
+		begin( )
+			dim as integer i = 0
+			do until( f2( i ).i )
+				i += 1
+			loop
+		check( 2*2, 0, 2*2 )
+
+		begin( )
+			dim x as ClassUdt
+			dim as integer i = 1
+			x.i = 5
+			do until( x.i = f2( i ).i )
+				i += 1
+			loop
+		check( 5*2 + 1, 0, 5*2 + 1 )
+
+		begin( )
+			dim x as ClassUdt
+			dim as integer i = 1
+			x.i = 1
+			do until( x.i <> f2( i ).i )
+				i += 1
+			loop
+		check( 2*2 + 1, 0, 2*2 + 1 )
+
+		begin( )
+			dim as integer i = 0
+			do
+				i += 1
+			loop until( f2( i ).i )
+		check( 1*2, 0, 1*2 )
+
+		begin( )
+			dim x as ClassUdt
+			dim as integer i = 1
+			x.i = 5
+			do
+				i += 1
+			loop until( x.i = f2( i ).i )
+		check( 4*2 + 1, 0, 4*2 + 1 )
+
+		begin( )
+			dim x as ClassUdt
+			dim as integer i = 1
+			x.i = 1
+			do
+				i += 1
+			loop until( x.i <> f2( i ).i )
+		check( 1*2 + 1, 0, 1*2 + 1 )
 	end sub
 end namespace
 
@@ -193,9 +296,10 @@ namespace classlikeDoubleIntUdt
 		this.i = 123
 		this.j = 456
 		totalctors += 1
-		with( status(hFindSlot( 0 )) )
+		with( status(hFindSlot( @this )) )
 			.instance = @this
-			.ctors += 1
+			CU_ASSERT( .refcount = 0 )
+			.refcount += 1
 		end with
 	end constructor
 
@@ -203,16 +307,18 @@ namespace classlikeDoubleIntUdt
 		this.i = rhs.i
 		this.j = rhs.j
 		totalcopyctors += 1
-		with( status(hFindSlot( 0 )) )
+		with( status(hFindSlot( @this )) )
 			.instance = @this
-			.copyctors += 1
+			CU_ASSERT( .refcount = 0 )
+			.refcount += 1
 		end with
 	end constructor
 
 	destructor ClassUdt( )
 		totaldtors += 1
 		with( status(hFindSlot( @this )) )
-			.dtors += 1
+			CU_ASSERT( .refcount = 1 )
+			.refcount -= 1
 		end with
 	end destructor
 
@@ -224,65 +330,186 @@ namespace classlikeDoubleIntUdt
 	end sub
 
 	sub testParamInit cdecl( )
-		hClearStatus( )
-		scope
+		begin( )
 			test2( )
-		end scope
-		hCheckStatus( 1, 1, 2 )
+		check( 2, 3, 5 )
 
-		hClearStatus( )
-		scope
+		begin( )
 			dim x as ClassUdt = test1( ClassUdt( ) )
-		end scope
-		hCheckStatus( 1, 1, 2 )
+		check( 2, 2, 4 )
 	end sub
 
 	sub testAnon cdecl( )
-		hClearStatus( )
-		scope
+		begin( )
 			CU_ASSERT( (type<ClassUdt>( )).i = 123 )
-		end scope
-		hCheckStatus( 1, 0, 1 )
+		check( 1, 0, 1 )
 
-		hClearStatus( )
-		scope
+		begin( )
 			dim x as ClassUdt
 			CU_ASSERT( x.i = 123 )
 			x.i = 11111
 			x = type<ClassUdt>( )
 			CU_ASSERT( x.i = 123 )
-		end scope
-		hCheckStatus( 2, 0, 2 )
+		check( 2, 0, 2 )
 
-		hClearStatus( )
-		scope
+		begin( )
 			dim x as ClassUdt
 			CU_ASSERT( x.i = 123 )
 			x.i = 11111
 			x = type( )
 			CU_ASSERT( x.i = 123 )
-		end scope
-		hCheckStatus( 2, 0, 2 )
+		check( 2, 0, 2 )
 
-		hClearStatus( )
-		scope
+		begin( )
 			dim x as ClassUdt
 			CU_ASSERT( iif( x.i = (type<ClassUdt>( )).i, 1, 2 ) = 1 )  '' field at offset 0
 			CU_ASSERT( iif( x.j = (type<ClassUdt>( )).j, 2, 1 ) = 2 )  '' field at non-0 offset
-		end scope
-		hCheckStatus( 3, 0, 3 )
+		check( 3, 0, 3 )
 	end sub
 
-	function f( ) as ClassUdt
+	function f1( ) as ClassUdt
 		function = type( )
 	end function
 
 	sub testResult cdecl( )
-		hClearStatus( )
-		scope
-			CU_ASSERT( f( ).i = 123 )
-		end scope
-		hCheckStatus( 2, 0, 2 )
+		begin( )
+			CU_ASSERT( f1( ).i = 123 )
+		check( 2, 0, 2 )
+	end sub
+
+	function f2( byval i as integer ) as ClassUdt
+		dim x as ClassUdt
+		x.i = i
+		function = x
+	end function
+
+	sub testWhileBranch cdecl( )
+		begin( )
+			dim as integer i = 5
+			while( f2( i ).i )
+				i -= 1
+			wend
+		check( 6*2, 0, 6*2 )
+
+		begin( )
+			dim x as ClassUdt
+			dim as integer i = 1
+			x.i = 1
+			while( x.i = f2( i ).i )
+				i += 1
+			wend
+		check( 2*2 + 1, 0, 2*2 + 1 )
+
+		begin( )
+			dim x as ClassUdt
+			dim as integer i = 1
+			x.i = 5
+			while( x.i <> f2( i ).i )
+				i += 1
+			wend
+		check( 5*2 + 1, 0, 5*2 + 1 )
+
+		begin( )
+			dim as integer i = 5
+			do while( f2( i ).i )
+				i -= 1
+			loop
+		check( 6*2, 0, 6*2 )
+
+		begin( )
+			dim x as ClassUdt
+			dim as integer i = 1
+			x.i = 1
+			do while( x.i = f2( i ).i )
+				i += 1
+			loop
+		check( 2*2 + 1, 0, 2*2 + 1 )
+
+		begin( )
+			dim x as ClassUdt
+			dim as integer i = 1
+			x.i = 5
+			do while( x.i <> f2( i ).i )
+				i += 1
+			loop
+		check( 5*2 + 1, 0, 5*2 + 1 )
+
+		begin( )
+			dim as integer i = 5
+			do
+				i -= 1
+			loop while( f2( i ).i )
+		check( 5*2, 0, 5*2 )
+
+		begin( )
+			dim x as ClassUdt
+			dim as integer i = 1
+			x.i = 1
+			do
+				i += 1
+			loop while( x.i = f2( i ).i )
+		check( 1*2 + 1, 0, 1*2 + 1 )
+
+		begin( )
+			dim x as ClassUdt
+			dim as integer i = 5
+			x.i = 1
+			do
+				i -= 1
+			loop while( x.i <> f2( i ).i )
+		check( 4*2 + 1, 0, 4*2 + 1 )
+	end sub
+
+	sub testUntilBranch cdecl( )
+		begin( )
+			dim as integer i = 0
+			do until( f2( i ).i )
+				i += 1
+			loop
+		check( 2*2, 0, 2*2 )
+
+		begin( )
+			dim x as ClassUdt
+			dim as integer i = 1
+			x.i = 5
+			do until( x.i = f2( i ).i )
+				i += 1
+			loop
+		check( 5*2 + 1, 0, 5*2 + 1 )
+
+		begin( )
+			dim x as ClassUdt
+			dim as integer i = 1
+			x.i = 1
+			do until( x.i <> f2( i ).i )
+				i += 1
+			loop
+		check( 2*2 + 1, 0, 2*2 + 1 )
+
+		begin( )
+			dim as integer i = 0
+			do
+				i += 1
+			loop until( f2( i ).i )
+		check( 1*2, 0, 1*2 )
+
+		begin( )
+			dim x as ClassUdt
+			dim as integer i = 1
+			x.i = 5
+			do
+				i += 1
+			loop until( x.i = f2( i ).i )
+		check( 4*2 + 1, 0, 4*2 + 1 )
+
+		begin( )
+			dim x as ClassUdt
+			dim as integer i = 1
+			x.i = 1
+			do
+				i += 1
+			loop until( x.i <> f2( i ).i )
+		check( 1*2 + 1, 0, 1*2 + 1 )
 	end sub
 end namespace
 
@@ -296,11 +523,7 @@ namespace dtorOnlyIntegerUdt
 		totaldtors += 1
 		with( status(hFindSlot( @this )) )
 			'' DtorUdt has no ctor, so fake it
-			if( .ctors = 0 ) then
-				totalctors += 1
-				.ctors += 1
-			end if
-			.dtors += 1
+			totalctors += 1
 		end with
 	end destructor
 
@@ -312,64 +535,183 @@ namespace dtorOnlyIntegerUdt
 	end sub
 
 	sub testParamInit cdecl( )
-		hClearStatus( )
-		scope
+		begin( )
 			test2( )
-		end scope
-		hCheckStatus( 0, 0, 2 )
+		check( 5, 0, 5 )
 
-		hClearStatus( )
-		scope
+		begin( )
 			dim x as DtorUdt = test1( type<DtorUdt>( 123 ) )
-		end scope
-		hCheckStatus( 0, 0, 2 )
+		check( 4, 0, 4 )
 	end sub
 
 	sub testAnon cdecl( )
-		hClearStatus( )
-		scope
+		begin( )
 			CU_ASSERT( (type<DtorUdt>( 123 )).i = 123 )
-		end scope
-		hCheckStatus( 0, 0, 1 )
+		check( 1, 0, 1 )
 
-		hClearStatus( )
-		scope
+		begin( )
 			dim x as DtorUdt = ( 123 )
 			CU_ASSERT( x.i = 123 )
 			x.i = 11111
 			x = type<DtorUdt>( 123 )
 			CU_ASSERT( x.i = 123 )
-		end scope
-		hCheckStatus( 0, 0, 2 )
+		check( 2, 0, 2 )
 
-		hClearStatus( )
-		scope
+		begin( )
 			dim x as DtorUdt = ( 123 )
 			CU_ASSERT( x.i = 123 )
 			x.i = 11111
 			x = type( 123 )
 			CU_ASSERT( x.i = 123 )
-		end scope
-		hCheckStatus( 0, 0, 2 )
+		check( 2, 0, 2 )
 
-		hClearStatus( )
-		scope
+		begin( )
 			dim x as DtorUdt = ( 123 )
 			CU_ASSERT( iif( x.i = (type<DtorUdt>( 123 )).i, 1, 2 ) = 1 )
-		end scope
-		hCheckStatus( 0, 0, 2 )
+		check( 2, 0, 2 )
 	end sub
 
-	function f( ) as DtorUdt
+	function f1( ) as DtorUdt
 		function = type( 123 )
 	end function
 
 	sub testResult cdecl( )
-		hClearStatus( )
-		scope
-			CU_ASSERT( f( ).i = 123 )
-		end scope
-		hCheckStatus( 0, 0, 2 )
+		begin( )
+			CU_ASSERT( f1( ).i = 123 )
+		check( 2, 0, 2 )
+	end sub
+
+	function f2( byval i as integer ) as DtorUdt
+		function = type( i )
+	end function
+
+	sub testWhileBranch cdecl( )
+		begin( )
+			dim as integer i = 5
+			while( f2( i ).i )
+				i -= 1
+			wend
+		check( 6*2, 0, 6*2 )
+
+		begin( )
+			dim x as DtorUdt
+			dim as integer i = 1
+			x.i = 1
+			while( x.i = f2( i ).i )
+				i += 1
+			wend
+		check( 2*2 + 1, 0, 2*2 + 1 )
+
+		begin( )
+			dim x as DtorUdt
+			dim as integer i = 1
+			x.i = 5
+			while( x.i <> f2( i ).i )
+				i += 1
+			wend
+		check( 5*2 + 1, 0, 5*2 + 1 )
+
+		begin( )
+			dim as integer i = 5
+			do while( f2( i ).i )
+				i -= 1
+			loop
+		check( 6*2, 0, 6*2 )
+
+		begin( )
+			dim x as DtorUdt
+			dim as integer i = 1
+			x.i = 1
+			do while( x.i = f2( i ).i )
+				i += 1
+			loop
+		check( 2*2 + 1, 0, 2*2 + 1 )
+
+		begin( )
+			dim x as DtorUdt
+			dim as integer i = 1
+			x.i = 5
+			do while( x.i <> f2( i ).i )
+				i += 1
+			loop
+		check( 5*2 + 1, 0, 5*2 + 1 )
+
+		begin( )
+			dim as integer i = 5
+			do
+				i -= 1
+			loop while( f2( i ).i )
+		check( 5*2, 0, 5*2 )
+
+		begin( )
+			dim x as DtorUdt
+			dim as integer i = 1
+			x.i = 1
+			do
+				i += 1
+			loop while( x.i = f2( i ).i )
+		check( 1*2 + 1, 0, 1*2 + 1 )
+
+		begin( )
+			dim x as DtorUdt
+			dim as integer i = 5
+			x.i = 1
+			do
+				i -= 1
+			loop while( x.i <> f2( i ).i )
+		check( 4*2 + 1, 0, 4*2 + 1 )
+	end sub
+
+	sub testUntilBranch cdecl( )
+		begin( )
+			dim as integer i = 0
+			do until( f2( i ).i )
+				i += 1
+			loop
+		check( 2*2, 0, 2*2 )
+
+		begin( )
+			dim x as DtorUdt
+			dim as integer i = 1
+			x.i = 5
+			do until( x.i = f2( i ).i )
+				i += 1
+			loop
+		check( 5*2 + 1, 0, 5*2 + 1 )
+
+		begin( )
+			dim x as DtorUdt
+			dim as integer i = 1
+			x.i = 1
+			do until( x.i <> f2( i ).i )
+				i += 1
+			loop
+		check( 2*2 + 1, 0, 2*2 + 1 )
+
+		begin( )
+			dim as integer i = 0
+			do
+				i += 1
+			loop until( f2( i ).i )
+		check( 1*2, 0, 1*2 )
+
+		begin( )
+			dim x as DtorUdt
+			dim as integer i = 1
+			x.i = 5
+			do
+				i += 1
+			loop until( x.i = f2( i ).i )
+		check( 4*2 + 1, 0, 4*2 + 1 )
+
+		begin( )
+			dim x as DtorUdt
+			dim as integer i = 1
+			x.i = 1
+			do
+				i += 1
+			loop until( x.i <> f2( i ).i )
+		check( 1*2 + 1, 0, 1*2 + 1 )
 	end sub
 end namespace
 
@@ -383,11 +725,7 @@ namespace dtorOnlyDoubleIntUdt
 		totaldtors += 1
 		with( status(hFindSlot( @this )) )
 			'' DtorUdt has no ctor, so fake it
-			if( .ctors = 0 ) then
-				totalctors += 1
-				.ctors += 1
-			end if
-			.dtors += 1
+			totalctors += 1
 		end with
 	end destructor
 
@@ -399,28 +737,21 @@ namespace dtorOnlyDoubleIntUdt
 	end sub
 
 	sub testParamInit cdecl( )
-		hClearStatus( )
-		scope
+		begin( )
 			test2( )
-		end scope
-		hCheckStatus( 0, 0, 2 )
+		check( 5, 0, 5 )
 
-		hClearStatus( )
-		scope
+		begin( )
 			dim x as DtorUdt = test1( type<DtorUdt>( 123 ) )
-		end scope
-		hCheckStatus( 0, 0, 2 )
+		check( 4, 0, 4 )
 	end sub
 
 	sub testAnon cdecl( )
-		hClearStatus( )
-		scope
+		begin( )
 			CU_ASSERT( (type<DtorUdt>( 123, 456 )).i = 123 )
-		end scope
-		hCheckStatus( 0, 0, 1 )
+		check( 1, 0, 1 )
 
-		hClearStatus( )
-		scope
+		begin( )
 			dim x as DtorUdt = ( 123, 456 )
 			CU_ASSERT( x.i = 123 )
 			CU_ASSERT( x.j = 456 )
@@ -429,11 +760,9 @@ namespace dtorOnlyDoubleIntUdt
 			x = type<DtorUdt>( 123, 456 )
 			CU_ASSERT( x.i = 123 )
 			CU_ASSERT( x.j = 456 )
-		end scope
-		hCheckStatus( 0, 0, 2 )
+		check( 2, 0, 2 )
 
-		hClearStatus( )
-		scope
+		begin( )
 			dim x as DtorUdt = ( 123, 456 )
 			CU_ASSERT( x.i = 123 )
 			CU_ASSERT( x.j = 456 )
@@ -442,28 +771,156 @@ namespace dtorOnlyDoubleIntUdt
 			x = type( 123, 456 )
 			CU_ASSERT( x.i = 123 )
 			CU_ASSERT( x.j = 456 )
-		end scope
-		hCheckStatus( 0, 0, 2 )
+		check( 2, 0, 2 )
 
-		hClearStatus( )
-		scope
+		begin( )
 			dim x as DtorUdt = ( 123, 456 )
 			CU_ASSERT( iif( x.i = (type<DtorUdt>( 123, 456 )).i, 1, 2 ) = 1 )
 			CU_ASSERT( iif( x.j = (type<DtorUdt>( 123, 456 )).j, 2, 1 ) = 2 )
-		end scope
-		hCheckStatus( 0, 0, 3 )
+		check( 3, 0, 3 )
 	end sub
 
-	function f( ) as DtorUdt
+	function f1( ) as DtorUdt
 		function = type( 123 )
 	end function
 
 	sub testResult cdecl( )
-		hClearStatus( )
-		scope
-			CU_ASSERT( f( ).i = 123 )
-		end scope
-		hCheckStatus( 0, 0, 2 )
+		begin( )
+			CU_ASSERT( f1( ).i = 123 )
+		check( 2, 0, 2 )
+	end sub
+
+	function f2( byval i as integer ) as DtorUdt
+		function = type( i )
+	end function
+
+	sub testWhileBranch cdecl( )
+		begin( )
+			dim as integer i = 5
+			while( f2( i ).i )
+				i -= 1
+			wend
+		check( 6*2, 0, 6*2 )
+
+		begin( )
+			dim x as DtorUdt
+			dim as integer i = 1
+			x.i = 1
+			while( x.i = f2( i ).i )
+				i += 1
+			wend
+		check( 2*2 + 1, 0, 2*2 + 1 )
+
+		begin( )
+			dim x as DtorUdt
+			dim as integer i = 1
+			x.i = 5
+			while( x.i <> f2( i ).i )
+				i += 1
+			wend
+		check( 5*2 + 1, 0, 5*2 + 1 )
+
+		begin( )
+			dim as integer i = 5
+			do while( f2( i ).i )
+				i -= 1
+			loop
+		check( 6*2, 0, 6*2 )
+
+		begin( )
+			dim x as DtorUdt
+			dim as integer i = 1
+			x.i = 1
+			do while( x.i = f2( i ).i )
+				i += 1
+			loop
+		check( 2*2 + 1, 0, 2*2 + 1 )
+
+		begin( )
+			dim x as DtorUdt
+			dim as integer i = 1
+			x.i = 5
+			do while( x.i <> f2( i ).i )
+				i += 1
+			loop
+		check( 5*2 + 1, 0, 5*2 + 1 )
+
+		begin( )
+			dim as integer i = 5
+			do
+				i -= 1
+			loop while( f2( i ).i )
+		check( 5*2, 0, 5*2 )
+
+		begin( )
+			dim x as DtorUdt
+			dim as integer i = 1
+			x.i = 1
+			do
+				i += 1
+			loop while( x.i = f2( i ).i )
+		check( 1*2 + 1, 0, 1*2 + 1 )
+
+		begin( )
+			dim x as DtorUdt
+			dim as integer i = 5
+			x.i = 1
+			do
+				i -= 1
+			loop while( x.i <> f2( i ).i )
+		check( 4*2 + 1, 0, 4*2 + 1 )
+	end sub
+
+	sub testUntilBranch cdecl( )
+		begin( )
+			dim as integer i = 0
+			do until( f2( i ).i )
+				i += 1
+			loop
+		check( 2*2, 0, 2*2 )
+
+		begin( )
+			dim x as DtorUdt
+			dim as integer i = 1
+			x.i = 5
+			do until( x.i = f2( i ).i )
+				i += 1
+			loop
+		check( 5*2 + 1, 0, 5*2 + 1 )
+
+		begin( )
+			dim x as DtorUdt
+			dim as integer i = 1
+			x.i = 1
+			do until( x.i <> f2( i ).i )
+				i += 1
+			loop
+		check( 2*2 + 1, 0, 2*2 + 1 )
+
+		begin( )
+			dim as integer i = 0
+			do
+				i += 1
+			loop until( f2( i ).i )
+		check( 1*2, 0, 1*2 )
+
+		begin( )
+			dim x as DtorUdt
+			dim as integer i = 1
+			x.i = 5
+			do
+				i += 1
+			loop until( x.i = f2( i ).i )
+		check( 4*2 + 1, 0, 4*2 + 1 )
+
+		begin( )
+			dim x as DtorUdt
+			dim as integer i = 1
+			x.i = 1
+			do
+				i += 1
+			loop until( x.i <> f2( i ).i )
+		check( 1*2 + 1, 0, 1*2 + 1 )
 	end sub
 end namespace
 
@@ -473,18 +930,26 @@ private sub ctor( ) constructor
 	fbcu.add_test( "11", @classlikeIntegerUdt.testParamInit )
 	fbcu.add_test( "12", @classlikeIntegerUdt.testAnon )
 	fbcu.add_test( "13", @classlikeIntegerUdt.testResult )
+	fbcu.add_test( "16", @classlikeIntegerUdt.testWhileBranch )
+	fbcu.add_test( "17", @classlikeIntegerUdt.testUntilBranch )
 
 	fbcu.add_test( "21", @classlikeDoubleIntUdt.testParamInit )
 	fbcu.add_test( "22", @classlikeDoubleIntUdt.testAnon )
 	fbcu.add_test( "23", @classlikeDoubleIntUdt.testResult )
+	fbcu.add_test( "26", @classlikeDoubleIntUdt.testWhileBranch )
+	fbcu.add_test( "27", @classlikeDoubleIntUdt.testUntilBranch )
 
 	fbcu.add_test( "31", @dtorOnlyIntegerUdt.testParamInit )
 	fbcu.add_test( "32", @dtorOnlyIntegerUdt.testAnon )
 	fbcu.add_test( "33", @dtorOnlyIntegerUdt.testResult )
+	fbcu.add_test( "36", @dtorOnlyIntegerUdt.testWhileBranch )
+	fbcu.add_test( "37", @dtorOnlyIntegerUdt.testUntilBranch )
 
 	fbcu.add_test( "41", @dtorOnlyDoubleIntUdt.testParamInit )
 	fbcu.add_test( "42", @dtorOnlyDoubleIntUdt.testAnon )
 	fbcu.add_test( "43", @dtorOnlyDoubleIntUdt.testResult )
+	fbcu.add_test( "46", @dtorOnlyDoubleIntUdt.testWhileBranch )
+	fbcu.add_test( "47", @dtorOnlyDoubleIntUdt.testUntilBranch )
 end sub
 
 end namespace

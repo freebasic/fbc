@@ -1048,6 +1048,10 @@ function astBuildBranch _
 
 			n->op.ex = next_label
 
+			if( isinverse ) then
+				n->op.op = astGetInverseLogOp( n->op.op )
+			end if
+
 			'' do the dtor calls and branch, and also emit the next label
 			n = astNewLINK( n, astDtorListFlush( FALSE ) )
 			n = astNewLINK( n, astNewBRANCH( AST_OP_JMP, label, NULL ) )
