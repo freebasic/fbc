@@ -1060,7 +1060,7 @@ function astBuildBranch _
 		n = astBuildVarAssign( temp, expr )
 
 		'' 2. call dtors
-		n = astNewLINK( n, astDtorListFlush( TRUE ) )
+		n = astNewLINK( n, astDtorListFlush( ) )
 
 		'' 3. branch if tempvar = zero
 		expr = astNewVAR( temp )
@@ -1090,7 +1090,7 @@ sub astDtorListAdd( byval sym as FBSYMBOL ptr )
 	end if
 end sub
 
-function astDtorListFlush( byval del_nodes as integer ) as ASTNODE ptr
+function astDtorListFlush( ) as ASTNODE ptr
     dim as AST_DTORLIST_ITEM ptr n = any, p = any
 	dim as ASTNODE ptr t = any
 
@@ -1101,9 +1101,7 @@ function astDtorListFlush( byval del_nodes as integer ) as ASTNODE ptr
 		t = astNewLINK( t, astBuildVarDtorCall( n->sym ) )
 
 		p = listGetPrev( n )
-		if( del_nodes ) then
-			listDelNode( @ast.dtorlist, n )
-		end if
+		listDelNode( @ast.dtorlist, n )
 		n = p
 	wend
 

@@ -271,7 +271,7 @@ private function astUpdate( byval n as ASTNODE ptr ) as ASTNODE ptr
 
 	'' Destroy temporaries if needed
 	if( ast.flushdtorlist ) then
-		n = astNewLINK( n, astDtorListFlush( TRUE ) )
+		n = astNewLINK( n, astDtorListFlush( ) )
 	end if
 
 	function = n
