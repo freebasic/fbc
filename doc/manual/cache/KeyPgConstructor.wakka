@@ -28,6 +28,10 @@ Called automatically when a class or user defined type is created
 
 	Constructors are called when declaring global or local static instances of ##//typename//## and when allocating ##//typename//## dynamically using the ##[[KeyPgOpNew New]]## operator. See examples below for different constructor syntaxes.
 
+	A copy ##**Constructor**## is a special constructor that initializes a new object from an existing object. There are three general cases where the copy ##**Constructor**## is called: when instantiating one object and initializing it with another object (in one instruction), when passing an object by value, when an object is returned from a function (by value).
+	A copy ##**Constructor**## must be defined if the shallow implicit copy constructor is not sufficient. This happens in cases when the object manages dynamically allocated memory or other resources which need to be specially constructed or copied (for example if a member pointer points to dynamically allocated memory, the implicit copy constructor will simply do an implicit pointer construction and a copy of value instead of allocate memory and then perform the copy of data).
+		Note: Even if is defined an explicit default ##**Constructor**##, it is never called by the implicit copy constructor.
+
 	##**Constructor**## can be also called directly from the ##//typename//## instance like the other member methods (##[[KeyPgSub Sub]]##) and with the same syntax, i.e. using a member access operator, e.g. ##//obj//.**Constructor**(//parameters//)##. No ##[[KeyPgDestructor destructor]]## is called, and the old object state - if any - is overwritten without any of its old members being destroyed, which could cause memory/resource leaks.
 
 {{fbdoc item="ex"}}
@@ -142,6 +146,37 @@ print "  x1 = "; x1
 print "  x2 = "; x2
 print "  x3 = "; x3
 print "  x4 = "; x4
+%%
+Example of copy constructor.
+{{fbdoc item="filename" value="examples/manual/udt/copyconstructor.bas"}}%%(freebasic)
+Type UDT
+  Dim As String Ptr p                     ''pointer to string
+  Declare Constructor ()                  ''default constructor
+  Declare Constructor (Byref rhs As UDT)  ''copy constructor
+  Declare Destructor ()                   ''destructor
+End Type
+
+Constructor UDT ()
+  This.p = Callocate(1, Sizeof(String))
+End Constructor
+
+Constructor UDT (Byref rhs As UDT)
+  This.p = Callocate(1, Sizeof(String))
+  *This.p = *rhs.p
+End Constructor
+
+Destructor UDT ()
+  *This.p = ""
+  Deallocate This.p
+End Destructor
+
+
+Dim As UDT u0
+*u0.p = "copy constructor exists"
+Dim As UDT u = u0
+*u0.p = ""  ''to check the independance of the result copy with the object copied
+Print *u.p
+Sleep
 %%
 {{fbdoc item="lang"}}
 	- Object-related features are supported only in the //[[CompilerOptlang -lang fb]]// option

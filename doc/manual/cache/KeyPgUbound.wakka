@@ -18,8 +18,10 @@ Returns the upper bound of an array's dimension
  
 {{fbdoc item="desc"}}
 	##**Ubound**## returns the largest value that can be used as an index into a particular dimension of an array.
-
-	Array dimensions are numbered from one (##1##) to ##//n//##, where ##//n//## is the total number of dimensions. If ##//dimension//## is not specified, ##**Ubound**## will return the upper bound of the first dimension. If ##//dimension//## is less than one (##1##) or greater than the total number of dimensions (##//n//##) in the array, the result is undefined.
+	
+	Array dimensions are numbered from one (##1##) to ##//n//##, where ##//n//## is the total number of dimensions. If ##//dimension//## is not specified, ##**Ubound**## will return the upper bound of the first dimension.
+	
+	If ##//dimension//## is zero (0), the result is the number of dimensions in the array. For any other cases of ##//dimension//## being outside of the valid range ##1##..##//n//##, the result is ##0##. Combined with the result of Lbound() for such cases, this can be used to detect the number of dimensions of variable-length arrays, for example whether a given dimension exists, or whether the array is empty (zero dimensions).
 
 {{fbdoc item="ex"}}
 
@@ -58,6 +60,38 @@ arraysize = arraylen * SizeOf( Long )
 
 Print "Number of elements in array:", arraylen    '2 * 3 * 4 * 5 = 120
 Print "Number of bytes used in array:", arraysize '120 * 4 = 480
+%%
+
+{{fbdoc item="filename" value="examples/manual/array/ubound4.bas"}}%%(freebasic)
+'' determining whether an array is empty
+dim array() as integer
+
+print "lbound: "; lbound( array ), "ubound: "; ubound( array )  '' 1 and 0
+
+if lbound( array ) > ubound( array ) then
+	print "array is empty"
+else
+	print "array is not empty"
+end if
+%%
+
+{{fbdoc item="filename" value="examples/manual/array/ubound5.bas"}}%%(freebasic)
+sub printArrayDimensions( array() as integer )
+	print "dimensions: " & ubound( array, 0 )
+
+	'' For each dimension...
+	for d as integer = lbound( array, 0 ) to ubound( array, 0 )
+		print "dimension " & d & ": " & lbound( array, d ) & " to " & ubound( array, d )
+	next
+end sub
+
+dim array() as integer
+printArrayDimensions( array() )
+
+print "---"
+
+redim array(10 to 11, 20 to 22)
+printArrayDimensions( array() )
 %%
 
 {{fbdoc item="see"}}

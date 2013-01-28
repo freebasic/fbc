@@ -14,10 +14,12 @@ Built-in type providing run-time type information
 	[[KeyPgDim dim]] //variable// [[KeyPgAs as]] **object**
 ##
 {{fbdoc item="desc"}}
-	**Object** is a built-in type which provides run-time type information for all types derived from it using ##[[KeyPgExtends Extends]]##, allowing them to be used with ##[[KeyPgOpIs Operator Is]]##.
+	**Object** is a built-in type which provides run-time type information for all types derived from it using ##[[KeyPgExtends Extends]]##, allowing them to be used with ##[[KeyPgOpIs Operator Is]]##, and to support ##[[KeyPgVirtual Virtual]]## and ##[[KeyPgAbstract Abstract]]## methods.
+
+	Extending the built-in **Object** type allows to add an extra hidden vtable pointer field at the top of the ##[[KeyPgType Type]]##. The vtable is used to dispatch ##[[KeyPgVirtual Virtual]]##  and ##[[KeyPgAbstract Abstract]]## methods and to access information for run-time type identification used by ##[[KeyPgOpIs Operator Is]]##.
 
 {{fbdoc item="ex"}}
-	See the ##[[KeyPgOpIs Operator Is]]## page
+	See the ##[[KeyPgOpIs Operator Is]]## page, the ##[[KeyPgVirtual Virtual]]## and ##[[KeyPgAbstract Abstract]]## pages.
 
 {{fbdoc item="lang"}}
 	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Object""**##.
@@ -26,7 +28,9 @@ Built-in type providing run-time type information
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgOpIs Operator Is]]##
 	- ##[[KeyPgExtends Extends]]##
+	- ##[[KeyPgOpIs Operator Is]]##
+	- ##[[KeyPgVirtual Virtual]]##
+	- ##[[KeyPgAbstract Abstract]]##
 
 {{fbdoc item="back" value="CatPgStdDataTypes|Standard Data Types"}}

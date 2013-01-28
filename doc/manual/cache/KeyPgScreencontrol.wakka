@@ -126,46 +126,92 @@ Sets or gets internal graphics library settings
 '' include fbgfx.bi for some useful definitions
 #include "fbgfx.bi"
 
-using fb
+'' use FB namespace for easy access to types/constants
+using FB
 
 dim e as EVENT
-dim as integer x, y, pressed, col
+dim as integer x0, y0, x, y
+dim as integer shakes = 0
 dim as any ptr img
 
-screenres 384, 64, 32,, GFX_SHAPED_WINDOW
+screenres 320, 200, 32
+print "Click to shake window"
 
-'' create a fancy window shape
-img = imagecreate(48,8)
-draw string img, (0, 0), "GfxLib"
-for y = 0 to 63
-	for x = 0 to 383
-		col = point(x \ 8, y \ 8, img)
-		if (col <> rgb(255, 0, 255)) then
-			col = rgb((x + y) and &hFF, (x + y) and &hFF, (x + y) and &hFF)
-		end if
-		pset (x, y), col
-	next x
-next y
+'' find window coordinates
+screencontrol GET_WINDOW_POS, x0, y0
 
-pressed = 0
 do
-	if (screenevent(@e)) then
-		select case e.type
-		case EVENT_MOUSE_BUTTON_PRESS
-			pressed = -1
-		case EVENT_MOUSE_BUTTON_RELEASE
-			pressed = 0
-		case EVENT_MOUSE_MOVE
-			if (pressed) then
-				screencontrol GET_WINDOW_POS, x, y
-				screencontrol SET_WINDOW_POS, x + e.dx, y + e.dy
-			end if
-		end select
+
+	if (shakes > 0) then
+	    
+	    '' do a shake of the window
+
+	    if (shakes > 1) then
+
+	        '' move window to a random position near its original coordinates
+	        x = x0 + int(32 * (rnd() - 0.5))
+	        y = y0 + int(32 * (rnd() - 0.5))
+	        screencontrol SET_WINDOW_POS, x, y
+
+	    else
+
+	        '' move window back to its original coordinates
+	        screencontrol SET_WINDOW_POS, x0, y0
+
+	    end if
+
+	    shakes -= 1
+
 	end if
+
+	if (screenevent(@e)) then
+	    select case e.type
+	    
+	    '' user pressed the mouse button
+	    case EVENT_MOUSE_BUTTON_PRESS
+
+	        if (shakes = 0) then
+	            '' set to do 20 shakes
+	            shakes = 20
+
+	            '' find current window coordinates to shake around
+	            screencontrol GET_WINDOW_POS, x0, y0
+	        end if
+
+	    '' user closed the window or pressed a key
+	    case EVENT_WINDOW_CLOSE, EVENT_KEY_PRESS
+	        '' exit to end of program
+	        exit do
+
+	    end select
+	end if
+
+	'' free up CPU for other programs
 	sleep 5
-loop while not multikey(1)
+
+loop
 %%
 
+{{fbdoc item="filename" value="examples/manual/gfx/screencontrol2.bas"}}%%(freebasic)
+'' include fbgfx.bi for some useful definitions
+#include "fbgfx.bi"
+
+dim as string driver
+
+#ifdef __FB_WIN32__
+'' set graphics driver to GDI (Win32 only), before calling ScreenRes
+screencontrol FB.SET_DRIVER_NAME, "GDI"
+#endif
+
+screenres 640, 480
+
+'' fetch graphics driver name and display it to user
+screencontrol FB.GET_DRIVER_NAME, driver
+print "Graphics driver name: " & driver
+
+'' wait for a keypress before closing the window
+sleep
+%%
 
 {{fbdoc item="lang"}}
 	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Screencontrol""**##.

@@ -30,6 +30,7 @@ End Sub
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
+	- ##[[KeyPgVisPrivate Private:]]## (Access Control)
 	- ##[[KeyPgPublic Public]]##
 	- ##[[KeyPgOptionprivate Option Private]]##
 	- ##[[KeyPgSub Sub]]##

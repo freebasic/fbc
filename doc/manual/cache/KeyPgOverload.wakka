@@ -21,6 +21,8 @@ Specifies that a procedure name can be overloaded
 
 	##**Overload**## is not necessary in member procedure declarations, as they are always implicitly overloaded.
 
+	When calling an overloaded procedure, the compiler determines the most appropriate definition to use among a set of compatible candidates, by comparing the argument types used to call the procedure with the parameter types specified in the definitions. If no match or an ambiguous match is found, the compiler generates an error at compile time.
+
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/procs/overload.bas"}}%%(freebasic)
 DECLARE FUNCTION SUM OVERLOAD (A AS INTEGER,B AS INTEGER) AS INTEGER

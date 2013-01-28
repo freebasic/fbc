@@ -1,6 +1,6 @@
 {{fbdoc item="title" value="FreeBASIC and QBasic"}}----
 
-==FreeBASIC the Successor==
+==""FreeBASIC"" the Successor==
 	""FreeBASIC"" is designed as an official successor of sorts to a high level compiler for MS-DOS titled "[[QuickBASIC]]", which compiled BASIC code, an easy-to-read programming language created in 1964 by John Kemeny and Thomas Kurtz.  "QB" was packaged with a user-friendly IDE and interpreter that made it very easy to write custom applications.  This line of products is officially continued today in the form of "Visual Basic", part of Microsoft's Visual Studio .NET programming suite.
 
 

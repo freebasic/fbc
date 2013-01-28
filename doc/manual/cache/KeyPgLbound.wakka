@@ -19,10 +19,11 @@ Returns the lower bound of an array's dimension
 {{fbdoc item="desc"}}
 	##**Lbound**## returns the lowest value that can be used as an index into a particular dimension of an array.
 
-	Array dimensions are numbered from one (1) to //n//, where //n// is the total number of dimensions. If ##//dimension//## is not specified, ##**Lbound**## will return the lower bound of the first dimension. If ##//dimension//## is less than one (1) or greater than the total number of dimensions (//n//) in the array, the result is undefined.
+	Array dimensions are numbered from one (##1##) to ##//n//##, where ##//n//## is the total number of dimensions. If ##//dimension//## is not specified, ##**Lbound**## will return the lower bound of the first dimension.
+	
+	If ##//dimension//## is zero (##0##) or another value outside of the valid range ##1##..##//n//##, the result is ##1##. Combined with the result of Ubound() for such cases, this can be used to detect the number of dimensions of variable-length arrays, for example whether a given dimension exists, or whether the array is empty (zero dimensions).
 
 {{fbdoc item="ex"}}
-
 {{fbdoc item="filename" value="examples/manual/array/lbound.bas"}}%%(freebasic)
 dim array(-10 to 10, 5 to 15, 1 to 2) as integer
 

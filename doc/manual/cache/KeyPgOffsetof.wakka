@@ -11,10 +11,13 @@ Returns the offset of a field within a type.
 	##//typename//##
 		Name of the type as defined using the ##[[KeyPgType Type...End Type]]## statements.
 	##//fieldname//##
-		Name of the field as defined within the type.
+		Name of the field as defined within the type (or within the base types for a derived type).
 
 {{fbdoc item="desc"}}
-	##**Offsetof**## will return the location ##//fieldname//## as offset in bytes from the beginning of ##//typename//##.
+	For a non-derived type, ##**Offsetof**## will return the location ##//fieldname//## as offset in bytes from the beginning of ##//typename//##.
+
+	For a derived type, ##**Offsetof**## will return the location ##//fieldname//## as offset in bytes from the beginning of its highest base type.
+	Note: if a member of the base type is overridden by a new member, the offset of the old member cannot be accessed from the derived type.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/misc/offsetof.bas"}}%%(freebasic)

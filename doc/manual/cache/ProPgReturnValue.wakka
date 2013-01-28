@@ -1,5 +1,8 @@
 {{fbdoc item="title" value="Returning Values"}}----
-**Returning Values** refers to the ability of a ##[[KeyPgFunction Function]]## procedure to have a value when the function finishes such that the value can be used in an expression or assigned to a variable.
+
+{{fbdoc item="section" value="Returning Values"}}
+
+... refers to the ability of a ##[[KeyPgFunction Function]]## procedure to have a value when the function finishes such that the value can be used in an expression or assigned to a variable.
 
 The value of a function can be returned in three ways:
 
@@ -39,10 +42,33 @@ Function myFunction () As Integer
 End Function
 %%
 
+{{fbdoc item="section" value="Returning References"}}
+	Function results can also be returned by reference, rather than by value. The semantics are quite different.
+	
+	When assigning a ##Byref## function result through a ##Function = variable## or ##Return variable## statement, the function does not copy and return the variable's value. Instead, it returns a reference to that variable. The caller of the function can modify the variable through the reference returned from the function, without having to use pointers manually. This is very much like ##[[KeyPgByref Byref]]## parameters.
+	
+	For more information, refer to: ##[[KeyPgByrefFunction Byref (function results)]]##
+
+{{fbdoc item="section" value="Manually returning pointers as-is from Byref functions"}}
+	By specifying the ##Byval## keyword in front of the result variable in the ##Function = variable## or ##Return variable## statements, an address (usually stored in a pointer) can be passed directly as-is, forcing the ##Byref## function result to reference the same memory location which the address pointed to. For example:
+
+{{fbdoc item="filename" value="examples/manual/proguide/procs/byrefresult-explicit-byval.bas"}}%%(freebasic)
+dim shared i as integer = 123
+
+function f( ) byref as integer
+	dim pi as integer ptr = @i
+
+	function = byval pi
+
+	'' or, with RETURN it would look like this:
+	return byval pi
+end function
+
+print i, f( )
+%%
+
 {{fbdoc item="see"}}
 	- ##[[KeyPgFunction Function]]##
+	- ##[[KeyPgByrefFunction Byref (function results)]]##
 
 {{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}
-   
-
-   

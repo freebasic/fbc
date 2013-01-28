@@ -173,6 +173,15 @@ int main() {
 /* foo */##>><<##' foo
 /' foo '/##>>
 
+{{fbdoc item="subsect" value="compile-time checks"}}
+<<###if //a//##
+###elif //b//##
+###else##
+###endif##>><<###if //a//##
+###elseif //b//##
+###else##
+###endif##>>
+
 {{fbdoc item="subsect" value="compile-time target system checks"}}
 <<###ifdef _WIN32##>><<###ifdef ""__FB_WIN32__""##>>
 
@@ -183,4 +192,3 @@ int main() {
 <<##gcc foo.c -o foo##>><<##fbc foo.bas##>>
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}
-   

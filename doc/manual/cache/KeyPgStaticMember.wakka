@@ -1,23 +1,21 @@
 {{fbdoc item="title" value="STATIC (Member)"}}----
-Declaration specifier for a static member procedure.
+Declare a static member procedure
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgType Type]] //typename//
-		[[KeyPgDeclare declare]] **Static** //membertype// //membername// ...
+		[[KeyPgDeclare Declare]] **Static** [[KeyPgSub Sub]]|[[KeyPgFunction Function]] ...
 	End Type
+	
+	**Static** [[KeyPgSub Sub]]|[[KeyPgFunction Function]] //typename// ...
+		...
+	End [[KeyPgSub Sub]]|[[KeyPgFunction Function]]
 ##
-{{fbdoc item="param"}}
-	##//typename//##
-		name of a user defined data type			
-	##//membertype//##
-		##[[KeyPgMemberSub Sub]]## or ##[[KeyPgMemberFunction Function]]##.
-	##//membername// ...##
-		Name of the member to declare or define with parameter list or return value following.
-
 {{fbdoc item="desc"}}
-	When declaring a member procedure, ##**Static**## specifies that the member procedure not have an implicit instance argument passed to it, and thus can only access values passed to it. Static member procedures may access Private or Protected members in their type, but to call procedures you must pass the Object as an additional first parameter. You may call a static member procedure anywhere in your code just like any other procedure in a type, i.e. //variable of the type//.//static procedure name//(//arguments//). The address of a static member function can also be assigned to a function pointer using the standard [[KeyPgOpProcptr ProcPtr()]] or the [[KeyPgOpAt @ Operator]] usage. 
-
-	##**Static**## is allowed in front of member procedure bodies, not just in the declaration (the coherence with declaration is checked by compiler). When the procedure body is far from the declaration, it may be suitable to have here the information.
+	##**Static**## methods do not have an implicit [[KeyPgThis This]] instance argument passed to them. This allows them to be used like normal non-member procedures (for example with callback procedure pointers), the only difference being that they are encapsulated in the //typename// namespace and have access to //typename//'s [[KeyPgVisPrivate Private]] or [[KeyPgVisProtected Protected]] members.
+	
+	Static methods can be called directly anywhere in code, like normal non-member procedures, or on objects of type //typename//, similar to non-static methods, however either way there is no implicit or explicit [[KeyPgThis This]] (or explicit [[KeyPgBase Base]]) access possible from within a static method.
+	
+	For member procedures with ##**Static**## in their declaration, ##**Static**## can also be specified on the corresponding procedure bodies, for improved code readability.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/udt/static.bas"}}%%(freebasic)

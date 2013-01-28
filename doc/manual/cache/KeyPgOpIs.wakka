@@ -18,6 +18,8 @@ Checks whether an object is compatible to a type derived from its runtime-type
 	
 	The ##**Is**## operator is successful not only for the real-type (the "lowest"), but also for its base-types, as long as they are still below the type of //expression// (the runtime-type). In order to determine the real-type, all possibilities from lowest to highest must be checked.
 
+	Extending the built-in ##[[KeyPgObject Object]]## type allows to add an extra hidden vtable pointer field at the top of the ##[[KeyPgType Type]]##. The vtable is used to access information for run-time type identification used by the ##**Is**## operator.
+
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/operator/is.bas"}}%%(freebasic)
 type Vehicle extends object

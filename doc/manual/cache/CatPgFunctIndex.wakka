@@ -452,11 +452,13 @@ List of ""FreeBASIC"" keywords sorted by the function they perform.
 
 {{fbdoc item="section" value="Procedures"}}
 	- {{fbdoc item="keyword" value="KeyPgDots|..."}}
+	- {{fbdoc item="keyword" value="KeyPgAbstract|ABSTRACT (member)"}}
 	- {{fbdoc item="keyword" value="KeyPgAlias|ALIAS"}}
 	- {{fbdoc item="keyword" value="KeyPgAny|ANY"}}
 	- {{fbdoc item="keyword" value="KeyPgBaseInit|BASE (initialization)"}}
 	- {{fbdoc item="keyword" value="KeyPgBase|BASE (member access)"}}
-	- {{fbdoc item="keyword" value="KeyPgByref|BYREF"}}
+	- {{fbdoc item="keyword" value="KeyPgByref|BYREF (parameters)"}}
+	- {{fbdoc item="keyword" value="KeyPgByrefFunction|BYREF (function results)"}}
 	- {{fbdoc item="keyword" value="KeyPgByval|BYVAL"}}
 	- {{fbdoc item="keyword" value="KeyPgCall|CALL"}}
 	- {{fbdoc item="keyword" value="KeyPgCdecl|CDECL"}}
@@ -472,6 +474,7 @@ List of ""FreeBASIC"" keywords sorted by the function they perform.
 	- {{fbdoc item="keyword" value="KeyPgNaked|NAKED"}}
 	- {{fbdoc item="keyword" value="KeyPgOperator|OPERATOR"}}
 	- {{fbdoc item="keyword" value="KeyPgOverload|OVERLOAD"}}
+	- {{fbdoc item="keyword" value="KeyPgOverride|OVERRIDE"}}
 	- {{fbdoc item="keyword" value="KeyPgPascal|PASCAL"}}
 	- {{fbdoc item="keyword" value="KeyPgVisPrivate|PRIVATE  (Member)"}}
 	- {{fbdoc item="keyword" value="KeyPgVisProtected|PROTECTED  (Member)"}}
@@ -485,6 +488,7 @@ List of ""FreeBASIC"" keywords sorted by the function they perform.
 	- {{fbdoc item="keyword" value="KeyPgVaArg|VA_ARG"}}
 	- {{fbdoc item="keyword" value="KeyPgVaFirst|VA_FIRST"}}
 	- {{fbdoc item="keyword" value="KeyPgVaNext|VA_NEXT"}}
+	- {{fbdoc item="keyword" value="KeyPgVirtual|VIRTUAL (member)"}}
 
 {{fbdoc item="section" value="Program flow"}}
 	- {{fbdoc item="keyword" value="KeyPgContinue|CONTINUE"}}

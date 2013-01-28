@@ -1,0 +1,8 @@
+{{fbdoc item="title" value="GLib"}}----
+Universal utility library most commonly used with [[ExtLibgtk GTK+]] and GNOME. Provides a main loop implementation for event-based programming, portable multi-threading, portable file/pipe I/O, many utilities such as command line parsing, timers, XML parsing, regular expressions, Unicode manipulation, and also general-purpose data structures.
+
+Website: http://developer.gnome.org/glib/
+Platforms supported: Linux, ""Win32""
+Headers to include: glib.bi
+
+{{fbdoc item="back" value="ExtLibTOC|External Library Table of Contents"}}

@@ -1,0 +1,31 @@
+{{fbdoc item="title" value="BYREF (function results)"}}----
+Specifies that a function result is returned by reference
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgFunction Function]] //name// ( //parameter-list// ) **Byref** [[KeyPgAs As]] //[[DataType datatype]]//
+##
+{{fbdoc item="desc"}}
+	Causes the function result to be returned by reference, rather than by value. A function returning ##**Byref**## will return the address of a variable, instead of making a copy like when returning by value. This allows the caller of the function to modify the variable which the function result points to.
+	
+	If ##**Byref**## is not specified, the default is to return the function result by value.
+	
+	Functions with ##**Byref**## result should not return local variables from the function, because they will be destroyed upon returning from the function, invalidating any pointer or reference to them. To help with writing safe code, the compiler will show an error message when a local variable is used with ##Function = x## assignments and ##Return x## statements.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/procs/byref-result.bas"}}%%(freebasic)
+function f( ) byref as zstring
+	'' This string will be returned by reference, no copy will be created.
+	function = "abcd"
+end function
+
+print f( )
+%%
+
+{{fbdoc item="diff"}}
+	- New to ""FreeBASIC""
+
+{{fbdoc item="see"}}
+	- [[ProPgReturnValue Returning values]]
+	- ##[[KeyPgByref Byref (parameters)]]##
+
+{{fbdoc item="back" value="CatPgProcedures|Procedures"}}

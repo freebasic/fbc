@@ -1,0 +1,41 @@
+{{fbdoc item="title" value="OVERRIDE"}}----
+Method attribute; specifies that a method must override a virtual
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgType Type]] //typename// [[KeyPgExtends Extends]] //basename//
+		...
+		[[KeyPgDeclare Declare]] [[KeyPgMemberSub Sub]]|[[KeyPgMemberFunction Function]]|[[KeyPgOperator Operator]]|[[KeyPgProperty Property]]|[[KeyPgDestructor Destructor]] ... ( [//parameterlist//] ) [[[KeyPgAs As]] //[[DataType datatype]]//] **Override**
+		...
+	End Type
+##
+{{fbdoc item="desc"}}
+	In method declarations, ##**Override**## can be used to indicate that this method is expected to override a [[KeyPgVirtual virtual]] or [[KeyPgAbstract abstract]] method from the base class. Then the compiler will show an error if the method does not override anything (only a non-static method can override a virtual or abstract method).
+	
+	Use of ##**Override**## is not mandatory to override a virtual or abstract method, it is highly recommended, as it will help prevent inadvertent errors (name/signature not matching).
+	
+	##**Override**## can only be specified on the method declaration in the UDT block, but not on the method body, because it is just a compile-time check in the context of the inheritance hierarchy, and does not affect the method in any way.
+	
+	##**Override**## is only recognized as a keyword at the end of member procedure declarations. It can still be used as identifier elsewhere.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/udt/override.bas"}}%%(freebasic)
+type A extends object
+	declare virtual sub f1( )
+	declare virtual function f2( ) as integer
+end type
+
+type B extends A
+	declare sub f1( ) override
+	declare function f2( ) as integer override
+end type
+
+'' Note: define four procedure bodies to compile without error
+%%
+
+{{fbdoc item="diff"}}
+	- New to ""FreeBASIC""
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgVirtual Virtual]]##, ##[[KeyPgAbstract Abstract]]##
+
+{{fbdoc item="back" value="CatPgProcedures|Procedures"}}
