@@ -299,23 +299,21 @@ private sub hStrArgToStrPtrParam _
 
 	'' var- or fixed-len string param?
 	if( typeGetClass( arg_dtype ) = FB_DATACLASS_STRING ) then
-
 		'' if it's a function returning a STRING, it will have to be
 		'' deleted automagically when the proc being called return
-		if( arg->class = AST_NODECLASS_CALL ) then
+		if( astIsCALL( arg ) ) then
 			'' create a temp string to pass as parameter (no copy is
 			'' done at rtlib, as the returned string is a temp too)
 			n->l = hAllocTmpString( parent, arg, FALSE )
 			arg_dtype = FB_DATATYPE_STRING
-        end if
+		end if
 
 		'' not fixed-len? deref var-len
 		if( arg_dtype <> FB_DATATYPE_FIXSTR ) then
 			n->l = astBuildStrPtr( n->l )
-
-        '' fixed-len..
-        else
-            '' get the address of
+		'' fixed-len..
+		else
+			'' get the address of
 			n->l = astNewCONV( typeAddrOf( FB_DATATYPE_CHAR ), _
     					   	   NULL, _
 						   	   astNewADDROF( n->l ) )
@@ -325,9 +323,9 @@ private sub hStrArgToStrPtrParam _
 
 	'' w- or z-string
 	else
-    	select case arg_dtype
-    	'' zstring? take the address of
-    	case FB_DATATYPE_CHAR
+		select case arg_dtype
+		'' zstring? take the address of
+		case FB_DATATYPE_CHAR
 			n->l = astNewADDROF( arg )
 			astGetFullType( n ) = astGetFullType( astGetLeft( n ) )
 
@@ -337,7 +335,7 @@ private sub hStrArgToStrPtrParam _
 			'' if it's a function returning a WSTRING, it will have to be
 			'' deleted automatically when the proc being called return
 			if( astIsCALL( arg ) ) then
-            	n->l = hAllocTmpWstrPtr( parent, arg )
+				n->l = hAllocTmpWstrPtr( parent, arg )
 
 			'' not a temporary..
 			else
@@ -385,7 +383,8 @@ private sub hCheckByrefParam _
 	select case as const t->class
 	'' var, array index or pointer? pass as-is (assuming the type was already checked)
 	case AST_NODECLASS_VAR, AST_NODECLASS_IDX, _
-		 AST_NODECLASS_FIELD, AST_NODECLASS_DEREF
+	     AST_NODECLASS_FIELD, AST_NODECLASS_DEREF, _
+	     AST_NODECLASS_IIF
 
 	case else
 		'' string? do nothing (ie: functions returning var-len string's)
@@ -995,12 +994,13 @@ private function hCheckParam _
 					end if
 				end if
 
-				'' param diff than arg can't passed by ref if it's a var/array/ptr
+				'' param diff than arg can't be passed by ref if it's a var/array/ptr
 				'' (cannot pass a bytevar (1 byte) to BYREF INTEGER (4 bytes) param,
 				''  that could cause a segfault)
 				select case as const t->class
 				case AST_NODECLASS_VAR, AST_NODECLASS_IDX, _
-				     AST_NODECLASS_FIELD, AST_NODECLASS_DEREF
+				     AST_NODECLASS_FIELD, AST_NODECLASS_DEREF, _
+				     AST_NODECLASS_IIF
 					hParamError( parent )
 					exit function
 				end select

@@ -1,35 +1,12 @@
 '' AST conditional IF nodes
-'' l = cond expr, r = link(true expr, false expr)
-''
-'' chng: sep/2004 written [v1ctor]
+'' l = VAR access to the iif temp var
+'' r = LINK( condexpr, LINK( truexpr, falsexpr ) )
 
 #include once "fb.bi"
 #include once "fbint.bi"
 #include once "ir.bi"
 #include once "ast.bi"
 #include once "rtl.bi"
-
-private sub hPrepareWstring _
-	( _
-		byval n       as ASTNODE ptr, _
-		byref truexpr as ASTNODE ptr, _
-		byref falsexpr as ASTNODE ptr _
-	)
-
-	'' the wstring must be allocated() but size
-	'' is unknown at compile-time, do:
-
-	'' dim temp as wstring ptr
-	n->sym = symbAddTempVar( typeAddrOf( FB_DATATYPE_WCHAR ) )
-
-	'' Deallocate it at the end of the statement
-	symbSetIsWstring( n->sym )
-	astDtorListAdd( n->sym )
-
-	truexpr  = astBuildFakeWstringAssign( n->sym, truexpr )
-	falsexpr = astBuildFakeWstringAssign( n->sym, falsexpr )
-
-end sub
 
 function hCheckTypes _
 	( _
@@ -255,19 +232,34 @@ function astNewIIF _
 	function = n
 
 	if( typeGetDtAndPtrOnly( dtype ) = FB_DATATYPE_WCHAR ) then
-		hPrepareWstring( n, truexpr, falsexpr )
+		'' Just like with SELECT CASE, for iif() on wstrings we need
+		'' a temporary wstring, but since the length of the iif() result
+		'' is unknown at compile-time it must be a dynamically allocated
+		'' buffer. For [z]strings we can use a normal STRING temp var,
+		'' but since there is no such thing for wstrings yet,
+		'' the "fake wstring", i.e. a wchar ptr, must be used.
+
+		'' dim temp as wstring ptr (doesn't need to be cleared)
+		n->sym = symbAddTempVar( typeAddrOf( FB_DATATYPE_WCHAR ) )
+		symbSetIsWstring( n->sym )
+
+		'' Register for cleanup at the end of the statement
+		astDtorListAdd( n->sym )
+
+		n->l = astBuildFakeWstringAccess( n->sym )
+
+		truexpr  = astBuildFakeWstringAssign( n->sym, truexpr )
+		falsexpr = astBuildFakeWstringAssign( n->sym, falsexpr )
 	else
 		n->sym = symbAddTempVar( dtype, subtype )
 
-		if( typeGetClass( dtype ) = FB_DATACLASS_STRING ) then
-			'' Clear the temp string before the conditional branch
-			condexpr = astNewLINK( astBuildTempVarClear( n->sym ), condexpr, FALSE )
-			'' And destroy it at the end of the statement
-			astDtorListAdd( n->sym )
-		end if
+		'' Register for cleanup at the end of the statement
+		astDtorListAdd( n->sym )
 
-		'' Using AST_OPOPT_ISINI to get a StrAssign() immediately for strings,
-		'' because this is nested in an IIF node, causing astOptAssignment() to miss it
+		n->l = astNewVAR( n->sym )
+
+		'' Using AST_OPOPT_ISINI to get fb_StrInit()'s instead of fb_StrAssign()'s,
+		'' because those would require the temp string to be cleared manually...
 		truexpr  = astNewASSIGN( astNewVAR( n->sym ), truexpr , AST_OPOPT_ISINI )
 		falsexpr = astNewASSIGN( astNewVAR( n->sym ), falsexpr, AST_OPOPT_ISINI )
 	end if
@@ -285,23 +277,22 @@ function astNewIIF _
 		falsexpr = astNewLINK( falsexpr, astDtorListFlush( falsecookie ) )
 	end if
 
-	n->l = condexpr
-	n->r = astNewLINK( truexpr, falsexpr )
+	n->r = astNewLINK( condexpr, astNewLINK( truexpr, falsexpr ) )
 
 	n->iif.falselabel = falselabel
 
 end function
 
 function astLoadIIF( byval n as ASTNODE ptr ) as IRVREG ptr
-	dim as ASTNODE ptr l = any, r = any, t = any
+	dim as ASTNODE ptr condexpr = any, truexpr = any, falsexpr = any
 	dim as FBSYMBOL ptr exitlabel = any
 
-	l = n->l
-	r = n->r
+	assert( n->r->class = AST_NODECLASS_LINK )
+	assert( n->r->r->class = AST_NODECLASS_LINK )
 
-	if( (l = NULL) or (r = NULL) ) then
-		return NULL
-	end if
+	condexpr = n->r->l
+	truexpr  = n->r->r->l
+	falsexpr = n->r->r->r
 
 	if( ast.doemit ) then
 		'' IR can't handle inter-blocks and live vregs atm, so any
@@ -314,14 +305,14 @@ function astLoadIIF( byval n as ASTNODE ptr ) as IRVREG ptr
 	end if
 
 	'' condition
-	astLoad( l )
-	astDelNode( l )
+	astLoad( condexpr )
+	astDelNode( condexpr )
 
-	''
 	exitlabel = symbAddLabel( NULL )
 
 	'' true expr
-	astLoad( r->l )
+	astLoad( truexpr )
+	astDelNode( truexpr )
 
 	if( ast.doemit ) then
 		irEmitBRANCH( AST_OP_JMP, exitlabel )
@@ -339,28 +330,18 @@ function astLoadIIF( byval n as ASTNODE ptr ) as IRVREG ptr
 		'''''end if
 	end if
 
-	astLoad( r->r )
+	astLoad( falsexpr )
+	astDelNode( falsexpr )
 
 	if( ast.doemit ) then
 		'' exit
 		irEmitLABELNF( exitlabel )
 	end if
 
-	if( symbGetIsWstring( n->sym ) ) then
-		t = astBuildFakeWstringAccess( n->sym )
-	else
-		t = astNewVAR( n->sym )
-	end if
+	'' Return the VAR access on the temp var
+	function = astLoad( n->l )
+	astDelNode( n->l )
 
-	' If assigning to a string, it needs to be forced to an address of string
-	if typeGetClass( astGetFullType( t ) ) = FB_DATACLASS_STRING then
-		t = astNewADDROF( t )
-	end if
-
-	function = astLoad( t )
-	astDelNode( t )
-
-	astDelNode( r->l )
-	astDelNode( r->r )
-	astDelNode( r )
+	astDelNode( n->r->r )
+	astDelNode( n->r )
 end function

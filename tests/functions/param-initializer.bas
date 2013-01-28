@@ -185,6 +185,26 @@ namespace strings
 		hScopeChecks( tester( ) )
 	end namespace
 
+	namespace byrefZstringFromIif0
+		dim shared as integer c = 0
+
+		sub tester( byref z as zstring = iif( c, "a", "bb" ) )
+			CU_ASSERT( z = "bb" )
+		end sub
+
+		hScopeChecks( tester( ) )
+	end namespace
+
+	namespace byrefZstringFromIif1
+		dim shared as integer c = 1
+
+		sub tester( byref z as zstring = iif( c, "a", "bb" ) )
+			CU_ASSERT( z = "a" )
+		end sub
+
+		hScopeChecks( tester( ) )
+	end namespace
+
 	namespace addrofWstrLiteral
 		sub tester( byval pw as const wstring ptr = @wstr( "w1" ) )
 			CU_ASSERT( *pw = wstr( "w1" ) )
@@ -198,6 +218,26 @@ namespace strings
 
 		sub tester( byval pw as wstring ptr = @w )
 			CU_ASSERT( *pw = "w2" )
+		end sub
+
+		hScopeChecks( tester( ) )
+	end namespace
+
+	namespace byrefWstringFromIif0
+		dim shared as integer c = 0
+
+		sub tester( byref w as wstring = iif( c, wstr( "a" ), wstr( "bb" ) ) )
+			CU_ASSERT( w = wstr( "bb" ) )
+		end sub
+
+		hScopeChecks( tester( ) )
+	end namespace
+
+	namespace byrefWstringFromIif1
+		dim shared as integer c = 1
+
+		sub tester( byref w as wstring = iif( c, wstr( "a" ), wstr( "bb" ) ) )
+			CU_ASSERT( w = wstr( "a" ) )
 		end sub
 
 		hScopeChecks( tester( ) )
@@ -319,8 +359,12 @@ private sub ctor( ) constructor
 	fbcu.add_test( "strings 05", @strings.byrefStringFromIif1    .test )
 	fbcu.add_test( "strings 06", @strings.addrofZstrLiteral      .test )
 	fbcu.add_test( "strings 07", @strings.addrofZstrGlobal       .test )
-	fbcu.add_test( "strings 08", @strings.addrofWstrLiteral      .test )
-	fbcu.add_test( "strings 09", @strings.addrofWstrGlobal       .test )
+	fbcu.add_test( "strings 08", @strings.byrefZstringFromIif0   .test )
+	fbcu.add_test( "strings 09", @strings.byrefZstringFromIif1   .test )
+	fbcu.add_test( "strings 10", @strings.addrofWstrLiteral      .test )
+	fbcu.add_test( "strings 11", @strings.addrofWstrGlobal       .test )
+	fbcu.add_test( "strings 12", @strings.byrefWstringFromIif0   .test )
+	fbcu.add_test( "strings 13", @strings.byrefWstringFromIif1   .test )
 
 	fbcu.add_test( "new[] ctorlist", @vectorNewCtorList          .test )
 end sub

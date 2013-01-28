@@ -987,7 +987,7 @@ private function astIncOffset _
 			function = astIncOffset( n->r, ofs )
 		end if
 
-	case AST_NODECLASS_FIELD
+	case AST_NODECLASS_FIELD, AST_NODECLASS_IIF
 		function = astIncOffset( n->l, ofs )
 
 	case AST_NODECLASS_CONV
@@ -2189,7 +2189,7 @@ private function hIsMultStrConcat _
 				end if
 			end if
 
-		case AST_NODECLASS_FIELD
+		case AST_NODECLASS_FIELD, AST_NODECLASS_IIF
 			select case l->l->class
 			case AST_NODECLASS_VAR, AST_NODECLASS_IDX
 
@@ -2235,7 +2235,7 @@ private function hOptStrAssignment _
 				end if
 			end if
 
-		case AST_NODECLASS_FIELD
+		case AST_NODECLASS_FIELD, AST_NODECLASS_IIF
 			select case as const l->l->class
 			case AST_NODECLASS_VAR, AST_NODECLASS_IDX
 
@@ -2384,7 +2384,7 @@ function astOptAssignment _
 	select case as const t->class
 	case AST_NODECLASS_VAR, AST_NODECLASS_IDX, AST_NODECLASS_DEREF
 
-	case AST_NODECLASS_FIELD
+	case AST_NODECLASS_FIELD, AST_NODECLASS_IIF
 		'' isn't it a bitfield?
 		if( astGetDataType( t->l ) = FB_DATATYPE_BITFIELD ) then
 			exit function
