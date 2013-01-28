@@ -147,6 +147,26 @@ namespace strings
 		hScopeChecks( tester( ) )
 	end namespace
 
+	namespace byrefStringFromIif0
+		dim shared as integer c = 0
+
+		sub tester( byref s as string = iif( c, "a", "bb" ) )
+			CU_ASSERT( s = "bb" )
+		end sub
+
+		hScopeChecks( tester( ) )
+	end namespace
+
+	namespace byrefStringFromIif1
+		dim shared as integer c = 1
+
+		sub tester( byref s as string = iif( c, "a", "bb" ) )
+			CU_ASSERT( s = "a" )
+		end sub
+
+		hScopeChecks( tester( ) )
+	end namespace
+
 	namespace addrofZstrLiteral
 		sub tester( byval pz as const zstring ptr = @"z1" )
 			CU_ASSERT( *pz = "z1" )
@@ -295,10 +315,12 @@ private sub ctor( ) constructor
 	fbcu.add_test( "strings 01", @strings.byrefLiteral           .test )
 	fbcu.add_test( "strings 02", @strings.addrofGlobal           .test )
 	fbcu.add_test( "strings 03", @strings.stringResult           .test )
-	fbcu.add_test( "strings 04", @strings.addrofZstrLiteral      .test )
-	fbcu.add_test( "strings 05", @strings.addrofZstrGlobal       .test )
-	fbcu.add_test( "strings 06", @strings.addrofWstrLiteral      .test )
-	fbcu.add_test( "strings 07", @strings.addrofWstrGlobal       .test )
+	fbcu.add_test( "strings 04", @strings.byrefStringFromIif0    .test )
+	fbcu.add_test( "strings 05", @strings.byrefStringFromIif1    .test )
+	fbcu.add_test( "strings 06", @strings.addrofZstrLiteral      .test )
+	fbcu.add_test( "strings 07", @strings.addrofZstrGlobal       .test )
+	fbcu.add_test( "strings 08", @strings.addrofWstrLiteral      .test )
+	fbcu.add_test( "strings 09", @strings.addrofWstrGlobal       .test )
 
 	fbcu.add_test( "new[] ctorlist", @vectorNewCtorList          .test )
 end sub

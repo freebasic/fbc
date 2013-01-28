@@ -1082,10 +1082,24 @@ end function
 
 sub astDtorListAdd( byval sym as FBSYMBOL ptr )
 	dim as AST_DTORLIST_ITEM ptr n = any
+	dim as integer add = any
 
 	assert( symbIsVar( sym ) )
 
-	if( symbHasDtor( sym ) ) then
+	'' Everything with a destructor (classes)
+	add = symbHasDtor( sym )
+
+	'' But also dynamic [w]strings
+	select case( symbGetType( sym ) )
+	case FB_DATATYPE_STRING
+		add = TRUE
+
+	case typeAddrOf( FB_DATATYPE_WCHAR )
+		add or= symbGetIsWstring( sym )
+
+	end select
+
+	if( add ) then
 		n = listNewNode( @ast.dtorlist )
 		n->sym = sym
 

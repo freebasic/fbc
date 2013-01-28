@@ -22,19 +22,9 @@ private sub hPrepareWstring _
 	'' dim temp as wstring ptr
 	n->sym = symbAddTempVar( typeAddrOf( FB_DATATYPE_WCHAR ) )
 
-	'' Remove temp flag to have it considered for dtor calling
-	symbUnsetIsTemp( n->sym )
-
-	'' Mark it as "dynamic wstring" so it will be deallocated with
-	'' WstrFree() at scope breaks/end
+	'' Deallocate it at the end of the statement
 	symbSetIsWstring( n->sym )
-
-	'' Pretent "= ANY" was used - even though the fake wstring
-	'' is pretended to have a constructor, we don't need the
-	'' default clear done by astNewDECL()
-	symbSetDontInit( n->sym )
-
-	astAdd( astNewDECL( n->sym, NULL ) )
+	astDtorListAdd( n->sym )
 
 	truexpr  = astBuildFakeWstringAssign( n->sym, truexpr )
 	falsexpr = astBuildFakeWstringAssign( n->sym, falsexpr )
@@ -264,18 +254,16 @@ function astNewIIF _
 	n = astNewNode( AST_NODECLASS_IIF, dtype, subtype )
 	function = n
 
-	n->l = condexpr
-
 	if( typeGetDtAndPtrOnly( dtype ) = FB_DATATYPE_WCHAR ) then
 		hPrepareWstring( n, truexpr, falsexpr )
 	else
 		n->sym = symbAddTempVar( dtype, subtype )
 
 		if( typeGetClass( dtype ) = FB_DATACLASS_STRING ) then
-			'' Remove temp flag to have its dtor called at scope breaks/end
-			'' (needed when the temporary is a string)
-			symbUnsetIsTemp( n->sym )
-			astAdd( astNewDECL( n->sym, NULL ) )
+			'' Clear the temp string before the conditional branch
+			condexpr = astNewLINK( astBuildTempVarClear( n->sym ), condexpr, FALSE )
+			'' And destroy it at the end of the statement
+			astDtorListAdd( n->sym )
 		end if
 
 		'' Using AST_OPOPT_ISINI to get a StrAssign() immediately for strings,
@@ -297,6 +285,7 @@ function astNewIIF _
 		falsexpr = astNewLINK( falsexpr, astDtorListFlush( falsecookie ) )
 	end if
 
+	n->l = condexpr
 	n->r = astNewLINK( truexpr, falsexpr )
 
 	n->iif.falselabel = falselabel
