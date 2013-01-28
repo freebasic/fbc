@@ -124,11 +124,11 @@ end sub
 	a = wstr( ""         ) : b = wstr( ""         ) : checkStr(                  a,         wstr( "" ), c, wstr( "" ), whex )
 #endmacro
 
-private sub hCheckByrefStrings( byref a as string, byref b as string, byref c as string )
+sub hCheckByrefStrings( byref a as string, byref b as string, byref c as string )
 	hStringChecks( a, b, c )
 end sub
 
-private sub hCheckByrefWstrings( byref a as wstring, byref b as wstring, byref c as wstring )
+sub hCheckByrefWstrings( byref a as wstring, byref b as wstring, byref c as wstring )
 	hWstringChecks( a, b, c )
 end sub
 
@@ -192,6 +192,59 @@ sub testStrings cdecl( )
 		dim as wstring * 32+1 a, b, c
 		hCheckByrefWstrings( a, b, c )
 	end scope
+end sub
+
+sub hCheckByvalString( byval s as string, byval expected as zstring ptr )
+	CU_ASSERT( s = *expected )
+end sub
+
+sub hCheckByrefString( byref s as string, byval expected as zstring ptr )
+	CU_ASSERT( s = *expected )
+end sub
+
+sub hCheckByrefZstring( byref z as zstring, byval expected as zstring ptr )
+	CU_ASSERT( z = *expected )
+end sub
+
+sub hCheckByvalZstringPtr( byval pz as zstring ptr, byval expected as zstring ptr )
+	CU_ASSERT( *pz = *expected )
+end sub
+
+sub hCheckByrefWstring( byref w as wstring, byval expected as wstring ptr )
+	CU_ASSERT( w = *expected )
+end sub
+
+sub hCheckByvalWstringPtr( byval pw as wstring ptr, byval expected as wstring ptr )
+	CU_ASSERT( *pw = *expected )
+end sub
+
+sub testStringIifArg cdecl( )
+	hCheckByvalString    ( iif( condtrue , "a", "bb" ), "a"  )
+	hCheckByvalString    ( iif( condfalse, "a", "bb" ), "bb" )
+	hCheckByrefString    ( iif( condtrue , "a", "bb" ), "a"  )
+	hCheckByrefString    ( iif( condfalse, "a", "bb" ), "bb" )
+	hCheckByrefZstring   ( iif( condtrue , "a", "bb" ), "a"  )
+	hCheckByrefZstring   ( iif( condfalse, "a", "bb" ), "bb" )
+	hCheckByvalZstringPtr( iif( condtrue , "a", "bb" ), "a"  )
+	hCheckByvalZstringPtr( iif( condfalse, "a", "bb" ), "bb" )
+	hCheckByrefWstring   ( iif( condtrue , wstr( "a" ), wstr( "bb" ) ), wstr( "a"  ) )
+	hCheckByrefWstring   ( iif( condfalse, wstr( "a" ), wstr( "bb" ) ), wstr( "bb" ) )
+	hCheckByvalWstringPtr( iif( condtrue , wstr( "a" ), wstr( "bb" ) ), wstr( "a"  ) )
+	hCheckByvalWstringPtr( iif( condfalse, wstr( "a" ), wstr( "bb" ) ), wstr( "bb" ) )
+
+	'' Testing some other RTL procs too (besides string assign/concat):
+
+	CU_ASSERT( valint( iif( condtrue , "123", "456" ) ) = 123 )
+	CU_ASSERT( valint( iif( condfalse, "123", "456" ) ) = 456 )
+
+	CU_ASSERT( valint( iif( condtrue , wstr( "123" ), wstr( "456" ) ) ) = 123 )
+	CU_ASSERT( valint( iif( condfalse, wstr( "123" ), wstr( "456" ) ) ) = 456 )
+
+	CU_ASSERT( len( iif( condtrue , "aaaa", "b" ) ) = 4 )
+	CU_ASSERT( len( iif( condfalse, "aaaa", "b" ) ) = 1 )
+
+	CU_ASSERT( len( iif( condtrue , wstr( "aaaa" ), wstr( "b" ) ) ) = 4 )
+	CU_ASSERT( len( iif( condfalse, wstr( "aaaa" ), wstr( "b" ) ) ) = 1 )
 end sub
 
 sub testNested cdecl( )
@@ -477,6 +530,7 @@ sub ctor( ) constructor
 	fbcu.add_test( "int BOP", @testIntBop )
 	fbcu.add_test( "float BOP", @testFloatBop )
 	fbcu.add_test( "string IIF", @testStrings )
+	fbcu.add_test( "string IIF as ARG", @testStringIifArg )
 	fbcu.add_test( "nested IIFs", @testNested )
 	fbcu.add_test( "side effects", @testSideFx )
 	fbcu.add_test( "CONSTness", @testConstness )
