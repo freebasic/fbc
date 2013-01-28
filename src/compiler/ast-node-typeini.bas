@@ -1089,18 +1089,13 @@ function astTypeIniUpdate( byval tree as ASTNODE ptr ) as ASTNODE ptr
 	return astNewLINK( hWalk( tree, NULL ), tree )
 end function
 
-function astTypeIniClone _
-	( _
-		byval tree as ASTNODE ptr _
-	) as ASTNODE ptr
+function astTypeIniClone( byval tree as ASTNODE ptr ) as ASTNODE ptr
+	dim as ASTNODE ptr clone = any
 
-	dim as ASTNODE ptr clone_tree = astCloneTree( tree )
+	assert( astIsTYPEINI( tree ) )
 
-	assert( astIsTYPEINI( clone_tree ) )
-	clone_tree->typeini.scp = NULL
+	clone = astCloneTree( tree )
+	hRelinkTemps( tree, clone )
 
-	hRelinkTemps( tree, clone_tree )
-
-	function = clone_tree
-
+	function = clone
 end function

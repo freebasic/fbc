@@ -260,6 +260,11 @@ function astCloneTree( byval n as ASTNODE ptr ) as ASTNODE ptr
 	case AST_NODECLASS_TYPEINI
 		ast.typeinicnt += 1
 
+		'' The scope that some TYPEINI have is not duplicated,
+		'' much less the temp vars (astTypeIniClone() should be used
+		'' for that), so better not leave a dangling pointer...
+		c->typeini.scp = NULL
+
 #if __FB_DEBUG__
 	case AST_NODECLASS_LIT, AST_NODECLASS_JMPTB
 		'' These nodes contain dynamically allocated memory,

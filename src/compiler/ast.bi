@@ -1022,10 +1022,7 @@ declare function astTypeIniUpdate _
 		byval tree as ASTNODE ptr _
 	) as ASTNODE ptr
 
-declare function astTypeIniClone _
-	( _
-		byval tree as ASTNODE ptr _
-	) as ASTNODE ptr
+declare function astTypeIniClone( byval tree as ASTNODE ptr ) as ASTNODE ptr
 
 declare function astDataStmtBegin( ) as ASTNODE ptr
 
