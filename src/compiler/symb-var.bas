@@ -489,6 +489,10 @@ function symbAddTempVar _
 	static as FBARRAYDIM dTB(0)
 	dim as FB_SYMBOPT options = FB_SYMBOPT_NONE
 
+	'' Cannot create temp z/wstrings this way, since the length is unknown
+	assert( typeGetDtAndPtrOnly( dtype ) <> FB_DATATYPE_CHAR )
+	assert( typeGetDtAndPtrOnly( dtype ) <> FB_DATATYPE_WCHAR )
+
 	if( fbLangOptIsSet( FB_LANG_OPT_SCOPE ) = FALSE ) then
 		options or= FB_SYMBOPT_UNSCOPE
 	end if

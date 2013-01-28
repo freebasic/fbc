@@ -1099,3 +1099,33 @@ function astTypeIniClone( byval tree as ASTNODE ptr ) as ASTNODE ptr
 
 	function = clone
 end function
+
+'' If it's only a TYPEINI_ASSIGN, and not for an UDT with a single field,
+'' then just remove the TYPEINI( TYPEINI_ASSIGN( foo ) ) and return only foo.
+function astTypeIniTryRemove( byval tree as ASTNODE ptr ) as ASTNODE ptr
+	assert( astIsTYPEINI( tree ) )
+
+	function = tree
+
+	'' More than one node?
+	if( tree->l->r ) then
+		exit function
+	end if
+
+	'' First node is not a TYPEINI_ASSIGN?
+	if( tree->l->class <> AST_NODECLASS_TYPEINI_ASSIGN ) then
+		exit function
+	end if
+
+	'' Not the same type (detects the case when the TYPEINI is for an UDT,
+	'' and the first TYPEINI_ASSIGN is for the first field)
+	if( (astGetDataType( tree ) <> astGetDataType( tree->l )) or _
+	    (tree->subtype <> tree->l->subtype) ) then
+		exit function
+	end if
+
+	function = tree->l->l
+	astDelNode( tree->l )
+	astDelNode( tree )
+	ast.typeinicnt -= 1
+end function

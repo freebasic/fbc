@@ -1052,6 +1052,10 @@ private function hCreateOptArg( byval param as FBSYMBOL ptr ) as ASTNODE ptr
 	'' other initializer expressions
 	if( astIsTYPEINI( tree ) ) then
 		tree = astTypeIniClone( tree )
+
+		'' Try to remove the TYPEINI if it was just used as a wrapper
+		'' to handle temp vars
+		tree = astTypeIniTryRemove( tree )
 	else
 		tree = astCloneTree( tree )
 	end if

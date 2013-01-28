@@ -1147,7 +1147,7 @@ namespace dtorOnlyIntegerUdt
 	sub testParamInit cdecl( )
 		begin( )
 			test2( )
-		check( 5, 0, 5 )
+		check( 4, 0, 4 )
 
 		begin( )
 			dim x as DtorUdt = test1( type<DtorUdt>( 123 ) )
@@ -1525,7 +1525,7 @@ namespace dtorOnlyDoubleIntUdt
 	sub testParamInit cdecl( )
 		begin( )
 			test2( )
-		check( 5, 0, 5 )
+		check( 4, 0, 4 )
 
 		begin( )
 			dim x as DtorUdt = test1( type<DtorUdt>( 123 ) )
