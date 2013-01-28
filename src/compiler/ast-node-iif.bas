@@ -199,7 +199,9 @@ function astNewIIF _
 	( _
 		byval condexpr as ASTNODE ptr, _
 		byval truexpr as ASTNODE ptr, _
-		byval falsexpr as ASTNODE ptr _
+		byval truecookie as integer, _
+		byval falsexpr as ASTNODE ptr, _
+		byval falsecookie as integer _
 	) as ASTNODE ptr
 
 	dim as ASTNODE ptr n = any
@@ -280,6 +282,19 @@ function astNewIIF _
 		'' because this is nested in an IIF node, causing astOptAssignment() to miss it
 		truexpr  = astNewASSIGN( astNewVAR( n->sym ), truexpr , AST_OPOPT_ISINI )
 		falsexpr = astNewASSIGN( astNewVAR( n->sym ), falsexpr, AST_OPOPT_ISINI )
+	end if
+
+	'' Add dtor calls to the true/false code paths, behind the assignments
+	'' to the iif temp var, so that any temp vars constructed inside the
+	'' true/false expressions themselves will only be destructed when their
+	'' code path was executed, but not when the other code path was chosen.
+	'' Zero (0) can be given for one or both cookies, in case the
+	'' corresponding expression won't have any temp var to destruct.
+	if( truecookie ) then
+		truexpr  = astNewLINK( truexpr , astDtorListFlush( truecookie  ) )
+	end if
+	if( falsecookie ) then
+		falsexpr = astNewLINK( falsexpr, astDtorListFlush( falsecookie ) )
 	end if
 
 	n->r = astNewLINK( truexpr, falsexpr )

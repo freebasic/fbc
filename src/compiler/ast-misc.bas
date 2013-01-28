@@ -54,13 +54,14 @@ declare sub astReplaceSymbolOnCALL _
 		18446744073709551615ULL _               '' ulongint
 	}
 
-
-'':::::
-sub astMiscInit
-
-	''
+sub astMiscInit( )
 	listInit( @ast.dtorlist, 64, len( AST_DTORLIST_ITEM ), LIST_FLAGS_NOCLEAR )
-
+	with( ast.dtorlistscopes )
+		.cookies = NULL
+		.count = 0
+		.room = 0
+	end with
+	ast.dtorlistcookies = 0
 	ast.flushdtorlist = TRUE
 
 	'' Remap wchar to target-specific type
@@ -68,14 +69,14 @@ sub astMiscInit
 	ast_maxlimitTB(FB_DATATYPE_WCHAR) = ast_maxlimitTB(env.target.wchar)
 
     '' !!!FIXME!!! remap [u]long to [u]longint if target = 64-bit
-
 end sub
 
-'':::::
-sub astMiscEnd
-
+sub astMiscEnd( )
+	with( ast.dtorlistscopes )
+		assert( .count = 0 )
+		deallocate( .cookies )
+	end with
 	listEnd( @ast.dtorlist )
-
 end sub
 
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -1087,10 +1088,20 @@ sub astDtorListAdd( byval sym as FBSYMBOL ptr )
 	if( symbHasDtor( sym ) ) then
 		n = listNewNode( @ast.dtorlist )
 		n->sym = sym
+
+		with( ast.dtorlistscopes )
+			'' If inside a dtorlist scope, mark the new entry
+			'' with the scope's cookie
+			if( .count > 0 ) then
+				n->cookie = .cookies[.count-1]
+			else
+				n->cookie = 0
+			end if
+		end with
 	end if
 end sub
 
-function astDtorListFlush( ) as ASTNODE ptr
+function astDtorListFlush( byval cookie as integer ) as ASTNODE ptr
     dim as AST_DTORLIST_ITEM ptr n = any, p = any
 	dim as ASTNODE ptr t = any
 
@@ -1098,12 +1109,25 @@ function astDtorListFlush( ) as ASTNODE ptr
 	t = NULL
 	n = listGetTail( @ast.dtorlist )
 	while( n )
-		t = astNewLINK( t, astBuildVarDtorCall( n->sym ) )
-
 		p = listGetPrev( n )
-		listDelNode( @ast.dtorlist, n )
+
+		'' astDtorListFlush() shouldn't be called without cookie
+		'' while there still are entries registered with cookies,
+		'' they probably should have been flushed first.
+		assert( iif( cookie = 0, n->cookie = 0, TRUE ) )
+
+		'' Only call dtors for the given cookie number
+		if( n->cookie = cookie ) then
+			t = astNewLINK( t, astBuildVarDtorCall( n->sym ) )
+			listDelNode( @ast.dtorlist, n )
+		end if
+
 		n = p
 	wend
+
+	if( cookie = 0 ) then
+		ast.dtorlistcookies = 0  '' Can aswell be reset
+	end if
 
 	function = t
 end function
@@ -1117,6 +1141,8 @@ sub astDtorListClear( )
 		listDelNode( @ast.dtorlist, n )
 		n = p
     loop
+
+	ast.dtorlistcookies = 0  '' Can aswell be reset
 end sub
 
 sub astDtorListDel( byval sym as FBSYMBOL ptr )
@@ -1132,6 +1158,35 @@ sub astDtorListDel( byval sym as FBSYMBOL ptr )
 		n = listGetPrev( n )
     loop
 end sub
+
+'' Opens a new dtorlist "scope", the newly allocated cookie number will be used
+'' to mark all dtorlist entries added by astDtorListAdd()'s while in this scope.
+sub astDtorListScopeBegin( )
+	'' Allocate new cookie
+	ast.dtorlistcookies += 1
+
+	'' Add new scope with that cookie
+	with( ast.dtorlistscopes )
+		'' No more room? Enlarge the array
+		if( .count = .room ) then
+			.room += 8
+			.cookies = xreallocate( .cookies, sizeof( *.cookies ) * .room )
+		end if
+		.cookies[.count] = ast.dtorlistcookies
+		.count += 1
+	end with
+end sub
+
+'' Closes the scope and returns its cookie number so it can be passed through
+'' to the following astNewIIF()
+function astDtorListScopeEnd( ) as integer
+	'' Pop entry from the scopes stack
+	with( ast.dtorlistscopes )
+		assert( .count > 0 )
+		function = .cookies[.count-1]
+		.count -= 1
+	end with
+end function
 
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' hacks

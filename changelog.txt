@@ -165,6 +165,7 @@ Version 0.25.0:
 - #627: ICE instead of error message on array access without index (or ()'s) nested inside the index of another array access
 - Bad conditional jumps when temporary variable destructors had to be called
 - Double destructor calls for temporary variables from iif() condition expressions
+- Temporary variables in the unreached expression in an IIF() or ANDALSO/ORELSE were always destructed, even if the code path that constructs them was not reached (either 2nd or 3rd operand of IIF(), 2nd operand of ANDALSO/ORELSE)
 
 
 Version 0.24.0:

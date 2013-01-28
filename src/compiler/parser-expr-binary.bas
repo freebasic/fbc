@@ -46,15 +46,12 @@ end function
 '':::::
 ''BoolExpression      =   LogExpression ( (ANDALSO | ORELSE ) LogExpression )* .
 ''
-function cBoolExpression _
-	( _
-		_
-	) as ASTNODE ptr
-
-    dim as integer op = any
+function cBoolExpression( ) as ASTNODE ptr
+	dim as integer op = any, dtorlistcookie = any
     dim as ASTNODE ptr expr = any, logexpr = any
 
     '' LogExpression
+	'' The first operand expression will always be executed
     logexpr = cLogExpression( )
     if( logexpr = NULL ) then
 	   	return NULL
@@ -74,26 +71,25 @@ function cBoolExpression _
 
     	lexSkipToken( )
 
-    	'' LogExpression
-    	expr = cLogExpression( )
-    	if( expr = NULL ) then
+		'' LogExpression
+		'' The second operand expression however only conditionally
+		astDtorListScopeBegin( )
+		expr = cLogExpression( )
+		dtorlistcookie = astDtorListScopeEnd( )
+		if( expr = NULL ) then
 			errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
 			exit do
-    	end if
+		end if
 
-    	'' do operation
-    	logexpr = astNewBOP( op, logexpr, expr )
-
-        if( logexpr = NULL ) then
+		logexpr = astNewBOP( op, logexpr, expr, cptr( any ptr, dtorlistcookie ) )
+		if( logexpr = NULL ) then
 			errReport( FB_ERRMSG_TYPEMISMATCH )
 			'' error recovery: fake a node
 			logexpr = astNewCONSTi( 0 )
-        end if
-
+		end if
     loop
 
 	function = logexpr
-
 end function
 
 '':::::

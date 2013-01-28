@@ -1500,13 +1500,13 @@ function astNewBOP _
 			return rtlMathLongintMOD( dtype, l, ldtype, r, rdtype )
 		end select
 
-	end select
-
 	' Trap ANDALSO, ORELSE, handle floats, and convert to IIF
-	if (op = AST_OP_ANDALSO) or (op = AST_OP_ORELSE) then
+	case AST_OP_ANDALSO, AST_OP_ORELSE
 		dim cmp_op as integer
 		dim cmp_constl as ASTNODE ptr
 		dim cmp_constr as ASTNODE ptr
+
+		'' For ANDALSO/ORELSE, "ex" is the dtorlist cookie
 
 		if ldclass = FB_DATACLASS_FPOINT then
 			cmp_constl = astNewConstf(0.0, FB_DATATYPE_SINGLE)
@@ -1526,11 +1526,11 @@ function astNewBOP _
 		r = astNewBOP( AST_OP_NE, r, cmp_constr )
 
 		if op = AST_OP_ANDALSO then
-			return astNewIIF( l, r, astNewCONSTi( 0 ) )
+			return astNewIIF( l, r, cint( ex ), astNewCONSTi( 0 ), 0 )
 		else
-			return astNewIIF( l, r, astNewCONSTi( -1 ) )
+			return astNewIIF( l, r, cint( ex ), astNewCONSTi( -1 ), 0 )
 		end if
-	end if
+	end select
 
 	'' alloc new node
 	n = astNewNode( AST_NODECLASS_BOP, dtype, subtype )

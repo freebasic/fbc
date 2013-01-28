@@ -458,6 +458,264 @@ namespace classlikeIntegerUdt
 			loop until( x.i <> f2( i ).i )
 		check( 1*2 + 1, 0, 1*2 + 1 )
 	end sub
+
+	sub testIifUnreached cdecl( )
+		begin( )
+			dim as integer i = 0
+			CU_ASSERT( iif( i, (type<ClassUdt>( )).i, 456 ) = 456 )
+		check( 0, 0, 0 )
+
+		begin( )
+			dim as integer i = 1
+			CU_ASSERT( iif( i, (type<ClassUdt>( )).i, 456 ) = 123 )
+		check( 1, 0, 1 )
+
+		begin( )
+			dim as integer i = 1
+			CU_ASSERT( iif( i, 456, (type<ClassUdt>( )).i ) = 456 )
+		check( 0, 0, 0 )
+
+		begin( )
+			dim as integer i = 0
+			CU_ASSERT( iif( i, 456, (type<ClassUdt>( )).i ) = 123 )
+		check( 1, 0, 1 )
+
+		begin( )
+			dim as integer i = 0
+			CU_ASSERT( iif( i, (type<ClassUdt>( )).i, (type<ClassUdt>( )).i ) = 123 )
+		check( 1, 0, 1 )
+
+		begin( )
+			dim as integer i = 1
+			CU_ASSERT( iif( i, (type<ClassUdt>( )).i, (type<ClassUdt>( )).i ) = 123 )
+		check( 1, 0, 1 )
+
+		begin( )
+			dim as integer i = 0, j = 0
+			CU_ASSERT( iif( i, iif( j, (type<ClassUdt>( )).i, 789 ), 456 ) = 456 )
+		check( 0, 0, 0 )
+
+		begin( )
+			dim as integer i = 0, j = 1
+			CU_ASSERT( iif( i, iif( j, (type<ClassUdt>( )).i, 789 ), 456 ) = 456 )
+		check( 0, 0, 0 )
+
+		begin( )
+			dim as integer i = 1, j = 0
+			CU_ASSERT( iif( i, iif( j, (type<ClassUdt>( )).i, 789 ), 456 ) = 789 )
+		check( 0, 0, 0 )
+
+		begin( )
+			dim as integer i = 1, j = 1
+			CU_ASSERT( iif( i, iif( j, (type<ClassUdt>( )).i, 789 ), 456 ) = 123 )
+		check( 1, 0, 1 )
+
+		begin( )
+			dim as integer i = 0, j = 0
+			CU_ASSERT( iif( i, iif( j, 789, (type<ClassUdt>( )).i ), 456 ) = 456 )
+		check( 0, 0, 0 )
+
+		begin( )
+			dim as integer i = 0, j = 1
+			CU_ASSERT( iif( i, iif( j, 789, (type<ClassUdt>( )).i ), 456 ) = 456 )
+		check( 0, 0, 0 )
+
+		begin( )
+			dim as integer i = 1, j = 1
+			CU_ASSERT( iif( i, iif( j, 789, (type<ClassUdt>( )).i ), 456 ) = 789 )
+		check( 0, 0, 0 )
+
+		begin( )
+			dim as integer i = 1, j = 0
+			CU_ASSERT( iif( i, iif( j, 789, (type<ClassUdt>( )).i ), 456 ) = 123 )
+		check( 1, 0, 1 )
+
+		begin( )
+			dim as integer i = 0, j = 0
+			CU_ASSERT( iif( i, _
+					(type<ClassUdt>( )).i + iif( j, _
+									789, _
+									(type<ClassUdt>( )).i ), _
+					456 ) = 456 )
+		check( 0, 0, 0 )
+
+		begin( )
+			dim as integer i = 0, j = 1
+			CU_ASSERT( iif( i, _
+					(type<ClassUdt>( )).i + iif( j, _
+									789, _
+									(type<ClassUdt>( )).i ), _
+					456 ) = 456 )
+		check( 0, 0, 0 )
+
+		begin( )
+			dim as integer i = 1, j = 1
+			CU_ASSERT( iif( i, _
+					(type<ClassUdt>( )).i + iif( j, _
+									789, _
+									(type<ClassUdt>( )).i ), _
+					456 ) = 123 + 789 )
+		check( 1, 0, 1 )
+
+		begin( )
+			dim as integer i = 1, j = 0
+			CU_ASSERT( iif( i, _
+					(type<ClassUdt>( )).i + iif( j, _
+									789, _
+									(type<ClassUdt>( )).i ), _
+					456 ) = 123 + 123 )
+		check( 2, 0, 2 )
+
+		begin( )
+			dim as integer i = 1, j = 0
+			CU_ASSERT( iif( i, _
+					456, _
+					(type<ClassUdt>( )).i + iif( j, _
+									(type<ClassUdt>( )).i, _
+									789 ) ) = 456 )
+		check( 0, 0, 0 )
+
+		begin( )
+			dim as integer i = 1, j = 1
+			CU_ASSERT( iif( i, _
+					456, _
+					(type<ClassUdt>( )).i + iif( j, _
+									(type<ClassUdt>( )).i, _
+									789 ) ) = 456 )
+		check( 0, 0, 0 )
+
+		begin( )
+			dim as integer i = 0, j = 0
+			CU_ASSERT( iif( i, _
+					456, _
+					(type<ClassUdt>( )).i + iif( j, _
+									(type<ClassUdt>( )).i, _
+									789 ) ) = 123 + 789 )
+		check( 1, 0, 1 )
+
+		begin( )
+			dim as integer i = 0, j = 1
+			CU_ASSERT( iif( i, _
+					456, _
+					(type<ClassUdt>( )).i + iif( j, _
+									(type<ClassUdt>( )).i, _
+									789 ) ) = 123 + 123 )
+		check( 2, 0, 2 )
+	end sub
+
+	sub testAndAlsoUnreached cdecl( )
+		begin( )
+			dim as integer i = 0
+			CU_ASSERT( (i andalso (type<ClassUdt>( )).i) = 0 )
+		check( 0, 0, 0 )
+
+		begin( )
+			dim as integer i = 1
+			CU_ASSERT( (i andalso (type<ClassUdt>( )).i) = -1 )
+		check( 1, 0, 1 )
+
+		begin( )
+			dim as integer i = 0, j = 0
+			CU_ASSERT( (i andalso (j andalso (type<ClassUdt>( )).i)) = 0 )
+		check( 0, 0, 0 )
+
+		begin( )
+			dim as integer i = 1, j = 0
+			CU_ASSERT( (i andalso (j andalso (type<ClassUdt>( )).i)) = 0 )
+		check( 0, 0, 0 )
+
+		begin( )
+			dim as integer i = 1, j = 1
+			CU_ASSERT( (i andalso (j andalso (type<ClassUdt>( )).i)) = -1 )
+		check( 1, 0, 1 )
+
+		begin( )
+			dim as integer i = 0
+			CU_ASSERT( ((type<ClassUdt>( )).i andalso i) = -1 )
+		check( 1, 0, 1 )
+
+		begin( )
+			dim as integer i = 1
+			CU_ASSERT( ((type<ClassUdt>( )).i andalso i) = -1 )
+		check( 1, 0, 1 )
+
+		begin( )
+			dim as integer i = 0, j = 0
+			CU_ASSERT( ((j andalso (type<ClassUdt>( )).i) andalso i) = 0 )
+		check( 0, 0, 0 )
+
+		begin( )
+			dim as integer i = 1, j = 0
+			CU_ASSERT( ((j andalso (type<ClassUdt>( )).i) andalso i) = 0 )
+		check( 0, 0, 0 )
+
+		begin( )
+			dim as integer i = 0, j = 1
+			CU_ASSERT( ((j andalso (type<ClassUdt>( )).i) andalso i) = 0 )
+		check( 1, 0, 1 )
+
+		begin( )
+			dim as integer i = 1, j = 1
+			CU_ASSERT( ((j andalso (type<ClassUdt>( )).i) andalso i) = -1 )
+		check( 1, 0, 1 )
+	end sub
+
+	sub testOrElseUnreached cdecl( )
+		begin( )
+			dim as integer i = 1
+			CU_ASSERT( (i orelse (type<ClassUdt>( )).i) = -1 )
+		check( 0, 0, 0 )
+
+		begin( )
+			dim as integer i = 0
+			CU_ASSERT( (i orelse (type<ClassUdt>( )).i) = -1 )
+		check( 1, 0, 1 )
+
+		begin( )
+			dim as integer i = 1, j = 1
+			CU_ASSERT( (i orelse (j orelse (type<ClassUdt>( )).i)) = -1 )
+		check( 0, 0, 0 )
+
+		begin( )
+			dim as integer i = 1, j = 0
+			CU_ASSERT( (i orelse (j orelse (type<ClassUdt>( )).i)) = -1 )
+		check( 0, 0, 0 )
+
+		begin( )
+			dim as integer i = 0, j = 0
+			CU_ASSERT( (i orelse (j orelse (type<ClassUdt>( )).i)) = -1 )
+		check( 1, 0, 1 )
+
+		begin( )
+			dim as integer i = 0
+			CU_ASSERT( ((type<ClassUdt>( )).i orelse i) = -1 )
+		check( 1, 0, 1 )
+
+		begin( )
+			dim as integer i = 1
+			CU_ASSERT( ((type<ClassUdt>( )).i orelse i) = -1 )
+		check( 1, 0, 1 )
+
+		begin( )
+			dim as integer i = 0, j = 1
+			CU_ASSERT( ((j orelse (type<ClassUdt>( )).i) orelse i) = -1 )
+		check( 0, 0, 0 )
+
+		begin( )
+			dim as integer i = 1, j = 1
+			CU_ASSERT( ((j orelse (type<ClassUdt>( )).i) orelse i) = -1 )
+		check( 0, 0, 0 )
+
+		begin( )
+			dim as integer i = 0, j = 0
+			CU_ASSERT( ((j orelse (type<ClassUdt>( )).i) orelse i) = -1 )
+		check( 1, 0, 1 )
+
+		begin( )
+			dim as integer i = 1, j = 0
+			CU_ASSERT( ((j orelse (type<ClassUdt>( )).i) orelse i) = -1 )
+		check( 1, 0, 1 )
+	end sub
 end namespace
 
 namespace classlikeDoubleIntUdt

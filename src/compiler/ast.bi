@@ -324,6 +324,18 @@ end type
 
 type AST_DTORLIST_ITEM
 	sym 			as FBSYMBOL ptr
+
+	'' Some integer used to identify temp vars from expressions nested
+	'' inside the true/false expressions of iif()'s, which may have to be
+	'' destroyed conditionally, depending on which code path was executed.
+	cookie			as integer
+end type
+
+type AST_DTORLIST_SCOPESTACK
+	'' Grow array; the stack of cookies of the current live dtorlist scopes
+	cookies	as integer ptr
+	count	as integer
+	room	as integer
 end type
 
 type ASTVALUE
@@ -346,6 +358,8 @@ type ASTCTX
 	typeinicnt		as integer
 
 	dtorlist		as TLIST						'' temp dtors list
+	dtorlistscopes		as AST_DTORLIST_SCOPESTACK	'' scope stack for astDtorListScope*()
+	dtorlistcookies		as integer			'' Cookie counter used to allocate new cookie numbers
 	flushdtorlist	as integer
 
 	asmtoklist		as TLIST  '' inline ASM token nodes
@@ -737,7 +751,9 @@ declare function astNewIIF _
 	( _
 		byval condexpr as ASTNODE ptr, _
 		byval truexpr as ASTNODE ptr, _
-		byval falsexpr as ASTNODE ptr _
+		byval truecookie as integer, _
+		byval falsexpr as ASTNODE ptr, _
+		byval falsecookie as integer _
 	) as ASTNODE ptr
 
 declare function astNewLINK _
@@ -1213,9 +1229,11 @@ declare sub astReplaceSymbolOnTree _
 	)
 
 declare sub astDtorListAdd( byval sym as FBSYMBOL ptr )
-declare function astDtorListFlush( ) as ASTNODE ptr
+declare function astDtorListFlush( byval cookie as integer = 0 ) as ASTNODE ptr
 declare sub astDtorListClear( )
 declare sub astDtorListDel( byval sym as FBSYMBOL ptr )
+declare sub astDtorListScopeBegin( )
+declare function astDtorListScopeEnd( ) as integer
 
 declare sub astSetType _
 	( _
