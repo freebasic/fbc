@@ -469,6 +469,56 @@ namespace vectorNewCtorList
 	end sub
 end namespace
 
+namespace vectorNewComplexElements
+	dim shared as integer ctors, dtors
+
+	type ClassUdt
+		i as integer
+		declare constructor( )
+		declare destructor( )
+	end type
+
+	constructor ClassUdt( )
+		ctors += 1
+	end constructor
+
+	destructor ClassUdt( )
+		dtors += 1
+	end destructor
+
+	type UDT
+		i as integer
+	end type
+
+	sub test cdecl( )
+		ctors = 0
+		dtors = 0
+		scope
+			var p = new ClassUdt[iif( (type<UDT>( (type<UDT>( 123 )).i )).i = 123, 4, 8 )]
+			CU_ASSERT( ctors = 4 )
+			CU_ASSERT( dtors = 0 )
+			delete[] p
+			CU_ASSERT( ctors = 4 )
+			CU_ASSERT( dtors = 4 )
+		end scope
+		CU_ASSERT( ctors = 4 )
+		CU_ASSERT( dtors = 4 )
+
+		ctors = 0
+		dtors = 0
+		scope
+			var p = new ClassUdt[iif( (type<UDT>( (type<UDT>( 123 )).i )).i = 456, 4, 8 )]
+			CU_ASSERT( ctors = 8 )
+			CU_ASSERT( dtors = 0 )
+			delete[] p
+			CU_ASSERT( ctors = 8 )
+			CU_ASSERT( dtors = 8 )
+		end scope
+		CU_ASSERT( ctors = 8 )
+		CU_ASSERT( dtors = 8 )
+	end sub
+end namespace
+
 '' #3509495 regression test
 namespace deleteDerivedPtr
 	type Parent
@@ -622,6 +672,7 @@ private sub ctor( ) constructor
 	fbcu.add_test( "New as field initializer", @newAsFieldInit.test )
 	fbcu.add_test( "New + side-effects", @newSideFx.test )
 	fbcu.add_test( "New[sidefx]", @vectorNewSideFx.test )
+	fbcu.add_test( "new[iif + TYPEINIs]", @vectorNewComplexElements.test )
 	fbcu.add_test( "Delete on derived UDT pointers", @deleteDerivedPtr.test )
 	fbcu.add_test( "Delete + side-effects 1", @deleteSideFx1.test )
 	fbcu.add_test( "Delete + side-effects 2", @deleteSideFx2.test )

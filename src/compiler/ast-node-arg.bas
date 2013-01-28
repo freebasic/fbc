@@ -1040,12 +1040,7 @@ private function hCheckParam _
 
 end function
 
-'':::::
-private function hCreateOptArg _
-	( _
-		byval param as FBSYMBOL ptr _
-	) as ASTNODE ptr
-
+private function hCreateOptArg( byval param as FBSYMBOL ptr ) as ASTNODE ptr
 	dim as ASTNODE ptr tree = symbGetParamOptExpr( param )
 
 	if( tree = NULL ) then
@@ -1061,11 +1056,7 @@ private function hCreateOptArg _
 		tree = astCloneTree( tree )
 	end if
 
-	'' update the counters
-	astTypeIniUpdCnt( tree )
-
 	function = tree
-
 end function
 
 '':::::

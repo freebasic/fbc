@@ -1089,28 +1089,6 @@ function astTypeIniUpdate( byval tree as ASTNODE ptr ) as ASTNODE ptr
 	return astNewLINK( hWalk( tree, NULL ), tree )
 end function
 
-'':::::
-sub astTypeIniUpdCnt _
-	( _
-		byval tree as ASTNODE ptr _
-	)
-
-	if( astIsTYPEINI( tree ) ) then
-		ast.typeinicnt += 1
-	end if
-
-	'' walk
-	if( tree->l <> NULL ) then
-		astTypeIniUpdCnt( tree->l )
-	end if
-
-	if( tree->r <> NULL ) then
-		astTypeIniUpdCnt( tree->r )
-	end if
-
-end sub
-
-'':::::
 function astTypeIniClone _
 	( _
 		byval tree as ASTNODE ptr _
@@ -1126,5 +1104,3 @@ function astTypeIniClone _
 	function = clone_tree
 
 end function
-
-
