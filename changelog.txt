@@ -169,7 +169,8 @@ Version 0.25.0:
 - When initializing an UDT parameter with any expression except for type(), an extra temporary copy was created everywhere the initializer was inserted
 - type<const UDT>() was not parsed as constructor call if the UDT had constructors, but as plain UDT initializer instead, due to the CONST
 - type() now also works with enums and function pointers (just for consistency, because it already worked with other built-in data types such as integers)
-- A parameter initializer was allowed even if the parameter's type was a forward reference or ANY (which is possible with BYREF parameters)
+- BYREF AS ANY|forward-reference parameters are no longer allowed to have parameter initializers
+- type() is no longer allowed as argument to BYREF AS ANY parameters
 
 
 Version 0.24.0:
