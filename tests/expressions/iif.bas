@@ -304,6 +304,123 @@ sub testNested cdecl( )
 	checkNested( integer ptr, @xa, @xb, @xc )
 end sub
 
+type UDT
+	as integer i, j
+end type
+
+sub hCheckByrefUdt _
+	( _
+		byref x as UDT, _
+		byval expecti as integer, _
+		byval expectj as integer _
+	)
+
+	CU_ASSERT( x.i = expecti )
+	CU_ASSERT( x.j = expectj )
+
+end sub
+
+sub hCheckByvalUdt _
+	( _
+		byval x as UDT, _
+		byval expecti as integer, _
+		byval expectj as integer _
+	)
+
+	CU_ASSERT( x.i = expecti )
+	CU_ASSERT( x.j = expectj )
+
+end sub
+
+sub testUdt cdecl( )
+	dim as UDT a = ( 12, 34 ), b = ( 56, 78 ), c = ( 11, 22 ), d
+
+	CU_ASSERT( (iif( condtrue , a, b )).i = 12 )
+	CU_ASSERT( (iif( condtrue , a, b )).j = 34 )
+	CU_ASSERT( (iif( condfalse, a, b )).i = 56 )
+	CU_ASSERT( (iif( condfalse, a, b )).j = 78 )
+
+	CU_ASSERT( (iif( condtrue , iif( condtrue , a, b ), c )).i = 12 )
+	CU_ASSERT( (iif( condtrue , iif( condtrue , a, b ), c )).j = 34 )
+	CU_ASSERT( (iif( condtrue , iif( condfalse, a, b ), c )).i = 56 )
+	CU_ASSERT( (iif( condtrue , iif( condfalse, a, b ), c )).j = 78 )
+	CU_ASSERT( (iif( condfalse, iif( condtrue , a, b ), c )).i = 11 )
+	CU_ASSERT( (iif( condfalse, iif( condtrue , a, b ), c )).j = 22 )
+	CU_ASSERT( (iif( condfalse, iif( condfalse, a, b ), c )).i = 11 )
+	CU_ASSERT( (iif( condfalse, iif( condfalse, a, b ), c )).j = 22 )
+
+	CU_ASSERT( (iif( condtrue , a, iif( condtrue , b, c ) )).i = 12 )
+	CU_ASSERT( (iif( condtrue , a, iif( condtrue , b, c ) )).j = 34 )
+	CU_ASSERT( (iif( condtrue , a, iif( condfalse, b, c ) )).i = 12 )
+	CU_ASSERT( (iif( condtrue , a, iif( condfalse, b, c ) )).j = 34 )
+	CU_ASSERT( (iif( condfalse, a, iif( condtrue , b, c ) )).i = 56 )
+	CU_ASSERT( (iif( condfalse, a, iif( condtrue , b, c ) )).j = 78 )
+	CU_ASSERT( (iif( condfalse, a, iif( condfalse, b, c ) )).i = 11 )
+	CU_ASSERT( (iif( condfalse, a, iif( condfalse, b, c ) )).j = 22 )
+
+	d = iif( condtrue, a, b )
+	CU_ASSERT( d.i = 12 )
+	CU_ASSERT( d.j = 34 )
+
+	d = iif( condfalse, a, b )
+	CU_ASSERT( d.i = 56 )
+	CU_ASSERT( d.j = 78 )
+
+
+	d = iif( condtrue , iif( condtrue , a, b ), c )
+	CU_ASSERT( d.i = 12 )
+	CU_ASSERT( d.j = 34 )
+
+	d = iif( condtrue , iif( condfalse, a, b ), c )
+	CU_ASSERT( d.i = 56 )
+	CU_ASSERT( d.j = 78 )
+
+	d = iif( condfalse, iif( condtrue , a, b ), c )
+	CU_ASSERT( d.i = 11 )
+	CU_ASSERT( d.j = 22 )
+
+	d = iif( condfalse, iif( condfalse, a, b ), c )
+	CU_ASSERT( d.i = 11 )
+	CU_ASSERT( d.j = 22 )
+
+
+	d = iif( condtrue , a, iif( condtrue , b, c ) )
+	CU_ASSERT( d.i = 12 )
+	CU_ASSERT( d.j = 34 )
+
+	d = iif( condtrue , a, iif( condfalse, b, c ) )
+	CU_ASSERT( d.i = 12 )
+	CU_ASSERT( d.j = 34 )
+
+	d = iif( condfalse, a, iif( condtrue , b, c ) )
+	CU_ASSERT( d.i = 56 )
+	CU_ASSERT( d.j = 78 )
+
+	d = iif( condfalse, a, iif( condfalse, b, c ) )
+	CU_ASSERT( d.i = 11 )
+	CU_ASSERT( d.j = 22 )
+
+	hCheckByrefUdt( iif( condtrue , a, b ), 12, 34 )
+	hCheckByrefUdt( iif( condfalse, a, b ), 56, 78 )
+	hCheckByvalUdt( iif( condtrue , a, b ), 12, 34 )
+	hCheckByvalUdt( iif( condfalse, a, b ), 56, 78 )
+
+	CU_ASSERT( (iif( condtrue , type<UDT>( 11, 22 ), a )).i = 11 )
+	CU_ASSERT( (iif( condtrue , type<UDT>( 11, 22 ), a )).j = 22 )
+	CU_ASSERT( (iif( condfalse, type<UDT>( 11, 22 ), a )).i = 12 )
+	CU_ASSERT( (iif( condfalse, type<UDT>( 11, 22 ), a )).j = 34 )
+
+	CU_ASSERT( (iif( condtrue , a, type<UDT>( 11, 22 ) )).i = 12 )
+	CU_ASSERT( (iif( condtrue , a, type<UDT>( 11, 22 ) )).j = 34 )
+	CU_ASSERT( (iif( condfalse, a, type<UDT>( 11, 22 ) )).i = 11 )
+	CU_ASSERT( (iif( condfalse, a, type<UDT>( 11, 22 ) )).j = 22 )
+
+	CU_ASSERT( (iif( condtrue , type<UDT>( 11, 22 ), type<UDT>( 33, 44 ) )).i = 11 )
+	CU_ASSERT( (iif( condtrue , type<UDT>( 11, 22 ), type<UDT>( 33, 44 ) )).j = 22 )
+	CU_ASSERT( (iif( condfalse, type<UDT>( 11, 22 ), type<UDT>( 33, 44 ) )).i = 33 )
+	CU_ASSERT( (iif( condfalse, type<UDT>( 11, 22 ), type<UDT>( 33, 44 ) )).j = 44 )
+end sub
+
 dim shared as integer fint1calls, fint2calls
 dim shared as integer fstr1calls, fstr2calls
 dim shared as integer fzstr1calls, fzstr2calls
@@ -525,6 +642,302 @@ sub testDifferentTypes cdecl( )
 	CU_ASSERT( iif( condfalse, 0, cptr( integer ptr, 1 ) ) = cptr( integer ptr, 1 ) )
 end sub
 
+namespace iifTempVarDefCtor
+	dim shared as integer ctors
+
+	type CtorUdt
+		i as integer
+		declare constructor( )
+	end type
+
+	constructor CtorUdt( )
+		ctors += 1
+	end constructor
+
+	sub test cdecl( )
+		CU_ASSERT( ctors = 0 )
+		dim as CtorUdt a, b
+		CU_ASSERT( ctors = 2 )
+
+		a.i = 11
+		b.i = 22
+		a = iif( condtrue, a, b )
+		CU_ASSERT( ctors = 3 )
+		CU_ASSERT( a.i = 11 )
+
+		a.i = 11
+		b.i = 22
+		a = iif( condfalse, a, b )
+		CU_ASSERT( ctors = 4 )
+		CU_ASSERT( a.i = 22 )
+
+		a.i = 11
+		a = iif( condtrue, CtorUdt( ), a )
+		CU_ASSERT( ctors = 5 )
+		CU_ASSERT( a.i = 0 )
+
+		a.i = 11
+		a = iif( condfalse, CtorUdt( ), a )
+		CU_ASSERT( ctors = 6 )
+		CU_ASSERT( a.i = 11 )
+
+		a.i = 11
+		a = iif( condtrue, a, CtorUdt( ) )
+		CU_ASSERT( ctors = 7 )
+		CU_ASSERT( a.i = 11 )
+
+		a.i = 11
+		a = iif( condfalse, a, CtorUdt( ) )
+		CU_ASSERT( ctors = 8 )
+		CU_ASSERT( a.i = 0 )
+	end sub
+end namespace
+
+namespace iifTempVarDefCtorAndCopyCtor
+	dim shared as integer defctors, copyctors
+
+	type CtorUdt
+		i as integer
+		declare constructor( )
+		declare constructor( as CtorUdt )
+	end type
+
+	constructor CtorUdt( )
+		defctors += 1
+	end constructor
+
+	constructor CtorUdt( rhs as CtorUdt )
+		copyctors += 1
+		this.i = rhs.i
+	end constructor
+
+	sub test cdecl( )
+		CU_ASSERT(  defctors = 0 )
+		CU_ASSERT( copyctors = 0 )
+
+		dim as CtorUdt a, b
+		CU_ASSERT(  defctors = 2 )
+		CU_ASSERT( copyctors = 0 )
+
+		a.i = 1
+		b.i = 2
+		a = iif( condtrue, a, b )
+		CU_ASSERT(  defctors = 2 )
+		CU_ASSERT( copyctors = 1 )
+		CU_ASSERT( a.i = 1 )
+
+		a.i = 1
+		b.i = 2
+		a = iif( condfalse, a, b )
+		CU_ASSERT(  defctors = 2 )
+		CU_ASSERT( copyctors = 2 )
+		CU_ASSERT( a.i = 2 )
+
+		a.i = 1
+		a = iif( condtrue, CtorUdt( ), a )
+		CU_ASSERT(  defctors = 3 )
+		CU_ASSERT( copyctors = 2 )
+		CU_ASSERT( a.i = 0 )
+
+		a.i = 1
+		a = iif( condfalse, CtorUdt( ), a )
+		CU_ASSERT(  defctors = 3 )
+		CU_ASSERT( copyctors = 3 )
+		CU_ASSERT( a.i = 1 )
+
+		a.i = 1
+		a = iif( condtrue, a, CtorUdt( ) )
+		CU_ASSERT(  defctors = 3 )
+		CU_ASSERT( copyctors = 4 )
+		CU_ASSERT( a.i = 1 )
+
+		a.i = 1
+		a = iif( condfalse, a, CtorUdt( ) )
+		CU_ASSERT(  defctors = 4 )
+		CU_ASSERT( copyctors = 4 )
+		CU_ASSERT( a.i = 0 )
+
+		a.i = 1
+		a = iif( condtrue, type<CtorUdt>( ), a )
+		CU_ASSERT(  defctors = 5 )
+		CU_ASSERT( copyctors = 4 )
+		CU_ASSERT( a.i = 0 )
+
+		a.i = 1
+		a = iif( condfalse, type<CtorUdt>( ), a )
+		CU_ASSERT(  defctors = 5 )
+		CU_ASSERT( copyctors = 5 )
+		CU_ASSERT( a.i = 1 )
+
+		a.i = 1
+		a = iif( condtrue, a, type<CtorUdt>( ) )
+		CU_ASSERT(  defctors = 5 )
+		CU_ASSERT( copyctors = 6 )
+		CU_ASSERT( a.i = 1 )
+
+		a.i = 1
+		a = iif( condfalse, a, type<CtorUdt>( ) )
+		CU_ASSERT(  defctors = 6 )
+		CU_ASSERT( copyctors = 6 )
+		CU_ASSERT( a.i = 0 )
+	end sub
+end namespace
+
+namespace iifTempVarIntCtor
+	dim shared as integer ctors
+
+	type CtorUdt
+		i as integer
+		declare constructor( as integer )
+	end type
+
+	constructor CtorUdt( i as integer )
+		ctors += 1
+		this.i = i
+	end constructor
+
+	sub test cdecl( )
+		CU_ASSERT( ctors = 0 )
+		dim as CtorUdt a = CtorUdt( 0 )
+		CU_ASSERT( ctors = 1 )
+
+		a = iif( condfalse, CtorUdt( 123 ), CtorUdt( 456 ) )
+		CU_ASSERT( ctors = 2 )
+		CU_ASSERT( a.i = 456 )
+
+		a = iif( condtrue, CtorUdt( 123 ), CtorUdt( 456 ) )
+		CU_ASSERT( ctors = 3 )
+		CU_ASSERT( a.i = 123 )
+
+		a = iif( condfalse, type<CtorUdt>( 123 ), type<CtorUdt>( 456 ) )
+		CU_ASSERT( ctors = 4 )
+		CU_ASSERT( a.i = 456 )
+
+		a = iif( condtrue, type<CtorUdt>( 123 ), type<CtorUdt>( 456 ) )
+		CU_ASSERT( ctors = 5 )
+		CU_ASSERT( a.i = 123 )
+	end sub
+end namespace
+
+namespace iifTempVarIntCtorAndCopyCtor
+	dim shared as integer intctors, copyctors
+
+	type CtorUdt
+		i as integer
+		declare constructor( as integer )
+		declare constructor( as CtorUdt )
+	end type
+
+	constructor CtorUdt( i as integer )
+		intctors += 1
+		this.i = i
+	end constructor
+
+	constructor CtorUdt( rhs as CtorUdt )
+		copyctors += 1
+		this.i = rhs.i
+	end constructor
+
+	sub test cdecl( )
+		CU_ASSERT(  intctors = 0 )
+		CU_ASSERT( copyctors = 0 )
+
+		dim as CtorUdt a = CtorUdt( 0 )
+		CU_ASSERT(  intctors = 1 )
+		CU_ASSERT( copyctors = 0 )
+
+		a.i = 456
+		a = iif( condfalse, CtorUdt( 123 ), a )
+		CU_ASSERT(  intctors = 1 )
+		CU_ASSERT( copyctors = 1 )
+		CU_ASSERT( a.i = 456 )
+
+		a.i = 0
+		a = iif( condtrue, CtorUdt( 123 ), a )
+		CU_ASSERT(  intctors = 2 )
+		CU_ASSERT( copyctors = 1 )
+		CU_ASSERT( a.i = 123 )
+
+		a.i = 0
+		a = iif( condfalse, a, CtorUdt( 789 ) )
+		CU_ASSERT(  intctors = 3 )
+		CU_ASSERT( copyctors = 1 )
+		CU_ASSERT( a.i = 789 )
+
+		a.i = 0
+		a = iif( condtrue, a, CtorUdt( 789 ) )
+		CU_ASSERT(  intctors = 3 )
+		CU_ASSERT( copyctors = 2 )
+		CU_ASSERT( a.i = 0 )
+	end sub
+end namespace
+
+namespace iifTempVarDefCtorAndIntCtor
+	dim shared as integer defctors, intctors
+
+	type CtorUdt
+		i as integer
+		declare constructor( )
+		declare constructor( as integer )
+	end type
+
+	constructor CtorUdt( )
+		defctors += 1
+	end constructor
+
+	constructor CtorUdt( i as integer )
+		intctors += 1
+		this.i = i
+	end constructor
+
+	sub test cdecl( )
+		CU_ASSERT( defctors = 0 )
+		CU_ASSERT( intctors = 0 )
+
+		dim as CtorUdt a, b
+		CU_ASSERT( defctors = 2 )
+		CU_ASSERT( intctors = 0 )
+
+		a.i = 1
+		b.i = 2
+		a = iif( condtrue, a, b )
+		CU_ASSERT( defctors = 3 )
+		CU_ASSERT( intctors = 0 )
+		CU_ASSERT( a.i = 1 )
+
+		a.i = 1
+		b.i = 2
+		a = iif( condfalse, a, b )
+		CU_ASSERT( defctors = 4 )
+		CU_ASSERT( intctors = 0 )
+		CU_ASSERT( a.i = 2 )
+
+		a.i = 1
+		a = iif( condtrue, CtorUdt( 123 ), a )
+		CU_ASSERT( defctors = 4 )
+		CU_ASSERT( intctors = 1 )
+		CU_ASSERT( a.i = 123 )
+
+		a.i = 1
+		a = iif( condfalse, CtorUdt( 123 ), a )
+		CU_ASSERT( defctors = 5 )
+		CU_ASSERT( intctors = 1 )
+		CU_ASSERT( a.i = 1 )
+
+		a.i = 1
+		a = iif( condtrue, a, CtorUdt( 123 ) )
+		CU_ASSERT( defctors = 6 )
+		CU_ASSERT( intctors = 1 )
+		CU_ASSERT( a.i = 1 )
+
+		a.i = 1
+		a = iif( condfalse, a, CtorUdt( 123 ) )
+		CU_ASSERT( defctors = 6 )
+		CU_ASSERT( intctors = 2 )
+		CU_ASSERT( a.i = 123 )
+	end sub
+end namespace
+
 sub ctor( ) constructor
 	fbcu.add_suite( "tests/expressions/iif" )
 	fbcu.add_test( "int BOP", @testIntBop )
@@ -532,9 +945,15 @@ sub ctor( ) constructor
 	fbcu.add_test( "string IIF", @testStrings )
 	fbcu.add_test( "string IIF as ARG", @testStringIifArg )
 	fbcu.add_test( "nested IIFs", @testNested )
+	fbcu.add_test( "UDT IIF", @testUdt )
 	fbcu.add_test( "side effects", @testSideFx )
 	fbcu.add_test( "CONSTness", @testConstness )
 	fbcu.add_test( "different types", @testDifferentTypes )
+	fbcu.add_test( "iif() ctors 1", @iifTempVarDefCtor.test )
+	fbcu.add_test( "iif() ctors 2", @iifTempVarDefCtorAndCopyCtor.test )
+	fbcu.add_test( "iif() ctors 3", @iifTempVarIntCtor.test )
+	fbcu.add_test( "iif() ctors 4", @iifTempVarIntCtorAndCopyCtor.test )
+	fbcu.add_test( "iif() ctors 5", @iifTempVarDefCtorAndIntCtor.test )
 end sub
 
 end namespace

@@ -716,6 +716,26 @@ namespace classlikeIntegerUdt
 			CU_ASSERT( ((j orelse (type<ClassUdt>( )).i) orelse i) = -1 )
 		check( 1, 0, 1 )
 	end sub
+
+	sub testIifTempVar cdecl( )
+		begin( )
+			dim as ClassUdt a, b
+			dim i as integer = 0
+			a.i = 123
+			b.i = 456
+			a = iif( i, a, b )
+			CU_ASSERT( a.i = 456 )
+		check( 2, 1, 3 )
+
+		begin( )
+			dim as ClassUdt a, b
+			dim i as integer = 1
+			a.i = 123
+			b.i = 456
+			a = iif( i, a, b )
+			CU_ASSERT( a.i = 123 )
+		check( 2, 1, 3 )
+	end sub
 end namespace
 
 namespace classlikeDoubleIntUdt
@@ -1121,6 +1141,26 @@ namespace classlikeDoubleIntUdt
 			loop until( x.i <> f2( i ).i )
 		check( 1*2 + 1, 0, 1*2 + 1 )
 	end sub
+
+	sub testIifTempVar cdecl( )
+		begin( )
+			dim as ClassUdt a, b
+			dim i as integer = 0
+			a.i = 123
+			b.i = 456
+			a = iif( i, a, b )
+			CU_ASSERT( a.i = 456 )
+		check( 2, 1, 3 )
+
+		begin( )
+			dim as ClassUdt a, b
+			dim i as integer = 1
+			a.i = 123
+			b.i = 456
+			a = iif( i, a, b )
+			CU_ASSERT( a.i = 123 )
+		check( 2, 1, 3 )
+	end sub
 end namespace
 
 namespace dtorOnlyIntegerUdt
@@ -1498,6 +1538,26 @@ namespace dtorOnlyIntegerUdt
 				i += 1
 			loop until( x.i <> f2( i ).i )
 		check( 1*2 + 1, 0, 1*2 + 1 )
+	end sub
+
+	sub testIifTempVar cdecl( )
+		begin( )
+			dim as DtorUdt a, b
+			dim i as integer = 0
+			a.i = 123
+			b.i = 456
+			a = iif( i, a, b )
+			CU_ASSERT( a.i = 456 )
+		check( 3, 0, 3 )
+
+		begin( )
+			dim as DtorUdt a, b
+			dim i as integer = 1
+			a.i = 123
+			b.i = 456
+			a = iif( i, a, b )
+			CU_ASSERT( a.i = 123 )
+		check( 3, 0, 3 )
 	end sub
 end namespace
 
@@ -1884,6 +1944,26 @@ namespace dtorOnlyDoubleIntUdt
 			loop until( x.i <> f2( i ).i )
 		check( 1*2 + 1, 0, 1*2 + 1 )
 	end sub
+
+	sub testIifTempVar cdecl( )
+		begin( )
+			dim as DtorUdt a, b
+			dim i as integer = 0
+			a.i = 123
+			b.i = 456
+			a = iif( i, a, b )
+			CU_ASSERT( a.i = 456 )
+		check( 3, 0, 3 )
+
+		begin( )
+			dim as DtorUdt a, b
+			dim i as integer = 1
+			a.i = 123
+			b.i = 456
+			a = iif( i, a, b )
+			CU_ASSERT( a.i = 123 )
+		check( 3, 0, 3 )
+	end sub
 end namespace
 
 private sub ctor( ) constructor
@@ -1896,6 +1976,7 @@ private sub ctor( ) constructor
 	fbcu.add_test( "15", @classlikeIntegerUdt.testIifBranch )
 	fbcu.add_test( "16", @classlikeIntegerUdt.testWhileBranch )
 	fbcu.add_test( "17", @classlikeIntegerUdt.testUntilBranch )
+	fbcu.add_test( "18", @classlikeIntegerUdt.testIifTempVar )
 
 	fbcu.add_test( "21", @classlikeDoubleIntUdt.testParamInit )
 	fbcu.add_test( "22", @classlikeDoubleIntUdt.testAnon )
@@ -1904,6 +1985,7 @@ private sub ctor( ) constructor
 	fbcu.add_test( "25", @classlikeDoubleIntUdt.testIifBranch )
 	fbcu.add_test( "26", @classlikeDoubleIntUdt.testWhileBranch )
 	fbcu.add_test( "27", @classlikeDoubleIntUdt.testUntilBranch )
+	fbcu.add_test( "28", @classlikeDoubleIntUdt.testIifTempVar )
 
 	fbcu.add_test( "31", @dtorOnlyIntegerUdt.testParamInit )
 	fbcu.add_test( "32", @dtorOnlyIntegerUdt.testAnon )
@@ -1912,6 +1994,7 @@ private sub ctor( ) constructor
 	fbcu.add_test( "35", @dtorOnlyIntegerUdt.testIifBranch )
 	fbcu.add_test( "36", @dtorOnlyIntegerUdt.testWhileBranch )
 	fbcu.add_test( "37", @dtorOnlyIntegerUdt.testUntilBranch )
+	fbcu.add_test( "38", @dtorOnlyIntegerUdt.testIifTempVar )
 
 	fbcu.add_test( "41", @dtorOnlyDoubleIntUdt.testParamInit )
 	fbcu.add_test( "42", @dtorOnlyDoubleIntUdt.testAnon )
@@ -1920,6 +2003,7 @@ private sub ctor( ) constructor
 	fbcu.add_test( "45", @dtorOnlyDoubleIntUdt.testIifBranch )
 	fbcu.add_test( "46", @dtorOnlyDoubleIntUdt.testWhileBranch )
 	fbcu.add_test( "47", @dtorOnlyDoubleIntUdt.testUntilBranch )
+	fbcu.add_test( "48", @dtorOnlyDoubleIntUdt.testIifTempVar )
 end sub
 
 end namespace

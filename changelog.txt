@@ -36,7 +36,7 @@ Version 0.25.0:
 - NAKED support for the C backend, using GCC inline asm
 - ALIAS "" or LIB "" will now result in a compiler error
 - fbc now recognizes --version and [-]-help command line options
-- IIF now accepts strings (yetifoot/dkl)
+- IIF now accepts strings and UDTs (yetifoot/dkl)
 - win/initguid.bi win32 header
 - -exx NULL pointer checks for procedure pointer calls
 - CVD(longint), CVS(integer), CVL(single), CVLONGINT(double), for reinterpreting directly between floating-point and integer representations without using strings

@@ -454,3 +454,21 @@ namespace vectorNewCtorList
 
 	hScopeChecks( CU_ASSERT( calls = 0 ) : tester( ) : CU_ASSERT( calls = 1 ) : calls = 0 )
 end namespace
+
+namespace iif_
+	dim shared as UDT globalx1 = ( 123 ), globalx2 = ( 456 )
+
+	sub tester( PARAM_MODE x as UDT = iif( cond, globalx1, globalx2 ) )
+		CU_ASSERT( x.i = 456 )
+	end sub
+
+	hScopeChecks( tester( ) )
+end namespace
+
+namespace iifAnon
+	sub tester( PARAM_MODE x as UDT = iif( cond, type<UDT>( 123 ), type<UDT>( 456 ) ) )
+		CU_ASSERT( x.i = 456 )
+	end sub
+
+	hScopeChecks( tester( ) )
+end namespace

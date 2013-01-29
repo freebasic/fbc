@@ -22,12 +22,6 @@ function hCheckTypes _
 
 	function = FALSE
 
-	'' Disallow UDTs
-	if( (typeGet( ldtype ) = FB_DATATYPE_STRUCT) or _
-	    (typeGet( rdtype ) = FB_DATATYPE_STRUCT) ) then
-		exit function
-	end if
-
 	'' Any pointers?
 	lmatch = typeIsPtr( ldtype )
 	rmatch = typeIsPtr( rdtype )
@@ -75,6 +69,8 @@ function hCheckTypes _
 		return TRUE
 	end if
 
+	'' (Assuming no more pointers from here on)
+
 	'' Any strings?
 	lmatch = (typeGetDtOnly( ldtype ) = FB_DATATYPE_STRING) or _
 	         (typeGetDtOnly( ldtype ) = FB_DATATYPE_FIXSTR) or _
@@ -102,6 +98,25 @@ function hCheckTypes _
 		end if
 		dtype = FB_DATATYPE_WCHAR
 		subtype = NULL
+		return TRUE
+	end if
+
+	'' Any UDTs?
+	lmatch = (typeGetDtOnly( ldtype ) = FB_DATATYPE_STRUCT)
+	rmatch = (typeGetDtOnly( rdtype ) = FB_DATATYPE_STRUCT)
+	if( lmatch or rmatch ) then
+		'' If one is, both must be
+		if( lmatch <> rmatch ) then
+			exit function
+		end if
+
+		'' And it must be the same UDT
+		if( lsubtype <> rsubtype ) then
+			exit function
+		end if
+
+		dtype = FB_DATATYPE_STRUCT
+		subtype = lsubtype
 		return TRUE
 	end if
 
@@ -171,9 +186,11 @@ function astNewIIF _
 		byval falsecookie as integer _
 	) as ASTNODE ptr
 
-	dim as ASTNODE ptr n = any
+	dim as ASTNODE ptr n = any, varexpr = any
 	dim as integer dtype = any
-	dim as FBSYMBOL ptr falselabel = any, subtype = any
+	dim as integer is_true_ctorcall = any, is_false_ctorcall = any
+	dim as integer call_true_defctor = any, call_false_defctor = any
+	dim as FBSYMBOL ptr falselabel = any, subtype = any, temp = any
 
 	function = NULL
 
@@ -227,10 +244,6 @@ function astNewIIF _
 		dtype  = FB_DATATYPE_STRING
 	end select
 
-	'' alloc new node
-	n = astNewNode( AST_NODECLASS_IIF, dtype, subtype )
-	function = n
-
 	if( typeGetDtAndPtrOnly( dtype ) = FB_DATATYPE_WCHAR ) then
 		'' Just like with SELECT CASE, for iif() on wstrings we need
 		'' a temporary wstring, but since the length of the iif() result
@@ -240,28 +253,82 @@ function astNewIIF _
 		'' the "fake wstring", i.e. a wchar ptr, must be used.
 
 		'' dim temp as wstring ptr (doesn't need to be cleared)
-		n->sym = symbAddTempVar( typeAddrOf( FB_DATATYPE_WCHAR ) )
-		symbSetIsWstring( n->sym )
+		temp = symbAddTempVar( typeAddrOf( FB_DATATYPE_WCHAR ) )
+		symbSetIsWstring( temp )
 
 		'' Register for cleanup at the end of the statement
-		astDtorListAdd( n->sym )
+		astDtorListAdd( temp )
 
-		n->l = astBuildFakeWstringAccess( n->sym )
-
-		truexpr  = astBuildFakeWstringAssign( n->sym, truexpr )
-		falsexpr = astBuildFakeWstringAssign( n->sym, falsexpr )
+		varexpr  = astBuildFakeWstringAccess( temp )
+		truexpr  = astBuildFakeWstringAssign( temp, truexpr )
+		falsexpr = astBuildFakeWstringAssign( temp, falsexpr )
 	else
-		n->sym = symbAddTempVar( dtype, subtype )
+		temp = symbAddTempVar( dtype, subtype )
 
 		'' Register for cleanup at the end of the statement
-		astDtorListAdd( n->sym )
+		astDtorListAdd( temp )
 
-		n->l = astNewVAR( n->sym )
+		varexpr = astNewVAR( temp )
+
+		is_true_ctorcall   = FALSE
+		is_false_ctorcall  = FALSE
+		call_true_defctor  = FALSE
+		call_false_defctor = FALSE
+
+		'' Any constructors?
+		if( symbHasCtor( temp ) ) then
+			'' Try calling them, to construct the temp var from the true/false expressions.
+			truexpr  = astBuildImplicitCtorCallEx( temp, truexpr , INVALID, is_true_ctorcall  )
+			falsexpr = astBuildImplicitCtorCallEx( temp, falsexpr, INVALID, is_false_ctorcall )
+
+			'' If the temp var can be constructed from the true/false expressions...
+			'' a) in both cases, just use these ctorcalls
+			'' b) in only one case (true or false), let's try to call a defctor in the other case
+			'' c) in no case at all, let's try to call a defctor once before the conditional branch
+
+			if( is_true_ctorcall or is_false_ctorcall ) then
+				if( is_true_ctorcall ) then
+					truexpr = astPatchCtorCall( truexpr , astNewVAR( temp ) )
+				else
+					'' Do a normal assignment and call the defctor in front of it
+					call_true_defctor = TRUE
+				end if
+
+				if( is_false_ctorcall ) then
+					falsexpr = astPatchCtorCall( falsexpr, astNewVAR( temp ) )
+				else
+					'' Do a normal assignment and call the defctor in front of it
+					call_false_defctor = TRUE
+				end if
+			else
+				'' Insert defctor call in front of the conditional branch
+				condexpr = astNewLINK( astBuildCtorCall( subtype, astNewVAR( temp ) ), condexpr )
+			end if
+
+			'' No defctor but it's needed?
+			if( symbHasDefCtor( temp ) = FALSE ) then
+				if( (is_true_ctorcall = FALSE) or (is_false_ctorcall = FALSE) ) then
+					exit function
+				end if
+			end if
+		end if
 
 		'' Using AST_OPOPT_ISINI to get fb_StrInit()'s instead of fb_StrAssign()'s,
 		'' because those would require the temp string to be cleared manually...
-		truexpr  = astNewASSIGN( astNewVAR( n->sym ), truexpr , AST_OPOPT_ISINI )
-		falsexpr = astNewASSIGN( astNewVAR( n->sym ), falsexpr, AST_OPOPT_ISINI )
+
+		if( is_true_ctorcall = FALSE ) then
+			truexpr  = astNewASSIGN( astNewVAR( temp ), truexpr , AST_OPOPT_ISINI )
+			if( call_true_defctor ) then
+				truexpr = astNewLINK( astBuildCtorCall( subtype, astNewVAR( temp ) ), truexpr )
+			end if
+		end if
+
+		if( is_false_ctorcall = FALSE ) then
+			falsexpr = astNewASSIGN( astNewVAR( temp ), falsexpr, AST_OPOPT_ISINI )
+			if( call_false_defctor ) then
+				falsexpr = astNewLINK( astBuildCtorCall( subtype, astNewVAR( temp ) ), falsexpr )
+			end if
+		end if
 	end if
 
 	'' Add dtor calls to the true/false code paths, behind the assignments
@@ -277,10 +344,14 @@ function astNewIIF _
 		falsexpr = astNewLINK( falsexpr, astDtorListFlush( falsecookie ) )
 	end if
 
-	n->r = astNewLINK( condexpr, astNewLINK( truexpr, falsexpr ) )
+	n = astNewNode( AST_NODECLASS_IIF, dtype, subtype )
 
+	n->sym = temp
+	n->l = varexpr
+	n->r = astNewLINK( condexpr, astNewLINK( truexpr, falsexpr ) )
 	n->iif.falselabel = falselabel
 
+	function = n
 end function
 
 function astLoadIIF( byval n as ASTNODE ptr ) as IRVREG ptr
