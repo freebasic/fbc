@@ -2111,7 +2111,7 @@ function typeDump _
 	) as string
 
 	dim as string dump
-	dim as integer ok = any
+	dim as integer ok = any, ptrcount = any
 
 	dump = "["
 
@@ -2119,6 +2119,12 @@ function typeDump _
 		dump += "invalid"
 		ok = (subtype = NULL)
 	else
+		ptrcount = abs( typeGetPtrCnt( dtype ) )
+
+		if( typeIsConstAt( dtype, ptrcount ) ) then
+			dump += "const "
+		end if
+
 		select case( typeGetDtOnly( dtype ) )
 		case FB_DATATYPE_STRUCT
 			dump += "struct"
@@ -2128,7 +2134,10 @@ function typeDump _
 			dump += *symb_dtypeTB(typeGetDtOnly( dtype )).name
 		end select
 
-		for i as integer = 1 to abs( typeGetPtrCnt( dtype ) )
+		for i as integer = (ptrcount-1) to 0 step -1
+			if( typeIsConstAt( dtype, i ) ) then
+				dump += " const"
+			end if
 			dump += " ptr"
 		next
 
