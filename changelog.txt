@@ -168,6 +168,7 @@ Version 0.25.0:
 - Temporary variables in the unreached expression in an IIF() or ANDALSO/ORELSE were always destructed, even if the code path that constructs them was not reached (either 2nd or 3rd operand of IIF(), 2nd operand of ANDALSO/ORELSE)
 - When initializing an UDT parameter with any expression except for type(), an extra temporary copy was created everywhere the initializer was inserted
 - type<const UDT>() was not parsed as constructor call if the UDT had constructors, but as plain UDT initializer instead, due to the CONST
+- type() now also works with enums and function pointers (just for consistency, because it already worked with other built-in data types such as integers)
 
 
 Version 0.24.0:

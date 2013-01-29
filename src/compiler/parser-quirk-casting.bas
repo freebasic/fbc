@@ -118,21 +118,21 @@ function cTypeConvExpr _
 
 end function
 
-'' AnonUDT  =  TYPE ('<' SymbolType '>')? '(' ... ')'
-function cAnonUDT( ) as ASTNODE ptr
+'' AnonType  =  TYPE ('<' SymbolType '>')? '(' ... ')'
+function cAnonType( ) as ASTNODE ptr
 	dim as ASTNODE ptr initree = any
 	dim as FBSYMBOL ptr sym = any, subtype = any
-	dim as integer dtype = any, lgt = any
+	dim as integer dtype = any, lgt = any, is_explicit = any
 
 	'' TYPE
 	lexSkipToken( )
 
-	'' ('<' SymbolType '>')?
-	if( lexGetToken( ) = FB_TK_LT ) then
-		lexSkipToken( )
+	'' '<'?
+	is_explicit = hMatch( FB_TK_LT )
 
-		'' get UDT or intrinsic type
-		if( cSymbolType( dtype, subtype, lgt, FB_SYMBTYPEOPT_NONE ) = FALSE ) then
+	if( is_explicit ) then
+		'' SymbolType
+		if( cSymbolType( dtype, subtype, lgt ) = FALSE ) then
 			'' it would be nice to be able to fall back and do
 			'' a cExpression(), like typeof(), or len() do,
 			'' however the ambiguity with the "greater-than '>' operator"
@@ -142,48 +142,27 @@ function cAnonUDT( ) as ASTNODE ptr
 			dtype = FB_DATATYPE_INTEGER
 			subtype = NULL
 		end if
-
-		'' '>'
-		if( lexGetToken( ) <> FB_TK_GT ) then
-			errReport( FB_ERRMSG_SYNTAXERROR )
-			'' error recovery: skip until next '>'
-			hSkipUntil( FB_TK_GT, TRUE )
-		else
-			lexSkipToken( )
-		end if
 	else
 		'' use the type from the left-hand expression,
 		'' this allows totally anonymous types.
 		subtype = parser.ctxsym
 		dtype   = parser.ctx_dtype
+	end if
 
-		if( subtype <> NULL ) then
-			dtype = FB_DATATYPE_STRUCT
+	'' Disallow creating objects of abstract classes
+	hComplainIfAbstractClass( dtype, subtype )
 
-			'' typedef? resolve..
-			if( symbIsTypedef( subtype ) ) then
-				subtype = symbGetSubtype( subtype )
-			end if
-
-			if( subtype = NULL ) then
-				errReport( FB_ERRMSG_SYNTAXERROR, TRUE )
-				'' error recovery: fake a node
-				return astNewCONSTi( 0 )
-			end if
-
-			if( symbIsStruct( subtype ) = FALSE ) then
-				errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE )
-				'' error recovery: fake a node
-				return astNewCONSTi( 0 )
-			end if
+	if( is_explicit ) then
+		'' '>'
+		if( hMatch( FB_TK_GT ) = FALSE ) then
+			errReport( FB_ERRMSG_SYNTAXERROR )
+			'' error recovery: skip until next '>'
+			hSkipUntil( FB_TK_GT, TRUE )
 		end if
 	end if
 
 	'' UDT?
 	if( typeGetDtAndPtrOnly( dtype ) = FB_DATATYPE_STRUCT ) then
-		'' Disallow creating objects of abstract classes
-		hComplainIfAbstractClass( dtype, subtype )
-
 		'' Has a ctor?
 		if( symbGetCompCtorHead( subtype ) ) then
 			return cCtorCall( subtype )

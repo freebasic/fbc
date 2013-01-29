@@ -888,7 +888,7 @@ declare function cErrorFunct() as ASTNODE ptr
 declare function cIIFFunct() as ASTNODE ptr
 declare function cVAFunct() as ASTNODE ptr
 declare function cScreenFunct() as ASTNODE ptr
-declare function cAnonUDT() as ASTNODE ptr
+declare function cAnonType( ) as ASTNODE ptr
 declare function cConstIntExpr( byval expr as ASTNODE ptr ) as integer
 declare function cOperatorNew( ) as ASTNODE ptr
 declare sub cOperatorDelete( )

@@ -193,7 +193,7 @@ function cQuirkFunction(byval sym as FBSYMBOL ptr) as ASTNODE ptr
 		return cTypeConvExpr( tk )
 
 	case FB_TK_TYPE
-		return cAnonUDT( )
+		return cAnonType( )
 
 	case FB_TK_VIEW
 		funcexpr = cViewStmt(TRUE)

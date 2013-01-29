@@ -167,7 +167,7 @@ end function
 ''					  | PtrTypeCastingExpr
 ''				  	  | ParentExpression
 ''					  ) FuncPtrOrMemberDeref?
-''				  |	  AnonUDT
+''				  |	  AnonType
 ''				  |   Atom .
 ''
 function cHighestPrecExpr _
