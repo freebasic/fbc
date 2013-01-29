@@ -180,7 +180,7 @@ function cAnonUDT( ) as ASTNODE ptr
 	end if
 
 	'' UDT?
-	if( dtype = FB_DATATYPE_STRUCT ) then
+	if( typeGetDtAndPtrOnly( dtype ) = FB_DATATYPE_STRUCT ) then
 		'' Disallow creating objects of abstract classes
 		hComplainIfAbstractClass( dtype, subtype )
 
