@@ -143,9 +143,6 @@ function cAnonUDT( ) as ASTNODE ptr
 			subtype = NULL
 		end if
 
-		'' Disallow creating objects of abstract classes
-		hComplainIfAbstractClass( dtype, subtype )
-
 		'' '>'
 		if( lexGetToken( ) <> FB_TK_GT ) then
 			errReport( FB_ERRMSG_SYNTAXERROR )
@@ -182,8 +179,12 @@ function cAnonUDT( ) as ASTNODE ptr
 		end if
 	end if
 
-	'' has a ctor?
+	'' UDT?
 	if( dtype = FB_DATATYPE_STRUCT ) then
+		'' Disallow creating objects of abstract classes
+		hComplainIfAbstractClass( dtype, subtype )
+
+		'' Has a ctor?
 		if( symbGetCompCtorHead( subtype ) ) then
 			return cCtorCall( subtype )
 		end if
