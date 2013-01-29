@@ -897,7 +897,8 @@ declare sub hSkipUntil _
 	( _
 		byval token as integer, _
 		byval doeat as integer = FALSE, _
-		byval flags as LEXCHECK = LEXCHECK_EVERYTHING _
+		byval flags as LEXCHECK = LEXCHECK_EVERYTHING, _
+		byval stop_on_comma as integer = FALSE _
 	)
 
 declare sub hSkipCompound _

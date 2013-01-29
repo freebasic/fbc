@@ -153,7 +153,8 @@ sub hSkipUntil _
 	( _
 		byval token as integer, _
 		byval doeat as integer, _
-		byval flags as LEXCHECK _
+		byval flags as LEXCHECK, _
+		byval stop_on_comma as integer _
 	)
 
 	dim as integer prntcnt
@@ -208,7 +209,7 @@ sub hSkipUntil _
 		'' ','?
 		case CHAR_COMMA
 			'' skip until ','?
-			if( token = CHAR_COMMA ) then
+			if( (token = CHAR_COMMA) or stop_on_comma ) then
 				'' not inside parentheses?
 				if( prntcnt = 0 ) then
 					exit do

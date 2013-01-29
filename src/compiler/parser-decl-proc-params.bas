@@ -141,6 +141,15 @@ private function hOptionalExpr _
     	end if
     end if
 
+	'' Complain if it's a forward reference or ANY (possible with BYREF),
+	'' since the type is unknown, we cannot parse an initializer for it.
+	select case( symbGetType( param ) )
+	case FB_DATATYPE_VOID, FB_DATATYPE_FWDREF
+		errReport( FB_ERRMSG_INCOMPLETETYPE )
+		hSkipUntil( CHAR_RPRNT, FALSE, , TRUE )
+		return astNewCONSTi( 0 )
+	end select
+
 	expr = cInitializer( param, FB_INIOPT_ISINI )
 	if( expr = NULL ) then
 		exit function
