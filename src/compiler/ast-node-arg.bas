@@ -676,13 +676,23 @@ private sub hUDTPassByval _
 	tmp = symbAddTempVar( symbGetFullType( param ), symbGetSubtype( param ) )
 	astDtorListAdd( tmp )
 
-	arg = astBuildImplicitCtorCallEx( param, n->l, n->arg.mode, is_ctorcall )
-	if( is_ctorcall ) then
-		'' Wrap in a CALLCTOR again just for fun
-		arg = astNewCALLCTOR( astPatchCtorCall( arg, astNewVAR( tmp ) ), astNewVAR( tmp ) )
+	arg = n->l
+
+	if( astIsTYPEINI( arg ) ) then
+		'' TYPEINI (e.g. from parameter initializer), assign to the temp
+		'' directly (it will probably always be a ctor call too, since
+		'' the parameter initializer wouldn't have allowed anything else)
+		arg = astNewLINK( astTypeIniFlush( arg, tmp, AST_INIOPT_NONE ), astNewVAR( tmp ), FALSE )
 	else
-		'' Shallow copy, and return a VAR access on the temp var
-		arg = astNewLINK( astNewASSIGN( astNewVAR( tmp ), arg ), astNewVAR( tmp ), FALSE )
+		'' Otherwise, call a constructor
+		arg = astBuildImplicitCtorCallEx( param, n->l, n->arg.mode, is_ctorcall )
+		if( is_ctorcall ) then
+			'' Wrap in a CALLCTOR again just for fun
+			arg = astNewCALLCTOR( astPatchCtorCall( arg, astNewVAR( tmp ) ), astNewVAR( tmp ) )
+		else
+			'' Shallow copy, and return a VAR access on the temp var
+			arg = astNewLINK( astNewASSIGN( astNewVAR( tmp ), arg ), astNewVAR( tmp ), FALSE )
+		end if
 	end if
 
 	hBuildByrefArg( param, n, arg )
@@ -800,7 +810,6 @@ private function hCheckUDTParam _
 				return TRUE
 			end if
 		end if
-
 
 		hBuildByrefArg( param, n, arg )
 

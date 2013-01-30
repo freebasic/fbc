@@ -14,22 +14,39 @@ namespace defCtor
 		ctors += 1
 	end constructor
 
+	dim shared as UDT x0
+
 	function hPassByval( byval x as UDT ) as integer
 		function = x.i
 	end function
 
+	function hPassByval1( byval x as UDT = x0 ) as integer
+		function = x.i
+	end function
+
+	function hPassByval2( byval x as UDT = UDT( ) ) as integer
+		function = x.i
+	end function
+
 	sub test cdecl( )
-		CU_ASSERT( ctors = 0 )
+		CU_ASSERT( ctors = 1 )
 
 		dim as UDT x
-		CU_ASSERT( ctors = 1 )
+		CU_ASSERT( ctors = 2 )
 
 		x.i = 123
 		CU_ASSERT( hPassByval( x ) = 123 )
-		CU_ASSERT( ctors = 1 )
+		CU_ASSERT( ctors = 2 )
 
 		CU_ASSERT( hPassByval( UDT( ) ) = 0 )
-		CU_ASSERT( ctors = 2 )
+		CU_ASSERT( ctors = 3 )
+
+		x0.i = 456
+		CU_ASSERT( hPassByval1( ) = 456 )
+		CU_ASSERT( ctors = 3 )
+
+		CU_ASSERT( hPassByval2( ) = 0 )
+		CU_ASSERT( ctors = 4 )
 	end sub
 end namespace
 
@@ -51,26 +68,45 @@ namespace defCtorAndCopyCtor
 		this.i = rhs.i
 	end constructor
 
+	dim shared as UDT x0
+
 	function hPassByval( byval x as UDT ) as integer
 		function = x.i
 	end function
 
+	function hPassByval1( byval x as UDT = x0 ) as integer
+		function = x.i
+	end function
+
+	function hPassByval2( byval x as UDT = UDT( ) ) as integer
+		function = x.i
+	end function
+
 	sub test cdecl( )
-		CU_ASSERT(  defctors = 0 )
+		CU_ASSERT(  defctors = 1 )
 		CU_ASSERT( copyctors = 0 )
 
 		dim as UDT x
-		CU_ASSERT(  defctors = 1 )
+		CU_ASSERT(  defctors = 2 )
 		CU_ASSERT( copyctors = 0 )
 
 		x.i = 123
 		CU_ASSERT( hPassByval( x ) = 123 )
-		CU_ASSERT(  defctors = 1 )
+		CU_ASSERT(  defctors = 2 )
 		CU_ASSERT( copyctors = 1 )
 
 		CU_ASSERT( hPassByval( UDT( ) ) = 0 )
-		CU_ASSERT(  defctors = 2 )
+		CU_ASSERT(  defctors = 3 )
 		CU_ASSERT( copyctors = 1 )
+
+		x0.i = 456
+		CU_ASSERT( hPassByval1( ) = 456 )
+		CU_ASSERT(  defctors = 3 )
+		CU_ASSERT( copyctors = 2 )
+
+		CU_ASSERT( hPassByval2( ) = 0 )
+		CU_ASSERT(  defctors = 4 )
+		CU_ASSERT( copyctors = 2 )
 	end sub
 end namespace
 
@@ -87,21 +123,37 @@ namespace intCtor
 		this.i = i
 	end constructor
 
+	dim shared as UDT x0 = UDT( 456 )
+
 	function hPassByval( byval x as UDT ) as integer
 		function = x.i
 	end function
 
+	function hPassByval1( byval x as UDT = x0 ) as integer
+		function = x.i
+	end function
+
+	function hPassByval2( byval x as UDT = UDT( 789 ) ) as integer
+		function = x.i
+	end function
+
 	sub test cdecl( )
-		CU_ASSERT( ctors = 0 )
+		CU_ASSERT( ctors = 1 )
 
 		dim as UDT x = UDT( 123 )
-		CU_ASSERT( ctors = 1 )
+		CU_ASSERT( ctors = 2 )
 
 		CU_ASSERT( hPassByval( x ) = 123 )
-		CU_ASSERT( ctors = 1 )
+		CU_ASSERT( ctors = 2 )
 
 		CU_ASSERT( hPassByval( UDT( 456 ) ) = 456 )
-		CU_ASSERT( ctors = 2 )
+		CU_ASSERT( ctors = 3 )
+
+		CU_ASSERT( hPassByval1( ) = 456 )
+		CU_ASSERT( ctors = 3 )
+
+		CU_ASSERT( hPassByval2( ) = 789 )
+		CU_ASSERT( ctors = 4 )
 	end sub
 end namespace
 
@@ -124,25 +176,43 @@ namespace intCtorAndCopyCtor
 		this.i = rhs.i
 	end constructor
 
+	dim shared as UDT x0 = UDT( 456 )
+
 	function hPassByval( byval x as UDT ) as integer
 		function = x.i
 	end function
 
+	function hPassByval1( byval x as UDT = x0 ) as integer
+		function = x.i
+	end function
+
+	function hPassByval2( byval x as UDT = UDT( 789 ) ) as integer
+		function = x.i
+	end function
+
 	sub test cdecl( )
-		CU_ASSERT(  intctors = 0 )
+		CU_ASSERT(  intctors = 1 )
 		CU_ASSERT( copyctors = 0 )
 
 		dim as UDT x = UDT( 123 )
-		CU_ASSERT(  intctors = 1 )
+		CU_ASSERT(  intctors = 2 )
 		CU_ASSERT( copyctors = 0 )
 
 		CU_ASSERT( hPassByval( x ) = 123 )
-		CU_ASSERT(  intctors = 1 )
+		CU_ASSERT(  intctors = 2 )
 		CU_ASSERT( copyctors = 1 )
 
 		CU_ASSERT( hPassByval( UDT( 456 ) ) = 456 )
-		CU_ASSERT(  intctors = 2 )
+		CU_ASSERT(  intctors = 3 )
 		CU_ASSERT( copyctors = 1 )
+
+		CU_ASSERT( hPassByval1( ) = 456 )
+		CU_ASSERT(  intctors = 3 )
+		CU_ASSERT( copyctors = 2 )
+
+		CU_ASSERT( hPassByval2( ) = 789 )
+		CU_ASSERT(  intctors = 4 )
+		CU_ASSERT( copyctors = 2 )
 	end sub
 end namespace
 
@@ -164,25 +234,43 @@ namespace defCtorAndIntCtor
 		this.i = i
 	end constructor
 
+	dim shared as UDT x0 = UDT( 456 )
+
 	function hPassByval( byval x as UDT ) as integer
+		function = x.i
+	end function
+
+	function hPassByval1( byval x as UDT = x0 ) as integer
+		function = x.i
+	end function
+
+	function hPassByval2( byval x as UDT = UDT( 789 ) ) as integer
 		function = x.i
 	end function
 
 	sub test cdecl( )
 		CU_ASSERT( defctors = 0 )
-		CU_ASSERT( intctors = 0 )
+		CU_ASSERT( intctors = 1 )
 
 		dim as UDT x = UDT( 123 )
 		CU_ASSERT( defctors = 0 )
-		CU_ASSERT( intctors = 1 )
+		CU_ASSERT( intctors = 2 )
 
 		CU_ASSERT( hPassByval( x ) = 123 )
 		CU_ASSERT( defctors = 0 )
-		CU_ASSERT( intctors = 1 )
+		CU_ASSERT( intctors = 2 )
 
 		CU_ASSERT( hPassByval( UDT( 456 ) ) = 456 )
 		CU_ASSERT( defctors = 0 )
-		CU_ASSERT( intctors = 2 )
+		CU_ASSERT( intctors = 3 )
+
+		CU_ASSERT( hPassByval1( ) = 456 )
+		CU_ASSERT( defctors = 0 )
+		CU_ASSERT( intctors = 3 )
+
+		CU_ASSERT( hPassByval2( ) = 789 )
+		CU_ASSERT( defctors = 0 )
+		CU_ASSERT( intctors = 4 )
 	end sub
 end namespace
 

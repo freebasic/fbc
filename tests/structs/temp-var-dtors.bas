@@ -104,7 +104,7 @@ namespace classlikeIntegerUdt
 	sub testParamInit cdecl( )
 		begin( )
 			test2( )
-		check( 2, 2, 4 )
+		check( 2, 1, 3 )
 
 		begin( )
 			dim x as ClassUdt = test1( ClassUdt( ) )
@@ -830,7 +830,7 @@ namespace classlikeDoubleIntUdt
 	sub testParamInit cdecl( )
 		begin( )
 			test2( )
-		check( 2, 2, 4 )
+		check( 2, 1, 3 )
 
 		begin( )
 			dim x as ClassUdt = test1( ClassUdt( ) )
@@ -1275,11 +1275,11 @@ namespace dtorOnlyIntegerUdt
 	sub testParamInit cdecl( )
 		begin( )
 			test2( )
-		check( 4, 0, 4 )
+		check( 3, 0, 3 )
 
 		begin( )
 			dim x as DtorUdt = test1( type<DtorUdt>( 123 ) )
-		check( 4, 0, 4 )
+		check( 3, 0, 3 )
 	end sub
 
 	sub testAnon cdecl( )
@@ -1659,11 +1659,11 @@ namespace dtorOnlyIntegerUdt
 
 		begin( )
 			hPassByval( type( 123 ) )
-		check( 2, 0, 2 )
+		check( 1, 0, 1 )
 
 		begin( )
 			hPassByval( type<DtorUdt>( 123 ) )
-		check( 2, 0, 2 )
+		check( 1, 0, 1 )
 	end sub
 
 	sub hPassByref( byref x as DtorUdt )
@@ -1709,11 +1709,11 @@ namespace dtorOnlyDoubleIntUdt
 	sub testParamInit cdecl( )
 		begin( )
 			test2( )
-		check( 4, 0, 4 )
+		check( 3, 0, 3 )
 
 		begin( )
 			dim x as DtorUdt = test1( type<DtorUdt>( 123 ) )
-		check( 4, 0, 4 )
+		check( 3, 0, 3 )
 	end sub
 
 	sub testAnon cdecl( )
@@ -2100,11 +2100,11 @@ namespace dtorOnlyDoubleIntUdt
 
 		begin( )
 			hPassByval( type( 123 ) )
-		check( 2, 0, 2 )
+		check( 1, 0, 1 )
 
 		begin( )
 			hPassByval( type<DtorUdt>( 123 ) )
-		check( 2, 0, 2 )
+		check( 1, 0, 1 )
 	end sub
 
 	sub hPassByref( byref x as DtorUdt )
