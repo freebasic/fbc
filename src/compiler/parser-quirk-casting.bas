@@ -148,6 +148,12 @@ function cAnonType( ) as ASTNODE ptr
 		subtype = parser.ctxsym
 		dtype   = parser.ctx_dtype
 
+		if( dtype = FB_DATATYPE_INVALID ) then
+			errReport( FB_ERRMSG_INCOMPLETETYPE )
+			dtype = FB_DATATYPE_INTEGER
+			subtype = NULL
+		end if
+
 		select case( typeGetDtAndPtrOnly( dtype ) )
 		case FB_DATATYPE_VOID, FB_DATATYPE_FWDREF
 			errReport( FB_ERRMSG_INCOMPLETETYPE )
