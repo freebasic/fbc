@@ -169,6 +169,7 @@ Version 0.25.0:
 - BYREF AS ANY|forward-reference parameters are no longer allowed to have parameter initializers
 - type() is no longer allowed as argument to BYREF AS ANY parameters
 - Single-line IF statements were not opening a scope, exposing potentially uninitialised variables declared within to outside code, e.g. "IF 0 THEN DIM s AS STRING ENDIF:  PRINT s"
+- win/commctrl.bi: NMPGSCROLL structure fixed
 
 
 Version 0.24.0:
