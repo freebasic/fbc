@@ -404,38 +404,6 @@ function astBuildDtorCall _
 	function = callexpr
 end function
 
-'':::::
-function astBuildCopyCtorCall _
-	( _
-		byval dst as ASTNODE ptr, _
-		byval src as ASTNODE ptr _
-	) as ASTNODE ptr
-
-    dim as ASTNODE ptr proc = any
-    dim as FBSYMBOL ptr copyctor = any
-
-	copyctor = symbGetCompCopyCtor( astGetSubtype( dst ) )
-
-	'' no copy ctor? do a shallow copy..
-	if( copyctor = NULL ) then
-    	return astNewASSIGN( dst, src, AST_OPOPT_DONTCHKPTR )
-    end if
-
-	if( symbCheckAccess( copyctor ) = FALSE ) then
-		errReport( FB_ERRMSG_NOACCESSTOCTOR )
-		return NULL
-	end if
-
-    '' call the copy ctor
-    proc = astNewCALL( copyctor )
-
-    astNewARG( proc, dst )
-    astNewARG( proc, src )
-
-    function = proc
-
-end function
-
 private function astFakeInstPtr( byval subtype as FBSYMBOL ptr ) as ASTNODE ptr
 	assert( symbIsStruct( subtype ) )
 	function = astNewCONSTi( 0, typeAddrOf( FB_DATATYPE_STRUCT ), subtype )

@@ -173,6 +173,7 @@ Version 0.25.0:
 - type() is no longer allowed as argument to BYREF AS ANY parameters
 - Single-line IF statements were not opening a scope, exposing potentially uninitialised variables declared within to outside code, e.g. "IF 0 THEN DIM s AS STRING ENDIF:  PRINT s"
 - win/commctrl.bi: NMPGSCROLL structure fixed
+- Two temporary copies could be created when passing UDTs with constructors BYVAL
 
 
 Version 0.24.0:

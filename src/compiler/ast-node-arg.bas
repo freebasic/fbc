@@ -638,7 +638,6 @@ private sub hByteByByte( byval param as FBSYMBOL ptr, byval n as ASTNODE ptr )
 	n->arg.lgt = symbGetLen( symbGetSubtype( param ) )
 end sub
 
-'':::::
 private sub hUDTPassByval _
 	( _
 		byval parent as ASTNODE ptr, _
@@ -648,6 +647,7 @@ private sub hUDTPassByval _
 
 	dim as FBSYMBOL ptr tmp = any
 	dim as ASTNODE ptr arg = any, callexpr = any
+	dim as integer is_ctorcall = any
 
 	arg = n->l
 
@@ -672,22 +672,23 @@ private sub hUDTPassByval _
 		exit sub
 	end if
 
-	'' non-trivial type, pass a pointer to a temp copy
+	'' Non-trivial type, pass a pointer to a temp copy (implicit BYREF)
 	tmp = symbAddTempVar( symbGetFullType( param ), symbGetSubtype( param ) )
 	astDtorListAdd( tmp )
 
-	callexpr = astBuildCopyCtorCall( astBuildVarField( tmp ), arg )
-	if( callexpr = NULL ) then
-		exit sub
+	arg = astBuildImplicitCtorCallEx( param, n->l, n->arg.mode, is_ctorcall )
+	if( is_ctorcall ) then
+		'' Wrap in a CALLCTOR again just for fun
+		arg = astNewCALLCTOR( astPatchCtorCall( arg, astNewVAR( tmp ) ), astNewVAR( tmp ) )
+	else
+		'' Shallow copy, and return a VAR access on the temp var
+		arg = astNewLINK( astNewASSIGN( astNewVAR( tmp ), arg ), astNewVAR( tmp ), FALSE )
 	end if
-
-	arg = astNewCALLCTOR( callexpr, astBuildVarField( tmp ) )
 
 	hBuildByrefArg( param, n, arg )
 
 end sub
 
-'':::::
 private function hImplicitCtor _
 	( _
 		byval parent as ASTNODE ptr, _
@@ -704,24 +705,27 @@ private function hImplicitCtor _
 		exit function
 	end if
 
-	'' recursion? (astBuildImplicitCtorCall() will call newARG with the same expr)
+	'' recursion? (astBuildImplicitCtorCallEx() will call astNewARG() with the same expr)
 	if( rec_cnt <> 0 ) then
 		exit function
 	end if
 
 	'' try calling any ctor with the expression
 	rec_cnt += 1
-	arg = astBuildImplicitCtorCall( symbGetSubtype( param ), n->l, n->arg.mode, is_ctorcall )
+	arg = astBuildImplicitCtorCallEx( param, n->l, n->arg.mode, is_ctorcall )
 	rec_cnt -= 1
 
 	if( is_ctorcall = FALSE ) then
+		'' No implicit construction possible, n->l is not changed
 		exit function
 	end if
 
 	tmp = symbAddTempVar( symbGetFullType( param ), symbGetSubtype( param ) )
 	astDtorListAdd( tmp )
 
-	n->l = astNewCALLCTOR( astPatchCtorCall( arg, astBuildVarField( tmp ) ), astBuildVarField( tmp ) )
+	'' Using a CALLCTOR, to allow hUDTPassByval() to reuse this ctor call if possible
+	'' (instead of making another temp copy)
+	n->l = astNewCALLCTOR( astPatchCtorCall( arg, astNewVAR( tmp ) ), astNewVAR( tmp ) )
 
 	if( symbGetParamMode( param ) = FB_PARAMMODE_BYVAL ) then
 		hUDTPassByval( parent, param, n )

@@ -1111,12 +1111,6 @@ declare function astBuildDtorCall _
 		byval ignore_virtual as integer = FALSE _
 	) as ASTNODE ptr
 
-declare function astBuildCopyCtorCall _
-	( _
-		byval dst as ASTNODE ptr, _
-		byval src as ASTNODE ptr _
-	) as ASTNODE ptr
-
 declare function astBuildForBegin _
 	( _
 		byval tree as ASTNODE ptr, _
