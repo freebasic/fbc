@@ -35,6 +35,12 @@ private sub hIfSingleLine(byval stk as FB_CMPSTMTSTK ptr)
 	if( lexGetToken( ) = FB_TK_ELSE ) then
 		lexSkipToken( )
 
+		'' end scope
+		if( stk->scopenode <> NULL ) then
+			astScopeEnd( stk->scopenode )
+			stk->scopenode = NULL
+		end if
+
 		'' exit if stmt
 		astAdd( astNewBRANCH( AST_OP_JMP, stk->if.endlabel ) )
 
@@ -56,6 +62,10 @@ private sub hIfSingleLine(byval stk as FB_CMPSTMTSTK ptr)
 
 			astAdd( astNewBRANCH( AST_OP_JMP, l ) )
 		else
+
+			'' begin scope
+			stk->scopenode = astScopeBegin( )
+
 			'' Statement
 			cStatement()
 		end if
@@ -78,6 +88,11 @@ private sub hIfSingleLine(byval stk as FB_CMPSTMTSTK ptr)
 	case FB_TK_ENDIF
 		lexSkipToken( )
 	end select
+
+	'' end scope
+	if( stk->scopenode <> NULL ) then
+		astScopeEnd( stk->scopenode )
+	end if
 
 	'' pop from stmt stack
 	cCompStmtPop( stk )
@@ -153,12 +168,13 @@ sub cIfStmtBegin()
 		ismultiline = FALSE
 	end select
 
+	'' begin scope
+	stk->scopenode = astScopeBegin( )
+
 	if( ismultiline ) then
 		stk->if.issingle = FALSE
-		stk->scopenode = astScopeBegin( )
 	else
 		stk->if.issingle = TRUE
-		stk->scopenode = NULL
 		hIfSingleLine( stk )
 	end if
 end sub
