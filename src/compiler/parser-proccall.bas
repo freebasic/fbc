@@ -946,7 +946,7 @@ function cProcCallOrAssign _
   			if( parser.stmt.with.sym <> NULL ) then
 				'' not '..'?
 				if( lexGetLookAhead( 1, LEXCHECK_NOPERIOD ) <> CHAR_DOT ) then
-					expr = cWithVariable( parser.stmt.with.sym, fbGetCheckArray( ) )
+					expr = cWithVariable( fbGetCheckArray( ) )
   					if( expr = NULL ) then
   						exit function
   					end if

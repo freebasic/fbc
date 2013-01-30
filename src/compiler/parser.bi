@@ -88,7 +88,10 @@ type FB_CMPSTMT_SELECT
 end type
 
 type FB_CMPSTMT_WITH
-	last			as FBSYMBOL ptr
+	'' The WITH temp var (if it needed to use a pointer), or the variable
+	'' (if a simple VAR access was given to the WITH)
+	sym		as FBSYMBOL ptr
+	is_ptr		as integer
 end type
 
 type FB_CMPSTMT_NAMESPACE
@@ -122,10 +125,6 @@ type FB_CMPSTMTSTK
 	end union
 end type
 
-type FBPARSER_STMT_WITH
-	sym				as FBSYMBOL ptr
-end type
-
 type FB_LETSTMT_NODE
 	expr			as ASTNODE ptr
 end type
@@ -146,7 +145,7 @@ type FBPARSER_STMT
 	while			as FB_CMPSTMTSTK ptr
 	select			as FB_CMPSTMTSTK ptr
 	proc			as FB_CMPSTMTSTK ptr
-	with			as FBPARSER_STMT_WITH
+	with			as FB_CMPSTMT_WITH
 	let				as FBPARSER_STMT_LET
 end type
 
@@ -642,11 +641,7 @@ declare function cVariableEx _
 		byval checkarray as integer _
 	) as ASTNODE ptr
 
-declare function cWithVariable _
-	( _
-		byval sym as FBSYMBOL ptr, _
-		byval checkarray as integer _
-	) as ASTNODE ptr
+declare function cWithVariable( byval checkarray as integer ) as ASTNODE ptr
 
 declare function cImplicitDataMember _
 	( _

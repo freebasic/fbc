@@ -422,7 +422,7 @@ check_id:
   		if( parser.stmt.with.sym <> NULL ) then
 			'' not '..'?
 			if( lexGetLookAhead( 1, LEXCHECK_NOPERIOD ) <> CHAR_DOT ) then
-  				return cWithVariable( parser.stmt.with.sym, fbGetCheckArray( ) )
+  				return cWithVariable( fbGetCheckArray( ) )
   			end if
   		end if
 

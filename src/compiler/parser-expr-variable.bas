@@ -1368,20 +1368,24 @@ function cVariableEx _
 
 end function
 
-''::::
 private function hImpField _
 	( _
 		byval this_ as FBSYMBOL ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
-		byval check_array as integer _
+		byval check_array as integer, _
+		byval is_ptr as integer _
 	) as ASTNODE ptr
 
 	dim as ASTNODE ptr varexpr = any
 
-	varexpr = cUdtMember( dtype, subtype, _
-		astNewVAR( this_, , typeAddrOf( dtype ), subtype ), _
-		check_array )
+	if( is_ptr ) then
+		varexpr = astNewVAR( this_, , typeAddrOf( dtype ), subtype )
+	else
+		varexpr = astNewADDROF( astNewVAR( this_, , dtype, subtype ) )
+	end if
+
+	varexpr = cUdtMember( dtype, subtype, varexpr, check_array )
 
    	if( varexpr = NULL ) then
    		return NULL
@@ -1409,23 +1413,22 @@ private function hImpField _
 								 	  check_array )
 end function
 
-'':::::
-''WithVariable        =   '.' UdtMember FuncPtrOrMemberDeref? .
-''
-function cWithVariable _
-	( _
-		byval sym as FBSYMBOL ptr, _
-		byval check_array as integer _
-	) as ASTNODE ptr
+''  WithVariable  = '.' UdtMember FuncPtrOrMemberDeref? .
+function cWithVariable( byval check_array as integer ) as ASTNODE ptr
+	dim as FBSYMBOL ptr sym = any
+	dim as integer dtype = any
 
-    '' '.'
-    lexSkipToken( LEXCHECK_NOPERIOD )
+	'' '.'
+	lexSkipToken( LEXCHECK_NOPERIOD )
 
-    function = hImpField( sym, _
-    					  typeDeref( symbGetFullType( sym ) ), _
-    					  symbGetSubtype( sym ), _
-    					  check_array )
+	sym = parser.stmt.with.sym
+	dtype = symbGetFullType( sym )
+	if( parser.stmt.with.is_ptr ) then
+		dtype = typeDeref( dtype )
+	end if
 
+	function = hImpField( sym, dtype, symbGetSubtype( sym ), check_array, _
+				parser.stmt.with.is_ptr )
 end function
 
 '':::::
@@ -1452,7 +1455,7 @@ function cVariable _
 			return NULL
 		end if
 
-		return cWithVariable( parser.stmt.with.sym, check_array )
+		return cWithVariable( check_array )
 	end select
 
 end function
@@ -1483,10 +1486,8 @@ function cImplicitDataMember _
 		base_parent = symbGetSubtype( this_ )
 	End If
 
-    function = hImpField( this_, _
-    					  symbGetFullType( this_ ), _
-    					  base_parent, _
-    					  check_array )
+	function = hImpField( this_, symbGetFullType( this_ ), base_parent, _
+				check_array, TRUE )
 
 end function
 
