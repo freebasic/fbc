@@ -1,8 +1,5 @@
 # include "fbcu.bi"
 
-
-
-
 namespace fbc_tests.compound.if_
 
 sub test_multiline_scope cdecl ()
@@ -47,8 +44,8 @@ end sub
 sub ctor () constructor
 
 	fbcu.add_suite("fbc_tests.compound.if_")
-	fbcu.add_test("test single-line if scope", @test_singleline)
-	fbcu.add_test("test multi-line if scope", @test_multiline)
+	fbcu.add_test("test single-line if scope", @test_singleline_scope)
+	fbcu.add_test("test multi-line if scope", @test_multiline_scope)
 
 end sub
 
