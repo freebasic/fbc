@@ -16,12 +16,13 @@ Version 0.25.0:
 - crt/stdio.bi now declares rename() instead of rename_()
 - Property methods using an explicit ALIAS now respect that alias and do not append __get__ or __set__ anymore
 - #637: Assert[Warn]() messages go to stderr now, rather than to the FB screen (because that might be about to be closed)
-- Class UDTs can no longer be used as variable names, due to the parsing ambiguity with static member variables
+- LBound/UBound( array, 0 ) now returns 1 and the dimension count, it is no longer the same as LBound/UBound( array, 1 )
 
 [added]
 - VIRTUAL and ABSTRACT methods (including virtual destructors) in UDTs extending OBJECT, which can be overridden by methods in derived UDTs, provided the same method name and signature is used
 - OVERRIDE attribute (method must override a virtual) on method declarations (compile-time check)
 - STATIC member variables in UDTs
+- BYREF function results:  function f( ) byref as integer
 - LLVM backend (-gen llvm) that emits textual LLVM IR code and uses llc to compile it into ASM
 - Updated headers for caca 0.99.beta18 (caca.bi = new API, caca0.bi = old API)
 - Updated header for libzip 0.10.1
@@ -35,11 +36,13 @@ Version 0.25.0:
 - NAKED support for the C backend, using GCC inline asm
 - ALIAS "" or LIB "" will now result in a compiler error
 - fbc now recognizes --version and [-]-help command line options
-- IIF now accepts strings (yetifoot/dkl)
+- IIF now accepts strings and UDTs (yetifoot/dkl)
 - win/initguid.bi win32 header
 - -exx NULL pointer checks for procedure pointer calls
 - CVD(longint), CVS(integer), CVL(single), CVLONGINT(double), for reinterpreting directly between floating-point and integer representations without using strings
 - In procedure prototypes, identifiers of array parameters (as in "array() as type") can now be omitted (as in "() as type"), as for non-array parameters
+- LBound/UBound() on fixed-size arrays with constant dimension argument (or none at all) will now be compile-time constants
+- IIF now allows different types to be mixed, for example iif( condition, mybyte, myinteger ), the result type is the bigger type
 
 [fixed]
 - libzip headers: zip_stat struct was unnecessarily named zip_stat_, breaking the libzip example
@@ -68,7 +71,7 @@ Version 0.25.0:
 - Win32 cond*() functions won't crash anymore when given NULL arguments; Unix condwait() won't crash anymore when given NULL instead of a valid mutex pointer
 - internal error in ThreadCall parser, potentially causing compiler crashes or miscompilation
 - Warnings could still be shown even after the "Too many errors, exiting" message
-- ASM backend: Unsigned integer multiplications did not preserve EDX in some cases
+- ASM backend: Unsigned integer multiplications did not preserve EDX in some cases due to buggy MUL code generation; now the simpler IMUL is used instead
 - ASM/C backend: DOUBLEs being cast to SINGLE will now be truncated to SINGLE, as if an assignment to a SINGLE variable was made
 - Multiple run-time library symbols have been removed from the global FB namespace: __main, mcount, _monstartup, rename, __divdi3, __udivdi3, __moddi3, __umoddi3, __fixunsdfdi
 - Fixed-size arrays/UDTs > 2 GiB will now result in a compile-time error, instead of causing internal integer overflows
