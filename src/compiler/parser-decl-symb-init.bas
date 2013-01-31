@@ -369,6 +369,12 @@ private function hUDTInit _
 
     rec_cnt += 1
 
+	dtype = symbGetType( ctx.sym )
+	subtype = symbGetSubtype( ctx.sym )
+	if( (ctx.options and FB_INIOPT_DODEREF) <> 0 ) then
+		dtype = typeDeref( dtype )
+	end if
+
     '' ctor?
     if( (ctx.options and FB_INIOPT_ISOBJ) <> 0 ) then
     	dim as ASTNODE ptr expr = any
@@ -380,6 +386,22 @@ private function hUDTInit _
 			'' error recovery: fake an expr
 			expr = astNewCONSTi( 0 )
 	    end if
+
+		'' When initializing a BYREF parameter, an expression of the
+		'' same type should be used as-is instead of causing a copy
+		'' constructor call + temp var to be used, because that would
+		'' destroy the BYREF semantics. For any other expression it's
+		'' ok to cause implicit constructor calls though, because it
+		'' couldn't be passed BYREF anyways.
+		if( symbGetClass( ctx.sym ) = FB_SYMBCLASS_PARAM ) then
+			if( symbGetParamMode( ctx.sym ) = FB_PARAMMODE_BYREF ) then
+				if( (astGetDataType( expr ) = dtype) and _
+				    (astGetSubtype( expr ) = subtype) ) then
+					rec_cnt -= 1
+					return hDoAssign( ctx, expr )
+				end if
+			end if
+		end if
 
 		'' array passed by descriptor?
 		dim as FB_PARAMMODE arg_mode = INVALID
@@ -430,12 +452,6 @@ private function hUDTInit _
 
 	if( parenth ) then
 		lexSkipToken( )
-	end if
-
-	dtype = symbGetType( ctx.sym )
-	subtype = symbGetSubtype( ctx.sym )
-	if( (ctx.options and FB_INIOPT_DODEREF) <> 0 ) then
-		dtype = typeDeref( dtype )
 	end if
 
 	first = symbUdtGetFirstField( subtype )

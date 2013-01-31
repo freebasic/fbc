@@ -130,6 +130,7 @@ private function hOptionalExpr _
 	) as ASTNODE ptr
 
     dim as ASTNODE ptr expr = any
+	dim as integer inioptions = any
 
     function = NULL
 
@@ -137,9 +138,9 @@ private function hOptionalExpr _
 	'' (not BYDESC nor VARARG)
 	if( symbGetParamMode( param ) <> FB_PARAMMODE_BYVAL ) then
 		if( symbGetParamMode( param ) <> FB_PARAMMODE_BYREF ) then
-    		exit function
-    	end if
-    end if
+			exit function
+		end if
+	end if
 
 	'' Complain if it's a forward reference or ANY (possible with BYREF),
 	'' since the type is unknown, we cannot parse an initializer for it.

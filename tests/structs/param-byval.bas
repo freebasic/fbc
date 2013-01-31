@@ -16,16 +16,19 @@ namespace defCtor
 
 	dim shared as UDT x0
 
-	function hPassByval( byval x as UDT ) as integer
+	function hPassByval1( byval x as UDT ) as integer
 		function = x.i
+		x.i = 111
 	end function
 
-	function hPassByval1( byval x as UDT = x0 ) as integer
+	function hPassByval2( byval x as UDT = x0 ) as integer
 		function = x.i
+		x.i = 222
 	end function
 
-	function hPassByval2( byval x as UDT = UDT( ) ) as integer
+	function hPassByval3( byval x as UDT = UDT( ) ) as integer
 		function = x.i
+		x.i = 333
 	end function
 
 	sub test cdecl( )
@@ -35,17 +38,19 @@ namespace defCtor
 		CU_ASSERT( ctors = 2 )
 
 		x.i = 123
-		CU_ASSERT( hPassByval( x ) = 123 )
+		CU_ASSERT( hPassByval1( x ) = 123 )
+		CU_ASSERT( x.i = 123 )
 		CU_ASSERT( ctors = 2 )
 
-		CU_ASSERT( hPassByval( UDT( ) ) = 0 )
+		CU_ASSERT( hPassByval1( UDT( ) ) = 0 )
 		CU_ASSERT( ctors = 3 )
 
 		x0.i = 456
-		CU_ASSERT( hPassByval1( ) = 456 )
+		CU_ASSERT( hPassByval2( ) = 456 )
+		CU_ASSERT( x0.i = 456 )
 		CU_ASSERT( ctors = 3 )
 
-		CU_ASSERT( hPassByval2( ) = 0 )
+		CU_ASSERT( hPassByval3( ) = 0 )
 		CU_ASSERT( ctors = 4 )
 	end sub
 end namespace
@@ -70,16 +75,19 @@ namespace defCtorAndCopyCtor
 
 	dim shared as UDT x0
 
-	function hPassByval( byval x as UDT ) as integer
+	function hPassByval1( byval x as UDT ) as integer
 		function = x.i
+		x.i = 111
 	end function
 
-	function hPassByval1( byval x as UDT = x0 ) as integer
+	function hPassByval2( byval x as UDT = x0 ) as integer
 		function = x.i
+		x.i = 222
 	end function
 
-	function hPassByval2( byval x as UDT = UDT( ) ) as integer
+	function hPassByval3( byval x as UDT = UDT( ) ) as integer
 		function = x.i
+		x.i = 333
 	end function
 
 	sub test cdecl( )
@@ -91,20 +99,22 @@ namespace defCtorAndCopyCtor
 		CU_ASSERT( copyctors = 0 )
 
 		x.i = 123
-		CU_ASSERT( hPassByval( x ) = 123 )
+		CU_ASSERT( hPassByval1( x ) = 123 )
+		CU_ASSERT( x.i = 123 )
 		CU_ASSERT(  defctors = 2 )
 		CU_ASSERT( copyctors = 1 )
 
-		CU_ASSERT( hPassByval( UDT( ) ) = 0 )
+		CU_ASSERT( hPassByval1( UDT( ) ) = 0 )
 		CU_ASSERT(  defctors = 3 )
 		CU_ASSERT( copyctors = 1 )
 
 		x0.i = 456
-		CU_ASSERT( hPassByval1( ) = 456 )
+		CU_ASSERT( hPassByval2( ) = 456 )
+		CU_ASSERT( x0.i = 456 )
 		CU_ASSERT(  defctors = 3 )
 		CU_ASSERT( copyctors = 2 )
 
-		CU_ASSERT( hPassByval2( ) = 0 )
+		CU_ASSERT( hPassByval3( ) = 0 )
 		CU_ASSERT(  defctors = 4 )
 		CU_ASSERT( copyctors = 2 )
 	end sub
@@ -125,16 +135,25 @@ namespace intCtor
 
 	dim shared as UDT x0 = UDT( 456 )
 
-	function hPassByval( byval x as UDT ) as integer
+	function hPassByval1( byval x as UDT ) as integer
 		function = x.i
+		x.i = 111
 	end function
 
-	function hPassByval1( byval x as UDT = x0 ) as integer
+	function hPassByval2( byval x as UDT = x0 ) as integer
 		function = x.i
+		x.i = 222
 	end function
 
-	function hPassByval2( byval x as UDT = UDT( 789 ) ) as integer
+	function hPassByval3( byval x as UDT = UDT( 789 ) ) as integer
 		function = x.i
+		x.i = 333
+	end function
+
+	'' implicit construction
+	function hPassByval4( byval x as UDT = 3344 ) as integer
+		function = x.i
+		x.i = 444
 	end function
 
 	sub test cdecl( )
@@ -143,17 +162,26 @@ namespace intCtor
 		dim as UDT x = UDT( 123 )
 		CU_ASSERT( ctors = 2 )
 
-		CU_ASSERT( hPassByval( x ) = 123 )
+		CU_ASSERT( hPassByval1( x ) = 123 )
+		CU_ASSERT( x.i = 123 )
 		CU_ASSERT( ctors = 2 )
 
-		CU_ASSERT( hPassByval( UDT( 456 ) ) = 456 )
+		CU_ASSERT( hPassByval1( UDT( 456 ) ) = 456 )
 		CU_ASSERT( ctors = 3 )
 
-		CU_ASSERT( hPassByval1( ) = 456 )
+		CU_ASSERT( hPassByval2( ) = 456 )
+		CU_ASSERT( x0.i = 456 )
 		CU_ASSERT( ctors = 3 )
 
-		CU_ASSERT( hPassByval2( ) = 789 )
+		CU_ASSERT( hPassByval3( ) = 789 )
 		CU_ASSERT( ctors = 4 )
+
+		'' implicit construction
+		CU_ASSERT( hPassByval1( 1122 ) = 1122 )
+		CU_ASSERT( ctors = 5 )
+
+		CU_ASSERT( hPassByval4( ) = 3344 )
+		CU_ASSERT( ctors = 6 )
 	end sub
 end namespace
 
@@ -178,16 +206,25 @@ namespace intCtorAndCopyCtor
 
 	dim shared as UDT x0 = UDT( 456 )
 
-	function hPassByval( byval x as UDT ) as integer
+	function hPassByval1( byval x as UDT ) as integer
 		function = x.i
+		x.i = 111
 	end function
 
-	function hPassByval1( byval x as UDT = x0 ) as integer
+	function hPassByval2( byval x as UDT = x0 ) as integer
 		function = x.i
+		x.i = 222
 	end function
 
-	function hPassByval2( byval x as UDT = UDT( 789 ) ) as integer
+	function hPassByval3( byval x as UDT = UDT( 789 ) ) as integer
 		function = x.i
+		x.i = 333
+	end function
+
+	'' implicit construction
+	function hPassByval4( byval x as UDT = 3344 ) as integer
+		function = x.i
+		x.i = 444
 	end function
 
 	sub test cdecl( )
@@ -198,20 +235,31 @@ namespace intCtorAndCopyCtor
 		CU_ASSERT(  intctors = 2 )
 		CU_ASSERT( copyctors = 0 )
 
-		CU_ASSERT( hPassByval( x ) = 123 )
+		CU_ASSERT( hPassByval1( x ) = 123 )
+		CU_ASSERT( x.i = 123 )
 		CU_ASSERT(  intctors = 2 )
 		CU_ASSERT( copyctors = 1 )
 
-		CU_ASSERT( hPassByval( UDT( 456 ) ) = 456 )
+		CU_ASSERT( hPassByval1( UDT( 456 ) ) = 456 )
 		CU_ASSERT(  intctors = 3 )
 		CU_ASSERT( copyctors = 1 )
 
-		CU_ASSERT( hPassByval1( ) = 456 )
+		CU_ASSERT( hPassByval2( ) = 456 )
+		CU_ASSERT( x0.i = 456 )
 		CU_ASSERT(  intctors = 3 )
 		CU_ASSERT( copyctors = 2 )
 
-		CU_ASSERT( hPassByval2( ) = 789 )
+		CU_ASSERT( hPassByval3( ) = 789 )
 		CU_ASSERT(  intctors = 4 )
+		CU_ASSERT( copyctors = 2 )
+
+		'' implicit construction
+		CU_ASSERT( hPassByval1( 1122 ) = 1122 )
+		CU_ASSERT(  intctors = 5 )
+		CU_ASSERT( copyctors = 2 )
+
+		CU_ASSERT( hPassByval4( ) = 3344 )
+		CU_ASSERT(  intctors = 6 )
 		CU_ASSERT( copyctors = 2 )
 	end sub
 end namespace
@@ -236,16 +284,25 @@ namespace defCtorAndIntCtor
 
 	dim shared as UDT x0 = UDT( 456 )
 
-	function hPassByval( byval x as UDT ) as integer
+	function hPassByval1( byval x as UDT ) as integer
 		function = x.i
+		x.i = 111
 	end function
 
-	function hPassByval1( byval x as UDT = x0 ) as integer
+	function hPassByval2( byval x as UDT = x0 ) as integer
 		function = x.i
+		x.i = 222
 	end function
 
-	function hPassByval2( byval x as UDT = UDT( 789 ) ) as integer
+	function hPassByval3( byval x as UDT = UDT( 789 ) ) as integer
 		function = x.i
+		x.i = 333
+	end function
+
+	'' implicit construction
+	function hPassByval4( byval x as UDT = 3344 ) as integer
+		function = x.i
+		x.i = 444
 	end function
 
 	sub test cdecl( )
@@ -256,21 +313,32 @@ namespace defCtorAndIntCtor
 		CU_ASSERT( defctors = 0 )
 		CU_ASSERT( intctors = 2 )
 
-		CU_ASSERT( hPassByval( x ) = 123 )
+		CU_ASSERT( hPassByval1( x ) = 123 )
+		CU_ASSERT( x.i = 123 )
 		CU_ASSERT( defctors = 0 )
 		CU_ASSERT( intctors = 2 )
 
-		CU_ASSERT( hPassByval( UDT( 456 ) ) = 456 )
+		CU_ASSERT( hPassByval1( UDT( 456 ) ) = 456 )
 		CU_ASSERT( defctors = 0 )
 		CU_ASSERT( intctors = 3 )
 
-		CU_ASSERT( hPassByval1( ) = 456 )
+		CU_ASSERT( hPassByval2( ) = 456 )
+		CU_ASSERT( x0.i = 456 )
 		CU_ASSERT( defctors = 0 )
 		CU_ASSERT( intctors = 3 )
 
-		CU_ASSERT( hPassByval2( ) = 789 )
+		CU_ASSERT( hPassByval3( ) = 789 )
 		CU_ASSERT( defctors = 0 )
 		CU_ASSERT( intctors = 4 )
+
+		'' implicit construction
+		CU_ASSERT( hPassByval1( 1122 ) = 1122 )
+		CU_ASSERT( defctors = 0 )
+		CU_ASSERT( intctors = 5 )
+
+		CU_ASSERT( hPassByval4( ) = 3344 )
+		CU_ASSERT( defctors = 0 )
+		CU_ASSERT( intctors = 6 )
 	end sub
 end namespace
 
