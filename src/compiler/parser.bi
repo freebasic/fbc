@@ -805,6 +805,7 @@ declare function cStrIdxOrMemberDeref _
 	) as ASTNODE ptr
 
 declare sub cAssignment(byval assgexpr as ASTNODE ptr)
+declare function cBydescArrayArgParens( byval arg as ASTNODE ptr ) as FB_PARAMMODE
 declare function cAssignFunctResult( byval is_return as integer ) as integer
 
 declare function cGfxStmt _

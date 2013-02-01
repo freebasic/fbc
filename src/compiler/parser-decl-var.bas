@@ -2004,22 +2004,8 @@ sub cAutoVarDecl(byval attrib as FB_SYMBATTRIB)
 
         	'' handle constructors..
         	else
-				'' array passed by descriptor?
-				dim as FB_PARAMMODE arg_mode = INVALID
-				if( lexGetToken( ) = CHAR_LPRNT ) then
-					if( lexGetLookAhead( 1 ) = CHAR_RPRNT ) then
-						if( astGetSymbol( expr ) <> NULL ) then
-							if( symbIsArray( astGetSymbol( expr ) ) ) then
-								lexSkipToken( )
-								lexSkipToken( )
-								arg_mode = FB_PARAMMODE_BYDESC
-							end if
-						end if
-					end if
-    			end if
-
-    			dim as integer is_ctorcall = any
-    			expr = astBuildImplicitCtorCallEx( sym, expr, arg_mode, is_ctorcall )
+				dim as integer is_ctorcall = any
+				expr = astBuildImplicitCtorCallEx( sym, expr, cBydescArrayArgParens( expr ), is_ctorcall )
 
         		if( expr <> NULL ) then
     				if( is_ctorcall ) then

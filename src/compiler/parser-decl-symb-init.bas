@@ -403,26 +403,12 @@ private function hUDTInit _
 			end if
 		end if
 
-		'' array passed by descriptor?
-		dim as FB_PARAMMODE arg_mode = INVALID
-		if( lexGetToken( ) = CHAR_LPRNT ) then
-			if( lexGetLookAhead( 1 ) = CHAR_RPRNT ) then
-				if( astGetSymbol( expr ) <> NULL ) then
-					if( symbIsArray( astGetSymbol( expr ) ) ) then
-						lexSkipToken( )
-						lexSkipToken( )
-						arg_mode = FB_PARAMMODE_BYDESC
-					end if
-				end if
-			end if
-    	end if
-
-    	dim as integer is_ctorcall = any
-    	expr = astBuildImplicitCtorCallEx( ctx.sym, expr, arg_mode, is_ctorcall )
-        if( expr = NULL ) then
-        	rec_cnt -= 1
-        	exit function
-        end if
+		dim as integer is_ctorcall = any
+		expr = astBuildImplicitCtorCallEx( ctx.sym, expr, cBydescArrayArgParens( expr ), is_ctorcall )
+		if( expr = NULL ) then
+			rec_cnt -= 1
+			exit function
+		end if
 
     	if( is_ctorcall ) then
     		rec_cnt -= 1
@@ -510,12 +496,11 @@ private function hUDTInit _
 
 			'' try to assign the expression to the parent
 			dim as integer is_ctorcall = any
-			dim as FB_PARAMMODE arg_mode = INVALID
 			dim as ASTNODE ptr expr = ctx.init_expr
 
 			ctx = old_ctx
 
-			expr = astBuildImplicitCtorCallEx( ctx.sym, expr, arg_mode, is_ctorcall )
+			expr = astBuildImplicitCtorCallEx( ctx.sym, expr, INVALID, is_ctorcall )
 			if( expr = NULL ) then
 				rec_cnt -= 1
 				exit function

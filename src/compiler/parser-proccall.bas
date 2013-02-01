@@ -14,6 +14,21 @@ declare sub hBaseInit( )
 declare function hBaseMemberAccess( ) as integer
 declare function hForwardCall( ) as integer
 
+function cBydescArrayArgParens( byval arg as ASTNODE ptr ) as FB_PARAMMODE
+	function = INVALID
+	if( lexGetToken( ) = CHAR_LPRNT ) then
+		if( lexGetLookAhead( 1 ) = CHAR_RPRNT ) then
+			if( astGetSymbol( arg ) <> NULL ) then
+				if( symbIsArray( astGetSymbol( arg ) ) ) then
+					lexSkipToken( )
+					lexSkipToken( )
+					function = FB_PARAMMODE_BYDESC
+				end if
+			end if
+		end if
+	end if
+end function
+
 function cAssignFunctResult( byval is_return as integer ) as integer
 	dim as FBSYMBOL ptr res = any, subtype = any
 	dim as ASTNODE ptr rhs = any, expr = any
@@ -107,22 +122,8 @@ function cAssignFunctResult( byval is_return as integer ) as integer
 
 	'' RETURN and has ctor? try to initialize..
 	if( is_return and has_ctor ) then
-		'' array passed by descriptor?
-		dim as FB_PARAMMODE arg_mode = INVALID
-		if( lexGetToken( ) = CHAR_LPRNT ) then
-			if( lexGetLookAhead( 1 ) = CHAR_RPRNT ) then
-				if( astGetSymbol( rhs ) <> NULL ) then
-					if( symbIsArray( astGetSymbol( rhs ) ) ) then
-						lexSkipToken( )
-						lexSkipToken( )
-						arg_mode = FB_PARAMMODE_BYDESC
-					end if
-				end if
-			end if
-		end if
-
 		dim as integer is_ctorcall = any
-		rhs = astBuildImplicitCtorCallEx( res, rhs, arg_mode, is_ctorcall )
+		rhs = astBuildImplicitCtorCallEx( res, rhs, cBydescArrayArgParens( rhs ), is_ctorcall )
 		if( rhs = NULL ) then
 			exit function
 		end if
