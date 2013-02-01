@@ -742,7 +742,6 @@ end type
 
 type FB_RTTICTX
 	fb_rtti			as FBSYMBOL ptr
-	fb_baseVT		as FBSYMBOL ptr
 	fb_object		as FBSYMBOL ptr
 End Type
 
