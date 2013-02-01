@@ -672,66 +672,7 @@ private function hAssignOrCall _
 	    	select case as const symbGetClass( sym )
 	    	'' proc?
 	    	case FB_SYMBCLASS_PROC
-	    		if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_CODE ) = FALSE ) then
-					exit function
-	    		end if
-
-				lexSkipToken( )
-
-	            ''
-	            dim as integer do_call = lexGetToken( ) <> FB_TK_ASSIGN
-
-	            if( do_call = FALSE ) then
-	            	'' special case: property
-	            	if( symbIsProperty( sym ) ) then
-	                	do_call = TRUE
-
-	                	'' unless it's inside a PROPERTY GET block
-	                	if( symbIsProperty( parser.currproc ) ) then
-	                		if( symbGetProcParams( parser.currproc ) = 1 ) then
-	                			if( symbIsProcOverloadOf( parser.currproc, sym ) ) then
-	                				do_call = FALSE
-	                			end if
-	                		end if
-	                	end if
-	            	end if
-	            end if
-
-				'' ID ProcParamList?
-				if( do_call ) then
-					dim as ASTNODE ptr expr = any
-					expr = cProcCall( base_parent, sym, NULL, NULL )
-
-					'' assignment of a function deref?
-					if( expr <> NULL ) then
-						cAssignment( expr )
-					end if
-
-					return TRUE
-
-				'' ID '=' Expression
-				else
-	            	'' CALL?
-	            	if( iscall ) then
-						errReport( FB_ERRMSG_SYNTAXERROR )
-						'' error recovery: skip stmt, return
-						hSkipStmt( )
-						return TRUE
-	            	end if
-
-	            	'' check if name is valid (or if overloaded)
-					if( symbIsProcOverloadOf( parser.currproc, sym ) = FALSE ) then
-						errReport( FB_ERRMSG_ILLEGALOUTSIDEAPROC )
-						'' error recovery: skip stmt, return
-						hSkipStmt( )
-						return TRUE
-					end if
-
-	       			'' skip the '='
-	       			lexSkipToken( )
-
-					return cAssignFunctResult( FALSE )
-				end if
+				return hProcSymbol( base_parent, sym, iscall )
 
 			case FB_SYMBCLASS_VAR
 				'' must process variables here, multiple calls to
