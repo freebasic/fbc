@@ -249,6 +249,11 @@ private sub hVarExtToPub _
 		end if
 
 		symbSetAttrib( desc, attrib )
+
+		'' Add an initializer to the descriptor, now that we know this
+		'' EXTERN will be allocated in this module, and the EXTERN
+		'' attribute was removed
+		symbGetTypeIniTree( desc ) = astBuildArrayDescIniTree( desc, sym, NULL )
 	end if
 
 end sub

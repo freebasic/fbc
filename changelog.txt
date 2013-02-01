@@ -175,6 +175,7 @@ Version 0.25.0:
 - win/commctrl.bi: NMPGSCROLL structure fixed
 - Two temporary copies could be created when passing classes BYVAL
 - UDT variables given in BYREF UDT parameter initializers could be copied to a temporary variable if a copy constructor was available, instead of being passed BYREF
+- #630: C backend: EXTERN dynamic array descriptors were not emitted (if the EXTERN was not DIMed in that module)
 
 
 Version 0.24.0:

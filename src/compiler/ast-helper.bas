@@ -765,10 +765,10 @@ function astBuildArrayDescIniTree _
     dim as integer dtype = any, dims = any
     dim as FBSYMBOL ptr elm = any, dimtb = any, subtype = any
 
-    '' COMMON?
-    if( symbIsCommon( array ) ) then
-    	return NULL
-    end if
+	'' COMMON or EXTERN? Cannot be initialized
+	if( symbIsCommon( array ) or symbIsExtern( array ) ) then
+		return NULL
+	end if
 
     ''
     tree = astTypeIniBegin( symbGetFullType( desc ), symbGetSubtype( desc ), TRUE )
