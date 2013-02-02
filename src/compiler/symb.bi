@@ -1317,13 +1317,8 @@ declare sub symbDelLabel _
 	)
 
 declare sub symbDelVarDims( byval s as FBSYMBOL ptr )
-declare sub symbDelVar( byval s as FBSYMBOL ptr, byval is_tbdel as integer = FALSE )
-
-declare sub symbDelPrototype _
-	( _
-		byval s as FBSYMBOL ptr _
-	)
-
+declare sub symbDelVar( byval s as FBSYMBOL ptr, byval is_tbdel as integer )
+declare sub symbDelPrototype( byval s as FBSYMBOL ptr )
 declare sub symbDelEnum( byval s as FBSYMBOL ptr )
 declare sub symbDelStruct( byval s as FBSYMBOL ptr )
 declare sub symbDelField( byval s as FBSYMBOL ptr )

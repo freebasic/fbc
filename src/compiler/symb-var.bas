@@ -827,7 +827,7 @@ sub symbDelVar( byval s as FBSYMBOL ptr, byval is_tbdel as integer )
     ''
     elseif( symbGetIsInitialized( s ) ) then
     	s->stats and= not FB_SYMBSTATS_INITIALIZED
-    	'' astEnd will free the nodes..
+		'' Note: astEnd() will already free the initree
     end if
 
     ''

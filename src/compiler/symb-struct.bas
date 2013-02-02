@@ -778,6 +778,7 @@ sub symbDelField( byval s as FBSYMBOL ptr )
 	if( symbGetArrayDimensions( s ) > 0 ) then
 		symbDelVarDims( s )
 	end if
+	'' Note: astEnd() will already free the initree
 	symbFreeSymbol( s )
 end sub
 

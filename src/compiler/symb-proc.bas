@@ -2384,33 +2384,21 @@ end function
 '' del
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-'':::::
-private sub hDelParams _
-	( _
-		byval f as FBSYMBOL ptr _
-	)
+private sub hDelParams( byval proc as FBSYMBOL ptr )
+	dim as FBSYMBOL ptr param = any, nxt = any
 
-	dim as FBSYMBOL ptr param, nxt
+	param = proc->proc.paramtb.head
+	while( param )
+		nxt = param->next
 
-    param = f->proc.paramtb.head
-    do while( param <> NULL )
-    	nxt = param->next
-    	symbFreeSymbol( param )
-    	param = nxt
-    loop
+		'' Note: astEnd() will already free the optexpr
+		symbFreeSymbol( param )
 
+		param = nxt
+	wend
 end sub
 
-'':::::
-sub symbDelPrototype _
-	( _
-		byval s as FBSYMBOL ptr _
-	)
-
-    if( s = NULL ) then
-    	exit sub
-    end if
-
+sub symbDelPrototype( byval s as FBSYMBOL ptr )
 	'' del args..
 	if( s->proc.params > 0 ) then
 		hDelParams( s )
@@ -2423,7 +2411,6 @@ sub symbDelPrototype _
     '' note: can't delete the next overloaded procs in the list here
     '' because global operators can be declared inside namespaces,
     '' but they will be linked together
-
 end sub
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::

@@ -1481,6 +1481,7 @@ sub symbDelSymbol _
 		symbNamespaceRemove( s, FALSE )
 
 	case FB_SYMBCLASS_FIELD
+		assert( is_tbdel )  '' symbDelField() assumption
 		symbDelField( s )
 
 	case else
