@@ -1474,6 +1474,9 @@ sub symbDelSymbol _
 	case FB_SYMBCLASS_NSIMPORT
 		symbNamespaceRemove( s, FALSE )
 
+	case FB_SYMBCLASS_FIELD
+		symbDelField( s )
+
 	case else
 		symbFreeSymbol( s )
 

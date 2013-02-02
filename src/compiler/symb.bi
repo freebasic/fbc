@@ -1332,10 +1332,8 @@ declare sub symbDelEnum _
 		byval s as FBSYMBOL ptr _
 	)
 
-declare sub symbDelStruct _
-	( _
-		byval s as FBSYMBOL ptr _
-	)
+declare sub symbDelStruct( byval s as FBSYMBOL ptr )
+declare sub symbDelField( byval s as FBSYMBOL ptr )
 
 declare sub symbDelConst _
 	( _

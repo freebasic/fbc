@@ -774,21 +774,25 @@ end function
 '' del
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-'':::::
-sub symbDelStruct _
-	( _
-		byval s as FBSYMBOL ptr _
-	)
+sub symbDelField( byval s as FBSYMBOL ptr )
+	dim as FBVARDIM ptr dim_ = any, dim_nxt = any
 
-    if( s = NULL ) then
-    	exit sub
-    end if
+	'' del array dims if not a scalar type
+	dim_ = s->var_.array.dimhead
+	while( dim_ )
+		dim_nxt = dim_->next
+		listDelNode( @symb.dimlist, dim_ )
+		dim_ = dim_nxt
+	wend
 
-    ''
+	symbFreeSymbol( s )
+end sub
+
+sub symbDelStruct( byval s as FBSYMBOL ptr )
     symbCompDelImportList( s )
 
-    '' del all udt elements
-    do
+	'' del all udt elements
+	do
 		'' starting from last because of the USING's that could be
 		'' referencing a namespace in the same scope block
 		dim as FBSYMBOL ptr fld = symbGetCompSymbTb( s ).tail
@@ -796,35 +800,15 @@ sub symbDelStruct _
 			exit do
 		end if
 
-    	'' an ordinary field?
-    	if( symbGetClass( fld ) = FB_SYMBCLASS_FIELD ) then
-    		'' del array dims if not a scalar type
-    		dim as FBVARDIM ptr dim_ = any, dim_nxt = any
-    		dim_ = fld->var_.array.dimhead
-    		do while( dim_ <> NULL )
-    			dim_nxt = dim_->next
+		symbDelSymbol( fld, TRUE )
+	loop
 
-    			listDelNode( @symb.dimlist, dim_ )
+	if( s->udt.ext ) then
+		deallocate( s->udt.ext )
+		s->udt.ext = NULL
+	end if
 
-    			dim_ = dim_nxt
-    		loop
-
-    		symbFreeSymbol( fld )
-
-    	'' ctor, dtor, operator or method's local symbol
-    	else
-    		symbDelSymbol( fld, TRUE )
-    	end if
-    loop
-
-    ''
-    if( s->udt.ext <> NULL ) then
-    	deallocate( s->udt.ext )
-    	s->udt.ext = NULL
-    end if
-
-	''
-	if( s->udt.ns.ext <> NULL ) then
+	if( s->udt.ns.ext ) then
 		symbCompFreeExt( s->udt.ns.ext )
 		s->udt.ns.ext = NULL
 	end if
@@ -835,7 +819,6 @@ sub symbDelStruct _
 
 	'' del the udt node
 	symbFreeSymbol( s )
-
 end sub
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
