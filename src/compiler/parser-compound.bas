@@ -754,13 +754,9 @@ sub cCompStmtPop _
 
 end sub
 
-'':::::
-function cCompStmtIsAllowed _
-	( _
-		byval allowmask as FB_CMPSTMT_MASK _
-	) as integer static
-
-	dim as FB_CMPSTMTSTK ptr stk
+function cCompStmtIsAllowed( byval allowmask as FB_CMPSTMT_MASK ) as integer
+	dim as FB_CMPSTMTSTK ptr stk = any
+	dim as integer errmsg = any
 
 	stk = stackGetTOS( @parser.stmt.stk )
 
@@ -775,13 +771,15 @@ function cCompStmtIsAllowed _
 	end if
 
 	'' error..
-	dim as integer errmsg
-
 	if( fbIsModLevel( ) = FALSE ) then
 		errmsg = FB_ERRMSG_ILLEGALINSIDEASUB
 	else
 		if( symbIsGlobalNamespc( ) ) then
-			errmsg = FB_ERRMSG_ILLEGALINSIDEASCOPE
+			if( stk->id = FB_TK_SELECT ) then
+				errmsg = FB_ERRMSG_ILLEGALINSIDESELECT
+			else
+				errmsg = FB_ERRMSG_ILLEGALINSIDEASCOPE
+			end if
 		else
 			errmsg = FB_ERRMSG_ILLEGALINSIDEANAMESPC
 		end if
@@ -790,5 +788,4 @@ function cCompStmtIsAllowed _
     errReport( errmsg )
 
 	function = FALSE
-
 end function

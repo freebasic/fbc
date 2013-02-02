@@ -126,6 +126,7 @@ end type
 		@"Illegal specification", _
 		@"Expected 'END WITH'", _
 		@"Illegal inside functions", _
+		@"Statement in between SELECT and first CASE", _
 		@"Expected array", _
 		@"Expected '{'", _
 		@"Expected '}'", _
