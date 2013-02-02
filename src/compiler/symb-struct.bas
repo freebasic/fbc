@@ -775,16 +775,9 @@ end function
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 sub symbDelField( byval s as FBSYMBOL ptr )
-	dim as FBVARDIM ptr dim_ = any, dim_nxt = any
-
-	'' del array dims if not a scalar type
-	dim_ = s->var_.array.dimhead
-	while( dim_ )
-		dim_nxt = dim_->next
-		listDelNode( @symb.dimlist, dim_ )
-		dim_ = dim_nxt
-	wend
-
+	if( symbGetArrayDimensions( s ) > 0 ) then
+		symbDelVarDims( s )
+	end if
 	symbFreeSymbol( s )
 end sub
 

@@ -15,7 +15,6 @@ type FB_SYMVAR_CTX
 	array_dimtype		as FBSYMBOL ptr
 end type
 
-declare sub hDelVarDims( byval s as FBSYMBOL ptr )
 declare sub hCreateArrayDescriptorType( )
 declare function hCreateDescType _
 	( _
@@ -304,7 +303,7 @@ sub symbSetArrayDimTb _
 		if( (s->var_.array.dimhead = NULL) or _
 			(symbGetArrayDimensions( s ) <> dimensions) ) then
 
-			hDelVarDims( s )
+			symbDelVarDims( s )
 
 			for i = 0 to dimensions-1
 				symbAddArrayDim( s, dTB(i).lower, dTB(i).upper )
@@ -783,7 +782,7 @@ end function
 '' del
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-private sub hDelVarDims( byval s as FBSYMBOL ptr )
+sub symbDelVarDims( byval s as FBSYMBOL ptr )
     dim as FBVARDIM ptr n = any, nxt = any
 
     n = s->var_.array.dimhead
@@ -801,17 +800,15 @@ private sub hDelVarDims( byval s as FBSYMBOL ptr )
 end sub
 
 sub symbDelVar( byval s as FBSYMBOL ptr, byval is_tbdel as integer )
-    if( s = NULL ) then
-    	exit sub
-    end if
-
-    if( symbGetArrayDimensions( s ) > 0 ) then
-    	hDelVarDims( s )
-    	if( is_tbdel = FALSE ) then
-    		'' del the array descriptor, recursively
-    		symbDelVar( s->var_.array.desc, FALSE )
-    	end if
-    end if
+	if( symbGetArrayDimensions( s ) > 0 ) then
+		symbDelVarDims( s )
+		if( is_tbdel = FALSE ) then
+			'' del the array descriptor, recursively
+			if( s->var_.array.desc ) then
+				symbDelSymbol( s->var_.array.desc, FALSE )
+			end if
+		end if
+	end if
 
     if( symbGetIsLiteral( s ) ) then
     	s->attrib and= not FB_SYMBATTRIB_LITERAL
