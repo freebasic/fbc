@@ -156,8 +156,8 @@ private function hOptionalExpr _
 		exit function
 	end if
 
-	'' remove the temps from the dtors list if any was added
-	astDtorListClear( )
+	'' No temp dtors should be left registered after the TYPEINI build-up
+	assert( astDtorListIsEmpty( ) )
 
 	'' Disallow references to local vars, except for temp vars/descriptors
 	if( astTypeIniUsesLocals( expr, FB_SYMBATTRIB_TEMP or FB_SYMBATTRIB_DESCRIPTOR ) ) then

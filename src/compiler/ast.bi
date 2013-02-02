@@ -476,25 +476,28 @@ declare sub astProcAddGlobalInstance _
 		byval has_dtor as integer _
 	)
 
-declare function astScopeBegin _
+declare function astScopeBegin( ) as ASTNODE ptr
+declare sub astScopeBreak( byval tolabel as FBSYMBOL ptr )
+declare sub astScopeEnd( byval s as ASTNODE ptr )
+declare function astScopeUpdBreakList( byval proc as ASTNODE ptr ) as integer
+declare sub astScopeDestroyVars( byval symtbtail as FBSYMBOL ptr )
+declare sub astScopeAllocLocals( byval symtbhead as FBSYMBOL ptr )
+declare function astTempScopeBegin _
 	( _
-		_
-	) as ASTNODE ptr
-
-declare sub astScopeEnd _
+		byref lastscp as FBSYMBOL ptr, _
+		byval backnode as ASTNODE ptr _
+	) as FBSYMBOL ptr
+declare sub astTempScopeEnd _
 	( _
-		byval s as ASTNODE ptr _
+		byval scp as FBSYMBOL ptr, _
+		byval lastscp as FBSYMBOL ptr _
 	)
-
-declare sub astScopeBreak(byval tolabel as FBSYMBOL ptr)
-
-declare function astScopeUpdBreakList _
+declare sub astTempScopeClone _
 	( _
-		byval proc as ASTNODE ptr _
-	) as integer
-
-declare sub astScopeDestroyVars(byval symtbtail as FBSYMBOL ptr)
-declare sub astScopeAllocLocals(byval symtbhead as FBSYMBOL ptr)
+		byval scp as FBSYMBOL ptr, _
+		byval clonetree as ASTNODE ptr _
+	)
+declare sub astTempScopeDelete( byval scp as FBSYMBOL ptr )
 
 declare function astAdd _
 	( _
@@ -1222,7 +1225,6 @@ declare sub astReplaceSymbolOnTree _
 
 declare sub astDtorListAdd( byval sym as FBSYMBOL ptr )
 declare function astDtorListFlush( byval cookie as integer = 0 ) as ASTNODE ptr
-declare sub astDtorListClear( )
 declare sub astDtorListDel( byval sym as FBSYMBOL ptr )
 declare sub astDtorListScopeBegin( )
 declare function astDtorListScopeEnd( ) as integer

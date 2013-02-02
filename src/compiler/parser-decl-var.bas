@@ -1039,8 +1039,8 @@ private function hCallGlobalCtor _
 
 	astProcAddGlobalInstance( sym, initree, has_dtor )
 
-	'' remove the temps from the dtors list if any was added
-	astDtorListClear( )
+	'' No temp dtors should be left registered after the TYPEINI build-up
+	assert( astDtorListIsEmpty( ) )
 
 	'' cannot call astAdd() before deleting the dtor list or it
 	'' would be flushed

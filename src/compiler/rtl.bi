@@ -1133,8 +1133,6 @@ declare function rtlMathPow _
 		byval yexpr as ASTNODE ptr _
 	) as ASTNODE ptr
 
-declare function rtlMathLen( byval expr as ASTNODE ptr ) as ASTNODE ptr
-
 declare function rtlMathLongintCMP _
 	( _
 		byval op as integer, _

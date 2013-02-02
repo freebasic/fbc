@@ -43,16 +43,7 @@ function astTypeIniBegin _
 	if( add_scope ) then
 		'' create a new scope block to handle temp vars allocated inside the
 		'' tree - with shared vars, the temps must be moved to another function
-    	dim as FBSYMBOL ptr s = symbAddScope( n )
-
-		n->typeini.scp = s
-		n->typeini.lastscp = parser.currblock
-
-		parser.scope += 1
-		parser.currblock = s
-
-		symbSetCurrentSymTb( @s->scp.symtb )
-
+		n->typeini.scp = astTempScopeBegin( n->typeini.lastscp, n )
 	else
 		n->typeini.scp = NULL
 	end if
@@ -68,6 +59,7 @@ sub astTypeIniEnd _
 
     dim as ASTNODE ptr n = any, p = any, l = any, r = any
     dim as integer ofs = any
+	dim as FBSYMBOL ptr sym = any
 
 	'' can't leave r pointing to the any node as the
 	'' tail node is linked already
@@ -120,16 +112,7 @@ sub astTypeIniEnd _
 
 	'' close the scope block
 	if( tree->typeini.scp <> NULL ) then
-		'' remove symbols from hash table
-		symbDelScopeTb( tree->typeini.scp )
-
-		'' back to preview symbol tb
-		symbSetCurrentSymTb( tree->typeini.scp->symtb )
-
-		symbFreeSymbol_UnlinkOnly( tree->typeini.scp )
-
-		parser.currblock = tree->typeini.lastscp
-		parser.scope -= 1
+		astTempScopeEnd( tree->typeini.scp, tree->typeini.lastscp )
 	end if
 
 end sub
@@ -995,29 +978,13 @@ end function
 '' original TYPEINI's temp scope are duplicated into the current scope context.
 function astTypeIniClone( byval tree as ASTNODE ptr ) as ASTNODE ptr
 	dim as ASTNODE ptr clonetree = any
-	dim as FBSYMBOL ptr sym = any, clonesym = any
 
 	assert( astIsTYPEINI( tree ) )
 
 	clonetree = astCloneTree( tree )
 
 	if( tree->typeini.scp ) then
-		sym = symbGetScopeSymbTbHead( tree->typeini.scp )
-		while( sym )
-			clonesym = symbCloneSymbol( sym )
-
-			astReplaceSymbolOnTree( clonetree, sym, clonesym )
-
-			'' Re-register temp var dtors
-			'' (They were removed via astDtorListClear() after
-			'' parsing the original expression, and must be re-added
-			'' everytime the initializer expression is instantiated)
-			if( symbIsVar( clonesym ) ) then
-				astDtorListAdd( clonesym )
-			end if
-
-			sym = sym->next
-		wend
+		astTempScopeClone( tree->typeini.scp, clonetree )
 	end if
 
 	function = clonetree
@@ -1055,20 +1022,10 @@ end function
 
 '' For deleting param/var/field initializer TYPEINIs and their temp scope
 sub astTypeIniDelete( byval tree as ASTNODE ptr )
-	dim as FBSYMBOL ptr sym = any, nxt = any
-
 	assert( astIsTYPEINI( tree ) )
 
 	if( tree->typeini.scp ) then
-		sym = symbGetScopeSymbTbHead( tree->typeini.scp )
-		while( sym )
-			nxt = sym->next
-			symbFreeSymbol_RemOnly( sym )
-			sym = nxt
-		wend
-
-		symbFreeSymbol_RemOnly( tree->typeini.scp )
-
+		astTempScopeDelete( tree->typeini.scp )
 		tree->typeini.scp = NULL
 	end if
 

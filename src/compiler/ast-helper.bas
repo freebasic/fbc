@@ -55,9 +55,11 @@ function astBuildFakeWstringAssign _
 		t = astNewLINK( t, astRemSideFx( expr ), FALSE )
 	end if
 
-	'' wcharptr = WstrAlloc( len( expr ) )
+	assert( astGetDataType( expr ) = FB_DATATYPE_WCHAR )
+
+	'' wcharptr = WstrAlloc( WstrLen( expr ) )
 	t = astNewLINK( t, _
-		astBuildVarAssign( sym, rtlWstrAlloc( rtlMathLen( astCloneTree( expr ) ) ) ), _
+		astBuildVarAssign( sym, rtlWstrAlloc( rtlWstrLen( astCloneTree( expr ) ) ) ), _
 		FALSE )
 
 	'' *wcharptr = expr

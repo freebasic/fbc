@@ -152,12 +152,20 @@ sub cTypeOf _
 	)
 
 	dim as ASTNODE ptr expr = any
+	dim as FBSYMBOL ptr scp = any, lastscp = any
+
+	'' Capture any temp vars, they shouldn't be emitted/allocated (and no
+	'' dtor calls for them either), since the expression will be deleted.
+	scp = astTempScopeBegin( lastscp, NULL )
 
 	'' Type or an Expression
 	expr = cTypeOrExpression( FALSE, dtype, subtype, lgt )
 
+	astTempScopeEnd( scp, lastscp )
+
 	'' Was it a type?
 	if( expr = NULL ) then
+		astTempScopeDelete( scp )
 		exit sub
 	end if
 
@@ -173,6 +181,7 @@ sub cTypeOf _
 	lgt     = astSizeOf( expr )
 
 	astDelTree( expr )
+	astTempScopeDelete( scp )
 end sub
 
 '':::::

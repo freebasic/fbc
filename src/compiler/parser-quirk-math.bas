@@ -45,15 +45,62 @@ private function hAtan2() as ASTNODE ptr
 	function = expr
 end function
 
+private function hLen _
+	( _
+		byval expr as ASTNODE ptr, _
+		byref lgt as integer _
+	) as ASTNODE ptr
+
+	dim as FBSYMBOL ptr litsym = any
+
+	select case( astGetDataType( expr ) )
+	case FB_DATATYPE_STRING
+		return rtlStrLen( expr )
+
+	case FB_DATATYPE_CHAR
+		litsym = astGetStrLitSymbol( expr )
+		if( litsym = NULL ) then
+			return rtlStrLen( expr )
+		end if
+
+		'' String literal, evaluate at compile-time
+		lgt = symbGetStrLen( litsym ) - 1
+
+	case FB_DATATYPE_WCHAR
+		litsym = astGetStrLitSymbol( expr )
+		if( litsym = NULL ) then
+			return rtlWstrLen( expr )
+		end if
+
+		'' String literal, evaluate at compile-time
+		lgt = symbGetWstrLen( litsym ) - 1
+
+	case FB_DATATYPE_FIXSTR
+		'' len( fixstr ) returns the N from STRING * N, i.e. it works
+		'' like sizeof() - 1 (-1 for the implicit null terminator),
+		'' it does not return the length of the stored string data.
+		lgt = astSizeOf( expr ) - 1
+		assert( lgt >= 0 )
+
+	case else
+		'' For anything else, len() means sizeof()
+		lgt = astSizeOf( expr )
+
+	end select
+
+	astDelTree( expr )
+	return NULL
+end function
+
 private function hLenSizeof _
 	( _
 		byval is_len as integer, _
 		byval isasm as integer _
 	) as ASTNODE ptr
 
-	dim as ASTNODE ptr expr = any, expr2 = any
-	dim as integer dtype = any, lgt = any, is_type = any
-	dim as FBSYMBOL ptr sym = any, subtype = any
+	dim as ASTNODE ptr expr = any, expr2 = any, initree = any
+	dim as integer dtype = any, lgt = any
+	dim as FBSYMBOL ptr subtype = any, scp = any, lastscp = any
 
 	'' LEN | SIZEOF
 	lexSkipToken( )
@@ -61,8 +108,14 @@ private function hLenSizeof _
 	'' '('
 	hMatchLPRNT( )
 
+	'' Capture any temp vars, they shouldn't be emitted/allocated (and no
+	'' dtor calls for them either), since the expression will be deleted.
+	scp = astTempScopeBegin( lastscp, NULL )
+
 	'' Type or an Expression
 	expr = cTypeOrExpression( is_len, dtype, subtype, lgt )
+
+	astTempScopeEnd( scp, lastscp )
 
 	'' Was it an expression?
 	if( expr ) then
@@ -97,16 +150,30 @@ private function hLenSizeof _
 		end if
 	end if
 
-	if( expr <> NULL ) then
+	if( expr ) then
 		if( is_len ) then
-			function = rtlMathLen( expr )
+			'' len()
+			expr = hLen( expr, lgt )
+			if( expr ) then
+				'' It's an fb_[W]StrLen() call, so the expression is preserved,
+				'' we must copy any temp symbols it uses from the temp scope
+				'' back into the current context.
+				astTempScopeClone( scp, expr )
+			else
+				expr = astNewCONSTi( lgt )
+			end if
 		else
-			function = astNewCONSTi( astSizeOf( expr ) )
+			'' sizeof()
+			lgt = astSizeOf( expr )
 			astDelTree( expr )
+			expr = astNewCONSTi( lgt )
 		end if
 	else
-		function = astNewCONSTi( lgt )
+		expr = astNewCONSTi( lgt )
 	end if
+
+	astTempScopeDelete( scp )
+	function = expr
 end function
 
 '':::::
@@ -179,10 +246,10 @@ function cMathFunct _
 
 	'' LEN|SIZEOF( data type | Expression{idx-less arrays too} )
 	case FB_TK_LEN
-		function = hLenSizeof(TRUE, isasm)
+		function = hLenSizeof( TRUE, isasm )
 
 	case FB_TK_SIZEOF
-		function = hLenSizeof(FALSE, isasm)
+		function = hLenSizeof( FALSE, isasm )
 
 	end select
 

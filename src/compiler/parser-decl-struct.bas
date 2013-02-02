@@ -226,8 +226,8 @@ private sub hFieldInit( byval parent as FBSYMBOL ptr, byval sym as FBSYMBOL ptr 
 		end if
 	end if
 
-	'' remove the temps from the dtors list if any was added
-	astDtorListClear( )
+	'' No temp dtors should be left registered after the TYPEINI build-up
+	assert( astDtorListIsEmpty( ) )
 
 	'' Field initializers are only used in constructors (replacing the
 	'' implicit default initialization), so we make sure to add a default

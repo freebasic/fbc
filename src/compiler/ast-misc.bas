@@ -1146,19 +1146,6 @@ function astDtorListFlush( byval cookie as integer ) as ASTNODE ptr
 	function = t
 end function
 
-sub astDtorListClear( )
-    dim as AST_DTORLIST_ITEM ptr n = any, p = any
-
-	n = listGetTail( @ast.dtorlist )
-	do while( n <> NULL )
-		p = listGetPrev( n )
-		listDelNode( @ast.dtorlist, n )
-		n = p
-    loop
-
-	ast.dtorlistcookies = 0  '' Can aswell be reset
-end sub
-
 sub astDtorListDel( byval sym as FBSYMBOL ptr )
     dim as AST_DTORLIST_ITEM ptr n = any
 

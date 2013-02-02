@@ -807,51 +807,6 @@ function rtlMathPow	_
 
 end function
 
-function rtlMathLen( byval expr as ASTNODE ptr ) as ASTNODE ptr
-	dim as ASTNODE ptr proc = any
-	dim as integer length = any
-	dim as FBSYMBOL ptr litsym = any
-
-	function = NULL
-
-	select case( astGetDataType( expr ) )
-	case FB_DATATYPE_STRING
-		return rtlStrLen( expr )
-
-	case FB_DATATYPE_CHAR
-		litsym = astGetStrLitSymbol( expr )
-		if( litsym = NULL ) then
-			return rtlStrLen( expr )
-		end if
-
-		'' String literal, evaluate at compile-time
-		length = symbGetStrLen( litsym ) - 1
-
-	case FB_DATATYPE_WCHAR
-		litsym = astGetStrLitSymbol( expr )
-		if( litsym = NULL ) then
-			return rtlWstrLen( expr )
-		end if
-
-		'' String literal, evaluate at compile-time
-		length = symbGetWstrLen( litsym ) - 1
-
-	case FB_DATATYPE_FIXSTR
-		'' len( fixstr ) returns the N from STRING * N, i.e. it works
-		'' like sizeof() - 1 (-1 for the implicit null terminator),
-		'' it does not return the length of the stored string data.
-		length = astSizeOf( expr ) - 1
-		assert( length >= 0 )
-
-	'' For anything else, len() means sizeof()
-	case else
-		length = astSizeOf( expr )
-	end select
-
-	astDelTree( expr )
-	function = astNewCONSTi( length )
-end function
-
 '':::::
 function rtlMathLongintDIV _
 	( _
