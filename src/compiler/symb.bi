@@ -1324,11 +1324,7 @@ declare sub symbDelPrototype _
 		byval s as FBSYMBOL ptr _
 	)
 
-declare sub symbDelEnum _
-	( _
-		byval s as FBSYMBOL ptr _
-	)
-
+declare sub symbDelEnum( byval s as FBSYMBOL ptr )
 declare sub symbDelStruct( byval s as FBSYMBOL ptr )
 declare sub symbDelField( byval s as FBSYMBOL ptr )
 
@@ -1342,10 +1338,13 @@ declare sub symbDelScope _
 		byval scp as FBSYMBOL ptr _
 	)
 
-declare sub symbDelNamespace _
+declare sub symbDelNamespaceMembers _
 	( _
-		byval ns as FBSYMBOL ptr _
+		byval ns as FBSYMBOL ptr, _
+		byval delete_hashtb as integer _
 	)
+
+declare sub symbDelNamespace( byval ns as FBSYMBOL ptr )
 
 declare function symbNewSymbol _
 	( _

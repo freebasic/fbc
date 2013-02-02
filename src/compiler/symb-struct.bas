@@ -782,35 +782,13 @@ sub symbDelField( byval s as FBSYMBOL ptr )
 end sub
 
 sub symbDelStruct( byval s as FBSYMBOL ptr )
-    symbCompDelImportList( s )
-
-	'' del all udt elements
-	do
-		'' starting from last because of the USING's that could be
-		'' referencing a namespace in the same scope block
-		dim as FBSYMBOL ptr fld = symbGetCompSymbTb( s ).tail
-		if( fld = NULL ) then
-			exit do
-		end if
-
-		symbDelSymbol( fld, TRUE )
-	loop
+	symbDelNamespaceMembers( s, (not symbGetUDTIsAnon( s )) )
 
 	if( s->udt.ext ) then
 		deallocate( s->udt.ext )
 		s->udt.ext = NULL
 	end if
 
-	if( s->udt.ns.ext ) then
-		symbCompFreeExt( s->udt.ns.ext )
-		s->udt.ns.ext = NULL
-	end if
-
-	if( symbGetUDTIsAnon( s ) = FALSE ) then
-		hashEnd( @s->udt.ns.hashtb.tb )
-	end if
-
-	'' del the udt node
 	symbFreeSymbol( s )
 end sub
 

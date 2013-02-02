@@ -1433,12 +1433,18 @@ sub symbFreeSymbol_UnlinkOnly _
 
 end sub
 
-'':::::
 sub symbDelSymbol _
 	( _
 		byval s as FBSYMBOL ptr, _
 		byval is_tbdel as integer _
 	)
+
+	'' is_tbdel: If the whole symbol table of a scope or namespace is
+	'' being deleted, we don't need to bother deleting symbols recursively,
+	'' such as array descriptors attached to variables, because the symbol
+	'' table deletion will catch them already. In fact, when deleting a
+	'' symbol table, any attached symbols might be deleted *before* their
+	'' parents, which then can not use the dangling pointers...
 
 	select case as const s->class
     case FB_SYMBCLASS_VAR
