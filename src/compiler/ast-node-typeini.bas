@@ -741,97 +741,6 @@ private function hFlushTreeStatic _
 
 end function
 
-'':::::
-private sub hRelinkTemps _
-	( _
-		byval tree as ASTNODE ptr, _
-		byval clone_tree as ASTNODE ptr _
-	) static
-
-	if( tree->typeini.scp = NULL ) then
-		exit sub
-	end if
-
-	dim as FBSYMBOL ptr sym = any, clonesym = any
-
-	'' different trees?
-	if( clone_tree <> NULL ) then
-		sym = symbGetScopeSymbTbHead( tree->typeini.scp )
-		do while( sym <> NULL )
-			clonesym = symbCloneSymbol( sym )
-			astReplaceSymbolOnTree( clone_tree, sym, clonesym )
-
-			'' Re-register temp var dtors
-			'' (They were removed via astDtorListClear() after
-			'' parsing the original expression, and must be re-added
-			'' everytime the initializer expression is instantiated)
-			if( symbIsVar( clonesym ) ) then
-				astDtorListAdd( clonesym )
-			end if
-
-			sym = sym->next
-		loop
-
-	'' same tree, don't let the old symbols leak..
-	else
-		dim as FBSYMBOL ptr nxt = any
-
-		sym = symbGetScopeSymbTbHead( tree->typeini.scp )
-		do while( sym <> NULL )
-			nxt = sym->next
-
-			clonesym = symbCloneSymbol( sym )
-			astReplaceSymbolOnTree( tree, sym, clonesym )
-
-			'' Re-register temp var dtors
-			'' (ditto)
-			if( symbIsVar( clonesym ) ) then
-				astDtorListAdd( clonesym )
-			end if
-
-			symbFreeSymbol_RemOnly( sym )
-
-			sym = nxt
-		loop
-
-		symbFreeSymbol_RemOnly( tree->typeini.scp )
-
-		tree->typeini.scp = NULL
-	end if
-
-end sub
-
-'':::::
-private sub hDelTemps _
-	( _
-		byval tree as ASTNODE ptr _
-	) static
-
-	dim as FBSYMBOL ptr sym_head = any
-
-	if( tree->typeini.scp = NULL ) then
-		exit sub
-	end if
-
-	dim as FBSYMBOL ptr sym = any, nxt = any
-
-	sym = symbGetScopeSymbTbHead( tree->typeini.scp )
-	do while( sym <> NULL )
-		nxt = sym->next
-
-		symbFreeSymbol_RemOnly( sym )
-
-		sym = nxt
-	loop
-
-	''
-	symbFreeSymbol_RemOnly( tree->typeini.scp )
-
-	tree->typeini.scp = NULL
-
-end sub
-
-'':::::
 function astTypeIniFlush _
 	( _
 		byval tree as ASTNODE ptr, _
@@ -851,19 +760,11 @@ function astTypeIniFlush _
 		ast.typeinicnt -= 1
 	end if
 
-	if( (options and AST_INIOPT_RELINK) <> 0 ) then
-		hRelinkTemps( tree, NULL )
-	end if
-
 	if( (options and AST_INIOPT_ISSTATIC) <> 0 ) then
 		hFlushTreeStatic( tree, basesym )
 		function = NULL
 	else
 		function = hFlushTree( tree, basesym, ((options and AST_INIOPT_DODEREF) <> 0) )
-	end if
-
-	if( (options and AST_INIOPT_RELINK) <> 0 ) then
-		hDelTemps( tree )
 	end if
 
 	astDelNode( tree )
@@ -1089,15 +990,37 @@ function astTypeIniUpdate( byval tree as ASTNODE ptr ) as ASTNODE ptr
 	return astNewLINK( hWalk( tree, NULL ), tree )
 end function
 
+'' Duplicates a TYPEINI initializer into the current context. The cloned TYPEINI
+'' won't have a temp scope on its own; instead any temp symbols from the
+'' original TYPEINI's temp scope are duplicated into the current scope context.
 function astTypeIniClone( byval tree as ASTNODE ptr ) as ASTNODE ptr
-	dim as ASTNODE ptr clone = any
+	dim as ASTNODE ptr clonetree = any
+	dim as FBSYMBOL ptr sym = any, clonesym = any
 
 	assert( astIsTYPEINI( tree ) )
 
-	clone = astCloneTree( tree )
-	hRelinkTemps( tree, clone )
+	clonetree = astCloneTree( tree )
 
-	function = clone
+	if( tree->typeini.scp ) then
+		sym = symbGetScopeSymbTbHead( tree->typeini.scp )
+		while( sym )
+			clonesym = symbCloneSymbol( sym )
+
+			astReplaceSymbolOnTree( clonetree, sym, clonesym )
+
+			'' Re-register temp var dtors
+			'' (They were removed via astDtorListClear() after
+			'' parsing the original expression, and must be re-added
+			'' everytime the initializer expression is instantiated)
+			if( symbIsVar( clonesym ) ) then
+				astDtorListAdd( clonesym )
+			end if
+
+			sym = sym->next
+		wend
+	end if
+
+	function = clonetree
 end function
 
 '' If it's only a TYPEINI_ASSIGN, and not for an UDT with a single field,
@@ -1129,3 +1052,25 @@ function astTypeIniTryRemove( byval tree as ASTNODE ptr ) as ASTNODE ptr
 	astDelNode( tree )
 	ast.typeinicnt -= 1
 end function
+
+'' For deleting param/var/field initializer TYPEINIs and their temp scope
+sub astTypeIniDelete( byval tree as ASTNODE ptr )
+	dim as FBSYMBOL ptr sym = any, nxt = any
+
+	assert( astIsTYPEINI( tree ) )
+
+	if( tree->typeini.scp ) then
+		sym = symbGetScopeSymbTbHead( tree->typeini.scp )
+		while( sym )
+			nxt = sym->next
+			symbFreeSymbol_RemOnly( sym )
+			sym = nxt
+		wend
+
+		symbFreeSymbol_RemOnly( tree->typeini.scp )
+
+		tree->typeini.scp = NULL
+	end if
+
+	astDelTree( tree )
+end sub

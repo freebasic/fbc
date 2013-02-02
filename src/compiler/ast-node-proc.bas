@@ -1200,7 +1200,8 @@ private sub hCallStaticCtor _
 		byval initree as ASTNODE ptr _
 	)
 
-	astAdd( astTypeIniFlush( initree, sym, AST_INIOPT_ISINI or AST_INIOPT_RELINK ) )
+	astAdd( astTypeIniFlush( astTypeIniClone( initree ), sym, AST_INIOPT_ISINI ) )
+	astTypeIniDelete( initree )
 
 end sub
 
@@ -1357,6 +1358,7 @@ private sub hGenGlobalInstancesCtor( )
 			'' has ctor?
 			if( inst->initree <> NULL ) then
 				hCallStaticCtor( inst->sym, inst->initree )
+				inst->initree = NULL
 			end if
 
 			inst = listGetNext( inst )

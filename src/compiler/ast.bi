@@ -386,8 +386,7 @@ enum AST_INIOPT
 	AST_INIOPT_NONE			= &h00000000
 	AST_INIOPT_ISINI		= &h00000001
 	AST_INIOPT_ISSTATIC		= &h00000002
-	AST_INIOPT_RELINK		= &h00000004
-	AST_INIOPT_DODEREF		= &h00000008
+	AST_INIOPT_DODEREF		= &h00000004
 end enum
 
 
@@ -1024,6 +1023,7 @@ declare function astTypeIniUpdate _
 
 declare function astTypeIniClone( byval tree as ASTNODE ptr ) as ASTNODE ptr
 declare function astTypeIniTryRemove( byval tree as ASTNODE ptr ) as ASTNODE ptr
+declare sub astTypeIniDelete( byval tree as ASTNODE ptr )
 
 declare function astDataStmtBegin( ) as ASTNODE ptr
 
