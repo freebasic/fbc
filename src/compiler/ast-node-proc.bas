@@ -23,39 +23,13 @@ type FB_GLOBINSTANCE
 	has_dtor		as integer
 end type
 
-declare function hModLevelIsEmpty _
-	( _
-		byval p as ASTNODE ptr _
-	) as integer
-
-declare sub hLoadProcResult _
-	( _
-		byval proc as FBSYMBOL ptr _
-	)
-
+declare function hModLevelIsEmpty( byval p as ASTNODE ptr ) as integer
+declare sub hLoadProcResult( byval proc as FBSYMBOL ptr )
 declare function hDeclProcParams( byval proc as FBSYMBOL ptr ) as integer
-
-declare function hUpdScopeBreakList	_
-	( _
-		byval n as ASTNODE ptr _
-	) as integer
-
 declare sub hCallCtors( byval n as ASTNODE ptr, byval sym as FBSYMBOL ptr )
-
-declare sub hCallDtors _
-	( _
-		byval proc as FBSYMBOL ptr _
-	)
-
-declare sub hGenStaticInstancesDtors _
-	( _
-		byval proc as FBSYMBOL ptr _
-	)
-
-declare sub hGenGlobalInstancesCtor _
-	( _
-		_
-	)
+declare sub hCallDtors( byval proc as FBSYMBOL ptr )
+declare sub hGenStaticInstancesDtors( byval proc as FBSYMBOL ptr )
+declare sub hGenGlobalInstancesCtor( )
 
 ''::::
 sub astProcListInit( )
@@ -791,12 +765,7 @@ private sub hLoadProcResult( byval proc as FBSYMBOL ptr )
 	astAdd( n )
 end sub
 
-''::::
-private function hModLevelIsEmpty _
-	( _
-		byval p as ASTNODE ptr _
-	) as integer
-
+private function hModLevelIsEmpty( byval p as ASTNODE ptr ) as integer
     dim as ASTNODE ptr n = any, nxt = any
 
 	'' an empty module-level proc will have just the
@@ -825,7 +794,6 @@ private function hModLevelIsEmpty _
 	end if
 
 	return FALSE
-
 end function
 
 private function hCallCtorList _
@@ -1214,12 +1182,7 @@ private sub hCallBaseDtor _
 				TRUE ) )
 end sub
 
-'':::::
-private sub hCallDtors _
-	( _
-		byval proc as FBSYMBOL ptr _
-	)
-
+private sub hCallDtors( byval proc as FBSYMBOL ptr )
 	dim as FBSYMBOL ptr parent = any
 
 	parent = symbGetNamespace( proc )
@@ -1229,22 +1192,19 @@ private sub hCallDtors _
 
 	'' 2nd) base dtor
 	hCallBaseDtor( parent, proc )
-
 end sub
 
-'':::::
 private sub hCallStaticCtor _
 	( _
 		byval sym as FBSYMBOL ptr, _
 		byval initree as ASTNODE ptr _
 	)
 
-	'' ctor?
-	if( initree <> NULL ) then
-		astAdd( astTypeIniFlush( initree, sym, AST_INIOPT_ISINI or AST_INIOPT_RELINK ) )
-		exit sub
-	end if
+	astAdd( astTypeIniFlush( initree, sym, AST_INIOPT_ISINI or AST_INIOPT_RELINK ) )
 
+end sub
+
+private sub hCallStaticDtor( byval sym as FBSYMBOL ptr )
 	'' dynamic?
 	if( symbIsDynamic( sym ) ) then
 		astAdd( rtlArrayErase( astBuildVarField( sym, NULL, 0 ), TRUE, FALSE ) )
@@ -1258,15 +1218,9 @@ private sub hCallStaticCtor _
 			astAdd( hCallCtorList( FALSE, sym, NULL ) )
 		end if
 	end if
-
 end sub
 
-'':::::
-private sub hGenStaticInstancesDtors _
-	( _
-		byval proc as FBSYMBOL ptr _
-	)
-
+private sub hGenStaticInstancesDtors( byval proc as FBSYMBOL ptr )
 	dim as TLIST ptr dtorlist = any
 	dim as FB_DTORWRAPPER ptr wrap = any
 	dim as ASTNODE ptr n = any
@@ -1283,8 +1237,8 @@ private sub hGenStaticInstancesDtors _
 		astProcBegin( wrap->proc, FALSE )
 		n = ast.proc.curr
 
-        '' call the dtor
-        hCallStaticCtor( wrap->sym, NULL )
+		'' call the dtor
+		hCallStaticDtor( wrap->sym )
 
 		astProcEnd( FALSE )
 
@@ -1300,7 +1254,6 @@ private sub hGenStaticInstancesDtors _
     listEnd( dtorlist )
     deallocate( proc->proc.ext->statdtor )
     proc->proc.ext->statdtor = NULL
-
 end sub
 
 '':::::
@@ -1393,49 +1346,46 @@ private sub hGenGlobalInstancesCtor( )
 	dim as FB_GLOBINSTANCE ptr inst = any
 	dim as FBSYMBOL ptr sym = any
 
-    '' any global instance with ctors?
-    if( ast.globinst.ctorcnt > 0 ) then
+	'' any global instance with ctors?
+	if( ast.globinst.ctorcnt > 0 ) then
 		'' sub ctor cdecl( ) constructor
 		hGlobCtorBegin( TRUE )
 
-    	'' for each node..
-    	inst = listGetHead( @ast.globinst.list )
-    	do while( inst <> NULL )
-
-        	'' has ctor?
-        	if( inst->initree <> NULL ) then
-        		'' call ctor
-                hCallStaticCtor( inst->sym, inst->initree )
+		'' for each node..
+		inst = listGetHead( @ast.globinst.list )
+		while( inst )
+			'' has ctor?
+			if( inst->initree <> NULL ) then
+				hCallStaticCtor( inst->sym, inst->initree )
 			end if
 
-    		inst = listGetNext( inst )
-    	loop
+			inst = listGetNext( inst )
+		wend
 
 		'' end sub
 		astProcEnd( FALSE )
-    end if
+	end if
 
-    '' any global instance with dtors?
-    if( ast.globinst.dtorcnt > 0 ) then
+	'' any global instance with dtors?
+	if( ast.globinst.dtorcnt > 0 ) then
 		'' sub dtor cdecl( ) destructor
 		hGlobCtorBegin( FALSE )
 
-    	'' for each node (in inverse order)..
-    	inst = listGetTail( @ast.globinst.list )
-    	do while( inst <> NULL )
-
-            '' has dtor?
-        	if( inst->has_dtor ) then
-        		'' call dtor
-                hCallStaticCtor( inst->sym, NULL )
+		'' for each node (in inverse order)..
+		inst = listGetTail( @ast.globinst.list )
+		while( inst )
+			'' has dtor?
+			if( inst->has_dtor ) then
+				'' call dtor
+				hCallStaticDtor( inst->sym )
 			end if
 
-    		inst = listGetPrev( inst )
-    	loop
+			inst = listGetPrev( inst )
+		wend
 
 		'' end sub
 		astProcEnd( FALSE )
-    end if
+	end if
 
     '' list will be deleted by astProcListEnd( )
 end sub
