@@ -1,3 +1,37 @@
+o 64bit
+  - Make INTEGER = pointer size, LONG = DWORD, LONGINT = QWORD
+  - All arithmetic/bitwise operations will work at 64bit precision
+
+  - Add -arch {amd64|x86_64}
+  - but also -target win64|linux64, the separate targets are needed to ensure
+    we have different bin/ and lib/ directories for 32bit and 64bit files,
+    e.g. lib/win32/libfb.a and lib/win64/libfb.a
+  - refuse -target/-arch if incompatible (e.g. -target dos -arch x86_64)
+
+  - remove the FB_{POINTER/INTEGER/LONG}SIZE constants, at least when used
+    outside the ASM emitter, and use typeGetSize( ... ) instead, to allow the
+    them to be remapped through the symb_dtypeTB depending on fbc command line
+    options (cross-compiling)
+  - FBVALUE and ir-hlc.bas:EXPRNODE must be adjusted to use guaranteed 32bit
+    and 64bit types to represent dwords/qwords instead of integer/longint
+  - fbint.bi contains various structs (e.g. FB_STRDESC) that are target-specific,
+    this would break when cross-compiling and the struct layout is different
+
+  - SHL/SHR shouldn't be limited to 32bit when targetting 64bit
+
+  - Later, the rtlib must be adjusted - it should use guarenteed sizes too,
+    otherwise it will be too confusing, for example:
+        fb_PrintInt( int )            -> fb_PrintInt32( int )
+        fb_PrintLongint( long long )  -> fb_PrintInt64( long long )
+    then:
+        32bit: print myinteger        -> fb_PrintInt32( int )
+        64bit: print myinteger        -> fb_PrintInt64( long long )
+
+    - FBSTRING, FBARRAY, FB_DATADESC, must be adjusted too (support arrays/strings > 2 GiB)
+
+  - Also, all FB includes must be adjusted for 64bit compatibility (if the
+    corresponding library even is available on 64bit)
+
 o LLVM backend
   - structs should be emitted as byte arrays, to let the FB side handle
     packing/alignment, unless the fields must be emitted individually as with
