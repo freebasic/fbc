@@ -227,10 +227,8 @@ private function hReadId( ) as zstring ptr
 
 end function
 
-'':::::
-'' MultipleTypedef = TYPE AS SymbolType symbol (',' symbol)*
-''
-sub cTypedefMultDecl()
+'' MultipleTypedef  =  TYPE AS SymbolType symbol (',' symbol)*
+sub cTypedefMultDecl( )
     dim as zstring ptr pfwdname = any, pid = any
     dim as integer dtype = any, lgt = any
     dim as FBSYMBOL ptr subtype = any
@@ -256,10 +254,8 @@ sub cTypedefMultDecl()
     loop
 end sub
 
-'':::::
-'' SingleTypedef = TYPE symbol AS SymbolType (',' symbol AS SymbolType)*
-''
-sub cTypedefSingleDecl(byval pid as zstring ptr)
+'' SingleTypedef  =  TYPE symbol AS SymbolType (',' symbol AS SymbolType)*
+sub cTypedefSingleDecl( byval pid as zstring ptr )
 	'' note: given id can be Ucase()'d
 
     dim as zstring ptr pfwdname = any

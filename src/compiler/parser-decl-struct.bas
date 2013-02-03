@@ -8,7 +8,7 @@
 #include once "parser.bi"
 #include once "ast.bi"
 
-declare function hTypeBody( byval s as FBSYMBOL ptr ) as integer
+declare sub hTypeBody( byval s as FBSYMBOL ptr )
 
 declare sub hPatchByvalParamsToSelf _
 	( _
@@ -97,38 +97,30 @@ private sub hTypeProtoDecl _
 	end select
 end sub
 
-'':::::
-''TypeEnumDecl 	=	ENUM|CONST ...
-''
-private function hTypeEnumDecl _
+'' TypeEnumDecl  =  ENUM|CONST ...
+private sub hTypeEnumDecl _
 	( _
 		byval parent as FBSYMBOL ptr, _
-		byval is_const as integer, _
+		byval tk as integer, _
 		byval attrib as integer _
-	) as integer
-
-	dim as integer res = any
+	)
 
 	'' anon?
 	if( symbGetUDTIsAnon( parent ) ) then
 		errReport( FB_ERRMSG_METHODINANONUDT )
 		'' error recovery: skip stmt
 		hSkipStmt( )
-		return TRUE
+		exit sub
 	end if
 
 	hBeginNesting( parent )
 
-	if( is_const ) then
-		res = cConstDecl( attrib )
+	if( tk = FB_TK_CONST ) then
+		cConstDecl( attrib )
 	else
 		cEnumDecl( attrib )
-		res = TRUE
 	end if
-
-	function = res
-
-end function
+end sub
 
 '':::::
 private sub hFieldInit( byval parent as FBSYMBOL ptr, byval sym as FBSYMBOL ptr )
@@ -510,7 +502,6 @@ sub hTypeStaticVarDecl _
 
 end sub
 
-'':::::
 private function hTypeAdd _
 	( _
 		byval parent as FBSYMBOL ptr, _
@@ -522,8 +513,6 @@ private function hTypeAdd _
 	) as FBSYMBOL ptr
 
 	dim as FBSYMBOL ptr s = any
-
-	function = NULL
 
 	s = symbStructBegin( NULL, parent, id, id_alias, isunion, align, baseSubtype, 0 )
 	if( s = NULL ) then
@@ -543,12 +532,9 @@ private function hTypeAdd _
 		'' error recovery: skip until next line or stmt
 		hSkipUntil( INVALID, TRUE )
 	end if
-	
+
 	'' TypeBody
-	dim as integer res = hTypeBody( s )
-	if( res = FALSE ) then
-		exit function
-	end if
+	hTypeBody( s )
 
 	'' finalize
 	symbStructEnd( s, symbGetIsUnique( s ) )
@@ -571,7 +557,6 @@ private function hTypeAdd _
 	end if
 
 	function = s
-
 end function
 
 '' [FIELD '=' ConstExpression]
@@ -617,19 +602,18 @@ private function cFieldAlignmentAttribute( ) as integer
 	return align
 end function
 
-'':::::
-''TypeBody      =   ( (UNION|TYPE Comment? SttSeparator
-''					   ElementDecl
-''					  END UNION|TYPE)
-''                  | ElementDecl
-''				    | AS AsElementDecl )+ .
+'' TypeBody  =
+''  (     (UNION|TYPE Comment? SttSeparator
+''             ElementDecl
+''         END UNION|TYPE)
+''     |  ElementDecl
+''     |  AS AsElementDecl )+ .
 ''
-private function hTypeBody( byval s as FBSYMBOL ptr ) as integer
+private sub hTypeBody( byval s as FBSYMBOL ptr )
 	dim as integer isunion = any
 	dim as FB_SYMBATTRIB attrib = any
 	dim as FBSYMBOL ptr inner = any
 
-	function = FALSE
 	attrib = FB_SYMBATTRIB_NONE  '' Used to hold visibility attributes
 
 	do
@@ -709,9 +693,6 @@ decl_inner:		'' it's an anonymous inner UDT
 
 				'' create a "temp" one
 				inner = hTypeAdd( s, symbUniqueId( ), NULL, isunion, align )
-				if( inner = NULL ) then
-					exit function
-				end if
 
 				if( isunion ) then
 					symbSetUDTIsUnion( inner )
@@ -754,15 +735,8 @@ decl_inner:		'' it's an anonymous inner UDT
 		case FB_TK_DECLARE
 			hTypeProtoDecl( s, attrib )
 
-		case FB_TK_ENUM
-			if( hTypeEnumDecl( s, FALSE, attrib ) = FALSE ) then
-				exit function
-			end if
-
-		case FB_TK_CONST
-			if( hTypeEnumDecl( s, TRUE, attrib ) = FALSE ) then
-				exit function
-			end if
+		case FB_TK_ENUM, FB_TK_CONST
+			hTypeEnumDecl( s, lexGetToken( ), attrib )
 
 		case FB_TK_DIM
 			'' Field(s) with explicit DIM
@@ -805,9 +779,7 @@ decl_inner:		'' it's an anonymous inner UDT
 	if( symbUdtGetFirstField( s ) = NULL ) then
 		errReport( FB_ERRMSG_NOELEMENTSDEFINED )
 	end if
-
-	function = TRUE
-end function
+end sub
 
 private sub hCheckForCDtorOrMethods( byval sym as FBSYMBOL ptr )
 	dim as FBSYMBOL ptr member = any
@@ -828,25 +800,19 @@ private sub hCheckForCDtorOrMethods( byval sym as FBSYMBOL ptr )
 	end if
 end sub
 
-'':::::
-''TypeDecl        =   (TYPE|UNION) ID (ALIAS LITSTR)? (EXTENDS SymbolType)? (FIELD '=' Expression)? Comment? SttSeparator
-''						TypeLine+
-''					  END (TYPE|UNION) .
-function cTypeDecl _
-	( _
-		byval attrib as FB_SYMBATTRIB _
-	) as integer
-
+'' TypeDecl  =
+''  TYPE|UNION ID (ALIAS LITSTR)? (EXTENDS SymbolType)? (FIELD '=' Expression)?
+''      TypeLine+
+''  END (TYPE|UNION) .
+sub cTypeDecl( byval attrib as integer )
 	static as zstring * FB_MAXNAMELEN+1 id
 	dim as integer isunion = any, checkid = any
 	dim as FBSYMBOL ptr sym = any
 	dim as FB_CMPSTMTSTK ptr stk = any
 
-	function = FALSE
-
 	isunion = (lexGetToken( ) = FB_TK_UNION)
 
-	'' skip TYPE | UNION
+	'' TYPE|UNION
 	lexSkipToken( )
 
 	'' ID
@@ -855,14 +821,14 @@ function cTypeDecl _
 	case FB_TKCLASS_IDENTIFIER
 
 	case FB_TKCLASS_KEYWORD
-    	if( isunion = FALSE ) then
-    		'' AS?
-    		if( lexGetToken( ) = FB_TK_AS ) then
+		if( isunion = FALSE ) then
+			'' AS?
+			if( lexGetToken( ) = FB_TK_AS ) then
 				'' (Note: the typedef parser will skip the AS)
-				cTypedefMultDecl()
-				return TRUE
-    		end if
-    	end if
+				cTypedefMultDecl( )
+				exit sub
+			end if
+		end if
 
 		errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
 		'' error recovery: fake an ID
@@ -902,7 +868,7 @@ function cTypeDecl _
 
 		'' (Note: the typedef parser will skip the AS)
 		cTypedefSingleDecl( id )
-		return TRUE
+		exit sub
 	end if
 
 	'' [ALIAS "id"]
@@ -959,10 +925,6 @@ function cTypeDecl _
 		cCompStmtPop( stk )
 	end if
 
-	if( sym = NULL ) then
-		return FALSE
-	end if
-
 	'' has methods? must be unique..
 	if( symbGetIsUnique( sym ) ) then
 		'' any preview declaration than itself?
@@ -994,10 +956,7 @@ function cTypeDecl _
 	if( symbGetUdtHasRecByvalRes( sym ) ) then
 		hPatchByvalResultToSelf( sym )
 	end if
-
-	function = TRUE
-
-end function
+end sub
 
 private sub hPatchByvalParamsToSelf( byval parent as FBSYMBOL ptr )
 	dim as FBSYMBOL ptr sym = any, param = any

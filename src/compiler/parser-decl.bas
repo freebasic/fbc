@@ -17,6 +17,8 @@ function cDeclaration _
 	dim as FB_SYMBATTRIB attrib = FB_SYMBATTRIB_NONE
 	dim as integer tk = any
 
+	function = FALSE
+
     '' QB mode?
     if( env.clopt.lang = FB_LANG_QB ) then
     	if( lexGetType() <> FB_DATATYPE_INVALID ) then
@@ -40,16 +42,19 @@ function cDeclaration _
 		lexSkipToken( )
 
 	case FB_TK_DECLARE
-		return cProcDecl( )
+		cProcDecl( )
+		return TRUE
 
 	case FB_TK_DEFBYTE, FB_TK_DEFUBYTE, FB_TK_DEFSHORT, FB_TK_DEFUSHORT, _
 		 FB_TK_DEFINT, FB_TK_DEFUINT, FB_TK_DEFLNG, FB_TK_DEFULNG, _
 		 FB_TK_DEFSNG, FB_TK_DEFDBL, FB_TK_DEFSTR, _
 		 FB_TK_DEFLNGINT, FB_TK_DEFULNGINT
-		return cDefDecl( )
+		cDefDecl( )
+		return TRUE
 
 	case FB_TK_OPTION
-		return cOptDecl( )
+		cOptDecl( )
+		return TRUE
 
 	end select
 
@@ -65,11 +70,13 @@ function cDeclaration _
 		case FB_TK_FUNCTION, FB_TK_SUB, FB_TK_OPERATOR, _
 		     FB_TK_CONSTRUCTOR, FB_TK_DESTRUCTOR, FB_TK_PROPERTY, _
 		     FB_TK_VIRTUAL, FB_TK_ABSTRACT
-			function = cProcStmtBegin( attrib )
+			cProcStmtBegin( attrib )
+			function = TRUE
 		case else
 			select case( tk )
 			case FB_TK_CONST
-				function = cConstDecl( attrib )
+				cConstDecl( attrib )
+				function = TRUE
 			case FB_TK_STATIC
 				function = cVariableDecl( attrib )
 			case else
@@ -79,41 +86,49 @@ function cDeclaration _
 
 	case FB_TK_FUNCTION, FB_TK_SUB, FB_TK_DESTRUCTOR, FB_TK_PROPERTY
 		if( attrib <> FB_SYMBATTRIB_NONE ) then
-			function = cProcStmtBegin( attrib )
+			cProcStmtBegin( attrib )
+			function = TRUE
 		else
 			'' not a FUNCTION|PROPERTY '=' ?
 			if( lexGetLookAhead( 1 ) <> FB_TK_ASSIGN ) then
-				function = cProcStmtBegin( )
+				cProcStmtBegin( )
+				function = TRUE
 			end if
 		end if
 
 	case FB_TK_CONSTRUCTOR
 		if( attrib <> FB_SYMBATTRIB_NONE ) then
-			function = cProcStmtBegin( attrib )
+			cProcStmtBegin( attrib )
+			function = TRUE
 		else
 			'' ambiguity: it could be a constructor chain
 			if( fbIsModLevel( ) ) then
-				function = cProcStmtBegin( )
+				cProcStmtBegin( )
+				function = TRUE
 			end if
 		end if
 
 	case FB_TK_OPERATOR
 		if( attrib <> FB_SYMBATTRIB_NONE ) then
-			function = cProcStmtBegin( attrib )
+			cProcStmtBegin( attrib )
+			function = TRUE
 		else
 			'' ambiguity: it could be the operator '=' body
 			if( fbIsModLevel( ) ) then
-				function = cProcStmtBegin( )
+				cProcStmtBegin( )
+				function = TRUE
 			else
 				'' not OPERATOR '=' ?
 				if( lexGetLookAhead( 1 ) <> FB_TK_ASSIGN ) then
-					function = cProcStmtBegin( )
+					cProcStmtBegin( )
+					function = TRUE
 				end if
 			end if
 		end if
 
 	case FB_TK_TYPE, FB_TK_UNION
-		function = cTypeDecl( attrib )
+		cTypeDecl( attrib )
+		function = TRUE
 
 	case FB_TK_ENUM
 		cEnumDecl( attrib )
@@ -129,9 +144,9 @@ function cDeclaration _
 	case else
 		if( attrib <> FB_SYMBATTRIB_NONE ) then
 			errReport( FB_ERRMSG_SYNTAXERROR )
+			hSkipStmt( )
+			function = TRUE
 		end if
-
-		function = FALSE
 	end select
 
 end function

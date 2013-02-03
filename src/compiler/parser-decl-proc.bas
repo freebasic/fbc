@@ -8,14 +8,12 @@
 #include once "ast.bi"
 
 '' ProcDecl  =  DECLARE SUB|FUNCTION|OPERATOR ProcHeader .
-function cProcDecl( ) as integer
+sub cProcDecl( )
 	dim as integer tk = any
-
-	function = FALSE
 
 	if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_DECL ) = FALSE ) then
 		hSkipStmt( )
-		exit function
+		exit sub
 	end if
 
 	'' DECLARE
@@ -35,6 +33,4 @@ function cProcDecl( ) as integer
 		'' error recovery: skip stmt
 		hSkipStmt( )
 	end select
-
-	function = TRUE
-end function
+end sub

@@ -25,14 +25,8 @@ private sub namespaceBegin _
 	symbNestBegin( sym, FALSE )
 end sub
 
-'':::::
-''NamespaceStmtBegin  =   NAMESPACE (ID (ALIAS LITSTR)?)? .
-''
-function cNamespaceStmtBegin _
-	( _
-		_
-	) as integer
-
+'' NamespaceStmtBegin  =  NAMESPACE (ID (ALIAS LITSTR)?)? .
+sub cNamespaceStmtBegin( )
     static as zstring * FB_MAXNAMELEN+1 id
     dim as zstring ptr palias = any
     dim as FBSYMBOL ptr sym = any
@@ -40,20 +34,18 @@ function cNamespaceStmtBegin _
     dim as FB_CMPSTMTSTK ptr stk = any
     dim as integer levels = any
 
-	function = FALSE
+	if( fbLangOptIsSet( FB_LANG_OPT_NAMESPC ) = FALSE ) then
+		errReportNotAllowed(FB_LANG_OPT_NAMESPC )
+		'' error recovery: skip the whole compound stmt
+		hSkipCompound( FB_TK_NAMESPACE )
+		exit sub
+	end if
 
-    if( fbLangOptIsSet( FB_LANG_OPT_NAMESPC ) = FALSE ) then
-    	errReportNotAllowed(FB_LANG_OPT_NAMESPC )
-    	'' error recovery: skip the whole compound stmt
-    	hSkipCompound( FB_TK_NAMESPACE )
-    	exit function
-    end if
-
-    if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_NAMESPC ) = FALSE ) then
-    	'' error recovery: skip the whole compound stmt
-    	hSkipCompound( FB_TK_NAMESPACE )
-    	exit function
-    end if
+	if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_NAMESPC ) = FALSE ) then
+		'' error recovery: skip the whole compound stmt
+		hSkipCompound( FB_TK_NAMESPACE )
+		exit sub
+	end if
 
 	'' skip NAMESPACE
 	lexSkipToken( LEXCHECK_NOPERIOD )
@@ -70,14 +62,14 @@ function cNamespaceStmtBegin _
 		                                        and (not FB_CMPSTMT_MASK_EXTERN) _
 		                                        and (not FB_CMPSTMT_MASK_DATA))
 		namespaceBegin(stk, NULL)
-		return TRUE
+		exit sub
 	end select
 
-    levels = 0
-    do
+	levels = 0
+	do
 		if( parser.nspcrec + levels >= FB_MAXNAMESPCRECLEVEL ) then
 			errReport( FB_ERRMSG_RECLEVELTOODEEP )
-			exit function
+			exit sub
 		end if
 
         levels += 1
@@ -167,23 +159,17 @@ function cNamespaceStmtBegin _
 	'' to reach the entry representing the actual namespace compound block.
 	stk->nspc.levels = levels
 	parser.nspcrec += levels
+end sub
 
-	function = TRUE
-end function
-
-'':::::
-''NamespaceStmtEnd  =     END NAMESPACE .
-''
-function cNamespaceStmtEnd as integer
+'' NamespaceStmtEnd  =  END NAMESPACE .
+sub cNamespaceStmtEnd( )
 	dim as FB_CMPSTMTSTK ptr stk = any
 	dim as integer levels = any
-
-	function = FALSE
 
 	stk = cCompStmtGetTOS( FB_TK_NAMESPACE )
 	if( stk = NULL ) then
 		hSkipStmt( )
-		exit function
+		exit sub
 	end if
 
 	'' END NAMESPACE
@@ -216,33 +202,26 @@ function cNamespaceStmtEnd as integer
 
 		levels -= 1
 	loop
+end sub
 
-	function = TRUE
+'' Usingtmt  =  USING ID (',' ID)*
+sub cUsingStmt( )
+	dim as FBSYMBOL ptr sym = any
 
-end function
+	if( fbLangOptIsSet( FB_LANG_OPT_NAMESPC ) = FALSE ) then
+		errReportNotAllowed( FB_LANG_OPT_NAMESPC )
+		'' error recovery: skip stmt
+		hSkipStmt( )
+		exit sub
+	end if
 
-'':::::
-''Usingtmt  =     USING ID (',' ID)*
-''
-function cUsingStmt as integer
-    dim as FBSYMBOL ptr sym = any
+	'' USING
+	lexSkipToken( LEXCHECK_NOPERIOD )
 
-    function = FALSE
-
-    if( fbLangOptIsSet( FB_LANG_OPT_NAMESPC ) = FALSE ) then
-    	errReportNotAllowed( FB_LANG_OPT_NAMESPC )
-    	'' error recovery: skip stmt
-    	hSkipStmt( )
-    	exit function
-    end if
-
-    '' USING
-    lexSkipToken( LEXCHECK_NOPERIOD )
-
-    do
-    	'' ID
-    	sym = cParentId( FB_IDOPT_DONTCHKPERIOD )
-    	if( sym = NULL ) then
+	do
+		'' ID
+		sym = cParentId( FB_IDOPT_DONTCHKPERIOD )
+		if( sym = NULL ) then
 			if( lexGetToken( ) <> FB_TK_ID ) then
 				errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
 			else
@@ -251,19 +230,15 @@ function cUsingStmt as integer
 
 			'' error recovery: skip until next ','
 			hSkipUntil( CHAR_COMMA )
-
-    	else
+		else
 			'' not a namespace?
 			if( symbIsNamespace( sym ) = FALSE ) then
 				errReport( FB_ERRMSG_TYPEMISMATCH )
 			else
-    			symbNamespaceImport( sym )
+				symbNamespaceImport( sym )
 			end if
 		end if
 
-    '' ','?
-    loop while( hMatch( CHAR_COMMA ) )
-
-    function = TRUE
-
-end function
+	'' ','?
+	loop while( hMatch( CHAR_COMMA ) )
+end sub

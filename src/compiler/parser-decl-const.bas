@@ -7,14 +7,7 @@
 #include once "parser.bi"
 #include once "ast.bi"
 
-private function hGetType _
-	( _
-		byref dtype as integer, _
-		byref subtype as FBSYMBOL ptr _
-	) as integer
-
-	function = FALSE
-
+private sub hGetType( byref dtype as integer, byref subtype as FBSYMBOL ptr )
 	'' (AS SymbolType)?
 	if( lexGetToken( ) = FB_TK_AS ) then
 		lexSkipToken( )
@@ -50,25 +43,21 @@ private function hGetType _
 		dtype = FB_DATATYPE_INVALID
 		subtype = NULL
 	end if
-
-	function = TRUE
-end function
+end sub
 
 '' ConstAssign  =  ID (AS SymbolType)? '=' ConstExpression .
-private function cConstAssign _
+private sub cConstAssign _
 	( _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
 		byval attrib as FB_SYMBATTRIB _
-	) as integer
+	)
 
     static as zstring * FB_MAXNAMELEN+1 id
 	dim as integer doskip = any, suffix = any
     dim as ASTNODE ptr expr = any
     dim as FBSYMBOL ptr litsym = any
     dim as FBVALUE value = any
-
-	function = FALSE
 
 	'' Namespace identifier if it matches the current namespace
 	cCurrentParentId()
@@ -92,7 +81,7 @@ private function cConstAssign _
 				errReport( FB_ERRMSG_DUPDEFINITION )
 				'' error recovery: skip until next stmt or const decl
 				hSkipUntil( FB_TK_DECLSEPCHAR )
-				return TRUE
+				exit sub
 			end if
 		end if
 
@@ -101,14 +90,14 @@ private function cConstAssign _
 			errReport( FB_ERRMSG_DUPDEFINITION )
 			'' error recovery: skip until next stmt or const decl
 			hSkipUntil( FB_TK_DECLSEPCHAR )
-			return TRUE
+			exit sub
 		end if
 
 	case else
 		errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
 		'' error recovery: skip until next stmt or const decl
 		hSkipUntil( FB_TK_DECLSEPCHAR )
-		return TRUE
+		exit sub
 	end select
 
 	suffix = lexGetType( )
@@ -122,9 +111,7 @@ private function cConstAssign _
 	'' not multiple?
 	if( dtype = FB_DATATYPE_INVALID ) then
 		'' (AS SymbolType)?
-		if( hGetType( dtype, subtype ) = FALSE ) then
-			exit function
-		end if
+		hGetType( dtype, subtype )
 	end if
 
 	'' both suffix and type given?
@@ -225,55 +212,40 @@ private function cConstAssign _
 			subtype = astGetSubtype( expr )
 		end if
 
-		''
-		if( symbAddConst( @id, _
-						  dtype, _
-						  subtype, _
-						  @astGetValue( expr ), _
-						  attrib ) = NULL ) then
+		if( symbAddConst( @id, dtype, subtype, _
+				@astGetValue( expr ), attrib ) = NULL ) then
 			errReportEx( FB_ERRMSG_DUPDEFINITION, id )
 		end if
     end if
 
-	''
 	astDelNode( expr )
 
 	if( doskip ) then
 		'' error recovery: skip until next stmt or const decl
 		hSkipUntil( FB_TK_DECLSEPCHAR )
 	end if
-
-	function = TRUE
-end function
+end sub
 
 '' ConstDecl  =  CONST (AS SymbolType)? ConstAssign (DECL_SEPARATOR ConstAssign)* .
-function cConstDecl( byval attrib as FB_SYMBATTRIB ) as integer
+sub cConstDecl( byval attrib as integer )
     dim as integer dtype = any
     dim as FBSYMBOL ptr subtype = any
-
-    function = FALSE
 
     '' CONST
     lexSkipToken( )
 
 	'' (AS SymbolType)?
-	if( hGetType( dtype, subtype ) = FALSE ) then
-		exit function
-	end if
+	hGetType( dtype, subtype )
 
 	do
 		'' ConstAssign
-		if( cConstAssign( dtype, subtype, attrib ) = FALSE ) then
-			exit function
+		cConstAssign( dtype, subtype, attrib )
+
+		'' ','?
+		if( lexGetToken( ) <> FB_TK_DECLSEPCHAR ) then
+			exit do
 		end if
 
-    	'' ','?
-    	if( lexGetToken( ) <> FB_TK_DECLSEPCHAR ) then
-    		exit do
-    	end if
-
-    	lexSkipToken( )
+		lexSkipToken( )
 	loop
-
-	function = TRUE
-end function
+end sub

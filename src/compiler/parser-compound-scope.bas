@@ -2,27 +2,22 @@
 ''
 '' chng: sep/2004 written [v1ctor]
 
-
 #include once "fb.bi"
 #include once "fbint.bi"
 #include once "parser.bi"
 #include once "ast.bi"
 
-'':::::
-''ScopeStmtBegin  =   SCOPE .
-''
-function cScopeStmtBegin as integer
+'' ScopeStmtBegin  =  SCOPE .
+sub cScopeStmtBegin( )
     dim as ASTNODE ptr n = any
     dim as FB_CMPSTMTSTK ptr stk = any
 
-	function = FALSE
-
-    if( fbLangOptIsSet( FB_LANG_OPT_SCOPE ) = FALSE ) then
-    	errReportNotAllowed( FB_LANG_OPT_SCOPE )
-    	'' error recovery: skip the whole compound stmt
-    	hSkipCompound( FB_TK_SCOPE )
-    	exit function
-    end if
+	if( fbLangOptIsSet( FB_LANG_OPT_SCOPE ) = FALSE ) then
+		errReportNotAllowed( FB_LANG_OPT_SCOPE )
+		'' error recovery: skip the whole compound stmt
+		hSkipCompound( FB_TK_SCOPE )
+		exit sub
+	end if
 
 	'' SCOPE
 	lexSkipToken( )
@@ -40,23 +35,16 @@ function cScopeStmtBegin as integer
 	'' must be allocated in the function scope
 	stk->scp.lastis_scope = fbGetIsScope( )
 	fbSetIsScope( TRUE )
+end sub
 
-	function = TRUE
-
-end function
-
-'':::::
-''ScopeStmtEnd  =     END SCOPE .
-''
-function cScopeStmtEnd as integer
+'' ScopeStmtEnd  =  END SCOPE .
+sub cScopeStmtEnd( )
 	dim as FB_CMPSTMTSTK ptr stk = any
-
-	function = FALSE
 
 	stk = cCompStmtGetTOS( FB_TK_SCOPE )
 	if( stk = NULL ) then
 		hSkipStmt( )
-		exit function
+		exit sub
 	end if
 
 	'' END SCOPE
@@ -65,14 +53,10 @@ function cScopeStmtEnd as integer
 
 	fbSetIsScope( stk->scp.lastis_scope )
 
-	''
 	if( stk->scopenode <> NULL ) then
 		astScopeEnd( stk->scopenode )
 	end if
 
 	'' pop from stmt stack
 	cCompStmtPop( stk )
-
-	function = TRUE
-
-end function
+end sub

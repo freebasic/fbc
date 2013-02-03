@@ -736,14 +736,10 @@ private sub hForStep _
 	end if
 end sub
 
-'':::::
-''ForStmtBegin    =   FOR ID (AS DataType)? '=' Expression TO Expression (STEP Expression)? .
-''
-function cForStmtBegin( ) as integer
+'' ForStmtBegin  =  FOR ID (AS DataType)? '=' Expression TO Expression (STEP Expression)? .
+sub cForStmtBegin( )
 	dim as FOR_FLAGS flags = 0
 	dim as FBSYMBOL ptr sym = any
-
-	function = FALSE
 
 	'' FOR
 	lexSkipToken( )
@@ -890,9 +886,7 @@ function cForStmtBegin( ) as integer
 	stk->for.testlabel = tl
 	stk->for.inilabel = il
 	stk->for.cmplabel = cl
-
-	function = TRUE
-end function
+end sub
 
 '':::::
 private function hUdtCallOpOvl _
@@ -1037,16 +1031,9 @@ private sub hForStmtClose(byval stk as FB_CMPSTMTSTK ptr)
 	end if
 end sub
 
-'':::::
-''ForStmtEnd      =   NEXT (ID (',' ID?))? .
-''
-function cForStmtEnd _
-	( _
-	) as integer
-
+'' ForStmtEnd  =  NEXT (ID (',' ID?))? .
+sub cForStmtEnd( )
 	dim as FB_CMPSTMTSTK ptr stk = any
-
-	function = FALSE
 
 	'' NEXT
 	lexSkipToken( )
@@ -1056,7 +1043,7 @@ function cForStmtEnd _
 		stk = cCompStmtGetTOS( FB_TK_FOR )
 		if( stk = NULL ) then
 			hSkipStmt( )
-			exit function
+			exit sub
 		end if
 
 		hForStmtClose( stk )
@@ -1102,6 +1089,4 @@ function cForStmtEnd _
 
 		lexSkipToken( )
 	loop
-
-	function = TRUE
-end function
+end sub

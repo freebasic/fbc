@@ -271,16 +271,11 @@ declare function cDeclaration _
 		_
 	) as integer
 
-declare function cConstDecl( byval attrib as FB_SYMBATTRIB ) as integer
-
-declare function cTypeDecl _
-	( _
-		byval attrib as FB_SYMBATTRIB = FB_SYMBATTRIB_NONE _
-	) as integer
-
-declare sub cTypedefMultDecl()
-declare sub cTypedefSingleDecl(byval pid as zstring ptr)
-declare sub cEnumDecl(byval attrib as FB_SYMBATTRIB = FB_SYMBATTRIB_NONE)
+declare sub cConstDecl( byval attrib as integer )
+declare sub cTypeDecl( byval attrib as integer )
+declare sub cTypedefMultDecl( )
+declare sub cTypedefSingleDecl( byval pid as zstring ptr )
+declare sub cEnumDecl( byval attrib as integer )
 declare function hCheckScope() as integer
 
 declare function cVariableDecl _
@@ -298,11 +293,7 @@ declare function cStaticArrayDecl _
 		byval allow_ellipsis as integer = TRUE _
 	) as integer
 
-declare function cArrayDecl _
-	( _
-		byref dimensions as integer, _
-		exprTB() as ASTNODE ptr _
-	) as integer
+declare sub cArrayDecl( byref dimensions as integer, exprTB() as ASTNODE ptr )
 
 declare function cInitializer _
 	( _
@@ -345,7 +336,7 @@ declare function cParentId _
 	) as FBSYMBOL ptr
 
 declare sub cCurrentParentId( )
-declare function cProcDecl( ) as integer
+declare sub cProcDecl( )
 
 declare function cProcHeader _
 	( _
@@ -363,15 +354,8 @@ declare sub cParameters _
 		byval isproto as integer _
 	)
 
-declare function cDefDecl _
-	( _
-		_
-	) as integer
-
-declare function cOptDecl _
-	( _
-		_
-	) as integer
+declare sub cDefDecl( )
+declare sub cOptDecl( )
 
 declare function cProcCallOrAssign _
 	( _
@@ -405,117 +389,46 @@ declare function cCompStmtGetTOS _
 		byval showerror as integer = TRUE _
 	) as FB_CMPSTMTSTK ptr
 
-declare sub cCompStmtPop _
-	( _
-		byval stk as FB_CMPSTMTSTK ptr _
-	)
+declare sub cCompStmtPop( byval stk as FB_CMPSTMTSTK ptr )
 
 declare function cCompStmtIsAllowed _
 	( _
 		byval allowmask as FB_CMPSTMT_MASK _
 	) as integer
 
-declare sub cIfStmtBegin()
-
-declare function cIfStmtNext _
-	( _
-		_
-	) as integer
-
-declare function cIfStmtEnd _
-	( _
-		_
-	) as integer
-
-declare function cForStmtBegin _
-	( _
-		_
-	) as integer
-
-declare function cForStmtEnd _
-	( _
-		_
-	) as integer
-
-declare sub cDoStmtBegin()
-
-declare function cDoStmtEnd _
-	( _
-		_
-	) as integer
-
-declare sub cWhileStmtBegin()
-
-declare function cWhileStmtEnd _
-	( _
-		_
-	) as integer
-
-declare sub cSelectStmtBegin()
-
-declare function cSelectStmtNext _
-	( _
-		_
-	) as integer
-
-declare function cSelectStmtEnd _
-	( _
-		_
-	) as integer
-
+declare sub cIfStmtBegin( )
+declare sub cIfStmtNext( )
+declare sub cIfStmtEnd( )
+declare sub cForStmtBegin( )
+declare sub cForStmtEnd( )
+declare sub cDoStmtBegin( )
+declare sub cDoStmtEnd( )
+declare sub cWhileStmtBegin( )
+declare sub cWhileStmtEnd( )
+declare sub cSelectStmtBegin( )
+declare sub cSelectStmtNext( )
+declare sub cSelectStmtEnd( )
 declare sub cSelConstStmtBegin( )
 declare sub cSelConstStmtNext( byval stk as FB_CMPSTMTSTK ptr )
 declare sub cSelConstStmtEnd( byval stk as FB_CMPSTMTSTK ptr )
 declare sub hDisallowStaticAttrib( byref attrib as integer )
 declare sub hDisallowVirtualCtor( byref attrib as integer )
 declare sub hDisallowAbstractDtor( byref attrib as integer )
-declare function cProcStmtBegin( byval attrib as FB_SYMBATTRIB = FB_SYMBATTRIB_NONE ) as integer
-declare function cProcStmtEnd( ) as integer
-declare sub cExitStatement()
-declare function cEndStatement( ) as integer
+declare sub cProcStmtBegin( byval attrib as integer = 0 )
+declare sub cProcStmtEnd( )
+declare sub cExitStatement( )
+declare sub cEndStatement( )
+declare sub cContinueStatement( )
+declare sub cWithStmtBegin( )
+declare sub cWithStmtEnd( )
+declare sub cScopeStmtBegin( )
+declare sub cScopeStmtEnd( )
 
-declare sub cContinueStatement()
-declare sub cWithStmtBegin()
-
-declare function cWithStmtEnd _
-	( _
-		_
-	) as integer
-
-declare function cScopeStmtBegin _
-	( _
-		_
-	) as integer
-
-declare function cScopeStmtEnd _
-	( _
-		_
-	) as integer
-
-declare function cNamespaceStmtBegin _
-	( _
-		_
-	) as integer
-
-declare function cNamespaceStmtEnd _
-	( _
-		_
-	) as integer
-
-declare function cUsingStmt _
-	( _
-		_
-	) as integer
-
-declare function cExternStmtBegin _
-	( _
-		_
-	) as integer
-
-declare function cExternStmtEnd _
-	( _
-		_
-	) as integer
+declare sub cNamespaceStmtBegin( )
+declare sub cNamespaceStmtEnd( )
+declare sub cUsingStmt( )
+declare sub cExternStmtBegin( )
+declare sub cExternStmtEnd( )
 
 declare function cAssignmentOrPtrCall _
 	( _

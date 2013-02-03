@@ -2,16 +2,13 @@
 ''
 '' chng: sep/2004 written [v1ctor]
 
-
 #include once "fb.bi"
 #include once "fbint.bi"
 #include once "parser.bi"
 #include once "ast.bi"
 
-'':::::
-'' DoStmtBegin     =   DO ((WHILE | UNTIL) Expression)? .
-''
-sub cDoStmtBegin()
+'' DoStmtBegin  =  DO ((WHILE | UNTIL) Expression)? .
+sub cDoStmtBegin( )
     dim as ASTNODE ptr expr = any
 	dim as integer iswhile = any, isuntil = any
     dim as FBSYMBOL ptr il = any, el = any, cl = any
@@ -74,20 +71,16 @@ sub cDoStmtBegin()
     stk->do.endlabel = el
 end sub
 
-'':::::
-'' DoStmtEnd     =   LOOP ((WHILE | UNTIL) Expression)? .
-''
-function cDoStmtEnd as integer
+'' DoStmtEnd  =  LOOP ((WHILE | UNTIL) Expression)? .
+sub cDoStmtEnd( )
     dim as ASTNODE ptr expr = any
 	dim as integer iswhile = any, isuntil = any
 	dim as FB_CMPSTMTSTK ptr stk = any
 
-	function = FALSE
-
 	stk = cCompStmtGetTOS( FB_TK_DO )
 	if( stk = NULL ) then
 		hSkipStmt( )
-		exit function
+		exit sub
 	end if
 
 	'' LOOP
@@ -139,10 +132,8 @@ function cDoStmtEnd as integer
 		end if
 
 		astAdd( expr )
-
-	'' top check..
 	else
-
+		'' top check
 		astAdd( astNewBRANCH( AST_OP_JMP, stk->do.inilabel ) )
 	end if
 
@@ -151,7 +142,4 @@ function cDoStmtEnd as integer
 
 	'' pop from stmt stack
 	cCompStmtPop( stk )
-
-	function = TRUE
-
-end function
+end sub

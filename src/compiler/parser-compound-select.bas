@@ -40,10 +40,8 @@ end sub
 sub parserSelectStmtEnd( )
 end sub
 
-'':::::
-''SelectStatement =   SELECT CASE (AS CONST)? Expression .
-''
-sub cSelectStmtBegin()
+'' SelectStatement  =  SELECT CASE (AS CONST)? Expression .
+sub cSelectStmtBegin( )
     dim as ASTNODE ptr expr = any
     dim as integer dtype = any
 	dim as FBSYMBOL ptr sym = any, el = any, subtype = any
@@ -279,21 +277,17 @@ private function hFlushCaseExpr _
 	function = TRUE
 end function
 
-'':::::
-''SelectStmtNext   =    CASE (ELSE | (CaseExpression (',' CaseExpression)*)) .
-''
-function cSelectStmtNext( ) as integer
+'' SelectStmtNext  =  CASE (ELSE | (CaseExpression (',' CaseExpression)*)) .
+sub cSelectStmtNext( )
 	dim as FBSYMBOL ptr il = any, nl = any
 	dim as integer cnt = any, i = any, cntbase = any
 	dim as FB_CMPSTMTSTK ptr stk = any
-
-	function = FALSE
 
 	stk = cCompStmtGetTOS( FB_TK_SELECT, FALSE )
 	if( stk = NULL ) then
 		errReport( FB_ERRMSG_CASEWITHOUTSELECT )
 		hSkipStmt( )
-		exit function
+		exit sub
 	end if
 
 	'' ELSE already parsed?
@@ -307,7 +301,7 @@ function cSelectStmtNext( ) as integer
     '' AS CONST?
     if( stk->select.isconst ) then
 		cSelConstStmtNext( stk )
-		return TRUE
+		exit sub
     end if
 
 	'' CASE
@@ -336,7 +330,7 @@ function cSelectStmtNext( ) as integer
 
 		stk->select.casecnt = -1
 
-		return TRUE
+		exit sub
 	end if
 
 	'' CaseExpression ((',' | TO) CaseExpression)*
@@ -389,22 +383,16 @@ function cSelectStmtNext( ) as integer
 	stk->scopenode = astScopeBegin( )
 
 	stk->select.casecnt += 1
+end sub
 
-	function = TRUE
-end function
-
-'':::::
-''SelectStmtEnd =   END SELECT .
-''
-function cSelectStmtEnd as integer
+'' SelectStmtEnd  =  END SELECT .
+sub cSelectStmtEnd( )
 	dim as FB_CMPSTMTSTK ptr stk = any
-
-	function = FALSE
 
 	stk = cCompStmtGetTOS( FB_TK_SELECT )
 	if( stk = NULL ) then
 		hSkipStmt( )
-		exit function
+		exit sub
 	end if
 
     '' no CASE's?
@@ -415,7 +403,7 @@ function cSelectStmtEnd as integer
     '' AS CONST?
     if( stk->select.isconst ) then
 		cSelConstStmtEnd( stk )
-		return TRUE
+		exit sub
     end if
 
 	'' END SELECT
@@ -438,7 +426,4 @@ function cSelectStmtEnd as integer
 
 	'' pop from stmt stack
 	cCompStmtPop( stk )
-
-	function = TRUE
-
-end function
+end sub

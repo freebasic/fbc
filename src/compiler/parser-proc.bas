@@ -1613,12 +1613,10 @@ end sub
 
 '' ProcStmtBegin  =  (PRIVATE|PUBLIC)? (STATIC? | CONST? VIRTUAL?)
 ''                   (SUB|FUNCTION|CONSTRUCTOR|DESTRUCTOR|OPERATOR) ProcHeader .
-function cProcStmtBegin( byval attrib as FB_SYMBATTRIB ) as integer
+sub cProcStmtBegin( byval attrib as integer )
 	dim as integer tkn = any, is_nested = any
     dim as FBSYMBOL ptr proc = any
     dim as FB_CMPSTMTSTK ptr stk = any
-
-	function = FALSE
 
 	if( (attrib and (FB_SYMBATTRIB_PUBLIC or FB_SYMBATTRIB_PRIVATE)) = 0 ) then
 		if( env.opt.procpublic ) then
@@ -1669,13 +1667,14 @@ function cProcStmtBegin( byval attrib as FB_SYMBATTRIB ) as integer
 
 	case else
 		errReport( FB_ERRMSG_SYNTAXERROR )
-		exit function
+		hSkipStmt( )
+		exit sub
 	end select
 
 	if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_PROC ) = FALSE ) then
-    	'' error recovery: skip the whole compound stmt
-    	hSkipCompound( tkn )
-		exit function
+		'' error recovery: skip the whole compound stmt
+		hSkipCompound( tkn )
+		exit sub
 	end if
 
 	lexSkipToken( )
@@ -1683,7 +1682,7 @@ function cProcStmtBegin( byval attrib as FB_SYMBATTRIB ) as integer
 	'' ProcHeader
 	proc = cProcHeader( attrib, is_nested, FB_PROCOPT_NONE, tkn )
 	if( proc = NULL ) then
-		exit function
+		exit sub
 	end if
 
 	'' ABSTRACTs shouldn't have a body implemented, VIRTUAL should be used instead
@@ -1699,28 +1698,24 @@ function cProcStmtBegin( byval attrib as FB_SYMBATTRIB ) as integer
 	stk->proc.tkn = tkn
 	stk->proc.is_nested = is_nested
 	stk->proc.endlabel = astGetProcExitlabel( ast.proc.curr )
-
-	function = TRUE
-end function
+end sub
 
 '' ProcStmtEnd  =  END (SUB | FUNCTION) .
-function cProcStmtEnd( ) as integer
+sub cProcStmtEnd( )
 	dim as FB_CMPSTMTSTK ptr stk = any
-
-	function = FALSE
+	dim as FBSYMBOL ptr proc_res = any
 
 	stk = cCompStmtGetTOS( FB_TK_FUNCTION )
 	if( stk = NULL ) then
-		exit function
+		hSkipStmt( )
+		exit sub
 	end if
 
 	'' END
 	lexSkipToken( )
 
-	dim as integer res
-
-	res = hMatch( stk->proc.tkn )
-	if( res = FALSE ) then
+	'' SUB | FUNCTION | ...
+	if( hMatch( stk->proc.tkn ) = FALSE ) then
 		select case stk->proc.tkn
 		case FB_TK_SUB
 			errReport( FB_ERRMSG_EXPECTEDENDSUB )
@@ -1738,8 +1733,6 @@ function cProcStmtEnd( ) as integer
 	end if
 
 	'' function and the result wasn't set?
-	dim as FBSYMBOL ptr proc_res
-
 	proc_res = symbGetProcResult( parser.currproc )
 	if( proc_res <> NULL ) then
 		if( symbGetIsAccessed( proc_res ) = FALSE ) then
@@ -1750,7 +1743,7 @@ function cProcStmtEnd( ) as integer
 	end if
 
     '' always finish
-	function = astProcEnd( FALSE )
+	astProcEnd( FALSE )
 
 	'' was the namespace changed?
 	if( stk->proc.is_nested ) then
@@ -1759,8 +1752,4 @@ function cProcStmtEnd( ) as integer
 
 	'' pop from stmt stack
 	cCompStmtPop( stk )
-
-	if( res = FALSE ) then
-		function = FALSE
-	end if
-end function
+end sub

@@ -59,15 +59,13 @@ sub cWithStmtBegin( )
 end sub
 
 '' WithStmtEnd  =  END WITH .
-function cWithStmtEnd( ) as integer
+sub cWithStmtEnd( )
 	dim as FB_CMPSTMTSTK ptr stk = any
-
-	function = FALSE
 
 	stk = cCompStmtGetTOS( FB_TK_WITH )
 	if( stk = NULL ) then
 		hSkipStmt( )
-		exit function
+		exit sub
 	end if
 
 	'' END WITH
@@ -77,6 +75,4 @@ function cWithStmtEnd( ) as integer
 	'' Restore the previous WITH context
 	parser.stmt.with = stk->with
 	cCompStmtPop( stk )
-
-	function = TRUE
-end function
+end sub

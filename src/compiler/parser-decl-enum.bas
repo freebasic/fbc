@@ -139,11 +139,11 @@ sub cEnumBody(byval s as FBSYMBOL ptr, byval attrib as integer)
 	end if
 end sub
 
-'':::::
-''EnumDecl        =   ENUM ID? (ALIAS LITSTR)? EXPLICIT? Comment? SttSeparator
-''                        EnumLine+
-''					  END ENUM .
-sub cEnumDecl(byval attrib as FB_SYMBATTRIB)
+'' EnumDecl  =
+''  ENUM ID? (ALIAS LITSTR)? EXPLICIT?
+''      EnumLine+
+''  END ENUM .
+sub cEnumDecl( byval attrib as integer )
 	static as zstring * FB_MAXNAMELEN+1 id
 	dim as FBSYMBOL ptr e = any
 

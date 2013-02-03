@@ -98,10 +98,8 @@ private sub hIfSingleLine(byval stk as FB_CMPSTMTSTK ptr)
 	cCompStmtPop( stk )
 end sub
 
-'':::::
-''IfStmtBegin	  =   IF Expression THEN (BlockIfStatement | SingleIfStatement) .
-''
-sub cIfStmtBegin()
+'' IfStmtBegin  =  IF Expression THEN (BlockIfStatement | SingleIfStatement) .
+sub cIfStmtBegin( )
 	dim as ASTNODE ptr expr = any
 	dim as FBSYMBOL ptr nl = any, el = any
 	dim as FB_CMPSTMTSTK ptr stk = any
@@ -179,15 +177,11 @@ sub cIfStmtBegin()
 	end if
 end sub
 
-'':::::
-''IfStmtNext	=     ELSEIF Expression THEN
-''              |     ELSE .
-''
-function cIfStmtNext(  ) as integer
+'' IfStmtNext  =     ELSEIF Expression THEN
+''                |  ELSE .
+sub cIfStmtNext( )
 	dim as ASTNODE ptr expr = any
 	dim as FB_CMPSTMTSTK ptr stk = any
-
-	function = FALSE
 
 	stk = cCompStmtGetTOS( FB_TK_IF, FALSE )
 	if( stk = NULL ) then
@@ -197,12 +191,12 @@ function cIfStmtNext(  ) as integer
 			errReport( FB_ERRMSG_ELSEWITHOUTIF )
 		end if
 		hSkipStmt( )
-		exit function
+		exit sub
 	end if
 
 	'' single line? don't process
 	if( stk->if.issingle ) then
-		return TRUE
+		exit sub
 	end if
 
     '' ELSE already parsed?
@@ -276,28 +270,21 @@ function cIfStmtNext(  ) as integer
 	stk->scopenode = astScopeBegin( )
 
 	cStatement( )
+end sub
 
-	function = TRUE
-
-end function
-
-'':::::
-''IfStmtEnd	  =   END IF | ENDIF .
-''
-function cIfStmtEnd as integer
+'' IfStmtEnd  =  END IF | ENDIF .
+sub cIfStmtEnd( )
 	dim as FB_CMPSTMTSTK ptr stk = any
-
-	function = FALSE
 
 	stk = cCompStmtGetTOS( FB_TK_IF )
 	if( stk = NULL ) then
 		hSkipStmt( )
-		exit function
+		exit sub
 	end if
 
 	'' single line? don't process
 	if( stk->if.issingle ) then
-		return TRUE
+		exit sub
 	end if
 
 	'' ENDIF or END IF
@@ -321,5 +308,4 @@ function cIfStmtEnd as integer
 
 	'' pop from stmt stack
 	cCompStmtPop( stk )
-
-end function
+end sub

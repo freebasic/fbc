@@ -11,7 +11,7 @@
 '':::::
 ''WhileStmtBegin  =   WHILE Expression .
 ''
-sub cWhileStmtBegin()
+sub cWhileStmtBegin( )
     dim as ASTNODE ptr expr = any
     dim as FBSYMBOL ptr il = any, el = any
     dim as FB_CMPSTMTSTK ptr stk = any
@@ -49,18 +49,14 @@ sub cWhileStmtBegin()
 	stk->while.endlabel = el
 end sub
 
-'':::::
-''WhileStmtEnd  =   WEND
-''
-function cWhileStmtEnd as integer
+'' WhileStmtEnd  =  WEND
+sub cWhileStmtEnd( )
 	dim as FB_CMPSTMTSTK ptr stk = any
-
-	function = FALSE
 
 	stk = cCompStmtGetTOS( FB_TK_WHILE )
 	if( stk = NULL ) then
 		hSkipStmt( )
-		exit function
+		exit sub
 	end if
 
 	'' WEND
@@ -77,7 +73,4 @@ function cWhileStmtEnd as integer
 
 	'' pop from stmt stack
 	cCompStmtPop( stk )
-
-	function = TRUE
-
-end function
+end sub

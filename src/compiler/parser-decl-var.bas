@@ -71,8 +71,6 @@ end function
 function cVariableDecl( byval attrib as FB_SYMBATTRIB ) as integer
 	dim as integer dopreserve = any, tk = any
 
-	function = FALSE
-
 #macro hCheckPrivPubAttrib( attrib )
 	if( (attrib and (FB_SYMBATTRIB_PUBLIC or FB_SYMBATTRIB_PRIVATE)) <> 0 ) then
 		errReport( FB_ERRMSG_PRIVORPUBTTRIBNOTALLOWED )
@@ -90,7 +88,7 @@ function cVariableDecl( byval attrib as FB_SYMBATTRIB ) as integer
 		'' REDIM generates code, check if allowed
 		if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_CODE ) = FALSE ) then
 			hSkipStmt( )
-			exit function
+			return TRUE
 		end if
 
 		hCheckPrivPubAttrib( attrib )
@@ -146,7 +144,7 @@ function cVariableDecl( byval attrib as FB_SYMBATTRIB ) as integer
 	case FB_TK_STATIC
 		if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_DECL or FB_CMPSTMT_MASK_CODE ) = FALSE ) then
 			hSkipStmt( )
-			exit function
+			return TRUE
 		end if
 
 		lexSkipToken( )
@@ -162,7 +160,7 @@ function cVariableDecl( byval attrib as FB_SYMBATTRIB ) as integer
 	case else
 		if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_DECL or FB_CMPSTMT_MASK_CODE ) = FALSE ) then
 			hSkipStmt( )
-			exit function
+			return TRUE
 		end if
 
 		lexSkipToken( )
@@ -203,14 +201,14 @@ function cVariableDecl( byval attrib as FB_SYMBATTRIB ) as integer
 		end if
 	end if
 
-	''
 	if( symbGetProcStaticLocals( parser.currproc ) ) then
 		if( (attrib and FB_SYMBATTRIB_DYNAMIC) = 0 ) then
 			attrib or= FB_SYMBATTRIB_STATIC
 		end if
 	end if
 
-	function = (cVarDecl( attrib, dopreserve, tk, FALSE ) <> NULL)
+	cVarDecl( attrib, dopreserve, tk, FALSE )
+	function = TRUE
 end function
 
 '':::::
@@ -1226,7 +1224,7 @@ function cVarDecl _
     		end if
     	end if
 
-    	'' ('(' ArrayDecl? ')')?
+		'' ('(' ArrayDecl? ')')?
 		dimensions = 0
 		check_exprtb = FALSE
 		if( (lexGetToken( ) = CHAR_LPRNT) and (is_fordecl = FALSE) ) then
@@ -1234,21 +1232,19 @@ function cVarDecl _
 
 			is_dynamic = (attrib and FB_SYMBATTRIB_DYNAMIC) <> 0
 
-            '' ID()
+			'' ID()
 			if( lexGetToken( ) = CHAR_RPRNT ) then
 				'' fake it
 				dimensions = -1
 				is_dynamic = TRUE
 
-            '' , ID( expr, (TO expr)? )
-    		else
-    			'' only allow subscripts if not COMMON
-    			if( (attrib and FB_SYMBATTRIB_COMMON) = 0 ) then
+			'' , ID( expr, (TO expr)? )
+			else
+				'' only allow subscripts if not COMMON
+				if( (attrib and FB_SYMBATTRIB_COMMON) = 0 ) then
 					'' static?
 					if( token = FB_TK_STATIC ) then
-    					if( cStaticArrayDecl( dimensions, dTB(), FALSE ) = FALSE ) then
-	    					exit function
-    					end if
+						cStaticArrayDecl( dimensions, dTB(), FALSE )
 
 						'' If there were any ellipsises in the
 						'' array decl then we mark the symbol before initializing
@@ -1258,13 +1254,11 @@ function cVarDecl _
 							end if
 						next
 
-    					is_dynamic = FALSE
+						is_dynamic = FALSE
 
 					'' can be static or dynamic..
 					else
-    					if( cArrayDecl( dimensions, exprTB() ) = FALSE ) then
-	    					exit function
-    					end if
+						cArrayDecl( dimensions, exprTB() )
 
 						check_exprtb = TRUE
 
@@ -1275,7 +1269,6 @@ function cVarDecl _
 								has_ellipsis = TRUE
 							end if
 						next
-
 					end if
 
     			'' COMMON.. no subscripts
@@ -1474,6 +1467,7 @@ function cVarDecl _
 			case else
 				if( hHasEllipsis( sym ) ) then
 					errReport( FB_ERRMSG_MUSTHAVEINITWITHELLIPSIS )
+					hSkipStmt( )
 					exit function
 				end if
 
@@ -1610,9 +1604,6 @@ function cVarDecl _
 
 		lexSkipToken( )
     loop
-
-    function = cast( FBSYMBOL ptr, TRUE )
-
 end function
 
 '' look for ... followed by ')', ',' or TO
@@ -1819,15 +1810,8 @@ end function
 ''                             (',' Expression (TO Expression)?)*
 ''				      ')' .
 ''
-function cArrayDecl _
-	( _
-		byref dimensions as integer, _
-		exprTB() as ASTNODE ptr _
-	) as integer
-
+sub cArrayDecl( byref dimensions as integer, exprTB() as ASTNODE ptr )
 	dim as integer i = any
-
-	function = FALSE
 
 	dimensions = 0
 
@@ -1881,10 +1865,7 @@ function cArrayDecl _
 			exit do
 		end if
 	loop
-
-	function = TRUE
-
-end function
+end sub
 
 '':::::
 ''AutoVarDecl    =   VAR SHARED? SymbolDef '=' VarInitializer
