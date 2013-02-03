@@ -196,6 +196,7 @@ function cIfStmtNext(  ) as integer
 		else
 			errReport( FB_ERRMSG_ELSEWITHOUTIF )
 		end if
+		hSkipStmt( )
 		exit function
 	end if
 
@@ -290,6 +291,7 @@ function cIfStmtEnd as integer
 
 	stk = cCompStmtGetTOS( FB_TK_IF )
 	if( stk = NULL ) then
+		hSkipStmt( )
 		exit function
 	end if
 

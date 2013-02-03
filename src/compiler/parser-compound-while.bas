@@ -59,6 +59,7 @@ function cWhileStmtEnd as integer
 
 	stk = cCompStmtGetTOS( FB_TK_WHILE )
 	if( stk = NULL ) then
+		hSkipStmt( )
 		exit function
 	end if
 

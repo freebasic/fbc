@@ -182,6 +182,7 @@ function cNamespaceStmtEnd as integer
 
 	stk = cCompStmtGetTOS( FB_TK_NAMESPACE )
 	if( stk = NULL ) then
+		hSkipStmt( )
 		exit function
 	end if
 

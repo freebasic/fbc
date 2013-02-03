@@ -1055,6 +1055,7 @@ function cForStmtEnd _
 		'' TOS = top of stack
 		stk = cCompStmtGetTOS( FB_TK_FOR )
 		if( stk = NULL ) then
+			hSkipStmt( )
 			exit function
 		end if
 
@@ -1062,10 +1063,8 @@ function cForStmtEnd _
 
 		'' ID?
 		if( lexGetClass( ) <> FB_TKCLASS_IDENTIFIER ) then
-
 			'' pop from stmt stack
 			cCompStmtPop( stk )
-
 			exit do
 		end if
 
@@ -1105,5 +1104,4 @@ function cForStmtEnd _
 	loop
 
 	function = TRUE
-
 end function

@@ -55,6 +55,7 @@ function cScopeStmtEnd as integer
 
 	stk = cCompStmtGetTOS( FB_TK_SCOPE )
 	if( stk = NULL ) then
+		hSkipStmt( )
 		exit function
 	end if
 

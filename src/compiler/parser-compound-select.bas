@@ -292,6 +292,7 @@ function cSelectStmtNext( ) as integer
 	stk = cCompStmtGetTOS( FB_TK_SELECT, FALSE )
 	if( stk = NULL ) then
 		errReport( FB_ERRMSG_CASEWITHOUTSELECT )
+		hSkipStmt( )
 		exit function
 	end if
 
@@ -402,6 +403,7 @@ function cSelectStmtEnd as integer
 
 	stk = cCompStmtGetTOS( FB_TK_SELECT )
 	if( stk = NULL ) then
+		hSkipStmt( )
 		exit function
 	end if
 
