@@ -11,10 +11,6 @@
 #include once "list.bi"
 #include once "ast.bi"
 
-type FB_SYMVAR_CTX
-	array_dimtype		as FBSYMBOL ptr
-end type
-
 declare sub hCreateArrayDescriptorType( )
 declare function hCreateDescType _
 	( _
@@ -25,9 +21,6 @@ declare function hCreateDescType _
 		byval subtype as FBSYMBOL ptr, _
 		byval attrib as integer _
 	) as FBSYMBOL ptr
-
-'' globals
-	dim shared as FB_SYMVAR_CTX ctx
 
 sub symbVarInit( )
 	listInit( @symb.dimlist, FB_INITDIMNODES, len( FBVARDIM ), LIST_FLAGS_NOCLEAR )
@@ -51,42 +44,42 @@ private sub hCreateArrayDescriptorType( )
 	dim as FBSYMBOL ptr fld = any
 
 	'' type FBARRAYDIM
-	ctx.array_dimtype = symbStructBegin( NULL, NULL, "__FB_ARRAYDIMTB$", NULL, FALSE, 0, NULL, 0 )
+	symb.array_dimtype = symbStructBegin( NULL, NULL, "__FB_ARRAYDIMTB$", NULL, FALSE, 0, NULL, 0 )
 
 	'' elements		as integer
-	symbAddField( ctx.array_dimtype, "elements", 0, dTB(), _
+	symbAddField( symb.array_dimtype, "elements", 0, dTB(), _
 	              FB_DATATYPE_INTEGER, NULL, FB_INTEGERSIZE, 0 )
 
 	'' lbound		as integer
-	symbAddField( ctx.array_dimtype, "lbound", 0, dTB(), _
+	symbAddField( symb.array_dimtype, "lbound", 0, dTB(), _
 	              FB_DATATYPE_INTEGER, NULL, FB_INTEGERSIZE, 0 )
 
 	'' ubound		as integer
-	symbAddField( ctx.array_dimtype, "ubound", 0, dTB(), _
+	symbAddField( symb.array_dimtype, "ubound", 0, dTB(), _
 	              FB_DATATYPE_INTEGER, NULL, FB_INTEGERSIZE, 0 )
 
 	'' end type
-	symbStructEnd( ctx.array_dimtype )
+	symbStructEnd( symb.array_dimtype )
 
 	'' type FBARRAY
 	''     ...
 	'' end type
-	symb.arrdesc_type = hCreateDescType( NULL, -1, "__FB_ARRAYDESC$", FB_DATATYPE_VOID, NULL, 0 )
+	symb.array_desctype = hCreateDescType( NULL, -1, "__FB_ARRAYDESC$", FB_DATATYPE_VOID, NULL, 0 )
 
 	''
 	'' Store some descriptor field offsets into globals for easy access
 	''
 
-	fld = symbUdtGetFirstField( symb.arrdesc_type )  '' data
-	symb.arrdesc_dataoffset = symbGetOfs( fld )
+	fld = symbUdtGetFirstField( symb.array_desctype )  '' data
+	symb.array_dataoffset = symbGetOfs( fld )
 
-	fld = symbUdtGetNextInitableField( fld )         '' ptr
-	fld = symbUdtGetNextInitableField( fld )         '' size
-	fld = symbUdtGetNextInitableField( fld )         '' element_len
-	fld = symbUdtGetNextInitableField( fld )         '' dimensions
+	fld = symbUdtGetNextField( fld )         '' ptr
+	fld = symbUdtGetNextField( fld )         '' size
+	fld = symbUdtGetNextField( fld )         '' element_len
+	fld = symbUdtGetNextField( fld )         '' dimensions
 
-	fld = symbUdtGetNextInitableField( fld )         '' dimTB
-	symb.arrdesc_dimtboffset = symbGetOfs( fld )
+	fld = symbUdtGetNextField( fld )         '' dimTB
+	symb.array_dimtboffset = symbGetOfs( fld )
 end sub
 
 private function hCreateDescType _
@@ -100,7 +93,7 @@ private function hCreateDescType _
 	) as FBSYMBOL ptr
 
 	static as FBARRAYDIM dTB(0)
-	dim as FBSYMBOL ptr sym = any, dimtype = any
+	dim as FBSYMBOL ptr sym = any
 
 	sym = symbStructBegin( symtb, NULL, id, NULL, FALSE, 0, NULL, attrib )
 
@@ -133,10 +126,8 @@ private function hCreateDescType _
 	dTB(0).lower = 0
 	dTB(0).upper = dims-1
 
-	dimtype = ctx.array_dimtype
-
-	symbAddField( sym, "dimTB", 1, dTB(), _
-	              FB_DATATYPE_STRUCT, dimtype, symbGetLen( dimtype ), 0 )
+	symbAddField( sym, "dimTB", 1, dTB(), FB_DATATYPE_STRUCT, _
+	              symb.array_dimtype, symbGetLen( symb.array_dimtype ), 0 )
 
 	symbStructEnd( sym )
 

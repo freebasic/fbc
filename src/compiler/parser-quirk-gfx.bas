@@ -43,12 +43,12 @@ private function hMakeArrayIndex _
     if( symbIsParamByDesc( sym ) ) then
 		'' deref descriptor->data
 		idxexpr = astNewDEREF( astNewVAR( sym, 0, FB_DATATYPE_INTEGER ), _
-				FB_DATATYPE_INTEGER, NULL, symb.arrdesc_dataoffset )
+				FB_DATATYPE_INTEGER, NULL, symb.array_dataoffset )
 
 		'' descriptor->dimTB(0).lBound
 		dataOffset = astNewDEREF( astNewVAR( sym, 0, FB_DATATYPE_INTEGER ), _
 					FB_DATATYPE_INTEGER, NULL, _
-					symb.arrdesc_dimtboffset + FB_ARRAYDESC_LBOUNDOFS )
+					symb.array_dimtboffset + FB_ARRAYDESC_LBOUNDOFS )
 
 		'' lBound * elemLen
 		dataOffset = astNewBOP( AST_OP_MUL, _
@@ -69,11 +69,11 @@ private function hMakeArrayIndex _
     elseif( symbGetIsDynamic( sym ) ) then
 		'' deref descriptor.data
 		idxexpr = astNewVAR( symbGetArrayDescriptor( sym ), _
-				symb.arrdesc_dataoffset, FB_DATATYPE_INTEGER )
+				symb.array_dataoffset, FB_DATATYPE_INTEGER )
 
 		'' descriptor->dimTB(0).lBound
 		dataOffset = astNewVAR( symbGetArrayDescriptor( sym ), _
-					symb.arrdesc_dimtboffset + FB_ARRAYDESC_LBOUNDOFS, _
+					symb.array_dimtboffset + FB_ARRAYDESC_LBOUNDOFS, _
 					FB_DATATYPE_INTEGER )
 
 		'' lBound * elemLen

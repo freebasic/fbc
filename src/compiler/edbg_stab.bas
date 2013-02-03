@@ -686,7 +686,7 @@ private function hDeclDynArray _
 
 	'' declare the array descriptor
 	desc = str( ctx.typecnt ) + "=s" + _
-		str( (symb.arrdesc_dimtboffset + FB_ARRAYDESC_DIMLEN * symbGetArrayDimensions( sym )) * 8 )
+		str( (symb.array_dimtboffset + FB_ARRAYDESC_DIMLEN * symbGetArrayDimensions( sym )) * 8 )
 	ctx.typecnt += 1
 
 	dimdesc = hDeclArrayDims( sym )
@@ -722,7 +722,7 @@ private function hDeclDynArray _
     					   FB_INTEGERSIZE )
 
     '' dimension fields
-	ofs = symb.arrdesc_dimtboffset
+	ofs = symb.array_dimtboffset
     i = 1
     d = symbGetArrayFirstDim( sym )
     do

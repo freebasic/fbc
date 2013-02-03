@@ -779,8 +779,8 @@ private function hDynArrayBoundChk _
 	) as ASTNODE ptr
 
 	function = astBuildBOUNDCHK( expr, _
-			astNewVAR( desc, symb.arrdesc_dimtboffset + idx*FB_ARRAYDESC_DIMLEN + FB_ARRAYDESC_LBOUNDOFS, FB_DATATYPE_INTEGER ), _
-			astNewVAR( desc, symb.arrdesc_dimtboffset + idx*FB_ARRAYDESC_DIMLEN + FB_ARRAYDESC_UBOUNDOFS, FB_DATATYPE_INTEGER ) )
+			astNewVAR( desc, symb.array_dimtboffset + idx*FB_ARRAYDESC_DIMLEN + FB_ARRAYDESC_LBOUNDOFS, FB_DATATYPE_INTEGER ), _
+			astNewVAR( desc, symb.array_dimtboffset + idx*FB_ARRAYDESC_DIMLEN + FB_ARRAYDESC_UBOUNDOFS, FB_DATATYPE_INTEGER ) )
 
 end function
 
@@ -843,7 +843,7 @@ private function cDynArrayIdx( byval sym as FBSYMBOL ptr ) as ASTNODE ptr
 
 		'' times desc(i).elements
 		expr = astNewBOP( AST_OP_MUL, expr, _
-				astNewVAR( desc, symb.arrdesc_dimtboffset + i*FB_ARRAYDESC_DIMLEN, _
+				astNewVAR( desc, symb.array_dimtboffset + i*FB_ARRAYDESC_DIMLEN, _
 						FB_DATATYPE_INTEGER ) )
 	loop
 
@@ -859,7 +859,7 @@ private function cDynArrayIdx( byval sym as FBSYMBOL ptr ) as ASTNODE ptr
 
 	'' plus desc.data (= ptr + diff)
 	function = astNewBOP( AST_OP_ADD, expr, _
-			astNewVAR( desc, symb.arrdesc_dataoffset, FB_DATATYPE_INTEGER ) )
+			astNewVAR( desc, symb.array_dataoffset, FB_DATATYPE_INTEGER ) )
 end function
 
 private function hArgArrayBoundChk _
@@ -872,10 +872,10 @@ private function hArgArrayBoundChk _
 	function = astBuildBOUNDCHK( expr, _
 			astNewDEREF( astNewVAR( desc, 0, FB_DATATYPE_INTEGER ), _
 				FB_DATATYPE_INTEGER, NULL, _
-				symb.arrdesc_dimtboffset + idx*FB_ARRAYDESC_DIMLEN + FB_ARRAYDESC_LBOUNDOFS ), _
+				symb.array_dimtboffset + idx*FB_ARRAYDESC_DIMLEN + FB_ARRAYDESC_LBOUNDOFS ), _
 			astNewDEREF( astNewVAR( desc, 0, FB_DATATYPE_INTEGER ), _
 				FB_DATATYPE_INTEGER, NULL, _
-				symb.arrdesc_dimtboffset + idx*FB_ARRAYDESC_DIMLEN + FB_ARRAYDESC_UBOUNDOFS ) )
+				symb.array_dimtboffset + idx*FB_ARRAYDESC_DIMLEN + FB_ARRAYDESC_UBOUNDOFS ) )
 
 
 end function
@@ -923,7 +923,7 @@ private function cArgArrayIdx( byval sym as FBSYMBOL ptr ) as ASTNODE ptr
 		expr = astNewBOP( AST_OP_MUL, expr, _
 				astNewDEREF( astNewVAR( sym, 0, FB_DATATYPE_INTEGER ), _
 					FB_DATATYPE_INTEGER, NULL, _
-					symb.arrdesc_dimtboffset + i*FB_ARRAYDESC_DIMLEN ) )
+					symb.array_dimtboffset + i*FB_ARRAYDESC_DIMLEN ) )
 	loop
 
 	'' times length
@@ -932,7 +932,7 @@ private function cArgArrayIdx( byval sym as FBSYMBOL ptr ) as ASTNODE ptr
 	'' plus desc->data (= ptr + diff)
 	function = astNewBOP( AST_OP_ADD, expr, _
 			astNewDEREF( astNewVAR( sym, 0, FB_DATATYPE_INTEGER ), _
-				FB_DATATYPE_INTEGER, NULL, symb.arrdesc_dataoffset ) )
+				FB_DATATYPE_INTEGER, NULL, symb.array_dataoffset ) )
 end function
 
 '':::::
@@ -1088,14 +1088,14 @@ private function hMakeArrayIdx( byval sym as FBSYMBOL ptr ) as ASTNODE ptr
     if( symbIsParamByDesc( sym ) ) then
 		'' return descriptor->data
 		return astNewDEREF( astNewVAR( sym, 0, FB_DATATYPE_INTEGER ), _
-				FB_DATATYPE_INTEGER, NULL, symb.arrdesc_dataoffset )
+				FB_DATATYPE_INTEGER, NULL, symb.array_dataoffset )
     end if
 
     '' dynamic array? (this will handle common's too)
     if( symbGetIsDynamic( sym ) ) then
 		'' return descriptor.data
 		return astNewVAR( symbGetArrayDescriptor( sym ), _
-				symb.arrdesc_dataoffset, FB_DATATYPE_INTEGER )
+				symb.array_dataoffset, FB_DATATYPE_INTEGER )
     end if
 
     '' static array, return lbound( array )
