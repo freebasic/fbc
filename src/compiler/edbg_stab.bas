@@ -643,120 +643,112 @@ sub edbgEmitProcFooter _
 
 end sub
 
-'':::::
-private function hDeclUDTField _
+private function hDeclUdtField _
 	( _
-		byval sname as zstring ptr, _
-		byval stype as integer, _
-		byval soffs as integer, _
-		byval ssize as integer, _
-		byval stypeopt as zstring ptr = NULL _
-	) as string static
+		byval fld as FBSYMBOL ptr, _
+		byval stypeopt as zstring ptr = NULL, _
+		byval idprefix as zstring ptr = NULL, _
+		byval baseoffset as integer = 0 _
+	) as string
 
 	dim as string desc
+	dim as integer dtype = any
 
-    desc = *sname
-    desc += ":"
+	if( idprefix ) then
+		desc += *idprefix
+	end if
 
-    if( typeIsPtr( stype ) ) then
-    	desc += hDeclPointer( stype )
-    end if
+	desc += *symbGetName( fld )
+	desc += ":"
+
+	dtype = symbGetType( fld )
+	if( typeIsPtr( dtype ) ) then
+		desc += hDeclPointer( dtype )
+	end if
 
 	if( stypeopt = NULL ) then
-		desc += str( remapTB(stype) )
+		desc += str( remapTB(dtype) )
 	else
 		desc += *stypeopt
 	end if
 
-	desc += "," + str( soffs * 8 ) + "," + str( ssize * 8 ) + ";"
+	desc += "," + str( (baseoffset + symbGetOfs( fld )) * 8 )
+	desc += "," + str( symbGetLen( fld ) * 8 )
+	desc += ";"
 
 	function = desc
-
 end function
 
-'':::::
-private function hDeclDynArray _
-	( _
-		byval sym as FBSYMBOL ptr _
-	) as string static
-
+private function hDeclDynArray( byval sym as FBSYMBOL ptr ) as string static
     dim as string desc, dimdesc
     dim as FBVARDIM ptr d = any
-    dim as integer ofs = any, i = any
+	dim as integer baseoffset = any, i = any
+	dim as FBSYMBOL ptr fld = any
 
 	'' declare the array descriptor
-	desc = str( ctx.typecnt ) + "=s" + _
-		str( (symb.array_dimtboffset + FB_ARRAYDESC_DIMLEN * symbGetArrayDimensions( sym )) * 8 )
+	desc = str( ctx.typecnt ) + "=s" + str( symbGetLen( symb.array_desctype ) )
 	ctx.typecnt += 1
 
 	dimdesc = hDeclArrayDims( sym )
 
     dimdesc += hGetDataType( sym, TRUE )
-    
-	'' data	as any ptr
-	desc += hDeclUDTField( "data", _
-		    			   FB_DATATYPE_POINTER, _
-		                   offsetof( FB_ARRAYDESC, data ), _
-		                   FB_POINTERSIZE, _
-		                   strptr( dimdesc ) )
-	'' ptr as any ptr
-	desc += hDeclUDTField( "ptr", _
-						   FB_DATATYPE_POINTER, _
-		                   offsetof( FB_ARRAYDESC, ptr ), _
-		                   FB_POINTERSIZE, _
-		                   strptr( dimdesc ) )
-    '' size	as integer
-	desc += hDeclUDTField( "size", _
-						   FB_DATATYPE_INTEGER, _
-						   offsetof( FB_ARRAYDESC, size ), _
-						   FB_INTEGERSIZE )
-    '' element_len as integer
-    desc += hDeclUDTField( "elen", _
-    					   FB_DATATYPE_INTEGER, _
-    					   offsetof( FB_ARRAYDESC, element_len ), _
-    					   FB_INTEGERSIZE )
-    '' dimensions as integer
-    desc += hDeclUDTField( "dims", _
-    					   FB_DATATYPE_INTEGER, _
-    					   offsetof( FB_ARRAYDESC, dimensions ), _
-    					   FB_INTEGERSIZE )
 
-    '' dimension fields
-	ofs = symb.array_dimtboffset
-    i = 1
-    d = symbGetArrayFirstDim( sym )
-    do
-    	dimdesc = "dim" + str( i )
+	'' FBARRAY fields
 
-    	'' elements as integer
-    	desc += hDeclUDTField( dimdesc + "_elemns", _
-    						   FB_DATATYPE_INTEGER, _
-    						   ofs + offsetof( FB_ARRAYDESCDIM, elements ), _
-    						   FB_INTEGERSIZE )
-    	'' lbound as integer
-    	desc += hDeclUDTField( dimdesc + "_lbound", _
-    						   FB_DATATYPE_INTEGER, _
-    						   ofs + offsetof( FB_ARRAYDESCDIM, lbound ), _
-    						   FB_INTEGERSIZE )
-    	'' ubound as integer
-    	desc += hDeclUDTField( dimdesc + "_ubound", _
-    						   FB_DATATYPE_INTEGER, _
-    						   ofs + offsetof( FB_ARRAYDESCDIM, ubound ), _
-    						   FB_INTEGERSIZE )
+	'' data
+	fld = symbUdtGetFirstField( symb.array_desctype )
+	desc += hDeclUdtField( fld, strptr( dimdesc ) )
 
-    	ofs += FB_ARRAYDESC_DIMLEN
+	'' ptr
+	fld = symbUdtGetNextField( fld )
+	desc += hDeclUdtField( fld, strptr( dimdesc ) )
 
-    	if( d = NULL ) then
-    		exit do
-    	end if
+	'' size
+	fld = symbUdtGetNextField( fld )
+	desc += hDeclUdtField( fld )
 
-    	d = d->next
-    loop while( d <> NULL )
+	'' element_len
+	fld = symbUdtGetNextField( fld )
+	desc += hDeclUdtField( fld )
+
+	'' dimensions
+	fld = symbUdtGetNextField( fld )
+	desc += hDeclUdtField( fld )
+
+	'' dimTB
+	fld = symbUdtGetNextField( fld )
+	baseoffset = symbGetOfs( fld )
+	i = 1
+	d = symbGetArrayFirstDim( sym )
+	do
+		dimdesc = "dim" + str( i ) + "_"
+
+		'' FBARRAYDIM fields
+
+		'' elements
+		fld = symbUdtGetFirstField( symb.array_dimtype )
+		desc += hDeclUdtField( fld, , dimdesc, baseoffset )
+
+		'' lbound
+		fld = symbUdtGetNextField( fld )
+		desc += hDeclUdtField( fld, , dimdesc, baseoffset )
+
+		'' ubound
+		fld = symbUdtGetNextField( fld )
+		desc += hDeclUdtField( fld, , dimdesc, baseoffset )
+
+		baseoffset += symbGetLen( symb.array_dimtype )
+
+		if( d = NULL ) then
+			exit do
+		end if
+
+		d = d->next
+	loop while( d )
 
 	desc += ";"
 
 	function = desc
-
 end function
 
 '':::::
