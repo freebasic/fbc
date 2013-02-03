@@ -48,15 +48,15 @@ private sub hCreateArrayDescriptorType( )
 
 	'' elements		as integer
 	symbAddField( symb.array_dimtype, "elements", 0, dTB(), _
-	              FB_DATATYPE_INTEGER, NULL, FB_INTEGERSIZE, 0 )
+	              FB_DATATYPE_INTEGER, NULL, 0, 0 )
 
 	'' lbound		as integer
 	symbAddField( symb.array_dimtype, "lbound", 0, dTB(), _
-	              FB_DATATYPE_INTEGER, NULL, FB_INTEGERSIZE, 0 )
+	              FB_DATATYPE_INTEGER, NULL, 0, 0 )
 
 	'' ubound		as integer
 	symbAddField( symb.array_dimtype, "ubound", 0, dTB(), _
-	              FB_DATATYPE_INTEGER, NULL, FB_INTEGERSIZE, 0 )
+	              FB_DATATYPE_INTEGER, NULL, 0, 0 )
 
 	'' end type
 	symbStructEnd( symb.array_dimtype )
@@ -99,23 +99,23 @@ private function hCreateDescType _
 
 	'' data			as any ptr
 	symbAddField( sym, "data", 0, dTB(), _
-	              typeAddrOf( dtype ), subtype, FB_POINTERSIZE, 0 )
+	              typeAddrOf( dtype ), subtype, 0, 0 )
 
 	'' ptr			as any ptr
 	symbAddField( sym, "ptr", 0, dTB(), _
-	              typeAddrOf( dtype ), subtype, FB_POINTERSIZE, 0 )
+	              typeAddrOf( dtype ), subtype, 0, 0 )
 
 	'' size			as integer
 	symbAddField( sym, "size", 0, dTB(), _
-	              FB_DATATYPE_INTEGER, NULL, FB_INTEGERSIZE, 0 )
+	              FB_DATATYPE_INTEGER, NULL, 0, 0 )
 
 	'' element_len		as integer
 	symbAddField( sym, "element_len", 0, dTB(), _
-	              FB_DATATYPE_INTEGER, NULL, FB_INTEGERSIZE, 0 )
+	              FB_DATATYPE_INTEGER, NULL, 0, 0 )
 
 	'' dimensions		as integer
 	symbAddField( sym, "dimensions", 0, dTB(), _
-	              FB_DATATYPE_INTEGER, NULL, FB_INTEGERSIZE, 0 )
+	              FB_DATATYPE_INTEGER, NULL, 0, 0 )
 
 	'' If the dimension count is unknown, reserve room for the max amount
 	if( dims = -1 ) then
@@ -127,7 +127,7 @@ private function hCreateDescType _
 	dTB(0).upper = dims-1
 
 	symbAddField( sym, "dimTB", 1, dTB(), FB_DATATYPE_STRUCT, _
-	              symb.array_dimtype, symbGetLen( symb.array_dimtype ), 0 )
+	              symb.array_dimtype, 0, 0 )
 
 	symbStructEnd( sym )
 
