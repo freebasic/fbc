@@ -23,10 +23,11 @@ function cDefDecl as integer static
 		return TRUE
 	end if
 
-	if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_DECL ) = FALSE ) then
-		if( fbLangIsSet( FB_LANG_QB ) = FALSE ) then '' QBASIC allows DEF___ in procs/compound statements
-			exit function
-		end if
+	'' QBASIC allows DEF___ in procs/compound statements
+	if( cCompStmtIsAllowed( iif( fbLangIsSet( FB_LANG_QB ), _
+				FB_CMPSTMT_MASK_DECL or FB_CMPSTMT_MASK_CODE, _
+				FB_CMPSTMT_MASK_DECL ) ) = FALSE ) then
+		exit function
 	end if
 
 	dtype = FB_DATATYPE_INVALID
