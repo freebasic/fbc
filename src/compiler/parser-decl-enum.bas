@@ -55,8 +55,9 @@ sub cEnumBody(byval s as FBSYMBOL ptr, byval attrib as integer)
 
 	do
 		'' Comment? SttSeparator?
-		do while( cComment( ) or cStmtSeparator( ) )
-		loop
+		while( (cComment( ) or cStmtSeparator( )) and _
+		       (lexGetToken( ) <> FB_TK_EOF) )
+		wend
 
 		select case lexGetToken( )
 		'' EOF?

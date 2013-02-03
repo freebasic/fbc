@@ -180,6 +180,7 @@ Version 0.25.0:
 - SELECT blocks will no longer allow other statements in between the SELECT header and the first CASE statement
 - lang qb didn't allow DEF___ statements inside procedures/compounds despite the change in 0.21.0
 - "CONST id AS" and "CONST AS" were allowed to be immediately followed by any statement, instead of triggering a compiler error
+- The compiler allowed a single "ASM" token to appear at end-of-file (without newline following), without showing an "expected END ASM" error
 
 
 Version 0.24.0:
