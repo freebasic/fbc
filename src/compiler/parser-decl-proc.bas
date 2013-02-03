@@ -14,6 +14,7 @@ function cProcDecl( ) as integer
 	function = FALSE
 
 	if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_DECL ) = FALSE ) then
+		hSkipStmt( )
 		exit function
 	end if
 

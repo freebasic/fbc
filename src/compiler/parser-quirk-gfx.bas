@@ -1299,10 +1299,12 @@ function cGfxImageCreate( byref funcexpr as ASTNODE ptr ) as integer
 
 end function
 
-#define CHECK_CODEMASK( ) 												_
-    if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_CODE ) = FALSE ) then		:_
-    	exit function													:_
-    end if
+#macro CHECK_CODEMASK( )
+	if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_CODE ) = FALSE ) then
+		hSkipStmt( )
+		exit function
+	end if
+#endmacro
 
 '':::::
 function cGfxStmt _

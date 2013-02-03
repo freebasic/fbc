@@ -75,6 +75,7 @@ function cDataStmt  _
 		if( env.clopt.lang <> FB_LANG_QB ) then
 			'' allowed?
 			if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_DATA ) = FALSE ) then
+				hSkipStmt( )
 				exit function
 			end if
 

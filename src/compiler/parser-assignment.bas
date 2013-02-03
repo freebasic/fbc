@@ -419,6 +419,7 @@ function cAssignmentOrPtrCallEx _
     function = FALSE
 
     if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_CODE ) = FALSE ) then
+		hSkipStmt( )
     	exit function
     end if
 
@@ -582,6 +583,7 @@ function cAssignmentOrPtrCall _
     end if
 
     if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_CODE ) = FALSE ) then
+		hSkipStmt( )
     	exit function
     end if
 

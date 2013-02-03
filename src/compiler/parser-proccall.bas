@@ -401,7 +401,6 @@ function cProcCall _
 
 end function
 
-'':::::
 private function hProcSymbol _
 	( _
 		byval base_parent as FBSYMBOL ptr, _
@@ -412,7 +411,8 @@ private function hProcSymbol _
 	function = FALSE
 
 	if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_CODE ) = FALSE ) then
-		exit function
+		hSkipStmt( )
+		return TRUE
 	end if
 
 	lexSkipToken( )
@@ -471,7 +471,6 @@ private function hProcSymbol _
 	lexSkipToken( )
 
 	function = cAssignFunctResult( FALSE )
-
 end function
 
 '':::::
@@ -707,11 +706,7 @@ private function hAssignOrCall _
 
 end function
 
-''::::
-private function hProcCallOrAssign_QB _
-	( _
-	) as integer
-
+private function hProcCallOrAssign_QB( ) as integer
 	function = FALSE
 
  	select case as const lexGetClass( )
@@ -725,9 +720,10 @@ private function hProcCallOrAssign_QB _
 			return hAssignOrCall_QB( lexGetSymChain( ), FALSE )
 		end if
 
-    	if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_CODE ) = FALSE ) then
-    		exit function
-    	end if
+		if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_CODE ) = FALSE ) then
+			hSkipStmt( )
+			exit function
+		end if
 
 		lexSkipToken( )
 
@@ -858,9 +854,10 @@ function cProcCallOrAssign _
 				return TRUE
     		end if
 
-    		if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_CODE ) = FALSE ) then
-    			exit function
-    		end if
+			if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_CODE ) = FALSE ) then
+				hSkipStmt( )
+				return TRUE
+			end if
 
 			lexSkipToken( )
 

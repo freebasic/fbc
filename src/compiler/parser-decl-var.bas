@@ -83,13 +83,15 @@ function cVariableDecl( byval attrib as FB_SYMBATTRIB ) as integer
 	dopreserve = FALSE
 
 	tk = lexGetToken( )
+
 	select case as const tk
 	'' REDIM
 	case FB_TK_REDIM
 		'' REDIM generates code, check if allowed
-    	if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_CODE ) = FALSE ) then
-    		exit function
-    	end if
+		if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_CODE ) = FALSE ) then
+			hSkipStmt( )
+			exit function
+		end if
 
 		hCheckPrivPubAttrib( attrib )
 
@@ -143,6 +145,7 @@ function cVariableDecl( byval attrib as FB_SYMBATTRIB ) as integer
 	'' STATIC
 	case FB_TK_STATIC
 		if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_DECL or FB_CMPSTMT_MASK_CODE ) = FALSE ) then
+			hSkipStmt( )
 			exit function
 		end if
 
@@ -158,6 +161,7 @@ function cVariableDecl( byval attrib as FB_SYMBATTRIB ) as integer
 
 	case else
 		if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_DECL or FB_CMPSTMT_MASK_CODE ) = FALSE ) then
+			hSkipStmt( )
 			exit function
 		end if
 
@@ -452,6 +456,7 @@ private function hDeclDynArray _
     if( dimensions <> -1 ) then
 		'' DIM'g dynamic arrays gens code, check if allowed
     	if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_CODE ) = FALSE ) then
+		hSkipStmt( )
     		exit function
     	end if
 	end if

@@ -23,10 +23,12 @@ function cDefDecl as integer static
 		return TRUE
 	end if
 
-	'' QBASIC allows DEF___ in procs/compound statements
+	'' QBASIC allows DEF___ in procs/compound statements, though even then
+	'' it's still disallowed between SELECT and CASE
 	if( cCompStmtIsAllowed( iif( fbLangIsSet( FB_LANG_QB ), _
 				FB_CMPSTMT_MASK_DECL or FB_CMPSTMT_MASK_CODE, _
 				FB_CMPSTMT_MASK_DECL ) ) = FALSE ) then
+		hSkipStmt( )
 		exit function
 	end if
 

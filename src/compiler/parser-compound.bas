@@ -49,11 +49,12 @@ sub parserCompoundStmtEnd( )
 
 end sub
 
-#define CHECK_CODEMASK( for_tk, until_tk )								_
-    if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_CODE ) = FALSE ) then		:_
-    	hSkipCompound( for_tk, until_tk )								:_
-    	exit function													:_
-    end if
+#macro CHECK_CODEMASK( for_tk, until_tk )
+	if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_CODE ) = FALSE ) then
+		hSkipCompound( for_tk, until_tk )
+		exit function
+	end if
+#endmacro
 
 '':::::
 ''CompoundStmt	  =   IfStatement

@@ -18,11 +18,14 @@ function cOptDecl as integer
 
 	if( fbLangOptIsSet( FB_LANG_OPT_OPTION ) = FALSE ) then
 		errReportNotAllowed( FB_LANG_OPT_OPTION )
+		hSkipStmt( )
+		return TRUE
 	end if
 
-    if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_DECL ) = FALSE ) then
-    	exit function
-    end if
+	if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_DECL ) = FALSE ) then
+		hSkipStmt( )
+		return TRUE
+	end if
 
 	'' OPTION
 	lexSkipToken( )
