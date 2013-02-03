@@ -142,6 +142,10 @@ function cVariableDecl( byval attrib as FB_SYMBATTRIB ) as integer
 
 	'' STATIC
 	case FB_TK_STATIC
+		if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_DECL or FB_CMPSTMT_MASK_CODE ) = FALSE ) then
+			exit function
+		end if
+
 		lexSkipToken( )
 
 		attrib or= FB_SYMBATTRIB_STATIC
@@ -153,6 +157,10 @@ function cVariableDecl( byval attrib as FB_SYMBATTRIB ) as integer
 		end if
 
 	case else
+		if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_DECL or FB_CMPSTMT_MASK_CODE ) = FALSE ) then
+			exit function
+		end if
+
 		lexSkipToken( )
 
 	end select

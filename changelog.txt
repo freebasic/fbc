@@ -177,6 +177,7 @@ Version 0.25.0:
 - UDT variables given in BYREF UDT parameter initializers could be copied to a temporary variable if a copy constructor was available, instead of being passed BYREF
 - #630: C backend: EXTERN dynamic array descriptors were not emitted (if the EXTERN was not DIMed in that module)
 - Temporary variables from the expressions given to sizeof() and typeof() (and also len() when evaluated at compile-time) were emitted and could even have their destructors called, even though they were unused and never constructed
+- SELECT blocks will no longer allow other statements in between the SELECT header and the first CASE statement
 
 
 Version 0.24.0:
