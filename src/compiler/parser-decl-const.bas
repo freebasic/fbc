@@ -63,7 +63,7 @@ private function cConstAssign _
 	) as integer
 
     static as zstring * FB_MAXNAMELEN+1 id
-    dim as integer doskip = any
+	dim as integer doskip = any, suffix = any
     dim as ASTNODE ptr expr = any
     dim as FBSYMBOL ptr litsym = any
     dim as FBVALUE value = any
@@ -72,9 +72,6 @@ private function cConstAssign _
 
 	'' Namespace identifier if it matches the current namespace
 	cCurrentParentId()
-
-	dim as integer suffix = lexGetType( )
-	hCheckSuffix( suffix )
 
 	'' ID
 	select case as const lexGetClass( )
@@ -114,7 +111,12 @@ private function cConstAssign _
 		return TRUE
 	end select
 
+	suffix = lexGetType( )
 	id = *lexGetText( )
+
+	hCheckSuffix( suffix )
+
+	'' ID
 	lexSkipToken( )
 
 	'' not multiple?
