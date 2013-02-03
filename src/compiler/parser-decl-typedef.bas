@@ -233,6 +233,11 @@ sub cTypedefMultDecl( )
     dim as integer dtype = any, lgt = any
     dim as FBSYMBOL ptr subtype = any
 
+	if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_DECL or FB_CMPSTMT_MASK_CODE ) = FALSE ) then
+		hSkipStmt( )
+		exit sub
+	end if
+
     '' AS
     lexSkipToken( )
 
@@ -257,6 +262,11 @@ end sub
 '' SingleTypedef  =  TYPE symbol AS SymbolType (',' symbol AS SymbolType)*
 sub cTypedefSingleDecl( byval pid as zstring ptr )
 	'' note: given id can be Ucase()'d
+
+	if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_DECL or FB_CMPSTMT_MASK_CODE ) = FALSE ) then
+		hSkipStmt( )
+		exit sub
+	end if
 
     dim as zstring ptr pfwdname = any
     dim as integer dtype = any, lgt = any

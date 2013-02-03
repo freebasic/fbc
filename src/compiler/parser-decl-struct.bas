@@ -871,6 +871,11 @@ sub cTypeDecl( byval attrib as integer )
 		exit sub
 	end if
 
+	if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_DECL or FB_CMPSTMT_MASK_CODE ) = FALSE ) then
+		hSkipCompound( FB_TK_TYPE )
+		exit sub
+	end if
+
 	'' [ALIAS "id"]
 	dim as zstring ptr palias = cAliasAttribute()
 
