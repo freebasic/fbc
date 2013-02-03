@@ -790,6 +790,7 @@ type SYMBCTX
 
 	arrdesc_type		as FBSYMBOL ptr			'' array descriptor type
 	arrdesc_dataoffset	as integer			'' offsetof( FBARRAY, data )
+	arrdesc_dimtboffset	as integer			'' offsetof( FBARRAY, dimTB )
 
 	rtti			as FB_RTTICTX 
 end type

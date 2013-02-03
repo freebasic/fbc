@@ -779,8 +779,8 @@ private function hDynArrayBoundChk _
 	) as ASTNODE ptr
 
 	function = astBuildBOUNDCHK( expr, _
-			astNewVAR( desc, FB_ARRAYDESCLEN + idx*FB_ARRAYDESC_DIMLEN + FB_ARRAYDESC_LBOUNDOFS, FB_DATATYPE_INTEGER ), _
-			astNewVAR( desc, FB_ARRAYDESCLEN + idx*FB_ARRAYDESC_DIMLEN + FB_ARRAYDESC_UBOUNDOFS, FB_DATATYPE_INTEGER ) )
+			astNewVAR( desc, symb.arrdesc_dimtboffset + idx*FB_ARRAYDESC_DIMLEN + FB_ARRAYDESC_LBOUNDOFS, FB_DATATYPE_INTEGER ), _
+			astNewVAR( desc, symb.arrdesc_dimtboffset + idx*FB_ARRAYDESC_DIMLEN + FB_ARRAYDESC_UBOUNDOFS, FB_DATATYPE_INTEGER ) )
 
 end function
 
@@ -841,12 +841,10 @@ private function cDynArrayIdx( byval sym as FBSYMBOL ptr ) as ASTNODE ptr
 
     	i += 1
 
-    	'' times desc(i).elements
-    	expr = astNewBOP( AST_OP_MUL, _
-    					  expr, _
-    					  astNewVAR( desc, _
-    						 		 FB_ARRAYDESCLEN + i*FB_ARRAYDESC_DIMLEN, _
-    						 		 FB_DATATYPE_INTEGER ) )
+		'' times desc(i).elements
+		expr = astNewBOP( AST_OP_MUL, expr, _
+				astNewVAR( desc, symb.arrdesc_dimtboffset + i*FB_ARRAYDESC_DIMLEN, _
+						FB_DATATYPE_INTEGER ) )
 	loop
 
 	'' times length
@@ -874,10 +872,10 @@ private function hArgArrayBoundChk _
 	function = astBuildBOUNDCHK( expr, _
 			astNewDEREF( astNewVAR( desc, 0, FB_DATATYPE_INTEGER ), _
 				FB_DATATYPE_INTEGER, NULL, _
-				FB_ARRAYDESCLEN + idx*FB_ARRAYDESC_DIMLEN + FB_ARRAYDESC_LBOUNDOFS ), _
+				symb.arrdesc_dimtboffset + idx*FB_ARRAYDESC_DIMLEN + FB_ARRAYDESC_LBOUNDOFS ), _
 			astNewDEREF( astNewVAR( desc, 0, FB_DATATYPE_INTEGER ), _
 				FB_DATATYPE_INTEGER, NULL, _
-				FB_ARRAYDESCLEN + idx*FB_ARRAYDESC_DIMLEN + FB_ARRAYDESC_UBOUNDOFS ) )
+				symb.arrdesc_dimtboffset + idx*FB_ARRAYDESC_DIMLEN + FB_ARRAYDESC_UBOUNDOFS ) )
 
 
 end function
@@ -921,13 +919,11 @@ private function cArgArrayIdx( byval sym as FBSYMBOL ptr ) as ASTNODE ptr
 
     	'' it's a descriptor pointer, dereference (only with DAG this will be optimized)
 
-    	'' times desc[i].elements
-    	expr = astNewBOP( AST_OP_MUL, _
-    					  expr, _
-    					  astNewDEREF( astNewVAR( sym, 0, FB_DATATYPE_INTEGER ), _
-    						   		   FB_DATATYPE_INTEGER, _
-    						   		   NULL, _
-    						   		   FB_ARRAYDESCLEN + i*FB_ARRAYDESC_DIMLEN ) )
+		'' times desc[i].elements
+		expr = astNewBOP( AST_OP_MUL, expr, _
+				astNewDEREF( astNewVAR( sym, 0, FB_DATATYPE_INTEGER ), _
+					FB_DATATYPE_INTEGER, NULL, _
+					symb.arrdesc_dimtboffset + i*FB_ARRAYDESC_DIMLEN ) )
 	loop
 
 	'' times length

@@ -47,9 +47,8 @@ private function hMakeArrayIndex _
 
 		'' descriptor->dimTB(0).lBound
 		dataOffset = astNewDEREF( astNewVAR( sym, 0, FB_DATATYPE_INTEGER ), _
-                                  FB_DATATYPE_INTEGER, _
-                                  NULL, _
-                                  FB_ARRAYDESCLEN + FB_ARRAYDESC_LBOUNDOFS )
+					FB_DATATYPE_INTEGER, NULL, _
+					symb.arrdesc_dimtboffset + FB_ARRAYDESC_LBOUNDOFS )
 
 		'' lBound * elemLen
 		dataOffset = astNewBOP( AST_OP_MUL, _
@@ -74,8 +73,8 @@ private function hMakeArrayIndex _
 
 		'' descriptor->dimTB(0).lBound
 		dataOffset = astNewVAR( symbGetArrayDescriptor( sym ), _
-                                FB_ARRAYDESCLEN + FB_ARRAYDESC_LBOUNDOFS, _
-                                FB_DATATYPE_INTEGER )
+					symb.arrdesc_dimtboffset + FB_ARRAYDESC_LBOUNDOFS, _
+					FB_DATATYPE_INTEGER )
 
 		'' lBound * elemLen
 		dataOffset = astNewBOP( AST_OP_MUL, _

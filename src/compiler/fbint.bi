@@ -50,8 +50,6 @@ type FB_ARRAYDESC
     dimensions		as integer
 end type
 
-const FB_ARRAYDESCLEN		= len( FB_ARRAYDESC )
-
 '' x86 assumption
 type FB_ARRAYDESCDIM
 	elements		as integer

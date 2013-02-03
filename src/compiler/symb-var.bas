@@ -79,6 +79,14 @@ private sub hCreateArrayDescriptorType( )
 
 	fld = symbUdtGetFirstField( symb.arrdesc_type )  '' data
 	symb.arrdesc_dataoffset = symbGetOfs( fld )
+
+	fld = symbUdtGetNextInitableField( fld )         '' ptr
+	fld = symbUdtGetNextInitableField( fld )         '' size
+	fld = symbUdtGetNextInitableField( fld )         '' element_len
+	fld = symbUdtGetNextInitableField( fld )         '' dimensions
+
+	fld = symbUdtGetNextInitableField( fld )         '' dimTB
+	symb.arrdesc_dimtboffset = symbGetOfs( fld )
 end sub
 
 private function hCreateDescType _
