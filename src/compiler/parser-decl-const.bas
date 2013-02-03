@@ -22,7 +22,9 @@ private function hGetType _
 		dim as integer lgt = any
 
 		if( cSymbolType( dtype, subtype, lgt ) = FALSE ) then
-			exit function
+			errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
+			dtype = FB_DATATYPE_INTEGER
+			subtype = NULL
 		end if
 
 		'' check for invalid types
