@@ -1883,6 +1883,11 @@ sub cAutoVarDecl(byval attrib as FB_SYMBATTRIB)
 		return
 	end if
 
+	if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_DECL or FB_CMPSTMT_MASK_CODE ) = FALSE ) then
+		hSkipStmt( )
+		exit sub
+	end if
+
 	'' VAR
 	lexSkipToken( )
 
