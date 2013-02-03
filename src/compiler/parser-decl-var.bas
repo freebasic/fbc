@@ -1717,7 +1717,7 @@ function cStaticArrayDecl _
 
 			if( dimension_has_ellipsis ) then
 				errReport( FB_ERRMSG_CANTUSEELLIPSISASLOWERBOUND )
-				exit function
+				dTB(i).lower = 0
 			end if
 
 			'' Second value - upper bound
@@ -1849,7 +1849,7 @@ function cArrayDecl _
 
 			if( dimension_has_ellipsis ) then
 				errReport( FB_ERRMSG_CANTUSEELLIPSISASLOWERBOUND )
-				exit function
+				exprTB(i,0) = astNewCONSTi( 0 )
 			end if
 
 			if( hMatchEllipsis( ) ) then
