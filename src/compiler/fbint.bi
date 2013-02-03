@@ -52,8 +52,6 @@ end type
 
 const FB_ARRAYDESCLEN		= len( FB_ARRAYDESC )
 
-const FB_ARRAYDESC_DATAOFFS = offsetof( FB_ARRAYDESC, data )
-
 '' x86 assumption
 type FB_ARRAYDESCDIM
 	elements		as integer

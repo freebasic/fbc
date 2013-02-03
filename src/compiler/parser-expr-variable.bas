@@ -859,10 +859,9 @@ private function cDynArrayIdx( byval sym as FBSYMBOL ptr ) as ASTNODE ptr
     	end if
     end if
 
-   	'' plus desc.data (= ptr + diff)
-    function = astNewBOP( AST_OP_ADD, _
-    				  	  expr, _
-    				  	  astNewVAR( desc, FB_ARRAYDESC_DATAOFFS, FB_DATATYPE_INTEGER ) )
+	'' plus desc.data (= ptr + diff)
+	function = astNewBOP( AST_OP_ADD, expr, _
+			astNewVAR( desc, symb.arrdesc_dataoffset, FB_DATATYPE_INTEGER ) )
 end function
 
 private function hArgArrayBoundChk _
@@ -934,13 +933,10 @@ private function cArgArrayIdx( byval sym as FBSYMBOL ptr ) as ASTNODE ptr
 	'' times length
 	expr = astNewBOP( AST_OP_MUL, expr, astNewCONSTi( symbGetLen( sym ) ) )
 
-   	'' plus desc->data (= ptr + diff)
-    function = astNewBOP( AST_OP_ADD, _
-    					  expr, _
-    					  astNewDEREF( astNewVAR( sym, 0, FB_DATATYPE_INTEGER ), _
-    					   			   FB_DATATYPE_INTEGER, _
-    					   			   NULL, _
-    					   			   FB_ARRAYDESC_DATAOFFS ) )
+	'' plus desc->data (= ptr + diff)
+	function = astNewBOP( AST_OP_ADD, expr, _
+			astNewDEREF( astNewVAR( sym, 0, FB_DATATYPE_INTEGER ), _
+				FB_DATATYPE_INTEGER, NULL, symb.arrdesc_dataoffset ) )
 end function
 
 '':::::
@@ -1091,32 +1087,23 @@ private function hVarAddUndecl _
 	function = s
 end function
 
-'':::::
-private function hMakeArrayIdx _
-	( _
-		byval sym as FBSYMBOL ptr _
-	) as ASTNODE ptr
-
+private function hMakeArrayIdx( byval sym as FBSYMBOL ptr ) as ASTNODE ptr
     ''  argument passed by descriptor?
     if( symbIsParamByDesc( sym ) ) then
-    	'' return descriptor->data
-    	return astNewDEREF( astNewVAR( sym, 0, FB_DATATYPE_INTEGER ), _
-    					  	FB_DATATYPE_INTEGER, _
-    					  	NULL, _
-    					  	FB_ARRAYDESC_DATAOFFS )
+		'' return descriptor->data
+		return astNewDEREF( astNewVAR( sym, 0, FB_DATATYPE_INTEGER ), _
+				FB_DATATYPE_INTEGER, NULL, symb.arrdesc_dataoffset )
     end if
 
     '' dynamic array? (this will handle common's too)
     if( symbGetIsDynamic( sym ) ) then
-    	'' return descriptor.data
-    	return astNewVAR( symbGetArrayDescriptor( sym ), _
-    					  FB_ARRAYDESC_DATAOFFS, _
-    					  FB_DATATYPE_INTEGER )
+		'' return descriptor.data
+		return astNewVAR( symbGetArrayDescriptor( sym ), _
+				symb.arrdesc_dataoffset, FB_DATATYPE_INTEGER )
     end if
 
     '' static array, return lbound( array )
     function = astNewCONSTi( symbGetArrayFirstDim( sym )->lower )
-
 end function
 
 '':::::

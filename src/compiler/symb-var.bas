@@ -48,8 +48,9 @@ end sub
 
 private sub hCreateArrayDescriptorType( )
 	static as FBARRAYDIM dTB(0)
+	dim as FBSYMBOL ptr fld = any
 
-	'' type TDimtTb
+	'' type FBARRAYDIM
 	ctx.array_dimtype = symbStructBegin( NULL, NULL, "__FB_ARRAYDIMTB$", NULL, FALSE, 0, NULL, 0 )
 
 	'' elements		as integer
@@ -64,9 +65,20 @@ private sub hCreateArrayDescriptorType( )
 	symbAddField( ctx.array_dimtype, "ubound", 0, dTB(), _
 	              FB_DATATYPE_INTEGER, NULL, FB_INTEGERSIZE, 0 )
 
+	'' end type
 	symbStructEnd( ctx.array_dimtype )
 
-	symb.arrdesctype = hCreateDescType( NULL, -1, "__FB_ARRAYDESC$", FB_DATATYPE_VOID, NULL, 0 )
+	'' type FBARRAY
+	''     ...
+	'' end type
+	symb.arrdesc_type = hCreateDescType( NULL, -1, "__FB_ARRAYDESC$", FB_DATATYPE_VOID, NULL, 0 )
+
+	''
+	'' Store some descriptor field offsets into globals for easy access
+	''
+
+	fld = symbUdtGetFirstField( symb.arrdesc_type )  '' data
+	symb.arrdesc_dataoffset = symbGetOfs( fld )
 end sub
 
 private function hCreateDescType _

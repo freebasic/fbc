@@ -788,8 +788,9 @@ type SYMBCTX
 					0 to AST_OPCODES-1 _
 				)	as SYMB_OVLOP				'' global operator overloading
 
-	arrdesctype		as FBSYMBOL ptr				'' array descriptor type
-	
+	arrdesc_type		as FBSYMBOL ptr			'' array descriptor type
+	arrdesc_dataoffset	as integer			'' offsetof( FBARRAY, data )
+
 	rtti			as FB_RTTICTX 
 end type
 

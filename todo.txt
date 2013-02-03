@@ -18,6 +18,7 @@ o 64bit
     this would break when cross-compiling and the struct layout is different
 
   - SHL/SHR shouldn't be limited to 32bit when targetting 64bit
+  - search for any other "x86 assumption"'s
 
   - Later, the rtlib must be adjusted - it should use guarenteed sizes too,
     otherwise it will be too confusing, for example:
