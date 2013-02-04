@@ -792,6 +792,8 @@ type SYMBCTX
 	array_dataoffset	as integer			'' offsetof( FBARRAY, data )
 	array_dimtboffset	as integer			'' offsetof( FBARRAY, dimTB )
 	array_dimtype		as FBSYMBOL ptr			'' FBARRAYDIM (dimTB element structure)
+	array_lboundoffset	as integer			'' offsetof( FBARRAYDIM, lbound )
+	array_uboundoffset	as integer			'' offsetof( FBARRAYDIM, ubound )
 
 	rtti			as FB_RTTICTX 
 end type

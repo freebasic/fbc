@@ -67,19 +67,25 @@ private sub hCreateArrayDescriptorType( )
 	symb.array_desctype = hCreateDescType( NULL, -1, "__FB_ARRAYDESC$", FB_DATATYPE_VOID, NULL, 0 )
 
 	''
-	'' Store some descriptor field offsets into globals for easy access
+	'' Store some field offsets into globals for easy access
 	''
 
+	'' FBARRAY
 	fld = symbUdtGetFirstField( symb.array_desctype )  '' data
 	symb.array_dataoffset = symbGetOfs( fld )
-
 	fld = symbUdtGetNextField( fld )         '' ptr
 	fld = symbUdtGetNextField( fld )         '' size
 	fld = symbUdtGetNextField( fld )         '' element_len
 	fld = symbUdtGetNextField( fld )         '' dimensions
-
 	fld = symbUdtGetNextField( fld )         '' dimTB
 	symb.array_dimtboffset = symbGetOfs( fld )
+
+	'' FBVARDIM
+	fld = symbUdtGetFirstField( symb.array_dimtype )  '' elements
+	fld = symbUdtGetNextField( fld )                  '' lbound
+	symb.array_lboundoffset = symbGetOfs( fld )
+	fld = symbUdtGetNextField( fld )                  '' ubound
+	symb.array_uboundoffset = symbGetOfs( fld )
 end sub
 
 private function hCreateDescType _

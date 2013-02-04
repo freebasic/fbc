@@ -57,9 +57,6 @@ type FB_ARRAYDESCDIM
 	ubound			as integer
 end type
 
-const FB_ARRAYDESC_LBOUNDOFS= offsetof( FB_ARRAYDESCDIM, lbound )
-const FB_ARRAYDESC_UBOUNDOFS= offsetof( FB_ARRAYDESCDIM, ubound )
-
 '' string descriptor
 '' x86 assumption
 type FB_STRDESC

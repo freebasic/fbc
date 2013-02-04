@@ -778,13 +778,13 @@ private function hDynArrayBoundChk _
 		byval idx as integer _
 	) as ASTNODE ptr
 
-	dim as integer offset = any
+	dim as integer dimoffset = any
 
-	offset = symb.array_dimtboffset + (idx * symbGetLen( symb.array_dimtype ))
+	dimoffset = symb.array_dimtboffset + (idx * symbGetLen( symb.array_dimtype ))
 
 	function = astBuildBOUNDCHK( expr, _
-			astNewVAR( desc, offset + FB_ARRAYDESC_LBOUNDOFS, FB_DATATYPE_INTEGER ), _
-			astNewVAR( desc, offset + FB_ARRAYDESC_UBOUNDOFS, FB_DATATYPE_INTEGER ) )
+			astNewVAR( desc, dimoffset + symb.array_lboundoffset, FB_DATATYPE_INTEGER ), _
+			astNewVAR( desc, dimoffset + symb.array_uboundoffset, FB_DATATYPE_INTEGER ) )
 
 end function
 
@@ -873,17 +873,17 @@ private function hArgArrayBoundChk _
 		byval idx as integer _
 	) as ASTNODE ptr
 
-	dim as integer offset = any
+	dim as integer dimoffset = any
 
-	offset = symb.array_dimtboffset + (idx * symbGetLen( symb.array_dimtype ))
+	dimoffset = symb.array_dimtboffset + (idx * symbGetLen( symb.array_dimtype ))
 
 	function = astBuildBOUNDCHK( expr, _
 			astNewDEREF( astNewVAR( desc, 0, FB_DATATYPE_INTEGER ), _
 				FB_DATATYPE_INTEGER, NULL, _
-				offset + FB_ARRAYDESC_LBOUNDOFS ), _
+				dimoffset + symb.array_lboundoffset ), _
 			astNewDEREF( astNewVAR( desc, 0, FB_DATATYPE_INTEGER ), _
 				FB_DATATYPE_INTEGER, NULL, _
-				offset + FB_ARRAYDESC_UBOUNDOFS ) )
+				dimoffset + symb.array_uboundoffset ) )
 
 
 end function
