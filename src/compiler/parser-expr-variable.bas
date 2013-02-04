@@ -778,9 +778,13 @@ private function hDynArrayBoundChk _
 		byval idx as integer _
 	) as ASTNODE ptr
 
+	dim as integer offset = any
+
+	offset = symb.array_dimtboffset + (idx * symbGetLen( symb.array_dimtype ))
+
 	function = astBuildBOUNDCHK( expr, _
-			astNewVAR( desc, symb.array_dimtboffset + idx*FB_ARRAYDESC_DIMLEN + FB_ARRAYDESC_LBOUNDOFS, FB_DATATYPE_INTEGER ), _
-			astNewVAR( desc, symb.array_dimtboffset + idx*FB_ARRAYDESC_DIMLEN + FB_ARRAYDESC_UBOUNDOFS, FB_DATATYPE_INTEGER ) )
+			astNewVAR( desc, offset + FB_ARRAYDESC_LBOUNDOFS, FB_DATATYPE_INTEGER ), _
+			astNewVAR( desc, offset + FB_ARRAYDESC_UBOUNDOFS, FB_DATATYPE_INTEGER ) )
 
 end function
 
@@ -843,7 +847,7 @@ private function cDynArrayIdx( byval sym as FBSYMBOL ptr ) as ASTNODE ptr
 
 		'' times desc(i).elements
 		expr = astNewBOP( AST_OP_MUL, expr, _
-				astNewVAR( desc, symb.array_dimtboffset + i*FB_ARRAYDESC_DIMLEN, _
+				astNewVAR( desc, symb.array_dimtboffset + (i * symbGetLen( symb.array_dimtype )), _
 						FB_DATATYPE_INTEGER ) )
 	loop
 
@@ -869,13 +873,17 @@ private function hArgArrayBoundChk _
 		byval idx as integer _
 	) as ASTNODE ptr
 
+	dim as integer offset = any
+
+	offset = symb.array_dimtboffset + (idx * symbGetLen( symb.array_dimtype ))
+
 	function = astBuildBOUNDCHK( expr, _
 			astNewDEREF( astNewVAR( desc, 0, FB_DATATYPE_INTEGER ), _
 				FB_DATATYPE_INTEGER, NULL, _
-				symb.array_dimtboffset + idx*FB_ARRAYDESC_DIMLEN + FB_ARRAYDESC_LBOUNDOFS ), _
+				offset + FB_ARRAYDESC_LBOUNDOFS ), _
 			astNewDEREF( astNewVAR( desc, 0, FB_DATATYPE_INTEGER ), _
 				FB_DATATYPE_INTEGER, NULL, _
-				symb.array_dimtboffset + idx*FB_ARRAYDESC_DIMLEN + FB_ARRAYDESC_UBOUNDOFS ) )
+				offset + FB_ARRAYDESC_UBOUNDOFS ) )
 
 
 end function
@@ -923,7 +931,7 @@ private function cArgArrayIdx( byval sym as FBSYMBOL ptr ) as ASTNODE ptr
 		expr = astNewBOP( AST_OP_MUL, expr, _
 				astNewDEREF( astNewVAR( sym, 0, FB_DATATYPE_INTEGER ), _
 					FB_DATATYPE_INTEGER, NULL, _
-					symb.array_dimtboffset + i*FB_ARRAYDESC_DIMLEN ) )
+					symb.array_dimtboffset + (i * symbGetLen( symb.array_dimtype )) ) )
 	loop
 
 	'' times length

@@ -57,7 +57,6 @@ type FB_ARRAYDESCDIM
 	ubound			as integer
 end type
 
-const FB_ARRAYDESC_DIMLEN	= len( FB_ARRAYDESCDIM )
 const FB_ARRAYDESC_LBOUNDOFS= offsetof( FB_ARRAYDESCDIM, lbound )
 const FB_ARRAYDESC_UBOUNDOFS= offsetof( FB_ARRAYDESCDIM, ubound )
 
