@@ -49,31 +49,31 @@ declare function _getTypeString( byval dtype as integer ) as const zstring ptr
 	'' same order as FB_DATATYPE
 	dim shared dtypeTB(0 to FB_DATATYPES-1) as EMITDATATYPE => _
 	{ _
-		( FB_DATACLASS_INTEGER, 0, "void ptr"  ), _ '' void
-		( FB_DATACLASS_INTEGER, 0, "byte ptr"  ), _ '' byte
-		( FB_DATACLASS_INTEGER, 0, "byte ptr"  ), _ '' ubyte
-		( FB_DATACLASS_INTEGER, 0, "byte ptr"  ), _ '' char
-		( FB_DATACLASS_INTEGER, 1, "word ptr"  ), _ '' short
-		( FB_DATACLASS_INTEGER, 1, "word ptr"  ), _ '' ushort
-		( FB_DATACLASS_INTEGER, 1, "word ptr"  ), _ '' wchar
-		( FB_DATACLASS_INTEGER, 2, "dword ptr" ), _ '' int
-		( FB_DATACLASS_INTEGER, 2, "dword ptr" ), _ '' uint
-		( FB_DATACLASS_INTEGER, 2, "dword ptr" ), _ '' enum
-		( FB_DATACLASS_INTEGER, 2, "dword ptr" ), _ '' bitfield
-		( FB_DATACLASS_INTEGER, 2, "dword ptr" ), _ '' long
-		( FB_DATACLASS_INTEGER, 2, "dword ptr" ), _ '' ulong
-		( FB_DATACLASS_INTEGER, 2, "qword ptr" ), _ '' longint
-		( FB_DATACLASS_INTEGER, 2, "qword ptr" ), _ '' ulongint
-		( FB_DATACLASS_FPOINT , 3, "dword ptr" ), _ '' single
-		( FB_DATACLASS_FPOINT , 3, "qword ptr" ), _ '' double
-		( FB_DATACLASS_STRING , 0, ""          ), _ '' string
-		( FB_DATACLASS_STRING , 0, "byte ptr"  ), _ '' fix-len string
-		( FB_DATACLASS_INTEGER, 2, "dword ptr" ), _ '' struct
-		( FB_DATACLASS_INTEGER, 0, ""          ), _ '' namespace
-		( FB_DATACLASS_INTEGER, 2, "dword ptr" ), _ '' function
-		( FB_DATACLASS_INTEGER, 0, "byte ptr"  ), _ '' fwd-ref
-		( FB_DATACLASS_INTEGER, 2, "dword ptr" ), _ '' pointer
-		( FB_DATACLASS_INTEGER, 3, "xmmword ptr" ) _ '' 128-bit
+		( 0, "void ptr"  ), _ '' void
+		( 0, "byte ptr"  ), _ '' byte
+		( 0, "byte ptr"  ), _ '' ubyte
+		( 0, "byte ptr"  ), _ '' char
+		( 1, "word ptr"  ), _ '' short
+		( 1, "word ptr"  ), _ '' ushort
+		( 1, "word ptr"  ), _ '' wchar
+		( 2, "dword ptr" ), _ '' int
+		( 2, "dword ptr" ), _ '' uint
+		( 2, "dword ptr" ), _ '' enum
+		( 2, "dword ptr" ), _ '' bitfield
+		( 2, "dword ptr" ), _ '' long
+		( 2, "dword ptr" ), _ '' ulong
+		( 2, "qword ptr" ), _ '' longint
+		( 2, "qword ptr" ), _ '' ulongint
+		( 3, "dword ptr" ), _ '' single
+		( 3, "qword ptr" ), _ '' double
+		( 0, ""          ), _ '' string
+		( 0, "byte ptr"  ), _ '' fix-len string
+		( 2, "dword ptr" ), _ '' struct
+		( 0, ""          ), _ '' namespace
+		( 2, "dword ptr" ), _ '' function
+		( 0, "byte ptr"  ), _ '' fwd-ref
+		( 2, "dword ptr" ), _ '' pointer
+		( 3, "xmmword ptr" ) _ '' 128-bit
 	}
 
 const EMIT_MAXKEYWORDS = 600
