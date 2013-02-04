@@ -214,7 +214,7 @@ private sub hGetRealParamType _
 
 	case FB_PARAMMODE_BYDESC
 		dtype = typeAddrOf( FB_DATATYPE_STRUCT )
-		subtype = symb.array_desctype
+		subtype = symb.fbarray
 
 	end select
 

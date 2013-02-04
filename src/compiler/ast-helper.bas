@@ -870,7 +870,7 @@ function astBuildArrayDescIniTree _
 		end if
 
 		'' Clear all dimTB entries
-		astTypeIniAddPad( tree, dims * symbGetLen( symb.array_dimtype ) )
+		astTypeIniAddPad( tree, dims * symbGetLen( symb.fbarraydim ) )
 	end if
 
     astTypeIniScopeEnd( tree, NULL )

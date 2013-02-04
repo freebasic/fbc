@@ -686,7 +686,7 @@ private function hDeclDynArray( byval sym as FBSYMBOL ptr ) as string static
 	dim as FBSYMBOL ptr fld = any
 
 	'' declare the array descriptor
-	desc = str( ctx.typecnt ) + "=s" + str( symbGetLen( symb.array_desctype ) )
+	desc = str( ctx.typecnt ) + "=s" + str( symbGetLen( symb.fbarray ) )
 	ctx.typecnt += 1
 
 	dimdesc = hDeclArrayDims( sym )
@@ -696,7 +696,7 @@ private function hDeclDynArray( byval sym as FBSYMBOL ptr ) as string static
 	'' FBARRAY fields
 
 	'' data
-	fld = symbUdtGetFirstField( symb.array_desctype )
+	fld = symbUdtGetFirstField( symb.fbarray )
 	desc += hDeclUdtField( fld, strptr( dimdesc ) )
 
 	'' ptr
@@ -726,7 +726,7 @@ private function hDeclDynArray( byval sym as FBSYMBOL ptr ) as string static
 		'' FBARRAYDIM fields
 
 		'' elements
-		fld = symbUdtGetFirstField( symb.array_dimtype )
+		fld = symbUdtGetFirstField( symb.fbarraydim )
 		desc += hDeclUdtField( fld, , dimdesc, baseoffset )
 
 		'' lbound
@@ -737,7 +737,7 @@ private function hDeclDynArray( byval sym as FBSYMBOL ptr ) as string static
 		fld = symbUdtGetNextField( fld )
 		desc += hDeclUdtField( fld, , dimdesc, baseoffset )
 
-		baseoffset += symbGetLen( symb.array_dimtype )
+		baseoffset += symbGetLen( symb.fbarraydim )
 
 		if( d = NULL ) then
 			exit do

@@ -44,48 +44,48 @@ private sub hCreateArrayDescriptorType( )
 	dim as FBSYMBOL ptr fld = any
 
 	'' type FBARRAYDIM
-	symb.array_dimtype = symbStructBegin( NULL, NULL, "__FB_ARRAYDIMTB$", NULL, FALSE, 0, NULL, 0 )
+	symb.fbarraydim = symbStructBegin( NULL, NULL, "__FB_ARRAYDIMTB$", NULL, FALSE, 0, NULL, 0 )
 
 	'' elements		as integer
-	symbAddField( symb.array_dimtype, "elements", 0, dTB(), _
+	symbAddField( symb.fbarraydim, "elements", 0, dTB(), _
 	              FB_DATATYPE_INTEGER, NULL, 0, 0 )
 
 	'' lbound		as integer
-	symbAddField( symb.array_dimtype, "lbound", 0, dTB(), _
+	symbAddField( symb.fbarraydim, "lbound", 0, dTB(), _
 	              FB_DATATYPE_INTEGER, NULL, 0, 0 )
 
 	'' ubound		as integer
-	symbAddField( symb.array_dimtype, "ubound", 0, dTB(), _
+	symbAddField( symb.fbarraydim, "ubound", 0, dTB(), _
 	              FB_DATATYPE_INTEGER, NULL, 0, 0 )
 
 	'' end type
-	symbStructEnd( symb.array_dimtype )
+	symbStructEnd( symb.fbarraydim )
 
 	'' type FBARRAY
 	''     ...
 	'' end type
-	symb.array_desctype = hCreateDescType( NULL, -1, "__FB_ARRAYDESC$", FB_DATATYPE_VOID, NULL, 0 )
+	symb.fbarray = hCreateDescType( NULL, -1, "__FB_ARRAYDESC$", FB_DATATYPE_VOID, NULL, 0 )
 
 	''
 	'' Store some field offsets into globals for easy access
 	''
 
 	'' FBARRAY
-	fld = symbUdtGetFirstField( symb.array_desctype )  '' data
-	symb.array_dataoffset = symbGetOfs( fld )
+	fld = symbUdtGetFirstField( symb.fbarray )  '' data
+	symb.fbarray_data = symbGetOfs( fld )
 	fld = symbUdtGetNextField( fld )         '' ptr
 	fld = symbUdtGetNextField( fld )         '' size
 	fld = symbUdtGetNextField( fld )         '' element_len
 	fld = symbUdtGetNextField( fld )         '' dimensions
 	fld = symbUdtGetNextField( fld )         '' dimTB
-	symb.array_dimtboffset = symbGetOfs( fld )
+	symb.fbarray_dimtb = symbGetOfs( fld )
 
 	'' FBVARDIM
-	fld = symbUdtGetFirstField( symb.array_dimtype )  '' elements
+	fld = symbUdtGetFirstField( symb.fbarraydim )  '' elements
 	fld = symbUdtGetNextField( fld )                  '' lbound
-	symb.array_lboundoffset = symbGetOfs( fld )
+	symb.fbarraydim_lbound = symbGetOfs( fld )
 	fld = symbUdtGetNextField( fld )                  '' ubound
-	symb.array_uboundoffset = symbGetOfs( fld )
+	symb.fbarraydim_ubound = symbGetOfs( fld )
 end sub
 
 private function hCreateDescType _
@@ -133,7 +133,7 @@ private function hCreateDescType _
 	dTB(0).upper = dims-1
 
 	symbAddField( sym, "dimTB", 1, dTB(), FB_DATATYPE_STRUCT, _
-	              symb.array_dimtype, 0, 0 )
+	              symb.fbarraydim, 0, 0 )
 
 	symbStructEnd( sym )
 
