@@ -2,7 +2,6 @@ const COMMA   = ", "
 
 type EMITDATATYPE
 	class			as integer
-	size			as integer
 	rnametb			as integer
 	mname			as zstring * 11+1
 end type

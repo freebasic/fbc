@@ -49,31 +49,31 @@ declare function _getTypeString( byval dtype as integer ) as const zstring ptr
 	'' same order as FB_DATATYPE
 	dim shared dtypeTB(0 to FB_DATATYPES-1) as EMITDATATYPE => _
 	{ _
-		( FB_DATACLASS_INTEGER, 0 			    , 0, "void ptr"  ), _	'' void
-		( FB_DATACLASS_INTEGER, 1			    , 0, "byte ptr"  ), _	'' byte
-		( FB_DATACLASS_INTEGER, 1			    , 0, "byte ptr"  ), _	'' ubyte
-		( FB_DATACLASS_INTEGER, 1               , 0, "byte ptr"  ), _	'' char
-		( FB_DATACLASS_INTEGER, 2               , 1, "word ptr"  ), _	'' short
-		( FB_DATACLASS_INTEGER, 2               , 1, "word ptr"  ), _	'' ushort
-		( FB_DATACLASS_INTEGER, 2  				, 1, "word ptr" ), _	'' wchar
-		( FB_DATACLASS_INTEGER, FB_INTEGERSIZE  , 2, "dword ptr" ), _	'' int
-		( FB_DATACLASS_INTEGER, FB_INTEGERSIZE  , 2, "dword ptr" ), _   '' uint
-		( FB_DATACLASS_INTEGER, FB_INTEGERSIZE  , 2, "dword ptr" ), _	'' enum
-		( FB_DATACLASS_INTEGER, FB_INTEGERSIZE  , 2, "dword ptr" ), _	'' bitfield
-		( FB_DATACLASS_INTEGER, FB_LONGSIZE  	, 2, "dword ptr" ), _	'' long
-		( FB_DATACLASS_INTEGER, FB_LONGSIZE  	, 2, "dword ptr" ), _   '' ulong
-		( FB_DATACLASS_INTEGER, FB_INTEGERSIZE*2, 2, "qword ptr" ), _	'' longint
-		( FB_DATACLASS_INTEGER, FB_INTEGERSIZE*2, 2, "qword ptr" ), _	'' ulongint
-		( FB_DATACLASS_FPOINT , 4			    , 3, "dword ptr" ), _	'' single
-		( FB_DATACLASS_FPOINT , 8			    , 3, "qword ptr" ), _	'' double
-		( FB_DATACLASS_STRING , FB_STRDESCLEN	, 0, ""          ), _	'' string
-		( FB_DATACLASS_STRING , 1               , 0, "byte ptr"  ), _	'' fix-len string
-		( FB_DATACLASS_INTEGER, FB_INTEGERSIZE  , 2, "dword ptr" ), _	'' struct
-		( FB_DATACLASS_INTEGER, 0  				, 0, "" 		), _	'' namespace
-		( FB_DATACLASS_INTEGER, FB_INTEGERSIZE  , 2, "dword ptr" ), _	'' function
-		( FB_DATACLASS_INTEGER, 1			    , 0, "byte ptr"  ), _	'' fwd-ref
-		( FB_DATACLASS_INTEGER, FB_POINTERSIZE  , 2, "dword ptr" ), _	'' pointer
-		( FB_DATACLASS_INTEGER, 16              , 3, "xmmword ptr" ) _	'' 128-bit
+		( FB_DATACLASS_INTEGER, 0, "void ptr"  ), _ '' void
+		( FB_DATACLASS_INTEGER, 0, "byte ptr"  ), _ '' byte
+		( FB_DATACLASS_INTEGER, 0, "byte ptr"  ), _ '' ubyte
+		( FB_DATACLASS_INTEGER, 0, "byte ptr"  ), _ '' char
+		( FB_DATACLASS_INTEGER, 1, "word ptr"  ), _ '' short
+		( FB_DATACLASS_INTEGER, 1, "word ptr"  ), _ '' ushort
+		( FB_DATACLASS_INTEGER, 1, "word ptr"  ), _ '' wchar
+		( FB_DATACLASS_INTEGER, 2, "dword ptr" ), _ '' int
+		( FB_DATACLASS_INTEGER, 2, "dword ptr" ), _ '' uint
+		( FB_DATACLASS_INTEGER, 2, "dword ptr" ), _ '' enum
+		( FB_DATACLASS_INTEGER, 2, "dword ptr" ), _ '' bitfield
+		( FB_DATACLASS_INTEGER, 2, "dword ptr" ), _ '' long
+		( FB_DATACLASS_INTEGER, 2, "dword ptr" ), _ '' ulong
+		( FB_DATACLASS_INTEGER, 2, "qword ptr" ), _ '' longint
+		( FB_DATACLASS_INTEGER, 2, "qword ptr" ), _ '' ulongint
+		( FB_DATACLASS_FPOINT , 3, "dword ptr" ), _ '' single
+		( FB_DATACLASS_FPOINT , 3, "qword ptr" ), _ '' double
+		( FB_DATACLASS_STRING , 0, ""          ), _ '' string
+		( FB_DATACLASS_STRING , 0, "byte ptr"  ), _ '' fix-len string
+		( FB_DATACLASS_INTEGER, 2, "dword ptr" ), _ '' struct
+		( FB_DATACLASS_INTEGER, 0, ""          ), _ '' namespace
+		( FB_DATACLASS_INTEGER, 2, "dword ptr" ), _ '' function
+		( FB_DATACLASS_INTEGER, 0, "byte ptr"  ), _ '' fwd-ref
+		( FB_DATACLASS_INTEGER, 2, "dword ptr" ), _ '' pointer
+		( FB_DATACLASS_INTEGER, 3, "xmmword ptr" ) _ '' 128-bit
 	}
 
 const EMIT_MAXKEYWORDS = 600
@@ -3215,15 +3215,15 @@ private sub _emitDIVI _
 	hPrepOperand( dvreg, dst )
 	hPrepOperand( svreg, src )
 
-    if( dtypeTB(dvreg->dtype).size = 4 ) then
-    	eax = "eax"
-    	ecx = "ecx"
-    	edx = "edx"
-    else
-    	eax = "ax"
-    	ecx = "cx"
-    	edx = "dx"
-    end if
+	if( typeGetSize( dvreg->dtype ) = 4 ) then
+		eax = "eax"
+		ecx = "ecx"
+		edx = "edx"
+	else
+		eax = "ax"
+		ecx = "cx"
+		edx = "dx"
+	end if
 
 	ecxtrashed = FALSE
 
@@ -3282,7 +3282,7 @@ private sub _emitDIVI _
 	end if
 
 	if( typeIsSigned( dvreg->dtype ) ) then
-		if( dtypeTB(dvreg->dtype).size = 4 ) then
+		if( typeGetSize( dvreg->dtype ) = 4 ) then
 			outp "cdq"
 		else
 			outp "cwd"
@@ -3369,15 +3369,15 @@ private sub _emitMODI _
 	hPrepOperand( dvreg, dst )
 	hPrepOperand( svreg, src )
 
-    if( dtypeTB(dvreg->dtype).size = 4 ) then
-    	eax = "eax"
-    	ecx = "ecx"
-    	edx = "edx"
-    else
-    	eax = "ax"
-    	ecx = "cx"
-    	edx = "dx"
-    end if
+	if( typeGetSize( dvreg->dtype ) = 4 ) then
+		eax = "eax"
+		ecx = "ecx"
+		edx = "edx"
+	else
+		eax = "ax"
+		ecx = "cx"
+		edx = "dx"
+	end if
 
 	ecxtrashed = FALSE
 
@@ -3436,7 +3436,7 @@ private sub _emitMODI _
 	end if
 
 	if( typeIsSigned( dvreg->dtype ) ) then
-		if( dtypeTB(dvreg->dtype).size = 4 ) then
+		if( typeGetSize( dvreg->dtype ) = 4 ) then
 			outp "cdq"
 		else
 			outp "cwd"
@@ -4968,7 +4968,7 @@ private sub _emitABSI _
 		hPUSH( rname )
 	end if
 
-	bits = (dtypeTB(dvreg->dtype).size * 8)-1
+	bits = typeGetBits( dvreg->dtype ) - 1
 
 	hMOV( rname, dst )
 
