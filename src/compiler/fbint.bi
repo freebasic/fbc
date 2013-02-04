@@ -50,13 +50,6 @@ type FB_ARRAYDESC
     dimensions		as integer
 end type
 
-'' x86 assumption
-type FB_ARRAYDESCDIM
-	elements		as integer
-	lbound			as integer
-	ubound			as integer
-end type
-
 '' string descriptor
 '' x86 assumption
 type FB_STRDESC
