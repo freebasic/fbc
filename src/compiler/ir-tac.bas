@@ -537,7 +537,7 @@ private sub _emitUop _
 end sub
 
 private sub _emitConvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
-	select case( symb_dtypeTB(typeGet( v1->dtype )).class )
+	select case( typeGetClass( v1->dtype ) )
 	case FB_DATACLASS_INTEGER
 		_emit( AST_OP_TOINT, v1, v2, NULL )
 	case FB_DATACLASS_FPOINT
