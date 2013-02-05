@@ -582,6 +582,8 @@ enum FB_TARGETOPT
 	'' - nor DJGPP
 	'' do it. TODO: what about the BSDs and Darwin/MacOSX?
 	FB_TARGETOPT_RETURNINREGS        = &h00000010
+
+	FB_TARGETOPT_64BIT               = &h00000020
 end enum
 
 type FBTARGET
