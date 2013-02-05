@@ -182,6 +182,7 @@ Version 0.25.0:
 - "CONST id AS" and "CONST AS" were allowed to be immediately followed by any statement, instead of triggering a compiler error
 - The compiler allowed a single "ASM" token to appear at end-of-file (without newline following), without showing an "expected END ASM" error
 - C backend: fbc always passed a "wrong" -mtune option to gcc, that didn't match what was given to fbc's -arch option
+- The -exx CPU type check could look for invalid CPU families under any -arch option except 386/486/586/686
 
 
 Version 0.24.0:

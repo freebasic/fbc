@@ -636,8 +636,17 @@ end sub
 private function rtlCpuCheck( ) as integer
 	dim as ASTNODE ptr proc = any, cpu = any
 	dim as FBSYMBOL ptr s = any, label = any
+	dim as integer family = any
 
 	function = FALSE
+
+	'' Trim to 686, using higher values from the FB_CPUTYPE_* constants
+	'' doesn't make sense, 786 represents the Intel Itanium (IA-64),
+	'' not FB_CPUTYPE_ATHLON, and so on.
+	family = env.clopt.cputype
+	if( family > FB_CPUTYPE_686 ) then
+		family = FB_CPUTYPE_686
+	end if
 
 	''
 	proc = astNewCALL( PROCLOOKUP( CPUDETECT ), NULL )
@@ -645,16 +654,12 @@ private function rtlCpuCheck( ) as integer
 	'' cpu = fb_CpuDetect shr 28
 	cpu = astNewBOP( AST_OP_SHR, proc, astNewCONSTi( 28, FB_DATATYPE_UINT ) )
 
-	'' if( cpu < env.clopt.cputype ) then
+	'' if( cpu < family ) then
 	label = symbAddLabel( NULL )
-	astAdd( astNewBOP( AST_OP_GE, _
-					   cpu, _
-					   astNewCONSTi( env.clopt.cputype, FB_DATATYPE_UINT ), _
-					   label, _
-					   AST_OPOPT_NONE ) )
+	astAdd( astNewBOP( AST_OP_GE, cpu, astNewCONSTi( family, FB_DATATYPE_UINT ), label, AST_OPOPT_NONE ) )
 
 	'' print "This program requires at least a <cpu> to run."
-	s = symbAllocStrConst( "This program requires at least a " & env.clopt.cputype & "86 to run.", -1 )
+	s = symbAllocStrConst( "This program requires at least a " & family & "86 to run.", -1 )
 	rtlPrint( astNewCONSTi( 0 ), FALSE, FALSE, astNewVAR( s ) )
 
 	'' end 1
