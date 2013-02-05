@@ -113,6 +113,7 @@ enum FB_PDCHECK
 end enum
 
 '' cpu types
+'' When changing, update fbc.bas:gcc_architectures()
 enum FB_CPUTYPE
 	FB_CPUTYPE_386 = 3
 	FB_CPUTYPE_486
@@ -128,7 +129,6 @@ enum FB_CPUTYPE
 	FB_CPUTYPE_PENTIUM4
 	FB_CPUTYPE_PENTIUMSSE3
 	FB_CPUTYPE_NATIVE
-	FB_CPUTYPECOUNT
 end enum
 
 const FB_DEFAULT_CPUTYPE    = FB_CPUTYPE_486

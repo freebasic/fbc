@@ -181,6 +181,7 @@ Version 0.25.0:
 - lang qb didn't allow DEF___ statements inside procedures/compounds despite the change in 0.21.0
 - "CONST id AS" and "CONST AS" were allowed to be immediately followed by any statement, instead of triggering a compiler error
 - The compiler allowed a single "ASM" token to appear at end-of-file (without newline following), without showing an "expected END ASM" error
+- C backend: fbc always passed a "wrong" -mtune option to gcc, that didn't match what was given to fbc's -arch option
 
 
 Version 0.24.0:
