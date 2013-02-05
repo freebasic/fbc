@@ -919,94 +919,126 @@ private sub hAddBas( byref basfile as string )
 	hSetIofile( listNewNode( @fbc.modules ), basfile, FALSE )
 end sub
 
-'' -target <id> parser
-'' Normal: recognizes FB's target names and GNU triplets
-'' Standalone: FB names only
-private function hParseTargetId( byref id as string ) as integer
-#ifdef ENABLE_STANDALONE
-	#macro MAYBE( target, comptarget )
-		if( id = target ) then
-			return comptarget
+#ifndef ENABLE_STANDALONE
+'' To support GNU triplets, we need to parse them, to identify which target
+'' of ours it could mean. A triplet is made up of these components:
+''    [arch-[vendor-]]os[-...]
+private sub hParseTargetId _
+	( _
+		byref os as string, _
+		byref arch as string _
+	)
+
+	dim as integer i = any, j = any
+
+	i = instr( 1, os, "-" )
+	if( i > 0 ) then
+		arch = left( os, i - 1 )
+
+		j = instr( i + 1, os, "-" )
+		if( j > 0 ) then
+			i = j
 		end if
-	#endmacro
 
-	select case as const( id[0] )
-#else
-	dim as string os = id
+		os = right( os, len( os ) - i )
+	end if
 
-	'' To support GNU triplets, we need to parse them,
-	'' to identify which target of ours it could mean.
-	'' A triplet is made up of these components:
-	''    [arch-][vendor-]os[-...]
+end sub
+#endif
 
-	'' Cut off up to two leading components to get to the OS
-	for i as integer = 0 to 1
-		dim as integer j = instr( 1, os, "-" )
-		if( j = 0 ) then
-			exit for
-		end if
-		os = right( os, len( os ) - j )
-	next
-
+private function hParseTargetOS( byref os as string ) as integer
 	if( len( os ) = 0 ) then
 		return -1
 	end if
 
-	#macro MAYBE( target, comptarget )
-		'' Allow incomplete matches, e.g.:
-		'' 'linux' matches 'linux-gnu',
-		'' 'mingw' matches 'mingw32msvc', etc.
-		if( left( os, len( target ) ) = target ) then
+#ifdef ENABLE_STANDALONE
+	#macro MAYBE( s, comptarget )
+		if( id = s ) then
 			return comptarget
 		end if
 	#endmacro
+#else
+	#macro MAYBE( s, comptarget )
+		'' Allow incomplete matches, e.g.:
+		'' 'linux' matches 'linux-gnu',
+		'' 'mingw' matches 'mingw32msvc', etc.
+		if( left( os, len( s ) ) = s ) then
+			return comptarget
+		end if
+	#endmacro
+#endif
 
+	'' Assuming 32bit for now; if it's 64bit, hParseTargetArch() will
+	'' remap the target to the corresponding 64bit one.
 	select case as const( os[0] )
-#endif
-	case asc("c")
-		MAYBE("cygwin", FB_COMPTARGET_CYGWIN)
+	case asc( "c" )
+		MAYBE( "cygwin", FB_COMPTARGET_CYGWIN )
 
-	case asc("d")
-		MAYBE("darwin", FB_COMPTARGET_DARWIN)
+	case asc( "d" )
+		MAYBE( "darwin", FB_COMPTARGET_DARWIN )
 #ifndef ENABLE_STANDALONE
-		MAYBE("djgpp", FB_COMPTARGET_DOS)
+		MAYBE( "djgpp", FB_COMPTARGET_DOS )
 #endif
-		MAYBE("dos", FB_COMPTARGET_DOS)
+		MAYBE( "dos", FB_COMPTARGET_DOS )
 
-	case asc("f")
-		MAYBE("freebsd", FB_COMPTARGET_FREEBSD)
+	case asc( "f" )
+		MAYBE( "freebsd", FB_COMPTARGET_FREEBSD )
 
-	case asc("l")
-		MAYBE("linux", FB_COMPTARGET_LINUX)
+	case asc( "l" )
+		MAYBE( "linux", FB_COMPTARGET_LINUX )
 
 #ifndef ENABLE_STANDALONE
-	case asc("m")
-		MAYBE("mingw", FB_COMPTARGET_WIN32)
-		MAYBE("msdos", FB_COMPTARGET_DOS)
+	case asc( "m" )
+		MAYBE( "mingw", FB_COMPTARGET_WIN32 )
+		MAYBE( "msdos", FB_COMPTARGET_DOS )
 #endif
 
-	case asc("n")
-		MAYBE("netbsd", FB_COMPTARGET_NETBSD)
+	case asc( "n" )
+		MAYBE( "netbsd", FB_COMPTARGET_NETBSD )
 
-	case asc("o")
-		MAYBE("openbsd", FB_COMPTARGET_OPENBSD)
+	case asc( "o" )
+		MAYBE( "openbsd", FB_COMPTARGET_OPENBSD )
 
-	case asc("s")
+	case asc( "s" )
 		'' TODO (not yet implemented in the compiler)
-		''MAYBE("solaris", FB_COMPTARGET_SOLARIS)
+		''MAYBE( "solaris", FB_COMPTARGET_SOLARIS )
 
-	case asc("w")
-		MAYBE("win32", FB_COMPTARGET_WIN32)
+	case asc( "w" )
+		MAYBE( "win32", FB_COMPTARGET_WIN32 )
 #ifndef ENABLE_STANDALONE
-		MAYBE("windows", FB_COMPTARGET_WIN32)
+		MAYBE( "windows", FB_COMPTARGET_WIN32 )
 #endif
 
-	case asc("x")
-		MAYBE("xbox", FB_COMPTARGET_XBOX)
+	case asc( "x" )
+		MAYBE( "xbox", FB_COMPTARGET_XBOX )
 
 	end select
 
 	function = -1
+end function
+
+private function hParseTargetArch _
+	( _
+		byval target as integer, _
+		byref arch as string _
+	) as integer
+
+	select case( arch )
+	'' 64bit architecture?
+	case "x86_64", "amd64"
+		'' Remap targets to their 64bit version if supported
+		select case( target )
+		case FB_COMPTARGET_WIN32
+			target = FB_COMPTARGET_WIN64
+		case FB_COMPTARGET_LINUX
+			target = FB_COMPTARGET_LINUX64
+		case else
+			'' Others not yet supported, or impossible (dos, xbox)
+			target = -1
+		end select
+	end select
+
+	function = target
 end function
 
 enum
@@ -1406,20 +1438,44 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 		''    bin/dos/ld[.exe]  (standalone build)
 		'' This allows fbc to work well with gcc/binutils
 		'' cross-toolchains via e.g. "fbc -target i686-pc-mingw32".
-		dim as string id = lcase( arg )
+		'' Normal: recognizes FB's target names and GNU triplets
+		'' Standalone: FB names only
+		dim as string os
+		dim as integer target = any
+
+		'' The -target option should be case-insensitive
+		os = lcase( arg )
 
 		'' Ignore it if it matches the host id; this adds backwards-
 		'' compatibility with fbc 0.23
-		if( id <> FB_HOST ) then
+		if( os <> FB_HOST ) then
+			#ifndef ENABLE_STANDALONE
+				'' Handle i686-pc-mingw32 triplets
+				dim as string arch
+				hParseTargetId( os, arch )
+			#endif
+
 			'' Identify the target
-			dim as integer comptarget = hParseTargetId( id )
-			if( comptarget < 0 ) then
+			target = hParseTargetOS( os )
+
+			#ifndef ENABLE_STANDALONE
+				'' Maybe remap to 64bit version
+				target = hParseTargetArch( target, arch )
+			#endif
+
+			'' Not recognized?
+			if( target < 0 ) then
 				hFatalInvalidOption( arg )
 			end if
-			fbSetOption( FB_COMPOPT_TARGET, comptarget )
-#ifndef ENABLE_STANDALONE
-			fbc.targetprefix = id + "-"
-#endif
+
+			fbSetOption( FB_COMPOPT_TARGET, target )
+
+			#ifndef ENABLE_STANDALONE
+				'' Should use the -target argument as-is when
+				'' prefixing to tool file names, because of
+				'' case-sensitive file systems
+				fbc.targetprefix = arg + "-"
+			#endif
 		end if
 
 	case OPT_TITLE

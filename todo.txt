@@ -2,12 +2,6 @@ o 64bit
   - Make INTEGER = pointer size, LONG = DWORD, LONGINT = QWORD
   - All arithmetic/bitwise operations will work at 64bit precision
 
-  - Add -arch {amd64|x86_64}
-  - but also -target win64|linux64, the separate targets are needed to ensure
-    we have different bin/ and lib/ directories for 32bit and 64bit files,
-    e.g. lib/win32/libfb.a and lib/win64/libfb.a
-  - refuse -target/-arch if incompatible (e.g. -target dos -arch x86_64)
-
   - remove the FB_{POINTER/INTEGER/LONG}SIZE constants, at least when used
     outside the ASM emitter, and use typeGetSize( ... ) instead, to allow the
     them to be remapped through the symb_dtypeTB depending on fbc command line

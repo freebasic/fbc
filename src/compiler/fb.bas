@@ -115,6 +115,16 @@ dim shared as FBTARGET targetinfo(0 to FB_COMPTARGETS-1) = _
 			or FB_TARGETOPT_RETURNINREGS _
 	), _
 	( _
+		@"win64", _
+		FB_DATATYPE_UINT, _
+		FB_DATATYPE_USHORT, _
+		FB_FUNCMODE_STDCALL, _
+		FB_FUNCMODE_STDCALL, _
+		0	or FB_TARGETOPT_UNDERSCORE _
+			or FB_TARGETOPT_EXPORT _
+			or FB_TARGETOPT_RETURNINREGS _
+	), _
+	( _
 		@"cygwin", _
 		FB_DATATYPE_UINT, _
 		FB_DATATYPE_USHORT, _
@@ -127,6 +137,15 @@ dim shared as FBTARGET targetinfo(0 to FB_COMPTARGETS-1) = _
 	), _
 	( _
 		@"linux", _
+		FB_DATATYPE_UINT, _
+		FB_DATATYPE_UINT, _
+		FB_FUNCMODE_CDECL, _
+		FB_FUNCMODE_STDCALL_MS, _
+		0	or FB_TARGETOPT_UNIX _
+			or FB_TARGETOPT_CALLEEPOPSHIDDENPTR _
+	), _
+	( _
+		@"linux64", _
 		FB_DATATYPE_UINT, _
 		FB_DATATYPE_UINT, _
 		FB_FUNCMODE_CDECL, _
