@@ -985,6 +985,9 @@ private function hParseTargetOS( byref os as string ) as integer
 		MAYBE( "freebsd", FB_COMPTARGET_FREEBSD )
 
 	case asc( "l" )
+		'' Checking linux64 first because it also starts with "linux",
+		'' but is a different target
+		MAYBE( "linux64", FB_COMPTARGET_LINUX64 )
 		MAYBE( "linux", FB_COMPTARGET_LINUX )
 
 #ifndef ENABLE_STANDALONE
@@ -1005,6 +1008,7 @@ private function hParseTargetOS( byref os as string ) as integer
 
 	case asc( "w" )
 		MAYBE( "win32", FB_COMPTARGET_WIN32 )
+		MAYBE( "win64", FB_COMPTARGET_WIN64 )
 #ifndef ENABLE_STANDALONE
 		MAYBE( "windows", FB_COMPTARGET_WIN32 )
 #endif
@@ -1027,11 +1031,19 @@ private function hParseTargetArch _
 	'' 64bit architecture?
 	case "x86_64", "amd64"
 		'' Remap targets to their 64bit version if supported
-		select case( target )
+		select case as const( target )
 		case FB_COMPTARGET_WIN32
+			'' This happens e.g. with x86_64-w64-mingw32, where the
+			'' mingw32 looks like win32 at first, but then due to
+			'' the x86_64 we know it's win64.
 			target = FB_COMPTARGET_WIN64
+
 		case FB_COMPTARGET_LINUX
 			target = FB_COMPTARGET_LINUX64
+
+		case FB_COMPTARGET_WIN64, FB_COMPTARGET_LINUX64
+			'' Already 64bit? Leave as-is
+
 		case else
 			'' Others not yet supported, or impossible (dos, xbox)
 			target = -1
