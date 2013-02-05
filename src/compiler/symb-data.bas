@@ -9,34 +9,54 @@
 '' same order as FB_DATATYPE
 dim shared symb_dtypeTB( 0 to FB_DATATYPES-1 ) as SYMB_DATATYPE => _
 { _
-	( FB_DATACLASS_UNKNOWN, 0               , FALSE, FB_DATATYPE_VOID    , @"void"     ), _
-	( FB_DATACLASS_INTEGER, 1               , TRUE , FB_DATATYPE_BYTE    , @"byte"     ), _
-	( FB_DATACLASS_INTEGER, 1               , FALSE, FB_DATATYPE_UBYTE   , @"ubyte"    ), _
-	( FB_DATACLASS_INTEGER, 1               , FALSE, FB_DATATYPE_UBYTE   , @"zstring"  ), _
-	( FB_DATACLASS_INTEGER, 2               , TRUE , FB_DATATYPE_SHORT   , @"short"    ), _
-	( FB_DATACLASS_INTEGER, 2               , FALSE, FB_DATATYPE_USHORT  , @"ushort"   ), _
-	( FB_DATACLASS_INTEGER, 2               , FALSE, FB_DATATYPE_USHORT  , @"wstring"  ), _
-	( FB_DATACLASS_INTEGER, FB_INTEGERSIZE  , TRUE , FB_DATATYPE_INTEGER , @"integer"  ), _
-	( FB_DATACLASS_INTEGER, FB_INTEGERSIZE  , FALSE, FB_DATATYPE_UINT    , @"uinteger" ), _
-	( FB_DATACLASS_INTEGER, FB_INTEGERSIZE  , TRUE , FB_DATATYPE_INTEGER , @"enum"     ), _
-	( FB_DATACLASS_INTEGER, FB_INTEGERSIZE  , FALSE, FB_DATATYPE_UINT    , @"bitfield" ), _
-	( FB_DATACLASS_INTEGER, FB_LONGSIZE     , TRUE , FB_DATATYPE_LONG    , @"long"     ), _
-	( FB_DATACLASS_INTEGER, FB_LONGSIZE     , FALSE, FB_DATATYPE_ULONG   , @"ulong"    ), _
-	( FB_DATACLASS_INTEGER, FB_INTEGERSIZE*2, TRUE , FB_DATATYPE_LONGINT , @"longint"  ), _
-	( FB_DATACLASS_INTEGER, FB_INTEGERSIZE*2, FALSE, FB_DATATYPE_ULONGINT, @"ulongint" ), _
-	( FB_DATACLASS_FPOINT , 4               , TRUE , FB_DATATYPE_SINGLE  , @"single"   ), _
-	( FB_DATACLASS_FPOINT , 8               , TRUE , FB_DATATYPE_DOUBLE  , @"double"   ), _
-	( FB_DATACLASS_STRING , FB_STRDESCLEN   , FALSE, FB_DATATYPE_STRING  , @"string"   ), _
-	( FB_DATACLASS_STRING , 1               , FALSE, FB_DATATYPE_FIXSTR  , @"string"   ), _
-	( FB_DATACLASS_UDT    , 0               , FALSE, FB_DATATYPE_STRUCT  , @"type"     ), _
-	( FB_DATACLASS_UDT    , 0               , FALSE, FB_DATATYPE_NAMESPC , @"namepace" ), _
-	( FB_DATACLASS_INTEGER, FB_POINTERSIZE  , FALSE, FB_DATATYPE_UINT    , @"function" ), _
-	( FB_DATACLASS_UNKNOWN, 0               , FALSE, FB_DATATYPE_VOID    , @"fwdref"   ), _
-	( FB_DATACLASS_INTEGER, FB_POINTERSIZE  , FALSE, FB_DATATYPE_UINT    , @"pointer"  ), _
-	( FB_DATACLASS_INTEGER, 16              , FALSE, FB_DATATYPE_XMMWORD , @"xmmword"  )  _
+	( FB_DATACLASS_UNKNOWN,  0, FALSE, FB_DATATYPE_VOID    , @"void"     ), _
+	( FB_DATACLASS_INTEGER,  1, TRUE , FB_DATATYPE_BYTE    , @"byte"     ), _
+	( FB_DATACLASS_INTEGER,  1, FALSE, FB_DATATYPE_UBYTE   , @"ubyte"    ), _
+	( FB_DATACLASS_INTEGER,  1, FALSE, FB_DATATYPE_UBYTE   , @"zstring"  ), _
+	( FB_DATACLASS_INTEGER,  2, TRUE , FB_DATATYPE_SHORT   , @"short"    ), _
+	( FB_DATACLASS_INTEGER,  2, FALSE, FB_DATATYPE_USHORT  , @"ushort"   ), _
+	( FB_DATACLASS_INTEGER,  2, FALSE, FB_DATATYPE_USHORT  , @"wstring"  ), _
+	( FB_DATACLASS_INTEGER, -1, TRUE , FB_DATATYPE_INTEGER , @"integer"  ), _
+	( FB_DATACLASS_INTEGER, -1, FALSE, FB_DATATYPE_UINT    , @"uinteger" ), _
+	( FB_DATACLASS_INTEGER, -1, TRUE , FB_DATATYPE_INTEGER , @"enum"     ), _
+	( FB_DATACLASS_INTEGER, -1, FALSE, FB_DATATYPE_UINT    , @"bitfield" ), _
+	( FB_DATACLASS_INTEGER,  4, TRUE , FB_DATATYPE_LONG    , @"long"     ), _
+	( FB_DATACLASS_INTEGER,  4, FALSE, FB_DATATYPE_ULONG   , @"ulong"    ), _
+	( FB_DATACLASS_INTEGER,  8, TRUE , FB_DATATYPE_LONGINT , @"longint"  ), _
+	( FB_DATACLASS_INTEGER,  8, FALSE, FB_DATATYPE_ULONGINT, @"ulongint" ), _
+	( FB_DATACLASS_FPOINT ,  4, TRUE , FB_DATATYPE_SINGLE  , @"single"   ), _
+	( FB_DATACLASS_FPOINT ,  8, TRUE , FB_DATATYPE_DOUBLE  , @"double"   ), _
+	( FB_DATACLASS_STRING , -1, FALSE, FB_DATATYPE_STRING  , @"string"   ), _
+	( FB_DATACLASS_STRING ,  1, FALSE, FB_DATATYPE_FIXSTR  , @"string"   ), _
+	( FB_DATACLASS_UDT    ,  0, FALSE, FB_DATATYPE_STRUCT  , @"type"     ), _
+	( FB_DATACLASS_UDT    ,  0, FALSE, FB_DATATYPE_NAMESPC , @"namepace" ), _
+	( FB_DATACLASS_INTEGER, -1, FALSE, FB_DATATYPE_UINT    , @"function" ), _
+	( FB_DATACLASS_UNKNOWN,  0, FALSE, FB_DATATYPE_VOID    , @"fwdref"   ), _
+	( FB_DATACLASS_INTEGER, -1, FALSE, FB_DATATYPE_UINT    , @"pointer"  ), _
+	( FB_DATACLASS_INTEGER, 16, FALSE, FB_DATATYPE_XMMWORD , @"xmmword"  )  _
 }
 
 sub symbDataInit( )
+	if( env.target.options and FB_TARGETOPT_64BIT ) then
+		'' 64bit
+		symb_dtypeTB(FB_DATATYPE_INTEGER ).size = 8
+		symb_dtypeTB(FB_DATATYPE_UINT    ).size = 8
+		symb_dtypeTB(FB_DATATYPE_ENUM    ).size = 8
+		symb_dtypeTB(FB_DATATYPE_BITFIELD).size = 8
+		symb_dtypeTB(FB_DATATYPE_STRING  ).size = 24
+		symb_dtypeTB(FB_DATATYPE_FUNCTION).size = 8
+		symb_dtypeTB(FB_DATATYPE_POINTER ).size = 8
+	else
+		'' 32bit
+		symb_dtypeTB(FB_DATATYPE_INTEGER ).size = 4
+		symb_dtypeTB(FB_DATATYPE_UINT    ).size = 4
+		symb_dtypeTB(FB_DATATYPE_ENUM    ).size = 4
+		symb_dtypeTB(FB_DATATYPE_BITFIELD).size = 4
+		symb_dtypeTB(FB_DATATYPE_STRING  ).size = 12
+		symb_dtypeTB(FB_DATATYPE_FUNCTION).size = 4
+		symb_dtypeTB(FB_DATATYPE_POINTER ).size = 4
+	end if
+
 	'' Remap wchar to target-specific type
 	'' (all fields except the name, so symbTypeToStr() returns WSTRING
 	'' instead of USHORT/UINTEGER...)

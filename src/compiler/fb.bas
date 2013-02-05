@@ -335,8 +335,6 @@ sub fbInit( byval ismain as integer, byval restarts as integer )
 	env.opt.base = 0
 	env.opt.gosub = (env.clopt.lang = FB_LANG_QB)
 
-	env.wchar_doconv = (sizeof( wstring ) = typeGetSize( env.target.wchar ))
-
 	env.fbctinf_started = FALSE
 
 	parserSetCtx( )
@@ -344,6 +342,9 @@ sub fbInit( byval ismain as integer, byval restarts as integer )
 	errInit( )
 	astInit( )
 	irInit( )
+
+	'' After symbInit(), we can use typeGetSize()
+	env.wchar_doconv = (sizeof( wstring ) = typeGetSize( env.target.wchar ))
 
 	hashInit( @env.incfilehash, FB_INITINCFILES )
 	hashInit( @env.inconcehash, FB_INITINCFILES )
