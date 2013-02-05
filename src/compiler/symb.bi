@@ -801,7 +801,6 @@ end type
 type SYMB_DATATYPE
 	class			as FB_DATACLASS				'' INTEGER, FPOINT
 	size			as integer					'' in bytes
-	bits			as integer					'' number of bits
 	signed			as integer					'' TRUE or FALSE
 	remaptype		as FB_DATATYPE				'' remapped type for ENUM, POINTER, etc
 	name			as const zstring ptr
@@ -2369,7 +2368,7 @@ declare sub symbProcSetRealType( byval proc as FBSYMBOL ptr )
 
 #define typeGetClass( dt ) symb_dtypeTB(typeGet( dt )).class
 #define typeGetSize( dt ) symb_dtypeTB(typeGet( dt )).size
-#define typeGetBits( dt ) symb_dtypeTB(typeGet( dt )).bits
+#define typeGetBits( dt ) (typeGetSize( dt ) * 8)
 #define typeIsSigned( dt ) symb_dtypeTB(typeGet( dt )).signed
 
 #define typeGet( dt ) iif( dt and FB_DT_PTRMASK, FB_DATATYPE_POINTER, dt and FB_DT_TYPEMASK )
