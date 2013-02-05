@@ -2344,7 +2344,7 @@ private function hCompileXpm( ) as integer
 	function = TRUE
 end function
 
-dim shared as const zstring ptr gcc_architectures(0 to (FB_CPUTYPECOUNT - 1)) = _
+dim shared as const zstring ptr gcc_architectures(FB_CPUTYPE_386 to FB_CPUTYPE_NATIVE) = _
 { _
 	@"i386", _
 	@"i486", _
