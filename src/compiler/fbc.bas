@@ -1887,7 +1887,7 @@ private sub parseArgsFromFile(byref filename as string)
 end sub
 
 private sub hParseArgs( byval argc as integer, byval argv as zstring ptr ptr )
-	dim as integer switch = any
+	dim as integer genericcputype = any, switch_target = any, errmsg = any
 
 	fbc.optid = -1
 
@@ -1941,36 +1941,31 @@ private sub hParseArgs( byval argc as integer, byval argv as zstring ptr ptr )
 		'' to 64bit target, and vice-versa, but without changing the
 		'' fbc.targetprefix. Instead, we will rely only on
 		'' "gcc -m32/-m64" and "as --32/--64" to work.
-		switch = -1
 
 		select case( fbc.cputype )
 		case FB_CPUTYPE_X86_64, FB_CPUTYPE_64
-			if( fbIsTarget64bit( ) = FALSE ) then
-				if( fbGetOppositeBitsTarget( ) < 0 ) then
-					'' 32bit target that doesn't have a corresponding 64bit version (e.g. dos, xbox)
-					errReportEx( FB_ERRMSG_64ARCHWITH32TARGET, "", -1 )
-					fbcEnd( 1 )
-				end if
-				switch = FB_CPUTYPE_64
-			end if
+			genericcputype = FB_CPUTYPE_64
+			switch_target = (not fbIsTarget64bit( ))
+			errmsg = FB_ERRMSG_64ARCHWITH32TARGET
 		case else
-			if( fbIsTarget64bit( ) ) then
-				'' Assuming all current 64bit targets have a corresponding 32bit version too
-				assert( fbGetOppositeBitsTarget( ) >= 0 )
-				switch = FB_CPUTYPE_32
-			end if
+			genericcputype = FB_CPUTYPE_32
+			switch_target = fbIsTarget64bit( )
+			errmsg = FB_ERRMSG_32ARCHWITH64TARGET
 		end select
 
-		if( switch >= 0 ) then
+		if( switch_target ) then
+			if( fbGetOppositeBitsTarget( ) < 0 ) then
+				errReportEx( errmsg, "", -1 )
+				fbcEnd( 1 )
+			end if
+
 			'' Switch target
 			fbSetOption( FB_COMPOPT_TARGET, fbGetOppositeBitsTarget( ) )
+		end if
 
-			'' If a specific arch was given, overwrite the target's
-			'' default one. Otherwise (for -arch 32/64), don't
-			'' overwrite the target's default.
-			if( fbc.cputype <> switch ) then
-				fbSetOption( FB_COMPOPT_CPUTYPE, fbc.cputype )
-			end if
+		'' If a specific arch was given, overwrite the default
+		if( fbc.cputype <> genericcputype ) then
+			fbSetOption( FB_COMPOPT_CPUTYPE, fbc.cputype )
 		end if
 	end if
 
