@@ -143,7 +143,9 @@ end type
 		@"Too many parameters", _
 		@"Macro text too long", _
 		@"Invalid command-line option", _
-		@"GAS ASM backend selected, but it does not support 64bit", _
+		@"GAS ASM backend selected for 64bit target (not supported)", _
+		@"32bit architecture selected for 64bit target", _
+		@"64bit architecture selected for 32bit target", _
 		@"Var-len strings cannot be initialized", _
 		@"Recursive TYPE or UNION not allowed", _
 		@"Recursive DEFINE not allowed", _

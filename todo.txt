@@ -2,9 +2,6 @@ o 64bit
   - Make INTEGER = pointer size, LONG = DWORD, LONGINT = QWORD
   - All arithmetic/bitwise operations will work at 64bit precision
 
-  - env.clopt.cputype should be set to x86_64 under 64bit
-    (for now; later it could also become aarch64 or sparc64)
-
   - remove the FB_{POINTER/INTEGER/LONG}SIZE constants, at least when used
     outside the ASM emitter, and use typeGetSize( ... ) instead, to allow the
     them to be remapped through the symb_dtypeTB depending on fbc command line

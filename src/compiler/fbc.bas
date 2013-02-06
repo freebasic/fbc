@@ -38,6 +38,7 @@ type FBCCTX
 	lastmoduleobj			as string ptr '' fbc.objlist node of last input file, so the default .o name can be overwritten with a following -o filename
 	objfile				as string '' -o filename waiting for next input file
 	backend				as integer  '' FB_BACKEND_* given via -gen, or -1 if -gen wasn't given
+	cputype				as integer  '' FB_CPUTYPE_* given via -arch, or -1 if -arch wasn't given
 
 	emitasmonly			as integer  '' write out FB backend output file only (.asm/.c)
 	keepasm				as integer  '' preserve FB backend output file (.asm/.c)
@@ -126,6 +127,7 @@ private sub fbcInit( )
 	const FBC_INITFILES = 64
 
 	fbc.backend = -1
+	fbc.cputype = -1
 
 	listInit( @fbc.modules, FBC_INITFILES, sizeof(FBCIOFILE) )
 	listInit( @fbc.rcs, FBC_INITFILES\4, sizeof(FBCIOFILE) )
@@ -1178,42 +1180,40 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 		fbcAddObj( arg )
 
 	case OPT_ARCH
-		dim as integer value = any
-
 		select case( arg )
 		case "386"
-			value = FB_CPUTYPE_386
+			fbc.cputype = FB_CPUTYPE_386
 		case "486"
-			value = FB_CPUTYPE_486
+			fbc.cputype = FB_CPUTYPE_486
 		case "586"
-			value = FB_CPUTYPE_586
+			fbc.cputype = FB_CPUTYPE_586
 		case "686"
-			value = FB_CPUTYPE_686
+			fbc.cputype = FB_CPUTYPE_686
 		case "athlon"
-			value = FB_CPUTYPE_ATHLON
+			fbc.cputype = FB_CPUTYPE_ATHLON
 		case "athlon-xp"
-			value = FB_CPUTYPE_ATHLONXP
+			fbc.cputype = FB_CPUTYPE_ATHLONXP
 		case "athlon-fx"
-			value = FB_CPUTYPE_ATHLONFX
+			fbc.cputype = FB_CPUTYPE_ATHLONFX
 		case "k8-sse3"
-			value = FB_CPUTYPE_ATHLONSSE3
+			fbc.cputype = FB_CPUTYPE_ATHLONSSE3
 		case "pentium-mmx"
-			value = FB_CPUTYPE_PENTIUMMMX
+			fbc.cputype = FB_CPUTYPE_PENTIUMMMX
 		case "pentium2"
-			value = FB_CPUTYPE_PENTIUM2
+			fbc.cputype = FB_CPUTYPE_PENTIUM2
 		case "pentium3"
-			value = FB_CPUTYPE_PENTIUM3
+			fbc.cputype = FB_CPUTYPE_PENTIUM3
 		case "pentium4"
-			value = FB_CPUTYPE_PENTIUM4
+			fbc.cputype = FB_CPUTYPE_PENTIUM4
 		case "pentium4-sse3"
-			value = FB_CPUTYPE_PENTIUMSSE3
+			fbc.cputype = FB_CPUTYPE_PENTIUMSSE3
+		case "x86_64", "amd64"
+			fbc.cputype = FB_CPUTYPE_X86_64
 		case "native"
-			value = FB_CPUTYPE_NATIVE
+			fbc.cputype = FB_CPUTYPE_NATIVE
 		case else
 			hFatalInvalidOption( arg )
 		end select
-
-		fbSetOption( FB_COMPOPT_CPUTYPE, value )
 
 	case OPT_ASM
 		select case( arg )
@@ -1913,13 +1913,32 @@ private sub hParseArgs( byval argc as integer, byval argv as zstring ptr ptr )
 		'' 64bit target? -gen gas not supported
 		if( fbIsTarget64bit( ) ) then
 			if( fbc.backend = FB_BACKEND_GAS ) then
-				errReportEx( FB_ERRMSG_ASMBACKEND64BIT, "", -1 )
+				errReportEx( FB_ERRMSG_ASMBACKEND64, "", -1 )
 				fbcEnd( 1 )
 			end if
 		end if
 
 		'' Override the compiler's target-based default
 		fbSetOption( FB_COMPOPT_BACKEND, fbc.backend )
+	end if
+
+	'' -arch given?
+	if( fbc.cputype >= 0 ) then
+		'' 64bit arch requires 64bit target
+		if( fbIsTarget64bit( ) ) then
+			if( fbc.cputype <> FB_CPUTYPE_X86_64 ) then
+				errReportEx( FB_ERRMSG_32ARCHWITH64TARGET, "", -1 )
+				fbcEnd( 1 )
+			end if
+		else
+			if( fbc.cputype = FB_CPUTYPE_X86_64 ) then
+				errReportEx( FB_ERRMSG_64ARCHWITH32TARGET, "", -1 )
+				fbcEnd( 1 )
+			end if
+		end if
+
+		'' Override the compiler's target-based default
+		fbSetOption( FB_COMPOPT_CPUTYPE, fbc.cputype )
 	end if
 
 	'' Resource scripts are only allowed for win32 & co,
@@ -2384,6 +2403,7 @@ dim shared as const zstring ptr gcc_architectures(FB_CPUTYPE_386 to FB_CPUTYPE_N
 	@"pentium3", _
 	@"pentium4", _
 	@"prescott", _
+	@"x86_64", _
 	@"native" _
 }
 

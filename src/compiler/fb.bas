@@ -387,6 +387,13 @@ private sub hUpdateTargetOptions( )
 	else
 		env.clopt.backend = FB_BACKEND_GAS
 	end if
+
+	'' Same for default arch
+	if( env.target.options and FB_TARGETOPT_64BIT ) then
+		env.clopt.cputype = FB_CPUTYPE_X86_64
+	else
+		env.clopt.cputype = FB_CPUTYPE_486
+	end if
 end sub
 
 sub fbGlobalInit()
@@ -399,7 +406,6 @@ sub fbGlobalInit()
 	env.clopt.pponly        = FALSE
 
 	env.clopt.target        = FB_DEFAULT_TARGET
-	env.clopt.cputype       = FB_DEFAULT_CPUTYPE
 	env.clopt.fputype       = FB_DEFAULT_FPUTYPE
 	env.clopt.fpmode        = FB_DEFAULT_FPMODE
 	env.clopt.vectorize     = FB_DEFAULT_VECTORIZELEVEL
