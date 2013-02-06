@@ -211,7 +211,14 @@ private function fbcFindLibFile( byval file as zstring ptr ) as string
 	'' Not found in our lib/, query the target-specific gcc
 	dim as string path
 	fbcFindBin( FBCTOOL_GCC, path )
-	path += " -m32 -print-file-name=" + *file
+
+	if( fbIsTarget64bit( ) ) then
+		path += " -m64"
+	else
+		path += " -m32"
+	end if
+
+	path += " -print-file-name=" + *file
 
 	dim as integer ff = freefile( )
 	if( open pipe( path, for input, as ff ) <> 0 ) then
@@ -1924,16 +1931,25 @@ private sub hParseArgs( byval argc as integer, byval argv as zstring ptr ptr )
 
 	'' -arch given?
 	if( fbc.cputype >= 0 ) then
-		'' 64bit arch requires 64bit target
+		'' If target is 32bit, but -arch x86_64 was given, then switch
+		'' to 64bit target, and vice-versa, but without changing the
+		'' fbc.targetprefix. Instead, we will rely only on
+		'' "gcc -m32/-m64" and "as --32/--64" to work.
+
 		if( fbIsTarget64bit( ) ) then
 			if( fbc.cputype <> FB_CPUTYPE_X86_64 ) then
-				errReportEx( FB_ERRMSG_32ARCHWITH64TARGET, "", -1 )
-				fbcEnd( 1 )
+				'' Assuming all current 64bit targets have a corresponding 32bit version too
+				assert( fbGetOppositeBitsTarget( ) >= 0 )
+				fbSetOption( FB_COMPOPT_TARGET, fbGetOppositeBitsTarget( ) )
 			end if
 		else
 			if( fbc.cputype = FB_CPUTYPE_X86_64 ) then
-				errReportEx( FB_ERRMSG_64ARCHWITH32TARGET, "", -1 )
-				fbcEnd( 1 )
+				if( fbGetOppositeBitsTarget( ) < 0 ) then
+					'' 32bit target that doesn't have a corresponding 64bit version (e.g. dos, xbox)
+					errReportEx( FB_ERRMSG_64ARCHWITH32TARGET, "", -1 )
+					fbcEnd( 1 )
+				end if
+				fbSetOption( FB_COMPOPT_TARGET, fbGetOppositeBitsTarget( ) )
 			end if
 		end if
 
@@ -2417,6 +2433,12 @@ private function hCompileStage2Module( byval module as FBCIOFILE ptr ) as intege
 
 	select case( fbGetOption( FB_COMPOPT_BACKEND ) )
 	case FB_BACKEND_GCC
+		if( fbIsTarget64bit( ) ) then
+			ln += "-m64 "
+		else
+			ln += "-m32 "
+		end if
+
 		ln += "-S -nostdlib -nostdinc -Wall -Wno-unused-label " + _
 		      "-Wno-unused-function -Wno-unused-variable "
 
@@ -2457,6 +2479,12 @@ private function hCompileStage2Module( byval module as FBCIOFILE ptr ) as intege
 		end if
 
 	case FB_BACKEND_LLVM
+		if( fbIsTarget64bit( ) ) then
+			ln += "-march=x86-64 "
+		else
+			ln += "-march=x86 "
+		end if
+
 		ln += "-O" + str( fbGetOption( FB_COMPOPT_OPTIMIZELEVEL ) ) + " "
 		if( fbGetOption( FB_COMPOPT_ASMSYNTAX ) = FB_ASMSYNTAX_INTEL ) then
 			ln += "--x86-asm-syntax=intel "
@@ -2489,7 +2517,12 @@ end sub
 private function hAssembleModule( byval module as FBCIOFILE ptr ) as integer
 	dim as string ln
 
-	ln = "--32 "  '' we're 32bit only for now, this helps on 64bit systems
+	if( fbIsTarget64bit( ) ) then
+		ln = "--64 "
+	else
+		ln = "--32 "
+	end if
+
 	if( fbGetOption( FB_COMPOPT_DEBUG ) = FALSE ) then
 		ln += "--strip-local-absolute "
 	end if

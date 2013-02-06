@@ -592,6 +592,7 @@ type FBTARGET
 	wchar           as FB_DATATYPE  '' Real wstring data type
 	fbcall          as FB_FUNCMODE  '' Default calling convention, must match the rtlib's FBCALL
 	stdcall         as FB_FUNCMODE  '' Calling convention to use for stdcall (stdcall or stdcallms)
+	oppositebits    as integer      '' FB_COMPTARGET_* with the opposite bits (32bit <-> 64bit), or -1 if none
 	options         as FB_TARGETOPT
 end type
 

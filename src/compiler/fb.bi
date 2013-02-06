@@ -373,6 +373,7 @@ declare sub fbIncludeFile(byval filename as zstring ptr, byval isonce as integer
 
 declare function fbGetTargetId( ) as zstring ptr
 declare function fbIsTarget64bit( ) as integer
+declare function fbGetOppositeBitsTarget( ) as integer
 
 declare function fbGetEntryPoint _
 	( _
