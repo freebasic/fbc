@@ -1887,7 +1887,8 @@ private sub parseArgsFromFile(byref filename as string)
 end sub
 
 private sub hParseArgs( byval argc as integer, byval argv as zstring ptr ptr )
-	dim as integer genericcputype = any, switch_target = any, errmsg = any
+	dim as integer cputype = any, genericcputype = any
+	dim as integer switch_target = any, errmsg = any
 
 	fbc.optid = -1
 
@@ -1935,14 +1936,31 @@ private sub hParseArgs( byval argc as integer, byval argv as zstring ptr ptr )
 		fbSetOption( FB_COMPOPT_BACKEND, fbc.backend )
 	end if
 
-	'' -arch given?
-	if( fbc.cputype >= 0 ) then
+	''
+	'' Check the -arch option
+	''
+	cputype = fbc.cputype
+
+	'' "-arch native" given? Re-map to real cputype
+	if( cputype = FB_CPUTYPE_NATIVE ) then
+		cputype = (fb_CpuDetect( ) shr 28)
+
+		'' Not 386..686?
+		if( (cputype < 3) or (cputype > 6) ) then
+			'' Don't change the FB compiler's default - since it
+			'' defaults to the host
+			cputype = -1
+		end if
+	end if
+
+	'' -arch given (or identified via -arch native)?
+	if( cputype >= 0 ) then
 		'' If target is 32bit, but -arch x86_64 was given, then switch
 		'' to 64bit target, and vice-versa, but without changing the
 		'' fbc.targetprefix. Instead, we will rely only on
 		'' "gcc -m32/-m64" and "as --32/--64" to work.
 
-		select case( fbc.cputype )
+		select case( cputype )
 		case FB_CPUTYPE_X86_64, FB_CPUTYPE_64
 			genericcputype = FB_CPUTYPE_64
 			switch_target = (not fbIsTarget64bit( ))
@@ -1964,8 +1982,8 @@ private sub hParseArgs( byval argc as integer, byval argv as zstring ptr ptr )
 		end if
 
 		'' If a specific arch was given, overwrite the default
-		if( fbc.cputype <> genericcputype ) then
-			fbSetOption( FB_COMPOPT_CPUTYPE, fbc.cputype )
+		if( cputype <> genericcputype ) then
+			fbSetOption( FB_COMPOPT_CPUTYPE, cputype )
 		end if
 	end if
 
@@ -2434,7 +2452,7 @@ dim shared as const zstring ptr gcc_architectures(FB_CPUTYPE_386 to FB_CPUTYPE_N
 	@"k8", _
 	NULL, _
 	NULL, _
-	@"native" _
+	NULL _
 }
 
 private function hCompileStage2Module( byval module as FBCIOFILE ptr ) as integer
@@ -2482,7 +2500,11 @@ private function hCompileStage2Module( byval module as FBCIOFILE ptr ) as intege
 			ln += "-g "
 		end if
 
-		ln += "-mtune=" + *gcc_architectures(fbGetOption( FB_COMPOPT_CPUTYPE )) + " "
+		if( fbc.cputype = FB_CPUTYPE_NATIVE ) then
+			ln += "-mtune=native "
+		else
+			ln += "-mtune=" + *gcc_architectures(fbGetOption( FB_COMPOPT_CPUTYPE )) + " "
+		end if
 
 		if( fbGetOption( FB_COMPOPT_FPUTYPE ) = FB_FPUTYPE_SSE ) then
 			ln += "-mfpmath=sse -msse2 "
