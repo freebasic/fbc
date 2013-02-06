@@ -129,6 +129,8 @@ enum FB_CPUTYPE
 	FB_CPUTYPE_PENTIUM4
 	FB_CPUTYPE_PENTIUMSSE3
 	FB_CPUTYPE_X86_64
+	FB_CPUTYPE_32  '' just to identify -arch 32/64, as a shortcut for the default arch for 32/64bit
+	FB_CPUTYPE_64
 	FB_CPUTYPE_NATIVE
 end enum
 

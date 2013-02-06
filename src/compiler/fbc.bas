@@ -1216,6 +1216,10 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 			fbc.cputype = FB_CPUTYPE_PENTIUMSSE3
 		case "x86_64", "amd64"
 			fbc.cputype = FB_CPUTYPE_X86_64
+		case "32"
+			fbc.cputype = FB_CPUTYPE_32
+		case "64"
+			fbc.cputype = FB_CPUTYPE_64
 		case "native"
 			fbc.cputype = FB_CPUTYPE_NATIVE
 		case else
@@ -1883,6 +1887,8 @@ private sub parseArgsFromFile(byref filename as string)
 end sub
 
 private sub hParseArgs( byval argc as integer, byval argv as zstring ptr ptr )
+	dim as integer switch = any
+
 	fbc.optid = -1
 
 	'' Note: ignoring argv[0], assuming it's the path used to run fbc
@@ -1935,26 +1941,37 @@ private sub hParseArgs( byval argc as integer, byval argv as zstring ptr ptr )
 		'' to 64bit target, and vice-versa, but without changing the
 		'' fbc.targetprefix. Instead, we will rely only on
 		'' "gcc -m32/-m64" and "as --32/--64" to work.
+		switch = -1
 
-		if( fbIsTarget64bit( ) ) then
-			if( fbc.cputype <> FB_CPUTYPE_X86_64 ) then
-				'' Assuming all current 64bit targets have a corresponding 32bit version too
-				assert( fbGetOppositeBitsTarget( ) >= 0 )
-				fbSetOption( FB_COMPOPT_TARGET, fbGetOppositeBitsTarget( ) )
-			end if
-		else
-			if( fbc.cputype = FB_CPUTYPE_X86_64 ) then
+		select case( fbc.cputype )
+		case FB_CPUTYPE_X86_64, FB_CPUTYPE_64
+			if( fbIsTarget64bit( ) = FALSE ) then
 				if( fbGetOppositeBitsTarget( ) < 0 ) then
 					'' 32bit target that doesn't have a corresponding 64bit version (e.g. dos, xbox)
 					errReportEx( FB_ERRMSG_64ARCHWITH32TARGET, "", -1 )
 					fbcEnd( 1 )
 				end if
-				fbSetOption( FB_COMPOPT_TARGET, fbGetOppositeBitsTarget( ) )
+				switch = FB_CPUTYPE_64
+			end if
+		case else
+			if( fbIsTarget64bit( ) ) then
+				'' Assuming all current 64bit targets have a corresponding 32bit version too
+				assert( fbGetOppositeBitsTarget( ) >= 0 )
+				switch = FB_CPUTYPE_32
+			end if
+		end select
+
+		if( switch >= 0 ) then
+			'' Switch target
+			fbSetOption( FB_COMPOPT_TARGET, fbGetOppositeBitsTarget( ) )
+
+			'' If a specific arch was given, overwrite the target's
+			'' default one. Otherwise (for -arch 32/64), don't
+			'' overwrite the target's default.
+			if( fbc.cputype <> switch ) then
+				fbSetOption( FB_COMPOPT_CPUTYPE, fbc.cputype )
 			end if
 		end if
-
-		'' Override the compiler's target-based default
-		fbSetOption( FB_COMPOPT_CPUTYPE, fbc.cputype )
 	end if
 
 	'' Resource scripts are only allowed for win32 & co,
