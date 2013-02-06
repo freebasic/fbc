@@ -207,8 +207,6 @@ enum FB_BACKEND
 	FB_BACKENDS
 end enum
 
-const FB_DEFAULT_BACKEND = FB_BACKEND_GAS
-
 enum FB_ASMSYNTAX
 	FB_ASMSYNTAX_INTEL = 0
 	FB_ASMSYNTAX_ATT
@@ -366,16 +364,8 @@ declare sub fbAddIncludePath(byref path as string)
 declare sub fbAddPreDefine(byref def as string)
 declare sub fbAddPreInclude(byref file as string)
 
-declare sub fbSetOption _
-	( _
-		byval opt as integer, _
-		byval value as integer _
-	)
-
-declare function fbGetOption _
-	( _
-		byval opt as integer _
-	) as integer
+declare sub fbSetOption( byval opt as integer, byval value as integer )
+declare function fbGetOption( byval opt as integer ) as integer
 
 declare sub fbChangeOption(byval opt as integer, byval value as integer)
 declare sub fbSetLibs(byval libs as TSTRSET ptr, byval libpaths as TSTRSET ptr)
@@ -384,6 +374,7 @@ declare sub fbPragmaOnce()
 declare sub fbIncludeFile(byval filename as zstring ptr, byval isonce as integer)
 
 declare function fbGetTargetId( ) as zstring ptr
+declare function fbIsTarget64bit( ) as integer
 
 declare function fbGetEntryPoint _
 	( _

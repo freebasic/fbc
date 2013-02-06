@@ -37,6 +37,7 @@ type FBCCTX
 	optid				as integer    '' Current option
 	lastmoduleobj			as string ptr '' fbc.objlist node of last input file, so the default .o name can be overwritten with a following -o filename
 	objfile				as string '' -o filename waiting for next input file
+	backend				as integer  '' FB_BACKEND_* given via -gen, or -1 if -gen wasn't given
 
 	emitasmonly			as integer  '' write out FB backend output file only (.asm/.c)
 	keepasm				as integer  '' preserve FB backend output file (.asm/.c)
@@ -123,6 +124,8 @@ dim shared as FBCCTX fbc
 
 private sub fbcInit( )
 	const FBC_INITFILES = 64
+
+	fbc.backend = -1
 
 	listInit( @fbc.modules, FBC_INITFILES, sizeof(FBCIOFILE) )
 	listInit( @fbc.rcs, FBC_INITFILES\4, sizeof(FBCIOFILE) )
@@ -1297,20 +1300,16 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 		fbSetOption( FB_COMPOPT_DEBUG, TRUE )
 
 	case OPT_GEN
-		dim as integer value = any
-
-		select case (lcase(arg))
+		select case( lcase( arg ) )
 		case "gas"
-			value = FB_BACKEND_GAS
+			fbc.backend = FB_BACKEND_GAS
 		case "gcc"
-			value = FB_BACKEND_GCC
+			fbc.backend = FB_BACKEND_GCC
 		case "llvm"
-			value = FB_BACKEND_LLVM
+			fbc.backend = FB_BACKEND_LLVM
 		case else
 			hFatalInvalidOption( arg )
 		end select
-
-		fbSetOption( FB_COMPOPT_BACKEND, value )
 
 	case OPT_HELP
 		fbc.showhelp = TRUE
@@ -1907,6 +1906,20 @@ private sub hParseArgs( byval argc as integer, byval argv as zstring ptr ptr )
 				errReportEx( FB_ERRMSG_OPTIONREQUIRESSSE, "", -1 )
 				return
 		end if
+	end if
+
+	'' -gen given?
+	if( fbc.backend >= 0 ) then
+		'' 64bit target? -gen gas not supported
+		if( fbIsTarget64bit( ) ) then
+			if( fbc.backend = FB_BACKEND_GAS ) then
+				errReportEx( FB_ERRMSG_ASMBACKEND64BIT, "", -1 )
+				fbcEnd( 1 )
+			end if
+		end if
+
+		'' Override the compiler's target-based default
+		fbSetOption( FB_COMPOPT_BACKEND, fbc.backend )
 	end if
 
 	'' Resource scripts are only allowed for win32 & co,

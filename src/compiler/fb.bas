@@ -374,12 +374,19 @@ sub fbEnd()
 	strsetEnd(@env.libpaths)
 end sub
 
-private sub updateLangOptions( )
+private sub hUpdateLangOptions( )
 	env.lang.opt = langTb(env.clopt.lang).options
 end sub
 
-private sub updateTargetOptions( )
+private sub hUpdateTargetOptions( )
 	env.target = targetinfo(env.clopt.target)
+
+	'' When setting the target, also set the default backend
+	if( env.target.options and FB_TARGETOPT_64BIT ) then
+		env.clopt.backend = FB_BACKEND_GCC
+	else
+		env.clopt.backend = FB_BACKEND_GAS
+	end if
 end sub
 
 sub fbGlobalInit()
@@ -391,7 +398,6 @@ sub fbGlobalInit()
 	env.clopt.outtype       = FB_DEFAULT_OUTTYPE
 	env.clopt.pponly        = FALSE
 
-	env.clopt.backend       = FB_DEFAULT_BACKEND
 	env.clopt.target        = FB_DEFAULT_TARGET
 	env.clopt.cputype       = FB_DEFAULT_CPUTYPE
 	env.clopt.fputype       = FB_DEFAULT_FPUTYPE
@@ -420,8 +426,8 @@ sub fbGlobalInit()
 	env.clopt.msbitfields   = FALSE
 	env.clopt.stacksize     = FB_DEFSTACKSIZE
 
-	updateLangOptions( )
-	updateTargetOptions( )
+	hUpdateLangOptions( )
+	hUpdateTargetOptions( )
 end sub
 
 sub fbAddIncludePath(byref path as string)
@@ -447,7 +453,7 @@ sub fbSetOption( byval opt as integer, byval value as integer )
 		env.clopt.backend = value
 	case FB_COMPOPT_TARGET
 		env.clopt.target = value
-		updateTargetOptions( )
+		hUpdateTargetOptions( )
 	case FB_COMPOPT_CPUTYPE
 		env.clopt.cputype = value
 	case FB_COMPOPT_FPUTYPE
@@ -463,7 +469,7 @@ sub fbSetOption( byval opt as integer, byval value as integer )
 
 	case FB_COMPOPT_LANG
 		env.clopt.lang = value
-		updateLangOptions( )
+		hUpdateLangOptions( )
 	case FB_COMPOPT_FORCELANG
 		env.clopt.forcelang = value
 
@@ -631,6 +637,10 @@ end function
 
 function fbGetTargetId( ) as zstring ptr
 	function = env.target.id
+end function
+
+function fbIsTarget64bit( ) as integer
+	function = ((env.target.options and FB_TARGETOPT_64BIT) <> 0)
 end function
 
 '':::::
