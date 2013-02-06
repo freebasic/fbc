@@ -342,6 +342,11 @@ sub symbDefineInit _
 		symbAddDefine( @"__FB_PCOS__", NULL, 0 )
 	end if
 
+	'' 64bit?
+	if( env.target.options and FB_TARGETOPT_64BIT ) then
+		symbAddDefine( @"__FB_64BIT__", NULL, 0 )
+	end if
+
 	'' add "main" define
 	if( ismain ) then
 		symbAddDefine( "__FB_MAIN__", NULL, 0 )
