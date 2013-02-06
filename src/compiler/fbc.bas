@@ -1214,7 +1214,7 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 			fbc.cputype = FB_CPUTYPE_PENTIUM4
 		case "pentium4-sse3"
 			fbc.cputype = FB_CPUTYPE_PENTIUMSSE3
-		case "x86_64", "amd64"
+		case "x86-64", "x86_64", "amd64"
 			fbc.cputype = FB_CPUTYPE_X86_64
 		case "32"
 			fbc.cputype = FB_CPUTYPE_32
