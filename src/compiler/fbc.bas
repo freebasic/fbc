@@ -2437,6 +2437,8 @@ dim shared as const zstring ptr gcc_architectures(FB_CPUTYPE_386 to FB_CPUTYPE_N
 	@"pentium4", _
 	@"prescott", _
 	@"k8", _
+	NULL, _
+	NULL, _
 	@"native" _
 }
 
