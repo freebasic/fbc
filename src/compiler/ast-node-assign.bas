@@ -3,14 +3,12 @@
 ''
 '' chng: sep/2004 written [v1ctor]
 
-
 #include once "fb.bi"
 #include once "fbint.bi"
 #include once "ir.bi"
 #include once "rtl.bi"
 #include once "ast.bi"
 
-'':::::
 private function hCheckStringOps _
 	( _
 		byval l as ASTNODE ptr, _
@@ -19,43 +17,26 @@ private function hCheckStringOps _
 		byval rdclass as FB_DATACLASS _
 	) as integer
 
+	dim as ASTNODE ptr other = any
+
 	function = FALSE
 
-	'' check if it's not a byte ptr
+	'' Other operand must be a z/wstring then
+	'' (since they're not both strings)
 	if( ldclass = FB_DATACLASS_STRING ) then
-		'' not a w|zstring?
-		select case astGetDataType( r )
-		case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
-
-		case else
-			if( r->class <> AST_NODECLASS_DEREF ) then
-				exit function
-			elseif( astGetDataType( r ) <> FB_DATATYPE_BYTE ) then
-				if( astGetDataType( r ) <> FB_DATATYPE_UBYTE ) then
-					exit function
-				end if
-			end if
-		end select
-
+		other = r
 	else
-		'' not a w|zstring?
-		dim as FB_DATATYPE dtype = astGetDataType( l )
-		select case as const dtype
-		case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
-
-		case else
-			if( l->class <> AST_NODECLASS_DEREF ) then
-				exit function
-			elseif( dtype <> FB_DATATYPE_BYTE ) then
-				if( dtype <> FB_DATATYPE_UBYTE ) then
-					exit function
-				end if
-			end if
-		end select
+		other = l
 	end if
 
-	function = TRUE
+	select case( astGetDataType( other ) )
+	case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
 
+	case else
+		exit function
+	end select
+
+	function = TRUE
 end function
 
 '':::::

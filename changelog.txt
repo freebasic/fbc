@@ -184,6 +184,7 @@ Version 0.25.0:
 - C backend: fbc always passed a "wrong" -mtune option to gcc, that didn't match what was given to fbc's -arch option
 - The -exx CPU type check could look for invalid CPU families under any -arch option except 386/486/586/686
 - The type checks for assignments involving *zstringptr or *wstringptr expressions could be buggy, for example causing "*zstringptr = float" assignments to be disallowed under the C backend
+- #577: The compiler allowed assignments between string and *byteptr expressions, as if they were string and *zstringptr expressions
 
 
 Version 0.24.0:
