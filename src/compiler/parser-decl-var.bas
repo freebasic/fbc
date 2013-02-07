@@ -1626,37 +1626,6 @@ private function hMatchEllipsis( ) as integer
 	end if
 end function
 
-function cIntConstExprValue( byval defaultvalue as integer ) as integer
-	dim as ASTNODE ptr expr = any
-
-	expr = cExpression( )
-
-	if( expr ) then
-		if( astIsCONST( expr ) ) then
-			'' Check whether the conversion to INTEGER would overflow
-			if( astCheckConst( FB_DATATYPE_INTEGER, expr, TRUE ) = FALSE ) then
-				expr = astNewCONV( FB_DATATYPE_INTEGER, NULL, expr )
-			end if
-		else
-			astDelTree( expr )
-			expr = NULL
-		end if
-	end if
-
-	if( expr = NULL ) then
-		errReport( FB_ERRMSG_EXPECTEDCONST )
-		'' error recovery: fake an expr
-		if( lexGetToken( ) <> FB_TK_TO ) then
-			hSkipUntil( CHAR_COMMA )
-		end if
-		expr = astNewCONSTi( defaultvalue )
-	end if
-
-	function = astGetValueAsInt( expr )
-
-	astDelTree( expr )
-end function
-
 '':::::
 ''ArrayDecl       =   '(' Expression (TO Expression)?
 ''                             (',' Expression (TO Expression)?)*
@@ -1698,7 +1667,7 @@ function cStaticArrayDecl _
 			dTB(i).lower = FB_ARRAYDIM_UNKNOWN
 		else
 			'' Expression (integer constant)
-			dTB(i).lower = cIntConstExprValue( env.opt.base )
+			dTB(i).lower = cConstIntExpr( cExpression( ), env.opt.base )
 		end if
 
 		'' TO
@@ -1716,7 +1685,7 @@ function cStaticArrayDecl _
 				dTB(i).upper = FB_ARRAYDIM_UNKNOWN
 			else
 				'' Expression (integer constant)
-				dTB(i).upper = cIntConstExprValue( dTB(i).lower )
+				dTB(i).upper = cConstIntExpr( cExpression( ), dTB(i).lower )
 			end if
 		else
 			'' First value was upper bound, not lower, use default for lower

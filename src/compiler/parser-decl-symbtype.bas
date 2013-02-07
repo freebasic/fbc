@@ -9,18 +9,23 @@
 #include once "ast.bi"
 #include once "rtl.bi"
 
-function cConstIntExpr( byval expr as ASTNODE ptr ) as integer
+function cConstIntExpr _
+	( _
+		byval expr as ASTNODE ptr, _
+		byval defaultvalue as integer _
+	) as integer
+
 	dim as integer v = any
 
 	if( expr = NULL ) then
 		errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
-		expr = astNewCONSTi( 0 )
+		expr = astNewCONSTi( defaultvalue )
 	end if
 
 	if( astIsCONST( expr ) = FALSE ) then
 		errReport( FB_ERRMSG_EXPECTEDCONST )
 		astDelTree( expr )
-		expr = astNewCONSTi( 0 )
+		expr = astNewCONSTi( defaultvalue )
 	end if
 
 	'' Expecting an integer constant, show overflow warning if it's too big

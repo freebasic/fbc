@@ -191,7 +191,7 @@ sub cSelConstStmtNext( byval stk as FB_CMPSTMTSTK ptr )
 
 	do
 		'' ConstExpression{int}
-		value = cIntConstExprValue( 0 )
+		value = cConstIntExpr( cExpression( ) )
 
 		minval = stk->select.const_.minval
 		maxval = stk->select.const_.maxval
@@ -200,7 +200,7 @@ sub cSelConstStmtNext( byval stk as FB_CMPSTMTSTK ptr )
 		if( lexGetToken( ) = FB_TK_TO ) then
 			lexSkipToken( )
 
-			tovalue = cIntConstExprValue( 0 )
+			tovalue = cConstIntExpr( cExpression( ) )
 
 			for value = value to tovalue
 				if( value < minval ) then
