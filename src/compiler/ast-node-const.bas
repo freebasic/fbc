@@ -67,8 +67,6 @@ function astNewCONSTwstr _
 
 end function
 
-
-'':::::
 function astNewCONSTi _
 	( _
 		byval value as integer, _
@@ -79,15 +77,12 @@ function astNewCONSTi _
     dim as ASTNODE ptr n = any
 
 	'' alloc new node
-	n = astNewNode( AST_NODECLASS_CONST, dtype, subtype )
+	n = astNewNode( AST_NODECLASS_CONST, FB_DATATYPE_INTEGER, NULL )
 	function = n
 
 	n->con.val.int = value
 
-	if( hTruncateInt( dtype, @n->con.val.int ) <> FALSE ) then
-		errReportWarn( FB_WARNINGMSG_CONVOVERFLOW )
-	end if
-
+	function = astNewCONV( dtype, subtype, n )
 end function
 
 '':::::

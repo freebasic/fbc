@@ -10,46 +10,6 @@
 #include once "rtl.bi"
 #include once "ast.bi"
 
-
-'':::::
-function hTruncateInt _
-	( _
-		byval dtype as integer, _
-		byval value as integer ptr _
-	) as integer
-
-	'' makes sure value is represented exactly as it would be stored in dtype
-
-	'' returns FALSE if conversion was lossless, or TRUE if the number changed
-
-	'' considers signed <-> unsigned changes (e.g. 8-bit -1 <-> 255) as
-	'' lossless, to prevent excessive warnings with things like &hff - counting_pine
-
-	dim as integer value0 = *value
-
-	select case as const dtype
-	case FB_DATATYPE_BYTE
-		*value = cbyte( value0 )
-		return (cbyte( *value ) <> value0) and (cubyte( *value ) <> value0)
-
-	case FB_DATATYPE_UBYTE
-		*value = cubyte( cuint( value0 ) )
-		return (cbyte( *value ) <> value0) and (cubyte( *value ) <> value0)
-
-	case FB_DATATYPE_SHORT
-		*value = cshort( value0 )
-		return (cshort( *value ) <> value0) and (cushort( *value ) <> value0)
-
-	case FB_DATATYPE_USHORT
-		*value = cushort( cuint( value0 ) )
-		return (cshort( *value ) <> value0) and (cushort( *value ) <> value0)
-
-	end select
-
-	return FALSE
-
-end function
-
 '':::::
 private sub hCONVConstEvalInt _
 	( _
@@ -108,10 +68,20 @@ private sub hCONVConstEvalInt _
 		end select
 
 	case else
+		select case as const( to_dtype )
+		case FB_DATATYPE_BYTE
+			v->con.val.int = cbyte( v->con.val.int )
 
-		if( hTruncateInt( to_dtype, @v->con.val.int ) <> FALSE ) then
-			errReportWarn( FB_WARNINGMSG_CONVOVERFLOW )
-		end if
+		case FB_DATATYPE_UBYTE
+			v->con.val.int = cubyte( cuint( v->con.val.int ) )
+
+		case FB_DATATYPE_SHORT
+			v->con.val.int = cshort( v->con.val.int )
+
+		case FB_DATATYPE_USHORT
+			v->con.val.int = cushort( cuint( v->con.val.int ) )
+
+		end select
 
 	end select
 
@@ -550,6 +520,8 @@ function astNewCONV _
 
 	'' constant? evaluate at compile-time
 	if( astIsCONST( l ) ) then
+		astCheckConst( typeGetDtAndPtrOnly( to_dtype ), l, TRUE )
+
 		select case as const typeGet( to_dtype )
 		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 			hCONVConstEval64( to_dtype, l )
@@ -569,8 +541,7 @@ function astNewCONV _
 			hCONVConstEvalInt( to_dtype, l )
 		end select
 
-		l->class = AST_NODECLASS_CONST
-		astGetFullType( l ) = to_dtype
+		l->dtype = to_dtype
 		l->subtype = to_subtype
 		return l
 	end if

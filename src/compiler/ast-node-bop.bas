@@ -232,21 +232,17 @@ private sub hToStr(byref l as ASTNODE ptr, byref r as ASTNODE ptr)
    	end select
 end sub
 
-private sub hBOPConstFoldInt _
+private function hBOPConstFoldInt _
 	( _
 		byval op as integer, _
 		byval l as ASTNODE ptr, _
 		byval r as ASTNODE ptr _
-	)
+	) as ASTNODE ptr
 
-	dim as integer issigned = any
-	dim as integer ldtype = any
+	dim as integer issigned = any, ldfull = any
+	dim as FBSYMBOL ptr lsubtype = any
 
-	ldtype = astGetDataType( l )
-	issigned = typeIsSigned( ldtype )
-
-	hTruncateInt( ldtype, @l->con.val.int )
-	hTruncateInt( ldtype, @r->con.val.int )
+	issigned = typeIsSigned( l->dtype )
 
 	select case as const op
 	case AST_OP_ADD
@@ -364,12 +360,17 @@ private sub hBOPConstFoldInt _
 		end if
 	end select
 
-	'' result truncated? (e.g. overflow when multiplying two shorts)
-	if( hTruncateInt( ldtype, @l->con.val.int ) <> FALSE ) then
-		errReportWarn( FB_WARNINGMSG_CONVOVERFLOW )
-	end if
+	'' Pretend the CONST is an integer for a moment, since the result was
+	'' calculated and stored at INTEGER precision above, then do a CONV
+	'' back to the original type and let it show any overflow warnings in
+	'' case the real type cannot hold the calculated value.
+	ldfull = l->dtype
+	lsubtype = l->subtype
+	l->dtype = FB_DATATYPE_INTEGER
+	l->subtype = NULL
 
-end sub
+	function = astNewCONV( ldfull, lsubtype, l )
+end function
 
 '':::::
 private sub hBOPConstFoldFlt _
@@ -1335,14 +1336,14 @@ function astNewBOP _
 
 		case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
 			if( FB_LONGSIZE = len( integer ) ) then
-				hBOPConstFoldInt( op, l, r )
+				l = hBOPConstFoldInt( op, l, r )
 			else
 				hBOPConstFold64( op, l, r )
 			end if
 
 		case else
 			'' byte's, short's, int's and enum's
-			hBOPConstFoldInt( op, l, r )
+			l = hBOPConstFoldInt( op, l, r )
 		end select
 
 		astGetFullType( l ) = dtype

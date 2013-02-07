@@ -189,8 +189,6 @@ private sub cConstAssign _
 				expr = astNewCONSTstr( NULL )
 			end if
 
-			astCheckConst( dtype, expr, TRUE )
-
 			'' Convert expression to given type if needed
 			if( (dtype <> exprdtype) or _
 				(subtype <> astGetSubtype( expr )) ) then

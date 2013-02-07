@@ -33,11 +33,6 @@ private function hIndexExpr( ) as ASTNODE ptr
 		expr = astNewCONSTi( 0 )
 
 	case else
-		'' Show overflow warning for big constant -> integer conversion
-		if( astIsCONST( expr ) ) then
-			astCheckConst( FB_DATATYPE_INTEGER, expr, TRUE )
-		end if
-
 		expr = astNewCONV( FB_DATATYPE_INTEGER, NULL, expr )
 		if( expr = NULL ) then
 			errReport( FB_ERRMSG_INVALIDARRAYINDEX, TRUE )

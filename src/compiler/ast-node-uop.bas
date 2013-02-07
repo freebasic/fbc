@@ -10,16 +10,14 @@
 #include once "rtl.bi"
 #include once "ast.bi"
 
-'':::::
-private sub hUOPConstFoldInt _
+private function hUOPConstFoldInt _
 	( _
 		byval op as integer, _
 		byval v as ASTNODE ptr _
-	) static
+	) as ASTNODE ptr
 
-	dim as integer dtype = any
-
-	dtype = astGetDataType( v )
+	dim as integer ldfull = any
+	dim as FBSYMBOL ptr lsubtype = any
 
 	select case as const op
 	case AST_OP_NOT
@@ -35,12 +33,17 @@ private sub hUOPConstFoldInt _
 		v->con.val.int = sgn( v->con.val.int )
 	end select
 
-	'' result truncated? (e.g. NOT CUSHORT( 0 ) )
-	if( hTruncateInt( dtype, @v->con.val.int ) <> FALSE ) then
-		errReportWarn( FB_WARNINGMSG_CONVOVERFLOW )
-	end if
+	'' Pretend the CONST is an integer for a moment, since the result was
+	'' calculated and stored at INTEGER precision above, then do a CONV
+	'' back to the original type and let it show any overflow warnings in
+	'' case the real type cannot hold the calculated value.
+	ldfull = v->dtype
+	lsubtype = v->subtype
+	v->dtype = FB_DATATYPE_INTEGER
+	v->subtype = NULL
 
-end sub
+	function = astNewCONV( ldfull, lsubtype, v )
+end function
 
 '':::::
 private sub hUOPConstFoldFlt _

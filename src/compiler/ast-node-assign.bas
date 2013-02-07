@@ -322,11 +322,9 @@ function astCheckASSIGN _
 		if( rdclass <> FB_DATACLASS_STRING ) then
 			'' constant?
 			if( astIsCONST( r ) ) then
-				if( astCheckConst( ldtype, r, TRUE ) = FALSE ) then
-					r = astNewCONV( ldfull, l->subtype, r )
-					if( r = NULL ) then
-						exit function
-					end if
+				r = astNewCONV( ldfull, l->subtype, r )
+				if( r = NULL ) then
+					exit function
 				end if
 			end if
 
@@ -610,11 +608,9 @@ function astNewASSIGN _
 		if( rdclass <> FB_DATACLASS_STRING ) then
 			'' constant?
 			if( astIsCONST( r ) ) then
-				if( astCheckConst( ldtype, r, TRUE ) = FALSE ) then
-					r = astNewCONV( ldfull, lsubtype, r )
-					if( r = NULL ) then
-						exit function
-					end if
+				r = astNewCONV( ldfull, lsubtype, r )
+				if( r = NULL ) then
+					exit function
 				end if
 			end if
 

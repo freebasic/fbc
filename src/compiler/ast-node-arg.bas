@@ -1025,14 +1025,6 @@ private function hCheckParam _
 			end if
 		end if
 
-		'' const?
-		if( astIsCONST( arg ) ) then
-			'' show "overflow in constant conversion" warnings
-			if( astCheckConst( symbGetType( param ), arg, FALSE ) = FALSE ) then
-				hParamWarning( parent, FB_WARNINGMSG_CONVOVERFLOW )
-			end if
-		end if
-
 		arg = astNewCONV( symbGetFullType( param ), symbGetSubtype( param ), arg )
 		if( arg = NULL ) then
 			hParamError( parent, FB_ERRMSG_INVALIDDATATYPES )

@@ -1739,12 +1739,6 @@ private function hIntExpr( byval defaultexpr as ASTNODE ptr ) as ASTNODE ptr
 	expr = cExpression( )
 
 	if( expr ) then
-		if( astIsCONST( expr ) ) then
-			'' Array bounds are integers, show "overflow in constant conversion" warnings
-			'' when given bigger constants (uinteger, longint, ...)
-			astCheckConst( FB_DATATYPE_INTEGER, expr, TRUE )
-		end if
-
 		'' expression must be integral (no strings, etc.)
 		intexpr = astNewCONV( FB_DATATYPE_INTEGER, NULL, expr )
 		if( intexpr ) then

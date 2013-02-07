@@ -28,12 +28,9 @@ function cConstIntExpr _
 		expr = astNewCONSTi( defaultvalue )
 	end if
 
-	'' Expecting an integer constant, show overflow warning if it's too big
-	if( astCheckConst( FB_DATATYPE_INTEGER, expr, TRUE ) = FALSE ) then
-		expr = astNewCONV( FB_DATATYPE_INTEGER, NULL, expr )
-	end if
-
+	expr = astNewCONV( FB_DATATYPE_INTEGER, NULL, expr )
 	v = astGetValueAsInt( expr )
+
 	astDelTree( expr )
 
 	function = v
