@@ -232,27 +232,18 @@ private sub hToStr(byref l as ASTNODE ptr, byref r as ASTNODE ptr)
    	end select
 end sub
 
-'':::::
 private sub hBOPConstFoldInt _
 	( _
 		byval op as integer, _
 		byval l as ASTNODE ptr, _
 		byval r as ASTNODE ptr _
-	) static
+	)
 
 	dim as integer issigned = any
 	dim as integer ldtype = any
 
 	ldtype = astGetDataType( l )
-
-	select case as const ldtype
-	case FB_DATATYPE_BYTE, FB_DATATYPE_SHORT, FB_DATATYPE_INTEGER, _
-		 FB_DATATYPE_ENUM, FB_DATATYPE_LONG
-		issigned = TRUE
-
-	case else
-		issigned = FALSE
-	end select
+	issigned = typeIsSigned( ldtype )
 
 	hTruncateInt( ldtype, @l->con.val.int )
 	hTruncateInt( ldtype, @r->con.val.int )
@@ -444,22 +435,16 @@ private sub hBOPConstFoldFlt _
 
 end sub
 
-'':::::
 private sub hBOPConstFold64 _
 	( _
 		byval op as integer, _
 		byval l as ASTNODE ptr, _
 		byval r as ASTNODE ptr _
-	) static
+	)
 
-	dim as integer issigned
+	dim as integer issigned = any
 
-	select case astGetDataType( l )
-	case FB_DATATYPE_LONGINT, FB_DATATYPE_LONG
-		issigned = TRUE
-	case else
-		issigned = FALSE
-	end select
+	issigned = typeIsSigned( l->dtype )
 
 	select case as const op
 	case AST_OP_ADD
