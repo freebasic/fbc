@@ -108,29 +108,28 @@ end function
 private function hCheckWstringOps _
 	( _
 		byval l as ASTNODE ptr, _
-		byref ldtype as FB_DATATYPE, _
+		byref ldfull as integer, _
 		byval r as ASTNODE ptr, _
-		byref rdtype as FB_DATATYPE, _
+		byref rdfull as integer, _
 		byref is_zstr as integer _
 	) as integer
 
 	function = FALSE
 
-	dim as FB_DATATYPE ld = any, rd = any
+	dim as integer ldtype = any, rdtype = any
 
-	ld = typeGet( ldtype )
-	rd = typeGet( rdtype )
+	ldtype = typeGet( ldfull )
+	rdtype = typeGet( rdfull )
 
     '' left?
-	if( ld = FB_DATATYPE_WCHAR ) then
+	if( ldtype = FB_DATATYPE_WCHAR ) then
 		'' is right a zstring? (fixed- or
 		'' var-len strings won't reach here)
-		is_zstr = ( rd = FB_DATATYPE_CHAR )
-
+		is_zstr = (rdtype = FB_DATATYPE_CHAR)
 	'' right?
 	else
 		'' is left a zstring?
-		is_zstr = ( ld = FB_DATATYPE_CHAR )
+		is_zstr = (ldtype = FB_DATATYPE_CHAR)
 	end if
 
 	if( is_zstr ) then
@@ -139,60 +138,55 @@ private function hCheckWstringOps _
 
 	'' one is not a string, nor a udt, treat as
 	'' numeric type, let emit convert them if needed..
-	if( ld = FB_DATATYPE_WCHAR ) then
+	if( ldtype = FB_DATATYPE_WCHAR ) then
 		'' don't allow, unless it's a pointer
-		if( l->class <> AST_NODECLASS_DEREF ) then
+		if( astIsDEREF( l ) = FALSE ) then
 			exit function
 		end if
 
 		'' remap the type or the optimizer will
 		'' assume it's a string assignment
-		ldtype = typeJoin( ldtype, env.target.wchar )
-
+		ldfull = typeJoin( ldfull, env.target.wchar )
 	else
 		'' same as above..
-		if( r->class <> AST_NODECLASS_DEREF ) then
+		if( astIsDEREF( r ) = FALSE ) then
 			exit function
 		end if
 
-		rdtype = typeJoin( rdtype, env.target.wchar )
+		rdfull = typeJoin( rdfull, env.target.wchar )
 	end if
 
 	function = TRUE
-
 end function
 
-'':::::
 private function hCheckZstringOps _
 	( _
 		byval l as ASTNODE ptr, _
-		byref ldtype as FB_DATATYPE, _
+		byref ldfull as integer, _
 		byval r as ASTNODE ptr, _
-		byref rdtype as FB_DATATYPE _
+		byref rdfull as integer _
 	) as integer
 
 	function = FALSE
 
 	'' same as for wstring's..
-	if( typeGet( ldtype ) = FB_DATATYPE_CHAR ) then
+	if( typeGet( ldfull ) = FB_DATATYPE_CHAR ) then
 		'' don't allow, unless it's a pointer
-		if( l->class <> AST_NODECLASS_DEREF ) then
+		if( astIsDEREF( l ) = FALSE ) then
 			exit function
 		end if
 
-		ldtype = typeJoin( ldtype, FB_DATATYPE_UBYTE )
-
+		ldfull = typeJoin( ldfull, FB_DATATYPE_UBYTE )
 	else
 		'' same as above..
-		if( r->class <> AST_NODECLASS_DEREF ) then
+		if( astIsDEREF( r ) = FALSE ) then
 			exit function
 		end if
 
-		rdtype = typeJoin( rdtype, FB_DATATYPE_UBYTE )
+		rdfull = typeJoin( rdfull, FB_DATATYPE_UBYTE )
 	end if
 
 	function = TRUE
-
 end function
 
 '':::::
@@ -305,6 +299,12 @@ function astCheckASSIGN _
 			if( is_zstr ) then
 				return TRUE
 			end if
+
+			'' hCheckWstringOps() may have remapped the types
+			ldclass = typeGetClass( ldfull )
+			rdclass = typeGetClass( rdfull )
+			ldtype = typeGet( ldfull )
+			rdtype = typeGet( rdfull )
 		end if
 
     '' zstrings?
@@ -316,9 +316,15 @@ function astCheckASSIGN _
 			return TRUE
 		end if
 
-		if( hCheckZstringOps( l, ldtype, r, rdtype ) = FALSE ) then
+		if( hCheckZstringOps( l, ldfull, r, rdfull ) = FALSE ) then
 			exit function
 		end if
+
+		'' hCheckZstringOps() may have remapped the types
+		ldclass = typeGetClass( ldfull )
+		rdclass = typeGetClass( rdfull )
+		ldtype = typeGet( ldfull )
+		rdtype = typeGet( rdfull )
 
     '' enums?
     elseif( (ldtype = FB_DATATYPE_ENUM) or _
@@ -574,6 +580,12 @@ function astNewASSIGN _
 			if( is_zstr ) then
 				return rtlWstrAssign( l, r, (options and AST_OPOPT_ISINI) <> 0 )
 			end if
+
+			'' hCheckWstringOps() may have remapped the types
+			ldclass = typeGetClass( ldfull )
+			rdclass = typeGetClass( rdfull )
+			ldtype = typeGet( ldfull )
+			rdtype = typeGet( rdfull )
 		end if
 
 		'' unless it's an initialization
@@ -590,9 +602,15 @@ function astNewASSIGN _
 			return rtlStrAssign( l, r )
 		end if
 
-		if( hCheckZstringOps( l, ldtype, r, rdtype ) = FALSE ) then
+		if( hCheckZstringOps( l, ldfull, r, rdfull ) = FALSE ) then
 			exit function
 		end if
+
+		'' hCheckZstringOps() may have remapped the types
+		ldclass = typeGetClass( ldfull )
+		rdclass = typeGetClass( rdfull )
+		ldtype = typeGet( ldfull )
+		rdtype = typeGet( rdfull )
 
     '' enums?
     elseif( (ldtype = FB_DATATYPE_ENUM) or _
