@@ -342,7 +342,7 @@ function astCheckASSIGN _
 			'' constant?
 			if( astIsCONST( r ) ) then
 				if( astCheckConst( ldtype, r, TRUE ) = FALSE ) then
-					r = astNewCONV( ldtype, NULL, r )
+					r = astNewCONV( ldfull, NULL, r )
 					if( r = NULL ) then
 						exit function
 					end if
@@ -630,7 +630,7 @@ function astNewASSIGN _
 			'' constant?
 			if( astIsCONST( r ) ) then
 				if( astCheckConst( ldtype, r, TRUE ) = FALSE ) then
-					r = astNewCONV( ldtype, NULL, r )
+					r = astNewCONV( ldfull, NULL, r )
 					if( r = NULL ) then
 						exit function
 					end if
