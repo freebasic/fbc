@@ -10,6 +10,8 @@ sub test cdecl( )
 	dim pz as zstring ptr = @z0
 	dim pw as wstring ptr = @w0
 	dim as integer i
+	dim as double d
+	dim as longint ll
 
 	'' Normally, DEREF'ing a zstring/wstring pointer "returns" a string.
 	'' But in some contexts such as BOPs or ASSIGNs, a zwstring/wstring
@@ -61,19 +63,58 @@ sub test cdecl( )
 
 	'' but the other operand can be an integer too:
 	z0 = "123"
-	w0 = wstr( "123" )
-
 	i = *pz
 	CU_ASSERT( i = asc( "1" ) )
 	i = 0
 
+	w0 = wstr( "123" )
 	i = *pw
 	CU_ASSERT( i = asc( "1" ) )
 	i = 0
 
+	z0 = "123"
+	w0 = wstr( "123" )
 	i = asc( "7" )
 	*pz = i
 	*pw = i
+	CU_ASSERT( *pz = "723" )
+	CU_ASSERT( *pw = wstr( "723" ) )
+
+	'' or a longint:
+	z0 = "123"
+	ll = *pz
+	CU_ASSERT( ll = asc( "1" ) )
+	ll = 0
+
+	w0 = wstr( "123" )
+	ll = *pw
+	CU_ASSERT( ll = asc( "1" ) )
+	ll = 0
+
+	z0 = "123"
+	w0 = wstr( "123" )
+	ll = asc( "7" )
+	*pz = ll
+	*pw = ll
+	CU_ASSERT( *pz = "723" )
+	CU_ASSERT( *pw = wstr( "723" ) )
+
+	'' or a float:
+	z0 = "123"
+	d = *pz
+	CU_ASSERT( d = asc( "1" ) )
+	d = 0
+
+	w0 = wstr( "123" )
+	d = *pw
+	CU_ASSERT( d = asc( "1" ) )
+	d = 0
+
+	z0 = "123"
+	w0 = wstr( "123" )
+	d = asc( "7" )
+	*pz = d
+	*pw = d
 	CU_ASSERT( *pz = "723" )
 	CU_ASSERT( *pw = wstr( "723" ) )
 
@@ -99,14 +140,35 @@ sub test cdecl( )
 	CU_ASSERT( *(pz+2) = asc( "3" ) )
 	CU_ASSERT( *(pz+3) = 0 )
 
+	z0 = "123"
 	i = pz[1]
 	CU_ASSERT( i = asc( "2" ) )
 	i = 0
 
+	z0 = "123"
 	i = asc( "7" )
 	pz[1] = i
 	CU_ASSERT( *pz = "173" )
+
 	z0 = "123"
+	ll = pz[1]
+	CU_ASSERT( ll = asc( "2" ) )
+	ll = 0
+
+	z0 = "123"
+	ll = asc( "7" )
+	pz[1] = ll
+	CU_ASSERT( *pz = "173" )
+
+	z0 = "123"
+	d = pz[1]
+	CU_ASSERT( d = asc( "2" ) )
+	d = 0
+
+	z0 = "123"
+	d = asc( "7" )
+	pz[1] = d
+	CU_ASSERT( *pz = "173" )
 
 	w0 = wstr( "123" )
 	CU_ASSERT( pw[0] = wstr( "123" ) )  '' other operand is a string
@@ -127,12 +189,34 @@ sub test cdecl( )
 	CU_ASSERT( *(pw+2) = asc( "3" ) )
 	CU_ASSERT( *(pw+3) = 0 )
 
+	w0 = wstr( "123" )
 	i = pw[1]
 	CU_ASSERT( i = asc( "2" ) )
 	i = 0
 
+	w0 = wstr( "123" )
 	i = asc( "7" )
 	pw[1] = i
+	CU_ASSERT( *pw = wstr( "173" ) )
+
+	w0 = wstr( "123" )
+	ll = pw[1]
+	CU_ASSERT( ll = asc( "2" ) )
+	ll = 0
+
+	w0 = wstr( "123" )
+	ll = asc( "7" )
+	pw[1] = ll
+	CU_ASSERT( *pw = wstr( "173" ) )
+
+	w0 = wstr( "123" )
+	d = pw[1]
+	CU_ASSERT( d = asc( "2" ) )
+	d = 0
+
+	w0 = wstr( "123" )
+	d = asc( "7" )
+	pw[1] = d
 	CU_ASSERT( *pw = wstr( "173" ) )
 
 	z0 = "123"
