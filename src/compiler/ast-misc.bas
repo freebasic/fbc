@@ -774,15 +774,14 @@ function astPtrCheck _
 	edtype = astGetFullType( expr )
 
 	'' expr not a pointer?
-	if (typeIsPtr(edtype) = FALSE) then
+	if( typeIsPtr( edtype ) = FALSE ) then
 		'' Only ok if it's a 0 constant
-		if (astIsCONST(expr) = FALSE) then
-			exit function
+		if( astIsCONST( expr ) ) then
+			if( typeGetClass( edtype ) = FB_DATACLASS_INTEGER ) then
+				function = astConstIsZero( expr )
+			end if
 		end if
-		if( typeGetClass( edtype ) = FB_DATACLASS_INTEGER ) then
-			return (astGetValueAsLongint( expr ) = 0)
-		end if
-		return FALSE
+		exit function
 	end if
 
 	'' different constant masks?
@@ -988,7 +987,7 @@ function astBuildBranch _
 		''    over the IF block.
 		'' b) true (or false but inverted), don't emit a jump at all,
 		''    but fall trough to the IF block.
-		if( astCONSTIsTrue( n ) = is_inverse ) then
+		if( astConstIsZero( n ) <> is_inverse ) then
 			function = astNewBRANCH( AST_OP_JMP, label, NULL )
 		else
 			function = astNewNOP( )

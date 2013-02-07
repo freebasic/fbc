@@ -205,12 +205,12 @@ function astNewIIF _
 		''    iif( 0, mystr, myfixstr )
 		'' produce? myfixstr is a fix-len string, it cannot just be
 		'' treated as a var-len string, and there is no temp var...
-		if( astCONSTIsTrue( condexpr ) ) then
-			astDelTree( falsexpr )
-			function = truexpr
-		else
+		if( astConstIsZero( condexpr ) ) then
 			astDelTree( truexpr )
 			function = falsexpr
+		else
+			astDelTree( falsexpr )
+			function = truexpr
 		end if
 		astDelTree( condexpr )
 		exit function

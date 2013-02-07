@@ -302,7 +302,7 @@ private function hCheckPtr _
 		case FB_DATATYPE_BYTE, FB_DATATYPE_UBYTE, _
 		     FB_DATATYPE_SHORT, FB_DATATYPE_USHORT
 			if( astIsCONST( expr ) ) then
-				if( astGetValueAsInt( expr ) = 0 ) then
+				if( astConstIsZero( expr ) ) then
 					'' Allow 0-to-pointer casts
 					exit function
 				end if
