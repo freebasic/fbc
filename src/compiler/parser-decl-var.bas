@@ -1626,15 +1626,14 @@ private function hMatchEllipsis( ) as integer
 	end if
 end function
 
-private function hIntConstExprValue( byval defaultvalue as integer ) as integer
+function cIntConstExprValue( byval defaultvalue as integer ) as integer
 	dim as ASTNODE ptr expr = any
 
 	expr = cExpression( )
 
 	if( expr ) then
 		if( astIsCONST( expr ) ) then
-			'' Array bounds are integers, show "overflow in constant conversion" warnings
-			'' when given bigger constants (uinteger, longint, ...)
+			'' Check whether the conversion to INTEGER would overflow
 			if( astCheckConst( FB_DATATYPE_INTEGER, expr, TRUE ) = FALSE ) then
 				expr = astNewCONV( FB_DATATYPE_INTEGER, NULL, expr )
 			end if
@@ -1699,7 +1698,7 @@ function cStaticArrayDecl _
 			dTB(i).lower = FB_ARRAYDIM_UNKNOWN
 		else
 			'' Expression (integer constant)
-			dTB(i).lower = hIntConstExprValue( env.opt.base )
+			dTB(i).lower = cIntConstExprValue( env.opt.base )
 		end if
 
 		'' TO
@@ -1717,7 +1716,7 @@ function cStaticArrayDecl _
 				dTB(i).upper = FB_ARRAYDIM_UNKNOWN
 			else
 				'' Expression (integer constant)
-				dTB(i).upper = hIntConstExprValue( dTB(i).lower )
+				dTB(i).upper = cIntConstExprValue( dTB(i).lower )
 			end if
 		else
 			'' First value was upper bound, not lower, use default for lower

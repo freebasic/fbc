@@ -830,6 +830,8 @@ declare function cVarDecl _
 		byval is_fordecl as integer _
 	) as FBSYMBOL ptr
 
+declare function cIntConstExprValue( byval defaultvalue as integer ) as integer
+
 declare sub hComplainIfAbstractClass _
 	( _
 		byval dtype as integer, _

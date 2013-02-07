@@ -149,11 +149,8 @@ private function hSelConstAddCase _
 
 end function
 
-'':::::
-''cSelConstStmtNext =   CASE (ELSE | (ConstExpression{int} (',' ConstExpression{int})*)) .
-''
-sub cSelConstStmtNext(byval stk as FB_CMPSTMTSTK ptr)
-	dim as ASTNODE ptr expr1, expr2
+'' cSelConstStmtNext  =  CASE (ELSE | (ConstExpression{int} (',' ConstExpression{int})*)) .
+sub cSelConstStmtNext( byval stk as FB_CMPSTMTSTK ptr )
 	dim as uinteger value, tovalue, maxval, minval
 	dim as FBSYMBOL ptr label
 	dim as integer swtbase
@@ -193,25 +190,8 @@ sub cSelConstStmtNext(byval stk as FB_CMPSTMTSTK ptr)
 	label = symbAddLabel( NULL, FB_SYMBOPT_NONE )
 
 	do
-		expr1 = cExpression( )
-		if( expr1 = NULL ) then
-			errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
-			'' error recovery: fake an expr
-			expr1 = astNewCONSTi( 0 )
-		end if
-
-		if( astIsCONST( expr1 ) = FALSE ) then
-			errReport( FB_ERRMSG_EXPECTEDCONST )
-			'' error recovery: skip until next ',' and fake an expr
-			if( lexGetToken( ) <> FB_TK_TO ) then
-				hSkipUntil( CHAR_COMMA )
-			end if
-			astDelTree( expr1 )
-			expr1 = astNewCONSTi( 0 )
-		end if
-
-		value = astGetValueAsInt( expr1 )
-		astDelNode( expr1 )
+		'' ConstExpression{int}
+		value = cIntConstExprValue( 0 )
 
 		minval = stk->select.const_.minval
 		maxval = stk->select.const_.maxval
@@ -220,23 +200,7 @@ sub cSelConstStmtNext(byval stk as FB_CMPSTMTSTK ptr)
 		if( lexGetToken( ) = FB_TK_TO ) then
 			lexSkipToken( )
 
-			expr2 = cExpression( )
-			if( expr2 = NULL ) then
-				errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
-				'' error recovery: skip until next ',' and fake an expr
-				hSkipUntil( CHAR_COMMA )
-				expr2 = astNewCONSTi( 0 )
-			end if
-
-			if( astIsCONST( expr2 ) = FALSE ) then
-				errReport( FB_ERRMSG_EXPECTEDCONST )
-				'' error recovery: fake an expr
-				astDelTree( expr2 )
-				expr2 = astNewCONSTi( 0 )
-			end if
-
-			tovalue = astGetValueAsInt( expr2 )
-			astDelNode( expr2 )
+			tovalue = cIntConstExprValue( 0 )
 
 			for value = value to tovalue
 				if( value < minval ) then
