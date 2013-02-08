@@ -516,34 +516,6 @@ function astGetValueAsLongInt _
 
 end function
 
-'':::::
-function astGetValueAsULongInt _
-	( _
-		byval n as ASTNODE ptr _
-	) as ulongint
-
-	assert( astIsCONST( n ) )
-
-  	select case as const astGetDataType( n )
-  	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-  	    function = astGetValLong( n )
-
-  	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-  		function = hCastFloatToULongint( astGetValFloat( n ) )
-
-  	case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
-  	    if( FB_LONGSIZE = len( integer ) ) then
-  	    	function = culngint( cuint( astGetValInt( n ) ) )
-  	    else
-  	    	function = astGetValLong( n )
-  	    end if
-
-  	case else
-  		function = culngint( cuint( astGetValInt( n ) ) )
-  	end select
-
-end function
-
 function astGetValueAsDouble( byval n as ASTNODE ptr ) as double
 	assert( astIsCONST( n ) )
 

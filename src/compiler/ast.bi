@@ -431,11 +431,6 @@ declare function astGetValueAsLongInt _
 		byval n as ASTNODE ptr _
 	) as longint
 
-declare function astGetValueAsULongInt _
-	( _
-		byval n as ASTNODE ptr _
-	) as ulongint
-
 declare function astGetValueAsDouble _
 	( _
 		byval n as ASTNODE ptr _

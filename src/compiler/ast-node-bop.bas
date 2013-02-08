@@ -1307,9 +1307,11 @@ function astNewBOP _
 		if( astIsCONST( r ) ) then
 			'' warn if shift is greater than or equal to the number of bits in ldtype
 			'' !!!FIXME!!! prevent asm error when value is higher than 255
-			select case astGetValueAsULongint( r )
-				case is >= typeGetSize( ldtype ) * 8
-					errReportWarn( FB_WARNINGMSG_SHIFTEXCEEDSBITSINDATATYPE )
+			select case astGetValueAsLongInt( r )
+			case 0 to (typeGetSize( ldtype ) * 8)-1
+
+			case else
+				errReportWarn( FB_WARNINGMSG_SHIFTEXCEEDSBITSINDATATYPE )
 			end select
 		end if
 
