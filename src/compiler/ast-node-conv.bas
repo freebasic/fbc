@@ -520,7 +520,7 @@ function astNewCONV _
 
 	'' constant? evaluate at compile-time
 	if( astIsCONST( l ) ) then
-		astCheckConst( typeGetDtAndPtrOnly( to_dtype ), l, TRUE )
+		astCheckConst( to_dtype, l )
 
 		select case as const typeGet( to_dtype )
 		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT

@@ -605,12 +605,11 @@ end sub
 '' checks
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-function astCheckConst _
+sub astCheckConst _
 	( _
 		byval dtype as integer, _
-		byval n as ASTNODE ptr, _
-		byval show_warn as integer _
-	) as integer
+		byval n as ASTNODE ptr _
+	)
 
 	dim as integer result = any
 	dim as double dval = any
@@ -621,7 +620,6 @@ function astCheckConst _
 
 	''
 	'' x86/32-bit assumptions
-	'' assuming dtype has been stripped of const info
 	''
 	'' We don't want to show overflow warnings for conversions where only
 	'' the sign differs, such as integer <-> uinteger, because in that case
@@ -633,7 +631,7 @@ function astCheckConst _
 	''    dim b as uinteger = 1 shl 31
 	''
 
-	select case as const( dtype )
+	select case as const( typeGet( dtype ) )
 	''case FB_DATATYPE_DOUBLE
 		'' DOUBLE can hold all the other dtype's values;
 		'' perhaps not with 100% precision (e.g. huge ULONGINTs will
@@ -684,7 +682,7 @@ function astCheckConst _
 		case 8
 			'' longints can hold most other type's values, except floats
 			'' float?
-			if( typeGetClass( astGetDataType( n ) ) = FB_DATACLASS_FPOINT ) then
+			if( typeGetClass( n->dtype ) = FB_DATACLASS_FPOINT ) then
 				dval = astGetValueAsDouble( n )
 				result = ((dval >= -9223372036854775808ull) and _
 					  (dval <= 18446744073709551615ull))
@@ -695,12 +693,10 @@ function astCheckConst _
 		'' !!!WRITEME!!! use ->subtype's
 	end select
 
-	if( show_warn and (result = FALSE) ) then
+	if( result = FALSE ) then
 		errReportWarn( FB_WARNINGMSG_CONVOVERFLOW )
 	end if
-
-	function = result
-end function
+end sub
 
 '':::::
 function astPtrCheck _

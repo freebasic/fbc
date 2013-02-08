@@ -880,12 +880,11 @@ declare function astOptAssignment _
 		byval n as ASTNODE ptr _
 	) as ASTNODE ptr
 
-declare function astCheckConst _
+declare sub astCheckConst _
 	( _
 		byval dtype as integer, _
-		byval n as ASTNODE ptr, _
-		byval show_warn as integer _
-	) as integer
+		byval n as ASTNODE ptr _
+	)
 
 declare function astCheckASSIGN _
 	( _
