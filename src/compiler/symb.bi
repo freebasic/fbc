@@ -981,6 +981,8 @@ declare function symbAddKeyword _
 		byval attrib as FB_SYMBATTRIB = FB_SYMBATTRIB_NONE _
 	) as FBSYMBOL ptr
 
+declare function symbKeywordGetText( byval tk as integer ) as const zstring ptr
+
 declare function symbAddDefine _
 	( _
 		byval symbol as const zstring ptr, _

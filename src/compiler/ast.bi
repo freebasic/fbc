@@ -1203,7 +1203,7 @@ declare function astBuildArrayBound _
 	( _
 		byval arrayexpr as ASTNODE ptr, _
 		byval dimexpr as ASTNODE ptr, _
-		byval is_lbound as integer _
+		byval tk as integer _
 	) as ASTNODE ptr
 
 declare function astBuildStrPtr( byval lhs as ASTNODE ptr ) as ASTNODE ptr

@@ -267,7 +267,6 @@ dim shared kwdTb( 0 to FB_TOKENS-1 ) as SYMBKWD => _
 	( NULL ) _
 }
 
-
 '':::::
 sub symbKeywordInit( )
 
@@ -359,4 +358,14 @@ function symbDelKeyword _
 
 end function
 
-
+function symbKeywordGetText( byval tk as integer ) as const zstring ptr
+	'' This is super slow, but as long as it's only used for error
+	'' reporting it does not matter.
+	'' (TODO: sort the keyword table to match FB_TOKEN enum)
+	for i as integer = lbound( kwdTb ) to ubound( kwdTb )
+		if( kwdTb(i).id = tk ) then
+			return kwdTb(i).name
+		end if
+	next
+	function = @""
+end function

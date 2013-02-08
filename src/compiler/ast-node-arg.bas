@@ -1112,7 +1112,7 @@ function astNewARG _
 		n->r = t
 	end if
 
-	errPushParamLocation( parent->sym, parent->call.args+1, NULL )
+	errPushParamLocation( parent->sym, -1, parent->call.args+1, NULL )
 
 	''
 	if( hCheckParam( parent, param, n ) = FALSE ) then

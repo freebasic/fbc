@@ -13,6 +13,7 @@ type ERRPARAMLOCATION
 	'' While an argument location is pushed,
 	'' errors will be reported "at parameter N of F()"
 	proc			as FBSYMBOL ptr
+	tk			as integer
 	paramnum		as integer
 	paramid			as zstring ptr
 end type
@@ -402,21 +403,25 @@ end function
 sub errPushParamLocation _
 	( _
 		byval proc as FBSYMBOL ptr, _
+		byval tk as integer, _
 		byval paramnum as integer, _
 		byval paramid as zstring ptr _
 	)
 
 	dim as ERRPARAMLOCATION ptr l = any
 
-	'' don't count the instance pointer
-	if( symbIsMethod( proc ) ) then
-		if( paramnum > 1 ) then
-			paramnum -= 1
+	if( proc ) then
+		'' don't count the instance pointer
+		if( symbIsMethod( proc ) ) then
+			if( paramnum > 1 ) then
+				paramnum -= 1
+			end if
 		end if
 	end if
 
 	l = listNewNode( @errctx.paramlocations )
 	l->proc = proc
+	l->tk = tk
 	l->paramnum = paramnum
 	l->paramid = paramid
 end sub
@@ -833,6 +838,11 @@ private function hMakeParamDesc _
 				end if
 			end if
 		end if
+	else
+		if( pnum > 0 ) then
+			desc += " of "
+		end if
+		desc += *symbKeywordGetText( paramloc->tk )
 	end if
 
 	function = strptr( desc )
@@ -846,7 +856,7 @@ sub errReportParam _
 		byval msgnum as integer _
 	)
 
-	errPushParamLocation( proc, paramnum, paramid )
+	errPushParamLocation( proc, -1, paramnum, paramid )
 	errReportEx( msgnum, NULL )
 	errPopParamLocation( )
 
@@ -860,7 +870,7 @@ sub errReportParamWarn _
 		byval msgnum as integer _
 	)
 
-	errPushParamLocation( proc, paramnum, paramid )
+	errPushParamLocation( proc, -1, paramnum, paramid )
 	errReportWarn( msgnum, NULL )
 	errPopParamLocation( )
 

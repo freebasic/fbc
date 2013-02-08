@@ -349,6 +349,7 @@ declare function errGetCount( ) as integer
 declare sub errPushParamLocation _
 	( _
 		byval proc as FBSYMBOL_ ptr, _
+		byval tk as integer, _
 		byval paramindex as integer, _
 		byval paramid as zstring ptr _
 	)
