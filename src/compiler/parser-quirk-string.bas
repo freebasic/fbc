@@ -185,7 +185,7 @@ private function cStrCHR(byval is_wstr as integer) as ASTNODE ptr
 	static as wstring * 32*6+1 ws
 	static as zstring * 8+1 o
 	dim as integer v = any, i = any, cnt = any, isconst = any
-	dim as ASTNODE ptr exprtb(0 to 31) = any, expr = any
+	dim as ASTNODE ptr exprtb(0 to 31) = any
 
 	hMatchLPRNT( )
 
@@ -229,9 +229,8 @@ private function cStrCHR(byval is_wstr as integer) as ASTNODE ptr
 		end if
 
 		for i = 0 to cnt-1
-  			expr = exprtb(i)
-  			v = astGetValueAsInt( expr )
-  			astDelNode( expr )
+			v = astConstFlushToInt( exprtb(i) )
+			exprtb(i) = NULL
 
 			if( is_wstr = FALSE ) then
 				if( cuint( v ) > 255 ) then
@@ -300,8 +299,8 @@ private function cStrASC() as ASTNODE ptr
 			'' pos is an constant too?
 			if( posexpr <> NULL ) then
 				if( astIsCONST( posexpr ) ) then
-					p = astGetValueAsInt( posexpr )
-					astDelNode( posexpr )
+					p = astConstFlushToInt( posexpr )
+					posexpr = NULL
 
 					if( p < 0 ) then
 						p = 0

@@ -389,34 +389,6 @@ function astIsConstant( byval expr as ASTNODE ptr ) as integer
 end function
 
 '':::::
-function astGetValueAsInt _
-	( _
-		byval n as ASTNODE ptr _
-	) as integer
-
-	assert( astIsCONST( n ) )
-
-  	select case as const astGetDataType( n )
-  	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-  	    function = cint( astGetValLong( n ) )
-
-  	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-  		function = cint( astGetValFloat( n ) )
-
-  	case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
-  	    if( FB_LONGSIZE = len( integer ) ) then
-  	    	function = astGetValInt( n )
-  	    else
-  	    	function = cint( astGetValLong( n ) )
-  	    end if
-
-  	case else
-  		function = astGetValInt( n )
-  	end select
-
-end function
-
-'':::::
 function astGetValueAsStr _
 	( _
 		byval n as ASTNODE ptr _

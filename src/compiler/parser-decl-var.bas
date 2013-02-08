@@ -761,9 +761,7 @@ private sub hMakeArrayDimTB _
 		dim as ASTNODE ptr expr = any
 
 		'' lower bound
-		expr = exprTB(i, 0)
-		dTB(i).lower = astGetValueAsInt( expr )
-		astDelNode( expr )
+		dTB(i).lower = astConstFlushToInt( exprTB(i, 0) )
 
 		'' upper bound
 		expr = exprTB(i, 1)
@@ -774,8 +772,7 @@ private sub hMakeArrayDimTB _
 			dTB(i).upper = FB_ARRAYDIM_UNKNOWN
 			continue for
 		else
-			dTB(i).upper = astGetValueAsInt( expr )
-			astDelNode( expr )
+			dTB(i).upper = astConstFlushToInt( expr )
 		end if
 
 		'' Besides the upper < lower case, also complain about FB_ARRAYDIM_UNKNOWN being

@@ -15,8 +15,6 @@ function cConstIntExpr _
 		byval defaultvalue as integer _
 	) as integer
 
-	dim as integer v = any
-
 	if( expr = NULL ) then
 		errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
 		expr = astNewCONSTi( defaultvalue )
@@ -28,12 +26,7 @@ function cConstIntExpr _
 		expr = astNewCONSTi( defaultvalue )
 	end if
 
-	expr = astNewCONV( FB_DATATYPE_INTEGER, NULL, expr )
-	v = astGetValueAsInt( expr )
-
-	astDelTree( expr )
-
-	function = v
+	function = astConstFlushToInt( expr )
 end function
 
 private function cSymbolTypeFuncPtr( byval is_func as integer ) as FBSYMBOL ptr

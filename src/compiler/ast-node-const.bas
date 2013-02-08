@@ -255,4 +255,11 @@ function astLoadCONST _
 
 end function
 
+function astConstFlushToInt( byval n as ASTNODE ptr ) as integer
+	n = astNewCONV( FB_DATATYPE_INTEGER, NULL, n )
 
+	assert( astIsCONST( n ) )
+	function = n->con.val.int
+
+	astDelNode( n )
+end function

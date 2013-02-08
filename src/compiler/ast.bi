@@ -426,11 +426,6 @@ declare sub astCONST2FBValue _
 
 declare function astIsConstant( byval expr as ASTNODE ptr ) as integer
 
-declare function astGetValueAsInt _
-	( _
-		byval n as ASTNODE ptr _
-	) as integer
-
 declare function astGetValueAsLongInt _
 	( _
 		byval n as ASTNODE ptr _
@@ -641,6 +636,8 @@ declare function astNewCONSTz _
 		byval dtype as integer = FB_DATATYPE_CHAR, _
 		byval subtype as FBSYMBOL ptr = NULL _
 	) as ASTNODE ptr
+
+declare function astConstFlushToInt( byval n as ASTNODE ptr ) as integer
 
 declare function astNewVAR _
 	( _

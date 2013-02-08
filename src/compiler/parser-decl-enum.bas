@@ -39,8 +39,7 @@ private sub hEnumConstDecl(byval id as zstring ptr, byref value as integer)
 			errReportWarn( FB_WARNINGMSG_IMPLICITCONVERSION, id )
 		end if
 
-		value = astGetValueAsInt( expr )
-		astDelNode( expr )
+		value = astConstFlushToInt( expr )
 	end if
 end sub
 
