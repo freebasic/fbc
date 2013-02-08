@@ -1398,24 +1398,7 @@ function astNewBOP _
 			end if
 
 			'' ? - c = ? + -c
-			select case as const typeGet( rdtype )
-			case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-				r->con.val.long = -r->con.val.long
-
-			case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-				r->con.val.float = -r->con.val.float
-
-			case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
-				if( FB_LONGSIZE = len( integer ) ) then
-					r->con.val.int = -r->con.val.int
-				else
-					r->con.val.long = -r->con.val.long
-				end if
-
-			case else
-				r->con.val.int = -r->con.val.int
-
-			end select
+			r = astNewUOP( AST_OP_NEG, r )
 			op = AST_OP_ADD
 
 		'' report error for 'x \ 0', 'x mod 0'
