@@ -342,10 +342,17 @@ enum FB_ERRMSGOPT
 	FB_ERRMSGOPT_DEFAULT	= FB_ERRMSGOPT_ADDCOMMA
 end enum
 
-declare sub errInit()
-declare sub errEnd()
-declare sub errHideFurtherErrors()
-declare function errGetCount() as integer
+declare sub errInit( )
+declare sub errEnd( )
+declare sub errHideFurtherErrors( )
+declare function errGetCount( ) as integer
+declare sub errPushParamLocation _
+	( _
+		byval proc as FBSYMBOL_ ptr, _
+		byval paramindex as integer, _
+		byval paramid as zstring ptr _
+	)
+declare sub errPopParamLocation( )
 
 declare sub errReportEx _
 	( _
