@@ -214,8 +214,7 @@ private function cStrCHR(byval is_wstr as integer) as ASTNODE ptr
 
         	'' when the constant value is 0, we must not handle
             '' this as a constant string
-  			v = astGetValueAsInt( exprtb(i) )
-			if( v = 0 ) then
+			if( astConstIsZero( exprtb(i) ) ) then
 				isconst = FALSE
 				exit for
 			end if
