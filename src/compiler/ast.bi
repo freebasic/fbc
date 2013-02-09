@@ -418,12 +418,6 @@ declare function astIsTreeEqual _
 		byval r as ASTNODE ptr _
 	) as integer
 
-declare sub astCONST2FBValue _
-	( _
-		byval dst as FBVALUE ptr, _
-		byval expr as ASTNODE ptr _
-	)
-
 declare function astIsConstant( byval expr as ASTNODE ptr ) as integer
 
 declare function astGetValueAsLongInt _

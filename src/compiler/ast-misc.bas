@@ -482,33 +482,6 @@ function astGetStrLitSymbol _
 
 end function
 
-'':::::
-sub astCONST2FBValue _
-	( _
-		byval dst as FBVALUE ptr, _
-		byval expr as ASTNODE ptr _
-	)
-
-	select case as const astGetDataType( expr )
-	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-		dst->long = astGetValLong( expr )
-
-	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-		dst->float = astGetValFloat( expr )
-
-	case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
-		if( FB_LONGSIZE = len( integer ) ) then
-			dst->int = astGetValInt( expr )
-		else
-			dst->long = astGetValLong( expr )
-		end if
-
-	case else
-		dst->int = astGetValInt( expr )
-	end select
-
-end sub
-
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' checks
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
