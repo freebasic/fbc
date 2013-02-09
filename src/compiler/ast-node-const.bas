@@ -263,3 +263,43 @@ function astConstFlushToInt( byval n as ASTNODE ptr ) as integer
 
 	astDelNode( n )
 end function
+
+function astConstFlushToStr( byval n as ASTNODE ptr ) as string
+	assert( astIsCONST( n ) )
+
+	select case as const( astGetDataType( n ) )
+	case FB_DATATYPE_SINGLE
+		function = str( csng( n->con.val.float ) )
+
+	case FB_DATATYPE_DOUBLE
+		function = str( n->con.val.float )
+
+	case FB_DATATYPE_LONGINT
+		function = str( n->con.val.long )
+
+	case FB_DATATYPE_ULONGINT
+		function = str( cunsg( n->con.val.long ) )
+
+	case FB_DATATYPE_BYTE, FB_DATATYPE_SHORT, FB_DATATYPE_INTEGER, FB_DATATYPE_ENUM
+		function = str( n->con.val.int )
+
+	case FB_DATATYPE_LONG
+		if( FB_LONGSIZE = len( integer ) ) then
+			function = str( n->con.val.int )
+		else
+			function = str( n->con.val.long )
+		end if
+
+	case FB_DATATYPE_ULONG
+		if( FB_LONGSIZE = len( integer ) ) then
+			function = str( cunsg( n->con.val.int ) )
+		else
+			function = str( cunsg( n->con.val.long ) )
+		end if
+
+	case else
+		function = str( cunsg( n->con.val.int ) )
+	end select
+
+	astDelNode( n )
+end function

@@ -3314,7 +3314,7 @@ function rtlToStr _
 				s = " "
 			end if
 		end if
-		s += astGetValueAsStr( expr )
+		s += astConstFlushToStr( expr )
 		return astNewCONSTstr( s )
 	end if
 

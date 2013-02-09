@@ -436,11 +436,6 @@ declare function astGetValueAsDouble _
 		byval n as ASTNODE ptr _
 	) as double
 
-declare function astGetValueAsStr _
-	( _
-		byval n as ASTNODE ptr _
-	) as string
-
 declare function astGetValueAsWstr _
 	( _
 		byval n as ASTNODE ptr _
@@ -633,6 +628,7 @@ declare function astNewCONSTz _
 	) as ASTNODE ptr
 
 declare function astConstFlushToInt( byval n as ASTNODE ptr ) as integer
+declare function astConstFlushToStr( byval n as ASTNODE ptr ) as string
 
 declare function astNewVAR _
 	( _

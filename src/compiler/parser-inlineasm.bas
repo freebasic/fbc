@@ -104,8 +104,7 @@ sub cAsmCode()
 		case FB_TKCLASS_NUMLITERAL
 			 expr = cNumLiteral( FALSE )
 			 if( expr <> NULL ) then
-             	text = astGetValueAsStr( expr )
-			 	astDelNode( expr )
+				text = astConstFlushToStr( expr )
 			 end if
 
 		'' lit string?
