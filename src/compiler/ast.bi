@@ -436,11 +436,6 @@ declare function astGetValueAsDouble _
 		byval n as ASTNODE ptr _
 	) as double
 
-declare function astGetValueAsWstr _
-	( _
-		byval n as ASTNODE ptr _
-	) as wstring ptr
-
 declare sub astProcBegin( byval proc as FBSYMBOL ptr, byval ismain as integer )
 declare function astProcEnd( byval callrtexit as integer ) as integer
 
@@ -629,6 +624,7 @@ declare function astNewCONSTz _
 
 declare function astConstFlushToInt( byval n as ASTNODE ptr ) as integer
 declare function astConstFlushToStr( byval n as ASTNODE ptr ) as string
+declare function astConstFlushToWstr( byval n as ASTNODE ptr ) as wstring ptr
 
 declare function astNewVAR _
 	( _

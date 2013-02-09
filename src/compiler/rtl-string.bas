@@ -3453,7 +3453,7 @@ function rtlToWstr _
 
     '' constant? evaluate
     if( astIsCONST( expr ) ) then
-    	return astNewCONSTwstr( astGetValueAsWstr( expr ) )
+		return astNewCONSTwstr( astConstFlushToWstr( expr ) )
     end if
 
     '' string literal? convert to unicode at compile-time
