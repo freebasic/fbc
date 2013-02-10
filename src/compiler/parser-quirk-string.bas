@@ -596,7 +596,7 @@ function cStringFunct(byval tk as FB_TOKEN) as ASTNODE ptr
 		end if
 		if( expr1 = NULL ) then
 			errReport( FB_ERRMSG_INVALIDDATATYPES )
-			expr1 = astNewCONST( 0, FB_DATATYPE_INTEGER )
+			expr1 = astNewCONSTi( 0 )
 		end if
 
 		function = expr1
@@ -619,7 +619,7 @@ function cStringFunct(byval tk as FB_TOKEN) as ASTNODE ptr
 		expr1 = rtlStrMid( expr1, expr2, expr3 )
 		if( expr1 = NULL ) then
 			errReport( FB_ERRMSG_INVALIDDATATYPES )
-			expr1 = astNewCONST( 0, FB_DATATYPE_INTEGER )
+			expr1 = astNewCONSTi( 0 )
 		end if
 
 		function = expr1
@@ -642,7 +642,7 @@ function cStringFunct(byval tk as FB_TOKEN) as ASTNODE ptr
 		end if
 		if( expr1 = NULL ) then
 			errReport( FB_ERRMSG_INVALIDDATATYPES )
-			expr1 = astNewCONST( 0, FB_DATATYPE_INTEGER )
+			expr1 = astNewCONSTi( 0 )
 		end if
 
 		function = expr1
@@ -685,7 +685,7 @@ function cStringFunct(byval tk as FB_TOKEN) as ASTNODE ptr
 		expr1 = rtlStrInstr( expr1, expr2, expr3, is_any )
 		if( expr1 = NULL ) then
 			errReport( FB_ERRMSG_INVALIDDATATYPES )
-			expr1 = astNewCONST( 0, FB_DATATYPE_INTEGER )
+			expr1 = astNewCONSTi( 0 )
 		end if
 
 		function = expr1
@@ -708,7 +708,7 @@ function cStringFunct(byval tk as FB_TOKEN) as ASTNODE ptr
 		expr1 = rtlStrInstrRev( expr3, expr1, expr2, is_any )
 		if( expr1 = NULL ) then
 			errReport( FB_ERRMSG_INVALIDDATATYPES )
-			expr1 = astNewCONST( 0, FB_DATATYPE_INTEGER )
+			expr1 = astNewCONSTi( 0 )
 		end if
 
 		function = expr1
@@ -738,7 +738,7 @@ function cStringFunct(byval tk as FB_TOKEN) as ASTNODE ptr
 
 		if( expr1 = NULL ) then
 			errReport( FB_ERRMSG_INVALIDDATATYPES )
-			expr1 = astNewCONST( 0, FB_DATATYPE_INTEGER )
+			expr1 = astNewCONSTi( 0 )
 		end if
 
 		function = expr1

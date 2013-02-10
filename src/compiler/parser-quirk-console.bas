@@ -35,7 +35,7 @@ function cViewStmt(byval is_func as integer) as ASTNODE ptr
 		if( expr1 <> NULL ) then
 			if( hMatch( FB_TK_TO ) = FALSE ) then
 				errReport( FB_ERRMSG_SYNTAXERROR )
-				expr1 = astNewCONST( 0, FB_DATATYPE_INTEGER )
+				expr1 = astNewCONSTi( 0 )
 			end if
 			hMatchExpressionEx( expr2, FB_DATATYPE_INTEGER )
 		else
