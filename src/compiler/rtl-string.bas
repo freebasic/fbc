@@ -3314,7 +3314,7 @@ function rtlToStr _
 				s = " "
 			end if
 		end if
-		s += astGetValueAsStr( expr )
+		s += astConstFlushToStr( expr )
 		return astNewCONSTstr( s )
 	end if
 
@@ -3453,7 +3453,7 @@ function rtlToWstr _
 
     '' constant? evaluate
     if( astIsCONST( expr ) ) then
-    	return astNewCONSTwstr( astGetValueAsWstr( expr ) )
+		return astNewCONSTwstr( astConstFlushToWstr( expr ) )
     end if
 
     '' string literal? convert to unicode at compile-time

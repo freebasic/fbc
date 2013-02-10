@@ -561,6 +561,8 @@ end function
 
 '' [FIELD '=' ConstExpression]
 private function cFieldAlignmentAttribute( ) as integer
+	dim as integer align = any
+
 	'' FIELD
 	if( lexGetToken( ) <> FB_TK_FIELD ) then
 		return 0
@@ -589,8 +591,7 @@ private function cFieldAlignmentAttribute( ) as integer
 	end if
 
 	'' follow the GCC 3.x ABI
-	dim as integer align = astGetValueAsInt( expr )
-	astDelNode( expr )
+	align = astConstFlushToInt( expr )
 	if( align < 0 ) then
 		align = 0
 	elseif( align > FB_INTEGERSIZE ) then
@@ -599,7 +600,7 @@ private function cFieldAlignmentAttribute( ) as integer
 		align = 2
 	end if
 
-	return align
+	function = align
 end function
 
 '' TypeBody  =

@@ -924,7 +924,8 @@ private function hConstBound _
 	end if
 
 	'' dimension is 1-based
-	dimension = astGetValueAsInt( dimexpr )
+	assert( astGetDataType( dimexpr ) = FB_DATATYPE_INTEGER )
+	dimension = astGetValInt( dimexpr )
 
 	'' Find the referenced dimension
 	if( dimension >= 1 ) then
@@ -968,19 +969,26 @@ function astBuildArrayBound _
 	( _
 		byval arrayexpr as ASTNODE ptr, _
 		byval dimexpr as ASTNODE ptr, _
-		byval is_lbound as integer _
+		byval tk as integer _
 	) as ASTNODE ptr
 
 	dim as ASTNODE ptr expr = any
 
+	'' Ensure it's an INTEGER, show overflow warnings
+	'' (normally astNewARG() would do it, but only for the runtime version
+	'' of course, not when evaluated at compile-time)
+	errPushParamLocation( NULL, tk, 2, "dimension" )
+	dimexpr = astNewCONV( FB_DATATYPE_INTEGER, NULL, dimexpr )
+	errPopParamLocation( )
+
 	'' Try to evaluate l/ubound( array, dimension ) at compile-time
-	expr = hConstBound( arrayexpr, dimexpr, is_lbound )
+	expr = hConstBound( arrayexpr, dimexpr, (tk = FB_TK_LBOUND) )
 
 	if( expr = NULL ) then
 		'' Fall back to run-time ubound(), that will work for array
 		'' declarations that can have non-const initializers, and cause
 		'' an error if a constant initializer was expected.
-		expr = rtlArrayBound( arrayexpr, dimexpr, is_lbound )
+		expr = rtlArrayBound( arrayexpr, dimexpr, (tk = FB_TK_LBOUND) )
 	end if
 
 	function = expr

@@ -132,7 +132,7 @@ sub astDataStmtEnd( byval tree as ASTNODE ptr )
 			expr = astNewADDROF( expr )
 
 		case FB_DATASTMT_ID_CONST
-			littext = astGetValueAsStr( expr )
+			littext = astConstFlushToStr( expr )
 			id = len( littext )
 			expr = astNewADDROF( astNewCONSTstr( littext ) )
 

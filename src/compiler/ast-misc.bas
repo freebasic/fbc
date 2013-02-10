@@ -389,126 +389,6 @@ function astIsConstant( byval expr as ASTNODE ptr ) as integer
 end function
 
 '':::::
-function astGetValueAsInt _
-	( _
-		byval n as ASTNODE ptr _
-	) as integer
-
-	assert( astIsCONST( n ) )
-
-  	select case as const astGetDataType( n )
-  	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-  	    function = cint( astGetValLong( n ) )
-
-  	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-  		function = cint( astGetValFloat( n ) )
-
-  	case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
-  	    if( FB_LONGSIZE = len( integer ) ) then
-  	    	function = astGetValInt( n )
-  	    else
-  	    	function = cint( astGetValLong( n ) )
-  	    end if
-
-  	case else
-  		function = astGetValInt( n )
-  	end select
-
-end function
-
-'':::::
-function astGetValueAsStr _
-	( _
-		byval n as ASTNODE ptr _
-	) as string
-
-	assert( astIsCONST( n ) )
-
-  	select case as const astGetDataType( n )
-  	case FB_DATATYPE_LONGINT
-  		function = str( astGetValLong( n ) )
-
-  	case FB_DATATYPE_ULONGINT
-  		function = str( cast( ulongint, astGetValLong( n ) ) )
-
-	case FB_DATATYPE_SINGLE
-		function = str( csng( astGetValFloat( n ) ) )
-
-	case FB_DATATYPE_DOUBLE
-		function = str( astGetValFloat( n ) )
-
-  	case FB_DATATYPE_BYTE, FB_DATATYPE_SHORT, FB_DATATYPE_INTEGER, FB_DATATYPE_ENUM
-  		function = str( astGetValInt( n ) )
-
-  	case FB_DATATYPE_LONG
-		if( FB_LONGSIZE = len( integer ) ) then
-			function = str( cast( uinteger, astGetValInt( n ) ) )
-		else
-			function = str( astGetValLong( n ) )
-		end if
-
-  	case FB_DATATYPE_ULONG
-		if( FB_LONGSIZE = len( integer ) ) then
-			function = str( cast( uinteger, astGetValInt( n ) ) )
-		else
-			function = str( cast( ulongint, astGetValLong( n ) ) )
-		end if
-
-  	case else
-  		function = str( cast( uinteger, astGetValInt( n ) ) )
-  	end select
-
-end function
-
-'':::::
-function astGetValueAsWstr _
-	( _
-		byval n as ASTNODE ptr _
-	) as wstring ptr
-
-    static as wstring * 64+1 res
-
-	assert( astIsCONST( n ) )
-
-  	select case as const astGetDataType( n )
-  	case FB_DATATYPE_LONGINT
-		res = wstr( astGetValLong( n ) )
-
-	case FB_DATATYPE_ULONGINT
-		res = wstr( cast( ulongint, astGetValLong( n ) ) )
-
-	case FB_DATATYPE_SINGLE
-		res = wstr( csng( astGetValFloat( n ) ) )
-
-	case FB_DATATYPE_DOUBLE
-		res = wstr( astGetValFloat( n ) )
-
-  	case FB_DATATYPE_BYTE, FB_DATATYPE_SHORT, FB_DATATYPE_INTEGER, FB_DATATYPE_ENUM
-  		res = wstr( astGetValInt( n ) )
-
-  	case FB_DATATYPE_LONG
-		if( FB_LONGSIZE = len( integer ) ) then
-			res = wstr( cast( uinteger, astGetValInt( n ) ) )
-		else
-			res = wstr( astGetValLong( n ) )
-		end if
-
-	case FB_DATATYPE_ULONG
-		if( FB_LONGSIZE = len( integer ) ) then
-			res = wstr( cast( uinteger, astGetValInt( n ) ) )
-		else
-			res = wstr( cast( ulongint, astGetValLong( n ) ) )
-		end if
-
-  	case else
-		res = wstr( cast( uinteger, astGetValInt( n ) ) )
-  	end select
-
-  	function = @res
-
-end function
-
-'':::::
 function astGetValueAsLongInt _
 	( _
 		byval n as ASTNODE ptr _
@@ -540,34 +420,6 @@ function astGetValueAsLongInt _
   		else
   			function = clngint( cuint( astGetValInt( n ) ) )
   		end if
-  	end select
-
-end function
-
-'':::::
-function astGetValueAsULongInt _
-	( _
-		byval n as ASTNODE ptr _
-	) as ulongint
-
-	assert( astIsCONST( n ) )
-
-  	select case as const astGetDataType( n )
-  	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-  	    function = astGetValLong( n )
-
-  	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-  		function = hCastFloatToULongint( astGetValFloat( n ) )
-
-  	case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
-  	    if( FB_LONGSIZE = len( integer ) ) then
-  	    	function = culngint( cuint( astGetValInt( n ) ) )
-  	    else
-  	    	function = astGetValLong( n )
-  	    end if
-
-  	case else
-  		function = culngint( cuint( astGetValInt( n ) ) )
   	end select
 
 end function
@@ -630,43 +482,15 @@ function astGetStrLitSymbol _
 
 end function
 
-'':::::
-sub astCONST2FBValue _
-	( _
-		byval dst as FBVALUE ptr, _
-		byval expr as ASTNODE ptr _
-	)
-
-	select case as const astGetDataType( expr )
-	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-		dst->long = astGetValLong( expr )
-
-	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-		dst->float = astGetValFloat( expr )
-
-	case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
-		if( FB_LONGSIZE = len( integer ) ) then
-			dst->int = astGetValInt( expr )
-		else
-			dst->long = astGetValLong( expr )
-		end if
-
-	case else
-		dst->int = astGetValInt( expr )
-	end select
-
-end sub
-
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' checks
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-function astCheckConst _
+sub astCheckConst _
 	( _
 		byval dtype as integer, _
-		byval n as ASTNODE ptr, _
-		byval show_warn as integer _
-	) as integer
+		byval n as ASTNODE ptr _
+	)
 
 	dim as integer result = any
 	dim as double dval = any
@@ -677,7 +501,6 @@ function astCheckConst _
 
 	''
 	'' x86/32-bit assumptions
-	'' assuming dtype has been stripped of const info
 	''
 	'' We don't want to show overflow warnings for conversions where only
 	'' the sign differs, such as integer <-> uinteger, because in that case
@@ -689,7 +512,7 @@ function astCheckConst _
 	''    dim b as uinteger = 1 shl 31
 	''
 
-	select case as const( dtype )
+	select case as const( typeGet( dtype ) )
 	''case FB_DATATYPE_DOUBLE
 		'' DOUBLE can hold all the other dtype's values;
 		'' perhaps not with 100% precision (e.g. huge ULONGINTs will
@@ -740,7 +563,7 @@ function astCheckConst _
 		case 8
 			'' longints can hold most other type's values, except floats
 			'' float?
-			if( typeGetClass( astGetDataType( n ) ) = FB_DATACLASS_FPOINT ) then
+			if( typeGetClass( n->dtype ) = FB_DATACLASS_FPOINT ) then
 				dval = astGetValueAsDouble( n )
 				result = ((dval >= -9223372036854775808ull) and _
 					  (dval <= 18446744073709551615ull))
@@ -751,12 +574,10 @@ function astCheckConst _
 		'' !!!WRITEME!!! use ->subtype's
 	end select
 
-	if( show_warn and (result = FALSE) ) then
+	if( result = FALSE ) then
 		errReportWarn( FB_WARNINGMSG_CONVOVERFLOW )
 	end if
-
-	function = result
-end function
+end sub
 
 '':::::
 function astPtrCheck _
@@ -774,15 +595,14 @@ function astPtrCheck _
 	edtype = astGetFullType( expr )
 
 	'' expr not a pointer?
-	if (typeIsPtr(edtype) = FALSE) then
+	if( typeIsPtr( edtype ) = FALSE ) then
 		'' Only ok if it's a 0 constant
-		if (astIsCONST(expr) = FALSE) then
-			exit function
+		if( astIsCONST( expr ) ) then
+			if( typeGetClass( edtype ) = FB_DATACLASS_INTEGER ) then
+				function = astConstIsZero( expr )
+			end if
 		end if
-		if( typeGetClass( edtype ) = FB_DATACLASS_INTEGER ) then
-			return (astGetValueAsLongint( expr ) = 0)
-		end if
-		return FALSE
+		exit function
 	end if
 
 	'' different constant masks?
@@ -988,7 +808,7 @@ function astBuildBranch _
 		''    over the IF block.
 		'' b) true (or false but inverted), don't emit a jump at all,
 		''    but fall trough to the IF block.
-		if( astCONSTIsTrue( n ) = is_inverse ) then
+		if( astConstIsZero( n ) <> is_inverse ) then
 			function = astNewBRANCH( AST_OP_JMP, label, NULL )
 		else
 			function = astNewNOP( )

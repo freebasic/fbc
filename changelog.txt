@@ -31,7 +31,7 @@ Version 0.25.0:
 - SELECT CASE won't use a temporary variable anymore if the given expression is just a plain variable access already
 - SC_CLEAR constant for FB scancode &h4C (numpad 5, a.k.a. clear key) in fbgfx.bi
 - SC_ALTGR constant (&h64) in fbgfx.bi, corresponding to the rtlib
-- Constant overflow warnings for array boundaries, array/pointer/string indexing, CONST declarations, fixed-length string * N declarations
+- Constant overflow warnings for array boundaries, array/pointer/string indexing, CONST declarations, fixed-length string * N declarations, CASE expressions of a SELECT CASE AS CONST
 - Huge variable on stack warning
 - NAKED support for the C backend, using GCC inline asm
 - ALIAS "" or LIB "" will now result in a compiler error
@@ -183,6 +183,9 @@ Version 0.25.0:
 - The compiler allowed a single "ASM" token to appear at end-of-file (without newline following), without showing an "expected END ASM" error
 - C backend: fbc always passed a "wrong" -mtune option to gcc, that didn't match what was given to fbc's -arch option
 - The -exx CPU type check could look for invalid CPU families under any -arch option except 386/486/586/686
+- The type checks for assignments involving *zstringptr or *wstringptr expressions could be buggy, for example causing "*zstringptr = float" assignments to be disallowed under the C backend
+- #577: The compiler allowed assignments between string and *byteptr expressions, as if they were string and *zstringptr expressions
+- #508: The internal allocate/callocate/reallocate declarations didn't use an unsigned parameter like the real malloc/calloc/realloc functions, causing type mismatches with the C backend
 
 
 Version 0.24.0:

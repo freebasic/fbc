@@ -232,30 +232,17 @@ private sub hToStr(byref l as ASTNODE ptr, byref r as ASTNODE ptr)
    	end select
 end sub
 
-'':::::
-private sub hBOPConstFoldInt _
+private function hBOPConstFoldInt _
 	( _
 		byval op as integer, _
 		byval l as ASTNODE ptr, _
 		byval r as ASTNODE ptr _
-	) static
+	) as ASTNODE ptr
 
-	dim as integer issigned = any
-	dim as integer ldtype = any
+	dim as integer issigned = any, ldfull = any
+	dim as FBSYMBOL ptr lsubtype = any
 
-	ldtype = astGetDataType( l )
-
-	select case as const ldtype
-	case FB_DATATYPE_BYTE, FB_DATATYPE_SHORT, FB_DATATYPE_INTEGER, _
-		 FB_DATATYPE_ENUM, FB_DATATYPE_LONG
-		issigned = TRUE
-
-	case else
-		issigned = FALSE
-	end select
-
-	hTruncateInt( ldtype, @l->con.val.int )
-	hTruncateInt( ldtype, @r->con.val.int )
+	issigned = typeIsSigned( l->dtype )
 
 	select case as const op
 	case AST_OP_ADD
@@ -373,12 +360,17 @@ private sub hBOPConstFoldInt _
 		end if
 	end select
 
-	'' result truncated? (e.g. overflow when multiplying two shorts)
-	if( hTruncateInt( ldtype, @l->con.val.int ) <> FALSE ) then
-		errReportWarn( FB_WARNINGMSG_CONVOVERFLOW )
-	end if
+	'' Pretend the CONST is an integer for a moment, since the result was
+	'' calculated and stored at INTEGER precision above, then do a CONV
+	'' back to the original type and let it show any overflow warnings in
+	'' case the real type cannot hold the calculated value.
+	ldfull = l->dtype
+	lsubtype = l->subtype
+	l->dtype = FB_DATATYPE_INTEGER
+	l->subtype = NULL
 
-end sub
+	function = astNewCONV( ldfull, lsubtype, l )
+end function
 
 '':::::
 private sub hBOPConstFoldFlt _
@@ -444,22 +436,16 @@ private sub hBOPConstFoldFlt _
 
 end sub
 
-'':::::
 private sub hBOPConstFold64 _
 	( _
 		byval op as integer, _
 		byval l as ASTNODE ptr, _
 		byval r as ASTNODE ptr _
-	) static
+	)
 
-	dim as integer issigned
+	dim as integer issigned = any
 
-	select case astGetDataType( l )
-	case FB_DATATYPE_LONGINT, FB_DATATYPE_LONG
-		issigned = TRUE
-	case else
-		issigned = FALSE
-	end select
+	issigned = typeIsSigned( l->dtype )
 
 	select case as const op
 	case AST_OP_ADD
@@ -1321,9 +1307,11 @@ function astNewBOP _
 		if( astIsCONST( r ) ) then
 			'' warn if shift is greater than or equal to the number of bits in ldtype
 			'' !!!FIXME!!! prevent asm error when value is higher than 255
-			select case astGetValueAsULongint( r )
-				case is >= typeGetSize( ldtype ) * 8
-					errReportWarn( FB_WARNINGMSG_SHIFTEXCEEDSBITSINDATATYPE )
+			select case astGetValueAsLongInt( r )
+			case 0 to (typeGetSize( ldtype ) * 8)-1
+
+			case else
+				errReportWarn( FB_WARNINGMSG_SHIFTEXCEEDSBITSINDATATYPE )
 			end select
 		end if
 
@@ -1350,14 +1338,14 @@ function astNewBOP _
 
 		case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
 			if( FB_LONGSIZE = len( integer ) ) then
-				hBOPConstFoldInt( op, l, r )
+				l = hBOPConstFoldInt( op, l, r )
 			else
 				hBOPConstFold64( op, l, r )
 			end if
 
 		case else
 			'' byte's, short's, int's and enum's
-			hBOPConstFoldInt( op, l, r )
+			l = hBOPConstFoldInt( op, l, r )
 		end select
 
 		astGetFullType( l ) = dtype
@@ -1410,24 +1398,7 @@ function astNewBOP _
 			end if
 
 			'' ? - c = ? + -c
-			select case as const typeGet( rdtype )
-			case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-				r->con.val.long = -r->con.val.long
-
-			case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-				r->con.val.float = -r->con.val.float
-
-			case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
-				if( FB_LONGSIZE = len( integer ) ) then
-					r->con.val.int = -r->con.val.int
-				else
-					r->con.val.long = -r->con.val.long
-				end if
-
-			case else
-				r->con.val.int = -r->con.val.int
-
-			end select
+			r = astNewUOP( AST_OP_NEG, r )
 			op = AST_OP_ADD
 
 		'' report error for 'x \ 0', 'x mod 0'

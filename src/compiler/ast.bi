@@ -418,43 +418,17 @@ declare function astIsTreeEqual _
 		byval r as ASTNODE ptr _
 	) as integer
 
-declare sub astCONST2FBValue _
-	( _
-		byval dst as FBVALUE ptr, _
-		byval expr as ASTNODE ptr _
-	)
-
 declare function astIsConstant( byval expr as ASTNODE ptr ) as integer
-
-declare function astGetValueAsInt _
-	( _
-		byval n as ASTNODE ptr _
-	) as integer
 
 declare function astGetValueAsLongInt _
 	( _
 		byval n as ASTNODE ptr _
 	) as longint
 
-declare function astGetValueAsULongInt _
-	( _
-		byval n as ASTNODE ptr _
-	) as ulongint
-
 declare function astGetValueAsDouble _
 	( _
 		byval n as ASTNODE ptr _
 	) as double
-
-declare function astGetValueAsStr _
-	( _
-		byval n as ASTNODE ptr _
-	) as string
-
-declare function astGetValueAsWstr _
-	( _
-		byval n as ASTNODE ptr _
-	) as wstring ptr
 
 declare sub astProcBegin( byval proc as FBSYMBOL ptr, byval ismain as integer )
 declare function astProcEnd( byval callrtexit as integer ) as integer
@@ -598,7 +572,7 @@ declare function astNewUOP _
 		byval o as ASTNODE ptr _
 	) as ASTNODE ptr
 
-declare function astCONSTIsTrue( byval n as ASTNODE ptr ) as integer
+declare function astConstIsZero( byval n as ASTNODE ptr ) as integer
 
 declare function astNewCONST _
 	( _
@@ -641,6 +615,10 @@ declare function astNewCONSTz _
 		byval dtype as integer = FB_DATATYPE_CHAR, _
 		byval subtype as FBSYMBOL ptr = NULL _
 	) as ASTNODE ptr
+
+declare function astConstFlushToInt( byval n as ASTNODE ptr ) as integer
+declare function astConstFlushToStr( byval n as ASTNODE ptr ) as string
+declare function astConstFlushToWstr( byval n as ASTNODE ptr ) as wstring ptr
 
 declare function astNewVAR _
 	( _
@@ -888,12 +866,11 @@ declare function astOptAssignment _
 		byval n as ASTNODE ptr _
 	) as ASTNODE ptr
 
-declare function astCheckConst _
+declare sub astCheckConst _
 	( _
 		byval dtype as integer, _
-		byval n as ASTNODE ptr, _
-		byval show_warn as integer _
-	) as integer
+		byval n as ASTNODE ptr _
+	)
 
 declare function astCheckASSIGN _
 	( _
@@ -1203,7 +1180,7 @@ declare function astBuildArrayBound _
 	( _
 		byval arrayexpr as ASTNODE ptr, _
 		byval dimexpr as ASTNODE ptr, _
-		byval is_lbound as integer _
+		byval tk as integer _
 	) as ASTNODE ptr
 
 declare function astBuildStrPtr( byval lhs as ASTNODE ptr ) as ASTNODE ptr

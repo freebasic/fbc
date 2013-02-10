@@ -12,28 +12,6 @@
 #include once "ast.bi"
 
 '':::::
-private sub hParamError _
-	( _
-		byval parent as ASTNODE ptr, _
-		byval msgnum as integer = FB_ERRMSG_PARAMTYPEMISMATCHAT _
-	)
-
-	errReportParam( parent->sym, parent->call.args+1, NULL, msgnum )
-
-end sub
-
-'':::::
-private sub hParamWarning _
-	( _
-		byval parent as ASTNODE ptr, _
-		byval msgnum as integer _
-	)
-
-	errReportParamWarn( parent->sym, parent->call.args+1, NULL, msgnum )
-
-end sub
-
-'':::::
 private function hAllocTmpArrayDesc _
 	( _
 		byval array as FBSYMBOL ptr, _
@@ -429,7 +407,7 @@ private function hCheckByDescParam _
 	s = astGetSymbol( arg )
 
 	if( s = NULL ) then
-		hParamError( parent )
+		errReport( FB_ERRMSG_PARAMTYPEMISMATCHAT )
 		return FALSE
 	end if
 
@@ -439,7 +417,7 @@ private function hCheckByDescParam _
 	if( (parent->call.isrtl = FALSE) and (sym_dtype <> FB_DATATYPE_VOID) ) then
 		if( (typeGetClass( arg_dtype ) <> typeGetClass( sym_dtype )) or _
 			(typeGetSize( arg_dtype ) <> typeGetSize( sym_dtype )) ) then
-			hParamError( parent )
+			errReport( FB_ERRMSG_PARAMTYPEMISMATCHAT )
 			return FALSE
 		end if
 	end if
@@ -448,7 +426,7 @@ private function hCheckByDescParam _
 	if( symbGetClass( s ) = FB_SYMBCLASS_FIELD ) then
 		'' not an array?
 		if( symbGetArrayDimensions( s ) = 0 ) then
-			hParamError( parent )
+			errReport( FB_ERRMSG_PARAMTYPEMISMATCHAT )
 			return FALSE
 		end if
 
@@ -471,11 +449,11 @@ private function hCheckByDescParam _
 			'' not an array?
 			desc = symbGetArrayDescriptor( s )
 			if( desc = NULL ) then
-				hParamError( parent )
+				errReport( FB_ERRMSG_PARAMTYPEMISMATCHAT )
 				return FALSE
 			end if
 		else
-			hParamError( parent )
+			errReport( FB_ERRMSG_PARAMTYPEMISMATCHAT )
 			return FALSE
 		end if
 
@@ -535,7 +513,7 @@ private function hCheckVarargParam _
 		end if
 
 	case else
-		hParamError( parent )
+		errReport( FB_ERRMSG_PARAMTYPEMISMATCHAT )
 		return FALSE
 	end select
 
@@ -590,7 +568,7 @@ private function hCheckStrParam _
 
 	'' not a string?
 	case else
-		hParamError( parent )
+		errReport( FB_ERRMSG_PARAMTYPEMISMATCHAT )
 		return FALSE
 	end select
 
@@ -640,7 +618,6 @@ end sub
 
 private sub hUDTPassByval _
 	( _
-		byval parent as ASTNODE ptr, _
 		byval param as FBSYMBOL ptr, _
 		byval n as ASTNODE ptr _
 	)
@@ -701,7 +678,6 @@ end sub
 
 private function hImplicitCtor _
 	( _
-		byval parent as ASTNODE ptr, _
 		byval param as FBSYMBOL ptr, _
 		byval n as ASTNODE ptr _
 	) as integer
@@ -738,7 +714,7 @@ private function hImplicitCtor _
 	n->l = astNewCALLCTOR( astPatchCtorCall( arg, astNewVAR( tmp ) ), astNewVAR( tmp ) )
 
 	if( symbGetParamMode( param ) = FB_PARAMMODE_BYVAL ) then
-		hUDTPassByval( parent, param, n )
+		hUDTPassByval( param, n )
 	else
 		hBuildByrefArg( param, n, n->l )
 	end if
@@ -749,7 +725,6 @@ end function
 '':::::
 private function hCheckUDTParam _
 	( _
-		byval parent as ASTNODE ptr, _
 		byval param as FBSYMBOL ptr, _
 		byval n as ASTNODE ptr _
 	) as integer
@@ -759,8 +734,8 @@ private function hCheckUDTParam _
 
 	'' not another UDT?
 	if( astGetDatatype( arg ) <> FB_DATATYPE_STRUCT ) then
-		if( hImplicitCtor( parent, param, n ) = FALSE ) then
-			hParamError( parent )
+		if( hImplicitCtor( param, n ) = FALSE ) then
+			errReport( FB_ERRMSG_PARAMTYPEMISMATCHAT )
 			return FALSE
 		end if
 		return TRUE
@@ -771,11 +746,11 @@ private function hCheckUDTParam _
 		'' param is not a base type of arg?
 		if( symbGetUDTBaseLevel( arg->subtype, symbGetSubtype( param ) ) = 0 ) then
 			'' no ctor in the param's type?
-			if( hImplicitCtor( parent, param, n ) = FALSE ) then
+			if( hImplicitCtor( param, n ) = FALSE ) then
 				'' no cast operator? 
 				arg = astNewCONV( symbGetType( param ), symbGetSubtype( param ), arg )
 				if( arg = NULL ) then
-					hParamError( parent )
+					errReport( FB_ERRMSG_PARAMTYPEMISMATCHAT )
 					return FALSE
 				end if
 				n->l = arg
@@ -815,7 +790,7 @@ private function hCheckUDTParam _
 
 	'' set the length if it's being passed by value
 	case FB_PARAMMODE_BYVAL
-		hUDTPassByval( parent, param, n )
+		hUDTPassByval( param, n )
 
 	end select
 
@@ -864,7 +839,7 @@ private function hCheckParam _
 		if( n->arg.mode = FB_PARAMMODE_BYVAL ) then
 			if( (typeGetClass( arg_dtype ) <> FB_DATACLASS_INTEGER) or _
 				(typeGetSize( arg_dtype ) <> FB_POINTERSIZE) ) then
-				hParamError( parent )
+				errReport( FB_ERRMSG_PARAMTYPEMISMATCHAT )
 				exit function
 			end if
 
@@ -875,7 +850,7 @@ private function hCheckParam _
 		'' @udt.bitfield isn't possible either...
 		if( astGetClass( arg ) = AST_NODECLASS_FIELD ) then
 			if( astGetDataType( astGetLeft( arg ) ) = FB_DATATYPE_BITFIELD ) then
-				hParamError( parent )
+				errReport( FB_ERRMSG_PARAMTYPEMISMATCHAT )
 				exit function
 			end if
 		end if
@@ -916,7 +891,7 @@ private function hCheckParam _
 
 	'' UDT param? check if the same, can't convert
 	case FB_DATATYPE_STRUCT
-		return hCheckUDTParam( parent, param, n )
+		return hCheckUDTParam( param, n )
 
 	end select
 
@@ -941,7 +916,7 @@ private function hCheckParam _
 			end if
 
 		case else
-			hParamError( parent )
+			errReport( FB_ERRMSG_PARAMTYPEMISMATCHAT )
 			exit function
 		end select
 
@@ -958,14 +933,14 @@ private function hCheckParam _
 
 	'' UDT? implicit casting failed, can't convert..
 	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-		hParamError( parent )
+		errReport( FB_ERRMSG_PARAMTYPEMISMATCHAT )
 		exit function
 	end select
 
 	'' enum args are only allowed to be passed enum or int params
 	if( (param_dtype = FB_DATATYPE_ENUM) or (arg_dtype = FB_DATATYPE_ENUM) ) then
 		if( typeGetClass( param_dtype ) <> typeGetClass( arg_dtype ) ) then
-			hParamWarning( parent, FB_WARNINGMSG_IMPLICITCONVERSION )
+			errReportWarn( FB_WARNINGMSG_IMPLICITCONVERSION )
 		end if
 	end if
 
@@ -973,23 +948,23 @@ private function hCheckParam _
 	if( typeIsPtr( param_dtype ) ) then
 		if( astPtrCheck( symbGetFullType( param ), symbGetSubtype( param ), arg ) = FALSE ) then
 			if( typeIsPtr( arg_dtype ) = FALSE ) then
-				hParamWarning( parent, FB_WARNINGMSG_PASSINGSCALARASPTR )
+				errReportWarn( FB_WARNINGMSG_PASSINGSCALARASPTR )
 			else
 				'' if both are UDT, a base param can't be passed to a derived arg
 				if( typeGetDtOnly( param_dtype ) = FB_DATATYPE_STRUCT and typeGetDtOnly( arg_dtype ) = FB_DATATYPE_STRUCT ) then
 					if( symbGetUDTBaseLevel( symbGetSubtype( param ), astGetSubType( arg ) ) > 0 ) then
-						hParamError( parent, FB_ERRMSG_INVALIDDATATYPES )
+						errReport( FB_ERRMSG_INVALIDDATATYPES )
 						exit function
 					else
-						hParamWarning( parent, FB_WARNINGMSG_PASSINGDIFFPOINTERS )
+						errReportWarn( FB_WARNINGMSG_PASSINGDIFFPOINTERS )
 					end if
 				else
-					hParamWarning( parent, FB_WARNINGMSG_PASSINGDIFFPOINTERS )
+					errReportWarn( FB_WARNINGMSG_PASSINGDIFFPOINTERS )
 				end if
 			end if
 		end if
 	elseif( typeIsPtr( arg_dtype ) ) then
-		hParamWarning( parent, FB_WARNINGMSG_PASSINGPTRTOSCALAR )
+		errReportWarn( FB_WARNINGMSG_PASSINGPTRTOSCALAR )
 	end if
 
 	'' different types? convert..
@@ -1014,7 +989,7 @@ private function hCheckParam _
 				case AST_NODECLASS_VAR, AST_NODECLASS_IDX, _
 				     AST_NODECLASS_FIELD, AST_NODECLASS_DEREF, _
 				     AST_NODECLASS_IIF
-					hParamError( parent )
+					errReport( FB_ERRMSG_PARAMTYPEMISMATCHAT )
 					exit function
 				end select
 
@@ -1025,17 +1000,9 @@ private function hCheckParam _
 			end if
 		end if
 
-		'' const?
-		if( astIsCONST( arg ) ) then
-			'' show "overflow in constant conversion" warnings
-			if( astCheckConst( symbGetType( param ), arg, FALSE ) = FALSE ) then
-				hParamWarning( parent, FB_WARNINGMSG_CONVOVERFLOW )
-			end if
-		end if
-
 		arg = astNewCONV( symbGetFullType( param ), symbGetSubtype( param ), arg )
 		if( arg = NULL ) then
-			hParamError( parent, FB_ERRMSG_INVALIDDATATYPES )
+			errReport( FB_ERRMSG_INVALIDDATATYPES )
 			exit function
 		end if
 		arg_dtype = astGetDatatype( arg )
@@ -1111,7 +1078,7 @@ function astNewARG _
 			if( symbIsParamInstance( param ) ) then
 				errReport( FB_ERRMSG_CONSTUDTTONONCONSTMETHOD, TRUE )
 			else
-				hParamError( parent, FB_ERRMSG_ILLEGALASSIGNMENT )
+				errReportParam( parent->sym, parent->call.args+1, NULL, FB_ERRMSG_ILLEGALASSIGNMENT )
 			end if
 			exit function
 		end if
@@ -1139,18 +1106,21 @@ function astNewARG _
 
 		parent->call.lastarg = n
 		n->r = NULL
-
 	else
-
 		'' non-pascal, the latest param added will be the first pushed
 		parent->r = n
 		n->r = t
 	end if
 
+	errPushParamLocation( parent->sym, -1, parent->call.args+1, NULL )
+
 	''
 	if( hCheckParam( parent, param, n ) = FALSE ) then
+		errPopParamLocation( )
 		return NULL
 	end if
+
+	errPopParamLocation( )
 
 	''
 	parent->call.args += 1

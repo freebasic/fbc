@@ -224,16 +224,13 @@ end function
 ''
 function cArrayFunct(byval tk as FB_TOKEN) as ASTNODE ptr
 	dim as ASTNODE ptr arrayexpr = any, dimexpr = any
-	dim as integer is_lbound = any
 	dim as FBSYMBOL ptr s = any
 
 	function = NULL
 
 	select case tk
-
 	'' (LBOUND|UBOUND) '(' ID (',' Expression)? ')'
 	case FB_TK_LBOUND, FB_TK_UBOUND
-		is_lbound = (tk = FB_TK_LBOUND)
 		lexSkipToken( )
 
 		'' '('
@@ -280,6 +277,6 @@ function cArrayFunct(byval tk as FB_TOKEN) as ASTNODE ptr
 		'' ')'
 		hMatchRPRNT( )
 
-		function = astBuildArrayBound( arrayexpr, dimexpr, is_lbound )
+		function = astBuildArrayBound( arrayexpr, dimexpr, tk )
 	end select
 end function

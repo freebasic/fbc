@@ -443,7 +443,7 @@ private sub hForAssign _
 			end if
 
 			'' take the constant value
-			astCONST2FBValue( @stk->for.cnt.value, expr )
+			stk->for.cnt.value = astGetValue( expr )
 
 			isconst += 1
 		end if
@@ -514,7 +514,7 @@ private sub hForTo _
 
 			'' insert constant value instead, deleting
 			'' source expression
-			astCONST2FBValue( @stk->for.end.value, expr )
+			stk->for.end.value = astGetValue( expr )
 			astDelNode( expr )
 
 			isconst += 1
@@ -639,7 +639,7 @@ private sub hForStep _
 			end if
 
 			'' store expr into value, and del temp expression
-			astCONST2FBValue( @stk->for.stp.value, expr )
+			stk->for.stp.value = astGetValue( expr )
 			astDelNode( expr )
 
 			isconst += 1

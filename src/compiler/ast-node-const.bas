@@ -9,25 +9,25 @@
 #include once "ir.bi"
 #include once "ast.bi"
 
-function astCONSTIsTrue( byval n as ASTNODE ptr ) as integer
+function astConstIsZero( byval n as ASTNODE ptr ) as integer
 	assert( astIsCONST( n ) )
 
 	select case as const( astGetDataType( n ) )
 	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-		function = (n->con.val.long <> 0ll)
+		function = (n->con.val.long = 0ll)
 
 	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-		function = (n->con.val.float <> 0.0)
+		function = (n->con.val.float = 0.0)
 
 	case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
 		if( FB_LONGSIZE = len( integer ) ) then
-			function = (n->con.val.int <> 0)
+			function = (n->con.val.int = 0)
 		else
-			function = (n->con.val.long <> 0ll)
+			function = (n->con.val.long = 0ll)
 		end if
 
 	case else
-		function = (n->con.val.int <> 0)
+		function = (n->con.val.int = 0)
 	end select
 end function
 
@@ -67,8 +67,6 @@ function astNewCONSTwstr _
 
 end function
 
-
-'':::::
 function astNewCONSTi _
 	( _
 		byval value as integer, _
@@ -79,15 +77,12 @@ function astNewCONSTi _
     dim as ASTNODE ptr n = any
 
 	'' alloc new node
-	n = astNewNode( AST_NODECLASS_CONST, dtype, subtype )
+	n = astNewNode( AST_NODECLASS_CONST, FB_DATATYPE_INTEGER, NULL )
 	function = n
 
 	n->con.val.int = value
 
-	if( hTruncateInt( dtype, @n->con.val.int ) <> FALSE ) then
-		errReportWarn( FB_WARNINGMSG_CONVOVERFLOW )
-	end if
-
+	function = astNewCONV( dtype, subtype, n )
 end function
 
 '':::::
@@ -260,4 +255,94 @@ function astLoadCONST _
 
 end function
 
+function astConstFlushToInt( byval n as ASTNODE ptr ) as integer
+	n = astNewCONV( FB_DATATYPE_INTEGER, NULL, n )
 
+	assert( astIsCONST( n ) )
+	function = n->con.val.int
+
+	astDelNode( n )
+end function
+
+function astConstFlushToStr( byval n as ASTNODE ptr ) as string
+	assert( astIsCONST( n ) )
+
+	select case as const( astGetDataType( n ) )
+	case FB_DATATYPE_SINGLE
+		function = str( csng( n->con.val.float ) )
+
+	case FB_DATATYPE_DOUBLE
+		function = str( n->con.val.float )
+
+	case FB_DATATYPE_LONGINT
+		function = str( n->con.val.long )
+
+	case FB_DATATYPE_ULONGINT
+		function = str( cunsg( n->con.val.long ) )
+
+	case FB_DATATYPE_BYTE, FB_DATATYPE_SHORT, FB_DATATYPE_INTEGER, FB_DATATYPE_ENUM
+		function = str( n->con.val.int )
+
+	case FB_DATATYPE_LONG
+		if( FB_LONGSIZE = len( integer ) ) then
+			function = str( n->con.val.int )
+		else
+			function = str( n->con.val.long )
+		end if
+
+	case FB_DATATYPE_ULONG
+		if( FB_LONGSIZE = len( integer ) ) then
+			function = str( cunsg( n->con.val.int ) )
+		else
+			function = str( cunsg( n->con.val.long ) )
+		end if
+
+	case else
+		function = str( cunsg( n->con.val.int ) )
+	end select
+
+	astDelNode( n )
+end function
+
+function astConstFlushToWstr( byval n as ASTNODE ptr ) as wstring ptr
+	static as wstring * 64+1 w
+
+	assert( astIsCONST( n ) )
+
+	select case as const( astGetDataType( n ) )
+	case FB_DATATYPE_SINGLE
+		w = wstr( csng( n->con.val.float ) )
+
+	case FB_DATATYPE_DOUBLE
+		w = wstr( n->con.val.float )
+
+	case FB_DATATYPE_LONGINT
+		w = wstr( n->con.val.long )
+
+	case FB_DATATYPE_ULONGINT
+		w = wstr( cunsg( n->con.val.long ) )
+
+	case FB_DATATYPE_BYTE, FB_DATATYPE_SHORT, FB_DATATYPE_INTEGER, FB_DATATYPE_ENUM
+		w = wstr( n->con.val.int )
+
+	case FB_DATATYPE_LONG
+		if( FB_LONGSIZE = len( integer ) ) then
+			w = wstr( n->con.val.int )
+		else
+			w = wstr( n->con.val.long )
+		end if
+
+	case FB_DATATYPE_ULONG
+		if( FB_LONGSIZE = len( integer ) ) then
+			w = wstr( cunsg( n->con.val.int ) )
+		else
+			w = wstr( cunsg( n->con.val.long ) )
+		end if
+
+	case else
+		w = wstr( cunsg( n->con.val.int ) )
+	end select
+
+	astDelNode( n )
+	function = @w
+end function

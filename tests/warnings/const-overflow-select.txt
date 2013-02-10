@@ -1,0 +1,4 @@
+SELECT:
+	Overflow in constant conversion
+CASE:
+	Overflow in constant conversion
