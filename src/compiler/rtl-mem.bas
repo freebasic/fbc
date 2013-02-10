@@ -97,7 +97,7 @@
 	 			) _
 	 		} _
 		), _
-		/' allocate cdecl ( byval bytes as integer ) as any ptr '/ _
+		/' allocate cdecl ( byval bytes as uinteger ) as any ptr '/ _
 		( _
 			@"allocate", @"malloc", _
 			typeAddrOf( FB_DATATYPE_VOID ), FB_FUNCMODE_CDECL, _
@@ -105,11 +105,11 @@
 			1, _
 			{ _
 				( _
-					FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE _
+					FB_DATATYPE_UINT,FB_PARAMMODE_BYVAL, FALSE _
 	 			) _
 	 		} _
 		), _
-		/' callocate cdecl ( byval bytes as integer ) as any ptr '/ _
+		/' callocate cdecl ( byval bytes as uinteger ) as any ptr '/ _
 		( _
 			@"callocate", @"calloc", _
 			typeAddrOf( FB_DATATYPE_VOID ), FB_FUNCMODE_CDECL, _
@@ -117,14 +117,14 @@
 			2, _
 			{ _
 				( _
-					FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE _
+					FB_DATATYPE_UINT,FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
-					FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, TRUE, 1 _
+					FB_DATATYPE_UINT,FB_PARAMMODE_BYVAL, TRUE, 1 _
 	 			) _
 	 		} _
 		), _
-		/' reallocate cdecl ( byval p as any ptr, byval bytes as integer ) as any ptr '/ _
+		/' reallocate cdecl ( byval p as any ptr, byval bytes as uinteger ) as any ptr '/ _
 		( _
 			@"reallocate", @"realloc", _
 			typeAddrOf( FB_DATATYPE_VOID ), FB_FUNCMODE_CDECL, _
@@ -135,7 +135,7 @@
 					typeAddrOf( FB_DATATYPE_VOID ),FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
-					FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE _
+					FB_DATATYPE_UINT,FB_PARAMMODE_BYVAL, FALSE _
 	 			) _
 	 		} _
 		), _
