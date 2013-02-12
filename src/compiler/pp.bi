@@ -43,9 +43,7 @@ declare sub ppCheck _
 	( _
 	)
 
-declare function ppParse _
-	( _
-	) as integer
+declare sub ppParse( )
 
 declare sub ppDefineInit _
 	( _

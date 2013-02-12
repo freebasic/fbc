@@ -154,7 +154,6 @@ sub ppCheck( )
 end sub
 
 
-'':::::
 '' PreProcess    =   '#'DEFINE ID (!WHITESPC '(' ID (',' ID)* ')')? LITERAL*
 ''               |   '#'UNDEF ID
 ''               |   '#'IFDEF ID
@@ -169,109 +168,98 @@ end sub
 ''				 |	 '#'LIBPATH LIT_STR
 ''				 |	 '#'ERROR LIT_STR .
 ''
-function ppParse( ) as integer
+sub ppParse( )
+	'' note: when adding any new PP symbol, update ppSkip() too
+	select case as const lexGetToken( LEXCHECK_KWDNAMESPC )
 
-    '' note: when adding any new PP symbol, update ppSkip() too
-    select case as const lexGetToken( LEXCHECK_KWDNAMESPC )
-
-    '' DEFINE ID (!WHITESPC '(' ID (',' ID)* ')')? LITERAL+
-    case FB_TK_PP_DEFINE
-    	lexSkipToken( LEXCHECK_NODEFINE )
-    	function = ppDefine( FALSE )
+	'' DEFINE ID (!WHITESPC '(' ID (',' ID)* ')')? LITERAL+
+	case FB_TK_PP_DEFINE
+		lexSkipToken( LEXCHECK_NODEFINE )
+		ppDefine( FALSE )
 
 	'' MACRO ID '(' ID (',' ID)* ')' Comment? EOL
-	'' 	MacroBody*
+	''    MacroBody*
 	'' ENDMACRO
 	case FB_TK_PP_MACRO
-    	lexSkipToken( LEXCHECK_NODEFINE )
-    	function = ppDefine( TRUE )
+		lexSkipToken( LEXCHECK_NODEFINE )
+		ppDefine( TRUE )
 
 	'' UNDEF ID
-    case FB_TK_PP_UNDEF
-    	dim as FBSYMCHAIN ptr chain_ = any
-    	dim as FBSYMBOL ptr base_parent = any
+	case FB_TK_PP_UNDEF
+		dim as FBSYMCHAIN ptr chain_ = any
+		dim as FBSYMBOL ptr base_parent = any
 
-    	lexSkipToken( LEXCHECK_NODEFINE )
+		lexSkipToken( LEXCHECK_NODEFINE )
 
-    	chain_ = cIdentifier( base_parent, FB_IDOPT_NONE )
-    	if( chain_ <> NULL ) then
-    		dim as FBSYMBOL ptr sym = chain_->sym
-    		'' don't remove if it was defined inside any namespace (any
-    		'' USING reference to that ns would break its linked-list)
-    		if( symbGetNamespace( sym ) <> @symbGetGlobalNamespc( ) ) then
+		chain_ = cIdentifier( base_parent, FB_IDOPT_NONE )
+		if( chain_ <> NULL ) then
+			dim as FBSYMBOL ptr sym = chain_->sym
+			'' don't remove if it was defined inside any namespace (any
+			'' USING reference to that ns would break its linked-list)
+			if( symbGetNamespace( sym ) <> @symbGetGlobalNamespc( ) ) then
 				errReport( FB_ERRMSG_CANTREMOVENAMESPCSYMBOLS )
-    		else
-    			if( symbGetCantUndef( sym ) ) then
+			else
+				if( symbGetCantUndef( sym ) ) then
 					errReport( FB_ERRMSG_CANTUNDEF )
-    			else
-    				symbDelSymbol( sym )
-    			end if
-    		end if
-    	end if
+				else
+					symbDelSymbol( sym )
+				end if
+			end if
+		end if
 
-    	lexSkipToken( )
-
-    	function = TRUE
+		lexSkipToken( )
 
 	'' IFDEF ID
 	'' IFNDEF ID
 	'' IF ID '=' LITERAL
-    case FB_TK_PP_IFDEF, FB_TK_PP_IFNDEF, FB_TK_PP_IF
-    	function = ppCondIf( )
+	case FB_TK_PP_IFDEF, FB_TK_PP_IFNDEF, FB_TK_PP_IF
+		ppCondIf( )
 
 	'' ELSE
 	case FB_TK_PP_ELSE, FB_TK_PP_ELSEIF
-    	function = ppCondElse( )
+		ppCondElse( )
 
 	'' ENDIF
 	case FB_TK_PP_ENDIF
-		function = ppCondEndIf( )
+		ppCondEndIf( )
 
 	'' PRINT LITERAL*
 	case FB_TK_PP_PRINT
 		lexSkipToken( )
 		print *ppReadLiteral( )
-		function = TRUE
 
 	'' ERROR LITERAL*
 	case FB_TK_PP_ERROR
 		lexSkipToken( )
 		errReportEx( -1, *ppReadLiteral( ) )
-		return TRUE
 
 	'' INCLUDE ONCE? LIT_STR
 	case FB_TK_PP_INCLUDE
 		lexSkipToken( )
-		ppInclude()
-		function = TRUE
+		ppInclude( )
 
 	'' INCLIB LIT_STR
 	case FB_TK_PP_INCLIB
 		lexSkipToken( )
-		ppIncLib()
-		function = TRUE
+		ppIncLib( )
 
 	'' LIBPATH LIT_STR
 	case FB_TK_PP_LIBPATH
 		lexSkipToken( )
-		ppLibPath()
-		function = TRUE
+		ppLibPath( )
 
 	'' PRAGMA ...
 	case FB_TK_PP_PRAGMA
 		lexSkipToken( )
-		ppPragma()
-		function = TRUE
+		ppPragma( )
 
 	case FB_TK_PP_LINE
 		lexSkipToken( )
 		ppLine()
-		function = TRUE
 
 	case FB_TK_PP_LANG
 		lexSkipToken( )
 		ppLang( )
-		function = TRUE
 
 	case else
 		errReport( FB_ERRMSG_SYNTAXERROR )
@@ -291,8 +279,7 @@ function ppParse( ) as integer
 			hSkipUntil( FB_TK_EOL )
 		end if
 	end if
-
-end function
+end sub
 
 '':::::
 '' ppInclude		=   '#'INCLUDE ONCE? LIT_STR
