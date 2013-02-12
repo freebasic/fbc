@@ -79,17 +79,9 @@ declare sub ppCondEnd _
 	( _
 	)
 
-declare function ppCondIf _
-	( _
-	) as integer
-
-declare function ppCondElse _
-	( _
-	) as integer
-
-declare function ppCondEndIf _
-	( _
-	) as integer
+declare sub ppCondIf( )
+declare sub ppCondElse( )
+declare sub ppCondEndIf( )
 
 declare function ppReadLiteral _
 	( _

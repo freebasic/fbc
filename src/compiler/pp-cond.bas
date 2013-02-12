@@ -28,10 +28,7 @@ type PPEXPR
 	str			as string
 end type
 
-
-declare function ppSkip _
-	( _
-	) as integer
+declare sub ppSkip( )
 
 declare function ppExpression _
 	( _
@@ -79,12 +76,9 @@ sub ppCondEnd( )
 
 end sub
 
-'':::::
-function ppCondIf( ) as integer
+sub ppCondIf( )
     dim as integer istrue = any
     dim as FBSYMBOL ptr base_parent = any
-
-    function = FALSE
 
 	istrue = FALSE
 
@@ -114,7 +108,7 @@ function ppCondIf( ) as integer
         lexSkipToken( )
 
 		if( ppExpression( istrue ) = FALSE ) then
-			exit function
+			exit sub
 		end if
 
 	end select
@@ -122,26 +116,20 @@ function ppCondIf( ) as integer
 	pp.level += 1
 	if( pp.level > FB_PP_MAXRECLEVEL ) then
 		errReport( FB_ERRMSG_RECLEVELTOODEEP )
-		errHideFurtherErrors()
-		exit function
+		errHideFurtherErrors( )
+		exit sub
 	end if
 
 	pptb(pp.level).istrue = istrue
 	pptb(pp.level).elsecnt = 0
 
-    if( istrue = FALSE ) then
-    	function = ppSkip( )
-    else
-		function = TRUE
+	if( istrue = FALSE ) then
+		ppSkip( )
 	end if
+end sub
 
-end function
-
-'':::::
-function ppCondElse( ) as integer
+sub ppCondElse( )
 	dim as integer istrue = any
-
-   	function = FALSE
 
    	istrue = FALSE
 
@@ -149,14 +137,14 @@ function ppCondElse( ) as integer
 		errReport( FB_ERRMSG_ILLEGALOUTSIDECOMP )
 		'' error recovery: skip statement
 		hSkipStmt( )
-		return TRUE
+		exit sub
 	end if
 
 	if( pptb(pp.level).elsecnt > 0 ) then
 		errReport( FB_ERRMSG_SYNTAXERROR )
 		'' error recovery: skip statement
 		hSkipStmt( )
-		return TRUE
+		exit sub
 	end if
 
 	'' ELSEIF?
@@ -164,15 +152,15 @@ function ppCondElse( ) as integer
         lexSkipToken( )
 
 		if( ppExpression( istrue ) = FALSE ) then
-			exit function
+			exit sub
 		end if
 
 		if( pptb(pp.level).istrue ) then
-		    return ppSkip( )
-		else
-			pptb(pp.level).istrue = istrue
+			ppSkip( )
+			exit sub
 		end if
 
+		pptb(pp.level).istrue = istrue
 	'' ELSE
 	else
 		lexSkipToken( )
@@ -181,38 +169,24 @@ function ppCondElse( ) as integer
         pptb(pp.level).istrue = not pptb(pp.level).istrue
     end if
 
-   	if( pptb(pp.level).istrue = FALSE ) then
-   		function = ppSkip( )
-   	else
-   		function = TRUE
-   	end if
-
-end function
-
-'':::::
-function ppCondEndIf( ) as integer
-
-   	function = FALSE
-
-	if( pp.level = 0 ) then
-		errReport( FB_ERRMSG_ILLEGALOUTSIDECOMP )
-		'' error recovery: skip token
-		lexSkipToken( )
-		return TRUE
+	if( pptb(pp.level).istrue = FALSE ) then
+		ppSkip( )
 	end if
+end sub
 
-   	'' ENDIF
-   	lexSkipToken( )
+sub ppCondEndIf( )
+	'' ENDIF
+	lexSkipToken( )
 
-	pp.level -= 1
+	if( pp.level > 0 ) then
+		pp.level -= 1
+	else
+		errReport( FB_ERRMSG_ILLEGALOUTSIDECOMP )
+	end if
+end sub
 
-end function
-
-'':::::
-private function ppSkip( ) as integer
+private sub ppSkip( )
     dim as integer iflevel = any
-
-	function = FALSE
 
 	pp.skipping = TRUE
 
@@ -235,7 +209,6 @@ private function ppSkip( ) as integer
 
 	'' skip lines until a #ENDIF or #ELSE at same level is found
 	do
-
 		select case lexGetToken( )
 		case CHAR_SHARP
 			lexSkipToken( LEXCHECK_KWDNAMESPC )
@@ -245,22 +218,26 @@ private function ppSkip( ) as integer
 				iflevel += 1
 
 			case FB_TK_PP_ELSE, FB_TK_PP_ELSEIF
-				if( iflevel = pp.level ) then
+				select case( iflevel )
+				case pp.level
 					pp.skipping = FALSE
-					return ppCondElse( )
-				elseif( iflevel = 0 ) then
+					ppCondElse( )
+					exit sub
+				case 0
 					errReport( FB_ERRMSG_ILLEGALOUTSIDECOMP )
-				end if
+				end select
 
 			case FB_TK_PP_ENDIF
-				if( iflevel = pp.level ) then
+				select case( iflevel )
+				case pp.level
 					pp.skipping = FALSE
-					return ppCondEndIf( )
-				elseif( iflevel = 0 ) then
+					ppCondEndIf( )
+					exit sub
+				case 0
 					errReport( FB_ERRMSG_ILLEGALOUTSIDECOMP )
-				else
+				case else
 					iflevel -= 1
-				end if
+				end select
 
 			case FB_TK_PP_DEFINE, FB_TK_PP_UNDEF, FB_TK_PP_PRINT, FB_TK_PP_ERROR, _
 			     FB_TK_PP_INCLUDE, FB_TK_PP_INCLIB, FB_TK_PP_LIBPATH, FB_TK_PP_PRAGMA, _
@@ -272,7 +249,6 @@ private function ppSkip( ) as integer
 
 		case FB_TK_EOF
 			errReport( FB_ERRMSG_EXPECTEDPPENDIF )
-			function = TRUE
 			exit do
 
 		end select
@@ -285,8 +261,7 @@ private function ppSkip( ) as integer
 	loop
 
 	pp.skipping = FALSE
-
-end function
+end sub
 
 private sub hHighestPrecision _
 	( _
