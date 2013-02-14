@@ -1092,7 +1092,7 @@ private function ppParentExpr _
 		if( res = NULL ) then
 			exit function
 		end if
-		parexpr.str += *res
+		parexpr.str = *res
 
   	'' '(' Expression ')'
   	case CHAR_LPRNT
@@ -1179,10 +1179,9 @@ private function ppParentExpr _
 
   	'' LITERAL
   	case else
-  		parexpr.dtype = lexGetType( )
-
   		select case lexGetClass( )
   		case FB_TKCLASS_NUMLITERAL
+			parexpr.dtype = lexGetType( )
   			parexpr.class = PPEXPR_CLASS_NUM
 
   			select case as const parexpr.dtype
@@ -1217,15 +1216,16 @@ private function ppParentExpr _
   			end select
 
 		case FB_TKCLASS_STRLITERAL
-  			parexpr.class = PPEXPR_CLASS_STR
-  			parexpr.str = QUOTE
-  			parexpr.str += *lexGetText( )
-  			parexpr.str += QUOTE
+			parexpr.dtype = lexGetType( )
+			parexpr.class = PPEXPR_CLASS_STR
+			parexpr.str = *lexGetText( )
 
-  		case else
-  			parexpr.class = PPEXPR_CLASS_STR
-  			parexpr.str = ucase( *lexGetText( ) )
-  		end select
+		case else
+			errReport( FB_ERRMSG_EXPECTEDCONST )
+			parexpr.dtype = lexGetType( )
+			parexpr.class = PPEXPR_CLASS_NUM
+			parexpr.num.int = 0
+		end select
 
   		lexSkipToken( )
 
