@@ -456,16 +456,17 @@ private function hConstAccumMUL _
 
 end function
 
-'':::::
-private function hOptConstAccum1 _
-	( _
-		byval n as ASTNODE ptr _
-	) as ASTNODE ptr
-
+private function hOptConstAccum1( byval n as ASTNODE ptr ) as ASTNODE ptr
 	dim as ASTNODE ptr l = any, r = any
+	dim as integer o = any
 
-	if( n = NULL ) then
-		return NULL
+	'' walk
+	if( n->l ) then
+		n->l = hOptConstAccum1( n->l )
+	end if
+
+	if( n->r ) then
+		n->r = hOptConstAccum1( n->r )
 	end if
 
 	'' check any ADD|SUB|MUL BOP node with a constant at the right leaf and
@@ -477,58 +478,50 @@ private function hOptConstAccum1 _
 		if( astIsCONST( r ) ) then
 			dim as ASTVALUE v = any
 
-			select case as const n->op.op
-			case AST_OP_ADD
-				v.dtype = FB_DATATYPE_INVALID
+			o = n->op.op
+			v.dtype = FB_DATATYPE_INVALID
+
+			select case( o )
+			case AST_OP_ADD, AST_OP_SUB
 				n = hConstAccumADDSUB( n, @v, 1 )
-				'' can't pass ConstAccumADDSUB() to newBOP, the order of
-				'' the params should't matter
-				n = astNewBOP( AST_OP_ADD, n, astNewCONST( @v.val, v.dtype ) )
+				if( v.dtype <> FB_DATATYPE_INVALID ) then
+					'' can't pass ConstAccumADDSUB() to newBOP, the order of
+					'' the params should't matter
+					n = astNewBOP( o, n, astNewCONST( @v.val, v.dtype ) )
+				end if
 
 			case AST_OP_MUL
-				v.dtype = FB_DATATYPE_INVALID
 				n = hConstAccumMUL( n, @v )
-				n = astNewBOP( AST_OP_MUL, n, astNewCONST( @v.val, v.dtype ) )
+				if( v.dtype <> FB_DATATYPE_INVALID ) then
+					n = astNewBOP( AST_OP_MUL, n, astNewCONST( @v.val, v.dtype ) )
+				end if
 
-			case AST_OP_SUB
-				v.dtype = FB_DATATYPE_INVALID
-				n = hConstAccumADDSUB( n, @v, 1 )
-				n = astNewBOP( AST_OP_ADD, n, astNewCONST( @v.val, v.dtype ) )
 			end select
 		end if
 	end if
 
-	'' walk
-	l = n->l
-	if( l <> NULL ) then
-		n->l = hOptConstAccum1( l )
-	end if
-
-	r = n->r
-	if( r <> NULL ) then
-		n->r = hOptConstAccum1( r )
-	end if
-
 	function = n
-
 end function
 
-'':::::
-private sub hOptConstAccum2 _
-	( _
-		byval n as ASTNODE ptr _
-	)
-
+private function hOptConstAccum2( byval n as ASTNODE ptr ) as ASTNODE ptr
 	dim as ASTNODE ptr l = any, r = any
-	dim as integer dtype = any, checktype = any
 	dim as ASTVALUE v = any
+
+	'' walk
+	if( n->l ) then
+		n->l = hOptConstAccum2( n->l )
+	end if
+
+	if( n->r ) then
+		n->r = hOptConstAccum2( n->r )
+	end if
 
 	'' check any ADD|SUB|MUL BOP node and then go to child leafs accumulating
 	'' any constants found there, deleting those nodes and then add the
 	'' result to a new node, at right side of the current one
 	'' (this will handle for ex. a+1+(b+2)+(c+3), that will become a+b+c+6)
 	if( n->class = AST_NODECLASS_BOP ) then
-		checktype = FALSE
+		v.dtype = FB_DATATYPE_INVALID
 
 		select case n->op.op
 		case AST_OP_ADD
@@ -538,66 +531,23 @@ private sub hOptConstAccum2 _
 				 FB_DATATYPE_WCHAR
 
 			case else
-				v.dtype = FB_DATATYPE_INVALID
-				n->l = hConstAccumADDSUB( n->l, @v, 1 )
-				n->r = hConstAccumADDSUB( n->r, @v, 1 )
-
+				n = hConstAccumADDSUB( n, @v, 1 )
 				if( v.dtype <> FB_DATATYPE_INVALID ) then
-					n->l = astNewBOP( AST_OP_ADD, n->l, n->r )
-					n->r = astNewCONST( @v.val, v.dtype )
-					checktype = TRUE
+					n = astNewBOP( AST_OP_ADD, n, astNewCONST( @v.val, v.dtype ) )
 				end if
 			end select
 
 		case AST_OP_MUL
-			v.dtype = FB_DATATYPE_INVALID
-			n->l = hConstAccumMUL( n->l, @v )
-			n->r = hConstAccumMUL( n->r, @v )
-
+			n = hConstAccumMUL( n, @v )
 			if( v.dtype <> FB_DATATYPE_INVALID ) then
-				n->l = astNewBOP( AST_OP_MUL, n->l, n->r )
-				n->r = astNewCONST( @v.val, v.dtype )
-				checktype = TRUE
+				n = astNewBOP( AST_OP_MUL, n, astNewCONST( @v.val, v.dtype ) )
 			end if
-       	end select
 
-		if( checktype ) then
-			'' update the node data type
-			l = n->l
-			r = n->r
-			dtype = typeMax( astGetDataType( l ), astGetDataType( r ) )
-			if( dtype <> FB_DATATYPE_INVALID ) then
-				if( typeGet( dtype ) <> typeGet( l->dtype ) ) then
-					n->l = astNewCONV( dtype, r->subtype, l )
-				else
-					n->r = astNewCONV( dtype, l->subtype, r )
-				end if
-				astGetFullType( n ) = dtype
-
-			else
-				'' an ENUM or POINTER always have the precedence
-				select case typeGet( astGetDataType( r ) )
-				case FB_DATATYPE_ENUM, FB_DATATYPE_POINTER
-					astGetFullType( n ) = astGetFullType( r )
-				case else
-					astGetFullType( n ) = astGetFullType( l )
-				end select
-			end if
-		end if
+		end select
 	end if
 
-	'' walk
-	l = n->l
-	if( l <> NULL ) then
-		hOptConstAccum2( l )
-	end if
-
-	r = n->r
-	if( r <> NULL ) then
-		hOptConstAccum2( r )
-	end if
-
-end sub
+	function = n
+end function
 
 '':::::
 private function hConstDistMUL _
@@ -613,12 +563,11 @@ private function hConstDistMUL _
 		return NULL
 	end if
 
-	if( astIsBOP( n, AST_OP_ADD) ) then
+	if( astIsBOP( n, AST_OP_ADD ) ) then
 		l = n->l
 		r = n->r
 
 		if( astIsCONST( r ) ) then
-
 			dtype = hPrepConst( v, r, 1 )
 
 			if( dtype <> FB_DATATYPE_INVALID ) then
@@ -647,7 +596,6 @@ private function hConstDistMUL _
 
 			'' top node is now the left one
 			n = hConstDistMUL( l, v )
-
 		else
 			n->l = hConstDistMUL( l, v )
 			n->r = hConstDistMUL( r, v )
@@ -655,7 +603,6 @@ private function hConstDistMUL _
 	end if
 
 	function = n
-
 end function
 
 '':::::
@@ -2593,7 +2540,7 @@ function astOptimizeTree( byval n as ASTNODE ptr ) as ASTNODE ptr
 
 	n = hOptConstAccum1( n )
 
-	hOptConstAccum2( n )
+	n = hOptConstAccum2( n )
 
 	hOptConstRemNeg( n )
 
