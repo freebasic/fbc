@@ -20,9 +20,9 @@ sub test cdecl ()
 		CU_FAIL()
 		#endif
 
-		'' CONST a AS b / CONST AS b a
-		const as integer<n> MIN = cast( integer<n>, -1) shl ((n)-1)
-		const MAX as integer<n> = not MIN
+		'' CONST a AS b / CONST AS b a; CINT<n>
+		const as integer<n> MIN= cint<n>( -1 ) shl ((n)-1)
+		const MAX as integer<n>= cint<n>( not MIN )
 
 		'' CAST
 		CU_ASSERT_EQUAL( cast( integer<n>, MIN - 1), MAX )
@@ -54,9 +54,9 @@ sub test cdecl ()
 		CU_FAIL()
 		#endif
 
-		'' CONST a AS b / CONST AS b a
-		const as T<n> MIN = cast( T<n>, 0)
-		const MAX as T<n> = not MIN
+		'' CONST a AS b / CONST AS b a; CUINT<n>
+		const as T<n> MIN= cuint<n>( 0 )
+		const MAX as T<n>= cuint<n>( not MIN )
 
 		'' CAST
 		CU_ASSERT_EQUAL( cast( T<n>, MIN - 1), MAX )

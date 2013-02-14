@@ -48,7 +48,7 @@ Version 0.25.0:
 - IIF now allows different types to be mixed, for example iif( condition, mybyte, myinteger ), the result type is the bigger type
 - #if/#elseif now accept all kinds of constant expressions that would be accepted in other places (e.g. in PRINT or in constant declarations)
 - preprocessor #assert statement
-- INTEGER<n> / UINTEGER<n>, where n is 8/16/32/64, for allowing to choose integer types of a specific size
+- INTEGER<n> / UINTEGER<n> / C[U]INT<n>, where n is 8/16/32/64, for allowing to choose integer types of a specific size
 
 [fixed]
 - libzip headers: zip_stat struct was unnecessarily named zip_stat_, breaking the libzip example

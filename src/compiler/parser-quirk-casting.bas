@@ -76,6 +76,26 @@ function cTypeConvExpr _
 
 	lexSkipToken( )
 
+	if( (tk = FB_TK_CINT) or (tk = FB_TK_CUINT) ) then
+
+		'' ['<' lgt '>']
+		if( hMatch( FB_TK_LT ) ) then
+
+			dim as integer lgt = any
+
+			'' expr
+			lgt = cConstIntExpr( cGtInParensOnlyExpr( ) )
+
+			dtype = hIntegerTypeFromBitSize( lgt, (tk = FB_TK_CUINT) )
+
+			if( hMatch( FB_TK_GT ) = FALSE ) then
+				errReport( FB_ERRMSG_EXPECTEDGT )
+			end if
+
+		end if
+
+	end if
+
 	'' '('
 	if( hMatch( CHAR_LPRNT ) = FALSE ) then
 		errReport( FB_ERRMSG_EXPECTEDLPRNT )
