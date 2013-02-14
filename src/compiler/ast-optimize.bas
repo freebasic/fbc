@@ -220,11 +220,11 @@ private sub hConvDataType _
 
 end sub
 
-''::::::
 private function hPrepConst _
 	( _
 		byval v as ASTVALUE ptr, _
-		byval r as ASTNODE ptr _
+		byval r as ASTNODE ptr, _
+		byval sign as integer _
 	) as integer
 
 	dim as integer dtype = any
@@ -233,23 +233,38 @@ private function hPrepConst _
 	if( v->dtype = FB_DATATYPE_INVALID ) then
 		v->dtype = astGetDataType( r )
 
-		select case as const v->dtype
-		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-			v->val.long = r->con.val.long
-
-		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-			v->val.float = r->con.val.float
-
-		case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
-			if( FB_LONGSIZE = len( integer ) ) then
-				v->val.int = r->con.val.int
-			else
+		'' Negate?
+		if( sign < 0 ) then
+			select case as const v->dtype
+			case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
+				v->val.long = -r->con.val.long
+			case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
+				v->val.float = -r->con.val.float
+			case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
+				if( FB_LONGSIZE = len( integer ) ) then
+					v->val.int = -r->con.val.int
+				else
+					v->val.long = -r->con.val.long
+				end if
+			case else
+				v->val.int = -r->con.val.int
+			end select
+		else
+			select case as const v->dtype
+			case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 				v->val.long = r->con.val.long
-			end if
-
-		case else
-            v->val.int = r->con.val.int
-		end select
+			case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
+				v->val.float = r->con.val.float
+			case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
+				if( FB_LONGSIZE = len( integer ) ) then
+					v->val.int = r->con.val.int
+				else
+					v->val.long = r->con.val.long
+				end if
+			case else
+				v->val.int = r->con.val.int
+			end select
+		end if
 
 		return FB_DATATYPE_INVALID
 	end if
@@ -282,17 +297,15 @@ private function hPrepConst _
 
 end function
 
-'':::::
 private function hConstAccumADDSUB _
 	( _
 		byval n as ASTNODE ptr, _
 		byval v as ASTVALUE ptr, _
-		byval op as integer _
+		byval sign as integer _
 	) as ASTNODE ptr
 
 	dim as ASTNODE ptr l = any, r = any
-	dim as integer o = any
-	dim as integer dtype = any
+	dim as integer dtype = any, o = any, rsign = any
 
 	if( n = NULL ) then
 		return NULL
@@ -309,19 +322,24 @@ private function hConstAccumADDSUB _
 		l = n->l
 		r = n->r
 
+		if( o = AST_OP_SUB ) then
+			rsign = -sign
+		else
+			rsign = sign
+		end if
+
 		if( astIsCONST( r ) ) then
-
-			if( op < 0 ) then
-				if( o = AST_OP_ADD ) then
-					o = AST_OP_SUB
-				else
-					o = AST_OP_ADD
-				end if
-			end if
-
-			dtype = hPrepConst( v, r )
+			dtype = hPrepConst( v, r, rsign )
 
 			if( dtype <> FB_DATATYPE_INVALID ) then
+				if( rsign < 0 ) then
+					if( o = AST_OP_ADD ) then
+						o = AST_OP_SUB
+					else
+						o = AST_OP_ADD
+					end if
+				end if
+
 				select case o
 				case AST_OP_ADD
 					select case as const typeGet( dtype )
@@ -368,25 +386,15 @@ private function hConstAccumADDSUB _
 			astDelNode( n )
 
 			'' top node is now the left one
-			n = hConstAccumADDSUB( l, v, op )
-
+			n = hConstAccumADDSUB( l, v, sign )
 		else
 			'' walk
-			n->l = hConstAccumADDSUB( l, v, op )
-
-			if( o = AST_OP_SUB ) then
-#if 1 '' simple fix for #3153953
-				exit select
-#endif
-				op = -op
-			end if
-
-			n->r = hConstAccumADDSUB( r, v, op )
+			n->l = hConstAccumADDSUB( l, v, sign )
+			n->r = hConstAccumADDSUB( r, v, rsign )
 		end if
 	end select
 
 	function = n
-
 end function
 
 '':::::
@@ -408,8 +416,7 @@ private function hConstAccumMUL _
 		r = n->r
 
 		if( astIsCONST( r ) ) then
-
-			dtype = hPrepConst( v, r )
+			dtype = hPrepConst( v, r, 1 )
 
 			if( dtype <> FB_DATATYPE_INVALID ) then
 				select case as const typeGet( dtype )
@@ -483,10 +490,10 @@ private function hOptConstAccum1 _
 				n = hConstAccumMUL( n, @v )
 				n = astNewBOP( AST_OP_MUL, n, astNewCONST( @v.val, v.dtype ) )
 
-           	case AST_OP_SUB
+			case AST_OP_SUB
 				v.dtype = FB_DATATYPE_INVALID
-				n = hConstAccumADDSUB( n, @v, -1 )
-				n = astNewBOP( AST_OP_SUB, n, astNewCONST( @v.val, v.dtype ) )
+				n = hConstAccumADDSUB( n, @v, 1 )
+				n = astNewBOP( AST_OP_ADD, n, astNewCONST( @v.val, v.dtype ) )
 			end select
 		end if
 	end if
@@ -612,7 +619,7 @@ private function hConstDistMUL _
 
 		if( astIsCONST( r ) ) then
 
-			dtype = hPrepConst( v, r )
+			dtype = hPrepConst( v, r, 1 )
 
 			if( dtype <> FB_DATATYPE_INVALID ) then
 				select case as const typeGet( dtype )
