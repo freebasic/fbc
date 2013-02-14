@@ -9,6 +9,7 @@
 #include once "fbint.bi"
 #include once "lex.bi"
 #include once "pp.bi"
+#include once "parser.bi"
 
 declare sub 		lexReadUTF8				( )
 
@@ -1836,7 +1837,7 @@ read_char:
 
 			case CHAR_GT
 				'' '>='?
-				if( lexCurrentChar( TRUE ) = CHAR_EQ ) then
+				if( fbGetGtInParensOnly( ) = FALSE andalso lexCurrentChar( TRUE ) = CHAR_EQ ) then
 					'' t.text += chr( lexEatChar )
 					t->text[t->len+0] = lexEatChar( )
 					t->text[t->len+1] = 0

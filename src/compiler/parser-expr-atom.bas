@@ -15,19 +15,38 @@ declare function hBaseMemberAccess _
 
 
 '':::::
-function cEqInParentsOnlyExpr _
+function cEqInParensOnlyExpr _
 	( _
 		_
 	) as ASTNODE ptr
 
 	dim as ASTNODE ptr expr = any
 
-	dim as integer eqinparentsonly = fbGetEqInParentsOnly( )
-	fbSetEqInParentsOnly( TRUE )
+	dim as integer eqinparensonly = fbGetEqInParensOnly( )
+	fbSetEqInParensOnly( TRUE )
 
 	expr = cExpression( )
 
-	fbSetEqInParentsOnly( eqinparentsonly )
+	fbSetEqInParensOnly( eqinparensonly )
+
+	return expr
+
+end function
+
+'':::::
+function cGtInParensOnlyExpr _
+	( _
+		_
+	) as ASTNODE ptr
+
+	dim as ASTNODE ptr expr = any
+
+	dim as integer gtinparensonly = fbGetGtInParensOnly( )
+	fbSetGtInParensOnly( TRUE )
+
+	expr = cExpression( )
+
+	fbSetGtInParensOnly( gtinparensonly )
 
 	return expr
 
@@ -42,6 +61,7 @@ function cParentExpression _
 	) as ASTNODE ptr
 
 	dim as ASTNODE ptr parexpr = any
+	dim as integer eqinparensonly = any, gtinparensonly = any
 
   	'' '('
   	if( lexGetToken( ) <> CHAR_LPRNT ) then
@@ -56,7 +76,16 @@ function cParentExpression _
   	dim as integer is_opt = fbGetPrntOptional( )
   	fbSetPrntOptional( FALSE )
 
+
+	eqinparensonly = fbGetEqInParensOnly( )
+	gtinparensonly = fbGetGtInParensOnly( )
+	fbSetEqInParensOnly( FALSE )
+	fbSetGtInParensOnly( FALSE )
+	
   	parexpr = cExpression(  )
+
+	fbSetEqInParensOnly( eqinparensonly )
+	fbSetGtInParensOnly( gtinparensonly )
 
   	if( parexpr = NULL ) then
   		'' calling a SUB? it could be a BYVAL or nothing due the optional ()'s

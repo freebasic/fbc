@@ -128,8 +128,8 @@ sub sizeofExpression cdecl()
 	CU_ASSERT(   len(a <> b) = 4)
 	CU_ASSERT(sizeof(a <> b) = 4)
 
-	CU_ASSERT(   len(a < b) = 4)
-	CU_ASSERT(sizeof(a < b) = 4)
+	''CU_ASSERT(   len(a < b) = 4) '' This is treated as type to support len(integer<n>)
+	''CU_ASSERT(sizeof(a < b) = 4)
 
 	CU_ASSERT(   len(a <= b) = 4)
 	CU_ASSERT(sizeof(a <= b) = 4)

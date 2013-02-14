@@ -98,9 +98,10 @@ function cTypeOrExpression _
 
 	maybe_type = TRUE
 
-	'' Token followed by an operator except '*'?
-	if( (lexGetLookAheadClass( 1 ) = FB_TKCLASS_OPERATOR) and _
-	    (lexGetLookAhead( 1 ) <> CHAR_TIMES) ) then
+	'' Token followed by an operator except '*' / '<'?
+	if( (lexGetLookAheadClass( 1 ) = FB_TKCLASS_OPERATOR) andalso _
+	    (lexGetLookAhead( 1 ) <> CHAR_TIMES) andalso _
+	    (lexGetLookAhead( 1 ) <> FB_TK_LT) ) then
 		maybe_type = FALSE
 	else
 		'' Check for some non-operator tokens
@@ -178,6 +179,36 @@ sub cTypeOf _
 	astDelTree( expr )
 	astTempScopeDelete( scp )
 end sub
+
+function hIntegerTypeFromBitSize _
+	( _
+		byval bitsize as integer, _
+		byval is_unsigned as integer _
+	) as FB_DATATYPE
+
+	dim as FB_DATATYPE dtype
+
+	select case bitsize
+	case 8
+		dtype = FB_DATATYPE_BYTE
+	case 16
+		dtype = FB_DATATYPE_SHORT
+	case 32
+		dtype = FB_DATATYPE_LONG
+	case 64
+		dtype = FB_DATATYPE_LONGINT
+	case else
+		errReport( FB_ERRMSG_INVALIDSIZE, TRUE )
+		dtype = FB_DATATYPE_INTEGER
+	end select
+
+	if( is_unsigned ) then
+		dtype = typeToUnsigned( dtype )
+	end if
+
+	return dtype
+
+end function
 
 '':::::
 ''SymbolType      =   CONST? UNSIGNED? (
@@ -269,13 +300,48 @@ function cSymbolType _
 
 		case FB_TK_INTEGER
 			lexSkipToken( )
-			dtype = fbLangGetType( INTEGER )
-			lgt = fbLangGetSize( INTEGER )
+
+			'' ['<' lgt '>']
+			if( hMatch( FB_TK_LT ) ) then
+
+				'' expr
+				lgt = cConstIntExpr( cGtInParensOnlyExpr( ) )
+
+				dtype = hIntegerTypeFromBitSize( lgt, FALSE )
+
+				if( hMatch( FB_TK_GT ) = FALSE ) then
+					errReport( FB_ERRMSG_EXPECTEDGT, TRUE )
+				end if
+			else
+
+				dtype = fbLangGetType( INTEGER )
+
+			end if
+
+			lgt = typeGetSize( dtype )
 
 		case FB_TK_UINT
 			lexSkipToken( )
-			dtype = FB_DATATYPE_UINT
-			lgt = FB_INTEGERSIZE
+
+			'' ['<' lgt '>']
+			if( hMatch( FB_TK_LT ) ) then
+
+				'' expr
+				lgt = cConstIntExpr( cGtInParensOnlyExpr( ) )
+
+				dtype = hIntegerTypeFromBitSize( lgt, TRUE )
+
+				if( hMatch( FB_TK_GT ) = FALSE ) then
+					errReport( FB_ERRMSG_EXPECTEDGT, TRUE )
+				end if
+
+			else
+
+				dtype = FB_DATATYPE_UINT
+
+			end if
+
+			lgt = typeGetSize( dtype )
 
 		case FB_TK_LONG
 			lexSkipToken( )
@@ -432,11 +498,11 @@ function cSymbolType _
 	end if
 
 	'' fixed-len z|w|string? (must be handled here because the typedefs)
-	if( lexGetToken( ) = CHAR_STAR ) then
+	if( lexGetToken( ) = CHAR_TIMES ) then
 		lexSkipToken( )
 
 		'' expr
-		lgt = cConstIntExpr( cEqInParentsOnlyExpr( ) )
+		lgt = cConstIntExpr( cEqInParensOnlyExpr( ) )
 
 		select case as const typeGet( dtype )
 		case FB_DATATYPE_STRING
