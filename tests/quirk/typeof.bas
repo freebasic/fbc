@@ -117,22 +117,22 @@ sub test cdecl( )
 		#if typeof(cp) <> typeof(dp)
 			CU_ASSERT(0)
 		#endif
-		#if typeof(bar(0)) <> string
+		#if typeof(bar(0)) <> "STRING"
 			CU_ASSERT(0)
 		#endif
-		#if typeof(bar) <> string
+		#if typeof(bar) <> "STRING"
 			CU_ASSERT(0)
 		#endif
-		#if typeof(thingy.__) <> UDT2
+		#if typeof(thingy.__) <> "UDT2"
 			CU_ASSERT(0)
 		#endif
-		#if typeof(thingy.__.__) <> string
+		#if typeof(thingy.__.__) <> "STRING"
 			CU_ASSERT(0)
 		#endif
-		#if typeof(thingy.__.something) <> string
+		#if typeof(thingy.__.something) <> "STRING"
 			CU_ASSERT(0)
 		#endif
-		#if typeof(ret_int()) <> integer
+		#if typeof(ret_int()) <> "INTEGER"
 			CU_ASSERT(0)
 		#endif
 
@@ -144,11 +144,11 @@ sub test cdecl( )
 	scope
 		dim as integer x
 		dim as double y
-		#if typeof( x + y ) <> double
+		#if typeof( x + y ) <> "DOUBLE"
 			CU_ASSERT(0)
 		#endif
 		dim as UDT1 f, g
-		#if typeof( f + g ) <> UDT1
+		#if typeof( f + g ) <> "UDT1"
 			CU_ASSERT(0)
 		#endif
 	end scope
