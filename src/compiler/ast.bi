@@ -338,11 +338,6 @@ type AST_DTORLIST_SCOPESTACK
 	room	as integer
 end type
 
-type ASTVALUE
-	dtype			as integer
-	val				as FBVALUE
-end type
-
 type ASTCTX
 	astTB			as TLIST
 
