@@ -18,7 +18,6 @@ expressions \
 file \
 functions \
 interactive \
-macros \
 namespace \
 numbers \
 optimizations \
