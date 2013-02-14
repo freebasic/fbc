@@ -30,11 +30,6 @@ end type
 
 declare sub ppSkip( )
 
-declare function ppExpression _
-	( _
-		byref istrue as integer _
-	) as integer
-
 declare function ppLogExpression _
 	( _
 		byref logexpr as PPEXPR _
@@ -76,6 +71,28 @@ sub ppCondEnd( )
 
 end sub
 
+private function ppExpression( ) as integer
+	dim as ASTNODE ptr expr = any
+
+	fbSetIsPP( TRUE )
+	expr = cExpression( )
+	fbSetIsPP( FALSE )
+
+	'' String literals evaluate to FALSE
+	if( astGetStrLitSymbol( expr ) <> NULL ) then
+		expr = astNewCONSTi( 0 )
+
+	'' Besides that, it must be a numeric constant (that includes the
+	'' result of defined() or BOPs)
+	elseif( astIsCONST( expr ) = FALSE ) then
+		errReport( FB_ERRMSG_EXPECTEDCONST )
+		astDelTree( expr )
+		expr = astNewCONSTi( 0 )
+	end if
+
+	function = not astConstIsZero( expr )
+end function
+
 sub ppCondIf( )
     dim as integer istrue = any
     dim as FBSYMBOL ptr base_parent = any
@@ -107,9 +124,7 @@ sub ppCondIf( )
 	case FB_TK_PP_IF
         lexSkipToken( )
 
-		if( ppExpression( istrue ) = FALSE ) then
-			exit sub
-		end if
+		istrue = ppExpression( )
 
 	end select
 
@@ -151,9 +166,7 @@ sub ppCondElse( )
 	if( lexGetToken( LEXCHECK_KWDNAMESPC ) = FB_TK_PP_ELSEIF ) then
         lexSkipToken( )
 
-		if( ppExpression( istrue ) = FALSE ) then
-			exit sub
-		end if
+		istrue = ppExpression( )
 
 		if( pptb(pp.level).istrue ) then
 			ppSkip( )
@@ -700,33 +713,6 @@ private function hNumToBool _
 	case else
 		function = v.int <> 0
   	end select
-
-end function
-
-'':::::
-''Expression      =   LogExpression .
-''
-private function ppExpression _
-	( _
-		byref istrue as integer _
-	) as integer
-
-    dim as PPEXPR expr
-
-    function = FALSE
-
-    '' LogExpression
-    if( ppLogExpression( expr ) = FALSE ) then
-    	exit function
-    end if
-
-    if( expr.class = PPEXPR_CLASS_NUM ) then
-    	istrue = hNumToBool( expr.dtype, expr.num )
-    else
-    	istrue = FALSE
-    end if
-
-    function = TRUE
 
 end function
 

@@ -512,7 +512,6 @@ function ppReadLiteral _
     		continue do
 
 	  	case FB_TK_TYPEOF
-	  		lexSkipToken( )
 			DZstrConcatAssign( text, ppTypeOf( ) )
 			exit do
 
@@ -656,8 +655,6 @@ function ppReadLiteralW _
     		continue do
 
 	  	case FB_TK_TYPEOF
-	  		lexSkipToken( )
-
 	        DWstrConcatAssignA( text, ppTypeOf( ) )
 			exit do
 
@@ -678,14 +675,14 @@ function ppReadLiteralW _
 
 end function
 
-function ppTypeOf _
-	( _
-	) as zstring ptr
-
+function ppTypeOf( ) as zstring ptr
 	'' get type's name
-	dim as zstring ptr res
-	dim as integer dtype, lgt
-	dim as FBSYMBOL ptr subtype
+	dim as zstring ptr res = any
+	dim as integer dtype = any, lgt = any
+	dim as FBSYMBOL ptr subtype = any
+
+	'' TYPEOF
+	lexSkipToken( )
 
 	'' '('
 	if( lexGetToken( ) <> CHAR_LPRNT ) then
@@ -711,5 +708,4 @@ function ppTypeOf _
 	end if
 
 	function = res
-
 end function

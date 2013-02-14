@@ -160,6 +160,7 @@ enum FB_PARSEROPT
 	FB_PARSEROPT_HASINSTPTR		= &h00000040
 	FB_PARSEROPT_ISPROPGET		= &h00000080
 	FB_PARSEROPT_EQINPARENTSONLY= &h00000100	'' only check for '=' if inside parentheses
+	FB_PARSEROPT_ISPP               = &h00000200  '' PP expression? (e.g. #if condition)
 end enum
 
 type PARSERCTX
@@ -986,8 +987,17 @@ declare function cThreadCallFunc() as ASTNODE ptr
 	end if
 #endmacro
 
+'' Whether the expression being parsed is a PP expression (#ifdef etc.)
+#define fbGetIsPP( ) ((parser.options and FB_PARSEROPT_ISPP) <> 0)
+#macro fbSetIsPP( _bool )
+	if( _bool ) then
+		parser.options or= FB_PARSEROPT_ISPP
+	else
+		parser.options and= not FB_PARSEROPT_ISPP
+	end if
+#endmacro
+
 ''
 '' inter-module globals
 ''
 extern parser as PARSERCTX
-

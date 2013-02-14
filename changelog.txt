@@ -44,6 +44,7 @@ Version 0.25.0:
 - In procedure prototypes, identifiers of array parameters (as in "array() as type") can now be omitted (as in "() as type"), as for non-array parameters
 - LBound/UBound() on fixed-size arrays with constant dimension argument (or none at all) will now be compile-time constants
 - IIF now allows different types to be mixed, for example iif( condition, mybyte, myinteger ), the result type is the bigger type
+- #if/#elseif now accept all kinds of constant expressions that would be accepted in other places (e.g. in PRINT or in constant declarations)
 
 [fixed]
 - libzip headers: zip_stat struct was unnecessarily named zip_stat_, breaking the libzip example
@@ -188,6 +189,7 @@ Version 0.25.0:
 - #577: The compiler allowed assignments between string and *byteptr expressions, as if they were string and *zstringptr expressions
 - #508: The internal allocate/callocate/reallocate declarations didn't use an unsigned parameter like the real malloc/calloc/realloc functions, causing type mismatches with the C backend
 - #if typeof( myintegerpointer ) = "INTEGER PTR" will now work
+- #if's expression evaluation could produce wrong results (or at least inconsistent with the rest of FB) on some edge cases, such as "(1/2) > .49" or "&hFFFFFFFFu > 0u" (both evaluated to FALSE while it should have been TRUE)
 
 
 Version 0.24.0:
