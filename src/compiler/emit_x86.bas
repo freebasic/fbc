@@ -1745,13 +1745,14 @@ private sub _emitSTORI2I _
 	) static
 
     dim as string dst, src
-    dim as integer ddsize
+	dim as integer ddsize, sdsize
     dim as string ostr
 
 	hPrepOperand( dvreg, dst )
 	hPrepOperand( svreg, src )
 
 	ddsize = typeGetSize( dvreg->dtype )
+	sdsize = typeGetSize( svreg->dtype )
 
 	if( ddsize = 1 ) then
 		if( svreg->typ = IR_VREGTYPE_IMM ) then
@@ -1760,13 +1761,9 @@ private sub _emitSTORI2I _
 	end if
 
 	'' dst size = src size
-	if( (svreg->typ = IR_VREGTYPE_IMM) or _
-		(dvreg->dtype = svreg->dtype) or _
-		(typeMax( dvreg->dtype, svreg->dtype ) = FB_DATATYPE_INVALID) ) then
-
+	if( (svreg->typ = IR_VREGTYPE_IMM) or (ddsize = sdsize) ) then
 		ostr = "mov " + dst + COMMA + src
 		outp ostr
-
 	'' sizes are different..
 	else
     	dim as string aux
@@ -1774,7 +1771,7 @@ private sub _emitSTORI2I _
 		aux = *hGetRegName( dvreg->dtype, svreg->reg )
 
 		'' dst size > src size
-		if( dvreg->dtype > svreg->dtype ) then
+		if( ddsize > sdsize ) then
 			if( typeIsSigned( svreg->dtype ) ) then
 				ostr = "movsx "
 			else
@@ -2360,14 +2357,14 @@ private sub _emitLOADI2I _
 	) static
 
     dim as string dst, src
-    dim as integer ddsize
+	dim as integer ddsize, sdsize
     dim as string ostr
 
 	hPrepOperand( dvreg, dst )
 	hPrepOperand( svreg, src )
 
-
 	ddsize = typeGetSize( dvreg->dtype )
+	sdsize = typeGetSize( svreg->dtype )
 
 	if( ddsize = 1 ) then
 		if( svreg->typ = IR_VREGTYPE_IMM ) then
@@ -2376,17 +2373,12 @@ private sub _emitLOADI2I _
 	end if
 
 	'' dst size = src size
-	if( (dvreg->dtype = svreg->dtype) or _
-		(typeMax( dvreg->dtype, svreg->dtype ) = FB_DATATYPE_INVALID) ) then
-
+	if( ddsize = sdsize ) then
 		ostr = "mov " + dst + COMMA + src
 		outp ostr
-
-
-
 	else
 		'' dst size > src size
-		if( dvreg->dtype > svreg->dtype ) then
+		if( ddsize > sdsize ) then
 			if( typeIsSigned( svreg->dtype ) ) then
 				ostr = "movsx "
 			else
