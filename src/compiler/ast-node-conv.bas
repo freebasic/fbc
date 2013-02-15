@@ -487,13 +487,15 @@ function astNewCONV _
 		end if
 	end if
 
-	'' check pointers
-	errmsg = hCheckPtr( to_dtype, to_subtype, ldtype, l, options )
-	if( errmsg <> FB_ERRMSG_OK ) then
-		if( perrmsg ) then
-			*perrmsg = errmsg
+	if( (options and AST_CONVOPT_DONTCHKPTR) = 0 ) then
+		'' check pointers
+		errmsg = hCheckPtr( to_dtype, to_subtype, ldtype, l, options )
+		if( errmsg <> FB_ERRMSG_OK ) then
+			if( perrmsg ) then
+				*perrmsg = errmsg
+			end if
+			exit function
 		end if
-		exit function
 	end if
 
 	'' string?

@@ -608,7 +608,8 @@ function astNewASSIGN _
 		if( rdclass <> FB_DATACLASS_STRING ) then
 			'' constant?
 			if( astIsCONST( r ) ) then
-				r = astNewCONV( ldfull, lsubtype, r )
+				r = astNewCONV( ldfull, lsubtype, r, _
+					iif( options and AST_OPOPT_DONTCHKPTR, AST_CONVOPT_DONTCHKPTR, 0 ) )
 				if( r = NULL ) then
 					exit function
 				end if
@@ -626,7 +627,8 @@ function astNewASSIGN _
 			end if
 
 			if( doconv ) then
-				r = astNewCONV( ldfull, l->subtype, r )
+				r = astNewCONV( ldfull, l->subtype, r, _
+					iif( options and AST_OPOPT_DONTCHKPTR, AST_CONVOPT_DONTCHKPTR, 0 ) )
 				if( r = NULL ) then
 					exit function
 				end if
