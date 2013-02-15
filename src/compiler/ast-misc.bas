@@ -127,34 +127,17 @@ function astIsTreeEqual _
 		end if
 
 	case AST_NODECLASS_CONST
-
-		select case as const astGetDataType( l )
-		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-			if( l->con.val.long <> r->con.val.long ) then
+		select case( typeGetClass( l->dtype ) )
+		case FB_DATACLASS_FPOINT
+			if( l->val.f <> r->val.f ) then
 				exit function
 			end if
 
-		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-			if( l->con.val.float <> r->con.val.float ) then
+		case FB_DATACLASS_INTEGER
+			if( l->val.i <> r->val.i ) then
 				exit function
 			end if
 
-  		case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
-  	    	if( FB_LONGSIZE = len( integer ) ) then
-				if( l->con.val.int <> r->con.val.int ) then
-					exit function
-				end if
-  	    	else
-				if( l->con.val.long <> r->con.val.long ) then
-					exit function
-				end if
-  	    	end if
-
-		case else
-			'' bytes/shorts/integers/enums
-			if( l->con.val.int <> r->con.val.int ) then
-				exit function
-			end if
 		end select
 
 	case AST_NODECLASS_DEREF
@@ -389,79 +372,6 @@ function astIsConstant( byval expr as ASTNODE ptr ) as integer
 end function
 
 '':::::
-function astGetValueAsLongInt _
-	( _
-		byval n as ASTNODE ptr _
-	) as longint
-
-	assert( astIsCONST( n ) )
-
-  	select case as const astGetDataType( n )
-  	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-  	    function = astGetValLong( n )
-
-  	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-  		function = clngint( astGetValFloat( n ) )
-
-  	case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
-  	    if( FB_LONGSIZE = len( integer ) ) then
-  			if( astGetDataType( n ) = FB_DATATYPE_LONG ) then
-  				function = clngint( astGetValInt( n ) )
-  			else
-  				function = clngint( cuint( astGetValInt( n ) ) )
-  			end if
-  	   	else
-  	    	function = astGetValLong( n )
-  	    end if
-
-  	case else
-  		if( typeIsSigned( astGetDataType( n ) ) ) then
-  			function = clngint( astGetValInt( n ) )
-  		else
-  			function = clngint( cuint( astGetValInt( n ) ) )
-  		end if
-  	end select
-
-end function
-
-function astGetValueAsDouble( byval n as ASTNODE ptr ) as double
-	assert( astIsCONST( n ) )
-
-	select case as const( astGetDataType( n ) )
-	case FB_DATATYPE_ULONGINT
-		'' without cunsg(), &hFFFFFFFFFFFFFFFFull would be seen as -1,
-		'' causing the double to be -1 instead of the huge value...
-		function = cdbl( cunsg( astGetValLong( n ) ) )
-
-	case FB_DATATYPE_LONGINT
-		function = cdbl( astGetValLong( n ) )
-
-	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-		function = astGetValFloat( n )
-
-	case FB_DATATYPE_ULONG
-		if( FB_LONGSIZE = len( integer ) ) then
-			function = cdbl( cunsg( astGetValLong( n ) ) )
-		else
-			function = cdbl( cunsg( astGetValInt( n ) ) )
-		end if
-
-	case FB_DATATYPE_LONG
-		if( FB_LONGSIZE = len( integer ) ) then
-			function = cdbl( astGetValLong( n ) )
-		else
-			function = cdbl( astGetValInt( n ) )
-		end if
-
-	case FB_DATATYPE_UINT
-		function = cdbl( cunsg( astGetValInt( n ) ) )
-
-	case else
-		function = cdbl( astGetValInt( n ) )
-	end select
-end function
-
-'':::::
 function astGetStrLitSymbol _
 	( _
 		byval n as ASTNODE ptr _
@@ -512,7 +422,7 @@ sub astCheckConst _
 	''    dim b as uinteger = 1 shl 31
 	''
 
-	select case as const( typeGet( dtype ) )
+	select case as const( typeGetDtAndPtrOnly( dtype ) )
 	''case FB_DATATYPE_DOUBLE
 		'' DOUBLE can hold all the other dtype's values;
 		'' perhaps not with 100% precision (e.g. huge ULONGINTs will
@@ -526,7 +436,7 @@ sub astCheckConst _
 		'' min = 1.401298e-45
 		'' max = 3.402823e+38
 
-		dval = astGetValueAsDouble( n )
+		dval = astConstGetAsDouble( n )
 
 		select case abs( dval )
 		case 0.0, 2e-45 to 3e+38 '' definitely no overflow: comfortably within SINGLE bounds
@@ -544,34 +454,33 @@ sub astCheckConst _
 			end if
 		end select
 
-	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT, _
-	     FB_DATATYPE_INTEGER, FB_DATATYPE_UINT, FB_DATATYPE_ENUM, _
-	     FB_DATATYPE_LONG, FB_DATATYPE_ULONG, _
-	     FB_DATATYPE_SHORT, FB_DATATYPE_USHORT, FB_DATATYPE_WCHAR, _
-	     FB_DATATYPE_BYTE, FB_DATATYPE_UBYTE, FB_DATATYPE_CHAR
+	case FB_DATATYPE_BITFIELD
+		'' !!!WRITEME!!! use ->subtype's
 
-		select case as const( typeGetSize( dtype ) )
-		case 1
-			lval = astGetValueAsLongInt( n )
+	case else
+		select case as const( typeGetSizeType( dtype ) )
+		case FB_SIZETYPE_INT8, FB_SIZETYPE_UINT8
+			lval = astConstGetAsInt64( n )
 			result = ((lval >= -128) and (lval <= 255))
-		case 2
-			lval = astGetValueAsLongInt( n )
+
+		case FB_SIZETYPE_INT16, FB_SIZETYPE_UINT16
+			lval = astConstGetAsInt64( n )
 			result = ((lval >= -32768) and (lval <= 65535))
-		case 4
-			lval = astGetValueAsLongInt( n )
+
+		case FB_SIZETYPE_INT32, FB_SIZETYPE_UINT32
+			lval = astConstGetAsInt64( n )
 			result = ((lval >= -2147483648u) and (lval <= 4294967295u))
-		case 8
+
+		case FB_SIZETYPE_INT64, FB_SIZETYPE_UINT64
 			'' longints can hold most other type's values, except floats
 			'' float?
 			if( typeGetClass( n->dtype ) = FB_DATACLASS_FPOINT ) then
-				dval = astGetValueAsDouble( n )
+				dval = astConstGetAsDouble( n )
 				result = ((dval >= -9223372036854775808ull) and _
 					  (dval <= 18446744073709551615ull))
 			end if
 		end select
 
-	case FB_DATATYPE_BITFIELD
-		'' !!!WRITEME!!! use ->subtype's
 	end select
 
 	if( result = FALSE ) then
@@ -599,7 +508,7 @@ function astPtrCheck _
 		'' Only ok if it's a 0 constant
 		if( astIsCONST( expr ) ) then
 			if( typeGetClass( edtype ) = FB_DATACLASS_INTEGER ) then
-				function = astConstIsZero( expr )
+				function = astConstEqZero( expr )
 			end if
 		end if
 		exit function
@@ -808,7 +717,7 @@ function astBuildBranch _
 		''    over the IF block.
 		'' b) true (or false but inverted), don't emit a jump at all,
 		''    but fall trough to the IF block.
-		if( astConstIsZero( n ) <> is_inverse ) then
+		if( astConstEqZero( n ) <> is_inverse ) then
 			function = astNewBRANCH( AST_OP_JMP, label, NULL )
 		else
 			function = astNewNOP( )

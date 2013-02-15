@@ -526,9 +526,9 @@ sub hPrepOperand _
 
 	case IR_VREGTYPE_IMM
 		if( isaux = FALSE ) then
-			operand = str( vreg->value.int )
+			operand = str( vreg->value.i )
 		else
-			operand = str( vreg->vaux->value.int )
+			operand = str( vreg->vaux->value.i )
 		end if
 
 	case else
@@ -1554,7 +1554,7 @@ private sub _emitRET _
 
     dim ostr as string
 
-    ostr = "ret " + str( vreg->value.int )
+	ostr = "ret " + str( vreg->value.i )
     outp( ostr )
 
 end sub
@@ -1667,7 +1667,7 @@ private sub _emitSTORI2L _
 		hMOV dst1, src1
 
 		'' negative?
-		if( typeIsSigned( svreg->dtype ) and (svreg->value.int and &h80000000) ) then
+		if( typeIsSigned( svreg->dtype ) and (svreg->value.i < 0) ) then
 			hMOV dst2, "-1"
 		else
 			hMOV dst2, "0"
@@ -2226,11 +2226,10 @@ private sub _emitLOADI2L _
 
 	'' immediate?
 	if( svreg->typ = IR_VREGTYPE_IMM ) then
-
         hMOV dst1, src1
 
 		'' negative?
-		if( typeIsSigned( svreg->dtype ) and (svreg->value.int and &h80000000) ) then
+		if( typeIsSigned( svreg->dtype ) and (svreg->value.i < 0) ) then
 			hMOV dst2, "-1"
 		else
 			hMOV dst2, "0"
@@ -2853,7 +2852,7 @@ private sub _emitADDI _
 	doinc = FALSE
 	dodec = FALSE
 	if( svreg->typ = IR_VREGTYPE_IMM ) then
-		select case svreg->value.int
+		select case svreg->value.i
 		case 1
 			doinc = TRUE
 		case -1
@@ -2941,7 +2940,7 @@ private sub _emitSUBI _
 	doinc = FALSE
 	dodec = FALSE
 	if( svreg->typ = IR_VREGTYPE_IMM ) then
-		select case svreg->value.int
+		select case svreg->value.i
 		case 1
 			dodec = TRUE
 		case -1
@@ -3552,7 +3551,7 @@ private sub hSHIFTL _
 	end if
 
 	if( svreg->typ = IR_VREGTYPE_IMM ) then
-		if( svreg->value.int >= 64 ) then
+		if( svreg->value.i >= 64 ) then
 			'' zero both result halves
 			if( bv->typ = IR_VREGTYPE_REG ) then
 				outp "xor " + b + ", " + b
@@ -3565,7 +3564,7 @@ private sub hSHIFTL _
 			else
 				outp "mov " + a + ", 0"
 			end if
-		elseif( svreg->value.int >= 32 ) then
+		elseif( svreg->value.i >= 32 ) then
 			tmpisfree = TRUE
 			if( (bv->typ = IR_VREGTYPE_REG) or (av->typ = IR_VREGTYPE_REG) ) then
 				'' a or b is a reg
@@ -3595,8 +3594,8 @@ private sub hSHIFTL _
 				outp "mov " + b + ", 0"
 			end if
 
-			if( svreg->value.int > 32 ) then
-				src = str( svreg->value.int - 32 )
+			if( svreg->value.i > 32 ) then
+				src = str( svreg->value.i - 32 )
 				outp mnemonic32 + a + ", " + src
 			end if
 
@@ -4306,7 +4305,7 @@ private sub hCMPI _
 	'' optimize "cmp" to "test"
 	dotest = FALSE
 	if( (svreg->typ = IR_VREGTYPE_IMM) and (dvreg->typ = IR_VREGTYPE_REG) ) then
-		if( svreg->value.int = 0 ) then
+		if( svreg->value.i = 0 ) then
 			dotest = TRUE
 		end if
 	end if
@@ -5323,10 +5322,10 @@ end sub
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 private sub _emitSTACKALIGN( byval vreg as IRVREG ptr, byval unused as integer )
-	if( vreg->value.int > 0 ) then
-		outp( "sub esp, " + str( vreg->value.int ) )
+	if( vreg->value.i > 0 ) then
+		outp( "sub esp, " + str( vreg->value.i ) )
 	else
-		outp( "add esp, " + str( -vreg->value.int ) )
+		outp( "add esp, " + str( -vreg->value.i ) )
 	end if
 end sub
 
@@ -5597,14 +5596,14 @@ private sub _emitPOPI _
 		'' gosub quirk: return-to-label needs to pop return address from the stack
 		'' see ast-gosub.bas::astGosubAddReturn() - (jeffm)
 
-		if( dvreg->value.int = 4 ) then
+		if( dvreg->value.i = 4 ) then
 			if( hIsRegFree( FB_DATACLASS_INTEGER, EMIT_REG_EAX ) ) then
 				hPOP "eax"
 			else
 				outp "add esp, 4"
 			end if
 		else
-			ostr = "add esp, " + str( dvreg->value.int )
+			ostr = "add esp, " + str( dvreg->value.i )
 			outp ostr
 		end if
 
@@ -6149,7 +6148,7 @@ private sub _emitMEMCLEAR _
 
 	'' handle the assumption done at ast-node-mem::newMEM()
 	if( irIsIMM( svreg ) ) then
-		dim as integer bytes = svreg->value.int
+		dim as integer bytes = svreg->value.i
 		if( bytes > EMIT_MEMBLOCK_MAXLEN ) then
 			hMemClearRepIMM( dvreg, bytes )
 		else

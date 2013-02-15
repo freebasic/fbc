@@ -57,6 +57,18 @@ const FB_DT_PTRLEVELS		= 8					'' max levels of pointer indirection
 const FB_DT_PTRPOS			= 5
 const FB_DT_CONSTPOS		= FB_DT_PTRPOS + 4
 
+enum
+	FB_SIZETYPE_INT8 = 0
+	FB_SIZETYPE_UINT8
+	FB_SIZETYPE_INT16
+	FB_SIZETYPE_UINT16
+	FB_SIZETYPE_INT32
+	FB_SIZETYPE_UINT32
+	FB_SIZETYPE_INT64
+	FB_SIZETYPE_UINT64
+	FB_SIZETYPE_FLOAT32
+	FB_SIZETYPE_FLOAT64
+end enum
 
 '' symbol classes
 '' When changing, update symb.bas:symbDump():classnames
@@ -303,12 +315,9 @@ type FBNAMESPC
 end type
 
 union FBVALUE
-	str				as FBSYMBOL_ ptr
-	int				as integer
-	uint			as uinteger
-	float			as double
-	long			as longint
-	ulong			as ulongint
+	s			as FBSYMBOL_ ptr
+	i			as longint
+	f			as double
 end union
 
 '' keyword
@@ -455,12 +464,6 @@ type FBS_ENUM
 	dbg				as FB_STRUCT_DBG
 end type
 
-'' constant
-type FBS_CONST
-	val				as FBVALUE
-end type
-
-''
 type FB_CALL_ARG								'' used by overloaded function calls
 	expr			as ASTNODE_ ptr
 	mode			as FB_PARAMMODE
@@ -680,7 +683,7 @@ type FBSYMBOL
 
 	union
 		var_		as FBS_VAR
-		con			as FBS_CONST
+		val			as FBVALUE  '' constants
 		udt			as FBS_STRUCT
 		bitfld		as FBS_BITFLD
 		enum_		as FBS_ENUM
@@ -803,6 +806,7 @@ type SYMB_DATATYPE
 	size			as integer					'' in bytes
 	signed			as integer					'' TRUE or FALSE
 	remaptype		as FB_DATATYPE				'' remapped type for ENUM, POINTER, etc
+	sizetype		as integer      '' FB_SIZETYPE_*
 	name			as const zstring ptr
 end type
 
@@ -970,11 +974,6 @@ declare function symbAreProcModesEqual _
 		byval procb as FBSYMBOL ptr _
 	) as integer
 
-declare function symbGetConstValueAsStr _
-	( _
-		byval s as FBSYMBOL ptr _
-	) as string
-
 declare function symbAddKeyword _
 	( _
 		byval symbol as const zstring ptr, _
@@ -1097,6 +1096,8 @@ declare function symbAddConst _
 		byval value as FBVALUE ptr, _
 		byval attrib as integer = FB_SYMBATTRIB_NONE _
 	) as FBSYMBOL ptr
+
+declare function symbGetConstValueAsStr( byval s as FBSYMBOL ptr ) as string
 
 declare function symbStructBegin _
 	( _
@@ -1697,11 +1698,7 @@ declare function symbCloneSymbol _
 		byval s as FBSYMBOL ptr _
 	) as FBSYMBOL ptr
 
-declare function symbCloneConst _
-	( _
-		byval sym as FBSYMBOL ptr _
-	) as FBSYMBOL ptr
-
+declare function symbCloneConst( byval sym as FBSYMBOL ptr ) as FBSYMBOL ptr
 declare function symbCloneVar( byval sym as FBSYMBOL ptr ) as FBSYMBOL ptr
 declare function symbCloneStruct( byval sym as FBSYMBOL ptr ) as FBSYMBOL ptr
 
@@ -2014,15 +2011,10 @@ declare function symbGetUDTBaseLevel _
 
 #define symbIsNameSpace(s) (s->class = FB_SYMBCLASS_NAMESPACE)
 
-#define symbGetConstVal(s) s->con.val
-
-#define symbGetConstValStr(s) s->con.val.str
-
-#define symbGetConstValInt(s) s->con.val.int
-
-#define symbGetConstValFloat(s) s->con.val.float
-
-#define symbGetConstValLong(s) s->con.val.long
+#define symbGetConstVal( sym )   (@((sym)->val))
+#define symbGetConstStr( sym )   ((sym)->val.s)
+#define symbGetConstInt( sym )   ((sym)->val.i)
+#define symbGetConstFloat( sym ) ((sym)->val.f)
 
 #define symbGetDefineText(d) d->def.text
 
@@ -2372,6 +2364,7 @@ declare sub symbProcSetRealType( byval proc as FBSYMBOL ptr )
 #define typeGetSize( dt ) symb_dtypeTB(typeGet( dt )).size
 #define typeGetBits( dt ) (typeGetSize( dt ) * 8)
 #define typeIsSigned( dt ) symb_dtypeTB(typeGet( dt )).signed
+#define typeGetSizeType( dt ) symb_dtypeTB(typeGet( dt )).sizetype
 
 #define typeGet( dt ) iif( dt and FB_DT_PTRMASK, FB_DATATYPE_POINTER, dt and FB_DT_TYPEMASK )
 #define typeGetDtOnly( dt ) (dt and FB_DT_TYPEMASK)

@@ -762,16 +762,16 @@ end sub
 private sub _emitVarIniEnd( byval sym as FBSYMBOL ptr )
 end sub
 
-private sub _emitVarIniI( byval dtype as integer, byval value as integer )
-	emitVARINIi( dtype, value )
+private sub _emitVarIniI( byval dtype as integer, byval value as longint )
+	if( ISLONGINT( dtype ) ) then
+		emitVARINI64( dtype, value )
+	else
+		emitVARINIi( dtype, value )
+	end if
 end sub
 
 private sub _emitVarIniF( byval dtype as integer, byval value as double )
 	emitVARINIf( dtype, value )
-end sub
-
-private sub _emitVarIniI64( byval dtype as integer, byval value as longint )
-	emitVARINI64( dtype, value )
 end sub
 
 private sub _emitVarIniOfs( byval sym as FBSYMBOL ptr, byval ofs as integer )
@@ -930,32 +930,7 @@ private function _allocVreg _
 
 end function
 
-'':::::
 private function _allocVrImm _
-	( _
-		byval dtype as integer, _
-		byval subtype as FBSYMBOL ptr, _
-		byval value as integer _
-	) as IRVREG ptr
-
-	dim as IRVREG ptr vr = any
-
-	vr = hNewVR( dtype, subtype, IR_VREGTYPE_IMM )
-
-	vr->value.int = value
-
-	'' longint?
-	if( ISLONGINT( dtype ) ) then
-		 vr->vaux = hNewVR( FB_DATATYPE_INTEGER, NULL, IR_VREGTYPE_IMM )
-		 vr->vaux->value.int = 0
-	end if
-
-	function = vr
-
-end function
-
-'':::::
-private function _allocVrImm64 _
 	( _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
@@ -966,18 +941,20 @@ private function _allocVrImm64 _
 
 	vr = hNewVR( dtype, subtype, IR_VREGTYPE_IMM )
 
-	vr->value.int = cuint( value )
+	if( ISLONGINT( dtype ) ) then
+		'' Only the low 32bits go in the main vreg
+		vr->value.i = cuint( value )
 
-	'' aux
-	vr->vaux = hNewVR( FB_DATATYPE_INTEGER, NULL, IR_VREGTYPE_IMM )
-
-	vr->vaux->value.int = cint( value shr 32 )
+		'' The aux vreg takes the high 32bits
+		vr->vaux = hNewVR( FB_DATATYPE_INTEGER, NULL, IR_VREGTYPE_IMM )
+		vr->vaux->value.i = cint( value shr 32 )
+	else
+		vr->value.i = value
+	end if
 
 	function = vr
-
 end function
 
-'':::::
 private function _allocVrImmF _
 	( _
 		byval dtype as integer, _
@@ -986,19 +963,19 @@ private function _allocVrImmF _
 	) as IRVREG ptr
 
 	dim as IRVREG ptr vr = any
+	dim as FBSYMBOL ptr s = any
 
-	'' the FPU doesn't support immediates? create a temp const var_..
-	if( irGetOption( IR_OPT_FPUIMMEDIATES ) = FALSE ) then
-		dim as FBSYMBOL ptr s = symbAllocFloatConst( value, dtype )
-		return irAllocVRVAR( dtype, subtype, s, symbGetOfs( s ) )
+	'' float immediates supported by the FPU?
+	if( irGetOption( IR_OPT_FPUIMMEDIATES ) ) then
+		vr = hNewVR( dtype, subtype, IR_VREGTYPE_IMM )
+		vr->value.f = value
+	else
+		'' create a temp const var
+		s = symbAllocFloatConst( value, dtype )
+		vr = irAllocVRVAR( dtype, subtype, s, symbGetOfs( s ) )
 	end if
 
-	vr = hNewVR( dtype, subtype, IR_VREGTYPE_IMM )
-
-	vr->value.float = value
-
 	function = vr
-
 end function
 
 '':::::
@@ -1023,7 +1000,7 @@ private function _allocVrVar _
 	if( ISLONGINT( dtype ) ) then
 		va = hNewVR( FB_DATATYPE_INTEGER, NULL, IR_VREGTYPE_VAR )
 		vr->vaux = va
-		va->ofs = ofs + FB_INTEGERSIZE
+		va->ofs = ofs + 4  '' vaux = the upper 4 bytes
 	end if
 
 	function = vr
@@ -1054,7 +1031,7 @@ private function _allocVrIdx _
 	if( ISLONGINT( dtype ) ) then
 		va = hNewVR( FB_DATATYPE_INTEGER, NULL, IR_VREGTYPE_IDX )
 		vr->vaux= va
-		va->ofs = ofs + FB_INTEGERSIZE
+		va->ofs = ofs + 4  '' vaux = the upper 4 bytes
 	end if
 
 	function = vr
@@ -1082,7 +1059,7 @@ private function _allocVrPtr _
 	if( ISLONGINT( dtype ) ) then
 		va = hNewVR( FB_DATATYPE_INTEGER, NULL, IR_VREGTYPE_IDX )
 		vr->vaux= va
-		va->ofs = ofs + FB_INTEGERSIZE
+		va->ofs = ofs + 4  '' vaux = the upper 4 bytes
 	end if
 
 	function = vr
@@ -2302,11 +2279,11 @@ private sub hFlushCONVERT _
 		if( irGetDistance( v2 ) = IR_MAXDIST ) then
 			'' don't reuse if any operand is a byte (because [E]SI/[E]DI) or longint
 			select case typeGetSize( v1_dtype )
-			case 1, FB_INTEGERSIZE*2
+			case 1, 8
 
 			case else
 				select case typeGetSize( v2_dtype )
-				case 1, FB_INTEGERSIZE*2
+				case 1, 8
 
 				case else
 					reuse = TRUE
@@ -2670,7 +2647,7 @@ private sub _storeVR _
 			regTB(FB_DATACLASS_INTEGER)->free( regTB(FB_DATACLASS_INTEGER), vareg->reg )
 			vareg->reg = INVALID
 			vareg->typ = IR_VREGTYPE_VAR
-			vareg->ofs = vreg->ofs + FB_INTEGERSIZE
+			vareg->ofs = vreg->ofs + 4  '' vaux = the upper 4 bytes
 		end if
 	end if
 
@@ -2749,7 +2726,6 @@ dim shared as IR_VTBL irtac_vtbl = _
 	@_emitVarIniEnd, _
 	@_emitVarIniI, _
 	@_emitVarIniF, _
-	@_emitVarIniI64, _
 	@_emitVarIniOfs, _
 	@_emitVarIniStr, _
 	@_emitVarIniWstr, _
@@ -2761,7 +2737,6 @@ dim shared as IR_VTBL irtac_vtbl = _
 	@_emitFbctinfEnd, _
 	@_allocVreg, _
 	@_allocVrImm, _
-	@_allocVrImm64, _
 	@_allocVrImmF, _
 	@_allocVrVar, _
 	@_allocVrIdx, _

@@ -163,11 +163,9 @@ private sub hScalarNext _
 
     '' is STEP known? (ie: an constant expression)
     if( stk->for.ispos.sym = NULL ) then
-    	'' counter <= or >= end cond?
-		hFlushBOP( iif( stk->for.ispos.value.int, AST_OP_LE, AST_OP_GE ), _
-			   	   @stk->for.cnt, _
-			   	   @stk->for.end, _
-			   	   stk->for.inilabel )
+		'' counter <= or >= end cond?
+		hFlushBOP( iif( stk->for.ispos.value.i, AST_OP_LE, AST_OP_GE ), _
+		           @stk->for.cnt, @stk->for.end, stk->for.inilabel )
 
     '' STEP unknown, check sign and branch
     else
@@ -348,7 +346,7 @@ private function hStepExpression _
 			'' The value of the constant is calculated by
 			'' taking the STEP value, and multiplying it by
 			'' the width of the counter type.
-			function = astNewCONSTi( rhs->value.int * length )
+			function = astNewCONSTi( rhs->value.i * length )
 		end if
 	'' regular variable counter
 	else
@@ -443,7 +441,7 @@ private sub hForAssign _
 			end if
 
 			'' take the constant value
-			stk->for.cnt.value = astGetValue( expr )
+			stk->for.cnt.value = *astConstGetVal( expr )
 
 			isconst += 1
 		end if
@@ -514,7 +512,7 @@ private sub hForTo _
 
 			'' insert constant value instead, deleting
 			'' source expression
-			stk->for.end.value = astGetValue( expr )
+			stk->for.end.value = *astConstGetVal( expr )
 			astDelNode( expr )
 
 			isconst += 1
@@ -552,24 +550,8 @@ private function hStepIsNonNegative _
 		return TRUE
 	end if
 
-	select case as const typeGet( dtype )
-	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-		function = (astGetValLong( expr ) >= 0)
-
-	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-		function = (astGetValFloat( expr ) >= 0)
-
-	case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
-		if( FB_LONGSIZE = len( integer ) ) then
-			function = (astGetValInt( expr ) >= 0)
-		else
-			function = (astGetValLong( expr ) >= 0)
-		end if
-
-	case else
-		function = (astGetValInt( expr ) >= 0)
-	end select
-
+	'' const >= 0?
+	function = astConstGeZero( expr )
 end function
 
 '':::::
@@ -628,7 +610,7 @@ private sub hForStep _
 			end if
 
 			'' get step's positivity
-			stk->for.ispos.value.int = hStepIsNonNegative( dtype, expr )
+			stk->for.ispos.value.i = hStepIsNonNegative( dtype, expr )
 
 			'' get constant step
 			stk->for.stp.sym = NULL
@@ -639,7 +621,7 @@ private sub hForStep _
 			end if
 
 			'' store expr into value, and del temp expression
-			stk->for.stp.value = astGetValue( expr )
+			stk->for.stp.value = *astConstGetVal( expr )
 			astDelNode( expr )
 
 			isconst += 1
@@ -683,34 +665,12 @@ private sub hForStep _
 		'' step is unsigned, so non-negative
 		stk->for.ispos.sym = NULL
 		stk->for.ispos.dtype = FB_DATATYPE_INTEGER
-		stk->for.ispos.value.int = TRUE
+		stk->for.ispos.value.i = -1  '' TRUE
 
     '' if STEP's sign is unknown, we have to check for that
     elseif( iscomplex and ((flags and FOR_ISUDT) = 0) ) then
-
-
-		dim as FB_CMPSTMT_FORELM cmp = any
-
+		dim as FB_CMPSTMT_FORELM cmp '' zero-init the FBVALUE field, etc.
 		cmp.dtype = stk->for.stp.dtype
-		cmp.sym = NULL
-
-		select case as const cmp.dtype
-		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-			cmp.value.long = 0
-
-		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-			cmp.value.float = 0.0
-
-		case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
-			if( FB_LONGSIZE = len( integer ) ) then
-				cmp.value.int = 0
-			else
-				cmp.value.long = 0
-			end if
-
-		case else
-			cmp.value.int = 0
-		end select
 
 		stk->for.ispos.sym = symbAddTempVar( FB_DATATYPE_INTEGER )
 		stk->for.ispos.dtype = FB_DATATYPE_INTEGER
@@ -859,22 +819,19 @@ sub cForStmtBegin( )
 		hUdtFor( stk )
 	end if
 
-    '' if inic, endc and stepc are all constants,
-    '' check if this branch is needed
-    if( isconst = 3 ) then
-    	expr = astNewBOP( iif( stk->for.ispos.value.int, AST_OP_LE, AST_OP_GE ), _
-    					  astNewCONST( @stk->for.cnt.value, stk->for.cnt.dtype ), _
-    					  astNewCONST( @stk->for.end.value, stk->for.end.dtype ) )
+	'' if inic, endc and stepc are all constants,
+	'' check if this branch is needed
+	if( isconst = 3 ) then
+		expr = astNewBOP( iif( stk->for.ispos.value.i, AST_OP_LE, AST_OP_GE ), _
+					astNewCONST( @stk->for.cnt.value, stk->for.cnt.dtype ), _
+					astNewCONST( @stk->for.end.value, stk->for.end.dtype ) )
 
-    	if( astGetValInt( expr ) = FALSE ) then
-    		astAdd( astNewBRANCH( AST_OP_JMP, el ) )
-    	end if
-
-    	astDelNode( expr )
-
-    else
-	   	astAdd( astNewBRANCH( AST_OP_JMP, tl ) )
-    end if
+		if( astConstFlushToInt( expr ) = 0 ) then
+			astAdd( astNewBRANCH( AST_OP_JMP, el ) )
+		end if
+	else
+		astAdd( astNewBRANCH( AST_OP_JMP, tl ) )
+	end if
 
 	'' add start label
 	il = symbAddLabel( NULL )

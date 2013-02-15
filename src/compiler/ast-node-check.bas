@@ -32,11 +32,11 @@ function astNewBOUNDCHK _
 			'' index also?
 			if( astIsCONST( l ) ) then
 				'' i < lbound?
-				if( l->con.val.int < lb->con.val.int ) then
+				if( astConstGetInt( l ) < astConstGetInt( lb ) ) then
 					return NULL
 				end if
 				'' i > ubound?
-				if( l->con.val.int > ub->con.val.int ) then
+				if( astConstGetInt( l ) > astConstGetInt( ub ) ) then
 					return NULL
 				end if
 
@@ -47,7 +47,7 @@ function astNewBOUNDCHK _
 		end if
 
 		'' 0? del it
-		if( lb->con.val.int = 0 ) then
+		if( astConstGetInt( lb ) = 0 ) then
 			astDelNode( lb )
 			lb = NULL
 		end if

@@ -169,10 +169,6 @@ type AST_NODE_OP  '' used by: bop, uop, addr
 	ex				as FBSYMBOL ptr					'' (extra: label, etc)
 end type
 
-type AST_NODE_CONST
-	val				as FBVALUE
-end type
-
 type AST_NODE_OFFS
 	ofs				as integer
 end type
@@ -267,7 +263,7 @@ type ASTNODE
 	vector			as integer					'' 0, 2, 3, or 4 (> 2 for single only)
 
 	union
-		con			as AST_NODE_CONST
+		val			as FBVALUE    '' CONST nodes
 		var_		as AST_NODE_VAR
 		idx			as AST_NODE_IDX
 		ptr			as AST_NODE_PTR
@@ -415,16 +411,6 @@ declare function astIsTreeEqual _
 
 declare function astIsConstant( byval expr as ASTNODE ptr ) as integer
 
-declare function astGetValueAsLongInt _
-	( _
-		byval n as ASTNODE ptr _
-	) as longint
-
-declare function astGetValueAsDouble _
-	( _
-		byval n as ASTNODE ptr _
-	) as double
-
 declare sub astProcBegin( byval proc as FBSYMBOL ptr, byval ismain as integer )
 declare function astProcEnd( byval callrtexit as integer ) as integer
 
@@ -568,7 +554,8 @@ declare function astNewUOP _
 		byval o as ASTNODE ptr _
 	) as ASTNODE ptr
 
-declare function astConstIsZero( byval n as ASTNODE ptr ) as integer
+declare function astConstEqZero( byval n as ASTNODE ptr ) as integer
+declare function astConstGeZero( byval n as ASTNODE ptr ) as integer
 
 declare function astNewCONST _
 	( _
@@ -589,7 +576,7 @@ declare function astNewCONSTwstr _
 
 declare function astNewCONSTi _
 	( _
-		byval value as integer, _
+		byval value as longint, _
 		byval dtype as integer = FB_DATATYPE_INTEGER, _
 		byval subtype as FBSYMBOL ptr = NULL _
 	) as ASTNODE ptr
@@ -598,12 +585,6 @@ declare function astNewCONSTf _
 	( _
 		byval value as double, _
 		byval dtype as integer = FB_DATATYPE_DOUBLE _
-	) as ASTNODE ptr
-
-declare function astNewCONSTl _
-	( _
-		byval value as longint, _
-		byval dtype as integer = FB_DATATYPE_LONGINT _
 	) as ASTNODE ptr
 
 declare function astNewCONSTz _
@@ -615,6 +596,9 @@ declare function astNewCONSTz _
 declare function astConstFlushToInt( byval n as ASTNODE ptr ) as integer
 declare function astConstFlushToStr( byval n as ASTNODE ptr ) as string
 declare function astConstFlushToWstr( byval n as ASTNODE ptr ) as wstring ptr
+declare function astConstGetAsInt64( byval n as ASTNODE ptr ) as longint
+declare function astConstGetAsDouble( byval n as ASTNODE ptr ) as double
+declare function astBuildConst( byval sym as FBSYMBOL ptr ) as ASTNODE ptr
 
 declare function astNewVAR _
 	( _
@@ -1334,13 +1318,10 @@ declare function astLoadNIDXARRAY( byval n as ASTNODE ptr ) as IRVREG ptr
 
 #define astIsCAST(n) (n->class = AST_NODECLASS_CONV)
 
-#define astGetValue(n) n->con.val
-
-#define astGetValInt(n) n->con.val.int
-
-#define astGetValFloat(n) n->con.val.float
-
-#define astGetValLong(n) n->con.val.long
+#define astConstGetVal( n ) (@(n)->val)
+#define astConstGetFloat( n ) ((n)->val.f)
+#define astConstGetInt( n ) ((n)->val.i)
+#define astConstGetUint( n ) cunsg( (n)->val.i )
 
 #define astGetFullType(n) n->dtype
 #define astGetDataType(n) typeGetDtAndPtrOnly( astGetFullType( n ) )

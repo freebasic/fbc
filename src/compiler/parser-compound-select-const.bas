@@ -213,7 +213,7 @@ sub cSelConstStmtNext( byval stk as FB_CMPSTMTSTK ptr )
 				'' too big?
 				if( (minval > maxval) or _
 					(maxval - minval > FB_MAXSWTCASERANGE) or _
-					(culngint(minval) * FB_INTEGERSIZE > 4294967292ULL) ) then
+					(culngint(minval) * typeGetSize( FB_DATATYPE_INTEGER ) > 4294967292ULL) ) then
 
 					errReport( FB_ERRMSG_RANGETOOLARGE )
 					'' error recovery: reset values
@@ -238,7 +238,7 @@ sub cSelConstStmtNext( byval stk as FB_CMPSTMTSTK ptr )
 			'' too big?
 			if( (minval > maxval) or _
 				(maxval - minval > FB_MAXSWTCASERANGE) or _
-				(culngint(minval) * FB_INTEGERSIZE > 4294967292ULL) ) then
+				(culngint(minval) * typeGetSize( FB_DATATYPE_INTEGER ) > 4294967292ULL) ) then
 
 				errReport( FB_ERRMSG_RANGETOOLARGE )
 				'' error recovery: reset values

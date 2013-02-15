@@ -1174,30 +1174,15 @@ private function _allocVrImm _
 	( _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
-		byval value as integer _
-	) as IRVREG ptr
-
-	dim as IRVREG ptr vr = hNewVR( dtype, subtype, IR_VREGTYPE_IMM )
-
-	vr->value.int = value
-
-	function = vr
-
-end function
-
-private function _allocVrImm64 _
-	( _
-		byval dtype as integer, _
-		byval subtype as FBSYMBOL ptr, _
 		byval value as longint _
 	) as IRVREG ptr
 
-	dim as IRVREG ptr vr = hNewVR( dtype, subtype, IR_VREGTYPE_IMM )
+	dim as IRVREG ptr vr = any
 
-	vr->value.long = value
+	vr = hNewVR( dtype, subtype, IR_VREGTYPE_IMM )
+	vr->value.i = value
 
 	function = vr
-
 end function
 
 private function _allocVrImmF _
@@ -1207,12 +1192,12 @@ private function _allocVrImmF _
 		byval value as double _
 	) as IRVREG ptr
 
-	dim as IRVREG ptr vr = hNewVR( dtype, subtype, IR_VREGTYPE_IMM )
+	dim as IRVREG ptr vr = any
 
-	vr->value.float = value
+	vr = hNewVR( dtype, subtype, IR_VREGTYPE_IMM )
+	vr->value.f = value
 
 	function = vr
-
 end function
 
 private function _allocVrVar _
@@ -1565,20 +1550,13 @@ private function hVregToStr( byval v as IRVREG ptr ) as string
 		end if
 
 	case IR_VREGTYPE_IMM
-		select case as const( v->dtype )
-		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-			s = hEmitLong( v->value.long )
-		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-			s = hEmitFloat( v->value.float )
-		case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
-			if( FB_LONGSIZE = len( integer ) ) then
-				s = hEmitInt( v->dtype, v->subtype, v->value.int )
-			else
-				s = hEmitLong( v->value.long )
-			end if
-		case else
-			s = hEmitInt( v->dtype, v->subtype, v->value.int )
-		end select
+		if( typeGetClass( v->dtype ) = FB_DATACLASS_FPOINT ) then
+			s = hEmitFloat( v->value.f )
+		elseif( typeGetSize( v->dtype ) = 8 ) then
+			s = hEmitLong( v->value.i )
+		else
+			s = hEmitInt( v->dtype, v->subtype, v->value.i )
+		end if
 
 	case IR_VREGTYPE_REG
 		if( v->sym ) then
@@ -2264,21 +2242,19 @@ private sub hVarIniSeparator( )
 	end if
 end sub
 
-private sub _emitVarIniI( byval dtype as integer, byval value as integer )
+private sub _emitVarIniI( byval dtype as integer, byval value as longint )
 	hVarIniElementType( dtype )
-	ctx.varini += hEmitInt( dtype, NULL, value )
+	if( typeGetSize( dtype ) = 8 ) then
+		ctx.varini += hEmitLong( value )
+	else
+		ctx.varini += hEmitInt( dtype, NULL, value )
+	end if
 	hVarIniSeparator( )
 end sub
 
 private sub _emitVarIniF( byval dtype as integer, byval value as double )
 	hVarIniElementType( dtype )
 	ctx.varini += hEmitFloat( value )
-	hVarIniSeparator( )
-end sub
-
-private sub _emitVarIniI64( byval dtype as integer, byval value as longint )
-	hVarIniElementType( dtype )
-	ctx.varini += hEmitLong( value )
 	hVarIniSeparator( )
 end sub
 
@@ -2482,7 +2458,6 @@ static as IR_VTBL irllvm_vtbl = _
 	@_emitVarIniEnd, _
 	@_emitVarIniI, _
 	@_emitVarIniF, _
-	@_emitVarIniI64, _
 	@_emitVarIniOfs, _
 	@_emitVarIniStr, _
 	@_emitVarIniWstr, _
@@ -2494,7 +2469,6 @@ static as IR_VTBL irllvm_vtbl = _
 	@_emitFbctinfEnd, _
 	@_allocVreg, _
 	@_allocVrImm, _
-	@_allocVrImm64, _
 	@_allocVrImmF, _
 	@_allocVrVar, _
 	@_allocVrIdx, _

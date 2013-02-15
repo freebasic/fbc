@@ -68,9 +68,7 @@ type EXPRNODE
 
 	union
 		text		as zstring ptr  '' TEXT
-		int		as integer      '' IMM
-		long		as longint      '' IMM
-		float		as double       '' IMM
+		val		as FBVALUE      '' IMM
 		sym		as FBSYMBOL ptr '' SYM
 		op		as integer      '' UOP/BOP
 	end union
@@ -1391,39 +1389,21 @@ private function _allocVreg _
 
 end function
 
-'':::::
 private function _allocVrImm _
-	( _
-		byval dtype as integer, _
-		byval subtype as FBSYMBOL ptr, _
-		byval value as integer _
-	) as IRVREG ptr
-
-	dim as IRVREG ptr vr = hNewVR( dtype, subtype, IR_VREGTYPE_IMM )
-
-	vr->value.int = value
-
-	function = vr
-
-end function
-
-'':::::
-private function _allocVrImm64 _
 	( _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
 		byval value as longint _
 	) as IRVREG ptr
 
-	dim as IRVREG ptr vr = hNewVR( dtype, subtype, IR_VREGTYPE_IMM )
+	dim as IRVREG ptr vr = any
 
-	vr->value.long = value
+	vr = hNewVR( dtype, subtype, IR_VREGTYPE_IMM )
+	vr->value.i = value
 
 	function = vr
-
 end function
 
-'':::::
 private function _allocVrImmF _
 	( _
 		byval dtype as integer, _
@@ -1431,12 +1411,12 @@ private function _allocVrImmF _
 		byval value as double _
 	) as IRVREG ptr
 
-	dim as IRVREG ptr vr = hNewVR( dtype, subtype, IR_VREGTYPE_IMM )
+	dim as IRVREG ptr vr = any
 
-	vr->value.float = value
+	vr = hNewVR( dtype, subtype, IR_VREGTYPE_IMM )
+	vr->value.f = value
 
 	function = vr
-
 end function
 
 '':::::
@@ -1676,28 +1656,14 @@ end function
 
 private function exprNewIMMi _
 	( _
-		byval i as integer, _
+		byval i as longint, _
 		byval dtype as integer = FB_DATATYPE_INTEGER _
 	) as EXPRNODE ptr
 
 	dim as EXPRNODE ptr n = any
 
 	n = exprNew( EXPRCLASS_IMM, dtype, NULL )
-	n->int = i
-
-	function = n
-end function
-
-private function exprNewIMMl _
-	( _
-		byval l as longint, _
-		byval dtype as integer _
-	) as EXPRNODE ptr
-
-	dim as EXPRNODE ptr n = any
-
-	n = exprNew( EXPRCLASS_IMM, dtype, NULL )
-	n->long = l
+	n->val.i = i
 
 	function = n
 end function
@@ -1711,7 +1677,7 @@ private function exprNewIMMf _
 	dim as EXPRNODE ptr n = any
 
 	n = exprNew( EXPRCLASS_IMM, dtype, NULL )
-	n->float = f
+	n->val.f = f
 
 	function = n
 end function
@@ -2161,11 +2127,11 @@ private sub hExprFlush( byval n as EXPRNODE ptr, byval need_parens as integer )
 
 	case EXPRCLASS_IMM
 		if( typeGetClass( n->dtype ) = FB_DATACLASS_FPOINT ) then
-			ctx.exprtext += hEmitFloat( n->dtype, n->float )
+			ctx.exprtext += hEmitFloat( n->dtype, n->val.f )
 		elseif( typeGetSize( n->dtype ) = 8 ) then
-			ctx.exprtext += hEmitLong( n->dtype, n->long )
+			ctx.exprtext += hEmitLong( n->dtype, n->val.i )
 		else
-			ctx.exprtext += hEmitInt( n->dtype, n->int )
+			ctx.exprtext += hEmitInt( n->dtype, n->val.i )
 		end if
 
 	case EXPRCLASS_SYM
@@ -2265,11 +2231,11 @@ private sub exprDump( byval n as EXPRNODE ptr )
 
 	case EXPRCLASS_IMM
 		if( typeGetClass( n->dtype ) = FB_DATACLASS_FPOINT ) then
-			s = "IMM( " + hEmitFloat( n->dtype, n->float ) + " )"
+			s = "IMM( " + hEmitFloat( n->dtype, n->val.f ) + " )"
 		elseif( typeGetSize( n->dtype ) = 8 ) then
-			s = "IMM( " + hEmitLong( n->dtype, n->long ) + " )"
+			s = "IMM( " + hEmitLong( n->dtype, n->val.i ) + " )"
 		else
-			s = "IMM( " + hEmitInt( n->dtype, n->int ) + " )"
+			s = "IMM( " + hEmitInt( n->dtype, n->val.i ) + " )"
 		end if
 
 	case EXPRCLASS_SYM
@@ -2512,31 +2478,11 @@ private function exprNewVREG _
 
 		dtype = vreg->dtype
 
-		select case as const( dtype )
-		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-			l = exprNewIMMl( vreg->value.long, dtype )
-		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-			l = exprNewIMMf( vreg->value.float, dtype )
-		case FB_DATATYPE_LONG
-			if( FB_LONGSIZE = len( integer ) ) then
-				l = exprNewIMMi( vreg->value.int, dtype )
-			else
-				l = exprNewIMMl( vreg->value.long, dtype )
-			end if
-		case FB_DATATYPE_ULONG
-			if( FB_LONGSIZE = len( integer ) ) then
-				l = exprNewIMMi( vreg->value.int, dtype )
-			else
-				l = exprNewIMMl( vreg->value.long, dtype )
-			end if
-		case FB_DATATYPE_UINT
-			l = exprNewIMMi( vreg->value.int, dtype )
-		case else
-			'' integers, bytes, shorts, pointers, enums
-			'' Emit them as integer literals, then let the CAST
-			'' below take care of the rest if needed.
-			l = exprNewIMMi( vreg->value.int )
-		end select
+		if( typeGetClass( dtype ) = FB_DATACLASS_FPOINT ) then
+			l = exprNewIMMf( vreg->value.f, dtype )
+		else
+			l = exprNewIMMi( vreg->value.i, dtype )
+		end if
 
 	case IR_VREGTYPE_REG
 		'' Access to existing vreg (e.g. BOP result)
@@ -3157,18 +3103,17 @@ private sub hVarIniSeparator( )
 	end if
 end sub
 
-private sub _emitVarIniI( byval dtype as integer, byval value as integer )
-	ctx.varini += hEmitInt( dtype, value )
+private sub _emitVarIniI( byval dtype as integer, byval value as longint )
+	if( typeGetSize( dtype ) = 8 ) then
+		ctx.varini += hEmitLong( dtype, value )
+	else
+		ctx.varini += hEmitInt( dtype, value )
+	end if
 	hVarIniSeparator( )
 end sub
 
 private sub _emitVarIniF( byval dtype as integer, byval value as double )
 	ctx.varini += hEmitFloat( dtype, value )
-	hVarIniSeparator( )
-end sub
-
-private sub _emitVarIniI64( byval dtype as integer, byval value as longint )
-	ctx.varini += hEmitLong( dtype, value )
 	hVarIniSeparator( )
 end sub
 
@@ -3430,7 +3375,6 @@ dim shared as IR_VTBL irhlc_vtbl = _
 	@_emitVarIniEnd, _
 	@_emitVarIniI, _
 	@_emitVarIniF, _
-	@_emitVarIniI64, _
 	@_emitVarIniOfs, _
 	@_emitVarIniStr, _
 	@_emitVarIniWstr, _
@@ -3442,7 +3386,6 @@ dim shared as IR_VTBL irhlc_vtbl = _
 	@_emitFbctinfEnd, _
 	@_allocVreg, _
 	@_allocVrImm, _
-	@_allocVrImm64, _
 	@_allocVrImmF, _
 	@_allocVrVar, _
 	@_allocVrIdx, _

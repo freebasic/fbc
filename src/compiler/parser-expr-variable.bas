@@ -207,18 +207,6 @@ private function hUdtDataMember _
 
 end function
 
-private function hUdtConstMember( byval fld as FBSYMBOL ptr ) as ASTNODE ptr
-	'' string constant?
-	select case symbGetType( fld )
-	case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
-		function = astNewVAR( symbGetConstValStr( fld ) )
-	case else
-		function = astNewCONST( @symbGetConstVal( fld ), _
-								symbGetFullType( fld ), _
-								symbGetSubType( fld ) )
-	end select
-end function
-
 '':::::
 '' MemberId       =   ID ArrayIdx?
 ''
@@ -329,7 +317,7 @@ function cUdtMember _
 			lexSkipToken( )
 
 			astDeltree(	varexpr	)
-			return hUdtConstMember(	fld	)
+			return astBuildConst( fld )
 
 		'' enum?
 		case FB_SYMBCLASS_ENUM

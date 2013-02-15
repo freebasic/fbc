@@ -275,7 +275,7 @@ function cSymbolType _
 		case FB_TK_UINT
 			lexSkipToken( )
 			dtype = FB_DATATYPE_UINT
-			lgt = FB_INTEGERSIZE
+			lgt = typeGetSize( FB_DATATYPE_UINT )
 
 		case FB_TK_LONG
 			lexSkipToken( )
@@ -290,12 +290,12 @@ function cSymbolType _
 		case FB_TK_LONGINT
 			lexSkipToken( )
 			dtype = FB_DATATYPE_LONGINT
-			lgt = FB_INTEGERSIZE*2
+			lgt = typeGetSize( FB_DATATYPE_LONGINT )
 
 		case FB_TK_ULONGINT
 			lexSkipToken( )
 			dtype = FB_DATATYPE_ULONGINT
-			lgt = FB_INTEGERSIZE*2
+			lgt = typeGetSize( FB_DATATYPE_ULONGINT )
 
 		case FB_TK_SINGLE
 			lexSkipToken( )
@@ -373,7 +373,7 @@ function cSymbolType _
 							lexSkipToken( )
 							dtype = FB_DATATYPE_ENUM
 							subtype = sym
-							lgt = FB_INTEGERSIZE
+							lgt = typeGetSize( FB_DATATYPE_ENUM )
 							exit do, do
 
 						case FB_SYMBCLASS_TYPEDEF

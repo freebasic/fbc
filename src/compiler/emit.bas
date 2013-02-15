@@ -1307,10 +1307,10 @@ end function
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 function emitSTACKALIGN( byval bytes as integer ) as EMIT_NODE ptr
-	static as IRVREG vr
+	dim as IRVREG vr
 
 	vr.typ = IR_VREGTYPE_IMM
-	vr.value.int = bytes
+	vr.value.i = bytes
 
 	function = hNewSTK( EMIT_OP_STACKALIGN, @vr )
 end function
@@ -1476,18 +1476,13 @@ function emitJUMPPTR _
 
 end function
 
-'':::::
-function emitRET _
-	( _
-		byval bytestopop as integer _
-	) as EMIT_NODE ptr static
-    static as IRVREG vr
+function emitRET( byval bytestopop as integer ) as EMIT_NODE ptr
+	dim as IRVREG vr
 
 	vr.typ = IR_VREGTYPE_IMM
-	vr.value.int = bytestopop
+	vr.value.i = bytestopop
 
 	function = hNewUOP( EMIT_OP_RET, @vr )
-
 end function
 
 '':::::

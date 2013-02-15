@@ -11,6 +11,9 @@ o 64bit
   - fbint.bi contains various structs (e.g. FB_STRDESC) that are target-specific,
     this would break when cross-compiling and the struct layout is different
 
+  - search for uses of "... and &h80000000", 32bit assumption, replace with "... < 0"
+  - check emitting of all kinds of number literals under all backends
+  - check all size-sensitive rtl functions, mk*(), cv*()
   - SHL/SHR shouldn't be limited to 32bit when targetting 64bit
   - search for any other "x86 assumption"'s
 

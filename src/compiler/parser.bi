@@ -587,20 +587,8 @@ declare function cEnumConstant _
 		byval sym as FBSYMBOL ptr _
 	) as ASTNODE ptr
 
-declare function cLiteral _
-	( _
-		_
-	) as ASTNODE ptr
-
-declare function cNumLiteral _
-	( _
-		byval skiptoken as integer = TRUE _
-	) as ASTNODE ptr
-
-declare function cStrLiteral _
-	( _
-		byval skiptoken as integer = TRUE _
-	) as ASTNODE ptr
+declare function cStrLiteral( byval skiptoken as integer = TRUE ) as ASTNODE ptr
+declare function cNumLiteral( byval skiptoken as integer = TRUE ) as ASTNODE ptr
 
 declare function cProcArgList _
 	( _

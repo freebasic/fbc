@@ -35,10 +35,9 @@ function symbAddConst _
 		exit function
 	end if
 
-	sym->con.val = *value
+	sym->val = *value
 
 	function = sym
-
 end function
 
 function symbAllocFloatConst _
@@ -266,64 +265,29 @@ sub symbDelConst( byval s as FBSYMBOL ptr )
 	symbFreeSymbol( s )
 end sub
 
-'':::::
-function symbGetConstValueAsStr _
-	( _
-		byval s as FBSYMBOL ptr _
-	) as string
-
-  	select case as const symbGetType( s )
-  	case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR
-  		function = *symbGetConstValStr( s )->var_.littext
-
-  	case FB_DATATYPE_LONGINT
-  		function = str( symbGetConstValLong( s ) )
-
-  	case FB_DATATYPE_ULONGINT
-  	    function = str( cunsg( symbGetConstValLong( s ) ) )
-
-	case FB_DATATYPE_SINGLE
-		function = str( csng( symbGetConstValFloat( s ) ) )
+function symbGetConstValueAsStr( byval s as FBSYMBOL ptr ) as string
+	select case( symbGetType( s ) )
+	case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR
+		function = *symbGetConstStr( s )->var_.littext
 
 	case FB_DATATYPE_DOUBLE
-		function = str( symbGetConstValFloat( s ) )
+		function = str( symbGetConstFloat( s ) )
 
-  	case FB_DATATYPE_LONG
-  		if( FB_LONGSIZE = len( integer ) ) then
-  			function = str( symbGetConstValInt( s ) )
-  		else
-  			function = str( symbGetConstValLong( s ) )
-  		end if
+	case FB_DATATYPE_SINGLE
+		function = str( csng( symbGetConstFloat( s ) ) )
 
-  	case FB_DATATYPE_ULONG
-  	    if( FB_LONGSIZE = len( integer ) ) then
-  	    	function = str( cunsg( symbGetConstValInt( s ) ) )
-  	    else
-  	    	function = str( cunsg( symbGetConstValLong( s ) ) )
-  	    end if
-
-  	case FB_DATATYPE_UBYTE, FB_DATATYPE_USHORT, FB_DATATYPE_UINT
-  		function = str( cunsg( symbGetConstValInt( s ) ) )
-
-  	case else
-  		function = str( symbGetConstValInt( s ) )
-  	end select
-
+	case else
+		if( typeIsSigned( s->typ ) ) then
+			function = str( symbGetConstInt( s ) )
+		else
+			function = str( cunsg( symbGetConstInt( s ) ) )
+		end if
+	end select
 end function
 
-'':::::
-function symbCloneConst _
-	( _
-		byval sym as FBSYMBOL ptr _
-	) as FBSYMBOL ptr
-
+function symbCloneConst( byval sym as FBSYMBOL ptr ) as FBSYMBOL ptr
 	'' no need to make a copy of fbvalue.str, if it's a literal,
 	'' it will be a non-local var
-
-	function = symbAddConst( NULL, _
-							 symbGetType( sym ), _
-							 symbGetSubType( sym ), _
-							 @sym->con.val, _
-							 symbGetAttrib( sym ) )
-
+	function = symbAddConst( NULL, symbGetType( sym ), symbGetSubtype( sym ), _
+	                         symbGetConstVal( sym ), symbGetAttrib( sym ) )
 end function

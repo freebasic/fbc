@@ -925,7 +925,7 @@ private function hConstBound _
 
 	'' dimension is 1-based
 	assert( astGetDataType( dimexpr ) = FB_DATATYPE_INTEGER )
-	dimension = astGetValInt( dimexpr )
+	dimension = astConstGetInt( dimexpr )
 
 	'' Find the referenced dimension
 	if( dimension >= 1 ) then

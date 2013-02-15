@@ -51,32 +51,11 @@ function vregDump( byval v as IRVREG ptr ) as string
 	select case( v->typ )
 	case IR_VREGTYPE_IMM
 		s += " "
-		select case as const( v->dtype )
-		case FB_DATATYPE_LONGINT
-			s += str( v->value.long )
-		case FB_DATATYPE_ULONGINT
-			s += str( v->value.long )
-		case FB_DATATYPE_SINGLE
-			s += str( v->value.float )
-		case FB_DATATYPE_DOUBLE
-			s += str( v->value.float )
-		case FB_DATATYPE_LONG
-			if( FB_LONGSIZE = len( integer ) ) then
-				s += str( v->value.int )
-			else
-				s += str( v->value.long )
-			end if
-		case FB_DATATYPE_ULONG
-			if( FB_LONGSIZE = len( integer ) ) then
-				s += str( v->value.int )
-			else
-				s += str( v->value.long )
-			end if
-		case FB_DATATYPE_UINT
-			s += str( v->value.int )
-		case else
-			s += str( v->value.int )
-		end select
+		if( typeGetClass( v->dtype ) = FB_DATACLASS_FPOINT ) then
+			s += str( v->value.f )
+		else
+			s += str( v->value.i )
+		end if
 
 	case IR_VREGTYPE_REG
 		if( env.clopt.backend = FB_BACKEND_GAS ) then

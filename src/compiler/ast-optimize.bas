@@ -410,7 +410,7 @@ private sub hOptConstIdxMult( byval n as ASTNODE ptr )
 				'' Check whether the constant is in usable range
 				'' (just casting to 32bit could break if 64bit
 				'' values are given)
-				c = astGetValueAsLongInt( lr )
+				c = astConstGetInt( lr )
 				if( (c >= 1) and (c <= 9) ) then
 					select case as const( c )
 					case 1, 2, 4, 8
@@ -1019,7 +1019,7 @@ private sub hDivToShift_Signed _
 	end if
 
 	n->op.op = AST_OP_SHR
-	n->r->con.val.int = const_val
+	astConstGetInt( n->r ) = const_val
 
 end sub
 
@@ -1048,7 +1048,7 @@ private sub hOptToShift _
 			if( astIsCONST( r ) ) then
 				if( typeGetClass( astGetDataType( n ) ) = FB_DATACLASS_INTEGER ) then
 					if( typeGetSize( astGetDataType( r ) ) <= FB_INTEGERSIZE ) then
-						const_val = r->con.val.int
+						const_val = astConstGetInt( r )
 						if( const_val > 0 ) then
 							const_val = hToPow2( const_val )
 							if( const_val > 0 ) then
@@ -1056,7 +1056,7 @@ private sub hOptToShift _
 								case AST_OP_MUL
 									if( const_val <= 32 ) then
 										n->op.op = AST_OP_SHL
-										r->con.val.int = const_val
+										astConstGetInt( r ) = const_val
 									end if
 
 								case AST_OP_INTDIV
@@ -1064,9 +1064,9 @@ private sub hOptToShift _
 										l = n->l
 										if( typeIsSigned( astGetDataType( l ) ) = FALSE ) then
 											n->op.op = AST_OP_SHR
-											r->con.val.int = const_val
+											astConstGetInt( r ) = const_val
 										else
-                                            hDivToShift_Signed( n, const_val )
+											hDivToShift_Signed( n, const_val )
 										end if
 									end if
 
@@ -1074,7 +1074,7 @@ private sub hOptToShift _
 									'' unsigned types only
 									if( typeIsSigned( astGetDataType( n->l ) ) = FALSE ) then
 										n->op.op = AST_OP_AND
-										r->con.val.int -= 1
+										astConstGetInt( r ) -= 1
 									end if
 								end select
 							end if
@@ -1154,11 +1154,7 @@ private function hOptNullOp _
 
 		if( typeGetClass( astGetDataType( n ) ) = FB_DATACLASS_INTEGER ) then
 			if( astIsCONST( r ) ) then
-				if( typeGetSize( astGetDataType( r ) ) <= FB_INTEGERSIZE ) then
-					v = r->con.val.int
-				else
-					v = r->con.val.long
-				end if
+				v = astConstGetInt( r )
 
 				select case as const op
 				case AST_OP_MUL
@@ -1180,7 +1176,7 @@ private function hOptNullOp _
 				case AST_OP_MOD
 					if( ( v = 1 ) or ( ( v = -1 ) and ( typeIsSigned( astGetDataType( r ) ) <> FALSE ) ) ) then
 						if( keep_l = FALSE ) then
-							r->con.val.int = 0
+							astConstGetInt( r ) = 0
 							astDelTree( l )
 							astDelNode( n )
 							return r
@@ -1242,11 +1238,7 @@ private function hOptNullOp _
 				end select
 
 			elseif( astIsCONST( l ) ) then
-				if( typeGetSize( astGetDataType( l ) ) <= FB_INTEGERSIZE ) then
-					v = l->con.val.int
-				else
-					v = l->con.val.long
-				end if
+				v = astConstGetInt( l )
 
 				select case as const op
 				case AST_OP_MUL, AST_OP_INTDIV, AST_OP_MOD, _
@@ -1296,53 +1288,31 @@ private function hOptLogic _
 	end if
 
 	if( typeGetClass( astGetDataType( n ) ) = FB_DATACLASS_INTEGER ) then
-
 		if( astIsUOP( n, AST_OP_NOT ) ) then
 			if( astIsUOP( l, AST_OP_NOT ) ) then
-
 				'' convert NOT NOT x to x
-
 				m = l->l
 				astDelNode( l )
 				astDelNode( n )
 				n = hOptLogic( m )
-
 			elseif( astIsBOP( l, AST_OP_XOR ) ) then
 				if( typeGetClass( astGetDataType( n ) ) = FB_DATACLASS_INTEGER ) then
 					if( astIsCONST( l->l ) ) then
 						'' convert:
 						'' not (const xor x)    to    (not const) xor x
-
-						if( typeGetSize( astGetDataType( l->l ) ) <= FB_INTEGERSIZE ) then
-							v = l->l->con.val.int
-						else
-							v = l->l->con.val.long
-						end if
-
-						l->l->con.val.long = not v
+						astConstGetInt( l->l ) = not astConstGetInt( l->l )
 						astDelNode( n )
 						n = hOptLogic( l )
-
 					elseif( astIsCONST( l->r ) ) then
 						'' convert:
 						'' not (x xor const)    to    x xor (not const)
-
-						if( typeGetSize( astGetDataType( l->r ) ) <= FB_INTEGERSIZE ) then
-							v = l->r->con.val.int
-						else
-							v = l->r->con.val.long
-						end if
-
-						l->r->con.val.long = not v
+						astConstGetInt( l->r ) = not astConstGetInt( l->r )
 						astDelNode( n )
 						n = hOptLogic( l )
-
 					end if
 				end if
 			end if
-
 		elseif( n->class = AST_NODECLASS_BOP ) then
-
 			if( typeGetClass( astGetDataType( n ) ) = FB_DATACLASS_INTEGER ) then
 				op = n->op.op
 				select case op
@@ -1395,14 +1365,9 @@ private function hOptLogic _
 						'' const or  (not x)    to    not ((not const) and x)
 						'' const xor (not x)    to    (not const) xor x
 
-						if( typeGetSize( astGetDataType( l ) ) <= FB_INTEGERSIZE ) then
-							v = l->con.val.int
-						else
-							v = l->con.val.long
-						end if
-
+						v = astConstGetInt( l )
 						m = astNewBOP( op, l, r->l )
-						l->con.val.long = not v
+						astConstGetInt( l ) = not v
 
 						if( op <> AST_OP_XOR ) then
 							m = astNewUOP( AST_OP_NOT, m )
@@ -1410,7 +1375,6 @@ private function hOptLogic _
 
 						astDelNode( r )
 						astDelNode( n )
-
 						n = m
 
 					elseif( astIsConst( r ) and astIsUOP(l, AST_OP_NOT) ) then
@@ -1419,14 +1383,9 @@ private function hOptLogic _
 						'' (not x) or  const    to    not (x and (not const))
 						'' (not x) xor const    to    x xor (not const)
 
-						if( typeGetSize( astGetDataType( r ) ) <= FB_INTEGERSIZE ) then
-							v = r->con.val.int
-						else
-							v = r->con.val.long
-						end if
-
+						v = astConstGetInt( r )
 						m = astNewBOP( op, l->l, r )
-						r->con.val.long = not v
+						astConstGetInt( r ) = not v
 
 						if( op <> AST_OP_XOR ) then
 							m = astNewUOP( AST_OP_NOT, m )
@@ -1434,33 +1393,22 @@ private function hOptLogic _
 
 						astDelNode( l )
 						astDelNode( n )
-
 						n = m
 
 					elseif( (op = AST_OP_XOR) and astIsUOP(l, AST_OP_NOT) ) then
 						'' convert:
 						'' (not x) xor y    to    not (x xor y)
-
 						m = astNewUOP( AST_OP_NOT, n )
-
 						n->l = l->l
-
 						astDelNode( l )
-
 						n = m
-
 					elseif( (op = AST_OP_XOR) and astIsUOP(r, AST_OP_NOT) ) then
 						'' convert:
 						'' x xor (not y)    to    not (x xor y)
-
 						m = astNewUOP( AST_OP_NOT, n)
-
 						n->r = r->l
-
 						astDelNode( r )
-
 						n = m
-
 					end if
 				end select
 			end if
@@ -1468,7 +1416,6 @@ private function hOptLogic _
 	end if
 
 	function = n
-
 end function
 
 private function hDoOptRemConv( byval n as ASTNODE ptr ) as ASTNODE ptr
@@ -1657,7 +1604,6 @@ private function hIsMultStrConcat _
 
 end function
 
-''::::
 private function hOptStrAssignment _
 	( _
 		byval n as ASTNODE ptr, _
@@ -1712,37 +1658,29 @@ private function hOptStrAssignment _
 		r = n->r
 
 		if( hIsMultStrConcat( l, r ) ) then
-
 			function = hOptStrMultConcat( l, l, r, is_wstr )
-
 		else
 			''	=            f() -- concatassign
 			'' / \           / \
 			''a   +    =>   a   expr
 			''   / \
 			''  a   expr
-
-            if( is_wstr = FALSE ) then
+			if( is_wstr = FALSE ) then
 				function = rtlStrConcatAssign( l, astUpdStrConcat( r ) )
 			else
 				function = rtlWstrConcatAssign( l, astUpdStrConcat( r ) )
 			end if
 		end if
-
 	else
-
 		'' convert "a = b + c + d" to "a = b: a += c: a += d"
 		if( hIsMultStrConcat( l, r ) ) then
-
 			function = hOptStrMultConcat( NULL, l, r, is_wstr )
-
 		else
 			''	=            f() -- assign
 			'' / \           / \
 			''a   +    =>   a   f() -- concat (done by UpdStrConcat)
 			''   / \           / \
 			''  b   expr      b   expr
-
 			if( is_wstr = FALSE ) then
 				function = rtlStrAssign( l, astUpdStrConcat( r ) )
 			else
@@ -1752,15 +1690,9 @@ private function hOptStrAssignment _
 	end if
 
 	astDelNode( n )
-
 end function
 
-''::::
-function astOptAssignment _
-	( _
-		byval n as ASTNODE ptr _
-	) as ASTNODE ptr
-
+function astOptAssignment( byval n as ASTNODE ptr ) as ASTNODE ptr
 	dim as ASTNODE ptr l = any, r = any
 	dim as integer dtype = any, dclass = any
 
@@ -1986,7 +1918,7 @@ private function hOptReciprocal _
 	if( astIsBOP( n, AST_OP_DIV ) ) then
 		l = n->l
 		if( astIsCONST( l ) ) then
-			if( ( astGetDataType( l ) = FB_DATATYPE_SINGLE ) andalso ( astGetValFloat( l ) = 1.0f ) ) then
+			if( (astGetDataType( l ) = FB_DATATYPE_SINGLE) andalso (astConstGetFloat( l ) = 1.0) ) then
 				r = n->r
 				if( astIsUOP( r, AST_OP_SQRT ) ) then
 					'' change this to a rsqrt

@@ -459,10 +459,7 @@ declare function emitLABEL _
 		byval label as FBSYMBOL ptr _
 	) as EMIT_NODE ptr
 
-declare function emitRET _
-	( _
-		byval bytestopop as integer _
-	) as EMIT_NODE ptr
+declare function emitRET( byval bytestopop as integer ) as EMIT_NODE ptr
 
 declare function emitPUBLIC _
 	( _

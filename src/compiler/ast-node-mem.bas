@@ -23,13 +23,13 @@ function astNewMEM _
     var blkmaxlen = irGetOptionValue( IR_OPTIONVALUE_MAXMEMBLOCKLEN )
 
 	dim as integer lgt = bytes
-    if( op = AST_OP_MEMCLEAR ) then
-    	if( astIsCONST( r ) ) then
-    		lgt = r->con.val.int
-    	else
-    		lgt = blkmaxlen + 1
-    	end if
-    end if
+	if( op = AST_OP_MEMCLEAR ) then
+		if( astIsCONST( r ) ) then
+			lgt = astConstGetInt( r )
+		else
+			lgt = blkmaxlen + 1
+		end if
+	end if
 
 	'' when clearing/moving more than IR_MEMBLOCK_MAXLEN bytes, take
 	'' the adress-of and let emit() do the rest

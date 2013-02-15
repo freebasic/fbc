@@ -2,16 +2,12 @@
 ''
 '' chng: sep/2004 written [v1ctor]
 
-
 #include once "fb.bi"
 #include once "fbint.bi"
 #include once "parser.bi"
 #include once "ast.bi"
 
 function cConstant( byval sym as FBSYMBOL ptr ) as ASTNODE ptr
-	dim as integer dtype = any
-	dim as FBSYMBOL ptr subtype = any
-
 	'' check visibility
 	if( symbCheckAccess( sym ) = FALSE ) then
 		errReport( FB_ERRMSG_ILLEGALMEMBERACCESS )
@@ -20,32 +16,7 @@ function cConstant( byval sym as FBSYMBOL ptr ) as ASTNODE ptr
   	'' ID
   	lexSkipToken( )
 
-	dtype = symbGetFullType( sym )
-	subtype = symbGetSubType( sym )
-
-	select case as const( typeGetDtAndPtrOnly( dtype ) )
-  	case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
-  		return astNewVAR( symbGetConstValStr( sym ), 0, dtype )
-
-  	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-  		return astNewCONSTl( symbGetConstValLong( sym ), dtype )
-
-  	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-  		return astNewCONSTf( symbGetConstValFloat( sym ), dtype )
-
-  	case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
-  		if( FB_LONGSIZE = len( integer ) ) then
-  			return astNewCONSTi( symbGetConstValInt( sym ), dtype, subtype )
-  		else
-  			return astNewCONSTl( symbGetConstValLong( sym ), dtype )
-  		end if
-
-  	case else
-		'' bytes/shorts/integers/enums
-		return astNewCONSTi( symbGetConstValInt( sym ), dtype, subtype )
-
-  	end select
-
+	function = astBuildConst( sym )
 end function
 
 '':::::
@@ -136,77 +107,28 @@ function cStrLiteral( byval skiptoken as integer ) as ASTNODE ptr
 	function = expr
 end function
 
-'':::::
-function cNumLiteral _
-	( _
-		byval skiptoken as integer _
-	) as ASTNODE ptr
-
+function cNumLiteral( byval skiptoken as integer ) as ASTNODE ptr
 	dim as integer dtype = any
 
-  	dtype = lexGetType( )
-  	select case as const dtype
-  	case FB_DATATYPE_LONGINT
-		function = astNewCONSTl( vallng( *lexGetText( ) ), dtype )
+	dtype = lexGetType( )
 
-	case FB_DATATYPE_ULONGINT
-		function = astNewCONSTl( valulng( *lexGetText( ) ), dtype )
-
-  	case FB_DATATYPE_DOUBLE
+	select case( dtype )
+	case FB_DATATYPE_DOUBLE
 		function = astNewCONSTf( val( *lexGetText( ) ), dtype )
 
-  	case FB_DATATYPE_SINGLE
+	case FB_DATATYPE_SINGLE
 		dim fval as single = val( *lexGetText( ) )
 		function = astNewCONSTf( fval , dtype )
 
-	case FB_DATATYPE_UINT
-		function = astNewCONSTi( valuint( *lexGetText( ) ), dtype )
-
-  	case FB_DATATYPE_LONG
-		if( FB_LONGSIZE = len( integer ) ) then
-			function = astNewCONSTi( valint( *lexGetText( ) ), dtype )
-		else
-			function = astNewCONSTl( vallng( *lexGetText( ) ), dtype )
-		end if
-
-	case FB_DATATYPE_ULONG
-		if( FB_LONGSIZE = len( integer ) ) then
-			function = astNewCONSTi( valuint( *lexGetText( ) ), dtype )
-		else
-			function = astNewCONSTl( valulng( *lexGetText( ) ), dtype )
-		end if
-
 	case else
-		function = astNewCONSTi( valint( *lexGetText( ) ), dtype )
-  	end select
+		if( typeIsSigned( dtype ) ) then
+			function = astNewCONSTi( vallng( *lexGetText( ) ), dtype )
+		else
+			function = astNewCONSTi( valulng( *lexGetText( ) ), dtype )
+		end if
+	end select
 
-  	if( skiptoken ) then
-  		lexSkipToken( )
-  	end if
-
+	if( skiptoken ) then
+		lexSkipToken( )
+	end if
 end function
-
-'':::::
-''Literal		  = NUM_LITERAL
-''				  | STR_LITERAL STR_LITERAL* .
-''
-function cLiteral _
-	( _
-		_
-	) as ASTNODE ptr
-
-	select case lexGetClass( )
-	'' NUM_LITERAL?
-	case FB_TKCLASS_NUMLITERAL
-		return cNumLiteral( )
-
-  	'' (STR_LITERAL STR_LITERAL*)?
-  	case FB_TKCLASS_STRLITERAL
-        return cStrLiteral( )
-
-  	case else
-  		return NULL
-  	end select
-
-end function
-

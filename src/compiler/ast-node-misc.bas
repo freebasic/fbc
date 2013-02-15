@@ -647,23 +647,10 @@ private function hAstNodeToStr _
 		return hAstNodeOpToStr( n->op.op )
 
 	case AST_NODECLASS_CONST
-		select case as const astGetDataType( n )
-		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-			return str( n->con.val.long )
-
-		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-			return str( n->con.val.float )
-
-		case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
-			if( FB_LONGSIZE = len( integer ) ) then
-				return str( n->con.val.int )
-			else
-				return str( n->con.val.long )
-			end if
-
-		case else
-            return str( n->con.val.int )
-		end select
+		if( typeGetClass( n->dtype ) = FB_DATACLASS_FPOINT ) then
+			return str( astConstGetFloat( n ) )
+		end if
+		return str( astConstGetInt( n ) )
 
 	case AST_NODECLASS_VAR
 		return "VAR( " & *symbGetName( n->sym ) & " )"

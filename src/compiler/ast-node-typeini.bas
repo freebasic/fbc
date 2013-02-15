@@ -591,11 +591,9 @@ private function hFlushExprStatic _
 
 	'' not a literal string?
 	if( litsym = NULL ) then
-
     	'' offset?
 		if( astIsOFFSET( expr ) ) then
 			irEmitVARINIOFS( astGetSymbol( expr ), expr->ofs.ofs )
-
 		'' anything else
 		else
 			'' different types?
@@ -618,23 +616,12 @@ private function hFlushExprStatic _
 				end if
 			end if
 
-			select case as const( sdtype )
-			case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-				irEmitVARINI64( sdtype, astGetValLong( expr ) )
-
-			case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-				irEmitVARINIf( sdtype, astGetValFloat( expr ) )
-
-			case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
-				if( FB_LONGSIZE = len( integer ) ) then
-					irEmitVARINIi( sdtype, astGetValInt( expr ) )
-				else
-					irEmitVARINI64( sdtype, astGetValLong( expr ) )
-				end if
-
-			case else
-				irEmitVARINIi( sdtype, astGetValInt( expr ) )
-			end select
+			assert( astIsCONST( expr ) )
+			if( typeGetClass( sdtype ) = FB_DATACLASS_FPOINT ) then
+				irEmitVARINIf( sdtype, astConstGetFloat( expr ) )
+			else
+				irEmitVARINIi( sdtype, astConstGetInt( expr ) )
+			end if
 		end if
 
 	'' literal string..

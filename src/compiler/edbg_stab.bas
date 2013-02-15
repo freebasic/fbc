@@ -926,7 +926,7 @@ private sub hDeclENUM _
 
 	e = symbGetENUMFirstElm( sym )
 	do while( e <> NULL )
-        desc += *symbGetName( e ) + ":" + str( symbGetConstValInt( e ) ) + ","
+        desc += *symbGetName( e ) + ":" + str( symbGetConstInt( e ) ) + ","
 
 		e = symbGetENUMNextElm( e )
 	loop

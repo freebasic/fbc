@@ -214,7 +214,7 @@ private function cStrCHR(byval is_wstr as integer) as ASTNODE ptr
 
         	'' when the constant value is 0, we must not handle
             '' this as a constant string
-			if( astConstIsZero( exprtb(i) ) ) then
+			if( astConstEqZero( exprtb(i) ) ) then
 				isconst = FALSE
 				exit for
 			end if
@@ -410,12 +410,14 @@ function cCVXFunct(byval tk as FB_TOKEN) as ASTNODE ptr
 				funcexpr = astNewCONSTf( cvd( *zs ), FB_DATATYPE_DOUBLE )
 			case FB_DATATYPE_SINGLE
 				funcexpr = astNewCONSTf( cvs( *zs ), FB_DATATYPE_SINGLE )
-			case FB_DATATYPE_INTEGER, FB_DATATYPE_LONG
-				funcexpr = astNewCONSTi( cvl( *zs ), FB_DATATYPE_INTEGER )
 			case FB_DATATYPE_SHORT
 				funcexpr = astNewCONSTi( cvshort( *zs ), FB_DATATYPE_SHORT )
-			case FB_DATATYPE_LONGINT
-				funcexpr = astNewCONSTl( cvlongint( *zs ), FB_DATATYPE_LONGINT )
+			case else
+				if( typeGetSize( functype ) = 8 ) then
+					funcexpr = astNewCONSTi( cvlongint( *zs ), functype )
+				else
+					funcexpr = astNewCONSTi( cvl( *zs ), functype )
+				end if
 			end select
 			astDelNode( expr1 )
 		else
@@ -493,14 +495,14 @@ function cMKXFunct(byval tk as FB_TOKEN) as ASTNODE ptr
 	#macro doMKX( token )
 		select case as const astGetDataType( expr1 )
 		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-			funcexpr = astNewCONSTstr( str( token( astGetValueAsLongint( expr1 ) ) ) )
+			funcexpr = astNewCONSTstr( str( token( astConstGetAsInt64( expr1 ) ) ) )
 		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-			funcexpr = astNewCONSTstr( str( token( astGetValueAsDouble( expr1 ) ) ) )
+			funcexpr = astNewCONSTstr( str( token( astConstGetAsDouble( expr1 ) ) ) )
 		case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
 			if( FB_LONGSIZE = len( integer ) ) then
 				funcexpr = astNewCONSTstr( str( token( astGetValueAsInt( expr1 ) ) ) )
 			else
-				funcexpr = astNewCONSTstr( str( token( astGetValueAsLongint( expr1 ) ) ) )
+				funcexpr = astNewCONSTstr( str( token( astConstGetAsInt64( expr1 ) ) ) )
 			end if
 		case else
 			funcexpr = astNewCONSTstr( str( token( astGetValueAsInt( expr1 ) ) ) )

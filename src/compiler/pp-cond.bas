@@ -46,7 +46,7 @@ private function ppExpression( ) as integer
 		expr = astNewCONSTi( 0 )
 	end if
 
-	function = not astConstIsZero( expr )
+	function = not astConstEqZero( expr )
 end function
 
 sub ppCondIf( )

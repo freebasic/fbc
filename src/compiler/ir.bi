@@ -314,9 +314,8 @@ type IR_VTBL
 
 	emitVarIniBegin as sub( byval sym as FBSYMBOL ptr )
 	emitVarIniEnd as sub( byval sym as FBSYMBOL ptr )
-	emitVarIniI as sub( byval dtype as integer, byval value as integer )
+	emitVarIniI as sub( byval dtype as integer, byval value as longint )
 	emitVarIniF as sub( byval dtype as integer, byval value as double )
-	emitVarIniI64 as sub( byval dtype as integer, byval value as longint )
 	emitVarIniOfs as sub( byval sym as FBSYMBOL ptr, byval ofs as integer )
 
 	emitVarIniStr as sub _
@@ -348,13 +347,6 @@ type IR_VTBL
 	) as IRVREG ptr
 
 	allocVrImm as function _
-	( _
-		byval dtype as integer, _
-		byval subtype as FBSYMBOL ptr, _
-		byval value as integer _
-	) as IRVREG ptr
-
-	allocVrImm64 as function _
 	( _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
@@ -480,8 +472,6 @@ declare function vregDump( byval v as IRVREG ptr ) as string
 
 #define irAllocVrImm(dtype, stype, value) ir.vtbl.allocVrImm( dtype, stype, value )
 
-#define irAllocVrImm64(dtype, stype, value) ir.vtbl.allocVrImm64( dtype, stype, value )
-
 #define irAllocVrImmF(dtype, stype, value) ir.vtbl.allocVrImmF( dtype, stype, value )
 
 #define irAllocVrVar(dtype, stype, sym, ofs) ir.vtbl.allocVrVar( dtype, stype, sym, ofs )
@@ -517,25 +507,14 @@ declare function vregDump( byval v as IRVREG ptr ) as string
 #define irEmitPROCEND(proc, initlabel, exitlabel) ir.vtbl.emitProcEnd( proc, initlabel, exitlabel )
 
 #define irEmitVARINIBEGIN(sym) ir.vtbl.emitVarIniBegin( sym )
-
 #define irEmitVARINIEND(sym) ir.vtbl.emitVarIniEnd( sym )
-
 #define irEmitVARINIi(dtype, value) ir.vtbl.emitVarIniI( dtype, value )
-
 #define irEmitVARINIf(dtype, value) ir.vtbl.emitVarIniF( dtype, value )
-
-#define irEmitVARINI64(dtype, value) ir.vtbl.emitVarIniI64( dtype, value )
-
 #define irEmitVARINIOFS(sym, ofs) ir.vtbl.emitVarIniOfs( sym, ofs )
-
 #define irEmitVARINISTR(totlgt, litstr, litlgt) ir.vtbl.emitVarIniStr( totlgt, litstr, litlgt )
-
 #define irEmitVARINIWSTR(totlgt, litstr, litlgt) ir.vtbl.emitVarIniWstr( totlgt, litstr, litlgt )
-
 #define irEmitVARINIPAD(bytes) ir.vtbl.emitVarIniPad( bytes )
-
 #define irEmitVARINISCOPEBEGIN( ) ir.vtbl.emitVarIniScopeBegin( )
-
 #define irEmitVARINISCOPEEND( ) ir.vtbl.emitVarIniScopeEnd( )
 
 #define irEmitFBCTINFBEGIN( )    ir.vtbl.emitFbctinfBegin( )

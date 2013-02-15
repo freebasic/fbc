@@ -161,8 +161,7 @@ private sub cConstAssign _
 			end if
 		end if
 
-		value.str = litsym
-
+		value.s = litsym
 		if( symbAddConst( @id, exprdtype, NULL, @value, attrib ) = NULL ) then
 			errReportEx( FB_ERRMSG_DUPDEFINITION, id )
 		end if
@@ -210,8 +209,7 @@ private sub cConstAssign _
 			subtype = astGetSubtype( expr )
 		end if
 
-		if( symbAddConst( @id, dtype, subtype, _
-				@astGetValue( expr ), attrib ) = NULL ) then
+		if( symbAddConst( @id, dtype, subtype, astConstGetVal( expr ), attrib ) = NULL ) then
 			errReportEx( FB_ERRMSG_DUPDEFINITION, id )
 		end if
     end if
