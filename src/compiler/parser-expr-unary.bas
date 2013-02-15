@@ -7,8 +7,37 @@
 #include once "fbint.bi"
 #include once "parser.bi"
 #include once "ast.bi"
+#include once "pp.bi"
 
 declare function hCast( byval options as AST_CONVOPT ) as ASTNODE ptr
+
+private function hPPDefinedExpr( ) as ASTNODE ptr
+	dim as FBSYMBOL ptr base_parent = any
+	dim as integer is_defined = any
+
+	'' DEFINED
+	lexSkipToken( LEXCHECK_NODEFINE )
+
+	'' '('
+	if( lexGetToken( ) <> CHAR_LPRNT ) then
+		errReport( FB_ERRMSG_EXPECTEDLPRNT )
+	else
+		lexSkipToken( LEXCHECK_NODEFINE )
+	end if
+
+	'' Identifier
+	is_defined = (cIdentifier( base_parent, FB_IDOPT_NONE ) <> NULL)
+	lexSkipToken( )
+
+	'' ')'
+	if( hMatch( CHAR_RPRNT ) = FALSE ) then
+		errReport( FB_ERRMSG_EXPECTEDRPRNT )
+		'' error recovery: skip until ')'
+		hSkipUntil( CHAR_RPRNT, TRUE )
+	end if
+
+	function = astNewCONSTi( is_defined )
+end function
 
 '':::::
 ''NegNotExpression=   ('-'|'+'|) ExpExpression
@@ -240,15 +269,27 @@ function cHighestPrecExpr _
 
 		'' Atom
 		case else
+			'' PP expression?
+			if( fbGetIsPP( ) ) then
+				select case( lexGetToken( ) )
+				'' TYPEOF '(' Expression ')'
+				case FB_TK_TYPEOF
+					return astNewCONSTstr( ppTypeOf( ) )
+
+				'' DEFINED '(' Identifier ')'
+				case FB_TK_DEFINED
+					return hPPDefinedExpr( )
+
+				end select
+			end if
+
 			return cAtom( base_parent, chain_ )
 
 		end select
 
 	end select
 
-	''
 	function = cStrIdxOrMemberDeref( expr )
-
 end function
 
 '' '(' DataType ',' Expression ')'

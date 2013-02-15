@@ -46,17 +46,17 @@ end type
 		("once"       , 0                     , LEXPP_PRAGMAFLAG_HAS_CALLBACK    ) _
 	}
 
-sub ppPragmaInit()
+sub ppPragmaInit( )
 	'' reset stacks
 	for i as integer = 0 to FB_COMPOPTIONS-1
 		pragmaStk(i).tos = 0
 	next
 end sub
 
-sub ppPragmaEnd()
+sub ppPragmaEnd( )
 end sub
 
-private sub pragmaPush(byval opt as integer, byval value as integer)
+private sub pragmaPush( byval opt as integer, byval value as integer )
 	with pragmaStk(opt)
 		if( .tos >= FB_MAXPRAGMARECLEVEL ) then
 			errReport( FB_ERRMSG_RECLEVELTOODEEP )
@@ -69,7 +69,7 @@ private sub pragmaPush(byval opt as integer, byval value as integer)
 	end with
 end sub
 
-private sub pragmaPop(byval opt as integer, byref value as integer)
+private sub pragmaPop( byval opt as integer, byref value as integer )
 	with pragmaStk(opt)
 		if( .tos <= 0 ) then
 			errReport( FB_ERRMSG_STACKUNDERFLOW )
@@ -89,7 +89,7 @@ end sub
 ''							| POP '(' symbol ')'
 ''							| symbol ('=' expression{int})?
 ''
-sub ppPragma()
+sub ppPragma( )
 	dim as string tk
 	dim as integer i = any, p = any, value = any, ispop = FALSE, ispush = FALSE
 

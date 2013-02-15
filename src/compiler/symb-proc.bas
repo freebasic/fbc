@@ -610,10 +610,6 @@ private function hSetupProc _
 
     function = NULL
 
-#if _SSE
-	'dim as integer returnMethod = sym->proc.returnMethod
-#endif
-
 	'' Procedures are always "globals"
 	attrib or= FB_SYMBATTRIB_SHARED
 
@@ -851,9 +847,6 @@ add_proc:
 	end if
 
 	proc->stats or= stats
-#if _SSE
-	'proc->proc.returnMethod = returnMethod
-#endif
 
 	'' Adding method to UDT?
 	if( symbIsMethod( proc ) ) then
