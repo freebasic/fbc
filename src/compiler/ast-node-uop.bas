@@ -178,14 +178,15 @@ function astNewUOP _
     	exit function
     end if
 
-    select case as const typeGet( dtype )
-    '' CHAR and WCHAR literals are also from the INTEGER class..
-    case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
-    	'' only if it's a deref pointer, to allow "NOT *p" etc
-    	if( astIsDEREF( o ) = FALSE ) then
-    		exit function
-    	end if
+	select case as const typeGet( dtype )
+	'' CHAR and WCHAR literals are also from the INTEGER class..
+	case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
+		'' only if it's a deref pointer, to allow "NOT *p" etc
+		if( astIsDEREF( o ) = FALSE ) then
+			exit function
+		end if
 
+	'' UDT?
 	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
 		'' try to convert to the most precise type
 		o = astNewCONV( FB_DATATYPE_VOID, NULL, o )
@@ -194,17 +195,26 @@ function astNewUOP _
 		end if
 
 		dtype = typeJoin( dtype, astGetFullType( o ) )
-    	dclass = typeGetClass( dtype )
+		dclass = typeGetClass( dtype )
+
+	'' Enum operand? Convert to integer (but preserve CONSTs)
+	case FB_DATATYPE_ENUM
+		'' See also astNewBOP() - when doing math on enum constants,
+		'' we don't know whether the resulting integer value will be
+		'' a part of that enum, so it's better to convert to integer.
+		'' For typesafe enums, an error would have to be shown here.
+		dtype = typeJoin( dtype, FB_DATATYPE_INTEGER )
+		dclass = FB_DATACLASS_INTEGER
+		o = astNewCONV( dtype, NULL, o )
 
 	'' pointer?
-	case else
-		if( typeIsPtr( dtype ) ) then
-    		'' only NOT allowed
-    		if( op <> AST_OP_NOT ) then
-    			exit function
-    		end if
-    	end if
-    end select
+	case FB_DATATYPE_POINTER
+		'' only NOT allowed
+		if( op <> AST_OP_NOT ) then
+			exit function
+		end if
+
+	end select
 
 	dim as FBSYMBOL ptr subtype = o->subtype
 

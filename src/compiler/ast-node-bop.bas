@@ -925,17 +925,27 @@ function astNewBOP _
 		end if
     end if
 
-    '' enums?
-    if( (typeGet( ldtype ) = FB_DATATYPE_ENUM) or _
-    	(typeGet( rdtype ) = FB_DATATYPE_ENUM) ) then
-    	'' not the same?
-    	if( ldtype <> rdtype ) then
-    		if( (ldclass <> FB_DATACLASS_INTEGER) or _
-    			(rdclass <> FB_DATACLASS_INTEGER) ) then
-    			errReportWarn( FB_WARNINGMSG_IMPLICITCONVERSION )
-    		end if
-    	end if
-    end if
+	''
+	'' Enum operands? Convert them to integer (but preserve CONSTs).
+	''
+	'' When doing math BOPs on enum constants, we don't even know whether
+	'' the resulting integer value will be a part of that enum.
+	'' For typesafe enums, an error would have to be shown here.
+	''
+	'' Similar for relational BOPs, it's better to compare enums as
+	'' integers, especially if the two operands are from different enums.
+	'' (also, the result of relational BOPs is an integer anyways...)
+	''
+	if( typeGet( ldtype ) = FB_DATATYPE_ENUM ) then
+		ldtype = typeJoin( ldtype, FB_DATATYPE_INTEGER )
+		ldclass = FB_DATACLASS_INTEGER
+		l = astNewCONV( ldtype, NULL, l )
+	end if
+	if( typeGet( rdtype ) = FB_DATATYPE_ENUM ) then
+		rdtype = typeJoin( rdtype, FB_DATATYPE_INTEGER )
+		rdclass = FB_DATACLASS_INTEGER
+		r = astNewCONV( rdtype, NULL, r )
+	end if
 
     '' both zstrings? treat as string..
     if( (typeGet( ldtype ) = FB_DATATYPE_CHAR) and _

@@ -540,36 +540,36 @@ INTEGER
 math ops (b, enum1a):
 
 b + enum1a =max =
-ENUM1
+INTEGER
 b -enum1a =max =
-ENUM1
+INTEGER
 b * enum1a =max =
-ENUM1
+INTEGER
 b / enum1a =float =
 DOUBLE
 b ^ enum1a =float =
 DOUBLE
 b \ enum1a =non-float =
-ENUM1
+INTEGER
 b mod enum1a =non-float =
-ENUM1
+INTEGER
 
 bitops (b, enum1a):
 
 b shl enum1a =non-float =
-ENUM1
+INTEGER
 b shr enum1a =non-float =
-ENUM1
+INTEGER
 b and enum1a =non-float =
-ENUM1
+INTEGER
 b or enum1a =non-float =
-ENUM1
+INTEGER
 b xor enum1a =non-float =
-ENUM1
+INTEGER
 b eqv enum1a =non-float =
-ENUM1
+INTEGER
 b imp enum1a =non-float =
-ENUM1
+INTEGER
 
 relational ops (b, enum1a):
 
@@ -1123,36 +1123,36 @@ INTEGER
 math ops (enum1a, b):
 
 enum1a + b =max =
-ENUM1
+INTEGER
 enum1a -b =max =
-ENUM1
+INTEGER
 enum1a * b =max =
-ENUM1
+INTEGER
 enum1a / b =float =
 DOUBLE
 enum1a ^ b =float =
 DOUBLE
 enum1a \ b =non-float =
-ENUM1
+INTEGER
 enum1a mod b =non-float =
-ENUM1
+INTEGER
 
 bitops (enum1a, b):
 
 enum1a shl b =non-float =
-ENUM1
+INTEGER
 enum1a shr b =non-float =
-ENUM1
+INTEGER
 enum1a and b =non-float =
-ENUM1
+INTEGER
 enum1a or b =non-float =
-ENUM1
+INTEGER
 enum1a xor b =non-float =
-ENUM1
+INTEGER
 enum1a eqv b =non-float =
-ENUM1
+INTEGER
 enum1a imp b =non-float =
-ENUM1
+INTEGER
 
 relational ops (enum1a, b):
 
@@ -3302,36 +3302,36 @@ INTEGER
 math ops (sh, enum1a):
 
 sh + enum1a =max =
-ENUM1
+INTEGER
 sh -enum1a =max =
-ENUM1
+INTEGER
 sh * enum1a =max =
-ENUM1
+INTEGER
 sh / enum1a =float =
 DOUBLE
 sh ^ enum1a =float =
 DOUBLE
 sh \ enum1a =non-float =
-ENUM1
+INTEGER
 sh mod enum1a =non-float =
-ENUM1
+INTEGER
 
 bitops (sh, enum1a):
 
 sh shl enum1a =non-float =
-ENUM1
+INTEGER
 sh shr enum1a =non-float =
-ENUM1
+INTEGER
 sh and enum1a =non-float =
-ENUM1
+INTEGER
 sh or enum1a =non-float =
-ENUM1
+INTEGER
 sh xor enum1a =non-float =
-ENUM1
+INTEGER
 sh eqv enum1a =non-float =
-ENUM1
+INTEGER
 sh imp enum1a =non-float =
-ENUM1
+INTEGER
 
 relational ops (sh, enum1a):
 
@@ -3885,36 +3885,36 @@ INTEGER
 math ops (enum1a, sh):
 
 enum1a + sh =max =
-ENUM1
+INTEGER
 enum1a -sh =max =
-ENUM1
+INTEGER
 enum1a * sh =max =
-ENUM1
+INTEGER
 enum1a / sh =float =
 DOUBLE
 enum1a ^ sh =float =
 DOUBLE
 enum1a \ sh =non-float =
-ENUM1
+INTEGER
 enum1a mod sh =non-float =
-ENUM1
+INTEGER
 
 bitops (enum1a, sh):
 
 enum1a shl sh =non-float =
-ENUM1
+INTEGER
 enum1a shr sh =non-float =
-ENUM1
+INTEGER
 enum1a and sh =non-float =
-ENUM1
+INTEGER
 enum1a or sh =non-float =
-ENUM1
+INTEGER
 enum1a xor sh =non-float =
-ENUM1
+INTEGER
 enum1a eqv sh =non-float =
-ENUM1
+INTEGER
 enum1a imp sh =non-float =
-ENUM1
+INTEGER
 
 relational ops (enum1a, sh):
 
@@ -4683,36 +4683,36 @@ INTEGER
 math ops (ush, enum1a):
 
 ush + enum1a =max =
-ENUM1
+INTEGER
 ush -enum1a =max =
-ENUM1
+INTEGER
 ush * enum1a =max =
-ENUM1
+INTEGER
 ush / enum1a =float =
 DOUBLE
 ush ^ enum1a =float =
 DOUBLE
 ush \ enum1a =non-float =
-ENUM1
+INTEGER
 ush mod enum1a =non-float =
-ENUM1
+INTEGER
 
 bitops (ush, enum1a):
 
 ush shl enum1a =non-float =
-ENUM1
+INTEGER
 ush shr enum1a =non-float =
-ENUM1
+INTEGER
 ush and enum1a =non-float =
-ENUM1
+INTEGER
 ush or enum1a =non-float =
-ENUM1
+INTEGER
 ush xor enum1a =non-float =
-ENUM1
+INTEGER
 ush eqv enum1a =non-float =
-ENUM1
+INTEGER
 ush imp enum1a =non-float =
-ENUM1
+INTEGER
 
 relational ops (ush, enum1a):
 
@@ -5266,36 +5266,36 @@ INTEGER
 math ops (enum1a, ush):
 
 enum1a + ush =max =
-ENUM1
+INTEGER
 enum1a -ush =max =
-ENUM1
+INTEGER
 enum1a * ush =max =
-ENUM1
+INTEGER
 enum1a / ush =float =
 DOUBLE
 enum1a ^ ush =float =
 DOUBLE
 enum1a \ ush =non-float =
-ENUM1
+INTEGER
 enum1a mod ush =non-float =
-ENUM1
+INTEGER
 
 bitops (enum1a, ush):
 
 enum1a shl ush =non-float =
-ENUM1
+INTEGER
 enum1a shr ush =non-float =
-ENUM1
+INTEGER
 enum1a and ush =non-float =
-ENUM1
+INTEGER
 enum1a or ush =non-float =
-ENUM1
+INTEGER
 enum1a xor ush =non-float =
-ENUM1
+INTEGER
 enum1a eqv ush =non-float =
-ENUM1
+INTEGER
 enum1a imp ush =non-float =
-ENUM1
+INTEGER
 
 relational ops (enum1a, ush):
 
@@ -6064,36 +6064,36 @@ INTEGER
 math ops (i, enum1a):
 
 i + enum1a =max =
-ENUM1
+INTEGER
 i -enum1a =max =
-ENUM1
+INTEGER
 i * enum1a =max =
-ENUM1
+INTEGER
 i / enum1a =float =
 DOUBLE
 i ^ enum1a =float =
 DOUBLE
 i \ enum1a =non-float =
-ENUM1
+INTEGER
 i mod enum1a =non-float =
-ENUM1
+INTEGER
 
 bitops (i, enum1a):
 
 i shl enum1a =non-float =
-ENUM1
+INTEGER
 i shr enum1a =non-float =
-ENUM1
+INTEGER
 i and enum1a =non-float =
-ENUM1
+INTEGER
 i or enum1a =non-float =
-ENUM1
+INTEGER
 i xor enum1a =non-float =
-ENUM1
+INTEGER
 i eqv enum1a =non-float =
-ENUM1
+INTEGER
 i imp enum1a =non-float =
-ENUM1
+INTEGER
 
 relational ops (i, enum1a):
 
@@ -6647,36 +6647,36 @@ INTEGER
 math ops (enum1a, i):
 
 enum1a + i =max =
-ENUM1
+INTEGER
 enum1a -i =max =
-ENUM1
+INTEGER
 enum1a * i =max =
-ENUM1
+INTEGER
 enum1a / i =float =
 DOUBLE
 enum1a ^ i =float =
 DOUBLE
 enum1a \ i =non-float =
-ENUM1
+INTEGER
 enum1a mod i =non-float =
-ENUM1
+INTEGER
 
 bitops (enum1a, i):
 
 enum1a shl i =non-float =
-ENUM1
+INTEGER
 enum1a shr i =non-float =
-ENUM1
+INTEGER
 enum1a and i =non-float =
-ENUM1
+INTEGER
 enum1a or i =non-float =
-ENUM1
+INTEGER
 enum1a xor i =non-float =
-ENUM1
+INTEGER
 enum1a eqv i =non-float =
-ENUM1
+INTEGER
 enum1a imp i =non-float =
-ENUM1
+INTEGER
 
 relational ops (enum1a, i):
 
@@ -14350,76 +14350,54 @@ INTEGER
 math ops (f, enum1a):
 
 f + enum1a =max =
-	Implicit conversion
 SINGLE
 f -enum1a =max =
-	Implicit conversion
 SINGLE
 f * enum1a =max =
-	Implicit conversion
 SINGLE
 f / enum1a =float =
-	Implicit conversion
 DOUBLE
 f ^ enum1a =float =
-	Implicit conversion
 DOUBLE
 f \ enum1a =non-float =
-	Implicit conversion
-ENUM1
+INTEGER
 f mod enum1a =non-float =
-	Implicit conversion
-ENUM1
+INTEGER
 
 bitops (f, enum1a):
 
 f shl enum1a =non-float =
-	Implicit conversion
-ENUM1
+INTEGER
 f shr enum1a =non-float =
-	Implicit conversion
-ENUM1
+INTEGER
 f and enum1a =non-float =
-	Implicit conversion
-ENUM1
+INTEGER
 f or enum1a =non-float =
-	Implicit conversion
-ENUM1
+INTEGER
 f xor enum1a =non-float =
-	Implicit conversion
-ENUM1
+INTEGER
 f eqv enum1a =non-float =
-	Implicit conversion
-ENUM1
+INTEGER
 f imp enum1a =non-float =
-	Implicit conversion
-ENUM1
+INTEGER
 
 relational ops (f, enum1a):
 
 f =enum1a =integer =
-	Implicit conversion
 INTEGER
 f >enum1a =integer =
-	Implicit conversion
 INTEGER
 f <enum1a =integer =
-	Implicit conversion
 INTEGER
 f <> enum1a =integer =
-	Implicit conversion
 INTEGER
 f <= enum1a =integer =
-	Implicit conversion
 INTEGER
 f >= enum1a =integer =
-	Implicit conversion
 INTEGER
 f andalso enum1a =integer =
-	Implicit conversion
 INTEGER
 f orelse enum1a =integer =
-	Implicit conversion
 INTEGER
 
 math ops (b, f):
@@ -14955,76 +14933,54 @@ INTEGER
 math ops (enum1a, f):
 
 enum1a + f =max =
-	Implicit conversion
 SINGLE
 enum1a -f =max =
-	Implicit conversion
 SINGLE
 enum1a * f =max =
-	Implicit conversion
 SINGLE
 enum1a / f =float =
-	Implicit conversion
 DOUBLE
 enum1a ^ f =float =
-	Implicit conversion
 DOUBLE
 enum1a \ f =non-float =
-	Implicit conversion
-ENUM1
+INTEGER
 enum1a mod f =non-float =
-	Implicit conversion
-ENUM1
+INTEGER
 
 bitops (enum1a, f):
 
 enum1a shl f =non-float =
-	Implicit conversion
-ENUM1
+INTEGER
 enum1a shr f =non-float =
-	Implicit conversion
-ENUM1
+INTEGER
 enum1a and f =non-float =
-	Implicit conversion
-ENUM1
+INTEGER
 enum1a or f =non-float =
-	Implicit conversion
-ENUM1
+INTEGER
 enum1a xor f =non-float =
-	Implicit conversion
-ENUM1
+INTEGER
 enum1a eqv f =non-float =
-	Implicit conversion
-ENUM1
+INTEGER
 enum1a imp f =non-float =
-	Implicit conversion
-ENUM1
+INTEGER
 
 relational ops (enum1a, f):
 
 enum1a =f =integer =
-	Implicit conversion
 INTEGER
 enum1a >f =integer =
-	Implicit conversion
 INTEGER
 enum1a <f =integer =
-	Implicit conversion
 INTEGER
 enum1a <> f =integer =
-	Implicit conversion
 INTEGER
 enum1a <= f =integer =
-	Implicit conversion
 INTEGER
 enum1a >= f =integer =
-	Implicit conversion
 INTEGER
 enum1a andalso f =integer =
-	Implicit conversion
 INTEGER
 enum1a orelse f =integer =
-	Implicit conversion
 INTEGER
 
 math ops (f, f):
@@ -15775,76 +15731,54 @@ INTEGER
 math ops (d, enum1a):
 
 d + enum1a =max =
-	Implicit conversion
 DOUBLE
 d -enum1a =max =
-	Implicit conversion
 DOUBLE
 d * enum1a =max =
-	Implicit conversion
 DOUBLE
 d / enum1a =float =
-	Implicit conversion
 DOUBLE
 d ^ enum1a =float =
-	Implicit conversion
 DOUBLE
 d \ enum1a =non-float =
-	Implicit conversion
-ENUM1
+INTEGER
 d mod enum1a =non-float =
-	Implicit conversion
-ENUM1
+INTEGER
 
 bitops (d, enum1a):
 
 d shl enum1a =non-float =
-	Implicit conversion
-ENUM1
+INTEGER
 d shr enum1a =non-float =
-	Implicit conversion
-ENUM1
+INTEGER
 d and enum1a =non-float =
-	Implicit conversion
-ENUM1
+INTEGER
 d or enum1a =non-float =
-	Implicit conversion
-ENUM1
+INTEGER
 d xor enum1a =non-float =
-	Implicit conversion
-ENUM1
+INTEGER
 d eqv enum1a =non-float =
-	Implicit conversion
-ENUM1
+INTEGER
 d imp enum1a =non-float =
-	Implicit conversion
-ENUM1
+INTEGER
 
 relational ops (d, enum1a):
 
 d =enum1a =integer =
-	Implicit conversion
 INTEGER
 d >enum1a =integer =
-	Implicit conversion
 INTEGER
 d <enum1a =integer =
-	Implicit conversion
 INTEGER
 d <> enum1a =integer =
-	Implicit conversion
 INTEGER
 d <= enum1a =integer =
-	Implicit conversion
 INTEGER
 d >= enum1a =integer =
-	Implicit conversion
 INTEGER
 d andalso enum1a =integer =
-	Implicit conversion
 INTEGER
 d orelse enum1a =integer =
-	Implicit conversion
 INTEGER
 
 math ops (b, d):
@@ -16380,76 +16314,54 @@ INTEGER
 math ops (enum1a, d):
 
 enum1a + d =max =
-	Implicit conversion
 DOUBLE
 enum1a -d =max =
-	Implicit conversion
 DOUBLE
 enum1a * d =max =
-	Implicit conversion
 DOUBLE
 enum1a / d =float =
-	Implicit conversion
 DOUBLE
 enum1a ^ d =float =
-	Implicit conversion
 DOUBLE
 enum1a \ d =non-float =
-	Implicit conversion
-ENUM1
+INTEGER
 enum1a mod d =non-float =
-	Implicit conversion
-ENUM1
+INTEGER
 
 bitops (enum1a, d):
 
 enum1a shl d =non-float =
-	Implicit conversion
-ENUM1
+INTEGER
 enum1a shr d =non-float =
-	Implicit conversion
-ENUM1
+INTEGER
 enum1a and d =non-float =
-	Implicit conversion
-ENUM1
+INTEGER
 enum1a or d =non-float =
-	Implicit conversion
-ENUM1
+INTEGER
 enum1a xor d =non-float =
-	Implicit conversion
-ENUM1
+INTEGER
 enum1a eqv d =non-float =
-	Implicit conversion
-ENUM1
+INTEGER
 enum1a imp d =non-float =
-	Implicit conversion
-ENUM1
+INTEGER
 
 relational ops (enum1a, d):
 
 enum1a =d =integer =
-	Implicit conversion
 INTEGER
 enum1a >d =integer =
-	Implicit conversion
 INTEGER
 enum1a <d =integer =
-	Implicit conversion
 INTEGER
 enum1a <> d =integer =
-	Implicit conversion
 INTEGER
 enum1a <= d =integer =
-	Implicit conversion
 INTEGER
 enum1a >= d =integer =
-	Implicit conversion
 INTEGER
 enum1a andalso d =integer =
-	Implicit conversion
 INTEGER
 enum1a orelse d =integer =
-	Implicit conversion
 INTEGER
 
 math ops (d, f):
@@ -16675,36 +16587,36 @@ enums:
 math ops (enum1a, b):
 
 enum1a + b =max =
-ENUM1
+INTEGER
 enum1a -b =max =
-ENUM1
+INTEGER
 enum1a * b =max =
-ENUM1
+INTEGER
 enum1a / b =float =
 DOUBLE
 enum1a ^ b =float =
 DOUBLE
 enum1a \ b =non-float =
-ENUM1
+INTEGER
 enum1a mod b =non-float =
-ENUM1
+INTEGER
 
 bitops (enum1a, b):
 
 enum1a shl b =non-float =
-ENUM1
+INTEGER
 enum1a shr b =non-float =
-ENUM1
+INTEGER
 enum1a and b =non-float =
-ENUM1
+INTEGER
 enum1a or b =non-float =
-ENUM1
+INTEGER
 enum1a xor b =non-float =
-ENUM1
+INTEGER
 enum1a eqv b =non-float =
-ENUM1
+INTEGER
 enum1a imp b =non-float =
-ENUM1
+INTEGER
 
 relational ops (enum1a, b):
 
@@ -16781,36 +16693,36 @@ INTEGER
 math ops (enum1a, sh):
 
 enum1a + sh =max =
-ENUM1
+INTEGER
 enum1a -sh =max =
-ENUM1
+INTEGER
 enum1a * sh =max =
-ENUM1
+INTEGER
 enum1a / sh =float =
 DOUBLE
 enum1a ^ sh =float =
 DOUBLE
 enum1a \ sh =non-float =
-ENUM1
+INTEGER
 enum1a mod sh =non-float =
-ENUM1
+INTEGER
 
 bitops (enum1a, sh):
 
 enum1a shl sh =non-float =
-ENUM1
+INTEGER
 enum1a shr sh =non-float =
-ENUM1
+INTEGER
 enum1a and sh =non-float =
-ENUM1
+INTEGER
 enum1a or sh =non-float =
-ENUM1
+INTEGER
 enum1a xor sh =non-float =
-ENUM1
+INTEGER
 enum1a eqv sh =non-float =
-ENUM1
+INTEGER
 enum1a imp sh =non-float =
-ENUM1
+INTEGER
 
 relational ops (enum1a, sh):
 
@@ -16834,36 +16746,36 @@ INTEGER
 math ops (enum1a, ush):
 
 enum1a + ush =max =
-ENUM1
+INTEGER
 enum1a -ush =max =
-ENUM1
+INTEGER
 enum1a * ush =max =
-ENUM1
+INTEGER
 enum1a / ush =float =
 DOUBLE
 enum1a ^ ush =float =
 DOUBLE
 enum1a \ ush =non-float =
-ENUM1
+INTEGER
 enum1a mod ush =non-float =
-ENUM1
+INTEGER
 
 bitops (enum1a, ush):
 
 enum1a shl ush =non-float =
-ENUM1
+INTEGER
 enum1a shr ush =non-float =
-ENUM1
+INTEGER
 enum1a and ush =non-float =
-ENUM1
+INTEGER
 enum1a or ush =non-float =
-ENUM1
+INTEGER
 enum1a xor ush =non-float =
-ENUM1
+INTEGER
 enum1a eqv ush =non-float =
-ENUM1
+INTEGER
 enum1a imp ush =non-float =
-ENUM1
+INTEGER
 
 relational ops (enum1a, ush):
 
@@ -16887,36 +16799,36 @@ INTEGER
 math ops (enum1a, i):
 
 enum1a + i =max =
-ENUM1
+INTEGER
 enum1a -i =max =
-ENUM1
+INTEGER
 enum1a * i =max =
-ENUM1
+INTEGER
 enum1a / i =float =
 DOUBLE
 enum1a ^ i =float =
 DOUBLE
 enum1a \ i =non-float =
-ENUM1
+INTEGER
 enum1a mod i =non-float =
-ENUM1
+INTEGER
 
 bitops (enum1a, i):
 
 enum1a shl i =non-float =
-ENUM1
+INTEGER
 enum1a shr i =non-float =
-ENUM1
+INTEGER
 enum1a and i =non-float =
-ENUM1
+INTEGER
 enum1a or i =non-float =
-ENUM1
+INTEGER
 enum1a xor i =non-float =
-ENUM1
+INTEGER
 enum1a eqv i =non-float =
-ENUM1
+INTEGER
 enum1a imp i =non-float =
-ENUM1
+INTEGER
 
 relational ops (enum1a, i):
 
@@ -17205,36 +17117,36 @@ INTEGER
 math ops (enum1a, enum1a):
 
 enum1a + enum1a =max =
-ENUM1
+INTEGER
 enum1a -enum1a =max =
-ENUM1
+INTEGER
 enum1a * enum1a =max =
-ENUM1
+INTEGER
 enum1a / enum1a =float =
 DOUBLE
 enum1a ^ enum1a =float =
 DOUBLE
 enum1a \ enum1a =non-float =
-ENUM1
+INTEGER
 enum1a mod enum1a =non-float =
-ENUM1
+INTEGER
 
 bitops (enum1a, enum1a):
 
 enum1a shl enum1a =non-float =
-ENUM1
+INTEGER
 enum1a shr enum1a =non-float =
-ENUM1
+INTEGER
 enum1a and enum1a =non-float =
-ENUM1
+INTEGER
 enum1a or enum1a =non-float =
-ENUM1
+INTEGER
 enum1a xor enum1a =non-float =
-ENUM1
+INTEGER
 enum1a eqv enum1a =non-float =
-ENUM1
+INTEGER
 enum1a imp enum1a =non-float =
-ENUM1
+INTEGER
 
 relational ops (enum1a, enum1a):
 
@@ -17258,36 +17170,36 @@ INTEGER
 math ops (b, enum1a):
 
 b + enum1a =max =
-ENUM1
+INTEGER
 b -enum1a =max =
-ENUM1
+INTEGER
 b * enum1a =max =
-ENUM1
+INTEGER
 b / enum1a =float =
 DOUBLE
 b ^ enum1a =float =
 DOUBLE
 b \ enum1a =non-float =
-ENUM1
+INTEGER
 b mod enum1a =non-float =
-ENUM1
+INTEGER
 
 bitops (b, enum1a):
 
 b shl enum1a =non-float =
-ENUM1
+INTEGER
 b shr enum1a =non-float =
-ENUM1
+INTEGER
 b and enum1a =non-float =
-ENUM1
+INTEGER
 b or enum1a =non-float =
-ENUM1
+INTEGER
 b xor enum1a =non-float =
-ENUM1
+INTEGER
 b eqv enum1a =non-float =
-ENUM1
+INTEGER
 b imp enum1a =non-float =
-ENUM1
+INTEGER
 
 relational ops (b, enum1a):
 
@@ -17364,36 +17276,36 @@ INTEGER
 math ops (sh, enum1a):
 
 sh + enum1a =max =
-ENUM1
+INTEGER
 sh -enum1a =max =
-ENUM1
+INTEGER
 sh * enum1a =max =
-ENUM1
+INTEGER
 sh / enum1a =float =
 DOUBLE
 sh ^ enum1a =float =
 DOUBLE
 sh \ enum1a =non-float =
-ENUM1
+INTEGER
 sh mod enum1a =non-float =
-ENUM1
+INTEGER
 
 bitops (sh, enum1a):
 
 sh shl enum1a =non-float =
-ENUM1
+INTEGER
 sh shr enum1a =non-float =
-ENUM1
+INTEGER
 sh and enum1a =non-float =
-ENUM1
+INTEGER
 sh or enum1a =non-float =
-ENUM1
+INTEGER
 sh xor enum1a =non-float =
-ENUM1
+INTEGER
 sh eqv enum1a =non-float =
-ENUM1
+INTEGER
 sh imp enum1a =non-float =
-ENUM1
+INTEGER
 
 relational ops (sh, enum1a):
 
@@ -17417,36 +17329,36 @@ INTEGER
 math ops (ush, enum1a):
 
 ush + enum1a =max =
-ENUM1
+INTEGER
 ush -enum1a =max =
-ENUM1
+INTEGER
 ush * enum1a =max =
-ENUM1
+INTEGER
 ush / enum1a =float =
 DOUBLE
 ush ^ enum1a =float =
 DOUBLE
 ush \ enum1a =non-float =
-ENUM1
+INTEGER
 ush mod enum1a =non-float =
-ENUM1
+INTEGER
 
 bitops (ush, enum1a):
 
 ush shl enum1a =non-float =
-ENUM1
+INTEGER
 ush shr enum1a =non-float =
-ENUM1
+INTEGER
 ush and enum1a =non-float =
-ENUM1
+INTEGER
 ush or enum1a =non-float =
-ENUM1
+INTEGER
 ush xor enum1a =non-float =
-ENUM1
+INTEGER
 ush eqv enum1a =non-float =
-ENUM1
+INTEGER
 ush imp enum1a =non-float =
-ENUM1
+INTEGER
 
 relational ops (ush, enum1a):
 
@@ -17470,36 +17382,36 @@ INTEGER
 math ops (i, enum1a):
 
 i + enum1a =max =
-ENUM1
+INTEGER
 i -enum1a =max =
-ENUM1
+INTEGER
 i * enum1a =max =
-ENUM1
+INTEGER
 i / enum1a =float =
 DOUBLE
 i ^ enum1a =float =
 DOUBLE
 i \ enum1a =non-float =
-ENUM1
+INTEGER
 i mod enum1a =non-float =
-ENUM1
+INTEGER
 
 bitops (i, enum1a):
 
 i shl enum1a =non-float =
-ENUM1
+INTEGER
 i shr enum1a =non-float =
-ENUM1
+INTEGER
 i and enum1a =non-float =
-ENUM1
+INTEGER
 i or enum1a =non-float =
-ENUM1
+INTEGER
 i xor enum1a =non-float =
-ENUM1
+INTEGER
 i eqv enum1a =non-float =
-ENUM1
+INTEGER
 i imp enum1a =non-float =
-ENUM1
+INTEGER
 
 relational ops (i, enum1a):
 
@@ -17788,36 +17700,36 @@ INTEGER
 math ops (enum1a, enum1a):
 
 enum1a + enum1a =max =
-ENUM1
+INTEGER
 enum1a -enum1a =max =
-ENUM1
+INTEGER
 enum1a * enum1a =max =
-ENUM1
+INTEGER
 enum1a / enum1a =float =
 DOUBLE
 enum1a ^ enum1a =float =
 DOUBLE
 enum1a \ enum1a =non-float =
-ENUM1
+INTEGER
 enum1a mod enum1a =non-float =
-ENUM1
+INTEGER
 
 bitops (enum1a, enum1a):
 
 enum1a shl enum1a =non-float =
-ENUM1
+INTEGER
 enum1a shr enum1a =non-float =
-ENUM1
+INTEGER
 enum1a and enum1a =non-float =
-ENUM1
+INTEGER
 enum1a or enum1a =non-float =
-ENUM1
+INTEGER
 enum1a xor enum1a =non-float =
-ENUM1
+INTEGER
 enum1a eqv enum1a =non-float =
-ENUM1
+INTEGER
 enum1a imp enum1a =non-float =
-ENUM1
+INTEGER
 
 relational ops (enum1a, enum1a):
 
@@ -17839,7 +17751,7 @@ enum1a orelse enum1a =integer =
 INTEGER
 
 enum1 + enum2 =
-ENUM1
+INTEGER
 
 ----------------------------------------------------------------------
 pointers:

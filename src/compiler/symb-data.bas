@@ -70,23 +70,13 @@ sub typeMax _
 	dtype2 = symb_dtypeTB(typeGet( rdtype )).remaptype
 
 	if( dtype1 = dtype2 ) then
-		'' Different types, but they remapped to the same, could be enums
-		'' Enums currently take precedence no matter whether on lhs or rhs,
-		'' just like pointer arithmetics; if both sides are enums,
-		'' currently the lhs wins.
-		if( typeGetDtAndPtrOnly( ldtype ) = FB_DATATYPE_ENUM ) then
-			dtype = ldtype
-			subtype = lsubtype
-		elseif( typeGetDtAndPtrOnly( rdtype ) = FB_DATATYPE_ENUM ) then
-			dtype = rdtype
-			subtype = rsubtype
-		else
-			'' Will this ever happen?
-			'' Return the generic remapped type, since we don't
-			'' know which side to prefer
-			dtype = dtype1
-			subtype = NULL
-		end if
+		'' Different types, but they remapped to the same,
+		'' will this ever happen? (special cases such as enums and
+		'' pointers should already have been handled by the caller)
+		'' Return the generic remapped type, since we don't
+		'' know which side to prefer
+		dtype = dtype1
+		subtype = NULL
 	elseif( dtype1 > dtype2 ) then
 		dtype = ldtype
 		subtype = lsubtype
