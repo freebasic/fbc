@@ -979,17 +979,17 @@ end sub
 
 private sub hEmitTypedefs( )
 	'' typedef's for debugging
-	hWriteLine( "typedef char byte;", TRUE )
+	hWriteLine( "typedef signed char byte;", TRUE )
 	hWriteLine( "typedef unsigned char ubyte;", TRUE )
 	hWriteLine( "typedef unsigned short ushort;", TRUE )
-	hWriteLine( "typedef int integer;", TRUE )
+	hWriteLine( "typedef signed int integer;", TRUE )
 	hWriteLine( "typedef unsigned int uinteger;", TRUE )
 	hWriteLine( "typedef unsigned long ulong;", TRUE )
-	hWriteLine( "typedef long long longint;", TRUE )
+	hWriteLine( "typedef signed long long longint;", TRUE )
 	hWriteLine( "typedef unsigned long long ulongint;", TRUE )
 	hWriteLine( "typedef float single;", TRUE )
 	hWriteLine( "typedef struct _string { char *data; int len; int size; } string;", TRUE )
-	hWriteLine( "typedef char fixstr;", TRUE )
+	hWriteLine( "typedef signed char fixstr;", TRUE )
 
 	'' Target-dependant wchar type
 	dim as string wchartype
