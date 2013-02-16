@@ -151,29 +151,7 @@ function hCheckTypes _
 	end if
 
 	'' Use the "max" of both types, like BOPs
-	dtype = typeMax( ldtype, rdtype )
-	if( dtype = FB_DATATYPE_INVALID ) then
-		if( typeGetClass( ldtype ) = FB_DATACLASS_FPOINT ) then
-			'' SINGLE, SINGLE -> SINGLE
-			'' everything else -> DOUBLE
-			if( (typeGetDtOnly( ldtype ) = FB_DATATYPE_SINGLE) and _
-			    (typeGetDtOnly( rdtype ) = FB_DATATYPE_SINGLE) ) then
-				dtype = FB_DATATYPE_SINGLE
-			else
-				dtype = FB_DATATYPE_DOUBLE
-			end if
-		else
-			'' typeMax() returns FB_DATATYPE_INVALID also
-			'' for INT vs. UINT, so prefer the unsigned one.
-			if( typeIsSigned( ldtype ) ) then
-				dtype = rdtype
-			else
-				dtype = ldtype
-			end if
-		end if
-	end if
-	subtype = NULL
-
+	typeMax( ldtype, lsubtype, rdtype, rsubtype, dtype, subtype )
 	function = TRUE
 end function
 

@@ -3,7 +3,6 @@
 '' chng: feb/2006 moved off ir.bas [v1ctor]
 ''
 
-
 #include once "fb.bi"
 #include once "fbint.bi"
 
@@ -47,116 +46,56 @@ sub symbDataInit( )
 	symb_dtypeTB(FB_DATATYPE_WCHAR).remaptype = symb_dtypeTB(env.target.wchar).remaptype
 end sub
 
-function typeMax _
+sub typeMax _
 	( _
 		byval ldtype as integer, _
-		byval rdtype as integer _
-	) as integer
+		byval lsubtype as FBSYMBOL ptr, _
+		byval rdtype as integer, _
+		byval rsubtype as FBSYMBOL ptr, _
+		byref dtype as integer, _
+		byref subtype as FBSYMBOL ptr _
+	)
 
-    dim as integer dtype1 = any, dtype2 = any
+	dim as integer dtype1 = any, dtype2 = any
 
-    function = FB_DATATYPE_INVALID
+	'' Same type?
+	if( (typeGetDtAndPtrOnly( ldtype ) = typeGetDtAndPtrOnly( rdtype )) and _
+	    (lsubtype = rsubtype) ) then
+		dtype = ldtype
+		subtype = lsubtype
+		exit sub
+	end if
 
-    dtype1 = typeGet( ldtype )
-    if( dtype1 = FB_DATATYPE_POINTER ) then
-    	'' can't be POINTER, due the -1 +1 hacks below
-    	dtype1 = FB_DATATYPE_ULONG
-    else
-    	dtype1 = symb_dtypeTB(dtype1).remaptype
-    end if
+	dtype1 = symb_dtypeTB(typeGet( ldtype )).remaptype
+	dtype2 = symb_dtypeTB(typeGet( rdtype )).remaptype
 
-    dtype2 = typeGet( rdtype )
-    if( dtype2 = FB_DATATYPE_POINTER ) then
-    	'' ditto
-    	dtype2 = FB_DATATYPE_ULONG
-    else
-    	dtype2 = symb_dtypeTB(dtype2).remaptype
-    end if
+	if( dtype1 = dtype2 ) then
+		'' Different types, but they remapped to the same, could be enums
+		'' Enums currently take precedence no matter whether on lhs or rhs,
+		'' just like pointer arithmetics; if both sides are enums,
+		'' currently the lhs wins.
+		if( typeGetDtAndPtrOnly( ldtype ) = FB_DATATYPE_ENUM ) then
+			dtype = ldtype
+			subtype = lsubtype
+		elseif( typeGetDtAndPtrOnly( rdtype ) = FB_DATATYPE_ENUM ) then
+			dtype = rdtype
+			subtype = rsubtype
+		else
+			'' Will this ever happen?
+			'' Return the generic remapped type, since we don't
+			'' know which side to prefer
+			dtype = dtype1
+			subtype = NULL
+		end if
+	elseif( dtype1 > dtype2 ) then
+		dtype = ldtype
+		subtype = lsubtype
+	else
+		dtype = rdtype
+		subtype = rsubtype
+	end if
 
-    '' same?
-    if( dtype1 = dtype2 ) then
-    	exit function
-    end if
-
-    '' don't convert byte <-> ubyte
-    select case as const dtype1
-    case FB_DATATYPE_BYTE, FB_DATATYPE_UBYTE
-    	select case as const dtype2
-    	case FB_DATATYPE_BYTE, FB_DATATYPE_UBYTE
-    		exit function
-    	end select
-
-    '' neither short <-> ushort
-    case FB_DATATYPE_SHORT, FB_DATATYPE_USHORT
-    	select case as const dtype2
-    	case FB_DATATYPE_SHORT, FB_DATATYPE_USHORT
-    		exit function
-    	end select
-
-	'' neither int <-> uint
-	case FB_DATATYPE_INTEGER, FB_DATATYPE_UINT
-    	select case as const dtype2
-    	case FB_DATATYPE_INTEGER, FB_DATATYPE_UINT
-    		exit function
-
-    	case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
-    		if( FB_LONGSIZE = FB_INTEGERSIZE ) then
-    			exit function
-    		end if
-    	end select
-
-	'' neither long <-> ulong
-	case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
-    	select case as const dtype2
-    	case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
-    		exit function
-
-    	case FB_DATATYPE_INTEGER, FB_DATATYPE_UINT
-    		if( FB_LONGSIZE = FB_INTEGERSIZE ) then
-    			exit function
-    		end if
-
-    	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-    		if( FB_LONGSIZE = FB_INTEGERSIZE*2 ) then
-    			exit function
-    		end if
-    	end select
-
-    '' neither qword <-> longint
-    case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-    	select case as const dtype2
-    	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-    		exit function
-
-    	case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
-    		if( FB_LONGSIZE = FB_INTEGERSIZE*2 ) then
-    			exit function
-    		end if
-    	end select
-
-    '' neither single <-> double
-    case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-    	select case as const dtype2
-    	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-    		exit function
-    	end select
-
-    '' neither string, fixstring
-    case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR
-    	return FB_DATATYPE_STRING
-
-    case else
-    	errReportEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
-    end select
-
-    '' assuming DATATYPE's are in order of precision
-    if( dtype1 > dtype2 ) then
-    	function = ldtype
-    else
-    	function = rdtype
-    end if
-
-end function
+end sub
 
 '':::::
 function typeRemap _

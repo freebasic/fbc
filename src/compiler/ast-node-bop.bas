@@ -1223,52 +1223,35 @@ function astNewBOP _
 
     ''::::::
 
-    '' convert types to the most precise if needed
 	if( ldtype <> rdtype ) then
-
-		dtype = typeMax( ldtype, rdtype )
-
-		'' don't convert?
-		if( dtype = FB_DATATYPE_INVALID ) then
-
-			'' as types are different, if class is fp,
-			'' the result type will be always a double
-			if( ldclass = FB_DATACLASS_FPOINT ) then
-
-				if( irGetOption( IR_OPT_FPUCONV ) ) then
-					dtype   = ldtype
-					subtype = l->subtype
-				else
-					dtype   = typeJoin( dtype, FB_DATATYPE_DOUBLE )
-					subtype = NULL
-				end if
+		'' Pointer arithmetic (but not handled above by hDoPointerArith())?
+		'' (assuming hCheckPointers() checks were already done)
+		if( (typeIsPtr( ldtype ) or typeIsPtr( rdtype )) and _
+		    ((op = AST_OP_ADD) or (op = AST_OP_SUB)) ) then
+			'' The result is supposed to be the pointer type
+			if( typeIsPtr( ldtype ) ) then
+				dtype   = ldtype
+				subtype = l->subtype
 			else
-
-				'' an ENUM or POINTER always has the precedence
-				if( (rdtype = FB_DATATYPE_ENUM) or typeIsPtr( rdtype ) ) then
-					dtype = rdtype
-					subtype = r->subtype
-				else
-					dtype = ldtype
-					subtype = l->subtype
-				end if
-
-			end if
-
-		else
-			'' convert the l operand?
-			if( typeGetDtAndPtrOnly( dtype ) <> typeGetDtAndPtrOnly( ldtype ) ) then
+				dtype   = rdtype
 				subtype = r->subtype
+			end if
+		else
+			'' Convert lhs/rhs to most precise type
+			'' (e.g. for +/-/* math BOPs, but also for relational BOPs,
+			'' even if they involve pointers)
+			typeMax( ldtype, l->subtype, rdtype, r->subtype, dtype, subtype )
+
+			if( (typeGetDtAndPtrOnly( dtype ) <> typeGetDtAndPtrOnly( ldtype )) or _
+			    (subtype <> l->subtype) ) then
 				l = astNewCONV( dtype, subtype, l )
 				if( l = NULL ) then exit function
-
 				ldtype = dtype
-				ldclass = rdclass
+				ldclass = typeGetClass( dtype )
+			end if
 
-			'' convert the r operand..
-			else
-				subtype = l->subtype
-
+			if( (typeGetDtAndPtrOnly( dtype ) <> typeGetDtAndPtrOnly( rdtype )) or _
+			    (subtype <> r->subtype) ) then
 				'' if it's the src-operand of a shift operation, do nothing
 				select case op
 				case AST_OP_SHL, AST_OP_SHR
@@ -1279,12 +1262,10 @@ function astNewBOP _
 					if( r = NULL ) then exit function
 
 					rdtype = dtype
-					rdclass = ldclass
+					rdclass = typeGetClass( dtype )
 				end select
-
 			end if
 		end if
-
 	'' no conversion, same types
 	else
 		dtype   = ldtype
@@ -1293,17 +1274,14 @@ function astNewBOP _
 
 	'' post check
 	select case as const op
-	'' relative ops, the result is always an integer
-	case AST_OP_EQ, AST_OP_GT, AST_OP_LT, AST_OP_NE, AST_OP_LE, AST_OP_GE
+	'' relational operations always return an integer
+	case AST_OP_EQ, AST_OP_GT, AST_OP_LT, AST_OP_NE, AST_OP_LE, AST_OP_GE, _
+	     AST_OP_ANDALSO, AST_OP_ORELSE
 		dtype = FB_DATATYPE_INTEGER
 		subtype = NULL
-	'' ANDALSO and ORELSE always return an integer
-	case AST_OP_ANDALSO, AST_OP_ORELSE
-		dtype = FB_DATATYPE_INTEGER
-		subtype = NULL
+
 	'' right-operand must be an integer, so pow2 opts can be done on longint's
 	case AST_OP_SHL, AST_OP_SHR
-
 		if( astIsCONST( r ) ) then
 			'' warn if shift is greater than or equal to the number of bits in ldtype
 			'' !!!FIXME!!! prevent asm error when value is higher than 255
@@ -1315,8 +1293,8 @@ function astNewBOP _
 			end select
 		end if
 
-		if( typeGet( rdtype ) <> FB_DATATYPE_INTEGER ) then
-			if( typeGet( rdtype ) <> FB_DATATYPE_UINT ) then
+		if( typeGetDtAndPtrOnly( rdtype ) <> FB_DATATYPE_INTEGER ) then
+			if( typeGetDtAndPtrOnly( rdtype ) <> FB_DATATYPE_UINT ) then
 				rdtype = typeJoin( rdtype, FB_DATATYPE_INTEGER )
 				r = astNewCONV( rdtype, NULL, r )
 				rdclass = FB_DATACLASS_INTEGER

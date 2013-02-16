@@ -1517,11 +1517,15 @@ declare function symbGetVarHasDtor _
 		byval s as FBSYMBOL ptr _
 	) as integer
 
-declare function typeMax _
+declare sub typeMax _
 	( _
-		byval dtype1 as integer, _
-		byval dtype2 as integer _
-	) as integer
+		byval ldtype as integer, _
+		byval lsubtype as FBSYMBOL ptr, _
+		byval rdtype as integer, _
+		byval rsubtype as FBSYMBOL ptr, _
+		byref dtype as integer, _
+		byref subtype as FBSYMBOL ptr _
+	)
 
 declare function typeToSigned _
 	( _

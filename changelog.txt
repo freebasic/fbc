@@ -190,6 +190,7 @@ Version 0.25.0:
 - #508: The internal allocate/callocate/reallocate declarations didn't use an unsigned parameter like the real malloc/calloc/realloc functions, causing type mismatches with the C backend
 - #if typeof( myintegerpointer ) = "INTEGER PTR" will now work
 - #if's expression evaluation could produce wrong results (or at least inconsistent with the rest of FB) on some edge cases, such as "(1/2) > .49" or "&hFFFFFFFFu > 0u" (both evaluated to FALSE while it should have been TRUE)
+- Binary operation result types are more consistent now, for example "integer + uinteger" will now return a uinteger, just like "uinteger + integer"
 
 
 Version 0.24.0:
