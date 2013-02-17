@@ -2380,6 +2380,7 @@ declare sub symbProcRecalcRealType( byval proc as FBSYMBOL ptr )
 #define typeGetDtOnly( dt ) (dt and FB_DT_TYPEMASK)
 #define typeGetDtAndPtrOnly( dt ) (dt and (FB_DT_TYPEMASK or FB_DT_PTRMASK))
 #define typeJoin( dt, ndt ) ((dt and (not (FB_DT_TYPEMASK or FB_DT_PTRMASK))) or (ndt and (FB_DT_TYPEMASK or FB_DT_PTRMASK)))
+#define typeJoinDtOnly( dt, ndt ) ((dt and (not FB_DT_TYPEMASK)) or (ndt and FB_DT_TYPEMASK))
 
 #define typeAddrOf( dt ) _
 	((dt and FB_DT_TYPEMASK) or _

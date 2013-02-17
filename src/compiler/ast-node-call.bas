@@ -406,7 +406,7 @@ function astBuildByrefResultDeref( byval expr as ASTNODE ptr ) as ASTNODE ptr
 
 	if( typeGetDtOnly( dtype ) = FB_DATATYPE_FWDREF ) then
 		errReport( FB_ERRMSG_INCOMPLETETYPE )
-		dtype = typeJoin( dtype, FB_DATATYPE_INTEGER )
+		dtype = typeJoinDtOnly( dtype, FB_DATATYPE_INTEGER )
 		subtype = NULL
 	end if
 
