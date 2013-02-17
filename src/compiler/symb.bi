@@ -2368,6 +2368,7 @@ declare sub symbProcSetRealType( byval proc as FBSYMBOL ptr )
 #define typeGetSize( dt ) symb_dtypeTB(typeGet( dt )).size
 #define typeGetBits( dt ) symb_dtypeTB(typeGet( dt )).bits
 #define typeIsSigned( dt ) symb_dtypeTB(typeGet( dt )).signed
+#define typeGetRemapType( dt ) symb_dtypeTB(typeGet( dt )).remaptype
 
 #define typeGet( dt ) iif( dt and FB_DT_PTRMASK, FB_DATATYPE_POINTER, dt and FB_DT_TYPEMASK )
 #define typeGetDtOnly( dt ) (dt and FB_DT_TYPEMASK)

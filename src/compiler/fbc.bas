@@ -2321,6 +2321,10 @@ private function hCompileStage2Module( byval module as FBCIOFILE ptr ) as intege
 		ln += "-S -nostdlib -nostdinc -Wall -Wno-unused-label " + _
 		      "-Wno-unused-function -Wno-unused-variable "
 
+		'' Don't warn about non-standard main() signature
+		'' (we emit "ubyte **argv" instead of "char **argv")
+		ln += "-Wno-main "
+
 		'' helps finding ir-hlc bugs
 		ln += "-Werror-implicit-function-declaration "
 
