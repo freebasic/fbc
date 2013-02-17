@@ -58,7 +58,7 @@ private function cSymbolTypeFuncPtr( byval is_func as integer ) as FBSYMBOL ptr
 			errReport( FB_ERRMSG_SYNTAXERROR )
 			dtype = FB_DATATYPE_VOID
 		else
-			cProcRetType( attrib, proc, dtype, subtype, lgt )
+			cProcRetType( attrib, proc, TRUE, dtype, subtype, lgt )
 		end if
 	else
 		'' if it's a function and type was not given, it can't be guessed

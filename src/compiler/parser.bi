@@ -628,6 +628,7 @@ declare sub cProcRetType _
 	( _
 		byval attrib as integer, _
 		byval proc as FBSYMBOL ptr, _
+		byval is_proto as integer, _
 		byref dtype as integer, _
 		byref subtype as FBSYMBOL ptr, _
 		byref lgt as integer _

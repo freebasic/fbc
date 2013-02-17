@@ -365,6 +365,7 @@ sub cProcRetType _
 	( _
 		byval attrib as integer, _
 		byval proc as FBSYMBOL ptr, _
+		byval is_proto as integer, _
 		byref dtype as integer, _
 		byref subtype as FBSYMBOL ptr, _
 		byref lgt as integer _
@@ -379,6 +380,11 @@ sub cProcRetType _
 
 	'' Returns BYREF?
 	if( attrib and FB_SYMBATTRIB_RETURNSBYREF ) then
+		'' In prototypes, allow BYREF AS FWDREF
+		if( is_proto ) then
+			options or= FB_SYMBTYPEOPT_ALLOWFORWARD
+		end if
+
 		'' Then allow BYREF AS Z/WSTRING as the type
 		options and= not FB_SYMBTYPEOPT_CHECKSTRPTR
 	end if
@@ -1309,7 +1315,8 @@ function cProcHeader _
 
 			'' AS SymbolType
 			if( lexGetToken( ) = FB_TK_AS ) then
-				cProcRetType( attrib, proc, dtype, subtype, lgt )
+				cProcRetType( attrib, proc, ((options and FB_PROCOPT_ISPROTO) <> 0), _
+				              dtype, subtype, lgt )
 			else
 				errReport( FB_ERRMSG_EXPECTEDRESTYPE )
 				'' error recovery: fake a type
@@ -1339,7 +1346,8 @@ function cProcHeader _
 
 		'' (AS SymbolType)?
 		if( lexGetToken( ) = FB_TK_AS ) then
-			cProcRetType( attrib, proc, dtype, subtype, lgt )
+			cProcRetType( attrib, proc, ((options and FB_PROCOPT_ISPROTO) <> 0), _
+			              dtype, subtype, lgt )
 			is_indexed = (symbGetProcParams( proc ) = 1+1)
 			is_get = TRUE
 		else
@@ -1374,7 +1382,8 @@ function cProcHeader _
 			if( (dtype <> FB_DATATYPE_INVALID) or (tk = FB_TK_SUB) ) then
 				errReport( FB_ERRMSG_SYNTAXERROR )
 			end if
-			cProcRetType( attrib, proc, dtype, subtype, lgt )
+			cProcRetType( attrib, proc, ((options and FB_PROCOPT_ISPROTO) <> 0), _
+			              dtype, subtype, lgt )
 		else
 			if( tk = FB_TK_FUNCTION ) then
 				if( fbLangOptIsSet( FB_LANG_OPT_DEFTYPE ) ) then
