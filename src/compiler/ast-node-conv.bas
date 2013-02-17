@@ -444,7 +444,25 @@ function astNewCONV _
 	'' same type?
 	if( typeGetDtAndPtrOnly( ldtype ) = typeGetDtAndPtrOnly( to_dtype ) ) then
 		if( l->subtype = to_subtype ) then
-			return l
+			'' Only CONST bits changed?
+			if( ldtype <> to_dtype ) then
+				'' CONST node? Evaluate at compile-time
+				if( astIsCONST( l ) ) then
+					astSetType( l, to_dtype, to_subtype )
+					n = l
+				else
+					'' Otherwise, add a CONV node to represent the changed CONST bits
+					'' to the expression parser
+					n = astNewNode( AST_NODECLASS_CONV, to_dtype, to_subtype )
+					n->l = l
+					n->cast.doconv = FALSE
+					n->cast.do_convfd2fs = FALSE
+				end if
+			else
+				n = l
+			end if
+
+			return n
 		end if
 	end if
 

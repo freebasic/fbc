@@ -192,6 +192,7 @@ Version 0.25.0:
 - #if's expression evaluation could produce wrong results (or at least inconsistent with the rest of FB) on some edge cases, such as "(1/2) > .49" or "&hFFFFFFFFu > 0u" (both evaluated to FALSE while it should have been TRUE)
 - #661: -gen gcc will now invoke gcc with -m32 now, allowing it to work with multi-lib gcc that defaults to 64bit (usually on 64bit systems)
 - #662: zstring ptrs were indexed as char* instead of ubyte*
+- #641: Type casting of an expression to the same data type but with CONSTs added or removed was being ignored
 
 
 Version 0.24.0:
