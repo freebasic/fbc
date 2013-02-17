@@ -257,7 +257,7 @@ function symbIsProcOverloadOf _
 
 end function
 
-sub symbProcSetRealType( byval proc as FBSYMBOL ptr )
+sub symbProcRecalcRealType( byval proc as FBSYMBOL ptr )
 	dim as integer dtype = any
 	dim as FBSYMBOL ptr subtype = any
 
@@ -810,7 +810,7 @@ add_proc:
 		end if
 	end if
 
-	symbProcSetRealType( proc )
+	symbProcRecalcRealType( proc )
 
 	if( (options and FB_SYMBOPT_DECLARING) <> 0 ) then
 		stats or= FB_SYMBSTATS_DECLARED

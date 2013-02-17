@@ -106,21 +106,12 @@ private sub symbReplaceForwardRef _
         oldptrcount = FB_DT_PTRLEVELS - addptrcount
     end if
 
-    '' Replace the forward ref:
+	'' Replace the forward ref with the real type,
+	'' but preserve existing PTRs and CONSTs
+	dtype = typeMultAddrOf( dtype, oldptrcount ) or _
+	        typeGetConstMask( symbGetFullType( s ) )
 
-    '' dtype (but preserve existing PTR's and CONST's)
-    symbGetFullType( s ) = typeMultAddrOf( dtype, oldptrcount ) or _
-                             typeGetConstMask( symbGetFullType( s ) )
-    '' subtype
-    symbGetSubtype( s ) = subtype
-
-	symbRecalcLen( s )
-
-    '' We might have substituted the fwdref by another fwdref, and then this
-    '' symbol must be patched again.
-    if( typeGetDtOnly( dtype ) = FB_DATATYPE_FWDREF ) then
-        symbAddToFwdRef( subtype, s )
-    end if
+	symbSetType( s, dtype, subtype )
 
 end sub
 

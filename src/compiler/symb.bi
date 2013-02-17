@@ -1390,6 +1390,12 @@ declare sub symbAddArrayDim _
 	)
 
 declare sub symbRecalcLen( byval sym as FBSYMBOL ptr )
+declare sub symbSetType _
+	( _
+		byval sym as FBSYMBOL ptr, _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr _
+	)
 
 declare function symbCalcLen _
 	( _
@@ -2210,7 +2216,7 @@ declare function symbGetUDTBaseLevel _
 
 #define symbGetProcRealType( sym )    (sym)->proc.realdtype
 #define symbGetProcRealSubtype( sym ) (sym)->proc.realsubtype
-declare sub symbProcSetRealType( byval proc as FBSYMBOL ptr )
+declare sub symbProcRecalcRealType( byval proc as FBSYMBOL ptr )
 
 #define symbGetProcSymbTb(f) f->proc.symtb
 
