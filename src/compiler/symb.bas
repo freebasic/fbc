@@ -2169,6 +2169,16 @@ function typeDump _
 			dump += *symb_dtypeTB(typeGetDtOnly( dtype )).name
 		end select
 
+		'' UDT name
+		select case( typeGetDtOnly( dtype ) )
+		case FB_DATATYPE_STRUCT, FB_DATATYPE_ENUM
+			if( subtype ) then
+				if( symbIsStruct( subtype ) ) then
+					dump += " " + *symbGetName( subtype )
+				end if
+			end if
+		end select
+
 		for i as integer = (ptrcount-1) to 0 step -1
 			if( typeIsConstAt( dtype, i ) ) then
 				dump += " const"
