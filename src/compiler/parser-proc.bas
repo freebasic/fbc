@@ -964,7 +964,7 @@ private sub hCheckPropParams _
 	end if
 
 	'' any optional param?
-	param = symbGetProcTailParam( proc )
+	param = symbGetProcHeadParam( proc )
 	i = 0
 	while( param )
 		if( symbGetIsOptional( param ) ) then
@@ -972,7 +972,7 @@ private sub hCheckPropParams _
 		end if
 
 		i += 1
-		param = param->prev
+		param = param->next
 	wend
 end sub
 

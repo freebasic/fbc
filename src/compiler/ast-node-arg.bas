@@ -1052,7 +1052,7 @@ function astNewARG _
 		byval mode as integer = INVALID _
 	) as ASTNODE ptr
 
-    dim as ASTNODE ptr n = any, t = any
+	dim as ASTNODE ptr n = any
     dim as FBSYMBOL ptr sym = any, param = any
 
 	sym = parent->sym
@@ -1092,24 +1092,24 @@ function astNewARG _
 	n->arg.mode = mode
 	n->arg.lgt = 0
 
-	'' add param node to function's list
-	t = parent->r
-
-	'' pascal mode, first param added will be the first pushed
+	'' Add ARGs to the CALL in the order they'll be pushed
 	if( symbGetProcMode( sym ) = FB_FUNCMODE_PASCAL ) then
-		if( t = NULL ) then
+		'' Pascal, push as-is, this ARG is added to the end of the list
+		if( parent->r = NULL ) then
 			parent->r = n
 		else
-			t = parent->call.lastarg
-			t->r = n
+			parent->call.argtail->r = n
 		end if
-
-		parent->call.lastarg = n
+		parent->call.argtail = n
 		n->r = NULL
 	else
-		'' non-pascal, the latest param added will be the first pushed
+		'' Non-pascal, push in reverse order,
+		'' this ARG is added to the front of the list
+		if( parent->r = NULL ) then
+			parent->call.argtail = n
+		end if
+		n->r = parent->r
 		parent->r = n
-		n->r = t
 	end if
 
 	errPushParamLocation( parent->sym, -1, parent->call.args+1, NULL )
@@ -1131,39 +1131,29 @@ function astNewARG _
 
 end function
 
-function astReplaceARG _
+sub astReplaceInstanceArg _
 	( _
 		byval parent as ASTNODE ptr, _
-		byval argnum as integer, _
 		byval expr as ASTNODE ptr, _
 		byval mode as integer _
-	) as ASTNODE ptr
+	)
 
 	dim as FBSYMBOL ptr sym = any, param = any
-	dim as integer cnt = any
 	dim as ASTNODE ptr n = any
 
 	assert( astIsCALL( parent ) )
 	sym = parent->sym
 
-	'' find the argument (assuming argnum is valid)
-	cnt = parent->call.args
-	param = symbGetProcFirstParam( sym )
-	n = parent->r
-	do while( n <> NULL )
-
-		cnt -= 1
-		if( cnt = argnum ) then
-			exit do
-		end if
-
-		param = symbGetProcNextParam( sym, param )
-		n = n->r
-	loop
-
-	if( (n = NULL) or (param = NULL) ) then
-		return NULL
+	'' For PASCAL procs, THIS will be the first ARG;
+	'' for others, it will be the last
+	if( symbGetProcMode( sym ) = FB_FUNCMODE_PASCAL ) then
+		n = parent->r
+	else
+		n = parent->call.argtail
 	end if
+
+	param = symbGetProcHeadParam( sym )
+	assert( symbIsParamInstance( param ) )
 
 	'' Delete the old argument expression
 	astDelTree( n->l )
@@ -1172,9 +1162,5 @@ function astReplaceARG _
 	n->arg.mode = mode
 	n->arg.lgt = 0
 
-	if( hCheckParam( parent, param, n ) = FALSE ) then
-		return NULL
-	end if
-
-	function = n
-end function
+	hCheckParam( parent, param, n )
+end sub

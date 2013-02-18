@@ -720,6 +720,9 @@ private function hDeclProcParams( byval proc as FBSYMBOL ptr ) as integer
 		symbAddProcResultParam( proc )
 	end if
 
+	'' Param vars must be declared in the order they should be allocated
+	'' on stack, i.e. depending on the calling convention
+	'' (see also irProcAllocArg())
 	i = 1
 	p = symbGetProcLastParam( proc )
 	do while( p <> NULL )

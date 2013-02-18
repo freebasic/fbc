@@ -331,7 +331,7 @@ private function hOvlProcArgList _
 	procexpr = astNewCALL( proc, procexpr )
 
     '' add to tree
-	param = symbGetProcLastParam( proc )
+	param = symbGetProcHeadParam( proc )
 	arg = arg_list->head
 	for i = 0 to args-1
         nxt = arg->next
@@ -346,7 +346,7 @@ private function hOvlProcArgList _
 		symbFreeOvlCallArg( @parser.ovlarglist, arg )
 
 		'' next
-		param = symbGetProcPrevParam( proc, param )
+		param = param->next
 		arg = nxt
 	next
 
@@ -357,11 +357,10 @@ private function hOvlProcArgList _
 
 		'' next
 		args += 1
-		param = symbGetProcPrevParam( proc, param )
+		param = param->next
 	loop
 
 	function = procexpr
-
 end function
 
 '':::::
@@ -443,7 +442,7 @@ function cProcArgList _
 
 	params = symbGetProcParams( proc )
 
-	param = symbGetProcLastParam( proc )
+	param = symbGetProcHeadParam( proc )
 
 	'' any pre-defined args?
 	arg = arg_list->head
@@ -457,7 +456,7 @@ function cProcArgList _
 		symbFreeOvlCallArg( @parser.ovlarglist, arg )
 
 		'' next
-		param = symbGetProcPrevParam( proc, param )
+		param = param->next
 		arg = nxt
 		params -= 1
 	loop
@@ -525,7 +524,7 @@ function cProcArgList _
 			'' next
 			args += 1
 			if( args < params ) then
-				param = symbGetProcPrevParam( proc, param )
+				param = param->next
 			end if
 
 		'' ','?
@@ -554,9 +553,8 @@ function cProcArgList _
 
 		'' next
 		args += 1
-		param = symbGetProcPrevParam( proc, param )
+		param = param->next
 	loop
 
 	function = procexpr
-
 end function

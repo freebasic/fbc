@@ -194,6 +194,7 @@ Version 0.25.0:
 - #662: zstring ptrs were indexed as char* instead of ubyte*
 - #641: Type casting of an expression to the same data type but with CONSTs added or removed was being ignored
 - #647: Shared/static UDT vars with destructor (only) ignored variable initializers
+- #621: Parsing & overloading checks for argument lists of PASCAL procedures/constructors was broken
 
 
 Version 0.24.0:

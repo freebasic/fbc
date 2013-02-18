@@ -30,7 +30,7 @@ function cVAFunct() as ASTNODE ptr
 	if( symbGetParamMode( param ) <> FB_PARAMMODE_VARARG ) then
 		exit function
 	end if
-	param = symbGetProcNextParam( proc, param )
+	param = param->prev
 	if( param = NULL ) then
 		exit function
 	end if

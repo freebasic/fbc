@@ -2191,16 +2191,10 @@ declare function symbGetUDTBaseLevel _
 
 #define symbGetProcMode(f) f->proc.mode
 
-#define symbGetProcFirstParam(f) iif( f->proc.mode = FB_FUNCMODE_PASCAL, f->proc.paramtb.head, f->proc.paramtb.tail )
-
 #define symbGetProcLastParam(f) iif( f->proc.mode = FB_FUNCMODE_PASCAL, f->proc.paramtb.tail, f->proc.paramtb.head )
-
 #define symbGetProcPrevParam(f,a) iif( f->proc.mode = FB_FUNCMODE_PASCAL, a->prev, a->next )
 
-#define symbGetProcNextParam(f,a) iif( f->proc.mode = FB_FUNCMODE_PASCAL, a->next, a->prev )
-
 #define symbGetProcHeadParam(f) f->proc.paramtb.head
-
 #define symbGetProcTailParam(f) f->proc.paramtb.tail
 
 #define symbGetProcCallback(f) f->proc.rtl.callback

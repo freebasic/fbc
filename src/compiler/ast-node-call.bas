@@ -61,6 +61,7 @@ function astNewCALL _
 		n->call.isrtl = FALSE
 	end if
 
+	n->call.argtail = NULL
 	n->call.strtail = NULL
 
 	'' Allocate temp struct result if needed
@@ -295,6 +296,17 @@ sub astCloneCALL _
 			sn = sn->prev
 		loop
 	end scope
+
+	'' Find the last ARG (if any); for each ARG...
+	n = c->r
+	while( n )
+		'' last one?
+		if( n->r = NULL ) then
+			exit while
+		end if
+		n = n->r
+	wend
+	c->call.argtail = n
 
 end sub
 
