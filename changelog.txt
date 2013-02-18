@@ -17,7 +17,7 @@ Version 0.25.0:
 - Property methods using an explicit ALIAS now respect that alias and do not append __get__ or __set__ anymore
 - #637: Assert[Warn]() messages go to stderr now, rather than to the FB screen (because that might be about to be closed)
 - LBound/UBound( array, 0 ) now returns 1 and the dimension count, it is no longer the same as LBound/UBound( array, 1 )
-- #if/#elseif (not #ifdef though) no longer allow identifiers/keywords to be used as-is, real string literals can (and must) now be used instead. For example, <#if foobar> is now an error, instead of evaluating to FALSE. <#if typeof( mystring ) = string> must be changed to <typeof( mystring ) = "STRING">.
+- #if/#elseif expressions now recognize declared identifiers (for example a constant FOO will be expanded to its value, instead of being treated as a "FOO" string)
 
 [added]
 - VIRTUAL and ABSTRACT methods (including virtual destructors) in UDTs extending OBJECT, which can be overridden by methods in derived UDTs, provided the same method name and signature is used
@@ -190,6 +190,7 @@ Version 0.25.0:
 - #508: The internal allocate/callocate/reallocate declarations didn't use an unsigned parameter like the real malloc/calloc/realloc functions, causing type mismatches with the C backend
 - #if typeof( myintegerpointer ) = "INTEGER PTR" will now work
 - #if's expression evaluation could produce wrong results (or at least inconsistent with the rest of FB) on some edge cases, such as "(1/2) > .49" or "&hFFFFFFFFu > 0u" (both evaluated to FALSE while it should have been TRUE)
+- String literal concatenation will now work properly in #if/#elseif expressions
 - #661: -gen gcc will now invoke gcc with -m32 now, allowing it to work with multi-lib gcc that defaults to 64bit (usually on 64bit systems)
 - #662: zstring ptrs were indexed as char* instead of ubyte*
 - #641: Type casting of an expression to the same data type but with CONSTs added or removed was being ignored
