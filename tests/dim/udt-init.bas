@@ -277,6 +277,31 @@ namespace derived1
 	end sub
 end namespace
 
+namespace dtorOnly
+	type DtorUDT
+		i as integer
+		declare destructor( )
+	end type
+
+	destructor DtorUDT( )
+	end destructor
+
+	'' The initializer should be emitted as for any other global,
+	'' despite the UDT having a dtor.
+	dim shared as DtorUDT globalx1 = ( 123 )
+
+	sub test cdecl( )
+		'' ditto
+		static as DtorUDT staticx1 = ( 123 )
+
+		dim as DtorUDT localx1 = ( 123 )
+
+		CU_ASSERT( globalx1.i = 123 )
+		CU_ASSERT( staticx1.i = 123 )
+		CU_ASSERT( localx1.i = 123 )
+	end sub
+end namespace
+
 sub ctor( ) constructor
 	fbcu.add_suite( "tests/dim/udt-init" )
 	fbcu.add_test( "basic 1", @basic.test1 )
@@ -289,6 +314,7 @@ sub ctor( ) constructor
 	fbcu.add_test( "obj 2", @obj2.test )
 	fbcu.add_test( "obj 3", @obj3.test )
 	fbcu.add_test( "derived 1", @derived1.test )
+	fbcu.add_test( "dtor-UDT init", @dtorOnly.test )
 end sub
 
 end namespace

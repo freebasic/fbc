@@ -193,6 +193,7 @@ Version 0.25.0:
 - #661: -gen gcc will now invoke gcc with -m32 now, allowing it to work with multi-lib gcc that defaults to 64bit (usually on 64bit systems)
 - #662: zstring ptrs were indexed as char* instead of ubyte*
 - #641: Type casting of an expression to the same data type but with CONSTs added or removed was being ignored
+- #647: Shared/static UDT vars with destructor (only) ignored variable initializers
 
 
 Version 0.24.0:
