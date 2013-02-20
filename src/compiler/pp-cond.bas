@@ -154,6 +154,21 @@ sub ppCondEndIf( )
 	end if
 end sub
 
+'':::::
+sub ppAssert( )
+    dim as integer istrue = any
+
+	'' ASSERT Expression
+
+	istrue = ppExpression( )
+
+	if( istrue = FALSE ) then
+		errReport( FB_ERRMSG_PPASSERT_FAILED ) 
+	end if
+
+end sub
+
+'':::::
 private sub ppSkip( )
     dim as integer iflevel = any
 

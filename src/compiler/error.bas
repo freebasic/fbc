@@ -366,7 +366,8 @@ declare function hMakeParamDesc _
 		@"Casting derived UDT pointer to unrelated UDT pointer type", _
 		@"ALIAS name string is empty", _
 		@"LIB name string is empty", _
-		@"UDT has unimplemented abstract methods" _
+		@"UDT has unimplemented abstract methods", _
+		@"#ASSERT condition failed" _
 	}
 
 
