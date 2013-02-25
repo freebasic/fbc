@@ -979,34 +979,16 @@ end sub
 
 private sub hEmitTypedefs( )
 	'' typedef's for debugging
-	hWriteLine( "typedef char byte;", TRUE )
+	hWriteLine( "typedef signed char byte;", TRUE )
 	hWriteLine( "typedef unsigned char ubyte;", TRUE )
 	hWriteLine( "typedef unsigned short ushort;", TRUE )
-	hWriteLine( "typedef int integer;", TRUE )
+	hWriteLine( "typedef signed int integer;", TRUE )
 	hWriteLine( "typedef unsigned int uinteger;", TRUE )
 	hWriteLine( "typedef unsigned long ulong;", TRUE )
-	hWriteLine( "typedef long long longint;", TRUE )
+	hWriteLine( "typedef signed long long longint;", TRUE )
 	hWriteLine( "typedef unsigned long long ulongint;", TRUE )
 	hWriteLine( "typedef float single;", TRUE )
 	hWriteLine( "typedef struct _string { char *data; int len; int size; } string;", TRUE )
-	hWriteLine( "typedef char fixstr;", TRUE )
-
-	'' Target-dependant wchar type
-	dim as string wchartype
-	select case as const( env.target.wchar )
-	case FB_DATATYPE_UBYTE      '' DOS
-		wchartype = "ubyte"
-	case FB_DATATYPE_USHORT     '' Windows, cygwin
-		wchartype = "ushort"
-	case else                   '' Linux & co
-		'' Normally our wstring type is unsigned, but gcc's wchar_t
-		'' is signed, and we must use the exact same or else fixed-length
-		'' wstring initializers (VarIniWstr) using L"abc" wouldn't work.
-		'' (If this is a problem, then VarIniWstr must be changed to
-		'' emit wstring initializers as { L'a', L'b', L'c', 0 } instead)
-		wchartype = "integer"
-	end select
-	hWriteLine( "typedef " + wchartype + " wchar;", TRUE )
 end sub
 
 private sub hWriteFTOI _
@@ -1562,10 +1544,10 @@ private function hEmitType _
 		@"void"     , _ '' void
 		@"byte"     , _ '' byte
 		@"ubyte"    , _ '' ubyte
-		@"char"     , _ '' char
+		NULL        , _ '' char
 		@"short"    , _ '' short
 		@"ushort"   , _ '' ushort
-		@"wchar"    , _ '' wchar
+		NULL        , _ '' wchar
 		@"integer"  , _ '' int
 		@"uinteger" , _ '' uint
 		NULL        , _ '' enum
@@ -1577,7 +1559,7 @@ private function hEmitType _
 		@"single"   , _ '' single
 		@"double"   , _ '' double
 		@"string"   , _ '' string
-		@"fixstr"   , _ '' fix-len string
+		NULL        , _ '' fix-len string
 		NULL        , _ '' struct
 		NULL        , _ '' namespace
 		NULL        , _ '' function
@@ -1608,7 +1590,28 @@ private function hEmitType _
 		hEmitUDT( subtype, (ptrcount > 0) )
 		s = *symbGetMangledName( subtype )
 
-	case FB_DATATYPE_STRING, FB_DATATYPE_WCHAR
+	case FB_DATATYPE_CHAR
+		'' Emit ubyte instead of char
+		s = *dtypeName(typeGetRemapType( dtype ))
+
+	case FB_DATATYPE_FIXSTR
+		'' Ditto (but typeGetRemapType() returns FB_DATATYPE_FIXSTR,
+		'' so do it manually)
+		s = *dtypeName(FB_DATATYPE_UBYTE)
+
+	case FB_DATATYPE_WCHAR
+		'' Emit ubyte/ushort/uinteger instead of wchar_t
+		dtype = typeGetRemapType( dtype )
+
+		'' Normally our wstring type is unsigned, but Linux gcc's wchar_t
+		'' is signed, and we must use the exact same or else fixed-length
+		'' wstring initializers (VarIniWstr) using L"abc" wouldn't work.
+		'' (If this is a problem, then VarIniWstr must be changed to
+		'' emit wstring initializers as { L'a', L'b', L'c', 0 } instead)
+		if( dtype = FB_DATATYPE_UINT ) then
+			dtype = FB_DATATYPE_INTEGER
+		end if
+
 		s = *dtypeName(dtype)
 
 	case FB_DATATYPE_BITFIELD
