@@ -1590,29 +1590,15 @@ private function hEmitType _
 		hEmitUDT( subtype, (ptrcount > 0) )
 		s = *symbGetMangledName( subtype )
 
-	case FB_DATATYPE_CHAR
-		'' Emit ubyte instead of char
+	case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
+		'' Emit ubyte instead of char,
+		'' and ubyte/ushort/uinteger instead of wchar_t
 		s = *dtypeName(typeGetRemapType( dtype ))
 
 	case FB_DATATYPE_FIXSTR
 		'' Ditto (but typeGetRemapType() returns FB_DATATYPE_FIXSTR,
 		'' so do it manually)
 		s = *dtypeName(FB_DATATYPE_UBYTE)
-
-	case FB_DATATYPE_WCHAR
-		'' Emit ubyte/ushort/uinteger instead of wchar_t
-		dtype = typeGetRemapType( dtype )
-
-		'' Normally our wstring type is unsigned, but Linux gcc's wchar_t
-		'' is signed, and we must use the exact same or else fixed-length
-		'' wstring initializers (VarIniWstr) using L"abc" wouldn't work.
-		'' (If this is a problem, then VarIniWstr must be changed to
-		'' emit wstring initializers as { L'a', L'b', L'c', 0 } instead)
-		if( dtype = FB_DATATYPE_UINT ) then
-			dtype = FB_DATATYPE_INTEGER
-		end if
-
-		s = *dtypeName(dtype)
 
 	case FB_DATATYPE_BITFIELD
 		s = *dtypeName(symbGetType( subtype ))
@@ -2114,6 +2100,84 @@ private function hEmitFloat _
 	function = s
 end function
 
+private sub hBuildStrLit _
+	( _
+		byref ln as string, _
+		byval z as zstring ptr, _
+		byval length as integer _  '' including null terminator
+	)
+
+	dim as integer ch = any
+
+	'' Convert the string to something suitable for C
+	'' (assuming internal escape sequences have already been solved out
+	'' using hUnescape())
+	'' Non-ASCII characters and also \ or " must be escaped, but also care
+	'' must be taken when normal chars following an escape sequence would
+	'' be seen as part of that escape sequence. This is handled by splitting
+	'' the string literal in two at that position.
+
+	ln += """"
+
+	for i as integer = 0 to length - 1
+		ch = (*z)[i]
+
+		if( hCharNeedsEscaping( ch, asc( """" ) ) ) then
+			'' Emit in \xNN escape form
+			ln += $"\x" + hex( ch, 2 )
+
+			'' Is there an 0-9, a-f or A-F char following?
+			if( i < (length - 1) ) then
+				if( hIsValidHexDigit( (*z)[i + 1] ) ) then
+					'' Split up the string literal to prevent
+					'' the compiler from treating this following
+					'' char as part of the escape sequence
+					ln += """ """
+				end if
+			end if
+		else
+			'' Emit as-is
+			ln += chr( ch )
+		end if
+	next
+
+	ln += """"
+end sub
+
+private sub hBuildWstrLit _
+	( _
+		byref ln as string, _
+		byval w as wstring ptr, _
+		byval length as integer _  '' including null terminator
+	)
+
+	dim as integer ch = any
+	dim as integer wcharsize = any
+
+	'' (ditto)
+
+	ln += "L"""
+	wcharsize = typeGetSize( FB_DATATYPE_WCHAR )
+
+	for i as integer = 0 to length - 1
+		ch = (*w)[i]
+
+		if( hCharNeedsEscaping( ch, asc( """" ) ) ) then
+			ln += $"\x" + hex( ch, wcharsize * 2 )
+
+			if( i < (length - 1) ) then
+				if( hIsValidHexDigit( (*w)[i + 1] ) ) then
+					ln += """ L"""
+				end if
+			end if
+		else
+			ln += chr( ch )
+		end if
+	next
+
+	ln += """"
+end sub
+
 private function hBopToStr( byval op as integer ) as zstring ptr
 	select case as const( op )
 	case AST_OP_ADD
@@ -2177,11 +2241,11 @@ private sub hExprFlush( byval n as EXPRNODE ptr, byval need_parens as integer )
 		'' String literal?
 		if( symbGetIsLiteral( sym ) ) then
 			if( symbGetType( sym ) = FB_DATATYPE_WCHAR ) then
-				ctx.exprtext += "L"""
-				ctx.exprtext += hEscapeToHexW( symbGetVarLitTextW( sym ) )
-				ctx.exprtext += """"
+				ctx.exprtext += "(" + hEmitType( typeAddrOf( FB_DATATYPE_WCHAR ), NULL ) + ")"
+				hBuildWstrLit( ctx.exprtext, hUnescapeW( symbGetVarLitTextW( sym ) ), symbGetWstrLen( sym ) )
 			else
-				ctx.exprtext += """" + *hEscape( symbGetVarLitText( sym ) ) + """"
+				ctx.exprtext += "(" + hEmitType( typeAddrOf( FB_DATATYPE_CHAR ), NULL ) + ")"
+				hBuildStrLit( ctx.exprtext, hUnescape( symbGetVarLitText( sym ) ), symbGetStrLen( sym ) )
 			end if
 		else
 			if( symbIsLabel( sym ) ) then
@@ -2281,11 +2345,9 @@ private sub exprDump( byval n as EXPRNODE ptr )
 		'' String literal?
 		if( symbGetIsLiteral( n->sym ) ) then
 			if( symbGetType( n->sym ) = FB_DATATYPE_WCHAR ) then
-				s += "L"""
-				s += hEscapeToHexW( symbGetVarLitTextW( n->sym ) )
-				s += """"
+				hBuildWstrLit( s, hUnescapeW( symbGetVarLitTextW( n->sym ) ), symbGetWstrLen( n->sym ) )
 			else
-				s += """" + *hEscape( symbGetVarLitText( n->sym ) ) + """"
+				hBuildStrLit( s, hUnescape( symbGetVarLitText( n->sym ) ), symbGetStrLen( n->sym ) )
 			end if
 		else
 			if( symbIsLabel( n->sym ) ) then
@@ -3187,48 +3249,78 @@ private sub _emitVarIniOfs( byval sym as FBSYMBOL ptr, byval ofs as integer )
 	hVarIniSeparator( )
 end sub
 
-private sub hEmitVarIniStr _
+private sub _emitVarIniStr _
 	( _
-		byval totlgt as integer, _
-		byref litstr as const zstring ptr, _
-		byval litlgt as integer _
+		byval varlength as integer, _
+		byval literal as zstring ptr, _
+		byval litlength as integer _
 	)
 
-	dim as string s = *litstr
-
-	'' String literal too long? (GCC would show a warning)
-	if( totlgt < litlgt ) then
-		'' Cut off; may be empty afterwards
-		s = left( s, totlgt )
-	''elseif( totlgt > litlgt ) then
-		'' Too short, remaining space will be filled with 0's by GCC
-	end if
+	dim as integer ch = any
 
 	'' Simple fixed-length string initialized from string literal
-	ctx.varini += """" + s + """"
+	'' "..."
+
+	'' String literal too long? (GCC would show a warning)
+	if( litlength > varlength ) then
+		'' Cut off; may be empty afterwards
+		litlength = varlength
+	end if
+
+	hBuildStrLit( ctx.varini, hUnescape( literal ), litlength )
+
 	hVarIniSeparator( )
 
 end sub
 
-private sub _emitVarIniStr _
-	( _
-		byval totlgt as integer, _
-		byval litstr as zstring ptr, _
-		byval litlgt as integer _
-	)
-	'' "..."
-	hEmitVarIniStr( totlgt, hEscape( litstr ), litlgt )
-end sub
-
 private sub _emitVarIniWstr _
 	( _
-		byval totlgt as integer, _
-		byval litstr as wstring ptr, _
-		byval litlgt as integer _
+		byval varlength as integer, _
+		byval literal as wstring ptr, _
+		byval litlength as integer _
 	)
-	'' L"..."
-	ctx.varini += "L"
-	hEmitVarIniStr( totlgt, hEscapeToHexW( litstr ), litlgt )
+
+	dim as uinteger ch = any
+	dim as integer wcharsize = any
+
+	'' In Linux GCC, wchar_t and thus L"..." expressions use signed int,
+	'' but FB uses unsigned integers. But GCC will show an error when doing
+	''    unsigned int mywstring[] = L"foo"
+	'' so we must emit it as
+	''    unsigned int mywstring[] = { L'f', L'o', L'o' }
+
+	ctx.varini += "{ "
+	literal = hUnescapeW( literal )
+	wcharsize = typeGetSize( FB_DATATYPE_WCHAR )
+
+	'' String literal too long?
+	if( litlength > varlength ) then
+		'' Cut off; may be empty afterwards
+		litlength = varlength
+	end if
+
+	for i as integer = 0 to litlength - 1
+		if( i > 0 ) then
+			ctx.varini += ", "
+		end if
+
+		ctx.varini += "L'"
+
+		ch = (*literal)[i]
+
+		if( hCharNeedsEscaping( ch, asc( "'" ) ) ) then
+			ctx.varini += $"\x" + hex( ch, wcharsize * 2 )
+		else
+			ctx.varini += chr( ch )
+		end if
+
+		ctx.varini += "'"
+	next
+
+	ctx.varini += " }"
+
+	hVarIniSeparator( )
+
 end sub
 
 private sub _emitVarIniPad( byval bytes as integer )
