@@ -18,6 +18,8 @@ Version 0.25.0:
 - #637: Assert[Warn]() messages go to stderr now, rather than to the FB screen (because that might be about to be closed)
 - LBound/UBound( array, 0 ) now returns 1 and the dimension count, it is no longer the same as LBound/UBound( array, 1 )
 - #if/#elseif expressions now recognize declared identifiers (for example a constant FOO will be expanded to its value, instead of being treated as a "FOO" string)
+- Unary/binary operations won't return enums anymore; any enum operands will be converted to integer before the operation. (with math operations, the result can be any integer value, and the operand enum won't necessarily include a constant corresponding to that value. And also, if the operands are from different enums, the compiler wouldn't know which one to use as the result type)
+- Unary/binary operations will now convert smaller operands to INTEGERs before the operation (note: thus, UBYTE becomes INTEGER now instead of UINTEGER, and also SHORT/USHORT operations will return an INTEGER now)
 
 [added]
 - VIRTUAL and ABSTRACT methods (including virtual destructors) in UDTs extending OBJECT, which can be overridden by methods in derived UDTs, provided the same method name and signature is used
@@ -199,6 +201,7 @@ Version 0.25.0:
 - #647: Shared/static UDT vars with destructor (only) ignored variable initializers
 - #621: Parsing & overloading checks for argument lists of PASCAL procedures/constructors was broken
 - C backend: Backslashes in wstring literals were not escaped when emitting
+- Binary operation result types are more consistent now, for example "integer + uinteger" will now return a uinteger, just like "uinteger + integer"
 
 
 Version 0.24.0:
