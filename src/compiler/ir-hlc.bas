@@ -137,6 +137,35 @@ declare sub exprDump( byval n as EXPRNODE ptr )
 '' globals
 dim shared as IRHLCCTX ctx
 
+'' same order as FB_DATATYPE
+dim shared as const zstring ptr dtypeName(0 to FB_DATATYPES-1) = _
+{ _
+	@"void"     , _ '' void
+	@"int8"     , _ '' byte
+	@"uint8"    , _ '' ubyte
+	NULL        , _ '' char
+	@"int16"    , _ '' short
+	@"uint16"   , _ '' ushort
+	NULL        , _ '' wchar
+	NULL        , _ '' integer
+	NULL        , _ '' uint
+	NULL        , _ '' enum
+	NULL        , _ '' bitfield
+	@"int32"    , _ '' long
+	@"uint32"   , _ '' ulong
+	@"int64"    , _ '' longint
+	@"uint64"   , _ '' ulongint
+	@"float"    , _ '' single
+	@"double"   , _ '' double
+	@"FBSTRING" , _ '' string
+	NULL        , _ '' fix-len string
+	NULL        , _ '' struct
+	NULL        , _ '' namespace
+	NULL        , _ '' function
+	@"void"     , _ '' fwdref (needed for any un-resolved fwdrefs)
+	NULL          _ '' pointer
+}
+
 private sub _init( )
 	flistInit( @ctx.vregTB, IR_INITVREGNODES, len( IRVREG ) )
 	listInit( @ctx.callargs, 32, sizeof(IRCALLARG), LIST_FLAGS_NOCLEAR )
@@ -144,6 +173,15 @@ private sub _init( )
 	listInit( @ctx.exprnodes, 32, sizeof( EXPRNODE ), LIST_FLAGS_CLEAR )
 	listInit( @ctx.exprcache, 8, sizeof( EXPRCACHENODE ), LIST_FLAGS_NOCLEAR )
 	irSetOption( IR_OPT_FPUIMMEDIATES or IR_OPT_NOINLINEOPS )
+
+	'' 64bit?
+	if( env.target.options and FB_TARGETOPT_64BIT ) then
+		dtypeName(FB_DATATYPE_INTEGER) = @"int64"
+		dtypeName(FB_DATATYPE_UINT   ) = @"uint64"
+	else
+		dtypeName(FB_DATATYPE_INTEGER) = @"int32"
+		dtypeName(FB_DATATYPE_UINT   ) = @"uint32"
+	end if
 end sub
 
 private sub _end( )
@@ -975,20 +1013,6 @@ private sub hEmitDataStmt( )
 	loop
 end sub
 
-private sub hEmitTypedefs( )
-	'' typedef's for debugging
-	hWriteLine( "typedef signed char byte;", TRUE )
-	hWriteLine( "typedef unsigned char ubyte;", TRUE )
-	hWriteLine( "typedef unsigned short ushort;", TRUE )
-	hWriteLine( "typedef signed int integer;", TRUE )
-	hWriteLine( "typedef unsigned int uinteger;", TRUE )
-	hWriteLine( "typedef unsigned long ulong;", TRUE )
-	hWriteLine( "typedef signed long long longint;", TRUE )
-	hWriteLine( "typedef unsigned long long ulongint;", TRUE )
-	hWriteLine( "typedef float single;", TRUE )
-	hWriteLine( "typedef struct _string { char *data; int len; int size; } string;", TRUE )
-end sub
-
 private sub hWriteFTOI _
 	( _
 		byref fname as string, _
@@ -1169,7 +1193,15 @@ private function _emitBegin( ) as integer
 	hWriteLine( "// Compilation of " + env.inf.name + " started at " + time( ) + " on " + date( ), TRUE )
 	hWriteLine( "", TRUE )
 
-	hEmitTypedefs( )
+	hWriteLine( "typedef   signed char       int8;", TRUE )
+	hWriteLine( "typedef unsigned char      uint8;", TRUE )
+	hWriteLine( "typedef   signed short      int16;", TRUE )
+	hWriteLine( "typedef unsigned short     uint16;", TRUE )
+	hWriteLine( "typedef   signed int        int32;", TRUE )
+	hWriteLine( "typedef unsigned int       uint32;", TRUE )
+	hWriteLine( "typedef   signed long long  int64;", TRUE )
+	hWriteLine( "typedef unsigned long long uint64;", TRUE )
+	hWriteLine( "typedef struct { char *data; int len; int size; } FBSTRING;", TRUE )
 
 	'' body
 	sectionBegin( )
@@ -1517,35 +1549,6 @@ private function hEmitType _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr _
 	) as string
-
-	'' same order as FB_DATATYPE
-	static as const zstring ptr dtypeName(0 to FB_DATATYPES-1) = _
-	{ _
-		@"void"     , _ '' void
-		@"byte"     , _ '' byte
-		@"ubyte"    , _ '' ubyte
-		NULL        , _ '' char
-		@"short"    , _ '' short
-		@"ushort"   , _ '' ushort
-		NULL        , _ '' wchar
-		@"integer"  , _ '' int
-		@"uinteger" , _ '' uint
-		NULL        , _ '' enum
-		NULL        , _ '' bitfield
-		@"long"     , _ '' long
-		@"ulong"    , _ '' ulong
-		@"longint"  , _ '' longint
-		@"ulongint" , _ '' ulongint
-		@"single"   , _ '' single
-		@"double"   , _ '' double
-		@"string"   , _ '' string
-		NULL        , _ '' fix-len string
-		NULL        , _ '' struct
-		NULL        , _ '' namespace
-		NULL        , _ '' function
-		@"void"     , _ '' fwd-ref (needed for any un-resolved fwdrefs)
-		NULL          _ '' pointer
-	}
 
 	dim as string s
 	dim as integer ptrcount = any
