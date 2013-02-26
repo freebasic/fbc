@@ -538,6 +538,20 @@ private function hGetUdtName( byval sym as FBSYMBOL ptr ) as string
 	function = hGetUdtTag( sym ) + hGetUdtId( sym )
 end function
 
+private sub hEmitEnum( byval s as FBSYMBOL ptr )
+	dim as string ln
+
+	symbSetIsEmitted( s )
+
+	ln = "typedef "
+	'' no subtype, to avoid infinite recursion
+	ln += hEmitType( FB_DATATYPE_ENUM, NULL )
+	ln += " "
+	ln += hGetUdtName( s )
+	ln += ";"
+	hWriteLine( ln )
+end sub
+
 private sub hEmitUDT( byval s as FBSYMBOL ptr, byval is_ptr as integer )
 	dim as integer section = any
 
@@ -577,8 +591,7 @@ private sub hEmitUDT( byval s as FBSYMBOL ptr, byval is_ptr as integer )
 
 	select case as const symbGetClass( s )
 	case FB_SYMBCLASS_ENUM
-		symbSetIsEmitted( s )
-		hWriteLine( "typedef int " + hGetUdtName( s ) + ";" )
+		hEmitEnum( s )
 
 	case FB_SYMBCLASS_STRUCT
 		hEmitStruct( s, is_ptr )
@@ -1562,7 +1575,7 @@ private function hEmitType _
 			hEmitUDT( subtype, (ptrcount > 0) )
 			s = hGetUdtName( subtype )
 		elseif( dtype = FB_DATATYPE_ENUM ) then
-			s = *dtypeName(FB_DATATYPE_INTEGER)
+			s = *dtypeName(typeGetRemapType( dtype ))
 		else
 			s = *dtypeName(FB_DATATYPE_VOID)
 		end if

@@ -1,18 +1,21 @@
 o 64bit
-  - Make INTEGER = pointer size, LONG = DWORD, LONGINT = QWORD
-  - All arithmetic/bitwise operations will work at 64bit precision
+  - C backend: ensure BOPs/UOPs/constants are emitted using the correct types
+  - Many internal integers should be longints (to support 32/64bit cross-compiling)
+      - ofs value on IRVREG, astNewDEREF(), astNewVAR(), ...
+      - astConstFlushToInt() result
+      - minval/maxval used by jump table emitting
+
+  - main() result and argc use INTEGER, that will be wrong on 64bit where they
+    are still 32bit
 
   - remove the FB_{POINTER/INTEGER/LONG}SIZE constants, at least when used
     outside the ASM emitter, and use typeGetSize( ... ) instead, to allow the
     them to be remapped through the symb_dtypeTB depending on fbc command line
     options (cross-compiling)
-  - FBVALUE and ir-hlc.bas:EXPRNODE must be adjusted to use guaranteed 32bit
-    and 64bit types to represent dwords/qwords instead of integer/longint
   - fbint.bi contains various structs (e.g. FB_STRDESC) that are target-specific,
     this would break when cross-compiling and the struct layout is different
 
   - search for uses of "... and &h80000000", 32bit assumption, replace with "... < 0"
-  - check emitting of all kinds of number literals under all backends
   - check all size-sensitive rtl functions, mk*(), cv*()
   - SHL/SHR shouldn't be limited to 32bit when targetting 64bit
   - search for any other "x86 assumption"'s
