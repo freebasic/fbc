@@ -423,7 +423,7 @@ function astPatchCtorCall _
 	assert( symbProcGetVtableIndex( procexpr->sym ) = 0 )
 
 	'' replace the instance pointer
-	astReplaceARG( procexpr, 0, thisexpr )
+	astReplaceInstanceArg( procexpr, thisexpr )
 
 	function = procexpr
 end function
@@ -446,7 +446,7 @@ function astCALLCTORToCALL _
 	'' Update the CALL: Replace the old THIS ptr ARG with a NULL ptr (given
 	'' BYVAL to the BYREF THIS param), since the temp var will be deleted.
 	assert( symbGetType( sym ) = FB_DATATYPE_STRUCT )
-	astReplaceARG( procexpr, 0, astFakeInstPtr( symbGetSubtype( sym ) ), FB_PARAMMODE_BYVAL )
+	astReplaceInstanceArg( procexpr, astFakeInstPtr( symbGetSubtype( sym ) ), FB_PARAMMODE_BYVAL )
 
 	'' remove right leaf (the VAR access on the temp var)
 	astDelTree( n->r )

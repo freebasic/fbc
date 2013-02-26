@@ -102,11 +102,31 @@ private sub testUshort cdecl( )
 		scope
 			dim as ushort a, b
 
+			CU_ASSERT( (NA * NB) = NR )
 			CU_ASSERT( (cushort( NA ) * cushort( NB )) = NR )
 
 			a = NA
 			b = NB
 			CU_ASSERT( (a * b) = NR )
+		end scope
+	#endmacro
+
+	#macro test2( NA, NB, NR )
+		scope
+			dim as ushort a, b, r
+
+			'' Truncating the result
+			CU_ASSERT( cushort( NA * NB ) = NR )
+			CU_ASSERT( cushort( cushort( NA ) * cushort( NB ) ) = NR )
+
+			a = NA
+			b = NB
+			r = a * b
+			CU_ASSERT( r = NR )
+
+			a = NA
+			b = NB
+			CU_ASSERT( cushort( a * b ) = NR )
 		end scope
 	#endmacro
 
@@ -120,12 +140,29 @@ private sub testUshort cdecl( )
 	test1( &h7FFFu, 1u, &h7FFFu )
 	test1( &h8000u, 1u, &h8000u )
 	test1( &hFFFFu, 1u, &hFFFFu )
-	test1( &h8000u, &h8000u, &h0000u )
-	test1( &h7FFFu, &h7FFFu, &h0001u )
-	test1( &hFFFFu, &hFFFFu, &h0001u )
+	test1( &h8000u, &h8000u, &h40000000u )
+	test1( &h7FFFu, &h7FFFu, &h3FFF0001u )
+	test1( &hFFFFu, &hFFFFu, &hFFFE0001u )
 	test1( 5u, 5u, 25u )
 	test1( 50u, 5u, 250u )
 	test1( 50u, 50u, 2500u )
+
+	test2( 0u, 0u, 0u )
+	test2( 1u, 1u, 1u )
+	test2( 1u, 0u, 0u )
+	test2( 0u, 1u, 0u )
+	test2( 2u, 2u, 4u )
+	test2( 3u, 3u, 9u )
+	test2( 2u, 5u, 10u )
+	test2( &h7FFFu, 1u, &h7FFFu )
+	test2( &h8000u, 1u, &h8000u )
+	test2( &hFFFFu, 1u, &hFFFFu )
+	test2( &h8000u, &h8000u, &h0000u )
+	test2( &h7FFFu, &h7FFFu, &h0001u )
+	test2( &hFFFFu, &hFFFFu, &h0001u )
+	test2( 5u, 5u, 25u )
+	test2( 50u, 5u, 250u )
+	test2( 50u, 50u, 2500u )
 end sub
 
 private sub testUbyte cdecl( )
@@ -133,8 +170,6 @@ private sub testUbyte cdecl( )
 		scope
 			dim as ubyte a, b
 
-			'' The result of <ubyte * ubyte> is not automatically
-			'' truncated to fit a ubyte, instead it's an uinteger (really?)
 			CU_ASSERT( (NA * NB) = NR )
 			CU_ASSERT( (cubyte( NA ) * cubyte( NB )) = NR )
 
@@ -148,8 +183,9 @@ private sub testUbyte cdecl( )
 		scope
 			dim as ubyte a, b, r
 
-			'' Truncating the result: cubyte( ubyte * ubyte )
+			'' Truncating the result
 			CU_ASSERT( cubyte( NA * NB ) = NR )
+			CU_ASSERT( cubyte( cubyte( NA ) * cubyte( NB ) ) = NR )
 
 			a = NA
 			b = NB

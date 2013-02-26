@@ -9,32 +9,50 @@
 '' same order as FB_DATATYPE
 dim shared symb_dtypeTB( 0 to FB_DATATYPES-1 ) as SYMB_DATATYPE => _
 { _
-	( FB_DATACLASS_UNKNOWN,  0, FALSE, FB_DATATYPE_VOID    , -1                 , @"void"     ), _
-	( FB_DATACLASS_INTEGER,  1, TRUE , FB_DATATYPE_BYTE    , FB_SIZETYPE_INT8   , @"byte"     ), _
-	( FB_DATACLASS_INTEGER,  1, FALSE, FB_DATATYPE_UBYTE   , FB_SIZETYPE_UINT8  , @"ubyte"    ), _
-	( FB_DATACLASS_INTEGER,  1, FALSE, FB_DATATYPE_UBYTE   , FB_SIZETYPE_UINT8  , @"zstring"  ), _
-	( FB_DATACLASS_INTEGER,  2, TRUE , FB_DATATYPE_SHORT   , FB_SIZETYPE_INT16  , @"short"    ), _
-	( FB_DATACLASS_INTEGER,  2, FALSE, FB_DATATYPE_USHORT  , FB_SIZETYPE_UINT16 , @"ushort"   ), _
-	( FB_DATACLASS_INTEGER,  2, FALSE, -1                  , -1                 , @"wstring"  ), _
-	( FB_DATACLASS_INTEGER, -1, TRUE , FB_DATATYPE_INTEGER , -1                 , @"integer"  ), _
-	( FB_DATACLASS_INTEGER, -1, FALSE, FB_DATATYPE_UINT    , -1                 , @"uinteger" ), _
-	( FB_DATACLASS_INTEGER, -1, TRUE , FB_DATATYPE_INTEGER , -1                 , @"enum"     ), _
-	( FB_DATACLASS_INTEGER, -1, FALSE, FB_DATATYPE_UINT    , -1                 , @"bitfield" ), _
-	( FB_DATACLASS_INTEGER,  4, TRUE , FB_DATATYPE_LONG    , FB_SIZETYPE_INT32  , @"long"     ), _
-	( FB_DATACLASS_INTEGER,  4, FALSE, FB_DATATYPE_ULONG   , FB_SIZETYPE_UINT32 , @"ulong"    ), _
-	( FB_DATACLASS_INTEGER,  8, TRUE , FB_DATATYPE_LONGINT , FB_SIZETYPE_INT64  , @"longint"  ), _
-	( FB_DATACLASS_INTEGER,  8, FALSE, FB_DATATYPE_ULONGINT, FB_SIZETYPE_UINT64 , @"ulongint" ), _
-	( FB_DATACLASS_FPOINT ,  4, TRUE , FB_DATATYPE_SINGLE  , FB_SIZETYPE_FLOAT32, @"single"   ), _
-	( FB_DATACLASS_FPOINT ,  8, TRUE , FB_DATATYPE_DOUBLE  , FB_SIZETYPE_FLOAT64, @"double"   ), _
-	( FB_DATACLASS_STRING , -1, FALSE, FB_DATATYPE_STRING  , -1                 , @"string"   ), _
-	( FB_DATACLASS_STRING ,  1, FALSE, FB_DATATYPE_FIXSTR  , -1                 , @"string"   ), _
-	( FB_DATACLASS_UDT    ,  0, FALSE, FB_DATATYPE_STRUCT  , -1                 , @"type"     ), _
-	( FB_DATACLASS_UDT    ,  0, FALSE, FB_DATATYPE_NAMESPC , -1                 , @"namepace" ), _
-	( FB_DATACLASS_INTEGER, -1, FALSE, FB_DATATYPE_UINT    , -1                 , @"function" ), _
-	( FB_DATACLASS_UNKNOWN,  0, FALSE, FB_DATATYPE_VOID    , -1                 , @"fwdref"   ), _
-	( FB_DATACLASS_INTEGER, -1, FALSE, FB_DATATYPE_UINT    , -1                 , @"pointer"  ), _
-	( FB_DATACLASS_INTEGER, 16, FALSE, FB_DATATYPE_XMMWORD , -1                 , @"xmmword"  )  _
+	( FB_DATACLASS_UNKNOWN,  0, FALSE,  0, FB_DATATYPE_VOID    , -1                 , @"void"     ), _
+	( FB_DATACLASS_INTEGER,  1, TRUE , 10, FB_DATATYPE_BYTE    , FB_SIZETYPE_INT8   , @"byte"     ), _
+	( FB_DATACLASS_INTEGER,  1, FALSE, 15, FB_DATATYPE_UBYTE   , FB_SIZETYPE_UINT8  , @"ubyte"    ), _
+	( FB_DATACLASS_INTEGER,  1, FALSE,  0, FB_DATATYPE_UBYTE   , FB_SIZETYPE_UINT8  , @"zstring"  ), _
+	( FB_DATACLASS_INTEGER,  2, TRUE , 20, FB_DATATYPE_SHORT   , FB_SIZETYPE_INT16  , @"short"    ), _
+	( FB_DATACLASS_INTEGER,  2, FALSE, 25, FB_DATATYPE_USHORT  , FB_SIZETYPE_UINT16 , @"ushort"   ), _
+	( FB_DATACLASS_INTEGER,  2, FALSE,  0, -1                  , -1                 , @"wstring"  ), _
+	( FB_DATACLASS_INTEGER, -1, TRUE , -1, FB_DATATYPE_INTEGER , -1                 , @"integer"  ), _
+	( FB_DATACLASS_INTEGER, -1, FALSE, -1, FB_DATATYPE_UINT    , -1                 , @"uinteger" ), _
+	( FB_DATACLASS_INTEGER, -1, TRUE ,  0, FB_DATATYPE_INTEGER , -1                 , @"enum"     ), _
+	( FB_DATACLASS_INTEGER, -1, FALSE,  0, FB_DATATYPE_UINT    , -1                 , @"bitfield" ), _
+	( FB_DATACLASS_INTEGER,  4, TRUE , 40, FB_DATATYPE_LONG    , FB_SIZETYPE_INT32  , @"long"     ), _
+	( FB_DATACLASS_INTEGER,  4, FALSE, 45, FB_DATATYPE_ULONG   , FB_SIZETYPE_UINT32 , @"ulong"    ), _
+	( FB_DATACLASS_INTEGER,  8, TRUE , 80, FB_DATATYPE_LONGINT , FB_SIZETYPE_INT64  , @"longint"  ), _
+	( FB_DATACLASS_INTEGER,  8, FALSE, 85, FB_DATATYPE_ULONGINT, FB_SIZETYPE_UINT64 , @"ulongint" ), _
+	( FB_DATACLASS_FPOINT ,  4, TRUE ,  0, FB_DATATYPE_SINGLE  , FB_SIZETYPE_FLOAT32, @"single"   ), _
+	( FB_DATACLASS_FPOINT ,  8, TRUE ,  0, FB_DATATYPE_DOUBLE  , FB_SIZETYPE_FLOAT64, @"double"   ), _
+	( FB_DATACLASS_STRING , -1, FALSE,  0, FB_DATATYPE_STRING  , -1                 , @"string"   ), _
+	( FB_DATACLASS_STRING ,  1, FALSE,  0, FB_DATATYPE_FIXSTR  , -1                 , @"string"   ), _
+	( FB_DATACLASS_UDT    ,  0, FALSE,  0, FB_DATATYPE_STRUCT  , -1                 , @"type"     ), _
+	( FB_DATACLASS_UDT    ,  0, FALSE,  0, FB_DATATYPE_NAMESPC , -1                 , @"namepace" ), _
+	( FB_DATACLASS_INTEGER, -1, FALSE,  0, FB_DATATYPE_UINT    , -1                 , @"function" ), _
+	( FB_DATACLASS_UNKNOWN,  0, FALSE,  0, FB_DATATYPE_VOID    , -1                 , @"fwdref"   ), _
+	( FB_DATACLASS_INTEGER, -1, FALSE,  0, FB_DATATYPE_UINT    , -1                 , @"pointer"  ), _
+	( FB_DATACLASS_INTEGER, 16, FALSE,  0, FB_DATATYPE_XMMWORD , -1                 , @"xmmword"  )  _
 }
+
+'' Note: the integer type ranking values are just arbitrary numbers, except
+'' that they allow comparisons of the form
+''    typeGetIntRank( a ) < typeGetIntRank( b )
+'' to determine which type takes precedence. As long as the order is maintained,
+'' the numbers can be changed.
+''
+'' For the small types it should be:
+''    byte < ubyte < short < ushort < others
+''
+'' For the bigger types, it depends on whether the target is 32bit or 64bit:
+''    32bit: long < integer < ulong < uinteger < longint < ulongint
+''    64bit: long < ulong < longint < integer < ulongint < uinteger
+''
+'' Note: As in C, unsigned types are treated as if they had more precision,
+'' even though they store the same number of bits. (for the sake of a '+' BOP's
+'' result type being the same no matter whether we're doing signed + unsigned
+'' or unsigned + signed, we need to have this kind of rule to decide)
 
 sub symbDataInit( )
 	if( env.target.options and FB_TARGETOPT_64BIT ) then
@@ -53,6 +71,9 @@ sub symbDataInit( )
 		symb_dtypeTB(FB_DATATYPE_BITFIELD).sizetype = FB_SIZETYPE_UINT64
 		symb_dtypeTB(FB_DATATYPE_FUNCTION).sizetype = FB_SIZETYPE_UINT64
 		symb_dtypeTB(FB_DATATYPE_POINTER ).sizetype = FB_SIZETYPE_UINT64
+
+		symb_dtypeTB(FB_DATATYPE_INTEGER ).intrank = 81
+		symb_dtypeTB(FB_DATATYPE_UINT    ).intrank = 86
 	else
 		'' 32bit
 		symb_dtypeTB(FB_DATATYPE_INTEGER ).size = 4
@@ -69,6 +90,9 @@ sub symbDataInit( )
 		symb_dtypeTB(FB_DATATYPE_BITFIELD).sizetype = FB_SIZETYPE_UINT32
 		symb_dtypeTB(FB_DATATYPE_FUNCTION).sizetype = FB_SIZETYPE_UINT32
 		symb_dtypeTB(FB_DATATYPE_POINTER ).sizetype = FB_SIZETYPE_UINT32
+
+		symb_dtypeTB(FB_DATATYPE_INTEGER ).intrank = 41
+		symb_dtypeTB(FB_DATATYPE_UINT    ).intrank = 46
 	end if
 
 	'' Remap wchar to target-specific type
@@ -80,116 +104,62 @@ sub symbDataInit( )
 	symb_dtypeTB(FB_DATATYPE_WCHAR).remaptype = symb_dtypeTB(env.target.wchar).remaptype
 end sub
 
-function typeMax _
+sub typeMax _
 	( _
 		byval ldtype as integer, _
-		byval rdtype as integer _
-	) as integer
+		byval lsubtype as FBSYMBOL ptr, _
+		byval rdtype as integer, _
+		byval rsubtype as FBSYMBOL ptr, _
+		byref dtype as integer, _
+		byref subtype as FBSYMBOL ptr _
+	)
 
-    dim as integer dtype1 = any, dtype2 = any
+	dim as integer dtype1 = any, dtype2 = any
 
-    function = FB_DATATYPE_INVALID
+	'' Same type?
+	if( (typeGetDtAndPtrOnly( ldtype ) = typeGetDtAndPtrOnly( rdtype )) and _
+	    (lsubtype = rsubtype) ) then
+		dtype = ldtype
+		subtype = lsubtype
+		exit sub
+	end if
 
-    dtype1 = typeGet( ldtype )
-    if( dtype1 = FB_DATATYPE_POINTER ) then
-    	'' can't be POINTER, due the -1 +1 hacks below
-    	dtype1 = FB_DATATYPE_ULONG
-    else
-    	dtype1 = symb_dtypeTB(dtype1).remaptype
-    end if
+	dtype1 = symb_dtypeTB(typeGet( ldtype )).remaptype
+	dtype2 = symb_dtypeTB(typeGet( rdtype )).remaptype
 
-    dtype2 = typeGet( rdtype )
-    if( dtype2 = FB_DATATYPE_POINTER ) then
-    	'' ditto
-    	dtype2 = FB_DATATYPE_ULONG
-    else
-    	dtype2 = symb_dtypeTB(dtype2).remaptype
-    end if
+	if( dtype1 = dtype2 ) then
+		'' Different types, but they remapped to the same,
+		'' will this ever happen? (special cases such as enums and
+		'' pointers should already have been handled by the caller)
+		'' Return the generic remapped type, since we don't
+		'' know which side to prefer
+		dtype = dtype1
+		subtype = NULL
 
-    '' same?
-    if( dtype1 = dtype2 ) then
-    	exit function
-    end if
+	'' If both are integers (only basic integers will appear, since it's
+	'' the remap types), decide based on integer rank
+	elseif( (typeGetClass( dtype1 ) = FB_DATACLASS_INTEGER) and _
+	        (typeGetClass( dtype2 ) = FB_DATACLASS_INTEGER) ) then
+		if( typeGetIntRank( dtype1 ) > typeGetIntRank( dtype2 ) ) then
+			dtype = ldtype
+			subtype = lsubtype
+		else
+			dtype = rdtype
+			subtype = rsubtype
+		end if
 
-    '' don't convert byte <-> ubyte
-    select case as const dtype1
-    case FB_DATATYPE_BYTE, FB_DATATYPE_UBYTE
-    	select case as const dtype2
-    	case FB_DATATYPE_BYTE, FB_DATATYPE_UBYTE
-    		exit function
-    	end select
+	'' Otherwise (i.e. floats are involved), decide based on FB_DATATYPE
+	'' enum order (this lets SINGLE/DOUBLE win over integers, and also
+	'' DOUBLE over SINGLE)
+	elseif( dtype1 > dtype2 ) then
+		dtype = ldtype
+		subtype = lsubtype
+	else
+		dtype = rdtype
+		subtype = rsubtype
+	end if
 
-    '' neither short <-> ushort
-    case FB_DATATYPE_SHORT, FB_DATATYPE_USHORT
-    	select case as const dtype2
-    	case FB_DATATYPE_SHORT, FB_DATATYPE_USHORT
-    		exit function
-    	end select
-
-	'' neither int <-> uint
-	case FB_DATATYPE_INTEGER, FB_DATATYPE_UINT
-    	select case as const dtype2
-    	case FB_DATATYPE_INTEGER, FB_DATATYPE_UINT
-    		exit function
-
-    	case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
-    		if( FB_LONGSIZE = FB_INTEGERSIZE ) then
-    			exit function
-    		end if
-    	end select
-
-	'' neither long <-> ulong
-	case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
-    	select case as const dtype2
-    	case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
-    		exit function
-
-    	case FB_DATATYPE_INTEGER, FB_DATATYPE_UINT
-    		if( FB_LONGSIZE = FB_INTEGERSIZE ) then
-    			exit function
-    		end if
-
-    	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-    		if( FB_LONGSIZE = FB_INTEGERSIZE*2 ) then
-    			exit function
-    		end if
-    	end select
-
-    '' neither qword <-> longint
-    case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-    	select case as const dtype2
-    	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-    		exit function
-
-    	case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
-    		if( FB_LONGSIZE = FB_INTEGERSIZE*2 ) then
-    			exit function
-    		end if
-    	end select
-
-    '' neither single <-> double
-    case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-    	select case as const dtype2
-    	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-    		exit function
-    	end select
-
-    '' neither string, fixstring
-    case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR
-    	return FB_DATATYPE_STRING
-
-    case else
-    	errReportEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
-    end select
-
-    '' assuming DATATYPE's are in order of precision
-    if( dtype1 > dtype2 ) then
-    	function = ldtype
-    else
-    	function = rdtype
-    end if
-
-end function
+end sub
 
 '':::::
 function typeRemap _

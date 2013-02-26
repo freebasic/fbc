@@ -663,6 +663,22 @@ private function hCheckDerefWcharPtr _
 	function = TRUE
 end function
 
+'' Convert an expression to the given type, preserving CONST bits, and also
+'' updating the corresponding helper variables
+private sub hConvOperand _
+	( _
+		byval newdtype as integer, _
+		byref dtype as integer, _
+		byref dclass as integer, _
+		byref n as ASTNODE ptr _
+	)
+
+	dtype = typeJoin( dtype, newdtype )
+	dclass = typeGetClass( newdtype )
+	n = astNewCONV( dtype, NULL, n )
+
+end sub
+
 '':::::
 function astNewBOP _
 	( _
@@ -676,6 +692,7 @@ function astNewBOP _
     dim as ASTNODE ptr n = any
     dim as integer ldtype = any, rdtype = any, dtype = any
     dim as integer ldclass = any, rdclass = any
+	dim as integer lrank = any, rrank = any, intrank = any, uintrank = any
     dim as integer is_str = any
     dim as FBSYMBOL ptr litsym = any, subtype = any
 
@@ -742,17 +759,23 @@ function astNewBOP _
 		end if
     end if
 
-    '' enums?
-    if( (typeGet( ldtype ) = FB_DATATYPE_ENUM) or _
-    	(typeGet( rdtype ) = FB_DATATYPE_ENUM) ) then
-    	'' not the same?
-    	if( ldtype <> rdtype ) then
-    		if( (ldclass <> FB_DATACLASS_INTEGER) or _
-    			(rdclass <> FB_DATACLASS_INTEGER) ) then
-    			errReportWarn( FB_WARNINGMSG_IMPLICITCONVERSION )
-    		end if
-    	end if
-    end if
+	''
+	'' Enum operands? Convert them to integer (but preserve CONSTs).
+	''
+	'' When doing math BOPs on enum constants, we don't even know whether
+	'' the resulting integer value will be a part of that enum.
+	'' For typesafe enums, an error would have to be shown here.
+	''
+	'' Similar for relational BOPs, it's better to compare enums as
+	'' integers, especially if the two operands are from different enums.
+	'' (also, the result of relational BOPs is an integer anyways...)
+	''
+	if( typeGet( ldtype ) = FB_DATATYPE_ENUM ) then
+		hConvOperand( FB_DATATYPE_INTEGER, ldtype, ldclass, l )
+	end if
+	if( typeGet( rdtype ) = FB_DATATYPE_ENUM ) then
+		hConvOperand( FB_DATATYPE_INTEGER, rdtype, rdclass, r )
+	end if
 
     '' both zstrings? treat as string..
     if( (typeGet( ldtype ) = FB_DATATYPE_CHAR) and _
@@ -860,12 +883,12 @@ function astNewBOP _
 			end if
 		end if
 
-    '' strings?
-    elseif( (typeGet( ldclass ) = FB_DATACLASS_STRING) or _
-    		(typeGet( rdclass ) = FB_DATACLASS_STRING) ) then
+	'' strings?
+	elseif( (ldclass = FB_DATACLASS_STRING) or _
+	        (rdclass = FB_DATACLASS_STRING) ) then
 
 		'' not both strings?
-		if( typeGetDtAndPtrOnly( ldclass ) <> typeGetDtAndPtrOnly( rdclass ) ) then
+		if( ldclass <> rdclass ) then
 			if( ldclass = FB_DATACLASS_STRING ) then
 				'' not a zstring?
 				if( typeGet( rdtype ) <> FB_DATATYPE_CHAR ) then
@@ -956,26 +979,71 @@ function astNewBOP _
 
     ''::::::
 
-	'' convert byte to int
-	if( typeGetSize( ldtype ) = 1 ) then
-		if( is_str = FALSE ) then
-			if( typeIsSigned( ldtype ) ) then
-				ldtype = typeJoin( ldtype, FB_DATATYPE_INTEGER )
-			else
-				ldtype = typeJoin( ldtype, FB_DATATYPE_UINT )
-			end if
-			l = astNewCONV( ldtype, NULL, l )
-		end if
-	end if
+	''
+	'' Promote smaller integer types to [U]INTEGER before the operation
+	''
+	'' - but not if it's -lang qb, because 16bit arithmetic should probably
+	''   not become 32bit there. It could matter for code like:
+	''        #lang "qb"
+	''        dim a as integer  '' 16-bit "integer" (SHORT internally)
+	''        dim b as integer
+	''        dim x as long
+	''        x = a + b
+	''   where the result of the 16bit BOP is assigned to a 32bit value.
+	''
+	'' - do nothing if this BOP is a string concatenation/comparison
+	'' - also, do nothing for float/UDT operands
+	''
+	'' - Pointers and bitfields should be treated as UINTEGER (their
+	''   "remap" types), i.e. they will effectively never be promoted.
+	''
+	''   Pointers can only appear in BOPs as part of pointer indexing,
+	''   which is a special case. The result type should always be the
+	''   pointer type, so it mustn't be converted here.
+	''
+	''   Bitfields must be treated as their remap type, since the BOP result
+	''   can't have bitfield type itself... (similar to enums)
+	''
+	'' - Enums would also be handled via their remap type here, but for now
+	''   any enum operand is already converted to integer above anyways,
+	''   so enums never arrive here.
+	''
 
-	if( typeGetSize( rdtype ) = 1 ) then
-		if( is_str = FALSE ) then
-			if( typeIsSigned( rdtype ) ) then
-				rdtype = typeJoin( rdtype, FB_DATATYPE_INTEGER )
+	if( (env.clopt.lang <> FB_LANG_QB) and (is_str = FALSE) ) then
+		intrank = typeGetIntRank( FB_DATATYPE_INTEGER )
+		uintrank = typeGetIntRank( FB_DATATYPE_UINT )
+
+		'' not for float
+		if( ldclass = FB_DATACLASS_INTEGER ) then
+			lrank = typeGetIntRank( typeGetRemapType( ldtype ) )
+
+			'' l < INTEGER?
+			if( lrank < intrank ) then
+				hConvOperand( FB_DATATYPE_INTEGER, ldtype, ldclass, l )
 			else
-				rdtype = typeJoin( rdtype, FB_DATATYPE_UINT )
+				'' INTEGER < l < UINTEGER?
+				if( (intrank < lrank) and (lrank < uintrank) ) then
+					'' Convert to UINTEGER for consistency with
+					'' the above conversion to INTEGER (this can
+					'' happen with ULONG on 32bit, and ULONGINT
+					'' on 64bit, due to the ranking order)
+					hConvOperand( FB_DATATYPE_UINT, ldtype, ldclass, l )
+				end if
 			end if
-			r = astNewCONV( rdtype, NULL, r )
+		end if
+
+		'' not for float
+		if( rdclass = FB_DATACLASS_INTEGER ) then
+			rrank = typeGetIntRank( typeGetRemapType( rdtype ) )
+
+			'' same for r
+			if( rrank < intrank ) then
+				hConvOperand( FB_DATATYPE_INTEGER, rdtype, rdclass, r )
+			else
+				if( (intrank < rrank) and (rrank < uintrank) ) then
+					hConvOperand( FB_DATATYPE_UINT, rdtype, rdclass, r )
+				end if
+			end if
 		end if
 	end if
 
@@ -1040,52 +1108,35 @@ function astNewBOP _
 
     ''::::::
 
-    '' convert types to the most precise if needed
 	if( ldtype <> rdtype ) then
-
-		dtype = typeMax( ldtype, rdtype )
-
-		'' don't convert?
-		if( dtype = FB_DATATYPE_INVALID ) then
-
-			'' as types are different, if class is fp,
-			'' the result type will be always a double
-			if( ldclass = FB_DATACLASS_FPOINT ) then
-
-				if( irGetOption( IR_OPT_FPUCONV ) ) then
-					dtype   = ldtype
-					subtype = l->subtype
-				else
-					dtype   = typeJoin( dtype, FB_DATATYPE_DOUBLE )
-					subtype = NULL
-				end if
+		'' Pointer arithmetic (but not handled above by hDoPointerArith())?
+		'' (assuming hCheckPointers() checks were already done)
+		if( (typeIsPtr( ldtype ) or typeIsPtr( rdtype )) and _
+		    ((op = AST_OP_ADD) or (op = AST_OP_SUB)) ) then
+			'' The result is supposed to be the pointer type
+			if( typeIsPtr( ldtype ) ) then
+				dtype   = ldtype
+				subtype = l->subtype
 			else
-
-				'' an ENUM or POINTER always has the precedence
-				if( (rdtype = FB_DATATYPE_ENUM) or typeIsPtr( rdtype ) ) then
-					dtype = rdtype
-					subtype = r->subtype
-				else
-					dtype = ldtype
-					subtype = l->subtype
-				end if
-
-			end if
-
-		else
-			'' convert the l operand?
-			if( typeGetDtAndPtrOnly( dtype ) <> typeGetDtAndPtrOnly( ldtype ) ) then
+				dtype   = rdtype
 				subtype = r->subtype
+			end if
+		else
+			'' Convert lhs/rhs to most precise type
+			'' (e.g. for +/-/* math BOPs, but also for relational BOPs,
+			'' even if they involve pointers)
+			typeMax( ldtype, l->subtype, rdtype, r->subtype, dtype, subtype )
+
+			if( (typeGetDtAndPtrOnly( dtype ) <> typeGetDtAndPtrOnly( ldtype )) or _
+			    (subtype <> l->subtype) ) then
 				l = astNewCONV( dtype, subtype, l )
 				if( l = NULL ) then exit function
-
 				ldtype = dtype
-				ldclass = rdclass
+				ldclass = typeGetClass( dtype )
+			end if
 
-			'' convert the r operand..
-			else
-				subtype = l->subtype
-
+			if( (typeGetDtAndPtrOnly( dtype ) <> typeGetDtAndPtrOnly( rdtype )) or _
+			    (subtype <> r->subtype) ) then
 				'' if it's the src-operand of a shift operation, do nothing
 				select case op
 				case AST_OP_SHL, AST_OP_SHR
@@ -1096,12 +1147,10 @@ function astNewBOP _
 					if( r = NULL ) then exit function
 
 					rdtype = dtype
-					rdclass = ldclass
+					rdclass = typeGetClass( dtype )
 				end select
-
 			end if
 		end if
-
 	'' no conversion, same types
 	else
 		dtype   = ldtype
@@ -1110,17 +1159,14 @@ function astNewBOP _
 
 	'' post check
 	select case as const op
-	'' relative ops, the result is always an integer
-	case AST_OP_EQ, AST_OP_GT, AST_OP_LT, AST_OP_NE, AST_OP_LE, AST_OP_GE
+	'' relational operations always return an integer
+	case AST_OP_EQ, AST_OP_GT, AST_OP_LT, AST_OP_NE, AST_OP_LE, AST_OP_GE, _
+	     AST_OP_ANDALSO, AST_OP_ORELSE
 		dtype = FB_DATATYPE_INTEGER
 		subtype = NULL
-	'' ANDALSO and ORELSE always return an integer
-	case AST_OP_ANDALSO, AST_OP_ORELSE
-		dtype = FB_DATATYPE_INTEGER
-		subtype = NULL
+
 	'' right-operand must be an integer, so pow2 opts can be done on longint's
 	case AST_OP_SHL, AST_OP_SHR
-
 		if( astIsCONST( r ) ) then
 			'' warn if shift is greater than or equal to the number of bits in ldtype
 			'' !!!FIXME!!! prevent asm error when value is higher than 255
@@ -1132,8 +1178,8 @@ function astNewBOP _
 			end select
 		end if
 
-		if( typeGet( rdtype ) <> FB_DATATYPE_INTEGER ) then
-			if( typeGet( rdtype ) <> FB_DATATYPE_UINT ) then
+		if( typeGetDtAndPtrOnly( rdtype ) <> FB_DATATYPE_INTEGER ) then
+			if( typeGetDtAndPtrOnly( rdtype ) <> FB_DATATYPE_UINT ) then
 				rdtype = typeJoin( rdtype, FB_DATATYPE_INTEGER )
 				r = astNewCONV( rdtype, NULL, r )
 				rdclass = FB_DATACLASS_INTEGER

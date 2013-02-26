@@ -139,7 +139,7 @@ function symbCalcProcParamsLen( byval proc as FBSYMBOL ptr ) as integer
 	'' - excluding the hidden struct result param, if any,
 	''   instead it's handled separately where needed.
 
-	param = symbGetProcTailParam( proc )
+	param = symbGetProcHeadParam( proc )
 	length = 0
 
 	while( param )
@@ -149,7 +149,7 @@ function symbCalcProcParamsLen( byval proc as FBSYMBOL ptr ) as integer
 
 		length += symbGetLen( param )
 
-		param = param->prev
+		param = param->next
 	wend
 
 	function = length
@@ -257,7 +257,7 @@ function symbIsProcOverloadOf _
 
 end function
 
-sub symbProcSetRealType( byval proc as FBSYMBOL ptr )
+sub symbProcRecalcRealType( byval proc as FBSYMBOL ptr )
 	dim as integer dtype = any
 	dim as FBSYMBOL ptr subtype = any
 
@@ -420,6 +420,9 @@ private function hAddOvlProc _
 			end if
 
 			'' for each arg..
+			'' (note: cycling backwards, starting with the tail param,
+			'' because a THIS instance param may have been removed from
+			'' the ovl_params count above)
 			param = symbGetProcTailParam( proc )
 			ovl_param = symbGetProcTailParam( ovl )
 
@@ -497,7 +500,6 @@ private function hAddOvlProc _
 			if( ovl_params = 0 ) then
 				exit function
 			end if
-
 		end if
 
 		ovl = symbGetProcOvlNext( ovl )
@@ -810,7 +812,7 @@ add_proc:
 		end if
 	end if
 
-	symbProcSetRealType( proc )
+	symbProcRecalcRealType( proc )
 
 	if( (options and FB_SYMBOPT_DECLARING) <> 0 ) then
 		stats or= FB_SYMBSTATS_DECLARED
@@ -1329,6 +1331,7 @@ function symbFindOverloadProc _
 			end if
 
 			'' for each arg..
+			'' (Note: cycling backwards, ditto)
 			ovl_param = symbGetProcTailParam( ovl )
 			param = symbGetProcTailParam( proc )
 			do
@@ -1361,7 +1364,6 @@ function symbFindOverloadProc _
 			if( ovl_params = 0 ) then
 				return ovl
 			end if
-
 		end if
 
 		ovl = symbGetProcOvlNext( ovl )
@@ -1881,9 +1883,9 @@ function symbFindClosestOvlProc _
 				return ovl
 			end if
 
-			param = symbGetProcLastParam( ovl )
+			param = symbGetProcHeadParam( ovl )
 			if( symbIsMethod( ovl ) ) then
-				param = symbGetProcPrevParam( ovl, param )
+				param = param->next
 			end if
 
 			matches = 0
@@ -1908,8 +1910,8 @@ function symbFindClosestOvlProc _
 
 				matches += arg_matches
 
-               	'' next param
-				param = symbGetProcPrevParam( ovl, param )
+				'' next param
+				param = param->next
 				arg = arg->next
 			next
 
@@ -1927,7 +1929,7 @@ function symbFindClosestOvlProc _
 			    		end if
 						total_args += 1
 						'' next param
-						param = symbGetProcPrevParam( ovl, param )
+						param = param->next
 					loop
 				end if
 			end if

@@ -1118,10 +1118,10 @@ private function hFlushInitializer _
 
 		'' must be added to the dtor list..
 		initree = NULL
+	else
+		'' Don't let the backend emit the initializer for this global/static
+		symbGetStats( sym ) and= not FB_SYMBSTATS_INITIALIZED
 	end if
-
-    '' don't let emit handle this global/static symbol
-    symbGetStats( sym ) and= not FB_SYMBSTATS_INITIALIZED
 
     '' local?
     if( symbIsLocal( sym ) ) then

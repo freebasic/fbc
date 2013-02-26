@@ -86,6 +86,8 @@ function astNewUOP _
 	) as ASTNODE ptr
 
 	dim as ASTNODE ptr n = any
+	dim as integer dtype = any, rank = any, intrank = any, uintrank = any
+	dim as FBSYMBOL ptr subtype = any
 
 	function = NULL
 
@@ -108,13 +110,9 @@ function astNewUOP _
 		end if
 	end if
 
-    dim as integer dclass = any, dtype = any
-	dtype = astGetFullType( o )
-    dclass = typeGetClass( dtype )
-
 	if( op = AST_OP_SWZ_REPEAT ) then
 		'' alloc new node
-		n = astNewNode( AST_NODECLASS_UOP, dtype, o->subtype )
+		n = astNewNode( AST_NODECLASS_UOP, o->dtype, o->subtype )
 
 		n->l = o
 		n->r = NULL
@@ -124,71 +122,89 @@ function astNewUOP _
 		return n
 	end if
 
-    '' string? can't operate
-    if( dclass = FB_DATACLASS_STRING ) then
-    	exit function
-    end if
+	'' string? can't operate
+	if( typeGetClass( o->dtype ) = FB_DATACLASS_STRING ) then
+		exit function
+	end if
 
-    select case as const typeGet( dtype )
-    '' CHAR and WCHAR literals are also from the INTEGER class..
-    case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
-    	'' only if it's a deref pointer, to allow "NOT *p" etc
-    	if( astIsDEREF( o ) = FALSE ) then
-    		exit function
-    	end if
+	select case as const( typeGet( o->dtype ) )
+	'' CHAR and WCHAR literals are also from the INTEGER class..
+	case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
+		'' only if it's a deref pointer, to allow "NOT *p" etc
+		if( astIsDEREF( o ) = FALSE ) then
+			exit function
+		end if
 
+	'' UDT?
 	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
 		'' try to convert to the most precise type
-		o = astNewCONV( FB_DATATYPE_VOID, NULL, o )
+		'' (astNewCONV() will try symbFindCastOvlProc() which gives
+		'' special treatment to the FB_DATATYPE_VOID)
+		o = astNewCONV( typeJoin( o->dtype, FB_DATATYPE_VOID ), NULL, o )
 		if( o = NULL ) then
 			exit function
 		end if
 
-		dtype = typeJoin( dtype, astGetFullType( o ) )
-    	dclass = typeGetClass( dtype )
+	'' Enum operand? Convert to integer (but preserve CONSTs)
+	case FB_DATATYPE_ENUM
+		'' See also astNewBOP() - when doing math on enum constants,
+		'' we don't know whether the resulting integer value will be
+		'' a part of that enum, so it's better to convert to integer.
+		'' For typesafe enums, an error would have to be shown here.
+		o = astNewCONV( typeJoin( o->dtype, FB_DATATYPE_INTEGER ), NULL, o )
 
 	'' pointer?
-	case else
-		if( typeIsPtr( dtype ) ) then
-    		'' only NOT allowed
-    		if( op <> AST_OP_NOT ) then
-    			exit function
-    		end if
-    	end if
-    end select
-
-	dim as FBSYMBOL ptr subtype = o->subtype
-
-	'' convert byte to integer
-	if( typeGetSize( dtype ) = 1 ) then
-		dim as integer nd = any
-		if( typeIsSigned( dtype ) ) then
-			nd = FB_DATATYPE_INTEGER
-		else
-			nd = FB_DATATYPE_UINT
+	case FB_DATATYPE_POINTER
+		'' only NOT allowed
+		if( op <> AST_OP_NOT ) then
+			exit function
 		end if
 
-		dtype = typeJoin( dtype, nd )
+	end select
 
-		'' !!!FIXME!!! if ENUM's could be BYTE's in future, this will fail
-		o = astNewCONV( dtype, NULL, o )
-		subtype = NULL
+	''
+	'' Promote smaller integer types to [U]INTEGER before the operation,
+	'' see also astNewBOP()
+	''
+
+	if( (env.clopt.lang <> FB_LANG_QB) and _
+	    (typeGetClass( o->dtype ) = FB_DATACLASS_INTEGER) ) then
+		rank = typeGetIntRank( typeGetRemapType( o->dtype ) )
+		intrank = typeGetIntRank( FB_DATATYPE_INTEGER )
+		uintrank = typeGetIntRank( FB_DATATYPE_UINT )
+
+		'' o < INTEGER?
+		if( rank < intrank ) then
+			o = astNewCONV( typeJoin( o->dtype, FB_DATATYPE_INTEGER ), NULL, o )
+		else
+			'' INTEGER < o < UINTEGER?
+			if( (intrank < rank) and (rank < uintrank) ) then
+				'' Convert to UINTEGER for consistency with
+				'' the above conversion to INTEGER (this can
+				'' happen with ULONG on 32bit, and ULONGINT
+				'' on 64bit, due to the ranking order)
+				o = astNewCONV( typeJoin( o->dtype, FB_DATATYPE_UINT ), NULL, o )
+			end if
+		end if
 	end if
+
+	'' Result type normally is the same as the operand
+	dtype = o->dtype
+	subtype = o->subtype
 
 	select case as const op
 	'' NOT can only operate on integers
 	case AST_OP_NOT
-		if( dclass <> FB_DATACLASS_INTEGER ) then
-			o = astNewCONV( FB_DATATYPE_INTEGER, NULL, o )
-			dtype = typeJoin( dtype, FB_DATATYPE_INTEGER )
-			subtype = NULL
+		if( typeGetClass( o->dtype ) <> FB_DATACLASS_INTEGER ) then
+			o = astNewCONV( typeJoin( o->dtype, FB_DATATYPE_INTEGER ), NULL, o )
+			dtype = o->dtype
+			subtype = o->subtype
 		end if
 
 	'' with SGN(int) the result is always a signed integer
 	case AST_OP_SGN
-		if( dclass = FB_DATACLASS_INTEGER ) then
-			dtype = typeJoin( dtype, typeToSigned( dtype ) )
-			subtype = NULL
+		if( typeGetClass( o->dtype ) = FB_DATACLASS_INTEGER ) then
+			dtype = typeToSigned( dtype )
 		end if
 
 	'' transcendental can only operate on floats
@@ -196,26 +212,26 @@ function astNewUOP _
 		 AST_OP_TAN, AST_OP_ATAN, AST_OP_SQRT, AST_OP_LOG, _
 		 AST_OP_EXP
 
-		if( dclass <> FB_DATACLASS_FPOINT ) then
-			o = astNewCONV( FB_DATATYPE_DOUBLE, NULL, o )
-			dtype = typeJoin( dtype, FB_DATATYPE_DOUBLE )
-			subtype = NULL
+		if( typeGetClass( o->dtype ) <> FB_DATACLASS_FPOINT ) then
+			o = astNewCONV( typeJoin( o->dtype, FB_DATATYPE_DOUBLE ), NULL, o )
+			dtype = o->dtype
+			subtype = o->subtype
 		end if
 
 	'' fix and floor only affect floats
 	case AST_OP_FIX, AST_OP_FLOOR
 		'' integer?
-		if( dclass = FB_DATACLASS_INTEGER ) then
+		if( typeGetClass( o->dtype ) = FB_DATACLASS_INTEGER ) then
 			'' return value unchanged (hack: add 0 to prevent passing byref)
-			return astNewBOP(AST_OP_ADD, o, astNewconsti(0, dtype))
+			return astNewBOP( AST_OP_ADD, o, astNewCONSTi( 0, dtype ) )
 		end if
 
 	'' frac returns 0 for non-floats
 	case AST_OP_FRAC
 		'' integer?
-		if( dclass = FB_DATACLASS_INTEGER ) then
+		if( typeGetClass( o->dtype ) = FB_DATACLASS_INTEGER ) then
 			'' return zero (opimization should eliminate 'AND 0' tree if no classes on o)
-			return astNewBOP(AST_OP_AND, o, astNewCONSTi(0, dtype))
+			return astNewBOP( AST_OP_AND, o, astNewCONSTi( 0, dtype ) )
 		end if
 
 	'' '+'? do nothing..
@@ -227,7 +243,7 @@ function astNewUOP _
 	'' constant folding
 	if( astIsCONST( o ) ) then
 		if( op = AST_OP_NEG ) then
-			if( typeIsSigned( dtype ) = FALSE ) then
+			if( typeIsSigned( o->dtype ) = FALSE ) then
 				'' Check for overflows, for example:
 				'' NEG( cushort( 32769 ) ) is -32769,
 				'' but the lowest short is -32768.
@@ -244,27 +260,20 @@ function astNewUOP _
 
 		o = hConstUop( op, dtype, subtype, o )
 
-		o->dtype = typeJoin( o->dtype, dtype )
-		o->subtype = subtype
-
+		o->dtype = dtype
 		return o
 	end if
 
 	'' alloc new node
 
-	''
 	if( irGetOption( IR_OPT_NOINLINEOPS ) ) then
-
 		select case as const op
 		case AST_OP_SGN, AST_OP_ABS, AST_OP_FIX, AST_OP_FRAC, _
 			 AST_OP_SIN, AST_OP_ASIN, AST_OP_COS, AST_OP_ACOS, _
 			 AST_OP_TAN, AST_OP_ATAN, AST_OP_SQRT, AST_OP_LOG, _
 		 	 AST_OP_EXP, AST_OP_FLOOR
-
 		 	 return rtlMathUop( op, o )
-
 		end select
-
 	end if
 
 
@@ -277,7 +286,6 @@ function astNewUOP _
 	n->op.options = AST_OPOPT_ALLOCRES
 
 	function = n
-
 end function
 
 '':::::

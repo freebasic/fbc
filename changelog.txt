@@ -17,7 +17,9 @@ Version 0.25.0:
 - Property methods using an explicit ALIAS now respect that alias and do not append __get__ or __set__ anymore
 - #637: Assert[Warn]() messages go to stderr now, rather than to the FB screen (because that might be about to be closed)
 - LBound/UBound( array, 0 ) now returns 1 and the dimension count, it is no longer the same as LBound/UBound( array, 1 )
-- #if/#elseif (not #ifdef though) no longer allow identifiers/keywords to be used as-is, real string literals can (and must) now be used instead. For example, <#if foobar> is now an error, instead of evaluating to FALSE. <#if typeof( mystring ) = string> must be changed to <typeof( mystring ) = "STRING">.
+- #if/#elseif expressions now recognize declared identifiers (for example a constant FOO will be expanded to its value, instead of being treated as a "FOO" string)
+- Unary/binary operations won't return enums anymore; any enum operands will be converted to integer before the operation. (with math operations, the result can be any integer value, and the operand enum won't necessarily include a constant corresponding to that value. And also, if the operands are from different enums, the compiler wouldn't know which one to use as the result type)
+- Unary/binary operations will now convert smaller operands to INTEGERs before the operation (note: thus, UBYTE becomes INTEGER now instead of UINTEGER, and also SHORT/USHORT operations will return an INTEGER now)
 
 [added]
 - VIRTUAL and ABSTRACT methods (including virtual destructors) in UDTs extending OBJECT, which can be overridden by methods in derived UDTs, provided the same method name and signature is used
@@ -45,6 +47,8 @@ Version 0.25.0:
 - LBound/UBound() on fixed-size arrays with constant dimension argument (or none at all) will now be compile-time constants
 - IIF now allows different types to be mixed, for example iif( condition, mybyte, myinteger ), the result type is the bigger type
 - #if/#elseif now accept all kinds of constant expressions that would be accepted in other places (e.g. in PRINT or in constant declarations)
+- preprocessor #assert statement
+- INTEGER<n> / UINTEGER<n>, where n is 8/16/32/64, for allowing to choose integer types of a specific size
 
 [fixed]
 - libzip headers: zip_stat struct was unnecessarily named zip_stat_, breaking the libzip example
@@ -190,6 +194,14 @@ Version 0.25.0:
 - #508: The internal allocate/callocate/reallocate declarations didn't use an unsigned parameter like the real malloc/calloc/realloc functions, causing type mismatches with the C backend
 - #if typeof( myintegerpointer ) = "INTEGER PTR" will now work
 - #if's expression evaluation could produce wrong results (or at least inconsistent with the rest of FB) on some edge cases, such as "(1/2) > .49" or "&hFFFFFFFFu > 0u" (both evaluated to FALSE while it should have been TRUE)
+- String literal concatenation will now work properly in #if/#elseif expressions
+- #661: -gen gcc will now invoke gcc with -m32 now, allowing it to work with multi-lib gcc that defaults to 64bit (usually on 64bit systems)
+- #662: zstring ptrs were indexed as char* instead of ubyte*
+- #641: Type casting of an expression to the same data type but with CONSTs added or removed was being ignored
+- #647: Shared/static UDT vars with destructor (only) ignored variable initializers
+- #621: Parsing & overloading checks for argument lists of PASCAL procedures/constructors was broken
+- C backend: Backslashes in wstring literals were not escaped when emitting
+- Binary operation result types are more consistent now, for example "integer + uinteger" will now return a uinteger, just like "uinteger + integer"
 
 
 Version 0.24.0:

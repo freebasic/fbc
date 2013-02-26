@@ -159,8 +159,9 @@ enum FB_PARSEROPT
 	FB_PARSEROPT_OPTONLY		= &h00000020
 	FB_PARSEROPT_HASINSTPTR		= &h00000040
 	FB_PARSEROPT_ISPROPGET		= &h00000080
-	FB_PARSEROPT_EQINPARENTSONLY= &h00000100	'' only check for '=' if inside parentheses
-	FB_PARSEROPT_ISPP               = &h00000200  '' PP expression? (e.g. #if condition)
+	FB_PARSEROPT_EQINPARENSONLY	= &h00000100	'' only check for '=' if inside parentheses
+	FB_PARSEROPT_GTINPARENSONLY	= &h00000200	'' only check for '>' if inside parentheses
+	FB_PARSEROPT_ISPP               = &h00000400  '' PP expression? (e.g. #if condition)
 end enum
 
 type PARSERCTX
@@ -521,7 +522,12 @@ declare function cTypeConvExpr _
 		byval isASM as integer = FALSE _
 	) as ASTNODE ptr
 
-declare function cEqInParentsOnlyExpr _
+declare function cEqInParensOnlyExpr _
+	( _
+		_
+	) as ASTNODE ptr
+
+declare function cGtInParensOnlyExpr _
 	( _
 		_
 	) as ASTNODE ptr
@@ -616,6 +622,7 @@ declare sub cProcRetType _
 	( _
 		byval attrib as integer, _
 		byval proc as FBSYMBOL ptr, _
+		byval is_proto as integer, _
 		byref dtype as integer, _
 		byref subtype as FBSYMBOL ptr, _
 		byref lgt as integer _
@@ -847,7 +854,13 @@ declare function hCheckForDefiniteExprs _
 	) as integer
 
 declare function cThreadCallFunc() as ASTNODE ptr
-    
+
+declare function hIntegerTypeFromBitSize _
+	( _
+		byval bitsize as integer, _
+		byval is_unsigned as integer = FALSE _
+	) as FB_DATATYPE
+
 ''
 '' macros
 ''
@@ -965,13 +978,23 @@ declare function cThreadCallFunc() as ASTNODE ptr
 	end if
 #endmacro
 
-#define fbGetEqInParentsOnly( ) ((parser.options and FB_PARSEROPT_EQINPARENTSONLY) <> 0)
+#define fbGetEqInParensOnly( ) ((parser.options and FB_PARSEROPT_EQINPARENSONLY) <> 0)
 
-#macro fbSetEqInParentsOnly( _bool )
+#macro fbSetEqInParensOnly( _bool )
 	if( _bool ) then
-		parser.options or= FB_PARSEROPT_EQINPARENTSONLY
+		parser.options or= FB_PARSEROPT_EQINPARENSONLY
 	else
-		parser.options and= not FB_PARSEROPT_EQINPARENTSONLY
+		parser.options and= not FB_PARSEROPT_EQINPARENSONLY
+	end if
+#endmacro
+
+#define fbGetGtInParensOnly( ) ((parser.options and FB_PARSEROPT_GTINPARENSONLY) <> 0)
+
+#macro fbSetGtInParensOnly( _bool )
+	if( _bool ) then
+		parser.options or= FB_PARSEROPT_GTINPARENSONLY
+	else
+		parser.options and= not FB_PARSEROPT_GTINPARENSONLY
 	end if
 #endmacro
 

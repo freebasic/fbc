@@ -104,7 +104,7 @@ type AST_NODE_CALL
 	isrtl			as integer
 	args			as integer
 	currarg			as FBSYMBOL ptr
-	lastarg			as ASTNODE_ ptr					'' used to speed up PASCAL conv. only
+	argtail			as ASTNODE_ ptr
 	strtail 		as AST_TMPSTRLIST_ITEM ptr
 	tmpres          as FBSYMBOL ptr					'' temp result structure, if needed
 end type
@@ -663,13 +663,12 @@ declare function astNewARG _
 		byval mode as integer = INVALID _
 	) as ASTNODE ptr
 
-declare function astReplaceARG _
+declare sub astReplaceInstanceArg _
 	( _
 		byval parent as ASTNODE ptr, _
-		byval argnum as integer, _
 		byval expr as ASTNODE ptr, _
 		byval mode as integer = INVALID _
-	) as ASTNODE ptr
+	)
 
 declare function astNewADDROF _
 	( _

@@ -2474,6 +2474,10 @@ private function hCompileStage2Module( byval module as FBCIOFILE ptr ) as intege
 		ln += "-S -nostdlib -nostdinc -Wall -Wno-unused-label " + _
 		      "-Wno-unused-function -Wno-unused-variable "
 
+		'' Don't warn about non-standard main() signature
+		'' (we emit "ubyte **argv" instead of "char **argv")
+		ln += "-Wno-main "
+
 		'' helps finding ir-hlc bugs
 		ln += "-Werror-implicit-function-declaration "
 
@@ -2522,6 +2526,7 @@ private function hCompileStage2Module( byval module as FBCIOFILE ptr ) as intege
 		end if
 
 		ln += "-O" + str( fbGetOption( FB_COMPOPT_OPTIMIZELEVEL ) ) + " "
+
 		if( fbGetOption( FB_COMPOPT_ASMSYNTAX ) = FB_ASMSYNTAX_INTEL ) then
 			ln += "--x86-asm-syntax=intel "
 		end if

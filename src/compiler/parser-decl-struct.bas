@@ -1005,7 +1005,7 @@ private sub hPatchByvalResultToSelf _
 		if( symbIsProc( sym ) ) then
 			'' byval result to self? reset..
 			if( symbGetSubtype( sym ) = parent ) then
-				symbProcSetRealType( sym )
+				symbProcRecalcRealType( sym )
 			end if
 		end if
 

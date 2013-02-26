@@ -52,6 +52,7 @@ const SYMB_MAXKEYWORDS = 24
         (@"ERROR"	, FB_TK_PP_ERROR	), _
         (@"LINE"	, FB_TK_PP_LINE		), _
         (@"LANG"	, FB_TK_PP_LANG		), _
+        (@"ASSERT"	, FB_TK_PP_ASSERT	), _
         (NULL) _
 	}
 
@@ -162,6 +163,7 @@ end sub
 ''				 |	 '#'ELSE
 ''				 |   '#'ELSEIF Expression
 ''               |   '#'ENDIF
+''				 |	 '#'ASSERT Expression
 ''               |   '#'PRINT LITERAL*
 ''				 |   '#'INCLUDE ONCE? LIT_STR
 ''				 |   '#'INCLIB LIT_STR
@@ -222,6 +224,11 @@ sub ppParse( )
 	'' ENDIF
 	case FB_TK_PP_ENDIF
 		ppCondEndIf( )
+
+	'' ASSERT Expression
+	case FB_TK_PP_ASSERT
+		lexSkipToken( )
+		ppAssert( )
 
 	'' PRINT LITERAL*
 	case FB_TK_PP_PRINT

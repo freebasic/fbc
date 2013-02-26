@@ -143,6 +143,36 @@ sub test cdecl( )
 		CU_FAIL( )
 	#endif
 
+	#if undeclaredid
+		CU_FAIL( )
+	#else
+		CU_PASS( )
+	#endif
+
+	#if undeclaredid = undeclaredid
+		CU_PASS( )
+	#else
+		CU_FAIL( )
+	#endif
+
+	#if undeclaredid = UNDECLAREDID
+		CU_PASS( )
+	#else
+		CU_FAIL( )
+	#endif
+
+	#if UNDECLAREDID = undeclaredid
+		CU_PASS( )
+	#else
+		CU_FAIL( )
+	#endif
+
+	#if undeclaredid1 = undeclaredid2
+		CU_FAIL( )
+	#else
+		CU_PASS( )
+	#endif
+
 	'' constant
 	#if defined( N1 )
 		CU_PASS( )

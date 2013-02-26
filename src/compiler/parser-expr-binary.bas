@@ -264,13 +264,14 @@ function cRelExpression _
     	select case as const lexGetToken( )
     	case FB_TK_EQ
 			'' eq only inside parentheses?
-			if( fbGetEqInParentsOnly( ) ) then
-				if( parser.prntcnt <= 0 ) then
-					exit do
-				end if
+			if( fbGetEqInParensOnly( ) ) then
+				exit do
 			end if
     		op = AST_OP_EQ
     	case FB_TK_GT
+			if( fbGetGtInParensOnly( ) ) then
+				exit do
+			end if
     		op = AST_OP_GT
     	case FB_TK_LT
     		op = AST_OP_LT
@@ -280,6 +281,7 @@ function cRelExpression _
     		op = AST_OP_LE
     	case FB_TK_GE
  			op = AST_OP_GE
+ 			assert( fbGetGtInParensOnly( ) = FALSE )
     	case else
       		exit do
     	end select

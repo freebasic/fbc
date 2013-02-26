@@ -61,6 +61,7 @@ function astNewCALL _
 		n->call.isrtl = FALSE
 	end if
 
+	n->call.argtail = NULL
 	n->call.strtail = NULL
 
 	'' Allocate temp struct result if needed
@@ -296,6 +297,17 @@ sub astCloneCALL _
 		loop
 	end scope
 
+	'' Find the last ARG (if any); for each ARG...
+	n = c->r
+	while( n )
+		'' last one?
+		if( n->r = NULL ) then
+			exit while
+		end if
+		n = n->r
+	wend
+	c->call.argtail = n
+
 end sub
 
 '':::::
@@ -387,14 +399,30 @@ function astBuildCallResultUdt( byval expr as ASTNODE ptr ) as ASTNODE ptr
 end function
 
 function astBuildByrefResultDeref( byval expr as ASTNODE ptr ) as ASTNODE ptr
+	dim as integer dtype = any
+	dim as FBSYMBOL ptr subtype = any
+
 	assert( astIsCALL( expr ) )
 	assert( symbProcReturnsByref( expr->sym ) )
 
 	'' Do an implicit DEREF with the function's type, and remap the CALL
 	'' node's type to the pointer, so the AST is consistent even if that
 	'' DEREF gets optimized out.
-	astSetType( expr, symbGetProcRealType( expr->sym ), _
-				symbGetProcRealSubtype( expr->sym ) )
+	''
+	'' If the function type is a forward reference, we must show an error.
+	'' (essentially a function with BYREF AS FWDREF result cannot be
+	'' called until the fwdref was implemented)
+
+	dtype = symbGetProcRealType( expr->sym )
+	subtype = symbGetProcRealSubtype( expr->sym )
+
+	if( typeGetDtOnly( dtype ) = FB_DATATYPE_FWDREF ) then
+		errReport( FB_ERRMSG_INCOMPLETETYPE )
+		dtype = typeJoinDtOnly( dtype, FB_DATATYPE_INTEGER )
+		subtype = NULL
+	end if
+
+	astSetType( expr, dtype, subtype )
 
 	function = astNewDEREF( expr )
 end function

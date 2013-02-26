@@ -1882,6 +1882,31 @@ sub symbRecalcLen( byval sym as FBSYMBOL ptr )
 	end if
 end sub
 
+sub symbSetType _
+	( _
+		byval sym as FBSYMBOL ptr, _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr _
+	)
+
+	sym->typ = dtype
+	sym->subtype = subtype
+
+	symbRecalcLen( sym )
+
+	'' If it's a procedure, the real dtype must be updated too
+	if( symbIsProc( sym ) ) then
+		symbProcRecalcRealType( sym )
+	end if
+
+	'' If setting type to a fwdref, register symbol for back-patching
+	'' (e.g. when substituting a fwdref by another fwdref)
+	if( typeGetDtOnly( dtype ) = FB_DATATYPE_FWDREF ) then
+		symbAddToFwdRef( subtype, sym )
+	end if
+
+end sub
+
 function symbCalcLen _
 	( _
 		byval dtype as integer, _
@@ -2142,6 +2167,16 @@ function typeDump _
 			dump += "wchar"
 		case else
 			dump += *symb_dtypeTB(typeGetDtOnly( dtype )).name
+		end select
+
+		'' UDT name
+		select case( typeGetDtOnly( dtype ) )
+		case FB_DATATYPE_STRUCT, FB_DATATYPE_ENUM
+			if( subtype ) then
+				if( symbIsStruct( subtype ) ) then
+					dump += " " + *symbGetName( subtype )
+				end if
+			end if
 		end select
 
 		for i as integer = (ptrcount-1) to 0 step -1

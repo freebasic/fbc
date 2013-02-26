@@ -659,6 +659,25 @@ namespace byrefResultAsLvalue
 	end sub
 end namespace
 
+namespace protoReturningFwdref
+	type typedef as fwdref
+
+	'' As with BYREF parameters, BYREF AS FWDREF is allowed, but only in
+	'' prototypes, not the function body itself
+	declare function f( ) byref as typedef
+
+	type fwdref as integer
+
+	function f( ) byref as integer
+		static as integer a = 123
+		function = a
+	end function
+
+	sub test cdecl( )
+		CU_ASSERT( f( ) = 123 )
+	end sub
+end namespace
+
 private sub ctor( ) constructor
 	fbcu.add_suite( "tests/functions/return-byref" )
 	fbcu.add_test( "returning globals", @returnGlobal.test )
@@ -680,6 +699,7 @@ private sub ctor( ) constructor
 	fbcu.add_test( "BYREF to BYREF", @byrefToByref.test )
 	fbcu.add_test( "tree using locals", @referenceToTreeUsingLocals.test )
 	fbcu.add_test( "explicit BYVAL", @explicitByval.test )
+	fbcu.add_test( "returning a forward ref", @protoReturningFwdref.test )
 end sub
 
 end namespace

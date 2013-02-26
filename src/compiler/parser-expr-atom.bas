@@ -15,19 +15,38 @@ declare function hBaseMemberAccess _
 
 
 '':::::
-function cEqInParentsOnlyExpr _
+function cEqInParensOnlyExpr _
 	( _
 		_
 	) as ASTNODE ptr
 
 	dim as ASTNODE ptr expr = any
 
-	dim as integer eqinparentsonly = fbGetEqInParentsOnly( )
-	fbSetEqInParentsOnly( TRUE )
+	dim as integer eqinparensonly = fbGetEqInParensOnly( )
+	fbSetEqInParensOnly( TRUE )
 
 	expr = cExpression( )
 
-	fbSetEqInParentsOnly( eqinparentsonly )
+	fbSetEqInParensOnly( eqinparensonly )
+
+	return expr
+
+end function
+
+'':::::
+function cGtInParensOnlyExpr _
+	( _
+		_
+	) as ASTNODE ptr
+
+	dim as ASTNODE ptr expr = any
+
+	dim as integer gtinparensonly = fbGetGtInParensOnly( )
+	fbSetGtInParensOnly( TRUE )
+
+	expr = cExpression( )
+
+	fbSetGtInParensOnly( gtinparensonly )
 
 	return expr
 
@@ -42,6 +61,7 @@ function cParentExpression _
 	) as ASTNODE ptr
 
 	dim as ASTNODE ptr parexpr = any
+	dim as integer eqinparensonly = any, gtinparensonly = any
 
   	'' '('
   	if( lexGetToken( ) <> CHAR_LPRNT ) then
@@ -56,7 +76,16 @@ function cParentExpression _
   	dim as integer is_opt = fbGetPrntOptional( )
   	fbSetPrntOptional( FALSE )
 
+
+	eqinparensonly = fbGetEqInParensOnly( )
+	gtinparensonly = fbGetGtInParensOnly( )
+	fbSetEqInParensOnly( FALSE )
+	fbSetGtInParensOnly( FALSE )
+	
   	parexpr = cExpression(  )
+
+	fbSetEqInParensOnly( eqinparensonly )
+	fbSetGtInParensOnly( gtinparensonly )
 
   	if( parexpr = NULL ) then
   		'' calling a SUB? it could be a BYVAL or nothing due the optional ()'s
@@ -352,89 +381,102 @@ private function hBaseMemberAccess _
 	return hFindId( symbGetSubtype( base_ ), @chain_ ) 
 end function
 
-'':::::
-''Atom            =   Constant | Function | QuirkFunction | Variable | Literal .
-''
+private function hCheckId _
+	( _
+		byval base_parent as FBSYMBOL ptr, _
+		byval chain_ as FBSYMCHAIN ptr _
+	) as ASTNODE ptr
+
+	dim as ASTNODE ptr expr = any
+
+	'' declared id?
+	if( chain_ <> NULL ) then
+		expr = hFindId( base_parent, chain_ )
+		if( expr ) then
+			return expr
+		end if
+	end if
+
+	'' Undeclared identifiers in PP expressions are upper-cased and then
+	'' turned into string literals, allowing them to be compared
+	if( fbGetIsPP( ) ) then
+		expr = astNewCONSTstr( ucase( *lexGetText( ) ) )
+		lexSkipToken( )
+		return expr
+	end if
+
+	'' try to alloc an implicit variable..
+	if( env.clopt.lang <> FB_LANG_QB ) then
+		if( lexGetClass( ) <> FB_TKCLASS_IDENTIFIER ) then
+			return NULL
+		end if
+	end if
+
+	if( fbLangOptIsSet( FB_LANG_OPT_IMPLICIT = FALSE ) ) then
+		errReportNotAllowed( FB_LANG_OPT_IMPLICIT, _
+							 FB_ERRMSG_IMPLICITVARSONLYVALIDINLANG )
+		return NULL
+	end if
+
+	return cVariableEx( cast( FBSYMCHAIN ptr, NULL ), fbGetCheckArray( ) )
+end function
+
+'' Atom  =  Constant | Function | QuirkFunction | Variable | Literal .
 function cAtom _
 	( _
 		byval base_parent as FBSYMBOL ptr, _
 		byval chain_ as FBSYMCHAIN ptr _
 	) as ASTNODE ptr
 
-  	dim as integer tk_class = any
+	dim as integer tk_class = any
 
- 	if( chain_ = NULL ) then
-  		tk_class = lexGetClass( )
-  	else
-  		tk_class = FB_TKCLASS_IDENTIFIER
-  	end if
+	if( chain_ = NULL ) then
+		tk_class = lexGetClass( )
+	else
+		tk_class = FB_TKCLASS_IDENTIFIER
+	end if
 
-  	select case as const tk_class
-  	case FB_TKCLASS_IDENTIFIER, FB_TKCLASS_QUIRKWD, FB_TKCLASS_KEYWORD
-  		if( chain_ = NULL ) then
-  			chain_ = cIdentifier( base_parent, FB_IDOPT_DEFAULT or FB_IDOPT_ALLOWSTRUCT )
-  		end if
+	select case as const tk_class
+	case FB_TKCLASS_IDENTIFIER, FB_TKCLASS_QUIRKWD, FB_TKCLASS_KEYWORD
+		if( chain_ = NULL ) then
+			chain_ = cIdentifier( base_parent, FB_IDOPT_DEFAULT or FB_IDOPT_ALLOWSTRUCT )
+		end if
 
-check_id:
-    	'' declared id?
-    	if( chain_ <> NULL ) then
-    		dim as ASTNODE ptr expr = hFindId( base_parent, chain_ )
-    		if( expr <> NULL ) then
-    			return expr
-    		end if
-        end if
+		return hCheckId( base_parent, chain_ )
 
-  		'' try to alloc an implicit variable..
-    	if( env.clopt.lang <> FB_LANG_QB ) then
-    		if( lexGetClass( ) <> FB_TKCLASS_IDENTIFIER ) then
-  				return NULL
-  			end if
-  		end if
-
-  		if( fbLangOptIsSet( FB_LANG_OPT_IMPLICIT = FALSE ) ) then
-  			errReportNotAllowed( FB_LANG_OPT_IMPLICIT, _
-  								 FB_ERRMSG_IMPLICITVARSONLYVALIDINLANG )
-  			return NULL
-  		end if
-
-  		return cVariableEx( cast( FBSYMCHAIN ptr, NULL ), fbGetCheckArray( ) )
-
-  	case FB_TKCLASS_OPERATOR
-  		'' QB quirks..
-  		if( env.clopt.lang = FB_LANG_QB ) then
-  			chain_ = lexGetSymChain( )
-  			goto check_id
-  		end if
+	case FB_TKCLASS_OPERATOR
+		'' QB quirks..
+		if( env.clopt.lang = FB_LANG_QB ) then
+			return hCheckId( base_parent, lexGetSymChain( ) )
+		end if
 
 	case FB_TKCLASS_NUMLITERAL
 		return cNumLiteral( )
 
-  	case FB_TKCLASS_STRLITERAL
-        return cStrLiteral( )
+	case FB_TKCLASS_STRLITERAL
+		return cStrLiteral( )
 
-  	case FB_TKCLASS_DELIMITER
+	case FB_TKCLASS_DELIMITER
 		'' '.'?
 		if( lexGetToken( ) <> CHAR_DOT ) then
 			return FALSE
 		end if
 
-  		'' inside a WITH block?
-  		if( parser.stmt.with.sym <> NULL ) then
+		'' inside a WITH block?
+		if( parser.stmt.with.sym <> NULL ) then
 			'' not '..'?
 			if( lexGetLookAhead( 1, LEXCHECK_NOPERIOD ) <> CHAR_DOT ) then
-  				return cWithVariable( fbGetCheckArray( ) )
-  			end if
-  		end if
+				return cWithVariable( fbGetCheckArray( ) )
+			end if
+		end if
 
-  		'' global namespace access..
-  		chain_ = cIdentifier( base_parent, FB_IDOPT_DEFAULT or FB_IDOPT_ALLOWSTRUCT )
-  		if( chain_ <> NULL ) then
-  			return hFindId( base_parent, chain_ )
-  		end if
+		'' global namespace access..
+		chain_ = cIdentifier( base_parent, FB_IDOPT_DEFAULT or FB_IDOPT_ALLOWSTRUCT )
+		if( chain_ <> NULL ) then
+			return hFindId( base_parent, chain_ )
+		end if
 
-  	end select
+	end select
 
-  	function = NULL
-
+	function = NULL
 end function
-

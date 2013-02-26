@@ -22,6 +22,7 @@ enum FB_TOKEN_PP
 	FB_TK_PP_ERROR
 	FB_TK_PP_LINE
 	FB_TK_PP_LANG
+	FB_TK_PP_ASSERT
 end enum
 
 type PP_CTX
@@ -79,6 +80,8 @@ declare sub ppCondEnd _
 declare sub ppCondIf( )
 declare sub ppCondElse( )
 declare sub ppCondEndIf( )
+
+declare sub ppAssert( )
 
 declare function ppReadLiteral _
 	( _
