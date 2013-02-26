@@ -798,6 +798,12 @@ type SYMB_DATATYPE
 	size			as integer					'' in bytes
 	bits			as integer					'' number of bits
 	signed			as integer					'' TRUE or FALSE
+
+	'' For basic integer types only: ranking value, to establish a proper
+	'' target-specific (32bit/64bit) order (the FB_DATATYPE enum order is
+	'' not enough because it's not target-specific)
+	intrank			as integer
+
 	remaptype		as FB_DATATYPE				'' remapped type for ENUM, POINTER, etc
 	name			as const zstring ptr
 end type
@@ -2373,6 +2379,7 @@ declare sub symbProcSetRealType( byval proc as FBSYMBOL ptr )
 #define typeGetBits( dt ) symb_dtypeTB(typeGet( dt )).bits
 #define typeIsSigned( dt ) symb_dtypeTB(typeGet( dt )).signed
 #define typeGetRemapType( dt ) symb_dtypeTB(typeGet( dt )).remaptype
+#define typeGetIntRank( dt ) symb_dtypeTB(typeGet( dt )).intrank
 
 #define typeGet( dt ) iif( dt and FB_DT_PTRMASK, FB_DATATYPE_POINTER, dt and FB_DT_TYPEMASK )
 #define typeGetDtOnly( dt ) (dt and FB_DT_TYPEMASK)

@@ -63,36 +63,36 @@ INTEGER
 math ops (b, ub):
 
 b + ub =max =
-UINTEGER
+INTEGER
 b -ub =max =
-UINTEGER
+INTEGER
 b * ub =max =
-UINTEGER
+INTEGER
 b / ub =float =
 DOUBLE
 b ^ ub =float =
 DOUBLE
 b \ ub =non-float =
-UINTEGER
+INTEGER
 b mod ub =non-float =
-UINTEGER
+INTEGER
 
 bitops (b, ub):
 
 b shl ub =non-float =
-UINTEGER
+INTEGER
 b shr ub =non-float =
-UINTEGER
+INTEGER
 b and ub =non-float =
-UINTEGER
+INTEGER
 b or ub =non-float =
-UINTEGER
+INTEGER
 b xor ub =non-float =
-UINTEGER
+INTEGER
 b eqv ub =non-float =
-UINTEGER
+INTEGER
 b imp ub =non-float =
-UINTEGER
+INTEGER
 
 relational ops (b, ub):
 
@@ -328,36 +328,36 @@ INTEGER
 math ops (b, l):
 
 b + l =max =
-LONG
+INTEGER
 b -l =max =
-LONG
+INTEGER
 b * l =max =
-LONG
+INTEGER
 b / l =float =
 DOUBLE
 b ^ l =float =
 DOUBLE
 b \ l =non-float =
-LONG
+INTEGER
 b mod l =non-float =
-LONG
+INTEGER
 
 bitops (b, l):
 
 b shl l =non-float =
-LONG
+INTEGER
 b shr l =non-float =
-LONG
+INTEGER
 b and l =non-float =
-LONG
+INTEGER
 b or l =non-float =
-LONG
+INTEGER
 b xor l =non-float =
-LONG
+INTEGER
 b eqv l =non-float =
-LONG
+INTEGER
 b imp l =non-float =
-LONG
+INTEGER
 
 relational ops (b, l):
 
@@ -381,36 +381,36 @@ INTEGER
 math ops (b, ul):
 
 b + ul =max =
-ULONG
+UINTEGER
 b -ul =max =
-ULONG
+UINTEGER
 b * ul =max =
-ULONG
+UINTEGER
 b / ul =float =
 DOUBLE
 b ^ ul =float =
 DOUBLE
 b \ ul =non-float =
-ULONG
+UINTEGER
 b mod ul =non-float =
-ULONG
+UINTEGER
 
 bitops (b, ul):
 
 b shl ul =non-float =
-ULONG
+UINTEGER
 b shr ul =non-float =
-ULONG
+UINTEGER
 b and ul =non-float =
-ULONG
+UINTEGER
 b or ul =non-float =
-ULONG
+UINTEGER
 b xor ul =non-float =
-ULONG
+UINTEGER
 b eqv ul =non-float =
-ULONG
+UINTEGER
 b imp ul =non-float =
-ULONG
+UINTEGER
 
 relational ops (b, ul):
 
@@ -646,36 +646,36 @@ INTEGER
 math ops (ub, b):
 
 ub + b =max =
-UINTEGER
+INTEGER
 ub -b =max =
-UINTEGER
+INTEGER
 ub * b =max =
-UINTEGER
+INTEGER
 ub / b =float =
 DOUBLE
 ub ^ b =float =
 DOUBLE
 ub \ b =non-float =
-UINTEGER
+INTEGER
 ub mod b =non-float =
-UINTEGER
+INTEGER
 
 bitops (ub, b):
 
 ub shl b =non-float =
-UINTEGER
+INTEGER
 ub shr b =non-float =
-UINTEGER
+INTEGER
 ub and b =non-float =
-UINTEGER
+INTEGER
 ub or b =non-float =
-UINTEGER
+INTEGER
 ub xor b =non-float =
-UINTEGER
+INTEGER
 ub eqv b =non-float =
-UINTEGER
+INTEGER
 ub imp b =non-float =
-UINTEGER
+INTEGER
 
 relational ops (ub, b):
 
@@ -911,36 +911,36 @@ INTEGER
 math ops (l, b):
 
 l + b =max =
-LONG
+INTEGER
 l -b =max =
-LONG
+INTEGER
 l * b =max =
-LONG
+INTEGER
 l / b =float =
 DOUBLE
 l ^ b =float =
 DOUBLE
 l \ b =non-float =
-LONG
+INTEGER
 l mod b =non-float =
-LONG
+INTEGER
 
 bitops (l, b):
 
 l shl b =non-float =
-LONG
+INTEGER
 l shr b =non-float =
-LONG
+INTEGER
 l and b =non-float =
-LONG
+INTEGER
 l or b =non-float =
-LONG
+INTEGER
 l xor b =non-float =
-LONG
+INTEGER
 l eqv b =non-float =
-LONG
+INTEGER
 l imp b =non-float =
-LONG
+INTEGER
 
 relational ops (l, b):
 
@@ -964,36 +964,36 @@ INTEGER
 math ops (ul, b):
 
 ul + b =max =
-ULONG
+UINTEGER
 ul -b =max =
-ULONG
+UINTEGER
 ul * b =max =
-ULONG
+UINTEGER
 ul / b =float =
 DOUBLE
 ul ^ b =float =
 DOUBLE
 ul \ b =non-float =
-ULONG
+UINTEGER
 ul mod b =non-float =
-ULONG
+UINTEGER
 
 bitops (ul, b):
 
 ul shl b =non-float =
-ULONG
+UINTEGER
 ul shr b =non-float =
-ULONG
+UINTEGER
 ul and b =non-float =
-ULONG
+UINTEGER
 ul or b =non-float =
-ULONG
+UINTEGER
 ul xor b =non-float =
-ULONG
+UINTEGER
 ul eqv b =non-float =
-ULONG
+UINTEGER
 ul imp b =non-float =
-ULONG
+UINTEGER
 
 relational ops (ul, b):
 
@@ -1391,36 +1391,36 @@ INTEGER
 math ops (ub, b):
 
 ub + b =max =
-UINTEGER
+INTEGER
 ub -b =max =
-UINTEGER
+INTEGER
 ub * b =max =
-UINTEGER
+INTEGER
 ub / b =float =
 DOUBLE
 ub ^ b =float =
 DOUBLE
 ub \ b =non-float =
-UINTEGER
+INTEGER
 ub mod b =non-float =
-UINTEGER
+INTEGER
 
 bitops (ub, b):
 
 ub shl b =non-float =
-UINTEGER
+INTEGER
 ub shr b =non-float =
-UINTEGER
+INTEGER
 ub and b =non-float =
-UINTEGER
+INTEGER
 ub or b =non-float =
-UINTEGER
+INTEGER
 ub xor b =non-float =
-UINTEGER
+INTEGER
 ub eqv b =non-float =
-UINTEGER
+INTEGER
 ub imp b =non-float =
-UINTEGER
+INTEGER
 
 relational ops (ub, b):
 
@@ -1444,36 +1444,36 @@ INTEGER
 math ops (ub, ub):
 
 ub + ub =max =
-UINTEGER
+INTEGER
 ub -ub =max =
-UINTEGER
+INTEGER
 ub * ub =max =
-UINTEGER
+INTEGER
 ub / ub =float =
 DOUBLE
 ub ^ ub =float =
 DOUBLE
 ub \ ub =non-float =
-UINTEGER
+INTEGER
 ub mod ub =non-float =
-UINTEGER
+INTEGER
 
 bitops (ub, ub):
 
 ub shl ub =non-float =
-UINTEGER
+INTEGER
 ub shr ub =non-float =
-UINTEGER
+INTEGER
 ub and ub =non-float =
-UINTEGER
+INTEGER
 ub or ub =non-float =
-UINTEGER
+INTEGER
 ub xor ub =non-float =
-UINTEGER
+INTEGER
 ub eqv ub =non-float =
-UINTEGER
+INTEGER
 ub imp ub =non-float =
-UINTEGER
+INTEGER
 
 relational ops (ub, ub):
 
@@ -1497,36 +1497,36 @@ INTEGER
 math ops (ub, sh):
 
 ub + sh =max =
-UINTEGER
+INTEGER
 ub -sh =max =
-UINTEGER
+INTEGER
 ub * sh =max =
-UINTEGER
+INTEGER
 ub / sh =float =
 DOUBLE
 ub ^ sh =float =
 DOUBLE
 ub \ sh =non-float =
-UINTEGER
+INTEGER
 ub mod sh =non-float =
-UINTEGER
+INTEGER
 
 bitops (ub, sh):
 
 ub shl sh =non-float =
-UINTEGER
+INTEGER
 ub shr sh =non-float =
-UINTEGER
+INTEGER
 ub and sh =non-float =
-UINTEGER
+INTEGER
 ub or sh =non-float =
-UINTEGER
+INTEGER
 ub xor sh =non-float =
-UINTEGER
+INTEGER
 ub eqv sh =non-float =
-UINTEGER
+INTEGER
 ub imp sh =non-float =
-UINTEGER
+INTEGER
 
 relational ops (ub, sh):
 
@@ -1550,36 +1550,36 @@ INTEGER
 math ops (ub, ush):
 
 ub + ush =max =
-UINTEGER
+INTEGER
 ub -ush =max =
-UINTEGER
+INTEGER
 ub * ush =max =
-UINTEGER
+INTEGER
 ub / ush =float =
 DOUBLE
 ub ^ ush =float =
 DOUBLE
 ub \ ush =non-float =
-UINTEGER
+INTEGER
 ub mod ush =non-float =
-UINTEGER
+INTEGER
 
 bitops (ub, ush):
 
 ub shl ush =non-float =
-UINTEGER
+INTEGER
 ub shr ush =non-float =
-UINTEGER
+INTEGER
 ub and ush =non-float =
-UINTEGER
+INTEGER
 ub or ush =non-float =
-UINTEGER
+INTEGER
 ub xor ush =non-float =
-UINTEGER
+INTEGER
 ub eqv ush =non-float =
-UINTEGER
+INTEGER
 ub imp ush =non-float =
-UINTEGER
+INTEGER
 
 relational ops (ub, ush):
 
@@ -1603,36 +1603,36 @@ INTEGER
 math ops (ub, i):
 
 ub + i =max =
-UINTEGER
+INTEGER
 ub -i =max =
-UINTEGER
+INTEGER
 ub * i =max =
-UINTEGER
+INTEGER
 ub / i =float =
 DOUBLE
 ub ^ i =float =
 DOUBLE
 ub \ i =non-float =
-UINTEGER
+INTEGER
 ub mod i =non-float =
-UINTEGER
+INTEGER
 
 bitops (ub, i):
 
 ub shl i =non-float =
-UINTEGER
+INTEGER
 ub shr i =non-float =
-UINTEGER
+INTEGER
 ub and i =non-float =
-UINTEGER
+INTEGER
 ub or i =non-float =
-UINTEGER
+INTEGER
 ub xor i =non-float =
-UINTEGER
+INTEGER
 ub eqv i =non-float =
-UINTEGER
+INTEGER
 ub imp i =non-float =
-UINTEGER
+INTEGER
 
 relational ops (ub, i):
 
@@ -1709,36 +1709,36 @@ INTEGER
 math ops (ub, l):
 
 ub + l =max =
-LONG
+INTEGER
 ub -l =max =
-LONG
+INTEGER
 ub * l =max =
-LONG
+INTEGER
 ub / l =float =
 DOUBLE
 ub ^ l =float =
 DOUBLE
 ub \ l =non-float =
-LONG
+INTEGER
 ub mod l =non-float =
-LONG
+INTEGER
 
 bitops (ub, l):
 
 ub shl l =non-float =
-LONG
+INTEGER
 ub shr l =non-float =
-LONG
+INTEGER
 ub and l =non-float =
-LONG
+INTEGER
 ub or l =non-float =
-LONG
+INTEGER
 ub xor l =non-float =
-LONG
+INTEGER
 ub eqv l =non-float =
-LONG
+INTEGER
 ub imp l =non-float =
-LONG
+INTEGER
 
 relational ops (ub, l):
 
@@ -1762,36 +1762,36 @@ INTEGER
 math ops (ub, ul):
 
 ub + ul =max =
-ULONG
+UINTEGER
 ub -ul =max =
-ULONG
+UINTEGER
 ub * ul =max =
-ULONG
+UINTEGER
 ub / ul =float =
 DOUBLE
 ub ^ ul =float =
 DOUBLE
 ub \ ul =non-float =
-ULONG
+UINTEGER
 ub mod ul =non-float =
-ULONG
+UINTEGER
 
 bitops (ub, ul):
 
 ub shl ul =non-float =
-ULONG
+UINTEGER
 ub shr ul =non-float =
-ULONG
+UINTEGER
 ub and ul =non-float =
-ULONG
+UINTEGER
 ub or ul =non-float =
-ULONG
+UINTEGER
 ub xor ul =non-float =
-ULONG
+UINTEGER
 ub eqv ul =non-float =
-ULONG
+UINTEGER
 ub imp ul =non-float =
-ULONG
+UINTEGER
 
 relational ops (ub, ul):
 
@@ -1921,36 +1921,36 @@ INTEGER
 math ops (ub, enum1a):
 
 ub + enum1a =max =
-UINTEGER
+INTEGER
 ub -enum1a =max =
-UINTEGER
+INTEGER
 ub * enum1a =max =
-UINTEGER
+INTEGER
 ub / enum1a =float =
 DOUBLE
 ub ^ enum1a =float =
 DOUBLE
 ub \ enum1a =non-float =
-UINTEGER
+INTEGER
 ub mod enum1a =non-float =
-UINTEGER
+INTEGER
 
 bitops (ub, enum1a):
 
 ub shl enum1a =non-float =
-UINTEGER
+INTEGER
 ub shr enum1a =non-float =
-UINTEGER
+INTEGER
 ub and enum1a =non-float =
-UINTEGER
+INTEGER
 ub or enum1a =non-float =
-UINTEGER
+INTEGER
 ub xor enum1a =non-float =
-UINTEGER
+INTEGER
 ub eqv enum1a =non-float =
-UINTEGER
+INTEGER
 ub imp enum1a =non-float =
-UINTEGER
+INTEGER
 
 relational ops (ub, enum1a):
 
@@ -1974,36 +1974,36 @@ INTEGER
 math ops (b, ub):
 
 b + ub =max =
-UINTEGER
+INTEGER
 b -ub =max =
-UINTEGER
+INTEGER
 b * ub =max =
-UINTEGER
+INTEGER
 b / ub =float =
 DOUBLE
 b ^ ub =float =
 DOUBLE
 b \ ub =non-float =
-UINTEGER
+INTEGER
 b mod ub =non-float =
-UINTEGER
+INTEGER
 
 bitops (b, ub):
 
 b shl ub =non-float =
-UINTEGER
+INTEGER
 b shr ub =non-float =
-UINTEGER
+INTEGER
 b and ub =non-float =
-UINTEGER
+INTEGER
 b or ub =non-float =
-UINTEGER
+INTEGER
 b xor ub =non-float =
-UINTEGER
+INTEGER
 b eqv ub =non-float =
-UINTEGER
+INTEGER
 b imp ub =non-float =
-UINTEGER
+INTEGER
 
 relational ops (b, ub):
 
@@ -2027,36 +2027,36 @@ INTEGER
 math ops (ub, ub):
 
 ub + ub =max =
-UINTEGER
+INTEGER
 ub -ub =max =
-UINTEGER
+INTEGER
 ub * ub =max =
-UINTEGER
+INTEGER
 ub / ub =float =
 DOUBLE
 ub ^ ub =float =
 DOUBLE
 ub \ ub =non-float =
-UINTEGER
+INTEGER
 ub mod ub =non-float =
-UINTEGER
+INTEGER
 
 bitops (ub, ub):
 
 ub shl ub =non-float =
-UINTEGER
+INTEGER
 ub shr ub =non-float =
-UINTEGER
+INTEGER
 ub and ub =non-float =
-UINTEGER
+INTEGER
 ub or ub =non-float =
-UINTEGER
+INTEGER
 ub xor ub =non-float =
-UINTEGER
+INTEGER
 ub eqv ub =non-float =
-UINTEGER
+INTEGER
 ub imp ub =non-float =
-UINTEGER
+INTEGER
 
 relational ops (ub, ub):
 
@@ -2080,36 +2080,36 @@ INTEGER
 math ops (sh, ub):
 
 sh + ub =max =
-UINTEGER
+INTEGER
 sh -ub =max =
-UINTEGER
+INTEGER
 sh * ub =max =
-UINTEGER
+INTEGER
 sh / ub =float =
 DOUBLE
 sh ^ ub =float =
 DOUBLE
 sh \ ub =non-float =
-UINTEGER
+INTEGER
 sh mod ub =non-float =
-UINTEGER
+INTEGER
 
 bitops (sh, ub):
 
 sh shl ub =non-float =
-UINTEGER
+INTEGER
 sh shr ub =non-float =
-UINTEGER
+INTEGER
 sh and ub =non-float =
-UINTEGER
+INTEGER
 sh or ub =non-float =
-UINTEGER
+INTEGER
 sh xor ub =non-float =
-UINTEGER
+INTEGER
 sh eqv ub =non-float =
-UINTEGER
+INTEGER
 sh imp ub =non-float =
-UINTEGER
+INTEGER
 
 relational ops (sh, ub):
 
@@ -2133,36 +2133,36 @@ INTEGER
 math ops (ush, ub):
 
 ush + ub =max =
-UINTEGER
+INTEGER
 ush -ub =max =
-UINTEGER
+INTEGER
 ush * ub =max =
-UINTEGER
+INTEGER
 ush / ub =float =
 DOUBLE
 ush ^ ub =float =
 DOUBLE
 ush \ ub =non-float =
-UINTEGER
+INTEGER
 ush mod ub =non-float =
-UINTEGER
+INTEGER
 
 bitops (ush, ub):
 
 ush shl ub =non-float =
-UINTEGER
+INTEGER
 ush shr ub =non-float =
-UINTEGER
+INTEGER
 ush and ub =non-float =
-UINTEGER
+INTEGER
 ush or ub =non-float =
-UINTEGER
+INTEGER
 ush xor ub =non-float =
-UINTEGER
+INTEGER
 ush eqv ub =non-float =
-UINTEGER
+INTEGER
 ush imp ub =non-float =
-UINTEGER
+INTEGER
 
 relational ops (ush, ub):
 
@@ -2186,36 +2186,36 @@ INTEGER
 math ops (i, ub):
 
 i + ub =max =
-UINTEGER
+INTEGER
 i -ub =max =
-UINTEGER
+INTEGER
 i * ub =max =
-UINTEGER
+INTEGER
 i / ub =float =
 DOUBLE
 i ^ ub =float =
 DOUBLE
 i \ ub =non-float =
-UINTEGER
+INTEGER
 i mod ub =non-float =
-UINTEGER
+INTEGER
 
 bitops (i, ub):
 
 i shl ub =non-float =
-UINTEGER
+INTEGER
 i shr ub =non-float =
-UINTEGER
+INTEGER
 i and ub =non-float =
-UINTEGER
+INTEGER
 i or ub =non-float =
-UINTEGER
+INTEGER
 i xor ub =non-float =
-UINTEGER
+INTEGER
 i eqv ub =non-float =
-UINTEGER
+INTEGER
 i imp ub =non-float =
-UINTEGER
+INTEGER
 
 relational ops (i, ub):
 
@@ -2292,36 +2292,36 @@ INTEGER
 math ops (l, ub):
 
 l + ub =max =
-LONG
+INTEGER
 l -ub =max =
-LONG
+INTEGER
 l * ub =max =
-LONG
+INTEGER
 l / ub =float =
 DOUBLE
 l ^ ub =float =
 DOUBLE
 l \ ub =non-float =
-LONG
+INTEGER
 l mod ub =non-float =
-LONG
+INTEGER
 
 bitops (l, ub):
 
 l shl ub =non-float =
-LONG
+INTEGER
 l shr ub =non-float =
-LONG
+INTEGER
 l and ub =non-float =
-LONG
+INTEGER
 l or ub =non-float =
-LONG
+INTEGER
 l xor ub =non-float =
-LONG
+INTEGER
 l eqv ub =non-float =
-LONG
+INTEGER
 l imp ub =non-float =
-LONG
+INTEGER
 
 relational ops (l, ub):
 
@@ -2345,36 +2345,36 @@ INTEGER
 math ops (ul, ub):
 
 ul + ub =max =
-ULONG
+UINTEGER
 ul -ub =max =
-ULONG
+UINTEGER
 ul * ub =max =
-ULONG
+UINTEGER
 ul / ub =float =
 DOUBLE
 ul ^ ub =float =
 DOUBLE
 ul \ ub =non-float =
-ULONG
+UINTEGER
 ul mod ub =non-float =
-ULONG
+UINTEGER
 
 bitops (ul, ub):
 
 ul shl ub =non-float =
-ULONG
+UINTEGER
 ul shr ub =non-float =
-ULONG
+UINTEGER
 ul and ub =non-float =
-ULONG
+UINTEGER
 ul or ub =non-float =
-ULONG
+UINTEGER
 ul xor ub =non-float =
-ULONG
+UINTEGER
 ul eqv ub =non-float =
-ULONG
+UINTEGER
 ul imp ub =non-float =
-ULONG
+UINTEGER
 
 relational ops (ul, ub):
 
@@ -2504,36 +2504,36 @@ INTEGER
 math ops (enum1a, ub):
 
 enum1a + ub =max =
-UINTEGER
+INTEGER
 enum1a -ub =max =
-UINTEGER
+INTEGER
 enum1a * ub =max =
-UINTEGER
+INTEGER
 enum1a / ub =float =
 DOUBLE
 enum1a ^ ub =float =
 DOUBLE
 enum1a \ ub =non-float =
-UINTEGER
+INTEGER
 enum1a mod ub =non-float =
-UINTEGER
+INTEGER
 
 bitops (enum1a, ub):
 
 enum1a shl ub =non-float =
-UINTEGER
+INTEGER
 enum1a shr ub =non-float =
-UINTEGER
+INTEGER
 enum1a and ub =non-float =
-UINTEGER
+INTEGER
 enum1a or ub =non-float =
-UINTEGER
+INTEGER
 enum1a xor ub =non-float =
-UINTEGER
+INTEGER
 enum1a eqv ub =non-float =
-UINTEGER
+INTEGER
 enum1a imp ub =non-float =
-UINTEGER
+INTEGER
 
 relational ops (enum1a, ub):
 
@@ -2567,26 +2567,26 @@ DOUBLE
 ub ^ f =float =
 DOUBLE
 ub \ f =non-float =
-UINTEGER
+INTEGER
 ub mod f =non-float =
-UINTEGER
+INTEGER
 
 bitops (ub, f):
 
 ub shl f =non-float =
-UINTEGER
+INTEGER
 ub shr f =non-float =
-UINTEGER
+INTEGER
 ub and f =non-float =
-UINTEGER
+INTEGER
 ub or f =non-float =
-UINTEGER
+INTEGER
 ub xor f =non-float =
-UINTEGER
+INTEGER
 ub eqv f =non-float =
-UINTEGER
+INTEGER
 ub imp f =non-float =
-UINTEGER
+INTEGER
 
 relational ops (ub, f):
 
@@ -2620,26 +2620,26 @@ DOUBLE
 ub ^ d =float =
 DOUBLE
 ub \ d =non-float =
-UINTEGER
+INTEGER
 ub mod d =non-float =
-UINTEGER
+INTEGER
 
 bitops (ub, d):
 
 ub shl d =non-float =
-UINTEGER
+INTEGER
 ub shr d =non-float =
-UINTEGER
+INTEGER
 ub and d =non-float =
-UINTEGER
+INTEGER
 ub or d =non-float =
-UINTEGER
+INTEGER
 ub xor d =non-float =
-UINTEGER
+INTEGER
 ub eqv d =non-float =
-UINTEGER
+INTEGER
 ub imp d =non-float =
-UINTEGER
+INTEGER
 
 relational ops (ub, d):
 
@@ -2673,26 +2673,26 @@ DOUBLE
 f ^ ub =float =
 DOUBLE
 f \ ub =non-float =
-UINTEGER
+INTEGER
 f mod ub =non-float =
-UINTEGER
+INTEGER
 
 bitops (f, ub):
 
 f shl ub =non-float =
-UINTEGER
+INTEGER
 f shr ub =non-float =
-UINTEGER
+INTEGER
 f and ub =non-float =
-UINTEGER
+INTEGER
 f or ub =non-float =
-UINTEGER
+INTEGER
 f xor ub =non-float =
-UINTEGER
+INTEGER
 f eqv ub =non-float =
-UINTEGER
+INTEGER
 f imp ub =non-float =
-UINTEGER
+INTEGER
 
 relational ops (f, ub):
 
@@ -2726,26 +2726,26 @@ DOUBLE
 d ^ ub =float =
 DOUBLE
 d \ ub =non-float =
-UINTEGER
+INTEGER
 d mod ub =non-float =
-UINTEGER
+INTEGER
 
 bitops (d, ub):
 
 d shl ub =non-float =
-UINTEGER
+INTEGER
 d shr ub =non-float =
-UINTEGER
+INTEGER
 d and ub =non-float =
-UINTEGER
+INTEGER
 d or ub =non-float =
-UINTEGER
+INTEGER
 d xor ub =non-float =
-UINTEGER
+INTEGER
 d eqv ub =non-float =
-UINTEGER
+INTEGER
 d imp ub =non-float =
-UINTEGER
+INTEGER
 
 relational ops (d, ub):
 
@@ -2825,36 +2825,36 @@ INTEGER
 math ops (sh, ub):
 
 sh + ub =max =
-UINTEGER
+INTEGER
 sh -ub =max =
-UINTEGER
+INTEGER
 sh * ub =max =
-UINTEGER
+INTEGER
 sh / ub =float =
 DOUBLE
 sh ^ ub =float =
 DOUBLE
 sh \ ub =non-float =
-UINTEGER
+INTEGER
 sh mod ub =non-float =
-UINTEGER
+INTEGER
 
 bitops (sh, ub):
 
 sh shl ub =non-float =
-UINTEGER
+INTEGER
 sh shr ub =non-float =
-UINTEGER
+INTEGER
 sh and ub =non-float =
-UINTEGER
+INTEGER
 sh or ub =non-float =
-UINTEGER
+INTEGER
 sh xor ub =non-float =
-UINTEGER
+INTEGER
 sh eqv ub =non-float =
-UINTEGER
+INTEGER
 sh imp ub =non-float =
-UINTEGER
+INTEGER
 
 relational ops (sh, ub):
 
@@ -2878,36 +2878,36 @@ INTEGER
 math ops (sh, sh):
 
 sh + sh =max =
-SHORT
+INTEGER
 sh -sh =max =
-SHORT
+INTEGER
 sh * sh =max =
-SHORT
+INTEGER
 sh / sh =float =
 DOUBLE
 sh ^ sh =float =
 DOUBLE
 sh \ sh =non-float =
-SHORT
+INTEGER
 sh mod sh =non-float =
-SHORT
+INTEGER
 
 bitops (sh, sh):
 
 sh shl sh =non-float =
-SHORT
+INTEGER
 sh shr sh =non-float =
-SHORT
+INTEGER
 sh and sh =non-float =
-SHORT
+INTEGER
 sh or sh =non-float =
-SHORT
+INTEGER
 sh xor sh =non-float =
-SHORT
+INTEGER
 sh eqv sh =non-float =
-SHORT
+INTEGER
 sh imp sh =non-float =
-SHORT
+INTEGER
 
 relational ops (sh, sh):
 
@@ -2931,36 +2931,36 @@ INTEGER
 math ops (sh, ush):
 
 sh + ush =max =
-USHORT
+INTEGER
 sh -ush =max =
-USHORT
+INTEGER
 sh * ush =max =
-USHORT
+INTEGER
 sh / ush =float =
 DOUBLE
 sh ^ ush =float =
 DOUBLE
 sh \ ush =non-float =
-USHORT
+INTEGER
 sh mod ush =non-float =
-USHORT
+INTEGER
 
 bitops (sh, ush):
 
 sh shl ush =non-float =
-USHORT
+INTEGER
 sh shr ush =non-float =
-USHORT
+INTEGER
 sh and ush =non-float =
-USHORT
+INTEGER
 sh or ush =non-float =
-USHORT
+INTEGER
 sh xor ush =non-float =
-USHORT
+INTEGER
 sh eqv ush =non-float =
-USHORT
+INTEGER
 sh imp ush =non-float =
-USHORT
+INTEGER
 
 relational ops (sh, ush):
 
@@ -3090,36 +3090,36 @@ INTEGER
 math ops (sh, l):
 
 sh + l =max =
-LONG
+INTEGER
 sh -l =max =
-LONG
+INTEGER
 sh * l =max =
-LONG
+INTEGER
 sh / l =float =
 DOUBLE
 sh ^ l =float =
 DOUBLE
 sh \ l =non-float =
-LONG
+INTEGER
 sh mod l =non-float =
-LONG
+INTEGER
 
 bitops (sh, l):
 
 sh shl l =non-float =
-LONG
+INTEGER
 sh shr l =non-float =
-LONG
+INTEGER
 sh and l =non-float =
-LONG
+INTEGER
 sh or l =non-float =
-LONG
+INTEGER
 sh xor l =non-float =
-LONG
+INTEGER
 sh eqv l =non-float =
-LONG
+INTEGER
 sh imp l =non-float =
-LONG
+INTEGER
 
 relational ops (sh, l):
 
@@ -3143,36 +3143,36 @@ INTEGER
 math ops (sh, ul):
 
 sh + ul =max =
-ULONG
+UINTEGER
 sh -ul =max =
-ULONG
+UINTEGER
 sh * ul =max =
-ULONG
+UINTEGER
 sh / ul =float =
 DOUBLE
 sh ^ ul =float =
 DOUBLE
 sh \ ul =non-float =
-ULONG
+UINTEGER
 sh mod ul =non-float =
-ULONG
+UINTEGER
 
 bitops (sh, ul):
 
 sh shl ul =non-float =
-ULONG
+UINTEGER
 sh shr ul =non-float =
-ULONG
+UINTEGER
 sh and ul =non-float =
-ULONG
+UINTEGER
 sh or ul =non-float =
-ULONG
+UINTEGER
 sh xor ul =non-float =
-ULONG
+UINTEGER
 sh eqv ul =non-float =
-ULONG
+UINTEGER
 sh imp ul =non-float =
-ULONG
+UINTEGER
 
 relational ops (sh, ul):
 
@@ -3408,36 +3408,36 @@ INTEGER
 math ops (ub, sh):
 
 ub + sh =max =
-UINTEGER
+INTEGER
 ub -sh =max =
-UINTEGER
+INTEGER
 ub * sh =max =
-UINTEGER
+INTEGER
 ub / sh =float =
 DOUBLE
 ub ^ sh =float =
 DOUBLE
 ub \ sh =non-float =
-UINTEGER
+INTEGER
 ub mod sh =non-float =
-UINTEGER
+INTEGER
 
 bitops (ub, sh):
 
 ub shl sh =non-float =
-UINTEGER
+INTEGER
 ub shr sh =non-float =
-UINTEGER
+INTEGER
 ub and sh =non-float =
-UINTEGER
+INTEGER
 ub or sh =non-float =
-UINTEGER
+INTEGER
 ub xor sh =non-float =
-UINTEGER
+INTEGER
 ub eqv sh =non-float =
-UINTEGER
+INTEGER
 ub imp sh =non-float =
-UINTEGER
+INTEGER
 
 relational ops (ub, sh):
 
@@ -3461,36 +3461,36 @@ INTEGER
 math ops (sh, sh):
 
 sh + sh =max =
-SHORT
+INTEGER
 sh -sh =max =
-SHORT
+INTEGER
 sh * sh =max =
-SHORT
+INTEGER
 sh / sh =float =
 DOUBLE
 sh ^ sh =float =
 DOUBLE
 sh \ sh =non-float =
-SHORT
+INTEGER
 sh mod sh =non-float =
-SHORT
+INTEGER
 
 bitops (sh, sh):
 
 sh shl sh =non-float =
-SHORT
+INTEGER
 sh shr sh =non-float =
-SHORT
+INTEGER
 sh and sh =non-float =
-SHORT
+INTEGER
 sh or sh =non-float =
-SHORT
+INTEGER
 sh xor sh =non-float =
-SHORT
+INTEGER
 sh eqv sh =non-float =
-SHORT
+INTEGER
 sh imp sh =non-float =
-SHORT
+INTEGER
 
 relational ops (sh, sh):
 
@@ -3514,36 +3514,36 @@ INTEGER
 math ops (ush, sh):
 
 ush + sh =max =
-USHORT
+INTEGER
 ush -sh =max =
-USHORT
+INTEGER
 ush * sh =max =
-USHORT
+INTEGER
 ush / sh =float =
 DOUBLE
 ush ^ sh =float =
 DOUBLE
 ush \ sh =non-float =
-USHORT
+INTEGER
 ush mod sh =non-float =
-USHORT
+INTEGER
 
 bitops (ush, sh):
 
 ush shl sh =non-float =
-USHORT
+INTEGER
 ush shr sh =non-float =
-USHORT
+INTEGER
 ush and sh =non-float =
-USHORT
+INTEGER
 ush or sh =non-float =
-USHORT
+INTEGER
 ush xor sh =non-float =
-USHORT
+INTEGER
 ush eqv sh =non-float =
-USHORT
+INTEGER
 ush imp sh =non-float =
-USHORT
+INTEGER
 
 relational ops (ush, sh):
 
@@ -3673,36 +3673,36 @@ INTEGER
 math ops (l, sh):
 
 l + sh =max =
-LONG
+INTEGER
 l -sh =max =
-LONG
+INTEGER
 l * sh =max =
-LONG
+INTEGER
 l / sh =float =
 DOUBLE
 l ^ sh =float =
 DOUBLE
 l \ sh =non-float =
-LONG
+INTEGER
 l mod sh =non-float =
-LONG
+INTEGER
 
 bitops (l, sh):
 
 l shl sh =non-float =
-LONG
+INTEGER
 l shr sh =non-float =
-LONG
+INTEGER
 l and sh =non-float =
-LONG
+INTEGER
 l or sh =non-float =
-LONG
+INTEGER
 l xor sh =non-float =
-LONG
+INTEGER
 l eqv sh =non-float =
-LONG
+INTEGER
 l imp sh =non-float =
-LONG
+INTEGER
 
 relational ops (l, sh):
 
@@ -3726,36 +3726,36 @@ INTEGER
 math ops (ul, sh):
 
 ul + sh =max =
-ULONG
+UINTEGER
 ul -sh =max =
-ULONG
+UINTEGER
 ul * sh =max =
-ULONG
+UINTEGER
 ul / sh =float =
 DOUBLE
 ul ^ sh =float =
 DOUBLE
 ul \ sh =non-float =
-ULONG
+UINTEGER
 ul mod sh =non-float =
-ULONG
+UINTEGER
 
 bitops (ul, sh):
 
 ul shl sh =non-float =
-ULONG
+UINTEGER
 ul shr sh =non-float =
-ULONG
+UINTEGER
 ul and sh =non-float =
-ULONG
+UINTEGER
 ul or sh =non-float =
-ULONG
+UINTEGER
 ul xor sh =non-float =
-ULONG
+UINTEGER
 ul eqv sh =non-float =
-ULONG
+UINTEGER
 ul imp sh =non-float =
-ULONG
+UINTEGER
 
 relational ops (ul, sh):
 
@@ -4206,36 +4206,36 @@ INTEGER
 math ops (ush, ub):
 
 ush + ub =max =
-UINTEGER
+INTEGER
 ush -ub =max =
-UINTEGER
+INTEGER
 ush * ub =max =
-UINTEGER
+INTEGER
 ush / ub =float =
 DOUBLE
 ush ^ ub =float =
 DOUBLE
 ush \ ub =non-float =
-UINTEGER
+INTEGER
 ush mod ub =non-float =
-UINTEGER
+INTEGER
 
 bitops (ush, ub):
 
 ush shl ub =non-float =
-UINTEGER
+INTEGER
 ush shr ub =non-float =
-UINTEGER
+INTEGER
 ush and ub =non-float =
-UINTEGER
+INTEGER
 ush or ub =non-float =
-UINTEGER
+INTEGER
 ush xor ub =non-float =
-UINTEGER
+INTEGER
 ush eqv ub =non-float =
-UINTEGER
+INTEGER
 ush imp ub =non-float =
-UINTEGER
+INTEGER
 
 relational ops (ush, ub):
 
@@ -4259,36 +4259,36 @@ INTEGER
 math ops (ush, sh):
 
 ush + sh =max =
-USHORT
+INTEGER
 ush -sh =max =
-USHORT
+INTEGER
 ush * sh =max =
-USHORT
+INTEGER
 ush / sh =float =
 DOUBLE
 ush ^ sh =float =
 DOUBLE
 ush \ sh =non-float =
-USHORT
+INTEGER
 ush mod sh =non-float =
-USHORT
+INTEGER
 
 bitops (ush, sh):
 
 ush shl sh =non-float =
-USHORT
+INTEGER
 ush shr sh =non-float =
-USHORT
+INTEGER
 ush and sh =non-float =
-USHORT
+INTEGER
 ush or sh =non-float =
-USHORT
+INTEGER
 ush xor sh =non-float =
-USHORT
+INTEGER
 ush eqv sh =non-float =
-USHORT
+INTEGER
 ush imp sh =non-float =
-USHORT
+INTEGER
 
 relational ops (ush, sh):
 
@@ -4312,36 +4312,36 @@ INTEGER
 math ops (ush, ush):
 
 ush + ush =max =
-USHORT
+INTEGER
 ush -ush =max =
-USHORT
+INTEGER
 ush * ush =max =
-USHORT
+INTEGER
 ush / ush =float =
 DOUBLE
 ush ^ ush =float =
 DOUBLE
 ush \ ush =non-float =
-USHORT
+INTEGER
 ush mod ush =non-float =
-USHORT
+INTEGER
 
 bitops (ush, ush):
 
 ush shl ush =non-float =
-USHORT
+INTEGER
 ush shr ush =non-float =
-USHORT
+INTEGER
 ush and ush =non-float =
-USHORT
+INTEGER
 ush or ush =non-float =
-USHORT
+INTEGER
 ush xor ush =non-float =
-USHORT
+INTEGER
 ush eqv ush =non-float =
-USHORT
+INTEGER
 ush imp ush =non-float =
-USHORT
+INTEGER
 
 relational ops (ush, ush):
 
@@ -4471,36 +4471,36 @@ INTEGER
 math ops (ush, l):
 
 ush + l =max =
-LONG
+INTEGER
 ush -l =max =
-LONG
+INTEGER
 ush * l =max =
-LONG
+INTEGER
 ush / l =float =
 DOUBLE
 ush ^ l =float =
 DOUBLE
 ush \ l =non-float =
-LONG
+INTEGER
 ush mod l =non-float =
-LONG
+INTEGER
 
 bitops (ush, l):
 
 ush shl l =non-float =
-LONG
+INTEGER
 ush shr l =non-float =
-LONG
+INTEGER
 ush and l =non-float =
-LONG
+INTEGER
 ush or l =non-float =
-LONG
+INTEGER
 ush xor l =non-float =
-LONG
+INTEGER
 ush eqv l =non-float =
-LONG
+INTEGER
 ush imp l =non-float =
-LONG
+INTEGER
 
 relational ops (ush, l):
 
@@ -4524,36 +4524,36 @@ INTEGER
 math ops (ush, ul):
 
 ush + ul =max =
-ULONG
+UINTEGER
 ush -ul =max =
-ULONG
+UINTEGER
 ush * ul =max =
-ULONG
+UINTEGER
 ush / ul =float =
 DOUBLE
 ush ^ ul =float =
 DOUBLE
 ush \ ul =non-float =
-ULONG
+UINTEGER
 ush mod ul =non-float =
-ULONG
+UINTEGER
 
 bitops (ush, ul):
 
 ush shl ul =non-float =
-ULONG
+UINTEGER
 ush shr ul =non-float =
-ULONG
+UINTEGER
 ush and ul =non-float =
-ULONG
+UINTEGER
 ush or ul =non-float =
-ULONG
+UINTEGER
 ush xor ul =non-float =
-ULONG
+UINTEGER
 ush eqv ul =non-float =
-ULONG
+UINTEGER
 ush imp ul =non-float =
-ULONG
+UINTEGER
 
 relational ops (ush, ul):
 
@@ -4789,36 +4789,36 @@ INTEGER
 math ops (ub, ush):
 
 ub + ush =max =
-UINTEGER
+INTEGER
 ub -ush =max =
-UINTEGER
+INTEGER
 ub * ush =max =
-UINTEGER
+INTEGER
 ub / ush =float =
 DOUBLE
 ub ^ ush =float =
 DOUBLE
 ub \ ush =non-float =
-UINTEGER
+INTEGER
 ub mod ush =non-float =
-UINTEGER
+INTEGER
 
 bitops (ub, ush):
 
 ub shl ush =non-float =
-UINTEGER
+INTEGER
 ub shr ush =non-float =
-UINTEGER
+INTEGER
 ub and ush =non-float =
-UINTEGER
+INTEGER
 ub or ush =non-float =
-UINTEGER
+INTEGER
 ub xor ush =non-float =
-UINTEGER
+INTEGER
 ub eqv ush =non-float =
-UINTEGER
+INTEGER
 ub imp ush =non-float =
-UINTEGER
+INTEGER
 
 relational ops (ub, ush):
 
@@ -4842,36 +4842,36 @@ INTEGER
 math ops (sh, ush):
 
 sh + ush =max =
-USHORT
+INTEGER
 sh -ush =max =
-USHORT
+INTEGER
 sh * ush =max =
-USHORT
+INTEGER
 sh / ush =float =
 DOUBLE
 sh ^ ush =float =
 DOUBLE
 sh \ ush =non-float =
-USHORT
+INTEGER
 sh mod ush =non-float =
-USHORT
+INTEGER
 
 bitops (sh, ush):
 
 sh shl ush =non-float =
-USHORT
+INTEGER
 sh shr ush =non-float =
-USHORT
+INTEGER
 sh and ush =non-float =
-USHORT
+INTEGER
 sh or ush =non-float =
-USHORT
+INTEGER
 sh xor ush =non-float =
-USHORT
+INTEGER
 sh eqv ush =non-float =
-USHORT
+INTEGER
 sh imp ush =non-float =
-USHORT
+INTEGER
 
 relational ops (sh, ush):
 
@@ -4895,36 +4895,36 @@ INTEGER
 math ops (ush, ush):
 
 ush + ush =max =
-USHORT
+INTEGER
 ush -ush =max =
-USHORT
+INTEGER
 ush * ush =max =
-USHORT
+INTEGER
 ush / ush =float =
 DOUBLE
 ush ^ ush =float =
 DOUBLE
 ush \ ush =non-float =
-USHORT
+INTEGER
 ush mod ush =non-float =
-USHORT
+INTEGER
 
 bitops (ush, ush):
 
 ush shl ush =non-float =
-USHORT
+INTEGER
 ush shr ush =non-float =
-USHORT
+INTEGER
 ush and ush =non-float =
-USHORT
+INTEGER
 ush or ush =non-float =
-USHORT
+INTEGER
 ush xor ush =non-float =
-USHORT
+INTEGER
 ush eqv ush =non-float =
-USHORT
+INTEGER
 ush imp ush =non-float =
-USHORT
+INTEGER
 
 relational ops (ush, ush):
 
@@ -5054,36 +5054,36 @@ INTEGER
 math ops (l, ush):
 
 l + ush =max =
-LONG
+INTEGER
 l -ush =max =
-LONG
+INTEGER
 l * ush =max =
-LONG
+INTEGER
 l / ush =float =
 DOUBLE
 l ^ ush =float =
 DOUBLE
 l \ ush =non-float =
-LONG
+INTEGER
 l mod ush =non-float =
-LONG
+INTEGER
 
 bitops (l, ush):
 
 l shl ush =non-float =
-LONG
+INTEGER
 l shr ush =non-float =
-LONG
+INTEGER
 l and ush =non-float =
-LONG
+INTEGER
 l or ush =non-float =
-LONG
+INTEGER
 l xor ush =non-float =
-LONG
+INTEGER
 l eqv ush =non-float =
-LONG
+INTEGER
 l imp ush =non-float =
-LONG
+INTEGER
 
 relational ops (l, ush):
 
@@ -5107,36 +5107,36 @@ INTEGER
 math ops (ul, ush):
 
 ul + ush =max =
-ULONG
+UINTEGER
 ul -ush =max =
-ULONG
+UINTEGER
 ul * ush =max =
-ULONG
+UINTEGER
 ul / ush =float =
 DOUBLE
 ul ^ ush =float =
 DOUBLE
 ul \ ush =non-float =
-ULONG
+UINTEGER
 ul mod ush =non-float =
-ULONG
+UINTEGER
 
 bitops (ul, ush):
 
 ul shl ush =non-float =
-ULONG
+UINTEGER
 ul shr ush =non-float =
-ULONG
+UINTEGER
 ul and ush =non-float =
-ULONG
+UINTEGER
 ul or ush =non-float =
-ULONG
+UINTEGER
 ul xor ush =non-float =
-ULONG
+UINTEGER
 ul eqv ush =non-float =
-ULONG
+UINTEGER
 ul imp ush =non-float =
-ULONG
+UINTEGER
 
 relational ops (ul, ush):
 
@@ -5587,36 +5587,36 @@ INTEGER
 math ops (i, ub):
 
 i + ub =max =
-UINTEGER
+INTEGER
 i -ub =max =
-UINTEGER
+INTEGER
 i * ub =max =
-UINTEGER
+INTEGER
 i / ub =float =
 DOUBLE
 i ^ ub =float =
 DOUBLE
 i \ ub =non-float =
-UINTEGER
+INTEGER
 i mod ub =non-float =
-UINTEGER
+INTEGER
 
 bitops (i, ub):
 
 i shl ub =non-float =
-UINTEGER
+INTEGER
 i shr ub =non-float =
-UINTEGER
+INTEGER
 i and ub =non-float =
-UINTEGER
+INTEGER
 i or ub =non-float =
-UINTEGER
+INTEGER
 i xor ub =non-float =
-UINTEGER
+INTEGER
 i eqv ub =non-float =
-UINTEGER
+INTEGER
 i imp ub =non-float =
-UINTEGER
+INTEGER
 
 relational ops (i, ub):
 
@@ -5852,36 +5852,36 @@ INTEGER
 math ops (i, l):
 
 i + l =max =
-LONG
+INTEGER
 i -l =max =
-LONG
+INTEGER
 i * l =max =
-LONG
+INTEGER
 i / l =float =
 DOUBLE
 i ^ l =float =
 DOUBLE
 i \ l =non-float =
-LONG
+INTEGER
 i mod l =non-float =
-LONG
+INTEGER
 
 bitops (i, l):
 
 i shl l =non-float =
-LONG
+INTEGER
 i shr l =non-float =
-LONG
+INTEGER
 i and l =non-float =
-LONG
+INTEGER
 i or l =non-float =
-LONG
+INTEGER
 i xor l =non-float =
-LONG
+INTEGER
 i eqv l =non-float =
-LONG
+INTEGER
 i imp l =non-float =
-LONG
+INTEGER
 
 relational ops (i, l):
 
@@ -5905,36 +5905,36 @@ INTEGER
 math ops (i, ul):
 
 i + ul =max =
-ULONG
+UINTEGER
 i -ul =max =
-ULONG
+UINTEGER
 i * ul =max =
-ULONG
+UINTEGER
 i / ul =float =
 DOUBLE
 i ^ ul =float =
 DOUBLE
 i \ ul =non-float =
-ULONG
+UINTEGER
 i mod ul =non-float =
-ULONG
+UINTEGER
 
 bitops (i, ul):
 
 i shl ul =non-float =
-ULONG
+UINTEGER
 i shr ul =non-float =
-ULONG
+UINTEGER
 i and ul =non-float =
-ULONG
+UINTEGER
 i or ul =non-float =
-ULONG
+UINTEGER
 i xor ul =non-float =
-ULONG
+UINTEGER
 i eqv ul =non-float =
-ULONG
+UINTEGER
 i imp ul =non-float =
-ULONG
+UINTEGER
 
 relational ops (i, ul):
 
@@ -6170,36 +6170,36 @@ INTEGER
 math ops (ub, i):
 
 ub + i =max =
-UINTEGER
+INTEGER
 ub -i =max =
-UINTEGER
+INTEGER
 ub * i =max =
-UINTEGER
+INTEGER
 ub / i =float =
 DOUBLE
 ub ^ i =float =
 DOUBLE
 ub \ i =non-float =
-UINTEGER
+INTEGER
 ub mod i =non-float =
-UINTEGER
+INTEGER
 
 bitops (ub, i):
 
 ub shl i =non-float =
-UINTEGER
+INTEGER
 ub shr i =non-float =
-UINTEGER
+INTEGER
 ub and i =non-float =
-UINTEGER
+INTEGER
 ub or i =non-float =
-UINTEGER
+INTEGER
 ub xor i =non-float =
-UINTEGER
+INTEGER
 ub eqv i =non-float =
-UINTEGER
+INTEGER
 ub imp i =non-float =
-UINTEGER
+INTEGER
 
 relational ops (ub, i):
 
@@ -6435,36 +6435,36 @@ INTEGER
 math ops (l, i):
 
 l + i =max =
-LONG
+INTEGER
 l -i =max =
-LONG
+INTEGER
 l * i =max =
-LONG
+INTEGER
 l / i =float =
 DOUBLE
 l ^ i =float =
 DOUBLE
 l \ i =non-float =
-LONG
+INTEGER
 l mod i =non-float =
-LONG
+INTEGER
 
 bitops (l, i):
 
 l shl i =non-float =
-LONG
+INTEGER
 l shr i =non-float =
-LONG
+INTEGER
 l and i =non-float =
-LONG
+INTEGER
 l or i =non-float =
-LONG
+INTEGER
 l xor i =non-float =
-LONG
+INTEGER
 l eqv i =non-float =
-LONG
+INTEGER
 l imp i =non-float =
-LONG
+INTEGER
 
 relational ops (l, i):
 
@@ -6488,36 +6488,36 @@ INTEGER
 math ops (ul, i):
 
 ul + i =max =
-ULONG
+UINTEGER
 ul -i =max =
-ULONG
+UINTEGER
 ul * i =max =
-ULONG
+UINTEGER
 ul / i =float =
 DOUBLE
 ul ^ i =float =
 DOUBLE
 ul \ i =non-float =
-ULONG
+UINTEGER
 ul mod i =non-float =
-ULONG
+UINTEGER
 
 bitops (ul, i):
 
 ul shl i =non-float =
-ULONG
+UINTEGER
 ul shr i =non-float =
-ULONG
+UINTEGER
 ul and i =non-float =
-ULONG
+UINTEGER
 ul or i =non-float =
-ULONG
+UINTEGER
 ul xor i =non-float =
-ULONG
+UINTEGER
 ul eqv i =non-float =
-ULONG
+UINTEGER
 ul imp i =non-float =
-ULONG
+UINTEGER
 
 relational ops (ul, i):
 
@@ -7233,36 +7233,36 @@ INTEGER
 math ops (ui, l):
 
 ui + l =max =
-LONG
+UINTEGER
 ui -l =max =
-LONG
+UINTEGER
 ui * l =max =
-LONG
+UINTEGER
 ui / l =float =
 DOUBLE
 ui ^ l =float =
 DOUBLE
 ui \ l =non-float =
-LONG
+UINTEGER
 ui mod l =non-float =
-LONG
+UINTEGER
 
 bitops (ui, l):
 
 ui shl l =non-float =
-LONG
+UINTEGER
 ui shr l =non-float =
-LONG
+UINTEGER
 ui and l =non-float =
-LONG
+UINTEGER
 ui or l =non-float =
-LONG
+UINTEGER
 ui xor l =non-float =
-LONG
+UINTEGER
 ui eqv l =non-float =
-LONG
+UINTEGER
 ui imp l =non-float =
-LONG
+UINTEGER
 
 relational ops (ui, l):
 
@@ -7286,36 +7286,36 @@ INTEGER
 math ops (ui, ul):
 
 ui + ul =max =
-ULONG
+UINTEGER
 ui -ul =max =
-ULONG
+UINTEGER
 ui * ul =max =
-ULONG
+UINTEGER
 ui / ul =float =
 DOUBLE
 ui ^ ul =float =
 DOUBLE
 ui \ ul =non-float =
-ULONG
+UINTEGER
 ui mod ul =non-float =
-ULONG
+UINTEGER
 
 bitops (ui, ul):
 
 ui shl ul =non-float =
-ULONG
+UINTEGER
 ui shr ul =non-float =
-ULONG
+UINTEGER
 ui and ul =non-float =
-ULONG
+UINTEGER
 ui or ul =non-float =
-ULONG
+UINTEGER
 ui xor ul =non-float =
-ULONG
+UINTEGER
 ui eqv ul =non-float =
-ULONG
+UINTEGER
 ui imp ul =non-float =
-ULONG
+UINTEGER
 
 relational ops (ui, ul):
 
@@ -7816,36 +7816,36 @@ INTEGER
 math ops (l, ui):
 
 l + ui =max =
-LONG
+UINTEGER
 l -ui =max =
-LONG
+UINTEGER
 l * ui =max =
-LONG
+UINTEGER
 l / ui =float =
 DOUBLE
 l ^ ui =float =
 DOUBLE
 l \ ui =non-float =
-LONG
+UINTEGER
 l mod ui =non-float =
-LONG
+UINTEGER
 
 bitops (l, ui):
 
 l shl ui =non-float =
-LONG
+UINTEGER
 l shr ui =non-float =
-LONG
+UINTEGER
 l and ui =non-float =
-LONG
+UINTEGER
 l or ui =non-float =
-LONG
+UINTEGER
 l xor ui =non-float =
-LONG
+UINTEGER
 l eqv ui =non-float =
-LONG
+UINTEGER
 l imp ui =non-float =
-LONG
+UINTEGER
 
 relational ops (l, ui):
 
@@ -7869,36 +7869,36 @@ INTEGER
 math ops (ul, ui):
 
 ul + ui =max =
-ULONG
+UINTEGER
 ul -ui =max =
-ULONG
+UINTEGER
 ul * ui =max =
-ULONG
+UINTEGER
 ul / ui =float =
 DOUBLE
 ul ^ ui =float =
 DOUBLE
 ul \ ui =non-float =
-ULONG
+UINTEGER
 ul mod ui =non-float =
-ULONG
+UINTEGER
 
 bitops (ul, ui):
 
 ul shl ui =non-float =
-ULONG
+UINTEGER
 ul shr ui =non-float =
-ULONG
+UINTEGER
 ul and ui =non-float =
-ULONG
+UINTEGER
 ul or ui =non-float =
-ULONG
+UINTEGER
 ul xor ui =non-float =
-ULONG
+UINTEGER
 ul eqv ui =non-float =
-ULONG
+UINTEGER
 ul imp ui =non-float =
-ULONG
+UINTEGER
 
 relational ops (ul, ui):
 
@@ -8296,36 +8296,36 @@ INTEGER
 math ops (l, b):
 
 l + b =max =
-LONG
+INTEGER
 l -b =max =
-LONG
+INTEGER
 l * b =max =
-LONG
+INTEGER
 l / b =float =
 DOUBLE
 l ^ b =float =
 DOUBLE
 l \ b =non-float =
-LONG
+INTEGER
 l mod b =non-float =
-LONG
+INTEGER
 
 bitops (l, b):
 
 l shl b =non-float =
-LONG
+INTEGER
 l shr b =non-float =
-LONG
+INTEGER
 l and b =non-float =
-LONG
+INTEGER
 l or b =non-float =
-LONG
+INTEGER
 l xor b =non-float =
-LONG
+INTEGER
 l eqv b =non-float =
-LONG
+INTEGER
 l imp b =non-float =
-LONG
+INTEGER
 
 relational ops (l, b):
 
@@ -8349,36 +8349,36 @@ INTEGER
 math ops (l, ub):
 
 l + ub =max =
-LONG
+INTEGER
 l -ub =max =
-LONG
+INTEGER
 l * ub =max =
-LONG
+INTEGER
 l / ub =float =
 DOUBLE
 l ^ ub =float =
 DOUBLE
 l \ ub =non-float =
-LONG
+INTEGER
 l mod ub =non-float =
-LONG
+INTEGER
 
 bitops (l, ub):
 
 l shl ub =non-float =
-LONG
+INTEGER
 l shr ub =non-float =
-LONG
+INTEGER
 l and ub =non-float =
-LONG
+INTEGER
 l or ub =non-float =
-LONG
+INTEGER
 l xor ub =non-float =
-LONG
+INTEGER
 l eqv ub =non-float =
-LONG
+INTEGER
 l imp ub =non-float =
-LONG
+INTEGER
 
 relational ops (l, ub):
 
@@ -8402,36 +8402,36 @@ INTEGER
 math ops (l, sh):
 
 l + sh =max =
-LONG
+INTEGER
 l -sh =max =
-LONG
+INTEGER
 l * sh =max =
-LONG
+INTEGER
 l / sh =float =
 DOUBLE
 l ^ sh =float =
 DOUBLE
 l \ sh =non-float =
-LONG
+INTEGER
 l mod sh =non-float =
-LONG
+INTEGER
 
 bitops (l, sh):
 
 l shl sh =non-float =
-LONG
+INTEGER
 l shr sh =non-float =
-LONG
+INTEGER
 l and sh =non-float =
-LONG
+INTEGER
 l or sh =non-float =
-LONG
+INTEGER
 l xor sh =non-float =
-LONG
+INTEGER
 l eqv sh =non-float =
-LONG
+INTEGER
 l imp sh =non-float =
-LONG
+INTEGER
 
 relational ops (l, sh):
 
@@ -8455,36 +8455,36 @@ INTEGER
 math ops (l, ush):
 
 l + ush =max =
-LONG
+INTEGER
 l -ush =max =
-LONG
+INTEGER
 l * ush =max =
-LONG
+INTEGER
 l / ush =float =
 DOUBLE
 l ^ ush =float =
 DOUBLE
 l \ ush =non-float =
-LONG
+INTEGER
 l mod ush =non-float =
-LONG
+INTEGER
 
 bitops (l, ush):
 
 l shl ush =non-float =
-LONG
+INTEGER
 l shr ush =non-float =
-LONG
+INTEGER
 l and ush =non-float =
-LONG
+INTEGER
 l or ush =non-float =
-LONG
+INTEGER
 l xor ush =non-float =
-LONG
+INTEGER
 l eqv ush =non-float =
-LONG
+INTEGER
 l imp ush =non-float =
-LONG
+INTEGER
 
 relational ops (l, ush):
 
@@ -8508,36 +8508,36 @@ INTEGER
 math ops (l, i):
 
 l + i =max =
-LONG
+INTEGER
 l -i =max =
-LONG
+INTEGER
 l * i =max =
-LONG
+INTEGER
 l / i =float =
 DOUBLE
 l ^ i =float =
 DOUBLE
 l \ i =non-float =
-LONG
+INTEGER
 l mod i =non-float =
-LONG
+INTEGER
 
 bitops (l, i):
 
 l shl i =non-float =
-LONG
+INTEGER
 l shr i =non-float =
-LONG
+INTEGER
 l and i =non-float =
-LONG
+INTEGER
 l or i =non-float =
-LONG
+INTEGER
 l xor i =non-float =
-LONG
+INTEGER
 l eqv i =non-float =
-LONG
+INTEGER
 l imp i =non-float =
-LONG
+INTEGER
 
 relational ops (l, i):
 
@@ -8561,36 +8561,36 @@ INTEGER
 math ops (l, ui):
 
 l + ui =max =
-LONG
+UINTEGER
 l -ui =max =
-LONG
+UINTEGER
 l * ui =max =
-LONG
+UINTEGER
 l / ui =float =
 DOUBLE
 l ^ ui =float =
 DOUBLE
 l \ ui =non-float =
-LONG
+UINTEGER
 l mod ui =non-float =
-LONG
+UINTEGER
 
 bitops (l, ui):
 
 l shl ui =non-float =
-LONG
+UINTEGER
 l shr ui =non-float =
-LONG
+UINTEGER
 l and ui =non-float =
-LONG
+UINTEGER
 l or ui =non-float =
-LONG
+UINTEGER
 l xor ui =non-float =
-LONG
+UINTEGER
 l eqv ui =non-float =
-LONG
+UINTEGER
 l imp ui =non-float =
-LONG
+UINTEGER
 
 relational ops (l, ui):
 
@@ -8614,36 +8614,36 @@ INTEGER
 math ops (l, l):
 
 l + l =max =
-LONG
+INTEGER
 l -l =max =
-LONG
+INTEGER
 l * l =max =
-LONG
+INTEGER
 l / l =float =
 DOUBLE
 l ^ l =float =
 DOUBLE
 l \ l =non-float =
-LONG
+INTEGER
 l mod l =non-float =
-LONG
+INTEGER
 
 bitops (l, l):
 
 l shl l =non-float =
-LONG
+INTEGER
 l shr l =non-float =
-LONG
+INTEGER
 l and l =non-float =
-LONG
+INTEGER
 l or l =non-float =
-LONG
+INTEGER
 l xor l =non-float =
-LONG
+INTEGER
 l eqv l =non-float =
-LONG
+INTEGER
 l imp l =non-float =
-LONG
+INTEGER
 
 relational ops (l, l):
 
@@ -8667,36 +8667,36 @@ INTEGER
 math ops (l, ul):
 
 l + ul =max =
-ULONG
+UINTEGER
 l -ul =max =
-ULONG
+UINTEGER
 l * ul =max =
-ULONG
+UINTEGER
 l / ul =float =
 DOUBLE
 l ^ ul =float =
 DOUBLE
 l \ ul =non-float =
-ULONG
+UINTEGER
 l mod ul =non-float =
-ULONG
+UINTEGER
 
 bitops (l, ul):
 
 l shl ul =non-float =
-ULONG
+UINTEGER
 l shr ul =non-float =
-ULONG
+UINTEGER
 l and ul =non-float =
-ULONG
+UINTEGER
 l or ul =non-float =
-ULONG
+UINTEGER
 l xor ul =non-float =
-ULONG
+UINTEGER
 l eqv ul =non-float =
-ULONG
+UINTEGER
 l imp ul =non-float =
-ULONG
+UINTEGER
 
 relational ops (l, ul):
 
@@ -8826,36 +8826,36 @@ INTEGER
 math ops (l, enum1a):
 
 l + enum1a =max =
-LONG
+INTEGER
 l -enum1a =max =
-LONG
+INTEGER
 l * enum1a =max =
-LONG
+INTEGER
 l / enum1a =float =
 DOUBLE
 l ^ enum1a =float =
 DOUBLE
 l \ enum1a =non-float =
-LONG
+INTEGER
 l mod enum1a =non-float =
-LONG
+INTEGER
 
 bitops (l, enum1a):
 
 l shl enum1a =non-float =
-LONG
+INTEGER
 l shr enum1a =non-float =
-LONG
+INTEGER
 l and enum1a =non-float =
-LONG
+INTEGER
 l or enum1a =non-float =
-LONG
+INTEGER
 l xor enum1a =non-float =
-LONG
+INTEGER
 l eqv enum1a =non-float =
-LONG
+INTEGER
 l imp enum1a =non-float =
-LONG
+INTEGER
 
 relational ops (l, enum1a):
 
@@ -8879,36 +8879,36 @@ INTEGER
 math ops (b, l):
 
 b + l =max =
-LONG
+INTEGER
 b -l =max =
-LONG
+INTEGER
 b * l =max =
-LONG
+INTEGER
 b / l =float =
 DOUBLE
 b ^ l =float =
 DOUBLE
 b \ l =non-float =
-LONG
+INTEGER
 b mod l =non-float =
-LONG
+INTEGER
 
 bitops (b, l):
 
 b shl l =non-float =
-LONG
+INTEGER
 b shr l =non-float =
-LONG
+INTEGER
 b and l =non-float =
-LONG
+INTEGER
 b or l =non-float =
-LONG
+INTEGER
 b xor l =non-float =
-LONG
+INTEGER
 b eqv l =non-float =
-LONG
+INTEGER
 b imp l =non-float =
-LONG
+INTEGER
 
 relational ops (b, l):
 
@@ -8932,36 +8932,36 @@ INTEGER
 math ops (ub, l):
 
 ub + l =max =
-LONG
+INTEGER
 ub -l =max =
-LONG
+INTEGER
 ub * l =max =
-LONG
+INTEGER
 ub / l =float =
 DOUBLE
 ub ^ l =float =
 DOUBLE
 ub \ l =non-float =
-LONG
+INTEGER
 ub mod l =non-float =
-LONG
+INTEGER
 
 bitops (ub, l):
 
 ub shl l =non-float =
-LONG
+INTEGER
 ub shr l =non-float =
-LONG
+INTEGER
 ub and l =non-float =
-LONG
+INTEGER
 ub or l =non-float =
-LONG
+INTEGER
 ub xor l =non-float =
-LONG
+INTEGER
 ub eqv l =non-float =
-LONG
+INTEGER
 ub imp l =non-float =
-LONG
+INTEGER
 
 relational ops (ub, l):
 
@@ -8985,36 +8985,36 @@ INTEGER
 math ops (sh, l):
 
 sh + l =max =
-LONG
+INTEGER
 sh -l =max =
-LONG
+INTEGER
 sh * l =max =
-LONG
+INTEGER
 sh / l =float =
 DOUBLE
 sh ^ l =float =
 DOUBLE
 sh \ l =non-float =
-LONG
+INTEGER
 sh mod l =non-float =
-LONG
+INTEGER
 
 bitops (sh, l):
 
 sh shl l =non-float =
-LONG
+INTEGER
 sh shr l =non-float =
-LONG
+INTEGER
 sh and l =non-float =
-LONG
+INTEGER
 sh or l =non-float =
-LONG
+INTEGER
 sh xor l =non-float =
-LONG
+INTEGER
 sh eqv l =non-float =
-LONG
+INTEGER
 sh imp l =non-float =
-LONG
+INTEGER
 
 relational ops (sh, l):
 
@@ -9038,36 +9038,36 @@ INTEGER
 math ops (ush, l):
 
 ush + l =max =
-LONG
+INTEGER
 ush -l =max =
-LONG
+INTEGER
 ush * l =max =
-LONG
+INTEGER
 ush / l =float =
 DOUBLE
 ush ^ l =float =
 DOUBLE
 ush \ l =non-float =
-LONG
+INTEGER
 ush mod l =non-float =
-LONG
+INTEGER
 
 bitops (ush, l):
 
 ush shl l =non-float =
-LONG
+INTEGER
 ush shr l =non-float =
-LONG
+INTEGER
 ush and l =non-float =
-LONG
+INTEGER
 ush or l =non-float =
-LONG
+INTEGER
 ush xor l =non-float =
-LONG
+INTEGER
 ush eqv l =non-float =
-LONG
+INTEGER
 ush imp l =non-float =
-LONG
+INTEGER
 
 relational ops (ush, l):
 
@@ -9091,36 +9091,36 @@ INTEGER
 math ops (i, l):
 
 i + l =max =
-LONG
+INTEGER
 i -l =max =
-LONG
+INTEGER
 i * l =max =
-LONG
+INTEGER
 i / l =float =
 DOUBLE
 i ^ l =float =
 DOUBLE
 i \ l =non-float =
-LONG
+INTEGER
 i mod l =non-float =
-LONG
+INTEGER
 
 bitops (i, l):
 
 i shl l =non-float =
-LONG
+INTEGER
 i shr l =non-float =
-LONG
+INTEGER
 i and l =non-float =
-LONG
+INTEGER
 i or l =non-float =
-LONG
+INTEGER
 i xor l =non-float =
-LONG
+INTEGER
 i eqv l =non-float =
-LONG
+INTEGER
 i imp l =non-float =
-LONG
+INTEGER
 
 relational ops (i, l):
 
@@ -9144,36 +9144,36 @@ INTEGER
 math ops (ui, l):
 
 ui + l =max =
-LONG
+UINTEGER
 ui -l =max =
-LONG
+UINTEGER
 ui * l =max =
-LONG
+UINTEGER
 ui / l =float =
 DOUBLE
 ui ^ l =float =
 DOUBLE
 ui \ l =non-float =
-LONG
+UINTEGER
 ui mod l =non-float =
-LONG
+UINTEGER
 
 bitops (ui, l):
 
 ui shl l =non-float =
-LONG
+UINTEGER
 ui shr l =non-float =
-LONG
+UINTEGER
 ui and l =non-float =
-LONG
+UINTEGER
 ui or l =non-float =
-LONG
+UINTEGER
 ui xor l =non-float =
-LONG
+UINTEGER
 ui eqv l =non-float =
-LONG
+UINTEGER
 ui imp l =non-float =
-LONG
+UINTEGER
 
 relational ops (ui, l):
 
@@ -9197,36 +9197,36 @@ INTEGER
 math ops (l, l):
 
 l + l =max =
-LONG
+INTEGER
 l -l =max =
-LONG
+INTEGER
 l * l =max =
-LONG
+INTEGER
 l / l =float =
 DOUBLE
 l ^ l =float =
 DOUBLE
 l \ l =non-float =
-LONG
+INTEGER
 l mod l =non-float =
-LONG
+INTEGER
 
 bitops (l, l):
 
 l shl l =non-float =
-LONG
+INTEGER
 l shr l =non-float =
-LONG
+INTEGER
 l and l =non-float =
-LONG
+INTEGER
 l or l =non-float =
-LONG
+INTEGER
 l xor l =non-float =
-LONG
+INTEGER
 l eqv l =non-float =
-LONG
+INTEGER
 l imp l =non-float =
-LONG
+INTEGER
 
 relational ops (l, l):
 
@@ -9250,36 +9250,36 @@ INTEGER
 math ops (ul, l):
 
 ul + l =max =
-ULONG
+UINTEGER
 ul -l =max =
-ULONG
+UINTEGER
 ul * l =max =
-ULONG
+UINTEGER
 ul / l =float =
 DOUBLE
 ul ^ l =float =
 DOUBLE
 ul \ l =non-float =
-ULONG
+UINTEGER
 ul mod l =non-float =
-ULONG
+UINTEGER
 
 bitops (ul, l):
 
 ul shl l =non-float =
-ULONG
+UINTEGER
 ul shr l =non-float =
-ULONG
+UINTEGER
 ul and l =non-float =
-ULONG
+UINTEGER
 ul or l =non-float =
-ULONG
+UINTEGER
 ul xor l =non-float =
-ULONG
+UINTEGER
 ul eqv l =non-float =
-ULONG
+UINTEGER
 ul imp l =non-float =
-ULONG
+UINTEGER
 
 relational ops (ul, l):
 
@@ -9409,36 +9409,36 @@ INTEGER
 math ops (enum1a, l):
 
 enum1a + l =max =
-LONG
+INTEGER
 enum1a -l =max =
-LONG
+INTEGER
 enum1a * l =max =
-LONG
+INTEGER
 enum1a / l =float =
 DOUBLE
 enum1a ^ l =float =
 DOUBLE
 enum1a \ l =non-float =
-LONG
+INTEGER
 enum1a mod l =non-float =
-LONG
+INTEGER
 
 bitops (enum1a, l):
 
 enum1a shl l =non-float =
-LONG
+INTEGER
 enum1a shr l =non-float =
-LONG
+INTEGER
 enum1a and l =non-float =
-LONG
+INTEGER
 enum1a or l =non-float =
-LONG
+INTEGER
 enum1a xor l =non-float =
-LONG
+INTEGER
 enum1a eqv l =non-float =
-LONG
+INTEGER
 enum1a imp l =non-float =
-LONG
+INTEGER
 
 relational ops (enum1a, l):
 
@@ -9472,26 +9472,26 @@ DOUBLE
 l ^ f =float =
 DOUBLE
 l \ f =non-float =
-LONG
+INTEGER
 l mod f =non-float =
-LONG
+INTEGER
 
 bitops (l, f):
 
 l shl f =non-float =
-LONG
+INTEGER
 l shr f =non-float =
-LONG
+INTEGER
 l and f =non-float =
-LONG
+INTEGER
 l or f =non-float =
-LONG
+INTEGER
 l xor f =non-float =
-LONG
+INTEGER
 l eqv f =non-float =
-LONG
+INTEGER
 l imp f =non-float =
-LONG
+INTEGER
 
 relational ops (l, f):
 
@@ -9525,26 +9525,26 @@ DOUBLE
 l ^ d =float =
 DOUBLE
 l \ d =non-float =
-LONG
+INTEGER
 l mod d =non-float =
-LONG
+INTEGER
 
 bitops (l, d):
 
 l shl d =non-float =
-LONG
+INTEGER
 l shr d =non-float =
-LONG
+INTEGER
 l and d =non-float =
-LONG
+INTEGER
 l or d =non-float =
-LONG
+INTEGER
 l xor d =non-float =
-LONG
+INTEGER
 l eqv d =non-float =
-LONG
+INTEGER
 l imp d =non-float =
-LONG
+INTEGER
 
 relational ops (l, d):
 
@@ -9578,26 +9578,26 @@ DOUBLE
 f ^ l =float =
 DOUBLE
 f \ l =non-float =
-LONG
+INTEGER
 f mod l =non-float =
-LONG
+INTEGER
 
 bitops (f, l):
 
 f shl l =non-float =
-LONG
+INTEGER
 f shr l =non-float =
-LONG
+INTEGER
 f and l =non-float =
-LONG
+INTEGER
 f or l =non-float =
-LONG
+INTEGER
 f xor l =non-float =
-LONG
+INTEGER
 f eqv l =non-float =
-LONG
+INTEGER
 f imp l =non-float =
-LONG
+INTEGER
 
 relational ops (f, l):
 
@@ -9631,26 +9631,26 @@ DOUBLE
 d ^ l =float =
 DOUBLE
 d \ l =non-float =
-LONG
+INTEGER
 d mod l =non-float =
-LONG
+INTEGER
 
 bitops (d, l):
 
 d shl l =non-float =
-LONG
+INTEGER
 d shr l =non-float =
-LONG
+INTEGER
 d and l =non-float =
-LONG
+INTEGER
 d or l =non-float =
-LONG
+INTEGER
 d xor l =non-float =
-LONG
+INTEGER
 d eqv l =non-float =
-LONG
+INTEGER
 d imp l =non-float =
-LONG
+INTEGER
 
 relational ops (d, l):
 
@@ -9677,36 +9677,36 @@ INTEGER
 math ops (ul, b):
 
 ul + b =max =
-ULONG
+UINTEGER
 ul -b =max =
-ULONG
+UINTEGER
 ul * b =max =
-ULONG
+UINTEGER
 ul / b =float =
 DOUBLE
 ul ^ b =float =
 DOUBLE
 ul \ b =non-float =
-ULONG
+UINTEGER
 ul mod b =non-float =
-ULONG
+UINTEGER
 
 bitops (ul, b):
 
 ul shl b =non-float =
-ULONG
+UINTEGER
 ul shr b =non-float =
-ULONG
+UINTEGER
 ul and b =non-float =
-ULONG
+UINTEGER
 ul or b =non-float =
-ULONG
+UINTEGER
 ul xor b =non-float =
-ULONG
+UINTEGER
 ul eqv b =non-float =
-ULONG
+UINTEGER
 ul imp b =non-float =
-ULONG
+UINTEGER
 
 relational ops (ul, b):
 
@@ -9730,36 +9730,36 @@ INTEGER
 math ops (ul, ub):
 
 ul + ub =max =
-ULONG
+UINTEGER
 ul -ub =max =
-ULONG
+UINTEGER
 ul * ub =max =
-ULONG
+UINTEGER
 ul / ub =float =
 DOUBLE
 ul ^ ub =float =
 DOUBLE
 ul \ ub =non-float =
-ULONG
+UINTEGER
 ul mod ub =non-float =
-ULONG
+UINTEGER
 
 bitops (ul, ub):
 
 ul shl ub =non-float =
-ULONG
+UINTEGER
 ul shr ub =non-float =
-ULONG
+UINTEGER
 ul and ub =non-float =
-ULONG
+UINTEGER
 ul or ub =non-float =
-ULONG
+UINTEGER
 ul xor ub =non-float =
-ULONG
+UINTEGER
 ul eqv ub =non-float =
-ULONG
+UINTEGER
 ul imp ub =non-float =
-ULONG
+UINTEGER
 
 relational ops (ul, ub):
 
@@ -9783,36 +9783,36 @@ INTEGER
 math ops (ul, sh):
 
 ul + sh =max =
-ULONG
+UINTEGER
 ul -sh =max =
-ULONG
+UINTEGER
 ul * sh =max =
-ULONG
+UINTEGER
 ul / sh =float =
 DOUBLE
 ul ^ sh =float =
 DOUBLE
 ul \ sh =non-float =
-ULONG
+UINTEGER
 ul mod sh =non-float =
-ULONG
+UINTEGER
 
 bitops (ul, sh):
 
 ul shl sh =non-float =
-ULONG
+UINTEGER
 ul shr sh =non-float =
-ULONG
+UINTEGER
 ul and sh =non-float =
-ULONG
+UINTEGER
 ul or sh =non-float =
-ULONG
+UINTEGER
 ul xor sh =non-float =
-ULONG
+UINTEGER
 ul eqv sh =non-float =
-ULONG
+UINTEGER
 ul imp sh =non-float =
-ULONG
+UINTEGER
 
 relational ops (ul, sh):
 
@@ -9836,36 +9836,36 @@ INTEGER
 math ops (ul, ush):
 
 ul + ush =max =
-ULONG
+UINTEGER
 ul -ush =max =
-ULONG
+UINTEGER
 ul * ush =max =
-ULONG
+UINTEGER
 ul / ush =float =
 DOUBLE
 ul ^ ush =float =
 DOUBLE
 ul \ ush =non-float =
-ULONG
+UINTEGER
 ul mod ush =non-float =
-ULONG
+UINTEGER
 
 bitops (ul, ush):
 
 ul shl ush =non-float =
-ULONG
+UINTEGER
 ul shr ush =non-float =
-ULONG
+UINTEGER
 ul and ush =non-float =
-ULONG
+UINTEGER
 ul or ush =non-float =
-ULONG
+UINTEGER
 ul xor ush =non-float =
-ULONG
+UINTEGER
 ul eqv ush =non-float =
-ULONG
+UINTEGER
 ul imp ush =non-float =
-ULONG
+UINTEGER
 
 relational ops (ul, ush):
 
@@ -9889,36 +9889,36 @@ INTEGER
 math ops (ul, i):
 
 ul + i =max =
-ULONG
+UINTEGER
 ul -i =max =
-ULONG
+UINTEGER
 ul * i =max =
-ULONG
+UINTEGER
 ul / i =float =
 DOUBLE
 ul ^ i =float =
 DOUBLE
 ul \ i =non-float =
-ULONG
+UINTEGER
 ul mod i =non-float =
-ULONG
+UINTEGER
 
 bitops (ul, i):
 
 ul shl i =non-float =
-ULONG
+UINTEGER
 ul shr i =non-float =
-ULONG
+UINTEGER
 ul and i =non-float =
-ULONG
+UINTEGER
 ul or i =non-float =
-ULONG
+UINTEGER
 ul xor i =non-float =
-ULONG
+UINTEGER
 ul eqv i =non-float =
-ULONG
+UINTEGER
 ul imp i =non-float =
-ULONG
+UINTEGER
 
 relational ops (ul, i):
 
@@ -9942,36 +9942,36 @@ INTEGER
 math ops (ul, ui):
 
 ul + ui =max =
-ULONG
+UINTEGER
 ul -ui =max =
-ULONG
+UINTEGER
 ul * ui =max =
-ULONG
+UINTEGER
 ul / ui =float =
 DOUBLE
 ul ^ ui =float =
 DOUBLE
 ul \ ui =non-float =
-ULONG
+UINTEGER
 ul mod ui =non-float =
-ULONG
+UINTEGER
 
 bitops (ul, ui):
 
 ul shl ui =non-float =
-ULONG
+UINTEGER
 ul shr ui =non-float =
-ULONG
+UINTEGER
 ul and ui =non-float =
-ULONG
+UINTEGER
 ul or ui =non-float =
-ULONG
+UINTEGER
 ul xor ui =non-float =
-ULONG
+UINTEGER
 ul eqv ui =non-float =
-ULONG
+UINTEGER
 ul imp ui =non-float =
-ULONG
+UINTEGER
 
 relational ops (ul, ui):
 
@@ -9995,36 +9995,36 @@ INTEGER
 math ops (ul, l):
 
 ul + l =max =
-ULONG
+UINTEGER
 ul -l =max =
-ULONG
+UINTEGER
 ul * l =max =
-ULONG
+UINTEGER
 ul / l =float =
 DOUBLE
 ul ^ l =float =
 DOUBLE
 ul \ l =non-float =
-ULONG
+UINTEGER
 ul mod l =non-float =
-ULONG
+UINTEGER
 
 bitops (ul, l):
 
 ul shl l =non-float =
-ULONG
+UINTEGER
 ul shr l =non-float =
-ULONG
+UINTEGER
 ul and l =non-float =
-ULONG
+UINTEGER
 ul or l =non-float =
-ULONG
+UINTEGER
 ul xor l =non-float =
-ULONG
+UINTEGER
 ul eqv l =non-float =
-ULONG
+UINTEGER
 ul imp l =non-float =
-ULONG
+UINTEGER
 
 relational ops (ul, l):
 
@@ -10048,36 +10048,36 @@ INTEGER
 math ops (ul, ul):
 
 ul + ul =max =
-ULONG
+UINTEGER
 ul -ul =max =
-ULONG
+UINTEGER
 ul * ul =max =
-ULONG
+UINTEGER
 ul / ul =float =
 DOUBLE
 ul ^ ul =float =
 DOUBLE
 ul \ ul =non-float =
-ULONG
+UINTEGER
 ul mod ul =non-float =
-ULONG
+UINTEGER
 
 bitops (ul, ul):
 
 ul shl ul =non-float =
-ULONG
+UINTEGER
 ul shr ul =non-float =
-ULONG
+UINTEGER
 ul and ul =non-float =
-ULONG
+UINTEGER
 ul or ul =non-float =
-ULONG
+UINTEGER
 ul xor ul =non-float =
-ULONG
+UINTEGER
 ul eqv ul =non-float =
-ULONG
+UINTEGER
 ul imp ul =non-float =
-ULONG
+UINTEGER
 
 relational ops (ul, ul):
 
@@ -10207,36 +10207,36 @@ INTEGER
 math ops (ul, enum1a):
 
 ul + enum1a =max =
-ULONG
+UINTEGER
 ul -enum1a =max =
-ULONG
+UINTEGER
 ul * enum1a =max =
-ULONG
+UINTEGER
 ul / enum1a =float =
 DOUBLE
 ul ^ enum1a =float =
 DOUBLE
 ul \ enum1a =non-float =
-ULONG
+UINTEGER
 ul mod enum1a =non-float =
-ULONG
+UINTEGER
 
 bitops (ul, enum1a):
 
 ul shl enum1a =non-float =
-ULONG
+UINTEGER
 ul shr enum1a =non-float =
-ULONG
+UINTEGER
 ul and enum1a =non-float =
-ULONG
+UINTEGER
 ul or enum1a =non-float =
-ULONG
+UINTEGER
 ul xor enum1a =non-float =
-ULONG
+UINTEGER
 ul eqv enum1a =non-float =
-ULONG
+UINTEGER
 ul imp enum1a =non-float =
-ULONG
+UINTEGER
 
 relational ops (ul, enum1a):
 
@@ -10260,36 +10260,36 @@ INTEGER
 math ops (b, ul):
 
 b + ul =max =
-ULONG
+UINTEGER
 b -ul =max =
-ULONG
+UINTEGER
 b * ul =max =
-ULONG
+UINTEGER
 b / ul =float =
 DOUBLE
 b ^ ul =float =
 DOUBLE
 b \ ul =non-float =
-ULONG
+UINTEGER
 b mod ul =non-float =
-ULONG
+UINTEGER
 
 bitops (b, ul):
 
 b shl ul =non-float =
-ULONG
+UINTEGER
 b shr ul =non-float =
-ULONG
+UINTEGER
 b and ul =non-float =
-ULONG
+UINTEGER
 b or ul =non-float =
-ULONG
+UINTEGER
 b xor ul =non-float =
-ULONG
+UINTEGER
 b eqv ul =non-float =
-ULONG
+UINTEGER
 b imp ul =non-float =
-ULONG
+UINTEGER
 
 relational ops (b, ul):
 
@@ -10313,36 +10313,36 @@ INTEGER
 math ops (ub, ul):
 
 ub + ul =max =
-ULONG
+UINTEGER
 ub -ul =max =
-ULONG
+UINTEGER
 ub * ul =max =
-ULONG
+UINTEGER
 ub / ul =float =
 DOUBLE
 ub ^ ul =float =
 DOUBLE
 ub \ ul =non-float =
-ULONG
+UINTEGER
 ub mod ul =non-float =
-ULONG
+UINTEGER
 
 bitops (ub, ul):
 
 ub shl ul =non-float =
-ULONG
+UINTEGER
 ub shr ul =non-float =
-ULONG
+UINTEGER
 ub and ul =non-float =
-ULONG
+UINTEGER
 ub or ul =non-float =
-ULONG
+UINTEGER
 ub xor ul =non-float =
-ULONG
+UINTEGER
 ub eqv ul =non-float =
-ULONG
+UINTEGER
 ub imp ul =non-float =
-ULONG
+UINTEGER
 
 relational ops (ub, ul):
 
@@ -10366,36 +10366,36 @@ INTEGER
 math ops (sh, ul):
 
 sh + ul =max =
-ULONG
+UINTEGER
 sh -ul =max =
-ULONG
+UINTEGER
 sh * ul =max =
-ULONG
+UINTEGER
 sh / ul =float =
 DOUBLE
 sh ^ ul =float =
 DOUBLE
 sh \ ul =non-float =
-ULONG
+UINTEGER
 sh mod ul =non-float =
-ULONG
+UINTEGER
 
 bitops (sh, ul):
 
 sh shl ul =non-float =
-ULONG
+UINTEGER
 sh shr ul =non-float =
-ULONG
+UINTEGER
 sh and ul =non-float =
-ULONG
+UINTEGER
 sh or ul =non-float =
-ULONG
+UINTEGER
 sh xor ul =non-float =
-ULONG
+UINTEGER
 sh eqv ul =non-float =
-ULONG
+UINTEGER
 sh imp ul =non-float =
-ULONG
+UINTEGER
 
 relational ops (sh, ul):
 
@@ -10419,36 +10419,36 @@ INTEGER
 math ops (ush, ul):
 
 ush + ul =max =
-ULONG
+UINTEGER
 ush -ul =max =
-ULONG
+UINTEGER
 ush * ul =max =
-ULONG
+UINTEGER
 ush / ul =float =
 DOUBLE
 ush ^ ul =float =
 DOUBLE
 ush \ ul =non-float =
-ULONG
+UINTEGER
 ush mod ul =non-float =
-ULONG
+UINTEGER
 
 bitops (ush, ul):
 
 ush shl ul =non-float =
-ULONG
+UINTEGER
 ush shr ul =non-float =
-ULONG
+UINTEGER
 ush and ul =non-float =
-ULONG
+UINTEGER
 ush or ul =non-float =
-ULONG
+UINTEGER
 ush xor ul =non-float =
-ULONG
+UINTEGER
 ush eqv ul =non-float =
-ULONG
+UINTEGER
 ush imp ul =non-float =
-ULONG
+UINTEGER
 
 relational ops (ush, ul):
 
@@ -10472,36 +10472,36 @@ INTEGER
 math ops (i, ul):
 
 i + ul =max =
-ULONG
+UINTEGER
 i -ul =max =
-ULONG
+UINTEGER
 i * ul =max =
-ULONG
+UINTEGER
 i / ul =float =
 DOUBLE
 i ^ ul =float =
 DOUBLE
 i \ ul =non-float =
-ULONG
+UINTEGER
 i mod ul =non-float =
-ULONG
+UINTEGER
 
 bitops (i, ul):
 
 i shl ul =non-float =
-ULONG
+UINTEGER
 i shr ul =non-float =
-ULONG
+UINTEGER
 i and ul =non-float =
-ULONG
+UINTEGER
 i or ul =non-float =
-ULONG
+UINTEGER
 i xor ul =non-float =
-ULONG
+UINTEGER
 i eqv ul =non-float =
-ULONG
+UINTEGER
 i imp ul =non-float =
-ULONG
+UINTEGER
 
 relational ops (i, ul):
 
@@ -10525,36 +10525,36 @@ INTEGER
 math ops (ui, ul):
 
 ui + ul =max =
-ULONG
+UINTEGER
 ui -ul =max =
-ULONG
+UINTEGER
 ui * ul =max =
-ULONG
+UINTEGER
 ui / ul =float =
 DOUBLE
 ui ^ ul =float =
 DOUBLE
 ui \ ul =non-float =
-ULONG
+UINTEGER
 ui mod ul =non-float =
-ULONG
+UINTEGER
 
 bitops (ui, ul):
 
 ui shl ul =non-float =
-ULONG
+UINTEGER
 ui shr ul =non-float =
-ULONG
+UINTEGER
 ui and ul =non-float =
-ULONG
+UINTEGER
 ui or ul =non-float =
-ULONG
+UINTEGER
 ui xor ul =non-float =
-ULONG
+UINTEGER
 ui eqv ul =non-float =
-ULONG
+UINTEGER
 ui imp ul =non-float =
-ULONG
+UINTEGER
 
 relational ops (ui, ul):
 
@@ -10578,36 +10578,36 @@ INTEGER
 math ops (l, ul):
 
 l + ul =max =
-ULONG
+UINTEGER
 l -ul =max =
-ULONG
+UINTEGER
 l * ul =max =
-ULONG
+UINTEGER
 l / ul =float =
 DOUBLE
 l ^ ul =float =
 DOUBLE
 l \ ul =non-float =
-ULONG
+UINTEGER
 l mod ul =non-float =
-ULONG
+UINTEGER
 
 bitops (l, ul):
 
 l shl ul =non-float =
-ULONG
+UINTEGER
 l shr ul =non-float =
-ULONG
+UINTEGER
 l and ul =non-float =
-ULONG
+UINTEGER
 l or ul =non-float =
-ULONG
+UINTEGER
 l xor ul =non-float =
-ULONG
+UINTEGER
 l eqv ul =non-float =
-ULONG
+UINTEGER
 l imp ul =non-float =
-ULONG
+UINTEGER
 
 relational ops (l, ul):
 
@@ -10631,36 +10631,36 @@ INTEGER
 math ops (ul, ul):
 
 ul + ul =max =
-ULONG
+UINTEGER
 ul -ul =max =
-ULONG
+UINTEGER
 ul * ul =max =
-ULONG
+UINTEGER
 ul / ul =float =
 DOUBLE
 ul ^ ul =float =
 DOUBLE
 ul \ ul =non-float =
-ULONG
+UINTEGER
 ul mod ul =non-float =
-ULONG
+UINTEGER
 
 bitops (ul, ul):
 
 ul shl ul =non-float =
-ULONG
+UINTEGER
 ul shr ul =non-float =
-ULONG
+UINTEGER
 ul and ul =non-float =
-ULONG
+UINTEGER
 ul or ul =non-float =
-ULONG
+UINTEGER
 ul xor ul =non-float =
-ULONG
+UINTEGER
 ul eqv ul =non-float =
-ULONG
+UINTEGER
 ul imp ul =non-float =
-ULONG
+UINTEGER
 
 relational ops (ul, ul):
 
@@ -10790,36 +10790,36 @@ INTEGER
 math ops (enum1a, ul):
 
 enum1a + ul =max =
-ULONG
+UINTEGER
 enum1a -ul =max =
-ULONG
+UINTEGER
 enum1a * ul =max =
-ULONG
+UINTEGER
 enum1a / ul =float =
 DOUBLE
 enum1a ^ ul =float =
 DOUBLE
 enum1a \ ul =non-float =
-ULONG
+UINTEGER
 enum1a mod ul =non-float =
-ULONG
+UINTEGER
 
 bitops (enum1a, ul):
 
 enum1a shl ul =non-float =
-ULONG
+UINTEGER
 enum1a shr ul =non-float =
-ULONG
+UINTEGER
 enum1a and ul =non-float =
-ULONG
+UINTEGER
 enum1a or ul =non-float =
-ULONG
+UINTEGER
 enum1a xor ul =non-float =
-ULONG
+UINTEGER
 enum1a eqv ul =non-float =
-ULONG
+UINTEGER
 enum1a imp ul =non-float =
-ULONG
+UINTEGER
 
 relational ops (enum1a, ul):
 
@@ -10853,26 +10853,26 @@ DOUBLE
 ul ^ f =float =
 DOUBLE
 ul \ f =non-float =
-ULONG
+UINTEGER
 ul mod f =non-float =
-ULONG
+UINTEGER
 
 bitops (ul, f):
 
 ul shl f =non-float =
-ULONG
+UINTEGER
 ul shr f =non-float =
-ULONG
+UINTEGER
 ul and f =non-float =
-ULONG
+UINTEGER
 ul or f =non-float =
-ULONG
+UINTEGER
 ul xor f =non-float =
-ULONG
+UINTEGER
 ul eqv f =non-float =
-ULONG
+UINTEGER
 ul imp f =non-float =
-ULONG
+UINTEGER
 
 relational ops (ul, f):
 
@@ -10906,26 +10906,26 @@ DOUBLE
 ul ^ d =float =
 DOUBLE
 ul \ d =non-float =
-ULONG
+UINTEGER
 ul mod d =non-float =
-ULONG
+UINTEGER
 
 bitops (ul, d):
 
 ul shl d =non-float =
-ULONG
+UINTEGER
 ul shr d =non-float =
-ULONG
+UINTEGER
 ul and d =non-float =
-ULONG
+UINTEGER
 ul or d =non-float =
-ULONG
+UINTEGER
 ul xor d =non-float =
-ULONG
+UINTEGER
 ul eqv d =non-float =
-ULONG
+UINTEGER
 ul imp d =non-float =
-ULONG
+UINTEGER
 
 relational ops (ul, d):
 
@@ -10959,26 +10959,26 @@ DOUBLE
 f ^ ul =float =
 DOUBLE
 f \ ul =non-float =
-ULONG
+UINTEGER
 f mod ul =non-float =
-ULONG
+UINTEGER
 
 bitops (f, ul):
 
 f shl ul =non-float =
-ULONG
+UINTEGER
 f shr ul =non-float =
-ULONG
+UINTEGER
 f and ul =non-float =
-ULONG
+UINTEGER
 f or ul =non-float =
-ULONG
+UINTEGER
 f xor ul =non-float =
-ULONG
+UINTEGER
 f eqv ul =non-float =
-ULONG
+UINTEGER
 f imp ul =non-float =
-ULONG
+UINTEGER
 
 relational ops (f, ul):
 
@@ -11012,26 +11012,26 @@ DOUBLE
 d ^ ul =float =
 DOUBLE
 d \ ul =non-float =
-ULONG
+UINTEGER
 d mod ul =non-float =
-ULONG
+UINTEGER
 
 bitops (d, ul):
 
 d shl ul =non-float =
-ULONG
+UINTEGER
 d shr ul =non-float =
-ULONG
+UINTEGER
 d and ul =non-float =
-ULONG
+UINTEGER
 d or ul =non-float =
-ULONG
+UINTEGER
 d xor ul =non-float =
-ULONG
+UINTEGER
 d eqv ul =non-float =
-ULONG
+UINTEGER
 d imp ul =non-float =
-ULONG
+UINTEGER
 
 relational ops (d, ul):
 
@@ -13883,26 +13883,26 @@ DOUBLE
 f ^ ub =float =
 DOUBLE
 f \ ub =non-float =
-UINTEGER
+INTEGER
 f mod ub =non-float =
-UINTEGER
+INTEGER
 
 bitops (f, ub):
 
 f shl ub =non-float =
-UINTEGER
+INTEGER
 f shr ub =non-float =
-UINTEGER
+INTEGER
 f and ub =non-float =
-UINTEGER
+INTEGER
 f or ub =non-float =
-UINTEGER
+INTEGER
 f xor ub =non-float =
-UINTEGER
+INTEGER
 f eqv ub =non-float =
-UINTEGER
+INTEGER
 f imp ub =non-float =
-UINTEGER
+INTEGER
 
 relational ops (f, ub):
 
@@ -14148,26 +14148,26 @@ DOUBLE
 f ^ l =float =
 DOUBLE
 f \ l =non-float =
-LONG
+INTEGER
 f mod l =non-float =
-LONG
+INTEGER
 
 bitops (f, l):
 
 f shl l =non-float =
-LONG
+INTEGER
 f shr l =non-float =
-LONG
+INTEGER
 f and l =non-float =
-LONG
+INTEGER
 f or l =non-float =
-LONG
+INTEGER
 f xor l =non-float =
-LONG
+INTEGER
 f eqv l =non-float =
-LONG
+INTEGER
 f imp l =non-float =
-LONG
+INTEGER
 
 relational ops (f, l):
 
@@ -14201,26 +14201,26 @@ DOUBLE
 f ^ ul =float =
 DOUBLE
 f \ ul =non-float =
-ULONG
+UINTEGER
 f mod ul =non-float =
-ULONG
+UINTEGER
 
 bitops (f, ul):
 
 f shl ul =non-float =
-ULONG
+UINTEGER
 f shr ul =non-float =
-ULONG
+UINTEGER
 f and ul =non-float =
-ULONG
+UINTEGER
 f or ul =non-float =
-ULONG
+UINTEGER
 f xor ul =non-float =
-ULONG
+UINTEGER
 f eqv ul =non-float =
-ULONG
+UINTEGER
 f imp ul =non-float =
-ULONG
+UINTEGER
 
 relational ops (f, ul):
 
@@ -14466,26 +14466,26 @@ DOUBLE
 ub ^ f =float =
 DOUBLE
 ub \ f =non-float =
-UINTEGER
+INTEGER
 ub mod f =non-float =
-UINTEGER
+INTEGER
 
 bitops (ub, f):
 
 ub shl f =non-float =
-UINTEGER
+INTEGER
 ub shr f =non-float =
-UINTEGER
+INTEGER
 ub and f =non-float =
-UINTEGER
+INTEGER
 ub or f =non-float =
-UINTEGER
+INTEGER
 ub xor f =non-float =
-UINTEGER
+INTEGER
 ub eqv f =non-float =
-UINTEGER
+INTEGER
 ub imp f =non-float =
-UINTEGER
+INTEGER
 
 relational ops (ub, f):
 
@@ -14731,26 +14731,26 @@ DOUBLE
 l ^ f =float =
 DOUBLE
 l \ f =non-float =
-LONG
+INTEGER
 l mod f =non-float =
-LONG
+INTEGER
 
 bitops (l, f):
 
 l shl f =non-float =
-LONG
+INTEGER
 l shr f =non-float =
-LONG
+INTEGER
 l and f =non-float =
-LONG
+INTEGER
 l or f =non-float =
-LONG
+INTEGER
 l xor f =non-float =
-LONG
+INTEGER
 l eqv f =non-float =
-LONG
+INTEGER
 l imp f =non-float =
-LONG
+INTEGER
 
 relational ops (l, f):
 
@@ -14784,26 +14784,26 @@ DOUBLE
 ul ^ f =float =
 DOUBLE
 ul \ f =non-float =
-ULONG
+UINTEGER
 ul mod f =non-float =
-ULONG
+UINTEGER
 
 bitops (ul, f):
 
 ul shl f =non-float =
-ULONG
+UINTEGER
 ul shr f =non-float =
-ULONG
+UINTEGER
 ul and f =non-float =
-ULONG
+UINTEGER
 ul or f =non-float =
-ULONG
+UINTEGER
 ul xor f =non-float =
-ULONG
+UINTEGER
 ul eqv f =non-float =
-ULONG
+UINTEGER
 ul imp f =non-float =
-ULONG
+UINTEGER
 
 relational ops (ul, f):
 
@@ -15264,26 +15264,26 @@ DOUBLE
 d ^ ub =float =
 DOUBLE
 d \ ub =non-float =
-UINTEGER
+INTEGER
 d mod ub =non-float =
-UINTEGER
+INTEGER
 
 bitops (d, ub):
 
 d shl ub =non-float =
-UINTEGER
+INTEGER
 d shr ub =non-float =
-UINTEGER
+INTEGER
 d and ub =non-float =
-UINTEGER
+INTEGER
 d or ub =non-float =
-UINTEGER
+INTEGER
 d xor ub =non-float =
-UINTEGER
+INTEGER
 d eqv ub =non-float =
-UINTEGER
+INTEGER
 d imp ub =non-float =
-UINTEGER
+INTEGER
 
 relational ops (d, ub):
 
@@ -15529,26 +15529,26 @@ DOUBLE
 d ^ l =float =
 DOUBLE
 d \ l =non-float =
-LONG
+INTEGER
 d mod l =non-float =
-LONG
+INTEGER
 
 bitops (d, l):
 
 d shl l =non-float =
-LONG
+INTEGER
 d shr l =non-float =
-LONG
+INTEGER
 d and l =non-float =
-LONG
+INTEGER
 d or l =non-float =
-LONG
+INTEGER
 d xor l =non-float =
-LONG
+INTEGER
 d eqv l =non-float =
-LONG
+INTEGER
 d imp l =non-float =
-LONG
+INTEGER
 
 relational ops (d, l):
 
@@ -15582,26 +15582,26 @@ DOUBLE
 d ^ ul =float =
 DOUBLE
 d \ ul =non-float =
-ULONG
+UINTEGER
 d mod ul =non-float =
-ULONG
+UINTEGER
 
 bitops (d, ul):
 
 d shl ul =non-float =
-ULONG
+UINTEGER
 d shr ul =non-float =
-ULONG
+UINTEGER
 d and ul =non-float =
-ULONG
+UINTEGER
 d or ul =non-float =
-ULONG
+UINTEGER
 d xor ul =non-float =
-ULONG
+UINTEGER
 d eqv ul =non-float =
-ULONG
+UINTEGER
 d imp ul =non-float =
-ULONG
+UINTEGER
 
 relational ops (d, ul):
 
@@ -15847,26 +15847,26 @@ DOUBLE
 ub ^ d =float =
 DOUBLE
 ub \ d =non-float =
-UINTEGER
+INTEGER
 ub mod d =non-float =
-UINTEGER
+INTEGER
 
 bitops (ub, d):
 
 ub shl d =non-float =
-UINTEGER
+INTEGER
 ub shr d =non-float =
-UINTEGER
+INTEGER
 ub and d =non-float =
-UINTEGER
+INTEGER
 ub or d =non-float =
-UINTEGER
+INTEGER
 ub xor d =non-float =
-UINTEGER
+INTEGER
 ub eqv d =non-float =
-UINTEGER
+INTEGER
 ub imp d =non-float =
-UINTEGER
+INTEGER
 
 relational ops (ub, d):
 
@@ -16112,26 +16112,26 @@ DOUBLE
 l ^ d =float =
 DOUBLE
 l \ d =non-float =
-LONG
+INTEGER
 l mod d =non-float =
-LONG
+INTEGER
 
 bitops (l, d):
 
 l shl d =non-float =
-LONG
+INTEGER
 l shr d =non-float =
-LONG
+INTEGER
 l and d =non-float =
-LONG
+INTEGER
 l or d =non-float =
-LONG
+INTEGER
 l xor d =non-float =
-LONG
+INTEGER
 l eqv d =non-float =
-LONG
+INTEGER
 l imp d =non-float =
-LONG
+INTEGER
 
 relational ops (l, d):
 
@@ -16165,26 +16165,26 @@ DOUBLE
 ul ^ d =float =
 DOUBLE
 ul \ d =non-float =
-ULONG
+UINTEGER
 ul mod d =non-float =
-ULONG
+UINTEGER
 
 bitops (ul, d):
 
 ul shl d =non-float =
-ULONG
+UINTEGER
 ul shr d =non-float =
-ULONG
+UINTEGER
 ul and d =non-float =
-ULONG
+UINTEGER
 ul or d =non-float =
-ULONG
+UINTEGER
 ul xor d =non-float =
-ULONG
+UINTEGER
 ul eqv d =non-float =
-ULONG
+UINTEGER
 ul imp d =non-float =
-ULONG
+UINTEGER
 
 relational ops (ul, d):
 
@@ -16640,36 +16640,36 @@ INTEGER
 math ops (enum1a, ub):
 
 enum1a + ub =max =
-UINTEGER
+INTEGER
 enum1a -ub =max =
-UINTEGER
+INTEGER
 enum1a * ub =max =
-UINTEGER
+INTEGER
 enum1a / ub =float =
 DOUBLE
 enum1a ^ ub =float =
 DOUBLE
 enum1a \ ub =non-float =
-UINTEGER
+INTEGER
 enum1a mod ub =non-float =
-UINTEGER
+INTEGER
 
 bitops (enum1a, ub):
 
 enum1a shl ub =non-float =
-UINTEGER
+INTEGER
 enum1a shr ub =non-float =
-UINTEGER
+INTEGER
 enum1a and ub =non-float =
-UINTEGER
+INTEGER
 enum1a or ub =non-float =
-UINTEGER
+INTEGER
 enum1a xor ub =non-float =
-UINTEGER
+INTEGER
 enum1a eqv ub =non-float =
-UINTEGER
+INTEGER
 enum1a imp ub =non-float =
-UINTEGER
+INTEGER
 
 relational ops (enum1a, ub):
 
@@ -16905,36 +16905,36 @@ INTEGER
 math ops (enum1a, l):
 
 enum1a + l =max =
-LONG
+INTEGER
 enum1a -l =max =
-LONG
+INTEGER
 enum1a * l =max =
-LONG
+INTEGER
 enum1a / l =float =
 DOUBLE
 enum1a ^ l =float =
 DOUBLE
 enum1a \ l =non-float =
-LONG
+INTEGER
 enum1a mod l =non-float =
-LONG
+INTEGER
 
 bitops (enum1a, l):
 
 enum1a shl l =non-float =
-LONG
+INTEGER
 enum1a shr l =non-float =
-LONG
+INTEGER
 enum1a and l =non-float =
-LONG
+INTEGER
 enum1a or l =non-float =
-LONG
+INTEGER
 enum1a xor l =non-float =
-LONG
+INTEGER
 enum1a eqv l =non-float =
-LONG
+INTEGER
 enum1a imp l =non-float =
-LONG
+INTEGER
 
 relational ops (enum1a, l):
 
@@ -16958,36 +16958,36 @@ INTEGER
 math ops (enum1a, ul):
 
 enum1a + ul =max =
-ULONG
+UINTEGER
 enum1a -ul =max =
-ULONG
+UINTEGER
 enum1a * ul =max =
-ULONG
+UINTEGER
 enum1a / ul =float =
 DOUBLE
 enum1a ^ ul =float =
 DOUBLE
 enum1a \ ul =non-float =
-ULONG
+UINTEGER
 enum1a mod ul =non-float =
-ULONG
+UINTEGER
 
 bitops (enum1a, ul):
 
 enum1a shl ul =non-float =
-ULONG
+UINTEGER
 enum1a shr ul =non-float =
-ULONG
+UINTEGER
 enum1a and ul =non-float =
-ULONG
+UINTEGER
 enum1a or ul =non-float =
-ULONG
+UINTEGER
 enum1a xor ul =non-float =
-ULONG
+UINTEGER
 enum1a eqv ul =non-float =
-ULONG
+UINTEGER
 enum1a imp ul =non-float =
-ULONG
+UINTEGER
 
 relational ops (enum1a, ul):
 
@@ -17223,36 +17223,36 @@ INTEGER
 math ops (ub, enum1a):
 
 ub + enum1a =max =
-UINTEGER
+INTEGER
 ub -enum1a =max =
-UINTEGER
+INTEGER
 ub * enum1a =max =
-UINTEGER
+INTEGER
 ub / enum1a =float =
 DOUBLE
 ub ^ enum1a =float =
 DOUBLE
 ub \ enum1a =non-float =
-UINTEGER
+INTEGER
 ub mod enum1a =non-float =
-UINTEGER
+INTEGER
 
 bitops (ub, enum1a):
 
 ub shl enum1a =non-float =
-UINTEGER
+INTEGER
 ub shr enum1a =non-float =
-UINTEGER
+INTEGER
 ub and enum1a =non-float =
-UINTEGER
+INTEGER
 ub or enum1a =non-float =
-UINTEGER
+INTEGER
 ub xor enum1a =non-float =
-UINTEGER
+INTEGER
 ub eqv enum1a =non-float =
-UINTEGER
+INTEGER
 ub imp enum1a =non-float =
-UINTEGER
+INTEGER
 
 relational ops (ub, enum1a):
 
@@ -17488,36 +17488,36 @@ INTEGER
 math ops (l, enum1a):
 
 l + enum1a =max =
-LONG
+INTEGER
 l -enum1a =max =
-LONG
+INTEGER
 l * enum1a =max =
-LONG
+INTEGER
 l / enum1a =float =
 DOUBLE
 l ^ enum1a =float =
 DOUBLE
 l \ enum1a =non-float =
-LONG
+INTEGER
 l mod enum1a =non-float =
-LONG
+INTEGER
 
 bitops (l, enum1a):
 
 l shl enum1a =non-float =
-LONG
+INTEGER
 l shr enum1a =non-float =
-LONG
+INTEGER
 l and enum1a =non-float =
-LONG
+INTEGER
 l or enum1a =non-float =
-LONG
+INTEGER
 l xor enum1a =non-float =
-LONG
+INTEGER
 l eqv enum1a =non-float =
-LONG
+INTEGER
 l imp enum1a =non-float =
-LONG
+INTEGER
 
 relational ops (l, enum1a):
 
@@ -17541,36 +17541,36 @@ INTEGER
 math ops (ul, enum1a):
 
 ul + enum1a =max =
-ULONG
+UINTEGER
 ul -enum1a =max =
-ULONG
+UINTEGER
 ul * enum1a =max =
-ULONG
+UINTEGER
 ul / enum1a =float =
 DOUBLE
 ul ^ enum1a =float =
 DOUBLE
 ul \ enum1a =non-float =
-ULONG
+UINTEGER
 ul mod enum1a =non-float =
-ULONG
+UINTEGER
 
 bitops (ul, enum1a):
 
 ul shl enum1a =non-float =
-ULONG
+UINTEGER
 ul shr enum1a =non-float =
-ULONG
+UINTEGER
 ul and enum1a =non-float =
-ULONG
+UINTEGER
 ul or enum1a =non-float =
-ULONG
+UINTEGER
 ul xor enum1a =non-float =
-ULONG
+UINTEGER
 ul eqv enum1a =non-float =
-ULONG
+UINTEGER
 ul imp enum1a =non-float =
-ULONG
+UINTEGER
 
 relational ops (ul, enum1a):
 

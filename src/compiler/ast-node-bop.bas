@@ -846,6 +846,22 @@ private function hCheckDerefWcharPtr _
 	function = TRUE
 end function
 
+'' Convert an expression to the given type, preserving CONST bits, and also
+'' updating the corresponding helper variables
+private sub hConvOperand _
+	( _
+		byval newdtype as integer, _
+		byref dtype as integer, _
+		byref dclass as integer, _
+		byref n as ASTNODE ptr _
+	)
+
+	dtype = typeJoin( dtype, newdtype )
+	dclass = typeGetClass( newdtype )
+	n = astNewCONV( dtype, NULL, n )
+
+end sub
+
 '':::::
 function astNewBOP _
 	( _
@@ -859,6 +875,7 @@ function astNewBOP _
     dim as ASTNODE ptr n = any
     dim as integer ldtype = any, rdtype = any, dtype = any
     dim as integer ldclass = any, rdclass = any
+	dim as integer lrank = any, rrank = any, intrank = any, uintrank = any
     dim as integer is_str = any
     dim as FBSYMBOL ptr litsym = any, subtype = any
 
@@ -937,14 +954,10 @@ function astNewBOP _
 	'' (also, the result of relational BOPs is an integer anyways...)
 	''
 	if( typeGet( ldtype ) = FB_DATATYPE_ENUM ) then
-		ldtype = typeJoin( ldtype, FB_DATATYPE_INTEGER )
-		ldclass = FB_DATACLASS_INTEGER
-		l = astNewCONV( ldtype, NULL, l )
+		hConvOperand( FB_DATATYPE_INTEGER, ldtype, ldclass, l )
 	end if
 	if( typeGet( rdtype ) = FB_DATATYPE_ENUM ) then
-		rdtype = typeJoin( rdtype, FB_DATATYPE_INTEGER )
-		rdclass = FB_DATACLASS_INTEGER
-		r = astNewCONV( rdtype, NULL, r )
+		hConvOperand( FB_DATATYPE_INTEGER, rdtype, rdclass, r )
 	end if
 
     '' both zstrings? treat as string..
@@ -1149,26 +1162,71 @@ function astNewBOP _
 
     ''::::::
 
-	'' convert byte to int
-	if( typeGetSize( ldtype ) = 1 ) then
-		if( is_str = FALSE ) then
-			if( typeIsSigned( ldtype ) ) then
-				ldtype = typeJoin( ldtype, FB_DATATYPE_INTEGER )
-			else
-				ldtype = typeJoin( ldtype, FB_DATATYPE_UINT )
-			end if
-			l = astNewCONV( ldtype, NULL, l )
-		end if
-	end if
+	''
+	'' Promote smaller integer types to [U]INTEGER before the operation
+	''
+	'' - but not if it's -lang qb, because 16bit arithmetic should probably
+	''   not become 32bit there. It could matter for code like:
+	''        #lang "qb"
+	''        dim a as integer  '' 16-bit "integer" (SHORT internally)
+	''        dim b as integer
+	''        dim x as long
+	''        x = a + b
+	''   where the result of the 16bit BOP is assigned to a 32bit value.
+	''
+	'' - do nothing if this BOP is a string concatenation/comparison
+	'' - also, do nothing for float/UDT operands
+	''
+	'' - Pointers and bitfields should be treated as UINTEGER (their
+	''   "remap" types), i.e. they will effectively never be promoted.
+	''
+	''   Pointers can only appear in BOPs as part of pointer indexing,
+	''   which is a special case. The result type should always be the
+	''   pointer type, so it mustn't be converted here.
+	''
+	''   Bitfields must be treated as their remap type, since the BOP result
+	''   can't have bitfield type itself... (similar to enums)
+	''
+	'' - Enums would also be handled via their remap type here, but for now
+	''   any enum operand is already converted to integer above anyways,
+	''   so enums never arrive here.
+	''
 
-	if( typeGetSize( rdtype ) = 1 ) then
-		if( is_str = FALSE ) then
-			if( typeIsSigned( rdtype ) ) then
-				rdtype = typeJoin( rdtype, FB_DATATYPE_INTEGER )
+	if( (env.clopt.lang <> FB_LANG_QB) and (is_str = FALSE) ) then
+		intrank = typeGetIntRank( FB_DATATYPE_INTEGER )
+		uintrank = typeGetIntRank( FB_DATATYPE_UINT )
+
+		'' not for float
+		if( ldclass = FB_DATACLASS_INTEGER ) then
+			lrank = typeGetIntRank( typeGetRemapType( ldtype ) )
+
+			'' l < INTEGER?
+			if( lrank < intrank ) then
+				hConvOperand( FB_DATATYPE_INTEGER, ldtype, ldclass, l )
 			else
-				rdtype = typeJoin( rdtype, FB_DATATYPE_UINT )
+				'' INTEGER < l < UINTEGER?
+				if( (intrank < lrank) and (lrank < uintrank) ) then
+					'' Convert to UINTEGER for consistency with
+					'' the above conversion to INTEGER (this can
+					'' happen with ULONG on 32bit, and ULONGINT
+					'' on 64bit, due to the ranking order)
+					hConvOperand( FB_DATATYPE_UINT, ldtype, ldclass, l )
+				end if
 			end if
-			r = astNewCONV( rdtype, NULL, r )
+		end if
+
+		'' not for float
+		if( rdclass = FB_DATACLASS_INTEGER ) then
+			rrank = typeGetIntRank( typeGetRemapType( rdtype ) )
+
+			'' same for r
+			if( rrank < intrank ) then
+				hConvOperand( FB_DATATYPE_INTEGER, rdtype, rdclass, r )
+			else
+				if( (intrank < rrank) and (rrank < uintrank) ) then
+					hConvOperand( FB_DATATYPE_UINT, rdtype, rdclass, r )
+				end if
+			end if
 		end if
 	end if
 

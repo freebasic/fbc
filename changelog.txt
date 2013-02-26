@@ -19,6 +19,7 @@ Version 0.25.0:
 - LBound/UBound( array, 0 ) now returns 1 and the dimension count, it is no longer the same as LBound/UBound( array, 1 )
 - #if/#elseif (not #ifdef though) no longer allow identifiers/keywords to be used as-is, real string literals can (and must) now be used instead. For example, <#if foobar> is now an error, instead of evaluating to FALSE. <#if typeof( mystring ) = string> must be changed to <typeof( mystring ) = "STRING">.
 - Unary/binary operations won't return enums anymore; any enum operands will be converted to integer before the operation. (with math operations, the result can be any integer value, and the operand enum won't necessarily include a constant corresponding to that value. And also, if the operands are from different enums, the compiler wouldn't know which one to use as the result type)
+- Unary/binary operations will now convert smaller operands to INTEGERs before the operation (note: thus, UBYTE becomes INTEGER now instead of UINTEGER, and also SHORT/USHORT operations will return an INTEGER now)
 
 [added]
 - VIRTUAL and ABSTRACT methods (including virtual destructors) in UDTs extending OBJECT, which can be overridden by methods in derived UDTs, provided the same method name and signature is used
