@@ -1043,12 +1043,12 @@ function astNewBOP _
 			end if
 		end if
 
-    '' strings?
-    elseif( (typeGet( ldclass ) = FB_DATACLASS_STRING) or _
-    		(typeGet( rdclass ) = FB_DATACLASS_STRING) ) then
+	'' strings?
+	elseif( (ldclass = FB_DATACLASS_STRING) or _
+	        (rdclass = FB_DATACLASS_STRING) ) then
 
 		'' not both strings?
-		if( typeGetDtAndPtrOnly( ldclass ) <> typeGetDtAndPtrOnly( rdclass ) ) then
+		if( ldclass <> rdclass ) then
 			if( ldclass = FB_DATACLASS_STRING ) then
 				'' not a zstring?
 				if( typeGet( rdtype ) <> FB_DATATYPE_CHAR ) then
