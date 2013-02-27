@@ -159,26 +159,33 @@ function astBuildVarField _
 
 	dim as ASTNODE ptr expr = any
 
-	if( fld <> NULL ) then
+	if( fld ) then
 		ofs += symbGetOfs( fld )
-	end if
 
-	'' byref or import?
-	if( symbIsParamByRef( sym ) or symbIsImport( sym ) ) then
-		expr = astNewDEREF( _
-			astNewVAR( sym, , typeAddrOf( symbGetFullType( sym ) ), _
-				symbGetSubtype( sym ) ), _
-			, , ofs )
-	else
-		expr = astNewVAR( sym, ofs )
-	end if
+		'' byref or import?
+		if( symbIsParamByRef( sym ) or symbIsImport( sym ) ) then
+			expr = astNewDEREF( _
+				astNewVAR( sym, , typeAddrOf( symbGetFullType( sym ) ), _
+					symbGetSubtype( sym ) ), _
+				symbGetFullType( fld ), symbGetSubtype( fld ), ofs )
+		else
+			expr = astNewVAR( sym, ofs, symbGetFullType( fld ), symbGetSubtype( fld ) )
+		end if
 
-	if( fld <> NULL ) then
 		expr = astNewFIELD( expr, fld, symbGetFullType( fld ), symbGetSubtype( fld ) )
+	else
+		'' byref or import?
+		if( symbIsParamByRef( sym ) or symbIsImport( sym ) ) then
+			expr = astNewDEREF( _
+				astNewVAR( sym, , typeAddrOf( symbGetFullType( sym ) ), _
+					symbGetSubtype( sym ) ), _
+				, , ofs )
+		else
+			expr = astNewVAR( sym, ofs )
+		end if
 	end if
 
 	function = expr
-
 end function
 
 function astBuildTempVarClear( byval sym as FBSYMBOL ptr ) as ASTNODE ptr
