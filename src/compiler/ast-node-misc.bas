@@ -309,9 +309,9 @@ function astLoadLOAD( byval n as ASTNODE ptr ) as IRVREG ptr
 	function = v1
 end function
 
-'' Field accesses - used only temporarily in expression trees, to be able to
-'' check for bitfield assignment/access and opimizations. FIELDs are pruned
-'' during astOptimizeTree().
+'' Field accesses - used in expression trees to be able to identify bitfield
+'' assignments/accesses, and also by astOptimizeTree() to optimize nested field
+'' accesses.
 '' l = field access; r = NULL
 function astNewFIELD _
 	( _
@@ -330,14 +330,194 @@ function astNewFIELD _
 		'' final type is always an unsigned int
 		dtype = typeJoin( dtype, FB_DATATYPE_UINT )
 		subtype = NULL
+
+		ast.bitfieldcount += 1
+
+		'' Note: We can't generate bitfield access code here yet,
+		'' because we don't know whether this will be a load from or
+		'' store to a bitfield.
 	end if
 
 	n = astNewNode( AST_NODECLASS_FIELD, dtype, subtype )
-
 	n->sym = sym
 	n->l = l
 
 	function = n
+end function
+
+'' Decrease bitfield counter for the bitfield FIELD nodes in this tree,
+'' to be used on field/parameter initializers that are never astAdd()ed,
+'' but only ever cloned.
+sub astForgetBitfields( byval n as ASTNODE ptr )
+	if( (n = NULL) or (ast.bitfieldcount <= 0) ) then
+		exit sub
+	end if
+
+	if( astIsBITFIELD( n ) ) then
+		ast.bitfieldcount -= 1
+	end if
+
+	astForgetBitfields( n->l )
+	astForgetBitfields( n->r )
+end sub
+
+private function astSetBitfield _
+	( _
+		byval l as ASTNODE ptr, _
+		byval r as ASTNODE ptr _
+	) as ASTNODE ptr
+
+	dim as FBSYMBOL ptr s = any
+
+	''
+	''    l<bitfield> = r
+	'' becomes:
+	''    l<int> = (l<int> and mask) or ((r and bits) shl bitpos)
+	''
+
+	s = l->subtype
+	assert( symbIsBitfield( s ) )
+
+	'' Remap type from bitfield to short/integer/etc., whichever was given
+	'' on the bitfield, to do a "full" field access.
+	astGetFullType( l ) = symbGetFullType( s )
+	l->subtype = s->subtype
+
+	'' l is reused on the rhs and thus must be duplicated
+	l = astCloneTree( l )
+
+	'' Apply a mask to retrieve all bits but the bitfield's ones
+	l = astNewBOP( AST_OP_AND, l, astNewCONSTi( not (ast_bitmaskTB(s->bitfld.bits) shl s->bitfld.bitpos) ) )
+
+	'' This ensures the bitfield is zeroed & clean before the new value
+	'' is ORed in below. Since the new value may contain zeroes while the
+	'' old values may have one-bits, the OR alone wouldn't necessarily
+	'' overwrite the old value.
+
+	'' Truncate r if it's too big, ensuring the OR below won't touch any
+	'' other bits outside the target bitfield.
+	r = astNewBOP( AST_OP_AND, r, astNewCONSTi( ast_bitmaskTB(s->bitfld.bits) ) )
+
+	'' Move r into position if the bitfield doesn't lie at the beginning of
+	'' the accessed field.
+	if( s->bitfld.bitpos > 0 ) then
+		r = astNewBOP( AST_OP_SHL, r, astNewCONSTi( s->bitfld.bitpos ) )
+	end if
+
+	'' OR in the new bitfield value r
+	function = astNewBOP( AST_OP_OR, l, r )
+end function
+
+private function astAccessBitfield( byval l as ASTNODE ptr ) as ASTNODE ptr
+	dim as FBSYMBOL ptr s = any
+
+	''    l<bitfield>
+	'' becomes:
+	''    (l<int> shr bitpos) and mask
+
+	s = l->subtype
+	assert( symbIsBitfield( s ) )
+
+	'' Remap type from bitfield to short/integer/etc, while keeping in
+	'' mind that the bitfield may have been casted, so the FIELD's type
+	'' can't just be discarded.
+	l->dtype = typeJoin( l->dtype, s->typ )
+	l->subtype = s->subtype
+
+	'' Shift into position, other bits to the right are shifted out
+	if( s->bitfld.bitpos > 0 ) then
+		l = astNewBOP( AST_OP_SHR, l, astNewCONSTi( s->bitfld.bitpos ) )
+	end if
+
+	'' Mask out other bits to the left
+	return astNewBOP( AST_OP_AND, l, astNewCONSTi( ast_bitmaskTB(s->bitfld.bits) ) )
+end function
+
+#if __FB_DEBUG__
+'' Count the bitfield FIELD nodes in a tree
+function astCountBitfields( byval n as ASTNODE ptr ) as integer
+	dim as integer count = any
+
+	count = 0
+
+	if( n ) then
+		if( astIsBITFIELD( n ) ) then
+			count += 1
+		end if
+
+		count += astCountBitfields( n->l )
+		count += astCountBitfields( n->r )
+	end if
+
+	function = count
+end function
+#endif
+
+'' Remove FIELD nodes that mark bitfield accesses/assignments and add the
+'' corresponding code instead. Non-bitfield FIELD nodes stay in,
+'' they're used by astProcVectorize().
+function astUpdateBitfields( byval n as ASTNODE ptr ) as ASTNODE ptr
+	dim as ASTNODE ptr l = any
+
+	'' Shouldn't miss any bitfields
+	assert( astCountBitfields( n ) <= ast.bitfieldcount )
+
+	if( ast.bitfieldcount <= 0 ) then
+		return n
+	end if
+
+	if( n = NULL ) then
+		return NULL
+	end if
+
+	select case( n->class )
+	case AST_NODECLASS_ASSIGN
+		'' Assigning to a bitfield?
+		if( n->l->class = AST_NODECLASS_FIELD ) then
+			if( astGetDataType( n->l->l ) = FB_DATATYPE_BITFIELD ) then
+				'' Delete and link out the FIELD
+				ast.bitfieldcount -= 1
+				astDelNode( n->l )
+				n->l = n->l->l
+
+				'' The lhs' type is adjusted, and the new rhs
+				'' is returned.
+				n->r = astSetBitfield( n->l, n->r )
+			end if
+		end if
+
+	case AST_NODECLASS_FIELD
+		l = n->l
+		if( astGetDataType( l ) = FB_DATATYPE_BITFIELD ) then
+			l = astAccessBitfield( l )
+
+			'' Delete and link out the FIELD
+			ast.bitfieldcount -= 1
+			astDelNode( n )
+			n = l
+
+			return astUpdateBitfields( n )
+		end if
+
+	end select
+
+	n->l = astUpdateBitfields( n->l )
+	n->r = astUpdateBitfields( n->r )
+
+	function = n
+end function
+
+function astLoadFIELD( byval n as ASTNODE ptr ) as IRVREG ptr
+	dim as IRVREG ptr vr = any
+
+	vr = astLoad( n->l )
+	astDelNode( n->l )
+
+	if( ast.doemit ) then
+		vr->vector = n->vector
+	end if
+
+	function = vr
 end function
 
 '' Stack operations (l = expression; r = NULL)
@@ -700,6 +880,11 @@ private sub astDumpTreeEx _
 
 	if( col <= 4 or col >= 76 ) then
 		col = 40
+	end if
+
+	if( n = NULL ) then
+		print "<NULL>"
+		exit sub
 	end if
 
 	dim as string s

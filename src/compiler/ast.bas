@@ -41,7 +41,7 @@ dim shared as AST_LOADCALLBACK ast_loadcallbacks( 0 to AST_CLASSES-1 ) => _
 	@astLoadCONST         , _    '' AST_NODECLASS_CONST
 	@astLoadVAR           , _    '' AST_NODECLASS_VAR
 	@astLoadIDX           , _    '' AST_NODECLASS_IDX
-	NULL                  , _    '' AST_NODECLASS_FIELD
+	@astLoadFIELD         , _    '' AST_NODECLASS_FIELD
 	@astLoadDEREF         , _    '' AST_NODECLASS_DEREF
 	@astLoadLABEL         , _    '' AST_NODECLASS_LABEL
 	NULL                  , _    '' AST_NODECLASS_ARG
@@ -198,7 +198,8 @@ sub astInit( )
     listInit( @ast.astTB, AST_INITNODES, len( ASTNODE ), LIST_FLAGS_NOCLEAR )
 
     ast.doemit = TRUE
-    ast.typeinicnt = 0
+	ast.typeinicount = 0
+	ast.bitfieldcount = 0
     ast.currblock = NULL
 
     astCallInit( )
@@ -258,12 +259,17 @@ function astCloneTree( byval n as ASTNODE ptr ) as ASTNODE ptr
 		astReplaceSymbolOnTree( c, c->op.ex, symbAddLabel( NULL ) )
 
 	case AST_NODECLASS_TYPEINI
-		ast.typeinicnt += 1
+		ast.typeinicount += 1
 
 		'' The scope that some TYPEINI have is not duplicated,
 		'' much less the temp vars (astTypeIniClone() should be used
 		'' for that), so better not leave a dangling pointer...
 		c->typeini.scp = NULL
+
+	case AST_NODECLASS_FIELD
+		if( astGetDataType( c->l ) = FB_DATATYPE_BITFIELD ) then
+			ast.bitfieldcount += 1
+		end if
 
 #if __FB_DEBUG__
 	case AST_NODECLASS_LIT, AST_NODECLASS_JMPTB

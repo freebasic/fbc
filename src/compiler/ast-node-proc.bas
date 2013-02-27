@@ -234,7 +234,10 @@ private function astUpdate( byval n as ASTNODE ptr ) as ASTNODE ptr
 	'' while in the proper scope context!
 	n = astTypeIniUpdate( n )
 
-	'' Tree optimizations, including FIELD removal and bitfield updating
+	'' Bitfield assignment/access updating
+	n = astUpdateBitfields( n )
+
+	'' Tree optimizations
 	n = astOptimizeTree( n )
 
 	'' Assignment optimizations

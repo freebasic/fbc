@@ -66,7 +66,7 @@ sub astTypeIniEnd _
 	tree->r = NULL
 
 	if( is_initializer = FALSE ) then
-		ast.typeinicnt += 1
+		ast.typeinicount += 1
 	end if
 
 	'' merge nested type ini trees
@@ -78,7 +78,7 @@ sub astTypeIniEnd _
 			l = n->l
 			'' is it an ini tree too?
 			if( astIsTYPEINI( l ) ) then
-				ast.typeinicnt -= 1
+				ast.typeinicount -= 1
 
     			ofs = n->typeini.ofs
 
@@ -740,7 +740,7 @@ function astTypeIniFlush _
 	#endif
 
 	if( (options and AST_INIOPT_ISINI) = 0 ) then
-		ast.typeinicnt -= 1
+		ast.typeinicount -= 1
 	end if
 
 	if( (options and AST_INIOPT_ISSTATIC) <> 0 ) then
@@ -963,8 +963,31 @@ private function hWalk _
 	return astNewLINK( hWalk( n->l, n ), hWalk( n->r, n ) )
 end function
 
+#if __FB_DEBUG__
+'' Count the TYPEINI nodes in a tree
+function astCountTypeinis( byval n as ASTNODE ptr ) as integer
+	dim as integer count = any
+
+	count = 0
+
+	if( n ) then
+		if( astIsTYPEINI( n ) ) then
+			count += 1
+		end if
+
+		count += astCountTypeinis( n->l )
+		count += astCountTypeinis( n->r )
+	end if
+
+	function = count
+end function
+#endif
+
 function astTypeIniUpdate( byval tree as ASTNODE ptr ) as ASTNODE ptr
-	if( ast.typeinicnt <= 0 ) then
+	'' Shouldn't miss any
+	assert( astCountTypeinis( tree ) <= ast.typeinicount )
+
+	if( ast.typeinicount <= 0 ) then
 		return tree
 	end if
 
@@ -1017,7 +1040,7 @@ function astTypeIniTryRemove( byval tree as ASTNODE ptr ) as ASTNODE ptr
 	function = tree->l->l
 	astDelNode( tree->l )
 	astDelNode( tree )
-	ast.typeinicnt -= 1
+	ast.typeinicount -= 1
 end function
 
 '' For deleting param/var/field initializer TYPEINIs and their temp scope

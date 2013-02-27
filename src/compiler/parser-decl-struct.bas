@@ -221,6 +221,10 @@ private sub hFieldInit( byval parent as FBSYMBOL ptr, byval sym as FBSYMBOL ptr 
 	'' No temp dtors should be left registered after the TYPEINI build-up
 	assert( astDtorListIsEmpty( ) )
 
+	'' Remove bitfields from the AST's bitfield counter - the field
+	'' initializer will never be astAdd()ed itself, only cloned.
+	astForgetBitfields( initree )
+
 	'' Field initializers are only used in constructors (replacing the
 	'' implicit default initialization), so we make sure to add a default
 	'' constructor, if no constructor was specified.

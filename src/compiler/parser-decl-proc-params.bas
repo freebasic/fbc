@@ -159,6 +159,10 @@ private function hOptionalExpr _
 	'' No temp dtors should be left registered after the TYPEINI build-up
 	assert( astDtorListIsEmpty( ) )
 
+	'' Remove bitfields from the AST's bitfield counter - the parameter
+	'' initializer will never be astAdd()ed itself, only cloned.
+	astForgetBitfields( expr )
+
 	'' Disallow references to local vars, except for temp vars/descriptors
 	if( astTypeIniUsesLocals( expr, FB_SYMBATTRIB_TEMP or FB_SYMBATTRIB_DESCRIPTOR ) ) then
 		hParamError( proc, pid, FB_ERRMSG_INVALIDREFERENCETOLOCAL, 0 )

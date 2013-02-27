@@ -350,7 +350,23 @@ type ASTCTX
 
 	doemit			as integer
 
-	typeinicnt		as integer
+	'' Count of TYPEINI nodes in expressions that are about to be astAdd()ed
+	'' (so astAdd() only bothers running astTypeIniUpdate() if it's really
+	'' necessary -- another pass besides astOptimizeTree() walking the
+	'' whole expression tree during every astAdd() would just be
+	'' unnecessarily slow)
+	typeinicount		as integer
+
+	'' Same for FIELD with bitfield type (for astUpdateBitfields())
+	bitfieldcount		as integer
+
+	'' The counters must always be >= the amount of corresponding nodes that
+	'' will be given to astAdd() so that the updating functions don't miss
+	'' anything. That's why it's important to update the counters during
+	'' astCloneTree() for example. On the other hand, nodes in field or
+	'' parameter initializers don't need to be counted, since these
+	'' expressions will always be cloned instead of being astAdd()ed
+	'' themselves. Unfortunately
 
 	dtorlist		as TLIST						'' temp dtors list
 	dtorlistscopes		as AST_DTORLIST_SCOPESTACK	'' scope stack for astDtorListScope*()
@@ -637,6 +653,8 @@ declare function astNewFIELD _
 		byval l as ASTNODE ptr, _
 		byval sym as FBSYMBOL ptr _
 	) as ASTNODE ptr
+declare sub astForgetBitfields( byval n as ASTNODE ptr )
+declare function astUpdateBitfields( byval n as ASTNODE ptr ) as ASTNODE ptr
 
 declare function astNewDEREF _
 	( _
@@ -1266,6 +1284,7 @@ declare function astLoadBRANCH( byval n as ASTNODE ptr ) as IRVREG ptr
 declare function astLoadIIF( byval n as ASTNODE ptr ) as IRVREG ptr
 declare function astLoadOFFSET( byval n as ASTNODE ptr ) as IRVREG ptr
 declare function astLoadLINK( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function astLoadFIELD( byval n as ASTNODE ptr ) as IRVREG ptr
 declare function astLoadSTACK( byval n as ASTNODE ptr ) as IRVREG ptr
 declare function astLoadLABEL( byval n as ASTNODE ptr ) as IRVREG ptr
 declare function astLoadLIT( byval n as ASTNODE ptr ) as IRVREG ptr
