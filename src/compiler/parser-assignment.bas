@@ -533,7 +533,7 @@ private function hAssignFromField _
 	expr = astNewVAR( rhs )
 	expr = astNewBOP( AST_OP_ADD, expr, astNewCONSTi( symbGetOfs( fld ) ) )
 	expr = astNewDEREF( expr, symbGetFullType( fld ), symbGetSubType( fld ) )
-	expr = astNewFIELD( expr, fld, symbGetFullType( fld ), symbGetSubType( fld ) )
+	expr = astNewFIELD( expr, fld )
 
 	expr = astNewASSIGN( lhs, expr )
 	if( expr = NULL ) then

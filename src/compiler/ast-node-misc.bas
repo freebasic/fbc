@@ -315,15 +315,18 @@ end function
 '' l = field access; r = NULL
 function astNewFIELD _
 	( _
-		byval p as ASTNODE ptr, _
-		byval sym as FBSYMBOL ptr, _
-		byval dtype as integer, _
-		byval subtype as FBSYMBOL ptr _
+		byval l as ASTNODE ptr, _
+		byval sym as FBSYMBOL ptr _
 	) as ASTNODE ptr
 
 	dim as ASTNODE ptr n = any
+	dim as integer dtype = any
+	dim as FBSYMBOL ptr subtype = any
 
-	if( dtype = FB_DATATYPE_BITFIELD ) then
+	dtype = l->dtype
+	subtype = l->subtype
+
+	if( typeGetDtAndPtrOnly( dtype ) = FB_DATATYPE_BITFIELD ) then
 		'' final type is always an unsigned int
 		dtype = typeJoin( dtype, FB_DATATYPE_UINT )
 		subtype = NULL
@@ -332,7 +335,7 @@ function astNewFIELD _
 	n = astNewNode( AST_NODECLASS_FIELD, dtype, subtype )
 
 	n->sym = sym
-	n->l = p
+	n->l = l
 
 	function = n
 end function

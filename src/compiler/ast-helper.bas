@@ -172,7 +172,7 @@ function astBuildVarField _
 			expr = astNewVAR( sym, ofs, symbGetFullType( fld ), symbGetSubtype( fld ) )
 		end if
 
-		expr = astNewFIELD( expr, fld, symbGetFullType( fld ), symbGetSubtype( fld ) )
+		expr = astNewFIELD( expr, fld )
 	else
 		'' byref or import?
 		if( symbIsParamByRef( sym ) or symbIsImport( sym ) ) then
@@ -622,7 +622,7 @@ function astBuildInstPtr _
 	expr = astNewDEREF( expr, dtype, subtype )
 
 	if( fld <> NULL ) then
-		expr = astNewFIELD( expr, fld, dtype, subtype )
+		expr = astNewFIELD( expr, fld )
 	end if
 
 	function = expr
@@ -660,7 +660,7 @@ function astBuildInstPtrAtOffset _
 	expr = astNewDEREF( expr, dtype, subtype )
 
 	if( fld <> NULL ) then
-		expr = astNewFIELD( expr, fld, dtype, subtype )
+		expr = astNewFIELD( expr, fld )
 	end if
 
 	function = expr

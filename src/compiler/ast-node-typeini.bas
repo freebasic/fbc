@@ -522,7 +522,7 @@ private function hFlushTree _
 							end if
 						end if
 
-						lside = astNewFIELD( lside, n->sym, astGetFullType( n ), n->subtype )
+						lside = astNewFIELD( lside, n->sym )
 					end if
 				end if
 			end if

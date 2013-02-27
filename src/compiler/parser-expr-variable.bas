@@ -374,7 +374,7 @@ function cUdtMember _
 
 			varexpr	= astNewDEREF( varexpr, dtype, subtype )
 
-			varexpr	= astNewFIELD( varexpr,	fld, dtype, subtype )
+			varexpr = astNewFIELD( varexpr, fld )
 
 			if( is_nidxarray ) then
 				return astNewNIDXARRAY( varexpr )
