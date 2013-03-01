@@ -462,23 +462,6 @@ function symbAddVarEx _
 	function = s
 end function
 
-'':::::
-function symbAddVar _
-	( _
-		byval id as zstring ptr, _
-		byval dtype as integer, _
-		byval subtype as FBSYMBOL ptr, _
-		byval dimensions as integer, _
-		dTB() as FBARRAYDIM, _
-		byval attrib as integer _
-	) as FBSYMBOL ptr
-
-    function = symbAddVarEx( id, NULL, dtype, subtype, _
-    		  			     0, dimensions, dTB(), _
-    						 attrib )
-
-end function
-
 function symbAddTempVar _
 	( _
 		byval dtype as integer, _

@@ -1070,7 +1070,7 @@ private function hVarAddUndecl _
 	if( s = NULL ) then
 		errReportEx( FB_ERRMSG_DUPDEFINITION, id )
 		'' error recovery: fake an id
-		s = symbAddVar( symbUniqueLabel( ), dtype, NULL, 0, dTB(), attrib )
+		s = symbAddVarEx( symbUniqueLabel( ), NULL, dtype, NULL, 0, 0, dTB(), attrib )
 	else
 		var_ = astNewDECL( s, NULL )
 
