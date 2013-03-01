@@ -197,9 +197,9 @@ function astBuildJMPTB _
 	'' in the AST.
 	''
 	if( env.clopt.backend = FB_BACKEND_GAS ) then
-		tbsym = symbAddVarEx( symbUniqueLabel( ), NULL, _
-		                      typeAddrOf( FB_DATATYPE_VOID ), NULL, 0, _
-		                      1, dTB(), FB_SYMBATTRIB_SHARED )
+		tbsym = symbAddVar( symbUniqueLabel( ), NULL, _
+		                    typeAddrOf( FB_DATATYPE_VOID ), NULL, 0, _
+		                    1, dTB(), FB_SYMBATTRIB_SHARED )
 		symbSetIsJumpTb( tbsym )
 		symbSetIsInitialized( tbsym )
 

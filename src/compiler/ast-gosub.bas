@@ -52,8 +52,8 @@ sub astGosubAddInit( byval proc as FBSYMBOL ptr )
 		dtype = typeAddrOf( FB_DATATYPE_VOID )
 	end if
 
-	sym = symbAddVarEx( symbUniqueLabel( ), NULL, dtype, NULL, 0, 0, dTB(), _
-	                    FB_SYMBATTRIB_NONE, FB_SYMBOPT_UNSCOPE )
+	sym = symbAddVar( symbUniqueLabel( ), NULL, dtype, NULL, 0, 0, dTB(), _
+	                  FB_SYMBATTRIB_NONE, FB_SYMBOPT_UNSCOPE )
 
 	var_decl = astNewDECL( sym, NULL )
 

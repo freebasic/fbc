@@ -252,11 +252,11 @@ function astDataStmtAdd _
 		return sym
 	end if
 
-	sym = symbAddVarEx( id, symbUniqueLabel( ), _
-	                    FB_DATATYPE_STRUCT, ast.data.desc, 0, _
-	                    1, dTB(), _
-	                    FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_STATIC, _
-	                    FB_SYMBOPT_MOVETOGLOB or FB_SYMBOPT_PRESERVECASE )
+	sym = symbAddVar( id, symbUniqueLabel( ), _
+	                  FB_DATATYPE_STRUCT, ast.data.desc, 0, _
+	                  1, dTB(), _
+	                  FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_STATIC, _
+	                  FB_SYMBOPT_MOVETOGLOB or FB_SYMBOPT_PRESERVECASE )
 
 	'' (set by astDataStmtEnd())
 	sym->var_.data.prev = NULL
