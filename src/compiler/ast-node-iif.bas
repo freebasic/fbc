@@ -222,6 +222,13 @@ function astNewIIF _
 		dtype  = FB_DATATYPE_STRING
 	end select
 
+	'' Note: Any changes to the true/false expressions must be enclosed
+	'' in astDtorListScopeBegin/astDtorListScopeEnd calls using the same
+	'' true/false cookies, until the astDtorListFlush()s below, to ensure
+	'' that any newly allocated temp vars end up in the same dtorlist scope
+	'' that was also used when the original true/false expressions were
+	'' being parsed (i.e. the same cookie must be used).
+
 	if( typeGetDtAndPtrOnly( dtype ) = FB_DATATYPE_WCHAR ) then
 		'' Just like with SELECT CASE, for iif() on wstrings we need
 		'' a temporary wstring, but since the length of the iif() result
@@ -238,8 +245,14 @@ function astNewIIF _
 		astDtorListAdd( temp )
 
 		varexpr  = astBuildFakeWstringAccess( temp )
+
+		astDtorListScopeBegin( truecookie )
 		truexpr  = astBuildFakeWstringAssign( temp, truexpr )
+		astDtorListScopeEnd( )
+
+		astDtorListScopeBegin( falsecookie )
 		falsexpr = astBuildFakeWstringAssign( temp, falsexpr )
+		astDtorListScopeEnd( )
 	else
 		temp = symbAddTempVar( dtype, subtype )
 
@@ -256,8 +269,13 @@ function astNewIIF _
 		'' Any constructors?
 		if( symbHasCtor( temp ) ) then
 			'' Try calling them, to construct the temp var from the true/false expressions.
+			astDtorListScopeBegin( truecookie )
 			truexpr  = astBuildImplicitCtorCallEx( temp, truexpr , INVALID, is_true_ctorcall  )
+			astDtorListScopeEnd( )
+
+			astDtorListScopeBegin( falsecookie )
 			falsexpr = astBuildImplicitCtorCallEx( temp, falsexpr, INVALID, is_false_ctorcall )
+			astDtorListScopeEnd( )
 
 			'' If the temp var can be constructed from the true/false expressions...
 			'' a) in both cases, just use these ctorcalls
@@ -266,14 +284,18 @@ function astNewIIF _
 
 			if( is_true_ctorcall or is_false_ctorcall ) then
 				if( is_true_ctorcall ) then
+					astDtorListScopeBegin( truecookie )
 					truexpr = astPatchCtorCall( truexpr , astNewVAR( temp ) )
+					astDtorListScopeEnd( )
 				else
 					'' Do a normal assignment and call the defctor in front of it
 					call_true_defctor = TRUE
 				end if
 
 				if( is_false_ctorcall ) then
+					astDtorListScopeBegin( falsecookie )
 					falsexpr = astPatchCtorCall( falsexpr, astNewVAR( temp ) )
+					astDtorListScopeEnd( )
 				else
 					'' Do a normal assignment and call the defctor in front of it
 					call_false_defctor = TRUE
@@ -295,17 +317,21 @@ function astNewIIF _
 		'' because those would require the temp string to be cleared manually...
 
 		if( is_true_ctorcall = FALSE ) then
+			astDtorListScopeBegin( truecookie )
 			truexpr  = astNewASSIGN( astNewVAR( temp ), truexpr , AST_OPOPT_ISINI )
 			if( call_true_defctor ) then
 				truexpr = astNewLINK( astBuildCtorCall( subtype, astNewVAR( temp ) ), truexpr )
 			end if
+			astDtorListScopeEnd( )
 		end if
 
 		if( is_false_ctorcall = FALSE ) then
+			astDtorListScopeBegin( falsecookie )
 			falsexpr = astNewASSIGN( astNewVAR( temp ), falsexpr, AST_OPOPT_ISINI )
 			if( call_false_defctor ) then
 				falsexpr = astNewLINK( astBuildCtorCall( subtype, astNewVAR( temp ) ), falsexpr )
 			end if
+			astDtorListScopeEnd( )
 		end if
 	end if
 

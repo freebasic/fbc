@@ -2174,6 +2174,100 @@ namespace dtorOnlyDoubleIntUdt
 	end sub
 end namespace
 
+namespace copyctorWith2ndParam
+	'' The AST must ensure that temp vars created in true/false expressions
+	'' of an iif() are only constructed/destructed if the true/false code
+	'' path actually is reached. This also affects constructor calls used
+	'' to construct the iif temp var from the true/false expressions.
+	''
+	'' For example, it could be a call to a copy constructor, with a 2nd
+	'' parameter (with a parameter initializer) which results in an ARG
+	'' that uses a temp var.
+
+	type A
+		i as integer
+		declare constructor( byval i as integer )
+		declare destructor( )
+	end type
+
+	constructor A( byval i as integer )
+		totalctors += 1
+		with( status(hFindSlot( @this )) )
+			.instance = @this
+			CU_ASSERT( .refcount = 0 )
+			.refcount += 1
+		end with
+	end constructor
+
+	destructor A( )
+		totaldtors += 1
+		with( status(hFindSlot( @this )) )
+			CU_ASSERT( .refcount = 1 )
+			.refcount -= 1
+		end with
+	end destructor
+
+	type B
+		i as integer
+		declare constructor( byval i as integer )
+
+		'' Copy constructor with 2nd parameter that requires a temp var.
+		'' It could also be an integer contant passed to a BYREF AS INTEGER
+		'' parameter, but using an UDT with destructor is easiest for this
+		'' test, since we can check whether the destructor was called.
+		'' In fact, the destructor calling is the most important part.
+		'' If it was just an integer param, the worst thing that could
+		'' happen would be that the temp var is allocated on stack but
+		'' never used, i.e. wasted memory.
+		declare constructor( byref rhs as B, byref x as A = type<A>( 123 ) )
+		declare destructor( )
+	end type
+
+	constructor B( byval i as integer )
+		this.i = i
+		totalctors += 1
+		with( status(hFindSlot( @this )) )
+			.instance = @this
+			CU_ASSERT( .refcount = 0 )
+			.refcount += 1
+		end with
+	end constructor
+
+	constructor B( byref rhs as B, byref x as A )
+		this.i = rhs.i
+		totalcopyctors += 1
+		with( status(hFindSlot( @this )) )
+			.instance = @this
+			CU_ASSERT( .refcount = 0 )
+			.refcount += 1
+		end with
+	end constructor
+
+	destructor B( )
+		totaldtors += 1
+		with( status(hFindSlot( @this )) )
+			CU_ASSERT( .refcount = 1 )
+			.refcount -= 1
+		end with
+	end destructor
+
+	sub test cdecl( )
+		dim c as integer
+
+		begin( )
+			c = -1
+			dim as B b1 = B( 1 ), b2 = B( 2 )
+			CU_ASSERT( (iif( c, b1, b2 )).i = 1 )
+		check( 3, 1, 4 )
+
+		begin( )
+			c = 0
+			dim as B b1 = B( 1 ), b2 = B( 2 )
+			CU_ASSERT( (iif( c, b1, b2 )).i = 2 )
+		check( 3, 1, 4 )
+	end sub
+end namespace
+
 private sub ctor( ) constructor
 	fbcu.add_suite( "tests/structs/temp-var-dtors" )
 
@@ -2228,6 +2322,8 @@ private sub ctor( ) constructor
 	add( dtorOnlyDoubleIntUdt.testIifTrueFalseExpressions )
 	add( dtorOnlyDoubleIntUdt.testByval )
 	add( dtorOnlyDoubleIntUdt.testByref )
+
+	add( copyctorWith2ndParam.test )
 end sub
 
 end namespace
