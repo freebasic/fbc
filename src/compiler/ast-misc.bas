@@ -1021,6 +1021,18 @@ sub astSetType _
 		byval subtype as FBSYMBOL ptr _
 	)
 
+#if __FB_DEBUG__
+	if( astIsTYPEINI( n ) ) then
+		'' TYPEINI types shouldn't be changed by optimizations,
+		'' it would cause astTypeIniUpdate() to use the wrong type
+		'' for the temp var.
+		'' (astSetType() can still be called, e.g. from astNewDEREF(),
+		'' just the type shouldn't be changed)
+		assert( typeGetDtAndPtrOnly( n->dtype ) = typeGetDtAndPtrOnly( dtype ) )
+		assert( n->subtype = subtype )
+	end if
+#endif
+
     astGetFullType( n ) = dtype
     n->subtype = subtype
 
@@ -1047,14 +1059,6 @@ sub astSetType _
 
 	case AST_NODECLASS_IIF
 		astSetType( n->l, dtype, subtype )
-
-#if __FB_DEBUG__
-	case AST_NODECLASS_TYPEINI
-		'' TYPEINI types shouldn't be changed by optimizations,
-		'' it would cause astTypeIniUpdate() to use the wrong type
-		'' for the temp var.
-		assert( FALSE )
-#endif
 
 	end select
 
