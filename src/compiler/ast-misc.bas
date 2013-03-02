@@ -982,9 +982,14 @@ end sub
 
 '' Opens a new dtorlist "scope", the newly allocated cookie number will be used
 '' to mark all dtorlist entries added by astDtorListAdd()'s while in this scope.
-sub astDtorListScopeBegin( )
-	'' Allocate new cookie
-	ast.dtorlistcookies += 1
+'' If a "cookie" is given then that will be used to mark new entries, instead of
+'' allocating a new cookie.
+sub astDtorListScopeBegin( byval cookie as integer )
+	if( cookie = 0 ) then
+		'' Allocate new cookie
+		ast.dtorlistcookies += 1
+		cookie = ast.dtorlistcookies
+	end if
 
 	'' Add new scope with that cookie
 	with( ast.dtorlistscopes )
@@ -993,7 +998,7 @@ sub astDtorListScopeBegin( )
 			.room += 8
 			.cookies = xreallocate( .cookies, sizeof( *.cookies ) * .room )
 		end if
-		.cookies[.count] = ast.dtorlistcookies
+		.cookies[.count] = cookie
 		.count += 1
 	end with
 end sub

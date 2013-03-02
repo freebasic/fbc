@@ -737,6 +737,16 @@ namespace classlikeIntegerUdt
 		check( 2, 1, 3 )
 	end sub
 
+	sub testIifTrueFalseExpressions cdecl( )
+		dim c as integer
+
+		begin( ) : c = -1 : CU_ASSERT( iif(  c, (ClassUdt( )).i, (ClassUdt( )).i ) = 123 ) : check( 1, 0, 1 )
+		begin( ) : c =  0 : CU_ASSERT( iif(  c, (ClassUdt( )).i, (ClassUdt( )).i ) = 123 ) : check( 1, 0, 1 )
+
+		begin( ) : c = -1 : CU_ASSERT( (iif(  c, ClassUdt( ), ClassUdt( ) )).i = 123 ) : check( 1, 0, 1 )
+		begin( ) : c =  0 : CU_ASSERT( (iif(  c, ClassUdt( ), ClassUdt( ) )).i = 123 ) : check( 1, 0, 1 )
+	end sub
+
 	sub hPassByval( byval x as ClassUdt )
 	end sub
 
@@ -1206,6 +1216,20 @@ namespace classlikeDoubleIntUdt
 		check( 2, 1, 3 )
 	end sub
 
+	sub testIifTrueFalseExpressions cdecl( )
+		dim c as integer
+
+		begin( ) : c = -1 : CU_ASSERT( iif(  c, (ClassUdt( )).i, (ClassUdt( )).j ) = 123 ) : check( 1, 0, 1 )
+		begin( ) : c = -1 : CU_ASSERT( iif(  c, (ClassUdt( )).j, (ClassUdt( )).i ) = 456 ) : check( 1, 0, 1 )
+		begin( ) : c =  0 : CU_ASSERT( iif(  c, (ClassUdt( )).i, (ClassUdt( )).j ) = 456 ) : check( 1, 0, 1 )
+		begin( ) : c =  0 : CU_ASSERT( iif(  c, (ClassUdt( )).j, (ClassUdt( )).i ) = 123 ) : check( 1, 0, 1 )
+
+		begin( ) : c = -1 : CU_ASSERT( (iif(  c, ClassUdt( ), ClassUdt( ) )).i = 123 ) : check( 1, 0, 1 )
+		begin( ) : c = -1 : CU_ASSERT( (iif(  c, ClassUdt( ), ClassUdt( ) )).j = 456 ) : check( 1, 0, 1 )
+		begin( ) : c =  0 : CU_ASSERT( (iif(  c, ClassUdt( ), ClassUdt( ) )).i = 123 ) : check( 1, 0, 1 )
+		begin( ) : c =  0 : CU_ASSERT( (iif(  c, ClassUdt( ), ClassUdt( ) )).j = 456 ) : check( 1, 0, 1 )
+	end sub
+
 	sub hPassByval( byval x as ClassUdt )
 	end sub
 
@@ -1646,6 +1670,16 @@ namespace dtorOnlyIntegerUdt
 			a = iif( i, a, b )
 			CU_ASSERT( a.i = 123 )
 		check( 3, 0, 3 )
+	end sub
+
+	sub testIifTrueFalseExpressions cdecl( )
+		dim c as integer
+
+		begin( ) : c = -1 : CU_ASSERT( iif(  c, (type<DtorUdt>( 1 )).i, (type<DtorUdt>( 2 )).i ) = 1 ) : check( 1, 0, 1 )
+		begin( ) : c =  0 : CU_ASSERT( iif(  c, (type<DtorUdt>( 1 )).i, (type<DtorUdt>( 2 )).i ) = 2 ) : check( 1, 0, 1 )
+
+		begin( ) : c = -1 : CU_ASSERT( (iif(  c, type<DtorUdt>( 1 ), type<DtorUdt>( 2 ) )).i = 1 ) : check( 2, 0, 2 )
+		begin( ) : c =  0 : CU_ASSERT( (iif(  c, type<DtorUdt>( 1 ), type<DtorUdt>( 2 ) )).i = 2 ) : check( 2, 0, 2 )
 	end sub
 
 	sub hPassByval( byval x as DtorUdt )
@@ -2089,6 +2123,20 @@ namespace dtorOnlyDoubleIntUdt
 		check( 3, 0, 3 )
 	end sub
 
+	sub testIifTrueFalseExpressions cdecl( )
+		dim c as integer
+
+		begin( ) : c = -1 : CU_ASSERT( iif(  c, (type<DtorUdt>( 1, 11 )).i, (type<DtorUdt>( 2, 22 )).j ) =  1 ) : check( 1, 0, 1 )
+		begin( ) : c = -1 : CU_ASSERT( iif(  c, (type<DtorUdt>( 1, 11 )).j, (type<DtorUdt>( 2, 22 )).i ) = 11 ) : check( 1, 0, 1 )
+		begin( ) : c =  0 : CU_ASSERT( iif(  c, (type<DtorUdt>( 1, 11 )).i, (type<DtorUdt>( 2, 22 )).j ) = 22 ) : check( 1, 0, 1 )
+		begin( ) : c =  0 : CU_ASSERT( iif(  c, (type<DtorUdt>( 1, 11 )).j, (type<DtorUdt>( 2, 22 )).i ) =  2 ) : check( 1, 0, 1 )
+
+		begin( ) : c = -1 : CU_ASSERT( (iif(  c, type<DtorUdt>( 1, 11 ), type<DtorUdt>( 2, 22 ) )).i =  1 ) : check( 2, 0, 2 )
+		begin( ) : c = -1 : CU_ASSERT( (iif(  c, type<DtorUdt>( 1, 11 ), type<DtorUdt>( 2, 22 ) )).j = 11 ) : check( 2, 0, 2 )
+		begin( ) : c =  0 : CU_ASSERT( (iif(  c, type<DtorUdt>( 1, 11 ), type<DtorUdt>( 2, 22 ) )).i =  2 ) : check( 2, 0, 2 )
+		begin( ) : c =  0 : CU_ASSERT( (iif(  c, type<DtorUdt>( 1, 11 ), type<DtorUdt>( 2, 22 ) )).j = 22 ) : check( 2, 0, 2 )
+	end sub
+
 	sub hPassByval( byval x as DtorUdt )
 	end sub
 
@@ -2129,49 +2177,57 @@ end namespace
 private sub ctor( ) constructor
 	fbcu.add_suite( "tests/structs/temp-var-dtors" )
 
-	fbcu.add_test( "11", @classlikeIntegerUdt.testParamInit )
-	fbcu.add_test( "12", @classlikeIntegerUdt.testAnon )
-	fbcu.add_test( "13", @classlikeIntegerUdt.testResult )
-	fbcu.add_test( "14", @classlikeIntegerUdt.testIfBranch )
-	fbcu.add_test( "15", @classlikeIntegerUdt.testIifBranch )
-	fbcu.add_test( "16", @classlikeIntegerUdt.testWhileBranch )
-	fbcu.add_test( "17", @classlikeIntegerUdt.testUntilBranch )
-	fbcu.add_test( "18", @classlikeIntegerUdt.testIifTempVar )
-	fbcu.add_test( "19", @classlikeIntegerUdt.testByval )
-	fbcu.add_test( "110",@classlikeIntegerUdt.testByref )
+	#macro add( t )
+		fbcu.add_test( #t, @t )
+	#endmacro
 
-	fbcu.add_test( "21", @classlikeDoubleIntUdt.testParamInit )
-	fbcu.add_test( "22", @classlikeDoubleIntUdt.testAnon )
-	fbcu.add_test( "23", @classlikeDoubleIntUdt.testResult )
-	fbcu.add_test( "24", @classlikeDoubleIntUdt.testIfBranch )
-	fbcu.add_test( "25", @classlikeDoubleIntUdt.testIifBranch )
-	fbcu.add_test( "26", @classlikeDoubleIntUdt.testWhileBranch )
-	fbcu.add_test( "27", @classlikeDoubleIntUdt.testUntilBranch )
-	fbcu.add_test( "28", @classlikeDoubleIntUdt.testIifTempVar )
-	fbcu.add_test( "29", @classlikeDoubleIntUdt.testByval )
-	fbcu.add_test( "210",@classlikeDoubleIntUdt.testByref )
+	add( classlikeIntegerUdt.testParamInit )
+	add( classlikeIntegerUdt.testAnon )
+	add( classlikeIntegerUdt.testResult )
+	add( classlikeIntegerUdt.testIfBranch )
+	add( classlikeIntegerUdt.testIifBranch )
+	add( classlikeIntegerUdt.testWhileBranch )
+	add( classlikeIntegerUdt.testUntilBranch )
+	add( classlikeIntegerUdt.testIifTempVar )
+	add( classlikeIntegerUdt.testIifTrueFalseExpressions )
+	add( classlikeIntegerUdt.testByval )
+	add( classlikeIntegerUdt.testByref )
 
-	fbcu.add_test( "31", @dtorOnlyIntegerUdt.testParamInit )
-	fbcu.add_test( "32", @dtorOnlyIntegerUdt.testAnon )
-	fbcu.add_test( "33", @dtorOnlyIntegerUdt.testResult )
-	fbcu.add_test( "34", @dtorOnlyIntegerUdt.testIfBranch )
-	fbcu.add_test( "35", @dtorOnlyIntegerUdt.testIifBranch )
-	fbcu.add_test( "36", @dtorOnlyIntegerUdt.testWhileBranch )
-	fbcu.add_test( "37", @dtorOnlyIntegerUdt.testUntilBranch )
-	fbcu.add_test( "38", @dtorOnlyIntegerUdt.testIifTempVar )
-	fbcu.add_test( "39", @dtorOnlyIntegerUdt.testByval )
-	fbcu.add_test( "310",@dtorOnlyIntegerUdt.testByref )
+	add( classlikeDoubleIntUdt.testParamInit )
+	add( classlikeDoubleIntUdt.testAnon )
+	add( classlikeDoubleIntUdt.testResult )
+	add( classlikeDoubleIntUdt.testIfBranch )
+	add( classlikeDoubleIntUdt.testIifBranch )
+	add( classlikeDoubleIntUdt.testWhileBranch )
+	add( classlikeDoubleIntUdt.testUntilBranch )
+	add( classlikeDoubleIntUdt.testIifTempVar )
+	add( classlikeDoubleIntUdt.testIifTrueFalseExpressions )
+	add( classlikeDoubleIntUdt.testByval )
+	add( classlikeDoubleIntUdt.testByref )
 
-	fbcu.add_test( "41", @dtorOnlyDoubleIntUdt.testParamInit )
-	fbcu.add_test( "42", @dtorOnlyDoubleIntUdt.testAnon )
-	fbcu.add_test( "43", @dtorOnlyDoubleIntUdt.testResult )
-	fbcu.add_test( "44", @dtorOnlyDoubleIntUdt.testIfBranch )
-	fbcu.add_test( "45", @dtorOnlyDoubleIntUdt.testIifBranch )
-	fbcu.add_test( "46", @dtorOnlyDoubleIntUdt.testWhileBranch )
-	fbcu.add_test( "47", @dtorOnlyDoubleIntUdt.testUntilBranch )
-	fbcu.add_test( "48", @dtorOnlyDoubleIntUdt.testIifTempVar )
-	fbcu.add_test( "49", @dtorOnlyDoubleIntUdt.testByval )
-	fbcu.add_test( "410",@dtorOnlyDoubleIntUdt.testByref )
+	add( dtorOnlyIntegerUdt.testParamInit )
+	add( dtorOnlyIntegerUdt.testAnon )
+	add( dtorOnlyIntegerUdt.testResult )
+	add( dtorOnlyIntegerUdt.testIfBranch )
+	add( dtorOnlyIntegerUdt.testIifBranch )
+	add( dtorOnlyIntegerUdt.testWhileBranch )
+	add( dtorOnlyIntegerUdt.testUntilBranch )
+	add( dtorOnlyIntegerUdt.testIifTempVar )
+	add( dtorOnlyIntegerUdt.testIifTrueFalseExpressions )
+	add( dtorOnlyIntegerUdt.testByval )
+	add( dtorOnlyIntegerUdt.testByref )
+
+	add( dtorOnlyDoubleIntUdt.testParamInit )
+	add( dtorOnlyDoubleIntUdt.testAnon )
+	add( dtorOnlyDoubleIntUdt.testResult )
+	add( dtorOnlyDoubleIntUdt.testIfBranch )
+	add( dtorOnlyDoubleIntUdt.testIifBranch )
+	add( dtorOnlyDoubleIntUdt.testWhileBranch )
+	add( dtorOnlyDoubleIntUdt.testUntilBranch )
+	add( dtorOnlyDoubleIntUdt.testIifTempVar )
+	add( dtorOnlyDoubleIntUdt.testIifTrueFalseExpressions )
+	add( dtorOnlyDoubleIntUdt.testByval )
+	add( dtorOnlyDoubleIntUdt.testByref )
 end sub
 
 end namespace

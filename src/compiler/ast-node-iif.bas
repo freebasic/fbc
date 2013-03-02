@@ -309,6 +309,19 @@ function astNewIIF _
 		end if
 	end if
 
+	'' Update any remaining TYPEINIs (after the astNewASSIGN()s above,
+	'' which could solve out TYPEINIs for optimization) in the true/false
+	'' expressions, in case they have dtors, otherwise astAdd() later would
+	'' do that, causing the corresponding temp vars for TYPEINIs from both
+	'' true/false code paths to always be constructed and destructed.
+	astDtorListScopeBegin( truecookie )
+	truexpr = astTypeIniUpdate( truexpr )
+	astDtorListScopeEnd( )
+
+	astDtorListScopeBegin( falsecookie )
+	falsexpr = astTypeIniUpdate( falsexpr )
+	astDtorListScopeEnd( )
+
 	'' Add dtor calls to the true/false code paths, behind the assignments
 	'' to the iif temp var, so that any temp vars constructed inside the
 	'' true/false expressions themselves will only be destructed when their

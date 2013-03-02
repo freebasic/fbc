@@ -1214,7 +1214,7 @@ declare sub astReplaceSymbolOnTree _
 declare sub astDtorListAdd( byval sym as FBSYMBOL ptr )
 declare function astDtorListFlush( byval cookie as integer = 0 ) as ASTNODE ptr
 declare sub astDtorListDel( byval sym as FBSYMBOL ptr )
-declare sub astDtorListScopeBegin( )
+declare sub astDtorListScopeBegin( byval cookie as integer = 0 )
 declare function astDtorListScopeEnd( ) as integer
 
 declare sub astSetType _
