@@ -2119,7 +2119,9 @@ private sub hBuildStrLit _
 
 	ln += """"
 
-	for i as integer = 0 to length - 1
+	'' Don't bother emitting the null terminator explicitly - gcc will add
+	'' it automatically already
+	for i as integer = 0 to length - 2
 		ch = (*z)[i]
 
 		if( hCharNeedsEscaping( ch, asc( """" ) ) ) then
@@ -2159,7 +2161,9 @@ private sub hBuildWstrLit _
 	ln += "L"""
 	wcharsize = typeGetSize( FB_DATATYPE_WCHAR )
 
-	for i as integer = 0 to length - 1
+	'' Don't bother emitting the null terminator explicitly - gcc will add
+	'' it automatically already
+	for i as integer = 0 to length - 2
 		ch = (*w)[i]
 
 		if( hCharNeedsEscaping( ch, asc( """" ) ) ) then
