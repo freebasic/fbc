@@ -363,6 +363,8 @@ private function hUDTInit _
 	dim as integer elm_cnt = any
 	dim as integer lgt = any, baseofs = any, pad_lgt = any, dtype = any
 	dim as FBSYMBOL ptr fld = any, first = any, subtype = any
+	dim as FBSYMBOL ptr oldsubtype = any
+	dim as integer olddtype = any
     dim as FB_INITCTX old_ctx = any
 
     function = FALSE
@@ -379,8 +381,20 @@ private function hUDTInit _
     if( (ctx.options and FB_INIOPT_ISOBJ) <> 0 ) then
     	dim as ASTNODE ptr expr = any
 
+		'' Set the context data type, to allow anonymous type()'s to
+		'' work for UDTs with constructors here
+		oldsubtype = parser.ctxsym
+		olddtype   = parser.ctx_dtype
+		parser.ctx_dtype = dtype
+		parser.ctxsym    = subtype
+
 	    '' Expression
 	    expr = cExpression( )
+
+		'' Restore context data type
+		parser.ctx_dtype = olddtype
+		parser.ctxsym    = oldsubtype
+
 	    if( expr = NULL ) then
 			errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
 			'' error recovery: fake an expr
