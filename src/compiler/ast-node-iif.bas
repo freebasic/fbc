@@ -186,9 +186,11 @@ function astNewIIF _
 		if( astConstIsZero( condexpr ) ) then
 			astDelTree( truexpr )
 			function = falsexpr
+			astDtorListUnscope( falsecookie )
 		else
 			astDelTree( falsexpr )
 			function = truexpr
+			astDtorListUnscope( truecookie )
 		end if
 		astDelTree( condexpr )
 		exit function

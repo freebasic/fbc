@@ -304,94 +304,11 @@ sub testSizeofTypeofOthers cdecl( )
 	CU_ASSERT( sizeof( typeof( p[1] ) ) = sizeof( integer ) )
 end sub
 
-namespace tempVarDtors
-	dim shared as integer ctors, dtors
-
-	type ClassUdt
-		i as integer
-		declare constructor( )
-		declare constructor( as ClassUdt )
-		declare constructor( as integer )
-		declare destructor( )
-	end type
-
-	constructor ClassUdt( )
-		ctors += 1
-	end constructor
-
-	constructor ClassUdt( rhs as ClassUdt )
-		this.i = rhs.i
-		ctors += 1
-	end constructor
-
-	constructor ClassUdt( i as integer )
-		this.i = i
-		ctors += 1
-	end constructor
-
-	destructor ClassUdt( )
-		this.i = 0
-		dtors += 1
-	end destructor
-
-	function f1( byval x as ClassUdt ) as integer
-		function = x.i
-	end function
-
-	function f2( byref x as ClassUdt ) as integer
-		function = x.i
-	end function
-
-	sub test cdecl( )
-		dim c as integer = -1
-
-		ctors = 0
-		dtors = 0
-
-		scope
-			dim i as typeof( f1( ClassUdt( 123 ) ) )
-		end scope
-		CU_ASSERT( ctors = 0 )
-		CU_ASSERT( dtors = 0 )
-
-		scope
-			dim i as typeof( f2( ClassUdt( 123 ) ) )
-		end scope
-		CU_ASSERT( ctors = 0 )
-		CU_ASSERT( dtors = 0 )
-
-		scope
-			dim i as typeof( f1( iif( c, ClassUdt( 112233 ), ClassUdt( 444 ) ) ) )
-		end scope
-		CU_ASSERT( ctors = 0 )
-		CU_ASSERT( dtors = 0 )
-
-		scope
-			dim i as typeof( f2( iif( c, ClassUdt( 112233 ), ClassUdt( 444 ) ) ) )
-		end scope
-		CU_ASSERT( ctors = 0 )
-		CU_ASSERT( dtors = 0 )
-
-		scope
-			dim x as typeof( ClassUdt( 123 ) )
-		end scope
-		CU_ASSERT( ctors = 1 )
-		CU_ASSERT( dtors = 1 )
-
-		scope
-			dim x as typeof( iif( c, ClassUdt( 112233 ), ClassUdt( 444 ) ) )
-		end scope
-		CU_ASSERT( ctors = 2 )
-		CU_ASSERT( dtors = 2 )
-	end sub
-end namespace
-
 private sub ctor( ) constructor
 	fbcu.add_suite( "tests/quirk/typeof" )
 	fbcu.add_test( "test", @test )
 	fbcu.add_test( "sizeof(typeof(deref))", @testSizeofTypeofDeref )
 	fbcu.add_test( "sizeof(typeof(...))", @testSizeofTypeofOthers )
-	fbcu.add_test( "typeof() temp dtors", @tempVarDtors.test )
 end sub
 
 end namespace

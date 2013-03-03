@@ -329,6 +329,8 @@ type AST_DTORLIST_ITEM
 	'' inside the true/false expressions of iif()'s, which may have to be
 	'' destroyed conditionally, depending on which code path was executed.
 	cookie			as integer
+
+	refcount		as integer
 end type
 
 type AST_DTORLIST_SCOPESTACK
@@ -1211,11 +1213,17 @@ declare sub astReplaceSymbolOnTree _
 		byval new_sym as FBSYMBOL ptr _
 	)
 
+#if __FB_DEBUG__
+declare sub astDtorListDump( )
+#endif
 declare sub astDtorListAdd( byval sym as FBSYMBOL ptr )
+declare sub astDtorListAddRef( byval sym as FBSYMBOL ptr )
+declare sub astDtorListRemoveRef( byval sym as FBSYMBOL ptr )
 declare function astDtorListFlush( byval cookie as integer = 0 ) as ASTNODE ptr
 declare sub astDtorListDel( byval sym as FBSYMBOL ptr )
 declare sub astDtorListScopeBegin( byval cookie as integer = 0 )
 declare function astDtorListScopeEnd( ) as integer
+declare sub astDtorListUnscope( byval cookie as integer )
 
 declare sub astSetType _
 	( _

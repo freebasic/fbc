@@ -900,39 +900,105 @@ end function
 '' temp destructors handling
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-sub astDtorListAdd( byval sym as FBSYMBOL ptr )
-	dim as AST_DTORLIST_ITEM ptr n = any
-	dim as integer add = any
-
+private function hHasDtor( byval sym as FBSYMBOL ptr ) as integer
 	assert( symbIsVar( sym ) )
 
 	'' Everything with a destructor (classes)
-	add = symbHasDtor( sym )
+	function = symbHasDtor( sym )
 
 	'' But also dynamic [w]strings
 	select case( symbGetType( sym ) )
 	case FB_DATATYPE_STRING
-		add = TRUE
+		function = TRUE
 
 	case typeAddrOf( FB_DATATYPE_WCHAR )
-		add or= symbGetIsWstring( sym )
+		if( symbGetIsWstring( sym ) ) then
+			function = TRUE
+		end if
 
 	end select
+end function
 
-	if( add ) then
-		n = listNewNode( @ast.dtorlist )
-		n->sym = sym
+#if __FB_DEBUG__
+sub astDtorListDump( )
+	dim as AST_DTORLIST_ITEM ptr i = any
 
-		with( ast.dtorlistscopes )
-			'' If inside a dtorlist scope, mark the new entry
-			'' with the scope's cookie
-			if( .count > 0 ) then
-				n->cookie = .cookies[.count-1]
-			else
-				n->cookie = 0
-			end if
-		end with
+	print "-------------- dtorlist: ------------------"
+	i = listGetTail( @ast.dtorlist )
+	while( i )
+		print "    ";symbDump( i->sym );" cookie: ";i->cookie;" refcount: ";i->refcount;" has dtor? ";hHasDtor( i->sym )
+		i = listGetPrev( i )
+	wend
+end sub
+#endif
+
+sub astDtorListAdd( byval sym as FBSYMBOL ptr )
+	dim as AST_DTORLIST_ITEM ptr n = any
+
+	if( hHasDtor( sym ) = FALSE ) then
+		exit sub
 	end if
+
+	n = listNewNode( @ast.dtorlist )
+	n->sym = sym
+
+	with( ast.dtorlistscopes )
+		'' If inside a dtorlist scope, mark the new entry
+		'' with the scope's cookie
+		if( .count > 0 ) then
+			n->cookie = .cookies[.count-1]
+		else
+			n->cookie = 0
+		end if
+	end with
+
+	n->refcount = 0
+end sub
+
+sub astDtorListAddRef( byval sym as FBSYMBOL ptr )
+	dim as AST_DTORLIST_ITEM ptr i = any
+
+	if( hHasDtor( sym ) = FALSE ) then
+		exit sub
+	end if
+
+	'' Find the entry for this symbol (if any still exists)
+	'' and increase its refcount
+	i = listGetTail( @ast.dtorlist )
+	while( i )
+		if( i->sym = sym ) then
+			i->refcount += 1
+			exit while
+		end if
+
+		i = listGetPrev( i )
+	wend
+end sub
+
+sub astDtorListRemoveRef( byval sym as FBSYMBOL ptr )
+	dim as AST_DTORLIST_ITEM ptr i = any
+
+	if( hHasDtor( sym ) = FALSE ) then
+		exit sub
+	end if
+
+	'' Find the entry for this symbol (if any still exists)
+	'' and decrease its refcount
+	i = listGetTail( @ast.dtorlist )
+	while( i )
+		if( i->sym = sym ) then
+			assert( i->refcount > 0 )
+			i->refcount -= 1
+
+			if( i->refcount <= 0 ) then
+				listDelNode( @ast.dtorlist, i )
+			end if
+
+			exit while
+		end if
+
+		i = listGetPrev( i )
+	wend
 end sub
 
 function astDtorListFlush( byval cookie as integer ) as ASTNODE ptr
@@ -967,17 +1033,20 @@ function astDtorListFlush( byval cookie as integer ) as ASTNODE ptr
 end function
 
 sub astDtorListDel( byval sym as FBSYMBOL ptr )
-    dim as AST_DTORLIST_ITEM ptr n = any
+	dim as AST_DTORLIST_ITEM ptr n = any
+
+	if( hHasDtor( sym ) = FALSE ) then
+		exit sub
+	end if
 
 	n = listGetTail( @ast.dtorlist )
-	do while( n <> NULL )
+	while( n )
 		if( n->sym = sym ) then
 			listDelNode( @ast.dtorlist, n )
-			exit do
+			exit while
 		end if
-
 		n = listGetPrev( n )
-    loop
+	wend
 end sub
 
 '' Opens a new dtorlist "scope", the newly allocated cookie number will be used
@@ -1013,6 +1082,19 @@ function astDtorListScopeEnd( ) as integer
 		.count -= 1
 	end with
 end function
+
+sub astDtorListUnscope( byval cookie as integer )
+	dim as AST_DTORLIST_ITEM ptr i = any
+
+	'' call the dtors in the reverse order
+	i = listGetTail( @ast.dtorlist )
+	while( i )
+		if( i->cookie = cookie ) then
+			i->cookie = 0
+		end if
+		i = listGetPrev( i )
+	wend
+end sub
 
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' hacks

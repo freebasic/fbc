@@ -31,6 +31,12 @@ function astNewVAR _
 	'' alloc new node
 	n = astNewNode( AST_NODECLASS_VAR, dtype, subtype )
 
+	if( sym ) then
+		if( symbIsVar( sym ) and symbIsTemp( sym ) ) then
+			astDtorListAddRef( sym )
+		end if
+	end if
+
 	n->sym = sym
 	n->var_.ofs = ofs
 

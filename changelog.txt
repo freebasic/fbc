@@ -183,7 +183,7 @@ Version 0.25.0:
 - Two temporary copies could be created when passing classes BYVAL
 - UDT variables given in BYREF UDT parameter initializers could be copied to a temporary variable if a copy constructor was available, instead of being passed BYREF
 - #630: C backend: EXTERN dynamic array descriptors were not emitted (if the EXTERN was not DIMed in that module)
-- Temporary variables from the expressions given to sizeof() and typeof() (and also len() when evaluated at compile-time) were emitted and could even have their destructors called, even though they were unused and never constructed
+- Temporary variables from deleted expressions (sizeof()/typeof() operand, instance expression in static member accesses) were still allocated on stack and could even have their destructors called, even though they were unused and never constructed
 - SELECT blocks will no longer allow other statements in between the SELECT header and the first CASE statement
 - lang qb didn't allow DEF___ statements inside procedures/compounds despite the change in 0.21.0
 - "CONST id AS" and "CONST AS" were allowed to be immediately followed by any statement, instead of triggering a compiler error

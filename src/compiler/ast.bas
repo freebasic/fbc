@@ -246,6 +246,13 @@ function astCloneTree( byval n as ASTNODE ptr ) as ASTNODE ptr
 	end if
 
 	select case( n->class )
+	case AST_NODECLASS_VAR
+		if( c->sym ) then
+			if( symbIsVar( c->sym ) and symbIsTemp( c->sym ) ) then
+				astDtorListAddRef( c->sym )
+			end if
+		end if
+
 	'' call nodes are too complex, let a helper function clone it
 	case AST_NODECLASS_CALL
 		astCloneCALL( n, c )
@@ -383,6 +390,14 @@ sub astDelNode _
 
 	if( n = NULL ) then
 		exit sub
+	end if
+
+	if( astIsVAR( n ) ) then
+		if( n->sym ) then
+			if( symbIsVar( n->sym ) and symbIsTemp( n->sym ) ) then
+				astDtorListRemoveRef( n->sym )
+			end if
+		end if
 	end if
 
 	listDelNode( @ast.astTB, n )

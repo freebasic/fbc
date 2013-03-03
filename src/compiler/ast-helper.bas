@@ -458,12 +458,9 @@ function astCALLCTORToCALL _
 	'' remove right leaf (the VAR access on the temp var)
 	astDelTree( n->r )
 
-	'' remove anon symbol
-	if( symbHasDtor( sym ) ) then
-		'' if the temp has a dtor it was added to the dtor list,
-		'' remove it too
-		astDtorListDel( sym )
-	end if
+	'' if the temp has a dtor it was added to the dtor list,
+	'' remove it too
+	astDtorListDel( sym )
 
 	'' Delete the temp var itself
 	symbDelSymbol( sym )

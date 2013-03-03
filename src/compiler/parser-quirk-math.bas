@@ -100,7 +100,7 @@ private function hLenSizeof _
 
 	dim as ASTNODE ptr expr = any, expr2 = any, initree = any
 	dim as integer dtype = any, lgt = any
-	dim as FBSYMBOL ptr subtype = any, scp = any, lastscp = any
+	dim as FBSYMBOL ptr subtype = any
 
 	'' LEN | SIZEOF
 	lexSkipToken( )
@@ -108,14 +108,8 @@ private function hLenSizeof _
 	'' '('
 	hMatchLPRNT( )
 
-	'' Capture any temp vars, they shouldn't be emitted/allocated (and no
-	'' dtor calls for them either), since the expression will be deleted.
-	scp = astTempScopeBegin( lastscp, NULL )
-
 	'' Type or an Expression
 	expr = cTypeOrExpression( is_len, dtype, subtype, lgt )
-
-	astTempScopeEnd( scp, lastscp )
 
 	'' Was it an expression?
 	if( expr ) then
@@ -153,13 +147,11 @@ private function hLenSizeof _
 	if( expr ) then
 		if( is_len ) then
 			'' len()
+			'' If an expression is returned, then it's an
+			'' fb_[W]StrLen() call, otherwise it's a sizeof() and
+			'' the length is returned in lgt.
 			expr = hLen( expr, lgt )
-			if( expr ) then
-				'' It's an fb_[W]StrLen() call, so the expression is preserved,
-				'' we must copy any temp symbols it uses from the temp scope
-				'' back into the current context.
-				astTempScopeClone( scp, expr )
-			else
+			if( expr = NULL ) then
 				expr = astNewCONSTi( lgt )
 			end if
 		else
@@ -172,7 +164,6 @@ private function hLenSizeof _
 		expr = astNewCONSTi( lgt )
 	end if
 
-	astTempScopeDelete( scp )
 	function = expr
 end function
 
