@@ -81,6 +81,17 @@ namespace ctorcallDespiteConstBits
 	end sub
 end namespace
 
+namespace memberAccess
+	type UDT
+		i as integer
+	end type
+
+	sub test cdecl( )
+		CU_ASSERT( (type<UDT>( 123 )).i = 123 )
+		CU_ASSERT( type<UDT>( 123 ).i = 123 )
+	end sub
+end namespace
+
 private sub ctor( ) constructor
 	fbcu.add_suite( "tests/structs/anon-assign" )
 	fbcu.add_test("test_1", @test_1)
@@ -88,6 +99,7 @@ private sub ctor( ) constructor
 	fbcu.add_test("test_3", @test_3)
 	fbcu.add_test("test_4", @test_4)
 	fbcu.add_test( "ctorcall + CONST bits", @ctorcallDespiteConstBits.test )
+	fbcu.add_test( "member access", @memberAccess.test )
 end sub
 
 end namespace
