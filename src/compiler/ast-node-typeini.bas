@@ -993,7 +993,9 @@ function astTypeIniUpdate( byval tree as ASTNODE ptr ) as ASTNODE ptr
 
 	'' Walk to expand any TYPEINIs. Note that the original tree will be
 	'' updated too, and both are needed.
-	return astNewLINK( hWalk( tree, NULL ), tree )
+	'' Returning the rhs from the LINK, so astTypeIniUpdate() can be used
+	'' in the middle of an expression.
+	return astNewLINK( hWalk( tree, NULL ), tree, FALSE )
 end function
 
 '' Duplicates a TYPEINI initializer into the current context. The cloned TYPEINI

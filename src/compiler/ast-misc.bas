@@ -791,6 +791,13 @@ function astBuildBranch _
 	'' This only affects astBuildBranch() calls that may use a condition
 	'' expression with temp vars, and are not immediately astAdd()'ed,
 	'' but LINKed together with something instead.
+
+	'' Update any remaining TYPEINIs in the condition expression, in case
+	'' they result in temp vars with dtors, otherwise astAdd() later would
+	'' do that, causing the dtor calls to appear at the end of the
+	'' statement (i.e. as dead code behind the branch...)
+	n = astTypeIniUpdate( n )
+
 	call_dtors = not (is_iif or astDTorListIsEmpty( ))
 
 	select case( n->class )

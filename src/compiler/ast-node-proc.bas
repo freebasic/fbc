@@ -229,6 +229,13 @@ private function astUpdate( byval n as ASTNODE ptr ) as ASTNODE ptr
 		end if
 	end if
 
+	'' Note: Any updating here that can create temp vars with dtors (such
+	'' as astTypeIniUpdate()) should also be done in astBuildBranch() (for
+	'' the condition expression) and astNewIIF() (for the true/false
+	'' expressions) since those cases require dtor calls for temp vars to
+	'' be in specific locations, not just generically at the end of the
+	'' statement (which is what the astDtorListFlush() below will do).
+
 	'' Turn TYPEINI trees into real assignments
 	'' Note: This can allocate temporary variables, so it must be done
 	'' while in the proper scope context!

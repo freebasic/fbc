@@ -303,6 +303,26 @@ namespace classlikeIntegerUdt
 			end if
 			CU_ASSERT( i = 1 )
 		check( 3, 0, 3 )
+
+		begin( )
+			dim i as integer = 0
+			if( (ClassUdt( )).i = 123 ) then
+				i = 1
+			else
+				i = 2
+			end if
+			CU_ASSERT( i = 1 )
+		check( 1, 0, 1 )
+
+		begin( )
+			dim i as integer = 0
+			if( (ClassUdt( )).i = 0 ) then
+				i = 1
+			else
+				i = 2
+			end if
+			CU_ASSERT( i = 2 )
+		check( 1, 0, 1 )
 	end sub
 
 	sub testIifBranch cdecl( )
@@ -1189,6 +1209,26 @@ namespace classlikeDoubleIntUdt
 			end if
 			CU_ASSERT( i = 1 )
 		check( 3, 0, 3 )
+
+		begin( )
+			dim i as integer = 0
+			if( (ClassUdt( )).i = 123 ) then
+				i = 1
+			else
+				i = 2
+			end if
+			CU_ASSERT( i = 1 )
+		check( 1, 0, 1 )
+
+		begin( )
+			dim i as integer = 0
+			if( (ClassUdt( )).i = 0 ) then
+				i = 1
+			else
+				i = 2
+			end if
+			CU_ASSERT( i = 2 )
+		check( 1, 0, 1 )
 	end sub
 
 	sub testIifBranch cdecl( )
@@ -1798,6 +1838,26 @@ namespace dtorOnlyIntegerUdt
 			end if
 			CU_ASSERT( i = 1 )
 		check( 3, 0, 3 )
+
+		begin( )
+			dim i as integer = 0
+			if( (type<DtorUdt>( 123 )).i = 123 ) then
+				i = 1
+			else
+				i = 2
+			end if
+			CU_ASSERT( i = 1 )
+		check( 1, 0, 1 )
+
+		begin( )
+			dim i as integer = 0
+			if( (type<DtorUdt>( 123 )).i = 0 ) then
+				i = 1
+			else
+				i = 2
+			end if
+			CU_ASSERT( i = 2 )
+		check( 1, 0, 1 )
 	end sub
 
 	sub testIifBranch cdecl( )
@@ -2406,6 +2466,26 @@ namespace dtorOnlyDoubleIntUdt
 			end if
 			CU_ASSERT( i = 1 )
 		check( 3, 0, 3 )
+
+		begin( )
+			dim i as integer = 0
+			if( (type<DtorUdt>( 123 )).i = 123 ) then
+				i = 1
+			else
+				i = 2
+			end if
+			CU_ASSERT( i = 1 )
+		check( 1, 0, 1 )
+
+		begin( )
+			dim i as integer = 0
+			if( (type<DtorUdt>( 123 )).i = 0 ) then
+				i = 1
+			else
+				i = 2
+			end if
+			CU_ASSERT( i = 2 )
+		check( 1, 0, 1 )
 	end sub
 
 	sub testIifBranch cdecl( )
