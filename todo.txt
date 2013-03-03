@@ -1,9 +1,20 @@
 o 64bit
   - C backend: ensure BOPs/UOPs/constants are emitted using the correct types
   - Many internal integers should be longints (to support 32/64bit cross-compiling)
-      - ofs value on IRVREG, astNewDEREF(), astNewVAR(), ...
+    It will be uncommon to have arrays or fixed-length strings or offsets > 2GiB,
+    but nevertheless... it should be supported properly. Counts that depend on
+    the .bas input don't need to be longints - nobody will have 2GiB source
+    files; but any other sizes/lengths/offsets must support 64bit, which means
+    the compiler must use longints internally in many places. For example,
+    to allow programs to do pointer arithmetic with huge offsets when
+    memory-mapping huge files on systems with 8GiB RAM+...
+      - offsets on IRVREG, ASTNODE, FBSYMBOL
+      - struct layout code
+      - length on data types, symbCalcLen(), astSizeOf(), FBSYMBOL, etc.
       - astConstFlushToInt() result
       - minval/maxval used by jump table emitting
+      - array index/diff/elements
+      - clear(), astNewMEM()
 
   - main() result and argc use INTEGER, that will be wrong on 64bit where they
     are still 32bit

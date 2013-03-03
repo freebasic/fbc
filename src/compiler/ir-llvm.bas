@@ -1201,7 +1201,7 @@ private function _allocVrVar _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
 		byval symbol as FBSYMBOL ptr, _
-		byval ofs as integer _
+		byval ofs as longint _
 	) as IRVREG ptr
 
 	dim as IRVREG ptr vr = hNewVR( dtype, subtype, IR_VREGTYPE_VAR )
@@ -1218,7 +1218,7 @@ private function _allocVrIdx _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
 		byval symbol as FBSYMBOL ptr, _
-		byval ofs as integer, _
+		byval ofs as longint, _
 		byval mult as integer, _
 		byval vidx as IRVREG ptr _
 	) as IRVREG ptr
@@ -1237,7 +1237,7 @@ private function _allocVrPtr _
 	( _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
-		byval ofs as integer, _
+		byval ofs as longint, _
 		byval vidx as IRVREG ptr _
 	) as IRVREG ptr
 
@@ -1255,7 +1255,7 @@ private function _allocVrOfs _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
 		byval symbol as FBSYMBOL ptr, _
-		byval ofs as integer _
+		byval ofs as longint _
 	) as IRVREG ptr
 
 	dim as IRVREG ptr vr = hNewVR( dtype, subtype, IR_VREGTYPE_OFS )
@@ -2254,7 +2254,7 @@ private sub _emitVarIniF( byval dtype as integer, byval value as double )
 	hVarIniSeparator( )
 end sub
 
-private sub _emitVarIniOfs( byval sym as FBSYMBOL ptr, byval ofs as integer )
+private sub _emitVarIniOfs( byval sym as FBSYMBOL ptr, byval ofs as longint )
 	ctx.varini += "TODO offset " + *symbGetMangledName( sym ) + " + " + str( ofs )
 	hVarIniSeparator( )
 end sub

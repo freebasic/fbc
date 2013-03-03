@@ -80,7 +80,7 @@ type IRVREG
 	value		as FBVALUE						'' imm value (hi-word of longint's at vaux->value)
 
 	sym			as FBSYMBOL ptr					'' symbol
-	ofs			as integer						'' +offset
+	ofs			as longint					'' +offset
 	mult		as integer						'' multipler, only valid for IDX and PTR under ir-tac
 
 	vidx		as IRVREG ptr					'' index vreg
@@ -316,7 +316,7 @@ type IR_VTBL
 	emitVarIniEnd as sub( byval sym as FBSYMBOL ptr )
 	emitVarIniI as sub( byval dtype as integer, byval value as longint )
 	emitVarIniF as sub( byval dtype as integer, byval value as double )
-	emitVarIniOfs as sub( byval sym as FBSYMBOL ptr, byval ofs as integer )
+	emitVarIniOfs as sub( byval sym as FBSYMBOL ptr, byval ofs as longint )
 
 	emitVarIniStr as sub _
 	( _
@@ -365,7 +365,7 @@ type IR_VTBL
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
 		byval symbol as FBSYMBOL ptr, _
-		byval ofs as integer _
+		byval ofs as longint _
 	) as IRVREG ptr
 
 	allocVrIdx as function _
@@ -373,7 +373,7 @@ type IR_VTBL
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
 		byval symbol as FBSYMBOL ptr, _
-		byval ofs as integer, _
+		byval ofs as longint, _
 		byval mult as integer, _
 		byval vidx as IRVREG ptr _
 	) as IRVREG ptr
@@ -382,7 +382,7 @@ type IR_VTBL
 	( _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
-		byval ofs as integer, _
+		byval ofs as longint, _
 		byval vidx as IRVREG ptr _
 	) as IRVREG ptr
 
@@ -391,7 +391,7 @@ type IR_VTBL
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
 		byval symbol as FBSYMBOL ptr, _
-		byval ofs as integer _
+		byval ofs as longint _
 	) as IRVREG ptr
 
 	setVregDataType as sub _
