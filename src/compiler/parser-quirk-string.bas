@@ -347,6 +347,25 @@ function cCVXFunct(byval tk as FB_TOKEN) as ASTNODE ptr
 	'' CVD | CVS | CVI | CVL | CVSHORT | CVLONGINT
 	lexSkipToken( )
 
+	dim as FB_DATATYPE dtype = FB_DATATYPE_INVALID
+
+	'' ['<' lgt '>']
+	if( (tk = FB_TK_CVI) andalso hMatch( FB_TK_LT ) ) then
+
+		'' expr
+		dim as integer lgt = cConstIntExpr( cGtInParensOnlyExpr( ) )
+
+		 '' disallow BYTEs here (would need to use ASC)
+		if( lgt = 8 ) then lgt = 0
+
+		dtype = hIntegerTypeFromBitSize( lgt, FALSE )
+
+		if( hMatch( FB_TK_GT ) = FALSE ) then
+			errReport( FB_ERRMSG_EXPECTEDGT )
+		end if
+
+	end if
+
 	'' '('
 	hMatchLPRNT( )
 
@@ -380,7 +399,12 @@ function cCVXFunct(byval tk as FB_TOKEN) as ASTNODE ptr
 		functype = FB_DATATYPE_SINGLE
 		allowconst = FALSE
 	case FB_TK_CVI
-		functype = fbLangGetType( INTEGER )
+		if( dtype <> FB_DATATYPE_INVALID ) then
+			functype = dtype
+		else
+			functype = fbLangGetType( INTEGER )
+		end if
+
 	case FB_TK_CVL
 		functype = fbLangGetType( LONG )
 	case FB_TK_CVSHORT
@@ -402,7 +426,7 @@ function cCVXFunct(byval tk as FB_TOKEN) as ASTNODE ptr
 	end if
 
 	dim as ASTNODE ptr funcexpr = NULL
-	'' string parameter, or CVSHORT (which can only take strings)
+	'' string parameter, or CVSHORT/CVI<16> (which can only take strings)
 	if( is_str orelse (functype = FB_DATATYPE_SHORT) ) then
 		if( zslen >= typeGetSize( functype ) ) then
 			select case as const functype
@@ -483,6 +507,26 @@ function cMKXFunct(byval tk as FB_TOKEN) as ASTNODE ptr
 	'' MKD | MKS | MKI | MKL | MKSHORT | MKLONGINT
 	lexSkipToken( )
 
+	dim as FB_DATATYPE dtype = FB_DATATYPE_INVALID
+
+	'' ['<' lgt '>']
+	if( (tk = FB_TK_MKI) andalso hMatch( FB_TK_LT ) ) then
+
+		'' expr
+		dim as integer lgt = cConstIntExpr( cGtInParensOnlyExpr( ) )
+
+		 '' disallow BYTEs here (would need to use CHR)
+		if( lgt = 8 ) then lgt = 0
+
+		dtype = hIntegerTypeFromBitSize( lgt, FALSE )
+
+		if( hMatch( FB_TK_GT ) = FALSE ) then
+			errReport( FB_ERRMSG_EXPECTEDGT )
+		end if
+
+	end if
+
+
 	hMatchLPRNT( )
 
 	dim as ASTNODE ptr expr1 = any
@@ -537,12 +581,19 @@ function cMKXFunct(byval tk as FB_TOKEN) as ASTNODE ptr
 		case FB_TK_MKS
 			funcexpr = astNewCALL( PROCLOOKUP( MKS ) )
 		case FB_TK_MKI
-			select case fbLangGetType( INTEGER )
+			if( dtype = FB_DATATYPE_INVALID ) then
+				dtype = fbLangGetType( INTEGER )
+			end if
+
+			select case dtype
 			case FB_DATATYPE_INTEGER, FB_DATATYPE_LONG
 				funcexpr = astNewCALL( PROCLOOKUP( MKI ) )
+			case FB_DATATYPE_LONGINT
+				funcexpr = astNewCALL( PROCLOOKUP( MKLONGINT ) )
 			case FB_DATATYPE_SHORT
 				funcexpr = astNewCALL( PROCLOOKUP( MKSHORT ) )
 			end select
+
 		case FB_TK_MKL
 			funcexpr = astNewCALL( PROCLOOKUP( MKL ) )
 		case FB_TK_MKSHORT

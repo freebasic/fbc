@@ -938,6 +938,55 @@ namespace iifTempVarDefCtorAndIntCtor
 	end sub
 end namespace
 
+namespace iifStringIndexingOrMemberAccess
+	type UDT
+		as integer i, j
+	end type
+
+	sub test cdecl( )
+		'' member access
+		dim as UDT xa = ( 1, 2 ), xb = ( 3, 4 )
+		CU_ASSERT( iif( condtrue , xa, xb ).i = 1 )
+		CU_ASSERT( iif( condtrue , xa, xb ).j = 2 )
+		CU_ASSERT( iif( condfalse, xa, xb ).i = 3 )
+		CU_ASSERT( iif( condfalse, xa, xb ).j = 4 )
+
+		'' member deref
+		dim as UDT ptr pxa = @xa, pxb = @xb
+		CU_ASSERT( iif( condtrue , pxa, pxb )->i = 1 )
+		CU_ASSERT( iif( condtrue , pxa, pxb )->j = 2 )
+		CU_ASSERT( iif( condfalse, pxa, pxb )->i = 3 )
+		CU_ASSERT( iif( condfalse, pxa, pxb )->j = 4 )
+
+		'' pointer indexing
+		dim as integer iarray1(0 to 1) = { 11, 22 }
+		dim as integer iarray2(0 to 1) = { 33, 44 }
+		dim as integer ptr pi1 = @iarray1(0), pi2 = @iarray2(0)
+		CU_ASSERT( iif( condtrue , pi1, pi2 )[0] = 11 )
+		CU_ASSERT( iif( condtrue , pi1, pi2 )[1] = 22 )
+		CU_ASSERT( iif( condfalse, pi1, pi2 )[0] = 33 )
+		CU_ASSERT( iif( condfalse, pi1, pi2 )[1] = 44 )
+
+		'' string indexing
+		dim as string sa = "123", sb = "456"
+		CU_ASSERT( iif( condtrue , sa, sb )[0] = asc( "1" ) )
+		CU_ASSERT( iif( condtrue , sa, sb )[1] = asc( "2" ) )
+		CU_ASSERT( iif( condtrue , sa, sb )[2] = asc( "3" ) )
+		CU_ASSERT( iif( condfalse, sa, sb )[0] = asc( "4" ) )
+		CU_ASSERT( iif( condfalse, sa, sb )[1] = asc( "5" ) )
+		CU_ASSERT( iif( condfalse, sa, sb )[2] = asc( "6" ) )
+
+		'' wstring indexing
+		dim as wstring * 32 wa = wstr( "123" ), wb = wstr( "456" )
+		CU_ASSERT( iif( condtrue , wa, wb )[0] = wa[0] )
+		CU_ASSERT( iif( condtrue , wa, wb )[1] = wa[1] )
+		CU_ASSERT( iif( condtrue , wa, wb )[2] = wa[2] )
+		CU_ASSERT( iif( condfalse, wa, wb )[0] = wb[0] )
+		CU_ASSERT( iif( condfalse, wa, wb )[1] = wb[1] )
+		CU_ASSERT( iif( condfalse, wa, wb )[2] = wb[2] )
+	end sub
+end namespace
+
 sub ctor( ) constructor
 	fbcu.add_suite( "tests/expressions/iif" )
 	fbcu.add_test( "int BOP", @testIntBop )
@@ -954,6 +1003,7 @@ sub ctor( ) constructor
 	fbcu.add_test( "iif() ctors 3", @iifTempVarIntCtor.test )
 	fbcu.add_test( "iif() ctors 4", @iifTempVarIntCtorAndCopyCtor.test )
 	fbcu.add_test( "iif() ctors 5", @iifTempVarDefCtorAndIntCtor.test )
+	fbcu.add_test( "member access", @iifStringIndexingOrMemberAccess.test )
 end sub
 
 end namespace

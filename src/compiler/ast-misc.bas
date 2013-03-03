@@ -613,25 +613,25 @@ end function
 '' into a (conditional) branch
 function astBuildBranch _
 	( _
-		byval n as ASTNODE ptr, _
+		byval expr as ASTNODE ptr, _
 		byval label as FBSYMBOL ptr, _
 		byval is_inverse as integer, _
 		byval is_iif as integer _
 	) as ASTNODE ptr
 
-	dim as ASTNODE ptr expr = any
+	dim as ASTNODE ptr n = any, parentlink = any, m = any
 	dim as integer dtype = any, call_dtors = any
 	dim as FBSYMBOL ptr temp = any
 
-	if( n = NULL ) then
+	if( expr = NULL ) then
 		return NULL
 	end if
 
 	'' Optimize here already to ensure the toplevel BOP is final and can be
 	'' relied upon for x86 flag assumptions below
-	n = astOptimizeTree( n )
+	expr = astOptimizeTree( expr )
 
-	dtype = astGetDataType( n )
+	dtype = astGetDataType( expr )
 
 	'' string? invalid..
 	if( typeGetClass( dtype ) = FB_DATACLASS_STRING ) then
@@ -641,10 +641,10 @@ function astBuildBranch _
     '' CHAR and WCHAR literals are also from the INTEGER class
     select case as const dtype
     case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
-    	'' don't allow, unless it's a deref pointer
-    	if( astIsDEREF( n ) = FALSE ) then
-    		return NULL
-    	end if
+		'' don't allow, unless it's a deref pointer
+		if( astIsDEREF( expr ) = FALSE ) then
+			return NULL
+		end if
 
 	'' UDT or CLASS?
 	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
@@ -652,21 +652,17 @@ function astBuildBranch _
 		dim as FBSYMBOL ptr ovlProc = any
 
 		'' check for a scalar overload..
-		ovlProc = symbFindCastOvlProc( FB_DATATYPE_VOID, NULL, n, @err_num )
+		ovlProc = symbFindCastOvlProc( FB_DATATYPE_VOID, NULL, expr, @err_num )
 		if( ovlProc = NULL ) then
 			'' no? try pointers...
-			ovlProc = symbFindCastOvlProc( typeAddrOf( FB_DATATYPE_VOID ), NULL, _
-										   n, _
-										   @err_num )
+			ovlProc = symbFindCastOvlProc( typeAddrOf( FB_DATATYPE_VOID ), NULL, expr, @err_num )
 			if( ovlProc = NULL ) then
-				dim as FBSYMBOL ptr subtype = astGetSubtype( n )
-
-				ovlProc = symbGetCompOpOvlHead( subtype, AST_OP_CAST )
+				ovlProc = symbGetCompOpOvlHead( expr->subtype, AST_OP_CAST )
 				if( ovlProc = NULL ) then
-					if( subtype <> NULL ) then
+					if( expr->subtype ) then
 						errReport( FB_ERRMSG_NOMATCHINGPROC, _
 								   TRUE, _
-								   " """ & *symbGetName( subtype ) & ".cast()""" )
+								   " """ & *symbGetName( expr->subtype ) & ".cast()""" )
 						return NULL
 					end if
 				end if
@@ -677,8 +673,8 @@ function astBuildBranch _
 		end if
 
 		'' build cast call
-		n = astBuildCall( ovlProc, n, NULL )
-		dtype = astGetDataType( n )
+		expr = astBuildCall( ovlProc, expr, NULL )
+		dtype = astGetDataType( expr )
 
 	end select
 
@@ -700,53 +696,78 @@ function astBuildBranch _
 	'' This only affects astBuildBranch() calls that may use a condition
 	'' expression with temp vars, and are not immediately astAdd()'ed,
 	'' but LINKed together with something instead.
+
+	'' Update any remaining TYPEINIs in the condition expression, in case
+	'' they result in temp vars with dtors, otherwise astAdd() later would
+	'' do that, causing the dtor calls to appear at the end of the
+	'' statement (i.e. as dead code behind the branch...)
+	expr = astTypeIniUpdate( expr )
+
 	call_dtors = not (is_iif or astDTorListIsEmpty( ))
 
-	select case( n->class )
-	case AST_NODECLASS_CONST
-		'' Note: a CONST expression will never use temp vars.
-		'' Although the AST may have dtors registered from other parts
-		'' of the expression if it's an iif(), iif() will (currently)
-		'' optimize out itself when the condition is CONST, so this
-		'' case never happens.
-		assert( is_iif = FALSE )
-		assert( call_dtors = FALSE )
+	if( call_dtors = FALSE ) then
+		'' Skip LINK nodes, if any
+		n = expr
+		parentlink = NULL
+		while( n->class = AST_NODECLASS_LINK )
+			parentlink = n
+			if( n->link.ret_left ) then
+				n = n->l
+			else
+				n = n->r
+			end if
+		wend
 
-		'' If the condition is...
-		'' a) false (or true but inverted), emit a simple jump to jump
-		''    over the IF block.
-		'' b) true (or false but inverted), don't emit a jump at all,
-		''    but fall trough to the IF block.
-		if( astConstEqZero( n ) <> is_inverse ) then
-			function = astNewBRANCH( AST_OP_JMP, label, NULL )
-		else
-			function = astNewNOP( )
-		end if
+		select case( n->class )
+		case AST_NODECLASS_CONST
+			'' Note: a CONST expression will never use temp vars.
+			'' Although the AST may have dtors registered from other parts
+			'' of the expression if it's an iif(), iif() will (currently)
+			'' optimize out itself when the condition is CONST, so this
+			'' case never happens.
+			assert( is_iif = FALSE )
+			assert( call_dtors = FALSE )
 
-		astDelNode( n )
-		exit function
+			'' If the condition is...
+			'' a) false (or true but inverted), emit a simple jump to jump
+			''    over the IF block.
+			'' b) true (or false but inverted), don't emit a jump at all,
+			''    but fall trough to the IF block.
+			if( astConstEqZero( n ) <> is_inverse ) then
+				m = astNewBRANCH( AST_OP_JMP, label, NULL )
+			else
+				m = astNewNOP( )
+			end if
 
-	case AST_NODECLASS_BOP
-		'' relational operator?
-		select case as const( n->op.op )
-		case AST_OP_EQ, AST_OP_NE, AST_OP_GT, _
-		     AST_OP_LT, AST_OP_GE, AST_OP_LE
-			if( call_dtors = FALSE ) then
+			astDelNode( n )
+			n = m
+
+		case AST_NODECLASS_BOP
+
+			'' relational operator?
+			select case as const( n->op.op )
+			case AST_OP_EQ, AST_OP_NE, AST_OP_GT, _
+			     AST_OP_LT, AST_OP_GE, AST_OP_LE
+
+				'' Not possible if dtors have to be called,
+				'' since they must be emitted in between the
+				'' expression and the branch...
+				assert( call_dtors = FALSE )
+
 				'' Directly update this BOP to do the branch itself
 				n->op.ex = label
 				if( is_inverse = FALSE ) then
 					n->op.op = astGetInverseLogOp( n->op.op )
 				end if
-				return n
-			end if
 
-		'' BOP that sets x86 flags?
-		case AST_OP_ADD, AST_OP_SUB, AST_OP_SHL, AST_OP_SHR, _
-		     AST_OP_AND, AST_OP_OR, AST_OP_XOR, AST_OP_IMP
-		     ''AST_OP_EQV -- NOT doesn't set any flags, so EQV can't be optimized (x86 assumption)
+			'' BOP that sets x86 flags?
+			case AST_OP_ADD, AST_OP_SUB, AST_OP_SHL, AST_OP_SHR, _
+			     AST_OP_AND, AST_OP_OR, AST_OP_XOR, AST_OP_IMP
+			     ''AST_OP_EQV -- NOT doesn't set any flags, so EQV can't be optimized (x86 assumption)
 
-			'' Can't optimize if dtors have be called, they'd trash the flags
-			if( call_dtors = FALSE ) then
+				'' Can't optimize if dtors have be called, they'd trash the flags
+				assert( call_dtors = FALSE )
+
 				dim as integer doopt = any
 
 				if( typeGetClass( dtype ) = FB_DATACLASS_INTEGER ) then
@@ -765,17 +786,40 @@ function astBuildBranch _
 				if( doopt ) then
 					'' Check against zero (= FALSE), relying on the flags set by the BOP;
 					'' so it must not be removed by later astAdd() optimizations.
-					return astNewBRANCH( iif( is_inverse, AST_OP_JNE, AST_OP_JEQ ), label, n )
+					n = astNewBRANCH( iif( is_inverse, AST_OP_JNE, AST_OP_JEQ ), label, n )
+				else
+					n = NULL
 				end if
-			end if
 
+			case else
+				n = NULL
+			end select
+
+		case else
+			n = NULL
 		end select
 
-	end select
+		'' An optimization was done?
+		if( n ) then
+			'' Update the parent LINK node, if any
+			if( parentlink ) then
+				if( parentlink->link.ret_left ) then
+					parentlink->l = n
+				else
+					parentlink->r = n
+				end if
+			else
+				'' Otherwise the whole expression was replaced
+				expr = n
+			end if
+
+			return expr
+		end if
+	else
+		n = NULL
+	end if
 
 	'' No optimization could be done, check expression against zero
-	expr = n
-	n = NULL
 
 	'' Remap zstring/wstring types, we don't want the temp var to be a
 	'' string, or the comparison against zero to be a string comparison...
@@ -809,39 +853,105 @@ end function
 '' temp destructors handling
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-sub astDtorListAdd( byval sym as FBSYMBOL ptr )
-	dim as AST_DTORLIST_ITEM ptr n = any
-	dim as integer add = any
-
+private function hHasDtor( byval sym as FBSYMBOL ptr ) as integer
 	assert( symbIsVar( sym ) )
 
 	'' Everything with a destructor (classes)
-	add = symbHasDtor( sym )
+	function = symbHasDtor( sym )
 
 	'' But also dynamic [w]strings
 	select case( symbGetType( sym ) )
 	case FB_DATATYPE_STRING
-		add = TRUE
+		function = TRUE
 
 	case typeAddrOf( FB_DATATYPE_WCHAR )
-		add or= symbGetIsWstring( sym )
+		if( symbGetIsWstring( sym ) ) then
+			function = TRUE
+		end if
 
 	end select
+end function
 
-	if( add ) then
-		n = listNewNode( @ast.dtorlist )
-		n->sym = sym
+#if __FB_DEBUG__
+sub astDtorListDump( )
+	dim as AST_DTORLIST_ITEM ptr i = any
 
-		with( ast.dtorlistscopes )
-			'' If inside a dtorlist scope, mark the new entry
-			'' with the scope's cookie
-			if( .count > 0 ) then
-				n->cookie = .cookies[.count-1]
-			else
-				n->cookie = 0
-			end if
-		end with
+	print "-------------- dtorlist: ------------------"
+	i = listGetTail( @ast.dtorlist )
+	while( i )
+		print "    ";symbDump( i->sym );" cookie: ";i->cookie;" refcount: ";i->refcount;" has dtor? ";hHasDtor( i->sym )
+		i = listGetPrev( i )
+	wend
+end sub
+#endif
+
+sub astDtorListAdd( byval sym as FBSYMBOL ptr )
+	dim as AST_DTORLIST_ITEM ptr n = any
+
+	if( hHasDtor( sym ) = FALSE ) then
+		exit sub
 	end if
+
+	n = listNewNode( @ast.dtorlist )
+	n->sym = sym
+
+	with( ast.dtorlistscopes )
+		'' If inside a dtorlist scope, mark the new entry
+		'' with the scope's cookie
+		if( .count > 0 ) then
+			n->cookie = .cookies[.count-1]
+		else
+			n->cookie = 0
+		end if
+	end with
+
+	n->refcount = 0
+end sub
+
+sub astDtorListAddRef( byval sym as FBSYMBOL ptr )
+	dim as AST_DTORLIST_ITEM ptr i = any
+
+	if( hHasDtor( sym ) = FALSE ) then
+		exit sub
+	end if
+
+	'' Find the entry for this symbol (if any still exists)
+	'' and increase its refcount
+	i = listGetTail( @ast.dtorlist )
+	while( i )
+		if( i->sym = sym ) then
+			i->refcount += 1
+			exit while
+		end if
+
+		i = listGetPrev( i )
+	wend
+end sub
+
+sub astDtorListRemoveRef( byval sym as FBSYMBOL ptr )
+	dim as AST_DTORLIST_ITEM ptr i = any
+
+	if( hHasDtor( sym ) = FALSE ) then
+		exit sub
+	end if
+
+	'' Find the entry for this symbol (if any still exists)
+	'' and decrease its refcount
+	i = listGetTail( @ast.dtorlist )
+	while( i )
+		if( i->sym = sym ) then
+			assert( i->refcount > 0 )
+			i->refcount -= 1
+
+			if( i->refcount <= 0 ) then
+				listDelNode( @ast.dtorlist, i )
+			end if
+
+			exit while
+		end if
+
+		i = listGetPrev( i )
+	wend
 end sub
 
 function astDtorListFlush( byval cookie as integer ) as ASTNODE ptr
@@ -876,24 +986,32 @@ function astDtorListFlush( byval cookie as integer ) as ASTNODE ptr
 end function
 
 sub astDtorListDel( byval sym as FBSYMBOL ptr )
-    dim as AST_DTORLIST_ITEM ptr n = any
+	dim as AST_DTORLIST_ITEM ptr n = any
+
+	if( hHasDtor( sym ) = FALSE ) then
+		exit sub
+	end if
 
 	n = listGetTail( @ast.dtorlist )
-	do while( n <> NULL )
+	while( n )
 		if( n->sym = sym ) then
 			listDelNode( @ast.dtorlist, n )
-			exit do
+			exit while
 		end if
-
 		n = listGetPrev( n )
-    loop
+	wend
 end sub
 
 '' Opens a new dtorlist "scope", the newly allocated cookie number will be used
 '' to mark all dtorlist entries added by astDtorListAdd()'s while in this scope.
-sub astDtorListScopeBegin( )
-	'' Allocate new cookie
-	ast.dtorlistcookies += 1
+'' If a "cookie" is given then that will be used to mark new entries, instead of
+'' allocating a new cookie.
+sub astDtorListScopeBegin( byval cookie as integer )
+	if( cookie = 0 ) then
+		'' Allocate new cookie
+		ast.dtorlistcookies += 1
+		cookie = ast.dtorlistcookies
+	end if
 
 	'' Add new scope with that cookie
 	with( ast.dtorlistscopes )
@@ -902,7 +1020,7 @@ sub astDtorListScopeBegin( )
 			.room += 8
 			.cookies = xreallocate( .cookies, sizeof( *.cookies ) * .room )
 		end if
-		.cookies[.count] = ast.dtorlistcookies
+		.cookies[.count] = cookie
 		.count += 1
 	end with
 end sub
@@ -918,6 +1036,19 @@ function astDtorListScopeEnd( ) as integer
 	end with
 end function
 
+sub astDtorListUnscope( byval cookie as integer )
+	dim as AST_DTORLIST_ITEM ptr i = any
+
+	'' call the dtors in the reverse order
+	i = listGetTail( @ast.dtorlist )
+	while( i )
+		if( i->cookie = cookie ) then
+			i->cookie = 0
+		end if
+		i = listGetPrev( i )
+	wend
+end sub
+
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' hacks
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -929,6 +1060,18 @@ sub astSetType _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr _
 	)
+
+#if __FB_DEBUG__
+	if( astIsTYPEINI( n ) ) then
+		'' TYPEINI types shouldn't be changed by optimizations,
+		'' it would cause astTypeIniUpdate() to use the wrong type
+		'' for the temp var.
+		'' (astSetType() can still be called, e.g. from astNewDEREF(),
+		'' just the type shouldn't be changed)
+		assert( typeGetDtAndPtrOnly( n->dtype ) = typeGetDtAndPtrOnly( dtype ) )
+		assert( n->subtype = subtype )
+	end if
+#endif
 
     astGetFullType( n ) = dtype
     n->subtype = subtype
@@ -956,14 +1099,6 @@ sub astSetType _
 
 	case AST_NODECLASS_IIF
 		astSetType( n->l, dtype, subtype )
-
-#if __FB_DEBUG__
-	case AST_NODECLASS_TYPEINI
-		'' TYPEINI types shouldn't be changed by optimizations,
-		'' it would cause astTypeIniUpdate() to use the wrong type
-		'' for the temp var.
-		assert( FALSE )
-#endif
 
 	end select
 

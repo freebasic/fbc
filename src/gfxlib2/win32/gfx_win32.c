@@ -142,6 +142,7 @@ LRESULT CALLBACK fb_hWin32WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM
 	PAINTSTRUCT ps;
 	EVENT e;
 	BOOL is_minimized;
+	MINMAXINFO *mmi;
 
 	e.type = 0;
 
@@ -448,6 +449,17 @@ LRESULT CALLBACK fb_hWin32WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM
 			if (fb_win32.mouse_clip)
 				ClipCursor(NULL);
 			break;
+
+		case WM_GETMINMAXINFO:
+			/* Don't let the window size be truncated to the screen size */
+			mmi = (MINMAXINFO *)lParam;
+			mmi->ptMaxSize.x      = fb_win32.fullw;
+			mmi->ptMaxSize.y      = fb_win32.fullh;
+			mmi->ptMinTrackSize.x = fb_win32.fullw;
+			mmi->ptMinTrackSize.y = fb_win32.fullh;
+			mmi->ptMaxTrackSize.x = fb_win32.fullw;
+			mmi->ptMaxTrackSize.y = fb_win32.fullh;
+			return 0;
 	}
 
 	if ((message == WM_MOUSEMOVE) || (message == WM_MOUSEENTER)) {
@@ -484,6 +496,9 @@ void fb_hHandleMessages(void)
 
 int fb_hInitWindow(DWORD style, DWORD ex_style, int x, int y, int w, int h)
 {
+	fb_win32.fullw = w;
+	fb_win32.fullh = h;
+
 	fb_win32.wnd = CreateWindowEx(ex_style, fb_win32.window_class, fb_win32.window_title, style,
 		x, y, w, h, HWND_DESKTOP, NULL, fb_win32.hinstance, NULL);
 	if (!fb_win32.wnd)

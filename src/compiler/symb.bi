@@ -1059,16 +1059,6 @@ declare function symbAddLabel _
 
 declare function symbAddVar _
 	( _
-		byval symbol as zstring ptr, _
-		byval dtype as integer, _
-		byval subtype as FBSYMBOL ptr, _
-		byval dimensions as integer, _
-		dTB() as FBARRAYDIM, _
-		byval attrib as integer _
-	) as FBSYMBOL ptr
-
-declare function symbAddVarEx _
-	( _
 		byval symbol as const zstring ptr, _
 		byval aliasname as const zstring ptr, _
 		byval dtype as integer, _

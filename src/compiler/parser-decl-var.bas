@@ -411,9 +411,8 @@ private function hDeclStaticVar _
 			options or= FB_SYMBOPT_UNSCOPE
 		end if
 
-    	sym = symbAddVarEx( id, idalias, dtype, subtype, _
-    				  	  	lgt, dimensions, dTB(), _
-    				  	  	attrib, options )
+		sym = symbAddVar( id, idalias, dtype, subtype, lgt, _
+		                  dimensions, dTB(), attrib, options )
 
     '' already declared extern..
     else
@@ -490,9 +489,8 @@ private function hDeclDynArray _
 			options or= FB_SYMBOPT_UNSCOPE
 		end if
 
-   		sym = symbAddVarEx( id, idalias, dtype, subtype, _
-   						    lgt, dimensions, dTB(), _
-   						    attrib, options )
+		sym = symbAddVar( id, idalias, dtype, subtype, lgt, _
+		                  dimensions, dTB(), attrib, options )
 
 	'' check reallocation..
 	else
@@ -991,8 +989,8 @@ private function hCallStaticCtor _
 	end if
 
 	'' create a static flag
-	flag = symbAddVarEx( symbUniqueLabel( ), NULL, FB_DATATYPE_INTEGER, NULL, 0, _
-	                     0, dTB(), FB_SYMBATTRIB_STATIC )
+	flag = symbAddVar( symbUniqueLabel( ), NULL, FB_DATATYPE_INTEGER, NULL, 0, _
+	                   0, dTB(), FB_SYMBATTRIB_STATIC )
 
 	tree = astNewLINK( tree, _
 					   astNewDECL( flag, NULL ) )

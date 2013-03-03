@@ -61,9 +61,14 @@ end function
 namespace classlikeIntegerUdt
 	type ClassUdt
 		i as integer
+
 		declare constructor( )
 		declare constructor( byref as ClassUdt )
 		declare destructor( )
+
+		const CONST1 = 1
+		static staticvar1 as integer
+		declare static sub staticsub1( )
 	end type
 
 	constructor ClassUdt( )
@@ -93,6 +98,10 @@ namespace classlikeIntegerUdt
 			.refcount -= 1
 		end with
 	end destructor
+
+	dim shared ClassUdt.staticvar1 as integer = 1
+	static sub ClassUdt.staticsub1( )
+	end sub
 
 	function test1( byval x as ClassUdt ) as ClassUdt
 		function = x
@@ -294,6 +303,26 @@ namespace classlikeIntegerUdt
 			end if
 			CU_ASSERT( i = 1 )
 		check( 3, 0, 3 )
+
+		begin( )
+			dim i as integer = 0
+			if( (ClassUdt( )).i = 123 ) then
+				i = 1
+			else
+				i = 2
+			end if
+			CU_ASSERT( i = 1 )
+		check( 1, 0, 1 )
+
+		begin( )
+			dim i as integer = 0
+			if( (ClassUdt( )).i = 0 ) then
+				i = 1
+			else
+				i = 2
+			end if
+			CU_ASSERT( i = 2 )
+		check( 1, 0, 1 )
 	end sub
 
 	sub testIifBranch cdecl( )
@@ -737,6 +766,22 @@ namespace classlikeIntegerUdt
 		check( 2, 1, 3 )
 	end sub
 
+	sub testIifTrueFalseExpressions cdecl( )
+		dim c as integer
+
+		begin( ) : c = -1 : CU_ASSERT( iif(  c, (ClassUdt( )).i, (ClassUdt( )).i ) = 123 ) : check( 1, 0, 1 )
+		begin( ) : c =  0 : CU_ASSERT( iif(  c, (ClassUdt( )).i, (ClassUdt( )).i ) = 123 ) : check( 1, 0, 1 )
+
+		begin( ) : c = -1 : CU_ASSERT( (iif(  c, ClassUdt( ), ClassUdt( ) )).i = 123 ) : check( 1, 0, 1 )
+		begin( ) : c =  0 : CU_ASSERT( (iif(  c, ClassUdt( ), ClassUdt( ) )).i = 123 ) : check( 1, 0, 1 )
+
+		begin( ) : CU_ASSERT( iif( -1, (ClassUdt( )).i, (ClassUdt( )).i ) = 123 ) : check( 1, 0, 1 )
+		begin( ) : CU_ASSERT( iif(  0, (ClassUdt( )).i, (ClassUdt( )).i ) = 123 ) : check( 1, 0, 1 )
+
+		begin( ) : CU_ASSERT( (iif( -1, ClassUdt( ), ClassUdt( ) )).i = 123 ) : check( 1, 0, 1 )
+		begin( ) : CU_ASSERT( (iif(  0, ClassUdt( ), ClassUdt( ) )).i = 123 ) : check( 1, 0, 1 )
+	end sub
+
 	sub hPassByval( byval x as ClassUdt )
 	end sub
 
@@ -780,14 +825,153 @@ namespace classlikeIntegerUdt
 			hPassByref( type<ClassUdt>( ) )
 		check( 1, 0, 1 )
 	end sub
+
+	function fByvalUdtToInt( byval x as ClassUdt ) as integer
+		function = x.i
+	end function
+
+	function fByrefUdtToInt( byref x as ClassUdt ) as integer
+		function = x.i
+	end function
+
+	function fByvalUdtToStr( byval x as ClassUdt ) as string
+		function = str( x.i )
+	end function
+
+	function fByrefUdtToStr( byref x as ClassUdt ) as string
+		function = str( x.i )
+	end function
+
+	sub testTypeof cdecl( )
+		dim c as integer = -1
+
+		begin( )
+			dim i as typeof( fByvalUdtToInt( ClassUdt( ) ) )
+		check( 0, 0, 0 )
+
+		begin( )
+			dim i as typeof( fByrefUdtToInt( ClassUdt( ) ) )
+		check( 0, 0, 0 )
+
+		begin( )
+			dim i as typeof( fByvalUdtToInt( iif( c, ClassUdt( ), ClassUdt( ) ) ) )
+		check( 0, 0, 0 )
+
+		begin( )
+			dim i as typeof( fByrefUdtToInt( iif( c, ClassUdt( ), ClassUdt( ) ) ) )
+		check( 0, 0, 0 )
+
+		begin( )
+			dim x as typeof( ClassUdt( ) )
+		check( 1, 0, 1 )
+
+		begin( )
+			dim x as typeof( iif( c, ClassUdt( ), ClassUdt( ) ) )
+		check( 1, 0, 1 )
+	end sub
+
+	sub testLen cdecl( )
+		dim c as integer = -1
+
+		begin( )
+			CU_ASSERT( len( fByvalUdtToStr( ClassUdt( ) ) ) = 3 )
+		check( 1, 0, 1 )
+
+		begin( )
+			CU_ASSERT( len( fByrefUdtToStr( ClassUdt( ) ) ) = 3 )
+		check( 1, 0, 1 )
+
+		begin( )
+			CU_ASSERT( len( fByvalUdtToStr( iif( c, ClassUdt( ), ClassUdt( ) ) ) ) = 3 ) '' "123"
+		check( 1, 1, 2 )
+
+		begin( )
+			CU_ASSERT( len( fByrefUdtToStr( iif( c, ClassUdt( ), ClassUdt( ) ) ) ) = 3 ) '' "123"
+		check( 1, 0, 1 )
+	end sub
+
+	sub testSizeOf cdecl( )
+		dim c as integer = -1
+
+		begin( )
+			CU_ASSERT( sizeof( fByvalUdtToInt( ClassUdt( ) ) ) = sizeof( integer ) )
+		check( 0, 0, 0 )
+
+		begin( )
+			CU_ASSERT( sizeof( fByrefUdtToInt( ClassUdt( ) ) ) = sizeof( integer ) )
+		check( 0, 0, 0 )
+
+		begin( )
+			CU_ASSERT( sizeof( fByvalUdtToInt( iif( c, ClassUdt( ), ClassUdt( ) ) ) ) = sizeof( integer ) )
+		check( 0, 0, 0 )
+
+		begin( )
+			CU_ASSERT( sizeof( fByrefUdtToInt( iif( c, ClassUdt( ), ClassUdt( ) ) ) ) = sizeof( integer ) )
+		check( 0, 0, 0 )
+
+		begin( )
+			CU_ASSERT( sizeof( ClassUdt( ) ) = sizeof( ClassUdt ) )
+		check( 0, 0, 0 )
+
+		begin( )
+			CU_ASSERT( sizeof( iif( c, ClassUdt( ), ClassUdt( ) ) ) = sizeof( ClassUdt ) )
+		check( 0, 0, 0 )
+
+		begin( )
+			CU_ASSERT( len( ClassUdt( ) ) = sizeof( ClassUdt ) )
+		check( 0, 0, 0 )
+
+		begin( )
+			CU_ASSERT( len( iif( c, ClassUdt( ), ClassUdt( ) ) ) = sizeof( ClassUdt ) )
+		check( 0, 0, 0 )
+
+		begin( )
+			CU_ASSERT( ((ClassUdt( )).i + sizeof( ClassUdt( ) )) = (123 + sizeof( ClassUdt )) )
+		check( 1, 0, 1 )
+
+		begin( )
+			CU_ASSERT( (sizeof( ClassUdt( ) ) + (ClassUdt( )).i) = (sizeof( ClassUdt ) + 123) )
+		check( 1, 0, 1 )
+	end sub
+
+	sub testStaticMemberAccess cdecl( )
+		begin( )
+			CU_ASSERT( f1( ).CONST1 = 1 )
+		check( 0, 0, 0 )
+
+		begin( )
+			CU_ASSERT( f1( ).staticvar1 = 1 )
+		check( 0, 0, 0 )
+
+		begin( )
+			f1( ).staticsub1( )
+		check( 0, 0, 0 )
+
+		begin( )
+			CU_ASSERT( (type<ClassUdt>( )).CONST1 = 1 )
+		check( 0, 0, 0 )
+
+		begin( )
+			CU_ASSERT( (type<ClassUdt>( )).staticvar1 = 1 )
+		check( 0, 0, 0 )
+
+		begin( )
+			(type<ClassUdt>( )).staticsub1( )
+		check( 0, 0, 0 )
+	end sub
 end namespace
 
 namespace classlikeDoubleIntUdt
 	type ClassUdt
 		as integer i, j
+
 		declare constructor( )
 		declare constructor( byref as ClassUdt )
 		declare destructor( )
+
+		const CONST1 = 1
+		static staticvar1 as integer
+		declare static sub staticsub1( )
 	end type
 
 	constructor ClassUdt( )
@@ -819,6 +1003,10 @@ namespace classlikeDoubleIntUdt
 			.refcount -= 1
 		end with
 	end destructor
+
+	dim shared ClassUdt.staticvar1 as integer = 1
+	static sub ClassUdt.staticsub1( )
+	end sub
 
 	function test1( byval x as ClassUdt ) as ClassUdt
 		function = x
@@ -1021,6 +1209,26 @@ namespace classlikeDoubleIntUdt
 			end if
 			CU_ASSERT( i = 1 )
 		check( 3, 0, 3 )
+
+		begin( )
+			dim i as integer = 0
+			if( (ClassUdt( )).i = 123 ) then
+				i = 1
+			else
+				i = 2
+			end if
+			CU_ASSERT( i = 1 )
+		check( 1, 0, 1 )
+
+		begin( )
+			dim i as integer = 0
+			if( (ClassUdt( )).i = 0 ) then
+				i = 1
+			else
+				i = 2
+			end if
+			CU_ASSERT( i = 2 )
+		check( 1, 0, 1 )
 	end sub
 
 	sub testIifBranch cdecl( )
@@ -1206,6 +1414,30 @@ namespace classlikeDoubleIntUdt
 		check( 2, 1, 3 )
 	end sub
 
+	sub testIifTrueFalseExpressions cdecl( )
+		dim c as integer
+
+		begin( ) : c = -1 : CU_ASSERT( iif(  c, (ClassUdt( )).i, (ClassUdt( )).j ) = 123 ) : check( 1, 0, 1 )
+		begin( ) : c = -1 : CU_ASSERT( iif(  c, (ClassUdt( )).j, (ClassUdt( )).i ) = 456 ) : check( 1, 0, 1 )
+		begin( ) : c =  0 : CU_ASSERT( iif(  c, (ClassUdt( )).i, (ClassUdt( )).j ) = 456 ) : check( 1, 0, 1 )
+		begin( ) : c =  0 : CU_ASSERT( iif(  c, (ClassUdt( )).j, (ClassUdt( )).i ) = 123 ) : check( 1, 0, 1 )
+
+		begin( ) : c = -1 : CU_ASSERT( (iif(  c, ClassUdt( ), ClassUdt( ) )).i = 123 ) : check( 1, 0, 1 )
+		begin( ) : c = -1 : CU_ASSERT( (iif(  c, ClassUdt( ), ClassUdt( ) )).j = 456 ) : check( 1, 0, 1 )
+		begin( ) : c =  0 : CU_ASSERT( (iif(  c, ClassUdt( ), ClassUdt( ) )).i = 123 ) : check( 1, 0, 1 )
+		begin( ) : c =  0 : CU_ASSERT( (iif(  c, ClassUdt( ), ClassUdt( ) )).j = 456 ) : check( 1, 0, 1 )
+
+		begin( ) : CU_ASSERT( iif( -1, (ClassUdt( )).i, (ClassUdt( )).j ) = 123 ) : check( 1, 0, 1 )
+		begin( ) : CU_ASSERT( iif( -1, (ClassUdt( )).j, (ClassUdt( )).i ) = 456 ) : check( 1, 0, 1 )
+		begin( ) : CU_ASSERT( iif(  0, (ClassUdt( )).i, (ClassUdt( )).j ) = 456 ) : check( 1, 0, 1 )
+		begin( ) : CU_ASSERT( iif(  0, (ClassUdt( )).j, (ClassUdt( )).i ) = 123 ) : check( 1, 0, 1 )
+
+		begin( ) : CU_ASSERT( (iif( -1, ClassUdt( ), ClassUdt( ) )).i = 123 ) : check( 1, 0, 1 )
+		begin( ) : CU_ASSERT( (iif( -1, ClassUdt( ), ClassUdt( ) )).j = 456 ) : check( 1, 0, 1 )
+		begin( ) : CU_ASSERT( (iif(  0, ClassUdt( ), ClassUdt( ) )).i = 123 ) : check( 1, 0, 1 )
+		begin( ) : CU_ASSERT( (iif(  0, ClassUdt( ), ClassUdt( ) )).j = 456 ) : check( 1, 0, 1 )
+	end sub
+
 	sub hPassByval( byval x as ClassUdt )
 	end sub
 
@@ -1249,12 +1481,151 @@ namespace classlikeDoubleIntUdt
 			hPassByref( type<ClassUdt>( ) )
 		check( 1, 0, 1 )
 	end sub
+
+	function fByvalUdtToInt( byval x as ClassUdt ) as integer
+		function = x.i
+	end function
+
+	function fByrefUdtToInt( byref x as ClassUdt ) as integer
+		function = x.i
+	end function
+
+	function fByvalUdtToStr( byval x as ClassUdt ) as string
+		function = str( x.i )
+	end function
+
+	function fByrefUdtToStr( byref x as ClassUdt ) as string
+		function = str( x.i )
+	end function
+
+	sub testTypeof cdecl( )
+		dim c as integer = -1
+
+		begin( )
+			dim i as typeof( fByvalUdtToInt( ClassUdt( ) ) )
+		check( 0, 0, 0 )
+
+		begin( )
+			dim i as typeof( fByrefUdtToInt( ClassUdt( ) ) )
+		check( 0, 0, 0 )
+
+		begin( )
+			dim i as typeof( fByvalUdtToInt( iif( c, ClassUdt( ), ClassUdt( ) ) ) )
+		check( 0, 0, 0 )
+
+		begin( )
+			dim i as typeof( fByrefUdtToInt( iif( c, ClassUdt( ), ClassUdt( ) ) ) )
+		check( 0, 0, 0 )
+
+		begin( )
+			dim x as typeof( ClassUdt( ) )
+		check( 1, 0, 1 )
+
+		begin( )
+			dim x as typeof( iif( c, ClassUdt( ), ClassUdt( ) ) )
+		check( 1, 0, 1 )
+	end sub
+
+	sub testLen cdecl( )
+		dim c as integer = -1
+
+		begin( )
+			CU_ASSERT( len( fByvalUdtToStr( ClassUdt( ) ) ) = 3 )
+		check( 1, 0, 1 )
+
+		begin( )
+			CU_ASSERT( len( fByrefUdtToStr( ClassUdt( ) ) ) = 3 )
+		check( 1, 0, 1 )
+
+		begin( )
+			CU_ASSERT( len( fByvalUdtToStr( iif( c, ClassUdt( ), ClassUdt( ) ) ) ) = 3 ) '' "123"
+		check( 1, 1, 2 )
+
+		begin( )
+			CU_ASSERT( len( fByrefUdtToStr( iif( c, ClassUdt( ), ClassUdt( ) ) ) ) = 3 ) '' "123"
+		check( 1, 0, 1 )
+	end sub
+
+	sub testSizeOf cdecl( )
+		dim c as integer = -1
+
+		begin( )
+			CU_ASSERT( sizeof( fByvalUdtToInt( ClassUdt( ) ) ) = sizeof( integer ) )
+		check( 0, 0, 0 )
+
+		begin( )
+			CU_ASSERT( sizeof( fByrefUdtToInt( ClassUdt( ) ) ) = sizeof( integer ) )
+		check( 0, 0, 0 )
+
+		begin( )
+			CU_ASSERT( sizeof( fByvalUdtToInt( iif( c, ClassUdt( ), ClassUdt( ) ) ) ) = sizeof( integer ) )
+		check( 0, 0, 0 )
+
+		begin( )
+			CU_ASSERT( sizeof( fByrefUdtToInt( iif( c, ClassUdt( ), ClassUdt( ) ) ) ) = sizeof( integer ) )
+		check( 0, 0, 0 )
+
+		begin( )
+			CU_ASSERT( sizeof( ClassUdt( ) ) = sizeof( ClassUdt ) )
+		check( 0, 0, 0 )
+
+		begin( )
+			CU_ASSERT( sizeof( iif( c, ClassUdt( ), ClassUdt( ) ) ) = sizeof( ClassUdt ) )
+		check( 0, 0, 0 )
+
+		begin( )
+			CU_ASSERT( len( ClassUdt( ) ) = sizeof( ClassUdt ) )
+		check( 0, 0, 0 )
+
+		begin( )
+			CU_ASSERT( len( iif( c, ClassUdt( ), ClassUdt( ) ) ) = sizeof( ClassUdt ) )
+		check( 0, 0, 0 )
+
+		begin( )
+			CU_ASSERT( ((ClassUdt( )).i + sizeof( ClassUdt( ) )) = (123 + sizeof( ClassUdt )) )
+		check( 1, 0, 1 )
+
+		begin( )
+			CU_ASSERT( (sizeof( ClassUdt( ) ) + (ClassUdt( )).i) = (sizeof( ClassUdt ) + 123) )
+		check( 1, 0, 1 )
+	end sub
+
+	sub testStaticMemberAccess cdecl( )
+		begin( )
+			CU_ASSERT( f1( ).CONST1 = 1 )
+		check( 0, 0, 0 )
+
+		begin( )
+			CU_ASSERT( f1( ).staticvar1 = 1 )
+		check( 0, 0, 0 )
+
+		begin( )
+			f1( ).staticsub1( )
+		check( 0, 0, 0 )
+
+		begin( )
+			CU_ASSERT( (type<ClassUdt>( )).CONST1 = 1 )
+		check( 0, 0, 0 )
+
+		begin( )
+			CU_ASSERT( (type<ClassUdt>( )).staticvar1 = 1 )
+		check( 0, 0, 0 )
+
+		begin( )
+			(type<ClassUdt>( )).staticsub1( )
+		check( 0, 0, 0 )
+	end sub
 end namespace
 
 namespace dtorOnlyIntegerUdt
 	type DtorUdt
 		i as integer
+
 		declare destructor( )
+
+		const CONST1 = 1
+		static staticvar1 as integer
+		declare static sub staticsub1( )
 	end type
 
 	destructor DtorUdt( )
@@ -1264,6 +1635,10 @@ namespace dtorOnlyIntegerUdt
 			totalctors += 1
 		end with
 	end destructor
+
+	dim shared DtorUdt.staticvar1 as integer = 1
+	static sub DtorUdt.staticsub1( )
+	end sub
 
 	function test1( byval x as DtorUdt ) as DtorUdt
 		function = x
@@ -1463,6 +1838,26 @@ namespace dtorOnlyIntegerUdt
 			end if
 			CU_ASSERT( i = 1 )
 		check( 3, 0, 3 )
+
+		begin( )
+			dim i as integer = 0
+			if( (type<DtorUdt>( 123 )).i = 123 ) then
+				i = 1
+			else
+				i = 2
+			end if
+			CU_ASSERT( i = 1 )
+		check( 1, 0, 1 )
+
+		begin( )
+			dim i as integer = 0
+			if( (type<DtorUdt>( 123 )).i = 0 ) then
+				i = 1
+			else
+				i = 2
+			end if
+			CU_ASSERT( i = 2 )
+		check( 1, 0, 1 )
 	end sub
 
 	sub testIifBranch cdecl( )
@@ -1648,6 +2043,22 @@ namespace dtorOnlyIntegerUdt
 		check( 3, 0, 3 )
 	end sub
 
+	sub testIifTrueFalseExpressions cdecl( )
+		dim c as integer
+
+		begin( ) : c = -1 : CU_ASSERT( iif(  c, (type<DtorUdt>( 1 )).i, (type<DtorUdt>( 2 )).i ) = 1 ) : check( 1, 0, 1 )
+		begin( ) : c =  0 : CU_ASSERT( iif(  c, (type<DtorUdt>( 1 )).i, (type<DtorUdt>( 2 )).i ) = 2 ) : check( 1, 0, 1 )
+
+		begin( ) : c = -1 : CU_ASSERT( (iif(  c, type<DtorUdt>( 1 ), type<DtorUdt>( 2 ) )).i = 1 ) : check( 2, 0, 2 )
+		begin( ) : c =  0 : CU_ASSERT( (iif(  c, type<DtorUdt>( 1 ), type<DtorUdt>( 2 ) )).i = 2 ) : check( 2, 0, 2 )
+
+		begin( ) : CU_ASSERT( iif( -1, (type<DtorUdt>( 1 )).i, (type<DtorUdt>( 2 )).i ) = 1 ) : check( 1, 0, 1 )
+		begin( ) : CU_ASSERT( iif(  0, (type<DtorUdt>( 1 )).i, (type<DtorUdt>( 2 )).i ) = 2 ) : check( 1, 0, 1 )
+
+		begin( ) : CU_ASSERT( (iif( -1, type<DtorUdt>( 1 ), type<DtorUdt>( 2 ) )).i = 1 ) : check( 1, 0, 1 )
+		begin( ) : CU_ASSERT( (iif(  0, type<DtorUdt>( 1 ), type<DtorUdt>( 2 ) )).i = 2 ) : check( 1, 0, 1 )
+	end sub
+
 	sub hPassByval( byval x as DtorUdt )
 	end sub
 
@@ -1683,12 +2094,159 @@ namespace dtorOnlyIntegerUdt
 			hPassByref( type<DtorUdt>( 123 ) )
 		check( 1, 0, 1 )
 	end sub
+
+	function fByvalUdtToInt( byval x as DtorUdt ) as integer
+		function = x.i
+	end function
+
+	function fByrefUdtToInt( byref x as DtorUdt ) as integer
+		function = x.i
+	end function
+
+	function fByvalUdtToStr( byval x as DtorUdt ) as string
+		function = str( x.i )
+	end function
+
+	function fByrefUdtToStr( byref x as DtorUdt ) as string
+		function = str( x.i )
+	end function
+
+	sub testTypeof cdecl( )
+		dim c as integer = -1
+
+		begin( )
+			dim i as typeof( fByvalUdtToInt( type<DtorUdt>( 123 ) ) )
+		check( 0, 0, 0 )
+
+		begin( )
+			dim i as typeof( fByrefUdtToInt( type<DtorUdt>( 123 ) ) )
+		check( 0, 0, 0 )
+
+		begin( )
+			dim i as typeof( fByvalUdtToInt( iif( c, type<DtorUdt>( 123 ), type<DtorUdt>( 123 ) ) ) )
+		check( 0, 0, 0 )
+
+		begin( )
+			dim i as typeof( fByrefUdtToInt( iif( c, type<DtorUdt>( 123 ), type<DtorUdt>( 123 ) ) ) )
+		check( 0, 0, 0 )
+
+		begin( )
+			dim x as typeof( type<DtorUdt>( 123 ) )
+		check( 1, 0, 1 )
+
+		begin( )
+			dim x as typeof( iif( c, type<DtorUdt>( 123 ), type<DtorUdt>( 123 ) ) )
+		check( 1, 0, 1 )
+	end sub
+
+	sub testLen cdecl( )
+		dim c as integer = -1
+
+		begin( )
+			CU_ASSERT( len( fByvalUdtToStr( type<DtorUdt>( 123 ) ) ) = 3 )
+		check( 1, 0, 1 )
+
+		begin( )
+			CU_ASSERT( len( fByrefUdtToStr( type<DtorUdt>( 123 ) ) ) = 3 )
+		check( 1, 0, 1 )
+
+		begin( )
+			CU_ASSERT( len( fByvalUdtToStr( iif( c, type<DtorUdt>( 111 ), type<DtorUdt>( 111222 ) ) ) ) = 3 ) '' "111"
+		check( 3, 0, 3 )
+
+		begin( )
+			CU_ASSERT( len( fByvalUdtToStr( iif( c, type<DtorUdt>( 111222 ), type<DtorUdt>( 111 ) ) ) ) = 6 ) '' "111222"
+		check( 3, 0, 3 )
+
+		begin( )
+			CU_ASSERT( len( fByrefUdtToStr( iif( c, type<DtorUdt>( 111 ), type<DtorUdt>( 111222 ) ) ) ) = 3 ) '' "111"
+		check( 2, 0, 2 )
+
+		begin( )
+			CU_ASSERT( len( fByrefUdtToStr( iif( c, type<DtorUdt>( 111222 ), type<DtorUdt>( 111 ) ) ) ) = 6 ) '' "111222"
+		check( 2, 0, 2 )
+	end sub
+
+	sub testSizeOf cdecl( )
+		dim c as integer = -1
+
+		begin( )
+			CU_ASSERT( sizeof( fByvalUdtToInt( type<DtorUdt>( 123 ) ) ) = sizeof( integer ) )
+		check( 0, 0, 0 )
+
+		begin( )
+			CU_ASSERT( sizeof( fByrefUdtToInt( type<DtorUdt>( 123 ) ) ) = sizeof( integer ) )
+		check( 0, 0, 0 )
+
+		begin( )
+			CU_ASSERT( sizeof( fByvalUdtToInt( iif( c, type<DtorUdt>( 123 ), type<DtorUdt>( 123 ) ) ) ) = sizeof( integer ) )
+		check( 0, 0, 0 )
+
+		begin( )
+			CU_ASSERT( sizeof( fByrefUdtToInt( iif( c, type<DtorUdt>( 123 ), type<DtorUdt>( 123 ) ) ) ) = sizeof( integer ) )
+		check( 0, 0, 0 )
+
+		begin( )
+			CU_ASSERT( sizeof( type<DtorUdt>( 123 ) ) = sizeof( DtorUdt ) )
+		check( 0, 0, 0 )
+
+		begin( )
+			CU_ASSERT( sizeof( iif( c, type<DtorUdt>( 123 ), type<DtorUdt>( 123 ) ) ) = sizeof( DtorUdt ) )
+		check( 0, 0, 0 )
+
+		begin( )
+			CU_ASSERT( len( type<DtorUdt>( 123 ) ) = sizeof( DtorUdt ) )
+		check( 0, 0, 0 )
+
+		begin( )
+			CU_ASSERT( len( iif( c, type<DtorUdt>( 123 ), type<DtorUdt>( 123 ) ) ) = sizeof( DtorUdt ) )
+		check( 0, 0, 0 )
+
+		begin( )
+			CU_ASSERT( ((type<DtorUdt>( 123 )).i + sizeof( type<DtorUdt>( 123 ) )) = (123 + sizeof( DtorUdt )) )
+		check( 1, 0, 1 )
+
+		begin( )
+			CU_ASSERT( (sizeof( type<DtorUdt>( 123 ) ) + (type<DtorUdt>( 123 )).i) = (sizeof( DtorUdt ) + 123) )
+		check( 1, 0, 1 )
+	end sub
+
+	sub testStaticMemberAccess cdecl( )
+		begin( )
+			CU_ASSERT( f1( ).CONST1 = 1 )
+		check( 0, 0, 0 )
+
+		begin( )
+			CU_ASSERT( f1( ).staticvar1 = 1 )
+		check( 0, 0, 0 )
+
+		begin( )
+			f1( ).staticsub1( )
+		check( 0, 0, 0 )
+
+		begin( )
+			CU_ASSERT( (type<DtorUdt>( 123 )).CONST1 = 1 )
+		check( 0, 0, 0 )
+
+		begin( )
+			CU_ASSERT( (type<DtorUdt>( 123 )).staticvar1 = 1 )
+		check( 0, 0, 0 )
+
+		begin( )
+			(type<DtorUdt>( 123 )).staticsub1( )
+		check( 0, 0, 0 )
+	end sub
 end namespace
 
 namespace dtorOnlyDoubleIntUdt
 	type DtorUdt
 		as integer i, j
+
 		declare destructor( )
+
+		const CONST1 = 1
+		static staticvar1 as integer
+		declare static sub staticsub1( )
 	end type
 
 	destructor DtorUdt( )
@@ -1698,6 +2256,10 @@ namespace dtorOnlyDoubleIntUdt
 			totalctors += 1
 		end with
 	end destructor
+
+	dim shared DtorUdt.staticvar1 as integer = 1
+	static sub DtorUdt.staticsub1( )
+	end sub
 
 	function test1( byval x as DtorUdt ) as DtorUdt
 		function = x
@@ -1904,6 +2466,26 @@ namespace dtorOnlyDoubleIntUdt
 			end if
 			CU_ASSERT( i = 1 )
 		check( 3, 0, 3 )
+
+		begin( )
+			dim i as integer = 0
+			if( (type<DtorUdt>( 123 )).i = 123 ) then
+				i = 1
+			else
+				i = 2
+			end if
+			CU_ASSERT( i = 1 )
+		check( 1, 0, 1 )
+
+		begin( )
+			dim i as integer = 0
+			if( (type<DtorUdt>( 123 )).i = 0 ) then
+				i = 1
+			else
+				i = 2
+			end if
+			CU_ASSERT( i = 2 )
+		check( 1, 0, 1 )
 	end sub
 
 	sub testIifBranch cdecl( )
@@ -2089,6 +2671,30 @@ namespace dtorOnlyDoubleIntUdt
 		check( 3, 0, 3 )
 	end sub
 
+	sub testIifTrueFalseExpressions cdecl( )
+		dim c as integer
+
+		begin( ) : c = -1 : CU_ASSERT( iif(  c, (type<DtorUdt>( 1, 11 )).i, (type<DtorUdt>( 2, 22 )).j ) =  1 ) : check( 1, 0, 1 )
+		begin( ) : c = -1 : CU_ASSERT( iif(  c, (type<DtorUdt>( 1, 11 )).j, (type<DtorUdt>( 2, 22 )).i ) = 11 ) : check( 1, 0, 1 )
+		begin( ) : c =  0 : CU_ASSERT( iif(  c, (type<DtorUdt>( 1, 11 )).i, (type<DtorUdt>( 2, 22 )).j ) = 22 ) : check( 1, 0, 1 )
+		begin( ) : c =  0 : CU_ASSERT( iif(  c, (type<DtorUdt>( 1, 11 )).j, (type<DtorUdt>( 2, 22 )).i ) =  2 ) : check( 1, 0, 1 )
+
+		begin( ) : c = -1 : CU_ASSERT( (iif(  c, type<DtorUdt>( 1, 11 ), type<DtorUdt>( 2, 22 ) )).i =  1 ) : check( 2, 0, 2 )
+		begin( ) : c = -1 : CU_ASSERT( (iif(  c, type<DtorUdt>( 1, 11 ), type<DtorUdt>( 2, 22 ) )).j = 11 ) : check( 2, 0, 2 )
+		begin( ) : c =  0 : CU_ASSERT( (iif(  c, type<DtorUdt>( 1, 11 ), type<DtorUdt>( 2, 22 ) )).i =  2 ) : check( 2, 0, 2 )
+		begin( ) : c =  0 : CU_ASSERT( (iif(  c, type<DtorUdt>( 1, 11 ), type<DtorUdt>( 2, 22 ) )).j = 22 ) : check( 2, 0, 2 )
+
+		begin( ) : CU_ASSERT( iif( -1, (type<DtorUdt>( 1, 11 )).i, (type<DtorUdt>( 2, 22 )).j ) =  1 ) : check( 1, 0, 1 )
+		begin( ) : CU_ASSERT( iif( -1, (type<DtorUdt>( 1, 11 )).j, (type<DtorUdt>( 2, 22 )).i ) = 11 ) : check( 1, 0, 1 )
+		begin( ) : CU_ASSERT( iif(  0, (type<DtorUdt>( 1, 11 )).i, (type<DtorUdt>( 2, 22 )).j ) = 22 ) : check( 1, 0, 1 )
+		begin( ) : CU_ASSERT( iif(  0, (type<DtorUdt>( 1, 11 )).j, (type<DtorUdt>( 2, 22 )).i ) =  2 ) : check( 1, 0, 1 )
+
+		begin( ) : CU_ASSERT( (iif( -1, type<DtorUdt>( 1, 11 ), type<DtorUdt>( 2, 22 ) )).i =  1 ) : check( 1, 0, 1 )
+		begin( ) : CU_ASSERT( (iif( -1, type<DtorUdt>( 1, 11 ), type<DtorUdt>( 2, 22 ) )).j = 11 ) : check( 1, 0, 1 )
+		begin( ) : CU_ASSERT( (iif(  0, type<DtorUdt>( 1, 11 ), type<DtorUdt>( 2, 22 ) )).i =  2 ) : check( 1, 0, 1 )
+		begin( ) : CU_ASSERT( (iif(  0, type<DtorUdt>( 1, 11 ), type<DtorUdt>( 2, 22 ) )).j = 22 ) : check( 1, 0, 1 )
+	end sub
+
 	sub hPassByval( byval x as DtorUdt )
 	end sub
 
@@ -2124,54 +2730,317 @@ namespace dtorOnlyDoubleIntUdt
 			hPassByref( type<DtorUdt>( 123 ) )
 		check( 1, 0, 1 )
 	end sub
+
+	function fByvalUdtToInt( byval x as DtorUdt ) as integer
+		function = x.i
+	end function
+
+	function fByrefUdtToInt( byref x as DtorUdt ) as integer
+		function = x.i
+	end function
+
+	function fByvalUdtToStr( byval x as DtorUdt ) as string
+		function = str( x.i )
+	end function
+
+	function fByrefUdtToStr( byref x as DtorUdt ) as string
+		function = str( x.i )
+	end function
+
+	sub testTypeof cdecl( )
+		dim c as integer = -1
+
+		begin( )
+			dim i as typeof( fByvalUdtToInt( type<DtorUdt>( 123 ) ) )
+		check( 0, 0, 0 )
+
+		begin( )
+			dim i as typeof( fByrefUdtToInt( type<DtorUdt>( 123 ) ) )
+		check( 0, 0, 0 )
+
+		begin( )
+			dim i as typeof( fByvalUdtToInt( iif( c, type<DtorUdt>( 123 ), type<DtorUdt>( 123 ) ) ) )
+		check( 0, 0, 0 )
+
+		begin( )
+			dim i as typeof( fByrefUdtToInt( iif( c, type<DtorUdt>( 123 ), type<DtorUdt>( 123 ) ) ) )
+		check( 0, 0, 0 )
+
+		begin( )
+			dim x as typeof( type<DtorUdt>( 123 ) )
+		check( 1, 0, 1 )
+
+		begin( )
+			dim x as typeof( iif( c, type<DtorUdt>( 123 ), type<DtorUdt>( 123 ) ) )
+		check( 1, 0, 1 )
+	end sub
+
+	sub testLen cdecl( )
+		dim c as integer = -1
+
+		begin( )
+			CU_ASSERT( len( fByvalUdtToStr( type<DtorUdt>( 123 ) ) ) = 3 )
+		check( 1, 0, 1 )
+
+		begin( )
+			CU_ASSERT( len( fByrefUdtToStr( type<DtorUdt>( 123 ) ) ) = 3 )
+		check( 1, 0, 1 )
+
+		begin( )
+			CU_ASSERT( len( fByvalUdtToStr( iif( c, type<DtorUdt>( 111 ), type<DtorUdt>( 111222 ) ) ) ) = 3 ) '' "111"
+		check( 3, 0, 3 )
+
+		begin( )
+			CU_ASSERT( len( fByvalUdtToStr( iif( c, type<DtorUdt>( 111222 ), type<DtorUdt>( 111 ) ) ) ) = 6 ) '' "111222"
+		check( 3, 0, 3 )
+
+		begin( )
+			CU_ASSERT( len( fByrefUdtToStr( iif( c, type<DtorUdt>( 111 ), type<DtorUdt>( 111222 ) ) ) ) = 3 ) '' "111"
+		check( 2, 0, 2 )
+
+		begin( )
+			CU_ASSERT( len( fByrefUdtToStr( iif( c, type<DtorUdt>( 111222 ), type<DtorUdt>( 111 ) ) ) ) = 6 ) '' "111222"
+		check( 2, 0, 2 )
+	end sub
+
+	sub testSizeOf cdecl( )
+		dim c as integer = -1
+
+		begin( )
+			CU_ASSERT( sizeof( fByvalUdtToInt( type<DtorUdt>( 123 ) ) ) = sizeof( integer ) )
+		check( 0, 0, 0 )
+
+		begin( )
+			CU_ASSERT( sizeof( fByrefUdtToInt( type<DtorUdt>( 123 ) ) ) = sizeof( integer ) )
+		check( 0, 0, 0 )
+
+		begin( )
+			CU_ASSERT( sizeof( fByvalUdtToInt( iif( c, type<DtorUdt>( 123 ), type<DtorUdt>( 123 ) ) ) ) = sizeof( integer ) )
+		check( 0, 0, 0 )
+
+		begin( )
+			CU_ASSERT( sizeof( fByrefUdtToInt( iif( c, type<DtorUdt>( 123 ), type<DtorUdt>( 123 ) ) ) ) = sizeof( integer ) )
+		check( 0, 0, 0 )
+
+		begin( )
+			CU_ASSERT( sizeof( type<DtorUdt>( 123 ) ) = sizeof( DtorUdt ) )
+		check( 0, 0, 0 )
+
+		begin( )
+			CU_ASSERT( sizeof( iif( c, type<DtorUdt>( 123 ), type<DtorUdt>( 123 ) ) ) = sizeof( DtorUdt ) )
+		check( 0, 0, 0 )
+
+		begin( )
+			CU_ASSERT( len( type<DtorUdt>( 123 ) ) = sizeof( DtorUdt ) )
+		check( 0, 0, 0 )
+
+		begin( )
+			CU_ASSERT( len( iif( c, type<DtorUdt>( 123 ), type<DtorUdt>( 123 ) ) ) = sizeof( DtorUdt ) )
+		check( 0, 0, 0 )
+
+		begin( )
+			CU_ASSERT( ((type<DtorUdt>( 123 )).i + sizeof( type<DtorUdt>( 123 ) )) = (123 + sizeof( DtorUdt )) )
+		check( 1, 0, 1 )
+
+		begin( )
+			CU_ASSERT( (sizeof( type<DtorUdt>( 123 ) ) + (type<DtorUdt>( 123 )).i) = (sizeof( DtorUdt ) + 123) )
+		check( 1, 0, 1 )
+	end sub
+
+	sub testStaticMemberAccess cdecl( )
+		begin( )
+			CU_ASSERT( f1( ).CONST1 = 1 )
+		check( 0, 0, 0 )
+
+		begin( )
+			CU_ASSERT( f1( ).staticvar1 = 1 )
+		check( 0, 0, 0 )
+
+		begin( )
+			f1( ).staticsub1( )
+		check( 0, 0, 0 )
+
+		begin( )
+			CU_ASSERT( (type<DtorUdt>( 123 )).CONST1 = 1 )
+		check( 0, 0, 0 )
+
+		begin( )
+			CU_ASSERT( (type<DtorUdt>( 123 )).staticvar1 = 1 )
+		check( 0, 0, 0 )
+
+		begin( )
+			(type<DtorUdt>( 123 )).staticsub1( )
+		check( 0, 0, 0 )
+	end sub
+end namespace
+
+
+namespace copyctorWith2ndParam
+	'' The AST must ensure that temp vars created in true/false expressions
+	'' of an iif() are only constructed/destructed if the true/false code
+	'' path actually is reached. This also affects constructor calls used
+	'' to construct the iif temp var from the true/false expressions.
+	''
+	'' For example, it could be a call to a copy constructor, with a 2nd
+	'' parameter (with a parameter initializer) which results in an ARG
+	'' that uses a temp var.
+
+	type A
+		i as integer
+		declare constructor( byval i as integer )
+		declare destructor( )
+	end type
+
+	constructor A( byval i as integer )
+		totalctors += 1
+		with( status(hFindSlot( @this )) )
+			.instance = @this
+			CU_ASSERT( .refcount = 0 )
+			.refcount += 1
+		end with
+	end constructor
+
+	destructor A( )
+		totaldtors += 1
+		with( status(hFindSlot( @this )) )
+			CU_ASSERT( .refcount = 1 )
+			.refcount -= 1
+		end with
+	end destructor
+
+	type B
+		i as integer
+		declare constructor( byval i as integer )
+
+		'' Copy constructor with 2nd parameter that requires a temp var.
+		'' It could also be an integer contant passed to a BYREF AS INTEGER
+		'' parameter, but using an UDT with destructor is easiest for this
+		'' test, since we can check whether the destructor was called.
+		'' In fact, the destructor calling is the most important part.
+		'' If it was just an integer param, the worst thing that could
+		'' happen would be that the temp var is allocated on stack but
+		'' never used, i.e. wasted memory.
+		declare constructor( byref rhs as B, byref x as A = type<A>( 123 ) )
+		declare destructor( )
+	end type
+
+	constructor B( byval i as integer )
+		this.i = i
+		totalctors += 1
+		with( status(hFindSlot( @this )) )
+			.instance = @this
+			CU_ASSERT( .refcount = 0 )
+			.refcount += 1
+		end with
+	end constructor
+
+	constructor B( byref rhs as B, byref x as A )
+		this.i = rhs.i
+		totalcopyctors += 1
+		with( status(hFindSlot( @this )) )
+			.instance = @this
+			CU_ASSERT( .refcount = 0 )
+			.refcount += 1
+		end with
+	end constructor
+
+	destructor B( )
+		totaldtors += 1
+		with( status(hFindSlot( @this )) )
+			CU_ASSERT( .refcount = 1 )
+			.refcount -= 1
+		end with
+	end destructor
+
+	sub test cdecl( )
+		dim c as integer
+
+		begin( )
+			c = -1
+			dim as B b1 = B( 1 ), b2 = B( 2 )
+			CU_ASSERT( (iif( c, b1, b2 )).i = 1 )
+		check( 3, 1, 4 )
+
+		begin( )
+			c = 0
+			dim as B b1 = B( 1 ), b2 = B( 2 )
+			CU_ASSERT( (iif( c, b1, b2 )).i = 2 )
+		check( 3, 1, 4 )
+	end sub
 end namespace
 
 private sub ctor( ) constructor
 	fbcu.add_suite( "tests/structs/temp-var-dtors" )
 
-	fbcu.add_test( "11", @classlikeIntegerUdt.testParamInit )
-	fbcu.add_test( "12", @classlikeIntegerUdt.testAnon )
-	fbcu.add_test( "13", @classlikeIntegerUdt.testResult )
-	fbcu.add_test( "14", @classlikeIntegerUdt.testIfBranch )
-	fbcu.add_test( "15", @classlikeIntegerUdt.testIifBranch )
-	fbcu.add_test( "16", @classlikeIntegerUdt.testWhileBranch )
-	fbcu.add_test( "17", @classlikeIntegerUdt.testUntilBranch )
-	fbcu.add_test( "18", @classlikeIntegerUdt.testIifTempVar )
-	fbcu.add_test( "19", @classlikeIntegerUdt.testByval )
-	fbcu.add_test( "110",@classlikeIntegerUdt.testByref )
+	#macro add( t )
+		fbcu.add_test( #t, @t )
+	#endmacro
 
-	fbcu.add_test( "21", @classlikeDoubleIntUdt.testParamInit )
-	fbcu.add_test( "22", @classlikeDoubleIntUdt.testAnon )
-	fbcu.add_test( "23", @classlikeDoubleIntUdt.testResult )
-	fbcu.add_test( "24", @classlikeDoubleIntUdt.testIfBranch )
-	fbcu.add_test( "25", @classlikeDoubleIntUdt.testIifBranch )
-	fbcu.add_test( "26", @classlikeDoubleIntUdt.testWhileBranch )
-	fbcu.add_test( "27", @classlikeDoubleIntUdt.testUntilBranch )
-	fbcu.add_test( "28", @classlikeDoubleIntUdt.testIifTempVar )
-	fbcu.add_test( "29", @classlikeDoubleIntUdt.testByval )
-	fbcu.add_test( "210",@classlikeDoubleIntUdt.testByref )
+	add( classlikeIntegerUdt.testParamInit )
+	add( classlikeIntegerUdt.testAnon )
+	add( classlikeIntegerUdt.testResult )
+	add( classlikeIntegerUdt.testIfBranch )
+	add( classlikeIntegerUdt.testIifBranch )
+	add( classlikeIntegerUdt.testWhileBranch )
+	add( classlikeIntegerUdt.testUntilBranch )
+	add( classlikeIntegerUdt.testIifTempVar )
+	add( classlikeIntegerUdt.testIifTrueFalseExpressions )
+	add( classlikeIntegerUdt.testByval )
+	add( classlikeIntegerUdt.testByref )
+	add( classlikeIntegerUdt.testTypeof )
+	add( classlikeIntegerUdt.testLen )
+	add( classlikeIntegerUdt.testSizeof )
+	add( classlikeIntegerUdt.testStaticMemberAccess )
 
-	fbcu.add_test( "31", @dtorOnlyIntegerUdt.testParamInit )
-	fbcu.add_test( "32", @dtorOnlyIntegerUdt.testAnon )
-	fbcu.add_test( "33", @dtorOnlyIntegerUdt.testResult )
-	fbcu.add_test( "34", @dtorOnlyIntegerUdt.testIfBranch )
-	fbcu.add_test( "35", @dtorOnlyIntegerUdt.testIifBranch )
-	fbcu.add_test( "36", @dtorOnlyIntegerUdt.testWhileBranch )
-	fbcu.add_test( "37", @dtorOnlyIntegerUdt.testUntilBranch )
-	fbcu.add_test( "38", @dtorOnlyIntegerUdt.testIifTempVar )
-	fbcu.add_test( "39", @dtorOnlyIntegerUdt.testByval )
-	fbcu.add_test( "310",@dtorOnlyIntegerUdt.testByref )
+	add( classlikeDoubleIntUdt.testParamInit )
+	add( classlikeDoubleIntUdt.testAnon )
+	add( classlikeDoubleIntUdt.testResult )
+	add( classlikeDoubleIntUdt.testIfBranch )
+	add( classlikeDoubleIntUdt.testIifBranch )
+	add( classlikeDoubleIntUdt.testWhileBranch )
+	add( classlikeDoubleIntUdt.testUntilBranch )
+	add( classlikeDoubleIntUdt.testIifTempVar )
+	add( classlikeDoubleIntUdt.testIifTrueFalseExpressions )
+	add( classlikeDoubleIntUdt.testByval )
+	add( classlikeDoubleIntUdt.testByref )
+	add( classlikeDoubleIntUdt.testTypeof )
+	add( classlikeDoubleIntUdt.testLen )
+	add( classlikeDoubleIntUdt.testSizeof )
+	add( classlikeDoubleIntUdt.testStaticMemberAccess )
 
-	fbcu.add_test( "41", @dtorOnlyDoubleIntUdt.testParamInit )
-	fbcu.add_test( "42", @dtorOnlyDoubleIntUdt.testAnon )
-	fbcu.add_test( "43", @dtorOnlyDoubleIntUdt.testResult )
-	fbcu.add_test( "44", @dtorOnlyDoubleIntUdt.testIfBranch )
-	fbcu.add_test( "45", @dtorOnlyDoubleIntUdt.testIifBranch )
-	fbcu.add_test( "46", @dtorOnlyDoubleIntUdt.testWhileBranch )
-	fbcu.add_test( "47", @dtorOnlyDoubleIntUdt.testUntilBranch )
-	fbcu.add_test( "48", @dtorOnlyDoubleIntUdt.testIifTempVar )
-	fbcu.add_test( "49", @dtorOnlyDoubleIntUdt.testByval )
-	fbcu.add_test( "410",@dtorOnlyDoubleIntUdt.testByref )
+	add( dtorOnlyIntegerUdt.testParamInit )
+	add( dtorOnlyIntegerUdt.testAnon )
+	add( dtorOnlyIntegerUdt.testResult )
+	add( dtorOnlyIntegerUdt.testIfBranch )
+	add( dtorOnlyIntegerUdt.testIifBranch )
+	add( dtorOnlyIntegerUdt.testWhileBranch )
+	add( dtorOnlyIntegerUdt.testUntilBranch )
+	add( dtorOnlyIntegerUdt.testIifTempVar )
+	add( dtorOnlyIntegerUdt.testIifTrueFalseExpressions )
+	add( dtorOnlyIntegerUdt.testByval )
+	add( dtorOnlyIntegerUdt.testByref )
+	add( dtorOnlyIntegerUdt.testTypeof )
+	add( dtorOnlyIntegerUdt.testLen )
+	add( dtorOnlyIntegerUdt.testSizeof )
+	add( dtorOnlyIntegerUdt.testStaticMemberAccess )
+
+	add( dtorOnlyDoubleIntUdt.testParamInit )
+	add( dtorOnlyDoubleIntUdt.testAnon )
+	add( dtorOnlyDoubleIntUdt.testResult )
+	add( dtorOnlyDoubleIntUdt.testIfBranch )
+	add( dtorOnlyDoubleIntUdt.testIifBranch )
+	add( dtorOnlyDoubleIntUdt.testWhileBranch )
+	add( dtorOnlyDoubleIntUdt.testUntilBranch )
+	add( dtorOnlyDoubleIntUdt.testIifTempVar )
+	add( dtorOnlyDoubleIntUdt.testIifTrueFalseExpressions )
+	add( dtorOnlyDoubleIntUdt.testByval )
+	add( dtorOnlyDoubleIntUdt.testByref )
+	add( dtorOnlyDoubleIntUdt.testTypeof )
+	add( dtorOnlyDoubleIntUdt.testLen )
+	add( dtorOnlyDoubleIntUdt.testSizeof )
+	add( dtorOnlyDoubleIntUdt.testStaticMemberAccess )
+
+	add( copyctorWith2ndParam.test )
 end sub
 
 end namespace

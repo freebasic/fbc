@@ -48,7 +48,9 @@ Version 0.25.0:
 - IIF now allows different types to be mixed, for example iif( condition, mybyte, myinteger ), the result type is the bigger type
 - #if/#elseif now accept all kinds of constant expressions that would be accepted in other places (e.g. in PRINT or in constant declarations)
 - preprocessor #assert statement
-- INTEGER<n> / UINTEGER<n>, where n is 8/16/32/64, for allowing to choose integer types of a specific size
+- INTEGER<n> / UINTEGER<n> / C[U]INT<n>, where n is 8/16/32/64, for allowing to choose integer types of a specific size
+- CVI<n> / MKI<n>, where n is 16/32/64, to allow bit conversions of a specific size
+- type<UDT>( ).field is now possible, as an alternative to (type<UDT>( )).field
 
 [fixed]
 - libzip headers: zip_stat struct was unnecessarily named zip_stat_, breaking the libzip example
@@ -182,7 +184,7 @@ Version 0.25.0:
 - Two temporary copies could be created when passing classes BYVAL
 - UDT variables given in BYREF UDT parameter initializers could be copied to a temporary variable if a copy constructor was available, instead of being passed BYREF
 - #630: C backend: EXTERN dynamic array descriptors were not emitted (if the EXTERN was not DIMed in that module)
-- Temporary variables from the expressions given to sizeof() and typeof() (and also len() when evaluated at compile-time) were emitted and could even have their destructors called, even though they were unused and never constructed
+- Temporary variables from deleted expressions (sizeof()/typeof() operand, instance expression in static member accesses) were still allocated on stack and could even have their destructors called, even though they were unused and never constructed
 - SELECT blocks will no longer allow other statements in between the SELECT header and the first CASE statement
 - lang qb didn't allow DEF___ statements inside procedures/compounds despite the change in 0.21.0
 - "CONST id AS" and "CONST AS" were allowed to be immediately followed by any statement, instead of triggering a compiler error
@@ -202,6 +204,8 @@ Version 0.25.0:
 - #621: Parsing & overloading checks for argument lists of PASCAL procedures/constructors was broken
 - C backend: Backslashes in wstring literals were not escaped when emitting
 - Binary operation result types are more consistent now, for example "integer + uinteger" will now return a uinteger, just like "uinteger + integer"
+- Win32: When using a graphics window nearly as big as or bigger than the available screen space, the graphics window's size could be truncated by the system, for example causing GetMouse to return coordinates that didn't match the actual mouse position, at least under the DirectX driver. FB will now handle WM_GETMINMAXINFO to prevent the system from making the window smaller than requested.
+- Anonymous type() couldn't be used in initializers for UDTs with constructors
 
 
 Version 0.24.0:

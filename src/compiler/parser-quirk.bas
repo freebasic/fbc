@@ -184,7 +184,7 @@ function cQuirkFunction(byval sym as FBSYMBOL ptr) as ASTNODE ptr
 		funcexpr = cErrorFunct()
 
 	case FB_TK_IIF
-		funcexpr = cIIFFunct()
+		return cStrIdxOrMemberDeref( cIIFFunct( ) )
 
 	case FB_TK_VA_FIRST
 		funcexpr = cVAFunct()
@@ -195,7 +195,7 @@ function cQuirkFunction(byval sym as FBSYMBOL ptr) as ASTNODE ptr
 		return cTypeConvExpr( tk )
 
 	case FB_TK_TYPE
-		return cAnonType( )
+		return cStrIdxOrMemberDeref( cAnonType( ) )
 
 	case FB_TK_VIEW
 		funcexpr = cViewStmt(TRUE)

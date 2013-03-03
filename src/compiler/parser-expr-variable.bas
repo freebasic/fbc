@@ -362,7 +362,7 @@ function cUdtMember _
 
 			varexpr	= astNewDEREF( varexpr, dtype, subtype )
 
-			varexpr	= astNewFIELD( varexpr,	fld, dtype, subtype )
+			varexpr = astNewFIELD( varexpr, fld )
 
 			if( is_nidxarray ) then
 				return astNewNIDXARRAY( varexpr )
@@ -1054,11 +1054,11 @@ private function hVarAddUndecl _
 		options or= FB_SYMBOPT_UNSCOPE
 	end if
 
-	s = symbAddVarEx( id, NULL, dtype, NULL, 0, 0, dTB(), attrib, options )
+	s = symbAddVar( id, NULL, dtype, NULL, 0, 0, dTB(), attrib, options )
 	if( s = NULL ) then
 		errReportEx( FB_ERRMSG_DUPDEFINITION, id )
 		'' error recovery: fake an id
-		s = symbAddVar( symbUniqueLabel( ), dtype, NULL, 0, dTB(), attrib )
+		s = symbAddVar( symbUniqueLabel( ), NULL, dtype, NULL, 0, 0, dTB(), attrib )
 	else
 		var_ = astNewDECL( s, NULL )
 

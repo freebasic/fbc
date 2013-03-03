@@ -364,8 +364,7 @@ sub symbSetArrayDimTb _
 
 end sub
 
-'':::::
-function symbAddVarEx _
+function symbAddVar _
 	( _
 		byval id as const zstring ptr, _
 		byval id_alias as const zstring ptr, _
@@ -479,23 +478,6 @@ function symbAddVarEx _
 	function = s
 end function
 
-'':::::
-function symbAddVar _
-	( _
-		byval id as zstring ptr, _
-		byval dtype as integer, _
-		byval subtype as FBSYMBOL ptr, _
-		byval dimensions as integer, _
-		dTB() as FBARRAYDIM, _
-		byval attrib as integer _
-	) as FBSYMBOL ptr
-
-    function = symbAddVarEx( id, NULL, dtype, subtype, _
-    		  			     0, dimensions, dTB(), _
-    						 attrib )
-
-end function
-
 function symbAddTempVar _
 	( _
 		byval dtype as integer, _
@@ -519,8 +501,8 @@ function symbAddTempVar _
 	''   and making them STATIC could cause hidden bugs with recursion or
 	''   multi-threading.
 
-	function = symbAddVarEx( symbUniqueId( ), NULL, dtype, subtype, 0, 0, _
-	                         dTB(), FB_SYMBATTRIB_TEMP, options )
+	function = symbAddVar( symbUniqueId( ), NULL, dtype, subtype, 0, 0, _
+	                       dTB(), FB_SYMBATTRIB_TEMP, options )
 end function
 
 function symbAddAndAllocateTempVar( byval dtype as integer ) as FBSYMBOL ptr
@@ -771,7 +753,7 @@ function symbCloneVar( byval sym as FBSYMBOL ptr ) as FBSYMBOL ptr
 			d = d->next
 		next
 
-		function = symbAddVarEx( symbGetName( sym ), NULL, _
+		function = symbAddVar( symbGetName( sym ), NULL, _
 				symbGetType( sym ), symbGetSubType( sym ), 0, _
 				dimensions, dTB(), symbGetAttrib( sym ), 0 )
 	end if

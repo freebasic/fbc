@@ -159,26 +159,33 @@ function astBuildVarField _
 
 	dim as ASTNODE ptr expr = any
 
-	if( fld <> NULL ) then
+	if( fld ) then
 		ofs += symbGetOfs( fld )
-	end if
 
-	'' byref or import?
-	if( symbIsParamByRef( sym ) or symbIsImport( sym ) ) then
-		expr = astNewDEREF( _
-			astNewVAR( sym, , typeAddrOf( symbGetFullType( sym ) ), _
-				symbGetSubtype( sym ) ), _
-			, , ofs )
+		'' byref or import?
+		if( symbIsParamByRef( sym ) or symbIsImport( sym ) ) then
+			expr = astNewDEREF( _
+				astNewVAR( sym, , typeAddrOf( symbGetFullType( sym ) ), _
+					symbGetSubtype( sym ) ), _
+				symbGetFullType( fld ), symbGetSubtype( fld ), ofs )
+		else
+			expr = astNewVAR( sym, ofs, symbGetFullType( fld ), symbGetSubtype( fld ) )
+		end if
+
+		expr = astNewFIELD( expr, fld )
 	else
-		expr = astNewVAR( sym, ofs )
-	end if
-
-	if( fld <> NULL ) then
-		expr = astNewFIELD( expr, fld, symbGetFullType( fld ), symbGetSubtype( fld ) )
+		'' byref or import?
+		if( symbIsParamByRef( sym ) or symbIsImport( sym ) ) then
+			expr = astNewDEREF( _
+				astNewVAR( sym, , typeAddrOf( symbGetFullType( sym ) ), _
+					symbGetSubtype( sym ) ), _
+				, , ofs )
+		else
+			expr = astNewVAR( sym, ofs )
+		end if
 	end if
 
 	function = expr
-
 end function
 
 function astBuildTempVarClear( byval sym as FBSYMBOL ptr ) as ASTNODE ptr
@@ -451,12 +458,9 @@ function astCALLCTORToCALL _
 	'' remove right leaf (the VAR access on the temp var)
 	astDelTree( n->r )
 
-	'' remove anon symbol
-	if( symbHasDtor( sym ) ) then
-		'' if the temp has a dtor it was added to the dtor list,
-		'' remove it too
-		astDtorListDel( sym )
-	end if
+	'' if the temp has a dtor it was added to the dtor list,
+	'' remove it too
+	astDtorListDel( sym )
 
 	'' Delete the temp var itself
 	symbDelSymbol( sym )
@@ -615,7 +619,7 @@ function astBuildInstPtr _
 	expr = astNewDEREF( expr, dtype, subtype )
 
 	if( fld <> NULL ) then
-		expr = astNewFIELD( expr, fld, dtype, subtype )
+		expr = astNewFIELD( expr, fld )
 	end if
 
 	function = expr
@@ -653,7 +657,7 @@ function astBuildInstPtrAtOffset _
 	expr = astNewDEREF( expr, dtype, subtype )
 
 	if( fld <> NULL ) then
-		expr = astNewFIELD( expr, fld, dtype, subtype )
+		expr = astNewFIELD( expr, fld )
 	end if
 
 	function = expr

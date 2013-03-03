@@ -39,7 +39,7 @@ enum LEXCHECK
 	LEXCHECK_NOMULTILINECOMMENT	= &h0200 
 	
 	'' don't interpret f, u, l as type-specifier suffixes on numeric literals (used in asm blocks)
-	LEXCHECK_NOLETTERSUFFIX	= &h0200 
+	LEXCHECK_NOLETTERSUFFIX	= &h0400
 	
 end enum
 

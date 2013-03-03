@@ -103,9 +103,9 @@ private sub hBuildRtti( byval udt as FBSYMBOL ptr )
 
 	'' static shared id as $fb_RTTI
 	id = "_ZTS" + *symbGetMangledName( udt )
-	rtti = symbAddVarEx( NULL, id, FB_DATATYPE_STRUCT, symb.rtti.fb_rtti, 0, 0, dTB(), _
-	                     FB_SYMBATTRIB_CONST or FB_SYMBATTRIB_STATIC or FB_SYMBATTRIB_SHARED, _
-	                     FB_SYMBOPT_PRESERVECASE )
+	rtti = symbAddVar( NULL, id, FB_DATATYPE_STRUCT, symb.rtti.fb_rtti, 0, 0, dTB(), _
+	                   FB_SYMBATTRIB_CONST or FB_SYMBATTRIB_STATIC or FB_SYMBATTRIB_SHARED, _
+	                   FB_SYMBOPT_PRESERVECASE )
 	udt->udt.ext->rtti = rtti
 
 	'' initializer
@@ -154,9 +154,9 @@ private sub hBuildVtable( byval udt as FBSYMBOL ptr )
 	'' static shared vtable(0 to elements-1) as any ptr
 	id = "_ZTV" + *symbGetMangledName( udt )
 	dTB(0).upper = udt->udt.ext->vtableelements - 1
-	vtable = symbAddVarEx( NULL, id, typeAddrOf( FB_DATATYPE_VOID ), NULL, 0, 1, dTB(), _
-	                       FB_SYMBATTRIB_CONST or FB_SYMBATTRIB_STATIC or FB_SYMBATTRIB_SHARED, _
-	                       FB_SYMBOPT_PRESERVECASE )
+	vtable = symbAddVar( NULL, id, typeAddrOf( FB_DATATYPE_VOID ), NULL, 0, 1, dTB(), _
+	                     FB_SYMBATTRIB_CONST or FB_SYMBATTRIB_STATIC or FB_SYMBATTRIB_SHARED, _
+	                     FB_SYMBOPT_PRESERVECASE )
 
 	'' Find information about the base UDT's vtable:
 	''    the number of elements,
@@ -1209,8 +1209,8 @@ sub symbCompRTTIInit( )
 	symbStructEnd( objtype, TRUE )
 
 	'' declare extern shared as $fb_RTTI __fb_ZTS6Object (the Object class RTTI instance created in C)
-	objrtti = symbAddVarEx( NULL, "__fb_ZTS6Object", FB_DATATYPE_STRUCT, symb.rtti.fb_rtti, 0, 0, dTB(), _
-	                        FB_SYMBATTRIB_EXTERN or FB_SYMBATTRIB_SHARED, FB_SYMBOPT_PRESERVECASE )
+	objrtti = symbAddVar( NULL, "__fb_ZTS6Object", FB_DATATYPE_STRUCT, symb.rtti.fb_rtti, 0, 0, dTB(), _
+	                      FB_SYMBATTRIB_EXTERN or FB_SYMBATTRIB_SHARED, FB_SYMBOPT_PRESERVECASE )
 
 	'' update the obj struct RTTI (used to create the link with base classes)
 	symbUdtAllocExt( objtype )

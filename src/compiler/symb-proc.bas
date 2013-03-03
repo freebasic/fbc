@@ -1170,7 +1170,7 @@ function symbAddVarForParam( byval param as FBSYMBOL ptr ) as FBSYMBOL ptr
 		attrib or= FB_SYMBATTRIB_SUFFIXED
 	end if
 
-	s = symbAddVarEx( symbGetName( param ), NULL, dtype, param->subtype, 0, 0, dTB(), attrib )
+	s = symbAddVar( symbGetName( param ), NULL, dtype, param->subtype, 0, 0, dTB(), attrib )
 	if( s = NULL ) then
 		exit function
 	end if
@@ -1195,8 +1195,8 @@ function symbAddProcResultParam( byval proc as FBSYMBOL ptr ) as FBSYMBOL ptr
 	end if
 
 	id = *symbUniqueId( )
-	s = symbAddVarEx( id, NULL, FB_DATATYPE_STRUCT, proc->subtype, FB_POINTERSIZE, _
-	                  0, dTB(), FB_SYMBATTRIB_PARAMBYREF, FB_SYMBOPT_PRESERVECASE )
+	s = symbAddVar( id, NULL, FB_DATATYPE_STRUCT, proc->subtype, FB_POINTERSIZE, _
+	                0, dTB(), FB_SYMBATTRIB_PARAMBYREF, FB_SYMBOPT_PRESERVECASE )
 
 	symbProcAllocExt( proc )
 	proc->proc.ext->res = s
@@ -1225,8 +1225,8 @@ function symbAddProcResult( byval proc as FBSYMBOL ptr ) as FBSYMBOL ptr
 		dtype = typeAddrOf( dtype )
 	end if
 
-	res = symbAddVarEx( @"fb$result", NULL, dtype, proc->subtype, 0, _
-	                    0, dTB(), FB_SYMBATTRIB_FUNCRESULT, FB_SYMBOPT_PRESERVECASE )
+	res = symbAddVar( @"fb$result", NULL, dtype, proc->subtype, 0, _
+	                  0, dTB(), FB_SYMBATTRIB_FUNCRESULT, FB_SYMBOPT_PRESERVECASE )
 
 	symbProcAllocExt( proc )
 

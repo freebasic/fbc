@@ -81,6 +81,45 @@ namespace ctorcallDespiteConstBits
 	end sub
 end namespace
 
+namespace memberAccess
+	type UDT
+		i as integer
+	end type
+
+	sub test cdecl( )
+		CU_ASSERT( (type<UDT>( 123 )).i = 123 )
+		CU_ASSERT( type<UDT>( 123 ).i = 123 )
+	end sub
+end namespace
+
+namespace anonCtorCallInit
+	type A
+		i as integer
+		declare constructor( )
+	end type
+
+	constructor A( )
+		i = 123
+	end constructor
+
+	type B
+		i as integer
+		declare function f( byref x as A = type( ) ) as integer
+	end type
+
+	function B.f( byref x as A ) as integer
+		function = x.i
+	end function
+
+	sub test cdecl( )
+		dim xa as A = type( )
+		CU_ASSERT( xa.i = 123 )
+
+		dim xb as B
+		CU_ASSERT( xb.f( ) = 123 )
+	end sub
+end namespace
+
 private sub ctor( ) constructor
 	fbcu.add_suite( "tests/structs/anon-assign" )
 	fbcu.add_test("test_1", @test_1)
@@ -88,6 +127,8 @@ private sub ctor( ) constructor
 	fbcu.add_test("test_3", @test_3)
 	fbcu.add_test("test_4", @test_4)
 	fbcu.add_test( "ctorcall + CONST bits", @ctorcallDespiteConstBits.test )
+	fbcu.add_test( "member access", @memberAccess.test )
+	fbcu.add_test( "type() initializer for UDTs with ctor", @anonCtorCallInit.test )
 end sub
 
 end namespace

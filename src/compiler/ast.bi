@@ -325,6 +325,8 @@ type AST_DTORLIST_ITEM
 	'' inside the true/false expressions of iif()'s, which may have to be
 	'' destroyed conditionally, depending on which code path was executed.
 	cookie			as integer
+
+	refcount		as integer
 end type
 
 type AST_DTORLIST_SCOPESTACK
@@ -346,7 +348,23 @@ type ASTCTX
 
 	doemit			as integer
 
-	typeinicnt		as integer
+	'' Count of TYPEINI nodes in expressions that are about to be astAdd()ed
+	'' (so astAdd() only bothers running astTypeIniUpdate() if it's really
+	'' necessary -- another pass besides astOptimizeTree() walking the
+	'' whole expression tree during every astAdd() would just be
+	'' unnecessarily slow)
+	typeinicount		as integer
+
+	'' Same for FIELD with bitfield type (for astUpdateBitfields())
+	bitfieldcount		as integer
+
+	'' The counters must always be >= the amount of corresponding nodes that
+	'' will be given to astAdd() so that the updating functions don't miss
+	'' anything. That's why it's important to update the counters during
+	'' astCloneTree() for example. On the other hand, nodes in field or
+	'' parameter initializers don't need to be counted, since these
+	'' expressions will always be cloned instead of being astAdd()ed
+	'' themselves. Unfortunately
 
 	dtorlist		as TLIST						'' temp dtors list
 	dtorlistscopes		as AST_DTORLIST_SCOPESTACK	'' scope stack for astDtorListScope*()
@@ -474,7 +492,7 @@ declare function astFindFirstCode( byval proc as ASTNODE ptr ) as ASTNODE ptr
 
 declare function astBuildBranch _
 	( _
-		byval n as ASTNODE ptr, _
+		byval expr as ASTNODE ptr, _
 		byval label as FBSYMBOL ptr, _
 		byval is_inverse as integer, _
 		byval is_iif as integer = FALSE _
@@ -618,11 +636,11 @@ declare function astNewIDX _
 
 declare function astNewFIELD _
 	( _
-		byval p as ASTNODE ptr, _
-		byval sym as FBSYMBOL ptr, _
-		byval dtype as integer, _
-		byval subtype as FBSYMBOL ptr _
+		byval l as ASTNODE ptr, _
+		byval sym as FBSYMBOL ptr _
 	) as ASTNODE ptr
+declare sub astForgetBitfields( byval n as ASTNODE ptr )
+declare function astUpdateBitfields( byval n as ASTNODE ptr ) as ASTNODE ptr
 
 declare function astNewDEREF _
 	( _
@@ -1179,11 +1197,17 @@ declare sub astReplaceSymbolOnTree _
 		byval new_sym as FBSYMBOL ptr _
 	)
 
+#if __FB_DEBUG__
+declare sub astDtorListDump( )
+#endif
 declare sub astDtorListAdd( byval sym as FBSYMBOL ptr )
+declare sub astDtorListAddRef( byval sym as FBSYMBOL ptr )
+declare sub astDtorListRemoveRef( byval sym as FBSYMBOL ptr )
 declare function astDtorListFlush( byval cookie as integer = 0 ) as ASTNODE ptr
 declare sub astDtorListDel( byval sym as FBSYMBOL ptr )
-declare sub astDtorListScopeBegin( )
+declare sub astDtorListScopeBegin( byval cookie as integer = 0 )
 declare function astDtorListScopeEnd( ) as integer
+declare sub astDtorListUnscope( byval cookie as integer )
 
 declare sub astSetType _
 	( _
@@ -1252,6 +1276,7 @@ declare function astLoadBRANCH( byval n as ASTNODE ptr ) as IRVREG ptr
 declare function astLoadIIF( byval n as ASTNODE ptr ) as IRVREG ptr
 declare function astLoadOFFSET( byval n as ASTNODE ptr ) as IRVREG ptr
 declare function astLoadLINK( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function astLoadFIELD( byval n as ASTNODE ptr ) as IRVREG ptr
 declare function astLoadSTACK( byval n as ASTNODE ptr ) as IRVREG ptr
 declare function astLoadLABEL( byval n as ASTNODE ptr ) as IRVREG ptr
 declare function astLoadLIT( byval n as ASTNODE ptr ) as IRVREG ptr
