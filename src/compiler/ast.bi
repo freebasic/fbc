@@ -1081,8 +1081,9 @@ declare function astBuildTempVarClear( byval sym as FBSYMBOL ptr ) as ASTNODE pt
 declare function astBuildCall _
 	( _
 		byval proc as FBSYMBOL ptr, _
-		byval arg1 as ASTNODE ptr, _
-		byval arg2 as ASTNODE ptr _
+		byval arg1 as ASTNODE ptr = NULL, _
+		byval arg2 as ASTNODE ptr = NULL, _
+		byval arg3 as ASTNODE ptr = NULL _
 	) as ASTNODE ptr
 
 declare function astBuildVtableLookup _

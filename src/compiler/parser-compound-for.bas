@@ -965,29 +965,7 @@ private function hUdtCallOpOvl _
 		return NULL
 	end if
 
-	dim as ASTNODE ptr proc = astNewCALL( sym )
-
-	'' push the instance pointer
-	if( astNewARG( proc, inst_expr ) = NULL ) then
-		return NULL
-	end if
-
-	'' and the 2nd arg
-	if( second_arg <> NULL ) then
-		if( astNewARG( proc, second_arg ) = NULL ) then
-			return NULL
-		end if
-	end if
-
-	'' and the 3rd arg
-	if( third_arg <> NULL ) then
-		if( astNewARG( proc, third_arg ) = NULL ) then
-			return NULL
-		end if
-	end if
-
-	function = proc
-
+	function = astBuildCall( sym, inst_expr, second_arg, third_arg )
 end function
 
 private sub hForStmtClose(byval stk as FB_CMPSTMTSTK ptr)

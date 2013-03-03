@@ -321,7 +321,8 @@ function astBuildCall _
 	( _
 		byval proc as FBSYMBOL ptr, _
 		byval arg1 as ASTNODE ptr, _
-		byval arg2 as ASTNODE ptr _
+		byval arg2 as ASTNODE ptr, _
+		byval arg3 as ASTNODE ptr _
 	) as ASTNODE ptr
 
 	dim as ASTNODE ptr p = any, ptrexpr = any
@@ -349,6 +350,12 @@ function astBuildCall _
 
 	if( arg2 ) then
 		if( astNewARG( p, arg2 ) = NULL ) then
+			return NULL
+		end if
+	end if
+
+	if( arg3 ) then
+		if( astNewARG( p, arg3 ) = NULL ) then
 			return NULL
 		end if
 	end if
@@ -709,7 +716,7 @@ function astBuildMultiDeref _
 			proc = symbFindUopOvlProc( AST_OP_DEREF, expr, @err_num )
 			if( proc <> NULL ) then
 				'' build a proc call
-				expr = astBuildCall( proc, expr, NULL )
+				expr = astBuildCall( proc, expr )
 				if( expr = NULL ) then
 					return NULL
 				end if

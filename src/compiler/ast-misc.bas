@@ -764,7 +764,7 @@ function astBuildBranch _
 		end if
 
 		'' build cast call
-		expr = astBuildCall( ovlProc, expr, NULL )
+		expr = astBuildCall( ovlProc, expr )
 		dtype = astGetDataType( expr )
 
 	end select

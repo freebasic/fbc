@@ -366,19 +366,62 @@ end namespace
 namespace operators
 	type UDT
 		i as integer
+
+		declare operator for( )
+		declare operator for( byref stp as UDT )
+		declare operator step( )
+		declare operator step( byref stp as UDT )
+		declare operator next( byref cond as UDT ) byref as integer
+		declare operator next( byref cond as UDT, byref stp as UDT ) byref as integer
 	end type
+
+	operator UDT.for( )
+		i = 0
+	end operator
+
+	operator UDT.for( byref stp as UDT )
+		i = 0
+	end operator
+
+	operator UDT.step( )
+		i += 1
+	end operator
+
+	operator UDT.step( byref stp as UDT )
+		i += 1
+	end operator
+
+	operator UDT.next( byref cond as UDT ) byref as integer
+		static c as integer
+		c = (i < 5)
+		operator = c
+	end operator
+
+	operator UDT.next( byref cond as UDT, byref stp as UDT ) byref as integer
+		static c as integer
+		c = (i < 5)
+		operator = c
+	end operator
 
 	operator *( byref x as UDT ) byref as integer
 		operator = x.i
 	end operator
 
 	sub test cdecl( )
+		dim as integer count
+
 		dim x as UDT = ( 123 )
 		CU_ASSERT( x.i = 123 )
 		CU_ASSERT( *x = 123 )
 		*x = 456
 		CU_ASSERT( x.i = 456 )
 		CU_ASSERT( *x = 456 )
+
+		count = 0
+		for i as UDT = x to x step x
+			count += 1
+		next
+		CU_ASSERT( count = 5 )
 	end sub
 end namespace
 

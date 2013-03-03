@@ -523,7 +523,7 @@ private function hVarPtrBody _
 		proc = symbFindSelfUopOvlProc( AST_OP_ADDROF, expr, @err_num )
 		if( proc <> NULL ) then
 			'' build a proc call
-			expr = astBuildCall( proc, expr, NULL )
+			expr = astBuildCall( proc, expr )
 			if( expr = NULL ) then
 				expr = astNewCONSTi( 0 )
 			end if
