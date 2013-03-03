@@ -506,7 +506,7 @@ declare function astFindFirstCode( byval proc as ASTNODE ptr ) as ASTNODE ptr
 
 declare function astBuildBranch _
 	( _
-		byval n as ASTNODE ptr, _
+		byval expr as ASTNODE ptr, _
 		byval label as FBSYMBOL ptr, _
 		byval is_inverse as integer, _
 		byval is_iif as integer = FALSE _
