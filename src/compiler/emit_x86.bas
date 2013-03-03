@@ -957,7 +957,9 @@ private sub hEmitVarConst _
 	case FB_DATATYPE_WCHAR
 		stext = QUOTE
 		stext += *hEscapeW( symbGetVarLitTextW( s ) )
-		stext += *hGetWstrNull( )
+		for i as integer = 1 to typeGetSize( FB_DATATYPE_WCHAR )
+			stext += RSLASH + "0"
+		next
 		stext += QUOTE
 
 	case else
@@ -6281,7 +6283,9 @@ sub emitVARINIWSTR( byval s as zstring ptr )
 	static as string ostr
 	ostr = ".ascii " + QUOTE
 	ostr += *s
-	ostr += *hGetWstrNull( )
+	for i as integer = 1 to typeGetSize( FB_DATATYPE_WCHAR )
+		ostr += RSLASH + "0"
+	next
 	ostr += QUOTE + NEWLINE
 	outEx( ostr )
 end sub

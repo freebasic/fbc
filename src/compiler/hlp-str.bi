@@ -124,10 +124,6 @@ declare function hReplaceChar _
 		byval newchar as integer _
 	) as zstring ptr
 
-declare function hGetWstrNull _
-	( _
-	) as zstring ptr
-
 declare function hCharNeedsEscaping _
 	( _
 		byval ch as integer, _
