@@ -13,12 +13,15 @@ type ptrdiff_t as integer
 
 #if defined(__FB_WIN32__)
 	type size_t as uinteger
+	type ssize_t as integer
 	type wchar_t as ushort
 #elseif defined(__FB_DOS__)
 	type size_t as ulong
+	type ssize_t as long
 	type wchar_t as ubyte
 #elseif defined(__FB_LINUX__)
 	type size_t as uinteger
+	type ssize_t as integer
 	type wchar_t as uinteger
 #endif
 
