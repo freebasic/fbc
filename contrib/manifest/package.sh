@@ -13,36 +13,46 @@ if [ -z "$1" ] || [ -z "$2" ]; then
 fi
 
 case "$3" in
-zip)
-	# Copy all the files listed in the manifest into a directory named <release-name>
-	zip -q temp.zip -@ < contrib/manifest/$1.lst
-	mkdir $2
-	cd $2
-	unzip -q ../temp.zip
-	cd ..
-	rm temp.zip
-
-	# Now package that directory
-	zip -q -r $2.zip $2
-
-	rm -rf $2
-	;;
-targz)
-	# Copy all the files listed in the manifest into a directory named <release-name>
-	tar -c -z -f temp.tar.gz -T contrib/manifest/$1.lst
-	mkdir $2
-	cd $2
-	tar -x -z -f ../temp.tar.gz
-	cd ..
-	rm temp.tar.gz
-
-	# Now package that directory
-	tar -c -z -f $2.tar.gz $2
-
-	rm -rf $2
+zip|targz)
 	;;
 *)
 	show_usage
 	exit 1
 	;;
 esac
+
+
+# For non-standalone releases, copy the includes into the proper directory
+case "$1" in
+linux|mingw32)
+	mkdir -p include/freebasic/
+	cp -r inc/* include/freebasic/
+	;;
+djgpp)
+	mkdir -p include/freebas/
+	cp -r inc/* include/freebas/
+	;;
+esac
+
+# Remove existing archive, if any
+case "$3" in
+zip)
+	rm -f $2.zip
+	;;
+targz)
+	rm $2.tar.gz
+	;;
+esac
+
+# Create an archive containing all the files listed in the manifest
+case "$3" in
+zip)
+	zip -q $2.zip -@ < contrib/manifest/$1.lst
+	;;
+targz)
+	tar -c -z -f $2.tar.gz -T contrib/manifest/$1.lst
+	;;
+esac
+
+# Remove the non-standalone include directory again (if any)
+rm -rf include/freebasic/ include/freebas/
