@@ -31,3 +31,7 @@ the source tree.
 
 This is pretty much the opposite of what the normal FB makefile is doing,
 where the new compiler binary is safely built using the host fbc only.
+
+contrib/bootstrap/create-asm-tarball.sh is an example use case - it can be used
+to create an FB source package with pre-compiled .asm files, which in turn can
+be used as foundation for deb/rpm packaging.
