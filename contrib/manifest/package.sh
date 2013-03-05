@@ -44,6 +44,9 @@ targz)
 	;;
 esac
 
+# Update the manifest (so you can verify the archive content)
+find . -type f | cut -c3- | contrib/manifest/exclude "$1" | sort -f > "contrib/manifest/$1.lst"
+
 # Create an archive containing all the files listed in the manifest
 case "$3" in
 zip)
