@@ -385,7 +385,6 @@ VPATH = $(RTLIB_DIRS) $(GFXLIB2_DIRS)
 .SUFFIXES:
 
 ifndef V
-  QUIET_AS    = @echo "AS $@";
   QUIET_FBC   = @echo "FBC $@";
   QUIET_LINK  = @echo "LINK $@";
   QUIET_CC    = @echo "CC $@";
@@ -415,32 +414,8 @@ compiler: $(newcompiler) $(FBC_EXE)
 $(FBC_EXE): $(FBC_BAS)
 	$(QUIET_LINK)$(FBC) $(ALLFBLFLAGS) -x $@ $^
 
-ifeq (,$(ENABLE_ASM_BOOTSTRAP)$(ENABLE_C_BOOTSTRAP))
 $(FBC_BAS): $(newcompiler)/%.o: $(srcdir)/compiler/%.bas $(FBC_BI)
 	$(QUIET_FBC)$(FBC) $(ALLFBCFLAGS) -c $< -o $@
-endif
-
-ifdef ENABLE_ASM_BOOTSTRAP
-
-# (ditto, same as below)
-GEN_GAS_ASFLAGS := --32 --strip-local-absolute
-
-$(FBC_BAS): $(newcompiler)/%.o: $(srcdir)/compiler/%.asm $(FBC_BI)
-	$(QUIET_AS)$(AS) $(GEN_GAS_ASFLAGS) $< -o $@
-
-endif
-
-ifdef ENABLE_C_BOOTSTRAP
-
-# Basically the same flags as would be used by "fbc -gen gcc",
-# at least the important ones
-GEN_GCC_CFLAGS := -nostdlib -nostdinc
-GEN_GCC_CFLAGS += -fno-strict-aliasing -frounding-math -fno-math-errno
-
-$(FBC_BAS): $(newcompiler)/%.o: $(srcdir)/compiler/%.c $(FBC_BI)
-	$(QUIET_CC)$(CC) $(GEN_GCC_CFLAGS) -c $< -o $@
-
-endif
 
 ################################################################################
 
@@ -567,27 +542,6 @@ clean-rtlib:
 clean-gfxlib2:
 	rm -f $(libdir)/libfbgfx.a $(newlibfbgfx)/*.o
 	-rmdir $(newlibfbgfx)
-
-################################################################################
-# 1. make prepare-*-bootstrap
-# turns the compiler's *.bas source files into corresponding *.asm or *.c files
-#
-# 2. make ENABLE_*_BOOTSTRAP=1
-# builds the compiler using the pre-built *.asm or *.c files
-# (The rtlib/gfxlib2 C/ASM sources are built normally)
-#
-# The source tree resulting from step 1 could be packaged up, and via step 2
-# be built into a new fbc by using only GAS or GCC, but not a host fbc.
-
-$(FBC_ASM): $(srcdir)/compiler/%.asm: $(srcdir)/compiler/%.bas $(FBC_BI)
-	$(QUIET_FBC)$(FBC) $(ALLFBCFLAGS) -gen gas -r $<
-
-$(FBC_C): $(srcdir)/compiler/%.c: $(srcdir)/compiler/%.bas $(FBC_BI)
-	$(QUIET_FBC)$(FBC) $(ALLFBCFLAGS) -gen gcc -r $<
-
-.PHONY: prepare-asm-bootstrap prepare-c-bootstrap
-prepare-asm-bootstrap: $(FBC_ASM)
-prepare-c-bootstrap: $(FBC_C)
 
 ################################################################################
 
