@@ -3,8 +3,8 @@ set -ex
 
 show_usage()
 {
-  echo "usage: contrib/manifest/package.sh <release-name> <package-name>"
-  echo " e.g.: contrib/manifest/package.sh linux FreeBASIC-0.24.0-linux"
+  echo "usage: contrib/manifest/package.sh <release-name> <version>"
+  echo " e.g.: contrib/manifest/package.sh linux 0.24.0"
 }
 
 if [ -z "$1" ] || [ -z "$2" ]; then
@@ -27,10 +27,10 @@ esac
 # Remove existing archive, if any
 case "$1" in
 dos|djgpp|win32|mingw32)
-	rm -f $2.zip
+	rm -f "FreeBASIC-$2-$1.zip"
 	;;
 *)
-	rm $2.tar.gz
+	rm -f "FreeBASIC-$2-$1.tar.gz"
 	;;
 esac
 
@@ -40,10 +40,10 @@ find . -type f | cut -c3- | contrib/manifest/exclude "$1" | sort -f > "contrib/m
 # Create an archive containing all the files listed in the manifest
 case "$1" in
 dos|djgpp|win32|mingw32)
-	zip -q $2.zip -@ < contrib/manifest/$1.lst
+	zip -q "FreeBASIC-$2-$1.zip" -@ < contrib/manifest/$1.lst
 	;;
 *)
-	tar -czf $2.tar.gz -T contrib/manifest/$1.lst
+	tar -czf "FreeBASIC-$2-$1.tar.gz" -T contrib/manifest/$1.lst
 	;;
 esac
 
