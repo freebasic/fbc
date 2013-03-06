@@ -120,7 +120,7 @@ end select					endlabel:
 
 {{fbdoc item="section" value="SELECT CASE without temp var"}}
 
-	When given a variable (instead of a more complex expression), SELECT CASE won't use a temp var, but instead defer the symbol from the given expression and access that in the CASE comparison expressions.
+	When given a variable (instead of a more complex expression), SELECT CASE won't use a temp var, but instead defer the symbol from the given expression and access that in the CASE comparison expressions. ???
 
 {{fbdoc item="back" value="DevToc|FreeBASIC Developer Information"}}
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

@@ -14,6 +14,8 @@ Subtracts two expressions
 	[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **-** ( [[KeyPgByref byref]] //lhs// [[KeyPgAs as]] [[KeyPgSingle single]], [[KeyPgByref byref]] //rhs// [[KeyPgAs as]] [[KeyPgSingle single]] ) [[KeyPgAs as]] [[KeyPgSingle single]]
 	[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **-** ( [[KeyPgByref byref]] //lhs// [[KeyPgAs as]] [[KeyPgDouble double]], [[KeyPgByref byref]] //rhs// [[KeyPgAs as]] [[KeyPgDouble double]] ) [[KeyPgAs as]] [[KeyPgDouble double]]
 
+	[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **-** ( [[KeyPgByref byref]] //lhs// [[KeyPgAs as]] //T// [[KeyPgPointer Pointer]], [[KeyPgByref byref]] //rhs// [[KeyPgAs as]] //T// [[KeyPgPointer Pointer]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+
 	[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **-** ( [[KeyPgByref byref]] //lhs// [[KeyPgAs as]] //T//, [[KeyPgByref byref]] //rhs// [[KeyPgAs as]] //T// ) [[KeyPgAs as]] [[KeyPgInteger integer]]
 	[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **-** ( [[KeyPgByref byref]] //lhs// [[KeyPgAs as]] //T//, [[KeyPgByref byref]] //rhs// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] //T//
 	[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **-** ( [[KeyPgByref byref]] //lhs// [[KeyPgAs as]] [[KeyPgInteger integer]], [[KeyPgByref byref]] //rhs// [[KeyPgAs as]] //T// ) [[KeyPgAs as]] //T//
@@ -35,7 +37,7 @@ Subtracts two expressions
 {{fbdoc item="desc"}}
 	When the left and right-hand side expressions are numeric values, **##Operator -## (Subtract)** returns the subtraction of the two values.
 
-	If either the left or right-hand side expressions is of [[KeyPgPointer Pointer]] type, **##Operator -## (Subtract)** performs pointer arithmetic on the address, returning the result.
+	If the left and right-hand side expressions are both of the ##//T// [[KeyPgPointer Pointer]]## type, for some type ##//T//##, the operator performs pointer subtraction on the address, returning the result.  This is different from numeric subtraction because the difference is divided by ##[[KeyPgSizeof Sizeof]]( //T// )##.
 
 	Neither operand is modified in any way.
 
@@ -46,7 +48,6 @@ Subtracts two expressions
 DIM n AS SINGLE
 n = 4 - 5
 PRINT n
-SLEEP
 %%
 	will produce the output:
 

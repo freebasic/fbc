@@ -3,7 +3,7 @@ Allowed escape sequences in string literals.
 
 {{fbdoc item="desc"}}
 	The accepted escape sequences are:
-	{{table columns="2" cellpadding="1" cells="\a;beep;\b;backspace;\f;formfeed;\l or \n;newline;\r;carriage return;\t;tab;\unnnn;unicode char in hex;\v;vertical tab;\nnn;ascii char in decimal;\&hnn;ascii char in hex;\&onnn;ascii char in octal;\&bnnnnnnnn;ascii char in binary;\\;backslash;\(double quote);double quote;\';single quote"}} 
+	{{table columns="2" cellpadding="1" cells="\a;beep;\b;backspace;\f;formfeed;\l or \n;newline;\r;carriage return;\t;tab;\unnnn;unicode char in hex;\v;vertical tab;\nnn;ascii char in decimal;\&amphnn;ascii char in hex;\&amponnn;ascii char in octal;\&ampbnnnnnnnn;ascii char in binary;\\;backslash;\(double quote);double quote;\';single quote"}} 
 
 {{fbdoc item="see"}}
 	- [[KeyPgOpPpEscape Operator ! (Escaped String)]]

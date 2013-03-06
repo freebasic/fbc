@@ -3,9 +3,15 @@ Standard data type: 32 bit signed
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDim dim]] //variable// [[KeyPgAs as]] **Integer**
+	[[KeyPgDim dim]] //variable// [[KeyPgAs as]] **Integer**<//bits//>
 ##
+{{fbdoc item="param"}}
+	##//bits//##
+		A numeric constant expression indicating the size in bits of integer desired.  The values allowed are ##8##, ##16##, ##32## or ##64##.
+
 {{fbdoc item="desc"}}
-	32-bit signed whole-number data type. Can hold values from -2147483648 to 2147483647.  (See ##[[KeyPgLongint Longint]]## for 64-bit integers.)
+	By default, a 32-bit signed whole-number data type. Can hold values from ##-2147483648## to ##2147483647##.
+	If an explicit bit size is given, a data type is provided that can hold values from ##-1LL [[KeyPgOpShiftleft Shl]] (//bits//-1)## up to ##(1LL [[KeyPgOpShiftleft Shl]] (//bits-1)) - 1##.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/datatype/integer.bas"}}%%(freebasic)
@@ -13,16 +19,16 @@ Standard data type: 32 bit signed
   Dim y As Integer = &H7FFFFFFF
   Print "Integer Range = "; x; " to "; y
 %%
-	**Output:**
-	%%Integer Range = -2147483648 to  2147483647%%
+**Output:**
+%%Integer Range = -2147483648 to  2147483647%%
 
 {{fbdoc item="lang"}}
 	- In the //[[CompilerOptlang -lang fb]]// and //[[CompilerOptlang -lang fblite]]// dialects, the ##**Integer**## data type is 32-bit.
 	- In the //[[CompilerOptlang -lang qb]]// dialect, the ##**Integer**## data type is 16-bit.
 
 {{fbdoc item="diff"}}
-	- The INTEGER type is 16 bits wide in QB.
-	- None, if compiled in the //[[CompilerOptlang -lang qb]]// dialect.
+	- The ability to select a bit size is new to ""FreeBASIC""
+	- The INTEGER type is always 16 bits wide in QB.
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgLong Long]]##

@@ -9,16 +9,52 @@ Specifies that a function result is returned by reference
 	
 	If ##**Byref**## is not specified, the default is to return the function result by value.
 	
-	Functions with ##**Byref**## result should not return local variables from the function, because they will be destroyed upon returning from the function, invalidating any pointer or reference to them. To help with writing safe code, the compiler will show an error message when a local variable is used with ##Function = x## assignments and ##Return x## statements.
+	Functions with ##**Byref**## result should not return local variables from the function, because they will be destroyed upon returning from the function, invalidating any pointer or reference to them. To help with writing safe code, the compiler will show an error message when a local variable is used with ##Function = x## (or ##//name// = x##) assignments and ##Return x## statements.
+	
+	**Note:** On the left-hand side of an assignment expression, the result of the function (returned by reference) must be enclosed in parentheses when the function calls one single argument.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/procs/byref-result.bas"}}%%(freebasic)
-function f( ) byref as zstring
+function f( ) byref as const zstring
 	'' This string will be returned by reference, no copy will be created.
 	function = "abcd"
 end function
 
 print f( )
+%%
+{{fbdoc item="filename" value="examples/manual/procs/byref-result2.bas"}}%%(freebasic)
+Dim Shared As String s
+
+Function f1( ) ByRef As String
+   '' This variable-length string will be returned by reference, no copy will be created.
+   Function = s
+End Function
+
+Function f2( ByRef _s As String ) ByRef As String
+   '' This variable-length string will be returned by reference, no copy will be created.
+   Function = _s
+End Function
+
+s = "abcd"
+Print s
+
+f1( ) &= "efgh"
+Print s
+
+'' At time of writing, the enclosing parentheses are required here.
+( f2( s ) ) &= "ijkl"
+Print s
+%%
+{{fbdoc item="filename" value="examples/manual/procs/byref-result3.bas"}}%%(freebasic)
+Function power2( Byref _I As Integer ) Byref As Integer
+   _I *= _I
+   '' This integer will be returned by reference, no copy will be created.
+   Function = _I
+End function
+
+Dim As Integer I = 2
+power2( power2( power2( I ) ) )  '' Function return-byref cascading is equivalent to ((I*I)*(I*I))*((I*I)*(I*I)) = I^8
+Print I
 %%
 
 {{fbdoc item="diff"}}

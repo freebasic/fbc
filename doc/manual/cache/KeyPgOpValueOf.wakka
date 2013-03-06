@@ -2,9 +2,8 @@
 Dereferences a pointer
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgOperator operator]] ***** ( [[KeyPgByref byref]] //rhs// [[KeyPgAs as]] //T// [[KeyPgPointer pointer]] ) [[KeyPgAs as]] //T//
+	[[KeyPgDeclare declare]] [[KeyPgOperator operator]] ***** ( [[KeyPgByref byref]] //rhs// [[KeyPgAs as]] //T// [[KeyPgPointer pointer]] ) [[KeyPgByrefFunction byref]] [[KeyPgAs as]] //T//
 ##
-~&//Note that **##Operator *## (Value of)** returns a reference. As of 02.27.07, ""FreeBASIC"" syntax does not support returning references.  When it does, this syntax will need to be changed.//
 
 {{fbdoc item="usage"}}##
 	//result// = * //rhs//
@@ -55,6 +54,7 @@ The new value of 'a' is 1
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgOpAt Operator @ (Address of)]]##
+	- ##{{fbdoc item="keyword" value="KeyPgOpPtrIndex|Operator [] (Pointer index)"}}##
 	- [[ProPgPointers Pointers]]
 	
 {{fbdoc item="back" value="CatPgOpPoint|Pointer Operators"}}{{fbdoc item="back" value="CatPgOperators|Operators"}}

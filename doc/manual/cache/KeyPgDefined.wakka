@@ -9,10 +9,10 @@ Preprocessor function to test if a symbol has been defined
 		Name of the symbol to test
 
 {{fbdoc item="ret"}}
-	Returns non-zero (-1) if the symbol has been defined, otherwise returns zero (0).
+	Returns non-zero (##-1##) if the symbol has been defined, otherwise returns zero (##0##).
 
 {{fbdoc item="desc"}}
-	Given the symbol name, the **defined()** preprocessor function returns true if the symbol has been defined - or false if the symbol is unknown of.
+	Given the symbol name, the ##**defined()**## preprocessor function returns true if the symbol has been defined - or false if the symbol is unknown.
 
 	This is used mainly with ##[[KeyPgPpif #if]]##.
 

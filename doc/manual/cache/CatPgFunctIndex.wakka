@@ -429,6 +429,7 @@ List of ""FreeBASIC"" keywords sorted by the function they perform.
 	- {{fbdoc item="keyword" value="KeyPgDdtime|__TIME__"}}
 
 {{fbdoc item="section" value="Preprocessor"}}
+	- {{fbdoc item="keyword" value="KeyPgPpassert|#ASSERT"}}
 	- {{fbdoc item="keyword" value="KeyPgPpdefine|#DEFINE"}}
 	- {{fbdoc item="keyword" value="KeyPgPpelse|#ELSE"}}
 	- {{fbdoc item="keyword" value="KeyPgPpelseif|#ELSEIF"}}

@@ -3,9 +3,15 @@ Standard data type: 32 bit unsigned
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDim dim]] //variable// [[KeyPgAs as]] **Uinteger**
+	[[KeyPgDim dim]] //variable// [[KeyPgAs as]] **Uinteger**<//bits//>
 ##
+{{fbdoc item="param"}}
+	##//bits//##
+		A numeric constant expression indicating the size in bits of unsigned integer desired.  The values allowed are ##8##, ##16##, ##32## or ##64##.
+
 {{fbdoc item="desc"}}
-	32-bit unsigned whole-number data type. Can hold values from 0 to 4294967295.
+	32-bit unsigned whole-number data type. Can hold values from ##0## to ##4294967295##.
+	If an explicit bit size is given, a data type is provided that can hold values from ##0## up to ##(1ULL [[KeyPgOpShiftleft Shl]] (//bits)) - 1##.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/datatype/uinteger.bas"}}%%(freebasic)
@@ -13,8 +19,8 @@ Standard data type: 32 bit unsigned
   Dim y As UInteger = &HFFFFFFFF
   Print "UInteger Range = "; x; " to "; y
 %%
-	**Output:**
-	%%UInteger Range = 0 to 4294967295%%
+**Output:**
+%%UInteger Range = 0 to 4294967295%%
 
 
 {{fbdoc item="lang"}}
@@ -25,6 +31,7 @@ Standard data type: 32 bit unsigned
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgInteger Integer]]##
+	- ##[[KeyPgUnsigned Unsigned]]##
 	- ##[[KeyPgCuint Cuint]]##
 
 {{fbdoc item="back" value="CatPgStdDataTypes|Standard Data Types"}}
