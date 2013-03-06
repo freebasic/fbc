@@ -24,6 +24,19 @@ djgpp)
 	;;
 esac
 
+# Temporarily copy fbc.exe into position
+case "$1" in
+linux)
+	cp bin/fbc-new bin/fbc
+	;;
+mingw32|djgpp)
+	cp bin/fbc-new.exe bin/fbc.exe
+	;;
+win32|dos)
+	cp fbc-new.exe fbc.exe
+	;;
+esac
+
 # Remove existing archive, if any
 case "$1" in
 dos|djgpp|win32|mingw32)
@@ -49,3 +62,6 @@ esac
 
 # Remove the non-standalone include directory again (if any)
 rm -rf include/freebasic/ include/freebas/
+
+# Same for fbc.exe
+rm -f fbc.exe fbc bin/fbc.exe bin/fbc
