@@ -61,7 +61,7 @@ dos|djgpp|win32|mingw32)
 esac
 
 # Remove the non-standalone include directory again (if any)
-rm -rf include/freebasic/ include/freebas/
+rm -rf include/
 
 # Same for fbc.exe
 rm -f fbc.exe fbc bin/fbc.exe bin/fbc
