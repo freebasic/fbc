@@ -1,7 +1,5 @@
 #!/usr/bin/make -f
 
-FBC := fbc
-
 BAS := $(wildcard src/compiler/*.bas)
 BI  := $(wildcard src/compiler/*.bi)
 OBJ  := $(patsubst src/compiler/%.bas,src/compiler/obj/%.o,$(BAS))
@@ -22,15 +20,15 @@ ASM := $(patsubst %.bas,%.$(ASMEXT),$(BAS))
 .SUFFIXES:
 .PHONY: prepare build rtlib
 
-prepare: $(ASM) src/compiler/fbc.bas
+prepare: src/compiler/fbc.bas $(ASM)
 
 $(ASM): %.$(ASMEXT): %.bas $(BI)
 	$(FBC) -gen $(GEN) -r -m fbc $<
 
 
-build: bin/fbc-new src/compiler/fbc.bas
+build: src/compiler/fbc.bas bin/fbc-new
 
-bin/fbc-new: lib/freebasic/libfb.a lib/freebasic/fbrt0.o $(OBJ) | bin
+bin/fbc-new: rtlib $(OBJ) | bin
 	ld -o $@ -dynamic-linker /lib/ld-linux.so.2 -m elf_i386 -s \
 		-L lib/freebasic \
 		-L "$(dir $(shell gcc -m32 -print-file-name=libgcc.a))" \
@@ -45,7 +43,6 @@ bin/fbc-new: lib/freebasic/libfb.a lib/freebasic/fbrt0.o $(OBJ) | bin
 
 # Assuming we're running from the fbc toplevel directory, use the main makefile
 # to build the rtlib/gfxlib2 libs
-lib/freebasic/libfb.a lib/freebasic/fbrt0.o: rtlib
 rtlib:
 	make rtlib gfxlib2
 
