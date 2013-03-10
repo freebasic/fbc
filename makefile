@@ -530,6 +530,9 @@ clean:        clean-compiler clean-rtlib clean-gfxlib2
 
 clean-compiler:
 	rm -f $(FBC_EXE) $(newcompiler)/*.o
+  ifndef ENABLE_STANDALONE
+	-rmdir bin
+  endif
 
 clean-rtlib:
 	rm -f $(libdir)/$(FB_LDSCRIPT) $(libdir)/fbrt0.o $(libdir)/libfb.a $(newlibfb)/*.o
