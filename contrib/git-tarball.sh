@@ -1,4 +1,6 @@
 #!/bin/sh
 set -ex
 
-git archive -o FreeBASIC-`date +%Y.%m.%d`-source.tar.gz HEAD
+version=`date +%Y.%m.%d`
+name="FreeBASIC-$version-source"
+git archive -o "$name.tar.gz" --prefix "$name/" HEAD

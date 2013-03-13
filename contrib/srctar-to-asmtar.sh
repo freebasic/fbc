@@ -17,6 +17,8 @@ tar -xzf "$1" -C "$tempdir"
 oldpwd="$PWD"
 cd "$tempdir"
 
+cd "FreeBASIC-$fbversion-source"
+
 # Build fbc
 make compiler
 
@@ -28,8 +30,11 @@ make -f contrib/bootstrap.mk prepare GEN=gas FBC='bin/fbc-new -i inc'
 # Remove bin/fbc-new and the *.o files again
 make clean
 
+cd ..
+mv "FreeBASIC-$fbversion-source" "FreeBASIC-$fbversion-source-asm"
+
 # Create asm tarball
-tar -czf "$fbtarball" *
+tar -czf "$fbtarball" "FreeBASIC-$fbversion-source-asm"
 
 cd "$oldpwd"
 
