@@ -763,30 +763,58 @@ private function hCheckOpOvlParams _
 
 		'' FOR, STEP or NEXT?
 		case AST_NODECLASS_COMP
-			if( astGetOpIsSelf( op ) ) then
+			select case as const op
+			'' relational? it must return an integer
+			case AST_OP_EQ, AST_OP_NE, AST_OP_GT, AST_OP_LT, AST_OP_GE, AST_OP_LE
 				if( params > 1 ) then
-					'' skip the instance ptr
-					if( is_method ) then
-						param = param->next
-					end if
-
-					'' must be of the same type as parent
-					if( (param = NULL) or (parent = NULL) ) then
-						hParamError( proc, 1, FB_ERRMSG_PARAMTYPEINCOMPATIBLEWITHPARENT )
-						exit function
-					end if
-
-					hCheckParam( proc, param, 1 )
-
-					'' same type?
-					if( (symbGetType( param ) <> symbGetType( parent )) or _
-					    (symbGetSubtype( param ) <> parent) ) then
-						hParamError( proc, 1, FB_ERRMSG_PARAMTYPEINCOMPATIBLEWITHPARENT )
-						exit function
+					dim as FBSYMBOL ptr nxtparam = param->next
+	
+					hCheckParam( proc, nxtparam, 2 )
+	
+					'' is the 1st param an UDT?
+					select case symbGetType( param )
+					case FB_DATATYPE_STRUCT, FB_DATATYPE_ENUM ', FB_DATATYPE_CLASS
+	
+					case else
+						'' try the 2nd one..
+						select case symbGetType( nxtparam )
+						case FB_DATATYPE_STRUCT, FB_DATATYPE_ENUM ', FB_DATATYPE_CLASS
+	
+						case else
+							hParamError( proc, 2, FB_ERRMSG_ATLEASTONEPARAMMUSTBEANUDT )
+							exit function
+						end select
+					end select
+				end if
+	
+			'' FOR, STEP or NEXT?
+			case AST_OP_FOR, AST_OP_STEP, AST_OP_NEXT
+				if( astGetOpIsSelf( op ) ) then
+					if( params > 1 ) then
+						'' skip the instance ptr
+						if( is_method ) then
+							param = param->next
+						end if
+	
+						'' must be of the same type as parent
+						if( (param = NULL) or (parent = NULL) ) then
+							hParamError( proc, 1, FB_ERRMSG_PARAMTYPEINCOMPATIBLEWITHPARENT )
+							exit function
+						end if
+	
+						hCheckParam( proc, param, 1 )
+	
+						'' same type?
+						if( (symbGetType( param ) <> symbGetType( parent )) or _
+						    (symbGetSubtype( param ) <> parent) ) then
+							hParamError( proc, 1, FB_ERRMSG_PARAMTYPEINCOMPATIBLEWITHPARENT )
+							exit function
+						end if
 					end if
 				end if
-			end if
-
+			case else
+				assert( FALSE )
+			end select
 		end select
 	end if
 
