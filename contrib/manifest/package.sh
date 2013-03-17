@@ -53,10 +53,33 @@ find . -type f | cut -c3- | contrib/manifest/exclude "$1" | sort -f > "contrib/m
 # Create an archive containing all the files listed in the manifest
 case "$1" in
 dos|djgpp|win32|mingw32)
-	zip -q "FreeBASIC-$2-$1.zip" -@ < contrib/manifest/$1.lst
+
+	# Copy all the files listed in the manifest into a directory named <release-name>
+	zip -q temp.zip -@ < contrib/manifest/$1.lst
+	mkdir FreeBASIC-$2-$1
+	cd FreeBASIC-$2-$1
+	unzip -q ../temp.zip
+	cd ..
+	rm temp.zip
+
+	# Now package that directory
+	zip -q -r FreeBASIC-$2-$1.zip FreeBASIC-$2-$1
+
+	rm -rf FreeBASIC-$2-$1
 	;;
 *)
-	tar -czf "FreeBASIC-$2-$1.tar.gz" -T contrib/manifest/$1.lst
+	# Copy all the files listed in the manifest into a directory named <release-name>
+	tar -czf temp.tar.gz -T contrib/manifest/$1.lst
+	mkdir FreeBASIC-$2-$1
+	cd FreeBASIC-$2-$1
+	tar -xzf ../temp.tar.gz
+	cd ..
+	rm temp.tar.gz
+
+	# Now package that directory
+	tar -czf FreeBASIC-$2-$1.tar.gz FreeBASIC-$2-$1
+
+	rm -rf FreeBASIC-$2-$1
 	;;
 esac
 
