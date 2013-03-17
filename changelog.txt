@@ -207,6 +207,7 @@ Version 0.25.0:
 - Win32: When using a graphics window nearly as big as or bigger than the available screen space, the graphics window's size could be truncated by the system, for example causing GetMouse to return coordinates that didn't match the actual mouse position, at least under the DirectX driver. FB will now handle WM_GETMINMAXINFO to prevent the system from making the window smaller than requested.
 - Anonymous type() couldn't be used in initializers for UDTs with constructors
 - Comparison Operator overloads accepting two intrinsic-type parameters could be declared (but not used)
+- #651: Operator overloading was overlooking matches where non-const expressions were passed to const parameters
 
 
 Version 0.24.0:

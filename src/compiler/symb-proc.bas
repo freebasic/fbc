@@ -1676,11 +1676,14 @@ private function hCheckOvlParam _
 		byval parent as FBSYMBOL ptr, _
 		byval param as FBSYMBOL ptr, _
 	  	byval arg_expr as ASTNODE ptr, _
-		byval arg_mode as integer _
+		byval arg_mode as integer, _
+		byref constonly_diff as integer _
 	) as integer
 
 	dim as integer param_dtype = any, arg_dtype = any, param_ptrcnt = any
 	dim as FBSYMBOL ptr param_subtype = any, arg_subtype = any
+
+	constonly_diff = FALSE
 
 	'' arg not passed?
 	if( arg_expr = NULL ) then
@@ -1764,6 +1767,7 @@ private function hCheckOvlParam _
 			if( param_subtype = arg_subtype ) then
 				'' param is const but arg isn't?
 				if( symbCheckConstAssign( param_dtype, arg_dtype, param_subtype, arg_subtype ) ) then
+					constonly_diff = TRUE
 					return FB_OVLPROC_HALFMATCH
 				end if
 			end if
@@ -1844,6 +1848,7 @@ function symbFindClosestOvlProc _
 	dim as FBSYMBOL ptr ovl = any, closest_proc = any, param = any
 	dim as integer i = any, arg_matches = any, matches = any
 	dim as integer max_matches = any, amb_cnt = any, exact_matches = any
+	dim as integer constonly_diff = any
 	dim as FB_CALL_ARG ptr arg = any
 
 	*err_num = FB_ERRMSG_OK
@@ -1901,7 +1906,7 @@ function symbFindClosestOvlProc _
 			arg = arg_head
 			for i = 0 to args-1
 
-				arg_matches = hCheckOvlParam( ovl, param, arg->expr, arg->mode )
+				arg_matches = hCheckOvlParam( ovl, param, arg->expr, arg->mode, constonly_diff )
 				if( arg_matches = 0 ) then
 					matches = 0
 					exit for
@@ -1949,7 +1954,7 @@ function symbFindClosestOvlProc _
 				'' an operator overload candidate is only eligible if
 				'' there is at least one exact arg match
 				if( options and FB_SYMBLOOKUPOPT_BOP_OVL ) then
-					if( exact_matches = 0 ) then
+					if( exact_matches = 0 and constonly_diff = FALSE ) then
 						eligible = FALSE
 					end if
 				end if
