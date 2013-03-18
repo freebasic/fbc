@@ -17,6 +17,7 @@
 enum
 	PRINT_HOST
 	PRINT_TARGET
+	PRINT_X
 end enum
 
 type FBC_EXTOPT
@@ -148,12 +149,62 @@ private sub fbcInit( )
 	fbc.print = -1
 end sub
 
-private sub fbcEnd(byval errnum as integer)
+private sub hSetOutName( )
+	'' Determine the output binary/archive's name if not given via -x
+	if( len( fbc.outname ) > 0 ) then
+		exit sub
+	end if
+
+	'' Creating a static lib?
+	if( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_STATICLIB ) then
+		fbc.outname = hStripFilename( fbc.mainname ) + _
+		              "lib" + hStripPath( fbc.mainname ) + ".a"
+		exit sub
+	end if
+
+	'' Otherwise, we're creating an .exe or DLL/shared lib
+	fbc.outname = fbc.mainname
+
+	select case( fbGetOption( FB_COMPOPT_OUTTYPE ) )
+	case FB_OUTTYPE_EXECUTABLE
+		select case( fbGetOption( FB_COMPOPT_TARGET ) )
+		case FB_COMPTARGET_CYGWIN, FB_COMPTARGET_WIN32, _
+		     FB_COMPTARGET_DOS, FB_COMPTARGET_XBOX
+			'' Note: XBox target creates an .exe first,
+			'' then uses cxbe to turn it into an .xbe later
+			fbc.outname += ".exe"
+		end select
+	case FB_OUTTYPE_DYNAMICLIB
+		select case( fbGetOption( FB_COMPOPT_TARGET ) )
+		case FB_COMPTARGET_CYGWIN, FB_COMPTARGET_WIN32
+			fbc.outname += ".dll"
+		case FB_COMPTARGET_FREEBSD, FB_COMPTARGET_DARWIN, _
+		     FB_COMPTARGET_LINUX, FB_COMPTARGET_NETBSD, _
+		     FB_COMPTARGET_OPENBSD
+			fbc.outname = hStripFilename( fbc.outname ) + _
+				"lib" + hStripPath( fbc.outname ) + ".so"
+		end select
+	end select
+end sub
+
+private sub fbcEnd( byval errnum as integer )
+	if( errnum = 0 ) then
+		select case( fbc.print )
+		case PRINT_HOST
+			print FB_HOST
+		case PRINT_TARGET
+			print *fbGetTargetId( )
+		case PRINT_X
+			hSetOutName( )
+			print fbc.outname
+		end select
+	end if
+
 	'' Clean up temporary files
-	dim as string ptr file = listGetHead(@fbc.temps)
-	while (file)
-		safeKill(*file)
-		file = listGetNext(file)
+	dim as string ptr file = listGetHead( @fbc.temps )
+	while( file )
+		safeKill( *file )
+		file = listGetNext( file )
 	wend
 
 	end errnum
@@ -411,36 +462,7 @@ private function hLinkFiles( ) as integer
 
 	function = FALSE
 
-	'' Determine the output binary's name if not given via -x
-	if (len(fbc.outname) = 0) then
-		fbc.outname = fbc.mainname
-
-		select case fbGetOption( FB_COMPOPT_OUTTYPE )
-		case FB_OUTTYPE_EXECUTABLE
-			select case as const fbGetOption( FB_COMPOPT_TARGET )
-			case FB_COMPTARGET_CYGWIN, FB_COMPTARGET_WIN32, _
-			     FB_COMPTARGET_DOS, FB_COMPTARGET_XBOX
-				'' Note: XBox target creates an .exe first,
-				'' then uses cxbe to turn it into an .xbe later
-				fbc.outname += ".exe"
-
-			end select
-
-		case FB_OUTTYPE_DYNAMICLIB
-			select case as const fbGetOption( FB_COMPOPT_TARGET )
-			case FB_COMPTARGET_CYGWIN, FB_COMPTARGET_WIN32
-				fbc.outname += ".dll"
-
-			case FB_COMPTARGET_FREEBSD, FB_COMPTARGET_DARWIN, _
-			     FB_COMPTARGET_LINUX, FB_COMPTARGET_NETBSD, _
-			     FB_COMPTARGET_OPENBSD
-				fbc.outname = hStripFilename(fbc.outname) + _
-					"lib" + hStripPath(fbc.outname) + ".so"
-
-			end select
-
-		end select
-	end if
+	hSetOutName( )
 
 	'' Set executable name
 	ldcline = "-o " + QUOTE + fbc.outname + QUOTE
@@ -1376,10 +1398,9 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 
 	case OPT_PRINT
 		select case( arg )
-		case "host"
-			fbc.print = PRINT_HOST
-		case "target"
-			fbc.print = PRINT_TARGET
+		case "host"   : fbc.print = PRINT_HOST
+		case "target" : fbc.print = PRINT_TARGET
+		case "x"      : fbc.print = PRINT_X
 		case else
 			hFatalInvalidOption( arg )
 		end select
@@ -2563,11 +2584,7 @@ private function hCompileFbctinf( ) as integer
 end function
 
 private function hArchiveFiles( ) as integer
-	'' Determine the output archive's name if not given via -x
-	if (len(fbc.outname) = 0) then
-		fbc.outname = hStripFilename(fbc.mainname) + _
-		              "lib" + hStripPath(fbc.mainname) + ".a"
-	end if
+	hSetOutName( )
 
 	'' Remove lib*.a if it already exists, because ar doesn't overwrite
 	safeKill( fbc.outname )
@@ -2784,7 +2801,8 @@ private sub hPrintOptions( )
 	print "  -p <path>        Add a library search path"
 	print "  -pp              Write out preprocessed input file (.pp.bas) only"
 	print "  -prefix <path>   Set the compiler prefix path"
-	print "  -print host|target  Display information"
+	print "  -print host|target  Display host/target system name"
+	print "  -print x         Display output binary/library file name (if known)"
 	print "  -profile         Enable function profiling"
 	print "  -r               Write out .asm (-gen gas) or .c (-gen gcc) only"
 	print "  -rr              Write out the final .asm only"
@@ -2857,14 +2875,6 @@ end sub
 		fbcEnd( 1 )
 	end if
 
-	'' -print host|target if requested
-	select case( fbc.print )
-	case PRINT_HOST
-		print FB_HOST
-	case PRINT_TARGET
-		print *fbGetTargetId( )
-	end select
-
 	'' Show help if there are no input files
 	if( (listGetHead( @fbc.modules   ) = NULL) and _
 	    (listGetHead( @fbc.objlist   ) = NULL) and _
@@ -2873,7 +2883,7 @@ end sub
 		'' ... unless there was a -print option that could be answered
 		'' without compiling anything.
 		select case( fbc.print )
-		case PRINT_HOST, PRINT_TARGET
+		case PRINT_HOST, PRINT_TARGET, PRINT_X
 			fbcEnd( 0 )
 		end select
 

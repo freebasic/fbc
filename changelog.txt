@@ -32,6 +32,7 @@ Version 0.25.0:
 - fbc -asm att|intel option (affects -gen gcc only)
 - fbc -rr and -RR options for preserving the final .asm file (useful with -gen gcc where -r/-R preserve the .c file; same as -r/-R under -gen gas)
 - fbc -print host|target option, to support shell scripts querying fbc for information that is useful to build systems etc.
+- fbc -print x option (named after the fbc -x option), to display the output binary/library file name, as far as it's known based on other input, i.e. -dll, -lib, -m, and input files. For example, on Win32/DOS "fbc -m foo -print x" will give "foo.exe", while "fbc -print x" alone will only print ".exe" (this can be used to query the executable file extension)
 - SELECT CASE won't use a temporary variable anymore if the given expression is just a plain variable access already
 - SC_CLEAR constant for FB scancode &h4C (numpad 5, a.k.a. clear key) in fbgfx.bi
 - SC_ALTGR constant (&h64) in fbgfx.bi, corresponding to the rtlib
