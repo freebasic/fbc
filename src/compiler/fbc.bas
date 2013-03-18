@@ -14,6 +14,11 @@
 	#define ENABLE_GORC
 #endif
 
+enum
+	PRINT_HOST
+	PRINT_TARGET
+end enum
+
 type FBC_EXTOPT
 	gas			as zstring * 128
 	ld			as zstring * 128
@@ -46,6 +51,7 @@ type FBCCTX
 	verbose				as integer
 	showversion			as integer
 	showhelp			as integer
+	print				as integer  '' PRINT_* (-print option)
 
 	'' Command line input
 	modules				as TLIST '' FBCIOFILE's for input .bas files
@@ -138,6 +144,8 @@ private sub fbcInit( )
 	fbGlobalInit()
 
 	fbc.objinf.lang = fbGetOption( FB_COMPOPT_LANG )
+
+	fbc.print = -1
 end sub
 
 private sub fbcEnd(byval errnum as integer)
@@ -1045,6 +1053,7 @@ enum
 	OPT_P
 	OPT_PP
 	OPT_PREFIX
+	OPT_PRINT
 	OPT_PROFILE
 	OPT_R
 	OPT_RKEEPASM
@@ -1104,6 +1113,7 @@ dim shared as integer option_takes_argument(0 to (OPT__COUNT - 1)) = _
 	TRUE , _ '' OPT_P
 	FALSE, _ '' OPT_PP
 	TRUE , _ '' OPT_PREFIX
+	TRUE , _ '' OPT_PRINT
 	FALSE, _ '' OPT_PROFILE
 	FALSE, _ '' OPT_R
 	FALSE, _ '' OPT_RKEEPASM
@@ -1364,6 +1374,16 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 		fbc.prefix = pathStripDiv(arg)
 		hReplaceSlash( fbc.prefix, asc( FB_HOST_PATHDIV ) )
 
+	case OPT_PRINT
+		select case( arg )
+		case "host"
+			fbc.print = PRINT_HOST
+		case "target"
+			fbc.print = PRINT_TARGET
+		case else
+			hFatalInvalidOption( arg )
+		end select
+
 	case OPT_PROFILE
 		fbSetOption( FB_COMPOPT_PROFILE, TRUE )
 
@@ -1581,6 +1601,7 @@ private function parseOption(byval opt as zstring ptr) as integer
 		ONECHAR(OPT_P)
 		CHECK("pp", OPT_PP)
 		CHECK("prefix", OPT_PREFIX)
+		CHECK("print", OPT_PRINT)
 		CHECK("profile", OPT_PROFILE)
 
 	case asc("r")
@@ -2763,6 +2784,7 @@ private sub hPrintOptions( )
 	print "  -p <path>        Add a library search path"
 	print "  -pp              Write out preprocessed input file (.pp.bas) only"
 	print "  -prefix <path>   Set the compiler prefix path"
+	print "  -print host|target  Display information"
 	print "  -profile         Enable function profiling"
 	print "  -r               Write out .asm (-gen gas) or .c (-gen gcc) only"
 	print "  -rr              Write out the final .asm only"
@@ -2825,19 +2847,38 @@ end sub
 		fbcEnd( 0 )
 	end if
 
-	'' Show help if --help was given, or if there are no input files
-	fbc.showhelp or= ((listGetHead(@fbc.modules) = NULL) and _
-	                  (listGetHead(@fbc.objlist) = NULL) and _
-	                  (listGetHead(@fbc.libs.list) = NULL) and _
-	                  (listGetHead(@fbc.libfiles) = NULL))
+	if( fbc.verbose ) then
+		hPrintVersion( )
+	end if
 
+	'' Show help if --help was given
 	if( fbc.showhelp ) then
 		hPrintOptions( )
 		fbcEnd( 1 )
 	end if
 
-	if( fbc.verbose ) then
-		hPrintVersion( )
+	'' -print host|target if requested
+	select case( fbc.print )
+	case PRINT_HOST
+		print FB_HOST
+	case PRINT_TARGET
+		print *fbGetTargetId( )
+	end select
+
+	'' Show help if there are no input files
+	if( (listGetHead( @fbc.modules   ) = NULL) and _
+	    (listGetHead( @fbc.objlist   ) = NULL) and _
+	    (listGetHead( @fbc.libs.list ) = NULL) and _
+	    (listGetHead( @fbc.libfiles  ) = NULL) ) then
+		'' ... unless there was a -print option that could be answered
+		'' without compiling anything.
+		select case( fbc.print )
+		case PRINT_HOST, PRINT_TARGET
+			fbcEnd( 0 )
+		end select
+
+		hPrintOptions( )
+		fbcEnd( 1 )
 	end if
 
 	fbcInit2( )
