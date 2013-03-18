@@ -7,7 +7,6 @@
 
 dim shared as string release '' release name from command line
 
-const MAX_FILES = 1024*4
 const MAX_PATTERNS = 128
 
 dim shared as string patterns(0 to MAX_PATTERNS-1)

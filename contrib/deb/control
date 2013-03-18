@@ -1,18 +1,16 @@
-Package: freebasic
-Version: <version>
+Package: @name@
+Version: @version@
 Section: devel
 Priority: optional
-Maintainer: FreeBASIC development team, dkl <dkls@users.sourceforge.net>
-Homepage: http://www.freebasic.net/wiki/
-Architecture: <arch>
-Depends: <depends>
+Maintainer: @maintainer@ <@email@>
+Homepage: http://www.freebasic.net/
+Architecture: @arch@
+Depends: @depends@
 Conflicts: libfreebasic
 Recommends: 
-Suggests: <suggests>
-Installed-Size: <installedsize>
-Description: The FreeBASIC Compiler
- This is the FreeBASIC Compiler - a multi-platform 32-bit BASIC Compiler.
- .
+Suggests: geany, gdb, gpm
+Installed-Size: @installsize@
+Description: Compiler for the FreeBASIC programming language
  The FreeBASIC project is a set of cross-platform development tools initially
  created by Andre Victor, consisting of a compiler, GNU-based assembler,
  linker and archiver, and supporting runtime libraries, including a

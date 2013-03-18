@@ -1,8 +1,0 @@
-#!/bin/sh
-
-echo "Running getlibs to install i386 versions of libx11-dev, libxext-dev,"
-echo "libxpm-dev, libxrandr-dev, and libxrender-dev..."
-yes | getlibs --verbose -p \
-        libx11-dev libxext-dev libxpm-dev libxrandr-dev libxrender-dev
-
-exit 0
