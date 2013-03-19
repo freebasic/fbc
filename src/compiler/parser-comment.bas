@@ -9,6 +9,8 @@
 
 #define LEX_FLAGS (LEXCHECK_NOLINECONT or LEXCHECK_NODEFINE or LEXCHECK_NOSUFFIX or LEXCHECK_NOMULTILINECOMMENT)
 
+declare sub cDirective( )
+
 '':::::
 ''Comment         =   (COMMENT_CHAR | REM) ((DIRECTIVE_CHAR Directive)
 ''				                              |   (any_char_but_EOL*)) .
@@ -20,6 +22,11 @@ function cComment _
 
 	select case lexGetToken( lexflags )
 	case FB_TK_COMMENT, FB_TK_REM
+		'' Prevent the PP from trying to parse (pointless in a comment
+		'' anyways), and -pp from emitting the tokens (specifically due
+		'' to the lexSkipToken() calls for '$' and from cDirective(),
+		'' when parsing a $ meta command)
+		lex.ctx->reclevel += 1
 		lexSkipToken( LEX_FLAGS )
 
 		if( lexGetToken( LEX_FLAGS ) = FB_TK_DIRECTIVECHAR ) then
@@ -29,6 +36,7 @@ function cComment _
 			lexSkipLine( )
 		end if
 
+		lex.ctx->reclevel -= 1
 		function = TRUE
 
 	case else
@@ -43,7 +51,7 @@ end function
 ''                |   STATIC .
 ''                |   LANG ':' '\"' STR_LIT '\"'
 ''
-sub cDirective() static
+private sub cDirective( ) static
     static as zstring * FB_MAXPATHLEN+1 incfile
     dim as integer isonce
 
@@ -54,6 +62,11 @@ sub cDirective() static
 		else
 			lexSkipToken( )
 			env.opt.dynamic = TRUE
+
+			'' Preserve under -pp
+			if( env.ppfile_num > 0 ) then
+				lexPPOnlyEmitText( "'$dynamic" )
+			end if
 		end if
 
 
@@ -63,6 +76,11 @@ sub cDirective() static
 		else
 			lexSkipToken( )
 			env.opt.dynamic = FALSE
+
+			'' Preserve under -pp
+			if( env.ppfile_num > 0 ) then
+				lexPPOnlyEmitText( "'$static" )
+			end if
 		end if
 
 	case FB_TK_INCLUDE
@@ -137,6 +155,11 @@ sub cDirective() static
 						errReport( FB_ERRMSG_INVALIDLANG )
 					else
 						fbChangeOption( FB_COMPOPT_LANG, id )
+
+						'' Preserve under -pp
+						if( env.ppfile_num > 0 ) then
+							lexPPOnlyEmitText( "'$lang: """ + fbGetLangName( id ) + """" )
+						end if
 					end if
 				else
 					errReport( FB_ERRMSG_SYNTAXERROR )

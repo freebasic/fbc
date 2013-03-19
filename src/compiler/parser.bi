@@ -260,7 +260,6 @@ declare function cComment _
 		byval lexflags as LEXCHECK = LEXCHECK_EVERYTHING _
 	) as integer
 
-declare sub cDirective()
 declare sub cStatement()
 
 declare function cStmtSeparator _
