@@ -22,7 +22,7 @@ type SYMBKWD
 end type
 
 declare sub ppInclude()
-declare sub ppIncLib()
+declare sub ppIncLib( )
 declare sub ppLibPath()
 declare sub ppLine()
 declare sub ppLang()
@@ -318,7 +318,7 @@ end sub
 '':::::
 '' ppIncLib			=   '#'INCLIB LIT_STR
 ''
-private sub ppIncLib()
+private sub ppIncLib( )
 	if( lexGetClass( ) <> FB_TKCLASS_STRLITERAL ) then
 		errReport( FB_ERRMSG_SYNTAXERROR )
 		'' error recovery: skip
@@ -326,8 +326,13 @@ private sub ppIncLib()
 		return
 	end if
 
-	fbAddLib(lexGetText())
-	lexSkipToken()
+	if( env.ppfile_num > 0 ) then
+		lexPPOnlyEmitText( "#inclib" )
+		lexPPOnlyEmitToken( )
+	end if
+
+	fbAddLib( lexGetText( ) )
+	lexSkipToken( )
 end sub
 
 '':::::
