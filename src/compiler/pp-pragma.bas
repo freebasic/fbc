@@ -149,6 +149,13 @@ sub ppPragma( )
 
 	if( ispop ) then
 		pragmaPop( pragmaOpt(p).opt, value )
+
+		'' Preserve msbitfields #pragmas under -pp
+		if( p = LEXPP_PRAGMAOPT_BITFIELD ) then
+			if( env.ppfile_num > 0 ) then
+				lexPPOnlyEmitText( "#pragma pop(msbitfields)" )
+			end if
+		end if
 	else
 		'' assume value is FALSE/TRUE unless the #pragma explicitly uses other values
 		value = FALSE
@@ -182,6 +189,17 @@ sub ppPragma( )
 		if( value = FALSE ) then
 			'' expr
 			value = cConstIntExpr( cExpression( ) )
+		end if
+
+		'' Preserve msbitfields #pragmas under -pp
+		if( p = LEXPP_PRAGMAOPT_BITFIELD ) then
+			if( env.ppfile_num > 0 ) then
+				if( ispush ) then
+					lexPPOnlyEmitText( "#pragma push(msbitfields, " + str( value ) + ")" )
+				else
+					lexPPOnlyEmitText( "#pragma msbitfields = " + str( value ) )
+				end if
+			end if
 		end if
 	end if
 
