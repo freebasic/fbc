@@ -31,17 +31,22 @@ fi
 
 case "$1" in
 "-i")
+	dir="`dirname '$0'`/"
+	if [ "$dir" = "/" ]; then
+		dir=""
+	fi
+
 	mkdir -p -m 0755 "$prefix/bin"
-	install bin/fbc "$prefix/bin"
+	install "${dir}"bin/fbc "$prefix/bin"
 
 	mkdir -p -m 0755 "$prefix/include/freebasic"
-	cp -r include/freebasic/* "$prefix/include/freebasic"
+	cp -r "${dir}"include/freebasic/* "$prefix/include/freebasic"
 
 	mkdir -p -m 0755 "$prefix/lib/freebasic"
-	cp -r lib/freebasic/* "$prefix/lib/freebasic"
+	cp -r "${dir}"lib/freebasic/ "$prefix/lib/freebasic"
 
 	mkdir -p -m 0755 "$prefix/man/man1"
-	gzip -c doc/fbc.1 > "$prefix/man/man1/fbc.1.gz"
+	gzip -c "${dir}"doc/fbc.1 > "$prefix/man/man1/fbc.1.gz"
 
 	echo "FreeBASIC compiler successfully installed in $prefix"
 	;;
