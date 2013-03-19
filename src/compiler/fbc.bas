@@ -2653,46 +2653,48 @@ end sub
 
 private sub hAddDefaultLibs( )
 	'' select the right FB rtlib
-	if (fbGetOption(FB_COMPOPT_MULTITHREADED)) then
-		fbcAddDefLib("fbmt")
+	if( fbGetOption( FB_COMPOPT_MULTITHREADED ) ) then
+		fbcAddDefLib( "fbmt" )
 	else
-		fbcAddDefLib("fb")
+		fbcAddDefLib( "fb" )
 	end if
-
-	fbcAddDefLib("gcc")
 
 	select case as const fbGetOption( FB_COMPOPT_TARGET )
 	case FB_COMPTARGET_CYGWIN
-		fbcAddDefLib("cygwin")
-		fbcAddDefLib("kernel32")
-		fbcAddDefLib("supc++")
+		fbcAddDefLib( "gcc" )
+		fbcAddDefLib( "cygwin" )
+		fbcAddDefLib( "kernel32" )
+		fbcAddDefLib( "supc++" )
 
 		'' profiling?
 		if( fbGetOption( FB_COMPOPT_PROFILE ) ) then
-			fbcAddDefLib("gmon")
+			fbcAddDefLib( "gmon" )
 		end if
 
 	case FB_COMPTARGET_DARWIN
-		fbcAddDefLib("System")
+		fbcAddDefLib( "gcc" )
+		fbcAddDefLib( "System" )
 
 	case FB_COMPTARGET_DOS
-		fbcAddDefLib("c")
-		fbcAddDefLib("m")
+		fbcAddDefLib( "gcc" )
+		fbcAddDefLib( "c" )
+		fbcAddDefLib( "m" )
 		#ifdef ENABLE_STANDALONE
 			'' Renamed lib for the standalone build, working around
 			'' the long file name.
-			fbcAddDefLib("supcx")
+			fbcAddDefLib( "supcx" )
 		#else
 			'' When installing into DJGPP, use its lib
-			fbcAddDefLib("supcxx")
+			fbcAddDefLib( "supcxx" )
 		#endif
 
 	case FB_COMPTARGET_FREEBSD
-		fbcAddDefLib("pthread")
-		fbcAddDefLib("c")
-		fbcAddDefLib("m")
-		fbcAddDefLib("ncurses")
-		fbcAddDefLib("supc++")
+		fbcAddDefLib( "gcc" )
+		fbcAddDefLib( "pthread" )
+		fbcAddDefLib( "c" )
+		fbcAddDefLib( "m" )
+		fbcAddDefLib( "ncurses" )
+		fbcAddDefLib( "supc++" )
 
 	case FB_COMPTARGET_LINUX
 		'' Note: When linking statically, -lpthread apparently should
@@ -2700,54 +2702,61 @@ private sub hAddDefaultLibs( )
 		'' -lpthread/-lc containing overlapping symbols (but the pthread
 		'' ones should be used). This is confirmed by minimal testing,
 		'' searching the web and 'gcc -pthread' behavior.
-		fbcAddDefLib("pthread")
-		fbcAddDefLib("c")
-		fbcAddDefLib("m")
-		fbcAddDefLib("dl")
-		fbcAddDefLib("ncurses")
-		fbcAddDefLib("supc++")
-		fbcAddDefLib("gcc_eh")
+		'' Also, it seems like libsupc++/libstdc++ need to be linked
+		'' before libc, at least with more recent glibc/gcc, see also:
+		''    http://www.freebasic.net/forum/viewtopic.php?f=5&t=20733
+		fbcAddDefLib( "ncurses" )
+		fbcAddDefLib( "m" )
+		fbcAddDefLib( "dl" )
+		fbcAddDefLib( "supc++" )
+		fbcAddDefLib( "pthread" )
+		fbcAddDefLib( "gcc" )
+		fbcAddDefLib( "gcc_eh" )
+		fbcAddDefLib( "c" )
 
 	case FB_COMPTARGET_NETBSD
 		'' TODO
 
 	case FB_COMPTARGET_OPENBSD
-		fbcAddDefLib("pthread")
-		fbcAddDefLib("c")
-		fbcAddDefLib("m")
-		fbcAddDefLib("ncurses")
-		fbcAddDefLib("supc++")
+		fbcAddDefLib( "gcc" )
+		fbcAddDefLib( "pthread" )
+		fbcAddDefLib( "c" )
+		fbcAddDefLib( "m" )
+		fbcAddDefLib( "ncurses" )
+		fbcAddDefLib( "supc++" )
 
 	case FB_COMPTARGET_WIN32
-		fbcAddDefLib("msvcrt")
-		fbcAddDefLib("kernel32")
-		fbcAddDefLib("mingw32")
-		fbcAddDefLib("mingwex")
-		fbcAddDefLib("moldname")
-		fbcAddDefLib("supc++")
+		fbcAddDefLib( "gcc" )
+		fbcAddDefLib( "msvcrt" )
+		fbcAddDefLib( "kernel32" )
+		fbcAddDefLib( "mingw32" )
+		fbcAddDefLib( "mingwex" )
+		fbcAddDefLib( "moldname" )
+		fbcAddDefLib( "supc++" )
 		#ifndef ENABLE_TDMGCC
 			'' Needed by mingw.org toolchain, but not TDM-GCC
-			fbcAddDefLib("gcc_eh")
+			fbcAddDefLib( "gcc_eh" )
 		#endif
 
 		'' profiling?
 		if( fbGetOption( FB_COMPOPT_PROFILE ) ) then
-			fbcAddDefLib("gmon")
+			fbcAddDefLib( "gmon" )
 		end if
 
 	case FB_COMPTARGET_XBOX
-		fbcAddDefLib("fbgfx")
-		fbcAddDefLib("openxdk")
-		fbcAddDefLib("hal")
-		fbcAddDefLib("c")
-		fbcAddDefLib("usb")
-		fbcAddDefLib("xboxkrnl")
-		fbcAddDefLib("m")
-		fbcAddDefLib("supc++")
+		fbcAddDefLib( "gcc" )
+		fbcAddDefLib( "fbgfx" )
+		fbcAddDefLib( "openxdk" )
+		fbcAddDefLib( "hal" )
+		fbcAddDefLib( "c" )
+		fbcAddDefLib( "usb" )
+		fbcAddDefLib( "xboxkrnl" )
+		fbcAddDefLib( "m" )
+		fbcAddDefLib( "supc++" )
 
 		'' profiling?
 		if( fbGetOption( FB_COMPOPT_PROFILE ) ) then
-			fbcAddDefLib("gmon")
+			fbcAddDefLib( "gmon" )
 		end if
 
 	end select
