@@ -204,6 +204,14 @@ sub ppParse( )
 				if( symbGetCantUndef( sym ) ) then
 					errReport( FB_ERRMSG_CANTUNDEF )
 				else
+					'' Any #undef (except on macros) should be preserved by -pp
+					'' (macros won't be preserved, but other symbols will be)
+					if( env.ppfile_num > 0 ) then
+						if( symbIsDefine( sym ) = FALSE ) then
+							lexPPOnlyEmitText( "#undef" )
+							lexPPOnlyEmitToken( )
+						end if
+					end if
 					symbDelSymbol( sym )
 				end if
 			end if
