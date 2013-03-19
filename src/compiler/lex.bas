@@ -138,6 +138,8 @@ end sub
 '':::::
 sub lexEnd( )
 
+	pponly_ln = ""
+
 	ppEnd( )
 
 end sub
