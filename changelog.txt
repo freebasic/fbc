@@ -20,7 +20,7 @@ Version 0.25.0:
 - #if/#elseif expressions now recognize declared identifiers (for example a constant FOO will be expanded to its value, instead of being treated as a "FOO" string)
 - Unary/binary operations won't return enums anymore; any enum operands will be converted to integer before the operation. (with math operations, the result can be any integer value, and the operand enum won't necessarily include a constant corresponding to that value. And also, if the operands are from different enums, the compiler wouldn't know which one to use as the result type)
 - Unary/binary operations will now convert smaller operands to INTEGERs before the operation (note: thus, UBYTE becomes INTEGER now instead of UINTEGER, and also SHORT/USHORT operations will return an INTEGER now)
-- -pp will now preserve #inclib, in order to allow the output file to be compiled just like the original
+- -pp will now preserve #inclib/#libpath, in order to allow the output file to be compiled just like the original
 
 [added]
 - VIRTUAL and ABSTRACT methods (including virtual destructors) in UDTs extending OBJECT, which can be overridden by methods in derived UDTs, provided the same method name and signature is used

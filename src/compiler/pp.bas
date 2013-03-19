@@ -23,7 +23,7 @@ end type
 
 declare sub ppInclude()
 declare sub ppIncLib( )
-declare sub ppLibPath()
+declare sub ppLibPath( )
 declare sub ppLine()
 declare sub ppLang()
 
@@ -338,7 +338,7 @@ end sub
 '':::::
 '' ppLibPath		=   '#'LIBPATH LIT_STR
 ''
-private sub ppLibPath()
+private sub ppLibPath( )
 	if( lexGetClass( ) <> FB_TKCLASS_STRLITERAL ) then
 		errReport( FB_ERRMSG_SYNTAXERROR )
 		'' error recovery: skip
@@ -346,8 +346,13 @@ private sub ppLibPath()
 		return
 	end if
 
-	fbAddLibPath(lexGetText())
-	lexSkipToken()
+	if( env.ppfile_num > 0 ) then
+		lexPPOnlyEmitText( "#libpath" )
+		lexPPOnlyEmitToken( )
+	end if
+
+	fbAddLibPath( lexGetText( ) )
+	lexSkipToken( )
 end sub
 
 '':::::
