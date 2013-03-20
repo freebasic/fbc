@@ -27,10 +27,18 @@ type FBC_EXTOPT
 end type
 
 type FBCIOFILE
-	srcfile		as string     '' input file
-	objfile		as string ptr '' output .o file
-			              '' (for modules from the command line
-			              '' this points to a node from fbc.objlist)
+	'' Input file name (usually *.bas, but also *.rc, *.res, *.xpm)
+	srcfile			as string     '' input file
+
+	'' Output .o file
+	'' - for modules from the command line this points to a node from
+	''   fbc.objlist, see also fbcAddObj()
+	'' - for example in hCompileFbctinf(), add temporary FBCIOFILE is used,
+	''   with objfile pointing to a string var on stack
+	objfile			as string ptr
+
+	'' Whether -o was used to override the default .o file name
+	is_custom_objfile	as integer
 end type
 
 type FBC_OBJINF
@@ -41,7 +49,7 @@ end type
 type FBCCTX
 	'' For command line parsing
 	optid				as integer    '' Current option
-	lastmoduleobj			as string ptr '' fbc.objlist node of last input file, so the default .o name can be overwritten with a following -o filename
+	lastmodule			as FBCIOFILE ptr '' module for last input file, so the default .o name can be overwritten with a following -o filename
 	objfile				as string '' -o filename waiting for next input file
 
 	emitasmonly			as integer  '' write out FB backend output file only (.asm/.c)
@@ -935,12 +943,13 @@ private sub hSetIofile _
 
 	module->srcfile = srcfile
 	module->objfile = fbcAddObj( fbc.objfile )
+	module->is_custom_objfile = not o_option_not_used_yet
 
 	fbc.objfile = ""
 
 	if( o_option_not_used_yet ) then
 		'' Allow overwriting by a following -o <file> later
-		fbc.lastmoduleobj = module->objfile
+		fbc.lastmodule = module
 	end if
 
 end sub
@@ -1361,8 +1370,9 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 
 		'' Assign it to the last module, if it doesn't have an
 		'' -o filename yet, or store it for later otherwise.
-		if( fbc.lastmoduleobj ) then
-			*fbc.lastmoduleobj = arg
+		if( fbc.lastmodule ) then
+			*fbc.lastmodule->objfile = arg
+			fbc.lastmodule->is_custom_objfile = TRUE
 		else
 			fbc.objfile = arg
 		end if
@@ -2075,15 +2085,29 @@ private sub hCompileBas _
 	)
 
 	dim as integer prevlang = any, prevouttype = any, restarts = any
-	dim as string asmfile
+	dim as string asmfile, pponlyfile
 
 	asmfile = hGetAsmName( module, 1 )
 	if( hCanDeleteAsm( 1 ) ) then
 		fbcAddTemp( asmfile )
 	end if
 
+	'' -pp?
+	if( fbGetOption( FB_COMPOPT_PPONLY ) ) then
+		'' Re-use the full -o path/filename for the -pp output file,
+		'' since no .o will be generated anyways (if -o was given)
+		pponlyfile = *module->objfile
+		if( module->is_custom_objfile = FALSE ) then
+			'' Otherwise, use a default file name
+			pponlyfile = hStripExt( pponlyfile ) + ".pp.bas"
+		end if
+	end if
+
 	if( fbc.verbose ) then
 		print "compiling: ", module->srcfile; " -o "; asmfile;
+		if( fbGetOption( FB_COMPOPT_PPONLY ) ) then
+			print " -pp " + pponlyfile;
+		end if
 		if( is_main ) then
 			print " (main module)";
 		elseif( is_fbctinf ) then
@@ -2122,7 +2146,7 @@ private sub hCompileBas _
 			fbSetLibs( @fbc.libs, @fbc.libpaths )
 		end if
 
-		fbCompile( module->srcfile, asmfile, is_main )
+		fbCompile( module->srcfile, asmfile, pponlyfile, is_main )
 
 		'' If there were any errors during parsing, just exit without
 		'' doing anything else.
@@ -2805,7 +2829,7 @@ private sub hPrintOptions( )
 	print "  -mt              Use thread-safe FB runtime"
 	print "  -nodeflibs       Do not include the default libraries"
 	print "  -noerrline       Do not show source context in error messages"
-	print "  -o <file>        Set .o file name for corresponding input .bas"
+	print "  -o <file>        Set .o (or -pp .bas) file name for prev/next input file"
 	print "  -O <value>       Optimization level (default: 0)"
 	print "  -p <path>        Add a library search path"
 	print "  -pp              Write out preprocessed input file (.pp.bas) only"

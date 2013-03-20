@@ -353,6 +353,7 @@ declare sub fbCompile _
 	( _
 		byval infname as zstring ptr, _
 		byval outfname as zstring ptr, _
+		byref pponlyfile as string, _
 		byval ismain as integer _
 	)
 
