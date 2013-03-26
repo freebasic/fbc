@@ -1,0 +1,93 @@
+musl libc currently doesn't have strtod_l() or strtof_l(), so remove code that
+uses it and fallback to normal versions.
+
+--- src/glsl/strtod.c.orig	2013-03-24 16:41:14.773738874 +0100
++++ src/glsl/strtod.c	2013-03-24 16:41:34.633837135 +0100
+@@ -44,16 +44,7 @@
+ double
+ glsl_strtod(const char *s, char **end)
+ {
+-#if defined(_GNU_SOURCE) && !defined(__CYGWIN__) && !defined(__FreeBSD__) && \
+-   !defined(__HAIKU__) && !defined(__UCLIBC__)
+-   static locale_t loc = NULL;
+-   if (!loc) {
+-      loc = newlocale(LC_CTYPE_MASK, "C", NULL);
+-   }
+-   return strtod_l(s, end, loc);
+-#else
+    return strtod(s, end);
+-#endif
+ }
+ 
+ 
+@@ -64,14 +55,7 @@
+ float
+ glsl_strtof(const char *s, char **end)
+ {
+-#if defined(_GNU_SOURCE) && !defined(__CYGWIN__) && !defined(__FreeBSD__) && \
+-   !defined(__HAIKU__) && !defined(__UCLIBC__)
+-   static locale_t loc = NULL;
+-   if (!loc) {
+-      loc = newlocale(LC_CTYPE_MASK, "C", NULL);
+-   }
+-   return strtof_l(s, end, loc);
+-#elif _XOPEN_SOURCE >= 600 || _ISOC99_SOURCE
++#if _XOPEN_SOURCE >= 600 || _ISOC99_SOURCE
+    return strtof(s, end);
+ #else
+    return (float) strtod(s, end);
+--- src/mesa/main/imports.c.orig	2013-03-24 16:49:12.540107737 +0100
++++ src/mesa/main/imports.c	2013-03-24 16:49:42.216254895 +0100
+@@ -565,14 +565,7 @@
+ float
+ _mesa_strtof( const char *s, char **end )
+ {
+-#if defined(_GNU_SOURCE) && !defined(__CYGWIN__) && !defined(__FreeBSD__) && \
+-   !defined(ANDROID) && !defined(__HAIKU__) && !defined(__UCLIBC__)
+-   static locale_t loc = NULL;
+-   if (!loc) {
+-      loc = newlocale(LC_CTYPE_MASK, "C", NULL);
+-   }
+-   return strtof_l(s, end, loc);
+-#elif defined(_ISOC99_SOURCE) || (defined(_XOPEN_SOURCE) && _XOPEN_SOURCE >= 600)
++#if defined(_ISOC99_SOURCE) || (defined(_XOPEN_SOURCE) && _XOPEN_SOURCE >= 600)
+    return strtof(s, end);
+ #else
+    return (float)strtod(s, end);
+--- src/mesa/main/arrayobj.c.orig	2013-03-24 17:25:34.782928902 +0100
++++ src/mesa/main/arrayobj.c	2013-03-24 17:25:53.227020350 +0100
+@@ -289,7 +289,7 @@
+    
+    while (enabled) {
+       struct gl_client_array *client_array;
+-      GLint attrib = ffsll(enabled) - 1;
++      GLint attrib = __builtin_ffsll(enabled) - 1;
+       enabled ^= BITFIELD64_BIT(attrib);
+       
+       client_array = &arrayObj->VertexAttrib[attrib];
+--- src/mesa/main/querymatrix.c.orig	2013-03-24 17:33:32.469297619 +0100
++++ src/mesa/main/querymatrix.c	2013-03-24 17:33:34.521307794 +0100
+@@ -71,22 +71,10 @@
+     }
+ }
+ 
+-#elif defined(__APPLE__) || defined(__CYGWIN__) || defined(__FreeBSD__) || \
+-     defined(__OpenBSD__) || defined(__NetBSD__) || defined(__DragonFly__) || \
+-     (defined(__sun) && defined(__C99FEATURES__)) || defined(__MINGW32__) || \
+-     (defined(__sun) && defined(__GNUC__)) || defined(ANDROID) || defined(__HAIKU__)
++#else
+ 
+ /* fpclassify is available. */
+ 
+-#elif !defined(_XOPEN_SOURCE) || _XOPEN_SOURCE < 600
+-
+-enum {FP_NAN, FP_INFINITE, FP_ZERO, FP_SUBNORMAL, FP_NORMAL}
+-fpclassify(double x)
+-{
+-   /* XXX do something better someday */
+-   return FP_NORMAL;
+-}
+-
+ #endif
+ 
+ GLbitfield GLAPIENTRY _mesa_QueryMatrixxOES(GLfixed mantissa[16], GLint exponent[16])

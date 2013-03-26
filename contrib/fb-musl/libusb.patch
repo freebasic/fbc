@@ -1,0 +1,18 @@
+--- libusb/io.c.orig	2013-03-25 17:02:59.147417390 +0100
++++ libusb/io.c	2013-03-25 17:03:01.639429749 +0100
+@@ -1121,6 +1121,15 @@
+ 	usbi_cond_destroy(&ctx->event_waiters_cond);
+ }
+ 
++/* musl libc doesn't have TIMESPEC_TO_TIMEVAL; #define taken from
++   libusb/os/poll_windows.h */
++#if !defined(TIMESPEC_TO_TIMEVAL)
++#define TIMESPEC_TO_TIMEVAL(tv, ts) {                   \
++	(tv)->tv_sec = (long)(ts)->tv_sec;                  \
++	(tv)->tv_usec = (long)(ts)->tv_nsec / 1000;         \
++}
++#endif
++
+ static int calculate_timeout(struct usbi_transfer *transfer)
+ {
+ 	int r;
