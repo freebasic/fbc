@@ -2484,6 +2484,11 @@ sub symbProcCheckOverridden _
 			errReport( FB_ERRMSG_OVERRIDERETTYPEDIFFERS )
 		end if
 
+		'' Check for return BYREF
+		if( symbProcReturnsByref( proc ) <> symbProcReturnsByref( overridden ) ) then
+			errReport( FB_ERRMSG_OVERRIDERETTYPEDIFFERS )
+		end if
+
 		if( symbAreProcModesEqual( proc, overridden ) = FALSE ) then
 			if( is_implicit ) then
 				'' symbUdtAddDefaultMembers() uses this to check

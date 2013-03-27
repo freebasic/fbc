@@ -12,3 +12,8 @@ but this should cause warnings (no matter what system):
 	Suspicious pointer assignment
 4.
 	Suspicious pointer assignment
+return byref:
+no warnings:
+	Suspicious pointer assignment
+two warnings:
+	Suspicious pointer assignment

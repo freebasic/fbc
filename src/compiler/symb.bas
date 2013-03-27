@@ -1687,6 +1687,10 @@ function symbIsEqual _
     '' function? must check because a @foo will point to a different
     '' symbol than funptr, but both can have the same signature
     case FB_SYMBCLASS_PROC
+		'' Check for return BYREF
+		if( symbProcReturnsByref( sym1 ) <> symbProcReturnsByref( sym2 ) ) then
+			exit function
+		end if
 
 		'' check calling convention
 		if( symbAreProcModesEqual( sym1, sym2 ) = FALSE ) then

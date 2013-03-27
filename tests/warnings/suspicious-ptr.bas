@@ -43,3 +43,24 @@ pCdecl = @fWindowsMs
 pCdecl = @fStdcall
 #print "4."
 pStdcall = @fCdecl
+
+#print "return byref:"
+function f1( ) byref as integer
+	static as integer x
+	function = x
+end function
+
+function f2( ) as integer
+	function = 123
+end function
+
+dim p1 as function( ) byref as integer
+dim p2 as function( ) as integer
+
+#print "no warnings:"
+p1 = @f1
+p2 = @f2
+
+#print "two warnings:"
+p1 = @f2
+p2 = @f1
