@@ -16,6 +16,7 @@ declare function hMangleFunctionPtr	_
 		byval proc as FBSYMBOL ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
+		byval attrib as integer, _
 		byval mode as integer _
 	) as zstring ptr
 
@@ -1021,7 +1022,7 @@ function symbAddProcPtr _
 	'' equal procptrs re-use the same proto symbols.
 	''
 
-	id = hMangleFunctionPtr( proc, dtype, subtype, mode )
+	id = hMangleFunctionPtr( proc, dtype, subtype, attrib, mode )
 
 	if( parser.scope = FB_MAINSCOPE ) then
 		'' When outside scopes, it's a global, because whichever symbol
@@ -2540,6 +2541,7 @@ private function hMangleFunctionPtr _
 		byval proc as FBSYMBOL ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
+		byval attrib as integer, _
 		byval mode as integer _
 	) as zstring ptr
 
@@ -2584,6 +2586,14 @@ private function hMangleFunctionPtr _
 	end if
 
     symbMangleEndAbbrev( )
+
+	'' return BYREF? - must be mangled explicitly, to distinguish it from
+	'' other function pointers with same types & parameters, that are not
+	'' returning BYREF though.
+	if( attrib and FB_SYMBATTRIB_RETURNSBYREF ) then
+		id += "$"  '' prevent the R from looking like part of the previous type id (if any)
+		id += "R"  '' R for reference, as in C++ mangling
+	end if
 
     '' calling convention
     id += "$"
