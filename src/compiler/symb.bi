@@ -1073,6 +1073,12 @@ declare function symbAddTempVar _
 		byval subtype as FBSYMBOL ptr = NULL _
 	) as FBSYMBOL ptr
 
+declare function symbAddImplicitVar _
+	( _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr = NULL _
+	) as FBSYMBOL ptr
+
 declare function symbAddAndAllocateTempVar( byval dtype as integer ) as FBSYMBOL ptr
 
 declare function symbAddArrayDesc _
@@ -2276,11 +2282,6 @@ declare sub symbProcRecalcRealType( byval proc as FBSYMBOL ptr )
 #define symbIsCommon(s) ((s->attrib and FB_SYMBATTRIB_COMMON) <> 0)
 
 #define symbIsTemp(s) ((s->attrib and FB_SYMBATTRIB_TEMP) <> 0)
-
-'' Used to remove the temp flag when a "temp" var is needed to stay alive
-'' for more than one statement. This causes any dtor to be properly called
-'' at scope breaks and scope end. Used by FOR and SELECT CASE temporaries.
-#define symbUnsetIsTemp(s) (s)->attrib and= (not FB_SYMBATTRIB_TEMP)
 
 #define symbIsParamByDesc(s) ((s->attrib and FB_SYMBATTRIB_PARAMBYDESC) <> 0)
 

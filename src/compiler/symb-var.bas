@@ -461,6 +461,17 @@ function symbAddVar _
 	function = s
 end function
 
+'' For implicit variables that should live only in the current statement
+'' - Will be marked with FB_SYMBATTRIB_TEMP, so it will not be destroyed
+''   at scope breaks, but instead via the AST's dtor list and astAdd()
+'' - Using a unique id, to avoid conflicts with the user's code
+'' - As a positive side-effect, creating the var will always succeed
+'' - FB_SYMBOPT_UNSCOPE is allowed, probably to ensure that temp vars used in
+''   the user's var initializers will be unscoped just like the user's vars and
+''   their initializers
+'' - Temp vars should never be made STATIC automatically, e.g. due to
+''   symbGetProcStaticLocals(), because they are hidden to the user, and making
+''   them STATIC could cause hidden bugs with recursion or multi-threading.
 function symbAddTempVar _
 	( _
 		byval dtype as integer, _
@@ -478,14 +489,36 @@ function symbAddTempVar _
 		options or= FB_SYMBOPT_UNSCOPE
 	end if
 
-	'' - Using a unique id, so creating the var should always succeed.
-	'' - Temp vars should never be made STATIC automatically, e.g. due to
-	''   symbGetProcStaticLocals(), because they are hidden to the user,
-	''   and making them STATIC could cause hidden bugs with recursion or
-	''   multi-threading.
-
 	function = symbAddVar( symbUniqueId( ), NULL, dtype, subtype, 0, 0, _
 	                       dTB(), FB_SYMBATTRIB_TEMP, options )
+end function
+
+'' For implicit variables that should live in the current scope, longer than
+'' just the current statement.
+'' - not marked with FB_SYMBATTRIB_TEMP, so the var will be destroyed properly
+''   at scope breaks in the current scope, and at the end of the current scope
+'' - just like a user-defined variable, just with an auto-generated name
+'' - no FB_SYMBOPT_UNSCOPE allowed though, that could cause it to be destroyed
+''   at scope breaks even before the current scope is reached, due to the lack
+''   of FB_SYMBATTRIB_TEMP; but that would only work if the initialization code
+''   is moved to the top of the procedure ("unscoped") too, which callers of
+''   this function currently do not do, since the var is intended to live in the
+''   current scope.
+'' - ditto regarding symbGetProcStaticLocals()
+function symbAddImplicitVar _
+	( _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr _
+	) as FBSYMBOL ptr
+
+	static as FBARRAYDIM dTB(0)
+
+	'' Cannot create temp z/wstrings this way, since the length is unknown
+	assert( typeGetDtAndPtrOnly( dtype ) <> FB_DATATYPE_CHAR )
+	assert( typeGetDtAndPtrOnly( dtype ) <> FB_DATATYPE_WCHAR )
+
+	function = symbAddVar( symbUniqueId( ), NULL, dtype, subtype, 0, 0, _
+	                       dTB(), 0, 0 )
 end function
 
 function symbAddAndAllocateTempVar( byval dtype as integer ) as FBSYMBOL ptr

@@ -11,9 +11,9 @@
 '' WithStmtBegin  =  WITH Variable .
 sub cWithStmtBegin( )
 	static as FBARRAYDIM dTB(0)
-	dim as FBSYMBOL ptr sym = any, subtype = any
+	dim as FBSYMBOL ptr sym = any
 	dim as ASTNODE ptr expr = any
-	dim as integer dtype = any, is_ptr = any
+	dim as integer is_ptr = any
 	dim as FB_CMPSTMTSTK ptr stk = any
 
 	'' WITH
@@ -25,11 +25,9 @@ sub cWithStmtBegin( )
 		errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
 		'' error recovery: fake a var
 		expr = astNewVAR( symbAddTempVar( FB_DATATYPE_INTEGER ) )
-		dtype = FB_DATATYPE_INTEGER
 	else
 		'' not an UDT?
-		dtype = astGetFullType( expr )
-		if( typeGetDtAndPtrOnly( dtype ) <> FB_DATATYPE_STRUCT ) then
+		if( typeGetDtAndPtrOnly( astGetFullType( expr ) ) <> FB_DATATYPE_STRUCT ) then
 			errReport( FB_ERRMSG_INVALIDDATATYPES )
 		end if
 	end if
@@ -42,11 +40,12 @@ sub cWithStmtBegin( )
 	else
 		'' Otherwise, take a reference (a pointer that will be deref'ed
 		'' for accesses from inside the WITH block)
-		sym = symbAddTempVar( typeAddrOf( dtype ), astGetSubType( expr ) )
+		''    dim temp as typeof( expr ) ptr = @expr
+		expr = astNewADDROF( expr )
+		sym = symbAddImplicitVar( astGetFullType( expr ), astGetSubType( expr ) )
+		astAdd( astNewDECL( sym, expr ) )  '' passing expr as initree, to prevent zero-initialization
+		astAdd( astNewASSIGN( astNewVAR( sym ), expr ) )
 		is_ptr = TRUE
-
-		'' temp = @expr
-		astAdd( astNewASSIGN( astNewVAR( sym ), astNewADDROF( expr ) ) )
 	end if
 
 	'' Save current WITH context to the statement stack

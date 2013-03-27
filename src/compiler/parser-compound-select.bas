@@ -117,44 +117,50 @@ sub cSelectStmtBegin( )
 
 		'' not a wstring?
 		if( typeGet( dtype ) <> FB_DATATYPE_WCHAR ) then
-			'' dim temp as dtype
-			sym = symbAddTempVar( dtype, subtype )
+			'' dim temp as dtype = expr
+			sym = symbAddImplicitVar( dtype, subtype )
+			astAdd( astNewDECL( sym, expr ) )
+			astAdd( astNewASSIGN( astNewVAR( sym ), expr, AST_OPOPT_ISINI ) )
 
-			'' Remove temp flag to have its dtor called at scope breaks/end
-			'' (needed at least in case the temporary is a string)
-			symbUnsetIsTemp( sym )
-
-			'' Anything besides FBSTRINGs doesn't need to be cleared
-			'' (this also silences "branch crossing ..." warnings when
-			'' jumping over a SELECT CASE integer into a CASE block)
+			'' Silence "branch crossing" warnings for simple temp vars,
+			'' i.e. anything except FBSTRINGs. UDTs aren't allowed
+			'' in SELECT anyways, so no need to worry about their
+			'' destructors. That leaves dynamic strings.
+			''
+			'' Using GOTO to jump above the SELECT CASE header, and
+			'' into a CASE block, must cause a "branch crossing"
+			'' error if it skips over a temp string initialization,
+			'' because there will be fb_StrDelete() (destructor)
+			'' calls at scope breaks, which mustn't be done on an
+			'' uninitialized string var.
+			''
+			'' For integers & co it's no problem though to skip the
+			'' SELECT CASE header and into a CASE, because once
+			'' we've jumped into a CASE, the integer temp var won't
+			'' be accessed anymore. (it doesn't have a dtor)
+			'' In that case normally a "branch crossing" warning
+			'' would be shown (just a warning, not an error, because
+			'' integers are simple, not "objects"), but we can
+			'' silence it since nothing bad could happen anyways.
+			'' (as long as there is no further access to the SELECT
+			'' temp var. I.e. when adding a feature that would break
+			'' these assumptions, then this should be changed to
+			'' show the warning)
 			if( typeGet( dtype ) <> FB_DATATYPE_STRING ) then
 				symbSetDontInit( sym )
 			end if
-
-			astAdd( astNewDECL( sym, NULL ) )
-
-			astAdd( astBuildVarAssign( sym, expr ) )
 		else
 			'' the wstring must be allocated() but size
 			'' is unknown at compile-time, do:
 
-			'' dim temp as wstring ptr
-			sym = symbAddTempVar( typeAddrOf( FB_DATATYPE_WCHAR ) )
-
-			'' Remove temp flag to have it considered for dtor calling
-			symbUnsetIsTemp( sym )
+			'' dim temp as wstring ptr = expr
+			sym = symbAddImplicitVar( typeAddrOf( FB_DATATYPE_WCHAR ) )
 
 			'' Mark it as "dynamic wstring" so it will be deallocated with
 			'' WstrFree() at scope breaks/end
 			symbSetIsWstring( sym )
 
-			'' Pretent "= ANY" was used - even though the fake wstring
-			'' is pretended to have a constructor, we don't need the
-			'' default clear done by astNewDECL()
-			symbSetDontInit( sym )
-
-			astAdd( astNewDECL( sym, NULL ) )
-
+			astAdd( astNewDECL( sym, expr ) )
 			astAdd( astBuildFakeWstringAssign( sym, expr ) )
 		end if
 	end if

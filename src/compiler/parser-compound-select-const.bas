@@ -80,9 +80,16 @@ sub cSelConstStmtBegin()
 	el = symbAddLabel( NULL, FB_SYMBOPT_NONE )
 	cl = symbAddLabel( NULL, FB_SYMBOPT_NONE )
 
-	'' temp = expr
-	sym = symbAddTempVar( FB_DATATYPE_UINT )
-	astAdd( astBuildVarAssign( sym, expr ) )
+	'' dim temp as uinteger = expr
+	sym = symbAddImplicitVar( FB_DATATYPE_UINT )
+	astAdd( astNewDECL( sym, expr ) )
+	astAdd( astNewASSIGN( astNewVAR( sym ), expr, AST_OPOPT_ISINI ) )
+
+	'' Silence "branch crossing" warnings; once we've jumped into a CASE,
+	'' the temp var won't be accessed anymore anyways (not even for clean up
+	'' at scope breaks, since it's just a UINTEGER that doesn't have a
+	'' destructor), so there is no point showing the warning in this case.
+	symbSetDontInit( sym )
 
 	'' skip the statements
 	astAdd( astNewBRANCH( AST_OP_JMP, cl ) )

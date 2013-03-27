@@ -1,0 +1,1 @@
+SELECT CASE [AS CONST] with simple integer temp var, no warnings:

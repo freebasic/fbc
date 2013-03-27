@@ -210,13 +210,10 @@ private function hAllocTemp _
 		byval subtype as FBSYMBOL ptr _
 	) as FBSYMBOL ptr
 
-    '' make a temp symbol
-	dim as FBSYMBOL ptr s = symbAddTempVar( dtype, subtype )
+	dim as FBSYMBOL ptr s = any
 
-    '' lang QB doesn't allow UDT's anyway...
-    if( env.clopt.lang <> FB_LANG_QB ) then
-		symbUnsetIsTemp(s)
-	end if
+	'' dim temp as dtype = any
+	s = symbAddImplicitVar( dtype, subtype )
 
 	'' Add DECL node for it, so the C backend can emit it correctly
 	'' (vars not marked as temp must have DECL nodes instead)
@@ -224,7 +221,6 @@ private function hAllocTemp _
 	astAdd( astNewDECL( s, NULL ) )
 
     function = s
-
 end function
 
 '':::::
