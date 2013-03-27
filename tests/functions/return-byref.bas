@@ -721,6 +721,66 @@ namespace protoReturningFwdref
 	end sub
 end namespace
 
+namespace cxxMangling
+	extern "C++"
+		'' The BYREF result in function pointer parameters must be included
+		'' in the C++ mangling. These 4 overloads should all have different
+		'' mangling:
+		sub f1 overload( byval p as function( ) as integer )
+		end sub
+
+		sub f1 overload( byval p as function( ) as const integer )
+		end sub
+
+		sub f1 overload( byval p as function( ) byref as integer )
+		end sub
+
+		sub f1 overload( byval p as function( ) byref as const integer )
+		end sub
+
+		'' A function's result isn't included in its C++ name mangling, since
+		'' overloading based on function result type isn't supported in C++
+		'' (neither in FB), but for function pointer parameters, it still must
+		'' be taken into account.
+		function f2 overload( byval p as function( ) as integer ) byref as integer
+			static as integer x = 1
+			function = x
+		end function
+
+		function f2 overload( byval p as function( ) as const integer ) byref as integer
+			static as integer x = 2
+			function = x
+		end function
+
+		function f2 overload( byval p as function( ) byref as integer ) byref as integer
+			static as integer x = 3
+			function = x
+		end function
+
+		function f2 overload( byval p as function( ) byref as const integer ) byref as integer
+			static as integer x = 4
+			function = x
+		end function
+	end extern
+
+	sub test cdecl( )
+		dim p1 as function( ) as integer
+		dim p2 as function( ) as const integer
+		dim p3 as function( ) byref as integer
+		dim p4 as function( ) byref as const integer
+
+		f1( p1 )
+		f1( p2 )
+		f1( p3 )
+		f1( p4 )
+
+		CU_ASSERT( f2( p1 ) = 1 )
+		CU_ASSERT( f2( p2 ) = 2 )
+		CU_ASSERT( f2( p3 ) = 3 )
+		CU_ASSERT( f2( p4 ) = 4 )
+	end sub
+end namespace
+
 private sub ctor( ) constructor
 	fbcu.add_suite( "tests/functions/return-byref" )
 	fbcu.add_test( "returning globals", @returnGlobal.test )
@@ -743,6 +803,7 @@ private sub ctor( ) constructor
 	fbcu.add_test( "tree using locals", @referenceToTreeUsingLocals.test )
 	fbcu.add_test( "explicit BYVAL", @explicitByval.test )
 	fbcu.add_test( "returning a forward ref", @protoReturningFwdref.test )
+	fbcu.add_test( "C++ mangling", @cxxMangling.test )
 end sub
 
 end namespace
