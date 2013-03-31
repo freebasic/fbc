@@ -69,6 +69,8 @@ Command line compiler options for the fbc compiler:
 		- Emit the preprocessed input file only, do not compile
 	{{fbdoc item="keyword" value="CompilerOptprefix|-prefix < path >"}}
 		- Set the compiler prefix path
+	{{fbdoc item="keyword" value="CompilerOptprint|-print < option >"}}
+		- Let the compiler display certain information (##host##, ##target##)
 	{{fbdoc item="keyword" value="CompilerOptprofile|-profile"}}
 		- Enable function profiling
 	{{fbdoc item="keyword" value="CompilerOptr|-r"}}

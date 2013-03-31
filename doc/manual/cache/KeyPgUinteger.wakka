@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="UINTEGER"}}----
-Standard data type: 32 bit unsigned
+Standard data type: 32-bit or 64-bit unsigned, same size as ##[[KeyPgSizeof SizeOf]]([[KeyPgAny Any]] [[KeyPgPtr Ptr]])##
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDim dim]] //variable// [[KeyPgAs as]] **Uinteger**
@@ -10,18 +10,21 @@ Standard data type: 32 bit unsigned
 		A numeric constant expression indicating the size in bits of unsigned integer desired.  The values allowed are ##8##, ##16##, ##32## or ##64##.
 
 {{fbdoc item="desc"}}
-	32-bit unsigned whole-number data type. Can hold values from ##0## to ##4294967295##.
-	If an explicit bit size is given, a data type is provided that can hold values from ##0## up to ##(1ULL [[KeyPgOpShiftleft Shl]] (//bits)) - 1##.
+	32-bit or 64-bit unsigned whole-number data type, depending on the platform.
+	
+	If an explicit bit size is given, a data type is provided that can hold values from ##0## up to ##(1ULL [[KeyPgOpShiftleft Shl]] (//bits//)) - 1##.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/datatype/uinteger.bas"}}%%(freebasic)
-  Dim x As UInteger = 0
-  Dim y As UInteger = &HFFFFFFFF
-  Print "UInteger Range = "; x; " to "; y
-%%
-**Output:**
-%%UInteger Range = 0 to 4294967295%%
-
+#if __FB_64BIT__
+	Dim x As UInteger = 0
+	Dim y As UInteger = &HFFFFFFFFFFFFFFFF
+	Print "UInteger Range = "; x; " to "; y
+#else
+	Dim x As UInteger = 0
+	Dim y As UInteger = &HFFFFFFFF
+	Print "UInteger Range = "; x; " to "; y
+#endif%%
 
 {{fbdoc item="lang"}}
 	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Uinteger""**##.

@@ -17,9 +17,9 @@ Built-in data types
 		8-bit wide data types that store integer values.
 	=={{fbdoc item="keyword" value="KeyPgShort|SHORT"}} and {{fbdoc item="keyword" value="KeyPgUshort|USHORT"}}==
 		16-bit wide data types that store integer values.
-	=={{fbdoc item="keyword" value="KeyPgInteger|INTEGER"}} and {{fbdoc item="keyword" value="KeyPgUinteger|UINTEGER"}}==
-		32-bit wide data types that store integer values.
 	=={{fbdoc item="keyword" value="KeyPgLong|LONG"}} and {{fbdoc item="keyword" value="KeyPgUlong|ULONG"}}==
+		32-bit wide data types that store integer values.
+	=={{fbdoc item="keyword" value="KeyPgInteger|INTEGER"}} and {{fbdoc item="keyword" value="KeyPgUinteger|UINTEGER"}}==
 		32-bit or 64-bit wide data types that store integer values.
 	=={{fbdoc item="keyword" value="KeyPgLongint|LONGINT"}} and {{fbdoc item="keyword" value="KeyPgUlongint|ULONGINT"}}==
 		64-bit wide data types that store integer values.

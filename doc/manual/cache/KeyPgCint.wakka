@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="CINT"}}----
-Converts numeric or string expression to an ##[[KeyPgInteger Integer]]## or an ##[[KeyPgInteger Integer]]<//bits//>##.
+Converts a numeric or string expression to an ##[[KeyPgInteger Integer]]## or an ##[[KeyPgInteger Integer]]<//bits//>##
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Cint** ( [[KeyPgByval byval]] //expression// [[KeyPgAs as]] [[DataType datatype]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
@@ -29,11 +29,12 @@ Converts numeric or string expression to an ##[[KeyPgInteger Integer]]## or an #
 	An ##[[KeyPgInteger Integer]]## or ##[[KeyPgInteger Integer]]<//bits//>## containing the converted value.
 
 {{fbdoc item="desc"}}
-	If ##**Cint**## is passed a numeric ##//expression//##, it rounds it using using the [[http://en.wikipedia.org/wiki/Rounding#Round-to-even_method round-to-even method]] - i.e. it rounds to the closest integer value, choosing the closest even integer if the number is equidistant from two integers - and returns a 32-bit ##[[KeyPgInteger Integer]]##, or if a ##//bits//## value is supplied, an integer type of the given size.
+	If ##**Cint**## is passed a numeric ##//expression//##, it rounds it using using the [[http://en.wikipedia.org/wiki/Rounding#Round-to-even_method round-to-even method]] - i.e. it rounds to the closest integer value, choosing the closest even integer if the number is equidistant from two integers - and returns an ##[[KeyPgInteger Integer]]##, or if a ##//bits//## value is supplied, an integer type of the given size.
+	
 	The function does not check for an overflow; for example, for a 32-bit ##[[KeyPgInteger Integer]]## the results are undefined for values which are less than ##-2## ##147## ##483## ##648## or larger than ##2## ##147## ##483## ##647##.
-
+	
 	If the argument is a string expression, it is converted to numeric by using ##[[KeyPgValint Valint]]## or ##[[KeyPgVallng Vallng]]##, depending on the size of the result type.
-
+	
 	The name "CINT" is derived from 'Convert to INTeger'.
 
 {{fbdoc item="ex"}}

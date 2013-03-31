@@ -42,7 +42,7 @@ Declares or defines an overloaded operator.
 	##//unary_op//##
 		##""-"" not * -> abs sgn fix frac int exp log sin asin cos acos tan atn##
 	##//binary_op//##
-		##+ - * & / \ mod shl shr and or xor imp eqv ^ = <> < > <= >= andalso orelse##
+		##+ - * & / \ mod shl shr and or xor imp eqv ^ = <> < > <= >=##
 
 {{fbdoc item="desc"}}
 	The built in operators like ##=##, ##+##, and ##cast## have predefined behaviors when used in expressions.  These operators can be overloaded to do something other than predefined operations when at least one of the arguments to the operator is a ##[[KeyPgType Type]]##, ##[[KeyPgClass Class]]##, ##[[KeyPgEnum Enum]]##, or ##[[KeyPgUnion Union]]## data type.

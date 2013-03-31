@@ -5,7 +5,7 @@ Standard data type: 64 bit signed
 	[[KeyPgDim dim]] //variable// [[KeyPgAs as]] **Longint**
 ##
 {{fbdoc item="desc"}}
-	A 64-bit signed whole-number data type. Can hold values from -9 223 372 036 854 775 808 to 9 223 372 036 854 775 807
+	A 64-bit signed whole-number data type. Can hold values from -9 223 372 036 854 775 808 to 9 223 372 036 854 775 807. Corresponds to a signed QWORD.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/datatype/longint.bas"}}%%(freebasic)

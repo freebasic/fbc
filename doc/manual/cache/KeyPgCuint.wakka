@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="CUINT"}}----
-Converts numeric or string expression to an unsigned integer (##[[KeyPgUinteger Uinteger]]## or ##[[KeyPgUinteger Uinteger]]<//bits//>##)
+Converts numeric or string expression to a ##[[KeyPgUinteger Uinteger]]## or ##[[KeyPgUinteger Uinteger]]<//bits//>##
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Cuint** ( [[KeyPgByval byval]] //expression// [[KeyPgAs as]] [[DataType datatype]] ) [[KeyPgAs as]] [[KeyPgUinteger uinteger]]
@@ -29,11 +29,12 @@ Converts numeric or string expression to an unsigned integer (##[[KeyPgUinteger 
 	A ##[[KeyPgUinteger Uinteger]]## or ##[[KeyPgUinteger Uinteger]]<//bits//>## containing the converted value.
 
 {{fbdoc item="desc"}}
-	The ##**Cuint**## function rounds off the decimal part and returns a 32-bit ##[[KeyPgUinteger Uinteger]]## value, or if a ##//bits//## value is supplied, an unsigned integer type of the given size.
-		The function does not check for an overflow; for example, for a 32-bit ##[[KeyPgUinteger Uinteger]]## results are undefined for values which are less than ##0## or larger than ##4## ##294## ##967## ##296##.
-
+	The ##**Cuint**## function rounds off the decimal part and returns a ##[[KeyPgUinteger Uinteger]]## value, or if a ##//bits//## value is supplied, an unsigned integer type of the given size.
+	
+	The function does not check for an overflow; for example, for a 32-bit ##[[KeyPgUinteger Uinteger]]## results are undefined for values which are less than ##0## or larger than ##4## ##294## ##967## ##296##.
+	
 	The name can be explained as 'Convert to Unsigned INTeger'.
-
+	
 	If the argument is a string expression, it is converted to numeric by using ##[[KeyPgValuint Valuint]]## or ##[[KeyPgValulng Valulng]]##, depending on the size of the result type.
 
 {{fbdoc item="ex"}}

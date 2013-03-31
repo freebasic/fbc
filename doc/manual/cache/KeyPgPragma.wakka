@@ -2,26 +2,28 @@
 Preprocessor directive
 
 {{fbdoc item="syntax"}}##
-	**#pragma** //option// [ =//value// ]
+	**#pragma** //option// [ = //value// ]
 	##//Or//##
-	**#pragma** **push** ( //option// )
+	**#pragma** **push** ( //option// [, //value// ] )
 	##//Or//##
 	**#pragma** **pop** ( //option// )
 ##
 {{fbdoc item="param"}}
 	Possible values for ##//option//## and related ##//value//##s:
-
-	{{table columns="3" cellpadding="1" cells="Option; Value; Description; msbitfields; 0; Use bitfields compatible with gcc (default);###; (nonzero); Use bitfields compatible with those used in Microsoft C compilers; once; N/A; cause the source file in which the pragma appears to behave as though it was included with #include once ..."}}
+	
+	{{table columns="3" cellpadding="1" cells="Option; Value; Description; msbitfields; 0; Use bitfields compatible with gcc (default);###; -1 (or any other non-zero value); Use bitfields compatible with those used in Microsoft C compilers; once; N/A; cause the source file in which the pragma appears to behave as though it was included with #include once ..."}}
+	
+	If //value// is not given, the compiler assumes //-1// (//TRUE//).
 
 {{fbdoc item="desc"}}
 	Allows the setting of compiler options inside the source code.
+	
+	**Push** saves the current value of the //option// onto a stack, then assigns the new //value// (or //-1//) to it. **Pop** restores the //option// to its previous value, and removes it from the stack. This mechanism allows options to be changed for a certain part of source code, regardless of the setting used by the context, which is especially useful inside #include header files.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/prepro/pragma.bas"}}%%(freebasic)
-'' save the current pragma setting
+'' MSVC-compatible bitfields: save the current setting and then enable them
 #pragma push(msbitfields)
-'' switch to MSVC-compatible bitfields
-#pragma msbitfields=1
 
 '' do something that requires MS-compatible bitfields here
 

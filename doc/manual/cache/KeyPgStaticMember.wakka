@@ -3,17 +3,17 @@ Declare a static member procedure
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgType Type]] //typename//
-		[[KeyPgDeclare Declare]] **Static** [[KeyPgSub Sub]]|[[KeyPgFunction Function]] ...
+		[[KeyPgDeclare Declare]] **Static** [[KeyPgSub Sub]]|[[KeyPgFunction Function]] //procname// ...
 	End Type
 	
-	**Static** [[KeyPgSub Sub]]|[[KeyPgFunction Function]] //typename// ...
+	**Static** [[KeyPgSub Sub]]|[[KeyPgFunction Function]] //typename//.//procname// ...
 		...
 	End [[KeyPgSub Sub]]|[[KeyPgFunction Function]]
 ##
 {{fbdoc item="desc"}}
-	##**Static**## methods do not have an implicit [[KeyPgThis This]] instance argument passed to them. This allows them to be used like normal non-member procedures (for example with callback procedure pointers), the only difference being that they are encapsulated in the //typename// namespace and have access to //typename//'s [[KeyPgVisPrivate Private]] or [[KeyPgVisProtected Protected]] members.
+	##**Static**## methods do not have an implicit ##[[KeyPgThis This]]## instance argument passed to them. This allows them to be used like normal non-member procedures (for example with callback procedure pointers), the only difference being that they are encapsulated in the ##//typename//## namespace and have access to ##//typename//##'s ##[[KeyPgVisPrivate Private]]## or ##[[KeyPgVisProtected Protected]]## members.
 	
-	Static methods can be called directly anywhere in code, like normal non-member procedures, or on objects of type //typename//, similar to non-static methods, however either way there is no implicit or explicit [[KeyPgThis This]] (or explicit [[KeyPgBase Base]]) access possible from within a static method.
+	##**Static**## methods can be called directly anywhere in code, like normal non-member procedures, or on objects of type ##//typename//##, similar to non-static methods, however either way there is no implicit or explicit ##[[KeyPgThis This]]## (or explicit ##[[KeyPgBase Base]]##) access possible from within a static method.
 	
 	For member procedures with ##**Static**## in their declaration, ##**Static**## can also be specified on the corresponding procedure bodies, for improved code readability.
 

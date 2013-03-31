@@ -389,6 +389,7 @@ Alphabetical listing of keywords, macros and procedures.
 	- {{fbdoc item="keyword" value="KeyPgPeek|PEEK"}}
 	- {{fbdoc item="keyword" value="KeyPgPmap|PMAP"}}
 	- {{fbdoc item="keyword" value="KeyPgPoint|POINT"}}
+	- {{fbdoc item="keyword" value="KeyPgPointCoord|POINTCOORD"}}
 	- {{fbdoc item="keyword" value="KeyPgPointer|POINTER"}}
 	- {{fbdoc item="keyword" value="KeyPgPoke|POKE"}}
 	- {{fbdoc item="keyword" value="KeyPgPos|POS"}}

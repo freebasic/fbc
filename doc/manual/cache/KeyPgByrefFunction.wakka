@@ -11,7 +11,9 @@ Specifies that a function result is returned by reference
 	
 	Functions with ##**Byref**## result should not return local variables from the function, because they will be destroyed upon returning from the function, invalidating any pointer or reference to them. To help with writing safe code, the compiler will show an error message when a local variable is used with ##Function = x## (or ##//name// = x##) assignments and ##Return x## statements.
 	
-	**Note:** On the left-hand side of an assignment expression, the result of the function (returned by reference) must be enclosed in parentheses when the function calls one single argument.
+	**Note:** On the left-hand side of an assignment expression, the result of the function (returned by reference) must be enclosed in parentheses when the function calls one single argument (an arguments list, even if empty, should be surrounded with parentheses).
+	
+	Operators (member or global), when used as functions, have also the capability to return results by reference, by using the same syntax.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/procs/byref-result.bas"}}%%(freebasic)
