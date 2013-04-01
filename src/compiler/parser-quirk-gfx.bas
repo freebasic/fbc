@@ -1380,11 +1380,6 @@ function cGfxStmt _
 		lexSkipToken( )
 		function = cGfxScreen( TRUE )
 
-	case FB_TK_SCREENRES
-		CHECK_CODEMASK( )
-		lexSkipToken( )
-		function = cGfxScreenRes( )
-
 	end select
 
 end function

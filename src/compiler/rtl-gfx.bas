@@ -544,9 +544,9 @@ declare function hPorts_cb _
 		/' fb_GfxScreenRes ( byval w as integer, byval h as integer, byval depth as integer = 8, _
 									byval num_pages as integer = 1, byval flags as integer = 0, byval refresh_rate as integer = 0 ) '/ _
 		( _
-			@FB_RTL_GFXSCREENRES, NULL, _
+			@"screenres", @FB_RTL_GFXSCREENRES, _
 			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
-	 		@hGfxlib_cb, FB_RTL_OPT_NONE, _
+	 		@hGfxlib_cb, FB_RTL_OPT_ERROR or FB_RTL_OPT_NOQB, _
 			6, _
 			{ _
 				( _
