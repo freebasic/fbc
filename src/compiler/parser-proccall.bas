@@ -324,10 +324,8 @@ function cProcCall _
 	fbSetPrntOptional( FALSE )
 
 	if( is_propset = FALSE ) then
-		'' Function returns BYREF?
-		if( symbProcReturnsByref( sym ) ) then
-			procexpr = astBuildByrefResultDeref( procexpr )
-		end if
+		'' Take care of functions returning BYREF
+		procexpr = astBuildByrefResultDeref( procexpr )
 
 		'' StrIdxOrMemberDeref?
 		procexpr = cStrIdxOrMemberDeref( procexpr )

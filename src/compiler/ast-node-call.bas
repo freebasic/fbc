@@ -402,8 +402,16 @@ function astBuildByrefResultDeref( byval expr as ASTNODE ptr ) as ASTNODE ptr
 	dim as integer dtype = any
 	dim as FBSYMBOL ptr subtype = any
 
-	assert( astIsCALL( expr ) )
-	assert( symbProcReturnsByref( expr->sym ) )
+	'' Only for CALLs; it could be a CONST( 0 ) after error recovery in
+	'' cProcArgList()
+	if( astIsCALL( expr ) = FALSE ) then
+		return expr
+	end if
+
+	'' And only if it actually has a BYREF result
+	if( symbProcReturnsByref( expr->sym ) = FALSE ) then
+		return expr
+	end if
 
 	'' Do an implicit DEREF with the function's type, and remap the CALL
 	'' node's type to the pointer, so the AST is consistent even if that

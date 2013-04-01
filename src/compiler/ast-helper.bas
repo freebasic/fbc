@@ -360,9 +360,8 @@ function astBuildCall _
 		end if
 	end if
 
-	if( symbProcReturnsByref( proc ) ) then
-		p = astBuildByrefResultDeref( p )
-	end if
+	'' Take care of functions returning BYREF
+	p = astBuildByrefResultDeref( p )
 
 	function = p
 end function
