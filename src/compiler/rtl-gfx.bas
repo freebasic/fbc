@@ -2678,8 +2678,7 @@ end function
 '':::::
 function rtlGfxScreenSet _
 	( _
-		byval wexpr as ASTNODE ptr, _
-		byval hexpr as ASTNODE ptr, _
+		byval mexpr as ASTNODE ptr, _
 		byval dexpr as ASTNODE ptr, _
 		byval pexpr as ASTNODE ptr, _
 		byval fexpr as ASTNODE ptr, _
@@ -2687,27 +2686,15 @@ function rtlGfxScreenSet _
 	) as integer
 
     dim as ASTNODE ptr proc = any
-    dim as FBSYMBOL ptr f = any
 
 	function = FALSE
 
-	if( hexpr = NULL ) then
-		f = PROCLOOKUP( GFXSCREENSET )
-	else
-		f = PROCLOOKUP( GFXSCREENRES )
-	end if
-    proc = astNewCALL( f )
+	proc = astNewCALL( PROCLOOKUP( GFXSCREENSET ) )
 
  	'' byval m as integer
- 	if( astNewARG( proc, wexpr ) = NULL ) then
+ 	if( astNewARG( proc, mexpr ) = NULL ) then
  		exit function
  	end if
-
-	if( hexpr <> NULL ) then
-		if( astNewARG( proc, hexpr ) = NULL ) then
-			exit function
-		end if
-	end if
 
  	'' byval d as integer
  	if( dexpr = NULL ) then

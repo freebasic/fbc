@@ -751,7 +751,6 @@ enum FB_RTL_IDX
 	FB_RTL_IDX_GFXGETQB
 	FB_RTL_IDX_GFXSCREENSET
 	FB_RTL_IDX_GFXSCREENSETQB
-	FB_RTL_IDX_GFXSCREENRES
 	FB_RTL_IDX_GFXIMAGECREATE
 	FB_RTL_IDX_GFXIMAGECREATEQB
 
@@ -1693,8 +1692,7 @@ declare function rtlGfxGet _
 
 declare function rtlGfxScreenSet _
 	( _
-		byval wexpr as ASTNODE ptr, _
-		byval hexpr as ASTNODE ptr, _
+		byval mexpr as ASTNODE ptr, _
 		byval dexpr as ASTNODE ptr, _
 		byval pexpr as ASTNODE ptr, _
 		byval fexpr as ASTNODE ptr, _
