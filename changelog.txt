@@ -23,6 +23,7 @@ Version 0.25.0:
 - -pp will now preserve #inclib, #libpath, #lang, $ meta commands, msbitfields #pragmas, and #undef (except on macros which, unlike other symbols, won't be preserved anyways), in order to allow the output file to be compiled just like the original
 - -o in combination with -pp will now set the output file name for the preprocessed version of the associated input module
 - SCREENRES is now a normal function instead of a quirk statement
+- BSAVE now (by default) saves 32-bit .bmp files in 32-bit screen modes instead of 24-bit files
 
 [added]
 - VIRTUAL and ABSTRACT methods (including virtual destructors) in UDTs extending OBJECT, which can be overridden by methods in derived UDTs, provided the same method name and signature is used
@@ -56,6 +57,7 @@ Version 0.25.0:
 - INTEGER<n> / UINTEGER<n> / C[U]INT<n>, where n is 8/16/32/64, for allowing to choose integer types of a specific size
 - CVI<n> / MKI<n>, where n is 16/32/64, to allow bit conversions of a specific size
 - type<UDT>( ).field is now possible, as an alternative to (type<UDT>( )).field
+- bpp parameter on BSAVE, to request a BMP bit depth
 
 [fixed]
 - libzip headers: zip_stat struct was unnecessarily named zip_stat_, breaking the libzip example
@@ -216,6 +218,7 @@ Version 0.25.0:
 - -pp could produce duplicate output in combination with parser restarts due to #lang mode changes
 - C++ name mangling ignored CONST on return types of function pointers used as parameters in overloaded procedures
 - -lang qb/fblite: "EXIT SUB/FUNCTION" above a "SELECT CASE string" tried to destroy an uninitialized string variable
+- BSAVE was returning "file not found" errors on invalid arguments instead of "illegal function call" errors
 
 
 Version 0.24.0:
