@@ -275,7 +275,7 @@ end namespace
 namespace resultIndexing
 	dim shared as integer array(0 to 1) = { 11, 22 }
 
-	function f( ) byref as integer ptr
+	function f( ) byref as integer
 		function = array(0)
 	end function
 
@@ -726,48 +726,48 @@ namespace cxxMangling
 		'' The BYREF result in function pointer parameters must be included
 		'' in the C++ mangling. These 4 overloads should all have different
 		'' mangling:
-		sub f1 overload( byval p as function( ) as integer )
+		sub f1 overload( byval p as function cdecl( ) as integer )
 		end sub
 
-		sub f1 overload( byval p as function( ) as const integer )
+		sub f1 overload( byval p as function cdecl( ) as const integer )
 		end sub
 
-		sub f1 overload( byval p as function( ) byref as integer )
+		sub f1 overload( byval p as function cdecl( ) byref as integer )
 		end sub
 
-		sub f1 overload( byval p as function( ) byref as const integer )
+		sub f1 overload( byval p as function cdecl( ) byref as const integer )
 		end sub
 
 		'' A function's result isn't included in its C++ name mangling, since
 		'' overloading based on function result type isn't supported in C++
 		'' (neither in FB), but for function pointer parameters, it still must
 		'' be taken into account.
-		function f2 overload( byval p as function( ) as integer ) byref as integer
+		function f2 overload( byval p as function cdecl( ) as integer ) byref as integer
 			static as integer x = 1
 			function = x
 		end function
 
-		function f2 overload( byval p as function( ) as const integer ) byref as integer
+		function f2 overload( byval p as function cdecl( ) as const integer ) byref as integer
 			static as integer x = 2
 			function = x
 		end function
 
-		function f2 overload( byval p as function( ) byref as integer ) byref as integer
+		function f2 overload( byval p as function cdecl( ) byref as integer ) byref as integer
 			static as integer x = 3
 			function = x
 		end function
 
-		function f2 overload( byval p as function( ) byref as const integer ) byref as integer
+		function f2 overload( byval p as function cdecl( ) byref as const integer ) byref as integer
 			static as integer x = 4
 			function = x
 		end function
 	end extern
 
 	sub test cdecl( )
-		dim p1 as function( ) as integer
-		dim p2 as function( ) as const integer
-		dim p3 as function( ) byref as integer
-		dim p4 as function( ) byref as const integer
+		dim p1 as function cdecl( ) as integer
+		dim p2 as function cdecl( ) as const integer
+		dim p3 as function cdecl( ) byref as integer
+		dim p4 as function cdecl( ) byref as const integer
 
 		f1( p1 )
 		f1( p2 )
