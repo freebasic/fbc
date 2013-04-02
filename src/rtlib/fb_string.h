@@ -129,6 +129,7 @@ FBCALL int          fb_StrCompare       ( void *str1, int str1_size, void *str2,
 FBCALL FBSTRING    *fb_StrAllocTempResult ( FBSTRING *src );
 FBCALL FBSTRING    *fb_StrAllocTempDescF( char *str, int str_size );
 FBCALL FBSTRING    *fb_StrAllocTempDescV( FBSTRING *str );
+FBCALL FBSTRING    *fb_StrAllocTempDescZEx( const char *str, int len );
 FBCALL FBSTRING    *fb_StrAllocTempDescZ( const char *str );
 FBCALL int          fb_StrLen           ( void *str, int str_size );
 
@@ -326,6 +327,10 @@ FBCALL void         fb_WstrAssignMid    ( FB_WCHAR *dst, int dst_len, int start,
  **************************************************************************************************/
 
 FBCALL FBSTRING *   fb_StrFormat        ( double value, FBSTRING *mask );
-
 FBCALL FBSTRING *   fb_hStrFormat       ( double value, const char *mask,
                                           size_t mask_length );
+
+FBCALL int          fb_VALINT           ( FBSTRING *str );
+FBCALL long long    fb_VALLNG           ( FBSTRING *str );
+FBCALL unsigned int fb_VALUINT          ( FBSTRING *str );
+FBCALL unsigned long long fb_VALULNG    ( FBSTRING *str );

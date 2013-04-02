@@ -2,9 +2,6 @@
 
 #include "../fb.h"
 
-void fb_hRtInit ( void );
-void fb_hRtExit ( void );
-
 /* note: they must be static, or shared libraries in Linux would reuse the 
 		 same function */
 
