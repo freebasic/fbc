@@ -48,6 +48,7 @@ FBCALL int fb_GfxPut(void *target, float fx, float fy, unsigned char *src, int x
 {
 	FB_GFXCTX *context = fb_hGetContext();
 	int x, y, w, h, pitch, bpp;
+	int lhs, rhs;
 	PUT_HEADER *header;
 
 	if ((!__fb_gfx) || (!src))
@@ -57,9 +58,7 @@ FBCALL int fb_GfxPut(void *target, float fx, float fy, unsigned char *src, int x
 	fb_hSetPixelTransfer(context, MASK_A_32);
 
 	// quirky but good
-	int lhs, rhs;
 	switch (coord_type) {
-
 		case COORD_TYPE_RA:
 			lhs = COORD_TYPE_R;
 			rhs = COORD_TYPE_A;
@@ -76,6 +75,8 @@ FBCALL int fb_GfxPut(void *target, float fx, float fy, unsigned char *src, int x
 			lhs = COORD_TYPE_A;
 			rhs = COORD_TYPE_R;
 			break;
+		default:
+			return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 	}
 
 	fb_hFixRelative(context, lhs, &fx, &fy, NULL, NULL);
