@@ -219,6 +219,7 @@ Version 0.25.0:
 - C++ name mangling ignored CONST on return types of function pointers used as parameters in overloaded procedures
 - -lang qb/fblite: "EXIT SUB/FUNCTION" above a "SELECT CASE string" tried to destroy an uninitialized string variable
 - BSAVE was returning "file not found" errors on invalid arguments instead of "illegal function call" errors
+- Sub calls were allowing the optional parentheses to start after the first argument, e.g. 'foo a, (b, c)'
 
 
 Version 0.24.0:
