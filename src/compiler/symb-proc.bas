@@ -2460,6 +2460,64 @@ end function
 '' misc
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
+private function hAreMethodsCompatible _
+	( _
+		byval v as FBSYMBOL ptr, _  '' The virtual that's overridden
+		byval o as FBSYMBOL ptr _   '' The override
+	) as integer
+
+	dim as FBSYMBOL ptr vparam = any, oparam = any
+
+	assert( symbIsProc( v ) and symbIsMethod( v ) )
+	assert( symbIsProc( o ) and symbIsMethod( o ) )
+
+	'' Different result type? (Note: SUBs have VOID result type)
+	if( (symbGetType   ( v ) <> symbGetType   ( o )) or _
+	    (symbGetSubtype( v ) <> symbGetSubtype( o )) ) then
+		return FB_ERRMSG_OVERRIDERETTYPEDIFFERS
+	end if
+
+	'' Does one have a BYREF result, but not the other?
+	if( symbProcReturnsByref( v ) <> symbProcReturnsByref( o ) ) then
+		return FB_ERRMSG_OVERRIDERETTYPEDIFFERS
+	end if
+
+	'' Different calling convention?
+	if( symbAreProcModesEqual( v, o ) = FALSE ) then
+		return FB_ERRMSG_OVERRIDECALLCONVDIFFERS
+	end if
+
+	'' Different parameter count?
+	if( symbGetProcParams( v ) <> symbGetProcParams( o ) ) then
+		return FB_ERRMSG_OVERRIDEPARAMSDIFFER
+	end if
+
+	'' Check each parameter's mode and type
+	vparam = symbGetProcLastParam( v )
+	oparam = symbGetProcLastParam( o )
+
+	'' But skip THIS ptr; virtual/override will have a different types here,
+	'' their parent classes respectively. Since this virtual was found to
+	'' be overridden by this override, we know that the override's THIS
+	'' type is derived from the virtual's THIS type.
+	assert( symbIsParamInstance( vparam ) )
+	assert( symbIsParamInstance( oparam ) )
+	vparam = vparam->next
+	oparam = oparam->next
+
+	while( vparam )
+		if( (symbGetParamMode( vparam ) <> symbGetParamMode( oparam )) or _
+		    (symbGetFullType ( vparam ) <> symbGetFullType ( oparam )) or _
+		    (symbGetSubtype  ( vparam ) <> symbGetSubtype  ( oparam )) ) then
+			return FB_ERRMSG_OVERRIDEPARAMSDIFFER
+		end if
+		vparam = vparam->next
+		oparam = oparam->next
+	wend
+
+	function = FB_ERRMSG_OK
+end function
+
 sub symbProcCheckOverridden _
 	( _
 		byval proc as FBSYMBOL ptr, _
@@ -2473,25 +2531,16 @@ sub symbProcCheckOverridden _
 
 	'' Overriding anything?
 	if( overridden ) then
-		'' Check whether override and overridden have different
-		'' return type or calling convention, this must be disallowed
+		'' Check whether override and overridden have different return
+		'' type or calling convention etc., this must be disallowed
 		'' (unlike with overloading) because the function signatures
 		'' aren't really compatible (e.g. return on stack vs. return
 		'' in registers).
-		if( (   symbGetType( proc ) <>    symbGetType( overridden )) or _
-		    (symbGetSubtype( proc ) <> symbGetSubtype( overridden ))      ) then
-			'' This won't happen with destructors/LET overloads
-			assert( is_implicit = FALSE )
-			errReport( FB_ERRMSG_OVERRIDERETTYPEDIFFERS )
-		end if
 
-		'' Check for return BYREF
-		if( symbProcReturnsByref( proc ) <> symbProcReturnsByref( overridden ) ) then
-			errReport( FB_ERRMSG_OVERRIDERETTYPEDIFFERS )
-		end if
-
-		if( symbAreProcModesEqual( proc, overridden ) = FALSE ) then
-			if( is_implicit ) then
+		errmsg = hAreMethodsCompatible( overridden, proc )
+		if( errmsg <> FB_ERRMSG_OK ) then
+			if( is_implicit and _
+			    (errmsg = FB_ERRMSG_OVERRIDECALLCONVDIFFERS) ) then
 				'' symbUdtAddDefaultMembers() uses this to check
 				'' implicit dtors and LET overloads. Since they
 				'' are not visible in the original code,
@@ -2501,13 +2550,11 @@ sub symbProcCheckOverridden _
 				else
 					errmsg = FB_ERRMSG_IMPLICITLETOVERRIDECALLCONVDIFFERS
 				end if
-			else
-				'' Normal error message that will be shown on
-				'' the problematic method declaration.
-				errmsg = FB_ERRMSG_OVERRIDECALLCONVDIFFERS
 			end if
+
 			errReport( errmsg )
 		end if
+
 	end if
 
 end sub

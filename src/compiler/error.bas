@@ -295,6 +295,7 @@ declare function hMakeParamDesc _
 		@"Override has different calling convention than overridden method", _
 		@"Implicit destructor override would have different calling convention", _
 		@"Implicit LET operator override would have different calling convention", _
+		@"Override has different parameters than overridden method", _
 		@"This operator cannot be STATIC", _
 		@"Parameter must be an integer", _
 		@"Parameter must be a pointer", _
