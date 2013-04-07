@@ -1,0 +1,10 @@
+--- random/unix.c.orig	2013-04-06 21:03:47.648204968 +0200
++++ random/unix.c	2013-04-06 21:03:50.256217906 +0200
+@@ -71,7 +71,6 @@
+ #include <fcntl.h>
+ #include <pwd.h>
+ #if !( defined( __QNX__ ) || defined( __MVS__ ) )
+-  #include <sys/errno.h>
+   #include <sys/ipc.h>
+ #endif /* !( QNX || MVS ) */
+ #include <sys/time.h>	/* SCO and SunOS need this before resource.h */

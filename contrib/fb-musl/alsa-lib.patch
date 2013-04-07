@@ -1,0 +1,121 @@
+diff --git a/include/global.h b/include/global.h
+index 3e3680f..5c36c3a 100644
+--- a/include/global.h
++++ b/include/global.h
+@@ -133,18 +133,6 @@ int snd_shm_area_destroy(struct snd_shm_area *area);
+ 
+ int snd_user_file(const char *file, char **result);
+ 
+-#if !defined(_POSIX_C_SOURCE) && !defined(_POSIX_SOURCE)
+-struct timeval {
+-	time_t		tv_sec;		/* seconds */
+-	long		tv_usec;	/* microseconds */
+-};
+-
+-struct timespec {
+-	time_t		tv_sec;		/* seconds */
+-	long		tv_nsec;	/* nanoseconds */
+-};
+-#endif
+-
+ /** Timestamp */
+ typedef struct timeval snd_timestamp_t;
+ /** Hi-res timestamp */
+diff --git a/include/pcm.h b/include/pcm.h
+index 4997557..a49880f 100644
+--- a/include/pcm.h
++++ b/include/pcm.h
+@@ -941,10 +941,10 @@ int snd_pcm_format_width(snd_pcm_format_t format);			/* in bits */
+ int snd_pcm_format_physical_width(snd_pcm_format_t format);		/* in bits */
+ snd_pcm_format_t snd_pcm_build_linear_format(int width, int pwidth, int unsignd, int big_endian);
+ ssize_t snd_pcm_format_size(snd_pcm_format_t format, size_t samples);
+-u_int8_t snd_pcm_format_silence(snd_pcm_format_t format);
+-u_int16_t snd_pcm_format_silence_16(snd_pcm_format_t format);
+-u_int32_t snd_pcm_format_silence_32(snd_pcm_format_t format);
+-u_int64_t snd_pcm_format_silence_64(snd_pcm_format_t format);
++uint8_t snd_pcm_format_silence(snd_pcm_format_t format);
++uint16_t snd_pcm_format_silence_16(snd_pcm_format_t format);
++uint32_t snd_pcm_format_silence_32(snd_pcm_format_t format);
++uint64_t snd_pcm_format_silence_64(snd_pcm_format_t format);
+ int snd_pcm_format_set_silence(snd_pcm_format_t format, void *buf, unsigned int samples);
+ 
+ snd_pcm_sframes_t snd_pcm_bytes_to_frames(snd_pcm_t *pcm, ssize_t bytes);
+diff --git a/include/search.h b/include/search.h
+index 91e6210..86bb3fa 100644
+--- a/include/search.h
++++ b/include/search.h
+@@ -25,7 +25,13 @@
+ #define __need_size_t
+ #include <stddef.h>
+ 
+-__BEGIN_DECLS
++#define __P(args) args
++#define __PMT(args) args
++#define __ptr_t void *
++
++#ifdef __cplusplus
++extern "C" {
++#endif
+ 
+ #if defined __USE_SVID || defined __USE_XOPEN_EXTENDED
+ /* Prototype structure for a linked-list data structure.
+@@ -172,6 +178,8 @@ extern void *lsearch __PMT ((__const void *__key, void *__base,
+ 			     size_t *__nmemb, size_t __size,
+ 			     __compar_fn_t __compar));
+ 
+-__END_DECLS
++#ifdef __cplusplus
++}
++#endif
+ 
+ #endif /* search.h */
+diff --git a/include/sound/asound.h b/include/sound/asound.h
+index 07c03fa..ba5a044 100644
+--- a/include/sound/asound.h
++++ b/include/sound/asound.h
+@@ -366,7 +366,7 @@ struct sndrv_interval {
+ #define SNDRV_MASK_MAX	256
+ 
+ struct sndrv_mask {
+-	u_int32_t bits[(SNDRV_MASK_MAX+31)/32];
++	uint32_t bits[(SNDRV_MASK_MAX+31)/32];
+ };
+ 
+ struct sndrv_pcm_hw_params {
+diff --git a/src/compat/hsearch_r.c b/src/compat/hsearch_r.c
+index 96ceac1..8aaa321 100644
+--- a/src/compat/hsearch_r.c
++++ b/src/compat/hsearch_r.c
+@@ -20,6 +20,7 @@
+ #include <errno.h>
+ #include <malloc.h>
+ #include <string.h>
++#include <stdlib.h>
+ 
+ #define __USE_GNU
+ #ifndef __set_errno
+diff --git a/src/conf.c b/src/conf.c
+index ecaa339..6c87b30 100644
+--- a/src/conf.c
++++ b/src/conf.c
+@@ -428,7 +428,7 @@ beginning:</P>
+ 
+ #ifdef HAVE_LIBPTHREAD
+ static pthread_mutex_t snd_config_update_mutex =
+-				PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP;
++				PTHREAD_MUTEX_INITIALIZER;
+ #endif
+ 
+ struct _snd_config {
+diff --git a/src/shmarea.c b/src/shmarea.c
+index 071f9f3..add31bb 100644
+--- a/src/shmarea.c
++++ b/src/shmarea.c
+@@ -18,6 +18,7 @@
+  *
+  */
+   
++#include <stdlib.h>
+ #include <stdio.h>
+ #include <malloc.h>
+ #include <string.h>
