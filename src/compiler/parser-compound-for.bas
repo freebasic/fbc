@@ -218,7 +218,7 @@ private function hAllocTemp _
 	'' Add DECL node for it, so the C backend can emit it correctly
 	'' (vars not marked as temp must have DECL nodes instead)
 	symbSetDontInit( s )
-	astAdd( astNewDECL( s, NULL ) )
+	astAdd( astNewDECL( s, TRUE ) )
 
     function = s
 end function

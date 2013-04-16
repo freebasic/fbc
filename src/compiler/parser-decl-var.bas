@@ -992,8 +992,7 @@ private function hCallStaticCtor _
 	flag = symbAddVar( symbUniqueLabel( ), NULL, FB_DATATYPE_INTEGER, NULL, 0, _
 	                   0, dTB(), FB_SYMBATTRIB_STATIC )
 
-	tree = astNewLINK( tree, _
-					   astNewDECL( flag, NULL ) )
+	tree = astNewLINK( tree, astNewDECL( flag, TRUE ) )
 
 	'' if flag = 0 then
 	label = symbAddLabel( NULL )
@@ -1489,12 +1488,12 @@ function cVarDecl _
    					symbSetDontInit( sym )
     			end if
 
-				var_decl = astNewDECL( sym, initree )
+				var_decl = astNewDECL( sym, (initree = NULL) )
 
 				'' add the descriptor too, if any
 				desc = symbGetArrayDescriptor( sym )
 				if( desc <> NULL ) then
-					var_decl = astNewLINK( var_decl, astNewDECL( desc, symbGetTypeIniTree( desc ) ) )
+					var_decl = astNewLINK( var_decl, astNewDECL( desc, (symbGetTypeIniTree( desc ) = NULL) ) )
 				end if
     		end if
 
@@ -1569,7 +1568,7 @@ function cVarDecl _
 								astAdd( astBuildVarDtorCall( sym, TRUE ) )
 							end if
 
-							assign_vardecl = astNewDECL( sym, assign_initree )
+							assign_vardecl = astNewDECL( sym, (assign_initree = NULL) )
 							assign_vardecl = hFlushDecl( assign_vardecl )
 
 							'' use the initializer as an assignment
@@ -1999,7 +1998,7 @@ sub cAutoVarDecl(byval attrib as FB_SYMBATTRIB)
         	symbSetIsInitialized( sym )
 
 			'' add to AST
-			dim as ASTNODE ptr var_decl = astNewDECL( sym, initree )
+			dim as ASTNODE ptr var_decl = astNewDECL( sym, FALSE )
 
 			'' set as declared
 			symbSetIsDeclared( sym )

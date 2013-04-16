@@ -119,7 +119,7 @@ sub cSelectStmtBegin( )
 		if( typeGet( dtype ) <> FB_DATATYPE_WCHAR ) then
 			'' dim temp as dtype = expr
 			sym = symbAddImplicitVar( dtype, subtype )
-			astAdd( astNewDECL( sym, expr ) )
+			astAdd( astNewDECL( sym, FALSE ) )
 			astAdd( astNewASSIGN( astNewVAR( sym ), expr, AST_OPOPT_ISINI ) )
 
 			'' Silence "branch crossing" warnings for simple temp vars,
@@ -160,7 +160,7 @@ sub cSelectStmtBegin( )
 			'' WstrFree() at scope breaks/end
 			symbSetIsWstring( sym )
 
-			astAdd( astNewDECL( sym, expr ) )
+			astAdd( astNewDECL( sym, FALSE ) )
 			astAdd( astBuildFakeWstringAssign( sym, expr ) )
 		end if
 	end if

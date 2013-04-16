@@ -1072,7 +1072,7 @@ private function hVarAddUndecl _
 		'' error recovery: fake an id
 		s = symbAddVar( symbUniqueLabel( ), NULL, dtype, NULL, 0, 0, dTB(), attrib )
 	else
-		var_ = astNewDECL( s, NULL )
+		var_ = astNewDECL( s, TRUE )
 
 		'' move to function scope?
 		if( (options and FB_SYMBOPT_UNSCOPE) <> 0 ) then

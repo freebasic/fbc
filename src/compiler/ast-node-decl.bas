@@ -42,13 +42,7 @@ private function hCtorList _
 
 end function
 
-'':::::
-private function hCallCtor _
-	( _
-		byval sym as FBSYMBOL ptr, _
-		byval initree as ASTNODE ptr _
-	) as ASTNODE ptr
-
+private function hDefaultInit( byval sym as FBSYMBOL ptr ) as ASTNODE ptr
     '' static, shared (includes extern/public) or common? do nothing..
     if( (symbGetAttrib( sym ) and (FB_SYMBATTRIB_STATIC or _
        	 						   FB_SYMBATTRIB_SHARED or _
@@ -58,11 +52,6 @@ private function hCallCtor _
     end if
 
     '' local..
-
-   	'' initialized? do nothing..
-   	if( initree <> NULL ) then
-   		exit function
-   	end if
 
 	'' Do not initialize?
 	if( symbGetDontInit( sym ) ) then
@@ -93,11 +82,10 @@ private function hCallCtor _
 	                      astNewCONSTi( symbGetLen( sym ) * symbGetArrayElements( sym ) ) )
 end function
 
-'':::::
 function astNewDECL _
 	( _
 		byval sym as FBSYMBOL ptr, _
-		byval initree as ASTNODE ptr _
+		byval do_defaultinit as integer _
 	) as ASTNODE ptr
 
     dim as ASTNODE ptr n = any
@@ -106,10 +94,11 @@ function astNewDECL _
 	n = astNewNode( AST_NODECLASS_DECL, FB_DATATYPE_INVALID )
 
 	n->sym = sym
-	n->l = hCallCtor( sym, initree )
+	if( do_defaultinit ) then
+		n->l = hDefaultInit( sym )
+	end if
 
 	function = n
-
 end function
 
 function astLoadDECL( byval n as ASTNODE ptr ) as IRVREG ptr

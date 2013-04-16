@@ -82,7 +82,7 @@ sub cSelConstStmtBegin()
 
 	'' dim temp as uinteger = expr
 	sym = symbAddImplicitVar( FB_DATATYPE_UINT )
-	astAdd( astNewDECL( sym, expr ) )
+	astAdd( astNewDECL( sym, FALSE ) )
 	astAdd( astNewASSIGN( astNewVAR( sym ), expr, AST_OPOPT_ISINI ) )
 
 	'' Silence "branch crossing" warnings; once we've jumped into a CASE,

@@ -32,7 +32,7 @@ private function hAllocTmpArrayDesc _
 
 
 	'' declare
-	tree = astNewDECL( desc, symbGetTypeIniTree( desc ) )
+	tree = astNewDECL( desc, (symbGetTypeIniTree( desc ) = NULL) )
 
 	'' flush (see symbAddArrayDesc(), the desc can't never be static)
 	tree = astNewLINK( tree, _

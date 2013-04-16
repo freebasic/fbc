@@ -1234,7 +1234,7 @@ function symbAddProcResult( byval proc as FBSYMBOL ptr ) as FBSYMBOL ptr
 	proc->proc.ext->res = res
 
 	'' clear up the result
-	astAdd( astNewDECL( res, NULL ) )
+	astAdd( astNewDECL( res, TRUE ) )
 
 	symbSetIsDeclared( res )
 

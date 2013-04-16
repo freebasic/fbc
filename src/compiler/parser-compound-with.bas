@@ -43,7 +43,7 @@ sub cWithStmtBegin( )
 		''    dim temp as typeof( expr ) ptr = @expr
 		expr = astNewADDROF( expr )
 		sym = symbAddImplicitVar( astGetFullType( expr ), astGetSubType( expr ) )
-		astAdd( astNewDECL( sym, expr ) )  '' passing expr as initree, to prevent zero-initialization
+		astAdd( astNewDECL( sym, FALSE ) )
 		astAdd( astNewASSIGN( astNewVAR( sym ), expr ) )
 		is_ptr = TRUE
 	end if
