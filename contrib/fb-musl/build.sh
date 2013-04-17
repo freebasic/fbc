@@ -136,9 +136,10 @@ fi
 # and headers
 # (TODO: gcc should be built with proper --with-sysroot)
 sysroot=$toplevel/sysroot
+prefix=$sysroot/usr
 if [ ! -d $sysroot ]; then
-	mkdir -p $sysroot/usr
-	mv $toplevel/i486-linux-musl/i486-linux-musl/* $sysroot/usr
+	mkdir -p sysroot/usr
+	mv $toplevel/i486-linux-musl/i486-linux-musl/* $prefix
 	rmdir $toplevel/i486-linux-musl/i486-linux-musl
 	ln -s ../sysroot/usr $toplevel/i486-linux-musl/i486-linux-musl
 fi
@@ -254,10 +255,20 @@ my_build()
 			make install DESTDIR=$sysroot
 			;;
 
+		big_int-*)
+			cd $name/libbig_int
+			$CC $CPPFLAGS $CFLAGS -Wall -c -I include src/*.c src/low_level_funcs/*.c
+			ar rcs libbig_int.a *.o
+			cp libbig_int.a $prefix/lib
+			mkdir -p $prefix/include/big_int
+			cp include/*.h $prefix/include/big_int
+			cd ../..
+			;;
+
 		bzip2-*)
 			make libbz2.a CC="$CC" CFLAGS="-O2 -D_FILE_OFFSET_BITS=64"
-			cp bzlib.h $sysroot/usr/include
-			cp libbz2.a $sysroot/usr/lib
+			cp bzlib.h $prefix/include
+			cp libbz2.a $prefix/lib
 			;;
 
 		cairo-*)
@@ -282,7 +293,7 @@ my_build()
 				-DCMAKE_C_COMPILER="$CC" \
 				-DCMAKE_CXX_COMPILER="$CXX" \
 				-DCMAKE_INSTALL_PREFIX=/usr \
-				-DCMAKE_FIND_ROOT_PATH=$sysroot/usr \
+				-DCMAKE_FIND_ROOT_PATH=$prefix \
 				-DCMAKE_FIND_ROOT_PATH_MODE_LIBRARY=ONLY \
 				-DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=ONLY
 			make
@@ -292,7 +303,7 @@ my_build()
 		cryptlib-*)
 			make CPP="$CPP" CC="$CC" CXX="$CXX" LD="$LD" \
 				CFLAGS="-c -D__UNIX__ -DNDEBUG -I. -DNO_ADDRESS=NO_DATA -Werror-implicit-function-declaration"
-			cp libcl.a $sysroot/usr/lib
+			cp libcl.a $prefix/lib
 			;;
 
 		curl-*)
@@ -345,15 +356,15 @@ my_build()
 				CXX="$CXX -Werror-implicit-function-declaration" \
 				LD="$LD" \
 				CCC="$CXX -Werror-implicit-function-declaration" \
-				OGG_INCLUDE_DIR=$sysroot/usr/include \
-				OGG_LIB_DIR=$sysroot/usr/lib
+				OGG_INCLUDE_DIR=$prefix/include \
+				OGG_LIB_DIR=$prefix/lib
 
 			# libFLAC headers
-			mkdir -p $sysroot/usr/include/FLAC
-			cp include/FLAC/*.h $sysroot/usr/include/FLAC
+			mkdir -p $prefix/include/FLAC
+			cp include/FLAC/*.h $prefix/include/FLAC
 
 			# libFLAC.a
-			cp obj/release/lib/libFLAC.a $sysroot/usr/lib
+			cp obj/release/lib/libFLAC.a $prefix/lib
 
 			# flac.pc for pkg-config
 			sed	-e 's|@prefix@|/usr|g' \
@@ -362,7 +373,7 @@ my_build()
 				-e 's|@includedir@|${prefix}/include|g' \
 				-e 's|@VERSION@|1.2.1|g' \
 				src/libFLAC/flac.pc.in \
-				> $sysroot/usr/lib/pkgconfig/flac.pc
+				> $prefix/lib/pkgconfig/flac.pc
 			;;
 
 		ffmpeg-*)
@@ -396,8 +407,8 @@ my_build()
 		FreeImage-*)
 			unset CFLAGS
 			make -f Makefile.gnu libfreeimage.a  CC="$CC" CXX="$CXX"
-			cp Source/FreeImage.h $sysroot/usr/include
-			cp libfreeimage.a $sysroot/usr/lib
+			cp Source/FreeImage.h $prefix/include
+			cp libfreeimage.a $prefix/lib
 			;;
 
 		gettext-*)
@@ -421,7 +432,7 @@ my_build()
 			;;
 
 		glfw-*)
-			make x11 x11-install PREFIX=$sysroot/usr \
+			make x11 x11-install PREFIX=$prefix \
 				CC="$CC" \
 				CXX="$CXX" \
 				LD="$LD" \
@@ -464,7 +475,7 @@ my_build()
 
 		gpm-*)
 			# gpm header for FB rtlib build
-			cp src/headers/gpm.h $sysroot/usr/include
+			cp src/headers/gpm.h $prefix/include
 			;;
 
 		grx-*-con)
@@ -483,7 +494,7 @@ my_build()
 				CC="$CC" \
 				CXX="$CXX" \
 				LD="$LD"
-			cp lib/unix/libgrx20.a $sysroot/usr/lib
+			cp lib/unix/libgrx20.a $prefix/lib
 			;;
 
 		grx-*-X)
@@ -499,7 +510,7 @@ my_build()
 				CC="$CC" \
 				CXX="$CXX" \
 				LD="$LD"
-			cp lib/unix/libgrx20X.a $sysroot/usr/lib
+			cp lib/unix/libgrx20X.a $prefix/lib
 			;;
 
 		jasper-*)
@@ -604,15 +615,15 @@ my_build()
 		libmng-*)
 			make -f makefiles/makefile.linux libmng.a \
 				CC="$CC" \
-				prefix=$sysroot/usr \
-				ZLIBLIB=$sysroot/usr/lib \
-				ZLIBINC=$sysroot/usr/include \
-				JPEGLIB=$sysroot/usr/lib \
-				JPEGINC=$sysroot/usr/include \
-				LCMSLIB=$sysroot/usr/lib \
-				LCMSINC=$sysroot/usr/include
-			cp libmng.h libmng_conf.h libmng_types.h $sysroot/usr/include
-			cp libmng.a $sysroot/usr/lib
+				prefix=$prefix \
+				ZLIBLIB=$prefix/lib \
+				ZLIBINC=$prefix/include \
+				JPEGLIB=$prefix/lib \
+				JPEGINC=$prefix/include \
+				LCMSLIB=$prefix/lib \
+				LCMSINC=$prefix/include
+			cp libmng.h libmng_conf.h libmng_types.h $prefix/include
+			cp libmng.a $prefix/lib
 			;;
 
 		liboggz-*)
@@ -643,7 +654,7 @@ my_build()
 			#	DWEBP_LIBS='-lpng -lz' \
 			#	CWEBP_LIBS='-lpng -ltiff -ljpeg -llzma -lz'
 
-			LIBPNG_CONFIG="$sysroot/usr/bin/libpng-config --static" \
+			LIBPNG_CONFIG="$prefix/bin/libpng-config --static" \
 			./configure \
 				--host=i486-pc-linux-gnu \
 				--prefix=/usr \
@@ -662,9 +673,9 @@ my_build()
 				--without-debugger \
 				--without-python \
 				--without-crypto \
-				--with-libxml-prefix=$sysroot/usr \
-				--with-libxml-include-prefix=$sysroot/usr/include \
-				--with-libxml-libs-prefix=$sysroot/usr/lib
+				--with-libxml-prefix=$prefix \
+				--with-libxml-include-prefix=$prefix/include \
+				--with-libxml-libs-prefix=$prefix/lib
 			make
 			make install DESTDIR=$sysroot
 			;;
@@ -679,6 +690,14 @@ my_build()
 			make
 			make install DESTDIR=$sysroot
 			cd ../../..
+			;;
+
+		lua-*)
+			make linux install INSTALL_TOP=$prefix \
+				CC="$CC" \
+				MYCFLAGS="$CPPFLAGS $CFLAGS" \
+				MYLDFLAGS="$LDFLAGS" \
+				MYLIBS="-ltinfo"
 			;;
 
 		Mesa-*)
@@ -758,7 +777,7 @@ my_build()
 				-DCMAKE_C_COMPILER="$CC" \
 				-DCMAKE_CXX_COMPILER="$CXX" \
 				-DCMAKE_INSTALL_PREFIX=/usr \
-				-DCMAKE_FIND_ROOT_PATH=$sysroot/usr \
+				-DCMAKE_FIND_ROOT_PATH=$prefix \
 				-DCMAKE_FIND_ROOT_PATH_MODE_LIBRARY=ONLY \
 				-DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=ONLY \
 				-DLIBTYPE=STATIC
@@ -791,14 +810,14 @@ my_build()
 				--without-tcl \
 				--with-tifflib --with-zlib --with-pnglib
 			make pdflib CPPFLAGS="$CPPFLAGS" CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS"
-			make install prefix=$sysroot/usr
+			make install prefix=$prefix
 			cd ..
 			;;
 
 		QuickLZ-*)
 			$CC -Wall $CFLAGS -c quicklz.c
 			ar rcs libquicklz.a quicklz.o
-			cp libquicklz.a $sysroot/usr/lib
+			cp libquicklz.a $prefix/lib
 			;;
 
 		SDL-*)
@@ -847,7 +866,7 @@ my_build()
 				-DCMAKE_C_COMPILER="$CC" \
 				-DCMAKE_CXX_COMPILER="$CXX" \
 				-DCMAKE_INSTALL_PREFIX=/usr \
-				-DCMAKE_FIND_ROOT_PATH=$sysroot/usr \
+				-DCMAKE_FIND_ROOT_PATH=$prefix \
 				-DBUILD_STATIC_LIBS=ON
 			make
 			make install DESTDIR=$sysroot
@@ -907,8 +926,8 @@ my_build()
 		         `find sysroot/usr/bin -type f -name "*-config"`; do
 
 			cat $f | sed \
-				-e "s:$sysroot/usr:/usr:g" \
-				-e "s:/usr:$sysroot/usr:g" \
+				-e "s:$prefix:/usr:g" \
+				-e "s:/usr:$prefix:g" \
 				> $f.tmp
 
 			# Overwrite original with temp file, preserve executable bit
@@ -956,8 +975,8 @@ my_work()
 # `pkg-config --cflags foo` which would return something like
 # "-I/usr/include/foo", allowing foo's custom include dir to be found.
 #
-# It should produce "-I$sysroot/usr/include/foo" though, since we want libs
-# to find their dependencies in our $sysroot/usr, not in the host system's
+# It should produce "-I$prefix/include/foo" though, since we want libs
+# to find their dependencies in our $prefix, not in the host system's
 # /usr dir, because
 #  a) we're building (even "cross-compiling") for musl libc, not the native
 #     system which is typically glibc, thus most binaries will be incompatible
@@ -969,7 +988,7 @@ my_work()
 #     and distribute all of them)
 #
 # For pkg-config we can set some environment variables to prevent it from
-# searching in host system dirs and return the proper dirs in $sysroot/usr
+# searching in host system dirs and return the proper dirs in $prefix
 # despite the .pc files there containing only the /usr prefix (due to the
 # packages being built with --prefix=/usr), this covers queries such as
 # `pkg-config --cflags foo`.
@@ -1020,8 +1039,8 @@ export PATH="$toplevel/path:$toplevel/i486-linux-musl/bin:$PATH"
 
 # Prevent pkg-config from looking in host system's dirs
 export PKG_CONFIG_DIR=
-export PKG_CONFIG_PATH=$sysroot/usr/lib/pkgconfig:$sysroot/usr/share/pkgconfig
-export PKG_CONFIG_LIBDIR=$sysroot/usr/lib
+export PKG_CONFIG_PATH=$prefix/lib/pkgconfig:$prefix/share/pkgconfig
+export PKG_CONFIG_LIBDIR=$prefix/lib
 
 # Let pkg-config prepend $sysroot to most returned paths
 export PKG_CONFIG_SYSROOT_DIR=$sysroot
@@ -1058,11 +1077,12 @@ my_work expat-2.1.0     expat-2.1.0.tar.gz       "http://sourceforge.net/project
 my_work pcre-8.32       pcre-8.32.tar.bz2        "ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/pcre-8.32.tar.bz2"
 my_work tre-0.8.0       tre-0.8.0.tar.bz2        "http://laurikari.net/tre/tre-0.8.0.tar.bz2"
 my_work gdsl-1.6        gdsl-1.6.tar.gz          "http://download.gna.org/gdsl/gdsl-1.6.tar.gz"
-my_work gmp-5.1.1       gmp-5.1.1.tar.lz         "ftp://ftp.gmplib.org/pub/gmp-5.1.1/gmp-5.1.1.tar.lz"
+my_work gmp-5.1.1       gmp-5.1.1.tar.xz         "ftp://ftp.gmplib.org/pub/gmp/gmp-5.1.1.tar.xz"
 my_work gsl-1.15        gsl-1.15.tar.gz          "ftp://ftp.gnu.org/gnu/gsl/gsl-1.15.tar.gz"
 my_work CUnit-2.1-2     CUnit-2.1-2-src.tar.bz2  "http://downloads.sourceforge.net/cunit/CUnit-2.1-2-src.tar.bz2?download"
 my_work aspell-0.60.6.1 aspell-0.60.6.1.tar.gz   "ftp://ftp.gnu.org/gnu/aspell/aspell-0.60.6.1.tar.gz"
 my_work cryptlib-3.4.2  cl342.zip                "ftp://ftp.franken.de/pub/crypt/cryptlib/cl342.zip"
+my_work big_int-1.0.7   big_int-1.0.7.tgz        "http://pecl.php.net/get/big_int-1.0.7.tgz"
 
 # X protocol headers and libs needed for the libX11 etc. builds
 my_work util-macros-1.17      util-macros-1.17.tar.bz2     "http://ftp.x.org/pub/individual/util/util-macros-1.17.tar.bz2"
@@ -1103,6 +1123,7 @@ my_work glfw-2.7.7       glfw-2.7.7.tar.bz2       "http://sourceforge.net/projec
 my_work ncurses-5.9      ncurses-5.9.tar.gz       "http://ftp.gnu.org/pub/gnu/ncurses/ncurses-5.9.tar.gz"
 my_work gpm-1.20.7       gpm-1.20.7.tar.bz2       "http://www.nico.schottelius.org/software/gpm/archives/gpm-1.20.7.tar.bz2"
 my_work libcaca-0.99.beta18 libcaca-0.99.beta18.tar.gz "http://caca.zoy.org/files/libcaca/libcaca-0.99.beta18.tar.gz"
+my_work readline-6.2     readline-6.2.tar.gz      "ftp://ftp.gnu.org/gnu/readline/readline-6.2.tar.gz"
 
 # curl
 my_work c-ares-1.9.1       c-ares-1.9.1.tar.gz        "http://c-ares.haxx.se/download/c-ares-1.9.1.tar.gz"
@@ -1173,6 +1194,7 @@ my_work gdbm-1.10           gdbm-1.10.tar.gz            "ftp://ftp.gnu.org/gnu/g
 #my_work postgresql-9.2.4    postgresql-9.2.4.tar.bz2    "http://ftp.postgresql.org/pub/source/v9.2.4/postgresql-9.2.4.tar.bz2"
 #my_work sqlite-autoconf-3071601 sqlite-autoconf-3071601.tar.gz "http://sqlite.org/2013/sqlite-autoconf-3071601.tar.gz"
 
+my_work lua-5.2.2           lua-5.2.2.tar.gz            "http://www.lua.org/ftp/lua-5.2.2.tar.gz"
 #my_work SpiderMonkey-17.0.0 mozjs17.0.0.tar.gz          "http://ftp.mozilla.org/pub/mozilla.org/js/mozjs17.0.0.tar.gz"
 #my_work json-c-0.9          json-c-0.9.tar.gz           "http://oss.metaparadigm.com/json-c/json-c-0.9.tar.gz"
 #my_work cgi-util-2.2.1      cgi-util-2.2.1.tar.gz       "ftp://ftp.tuxpaint.org/unix/www/cgi-util/cgi-util-2.2.1.tar.gz"
@@ -1241,7 +1263,7 @@ echo "ENABLE_STANDALONE := 1" >  config.mk
 echo "CC := $toplevel/i486-linux-musl/bin/i486-linux-musl-gcc" >> config.mk
 echo "CFLAGS := -O2 -D_GNU_SOURCE" >> config.mk
 echo "CFLAGS += `pkg-config --cflags libffi`" >> config.mk
-echo "CFLAGS += `$sysroot/usr/bin/ncurses5-config --cflags`" >> config.mk
+echo "CFLAGS += `$prefix/bin/ncurses5-config --cflags`" >> config.mk
 echo "CFLAGS += -DPTHREAD_MUTEX_RECURSIVE_NP=PTHREAD_MUTEX_RECURSIVE" >> config.mk
 make
 cd ..
