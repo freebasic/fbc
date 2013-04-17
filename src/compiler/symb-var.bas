@@ -498,17 +498,12 @@ end function
 '' - not marked with FB_SYMBATTRIB_TEMP, so the var will be destroyed properly
 ''   at scope breaks in the current scope, and at the end of the current scope
 '' - just like a user-defined variable, just with an auto-generated name
-'' - no FB_SYMBOPT_UNSCOPE allowed though, that could cause it to be destroyed
-''   at scope breaks even before the current scope is reached, due to the lack
-''   of FB_SYMBATTRIB_TEMP; but that would only work if the initialization code
-''   is moved to the top of the procedure ("unscoped") too, which callers of
-''   this function currently do not do, since the var is intended to live in the
-''   current scope.
 '' - ditto regarding symbGetProcStaticLocals()
 function symbAddImplicitVar _
 	( _
 		byval dtype as integer, _
-		byval subtype as FBSYMBOL ptr _
+		byval subtype as FBSYMBOL ptr, _
+		byval options as integer _
 	) as FBSYMBOL ptr
 
 	static as FBARRAYDIM dTB(0)
@@ -518,7 +513,7 @@ function symbAddImplicitVar _
 	assert( typeGetDtAndPtrOnly( dtype ) <> FB_DATATYPE_WCHAR )
 
 	function = symbAddVar( symbUniqueId( ), NULL, dtype, subtype, 0, 0, _
-	                       dTB(), 0, 0 )
+	                       dTB(), 0, options )
 end function
 
 function symbAddAndAllocateTempVar( byval dtype as integer ) as FBSYMBOL ptr

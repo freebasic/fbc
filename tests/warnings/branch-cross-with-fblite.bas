@@ -7,7 +7,7 @@ end type
 dim x as UDT
 dim px as UDT ptr = @x
 
-#print "WITH, 1 warning:"
+#print "no warnings:"
 
 goto with1:
 with *px

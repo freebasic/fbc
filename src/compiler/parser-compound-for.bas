@@ -203,27 +203,36 @@ private sub hScalarNext _
 
 end sub
 
-'':::::
-private function hAllocTemp _
+private function hAddImplicitVar _
 	( _
 		byval dtype as integer, _
-		byval subtype as FBSYMBOL ptr _
+		byval subtype as FBSYMBOL ptr = NULL _
 	) as FBSYMBOL ptr
 
 	dim as FBSYMBOL ptr s = any
+	dim as integer options = any
 
-	'' dim temp as dtype = any
-	s = symbAddImplicitVar( dtype, subtype )
+	options = 0
 
-	'' Add DECL node for it, so the C backend can emit it correctly
-	'' (vars not marked as temp must have DECL nodes instead)
-	symbSetDontInit( s )
-	astAdd( astNewDECL( s, TRUE ) )
+	'' Move the implicit var to procedure-level if the lang mode requests it
+	'' (to prevent the stack memory from being re-used by other locals,
+	'' allowing for "random" GOTOs/GOSUBs in and out of FOR loops)
+	if( fbLangOptIsSet( FB_LANG_OPT_SCOPE ) = FALSE ) then
+		options or= FB_SYMBOPT_UNSCOPE
+	end if
 
-    function = s
+	'' dim temp as dtype
+	s = symbAddImplicitVar( dtype, subtype, options )
+
+	if( options and FB_SYMBOPT_UNSCOPE ) then
+		astAddUnscoped( astNewDECL( s, TRUE ) )
+	else
+		astAdd( astNewDECL( s, FALSE ) )
+	end if
+
+	function = s
 end function
 
-'':::::
 private function hStoreTemp _
 	( _
 		byval dtype as integer, _
@@ -234,7 +243,7 @@ private function hStoreTemp _
 	'' This function creates a temporary symbol,
 	'' which then has the expression 'expr' stored
 	'' into it. The symbol is returned.
-	dim as FBSYMBOL ptr s = hAllocTemp( dtype, subtype )
+	dim as FBSYMBOL ptr s = hAddImplicitVar( dtype, subtype )
 
     '' expr is assigned into the symbol
 	expr = astNewASSIGN( astNewVAR( s ), expr )
@@ -526,7 +535,7 @@ private sub hForTo _
 	else
 
 		'' generate a symbol using the expression's type
-		stk->for.end.sym = hAllocTemp( dtype, subtype )
+		stk->for.end.sym = hAddImplicitVar( dtype, subtype )
 		stk->for.end.dtype = symbGetType( stk->for.end.sym )
 
 		'' build constructor call
@@ -664,7 +673,7 @@ private sub hForStep _
 
 		if( stk->for.explicit_step ) then
 			'' generate a symbol using the expression's type
-			stk->for.stp.sym = hAllocTemp( dtype, subtype )
+			stk->for.stp.sym = hAddImplicitVar( dtype, subtype )
 			stk->for.stp.dtype = symbGetType( stk->for.stp.sym )
 
 			'' build constructor call
@@ -708,7 +717,7 @@ private sub hForStep _
 			cmp.value.int = 0
 		end select
 
-		stk->for.ispos.sym = symbAddTempVar( FB_DATATYPE_INTEGER )
+		stk->for.ispos.sym = hAddImplicitVar( FB_DATATYPE_INTEGER )
 		stk->for.ispos.dtype = FB_DATATYPE_INTEGER
 
         '' rhs = STEP >= 0

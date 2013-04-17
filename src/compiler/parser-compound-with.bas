@@ -13,7 +13,7 @@ sub cWithStmtBegin( )
 	static as FBARRAYDIM dTB(0)
 	dim as FBSYMBOL ptr sym = any
 	dim as ASTNODE ptr expr = any
-	dim as integer is_ptr = any
+	dim as integer is_ptr = any, options = any
 	dim as FB_CMPSTMTSTK ptr stk = any
 
 	'' WITH
@@ -42,9 +42,22 @@ sub cWithStmtBegin( )
 		'' for accesses from inside the WITH block)
 		''    dim temp as typeof( expr ) ptr = @expr
 		expr = astNewADDROF( expr )
-		sym = symbAddImplicitVar( astGetFullType( expr ), astGetSubType( expr ) )
-		astAdd( astNewDECL( sym, FALSE ) )
-		astAdd( astNewASSIGN( astNewVAR( sym ), expr ) )
+
+		options = 0
+		if( fbLangOptIsSet( FB_LANG_OPT_SCOPE ) = FALSE ) then
+			options or= FB_SYMBOPT_UNSCOPE
+		end if
+
+		sym = symbAddImplicitVar( astGetFullType( expr ), astGetSubType( expr ), options )
+
+		if( options and FB_SYMBOPT_UNSCOPE ) then
+			astAddUnscoped( astNewDECL( sym, TRUE ) )
+			astAdd( astNewASSIGN( astNewVAR( sym ), expr ) )
+		else
+			astAdd( astNewDECL( sym, FALSE ) )
+			astAdd( astNewASSIGN( astNewVAR( sym ), expr, AST_OPOPT_ISINI ) )
+		end if
+
 		is_ptr = TRUE
 	end if
 

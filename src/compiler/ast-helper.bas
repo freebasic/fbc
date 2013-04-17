@@ -42,7 +42,8 @@ end function
 function astBuildFakeWstringAssign _
 	( _
 		byval sym as FBSYMBOL ptr, _
-		byval expr as ASTNODE ptr _
+		byval expr as ASTNODE ptr, _
+		byval options as integer _
 	) as ASTNODE ptr
 
 	dim as ASTNODE ptr t = any
@@ -63,10 +64,8 @@ function astBuildFakeWstringAssign _
 		FALSE )
 
 	'' *wcharptr = expr
-	'' Using AST_OPOPT_ISINI to get a WstrAssign() immediately, because this
-	'' can be nested in an IIF node, causing astOptAssignment() to miss it
 	t = astNewLINK( t, _
-		astNewASSIGN( astBuildFakeWstringAccess( sym ), expr, AST_OPOPT_ISINI ), _
+		astNewASSIGN( astBuildFakeWstringAccess( sym ), expr, options ), _
 		FALSE )
 
 	function = t

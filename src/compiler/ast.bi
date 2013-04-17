@@ -1066,7 +1066,8 @@ declare function astBuildFakeWstringAccess( byval sym as FBSYMBOL ptr ) as ASTNO
 declare function astBuildFakeWstringAssign _
 	( _
 		byval sym as FBSYMBOL ptr, _
-		byval expr as ASTNODE ptr _
+		byval expr as ASTNODE ptr, _
+		byval options as integer = 0 _
 	) as ASTNODE ptr
 
 declare function astBuildVarField _

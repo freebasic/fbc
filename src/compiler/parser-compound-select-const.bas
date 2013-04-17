@@ -34,6 +34,7 @@ sub cSelConstStmtBegin()
     dim as ASTNODE ptr expr
 	dim as FBSYMBOL ptr sym, el, cl
 	dim as FB_CMPSTMTSTK ptr stk
+	dim as integer options = any
 
 	'' Open outer scope (perhaps not really needed, but done to match the
 	'' normal SELECT CASE, also the scope might help with stack usage)
@@ -80,16 +81,26 @@ sub cSelConstStmtBegin()
 	el = symbAddLabel( NULL, FB_SYMBOPT_NONE )
 	cl = symbAddLabel( NULL, FB_SYMBOPT_NONE )
 
-	'' dim temp as uinteger = expr
-	sym = symbAddImplicitVar( FB_DATATYPE_UINT )
-	astAdd( astNewDECL( sym, FALSE ) )
-	astAdd( astNewASSIGN( astNewVAR( sym ), expr, AST_OPOPT_ISINI ) )
+	options = 0
+	if( fbLangOptIsSet( FB_LANG_OPT_SCOPE ) = FALSE ) then
+		options or= FB_SYMBOPT_UNSCOPE
+	end if
 
-	'' Silence "branch crossing" warnings; once we've jumped into a CASE,
-	'' the temp var won't be accessed anymore anyways (not even for clean up
-	'' at scope breaks, since it's just a UINTEGER that doesn't have a
-	'' destructor), so there is no point showing the warning in this case.
+	'' dim temp as uinteger = expr
+	sym = symbAddImplicitVar( FB_DATATYPE_UINT, NULL, options )
+
+	'' a) Don't bother clearing the temp var, it's just an integer
+	'' b) Silence "branch crossing" warnings, the temp var won't be
+	''    accessed anymore once a CASE was entered anyways
 	symbSetDontInit( sym )
+
+	if( options and FB_SYMBOPT_UNSCOPE ) then
+		astAddUnscoped( astNewDECL( sym, TRUE ) )
+		astAdd( astNewASSIGN( astNewVAR( sym ), expr ) )
+	else
+		astAdd( astNewDECL( sym, FALSE ) )
+		astAdd( astNewASSIGN( astNewVAR( sym ), expr, AST_OPOPT_ISINI ) )
+	end if
 
 	'' skip the statements
 	astAdd( astNewBRANCH( AST_OP_JMP, cl ) )

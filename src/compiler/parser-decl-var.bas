@@ -1481,21 +1481,18 @@ function cVarDecl _
     		dim as ASTNODE ptr var_decl = NULL
 
 			'' not declared already?
-    		if( is_decl = FALSE ) then
-    			'' don't init it if it's a temp FOR var, it
-    			'' will have the start condition put into it...
-    			if( is_fordecl ) then
-   					symbSetDontInit( sym )
-    			end if
-
-				var_decl = astNewDECL( sym, (initree = NULL) )
+			if( is_decl = FALSE ) then
+				'' Don't init if it's a temp FOR var, it will
+				'' have the start condition put into it.
+				var_decl = astNewDECL( sym, _
+						((initree = NULL) and (not is_fordecl)) )
 
 				'' add the descriptor too, if any
 				desc = symbGetArrayDescriptor( sym )
 				if( desc <> NULL ) then
 					var_decl = astNewLINK( var_decl, astNewDECL( desc, (symbGetTypeIniTree( desc ) = NULL) ) )
 				end if
-    		end if
+			end if
 
 			'' handle arrays (must be done after adding the decl node)
 

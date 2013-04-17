@@ -8,7 +8,7 @@ dim x as UDT
 dim px as UDT __ptr
 px = @x
 
-#print "WITH, 1 warning:"
+#print "no warnings:"
 
 goto with1:
 __with *px

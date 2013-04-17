@@ -43,7 +43,7 @@ end sub
 '' SelectStatement  =  SELECT CASE (AS CONST)? Expression .
 sub cSelectStmtBegin( )
     dim as ASTNODE ptr expr = any
-    dim as integer dtype = any
+	dim as integer dtype = any, options = any
 	dim as FBSYMBOL ptr sym = any, el = any, subtype = any
 	dim as FB_CMPSTMTSTK ptr stk = any
 
@@ -115,53 +115,59 @@ sub cSelectStmtBegin( )
 			dtype = FB_DATATYPE_STRING
 		end select
 
+		options = 0
+		if( fbLangOptIsSet( FB_LANG_OPT_SCOPE ) = FALSE ) then
+			options or= FB_SYMBOPT_UNSCOPE
+		end if
+
 		'' not a wstring?
 		if( typeGet( dtype ) <> FB_DATATYPE_WCHAR ) then
 			'' dim temp as dtype = expr
-			sym = symbAddImplicitVar( dtype, subtype )
-			astAdd( astNewDECL( sym, FALSE ) )
-			astAdd( astNewASSIGN( astNewVAR( sym ), expr, AST_OPOPT_ISINI ) )
+			sym = symbAddImplicitVar( dtype, subtype, options )
 
-			'' Silence "branch crossing" warnings for simple temp vars,
-			'' i.e. anything except FBSTRINGs. UDTs aren't allowed
-			'' in SELECT anyways, so no need to worry about their
-			'' destructors. That leaves dynamic strings.
-			''
-			'' Using GOTO to jump above the SELECT CASE header, and
-			'' into a CASE block, must cause a "branch crossing"
-			'' error if it skips over a temp string initialization,
-			'' because there will be fb_StrDelete() (destructor)
-			'' calls at scope breaks, which mustn't be done on an
-			'' uninitialized string var.
-			''
-			'' For integers & co it's no problem though to skip the
-			'' SELECT CASE header and into a CASE, because once
-			'' we've jumped into a CASE, the integer temp var won't
-			'' be accessed anymore. (it doesn't have a dtor)
-			'' In that case normally a "branch crossing" warning
-			'' would be shown (just a warning, not an error, because
-			'' integers are simple, not "objects"), but we can
-			'' silence it since nothing bad could happen anyways.
-			'' (as long as there is no further access to the SELECT
-			'' temp var. I.e. when adding a feature that would break
-			'' these assumptions, then this should be changed to
-			'' show the warning)
+			'' Only need to clear if it's a string because of the
+			'' fb_StrDelete() calls at scope breaks; integers don't
+			'' have clean up, and UDTs aren't supported anyways.
+			'' This also silences the "branch crossing" warnings for
+			'' integers, they aren't needed since integer vars won't
+			'' be accessed anymore once a CASE body was reached,
+			'' unlike string temp vars and their fb_StrDelete().
 			if( typeGet( dtype ) <> FB_DATATYPE_STRING ) then
 				symbSetDontInit( sym )
 			end if
+
+			if( options and FB_SYMBOPT_UNSCOPE ) then
+				'' Clear at procedure-level if needed,
+				'' and do a normal assignment here
+				astAddUnscoped( astNewDECL( sym, TRUE ) )
+				astAdd( astNewASSIGN( astNewVAR( sym ), expr ) )
+			else
+				astAdd( astNewDECL( sym, FALSE ) )
+				astAdd( astNewASSIGN( astNewVAR( sym ), expr, AST_OPOPT_ISINI ) )
+			end if
 		else
-			'' the wstring must be allocated() but size
-			'' is unknown at compile-time, do:
+			'' The wstring expression must be copied into a
+			'' dynamically allocated buffer, just like with string
+			'' expressions, so it can be preserved for comparison
+			'' at every CASE.
 
 			'' dim temp as wstring ptr = expr
-			sym = symbAddImplicitVar( typeAddrOf( FB_DATATYPE_WCHAR ) )
+			sym = symbAddImplicitVar( typeAddrOf( FB_DATATYPE_WCHAR ), NULL, options )
 
-			'' Mark it as "dynamic wstring" so it will be deallocated with
-			'' WstrFree() at scope breaks/end
+			'' Mark it as "dynamic wstring" so it will be
+			'' deallocated with fb_WstrDelete() at scope breaks
 			symbSetIsWstring( sym )
 
-			astAdd( astNewDECL( sym, FALSE ) )
-			astAdd( astBuildFakeWstringAssign( sym, expr ) )
+			if( options and FB_SYMBOPT_UNSCOPE ) then
+				'' Clear the pointer at procedure-level,
+				'' and do a normal assignment here
+				astAddUnscoped( astNewDECL( sym, TRUE ) )
+				astAdd( astBuildFakeWstringAssign( sym, expr ) )
+			else
+				'' Just the assignment, used as initializer
+				astAdd( astNewDECL( sym, FALSE ) )
+				astAdd( astBuildFakeWstringAssign( sym, expr, AST_OPOPT_ISINI ) )
+			end if
 		end if
 	end if
 
