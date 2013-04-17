@@ -34,6 +34,11 @@ private function ppExpression( ) as integer
 	expr = cExpression( )
 	fbSetIsPP( FALSE )
 
+	if( expr = NULL ) then
+		errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
+		expr = astNewCONSTi( 0 )
+	end if
+
 	'' String literals evaluate to FALSE
 	if( astGetStrLitSymbol( expr ) <> NULL ) then
 		expr = astNewCONSTi( 0 )
