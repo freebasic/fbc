@@ -1,40 +1,45 @@
-LIBRARY     ILUT.DLL
-
+LIBRARY ILUT.dll
 EXPORTS
-    ilutConvertToHBitmap           @1   
-    ilutDisable                    @2   
-    ilutEnable                     @3   
-    ilutFreePaddedData             @4   
-    ilutGLBindMipmaps              @5   
-    ilutGLBindTexImage             @6   
-    ilutGLBuildMipmaps             @7   
-    ilutGLLoadImage                @8   
-    ilutGLSaveImage                @9   
-    ilutGLScreen                   @10  
-    ilutGLScreenie                 @11  
-    ilutGLSetTex                   @12  
-    ilutGLTexImage                 @13  
-    ilutGetBmpInfo                 @14  
-    ilutGetBoolean                 @15  
-    ilutGetBooleanv                @16  
-    ilutGetHPal                    @17  
-    ilutGetInteger                 @18  
-    ilutGetIntegerv                @19  
-    ilutGetPaddedData              @20  
-    ilutGetString                  @21  
-    ilutGetWinClipboard            @22  
-    ilutInit                       @23  
-    ilutIsDisabled                 @24  
-    ilutIsEnabled                  @25  
-    ilutLoadResource               @26  
-    ilutPopAttrib                  @27  
-    ilutPushAttrib                 @28  
-    ilutRenderer                   @29  
-    ilutSetHBitmap                 @30  
-    ilutSetHPal                    @31  
-    ilutSetInteger                 @32  
-    ilutSetWinClipboard            @33  
-    ilutWinLoadImage               @34  
-    ilutWinLoadUrl                 @35  
-    ilutWinPrint                   @36  
-    ilutWinSaveImage               @37  
+ilutConvertSliceToHBitmap DATA
+ilutConvertToHBitmap DATA
+ilutDisable DATA
+ilutEnable DATA
+ilutFreePaddedData DATA
+ilutGLBindMipmaps DATA
+ilutGLBindTexImage DATA
+ilutGLBuildMipmaps DATA
+ilutGLLoadImage DATA
+ilutGLSaveImage DATA
+ilutGLScreen DATA
+ilutGLScreenie DATA
+ilutGLSetTex DATA
+ilutGLSetTex2D DATA
+ilutGLSetTex3D DATA
+ilutGLSubTex DATA
+ilutGLSubTex2D DATA
+ilutGLSubTex3D DATA
+ilutGLTexImage DATA
+ilutGetBmpInfo DATA
+ilutGetBoolean DATA
+ilutGetBooleanv DATA
+ilutGetHPal DATA
+ilutGetInteger DATA
+ilutGetIntegerv DATA
+ilutGetPaddedData DATA
+ilutGetString DATA
+ilutGetWinClipboard DATA
+ilutInit DATA
+ilutIsDisabled DATA
+ilutIsEnabled DATA
+ilutLoadResource DATA
+ilutPopAttrib DATA
+ilutPushAttrib DATA
+ilutRenderer DATA
+ilutSetHBitmap DATA
+ilutSetHPal DATA
+ilutSetInteger DATA
+ilutSetWinClipboard DATA
+ilutWinLoadImage DATA
+ilutWinLoadUrl DATA
+ilutWinPrint DATA
+ilutWinSaveImage DATA

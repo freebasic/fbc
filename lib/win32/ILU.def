@@ -1,50 +1,52 @@
-LIBRARY     ILU.DLL
-
+LIBRARY ILU.dll
 EXPORTS
-    iluAlienify                    @1   
-    iluBlurAvg                     @2   
-    iluBlurGaussian                @3   
-    iluBuildMipmaps                @4   
-    iluColoursUsed                 @5   
-    iluCompareImage                @6   
-    iluContrast                    @7   
-    iluCrop                        @8   
-    iluDeleteImage                 @9   
-    iluEdgeDetectE                 @10  
-    iluEdgeDetectP                 @11  
-    iluEdgeDetectS                 @12  
-    iluEmboss                      @13  
-    iluEnlargeCanvas               @14  
-    iluEnlargeImage                @15  
-    iluEqualize                    @16  
-    iluErrorString                 @17  
-    iluFlipImage                   @18  
-    iluGammaCorrect                @19  
-    iluGenImage                    @20  
-    iluGetImageInfo                @21  
-    iluGetInteger                  @22  
-    iluGetIntegerv                 @23  
-    iluGetString                   @24  
-    iluImageParameter              @25  
-    iluInit                        @26  
-    iluInvertAlpha                 @27  
-    iluLoadImage                   @28  
-    iluMirror                      @29  
-    iluNegative                    @30  
-    iluNoisify                     @31  
-    iluPixelize                    @32  
-    iluRegionfv                    @33  
-    iluRegioniv                    @34  
-    iluReplaceColour               @35  
-    iluRotate                      @38  
-    iluRotate3D                    @36  
-    iluRotate3D_                   @37  
-    iluRotate_                     @39  
-    iluSaturate1f                  @40  
-    iluSaturate4f                  @41  
-    iluScale                       @42  
-    iluScaleColours                @43  
-    iluScale_                      @44  
-    iluSharpen                     @45  
-    iluSwapColours                 @46  
-    iluWave                        @47  
+iluAlienify DATA
+iluBlurAvg DATA
+iluBlurGaussian DATA
+iluBuildMipmaps DATA
+iluColoursUsed DATA
+iluCompareImage DATA
+iluContrast DATA
+iluConvolution DATA
+iluCrop DATA
+iluDeleteImage DATA
+iluEdgeDetectE DATA
+iluEdgeDetectP DATA
+iluEdgeDetectS DATA
+iluEmboss DATA
+iluEnlargeCanvas DATA
+iluEnlargeImage DATA
+iluEqualize DATA
+iluErrorString DATA
+iluFlipImage DATA
+iluGammaCorrect DATA
+iluGenImage DATA
+iluGetImageInfo DATA
+iluGetInteger DATA
+iluGetIntegerv DATA
+iluGetString DATA
+iluImageParameter DATA
+iluInit DATA
+iluInvertAlpha DATA
+iluLoadImage DATA
+iluMirror DATA
+iluNegative DATA
+iluNoisify DATA
+iluPixelize DATA
+iluRegionfv DATA
+iluRegioniv DATA
+iluReplaceColour DATA
+iluRotate DATA
+iluRotate3D DATA
+iluRotate3D_ DATA
+iluRotate_ DATA
+iluSaturate1f DATA
+iluSaturate4f DATA
+iluScale DATA
+iluScaleAlpha DATA
+iluScaleColours DATA
+iluScale_ DATA
+iluSetLanguage DATA
+iluSharpen DATA
+iluSwapColours DATA
+iluWave DATA
