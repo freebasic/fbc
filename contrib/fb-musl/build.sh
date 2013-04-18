@@ -235,7 +235,7 @@ my_build()
 
 		cd $name
 
-		export CPPFLAGS=" -D_GNU_SOURCE"
+		export CPPFLAGS="-D_GNU_SOURCE"
 		export CFLAGS="-O2 -Werror-implicit-function-declaration"
 		export CXXFLAGS="-O2"
 		export CPP="$toplevel/i486-linux-musl/bin/i486-linux-musl-cpp"
@@ -773,6 +773,8 @@ my_build()
 			;;
 
 		openal-soft-*)
+			# Add -DNDEBUG to disable some assert()s
+			export CFLAGS="-DNDEBUG -O2 -Werror-implicit-function-declaration"
 			cmake . \
 				-DCMAKE_C_COMPILER="$CC" \
 				-DCMAKE_CXX_COMPILER="$CXX" \
