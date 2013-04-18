@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 set -e
 
 toplevel="$PWD"
@@ -1277,9 +1277,9 @@ cp $binutilsname-build/binutils/ar  musl-fbc/bin/linux/ar
 cp $binutilsname-build/ld/ld-new    musl-fbc/bin/linux/ld
 
 # Copy in the libraries
-cp i486-linux-musl/lib/gcc/i486-linux-musl/4.7.2/*.o  musl-fbc/lib/linux
-cp i486-linux-musl/lib/gcc/i486-linux-musl/4.7.2/*.a  musl-fbc/lib/linux
-cp sysroot/usr/lib/*.o            musl-fbc/lib/linux
+cp i486-linux-musl/lib/gcc/i486-linux-musl/4.7.2/crt{begin,end}.o  musl-fbc/lib/linux
+cp i486-linux-musl/lib/gcc/i486-linux-musl/4.7.2/*.a               musl-fbc/lib/linux
+cp sysroot/usr/lib/crt{1,i,n}.o   musl-fbc/lib/linux
 cp sysroot/usr/lib/*.a            musl-fbc/lib/linux
 
 # Create empty libgcc_eh.a archive, to prevent ld error, because fbc currently
