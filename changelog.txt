@@ -221,6 +221,7 @@ Version 0.25.0:
 - -lang qb/fblite: "EXIT SUB/FUNCTION" above a "SELECT CASE string" tried to destroy an uninitialized string variable
 - BSAVE was returning "file not found" errors on invalid arguments instead of "illegal function call" errors
 - Sub calls were allowing the optional parentheses to start after the first argument, e.g. 'foo a, (b, c)'
+- #668: Internal compiler error on lines such as "END SUB : SUB foo( )" (one procedure closed, and a new one opened, in the same line) when compiling with -g
 
 
 Version 0.24.0:
