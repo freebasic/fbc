@@ -6,6 +6,7 @@
 ''
 
 #include "mydll.bi"
+#inclib "mydll"
 
 randomize( timer( ) )
 
