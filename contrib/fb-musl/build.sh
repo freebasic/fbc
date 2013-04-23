@@ -1100,7 +1100,7 @@ my_work libelf-0.8.13     libelf-0.8.13.tar.gz     "http://www.mr511.de/software
 
 # compression
 my_work zlib-1.2.7     zlib-1.2.7.tar.bz2     "http://prdownloads.sourceforge.net/libpng/zlib-1.2.7.tar.bz2?download"
-my_work libzip-0.10.1  libzip-0.10.1.tar.bz2  "http://www.nih.at/libzip/libzip-0.10.1.tar.bz2"
+my_work libzip-0.11    libzip-0.11.tar.xz     "http://www.nih.at/libzip/libzip-0.11.tar.xz"
 my_work xz-5.0.4       xz-5.0.4.tar.xz        "http://tukaani.org/xz/xz-5.0.4.tar.xz"
 my_work bzip2-1.0.6    bzip2-1.0.6.tar.gz     "http://www.bzip.org/1.0.6/bzip2-1.0.6.tar.gz"
 my_work lzo-2.06       lzo-2.06.tar.gz        "http://www.oberhumer.com/opensource/lzo/download/lzo-2.06.tar.gz"
