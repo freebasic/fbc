@@ -1,0 +1,13 @@
+--- Source/OpenEXR/IlmImf/ImfAutoArray.h.orig	2013-03-22 15:23:18.228066937 +0100
++++ Source/OpenEXR/IlmImf/ImfAutoArray.h	2013-03-22 15:22:03.591696764 +0100
+@@ -46,6 +46,10 @@
+ 
+ #include "OpenEXRConfig.h"
+ 
++#if !defined (HAVE_LARGE_STACK)
++#include <cstring>  // for memset() below
++#endif
++
+ namespace Imf {
+ 
+ 

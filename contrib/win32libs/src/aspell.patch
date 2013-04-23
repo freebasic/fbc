@@ -1,0 +1,10 @@
+--- common/file_util.cpp.orig	2013-04-08 23:07:44 +0000
++++ common/file_util.cpp	2013-04-08 23:07:47 +0000
+@@ -13,6 +13,7 @@
+ #include "fstream.hpp"
+ #include "errors.hpp"
+ #include "string_list.hpp"
++#include "asc_ctype.hpp"
+ 
+ #ifdef USE_FILE_LOCKS
+ #  include <fcntl.h>
