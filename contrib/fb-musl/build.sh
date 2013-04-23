@@ -179,10 +179,13 @@ my_patch()
 		FreeImage-*)
 			patch -p0 < ../src/freeimage.patch
 			;;
-		gd-*)
+		gd-2.0.33)
 			patch -p0 < ../src/gd.patch
 			rm configure.in
 			autoreconf
+			;;
+		gd-73cab5d8af96)
+			autoreconf -fi
 			;;
 		glib-*)
 			patch -p1 < ../src/glib.patch
@@ -421,7 +424,7 @@ my_build()
 			make install DESTDIR=$sysroot
 			;;
 
-		gd-*)
+		gd-2.0.33)
 			LIBS="-lbz2 -lexpat -lxcb -lXau -lXdmcp -pthread -ldl -lm" \
 			./configure \
 				--host=i486-pc-linux-gnu \
@@ -429,6 +432,35 @@ my_build()
 				--disable-shared --enable-static
 			make
 			make install DESTDIR=$sysroot
+			;;
+
+		gd-73cab5d8af96)
+			LIBS="-llzma -lexpat -lbz2 -lz -lX11 -lxcb -lXau" \
+			./configure \
+				--host=i486-pc-linux-gnu \
+				--prefix=/usr \
+				--disable-shared --enable-static \
+				--with-zlib=$prefix \
+				--with-png=$prefix \
+				--with-freetype=$prefix \
+				--with-fontconfig=$prefix \
+				--with-jpeg=$prefix \
+				--with-xpm=$prefix \
+				--with-tiff=$prefix
+			make
+			make install DESTDIR=$sysroot
+
+			#cmake . \
+			#	-DENABLE_PNG=1 -DENABLE_JPEG=1 -DENABLE_TIFF=1 \
+			#	-DENABLE_XPM=1 -DENABLE_FREETYPE=1 -DENABLE_WEBP=1 \
+			#	-DCMAKE_C_COMPILER="$CC" \
+			#	-DCMAKE_CXX_COMPILER="$CXX" \
+			#	-DCMAKE_INSTALL_PREFIX=/usr \
+			#	-DCMAKE_FIND_ROOT_PATH=$prefix \
+			#	-DCMAKE_FIND_ROOT_PATH_MODE_LIBRARY=ONLY \
+			#	-DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=ONLY
+			#make
+			#make install DESTDIR=$sysroot
 			;;
 
 		glfw-*)
@@ -1151,13 +1183,14 @@ my_work libmng-1.0.10  libmng-1.0.10.tar.bz2 "http://sourceforge.net/projects/li
 my_work jasper-1.900.1 jasper-1.900.1.zip    "http://www.ece.uvic.ca/~frodo/jasper/software/jasper-1.900.1.zip"
 my_work DevIL-1.7.8    DevIL-1.7.8.tar.gz    "http://downloads.sourceforge.net/openil/DevIL-1.7.8.tar.gz"
 my_work FreeImage-3.15.4  FreeImage3154.zip  "http://sourceforge.net/projects/freeimage/files/Source%20Distribution/3.15.4/FreeImage3154.zip/download"
-my_work gd-2.0.33      GD_2_0_33.tar.bz2     "https://bitbucket.org/pierrejoye/gd-libgd/get/GD_2_0_33.tar.bz2"
 my_work pixman-0.28.2  pixman-0.28.2.tar.gz  "http://cairographics.org/releases/pixman-0.28.2.tar.gz"
 my_work cairo-1.12.14  cairo-1.12.14.tar.xz  "http://cairographics.org/releases/cairo-1.12.14.tar.xz"
 my_work grx-2.4.9-con  grx249.tar.gz         "http://grx.gnu.de/download/grx249.tar.gz"
 my_work grx-2.4.9-X    grx249.tar.gz         "http://grx.gnu.de/download/grx249.tar.gz"
 my_work libwebp-0.3.0  libwebp-0.3.0.tar.gz  "https://webp.googlecode.com/files/libwebp-0.3.0.tar.gz"
 my_work pdflib-4.0.2   pdflib-4.0.2-src.zip  "http://sourceforge.net/projects/gnuwin32/files/pdflib-lite/4.0.2/pdflib-4.0.2-src.zip/download"
+#my_work gd-2.0.33      GD_2_0_33.tar.bz2     "https://bitbucket.org/pierrejoye/gd-libgd/get/GD_2_0_33.tar.bz2"
+my_work gd-73cab5d8af96  gd-73cab5d8af96.zip  "https://bitbucket.org/libgd/gd-libgd/get/73cab5d8af96.zip"
 
 my_work glib-2.34.3    glib-2.34.3.tar.xz    "http://ftp.gnome.org/pub/gnome/sources/glib/2.34/glib-2.34.3.tar.xz"
 
