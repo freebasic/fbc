@@ -1207,7 +1207,7 @@ my_work lua-5.2.2           lua-5.2.2.tar.gz            "http://www.lua.org/ftp/
 # Build a set of binutils, statically linked against musl libc, using the
 # i486-linux-musl toolchain, for the standalone FB setup
 
-binutilsname=binutils-2.23.1
+binutilsname=binutils-2.23.2
 binutilstarball=$binutilsname.tar.bz2
 
 my_fetch  $binutilstarball  http://ftp.gnu.org/gnu/binutils/$binutilstarball
