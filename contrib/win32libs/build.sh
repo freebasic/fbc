@@ -101,14 +101,8 @@ my_patch()
 		FreeImage-*)
 			patch -p0 < ../src/FreeImage.patch
 			;;
-		gd-e07ba7cfa9ed)
-			#mv config src
-			#mv test src
-			patch -p0 < ../src/gd.patch
-			#cd src
-			#./bootstrap.sh
-			#autoreconf
-			#cd ..
+		gd-73cab5d8af96)
+			patch -p0 < ../src/gd-73cab5d8af96.patch
 			;;
 		giflib*)
 			patch -p0 < ../src/giflib.patch
@@ -261,23 +255,13 @@ my_build()
 			cp Dist/FreeImage.lib $prefix/lib/libFreeImage.dll.a
 			;;
 
-		gd-*)
-			#cd src
-			#export CFLAGS="$CFLAGS -DBGDWIN32"
-			#./configure $confargs
-			#make
-			#make install
-			#cd ..
-
+		gd-73cab5d8af96)
 			cmake . -G "MSYS Makefiles" \
 				-DENABLE_PNG=1 -DENABLE_JPEG=1 -DENABLE_TIFF=1 \
 				-DCMAKE_INSTALL_PREFIX=$prefix \
 				-DCMAKE_FIND_ROOT_PATH=$prefix \
 				-DCMAKE_FIND_ROOT_PATH_MODE_LIBRARY=ONLY \
 				-DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=ONLY
-
-				#-DZLIB_INCLUDE_DIR:PATH=$prefix/include \
-				#-DPNG_PNG_INCLUDE_DIR:PATH=$prefix/include
 			make
 			make install
 			;;
@@ -693,7 +677,7 @@ my_work libmng-1.0.10-dll    libmng-1.0.10.tar.bz2 "http://sourceforge.net/proje
 #my_work DevIL-1.7.8    DevIL-1.7.8.tar.gz    "http://downloads.sourceforge.net/openil/DevIL-1.7.8.tar.gz"
 my_work FreeImage-3.15.4-static  FreeImage3154.zip  "http://sourceforge.net/projects/freeimage/files/Source%20Distribution/3.15.4/FreeImage3154.zip/download"
 my_work FreeImage-3.15.4-dll     FreeImage3154.zip  "http://sourceforge.net/projects/freeimage/files/Source%20Distribution/3.15.4/FreeImage3154.zip/download"
-my_work gd-e07ba7cfa9ed gd-e07ba7cfa9ed.zip  "--no-check-certificate https://bitbucket.org/pierrejoye/gd-libgd/get/e07ba7cfa9ed.zip"
+my_work gd-73cab5d8af96  gd-73cab5d8af96.zip  "--no-check-certificate https://bitbucket.org/libgd/gd-libgd/get/73cab5d8af96.zip"
 #my_work pixman-0.28.2  pixman-0.28.2.tar.gz  "http://cairographics.org/releases/pixman-0.28.2.tar.gz"
 #my_work cairo-1.12.14  cairo-1.12.14.tar.xz  "http://cairographics.org/releases/cairo-1.12.14.tar.xz"
 
