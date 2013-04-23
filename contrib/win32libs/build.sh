@@ -116,6 +116,9 @@ my_patch()
 		libxslt-*)
 			patch -p0 < ../src/libxslt.patch
 			;;
+		TinyPTC-Windows-*)
+			patch -p1 < ../src/TinyPTC-Windows.patch
+			;;
 		tinyxml2-*)
 			patch -p0 < ../src/tinyxml2.patch
 			;;
@@ -545,6 +548,11 @@ my_build()
 			cp *.a $prefix/lib
 			;;
 
+		TinyPTC-Windows-*)
+			make CFLAGS="-I. $CPPFLAGS $CFLAGS -I../../../src/rtlib -I../../../src/rtlib/win32 -I../../../src/gfxlib2"
+			cp *.a $prefix/lib
+			;;
+
 		tinyxml2-*)
 			cmake . -G "MSYS Makefiles" -DCMAKE_INSTALL_PREFIX=$prefix -DBUILD_STATIC_LIBS=ON
 			make
@@ -605,6 +613,8 @@ my_work()
 }
 
 export PATH=$prefix/bin:$PATH
+
+my_work TinyPTC-Windows-0.8 TinyPTC-Windows-0.8.zip "http://sourceforge.net/projects/tinyptc/files/Windows%20Version/TinyPTC%20Windows%200.8/TinyPTC-Windows-0.8.zip/download"
 
 my_work libffi-3.0.12    libffi-3.0.12.tar.gz     "ftp://sourceware.org/pub/libffi/libffi-3.0.12.tar.gz"
 #my_work libjit-749e162d71eb295ff1e195cd4fd78f345c325773  libjit-749e162d71eb295ff1e195cd4fd78f345c325773.tar.gz  "http://git.savannah.gnu.org/cgit/libjit.git/snapshot/libjit-749e162d71eb295ff1e195cd4fd78f345c325773.tar.gz"
