@@ -2,7 +2,7 @@
 '' GD library test
 ''
 
-#include once "gd/gd.bi"
+#include once "gd.bi"
 
 enum
 	FORMAT_GIF
