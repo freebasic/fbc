@@ -215,6 +215,9 @@ my_patch()
 		libxml2-*)
 			patch -p0 < ../src/libxml2.patch
 			;;
+		libXxf86dga-*)
+			patch -p0 < ../src/libXxf86dga.patch
+			;;
 		libzen-*)
 			patch -p0 < ../src/libzen.patch
 			;;
@@ -250,7 +253,8 @@ my_build()
 		case $name in
 		util-macros-*|xproto-*|xextproto-*|renderproto-*|\
 		randrproto-*|kbproto-*|inputproto-*|xtrans-*|\
-		xcb-proto-*|dri2proto-*|xtrans-*)
+		xcb-proto-*|dri2proto-*|xtrans-*|\
+		xf86dgaproto-*|xf86vidmodeproto-*|videoproto-*)
 			./configure \
 				--host=i486-pc-linux-gnu \
 				--prefix=/usr
@@ -894,6 +898,15 @@ my_build()
 			make install DESTDIR=$sysroot
 			;;
 
+		TinyPTC-X11-*)
+			touch .depend
+			make CC="$CC" CPP="$CPP" LD="$CC" \
+				CFLAGS="$CFLAGS -Wall -Wno-unknown-pragmas -Os" \
+				INCLUDES="" \
+				LIBS="-lX11 -lXext -lXxf86dga -lXxf86vm -lXv -lxcb -lXau"
+			cp libtinyptc.a $prefix/lib
+			;;
+
 		tinyxml2-*)
 			unset LDFLAGS
 			cmake . \
@@ -1129,6 +1142,9 @@ my_work inputproto-2.3        inputproto-2.3.tar.bz2       "http://ftp.x.org/pub
 my_work xtrans-1.2.7          xtrans-1.2.7.tar.bz2         "http://ftp.x.org/pub/individual/lib/xtrans-1.2.7.tar.bz2"
 my_work xcb-proto-1.8         xcb-proto-1.8.tar.bz2        "http://xcb.freedesktop.org/dist/xcb-proto-1.8.tar.bz2"
 my_work dri2proto-2.8         dri2proto-2.8.tar.bz2        "http://xorg.freedesktop.org/releases/individual/proto/dri2proto-2.8.tar.bz2"
+my_work xf86dgaproto-2.1      xf86dgaproto-2.1.tar.bz2     "http://ftp.x.org/pub/individual/proto/xf86dgaproto-2.1.tar.bz2"
+my_work xf86vidmodeproto-2.3.1 xf86vidmodeproto-2.3.1.tar.bz2 "http://ftp.x.org/pub/individual/proto/xf86vidmodeproto-2.3.1.tar.bz2"
+my_work videoproto-2.3.1      videoproto-2.3.1.tar.bz2     "http://ftp.x.org/pub/individual/proto/videoproto-2.3.1.tar.bz2"
 
 # X11 libs, headers needed to build the rtlib, libs for FB programs
 # (more or less in order of dependencies)
@@ -1145,6 +1161,9 @@ my_work libXrender-0.9.7 libXrender-0.9.7.tar.bz2 "http://ftp.x.org/pub/individu
 my_work libXrandr-1.3.2  libXrandr-1.3.2.tar.bz2  "http://ftp.x.org/pub/individual/lib/libXrandr-1.3.2.tar.bz2"
 my_work libXi-1.7        libXi-1.7.tar.bz2        "http://ftp.x.org/pub/individual/lib/libXi-1.7.tar.bz2"
 my_work libXdmcp-1.1.1   libXdmcp-1.1.1.tar.bz2   "http://ftp.x.org/pub/individual/lib/libXdmcp-1.1.1.tar.bz2"
+my_work libXxf86dga-1.1.3 libXxf86dga-1.1.3.tar.bz2 "http://ftp.x.org/pub/individual/lib/libXxf86dga-1.1.3.tar.bz2"
+my_work libXxf86vm-1.1.2 libXxf86vm-1.1.2.tar.bz2 "http://ftp.x.org/pub/individual/lib/libXxf86vm-1.1.2.tar.bz2"
+my_work libXv-1.0.7      libXv-1.0.7.tar.bz2      "http://ftp.x.org/pub/individual/lib/libXv-1.0.7.tar.bz2"
 
 # GL
 my_work libpciaccess-0.13.1  libpciaccess-0.13.1.tar.gz  "ftp://ftp.freedesktop.org/pub/xorg/individual/lib/libpciaccess-0.13.1.tar.bz2"
@@ -1158,6 +1177,8 @@ my_work ncurses-5.9      ncurses-5.9.tar.gz       "http://ftp.gnu.org/pub/gnu/nc
 my_work gpm-1.20.7       gpm-1.20.7.tar.bz2       "http://www.nico.schottelius.org/software/gpm/archives/gpm-1.20.7.tar.bz2"
 my_work libcaca-0.99.beta18 libcaca-0.99.beta18.tar.gz "http://caca.zoy.org/files/libcaca/libcaca-0.99.beta18.tar.gz"
 my_work readline-6.2     readline-6.2.tar.gz      "ftp://ftp.gnu.org/gnu/readline/readline-6.2.tar.gz"
+
+my_work TinyPTC-X11-0.7.3 TinyPTC-X11-0.7.3.tar.bz2 "http://sourceforge.net/projects/tinyptc/files/X11%20Version/0.7.3/TinyPTC-X11-0.7.3.tar.bz2/download"
 
 # curl
 my_work c-ares-1.9.1       c-ares-1.9.1.tar.gz        "http://c-ares.haxx.se/download/c-ares-1.9.1.tar.gz"
