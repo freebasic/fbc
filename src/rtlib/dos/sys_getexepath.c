@@ -51,7 +51,7 @@ char *fb_hGetExePath( char *dst, int maxlen )
 
 	p = strrchr( dst, '\\' );
 	if( p != NULL )
-		*p = '\0';
+		*(p + 1) = '\0';
 
 	/* upcase drive letter to be consistent with win32 port */
 	dst[0] = toupper( dst[0] );

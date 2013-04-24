@@ -6,7 +6,7 @@ char *fb_hGetExePath( char *dst, int maxlen )
 {
 	const char *p = strrchr( __fb_ctx.argv[0], '/' );
 	if( p ) {
-		int len = p - __fb_ctx.argv[0];
+		int len = p + 1 - __fb_ctx.argv[0];
 		if( len > maxlen ) {
 			len = maxlen;
 		}

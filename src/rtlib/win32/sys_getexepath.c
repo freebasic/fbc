@@ -9,7 +9,7 @@ char *fb_hGetExePath( char *dst, int maxlen )
 
 	char *p = strrchr( dst, '\\' );
 	if( p != NULL )
-		*p = '\0';
+		*(p + 1) = '\0';
 	else
 		dst[0] = '\0';
 

@@ -16,7 +16,7 @@ char *fb_hGetExePath( char *dst, int maxlen )
 		dst[len] = '\0';
 		p = strrchr(dst, '/');
 		if (p)
-			*p = '\0';
+			*(p + 1) = '\0';
 		else
 			dst[0] = '\0';
 	} else {
