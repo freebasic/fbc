@@ -888,6 +888,13 @@ my_build()
 			make install DESTDIR=$sysroot
 			;;
 
+		sqlite-*)
+			$CC -Wall $CPPFLAGS $CFLAGS -c sqlite3.c
+			ar rcs libsqlite3.a sqlite3.o
+			cp *.h $prefix/include
+			cp *.a $prefix/lib
+			;;
+
 		tiff-*)
 			LIBS="-lX11 -lxcb -lXau" \
 			./configure \
@@ -1248,7 +1255,7 @@ my_work openal-soft-1.15.1  openal-soft-1.15.1.tar.bz2  "http://kcat.strangesoft
 my_work gdbm-1.10           gdbm-1.10.tar.gz            "ftp://ftp.gnu.org/gnu/gdbm/gdbm-1.10.tar.gz"
 #my_work mysql-5.6.10        mysql-5.6.10.tar.gz         "http://www.mysql.com/get/Downloads/MySQL-5.6/mysql-5.6.10.tar.gz/from/http://cdn.mysql.com/"
 #my_work postgresql-9.2.4    postgresql-9.2.4.tar.bz2    "http://ftp.postgresql.org/pub/source/v9.2.4/postgresql-9.2.4.tar.bz2"
-#my_work sqlite-autoconf-3071601 sqlite-autoconf-3071601.tar.gz "http://sqlite.org/2013/sqlite-autoconf-3071601.tar.gz"
+my_work sqlite-3071601      sqlite-amalgamation-3071601.zip    "http://sqlite.org/2013/sqlite-amalgamation-3071601.zip"
 
 my_work lua-5.2.2           lua-5.2.2.tar.gz            "http://www.lua.org/ftp/lua-5.2.2.tar.gz"
 #my_work SpiderMonkey-17.0.0 mozjs17.0.0.tar.gz          "http://ftp.mozilla.org/pub/mozilla.org/js/mozjs17.0.0.tar.gz"
