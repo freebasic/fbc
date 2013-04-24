@@ -15,8 +15,10 @@ char *fb_hGetExePath( char *dst, int maxlen )
 		/* Linux-like proc fs is available */
 		dst[len] = '\0';
 		p = strrchr(dst, '/');
-		if (p)
+		if (p == dst) /* keep the "/" rather than returning "" */
 			*(p + 1) = '\0';
+		else if (p)
+			*p = '\0';
 		else
 			dst[0] = '\0';
 	} else {

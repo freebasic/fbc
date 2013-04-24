@@ -9,9 +9,16 @@ char *fb_hGetExePath( char *dst, int maxlen )
 
 	char *p = strrchr( dst, '\\' );
 	if( p != NULL )
-		*(p + 1) = '\0';
+		*p = '\0';
 	else
 		dst[0] = '\0';
+
+	/* just a drive letter? make sure \ follows to prevent using relative path */
+	if( maxlen > 3 && dst[2] == '\0' && dst[1] == ':' && isalpha(dst[0]) )
+	{
+		dst[2] = '\\';
+		dst[3] = '\0';
+	}
 
 	return p;
 }
