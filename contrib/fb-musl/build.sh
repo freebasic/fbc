@@ -1117,7 +1117,7 @@ my_work QuickLZ-1.5.0 QuickLZ-1.5.0.tar.gz unused
 
 # xml, regex, math, util
 my_work tinyxml2-master tinyxml2-master.zip      "https://github.com/leethomason/tinyxml2/archive/master.zip"
-my_work mxml-2.7        mxml-2.7.tar.gz          "http://ftp.easysw.com/pub/mxml/2.7/mxml-2.7.tar.gz"
+my_work mxml-2.7        mxml-2.7.tar.gz          "http://www.msweet.org/files/project3/mxml-2.7.tar.gz"
 my_work libxml2-2.9.0   libxml2-2.9.0.tar.gz     "ftp://xmlsoft.org/libxml2/libxml2-2.9.0.tar.gz"
 my_work libxslt-1.1.28  libxslt-1.1.28.tar.gz    "ftp://xmlsoft.org/libxml2/libxslt-1.1.28.tar.gz"
 my_work expat-2.1.0     expat-2.1.0.tar.gz       "http://sourceforge.net/projects/expat/files/expat/2.1.0/expat-2.1.0.tar.gz/download"
