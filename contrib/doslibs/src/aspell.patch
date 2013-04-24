@@ -1,0 +1,10 @@
+--- common/lock.hpp.orig	2013-04-24 17:40:03.931205316 +0200
++++ common/lock.hpp	2013-04-24 17:40:05.583213441 +0200
+@@ -16,6 +16,7 @@
+ #define DISTRIBNET_LOCK__HPP
+ 
+ #include <assert.h>
++#include <stddef.h>
+ 
+ #include "settings.h"
+ 

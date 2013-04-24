@@ -1,0 +1,77 @@
+--- xmlIO.c.orig	2013-04-24 04:47:20.519578589 +0200
++++ xmlIO.c	2013-04-24 04:46:19.000000000 +0200
+@@ -212,7 +212,7 @@
+     "unknown address familly",	/* EAFNOSUPPORT */
+ };
+ 
+-#if defined(_WIN32) || defined (__DJGPP__) && !defined (__CYGWIN__)
++#if defined(_WIN32) && !defined (__CYGWIN__)
+ /**
+  * __xmlIOWin32UTF8ToWChar:
+  * @u8String:  uft-8 string
+@@ -592,6 +592,7 @@
+ 
+ #if defined(_WIN32) || defined (__DJGPP__) && !defined (__CYGWIN__)
+ 
++#ifndef __DJGPP__
+ /**
+  *  xmlWrapOpenUtf8:
+  * @path:  the path in utf-8 encoding
+@@ -618,7 +619,9 @@
+ 
+     return fd;
+ }
++#endif
+ 
++#ifndef __DJGPP__
+ #ifdef HAVE_ZLIB_H
+ static gzFile
+ xmlWrapGzOpenUtf8(const char *path, const char *mode)
+@@ -646,7 +649,9 @@
+     return fd;
+ }
+ #endif
++#endif
+ 
++#ifndef __DJGPP__
+ /**
+  *  xmlWrapStatUtf8:
+  * @path:  the path in utf-8 encoding
+@@ -676,6 +681,7 @@
+     return -1;
+ #endif
+ }
++#endif
+ 
+ /**
+  *  xmlWrapOpenNative:
+@@ -726,11 +732,12 @@
+ xmlInitPlatformSpecificIo(void)
+ {
+     static int xmlPlatformIoInitialized = 0;
+-    OSVERSIONINFO osvi;
+ 
+     if(xmlPlatformIoInitialized)
+       return;
+ 
++#ifndef __DJGPP__
++    OSVERSIONINFO osvi;
+     osvi.dwOSVersionInfoSize = sizeof(osvi);
+ 
+     if(GetVersionEx(&osvi) && (osvi.dwPlatformId == VER_PLATFORM_WIN32_NT)) {
+@@ -740,12 +747,15 @@
+       xmlWrapGzOpen = xmlWrapGzOpenUtf8;
+ #endif
+     } else {
++#endif
+       xmlWrapStat = xmlWrapStatNative;
+       xmlWrapOpen = xmlWrapOpenNative;
+ #ifdef HAVE_ZLIB_H
+       xmlWrapGzOpen = gzopen;
+ #endif
++#ifndef __DJGPP__
+     }
++#endif
+ 
+     xmlPlatformIoInitialized = 1;
+     return;
