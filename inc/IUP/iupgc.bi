@@ -9,9 +9,4 @@
 #ifndef __iupgc_bi__
 #define __iupgc_bi__
 
-extern "c"
-declare sub IupGetColorOpen ()
-declare function IupGetColor (byval x as integer, byval y as integer, byval r as ubyte ptr, byval g as ubyte ptr, byval b as ubyte ptr) as integer
-end extern
-
 #endif

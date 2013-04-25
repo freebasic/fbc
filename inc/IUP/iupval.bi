@@ -9,11 +9,4 @@
 #ifndef __iupval_bi__
 #define __iupval_bi__
 
-#define ICTL_SHOWTICKS "SHOWTICKS"
-
-extern "c"
-declare function IupVal (byval as zstring ptr) as Ihandle ptr
-declare sub IupValOpen ()
-end extern
-
 #endif
