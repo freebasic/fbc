@@ -6,35 +6,44 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __lua_lualib_bi__
-#define __lua_lualib_bi__
+#ifndef __lualib_bi__
+#define __lualib_bi__
 
-#include once "lua.bi"
-
-#define LUA_FILEHANDLE "FILE*"
 #define LUA_COLIBNAME "coroutine"
+
+declare function luaopen_coroutine cdecl alias "luaopen_coroutine" (byval L as lua_State ptr) as integer
+
 #define LUA_TABLIBNAME "table"
+
+declare function luaopen_table cdecl alias "luaopen_table" (byval L as lua_State ptr) as integer
+
 #define LUA_IOLIBNAME "io"
+
+declare function luaopen_io cdecl alias "luaopen_io" (byval L as lua_State ptr) as integer
+
 #define LUA_OSLIBNAME "os"
+
+declare function luaopen_os cdecl alias "luaopen_os" (byval L as lua_State ptr) as integer
+
 #define LUA_STRLIBNAME "string"
+
+declare function luaopen_string cdecl alias "luaopen_string" (byval L as lua_State ptr) as integer
+
+#define LUA_BITLIBNAME "bit32"
+
+declare function luaopen_bit32 cdecl alias "luaopen_bit32" (byval L as lua_State ptr) as integer
+
 #define LUA_MATHLIBNAME "math"
+
+declare function luaopen_math cdecl alias "luaopen_math" (byval L as lua_State ptr) as integer
+
 #define LUA_DBLIBNAME "debug"
+
+declare function luaopen_debug cdecl alias "luaopen_debug" (byval L as lua_State ptr) as integer
+
 #define LUA_LOADLIBNAME "package"
 
-extern "c"
-declare function luaopen_base (byval L as lua_State ptr) as integer
-declare function luaopen_table (byval L as lua_State ptr) as integer
-declare function luaopen_io (byval L as lua_State ptr) as integer
-declare function luaopen_os (byval L as lua_State ptr) as integer
-declare function luaopen_string (byval L as lua_State ptr) as integer
-declare function luaopen_math (byval L as lua_State ptr) as integer
-declare function luaopen_debug (byval L as lua_State ptr) as integer
-declare function luaopen_package (byval L as lua_State ptr) as integer
-declare sub luaL_openlibs (byval L as lua_State ptr)
-end extern
-
-#ifndef lua_assert
-#define lua_assert(x)
-#endif
+declare function luaopen_package cdecl alias "luaopen_package" (byval L as lua_State ptr) as integer
+declare sub luaL_openlibs cdecl alias "luaL_openlibs" (byval L as lua_State ptr)
 
 #endif
