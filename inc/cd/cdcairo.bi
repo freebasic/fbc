@@ -11,14 +11,28 @@
 
 #inclib "cdcairo"
 
-declare function cdContextCairoNativeWindow cdecl alias "cdContextCairoNativeWindow" () as cdContext ptr
-declare function cdContextCairoImage cdecl alias "cdContextCairoImage" () as cdContext ptr
-declare function cdContextCairoDBuffer cdecl alias "cdContextCairoDBuffer" () as cdContext ptr
-declare function cdContextCairoPrinter cdecl alias "cdContextCairoPrinter" () as cdContext ptr
-declare function cdContextCairoPS cdecl alias "cdContextCairoPS" () as cdContext ptr
-declare function cdContextCairoPDF cdecl alias "cdContextCairoPDF" () as cdContext ptr
-declare function cdContextCairoSVG cdecl alias "cdContextCairoSVG" () as cdContext ptr
-declare function cdContextCairoImageRGB cdecl alias "cdContextCairoImageRGB" () as cdContext ptr
-declare function cdContextCairoEMF cdecl alias "cdContextCairoEMF" () as cdContext ptr
+extern "C"
+
+declare function cdContextCairoNativeWindow () as cdContext ptr
+declare function cdContextCairoImage () as cdContext ptr
+declare function cdContextCairoDBuffer () as cdContext ptr
+declare function cdContextCairoPrinter () as cdContext ptr
+declare function cdContextCairoPS () as cdContext ptr
+declare function cdContextCairoPDF () as cdContext ptr
+declare function cdContextCairoSVG () as cdContext ptr
+declare function cdContextCairoImageRGB () as cdContext ptr
+declare function cdContextCairoEMF () as cdContext ptr
+
+end extern
+
+#define CD_CAIRO_NATIVEWINDOW cdContextCairoNativeWindow()
+#define CD_CAIRO_IMAGE cdContextCairoImage()
+#define CD_CAIRO_DBUFFER cdContextCairoDBuffer()
+#define CD_CAIRO_PRINTER cdContextCairoPrinter()
+#define CD_CAIRO_PS cdContextCairoPS()
+#define CD_CAIRO_PDF cdContextCairoPDF()
+#define CD_CAIRO_SVG cdContextCairoSVG()
+#define CD_CAIRO_IMAGERGB cdContextCairoImageRGB()
+#define CD_CAIRO_EMF cdContextCairoEMF()
 
 #endif

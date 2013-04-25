@@ -10,5 +10,6 @@
 #define __cdclipbd_bi__
 
 declare function cdContextClipboard cdecl alias "cdContextClipboard" () as cdContext ptr
+#define CD_CLIPBOARD cdContextClipboard()
 
 #endif

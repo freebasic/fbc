@@ -1,0 +1,4 @@
+LIBRARY iupluagl52.dll
+EXPORTS
+iupgllua_open
+luaopen_iupluagl

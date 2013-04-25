@@ -29,153 +29,174 @@ type _cdBitmap
 	type as integer
 	data as any ptr
 end type
-
 type cdBitmap as _cdBitmap
 
-declare function cdVersion cdecl alias "cdVersion" () as zstring ptr
-declare function cdVersionDate cdecl alias "cdVersionDate" () as zstring ptr
-declare function cdVersionNumber cdecl alias "cdVersionNumber" () as integer
-declare function cdCreateCanvas cdecl alias "cdCreateCanvas" (byval context as cdContext ptr, byval data as any ptr) as cdCanvas ptr
-declare function cdCreateCanvasf cdecl alias "cdCreateCanvasf" (byval context as cdContext ptr, byval format as zstring ptr, ...) as cdCanvas ptr
-declare sub cdKillCanvas cdecl alias "cdKillCanvas" (byval canvas as cdCanvas ptr)
-declare function cdCanvasGetContext cdecl alias "cdCanvasGetContext" (byval canvas as cdCanvas ptr) as cdContext ptr
-declare function cdCanvasActivate cdecl alias "cdCanvasActivate" (byval canvas as cdCanvas ptr) as integer
-declare sub cdCanvasDeactivate cdecl alias "cdCanvasDeactivate" (byval canvas as cdCanvas ptr)
-declare function cdUseContextPlus cdecl alias "cdUseContextPlus" (byval use as integer) as integer
-declare sub cdInitContextPlus cdecl alias "cdInitContextPlus" ()
-declare sub cdFinishContextPlus cdecl alias "cdFinishContextPlus" ()
+extern "C"
 
+'library
+declare function cdVersion () as zstring ptr
+declare function cdVersionDate () as zstring ptr
+declare function cdVersionNumber () as integer
+
+'canvas init
+declare function cdCreateCanvas (byval context as cdContext ptr, byval data_ as any ptr) as cdCanvas ptr
+declare function cdCreateCanvasf (byval context as cdContext ptr, byval format as zstring ptr, ...) as cdCanvas ptr
+declare sub cdKillCanvas (byval canvas as cdCanvas ptr)
+
+
+declare function cdCanvasGetContext (byval canvas as cdCanvas ptr) as cdContext ptr
+declare function cdCanvasActivate (byval canvas as cdCanvas ptr) as integer
+declare sub cdCanvasDeactivate (byval canvas as cdCanvas ptr)
+declare function cdUseContextPlus (byval use as integer) as integer
+declare sub cdInitContextPlus ()
+declare sub cdFinishContextPlus ()
+
+'context
 type cdCallback as function cdecl(byval as cdCanvas ptr, ...) as integer
 
-declare function cdContextRegisterCallback cdecl alias "cdContextRegisterCallback" (byval context as cdContext ptr, byval cb as integer, byval func as cdCallback) as integer
-declare function cdContextCaps cdecl alias "cdContextCaps" (byval context as cdContext ptr) as uinteger
-declare function cdContextIsPlus cdecl alias "cdContextIsPlus" (byval context as cdContext ptr) as integer
-declare function cdContextType cdecl alias "cdContextType" (byval context as cdContext ptr) as integer
-declare function cdCanvasSimulate cdecl alias "cdCanvasSimulate" (byval canvas as cdCanvas ptr, byval mode as integer) as integer
-declare sub cdCanvasFlush cdecl alias "cdCanvasFlush" (byval canvas as cdCanvas ptr)
-declare sub cdCanvasClear cdecl alias "cdCanvasClear" (byval canvas as cdCanvas ptr)
-declare function cdCanvasSaveState cdecl alias "cdCanvasSaveState" (byval canvas as cdCanvas ptr) as cdState ptr
-declare sub cdCanvasRestoreState cdecl alias "cdCanvasRestoreState" (byval canvas as cdCanvas ptr, byval state as cdState ptr)
-declare sub cdReleaseState cdecl alias "cdReleaseState" (byval state as cdState ptr)
-declare sub cdCanvasSetAttribute cdecl alias "cdCanvasSetAttribute" (byval canvas as cdCanvas ptr, byval name as zstring ptr, byval data as zstring ptr)
-declare sub cdCanvasSetfAttribute cdecl alias "cdCanvasSetfAttribute" (byval canvas as cdCanvas ptr, byval name as zstring ptr, byval format as zstring ptr, ...)
-declare function cdCanvasGetAttribute cdecl alias "cdCanvasGetAttribute" (byval canvas as cdCanvas ptr, byval name as zstring ptr) as zstring ptr
-declare function cdCanvasPlay cdecl alias "cdCanvasPlay" (byval canvas as cdCanvas ptr, byval context as cdContext ptr, byval xmin as integer, byval xmax as integer, byval ymin as integer, byval ymax as integer, byval data as any ptr) as integer
-declare sub cdCanvasGetSize cdecl alias "cdCanvasGetSize" (byval canvas as cdCanvas ptr, byval width as integer ptr, byval height as integer ptr, byval width_mm as double ptr, byval height_mm as double ptr)
-declare function cdCanvasUpdateYAxis cdecl alias "cdCanvasUpdateYAxis" (byval canvas as cdCanvas ptr, byval y as integer ptr) as integer
-declare function cdfCanvasUpdateYAxis cdecl alias "cdfCanvasUpdateYAxis" (byval canvas as cdCanvas ptr, byval y as double ptr) as double
-declare function cdCanvasInvertYAxis cdecl alias "cdCanvasInvertYAxis" (byval canvas as cdCanvas ptr, byval y as integer) as integer
-declare function cdfCanvasInvertYAxis cdecl alias "cdfCanvasInvertYAxis" (byval canvas as cdCanvas ptr, byval y as double) as double
-declare sub cdCanvasMM2Pixel cdecl alias "cdCanvasMM2Pixel" (byval canvas as cdCanvas ptr, byval mm_dx as double, byval mm_dy as double, byval dx as integer ptr, byval dy as integer ptr)
-declare sub cdCanvasPixel2MM cdecl alias "cdCanvasPixel2MM" (byval canvas as cdCanvas ptr, byval dx as integer, byval dy as integer, byval mm_dx as double ptr, byval mm_dy as double ptr)
-declare sub cdfCanvasMM2Pixel cdecl alias "cdfCanvasMM2Pixel" (byval canvas as cdCanvas ptr, byval mm_dx as double, byval mm_dy as double, byval dx as double ptr, byval dy as double ptr)
-declare sub cdfCanvasPixel2MM cdecl alias "cdfCanvasPixel2MM" (byval canvas as cdCanvas ptr, byval dx as double, byval dy as double, byval mm_dx as double ptr, byval mm_dy as double ptr)
-declare sub cdCanvasOrigin cdecl alias "cdCanvasOrigin" (byval canvas as cdCanvas ptr, byval x as integer, byval y as integer)
-declare sub cdfCanvasOrigin cdecl alias "cdfCanvasOrigin" (byval canvas as cdCanvas ptr, byval x as double, byval y as double)
-declare sub cdCanvasGetOrigin cdecl alias "cdCanvasGetOrigin" (byval canvas as cdCanvas ptr, byval x as integer ptr, byval y as integer ptr)
-declare sub cdfCanvasGetOrigin cdecl alias "cdfCanvasGetOrigin" (byval canvas as cdCanvas ptr, byval x as double ptr, byval y as double ptr)
-declare sub cdCanvasTransform cdecl alias "cdCanvasTransform" (byval canvas as cdCanvas ptr, byval matrix as double ptr)
-declare function cdCanvasGetTransform cdecl alias "cdCanvasGetTransform" (byval canvas as cdCanvas ptr) as double ptr
-declare sub cdCanvasTransformMultiply cdecl alias "cdCanvasTransformMultiply" (byval canvas as cdCanvas ptr, byval matrix as double ptr)
-declare sub cdCanvasTransformRotate cdecl alias "cdCanvasTransformRotate" (byval canvas as cdCanvas ptr, byval angle as double)
-declare sub cdCanvasTransformScale cdecl alias "cdCanvasTransformScale" (byval canvas as cdCanvas ptr, byval sx as double, byval sy as double)
-declare sub cdCanvasTransformTranslate cdecl alias "cdCanvasTransformTranslate" (byval canvas as cdCanvas ptr, byval dx as double, byval dy as double)
-declare sub cdCanvasTransformPoint cdecl alias "cdCanvasTransformPoint" (byval canvas as cdCanvas ptr, byval x as integer, byval y as integer, byval tx as integer ptr, byval ty as integer ptr)
-declare sub cdfCanvasTransformPoint cdecl alias "cdfCanvasTransformPoint" (byval canvas as cdCanvas ptr, byval x as double, byval y as double, byval tx as double ptr, byval ty as double ptr)
-declare function cdCanvasClip cdecl alias "cdCanvasClip" (byval canvas as cdCanvas ptr, byval mode as integer) as integer
-declare sub cdCanvasClipArea cdecl alias "cdCanvasClipArea" (byval canvas as cdCanvas ptr, byval xmin as integer, byval xmax as integer, byval ymin as integer, byval ymax as integer)
-declare function cdCanvasGetClipArea cdecl alias "cdCanvasGetClipArea" (byval canvas as cdCanvas ptr, byval xmin as integer ptr, byval xmax as integer ptr, byval ymin as integer ptr, byval ymax as integer ptr) as integer
-declare sub cdfCanvasClipArea cdecl alias "cdfCanvasClipArea" (byval canvas as cdCanvas ptr, byval xmin as double, byval xmax as double, byval ymin as double, byval ymax as double)
-declare function cdfCanvasGetClipArea cdecl alias "cdfCanvasGetClipArea" (byval canvas as cdCanvas ptr, byval xmin as double ptr, byval xmax as double ptr, byval ymin as double ptr, byval ymax as double ptr) as integer
-declare function cdCanvasIsPointInRegion cdecl alias "cdCanvasIsPointInRegion" (byval canvas as cdCanvas ptr, byval x as integer, byval y as integer) as integer
-declare sub cdCanvasOffsetRegion cdecl alias "cdCanvasOffsetRegion" (byval canvas as cdCanvas ptr, byval x as integer, byval y as integer)
-declare sub cdCanvasGetRegionBox cdecl alias "cdCanvasGetRegionBox" (byval canvas as cdCanvas ptr, byval xmin as integer ptr, byval xmax as integer ptr, byval ymin as integer ptr, byval ymax as integer ptr)
-declare function cdCanvasRegionCombineMode cdecl alias "cdCanvasRegionCombineMode" (byval canvas as cdCanvas ptr, byval mode as integer) as integer
-declare sub cdCanvasPixel cdecl alias "cdCanvasPixel" (byval canvas as cdCanvas ptr, byval x as integer, byval y as integer, byval color as integer)
-declare sub cdCanvasMark cdecl alias "cdCanvasMark" (byval canvas as cdCanvas ptr, byval x as integer, byval y as integer)
-declare sub cdCanvasBegin cdecl alias "cdCanvasBegin" (byval canvas as cdCanvas ptr, byval mode as integer)
-declare sub cdCanvasPathSet cdecl alias "cdCanvasPathSet" (byval canvas as cdCanvas ptr, byval action as integer)
-declare sub cdCanvasEnd cdecl alias "cdCanvasEnd" (byval canvas as cdCanvas ptr)
-declare sub cdCanvasLine cdecl alias "cdCanvasLine" (byval canvas as cdCanvas ptr, byval x1 as integer, byval y1 as integer, byval x2 as integer, byval y2 as integer)
-declare sub cdCanvasVertex cdecl alias "cdCanvasVertex" (byval canvas as cdCanvas ptr, byval x as integer, byval y as integer)
-declare sub cdCanvasRect cdecl alias "cdCanvasRect" (byval canvas as cdCanvas ptr, byval xmin as integer, byval xmax as integer, byval ymin as integer, byval ymax as integer)
-declare sub cdCanvasBox cdecl alias "cdCanvasBox" (byval canvas as cdCanvas ptr, byval xmin as integer, byval xmax as integer, byval ymin as integer, byval ymax as integer)
-declare sub cdCanvasArc cdecl alias "cdCanvasArc" (byval canvas as cdCanvas ptr, byval xc as integer, byval yc as integer, byval w as integer, byval h as integer, byval angle1 as double, byval angle2 as double)
-declare sub cdCanvasSector cdecl alias "cdCanvasSector" (byval canvas as cdCanvas ptr, byval xc as integer, byval yc as integer, byval w as integer, byval h as integer, byval angle1 as double, byval angle2 as double)
-declare sub cdCanvasChord cdecl alias "cdCanvasChord" (byval canvas as cdCanvas ptr, byval xc as integer, byval yc as integer, byval w as integer, byval h as integer, byval angle1 as double, byval angle2 as double)
-declare sub cdCanvasText cdecl alias "cdCanvasText" (byval canvas as cdCanvas ptr, byval x as integer, byval y as integer, byval s as zstring ptr)
-declare sub cdfCanvasLine cdecl alias "cdfCanvasLine" (byval canvas as cdCanvas ptr, byval x1 as double, byval y1 as double, byval x2 as double, byval y2 as double)
-declare sub cdfCanvasVertex cdecl alias "cdfCanvasVertex" (byval canvas as cdCanvas ptr, byval x as double, byval y as double)
-declare sub cdfCanvasRect cdecl alias "cdfCanvasRect" (byval canvas as cdCanvas ptr, byval xmin as double, byval xmax as double, byval ymin as double, byval ymax as double)
-declare sub cdfCanvasBox cdecl alias "cdfCanvasBox" (byval canvas as cdCanvas ptr, byval xmin as double, byval xmax as double, byval ymin as double, byval ymax as double)
-declare sub cdfCanvasArc cdecl alias "cdfCanvasArc" (byval canvas as cdCanvas ptr, byval xc as double, byval yc as double, byval w as double, byval h as double, byval angle1 as double, byval angle2 as double)
-declare sub cdfCanvasSector cdecl alias "cdfCanvasSector" (byval canvas as cdCanvas ptr, byval xc as double, byval yc as double, byval w as double, byval h as double, byval angle1 as double, byval angle2 as double)
-declare sub cdfCanvasChord cdecl alias "cdfCanvasChord" (byval canvas as cdCanvas ptr, byval xc as double, byval yc as double, byval w as double, byval h as double, byval angle1 as double, byval angle2 as double)
-declare sub cdfCanvasText cdecl alias "cdfCanvasText" (byval canvas as cdCanvas ptr, byval x as double, byval y as double, byval s as zstring ptr)
-declare sub cdCanvasSetBackground cdecl alias "cdCanvasSetBackground" (byval canvas as cdCanvas ptr, byval color as integer)
-declare sub cdCanvasSetForeground cdecl alias "cdCanvasSetForeground" (byval canvas as cdCanvas ptr, byval color as integer)
-declare function cdCanvasBackground cdecl alias "cdCanvasBackground" (byval canvas as cdCanvas ptr, byval color as integer) as integer
-declare function cdCanvasForeground cdecl alias "cdCanvasForeground" (byval canvas as cdCanvas ptr, byval color as integer) as integer
-declare function cdCanvasBackOpacity cdecl alias "cdCanvasBackOpacity" (byval canvas as cdCanvas ptr, byval opacity as integer) as integer
-declare function cdCanvasWriteMode cdecl alias "cdCanvasWriteMode" (byval canvas as cdCanvas ptr, byval mode as integer) as integer
-declare function cdCanvasLineStyle cdecl alias "cdCanvasLineStyle" (byval canvas as cdCanvas ptr, byval style as integer) as integer
-declare sub cdCanvasLineStyleDashes cdecl alias "cdCanvasLineStyleDashes" (byval canvas as cdCanvas ptr, byval dashes as integer ptr, byval count as integer)
-declare function cdCanvasLineWidth cdecl alias "cdCanvasLineWidth" (byval canvas as cdCanvas ptr, byval width as integer) as integer
-declare function cdCanvasLineJoin cdecl alias "cdCanvasLineJoin" (byval canvas as cdCanvas ptr, byval join as integer) as integer
-declare function cdCanvasLineCap cdecl alias "cdCanvasLineCap" (byval canvas as cdCanvas ptr, byval cap as integer) as integer
-declare function cdCanvasInteriorStyle cdecl alias "cdCanvasInteriorStyle" (byval canvas as cdCanvas ptr, byval style as integer) as integer
-declare function cdCanvasHatch cdecl alias "cdCanvasHatch" (byval canvas as cdCanvas ptr, byval style as integer) as integer
-declare sub cdCanvasStipple cdecl alias "cdCanvasStipple" (byval canvas as cdCanvas ptr, byval w as integer, byval h as integer, byval stipple as ubyte ptr)
-declare function cdCanvasGetStipple cdecl alias "cdCanvasGetStipple" (byval canvas as cdCanvas ptr, byval n as integer ptr, byval m as integer ptr) as ubyte ptr
-declare function cdCanvasGetPattern cdecl alias "cdCanvasGetPattern" (byval canvas as cdCanvas ptr, byval n as integer ptr, byval m as integer ptr) as integer ptr
-declare function cdCanvasFillMode cdecl alias "cdCanvasFillMode" (byval canvas as cdCanvas ptr, byval mode as integer) as integer
-declare function cdCanvasFont cdecl alias "cdCanvasFont" (byval canvas as cdCanvas ptr, byval type_face as zstring ptr, byval style as integer, byval size as integer) as integer
-declare sub cdCanvasGetFont cdecl alias "cdCanvasGetFont" (byval canvas as cdCanvas ptr, byval type_face as zstring ptr, byval style as integer ptr, byval size as integer ptr)
-declare function cdCanvasNativeFont cdecl alias "cdCanvasNativeFont" (byval canvas as cdCanvas ptr, byval font as zstring ptr) as zstring ptr
-declare function cdCanvasTextAlignment cdecl alias "cdCanvasTextAlignment" (byval canvas as cdCanvas ptr, byval alignment as integer) as integer
-declare function cdCanvasTextOrientation cdecl alias "cdCanvasTextOrientation" (byval canvas as cdCanvas ptr, byval angle as double) as double
-declare function cdCanvasMarkType cdecl alias "cdCanvasMarkType" (byval canvas as cdCanvas ptr, byval type as integer) as integer
-declare function cdCanvasMarkSize cdecl alias "cdCanvasMarkSize" (byval canvas as cdCanvas ptr, byval size as integer) as integer
-declare sub cdCanvasVectorText cdecl alias "cdCanvasVectorText" (byval canvas as cdCanvas ptr, byval x as integer, byval y as integer, byval s as zstring ptr)
-declare sub cdCanvasMultiLineVectorText cdecl alias "cdCanvasMultiLineVectorText" (byval canvas as cdCanvas ptr, byval x as integer, byval y as integer, byval s as zstring ptr)
-declare function cdCanvasVectorFont cdecl alias "cdCanvasVectorFont" (byval canvas as cdCanvas ptr, byval filename as zstring ptr) as zstring ptr
-declare sub cdCanvasVectorTextDirection cdecl alias "cdCanvasVectorTextDirection" (byval canvas as cdCanvas ptr, byval x1 as integer, byval y1 as integer, byval x2 as integer, byval y2 as integer)
-declare function cdCanvasVectorTextTransform cdecl alias "cdCanvasVectorTextTransform" (byval canvas as cdCanvas ptr, byval matrix as double ptr) as double ptr
-declare sub cdCanvasVectorTextSize cdecl alias "cdCanvasVectorTextSize" (byval canvas as cdCanvas ptr, byval size_x as integer, byval size_y as integer, byval s as zstring ptr)
-declare function cdCanvasVectorCharSize cdecl alias "cdCanvasVectorCharSize" (byval canvas as cdCanvas ptr, byval size as integer) as integer
-declare sub cdCanvasVectorFontSize cdecl alias "cdCanvasVectorFontSize" (byval canvas as cdCanvas ptr, byval size_x as double, byval size_y as double)
-declare sub cdCanvasGetVectorFontSize cdecl alias "cdCanvasGetVectorFontSize" (byval canvas as cdCanvas ptr, byval size_x as double ptr, byval size_y as double ptr)
-declare sub cdCanvasGetVectorTextSize cdecl alias "cdCanvasGetVectorTextSize" (byval canvas as cdCanvas ptr, byval s as zstring ptr, byval x as integer ptr, byval y as integer ptr)
-declare sub cdCanvasGetVectorTextBounds cdecl alias "cdCanvasGetVectorTextBounds" (byval canvas as cdCanvas ptr, byval s as zstring ptr, byval x as integer, byval y as integer, byval rect as integer ptr)
-declare sub cdCanvasGetVectorTextBox cdecl alias "cdCanvasGetVectorTextBox" (byval canvas as cdCanvas ptr, byval x as integer, byval y as integer, byval s as zstring ptr, byval xmin as integer ptr, byval xmax as integer ptr, byval ymin as integer ptr, byval ymax as integer ptr)
-declare sub cdCanvasGetFontDim cdecl alias "cdCanvasGetFontDim" (byval canvas as cdCanvas ptr, byval max_width as integer ptr, byval height as integer ptr, byval ascent as integer ptr, byval descent as integer ptr)
-declare sub cdCanvasGetTextSize cdecl alias "cdCanvasGetTextSize" (byval canvas as cdCanvas ptr, byval s as zstring ptr, byval width as integer ptr, byval height as integer ptr)
-declare sub cdCanvasGetTextBox cdecl alias "cdCanvasGetTextBox" (byval canvas as cdCanvas ptr, byval x as integer, byval y as integer, byval s as zstring ptr, byval xmin as integer ptr, byval xmax as integer ptr, byval ymin as integer ptr, byval ymax as integer ptr)
-declare sub cdCanvasGetTextBounds cdecl alias "cdCanvasGetTextBounds" (byval canvas as cdCanvas ptr, byval x as integer, byval y as integer, byval s as zstring ptr, byval rect as integer ptr)
-declare function cdCanvasGetColorPlanes cdecl alias "cdCanvasGetColorPlanes" (byval canvas as cdCanvas ptr) as integer
-declare sub cdCanvasPalette cdecl alias "cdCanvasPalette" (byval canvas as cdCanvas ptr, byval n as integer, byval palette as integer ptr, byval mode as integer)
-declare sub cdCanvasGetImageRGB cdecl alias "cdCanvasGetImageRGB" (byval canvas as cdCanvas ptr, byval r as ubyte ptr, byval g as ubyte ptr, byval b as ubyte ptr, byval x as integer, byval y as integer, byval w as integer, byval h as integer)
-declare sub cdCanvasPutImageRectRGB cdecl alias "cdCanvasPutImageRectRGB" (byval canvas as cdCanvas ptr, byval iw as integer, byval ih as integer, byval r as ubyte ptr, byval g as ubyte ptr, byval b as ubyte ptr, byval x as integer, byval y as integer, byval w as integer, byval h as integer, byval xmin as integer, byval xmax as integer, byval ymin as integer, byval ymax as integer)
-declare sub cdCanvasPutImageRectRGBA cdecl alias "cdCanvasPutImageRectRGBA" (byval canvas as cdCanvas ptr, byval iw as integer, byval ih as integer, byval r as ubyte ptr, byval g as ubyte ptr, byval b as ubyte ptr, byval a as ubyte ptr, byval x as integer, byval y as integer, byval w as integer, byval h as integer, byval xmin as integer, byval xmax as integer, byval ymin as integer, byval ymax as integer)
-declare sub cdCanvasPutImageRectMap cdecl alias "cdCanvasPutImageRectMap" (byval canvas as cdCanvas ptr, byval iw as integer, byval ih as integer, byval index as ubyte ptr, byval colors as integer ptr, byval x as integer, byval y as integer, byval w as integer, byval h as integer, byval xmin as integer, byval xmax as integer, byval ymin as integer, byval ymax as integer)
-declare function cdCanvasCreateImage cdecl alias "cdCanvasCreateImage" (byval canvas as cdCanvas ptr, byval w as integer, byval h as integer) as cdImage ptr
-declare sub cdKillImage cdecl alias "cdKillImage" (byval image as cdImage ptr)
-declare sub cdCanvasGetImage cdecl alias "cdCanvasGetImage" (byval canvas as cdCanvas ptr, byval image as cdImage ptr, byval x as integer, byval y as integer)
-declare sub cdCanvasPutImageRect cdecl alias "cdCanvasPutImageRect" (byval canvas as cdCanvas ptr, byval image as cdImage ptr, byval x as integer, byval y as integer, byval xmin as integer, byval xmax as integer, byval ymin as integer, byval ymax as integer)
-declare sub cdCanvasScrollArea cdecl alias "cdCanvasScrollArea" (byval canvas as cdCanvas ptr, byval xmin as integer, byval xmax as integer, byval ymin as integer, byval ymax as integer, byval dx as integer, byval dy as integer)
-declare function cdCreateBitmap cdecl alias "cdCreateBitmap" (byval w as integer, byval h as integer, byval type as integer) as cdBitmap ptr
-declare function cdInitBitmap cdecl alias "cdInitBitmap" (byval w as integer, byval h as integer, byval type as integer, ...) as cdBitmap ptr
-declare sub cdKillBitmap cdecl alias "cdKillBitmap" (byval bitmap as cdBitmap ptr)
-declare function cdBitmapGetData cdecl alias "cdBitmapGetData" (byval bitmap as cdBitmap ptr, byval dataptr as integer) as ubyte ptr
-declare sub cdBitmapSetRect cdecl alias "cdBitmapSetRect" (byval bitmap as cdBitmap ptr, byval xmin as integer, byval xmax as integer, byval ymin as integer, byval ymax as integer)
-declare sub cdCanvasPutBitmap cdecl alias "cdCanvasPutBitmap" (byval canvas as cdCanvas ptr, byval bitmap as cdBitmap ptr, byval x as integer, byval y as integer, byval w as integer, byval h as integer)
-declare sub cdCanvasGetBitmap cdecl alias "cdCanvasGetBitmap" (byval canvas as cdCanvas ptr, byval bitmap as cdBitmap ptr, byval x as integer, byval y as integer)
-declare sub cdBitmapRGB2Map cdecl alias "cdBitmapRGB2Map" (byval bitmap_rgb as cdBitmap ptr, byval bitmap_map as cdBitmap ptr)
-declare function cdEncodeColor cdecl alias "cdEncodeColor" (byval red as ubyte, byval green as ubyte, byval blue as ubyte) as integer
-declare sub cdDecodeColor cdecl alias "cdDecodeColor" (byval color as integer, byval red as ubyte ptr, byval green as ubyte ptr, byval blue as ubyte ptr)
-declare function cdDecodeAlpha cdecl alias "cdDecodeAlpha" (byval color as integer) as ubyte
-declare function cdEncodeAlpha cdecl alias "cdEncodeAlpha" (byval color as integer, byval alpha as ubyte) as integer
-declare sub cdRGB2Map cdecl alias "cdRGB2Map" (byval width as integer, byval height as integer, byval red as ubyte ptr, byval green as ubyte ptr, byval blue as ubyte ptr, byval index as ubyte ptr, byval pal_size as integer, byval color as integer ptr)
+declare function cdContextRegisterCallback (byval context as cdContext ptr, byval cb as integer, byval func as cdCallback) as integer
+declare function cdContextCaps (byval context as cdContext ptr) as uinteger
+declare function cdContextIsPlus (byval context as cdContext ptr) as integer
+declare function cdContextType (byval context as cdContext ptr) as integer
+
+'control
+declare function cdCanvasSimulate (byval canvas as cdCanvas ptr, byval mode as integer) as integer
+declare sub cdCanvasFlush (byval canvas as cdCanvas ptr)
+declare sub cdCanvasClear (byval canvas as cdCanvas ptr)
+declare function cdCanvasSaveState (byval canvas as cdCanvas ptr) as cdState ptr
+declare sub cdCanvasRestoreState (byval canvas as cdCanvas ptr, byval state as cdState ptr)
+declare sub cdReleaseState (byval state as cdState ptr)
+declare sub cdCanvasSetAttribute (byval canvas as cdCanvas ptr, byval name as const zstring ptr, byval data as const zstring ptr)
+declare sub cdCanvasSetfAttribute (byval canvas as cdCanvas ptr, byval name as const zstring ptr, byval format as const zstring ptr, ...)
+declare function cdCanvasGetAttribute (byval canvas as cdCanvas ptr, byval const name as zstring ptr) as zstring ptr
+
+'interpretation
+declare function cdCanvasPlay (byval canvas as cdCanvas ptr, byval context as cdContext ptr, byval xmin as integer, byval xmax as integer, byval ymin as integer, byval ymax as integer, byval data_ as any ptr) as integer
+
+'coordinate transformation
+declare sub cdCanvasGetSize (byval canvas as cdCanvas ptr, byval width as integer ptr, byval height as integer ptr, byval width_mm as double ptr, byval height_mm as double ptr)
+declare function cdCanvasUpdateYAxis (byval canvas as cdCanvas ptr, byval y as integer ptr) as integer
+declare function cdfCanvasUpdateYAxis (byval canvas as cdCanvas ptr, byval y as double ptr) as double
+declare function cdCanvasInvertYAxis (byval canvas as cdCanvas ptr, byval y as integer) as integer
+declare function cdfCanvasInvertYAxis (byval canvas as cdCanvas ptr, byval y as double) as double
+declare sub cdCanvasMM2Pixel (byval canvas as cdCanvas ptr, byval mm_dx as double, byval mm_dy as double, byval dx as integer ptr, byval dy as integer ptr)
+declare sub cdCanvasPixel2MM (byval canvas as cdCanvas ptr, byval dx as integer, byval dy as integer, byval mm_dx as double ptr, byval mm_dy as double ptr)
+declare sub cdfCanvasMM2Pixel (byval canvas as cdCanvas ptr, byval mm_dx as double, byval mm_dy as double, byval dx as double ptr, byval dy as double ptr)
+declare sub cdfCanvasPixel2MM (byval canvas as cdCanvas ptr, byval dx as double, byval dy as double, byval mm_dx as double ptr, byval mm_dy as double ptr)
+declare sub cdCanvasOrigin (byval canvas as cdCanvas ptr, byval x as integer, byval y as integer)
+declare sub cdfCanvasOrigin (byval canvas as cdCanvas ptr, byval x as double, byval y as double)
+declare sub cdCanvasGetOrigin (byval canvas as cdCanvas ptr, byval x as integer ptr, byval y as integer ptr)
+declare sub cdfCanvasGetOrigin (byval canvas as cdCanvas ptr, byval x as double ptr, byval y as double ptr)
+declare sub cdCanvasTransform (byval canvas as cdCanvas ptr, byval matrix as double ptr)
+declare function cdCanvasGetTransform (byval canvas as cdCanvas ptr) as double ptr
+declare sub cdCanvasTransformMultiply (byval canvas as cdCanvas ptr, byval matrix as double ptr)
+declare sub cdCanvasTransformRotate (byval canvas as cdCanvas ptr, byval angle as double)
+declare sub cdCanvasTransformScale (byval canvas as cdCanvas ptr, byval sx as double, byval sy as double)
+declare sub cdCanvasTransformTranslate (byval canvas as cdCanvas ptr, byval dx as double, byval dy as double)
+declare sub cdCanvasTransformPoint (byval canvas as cdCanvas ptr, byval x as integer, byval y as integer, byval tx as integer ptr, byval ty as integer ptr)
+declare sub cdfCanvasTransformPoint (byval canvas as cdCanvas ptr, byval x as double, byval y as double, byval tx as double ptr, byval ty as double ptr)
+
+'clipping
+declare function cdCanvasClip (byval canvas as cdCanvas ptr, byval mode as integer) as integer
+declare sub cdCanvasClipArea (byval canvas as cdCanvas ptr, byval xmin as integer, byval xmax as integer, byval ymin as integer, byval ymax as integer)
+declare function cdCanvasGetClipArea (byval canvas as cdCanvas ptr, byval xmin as integer ptr, byval xmax as integer ptr, byval ymin as integer ptr, byval ymax as integer ptr) as integer
+declare sub cdfCanvasClipArea (byval canvas as cdCanvas ptr, byval xmin as double, byval xmax as double, byval ymin as double, byval ymax as double)
+declare function cdfCanvasGetClipArea (byval canvas as cdCanvas ptr, byval xmin as double ptr, byval xmax as double ptr, byval ymin as double ptr, byval ymax as double ptr) as integer
+
+'clipping region
+declare function cdCanvasIsPointInRegion (byval canvas as cdCanvas ptr, byval x as integer, byval y as integer) as integer
+declare sub cdCanvasOffsetRegion byval canvas as cdCanvas ptr, byval x as integer, byval y as integer)
+declare sub cdCanvasGetRegionBox (byval canvas as cdCanvas ptr, byval xmin as integer ptr, byval xmax as integer ptr, byval ymin as integer ptr, byval ymax as integer ptr)
+declare function cdCanvasRegionCombineMode (byval canvas as cdCanvas ptr, byval mode as integer) as integer
+
+'primitives
+declare sub cdCanvasPixel (byval canvas as cdCanvas ptr, byval x as integer, byval y as integer, byval color as integer)
+declare sub cdCanvasMark (byval canvas as cdCanvas ptr, byval x as integer, byval y as integer)
+declare sub cdCanvasBegin (byval canvas as cdCanvas ptr, byval mode as integer)
+declare sub cdCanvasPathSet (byval canvas as cdCanvas ptr, byval action as integer)
+declare sub cdCanvasEnd (byval canvas as cdCanvas ptr)
+declare sub cdCanvasLine (byval canvas as cdCanvas ptr, byval x1 as integer, byval y1 as integer, byval x2 as integer, byval y2 as integer)
+declare sub cdCanvasVertex (byval canvas as cdCanvas ptr, byval x as integer, byval y as integer)
+declare sub cdCanvasRect (byval canvas as cdCanvas ptr, byval xmin as integer, byval xmax as integer, byval ymin as integer, byval ymax as integer)
+declare sub cdCanvasBox (byval canvas as cdCanvas ptr, byval xmin as integer, byval xmax as integer, byval ymin as integer, byval ymax as integer)
+declare sub cdCanvasArc (byval canvas as cdCanvas ptr, byval xc as integer, byval yc as integer, byval w as integer, byval h as integer, byval angle1 as double, byval angle2 as double)
+declare sub cdCanvasSector (byval canvas as cdCanvas ptr, byval xc as integer, byval yc as integer, byval w as integer, byval h as integer, byval angle1 as double, byval angle2 as double)
+declare sub cdCanvasChord (byval canvas as cdCanvas ptr, byval xc as integer, byval yc as integer, byval w as integer, byval h as integer, byval angle1 as double, byval angle2 as double)
+declare sub cdCanvasText (byval canvas as cdCanvas ptr, byval x as integer, byval y as integer, byval s as zstring ptr)
+declare sub cdfCanvasLine (byval canvas as cdCanvas ptr, byval x1 as double, byval y1 as double, byval x2 as double, byval y2 as double)
+declare sub cdfCanvasVertex (byval canvas as cdCanvas ptr, byval x as double, byval y as double)
+declare sub cdfCanvasRect (byval canvas as cdCanvas ptr, byval xmin as double, byval xmax as double, byval ymin as double, byval ymax as double)
+declare sub cdfCanvasBox (byval canvas as cdCanvas ptr, byval xmin as double, byval xmax as double, byval ymin as double, byval ymax as double)
+declare sub cdfCanvasArc (byval canvas as cdCanvas ptr, byval xc as double, byval yc as double, byval w as double, byval h as double, byval angle1 as double, byval angle2 as double)
+declare sub cdfCanvasSector (byval canvas as cdCanvas ptr, byval xc as double, byval yc as double, byval w as double, byval h as double, byval angle1 as double, byval angle2 as double)
+declare sub cdfCanvasChord (byval canvas as cdCanvas ptr, byval xc as double, byval yc as double, byval w as double, byval h as double, byval angle1 as double, byval angle2 as double)
+declare sub cdfCanvasText (byval canvas as cdCanvas ptr, byval x as double, byval y as double, byval s as zstring ptr)
+declare sub cdCanvasSetBackground (byval canvas as cdCanvas ptr, byval color as integer)
+declare sub cdCanvasSetForeground (byval canvas as cdCanvas ptr, byval color as integer)
+declare function cdCanvasBackground (byval canvas as cdCanvas ptr, byval color as integer) as integer
+declare function cdCanvasForeground (byval canvas as cdCanvas ptr, byval color as integer) as integer
+declare function cdCanvasBackOpacity (byval canvas as cdCanvas ptr, byval opacity as integer) as integer
+declare function cdCanvasWriteMode (byval canvas as cdCanvas ptr, byval mode as integer) as integer
+declare function cdCanvasLineStyle (byval canvas as cdCanvas ptr, byval style as integer) as integer
+declare sub cdCanvasLineStyleDashes (byval canvas as cdCanvas ptr, byval dashes as integer ptr, byval count as integer)
+declare function cdCanvasLineWidth (byval canvas as cdCanvas ptr, byval width as integer) as integer
+declare function cdCanvasLineJoin (byval canvas as cdCanvas ptr, byval join as integer) as integer
+declare function cdCanvasLineCap (byval canvas as cdCanvas ptr, byval cap as integer) as integer
+declare function cdCanvasInteriorStyle (byval canvas as cdCanvas ptr, byval style as integer) as integer
+declare function cdCanvasHatch (byval canvas as cdCanvas ptr, byval style as integer) as integer
+declare sub cdCanvasStipple (byval canvas as cdCanvas ptr, byval w as integer, byval h as integer, byval stipple as ubyte ptr)
+declare function cdCanvasGetStipple (byval canvas as cdCanvas ptr, byval n as integer ptr, byval m as integer ptr) as ubyte ptr
+declare function cdCanvasGetPattern (byval canvas as cdCanvas ptr, byval n as integer ptr, byval m as integer ptr) as integer ptr
+declare function cdCanvasFillMode (byval canvas as cdCanvas ptr, byval mode as integer) as integer
+declare function cdCanvasFont (byval canvas as cdCanvas ptr, byval type_face as zstring ptr, byval style as integer, byval size as integer) as integer
+declare sub cdCanvasGetFont (byval canvas as cdCanvas ptr, byval type_face as zstring ptr, byval style as integer ptr, byval size as integer ptr)
+declare function cdCanvasNativeFont (byval canvas as cdCanvas ptr, byval font as zstring ptr) as zstring ptr
+declare function cdCanvasTextAlignment (byval canvas as cdCanvas ptr, byval alignment as integer) as integer
+declare function cdCanvasTextOrientation (byval canvas as cdCanvas ptr, byval angle as double) as double
+declare function cdCanvasMarkType (byval canvas as cdCanvas ptr, byval type as integer) as integer
+declare function cdCanvasMarkSize (byval canvas as cdCanvas ptr, byval size as integer) as integer
+declare sub cdCanvasVectorText (byval canvas as cdCanvas ptr, byval x as integer, byval y as integer, byval s as zstring ptr)
+declare sub cdCanvasMultiLineVectorText (byval canvas as cdCanvas ptr, byval x as integer, byval y as integer, byval s as zstring ptr)
+declare function cdCanvasVectorFont (byval canvas as cdCanvas ptr, byval filename as zstring ptr) as zstring ptr
+declare sub cdCanvasVectorTextDirection (byval canvas as cdCanvas ptr, byval x1 as integer, byval y1 as integer, byval x2 as integer, byval y2 as integer)
+declare function cdCanvasVectorTextTransform (byval canvas as cdCanvas ptr, byval matrix as double ptr) as double ptr
+declare sub cdCanvasVectorTextSize (byval canvas as cdCanvas ptr, byval size_x as integer, byval size_y as integer, byval s as zstring ptr)
+declare function cdCanvasVectorCharSize (byval canvas as cdCanvas ptr, byval size as integer) as integer
+declare sub cdCanvasVectorFontSize (byval canvas as cdCanvas ptr, byval size_x as double, byval size_y as double)
+declare sub cdCanvasGetVectorFontSize (byval canvas as cdCanvas ptr, byval size_x as double ptr, byval size_y as double ptr)
+declare sub cdCanvasGetVectorTextSize (byval canvas as cdCanvas ptr, byval s as zstring ptr, byval x as integer ptr, byval y as integer ptr)
+declare sub cdCanvasGetVectorTextBounds (byval canvas as cdCanvas ptr, byval s as zstring ptr, byval x as integer, byval y as integer, byval rect as integer ptr)
+declare sub cdCanvasGetVectorTextBox (byval canvas as cdCanvas ptr, byval x as integer, byval y as integer, byval s as zstring ptr, byval xmin as integer ptr, byval xmax as integer ptr, byval ymin as integer ptr, byval ymax as integer ptr)
+declare sub cdCanvasGetFontDim (byval canvas as cdCanvas ptr, byval max_width as integer ptr, byval height as integer ptr, byval ascent as integer ptr, byval descent as integer ptr)
+declare sub cdCanvasGetTextSize (byval canvas as cdCanvas ptr, byval s as zstring ptr, byval width as integer ptr, byval height as integer ptr)
+declare sub cdCanvasGetTextBox (byval canvas as cdCanvas ptr, byval x as integer, byval y as integer, byval s as zstring ptr, byval xmin as integer ptr, byval xmax as integer ptr, byval ymin as integer ptr, byval ymax as integer ptr)
+declare sub cdCanvasGetTextBounds (byval canvas as cdCanvas ptr, byval x as integer, byval y as integer, byval s as zstring ptr, byval rect as integer ptr)
+declare function cdCanvasGetColorPlanes (byval canvas as cdCanvas ptr) as integer
+declare sub cdCanvasPalette (byval canvas as cdCanvas ptr, byval n as integer, byval palette as integer ptr, byval mode as integer)
+declare sub cdCanvasGetImageRGB (byval canvas as cdCanvas ptr, byval r as ubyte ptr, byval g as ubyte ptr, byval b as ubyte ptr, byval x as integer, byval y as integer, byval w as integer, byval h as integer)
+declare sub cdCanvasPutImageRectRGB (byval canvas as cdCanvas ptr, byval iw as integer, byval ih as integer, byval r as ubyte ptr, byval g as ubyte ptr, byval b as ubyte ptr, byval x as integer, byval y as integer, byval w as integer, byval h as integer, byval xmin as integer, byval xmax as integer, byval ymin as integer, byval ymax as integer)
+declare sub cdCanvasPutImageRectRGBA (byval canvas as cdCanvas ptr, byval iw as integer, byval ih as integer, byval r as ubyte ptr, byval g as ubyte ptr, byval b as ubyte ptr, byval a as ubyte ptr, byval x as integer, byval y as integer, byval w as integer, byval h as integer, byval xmin as integer, byval xmax as integer, byval ymin as integer, byval ymax as integer)
+declare sub cdCanvasPutImageRectMap (byval canvas as cdCanvas ptr, byval iw as integer, byval ih as integer, byval index as ubyte ptr, byval colors as integer ptr, byval x as integer, byval y as integer, byval w as integer, byval h as integer, byval xmin as integer, byval xmax as integer, byval ymin as integer, byval ymax as integer)
+declare function cdCanvasCreateImage (byval canvas as cdCanvas ptr, byval w as integer, byval h as integer) as cdImage ptr
+declare sub cdKillImage (byval image as cdImage ptr)
+declare sub cdCanvasGetImage (byval canvas as cdCanvas ptr, byval image as cdImage ptr, byval x as integer, byval y as integer)
+declare sub cdCanvasPutImageRect (byval canvas as cdCanvas ptr, byval image as cdImage ptr, byval x as integer, byval y as integer, byval xmin as integer, byval xmax as integer, byval ymin as integer, byval ymax as integer)
+declare sub cdCanvasScrollArea (byval canvas as cdCanvas ptr, byval xmin as integer, byval xmax as integer, byval ymin as integer, byval ymax as integer, byval dx as integer, byval dy as integer)
+declare function cdCreateBitmap (byval w as integer, byval h as integer, byval type as integer) as cdBitmap ptr
+declare function cdInitBitmap (byval w as integer, byval h as integer, byval type as integer, ...) as cdBitmap ptr
+declare sub cdKillBitmap (byval bitmap as cdBitmap ptr)
+declare function cdBitmapGetData (byval bitmap as cdBitmap ptr, byval dataptr as integer) as ubyte ptr
+declare sub cdBitmapSetRect (byval bitmap as cdBitmap ptr, byval xmin as integer, byval xmax as integer, byval ymin as integer, byval ymax as integer)
+declare sub cdCanvasPutBitmap (byval canvas as cdCanvas ptr, byval bitmap as cdBitmap ptr, byval x as integer, byval y as integer, byval w as integer, byval h as integer)
+declare sub cdCanvasGetBitmap (byval canvas as cdCanvas ptr, byval bitmap as cdBitmap ptr, byval x as integer, byval y as integer)
+declare sub cdBitmapRGB2Map (byval bitmap_rgb as cdBitmap ptr, byval bitmap_map as cdBitmap ptr)
+declare function cdEncodeColor (byval red as ubyte, byval green as ubyte, byval blue as ubyte) as integer
+declare sub cdDecodeColor (byval color as integer, byval red as ubyte ptr, byval green as ubyte ptr, byval blue as ubyte ptr)
+declare function cdDecodeAlpha (byval color as integer) as ubyte
+declare function cdEncodeAlpha (byval color as integer, byval alpha as ubyte) as integer
+declare sub cdRGB2Map (byval width as integer, byval height as integer, byval red as ubyte ptr, byval green as ubyte ptr, byval blue as ubyte ptr, byval index as ubyte ptr, byval pal_size as integer, byval color as integer ptr)
+
+end extern
 
 #define CD_QUERY -1
 
@@ -332,6 +353,8 @@ enum
 	CD_STRIKEOUT = 8
 end enum
 
+#define CD_BOLD_ITALIC (CD_BOLD OR CD_ITALIC)
+
 enum 
 	CD_SMALL = 8
 	CD_STANDARD = 12
@@ -397,8 +420,10 @@ type cdSizeCB as function cdecl(byval as cdCanvas ptr, byval as integer, byval a
 #define CD_SIM_POLYGON &h0080
 #define CD_SIM_TEXT &h0100
 #define CD_SIM_ALL &hFFFF
+
 #define CD_SIM_LINES (&h0001 or &h0002 or &h0008 or &h0040)
 #define CD_SIM_FILLS (&h0004 or &h0010 or &h0020 or &h0080)
+
 #define CD_RED &hFF0000L
 #define CD_DARK_RED &h800000L
 #define CD_GREEN &h00FF00L
@@ -415,6 +440,7 @@ type cdSizeCB as function cdecl(byval as cdCanvas ptr, byval as integer, byval a
 #define CD_BLACK &h000000L
 #define CD_DARK_GRAY &h808080L
 #define CD_GRAY &hC0C0C0L
+
 #define CD_MM2PT 2.834645669
 #define CD_RAD2DEG 57.295779513
 #define CD_DEG2RAD 0.01745329252
@@ -429,5 +455,32 @@ enum
 	CD_LETTER
 	CD_LEGAL
 end enum
+
+#ifndef CD_NO_OLD_INTERFACE
+#include once "IUP/cd_old.bi"
+#endif
+
+'/******************************************************************************
+'Copyright (C) 1994-2012 Tecgraf, PUC-Rio.
+'
+'Permission is hereby granted, free of charge, to any person obtaining
+'a copy of this software and associated documentation files (the
+'"Software"), to deal in the Software without restriction, including
+'without limitation the rights to use, copy, modify, merge, publish,
+'distribute, sublicense, and/or sell copies of the Software, and to
+'permit persons to whom the Software is furnished to do so, subject to
+'the following conditions:
+'
+'The above copyright notice and this permission notice shall be
+'included in all copies or substantial portions of the Software.
+'
+'THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+'EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+'MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+'IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+'CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+'TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+'SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+'******************************************************************************/
 
 #endif

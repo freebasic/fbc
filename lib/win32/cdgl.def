@@ -1,0 +1,3 @@
+LIBRARY cdgl.dll
+EXPORTS
+cdContextGL

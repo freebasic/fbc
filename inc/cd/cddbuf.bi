@@ -10,5 +10,6 @@
 #define __cddbuf_bi__
 
 declare function cdContextDBuffer cdecl alias "cdContextDBuffer" () as cdContext ptr
+#define CD_DBUFFER cdContextDBuffer()
 
 #endif

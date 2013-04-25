@@ -1,0 +1,4 @@
+LIBRARY cdluagl52.dll
+EXPORTS
+cdluagl_open
+luaopen_cdluagl

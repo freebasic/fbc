@@ -1,0 +1,3 @@
+LIBRARY imlua_jp252.dll
+EXPORTS
+luaopen_imlua_jp2

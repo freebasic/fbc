@@ -1,0 +1,5 @@
+LIBRARY iupluacontrols52.dll
+EXPORTS
+iupcontrolslua_close
+iupcontrolslua_open
+luaopen_iupluacontrols

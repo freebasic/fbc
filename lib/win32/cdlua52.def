@@ -1,0 +1,13 @@
+LIBRARY cdlua52.dll
+EXPORTS
+cdlua_addcontext
+cdlua_checkbitmap
+cdlua_checkcanvas
+cdlua_close
+cdlua_getcanvas
+cdlua_getplaystate
+cdlua_getstate
+cdlua_open
+cdlua_pushbitmap
+cdlua_pushcanvas
+luaopen_cdlua

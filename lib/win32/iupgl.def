@@ -1,0 +1,10 @@
+LIBRARY iupgl.dll
+EXPORTS
+IupGLCanvas
+IupGLCanvasOpen
+IupGLIsCurrent
+IupGLMakeCurrent
+IupGLPalette
+IupGLSwapBuffers
+IupGLUseFont
+IupGLWait

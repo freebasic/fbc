@@ -10,6 +10,7 @@
 #define __cdcgm_bi__
 
 declare function cdContextCGM cdecl alias "cdContextCGM" () as cdContext ptr
+#define CD_CGM cdContextCGM()
 
 #define CD_CGMCOUNTERCB 1
 #define CD_CGMSCLMDECB 2
@@ -17,5 +18,8 @@ declare function cdContextCGM cdecl alias "cdContextCGM" () as cdContext ptr
 #define CD_CGMBEGPICTCB 4
 #define CD_CGMBEGPICTBCB 5
 #define CD_CGMBEGMTFCB 6
+
+#define CDPLAY_ABORT CD_ABORT
+#define CDPLAY_GO CD_CONTINUE
 
 #endif

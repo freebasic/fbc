@@ -1,0 +1,25 @@
+LIBRARY imlua52.dll
+EXPORTS
+imlua_argerrorcolorspace
+imlua_argerrordatatype
+imlua_checkimage
+imlua_checkmask
+imlua_errormatch
+imlua_errormatchcolor
+imlua_errormatchcolorspace
+imlua_errormatchdatatype
+imlua_errormatchsize
+imlua_newarrayfloat
+imlua_newarrayint
+imlua_newarrayulong
+imlua_open
+imlua_pushimage
+imlua_regconstants
+imlua_toarrayfloat
+imlua_toarrayfloatopt
+imlua_toarrayimage
+imlua_toarrayint
+imlua_toarrayintopt
+imlua_toarrayulong
+imlua_toarrayulongopt
+luaopen_imlua

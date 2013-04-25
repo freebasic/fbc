@@ -1,0 +1,3 @@
+LIBRARY iupimglib.dll
+EXPORTS
+IupImageLibOpen

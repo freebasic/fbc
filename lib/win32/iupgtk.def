@@ -1,4 +1,4 @@
-LIBRARY iup.dll
+LIBRARY iupgtk.dll
 EXPORTS
 IupAlarm
 IupAppend

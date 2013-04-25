@@ -1,0 +1,4 @@
+LIBRARY iupole.dll
+EXPORTS
+IupOleControl
+IupOleControlOpen

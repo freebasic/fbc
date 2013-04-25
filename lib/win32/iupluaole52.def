@@ -1,0 +1,4 @@
+LIBRARY iupluaole52.dll
+EXPORTS
+iupolelua_open
+luaopen_iupluaole
