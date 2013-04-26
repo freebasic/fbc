@@ -1,0 +1,39 @@
+--- Makefile.am.orig	2013-04-24 18:44:01.410234279 +0200
++++ Makefile.am	2013-04-24 18:44:30.850380258 +0200
+@@ -1,9 +1,4 @@
+-SUBDIRS = lib util pic
+-
+-# Avoid trouble if your system doesn't have xmlto.
+-if BUILD_DOC
+-SUBDIRS += doc
+-endif
++SUBDIRS = lib
+ 
+ EXTRA_DIST = Makefile.unx \
+ 	     autogen.sh \
+@@ -18,25 +13,3 @@
+ 	     $(WINDOWS)
+ 
+ TESTS=test.sh
+-
+-# Auditing tools.
+-
+-# Coverity - avoid making doc as xmlto craps out under cov-build
+-coverity:
+-	cd lib; make
+-	cd util; make
+-
+-# cppcheck should run clean
+-cppcheck:
+-	cppcheck -Ilib --inline-suppr --template gcc --enable=all --suppress=unusedStructMember --suppress=unusedFunction --force lib/*.[ch] util/*.[ch]
+-
+-# splint is nowhere near running clean
+-SPLINT_SUPPRESSIONS = -boolops -nullret
+-splint: 
+-	splint +quiet +posixlib $(SPLINT_SUPPRESSIONS) lib/*.[ch]
+-
+-# release using the shipper tool, if distcheck passes
+-release: distcheck
+-	cd doc; make website
+-	shipper -u -m -t; make clean
+-	rm -fr doc/staging

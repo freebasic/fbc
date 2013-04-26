@@ -144,6 +144,9 @@ if [ ! -d $sysroot ]; then
 	ln -s ../sysroot/usr $toplevel/i486-linux-musl/i486-linux-musl
 fi
 
+licensedir=$toplevel/fbc-static/doc/licenses
+mkdir -p "$licensedir"
+
 ################################################################################
 # Build various libs used by FB rtlib/gfxlib2 (i.e. needed for FB programs),
 # including headers needed just to compile the FB rtlib/gfxlib2
@@ -516,6 +519,7 @@ my_build()
 
 		grx-*-con)
 			make -f makefile.lnx libs \
+				HAVE_LIBTIFF=y \
 				HAVE_LIBJPEG=y \
 				HAVE_LIBPNG=y \
 				NEED_ZLIB=y \
@@ -535,6 +539,7 @@ my_build()
 
 		grx-*-X)
 			make -f makefile.x11 libs \
+				HAVE_LIBTIFF=y \
 				HAVE_LIBJPEG=y \
 				HAVE_LIBPNG=y \
 				NEED_ZLIB=y \
@@ -888,6 +893,13 @@ my_build()
 			make install DESTDIR=$sysroot
 			;;
 
+		sqlite-*)
+			$CC -Wall $CPPFLAGS $CFLAGS -c sqlite3.c
+			ar rcs libsqlite3.a sqlite3.o
+			cp *.h $prefix/include
+			cp *.a $prefix/lib
+			;;
+
 		tiff-*)
 			LIBS="-lX11 -lxcb -lXau" \
 			./configure \
@@ -1000,16 +1012,121 @@ my_build()
 	fi
 }
 
+my_license()
+{
+	local name="$1"
+
+	cd "$name"
+
+	case "$name" in
+	alsa-lib-*)     cp COPYING                      $licensedir/alsa-lib.txt;;
+	aspell-*)       cp COPYING                      $licensedir/aspell.txt;;
+	big_int-*)      cp $name/libbig_int/LICENSE     $licensedir/big_int.txt;;
+	bzip2-*)        cp LICENSE                      $licensedir/bzip2.txt;;
+	c-ares-*)       head -n16 ares_library_init.c > $licensedir/c-ares.txt;;
+	cairo-*)        cp COPYING                      $licensedir/cairo.txt;;
+	cryptlib-*)     cp COPYING                      $licensedir/cryptlib.txt;;
+	CUnit-*)        cp COPYING                      $licensedir/CUnit.txt;;
+	curl-*)         cp COPYING                      $licensedir/curl.txt;;
+	DevIL-*)        cp COPYING                      $licensedir/DevIL.txt;;
+	e2fsprogs-*)    cp COPYING                      $licensedir/e2fsprogs.txt;;
+	expat-*)        cp COPYING                      $licensedir/expat.txt;;
+	flac-*)         cp COPYING.Xiph                 $licensedir/flac.txt;;
+	fontconfig-*)   cp COPYING                      $licensedir/fontconfig.txt;;
+	freeglut-*)     cp COPYING                      $licensedir/freeglut.txt;;
+	FreeImage-*)    cp license-fi.txt               $licensedir/FreeImage.txt;;
+	freetype-*)     cp docs/LICENSE.TXT             $licensedir/freetype.txt;;
+	gd-*)           cp COPYING                      $licensedir/GD.txt;;
+	gdbm-*)         cp COPYING                      $licensedir/gdbm.txt;;
+	gdsl-*)         cp COPYING                      $licensedir/gdsl.txt;;
+	giflib-*)       cp COPYING                      $licensedir/giflib.txt;;
+	glfw-*)         cp COPYING.txt                  $licensedir/glfw.txt;;
+	glib-*)         cp COPYING                      $licensedir/glib.txt;;
+	glu-*)          head -n29 include/GL/glu.h    > $licensedir/glu.txt;;
+	gmp-*)          cp COPYING.LIB                  $licensedir/gmp.txt;;
+	gnutls-*)       cp COPYING.LESSER               $licensedir/gnutls.txt
+	                cp COPYING                      $licensedir/gnutls-openssl.txt;;
+	grx-*)          cp copying.grx                  $licensedir/grx.txt;;
+	gsl-*)          cp COPYING                      $licensedir/gsl.txt;;
+	jasper-*)       cp LICENSE                      $licensedir/jasper.txt;;
+	jpeg-*)         cp README                       $licensedir/jpeglib.txt;;
+	lcms-*)         cp COPYING                      $licensedir/lcms.txt;;
+	lcms2-*)        cp COPYING                      $licensedir/lcms2.txt;;
+	libcaca-*)      cp COPYING                      $licensedir/libcaca.txt;;
+	libelf-*)       cp COPYING.LIB                  $licensedir/libelf.txt;;
+	libffi-*)       cp LICENSE                      $licensedir/libffi.txt;;
+	libICE-*)       cp COPYING                      $licensedir/libICE.txt;;
+	libidn-*)       cp COPYING                      $licensedir/libidn.txt;;
+	libjit-*)       cp COPYING.LESSER               $licensedir/libjit.txt;;
+	libmetalink-*)  cp COPYING                      $licensedir/libmetalink.txt;;
+	libmng-*)       cp LICENSE                      $licensedir/libmng.txt;;
+	libogg-*)       cp COPYING                      $licensedir/libogg.txt;;
+	liboggz-*)      cp COPYING                      $licensedir/liboggz.txt;;
+	libpciaccess-*) cp COPYING                      $licensedir/libpciaccess.txt;;
+	libpng-*)       cp LICENSE                      $licensedir/libpng.txt;;
+	libpthread-stubs-*) cp COPYING                  $licensedir/libpthread-stubs.txt;;
+	libSM-*)        cp COPYING                      $licensedir/libSM.txt;;
+	libtasn1-*)     cp COPYING.LIB                  $licensedir/libtasn1.txt;;
+	libtheora-*)    cp COPYING                      $licensedir/libtheora.txt;;
+	libusb-*)       cp COPYING                      $licensedir/libusb.txt;;
+	libvorbis-*)    cp COPYING                      $licensedir/libvorbis.txt;;
+	libwebp-*)      cp COPYING                      $licensedir/libwebp.txt;;
+	libX11-*)       cp COPYING                      $licensedir/libX11.txt;;
+	libXau-*)       cp COPYING                      $licensedir/libXau.txt;;
+	libxcb-*)       cp COPYING                      $licensedir/libxcb.txt;;
+	libXdmcp-*)     cp COPYING                      $licensedir/libXdmcp.txt;;
+	libXext-*)      cp COPYING                      $licensedir/libXext.txt;;
+	libXi-*)        cp COPYING                      $licensedir/libXi.txt;;
+	libxml2-*)      cp COPYING                      $licensedir/libxml2.txt;;
+	libXpm-*)       cp COPYING                      $licensedir/libXpm.txt;;
+	libXrandr-*)    cp COPYING                      $licensedir/libXrandr.txt;;
+	libXrender-*)   cp COPYING                      $licensedir/libXrender.txt;;
+	libxslt-*)      cp COPYING                      $licensedir/libxslt.txt;;
+	libXt-*)        cp COPYING                      $licensedir/libXt.txt;;
+	libXv-*)        cp COPYING                      $licensedir/libXv.txt;;
+	libXxf86dga-*)  cp COPYING                      $licensedir/libXxf86dga.txt;;
+	libXxf86vm-*)   cp COPYING                      $licensedir/libXxf86vm.txt;;
+	libzip-*)       cp LICENSE                      $licensedir/libzip.txt;;
+	lua-*)          cp doc/readme.html              $licensedir/Lua.html;;
+	lzo-*)          cp COPYING                      $licensedir/LZO.txt;;
+	Mesa-*)         cp docs/license.html            $licensedir/Mesa.html;;
+	mxml-*)         cp COPYING                      $licensedir/mxml.txt;;
+	ncurses-*)      cp README                       $licensedir/ncurses.txt;;
+	nettle-*)       cp COPYING.LIB                  $licensedir/nettle.txt;;
+	openal-soft-*)  cp COPYING                      $licensedir/openal-soft.txt;;
+	pcre-*)         cp LICENCE                      $licensedir/PCRE.txt;;
+	pdflib-*)       cp src/readme.txt               $licensedir/pdflib.txt;;
+	pixman-*)       cp COPYING                      $licensedir/pixman.txt;;
+	QuickLZ-*)      head -n8 quicklz.c            > $licensedir/QuickLZ.txt;;
+	readline-*)     cp COPYING                      $licensedir/readline.txt;;
+	SDL-*)          cp COPYING                      $licensedir/SDL.txt;;
+	SDL_image-*)    cp COPYING                      $licensedir/SDL_image.txt;;
+	SDL_net-*)      cp COPYING                      $licensedir/SDL_net.txt;;
+	SDL_ttf-*)      cp COPYING                      $licensedir/SDL_ttf.txt;;
+	sqlite-*)       head -n10 sqlite3.h | tail -n9 > $licensedir/sqlite3.txt;;
+	tiff-*)         cp COPYRIGHT                    $licensedir/tiff.txt;;
+	TinyPTC-*)      cp COPYING                      $licensedir/TinyPTC.txt;;
+	tinyxml2-*)     head -n22 tinyxml2.h          > $licensedir/tinyxml2.txt;;
+	tre-*)          cp LICENSE                      $licensedir/TRE.txt;;
+	xtrans-*)       cp COPYING                      $licensedir/xtrans.txt;;
+	xz-*)           cp COPYING                      $licensedir/xz.txt;;
+	zlib-*)         cp README                       $licensedir/zlib.txt;;
+	esac
+
+	cd ..
+}
+
 my_work()
 {
 	local name="$1"
 	local tarball="$2"
 	local url="$3"
 
-	my_fetch $tarball $url
-	my_extract $name $tarball
-	my_patch $name
-	my_build $name
+	my_fetch "$tarball" "$url"
+	my_extract "$name" "$tarball"
+	my_patch "$name"
+	my_build "$name"
+	my_license "$name"
 }
 
 # We should build packages with --prefix=/usr, at least those that hard-code
@@ -1117,7 +1234,7 @@ my_work QuickLZ-1.5.0 QuickLZ-1.5.0.tar.gz unused
 
 # xml, regex, math, util
 my_work tinyxml2-master tinyxml2-master.zip      "https://github.com/leethomason/tinyxml2/archive/master.zip"
-my_work mxml-2.7        mxml-2.7.tar.gz          "http://ftp.easysw.com/pub/mxml/2.7/mxml-2.7.tar.gz"
+my_work mxml-2.7        mxml-2.7.tar.gz          "http://www.msweet.org/files/project3/mxml-2.7.tar.gz"
 my_work libxml2-2.9.0   libxml2-2.9.0.tar.gz     "ftp://xmlsoft.org/libxml2/libxml2-2.9.0.tar.gz"
 my_work libxslt-1.1.28  libxslt-1.1.28.tar.gz    "ftp://xmlsoft.org/libxml2/libxslt-1.1.28.tar.gz"
 my_work expat-2.1.0     expat-2.1.0.tar.gz       "http://sourceforge.net/projects/expat/files/expat/2.1.0/expat-2.1.0.tar.gz/download"
@@ -1228,11 +1345,11 @@ my_work SDL_ttf-2.0.11    SDL_ttf-2.0.11.tar.gz    "http://www.libsdl.org/projec
 
 # audio
 my_work alsa-lib-1.0.26     alsa-lib-1.0.26.tar.bz2     "ftp://ftp.alsa-project.org/pub/lib/alsa-lib-1.0.26.tar.bz2"
-#my_work libogg-1.3.0        libogg-1.3.0.tar.xz         "http://downloads.xiph.org/releases/ogg/libogg-1.3.0.tar.xz"
-#my_work liboggz-1.1.1       liboggz-1.1.1.tar.gz        "http://downloads.xiph.org/releases/liboggz/liboggz-1.1.1.tar.gz"
-#my_work libvorbis-1.3.3     libvorbis-1.3.3.tar.xz      "http://downloads.xiph.org/releases/vorbis/libvorbis-1.3.3.tar.xz"
-#my_work libtheora-1.1.1     libtheora-1.1.1.tar.bz2     "http://downloads.xiph.org/releases/theora/libtheora-1.1.1.tar.bz2"
-#my_work flac-1.2.1          flac-1.2.1.tar.gz           "http://sourceforge.net/projects/flac/files/flac-src/flac-1.2.1-src/flac-1.2.1.tar.gz/download"
+my_work libogg-1.3.0        libogg-1.3.0.tar.xz         "http://downloads.xiph.org/releases/ogg/libogg-1.3.0.tar.xz"
+my_work liboggz-1.1.1       liboggz-1.1.1.tar.gz        "http://downloads.xiph.org/releases/liboggz/liboggz-1.1.1.tar.gz"
+my_work libvorbis-1.3.3     libvorbis-1.3.3.tar.xz      "http://downloads.xiph.org/releases/vorbis/libvorbis-1.3.3.tar.xz"
+my_work libtheora-1.1.1     libtheora-1.1.1.tar.bz2     "http://downloads.xiph.org/releases/theora/libtheora-1.1.1.tar.bz2"
+my_work flac-1.2.1          flac-1.2.1.tar.gz           "http://sourceforge.net/projects/flac/files/flac-src/flac-1.2.1-src/flac-1.2.1.tar.gz/download"
 #my_work ffmpeg-1.2          ffmpeg-1.2.tar.bz2          "http://ffmpeg.org/releases/ffmpeg-1.2.tar.bz2"
 
 #my_work libsndfile-1.0.25   libsndfile-1.0.25.tar.gz    "http://www.mega-nerd.com/libsndfile/files/libsndfile-1.0.25.tar.gz"
@@ -1248,7 +1365,7 @@ my_work openal-soft-1.15.1  openal-soft-1.15.1.tar.bz2  "http://kcat.strangesoft
 my_work gdbm-1.10           gdbm-1.10.tar.gz            "ftp://ftp.gnu.org/gnu/gdbm/gdbm-1.10.tar.gz"
 #my_work mysql-5.6.10        mysql-5.6.10.tar.gz         "http://www.mysql.com/get/Downloads/MySQL-5.6/mysql-5.6.10.tar.gz/from/http://cdn.mysql.com/"
 #my_work postgresql-9.2.4    postgresql-9.2.4.tar.bz2    "http://ftp.postgresql.org/pub/source/v9.2.4/postgresql-9.2.4.tar.bz2"
-#my_work sqlite-autoconf-3071601 sqlite-autoconf-3071601.tar.gz "http://sqlite.org/2013/sqlite-autoconf-3071601.tar.gz"
+my_work sqlite-3071601      sqlite-amalgamation-3071601.zip    "http://sqlite.org/2013/sqlite-amalgamation-3071601.zip"
 
 my_work lua-5.2.2           lua-5.2.2.tar.gz            "http://www.lua.org/ftp/lua-5.2.2.tar.gz"
 #my_work SpiderMonkey-17.0.0 mozjs17.0.0.tar.gz          "http://ftp.mozilla.org/pub/mozilla.org/js/mozjs17.0.0.tar.gz"

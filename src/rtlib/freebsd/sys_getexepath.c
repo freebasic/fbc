@@ -10,6 +10,10 @@ char *fb_hGetExePath( char *dst, int maxlen )
 		if( len > maxlen ) {
 			len = maxlen;
 		}
+		else if( len == 0 ) {
+			/* keep the "/" rather than returning "" */
+			len = 1;
+		}
 
 		memcpy( dst, __fb_ctx.argv[0], len );
 		dst[len] = '\0';

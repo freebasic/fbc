@@ -2,8 +2,11 @@
 set -ex
 
 toplevel="$PWD"
-mkdir -p src sysroot sysroot/bin sysroot/include sysroot/lib
-prefix=$toplevel/sysroot
+mkdir -p src prefix prefix/bin prefix/include prefix/lib
+prefix=$toplevel/prefix
+
+licensedir=$toplevel/fbc/doc/licenses
+mkdir -p "$licensedir"
 
 my_report()
 {
@@ -201,9 +204,22 @@ my_build()
 			make install
 			;;
 
-		DevIL-*)
-			# TODO: Building the DLL doesn't work without libjasper.dll
-			./configure --host=$triplet --prefix=$prefix --disable-shared --enable-static \
+		DevIL-*-static)
+			export CPPFLAGS="-DIL_STATIC_LIB=1 -I$prefix/include"
+			export LDFLAGS="-static-libgcc -Wl,-Bstatic -L$prefix/lib"
+			export LIBS="-lstdc++"
+			./configure --host=$triplet --prefix=$prefix \
+				--disable-shared --enable-static \
+				--enable-ILU --enable-ILUT \
+				--disable-wdp
+			make
+			make install
+			;;
+
+		DevIL-*-dll)
+			export CPPFLAGS="-DMNG_USE_DLL=1 -I$prefix/include"
+			./configure --host=$triplet --prefix=$prefix \
+				--enable-shared --disable-static \
 				--enable-ILU --enable-ILUT \
 				--disable-wdp
 			make
@@ -314,6 +330,7 @@ my_build()
 			cd contrib/grx249
 
 			make -f makefile.w32 libs \
+				HAVE_LIBTIFF=y \
 				HAVE_LIBJPEG=y \
 				HAVE_LIBPNG=y \
 				NEED_ZLIB=y \
@@ -329,10 +346,32 @@ my_build()
 			;;
 
 		jasper-*)
-			# TODO: How to build a libjasper.dll? --enable-shared doesn't seem to do anything
+			# This only builds the static lib
+			# (TODO: even with --disable-static --enable-shared,
+			# only a static lib is produced, what's wrong?)
 			./configure --host=$triplet --prefix=$prefix
 			make
 			make install
+
+			# but we can create a DLL manually
+			mkdir build-dll
+			cd build-dll
+			ar x $prefix/lib/libjasper.a
+			gcc -shared -o libjasper-1.dll \
+				-Wl,--out-implib,libjasper.dll.a \
+				*.o \
+				-L$prefix/lib -ljpeg
+			cp *.dll $prefix/bin
+			cp *.a $prefix/lib
+
+			# Fix the libjasper.la to allow DevIL to compile properly against
+			# the libjasper-1.dll/libjasper.dll.a
+			sed	-e "s|dlname=''|dlname='../bin/libjasper-1.dll'|g" \
+				-e "s|library_names=''|library_names='libjasper.dll.a'|g" \
+				$prefix/lib/libjasper.la > $prefix/lib/libjasper.la.tmp
+			mv $prefix/lib/libjasper.la.tmp $prefix/lib/libjasper.la
+
+			cd ..
 			;;
 
 		libcaca-*)
@@ -388,6 +427,10 @@ my_build()
 			;;
 
 		libmng-*-dll)
+			# Note: When built with MNG_BUILD_DLL, libmng.h switches to __stdcall,
+			# so any users (i.e. DevIL) have to #define MNG_USE_DLL to match that,
+			# at least as long as libmng.dll.a exists, because the linker will prefer
+			# that over the static libmng.a lib (which uses cdecl and thus is incompatible).
 			gcc -shared -Wall $CPPFLAGS $CFLAGS \
 				-DMNG_BUILD_DLL \
 				-DMNG_SUPPORT_READ -DMNG_SUPPORT_DISPLAY -DMNG_SUPPORT_WRITE \
@@ -482,7 +525,8 @@ my_build()
 			./configure $confargs \
 				--enable-pcre16 --enable-pcre32 \
 				--disable-cpp \
-				--enable-utf --enable-unicode-properties
+				--enable-utf --enable-unicode-properties \
+				--enable-newline-is-crlf
 			make
 			make install
 			;;
@@ -600,6 +644,78 @@ my_build()
 	fi
 }
 
+my_license()
+{
+	local name="$1"
+
+	cd "$name"
+
+	case "$name" in
+	aspell-*)       cp COPYING                      $licensedir/aspell.txt;;
+	big_int-*)      cp $name/libbig_int/LICENSE     $licensedir/big_int.txt;;
+	bzip2-*)        cp LICENSE                      $licensedir/bzip2.txt;;
+	c-ares-*)       head -n16 ares_library_init.c > $licensedir/c-ares.txt;;
+	cgi-util-*)     cp COPYING.txt                  $licensedir/cgi-util.txt;;
+	cryptlib-*)     cp COPYING                      $licensedir/cryptlib.txt;;
+	CUnit-*)        cp COPYING                      $licensedir/CUnit.txt;;
+	curl-*)         cp COPYING                      $licensedir/curl.txt;;
+	DevIL-*)        cp COPYING                      $licensedir/DevIL.txt;;
+	disphelper-*)   cp readme.htm                   $licensedir/disphelper.html;;
+	expat-*)        cp COPYING                      $licensedir/expat.txt;;
+	flac-*)         cp COPYING.Xiph                 $licensedir/flac.txt;;
+	freeglut-*)     cp COPYING                      $licensedir/freeglut.txt;;
+	FreeImage-*)    cp license-fi.txt               $licensedir/FreeImage.txt;;
+	freetype-*)     cp docs/LICENSE.TXT             $licensedir/freetype.txt;;
+	gd-*)           cp COPYING                      $licensedir/GD.txt;;
+	gdsl-*)         cp COPYING                      $licensedir/gdsl.txt;;
+	giflib-*)       cp COPYING                      $licensedir/giflib.txt;;
+	glfw-*)         cp COPYING.txt                  $licensedir/glfw.txt;;
+	gmp-*)          cp COPYING.LIB                  $licensedir/gmp.txt;;
+	gnutls-*)       cp COPYING.LESSER               $licensedir/gnutls.txt
+	                cp COPYING                      $licensedir/gnutls-openssl.txt;;
+	grx-*)          cp contrib/grx249/copying.grx   $licensedir/grx.txt;;
+	gsl-*)          cp COPYING                      $licensedir/gsl.txt;;
+	jasper-*)       cp LICENSE                      $licensedir/jasper.txt;;
+	jpeg-*)         cp README                       $licensedir/jpeglib.txt;;
+	lcms-*)         cp COPYING                      $licensedir/lcms.txt;;
+	lcms2-*)        cp COPYING                      $licensedir/lcms2.txt;;
+	libffi-*)       cp LICENSE                      $licensedir/libffi.txt;;
+	libidn-*)       cp COPYING                      $licensedir/libidn.txt;;
+	libmetalink-*)  cp COPYING                      $licensedir/libmetalink.txt;;
+	libmng-*)       cp LICENSE                      $licensedir/libmng.txt;;
+	libogg-*)       cp COPYING                      $licensedir/libogg.txt;;
+	liboggz-*)      cp COPYING                      $licensedir/liboggz.txt;;
+	libpng-*)       cp LICENSE                      $licensedir/libpng.txt;;
+	libtasn1-*)     cp COPYING.LIB                  $licensedir/libtasn1.txt;;
+	libtheora-*)    cp COPYING                      $licensedir/libtheora.txt;;
+	libvorbis-*)    cp COPYING                      $licensedir/libvorbis.txt;;
+	libwebp-*)      cp COPYING                      $licensedir/libwebp.txt;;
+	libxml2-*)      cp COPYING                      $licensedir/libxml2.txt;;
+	libxslt-*)      cp COPYING                      $licensedir/libxslt.txt;;
+	libzip-*)       cp LICENSE                      $licensedir/libzip.txt;;
+	lua-*)          cp doc/readme.html              $licensedir/Lua.html;;
+	lzo-*)          cp COPYING                      $licensedir/LZO.txt;;
+	mxml-*)         cp COPYING                      $licensedir/mxml.txt;;
+	nettle-*)       cp COPYING.LIB                  $licensedir/nettle.txt;;
+	openal-soft-*)  cp COPYING                      $licensedir/openal-soft.txt;;
+	pcre-*)         cp LICENCE                      $licensedir/PCRE.txt;;
+	PDCurses-*)     cp README                       $licensedir/PDCurses.txt;;
+	pdflib-*)       cp src/readme.txt               $licensedir/pdflib.txt;;
+	QuickLZ-*)      head -n8 quicklz.c            > $licensedir/QuickLZ.txt;;
+	SDL-*)          cp COPYING                      $licensedir/SDL.txt;;
+	SDL_image-*)    cp COPYING                      $licensedir/SDL_image.txt;;
+	SDL_net-*)      cp COPYING                      $licensedir/SDL_net.txt;;
+	SDL_ttf-*)      cp COPYING                      $licensedir/SDL_ttf.txt;;
+	sqlite-*)       head -n10 sqlite3.h | tail -n9 > $licensedir/sqlite3.txt;;
+	tiff-*)         cp COPYRIGHT                    $licensedir/tiff.txt;;
+	tre-*)          cp LICENSE                      $licensedir/TRE.txt;;
+	xz-*)           cp COPYING                      $licensedir/xz.txt;;
+	zlib-*)         cp README                       $licensedir/zlib.txt;;
+	esac
+
+	cd ..
+}
+
 my_work()
 {
 	local name="$1"
@@ -610,6 +726,7 @@ my_work()
 	my_extract "$name" "$tarball"
 	my_patch "$name"
 	my_build "$name"
+	my_license "$name"
 }
 
 export PATH=$prefix/bin:$PATH
@@ -638,7 +755,7 @@ my_work QuickLZ-1.5.0 QuickLZ-1.5.0.tar.gz unused
 
 # xml, regex, math, util
 #my_work tinyxml2-master tinyxml2-master.zip      "--no-check-certificate https://github.com/leethomason/tinyxml2/archive/master.zip"
-my_work mxml-2.7        mxml-2.7.tar.gz          "http://ftp.easysw.com/pub/mxml/2.7/mxml-2.7.tar.gz"
+my_work mxml-2.7        mxml-2.7.tar.gz          "http://www.msweet.org/files/project3/mxml-2.7.tar.gz"
 my_work libxml2-2.9.0   libxml2-2.9.0.tar.gz     "ftp://xmlsoft.org/libxml2/libxml2-2.9.0.tar.gz"
 my_work libxslt-1.1.28  libxslt-1.1.28.tar.gz    "ftp://xmlsoft.org/libxml2/libxslt-1.1.28.tar.gz"
 my_work expat-2.1.0     expat-2.1.0.tar.gz       "http://sourceforge.net/projects/expat/files/expat/2.1.0/expat-2.1.0.tar.gz/download"
@@ -683,8 +800,9 @@ my_work lcms-1.19      lcms-1.19.tar.gz      "http://sourceforge.net/projects/lc
 my_work lcms2-2.4      lcms2-2.4.tar.gz      "http://sourceforge.net/projects/lcms/files/lcms/2.4/lcms2-2.4.tar.gz/download"
 my_work libmng-1.0.10-static libmng-1.0.10.tar.bz2 "http://sourceforge.net/projects/libmng/files/libmng-devel/1.0.10/libmng-1.0.10.tar.bz2/download"
 my_work libmng-1.0.10-dll    libmng-1.0.10.tar.bz2 "http://sourceforge.net/projects/libmng/files/libmng-devel/1.0.10/libmng-1.0.10.tar.bz2/download"
-#my_work jasper-1.900.1 jasper-1.900.1.zip    "http://www.ece.uvic.ca/~frodo/jasper/software/jasper-1.900.1.zip"
-#my_work DevIL-1.7.8    DevIL-1.7.8.tar.gz    "http://downloads.sourceforge.net/openil/DevIL-1.7.8.tar.gz"
+my_work jasper-1.900.1 jasper-1.900.1.zip    "http://www.ece.uvic.ca/~frodo/jasper/software/jasper-1.900.1.zip"
+my_work DevIL-1.7.8-static DevIL-1.7.8.tar.gz    "http://downloads.sourceforge.net/openil/DevIL-1.7.8.tar.gz"
+my_work DevIL-1.7.8-dll    DevIL-1.7.8.tar.gz    "http://downloads.sourceforge.net/openil/DevIL-1.7.8.tar.gz"
 my_work FreeImage-3.15.4-static  FreeImage3154.zip  "http://sourceforge.net/projects/freeimage/files/Source%20Distribution/3.15.4/FreeImage3154.zip/download"
 my_work FreeImage-3.15.4-dll     FreeImage3154.zip  "http://sourceforge.net/projects/freeimage/files/Source%20Distribution/3.15.4/FreeImage3154.zip/download"
 my_work gd-73cab5d8af96  gd-73cab5d8af96.zip  "--no-check-certificate https://bitbucket.org/libgd/gd-libgd/get/73cab5d8af96.zip"

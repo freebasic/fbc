@@ -1,0 +1,11 @@
+--- xmltest.cpp.orig	2013-04-08 22:40:04 +0000
++++ xmltest.cpp	2013-04-08 22:40:13 +0000
+@@ -15,7 +15,7 @@
+ 	_CrtMemState startMemState;
+ 	_CrtMemState endMemState;
+ #elif defined(MINGW32) || defined(__MINGW32__)
+-    #include <io.h>  // mkdir
++	#include <direct.h>  // mkdir
+ #else
+ 	#include <sys/stat.h>	// mkdir
+ #endif

@@ -56,5 +56,12 @@ char *fb_hGetExePath( char *dst, int maxlen )
 	/* upcase drive letter to be consistent with win32 port */
 	dst[0] = toupper( dst[0] );
 
+	/* just a drive letter? make sure \ follows to prevent using relative path */
+	if( maxlen > 3 && dst[2] == '\0' && dst[1] == ':' && isalpha(dst[0]) )
+	{
+		dst[2] = '\\';
+		dst[3] = '\0';
+	}
+
 	return p;
 }
