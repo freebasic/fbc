@@ -23,7 +23,11 @@
 
 #inclib "bz2"
 
+#ifdef __FB_WIN32__
+extern "Windows"
+#else
 extern "C"
+#endif
 
 #define BZ_RUN               0
 #define BZ_FLUSH             1
