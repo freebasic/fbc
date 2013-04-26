@@ -42,6 +42,7 @@ const IMG_HEIGHT = 200
 dim as gdImagePtr img = gdImageCreateTrueColor( IMG_WIDTH, IMG_HEIGHT )
 
 '' draw on it
+print "creating example image..."
 randomize( timer() )
 for i as integer = 1 to 1000
 	dim as integer x1 = rnd * (IMG_WIDTH-1)
@@ -53,6 +54,7 @@ for i as integer = 1 to 1000
 next
 
 '' save to files
+print "saving it as test.gif, test.png and test.jpg in " & curdir( )
 saveImageAs( img, "test.gif", FORMAT_GIF )
 saveImageAs( img, "test.png", FORMAT_PNG )
 saveImageAs( img, "test.jpg", FORMAT_JPEG )
