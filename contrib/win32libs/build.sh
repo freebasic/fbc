@@ -327,6 +327,7 @@ my_build()
 			cd contrib/grx249
 
 			make -f makefile.w32 libs \
+				HAVE_LIBTIFF=y \
 				HAVE_LIBJPEG=y \
 				HAVE_LIBPNG=y \
 				NEED_ZLIB=y \

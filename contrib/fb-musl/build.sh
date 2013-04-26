@@ -516,6 +516,7 @@ my_build()
 
 		grx-*-con)
 			make -f makefile.lnx libs \
+				HAVE_LIBTIFF=y \
 				HAVE_LIBJPEG=y \
 				HAVE_LIBPNG=y \
 				NEED_ZLIB=y \
@@ -535,6 +536,7 @@ my_build()
 
 		grx-*-X)
 			make -f makefile.x11 libs \
+				HAVE_LIBTIFF=y \
 				HAVE_LIBJPEG=y \
 				HAVE_LIBPNG=y \
 				NEED_ZLIB=y \
