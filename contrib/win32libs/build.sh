@@ -522,7 +522,8 @@ my_build()
 			./configure $confargs \
 				--enable-pcre16 --enable-pcre32 \
 				--disable-cpp \
-				--enable-utf --enable-unicode-properties
+				--enable-utf --enable-unicode-properties \
+				--enable-newline-is-crlf
 			make
 			make install
 			;;
