@@ -2,8 +2,8 @@
 set -ex
 
 toplevel="$PWD"
-mkdir -p src sysroot sysroot/bin sysroot/include sysroot/lib
-prefix=$toplevel/sysroot
+mkdir -p src prefix prefix/bin prefix/include prefix/lib
+prefix=$toplevel/prefix
 
 my_report()
 {
@@ -201,9 +201,22 @@ my_build()
 			make install
 			;;
 
-		DevIL-*)
-			# TODO: Building the DLL doesn't work without libjasper.dll
-			./configure --host=$triplet --prefix=$prefix --disable-shared --enable-static \
+		DevIL-*-static)
+			export CPPFLAGS="-DIL_STATIC_LIB=1 -I$prefix/include"
+			export LDFLAGS="-static-libgcc -Wl,-Bstatic -L$prefix/lib"
+			export LIBS="-lstdc++"
+			./configure --host=$triplet --prefix=$prefix \
+				--disable-shared --enable-static \
+				--enable-ILU --enable-ILUT \
+				--disable-wdp
+			make
+			make install
+			;;
+
+		DevIL-*-dll)
+			export CPPFLAGS="-DMNG_USE_DLL=1 -I$prefix/include"
+			./configure --host=$triplet --prefix=$prefix \
+				--enable-shared --disable-static \
 				--enable-ILU --enable-ILUT \
 				--disable-wdp
 			make
@@ -329,10 +342,32 @@ my_build()
 			;;
 
 		jasper-*)
-			# TODO: How to build a libjasper.dll? --enable-shared doesn't seem to do anything
+			# This only builds the static lib
+			# (TODO: even with --disable-static --enable-shared,
+			# only a static lib is produced, what's wrong?)
 			./configure --host=$triplet --prefix=$prefix
 			make
 			make install
+
+			# but we can create a DLL manually
+			mkdir build-dll
+			cd build-dll
+			ar x $prefix/lib/libjasper.a
+			gcc -shared -o libjasper-1.dll \
+				-Wl,--out-implib,libjasper.dll.a \
+				*.o \
+				-L$prefix/lib -ljpeg
+			cp *.dll $prefix/bin
+			cp *.a $prefix/lib
+
+			# Fix the libjasper.la to allow DevIL to compile properly against
+			# the libjasper-1.dll/libjasper.dll.a
+			sed	-e "s|dlname=''|dlname='../bin/libjasper-1.dll'|g" \
+				-e "s|library_names=''|library_names='libjasper.dll.a'|g" \
+				$prefix/lib/libjasper.la > $prefix/lib/libjasper.la.tmp
+			mv $prefix/lib/libjasper.la.tmp $prefix/lib/libjasper.la
+
+			cd ..
 			;;
 
 		libcaca-*)
@@ -388,6 +423,10 @@ my_build()
 			;;
 
 		libmng-*-dll)
+			# Note: When built with MNG_BUILD_DLL, libmng.h switches to __stdcall,
+			# so any users (i.e. DevIL) have to #define MNG_USE_DLL to match that,
+			# at least as long as libmng.dll.a exists, because the linker will prefer
+			# that over the static libmng.a lib (which uses cdecl and thus is incompatible).
 			gcc -shared -Wall $CPPFLAGS $CFLAGS \
 				-DMNG_BUILD_DLL \
 				-DMNG_SUPPORT_READ -DMNG_SUPPORT_DISPLAY -DMNG_SUPPORT_WRITE \
@@ -683,8 +722,9 @@ my_work lcms-1.19      lcms-1.19.tar.gz      "http://sourceforge.net/projects/lc
 my_work lcms2-2.4      lcms2-2.4.tar.gz      "http://sourceforge.net/projects/lcms/files/lcms/2.4/lcms2-2.4.tar.gz/download"
 my_work libmng-1.0.10-static libmng-1.0.10.tar.bz2 "http://sourceforge.net/projects/libmng/files/libmng-devel/1.0.10/libmng-1.0.10.tar.bz2/download"
 my_work libmng-1.0.10-dll    libmng-1.0.10.tar.bz2 "http://sourceforge.net/projects/libmng/files/libmng-devel/1.0.10/libmng-1.0.10.tar.bz2/download"
-#my_work jasper-1.900.1 jasper-1.900.1.zip    "http://www.ece.uvic.ca/~frodo/jasper/software/jasper-1.900.1.zip"
-#my_work DevIL-1.7.8    DevIL-1.7.8.tar.gz    "http://downloads.sourceforge.net/openil/DevIL-1.7.8.tar.gz"
+my_work jasper-1.900.1 jasper-1.900.1.zip    "http://www.ece.uvic.ca/~frodo/jasper/software/jasper-1.900.1.zip"
+my_work DevIL-1.7.8-static DevIL-1.7.8.tar.gz    "http://downloads.sourceforge.net/openil/DevIL-1.7.8.tar.gz"
+my_work DevIL-1.7.8-dll    DevIL-1.7.8.tar.gz    "http://downloads.sourceforge.net/openil/DevIL-1.7.8.tar.gz"
 my_work FreeImage-3.15.4-static  FreeImage3154.zip  "http://sourceforge.net/projects/freeimage/files/Source%20Distribution/3.15.4/FreeImage3154.zip/download"
 my_work FreeImage-3.15.4-dll     FreeImage3154.zip  "http://sourceforge.net/projects/freeimage/files/Source%20Distribution/3.15.4/FreeImage3154.zip/download"
 my_work gd-73cab5d8af96  gd-73cab5d8af96.zip  "--no-check-certificate https://bitbucket.org/libgd/gd-libgd/get/73cab5d8af96.zip"
