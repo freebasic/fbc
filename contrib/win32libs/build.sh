@@ -5,6 +5,9 @@ toplevel="$PWD"
 mkdir -p src prefix prefix/bin prefix/include prefix/lib
 prefix=$toplevel/prefix
 
+licensedir=$toplevel/fbc/doc/licenses
+mkdir -p "$licensedir"
+
 my_report()
 {
 	echo "------------------------------------------------------------"
@@ -641,6 +644,78 @@ my_build()
 	fi
 }
 
+my_license()
+{
+	local name="$1"
+
+	cd "$name"
+
+	case "$name" in
+	aspell-*)       cp COPYING                      $licensedir/aspell.txt;;
+	big_int-*)      cp $name/libbig_int/LICENSE     $licensedir/big_int.txt;;
+	bzip2-*)        cp LICENSE                      $licensedir/bzip2.txt;;
+	c-ares-*)       head -n16 ares_library_init.c > $licensedir/c-ares.txt;;
+	cgi-util-*)     cp COPYING.txt                  $licensedir/cgi-util.txt;;
+	cryptlib-*)     cp COPYING                      $licensedir/cryptlib.txt;;
+	CUnit-*)        cp COPYING                      $licensedir/CUnit.txt;;
+	curl-*)         cp COPYING                      $licensedir/curl.txt;;
+	DevIL-*)        cp COPYING                      $licensedir/DevIL.txt;;
+	disphelper-*)   cp readme.htm                   $licensedir/disphelper.html;;
+	expat-*)        cp COPYING                      $licensedir/expat.txt;;
+	flac-*)         cp COPYING.Xiph                 $licensedir/flac.txt;;
+	freeglut-*)     cp COPYING                      $licensedir/freeglut.txt;;
+	FreeImage-*)    cp license-fi.txt               $licensedir/FreeImage.txt;;
+	freetype-*)     cp docs/LICENSE.TXT             $licensedir/freetype.txt;;
+	gd-*)           cp COPYING                      $licensedir/GD.txt;;
+	gdsl-*)         cp COPYING                      $licensedir/gdsl.txt;;
+	giflib-*)       cp COPYING                      $licensedir/giflib.txt;;
+	glfw-*)         cp COPYING.txt                  $licensedir/glfw.txt;;
+	gmp-*)          cp COPYING.LIB                  $licensedir/gmp.txt;;
+	gnutls-*)       cp COPYING.LESSER               $licensedir/gnutls.txt
+	                cp COPYING                      $licensedir/gnutls-openssl.txt;;
+	grx-*)          cp contrib/grx249/copying.grx   $licensedir/grx.txt;;
+	gsl-*)          cp COPYING                      $licensedir/gsl.txt;;
+	jasper-*)       cp LICENSE                      $licensedir/jasper.txt;;
+	jpeg-*)         cp README                       $licensedir/jpeglib.txt;;
+	lcms-*)         cp COPYING                      $licensedir/lcms.txt;;
+	lcms2-*)        cp COPYING                      $licensedir/lcms2.txt;;
+	libffi-*)       cp LICENSE                      $licensedir/libffi.txt;;
+	libidn-*)       cp COPYING                      $licensedir/libidn.txt;;
+	libmetalink-*)  cp COPYING                      $licensedir/libmetalink.txt;;
+	libmng-*)       cp LICENSE                      $licensedir/libmng.txt;;
+	libogg-*)       cp COPYING                      $licensedir/libogg.txt;;
+	liboggz-*)      cp COPYING                      $licensedir/liboggz.txt;;
+	libpng-*)       cp LICENSE                      $licensedir/libpng.txt;;
+	libtasn1-*)     cp COPYING.LIB                  $licensedir/libtasn1.txt;;
+	libtheora-*)    cp COPYING                      $licensedir/libtheora.txt;;
+	libvorbis-*)    cp COPYING                      $licensedir/libvorbis.txt;;
+	libwebp-*)      cp COPYING                      $licensedir/libwebp.txt;;
+	libxml2-*)      cp COPYING                      $licensedir/libxml2.txt;;
+	libxslt-*)      cp COPYING                      $licensedir/libxslt.txt;;
+	libzip-*)       cp LICENSE                      $licensedir/libzip.txt;;
+	lua-*)          cp doc/readme.html              $licensedir/Lua.html;;
+	lzo-*)          cp COPYING                      $licensedir/LZO.txt;;
+	mxml-*)         cp COPYING                      $licensedir/mxml.txt;;
+	nettle-*)       cp COPYING.LIB                  $licensedir/nettle.txt;;
+	openal-soft-*)  cp COPYING                      $licensedir/openal-soft.txt;;
+	pcre-*)         cp LICENCE                      $licensedir/PCRE.txt;;
+	PDCurses-*)     cp README                       $licensedir/PDCurses.txt;;
+	pdflib-*)       cp src/readme.txt               $licensedir/pdflib.txt;;
+	QuickLZ-*)      head -n8 quicklz.c            > $licensedir/QuickLZ.txt;;
+	SDL-*)          cp COPYING                      $licensedir/SDL.txt;;
+	SDL_image-*)    cp COPYING                      $licensedir/SDL_image.txt;;
+	SDL_net-*)      cp COPYING                      $licensedir/SDL_net.txt;;
+	SDL_ttf-*)      cp COPYING                      $licensedir/SDL_ttf.txt;;
+	sqlite-*)       head -n10 sqlite3.h | tail -n9 > $licensedir/sqlite3.txt;;
+	tiff-*)         cp COPYRIGHT                    $licensedir/tiff.txt;;
+	tre-*)          cp LICENSE                      $licensedir/TRE.txt;;
+	xz-*)           cp COPYING                      $licensedir/xz.txt;;
+	zlib-*)         cp README                       $licensedir/zlib.txt;;
+	esac
+
+	cd ..
+}
+
 my_work()
 {
 	local name="$1"
@@ -651,6 +726,7 @@ my_work()
 	my_extract "$name" "$tarball"
 	my_patch "$name"
 	my_build "$name"
+	my_license "$name"
 }
 
 export PATH=$prefix/bin:$PATH

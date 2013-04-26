@@ -1,9 +1,12 @@
 #!/bin/sh
 set -e
 
-toplevel="$PWD"
 mkdir -p bin src prefix prefix/bin prefix/include prefix/lib
+mkdir -p fbc/doc/licenses fbc/lib/dos
+
+toplevel="$PWD"
 prefix=$toplevel/prefix
+licensedir=$toplevel/fbc/doc/licenses
 
 triplet=i586-pc-msdosdjgpp
 export      AS="$triplet-as"
@@ -392,6 +395,49 @@ my_build()
 	fi
 }
 
+my_license()
+{
+	local name="$1"
+
+	cd "$name"
+
+	case "$name" in
+	aspell-*)   cp COPYING                    $licensedir/aspell.txt;;
+	big_int-*)  cp $name/libbig_int/LICENSE   $licensedir/big_int.txt;;
+	bzip2-*)    cp LICENSE                    $licensedir/bzip2.txt;;
+	CUnit-*)    cp COPYING                    $licensedir/CUnit.txt;;
+	DevIL-*)    cp COPYING                    $licensedir/DevIL.txt;;
+	expat-*)    cp COPYING                    $licensedir/expat.txt;;
+	gd-*)       cp COPYING                    $licensedir/GD.txt;;
+	gdsl-*)     cp COPYING                    $licensedir/gdsl.txt;;
+	giflib-*)   cp COPYING                    $licensedir/giflib.txt;;
+	gmp-*)      cp COPYING.LIB                $licensedir/gmp.txt;;
+	grx-*)      cp contrib/grx249/copying.grx $licensedir/grx.txt;;
+	gsl-*)      cp COPYING                    $licensedir/gsl.txt;;
+	jasper-*)   cp LICENSE                    $licensedir/jasper.txt;;
+	jpeg-*)     cp README                     $licensedir/jpeglib.txt;;
+	lcms-*)     cp COPYING                    $licensedir/lcms.txt;;
+	lcms2-*)    cp COPYING                    $licensedir/lcms2.txt;;
+	libmng-*)   cp LICENSE                    $licensedir/libmng.txt;;
+	libpng-*)   cp LICENSE                    $licensedir/libpng.txt;;
+	libxml2-*)  cp COPYING                    $licensedir/libxml2.txt;;
+	libxslt-*)  cp COPYING                    $licensedir/libxslt.txt;;
+	libzip-*)   cp LICENSE                    $licensedir/libzip.txt;;
+	lua-*)      cp doc/readme.html            $licensedir/Lua.html;;
+	lzo-*)      cp COPYING                    $licensedir/LZO.txt;;
+	mxml-*)     cp COPYING                    $licensedir/mxml.txt;;
+	pcre-*)     cp LICENCE                    $licensedir/PCRE.txt;;
+	PDCurses-*) cp README                     $licensedir/PDCurses.txt;;
+	QuickLZ-*)  head -n8 quicklz.c          > $licensedir/QuickLZ.txt;;
+	tiff-*)     cp COPYRIGHT                  $licensedir/tiff.txt;;
+	tre-*)      cp LICENSE                    $licensedir/TRE.txt;;
+	xz-*)       cp COPYING                    $licensedir/xz.txt;;
+	zlib-*)     cp README                     $licensedir/zlib.txt;;
+	esac
+
+	cd ..
+}
+
 my_work()
 {
 	local name="$1"
@@ -402,6 +448,7 @@ my_work()
 	my_extract "$name" "$tarball"
 	my_patch "$name"
 	my_build "$name"
+	my_license "$name"
 }
 
 
@@ -462,7 +509,6 @@ my_work lua-5.2.2  lua-5.2.2.tar.gz  "http://www.lua.org/ftp/lua-5.2.2.tar.gz"
 ################################################################################
 
 # Copy in the libraries
-mkdir -p fbc/lib/dos
 cp $prefix/lib/*.a   fbc/lib/dos
 
 $STRIP -g fbc/lib/dos/*
