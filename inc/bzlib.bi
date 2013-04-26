@@ -215,13 +215,13 @@ declare function BZ2_bzdopen( _
       byval mode as const zstring ptr _
    ) as bzfile ptr
          
-declare function BZ2_bzread_( _
+declare function BZ2_bzread_ alias "BZ2_bzread"( _
       byval  b as bzfile ptr, _
       byval buf as any ptr, _
       byval len_ as integer _
    ) as integer
 
-declare function BZ2_bzwrite_( _
+declare function BZ2_bzwrite_ alias "BZ2_bzwrite"( _
       byval  b as bzfile ptr, _ 
       byval buf as any ptr, _
       byval len_ as integer _
