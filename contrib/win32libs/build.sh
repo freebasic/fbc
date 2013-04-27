@@ -1,12 +1,32 @@
-#!/bin/sh
+#!/bin/bash
 set -ex
 
-toplevel="$PWD"
 mkdir -p src prefix prefix/bin prefix/include prefix/lib
-prefix=$toplevel/prefix
+mkdir -p fbc/bin/win32 fbc/bin/linux
+mkdir -p fbc/lib/win32
+mkdir -p fbc/doc/licenses
 
+toplevel="$PWD"
+prefix=$toplevel/prefix
 licensedir=$toplevel/fbc/doc/licenses
-mkdir -p "$licensedir"
+
+triplet="i686-w64-mingw32"
+
+# TODO: For cross-compiling, we'll need to override pkg-config just as done
+# in the FB-musllibc build script
+crosstoolprefix=""
+#crosstoolprefix="${triplet}-"
+export      AS="${crosstoolprefix}as"
+export     CPP="${crosstoolprefix}cpp"
+export      CC="${crosstoolprefix}gcc"
+export     CXX="${crosstoolprefix}g++"
+export      AR="${crosstoolprefix}ar"
+export  RANLIB="${crosstoolprefix}ranlib"
+export      LD="${crosstoolprefix}ld"
+export DLLTOOL="${crosstoolprefix}dlltool"
+export WINDRES="${crosstoolprefix}windres"
+export   STRIP="${crosstoolprefix}strip"
+export STRINGS="${crosstoolprefix}strings"
 
 my_report()
 {
@@ -98,6 +118,9 @@ my_patch()
 		aspell-*)
 			patch -p0 < ../src/aspell.patch
 			;;
+		cryptlib-*)
+			find . -type f -print0 | xargs -0 dos2unix && true
+			;;
 		DevIL-*)
 			patch -p0 < ../src/DevIL.patch
 			;;
@@ -120,6 +143,7 @@ my_patch()
 			patch -p0 < ../src/libxslt.patch
 			;;
 		TinyPTC-Windows-*)
+			find . -type f -print0 | xargs -0 dos2unix && true
 			patch -p1 < ../src/TinyPTC-Windows.patch
 			;;
 		tinyxml2-*)
@@ -147,27 +171,26 @@ my_build()
 		export CXXFLAGS="-O2 -L$prefix/lib"
 		export LDFLAGS="-L$prefix/lib"
 
-		triplet="i686-w64-mingw32"
-		confargs="--build=$triplet --host=$triplet --prefix=$prefix --enable-shared --enable-static"
+		confargs="--host=$triplet --prefix=$prefix --enable-shared --enable-static"
 
 		case $name in
 		aspell-*)
-			# Aspell hard-codes the prefix path, but we don't
-			# want that at all, so use --prefix=/ for now and hope
-			# for the best
-			./configure --build=$triplet --host=$triplet \
-				--prefix=/ \
+			# Aspell hard-codes the prefix path, even with the
+			# --enable-win32-relocatable option, but we don't want
+			# that at all, so use --prefix=/usr/local for now and
+			# hope for the best.
+			./configure --host=$triplet \
 				--enable-shared --enable-static \
 				--enable-win32-relocatable \
 				--disable-nls
 			make
-			make install DESTDIR=$prefix
+			make install prefix="" DESTDIR=$prefix
 			;;
 
 		big_int-*)
 			cd $name/libbig_int
-			gcc $CPPFLAGS $CFLAGS -Wall -c -I include src/*.c src/low_level_funcs/*.c
-			ar rcs libbig_int.a *.o
+			$CC $CPPFLAGS $CFLAGS -Wall -c -I include src/*.c src/low_level_funcs/*.c
+			$AR rcs libbig_int.a *.o
 			cp libbig_int.a $prefix/lib
 			mkdir -p $prefix/include/big_int
 			cp include/*.h $prefix/include/big_int
@@ -175,26 +198,37 @@ my_build()
 			;;
 
 		bzip2-*)
-			make libbz2.a PREFIX="$prefix" \
-				CFLAGS="$CPPFLAGS $CFLAGS" LDFLAGS="$LDFLAGS"
-			cp libbz2.a $prefix/lib
+			$CC $CPPFLAGS $CFLAGS -c \
+				blocksort.c huffman.c crctable.c \
+				randtable.c compress.c decompress.c bzlib.c
+			$AR rcs libbz2.a \
+				blocksort.o huffman.o crctable.o \
+				randtable.o compress.o decompress.o bzlib.o
+			$CC -shared -o libbz2.dll \
+				-Wl,--out-implib,libbz2.dll.a \
+				blocksort.o huffman.o crctable.o \
+				randtable.o compress.o decompress.o bzlib.o
 			cp bzlib.h $prefix/include
+			cp *.a $prefix/lib
+			cp *.dll $prefix/bin
 			;;
 
 		cgi-util-*)
-			make install-a \
-				CFLAGS="$CPPFLAGS $CFLAGS" \
-				INCDIR=$prefix/include LIBDIR=$prefix/lib
+			$CC $CPPFLAGS $CFLAGS -c cgi-util.c
+			$AR rcs libcgi-util.a cgi-util.o
+			cp cgi-util.h $prefix/include
+			cp *.a $prefix/lib
 			;;
 
 		cryptlib-*)
 			# This builds the static lib
-			make CC="gcc"
+			make CPP="$CPP" CC="$CC" CXX="$CXX" LD="$LD" AR="$AR" STRIP="$STRIP" \
+				OSNAME="MINGW32_NT-5.1"
 			cp libcl.a $prefix/lib
 
 			# The DLL is already precompiled
 			cp cl32.dll $prefix/bin
-			dlltool --input-def crypt32.def --dllname cl32.dll --output-lib libcl.dll.a
+			$DLLTOOL --input-def crypt32.def --dllname cl32.dll --output-lib libcl.dll.a
 			cp libcl.dll.a $prefix/lib
 			;;
 
@@ -228,8 +262,8 @@ my_build()
 
 		disphelper-*)
 			cd source
-			gcc $CPPFLAGS $CFLAGS -Wall -c *.c
-			ar rcs libdisphelper.a *.o
+			$CC $CPPFLAGS $CFLAGS -Wall -c *.c
+			$AR rcs libdisphelper.a *.o
 			cp libdisphelper.a $prefix/lib
 			cp disphelper.h $prefix/include
 			cd ..
@@ -259,7 +293,8 @@ my_build()
 			unset CXXFLAGS
 			unset LDFLAGS
 			make -f Makefile.mingw all INSTALLDIR=$prefix \
-				FREEIMAGE_LIBRARY_TYPE=STATIC
+				FREEIMAGE_LIBRARY_TYPE=STATIC \
+				CC="$CC" LD="$CXX" DLLTOOL="$DLLTOOL" RC="$WINDRES"
 			cp Dist/libFreeImage.a $prefix/lib
 			cp Dist/FreeImage.h $prefix/include
 			;;
@@ -269,24 +304,32 @@ my_build()
 			unset CXXFLAGS
 			unset LDFLAGS
 			make -f Makefile.mingw all INSTALLDIR=$prefix \
-				FREEIMAGE_LIBRARY_TYPE=SHARED
+				FREEIMAGE_LIBRARY_TYPE=SHARED \
+				CC="$CC" LD="$CXX" DLLTOOL="$DLLTOOL" RC="$WINDRES"
 			cp Dist/FreeImage.dll $prefix/bin
 			cp Dist/FreeImage.lib $prefix/lib/libFreeImage.dll.a
 			;;
 
 		gd-73cab5d8af96)
-			cmake . -G "MSYS Makefiles" \
-				-DENABLE_PNG=1 -DENABLE_JPEG=1 -DENABLE_TIFF=1 \
-				-DCMAKE_INSTALL_PREFIX=$prefix \
+			# -G "MSYS Makefiles"
+			cmake . \
+				-DCMAKE_SYSTEM_NAME="Windows" \
+				-DCMAKE_C_COMPILER="$CC" \
+				-DCMAKE_CXX_COMPILER="$CXX" \
+				-DCMAKE_RC_COMPILER="$WINDRES" \
 				-DCMAKE_FIND_ROOT_PATH=$prefix \
+				-DCMAKE_FIND_ROOT_PATH_MODE_PROGRAM=NEVER \
 				-DCMAKE_FIND_ROOT_PATH_MODE_LIBRARY=ONLY \
-				-DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=ONLY
+				-DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=ONLY \
+				\
+				-DENABLE_PNG=1 -DENABLE_JPEG=1 -DENABLE_TIFF=1 \
+				-DCMAKE_INSTALL_PREFIX=$prefix
 			make
 			make install
 			;;
 
 		glfw-*)
-			make win32-msys
+			make win32-msys CC="$CC" MKLIB="$AR" DLLTOOL="$DLLTOOL"
 			cp lib/win32/glfw.dll $prefix/bin
 			cp lib/win32/libglfwdll.a $prefix/lib
 			cp lib/win32/libglfw.a $prefix/lib
@@ -303,16 +346,68 @@ my_build()
 			# to avoid overwriting headers/*.pc/*.la files from
 			# the DLL install.
 
-			mkdir build-dll
+			# Observed problem: When cross-compiling from Linux to
+			# MinGW with CC set, gmp's libtool does
+			#    gcc ... -o .libs/libgmp-10.dll -Xlinker --out-implib -Xlinker .libs/libgmp-10.dll
+			# i.e. output DLL and import library are given the same name,
+			# and one will probably overwrite the other. Besides that,
+			# libgmp.lib as symlink to libgmp-10.dll is generated.
+			# Instead there should be just a .dll and the .dll.a
+			# import lib.
+			#
+			# This seems to happen due to the library_names_spec
+			# variable in the generated libtool file. It is set
+			# by configure in code coming from aclocal.m4:
+			#
+			#  case $GCC,$cc_basename in
+			#  yes,*)
+			#    # gcc
+			#    ...
+			#    library_names_spec='$libname.dll.a'
+			#    ...
+			#    ;;
+			#
+			#  *,cl*)
+			#    # Native MSVC
+			#    ...
+			#    library_names_spec='${libname}.dll.lib'
+			#    ...
+			#    ;;
+			#
+			#  *)
+			#    # Assume MSVC wrapper
+			#    ...
+			#    library_names_spec='${libname}`echo ${release} | $SED -e 's/[[.]]/-/g'`${versuffix}${shared_ext} $libname.lib'
+			#    ...
+			#    ;;
+			#  esac
+			#
+			# configure sets GCC to yes when using GNU CC, but later
+			# it does GCC=$GXX, but GXX isn't set, so GCC ends up
+			# empty instead of yes, causing the "MSVC wrapper" part
+			# from the above case block to be used, instead of the
+			# "gcc" part. This is wrong when cross-compiling for
+			# MinGW though.
+			#
+			# This is related to CC being set, and to
+			# cross-compiling. gmp's configure has special code that
+			# checks for this situation and behaves differently
+			# depending on whether CC was set. Not setting CC fixes
+			# the issue. Another (hackish) work-around seems to be
+			# to set GXX=yes manually.
+
+			mkdir -p build-dll
 			cd build-dll
+				GXX=yes \
 				../configure --host=$triplet --prefix=$prefix \
 					--enable-shared --disable-static
 				make
 				make install
 			cd ..
 
-			mkdir build-static
+			mkdir -p build-static
 			cd build-static
+				GXX=yes \
 				../configure --host=$triplet --prefix=$prefix \
 					--disable-shared --enable-static
 				make
@@ -338,7 +433,8 @@ my_build()
 				EP= \
 				prefix="$prefix" \
 				CCOPT="$CPPFLAGS $CFLAGS -fno-strict-aliasing -Wall" \
-				LDOPT="$LDFLAGS -s"
+				LDOPT="$LDFLAGS -s" \
+				CROSS_PLATFORM="$crosstoolprefix"
 
 			cp lib/win32/libgrx20.a $prefix/lib
 
@@ -356,8 +452,8 @@ my_build()
 			# but we can create a DLL manually
 			mkdir build-dll
 			cd build-dll
-			ar x $prefix/lib/libjasper.a
-			gcc -shared -o libjasper-1.dll \
+			$AR x $prefix/lib/libjasper.a
+			$CC -shared -o libjasper-1.dll \
 				-Wl,--out-implib,libjasper.dll.a \
 				*.o \
 				-L$prefix/lib -ljpeg
@@ -417,11 +513,11 @@ my_build()
 			;;
 
 		libmng-*-static)
-			gcc -Wall $CPPFLAGS $CFLAGS \
+			$CC $CPPFLAGS $CFLAGS \
 				-DMNG_SUPPORT_READ -DMNG_SUPPORT_DISPLAY -DMNG_SUPPORT_WRITE \
 				-DMNG_ACCESS_CHUNKS -DMNG_STORE_CHUNKS \
 				*.c -c
-			ar rcs libmng.a *.o
+			$AR rcs libmng.a *.o
 			cp libmng.a $prefix/lib
 			cp libmng.h libmng_conf.h libmng_types.h $prefix/include
 			;;
@@ -431,7 +527,7 @@ my_build()
 			# so any users (i.e. DevIL) have to #define MNG_USE_DLL to match that,
 			# at least as long as libmng.dll.a exists, because the linker will prefer
 			# that over the static libmng.a lib (which uses cdecl and thus is incompatible).
-			gcc -shared -Wall $CPPFLAGS $CFLAGS \
+			$CC -shared -Wall $CPPFLAGS $CFLAGS \
 				-DMNG_BUILD_DLL \
 				-DMNG_SUPPORT_READ -DMNG_SUPPORT_DISPLAY -DMNG_SUPPORT_WRITE \
 				-DMNG_ACCESS_CHUNKS -DMNG_STORE_CHUNKS \
@@ -466,7 +562,8 @@ my_build()
 			;;
 
 		lua-*)
-			make mingw install INSTALL_TOP=$prefix
+			make mingw install INSTALL_TOP=$prefix \
+				CC="$CC" AR="$AR rcu" RANLIB="$RANLIB"
 			cp src/lua52.dll $prefix/bin
 			;;
 
@@ -483,15 +580,15 @@ my_build()
 
 			mkdir -p build-static
 			cd build-static
-			gcc $CPPFLAGS $CFLAGS -Wall -c $mxmlsrcs
-			ar rcs libmxml.a *.o
+			$CC $CPPFLAGS $CFLAGS -Wall -c $mxmlsrcs
+			$AR rcs libmxml.a *.o
 			cp libmxml.a $prefix/lib
 			cd ..
 
 			mkdir -p build-dll
 			cd build-dll
-			gcc $CPPFLAGS $CFLAGS -DMXML1_EXPORTS -Wall -c $mxmlsrcs
-			gcc $CFLAGS $LDFLAGS -shared -o mxml.dll *.o -Wl,--out-implib,libmxml.dll.a
+			$CC $CPPFLAGS $CFLAGS $LDFLAGS -DMXML1_EXPORTS $mxmlsrcs \
+				-shared -o mxml.dll -Wl,--out-implib,libmxml.dll.a
 			cp mxml.dll $prefix/bin
 			cp libmxml.dll.a $prefix/lib
 			cd ..
@@ -506,7 +603,17 @@ my_build()
 		openal-soft-*)
 			mkdir -p build-dll
 			cd build-dll
-			cmake .. -G "MSYS Makefiles" \
+			# -G "MSYS Makefiles"
+			cmake .. \
+				-DCMAKE_SYSTEM_NAME="Windows" \
+				-DCMAKE_C_COMPILER="$CC" \
+				-DCMAKE_CXX_COMPILER="$CXX" \
+				-DCMAKE_RC_COMPILER="$WINDRES" \
+				-DCMAKE_FIND_ROOT_PATH=$prefix \
+				-DCMAKE_FIND_ROOT_PATH_MODE_PROGRAM=NEVER \
+				-DCMAKE_FIND_ROOT_PATH_MODE_LIBRARY=ONLY \
+				-DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=ONLY \
+				\
 				-DCMAKE_INSTALL_PREFIX=$prefix
 			make
 			make install
@@ -514,14 +621,28 @@ my_build()
 
 			mkdir -p build-static
 			cd build-static
-			cmake .. -G "MSYS Makefiles" \
-				-DCMAKE_INSTALL_PREFIX=$prefix -DLIBTYPE=STATIC
+			# -G "MSYS Makefiles"
+			cmake .. \
+				-DCMAKE_SYSTEM_NAME="Windows" \
+				-DCMAKE_C_COMPILER="$CC" \
+				-DCMAKE_CXX_COMPILER="$CXX" \
+				-DCMAKE_RC_COMPILER="$WINDRES" \
+				-DCMAKE_FIND_ROOT_PATH=$prefix \
+				-DCMAKE_FIND_ROOT_PATH_MODE_PROGRAM=NEVER \
+				-DCMAKE_FIND_ROOT_PATH_MODE_LIBRARY=ONLY \
+				-DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=ONLY \
+				\
+				-DCMAKE_INSTALL_PREFIX=$prefix \
+				-DLIBTYPE=STATIC
 			make
 			make install
 			cd ..
 			;;
 
 		pcre-*)
+			# Setting CC_FOR_BUILD to avoid pcre's config.guess
+			# picking up CC and failing to detect the build system
+			CC_FOR_BUILD="gcc" \
 			./configure $confargs \
 				--enable-pcre16 --enable-pcre32 \
 				--disable-cpp \
@@ -536,14 +657,16 @@ my_build()
 
 			mkdir build-static
 			cd build-static
-			make -f ../gccwin32.mak libs PDCURSES_SRCDIR=../.. WIDE=Y
+			make -f ../gccwin32.mak libs PDCURSES_SRCDIR=../.. WIDE=Y \
+				CC="$CC" LINK="$CC" LIBEXE="$AR"
 			cp pdcurses.a $prefix/lib/libpdcurses.a
 			cp panel.a $prefix/lib/libpanel.a
 			cd ..
 
 			mkdir build-dll
 			cd build-dll
-			make -f ../gccwin32.mak libs PDCURSES_SRCDIR=../.. WIDE=Y DLL=Y
+			make -f ../gccwin32.mak libs PDCURSES_SRCDIR=../.. WIDE=Y DLL=Y \
+				CC="$CC" LINK="$CC" LIBEXE="$CC"' $(DEFFILE)'
 			cp pdcurses.dll $prefix/bin
 			cp pdcurses.a $prefix/lib/libpdcurses.dll.a
 			cp panel.a $prefix/lib/libpanel.dll.a
@@ -570,7 +693,7 @@ my_build()
 			# for the best
 			# -Werror-implicit-function-declaration breaks configure
 			export CFLAGS="-O2 -L$prefix/lib"
-			./configure --build=$triplet --host=$triplet \
+			./configure --host=$triplet \
 				--prefix=$prefix \
 				--enable-shared --enable-static
 			make
@@ -578,27 +701,31 @@ my_build()
 			;;
 
 		QuickLZ-*)
-			gcc -Wall $CPPFLAGS $CFLAGS -c quicklz.c
-			ar rcs libquicklz.a quicklz.o
+			$CC -Wall $CPPFLAGS $CFLAGS -c quicklz.c
+			$AR rcs libquicklz.a quicklz.o
 			cp libquicklz.a $prefix/lib
 			;;
 
 		sqlite-*)
-			gcc -Wall $CPPFLAGS $CFLAGS -c sqlite3.c
-			ar rcs libsqlite3.a sqlite3.o
-			gcc -shared -Wall $CPPFLAGS $CFLAGS $LDFLAGS sqlite3.c -o sqlite3.dll -Wl,--out-implib,libsqlite3.dll.a
+			$CC $CPPFLAGS $CFLAGS -c sqlite3.c
+			$AR rcs libsqlite3.a sqlite3.o
+			$CC -shared $CPPFLAGS $CFLAGS $LDFLAGS sqlite3.c -o sqlite3.dll -Wl,--out-implib,libsqlite3.dll.a
 			cp *.h $prefix/include
 			cp *.dll $prefix/bin
 			cp *.a $prefix/lib
 			;;
 
 		TinyPTC-Windows-*)
-			make CFLAGS="-I. $CPPFLAGS $CFLAGS -I../../../src/rtlib -I../../../src/rtlib/win32 -I../../../src/gfxlib2"
+			make CFLAGS="-I. $CPPFLAGS $CFLAGS -I../../../src/rtlib -I../../../src/rtlib/win32 -I../../../src/gfxlib2" \
+				AR="$AR" CC="$CC"
 			cp *.a $prefix/lib
 			;;
 
 		tinyxml2-*)
-			cmake . -G "MSYS Makefiles" -DCMAKE_INSTALL_PREFIX=$prefix -DBUILD_STATIC_LIBS=ON
+			to do
+			cmake . -G "MSYS Makefiles" \
+				-DCMAKE_INSTALL_PREFIX=$prefix \
+				-DBUILD_STATIC_LIBS=ON
 			make
 			make install
 			;;
@@ -623,7 +750,8 @@ my_build()
 				SHARED_MODE=1 \
 				BINARY_PATH=$prefix/bin \
 				INCLUDE_PATH=$prefix/include \
-				LIBRARY_PATH=$prefix/lib
+				LIBRARY_PATH=$prefix/lib \
+				PREFIX="$crosstoolprefix"
 			;;
 
 		*)
@@ -857,7 +985,6 @@ my_work cgi-util-2.2.1      cgi-util-2.2.1.tar.gz       "ftp://ftp.tuxpaint.org/
 #my_work zeromq-3.2.2        zeromq-3.2.2.tar.gz         "http://download.zeromq.org/zeromq-3.2.2.tar.gz"
 
 # Copy in the libraries
-mkdir -p fbc/bin/win32 fbc/lib/win32
 cp $prefix/bin/*.dll fbc/bin/win32
 cp $prefix/lib/*.a   fbc/lib/win32
 
@@ -896,16 +1023,14 @@ binutilslinux=$binutilsname-build-linux
 my_fetch  $binutilstarball  "http://ftp.gnu.org/gnu/binutils/$binutilstarball"
 my_extract  $binutilsname  $binutilstarball
 
-build_binutils $binutilsname $binutilswin32 "--build=i486-w64-mingw32"
-mkdir -p fbc/bin/win32
+build_binutils $binutilsname $binutilswin32 "--host=$triplet --target=$triplet"
 cp $binutilswin32/binutils/ar.exe      fbc/bin/win32/ar.exe
 cp $binutilswin32/binutils/dlltool.exe fbc/bin/win32/dlltool.exe
 cp $binutilswin32/gas/as-new.exe       fbc/bin/win32/as.exe
 cp $binutilswin32/gprof/gprof.exe      fbc/bin/win32/gprof.exe
 cp $binutilswin32/ld/ld-new.exe        fbc/bin/win32/ld.exe
 
-build_binutils $binutilsname $binutilslinux "--build=i486-w64-mingw32 --host=i486-w64-mingw32 --target=i486-pc-linux-gnu"
-mkdir -p fbc/bin/linux
+build_binutils $binutilsname $binutilslinux "--host=$triplet --target=i486-pc-linux-gnu"
 cp $binutilslinux/binutils/ar.exe fbc/bin/linux/ar.exe
 cp $binutilslinux/gas/as-new.exe  fbc/bin/linux/as.exe
 cp $binutilslinux/ld/ld-new.exe   fbc/bin/linux/ld.exe
@@ -931,7 +1056,8 @@ if [ ! -d "$gdbwin32" ]; then
 	CFLAGS="-O2 -I$prefix/include" \
 	CXXFLAGS="-O2 -I$prefix/include" \
 	LDFLAGS="-static-libgcc -static -L$prefix/lib" \
-	"../$gdbname/configure" --build=i486-w64-mingw32 --prefix=/usr \
+	"../$gdbname/configure" --host=i686-w64-mingw32 --target=i686-w64-mingw32 \
+		--prefix=/usr \
 		--disable-shared --enable-static \
 		--disable-nls
 
@@ -944,11 +1070,11 @@ fi
 
 ################################################################################
 
-strip -g fbc/bin/linux/* fbc/bin/win32/* fbc/lib/win32/*
+$STRIP -g fbc/bin/linux/* fbc/bin/win32/* fbc/lib/win32/*
 
 my_report "checking libs for hard-coded paths"
 for f in fbc/bin/linux/* fbc/bin/win32/* fbc/lib/win32/*; do
-	text=`strings $f | grep $toplevel || echo`
+	text=`$STRINGS $f | grep $toplevel || echo`
 	if [ -n "$text" ]; then
 		echo "*** $f: ***"
 		echo "$text"

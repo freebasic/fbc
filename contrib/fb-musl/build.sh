@@ -311,7 +311,7 @@ my_build()
 			;;
 
 		cryptlib-*)
-			make CPP="$CPP" CC="$CC" CXX="$CXX" LD="$LD" \
+			make CPP="$CPP" CC="$CC" CXX="$CXX" LD="$LD" AR="$AR" STRIP="$STRIP" \
 				CFLAGS="-c -D__UNIX__ -DNDEBUG -I. -DNO_ADDRESS=NO_DATA -Werror-implicit-function-declaration"
 			cp libcl.a $prefix/lib
 			;;
@@ -533,7 +533,10 @@ my_build()
 				LDOPT="$LDFLAGS -s" \
 				CC="$CC" \
 				CXX="$CXX" \
-				LD="$LD"
+				LD="$LD" \
+				AR="$AR" \
+				RANLIB="$RANLIB" \
+				STRIP="$STRIP"
 			cp lib/unix/libgrx20.a $prefix/lib
 			;;
 
@@ -550,7 +553,10 @@ my_build()
 				LDOPT="$LDFLAGS -s" \
 				CC="$CC" \
 				CXX="$CXX" \
-				LD="$LD"
+				LD="$LD" \
+				AR="$AR" \
+				RANLIB="$RANLIB" \
+				STRIP="$STRIP"
 			cp lib/unix/libgrx20X.a $prefix/lib
 			;;
 

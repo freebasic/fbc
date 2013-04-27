@@ -10,6 +10,7 @@ licensedir=$toplevel/fbc/doc/licenses
 
 triplet=i586-pc-msdosdjgpp
 export      AS="$triplet-as"
+export     CPP="$triplet-cpp"
 export      CC="$triplet-gcc"
 export     CXX="$triplet-g++"
 export      AR="$triplet-ar"
