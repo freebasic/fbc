@@ -37,6 +37,7 @@ Version 0.25.0:
 - Fixed & updated header for PDCurses 3.4
 - Updated GD graphics library header for the 2.1.0 development version
 - Updated header for libzip 0.11
+- Updated header for giflib 4.2.1
 - fbc -asm att|intel option (affects -gen gcc only)
 - fbc -rr and -RR options for preserving the final .asm file (useful with -gen gcc where -r/-R preserve the .c file; same as -r/-R under -gen gas)
 - fbc -print host|target option, to support shell scripts querying fbc for information that is useful to build systems etc.
