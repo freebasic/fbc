@@ -15,6 +15,10 @@
 	#inclib "gd"
 #endif
 
+#inclib "jpeg"
+#inclib "png"
+#inclib "z"
+
 #define GD_MAJOR_VERSION 2
 #define GD_MINOR_VERSION 1
 #define GD_RELEASE_VERSION 0
