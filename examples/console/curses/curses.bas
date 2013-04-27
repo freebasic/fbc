@@ -1,3 +1,11 @@
+#ifdef __FB_WIN32__
+	'' When using the pdcurses.dll (through libpdcurses.dll.a), instead of
+	'' the libpdcurses.a static lib, PDC_DLL_BUILD must be defined, for the
+	'' curses/pdcurses.bi header to change some EXTERN statements over
+	'' to EXTERN IMPORT, or else the program will crash:
+	'#define PDC_DLL_BUILD
+#endif
+
 #include once "curses.bi"
 
 initscr()
