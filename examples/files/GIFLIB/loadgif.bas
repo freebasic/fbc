@@ -1,6 +1,7 @@
 '' gif_lib example, by jofers
 
 #include once "gif_lib.bi"
+#define NULL 0
 
 const SCR_W = 640
 const SCR_H = 480
@@ -28,28 +29,41 @@ function imageread_gif( byval filename as zstring ptr, byval bpp as integer ) as
 		return NULL
 	end if
 
-	DGifSlurp( ft )
+	if( DGifSlurp( ft ) <> GIF_OK ) then
+		return NULL
+	end if
+
+	if( ft->ImageCount <= 0 ) then
+		return NULL
+	end if
 
 	dim as integer w = ft->SavedImages[0].ImageDesc.Width
 	dim as integer h = ft->SavedImages[0].ImageDesc.Height
 
 	dim as any ptr img = imagecreate( w, h )
+	if( img = NULL ) then
+		return NULL
+	end if
 
 	dim as GifColorType ptr pal = ft->sColorMap->Colors
-	dim as byte ptr src = ft->SavedImages[0].RasterBits
+	dim as ubyte ptr src = ft->SavedImages[0].RasterBits
 
 	if( bpp = 8 ) Then
 		for c as integer = 0 To ft->sColorMap->ColorCount - 1
 			palette c, pal[c].Red, pal[c].Green, pal[c].Blue
 		next
 
-		memcpy( cast( byte ptr, img ) + 4, src, w * h )
+		for ht as integer = 0 to h-1
+			for wt as integer = 0 to w-1
+				pset img, (wt, ht), *src
+				src += 1
+			next
+		next
 	else
 		for ht as integer = 0 to h-1
 			for wt as integer = 0 to w-1
-				dim as integer c = *src
+				pset img, (wt, ht), Rgb(pal[*src].Red, pal[*src].Green, pal[*src].Blue)
 				src += 1
-				pset img, (wt, ht), Rgb(pal[c].Red, pal[c].Green, pal[c].Blue)
 			next
 		next
 	end if

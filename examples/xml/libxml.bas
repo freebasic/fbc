@@ -10,7 +10,7 @@ End If
 Dim As xmlTextReaderPtr reader = xmlReaderForFile( filename, NULL, 0 )
 If (reader = NULL) Then
     Print "Unable to open "; filename
-    Return
+    End 1
 End If
 
 Dim As Integer ret = xmlTextReaderRead( reader )
