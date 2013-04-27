@@ -1,7 +1,7 @@
 #!/bin/sh
 set -e
 
-mkdir -p bin src prefix prefix/bin prefix/include prefix/lib
+mkdir -p src prefix prefix/bin prefix/include prefix/lib
 mkdir -p fbc/doc/licenses fbc/lib/dos
 
 toplevel="$PWD"
@@ -126,8 +126,12 @@ my_patch()
 			patch -p0 < ../src/gd-73cab5d8af96.patch
 			autoreconf -fi
 			;;
-		giflib-*)
-			patch -p0 < ../src/giflib.patch
+		giflib-5.0.4)
+			patch -p0 < ../src/giflib-5.0.4.patch
+			autoreconf
+			;;
+		giflib-4.2.1)
+			patch -p0 < ../src/giflib-4.2.1.patch
 			autoreconf
 			;;
 		jasper-*)
@@ -493,7 +497,8 @@ my_work PDCurses-3.4     pdcurs34.zip           "http://sourceforge.net/projects
 
 # images
 my_work libpng-1.5.14  libpng-1.5.14.tar.xz  "http://prdownloads.sourceforge.net/libpng/libpng-1.5.14.tar.xz?download"
-my_work giflib-5.0.4   giflib-5.0.4.tar.bz2  "http://sourceforge.net/projects/giflib/files/giflib-5.x/giflib-5.0.4.tar.bz2/download"
+#my_work giflib-5.0.4   giflib-5.0.4.tar.bz2  "http://sourceforge.net/projects/giflib/files/giflib-5.x/giflib-5.0.4.tar.bz2/download"
+my_work giflib-4.2.1   giflib-4.2.1.tar.bz2  "http://sourceforge.net/projects/giflib/files/giflib-4.x/giflib-4.2.1.tar.bz2/download"
 my_work jpeg-9         jpegsrc.v9.tar.gz     "http://www.ijg.org/files/jpegsrc.v9.tar.gz"
 my_work tiff-4.0.3     tiff-4.0.3.tar.gz     "ftp://ftp.remotesensing.org/pub/libtiff/tiff-4.0.3.tar.gz"
 my_work lcms-1.19      lcms-1.19.tar.gz      "http://sourceforge.net/projects/lcms/files/lcms/1.19/lcms-1.19.tar.gz/download"
