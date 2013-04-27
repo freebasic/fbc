@@ -179,12 +179,27 @@ my_build()
 			# --enable-win32-relocatable option, but we don't want
 			# that at all, so use --prefix=/usr/local for now and
 			# hope for the best.
-			./configure --host=$triplet \
-				--enable-shared --enable-static \
+			./configure --build=$triplet --host=$triplet \
+				--disable-shared --enable-static \
 				--enable-win32-relocatable \
 				--disable-nls
 			make
 			make install prefix="" DESTDIR=$prefix
+
+			# TODO: Much like with libjasper, no DLL is built even
+			# when using --enable-shared. However, it works when
+			# cross-compiling from Linux, so it's probably a problem
+			# with MinGW/MSYS's libtool.
+
+			# Create a DLL manually (aspell doesn't use
+			# dllexport/dllimport or other DLL-specifics anyways)
+			mkdir build-dll
+			cd build-dll
+			ar x $prefix/lib/libaspell.a
+			g++ -shared -o libaspell-15.dll -Wl,--out-implib,libaspell.dll.a *.o -pthread
+			cp *.dll $prefix/bin
+			cp *.a $prefix/lib
+			cd ..
 			;;
 
 		big_int-*)
