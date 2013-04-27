@@ -1,9 +1,10 @@
 *.o
 *.a
+*.exe
+*.dll
+*.so
 fbc
-fbc.exe
 fbc-new
-fbc-new.exe
 bin/*
 lib/*/i386go32.x
 lib/*/fbextra.x
