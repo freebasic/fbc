@@ -196,7 +196,7 @@ function imageread_png _
 	deallocate( src )
 
 	png_read_end( png, info )
-	png_read_destroy( png, info, 0 )
+	png_destroy_read_struct( @png, @info, 0 )
 	fclose( fp )
 
 	function = img
