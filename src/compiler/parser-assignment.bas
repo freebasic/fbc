@@ -306,7 +306,7 @@ function cOperator _
 	case CHAR_RSLASH
 		op = AST_OP_INTDIV
 
-	case CHAR_CARET
+	case CHAR_TIMES
 		op = AST_OP_MUL
 
 	case CHAR_SLASH

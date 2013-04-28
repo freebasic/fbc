@@ -652,7 +652,7 @@ function cMultExpression _
     do
     	'' Mult operator
     	select case lexGetToken( )
-    	case CHAR_CARET
+    	case CHAR_TIMES
     		op = AST_OP_MUL
     	case CHAR_SLASH
  			op = AST_OP_DIV
