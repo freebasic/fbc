@@ -219,7 +219,6 @@ const CHAR_NULL   	= 00, _
       CHAR_PLUS   	= 43, _
       CHAR_MINUS  	= 45, _
       CHAR_RSLASH  	= 92, _
-      CHAR_CARET   	= 42, _
       CHAR_SLASH   	= 47, _
       CHAR_CART   	= 94, _
       CHAR_EQ     	= 61, _
@@ -535,7 +534,7 @@ end enum
 const FB_TK_DIRECTIVECHAR		= CHAR_DOLAR	'' $
 const FB_TK_DECLSEPCHAR			= CHAR_COMMA	'' ,
 const FB_TK_ASSIGN				= FB_TK_EQ		'' special case, because lex
-const FB_TK_DEREFCHAR			= CHAR_CARET	'' *
+const FB_TK_DEREFCHAR			= CHAR_STAR	    '' *
 const FB_TK_ADDROFCHAR			= CHAR_AT		'' @
 
 const FB_TK_INTTYPECHAR			= CHAR_PERC

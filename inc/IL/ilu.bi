@@ -4,7 +4,11 @@
 #inclib "ILU"
 
 #ifdef __FB_WIN32__
-	extern "Windows-MS"
+	'' DevIL MSVC build:
+	''extern "Windows-MS"
+
+	'' DevIL MinGW/MSYS build:
+	extern "Windows"
 #else
 	extern "C"
 #endif

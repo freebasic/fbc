@@ -37,8 +37,8 @@ Version 0.25.0:
 - Fixed & updated header for PDCurses 3.4
 - Updated GD graphics library header for the 2.1.0 development version
 - Updated header for libzip 0.11
-- Updated header for giflib 4.2.1
-- Separate gif_lib5.bi header for giflib 5.0.4. Note: As giflib 5 is not fully backwards compatible to giflib 4, the gfx_lib5.bi header can only be used in combination with giflib 5 binaries.
+- Updated header for giflib 4.2.1 and 5.0.4 (version may be selected by defining __GIFLIB_VER__ to 4 or 5)
+- Updated header for jpeglib 6.2, 7.0, 8.4 and 9.0 (version may be selected by defining __JPEGLIB_VER__ to one of 6,7,8,9)
 - fbc -asm att|intel option (affects -gen gcc only)
 - fbc -rr and -RR options for preserving the final .asm file (useful with -gen gcc where -r/-R preserve the .c file; same as -r/-R under -gen gas)
 - fbc -print host|target option, to support shell scripts querying fbc for information that is useful to build systems etc.

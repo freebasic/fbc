@@ -24,7 +24,11 @@ declare function imageread_gif( byval filename as zstring ptr, byval bpp as inte
 	imagedestroy( img )
 
 function imageread_gif( byval filename as zstring ptr, byval bpp as integer ) as any ptr
-	dim ft as GifFileType ptr = DGifOpenFileName( filename )
+	#if __GIFLIB_VER__ <= 4
+		dim ft as GifFileType ptr = DGifOpenFileName( filename )
+	#else
+		dim ft as GifFileType ptr = DGifOpenFileName( filename, NULL )
+	#endif
 	if( ft = NULL ) then
 		return NULL
 	end if
