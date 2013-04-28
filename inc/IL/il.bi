@@ -1,12 +1,27 @@
 #pragma once
 
 #ifdef __FB_WIN32__
-	#inclib "DevIL"
-	extern "Windows-MS"
+	'' DevIL MSVC build:
+	''#inclib "DevIL"
+	''extern "Windows-MS"
+
+	'' DevIL MinGW/MSYS build:
+	#inclib "IL"
+	extern "Windows"
 #else
 	#inclib "IL"
 	extern "C"
 #endif
+
+'' Dependencies for static linking
+#inclib "jasper"
+#inclib "jpeg"
+#inclib "tiff"
+#inclib "mng"
+#inclib "png"
+#inclib "lzma"
+#inclib "z"
+#inclib "stdc++"
 
 type ILenum as ulong
 type ILboolean as ubyte
