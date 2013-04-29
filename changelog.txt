@@ -230,6 +230,7 @@ Version 0.25.0:
 - #668: Internal compiler error on lines such as "END SUB : SUB foo( )" (one procedure closed, and a new one opened, in the same line) when compiling with -g
 - DOS COMMAND(0) was giving '/' for the path separator instead of '\'
 - EXEPATH() on all platforms was omitting the slash at the end of root paths, resulting in a relative or missing path (e.g. "X:\" -> "X:" or "/" -> "")
+- Hang in exec()/chain() functions on Linux if the target executable isn't found (observed with musl libc)
 
 
 Version 0.24.0:
