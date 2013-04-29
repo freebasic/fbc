@@ -63,7 +63,7 @@ declare function imageread_png _
 	#endif
 
 
-private sub libpng_error_callback _
+private sub libpng_error_callback cdecl _
 	( _
 		byval png as png_structp, _
 		byval p as png_const_charp _
