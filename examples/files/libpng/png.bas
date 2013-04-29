@@ -1,5 +1,7 @@
 #include once "png.bi"
 #include once "fbgfx.bi"
+#include once "crt/errno.bi"
+#include once "crt/string.bi"
 
 const SCR_W = 640
 const SCR_H = 480
@@ -29,6 +31,9 @@ declare function imageread_png _
 		dim as string path = exepath( ) & "/"
 
 		img1 = imageread_png( path, "../../fblogo.png", SCR_BPP )
+		if( img1 = NULL ) then
+			sleep : end 1
+		end if
 
 		put (0,100), img1, pset
 
@@ -42,6 +47,9 @@ declare function imageread_png _
 		img1 = imageread_png( path, "../../fblogo.png", SCR_BPP )
 		img2 = imageread_png( path, "color.png", SCR_BPP )
 		img3 = imageread_png( path, "alpha.png", SCR_BPP )
+		if( (img1 = NULL) or (img2 = NULL) or (img3 = NULL) ) then
+			sleep : end 1
+		end if
 
 		put (0,100), img1, alpha
 		put (320,100), img2, alpha
@@ -54,6 +62,16 @@ declare function imageread_png _
 		imagedestroy( img1 )
 	#endif
 
+
+private sub libpng_error_callback _
+	( _
+		byval png as png_structp, _
+		byval p as png_const_charp _
+	)
+
+	print "libpng failed to load the image (" & *p & ")"
+
+end sub
 
 function imageread_png _
 	( _
@@ -82,7 +100,7 @@ function imageread_png _
 		return NULL
 	end if
 
-	dim as png_structp png = png_create_read_struct( PNG_LIBPNG_VER_STRING, NULL, NULL, NULL )
+	dim as png_structp png = png_create_read_struct( PNG_LIBPNG_VER_STRING, NULL, @libpng_error_callback, NULL )
 	if( png = NULL ) then
 		print "png_create_read_struct() failed"
 		fclose( fp )
@@ -96,26 +114,20 @@ function imageread_png _
 		return NULL
 	end if
 
-	if( setjmp( png_jmpbuf( png ) ) ) then
-		print "failed to load the png"
-		png_destroy_read_struct( @png, @info, 0 )
-		fclose( fp )
-		return NULL
-	end if
-
 	png_init_io( png, fp )
 	png_set_sig_bytes( png, 8 )
 
 	png_read_info( png, info )
 
-	dim as integer w, h, bitdepth, pixdepth, colortype, rowbytes
+	dim as integer w, h, bitdepth, channels, pixdepth, colortype, rowbytes
 	w = png_get_image_width( png, info )
 	h = png_get_image_height( png, info )
 	bitdepth = png_get_bit_depth( png, info )
-	pixdepth = info->pixel_depth
+	channels = png_get_channels( png, info )
+	pixdepth = bitdepth * channels
 	colortype = png_get_color_type( png, info )
 
-	print filename & ": " & w & "x" & h & " bitdepth=" & bitdepth & " pixdepth=" & pixdepth & " channels=" & png_get_channels( png, info ) & " ";
+	print filename & ": " & w & "x" & h & " bitdepth=" & bitdepth & " pixdepth=" & pixdepth & " channels=" & channels & " ";
 
 	select case( colortype )
 	case PNG_COLOR_TYPE_RGB
