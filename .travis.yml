@@ -7,7 +7,7 @@ install:
   - sudo ./install.sh -i ../fbinstall
   - cd ..
   - ls
-  - sudo apt-get install libncurses5-dev libstdc++6-4.3-dev build-essential libX11-dev libXext-dev libXpm-dev libXrender-dev libXrandr-dev libgpm-dev
+  - sudo apt-get install libncurses5-dev libstdc++6 build-essential libX11-dev libXext-dev libXpm-dev libXrender-dev libXrandr-dev libgpm-dev
 script: make FBC=fbinstall/bin/fbc && cd tests && make check
 branches:
   only:
