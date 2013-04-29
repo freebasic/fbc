@@ -1,5 +1,9 @@
 language: c
-install: wget -O fb.tar.gz http://downloads.sourceforge.net/fbc/FreeBASIC-0.24.0-linux.tar.gz?download && tar zxf fb.tar.gz && cd FreeBASIC-0.24.0-linux && sudo ./install.sh -i
+install: 
+  - wget -O fb.tar.gz http://downloads.sourceforge.net/fbc/FreeBASIC-0.24.0-linux.tar.gz?download
+  - tar zxf fb.tar.gz 
+  - cd FreeBASIC-0.24.0-linux 
+  - sudo ./install.sh -i
 script: make && cd tests && make check
 branches:
   only:
