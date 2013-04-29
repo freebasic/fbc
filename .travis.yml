@@ -6,9 +6,9 @@ install:
   - cd FreeBASIC-0.24.0-linux 
   - sudo ./install.sh -i ../fbinstall
   - cd ..
-  - ls
+  - ls fbinstall/bin
   - sudo apt-get install libncurses5-dev libstdc++6 build-essential libX11-dev libXext-dev libXpm-dev libXrender-dev libXrandr-dev libgpm-dev
-script: make FBC=fbinstall/bin/fbc && cd tests && make check
+script: make FBC=$PWD/fbinstall/bin/fbc && cd tests && make check
 branches:
   only:
     - master
