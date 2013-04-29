@@ -1386,7 +1386,7 @@ static unsigned long long hScaleDoubleToULL( double value, int *pval_exp )
 
 FBCALL int fb_PrintUsingDouble( int fnum, double value, int mask )
 {
-	int val_exp;
+	int val_exp = 0;
 	int flags;
 	unsigned long long val_ull = 1;
 
@@ -1422,7 +1422,7 @@ FBCALL int fb_PrintUsingDouble( int fnum, double value, int mask )
 
 FBCALL int fb_PrintUsingSingle( int fnum, float value_f, int mask )
 {
-	int val_exp;
+	int val_exp = 0;
 	int flags;
 	unsigned long long val_ull = 1;
 
