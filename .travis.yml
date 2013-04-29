@@ -5,7 +5,7 @@ install:
   - cd FreeBASIC-0.24.0-linux 
   - sudo ./install.sh -i
   - cd ..
-script: make FBC=/usr/local/fbc && cd tests && make check
+script: make FBC=/usr/local/bin/fbc && cd tests && make check
 branches:
   only:
     - master
