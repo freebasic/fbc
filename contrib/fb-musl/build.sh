@@ -85,7 +85,7 @@ my_extract()
 # Copy patches
 cp `dirname "$0"`/*.patch src
 
-muslcrossrev=74d6e78976bd
+muslcrossrev=3ebcb354a9d7
 muslcrossname=GregorR-musl-cross-$muslcrossrev
 muslcrosstarball=$muslcrossname.tar.bz2
 my_fetch  $muslcrosstarball  "https://bitbucket.org/GregorR/musl-cross/get/$muslcrossrev.tar.bz2"
@@ -144,8 +144,11 @@ if [ ! -d $sysroot ]; then
 	ln -s ../sysroot/usr $toplevel/i486-linux-musl/i486-linux-musl
 fi
 
-licensedir=$toplevel/fbc-static/doc/licenses
+licensedir=$prefix/doc/licenses
 mkdir -p "$licensedir"
+
+# Add the i486-linux-musl gcc/binutils to PATH
+export PATH="$toplevel/i486-linux-musl/bin:$PATH"
 
 ################################################################################
 # Build various libs used by FB rtlib/gfxlib2 (i.e. needed for FB programs),
@@ -252,14 +255,20 @@ my_build()
 
 		cd $name
 
+		triplet=i486-linux-musl
+		export      AS="$triplet-as"
+		export     CPP="$triplet-cpp"
+		export      CC="$triplet-gcc"
+		export     CXX="$triplet-g++"
+		export      AR="$triplet-ar"
+		export  RANLIB="$triplet-ranlib"
+		export      LD="$triplet-ld"
+		export   STRIP="$triplet-strip"
+		export STRINGS="$triplet-strings"
+
 		export CPPFLAGS="-D_GNU_SOURCE"
 		export CFLAGS="-O2 -Werror-implicit-function-declaration"
 		export CXXFLAGS="-O2"
-		export CPP="$toplevel/i486-linux-musl/bin/i486-linux-musl-cpp"
-		export  CC="$toplevel/i486-linux-musl/bin/i486-linux-musl-gcc"
-		export CXX="$toplevel/i486-linux-musl/bin/i486-linux-musl-g++"
-		export  LD="$toplevel/i486-linux-musl/bin/i486-linux-musl-ld"
-		##export LDFLAGS="-static-libgcc -Wl,-Bstatic"
 
 		case $name in
 		util-macros-*|xproto-*|xextproto-*|renderproto-*|\
@@ -284,7 +293,12 @@ my_build()
 			;;
 
 		bzip2-*)
-			make libbz2.a CC="$CC" CFLAGS="-O2 -D_FILE_OFFSET_BITS=64"
+			$CC $CPPFLAGS $CFLAGS -D_FILE_OFFSET_BITS=64 -c \
+				blocksort.c huffman.c crctable.c \
+				randtable.c compress.c decompress.c bzlib.c
+			$AR rcs libbz2.a \
+				blocksort.o huffman.o crctable.o \
+				randtable.o compress.o decompress.o bzlib.o
 			cp bzlib.h $prefix/include
 			cp libbz2.a $prefix/lib
 			;;
@@ -413,7 +427,7 @@ my_build()
 			;;
 
 		freeglut-*)
-			LIBS="-lxcb -lXau -lXrandr -lXi" \
+			LIBS="-lXxf86vm -lxcb -lXau -lXrandr -lXi" \
 			./configure \
 				--host=i486-pc-linux-gnu \
 				--prefix=/usr \
@@ -1213,7 +1227,7 @@ echo 'fi'                                             >> path/pkg-config
 chmod +x path/pkg-config
 
 # Add the pkg-config wrapper to PATH, before the real pkg-config
-export PATH="$toplevel/path:$toplevel/i486-linux-musl/bin:$PATH"
+export PATH="$toplevel/path:$PATH"
 
 # Prevent pkg-config from looking in host system's dirs
 export PKG_CONFIG_DIR=
@@ -1465,8 +1479,8 @@ cp $binutilsname-build/binutils/ar  musl-fbc/bin/linux/ar
 cp $binutilsname-build/ld/ld-new    musl-fbc/bin/linux/ld
 
 # Copy in the libraries
-cp i486-linux-musl/lib/gcc/i486-linux-musl/4.7.2/crt{begin,end}.o  musl-fbc/lib/linux
-cp i486-linux-musl/lib/gcc/i486-linux-musl/4.7.2/*.a               musl-fbc/lib/linux
+cp i486-linux-musl/lib/gcc/i486-linux-musl/4.7.3/crt{begin,end}.o  musl-fbc/lib/linux
+cp i486-linux-musl/lib/gcc/i486-linux-musl/4.7.3/*.a               musl-fbc/lib/linux
 cp sysroot/usr/lib/crt{1,i,n}.o   musl-fbc/lib/linux
 cp sysroot/usr/lib/*.a            musl-fbc/lib/linux
 
@@ -1500,17 +1514,20 @@ fi
 
 cd fbc-static
 echo "ENABLE_STANDALONE := 1" > config.mk
+#echo "FBFLAGS := -g -exx" >> config.mk
 echo "FBC := $toplevel/musl-fbc/fbc-new -static -l tinfo" >> config.mk
 make compiler
 cd ..
 
 my_report "copying binutils & libs into fbc-static"
 
-# Copy over the libraries
+# Copy over the libraries etc.
 mkdir -p fbc-static/bin/linux
 cp musl-fbc/bin/linux/* fbc-static/bin/linux
 mkdir -p fbc-static/lib/linux
 cp musl-fbc/lib/linux/* fbc-static/lib/linux
+mkdir -p fbc-static/doc
+cp -r "$licensedir" fbc-static/doc
 
 ################################################################################
 
