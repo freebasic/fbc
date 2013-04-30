@@ -75,7 +75,12 @@ FBCALL int fb_ExecEx( FBSTRING *program, FBSTRING *args, int do_fork )
 				execvp( application, argv );
 				/* HACK: execvp() failed, this must be communiated to the parent process *somehow*,
 				   so fb_ExecEx() can return -1 there */
-				exit( 255 );
+				/* Using _Exit() instead of exit() to prevent the child from flusing file I/O and
+				   running global destructors (especially the rtlib's own cleanup), which may try
+				   to wait on threads to finish (e.g. hinit.c::bg_thread()), but fork() doesn't
+				   duplicate other threads besides the current one, so their pthread handles will be
+				   invalid here in the child process. */
+				_Exit( 255 );
 				/* FIXME: won't be able to tell the difference if the exec'ed program returned 255.
 				   Maybe a pipe could be used instead of the 255 exit code? Unless that's too slow/has side-effects */
 			} else if( (waitpid(pid, &status, 0) > 0) && WIFEXITED(status) ) {
