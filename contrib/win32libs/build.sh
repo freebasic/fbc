@@ -120,6 +120,7 @@ my_patch()
 			;;
 		cryptlib-*)
 			find . -type f -print0 | xargs -0 dos2unix && true
+			patch -p0 < ../src/cryptlib.patch
 			;;
 		DevIL-*)
 			patch -p0 < ../src/DevIL.patch
@@ -240,8 +241,10 @@ my_build()
 
 		cryptlib-*)
 			# This builds the static lib
+			rm -f libcl.a
 			make CPP="$CPP" CC="$CC" CXX="$CXX" LD="$LD" AR="$AR" STRIP="$STRIP" \
-				OSNAME="MINGW32_NT-5.1"
+				OSNAME="MINGW32_NT-5.1" \
+				XCFLAGS="-c -DNDEBUG -I. -DSTATIC_LIB -Werror-implicit-function-declaration"
 			cp libcl.a $prefix/lib
 
 			# The DLL is already precompiled
