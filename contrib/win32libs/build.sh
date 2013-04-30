@@ -306,6 +306,12 @@ my_build()
 			make install
 			;;
 
+		freeglut-*)
+			./configure $confargs --disable-replace-glut
+			make
+			make install
+			;;
+
 		FreeImage-*-static)
 			unset CFLAGS
 			unset CXXFLAGS
