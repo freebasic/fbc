@@ -10,7 +10,7 @@
 #ifndef _CRYPTLIB_DEFINED
 #define _CRYPTLIB_DEFINED
 
-#inclib "cl32"
+#inclib "cl"
 
 ' The current cryptlib version: 3.4.1
 
