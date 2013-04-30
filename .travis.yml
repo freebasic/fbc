@@ -8,7 +8,7 @@ install:
   - cd ..
   - ls fbinstall/bin
   - sudo apt-get install libncurses5-dev libstdc++6 build-essential libX11-dev libXext-dev libXpm-dev libXrender-dev libXrandr-dev libgpm-dev
-script: make FBC=$PWD/fbinstall/bin/fbc && cd tests && make check
+script: make FBC=/home/travis/build/mudhairless/fbc/fbinstall/bin/fbc && cd tests && make check
 branches:
   only:
     - master
