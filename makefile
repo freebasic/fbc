@@ -275,7 +275,8 @@ endif
 
 newcompiler := src/compiler/obj
 ifdef ENABLE_STANDALONE
-  FBC_EXE     := fbc-new$(EXEEXT)
+  FBC_EXE     := fbc$(EXEEXT)
+  FBCNEW_EXE  := fbc-new$(EXEEXT)
   newlibfb    := src/rtlib/$(TARGET_OS)-obj
   newlibfbmt  := src/rtlib/$(TARGET_OS)-objmt
   newlibfbgfx := src/gfxlib2/$(TARGET_OS)-obj
@@ -284,7 +285,8 @@ ifdef ENABLE_STANDALONE
   prefixinclude  := $(prefix)/inc
   prefixlib      := $(prefix)/lib/$(TARGET_OS)
 else
-  FBC_EXE     := bin/fbc$(ENABLE_SUFFIX)-new$(EXEEXT)
+  FBC_EXE     := bin/fbc$(ENABLE_SUFFIX)$(EXEEXT)
+  FBCNEW_EXE  := bin/fbc$(ENABLE_SUFFIX)-new$(EXEEXT)
   newlibfb    := src/rtlib/$(TARGET_PREFIX)obj
   newlibfbmt  := src/rtlib/$(TARGET_PREFIX)objmt
   newlibfbgfx := src/gfxlib2/$(TARGET_PREFIX)obj
@@ -390,6 +392,7 @@ ifndef V
   QUIET_CC    = @echo "CC $@";
   QUIET_CPPAS = @echo "CPPAS $@";
   QUIET_AR    = @echo "AR $@";
+  QUIET       = @
 endif
 
 ################################################################################
@@ -412,7 +415,8 @@ endif
 compiler: $(newcompiler) $(FBC_EXE)
 
 $(FBC_EXE): $(FBC_BAS)
-	$(QUIET_LINK)$(FBC) $(ALLFBLFLAGS) -x $@ $^
+	$(QUIET_LINK)$(FBC) $(ALLFBLFLAGS) -x $(FBCNEW_EXE) $^
+	$(QUIET)mv $(FBCNEW_EXE) $@
 
 $(FBC_BAS): $(newcompiler)/%.o: $(srcdir)/compiler/%.bas $(FBC_BI)
 	$(QUIET_FBC)$(FBC) $(ALLFBCFLAGS) -c $< -o $@
