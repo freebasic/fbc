@@ -9,7 +9,6 @@ function ok_cb cdecl (byval handler as Ihandle ptr) as integer
   dim as Ihandle ptr green_text
   dim as Ihandle ptr blue_text
   dim as Ihandle ptr color_text
-  dim as Ihandle ptr clr
   dim as integer red
   dim as integer green
   dim as integer blue
@@ -27,9 +26,12 @@ function ok_cb cdecl (byval handler as Ihandle ptr) as integer
   if(green < 0 or green > 255) then green = 0 
   if(blue < 0 or blue > 255) then blue = 0 
 
-  clr = IupColor(red, green, blue)
-  IupSetHandle("color", clr)
-  IupSetAttribute(color_text, IUP_BGCOLOR, "color")
+  '' The color can be set by passing a string like "255 128 0", i.e. "R G B".
+  '' IUP will keep a pointer to our string and use it, so we must ensure it
+  '' stays valid even when this function returns.
+  static clr as zstring * 12
+  clr = red & " " & green & " " & blue
+  IupSetAttribute(color_text, IUP_BGCOLOR, strptr(clr))
   
   return IUP_DEFAULT
 end function
@@ -47,7 +49,7 @@ end function
   dim as Ihandle ptr ok_button
   dim as Ihandle ptr main_dlg
 
-  IupOpen()
+  IupOpen( NULL, NULL )
 
   label = IupLabel("Enter RGB values")
   red_label = IupLabel("Red")
@@ -103,9 +105,7 @@ end function
   
   IupSetFunction("ok_act", @ok_cb)
 
-  IupPopup(main_dlg, IUP_CENTER, IUP_CENTER)
+  IupShowXY(main_dlg, IUP_CENTER, IUP_CENTER)
 
   IupMainLoop()
   IupClose()
-
-  end 0

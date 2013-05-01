@@ -7,7 +7,7 @@
   dim as Ihandle ptr frame, dialog
 
   '' Initializes IUP 
-  IupOpen()
+  IupOpen( NULL, NULL )
 
   '' Creates frame with a label
   frame = IupFrame _

@@ -6,7 +6,7 @@
 declare function ok_onclick cdecl (byval handler as Ihandle ptr) as integer 
 declare function close_onclick cdecl (byval handler as Ihandle ptr) as integer 
 
-	if( IupOpen( ) = IUP_ERROR ) then
+	if( IupOpen( NULL, NULL ) = IUP_ERROR ) then
 		end 1
 	end if
 
