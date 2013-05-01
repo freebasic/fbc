@@ -36,49 +36,45 @@ Writes data from a buffer to a file
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/fileio/put.bas"}}%%(freebasic)
-' Create integer variables (our buffer has just 4 bytes)
-Dim As Integer buffer , f 
+' Create variables for the file number, and the number to put
+Dim As Integer f
+Dim As Long value
 
-' Find the first free file file number.
-f = Freefile
+' Find the first free file number
+f = Freefile()
 
-' Open the file "file.ext" for binary usage, using the file number "f".
+' Open the file "file.ext" for binary usage, using the file number "f"
 Open "file.ext" For Binary As #f
-  buffer=10
-  ' Write 4 bytes from the buffer into the file, using file number "f"
-  ' starting at the beginning of the file (1).
-  Put #f, 1, buffer
 
-' Close the file.  
+  value= 10
+
+  ' Write the bytes of the integer 'value' into the file, using file number "f"
+  ' starting at the beginning of the file (position 1)
+  Put #f, 1, value
+
+' Close the file
 Close #f
-
-' End the program.
-End
 %%
 
 {{fbdoc item="filename" value="examples/manual/fileio/put-array.bas"}}%%(freebasic)
 ' Create an integer array
 Dim buffer(1 To 10) As Integer
-Dim i As Integer
-For i = 1 To 10
+For i As Integer = 1 To 10
 	buffer(i) = i
 Next
 
-' Find the first free file file number.
+' Find the first free file file number
 Dim f As Integer
-f = Freefile
+f = Freefile()
 
-' Open the file "file.ext" for binary usage, using the file number "f".
+' Open the file "file.ext" for binary usage, using the file number "f"
 Open "file.ext" For Binary As #f
 ' Write the array into the file, using file number "f"
-' starting at the beginning of the file (1).
+' starting at the beginning of the file (position 1)
 Put #f, 1, buffer()
 
-' Close the file.
+' Close the file
 Close #f
-
-' End the program.
-End
 %%
 
 {{fbdoc item="ex"}}
@@ -86,26 +82,27 @@ End
 Dim As Byte Ptr lpBuffer
 Dim As Integer hFile, Counter, Size
 
-Size=256
+Size = 256
 
-lpBuffer=Allocate(Size)
-For Counter=0 to Size-1
-  lpBuffer[Counter]=(Counter and &HFF)
+lpBuffer = Allocate(Size)
+For Counter = 0 to Size-1
+  lpBuffer[Counter] = (Counter and &HFF)
 Next
 
-' Get free file file number.
+' Get free file file number
 hFile = Freefile()
 
-' Open the file "test.bin" in binary writing mode.
+' Open the file "test.bin" in binary writing mode
 Open "test.bin" For Binary Access Write As #hFile
-  ' Write 256 bytes from the memory pointened by lpBuffer.
-  Put #hFile, , lpBuffer[0],Size
-' Close the file.  
+
+  ' Write 256 bytes from the memory pointed to by lpBuffer
+  Put #hFile, , lpBuffer[0], Size
+
+' Close the file
 Close #hFile
-' Free the allocated memory.
+
+' Free the allocated memory
 Deallocate lpBuffer
-' End the program.
-End
 %%
 {{fbdoc item="diff"}}
 	- ##**Put**## can write full arrays as in VB or, alternatively, write a multiple of the data size from ##//buffer//##'s memory location.

@@ -3,8 +3,9 @@ A full featured cross-platform image library.
 
 Website: http://openil.sourceforge.net/
 Platforms supported: ""Win32"", Linux
-Headers to include: IL/il.bi
-Header version: 1.6.7
+Headers to include: IL/il.bi, IL/ilu.bi, IL/ilut.bi
+Header version: 1.7.8
+Examples: in ""examples/files/DevIL/""
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/libraries/il.bas"}}%%(freebasic)

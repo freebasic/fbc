@@ -5,6 +5,7 @@ Website: http://xmlsoft.org/
 Platforms supported: ""Win32"", Linux
 Headers to include: libxml/*.bi
 Header version: 2.6.17
+Examples: in examples/xml/
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/libraries/"}}%%(freebasic)

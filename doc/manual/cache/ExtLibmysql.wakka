@@ -5,6 +5,6 @@ Website: http://www.mysql.org
 Platforms supported: ""Win32"", Linux
 Headers to include: mysql/mysql.bi
 Header version: 4.0.17
-Examples: in examples/libraries/DB/
+Examples: in examples/database/
 
 {{fbdoc item="back" value="ExtLibTOC|External Library Table of Contents"}}

@@ -2,9 +2,9 @@
 Cross-platform library for reading/writing jpeg images
 
 Website: [[http://ijg.org/]]
-Platforms supported: ""Win32"", Linux
+Platforms supported: ""Win32"", Linux, DOS
 Headers to include: jpeglib.bi
-Header version: 6.2 (not sure)
-Example Usage: yes, in examples/gfx/jpeg_read.bas
+Header version: 6.2, 7.0, 8.4, 9.0 (#define ""__JPEGLIB_VER__"" to one of 6,7,8,9 if needed; default = 9)
+Example Usage: yes, in examples/files/jpeglib
 
 {{fbdoc item="back" value="ExtLibTOC|External Library Table of Contents"}}

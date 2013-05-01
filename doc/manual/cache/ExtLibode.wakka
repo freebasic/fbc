@@ -5,5 +5,6 @@ Website: http://www.ode.org/
 Platforms supported: ""Win32"", Linux
 Headers to include: ode/ode.bi
 Header version: 0.11.1
+Examples: in examples/math/ODE/
 
 {{fbdoc item="back" value="ExtLibTOC|External Library Table of Contents"}}

@@ -2,33 +2,42 @@
 Starts a user-defined procedure in a separate execution thread
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Threadcreate** ( [[KeyPgByval byval]] //proc// [[KeyPgAs as]] [[KeyPgSub sub]] ( [[KeyPgByval byval]] [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]] ), [[KeyPgByval byval]] //param// [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]] = 0, [[KeyPgByval byval]] //stack_size// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0 ) [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]]
+	[[KeyPgDeclare Declare]] [[KeyPgFunction Function]] **Threadcreate** _
+		( _
+			[[KeyPgByval ByVal]] //procptr// [[KeyPgAs As]] [[KeyPgSub Sub]] ( [[KeyPgByval ByVal]] //userdata// [[KeyPgAs As]] [[KeyPgAny Any]] [[KeyPgPtr Ptr]] ), _
+			[[KeyPgByval ByVal]] //param// [[KeyPgAs As]] [[KeyPgAny Any]] [[KeyPgPtr Ptr]] = 0, _
+			[[KeyPgByval ByVal]] //stack_size// [[KeyPgAs As]] [[KeyPgInteger Integer]] = 0 _
+		) [[KeyPgAs As]] [[KeyPgAny Any]] [[KeyPgPtr Ptr]]
 ##
 {{fbdoc item="usage"}}##
-	//result// = **Threadcreate** ( //proc// [, [ //param// ] [, //stack_size// ] ] )
+	//result// = **Threadcreate** ( //procptr// [, [ //param// ] [, //stack_size// ] ] )
 ##
 {{fbdoc item="param"}}
-	##//proc//##
-		A pointer to the ##[[KeyPgSub Sub]]## intended to work as a thread.
+	##//procptr//##
+		A pointer to the ##[[KeyPgSub Sub]]## intended to work as a thread. The sub must have the following signature (same parameters, same calling convention) to be compatible to //procptr//:
+		##[[KeyPgDeclare Declare]] [[KeyPgSub Sub]] myThread ( [[KeyPgByval ByVal]] //userdata// [[KeyPgAs As]] [[KeyPgAny Any]] [[KeyPgPtr Ptr]] )##
+	##//userdata//##
+		The ##Any Ptr## parameter of the ##[[KeyPgSub Sub]]## intended to work as a thread. ""FreeBASIC"" expects this parameter to be present, it must not be omitted! 
 	##//param//##
-		Optional [[KeyPgAny any]] [[KeyPgPtr ptr]] argument for the ##[[KeyPgSub Sub]]## pointed to by ##//proc//## (it can be a pointer to a structure or an array if more arguments are needed).
+		##Any Ptr## argument that will be passed to the thread ##[[KeyPgSub Sub]]## pointed to by ##//procptr//## through its //userdata// parameter. For example, this can be a pointer to a structure or an array containing various information for the thread sub to work with. If //param// is not given, ##0## (zero) will be passed to the thread sub's //userdata// parameter instead.
 	##//stack_size//##
 		Optional number of bytes to reserve for this thread's stack.
 
 {{fbdoc item="ret"}}
-	**Threadcreate** returns an ##[[KeyPgAny any]] [[KeyPgPtr ptr]]## handle to the thread created, or the null pointer (##0##) on failure.
+	**Threadcreate** returns an ##Any Ptr## handle to the thread created, or a null pointer (##0##) on failure.
 
 {{fbdoc item="desc"}}
-	The user function is started as a thread executes in parallel with the main part of the program. The OS achieves this by assigning it to a different processor if it exists, or using the waiting times in the main program.
-
+	The sub pointed to by //procptr// is started as a thread. It will be passed the content of //param//, or 0 (zero) if not specified, in its //userdata// parameter.
+	
+	The sub that was started as a thread will execute in parallel with the main part of the program. The OS achieves this by assigning it to a different processor if it exists, or by alternating between execution threads on a single processor. There is no guarantee about the order in which different threads execute, and no assumptions can be made about the order in which multiple create threads actually start executing.
+	
 	Before closing, a program must wait for the termination of all the threads it has launched; see ##[[KeyPgThreadWait Threadwait]]##.
-
-	To avoid simultaneous access to shared resources from different threads, ""FreeBASIC"" implements mutexes, mutual exclusion locks that can be "owned" by a single thread when doing critical work. See ##[[KeyPgMutexCreate Mutexcreate]]##, ##[[KeyPgMutexLock Mutexlock]]##, ##[[KeyPgMutexUnlock Mutexunlock]]##, ##[[KeyPgMutexDestroy Mutexdestroy]]##.
-
-	On some systems, the stack automatically grows beyond ##//stack_size//## if more space is needed; on others, this is the fixed maximum allowed. Behavior is undefined when more stack is used than the reserved size on systems where stacks are not able to grow.
+	
+	Due to the nature of threads, no assumptions about execution order can be made. In order to exchange data between multiple threads, including a thread and the main part of the program, mutexes must be used. These mutual exclusion locks can be "owned" by a single thread while doing critical work, causing other threads to wait for their turn. See ##[[KeyPgMutexCreate Mutexcreate]]##, ##[[KeyPgMutexLock Mutexlock]]##, ##[[KeyPgMutexUnlock Mutexunlock]]##, ##[[KeyPgMutexDestroy Mutexdestroy]]##.
+	
+	##//stack_size//## can be used to change the thread's stack size from the system's default. This can be useful when the program requires a big stack, for example due to lots of procedure recursion or when allocating huge strings/arrays on the stack. On some systems (Linux), the stack automatically grows beyond ##//stack_size//## if more space is needed; on others (Win32), this is the fixed maximum allowed. Behavior is undefined when more stack is used than the reserved size on systems where stacks are not able to grow.
 
 {{fbdoc item="ex"}}
-
 	{{fbdoc item="filename" value="examples/manual/threads/threads1.bas"}}%%(freebasic)
 '' Threading synchronization using Mutexes
 '' If you comment out the lines containing "MutexLock" and "MutexUnlock",

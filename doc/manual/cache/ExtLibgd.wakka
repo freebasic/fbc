@@ -3,7 +3,8 @@ Open source code library for the dynamic creation of images by programmers.
 
 Website: http://www.libgd.org
 Platforms supported: ""Win32"", Linux
-Headers to include: gd/gd.bi
-Header version: from 2005
+Headers to include: gd.bi
+Header version: 2.1.0 development version
+Examples: yes, in examples/files/GD/
 
 {{fbdoc item="back" value="ExtLibTOC|External Library Table of Contents"}}

@@ -23,19 +23,22 @@ Copies one graphical or text page onto another
 {{fbdoc item="ex"}}
 
 	{{fbdoc item="filename" value="examples/manual/gfx/pcopy.bas"}}%%(freebasic)
-screenres 320, 240, 32, 2    'Sets up the screen to be 320x240 in 32-bit color with 2 video pages.
-dim as integer max_x_value = 270, x_value = 50    'Dimension our working variables.
+'Sets up the screen to be 320x200 in 8-bit color with 2 video pages.
+ScreenRes 320, 200, 8, 2
 
-do while x_value < max_x_value     'Loop while x_value is less than the max
-	screenset 1,0     'Sets the working page to 1 and the displayed page to 0
-	cls    'Clears the screen so we can start fresh
-	circle (x_value,50),50,&h00FFFF00     'Draws a circle with a 50 pixel radius in yellow on page 1
-	pcopy 1,0    'Copies our circle from page 1 to page 0
-	x_value += 1     'Increments x_value so it will move.
-	sleep 25     'Waits for 25 milliseconds.
-loop     'Goes back to do as long as x_value is less than x_max_value
+'Sets the working page to 1 and the displayed page to 0
+ScreenSet 1, 0
 
-sleep   'Waits for any key to be pressed so you can see the work done.
+'Draws a circle moving across the top of the screen
+for x as integer = 50 to 269
+	Cls                    'Clears the screen so we can start fresh
+	Circle (x, 50), 50, 14 'Draws a yellow circle with a 50 pixel radius on page 1
+	PCopy 1, 0             'Copies our image from page 1 to page 0
+	Sleep 25               'Waits for 25 milliseconds.
+next x
+
+'Wait for a keypress before the screen closes
+Sleep
 %%
 	
 	{{fbdoc item="filename" value="examples/manual/gfx/pcopy_cons.bas"}}%%(freebasic)
