@@ -146,6 +146,9 @@ my_patch()
 		libxslt-*)
 			patch -p0 < ../src/libxslt.patch
 			;;
+		lua-*-dll)
+			patch -p0 < ../src/lua-dll.patch
+			;;
 		TinyPTC-Windows-*)
 			find . -type f -print0 | xargs -0 dos2unix && true
 			patch -p1 < ../src/TinyPTC-Windows.patch
@@ -588,10 +591,21 @@ my_build()
 			cd ../../..
 			;;
 
-		lua-*)
+		lua-*-static)
+			make generic \
+				CC="$CC" \
+				AR="$AR rcs" \
+				RANLIB="$RANLIB" \
+				MYCFLAGS="$CPPFLAGS $CFLAGS" \
+				MYLDFLAGS="$LDFLAGS"
+			cp src/liblua.a $prefix/lib
+			;;
+
+		lua-*-dll)
 			make mingw install INSTALL_TOP=$prefix \
 				CC="$CC" AR="$AR rcu" RANLIB="$RANLIB"
 			cp src/lua52.dll $prefix/bin
+			cp src/liblua.dll.a $prefix/lib
 			;;
 
 		mxml-*)
@@ -1005,7 +1019,8 @@ my_work openal-soft-1.15.1  openal-soft-1.15.1.tar.bz2  "http://kcat.strangesoft
 #my_work postgresql-9.2.4    postgresql-9.2.4.tar.bz2    "http://ftp.postgresql.org/pub/source/v9.2.4/postgresql-9.2.4.tar.bz2"
 my_work sqlite-3071601      sqlite-amalgamation-3071601.zip    "http://sqlite.org/2013/sqlite-amalgamation-3071601.zip"
 
-my_work lua-5.2.2           lua-5.2.2.tar.gz            "http://www.lua.org/ftp/lua-5.2.2.tar.gz"
+my_work lua-5.2.2-static    lua-5.2.2.tar.gz            "http://www.lua.org/ftp/lua-5.2.2.tar.gz"
+my_work lua-5.2.2-dll       lua-5.2.2.tar.gz            "http://www.lua.org/ftp/lua-5.2.2.tar.gz"
 #my_work SpiderMonkey-17.0.0 mozjs17.0.0.tar.gz          "http://ftp.mozilla.org/pub/mozilla.org/js/mozjs17.0.0.tar.gz"
 #my_work json-c-0.9          json-c-0.9.tar.gz           "http://oss.metaparadigm.com/json-c/json-c-0.9.tar.gz"
 my_work cgi-util-2.2.1      cgi-util-2.2.1.tar.gz       "ftp://ftp.tuxpaint.org/unix/www/cgi-util/cgi-util-2.2.1.tar.gz"

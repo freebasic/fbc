@@ -1,0 +1,16 @@
+LIBRARY iup_pplot.dll
+EXPORTS
+IupPPlot
+IupPPlotAdd
+IupPPlotAddPoints
+IupPPlotAddStr
+IupPPlotAddStrPoints
+IupPPlotBegin
+IupPPlotEnd
+IupPPlotInsert
+IupPPlotInsertPoints
+IupPPlotInsertStr
+IupPPlotInsertStrPoints
+IupPPlotOpen
+IupPPlotPaintTo
+IupPPlotTransform

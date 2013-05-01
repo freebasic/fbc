@@ -1,0 +1,3 @@
+LIBRARY cdluacairo52.dll
+EXPORTS
+luaopen_cdluacairo

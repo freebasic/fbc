@@ -9,9 +9,4 @@
 #ifndef __iupsbox_bi__
 #define __iupsbox_bi__
 
-extern "c"
-declare sub IupSboxOpen ()
-declare function IupSbox (byval child as Ihandle ptr) as Ihandle ptr
-end extern
-
 #endif

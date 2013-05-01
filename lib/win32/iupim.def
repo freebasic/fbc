@@ -1,0 +1,6 @@
+LIBRARY iupim.dll
+EXPORTS
+IupGetImageNativeHandle
+IupGetNativeHandleImage
+IupLoadImage
+IupSaveImage

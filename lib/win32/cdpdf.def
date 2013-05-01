@@ -1,0 +1,3 @@
+LIBRARY cdpdf.dll
+EXPORTS
+cdContextPDF
