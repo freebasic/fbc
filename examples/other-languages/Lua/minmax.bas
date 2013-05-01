@@ -4,71 +4,79 @@
 '' translated from a PB source, originally written by Marco Pontello (marcopon[at]myrealbox.com)
 ''
 
-
 #include once "Lua/lua.bi"
 #include once "Lua/lauxlib.bi"
 #include once "Lua/lualib.bi"
 
+function minmax cdecl(byval L as lua_State ptr) as long
+	dim as integer argcount
+	dim as double num, maxnum, minnum
 
-function minmax cdecl (byval L as lua_State ptr) as integer
+	'' Get the number of arguments passed on the virtual stack
+	'' by the calling lua code
+	argcount = lua_gettop( L )
 
-	dim numpar as long
-  	dim i as long
-  	dim num as double
-  	dim maxnum as double
-  	dim minnum as double
+	'' Pop all parameters from the virtual stack and evaluate them
+	for i as integer = 1 to argcount
+		'' Peek the specified virtual stack element
+		num = lua_tonumber( L, i )
 
-  	' get the number of parameters passed on the virtual stack
-  	' by the calling lua code
-
-  	numpar = lua_gettop( L )
-
-  	' pop all parameters from the vs and evaluate them
-  	for i = 1 to numpar
-
-    	' peek the specified vs element
-    	num = lua_tonumber( L, i )
-
-    	if( num > maxnum ) then
-    		maxnum = num
-    	end if
-    	if minnum = 0 then
-      		minnum = num
-    	else
-      		if( num < minnum ) then
-      			minnum=  num
-      		end if
-    	end if
-  	next i
+		if( num > maxnum ) then
+			maxnum = num
+		end if
+		if minnum = 0 then
+			minnum = num
+		else
+			if( num < minnum ) then
+				minnum = num
+			end if
+		end if
+	next
   
-  	' push the results on the vs
-  	lua_pushnumber( L, minnum )
-  	lua_pushnumber( L, maxnum )
+	'' Push the results on the virtual stack
+	lua_pushnumber( L, minnum )
+	lua_pushnumber( L, maxnum )
   
-  	' set number of returned parameters
-  	minmax = 2
+	'' Return number of returned parameters
+	function = 2
+end function
+
+private function my_lua_Alloc cdecl _
+	( _
+		byval ud as any ptr, _
+		byval p as any ptr, _
+		byval osize as uinteger, _
+		byval nsize as uinteger _
+	) as any ptr
+
+	if( nsize = 0 ) then
+		deallocate( p )
+		function = NULL
+	else
+		function = reallocate( p, nsize )
+	end if
 
 end function
 
 ''
-'' main                                         
+'' main
 ''
-  	dim L as lua_State ptr
+	dim L as lua_State ptr
 
-  	' create a lua state
-  	L = lua_open( )
+	'' Create a lua state
+	L = lua_newstate( @my_lua_Alloc, NULL )
 
-  	' load the base lua library (needed for 'print')
-  	luaopen_base( L )
+	'' Load the base lua library (needed for 'print')
+	luaopen_base( L )
 
-  	' register the function to be called from lua as MinMax
-  	lua_register( L, "MinMax", @minmax )
+	'' Register the function to be called from lua as MinMax
+	lua_register( L, "MinMax", @minmax )
 
-  	' execute the lua script from a file
-  	luaL_dofile( L, "minmax.lua" )
+	'' Execute the lua script from a file
+	luaL_dofile( L, exepath() + "/minmax.lua" )
 
-  	' release the lua state
-  	lua_close( L )
+	'' Release the lua state
+	lua_close( L )
 
-  	print "finished! press any key"
-  	sleep
+	print "Finished! Waiting for keypress to exit..."
+	sleep
