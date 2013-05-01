@@ -39,6 +39,11 @@
 '' *---------------------------------------------------------------------------*
 
 #inclib "pdf"
+#inclib "jpeg"
+#inclib "tiff"
+#inclib "lzma"
+#inclib "png"
+#inclib "z"
 
 type PDF as any
 
