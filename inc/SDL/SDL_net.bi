@@ -11,6 +11,11 @@
 
 #inclib "SDL_net"
 
+#ifdef __FB_WIN32__
+#inclib "ws2_32"
+#inclib "iphlpapi"
+#endif
+
 #include once "SDL.bi"
 #include once "SDL_endian.bi"
 #include once "begin_code.bi"
