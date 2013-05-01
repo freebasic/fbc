@@ -1,4 +1,0 @@
-LIBRARY iuplua_pplot52.dll
-EXPORTS
-iup_pplotlua_open
-luaopen_iuplua_pplot

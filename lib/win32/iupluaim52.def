@@ -1,4 +1,0 @@
-LIBRARY iupluaim52.dll
-EXPORTS
-iupimlua_open
-luaopen_iupluaim

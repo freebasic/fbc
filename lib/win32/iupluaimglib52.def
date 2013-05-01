@@ -1,3 +1,0 @@
-LIBRARY iupluaimglib52.dll
-EXPORTS
-luaopen_iupluaimglib

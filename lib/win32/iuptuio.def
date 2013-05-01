@@ -1,4 +1,0 @@
-LIBRARY iuptuio.dll
-EXPORTS
-IupTuioClient
-IupTuioOpen
