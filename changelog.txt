@@ -32,11 +32,10 @@ Version 0.25.0:
 - BYREF function results:  function f( ) byref as integer
 - LLVM backend (-gen llvm) that emits textual LLVM IR code and uses llc to compile it into ASM
 - Updated headers for caca 0.99.beta18 (caca.bi = new API, caca0.bi = old API)
-- Updated header for libzip 0.10.1
+- Updated header for libzip 0.11
 - Updated header for DevIL 1.7.8
 - Fixed & updated header for PDCurses 3.4
 - Updated GD graphics library header for the 2.1.0 development version
-- Updated header for libzip 0.11
 - Updated header for giflib 4.2.1 and 5.0.4 (version may be selected by defining __GIFLIB_VER__ to 4 or 5)
 - Updated header for jpeglib 6.2, 7.0, 8.4 and 9.0 (version may be selected by defining __JPEGLIB_VER__ to one of 6,7,8,9)
 - Updated header for libpng 1.5.14
