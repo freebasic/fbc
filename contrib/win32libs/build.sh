@@ -865,6 +865,8 @@ my_license()
 	lua-*)          cp doc/readme.html              $licensedir/Lua.html;;
 	lzo-*)          cp COPYING                      $licensedir/LZO.txt;;
 	mxml-*)         cp COPYING                      $licensedir/mxml.txt;;
+	mpfr-*)         cp COPYING.LESSER               $licensedir/mpfr.txt;;
+	mpc-*)          cp COPYING.LESSER               $licensedir/mpc.txt;;
 	nettle-*)       cp COPYING.LIB                  $licensedir/nettle.txt;;
 	openal-soft-*)  cp COPYING                      $licensedir/openal-soft.txt;;
 	pcre-*)         cp LICENCE                      $licensedir/PCRE.txt;;
@@ -932,6 +934,8 @@ my_work pcre-8.32       pcre-8.32.tar.bz2        "ftp://ftp.csx.cam.ac.uk/pub/so
 my_work tre-0.8.0       tre-0.8.0.tar.bz2        "http://laurikari.net/tre/tre-0.8.0.tar.bz2"
 my_work gdsl-1.6        gdsl-1.6.tar.gz          "http://download.gna.org/gdsl/gdsl-1.6.tar.gz"
 my_work gmp-5.1.1       gmp-5.1.1.tar.xz         "ftp://ftp.gmplib.org/pub/gmp/gmp-5.1.1.tar.xz"
+my_work mpfr-3.1.2      mpfr-3.1.2.tar.xz        "http://www.mpfr.org/mpfr-current/mpfr-3.1.2.tar.xz"
+my_work mpc-1.0.1       mpc-1.0.1.tar.gz         "http://www.multiprecision.org/mpc/download/mpc-1.0.1.tar.gz"
 my_work gsl-1.15        gsl-1.15.tar.gz          "ftp://ftp.gnu.org/gnu/gsl/gsl-1.15.tar.gz"
 my_work CUnit-2.1-2     CUnit-2.1-2-src.tar.bz2  "http://downloads.sourceforge.net/cunit/CUnit-2.1-2-src.tar.bz2?download"
 my_work aspell-0.60.6.1 aspell-0.60.6.1.tar.gz   "ftp://ftp.gnu.org/gnu/aspell/aspell-0.60.6.1.tar.gz"
@@ -1027,14 +1031,16 @@ my_work cgi-util-2.2.1      cgi-util-2.2.1.tar.gz       "ftp://ftp.tuxpaint.org/
 #my_work fcgi-current        fcgi.tar.gz                 "http://www.fastcgi.com/dist/fcgi.tar.gz"
 #my_work zeromq-3.2.2        zeromq-3.2.2.tar.gz         "http://download.zeromq.org/zeromq-3.2.2.tar.gz"
 
+################################################################################
 # Copy in the libraries
+
 cp $prefix/bin/*.dll fbc/bin/win32
 cp $prefix/lib/*.a   fbc/lib/win32
 
 ################################################################################
-# Build a set of binutils for cross-compiling from win32 to linux
+# Build multiple binutils for native and cross compilation
 
-build_binutils()
+my_binutils()
 {
 	srcdir="$1"
 	builddir="$2"
@@ -1063,37 +1069,139 @@ binutilstarball=$binutilsname.tar.bz2
 binutilswin32=$binutilsname-build-win32
 binutilslinux=$binutilsname-build-linux
 
-my_fetch  $binutilstarball  "http://ftp.gnu.org/gnu/binutils/$binutilstarball"
-my_extract  $binutilsname  $binutilstarball
+my_fetch "$binutilstarball" "http://ftp.gnu.org/gnu/binutils/$binutilstarball"
+my_extract "$binutilsname" "$binutilstarball"
 
-build_binutils $binutilsname $binutilswin32 "--host=$triplet --target=$triplet"
-cp $binutilswin32/binutils/ar.exe      fbc/bin/win32/ar.exe
-cp $binutilswin32/binutils/dlltool.exe fbc/bin/win32/dlltool.exe
-cp $binutilswin32/gas/as-new.exe       fbc/bin/win32/as.exe
-cp $binutilswin32/gprof/gprof.exe      fbc/bin/win32/gprof.exe
-cp $binutilswin32/ld/ld-new.exe        fbc/bin/win32/ld.exe
+my_binutils "$binutilsname" "binutils-build-djgpp" "--host=$triplet --target=i486-pc-msdosdjgpp"
+my_binutils "$binutilsname" "binutils-build-linux" "--host=$triplet --target=i486-pc-linux-gnu"
+my_binutils "$binutilsname" "binutils-build-mingw" "--host=$triplet --target=$triplet"
 
-build_binutils $binutilsname $binutilslinux "--host=$triplet --target=i486-pc-linux-gnu"
-cp $binutilslinux/binutils/ar.exe fbc/bin/linux/ar.exe
-cp $binutilslinux/gas/as-new.exe  fbc/bin/linux/as.exe
-cp $binutilslinux/ld/ld-new.exe   fbc/bin/linux/ld.exe
+mkdir -p fbc/bin/dos
+cp binutils-build-djgpp/binutils/ar.exe fbc/bin/dos/ar.exe
+cp binutils-build-djgpp/gas/as-new.exe  fbc/bin/dos/as.exe
+cp binutils-build-djgpp/ld/ld-new.exe   fbc/bin/dos/ld.exe
+
+mkdir -p fbc/bin/linux
+cp binutils-build-linux/binutils/ar.exe fbc/bin/linux/ar.exe
+cp binutils-build-linux/gas/as-new.exe  fbc/bin/linux/as.exe
+cp binutils-build-linux/ld/ld-new.exe   fbc/bin/linux/ld.exe
+
+mkdir -p fbc/bin/win32
+cp binutils-build-mingw/binutils/ar.exe      fbc/bin/win32/ar.exe
+cp binutils-build-mingw/binutils/dlltool.exe fbc/bin/win32/dlltool.exe
+cp binutils-build-mingw/gas/as-new.exe       fbc/bin/win32/as.exe
+cp binutils-build-mingw/gprof/gprof.exe      fbc/bin/win32/gprof.exe
+cp binutils-build-mingw/ld/ld-new.exe        fbc/bin/win32/ld.exe
+
+################################################################################
+# Build static gccs, for native and cross compilation
+
+my_gcc()
+{
+	srcdir="$1"
+	builddir="$2"
+	target="$3"
+
+	if [ ! -d "$builddir" ]; then
+		mkdir -p "$builddir"/myinstall/usr/local
+		cd "$builddir"
+
+		CPPFLAGS="-I$prefix/include" \
+		CFLAGS="-O2 -I$prefix/include" \
+		CXXFLAGS="-O2 -I$prefix/include" \
+		LDFLAGS="-L$prefix/lib" \
+		../$srcdir/configure \
+			--host="$triplet" --target="$target" \
+			--disable-bootstrap --enable-languages=c \
+			--with-newlib --without-headers \
+			--disable-multilib --disable-libssp --disable-libquadmath \
+			--disable-threads --disable-decimal-float \
+			--disable-shared --disable-lto --disable-lto-plugin \
+			--disable-libmudflap --disable-libgomp --disable-libatomic
+		make all-gcc
+		make install-gcc DESTDIR=$toplevel/"$builddir"/myinstall
+		cd ..
+	fi
+}
+
+gccname=gcc-4.7.3
+gcctarball=$gccname.tar.bz2
+
+my_fetch "$gcctarball" "http://ftp.gnu.org/gnu/gcc/$gccname/$gcctarball"
+my_extract "$gccname" "$gcctarball"
+
+my_fetch "gcc473s.zip" "ftp://ftp.delorie.com/pub/djgpp/current/v2gnu/gcc473s.zip"
+my_extract "gcc473s" "gcc473s.zip"
+
+gcctripletdjgpp=i586-pc-msdosdjgpp
+gcctripletlinux=i686-pc-linux-gnu
+gcctripletmingw=i686-w64-mingw32
+
+unset      AS
+unset     CPP
+unset      CC
+unset     CXX
+unset      AR
+unset  RANLIB
+unset      LD
+unset DLLTOOL
+unset WINDRES
+unset   STRIP
+unset STRINGS
+
+my_gcc "gcc473s/gnu/gcc-4.73" "gcc-build-djgpp" "$gcctripletdjgpp"
+my_gcc "$gccname" "gcc-build-linux" "$gcctripletlinux"
+my_gcc "$gccname" "gcc-build-mingw" "$gcctripletmingw"
+
+export      AS="${crosstoolprefix}as"
+export     CPP="${crosstoolprefix}cpp"
+export      CC="${crosstoolprefix}gcc"
+export     CXX="${crosstoolprefix}g++"
+export      AR="${crosstoolprefix}ar"
+export  RANLIB="${crosstoolprefix}ranlib"
+export      LD="${crosstoolprefix}ld"
+export DLLTOOL="${crosstoolprefix}dlltool"
+export WINDRES="${crosstoolprefix}windres"
+export   STRIP="${crosstoolprefix}strip"
+export STRINGS="${crosstoolprefix}strings"
+
+# Copy in gcc binaries
+mkdir -p fbc/bin/dos
+mkdir -p fbc/bin/linux
+mkdir -p fbc/bin/win32
+cp gcc-build-djgpp/myinstall/usr/local/bin/$gcctripletdjgpp-gcc.exe fbc/bin/dos/gcc.exe
+cp gcc-build-linux/myinstall/usr/local/bin/$gcctripletlinux-gcc.exe fbc/bin/linux/gcc.exe
+cp gcc-build-mingw/myinstall/usr/local/bin/$gcctripletmingw-gcc.exe fbc/bin/win32/gcc.exe
+$STRIP -g fbc/bin/dos/gcc.exe
+$STRIP -g fbc/bin/linux/gcc.exe
+$STRIP -g fbc/bin/win32/gcc.exe
+
+# Each gcc also needs its ../libexec/gcc/<target>/<version>/cc1
+mkdir -p fbc/bin/libexec/gcc/$gcctripletdjgpp/4.7.3
+mkdir -p fbc/bin/libexec/gcc/$gcctripletlinux/4.7.3
+mkdir -p fbc/bin/libexec/gcc/$gcctripletmingw/4.7.3
+cp gcc-build-djgpp/myinstall/usr/local/libexec/gcc/$gcctripletdjgpp/4.7.3/cc1.exe fbc/bin/libexec/gcc/$gcctripletdjgpp/4.7.3
+cp gcc-build-linux/myinstall/usr/local/libexec/gcc/$gcctripletlinux/4.7.3/cc1.exe fbc/bin/libexec/gcc/$gcctripletlinux/4.7.3
+cp gcc-build-mingw/myinstall/usr/local/libexec/gcc/$gcctripletmingw/4.7.3/cc1.exe fbc/bin/libexec/gcc/$gcctripletmingw/4.7.3
+$STRIP -g fbc/bin/libexec/gcc/$gcctripletdjgpp/4.7.3/cc1.exe
+$STRIP -g fbc/bin/libexec/gcc/$gcctripletlinux/4.7.3/cc1.exe
+$STRIP -g fbc/bin/libexec/gcc/$gcctripletmingw/4.7.3/cc1.exe
 
 ################################################################################
 # Build win32 gdb
 
 gdbname=gdb-7.5.1
 gdbtarball=$gdbname.tar.bz2
-gdbwin32=$gdbname-build
 
-my_fetch  $gdbtarball  "http://ftp.gnu.org/gnu/gdb/$gdbtarball"
-my_extract  $gdbname  $gdbtarball
+my_fetch "$gdbtarball" "http://ftp.gnu.org/gnu/gdb/$gdbtarball"
+my_extract "$gdbname" "$gdbtarball"
 
 # build
-if [ ! -d "$gdbwin32" ]; then
-	my_report "building $gdbname"
+if [ ! -d gdb-build ]; then
+	my_report "building gdb"
 
-	mkdir "$gdbwin32"
-	cd "$gdbwin32"
+	mkdir gdb-build
+	cd gdb-build
 
 	CPPFLAGS="-I$prefix/include" \
 	CFLAGS="-O2 -I$prefix/include" \
@@ -1106,10 +1214,10 @@ if [ ! -d "$gdbwin32" ]; then
 
 	make
 
-	cp gdb/gdb.exe ../fbc/bin/win32
-
 	cd ..
 fi
+
+cp gdb-build/gdb/gdb.exe fbc/bin/win32
 
 ################################################################################
 

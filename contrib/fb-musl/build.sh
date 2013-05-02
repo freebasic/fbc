@@ -1119,6 +1119,8 @@ my_license()
 	lzo-*)          cp COPYING                      $licensedir/LZO.txt;;
 	Mesa-*)         cp docs/license.html            $licensedir/Mesa.html;;
 	mxml-*)         cp COPYING                      $licensedir/mxml.txt;;
+	mpfr-*)         cp COPYING.LESSER               $licensedir/mpfr.txt;;
+	mpc-*)          cp COPYING.LESSER               $licensedir/mpc.txt;;
 	ncurses-*)      cp README                       $licensedir/ncurses.txt;;
 	nettle-*)       cp COPYING.LIB                  $licensedir/nettle.txt;;
 	openal-soft-*)  cp COPYING                      $licensedir/openal-soft.txt;;
@@ -1270,6 +1272,8 @@ my_work pcre-8.32       pcre-8.32.tar.bz2        "ftp://ftp.csx.cam.ac.uk/pub/so
 my_work tre-0.8.0       tre-0.8.0.tar.bz2        "http://laurikari.net/tre/tre-0.8.0.tar.bz2"
 my_work gdsl-1.6        gdsl-1.6.tar.gz          "http://download.gna.org/gdsl/gdsl-1.6.tar.gz"
 my_work gmp-5.1.1       gmp-5.1.1.tar.xz         "ftp://ftp.gmplib.org/pub/gmp/gmp-5.1.1.tar.xz"
+my_work mpfr-3.1.2      mpfr-3.1.2.tar.xz        "http://www.mpfr.org/mpfr-current/mpfr-3.1.2.tar.xz"
+my_work mpc-1.0.1       mpc-1.0.1.tar.gz         "http://www.multiprecision.org/mpc/download/mpc-1.0.1.tar.gz"
 my_work gsl-1.15        gsl-1.15.tar.gz          "ftp://ftp.gnu.org/gnu/gsl/gsl-1.15.tar.gz"
 my_work CUnit-2.1-2     CUnit-2.1-2-src.tar.bz2  "http://downloads.sourceforge.net/cunit/CUnit-2.1-2-src.tar.bz2?download"
 my_work aspell-0.60.6.1 aspell-0.60.6.1.tar.gz   "ftp://ftp.gnu.org/gnu/aspell/aspell-0.60.6.1.tar.gz"
@@ -1404,45 +1408,7 @@ my_work lua-5.2.2           lua-5.2.2.tar.gz            "http://www.lua.org/ftp/
 #my_work zeromq-3.2.2        zeromq-3.2.2.tar.gz         "http://download.zeromq.org/zeromq-3.2.2.tar.gz"
 
 ################################################################################
-# Build a set of binutils, statically linked against musl libc, using the
-# i486-linux-musl toolchain, for the standalone FB setup
-
-binutilsname=binutils-2.23.2
-binutilstarball=$binutilsname.tar.bz2
-
-my_fetch  $binutilstarball  http://ftp.gnu.org/gnu/binutils/$binutilstarball
-my_extract  $binutilsname  $binutilstarball
-
-# build
-if [ ! -d $binutilsname-build ]; then
-	my_report "building $binutilsname"
-
-	mkdir $binutilsname-build
-	cd $binutilsname-build
-
-	CPPFLAGS="-D_GNU_SOURCE" \
-	CFLAGS="-O2" \
-	CXXFLAGS="-O2" \
-	LDFLAGS="-Wl,-Bstatic -static-libgcc"
-	 CC="$toplevel/i486-linux-musl/bin/i486-linux-musl-gcc" \
-	CXX="$toplevel/i486-linux-musl/bin/i486-linux-musl-g++" \
-	 AR="$toplevel/i486-linux-musl/bin/i486-linux-musl-ar" \
-	 LD="$toplevel/i486-linux-musl/bin/i486-linux-musl-ld" \
-	../$binutilsname/configure \
-		--host=i486-pc-linux-gnu --target=i486-pc-linux-gnu \
-		--prefix=/usr \
-		--disable-shared --enable-static \
-		--disable-nls --disable-werror
-
-	make
-	cd ..
-fi
-
-################################################################################
-# 1. Build an FB setup for native -> musl cross compilation, i.e. a native fbc
-#    plus the libraries for cross-compilation to i486-linux-musl, all installed
-#    into the $toplevel/i486-linux-musl tree
-#
+# Build an FB setup for native -> musl cross compilation
 # The most important part are the rtlib and gfxlib2 binaries, but the compiler
 # itself aswell; building it ensures that we get a native fbc whose ABI matches
 # the rtlib/gfxlib2 binaries, so we don't need to make assumptions about the
@@ -1470,15 +1436,9 @@ echo "CFLAGS += -DPTHREAD_MUTEX_RECURSIVE_NP=PTHREAD_MUTEX_RECURSIVE" >> config.
 make
 cd ..
 
-my_report "copying binutils & libs into musl-fbc"
-
-# Copy in the binutils
-mkdir -p musl-fbc/bin/linux
-cp $binutilsname-build/gas/as-new   musl-fbc/bin/linux/as
-cp $binutilsname-build/binutils/ar  musl-fbc/bin/linux/ar
-cp $binutilsname-build/ld/ld-new    musl-fbc/bin/linux/ld
-
+################################################################################
 # Copy in the libraries
+
 cp i486-linux-musl/lib/gcc/i486-linux-musl/4.7.3/crt{begin,end}.o  musl-fbc/lib/linux
 cp i486-linux-musl/lib/gcc/i486-linux-musl/4.7.3/*.a               musl-fbc/lib/linux
 cp sysroot/usr/lib/crt{1,i,n}.o   musl-fbc/lib/linux
@@ -1493,16 +1453,183 @@ if [ ! -f musl-fbc/lib/linux/libgcc_eh.a ]; then
 	ar rcs musl-fbc/lib/linux/libgcc_eh.a
 fi
 
-chmod 644 musl-fbc/lib/linux/*.o \
-          musl-fbc/lib/linux/*.a
-
-strip -g musl-fbc/bin/linux/*   \
-         musl-fbc/lib/linux/*.o \
-         musl-fbc/lib/linux/*.a
+chmod 644 musl-fbc/lib/linux/*.o musl-fbc/lib/linux/*.a
+strip -g  musl-fbc/lib/linux/*.o musl-fbc/lib/linux/*.a
 
 ################################################################################
-# 2. "Cross-compile" a standalone FB setup using the 1st one, to get a static
-#    fbc binary; the i486-linux-musl libs can just be copied over
+# Build static binutils, for Linux, and for cross-compiling to MinGW/DJGPP
+
+my_binutils()
+{
+	srcdir="$1"
+	builddir="$2"
+	target="$3"
+
+	# build
+	if [ ! -d "$builddir" ]; then
+		my_report "building $builddir"
+
+		mkdir "$builddir"
+		cd "$builddir"
+
+		CPPFLAGS="-D_GNU_SOURCE" \
+		CFLAGS="-O2" \
+		CXXFLAGS="-O2" \
+		LDFLAGS="-Wl,-Bstatic -static-libgcc"
+		 CC="$toplevel/i486-linux-musl/bin/i486-linux-musl-gcc" \
+		CXX="$toplevel/i486-linux-musl/bin/i486-linux-musl-g++" \
+		 AR="$toplevel/i486-linux-musl/bin/i486-linux-musl-ar" \
+		 LD="$toplevel/i486-linux-musl/bin/i486-linux-musl-ld" \
+		../$binutilsname/configure \
+			--host=i486-pc-linux-gnu --target=$target \
+			--prefix=/usr \
+			--disable-shared --enable-static \
+			--disable-nls --disable-werror
+
+		make
+		cd ..
+	fi
+}
+
+binutilsname=binutils-2.23.2
+binutilstarball=$binutilsname.tar.bz2
+
+my_fetch "$binutilstarball" "http://ftp.gnu.org/gnu/binutils/$binutilstarball"
+my_extract "$binutilsname" "$binutilstarball"
+
+my_binutils "$binutilsname" "binutils-build-djgpp" "i486-pc-msdosdjgpp"
+my_binutils "$binutilsname" "binutils-build-linux" "i486-pc-linux-gnu"
+my_binutils "$binutilsname" "binutils-build-mingw" "i486-pc-mingw32"
+
+mkdir -p musl-fbc/bin/dos
+cp binutils-build-djgpp/binutils/ar musl-fbc/bin/dos/ar
+cp binutils-build-djgpp/gas/as-new  musl-fbc/bin/dos/as
+cp binutils-build-djgpp/ld/ld-new   musl-fbc/bin/dos/ld
+
+mkdir -p musl-fbc/bin/linux
+cp binutils-build-linux/binutils/ar musl-fbc/bin/linux/ar
+cp binutils-build-linux/gas/as-new  musl-fbc/bin/linux/as
+cp binutils-build-linux/ld/ld-new   musl-fbc/bin/linux/ld
+cp binutils-build-linux/gprof/gprof musl-fbc/bin/linux/gprof
+
+mkdir -p musl-fbc/bin/win32
+cp binutils-build-mingw/binutils/ar      musl-fbc/bin/win32/ar
+cp binutils-build-mingw/binutils/dlltool musl-fbc/bin/win32/dlltool
+cp binutils-build-mingw/gas/as-new       musl-fbc/bin/win32/as
+cp binutils-build-mingw/ld/ld-new        musl-fbc/bin/win32/ld
+
+################################################################################
+# Build static gccs, for native and cross compilation
+
+my_gcc()
+{
+	srcdir="$1"
+	builddir="$2"
+	target="$3"
+
+	if [ ! -d "$builddir" ]; then
+		my_report "building $builddir"
+
+		mkdir -p "$builddir"/myinstall/usr/local
+		cd "$builddir"
+
+		 AR="$toplevel/i486-linux-musl/bin/i486-linux-musl-ar" \
+		 CC="$toplevel/i486-linux-musl/bin/i486-linux-musl-gcc -Wl,-Bstatic -static-libgcc" \
+		CXX="$toplevel/i486-linux-musl/bin/i486-linux-musl-g++ -Wl,-Bstatic -static-libgcc" \
+		CFLAGS="-O2" CXXFLAGS="-O2" \
+		../$srcdir/configure \
+			--target="$target" \
+			--disable-bootstrap --enable-languages=c \
+			--with-newlib --without-headers \
+			--disable-multilib --disable-libssp --disable-libquadmath \
+			--disable-threads --disable-decimal-float \
+			--disable-shared --disable-lto --disable-lto-plugin \
+			--disable-libmudflap --disable-libgomp --disable-libatomic
+		make all-gcc
+		make install-gcc DESTDIR=$toplevel/"$builddir"/myinstall
+		cd ..
+	fi
+}
+
+gccname=gcc-4.7.3
+gcctarball=$gccname.tar.bz2
+
+my_fetch "$gcctarball" "http://ftp.gnu.org/gnu/gcc/$gccname/$gcctarball"
+my_extract "$gccname" "$gcctarball"
+
+my_fetch "gcc473s.zip" "ftp://ftp.delorie.com/pub/djgpp/current/v2gnu/gcc473s.zip"
+my_extract "gcc473s" "gcc473s.zip"
+
+gcctripletdjgpp=i486-pc-msdosdjgpp
+gcctripletlinux=i486-pc-linux-gnu
+gcctripletmingw=i486-pc-mingw32
+
+my_gcc "gcc473s/gnu/gcc-4.73" "gcc-build-djgpp" "$gcctripletdjgpp"
+my_gcc "$gccname" "gcc-build-linux" "$gcctripletlinux"
+my_gcc "$gccname" "gcc-build-mingw" "$gcctripletmingw"
+
+# Copy in gcc binaries
+mkdir -p musl-fbc/bin/dos
+mkdir -p musl-fbc/bin/linux
+mkdir -p musl-fbc/bin/win32
+cp gcc-build-djgpp/myinstall/usr/local/bin/$gcctripletdjgpp-gcc musl-fbc/bin/dos/gcc
+cp gcc-build-linux/myinstall/usr/local/bin/$gcctripletlinux-gcc musl-fbc/bin/linux/gcc
+cp gcc-build-mingw/myinstall/usr/local/bin/$gcctripletmingw-gcc musl-fbc/bin/win32/gcc
+strip -g musl-fbc/bin/dos/gcc
+strip -g musl-fbc/bin/linux/gcc
+strip -g musl-fbc/bin/win32/gcc
+
+# Each gcc also needs its ../libexec/gcc/<target>/<version>/cc1
+mkdir -p musl-fbc/bin/libexec/gcc/$gcctripletdjgpp/4.7.3
+mkdir -p musl-fbc/bin/libexec/gcc/$gcctripletlinux/4.7.3
+mkdir -p musl-fbc/bin/libexec/gcc/$gcctripletmingw/4.7.3
+cp gcc-build-djgpp/myinstall/usr/local/libexec/gcc/$gcctripletdjgpp/4.7.3/cc1 musl-fbc/bin/libexec/gcc/$gcctripletdjgpp/4.7.3
+cp gcc-build-linux/myinstall/usr/local/libexec/gcc/$gcctripletlinux/4.7.3/cc1 musl-fbc/bin/libexec/gcc/$gcctripletlinux/4.7.3
+cp gcc-build-mingw/myinstall/usr/local/libexec/gcc/$gcctripletmingw/4.7.3/cc1 musl-fbc/bin/libexec/gcc/$gcctripletmingw/4.7.3
+strip -g musl-fbc/bin/libexec/gcc/$gcctripletdjgpp/4.7.3/cc1
+strip -g musl-fbc/bin/libexec/gcc/$gcctripletlinux/4.7.3/cc1
+strip -g musl-fbc/bin/libexec/gcc/$gcctripletmingw/4.7.3/cc1
+
+################################################################################
+# Build gdb
+# TODO: not yet working with musl libc
+
+#gdbname=gdb-7.5.1
+#gdbtarball=$gdbname.tar.bz2
+#
+#my_fetch "$gdbtarball" "http://ftp.gnu.org/gnu/gdb/$gdbtarball"
+#my_extract "$gdbname" "$gdbtarball"
+#
+## build
+#if [ ! -d gdb-build ]; then
+#	my_report "building gdb"
+#
+#	mkdir gdb-build
+#	cd gdb-build
+#
+#	CPPFLAGS="-D_GNU_SOURCE" \
+#	CFLAGS="-O2" \
+#	CXXFLAGS="-O2" \
+#	LDFLAGS="-Wl,-Bstatic -static-libgcc"
+#	 CC="$toplevel/i486-linux-musl/bin/i486-linux-musl-gcc" \
+#	CXX="$toplevel/i486-linux-musl/bin/i486-linux-musl-g++" \
+#	 AR="$toplevel/i486-linux-musl/bin/i486-linux-musl-ar" \
+#	 LD="$toplevel/i486-linux-musl/bin/i486-linux-musl-ld" \
+#	"../$gdbname/configure" --host=i486-pc-linux-gnu --target=i486-pc-linux-gnu \
+#		--prefix=/usr \
+#		--disable-shared --enable-static \
+#		--disable-nls
+#
+#	make
+#
+#	cd ..
+#fi
+#
+#cp gdb-build/gdb/gdb musl-fbc/bin/linux
+
+################################################################################
+# "Cross-compile" another FB setup using the 1st one, to get a static fbc
+# (anything else, i.e. gcc/binutils and libs, can just be copied over)
 
 my_report "building fbc-static"
 
@@ -1515,15 +1642,14 @@ fi
 cd fbc-static
 echo "ENABLE_STANDALONE := 1" > config.mk
 #echo "FBFLAGS := -g -exx" >> config.mk
-echo "FBC := $toplevel/musl-fbc/fbc-new -static -l tinfo" >> config.mk
+echo "FBC := $toplevel/musl-fbc/fbc -static -l tinfo" >> config.mk
 make compiler
 cd ..
 
 my_report "copying binutils & libs into fbc-static"
 
 # Copy over the libraries etc.
-mkdir -p fbc-static/bin/linux
-cp musl-fbc/bin/linux/* fbc-static/bin/linux
+cp -r musl-fbc/bin fbc-static
 mkdir -p fbc-static/lib/linux
 cp musl-fbc/lib/linux/* fbc-static/lib/linux
 mkdir -p fbc-static/doc
