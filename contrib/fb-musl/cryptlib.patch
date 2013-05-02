@@ -8,3 +8,43 @@
    #include <sys/ipc.h>
  #endif /* !( QNX || MVS ) */
  #include <sys/time.h>	/* SCO and SunOS need this before resource.h */
+--- kernel/thread.h.orig	2013-04-30 22:06:15.270337457 +0200
++++ kernel/thread.h	2013-04-30 22:06:17.254347291 +0200
+@@ -2232,34 +2232,9 @@
+ #define THREAD_INITIALISER		0
+ #define THREAD_SELF()			pthread_self()
+ #define THREAD_SAME( thread1, thread2 )	pthread_equal( ( thread1 ), ( thread2 ) )
+-#if defined( __osf__ ) || defined( __alpha__ ) || defined( __APPLE__ )
+-  #define THREAD_YIELD()		pthread_yield_np()
+-#elif defined( __MVS__ )
+-  #define THREAD_YIELD()		pthread_yield( NULL )
+-#elif defined( sun )
+-  #if OSVERSION <= 6
+-	/* Older Slowaris gets a bit complex, SunOS 4.x always returns -1 and 
+-	   sets errno to ENOSYS when sched_yield() is called, so we use this to 
+-	   fall back to the UI interface if necessary */
+-	#define THREAD_YIELD()		{ if( sched_yield() ) thr_yield(); }
+-  #else
+-	#define THREAD_YIELD()		sched_yield()
+-  #endif /* Slowaris 5.7 / 7.x or newer */
+-#elif defined( _AIX ) || defined( __CYGWIN__ ) || \
+-	  ( defined( __hpux ) && ( OSVERSION >= 11 ) ) || \
+-	  defined( __NetBSD__ ) || defined( __QNX__ ) || defined( __UCLIBC__ )
+-  #define THREAD_YIELD()		sched_yield()
+-#elif defined( __XMK__ )
+-  /* The XMK underlying scheduling object is the process context, for which
+-     the user-visible interface is the thread.  Therefore yielding the
+-	 underlying process context should yield the associated thread */
+-  #define THREAD_YIELD()		yield()
+-#else
+-  #if defined( __linux__ ) && !defined( __USE_GNU )
+-	void pthread_yield( void );
+-  #endif /* Present but not prototyped unless GNU extensions are enabled */
+-  #define  THREAD_YIELD()		pthread_yield()
+-#endif /* Not-very-portable Posix portability */
++
++#define THREAD_YIELD() sched_yield()
++
+ #define THREAD_SLEEP( ms )		{ \
+ 								struct timeval tv = { 0 }; \
+ 								\

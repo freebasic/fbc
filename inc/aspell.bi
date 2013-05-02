@@ -14,6 +14,16 @@
 #define __aspell_bi__
 
 #inclib "aspell"
+#ifdef __FB_DOS__
+	#inclib "stdcx"
+#else
+	#inclib "stdc++"
+	#ifdef __FB_WIN32__
+		'' MinGW-w64 has libpthread, and Aspell depends on it,
+		'' when built with MinGW-w64
+		#inclib "pthread"
+	#endif
+#endif
 
 union AspellTypeId
 	num as uinteger

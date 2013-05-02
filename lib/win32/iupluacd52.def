@@ -1,4 +1,0 @@
-LIBRARY iupluacd52.dll
-EXPORTS
-cdluaiup_open
-luaopen_iupluacd

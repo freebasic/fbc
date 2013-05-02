@@ -1,4 +1,0 @@
-LIBRARY iupluatuio52.dll
-EXPORTS
-iuptuiolua_open
-luaopen_iupluatuio
