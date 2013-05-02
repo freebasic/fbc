@@ -41,6 +41,10 @@ Version 0.25.0:
 - Updated header for libpng 1.5.14
 - Updated header for Lua 5.2.2
 - Updated header for IUP 3.7
+- Updated headers for GTK+: GDK & GTK 3.4.4, glib 2.32.4, Cairo 1.12.2, Pango 1.30.1, ATK 2.4.0, Gdk-Pixbuf 2.26.1
+- Updated header for libintl 0.18
+- Updated header for ODE 0.11.1
+- Updated header for SQLite 3.7.13
 - fbc -asm att|intel option (affects -gen gcc only)
 - fbc -rr and -RR options for preserving the final .asm file (useful with -gen gcc where -r/-R preserve the .c file; same as -r/-R under -gen gas)
 - fbc -print host|target option, to support shell scripts querying fbc for information that is useful to build systems etc.

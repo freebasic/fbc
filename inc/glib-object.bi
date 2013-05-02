@@ -1,11 +1,11 @@
 ' This is file glib-object.bi
-' (FreeBasic binding for GLib library version 2.31.4)
+' (FreeBasic binding for GLib library version 2.32.4)
 '
 ' translated with help of h_2_bi.bas by
 ' Thomas[ dot ]Freiherr[ at ]gmx[ dot ]net.
 '
 ' Licence:
-' (C) 2011 Thomas[ dot ]Freiherr[ at ]gmx[ dot ]net
+' (C) 2011-2012 Thomas[ dot ]Freiherr[ at ]gmx[ dot ]net
 '
 ' This library binding is free software; you can redistribute it
 ' and/or modify it under the terms of the GNU Lesser General Public
@@ -44,7 +44,7 @@
 
 #INCLIB "gobject-2.0"
 
-EXTERN "C"
+EXTERN "C" ' (h_2_bi -P_oCD option)
 
 #IFNDEF __GLIB_GOBJECT_H__
 #DEFINE __GLIB_GOBJECT_H__
@@ -52,7 +52,7 @@ EXTERN "C"
 
 #IFNDEF __G_BINDING_H__
 #DEFINE __G_BINDING_H__
-#INCLUDE ONCE "glib.bi"
+#INCLUDE ONCE "glib.bi" '__HEADERS__: glib.h
 
 #IFNDEF __G_OBJECT_H__
 #DEFINE __G_OBJECT_H__
@@ -60,8 +60,8 @@ EXTERN "C"
 #IFNDEF __G_TYPE_H__
 #DEFINE __G_TYPE_H__
 
-#DEFINE G_TYPE_FUNDAMENTAL(type) (g_type_fundamental_(type))
-#DEFINE G_TYPE_FUNDAMENTAL_MAX (255 SHL G_TYPE_FUNDAMENTAL_SHIFT)
+#DEFINE G_TYPE_FUNDAMENTAL(type) (g_type_fundamental_ (type))
+#DEFINE G_TYPE_FUNDAMENTAL_MAX (255  SHL G_TYPE_FUNDAMENTAL_SHIFT)
 #DEFINE G_TYPE_INVALID G_TYPE_MAKE_FUNDAMENTAL (0)
 #DEFINE G_TYPE_NONE G_TYPE_MAKE_FUNDAMENTAL (1)
 #DEFINE G_TYPE_INTERFACE G_TYPE_MAKE_FUNDAMENTAL (2)
@@ -85,14 +85,14 @@ EXTERN "C"
 #DEFINE G_TYPE_OBJECT G_TYPE_MAKE_FUNDAMENTAL (20)
 #DEFINE G_TYPE_VARIANT G_TYPE_MAKE_FUNDAMENTAL (21)
 #DEFINE G_TYPE_FUNDAMENTAL_SHIFT (2)
-#DEFINE G_TYPE_MAKE_FUNDAMENTAL(x) (CAST(GType, ((x) SHL G_TYPE_FUNDAMENTAL_SHIFT)))
+#DEFINE G_TYPE_MAKE_FUNDAMENTAL(x) (CAST(GType, ((x)  SHL G_TYPE_FUNDAMENTAL_SHIFT)))
 #DEFINE G_TYPE_RESERVED_GLIB_FIRST (22)
 #DEFINE G_TYPE_RESERVED_GLIB_LAST (31)
 #DEFINE G_TYPE_RESERVED_BSE_FIRST (32)
 #DEFINE G_TYPE_RESERVED_BSE_LAST (48)
 #DEFINE G_TYPE_RESERVED_USER_FIRST (49)
-#DEFINE G_TYPE_IS_FUNDAMENTAL(type) ((type) <= G_TYPE_FUNDAMENTAL_MAX)
-#DEFINE G_TYPE_IS_DERIVED(type) ((type) > G_TYPE_FUNDAMENTAL_MAX)
+#DEFINE G_TYPE_IS_FUNDAMENTAL(type) ((type)  <= G_TYPE_FUNDAMENTAL_MAX)
+#DEFINE G_TYPE_IS_DERIVED(type) ((type)  > G_TYPE_FUNDAMENTAL_MAX)
 #DEFINE G_TYPE_IS_INTERFACE(type) (G_TYPE_FUNDAMENTAL (type) = G_TYPE_INTERFACE)
 #DEFINE G_TYPE_IS_CLASSED(type) (g_type_test_flags ((type), G_TYPE_FLAG_CLASSED))
 #DEFINE G_TYPE_IS_INSTANTIATABLE(type) (g_type_test_flags ((type), G_TYPE_FLAG_INSTANTIATABLE))
@@ -101,7 +101,7 @@ EXTERN "C"
 #DEFINE G_TYPE_IS_ABSTRACT(type) (g_type_test_flags ((type), G_TYPE_FLAG_ABSTRACT))
 #DEFINE G_TYPE_IS_VALUE_ABSTRACT(type) (g_type_test_flags ((type), G_TYPE_FLAG_VALUE_ABSTRACT))
 #DEFINE G_TYPE_IS_VALUE_TYPE(type) (g_type_check_is_value_type (type))
-#DEFINE G_TYPE_HAS_VALUE_TABLE(type) (g_type_value_table_peek (type) <> NULL)
+#DEFINE G_TYPE_HAS_VALUE_TABLE(type) (g_type_value_table_peek (type)  <> NULL)
 
 TYPE GType AS gsize
 
@@ -149,13 +149,13 @@ END TYPE
 #DEFINE G_TYPE_FROM_INSTANCE(instance) (G_TYPE_FROM_CLASS ((CAST(GTypeInstance PTR, (instance)))->g_class))
 #DEFINE G_TYPE_FROM_CLASS(g_class) ((CAST(GTypeClass PTR, (g_class)))->g_type)
 #DEFINE G_TYPE_FROM_INTERFACE(g_iface) ((CAST(GTypeInterface PTR, (g_iface)))->g_type)
-#DEFINE G_TYPE_INSTANCE_GET_PRIVATE(instance, g_type, c_type) (CAST(c_type PTR, g_type_instance_get_private_(CAST(GTypeInstance PTR, (instance)), (g_type))))
-#DEFINE G_TYPE_CLASS_GET_PRIVATE(klass, g_type, c_type) (CAST(c_type PTR, g_type_class_get_private_(CAST(GTypeClass PTR, (klass)), (g_type))))
+#DEFINE G_TYPE_INSTANCE_GET_PRIVATE(instance, g_type, c_type) (CAST(c_type PTR, g_type_instance_get_private_ (CAST(GTypeInstance PTR, (instance)), (g_type))))
+#DEFINE G_TYPE_CLASS_GET_PRIVATE(klass, g_type, c_type) (CAST(c_type PTR, g_type_class_get_private_ (CAST(GTypeClass PTR, (klass)), (g_type))))
 
 ENUM GTypeDebugFlags
   G_TYPE_DEBUG_NONE = 0
-  G_TYPE_DEBUG_OBJECTS = 1 SHL 0
-  G_TYPE_DEBUG_SIGNALS = 1 SHL 1
+  G_TYPE_DEBUG_OBJECTS = 1  SHL 0
+  G_TYPE_DEBUG_SIGNALS = 1  SHL 1
   G_TYPE_DEBUG_MASK = &h03
 END ENUM
 
@@ -195,15 +195,15 @@ TYPE GTypeClassCacheFunc AS FUNCTION(BYVAL AS gpointer, BYVAL AS GTypeClass PTR)
 TYPE GTypeInterfaceCheckFunc AS SUB(BYVAL AS gpointer, BYVAL AS gpointer)
 
 ENUM GTypeFundamentalFlags
-  G_TYPE_FLAG_CLASSED = (1 SHL 0)
-  G_TYPE_FLAG_INSTANTIATABLE = (1 SHL 1)
-  G_TYPE_FLAG_DERIVABLE = (1 SHL 2)
-  G_TYPE_FLAG_DEEP_DERIVABLE = (1 SHL 3)
+  G_TYPE_FLAG_CLASSED = (1  SHL 0)
+  G_TYPE_FLAG_INSTANTIATABLE = (1  SHL 1)
+  G_TYPE_FLAG_DERIVABLE = (1  SHL 2)
+  G_TYPE_FLAG_DEEP_DERIVABLE = (1  SHL 3)
 END ENUM
 
 ENUM GTypeFlags
-  G_TYPE_FLAG_ABSTRACT = (1 SHL 4)
-  G_TYPE_FLAG_VALUE_ABSTRACT = (1 SHL 5)
+  G_TYPE_FLAG_ABSTRACT = (1  SHL 4)
+  G_TYPE_FLAG_VALUE_ABSTRACT = (1  SHL 5)
 END ENUM
 
 TYPE _GTypeInfo
@@ -234,9 +234,9 @@ TYPE _GTypeValueTable
   value_free AS SUB(BYVAL AS GValue PTR)
   value_copy AS SUB(BYVAL AS CONST GValue PTR, BYVAL AS GValue PTR)
   value_peek_pointer AS FUNCTION(BYVAL AS CONST GValue PTR) AS gpointer
-  AS gchar PTR collect_format
+  AS CONST gchar PTR collect_format
   collect_value AS FUNCTION(BYVAL AS GValue PTR, BYVAL AS guint, BYVAL AS GTypeCValue PTR, BYVAL AS guint) AS gchar PTR
-  AS gchar PTR lcopy_format
+  AS CONST gchar PTR lcopy_format
   lcopy_value AS FUNCTION(BYVAL AS CONST GValue PTR, BYVAL AS guint, BYVAL AS GTypeCValue PTR, BYVAL AS guint) AS gchar PTR
 END TYPE
 
@@ -387,16 +387,16 @@ DECLARE FUNCTION g_type_name_from_class(BYVAL AS GTypeClass PTR) AS CONST gchar 
 
 #IFNDEF G_DISABLE_CAST_CHECKS
 #DEFINE _G_TYPE_CIC(ip, gt, ct) _
-    (CAST(ct PTR, g_type_check_instance_cast_(CAST(GTypeInstance PTR, ip), gt)))
+    (CAST(ct PTR, g_type_check_instance_cast_ (CAST(GTypeInstance PTR, ip), gt)))
 #DEFINE _G_TYPE_CCC(cp, gt, ct) _
-    (CAST(ct PTR, g_type_check_class_cast_(CAST(GTypeClass PTR, cp), gt)))
+    (CAST(ct PTR, g_type_check_class_cast_ (CAST(GTypeClass PTR, cp), gt)))
 #ELSE ' G_DISABLE_CAST_CHECKS
 #DEFINE _G_TYPE_CIC(ip, gt, ct) (CAST(ct PTR, ip))
 #DEFINE _G_TYPE_CCC(cp, gt, ct) (CAST(ct PTR, cp))
 #ENDIF ' G_DISABLE_CAST_CHECKS
 
-#DEFINE _G_TYPE_CHI(ip) (g_type_check_instance_ ALIAS "g_type_check_instance" (CAST(GTypeInstance PTR, ip)))
-#DEFINE _G_TYPE_CHV(vl) (g_type_check_value_ ALIAS "g_type_check_value" (CAST(GValue PTR, vl)))
+#DEFINE _G_TYPE_CHI(ip) (g_type_check_instance_ (CAST(GTypeInstance PTR, ip)))
+#DEFINE _G_TYPE_CHV(vl) (g_type_check_value_ (CAST(GValue PTR, vl)))
 #DEFINE _G_TYPE_IGC(ip, gt, ct) (CAST(ct PTR, ((CAST(GTypeInstance PTR, ip))->g_class)))
 #DEFINE _G_TYPE_IGI(ip, gt, ct) (CAST(ct PTR, g_type_interface_peek ((CAST(GTypeInstance PTR, ip))->g_class, gt)))
 
@@ -416,12 +416,14 @@ DECLARE FUNCTION g_type_name_from_class(BYVAL AS GTypeClass PTR) AS CONST gchar 
           g_type_check_value_holds (CAST(GValue PTR, vl), gt)))
 
 #ELSE ' __GNUC__
+
 #DEFINE _G_TYPE_CIT(ip, gt) (g_type_check_instance_is_a (CAST(GTypeInstance PTR, ip), gt))
 #DEFINE _G_TYPE_CCT(cp, gt) (g_type_check_class_is_a (CAST(GTypeClass PTR, cp), gt))
 #DEFINE _G_TYPE_CVH(vl, gt) (g_type_check_value_holds (CAST(GValue PTR, vl), gt))
+
 #ENDIF ' __GNUC__
 
-#DEFINE G_TYPE_FLAG_RESERVED_ID_BIT (CAST(GType, (1 SHL 0)))
+#DEFINE G_TYPE_FLAG_RESERVED_ID_BIT (CAST(GType, (1  SHL 0)))
 
 EXTERN AS GTypeDebugFlags _g_type_debug_flags
 
@@ -438,7 +440,7 @@ EXTERN AS GTypeDebugFlags _g_type_debug_flags
 
 TYPE GValueTransform AS SUB(BYVAL AS CONST GValue PTR, BYVAL AS GValue PTR)
 
-UNION _GValue_data_
+UNION _GValue_data
   AS gint v_int
   AS guint v_uint
   AS glong v_long
@@ -452,7 +454,7 @@ END UNION
 
 TYPE _GValue
   AS GType g_type
-  AS _GValue_data_ data(1)
+DIM AS _GValue_data data(1)
 END TYPE
 
 DECLARE FUNCTION g_value_init_ ALIAS "g_value_init"(BYVAL AS GValue PTR, BYVAL AS GType) AS GValue PTR
@@ -467,8 +469,8 @@ DECLARE FUNCTION g_value_type_transformable(BYVAL AS GType, BYVAL AS GType) AS g
 DECLARE FUNCTION g_value_transform(BYVAL AS CONST GValue PTR, BYVAL AS GValue PTR) AS gboolean
 DECLARE SUB g_value_register_transform_func(BYVAL AS GType, BYVAL AS GType, BYVAL AS GValueTransform)
 
-#DEFINE G_VALUE_NOCOPY_CONTENTS (1 SHL 27)
-#DEFINE G_VALUE_INIT TYPE<GValue>( 0, { 0, 0 } )
+#DEFINE G_VALUE_NOCOPY_CONTENTS (1  SHL 27)
+#DEFINE G_VALUE_INIT { 0, { { 0 } } }
 #ENDIF ' __G_VALUE_H__
 
 #IFNDEF __G_PARAM_H__
@@ -486,22 +488,22 @@ DECLARE SUB g_value_register_transform_func(BYVAL AS GType, BYVAL AS GType, BYVA
 #DEFINE G_VALUE_HOLDS_PARAM(value) (G_TYPE_CHECK_VALUE_TYPE ((value), G_TYPE_PARAM))
 
 ENUM GParamFlags
-  G_PARAM_READABLE = 1 SHL 0
-  G_PARAM_WRITABLE = 1 SHL 1
-  G_PARAM_CONSTRUCT = 1 SHL 2
-  G_PARAM_CONSTRUCT_ONLY = 1 SHL 3
-  G_PARAM_LAX_VALIDATION = 1 SHL 4
-  G_PARAM_STATIC_NAME = 1 SHL 5
+  G_PARAM_READABLE = 1  SHL 0
+  G_PARAM_WRITABLE = 1  SHL 1
+  G_PARAM_CONSTRUCT = 1  SHL 2
+  G_PARAM_CONSTRUCT_ONLY = 1  SHL 3
+  G_PARAM_LAX_VALIDATION = 1  SHL 4
+  G_PARAM_STATIC_NAME = 1  SHL 5
 #IFNDEF G_DISABLE_DEPRECATED
   G_PARAM_PRIVATE = G_PARAM_STATIC_NAME
 #ENDIF ' G_DISABLE_DEPRECATED
-  G_PARAM_STATIC_NICK = 1 SHL 6
-  G_PARAM_STATIC_BLURB = 1 SHL 7
-  G_PARAM_DEPRECATED = 1 SHL 31
+  G_PARAM_STATIC_NICK = 1  SHL 6
+  G_PARAM_STATIC_BLURB = 1  SHL 7
+  G_PARAM_DEPRECATED = 1  SHL 31
 END ENUM
 
-#DEFINE G_PARAM_READWRITE (G_PARAM_READABLE OR G_PARAM_WRITABLE)
-#DEFINE G_PARAM_STATIC_STRINGS (G_PARAM_STATIC_NAME OR G_PARAM_STATIC_NICK OR G_PARAM_STATIC_BLURB)
+#DEFINE G_PARAM_READWRITE (G_PARAM_READABLE  OR G_PARAM_WRITABLE)
+#DEFINE G_PARAM_STATIC_STRINGS (G_PARAM_STATIC_NAME  OR G_PARAM_STATIC_NICK  OR G_PARAM_STATIC_BLURB)
 #DEFINE G_PARAM_MASK (&h000000FF)
 #DEFINE G_PARAM_USER_SHIFT (8)
 
@@ -590,7 +592,7 @@ DECLARE FUNCTION g_param_spec_pool_list(BYVAL AS GParamSpecPool PTR, BYVAL AS GT
 #DEFINE __G_CLOSURE_H__
 
 #DEFINE G_CLOSURE_NEEDS_MARSHAL(closure) ((CAST(GClosure PTR, (closure)))->marshal = NULL)
-#DEFINE G_CLOSURE_N_NOTIFIERS(cl) ((cl)->meta_marshal + ((cl)->n_guards SHL 1L) + _
+#DEFINE G_CLOSURE_N_NOTIFIERS(cl) (((cl)->n_guards  SHL 1L) + _
                                           (cl)->n_fnotifiers + (cl)->n_inotifiers)
 #DEFINE G_CCLOSURE_SWAP_DATA(cclosure) ((CAST(GClosure PTR, (cclosure)))->derivative_flag)
 #DEFINE G_CALLBACK(f) (CAST(GCallback, (f)))
@@ -600,6 +602,7 @@ TYPE GClosureNotifyData AS _GClosureNotifyData
 TYPE GCallback AS SUB()
 TYPE GClosureNotify AS SUB(BYVAL AS gpointer, BYVAL AS GClosure PTR)
 TYPE GClosureMarshal AS SUB(BYVAL AS GClosure PTR, BYVAL AS GValue PTR, BYVAL AS guint, BYVAL AS CONST GValue PTR, BYVAL AS gpointer, BYVAL AS gpointer)
+TYPE GVaClosureMarshal AS SUB(BYVAL AS GClosure PTR, BYVAL AS GValue PTR, BYVAL AS gpointer, BYVAL AS va_list, BYVAL AS gpointer, BYVAL AS INTEGER, BYVAL AS GType PTR)
 TYPE GCClosure AS _GCClosure
 
 TYPE _GClosureNotifyData
@@ -609,7 +612,7 @@ END TYPE
 
 TYPE _GClosure
   AS guint ref_count : 15
-  AS guint meta_marshal : 1
+  AS guint meta_marshal_nouse : 1
   AS guint n_guards : 1
   AS guint n_fnotifiers : 2
   AS guint n_inotifiers : 8
@@ -645,6 +648,7 @@ DECLARE SUB g_closure_set_meta_marshal(BYVAL AS GClosure PTR, BYVAL AS gpointer,
 DECLARE SUB g_closure_invalidate(BYVAL AS GClosure PTR)
 DECLARE SUB g_closure_invoke(BYVAL AS GClosure PTR, BYVAL AS GValue PTR, BYVAL AS guint, BYVAL AS CONST GValue PTR, BYVAL AS gpointer)
 DECLARE SUB g_cclosure_marshal_generic(BYVAL AS GClosure PTR, BYVAL AS GValue PTR, BYVAL AS guint, BYVAL AS CONST GValue PTR, BYVAL AS gpointer, BYVAL AS gpointer)
+DECLARE SUB g_cclosure_marshal_generic_va(BYVAL AS GClosure PTR, BYVAL AS GValue PTR, BYVAL AS gpointer, BYVAL AS va_list, BYVAL AS gpointer, BYVAL AS INTEGER, BYVAL AS GType PTR)
 
 #ENDIF ' __G_CLOSURE_H__
 
@@ -655,30 +659,52 @@ DECLARE SUB g_cclosure_marshal_generic(BYVAL AS GClosure PTR, BYVAL AS GValue PT
 #DEFINE __G_MARSHAL_H__
 
 EXTERN g_cclosure_marshal_VOID__VOID AS SUB(BYVAL AS GClosure PTR, BYVAL AS GValue PTR, BYVAL AS guint, BYVAL AS CONST GValue PTR, BYVAL AS gpointer, BYVAL AS gpointer)
+EXTERN g_cclosure_marshal_VOID__VOIDv AS SUB(BYVAL AS GClosure PTR, BYVAL AS GValue PTR, BYVAL AS gpointer, BYVAL AS va_list, BYVAL AS gpointer, BYVAL AS INTEGER, BYVAL AS GType PTR)
 EXTERN g_cclosure_marshal_VOID__BOOLEAN AS SUB(BYVAL AS GClosure PTR, BYVAL AS GValue PTR, BYVAL AS guint, BYVAL AS CONST GValue PTR, BYVAL AS gpointer, BYVAL AS gpointer)
+EXTERN g_cclosure_marshal_VOID__BOOLEANv AS SUB(BYVAL AS GClosure PTR, BYVAL AS GValue PTR, BYVAL AS gpointer, BYVAL AS va_list, BYVAL AS gpointer, BYVAL AS INTEGER, BYVAL AS GType PTR)
 EXTERN g_cclosure_marshal_VOID__CHAR AS SUB(BYVAL AS GClosure PTR, BYVAL AS GValue PTR, BYVAL AS guint, BYVAL AS CONST GValue PTR, BYVAL AS gpointer, BYVAL AS gpointer)
+EXTERN g_cclosure_marshal_VOID__CHARv AS SUB(BYVAL AS GClosure PTR, BYVAL AS GValue PTR, BYVAL AS gpointer, BYVAL AS va_list, BYVAL AS gpointer, BYVAL AS INTEGER, BYVAL AS GType PTR)
 EXTERN g_cclosure_marshal_VOID__UCHAR AS SUB(BYVAL AS GClosure PTR, BYVAL AS GValue PTR, BYVAL AS guint, BYVAL AS CONST GValue PTR, BYVAL AS gpointer, BYVAL AS gpointer)
+EXTERN g_cclosure_marshal_VOID__UCHARv AS SUB(BYVAL AS GClosure PTR, BYVAL AS GValue PTR, BYVAL AS gpointer, BYVAL AS va_list, BYVAL AS gpointer, BYVAL AS INTEGER, BYVAL AS GType PTR)
 EXTERN g_cclosure_marshal_VOID__INT AS SUB(BYVAL AS GClosure PTR, BYVAL AS GValue PTR, BYVAL AS guint, BYVAL AS CONST GValue PTR, BYVAL AS gpointer, BYVAL AS gpointer)
+EXTERN g_cclosure_marshal_VOID__INTv AS SUB(BYVAL AS GClosure PTR, BYVAL AS GValue PTR, BYVAL AS gpointer, BYVAL AS va_list, BYVAL AS gpointer, BYVAL AS INTEGER, BYVAL AS GType PTR)
 EXTERN g_cclosure_marshal_VOID__UINT AS SUB(BYVAL AS GClosure PTR, BYVAL AS GValue PTR, BYVAL AS guint, BYVAL AS CONST GValue PTR, BYVAL AS gpointer, BYVAL AS gpointer)
+EXTERN g_cclosure_marshal_VOID__UINTv AS SUB(BYVAL AS GClosure PTR, BYVAL AS GValue PTR, BYVAL AS gpointer, BYVAL AS va_list, BYVAL AS gpointer, BYVAL AS INTEGER, BYVAL AS GType PTR)
 EXTERN g_cclosure_marshal_VOID__LONG AS SUB(BYVAL AS GClosure PTR, BYVAL AS GValue PTR, BYVAL AS guint, BYVAL AS CONST GValue PTR, BYVAL AS gpointer, BYVAL AS gpointer)
+EXTERN g_cclosure_marshal_VOID__LONGv AS SUB(BYVAL AS GClosure PTR, BYVAL AS GValue PTR, BYVAL AS gpointer, BYVAL AS va_list, BYVAL AS gpointer, BYVAL AS INTEGER, BYVAL AS GType PTR)
 EXTERN g_cclosure_marshal_VOID__ULONG AS SUB(BYVAL AS GClosure PTR, BYVAL AS GValue PTR, BYVAL AS guint, BYVAL AS CONST GValue PTR, BYVAL AS gpointer, BYVAL AS gpointer)
+EXTERN g_cclosure_marshal_VOID__ULONGv AS SUB(BYVAL AS GClosure PTR, BYVAL AS GValue PTR, BYVAL AS gpointer, BYVAL AS va_list, BYVAL AS gpointer, BYVAL AS INTEGER, BYVAL AS GType PTR)
 EXTERN g_cclosure_marshal_VOID__ENUM AS SUB(BYVAL AS GClosure PTR, BYVAL AS GValue PTR, BYVAL AS guint, BYVAL AS CONST GValue PTR, BYVAL AS gpointer, BYVAL AS gpointer)
+EXTERN g_cclosure_marshal_VOID__ENUMv AS SUB(BYVAL AS GClosure PTR, BYVAL AS GValue PTR, BYVAL AS gpointer, BYVAL AS va_list, BYVAL AS gpointer, BYVAL AS INTEGER, BYVAL AS GType PTR)
 EXTERN g_cclosure_marshal_VOID__FLAGS AS SUB(BYVAL AS GClosure PTR, BYVAL AS GValue PTR, BYVAL AS guint, BYVAL AS CONST GValue PTR, BYVAL AS gpointer, BYVAL AS gpointer)
+EXTERN g_cclosure_marshal_VOID__FLAGSv AS SUB(BYVAL AS GClosure PTR, BYVAL AS GValue PTR, BYVAL AS gpointer, BYVAL AS va_list, BYVAL AS gpointer, BYVAL AS INTEGER, BYVAL AS GType PTR)
 EXTERN g_cclosure_marshal_VOID__FLOAT AS SUB(BYVAL AS GClosure PTR, BYVAL AS GValue PTR, BYVAL AS guint, BYVAL AS CONST GValue PTR, BYVAL AS gpointer, BYVAL AS gpointer)
+EXTERN g_cclosure_marshal_VOID__FLOATv AS SUB(BYVAL AS GClosure PTR, BYVAL AS GValue PTR, BYVAL AS gpointer, BYVAL AS va_list, BYVAL AS gpointer, BYVAL AS INTEGER, BYVAL AS GType PTR)
 EXTERN g_cclosure_marshal_VOID__DOUBLE AS SUB(BYVAL AS GClosure PTR, BYVAL AS GValue PTR, BYVAL AS guint, BYVAL AS CONST GValue PTR, BYVAL AS gpointer, BYVAL AS gpointer)
+EXTERN g_cclosure_marshal_VOID__DOUBLEv AS SUB(BYVAL AS GClosure PTR, BYVAL AS GValue PTR, BYVAL AS gpointer, BYVAL AS va_list, BYVAL AS gpointer, BYVAL AS INTEGER, BYVAL AS GType PTR)
 EXTERN g_cclosure_marshal_VOID__STRING AS SUB(BYVAL AS GClosure PTR, BYVAL AS GValue PTR, BYVAL AS guint, BYVAL AS CONST GValue PTR, BYVAL AS gpointer, BYVAL AS gpointer)
+EXTERN g_cclosure_marshal_VOID__STRINGv AS SUB(BYVAL AS GClosure PTR, BYVAL AS GValue PTR, BYVAL AS gpointer, BYVAL AS va_list, BYVAL AS gpointer, BYVAL AS INTEGER, BYVAL AS GType PTR)
 EXTERN g_cclosure_marshal_VOID__PARAM AS SUB(BYVAL AS GClosure PTR, BYVAL AS GValue PTR, BYVAL AS guint, BYVAL AS CONST GValue PTR, BYVAL AS gpointer, BYVAL AS gpointer)
+EXTERN g_cclosure_marshal_VOID__PARAMv AS SUB(BYVAL AS GClosure PTR, BYVAL AS GValue PTR, BYVAL AS gpointer, BYVAL AS va_list, BYVAL AS gpointer, BYVAL AS INTEGER, BYVAL AS GType PTR)
 EXTERN g_cclosure_marshal_VOID__BOXED AS SUB(BYVAL AS GClosure PTR, BYVAL AS GValue PTR, BYVAL AS guint, BYVAL AS CONST GValue PTR, BYVAL AS gpointer, BYVAL AS gpointer)
+EXTERN g_cclosure_marshal_VOID__BOXEDv AS SUB(BYVAL AS GClosure PTR, BYVAL AS GValue PTR, BYVAL AS gpointer, BYVAL AS va_list, BYVAL AS gpointer, BYVAL AS INTEGER, BYVAL AS GType PTR)
 EXTERN g_cclosure_marshal_VOID__POINTER AS SUB(BYVAL AS GClosure PTR, BYVAL AS GValue PTR, BYVAL AS guint, BYVAL AS CONST GValue PTR, BYVAL AS gpointer, BYVAL AS gpointer)
+EXTERN g_cclosure_marshal_VOID__POINTERv AS SUB(BYVAL AS GClosure PTR, BYVAL AS GValue PTR, BYVAL AS gpointer, BYVAL AS va_list, BYVAL AS gpointer, BYVAL AS INTEGER, BYVAL AS GType PTR)
 EXTERN g_cclosure_marshal_VOID__OBJECT AS SUB(BYVAL AS GClosure PTR, BYVAL AS GValue PTR, BYVAL AS guint, BYVAL AS CONST GValue PTR, BYVAL AS gpointer, BYVAL AS gpointer)
+EXTERN g_cclosure_marshal_VOID__OBJECTv AS SUB(BYVAL AS GClosure PTR, BYVAL AS GValue PTR, BYVAL AS gpointer, BYVAL AS va_list, BYVAL AS gpointer, BYVAL AS INTEGER, BYVAL AS GType PTR)
 EXTERN g_cclosure_marshal_VOID__VARIANT AS SUB(BYVAL AS GClosure PTR, BYVAL AS GValue PTR, BYVAL AS guint, BYVAL AS CONST GValue PTR, BYVAL AS gpointer, BYVAL AS gpointer)
+EXTERN g_cclosure_marshal_VOID__VARIANTv AS SUB(BYVAL AS GClosure PTR, BYVAL AS GValue PTR, BYVAL AS gpointer, BYVAL AS va_list, BYVAL AS gpointer, BYVAL AS INTEGER, BYVAL AS GType PTR)
 EXTERN g_cclosure_marshal_VOID__UINT_POINTER AS SUB(BYVAL AS GClosure PTR, BYVAL AS GValue PTR, BYVAL AS guint, BYVAL AS CONST GValue PTR, BYVAL AS gpointer, BYVAL AS gpointer)
+EXTERN g_cclosure_marshal_VOID__UINT_POINTERv AS SUB(BYVAL AS GClosure PTR, BYVAL AS GValue PTR, BYVAL AS gpointer, BYVAL AS va_list, BYVAL AS gpointer, BYVAL AS INTEGER, BYVAL AS GType PTR)
 EXTERN g_cclosure_marshal_BOOLEAN__FLAGS AS SUB(BYVAL AS GClosure PTR, BYVAL AS GValue PTR, BYVAL AS guint, BYVAL AS CONST GValue PTR, BYVAL AS gpointer, BYVAL AS gpointer)
+EXTERN g_cclosure_marshal_BOOLEAN__FLAGSv AS SUB(BYVAL AS GClosure PTR, BYVAL AS GValue PTR, BYVAL AS gpointer, BYVAL AS va_list, BYVAL AS gpointer, BYVAL AS INTEGER, BYVAL AS GType PTR)
 
 #DEFINE g_cclosure_marshal_BOOL__FLAGS g_cclosure_marshal_BOOLEAN__FLAGS
 
 EXTERN g_cclosure_marshal_STRING__OBJECT_POINTER AS SUB(BYVAL AS GClosure PTR, BYVAL AS GValue PTR, BYVAL AS guint, BYVAL AS CONST GValue PTR, BYVAL AS gpointer, BYVAL AS gpointer)
+EXTERN g_cclosure_marshal_STRING__OBJECT_POINTERv AS SUB(BYVAL AS GClosure PTR, BYVAL AS GValue PTR, BYVAL AS gpointer, BYVAL AS va_list, BYVAL AS gpointer, BYVAL AS INTEGER, BYVAL AS GType PTR)
 EXTERN g_cclosure_marshal_BOOLEAN__BOXED_BOXED AS SUB(BYVAL AS GClosure PTR, BYVAL AS GValue PTR, BYVAL AS guint, BYVAL AS CONST GValue PTR, BYVAL AS gpointer, BYVAL AS gpointer)
+EXTERN g_cclosure_marshal_BOOLEAN__BOXED_BOXEDv AS SUB(BYVAL AS GClosure PTR, BYVAL AS GValue PTR, BYVAL AS gpointer, BYVAL AS va_list, BYVAL AS gpointer, BYVAL AS INTEGER, BYVAL AS GType PTR)
 
 #DEFINE g_cclosure_marshal_BOOL__BOXED_BOXED g_cclosure_marshal_BOOLEAN__BOXED_BOXED
 #ENDIF ' __G_MARSHAL_H__
@@ -686,35 +712,36 @@ EXTERN g_cclosure_marshal_BOOLEAN__BOXED_BOXED AS SUB(BYVAL AS GClosure PTR, BYV
 TYPE GSignalQuery AS _GSignalQuery
 TYPE GSignalInvocationHint AS _GSignalInvocationHint
 TYPE GSignalCMarshaller AS GClosureMarshal
+TYPE GSignalCVaMarshaller AS GVaClosureMarshal
 TYPE GSignalEmissionHook AS FUNCTION(BYVAL AS GSignalInvocationHint PTR, BYVAL AS guint, BYVAL AS CONST GValue PTR, BYVAL AS gpointer) AS gboolean
 TYPE GSignalAccumulator AS FUNCTION(BYVAL AS GSignalInvocationHint PTR, BYVAL AS GValue PTR, BYVAL AS CONST GValue PTR, BYVAL AS gpointer) AS gboolean
 
 ENUM GSignalFlags
-  G_SIGNAL_RUN_FIRST = 1 SHL 0
-  G_SIGNAL_RUN_LAST = 1 SHL 1
-  G_SIGNAL_RUN_CLEANUP = 1 SHL 2
-  G_SIGNAL_NO_RECURSE = 1 SHL 3
-  G_SIGNAL_DETAILED = 1 SHL 4
-  G_SIGNAL_ACTION = 1 SHL 5
-  G_SIGNAL_NO_HOOKS = 1 SHL 6
-  G_SIGNAL_MUST_COLLECT = 1 SHL 7
-  G_SIGNAL_DEPRECATED = 1 SHL 8
+  G_SIGNAL_RUN_FIRST = 1  SHL 0
+  G_SIGNAL_RUN_LAST = 1  SHL 1
+  G_SIGNAL_RUN_CLEANUP = 1  SHL 2
+  G_SIGNAL_NO_RECURSE = 1  SHL 3
+  G_SIGNAL_DETAILED = 1  SHL 4
+  G_SIGNAL_ACTION = 1  SHL 5
+  G_SIGNAL_NO_HOOKS = 1  SHL 6
+  G_SIGNAL_MUST_COLLECT = 1  SHL 7
+  G_SIGNAL_DEPRECATED = 1  SHL 8
 END ENUM
 
 #DEFINE G_SIGNAL_FLAGS_MASK &h1FF
 
 ENUM GConnectFlags
-  G_CONNECT_AFTER = 1 SHL 0
-  G_CONNECT_SWAPPED = 1 SHL 1
+  G_CONNECT_AFTER = 1  SHL 0
+  G_CONNECT_SWAPPED = 1  SHL 1
 END ENUM
 
 ENUM GSignalMatchType
-  G_SIGNAL_MATCH_ID = 1 SHL 0
-  G_SIGNAL_MATCH_DETAIL = 1 SHL 1
-  G_SIGNAL_MATCH_CLOSURE = 1 SHL 2
-  G_SIGNAL_MATCH_FUNC = 1 SHL 3
-  G_SIGNAL_MATCH_DATA = 1 SHL 4
-  G_SIGNAL_MATCH_UNBLOCKED = 1 SHL 5
+  G_SIGNAL_MATCH_ID = 1  SHL 0
+  G_SIGNAL_MATCH_DETAIL = 1  SHL 1
+  G_SIGNAL_MATCH_CLOSURE = 1  SHL 2
+  G_SIGNAL_MATCH_FUNC = 1  SHL 3
+  G_SIGNAL_MATCH_DATA = 1  SHL 4
+  G_SIGNAL_MATCH_UNBLOCKED = 1  SHL 5
 END ENUM
 
 #DEFINE G_SIGNAL_MATCH_MASK &h3F
@@ -740,6 +767,7 @@ DECLARE FUNCTION g_signal_newv(BYVAL AS CONST gchar PTR, BYVAL AS GType, BYVAL A
 DECLARE FUNCTION g_signal_new_valist(BYVAL AS CONST gchar PTR, BYVAL AS GType, BYVAL AS GSignalFlags, BYVAL AS GClosure PTR, BYVAL AS GSignalAccumulator, BYVAL AS gpointer, BYVAL AS GSignalCMarshaller, BYVAL AS GType, BYVAL AS guint, BYVAL AS va_list) AS guint
 DECLARE FUNCTION g_signal_new(BYVAL AS CONST gchar PTR, BYVAL AS GType, BYVAL AS GSignalFlags, BYVAL AS guint, BYVAL AS GSignalAccumulator, BYVAL AS gpointer, BYVAL AS GSignalCMarshaller, BYVAL AS GType, BYVAL AS guint, ...) AS guint
 DECLARE FUNCTION g_signal_new_class_handler(BYVAL AS CONST gchar PTR, BYVAL AS GType, BYVAL AS GSignalFlags, BYVAL AS GCallback, BYVAL AS GSignalAccumulator, BYVAL AS gpointer, BYVAL AS GSignalCMarshaller, BYVAL AS GType, BYVAL AS guint, ...) AS guint
+DECLARE SUB g_signal_set_va_marshaller(BYVAL AS guint, BYVAL AS GType, BYVAL AS GSignalCVaMarshaller)
 DECLARE SUB g_signal_emitv(BYVAL AS CONST GValue PTR, BYVAL AS guint, BYVAL AS GQuark, BYVAL AS GValue PTR)
 DECLARE SUB g_signal_emit_valist(BYVAL AS gpointer, BYVAL AS guint, BYVAL AS GQuark, BYVAL AS va_list)
 DECLARE SUB g_signal_emit(BYVAL AS gpointer, BYVAL AS guint, BYVAL AS GQuark, ...)
@@ -781,6 +809,8 @@ DECLARE SUB g_signal_chain_from_overridden_handler(BYVAL AS gpointer, ...)
     g_signal_handlers_disconnect_matched ((instance), _
        CAST(GSignalMatchType, (G_SIGNAL_MATCH_FUNC OR G_SIGNAL_MATCH_DATA)), _
        0, 0, NULL, (func), (data))
+#DEFINE g_signal_handlers_disconnect_by_data(instance, data) _
+    g_signal_handlers_disconnect_matched ((instance), G_SIGNAL_MATCH_DATA, 0, 0, NULL, NULL, (data))
 #DEFINE g_signal_handlers_block_by_func(instance, func, data) _
     g_signal_handlers_block_matched ((instance), _
               CAST(GSignalMatchType, (G_SIGNAL_MATCH_FUNC OR G_SIGNAL_MATCH_DATA)), _
@@ -923,17 +953,31 @@ DECLARE FUNCTION g_object_compat_control(BYVAL AS gsize, BYVAL AS gpointer) AS g
 #DEFINE G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec) _
     G_OBJECT_WARN_INVALID_PSPEC ((object), !"property", (property_id), (pspec))
 
-DECLARE SUB g_clear_object(BYVAL AS GObject PTR PTR)
-'#MACRO g_clear_object(object_ptr) _
- 'SCOPE
-  'VAR _p = CAST(gpointer PTR, (object_ptr))
-  'VAR _o = g_atomic_pointer_get (_p)
-  'DO
-   '_o = g_atomic_pointer_get (_p)
-  'LOOP WHILE G_UNLIKELY(0 = g_atomic_pointer_compare_and_exchange (_p, _o, NULL))
-  'IF (_o) THEN g_object_unref (_o)
- 'END SCOPE
-'#ENDMACRO
+DECLARE SUB g_clear_object_ ALIAS "g_clear_object"(BYVAL AS GObject PTR PTR)
+
+#MACRO g_clear_object(object_ptr) _
+ SCOPE
+  VAR _p = CAST(gpointer PTR, (object_ptr))
+  VAR _o = g_atomic_pointer_get (_p)
+  WHILE NOT G_UNLIKELY(0 = g_atomic_pointer_compare_and_exchange (_p, _o, NULL))
+   _o = g_atomic_pointer_get (_p)
+  WEND
+  IF (_o) THEN g_object_unref (_o)
+ END SCOPE
+#ENDMACRO
+
+UNION GWeakRef_priv
+  AS gpointer p
+END UNION
+
+TYPE GWeakRef
+  AS GWeakRef_priv priv
+END TYPE
+
+DECLARE SUB g_weak_ref_init(BYVAL AS GWeakRef PTR, BYVAL AS gpointer)
+DECLARE SUB g_weak_ref_clear(BYVAL AS GWeakRef PTR)
+DECLARE FUNCTION g_weak_ref_get(BYVAL AS GWeakRef PTR) AS gpointer
+DECLARE SUB g_weak_ref_set(BYVAL AS GWeakRef PTR, BYVAL AS gpointer)
 
 #ENDIF ' __G_OBJECT_H__
 
@@ -947,9 +991,9 @@ TYPE GBindingTransformFunc AS FUNCTION(BYVAL AS GBinding PTR, BYVAL AS CONST GVa
 
 ENUM GBindingFlags
   G_BINDING_DEFAULT = 0
-  G_BINDING_BIDIRECTIONAL = 1 SHL 0
-  G_BINDING_SYNC_CREATE = 1 SHL 1
-  G_BINDING_INVERT_BOOLEAN = 1 SHL 2
+  G_BINDING_BIDIRECTIONAL = 1  SHL 0
+  G_BINDING_SYNC_CREATE = 1  SHL 1
+  G_BINDING_INVERT_BOOLEAN = 1  SHL 2
 END ENUM
 
 DECLARE FUNCTION g_binding_flags_get_type() AS GType
@@ -970,15 +1014,8 @@ DECLARE FUNCTION g_object_bind_property_with_closures(BYVAL AS gpointer, BYVAL A
 
 #IFNDEF __GI_SCANNER__
 
-
 #IFNDEF __GLIB_TYPES_H__
 #DEFINE __GLIB_TYPES_H__
-
-#IFDEF __GI_SCANNER__
-
-TYPE GType AS gsize
-
-#ENDIF ' __GI_SCANNER__
 
 #DEFINE G_TYPE_DATE (g_date_get_type ())
 #DEFINE G_TYPE_STRV (g_strv_get_type ())
@@ -1023,7 +1060,7 @@ DECLARE FUNCTION g_main_context_get_type() AS GType
 DECLARE FUNCTION g_source_get_type() AS GType
 DECLARE FUNCTION g_variant_get_gtype() AS GType
 
-TYPE GStrv AS gchar PTR PTR
+TYPE AS gchar PTR PTR GStrv
 
 #ENDIF ' __GLIB_TYPES_H__
 #ENDIF ' __GI_SCANNER__
@@ -1046,11 +1083,9 @@ DECLARE FUNCTION g_boxed_type_register_static(BYVAL AS CONST gchar PTR, BYVAL AS
 
 #DEFINE G_TYPE_CLOSURE (g_closure_get_type ())
 #DEFINE G_TYPE_VALUE (g_value_get_type ())
-#DEFINE G_TYPE_VALUE_ARRAY (g_value_array_get_type ())
 
 DECLARE FUNCTION g_closure_get_type() AS GType
 DECLARE FUNCTION g_value_get_type() AS GType
-DECLARE FUNCTION g_value_array_get_type() AS GType
 
 #ENDIF ' __G_BOXED_H__
 
@@ -1426,7 +1461,7 @@ TYPE _GTypeModuleClass
   reserved4 AS SUB()
 END TYPE
 
-#DEFINE G_DEFINE_DYNAMIC_TYPE(TN, t_n, T_P) G_DEFINE_DYNAMIC_TYPE_EXTENDED (TN, t_n, T_P, 0, )
+#DEFINE G_DEFINE_DYNAMIC_TYPE(TN, t_n, T_P) G_DEFINE_DYNAMIC_TYPE_EXTENDED (TN, t_n, T_P, 0, {})
 
 #MACRO G_DEFINE_DYNAMIC_TYPE_EXTENDED(TypeName, type_name, TYPE_PARENT, flags, CODE)
  DECLARE SUB type_name##_init CDECL(BYVAL self AS TypeName PTR)
@@ -1515,6 +1550,8 @@ DECLARE SUB g_type_plugin_complete_interface_info(BYVAL AS GTypePlugin PTR, BYVA
 #IFNDEF __G_VALUE_ARRAY_H__
 #DEFINE __G_VALUE_ARRAY_H__
 
+#DEFINE G_TYPE_VALUE_ARRAY (g_value_array_get_type ())
+
 TYPE GValueArray AS _GValueArray
 
 TYPE _GValueArray
@@ -1523,6 +1560,7 @@ TYPE _GValueArray
   AS guint n_prealloced
 END TYPE
 
+DECLARE FUNCTION g_value_array_get_type() AS GType
 DECLARE FUNCTION g_value_array_get_nth(BYVAL AS GValueArray PTR, BYVAL AS guint) AS GValue PTR
 DECLARE FUNCTION g_value_array_new(BYVAL AS guint) AS GValueArray PTR
 DECLARE SUB g_value_array_free(BYVAL AS GValueArray PTR)
@@ -1556,8 +1594,8 @@ DECLARE FUNCTION g_value_array_sort_with_data(BYVAL AS GValueArray PTR, BYVAL AS
 #DEFINE G_VALUE_HOLDS_GTYPE(value) (G_TYPE_CHECK_VALUE_TYPE ((value), G_TYPE_GTYPE))
 #DEFINE G_VALUE_HOLDS_VARIANT(value) (G_TYPE_CHECK_VALUE_TYPE ((value), G_TYPE_VARIANT))
 
-DECLARE SUB g_value_set_char(BYVAL AS GValue PTR, BYVAL AS UBYTE)
-DECLARE FUNCTION g_value_get_char(BYVAL AS CONST GValue PTR) AS UBYTE
+DECLARE SUB g_value_set_char(BYVAL AS GValue PTR, BYVAL AS gchar PTR)
+DECLARE FUNCTION g_value_get_char(BYVAL AS CONST GValue PTR) AS gchar PTR
 DECLARE SUB g_value_set_schar(BYVAL AS GValue PTR, BYVAL AS gint8)
 DECLARE FUNCTION g_value_get_schar(BYVAL AS CONST GValue PTR) AS gint8
 DECLARE SUB g_value_set_uchar(BYVAL AS GValue PTR, BYVAL AS guchar)
@@ -1598,15 +1636,96 @@ DECLARE FUNCTION g_strdup_value_contents(BYVAL AS CONST GValue PTR) AS gchar PTR
 DECLARE SUB g_value_take_string(BYVAL AS GValue PTR, BYVAL AS gchar PTR)
 DECLARE SUB g_value_set_string_take_ownership(BYVAL AS GValue PTR, BYVAL AS gchar PTR)
 
-TYPE gchararray AS gchar PTR
+TYPE AS gchar PTR gchararray
 
 #ENDIF ' __G_VALUETYPES_H__
 
 #UNDEF __GLIB_GOBJECT_H_INSIDE__
 #ENDIF ' __GLIB_GOBJECT_H__
 
-END EXTERN
+END EXTERN ' (h_2_bi -P_oCD option)
 
 #IFDEF __FB_WIN32__
 #PRAGMA pop(msbitfields)
 #ENDIF
+
+' Translated at 12-07-26 12:02:44, by h_2_bi (version 0.2.2.1,
+' released under GPLv3 by Thomas[ dot ]Freiherr{ at }gmx[ dot ]net)
+
+'   Protocol: GLIB-OBJECT-2.32.4.bi
+' Parameters: GLIB-OBJECT-2.32.4
+'                                  Process time [s]: 0.4324580065440387
+'                                  Bytes translated: 111584
+'                                      Maximum deep: 5
+'                                SUB/FUNCTION names: 437
+'                                mangled TYPE names: 0
+'                                        files done: 18
+' glib-2.32.4/glib/glib-object.h
+' glib-2.32.4/gobject/gbinding.h
+' glib-2.32.4/gobject/gobject.h
+' glib-2.32.4/gobject/gtype.h
+' glib-2.32.4/gobject/gvalue.h
+' glib-2.32.4/gobject/gparam.h
+' glib-2.32.4/gobject/gclosure.h
+' glib-2.32.4/gobject/gsignal.h
+' glib-2.32.4/gobject/gmarshal.h
+' glib-2.32.4/gobject/gboxed.h
+' glib-2.32.4/gobject/glib-types.h
+' glib-2.32.4/gobject/genums.h
+' glib-2.32.4/gobject/gparamspecs.h
+' glib-2.32.4/gobject/gsourceclosure.h
+' glib-2.32.4/gobject/gtypemodule.h
+' glib-2.32.4/gobject/gtypeplugin.h
+' glib-2.32.4/gobject/gvaluearray.h
+' glib-2.32.4/gobject/gvaluetypes.h
+'                                      files missed: 0
+'                                       __FOLDERS__: 2
+' glib-2.32.4/glib/
+' glib-2.32.4/
+'                                        __MACROS__: 9
+' 17: #define G_BEGIN_DECLS
+' 17: #define G_END_DECLS
+' 31: #define G_GNUC_CONST
+' 5: #define G_GNUC_PURE
+' 1: #define GLIB_DEPRECATED
+' 5: #define GLIB_DEPRECATED_FOR(x)
+' 1: #define GOBJECT_VAR extern
+' 13: #define GLIB_DEPRECATED_IN_2_32_FOR(x)
+' 4: #define GLIB_AVAILABLE_IN_2_30
+'                                       __HEADERS__: 1
+' 1: glib-object.h>
+'                                         __TYPES__: 0
+'                                     __POST_REPS__: 32
+' 2: g_type_instance_get_private&_ ALIAS "g_type_instance_get_private"
+' 2: g_type_class_get_private&_ ALIAS "g_type_class_get_private"
+' 2: g_type_check_instance&_ ALIAS "g_type_check_instance"
+' 2: g_type_check_instance_cast&_ ALIAS "g_type_check_instance_cast"
+' 2: g_type_check_class_cast&_ ALIAS "g_type_check_class_cast"
+' 2: g_type_check_value&_ ALIAS "g_type_check_value"
+' 2: __cplusplus>(__cplusplus)
+' 1: g_param_spec_char&_ ALIAS "g_param_spec_char"
+' 1: g_param_spec_uchar&_ ALIAS "g_param_spec_uchar"
+' 1: g_param_spec_boolean&_ ALIAS "g_param_spec_boolean"
+' 1: g_param_spec_int&_ ALIAS "g_param_spec_int"
+' 1: g_param_spec_uint&_ ALIAS "g_param_spec_uint"
+' 1: g_param_spec_long&_ ALIAS "g_param_spec_long"
+' 1: g_param_spec_ulong&_ ALIAS "g_param_spec_ulong"
+' 1: g_param_spec_int64&_ ALIAS "g_param_spec_int64"
+' 1: g_param_spec_uint64&_ ALIAS "g_param_spec_uint64"
+' 1: g_param_spec_unichar&_ ALIAS "g_param_spec_unichar"
+' 1: g_param_spec_enum&_ ALIAS "g_param_spec_enum"
+' 1: g_param_spec_flags&_ ALIAS "g_param_spec_flags"
+' 1: g_param_spec_float&_ ALIAS "g_param_spec_float"
+' 1: g_param_spec_double&_ ALIAS "g_param_spec_double"
+' 1: g_param_spec_string&_ ALIAS "g_param_spec_string"
+' 1: g_param_spec_param&_ ALIAS "g_param_spec_param"
+' 1: g_param_spec_boxed&_ ALIAS "g_param_spec_boxed"
+' 1: g_param_spec_pointer&_ ALIAS "g_param_spec_pointer"
+' 1: g_param_spec_value_array&_ ALIAS "g_param_spec_value_array"
+' 1: g_param_spec_object&_ ALIAS "g_param_spec_object"
+' 1: g_param_spec_override&_ ALIAS "g_param_spec_override"
+' 1: g_param_spec_gtype&_ ALIAS "g_param_spec_gtype"
+' 1: g_param_spec_variant&_ ALIAS "g_param_spec_variant"
+' 1: g_value_init&_ ALIAS "g_value_init"
+' 2: g_type_fundamental&_ ALIAS "g_type_fundamental"
+' 2: g_clear_object&_ ALIAS "g_clear_object"

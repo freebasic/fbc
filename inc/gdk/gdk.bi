@@ -1,7 +1,7 @@
 ' This is file gtk.bi
 ' (FreeBasic binding for GTK - The GIMP Toolkit)
 '
-' (C) 2011 Thomas[ dot ]Freiherr[ at ]gmx[ dot ]net
+' (C) 2011-2012 Thomas[ dot ]Freiherr[ at ]gmx[ dot ]net
 ' translated with help of h_2_bi.bas
 ' (http://www.freebasic-portal.de/downloads/ressourcencompiler/h2bi-bas-134.html)
 '
@@ -21,7 +21,7 @@
 ' See files for original license text
 '
 #IFDEF __USE_GTK3__
-#INCLUDE ONCE "gdk-3.2.bi"
+#INCLUDE ONCE "gdk/gdk-3.4.bi"
 #ELSE
-#INCLUDE ONCE "gdk-2.24.bi"
+#INCLUDE ONCE "gdk/gdk-2.24.bi"
 #ENDIF

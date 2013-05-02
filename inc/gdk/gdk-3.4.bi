@@ -1,11 +1,11 @@
-' This is file gdk-3.2.bi
-' (FreeBasic binding for GDK - version 3.2.2)
+' This is file gdk-3.4.bi
+' (FreeBasic binding for GDK library - version 3.4.4)
 '
 ' translated with help of h_2_bi.bas by
 ' Thomas[ dot ]Freiherr[ at ]gmx[ dot ]net.
 '
 ' Licence:
-' (C) 2011 Thomas[ dot ]Freiherr[ at ]gmx[ dot ]net
+' (C) 2011-2012 Thomas[ dot ]Freiherr[ at ]gmx[ dot ]net
 '
 ' This library binding is free software; you can redistribute it
 ' and/or modify it under the terms of the GNU Lesser General Public
@@ -21,7 +21,7 @@
 '
 ' Original license text:
 '
-'/* GTK - The GIMP Toolkit
+'/* GDK - The GIMP Drawing Kit
  '* Copyright (C) 1995-1997 Peter Mattis, Spencer Kimball and Josh MacDonald
  '*
  '* This library is free software; you can redistribute it and/or
@@ -31,13 +31,11 @@
  '*
  '* This library is distributed in the hope that it will be useful,
  '* but WITHOUT ANY WARRANTY; without even the implied warranty of
- '* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ '* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.   See the GNU
  '* Lesser General Public License for more details.
  '*
  '* You should have received a copy of the GNU Lesser General Public
- '* License along with this library; if not, write to the
- '* Free Software Foundation, Inc., 59 Temple Place - Suite 330,
- '* Boston, MA 02111-1307, USA.
+ '* License along with this library. If not, see <http://www.gnu.org/licenses/>.
  '*/
 
 '/*
@@ -47,51 +45,146 @@
  '* GTK+ at ftp://ftp.gtk.org/pub/gtk/.
  '*/
 
+#IFNDEF __GDK_TJF__
+#DEFINE __GDK_TJF__
+
 #IF NOT __FB_MIN_VERSION__(0, 20, 0)
   #ERROR fbc version must NOT be less than 0.20.0 to compile this header
 #ENDIF
 
 #IFDEF __FB_WIN32__
- #DEFINE G_OS_WIN32
- #DEFINE G_PLATFORM_WIN32
  #PRAGMA push(msbitfields)
+ #DEFINE GDK_WINDOWING_WIN32
 #ELSEIF NOT DEFINED(__FB_LINUX__)
  #ERROR "Platform not supported!"
 #ELSE
- #DEFINE G_OS_UNIX
+ #DEFINE GDK_WINDOWING_X11
 #ENDIF
-
 #INCLIB "gdk-3"
 
-EXTERN "C"
+EXTERN "C" ' (h_2_bi -P_oCD option)
 
 #IFNDEF __GDK_H__
 #DEFINE __GDK_H__
 #DEFINE __GDK_H_INSIDE__
 
+#IFNDEF __GDK_VERSION_MACROS_H__
+#DEFINE __GDK_VERSION_MACROS_H__
+#INCLUDE ONCE "glib.bi" '__HEADERS__: glib.h
+#DEFINE GDK_MAJOR_VERSION (3)
+#DEFINE GDK_MINOR_VERSION (4)
+#DEFINE GDK_MICRO_VERSION (4)
+
+#IFDEF GDK_DISABLE_DEPRECATION_WARNINGS
+#DEFINE GDK_DEPRECATED
+#DEFINE GDK_DEPRECATED_FOR(f)
+#DEFINE GDK_UNAVAILABLE(maj,min)
+#ELSE ' GDK_DISABLE_DEPRECATION_WARNINGS
+#DEFINE GDK_DEPRECATED G_DEPRECATED
+#DEFINE GDK_DEPRECATED_FOR(f) G_DEPRECATED_FOR(f)
+#DEFINE GDK_UNAVAILABLE(maj,min) G_UNAVAILABLE(maj,min)
+#ENDIF ' GDK_DISABLE_DEPRECATION_WARNINGS
+
+#DEFINE GDK_VERSION_3_0 (G_ENCODE_VERSION (3, 0))
+#DEFINE GDK_VERSION_3_2 (G_ENCODE_VERSION (3, 2))
+#DEFINE GDK_VERSION_3_4 (G_ENCODE_VERSION (3, 4))
+
+'#IF (GDK_MINOR_VERSION  MOD 2)
+'#DEFINE GDK_VERSION_CUR_STABLE (G_ENCODE_VERSION (GDK_MAJOR_VERSION, GDK_MINOR_VERSION + 1))
+'#ELSE ' (GDK_MINOR_VERS...
+'#DEFINE GDK_VERSION_CUR_STABLE (G_ENCODE_VERSION (GDK_MAJOR_VERSION, GDK_MINOR_VERSION))
+'#ENDIF ' (GDK_MINOR_VERS...
+
+'#IF (GDK_MINOR_VERSION  MOD 2)
+'#DEFINE GDK_VERSION_PREV_STABLE (G_ENCODE_VERSION (GDK_MAJOR_VERSION, GDK_MINOR_VERSION - 1))
+'#ELSE ' (GDK_MINOR_VERS...
+'#DEFINE GDK_VERSION_PREV_STABLE (G_ENCODE_VERSION (GDK_MAJOR_VERSION, GDK_MINOR_VERSION - 2))
+'#ENDIF ' (GDK_MINOR_VERS...
+
+'#IFNDEF GDK_VERSION_MIN_REQUIRED
+'#DEFINE GDK_VERSION_MIN_REQUIRED (GDK_VERSION_PREV_STABLE)
+'#ENDIF ' GDK_VERSION_MIN_REQUIRED
+
+'#IFNDEF GDK_VERSION_MAX_ALLOWED
+'#IF GDK_VERSION_MIN_REQUIRED  > GDK_VERSION_PREV_STABLE
+'#DEFINE GDK_VERSION_MAX_ALLOWED GDK_VERSION_MIN_REQUIRED
+'#ELSE ' GDK_VERSION_MIN...
+'#DEFINE GDK_VERSION_MAX_ALLOWED GDK_VERSION_CUR_STABLE
+'#ENDIF ' GDK_VERSION_MIN...
+'#ENDIF ' GDK_VERSION_MAX_ALLOWED
+
+'#IF GDK_VERSION_MAX_ALLOWED  < GDK_VERSION_MIN_REQUIRED
+'#ERROR "GDK_VERSION_MAX_ALLOWED must be >= GDK_VERSION_MIN_REQUIRED"
+'#ENDIF ' GDK_VERSION_MAX...
+
+'#IF GDK_VERSION_MIN_REQUIRED  < GDK_VERSION_3_0
+'#ERROR "GDK_VERSION_MIN_REQUIRED must be >= GDK_VERSION_3_0"
+'#ENDIF ' GDK_VERSION_MIN...
+
+'#IF GDK_VERSION_MIN_REQUIRED  >= GDK_VERSION_3_0
+'#DEFINE GDK_DEPRECATED_IN_3_0 GDK_DEPRECATED
+'#DEFINE GDK_DEPRECATED_IN_3_0_FOR(f) GDK_DEPRECATED_FOR(f)
+'#ELSE ' GDK_VERSION_MIN...
+'#DEFINE GDK_DEPRECATED_IN_3_0
+'#DEFINE GDK_DEPRECATED_IN_3_0_FOR(f)
+'#ENDIF ' GDK_VERSION_MIN...
+
+'#IF GDK_VERSION_MAX_ALLOWED  < GDK_VERSION_3_0
+'#DEFINE GDK_AVAILABLE_IN_3_0 GDK_UNAVAILABLE(3, 0)
+'#ELSE ' GDK_VERSION_MAX...
+'#DEFINE GDK_AVAILABLE_IN_3_0
+'#ENDIF ' GDK_VERSION_MAX...
+
+'#IF GDK_VERSION_MIN_REQUIRED  >= GDK_VERSION_3_2
+'#DEFINE GDK_DEPRECATED_IN_3_2 GDK_DEPRECATED
+'#DEFINE GDK_DEPRECATED_IN_3_2_FOR(f) GDK_DEPRECATED_FOR(f)
+'#ELSE ' GDK_VERSION_MIN...
+'#DEFINE GDK_DEPRECATED_IN_3_2
+'#DEFINE GDK_DEPRECATED_IN_3_2_FOR(f)
+'#ENDIF ' GDK_VERSION_MIN...
+
+'#IF GDK_VERSION_MAX_ALLOWED  < GDK_VERSION_3_2
+'#DEFINE GDK_AVAILABLE_IN_3_2 GDK_UNAVAILABLE(3, 2)
+'#ELSE ' GDK_VERSION_MAX...
+'#DEFINE GDK_AVAILABLE_IN_3_2
+'#ENDIF ' GDK_VERSION_MAX...
+
+'#IF GDK_VERSION_MIN_REQUIRED  >= GDK_VERSION_3_4
+'#DEFINE GDK_DEPRECATED_IN_3_4 GDK_DEPRECATED
+'#DEFINE GDK_DEPRECATED_IN_3_4_FOR(f) GDK_DEPRECATED_FOR(f)
+'#ELSE ' GDK_VERSION_MIN...
+'#DEFINE GDK_DEPRECATED_IN_3_4
+'#DEFINE GDK_DEPRECATED_IN_3_4_FOR(f)
+'#ENDIF ' GDK_VERSION_MIN...
+
+'#IF GDK_VERSION_MAX_ALLOWED  < GDK_VERSION_3_4
+'#DEFINE GDK_AVAILABLE_IN_3_4 GDK_UNAVAILABLE(3, 4)
+'#ELSE ' GDK_VERSION_MAX...
+'#DEFINE GDK_AVAILABLE_IN_3_4
+'#ENDIF ' GDK_VERSION_MAX...
+#ENDIF ' __GDK_VERSION_MACROS_H__
 
 #IFNDEF __GDK_APP_LAUNCH_CONTEXT_H__
 #DEFINE __GDK_APP_LAUNCH_CONTEXT_H__
-#INCLUDE ONCE "gio/gio.bi"
+#INCLUDE ONCE "gio/gio.bi" '__HEADERS__: gio/gio.h
 
 #IFNDEF __GDK_TYPES_H__
 #DEFINE __GDK_TYPES_H__
-#INCLUDE ONCE "glib.bi"
 
-#INCLUDE ONCE "pango/pango.bi"
-#INCLUDE ONCE "glib-object.bi"
-#INCLUDE ONCE "cairo/cairo.bi"
+#INCLUDE ONCE "pango/pango.bi" '__HEADERS__: pango/pango.h
+#INCLUDE ONCE "glib-object.bi" '__HEADERS__: glib-object.h
+#INCLUDE ONCE "cairo/cairo.bi" '__HEADERS__: cairo.h
 
 #DEFINE GDK_CURRENT_TIME 0L
 #DEFINE GDK_PARENT_RELATIVE 1L
 
 TYPE GdkPoint AS _GdkPoint
 TYPE GdkRectangle AS cairo_rectangle_int_t
-TYPE GdkAtom AS _GdkAtom PTR
+TYPE AS _GdkAtom PTR GdkAtom
 
 #DEFINE GDK_ATOM_TO_POINTER(atom) (atom)
-#DEFINE GDK_POINTER_TO_ATOM(ptr) ((GdkAtom)(ptr))
-#DEFINE _GDK_MAKE_ATOM(val) ((GdkAtom)GUINT_TO_POINTER(val))
+#DEFINE GDK_POINTER_TO_ATOM(ptr) (CAST(GdkAtom, (ptr)))
+#DEFINE _GDK_MAKE_ATOM(val) (CAST(GdkAtom, GUINT_TO_POINTER(val)))
 #DEFINE GDK_NONE _GDK_MAKE_ATOM (0)
 
 TYPE GdkColor AS _GdkColor
@@ -114,38 +207,47 @@ ENUM GdkByteOrder
 END ENUM
 
 ENUM GdkModifierType
-  GDK_SHIFT_MASK = 1 SHL 0
-  GDK_LOCK_MASK = 1 SHL 1
-  GDK_CONTROL_MASK = 1 SHL 2
-  GDK_MOD1_MASK = 1 SHL 3
-  GDK_MOD2_MASK = 1 SHL 4
-  GDK_MOD3_MASK = 1 SHL 5
-  GDK_MOD4_MASK = 1 SHL 6
-  GDK_MOD5_MASK = 1 SHL 7
-  GDK_BUTTON1_MASK = 1 SHL 8
-  GDK_BUTTON2_MASK = 1 SHL 9
-  GDK_BUTTON3_MASK = 1 SHL 10
-  GDK_BUTTON4_MASK = 1 SHL 11
-  GDK_BUTTON5_MASK = 1 SHL 12
-  GDK_MODIFIER_RESERVED_13_MASK = 1 SHL 13
-  GDK_MODIFIER_RESERVED_14_MASK = 1 SHL 14
-  GDK_MODIFIER_RESERVED_15_MASK = 1 SHL 15
-  GDK_MODIFIER_RESERVED_16_MASK = 1 SHL 16
-  GDK_MODIFIER_RESERVED_17_MASK = 1 SHL 17
-  GDK_MODIFIER_RESERVED_18_MASK = 1 SHL 18
-  GDK_MODIFIER_RESERVED_19_MASK = 1 SHL 19
-  GDK_MODIFIER_RESERVED_20_MASK = 1 SHL 20
-  GDK_MODIFIER_RESERVED_21_MASK = 1 SHL 21
-  GDK_MODIFIER_RESERVED_22_MASK = 1 SHL 22
-  GDK_MODIFIER_RESERVED_23_MASK = 1 SHL 23
-  GDK_MODIFIER_RESERVED_24_MASK = 1 SHL 24
-  GDK_MODIFIER_RESERVED_25_MASK = 1 SHL 25
-  GDK_SUPER_MASK = 1 SHL 26
-  GDK_HYPER_MASK = 1 SHL 27
-  GDK_META_MASK = 1 SHL 28
-  GDK_MODIFIER_RESERVED_29_MASK = 1 SHL 29
-  GDK_RELEASE_MASK = 1 SHL 30
+  GDK_SHIFT_MASK = 1  SHL 0
+  GDK_LOCK_MASK = 1  SHL 1
+  GDK_CONTROL_MASK = 1  SHL 2
+  GDK_MOD1_MASK = 1  SHL 3
+  GDK_MOD2_MASK = 1  SHL 4
+  GDK_MOD3_MASK = 1  SHL 5
+  GDK_MOD4_MASK = 1  SHL 6
+  GDK_MOD5_MASK = 1  SHL 7
+  GDK_BUTTON1_MASK = 1  SHL 8
+  GDK_BUTTON2_MASK = 1  SHL 9
+  GDK_BUTTON3_MASK = 1  SHL 10
+  GDK_BUTTON4_MASK = 1  SHL 11
+  GDK_BUTTON5_MASK = 1  SHL 12
+  GDK_MODIFIER_RESERVED_13_MASK = 1  SHL 13
+  GDK_MODIFIER_RESERVED_14_MASK = 1  SHL 14
+  GDK_MODIFIER_RESERVED_15_MASK = 1  SHL 15
+  GDK_MODIFIER_RESERVED_16_MASK = 1  SHL 16
+  GDK_MODIFIER_RESERVED_17_MASK = 1  SHL 17
+  GDK_MODIFIER_RESERVED_18_MASK = 1  SHL 18
+  GDK_MODIFIER_RESERVED_19_MASK = 1  SHL 19
+  GDK_MODIFIER_RESERVED_20_MASK = 1  SHL 20
+  GDK_MODIFIER_RESERVED_21_MASK = 1  SHL 21
+  GDK_MODIFIER_RESERVED_22_MASK = 1  SHL 22
+  GDK_MODIFIER_RESERVED_23_MASK = 1  SHL 23
+  GDK_MODIFIER_RESERVED_24_MASK = 1  SHL 24
+  GDK_MODIFIER_RESERVED_25_MASK = 1  SHL 25
+  GDK_SUPER_MASK = 1  SHL 26
+  GDK_HYPER_MASK = 1  SHL 27
+  GDK_META_MASK = 1  SHL 28
+  GDK_MODIFIER_RESERVED_29_MASK = 1  SHL 29
+  GDK_RELEASE_MASK = 1  SHL 30
   GDK_MODIFIER_MASK = &h5C001FFF
+END ENUM
+
+ENUM GdkModifierIntent
+  GDK_MODIFIER_INTENT_PRIMARY_ACCELERATOR
+  GDK_MODIFIER_INTENT_CONTEXT_MENU
+  GDK_MODIFIER_INTENT_EXTEND_SELECTION
+  GDK_MODIFIER_INTENT_MODIFY_SELECTION
+  GDK_MODIFIER_INTENT_NO_TEXT_INPUT
+  GDK_MODIFIER_INTENT_SHIFT_GROUP
 END ENUM
 
 ENUM GdkStatus
@@ -171,28 +273,30 @@ ENUM GdkGrabOwnership
 END ENUM
 
 ENUM GdkEventMask
-  GDK_EXPOSURE_MASK = 1 SHL 1
-  GDK_POINTER_MOTION_MASK = 1 SHL 2
-  GDK_POINTER_MOTION_HINT_MASK = 1 SHL 3
-  GDK_BUTTON_MOTION_MASK = 1 SHL 4
-  GDK_BUTTON1_MOTION_MASK = 1 SHL 5
-  GDK_BUTTON2_MOTION_MASK = 1 SHL 6
-  GDK_BUTTON3_MOTION_MASK = 1 SHL 7
-  GDK_BUTTON_PRESS_MASK = 1 SHL 8
-  GDK_BUTTON_RELEASE_MASK = 1 SHL 9
-  GDK_KEY_PRESS_MASK = 1 SHL 10
-  GDK_KEY_RELEASE_MASK = 1 SHL 11
-  GDK_ENTER_NOTIFY_MASK = 1 SHL 12
-  GDK_LEAVE_NOTIFY_MASK = 1 SHL 13
-  GDK_FOCUS_CHANGE_MASK = 1 SHL 14
-  GDK_STRUCTURE_MASK = 1 SHL 15
-  GDK_PROPERTY_CHANGE_MASK = 1 SHL 16
-  GDK_VISIBILITY_NOTIFY_MASK = 1 SHL 17
-  GDK_PROXIMITY_IN_MASK = 1 SHL 18
-  GDK_PROXIMITY_OUT_MASK = 1 SHL 19
-  GDK_SUBSTRUCTURE_MASK = 1 SHL 20
-  GDK_SCROLL_MASK = 1 SHL 21
-  GDK_ALL_EVENTS_MASK = &h3FFFFE
+  GDK_EXPOSURE_MASK = 1  SHL 1
+  GDK_POINTER_MOTION_MASK = 1  SHL 2
+  GDK_POINTER_MOTION_HINT_MASK = 1  SHL 3
+  GDK_BUTTON_MOTION_MASK = 1  SHL 4
+  GDK_BUTTON1_MOTION_MASK = 1  SHL 5
+  GDK_BUTTON2_MOTION_MASK = 1  SHL 6
+  GDK_BUTTON3_MOTION_MASK = 1  SHL 7
+  GDK_BUTTON_PRESS_MASK = 1  SHL 8
+  GDK_BUTTON_RELEASE_MASK = 1  SHL 9
+  GDK_KEY_PRESS_MASK = 1  SHL 10
+  GDK_KEY_RELEASE_MASK = 1  SHL 11
+  GDK_ENTER_NOTIFY_MASK = 1  SHL 12
+  GDK_LEAVE_NOTIFY_MASK = 1  SHL 13
+  GDK_FOCUS_CHANGE_MASK = 1  SHL 14
+  GDK_STRUCTURE_MASK = 1  SHL 15
+  GDK_PROPERTY_CHANGE_MASK = 1  SHL 16
+  GDK_VISIBILITY_NOTIFY_MASK = 1  SHL 17
+  GDK_PROXIMITY_IN_MASK = 1  SHL 18
+  GDK_PROXIMITY_OUT_MASK = 1  SHL 19
+  GDK_SUBSTRUCTURE_MASK = 1  SHL 20
+  GDK_SCROLL_MASK = 1  SHL 21
+  GDK_TOUCH_MASK = 1  SHL 22
+  GDK_SMOOTH_SCROLL_MASK = 1  SHL 23
+  GDK_ALL_EVENTS_MASK = &hFFFFFE
 END ENUM
 
 TYPE _GdkPoint
@@ -245,18 +349,14 @@ DECLARE FUNCTION gdk_color_to_string(BYVAL AS CONST GdkColor PTR) AS gchar PTR
 
 TYPE GdkTimeCoord AS _GdkTimeCoord
 
-ENUM GdkExtensionMode
-  GDK_EXTENSION_EVENTS_NONE
-  GDK_EXTENSION_EVENTS_ALL
-  GDK_EXTENSION_EVENTS_CURSOR
-END ENUM
-
 ENUM GdkInputSource
   GDK_SOURCE_MOUSE
   GDK_SOURCE_PEN
   GDK_SOURCE_ERASER
   GDK_SOURCE_CURSOR
   GDK_SOURCE_KEYBOARD
+  GDK_SOURCE_TOUCHSCREEN
+  GDK_SOURCE_TOUCHPAD
 END ENUM
 
 ENUM GdkInputMode
@@ -325,12 +425,12 @@ DECLARE FUNCTION gdk_device_grab_info_libgtk_only(BYVAL AS GdkDisplay PTR, BYVAL
 #DEFINE GDK_IS_DRAG_CONTEXT(object) (G_TYPE_CHECK_INSTANCE_TYPE ((object), GDK_TYPE_DRAG_CONTEXT))
 
 ENUM GdkDragAction
-  GDK_ACTION_DEFAULT = 1 SHL 0
-  GDK_ACTION_COPY = 1 SHL 1
-  GDK_ACTION_MOVE = 1 SHL 2
-  GDK_ACTION_LINK = 1 SHL 3
-  GDK_ACTION_PRIVATE = 1 SHL 4
-  GDK_ACTION_ASK = 1 SHL 5
+  GDK_ACTION_DEFAULT = 1  SHL 0
+  GDK_ACTION_COPY = 1  SHL 1
+  GDK_ACTION_MOVE = 1  SHL 2
+  GDK_ACTION_LINK = 1  SHL 3
+  GDK_ACTION_PRIVATE = 1  SHL 4
+  GDK_ACTION_ASK = 1  SHL 5
 END ENUM
 
 ENUM GdkDragProtocol
@@ -370,12 +470,18 @@ DECLARE FUNCTION gdk_drag_drop_succeeded(BYVAL AS GdkDragContext PTR) AS gboolea
 #DEFINE GDK_TYPE_EVENT (gdk_event_get_type ())
 #DEFINE GDK_PRIORITY_EVENTS (G_PRIORITY_DEFAULT)
 #DEFINE GDK_PRIORITY_REDRAW (G_PRIORITY_HIGH_IDLE + 20)
+#DEFINE GDK_EVENT_PROPAGATE (FALSE)
+#DEFINE GDK_EVENT_STOP (TRUE)
+#DEFINE GDK_BUTTON_PRIMARY (1)
+#DEFINE GDK_BUTTON_MIDDLE (2)
+#DEFINE GDK_BUTTON_SECONDARY (3)
 
 TYPE GdkEventAny AS _GdkEventAny
 TYPE GdkEventExpose AS _GdkEventExpose
 TYPE GdkEventVisibility AS _GdkEventVisibility
 TYPE GdkEventMotion AS _GdkEventMotion
 TYPE GdkEventButton AS _GdkEventButton
+TYPE GdkEventTouch AS _GdkEventTouch
 TYPE GdkEventScroll AS _GdkEventScroll
 TYPE GdkEventKey AS _GdkEventKey
 TYPE GdkEventFocus AS _GdkEventFocus
@@ -389,6 +495,7 @@ TYPE GdkEventDND AS _GdkEventDND
 TYPE GdkEventWindowState AS _GdkEventWindowState
 TYPE GdkEventSetting AS _GdkEventSetting
 TYPE GdkEventGrabBroken AS _GdkEventGrabBroken
+TYPE GdkEventSequence AS _GdkEventSequence
 TYPE GdkEvent AS _GdkEvent
 TYPE GdkEventFunc AS SUB(BYVAL AS GdkEvent PTR, BYVAL AS gpointer)
 TYPE GdkXEvent AS ANY
@@ -439,6 +546,10 @@ ENUM GdkEventType
   GDK_OWNER_CHANGE = 34
   GDK_GRAB_BROKEN = 35
   GDK_DAMAGE = 36
+  GDK_TOUCH_BEGIN = 37
+  GDK_TOUCH_UPDATE = 38
+  GDK_TOUCH_END = 39
+  GDK_TOUCH_CANCEL = 40
   GDK_EVENT_LAST
 END ENUM
 
@@ -453,6 +564,7 @@ ENUM GdkScrollDirection
   GDK_SCROLL_DOWN
   GDK_SCROLL_LEFT
   GDK_SCROLL_RIGHT
+  GDK_SCROLL_SMOOTH
 END ENUM
 
 ENUM GdkNotifyType
@@ -471,6 +583,9 @@ ENUM GdkCrossingMode
   GDK_CROSSING_GTK_GRAB
   GDK_CROSSING_GTK_UNGRAB
   GDK_CROSSING_STATE_CHANGED
+  GDK_CROSSING_TOUCH_BEGIN
+  GDK_CROSSING_TOUCH_END
+  GDK_CROSSING_DEVICE_SWITCH
 END ENUM
 
 ENUM GdkPropertyState
@@ -479,13 +594,14 @@ ENUM GdkPropertyState
 END ENUM
 
 ENUM GdkWindowState
-  GDK_WINDOW_STATE_WITHDRAWN = 1 SHL 0
-  GDK_WINDOW_STATE_ICONIFIED = 1 SHL 1
-  GDK_WINDOW_STATE_MAXIMIZED = 1 SHL 2
-  GDK_WINDOW_STATE_STICKY = 1 SHL 3
-  GDK_WINDOW_STATE_FULLSCREEN = 1 SHL 4
-  GDK_WINDOW_STATE_ABOVE = 1 SHL 5
-  GDK_WINDOW_STATE_BELOW = 1 SHL 6
+  GDK_WINDOW_STATE_WITHDRAWN = 1  SHL 0
+  GDK_WINDOW_STATE_ICONIFIED = 1  SHL 1
+  GDK_WINDOW_STATE_MAXIMIZED = 1  SHL 2
+  GDK_WINDOW_STATE_STICKY = 1  SHL 3
+  GDK_WINDOW_STATE_FULLSCREEN = 1  SHL 4
+  GDK_WINDOW_STATE_ABOVE = 1  SHL 5
+  GDK_WINDOW_STATE_BELOW = 1  SHL 6
+  GDK_WINDOW_STATE_FOCUSED = 1  SHL 7
 END ENUM
 
 ENUM GdkSettingAction
@@ -550,6 +666,21 @@ TYPE _GdkEventButton
   AS gdouble x_root, y_root
 END TYPE
 
+TYPE _GdkEventTouch
+  AS GdkEventType type
+  AS GdkWindow PTR window
+  AS gint8 send_event
+  AS guint32 time
+  AS gdouble x
+  AS gdouble y
+  AS gdouble PTR axes
+  AS guint state
+  AS GdkEventSequence PTR sequence
+  AS gboolean emulating_pointer
+  AS GdkDevice PTR device
+  AS gdouble x_root, y_root
+END TYPE
+
 TYPE _GdkEventScroll
   AS GdkEventType type
   AS GdkWindow PTR window
@@ -561,6 +692,8 @@ TYPE _GdkEventScroll
   AS GdkScrollDirection direction
   AS GdkDevice PTR device
   AS gdouble x_root, y_root
+  AS gdouble delta_x
+  AS gdouble delta_y
 END TYPE
 
 TYPE _GdkEventKey
@@ -689,6 +822,7 @@ UNION _GdkEvent
   AS GdkEventVisibility visibility
   AS GdkEventMotion motion
   AS GdkEventButton button
+  AS GdkEventTouch touch
   AS GdkEventScroll scroll
   AS GdkEventKey key
   AS GdkEventCrossing crossing
@@ -721,18 +855,21 @@ DECLARE FUNCTION gdk_event_get_click_count(BYVAL AS CONST GdkEvent PTR, BYVAL AS
 DECLARE FUNCTION gdk_event_get_keyval(BYVAL AS CONST GdkEvent PTR, BYVAL AS guint PTR) AS gboolean
 DECLARE FUNCTION gdk_event_get_keycode(BYVAL AS CONST GdkEvent PTR, BYVAL AS guint16 PTR) AS gboolean
 DECLARE FUNCTION gdk_event_get_scroll_direction(BYVAL AS CONST GdkEvent PTR, BYVAL AS GdkScrollDirection PTR) AS gboolean
+DECLARE FUNCTION gdk_event_get_scroll_deltas(BYVAL AS CONST GdkEvent PTR, BYVAL AS gdouble PTR, BYVAL AS gdouble PTR) AS gboolean
 DECLARE FUNCTION gdk_event_get_axis(BYVAL AS CONST GdkEvent PTR, BYVAL AS GdkAxisUse, BYVAL AS gdouble PTR) AS gboolean
 DECLARE SUB gdk_event_set_device(BYVAL AS GdkEvent PTR, BYVAL AS GdkDevice PTR)
 DECLARE FUNCTION gdk_event_get_device(BYVAL AS CONST GdkEvent PTR) AS GdkDevice PTR
 DECLARE SUB gdk_event_set_source_device(BYVAL AS GdkEvent PTR, BYVAL AS GdkDevice PTR)
 DECLARE FUNCTION gdk_event_get_source_device(BYVAL AS CONST GdkEvent PTR) AS GdkDevice PTR
 DECLARE SUB gdk_event_request_motions(BYVAL AS CONST GdkEventMotion PTR)
+DECLARE FUNCTION gdk_event_triggers_context_menu(BYVAL AS CONST GdkEvent PTR) AS gboolean
 DECLARE FUNCTION gdk_events_get_distance(BYVAL AS GdkEvent PTR, BYVAL AS GdkEvent PTR, BYVAL AS gdouble PTR) AS gboolean
 DECLARE FUNCTION gdk_events_get_angle(BYVAL AS GdkEvent PTR, BYVAL AS GdkEvent PTR, BYVAL AS gdouble PTR) AS gboolean
 DECLARE FUNCTION gdk_events_get_center(BYVAL AS GdkEvent PTR, BYVAL AS GdkEvent PTR, BYVAL AS gdouble PTR, BYVAL AS gdouble PTR) AS gboolean
 DECLARE SUB gdk_event_handler_set(BYVAL AS GdkEventFunc, BYVAL AS gpointer, BYVAL AS GDestroyNotify)
 DECLARE SUB gdk_event_set_screen(BYVAL AS GdkEvent PTR, BYVAL AS GdkScreen PTR)
 DECLARE FUNCTION gdk_event_get_screen(BYVAL AS CONST GdkEvent PTR) AS GdkScreen PTR
+DECLARE FUNCTION gdk_event_get_event_sequence(BYVAL AS CONST GdkEvent PTR) AS GdkEventSequence PTR
 DECLARE SUB gdk_set_show_events(BYVAL AS gboolean)
 DECLARE FUNCTION gdk_get_show_events() AS gboolean
 
@@ -773,13 +910,11 @@ DECLARE FUNCTION gdk_display_get_screen(BYVAL AS GdkDisplay PTR, BYVAL AS gint) 
 DECLARE FUNCTION gdk_display_get_default_screen(BYVAL AS GdkDisplay PTR) AS GdkScreen PTR
 
 #IFNDEF GDK_MULTIDEVICE_SAFE
-#IFNDEF GDK_DISABLE_DEPRECATED
 
 DECLARE SUB gdk_display_pointer_ungrab(BYVAL AS GdkDisplay PTR, BYVAL AS guint32)
 DECLARE SUB gdk_display_keyboard_ungrab(BYVAL AS GdkDisplay PTR, BYVAL AS guint32)
 DECLARE FUNCTION gdk_display_pointer_is_grabbed(BYVAL AS GdkDisplay PTR) AS gboolean
 
-#ENDIF ' GDK_DISABLE_DEPRECATED
 #ENDIF ' GDK_MULTIDEVICE_SAFE
 
 DECLARE FUNCTION gdk_display_device_is_grabbed(BYVAL AS GdkDisplay PTR, BYVAL AS GdkDevice PTR) AS gboolean
@@ -788,13 +923,7 @@ DECLARE SUB gdk_display_sync(BYVAL AS GdkDisplay PTR)
 DECLARE SUB gdk_display_flush(BYVAL AS GdkDisplay PTR)
 DECLARE SUB gdk_display_close(BYVAL AS GdkDisplay PTR)
 DECLARE FUNCTION gdk_display_is_closed(BYVAL AS GdkDisplay PTR) AS gboolean
-
-#IFNDEF GDK_DISABLE_DEPRECATED
-
 DECLARE FUNCTION gdk_display_list_devices(BYVAL AS GdkDisplay PTR) AS GList PTR
-
-#ENDIF ' GDK_DISABLE_DEPRECATED
-
 DECLARE FUNCTION gdk_display_get_event(BYVAL AS GdkDisplay PTR) AS GdkEvent PTR
 DECLARE FUNCTION gdk_display_peek_event(BYVAL AS GdkDisplay PTR) AS GdkEvent PTR
 DECLARE SUB gdk_display_put_event(BYVAL AS GdkDisplay PTR, BYVAL AS CONST GdkEvent PTR)
@@ -804,13 +933,11 @@ DECLARE SUB gdk_display_set_double_click_distance(BYVAL AS GdkDisplay PTR, BYVAL
 DECLARE FUNCTION gdk_display_get_default() AS GdkDisplay PTR
 
 #IFNDEF GDK_MULTIDEVICE_SAFE
-#IFNDEF GDK_DISABLE_DEPRECATED
 
 DECLARE SUB gdk_display_get_pointer(BYVAL AS GdkDisplay PTR, BYVAL AS GdkScreen PTR PTR, BYVAL AS gint PTR, BYVAL AS gint PTR, BYVAL AS GdkModifierType PTR)
 DECLARE FUNCTION gdk_display_get_window_at_pointer(BYVAL AS GdkDisplay PTR, BYVAL AS gint PTR, BYVAL AS gint PTR) AS GdkWindow PTR
 DECLARE SUB gdk_display_warp_pointer(BYVAL AS GdkDisplay PTR, BYVAL AS GdkScreen PTR, BYVAL AS gint, BYVAL AS gint)
 
-#ENDIF ' GDK_DISABLE_DEPRECATED
 #ENDIF ' GDK_MULTIDEVICE_SAFE
 
 DECLARE FUNCTION gdk_display_open_default_libgtk_only() AS GdkDisplay PTR
@@ -853,6 +980,7 @@ DECLARE FUNCTION gdk_screen_make_display_name(BYVAL AS GdkScreen PTR) AS gchar P
 DECLARE FUNCTION gdk_screen_get_n_monitors(BYVAL AS GdkScreen PTR) AS gint
 DECLARE FUNCTION gdk_screen_get_primary_monitor(BYVAL AS GdkScreen PTR) AS gint
 DECLARE SUB gdk_screen_get_monitor_geometry(BYVAL AS GdkScreen PTR, BYVAL AS gint, BYVAL AS GdkRectangle PTR)
+DECLARE SUB gdk_screen_get_monitor_workarea(BYVAL AS GdkScreen PTR, BYVAL AS gint, BYVAL AS GdkRectangle PTR)
 DECLARE FUNCTION gdk_screen_get_monitor_at_point(BYVAL AS GdkScreen PTR, BYVAL AS gint, BYVAL AS gint) AS gint
 DECLARE FUNCTION gdk_screen_get_monitor_at_window(BYVAL AS GdkScreen PTR, BYVAL AS GdkWindow PTR) AS gint
 DECLARE FUNCTION gdk_screen_get_monitor_width_mm(BYVAL AS GdkScreen PTR, BYVAL AS gint) AS gint
@@ -874,14 +1002,8 @@ DECLARE FUNCTION gdk_screen_get_window_stack(BYVAL AS GdkScreen PTR) AS GList PT
 #DEFINE GDK_IS_APP_LAUNCH_CONTEXT(o) (G_TYPE_CHECK_INSTANCE_TYPE ((o), GDK_TYPE_APP_LAUNCH_CONTEXT))
 
 DECLARE FUNCTION gdk_app_launch_context_get_type() AS GType
-
-#IFNDEF GDK_DISABLE_DEPRECATED
-
 DECLARE FUNCTION gdk_app_launch_context_new() AS GdkAppLaunchContext PTR
 DECLARE SUB gdk_app_launch_context_set_display(BYVAL AS GdkAppLaunchContext PTR, BYVAL AS GdkDisplay PTR)
-
-#ENDIF ' GDK_DISABLE_DEPRECATED
-
 DECLARE SUB gdk_app_launch_context_set_screen(BYVAL AS GdkAppLaunchContext PTR, BYVAL AS GdkScreen PTR)
 DECLARE SUB gdk_app_launch_context_set_desktop(BYVAL AS GdkAppLaunchContext PTR, BYVAL AS gint)
 DECLARE SUB gdk_app_launch_context_set_timestamp(BYVAL AS GdkAppLaunchContext PTR, BYVAL AS guint32)
@@ -892,6 +1014,7 @@ DECLARE SUB gdk_app_launch_context_set_icon_name(BYVAL AS GdkAppLaunchContext PT
 
 #IFNDEF __GDK_CAIRO_H__
 #DEFINE __GDK_CAIRO_H__
+
 
 #IFNDEF __GDK_RGBA_H__
 #DEFINE __GDK_RGBA_H__
@@ -918,24 +1041,24 @@ DECLARE FUNCTION gdk_rgba_to_string(BYVAL AS CONST GdkRGBA PTR) AS gchar PTR
 #IFNDEF __GDK_PIXBUF_H__
 #DEFINE __GDK_PIXBUF_H__
 
-#INCLUDE ONCE "gdk-pixbuf/gdk-pixbuf.bi"
+#INCLUDE ONCE "gdk-pixbuf/gdk-pixbuf.bi" '__HEADERS__: gdk-pixbuf/gdk-pixbuf.h
 
 DECLARE FUNCTION gdk_pixbuf_get_from_window(BYVAL AS GdkWindow PTR, BYVAL AS gint, BYVAL AS gint, BYVAL AS gint, BYVAL AS gint) AS GdkPixbuf PTR
 DECLARE FUNCTION gdk_pixbuf_get_from_surface(BYVAL AS cairo_surface_t PTR, BYVAL AS gint, BYVAL AS gint, BYVAL AS gint, BYVAL AS gint) AS GdkPixbuf PTR
 
 #ENDIF ' __GDK_PIXBUF_H__
 
-#INCLUDE ONCE "pango/pangocairo.bi"
+#INCLUDE ONCE "pango/pangocairo.bi" '__HEADERS__: pango/pangocairo.h
 
 DECLARE FUNCTION gdk_cairo_create(BYVAL AS GdkWindow PTR) AS cairo_t PTR
 DECLARE FUNCTION gdk_cairo_get_clip_rectangle(BYVAL AS cairo_t PTR, BYVAL AS GdkRectangle PTR) AS gboolean
-DECLARE SUB gdk_cairo_set_source_color(BYVAL AS cairo_t PTR, BYVAL AS CONST GdkColor PTR)
 DECLARE SUB gdk_cairo_set_source_rgba(BYVAL AS cairo_t PTR, BYVAL AS CONST GdkRGBA PTR)
 DECLARE SUB gdk_cairo_set_source_pixbuf(BYVAL AS cairo_t PTR, BYVAL AS CONST GdkPixbuf PTR, BYVAL AS gdouble, BYVAL AS gdouble)
 DECLARE SUB gdk_cairo_set_source_window(BYVAL AS cairo_t PTR, BYVAL AS GdkWindow PTR, BYVAL AS gdouble, BYVAL AS gdouble)
 DECLARE SUB gdk_cairo_rectangle(BYVAL AS cairo_t PTR, BYVAL AS CONST GdkRectangle PTR)
 DECLARE SUB gdk_cairo_region(BYVAL AS cairo_t PTR, BYVAL AS CONST cairo_region_t PTR)
 DECLARE FUNCTION gdk_cairo_region_create_from_surface(BYVAL AS cairo_surface_t PTR) AS cairo_region_t PTR
+DECLARE SUB gdk_cairo_set_source_color(BYVAL AS cairo_t PTR, BYVAL AS CONST GdkColor PTR)
 
 #ENDIF ' __GDK_CAIRO_H__
 
@@ -1041,14 +1164,8 @@ DECLARE FUNCTION gdk_cursor_new(BYVAL AS GdkCursorType) AS GdkCursor PTR
 DECLARE FUNCTION gdk_cursor_new_from_pixbuf(BYVAL AS GdkDisplay PTR, BYVAL AS GdkPixbuf PTR, BYVAL AS gint, BYVAL AS gint) AS GdkCursor PTR
 DECLARE FUNCTION gdk_cursor_new_from_name(BYVAL AS GdkDisplay PTR, BYVAL AS CONST gchar PTR) AS GdkCursor PTR
 DECLARE FUNCTION gdk_cursor_get_display(BYVAL AS GdkCursor PTR) AS GdkDisplay PTR
-
-#IFNDEF GDK_DISABLE_DEPRECATED
-
 DECLARE FUNCTION gdk_cursor_ref(BYVAL AS GdkCursor PTR) AS GdkCursor PTR
 DECLARE SUB gdk_cursor_unref(BYVAL AS GdkCursor PTR)
-
-#ENDIF ' GDK_DISABLE_DEPRECATED
-
 DECLARE FUNCTION gdk_cursor_get_image(BYVAL AS GdkCursor PTR) AS GdkPixbuf PTR
 DECLARE FUNCTION gdk_cursor_get_cursor_type(BYVAL AS GdkCursor PTR) AS GdkCursorType
 
@@ -1075,8 +1192,6 @@ DECLARE FUNCTION gdk_display_manager_open_display(BYVAL AS GdkDisplayManager PTR
 
 DECLARE FUNCTION gdk_cursor_type_get_type() AS GType
 #DEFINE GDK_TYPE_CURSOR_TYPE (gdk_cursor_type_get_type ())
-DECLARE FUNCTION gdk_extension_mode_get_type() AS GType
-#DEFINE GDK_TYPE_EXTENSION_MODE (gdk_extension_mode_get_type ())
 DECLARE FUNCTION gdk_input_source_get_type() AS GType
 #DEFINE GDK_TYPE_INPUT_SOURCE (gdk_input_source_get_type ())
 DECLARE FUNCTION gdk_input_mode_get_type() AS GType
@@ -1115,6 +1230,8 @@ DECLARE FUNCTION gdk_byte_order_get_type() AS GType
 #DEFINE GDK_TYPE_BYTE_ORDER (gdk_byte_order_get_type ())
 DECLARE FUNCTION gdk_modifier_type_get_type() AS GType
 #DEFINE GDK_TYPE_MODIFIER_TYPE (gdk_modifier_type_get_type ())
+DECLARE FUNCTION gdk_modifier_intent_get_type() AS GType
+#DEFINE GDK_TYPE_MODIFIER_INTENT (gdk_modifier_intent_get_type ())
 DECLARE FUNCTION gdk_status_get_type() AS GType
 #DEFINE GDK_TYPE_STATUS (gdk_status_get_type ())
 DECLARE FUNCTION gdk_grab_status_get_type() AS GType
@@ -1178,8 +1295,10 @@ DECLARE FUNCTION gdk_keymap_get_direction(BYVAL AS GdkKeymap PTR) AS PangoDirect
 DECLARE FUNCTION gdk_keymap_have_bidi_layouts(BYVAL AS GdkKeymap PTR) AS gboolean
 DECLARE FUNCTION gdk_keymap_get_caps_lock_state(BYVAL AS GdkKeymap PTR) AS gboolean
 DECLARE FUNCTION gdk_keymap_get_num_lock_state(BYVAL AS GdkKeymap PTR) AS gboolean
+DECLARE FUNCTION gdk_keymap_get_modifier_state(BYVAL AS GdkKeymap PTR) AS guint
 DECLARE SUB gdk_keymap_add_virtual_modifiers(BYVAL AS GdkKeymap PTR, BYVAL AS GdkModifierType PTR)
 DECLARE FUNCTION gdk_keymap_map_virtual_modifiers(BYVAL AS GdkKeymap PTR, BYVAL AS GdkModifierType PTR) AS gboolean
+DECLARE FUNCTION gdk_keymap_get_modifier_mask(BYVAL AS GdkKeymap PTR, BYVAL AS GdkModifierIntent) AS GdkModifierType
 DECLARE FUNCTION gdk_keyval_name(BYVAL AS guint) AS gchar PTR
 DECLARE FUNCTION gdk_keyval_from_name(BYVAL AS CONST gchar PTR) AS guint
 DECLARE SUB gdk_keyval_convert_case(BYVAL AS guint, BYVAL AS guint PTR, BYVAL AS guint PTR)
@@ -1453,6 +1572,7 @@ DECLARE FUNCTION gdk_unicode_to_keyval(BYVAL AS guint32) AS guint
 #DEFINE GDK_KEY_dead_U_ &hFE89
 #DEFINE GDK_KEY_dead_small_schwa &hFE8A
 #DEFINE GDK_KEY_dead_capital_schwa &hFE8B
+#DEFINE GDK_KEY_dead_greek &hFE8C
 #DEFINE GDK_KEY_First_Virtual_Screen &hFED0
 #DEFINE GDK_KEY_Prev_Virtual_Screen &hFED1
 #DEFINE GDK_KEY_Next_Virtual_Screen &hFED2
@@ -1499,6 +1619,12 @@ DECLARE FUNCTION gdk_unicode_to_keyval(BYVAL AS guint32) AS guint
 #DEFINE GDK_KEY_Pointer_Accelerate &hFEFA
 #DEFINE GDK_KEY_Pointer_DfltBtnNext &hFEFB
 #DEFINE GDK_KEY_Pointer_DfltBtnPrev &hFEFC
+#DEFINE GDK_KEY_ch &hFEA0
+#DEFINE GDK_KEY_Ch_ &hFEA1
+#DEFINE GDK_KEY_CH__ &hFEA2
+#DEFINE GDK_KEY_c_h &hFEA3
+#DEFINE GDK_KEY_C_h_ &hFEA4
+#DEFINE GDK_KEY_C_H__ &hFEA5
 #DEFINE GDK_KEY_3270_Duplicate &hFD01
 #DEFINE GDK_KEY_3270_FieldMark &hFD02
 #DEFINE GDK_KEY_3270_Right2 &hFD03
@@ -1778,9 +1904,9 @@ DECLARE FUNCTION gdk_unicode_to_keyval(BYVAL AS guint32) AS guint
 #DEFINE GDK_KEY_nacute &h1F1
 #DEFINE GDK_KEY_ncaron &h1F2
 #DEFINE GDK_KEY_odoubleacute &h1F5
-#DEFINE GDK_KEY_udoubleacute &h1FB
 #DEFINE GDK_KEY_rcaron &h1F8
 #DEFINE GDK_KEY_uring &h1F9
+#DEFINE GDK_KEY_udoubleacute &h1FB
 #DEFINE GDK_KEY_tcedilla &h1FE
 #DEFINE GDK_KEY_abovedot &h1FF
 #DEFINE GDK_KEY_Hstroke_ &h2A1
@@ -1841,32 +1967,32 @@ DECLARE FUNCTION gdk_unicode_to_keyval(BYVAL AS guint32) AS guint
 #DEFINE GDK_KEY_uogonek &h3F9
 #DEFINE GDK_KEY_utilde &h3FD
 #DEFINE GDK_KEY_umacron &h3FE
+#DEFINE GDK_KEY_Wcircumflex_ &h1000174
+#DEFINE GDK_KEY_wcircumflex &h1000175
+#DEFINE GDK_KEY_Ycircumflex_ &h1000176
+#DEFINE GDK_KEY_ycircumflex &h1000177
 #DEFINE GDK_KEY_Babovedot_ &h1001E02
 #DEFINE GDK_KEY_babovedot &h1001E03
 #DEFINE GDK_KEY_Dabovedot_ &h1001E0A
-#DEFINE GDK_KEY_Wgrave_ &h1001E80
-#DEFINE GDK_KEY_Wacute_ &h1001E82
 #DEFINE GDK_KEY_dabovedot &h1001E0B
-#DEFINE GDK_KEY_Ygrave_ &h1001EF2
 #DEFINE GDK_KEY_Fabovedot_ &h1001E1E
 #DEFINE GDK_KEY_fabovedot &h1001E1F
 #DEFINE GDK_KEY_Mabovedot_ &h1001E40
 #DEFINE GDK_KEY_mabovedot &h1001E41
 #DEFINE GDK_KEY_Pabovedot_ &h1001E56
-#DEFINE GDK_KEY_wgrave &h1001E81
 #DEFINE GDK_KEY_pabovedot &h1001E57
-#DEFINE GDK_KEY_wacute &h1001E83
 #DEFINE GDK_KEY_Sabovedot_ &h1001E60
-#DEFINE GDK_KEY_ygrave &h1001EF3
+#DEFINE GDK_KEY_sabovedot &h1001E61
+#DEFINE GDK_KEY_Tabovedot_ &h1001E6A
+#DEFINE GDK_KEY_tabovedot &h1001E6B
+#DEFINE GDK_KEY_Wgrave_ &h1001E80
+#DEFINE GDK_KEY_wgrave &h1001E81
+#DEFINE GDK_KEY_Wacute_ &h1001E82
+#DEFINE GDK_KEY_wacute &h1001E83
 #DEFINE GDK_KEY_Wdiaeresis_ &h1001E84
 #DEFINE GDK_KEY_wdiaeresis &h1001E85
-#DEFINE GDK_KEY_sabovedot &h1001E61
-#DEFINE GDK_KEY_Wcircumflex_ &h1000174
-#DEFINE GDK_KEY_Tabovedot_ &h1001E6A
-#DEFINE GDK_KEY_Ycircumflex_ &h1000176
-#DEFINE GDK_KEY_wcircumflex &h1000175
-#DEFINE GDK_KEY_tabovedot &h1001E6B
-#DEFINE GDK_KEY_ycircumflex &h1000177
+#DEFINE GDK_KEY_Ygrave_ &h1001EF2
+#DEFINE GDK_KEY_ygrave &h1001EF3
 #DEFINE GDK_KEY_OE_ &h13BC
 #DEFINE GDK_KEY_oe &h13BD
 #DEFINE GDK_KEY_Ydiaeresis_ &h13BE
@@ -2361,6 +2487,7 @@ DECLARE FUNCTION gdk_unicode_to_keyval(BYVAL AS guint32) AS guint
 #DEFINE GDK_KEY_leftdoublequotemark &hAD2
 #DEFINE GDK_KEY_rightdoublequotemark &hAD3
 #DEFINE GDK_KEY_prescription &hAD4
+#DEFINE GDK_KEY_permille &hAD5
 #DEFINE GDK_KEY_minutes &hAD6
 #DEFINE GDK_KEY_seconds &hAD7
 #DEFINE GDK_KEY_latincross &hAD9
@@ -2794,6 +2921,8 @@ DECLARE FUNCTION gdk_unicode_to_keyval(BYVAL AS guint32) AS guint
 #DEFINE GDK_KEY_obarred &h1000275
 #DEFINE GDK_KEY_SCHWA_ &h100018F
 #DEFINE GDK_KEY_schwa &h1000259
+#DEFINE GDK_KEY_EZH &h10001B7
+#DEFINE GDK_KEY_ezh_ &h1000292
 #DEFINE GDK_KEY_Lbelowdot_ &h1001E36
 #DEFINE GDK_KEY_lbelowdot &h1001E37
 #DEFINE GDK_KEY_Abelowdot_ &h1001EA0
@@ -3451,6 +3580,8 @@ DECLARE FUNCTION gdk_unicode_to_keyval(BYVAL AS guint32) AS guint
 #DEFINE GDK_KEY_ClearGrab &h1008FE21
 #DEFINE GDK_KEY_Next_VMode &h1008FE22
 #DEFINE GDK_KEY_Prev_VMode &h1008FE23
+#DEFINE GDK_KEY_LogWindowTree &h1008FE24
+#DEFINE GDK_KEY_LogGrabInfo &h1008FE25
 #ENDIF ' __GDK_KEYSYMS_H__
 
 #IFNDEF __GDK_MAIN_H__
@@ -3468,30 +3599,25 @@ DECLARE SUB gdk_set_program_class(BYVAL AS CONST gchar PTR)
 DECLARE SUB gdk_notify_startup_complete()
 DECLARE SUB gdk_notify_startup_complete_with_id(BYVAL AS CONST gchar PTR)
 DECLARE SUB gdk_error_trap_push()
-'DECLARE FUNCTION gdk_error_trap_pop() AS G_GNUC_WARN_UNUSED_RESULT gint '!!!
+DECLARE FUNCTION gdk_error_trap_pop() AS gint
 DECLARE SUB gdk_error_trap_pop_ignored()
-
 DECLARE FUNCTION gdk_get_display_arg_name() AS CONST gchar PTR
 DECLARE FUNCTION gdk_get_display() AS gchar PTR
 
 #IFNDEF GDK_MULTIDEVICE_SAFE
-#IFNDEF GDK_DISABLE_DEPRECATED
 
 DECLARE FUNCTION gdk_pointer_grab(BYVAL AS GdkWindow PTR, BYVAL AS gboolean, BYVAL AS GdkEventMask, BYVAL AS GdkWindow PTR, BYVAL AS GdkCursor PTR, BYVAL AS guint32) AS GdkGrabStatus
 DECLARE FUNCTION gdk_keyboard_grab(BYVAL AS GdkWindow PTR, BYVAL AS gboolean, BYVAL AS guint32) AS GdkGrabStatus
 
-#ENDIF ' GDK_DISABLE_DEPRECATED
 #ENDIF ' GDK_MULTIDEVICE_SAFE
 
 #IFNDEF GDK_MULTIHEAD_SAFE
 #IFNDEF GDK_MULTIDEVICE_SAFE
-#IFNDEF GDK_DISABLE_DEPRECATED
 
 DECLARE SUB gdk_pointer_ungrab(BYVAL AS guint32)
 DECLARE SUB gdk_keyboard_ungrab(BYVAL AS guint32)
 DECLARE FUNCTION gdk_pointer_is_grabbed() AS gboolean
 
-#ENDIF ' GDK_DISABLE_DEPRECATED
 #ENDIF ' GDK_MULTIDEVICE_SAFE
 
 DECLARE FUNCTION gdk_screen_width() AS gint
@@ -3615,26 +3741,26 @@ ENUM GdkWindowType
 END ENUM
 
 ENUM GdkWindowAttributesType
-  GDK_WA_TITLE = 1 SHL 1
-  GDK_WA_X = 1 SHL 2
-  GDK_WA_Y = 1 SHL 3
-  GDK_WA_CURSOR = 1 SHL 4
-  GDK_WA_VISUAL = 1 SHL 5
-  GDK_WA_WMCLASS = 1 SHL 6
-  GDK_WA_NOREDIR = 1 SHL 7
-  GDK_WA_TYPE_HINT = 1 SHL 8
+  GDK_WA_TITLE = 1  SHL 1
+  GDK_WA_X = 1  SHL 2
+  GDK_WA_Y = 1  SHL 3
+  GDK_WA_CURSOR = 1  SHL 4
+  GDK_WA_VISUAL = 1  SHL 5
+  GDK_WA_WMCLASS = 1  SHL 6
+  GDK_WA_NOREDIR = 1  SHL 7
+  GDK_WA_TYPE_HINT = 1  SHL 8
 END ENUM
 
 ENUM GdkWindowHints
-  GDK_HINT_POS = 1 SHL 0
-  GDK_HINT_MIN_SIZE = 1 SHL 1
-  GDK_HINT_MAX_SIZE = 1 SHL 2
-  GDK_HINT_BASE_SIZE = 1 SHL 3
-  GDK_HINT_ASPECT = 1 SHL 4
-  GDK_HINT_RESIZE_INC = 1 SHL 5
-  GDK_HINT_WIN_GRAVITY = 1 SHL 6
-  GDK_HINT_USER_POS = 1 SHL 7
-  GDK_HINT_USER_SIZE = 1 SHL 8
+  GDK_HINT_POS = 1  SHL 0
+  GDK_HINT_MIN_SIZE = 1  SHL 1
+  GDK_HINT_MAX_SIZE = 1  SHL 2
+  GDK_HINT_BASE_SIZE = 1  SHL 3
+  GDK_HINT_ASPECT = 1  SHL 4
+  GDK_HINT_RESIZE_INC = 1  SHL 5
+  GDK_HINT_WIN_GRAVITY = 1  SHL 6
+  GDK_HINT_USER_POS = 1  SHL 7
+  GDK_HINT_USER_SIZE = 1  SHL 8
 END ENUM
 
 ENUM GdkWindowTypeHint
@@ -3655,22 +3781,22 @@ ENUM GdkWindowTypeHint
 END ENUM
 
 ENUM GdkWMDecoration
-  GDK_DECOR_ALL = 1 SHL 0
-  GDK_DECOR_BORDER = 1 SHL 1
-  GDK_DECOR_RESIZEH = 1 SHL 2
-  GDK_DECOR_TITLE = 1 SHL 3
-  GDK_DECOR_MENU = 1 SHL 4
-  GDK_DECOR_MINIMIZE = 1 SHL 5
-  GDK_DECOR_MAXIMIZE = 1 SHL 6
+  GDK_DECOR_ALL = 1  SHL 0
+  GDK_DECOR_BORDER = 1  SHL 1
+  GDK_DECOR_RESIZEH = 1  SHL 2
+  GDK_DECOR_TITLE = 1  SHL 3
+  GDK_DECOR_MENU = 1  SHL 4
+  GDK_DECOR_MINIMIZE = 1  SHL 5
+  GDK_DECOR_MAXIMIZE = 1  SHL 6
 END ENUM
 
 ENUM GdkWMFunction
-  GDK_FUNC_ALL = 1 SHL 0
-  GDK_FUNC_RESIZE = 1 SHL 1
-  GDK_FUNC_MOVE = 1 SHL 2
-  GDK_FUNC_MINIMIZE = 1 SHL 3
-  GDK_FUNC_MAXIMIZE = 1 SHL 4
-  GDK_FUNC_CLOSE = 1 SHL 5
+  GDK_FUNC_ALL = 1  SHL 0
+  GDK_FUNC_RESIZE = 1  SHL 1
+  GDK_FUNC_MOVE = 1  SHL 2
+  GDK_FUNC_MINIMIZE = 1  SHL 3
+  GDK_FUNC_MAXIMIZE = 1  SHL 4
+  GDK_FUNC_CLOSE = 1  SHL 5
 END ENUM
 
 ENUM GdkGravity
@@ -3885,7 +4011,9 @@ DECLARE SUB gdk_window_set_opacity(BYVAL AS GdkWindow PTR, BYVAL AS gdouble)
 DECLARE SUB gdk_window_register_dnd(BYVAL AS GdkWindow PTR)
 DECLARE FUNCTION gdk_window_get_drag_protocol(BYVAL AS GdkWindow PTR, BYVAL AS GdkWindow PTR PTR) AS GdkDragProtocol
 DECLARE SUB gdk_window_begin_resize_drag(BYVAL AS GdkWindow PTR, BYVAL AS GdkWindowEdge, BYVAL AS gint, BYVAL AS gint, BYVAL AS gint, BYVAL AS guint32)
+DECLARE SUB gdk_window_begin_resize_drag_for_device(BYVAL AS GdkWindow PTR, BYVAL AS GdkWindowEdge, BYVAL AS GdkDevice PTR, BYVAL AS gint, BYVAL AS gint, BYVAL AS gint, BYVAL AS guint32)
 DECLARE SUB gdk_window_begin_move_drag(BYVAL AS GdkWindow PTR, BYVAL AS gint, BYVAL AS gint, BYVAL AS gint, BYVAL AS guint32)
+DECLARE SUB gdk_window_begin_move_drag_for_device(BYVAL AS GdkWindow PTR, BYVAL AS GdkDevice PTR, BYVAL AS gint, BYVAL AS gint, BYVAL AS gint, BYVAL AS guint32)
 DECLARE SUB gdk_window_invalidate_rect(BYVAL AS GdkWindow PTR, BYVAL AS CONST GdkRectangle PTR, BYVAL AS gboolean)
 DECLARE SUB gdk_window_invalidate_region(BYVAL AS GdkWindow PTR, BYVAL AS CONST cairo_region_t PTR, BYVAL AS gboolean)
 
@@ -3985,8 +4113,421 @@ DECLARE SUB gdk_visual_get_blue_pixel_details(BYVAL AS GdkVisual PTR, BYVAL AS g
 #UNDEF __GDK_H_INSIDE__
 #ENDIF ' __GDK_H__
 
-END EXTERN
+END EXTERN ' (h_2_bi -P_oCD option)
 
 #IFDEF __FB_WIN32__
  #PRAGMA pop(msbitfields)
 #ENDIF
+
+#ENDIF ' __GDK_TJF__
+
+' Translated at 12-08-19 16:11:25, by h_2_bi (version 0.2.2.1,
+' released under GPLv3 by Thomas[ dot ]Freiherr{ at }gmx[ dot ]net)
+
+'   Protocol: GDK-3.4.4.bi
+' Parameters: GDK-3.4.4
+'                                  Process time [s]: 1.299729920458049
+'                                  Bytes translated: 167749
+'                                      Maximum deep: 7
+'                                SUB/FUNCTION names: 500
+'                                mangled TYPE names: 0
+'                                        files done: 28
+' gtk+-3.4.4/gdk/gdk.h
+' gtk+-3.4.4/gdk/gdkversionmacros.h
+' gtk+-3.4.4/gdk/gdkapplaunchcontext.h
+' gtk+-3.4.4/gdk/gdktypes.h
+' gtk+-3.4.4/gdk/gdkscreen.h
+' gtk+-3.4.4/gdk/gdkdisplay.h
+' gtk+-3.4.4/gdk/gdkevents.h
+' gtk+-3.4.4/gdk/gdkcolor.h
+' gtk+-3.4.4/gdk/gdkdnd.h
+' gtk+-3.4.4/gdk/gdkdevice.h
+' gtk+-3.4.4/gdk/gdkdevicemanager.h
+' gtk+-3.4.4/gdk/gdkcairo.h
+' gtk+-3.4.4/gdk/gdkrgba.h
+' gtk+-3.4.4/gdk/gdkpixbuf.h
+' gtk+-3.4.4/gdk/gdkcursor.h
+' gtk+-3.4.4/gdk/gdkdisplaymanager.h
+' gtk+-3.4.4/gdk/gdkenumtypes.h
+' gtk+-3.4.4/gdk/gdkkeys.h
+' gtk+-3.4.4/gdk/gdkkeysyms.h
+' gtk+-3.4.4/gdk/gdkmain.h
+' gtk+-3.4.4/gdk/gdkpango.h
+' gtk+-3.4.4/gdk/gdkproperty.h
+' gtk+-3.4.4/gdk/gdkrectangle.h
+' gtk+-3.4.4/gdk/gdkselection.h
+' gtk+-3.4.4/gdk/gdktestutils.h
+' gtk+-3.4.4/gdk/gdkwindow.h
+' gtk+-3.4.4/gdk/gdkthreads.h
+' gtk+-3.4.4/gdk/gdkvisual.h
+'                                      files missed: 1
+' gdk/gdkconfig.h
+'                                       __FOLDERS__: 2
+' gtk+-3.4.4/gdk/
+' gtk+-3.4.4/
+'                                        __MACROS__: 8
+' 25: #define G_BEGIN_DECLS
+' 25: #define G_END_DECLS
+' 60: #define G_GNUC_CONST
+' 5: #define GDK_AVAILABLE_IN_3_2
+' 8: #define GDK_AVAILABLE_IN_3_4
+' 18: #define GDK_DEPRECATED_IN_3_0_FOR(x)
+' 2: #define GDK_DEPRECATED_IN_3_4_FOR(x)
+' 1: #define G_GNUC_WARN_UNUSED_RESULT
+'                                       __HEADERS__: 7
+' 2: glib.h>glib.bi
+' 1: gio/gio.h>gio/gio.bi
+' 1: pango/pango.h>pango/pango.bi
+' 2: glib-object.h>glib-object.bi
+' 4: cairo.h>cairo.bi
+' 2: gdk-pixbuf/gdk-pixbuf.h>gtk/gdk-pixbuf/gdk-pixbuf.bi
+' 1: pango/pangocairo.h>pango/pangocairo.bi
+'                                         __TYPES__: 0
+'                                     __POST_REPS__: 347
+' 1: GDK_DRAG_MOTION&
+' 1: GDK_DRAG_STATUS&
+' 1: GDK_KEY_dead_A&
+' 1: GDK_KEY_dead_E&
+' 1: GDK_KEY_dead_I&
+' 1: GDK_KEY_dead_O&
+' 1: GDK_KEY_dead_U&
+' 1: GDK_KEY_A&
+' 1: GDK_KEY_B&
+' 1: GDK_KEY_C&
+' 1: GDK_KEY_D&
+' 1: GDK_KEY_E&
+' 1: GDK_KEY_F&
+' 1: GDK_KEY_G&
+' 1: GDK_KEY_H&
+' 1: GDK_KEY_I&
+' 1: GDK_KEY_J&
+' 1: GDK_KEY_K&
+' 1: GDK_KEY_L&
+' 1: GDK_KEY_M&
+' 1: GDK_KEY_N&
+' 1: GDK_KEY_O&
+' 1: GDK_KEY_P&
+' 1: GDK_KEY_Q&
+' 1: GDK_KEY_R&
+' 1: GDK_KEY_S&
+' 1: GDK_KEY_T&
+' 1: GDK_KEY_U&
+' 1: GDK_KEY_V&
+' 1: GDK_KEY_W&
+' 1: GDK_KEY_X&
+' 1: GDK_KEY_Y&
+' 1: GDK_KEY_Z&
+' 1: GDK_KEY_Agrave&
+' 1: GDK_KEY_Aacute&
+' 1: GDK_KEY_Acircumflex&
+' 1: GDK_KEY_Atilde&
+' 1: GDK_KEY_Adiaeresis&
+' 1: GDK_KEY_Aring&
+' 1: GDK_KEY_AE&
+' 1: GDK_KEY_Ccedilla&
+' 1: GDK_KEY_Egrave&
+' 1: GDK_KEY_Eacute&
+' 1: GDK_KEY_Ecircumflex&
+' 1: GDK_KEY_Ediaeresis&
+' 1: GDK_KEY_Igrave&
+' 1: GDK_KEY_Iacute&
+' 1: GDK_KEY_Icircumflex&
+' 1: GDK_KEY_Idiaeresis&
+' 1: GDK_KEY_ETH&_2
+' 1: GDK_KEY_Eth&
+' 1: GDK_KEY_Ntilde&
+' 1: GDK_KEY_Ograve&
+' 1: GDK_KEY_Oacute&
+' 1: GDK_KEY_Ocircumflex&
+' 1: GDK_KEY_Otilde&
+' 1: GDK_KEY_Odiaeresis&
+' 1: GDK_KEY_Oslash&
+' 1: GDK_KEY_Ooblique&
+' 1: GDK_KEY_Ugrave&
+' 1: GDK_KEY_Uacute&
+' 1: GDK_KEY_Ucircumflex&
+' 1: GDK_KEY_Udiaeresis&
+' 1: GDK_KEY_Yacute&
+' 1: GDK_KEY_Thorn&
+' 1: GDK_KEY_Aogonek&
+' 1: GDK_KEY_Lstroke&
+' 1: GDK_KEY_Lcaron&
+' 1: GDK_KEY_Sacute&
+' 1: GDK_KEY_Scaron&
+' 1: GDK_KEY_Scedilla&
+' 1: GDK_KEY_Tcaron&
+' 1: GDK_KEY_Zacute&
+' 1: GDK_KEY_Zcaron&
+' 1: GDK_KEY_Zabovedot&
+' 1: GDK_KEY_Racute&
+' 1: GDK_KEY_Abreve&
+' 1: GDK_KEY_Lacute&
+' 1: GDK_KEY_Cacute&
+' 1: GDK_KEY_Ccaron&
+' 1: GDK_KEY_Eogonek&
+' 1: GDK_KEY_Ecaron&
+' 1: GDK_KEY_Dcaron&
+' 1: GDK_KEY_THORN&_2
+' 1: GDK_KEY_Dstroke&
+' 1: GDK_KEY_Nacute&
+' 1: GDK_KEY_Ncaron&
+' 1: GDK_KEY_Odoubleacute&
+' 1: GDK_KEY_Udoubleacute&
+' 1: GDK_KEY_Rcaron&
+' 1: GDK_KEY_Uring&
+' 1: GDK_KEY_Tcedilla&
+' 1: GDK_KEY_Hstroke&
+' 1: GDK_KEY_Hcircumflex&
+' 1: GDK_KEY_Gbreve&
+' 1: GDK_KEY_Jcircumflex&
+' 1: GDK_KEY_Cabovedot&
+' 1: GDK_KEY_Ccircumflex&
+' 1: GDK_KEY_Gabovedot&
+' 1: GDK_KEY_Gcircumflex&
+' 1: GDK_KEY_Ubreve&
+' 1: GDK_KEY_Scircumflex&
+' 1: GDK_KEY_Rcedilla&
+' 1: GDK_KEY_Itilde&
+' 1: GDK_KEY_Lcedilla&
+' 1: GDK_KEY_Emacron&
+' 1: GDK_KEY_Gcedilla&
+' 1: GDK_KEY_Tslash&
+' 1: GDK_KEY_ENG&
+' 1: GDK_KEY_Amacron&
+' 1: GDK_KEY_Iogonek&
+' 1: GDK_KEY_Eabovedot&
+' 1: GDK_KEY_Imacron&
+' 1: GDK_KEY_Ncedilla&
+' 1: GDK_KEY_Omacron&
+' 1: GDK_KEY_Kcedilla&
+' 1: GDK_KEY_Uogonek&
+' 1: GDK_KEY_Utilde&
+' 1: GDK_KEY_Umacron&
+' 1: GDK_KEY_Babovedot&
+' 1: GDK_KEY_Dabovedot&
+' 1: GDK_KEY_Fabovedot&
+' 1: GDK_KEY_Mabovedot&
+' 1: GDK_KEY_Wgrave&
+' 1: GDK_KEY_Pabovedot&
+' 1: GDK_KEY_Wacute&
+' 1: GDK_KEY_Ygrave&
+' 1: GDK_KEY_Wdiaeresis&
+' 1: GDK_KEY_Sabovedot&
+' 1: GDK_KEY_Wcircumflex&
+' 1: GDK_KEY_Tabovedot&
+' 1: GDK_KEY_Ycircumflex&
+' 1: GDK_KEY_OE&
+' 1: GDK_KEY_Ydiaeresis&
+' 1: GDK_KEY_kana_A&
+' 1: GDK_KEY_kana_I&
+' 1: GDK_KEY_kana_U&
+' 1: GDK_KEY_kana_E&
+' 1: GDK_KEY_kana_O&
+' 1: GDK_KEY_kana_TSU&
+' 1: GDK_KEY_kana_TU&
+' 1: GDK_KEY_kana_YA&
+' 1: GDK_KEY_kana_YU&
+' 1: GDK_KEY_kana_YO&
+' 1: GDK_KEY_Cyrillic_GHE_bar&
+' 1: GDK_KEY_Cyrillic_ZHE_descender&
+' 1: GDK_KEY_Cyrillic_KA_descender&
+' 1: GDK_KEY_Cyrillic_KA_vertstroke&
+' 1: GDK_KEY_Cyrillic_EN_descender&
+' 1: GDK_KEY_Cyrillic_U_straight&
+' 1: GDK_KEY_Cyrillic_U_straight_bar&
+' 1: GDK_KEY_Cyrillic_HA_descender&
+' 1: GDK_KEY_Cyrillic_CHE_descender&
+' 1: GDK_KEY_Cyrillic_CHE_vertstroke&
+' 1: GDK_KEY_Cyrillic_SHHA&
+' 1: GDK_KEY_Cyrillic_SCHWA&
+' 1: GDK_KEY_Cyrillic_I_macron&
+' 1: GDK_KEY_Cyrillic_O_bar&
+' 1: GDK_KEY_Cyrillic_U_macron&
+' 1: GDK_KEY_Serbian_DJE&
+' 1: GDK_KEY_Macedonia_GJE&
+' 1: GDK_KEY_Cyrillic_IO&
+' 1: GDK_KEY_Ukrainian_IE&
+' 1: GDK_KEY_Ukranian_JE&
+' 1: GDK_KEY_Macedonia_DSE&
+' 1: GDK_KEY_Ukrainian_I&
+' 1: GDK_KEY_Ukranian_I&
+' 1: GDK_KEY_Ukrainian_YI&
+' 1: GDK_KEY_Ukranian_YI&
+' 1: GDK_KEY_Cyrillic_JE&
+' 1: GDK_KEY_Serbian_JE&
+' 1: GDK_KEY_Cyrillic_LJE&
+' 1: GDK_KEY_Serbian_LJE&
+' 1: GDK_KEY_Cyrillic_NJE&
+' 1: GDK_KEY_Serbian_NJE&
+' 1: GDK_KEY_Serbian_TSHE&
+' 1: GDK_KEY_Macedonia_KJE&
+' 1: GDK_KEY_Ukrainian_GHE_WITH_UPTURN&
+' 1: GDK_KEY_Byelorussian_SHORTU&
+' 1: GDK_KEY_Cyrillic_DZHE&
+' 1: GDK_KEY_Serbian_DZE&
+' 1: GDK_KEY_Cyrillic_YU&
+' 1: GDK_KEY_Cyrillic_A&
+' 1: GDK_KEY_Cyrillic_BE&
+' 1: GDK_KEY_Cyrillic_TSE&
+' 1: GDK_KEY_Cyrillic_DE&
+' 1: GDK_KEY_Cyrillic_IE&
+' 1: GDK_KEY_Cyrillic_EF&
+' 1: GDK_KEY_Cyrillic_GHE&
+' 1: GDK_KEY_Cyrillic_HA&
+' 1: GDK_KEY_Cyrillic_I&
+' 1: GDK_KEY_Cyrillic_SHORTI&
+' 1: GDK_KEY_Cyrillic_KA&
+' 1: GDK_KEY_Cyrillic_EL&
+' 1: GDK_KEY_Cyrillic_EM&
+' 1: GDK_KEY_Cyrillic_EN&
+' 1: GDK_KEY_Cyrillic_O&
+' 1: GDK_KEY_Cyrillic_PE&
+' 1: GDK_KEY_Cyrillic_YA&
+' 1: GDK_KEY_Cyrillic_ER&
+' 1: GDK_KEY_Cyrillic_ES&
+' 1: GDK_KEY_Cyrillic_TE&
+' 1: GDK_KEY_Cyrillic_U&
+' 1: GDK_KEY_Cyrillic_ZHE&
+' 1: GDK_KEY_Cyrillic_VE&
+' 1: GDK_KEY_Cyrillic_SOFTSIGN&
+' 1: GDK_KEY_Cyrillic_YERU&
+' 1: GDK_KEY_Cyrillic_ZE&
+' 1: GDK_KEY_Cyrillic_SHA&
+' 1: GDK_KEY_Cyrillic_E&
+' 1: GDK_KEY_Cyrillic_SHCHA&
+' 1: GDK_KEY_Cyrillic_CHE&
+' 1: GDK_KEY_Cyrillic_HARDSIGN&
+' 1: GDK_KEY_Greek_ALPHAaccent&
+' 1: GDK_KEY_Greek_EPSILONaccent&
+' 1: GDK_KEY_Greek_ETAaccent&
+' 1: GDK_KEY_Greek_IOTAaccent&
+' 1: GDK_KEY_Greek_IOTAdieresis&
+' 1: GDK_KEY_Greek_OMICRONaccent&
+' 1: GDK_KEY_Greek_UPSILONaccent&
+' 1: GDK_KEY_Greek_UPSILONdieresis&
+' 1: GDK_KEY_Greek_OMEGAaccent&
+' 1: GDK_KEY_Greek_ALPHA&
+' 1: GDK_KEY_Greek_BETA&
+' 1: GDK_KEY_Greek_GAMMA&
+' 1: GDK_KEY_Greek_DELTA&
+' 1: GDK_KEY_Greek_EPSILON&
+' 1: GDK_KEY_Greek_ZETA&
+' 1: GDK_KEY_Greek_ETA&
+' 1: GDK_KEY_Greek_THETA&
+' 1: GDK_KEY_Greek_IOTA&
+' 1: GDK_KEY_Greek_KAPPA&
+' 1: GDK_KEY_Greek_LAMDA&
+' 1: GDK_KEY_Greek_LAMBDA&
+' 1: GDK_KEY_Greek_MU&
+' 1: GDK_KEY_Greek_NU&
+' 1: GDK_KEY_Greek_XI&
+' 1: GDK_KEY_Greek_OMICRON&
+' 1: GDK_KEY_Greek_PI&
+' 1: GDK_KEY_Greek_RHO&
+' 1: GDK_KEY_Greek_SIGMA&
+' 1: GDK_KEY_Greek_TAU&
+' 1: GDK_KEY_Greek_UPSILON&
+' 1: GDK_KEY_Greek_PHI&
+' 1: GDK_KEY_Greek_CHI&
+' 1: GDK_KEY_Greek_PSI&
+' 1: GDK_KEY_Greek_OMEGA&
+' 1: GDK_KEY_Armenian_AYB&
+' 1: GDK_KEY_Armenian_BEN&
+' 1: GDK_KEY_Armenian_GIM&
+' 1: GDK_KEY_Armenian_DA&
+' 1: GDK_KEY_Armenian_YECH&
+' 1: GDK_KEY_Armenian_ZA&
+' 1: GDK_KEY_Armenian_E&
+' 1: GDK_KEY_Armenian_AT&
+' 1: GDK_KEY_Armenian_TO&
+' 1: GDK_KEY_Armenian_ZHE&
+' 1: GDK_KEY_Armenian_INI&
+' 1: GDK_KEY_Armenian_LYUN&
+' 1: GDK_KEY_Armenian_KHE&
+' 1: GDK_KEY_Armenian_TSA&
+' 1: GDK_KEY_Armenian_KEN&
+' 1: GDK_KEY_Armenian_HO&
+' 1: GDK_KEY_Armenian_DZA&
+' 1: GDK_KEY_Armenian_GHAT&
+' 1: GDK_KEY_Armenian_TCHE&
+' 1: GDK_KEY_Armenian_MEN&
+' 1: GDK_KEY_Armenian_HI&
+' 1: GDK_KEY_Armenian_NU&
+' 1: GDK_KEY_Armenian_SHA&
+' 1: GDK_KEY_Armenian_VO&
+' 1: GDK_KEY_Armenian_CHA&
+' 1: GDK_KEY_Armenian_PE&
+' 1: GDK_KEY_Armenian_JE&
+' 1: GDK_KEY_Armenian_RA&
+' 1: GDK_KEY_Armenian_SE&
+' 1: GDK_KEY_Armenian_VEV&
+' 1: GDK_KEY_Armenian_TYUN&
+' 1: GDK_KEY_Armenian_RE&
+' 1: GDK_KEY_Armenian_TSO&
+' 1: GDK_KEY_Armenian_VYUN&
+' 1: GDK_KEY_Armenian_PYUR&
+' 1: GDK_KEY_Armenian_KE&
+' 1: GDK_KEY_Armenian_O&
+' 1: GDK_KEY_Armenian_FE&
+' 1: GDK_KEY_Xabovedot&
+' 1: GDK_KEY_Ibreve&
+' 1: GDK_KEY_Zstroke&
+' 1: GDK_KEY_Gcaron&
+' 1: GDK_KEY_Ocaron&
+' 1: GDK_KEY_Obarred&
+' 1: GDK_KEY_SCHWA&
+' 1: GDK_KEY_Lbelowdot&
+' 1: GDK_KEY_Abelowdot&
+' 1: GDK_KEY_Ahook&
+' 1: GDK_KEY_Acircumflexacute&
+' 1: GDK_KEY_Acircumflexgrave&
+' 1: GDK_KEY_Acircumflexhook&
+' 1: GDK_KEY_Acircumflextilde&
+' 1: GDK_KEY_Acircumflexbelowdot&
+' 1: GDK_KEY_Abreveacute&
+' 1: GDK_KEY_Abrevegrave&
+' 1: GDK_KEY_Abrevehook&
+' 1: GDK_KEY_Abrevetilde&
+' 1: GDK_KEY_Abrevebelowdot&
+' 1: GDK_KEY_Ebelowdot&
+' 1: GDK_KEY_Ehook&
+' 1: GDK_KEY_Etilde&
+' 1: GDK_KEY_Ecircumflexacute&
+' 1: GDK_KEY_Ecircumflexgrave&
+' 1: GDK_KEY_Ecircumflexhook&
+' 1: GDK_KEY_Ecircumflextilde&
+' 1: GDK_KEY_Ecircumflexbelowdot&
+' 1: GDK_KEY_Ihook&
+' 1: GDK_KEY_Ibelowdot&
+' 1: GDK_KEY_Obelowdot&
+' 1: GDK_KEY_Ohook&
+' 1: GDK_KEY_Ocircumflexacute&
+' 1: GDK_KEY_Ocircumflexgrave&
+' 1: GDK_KEY_Ocircumflexhook&
+' 1: GDK_KEY_Ocircumflextilde&
+' 1: GDK_KEY_Ocircumflexbelowdot&
+' 1: GDK_KEY_Ohornacute&
+' 1: GDK_KEY_Ohorngrave&
+' 1: GDK_KEY_Ohornhook&
+' 1: GDK_KEY_Ohorntilde&
+' 1: GDK_KEY_Ohornbelowdot&
+' 1: GDK_KEY_Ubelowdot&
+' 1: GDK_KEY_Uhook&
+' 1: GDK_KEY_Uhornacute&
+' 1: GDK_KEY_Uhorngrave&
+' 1: GDK_KEY_Uhornhook&
+' 1: GDK_KEY_Uhorntilde&
+' 1: GDK_KEY_Uhornbelowdot&
+' 1: GDK_KEY_Ybelowdot&
+' 1: GDK_KEY_Yhook&
+' 1: GDK_KEY_Ytilde&
+' 1: GDK_KEY_Ohorn&
+' 1: GDK_KEY_Uhorn&
+' 1: GDK_PROPERTY_DELETE&
+' 1: GDK_THREADS_ENTER&
+' 1: GDK_THREADS_LEAVE&
+' 1: GDK_KEY_Ch&
+' 1: GDK_KEY_CH&__
+' 1: GDK_KEY_C_h&
+' 1: GDK_KEY_C_H&__
+' 1: GDK_KEY_ezh&

@@ -1,11 +1,11 @@
-' This is file pango.bi
-' (FreeBasic binding for Pango library version 1.29.5)
+' This is file glib.bi
+' (FreeBasic binding for Pango library version 1.30.1)
 '
 ' translated with help of h_2_bi.bas by
 ' Thomas[ dot ]Freiherr[ at ]gmx[ dot ]net.
 '
 ' Licence:
-' (C) 2011 Thomas[ dot ]Freiherr[ at ]gmx[ dot ]net
+' (C) 2011-2012 Thomas[ dot ]Freiherr[ at ]gmx[ dot ]net
 '
 ' This library binding is free software; you can redistribute it
 ' and/or modify it under the terms of the GNU Lesser General Public
@@ -48,7 +48,7 @@
 
 #INCLIB "pango-1.0"
 
-EXTERN "C"
+EXTERN "C" ' (h_2_bi -P_oCD option)
 
 #IFNDEF __PANGO_H__
 #DEFINE __PANGO_H__
@@ -61,7 +61,7 @@ EXTERN "C"
 
 #IFNDEF __PANGO_COVERAGE_H__
 #DEFINE __PANGO_COVERAGE_H__
-#INCLUDE ONCE "glib.bi"
+#INCLUDE ONCE "glib.bi" '__HEADERS__: glib.h
 
 TYPE PangoCoverage AS _PangoCoverage
 
@@ -87,7 +87,7 @@ DECLARE FUNCTION pango_coverage_from_bytes(BYVAL AS guchar PTR, BYVAL AS INTEGER
 #IFNDEF __PANGO_TYPES_H__
 #DEFINE __PANGO_TYPES_H__
 
-#INCLUDE ONCE "glib-object.bi"
+#INCLUDE ONCE "glib-object.bi" '__HEADERS__: glib-object.h
 
 TYPE PangoLogAttr AS _PangoLogAttr
 TYPE PangoEngineLang AS _PangoEngineLang
@@ -98,11 +98,11 @@ TYPE PangoRectangle AS _PangoRectangle
 TYPE PangoGlyph AS guint32
 
 #DEFINE PANGO_SCALE 1024
-#DEFINE PANGO_PIXELS(d) (CAST(INTEGER, (d) + 512) SHR 10)
-#DEFINE PANGO_PIXELS_FLOOR(d) ((CAST(INTEGER, (d))) SHR 10)
+#DEFINE PANGO_PIXELS(d) (CAST(INTEGER, (d, + 512)) SHR 10)
+#DEFINE PANGO_PIXELS_FLOOR(d) (CAST(INTEGER, (d)) SHR 10)
 #DEFINE PANGO_PIXELS_CEIL(d) (CAST(INTEGER, (d) + 1023) SHR 10)
 #DEFINE PANGO_UNITS_ROUND(d) _
-  (((d) + (PANGO_SCALE SHR 1)) AND NOT (PANGO_SCALE - 1))
+  ((d) + (PANGO_SCALE  SHR 1) AND NOT (PANGO_SCALE - 1))
 
 DECLARE FUNCTION pango_units_from_double(BYVAL AS DOUBLE) AS INTEGER
 DECLARE FUNCTION pango_units_to_double(BYVAL AS INTEGER) AS DOUBLE
@@ -139,7 +139,7 @@ ENUM PangoGravityHint
 END ENUM
 
 #DEFINE PANGO_GRAVITY_IS_VERTICAL(gravity) _
- ((gravity) = PANGO_GRAVITY_EAST ORELSE (gravity) = PANGO_GRAVITY_WEST)
+ ((gravity) = PANGO_GRAVITY_EAST  ORELSE (gravity) = PANGO_GRAVITY_WEST)
 
 #IFNDEF __PANGO_MATRIX_H__
 #DEFINE __PANGO_MATRIX_H__
@@ -275,9 +275,9 @@ TYPE PangoLanguage AS _PangoLanguage
 
 DECLARE FUNCTION pango_language_get_type() AS GType
 DECLARE FUNCTION pango_language_from_string(BYVAL AS CONST ZSTRING PTR) AS PangoLanguage PTR
-DECLARE FUNCTION pango_language_to_string(BYVAL AS PangoLanguage PTR) AS CONST ZSTRING PTR
+DECLARE FUNCTION pango_language_to_string_ ALIAS "pango_language_to_string"(BYVAL AS PangoLanguage PTR) AS CONST ZSTRING PTR
 
-'#DEFINE pango_language_to_string(language) (CAST(CONST ZSTRING PTR, language))
+#DEFINE pango_language_to_string(language) (CAST(CONST ZSTRING PTR, language))
 
 DECLARE FUNCTION pango_language_get_sample_string(BYVAL AS PangoLanguage PTR) AS CONST ZSTRING PTR
 DECLARE FUNCTION pango_language_get_default() AS PangoLanguage PTR
@@ -345,7 +345,6 @@ DECLARE FUNCTION pango_get_mirror_char(BYVAL AS gunichar, BYVAL AS gunichar PTR)
 
 #ENDIF ' PANGO_DISABLE_DEPRECATED
 #ENDIF ' __PANGO_BIDI_TYPE_H__
-
 #ENDIF ' __PANGO_TYPES_H__
 
 TYPE PangoFontDescription AS _PangoFontDescription
@@ -389,13 +388,13 @@ ENUM PangoStretch
 END ENUM
 
 ENUM PangoFontMask
-  PANGO_FONT_MASK_FAMILY = 1 SHL 0
-  PANGO_FONT_MASK_STYLE = 1 SHL 1
-  PANGO_FONT_MASK_VARIANT = 1 SHL 2
-  PANGO_FONT_MASK_WEIGHT = 1 SHL 3
-  PANGO_FONT_MASK_STRETCH = 1 SHL 4
-  PANGO_FONT_MASK_SIZE = 1 SHL 5
-  PANGO_FONT_MASK_GRAVITY = 1 SHL 6
+  PANGO_FONT_MASK_FAMILY = 1  SHL 0
+  PANGO_FONT_MASK_STYLE = 1  SHL 1
+  PANGO_FONT_MASK_VARIANT = 1  SHL 2
+  PANGO_FONT_MASK_WEIGHT = 1  SHL 3
+  PANGO_FONT_MASK_STRETCH = 1  SHL 4
+  PANGO_FONT_MASK_SIZE = 1  SHL 5
+  PANGO_FONT_MASK_GRAVITY = 1  SHL 6
 END ENUM
 
 #DEFINE PANGO_SCALE_XX_SMALL (CAST(DOUBLE, 0.5787037037037))
@@ -778,7 +777,7 @@ DECLARE FUNCTION pango_parse_markup(BYVAL AS CONST ZSTRING PTR, BYVAL AS INTEGER
 TYPE PangoAnalysis AS _PangoAnalysis
 TYPE PangoItem AS _PangoItem
 
-#DEFINE PANGO_ANALYSIS_FLAG_CENTERED_BASELINE (1 SHL 0)
+#DEFINE PANGO_ANALYSIS_FLAG_CENTERED_BASELINE (1  SHL 0)
 
 TYPE _PangoAnalysis
   AS PangoEngineShape PTR shape_engine
@@ -1026,8 +1025,8 @@ DECLARE FUNCTION pango_reorder_items(BYVAL AS GList PTR) AS GList PTR
 #ENDIF ' __PANGO_GLYPH_H__
 
 #IFDEF PANGO_ENABLE_ENGINE
-#INCLUDE ONCE "gmodule.bi"
-#DEFINE PANGO_RENDER_TYPE_NONE !"PangoRenderNone"
+#INCLUDE ONCE "gmodule.bi" '__HEADERS__: gmodule.h
+#DEFINE PANGO_RENDER_TYPE_NONE @!"PangoRenderNone"
 #DEFINE PANGO_TYPE_ENGINE (pango_engine_get_type ())
 #DEFINE PANGO_ENGINE(object) (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_ENGINE, PangoEngine))
 #DEFINE PANGO_IS_ENGINE(object) (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_TYPE_ENGINE))
@@ -1048,7 +1047,7 @@ END TYPE
 
 DECLARE FUNCTION pango_engine_get_type() AS GType
 
-#DEFINE PANGO_ENGINE_TYPE_LANG !"PangoEngineLang"
+#DEFINE PANGO_ENGINE_TYPE_LANG @!"PangoEngineLang"
 #DEFINE PANGO_TYPE_ENGINE_LANG (pango_engine_lang_get_type ())
 #DEFINE PANGO_ENGINE_LANG(object) (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_ENGINE_LANG, PangoEngineLang))
 #DEFINE PANGO_IS_ENGINE_LANG(object) (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_TYPE_ENGINE_LANG))
@@ -1069,7 +1068,7 @@ END TYPE
 
 DECLARE FUNCTION pango_engine_lang_get_type() AS GType
 
-#DEFINE PANGO_ENGINE_TYPE_SHAPE !"PangoEngineShape"
+#DEFINE PANGO_ENGINE_TYPE_SHAPE @!"PangoEngineShape"
 #DEFINE PANGO_TYPE_ENGINE_SHAPE (pango_engine_shape_get_type ())
 #DEFINE PANGO_ENGINE_SHAPE(object) (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_ENGINE_SHAPE, PangoEngineShape))
 #DEFINE PANGO_IS_ENGINE_SHAPE(object) (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_TYPE_ENGINE_SHAPE))
@@ -1188,15 +1187,16 @@ DECLARE FUNCTION pango_render_part_get_type() AS GType
 DECLARE FUNCTION pango_script_get_type() AS GType
 #DEFINE PANGO_TYPE_SCRIPT (pango_script_get_type())
 DECLARE FUNCTION pango_tab_align_get_type() AS GType
+
 #DEFINE PANGO_TYPE_TAB_ALIGN (pango_tab_align_get_type())
 #ENDIF ' __PANGO_ENUM_TYPES_H__
 
 #IFNDEF PANGO_FEATURES_H
 #DEFINE PANGO_FEATURES_H
 #DEFINE PANGO_VERSION_MAJOR 1
-#DEFINE PANGO_VERSION_MINOR 29
-#DEFINE PANGO_VERSION_MICRO 5
-#DEFINE PANGO_VERSION_STRING !"1.29.5"
+#DEFINE PANGO_VERSION_MINOR 30
+#DEFINE PANGO_VERSION_MICRO 1
+#DEFINE PANGO_VERSION_STRING @!"1.30.1"
 #ENDIF ' PANGO_FEATURES_H
 
 #IFNDEF __PANGO_GLYPH_ITEM_H__
@@ -1480,7 +1480,7 @@ DECLARE FUNCTION pango_renderer_get_layout_line(BYVAL AS PangoRenderer PTR) AS P
 
 #IFNDEF __PANGO_UTILS_H__
 #DEFINE __PANGO_UTILS_H__
-#INCLUDE ONCE "crt/stdio.bi"
+#INCLUDE ONCE "crt/stdio.bi" '__HEADERS__: stdio.h
 
 DECLARE FUNCTION pango_split_file_list(BYVAL AS CONST ZSTRING PTR) AS ZSTRING PTR PTR
 DECLARE FUNCTION pango_trim_string(BYVAL AS CONST ZSTRING PTR) AS ZSTRING PTR
@@ -1523,18 +1523,69 @@ DECLARE FUNCTION pango_is_zero_width(BYVAL AS gunichar) AS gboolean
  PANGO_VERSION_MINOR, _
  PANGO_VERSION_MICRO)
 #DEFINE PANGO_VERSION_CHECK(major,minor,micro) _
- (PANGO_VERSION >= PANGO_VERSION_ENCODE(major,minor,micro))
+ (PANGO_VERSION  >= PANGO_VERSION_ENCODE(major,minor,micro))
 
 DECLARE FUNCTION pango_version_ ALIAS "pango_version"() AS INTEGER
 DECLARE FUNCTION pango_version_string_ ALIAS "pango_version_string"() AS CONST ZSTRING PTR
 DECLARE FUNCTION pango_version_check_ ALIAS "pango_version_check"(BYVAL AS INTEGER, BYVAL AS INTEGER, BYVAL AS INTEGER) AS CONST ZSTRING PTR
 
 #ENDIF ' __PANGO_UTILS_H__
-
 #ENDIF ' __PANGO_H__
 
-END EXTERN
+END EXTERN ' (h_2_bi -P_oCD option)
 
 #IFDEF __FB_WIN32__
 #PRAGMA pop(msbitfields)
 #ENDIF
+
+' Translated at 12-08-18 19:03:42, by h_2_bi (version 0.2.2.1,
+' released under GPLv3 by Thomas[ dot ]Freiherr{ at }gmx[ dot ]net)
+
+'   Protocol: PANGO-1.30.1.bi
+' Parameters: PANGO-1.30.1
+'                                  Process time [s]: 0.2928439745446667
+'                                  Bytes translated: 79552
+'                                      Maximum deep: 7
+'                                SUB/FUNCTION names: 399
+'                                mangled TYPE names: 0
+'                                        files done: 24
+' pango-1.30.1/pango/pango.h
+' pango-1.30.1/pango/pango-attributes.h
+' pango-1.30.1/pango/pango-font.h
+' pango-1.30.1/pango/pango-coverage.h
+' pango-1.30.1/pango/pango-types.h
+' pango-1.30.1/pango/pango-gravity.h
+' pango-1.30.1/pango/pango-matrix.h
+' pango-1.30.1/pango/pango-script.h
+' pango-1.30.1/pango/pango-language.h
+' pango-1.30.1/pango/pango-bidi-type.h
+' pango-1.30.1/pango/pango-break.h
+' pango-1.30.1/pango/pango-item.h
+' pango-1.30.1/pango/pango-context.h
+' pango-1.30.1/pango/pango-fontmap.h
+' pango-1.30.1/pango/pango-fontset.h
+' pango-1.30.1/pango/pango-engine.h
+' pango-1.30.1/pango/pango-glyph.h
+' pango-1.30.1/pango/pango-enum-types.h
+' pango-1.30.1/pango/pango-features.h
+' pango-1.30.1/pango/pango-glyph-item.h
+' pango-1.30.1/pango/pango-layout.h
+' pango-1.30.1/pango/pango-tabs.h
+' pango-1.30.1/pango/pango-renderer.h
+' pango-1.30.1/pango/pango-utils.h
+'                                      files missed: 0
+'                                       __FOLDERS__: 2
+' pango-1.30.1/pango/
+' pango-1.30.1/
+'                                        __MACROS__: 4
+' 22: #define G_BEGIN_DECLS
+' 22: #define G_END_DECLS
+' 41: #define G_GNUC_CONST
+' 1: #define G_DEPRECATED_FOR(f)
+'                                       __HEADERS__: 0
+'                                         __TYPES__: 0
+'                                     __POST_REPS__: 4
+' 1: pango_version&_ ALIAS "pango_version"
+' 1: pango_version_string&_ ALIAS "pango_version_string"
+' 1: pango_version_check&_ ALIAS "pango_version_check"
+' 2: pango_language_to_string&_ ALIAS "pango_language_to_string"

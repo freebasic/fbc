@@ -1,11 +1,11 @@
-' This is file gio.bi
-' (FreeBasic binding for GLib library version 2.31.4)
+' This is file glib.bi
+' (FreeBasic binding for GLib:GIO library version 2.32.4)
 '
 ' translated with help of h_2_bi.bas by
 ' Thomas[ dot ]Freiherr[ at ]gmx[ dot ]net.
 '
 ' Licence:
-' (C) 2011 Thomas[ dot ]Freiherr[ at ]gmx[ dot ]net
+' (C) 2011-2012 Thomas[ dot ]Freiherr[ at ]gmx[ dot ]net
 '
 ' This library binding is free software; you can redistribute it
 ' and/or modify it under the terms of the GNU Lesser General Public
@@ -47,11 +47,9 @@
 #PRAGMA push(msbitfields)
 #ENDIF
 
-#IFNDEF __USE_GTK_OLD__
 #INCLIB "gio-2.0"
-#ENDIF
 
-EXTERN "C"
+EXTERN "C" ' (h_2_bi -P_oCD option)
 
 #IFNDEF __G_IO_H__
 #DEFINE __G_IO_H__
@@ -62,19 +60,19 @@ EXTERN "C"
 
 #IFNDEF __GIO_ENUMS_H__
 #DEFINE __GIO_ENUMS_H__
-#INCLUDE ONCE "glib-object.bi"
+#INCLUDE ONCE "glib-object.bi" '__HEADERS__: glib-object.h
 
 ENUM GAppInfoCreateFlags
   G_APP_INFO_CREATE_NONE = 0
-  G_APP_INFO_CREATE_NEEDS_TERMINAL = (1 SHL 0)
-  G_APP_INFO_CREATE_SUPPORTS_URIS = (1 SHL 1)
-  G_APP_INFO_CREATE_SUPPORTS_STARTUP_NOTIFICATION = (1 SHL 2)
+  G_APP_INFO_CREATE_NEEDS_TERMINAL = (1  SHL 0)
+  G_APP_INFO_CREATE_SUPPORTS_URIS = (1  SHL 1)
+  G_APP_INFO_CREATE_SUPPORTS_STARTUP_NOTIFICATION = (1  SHL 2)
 END ENUM
 
 ENUM GConverterFlags
   G_CONVERTER_NO_FLAGS = 0
-  G_CONVERTER_INPUT_AT_END = (1 SHL 0)
-  G_CONVERTER_FLUSH = (1 SHL 1)
+  G_CONVERTER_INPUT_AT_END = (1  SHL 0)
+  G_CONVERTER_FLUSH = (1  SHL 1)
 END ENUM
 
 ENUM GConverterResult
@@ -112,8 +110,8 @@ END ENUM
 
 ENUM GFileAttributeInfoFlags
   G_FILE_ATTRIBUTE_INFO_NONE = 0
-  G_FILE_ATTRIBUTE_INFO_COPY_WITH_FILE = (1 SHL 0)
-  G_FILE_ATTRIBUTE_INFO_COPY_WHEN_MOVED = (1 SHL 1)
+  G_FILE_ATTRIBUTE_INFO_COPY_WITH_FILE = (1  SHL 0)
+  G_FILE_ATTRIBUTE_INFO_COPY_WHEN_MOVED = (1  SHL 1)
 END ENUM
 
 ENUM GFileAttributeStatus
@@ -124,13 +122,13 @@ END ENUM
 
 ENUM GFileQueryInfoFlags
   G_FILE_QUERY_INFO_NONE = 0
-  G_FILE_QUERY_INFO_NOFOLLOW_SYMLINKS = (1 SHL 0)
+  G_FILE_QUERY_INFO_NOFOLLOW_SYMLINKS = (1  SHL 0)
 END ENUM
 
 ENUM GFileCreateFlags
   G_FILE_CREATE_NONE = 0
-  G_FILE_CREATE_PRIVATE = (1 SHL 0)
-  G_FILE_CREATE_REPLACE_DESTINATION = (1 SHL 1)
+  G_FILE_CREATE_PRIVATE = (1  SHL 0)
+  G_FILE_CREATE_REPLACE_DESTINATION = (1  SHL 1)
 END ENUM
 
 ENUM GMountMountFlags
@@ -139,7 +137,7 @@ END ENUM
 
 ENUM GMountUnmountFlags
   G_MOUNT_UNMOUNT_NONE = 0
-  G_MOUNT_UNMOUNT_FORCE = (1 SHL 0)
+  G_MOUNT_UNMOUNT_FORCE = (1  SHL 0)
 END ENUM
 
 ENUM GDriveStartFlags
@@ -156,18 +154,18 @@ END ENUM
 
 ENUM GFileCopyFlags
   G_FILE_COPY_NONE = 0
-  G_FILE_COPY_OVERWRITE = (1 SHL 0)
-  G_FILE_COPY_BACKUP = (1 SHL 1)
-  G_FILE_COPY_NOFOLLOW_SYMLINKS = (1 SHL 2)
-  G_FILE_COPY_ALL_METADATA = (1 SHL 3)
-  G_FILE_COPY_NO_FALLBACK_FOR_MOVE = (1 SHL 4)
-  G_FILE_COPY_TARGET_DEFAULT_PERMS = (1 SHL 5)
+  G_FILE_COPY_OVERWRITE = (1  SHL 0)
+  G_FILE_COPY_BACKUP = (1  SHL 1)
+  G_FILE_COPY_NOFOLLOW_SYMLINKS = (1  SHL 2)
+  G_FILE_COPY_ALL_METADATA = (1  SHL 3)
+  G_FILE_COPY_NO_FALLBACK_FOR_MOVE = (1  SHL 4)
+  G_FILE_COPY_TARGET_DEFAULT_PERMS = (1  SHL 5)
 END ENUM
 
 ENUM GFileMonitorFlags
   G_FILE_MONITOR_NONE = 0
-  G_FILE_MONITOR_WATCH_MOUNTS = (1 SHL 0)
-  G_FILE_MONITOR_SEND_MOVED = (1 SHL 1)
+  G_FILE_MONITOR_WATCH_MOUNTS = (1  SHL 0)
+  G_FILE_MONITOR_SEND_MOVED = (1  SHL 1)
 END ENUM
 
 ENUM GFileType
@@ -245,11 +243,11 @@ ENUM GIOErrorEnum
 END ENUM
 
 ENUM GAskPasswordFlags
-  G_ASK_PASSWORD_NEED_PASSWORD = (1 SHL 0)
-  G_ASK_PASSWORD_NEED_USERNAME = (1 SHL 1)
-  G_ASK_PASSWORD_NEED_DOMAIN = (1 SHL 2)
-  G_ASK_PASSWORD_SAVING_SUPPORTED = (1 SHL 3)
-  G_ASK_PASSWORD_ANONYMOUS_SUPPORTED = (1 SHL 4)
+  G_ASK_PASSWORD_NEED_PASSWORD = (1  SHL 0)
+  G_ASK_PASSWORD_NEED_USERNAME = (1  SHL 1)
+  G_ASK_PASSWORD_NEED_DOMAIN = (1  SHL 2)
+  G_ASK_PASSWORD_SAVING_SUPPORTED = (1  SHL 3)
+  G_ASK_PASSWORD_ANONYMOUS_SUPPORTED = (1  SHL 4)
 END ENUM
 
 ENUM GPasswordSave
@@ -266,15 +264,15 @@ END ENUM
 
 ENUM GOutputStreamSpliceFlags
   G_OUTPUT_STREAM_SPLICE_NONE = 0
-  G_OUTPUT_STREAM_SPLICE_CLOSE_SOURCE = (1 SHL 0)
-  G_OUTPUT_STREAM_SPLICE_CLOSE_TARGET = (1 SHL 1)
+  G_OUTPUT_STREAM_SPLICE_CLOSE_SOURCE = (1  SHL 0)
+  G_OUTPUT_STREAM_SPLICE_CLOSE_TARGET = (1  SHL 1)
 END ENUM
 
 ENUM GIOStreamSpliceFlags
   G_IO_STREAM_SPLICE_NONE = 0
-  G_IO_STREAM_SPLICE_CLOSE_STREAM1 = (1 SHL 0)
-  G_IO_STREAM_SPLICE_CLOSE_STREAM2 = (1 SHL 1)
-  G_IO_STREAM_SPLICE_WAIT_FOR_BOTH = (1 SHL 2)
+  G_IO_STREAM_SPLICE_CLOSE_STREAM1 = (1  SHL 0)
+  G_IO_STREAM_SPLICE_CLOSE_STREAM2 = (1  SHL 1)
+  G_IO_STREAM_SPLICE_WAIT_FOR_BOTH = (1  SHL 2)
 END ENUM
 
 ENUM GEmblemOrigin
@@ -290,11 +288,23 @@ ENUM GResolverError
   G_RESOLVER_ERROR_INTERNAL
 END ENUM
 
+ENUM GResourceError
+  G_RESOURCE_ERROR_NOT_FOUND
+  G_RESOURCE_ERROR_INTERNAL
+END ENUM
+
+ENUM GResourceFlags
+  G_RESOURCE_FLAGS_NONE = 0
+  G_RESOURCE_FLAGS_COMPRESSED = (1 SHL 0)
+END ENUM
+
+ENUM GResourceLookupFlags
+  G_RESOURCE_LOOKUP_FLAGS_NONE = 0
+END ENUM
+
 ENUM GSocketFamily
   G_SOCKET_FAMILY_INVALID
-#IFDEF GLIB_SYSDEF_AF_UNIX
   G_SOCKET_FAMILY_UNIX = GLIB_SYSDEF_AF_UNIX
-#ENDIF ' GLIB_SYSDEF_AF_UNIX
   G_SOCKET_FAMILY_IPV4 = GLIB_SYSDEF_AF_INET
   G_SOCKET_FAMILY_IPV6 = GLIB_SYSDEF_AF_INET6
 END ENUM
@@ -358,6 +368,7 @@ ENUM GDBusProxyFlags
   G_DBUS_PROXY_FLAGS_DO_NOT_LOAD_PROPERTIES = (1 SHL 0)
   G_DBUS_PROXY_FLAGS_DO_NOT_CONNECT_SIGNALS = (1 SHL 1)
   G_DBUS_PROXY_FLAGS_DO_NOT_AUTO_START = (1 SHL 2)
+  G_DBUS_PROXY_FLAGS_GET_INVALIDATED_PROPERTIES = (1 SHL 3)
 END ENUM
 
 ENUM GDBusError
@@ -491,12 +502,12 @@ END ENUM
 
 ENUM GApplicationFlags
   G_APPLICATION_FLAGS_NONE
-  G_APPLICATION_IS_SERVICE = (1 SHL 0)
-  G_APPLICATION_IS_LAUNCHER = (1 SHL 1)
-  G_APPLICATION_HANDLES_OPEN = (1 SHL 2)
-  G_APPLICATION_HANDLES_COMMAND_LINE = (1 SHL 3)
-  G_APPLICATION_SEND_ENVIRONMENT = (1 SHL 4)
-  G_APPLICATION_NON_UNIQUE = (1 SHL 5)
+  G_APPLICATION_IS_SERVICE = (1  SHL 0)
+  G_APPLICATION_IS_LAUNCHER = (1  SHL 1)
+  G_APPLICATION_HANDLES_OPEN = (1  SHL 2)
+  G_APPLICATION_HANDLES_COMMAND_LINE = (1  SHL 3)
+  G_APPLICATION_SEND_ENVIRONMENT = (1  SHL 4)
+  G_APPLICATION_NON_UNIQUE = (1  SHL 5)
 END ENUM
 
 ENUM GTlsError
@@ -510,13 +521,13 @@ ENUM GTlsError
 END ENUM
 
 ENUM GTlsCertificateFlags
-  G_TLS_CERTIFICATE_UNKNOWN_CA = (1 SHL 0)
-  G_TLS_CERTIFICATE_BAD_IDENTITY = (1 SHL 1)
-  G_TLS_CERTIFICATE_NOT_ACTIVATED = (1 SHL 2)
-  G_TLS_CERTIFICATE_EXPIRED = (1 SHL 3)
-  G_TLS_CERTIFICATE_REVOKED = (1 SHL 4)
-  G_TLS_CERTIFICATE_INSECURE = (1 SHL 5)
-  G_TLS_CERTIFICATE_GENERIC_ERROR = (1 SHL 6)
+  G_TLS_CERTIFICATE_UNKNOWN_CA = (1  SHL 0)
+  G_TLS_CERTIFICATE_BAD_IDENTITY = (1  SHL 1)
+  G_TLS_CERTIFICATE_NOT_ACTIVATED = (1  SHL 2)
+  G_TLS_CERTIFICATE_EXPIRED = (1  SHL 3)
+  G_TLS_CERTIFICATE_REVOKED = (1  SHL 4)
+  G_TLS_CERTIFICATE_INSECURE = (1  SHL 5)
+  G_TLS_CERTIFICATE_GENERIC_ERROR = (1  SHL 6)
   G_TLS_CERTIFICATE_VALIDATE_ALL = &h007F
 END ENUM
 
@@ -534,12 +545,12 @@ END ENUM
 
 ENUM _GTlsPasswordFlags
   G_TLS_PASSWORD_NONE = 0
-  G_TLS_PASSWORD_RETRY = 1 SHL 1
-  G_TLS_PASSWORD_MANY_TRIES = 1 SHL 2
-  G_TLS_PASSWORD_FINAL_TRY = 1 SHL 3
+  G_TLS_PASSWORD_RETRY = 1  SHL 1
+  G_TLS_PASSWORD_MANY_TRIES = 1  SHL 2
+  G_TLS_PASSWORD_FINAL_TRY = 1  SHL 3
 END ENUM
 
-TYPE AS _GTlsPasswordFlags GTlsPasswordFlags
+TYPE GTlsPasswordFlags AS _GTlsPasswordFlags
 
 ENUM GTlsInteractionResult
   G_TLS_INTERACTION_UNHANDLED
@@ -571,6 +582,18 @@ ENUM GIOModuleScopeFlags
   G_IO_MODULE_SCOPE_BLOCK_DUPLICATES
 END ENUM
 
+ENUM GSocketClientEvent
+  G_SOCKET_CLIENT_RESOLVING
+  G_SOCKET_CLIENT_RESOLVED
+  G_SOCKET_CLIENT_CONNECTING
+  G_SOCKET_CLIENT_CONNECTED
+  G_SOCKET_CLIENT_PROXY_NEGOTIATING
+  G_SOCKET_CLIENT_PROXY_NEGOTIATED
+  G_SOCKET_CLIENT_TLS_HANDSHAKING
+  G_SOCKET_CLIENT_TLS_HANDSHAKED
+  G_SOCKET_CLIENT_COMPLETE
+END ENUM
+
 #ENDIF ' __GIO_ENUMS_H__
 
 TYPE GAppLaunchContext AS _GAppLaunchContext
@@ -589,6 +612,7 @@ TYPE GSimplePermission AS _GSimplePermission
 TYPE GZlibCompressor AS _GZlibCompressor
 TYPE GZlibDecompressor AS _GZlibDecompressor
 TYPE GSimpleActionGroup AS _GSimpleActionGroup
+TYPE GRemoteActionGroup AS _GRemoteActionGroup
 TYPE GDBusActionGroup AS _GDBusActionGroup
 TYPE GActionMap AS _GActionMap
 TYPE GActionGroup AS _GActionGroup
@@ -640,6 +664,7 @@ TYPE GIOStream AS _GIOStream
 TYPE GPollableInputStream AS _GPollableInputStream
 TYPE GPollableOutputStream AS _GPollableOutputStream
 TYPE GResolver AS _GResolver
+TYPE GResource AS _GResource
 TYPE GSeekable AS _GSeekable
 TYPE GSimpleAsyncResult AS _GSimpleAsyncResult
 TYPE GSocket AS _GSocket
@@ -817,8 +842,6 @@ DECLARE SUB g_dbus_connection_unexport_action_group(BYVAL AS GDBusConnection PTR
 
 #ENDIF ' __G_ACTION_GROUP_EXPORTER_H__
 
-' 002 start from: glib-2.31.4/gio/gio.h ==> glib-2.31.4/gio/gactionmap.h
-
 #IFNDEF __G_ACTION_MAP_H__
 #DEFINE __G_ACTION_MAP_H__
 
@@ -856,6 +879,7 @@ DECLARE SUB g_action_map_remove_action(BYVAL AS GActionMap PTR, BYVAL AS CONST g
 DECLARE SUB g_action_map_add_action_entries(BYVAL AS GActionMap PTR, BYVAL AS CONST GActionEntry PTR, BYVAL AS gint, BYVAL AS gpointer)
 
 #ENDIF ' __G_ACTION_MAP_H__
+
 #IFNDEF __G_APP_INFO_H__
 #DEFINE __G_APP_INFO_H__
 
@@ -961,7 +985,6 @@ DECLARE SUB g_app_launch_context_launch_failed(BYVAL AS GAppLaunchContext PTR, B
 
 #ENDIF ' __G_APP_INFO_H__
 
-
 #IFNDEF __G_APPLICATION_H__
 #DEFINE __G_APPLICATION_H__
 
@@ -1009,10 +1032,6 @@ DECLARE SUB g_application_set_inactivity_timeout(BYVAL AS GApplication PTR, BYVA
 DECLARE FUNCTION g_application_get_flags(BYVAL AS GApplication PTR) AS GApplicationFlags
 DECLARE SUB g_application_set_flags(BYVAL AS GApplication PTR, BYVAL AS GApplicationFlags)
 DECLARE SUB g_application_set_action_group(BYVAL AS GApplication PTR, BYVAL AS GActionGroup PTR)
-DECLARE SUB g_application_set_app_menu(BYVAL AS GApplication PTR, BYVAL AS GMenuModel PTR)
-DECLARE FUNCTION g_application_get_app_menu(BYVAL AS GApplication PTR) AS GMenuModel PTR
-DECLARE SUB g_application_set_menubar(BYVAL AS GApplication PTR, BYVAL AS GMenuModel PTR)
-DECLARE FUNCTION g_application_get_menubar(BYVAL AS GApplication PTR) AS GMenuModel PTR
 DECLARE FUNCTION g_application_get_is_registered(BYVAL AS GApplication PTR) AS gboolean
 DECLARE FUNCTION g_application_get_is_remote(BYVAL AS GApplication PTR) AS gboolean
 DECLARE FUNCTION g_application_register(BYVAL AS GApplication PTR, BYVAL AS GCancellable PTR, BYVAL AS GError PTR PTR) AS gboolean
@@ -1021,6 +1040,7 @@ DECLARE SUB g_application_release(BYVAL AS GApplication PTR)
 DECLARE SUB g_application_activate(BYVAL AS GApplication PTR)
 DECLARE SUB g_application_open(BYVAL AS GApplication PTR, BYVAL AS GFile PTR PTR, BYVAL AS gint, BYVAL AS CONST gchar PTR)
 DECLARE FUNCTION g_application_run(BYVAL AS GApplication PTR, BYVAL AS INTEGER, BYVAL AS ZSTRING PTR PTR) AS INTEGER
+DECLARE SUB g_application_quit(BYVAL AS GApplication PTR)
 DECLARE FUNCTION g_application_get_default() AS GApplication PTR
 DECLARE SUB g_application_set_default(BYVAL AS GApplication PTR)
 
@@ -1584,8 +1604,8 @@ DECLARE FUNCTION g_converter_output_stream_get_converter(BYVAL AS GConverterOutp
 #DEFINE __G_CREDENTIALS_H__
 
 #IFDEF G_OS_UNIX
-#INCLUDE ONCE "crt/unistd.bi"
-#INCLUDE ONCE "crt/sys/types.bi"
+#INCLUDE ONCE "crt/unistd.bi" '__HEADERS__: unistd.h
+#INCLUDE ONCE "crt/sys/types.bi" '__HEADERS__: sys/types.h
 #ENDIF ' G_OS_UNIX
 
 #DEFINE G_TYPE_CREDENTIALS (g_credentials_get_type ())
@@ -2639,81 +2659,82 @@ DECLARE FUNCTION g_file_icon_get_file(BYVAL AS GFileIcon PTR) AS GFile PTR
 
 TYPE GFileInfoClass AS _GFileInfoClass
 
-#DEFINE G_FILE_ATTRIBUTE_STANDARD_TYPE !"standard::type"
-#DEFINE G_FILE_ATTRIBUTE_STANDARD_IS_HIDDEN !"standard::is-hidden"
-#DEFINE G_FILE_ATTRIBUTE_STANDARD_IS_BACKUP !"standard::is-backup"
-#DEFINE G_FILE_ATTRIBUTE_STANDARD_IS_SYMLINK !"standard::is-symlink"
-#DEFINE G_FILE_ATTRIBUTE_STANDARD_IS_VIRTUAL !"standard::is-virtual"
-#DEFINE G_FILE_ATTRIBUTE_STANDARD_NAME !"standard::name"
-#DEFINE G_FILE_ATTRIBUTE_STANDARD_DISPLAY_NAME !"standard::display-name"
-#DEFINE G_FILE_ATTRIBUTE_STANDARD_EDIT_NAME !"standard::edit-name"
-#DEFINE G_FILE_ATTRIBUTE_STANDARD_COPY_NAME !"standard::copy-name"
-#DEFINE G_FILE_ATTRIBUTE_STANDARD_DESCRIPTION !"standard::description"
-#DEFINE G_FILE_ATTRIBUTE_STANDARD_ICON !"standard::icon"
-#DEFINE G_FILE_ATTRIBUTE_STANDARD_CONTENT_TYPE !"standard::content-type"
-#DEFINE G_FILE_ATTRIBUTE_STANDARD_FAST_CONTENT_TYPE !"standard::fast-content-type"
-#DEFINE G_FILE_ATTRIBUTE_STANDARD_SIZE !"standard::size"
-#DEFINE G_FILE_ATTRIBUTE_STANDARD_ALLOCATED_SIZE !"standard::allocated-size"
-#DEFINE G_FILE_ATTRIBUTE_STANDARD_SYMLINK_TARGET !"standard::symlink-target"
-#DEFINE G_FILE_ATTRIBUTE_STANDARD_TARGET_URI !"standard::target-uri"
-#DEFINE G_FILE_ATTRIBUTE_STANDARD_SORT_ORDER !"standard::sort-order"
-#DEFINE G_FILE_ATTRIBUTE_ETAG_VALUE !"etag::value"
-#DEFINE G_FILE_ATTRIBUTE_ID_FILE !"id::file"
-#DEFINE G_FILE_ATTRIBUTE_ID_FILESYSTEM !"id::filesystem"
-#DEFINE G_FILE_ATTRIBUTE_ACCESS_CAN_READ !"access::can-read"
-#DEFINE G_FILE_ATTRIBUTE_ACCESS_CAN_WRITE !"access::can-write"
-#DEFINE G_FILE_ATTRIBUTE_ACCESS_CAN_EXECUTE !"access::can-execute"
-#DEFINE G_FILE_ATTRIBUTE_ACCESS_CAN_DELETE !"access::can-delete"
-#DEFINE G_FILE_ATTRIBUTE_ACCESS_CAN_TRASH !"access::can-trash"
-#DEFINE G_FILE_ATTRIBUTE_ACCESS_CAN_RENAME !"access::can-rename"
-#DEFINE G_FILE_ATTRIBUTE_MOUNTABLE_CAN_MOUNT !"mountable::can-mount"
-#DEFINE G_FILE_ATTRIBUTE_MOUNTABLE_CAN_UNMOUNT !"mountable::can-unmount"
-#DEFINE G_FILE_ATTRIBUTE_MOUNTABLE_CAN_EJECT !"mountable::can-eject"
-#DEFINE G_FILE_ATTRIBUTE_MOUNTABLE_UNIX_DEVICE !"mountable::unix-device"
-#DEFINE G_FILE_ATTRIBUTE_MOUNTABLE_UNIX_DEVICE_FILE !"mountable::unix-device-file"
-#DEFINE G_FILE_ATTRIBUTE_MOUNTABLE_HAL_UDI !"mountable::hal-udi"
-#DEFINE G_FILE_ATTRIBUTE_MOUNTABLE_CAN_START !"mountable::can-start"
-#DEFINE G_FILE_ATTRIBUTE_MOUNTABLE_CAN_START_DEGRADED !"mountable::can-start-degraded"
-#DEFINE G_FILE_ATTRIBUTE_MOUNTABLE_CAN_STOP !"mountable::can-stop"
-#DEFINE G_FILE_ATTRIBUTE_MOUNTABLE_START_STOP_TYPE !"mountable::start-stop-type"
-#DEFINE G_FILE_ATTRIBUTE_MOUNTABLE_CAN_POLL !"mountable::can-poll"
-#DEFINE G_FILE_ATTRIBUTE_MOUNTABLE_IS_MEDIA_CHECK_AUTOMATIC !"mountable::is-media-check-automatic"
-#DEFINE G_FILE_ATTRIBUTE_TIME_MODIFIED !"time::modified"
-#DEFINE G_FILE_ATTRIBUTE_TIME_MODIFIED_USEC !"time::modified-usec"
-#DEFINE G_FILE_ATTRIBUTE_TIME_ACCESS !"time::access"
-#DEFINE G_FILE_ATTRIBUTE_TIME_ACCESS_USEC !"time::access-usec"
-#DEFINE G_FILE_ATTRIBUTE_TIME_CHANGED !"time::changed"
-#DEFINE G_FILE_ATTRIBUTE_TIME_CHANGED_USEC !"time::changed-usec"
-#DEFINE G_FILE_ATTRIBUTE_TIME_CREATED !"time::created"
-#DEFINE G_FILE_ATTRIBUTE_TIME_CREATED_USEC !"time::created-usec"
-#DEFINE G_FILE_ATTRIBUTE_UNIX_DEVICE !"unix::device"
-#DEFINE G_FILE_ATTRIBUTE_UNIX_INODE !"unix::inode"
-#DEFINE G_FILE_ATTRIBUTE_UNIX_MODE !"unix::mode"
-#DEFINE G_FILE_ATTRIBUTE_UNIX_NLINK !"unix::nlink"
-#DEFINE G_FILE_ATTRIBUTE_UNIX_UID !"unix::uid"
-#DEFINE G_FILE_ATTRIBUTE_UNIX_GID !"unix::gid"
-#DEFINE G_FILE_ATTRIBUTE_UNIX_RDEV !"unix::rdev"
-#DEFINE G_FILE_ATTRIBUTE_UNIX_BLOCK_SIZE !"unix::block-size"
-#DEFINE G_FILE_ATTRIBUTE_UNIX_BLOCKS !"unix::blocks"
-#DEFINE G_FILE_ATTRIBUTE_UNIX_IS_MOUNTPOINT !"unix::is-mountpoint"
-#DEFINE G_FILE_ATTRIBUTE_DOS_IS_ARCHIVE !"dos::is-archive"
-#DEFINE G_FILE_ATTRIBUTE_DOS_IS_SYSTEM !"dos::is-system"
-#DEFINE G_FILE_ATTRIBUTE_OWNER_USER !"owner::user"
-#DEFINE G_FILE_ATTRIBUTE_OWNER_USER_REAL !"owner::user-real"
-#DEFINE G_FILE_ATTRIBUTE_OWNER_GROUP !"owner::group"
-#DEFINE G_FILE_ATTRIBUTE_THUMBNAIL_PATH !"thumbnail::path"
-#DEFINE G_FILE_ATTRIBUTE_THUMBNAILING_FAILED !"thumbnail::failed"
-#DEFINE G_FILE_ATTRIBUTE_PREVIEW_ICON !"preview::icon"
-#DEFINE G_FILE_ATTRIBUTE_FILESYSTEM_SIZE !"filesystem::size"
-#DEFINE G_FILE_ATTRIBUTE_FILESYSTEM_FREE !"filesystem::free"
-#DEFINE G_FILE_ATTRIBUTE_FILESYSTEM_TYPE !"filesystem::type"
-#DEFINE G_FILE_ATTRIBUTE_FILESYSTEM_READONLY !"filesystem::readonly"
-#DEFINE G_FILE_ATTRIBUTE_FILESYSTEM_USE_PREVIEW !"filesystem::use-preview"
-#DEFINE G_FILE_ATTRIBUTE_GVFS_BACKEND !"gvfs::backend"
-#DEFINE G_FILE_ATTRIBUTE_SELINUX_CONTEXT !"selinux::context"
-#DEFINE G_FILE_ATTRIBUTE_TRASH_ITEM_COUNT !"trash::item-count"
-#DEFINE G_FILE_ATTRIBUTE_TRASH_ORIG_PATH !"trash::orig-path"
-#DEFINE G_FILE_ATTRIBUTE_TRASH_DELETION_DATE !"trash::deletion-date"
+#DEFINE G_FILE_ATTRIBUTE_STANDARD_TYPE @!"standard::type"
+#DEFINE G_FILE_ATTRIBUTE_STANDARD_IS_HIDDEN @!"standard::is-hidden"
+#DEFINE G_FILE_ATTRIBUTE_STANDARD_IS_BACKUP @!"standard::is-backup"
+#DEFINE G_FILE_ATTRIBUTE_STANDARD_IS_SYMLINK @!"standard::is-symlink"
+#DEFINE G_FILE_ATTRIBUTE_STANDARD_IS_VIRTUAL @!"standard::is-virtual"
+#DEFINE G_FILE_ATTRIBUTE_STANDARD_NAME @!"standard::name"
+#DEFINE G_FILE_ATTRIBUTE_STANDARD_DISPLAY_NAME @!"standard::display-name"
+#DEFINE G_FILE_ATTRIBUTE_STANDARD_EDIT_NAME @!"standard::edit-name"
+#DEFINE G_FILE_ATTRIBUTE_STANDARD_COPY_NAME @!"standard::copy-name"
+#DEFINE G_FILE_ATTRIBUTE_STANDARD_DESCRIPTION @!"standard::description"
+#DEFINE G_FILE_ATTRIBUTE_STANDARD_ICON @!"standard::icon"
+#DEFINE G_FILE_ATTRIBUTE_STANDARD_CONTENT_TYPE @!"standard::content-type"
+#DEFINE G_FILE_ATTRIBUTE_STANDARD_FAST_CONTENT_TYPE @!"standard::fast-content-type"
+#DEFINE G_FILE_ATTRIBUTE_STANDARD_SIZE @!"standard::size"
+#DEFINE G_FILE_ATTRIBUTE_STANDARD_ALLOCATED_SIZE @!"standard::allocated-size"
+#DEFINE G_FILE_ATTRIBUTE_STANDARD_SYMLINK_TARGET @!"standard::symlink-target"
+#DEFINE G_FILE_ATTRIBUTE_STANDARD_TARGET_URI @!"standard::target-uri"
+#DEFINE G_FILE_ATTRIBUTE_STANDARD_SORT_ORDER @!"standard::sort-order"
+#DEFINE G_FILE_ATTRIBUTE_ETAG_VALUE @!"etag::value"
+#DEFINE G_FILE_ATTRIBUTE_ID_FILE @!"id::file"
+#DEFINE G_FILE_ATTRIBUTE_ID_FILESYSTEM @!"id::filesystem"
+#DEFINE G_FILE_ATTRIBUTE_ACCESS_CAN_READ @!"access::can-read"
+#DEFINE G_FILE_ATTRIBUTE_ACCESS_CAN_WRITE @!"access::can-write"
+#DEFINE G_FILE_ATTRIBUTE_ACCESS_CAN_EXECUTE @!"access::can-execute"
+#DEFINE G_FILE_ATTRIBUTE_ACCESS_CAN_DELETE @!"access::can-delete"
+#DEFINE G_FILE_ATTRIBUTE_ACCESS_CAN_TRASH @!"access::can-trash"
+#DEFINE G_FILE_ATTRIBUTE_ACCESS_CAN_RENAME @!"access::can-rename"
+#DEFINE G_FILE_ATTRIBUTE_MOUNTABLE_CAN_MOUNT @!"mountable::can-mount"
+#DEFINE G_FILE_ATTRIBUTE_MOUNTABLE_CAN_UNMOUNT @!"mountable::can-unmount"
+#DEFINE G_FILE_ATTRIBUTE_MOUNTABLE_CAN_EJECT @!"mountable::can-eject"
+#DEFINE G_FILE_ATTRIBUTE_MOUNTABLE_UNIX_DEVICE @!"mountable::unix-device"
+#DEFINE G_FILE_ATTRIBUTE_MOUNTABLE_UNIX_DEVICE_FILE @!"mountable::unix-device-file"
+#DEFINE G_FILE_ATTRIBUTE_MOUNTABLE_HAL_UDI @!"mountable::hal-udi"
+#DEFINE G_FILE_ATTRIBUTE_MOUNTABLE_CAN_START @!"mountable::can-start"
+#DEFINE G_FILE_ATTRIBUTE_MOUNTABLE_CAN_START_DEGRADED @!"mountable::can-start-degraded"
+#DEFINE G_FILE_ATTRIBUTE_MOUNTABLE_CAN_STOP @!"mountable::can-stop"
+#DEFINE G_FILE_ATTRIBUTE_MOUNTABLE_START_STOP_TYPE @!"mountable::start-stop-type"
+#DEFINE G_FILE_ATTRIBUTE_MOUNTABLE_CAN_POLL @!"mountable::can-poll"
+#DEFINE G_FILE_ATTRIBUTE_MOUNTABLE_IS_MEDIA_CHECK_AUTOMATIC @!"mountable::is-media-check-automatic"
+#DEFINE G_FILE_ATTRIBUTE_TIME_MODIFIED @!"time::modified"
+#DEFINE G_FILE_ATTRIBUTE_TIME_MODIFIED_USEC @!"time::modified-usec"
+#DEFINE G_FILE_ATTRIBUTE_TIME_ACCESS @!"time::access"
+#DEFINE G_FILE_ATTRIBUTE_TIME_ACCESS_USEC @!"time::access-usec"
+#DEFINE G_FILE_ATTRIBUTE_TIME_CHANGED @!"time::changed"
+#DEFINE G_FILE_ATTRIBUTE_TIME_CHANGED_USEC @!"time::changed-usec"
+#DEFINE G_FILE_ATTRIBUTE_TIME_CREATED @!"time::created"
+#DEFINE G_FILE_ATTRIBUTE_TIME_CREATED_USEC @!"time::created-usec"
+#DEFINE G_FILE_ATTRIBUTE_UNIX_DEVICE @!"unix::device"
+#DEFINE G_FILE_ATTRIBUTE_UNIX_INODE @!"unix::inode"
+#DEFINE G_FILE_ATTRIBUTE_UNIX_MODE @!"unix::mode"
+#DEFINE G_FILE_ATTRIBUTE_UNIX_NLINK @!"unix::nlink"
+#DEFINE G_FILE_ATTRIBUTE_UNIX_UID @!"unix::uid"
+#DEFINE G_FILE_ATTRIBUTE_UNIX_GID @!"unix::gid"
+#DEFINE G_FILE_ATTRIBUTE_UNIX_RDEV @!"unix::rdev"
+#DEFINE G_FILE_ATTRIBUTE_UNIX_BLOCK_SIZE @!"unix::block-size"
+#DEFINE G_FILE_ATTRIBUTE_UNIX_BLOCKS @!"unix::blocks"
+#DEFINE G_FILE_ATTRIBUTE_UNIX_IS_MOUNTPOINT @!"unix::is-mountpoint"
+#DEFINE G_FILE_ATTRIBUTE_DOS_IS_ARCHIVE @!"dos::is-archive"
+#DEFINE G_FILE_ATTRIBUTE_DOS_IS_SYSTEM @!"dos::is-system"
+#DEFINE G_FILE_ATTRIBUTE_OWNER_USER @!"owner::user"
+#DEFINE G_FILE_ATTRIBUTE_OWNER_USER_REAL @!"owner::user-real"
+#DEFINE G_FILE_ATTRIBUTE_OWNER_GROUP @!"owner::group"
+#DEFINE G_FILE_ATTRIBUTE_THUMBNAIL_PATH @!"thumbnail::path"
+#DEFINE G_FILE_ATTRIBUTE_THUMBNAILING_FAILED @!"thumbnail::failed"
+#DEFINE G_FILE_ATTRIBUTE_PREVIEW_ICON @!"preview::icon"
+#DEFINE G_FILE_ATTRIBUTE_FILESYSTEM_SIZE @!"filesystem::size"
+#DEFINE G_FILE_ATTRIBUTE_FILESYSTEM_FREE @!"filesystem::free"
+#DEFINE G_FILE_ATTRIBUTE_FILESYSTEM_USED @!"filesystem::used"
+#DEFINE G_FILE_ATTRIBUTE_FILESYSTEM_TYPE @!"filesystem::type"
+#DEFINE G_FILE_ATTRIBUTE_FILESYSTEM_READONLY @!"filesystem::readonly"
+#DEFINE G_FILE_ATTRIBUTE_FILESYSTEM_USE_PREVIEW @!"filesystem::use-preview"
+#DEFINE G_FILE_ATTRIBUTE_GVFS_BACKEND @!"gvfs::backend"
+#DEFINE G_FILE_ATTRIBUTE_SELINUX_CONTEXT @!"selinux::context"
+#DEFINE G_FILE_ATTRIBUTE_TRASH_ITEM_COUNT @!"trash::item-count"
+#DEFINE G_FILE_ATTRIBUTE_TRASH_ORIG_PATH @!"trash::orig-path"
+#DEFINE G_FILE_ATTRIBUTE_TRASH_DELETION_DATE @!"trash::deletion-date"
 
 DECLARE FUNCTION g_file_info_get_type() AS GType
 DECLARE FUNCTION g_file_info_new() AS GFileInfo PTR
@@ -2837,7 +2858,7 @@ DECLARE FUNCTION g_file_input_stream_query_info_finish(BYVAL AS GFileInputStream
 
 #IFNDEF __G_IO_ERROR_H__
 #DEFINE __G_IO_ERROR_H__
-#INCLUDE ONCE "glib.bi"
+#INCLUDE ONCE "glib.bi" '__HEADERS__: glib.h
 
 #DEFINE G_IO_ERROR g_io_error_quark()
 
@@ -3188,6 +3209,8 @@ DECLARE FUNCTION g_inet_socket_address_get_type() AS GType
 DECLARE FUNCTION g_inet_socket_address_new(BYVAL AS GInetAddress PTR, BYVAL AS guint16) AS GSocketAddress PTR
 DECLARE FUNCTION g_inet_socket_address_get_address(BYVAL AS GInetSocketAddress PTR) AS GInetAddress PTR
 DECLARE FUNCTION g_inet_socket_address_get_port(BYVAL AS GInetSocketAddress PTR) AS guint16
+DECLARE FUNCTION g_inet_socket_address_get_flowinfo(BYVAL AS GInetSocketAddress PTR) AS guint32
+DECLARE FUNCTION g_inet_socket_address_get_scope_id(BYVAL AS GInetSocketAddress PTR) AS guint32
 
 #ENDIF ' __G_INET_SOCKET_ADDRESS_H__
 
@@ -3248,6 +3271,12 @@ DECLARE FUNCTION g_emblem_origin_get_type() AS GType
 #DEFINE G_TYPE_EMBLEM_ORIGIN (g_emblem_origin_get_type ())
 DECLARE FUNCTION g_resolver_error_get_type() AS GType
 #DEFINE G_TYPE_RESOLVER_ERROR (g_resolver_error_get_type ())
+DECLARE FUNCTION g_resource_error_get_type() AS GType
+#DEFINE G_TYPE_RESOURCE_ERROR (g_resource_error_get_type ())
+DECLARE FUNCTION g_resource_flags_get_type() AS GType
+#DEFINE G_TYPE_RESOURCE_FLAGS (g_resource_flags_get_type ())
+DECLARE FUNCTION g_resource_lookup_flags_get_type() AS GType
+#DEFINE G_TYPE_RESOURCE_LOOKUP_FLAGS (g_resource_lookup_flags_get_type ())
 DECLARE FUNCTION g_socket_family_get_type() AS GType
 #DEFINE G_TYPE_SOCKET_FAMILY (g_socket_family_get_type ())
 DECLARE FUNCTION g_socket_type_get_type() AS GType
@@ -3320,6 +3349,8 @@ DECLARE FUNCTION g_tls_database_lookup_flags_get_type() AS GType
 #DEFINE G_TYPE_TLS_DATABASE_LOOKUP_FLAGS (g_tls_database_lookup_flags_get_type ())
 DECLARE FUNCTION g_io_module_scope_flags_get_type() AS GType
 #DEFINE G_TYPE_IO_MODULE_SCOPE_FLAGS (g_io_module_scope_flags_get_type ())
+DECLARE FUNCTION g_socket_client_event_get_type() AS GType
+#DEFINE G_TYPE_SOCKET_CLIENT_EVENT (g_socket_client_event_get_type ())
 DECLARE FUNCTION g_settings_bind_flags_get_type() AS GType
 #DEFINE G_TYPE_SETTINGS_BIND_FLAGS (g_settings_bind_flags_get_type ())
 #ENDIF ' __GIO_ENUM_TYPES_H__
@@ -3327,7 +3358,7 @@ DECLARE FUNCTION g_settings_bind_flags_get_type() AS GType
 #IFNDEF __G_IO_MODULE_H__
 #DEFINE __G_IO_MODULE_H__
 
-#INCLUDE ONCE "gmodule.bi"
+#INCLUDE ONCE "gmodule.bi" '__HEADERS__: gmodule.h
 
 TYPE GIOModuleScope AS _GIOModuleScope
 
@@ -3610,7 +3641,7 @@ DECLARE SUB g_mount_operation_reply(BYVAL AS GMountOperation PTR, BYVAL AS GMoun
 #DEFINE G_VOLUME_MONITOR_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), G_TYPE_VOLUME_MONITOR, GVolumeMonitorClass))
 #DEFINE G_IS_VOLUME_MONITOR(o) (G_TYPE_CHECK_INSTANCE_TYPE ((o), G_TYPE_VOLUME_MONITOR))
 #DEFINE G_IS_VOLUME_MONITOR_CLASS(k) (G_TYPE_CHECK_CLASS_TYPE ((k), G_TYPE_VOLUME_MONITOR))
-#DEFINE G_VOLUME_MONITOR_EXTENSION_POINT_NAME !"gio-volume-monitor"
+#DEFINE G_VOLUME_MONITOR_EXTENSION_POINT_NAME @!"gio-volume-monitor"
 
 TYPE GVolumeMonitorClass AS _GVolumeMonitorClass
 
@@ -3664,7 +3695,7 @@ DECLARE FUNCTION g_volume_monitor_adopt_orphan_mount(BYVAL AS GMount PTR) AS GVo
 #DEFINE G_NATIVE_VOLUME_MONITOR_CLASS(k) (G_TYPE_CHECK_CLASS_CAST((k), G_TYPE_NATIVE_VOLUME_MONITOR, GNativeVolumeMonitorClass))
 #DEFINE G_IS_NATIVE_VOLUME_MONITOR(o) (G_TYPE_CHECK_INSTANCE_TYPE ((o), G_TYPE_NATIVE_VOLUME_MONITOR))
 #DEFINE G_IS_NATIVE_VOLUME_MONITOR_CLASS(k) (G_TYPE_CHECK_CLASS_TYPE ((k), G_TYPE_NATIVE_VOLUME_MONITOR))
-#DEFINE G_NATIVE_VOLUME_MONITOR_EXTENSION_POINT_NAME !"gio-native-volume-monitor"
+#DEFINE G_NATIVE_VOLUME_MONITOR_EXTENSION_POINT_NAME @!"gio-native-volume-monitor"
 
 TYPE GNativeVolumeMonitor AS _GNativeVolumeMonitor
 TYPE GNativeVolumeMonitorClass AS _GNativeVolumeMonitorClass
@@ -3717,7 +3748,7 @@ DECLARE FUNCTION g_network_address_get_scheme(BYVAL AS GNetworkAddress PTR) AS C
 #IFNDEF __G_NETWORK_MONITOR_H__
 #DEFINE __G_NETWORK_MONITOR_H__
 
-#DEFINE G_NETWORK_MONITOR_EXTENSION_POINT_NAME !"gio-network-monitor"
+#DEFINE G_NETWORK_MONITOR_EXTENSION_POINT_NAME @!"gio-network-monitor"
 #DEFINE G_TYPE_NETWORK_MONITOR (g_network_monitor_get_type ())
 #DEFINE G_NETWORK_MONITOR(o) (G_TYPE_CHECK_INSTANCE_CAST ((o), G_TYPE_NETWORK_MONITOR, GNetworkMonitor))
 #DEFINE G_IS_NETWORK_MONITOR(o) (G_TYPE_CHECK_INSTANCE_TYPE ((o), G_TYPE_NETWORK_MONITOR))
@@ -3824,7 +3855,7 @@ DECLARE SUB g_permission_impl_update(BYVAL AS GPermission PTR, BYVAL AS gboolean
 
 #IFNDEF __G_POLLABLE_INPUT_STREAM_H__
 #DEFINE __G_POLLABLE_INPUT_STREAM_H__
-
+#INCLUDE ONCE "gio/gio.bi" '__HEADERS__: gio/gio.h
 #DEFINE G_TYPE_POLLABLE_INPUT_STREAM (g_pollable_input_stream_get_type ())
 #DEFINE G_POLLABLE_INPUT_STREAM(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), G_TYPE_POLLABLE_INPUT_STREAM, GPollableInputStream))
 #DEFINE G_IS_POLLABLE_INPUT_STREAM(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), G_TYPE_POLLABLE_INPUT_STREAM))
@@ -3882,7 +3913,7 @@ DECLARE FUNCTION g_pollable_output_stream_write_nonblocking(BYVAL AS GPollableOu
 #DEFINE G_PROXY(o) (G_TYPE_CHECK_INSTANCE_CAST ((o), G_TYPE_PROXY, GProxy))
 #DEFINE G_IS_PROXY(o) (G_TYPE_CHECK_INSTANCE_TYPE ((o), G_TYPE_PROXY))
 #DEFINE G_PROXY_GET_IFACE(obj) (G_TYPE_INSTANCE_GET_INTERFACE ((obj), G_TYPE_PROXY, GProxyInterface))
-#DEFINE G_PROXY_EXTENSION_POINT_NAME !"gio-proxy"
+#DEFINE G_PROXY_EXTENSION_POINT_NAME @!"gio-proxy"
 
 TYPE GProxyInterface AS _GProxyInterface
 
@@ -4005,7 +4036,7 @@ DECLARE FUNCTION g_proxy_address_enumerator_get_type() AS GType
 #DEFINE G_PROXY_RESOLVER(o) (G_TYPE_CHECK_INSTANCE_CAST ((o), G_TYPE_PROXY_RESOLVER, GProxyResolver))
 #DEFINE G_IS_PROXY_RESOLVER(o) (G_TYPE_CHECK_INSTANCE_TYPE ((o), G_TYPE_PROXY_RESOLVER))
 #DEFINE G_PROXY_RESOLVER_GET_IFACE(o) (G_TYPE_INSTANCE_GET_INTERFACE ((o), G_TYPE_PROXY_RESOLVER, GProxyResolverInterface))
-#DEFINE G_PROXY_RESOLVER_EXTENSION_POINT_NAME !"gio-proxy-resolver"
+#DEFINE G_PROXY_RESOLVER_EXTENSION_POINT_NAME @!"gio-proxy-resolver"
 
 TYPE GProxyResolverInterface AS _GProxyResolverInterface
 
@@ -4084,6 +4115,45 @@ DECLARE SUB g_resolver_free_targets(BYVAL AS GList PTR)
 DECLARE FUNCTION g_resolver_error_quark() AS GQuark
 
 #ENDIF ' __G_RESOLVER_H__
+
+#IFNDEF __G_RESOURCE_H__
+#DEFINE __G_RESOURCE_H__
+
+#DEFINE G_TYPE_RESOURCE (g_resource_get_type ())
+#DEFINE G_RESOURCE_ERROR (g_resource_error_quark ())
+
+DECLARE FUNCTION g_resource_error_quark() AS GQuark
+
+TYPE GStaticResource AS _GStaticResource
+
+TYPE _GStaticResource
+  AS CONST guint8 PTR data
+  AS gsize data_len
+  AS GResource PTR resource
+  AS GStaticResource PTR next
+  AS gpointer padding
+END TYPE
+
+DECLARE FUNCTION g_resource_get_type() AS GType
+DECLARE FUNCTION g_resource_new_from_data(BYVAL AS GBytes PTR, BYVAL AS GError PTR PTR) AS GResource PTR
+DECLARE FUNCTION g_resource_ref(BYVAL AS GResource PTR) AS GResource PTR
+DECLARE SUB g_resource_unref(BYVAL AS GResource PTR)
+DECLARE FUNCTION g_resource_load(BYVAL AS CONST gchar PTR, BYVAL AS GError PTR PTR) AS GResource PTR
+DECLARE FUNCTION g_resource_open_stream(BYVAL AS GResource PTR, BYVAL AS CONST ZSTRING PTR, BYVAL AS GResourceLookupFlags, BYVAL AS GError PTR PTR) AS GInputStream PTR
+DECLARE FUNCTION g_resource_lookup_data(BYVAL AS GResource PTR, BYVAL AS CONST ZSTRING PTR, BYVAL AS GResourceLookupFlags, BYVAL AS GError PTR PTR) AS GBytes PTR
+DECLARE FUNCTION g_resource_enumerate_children(BYVAL AS GResource PTR, BYVAL AS CONST ZSTRING PTR, BYVAL AS GResourceLookupFlags, BYVAL AS GError PTR PTR) AS ZSTRING PTR PTR
+DECLARE FUNCTION g_resource_get_info(BYVAL AS GResource PTR, BYVAL AS CONST ZSTRING PTR, BYVAL AS GResourceLookupFlags, BYVAL AS gsize PTR, BYVAL AS guint32 PTR, BYVAL AS GError PTR PTR) AS gboolean
+DECLARE SUB g_resources_register(BYVAL AS GResource PTR)
+DECLARE SUB g_resources_unregister(BYVAL AS GResource PTR)
+DECLARE FUNCTION g_resources_open_stream(BYVAL AS CONST ZSTRING PTR, BYVAL AS GResourceLookupFlags, BYVAL AS GError PTR PTR) AS GInputStream PTR
+DECLARE FUNCTION g_resources_lookup_data(BYVAL AS CONST ZSTRING PTR, BYVAL AS GResourceLookupFlags, BYVAL AS GError PTR PTR) AS GBytes PTR
+DECLARE FUNCTION g_resources_enumerate_children(BYVAL AS CONST ZSTRING PTR, BYVAL AS GResourceLookupFlags, BYVAL AS GError PTR PTR) AS ZSTRING PTR PTR
+DECLARE FUNCTION g_resources_get_info(BYVAL AS CONST ZSTRING PTR, BYVAL AS GResourceLookupFlags, BYVAL AS gsize PTR, BYVAL AS guint32 PTR, BYVAL AS GError PTR PTR) AS gboolean
+DECLARE SUB g_static_resource_init(BYVAL AS GStaticResource PTR)
+DECLARE SUB g_static_resource_fini(BYVAL AS GStaticResource PTR)
+DECLARE FUNCTION g_static_resource_get_resource(BYVAL AS GStaticResource PTR) AS GResource PTR
+
+#ENDIF ' __G_RESOURCE_H__
 
 #IFNDEF __G_SEEKABLE_H__
 #DEFINE __G_SEEKABLE_H__
@@ -4226,6 +4296,7 @@ DECLARE SUB g_settings_bind(BYVAL AS GSettings PTR, BYVAL AS CONST gchar PTR, BY
 DECLARE SUB g_settings_bind_with_mapping(BYVAL AS GSettings PTR, BYVAL AS CONST gchar PTR, BYVAL AS gpointer, BYVAL AS CONST gchar PTR, BYVAL AS GSettingsBindFlags, BYVAL AS GSettingsBindGetMapping, BYVAL AS GSettingsBindSetMapping, BYVAL AS gpointer, BYVAL AS GDestroyNotify)
 DECLARE SUB g_settings_bind_writable(BYVAL AS GSettings PTR, BYVAL AS CONST gchar PTR, BYVAL AS gpointer, BYVAL AS CONST gchar PTR, BYVAL AS gboolean)
 DECLARE SUB g_settings_unbind(BYVAL AS gpointer, BYVAL AS CONST gchar PTR)
+DECLARE FUNCTION g_settings_create_action(BYVAL AS GSettings PTR, BYVAL AS CONST gchar PTR) AS GAction PTR
 DECLARE FUNCTION g_settings_get_mapped(BYVAL AS GSettings PTR, BYVAL AS CONST gchar PTR, BYVAL AS GSettingsGetMapping, BYVAL AS gpointer) AS gpointer
 
 #ENDIF ' __G_SETTINGS_H__
@@ -4246,8 +4317,6 @@ DECLARE SUB g_simple_action_set_enabled(BYVAL AS GSimpleAction PTR, BYVAL AS gbo
 DECLARE SUB g_simple_action_set_state(BYVAL AS GSimpleAction PTR, BYVAL AS GVariant PTR)
 
 #ENDIF ' __G_SIMPLE_ACTION_H__
-
-' 002 start from: glib-2.31.4/gio/gio.h ==> glib-2.31.4/gio/gsimpleactiongroup.h
 
 #IFNDEF __G_SIMPLE_ACTION_GROUP_H__
 #DEFINE __G_SIMPLE_ACTION_GROUP_H__
@@ -4309,6 +4378,7 @@ DECLARE SUB g_simple_async_result_set_op_res_gssize(BYVAL AS GSimpleAsyncResult 
 DECLARE FUNCTION g_simple_async_result_get_op_res_gssize(BYVAL AS GSimpleAsyncResult PTR) AS gssize
 DECLARE SUB g_simple_async_result_set_op_res_gboolean(BYVAL AS GSimpleAsyncResult PTR, BYVAL AS gboolean)
 DECLARE FUNCTION g_simple_async_result_get_op_res_gboolean(BYVAL AS GSimpleAsyncResult PTR) AS gboolean
+DECLARE SUB g_simple_async_result_set_check_cancellable(BYVAL AS GSimpleAsyncResult PTR, BYVAL AS GCancellable PTR)
 DECLARE FUNCTION g_simple_async_result_get_source_tag(BYVAL AS GSimpleAsyncResult PTR) AS gpointer
 DECLARE SUB g_simple_async_result_set_handle_cancellation(BYVAL AS GSimpleAsyncResult PTR, BYVAL AS gboolean)
 DECLARE SUB g_simple_async_result_complete(BYVAL AS GSimpleAsyncResult PTR)
@@ -4361,11 +4431,11 @@ TYPE GSocketClientClass AS _GSocketClientClass
 
 TYPE _GSocketClientClass
   AS GObjectClass parent_class
+  event AS SUB(BYVAL AS GSocketClient PTR, BYVAL AS GSocketClientEvent, BYVAL AS GSocketConnectable PTR, BYVAL AS GIOStream PTR)
   _g_reserved1 AS SUB()
   _g_reserved2 AS SUB()
   _g_reserved3 AS SUB()
   _g_reserved4 AS SUB()
-  _g_reserved5 AS SUB()
 END TYPE
 
 TYPE _GSocketClient
@@ -4486,12 +4556,24 @@ DECLARE FUNCTION g_socket_get_listen_backlog(BYVAL AS GSocket PTR) AS gint
 DECLARE SUB g_socket_set_listen_backlog(BYVAL AS GSocket PTR, BYVAL AS gint)
 DECLARE FUNCTION g_socket_get_timeout(BYVAL AS GSocket PTR) AS guint
 DECLARE SUB g_socket_set_timeout(BYVAL AS GSocket PTR, BYVAL AS guint)
+DECLARE FUNCTION g_socket_get_ttl(BYVAL AS GSocket PTR) AS guint
+DECLARE SUB g_socket_set_ttl(BYVAL AS GSocket PTR, BYVAL AS guint)
+DECLARE FUNCTION g_socket_get_broadcast(BYVAL AS GSocket PTR) AS gboolean
+DECLARE SUB g_socket_set_broadcast(BYVAL AS GSocket PTR, BYVAL AS gboolean)
+DECLARE FUNCTION g_socket_get_multicast_loopback(BYVAL AS GSocket PTR) AS gboolean
+DECLARE SUB g_socket_set_multicast_loopback(BYVAL AS GSocket PTR, BYVAL AS gboolean)
+DECLARE FUNCTION g_socket_get_multicast_ttl(BYVAL AS GSocket PTR) AS guint
+DECLARE SUB g_socket_set_multicast_ttl(BYVAL AS GSocket PTR, BYVAL AS guint)
 DECLARE FUNCTION g_socket_is_connected(BYVAL AS GSocket PTR) AS gboolean
 DECLARE FUNCTION g_socket_bind(BYVAL AS GSocket PTR, BYVAL AS GSocketAddress PTR, BYVAL AS gboolean, BYVAL AS GError PTR PTR) AS gboolean
+DECLARE FUNCTION g_socket_join_multicast_group(BYVAL AS GSocket PTR, BYVAL AS GInetAddress PTR, BYVAL AS gboolean, BYVAL AS CONST gchar PTR, BYVAL AS GError PTR PTR) AS gboolean
+DECLARE FUNCTION g_socket_leave_multicast_group(BYVAL AS GSocket PTR, BYVAL AS GInetAddress PTR, BYVAL AS gboolean, BYVAL AS CONST gchar PTR, BYVAL AS GError PTR PTR) AS gboolean
 DECLARE FUNCTION g_socket_connect(BYVAL AS GSocket PTR, BYVAL AS GSocketAddress PTR, BYVAL AS GCancellable PTR, BYVAL AS GError PTR PTR) AS gboolean
 DECLARE FUNCTION g_socket_check_connect_result(BYVAL AS GSocket PTR, BYVAL AS GError PTR PTR) AS gboolean
+DECLARE FUNCTION g_socket_get_available_bytes(BYVAL AS GSocket PTR) AS gssize
 DECLARE FUNCTION g_socket_condition_check(BYVAL AS GSocket PTR, BYVAL AS GIOCondition) AS GIOCondition
 DECLARE FUNCTION g_socket_condition_wait(BYVAL AS GSocket PTR, BYVAL AS GIOCondition, BYVAL AS GCancellable PTR, BYVAL AS GError PTR PTR) AS gboolean
+DECLARE FUNCTION g_socket_condition_timed_wait(BYVAL AS GSocket PTR, BYVAL AS GIOCondition, BYVAL AS gint64, BYVAL AS GCancellable PTR, BYVAL AS GError PTR PTR) AS gboolean
 DECLARE FUNCTION g_socket_accept(BYVAL AS GSocket PTR, BYVAL AS GCancellable PTR, BYVAL AS GError PTR PTR) AS GSocket PTR
 DECLARE FUNCTION g_socket_listen(BYVAL AS GSocket PTR, BYVAL AS GError PTR PTR) AS gboolean
 DECLARE FUNCTION g_socket_receive(BYVAL AS GSocket PTR, BYVAL AS gchar PTR, BYVAL AS gsize, BYVAL AS GCancellable PTR, BYVAL AS GError PTR PTR) AS gssize
@@ -4542,6 +4624,10 @@ TYPE _GSocketConnection
 END TYPE
 
 DECLARE FUNCTION g_socket_connection_get_type() AS GType
+DECLARE FUNCTION g_socket_connection_is_connected(BYVAL AS GSocketConnection PTR) AS gboolean
+DECLARE FUNCTION g_socket_connection_connect(BYVAL AS GSocketConnection PTR, BYVAL AS GSocketAddress PTR, BYVAL AS GCancellable PTR, BYVAL AS GError PTR PTR) AS gboolean
+DECLARE SUB g_socket_connection_connect_async(BYVAL AS GSocketConnection PTR, BYVAL AS GSocketAddress PTR, BYVAL AS GCancellable PTR, BYVAL AS GAsyncReadyCallback, BYVAL AS gpointer)
+DECLARE FUNCTION g_socket_connection_connect_finish(BYVAL AS GSocketConnection PTR, BYVAL AS GAsyncResult PTR, BYVAL AS GError PTR PTR) AS gboolean
 DECLARE FUNCTION g_socket_connection_get_socket(BYVAL AS GSocketConnection PTR) AS GSocket PTR
 DECLARE FUNCTION g_socket_connection_get_local_address(BYVAL AS GSocketConnection PTR, BYVAL AS GError PTR PTR) AS GSocketAddress PTR
 DECLARE FUNCTION g_socket_connection_get_remote_address(BYVAL AS GSocketConnection PTR, BYVAL AS GError PTR PTR) AS GSocketAddress PTR
@@ -4843,7 +4929,7 @@ DECLARE FUNCTION g_threaded_socket_service_new(BYVAL AS INTEGER) AS GSocketServi
 #IFNDEF __G_TLS_BACKEND_H__
 #DEFINE __G_TLS_BACKEND_H__
 
-#DEFINE G_TLS_BACKEND_EXTENSION_POINT_NAME !"gio-tls-backend"
+#DEFINE G_TLS_BACKEND_EXTENSION_POINT_NAME @!"gio-tls-backend"
 #DEFINE G_TYPE_TLS_BACKEND (g_tls_backend_get_type ())
 #DEFINE G_TLS_BACKEND(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), G_TYPE_TLS_BACKEND, GTlsBackend))
 #DEFINE G_IS_TLS_BACKEND(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), G_TYPE_TLS_BACKEND))
@@ -4989,8 +5075,8 @@ DECLARE FUNCTION g_tls_client_connection_get_accepted_cas(BYVAL AS GTlsClientCon
 #IFNDEF __G_TLS_DATABASE_H__
 #DEFINE __G_TLS_DATABASE_H__
 
-#DEFINE G_TLS_DATABASE_PURPOSE_AUTHENTICATE_SERVER !"1.3.6.1.5.5.7.3.1"
-#DEFINE G_TLS_DATABASE_PURPOSE_AUTHENTICATE_CLIENT !"1.3.6.1.5.5.7.3.2"
+#DEFINE G_TLS_DATABASE_PURPOSE_AUTHENTICATE_SERVER @!"1.3.6.1.5.5.7.3.1"
+#DEFINE G_TLS_DATABASE_PURPOSE_AUTHENTICATE_CLIENT @!"1.3.6.1.5.5.7.3.2"
 #DEFINE G_TYPE_TLS_DATABASE (g_tls_database_get_type ())
 #DEFINE G_TLS_DATABASE(inst) (G_TYPE_CHECK_INSTANCE_CAST ((inst), G_TYPE_TLS_DATABASE, GTlsDatabase))
 #DEFINE G_TLS_DATABASE_CLASS(class) (G_TYPE_CHECK_CLASS_CAST ((class), G_TYPE_TLS_DATABASE, GTlsDatabaseClass))
@@ -5163,7 +5249,7 @@ DECLARE SUB g_tls_password_set_warning(BYVAL AS GTlsPassword PTR, BYVAL AS CONST
 #DEFINE G_VFS_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), G_TYPE_VFS, GVfsClass))
 #DEFINE G_IS_VFS(o) (G_TYPE_CHECK_INSTANCE_TYPE ((o), G_TYPE_VFS))
 #DEFINE G_IS_VFS_CLASS(k) (G_TYPE_CHECK_CLASS_TYPE ((k), G_TYPE_VFS))
-#DEFINE G_VFS_EXTENSION_POINT_NAME !"gio-vfs"
+#DEFINE G_VFS_EXTENSION_POINT_NAME @!"gio-vfs"
 
 TYPE GVfsClass AS _GVfsClass
 
@@ -5176,7 +5262,7 @@ TYPE _GVfsClass
   is_active AS FUNCTION(BYVAL AS GVfs PTR) AS gboolean
   get_file_for_path AS FUNCTION(BYVAL AS GVfs PTR, BYVAL AS CONST ZSTRING PTR) AS GFile PTR
   get_file_for_uri AS FUNCTION(BYVAL AS GVfs PTR, BYVAL AS CONST ZSTRING PTR) AS GFile PTR
-  get_supported_uri_schemes AS FUNCTION(BYVAL AS GVfs PTR) AS CONST gchar CONST PTR PTR
+  get_supported_uri_schemes AS FUNCTION(BYVAL AS GVfs PTR) AS CONST gchar CONST PTR
   parse_name AS FUNCTION(BYVAL AS GVfs PTR, BYVAL AS CONST ZSTRING PTR) AS GFile PTR
   local_file_add_info AS SUB(BYVAL AS GVfs PTR, BYVAL AS CONST ZSTRING PTR, BYVAL AS guint64, BYVAL AS GFileAttributeMatcher PTR, BYVAL AS GFileInfo PTR, BYVAL AS GCancellable PTR, BYVAL AS gpointer PTR, BYVAL AS GDestroyNotify PTR)
   add_writable_namespaces AS SUB(BYVAL AS GVfs PTR, BYVAL AS GFileAttributeInfoList PTR)
@@ -5206,11 +5292,12 @@ DECLARE FUNCTION g_vfs_get_local() AS GVfs PTR
 #IFNDEF __G_VOLUME_H__
 #DEFINE __G_VOLUME_H__
 
-#DEFINE G_VOLUME_IDENTIFIER_KIND_HAL_UDI !"hal-udi"
-#DEFINE G_VOLUME_IDENTIFIER_KIND_UNIX_DEVICE !"unix-device"
-#DEFINE G_VOLUME_IDENTIFIER_KIND_LABEL !"label"
-#DEFINE G_VOLUME_IDENTIFIER_KIND_UUID !"uuid"
-#DEFINE G_VOLUME_IDENTIFIER_KIND_NFS_MOUNT !"nfs-mount"
+#DEFINE G_VOLUME_IDENTIFIER_KIND_HAL_UDI @!"hal-udi"
+#DEFINE G_VOLUME_IDENTIFIER_KIND_UNIX_DEVICE @!"unix-device"
+#DEFINE G_VOLUME_IDENTIFIER_KIND_LABEL @!"label"
+#DEFINE G_VOLUME_IDENTIFIER_KIND_UUID @!"uuid"
+#DEFINE G_VOLUME_IDENTIFIER_KIND_NFS_MOUNT @!"nfs-mount"
+#DEFINE G_VOLUME_IDENTIFIER_KIND_CLASS @!"class"
 #DEFINE G_TYPE_VOLUME (g_volume_get_type ())
 #DEFINE G_VOLUME(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), G_TYPE_VOLUME, GVolume))
 #DEFINE G_IS_VOLUME(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), G_TYPE_VOLUME))
@@ -5324,12 +5411,14 @@ TYPE _GDBusInterfaceIface
   get_info AS FUNCTION(BYVAL AS GDBusInterface PTR) AS GDBusInterfaceInfo PTR
   get_object AS FUNCTION(BYVAL AS GDBusInterface PTR) AS GDBusObject PTR
   set_object AS SUB(BYVAL AS GDBusInterface PTR, BYVAL AS GDBusObject PTR)
+  dup_object AS FUNCTION(BYVAL AS GDBusInterface PTR) AS GDBusObject PTR
 END TYPE
 
 DECLARE FUNCTION g_dbus_interface_get_type() AS GType
 DECLARE FUNCTION g_dbus_interface_get_info(BYVAL AS GDBusInterface PTR) AS GDBusInterfaceInfo PTR
 DECLARE FUNCTION g_dbus_interface_get_object(BYVAL AS GDBusInterface PTR) AS GDBusObject PTR
 DECLARE SUB g_dbus_interface_set_object(BYVAL AS GDBusInterface PTR, BYVAL AS GDBusObject PTR)
+DECLARE FUNCTION g_dbus_interface_dup_object(BYVAL AS GDBusInterface PTR) AS GDBusObject PTR
 
 #ENDIF ' __G_DBUS_INTERFACE_H__
 
@@ -5590,14 +5679,40 @@ DECLARE FUNCTION g_dbus_action_group_get(BYVAL AS GDBusConnection PTR, BYVAL AS 
 
 #ENDIF ' __G_DBUS_ACTION_GROUP_H__
 
+#IFNDEF __G_REMOTE_ACTION_GROUP_H__
+#DEFINE __G_REMOTE_ACTION_GROUP_H__
+
+#DEFINE G_TYPE_REMOTE_ACTION_GROUP (g_remote_action_group_get_type ())
+#DEFINE G_REMOTE_ACTION_GROUP(inst) (G_TYPE_CHECK_INSTANCE_CAST ((inst), _
+                                                             G_TYPE_REMOTE_ACTION_GROUP, GRemoteActionGroup))
+#DEFINE G_IS_REMOTE_ACTION_GROUP(inst) (G_TYPE_CHECK_INSTANCE_TYPE ((inst), _
+                                                             G_TYPE_REMOTE_ACTION_GROUP))
+#DEFINE G_REMOTE_ACTION_GROUP_GET_IFACE(inst) (G_TYPE_INSTANCE_GET_INTERFACE ((inst), _
+                                                             G_TYPE_REMOTE_ACTION_GROUP, _
+                                                             GRemoteActionGroupInterface))
+
+TYPE GRemoteActionGroupInterface AS _GRemoteActionGroupInterface
+
+TYPE _GRemoteActionGroupInterface
+  AS GTypeInterface g_iface
+  activate_action_full AS SUB(BYVAL AS GRemoteActionGroup PTR, BYVAL AS CONST gchar PTR, BYVAL AS GVariant PTR, BYVAL AS GVariant PTR)
+  change_action_state_full AS SUB(BYVAL AS GRemoteActionGroup PTR, BYVAL AS CONST gchar PTR, BYVAL AS GVariant PTR, BYVAL AS GVariant PTR)
+END TYPE
+
+DECLARE FUNCTION g_remote_action_group_get_type() AS GType
+DECLARE SUB g_remote_action_group_activate_action_full(BYVAL AS GRemoteActionGroup PTR, BYVAL AS CONST gchar PTR, BYVAL AS GVariant PTR, BYVAL AS GVariant PTR)
+DECLARE SUB g_remote_action_group_change_action_state_full(BYVAL AS GRemoteActionGroup PTR, BYVAL AS CONST gchar PTR, BYVAL AS GVariant PTR, BYVAL AS GVariant PTR)
+
+#ENDIF ' __G_REMOTE_ACTION_GROUP_H__
+
 #IFNDEF __G_MENU_MODEL_H__
 #DEFINE __G_MENU_MODEL_H__
 
-#DEFINE G_MENU_ATTRIBUTE_ACTION !"action"
-#DEFINE G_MENU_ATTRIBUTE_TARGET !"target"
-#DEFINE G_MENU_ATTRIBUTE_LABEL !"label"
-#DEFINE G_MENU_LINK_SUBMENU !"submenu"
-#DEFINE G_MENU_LINK_SECTION !"section"
+#DEFINE G_MENU_ATTRIBUTE_ACTION @!"action"
+#DEFINE G_MENU_ATTRIBUTE_TARGET @!"target"
+#DEFINE G_MENU_ATTRIBUTE_LABEL @!"label"
+#DEFINE G_MENU_LINK_SUBMENU @!"submenu"
+#DEFINE G_MENU_LINK_SECTION @!"section"
 #DEFINE G_TYPE_MENU_MODEL (g_menu_model_get_type ())
 #DEFINE G_MENU_MODEL(inst) (G_TYPE_CHECK_INSTANCE_CAST ((inst), _
                                                              G_TYPE_MENU_MODEL, GMenuModel))
@@ -5761,20 +5876,6 @@ DECLARE SUB g_dbus_connection_unexport_menu_model(BYVAL AS GDBusConnection PTR, 
 
 #ENDIF ' __G_MENU_EXPORTER_H__
 
-' 002 start from: glib-2.31.4/gio/gio.h ==> glib-2.31.4/gio/gmenumarkup.h
-
-#IFNDEF __G_MENU_MARKUP_H__
-#DEFINE __G_MENU_MARKUP_H__
-
-DECLARE SUB g_menu_markup_parser_start(BYVAL AS GMarkupParseContext PTR, BYVAL AS CONST gchar PTR, BYVAL AS GHashTable PTR)
-DECLARE FUNCTION g_menu_markup_parser_end(BYVAL AS GMarkupParseContext PTR) AS GHashTable PTR
-DECLARE SUB g_menu_markup_parser_start_menu(BYVAL AS GMarkupParseContext PTR, BYVAL AS CONST gchar PTR, BYVAL AS GHashTable PTR)
-DECLARE FUNCTION g_menu_markup_parser_end_menu(BYVAL AS GMarkupParseContext PTR) AS GMenu PTR
-DECLARE SUB g_menu_markup_print_stderr(BYVAL AS GMenuModel PTR)
-DECLARE FUNCTION g_menu_markup_print_string(BYVAL AS GString PTR, BYVAL AS GMenuModel PTR, BYVAL AS gint, BYVAL AS gint) AS GString PTR
-
-#ENDIF ' __G_MENU_MARKUP_H__
-
 #IFNDEF __G_DBUS_MENU_MODEL_H__
 #DEFINE __G_DBUS_MENU_MODEL_H__
 
@@ -5794,8 +5895,167 @@ DECLARE FUNCTION g_dbus_menu_model_get(BYVAL AS GDBusConnection PTR, BYVAL AS CO
 #UNDEF __GIO_GIO_H_INSIDE__
 #ENDIF ' __G_IO_H__
 
-END EXTERN
+END EXTERN ' (h_2_bi -P_oCD option)
 
 #IFDEF __FB_WIN32__
 #PRAGMA pop(msbitfields)
 #ENDIF
+
+' Translated at 12-08-18 17:57:25, by h_2_bi (version 0.2.2.1,
+' released under GPLv3 by Thomas[ dot ]Freiherr{ at }gmx[ dot ]net)
+
+'   Protocol: GIO-2.32.4.bi
+' Parameters: GIO-2.32.4
+'                                  Process time [s]: 2.073054910753854
+'                                  Bytes translated: 411548
+'                                      Maximum deep: 4
+'                                SUB/FUNCTION names: 1564
+'                                mangled TYPE names: 0
+'                                        files done: 129
+' glib-2.32.4/gio/gio.h
+' glib-2.32.4/gio/giotypes.h
+' glib-2.32.4/gio/gioenums.h
+' glib-2.32.4/gio/gaction.h
+' glib-2.32.4/gio/gactiongroup.h
+' glib-2.32.4/gio/gactiongroupexporter.h
+' glib-2.32.4/gio/gactionmap.h
+' glib-2.32.4/gio/gappinfo.h
+' glib-2.32.4/gio/gapplication.h
+' glib-2.32.4/gio/gapplicationcommandline.h
+' glib-2.32.4/gio/gasyncinitable.h
+' glib-2.32.4/gio/ginitable.h
+' glib-2.32.4/gio/gasyncresult.h
+' glib-2.32.4/gio/gbufferedinputstream.h
+' glib-2.32.4/gio/gfilterinputstream.h
+' glib-2.32.4/gio/ginputstream.h
+' glib-2.32.4/gio/gbufferedoutputstream.h
+' glib-2.32.4/gio/gfilteroutputstream.h
+' glib-2.32.4/gio/goutputstream.h
+' glib-2.32.4/gio/gcancellable.h
+' glib-2.32.4/gio/gcharsetconverter.h
+' glib-2.32.4/gio/gconverter.h
+' glib-2.32.4/gio/gcontenttype.h
+' glib-2.32.4/gio/gconverterinputstream.h
+' glib-2.32.4/gio/gconverteroutputstream.h
+' glib-2.32.4/gio/gcredentials.h
+' glib-2.32.4/gio/gdatainputstream.h
+' glib-2.32.4/gio/gdataoutputstream.h
+' glib-2.32.4/gio/gdbusaddress.h
+' glib-2.32.4/gio/gdbusauthobserver.h
+' glib-2.32.4/gio/gdbusconnection.h
+' glib-2.32.4/gio/gdbuserror.h
+' glib-2.32.4/gio/gdbusintrospection.h
+' glib-2.32.4/gio/gdbusmessage.h
+' glib-2.32.4/gio/gdbusmethodinvocation.h
+' glib-2.32.4/gio/gdbusnameowning.h
+' glib-2.32.4/gio/gdbusnamewatching.h
+' glib-2.32.4/gio/gdbusproxy.h
+' glib-2.32.4/gio/gdbusserver.h
+' glib-2.32.4/gio/gdbusutils.h
+' glib-2.32.4/gio/gdrive.h
+' glib-2.32.4/gio/gemblemedicon.h
+' glib-2.32.4/gio/gicon.h
+' glib-2.32.4/gio/gemblem.h
+' glib-2.32.4/gio/gfileattribute.h
+' glib-2.32.4/gio/gfileenumerator.h
+' glib-2.32.4/gio/gfile.h
+' glib-2.32.4/gio/gfileicon.h
+' glib-2.32.4/gio/gfileinfo.h
+' glib-2.32.4/gio/gfileinputstream.h
+' glib-2.32.4/gio/gfileiostream.h
+' glib-2.32.4/gio/giostream.h
+' glib-2.32.4/gio/gioerror.h
+' glib-2.32.4/gio/gfilemonitor.h
+' glib-2.32.4/gio/gfilenamecompleter.h
+' glib-2.32.4/gio/gfileoutputstream.h
+' glib-2.32.4/gio/ginetaddress.h
+' glib-2.32.4/gio/ginetaddressmask.h
+' glib-2.32.4/gio/ginetsocketaddress.h
+' glib-2.32.4/gio/gsocketaddress.h
+' glib-2.32.4/gio/gioenumtypes.h
+' glib-2.32.4/gio/giomodule.h
+' glib-2.32.4/gio/gioscheduler.h
+' glib-2.32.4/gio/gloadableicon.h
+' glib-2.32.4/gio/gmemoryinputstream.h
+' glib-2.32.4/gio/gmemoryoutputstream.h
+' glib-2.32.4/gio/gmount.h
+' glib-2.32.4/gio/gmountoperation.h
+' glib-2.32.4/gio/gnativevolumemonitor.h
+' glib-2.32.4/gio/gvolumemonitor.h
+' glib-2.32.4/gio/gnetworkaddress.h
+' glib-2.32.4/gio/gnetworkmonitor.h
+' glib-2.32.4/gio/gnetworkservice.h
+' glib-2.32.4/gio/gpermission.h
+' glib-2.32.4/gio/gpollableinputstream.h
+' glib-2.32.4/gio/gpollableoutputstream.h
+' glib-2.32.4/gio/gproxy.h
+' glib-2.32.4/gio/gproxyaddress.h
+' glib-2.32.4/gio/gproxyaddressenumerator.h
+' glib-2.32.4/gio/gsocketaddressenumerator.h
+' glib-2.32.4/gio/gproxyresolver.h
+' glib-2.32.4/gio/gresolver.h
+' glib-2.32.4/gio/gresource.h
+' glib-2.32.4/gio/gseekable.h
+' glib-2.32.4/gio/gsettingsschema.h
+' glib-2.32.4/gio/gsettings.h
+' glib-2.32.4/gio/gsimpleaction.h
+' glib-2.32.4/gio/gsimpleactiongroup.h
+' glib-2.32.4/gio/gsimpleasyncresult.h
+' glib-2.32.4/gio/gsimplepermission.h
+' glib-2.32.4/gio/gsocketclient.h
+' glib-2.32.4/gio/gsocketconnectable.h
+' glib-2.32.4/gio/gsocketconnection.h
+' glib-2.32.4/gio/gsocket.h
+' glib-2.32.4/gio/gsocketcontrolmessage.h
+' glib-2.32.4/gio/gsocketlistener.h
+' glib-2.32.4/gio/gsocketservice.h
+' glib-2.32.4/gio/gsrvtarget.h
+' glib-2.32.4/gio/gtcpconnection.h
+' glib-2.32.4/gio/gtcpwrapperconnection.h
+' glib-2.32.4/gio/gthemedicon.h
+' glib-2.32.4/gio/gthreadedsocketservice.h
+' glib-2.32.4/gio/gtlsbackend.h
+' glib-2.32.4/gio/gtlscertificate.h
+' glib-2.32.4/gio/gtlsclientconnection.h
+' glib-2.32.4/gio/gtlsconnection.h
+' glib-2.32.4/gio/gtlsdatabase.h
+' glib-2.32.4/gio/gtlsfiledatabase.h
+' glib-2.32.4/gio/gtlsinteraction.h
+' glib-2.32.4/gio/gtlsserverconnection.h
+' glib-2.32.4/gio/gtlspassword.h
+' glib-2.32.4/gio/gvfs.h
+' glib-2.32.4/gio/gvolume.h
+' glib-2.32.4/gio/gzlibcompressor.h
+' glib-2.32.4/gio/gzlibdecompressor.h
+' glib-2.32.4/gio/gdbusinterface.h
+' glib-2.32.4/gio/gdbusinterfaceskeleton.h
+' glib-2.32.4/gio/gdbusobject.h
+' glib-2.32.4/gio/gdbusobjectskeleton.h
+' glib-2.32.4/gio/gdbusobjectproxy.h
+' glib-2.32.4/gio/gdbusobjectmanager.h
+' glib-2.32.4/gio/gdbusobjectmanagerclient.h
+' glib-2.32.4/gio/gdbusobjectmanagerserver.h
+' glib-2.32.4/gio/gdbusactiongroup.h
+' glib-2.32.4/gio/gremoteactiongroup.h
+' glib-2.32.4/gio/gmenumodel.h
+' glib-2.32.4/gio/gmenu.h
+' glib-2.32.4/gio/gmenuexporter.h
+' glib-2.32.4/gio/gdbusmenumodel.h
+'                                      files missed: 0
+'                                       __FOLDERS__: 2
+' glib-2.32.4/
+' glib-2.32.4/gio/
+'                                        __MACROS__: 8
+' 127: #define G_BEGIN_DECLS
+' 127: #define G_END_DECLS
+' 189: #define G_GNUC_CONST
+' 4: #define G_GNUC_PRINTF( format_idx, arg_idx )
+' 4: #define GLIB_DEPRECATED
+' 12: #define GLIB_DEPRECATED_FOR(x)
+' 6: #define GLIB_AVAILABLE_IN_2_30
+' 71: #define GLIB_AVAILABLE_IN_2_32
+'                                       __HEADERS__: 0
+'                                         __TYPES__: 0
+'                                     __POST_REPS__: 2
+' 1: g_file_monitor&_ ALIAS "g_file_monitor"
+' 1: G_DBUS_INTERFACE_SKELETON_FLAGS_HANDLE_METHOD_INVOCATIONS_IN_THREAD>G_DBUS_INTERFACE_SKELETON_FLAGS_HANDLE_METHOD_INVOCATIONS_IN_THR

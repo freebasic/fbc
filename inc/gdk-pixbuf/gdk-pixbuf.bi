@@ -1,11 +1,11 @@
 ' This is file gdk-pixbuf.bi
-' (FreeBasic binding for gdk-pixbuf library version 2.25.0)
+' (FreeBasic binding for gdk-pixbuf library version 2.26.1)
 '
 ' translated with help of h_2_bi.bas by
 ' Thomas[ dot ]Freiherr[ at ]gmx[ dot ]net.
 '
 ' Licence:
-' (C) 2011 Thomas[ dot ]Freiherr[ at ]gmx[ dot ]net
+' (C) 2011-2012 Thomas[ dot ]Freiherr[ at ]gmx[ dot ]net
 '
 ' This library binding is free software; you can redistribute it
 ' and/or modify it under the terms of the GNU Lesser General Public
@@ -18,33 +18,32 @@
 ' Lesser General Public License for more details, refer to:
 ' http://www.gnu.org/licenses/lgpl.html
 '
-'
 ' Original license text:
 '
-'  * GdkPixbuf library - Main header file
-'  *
-'  * Copyright (C) 1999 The Free Software Foundation
-'  *
-'  * Authors: Mark Crichton <crichton@gimp.org>
-'  *          Miguel de Icaza <miguel@gnu.org>
-'  *          Federico Mena-Quintero <federico@gimp.org>
-'  *          Havoc Pennington <hp@redhat.com>
-'  *
-'  * This library is free software; you can redistribute it and/or
-'  * modify it under the terms of the GNU Lesser General Public
-'  * License as published by the Free Software Foundation; either
-'  * version 2 of the License, or (at your option) any later version.
-'  *
-'  * This library is distributed in the hope that it will be useful,
-'  * but WITHOUT ANY WARRANTY; without even the implied warranty of
-'  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-'  * Lesser General Public License for more details.
-'  *
-'  * You should have received a copy of the GNU Lesser General Public
-'  * License along with this library; if not, write to the
-'  * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
-'  * Boston, MA 02111-1307, USA.
-'  *
+'/* GdkPixbuf library - Main header file
+ '*
+ '* Copyright (C) 1999 The Free Software Foundation
+ '*
+ '* Authors: Mark Crichton <crichton@gimp.org>
+ '*          Miguel de Icaza <miguel@gnu.org>
+ '*          Federico Mena-Quintero <federico@gimp.org>
+ '*          Havoc Pennington <hp@redhat.com>
+ '*
+ '* This library is free software; you can redistribute it and/or
+ '* modify it under the terms of the GNU Lesser General Public
+ '* License as published by the Free Software Foundation; either
+ '* version 2 of the License, or (at your option) any later version.
+ '*
+ '* This library is distributed in the hope that it will be useful,
+ '* but WITHOUT ANY WARRANTY; without even the implied warranty of
+ '* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ '* Lesser General Public License for more details.
+ '*
+ '* You should have received a copy of the GNU Lesser General Public
+ '* License along with this library; if not, write to the
+ '* Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ '* Boston, MA 02111-1307, USA.
+ '*/
 
 #IFDEF __FB_WIN32__
 #PRAGMA push(msbitfields)
@@ -52,20 +51,38 @@
 
 #INCLIB "gdk_pixbuf-2.0"
 
-EXTERN "C"
+EXTERN "C" ' (h_2_bi -P_oCD option)
 
 #IFNDEF GDK_PIXBUF_H
 #DEFINE GDK_PIXBUF_H
 #DEFINE GDK_PIXBUF_H_INSIDE
-#INCLUDE ONCE "glib.bi"
+#INCLUDE ONCE "glib.bi" '__HEADERS__: glib.h
 
 #IFNDEF GDK_PIXBUF_FEATURES_H
 #DEFINE GDK_PIXBUF_FEATURES_H 1
 
 #DEFINE GDK_PIXBUF_MAJOR (2)
-#DEFINE GDK_PIXBUF_MINOR (25)
-#DEFINE GDK_PIXBUF_MICRO (0)
-#DEFINE GDK_PIXBUF_VERSION_ !"2.25.0"
+#DEFINE GDK_PIXBUF_MINOR (26)
+#DEFINE GDK_PIXBUF_MICRO (1)
+#DEFINE GDK_PIXBUF_VERSION_ @!"2.26.1"
+
+#IFDEF G_PLATFORM_WIN32
+#IFDEF GDK_PIXBUF_STATIC_COMPILATION
+#DEFINE GDK_PIXBUF_VAR extern
+#ELSE ' GDK_PIXBUF_STATIC_COMPILATION
+#IFDEF GDK_PIXBUF_C_COMPILATION
+#IFDEF DLL_EXPORT
+#DEFINE GDK_PIXBUF_VAR __declspec(dllexport)
+#ELSE ' DLL_EXPORT
+#DEFINE GDK_PIXBUF_VAR extern
+#ENDIF ' DLL_EXPORT
+#ELSE ' GDK_PIXBUF_C_COMPILATION
+#DEFINE GDK_PIXBUF_VAR extern __declspec(dllimport)
+#ENDIF ' GDK_PIXBUF_C_COMPILATION
+#ENDIF ' GDK_PIXBUF_STATIC_COMPILATION
+#ELSE ' G_PLATFORM_WIN32
+#DEFINE GDK_PIXBUF_VAR extern
+#ENDIF ' G_PLATFORM_WIN32
 
 EXTERN AS CONST guint gdk_pixbuf_major_version
 EXTERN AS CONST guint gdk_pixbuf_minor_version
@@ -74,14 +91,12 @@ EXTERN AS CONST ZSTRING PTR gdk_pixbuf_version
 
 #ENDIF ' GDK_PIXBUF_FEATURES_H
 
-#INCLUDE ONCE "glib-object.bi"
+#INCLUDE ONCE "glib-object.bi" '__HEADERS__: glib-object.h
 
 #IFNDEF GDK_PIXBUF_CORE_H
 #DEFINE GDK_PIXBUF_CORE_H
 
-#IFNDEF __USE_GTK_OLD__
-#INCLUDE ONCE "gio/gio.bi"
-#ENDIF
+#INCLUDE ONCE "gio/gio.bi" '__HEADERS__: gio/gio.h
 
 ENUM GdkPixbufAlphaMode
   GDK_PIXBUF_ALPHA_BILEVEL
@@ -146,6 +161,8 @@ DECLARE FUNCTION gdk_pixbuf_new_subpixbuf(BYVAL AS GdkPixbuf PTR, BYVAL AS INTEG
 DECLARE FUNCTION gdk_pixbuf_new_from_file(BYVAL AS CONST ZSTRING PTR, BYVAL AS GError PTR PTR) AS GdkPixbuf PTR
 DECLARE FUNCTION gdk_pixbuf_new_from_file_at_size(BYVAL AS CONST ZSTRING PTR, BYVAL AS INTEGER, BYVAL AS INTEGER, BYVAL AS GError PTR PTR) AS GdkPixbuf PTR
 DECLARE FUNCTION gdk_pixbuf_new_from_file_at_scale(BYVAL AS CONST ZSTRING PTR, BYVAL AS INTEGER, BYVAL AS INTEGER, BYVAL AS gboolean, BYVAL AS GError PTR PTR) AS GdkPixbuf PTR
+DECLARE FUNCTION gdk_pixbuf_new_from_resource(BYVAL AS CONST ZSTRING PTR, BYVAL AS GError PTR PTR) AS GdkPixbuf PTR
+DECLARE FUNCTION gdk_pixbuf_new_from_resource_at_scale(BYVAL AS CONST ZSTRING PTR, BYVAL AS INTEGER, BYVAL AS INTEGER, BYVAL AS gboolean, BYVAL AS GError PTR PTR) AS GdkPixbuf PTR
 DECLARE FUNCTION gdk_pixbuf_new_from_data(BYVAL AS CONST guchar PTR, BYVAL AS GdkColorspace, BYVAL AS gboolean, BYVAL AS INTEGER, BYVAL AS INTEGER, BYVAL AS INTEGER, BYVAL AS INTEGER, BYVAL AS GdkPixbufDestroyNotify, BYVAL AS gpointer) AS GdkPixbuf PTR
 DECLARE FUNCTION gdk_pixbuf_new_from_xpm_data(BYVAL AS CONST ZSTRING PTR PTR) AS GdkPixbuf PTR
 DECLARE FUNCTION gdk_pixbuf_new_from_inline(BYVAL AS gint, BYVAL AS CONST guint8 PTR, BYVAL AS gboolean, BYVAL AS GError PTR PTR) AS GdkPixbuf PTR
@@ -319,8 +336,9 @@ DECLARE FUNCTION gdk_pixbuf_simple_anim_get_loop(BYVAL AS GdkPixbufSimpleAnim PT
 
 #IFNDEF GDK_PIXBUF_IO_H
 #DEFINE GDK_PIXBUF_IO_H
-#INCLUDE ONCE "crt/stdio.bi"
-#INCLUDE ONCE "gmodule.bi"
+#INCLUDE ONCE "crt/stdio.bi" '__HEADERS__: stdio.h
+
+#INCLUDE ONCE "gmodule.bi" '__HEADERS__: gmodule.h
 
 TYPE GdkPixbufFormat AS _GdkPixbufFormat
 
@@ -380,9 +398,9 @@ TYPE GdkPixbufModuleFillInfoFunc AS SUB(BYVAL AS GdkPixbufFormat PTR)
 DECLARE FUNCTION gdk_pixbuf_set_option(BYVAL AS GdkPixbuf PTR, BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR) AS gboolean
 
 ENUM GdkPixbufFormatFlags
-  GDK_PIXBUF_FORMAT_WRITABLE = 1 SHL 0
-  GDK_PIXBUF_FORMAT_SCALABLE = 1 SHL 1
-  GDK_PIXBUF_FORMAT_THREADSAFE = 1 SHL 2
+  GDK_PIXBUF_FORMAT_WRITABLE = 1  SHL 0
+  GDK_PIXBUF_FORMAT_SCALABLE = 1  SHL 1
+  GDK_PIXBUF_FORMAT_THREADSAFE = 1  SHL 2
 END ENUM
 
 TYPE _GdkPixbufFormat
@@ -458,8 +476,46 @@ DECLARE FUNCTION gdk_pixbuf_rotation_get_type() AS GType
 #UNDEF GDK_PIXBUF_H_INSIDE
 #ENDIF ' GDK_PIXBUF_H
 
-END EXTERN
+END EXTERN ' (h_2_bi -P_oCD option)
 
 #IFDEF __FB_WIN32__
 #PRAGMA pop(msbitfields)
 #ENDIF
+
+' Translated at 12-08-19 14:46:19, by h_2_bi (version 0.2.2.1,
+' released under GPLv3 by Thomas[ dot ]Freiherr{ at }gmx[ dot ]net)
+
+'   Protocol: GDK-pixbuf-2.26.1.bi
+' Parameters: GDK-pixbuf-2.26.1
+'                                  Process time [s]: 0.1403330764733255
+'                                  Bytes translated: 28539
+'                                      Maximum deep: 2
+'                                SUB/FUNCTION names: 111
+'                                mangled TYPE names: 0
+'                                        files done: 9
+' gdk-pixbuf-2.26.1/gdk-pixbuf/gdk-pixbuf.h
+' gdk-pixbuf-2.26.1/gdk-pixbuf/gdk-pixbuf-features.h
+' gdk-pixbuf-2.26.1/gdk-pixbuf/gdk-pixbuf-core.h
+' gdk-pixbuf-2.26.1/gdk-pixbuf/gdk-pixbuf-transform.h
+' gdk-pixbuf-2.26.1/gdk-pixbuf/gdk-pixbuf-animation.h
+' gdk-pixbuf-2.26.1/gdk-pixbuf/gdk-pixbuf-simple-anim.h
+' gdk-pixbuf-2.26.1/gdk-pixbuf/gdk-pixbuf-io.h
+' gdk-pixbuf-2.26.1/gdk-pixbuf/gdk-pixbuf-loader.h
+' gdk-pixbuf-2.26.1/gdk-pixbuf/gdk-pixbuf-enum-types.h
+'                                      files missed: 0
+'                                       __FOLDERS__: 2
+' gdk-pixbuf-2.26.1/gdk-pixbuf/
+' gdk-pixbuf-2.26.1/
+'                                        __MACROS__: 5
+' 4: #define GDK_PIXBUF_VAR extern
+' 7: #define G_BEGIN_DECLS
+' 7: #define G_END_DECLS
+' 13: #define G_GNUC_CONST
+' 4: #define G_DEPRECATED_FOR(f)
+'                                       __HEADERS__: 3
+' 6: glib.h>glib.bi
+' 1: gio/gio.h>gio/gio.bi
+' 5: glib-object.h>glib-object.bi
+'                                         __TYPES__: 0
+'                                     __POST_REPS__: 1
+' 1: GDK_PIXBUF_VERSION&

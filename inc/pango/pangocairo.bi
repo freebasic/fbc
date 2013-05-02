@@ -1,11 +1,11 @@
-' This is file pangocairo.bi
-' (FreeBasic binding for Pango library version 1.29.5)
+' This is file glib.bi
+' (FreeBasic binding for PangaCairo library version 1.30.1)
 '
 ' translated with help of h_2_bi.bas by
 ' Thomas[ dot ]Freiherr[ at ]gmx[ dot ]net.
 '
 ' Licence:
-' (C) 2011 Thomas[ dot ]Freiherr[ at ]gmx[ dot ]net
+' (C) 2011-2012 Thomas[ dot ]Freiherr[ at ]gmx[ dot ]net
 '
 ' This library binding is free software; you can redistribute it
 ' and/or modify it under the terms of the GNU Lesser General Public
@@ -46,17 +46,14 @@
 #PRAGMA push(msbitfields)
 #ENDIF
 
-#IFNDEF __USE_GTK_OLD__
 #INCLIB "pangocairo-1.0"
-#ENDIF
 
-
-EXTERN "C"
+EXTERN "C" ' (h_2_bi -P_oCD option)
 
 #IFNDEF __PANGOCAIRO_H__
 #DEFINE __PANGOCAIRO_H__
-#INCLUDE ONCE "pango/pango.bi"
-#INCLUDE ONCE "cairo/cairo.bi"
+#INCLUDE ONCE "pango/pango.bi" '__HEADERS__: pango/pango.h
+#INCLUDE ONCE "cairo/cairo.bi" '__HEADERS__: cairo.h
 
 TYPE PangoCairoFont AS _PangoCairoFont
 
@@ -111,8 +108,33 @@ DECLARE SUB pango_cairo_error_underline_path(BYVAL AS cairo_t PTR, BYVAL AS DOUB
 
 #ENDIF ' __PANGOCAIRO_H__
 
-END EXTERN
+END EXTERN ' (h_2_bi -P_oCD option)
 
 #IFDEF __FB_WIN32__
 #PRAGMA pop(msbitfields)
 #ENDIF
+
+' Translated at 12-08-19 14:38:59, by h_2_bi (version 0.2.2.1,
+' released under GPLv3 by Thomas[ dot ]Freiherr{ at }gmx[ dot ]net)
+
+'   Protocol: PANGOCAIRO-1.30.1.bi
+' Parameters: PANGOCAIRO-1.30.1
+'                                  Process time [s]: 0.03385302342940122
+'                                  Bytes translated: 4309
+'                                      Maximum deep: 1
+'                                SUB/FUNCTION names: 31
+'                                mangled TYPE names: 0
+'                                        files done: 1
+' pango-1.30.1/pango/pangocairo.h
+'                                      files missed: 0
+'                                       __FOLDERS__: 2
+' pango-1.30.1/pango/
+' pango-1.30.1/
+'                                        __MACROS__: 4
+' 1: #define G_BEGIN_DECLS
+' 1: #define G_END_DECLS
+' 2: #define G_GNUC_CONST
+' 1: #define G_DEPRECATED_FOR(f)
+'                                       __HEADERS__: 0
+'                                         __TYPES__: 0
+'                                     __POST_REPS__: 0
