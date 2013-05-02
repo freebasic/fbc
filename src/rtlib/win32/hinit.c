@@ -21,6 +21,14 @@ FB_CONSOLE_CTX __fb_con /* not initialized */;
 void fb_hInit( void )
 {
 #ifdef HOST_MINGW
+#ifndef _clear87
+/* if __STRICT_ANSI__ is defined the _controlfp function is not defined in some versions of mingw-gcc */
+#define	_PC_64		0x00000000
+#define	_RC_NEAR	0x00000000
+#define	_MCW_RC		0x00000300	/* Rounding */
+#define	_MCW_PC		0x00030000	/* Precision */
+_CRTIMP unsigned int __cdecl __MINGW_NOTHROW _controlfp (unsigned int unNew, unsigned int unMask);
+#endif
     /* set FPU precision to 64-bit and round to nearest (as in QB) */
     _controlfp( _PC_64|_RC_NEAR, _MCW_PC|_MCW_RC );
 #elif defined HOST_X86
