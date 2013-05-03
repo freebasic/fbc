@@ -1,4 +1,4 @@
-Version 0.25.0:
+Version 0.90.0 (former 0.25.0):
 
 [changed]
 - -c, -r and -pp options will now complement each-other when used together, instead of partially overwriting each-other and thus causing weird behaviour
