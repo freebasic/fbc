@@ -127,6 +127,7 @@ void fb_hInitX11KeycodeToScancodeTb
 	)
 {
 	int keycode_min, keycode_max, i, j;
+	int keysyms_per_keycode_return;
 	KeySym keysym;
 
 	DisplayKeycodes( display, &keycode_min, &keycode_max );
@@ -134,7 +135,7 @@ void fb_hInitX11KeycodeToScancodeTb
 	if( keycode_max > 255 ) keycode_max = 255;
 
 	for( i = keycode_min; i <= keycode_max; i++ ) {
-		keysym = KeycodeToKeysym( display, i, 0 );
+		keysym = *XGetKeyboardMapping( display, i, 1, &keysyms_per_keycode_return );
 		if( keysym != NoSymbol ) {
 			for( j = 0;
 			     keysym_to_scancode[j].scancode &&
