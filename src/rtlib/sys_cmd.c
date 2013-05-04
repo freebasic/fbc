@@ -49,6 +49,10 @@ FBCALL FBSTRING *fb_Command ( int arg )
 #ifdef HOST_DOS
 	if( arg == 0 )
 	{
+		/* make drive letter uppercase */
+		if( dst[1] == ':' )
+			dst[0] = toupper( dst[0] );
+
 		/* DOS gives us argv[0] with '/' path separators -
 		 * change them to the more DOS-like '\'. */
 		for( i = 0; i < len; ++i )
