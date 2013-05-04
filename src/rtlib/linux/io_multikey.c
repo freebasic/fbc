@@ -23,7 +23,7 @@ typedef struct {
     XCLOSEDISPLAY CloseDisplay;
     XQUERYKEYMAP QueryKeymap;
     XDISPLAYKEYCODES DisplayKeycodes;
-    XKEYCODETOKEYSYM XGetKeyboardMapping;
+    XGETKEYBOARDMAPPING GetKeyboardMapping;
 } X_FUNCS;
 
 static Display *display;
@@ -275,7 +275,7 @@ static int keyboard_init(void)
 		if (!display)
 			return -1;
 
-		fb_hInitX11KeycodeToScancodeTb( display, X.DisplayKeycodes, X.XGetKeyboardMapping );
+		fb_hInitX11KeycodeToScancodeTb( display, X.DisplayKeycodes, X.GetKeyboardMapping );
 
 		fb_hXTermInitFocus();
 		__fb_con.keyboard_handler = keyboard_x11_handler;
