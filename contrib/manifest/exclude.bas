@@ -7,7 +7,7 @@
 
 dim shared as string release '' release name from command line
 
-const MAX_PATTERNS = 128
+const MAX_PATTERNS = 1024*8
 
 dim shared as string patterns(0 to MAX_PATTERNS-1)
 dim shared as integer patterncount

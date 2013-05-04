@@ -26,7 +26,7 @@ esac
 
 # Remove existing archive, if any
 case "$1" in
-dos|djgpp|win32|mingw32)
+dos*|djgpp|win32*|mingw32)
 	rm -f "FreeBASIC-$2-$1.zip"
 	;;
 *)
@@ -39,7 +39,7 @@ find . -type f | cut -c3- | contrib/manifest/exclude "$1" | sort -f > "contrib/m
 
 # Create an archive containing all the files listed in the manifest
 case "$1" in
-dos|djgpp|win32|mingw32)
+dos*|djgpp|win32*|mingw32)
 
 	# Copy all the files listed in the manifest into a directory named <release-name>
 	zip -q temp.zip -@ < contrib/manifest/$1.lst
