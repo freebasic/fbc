@@ -1515,6 +1515,7 @@ cp binutils-build-linux/gprof/gprof musl-fbc/bin/linux/gprof
 mkdir -p musl-fbc/bin/win32
 cp binutils-build-mingw/binutils/ar      musl-fbc/bin/win32/ar
 cp binutils-build-mingw/binutils/dlltool musl-fbc/bin/win32/dlltool
+cp binutils-build-mingw/binutils/windres musl-fbc/bin/win32/windres
 cp binutils-build-mingw/gas/as-new       musl-fbc/bin/win32/as
 cp binutils-build-mingw/ld/ld-new        musl-fbc/bin/win32/ld
 
