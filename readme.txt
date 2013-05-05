@@ -162,7 +162,7 @@
         Author of huge parts of the runtime (printing support, date/time
         functions, SCR/LPTx/COM/console/keyboard I/O), Cygwin port,
         first FB installer scripts.
-    - Matthew Fearnley (counting.pine[at]virgin.net)
+    - Matthew Fearnley (matthew.w.fearnley[at]gmail.com)
         Print Using & Co, ImageInfo, and others, dialect specifics,
         optimization improvements in the compiler, many fixes and improvements.
     - Ruben Rodriguez (rubentbstk[at]gmail.com)
