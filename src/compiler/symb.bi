@@ -1570,6 +1570,12 @@ declare function typeHasDtor _
 		byval subtype as FBSYMBOL ptr _
 	) as integer
 
+declare function typeMerge _
+	( _
+		byval dtype1 as integer, _
+		byval dtype2 as integer _
+	) as integer
+
 declare sub symbHashListAdd _
 	( _
 		byval hashtb as FBHASHTB ptr _

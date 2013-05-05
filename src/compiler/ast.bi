@@ -1215,6 +1215,14 @@ declare sub astReplaceSymbolOnTree _
 		byval new_sym as FBSYMBOL ptr _
 	)
 
+declare sub astReplaceFwdref _
+	( _
+		byval n as ASTNODE ptr, _
+		byval oldsubtype as FBSYMBOL ptr, _
+		byval newdtype as integer, _
+		byval newsubtype as FBSYMBOL ptr _
+	)
+
 #if __FB_DEBUG__
 declare sub astDtorListDump( )
 #endif

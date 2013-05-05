@@ -369,6 +369,29 @@ sub astReplaceSymbolOnTree _
 
 end sub
 
+sub astReplaceFwdref _
+	( _
+		byval n as ASTNODE ptr, _
+		byval oldsubtype as FBSYMBOL ptr, _
+		byval newdtype as integer, _
+		byval newsubtype as FBSYMBOL ptr _
+	)
+
+	if( (typeGetDtOnly( n->dtype ) = FB_DATATYPE_FWDREF) and _
+	    (n->subtype = oldsubtype) ) then
+		n->dtype = typeMerge( n->dtype, newdtype )
+		n->subtype = newsubtype
+	end if
+
+	if( n->l ) then
+		astReplaceFwdref( n->l, oldsubtype, newdtype, newsubtype )
+	end if
+	if( n->r ) then
+		astReplaceFwdref( n->r, oldsubtype, newdtype, newsubtype )
+	end if
+
+end sub
+
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' const helpers
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
