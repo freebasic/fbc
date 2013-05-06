@@ -188,7 +188,7 @@ static int save_bmp(FB_GFXCTX *ctx, FILE *f, void *src, void *pal, int outbpp)
 				for (i = 0; i < w; i++) {
 					color = ((unsigned short *)s)[i];
 					*p++ = ((color & 0x001F) << 3) | ((color & 0x001F) >> 2);
-					*p++ = ((color & 0x07E0) >> 3) | ((color & 0x07E0) >> 8);
+					*p++ = ((color & 0x07E0) >> 3) | ((color & 0x07E0) >> 9);
 					*p++ = ((color & 0xF800) >> 8) | ((color & 0xF800) >> 13);
 				}
 				break;
