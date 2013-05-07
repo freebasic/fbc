@@ -50,8 +50,8 @@ FBCALL FBSTRING *fb_Command ( int arg )
 	if( arg == 0 )
 	{
 		/* make drive letter uppercase */
-		if( dst[1] == ':' )
-			dst[0] = toupper( dst[0] );
+		if( dst->data[1] == ':' )
+			dst->data[0] = toupper( dst->data[0] );
 
 		/* DOS gives us argv[0] with '/' path separators -
 		 * change them to the more DOS-like '\'. */
