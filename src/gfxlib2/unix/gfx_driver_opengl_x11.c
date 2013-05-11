@@ -194,10 +194,9 @@ static int driver_init(char *title, int w, int h, int depth, int refresh_rate, i
 		if ((info = __fb_glX.ChooseVisual(dpy, fb_x11.screen, attribs))) {
 			fb_x11.visual = info->visual;
 			context = __fb_glX.CreateContext(dpy, info, NULL, True);
-			if ((intptr_t)context > 0)
+			if (context)
 				break;
-			else
-				__fb_glX.DestroyContext(dpy, context);
+			__fb_glX.DestroyContext(dpy, context);
 			XFree(info);
 			info = NULL;
 		}
@@ -229,9 +228,10 @@ static int driver_init(char *title, int w, int h, int depth, int refresh_rate, i
 
 static void driver_exit(void)
 {
-	if (context > 0) {
+	if (context) {
 		__fb_glX.MakeCurrent(fb_x11.display, None, NULL);
 		__fb_glX.DestroyContext(fb_x11.display, context);
+		context = NULL;
 	}
 	fb_hX11Exit();
     fb_hDynUnload(&gl_lib);
