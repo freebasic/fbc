@@ -70,6 +70,7 @@ private sub libpng_error_callback cdecl _
 	)
 
 	print "libpng failed to load the image (" & *p & ")"
+	end 1
 
 end sub
 
