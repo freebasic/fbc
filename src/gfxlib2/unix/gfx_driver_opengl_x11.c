@@ -196,7 +196,6 @@ static int driver_init(char *title, int w, int h, int depth, int refresh_rate, i
 			context = __fb_glX.CreateContext(dpy, info, NULL, True);
 			if (context)
 				break;
-			__fb_glX.DestroyContext(dpy, context);
 			XFree(info);
 			info = NULL;
 		}
