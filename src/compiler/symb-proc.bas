@@ -1096,33 +1096,50 @@ function symbAddProcPtrFromFunction _
 
 end function
 
-'':::::
-function symbPreAddProc _
-	( _
-		byval symbol as zstring ptr _
-	) as FBSYMBOL ptr
-
+function symbPreAddProc( byval symbol as zstring ptr ) as FBSYMBOL ptr
     dim as FBSYMBOL ptr proc = any
 
 	proc = listNewNode( @symb.symlist )
 
 	proc->class = FB_SYMBCLASS_PROC
+	proc->attrib = 0
+	proc->stats = 0
+	proc->id.name = symbol
+	proc->id.alias = NULL
+	proc->id.mangled = NULL
+	proc->typ = FB_DATATYPE_INVALID
+	proc->subtype = NULL
+	proc->scope = 0
+	proc->mangling = FB_MANGLING_BASIC
+	proc->lgt = 0
+	proc->ofs = 0
+
 	proc->proc.params = 0
 	proc->proc.optparams = 0
 	symbSymbTbInit( proc->proc.paramtb, proc )
-	proc->id.name = symbol
-	proc->proc.ext = NULL
-	proc->attrib = 0
-	proc->stats = 0
-
+	proc->proc.mode = env.target.fbcall
+	proc->proc.realdtype = FB_DATATYPE_INVALID
+	proc->proc.realsubtype = NULL
 	proc->proc.returnMethod = FB_RETURN_FPU
+	proc->proc.rtl.callback = NULL
+	proc->proc.ovl.minparams = 0
+	proc->proc.ovl.maxparams = 0
+	proc->proc.ovl.next = NULL
+	proc->proc.ext = NULL
 
     '' to allow getNamespace() and GetParent() to work
     proc->symtb = @symbGetCompSymbTb( symbGetCurrentNamespc( ) )
     proc->hash.tb = @symbGetCompHashTb( symbGetCurrentNamespc( ) )
+	proc->hash.item = NULL
+	proc->hash.index = 0
+	proc->hash.prev = NULL
+	proc->hash.next = NULL
+
+	proc->parent = NULL
+	proc->prev = NULL
+	proc->next = NULL
 
 	function = proc
-
 end function
 
 function symbAddVarForParam( byval param as FBSYMBOL ptr ) as FBSYMBOL ptr
@@ -2647,7 +2664,6 @@ private function hMangleFunctionPtr _
     id += hex( mode )
 
 	function = strptr( id )
-
 end function
 
 private function hDemangleParams _
