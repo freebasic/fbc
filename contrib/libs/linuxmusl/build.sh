@@ -1,98 +1,19 @@
 #!/bin/bash
 set -e
 
+scriptdir="`dirname \"$0\"`"
+source "$scriptdir/../common.sh"
+
 toplevel="$PWD"
-mkdir -p src
-
-my_report()
-{
-	echo "------------------------------------------------------------"
-	echo $@
-}
-
-my_fetch()
-{
-	local tarball="$1"
-	local url="$2"
-
-	# download
-	if [ ! -f src/$tarball ]; then
-		my_report "downloading $tarball"
-		wget $url -O src/$tarball
-	fi
-}
-
-my_fixdir()
-{
-	local top="$1"
-	local name="$2"
-
-	cd "$top"
-
-	# If the archive included one or multiple prefix directories,
-	# remove them
-
-	# Just one dir in current dir?
-	# (note: ignoring hidden files here, which helps at least with some
-	# packages that have .hg_archival.txt etc. at the toplevel but all other
-	# files in a subdir)
-	if [ "`ls -1 | wc -l`" = "1" ] && [ -d "`ls -1`" ]; then
-		# Recursion to handle nested dirs
-		my_fixdir "`ls -1`" "$name"
-
-		mv "$name" ..
-		cd ..
-		rm -rf "$top"
-	else
-		cd ..
-		if [ "$top" != "$name" ]; then
-			mv "$top" "$name"
-		fi
-	fi
-}
-
-my_extract()
-{
-	local name="$1"
-	local tarball="$2"
-
-	# unpack
-	if [ ! -d $name ]; then
-		my_report "extracting $tarball -> $name"
-
-		# Extract archive inside tmpextract/
-		mkdir tmpextract
-		cd tmpextract
-
-		if [ -n "`echo $tarball | grep '\.zip$'`" ]; then
-			unzip -q ../src/$tarball
-		else
-			tar -xf ../src/$tarball
-		fi
-
-		cd ..
-
-		my_fixdir tmpextract $name
-
-		# assert that these files don't exist yet
-		test ! -f $name/patch-done
-		test ! -f $name/build-done
-	fi
-}
 
 ################################################################################
-
-# Copy patches
-cp `dirname "$0"`/*.patch src
+# Build an i486-linux-musl cross compiler toolchain with the help of the
+# musl-cross scripts.
 
 muslcrossrev=3ebcb354a9d7
 muslcrossname=GregorR-musl-cross-$muslcrossrev
 muslcrosstarball=$muslcrossname.tar.bz2
 my_fetch  $muslcrosstarball  "https://bitbucket.org/GregorR/musl-cross/get/$muslcrossrev.tar.bz2"
-
-################################################################################
-# Build an i486-linux-musl cross compiler toolchain with the help of the
-# musl-cross scripts.
 
 toolchainbackup="i486-linux-musl.tar.xz"
 if [ -f "$toolchainbackup" ]; then
@@ -106,7 +27,7 @@ else
 	# Relink musl-cross' tarballs dir to our src dir
 	rm musl-cross/tarballs/empty
 	rmdir musl-cross/tarballs
-	ln -s ../src musl-cross/tarballs
+	ln -s "$srcdir" musl-cross/tarballs
 
 	if [ ! -d i486-linux-musl ]; then
 		my_report "building musl-cross toolchain"
@@ -164,29 +85,29 @@ my_patch()
 
 		case $name in
 		alsa-lib-*)
-			patch -p1 < ../src/alsa-lib.patch
+			patch -p1 < "$srcdir/alsa-lib-linuxmusl.patch"
 			;;
 		Chipmunk-*)
-			patch -p0 < ../src/chipmunk.patch
+			patch -p0 < "$srcdir/chipmunk-linuxmusl.patch"
 			;;
 		cryptlib-*)
 			find . -type f -print0 | xargs -0 dos2unix && true
-			patch -p0 < ../src/cryptlib.patch
+			patch -p0 < "$srcdir/cryptlib-linuxmusl.patch"
 			;;
 		DevIL-*)
-			patch -p0 < ../src/DevIL.patch
+			patch -p0 < "$srcdir/DevIL.patch"
 			;;
 		flac-*)
-			patch -p0 < ../src/flac.patch
+			patch -p0 < "$srcdir/flac-linuxmusl.patch"
 			;;
 		freeglut-*)
-			patch -p0 < ../src/freeglut.patch
+			patch -p0 < "$srcdir/freeglut-linuxmusl.patch"
 			;;
 		FreeImage-*)
-			patch -p0 < ../src/freeimage.patch
+			patch -p0 < "$srcdir/FreeImage.patch"
 			;;
 		gd-2.0.33)
-			patch -p0 < ../src/gd.patch
+			patch -p0 < "$srcdir/gd-linuxmusl.patch"
 			rm configure.in
 			autoreconf
 			;;
@@ -194,49 +115,45 @@ my_patch()
 			autoreconf -fi
 			;;
 		giflib-5.0.4)
-			patch -p0 < ../src/giflib-5.0.4.patch
-			autoreconf
-			;;
-		giflib-4.2.1)
-			patch -p0 < ../src/giflib-4.2.1.patch
+			patch -p0 < "$srcdir/giflib-5.0.4.patch"
 			autoreconf
 			;;
 		glib-*)
-			patch -p1 < ../src/glib.patch
+			patch -p1 < "$srcdir/glib.patch"
 			;;
 		grx-*-con)
-			patch -p0 < ../src/grx-con.patch
+			patch -p0 < "$srcdir/grx-con.patch"
 			;;
 		jasper-*)
-			patch -p0 < ../src/jasper.patch
+			patch -p0 < "$srcdir/jasper.patch"
 			;;
 		jpeg-*)
-			patch -p0 < ../src/jpeglib.patch
+			patch -p0 < "$srcdir/jpeglib.patch"
 			;;
 		libjit-*)
-			patch -p0 < ../src/libjit.patch
+			patch -p0 < "$srcdir/libjit-linuxmusl.patch"
 			;;
 		libmediainfo-*)
 			find . -type f -print0 | xargs -0 dos2unix && true
-			patch -p0 < ../src/libmediainfo.patch
+			patch -p0 < "$srcdir/libmediainfo-linuxmusl.patch"
 			;;
 		libpciaccess-*)
-			patch -p0 < ../src/libpciaccess.patch
+			patch -p0 < "$srcdir/libpciaccess-linuxmusl.patch"
 			;;
 		libusb-*)
-			patch -p0 < ../src/libusb.patch
+			patch -p0 < "$srcdir/libusb-linuxmusl.patch"
 			;;
 		libxml2-*)
-			patch -p0 < ../src/libxml2.patch
+			patch -p0 < "$srcdir/libxml2-linuxmusl.patch"
 			;;
 		libXxf86dga-*)
-			patch -p0 < ../src/libXxf86dga.patch
+			patch -p0 < "$srcdir/libXxf86dga-linuxmusl.patch"
 			;;
 		libzen-*)
-			patch -p0 < ../src/libzen.patch
+			patch -p0 < "$srcdir/libzen-linuxmusl.patch"
 			;;
 		Mesa-*)
-			patch -p0 < ../src/mesa.patch
+			patch -p0 < "$srcdir/mesa-linuxmusl.patch"
 			;;
 		esac
 
@@ -1254,10 +1171,10 @@ my_work lzo-2.06       lzo-2.06.tar.gz        "http://www.oberhumer.com/opensour
 
 # QuickLZ apparently doesn't offer a tarball download, only the quicklz.c/h files,
 # so create a tarball out of those manually:
-if [ ! -f src/QuickLZ-1.5.0.tar.gz ]; then
+if [ ! -f "$srcdir/QuickLZ-1.5.0.tar.gz" ]; then
 	wget "http://www.quicklz.com/quicklz.h" -O quicklz.h
 	wget "http://www.quicklz.com/quicklz.c" -O quicklz.c
-	tar -czf src/QuickLZ-1.5.0.tar.gz --transform 's,^,QuickLZ-1.5.0/,g' quicklz.c quicklz.h
+	tar -czf "$srcdir/QuickLZ-1.5.0.tar.gz" --transform 's,^,QuickLZ-1.5.0/,g' quicklz.c quicklz.h
 	rm quicklz.c quicklz.h
 fi
 my_work QuickLZ-1.5.0 QuickLZ-1.5.0.tar.gz unused
@@ -1345,7 +1262,6 @@ my_work fontconfig-2.10.91  fontconfig-2.10.91.tar.bz2 "http://www.freedesktop.o
 # images
 my_work libpng-1.5.14  libpng-1.5.14.tar.xz  "http://prdownloads.sourceforge.net/libpng/libpng-1.5.14.tar.xz?download"
 my_work giflib-5.0.4   giflib-5.0.4.tar.bz2  "http://sourceforge.net/projects/giflib/files/giflib-5.x/giflib-5.0.4.tar.bz2/download"
-#my_work giflib-4.2.1   giflib-4.2.1.tar.bz2  "http://sourceforge.net/projects/giflib/files/giflib-4.x/giflib-4.2.1.tar.bz2/download"
 my_work jpeg-9         jpegsrc.v9.tar.gz     "http://www.ijg.org/files/jpegsrc.v9.tar.gz"
 my_work tiff-4.0.3     tiff-4.0.3.tar.gz     "ftp://ftp.remotesensing.org/pub/libtiff/tiff-4.0.3.tar.gz"
 my_work lcms-1.19      lcms-1.19.tar.gz      "http://sourceforge.net/projects/lcms/files/lcms/1.19/lcms-1.19.tar.gz/download"
@@ -1422,7 +1338,7 @@ fbtarball=$fbname.tar.gz
 
 # unpack
 if [ ! -d musl-fbc ]; then
-	tar -xf src/$fbtarball
+	tar -xf "$srcdir/$fbtarball"
 	mv $fbname musl-fbc
 fi
 
@@ -1461,9 +1377,9 @@ strip -g  musl-fbc/lib/linux/*.o musl-fbc/lib/linux/*.a
 
 my_binutils()
 {
-	srcdir="$1"
-	builddir="$2"
-	target="$3"
+	local srcdir="$1"
+	local builddir="$2"
+	local target="$3"
 
 	# build
 	if [ ! -d "$builddir" ]; then
@@ -1524,9 +1440,9 @@ cp binutils-build-mingw/ld/ld-new        musl-fbc/bin/win32/ld
 
 my_gcc()
 {
-	srcdir="$1"
-	builddir="$2"
-	target="$3"
+	local srcdir="$1"
+	local builddir="$2"
+	local target="$3"
 
 	if [ ! -d "$builddir" ]; then
 		my_report "building $builddir"
@@ -1592,43 +1508,6 @@ strip -g musl-fbc/bin/libexec/gcc/$gcctripletlinux/4.7.3/cc1
 strip -g musl-fbc/bin/libexec/gcc/$gcctripletmingw/4.7.3/cc1
 
 ################################################################################
-# Build gdb
-# TODO: not yet working with musl libc
-
-#gdbname=gdb-7.5.1
-#gdbtarball=$gdbname.tar.bz2
-#
-#my_fetch "$gdbtarball" "http://ftp.gnu.org/gnu/gdb/$gdbtarball"
-#my_extract "$gdbname" "$gdbtarball"
-#
-## build
-#if [ ! -d gdb-build ]; then
-#	my_report "building gdb"
-#
-#	mkdir gdb-build
-#	cd gdb-build
-#
-#	CPPFLAGS="-D_GNU_SOURCE" \
-#	CFLAGS="-O2" \
-#	CXXFLAGS="-O2" \
-#	LDFLAGS="-Wl,-Bstatic -static-libgcc"
-#	 CC="$toplevel/i486-linux-musl/bin/i486-linux-musl-gcc" \
-#	CXX="$toplevel/i486-linux-musl/bin/i486-linux-musl-g++" \
-#	 AR="$toplevel/i486-linux-musl/bin/i486-linux-musl-ar" \
-#	 LD="$toplevel/i486-linux-musl/bin/i486-linux-musl-ld" \
-#	"../$gdbname/configure" --host=i486-pc-linux-gnu --target=i486-pc-linux-gnu \
-#		--prefix=/usr \
-#		--disable-shared --enable-static \
-#		--disable-nls
-#
-#	make
-#
-#	cd ..
-#fi
-#
-#cp gdb-build/gdb/gdb musl-fbc/bin/linux
-
-################################################################################
 # "Cross-compile" another FB setup using the 1st one, to get a static fbc
 # (anything else, i.e. gcc/binutils and libs, can just be copied over)
 
@@ -1636,7 +1515,7 @@ my_report "building fbc-static"
 
 # unpack
 if [ ! -d fbc-static ]; then
-	tar -xf src/$fbtarball
+	tar -xf "$srcdir/$fbtarball"
 	mv $fbname fbc-static
 fi
 

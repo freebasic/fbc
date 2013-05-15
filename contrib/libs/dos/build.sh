@@ -1,12 +1,15 @@
 #!/bin/sh
 set -e
 
-mkdir -p src prefix prefix/bin prefix/include prefix/lib
+mkdir -p prefix prefix/bin prefix/include prefix/lib
 mkdir -p fbc/doc/licenses fbc/lib/dos
 
+scriptdir="`dirname \"$0\"`"
+source "$scriptdir/../common.sh"
+
 toplevel="$PWD"
-prefix=$toplevel/prefix
-licensedir=$toplevel/fbc/doc/licenses
+prefix="$toplevel/prefix"
+licensedir="$toplevel/fbc/doc/licenses"
 
 triplet=i586-pc-msdosdjgpp
 export      AS="$triplet-as"
@@ -18,82 +21,6 @@ export  RANLIB="$triplet-ranlib"
 export      LD="$triplet-ld"
 export   STRIP="$triplet-strip"
 export STRINGS="$triplet-strings"
-
-my_report()
-{
-	echo "------------------------------------------------------------"
-	echo $@
-}
-
-my_fetch()
-{
-	local tarball="$1"
-	local url="$2"
-
-	# download
-	if [ ! -f src/$tarball ]; then
-		my_report "downloading $tarball"
-		wget $url -O src/$tarball
-	fi
-}
-
-my_fixdir()
-{
-	local top="$1"
-	local name="$2"
-
-	cd "$top"
-
-	# If the archive included one or multiple prefix directories,
-	# remove them
-
-	# Just one dir in current dir?
-	# (note: ignoring hidden files here, which helps at least with some
-	# packages that have .hg_archival.txt etc. at the toplevel but all other
-	# files in a subdir)
-	if [ "`ls -1 | wc -l`" = "1" ] && [ -d "`ls -1`" ]; then
-		# Recursion to handle nested dirs
-		my_fixdir "`ls -1`" "$name"
-
-		mv "$name" ..
-		cd ..
-		rm -rf "$top"
-	else
-		cd ..
-		if [ "$top" != "$name" ]; then
-			mv "$top" "$name"
-		fi
-	fi
-}
-
-my_extract()
-{
-	local name="$1"
-	local tarball="$2"
-
-	# unpack
-	if [ ! -d $name ]; then
-		my_report "extracting $tarball -> $name"
-
-		# Extract archive inside tmpextract/
-		mkdir tmpextract
-		cd tmpextract
-
-		if [ -n "`echo $tarball | grep '\.zip$'`" ]; then
-			unzip -q ../src/$tarball
-		else
-			tar -xf ../src/$tarball
-		fi
-
-		cd ..
-
-		my_fixdir tmpextract $name
-
-		# assert that these files don't exist yet
-		test ! -f $name/patch-done
-		test ! -f $name/build-done
-	fi
-}
 
 ################################################################################
 
@@ -107,47 +34,43 @@ my_patch()
 
 		case $name in
 		aspell-*)
-			patch -p0 < ../src/aspell.patch
+			patch -p0 < "$srcdir/aspell-dos.patch"
 			;;
 		cryptlib-*)
 			find . -type f -print0 | xargs -0 dos2unix && true
 			;;
 		CUnit-*)
-			patch -p0 < ../src/CUnit.patch
+			patch -p0 < "$srcdir/CUnit-dos.patch"
 			autoreconf
 			;;
 		DevIL-*)
-			patch -p0 < ../src/DevIL.patch
+			patch -p0 < "$srcdir/DevIL.patch"
 			;;
 		expat-*)
-			patch -p0 < ../src/expat.patch
+			patch -p0 < "$srcdir/expat-dos.patch"
 			;;
 		gd-73cab5d8af96)
-			patch -p0 < ../src/gd-73cab5d8af96.patch
+			patch -p0 < "$srcdir/gd-73cab5d8af96-dos.patch"
 			autoreconf -fi
 			;;
 		giflib-5.0.4)
-			patch -p0 < ../src/giflib-5.0.4.patch
-			autoreconf
-			;;
-		giflib-4.2.1)
-			patch -p0 < ../src/giflib-4.2.1.patch
+			patch -p0 < "$srcdir/giflib-5.0.4.patch"
 			autoreconf
 			;;
 		jasper-*)
-			patch -p0 < ../src/jasper.patch
+			patch -p0 < "$srcdir/jasper.patch"
 			;;
 		jpeg-*)
-			patch -p0 < ../src/jpeglib.patch
+			patch -p0 < "$srcdir/jpeglib.patch"
 			;;
 		lcms-*)
-			patch -p0 < ../src/lcms.patch
+			patch -p0 < "$srcdir/lcms-dos.patch"
 			;;
 		libxml2-*)
-			patch -p0 < ../src/libxml2.patch
+			patch -p0 < "$srcdir/libxml2-dos.patch"
 			;;
 		libzip-*)
-			patch -p0 < ../src/libzip.patch
+			patch -p0 < "$srcdir/libzip.patch"
 			;;
 		esac
 
@@ -468,10 +391,10 @@ my_work lzo-2.06       lzo-2.06.tar.gz        "http://www.oberhumer.com/opensour
 
 # QuickLZ apparently doesn't offer a tarball download, only the quicklz.c/h files,
 # so create a tarball out of those manually:
-if [ ! -f src/QuickLZ-1.5.0.tar.gz ]; then
+if [ ! -f "$srcdir/QuickLZ-1.5.0.tar.gz" ]; then
 	wget "http://www.quicklz.com/quicklz.h" -O quicklz.h
 	wget "http://www.quicklz.com/quicklz.c" -O quicklz.c
-	tar -czf src/QuickLZ-1.5.0.tar.gz --transform 's,^,QuickLZ-1.5.0/,g' quicklz.c quicklz.h
+	tar -czf "$srcdir/QuickLZ-1.5.0.tar.gz" --transform 's,^,QuickLZ-1.5.0/,g' quicklz.c quicklz.h
 	rm quicklz.c quicklz.h
 fi
 my_work QuickLZ-1.5.0 QuickLZ-1.5.0.tar.gz unused
@@ -498,7 +421,6 @@ my_work PDCurses-3.4     pdcurs34.zip           "http://sourceforge.net/projects
 # images
 my_work libpng-1.5.14  libpng-1.5.14.tar.xz  "http://prdownloads.sourceforge.net/libpng/libpng-1.5.14.tar.xz?download"
 my_work giflib-5.0.4   giflib-5.0.4.tar.bz2  "http://sourceforge.net/projects/giflib/files/giflib-5.x/giflib-5.0.4.tar.bz2/download"
-#my_work giflib-4.2.1   giflib-4.2.1.tar.bz2  "http://sourceforge.net/projects/giflib/files/giflib-4.x/giflib-4.2.1.tar.bz2/download"
 my_work jpeg-9         jpegsrc.v9.tar.gz     "http://www.ijg.org/files/jpegsrc.v9.tar.gz"
 my_work tiff-4.0.3     tiff-4.0.3.tar.gz     "ftp://ftp.remotesensing.org/pub/libtiff/tiff-4.0.3.tar.gz"
 my_work lcms-1.19      lcms-1.19.tar.gz      "http://sourceforge.net/projects/lcms/files/lcms/1.19/lcms-1.19.tar.gz/download"
