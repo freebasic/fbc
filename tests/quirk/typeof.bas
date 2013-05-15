@@ -176,6 +176,8 @@ sub test cdecl( )
 	checkVar( string * 11 )
 	checkVar( zstring * 22 )
 	checkVar( wstring * 33 )
+	checkVar( sub( ) )
+	checkVar( function( ) as byte )
 
 	checkExpr(        byte, cbyte( 0 )   )
 	checkExpr(       ubyte, cubyte( 0 )  )
@@ -262,6 +264,9 @@ sub test cdecl( )
 		checkExpr(    byte, pfb( ) )
 		checkExpr( integer, pfi( ) )
 		checkExpr( longint, pfll( ) )
+
+		checkExpr( sub(), sub() )
+		checkExpr( function() as byte, function() as byte )
 	end scope
 
 	scope
@@ -304,11 +309,44 @@ sub testSizeofTypeofOthers cdecl( )
 	CU_ASSERT( sizeof( typeof( p[1] ) ) = sizeof( integer ) )
 end sub
 
+dim shared as integer mysubcalls
+
+private sub mySub( )
+	mysubcalls += 1
+end sub
+
+private function myFunc( ) as integer
+	function = 123
+end function
+
+sub testTypeofProcPtr cdecl( )
+	dim pSub as typeof( sub( ) )
+	pSub = @mySub
+	CU_ASSERT( mysubcalls = 0 )
+	pSub( )
+	CU_ASSERT( mysubcalls = 1 )
+
+	dim ppSub as typeof( sub( ) ) ptr
+	ppSub = @pSub
+	CU_ASSERT( mysubcalls = 1 )
+	(*ppSub)( )
+	CU_ASSERT( mysubcalls = 2 )
+
+	dim pFunc as typeof( function( ) as integer )
+	pFunc = @myFunc
+	CU_ASSERT( pFunc( ) = 123 )
+
+	dim ppFunc as typeof( function( ) as integer ) ptr
+	ppFunc = @pFunc
+	CU_ASSERT( (*ppFunc)( ) = 123 )
+end sub
+
 private sub ctor( ) constructor
 	fbcu.add_suite( "tests/quirk/typeof" )
 	fbcu.add_test( "test", @test )
 	fbcu.add_test( "sizeof(typeof(deref))", @testSizeofTypeofDeref )
 	fbcu.add_test( "sizeof(typeof(...))", @testSizeofTypeofOthers )
+	fbcu.add_test( "typeof( sub|function(...) )", @testTypeofProcPtr )
 end sub
 
 end namespace

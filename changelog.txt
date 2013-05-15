@@ -72,6 +72,7 @@ Version 0.90.0 (former 0.25.0):
 - CVI<n> / MKI<n>, where n is 16/32/64, to allow bit conversions of a specific size
 - type<UDT>( ).field is now possible, as an alternative to (type<UDT>( )).field
 - bpp parameter on BSAVE, to request a BMP bit depth
+- TYPEOF() can now also be used directly on SUB|FUNCTION(...) function pointer types
 
 [fixed]
 - libzip headers: zip_stat struct was unnecessarily named zip_stat_, breaking the libzip example
