@@ -1545,32 +1545,16 @@ sub symbDelSymbolTb _
 
     '' del from hash tb only?
     if( hashonly ) then
+		dim as FBSYMBOL ptr s = tb->head
+		while( s )
+			symbDelFromHash( s )
 
-    	dim as FBSYMBOL ptr s = tb->head
-    	do while( s <> NULL )
+			if( s->class = FB_SYMBCLASS_NSIMPORT ) then
+				symbNamespaceRemove( s, TRUE )
+			end if
 
-	    	select case as const s->class
-    		case FB_SYMBCLASS_VAR, _
-    			 FB_SYMBCLASS_CONST, _
-    			 FB_SYMBCLASS_STRUCT, _
-    			 FB_SYMBCLASS_ENUM, _
-    			 FB_SYMBCLASS_TYPEDEF, _
-    			 FB_SYMBCLASS_LABEL, _
-    			 FB_SYMBCLASS_DEFINE
-
-    			symbDelFromHash( s )
-
-    		case FB_SYMBCLASS_NSIMPORT
-    			symbNamespaceRemove( s, TRUE )
-
-    		case FB_SYMBCLASS_SCOPE
-    			'' already removed..
-    			''''' symbDelScopeTb( s )
-    		end select
-
-    		s = s->next
-    	loop
-
+			s = s->next
+		wend
     '' del from hash and symbol tb's
     else
     	do

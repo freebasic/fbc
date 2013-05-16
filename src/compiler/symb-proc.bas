@@ -1021,6 +1021,17 @@ function symbAddProcPtr _
 	'' equality check for procptrs, hence this mangling must ensure that
 	'' equal procptrs re-use the same proto symbols.
 	''
+	'' New procptr PROC symbols should be added to the current scope,
+	'' because they themselves may reference symbols from the current scope,
+	'' e.g. UDTs used in parameters/result type. It wouldn't be safe to
+	'' add them to the global namespace in this case, because the symbols
+	'' in a scope do not live as long as those from the global namespace.
+	''
+	'' Besides that, the mangling below doesn't differentiate between two
+	'' UDTs with the same name but from different scopes, so it may produce
+	'' the same mangled id for two procptrs that have different type. This
+	'' also requires them to be scoped locally.
+	''
 
 	id = hMangleFunctionPtr( proc, dtype, subtype, attrib, mode )
 
