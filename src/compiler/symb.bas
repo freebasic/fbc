@@ -2259,6 +2259,10 @@ function symbDump( byval sym as FBSYMBOL ptr ) as string
 		return "<NULL>"
 	end if
 
+#if 0
+	s += "[" & hex( sym ) & "] "
+#endif
+
 #if 1
 	if( (sym->class < FB_SYMBCLASS_VAR) or (sym->class > FB_SYMBCLASS_NSIMPORT) ) then
 		s += "<bad class " + str( sym->class ) + "> "
@@ -2319,6 +2323,55 @@ function symbDump( byval sym as FBSYMBOL ptr ) as string
 	checkAttrib( VIRTUAL )
 #endif
 
+#if 1
+	#macro checkStat( ID )
+		if( sym->stats and FB_SYMBSTATS_##ID ) then
+			s += lcase( #ID ) + " "
+		end if
+	#endmacro
+
+	checkStat( VARALLOCATED )
+	checkStat( ACCESSED )
+	if( symbIsProc( sym ) ) then
+		checkStat( CTORINITED )
+	else
+		checkStat( INITIALIZED )
+	end if
+	checkStat( DECLARED )
+	checkStat( RTL )
+	checkStat( THROWABLE )
+	checkStat( PARSED )
+	checkStat( HASALIAS )
+	if( symbIsProc( sym ) ) then
+		checkStat( EXCLPARENT )
+	else
+		checkStat( DONTINIT )
+	end if
+	checkStat( MAINPROC )
+	checkStat( MODLEVELPROC )
+	checkStat( FUNCPTR )
+	checkStat( JUMPTB )
+	checkStat( GLOBALCTOR )
+	checkStat( GLOBALDTOR )
+	checkStat( CANTDUP )
+	if( symbIsProc( sym ) ) then
+		checkStat( GCCBUILTIN )
+		checkStat( IRHLCBUILTIN )
+	end if
+	checkStat( HASRTTI )
+	checkStat( CANTUNDEF )
+	if( symbIsField( sym ) ) then
+		checkStat( UNIONFIELD )
+	elseif( symbIsProc( sym ) ) then
+		checkStat( PROCEMITTED )
+	else
+		checkStat( WSTRING )
+	end if
+	checkStat( RTL_CONST )
+	checkStat( EMITTED )
+	checkStat( BEINGEMITTED )
+#endif
+
 	if( sym->class = FB_SYMBCLASS_NSIMPORT ) then
 		s += "from: "
 		s += symbDump( sym->nsimp.imp_ns )
@@ -2326,7 +2379,11 @@ function symbDump( byval sym as FBSYMBOL ptr ) as string
 	end if
 
 #if 1
-	s += hGetNamespacePrefix( sym )
+	if( sym = @symbGetGlobalNamespc( ) ) then
+		s += "<global namespace>"
+	else
+		s += hGetNamespacePrefix( sym )
+	end if
 #endif
 
 	if( symbIsProc( sym ) and symbIsOperator( sym ) ) then
