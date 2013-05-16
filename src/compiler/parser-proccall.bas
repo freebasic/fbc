@@ -51,7 +51,7 @@ function cAssignFunctResult( byval is_return as integer ) as integer
 	if( is_return ) then
 		if( symbGetProcStatAssignUsed( parser.currproc ) ) then
 			if( has_defctor ) then
-				errReport( FB_ERRMSG_RETURNANDFUNCTIONCANTBEUSED )
+				errReport( FB_ERRMSG_RETURNMIXEDWITHASSIGN )
 			end if
 		end if
 
@@ -59,7 +59,7 @@ function cAssignFunctResult( byval is_return as integer ) as integer
 	else
 		if( symbGetProcStatReturnUsed( parser.currproc ) ) then
 			if( has_defctor ) then
-				errReport( FB_ERRMSG_RETURNANDFUNCTIONCANTBEUSED )
+				errReport( FB_ERRMSG_ASSIGNMIXEDWITHRETURN )
 			end if
 		end if
 

@@ -246,7 +246,8 @@ declare function hMakeParamDesc _
 		@"ERASE on UDT with non-CDECL destructor", _
 		@"ERASE on UDT with non-parameterless default constructor", _
 		@"This symbol cannot be undefined", _
-		@"Either 'RETURN' or 'FUNCTION =' should be used when returning objects with default constructors", _
+		@"RETURN mixed with 'FUNCTION =' or EXIT FUNCTION (using both styles together is unsupported when returning objects with constructors)", _
+		@"'FUNCTION =' or EXIT FUNCTION mixed with RETURN (using both styles together is unsupported when returning objects with constructors)", _
 		@"Missing RETURN to copy-construct function result", _
 		@"Invalid assignment/conversion", _
 		@"Invalid array subscript", _
