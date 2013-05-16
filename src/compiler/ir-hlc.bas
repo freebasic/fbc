@@ -3255,9 +3255,9 @@ end sub
 
 private sub _emitVarIniStr _
 	( _
-		byval varlength as integer, _
+		byval varlength as integer, _    '' without null terminator
 		byval literal as zstring ptr, _
-		byval litlength as integer _
+		byval litlength as integer _     '' without null terminator
 	)
 
 	dim as integer ch = any
@@ -3271,7 +3271,7 @@ private sub _emitVarIniStr _
 		litlength = varlength
 	end if
 
-	hBuildStrLit( ctx.varini, hUnescape( literal ), litlength )
+	hBuildStrLit( ctx.varini, hUnescape( literal ), litlength + 1 )
 
 	hVarIniSeparator( )
 
@@ -3279,9 +3279,9 @@ end sub
 
 private sub _emitVarIniWstr _
 	( _
-		byval varlength as integer, _
+		byval varlength as integer, _  '' without null terminator
 		byval literal as wstring ptr, _
-		byval litlength as integer _
+		byval litlength as integer _   '' without null terminator
 	)
 
 	dim as uinteger ch = any
