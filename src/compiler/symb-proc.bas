@@ -506,10 +506,6 @@ private function hAddOvlProc _
 		ovl = symbGetProcOvlNext( ovl )
 	loop while( ovl <> NULL )
 
-    if( symbIsLocal( ovl_head_proc ) ) then
-    	attrib or= FB_SYMBATTRIB_LOCAL
-    end if
-
     '' add the new proc symbol, w/o adding it to the hash table
 	proc = symbNewSymbol( iif( preservecase, FB_SYMBOPT_PRESERVECASE, FB_SYMBOPT_NONE ), _
 	                      proc, symtb, hashtb, FB_SYMBCLASS_PROC, id, id_alias, dtype, subtype, attrib )
@@ -579,10 +575,6 @@ private function hAddOpOvlProc _
 		ovl = symbGetProcOvlNext( ovl )
 	loop
 
-	if( symbIsLocal( ovl_head_proc ) ) then
-		attrib or= FB_SYMBATTRIB_LOCAL
-	end if
-
     '' add it
 	proc = symbNewSymbol( FB_SYMBOPT_NONE, proc, symtb, hashtb, _
 	                      FB_SYMBCLASS_PROC, NULL, id_alias, dtype, subtype, attrib )
@@ -612,9 +604,6 @@ private function hSetupProc _
 	dim as FBSYMBOL ptr proc = any, head_proc = any, overridden = any
 
     function = NULL
-
-	'' Procedures are always "globals"
-	attrib or= FB_SYMBATTRIB_SHARED
 
 #if __FB_DEBUG__
 	'' Member procs generally must have either STATIC or METHOD attributes,
@@ -665,10 +654,6 @@ private function hSetupProc _
 
 		'' not overloaded yet? just add it
 		if( head_proc = NULL ) then
-			if( symbIsLocal( parent ) ) then
-				attrib or= FB_SYMBATTRIB_LOCAL
-			end if
-
 			proc = symbNewSymbol( FB_SYMBOPT_NONE, sym, symtb, hashtb, _
 			                      FB_SYMBCLASS_PROC, NULL, id_alias, _
 			                      FB_DATATYPE_VOID, NULL, attrib )
@@ -715,12 +700,6 @@ private function hSetupProc _
 
         '' not overloaded yet? just add it
         if( head_proc = NULL ) then
-			if( parent <> NULL ) then
-				if( symbIsLocal( parent ) ) then
-					attrib or= FB_SYMBATTRIB_LOCAL
-				end if
-			end if
-
 			proc = symbNewSymbol( FB_SYMBOPT_NONE, sym, symtb, hashtb, _
 			                      FB_SYMBCLASS_PROC, NULL, id_alias, _
 			                      dtype, subtype, attrib )
@@ -746,10 +725,6 @@ private function hSetupProc _
 add_proc:
 
 		preserve_case = (options and FB_SYMBOPT_PRESERVECASE) <> 0
-
-		if( parser.scope > FB_MAINSCOPE ) then
-			attrib or= FB_SYMBATTRIB_LOCAL
-		end if
 
 		proc = symbNewSymbol( options or FB_SYMBOPT_DOHASH, sym, symtb, hashtb, _
 		                      FB_SYMBCLASS_PROC, id, id_alias, dtype, subtype, attrib )
@@ -955,6 +930,12 @@ function symbAddProc _
 	symtb = @symbGetCompSymbTb( parent )
 	hashtb = @symbGetCompHashTb( parent )
 
+	'' Procedures are always "globals", assuming that local/nested
+	'' procedures aren't allowed
+	attrib or= FB_SYMBATTRIB_SHARED
+	assert( (proc->attrib and FB_SYMBATTRIB_LOCAL) = 0 )
+	assert( (attrib and FB_SYMBATTRIB_LOCAL) = 0 )
+
 	function = hSetupProc( proc, parent, symtb, hashtb, id, id_alias, _
 	                       dtype, subtype, attrib, mode, options )
 
@@ -1042,6 +1023,10 @@ function symbAddProcPtr _
 		parent = @symbGetGlobalNamespc( )
 		symtb = @symbGetCompSymbTb( parent )
 		hashtb = @symbGetCompHashTb( parent )
+
+		attrib or= FB_SYMBATTRIB_SHARED
+		assert( (proc->attrib and FB_SYMBATTRIB_LOCAL) = 0 )
+		assert( (attrib and FB_SYMBATTRIB_LOCAL) = 0 )
 	else
 		'' If inside a scope, make the procptr proto local too, because
 		'' it could use local symbols, while it itself can only be used
@@ -1051,6 +1036,10 @@ function symbAddProcPtr _
 		symtb = symb.symtb                    '' symtb of current scope
 		hashtb = @symbGetCompHashTb( parent ) '' hashtb of current namespace
 		assert( hashtb = symb.hashtb )
+
+		attrib or= FB_SYMBATTRIB_LOCAL
+		assert( (proc->attrib and FB_SYMBATTRIB_SHARED) = 0 )
+		assert( (attrib and FB_SYMBATTRIB_SHARED) = 0 )
 	end if
 
 	'' already exists? (it's ok to use LookupAt, literal str's are always
