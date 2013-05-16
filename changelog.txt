@@ -47,6 +47,7 @@ Version 0.90.0 (former 0.25.0):
 - Updated header for SQLite 3.7.13
 - Header for libxmp 4.0.4 (module audio decoder)
 - Headers for CD 5.6 (Canvas Draw, 2D graphics) and IM 3.8 (image file handling) libraries
+- Updated crt/linux/fcntl.bi header
 - fbc -asm att|intel option (affects -gen gcc only)
 - fbc -rr and -RR options for preserving the final .asm file (useful with -gen gcc where -r/-R preserve the .c file; same as -r/-R under -gen gas)
 - fbc -print host|target option, to support shell scripts querying fbc for information that is useful to build systems etc.
