@@ -2246,6 +2246,11 @@ private function hGetNamespacePrefix( byval sym as FBSYMBOL ptr ) as string
 	ns = symbGetNamespace( sym )
 	while( ns <> @symbGetGlobalNamespc( ) )
 		s = *symbGetName( ns ) + "." + s
+
+		if( symbGetHashtb( ns ) = NULL ) then
+			exit while
+		end if
+
 		ns = symbGetNamespace( ns )
 	wend
 
@@ -2446,4 +2451,34 @@ function symbDump( byval sym as FBSYMBOL ptr ) as string
 
 	function = s
 end function
+
+sub symbDumpNamespace( byval ns as FBSYMBOL ptr )
+	dim as FBSYMBOL ptr i = any
+	dim as THASH ptr hash = any
+	dim as HASHITEM ptr hashitem = any
+
+	select case( ns->class )
+	case FB_SYMBCLASS_STRUCT, FB_SYMBCLASS_ENUM, FB_SYMBCLASS_NAMESPACE
+
+	case else
+		print "symbDumpNamespace(): not a namespace"
+	end select
+
+	print symbDump( ns ) + ":"
+
+	i = symbGetCompSymbTb( ns ).head
+	while( i )
+		print "    symtb: " + symbDump( i )
+		i = i->next
+	wend
+
+	hash = @symbGetCompHashTb( ns ).tb
+	for index as integer = 0 to hash->nodes-1
+		hashitem = hash->list[index].head
+		while( hashitem )
+			print "    hashtb[" & index & "]: " + *hashitem->name + " = " + symbDump( hashitem->data )
+			hashitem = hashitem->next
+		wend
+	next
+end sub
 #endif
