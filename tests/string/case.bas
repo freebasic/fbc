@@ -39,6 +39,13 @@ sub testAscii cdecl( )
 	s = "abc" : CU_ASSERT( ucase( s, 1 ) = "ABC" )
 	s = "ABC" : CU_ASSERT( ucase( s, 1 ) = "ABC" )
 
+	const CONSTZ1 = lcase( "XYZ123", 1 )
+	const CONSTZ2 = ucase( "xyz123", 1 )
+	CU_ASSERT( lcase( CONSTZ1, 1 ) = CONSTZ1 )
+	CU_ASSERT( lcase( CONSTZ1, 1 ) = "xyz123" )
+	CU_ASSERT( ucase( CONSTZ2, 1 ) = CONSTZ2 )
+	CU_ASSERT( ucase( CONSTZ2, 1 ) = "XYZ123" )
+
 	dim z as zstring * 32
 	z = "ABC" : CU_ASSERT( lcase( z, 1 ) = "abc" )
 	z = "abc" : CU_ASSERT( lcase( z, 1 ) = "abc" )
@@ -51,6 +58,30 @@ sub testAscii cdecl( )
 	*pz = "abc" : CU_ASSERT( ucase( *pz, 1 ) = "ABC" )
 	*pz = "ABC" : CU_ASSERT( ucase( *pz, 1 ) = "ABC" )
 
+	#if CONSTZ1 <> "xyz123"
+		CU_FAIL( )
+	#endif
+
+	#if CONSTZ2 <> "XYZ123"
+		CU_FAIL( )
+	#endif
+
+	#if lcase( "ABC", 1 ) <> "abc"
+		CU_FAIL( )
+	#endif
+
+	#if lcase( "abc", 1 ) <> "abc"
+		CU_FAIL( )
+	#endif
+
+	#if ucase( "abc", 1 ) <> "ABC"
+		CU_FAIL( )
+	#endif
+
+	#if ucase( "ABC", 1 ) <> "ABC"
+		CU_FAIL( )
+	#endif
+
 	''
 	'' wstring
 	''
@@ -59,6 +90,13 @@ sub testAscii cdecl( )
 	CU_ASSERT( lcase( wstr( "abc" ), 1 ) = wstr( "abc" ) )
 	CU_ASSERT( ucase( wstr( "abc" ), 1 ) = wstr( "ABC" ) )
 	CU_ASSERT( ucase( wstr( "ABC" ), 1 ) = wstr( "ABC" ) )
+
+	const CONSTW1 = lcase( wstr( "XYZ123" ), 1 )
+	const CONSTW2 = ucase( wstr( "xyz123" ), 1 )
+	CU_ASSERT( lcase( CONSTW1, 1 ) = CONSTW1 )
+	CU_ASSERT( lcase( CONSTW1, 1 ) = wstr( "xyz123" ) )
+	CU_ASSERT( ucase( CONSTW2, 1 ) = CONSTW2 )
+	CU_ASSERT( ucase( CONSTW2, 1 ) = wstr( "XYZ123" ) )
 
 	dim w as wstring * 32
 	w = wstr( "ABC" ) : CU_ASSERT( lcase( w, 1 ) = wstr( "abc" ) )
@@ -71,6 +109,30 @@ sub testAscii cdecl( )
 	*pw = wstr( "abc" ) : CU_ASSERT( lcase( *pw, 1 ) = wstr( "abc" ) )
 	*pw = wstr( "abc" ) : CU_ASSERT( ucase( *pw, 1 ) = wstr( "ABC" ) )
 	*pw = wstr( "ABC" ) : CU_ASSERT( ucase( *pw, 1 ) = wstr( "ABC" ) )
+
+	#if CONSTW1 <> wstr( "xyz123" )
+		CU_FAIL( )
+	#endif
+
+	#if CONSTW2 <> wstr( "XYZ123" )
+		CU_FAIL( )
+	#endif
+
+	#if lcase( wstr( "ABC" ), 1 ) <> wstr( "abc" )
+		CU_FAIL( )
+	#endif
+
+	#if lcase( wstr( "abc" ), 1 ) <> wstr( "abc" )
+		CU_FAIL( )
+	#endif
+
+	#if ucase( wstr( "abc" ), 1 ) <> wstr( "ABC" )
+		CU_FAIL( )
+	#endif
+
+	#if ucase( wstr( "ABC" ), 1 ) <> wstr( "ABC" )
+		CU_FAIL( )
+	#endif
 
 	''
 	'' escape sequences

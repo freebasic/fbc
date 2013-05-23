@@ -74,7 +74,7 @@ Version 0.90.0 (former 0.25.0):
 - type<UDT>( ).field is now possible, as an alternative to (type<UDT>( )).field
 - bpp parameter on BSAVE, to request a BMP bit depth
 - TYPEOF() can now also be used directly on SUB|FUNCTION(...) function pointer types
-- Mode parameter for Lcase()/Ucase() functions, that can be set to 1 to enable ASCII-only mode
+- Mode parameter for Lcase()/Ucase() functions, that can be set to 1 to enable ASCII-only mode (e.g. LCASE("foo", 1)), which will be evaluated as compile-time constant if possible
 
 [fixed]
 - libzip headers: zip_stat struct was unnecessarily named zip_stat_, breaking the libzip example

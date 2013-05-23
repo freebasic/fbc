@@ -78,6 +78,8 @@
 #define FB_RTL_STRLTRIM 				"fb_LTRIM"
 #define FB_RTL_STRLTRIMANY 				"fb_LTrimAny"
 #define FB_RTL_STRLTRIMEX 				"fb_LTrimEx"
+#define FB_RTL_STRLCASE2				"fb_StrLcase2"
+#define FB_RTL_STRUCASE2				"fb_StrUcase2"
 #define FB_RTL_STRSWAP 					"fb_StrSwap"
 
 #define FB_RTL_WSTRALLOC				"fb_WstrAlloc"
@@ -122,6 +124,8 @@
 #define FB_RTL_WSTRLTRIM 				"fb_WstrLTrim"
 #define FB_RTL_WSTRLTRIMANY 			"fb_WstrLTrimAny"
 #define FB_RTL_WSTRLTRIMEX 				"fb_WstrLTrimEx"
+#define FB_RTL_WSTRLCASE2				"fb_WstrLcase2"
+#define FB_RTL_WSTRUCASE2				"fb_WstrUcase2"
 #define FB_RTL_WSTRSWAP 				"fb_WstrSwap"
 
 #define FB_RTL_LONGINTDIV				"fb___divdi3"
@@ -478,6 +482,8 @@ enum FB_RTL_IDX
 	FB_RTL_IDX_STRLTRIM
 	FB_RTL_IDX_STRLTRIMANY
 	FB_RTL_IDX_STRLTRIMEX
+	FB_RTL_IDX_STRLCASE2
+	FB_RTL_IDX_STRUCASE2
 	FB_RTL_IDX_STRSWAP
 
 	FB_RTL_IDX_WSTRALLOC
@@ -522,6 +528,8 @@ enum FB_RTL_IDX
 	FB_RTL_IDX_WSTRLTRIM
 	FB_RTL_IDX_WSTRLTRIMANY
 	FB_RTL_IDX_WSTRLTRIMEX
+	FB_RTL_IDX_WSTRLCASE2
+	FB_RTL_IDX_WSTRUCASE2
 	FB_RTL_IDX_WSTRSWAP
 
 	FB_RTL_IDX_LONGINTDIV
@@ -1067,6 +1075,13 @@ declare function rtlStrLTrim _
 		byval nd_text as ASTNODE ptr, _
 		byval nd_pattern as ASTNODE ptr, _
 		byval is_any as integer _
+	) as ASTNODE ptr
+
+declare function rtlStrCase _
+	( _
+		byval expr as ASTNODE ptr, _
+		byval mode as ASTNODE ptr, _
+		byval is_lcase as integer _
 	) as ASTNODE ptr
 
 declare function rtlArrayClear _
