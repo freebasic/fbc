@@ -2369,51 +2369,63 @@
 				) _
 			} _
  		), _
-		/' fb_LCASE overload ( byref str as string ) as string '/ _
+		/' lcase overload alias "fb_StrLcase2"( byref src as string, byval mode as integer = 0 ) as string '/ _
 		( _
-			@"lcase", @"fb_LCASE", _
+			@"lcase", @"fb_StrLcase2", _
 			FB_DATATYPE_STRING, FB_USE_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_STRSUFFIX, _
-			1, _
+			2, _
 			{ _
 				( _
 					FB_DATATYPE_STRING, FB_PARAMMODE_BYREF, FALSE _
+				), _
+				( _
+					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, 0 _
 				) _
 			} _
  		), _
-		/' fb_WstrLcase ( byval str as wstring ptr ) as wstring '/ _
+		/' lcase overload alias "fb_WstrLcase2"( byval src as wstring ptr, byval mode as integer = 0 ) as wstring '/ _
 		( _
-			@"lcase", @"fb_WstrLcase", _
+			@"lcase", @"fb_WstrLcase2", _
 			FB_DATATYPE_WCHAR, FB_USE_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
-			1, _
+			2, _
 			{ _
 				( _
 					typeAddrOf( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYVAL, FALSE _
+				), _
+				( _
+					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, 0 _
 				) _
 			} _
  		), _
-		/' fb_UCASE overload ( byref str as string ) as string '/ _
+		/' ucase overload alias "fb_StrUcase2"( byref src as string, byval mode as integer = 0 ) as string '/ _
 		( _
-			@"ucase", @"fb_UCASE", _
+			@"ucase", @"fb_StrUcase2", _
 			FB_DATATYPE_STRING, FB_USE_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_STRSUFFIX, _
-			1, _
+			2, _
 			{ _
 				( _
 					FB_DATATYPE_STRING, FB_PARAMMODE_BYREF, FALSE _
+				), _
+				( _
+					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, 0 _
 				) _
 			} _
 		), _
-		/' fb_WstrUcase ( byval str as wstring ptr ) as wstring '/ _
+		/' ucase overload alias "fb_WstrUcase2"( byval src as wstring ptr, byval mode as integer = 0 ) as wstring '/ _
 		( _
-			@"ucase", @"fb_WstrUcase", _
+			@"ucase", @"fb_WstrUcase2", _
 			FB_DATATYPE_WCHAR, FB_USE_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
-			1, _
+			2, _
 			{ _
 				( _
 					typeAddrOf( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYVAL, FALSE _
+				), _
+				( _
+					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, 0 _
 				) _
 			} _
 		), _
