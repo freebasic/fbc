@@ -62,7 +62,7 @@ end type
 
 
 dim shared textures(0 to 9) as TextureImage   '' Storage For 10 Textures
-dim shared object(0 to 29) as objects         '' Storage For 30 Objects
+dim shared object_(0 to 29) as objects        '' Storage For 30 Objects
 
 type dimensions                         '' Object Dimensions
 	w as single                         '' Object Width
@@ -288,43 +288,46 @@ end function
 
 '------------------------------------------------------------------------
 sub InitObject (byval num as integer)                '' Initialize An Object
-	object(num).rot = 1                              '' Clockwise Rotation
-	object(num).frame = 0                            '' Reset The Explosion Frame To Zero
-	object(num).hit = FALSE                          '' Reset Object Has Been Hit Status To False
-	object(num).texid = int(rnd * 5)                 '' Assign A New Texture
-	object(num).distance = - (int(rnd * 4001) / 100.0f) '' Random Distance
-	object(num).y = - 1.5f + (int(rnd * 451) / 100.0f)  '' Random Y Position
+	with object_(num)
+		.rot = 1                              '' Clockwise Rotation
+		.frame = 0                            '' Reset The Explosion Frame To Zero
+		.hit = FALSE                          '' Reset Object Has Been Hit Status To False
+		.texid = int(rnd * 5)                 '' Assign A New Texture
+		.distance = - (int(rnd * 4001) / 100.0f) '' Random Distance
+		.y = - 1.5f + (int(rnd * 451) / 100.0f)  '' Random Y Position
 
-	'' Random Starting X Position Based On Distance Of Object And Random Amount For A Delay (Positive Value)
-	object(num).x = ((object(num).distance - 15.0f) / 2.0f) - (5 *level) -  (rnd * (5 *level))
-	object(num).ddir = int(rnd * 2)                 '' Pick A Random Direction
+		'' Random Starting X Position Based On Distance Of Object And Random Amount For A Delay (Positive Value)
+		.x = ((.distance - 15.0f) / 2.0f) - (5 *level) -  (rnd * (5 *level))
+		.ddir = int(rnd * 2)                 '' Pick A Random Direction
 
-	'' Is Random Direction Right
-	if object(num).ddir = 0 then
-		object(num).rot = 2                         '' Counter Clockwise Rotation
-		object(num).x = - object(num).x             '' Start On The Left Side (Negative Value)
-	end if
-	'' Blue Face
-	if object(num).texid = 0 then                   '' Always Rolling On The Ground
-		object(num).y = - 2.0f
-	end if
-	'' Bucket
-	if object(num).texid = 1 then
-		object(num).ddir = 3                        '' Falling Down
-		object(num).x = (abs(rnd * cint(object(num).distance - 10.0f))) + ((object(num).distance - 10.0f) / 2.0f)
-		object(num).y = 4.5f                        '' Random X, Start At Top Of The Screen
-	end if
-	'' Target
-	if object(num).texid = 2 then
-		object(num).ddir = 2                        '' Start Off Flying Up
-		object(num).x = abs(rnd *  cint(object(num).distance - 10.0f)) + ((object(num).distance - 10.0f) / 2.0f)
-		object(num).y = - 3.0f - cint(rnd * (5 *level))  '' Random X, Start Under Ground + Random Value 32.51
-	end if
+		'' Is Random Direction Right
+		if .ddir = 0 then
+				.rot = 2                         '' Counter Clockwise Rotation
+				.x = -.x             '' Start On The Left Side (Negative Value)
+		end if
+		'' Blue Face
+		if .texid = 0 then                   '' Always Rolling On The Ground
+			.y = - 2.0f
+		end if
+		'' Bucket
+		if .texid = 1 then
+			.ddir = 3                        '' Falling Down
+			.x = (abs(rnd * cint(.distance - 10.0f))) + ((.distance - 10.0f) / 2.0f)
+			.y = 4.5f                        '' Random X, Start At Top Of The Screen
+		end if
+		'' Target
+		if .texid = 2 then
+			.ddir = 2                        '' Start Off Flying Up
+			.x = abs(rnd *  cint(.distance - 10.0f)) + ((.distance - 10.0f) / 2.0f)
+			.y = - 3.0f - cint(rnd * (5 *level))  '' Random X, Start Under Ground + Random Value 32.51
+		end if
+	end with
+
 	'' Sort Objects By Distance:   Beginning Address Of Our object Array   *** MSDN CODE MODIFIED FOR THIS TUT ***
 	''                      Number Of Elements To Sort
 	''                      Size Of Each Element
 	''                      Pointer To Our Compare Function
-	QSORT (@object(0), level, sizeof (objects),  cast(any ptr,@Compare))
+	QSORT (@object_(0), level, sizeof (objects),  cast(any ptr,@Compare))
 end sub
 
 '------------------------------------------------------------------------
@@ -431,8 +434,8 @@ sub Selection ()                                         '' This Is Where Select
 		wend
 
 		'' If The Object Hasn't Already Been Hit
-		if  not  object(choose).hit then
-			object(choose).hit = TRUE                    '' Mark The Object As Being Hit
+		if  not  object_(choose).hit then
+			object_(choose).hit = TRUE                    '' Mark The Object As Being Hit
 			score + = 1                                  '' Increase Score
 			kills + = 1                                  '' Increase Level Kills
 			'' New Level Yet?
@@ -474,49 +477,51 @@ sub Update (byval milliseconds as integer)               '' Perform Motion Updat
 
 	'' Loop Through The Objects
 	while iLoop<level
-		'' If Rotation Is Clockwise
-		if object(iLoop).rot = 1 then                   '' Spin Clockwise
-			object(iLoop).spin -= 0.2f *( (iLoop + milliseconds))
-		end if
-		'' If Rotation Is Counter Clockwise
-		if object(iLoop).rot = 2 then                   '' Spin Counter Clockwise
-			object(iLoop).spin += 0.2f *((iLoop + milliseconds))
-		end if
-		'' If Direction Is Right
-		if object(iLoop).ddir = 1 then                  '' Move Right
-			object(iLoop).x += 0.012f * (milliseconds)
-		end if
-		'' If Direction Is Left
-		if object(iLoop).ddir = 0 then                  '' Move Left
-			object(iLoop).x -= 0.012f * (milliseconds)
-		end if
-		'' If Direction Is Up
-		if object(iLoop).ddir = 2 then                  '' Move Up
-			object(iLoop).y += 0.012f * (milliseconds)
-		end if
-		'' If Direction Is Down
-		if object(iLoop).ddir = 3 then                  '' Move Down
-			object(iLoop).y -= 0.0025f * (milliseconds)
-		end if
-		'' If We Are To Far Left, Direction Is Left And The Object Was Not Hit
-		if (object(iLoop).x < (object(iLoop).distance - 15.0f) / 2.0f)  and  (object(iLoop).ddir = 0)  and (object(iLoop).hit = FALSE) then
-			miss += 1                                   '' Increase miss (Missed Object)
-			object(iLoop).hit = TRUE                    '' Set hit To True To Manually Blow Up The Object
-		end if
-		'' If We Are To Far Right, Direction Is right And The Object Was Not Hit
-		if (object(iLoop).x > -(object(iLoop).distance - 15.0f) / 2.0f)  and  (object(iLoop).ddir = 1)  and (object(iLoop).hit = FALSE) then
-			miss += 1                                   '' Increase miss (Missed Object)
-			object(iLoop).hit = TRUE                    '' Set hit To True To Manually Blow Up The Object
-		end if
-		'' If We Are To Far Down, Direction Is Down And The Object Was Not Hit
-		if (object(iLoop).y < - 2.0f)  and  (object(iLoop).ddir = 3)  and (object(iLoop).hit = FALSE) then
-			miss += 1                                   '' Increase miss (Missed Object)
-			object(iLoop).hit = TRUE                    '' Set hit To True To Manually Blow Up The Object
-		end if
-		'' If We Are To Far Up And The Direction Is Up
-		if (object(iLoop).y > 4.5f)  and  (object(iLoop).ddir = 2) then    '' Change The Direction To Down
-			object(iLoop).ddir = 3
-		end if
+		with object_(iLoop)
+			'' If Rotation Is Clockwise
+			if .rot = 1 then                   '' Spin Clockwise
+				.spin -= 0.2f *( (iLoop + milliseconds))
+			end if
+			'' If Rotation Is Counter Clockwise
+			if .rot = 2 then                   '' Spin Counter Clockwise
+				.spin += 0.2f *((iLoop + milliseconds))
+			end if
+			'' If Direction Is Right
+			if .ddir = 1 then                  '' Move Right
+				.x += 0.012f * (milliseconds)
+			end if
+			'' If Direction Is Left
+			if .ddir = 0 then                  '' Move Left
+				.x -= 0.012f * (milliseconds)
+			end if
+			'' If Direction Is Up
+			if .ddir = 2 then                  '' Move Up
+				.y += 0.012f * (milliseconds)
+			end if
+			'' If Direction Is Down
+			if .ddir = 3 then                  '' Move Down
+				.y -= 0.0025f * (milliseconds)
+			end if
+			'' If We Are Too Far Left, Direction Is Left And The Object Was Not Hit
+			if (.x < (.distance - 15.0f) / 2.0f)  and  (.ddir = 0)  and (.hit = FALSE) then
+				miss += 1                                   '' Increase miss (Missed Object)
+				.hit = TRUE                                 '' Set hit To True To Manually Blow Up The Object
+			end if
+			'' If We Are Too Far Right, Direction Is right And The Object Was Not Hit
+			if (.x > -(.distance - 15.0f) / 2.0f)  and  (.ddir = 1)  and (.hit = FALSE) then
+				miss += 1                                   '' Increase miss (Missed Object)
+				.hit = TRUE                    '' Set hit To True To Manually Blow Up The Object
+			end if
+			'' If We Are Too Far Down, Direction Is Down And The Object Was Not Hit
+			if (.y < - 2.0f)  and  (.ddir = 3)  and (.hit = FALSE) then
+				miss += 1                                   '' Increase miss (Missed Object)
+				.hit = TRUE                    '' Set hit To True To Manually Blow Up The Object
+			end if
+			'' If We Are Too Far Up And The Direction Is Up
+			if (.y > 4.5f)  and  (.ddir = 2) then    '' Change The Direction To Down
+				.ddir = 3
+			end if
+		end with
 		iLoop+=1
 	wend
 end sub
@@ -535,9 +540,9 @@ end sub
 '------------------------------------------------------------------------
 sub Explosion (byval num as integer)                     '' Draws An Animated Explosion For Object "num"
 	dim ex as single                                     '' Calculate Explosion X Frame (0.0f - 0.75f)
-	ex =  ((object(num).frame \ 4) mod 4) / 4.0f
+	ex =  ((object_(num).frame \ 4) mod 4) / 4.0f
 	dim ey as single                                     '' Calculate Explosion Y Frame (0.0f - 0.75f)
-	ey =  ((object(num).frame \ 4) \ 4) / 4.0f
+	ey =  ((object_(num).frame \ 4) \ 4) / 4.0f
 
 	glBindTexture (GL_TEXTURE_2D, textures(5).texID)     '' Select The Explosion Texture
 	glBegin (GL_QUADS)                                   '' Begin Drawing A Quad
@@ -547,9 +552,9 @@ sub Explosion (byval num as integer)                     '' Draws An Animated Ex
 		glTexCoord2f (ex, 1.0f - (ey + 0.25f))         : glVertex3f (- 1.0f, 1.0f, 0.0f)   '' Top Left
 	glEnd ()                                             '' Done Drawing Quad
 
-	object(num).frame += 1                              '' Increase Current Explosion Frame
+	object_(num).frame += 1                              '' Increase Current Explosion Frame
 	'' Have We Gone Through All 16 Frames?
-	if object(num).frame > 63 then
+	if object_(num).frame > 63 then
 		InitObject (num)                                '' Init The Object (Assign New Values)
 	end if
 end sub
@@ -563,15 +568,17 @@ sub DrawTargets ()                                       '' Draws The Targets (N
 	while iLoop<level
 		glLoadName (iLoop)                               '' Assign Object A Name (ID)
 		glPushMatrix ()                                  '' Push The Modelview Matrix
-			glTranslatef (object(iLoop).x, object(iLoop).y, object(iLoop).distance)   '' Position The Object (x,y)
-			'' If Object Has Been Hit
-			if object(iLoop).hit = TRUE then
-				Explosion (iLoop)                        '' Draw An Explosion
-				'' Otherwise
-			else
-				glRotatef (object(iLoop).spin, 0.0f, 0.0f, 1.0f)    '' Rotate The Object
-				drawobject (size(object(iLoop).texid).w, size(object(iLoop).texid).h, object(iLoop).texid)  '' Draw The Object
-			end if
+			with object_(iLoop)
+				glTranslatef (.x, .y, .distance)   '' Position The Object (x,y)
+				'' If Object Has Been Hit
+				if .hit = TRUE then
+					Explosion (iLoop)                        '' Draw An Explosion
+					'' Otherwise
+				else
+					glRotatef (.spin, 0.0f, 0.0f, 1.0f)    '' Rotate The Object
+					drawobject (size(.texid).w, size(.texid).h, .texid)  '' Draw The Object
+				end if
+			end with
 		glPopMatrix ()                                   '' Pop The Modelview Matrix
 		iLoop+=1
 	wend

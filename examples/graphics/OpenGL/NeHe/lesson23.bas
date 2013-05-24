@@ -49,7 +49,7 @@ declare sub glDrawCube()
 	dim filter as single                                   '' Which Filter To Use
 	dim texture(0 to 5) as uinteger                        '' Storage For 6 Textures (MODIFIED)
 
-	dim object as uinteger = 1                             '' Which Object To Draw
+	dim object_ as uinteger = 1                            '' Which Object To Draw
 
 	windowtitle "NeHe & TipTup's Environment Mapping Tutorial"   '' Set window title
 	screen 18, 16, , 2
@@ -112,7 +112,7 @@ declare sub glDrawCube()
 		glPushMatrix
 			glRotatef xrot,1.0,0.0,0.0
 			glRotatef yrot,0.0,1.0,0.0
-			select case object
+			select case object_
 			case 0
 				glDrawCube()
 			case 1
@@ -165,8 +165,8 @@ declare sub glDrawCube()
 
 		if MULTIKEY(FB.SC_SPACE) and not sp then      '' Space Key down
 			sp = true
-			object = object + 1                    '' Select next object
-			if object>3 then object = 0
+			object_ += 1                           '' Select next object
+			if object_>3 then object_ = 0
 		end if
 		if MULTIKEY(FB.SC_SPACE) = FALSE then sp = false  '' Space Key Up
 
