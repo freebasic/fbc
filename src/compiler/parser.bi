@@ -442,6 +442,9 @@ declare function cAssignmentOrPtrCallEx _
 		byval expr as ASTNODE ptr _
 	) as integer
 
+declare function hIsAssignToken( ) as integer
+declare function cAssignToken( ) as integer
+
 declare function cOperator _
 	( _
 		byval options as FB_OPEROPTS = FB_OPEROPTS_DEFAULT _

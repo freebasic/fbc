@@ -127,10 +127,7 @@ private sub hFieldInit( byval parent as FBSYMBOL ptr, byval sym as FBSYMBOL ptr 
 	dim as FBSYMBOL ptr defctor = any, subtype = any
 
 	'' '=' | '=>' ?
-	select case lexGetToken( )
-	case FB_TK_DBLEQ, FB_TK_EQ
-
-	case else
+	if( hIsAssignToken( ) = FALSE ) then
 		'' No initializer
 
 		'' Check ctors/dtors
@@ -165,7 +162,7 @@ private sub hFieldInit( byval parent as FBSYMBOL ptr, byval sym as FBSYMBOL ptr 
 		end if
 
 		exit sub
-	end select
+	end if
 
 	if( fbLangOptIsSet( FB_LANG_OPT_INITIALIZER ) = FALSE ) then
 		errReportNotAllowed( FB_LANG_OPT_INITIALIZER )
@@ -575,7 +572,7 @@ private function cFieldAlignmentAttribute( ) as integer
 	lexSkipToken( )
 
 	'' '='
-	if( hMatch( FB_TK_ASSIGN ) = FALSE ) then
+	if( cAssignToken( ) = FALSE ) then
 		errReport( FB_ERRMSG_SYNTAXERROR )
 	end if
 

@@ -90,10 +90,13 @@ function cDeclaration _
 			function = TRUE
 		else
 			'' not a FUNCTION|PROPERTY '=' ?
-			if( lexGetLookAhead( 1 ) <> FB_TK_ASSIGN ) then
+			select case( lexGetLookAhead( 1 ) )
+			case FB_TK_ASSIGN, FB_TK_DBLEQ
+
+			case else
 				cProcStmtBegin( )
 				function = TRUE
-			end if
+			end select
 		end if
 
 	case FB_TK_CONSTRUCTOR
@@ -119,10 +122,13 @@ function cDeclaration _
 				function = TRUE
 			else
 				'' not OPERATOR '=' ?
-				if( lexGetLookAhead( 1 ) <> FB_TK_ASSIGN ) then
+				select case( lexGetLookAhead( 1 ) )
+				case FB_TK_ASSIGN, FB_TK_DBLEQ
+
+				case else
 					cProcStmtBegin( )
 					function = TRUE
-				end if
+				end select
 			end if
 		end if
 

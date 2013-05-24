@@ -30,6 +30,7 @@ Version 0.90.0 (former 0.25.0):
 - OVERRIDE attribute (method must override a virtual) on method declarations (compile-time check)
 - STATIC member variables in UDTs
 - BYREF function results:  function f( ) byref as integer
+- '=>' can now be used for assignments, in place of '=', same as for initializers. This can be used to solve syntax ambiguities with '=', which sometimes may be interpreted as equality comparison operator while the programmer intended to do an assignment.
 - LLVM backend (-gen llvm) that emits textual LLVM IR code and uses llc to compile it into ASM
 - Updated headers for caca 0.99.beta18 (caca.bi = new API, caca0.bi = old API)
 - Updated header for libzip 0.11
