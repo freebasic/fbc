@@ -43,8 +43,3 @@ FBCALL FB_WCHAR *fb_WstrLcase2( const FB_WCHAR *src, int mode )
 
 	return dst;
 }
-
-FBCALL FB_WCHAR *fb_WstrLcase( const FB_WCHAR *src )
-{
-	return fb_WstrLcase2( src, 0 );
-}

@@ -55,8 +55,3 @@ FBCALL FBSTRING *fb_StrLcase2( FBSTRING *src, int mode )
 
 	return dst;
 }
-
-FBCALL FBSTRING *fb_LCASE( FBSTRING *src )
-{
-	return fb_StrLcase2( src, 0 );
-}

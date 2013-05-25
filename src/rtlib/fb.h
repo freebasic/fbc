@@ -312,6 +312,7 @@ void                fb_hListDynElemRemove   ( FB_LIST *list, FB_LISTELEM *elem )
 #include "fb_thread.h"
 #include "fb_hook.h"
 #include "fb_oop.h"
+#include "fb_legacy.h"
 
 /* DOS keyboard scancodes */
 #define SC_ESCAPE	0x01
