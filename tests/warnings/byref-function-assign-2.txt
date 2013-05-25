@@ -1,0 +1,14 @@
+no warning:
+no warning:
+1 warning:
+	'=' parsed as equality operator in function argument, not assignment to BYREF function result
+no warning:
+1 warning:
+	'=' parsed as equality operator in function argument, not assignment to BYREF function result
+1 warning:
+	'=' parsed as equality operator in function argument, not assignment to BYREF function result
+no warning:
+no warning:
+1 warning:
+	'=' parsed as equality operator in function argument, not assignment to BYREF function result
+no warning:

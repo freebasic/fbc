@@ -32,6 +32,7 @@ private function hProcArg _
 		byval argnum as integer, _
 		byref expr as ASTNODE ptr, _
 		byref amode as integer, _
+		byref have_eq_outside_parens as integer, _
 		byval options as FB_PARSEROPT _
 	) as integer
 
@@ -54,9 +55,12 @@ private function hProcArg _
 	old_dtype = parser.ctx_dtype
 	parser.ctxsym    = symbGetSubType( param )
 	parser.ctx_dtype = symbGetType( param )
+	parser.have_eq_outside_parens = FALSE
 
 	'' Expression
 	expr = cExpression( )
+
+	have_eq_outside_parens or= parser.have_eq_outside_parens
 
 	'' disable optional opening '{' after first parameter
 	fbSetPrntOptional( FALSE )
@@ -133,6 +137,7 @@ private sub hOvlProcArg _
 	( _
 		byval argnum as integer, _
 		byval arg as FB_CALL_ARG ptr, _
+		byref have_eq_outside_parens as integer, _
 		byval options as FB_PARSEROPT _
 	)
 
@@ -151,6 +156,7 @@ private sub hOvlProcArg _
 	old_dtype = parser.ctx_dtype
 	parser.ctxsym    = NULL
 	parser.ctx_dtype = FB_DATATYPE_INVALID
+	parser.have_eq_outside_parens = FALSE
 
 	'' Expression
 	arg->expr = cExpression( )
@@ -172,6 +178,7 @@ private sub hOvlProcArg _
 
 	parser.ctxsym    = oldsym
 	parser.ctx_dtype = old_dtype
+	have_eq_outside_parens or= parser.have_eq_outside_parens
 
 	'' not optional?
 	if( arg->expr <> NULL ) then
@@ -189,6 +196,22 @@ private sub hOvlProcArg _
 	end if
 end sub
 
+private sub hMaybeWarnAboutEqOutsideParens _
+	( _
+		byval args as integer, _
+		byval have_eq_outside_parens as integer, _
+		byval proc as FBSYMBOL ptr _
+	)
+
+	'' If there was just one argument, with '=' outside parentheses, in a
+	'' call to a BYREF function like <f (1) = 2>, show a warning -- it could
+	'' easily be misinterpreted as assignment to the BYREF function result.
+	if( (args = 1) and have_eq_outside_parens and symbProcReturnsByref( proc ) ) then
+		errReportWarn( FB_WARNINGMSG_BYREFEQAFTERPARENS )
+	end if
+
+end sub
+
 '':::::
 ''ProcArgList     =    ProcArg (DECL_SEPARATOR ProcArg)* .
 ''
@@ -200,13 +223,14 @@ private function hOvlProcArgList _
 		byval options as FB_PARSEROPT _
 	) as ASTNODE ptr
 
-    dim as integer i = any, params = any, args = any
+	dim as integer i = any, params = any, args = any, have_eq_outside_parens = any
     dim as ASTNODE ptr procexpr = any
     dim as FBSYMBOL ptr param = any, ovlproc = any
     dim as FB_CALL_ARG ptr arg = any, nxt = any
     dim as FB_ERRMSG err_num = any
 
 	function = NULL
+	have_eq_outside_parens = FALSE
 
 	params = symGetProcOvlMaxParams( proc )
 
@@ -236,7 +260,7 @@ private function hOvlProcArgList _
 			'' alloc a new arg
 			arg = symbAllocOvlCallArg( @parser.ovlarglist, arg_list, FALSE )
 
-			hOvlProcArg( args - init_args, arg, options )
+			hOvlProcArg( args - init_args, arg, have_eq_outside_parens, options )
 
 			'' ','?
 			if( lexGetToken( ) <> CHAR_COMMA ) then
@@ -284,6 +308,8 @@ private function hOvlProcArgList _
 	end if
 
 	proc = ovlproc
+
+	hMaybeWarnAboutEqOutsideParens( args, have_eq_outside_parens, proc )
 
 	'' check visibility
 	if( symbCheckAccess( proc ) = FALSE ) then
@@ -379,7 +405,7 @@ function cProcArgList _
 		byval options as FB_PARSEROPT _
 	) as ASTNODE ptr
 
-    dim as integer args = any, params = any, mode = any
+	dim as integer args = any, params = any, mode = any, have_eq_outside_parens = any
     dim as FBSYMBOL ptr param = any
     dim as ASTNODE ptr procexpr = any, expr = any
     dim as FB_CALL_ARG ptr arg = any
@@ -393,6 +419,7 @@ function cProcArgList _
 	end if
 
 	function = NULL
+	have_eq_outside_parens = FALSE
 
 	'' check visibility
 	if( symbCheckAccess( proc ) = FALSE ) then
@@ -506,7 +533,7 @@ function cProcArgList _
 				end if
 			end if
 
-			if( hProcArg( proc, param, args, expr, mode, options ) = FALSE ) then
+			if( hProcArg( proc, param, args, expr, mode, have_eq_outside_parens, options ) = FALSE ) then
 				exit do
 			end if
 
@@ -534,6 +561,8 @@ function cProcArgList _
 		'' ','?
 		loop while( hMatch( CHAR_COMMA ) )
 	end if
+
+	hMaybeWarnAboutEqOutsideParens( args, have_eq_outside_parens, proc )
 
 	'' if not all args were given, check for the optional ones
 	do while( args < params )
