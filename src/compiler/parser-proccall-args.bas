@@ -203,10 +203,42 @@ private sub hMaybeWarnAboutEqOutsideParens _
 		byval proc as FBSYMBOL ptr _
 	)
 
+	dim as integer warn = any
+
 	'' If there was just one argument, with '=' outside parentheses, in a
 	'' call to a BYREF function like <f (1) = 2>, show a warning -- it could
 	'' easily be misinterpreted as assignment to the BYREF function result.
-	if( (args = 1) and have_eq_outside_parens and symbProcReturnsByref( proc ) ) then
+	''
+	'' Also, the warning about this syntax problem should be shown in calls
+	'' to overloaded functions, if any of the overloads is a BYREF function,
+	'' because the exact overload used depends more on semantics than on
+	'' syntax.
+	''    f( a ) = b    i.e.    f( (a) = b )
+	'' might be a call to BYVAL or BYREF function depending on 'a'
+	'' could resolve to a different overload than
+	''    (f( a )) = b
+
+	warn = symbProcReturnsByref( proc )
+
+	if( warn = FALSE ) then
+		'' Also check other overloads, if any (for this to work,
+		'' the passed proc must be the overload head proc)
+		if( symbGetProcIsOverloaded( proc ) ) then
+			do
+				proc = symbGetProcOvlNext( proc )
+				if( proc = NULL ) then
+					exit do
+				end if
+
+				warn = symbProcReturnsByref( proc )
+			loop until( warn )
+		end if
+	end if
+
+	warn and= (args = 1)
+	warn and= have_eq_outside_parens
+
+	if( warn ) then
 		errReportWarn( FB_WARNINGMSG_BYREFEQAFTERPARENS )
 	end if
 
@@ -279,6 +311,9 @@ private function hOvlProcArgList _
 		loop
 	end if
 
+	'' (checking the first overload, the overload head proc)
+	hMaybeWarnAboutEqOutsideParens( args, have_eq_outside_parens, proc )
+
 	'' try finding the closest overloaded proc (don't pass the instance ptr, if any)
 	dim as FB_SYMBLOOKUPOPT lkup_options = FB_SYMBLOOKUPOPT_NONE
 	if( symbIsProperty( proc ) ) then
@@ -308,8 +343,6 @@ private function hOvlProcArgList _
 	end if
 
 	proc = ovlproc
-
-	hMaybeWarnAboutEqOutsideParens( args, have_eq_outside_parens, proc )
 
 	'' check visibility
 	if( symbCheckAccess( proc ) = FALSE ) then
