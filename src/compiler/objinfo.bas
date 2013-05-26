@@ -1,6 +1,42 @@
 ''
 '' FB compile time information section (.fbctinf) reader
 ''
+''
+'' Old format (supported for backwards compatibility with FB <= 0.24):
+''
+''    The first byte of the .fbctinf section is the version number &h10.
+''
+''    Multiple data sections can be following behind it:
+''
+''    Each section starts with 1 byte holding one of the FB_INFOSEC_* values,
+''    describing the content of the section.
+''        FB_INFOSEC_LIB = library names, from -l or #inclib
+''        FB_INFOSEC_PTH = library search paths, from -p or #libpath
+''        FB_INFOSEC_CMD = -lang mode and/or -mt setting
+''
+''    The strings for FB_INFOSEC_LIB and FB_INFOSEC_PTH are stored like this:
+''        1 byte = string length without null terminator
+''        followed by <raw string with null terminator>
+''
+''    In FB_INFOSEC_CMD, there can be
+''        -lang:
+''            1 byte = 5 = len( "-lang" )
+''            "-lang" with null terminator
+''            "qb"|"deprecated"|"fblite"|"fb" with null terminator
+''            (strings encoded much like described above, but no length byte
+''             in front of the dialect name)
+''        -mt:
+''            1 byte = 3 = len( "-mt" )
+''            "-mt" with null terminator
+''            (string encoded like described above)
+''
+''    Each of these 3 sections is terminated with a 0 byte.
+''
+''    Finally, there's 1 byte holding FB_INFOSEC_EOL (= 0).
+''
+''
+'' New format:
+''
 '' The .fbctinf section's content is a string similar to the fbc command line,
 '' except the strings (options/arguments) are each null-terminated on their own,
 '' instead of being separated with spaces and only having a null at the end.
@@ -18,10 +54,12 @@
 '' Technically it's ok for all entries to appear multiple times,
 '' although it only makes sense for -l and -p.
 ''
+''
 '' The FB backends can add that section containing the data to the output
 '' files they generate. There is no unified writer interface at the moment,
 '' since it's different for each backend, that's why it's best to keep the
 '' format simple.
+''
 ''
 '' The fbc frontend uses the reading interface to extract the objinfo data
 '' from the .fbctinf sections of object files it's going to link together.
@@ -69,9 +107,18 @@ dim shared as DATABUFFER _
 	objdata, _  '' current .o file content (can point into ardata)
 	fbctinf     '' .fbctinf section content, points into objdata
 
+enum
+	FB_INFOSEC_EOL = 0
+	FB_INFOSEC_LIB
+	FB_INFOSEC_PTH
+	FB_INFOSEC_CMD
+end enum
+
 type OBJINFOPARSERCTX
-	i         as integer
-	filename  as string
+	i		as integer
+	filename	as string
+	is_old		as integer  '' old .fbctinf format?
+	old_section	as integer  '' FB_INFOSEC_* or -1
 end type
 
 dim shared as OBJINFOPARSERCTX parser
@@ -510,6 +557,15 @@ private sub hLoadFbctinfFromObj( )
 	end if
 
 	INFO( "found .fbctinf (" + str( fbctinf.size ) + " bytes)" )
+
+	'' Check whether it's the old or new format
+	if( fbctinf.p[0] = &h10 ) then
+		INFO( ".fbctinf is using the old format" )
+		parser.is_old = TRUE
+		parser.i = 1  '' Skip the header byte
+	else
+		parser.is_old = FALSE
+	end if
 end sub
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -541,6 +597,8 @@ private sub objinfoInit( byref filename as string )
 	hResetBuffers( )
 	parser.i = 0
 	parser.filename = filename
+	parser.is_old = FALSE
+	parser.old_section = -1
 end sub
 
 sub objinfoReadObj( byref objfile as string )
@@ -571,21 +629,21 @@ sub objinfoReadLibfile( byref libfile as string )
 end sub
 
 sub objinfoReadLib( byref libname as string, byval libpaths as TLIST ptr )
-	static as string libfile
-	static as string filename
+	static as string libfile, filename
+	dim as TSTRSETITEM ptr path = any
 
 	'' only search for static libraries (import are named .dll.a and dynamic .so)
 	filename =  "lib" + libname + ".a"
 
 	'' try finding it at the lib paths
-	dim as TSTRSETITEM ptr path = listGetHead(libpaths)
-	while (path)
+	path = listGetHead( libpaths )
+	while( path )
 		libfile = path->s + FB_HOST_PATHDIV + filename
 		if( hFileExists( libfile ) ) then
 			exit while
 		end if
 
-		path = listGetNext(path)
+		path = listGetNext( path )
 	wend
 
 	'' not found?
@@ -598,23 +656,86 @@ sub objinfoReadLib( byref libname as string, byval libpaths as TLIST ptr )
 end sub
 
 private function hGetNextString( ) as zstring ptr
-	if( parser.i < fbctinf.size ) then
-		function = fbctinf.p + parser.i
+	dim as integer begin = any
 
-		'' Skip over the string
-		while( fbctinf.p[parser.i] <> 0 )
-			parser.i += 1
-		wend
+	function = @""
 
-		'' and the null terminator
+	begin = parser.i
+
+	'' Skip over the next null-terminated string, if any
+	while( parser.i < fbctinf.size )
 		parser.i += 1
-	else
-		function = @""
-	end if
+
+		'' Was it a null terminator?
+		if( fbctinf.p[parser.i-1] = 0 ) then
+			return fbctinf.p + begin
+		end if
+	wend
 end function
 
 function objinfoReadNext( byref dat as string ) as integer
-	if( fbctinf.size > 0 ) then
+	if( fbctinf.size <= 0 ) then
+		return -1
+	end if
+
+	if( parser.is_old ) then
+		while( parser.i < fbctinf.size )
+			'' Not inside any section currently?
+			if( parser.old_section < 0 ) then
+				'' Read next section id byte
+				parser.old_section = fbctinf.p[parser.i]
+				parser.i += 1
+
+				'' Validate the section id, and also stop on EOL
+				if( (parser.old_section <= FB_INFOSEC_EOL) or _
+				    (parser.old_section >  FB_INFOSEC_CMD) ) then
+					parser.old_section = -1
+					parser.i = fbctinf.size
+					return -1
+				end if
+			end if
+
+			'' Read next entry
+
+			'' Entry string length byte, or 0 section end byte
+			if( parser.i >= fbctinf.size ) then
+				return -1
+			end if
+			parser.i += 1
+
+			'' If it was a 0 byte, continue on to the next section
+			if( fbctinf.p[parser.i-1] = 0 ) then
+				parser.old_section = -1
+				continue while
+			end if
+
+			'' Otherwise it's an entry. Parse the null-terminated
+			'' string following behind the length byte, if any.
+			dat = *hGetNextString( )
+
+			select case( parser.old_section )
+			case FB_INFOSEC_LIB
+				INFO( "lib: " + dat )
+				return OBJINFO_LIB
+			case FB_INFOSEC_PTH
+				INFO( "libpath: " + dat )
+				return OBJINFO_LIBPATH
+			case FB_INFOSEC_CMD
+				select case( dat )
+				case "-lang"
+					'' Read another string, the dialect id
+					dat = *hGetNextString( )
+					if( len( dat ) > 0 ) then
+						INFO( "-lang " + dat )
+						return OBJINFO_LANG
+					end if
+				case "-mt"
+					INFO( "-mt" )
+					return OBJINFO_MT
+				end select
+			end select
+		wend
+	else
 		'' Parse the objinfo data (multiple null-terminated strings)
 		dat = *hGetNextString( )
 
@@ -630,6 +751,7 @@ function objinfoReadNext( byref dat as string ) as integer
 			end if
 		next
 	end if
+
 	function = -1
 end function
 
