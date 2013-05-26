@@ -234,7 +234,6 @@ static void *window_thread(void *arg)
 					     (event.xconfigure.height != real_h)) ) {
 						/* Window has been maximized: simulate ALT-Enter */
 						__fb_gfx->key[SC_ENTER] = __fb_gfx->key[SC_ALT] = TRUE;
-						printf("%x\n", event.xkey.keycode);
 						hOnAltEnter( );
 					}
 					break;
