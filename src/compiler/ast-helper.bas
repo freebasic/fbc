@@ -964,11 +964,12 @@ private function hConstBound _
 		'' Out-of-bounds dimension argument: For dimension = 0 we
 		'' return l/ubound of the array's dimTB, with lbound=1 and
 		'' ubound=dimensions. For other out-of-bound dimension values,
-		'' we return lbound=1 and ubound=0.
-		bound = iif( is_lbound, 1, _
-		             iif( dimension = 0, _
-		                  symbGetArrayDimensions( array ), _
-		                  0 ) )
+		'' we return lbound=0 and ubound=-1.
+		if( dimension = 0 ) then
+			bound = iif( is_lbound, 1, symbGetArrayDimensions( array ) )
+		else
+			bound = iif( is_lbound, 0, -1 )
+		end if
 	end if
 
 	function = astNewCONSTi( bound )
