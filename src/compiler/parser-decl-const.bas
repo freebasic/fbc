@@ -128,11 +128,9 @@ private sub cConstAssign _
 
 	'' '='
 	doskip = FALSE
-	if( lexGetToken( ) <> FB_TK_ASSIGN ) then
+	if( cAssignToken( ) = FALSE ) then
 		errReport( FB_ERRMSG_EXPECTEDEQ )
 		doskip = TRUE
-	else
-		lexSkipToken( )
 	end if
 
 	'' ConstExpression

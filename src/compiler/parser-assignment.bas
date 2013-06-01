@@ -22,6 +22,24 @@ sub parserLetEnd
 
 end sub
 
+function hIsAssignToken( ) as integer
+	select case( lexGetToken( ) )
+	case FB_TK_ASSIGN, FB_TK_DBLEQ
+		function = TRUE
+	case else
+		function = FALSE
+	end select
+end function
+
+function cAssignToken( ) as integer
+	if( hIsAssignToken( ) ) then
+		lexSkipToken( )
+		function = TRUE
+	else
+		function = FALSE
+	end if
+end function
+
 '':::::
 function cOperator _
 	( _
@@ -337,8 +355,7 @@ function cOperator _
     end if
 
     '' '='?
-    if( lexGetToken( ) = FB_TK_ASSIGN ) then
-    	lexSkipToken( )
+	if( cAssignToken( ) ) then
     	'' get the self version
     	op = astGetOpSelfVer( op )
     end if
@@ -354,12 +371,12 @@ sub cAssignment( byval l as ASTNODE ptr )
 
 	'' '='?
 	dim as integer op = INVALID
-	if( lexGetToken( ) <> FB_TK_ASSIGN ) then
+	if( hIsAssignToken( ) = FALSE ) then
 		'' BOP?
 		op = cOperator( FB_OPEROPTS_NONE )
 
 		'' '='?
-		if( lexGetToken( ) <> FB_TK_ASSIGN ) then
+		if( hIsAssignToken( ) = FALSE ) then
 			errReport( FB_ERRMSG_EXPECTEDEQ )
 			'' error recovery: skip stmt
 			hSkipStmt( )
@@ -641,14 +658,12 @@ function cAssignmentOrPtrCall _
 	end if
 
 	'' '='?
-	if( lexGetToken( ) <> FB_TK_ASSIGN ) then
+	if( cAssignToken( ) = FALSE ) then
 		errReport( FB_ERRMSG_EXPECTEDEQ )
 		'' error recovery: skip stmt
 		hSkipStmt( )
 		expr = NULL
 	else
-		lexSkipToken( )
-
 		'' Expression?
 		expr = cExpression( )
 		if( expr = NULL ) then

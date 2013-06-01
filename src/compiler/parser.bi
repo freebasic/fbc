@@ -184,6 +184,7 @@ type PARSERCTX
 	options			as FB_PARSEROPT
 	ctx_dtype       as integer                  '' used to resolve the address of overloaded procs
 	ctxsym			as FBSYMBOL ptr				'' /
+	have_eq_outside_parens	as integer
 end type
 
 '' cSymbolType flags
@@ -440,6 +441,9 @@ declare function cAssignmentOrPtrCallEx _
 	( _
 		byval expr as ASTNODE ptr _
 	) as integer
+
+declare function hIsAssignToken( ) as integer
+declare function cAssignToken( ) as integer
 
 declare function cOperator _
 	( _

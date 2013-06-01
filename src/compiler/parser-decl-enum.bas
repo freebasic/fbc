@@ -15,9 +15,7 @@ private sub hEnumConstDecl(byval id as zstring ptr, byref value as integer)
 	dim as ASTNODE ptr expr = any
 
 	'' '='?
-	if( lexGetToken( ) = FB_TK_ASSIGN ) then
-		lexSkipToken( )
-
+	if( cAssignToken( ) ) then
 		'' ConstExpression
 		expr = cExpression( )
 		if( expr = NULL ) then

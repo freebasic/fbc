@@ -422,10 +422,8 @@ private sub hForAssign _
 	'' expression of a FOR block.
 
 	'' =
-	if( lexGetToken( ) <> FB_TK_ASSIGN) then
+	if( cAssignToken( ) = FALSE ) then
 		errReport( FB_ERRMSG_EXPECTEDEQ )
-	else
-		lexSkipToken( )
 	end if
 
 	'' Not a local UDT with a constructor?

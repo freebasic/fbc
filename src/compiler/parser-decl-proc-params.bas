@@ -477,9 +477,7 @@ private function hParamDecl _
 	end if
 
 	'' ('=' (expr | ANY))?
-	if( lexGetToken( ) = FB_TK_ASSIGN ) then
-		lexSkipToken( )
-
+	if( cAssignToken( ) ) then
 		if( mode = FB_PARAMMODE_BYDESC ) then
 			'' ANY?
 			if( lexGetToken( ) = FB_TK_ANY ) then

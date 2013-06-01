@@ -1425,8 +1425,7 @@ function cVarDecl _
 			assign_initree = NULL
 
 			'' '=' | '=>' ?
-			select case lexGetToken( )
-			case FB_TK_DBLEQ, FB_TK_EQ
+			if( hIsAssignToken( ) ) then
 				initree = hVarInit( sym, is_decl )
 
 				if( ( initree <> NULL ) and ( fbLangOptIsSet( FB_LANG_OPT_SCOPE ) = FALSE ) ) then
@@ -1456,9 +1455,8 @@ function cVarDecl _
 						initree = hVarInitDefault( sym, is_decl, has_defctor )
 					end if
 				end if
-
-			'' default initialization
-			case else
+			else
+				'' default initialization
 				if( hHasEllipsis( sym ) ) then
 					errReport( FB_ERRMSG_MUSTHAVEINITWITHELLIPSIS )
 					hSkipStmt( )
@@ -1466,8 +1464,7 @@ function cVarDecl _
 				end if
 
 				initree = hVarInitDefault( sym, is_decl, has_defctor )
-
-			end select
+			end if
 		else
 			initree = NULL
 			assign_initree = NULL
@@ -1895,13 +1892,9 @@ sub cAutoVarDecl(byval attrib as FB_SYMBATTRIB)
 						TRUE, FALSE, TRUE )
 
 		'' '=' | '=>' ?
-		select case lexGetToken( )
-		case FB_TK_DBLEQ, FB_TK_EQ
-			lexSkipToken( )
-
-		case else
+		if( cAssignToken( ) = FALSE ) then
 			errReport( FB_ERRMSG_EXPECTEDEQ )
-		end select
+		end if
 
     	'' parse expression
 		dim as ASTNODE ptr expr = cExpression( )

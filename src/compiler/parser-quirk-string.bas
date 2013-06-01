@@ -57,7 +57,7 @@ function cMidStmt _
 
 	hMatchRPRNT( )
 
-	if( hMatch( FB_TK_ASSIGN ) = FALSE ) then
+	if( cAssignToken( ) = FALSE ) then
 		errReport( FB_ERRMSG_EXPECTEDEQ )
 	end if
 
@@ -130,7 +130,7 @@ function cLRSetStmt(byval tk as FB_TOKEN) as integer
 
 	'' ',' or '='
 	if( hMatch( CHAR_COMMA ) = FALSE ) then
-		if( hMatch( FB_TK_ASSIGN ) = FALSE ) then
+		if( cAssignToken( ) = FALSE ) then
 			errReport( FB_ERRMSG_EXPECTEDCOMMA )
 		end if
 	end if
