@@ -44,11 +44,11 @@ typedef void (*FB_DTORMULT) ( FBARRAY *array, FB_DEFCTOR dtor, int base_idx );
        void fb_hArrayDtorStr   ( FBARRAY *array, FB_DEFCTOR dtor, int base_idx );
 FBCALL void fb_ArrayDestructObj( FBARRAY *array, FB_DEFCTOR dtor );
 FBCALL void fb_ArrayDestructStr( FBARRAY *array );
-FBCALL void fb_ArrayClear      ( FBARRAY *array );
-FBCALL void fb_ArrayClearObj   ( FBARRAY *array, FB_DEFCTOR ctor, FB_DEFCTOR dtor );
-FBCALL void fb_ArrayErase      ( FBARRAY *array );
-FBCALL void fb_ArrayEraseObj   ( FBARRAY *array, FB_DEFCTOR dtor );
-FBCALL void fb_ArrayEraseStr   ( FBARRAY *array );
+FBCALL int  fb_ArrayClear      ( FBARRAY *array, int isvarlen );
+FBCALL int  fb_ArrayClearObj   ( FBARRAY *array, FB_DEFCTOR ctor, FB_DEFCTOR dtor, int dofill );
+FBCALL int  fb_ArrayErase      ( FBARRAY *array, int isvarlen );
+FBCALL int  fb_ArrayEraseObj   ( FBARRAY *array, FB_DEFCTOR dtor );
+FBCALL void fb_ArrayStrErase   ( FBARRAY *array );
 
 int fb_ArrayRedim        ( FBARRAY *array, int element_len, int preserve, int dimensions, ... );
 int fb_ArrayRedimEx      ( FBARRAY *array, int element_len, int doclear, int isvarlen, int dimensions, ... );

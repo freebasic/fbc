@@ -2,8 +2,7 @@
 
 #include "fb.h"
 
-FBCALL void fb_ArrayEraseStr( FBARRAY *array )
+FBCALL void fb_ArrayStrErase( FBARRAY *array )
 {
-	fb_ArrayDestructStr( array );
-	fb_ArrayErase( array );
+	fb_ArrayErase( array, -1 );
 }

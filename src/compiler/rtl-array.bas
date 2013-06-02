@@ -156,24 +156,27 @@
 				) _
 			} _
 		), _
-		/' sub fb_ArrayClear( array() as any ) '/ _
+		/' fb_ArrayClear( array() as any, byval isvarlen as integer ) as integer '/ _
 		( _
 			@FB_RTL_ARRAYCLEAR, NULL, _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
-			1, _
+			2, _
 			{ _
 				( _
 					FB_DATATYPE_VOID, FB_PARAMMODE_BYDESC, FALSE _
+				), _
+				( _
+					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
 				) _
 			} _
 		), _
-		/' sub fb_ArrayClearObj( array() as any, byval ctor as sub cdecl(), byval dtor as sub cdecl() ) '/ _
+		/' fb_ArrayClearObj( array() as any, byval ctor as sub cdecl(), byval dtor as sub cdecl(), byval dofill as integer ) as integer '/ _
 		( _
 			@FB_RTL_ARRAYCLEAROBJ, NULL, _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
-			3, _
+			4, _
 			{ _
 				( _
 					FB_DATATYPE_VOID, FB_PARAMMODE_BYDESC, FALSE _
@@ -183,25 +186,31 @@
 				), _
 				( _
 					typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE _
+				), _
+				( _
+					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
 				) _
 			} _
 		), _
-		/' sub fb_ArrayErase( array() as any ) '/ _
+		/' fb_ArrayErase( array() as any, byval isvarlen as integer ) as integer '/ _
 		( _
 			@FB_RTL_ARRAYERASE, NULL, _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
-			1, _
+			2, _
 			{ _
 				( _
 					FB_DATATYPE_VOID, FB_PARAMMODE_BYDESC, FALSE _
+				), _
+				( _
+					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
 				) _
 			} _
 		), _
-		/' sub fb_ArrayEraseObj( array() as any, byval dtor as sub cdecl() ) '/ _
+		/' fb_ArrayEraseObj( array() as any, byval dtor as sub cdecl() ) as integer '/ _
 		( _
 			@FB_RTL_ARRAYERASEOBJ, NULL, _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			2, _
 			{ _
@@ -213,7 +222,7 @@
 				) _
 			} _
 		), _
-		/' sub fb_ArrayEraseStr( array() as any ) '/ _
+		/' fb_ArrayStrErase( array() as any ) '/ _
 		( _
 			@FB_RTL_ARRAYERASESTR, NULL, _
 			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
@@ -428,17 +437,30 @@ function rtlArrayClear( byval arrayexpr as ASTNODE ptr ) as ASTNODE ptr
 		if( astNewARG( proc, hBuildProcPtr( dtor ) ) = NULL ) then
 			exit function
 		end if
-	else
-		if( dtype = FB_DATATYPE_STRING ) then
-			'' fb_ArrayDestructStr() works as fb_ArrayClearStr() too
-			proc = astNewCALL( PROCLOOKUP( ARRAYDESTRUCTSTR ) )
-		else
-			'' fb_ArrayClear()
-			proc = astNewCALL( PROCLOOKUP( ARRAYCLEAR ) )
+
+		'' byval dofill as integer
+		if( astNewARG( proc, astNewCONSTi( -1 ) ) = NULL ) then
+			exit function
 		end if
+	elseif( dtype = FB_DATATYPE_STRING ) then
+		'' fb_ArrayDestructStr() works as fb_ArrayClearStr() just fine
+		proc = astNewCALL( PROCLOOKUP( ARRAYDESTRUCTSTR ) )
 
 		'' array() as any
 		if( astNewARG( proc, arrayexpr, dtype ) = NULL ) then
+			exit function
+		end if
+	else
+		'' fb_ArrayClear()
+		proc = astNewCALL( PROCLOOKUP( ARRAYCLEAR ) )
+
+		'' array() as any
+		if( astNewARG( proc, arrayexpr, dtype ) = NULL ) then
+			exit function
+		end if
+
+		'' byval isvarlen as integer
+		if( astNewARG( proc, astNewCONSTi( 0 ) ) = NULL ) then
 			exit function
 		end if
 	end if
@@ -489,27 +511,35 @@ function rtlArrayErase _
 		if( astNewARG( proc, hBuildProcPtr( dtor ) ) = NULL ) then
 			exit function
 		end if
-	else
-		if( dtype = FB_DATATYPE_STRING ) then
-			if( is_dynamic ) then
-				'' fb_ArrayEraseStr()
-				proc = astNewCALL( PROCLOOKUP( ARRAYERASESTR ) )
-			else
-				'' fb_ArrayDestructStr()
-				proc = astNewCALL( PROCLOOKUP( ARRAYDESTRUCTSTR ) )
-			end if
+	elseif( dtype = FB_DATATYPE_STRING ) then
+		if( is_dynamic ) then
+			'' fb_ArrayStrErase()
+			proc = astNewCALL( PROCLOOKUP( ARRAYERASESTR ) )
 		else
-			if( is_dynamic = FALSE ) then
-				'' No dtor, not dynamic = nothing to do
-				exit function
-			end if
-
-			'' fb_ArrayErase()
-			proc = astNewCALL( PROCLOOKUP( ARRAYERASE ) )
+			'' fb_ArrayDestructStr()
+			proc = astNewCALL( PROCLOOKUP( ARRAYDESTRUCTSTR ) )
 		end if
 
 		'' array() as any
 		if( astNewARG( proc, arrayexpr, dtype ) = NULL ) then
+			exit function
+		end if
+	else
+		if( is_dynamic = FALSE ) then
+			'' No dtor, not dynamic = nothing to do
+			exit function
+		end if
+
+		'' fb_ArrayErase()
+		proc = astNewCALL( PROCLOOKUP( ARRAYERASE ) )
+
+		'' array() as any
+		if( astNewARG( proc, arrayexpr, dtype ) = NULL ) then
+			exit function
+		end if
+
+		 '' byval isvarlen as integer
+		if( astNewARG( proc, astNewCONSTi( 0 ) ) = NULL ) then
 			exit function
 		end if
 	end if

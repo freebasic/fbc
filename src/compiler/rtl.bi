@@ -140,7 +140,7 @@
 #define FB_RTL_ARRAYCLEAROBJ				"fb_ArrayClearObj"
 #define FB_RTL_ARRAYERASE				"fb_ArrayErase"
 #define FB_RTL_ARRAYERASEOBJ				"fb_ArrayEraseObj"
-#define FB_RTL_ARRAYERASESTR				"fb_ArrayEraseStr"
+#define FB_RTL_ARRAYERASESTR				"fb_ArrayStrErase"
 #define FB_RTL_ARRAYREDIM				"fb_ArrayRedimEx"
 #define FB_RTL_ARRAYREDIM_OBJ				"fb_ArrayRedimObj"
 #define FB_RTL_ARRAYREDIMPRESV				"fb_ArrayRedimPresvEx"
