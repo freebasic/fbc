@@ -1084,11 +1084,7 @@ declare function rtlStrCase _
 		byval is_lcase as integer _
 	) as ASTNODE ptr
 
-declare function rtlArrayClear _
-	( _
-		byval arrayexpr as ASTNODE ptr, _
-		byval check_access as integer _
-	) as ASTNODE ptr
+declare function rtlArrayClear( byval arrayexpr as ASTNODE ptr ) as ASTNODE ptr
 
 declare function rtlArrayErase _
 	( _

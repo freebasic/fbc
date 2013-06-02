@@ -383,12 +383,7 @@ private sub hCheckDtor _
 end sub
 
 '' fb_ArrayClear* - destruct elements if needed and then re-initialize
-function rtlArrayClear _
-	( _
-		byval arrayexpr as ASTNODE ptr, _
-		byval check_access as integer _
-	) as ASTNODE ptr
-
+function rtlArrayClear( byval arrayexpr as ASTNODE ptr ) as ASTNODE ptr
 	dim as ASTNODE ptr proc = any
 	dim as integer dtype = any
 	dim as FBSYMBOL ptr ctor = any, dtor = any, subtype = any
@@ -413,8 +408,8 @@ function rtlArrayClear _
 	end if
 
 	if( (ctor <> NULL) or (dtor <> NULL) ) then
-		hCheckDefCtor( ctor, check_access, TRUE )
-		hCheckDtor( dtor, check_access, TRUE )
+		hCheckDefCtor( ctor, TRUE, TRUE )
+		hCheckDtor( dtor, TRUE, TRUE )
 
 		'' fb_ArrayClearObj()
 		proc = astNewCALL( PROCLOOKUP( ARRAYCLEAROBJ ) )
