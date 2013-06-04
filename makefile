@@ -54,7 +54,6 @@
 #
 # compiler source code configuration (FBCFLAGS):
 #   -d ENABLE_STANDALONE     build for a self-contained installation
-#   -d ENABLE_TDMGCC         build for TDM-GCC instead of MinGW.org setup
 #   -d ENABLE_SUFFIX=-0.24   assume FB's lib dir uses the given suffix (non-standalone only)
 #   -d ENABLE_PREFIX=/some/path   hard-code specific $(prefix) into fbc
 #

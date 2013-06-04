@@ -2754,7 +2754,11 @@ private sub hAddDefaultLibs( )
 		fbcAddDefLib( "supc++" )
 		fbcAddDefLib( "pthread" )
 		fbcAddDefLib( "gcc" )
-		fbcAddDefLib( "gcc_eh" )
+		'' Link libgcc_eh if it exists (it depends on the gcc build)
+		if( (len( fbcFindLibFile( "libgcc_eh.a"  ) ) > 0) or _
+		    (len( fbcFindLibFile( "libgcc_eh.so" ) ) > 0) ) then
+			fbcAddDefLib( "gcc_eh" )
+		end if
 		fbcAddDefLib( "c" )
 
 	case FB_COMPTARGET_NETBSD
@@ -2776,10 +2780,12 @@ private sub hAddDefaultLibs( )
 		fbcAddDefLib( "mingwex" )
 		fbcAddDefLib( "moldname" )
 		fbcAddDefLib( "supc++" )
-		#ifndef ENABLE_TDMGCC
+		'' Link libgcc_eh if it exists
+		if( (len( fbcFindLibFile( "libgcc_eh.a"     ) ) > 0) or _
+		    (len( fbcFindLibFile( "libgcc_eh.dll.a" ) ) > 0) ) then
 			'' Needed by mingw.org toolchain, but not TDM-GCC
 			fbcAddDefLib( "gcc_eh" )
-		#endif
+		end if
 
 		'' profiling?
 		if( fbGetOption( FB_COMPOPT_PROFILE ) ) then
