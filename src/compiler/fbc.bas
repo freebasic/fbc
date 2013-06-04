@@ -277,7 +277,6 @@ private function fbcFindLibFile( byval file as zstring ptr ) as string
 
 	dim as integer ff = freefile( )
 	if( open pipe( path, for input, as ff ) <> 0 ) then
-		errReportEx( FB_ERRMSG_FILENOTFOUND, file, -1 )
 		exit function
 	end if
 
@@ -286,7 +285,6 @@ private function fbcFindLibFile( byval file as zstring ptr ) as string
 	close ff
 
 	if( found = hStripPath( found ) ) then
-		errReportEx( FB_ERRMSG_FILENOTFOUND, file, -1 )
 		exit function
 	end if
 #endif
@@ -462,7 +460,12 @@ private function makeImpLib _
 end function
 
 private function hFindLib( byval file as zstring ptr ) as string
-	function = " """ + fbcFindLibFile( file ) + """"
+	dim as string found = fbcFindLibFile( file )
+	if( len( found ) > 0 ) then
+		function = " """ + found + """"
+	else
+		errReportEx( FB_ERRMSG_FILENOTFOUND, file, -1 )
+	end if
 end function
 
 private function hLinkFiles( ) as integer
@@ -2721,15 +2724,31 @@ private sub hAddDefaultLibs( )
 		fbcAddDefLib( "supc++" )
 
 	case FB_COMPTARGET_LINUX
-		'' Note: When linking statically, -lpthread apparently should
-		'' be linked before -lc. Otherwise there can be errors due to
+		''
+		'' Notes:
+		''
+		'' When linking statically, -lpthread apparently should be
+		'' linked before -lc. Otherwise there can be errors due to
 		'' -lpthread/-lc containing overlapping symbols (but the pthread
 		'' ones should be used). This is confirmed by minimal testing,
 		'' searching the web and 'gcc -pthread' behavior.
+		''
 		'' Also, it seems like libsupc++/libstdc++ need to be linked
 		'' before libc, at least with more recent glibc/gcc, see also:
 		''    http://www.freebasic.net/forum/viewtopic.php?f=5&t=20733
-		fbcAddDefLib( "ncurses" )
+		''
+		'' libncurses and libtinfo: FB's rtlib depends on the libtinfo
+		'' part of ncurses, which sometimes is included in libncurses
+		'' and sometimes separate (depending on how ncurses was built).
+
+		'' Prefer libtinfo over libncurses
+		if( (len( fbcFindLibFile( "libtinfo.a"  ) ) > 0) or _
+		    (len( fbcFindLibFile( "libtinfo.so" ) ) > 0) ) then
+			fbcAddDefLib( "tinfo" )
+		else
+			fbcAddDefLib( "ncurses" )
+		end if
+
 		fbcAddDefLib( "m" )
 		fbcAddDefLib( "dl" )
 		fbcAddDefLib( "supc++" )
