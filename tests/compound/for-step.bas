@@ -68,6 +68,13 @@ private sub testPositiveStep cdecl()
 	testfor_to( uinteger, 0, 1, 1u shl 31 )
 	testfor_to( ulong   , 0, 1, 1u shl 31 )
 	testfor_to( ulongint, 0, 1, 1ull shl 63 )
+
+	testfor_to( byte   , -1   shl  6, 0, 1u   shl  7 )
+	testfor_to( short  , -1   shl 14, 0, 1u   shl 15 )
+	testfor_to( integer, -1   shl 30, 0, 1u   shl 31 )
+	testfor_to( long   , -1   shl 30, 0, 1u   shl 31 )
+	testfor_to( longint, -1ll shl 62, 0, 1ull shl 63 )
+
 end sub
 
 private sub testNegativeStep cdecl()
