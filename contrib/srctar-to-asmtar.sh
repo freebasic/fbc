@@ -25,9 +25,9 @@ make compiler
 # Use that fbc to pre-compile its own *.bas files to *.asm
 # (unlike using the host fbc to pre-compile, this ensures that the resulting
 # *.asm files are ABI-compatible to the rtlib in this source tree)
-make -f contrib/bootstrap.mk prepare GEN=gas FBC='bin/fbc-new -i inc'
+make -f contrib/bootstrap.mk prepare GEN=gas FBC='bin/fbc -i inc'
 
-# Remove bin/fbc-new and the *.o files again
+# Remove bin/fbc and the *.o files again
 make clean
 
 cd ..
