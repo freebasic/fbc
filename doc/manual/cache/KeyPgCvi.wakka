@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="CVI"}}----
-Converts a single-precision floating-point number or four-byte string to an integer variable using a binary copy
+Converts a single-precision floating-point number or string to an integer variable using a binary copy
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Cvi** ( [[KeyPgByval byval]] //sng// [[KeyPgAs as]] [[KeyPgSingle single]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
@@ -31,7 +31,7 @@ Converts a single-precision floating-point number or four-byte string to an inte
 
 	This function can also be used to convert 32-bit integer values from a memory or file buffer without the need for a ##[[KeyPgType Type]]## structure.  However, just as with the type structure, special care should be taken when using ##**Cvi**## to convert strings that have been read from a buffer.
 
-	##**Cvi**## supports an optional ##<//bits//>## parameter before the argument.  If ##//bits//## is ##16##, ##[[KeyPgCvshort Cvshort]]## will be called instead; if ##//bits//## is ##32##, ##[[KeyPgCvl Cvl]]## will be called; if ##//bits//## is ##64##, ##[[KeyPgCvlongint]]## will be called.  The return type and accepted argument types will depend on which function is called.  See each function's page for more information.
+	##**Cvi**## supports an optional ##<//bits//>## parameter before the argument.  If ##//bits//## is ##16##, ##[[KeyPgCvshort Cvshort]]## will be called instead; if ##//bits//## is ##32##, ##[[KeyPgCvl Cvl]]## will be called; if ##//bits//## is ##64##, ##[[KeyPgCvlongint Cvlongint]]## will be called.  The return type and accepted argument types will depend on which function is called.  See each function's page for more information.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/strings/cvi.bas"}}%%(freebasic)
@@ -44,6 +44,7 @@ print using "i = _&H&"; hex(i)
 
 {{fbdoc item="lang"}}
 	- In the //[[CompilerOptlang -lang qb]]// dialect, ##**Cvi**## expects a 2-byte string, since a QB integer is only 16 bits.  Only the first two bytes of the string are used, even if the string happens to be longer than two bytes.
+	- In the //[[CompilerOptlang -lang qb]]// dialect, ##**Cvi**## will not take a floating-point argument, since a QB integer is only 16 bits and there is no 16-bit floating-point data type.  Instead, ##**Cvi**<32>##/##**Cvi**<64>## or ##[[KeyPgCvl Cvl]]##/##[[KeyPgCvlongint Cvlongint]]## may be used.
 
 {{fbdoc item="diff"}}
 	- In QB an error occurs if the string passed is fewer than two bytes in length.

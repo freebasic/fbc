@@ -12,7 +12,7 @@ Returns a reference to a character in a string
 ##
 {{fbdoc item="param"}}
 	##//lhs//##
-		The string.
+		The string (a string reference, not a string returned as local copy).
 	##//rhs//##
 		A zero-based offset from the first character.
 	##//T//##

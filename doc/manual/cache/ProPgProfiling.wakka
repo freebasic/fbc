@@ -3,7 +3,7 @@ Profiling can be used to analyze the performance of an application.
 
 The performance of an application might be measured by how many times functions are called, how much time is spent executing those functions, and which functions are calling other functions.  This can help to identify functions that might be taking too long to execute or executed too many times and that might be worth reviewing for optimization.
 
-FreeBASIC uses GPROF for analyzing the execution of an application.  The profiler information is collected while the program is running, and GPROF is used to report on the collected data afterward.
+""FreeBASIC"" uses GPROF for analyzing the execution of an application.  The profiler information is collected while the program is running, and GPROF is used to report on the collected data afterward.
 
 The three basic steps to profiling a program are:
 	- 1) Prepare the program for profiling by compiling source with the //[[CompilerOptprofile -profile]]// option.
@@ -12,10 +12,10 @@ The three basic steps to profiling a program are:
 
 Full documentation on GPROF is available here: [[http://www.gnu.org/software/binutils/manual/gprof-2.9.1/gprof.html http://www.gnu.org/software/binutils/manual/gprof-2.9.1/gprof.html]].  If the documentation has moved from that location, simply search the web for "GNU GPROF" and a relevant link should be returned.
 
-FreeBASIC supports function profiling; not basic-block or line-by-line profiling.
+""FreeBASIC"" supports function profiling; not basic-block or line-by-line profiling.
 
 {{fbdoc item="section" value="Preparing a Program for Profiling"}}
-	Only code that is compiled with the //[[CompilerOptprofile -profile]]// command line option can be profiled.  Pass the //[[CompilerOptprofile -profile]]// option to the FreeBASIC compiler to prepare the program to be profiled.  This will tell the compiler to insert special startup code at the beginning of the application as well as at the beginning of each function.
+	Only code that is compiled with the //[[CompilerOptprofile -profile]]// command line option can be profiled.  Pass the //[[CompilerOptprofile -profile]]// option to the ""FreeBASIC"" compiler to prepare the program to be profiled.  This will tell the compiler to insert special startup code at the beginning of the application as well as at the beginning of each function.
 	%%
 fbc program.bas -profile
 %%
@@ -62,6 +62,6 @@ gprof program[.exe] --brief --flat-profile > profile.txt
 	- dos will require ##gcrt0.o## (profiler code is in ##libc.a##) 
 	- linux will require ##gcrt1.o## (profiler code is in ##libc.a##) 
 
-	The details may vary from one port of FreeBASIC to the next, but source code built for profiling with FreeBASIC should be compatible with other languages also supporting GPROF.
+	The details may vary from one port of ""FreeBASIC"" to the next, but source code built for profiling with ""FreeBASIC"" should be compatible with other languages also supporting GPROF.
 
 {{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

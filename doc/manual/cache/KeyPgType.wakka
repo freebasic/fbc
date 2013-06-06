@@ -35,7 +35,7 @@ Declares a user-defined type.
 	**End Type**
 ##
 {{fbdoc item="desc"}}
-	##**Type**## is used to declare custom data types containing one or more data fields, including integer types, floating point types, fixed-size arrays, strings, bitfields, and other user-defined types or unions.
+	##**Type**## is used to declare custom data types containing one or more data fields, including integer types, floating point types, fixed-size arrays, strings, bitfields, and other unnamed user-defined types or unions.
 	
 	Types support various functionality related to object-oriented programming:
 		- Inheritance through the use of the [[KeyPgExtends Extends]] keyword
@@ -51,6 +51,9 @@ Declares a user-defined type.
 	
 	//Special note on fixed length strings//
 	Currently, fixed-length string fields of ##[[KeyPgString String]] * //N//## type have an extra null terminator at their end, for compatibility with C strings, making them incompatible with QB strings inside Types, because they actually use up ##//N//+1## bytes, instead of just ##N## bytes. A possible work-around is to declare the field ##As [[KeyPgString String]] * (//N//-1)##, though this will not work in future releases if the null terminator is removed.  Another alternative is to use a ##[[KeyPgByte Byte]]## or ##[[KeyPgUbyte UByte]]## array with the proper size.
+
+	//Remark//
+	Nested unnamed type or union cannot have function members.
 
 {{fbdoc item="ex"}}
 This is an example of a QB-style type, not including procedure definitions
