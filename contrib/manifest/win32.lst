@@ -2872,6 +2872,7 @@ lib/win32/liburl.dll.a
 lib/win32/libuser32.dll.a
 lib/win32/libuserenv.dll.a
 lib/win32/libusp10.dll.a
+lib/win32/libuuid.dll.a
 lib/win32/libuxtheme.dll.a
 lib/win32/libversion.dll.a
 lib/win32/libvfw32.dll.a

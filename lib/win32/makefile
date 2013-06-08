@@ -101,6 +101,7 @@ win32libs += url
 win32libs += user32
 win32libs += userenv
 win32libs += usp10
+win32libs += uuid
 win32libs += uxtheme
 win32libs += version
 win32libs += vfw32
