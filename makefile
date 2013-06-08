@@ -18,6 +18,9 @@
 #          and src/rtlib/$(TARGET_ARCH), compiled into libfb.a
 #          src/rtlib/static/fbrt0.c compiled into fbrt0.o
 #
+#          For DOS, the modified version of libc.a is created too,
+#          see contrib/djgpp/ for more information.
+#
 #   3) the thread-safe rtlib (except for DOS)
 #          like the normal rtlib, but with -DENABLE_MT, compiled into libfbmt.a
 #
@@ -428,6 +431,9 @@ rtlib: $(libdir)/$(FB_LDSCRIPT) $(libdir)/fbrt0.o $(libdir)/libfb.a
 ifndef DISABLE_MT
 rtlib: $(newlibfbmt) $(libdir)/libfbmt.a
 endif
+ifeq ($(TARGET_OS),dos)
+rtlib: $(libdir)/libc.a
+endif
 
 $(libdir)/fbextra.x: $(rootdir)lib/fbextra.x
 	cp $< $@
@@ -461,6 +467,18 @@ $(LIBFBMT_C): $(newlibfbmt)/%.o: %.c $(LIBFB_H)
 
 $(LIBFBMT_S): $(newlibfbmt)/%.o: %.s $(LIBFB_H)
 	$(QUIET_CPPAS)$(CC) -x assembler-with-cpp -DENABLE_MT $(ALLCFLAGS) -c $< -o $@
+
+ifeq ($(TARGET_OS),dos)
+djgpplibc := $(shell $(CC) -print-file-name=libc.a)
+libcmaino := contrib/djgpp/libc/crt0/_main.o
+
+$(libcmaino): %.o: %.c
+	$(QUIET_CC)$(CC) $(ALLCFLAGS) -c $< -o $@
+
+$(libdir)/libc.a: $(djgpplibc) $(libcmaino)
+	cp $(djgpplibc) $@
+	$(QUIET_AR)ar rs $@ $(libcmaino)
+endif
 
 ################################################################################
 
@@ -501,6 +519,9 @@ install-rtlib: $(prefix)/lib $(prefixlib)
   ifndef DISABLE_MT
 	$(INSTALL_FILE) $(libdir)/libfbmt.a $(prefixlib)/
   endif
+  ifeq ($(TARGET_OS),dos)
+	$(INSTALL_FILE) $(libdir)/libc.a
+  endif
 
 install-gfxlib2: $(prefix)/lib $(prefixlib)
 	$(INSTALL_FILE) $(libdir)/libfbgfx.a $(prefixlib)/
@@ -521,6 +542,9 @@ uninstall-rtlib:
 	rm -f $(prefixlib)/$(FB_LDSCRIPT) $(prefixlib)/fbrt0.o $(prefixlib)/libfb.a
   ifndef DISABLE_MT
 	rm -f $(prefixlib)/libfbmt.a
+  endif
+  ifeq ($(TARGET_OS),dos)
+	rm -f $(libdir)/libc.a
   endif
 
 uninstall-gfxlib2:
@@ -543,6 +567,9 @@ clean-rtlib:
   ifndef DISABLE_MT
 	rm -f $(libdir)/libfbmt.a $(newlibfbmt)/*.o
 	-rmdir $(newlibfbmt)
+  endif
+  ifeq ($(TARGET_OS),dos)
+	rm -f $(libdir)/libc.a $(libcmaino)
   endif
 
 clean-gfxlib2:
