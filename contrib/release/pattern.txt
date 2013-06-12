@@ -735,6 +735,7 @@
 + lib/win32/crtbegin.o
 + lib/win32/crtend.o
 + lib/win32/dllcrt2.o
++ lib/win32/fbextra.x
 + lib/win32/fbrt0.o
 + lib/win32/gcrt2.o
 + lib/win32/libadvapi32.dll.a
