@@ -144,6 +144,10 @@ include/freebas/ffi.bi
 include/freebas/file.bi
 include/freebas/gd.bi
 include/freebas/gdbm.bi
+include/freebas/gdsl/_gdsl_bintree.bi
+include/freebas/gdsl/_gdsl_bstree.bi
+include/freebas/gdsl/_gdsl_list.bi
+include/freebas/gdsl/_gdsl_node.bi
 include/freebas/gdsl/gdsl.bi
 include/freebas/gdsl/gdsl_2darray.bi
 include/freebas/gdsl/gdsl_bstree.bi
@@ -156,10 +160,6 @@ include/freebas/gdsl/gdsl_rbtree.bi
 include/freebas/gdsl/gdsl_sort.bi
 include/freebas/gdsl/gdsl_stack.bi
 include/freebas/gdsl/gdsl_types.bi
-include/freebas/gdsl/_gdsl_bintree.bi
-include/freebas/gdsl/_gdsl_bstree.bi
-include/freebas/gdsl/_gdsl_list.bi
-include/freebas/gdsl/_gdsl_node.bi
 include/freebas/gettext-po.bi
 include/freebas/gif_lib.bi
 include/freebas/gmp.bi
