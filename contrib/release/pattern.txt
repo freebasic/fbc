@@ -1,0 +1,481 @@
+[dos]
++ bin/dos/*
+- bin/dos/gcc.exe				> gcc
++ bin/libexec/gcc/djgpp/*			> gcc
++ changelog.txt
++ doc/gpl.txt
++ doc/lgpl.txt
++ examples/*
+- examples/database/mysql_test.bas
+- examples/database/postgresql_test.bas
+- examples/dll/*
+- examples/files/FreeImage/*
+- examples/files/pdflib/*
+- examples/graphics/cairo/*
+- examples/graphics/FreeType/*
+- examples/graphics/OpenGL/*
+- examples/graphics/SDL/*
+- examples/GUI/GTK+/*
+- examples/GUI/IUP/*
+- examples/GUI/win32/*
+- examples/GUI/wx-c/*
+- examples/manual/threads/*
+- examples/math/cryptlib/*
+- examples/math/Newton/*
+- examples/math/ODE/*
+- examples/misc/Glib/*
+- examples/network/http-get.bas
+- examples/network/win32/*
+- examples/other-languages/Java*
+- examples/other-languages/VB/*
+- examples/sound/*
+- examples/threads/*
+- examples/unicode/*
+- examples/win32/*
++ inc/*
+- inc/AL/*
+- inc/atk/*
+- inc/bass.bi
+- inc/bassmod.bi
+- inc/cairo/*
+- inc/cd/*
+- inc/chipmunk/*
+- inc/crt/arpa/*
+- inc/crt/bits/*
+- inc/crt/linux/*
+- inc/crt/netdb.bi
+- inc/crt/netinet/in.bi
+- inc/crt/netinet/linux/in.bi
+- inc/crt/sys/linux/*
+- inc/crt/sys/socket.bi
+- inc/crt/sys/win32/*
+- inc/crt/win32/*
+- inc/curses/ncurses.bi
+- inc/disphelper/*
+- inc/fastcgi/*
+- inc/flite/*
+- inc/fmod.bi
+- inc/FreeImage.bi
+- inc/freetype2/*
+- inc/gdk*
+- inc/gio/*
+- inc/GL/*
+- inc/glade/*
+- inc/glib*
+- inc/gmodule.bi
+- inc/goocanvas.bi
+- inc/gtk*
+- inc/im/*
+- inc/IUP*
+- inc/japi*
+- inc/jni.bi
+- inc/json*
+- inc/libart_lgpl/*
+- inc/MediaInfo*
+- inc/modplug.bi
+- inc/mpg123.bi
+- inc/mysql/*
+- inc/Newton.bi
+- inc/ode/*
+- inc/ogg/*
+- inc/pango/*
+- inc/pdflib.bi
+- inc/portaudio.bi
+- inc/postgresql/*
+- inc/SDL/*
+- inc/sndfile.bi
+- inc/spidermonkey/*
+- inc/uuid.bi
+- inc/vlc/*
+- inc/vorbis/*
+- inc/win/*
+- inc/windows.bi
+- inc/wx-c/*
+- inc/X11/*
+- inc/xmp.bi
+- inc/zmq/*
++ lib/dos/*
++ readme.txt
+
+[djgpp]
++ bin/fbc.exe
++ include/freebas/*
+- include/freebas/AL/*
+- include/freebas/atk/*
+- include/freebas/bass.bi
+- include/freebas/bassmod.bi
+- include/freebas/cairo/*
+- include/freebas/cd/*
+- include/freebas/chipmunk/*
+- include/freebas/crt/arpa/*
+- include/freebas/crt/bits/*
+- include/freebas/crt/linux/*
+- include/freebas/crt/netdb.bi
+- include/freebas/crt/netinet/in.bi
+- include/freebas/crt/netinet/linux/in.bi
+- include/freebas/crt/sys/linux/*
+- include/freebas/crt/sys/socket.bi
+- include/freebas/crt/sys/win32/*
+- include/freebas/crt/win32/*
+- include/freebas/curses/ncurses.bi
+- include/freebas/disphelper/*
+- include/freebas/fastcgi/*
+- include/freebas/flite/*
+- include/freebas/fmod.bi
+- include/freebas/FreeImage.bi
+- include/freebas/freetype2/*
+- include/freebas/gdk*
+- include/freebas/gio/*
+- include/freebas/GL/*
+- include/freebas/glade/*
+- include/freebas/glib*
+- include/freebas/gmodule.bi
+- include/freebas/goocanvas.bi
+- include/freebas/gtk*
+- include/freebas/im/*
+- include/freebas/IUP*
+- include/freebas/japi*
+- include/freebas/jni.bi
+- include/freebas/json*
+- include/freebas/libart_lgpl/*
+- include/freebas/MediaInfo*
+- include/freebas/modplug.bi
+- include/freebas/mpg123.bi
+- include/freebas/mysql/*
+- include/freebas/Newton.bi
+- include/freebas/ode/*
+- include/freebas/ogg/*
+- include/freebas/pango/*
+- include/freebas/pdflib.bi
+- include/freebas/portaudio.bi
+- include/freebas/postgresql/*
+- include/freebas/SDL/*
+- include/freebas/sndfile.bi
+- include/freebas/spidermonkey/*
+- include/freebas/uuid.bi
+- include/freebas/vlc/*
+- include/freebas/vorbis/*
+- include/freebas/win/*
+- include/freebas/windows.bi
+- include/freebas/wx-c/*
+- include/freebas/X11/*
+- include/freebas/xmp.bi
+- include/freebas/zmq/*
++ lib/freebas/*
+
+[linux]
++ bin/fbc
++ changelog.txt
++ doc/fbc.1
++ doc/gpl.txt
++ doc/lgpl.txt
++ examples/*
+- examples/DOS/*
+- examples/win32/*
++ include/freebasic/*
+- include/freebasic/crt/dos/*
+- include/freebasic/crt/sys/dos/*
+- include/freebasic/crt/sys/win32/*
+- include/freebasic/crt/win32/*
+- include/freebasic/curses/pdcurses.bi
+- include/freebasic/disphelper/*
+- include/freebasic/dos/*
+- include/freebasic/win/*
+- include/freebasic/windows.bi
+- include/freebasic/X11/*.h
++ install.sh
++ lib/freebasic/*
++ readme.txt
+
+[linuxmusl]
++ bin/dos/ar					> dos-binutils	= 2.23.2
++ bin/dos/as					> dos-binutils
++ bin/dos/gcc					> dos-gcc	= 4.7.3
++ bin/dos/ld					> dos-binutils
++ bin/libexec/gcc/i486-pc-linux-gnu/*		> gcc		= 4.7.3
++ bin/libexec/gcc/i486-pc-mingw32/*		> win32-gcc
++ bin/libexec/gcc/i486-pc-msdosdjgpp/*		> dos-gcc
++ bin/linux/*
+- bin/linux/gcc					> gcc
++ bin/win32/ar					> win32-binutils	= 2.23.2
++ bin/win32/as					> win32-binutils
++ bin/win32/dlltool				> win32-binutils
++ bin/win32/gcc					> win32-gcc	= 4.7.3
++ bin/win32/ld					> win32-binutils
++ bin/win32/windres				> win32-binutils
++ changelog.txt
++ doc/gpl.txt
++ doc/lgpl.txt
++ doc/licenses/alsa-lib.txt			> alsa-lib
++ doc/licenses/aspell.txt			> aspell
++ doc/licenses/big_int.txt			> big_int
++ doc/licenses/bzip2.txt			> bzip2
++ doc/licenses/c-ares.txt			> c-ares
++ doc/licenses/cairo.txt			> cairo
++ doc/licenses/cryptlib.txt			> cryptlib
++ doc/licenses/CUnit.txt			> cunit
++ doc/licenses/curl.txt				> curl
++ doc/licenses/DevIL.txt			> devil
++ doc/licenses/e2fsprogs.txt			> e2fsprogs
++ doc/licenses/expat.txt			> expat
++ doc/licenses/flac.txt				> flac
++ doc/licenses/fontconfig.txt			> fontconfig
++ doc/licenses/freeglut.txt			> freeglut
++ doc/licenses/FreeImage.txt			> freeimage
++ doc/licenses/freetype.txt			> freetype
++ doc/licenses/GD.txt				> gd
++ doc/licenses/gdbm.txt				> gdbm
++ doc/licenses/gdsl.txt				> gdsl
++ doc/licenses/giflib.txt			> giflib
++ doc/licenses/glfw.txt				> glfw
++ doc/licenses/glib.txt				> glib
++ doc/licenses/glu.txt
++ doc/licenses/gmp.txt				> gmp
++ doc/licenses/gnutls*				> gnutls
++ doc/licenses/grx.txt				> grx
++ doc/licenses/gsl.txt				> gsl
++ doc/licenses/jasper.txt			> jasper
++ doc/licenses/jpeglib.txt			> jpeglib
++ doc/licenses/lcms.txt				> lcms
++ doc/licenses/lcms2.txt			> lcms2
++ doc/licenses/libcaca.txt			> libcaca
++ doc/licenses/libelf.txt			> libelf
++ doc/licenses/libffi.txt
++ doc/licenses/libICE.txt
++ doc/licenses/libidn.txt			> libidn
++ doc/licenses/libjit.txt			> libjit
++ doc/licenses/libmetalink.txt			> libmetalink
++ doc/licenses/libmng.txt			> libmng
++ doc/licenses/libogg.txt			> libogg
++ doc/licenses/liboggz.txt			> liboggz
++ doc/licenses/libpciaccess.txt
++ doc/licenses/libpng.txt			> libpng
++ doc/licenses/libpthread-stubs.txt
++ doc/licenses/libSM.txt
++ doc/licenses/libtasn1.txt			> libtasn1
++ doc/licenses/libtheora.txt			> libtheora
++ doc/licenses/libusb.txt			> libusb
++ doc/licenses/libvorbis.txt			> libvorbis
++ doc/licenses/libwebp.txt			> libwebp
++ doc/licenses/libX11.txt
++ doc/licenses/libXau.txt
++ doc/licenses/libxcb.txt
++ doc/licenses/libXdmcp.txt
++ doc/licenses/libXext.txt
++ doc/licenses/libXi.txt
++ doc/licenses/libxml2.txt			> libxml2
++ doc/licenses/libXpm.txt
++ doc/licenses/libXrandr.txt
++ doc/licenses/libXrender.txt
++ doc/licenses/libxslt.txt			> libxslt
++ doc/licenses/libXt.txt
++ doc/licenses/libXv.txt
++ doc/licenses/libXxf86dga.txt
++ doc/licenses/libXxf86vm.txt
++ doc/licenses/libzip.txt			> libzip
++ doc/licenses/Lua.html				> lua
++ doc/licenses/LZO.txt				> lzo
++ doc/licenses/Mesa.html
++ doc/licenses/mpc.txt				> mpc
++ doc/licenses/mpfr.txt				> mpfr
++ doc/licenses/mxml.txt				> mxml
++ doc/licenses/ncurses.txt
++ doc/licenses/nettle.txt			> nettle
++ doc/licenses/openal-soft.txt			> openal-soft
++ doc/licenses/PCRE.txt				> pcre
++ doc/licenses/pdflib.txt			> pdflib
++ doc/licenses/pixman.txt			> pixman
++ doc/licenses/QuickLZ.txt			> quicklz
++ doc/licenses/readline.txt			> readline
++ doc/licenses/SDL.txt				> sdl
++ doc/licenses/SDL_image.txt			> sdl_image
++ doc/licenses/SDL_net.txt			> sdl_net
++ doc/licenses/SDL_ttf.txt			> sdl_ttf
++ doc/licenses/sqlite3.txt			> sqlite
++ doc/licenses/tiff.txt				> tiff
++ doc/licenses/TinyPTC.txt			> tinyptc
++ doc/licenses/tinyxml2.txt			> tinyxml2
++ doc/licenses/TRE.txt				> tre
++ doc/licenses/xtrans.txt
++ doc/licenses/xz.txt				> xz
++ doc/licenses/zlib.txt				> zlib
++ examples/*
++ fbc
++ inc/*
+- inc/X11/*.h
++ lib/linux/*
+- lib/linux/libasound.a				> alsa-lib	= 1.0.26
+- lib/linux/libaspell.a				> aspell	= 0.60.6.1
+- lib/linux/libbig_int.a			> big_int	= 1.0.7
+- lib/linux/libblkid.a				> e2fsprogs	= 1.42.7
+- lib/linux/libbz2.a				> bzip2		= 1.0.6
+- lib/linux/libcaca.a				> libcaca	= 0.99.beta18
+- lib/linux/libcairo.a				> cairo		= 1.12.14
+- lib/linux/libcairo-script-interpreter.a	> cairo
+- lib/linux/libcares.a				> c-ares	= 1.9.1
+- lib/linux/libcl.a				> cryptlib	= 3.4.2
+- lib/linux/libcom_err.a			> e2fsprogs
+- lib/linux/libcrypt.a
+- lib/linux/libcunit.a				> cunit		= 2.1-2
+- lib/linux/libcurl.a				> curl		= 7.29.0
+- lib/linux/libcurses.a				; ncurses
+- lib/linux/libe2p.a				> e2fsprogs
+- lib/linux/libelf.a				> libelf	= 0.8.13
+- lib/linux/libexpat.a				> expat		= 2.1.0
+- lib/linux/libexslt.a				> libxslt
+- lib/linux/libext2fs.a				> e2fsprogs
+- lib/linux/libFLAC.a				> flac		= 1.2.1
+- lib/linux/libfontconfig.a			> fontconfig	= 2.10.91
+- lib/linux/libform.a				; ncurses
+- lib/linux/libfreeimage.a			> freeimage	= 3.15.4
+- lib/linux/libfreetype.a			> freetype	= 2.4.11
+- lib/linux/libgd.a				> gd		= 73cab5d8af96
+- lib/linux/libgdbm.a				> gdbm		= 1.10
+- lib/linux/libgdsl.a				> gdsl		= 1.6
+- lib/linux/libgif.a				> giflib	= 5.0.4
+- lib/linux/libgio-2.0.a			> glib
+- lib/linux/libglfw.a				> glfw		= 2.7.7
+- lib/linux/libglib-2.0.a			> glib		= 2.34.3
+- lib/linux/libglut.a				> freeglut	= 2.8.0
+- lib/linux/libgmodule-2.0.a			> glib
+- lib/linux/libgmp.a				> gmp		= 5.1.1
+- lib/linux/libgnutls.a				> gnutls	= 3.1.9
+- lib/linux/libgnutls-openssl.a			> gnutls
+- lib/linux/libgnutls-xssl.a			> gnutls
+- lib/linux/libgnutlsxx.a			> gnutls
+- lib/linux/libgobject-2.0.a			> glib
+- lib/linux/libgomp.a				> gcc
+- lib/linux/libgrx20.a				> grx		= 2.4.9
+- lib/linux/libgrx20X.a				> grx
+- lib/linux/libgsl.a				> gsl		= 1.15
+- lib/linux/libgslcblas.a			> gsl
+- lib/linux/libgthread-2.0.a			> glib
+- lib/linux/libhistory.a			> readline
+- lib/linux/libhogweed.a			> nettle
+- lib/linux/libidn.a				> libidn	= 1.26
+- lib/linux/libIL.a				> devil		= 1.7.8
+- lib/linux/libILU.a				> devil
+- lib/linux/libILUT.a				> devil
+- lib/linux/libitm.a				> gcc
+- lib/linux/libjasper.a				> jasper	= 1.900.1
+- lib/linux/libjit.a				> libjit	= 749e162d71eb295ff1e195cd4fd78f345c325773
+- lib/linux/libjitdynamic.a			> libjit
+- lib/linux/libjitplus.a			> libjit
+- lib/linux/libjpeg.a				> jpeglib	= 9
+- lib/linux/liblcms2.a				> lcms2		= 2.4
+- lib/linux/liblcms.a				> lcms		= 1.19
+- lib/linux/liblua.a				> lua		= 5.2.2
+- lib/linux/liblzma.a				> xz		= 5.0.4
+- lib/linux/liblzo2.a				> lzo		= 2.06
+- lib/linux/libmenu.a				; ncurses
+- lib/linux/libmetalink.a			> libmetalink	= 0.1.2
+- lib/linux/libmng.a				> libmng	= 1.0.10
+- lib/linux/libmpc.a				> mpc		= 1.0.1
+- lib/linux/libmpfr.a				> mpfr		= 3.1.2
+- lib/linux/libmxml.a				> mxml		= 2.7
+- lib/linux/libnettle.a				> nettle	= 2.6
+- lib/linux/libogg.a				> libogg	= 1.3.0
+- lib/linux/liboggz.a				> liboggz	= 1.1.1
+- lib/linux/libopenal.a				> openal-soft	= 1.15.1
+- lib/linux/libpanel.a				; ncurses
+- lib/linux/libpcre16.a				> pcre
+- lib/linux/libpcre32.a				> pcre
+- lib/linux/libpcre.a				> pcre		= 8.32
+- lib/linux/libpcreposix.a			> pcre
+- lib/linux/libpdf.a				> pdflib	= 4.0.2
+- lib/linux/libpixman-1.a			> pixman	= 0.28.2
+- lib/linux/libpng.a				> libpng	= 1.5.14
+- lib/linux/libpng15.a
+- lib/linux/libpspell.a				> aspell
+- lib/linux/libquadmath.a			> gcc
+- lib/linux/libquicklz.a			> quicklz	= 1.5.0
+- lib/linux/libquota.a				> e2fsprogs
+- lib/linux/libreadline.a			> readline	= 6.2
+- lib/linux/libSDL.a				> sdl		= 1.2.15
+- lib/linux/libSDL_image.a			> sdl_image	= 1.2.12
+- lib/linux/libSDLmain.a			> sdl
+- lib/linux/libSDL_net.a			> sdl_net	= 1.2.8
+- lib/linux/libSDL_ttf.a			> sdl_ttf	= 2.0.11
+- lib/linux/libsqlite3.a			> sqlite	= 3071601
+- lib/linux/libss.a				> e2fsprogs
+- lib/linux/libssp.a				> gcc
+- lib/linux/libssp_nonshared.a			> gcc
+- lib/linux/libtasn1.a				> libtasn1	= 3.2
+- lib/linux/libtheora.a				> libtheora	= 1.1.1
+- lib/linux/libtheoradec.a			> libtheora
+- lib/linux/libtheoraenc.a			> libtheora
+- lib/linux/libtiff.a				> tiff		= 4.0.3
+- lib/linux/libtiffxx.a				> tiff
+- lib/linux/libtinyptc.a			> tinyptc	= 0.7.3
+- lib/linux/libtinyxml2.a			> tinyxml2	= 2013.04
+- lib/linux/libtre.a				> tre		= 0.8.0
+- lib/linux/libusb-1.0.a			> libusb	= 1.0.9
+- lib/linux/libutil.a
+- lib/linux/libuuid.a				> e2fsprogs
+- lib/linux/libvorbis.a				> libvorbis	= 1.3.3
+- lib/linux/libvorbisenc.a			> libvorbis
+- lib/linux/libvorbisfile.a			> libvorbis
+- lib/linux/libwebp.a				> libwebp	= 0.3.0
+- lib/linux/libxml2.a				> libxml2	= 2.9.0
+- lib/linux/libxslt.a				> libxslt	= 1.1.28
+- lib/linux/libz.a				> zlib		= 1.2.7
+- lib/linux/libzip.a				> libzip	= 0.11
++ readme.txt
+
+[win32]
++ bin/dos/*					> x-dos
++ bin/libexec/gcc/i586-pc-msdosdjgpp/*		> x-dos
++ bin/libexec/gcc/i686-pc-linux-gnu/*		> x-linuxmusl
++ bin/libexec/gcc/i686-w64-mingw32/*		> gcc
++ bin/linux/*					> x-linuxmusl
++ bin/win32/*
+- bin/win32/gcc.exe				> gcc
++ changelog.txt
++ doc/gpl.txt
++ doc/lgpl.txt
++ examples/*
+- examples/DOS/*
++ fbc.exe
++ inc/*
+- inc/crt/dos/*
+- inc/crt/linux/*
+- inc/crt/netdb.bi
+- inc/crt/netinet/in.bi
+- inc/crt/netinet/linux/in.bi
+- inc/crt/sys/dos/*
+- inc/crt/sys/linux/*
+- inc/curses/ncurses.bi
+- inc/dos/*
+- inc/X11/*
++ lib/win32/*
+- lib/win32/*.def
+- lib/win32/makefile
++ readme.txt
+
+[win32-x-dos]
++ bin/dos/*
++ bin/libexec/gcc/i586-pc-msdosdjgpp/*
++ inc/crt/dos/*
+
+[win32-x-linux]
++ bin/libexec/gcc/i686-pc-linux-gnu/*
++ bin/linux/*
++ inc/crt/linux/*
++ inc/crt/netdb.bi
++ inc/crt/netinet/in.bi
++ inc/crt/netinet/linux/in.bi
+
+[mingw32]
++ bin/fbc.exe
++ include/freebasic/*
+- include/freebasic/crt/dos/*
+- include/freebasic/crt/linux/*
+- include/freebasic/crt/netdb.bi
+- include/freebasic/crt/netinet/in.bi
+- include/freebasic/crt/netinet/linux/in.bi
+- include/freebasic/crt/sys/dos/*
+- include/freebasic/crt/sys/linux/*
+- include/freebasic/curses/ncurses.bi
+- include/freebasic/dos/*
+- include/freebasic/X11/*
++ lib/freebasic/*

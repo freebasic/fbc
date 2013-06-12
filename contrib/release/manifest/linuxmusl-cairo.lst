@@ -1,0 +1,3 @@
+doc/licenses/cairo.txt
+lib/linux/libcairo-script-interpreter.a
+lib/linux/libcairo.a

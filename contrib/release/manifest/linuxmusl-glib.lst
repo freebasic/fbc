@@ -1,0 +1,6 @@
+doc/licenses/glib.txt
+lib/linux/libgio-2.0.a
+lib/linux/libglib-2.0.a
+lib/linux/libgmodule-2.0.a
+lib/linux/libgobject-2.0.a
+lib/linux/libgthread-2.0.a
