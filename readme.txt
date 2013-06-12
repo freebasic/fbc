@@ -115,7 +115,7 @@
     The FreeBASIC runtime library uses LibFFI to implement the Threadcall
     functionality. This means that, by default, FreeBASIC programs will be
     linked against LibFFI when using Threadcall. LibFFI is released under
-    the MIT/Expat license, see doc/LICENSE.libffi.
+    the MIT/Expat license, see doc/licenses/libffi.txt.
 
     By default, FreeBASIC programs are linked against various system and/or
     support libraries, depending on the platform. Those include the DJGPP
