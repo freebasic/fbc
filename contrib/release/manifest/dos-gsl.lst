@@ -1,0 +1,3 @@
+doc/licenses/gsl.txt
+lib/dos/libgsl.a
+lib/dos/libgslcblas.a

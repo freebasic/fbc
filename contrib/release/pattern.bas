@@ -554,7 +554,9 @@ end function
 		dim as string manifest = packs.list(i).manifest
 
 		select case( target )
-		case "dos", "win32", "win32-mini", "mingw32"
+		case "dos"
+			hShell( "zip -q " & title & ".zip -@ < " + manifest )
+		case "win32", "win32-mini", "mingw32"
 			hShell( "zip -q " & title & ".zip -@ < " + manifest )
 			hShell( "7z a " & title & ".7z -i@" + manifest + " > nul" )
 		case else

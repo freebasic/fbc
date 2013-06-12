@@ -1,10 +1,42 @@
 [dos]
 + bin/dos/*
-- bin/dos/gcc.exe				> gcc
+- bin/dos/gcc.exe				> gcc		= 4.7.2
 + bin/libexec/gcc/djgpp/*			> gcc
 + changelog.txt
 + doc/gpl.txt
 + doc/lgpl.txt
++ doc/licenses/*
+- doc/licenses/aspell.txt			> aspell
+- doc/licenses/big_int.txt			> big_int
+- doc/licenses/bzip2.txt			> bzip2
+- doc/licenses/CUnit.txt			> cunit
+- doc/licenses/DevIL.txt			> devil
+- doc/licenses/expat.txt			> expat
+- doc/licenses/GD.txt				> gd
+- doc/licenses/gdsl.txt				> gdsl
+- doc/licenses/giflib.txt			> giflib
+- doc/licenses/gmp.txt				> gmp
+- doc/licenses/grx.txt				> grx
+- doc/licenses/gsl.txt				> gsl
+- doc/licenses/jasper.txt			> jasper
+- doc/licenses/jpeglib.txt			> jpeglib
+- doc/licenses/lcms.txt				> lcms
+- doc/licenses/lcms2.txt			> lcms2
+- doc/licenses/libmng.txt			> libmng
+- doc/licenses/libpng.txt			> libpng
+- doc/licenses/libxml2.txt			> libxml2
+- doc/licenses/libxslt.txt			> libxslt
+- doc/licenses/libzip.txt			> libzip
+- doc/licenses/Lua.html				> lua
+- doc/licenses/LZO.txt				> lzo
+- doc/licenses/mxml.txt				> mxml
+- doc/licenses/PCRE.txt				> pcre
+- doc/licenses/PDCurses.txt			> pdcurses
+- doc/licenses/QuickLZ.txt			> quicklz
+- doc/licenses/tiff.txt				> tiff
+- doc/licenses/TRE.txt				> tre
+- doc/licenses/xz.txt				> xz
+- doc/licenses/zlib.txt				> zlib
 + examples/*
 - examples/database/mysql_test.bas
 - examples/database/postgresql_test.bas
@@ -23,7 +55,7 @@
 - examples/math/cryptlib/*
 - examples/math/Newton/*
 - examples/math/ODE/*
-- examples/misc/Glib/*
+- examples/misc/glib/*
 - examples/network/http-get.bas
 - examples/network/win32/*
 - examples/other-languages/Java*
@@ -32,6 +64,7 @@
 - examples/threads/*
 - examples/unicode/*
 - examples/win32/*
++ fbc.exe
 + inc/*
 - inc/AL/*
 - inc/atk/*
@@ -95,6 +128,48 @@
 - inc/xmp.bi
 - inc/zmq/*
 + lib/dos/*
+- lib/dos/libaspell.a				> aspell	= 0.60.6.1
+- lib/dos/libbig_int.a				> big_int	= 1.0.7
+- lib/dos/libbz2.a				> bzip2		= 1.0.6
+- lib/dos/libcunit.a				> cunit		= 2.1-2
+- lib/dos/libexpat.a				> expat		= 2.1.0
+- lib/dos/libexslt.a				> libxslt
+- lib/dos/libgd.a				> gd		= 73cab5d8af96
+- lib/dos/libgdsl.a				> gdsl		= 1.6
+- lib/dos/libgif.a				> giflib	= 5.0.4
+- lib/dos/libgmp.a				> gmp		= 5.1.1
+- lib/dos/libgrx20.a				> grx		= 2.4.9
+- lib/dos/libgsl.a				> gsl		= 1.15
+- lib/dos/libgslcblas.a				> gsl
+- lib/dos/libIL.a				> devil		= 1.7.8
+- lib/dos/libILU.a				> devil
+- lib/dos/libILUT.a				> devil
+- lib/dos/libjasper.a				> jasper	= 1.900.1
+- lib/dos/libjpeg.a				> jpeglib	= 9
+- lib/dos/liblcms.a				> lcms		= 1.19
+- lib/dos/liblcms2.a				> lcms2		= 2.4
+- lib/dos/liblua.a				> lua		= 5.2.2
+- lib/dos/liblzma.a				> xz		= 5.0.4
+- lib/dos/liblzo2.a				> lzo		= 2.06
+- lib/dos/libmng.a				> libmng	= 1.0.10
+- lib/dos/libmp.a
+- lib/dos/libmxml.a				> mxml		= 2.7
+- lib/dos/libpcre.a				> pcre		= 8.32
+- lib/dos/libpcre16.a				> pcre
+- lib/dos/libpcre32.a				> pcre
+- lib/dos/libpcreposix.a			> pcre
+- lib/dos/libpdcurses.a				> pdcurses	= 3.4
+- lib/dos/libpng.a				> libpng	= 1.5.14
+- lib/dos/libpspell.a				> aspell
+- lib/dos/libquicklz.a				> quicklz	= 1.5.0
+- lib/dos/libtiff.a				> tiff		= 4.0.3
+- lib/dos/libtiffxx.a				> tiff
+- lib/dos/libtinyptc.a				> tinyptc	= 0.1
+- lib/dos/libtre.a				> tre		= 0.8.0
+- lib/dos/libxml2.a				> libxml2	= 2.9.0
+- lib/dos/libxslt.a				> libxslt	= 1.1.28
+- lib/dos/libz.a				> zlib		= 1.2.7
+- lib/dos/libzip.a				> libzip	= 0.11
 + readme.txt
 
 [djgpp]
@@ -206,99 +281,100 @@
 + changelog.txt
 + doc/gpl.txt
 + doc/lgpl.txt
-+ doc/licenses/alsa-lib.txt			> alsa-lib
-+ doc/licenses/aspell.txt			> aspell
-+ doc/licenses/big_int.txt			> big_int
-+ doc/licenses/bzip2.txt			> bzip2
-+ doc/licenses/c-ares.txt			> c-ares
-+ doc/licenses/cairo.txt			> cairo
-+ doc/licenses/cryptlib.txt			> cryptlib
-+ doc/licenses/CUnit.txt			> cunit
-+ doc/licenses/curl.txt				> curl
-+ doc/licenses/DevIL.txt			> devil
-+ doc/licenses/e2fsprogs.txt			> e2fsprogs
-+ doc/licenses/expat.txt			> expat
-+ doc/licenses/flac.txt				> flac
-+ doc/licenses/fontconfig.txt			> fontconfig
-+ doc/licenses/freeglut.txt			> freeglut
-+ doc/licenses/FreeImage.txt			> freeimage
-+ doc/licenses/freetype.txt			> freetype
-+ doc/licenses/GD.txt				> gd
-+ doc/licenses/gdbm.txt				> gdbm
-+ doc/licenses/gdsl.txt				> gdsl
-+ doc/licenses/giflib.txt			> giflib
-+ doc/licenses/glfw.txt				> glfw
-+ doc/licenses/glib.txt				> glib
-+ doc/licenses/glu.txt
-+ doc/licenses/gmp.txt				> gmp
-+ doc/licenses/gnutls*				> gnutls
-+ doc/licenses/grx.txt				> grx
-+ doc/licenses/gsl.txt				> gsl
-+ doc/licenses/jasper.txt			> jasper
-+ doc/licenses/jpeglib.txt			> jpeglib
-+ doc/licenses/lcms.txt				> lcms
-+ doc/licenses/lcms2.txt			> lcms2
-+ doc/licenses/libcaca.txt			> libcaca
-+ doc/licenses/libelf.txt			> libelf
-+ doc/licenses/libffi.txt
-+ doc/licenses/libICE.txt
-+ doc/licenses/libidn.txt			> libidn
-+ doc/licenses/libjit.txt			> libjit
-+ doc/licenses/libmetalink.txt			> libmetalink
-+ doc/licenses/libmng.txt			> libmng
-+ doc/licenses/libogg.txt			> libogg
-+ doc/licenses/liboggz.txt			> liboggz
-+ doc/licenses/libpciaccess.txt
-+ doc/licenses/libpng.txt			> libpng
-+ doc/licenses/libpthread-stubs.txt
-+ doc/licenses/libSM.txt
-+ doc/licenses/libtasn1.txt			> libtasn1
-+ doc/licenses/libtheora.txt			> libtheora
-+ doc/licenses/libusb.txt			> libusb
-+ doc/licenses/libvorbis.txt			> libvorbis
-+ doc/licenses/libwebp.txt			> libwebp
-+ doc/licenses/libX11.txt
-+ doc/licenses/libXau.txt
-+ doc/licenses/libxcb.txt
-+ doc/licenses/libXdmcp.txt
-+ doc/licenses/libXext.txt
-+ doc/licenses/libXi.txt
-+ doc/licenses/libxml2.txt			> libxml2
-+ doc/licenses/libXpm.txt
-+ doc/licenses/libXrandr.txt
-+ doc/licenses/libXrender.txt
-+ doc/licenses/libxslt.txt			> libxslt
-+ doc/licenses/libXt.txt
-+ doc/licenses/libXv.txt
-+ doc/licenses/libXxf86dga.txt
-+ doc/licenses/libXxf86vm.txt
-+ doc/licenses/libzip.txt			> libzip
-+ doc/licenses/Lua.html				> lua
-+ doc/licenses/LZO.txt				> lzo
-+ doc/licenses/Mesa.html
-+ doc/licenses/mpc.txt				> mpc
-+ doc/licenses/mpfr.txt				> mpfr
-+ doc/licenses/mxml.txt				> mxml
-+ doc/licenses/ncurses.txt
-+ doc/licenses/nettle.txt			> nettle
-+ doc/licenses/openal-soft.txt			> openal-soft
-+ doc/licenses/PCRE.txt				> pcre
-+ doc/licenses/pdflib.txt			> pdflib
-+ doc/licenses/pixman.txt			> pixman
-+ doc/licenses/QuickLZ.txt			> quicklz
-+ doc/licenses/readline.txt			> readline
-+ doc/licenses/SDL.txt				> sdl
-+ doc/licenses/SDL_image.txt			> sdl_image
-+ doc/licenses/SDL_net.txt			> sdl_net
-+ doc/licenses/SDL_ttf.txt			> sdl_ttf
-+ doc/licenses/sqlite3.txt			> sqlite
-+ doc/licenses/tiff.txt				> tiff
-+ doc/licenses/TinyPTC.txt			> tinyptc
-+ doc/licenses/tinyxml2.txt			> tinyxml2
-+ doc/licenses/TRE.txt				> tre
-+ doc/licenses/xtrans.txt
-+ doc/licenses/xz.txt				> xz
-+ doc/licenses/zlib.txt				> zlib
++ doc/licenses/*
+- doc/licenses/alsa-lib.txt			> alsa-lib
+- doc/licenses/aspell.txt			> aspell
+- doc/licenses/big_int.txt			> big_int
+- doc/licenses/bzip2.txt			> bzip2
+- doc/licenses/c-ares.txt			> c-ares
+- doc/licenses/cairo.txt			> cairo
+- doc/licenses/cryptlib.txt			> cryptlib
+- doc/licenses/CUnit.txt			> cunit
+- doc/licenses/curl.txt				> curl
+- doc/licenses/DevIL.txt			> devil
+- doc/licenses/e2fsprogs.txt			> e2fsprogs
+- doc/licenses/expat.txt			> expat
+- doc/licenses/flac.txt				> flac
+- doc/licenses/fontconfig.txt			> fontconfig
+- doc/licenses/freeglut.txt			> freeglut
+- doc/licenses/FreeImage.txt			> freeimage
+- doc/licenses/freetype.txt			> freetype
+- doc/licenses/GD.txt				> gd
+- doc/licenses/gdbm.txt				> gdbm
+- doc/licenses/gdsl.txt				> gdsl
+- doc/licenses/giflib.txt			> giflib
+- doc/licenses/glfw.txt				> glfw
+- doc/licenses/glib.txt				> glib
+- doc/licenses/glu.txt
+- doc/licenses/gmp.txt				> gmp
+- doc/licenses/gnutls*				> gnutls
+- doc/licenses/grx.txt				> grx
+- doc/licenses/gsl.txt				> gsl
+- doc/licenses/jasper.txt			> jasper
+- doc/licenses/jpeglib.txt			> jpeglib
+- doc/licenses/lcms.txt				> lcms
+- doc/licenses/lcms2.txt			> lcms2
+- doc/licenses/libcaca.txt			> libcaca
+- doc/licenses/libelf.txt			> libelf
+- doc/licenses/libffi.txt
+- doc/licenses/libICE.txt
+- doc/licenses/libidn.txt			> libidn
+- doc/licenses/libjit.txt			> libjit
+- doc/licenses/libmetalink.txt			> libmetalink
+- doc/licenses/libmng.txt			> libmng
+- doc/licenses/libogg.txt			> libogg
+- doc/licenses/liboggz.txt			> liboggz
+- doc/licenses/libpciaccess.txt
+- doc/licenses/libpng.txt			> libpng
+- doc/licenses/libpthread-stubs.txt
+- doc/licenses/libSM.txt
+- doc/licenses/libtasn1.txt			> libtasn1
+- doc/licenses/libtheora.txt			> libtheora
+- doc/licenses/libusb.txt			> libusb
+- doc/licenses/libvorbis.txt			> libvorbis
+- doc/licenses/libwebp.txt			> libwebp
+- doc/licenses/libX11.txt
+- doc/licenses/libXau.txt
+- doc/licenses/libxcb.txt
+- doc/licenses/libXdmcp.txt
+- doc/licenses/libXext.txt
+- doc/licenses/libXi.txt
+- doc/licenses/libxml2.txt			> libxml2
+- doc/licenses/libXpm.txt
+- doc/licenses/libXrandr.txt
+- doc/licenses/libXrender.txt
+- doc/licenses/libxslt.txt			> libxslt
+- doc/licenses/libXt.txt
+- doc/licenses/libXv.txt
+- doc/licenses/libXxf86dga.txt
+- doc/licenses/libXxf86vm.txt
+- doc/licenses/libzip.txt			> libzip
+- doc/licenses/Lua.html				> lua
+- doc/licenses/LZO.txt				> lzo
+- doc/licenses/Mesa.html
+- doc/licenses/mpc.txt				> mpc
+- doc/licenses/mpfr.txt				> mpfr
+- doc/licenses/mxml.txt				> mxml
+- doc/licenses/ncurses.txt
+- doc/licenses/nettle.txt			> nettle
+- doc/licenses/openal-soft.txt			> openal-soft
+- doc/licenses/PCRE.txt				> pcre
+- doc/licenses/pdflib.txt			> pdflib
+- doc/licenses/pixman.txt			> pixman
+- doc/licenses/QuickLZ.txt			> quicklz
+- doc/licenses/readline.txt			> readline
+- doc/licenses/SDL.txt				> sdl
+- doc/licenses/SDL_image.txt			> sdl_image
+- doc/licenses/SDL_net.txt			> sdl_net
+- doc/licenses/SDL_ttf.txt			> sdl_ttf
+- doc/licenses/sqlite3.txt			> sqlite
+- doc/licenses/tiff.txt				> tiff
+- doc/licenses/TinyPTC.txt			> tinyptc
+- doc/licenses/tinyxml2.txt			> tinyxml2
+- doc/licenses/TRE.txt				> tre
+- doc/licenses/xtrans.txt
+- doc/licenses/xz.txt				> xz
+- doc/licenses/zlib.txt				> zlib
 + examples/*
 + fbc
 + inc/*
@@ -440,67 +516,68 @@
 + doc/GoRC.txt
 + doc/gpl.txt
 + doc/lgpl.txt
-+ doc/licenses/aspell.txt			> aspell
-+ doc/licenses/big_int.txt			> big_int
-+ doc/licenses/bzip2.txt			> bzip2
-+ doc/licenses/c-ares.txt			> c-ares
-+ doc/licenses/cgi-util.txt			> cgi-util
-+ doc/licenses/cryptlib.txt			> cryptlib
-+ doc/licenses/CUnit.txt			> cunit
-+ doc/licenses/curl.txt				> curl
-+ doc/licenses/DevIL.txt			> devil
-+ doc/licenses/disphelper.html			> disphelper
-+ doc/licenses/expat.txt			> expat
-+ doc/licenses/flac.txt				> flac
-+ doc/licenses/freeglut.txt			> freeglut
-+ doc/licenses/FreeImage.txt			> freeimage
-+ doc/licenses/freetype.txt			> freetype
-+ doc/licenses/GD.txt				> gd
-+ doc/licenses/gdsl.txt				> gdsl
-+ doc/licenses/giflib.txt			> giflib
-+ doc/licenses/glfw.txt				> glfw
-+ doc/licenses/gmp.txt				> gmp
-+ doc/licenses/gnutls*				> gnutls
-+ doc/licenses/grx.txt				> grx
-+ doc/licenses/gsl.txt				> gsl
-+ doc/licenses/jasper.txt			> jasper
-+ doc/licenses/jpeglib.txt			> jpeglib
-+ doc/licenses/lcms.txt				> lcms
-+ doc/licenses/lcms2.txt			> lcms2
-+ doc/licenses/libffi.txt
-+ doc/licenses/libidn.txt			> libidn
-+ doc/licenses/libmetalink.txt			> libmetalink
-+ doc/licenses/libmng.txt			> libmng
-+ doc/licenses/libogg.txt			> libogg
-+ doc/licenses/liboggz.txt			> liboggz
-+ doc/licenses/libpng.txt			> libpng
-+ doc/licenses/libtasn1.txt			> libtasn1
-+ doc/licenses/libtheora.txt			> libtheora
-+ doc/licenses/libvorbis.txt			> libvorbis
-+ doc/licenses/libwebp.txt			> libwebp
-+ doc/licenses/libxml2.txt			> libxml2
-+ doc/licenses/libxslt.txt			> libxslt
-+ doc/licenses/libzip.txt			> libzip
-+ doc/licenses/Lua.html				> lua
-+ doc/licenses/LZO.txt				> lzo
-+ doc/licenses/mpc.txt				> mpc
-+ doc/licenses/mpfr.txt				> mpfr
-+ doc/licenses/mxml.txt				> mxml
-+ doc/licenses/nettle.txt			> nettle
-+ doc/licenses/openal-soft.txt			> openal-soft
-+ doc/licenses/PCRE.txt				> pcre
-+ doc/licenses/PDCurses.txt			> pdcurses
-+ doc/licenses/pdflib.txt			> pdflib
-+ doc/licenses/QuickLZ.txt			> quicklz
-+ doc/licenses/SDL.txt				> sdl
-+ doc/licenses/SDL_image.txt			> sdl_image
-+ doc/licenses/SDL_net.txt			> sdl_net
-+ doc/licenses/SDL_ttf.txt			> sdl_ttf
-+ doc/licenses/sqlite3.txt			> sqlite
-+ doc/licenses/tiff.txt				> tiff
-+ doc/licenses/TRE.txt				> tre
-+ doc/licenses/xz.txt				> xz
-+ doc/licenses/zlib.txt				> zlib
++ doc/licenses/*
+- doc/licenses/aspell.txt			> aspell
+- doc/licenses/big_int.txt			> big_int
+- doc/licenses/bzip2.txt			> bzip2
+- doc/licenses/c-ares.txt			> c-ares
+- doc/licenses/cgi-util.txt			> cgi-util
+- doc/licenses/cryptlib.txt			> cryptlib
+- doc/licenses/CUnit.txt			> cunit
+- doc/licenses/curl.txt				> curl
+- doc/licenses/DevIL.txt			> devil
+- doc/licenses/disphelper.html			> disphelper
+- doc/licenses/expat.txt			> expat
+- doc/licenses/flac.txt				> flac
+- doc/licenses/freeglut.txt			> freeglut
+- doc/licenses/FreeImage.txt			> freeimage
+- doc/licenses/freetype.txt			> freetype
+- doc/licenses/GD.txt				> gd
+- doc/licenses/gdsl.txt				> gdsl
+- doc/licenses/giflib.txt			> giflib
+- doc/licenses/glfw.txt				> glfw
+- doc/licenses/gmp.txt				> gmp
+- doc/licenses/gnutls*				> gnutls
+- doc/licenses/grx.txt				> grx
+- doc/licenses/gsl.txt				> gsl
+- doc/licenses/jasper.txt			> jasper
+- doc/licenses/jpeglib.txt			> jpeglib
+- doc/licenses/lcms.txt				> lcms
+- doc/licenses/lcms2.txt			> lcms2
+- doc/licenses/libffi.txt
+- doc/licenses/libidn.txt			> libidn
+- doc/licenses/libmetalink.txt			> libmetalink
+- doc/licenses/libmng.txt			> libmng
+- doc/licenses/libogg.txt			> libogg
+- doc/licenses/liboggz.txt			> liboggz
+- doc/licenses/libpng.txt			> libpng
+- doc/licenses/libtasn1.txt			> libtasn1
+- doc/licenses/libtheora.txt			> libtheora
+- doc/licenses/libvorbis.txt			> libvorbis
+- doc/licenses/libwebp.txt			> libwebp
+- doc/licenses/libxml2.txt			> libxml2
+- doc/licenses/libxslt.txt			> libxslt
+- doc/licenses/libzip.txt			> libzip
+- doc/licenses/Lua.html				> lua
+- doc/licenses/LZO.txt				> lzo
+- doc/licenses/mpc.txt				> mpc
+- doc/licenses/mpfr.txt				> mpfr
+- doc/licenses/mxml.txt				> mxml
+- doc/licenses/nettle.txt			> nettle
+- doc/licenses/openal-soft.txt			> openal-soft
+- doc/licenses/PCRE.txt				> pcre
+- doc/licenses/PDCurses.txt			> pdcurses
+- doc/licenses/pdflib.txt			> pdflib
+- doc/licenses/QuickLZ.txt			> quicklz
+- doc/licenses/SDL.txt				> sdl
+- doc/licenses/SDL_image.txt			> sdl_image
+- doc/licenses/SDL_net.txt			> sdl_net
+- doc/licenses/SDL_ttf.txt			> sdl_ttf
+- doc/licenses/sqlite3.txt			> sqlite
+- doc/licenses/tiff.txt				> tiff
+- doc/licenses/TRE.txt				> tre
+- doc/licenses/xz.txt				> xz
+- doc/licenses/zlib.txt				> zlib
 + examples/*
 + fbc.exe
 + inc/*
