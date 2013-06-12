@@ -520,7 +520,7 @@ install-rtlib: $(prefix)/lib $(prefixlib)
 	$(INSTALL_FILE) $(libdir)/libfbmt.a $(prefixlib)/
   endif
   ifeq ($(TARGET_OS),dos)
-	$(INSTALL_FILE) $(libdir)/libc.a
+	$(INSTALL_FILE) $(libdir)/libc.a $(prefixlib)/
   endif
 
 install-gfxlib2: $(prefix)/lib $(prefixlib)
