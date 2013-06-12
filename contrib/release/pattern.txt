@@ -683,14 +683,5 @@
 [mingw32]
 + bin/fbc.exe
 + include/freebasic/*
-- include/freebasic/crt/dos/*
-- include/freebasic/crt/linux/*
-- include/freebasic/crt/netdb.bi
-- include/freebasic/crt/netinet/in.bi
-- include/freebasic/crt/netinet/linux/in.bi
-- include/freebasic/crt/sys/dos/*
-- include/freebasic/crt/sys/linux/*
-- include/freebasic/curses/ncurses.bi
-- include/freebasic/dos/*
-- include/freebasic/X11/*
+- include/freebasic/X11/*.h
 + lib/freebasic/*

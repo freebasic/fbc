@@ -505,10 +505,12 @@ end function
 	'' For non-standalone releases, copy the includes into the proper directory
 	select case( target )
 	case "linux", "mingw32"
-		hShell( "mkdir -p include/freebasic" )
+		mkdir( "include" )
+		mkdir( "include/freebasic" )
 		hShell( "cp -r inc/* include/freebasic" )
 	case "djgpp"
-		hShell( "mkdir -p include/freebas" )
+		mkdir( "include" )
+		mkdir( "include/freebas" )
 		hShell( "cp -r inc/* include/freebas" )
 	end select
 
@@ -552,7 +554,7 @@ end function
 		dim as string manifest = packs.list(i).manifest
 
 		select case( target )
-		case "dos", "win32", "win32-mini"
+		case "dos", "win32", "win32-mini", "mingw32"
 			hShell( "zip -q " & title & ".zip -@ < " + manifest )
 			hShell( "7z a " & title & ".7z -i@" + manifest + " > nul" )
 		case else
