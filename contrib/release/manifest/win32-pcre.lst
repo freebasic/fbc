@@ -1,0 +1,5 @@
+doc/licenses/PCRE.txt
+lib/win32/libpcre.a
+lib/win32/libpcre16.a
+lib/win32/libpcre32.a
+lib/win32/libpcreposix.a

@@ -1,0 +1,4 @@
+doc/licenses/DevIL.txt
+lib/win32/libIL.a
+lib/win32/libILU.a
+lib/win32/libILUT.a

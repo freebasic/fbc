@@ -19,6 +19,42 @@
 
 dim shared as string target
 
+private function strReplace _
+	( _
+		byref text as string, _
+		byref a as string, _
+		byref b as string _
+	) as string
+
+	dim as string keep, result
+	dim as integer alen = any, blen = any, i = any
+
+	result = text
+
+	alen = len( a )
+	blen = len( b )
+
+	i = 0
+	do
+		'' Does result contain an occurence of a?
+		i = instr( i + 1, result, a )
+		if( i = 0 ) then
+			exit do
+		end if
+
+		'' Cut out a and insert b in its place
+		'' result  =  front  +  b  +  back
+		keep = right( result, len( result ) - ((i - 1) + alen) )
+		result = left( result, i - 1 )
+		result += b
+		result += keep
+
+		i += blen - 1
+	loop
+
+	function = result
+end function
+
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
 namespace files
@@ -37,16 +73,10 @@ private sub hAddFile( byref filename as string )
 		redim preserve files.list(0 to files.room-1)
 	end if
 
-	files.list(files.count).filename = filename
+	files.list(files.count).filename = strReplace( filename, "\", "/" )
 	files.list(files.count).pack = -1
 	files.count += 1
 end sub
-
-#if defined( __FB_WIN32__ ) or defined( __FB_DOS__ )
-	#define PATHDIV "\"
-#else
-	#define PATHDIV "/"
-#endif
 
 private function pathAddDiv( byref path as string ) as string
 	dim as string s
@@ -463,24 +493,13 @@ end function
 	case 2
 		target = *__FB_ARGV__[1]
 
-		select case( target )
-		case "dos", "linux", "win32"
-
-		case else
-			print "target '" & target & "' not recognized, it should be one of:"
-			print "    dos, linux, win32"
-			end 1
-		end select
-
 	case else
 		print "usage: ./release [<id>]"
 		print "<id> = dos|linux|win32|etc., from pattern.txt"
 		end 1
 	end select
 
-	target = "linuxmusl"
-
-	dim as string rootdir = pathAddDiv( exepath( ) ) + ".." + PATHDIV + ".."
+	dim as string rootdir = strReplace( pathAddDiv( exepath( ) ) + "../..", "\", "/" )
 	chdir( rootdir )
 
 	'' For non-standalone releases, copy the includes into the proper directory
@@ -504,18 +523,14 @@ end function
 	hAddOrLookupPack( target )
 
 	'' Load and apply patterns
-	dim as string patternfile = "contrib" + PATHDIV + "release" + PATHDIV + "pattern.txt"
+	dim as string patternfile = "contrib/release/pattern.txt"
 	print "loading patterns from '" & patternfile & "'..."
 	hLoadPatterns( patternfile )
 	print "done: " & files.count & " files, " & packs.count & " packs"
 
 	'' Create manifests and show some stats
 	for i as integer = 0 to packs.count-1
-		packs.list(i).manifest = _
-			"contrib" + PATHDIV + _
-			"release" + PATHDIV + _
-			"manifest" + PATHDIV + _
-			packs.list(i).id + ".lst"
+		packs.list(i).manifest = "contrib/release/manifest/" + packs.list(i).id + ".lst"
 		print hCountPackFiles( i ) & " files = " & packs.list(i).manifest
 		hWriteManifest( i, packs.list(i).manifest )
 	next
@@ -537,7 +552,7 @@ end function
 		dim as string manifest = packs.list(i).manifest
 
 		select case( target )
-		case "dos", "win32"
+		case "dos", "win32", "win32-mini"
 			hShell( "zip -q " & title & ".zip -@ < " + manifest )
 			hShell( "7z a " & title & ".7z -i@" + manifest + " > nul" )
 		case else

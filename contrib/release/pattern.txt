@@ -423,47 +423,262 @@
 + readme.txt
 
 [win32]
-+ bin/dos/*					> x-dos
-+ bin/libexec/gcc/i586-pc-msdosdjgpp/*		> x-dos
-+ bin/libexec/gcc/i686-pc-linux-gnu/*		> x-linuxmusl
++ bin/dos/ar.exe				> dos-binutils	= 2.23.2
++ bin/dos/as.exe				> dos-binutils
++ bin/dos/gcc.exe				> dos-gcc	= 4.7.3
++ bin/dos/ld.exe				> dos-binutils
++ bin/libexec/gcc/i586-pc-msdosdjgpp/*		> dos-gcc
++ bin/libexec/gcc/i686-pc-linux-gnu/*		> linux-gcc
 + bin/libexec/gcc/i686-w64-mingw32/*		> gcc
-+ bin/linux/*					> x-linuxmusl
++ bin/linux/ar.exe				> linux-binutils	= 2.23.2
++ bin/linux/as.exe				> linux-binutils
++ bin/linux/gcc.exe				> linux-gcc	= 4.7.3
++ bin/linux/ld.exe				> linux-binutils
 + bin/win32/*
-- bin/win32/gcc.exe				> gcc
+- bin/win32/gcc.exe				> gcc		= 4.7.3
 + changelog.txt
++ doc/GoRC.txt
 + doc/gpl.txt
 + doc/lgpl.txt
++ doc/licenses/aspell.txt			> aspell
++ doc/licenses/big_int.txt			> big_int
++ doc/licenses/bzip2.txt			> bzip2
++ doc/licenses/c-ares.txt			> c-ares
++ doc/licenses/cgi-util.txt			> cgi-util
++ doc/licenses/cryptlib.txt			> cryptlib
++ doc/licenses/CUnit.txt			> cunit
++ doc/licenses/curl.txt				> curl
++ doc/licenses/DevIL.txt			> devil
++ doc/licenses/disphelper.html			> disphelper
++ doc/licenses/expat.txt			> expat
++ doc/licenses/flac.txt				> flac
++ doc/licenses/freeglut.txt			> freeglut
++ doc/licenses/FreeImage.txt			> freeimage
++ doc/licenses/freetype.txt			> freetype
++ doc/licenses/GD.txt				> gd
++ doc/licenses/gdsl.txt				> gdsl
++ doc/licenses/giflib.txt			> giflib
++ doc/licenses/glfw.txt				> glfw
++ doc/licenses/gmp.txt				> gmp
++ doc/licenses/gnutls*				> gnutls
++ doc/licenses/grx.txt				> grx
++ doc/licenses/gsl.txt				> gsl
++ doc/licenses/jasper.txt			> jasper
++ doc/licenses/jpeglib.txt			> jpeglib
++ doc/licenses/lcms.txt				> lcms
++ doc/licenses/lcms2.txt			> lcms2
++ doc/licenses/libffi.txt
++ doc/licenses/libidn.txt			> libidn
++ doc/licenses/libmetalink.txt			> libmetalink
++ doc/licenses/libmng.txt			> libmng
++ doc/licenses/libogg.txt			> libogg
++ doc/licenses/liboggz.txt			> liboggz
++ doc/licenses/libpng.txt			> libpng
++ doc/licenses/libtasn1.txt			> libtasn1
++ doc/licenses/libtheora.txt			> libtheora
++ doc/licenses/libvorbis.txt			> libvorbis
++ doc/licenses/libwebp.txt			> libwebp
++ doc/licenses/libxml2.txt			> libxml2
++ doc/licenses/libxslt.txt			> libxslt
++ doc/licenses/libzip.txt			> libzip
++ doc/licenses/Lua.html				> lua
++ doc/licenses/LZO.txt				> lzo
++ doc/licenses/mpc.txt				> mpc
++ doc/licenses/mpfr.txt				> mpfr
++ doc/licenses/mxml.txt				> mxml
++ doc/licenses/nettle.txt			> nettle
++ doc/licenses/openal-soft.txt			> openal-soft
++ doc/licenses/PCRE.txt				> pcre
++ doc/licenses/PDCurses.txt			> pdcurses
++ doc/licenses/pdflib.txt			> pdflib
++ doc/licenses/QuickLZ.txt			> quicklz
++ doc/licenses/SDL.txt				> sdl
++ doc/licenses/SDL_image.txt			> sdl_image
++ doc/licenses/SDL_net.txt			> sdl_net
++ doc/licenses/SDL_ttf.txt			> sdl_ttf
++ doc/licenses/sqlite3.txt			> sqlite
++ doc/licenses/tiff.txt				> tiff
++ doc/licenses/TRE.txt				> tre
++ doc/licenses/xz.txt				> xz
++ doc/licenses/zlib.txt				> zlib
 + examples/*
-- examples/DOS/*
 + fbc.exe
 + inc/*
-- inc/crt/dos/*
-- inc/crt/linux/*
-- inc/crt/netdb.bi
-- inc/crt/netinet/in.bi
-- inc/crt/netinet/linux/in.bi
-- inc/crt/sys/dos/*
-- inc/crt/sys/linux/*
-- inc/curses/ncurses.bi
-- inc/dos/*
-- inc/X11/*
+- inc/X11/*.h
 + lib/win32/*
 - lib/win32/*.def
 - lib/win32/makefile
+- lib/win32/liballeg.dll.a			> allegro	= 4.1
+- lib/win32/libalut.dll.a			> alut		= 1.1.0
+- lib/win32/libaspell.a				> aspell	= 0.60.6.1
+- lib/win32/libbass.dll.a			> bass		= 2.4.8
+- lib/win32/libbassmod.dll.a			> bassmod	= 2.0
+- lib/win32/libbgd-static.a			> gd		= 73cab5d8af96
+- lib/win32/libbig_int.a			> big_int	= 1.0.7
+- lib/win32/libbz2.a				> bzip2		= 1.0.6
+- lib/win32/libcares.a				> c-ares	= 1.9.1
+- lib/win32/libcd.dll.a				> cd		= 5.6
+- lib/win32/libcdcairo.dll.a			> cd
+- lib/win32/libcdcontextplus.dll.a		> cd
+- lib/win32/libcdgdk.dll.a			> cd
+- lib/win32/libcdgl.dll.a			> cd
+- lib/win32/libcdlua52.dll.a			> cd
+- lib/win32/libcdluacairo52.dll.a		> cd
+- lib/win32/libcdluacontextplus52.dll.a		> cd
+- lib/win32/libcdluagl52.dll.a			> cd
+- lib/win32/libcdluaim52.dll.a			> cd
+- lib/win32/libcdluapdf52.dll.a			> cd
+- lib/win32/libcdpdf.dll.a			> cd
+- lib/win32/libcgi-util.a			> cgi-util	= 2.2.1
+- lib/win32/libcgui.dll.a			> cgui		= 2.0.1
+- lib/win32/libcl.a				> cryptlib	= 3.4.2
+- lib/win32/libcunit.a				> cunit		= 2.1-2
+- lib/win32/libcurl.a				> curl		= 7.29.0
+- lib/win32/libdisphelper.a			> disphelper	= 0.81
+- lib/win32/libexpat.a				> expat		= 2.1.0
+- lib/win32/libexslt.a				> libxslt	= 1.1.28
+- lib/win32/libfcgi.dll.a			> fastcgi	= 2005
+- lib/win32/libFLAC.a				> flac		= 1.2.1
+- lib/win32/libfmod.dll.a			> fmod		= 3.74
+- lib/win32/libfreeglut.a			> freeglut	= 2.8.0
+- lib/win32/libFreeImage.a			> freeimage	= 3.15.4
+- lib/win32/libfreetype.a			> freetype	= 2.4.11
+- lib/win32/libgdsl.a				> gdsl		= 1.6
+- lib/win32/libgif.a				> giflib	= 5.0.4
+- lib/win32/libglfw.a				> glfw		= 2.7.7
+- lib/win32/libgmp.a				> gmp		= 5.1.1
+- lib/win32/libgnutls-openssl.a			> gnutls
+- lib/win32/libgnutls-xssl.a			> gnutls
+- lib/win32/libgnutls.a				> gnutls	= 3.1.9
+- lib/win32/libgnutlsxx.a			> gnutls
+- lib/win32/libgrx20.a				> grx		= 2.4.9
+- lib/win32/libgsl.a				> gsl		= 1.15
+- lib/win32/libgslcblas.a			> gsl
+- lib/win32/libhogweed.a			> nettle
+- lib/win32/libidn.a				> libidn	= 1.26
+- lib/win32/libIL.a				> devil		= 1.7.8
+- lib/win32/libILU.a				> devil
+- lib/win32/libILUT.a				> devil
+- lib/win32/libim.dll.a				> im		= 3.8.1
+- lib/win32/libim_avi.dll.a			> im
+- lib/win32/libim_capture.dll.a			> im
+- lib/win32/libim_fftw.dll.a			> im
+- lib/win32/libim_jp2.dll.a			> im
+- lib/win32/libim_process.dll.a			> im
+- lib/win32/libim_process_omp.dll.a		> im
+- lib/win32/libimagequant.a			> gd
+- lib/win32/libimlua52.dll.a			> im
+- lib/win32/libimlua_avi52.dll.a		> im
+- lib/win32/libimlua_capture52.dll.a		> im
+- lib/win32/libimlua_fftw52.dll.a		> im
+- lib/win32/libimlua_jp252.dll.a		> im
+- lib/win32/libimlua_process52.dll.a		> im
+- lib/win32/libimlua_process_omp52.dll.a	> im
+- lib/win32/libjasper.a				> jasper	= 1.900.1
+- lib/win32/libjpeg.a				> jpeglib	= 9
+- lib/win32/libjvm.dll.a			> jni		= 2006
+- lib/win32/liblcms.a				> lcms		= 1.19
+- lib/win32/liblcms2.a				> lcms2		= 2.4
+- lib/win32/liblua.a				> lua		= 5.2.2
+- lib/win32/liblzma.a				> xz		= 5.0.4
+- lib/win32/liblzo2.a				> lzo		= 2.06
+- lib/win32/libMediaInfo.dll.a			> mediainfo	= 2011
+- lib/win32/libmetalink.a			> libmetalink	= 0.1.2
+- lib/win32/libmng.a				> libmng	= 1.0.10
+- lib/win32/libmpc.a				> mpc		= 1.0.1
+- lib/win32/libmpfr.a				> mpfr		= 3.1.2
+- lib/win32/libmxml.a				> mxml		= 2.7
+- lib/win32/libmySQL.dll.a			> mysql		= 4.0.17
+- lib/win32/libnettle.a				> nettle	= 2.6
+- lib/win32/libNewton.dll.a			> newton	= 2005
+- lib/win32/libode_single.dll.a			> ode		= 0.11.1
+- lib/win32/libogg.a				> libogg	= 1.3.0
+- lib/win32/liboggz.a				> liboggz	= 1.1.1
+- lib/win32/libOpenAL32.a			> openal-soft	= 1.15.1
+- lib/win32/libpanel.a				> pdcurses
+- lib/win32/libpcre.a				> pcre		= 8.32
+- lib/win32/libpcre16.a				> pcre
+- lib/win32/libpcre32.a				> pcre
+- lib/win32/libpcreposix.a			> pcre
+- lib/win32/libpdcurses.a			> pdcurses	= 3.4
+- lib/win32/libpdf.a				> pdflib	= 4.0.2
+- lib/win32/libpng.a				> libpng	= 1.5.14
+- lib/win32/libpq.dll.a				> postgresql	= 2006
+- lib/win32/libpspell.a				> aspell
+- lib/win32/libquicklz.a			> quicklz	= 1.5.0
+- lib/win32/libSDL.a
+- lib/win32/libSDL_gfx.dll.a
+- lib/win32/libSDL_image.a
+- lib/win32/libSDL_mixer.dll.a
+- lib/win32/libSDL_net.a
+- lib/win32/libSDL_ttf.a
+- lib/win32/libSDLmain.a
+- lib/win32/libsqlite.dll.a			> sqlite
+- lib/win32/libsqlite3.a			> sqlite	= 3071601
+- lib/win32/libtasn1.a				> libtasn1	= 3.2
+- lib/win32/libtheora.a				> libtheora	= 1.1.1
+- lib/win32/libtheoradec.a			> libtheora
+- lib/win32/libtheoraenc.a			> libtheora
+- lib/win32/libtiff.a				> tiff		= 4.0.3
+- lib/win32/libtiffxx.a				> tiff
+- lib/win32/libtinyptc-win.a			> tinyptc	= 0.8
+- lib/win32/libtinyptc.a			> tinyptc
+- lib/win32/libtre.a				> tre		= 0.8.0
+- lib/win32/libvorbis.a				> libvorbis	= 1.3.3
+- lib/win32/libvorbisenc.a			> libvorbis
+- lib/win32/libvorbisfile.a			> libvorbis
+- lib/win32/libwebp.a				> libwebp	= 0.3.0
+- lib/win32/libwx-c-0-9-0-2.dll.a		> wx-c		= 0.9.0.2
+- lib/win32/libxml2.a				> libxml2	= 2.9.0
+- lib/win32/libxslt.a				> libxslt	= 1.1.28
+- lib/win32/libz.a				> zlib		= 1.2.7
+- lib/win32/libzip.a				> libzip	= 0.11
 + readme.txt
 
-[win32-x-dos]
-+ bin/dos/*
-+ bin/libexec/gcc/i586-pc-msdosdjgpp/*
-+ inc/crt/dos/*
-
-[win32-x-linux]
-+ bin/libexec/gcc/i686-pc-linux-gnu/*
-+ bin/linux/*
-+ inc/crt/linux/*
-+ inc/crt/netdb.bi
-+ inc/crt/netinet/in.bi
-+ inc/crt/netinet/linux/in.bi
+[win32-mini]
++ bin/win32/as.exe
++ bin/win32/ar.exe
++ bin/win32/dlltool.exe
++ bin/win32/GoRC.exe
++ bin/win32/ld.exe
++ changelog.txt
++ doc/GoRC.txt
++ doc/gpl.txt
++ doc/lgpl.txt
++ doc/licenses/libffi.txt
++ fbc.exe
++ inc/datetime.bi
++ inc/dir.bi
++ inc/fbgfx.bi
++ inc/file.bi
++ inc/string.bi
++ inc/utf_conv.bi
++ inc/vbcompat.bi
++ lib/win32/crt2.o
++ lib/win32/crtbegin.o
++ lib/win32/crtend.o
++ lib/win32/dllcrt2.o
++ lib/win32/fbrt0.o
++ lib/win32/gcrt2.o
++ lib/win32/libadvapi32.dll.a
++ lib/win32/libfb.a
++ lib/win32/libfbgfx.a
++ lib/win32/libfbmt.a
++ lib/win32/libffi.a
++ lib/win32/libgcc.a
++ lib/win32/libgcc_eh.a
++ lib/win32/libgdi32.dll.a
++ lib/win32/libgmon.a
++ lib/win32/libkernel32.dll.a
++ lib/win32/libmingw32.a
++ lib/win32/libmingwex.a
++ lib/win32/libmoldname.a
++ lib/win32/libmsvcrt.dll.a
++ lib/win32/libsupc++.a
++ lib/win32/libuser32.dll.a
++ lib/win32/libwinmm.dll.a
++ lib/win32/libwinspool.dll.a
++ readme.txt
 
 [mingw32]
 + bin/fbc.exe
