@@ -6,6 +6,7 @@
 fbc
 fbc-new
 bin/*
+doc/licenses/*
 lib/*/i386go32.x
 lib/*/fbextra.x
 config.mk
