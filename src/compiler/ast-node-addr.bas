@@ -3,36 +3,23 @@
 ''
 '' chng: sep/2004 written [v1ctor]
 
-
 #include once "fb.bi"
 #include once "fbint.bi"
 #include once "ir.bi"
 #include once "ast.bi"
 
-'':::::
-function astGetOFFSETChildOfs _
-	( _
-		byval l as ASTNODE ptr _
-	) as integer
-
+function astGetOFFSETChildOfs( byval l as ASTNODE ptr ) as longint
 	'' var?
 	if( astIsVAR( l ) ) then
 		function = l->var_.ofs
-
 	'' array..
 	else
 		function = l->idx.ofs + l->r->var_.ofs + _
 					 symbGetArrayDiff( l->sym ) + symbGetOfs( l->sym )
 	end if
-
 end function
 
-'':::::
-private function astNewOFFSET _
-	( _
-		byval l as ASTNODE ptr _
-	) as ASTNODE ptr
-
+private function astNewOFFSET( byval l as ASTNODE ptr ) as ASTNODE ptr
 	dim as ASTNODE ptr n = any
 
 	if( l = NULL ) then
@@ -58,15 +45,9 @@ private function astNewOFFSET _
 	end if
 
 	function = n
-
 end function
 
-'':::::
-function astLoadOFFSET _
-	( _
-		byval n as ASTNODE ptr _
-	) as IRVREG ptr
-
+function astLoadOFFSET( byval n as ASTNODE ptr ) as IRVREG ptr
     dim as IRVREG ptr vr = any
     dim as FBSYMBOL ptr sym = any
 	dim as ASTNODE ptr l = any
@@ -91,7 +72,6 @@ function astLoadOFFSET _
 	astDelNode( l )
 
 	function = vr
-
 end function
 
 private sub hRemoveNullPtrCheck( byval l as ASTNODE ptr )
@@ -269,12 +249,7 @@ function astNewADDROF( byval l as ASTNODE ptr ) as ASTNODE ptr
 	function = n
 end function
 
-'':::::
-function astLoadADDROF _
-	( _
-		byval n as ASTNODE ptr _
-	) as IRVREG ptr
-
+function astLoadADDROF( byval n as ASTNODE ptr ) as IRVREG ptr
     dim as ASTNODE ptr p = any
     dim as IRVREG ptr v1 = any, vr = any
 
@@ -302,6 +277,4 @@ function astLoadADDROF _
 	astDelNode( p )
 
 	function = vr
-
 end function
-

@@ -157,7 +157,7 @@ function astLoadCONST( byval n as ASTNODE ptr ) as IRVREG ptr
 	end if
 end function
 
-function astConstFlushToInt( byval n as ASTNODE ptr ) as integer
+function astConstFlushToInt( byval n as ASTNODE ptr ) as longint
 	n = astNewCONV( FB_DATATYPE_INTEGER, NULL, n )
 
 	assert( astIsCONST( n ) )

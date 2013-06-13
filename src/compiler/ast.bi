@@ -611,7 +611,7 @@ declare function astNewCONSTz _
 		byval subtype as FBSYMBOL ptr = NULL _
 	) as ASTNODE ptr
 
-declare function astConstFlushToInt( byval n as ASTNODE ptr ) as integer
+declare function astConstFlushToInt( byval n as ASTNODE ptr ) as longint
 declare function astConstFlushToStr( byval n as ASTNODE ptr ) as string
 declare function astConstFlushToWstr( byval n as ASTNODE ptr ) as wstring ptr
 declare function astConstGetAsInt64( byval n as ASTNODE ptr ) as longint
@@ -1226,13 +1226,10 @@ declare sub astSetType _
 		byval subtype as FBSYMBOL ptr _
 	)
 
-declare function astSizeOf( byval n as ASTNODE ptr ) as integer
+declare function astSizeOf( byval n as ASTNODE ptr ) as longint
 declare function astIsAccessToLocal( byval expr as ASTNODE ptr ) as integer
 
-declare function astGetOFFSETChildOfs _
-	( _
-		byval l as ASTNODE ptr _
-	) as integer
+declare function astGetOFFSETChildOfs( byval l as ASTNODE ptr ) as longint
 
 declare function astBuildCallResultVar( byval expr as ASTNODE ptr ) as ASTNODE ptr
 declare function astBuildCallResultUdt( byval expr as ASTNODE ptr ) as ASTNODE ptr

@@ -1127,7 +1127,7 @@ sub astSetType _
 
 end sub
 
-function astSizeOf( byval n as ASTNODE ptr ) as integer
+function astSizeOf( byval n as ASTNODE ptr ) as longint
 	function = symbCalcLen( n->dtype, n->subtype )
 
 	'' If it's a STRING * N, we must get the real length from the
