@@ -147,7 +147,7 @@ end function
 
 private function hCalcPadding _
 	( _
-		byval ofs as integer, _
+		byval ofs as longint, _
 		byval align as integer, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr _
