@@ -18,7 +18,7 @@ function astTypeIniBegin _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
 		byval is_local as integer, _
-		byval ofs as integer _
+		byval ofs as longint _
 	) as ASTNODE ptr
 
     dim as ASTNODE ptr n = any
@@ -213,12 +213,11 @@ function astTypeIniAddCtorCall _
 
 end function
 
-'':::::
 function astTypeIniAddCtorList _
 	( _
 		byval tree as ASTNODE ptr, _
 		byval sym as FBSYMBOL ptr, _
-		byval elements as integer _
+		byval elements as longint _
 	) as ASTNODE ptr
 
 	dim as ASTNODE ptr n = any
@@ -235,7 +234,6 @@ function astTypeIniAddCtorList _
 	tree->typeini.ofs += symbGetLen( sym ) * elements
 
 	function = n
-
 end function
 
 '':::::

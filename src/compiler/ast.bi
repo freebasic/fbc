@@ -621,7 +621,7 @@ declare function astBuildConst( byval sym as FBSYMBOL ptr ) as ASTNODE ptr
 declare function astNewVAR _
 	( _
 		byval sym as FBSYMBOL ptr, _
-		byval ofs as integer = 0, _
+		byval ofs as longint = 0, _
 		byval dtype as integer = FB_DATATYPE_INVALID, _
 		byval subtype as FBSYMBOL ptr = NULL _
 	) as ASTNODE ptr
@@ -647,7 +647,7 @@ declare function astNewDEREF _
 		byval l as ASTNODE ptr, _
 		byval dtype as integer = FB_DATATYPE_INVALID, _
 		byval subtype as FBSYMBOL ptr = NULL, _
-		byval ofs as integer = 0 _
+		byval ofs as longint = 0 _
 	) as ASTNODE ptr
 
 declare function astNewCALL _
@@ -913,7 +913,7 @@ declare function astTypeIniBegin _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
 		byval is_local as integer, _
-		byval ofs as integer = 0 _
+		byval ofs as longint = 0 _
 	) as ASTNODE ptr
 
 declare sub astTypeIniEnd _
@@ -946,7 +946,7 @@ declare function astTypeIniAddCtorList _
 	( _
 		byval tree as ASTNODE ptr, _
 		byval sym as FBSYMBOL ptr, _
-		byval elements as integer _
+		byval elements as longint _
 	) as ASTNODE ptr
 
 declare function astTypeIniScopeBegin _
@@ -1058,7 +1058,7 @@ declare function astBuildVarField _
 	( _
 		byval sym as FBSYMBOL ptr, _
 		byval fld as FBSYMBOL ptr = NULL, _
-		byval ofs as integer = 0 _
+		byval ofs as longint = 0 _
 	) as ASTNODE ptr
 
 declare function astBuildTempVarClear( byval sym as FBSYMBOL ptr ) as ASTNODE ptr
@@ -1119,7 +1119,7 @@ declare function astBuildInstPtrAtOffset _
 	( _
 		byval sym as FBSYMBOL ptr, _
 		byval fld as FBSYMBOL ptr = NULL, _
-		byval ofs as integer = 0 _
+		byval ofs as longint = 0 _
 	) as ASTNODE ptr
 
 declare function astBuildVarDtorCall _

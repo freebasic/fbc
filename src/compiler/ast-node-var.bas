@@ -7,7 +7,7 @@
 function astNewVAR _
 	( _
 		byval sym as FBSYMBOL ptr, _
-		byval ofs as integer, _
+		byval ofs as longint, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr _
 	) as ASTNODE ptr

@@ -13,7 +13,7 @@ o 64bit
       - length on data types, symbCalcLen(), astSizeOf(), FBSYMBOL, etc.
       - astConstFlushToInt() result
       - minval/maxval used by jump table emitting
-      - array index/diff/elements
+      - array index/diff/elements/lbound/ubound
       - clear(), astNewMEM()
 
   - main() result and argc use INTEGER, that will be wrong on 64bit where they

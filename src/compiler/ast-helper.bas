@@ -148,12 +148,11 @@ function astBuildVarDtorCall _
 
 end function
 
-'':::::
 function astBuildVarField _
 	( _
 		byval sym as FBSYMBOL ptr, _
 		byval fld as FBSYMBOL ptr, _
-		byval ofs as integer _
+		byval ofs as longint _
 	) as ASTNODE ptr
 
 	dim as ASTNODE ptr expr = any
@@ -631,12 +630,11 @@ function astBuildInstPtr _
 
 end function
 
-'':::::
 function astBuildInstPtrAtOffset _
 	( _
 		byval sym as FBSYMBOL ptr, _
 		byval fld as FBSYMBOL ptr, _
-		byval ofs as integer _
+		byval ofs as longint _
 	) as ASTNODE ptr
 
 	dim as ASTNODE ptr expr = any
@@ -666,7 +664,6 @@ function astBuildInstPtrAtOffset _
 	end if
 
 	function = expr
-
 end function
 
 ''

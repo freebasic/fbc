@@ -464,7 +464,7 @@ end sub
 private function astIncOffset _
 	( _
 		byval n as ASTNODE ptr, _
-		byval ofs as integer _
+		byval ofs as longint _
 	) as integer
 
 	select case as const n->class
