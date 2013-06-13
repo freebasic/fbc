@@ -2,9 +2,8 @@
 Returns a reference to an element in an array
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **()** ( //lhs//() [[KeyPgAs as]] //T//, [[KeyPgByref byref]] //rhs// [[KeyPgAs as]] [[KeyPgInteger integer]], ... ) [[KeyPgAs as]] //T//
+	[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **()** ( //lhs//() [[KeyPgAs as]] //T//, [[KeyPgByref byref]] //rhs// [[KeyPgAs as]] [[KeyPgInteger integer]], ... ) [[KeyPgByrefFunction byref]] [[KeyPgAs as]] //T//
 ##
-~&//Note that **##Operator ()## (Array index)** returns a reference. See [[CompilerFAQ Compiler FAQ]].//
 
 {{fbdoc item="usage"}}##
 	//result// = //lhs// **(** //rhs// [, ...] **)**
@@ -25,21 +24,23 @@ Returns a reference to an element in an array
 {{fbdoc item="ex"}}
 
 {{fbdoc item="filename" value="examples/manual/operator/arrayindex.bas"}}%%(freebasic)
-dim array(4) as integer = { 0, 1, 2, 3, 4 }
+dim array(0 to 4) as integer = { 0, 1, 2, 3, 4 }
 
 for index as integer = 0 to 4
-	print array(index)
+	print array(index);
 next
+print
 %%
 	will produce the output:
 
 %%
-	0 1 2 3 4
+ 0 1 2 3 4
 %%
 
 {{fbdoc item="diff"}}
 	- None
 
 {{fbdoc item="see"}}
+	- ##{{fbdoc item="keyword" value="KeyPgOpPtrIndex|Operator [] (Pointer index)"}}##
 
 {{fbdoc item="back" value="CatPgOpIndexing|Indexing Operators"}}{{fbdoc item="back" value="CatPgOperators|Operators"}}

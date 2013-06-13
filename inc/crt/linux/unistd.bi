@@ -31,7 +31,9 @@
 
 #include once "crt/sys/types.bi"
 
+#ifndef ssize_t
 type ssize_t as __ssize_t
+#endif
 
 #include once "crt/stddef.bi"
 

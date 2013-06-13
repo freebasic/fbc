@@ -201,31 +201,36 @@ private sub hScalarNext _
 
 end sub
 
-'':::::
-private function hAllocTemp _
+private function hAddImplicitVar _
 	( _
 		byval dtype as integer, _
-		byval subtype as FBSYMBOL ptr _
+		byval subtype as FBSYMBOL ptr = NULL _
 	) as FBSYMBOL ptr
 
-    '' make a temp symbol
-	dim as FBSYMBOL ptr s = symbAddTempVar( dtype, subtype )
+	dim as FBSYMBOL ptr s = any
+	dim as integer options = any
 
-    '' lang QB doesn't allow UDT's anyway...
-    if( env.clopt.lang <> FB_LANG_QB ) then
-		symbUnsetIsTemp(s)
+	options = 0
+
+	'' Move the implicit var to procedure-level if the lang mode requests it
+	'' (to prevent the stack memory from being re-used by other locals,
+	'' allowing for "random" GOTOs/GOSUBs in and out of FOR loops)
+	if( fbLangOptIsSet( FB_LANG_OPT_SCOPE ) = FALSE ) then
+		options or= FB_SYMBOPT_UNSCOPE
 	end if
 
-	'' Add DECL node for it, so the C backend can emit it correctly
-	'' (vars not marked as temp must have DECL nodes instead)
-	symbSetDontInit( s )
-	astAdd( astNewDECL( s, NULL ) )
+	'' dim temp as dtype
+	s = symbAddImplicitVar( dtype, subtype, options )
 
-    function = s
+	if( options and FB_SYMBOPT_UNSCOPE ) then
+		astAddUnscoped( astNewDECL( s, TRUE ) )
+	else
+		astAdd( astNewDECL( s, FALSE ) )
+	end if
 
+	function = s
 end function
 
-'':::::
 private function hStoreTemp _
 	( _
 		byval dtype as integer, _
@@ -236,7 +241,7 @@ private function hStoreTemp _
 	'' This function creates a temporary symbol,
 	'' which then has the expression 'expr' stored
 	'' into it. The symbol is returned.
-	dim as FBSYMBOL ptr s = hAllocTemp( dtype, subtype )
+	dim as FBSYMBOL ptr s = hAddImplicitVar( dtype, subtype )
 
     '' expr is assigned into the symbol
 	expr = astNewASSIGN( astNewVAR( s ), expr )
@@ -415,10 +420,8 @@ private sub hForAssign _
 	'' expression of a FOR block.
 
 	'' =
-	if( lexGetToken( ) <> FB_TK_ASSIGN) then
+	if( cAssignToken( ) = FALSE ) then
 		errReport( FB_ERRMSG_EXPECTEDEQ )
-	else
-		lexSkipToken( )
 	end if
 
 	'' Not a local UDT with a constructor?
@@ -528,7 +531,7 @@ private sub hForTo _
 	else
 
 		'' generate a symbol using the expression's type
-		stk->for.end.sym = hAllocTemp( dtype, subtype )
+		stk->for.end.sym = hAddImplicitVar( dtype, subtype )
 		stk->for.end.dtype = symbGetType( stk->for.end.sym )
 
 		'' build constructor call
@@ -650,7 +653,7 @@ private sub hForStep _
 
 		if( stk->for.explicit_step ) then
 			'' generate a symbol using the expression's type
-			stk->for.stp.sym = hAllocTemp( dtype, subtype )
+			stk->for.stp.sym = hAddImplicitVar( dtype, subtype )
 			stk->for.stp.dtype = symbGetType( stk->for.stp.sym )
 
 			'' build constructor call
@@ -672,7 +675,7 @@ private sub hForStep _
 		dim as FB_CMPSTMT_FORELM cmp '' zero-init the FBVALUE field, etc.
 		cmp.dtype = stk->for.stp.dtype
 
-		stk->for.ispos.sym = symbAddTempVar( FB_DATATYPE_INTEGER )
+		stk->for.ispos.sym = hAddImplicitVar( FB_DATATYPE_INTEGER )
 		stk->for.ispos.dtype = FB_DATATYPE_INTEGER
 
         '' rhs = STEP >= 0
@@ -922,29 +925,7 @@ private function hUdtCallOpOvl _
 		return NULL
 	end if
 
-	dim as ASTNODE ptr proc = astNewCALL( sym )
-
-	'' push the instance pointer
-	if( astNewARG( proc, inst_expr ) = NULL ) then
-		return NULL
-	end if
-
-	'' and the 2nd arg
-	if( second_arg <> NULL ) then
-		if( astNewARG( proc, second_arg ) = NULL ) then
-			return NULL
-		end if
-	end if
-
-	'' and the 3rd arg
-	if( third_arg <> NULL ) then
-		if( astNewARG( proc, third_arg ) = NULL ) then
-			return NULL
-		end if
-	end if
-
-	function = proc
-
+	function = astBuildCall( sym, inst_expr, second_arg, third_arg )
 end function
 
 private sub hForStmtClose(byval stk as FB_CMPSTMTSTK ptr)

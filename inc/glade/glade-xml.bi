@@ -12,8 +12,7 @@
 extern "c" lib "glade-2.0"
 
 #include once "glib.bi"
-#include once "gtk/gtkwidget.bi"
-#include once "gtk/gtktooltips.bi"
+#include once "gtk/gtk.bi"
 
 #define GLADE_TYPE_XML (glade_xml_get_type())
 #define GLADE_XML(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GLADE_TYPE_XML, GladeXML))

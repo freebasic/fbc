@@ -1,0 +1,7 @@
+bin/libexec/gcc/i486-pc-linux-gnu/4.7.3/cc1
+bin/linux/gcc
+lib/linux/libgomp.a
+lib/linux/libitm.a
+lib/linux/libquadmath.a
+lib/linux/libssp.a
+lib/linux/libssp_nonshared.a

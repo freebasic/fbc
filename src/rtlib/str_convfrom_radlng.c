@@ -49,6 +49,9 @@ FBCALL long long fb_hStrRadix2Longint( char *src, int len, int radix )
 					break;
 			}
 			break;
+
+		default:
+			break;
 	}
 
 	return v;

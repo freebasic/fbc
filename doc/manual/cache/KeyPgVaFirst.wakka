@@ -1,11 +1,11 @@
 {{fbdoc item="title" value="VA_FIRST"}}----
-Returns the first argument in a variable argument list
+Returns a pointer to the first argument in a variable argument list
 
 {{fbdoc item="syntax"}}##
 	//pointer_variable// = **va_first**()
 ##
 {{fbdoc item="desc"}}
-	The ##**va_first**## function initializes a [[ProPgPointers pointer]], //pointer_variable//, to point to the first variable argument passed to a function.
+	The ##**va_first**## function provides an untyped [[ProPgPointers pointer]] value that points to the first variable argument passed to a function.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/procs/vararg1.bas"}}%%(freebasic)

@@ -1,0 +1,3 @@
+doc/licenses/tiff.txt
+lib/win32/libtiff.a
+lib/win32/libtiffxx.a

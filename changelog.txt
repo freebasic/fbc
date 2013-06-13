@@ -1,4 +1,4 @@
-Version 0.25.0:
+Version 0.90.0 (former 0.25.0):
 
 [changed]
 - -c, -r and -pp options will now complement each-other when used together, instead of partially overwriting each-other and thus causing weird behaviour
@@ -12,6 +12,7 @@ Version 0.25.0:
 - The C backend now emits expressions in-line instead of using #defines, and also avoids many unnecessary casts, producing much nicer C code
 - fbc now uses a custom COFF/ELF32 reader instead of libbfd for the objinfo feature
 - fbc will now also read out compile-time information from libs passed as libfoo.a instead of -l foo or #inclib "foo"
+- Linux fbc will now prefer linking with libtinfo over libncurses, if available (depending on the distro, ncurses may be present as one libncurses, or with separate libtinfo; but either way FB only needs the libtinfo part)
 - ASM backend: Floating point constants are now emitted in form of their raw byte representation, for better precision than when using STR() to emit them as rounded floating point number literals
 - crt/stdio.bi now declares rename() instead of rename_()
 - Property methods using an explicit ALIAS now respect that alias and do not append __get__ or __set__ anymore
@@ -20,17 +21,39 @@ Version 0.25.0:
 - #if/#elseif expressions now recognize declared identifiers (for example a constant FOO will be expanded to its value, instead of being treated as a "FOO" string)
 - Unary/binary operations won't return enums anymore; any enum operands will be converted to integer before the operation. (with math operations, the result can be any integer value, and the operand enum won't necessarily include a constant corresponding to that value. And also, if the operands are from different enums, the compiler wouldn't know which one to use as the result type)
 - Unary/binary operations will now convert smaller operands to INTEGERs before the operation (note: thus, UBYTE becomes INTEGER now instead of UINTEGER, and also SHORT/USHORT operations will return an INTEGER now)
+- -pp will now preserve #inclib, #libpath, #lang, $ meta commands, msbitfields #pragmas, and #undef (except on macros which, unlike other symbols, won't be preserved anyways), in order to allow the output file to be compiled just like the original
+- -o in combination with -pp will now set the output file name for the preprocessed version of the associated input module
+- SCREENRES is now a normal function instead of a quirk statement
+- BSAVE now (by default) saves 32-bit .bmp files in 32-bit screen modes instead of 24-bit files
 
 [added]
 - VIRTUAL and ABSTRACT methods (including virtual destructors) in UDTs extending OBJECT, which can be overridden by methods in derived UDTs, provided the same method name and signature is used
 - OVERRIDE attribute (method must override a virtual) on method declarations (compile-time check)
 - STATIC member variables in UDTs
 - BYREF function results:  function f( ) byref as integer
+- '=>' can now be used for assignments, in place of '=', same as for initializers. This can be used to solve syntax ambiguities with '=', which sometimes may be interpreted as equality comparison operator while the programmer intended to do an assignment.
 - LLVM backend (-gen llvm) that emits textual LLVM IR code and uses llc to compile it into ASM
 - Updated headers for caca 0.99.beta18 (caca.bi = new API, caca0.bi = old API)
-- Updated header for libzip 0.10.1
+- Updated header for libzip 0.11
+- Updated header for DevIL 1.7.8
+- Fixed & updated header for PDCurses 3.4
+- Updated GD graphics library header for the 2.1.0 development version
+- Updated header for giflib 4.2.1 and 5.0.4 (version may be selected by defining __GIFLIB_VER__ to 4 or 5)
+- Updated header for jpeglib 6.2, 7.0, 8.4 and 9.0 (version may be selected by defining __JPEGLIB_VER__ to one of 6,7,8,9)
+- Updated header for libpng 1.5.14
+- Updated header for Lua 5.2.2
+- Updated header for IUP 3.7
+- Updated headers for GTK+: GDK & GTK 3.4.4, glib 2.32.4, Cairo 1.12.2, Pango 1.30.1, ATK 2.4.0, Gdk-Pixbuf 2.26.1
+- Updated header for libintl 0.18
+- Updated header for ODE 0.11.1
+- Updated header for SQLite 3.7.13
+- Header for libxmp 4.0.4 (module audio decoder)
+- Headers for CD 5.6 (Canvas Draw, 2D graphics) and IM 3.8 (image file handling) libraries
+- Updated crt/linux/fcntl.bi header
 - fbc -asm att|intel option (affects -gen gcc only)
 - fbc -rr and -RR options for preserving the final .asm file (useful with -gen gcc where -r/-R preserve the .c file; same as -r/-R under -gen gas)
+- fbc -print host|target option, to support shell scripts querying fbc for information that is useful to build systems etc.
+- fbc -print x option (named after the fbc -x option), to display the output binary/library file name, as far as it's known based on other input, i.e. -dll, -lib, -m, and input files. For example, on Win32/DOS "fbc -m foo -print x" will give "foo.exe", while "fbc -print x" alone will only print ".exe" (this can be used to query the executable file extension)
 - SELECT CASE won't use a temporary variable anymore if the given expression is just a plain variable access already
 - SC_CLEAR constant for FB scancode &h4C (numpad 5, a.k.a. clear key) in fbgfx.bi
 - SC_ALTGR constant (&h64) in fbgfx.bi, corresponding to the rtlib
@@ -51,6 +74,9 @@ Version 0.25.0:
 - INTEGER<n> / UINTEGER<n> / C[U]INT<n>, where n is 8/16/32/64, for allowing to choose integer types of a specific size
 - CVI<n> / MKI<n>, where n is 16/32/64, to allow bit conversions of a specific size
 - type<UDT>( ).field is now possible, as an alternative to (type<UDT>( )).field
+- bpp parameter on BSAVE, to request a BMP bit depth
+- TYPEOF() can now also be used directly on SUB|FUNCTION(...) function pointer types
+- Mode parameter for Lcase()/Ucase() functions, that can be set to 1 to enable ASCII-only mode (e.g. LCASE("foo", 1)), which will be evaluated as compile-time constant if possible
 
 [fixed]
 - libzip headers: zip_stat struct was unnecessarily named zip_stat_, breaking the libzip example
@@ -145,7 +171,7 @@ Version 0.25.0:
 - Static member procedures were allowed to be DECLAREd in UDT declarations nested inside procedures or scope blocks, even though procedures cannot be nested, and methods were already disallowed
 - Constants with CONST bits were treated as INTEGER constants even if they were LONGINT or STRING
 - Constants could not be declared as CONST STRING
-- LBound/UBound( array, dimension ) with an out-of-bounds dimension argument (except for 0) will return 1 and 0 instead of crashing
+- LBound/UBound( array, dimension ) with an out-of-bounds dimension argument (except for 0) will return 0 and -1 instead of crashing
 - When DIM'ing an EXTERN array, the DIM statement must now have the same lbounds/ubounds as the previous EXTERN statement, otherwise a compiler error will be shown (previously, only the number of dimensions was checked)
 - Duplicate EXTERN statements declaring the same array but with different lbounds/ubounds will now result in an error
 - #print typeof() and error reports including data types will now include the "* N" for Z/WSTRING (as for "STRING * N") and display wstrings as "WSTRING" instead of UBYTE/USHORT/UINTEGER
@@ -184,7 +210,7 @@ Version 0.25.0:
 - Two temporary copies could be created when passing classes BYVAL
 - UDT variables given in BYREF UDT parameter initializers could be copied to a temporary variable if a copy constructor was available, instead of being passed BYREF
 - #630: C backend: EXTERN dynamic array descriptors were not emitted (if the EXTERN was not DIMed in that module)
-- Temporary variables from deleted expressions (sizeof()/typeof() operand, instance expression in static member accesses) were still allocated on stack and could even have their destructors called, even though they were unused and never constructed
+- Destructors for temporary variables from deleted expressions were called, even though the variables were unused and never constructed (this affected e.g. the sizeof()/typeof() operand, or the instance expression in static member accesses)
 - SELECT blocks will no longer allow other statements in between the SELECT header and the first CASE statement
 - lang qb didn't allow DEF___ statements inside procedures/compounds despite the change in 0.21.0
 - "CONST id AS" and "CONST AS" were allowed to be immediately followed by any statement, instead of triggering a compiler error
@@ -206,6 +232,20 @@ Version 0.25.0:
 - Binary operation result types are more consistent now, for example "integer + uinteger" will now return a uinteger, just like "uinteger + integer"
 - Win32: When using a graphics window nearly as big as or bigger than the available screen space, the graphics window's size could be truncated by the system, for example causing GetMouse to return coordinates that didn't match the actual mouse position, at least under the DirectX driver. FB will now handle WM_GETMINMAXINFO to prevent the system from making the window smaller than requested.
 - Anonymous type() couldn't be used in initializers for UDTs with constructors
+- Comparison Operator overloads accepting two intrinsic-type parameters could be declared (but not used)
+- #651: Operator overloading was overlooking matches where non-const expressions were passed to const parameters
+- -pp could produce duplicate output in combination with parser restarts due to #lang mode changes
+- C++ name mangling ignored CONST on return types of function pointers used as parameters in overloaded procedures
+- -lang qb/fblite: "EXIT SUB/FUNCTION" above a "SELECT CASE string" tried to destroy an uninitialized string variable
+- BSAVE was returning "file not found" errors on invalid arguments instead of "illegal function call" errors
+- Sub calls were allowing the optional parentheses to start after the first argument, e.g. 'foo a, (b, c)'
+- #668: Internal compiler error on lines such as "END SUB : SUB foo( )" (one procedure closed, and a new one opened, in the same line) when compiling with -g
+- DOS COMMAND(0) was giving '/' for the path separator instead of '\'
+- DOS CURDIR and COMMAND(0) return values had a lower-case drive letter
+- EXEPATH() on all platforms was omitting the slash at the end of root paths, resulting in a relative or missing path (e.g. "X:\" -> "X:" or "/" -> "")
+- Hang in exec()/chain() functions on Linux if the target executable isn't found (observed with musl libc)
+- Minor scaling bug when using BSAVE to save 16-bit images to BMP, causing barely visible changes and the potential loss of the least significant green bit
+- Potential crash (read-after-free) in gfxlib2 X11 OpenGL backend initialization
 
 
 Version 0.24.0:

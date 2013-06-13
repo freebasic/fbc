@@ -57,7 +57,7 @@ function cMidStmt _
 
 	hMatchRPRNT( )
 
-	if( hMatch( FB_TK_ASSIGN ) = FALSE ) then
+	if( cAssignToken( ) = FALSE ) then
 		errReport( FB_ERRMSG_EXPECTEDEQ )
 	end if
 
@@ -130,7 +130,7 @@ function cLRSetStmt(byval tk as FB_TOKEN) as integer
 
 	'' ',' or '='
 	if( hMatch( CHAR_COMMA ) = FALSE ) then
-		if( hMatch( FB_TK_ASSIGN ) = FALSE ) then
+		if( cAssignToken( ) = FALSE ) then
 			errReport( FB_ERRMSG_EXPECTEDCOMMA )
 		end if
 	end if
@@ -625,6 +625,7 @@ end function
 ''              |   INSTR '(' (Expression{int} ',')? Expression{str}, "ANY"? Expression{str} ')'
 ''              |   INSTRREV '(' Expression{str}, "ANY"? Expression{str} (',' Expression{int})? ')'
 ''              |   RTRIM$ '(' Expression{str} (, "ANY" Expression{str} )? ')'
+''              |   LCASE|UCASE '(' Expression{str} [, Expression{integer}] ')'
 ''
 function cStringFunct(byval tk as FB_TOKEN) as ASTNODE ptr
 	dim as ASTNODE ptr expr1 = any, expr2 = any, expr3 = any
@@ -795,6 +796,24 @@ function cStringFunct(byval tk as FB_TOKEN) as ASTNODE ptr
 		end if
 
 		function = expr1
+
+	'' LCASE|UCASE '(' Expression{string} [, Expression{integer}] ')'
+	case FB_TK_LCASE, FB_TK_UCASE
+		lexSkipToken( )
+
+		hMatchLPRNT( )
+		hMatchExpressionEx( expr1, FB_DATATYPE_STRING )
+
+		'' Mode parameter given?
+		if( hMatch( CHAR_COMMA ) ) then
+			hMatchExpressionEx( expr2, FB_DATATYPE_INTEGER )
+		else
+			expr2 = NULL  '' Let rtlStrCase() use the default value
+		end if
+
+		hMatchRPRNT( )
+
+		function = rtlStrCase( expr1, expr2, (tk = FB_TK_LCASE) )
 
 	end select
 

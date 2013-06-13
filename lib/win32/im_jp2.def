@@ -1,0 +1,3 @@
+LIBRARY im_jp2.dll
+EXPORTS
+imFormatRegisterJP2

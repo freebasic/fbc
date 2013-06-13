@@ -171,10 +171,9 @@ declare sub lexEatToken _
 		byval flags as LEXCHECK = LEXCHECK_EVERYTHING _
 	)
 
-declare sub lexSkipToken _
-	( _
-		byval flags as LEXCHECK = LEXCHECK_EVERYTHING _
-	)
+declare sub lexPPOnlyEmitToken( )
+declare sub lexPPOnlyEmitText( byref s as string )
+declare sub lexSkipToken( byval flags as LEXCHECK = LEXCHECK_EVERYTHING )
 
 declare function lexGetLookAheadClass _
 	( _

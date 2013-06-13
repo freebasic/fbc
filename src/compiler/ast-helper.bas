@@ -42,7 +42,8 @@ end function
 function astBuildFakeWstringAssign _
 	( _
 		byval sym as FBSYMBOL ptr, _
-		byval expr as ASTNODE ptr _
+		byval expr as ASTNODE ptr, _
+		byval options as integer _
 	) as ASTNODE ptr
 
 	dim as ASTNODE ptr t = any
@@ -63,10 +64,8 @@ function astBuildFakeWstringAssign _
 		FALSE )
 
 	'' *wcharptr = expr
-	'' Using AST_OPOPT_ISINI to get a WstrAssign() immediately, because this
-	'' can be nested in an IIF node, causing astOptAssignment() to miss it
 	t = astNewLINK( t, _
-		astNewASSIGN( astBuildFakeWstringAccess( sym ), expr, AST_OPOPT_ISINI ), _
+		astNewASSIGN( astBuildFakeWstringAccess( sym ), expr, options ), _
 		FALSE )
 
 	function = t
@@ -321,7 +320,8 @@ function astBuildCall _
 	( _
 		byval proc as FBSYMBOL ptr, _
 		byval arg1 as ASTNODE ptr, _
-		byval arg2 as ASTNODE ptr _
+		byval arg2 as ASTNODE ptr, _
+		byval arg3 as ASTNODE ptr _
 	) as ASTNODE ptr
 
 	dim as ASTNODE ptr p = any, ptrexpr = any
@@ -353,9 +353,14 @@ function astBuildCall _
 		end if
 	end if
 
-	if( symbProcReturnsByref( proc ) ) then
-		p = astBuildByrefResultDeref( p )
+	if( arg3 ) then
+		if( astNewARG( p, arg3 ) = NULL ) then
+			return NULL
+		end if
 	end if
+
+	'' Take care of functions returning BYREF
+	p = astBuildByrefResultDeref( p )
 
 	function = p
 end function
@@ -709,7 +714,7 @@ function astBuildMultiDeref _
 			proc = symbFindUopOvlProc( AST_OP_DEREF, expr, @err_num )
 			if( proc <> NULL ) then
 				'' build a proc call
-				expr = astBuildCall( proc, expr, NULL )
+				expr = astBuildCall( proc, expr )
 				if( expr = NULL ) then
 					return NULL
 				end if
@@ -959,11 +964,12 @@ private function hConstBound _
 		'' Out-of-bounds dimension argument: For dimension = 0 we
 		'' return l/ubound of the array's dimTB, with lbound=1 and
 		'' ubound=dimensions. For other out-of-bound dimension values,
-		'' we return lbound=1 and ubound=0.
-		bound = iif( is_lbound, 1, _
-		             iif( dimension = 0, _
-		                  symbGetArrayDimensions( array ), _
-		                  0 ) )
+		'' we return lbound=0 and ubound=-1.
+		if( dimension = 0 ) then
+			bound = iif( is_lbound, 1, symbGetArrayDimensions( array ) )
+		else
+			bound = iif( is_lbound, 0, -1 )
+		end if
 	end if
 
 	function = astNewCONSTi( bound )

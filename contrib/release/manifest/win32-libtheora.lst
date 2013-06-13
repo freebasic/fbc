@@ -1,0 +1,4 @@
+doc/licenses/libtheora.txt
+lib/win32/libtheora.a
+lib/win32/libtheoradec.a
+lib/win32/libtheoraenc.a

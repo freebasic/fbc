@@ -30,18 +30,28 @@ void fb_hArrayCtorObj( FBARRAY *array, FB_DEFCTOR ctor, int base_idx )
 	}
 }
 
-FBCALL void fb_ArrayClearObj( FBARRAY *array, FB_DEFCTOR ctor, FB_DEFCTOR dtor )
+FBCALL int fb_ArrayClearObj
+	(
+		FBARRAY *array,
+		FB_DEFCTOR ctor,
+		FB_DEFCTOR dtor,
+		int dofill /* legacy */
+	)
 {
 	/* destruct all objects in the array
 	   (dtor can be NULL if there only is a ctor) */
 	if( dtor )
 		fb_ArrayDestructObj( array, dtor );
 
-	/* re-initialize (ctor can be NULL if there only is a dtor) */
-	if( ctor )
-		/* if a ctor exists, it should handle the whole initialization */
-		fb_hArrayCtorObj( array, ctor, 0 );
-	else
-		/* otherwise, just clear */
-		fb_ArrayClear( array );
+	if( dofill ) {
+		/* re-initialize (ctor can be NULL if there only is a dtor) */
+		if( ctor )
+			/* if a ctor exists, it should handle the whole initialization */
+			fb_hArrayCtorObj( array, ctor, 0 );
+		else
+			/* otherwise, just clear */
+			fb_ArrayClear( array, 0 );
+	}
+
+	return fb_ErrorSetNum( FB_RTERROR_OK );
 }

@@ -26,7 +26,7 @@ const null = false
 #include once "crt.bi"
 #include once "createtex.bi"
 
-type OBJECT           '' Create A Structure For Our Player
+type OBJECT_           '' Create A Structure For Our Player
 	fx as integer
 	fy as integer     '' Fine Movement Position
 	x as integer
@@ -38,11 +38,11 @@ declare sub BuildFont()
 declare sub glPrint cdecl (byval x as integer, byval y as integer, byval gset as integer, byref fmt as string, ...)
 declare sub ResetObjects()
 
-dim shared player as OBJECT
+dim shared player as OBJECT_
 dim shared loop1 as integer                                 '' Generic Loop1
 dim shared stage as integer = 1                             '' Game Stage
 dim shared level as integer = 1                             '' Internal Game Level
-dim shared enemy(8) as OBJECT
+dim shared enemy(8) as OBJECT_
 dim shared gbase as uinteger                                '' Base Display List For The Font
 dim shared texture(1) as uinteger                           '' Font Texture Storage Space
 
@@ -61,7 +61,7 @@ dim shared texture(1) as uinteger                           '' Font Texture Stor
 
 	dim level2 as integer = 1                               '' Displayed Game Level
 
-	dim hourglass as OBJECT
+	dim hourglass as OBJECT_
 
 	dim steps(0 to 5) as integer => {1, 2, 4, 5, 10, 20}    '' Stepping Values For Slow Video Adjustment
 

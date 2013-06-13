@@ -21,7 +21,7 @@ Returns the upper bound of an array's dimension
 	
 	Array dimensions are numbered from one (##1##) to ##//n//##, where ##//n//## is the total number of dimensions. If ##//dimension//## is not specified, ##**Ubound**## will return the upper bound of the first dimension.
 	
-	If ##//dimension//## is zero (0), the result is the number of dimensions in the array. For any other cases of ##//dimension//## being outside of the valid range ##1##..##//n//##, the result is ##0##. Combined with the result of Lbound() for such cases, this can be used to detect the number of dimensions of variable-length arrays, for example whether a given dimension exists, or whether the array is empty (zero dimensions).
+	If ##//dimension//## is zero (0), ##**Ubound**## returns ##//n//##, the number of dimensions in the array. For any other ##//dimension//## values outside of the valid range ##1##..##//n//##, the result is ##-1##. This can be used to detect the number of dimensions of variable-length arrays, and in combination with the result of ##Lbound()## for such cases, whether a given dimension exists, or whether the array is empty (zero dimensions). See the ##[[KeyPgLbound Lbound]]## page for more information.
 
 {{fbdoc item="ex"}}
 

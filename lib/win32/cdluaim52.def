@@ -1,0 +1,4 @@
+LIBRARY cdluaim52.dll
+EXPORTS
+cdluaim_open
+luaopen_cdluaim

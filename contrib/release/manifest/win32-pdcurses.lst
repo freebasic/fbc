@@ -1,0 +1,3 @@
+doc/licenses/PDCurses.txt
+lib/win32/libpanel.a
+lib/win32/libpdcurses.a

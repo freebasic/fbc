@@ -805,6 +805,7 @@ sub fbCompile _
 	( _
 		byval infname as zstring ptr, _
 		byval outfname as zstring ptr, _
+		byref pponlyfile as string, _
 		byval ismain as integer _
 	)
 
@@ -839,10 +840,9 @@ sub fbCompile _
 	end if
 
 	if( fbGetOption( FB_COMPOPT_PPONLY ) ) then
-		env.ppfile_num = freefile()
-		dim as string ppfile = hStripExt( env.inf.name ) + ".pp.bas"
-		if( open( ppfile, for output, as #env.ppfile_num ) <> 0 ) then
-			errReportEx( FB_ERRMSG_FILEACCESSERROR, ppfile, -1 )
+		env.ppfile_num = freefile( )
+		if( open( pponlyfile, for output, as #env.ppfile_num ) <> 0 ) then
+			errReportEx( FB_ERRMSG_FILEACCESSERROR, pponlyfile, -1 )
 			exit sub
 		end if
 	else

@@ -1,0 +1,11 @@
+--- src/XF86DGA2.c.orig	2013-04-23 13:14:36.019434546 +0200
++++ src/XF86DGA2.c	2013-04-23 13:14:38.979449224 +0200
+@@ -928,7 +928,7 @@
+     if ((pMap->fd = open(name, O_RDWR)) < 0)
+ 	return False;
+     pMap->virtual = mmap(NULL, size, PROT_READ | PROT_WRITE,
+-			MAP_FILE | MAP_SHARED, pMap->fd, (off_t)base);
++			MAP_FILE | MAP_SHARED, pMap->fd, (off_t)(size_t)base);
+     if (pMap->virtual == (void *)-1)
+ 	return False;
+     mprotect(pMap->virtual, size, PROT_READ | PROT_WRITE);

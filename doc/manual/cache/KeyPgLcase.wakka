@@ -2,15 +2,17 @@
 Returns a lower case copy of a string
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Lcase** [[KeyPgOverload overload]] ( [[KeyPgByref byref]] //str// [[KeyPgAs as]] [[KeyPgConstQualifier const]] [[KeyPgString string]] ) [[KeyPgAs as]] [[KeyPgString string]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Lcase** ( [[KeyPgByref byref]] //str// [[KeyPgAs as]] [[KeyPgConstQualifier const]] [[KeyPgWstring wstring]] ) [[KeyPgAs as]] [[KeyPgWstring wstring]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Lcase** [[KeyPgOverload overload]] ( [[KeyPgByref byref]] //str// [[KeyPgAs as]] [[KeyPgConstQualifier const]] [[KeyPgString string]], [[KeyPgByval byval]] //mode// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0 ) [[KeyPgAs as]] [[KeyPgString string]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Lcase** ( [[KeyPgByref byref]] //str// [[KeyPgAs as]] [[KeyPgConstQualifier const]] [[KeyPgWstring wstring]], [[KeyPgByval byval]] //mode// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0 ) [[KeyPgAs as]] [[KeyPgWstring wstring]]
 ##
 {{fbdoc item="usage"}}##
-	//result// = **Lcase**[$]( //str// )
+	//result// = **Lcase**[$]( //str// [ , //mode// ] )
 ##
 {{fbdoc item="param"}}
 	##//str//##
 		String to convert to lowercase.
+	##//mode//##
+		The conversion mode: 0 = current locale, 1 = ASCII only
 
 {{fbdoc item="ret"}}
 	Lowercase copy of ##//str//##.

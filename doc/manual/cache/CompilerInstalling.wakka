@@ -1,59 +1,89 @@
 {{fbdoc item="title" value="Installing"}}----
-FreeBASIC installation.
+Installing ""FreeBASIC"", any additionally needed packages, and perhaps a text editor or IDE.
 
 {{fbdoc item="section" value="Windows"}}
-	Run the installer executable, and follow its instructions. FreeBASIC uses the NSIS installer which has a strong compression. The download size is ca 6 MB, after extraction the full total size is ca 50 MB.
 
-	FreeBASIC will be installed in ##C:\FreeBASIC##, or if you chose a different installation directory, in your chosen directory. Start Menu shortcuts to the Uninstaller and website will be installed as well.
+	1) Download the latest [[https://sourceforge.net/projects/fbc/files/Binaries%20-%20Windows/ FreeBASIC-x.xx.x-win32.exe]] installer
+	1) Run it and click through it. The installer will install ""FreeBASIC"" at ##""C:\%ProgramFiles%\FreeBASIC""##, or if you chose a different installation directory, in your chosen directory. Start Menu shortcuts to the website will be installed as well.
+	1) Unless you already have a text editor or IDE, you should install one too, as ""FreeBASIC"" itself does not include one. An IDE can be used to write and save .bas files and to launch the ""FreeBASIC"" Compiler to compile them. The following IDEs are known to explicitly support ""FreeBASIC"":
+		- [[http://fbide.freebasic.net/ FBIDE]]
+		- [[http://radasm.cherrytree.at/fbedit/ FBEdit]]
+	
+	To uninstall ""FreeBASIC"", remove it from the system's list of installed software ([[http://www.microsoft.com/resources/documentation/windows/xp/all/proddocs/en-us/win_addprog_window_component.mspx Add/remove programs]], [[http://windows.microsoft.com/en-US/windows-vista/Uninstall-or-change-a-program Uninstall or change a program]]).
 
 {{fbdoc item="section" value="Linux"}}
-	Unpack the archive to a temporary folder and navigate to the root FreeBASIC installation directory. For example, if the FreeBASIC package you downloaded was called ##""FreeBASIC-vX.XX.Xb-linux.tar.gz""## and was in your home directory, type,
 
-		##cd##
-			//(change to your home directory)//
-		##mkdir -p tmp && cd tmp##
-			//(attempt to create a temporary directory and change to it)//
-		##tar -xzf ""../FreeBASIC-vX.XX.Xb-linux.tar.gz""##
-			//(unpack the archive)//
-		##cd FreeBASIC##
-			//(change to the root installation directory)//
-
-	Run the installation script ##install.sh## with the "-i" switch, optionally specifying the installation directory.  For example, to install FreeBASIC into the default directory type,
-
-		##sudo ./install.sh -i##
-			//(the default installation)//
-
-	Run the installation script with no arguments for more info on command-line options.  ##install.sh## will install FreeBASIC ##/usr/local## by default.
-
-	To uninstall FreeBASIC, you can run "install.sh -u"
-
-{{fbdoc item="section" value="Linux (standalone)"}}
-	Unpack the archive to a temporary folder and navigate to the root FreeBASIC installation directory. For example, if the FreeBASIC package you downloaded was called ##""FreeBASIC-vX.XX.Xb-linux-standalone.tar.gz""## and was in your home directory, type,
-
-		##cd##
-			//(change to your home directory)//
-		##mkdir -p tmp && cd tmp##
-			//(attempt to create a temporary directory and change to it)//
-		##tar -xzf ""../FreeBASIC-vX.XX.Xb-linux-standalone.tar.gz""##
-			//(unpack the archive)//
-		##cd FreeBASIC##
-			//(change to the root installation directory)//
-
-	Run the installation script ##install-standalone.sh## with the "-i" switch, optionally specifying the installation directory.  For example, to install FreeBASIC into the default directory type,
-
-		##sudo ./install-standalone.sh -i##
-			//(the default installation)//
-
-	Run the installation script with no arguments for more info on command-line options.  ##install-standalone.sh## will install FreeBASIC to ##/usr/share/freebasic## by default and a symlink to the compiler binary will be created at ##/usr/bin/fbc## if run with root permission. 
-
-	To uninstall FreeBASIC, you can run "install-standalone.sh -u"
+	1) Download the latest [[https://sourceforge.net/projects/fbc/files/Binaries%20-%20Linux/ FreeBASIC-x.xx.x-linux.tar.gz]] package
+	1) Extract the archive, for example by doing right-click -> Extract Here, or manually in a terminal:
+		
+		%%$ cd Downloads
+$ tar xzf FreeBASIC-x.xx.x-linux.tar.gz%%
+		
+	1) The ""FreeBASIC"" setup can be used from where it was extracted. Usually it is installed into the /usr/local system directory though, so that the ##fbc## program is available through-out the whole system. To do that, run the included installation script:
+		
+		%%$ cd FreeBASIC-x.xx.x-linux
+$ sudo ./install.sh -i%%
+		
+		The ##install.sh## script can also be given a path as in ##./install.sh -i /usr## if you prefer to install into a directory other than the default ##/usr/local##. This default is a good choice though, as it avoids mixing with the content of ##/usr## which is usually managed by the distribution's packaging tool.
+	
+	1) ""FreeBASIC"" requires several additional packages to be installed before it can be used to compile executables. In general, these are:
+		
+			- binutils
+			- libc development files
+			- gcc
+			- ""g++ (or rather, libsupc++, part of libstdc++)""
+			- libncurses development files
+			- X11 development files (for FB graphics programs)
+			- libffi development files (for the [[KeyPgThreadCall ThreadCall]] keyword)
+		
+		The actual package names to install vary depending on the GNU/Linux distribution.
+		
+		Debian/Ubuntu x86 (32bit):
+			- gcc, ""g++""
+			- libncurses5-dev
+			- libx11-dev, libxext-dev, libxrender-dev, libxrandr-dev, libxpm-dev
+			- libffi-dev
+		
+		Debian/Ubuntu amd64 (64bit):
+			- gcc-multilib, ""g++-multilib""
+			- lib32ncurses5-dev
+			- libx11-dev:i386, libxext-dev:i386, libxrender-dev:i386, libxrandr-dev:i386, libxpm-dev:i386
+		
+		older Debian/Ubuntu amd64 (64bit), before the switch to multiarch:
+			- gcc-multilib, ""g++-multilib""
+			- lib32ncurses5-dev
+			- ia32-libs
+			- lib32ffi-dev
+		
+		""OpenSUSE"" x86 (32bit):
+			- gcc, ""gcc-c++""
+			- ncurses-devel
+			- xorg-x11-devel
+			- libffi46-devel
+		
+		""OpenSUSE"" x86_64 (64bit):
+			- gcc-32bit, ""gcc-c++-32bit""
+			- ncurses-devel-32bit
+			- xorg-x11-devel-32bit
+			- xorg-x11-libX11-devel-32bit
+			- xorg-x11-libXext-devel-32bit
+			- xorg-x11-libXrender-devel-32bit
+			- xorg-x11-libXpm-devel-32bit
+			- libffi46-devel-32bit
+	
+	1) Unless you already have a text editor or IDE, you should install one too, as ""FreeBASIC"" itself does not include one. An IDE can be used to write and save .bas files and to launch the ""FreeBASIC"" Compiler to compile them. The following IDEs are known to explicitly support ""FreeBASIC"":
+		- [[http://www.geany.org/ Geany]]
+	
+	To uninstall ""FreeBASIC"" from ##/usr/local##, you can run the install.sh script again, but with the -u option: ##sudo ./install.sh -u##
 
 {{fbdoc item="section" value="DOS"}}
-	- Find a place for FreeBASIC with at least 13 MiB free space.
-	- Unpack the ZIP archive, making sure that the directory structure as used inside the archive is preserved ("PKUNZIP -d" for example). 
-	- The top-level directory is named FreeBASIC (will be truncated to "FREEBASI" in DOS without full  LFN support), so you might want to rename it then to a convenient DOS-compliant name not longer than 8 characters and containing no white-spaces, like "FB".
-	- All the important files used by the compiler (includes, libs) inside the archive do have DOS-compliant names, therefore DOSLFN is not required to use FreeBASIC, however, some examples and texts do have longer names and will be truncated when extracted without full LFN support.  
 
+	1) Download the latest [[https://sourceforge.net/projects/fbc/files/Binaries%20-%20DOS/ FreeBASIC-x.xx.x-dos.zip]] archive
+	1) Find a place for ""FreeBASIC"" with at least 13 ""MiB"" free space.
+	1) Unpack the ZIP archive, making sure that the directory structure as used inside the archive is preserved ("PKUNZIP -d" for example). 
+	1) The top-level directory is named ""FreeBASIC-x.xx.x-dos"" (will be truncated to "FREEBASI" in DOS without full LFN support), so you might want to rename it then to a convenient DOS-compliant name not longer than 8 characters and containing no white-spaces, like "FB".
+	1) All the important files used by the compiler (includes, libs) inside the archive do have DOS-compliant names, therefore DOSLFN is not required to use ""FreeBASIC"", however, some examples and texts do have longer names and will be truncated when extracted without full LFN support.  
+	
 	(Note: you can install the DOS version "over" the Windows one or vice-versa, or "merge" those installations later, but rename the FBC.EXE file of the previous installation to FBCW.EXE , FBCD.EXE or such, or it will be overwritten by the new one. Other platform specific files are placed in subdirectories making sure that they won't conflict.)
 
 {{fbdoc item="see"}}

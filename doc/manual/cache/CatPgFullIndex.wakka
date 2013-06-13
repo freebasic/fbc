@@ -60,6 +60,7 @@ Alphabetical listing of keywords, macros and procedures.
 	- {{fbdoc item="keyword" value="KeyPgDdpath|__PATH__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdtime|__TIME__"}}
 {{fbdoc item="section" value="#"}}
+	- {{fbdoc item="keyword" value="KeyPgPpassert|#ASSERT"}}
 	- {{fbdoc item="keyword" value="KeyPgPpdefine|#DEFINE"}}
 	- {{fbdoc item="keyword" value="KeyPgPpelse|#ELSE"}}
 	- {{fbdoc item="keyword" value="KeyPgPpelseif|#ELSEIF"}}
@@ -388,6 +389,7 @@ Alphabetical listing of keywords, macros and procedures.
 	- {{fbdoc item="keyword" value="KeyPgPeek|PEEK"}}
 	- {{fbdoc item="keyword" value="KeyPgPmap|PMAP"}}
 	- {{fbdoc item="keyword" value="KeyPgPoint|POINT"}}
+	- {{fbdoc item="keyword" value="KeyPgPointCoord|POINTCOORD"}}
 	- {{fbdoc item="keyword" value="KeyPgPointer|POINTER"}}
 	- {{fbdoc item="keyword" value="KeyPgPoke|POKE"}}
 	- {{fbdoc item="keyword" value="KeyPgPos|POS"}}

@@ -74,6 +74,33 @@ sub	parserEnd( )
 
 end sub
 
+private sub hEmitCurrentLineText( )
+	dim as ASTNODE ptr n = any
+
+	'' Notes:
+	''  - The text is only available after the lexer parsed through it,
+	''    so this must be done after parsing it
+	''  - And yet, the text (in form of a LIT node) should be inserted
+	''    above the code generated for it, so we need to use astAddAfter()
+	''  - No assumptions about the current procedure should be made, as it
+	''    can change when parsing the line/statement
+
+	'' Find the last DBG( AST_OP_DBG_LINEINI ) node
+	'' in the current proc and insert behind it
+	n = astGetProcTailNode( )
+	while( n )
+		if( n->class = AST_NODECLASS_DBG ) then
+			if( n->dbg.op = AST_OP_DBG_LINEINI ) then
+				astAddAfter( astNewLIT( lexCurrLineGet( ) ), n )
+				exit while
+			end if
+		end if
+		n = n->prev
+	wend
+
+	lexCurrLineReset( )
+end sub
+
 '' Program = (Label? Statement? Comment?)* EOF?
 sub cProgram()
 	dim as integer startlevel = pp.level
@@ -84,8 +111,6 @@ sub cProgram()
 
 		'' line begin
 		astAdd( astNewDBG( AST_OP_DBG_LINEINI, lexLineNum( ) ) )
-
-		dim as ASTNODE ptr proc = astGetProc( ), expr = astGetProcTailNode( )
 
 		'' Label?
 		cLabel( )
@@ -100,14 +125,10 @@ sub cProgram()
 			exit sub
 		end if
 
-		'' emit the current line in text form
+		'' Emit the current line in text form, for debugging purposes
 		if( env.clopt.debug ) then
 			if( env.includerec = 0 ) then
-				'' don't add if proc changed (from main() to proc block or the inverse)
-				if( proc = astGetProc( ) ) then
-					astAddAfter( astNewLIT( lexCurrLineGet( ) ), expr )
-				end if
-				lexCurrLineReset( )
+				hEmitCurrentLineText( )
 			end if
 		end if
 

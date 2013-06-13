@@ -275,7 +275,7 @@ end namespace
 namespace resultIndexing
 	dim shared as integer array(0 to 1) = { 11, 22 }
 
-	function f( ) byref as integer ptr
+	function f( ) byref as integer
 		function = array(0)
 	end function
 
@@ -366,19 +366,62 @@ end namespace
 namespace operators
 	type UDT
 		i as integer
+
+		declare operator for( )
+		declare operator for( byref stp as UDT )
+		declare operator step( )
+		declare operator step( byref stp as UDT )
+		declare operator next( byref cond as UDT ) byref as integer
+		declare operator next( byref cond as UDT, byref stp as UDT ) byref as integer
 	end type
+
+	operator UDT.for( )
+		i = 0
+	end operator
+
+	operator UDT.for( byref stp as UDT )
+		i = 0
+	end operator
+
+	operator UDT.step( )
+		i += 1
+	end operator
+
+	operator UDT.step( byref stp as UDT )
+		i += 1
+	end operator
+
+	operator UDT.next( byref cond as UDT ) byref as integer
+		static c as integer
+		c = (i < 5)
+		operator = c
+	end operator
+
+	operator UDT.next( byref cond as UDT, byref stp as UDT ) byref as integer
+		static c as integer
+		c = (i < 5)
+		operator = c
+	end operator
 
 	operator *( byref x as UDT ) byref as integer
 		operator = x.i
 	end operator
 
 	sub test cdecl( )
+		dim as integer count
+
 		dim x as UDT = ( 123 )
 		CU_ASSERT( x.i = 123 )
 		CU_ASSERT( *x = 123 )
 		*x = 456
 		CU_ASSERT( x.i = 456 )
 		CU_ASSERT( *x = 456 )
+
+		count = 0
+		for i as UDT = x to x step x
+			count += 1
+		next
+		CU_ASSERT( count = 5 )
 	end sub
 end namespace
 
@@ -678,6 +721,66 @@ namespace protoReturningFwdref
 	end sub
 end namespace
 
+namespace cxxMangling
+	extern "C++"
+		'' The BYREF result in function pointer parameters must be included
+		'' in the C++ mangling. These 4 overloads should all have different
+		'' mangling:
+		sub f1 overload( byval p as function cdecl( ) as integer )
+		end sub
+
+		sub f1 overload( byval p as function cdecl( ) as const integer )
+		end sub
+
+		sub f1 overload( byval p as function cdecl( ) byref as integer )
+		end sub
+
+		sub f1 overload( byval p as function cdecl( ) byref as const integer )
+		end sub
+
+		'' A function's result isn't included in its C++ name mangling, since
+		'' overloading based on function result type isn't supported in C++
+		'' (neither in FB), but for function pointer parameters, it still must
+		'' be taken into account.
+		function f2 overload( byval p as function cdecl( ) as integer ) byref as integer
+			static as integer x = 1
+			function = x
+		end function
+
+		function f2 overload( byval p as function cdecl( ) as const integer ) byref as integer
+			static as integer x = 2
+			function = x
+		end function
+
+		function f2 overload( byval p as function cdecl( ) byref as integer ) byref as integer
+			static as integer x = 3
+			function = x
+		end function
+
+		function f2 overload( byval p as function cdecl( ) byref as const integer ) byref as integer
+			static as integer x = 4
+			function = x
+		end function
+	end extern
+
+	sub test cdecl( )
+		dim p1 as function cdecl( ) as integer
+		dim p2 as function cdecl( ) as const integer
+		dim p3 as function cdecl( ) byref as integer
+		dim p4 as function cdecl( ) byref as const integer
+
+		f1( p1 )
+		f1( p2 )
+		f1( p3 )
+		f1( p4 )
+
+		CU_ASSERT( f2( p1 ) = 1 )
+		CU_ASSERT( f2( p2 ) = 2 )
+		CU_ASSERT( f2( p3 ) = 3 )
+		CU_ASSERT( f2( p4 ) = 4 )
+	end sub
+end namespace
+
 private sub ctor( ) constructor
 	fbcu.add_suite( "tests/functions/return-byref" )
 	fbcu.add_test( "returning globals", @returnGlobal.test )
@@ -700,6 +803,7 @@ private sub ctor( ) constructor
 	fbcu.add_test( "tree using locals", @referenceToTreeUsingLocals.test )
 	fbcu.add_test( "explicit BYVAL", @explicitByval.test )
 	fbcu.add_test( "returning a forward ref", @protoReturningFwdref.test )
+	fbcu.add_test( "C++ mangling", @cxxMangling.test )
 end sub
 
 end namespace

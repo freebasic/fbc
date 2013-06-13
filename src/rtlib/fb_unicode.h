@@ -250,7 +250,7 @@ static __inline__ FB_WCHAR fb_wstr_ToUpper( FB_WCHAR c )
 static __inline__ void fb_wstr_Copy( FB_WCHAR *dst, const FB_WCHAR *src, int chars )
 {
 	if( (src != NULL) && (chars > 0) )
-		dst = FB_MEMCPYX( dst, src, chars * sizeof( FB_WCHAR ) );
+		dst = (FB_WCHAR *) FB_MEMCPYX( dst, src, chars * sizeof( FB_WCHAR ) );
 
 	/* add the null-term */
 	*dst = _LC('\0');
@@ -259,7 +259,7 @@ static __inline__ void fb_wstr_Copy( FB_WCHAR *dst, const FB_WCHAR *src, int cha
 /* Copy n characters from A to B. */
 static __inline__ FB_WCHAR *fb_wstr_Move( FB_WCHAR *dst, const FB_WCHAR *src, int chars )
 {
-	return FB_MEMCPYX( dst, src, chars * sizeof( FB_WCHAR ) );
+	return (FB_WCHAR *) FB_MEMCPYX( dst, src, chars * sizeof( FB_WCHAR ) );
 }
 
 static __inline__ void fb_wstr_Fill( FB_WCHAR *dst, FB_WCHAR c, int chars )

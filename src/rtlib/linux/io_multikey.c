@@ -23,7 +23,7 @@ typedef struct {
     XCLOSEDISPLAY CloseDisplay;
     XQUERYKEYMAP QueryKeymap;
     XDISPLAYKEYCODES DisplayKeycodes;
-    XKEYCODETOKEYSYM KeycodeToKeysym;
+    XGETKEYBOARDMAPPING GetKeyboardMapping;
 } X_FUNCS;
 
 static Display *display;
@@ -236,7 +236,7 @@ static int keyboard_init(void)
 {
 #ifndef DISABLE_X11
 	const char *funcs[] = {
-		"XOpenDisplay", "XCloseDisplay", "XQueryKeymap", "XDisplayKeycodes", "XKeycodeToKeysym", NULL
+		"XOpenDisplay", "XCloseDisplay", "XQueryKeymap", "XDisplayKeycodes", "XGetKeyboardMapping", NULL
 	};
 #endif
 	struct termios term;
@@ -246,13 +246,13 @@ static int keyboard_init(void)
 
 	if(__fb_con.inited == INIT_CONSOLE) {
 		key_fd = dup(__fb_con.h_in);
-		
+
 		term.c_iflag = 0;
 		term.c_cflag = CS8;
 		term.c_lflag = 0;
 		term.c_cc[VMIN] = 0;
 		term.c_cc[VTIME] = 0;
-		
+
 		if ((ioctl(key_fd, KDGKBMODE, &key_old_mode) < 0) ||
 		    (tcsetattr(key_fd, TCSANOW, &term) < 0) ||
 		    (ioctl(key_fd, KDSKBMODE, K_MEDIUMRAW) < 0)) {
@@ -270,12 +270,12 @@ static int keyboard_init(void)
 	    xlib = fb_hDynLoad("libX11.so", funcs, (void **)&X);
 	    if (!xlib)
 	        return -1;
-	    
+
 		display = X.OpenDisplay(NULL);
 		if (!display)
 			return -1;
 
-		fb_hInitX11KeycodeToScancodeTb( display, X.DisplayKeycodes, X.KeycodeToKeysym );
+		fb_hInitX11KeycodeToScancodeTb( display, X.DisplayKeycodes, X.GetKeyboardMapping );
 
 		fb_hXTermInitFocus();
 		__fb_con.keyboard_handler = keyboard_x11_handler;
@@ -362,6 +362,6 @@ int fb_hConsoleGfxMode
 		}
 	}
 	BG_UNLOCK();
-	
+
 	return 0;
 }

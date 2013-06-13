@@ -1,0 +1,50 @@
+{{fbdoc item="title" value="POINTCOORD"}}----
+Queries ##[[KeyPgDraw Draw]]##'s pen position in graphics mode
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare Declare]] [[KeyPgFunction Function]] ""PointCoord""( [[KeyPgByval ByVal]] //func// [[KeyPgAs As]] [[KeyPgInteger Integer]] ) [[KeyPgAs As]] [[KeyPgSingle Single]]
+	//result// = ""PointCoord""( //func// )
+##
+{{fbdoc item="desc"}}
+	The ##**""PointCoord""**## function can be used to query x and y position of the ##[[KeyPgDraw Draw]]## pen in graphics mode. The //result// value depends on the passed //func// value:
+	
+	{{table columns="2" cellpadding="1" cells="func value:;return value:;0;x physical coordinate, same as PMap( PointCoord( 2 ), 0 );1;y physical coordinate, same as PMap( PointCoord( 3 ), 1 );2;x view coordinate;3;y view coordinate"}}
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/gfx/pointcoord.bas"}}%%(freebasic)
+Screen 12
+
+print "--- Default window coordinate mapping ---"
+Print "DRAW pen position, at the default (0,0):"
+Print "Physical:", PointCoord( 0 ), PointCoord( 1 )
+Print "View:", PointCoord( 2 ), PointCoord( 3 )
+
+Draw "BM 50,50"
+Print "DRAW pen position, after being moved to (50,50):"
+Print "Physical:", PointCoord( 0 ), PointCoord( 1 )
+Print "View:", PointCoord( 2 ), PointCoord( 3 )
+
+print "--- Changing window coordinate mapping ---"
+Window Screen (-100, -100) - (100, 100)
+
+Draw "BM 0,0"
+Print "DRAW pen position, after being moved to (0,0):"
+Print "Physical:", PointCoord( 0 ), PointCoord( 1 )
+Print "View:", PointCoord( 2 ), PointCoord( 3 )
+
+Draw "BM 50,50"
+Print "DRAW pen position, after being moved to (50,50):"
+Print "Physical:", PointCoord( 0 ), PointCoord( 1 )
+Print "View:", PointCoord( 2 ), PointCoord( 3 )
+
+Sleep
+%%
+
+{{fbdoc item="diff"}}
+	- New to ""FreeBASIC""
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgPmap PMap]]##
+	- ##[[KeyPgWindow Window]]##
+
+{{fbdoc item="back" value="CatPgGfxScreen|Screen Functions"}}

@@ -35,7 +35,7 @@ Declares a user-defined type.
 	**End Type**
 ##
 {{fbdoc item="desc"}}
-	##**Type**## is used to declare custom data types containing one or more data fields, including integer types, floating point types, fixed-size arrays, strings, bitfields, and other user-defined types or unions.
+	##**Type**## is used to declare custom data types containing one or more data fields, including integer types, floating point types, fixed-size arrays, strings, bitfields, and other unnamed user-defined types or unions.
 	
 	Types support various functionality related to object-oriented programming:
 		- Inheritance through the use of the [[KeyPgExtends Extends]] keyword
@@ -50,7 +50,10 @@ Declares a user-defined type.
 	Types can contain dynamic strings, but note that the Type will contain the ##[[KeyPgString String]]## descriptor structure, not the string data itself, which afterall is dynamically allocated and can be of variable length, and thus can not be inserted into the Type. Because of that, saving such a Type into a file will write out the string descriptor, not the actual string data. In order to embed strings into Types directly, fixed-length strings must be used. Similarly, when maintaining dynamic data manually through the use of pointers within a Type, it does usually not make sense to save the Type to a file, because the address stored in the pointer field will be written to file, not the actual memory it points to. Addresses are meaningful to a specific process only though, and cannot be shared that way.
 	
 	//Special note on fixed length strings//
-	Currently, fixed-length string fields of ##[[KeyPgString String]] * //N//## type have an extra null terminator at their end, for compatibility with C strings, making them incompatible with QB strings inside Types, because they actually use up ##//N//+1## bytes, instead of just ##N## bytes. A possible work-around is to declare the field ##As [[KeyPgString String]] * (//N//-1)##, though this will not work in future releases if the null terminator is removed.  Another alternative is to use a ##[[KeyPgByte Byte]]## array with the proper size.
+	Currently, fixed-length string fields of ##[[KeyPgString String]] * //N//## type have an extra null terminator at their end, for compatibility with C strings, making them incompatible with QB strings inside Types, because they actually use up ##//N//+1## bytes, instead of just ##N## bytes. A possible work-around is to declare the field ##As [[KeyPgString String]] * (//N//-1)##, though this will not work in future releases if the null terminator is removed.  Another alternative is to use a ##[[KeyPgByte Byte]]## or ##[[KeyPgUbyte UByte]]## array with the proper size.
+
+	//Remark//
+	Nested unnamed type or union cannot have function members.
 
 {{fbdoc item="ex"}}
 This is an example of a QB-style type, not including procedure definitions
@@ -92,10 +95,10 @@ if left(h1->sig, 5) = "GIF89" then print "ok" else print "error"
 
 '' Using a ubyte array, we need an auxiliary function to convert it to a string
 function ub2str( ub() as ubyte ) as string
-	dim as integer length = ubound(ub) + 1
-	dim as string res = space(length)
-	for i as integer = 0 to length-1
-	    res[i] = ub(i): next
+	dim as string res = space(ubound(ub) - lbound(ub) + 1)
+	for i as integer = lbound(ub) to ubound(ub)
+	    res[i - Lbound(ub)] = ub(i)
+	next
 	function = res
 end function
 

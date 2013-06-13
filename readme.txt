@@ -115,7 +115,7 @@
     The FreeBASIC runtime library uses LibFFI to implement the Threadcall
     functionality. This means that, by default, FreeBASIC programs will be
     linked against LibFFI when using Threadcall. LibFFI is released under
-    the MIT/Expat license, see doc/LICENSE.libffi.
+    the MIT/Expat license, see doc/licenses/libffi.txt.
 
     By default, FreeBASIC programs are linked against various system and/or
     support libraries, depending on the platform. Those include the DJGPP
@@ -162,7 +162,7 @@
         Author of huge parts of the runtime (printing support, date/time
         functions, SCR/LPTx/COM/console/keyboard I/O), Cygwin port,
         first FB installer scripts.
-    - Matthew Fearnley (counting.pine[at]virgin.net)
+    - Matthew Fearnley (matthew.w.fearnley[at]gmail.com)
         Print Using & Co, ImageInfo, and others, dialect specifics,
         optimization improvements in the compiler, many fixes and improvements.
     - Ruben Rodriguez (rubentbstk[at]gmail.com)

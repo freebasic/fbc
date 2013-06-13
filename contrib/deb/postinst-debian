@@ -1,7 +1,0 @@
-#!/bin/sh
-
-if test -e /usr/lib32/libXpm.so.4 && test ! -e /usr/lib32/libXpm.so; then
-	ln -s /usr/lib32/libXpm.so.4 /usr/lib32/libXpm.so
-fi
-
-exit 0

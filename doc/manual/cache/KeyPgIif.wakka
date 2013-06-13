@@ -10,26 +10,62 @@ Conditional function that returns one of two values.
 		A non-zero value evaluates as true, while a value of zero evaluates as false.
 	##//expr_if_true//##
 		An expression to evaluate and return if ##//condition//## is true.
-		It must return a numeric value, which can be an integer, floating point number or a pointer.
+		It must return:
+			- a numeric value, which can be an integer, floating point number or a pointer,
+			- or a string value,
+			- or an UDT value.
 	##//expr_if_false//##
 		An expression to evaluate and return if ##//condition//## is false.
-		It must be the same type of number as ##//expr_if_true//##.
+		It must be same type as ##//expr_if_true//## (either numeric, either string or UDT).
 
 {{fbdoc item="desc"}}
-	##**IIf**## returns a different numeric value depending of the result of a conditional expression. Its typical use is in the middle of an expression; it avoids splitting it to put a conditional in the middle.
+	##**IIf**## returns a different numeric or string or UDT value depending of the result of a conditional expression. Its typical use is in the middle of an expression; it avoids splitting it to put a conditional in the middle.
 
 	##**IIf**## only evaluates the expression that it needs to return.  This saves time, and can also be useful to prevent evaluating expressions that might be invalid depending on the ##//condition//##.
+
+	**Warning:** The capacity to accept different numeric types to be mixed, strings and UDTs is only supported from the fbc version 0.25.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/control/iif.bas"}}%%(freebasic)
 dim as integer a, b, x, y, z
 a = (x + y + iif(b > 0, 4, 7)) \ z
-%%
-is equivalent to:
+%%is equivalent to:
 {{fbdoc item="filename" value="examples/manual/control/iif2.bas"}}%%(freebasic)
 dim as integer a, b, x, y, z, temp
 if b > 0 then temp = 4 else temp = 7
 a = (x + y + temp) \ z
+%%
+{{fbdoc item="filename" value="examples/manual/control/iif3.bas"}}%%(freebasic)
+Dim As Integer I
+I = -10
+Print I, iif(I>0, "positive", iif(I=0, "null", "negative"))
+I = 0
+Print I, iif(I>0, "positive", iif(I=0, "null", "negative"))
+I = 10
+Print I, iif(I>0, "positive", iif(I=0, "null", "negative"))
+Sleep
+%%
+{{fbdoc item="filename" value="examples/manual/control/iif4.bas"}}%%(freebasic)
+Type UDT1
+  Dim As Integer I1
+End Type
+
+Type UDT2 Extends UDT1
+  Dim As Integer I2
+End Type
+
+Dim As UDT1 u1, u10 = (1)
+Dim As UDT2 u2, u20 = (2, 3)
+
+u1 = Iif(0, u10, u20)
+Print u1.I1
+u1 = Iif(1, u10, u20)
+Print u1.I1
+
+u2 = Iif(0 , u10, u20)
+Print u2.I1; u2.I2
+'u2 = Iif(1, u10, u20) ''Invalid assignment/conversion
+Sleep
 %%
 
 {{fbdoc item="lang"}}

@@ -39,11 +39,29 @@ FBCALL FBSTRING *fb_Command ( int arg )
 	if( arg >= __fb_ctx.argc )
 	    return &__fb_ctx.null_desc;
 
-    dst = fb_hStrAllocTemp( NULL, strlen( __fb_ctx.argv[arg] ) );
+	len = strlen( __fb_ctx.argv[arg] );
+	dst = fb_hStrAllocTemp( NULL, len );
 	if( dst == NULL )
 		return &__fb_ctx.null_desc;
 
 	strcpy( dst->data, __fb_ctx.argv[arg] );
+
+#ifdef HOST_DOS
+	if( arg == 0 )
+	{
+		/* make drive letter uppercase */
+		if( dst->data[1] == ':' )
+			dst->data[0] = toupper( dst->data[0] );
+
+		/* DOS gives us argv[0] with '/' path separators -
+		 * change them to the more DOS-like '\'. */
+		for( i = 0; i < len; ++i )
+		{
+			if( dst->data[i] == '/' )
+				dst->data[i] = '\\';
+		}
+	}
+#endif
 
 	return dst;
 }

@@ -544,9 +544,9 @@ declare function hPorts_cb _
 		/' fb_GfxScreenRes ( byval w as integer, byval h as integer, byval depth as integer = 8, _
 									byval num_pages as integer = 1, byval flags as integer = 0, byval refresh_rate as integer = 0 ) '/ _
 		( _
-			@FB_RTL_GFXSCREENRES, NULL, _
+			@"screenres", @FB_RTL_GFXSCREENRES, _
 			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
-	 		@hGfxlib_cb, FB_RTL_OPT_NONE, _
+	 		@hGfxlib_cb, FB_RTL_OPT_ERROR or FB_RTL_OPT_NOQB, _
 			6, _
 			{ _
 				( _
@@ -605,11 +605,11 @@ declare function hPorts_cb _
 	 			) _
 	 		} _
 		), _
-		/' fb_GfxBsave( byref filename as string, byval src as any ptr, byval length as uinteger = 0, byval pal as any ptr = NULL ) as integer '/ _
+		/' fb_GfxBsave( byref filename as string, byval src as any ptr, byval length as uinteger = 0, byval pal as any ptr ) as integer '/ _
 		( _
 			@"bsave", @"fb_GfxBsave", _
 			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
-	 		@hGfxlib_cb, FB_RTL_OPT_ERROR, _
+	 		@hGfxlib_cb, FB_RTL_OPT_OVER or FB_RTL_OPT_ERROR, _
 			4, _
 			{ _
 				( _
@@ -622,7 +622,31 @@ declare function hPorts_cb _
  					FB_DATATYPE_UINT, FB_PARAMMODE_BYVAL, TRUE, 0 _
 	 			), _
 				( _
- 					typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, TRUE, NULL _
+ 					typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, TRUE, 0 _
+	 			) _
+	 		} _
+		), _
+		/' fb_GfxBsave( byref filename as string, byval src as any ptr, byval length as uinteger = 0, byval pal as any ptr = NULL, byval bpp as integer ) as integer '/ _
+		( _
+			@"bsave", @"fb_GfxBsaveEx", _
+			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
+	 		@hGfxlib_cb, FB_RTL_OPT_OVER or FB_RTL_OPT_ERROR, _
+			5, _
+			{ _
+				( _
+					FB_DATATYPE_STRING, FB_PARAMMODE_BYREF, FALSE _
+				), _
+				( _
+ 					typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE _
+				), _
+				( _
+ 					FB_DATATYPE_UINT, FB_PARAMMODE_BYVAL, TRUE, 0 _
+	 			), _
+				( _
+ 					typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+				( _
+ 					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
 	 			) _
 	 		} _
 		), _
@@ -2678,8 +2702,7 @@ end function
 '':::::
 function rtlGfxScreenSet _
 	( _
-		byval wexpr as ASTNODE ptr, _
-		byval hexpr as ASTNODE ptr, _
+		byval mexpr as ASTNODE ptr, _
 		byval dexpr as ASTNODE ptr, _
 		byval pexpr as ASTNODE ptr, _
 		byval fexpr as ASTNODE ptr, _
@@ -2687,27 +2710,15 @@ function rtlGfxScreenSet _
 	) as integer
 
     dim as ASTNODE ptr proc = any
-    dim as FBSYMBOL ptr f = any
 
 	function = FALSE
 
-	if( hexpr = NULL ) then
-		f = PROCLOOKUP( GFXSCREENSET )
-	else
-		f = PROCLOOKUP( GFXSCREENRES )
-	end if
-    proc = astNewCALL( f )
+	proc = astNewCALL( PROCLOOKUP( GFXSCREENSET ) )
 
  	'' byval m as integer
- 	if( astNewARG( proc, wexpr ) = NULL ) then
+ 	if( astNewARG( proc, mexpr ) = NULL ) then
  		exit function
  	end if
-
-	if( hexpr <> NULL ) then
-		if( astNewARG( proc, hexpr ) = NULL ) then
-			exit function
-		end if
-	end if
 
  	'' byval d as integer
  	if( dexpr = NULL ) then

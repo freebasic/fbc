@@ -28,7 +28,7 @@ FBCALL int fb_StrInstrAny ( int start, FBSTRING *src, FBSTRING *patt )
 			
 			for( i=0; i!=size_patt; ++i ) 
 			{
-				const char *pszEnd = FB_MEMCHR( pachText, patt->data[i], r );
+				const char *pszEnd = (const char *) FB_MEMCHR( pachText, patt->data[i], r );
 				if( pszEnd!=NULL ) 
 				{
 					found = pszEnd - pachText;

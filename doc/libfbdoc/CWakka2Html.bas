@@ -781,7 +781,7 @@ namespace fb.fbdoc
 			if( cell = "###" ) then
 				res += "<td>&nbsp;</td>"
 			else
-				res += "<td>" + Text2Html( cell ) + "</td>"
+				res += "<td>" + Text2Html( CellUnescapeCodes( cell ) ) + "</td>"
 			end if
 			col += 1
 			if( col > cols ) then

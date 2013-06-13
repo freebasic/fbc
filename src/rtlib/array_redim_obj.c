@@ -16,12 +16,9 @@ int fb_ArrayRedimObj
 	int res;
 
 	/* free old */
-	if( array->ptr ) {
-		if( dtor )
-			fb_ArrayEraseObj( array, dtor );
-		else
-			fb_ArrayErase( array );
-	}
+	if( dtor )
+		fb_ArrayDestructObj( array, dtor );
+	fb_ArrayErase( array, 0 );
 
 	va_start( ap, dimensions );
 	res = fb_hArrayAlloc( array, element_len, FB_FALSE, ctor, dimensions, ap );

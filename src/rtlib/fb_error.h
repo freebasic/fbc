@@ -46,3 +46,8 @@ FBCALL int           fb_ErrorGetNum     ( void );
 FBCALL int           fb_ErrorSetNum     ( int errnum );
        void         *fb_ErrorResume     ( void );
        void         *fb_ErrorResumeNext ( void );
+FBCALL int           fb_ErrorGetLineNum ( void );
+FBCALL const char   *fb_ErrorGetModName ( void );
+FBCALL const char   *fb_ErrorSetModName ( const char *mod_name );
+FBCALL const char   *fb_ErrorGetFuncName( void );
+FBCALL const char   *fb_ErrorSetFuncName( const char *fun_name );

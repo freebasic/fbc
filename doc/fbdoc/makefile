@@ -12,11 +12,7 @@ FBFLAGS += -exx -g -i ../libfbdoc
 ifdef HAVE_MYSQL
     FBFLAGS += -d HAVE_MYSQL -l mysql
 endif
-FBFLAGS += -p ../libfbdoc -l fbdoc -l curl -l pcre
-
-ifeq ($(EXEEXT),.exe)
-  FBFLAGS += -l ws2_32
-endif
+FBFLAGS += -p ../libfbdoc -l fbdoc
 
 $(FBDOC): fbdoc.bas ../libfbdoc/libfbdoc.a
 	$(FBC) $(FBFLAGS) $< -x $@

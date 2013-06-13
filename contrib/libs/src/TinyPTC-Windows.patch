@@ -1,0 +1,405 @@
+From e1bd398b2eb6f285cd11947c1142e70c8a1a16e9 Mon Sep 17 00:00:00 2001
+From: dkl <daniel.c.klauer@web.de>
+Date: Tue, 23 Apr 2013 20:52:13 +0200
+Subject: [PATCH] fb patch
+
+---
+ ddraw.c           | 113 ++++++++++++++++++++++++++++++++++++++++++++++--------
+ libfb_ptc_inkey.c | 103 +++++++++++++++++++++++++++++++++++++++++++++++++
+ makefile          |  27 +++++++++++++
+ tinyptc.h         |  45 +++++++++++++++-------
+ 4 files changed, 260 insertions(+), 28 deletions(-)
+ create mode 100644 libfb_ptc_inkey.c
+ create mode 100644 makefile
+
+diff --git a/ddraw.c b/ddraw.c
+index fc13df5..70d7a17 100644
+--- a/ddraw.c
++++ b/ddraw.c
+@@ -18,7 +18,7 @@ static LPDIRECTDRAWSURFACE lpDDS = 0;
+ static LPDIRECTDRAWSURFACE lpDDS_back;
+ static WNDCLASS wc;
+ static HWND wnd;
+-static int active;
++static int active = TRUE;
+ static int dx;
+ static int dy;
+ 
+@@ -102,7 +102,7 @@ static LRESULT CALLBACK WndProc(HWND hWnd,UINT message,WPARAM wParam,LPARAM lPar
+         }
+         break;
+ 
+-        #else
++        #endif
+ 
+         case WM_ACTIVATEAPP:
+         {                                       
+@@ -111,6 +111,7 @@ static LRESULT CALLBACK WndProc(HWND hWnd,UINT message,WPARAM wParam,LPARAM lPar
+         }
+         break;
+ 
++        #ifndef __PTC_WINDOWED__
+         case WM_SETCURSOR:
+         {
+             // hide cursor
+@@ -147,26 +148,100 @@ static LRESULT CALLBACK WndProc(HWND hWnd,UINT message,WPARAM wParam,LPARAM lPar
+ #endif
+ #endif
+ 
+-#ifdef __PTC_CLOSE_ON_ESCAPE__
++    case WM_SYSKEYDOWN:
++        if (!active)
++            break;
+ 
+         case WM_KEYDOWN:
+         {
+-            // close on escape key
+-            if ((wParam&0xFF)!=27) break;
+-        }
++            WORD wVkCode = (WORD) wParam;
++            WORD wVsCode = (WORD) (( lParam & 0xFF0000 ) >> 16);
++            int is_ext_keycode = ( lParam & 0x1000000 )!=0;
++            size_t repeat_count = ( lParam & 0xFFFF );
++            DWORD dwControlKeyState = 0;
++            char chAsciiChar;
++            int is_dead_key;
++            int key;
++            BYTE key_state[256];
++
++            GetKeyboardState(key_state);
++
++            if( (key_state[VK_SHIFT] | key_state[VK_LSHIFT] | key_state[VK_RSHIFT]) & 0x80 )
++                dwControlKeyState ^= SHIFT_PRESSED;
++            if( (key_state[VK_LCONTROL] | key_state[VK_CONTROL]) & 0x80 )
++                dwControlKeyState ^= LEFT_CTRL_PRESSED;
++            if( key_state[VK_RCONTROL] & 0x80 )
++                dwControlKeyState ^= RIGHT_CTRL_PRESSED;
++            if( (key_state[VK_LMENU] | key_state[VK_MENU]) & 0x80 )
++                dwControlKeyState ^= LEFT_ALT_PRESSED;
++            if( key_state[VK_RMENU] & 0x80 )
++                dwControlKeyState ^= RIGHT_ALT_PRESSED;
++            if( is_ext_keycode )
++                dwControlKeyState |= ENHANCED_KEY;
++
++            is_dead_key = (MapVirtualKey( wVkCode, 2 ) & 0x80000000)!=0;
++            if( !is_dead_key ) {
++                WORD wKey = 0;
++                if( ToAscii( wVkCode, wVsCode, key_state, &wKey, 0 )==1 ) {
++                    chAsciiChar = (char) wKey;
++                } else {
++                    chAsciiChar = 0;
++                }
++            } else {
++                /* Never use ToAscii when a dead key is used - otherwise
++                 * we don't get the combined character (for accents) */
++                chAsciiChar = 0;
++            }
++            key =
++                fb_hConsoleTranslateKey( chAsciiChar,
++                                         wVsCode,
++                                         wVkCode,
++                                         dwControlKeyState,
++                                         FALSE );
++            if ( key>255 ) {
++                while( repeat_count-- ) {
++                    fb_hTinyPtcPostKey(key);
++                }
++            }
+ 
+-#endif
++            /* We don't want to enter the menu ... */
++            if( wVkCode==VK_F10 || wVkCode==VK_MENU || key==0x6BFF )
++                return FALSE;
++        }
++        break;
+ 
+-        case WM_CLOSE:
++    case WM_CHAR:
+         {
+-            #ifdef __PTC_ALLOW_CLOSE__
+-
+-			    // close ptc
+-			    ptc_close();
++            size_t repeat_count = ( lParam & 0xFFFF );
++            int key = (int) wParam;
++            if( key < 256 ) {
++                int target_cp = FB_GFX_GET_CODEPAGE();
++                if( target_cp!=-1 ) {
++                    char ch[2] = {
++                        (char) key,
++                        0
++                    };
++                    FBSTRING *result =
++                        fb_StrAllocTempDescF( ch, 2 );
++                    result = fb_hIntlConvertString( result,
++                                                    CP_ACP,
++                                                    target_cp );
++                    key = (unsigned) (unsigned char) result->data[0];
++                    fb_hStrDelTemp( result );
++                }
++
++                while( repeat_count-- ) {
++                    fb_hTinyPtcPostKey(key);
++                }
++            }
++        }
+ 
+-			    // exit process
+-			    ExitProcess(0);
++        break;
+ 
++    case WM_CLOSE:
++        {
++            #ifdef __PTC_ALLOW_CLOSE__
++                fb_hTinyPtcPostKey(KEY_QUIT);
+             #endif
+         }
+         break;
+@@ -403,6 +478,10 @@ int ptc_open(char *title,int width,int height)
+ 
+ #endif
+ 
++    __fb_ctx.hooks.inkeyproc = fb_TinyPtcInkey;
++    __fb_ctx.hooks.getkeyproc = fb_TinyPtcGetkey;
++    __fb_ctx.hooks.keyhitproc = fb_TinyPtcKeyHit;
++
+     // success
+     return 1;
+ }
+@@ -461,7 +540,7 @@ int ptc_update(void *buffer)
+         #ifndef __PTC_WINDOWED__
+     
+             // flip primary surface
+-            IDirectDrawSurface_Flip(lpDDS,0,DDFLIP_WAIT);
++            IDirectDrawSurface_Flip(lpDDS,0,DDFLIP_DONOTWAIT | DDFLIP_NOVSYNC /*DDFLIP_WAIT*/);
+ 
+         #else
+ 
+@@ -539,6 +618,10 @@ void ptc_close()
+     SystemParametersInfo(SPI_SETSCREENSAVEACTIVE, 1, 0, 0);
+ 
+ #endif
++
++    __fb_ctx.hooks.inkeyproc = NULL;
++    __fb_ctx.hooks.getkeyproc = NULL;
++    __fb_ctx.hooks.keyhitproc = NULL;
+ }
+ 
+ 
+diff --git a/libfb_ptc_inkey.c b/libfb_ptc_inkey.c
+new file mode 100644
+index 0000000..96664e4
+--- /dev/null
++++ b/libfb_ptc_inkey.c
+@@ -0,0 +1,103 @@
++/*
++ *  libgfx2 - FreeBASIC's alternative gfx library
++ *	Copyright (C) 2005 Angelo Mottola (a.mottola@libero.it)
++ *
++ *  This library is free software; you can redistribute it and/or
++ *  modify it under the terms of the GNU Lesser General Public
++ *  License as published by the Free Software Foundation; either
++ *  version 2.1 of the License, or (at your option) any later version.
++ *
++ *  This library is distributed in the hope that it will be useful,
++ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++ *  Lesser General Public License for more details.
++ *
++ *  You should have received a copy of the GNU Lesser General Public
++ *  License along with this library; if not, write to the Free Software
++ *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
++*/
++
++/*
++ * ptc_inkey.c -- inkey$ handling
++ *
++ * chng: jan/2005 written [lillo]
++ *       aug/2005 copied for use with TinyPTC [mjs]
++ *
++ */
++
++#include "tinyptc.h"
++
++#define KEY_BUFFER_LEN 512
++static int key_buffer[KEY_BUFFER_LEN], key_head = 0, key_tail = 0;
++
++void fb_hTinyPtcPostKey( int key )
++{
++	FB_LOCK( );
++
++	key_buffer[key_tail] = key;
++	if (((key_tail + 1) & (KEY_BUFFER_LEN - 1)) == key_head)
++		key_head = (key_head + 1) & (KEY_BUFFER_LEN - 1);
++	key_tail = (key_tail + 1) & (KEY_BUFFER_LEN - 1);
++
++	FB_UNLOCK( );
++}
++
++#ifdef __DJGPP__
++void fb_hTinyPtcPostKey_End(void)
++{ /* this function is here to get the length of the fb_hPostKey function so
++     the DOS gfxlib driver can lock it into physical memory for use in an
++     interrupt handler */ }
++#endif
++
++
++static int get_key( void )
++{
++	int key = 0;
++
++	FB_LOCK( );
++
++	if( key_head != key_tail ) {
++		key = key_buffer[key_head];
++		key_head = (key_head + 1) & (KEY_BUFFER_LEN - 1);
++	}
++
++	FB_UNLOCK( );
++
++	return key;
++}
++
++
++int fb_TinyPtcGetkey( void )
++{
++	int key = 0;
++
++	do {
++		key = get_key();
++		fb_Sleep(20);
++	} while( key == 0 );
++
++	return key;
++}
++
++int fb_TinyPtcKeyHit( void )
++{
++	int res;
++	FB_LOCK( );
++	res = (key_head != key_tail ? 1 : 0);
++	FB_UNLOCK( );
++	return res;
++}
++
++FBSTRING *fb_TinyPtcInkey( void )
++{
++	FBSTRING *s;
++	int ch;
++
++	ch = get_key( );
++	if( ch )
++		s = fb_hMakeInkeyStr( ch );
++	else
++		s = &__fb_ctx.null_desc;
++
++	return s;
++}
+diff --git a/makefile b/makefile
+new file mode 100644
+index 0000000..e19e83b
+--- /dev/null
++++ b/makefile
+@@ -0,0 +1,27 @@
++AR := ar
++CC := gcc
++NASM := nasm
++
++inc := $(wildcard *.h)
++src := tinyptc.c ddraw.c convert.c libfb_ptc_inkey.c
++obj := $(patsubst %.c,%.o,$(src))
++wobj := $(patsubst %.c,%-win.o,$(src))
++
++.SUFFIXES:
++
++all: libtinyptc.a libtinyptc-win.a
++
++libtinyptc.a: $(obj) mmx.o
++	$(AR) rcs $@ $^
++
++libtinyptc-win.a: $(wobj) mmx.o
++	$(AR) rcs $@ $^
++
++$(obj): %.o: %.c $(inc)
++	$(CC) $(CFLAGS) -c $< -o $@
++
++$(wobj): %-win.o: %.c $(inc)
++	$(CC) $(CFLAGS) -DPTC_USE_WINDOW=1 -c $< -o $@
++
++mmx.o: mmx.asm
++	$(NASM) -f win32 $< -o $@
+diff --git a/tinyptc.h b/tinyptc.h
+index 30bd66c..e66f565 100644
+--- a/tinyptc.h
++++ b/tinyptc.h
+@@ -6,11 +6,11 @@
+ #ifndef __TINYPTC_WINDOWS_H
+ #define __TINYPTC_WINDOWS_H
+ 
+-
+ // integer types
+-typedef unsigned __int32 int32;
+-typedef unsigned __int16 short16;
+-typedef unsigned __int8 char8;
++typedef unsigned int          int32;
++typedef unsigned short        int16;
++typedef unsigned short        short16;
++typedef unsigned char         char8;
+ 
+ // tinyptc api
+ extern int ptc_open(char *title,int width,int height);
+@@ -23,13 +23,16 @@ extern void ptc_close();
+ //#define __PTC_VFW__
+ 
+ // configuration
+-#define __PTC_WINDOWED__
++#ifdef PTC_USE_WINDOW
++#  define __PTC_WINDOWED__
++#endif
++
+ #define __PTC_CENTER_WINDOW__
+-#define __PTC_RESIZE_WINDOW__
+-#define __PTC_SYSTEM_MENU__
+-#define __PTC_ICON__ "IDI_MAIN"
+-#define __PTC_ALLOW_CLOSE__
+-#define __PTC_CLOSE_ON_ESCAPE__
++/* #define __PTC_RESIZE_WINDOW__ */
++/* #define __PTC_SYSTEM_MENU__ */
++/* #define __PTC_ICON__ "IDI_MAIN" */
++/* #define __PTC_ALLOW_CLOSE__ */
++/* #define __PTC_CLOSE_ON_ESCAPE__ */
+ #define __PTC_DISABLE_SCREENSAVER__
+ 
+ // converter configuration
+@@ -49,9 +52,25 @@ extern void ptc_close();
+ #define __PTC_MMX__
+ #define __PTC_MEMCPY__
+ 
+-// linker configuration
+-#define __PTC_WINMAIN_CRT__
+-//#define __PTC_MAIN_CRT__
++#include "fb.h"
++#include "fb_private_console.h"
++#include "fb_private_intl.h"
++#include "fb_gfx.h"
++
++#ifdef DRIVER_LOCK
++#undef DRIVER_LOCK
++#define DRIVER_LOCK()
++#endif
++
++#ifdef DRIVER_UNLOCK
++#undef DRIVER_UNLOCK
++#define DRIVER_UNLOCK()
++#endif
+ 
++void fb_hTinyPtcPostKey(int key);
++void fb_hTinyPtcPostKey_End(void);
++int fb_TinyPtcGetkey(void);
++int fb_TinyPtcKeyHit(void);
++FBSTRING *fb_TinyPtcInkey(void);
+ 
+ #endif
+-- 
+1.8.1.msysgit.1
+

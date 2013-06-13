@@ -1,7 +1,7 @@
 {{fbdoc item="title" value="cgi-util"}}----
 Small C library for creating CGI programs for Websites.
 
-Website: http://directory.fsf.org/cgi-util.html
+Website: http://www.newbreedsoftware.com/cgi-util/
 Platforms supported: ""Win32"", Linux
 Headers to include: cgi-util.bi
 

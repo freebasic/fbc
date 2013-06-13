@@ -1,9 +1,5 @@
 #include "fb.h"
 
-FBCALL FBSTRING *fb_HEX_i ( unsigned int num );
-FBCALL FBSTRING *fb_OCT_i ( unsigned int num );
-FBCALL FBSTRING *fb_BIN_i ( unsigned int num );
-
 /*:::::*/
 FBCALL FBSTRING *fb_HEX ( int num )
 {

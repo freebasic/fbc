@@ -1,0 +1,11 @@
+LIBRARY cdcontextplus.dll
+EXPORTS
+cdFinishContextPlus
+cdInitContextPlus
+cdInitGdiPlus
+cdwpCreateCanvas
+cdwpGdiPlusShutdown
+cdwpGdiPlusStartup
+cdwpInitTable
+cdwpKillCanvas
+cdwpUpdateCanvas

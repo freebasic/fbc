@@ -1,0 +1,3 @@
+doc/licenses/nettle.txt
+lib/linux/libhogweed.a
+lib/linux/libnettle.a

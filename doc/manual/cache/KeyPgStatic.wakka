@@ -7,6 +7,12 @@ Defines variables, objects and arrays having static storage
 	{ [[KeyPgSub sub]]|[[KeyPgFunction function]] } //proc_header// **Static**
 		[ ... ]
 	[[KeyPgEndblock end]] { [[KeyPgSub sub]]|[[KeyPgFunction function]] }
+		//or//
+	{ [[KeyPgType Type]] | [[KeyPgClass Class]] } //typename//
+		**Static** //symbol// [ ( [ //subscripts// ] ) ] [ [[KeyPgAs as]] [[DataType DataType]] ] [ , ... ]
+		...
+	End { [[KeyPgType Type]] | [[KeyPgClass Class]] }
+	[[KeyPgDim Dim]] //typename.symbol// [ ( [ //subscripts// ] ) ] [ [[KeyPgAs as]] [[DataType DataType]] ] [ , ... ]
 ##
 {{fbdoc item="param"}}
 	##//symbol//##
@@ -28,6 +34,9 @@ Defines variables, objects and arrays having static storage
 	When used with module-level and member procedure declarations, ##**Static**## specifies [[ProPgStorageClasses static storage]] for all local variables, objects and arrays.
 
 	At module-level variable declaration only, the modifier ##[[KeyPgShared Shared]]## may be used with the keyword ##**Static**## to make module-level static variables visible inside procedures.
+
+	When used with UDT, each ##**Static**## member variable needs an explicit definition as well as a declaration. The declaration inside the UDT is the prototype that is visible to every module seeing the UDT declaration (like with methods). The definition - which must be done outside the type declaration code, and appear only once in a single module - allocates static space for - and optionally initializes - the static variable.
+	A ##**Static**## member variable is visible throughout the entire program (inside any procedure) even if the modifier ##[[KeyPgShared Shared]]## is not specified in the definition (##**Static**## and ##[[KeyPgShared Shared]]## are useless in the definition). So, ##**Static**## member variables can be called directly anywhere in code, or on objects of type ##//typename//##.
 
 	##[[KeyPgStaticMember Static (Member)]]## is also used in member procedure declarations to specify static member procedures.
 
@@ -52,10 +61,41 @@ Number of times called: 1
 Number of times called: 2
 %%
 
+{{fbdoc item="filename" value="examples/manual/variable/static2.bas"}}%%(freebasic)
+'Assign an unique ID to every instance of a Type (ID incremented in order of creation)
+
+Type UDT
+  Public:
+	Declare Property getID () As integer
+	Declare Constructor ()
+  Private:
+	Dim As Integer ID
+	Static As Integer countID
+End Type
+Dim As Integer UDT.countID = 0
+
+Property UDT.getID () As Integer
+  Property = This.ID
+End Property
+
+Constructor UDT ()
+  This.ID = UDT.countID
+  UDT.countID += 1
+End Constructor
+
+
+Dim As UDT uFirst
+Dim as UDT uSecond
+Dim As UDT uThird
+
+Print uFirst.getID
+Print uSecond.getID
+Print uThird.getID%%
+
 {{fbdoc item="diff"}}
 	- ""QuickBASIC"" allows variables and arrays to be declared using the ##**Static**## keyword within procedures and ##DEF FN## routines only.
 	- ##**Static**## forces local visibility of variables and arrays in ""QuickBASIC"" ##DEF FN## routines. ""FreeBASIC"" supports neither ##DEF FN## routines nor this usage of ##**Static**##.
-	- Using ##[[KeyPgStaticMember Static]]## to specify static member procedures is new to ""FreeBASIC"".
+	- Using ##**Static**## to specify static member variables (and also ##[[KeyPgStaticMember Static]]## member procedures) is new to ""FreeBASIC"".
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgStaticMember Static (Member)]]##

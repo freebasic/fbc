@@ -37,5 +37,8 @@ Print "x ="; x; ", "; "y ="; y
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgDim Dim]]##
+	- ##[[KeyPgRedim Redim]]##
+	- ##[[KeyPgStatic Static]]##
+	- ##[[KeyPgVar Var]]##
 
 {{fbdoc item="back" value="CatPgVariables|Variable Declarations"}}

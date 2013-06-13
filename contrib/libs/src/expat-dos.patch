@@ -1,0 +1,13 @@
+--- xmlwf/readfilemap.c.orig	2013-04-24 05:30:20.816373589 +0200
++++ xmlwf/readfilemap.c	2013-04-24 05:30:22.952384163 +0200
+@@ -20,6 +20,10 @@
+ #include <unistd.h>
+ #endif
+ 
++#ifdef __DJGPP__
++#include <unistd.h>
++#endif
++
+ #ifndef S_ISREG
+ #ifndef S_IFREG
+ #define S_IFREG _S_IFREG

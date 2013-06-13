@@ -8,7 +8,7 @@ This guide is not a [[http://www.cprogramming.com/tutorial.html#ctutorial C tuto
 	- Translations should be very close to the original, so they look familiar and can be updated easily.
 	- Identifiers (including any #defines) should not be changed unless absolutely necessary.
 	- Smaller files may be combined into one bigger header, if they would be #included anyways and all belong to the same library.
-	- Original license and documentation comments should be retained. 
+	- Original license should be retained. 
 
 ====Coding style====
 

@@ -53,7 +53,7 @@ declare sub glDrawCube()
 	dim part2 as integer                           '' End Of Disc ( NEW )
 	dim p1 as integer                              '' Increase 1 ( NEW )
 	dim p2 as integer = 1                          '' Increase 2 ( NEW )
-	dim object as uinteger                         '' Which Object To Draw (NEW)
+	dim object_ as uinteger                        '' Which Object To Draw (NEW)
 
 
 	dim quadratic as GLUquadricObj ptr             '' Storage For Our Quadratic Objects ( NEW )
@@ -107,7 +107,7 @@ declare sub glDrawCube()
 		glBindTexture GL_TEXTURE_2D, texture(filter)          '' Select A Filtered Texture
 
 		'' This Section Of Code Is New ( NEW )
-		select case object                                '' Check object To Find Out What To Draw
+		select case object_                               '' Check object To Find Out What To Draw
 		case 0
 			glDrawCube                                    '' Draw Our Cube
 		case 1
@@ -161,8 +161,8 @@ declare sub glDrawCube()
 
 		if MULTIKEY(FB.SC_SPACE) and not sp then     '' Space Key down
 			sp = TRUE                             '' Set sp To TRUE
-			object = object + 1                   '' Cycle Through The Objects
-			if object>5 then object=0             '' (0-5) = 6 objects
+			object_ += 1                            '' Cycle Through The Objects
+			if object_>5 then object_=0             '' (0-5) = 6 objects
 		end if
 		if not MULTIKEY(FB.SC_SPACE) then sp = false '' Space Key Up
 

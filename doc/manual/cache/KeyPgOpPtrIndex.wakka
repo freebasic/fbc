@@ -2,9 +2,8 @@
 Returns a reference to memory offset from an address
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **[]** ( [[KeyPgByref byref]] //lhs// [[KeyPgAs as]] //T// [[KeyPgPointer pointer]], [[KeyPgByref byref]] //rhs// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] //T//
+	[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **[]** ( [[KeyPgByref byref]] //lhs// [[KeyPgAs as]] //T// [[KeyPgPointer pointer]], [[KeyPgByref byref]] //rhs// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgByrefFunction byref]] [[KeyPgAs as]] //T//
 ##
-~&//Note that **##Operator []## (Pointer index)** returns a reference. See [[CompilerFAQ CompilerFAQ]].//
 
 {{fbdoc item="usage"}}##
 	//result// = //lhs// **[** //rhs// **]**
@@ -18,10 +17,10 @@ Returns a reference to memory offset from an address
 		Any data type.
 
 {{fbdoc item="desc"}}
-	This operator returns a reference to a value some distance in memory from a base address. It is essentially shorthand for "##[[KeyPgOpValueOf *]](//lhs// [[KeyPgOpAdd +]] //rhs//)##"; both do exactly the same thing. Like pointer arithmetic, any type of ##[[KeyPgPointer POINTER]]## can be indexed except for an ##[[KeyPgAny ANY]]## ##[[KeyPgPointer POINTER]]##. Also, like pointer arithmetic, it is up to the user to make sure meaningful data is being accessed.
+	This operator returns a reference to a value some distance in memory from a base address. It is essentially shorthand for "##[[KeyPgOpValueOf *]](//lhs// [[KeyPgOpAdd +]] //rhs//)##"; both do exactly the same thing. Like pointer arithmetic, any type of ##[[KeyPgPointer Pointer]]## can be indexed except for an ##[[KeyPgAny Any]]## ##[[KeyPgPointer Pointer]]##. Also, like pointer arithmetic, it is up to the user to make sure meaningful data is being accessed.
 
-	When using 'nD' pointer (n indexes, with n > 1): Pt[I1][I2].....[In], the indexes order (from left to right) corresponds to the dereferencing order.
-	Example for '2D' pointer: Pt[I1][I2] = *(Pt[I1] + I2) = *(*(Pt + I1) + I2)
+	When indexing a '2-dimensional' pointer (i.e. a ##//T// Ptr Ptr##), the first (leftmost) index is applied before the second: For example, ##//Pt//[//I1//][//I2//]## = ##*(//Pt//[//I1//] + //I2//)## = ##*(*(//Pt// + //I1//) + //I2//)##
+	In general, when using an '//n//-dimensional' pointer: ##//Pt//[//I1//][//I2//].....[//In//]##, the index order (from left to right) corresponds to the dereferencing order.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/operator/pointer-index.bas"}}%%(freebasic)
@@ -33,19 +32,23 @@ dim p as integer ptr = @array(0)
 
 '' use pointer indexing to output array elements
 for index as integer = 0 to 4
-	print p[index]
+	print p[index];
 next
+print
 %%
 
 	Will give the output,
 
-%%0 1 2 3 4
+%% 0 1 2 3 4
 %%
 
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
+	- ##[[KeyPgOpValueOf Operator * (Value of)]]##
+	- ##{{fbdoc item="keyword" value="KeyPgOpStringIndex|Operator [] (String index)"}}##
+	- ##[[KeyPgOpArrayIndex Operator () (Array index)]]##
 	- ##[[KeyPgOpAdd Operator + (Add)]]##
 	- ##[[KeyPgOpSubtract Operator - (Subtract)]]##
 	- [[CatPgOpPoint Pointer Operators]]

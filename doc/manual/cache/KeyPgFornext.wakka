@@ -21,7 +21,9 @@ Control flow statement for looping
 {{fbdoc item="desc"}}
 	A ##**For...Next**## loop initializes ##//iterator//## to ##//startvalue//##, then executes the ##//statement block//##, incrementing ##//iterator//## by ##//stepvalue//## until it exceeds ##//endvalue//##. If ##//stepvalue//## is not explicitly given it will set to ##1##.
 
-	The values of ##//stepvalue//## and ##//endvalue//## are stored internally immediately following execution of the ##**For**## statement and thus neither can be changed inside the ##**For**## loop. (the variables that define them can be changed, but changing those variables inside the ##**For**## loop will not affect its execution. See examples)
+	The values of ##//stepvalue//## and ##//endvalue//## are stored internally immediately following execution of the ##**For**## statement and thus neither can be changed inside the ##**For**## loop.  Comparison operators such as < and > will not be effective as ##//stepvalue//## or ##//endvalue//## because the expressions will not be re-evaluated while the loop is running. (The results of the expressions used to define them may be changed, but these changes will not affect the execution of the ##**For**## loop.) See examples.
+	
+	Note: In some dialects, the temporary variables holding ##//stepvalue//## and ##//endvalue//## go out of scope at the end of the loop, and their values are not guaranteed to remain unchanged once any code following the loop has been executed.  For this reason, it is recommended never to branch out of a ##**For...Next**## loop (using ##[[KeyPgGoto Goto]]## or similar), and then jump back into the middle of it later when in the //[[CompilerOptlang -lang fb]]// or //[[CompilerOptlang -lang deprecated]]// dialect.
 	
 	The iterator must be an intrinsic scalar: only ##[[KeyPgStatic Static]]##/##[[KeyPgShared Shared]]## variables and local variables can be used; no other kind can be used, including array elements, UDT members, ##[[KeyPgByref Byref]]## parameters or any kind of dereferenced address.
 	
@@ -71,8 +73,8 @@ loop
 print%%
 
 {{fbdoc item="lang"}}
-	- In the //[[CompilerOptlang -lang qb]]// and //[[CompilerOptlang -lang fblite]]// dialects, variables declared inside a ##**For**##..##**Next**## block have a procedure-wide [[ProPgVariableScope scope]]  as in QB 
 	- In the //[[CompilerOptlang -lang fb]]// and //[[CompilerOptlang -lang deprecated]]// dialects, variables declared inside a ##**For**##..##**Next**## block are visible only inside the block, and cannot be accessed outside it.
+	- In the //[[CompilerOptlang -lang qb]]// and //[[CompilerOptlang -lang fblite]]// dialects, variables declared inside a ##**For**##..##**Next**## block (including the counter if declared, and any temporary variables used to hold ##//endvalue//## or //##stepvalue//##), have a procedure-wide [[ProPgVariableScope scope]]  as in QB
 
 {{fbdoc item="diff"}}
 	- ##[[KeyPgByref Byref]]## arguments cannot be used as counters.

@@ -833,7 +833,7 @@ declare function astBuildPTRCHK( byval expr as ASTNODE ptr ) as ASTNODE ptr
 declare function astNewDECL _
 	( _
 		byval sym as FBSYMBOL ptr, _
-		byval initree as ASTNODE ptr _
+		byval do_defaultinit as integer _
 	) as ASTNODE ptr
 
 declare function astNewNIDXARRAY _
@@ -1050,7 +1050,8 @@ declare function astBuildFakeWstringAccess( byval sym as FBSYMBOL ptr ) as ASTNO
 declare function astBuildFakeWstringAssign _
 	( _
 		byval sym as FBSYMBOL ptr, _
-		byval expr as ASTNODE ptr _
+		byval expr as ASTNODE ptr, _
+		byval options as integer = 0 _
 	) as ASTNODE ptr
 
 declare function astBuildVarField _
@@ -1065,8 +1066,9 @@ declare function astBuildTempVarClear( byval sym as FBSYMBOL ptr ) as ASTNODE pt
 declare function astBuildCall _
 	( _
 		byval proc as FBSYMBOL ptr, _
-		byval arg1 as ASTNODE ptr, _
-		byval arg2 as ASTNODE ptr _
+		byval arg1 as ASTNODE ptr = NULL, _
+		byval arg2 as ASTNODE ptr = NULL, _
+		byval arg3 as ASTNODE ptr = NULL _
 	) as ASTNODE ptr
 
 declare function astBuildVtableLookup _
@@ -1195,6 +1197,14 @@ declare sub astReplaceSymbolOnTree _
 		byval n as ASTNODE ptr, _
 		byval old_sym as FBSYMBOL ptr, _
 		byval new_sym as FBSYMBOL ptr _
+	)
+
+declare sub astReplaceFwdref _
+	( _
+		byval n as ASTNODE ptr, _
+		byval oldsubtype as FBSYMBOL ptr, _
+		byval newdtype as integer, _
+		byval newsubtype as FBSYMBOL ptr _
 	)
 
 #if __FB_DEBUG__

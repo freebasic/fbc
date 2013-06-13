@@ -9,7 +9,7 @@ Declare virtual methods
 {{fbdoc item="desc"}}
 	**Virtual** methods are methods that can be overridden by data types derived from the type they were declared in, allowing for polymorphism. In contrast to ##[[KeyPgAbstract Abstract]]## methods, virtual methods must have an implementation, which is used when the virtual is not overridden.
 	
-	A derived type can override virtual methods declared in its base type by declaring a method with the same identifier and signature, meaning same number and type of parameters, same return type (if any) and same calling convention. The property of being a virtual method is not implicitly inherited by the overriding method in the derived type.
+	A derived type can override virtual methods declared in its base type by declaring a method with the same identifier and signature, meaning same number and type of parameters, same return type (if any) and same calling convention (if that differs only in parameter passing mode or calling convention or return type, then an overriding error is returned at compile time, else only shadowing is enabled). The property of being a virtual method is not implicitly inherited by the overriding method in the derived type.
 	
 	When calling virtual methods, the compiler may need to do a vtable lookup in order to find out which method must be called for a given object. This requires an extra hidden vtable pointer field to be added at the top of each type with virtual methods. This hidden vptr is provided by the built-in ##[[KeyPgObject Object]]## type. Because of that, virtual methods can only be declared in a type that directly or indirectly ##[[KeyPgExtends extends]]## ##[[KeyPgObject Object]]##.
 	
@@ -82,7 +82,7 @@ end sub
 	next
 %%
 {{fbdoc item="lang"}}
-	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Virtual""**##.
+	- Only available in the //[[CompilerOptlang -lang fb]]// dialect.
 
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC""

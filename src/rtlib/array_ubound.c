@@ -4,14 +4,15 @@
 
 FBCALL int fb_ArrayUBound( FBARRAY *array, int dimension )
 {
+	/* given dimension is 1-based */
 	dimension -= 1;
 
+	/* out-of-bound dimension? */
 	if( (dimension < 0) || (dimension >= array->dimensions) ) {
-		/* ubound( a, 0 ) returns the array's dimension count,
-		   any other out-of-bound dimension value returns 0,
-		   together with lbound() returning 1 for such cases
-		   we can detect invalid dimensions */
-		return dimension == -1 ? array->dimensions : 0;
+		/* ubound( a, 0 ) returns the array's dimension count.
+		   Any other out-of-bound dimension value returns -1.
+		   (see also fb_ArrayLBound()) */
+		return dimension == -1 ? array->dimensions : -1;
 	}
 
 	return array->dimTB[dimension].ubound;

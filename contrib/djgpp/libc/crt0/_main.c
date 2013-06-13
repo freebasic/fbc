@@ -1,6 +1,7 @@
 /* Copyright (C) 1995 DJ Delorie, see COPYING.DJ for details */
-#include <libc/internal.h>
-#include <libc/bss.h>
+/*#include <libc/internal.h>*/
+/*#include <libc/bss.h>*/
+extern int __bss_count;
 
 typedef void (*FUNC)(void);
 extern FUNC djgpp_first_ctor[] __asm__("djgpp_first_ctor");

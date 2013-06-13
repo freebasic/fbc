@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="FreeBASIC Primer #1"}}----
-This primer is intended for beginning beginners, for those who are just starting to learn how to program and using FreeBASIC do to it.
+This primer is intended for beginning beginners, for those who are just starting to learn how to program and using [[FreeBASIC]] do to it.
 
 {{fbdoc item="section" value="Learning the language"}}
 	Learning a programming language means learning the words to write it and knowing what they mean when they are written.  We don't need to learn them all at once.  But learning a few important words that do something will help us get started.  Here we are just going to concentrate on these keywords:
@@ -21,7 +21,7 @@ Print "Hello World!"
 	The text between the pair of double quotes is a literal string.  The ##[[KeyPgPrint Print]]## statement is used to output text to the display.  If you can edit, compile, and execute this example, you are on your way.
 
 {{fbdoc item="section" value="Using a Variable to Store Data"}}
-	Sometimes in a program we will want to store some information somewhere, in memory, and then use it later.  To store something in memory we use a variable.  All variables in FreeBASIC are of some specific type, like a number or a string.  We use the ##[[KeyPgDim Dim]]## statement to declare a variable name and specify what type of information we want to store in it.
+	Sometimes in a program we will want to store some information somewhere, in memory, and then use it later.  To store something in memory we use a variable.  All variables in ""FreeBASIC"" are of some specific type, like a number or a string.  We use the ##[[KeyPgDim Dim]]## statement to declare a variable name and specify what type of information we want to store in it.
 
 	{{fbdoc item="filename" value="examples/manual/proguide/primer/primer2.bas"}}%%(freebasic)
 Dim text As String

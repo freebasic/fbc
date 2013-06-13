@@ -36,8 +36,8 @@
 		acquire_screen()
 
 		'' the mouse position is stored in the variables mouse_x and mouse_y
-		textout(screen, font, "mouse_x =" + str(mouse_x), 16, 48, makecol(0, 0, 0))
-		textout(screen, font, "mouse_y =" + str(mouse_y), 16, 64, makecol(0, 0, 0))
+		textout(screen, font, "mouse_x =" + str(mouse_x) + "    ", 16, 48, makecol(0, 0, 0))
+		textout(screen, font, "mouse_y =" + str(mouse_y) + "    ", 16, 64, makecol(0, 0, 0))
 
 		'' or you can use this function to measure the speed of movement.
 		'' Note that we only call it every fourth time round the loop: 
@@ -48,8 +48,8 @@
 			get_mouse_mickeys(@mickeyx, @mickeyy)
 		end if
 
-		textout(screen, font, "mickey_x =" + str(mickeyx), 16, 88, makecol(0, 0, 0))
-		textout(screen, font, "mickey_y =" + str(mickeyy), 16, 104, makecol(0, 0, 0))
+		textout(screen, font, "mickey_x =" + str(mickeyx) + "    ", 16, 88, makecol(0, 0, 0))
+		textout(screen, font, "mickey_y =" + str(mickeyy) + "    ", 16, 104, makecol(0, 0, 0))
 
 		'' the mouse button state is stored in the variable mouse_b
 		if (mouse_b and 1) then
@@ -71,7 +71,7 @@
 		end if
 
 		'' the wheel position is stored in the variable mouse_z
-		textout(screen, font, "mouse_z =" + str(mouse_z), 16, 184, makecol(0, 0, 0))
+		textout(screen, font, "mouse_z =" + str(mouse_z) + "    ", 16, 184, makecol(0, 0, 0))
 
 		release_screen()
 

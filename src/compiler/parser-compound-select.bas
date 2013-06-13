@@ -43,7 +43,7 @@ end sub
 '' SelectStatement  =  SELECT CASE (AS CONST)? Expression .
 sub cSelectStmtBegin( )
     dim as ASTNODE ptr expr = any
-    dim as integer dtype = any
+	dim as integer dtype = any, options = any
 	dim as FBSYMBOL ptr sym = any, el = any, subtype = any
 	dim as FB_CMPSTMTSTK ptr stk = any
 
@@ -115,47 +115,59 @@ sub cSelectStmtBegin( )
 			dtype = FB_DATATYPE_STRING
 		end select
 
+		options = 0
+		if( fbLangOptIsSet( FB_LANG_OPT_SCOPE ) = FALSE ) then
+			options or= FB_SYMBOPT_UNSCOPE
+		end if
+
 		'' not a wstring?
 		if( typeGet( dtype ) <> FB_DATATYPE_WCHAR ) then
-			'' dim temp as dtype
-			sym = symbAddTempVar( dtype, subtype )
+			'' dim temp as dtype = expr
+			sym = symbAddImplicitVar( dtype, subtype, options )
 
-			'' Remove temp flag to have its dtor called at scope breaks/end
-			'' (needed at least in case the temporary is a string)
-			symbUnsetIsTemp( sym )
-
-			'' Anything besides FBSTRINGs doesn't need to be cleared
-			'' (this also silences "branch crossing ..." warnings when
-			'' jumping over a SELECT CASE integer into a CASE block)
+			'' Only need to clear if it's a string because of the
+			'' fb_StrDelete() calls at scope breaks; integers don't
+			'' have clean up, and UDTs aren't supported anyways.
+			'' This also silences the "branch crossing" warnings for
+			'' integers, they aren't needed since integer vars won't
+			'' be accessed anymore once a CASE body was reached,
+			'' unlike string temp vars and their fb_StrDelete().
 			if( typeGet( dtype ) <> FB_DATATYPE_STRING ) then
 				symbSetDontInit( sym )
 			end if
 
-			astAdd( astNewDECL( sym, NULL ) )
-
-			astAdd( astBuildVarAssign( sym, expr ) )
+			if( options and FB_SYMBOPT_UNSCOPE ) then
+				'' Clear at procedure-level if needed,
+				'' and do a normal assignment here
+				astAddUnscoped( astNewDECL( sym, TRUE ) )
+				astAdd( astNewASSIGN( astNewVAR( sym ), expr ) )
+			else
+				astAdd( astNewDECL( sym, FALSE ) )
+				astAdd( astNewASSIGN( astNewVAR( sym ), expr, AST_OPOPT_ISINI ) )
+			end if
 		else
-			'' the wstring must be allocated() but size
-			'' is unknown at compile-time, do:
+			'' The wstring expression must be copied into a
+			'' dynamically allocated buffer, just like with string
+			'' expressions, so it can be preserved for comparison
+			'' at every CASE.
 
-			'' dim temp as wstring ptr
-			sym = symbAddTempVar( typeAddrOf( FB_DATATYPE_WCHAR ) )
+			'' dim temp as wstring ptr = expr
+			sym = symbAddImplicitVar( typeAddrOf( FB_DATATYPE_WCHAR ), NULL, options )
 
-			'' Remove temp flag to have it considered for dtor calling
-			symbUnsetIsTemp( sym )
-
-			'' Mark it as "dynamic wstring" so it will be deallocated with
-			'' WstrFree() at scope breaks/end
+			'' Mark it as "dynamic wstring" so it will be
+			'' deallocated with fb_WstrDelete() at scope breaks
 			symbSetIsWstring( sym )
 
-			'' Pretent "= ANY" was used - even though the fake wstring
-			'' is pretended to have a constructor, we don't need the
-			'' default clear done by astNewDECL()
-			symbSetDontInit( sym )
-
-			astAdd( astNewDECL( sym, NULL ) )
-
-			astAdd( astBuildFakeWstringAssign( sym, expr ) )
+			if( options and FB_SYMBOPT_UNSCOPE ) then
+				'' Clear the pointer at procedure-level,
+				'' and do a normal assignment here
+				astAddUnscoped( astNewDECL( sym, TRUE ) )
+				astAdd( astBuildFakeWstringAssign( sym, expr ) )
+			else
+				'' Just the assignment, used as initializer
+				astAdd( astNewDECL( sym, FALSE ) )
+				astAdd( astBuildFakeWstringAssign( sym, expr, AST_OPOPT_ISINI ) )
+			end if
 		end if
 	end if
 

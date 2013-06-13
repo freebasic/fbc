@@ -1545,32 +1545,16 @@ sub symbDelSymbolTb _
 
     '' del from hash tb only?
     if( hashonly ) then
+		dim as FBSYMBOL ptr s = tb->head
+		while( s )
+			symbDelFromHash( s )
 
-    	dim as FBSYMBOL ptr s = tb->head
-    	do while( s <> NULL )
+			if( s->class = FB_SYMBCLASS_NSIMPORT ) then
+				symbNamespaceRemove( s, TRUE )
+			end if
 
-	    	select case as const s->class
-    		case FB_SYMBCLASS_VAR, _
-    			 FB_SYMBCLASS_CONST, _
-    			 FB_SYMBCLASS_STRUCT, _
-    			 FB_SYMBCLASS_ENUM, _
-    			 FB_SYMBCLASS_TYPEDEF, _
-    			 FB_SYMBCLASS_LABEL, _
-    			 FB_SYMBCLASS_DEFINE
-
-    			symbDelFromHash( s )
-
-    		case FB_SYMBCLASS_NSIMPORT
-    			symbNamespaceRemove( s, TRUE )
-
-    		case FB_SYMBCLASS_SCOPE
-    			'' already removed..
-    			''''' symbDelScopeTb( s )
-    		end select
-
-    		s = s->next
-    	loop
-
+			s = s->next
+		wend
     '' del from hash and symbol tb's
     else
     	do
@@ -1687,6 +1671,10 @@ function symbIsEqual _
     '' function? must check because a @foo will point to a different
     '' symbol than funptr, but both can have the same signature
     case FB_SYMBCLASS_PROC
+		'' Check for return BYREF
+		if( symbProcReturnsByref( sym1 ) <> symbProcReturnsByref( sym2 ) ) then
+			exit function
+		end if
 
 		'' check calling convention
 		if( symbAreProcModesEqual( sym1, sym2 ) = FALSE ) then
@@ -2242,6 +2230,11 @@ private function hGetNamespacePrefix( byval sym as FBSYMBOL ptr ) as string
 	ns = symbGetNamespace( sym )
 	while( ns <> @symbGetGlobalNamespc( ) )
 		s = *symbGetName( ns ) + "." + s
+
+		if( symbGetHashtb( ns ) = NULL ) then
+			exit while
+		end if
+
 		ns = symbGetNamespace( ns )
 	wend
 
@@ -2254,6 +2247,10 @@ function symbDump( byval sym as FBSYMBOL ptr ) as string
 	if( sym = NULL ) then
 		return "<NULL>"
 	end if
+
+#if 0
+	s += "[" & hex( sym ) & "] "
+#endif
 
 #if 1
 	if( (sym->class < FB_SYMBCLASS_VAR) or (sym->class > FB_SYMBCLASS_NSIMPORT) ) then
@@ -2315,6 +2312,55 @@ function symbDump( byval sym as FBSYMBOL ptr ) as string
 	checkAttrib( VIRTUAL )
 #endif
 
+#if 1
+	#macro checkStat( ID )
+		if( sym->stats and FB_SYMBSTATS_##ID ) then
+			s += lcase( #ID ) + " "
+		end if
+	#endmacro
+
+	checkStat( VARALLOCATED )
+	checkStat( ACCESSED )
+	if( symbIsProc( sym ) ) then
+		checkStat( CTORINITED )
+	else
+		checkStat( INITIALIZED )
+	end if
+	checkStat( DECLARED )
+	checkStat( RTL )
+	checkStat( THROWABLE )
+	checkStat( PARSED )
+	checkStat( HASALIAS )
+	if( symbIsProc( sym ) ) then
+		checkStat( EXCLPARENT )
+	else
+		checkStat( DONTINIT )
+	end if
+	checkStat( MAINPROC )
+	checkStat( MODLEVELPROC )
+	checkStat( FUNCPTR )
+	checkStat( JUMPTB )
+	checkStat( GLOBALCTOR )
+	checkStat( GLOBALDTOR )
+	checkStat( CANTDUP )
+	if( symbIsProc( sym ) ) then
+		checkStat( GCCBUILTIN )
+		checkStat( IRHLCBUILTIN )
+	end if
+	checkStat( HASRTTI )
+	checkStat( CANTUNDEF )
+	if( symbIsField( sym ) ) then
+		checkStat( UNIONFIELD )
+	elseif( symbIsProc( sym ) ) then
+		checkStat( PROCEMITTED )
+	else
+		checkStat( WSTRING )
+	end if
+	checkStat( RTL_CONST )
+	checkStat( EMITTED )
+	checkStat( BEINGEMITTED )
+#endif
+
 	if( sym->class = FB_SYMBCLASS_NSIMPORT ) then
 		s += "from: "
 		s += symbDump( sym->nsimp.imp_ns )
@@ -2322,7 +2368,11 @@ function symbDump( byval sym as FBSYMBOL ptr ) as string
 	end if
 
 #if 1
-	s += hGetNamespacePrefix( sym )
+	if( sym = @symbGetGlobalNamespc( ) ) then
+		s += "<global namespace>"
+	else
+		s += hGetNamespacePrefix( sym )
+	end if
 #endif
 
 	if( symbIsProc( sym ) and symbIsOperator( sym ) ) then
@@ -2385,4 +2435,34 @@ function symbDump( byval sym as FBSYMBOL ptr ) as string
 
 	function = s
 end function
+
+sub symbDumpNamespace( byval ns as FBSYMBOL ptr )
+	dim as FBSYMBOL ptr i = any
+	dim as THASH ptr hash = any
+	dim as HASHITEM ptr hashitem = any
+
+	select case( ns->class )
+	case FB_SYMBCLASS_STRUCT, FB_SYMBCLASS_ENUM, FB_SYMBCLASS_NAMESPACE
+
+	case else
+		print "symbDumpNamespace(): not a namespace"
+	end select
+
+	print symbDump( ns ) + ":"
+
+	i = symbGetCompSymbTb( ns ).head
+	while( i )
+		print "    symtb: " + symbDump( i )
+		i = i->next
+	wend
+
+	hash = @symbGetCompHashTb( ns ).tb
+	for index as integer = 0 to hash->nodes-1
+		hashitem = hash->list[index].head
+		while( hashitem )
+			print "    hashtb[" & index & "]: " + *hashitem->name + " = " + symbDump( hashitem->data )
+			hashitem = hashitem->next
+		wend
+	next
+end sub
 #endif

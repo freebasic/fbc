@@ -5,7 +5,7 @@ Standard data type: 64 bit unsigned
 	[[KeyPgDim dim]] //variable// [[KeyPgAs as]] **Ulongint**
 ##
 {{fbdoc item="desc"}}
-	A 64-bit unsigned whole-number data type. Can hold values from 0 to 18 446 744 073 709 551 615
+	A 64-bit unsigned whole-number data type. Can hold values from 0 to 18 446 744 073 709 551 615. Corresponds to an unsigned QWORD.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/datatype/ulongint.bas"}}%%(freebasic)

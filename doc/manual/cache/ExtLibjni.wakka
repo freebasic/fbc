@@ -5,6 +5,7 @@ Website: [[http://download.oracle.com/javase/6/docs/technotes/guides/jni/index.h
 Platforms supported: ""Win32"", Linux
 Headers to include: jni.bi
 Header version: from 2006
+Examples: in examples/other-languages/Java/
 
 {{fbdoc item="ex"}}
 

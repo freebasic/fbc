@@ -449,7 +449,7 @@ function astNewASSIGN _
 			'' operator LET, which was handled just above.
 
 			'' build a proc call
-			r = astBuildCall( proc, r, NULL )
+			r = astBuildCall( proc, r )
 		else
 			if( err_num <> FB_ERRMSG_OK ) then
 				return NULL

@@ -1,8 +1,6 @@
 /* console mode mouse functions */
 
 #include "../fb.h"
-#include "../unix/fb_private_console.h"
-#include "../fb_private_hdynload.h"
 
 #ifdef DISABLE_GPM
 
@@ -13,6 +11,9 @@ int fb_ConsoleGetMouse( int *x, int *y, int *z, int *buttons, int *clip )
 
 #else
 
+#include "../unix/fb_private_console.h"
+#include "../fb_private_hdynload.h"
+#include <sys/select.h>
 #include <gpm.h>
 
 typedef int (*GPM_OPEN)(Gpm_Connect *, int);

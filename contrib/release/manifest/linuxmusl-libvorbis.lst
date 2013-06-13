@@ -1,0 +1,4 @@
+doc/licenses/libvorbis.txt
+lib/linux/libvorbis.a
+lib/linux/libvorbisenc.a
+lib/linux/libvorbisfile.a

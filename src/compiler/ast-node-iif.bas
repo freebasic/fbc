@@ -249,11 +249,14 @@ function astNewIIF _
 		varexpr  = astBuildFakeWstringAccess( temp )
 
 		astDtorListScopeBegin( truecookie )
-		truexpr  = astBuildFakeWstringAssign( temp, truexpr )
+		'' Using AST_OPOPT_ISINI to get a WstrAssign() immediately,
+		'' as astOptAssignment() will miss it because it's nested
+		'' inside an IIF node
+		truexpr = astBuildFakeWstringAssign( temp, truexpr, AST_OPOPT_ISINI )
 		astDtorListScopeEnd( )
 
 		astDtorListScopeBegin( falsecookie )
-		falsexpr = astBuildFakeWstringAssign( temp, falsexpr )
+		falsexpr = astBuildFakeWstringAssign( temp, falsexpr, AST_OPOPT_ISINI )
 		astDtorListScopeEnd( )
 	else
 		temp = symbAddTempVar( dtype, subtype )

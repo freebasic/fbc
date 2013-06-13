@@ -78,6 +78,8 @@
 #define FB_RTL_STRLTRIM 				"fb_LTRIM"
 #define FB_RTL_STRLTRIMANY 				"fb_LTrimAny"
 #define FB_RTL_STRLTRIMEX 				"fb_LTrimEx"
+#define FB_RTL_STRLCASE2				"fb_StrLcase2"
+#define FB_RTL_STRUCASE2				"fb_StrUcase2"
 #define FB_RTL_STRSWAP 					"fb_StrSwap"
 
 #define FB_RTL_WSTRALLOC				"fb_WstrAlloc"
@@ -122,6 +124,8 @@
 #define FB_RTL_WSTRLTRIM 				"fb_WstrLTrim"
 #define FB_RTL_WSTRLTRIMANY 			"fb_WstrLTrimAny"
 #define FB_RTL_WSTRLTRIMEX 				"fb_WstrLTrimEx"
+#define FB_RTL_WSTRLCASE2				"fb_WstrLcase2"
+#define FB_RTL_WSTRUCASE2				"fb_WstrUcase2"
 #define FB_RTL_WSTRSWAP 				"fb_WstrSwap"
 
 #define FB_RTL_LONGINTDIV				"fb___divdi3"
@@ -136,7 +140,7 @@
 #define FB_RTL_ARRAYCLEAROBJ				"fb_ArrayClearObj"
 #define FB_RTL_ARRAYERASE				"fb_ArrayErase"
 #define FB_RTL_ARRAYERASEOBJ				"fb_ArrayEraseObj"
-#define FB_RTL_ARRAYERASESTR				"fb_ArrayEraseStr"
+#define FB_RTL_ARRAYERASESTR				"fb_ArrayStrErase"
 #define FB_RTL_ARRAYREDIM				"fb_ArrayRedimEx"
 #define FB_RTL_ARRAYREDIM_OBJ				"fb_ArrayRedimObj"
 #define FB_RTL_ARRAYREDIMPRESV				"fb_ArrayRedimPresvEx"
@@ -478,6 +482,8 @@ enum FB_RTL_IDX
 	FB_RTL_IDX_STRLTRIM
 	FB_RTL_IDX_STRLTRIMANY
 	FB_RTL_IDX_STRLTRIMEX
+	FB_RTL_IDX_STRLCASE2
+	FB_RTL_IDX_STRUCASE2
 	FB_RTL_IDX_STRSWAP
 
 	FB_RTL_IDX_WSTRALLOC
@@ -522,6 +528,8 @@ enum FB_RTL_IDX
 	FB_RTL_IDX_WSTRLTRIM
 	FB_RTL_IDX_WSTRLTRIMANY
 	FB_RTL_IDX_WSTRLTRIMEX
+	FB_RTL_IDX_WSTRLCASE2
+	FB_RTL_IDX_WSTRUCASE2
 	FB_RTL_IDX_WSTRSWAP
 
 	FB_RTL_IDX_LONGINTDIV
@@ -751,7 +759,6 @@ enum FB_RTL_IDX
 	FB_RTL_IDX_GFXGETQB
 	FB_RTL_IDX_GFXSCREENSET
 	FB_RTL_IDX_GFXSCREENSETQB
-	FB_RTL_IDX_GFXSCREENRES
 	FB_RTL_IDX_GFXIMAGECREATE
 	FB_RTL_IDX_GFXIMAGECREATEQB
 
@@ -1070,11 +1077,14 @@ declare function rtlStrLTrim _
 		byval is_any as integer _
 	) as ASTNODE ptr
 
-declare function rtlArrayClear _
+declare function rtlStrCase _
 	( _
-		byval arrayexpr as ASTNODE ptr, _
-		byval check_access as integer _
+		byval expr as ASTNODE ptr, _
+		byval mode as ASTNODE ptr, _
+		byval is_lcase as integer _
 	) as ASTNODE ptr
+
+declare function rtlArrayClear( byval arrayexpr as ASTNODE ptr ) as ASTNODE ptr
 
 declare function rtlArrayErase _
 	( _
@@ -1693,8 +1703,7 @@ declare function rtlGfxGet _
 
 declare function rtlGfxScreenSet _
 	( _
-		byval wexpr as ASTNODE ptr, _
-		byval hexpr as ASTNODE ptr, _
+		byval mexpr as ASTNODE ptr, _
 		byval dexpr as ASTNODE ptr, _
 		byval pexpr as ASTNODE ptr, _
 		byval fexpr as ASTNODE ptr, _

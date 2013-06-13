@@ -28,10 +28,8 @@ Procedures that work with numbers mathematically.
 		Returns the largest integer less than or equal to a number.
 	=={{fbdoc item="keyword" value="KeyPgSgn|SGN"}}==
 		Returns the sign of a number.
-	=={{fbdoc item="keyword" value="KeyPgRnd|RND"}}==
-		Returns a random [[KeyPgDouble Double]] in the range [0, 1).
 
-<<>>{{anchor name="TRIG"}}{{fbdoc item="section" value="Trigonometry Procedures"}}
+<<>>{{anchor name="TRIG"}}{{fbdoc item="section" value="Trigonometric Procedures"}}
 	=={{fbdoc item="keyword" value="KeyPgSin|SIN"}}==
 		Returns the sine of an angle.
 	=={{fbdoc item="keyword" value="KeyPgAsin|ASIN"}}==
@@ -50,6 +48,8 @@ Procedures that work with numbers mathematically.
 {{anchor name="MISC"}}{{fbdoc item="section" value="Miscellaneous Procedures"}}
 	=={{fbdoc item="keyword" value="KeyPgRandomize|RANDOMIZE"}}==
 		Seeds the random number generator used by ##[[KeyPgRnd Rnd]]##.
+	=={{fbdoc item="keyword" value="KeyPgRnd|RND"}}==
+		Returns a random [[KeyPgDouble Double]] in the range [0, 1).
 >>::c::
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

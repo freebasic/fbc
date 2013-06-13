@@ -11,9 +11,9 @@
 '' WithStmtBegin  =  WITH Variable .
 sub cWithStmtBegin( )
 	static as FBARRAYDIM dTB(0)
-	dim as FBSYMBOL ptr sym = any, subtype = any
+	dim as FBSYMBOL ptr sym = any
 	dim as ASTNODE ptr expr = any
-	dim as integer dtype = any, is_ptr = any
+	dim as integer is_ptr = any, options = any
 	dim as FB_CMPSTMTSTK ptr stk = any
 
 	'' WITH
@@ -25,11 +25,9 @@ sub cWithStmtBegin( )
 		errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
 		'' error recovery: fake a var
 		expr = astNewVAR( symbAddTempVar( FB_DATATYPE_INTEGER ) )
-		dtype = FB_DATATYPE_INTEGER
 	else
 		'' not an UDT?
-		dtype = astGetFullType( expr )
-		if( typeGetDtAndPtrOnly( dtype ) <> FB_DATATYPE_STRUCT ) then
+		if( typeGetDtAndPtrOnly( astGetFullType( expr ) ) <> FB_DATATYPE_STRUCT ) then
 			errReport( FB_ERRMSG_INVALIDDATATYPES )
 		end if
 	end if
@@ -42,11 +40,25 @@ sub cWithStmtBegin( )
 	else
 		'' Otherwise, take a reference (a pointer that will be deref'ed
 		'' for accesses from inside the WITH block)
-		sym = symbAddTempVar( typeAddrOf( dtype ), astGetSubType( expr ) )
-		is_ptr = TRUE
+		''    dim temp as typeof( expr ) ptr = @expr
+		expr = astNewADDROF( expr )
 
-		'' temp = @expr
-		astAdd( astNewASSIGN( astNewVAR( sym ), astNewADDROF( expr ) ) )
+		options = 0
+		if( fbLangOptIsSet( FB_LANG_OPT_SCOPE ) = FALSE ) then
+			options or= FB_SYMBOPT_UNSCOPE
+		end if
+
+		sym = symbAddImplicitVar( astGetFullType( expr ), astGetSubType( expr ), options )
+
+		if( options and FB_SYMBOPT_UNSCOPE ) then
+			astAddUnscoped( astNewDECL( sym, TRUE ) )
+			astAdd( astNewASSIGN( astNewVAR( sym ), expr ) )
+		else
+			astAdd( astNewDECL( sym, FALSE ) )
+			astAdd( astNewASSIGN( astNewVAR( sym ), expr, AST_OPOPT_ISINI ) )
+		end if
+
+		is_ptr = TRUE
 	end if
 
 	'' Save current WITH context to the statement stack

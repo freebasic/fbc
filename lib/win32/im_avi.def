@@ -1,0 +1,3 @@
+LIBRARY im_avi.dll
+EXPORTS
+imFormatRegisterAVI

@@ -296,3 +296,58 @@ function typeHasDtor _
 	end select
 
 end function
+
+''
+'' Replace/merge a type with another type; used to replace forward references
+'' (FB_DATATYPE_FWDREF) by the real dtype once its known (when the forward
+'' reference is implemented).
+''
+'' Normal case:
+''
+''         type UDT as UDT_
+''         dim p as UDT ptr
+''         type UDT_
+''             i as integer
+''         end type
+''
+'' Variable 'p' is a pointer to a forward reference that will be implemented as
+'' a struct, so we're going to turn typeAddrOf( FB_DATATYPE_FWDREF ) into
+'' typeAddrOf( FB_DATATYPE_STRUCT ) and replace the subtype too.
+''
+'' Care must be taken in cases like the following:
+''
+''         type typedef as fwdref ptr ptr ptr ptr
+''         type fwdref as integer ptr ptr ptr ptr ptr
+''
+'' 'typedef' has 4 PTRs, and the forward reference itself will be implemented
+'' with 5 PTRs. These two cannot be merged because 4+5 would be too many PTRs,
+'' the limit is 8 (FB_DT_PTRLEVELS).
+''
+function typeMerge _
+	( _
+		byval dtype1 as integer, _
+		byval dtype2 as integer _
+	) as integer
+
+	dim as integer oldptrcount = any, addptrcount = any
+
+	'' Existing PTR's (pointer to forward ref, e.g. on typedefs/variables)
+	oldptrcount = typeGetPtrCnt( dtype1 )
+
+	'' and additional PTR's
+	addptrcount = typeGetPtrCnt( dtype2 )
+
+	'' Too many PTR's after replacing the forward ref with its actual type?
+	if( (oldptrcount + addptrcount) > FB_DT_PTRLEVELS ) then
+		errReport( FB_ERRMSG_TOOMANYPTRINDIRECTIONS )
+		'' Error recovery: use the max. amount of PTRs on the final type
+		oldptrcount = FB_DT_PTRLEVELS - addptrcount
+	end if
+
+	'' Replace the forward ref with the real type,
+	'' but preserve existing PTRs and CONSTs
+	dtype1 = typeMultAddrOf( dtype2, oldptrcount ) or _
+	         typeGetConstMask( dtype1 )
+
+	function = dtype1
+end function

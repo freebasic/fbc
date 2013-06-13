@@ -13,7 +13,7 @@ Converts a double-precision floating-point number or eight-byte string to a ##[[
 	##//dbl//##
 		A ##[[KeyPgDouble Double]]## floating-point number with a binary copy of a ##[[keyPgLongint Longint]]## variable stored in it.
 	##//str//##
-		A ##[[KeyPgString String]]## at least four bytes in length with a binary copy of a ##[[KeyPgLongint Longint]]## variable stored in it.
+		A ##[[KeyPgString String]]## at least eight bytes in length with a binary copy of a ##[[KeyPgLongint Longint]]## variable stored in it.
 
 {{fbdoc item="ret"}}
 		A ##[[KeyPgLongint Longint]]## variable holding a binary copy of the input variable.
@@ -35,7 +35,7 @@ print using "ll = _&H&"; hex(ll)
 %%
 
 {{fbdoc item="diff"}}
-	- In QB an error occurs if the string passed is less than four bytes in length.
+	- In QB an error occurs if the string passed is less than eight bytes in length.
 	- QB did not support floating-point arguments.
 
 {{fbdoc item="see"}}

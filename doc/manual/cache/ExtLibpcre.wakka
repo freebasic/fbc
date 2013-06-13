@@ -5,5 +5,6 @@ Website: http://www.pcre.org
 Platforms supported: ""Win32"", Linux
 Headers to include: pcre.bi, pcre16.bi, prceposix.bi
 Version: 8.31
+Examples: in examples/regex/PCRE/
 
 {{fbdoc item="back" value="ExtLibTOC|External Library Table of Contents"}}

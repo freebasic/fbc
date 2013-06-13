@@ -1064,7 +1064,7 @@ private function hFileOpen _
 
 	'' (LEN '=' Expression)?
 	if( hMatchText( "LEN" ) ) then
-		if( hMatch( FB_TK_ASSIGN ) = FALSE ) then
+		if( cAssignToken( ) = FALSE ) then
 			errReport( FB_ERRMSG_EXPECTEDEQ )
 			flen = astNewCONSTi( 0 )
 		else

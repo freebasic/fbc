@@ -51,7 +51,7 @@ function cAssignFunctResult( byval is_return as integer ) as integer
 	if( is_return ) then
 		if( symbGetProcStatAssignUsed( parser.currproc ) ) then
 			if( has_defctor ) then
-				errReport( FB_ERRMSG_RETURNANDFUNCTIONCANTBEUSED )
+				errReport( FB_ERRMSG_RETURNMIXEDWITHASSIGN )
 			end if
 		end if
 
@@ -59,7 +59,7 @@ function cAssignFunctResult( byval is_return as integer ) as integer
 	else
 		if( symbGetProcStatReturnUsed( parser.currproc ) ) then
 			if( has_defctor ) then
-				errReport( FB_ERRMSG_RETURNANDFUNCTIONCANTBEUSED )
+				errReport( FB_ERRMSG_ASSIGNMIXEDWITHRETURN )
 			end if
 		end if
 
@@ -233,7 +233,7 @@ function cProcCall _
 		end if
 
 		'' '='?
-		if( lexGetToken( ) = FB_TK_ASSIGN ) then
+		if( hIsAssignToken( ) ) then
 			if( is_indexed ) then
 				if( symbGetUDTHasIdxSetProp( symbGetParent( sym ) ) = FALSE ) then
 					errReport( FB_ERRMSG_PROPERTYHASNOIDXSETMETHOD, TRUE )
@@ -259,7 +259,7 @@ function cProcCall _
 					errReport( FB_ERRMSG_PROPERTYHASNOIDXGETMETHOD, TRUE )
 					exit function
 				end if
-            else
+			else
 				if( symbGetUDTHasGetProp( symbGetParent( sym ) ) = FALSE ) then
 					errReport( FB_ERRMSG_PROPERTYHASNOGETMETHOD )
 					exit function
@@ -324,10 +324,8 @@ function cProcCall _
 	fbSetPrntOptional( FALSE )
 
 	if( is_propset = FALSE ) then
-		'' Function returns BYREF?
-		if( symbProcReturnsByref( sym ) ) then
-			procexpr = astBuildByrefResultDeref( procexpr )
-		end if
+		'' Take care of functions returning BYREF
+		procexpr = astBuildByrefResultDeref( procexpr )
 
 		'' StrIdxOrMemberDeref?
 		procexpr = cStrIdxOrMemberDeref( procexpr )
@@ -408,6 +406,8 @@ private function hProcSymbol _
 		byval iscall as integer _
 	) as integer
 
+	dim as integer do_call = any
+
 	function = FALSE
 
 	if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_CODE ) = FALSE ) then
@@ -417,8 +417,8 @@ private function hProcSymbol _
 
 	lexSkipToken( )
 
-	''
-	dim as integer do_call = lexGetToken( ) <> FB_TK_ASSIGN
+	'' '='?
+	do_call = not hIsAssignToken( )
 
 	if( do_call = FALSE ) then
 		'' special case: property

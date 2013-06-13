@@ -263,7 +263,10 @@ function cRelExpression _
     	'' Relational operator
     	select case as const lexGetToken( )
     	case FB_TK_EQ
-			'' eq only inside parentheses?
+			parser.have_eq_outside_parens = (parser.prntcnt = 0)
+
+			'' outside parentheses? (cParentExpression() would have
+			'' unset this flag otherwise)
 			if( fbGetEqInParensOnly( ) ) then
 				exit do
 			end if
@@ -652,7 +655,7 @@ function cMultExpression _
     do
     	'' Mult operator
     	select case lexGetToken( )
-    	case CHAR_CARET
+    	case CHAR_TIMES
     		op = AST_OP_MUL
     	case CHAR_SLASH
  			op = AST_OP_DIV

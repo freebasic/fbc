@@ -27,7 +27,8 @@ all: $(TXT)
 # redirect that into the .txt,
 # delete the temp .asm file.
 $(TXT): %.txt: %.bas force-rebuild
-	$(QUIET)$(FBC) $< -r -m $* | sed -e 's/[0-9a-z\-]*\.bas([0-9]*) warning [0-9]*([0-9]*): /\t/g' > $@ && rm $*.asm
+	$(QUIET)$(FBC) $< -r -m $* | sed -e 's/[0-9a-z\-]*\.bas([0-9]*) warning [0-9]*([0-9]*): /\t/g' > $@ \
+		&& rm -f $*.asm $*.c
 
 .PHONY: force-rebuild
 force-rebuild:

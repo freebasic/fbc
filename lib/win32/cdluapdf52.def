@@ -1,0 +1,4 @@
+LIBRARY cdluapdf52.dll
+EXPORTS
+cdluapdf_open
+luaopen_cdluapdf

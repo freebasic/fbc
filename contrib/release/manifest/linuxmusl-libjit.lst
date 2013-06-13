@@ -1,0 +1,4 @@
+doc/licenses/libjit.txt
+lib/linux/libjit.a
+lib/linux/libjitdynamic.a
+lib/linux/libjitplus.a

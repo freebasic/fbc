@@ -191,6 +191,7 @@ List of ""FreeBASIC"" keywords sorted by the function they perform.
 	- {{fbdoc item="keyword" value="KeyPgPcopy|PCOPY"}}
 	- {{fbdoc item="keyword" value="KeyPgPmap|PMAP"}}
 	- {{fbdoc item="keyword" value="KeyPgPoint|POINT"}}
+	- {{fbdoc item="keyword" value="KeyPgPointCoord|POINTCOORD"}}
 	- {{fbdoc item="keyword" value="KeyPgPreset|PRESET"}}
 	- {{fbdoc item="keyword" value="KeyPgPset|PSET"}}
 	- {{fbdoc item="keyword" value="KeyPgPsetGfx|PSET (Graphics PUT)"}}
@@ -429,6 +430,7 @@ List of ""FreeBASIC"" keywords sorted by the function they perform.
 	- {{fbdoc item="keyword" value="KeyPgDdtime|__TIME__"}}
 
 {{fbdoc item="section" value="Preprocessor"}}
+	- {{fbdoc item="keyword" value="KeyPgPpassert|#ASSERT"}}
 	- {{fbdoc item="keyword" value="KeyPgPpdefine|#DEFINE"}}
 	- {{fbdoc item="keyword" value="KeyPgPpelse|#ELSE"}}
 	- {{fbdoc item="keyword" value="KeyPgPpelseif|#ELSEIF"}}

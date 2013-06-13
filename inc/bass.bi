@@ -21,13 +21,16 @@ type DWORD as UInteger
 type QWORD as ULongInt
 type BOOL as integer
 
-
 #Ifndef TRUE
     #define TRUE 1
     #define FALSE 0
 #EndIf
+#ifndef MAKEWORD
 #define MAKEWORD(a,b) Cast(WORD, ((a) And &hFF) Or ((b) Shl 8))
+#endif
+#ifndef MAKELONG
 #define MAKELONG(a,b) Cast(DWORD, ((a) And &hFFFF) Or ((b) Shl 16))
+#endif
 
 #define BASSVERSION &h204
 #define BASSVERSIONTEXT "2.4"

@@ -90,9 +90,11 @@ function cTypeOrExpression _
 	'' user-defined types/aliases.
 	'' Disambiguation:
 	''  - Types can't be followed by an operator, except for '*', which can
-	''    be used in 'STRING * N'. Note: we cannot check for {Z|W}STRING
-	''    followed by '*', because '*' also works with {z|w}string typedefs.
-	''  - Types can't be followed by '[' or '(', except for 'TYPEOF(...)'.
+	''    be used in 'STRING * N'. Note: We can't just check for
+	''    '{Z|W}STRING *' because '*' also works with {z|w}string typedefs,
+	''    e.g. 'myZstringTypedef * N'.
+	''  - Types can't be followed by '[' or '(', except for:
+	''      TYPEOF|SUB|FUNCTION(...)
 	''  - Note: '.' doesn't make it an expression, because it could be a
 	''    type in a namespace.
 
@@ -109,8 +111,13 @@ function cTypeOrExpression _
 		case CHAR_LBRACKET    '' [
 			maybe_type = FALSE
 		case CHAR_LPRNT       '' (
-			'' Not a TYPEOF though?
-			maybe_type = (lexGetToken( ) = FB_TK_TYPEOF)
+			'' Not a TYPEOF/SUB/FUNCTION though?
+			select case( lexGetToken( ) )
+			case FB_TK_TYPEOF, FB_TK_SUB, FB_TK_FUNCTION
+
+			case else
+				maybe_type = FALSE
+			end select
 		end select
 	end if
 
@@ -148,20 +155,12 @@ sub cTypeOf _
 	)
 
 	dim as ASTNODE ptr expr = any
-	dim as FBSYMBOL ptr scp = any, lastscp = any
-
-	'' Capture any temp vars, they shouldn't be emitted/allocated (and no
-	'' dtor calls for them either), since the expression will be deleted.
-	scp = astTempScopeBegin( lastscp, NULL )
 
 	'' Type or an Expression
 	expr = cTypeOrExpression( FALSE, dtype, subtype, lgt )
 
-	astTempScopeEnd( scp, lastscp )
-
 	'' Was it a type?
 	if( expr = NULL ) then
-		astTempScopeDelete( scp )
 		exit sub
 	end if
 
@@ -177,7 +176,6 @@ sub cTypeOf _
 	lgt     = astSizeOf( expr )
 
 	astDelTree( expr )
-	astTempScopeDelete( scp )
 end sub
 
 function hIntegerTypeFromBitSize _

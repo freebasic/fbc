@@ -10,8 +10,8 @@
 ''
 '' call-backs
 ''
-declare sub on_window1_destroy cdecl alias "on_window1_destroy" (byval object as GtkObject ptr, byval user_data as gpointer )
-declare sub on_button1_clicked cdecl alias "on_button1_clicked" (byval object as GtkObject ptr, byval user_data as gpointer )
+declare sub on_window1_destroy cdecl alias "on_window1_destroy" (byval object_ as GtkObject ptr, byval user_data as gpointer )
+declare sub on_button1_clicked cdecl alias "on_button1_clicked" (byval object_ as GtkObject ptr, byval user_data as gpointer )
 
     dim xml as GladeXML ptr
 
@@ -33,14 +33,14 @@ declare sub on_button1_clicked cdecl alias "on_button1_clicked" (byval object as
 
 
 '':::::
-sub on_window1_destroy cdecl (byval object as GtkObject ptr, _
+sub on_window1_destroy cdecl (byval object_ as GtkObject ptr, _
 							  byval user_data as gpointer ) export
     gtk_main_quit()
 
 end sub
 
 '':::::
-sub on_button1_clicked cdecl (byval object as GtkObject ptr, _
+sub on_button1_clicked cdecl (byval object_ as GtkObject ptr, _
 							  byval user_data as gpointer ) export
 
 	gtk_main_quit()

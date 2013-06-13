@@ -992,8 +992,7 @@ private function hCallStaticCtor _
 	flag = symbAddVar( symbUniqueLabel( ), NULL, FB_DATATYPE_INTEGER, NULL, 0, _
 	                   0, dTB(), FB_SYMBATTRIB_STATIC )
 
-	tree = astNewLINK( tree, _
-					   astNewDECL( flag, NULL ) )
+	tree = astNewLINK( tree, astNewDECL( flag, TRUE ) )
 
 	'' if flag = 0 then
 	label = symbAddLabel( NULL )
@@ -1426,8 +1425,7 @@ function cVarDecl _
 			assign_initree = NULL
 
 			'' '=' | '=>' ?
-			select case lexGetToken( )
-			case FB_TK_DBLEQ, FB_TK_EQ
+			if( hIsAssignToken( ) ) then
 				initree = hVarInit( sym, is_decl )
 
 				if( ( initree <> NULL ) and ( fbLangOptIsSet( FB_LANG_OPT_SCOPE ) = FALSE ) ) then
@@ -1457,9 +1455,8 @@ function cVarDecl _
 						initree = hVarInitDefault( sym, is_decl, has_defctor )
 					end if
 				end if
-
-			'' default initialization
-			case else
+			else
+				'' default initialization
 				if( hHasEllipsis( sym ) ) then
 					errReport( FB_ERRMSG_MUSTHAVEINITWITHELLIPSIS )
 					hSkipStmt( )
@@ -1467,8 +1464,7 @@ function cVarDecl _
 				end if
 
 				initree = hVarInitDefault( sym, is_decl, has_defctor )
-
-			end select
+			end if
 		else
 			initree = NULL
 			assign_initree = NULL
@@ -1482,21 +1478,18 @@ function cVarDecl _
     		dim as ASTNODE ptr var_decl = NULL
 
 			'' not declared already?
-    		if( is_decl = FALSE ) then
-    			'' don't init it if it's a temp FOR var, it
-    			'' will have the start condition put into it...
-    			if( is_fordecl ) then
-   					symbSetDontInit( sym )
-    			end if
-
-				var_decl = astNewDECL( sym, initree )
+			if( is_decl = FALSE ) then
+				'' Don't init if it's a temp FOR var, it will
+				'' have the start condition put into it.
+				var_decl = astNewDECL( sym, _
+						((initree = NULL) and (not is_fordecl)) )
 
 				'' add the descriptor too, if any
 				desc = symbGetArrayDescriptor( sym )
 				if( desc <> NULL ) then
-					var_decl = astNewLINK( var_decl, astNewDECL( desc, symbGetTypeIniTree( desc ) ) )
+					var_decl = astNewLINK( var_decl, astNewDECL( desc, (symbGetTypeIniTree( desc ) = NULL) ) )
 				end if
-    		end if
+			end if
 
 			'' handle arrays (must be done after adding the decl node)
 
@@ -1569,7 +1562,7 @@ function cVarDecl _
 								astAdd( astBuildVarDtorCall( sym, TRUE ) )
 							end if
 
-							assign_vardecl = astNewDECL( sym, assign_initree )
+							assign_vardecl = astNewDECL( sym, (assign_initree = NULL) )
 							assign_vardecl = hFlushDecl( assign_vardecl )
 
 							'' use the initializer as an assignment
@@ -1899,13 +1892,9 @@ sub cAutoVarDecl(byval attrib as FB_SYMBATTRIB)
 						TRUE, FALSE, TRUE )
 
 		'' '=' | '=>' ?
-		select case lexGetToken( )
-		case FB_TK_DBLEQ, FB_TK_EQ
-			lexSkipToken( )
-
-		case else
+		if( cAssignToken( ) = FALSE ) then
 			errReport( FB_ERRMSG_EXPECTEDEQ )
-		end select
+		end if
 
     	'' parse expression
 		dim as ASTNODE ptr expr = cExpression( )
@@ -1999,7 +1988,7 @@ sub cAutoVarDecl(byval attrib as FB_SYMBATTRIB)
         	symbSetIsInitialized( sym )
 
 			'' add to AST
-			dim as ASTNODE ptr var_decl = astNewDECL( sym, initree )
+			dim as ASTNODE ptr var_decl = astNewDECL( sym, FALSE )
 
 			'' set as declared
 			symbSetIsDeclared( sym )

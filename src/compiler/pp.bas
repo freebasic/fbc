@@ -22,8 +22,8 @@ type SYMBKWD
 end type
 
 declare sub ppInclude()
-declare sub ppIncLib()
-declare sub ppLibPath()
+declare sub ppIncLib( )
+declare sub ppLibPath( )
 declare sub ppLine()
 declare sub ppLang()
 
@@ -204,6 +204,14 @@ sub ppParse( )
 				if( symbGetCantUndef( sym ) ) then
 					errReport( FB_ERRMSG_CANTUNDEF )
 				else
+					'' Preserve #undef under -pp, except if #undeffing a macro,
+					'' which won't be preserved (only other symbols will be)
+					if( env.ppfile_num > 0 ) then
+						if( symbIsDefine( sym ) = FALSE ) then
+							lexPPOnlyEmitText( "#undef" )
+							lexPPOnlyEmitToken( )
+						end if
+					end if
 					symbDelSymbol( sym )
 				end if
 			end if
@@ -318,7 +326,7 @@ end sub
 '':::::
 '' ppIncLib			=   '#'INCLIB LIT_STR
 ''
-private sub ppIncLib()
+private sub ppIncLib( )
 	if( lexGetClass( ) <> FB_TKCLASS_STRLITERAL ) then
 		errReport( FB_ERRMSG_SYNTAXERROR )
 		'' error recovery: skip
@@ -326,14 +334,20 @@ private sub ppIncLib()
 		return
 	end if
 
-	fbAddLib(lexGetText())
-	lexSkipToken()
+	'' Preserve under -pp
+	if( env.ppfile_num > 0 ) then
+		lexPPOnlyEmitText( "#inclib" )
+		lexPPOnlyEmitToken( )
+	end if
+
+	fbAddLib( lexGetText( ) )
+	lexSkipToken( )
 end sub
 
 '':::::
 '' ppLibPath		=   '#'LIBPATH LIT_STR
 ''
-private sub ppLibPath()
+private sub ppLibPath( )
 	if( lexGetClass( ) <> FB_TKCLASS_STRLITERAL ) then
 		errReport( FB_ERRMSG_SYNTAXERROR )
 		'' error recovery: skip
@@ -341,8 +355,14 @@ private sub ppLibPath()
 		return
 	end if
 
-	fbAddLibPath(lexGetText())
-	lexSkipToken()
+	'' Preserve under -pp
+	if( env.ppfile_num > 0 ) then
+		lexPPOnlyEmitText( "#libpath" )
+		lexPPOnlyEmitToken( )
+	end if
+
+	fbAddLibPath( lexGetText( ) )
+	lexSkipToken( )
 end sub
 
 '':::::
@@ -369,26 +389,30 @@ end sub
 '':::::
 '' ppLang		=   '#'LANG LIT_STR
 ''
-private sub ppLang()
-    static as zstring * FB_MAXPATHLEN+1 opt
+private sub ppLang( )
 	dim as FB_LANG id = any
 
 	if( lexGetClass( ) <> FB_TKCLASS_STRLITERAL ) then
 		errReport( FB_ERRMSG_SYNTAXERROR )
 		'' error recovery: skip
 		lexSkipToken( )
-		return
+		exit sub
 	end if
 
-	lexEatToken( opt )
-
-	id = fbGetLangId( @opt )
-
+	id = fbGetLangId( lexGetText( ) )
 	if( id = FB_LANG_INVALID ) then
 		errReport( FB_ERRMSG_INVALIDLANG )
-	else
-		fbChangeOption( FB_COMPOPT_LANG, id )
+		lexSkipToken( )
+		exit sub
 	end if
+
+	'' Preserve under -pp
+	if( env.ppfile_num > 0 ) then
+		lexPPOnlyEmitText( "#lang """ + fbGetLangName( id ) + """" )
+	end if
+
+	fbChangeOption( FB_COMPOPT_LANG, id )
+	lexSkipToken( )
 end sub
 
 '':::::

@@ -28,5 +28,6 @@ Preprocessor diagnostic directive
 {{fbdoc item="see"}}
 	- ##[[KeyPgPpif #if]]##
 	- ##[[KeyPgPpprint #print]]##
+	- ##[[KeyPgPpassert #assert]]##
 
 {{fbdoc item="back" value="CatPgPreProcess|Preprocessor"}}

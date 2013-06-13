@@ -156,6 +156,57 @@ namespace fb.fbdoc
 	end function
 
 	'':::::
+	function CellUnescapeCodes _
+		( _
+			byref celltext as const string _
+		) as string
+
+		'' Unescape HTML-like codes (eg &amp, &#...) which may be
+		'' found in {{table}} blocks.  Note the lack of ';' terminator.
+
+		dim i as integer = 1, ret as string 
+		ret = celltext
+		do
+
+			i = instr(i, ret, "&") 
+			if i = 0 then exit do
+
+			if( mid( ret, i + 1, 3 ) = "amp" ) then
+				ret = left(ret, i - 1) + "&" + mid(ret, i + 3 + 1) 
+				i += 3
+			elseif( mid( ret, i + 1, 4 ) = "quot" ) then
+				ret = left(ret, i - 1) + """" + mid(ret, i + 4 + 1) 
+				i += 4
+			elseif( asc( ret , i + 1 ) = asc( "#" ) ) then
+				dim as integer j = i + 2
+				dim as integer c = 0
+				do
+					select case asc( ret, j )
+					case asc("0") to asc("9")
+						if( c <= 255 ) then c = c * 10 + asc( ret, j ) - asc("0")
+					case else
+						exit do
+					end select
+					j += 1
+				loop
+				if( c > 0 and c <= 255 ) then
+					ret = left(ret, i - 1) + chr(c) + mid(ret, j)
+				end if
+				i = j - 1
+			end if
+
+			i += 1
+		loop
+
+		'' new string should not be longer
+		'' (it may be written inline into a contiguous region of zstring data)
+		assert( len( ret ) <= len( celltext ) )
+
+		return ret
+
+	end function
+
+	'':::::
 	function Text2Html _
 		( _
 			byref text as string, _

@@ -5,6 +5,7 @@ Website: http://www.un4seen.com/bass.html
 Platforms supported: ""Win32"", Linux (beta)
 Headers to include: bass.bi
 Header version: 2.4.8
+Examples: in examples/sound/BASS/
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/libraries/bass.bas"}}%%(freebasic)
@@ -41,4 +42,3 @@ BASS_Free()
 %%
 
 {{fbdoc item="back" value="ExtLibTOC|External Library Table of Contents"}}
-   

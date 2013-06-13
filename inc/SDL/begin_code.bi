@@ -11,6 +11,14 @@
 
 #inclib "SDL"
 
+#ifdef __FB_WIN32__
+#inclib "gdi32"
+#inclib "user32"
+#inclib "winmm"
+#inclib "dxguid"
+#inclib "advapi32"
+#endif
+
 #ifndef SDLCALL
 #define SDLCALL cdecl
 #endif

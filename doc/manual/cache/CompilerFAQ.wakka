@@ -241,11 +241,7 @@ Depends. If your OS at least egalizes the functionality of DOS with DPMI32 (cons
 
 {{anchor name="item37"}}==Does ""FreeBASIC"" support returning references from Functions, like in ""C++""?==
 
-As of version 0.20.0b, no. There are some keywords, such as ##[[KeyPgPeek Peek]]## and the [[CatPgOpIndexing indexing operators]], for instance, that behave as if they were ##[[KeyPgFunction Function]]## procedures that return a reference, as in ""C++"". That is, they evaluate to something that can be used in place of an object, much like [[ProPgPassingArguments reference parameters]].
-
-For example, if ##//mystring//## is of type ##[[KeyPgString String]]## of non-zero length, then ##//mystring[0]//## evaluates to a reference to the first character (a ##[[KeyPgUbyte UByte]]##), which can be assigned to and modified, passed to procedures, etc.
-
-##[[KeyPgPeek Peek]]## and the [[CatPgOpIndexing indexing operators]] are documented as ##[[KeyPgFunction Function]]## procedures or operators that return a value, since ""FreeBASIC"" does not yet support returning references. When returning references is supported, the documentation will be changed to reflect that.
+In version 0.24.0b and earlier, this is not possible.  However, functionality for this now exists in the source code for prerelease versions.  Procedures can now return references using ##[[KeyPgByrefFunction byref]] as //datatype//## for the return type.
 
 {{anchor name="item0|Back to top"}}
 

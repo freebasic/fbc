@@ -5,6 +5,7 @@ Website: http://expat.sourceforge.net/
 Platforms supported: ""Win32"", Linux
 Headers to include: expat.bi
 Header version: 1.95.8
+Examples: in examples/xml/
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/libraries/expat.bas"}}%%(freebasic)

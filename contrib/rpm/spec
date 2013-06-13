@@ -1,0 +1,46 @@
+Summary: Compiler for the FreeBASIC programming language
+Name: @name@
+Version: @version@
+Release: @release@
+License: GPL+
+Group: Development/Tools
+Source: @tarball@
+URL: http://www.freebasic.net/
+BuildRoot: %{_topdir}/%{name}
+BuildArch: @arch@
+Requires: @requires@
+
+%description
+The FreeBASIC project is a set of cross-platform development tools initially
+created by Andre Victor, consisting of a compiler, GNU-based assembler,
+linker and archiver, and supporting runtime libraries, including a
+software-based graphics library. The compiler, fbc, currently supports
+building for i386-based architectures on the DOS, Linux, Windows and Xbox
+platforms. The project also contains thin bindings (header files) to some
+popular 3rd party libraries such as the C runtime library, Allegro, SDL,
+OpenGL, GTK, the Windows API and many others, as well as example programs
+for many of these libraries.
+
+FreeBASIC is a high-level programming language supporting procedural,
+object-oriented and meta-programming paradigms, with a syntax compatible to
+Microsoft QuickBasic. In fact, the FreeBASIC project originally began as an
+attempt to create a code-compatible, free alternative to Microsoft QuickBasic,
+but it has since grown into a powerful development tool. FreeBASIC can be seen
+to extend the capabilities of Microsoft QuickBasic in a number of ways,
+supporting more data types, language constructs, programming styles, and
+modern platforms and APIs.
+
+%prep
+%setup -q -n @tarballbasename@
+
+%build
+
+%install
+mkdir -p %{buildroot}/usr
+./install.sh -i %{buildroot}/usr
+
+%changelog
+
+%files
+%defattr(-,root,root,-)
+# Note: The file list will be appended here at EOF by our script

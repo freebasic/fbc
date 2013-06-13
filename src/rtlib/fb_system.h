@@ -38,4 +38,7 @@ FBCALL void         fb_DylibFree        ( void *library );
 
        int          fb_hIn              ( unsigned short port );
        int          fb_hOut             ( unsigned short port, unsigned char value );
-FBCALL int          fb_Wait             ( unsigned short port, int and, int xor);
+FBCALL int          fb_Wait             ( unsigned short port, int val_and, int val_xor);
+
+       void         fb_hRtInit          ( void );
+       void         fb_hRtExit          ( void );

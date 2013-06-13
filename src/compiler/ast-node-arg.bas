@@ -32,7 +32,7 @@ private function hAllocTmpArrayDesc _
 
 
 	'' declare
-	tree = astNewDECL( desc, symbGetTypeIniTree( desc ) )
+	tree = astNewDECL( desc, (symbGetTypeIniTree( desc ) = NULL) )
 
 	'' flush (see symbAddArrayDesc(), the desc can't never be static)
 	tree = astNewLINK( tree, _
@@ -875,7 +875,7 @@ private function hCheckParam _
     		if( rec_cnt = 0 ) then
 				'' build a proc call
 				rec_cnt += 1
-				n->l = astBuildCall( proc, arg, NULL )
+				n->l = astBuildCall( proc, arg )
 				rec_cnt -= 1
 
 				arg = n->l

@@ -16,6 +16,7 @@ declare function hMangleFunctionPtr	_
 		byval proc as FBSYMBOL ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
+		byval attrib as integer, _
 		byval mode as integer _
 	) as zstring ptr
 
@@ -505,10 +506,6 @@ private function hAddOvlProc _
 		ovl = symbGetProcOvlNext( ovl )
 	loop while( ovl <> NULL )
 
-    if( symbIsLocal( ovl_head_proc ) ) then
-    	attrib or= FB_SYMBATTRIB_LOCAL
-    end if
-
     '' add the new proc symbol, w/o adding it to the hash table
 	proc = symbNewSymbol( iif( preservecase, FB_SYMBOPT_PRESERVECASE, FB_SYMBOPT_NONE ), _
 	                      proc, symtb, hashtb, FB_SYMBCLASS_PROC, id, id_alias, dtype, subtype, attrib )
@@ -578,10 +575,6 @@ private function hAddOpOvlProc _
 		ovl = symbGetProcOvlNext( ovl )
 	loop
 
-	if( symbIsLocal( ovl_head_proc ) ) then
-		attrib or= FB_SYMBATTRIB_LOCAL
-	end if
-
     '' add it
 	proc = symbNewSymbol( FB_SYMBOPT_NONE, proc, symtb, hashtb, _
 	                      FB_SYMBCLASS_PROC, NULL, id_alias, dtype, subtype, attrib )
@@ -611,9 +604,6 @@ private function hSetupProc _
 	dim as FBSYMBOL ptr proc = any, head_proc = any, overridden = any
 
     function = NULL
-
-	'' Procedures are always "globals"
-	attrib or= FB_SYMBATTRIB_SHARED
 
 #if __FB_DEBUG__
 	'' Member procs generally must have either STATIC or METHOD attributes,
@@ -664,10 +654,6 @@ private function hSetupProc _
 
 		'' not overloaded yet? just add it
 		if( head_proc = NULL ) then
-			if( symbIsLocal( parent ) ) then
-				attrib or= FB_SYMBATTRIB_LOCAL
-			end if
-
 			proc = symbNewSymbol( FB_SYMBOPT_NONE, sym, symtb, hashtb, _
 			                      FB_SYMBCLASS_PROC, NULL, id_alias, _
 			                      FB_DATATYPE_VOID, NULL, attrib )
@@ -714,12 +700,6 @@ private function hSetupProc _
 
         '' not overloaded yet? just add it
         if( head_proc = NULL ) then
-			if( parent <> NULL ) then
-				if( symbIsLocal( parent ) ) then
-					attrib or= FB_SYMBATTRIB_LOCAL
-				end if
-			end if
-
 			proc = symbNewSymbol( FB_SYMBOPT_NONE, sym, symtb, hashtb, _
 			                      FB_SYMBCLASS_PROC, NULL, id_alias, _
 			                      dtype, subtype, attrib )
@@ -745,10 +725,6 @@ private function hSetupProc _
 add_proc:
 
 		preserve_case = (options and FB_SYMBOPT_PRESERVECASE) <> 0
-
-		if( parser.scope > FB_MAINSCOPE ) then
-			attrib or= FB_SYMBATTRIB_LOCAL
-		end if
 
 		proc = symbNewSymbol( options or FB_SYMBOPT_DOHASH, sym, symtb, hashtb, _
 		                      FB_SYMBCLASS_PROC, id, id_alias, dtype, subtype, attrib )
@@ -954,6 +930,12 @@ function symbAddProc _
 	symtb = @symbGetCompSymbTb( parent )
 	hashtb = @symbGetCompHashTb( parent )
 
+	'' Procedures are always "globals", assuming that local/nested
+	'' procedures aren't allowed
+	attrib or= FB_SYMBATTRIB_SHARED
+	assert( (proc->attrib and FB_SYMBATTRIB_LOCAL) = 0 )
+	assert( (attrib and FB_SYMBATTRIB_LOCAL) = 0 )
+
 	function = hSetupProc( proc, parent, symtb, hashtb, id, id_alias, _
 	                       dtype, subtype, attrib, mode, options )
 
@@ -1020,8 +1002,19 @@ function symbAddProcPtr _
 	'' equality check for procptrs, hence this mangling must ensure that
 	'' equal procptrs re-use the same proto symbols.
 	''
+	'' New procptr PROC symbols should be added to the current scope,
+	'' because they themselves may reference symbols from the current scope,
+	'' e.g. UDTs used in parameters/result type. It wouldn't be safe to
+	'' add them to the global namespace in this case, because the symbols
+	'' in a scope do not live as long as those from the global namespace.
+	''
+	'' Besides that, the mangling below doesn't differentiate between two
+	'' UDTs with the same name but from different scopes, so it may produce
+	'' the same mangled id for two procptrs that have different type. This
+	'' also requires them to be scoped locally.
+	''
 
-	id = hMangleFunctionPtr( proc, dtype, subtype, mode )
+	id = hMangleFunctionPtr( proc, dtype, subtype, attrib, mode )
 
 	if( parser.scope = FB_MAINSCOPE ) then
 		'' When outside scopes, it's a global, because whichever symbol
@@ -1030,6 +1023,10 @@ function symbAddProcPtr _
 		parent = @symbGetGlobalNamespc( )
 		symtb = @symbGetCompSymbTb( parent )
 		hashtb = @symbGetCompHashTb( parent )
+
+		attrib or= FB_SYMBATTRIB_SHARED
+		assert( (proc->attrib and FB_SYMBATTRIB_LOCAL) = 0 )
+		assert( (attrib and FB_SYMBATTRIB_LOCAL) = 0 )
 	else
 		'' If inside a scope, make the procptr proto local too, because
 		'' it could use local symbols, while it itself can only be used
@@ -1039,6 +1036,10 @@ function symbAddProcPtr _
 		symtb = symb.symtb                    '' symtb of current scope
 		hashtb = @symbGetCompHashTb( parent ) '' hashtb of current namespace
 		assert( hashtb = symb.hashtb )
+
+		attrib or= FB_SYMBATTRIB_LOCAL
+		assert( (proc->attrib and FB_SYMBATTRIB_SHARED) = 0 )
+		assert( (attrib and FB_SYMBATTRIB_SHARED) = 0 )
 	end if
 
 	'' already exists? (it's ok to use LookupAt, literal str's are always
@@ -1095,33 +1096,50 @@ function symbAddProcPtrFromFunction _
 
 end function
 
-'':::::
-function symbPreAddProc _
-	( _
-		byval symbol as zstring ptr _
-	) as FBSYMBOL ptr
-
+function symbPreAddProc( byval symbol as zstring ptr ) as FBSYMBOL ptr
     dim as FBSYMBOL ptr proc = any
 
 	proc = listNewNode( @symb.symlist )
 
 	proc->class = FB_SYMBCLASS_PROC
+	proc->attrib = 0
+	proc->stats = 0
+	proc->id.name = symbol
+	proc->id.alias = NULL
+	proc->id.mangled = NULL
+	proc->typ = FB_DATATYPE_INVALID
+	proc->subtype = NULL
+	proc->scope = 0
+	proc->mangling = FB_MANGLING_BASIC
+	proc->lgt = 0
+	proc->ofs = 0
+
 	proc->proc.params = 0
 	proc->proc.optparams = 0
 	symbSymbTbInit( proc->proc.paramtb, proc )
-	proc->id.name = symbol
-	proc->proc.ext = NULL
-	proc->attrib = 0
-	proc->stats = 0
-
+	proc->proc.mode = env.target.fbcall
+	proc->proc.realdtype = FB_DATATYPE_INVALID
+	proc->proc.realsubtype = NULL
 	proc->proc.returnMethod = FB_RETURN_FPU
+	proc->proc.rtl.callback = NULL
+	proc->proc.ovl.minparams = 0
+	proc->proc.ovl.maxparams = 0
+	proc->proc.ovl.next = NULL
+	proc->proc.ext = NULL
 
     '' to allow getNamespace() and GetParent() to work
     proc->symtb = @symbGetCompSymbTb( symbGetCurrentNamespc( ) )
     proc->hash.tb = @symbGetCompHashTb( symbGetCurrentNamespc( ) )
+	proc->hash.item = NULL
+	proc->hash.index = 0
+	proc->hash.prev = NULL
+	proc->hash.next = NULL
+
+	proc->parent = NULL
+	proc->prev = NULL
+	proc->next = NULL
 
 	function = proc
-
 end function
 
 function symbAddVarForParam( byval param as FBSYMBOL ptr ) as FBSYMBOL ptr
@@ -1233,7 +1251,7 @@ function symbAddProcResult( byval proc as FBSYMBOL ptr ) as FBSYMBOL ptr
 	proc->proc.ext->res = res
 
 	'' clear up the result
-	astAdd( astNewDECL( res, NULL ) )
+	astAdd( astNewDECL( res, TRUE ) )
 
 	symbSetIsDeclared( res )
 
@@ -1670,11 +1688,14 @@ private function hCheckOvlParam _
 		byval parent as FBSYMBOL ptr, _
 		byval param as FBSYMBOL ptr, _
 	  	byval arg_expr as ASTNODE ptr, _
-		byval arg_mode as integer _
+		byval arg_mode as integer, _
+		byref constonly_diff as integer _
 	) as integer
 
 	dim as integer param_dtype = any, arg_dtype = any, param_ptrcnt = any
 	dim as FBSYMBOL ptr param_subtype = any, arg_subtype = any
+
+	constonly_diff = FALSE
 
 	'' arg not passed?
 	if( arg_expr = NULL ) then
@@ -1758,6 +1779,7 @@ private function hCheckOvlParam _
 			if( param_subtype = arg_subtype ) then
 				'' param is const but arg isn't?
 				if( symbCheckConstAssign( param_dtype, arg_dtype, param_subtype, arg_subtype ) ) then
+					constonly_diff = TRUE
 					return FB_OVLPROC_HALFMATCH
 				end if
 			end if
@@ -1838,6 +1860,7 @@ function symbFindClosestOvlProc _
 	dim as FBSYMBOL ptr ovl = any, closest_proc = any, param = any
 	dim as integer i = any, arg_matches = any, matches = any
 	dim as integer max_matches = any, amb_cnt = any, exact_matches = any
+	dim as integer constonly_diff = any
 	dim as FB_CALL_ARG ptr arg = any
 
 	*err_num = FB_ERRMSG_OK
@@ -1895,7 +1918,7 @@ function symbFindClosestOvlProc _
 			arg = arg_head
 			for i = 0 to args-1
 
-				arg_matches = hCheckOvlParam( ovl, param, arg->expr, arg->mode )
+				arg_matches = hCheckOvlParam( ovl, param, arg->expr, arg->mode, constonly_diff )
 				if( arg_matches = 0 ) then
 					matches = 0
 					exit for
@@ -1943,7 +1966,7 @@ function symbFindClosestOvlProc _
 				'' an operator overload candidate is only eligible if
 				'' there is at least one exact arg match
 				if( options and FB_SYMBLOOKUPOPT_BOP_OVL ) then
-					if( exact_matches = 0 ) then
+					if( exact_matches = 0 and constonly_diff = FALSE ) then
 						eligible = FALSE
 					end if
 				end if
@@ -2448,6 +2471,64 @@ end function
 '' misc
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
+private function hAreMethodsCompatible _
+	( _
+		byval v as FBSYMBOL ptr, _  '' The virtual that's overridden
+		byval o as FBSYMBOL ptr _   '' The override
+	) as integer
+
+	dim as FBSYMBOL ptr vparam = any, oparam = any
+
+	assert( symbIsProc( v ) and symbIsMethod( v ) )
+	assert( symbIsProc( o ) and symbIsMethod( o ) )
+
+	'' Different result type? (Note: SUBs have VOID result type)
+	if( (symbGetType   ( v ) <> symbGetType   ( o )) or _
+	    (symbGetSubtype( v ) <> symbGetSubtype( o )) ) then
+		return FB_ERRMSG_OVERRIDERETTYPEDIFFERS
+	end if
+
+	'' Does one have a BYREF result, but not the other?
+	if( symbProcReturnsByref( v ) <> symbProcReturnsByref( o ) ) then
+		return FB_ERRMSG_OVERRIDERETTYPEDIFFERS
+	end if
+
+	'' Different calling convention?
+	if( symbAreProcModesEqual( v, o ) = FALSE ) then
+		return FB_ERRMSG_OVERRIDECALLCONVDIFFERS
+	end if
+
+	'' Different parameter count?
+	if( symbGetProcParams( v ) <> symbGetProcParams( o ) ) then
+		return FB_ERRMSG_OVERRIDEPARAMSDIFFER
+	end if
+
+	'' Check each parameter's mode and type
+	vparam = symbGetProcLastParam( v )
+	oparam = symbGetProcLastParam( o )
+
+	'' But skip THIS ptr; virtual/override will have a different types here,
+	'' their parent classes respectively. Since this virtual was found to
+	'' be overridden by this override, we know that the override's THIS
+	'' type is derived from the virtual's THIS type.
+	assert( symbIsParamInstance( vparam ) )
+	assert( symbIsParamInstance( oparam ) )
+	vparam = vparam->next
+	oparam = oparam->next
+
+	while( vparam )
+		if( (symbGetParamMode( vparam ) <> symbGetParamMode( oparam )) or _
+		    (symbGetFullType ( vparam ) <> symbGetFullType ( oparam )) or _
+		    (symbGetSubtype  ( vparam ) <> symbGetSubtype  ( oparam )) ) then
+			return FB_ERRMSG_OVERRIDEPARAMSDIFFER
+		end if
+		vparam = vparam->next
+		oparam = oparam->next
+	wend
+
+	function = FB_ERRMSG_OK
+end function
+
 sub symbProcCheckOverridden _
 	( _
 		byval proc as FBSYMBOL ptr, _
@@ -2461,20 +2542,16 @@ sub symbProcCheckOverridden _
 
 	'' Overriding anything?
 	if( overridden ) then
-		'' Check whether override and overridden have different
-		'' return type or calling convention, this must be disallowed
+		'' Check whether override and overridden have different return
+		'' type or calling convention etc., this must be disallowed
 		'' (unlike with overloading) because the function signatures
 		'' aren't really compatible (e.g. return on stack vs. return
 		'' in registers).
-		if( (   symbGetType( proc ) <>    symbGetType( overridden )) or _
-		    (symbGetSubtype( proc ) <> symbGetSubtype( overridden ))      ) then
-			'' This won't happen with destructors/LET overloads
-			assert( is_implicit = FALSE )
-			errReport( FB_ERRMSG_OVERRIDERETTYPEDIFFERS )
-		end if
 
-		if( symbAreProcModesEqual( proc, overridden ) = FALSE ) then
-			if( is_implicit ) then
+		errmsg = hAreMethodsCompatible( overridden, proc )
+		if( errmsg <> FB_ERRMSG_OK ) then
+			if( is_implicit and _
+			    (errmsg = FB_ERRMSG_OVERRIDECALLCONVDIFFERS) ) then
 				'' symbUdtAddDefaultMembers() uses this to check
 				'' implicit dtors and LET overloads. Since they
 				'' are not visible in the original code,
@@ -2484,13 +2561,11 @@ sub symbProcCheckOverridden _
 				else
 					errmsg = FB_ERRMSG_IMPLICITLETOVERRIDECALLCONVDIFFERS
 				end if
-			else
-				'' Normal error message that will be shown on
-				'' the problematic method declaration.
-				errmsg = FB_ERRMSG_OVERRIDECALLCONVDIFFERS
 			end if
+
 			errReport( errmsg )
 		end if
+
 	end if
 
 end sub
@@ -2524,6 +2599,7 @@ private function hMangleFunctionPtr _
 		byval proc as FBSYMBOL ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
+		byval attrib as integer, _
 		byval mode as integer _
 	) as zstring ptr
 
@@ -2569,12 +2645,19 @@ private function hMangleFunctionPtr _
 
     symbMangleEndAbbrev( )
 
+	'' return BYREF? - must be mangled explicitly, to distinguish it from
+	'' other function pointers with same types & parameters, that are not
+	'' returning BYREF though.
+	if( attrib and FB_SYMBATTRIB_RETURNSBYREF ) then
+		id += "$"  '' prevent the R from looking like part of the previous type id (if any)
+		id += "R"  '' R for reference, as in C++ mangling
+	end if
+
     '' calling convention
     id += "$"
     id += hex( mode )
 
 	function = strptr( id )
-
 end function
 
 private function hDemangleParams _

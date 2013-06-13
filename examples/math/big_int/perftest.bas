@@ -139,7 +139,6 @@ end sub
     big_int_destroy(c)
     big_int_destroy(b)
     big_int_destroy(a)
-    
+
+    print "done, waiting for keypress to exit..."
     sleep
-    
-	end 0

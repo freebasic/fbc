@@ -247,6 +247,8 @@ function astCloneTree( byval n as ASTNODE ptr ) as ASTNODE ptr
 
 	select case( n->class )
 	case AST_NODECLASS_VAR
+		'' When cloning a temp VAR access, the AST dtorlist must be
+		'' told about the additional reference
 		if( c->sym ) then
 			if( symbIsVar( c->sym ) and symbIsTemp( c->sym ) ) then
 				astDtorListAddRef( c->sym )

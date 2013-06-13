@@ -142,31 +142,31 @@ static void *window_thread(void *arg)
 						e.type = EVENT_WINDOW_GOT_FOCUS;
 					}
 					/* fallthrough */
-					
+
 				case Expose:
 					fb_hMemSet(__fb_gfx->dirty, TRUE, fb_x11.h);
 					break;
-				
+
 				case FocusOut:
 					fb_hMemSet(__fb_gfx->key, FALSE, 128);
 					has_focus = mouse_on = FALSE;
 					e.type = EVENT_WINDOW_LOST_FOCUS;
 					break;
-				
+
 				case EnterNotify:
 					if (has_focus) {
 						mouse_on = TRUE;
 						e.type = EVENT_MOUSE_ENTER;
 					}
 					break;
-				
+
 				case LeaveNotify:
 					if (has_focus) {
 						mouse_on = FALSE;
 						e.type = EVENT_MOUSE_EXIT;
 					}
 					break;
-				
+
 				case MotionNotify:
 					if (mouse_x_root < 0) {
 						e.dx = e.dy = 0;
@@ -186,7 +186,7 @@ static void *window_thread(void *arg)
 						e.y = mouse_y;
 					}
 					break;
-				
+
 				case ButtonPress:
 					switch (event.xbutton.button) {
 					case Button1: mouse_buttons |= BUTTON_LEFT  ; e.button = BUTTON_LEFT  ; break;
@@ -217,7 +217,7 @@ static void *window_thread(void *arg)
 					}
 
 					break;
-					
+
 				case ButtonRelease:
 					e.type = EVENT_MOUSE_BUTTON_RELEASE;
 					switch (event.xbutton.button) {
@@ -227,14 +227,13 @@ static void *window_thread(void *arg)
 						default:		e.type = 0; break;
 					}
 					break;
-				
+
 				case ConfigureNotify:
 					if( (event.xconfigure.width != fb_x11.w) ||
 					    ((event.xconfigure.height != fb_x11.h) &&
 					     (event.xconfigure.height != real_h)) ) {
 						/* Window has been maximized: simulate ALT-Enter */
 						__fb_gfx->key[SC_ENTER] = __fb_gfx->key[SC_ALT] = TRUE;
-						printf("%x\n", event.xkey.keycode);
 						hOnAltEnter( );
 					}
 					break;
@@ -259,7 +258,7 @@ static void *window_thread(void *arg)
 						e.type = EVENT_KEY_PRESS;
 					}
 					break;
-				
+
 				case KeyRelease:
 					if (has_focus) {
 						e.scancode = fb_x11keycode_to_scancode[event.xkey.keycode];
@@ -276,7 +275,7 @@ static void *window_thread(void *arg)
 						}
 					}
 					break;
-				
+
 				case ClientMessage:
 					if ((Atom)event.xclient.data.l[0] == wm_delete_window) {
 						fb_hPostKey( KEY_QUIT );
@@ -287,16 +286,16 @@ static void *window_thread(void *arg)
 			if (e.type)
 				fb_hPostEvent(&e);
 		}
-		
+
 		pthread_cond_signal(&cond);
-		
+
 		fb_hX11Unlock();
-		
+
 		usleep(30000);
 	}
-	
+
 	fb_x11.exit();
-	
+
 	return NULL;
 }
 
@@ -333,7 +332,7 @@ void fb_hX11LeaveFullscreen(void)
 {
 	if ((!fb_x11.config) || (target_size < 0))
 		return;
-	
+
 	if (current_size != orig_size) {
 		if ((target_rate <= 0) || (XRRSetScreenConfigAndRate(fb_x11.display, fb_x11.config, root_window, orig_size, orig_rotation, orig_rate, CurrentTime) == BadValue))
 			XRRSetScreenConfig(fb_x11.display, fb_x11.config, root_window, orig_size, orig_rotation, CurrentTime);
@@ -374,11 +373,11 @@ void fb_hX11InitWindow(int x, int y)
 	} else {
 		/* fullscreen */
 		XMoveResizeWindow(fb_x11.display, fb_x11.fswindow, 0, 0, fb_x11.w, fb_x11.h);
-		XMoveResizeWindow(fb_x11.display, fb_x11.window, 0, 0, fb_x11.w, fb_x11.h);	
+		XMoveResizeWindow(fb_x11.display, fb_x11.window, 0, 0, fb_x11.w, fb_x11.h);
 		XReparentWindow(fb_x11.display, fb_x11.window, fb_x11.fswindow, 0, 0);
 		XMapRaised(fb_x11.display, fb_x11.fswindow);
 		/* use XSync instead of WaitMapped for unmanaged windows */
-		XSync(fb_x11.display, False);  
+		XSync(fb_x11.display, False);
 		XMapRaised(fb_x11.display, fb_x11.window);
 		XSync(fb_x11.display, False);
 		XRaiseWindow(fb_x11.display, fb_x11.window);
@@ -580,7 +579,7 @@ int fb_hX11Init(char *title, int w, int h, int depth, int refresh_rate, int flag
 		__fb_gfx->refresh_rate = fb_x11.refresh_rate;
 	}
 
-	fb_hInitX11KeycodeToScancodeTb( fb_x11.display, XDisplayKeycodes, XKeycodeToKeysym );
+	fb_hInitX11KeycodeToScancodeTb( fb_x11.display, XDisplayKeycodes, XGetKeyboardMapping );
 
 	if (flags & DRIVER_FULLSCREEN) {
 		mouse_on = TRUE;

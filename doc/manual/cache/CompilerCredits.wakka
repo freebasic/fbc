@@ -7,13 +7,13 @@
 		- Main compiler developer.
 
 	**Angelo Mottola** (a.mottola[at]libero.it) - Project Member:
-		- Ported FreeBASIC to Linux.
-		- Developer of GFXLib2.
+		- Ported ""FreeBASIC"" to Linux.
+		- Developer of ""GFXLib2"".
 		- Added built-in threads, dynlib support and I/O ports access support.
 		- Made the rtlib thread-safe, besides many other runtime lib and compiler improvements.
 
 	**Daniel R. Verkamp** (i_am_drv[at]yahoo.com) - Project Member:
-		- Ported FreeBASIC to DOS and Xbox; ports maintainer.
+		- Ported ""FreeBASIC"" to DOS and ""Xbox""; ports maintainer.
 		- Translated the Allegro headers (later replaced by the SWIG FB wrapper version).
 		- Wrote the DLL and static library automation, plus resource scripts support on Windows.
 		- Developed the VB-compatible file routines in the extended runtime library.
@@ -43,8 +43,7 @@
 
 	**Simon Nash** - Project Member:
 		- Implemented the ""AndAlso""/""OrElse"" short-circuit operators. 
-		- Many compiler improvements and bug fixes. 
-
+		- Many compiler improvements and bug fixes.
 
 ==__Contributors__==
 
@@ -54,7 +53,7 @@
 		- Added DLL hot-linking support to the Windows port (disabled at the moment).
 
 	**Bryan Stoeberl** (b_stoeberl[at]yahoo.com):
-		- Translated the OpenGL Extensions header (later replaced by the SWIG FB wrapper version).
+		- Translated the ""OpenGL"" Extensions header (later replaced by the SWIG FB wrapper version).
 		- Wrote the glext example at the examples/GL dir.
 		- Added SSE/SSE2 code generation for floating point math.
 
@@ -96,7 +95,7 @@
 		- Added support for serial devices in Linux.
 
 	**Laanan Fisher** (laananfisher[at]gmail.com):
-		- Re-implemented the compiler test suite (at the /tests directory), using unit testing (CUnit).
+		- Re-implemented the compiler test suite (at the /tests directory), using unit testing (""CUnit"").
 
 	**Jofers** (spam[at]betterwebber.com):
 		- Wrote the examples in the examples/freetype directory.
@@ -121,13 +120,12 @@
 		- Wrote the GSL matrix test at the examples/GSL directory.
 
 	**Sterling Christensen** (sterling[at]engineer.com):
-		- Ex-project member, developer of the QB-like graphics library (later replaced by GFXLib2 in 0.11b).
+		- Ex-project member, developer of the QB-like graphics library (later replaced by ""GFXLib2"" in 0.11b).
 
 	**Steven Hidy** (subxero[at]phatcode.net):
-		- Rewrote the readme file, correcting v1ctor's mistakes (also re-edited by KrisKhaos for version 0.12).
+		- Rewrote the readme file, correcting v1ctor's mistakes (also re-edited by ""KrisKhaos"" for version 0.12).
 
 	**zydon** (zydon[at]mesra.net):
 		- Wrote many of the examples in the examples/Windows/gui directory.
-
 
 {{fbdoc item="back" value="FBWiki|Main Page"}}

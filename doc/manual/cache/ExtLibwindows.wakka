@@ -4,5 +4,6 @@ Standard API for all Windows Systems, used for example for creating Windows GUIs
 Website: http://msdn.microsoft.com/en-us/library/ee663300.aspx
 Platforms supported: ""Win32"", Linux (using WINE)
 Headers to include: windows.bi
+Examples: yes, in examples/win32/
 
 {{fbdoc item="back" value="ExtLibTOC|External Library Table of Contents"}}

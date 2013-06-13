@@ -5,6 +5,7 @@ Website: http://www.cs.auckland.ac.nz/~pgut001/cryptlib/
 Platforms supported: ""Win32"", Linux
 Headers to include: cryptlib.bi
 Header version: from 2005
+Examples: in examples/math/cryptlib/
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/libraries/cryptlib.bas"}}%%(freebasic)

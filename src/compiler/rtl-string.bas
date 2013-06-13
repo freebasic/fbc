@@ -2369,51 +2369,63 @@
 				) _
 			} _
  		), _
-		/' fb_LCASE overload ( byref str as string ) as string '/ _
+		/' fb_StrLcase2( byref src as string, byval mode as integer = 0 ) as string '/ _
 		( _
-			@"lcase", @"fb_LCASE", _
+			@FB_RTL_STRLCASE2, NULL, _
 			FB_DATATYPE_STRING, FB_USE_FUNCMODE_FBCALL, _
-			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_STRSUFFIX, _
-			1, _
+			NULL, FB_RTL_OPT_NONE, _
+			2, _
 			{ _
 				( _
 					FB_DATATYPE_STRING, FB_PARAMMODE_BYREF, FALSE _
+				), _
+				( _
+					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, 0 _
 				) _
 			} _
  		), _
-		/' fb_WstrLcase ( byval str as wstring ptr ) as wstring '/ _
+		/' fb_WstrLcase2( byval src as wstring ptr, byval mode as integer = 0 ) as wstring '/ _
 		( _
-			@"lcase", @"fb_WstrLcase", _
+			@FB_RTL_WSTRLCASE2, NULL, _
 			FB_DATATYPE_WCHAR, FB_USE_FUNCMODE_FBCALL, _
-			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
-			1, _
+			NULL, FB_RTL_OPT_NONE, _
+			2, _
 			{ _
 				( _
 					typeAddrOf( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYVAL, FALSE _
+				), _
+				( _
+					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, 0 _
 				) _
 			} _
  		), _
-		/' fb_UCASE overload ( byref str as string ) as string '/ _
+		/' fb_StrUcase2( byref src as string, byval mode as integer = 0 ) as string '/ _
 		( _
-			@"ucase", @"fb_UCASE", _
+			@FB_RTL_STRUCASE2, NULL, _
 			FB_DATATYPE_STRING, FB_USE_FUNCMODE_FBCALL, _
-			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_STRSUFFIX, _
-			1, _
+			NULL, FB_RTL_OPT_NONE, _
+			2, _
 			{ _
 				( _
 					FB_DATATYPE_STRING, FB_PARAMMODE_BYREF, FALSE _
+				), _
+				( _
+					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, 0 _
 				) _
 			} _
 		), _
-		/' fb_WstrUcase ( byval str as wstring ptr ) as wstring '/ _
+		/' fb_WstrUcase2( byval src as wstring ptr, byval mode as integer = 0 ) as wstring '/ _
 		( _
-			@"ucase", @"fb_WstrUcase", _
+			@FB_RTL_WSTRUCASE2, NULL, _
 			FB_DATATYPE_WCHAR, FB_USE_FUNCMODE_FBCALL, _
-			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
-			1, _
+			NULL, FB_RTL_OPT_NONE, _
+			2, _
 			{ _
 				( _
 					typeAddrOf( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYVAL, FALSE _
+				), _
+				( _
+					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, 0 _
 				) _
 			} _
 		), _
@@ -4223,6 +4235,139 @@ function rtlStrLTrim _
 
     function = proc
 
+end function
+
+'' Takes the text from a string literal symbol and performs ASCII-only
+'' Lcase/AscUcase on it. The result is a new literal symbol holding the
+'' lcased/ucased text.
+private function hEvalAscCase _
+	( _
+		byval literal as FBSYMBOL ptr, _
+		byval is_lcase as integer _
+	) as FBSYMBOL ptr
+
+	dim as wstring ptr w = any
+	dim as zstring ptr z = any
+	dim as integer reallength = any, internallength = any
+	dim as integer char = any, chara = any, charz = any, chardiff = any
+
+	function = NULL
+
+	'' Convert to lower case?
+	if( is_lcase ) then
+		chara = asc( "A" )
+		charz = asc( "Z" )
+		chardiff = asc( "a" ) - asc( "A" )
+	else
+		chara = asc( "a" )
+		charz = asc( "z" )
+		chardiff = asc( "A" ) - asc( "a" )
+	end if
+
+	if( symbGetType( literal ) = FB_DATATYPE_WCHAR ) then
+		w = symbGetVarLitTextW( literal )
+		internallength = len( *w )
+		w = hUnescapeW( w )
+		reallength = symbGetWstrLen( literal ) - 1
+
+		if( internallength <> reallength ) then
+			exit function
+		end if
+
+		for i as integer = 0 to reallength - 1
+			char = (*w)[i]
+			if( (char >= chara) and (char <= charz) ) then
+				char += chardiff
+			end if
+			(*w)[i] = char
+		next
+
+		function = symbAllocWstrConst( w, reallength )
+	else
+		z = symbGetVarLitText( literal )
+		internallength = len( *z )
+		z = hUnescape( z )
+		reallength = symbGetStrLen( literal ) - 1
+
+		'' Don't do it if it includes internal escape sequences,
+		'' handling these here would be quite hard... (TODO)
+		'' On one hand we should handle "A" disguised as !"\&h41" which
+		'' internally is something involving FB_INTSCAPECHAR; on the
+		'' other hand to do that we'd have to solve the internal escape
+		'' sequences, do the lcase/ucase, and then re-create internal
+		'' escape sequences where needed.
+		if( internallength <> reallength ) then
+			exit function
+		end if
+
+		for i as integer = 0 to reallength - 1
+			char = (*z)[i]
+			if( (char >= chara) and (char <= charz) ) then
+				char += chardiff
+			end if
+			(*z)[i] = char
+		next
+
+		function = symbAllocStrConst( z, reallength )
+	end if
+end function
+
+function rtlStrCase _
+	( _
+		byval expr as ASTNODE ptr, _
+		byval mode as ASTNODE ptr, _
+		byval is_lcase as integer _
+	) as ASTNODE ptr
+
+	dim as ASTNODE ptr proc = any
+	dim as FBSYMBOL ptr f = any, literal = any
+
+	'' Evalute ASCII-only Lcase/Ucase at compile-time if possible.
+
+	'' Mode given?
+	if( mode ) then
+		'' Constant string?
+		literal = astGetStrLitSymbol( expr )
+		if( literal ) then
+			'' Constant mode?
+			if( astIsCONST( mode ) ) then
+				'' ASCII-only mode (1)?
+				if( astConstGetAsInt64( mode ) = 1 ) then
+					literal = hEvalAscCase( literal, is_lcase )
+					if( literal ) then
+						return astNewVAR( literal )
+					end if
+				end if
+			end if
+		end if
+	end if
+
+	if( is_lcase ) then
+		if( astGetDataType( expr ) = FB_DATATYPE_WCHAR ) then
+			f = PROCLOOKUP( WSTRLCASE2 )
+		else
+			f = PROCLOOKUP( STRLCASE2 )
+		end if
+	else
+		if( astGetDataType( expr ) = FB_DATATYPE_WCHAR ) then
+			f = PROCLOOKUP( WSTRUCASE2 )
+		else
+			f = PROCLOOKUP( STRUCASE2 )
+		end if
+	end if
+
+	proc = astNewCALL( f )
+
+	if( astNewARG( proc, expr ) = NULL ) then
+		exit function
+	end if
+
+	'' mode can be NULL, in which case the param's default arg will be used
+	if( astNewARG( proc, mode ) = NULL ) then
+		exit function
+	end if
+
+	function = proc
 end function
 
 '':::::

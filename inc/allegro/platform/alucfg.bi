@@ -17,6 +17,8 @@
 #inclib "X11"
 #inclib "Xext"
 #inclib "Xpm"
+#inclib "Xxf86vm"
+#inclib "Xcursor"
 
 #ifndef __FB_BIGENDIAN__
 #define ALLEGRO_I386

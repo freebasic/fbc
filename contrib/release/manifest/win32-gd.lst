@@ -1,0 +1,3 @@
+doc/licenses/GD.txt
+lib/win32/libbgd-static.a
+lib/win32/libimagequant.a

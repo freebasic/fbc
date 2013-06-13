@@ -14,28 +14,36 @@ Sets current work and visible pages
 		index to visible page
 
 {{fbdoc item="desc"}}
-	##**Screenset**## allows to set the current working page and the current visible page. Page numbers range from  0 to the num_pages specified when setting the graphics mode minus 1 . You can use this function to achieve page-flipping or double-buffering.  If you omit ##//work_page//## but not ##//visible_page//##, only visible page is changed. If you omit ##//visible_page//## but not ##//work_page//##, only work page is changed. If you omit both arguments, both work page and visible page are reset to page 0.
+	##**Screenset**## allows to set the current working page and the current visible page. Page numbers range from ##0## to ##//num_pages// - 1##, where ##//num_pages//## is the number of pages specified when setting the graphics mode with ##[[KeyPgScreenres Screenres]]## or ##[[KeyPgScreengraphics Screen]]##.  You can use this function to achieve page-flipping or double-buffering.
+
+	If you provide ##//visible_page//## but not ##//work_page//##, only the visible page is changed. If you omit ##//work_page//## but not ##//visible_page//##, only the work page is changed. If you omit both arguments, both work page and visible page are reset to page 0.
+
+	##**Screenset**## provides one method of writing to the screen without instantly displaying changes to the user.  See also ##[[KeyPgScreenlock Screenlock]]## / ##[[KeyPgScreenunlock Screenunlock]]## for an alternative method of doing this.
+
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/gfx/screenset.bas"}}%%(freebasic)
-' Set good old 320x200 in 8bpp mode, but with 2 pages
-SCREEN 13, ,2
-COLOR ,15
-DIM x AS INTEGER
-x = -40
-' Let's work on page 1 while we display page 0
-SCREENSET 1, 0
-DO
-	CLS
-	LINE (x, 80)-(x + 39, 119), 4, BF
-	x = x + 1
-	IF (x > 319) THEN x = -40
-	' Wait for vertical sync: only used as synchronous temporizing in that case (can be put anywhere in the Do Loop)
-	ScreenSync
-	' Copy work page to visible page
-	SCREENCOPY
-LOOP WHILE INKEY = ""
+' Open graphics screen (320*200, 8bpp) with 2 pages
+Screenres 320, 200, 8, 2
 
+' Work on page 1 while displaying page 0
+ScreenSet 1, 0
+
+Dim As Integer x = -40
+
+Do
+	'' Clear the screen, draw a box, update x
+	Cls
+	Line (x, 80)-step(39, 39), 4, BF
+	x += 1: If (x > 319) Then x = -40
+	
+	' Wait for vertical sync: only used to control refresh rate, can be put anywhere in the Do loop
+	ScreenSync
+	
+	' Copy work page to visible page
+	ScreenCopy
+	
+Loop While Inkey = ""
 %%
 
 
@@ -49,5 +57,7 @@ LOOP WHILE INKEY = ""
 	- ##[[KeyPgScreengraphics Screen (Graphics)]]##
 	- ##[[KeyPgScreenres Screenres]]##
 	- ##[[KeyPgScreencopy Screencopy]]##
+	- ##[[KeyPgScreenlock Screenlock]]##
+	- ##[[KeyPgScreenunlock Screenunlock]]##
 
 {{fbdoc item="back" value="CatPgGfxScreen|Screen Functions"}}

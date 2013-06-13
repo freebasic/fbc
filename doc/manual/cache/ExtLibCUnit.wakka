@@ -5,7 +5,7 @@ Website: http://cunit.sourceforge.net/
 Platforms supported: ""Win32"", Linux, DOS
 Headers to include: CUnit/CUnit.bi
 Header version: 2.1-0
-Example Usage: yes, in examples/libraries/CUnit/
+Examples: in examples/misc/CUnit/
 
 
 {{fbdoc item="back" value="ExtLibTOC|External Library Table of Contents"}}

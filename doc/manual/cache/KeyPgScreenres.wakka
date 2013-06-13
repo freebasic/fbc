@@ -2,10 +2,11 @@
 Initializes a graphics mode by specifying horizontal and vertical resolution
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Screenres** ( [[KeyPgByval byval]] //width// [[KeyPgAs as]] [[KeyPgInteger integer]], [[KeyPgByval byval]] //height// [[KeyPgAs as]] [[KeyPgInteger integer]], [[KeyPgByval byval]] //depth// [[KeyPgAs as]] [[KeyPgInteger integer]] = 8, [[KeyPgByval byval]] //num_pages// [[KeyPgAs as]] [[KeyPgInteger integer]] = 1, [[KeyPgByval byval]] //flags// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0, [[KeyPgByval byval]] //refresh_rate// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0 )
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Screenres** ( [[KeyPgByval byval]] //width// [[KeyPgAs as]] [[KeyPgInteger integer]], [[KeyPgByval byval]] //height// [[KeyPgAs as]] [[KeyPgInteger integer]], [[KeyPgByval byval]] //depth// [[KeyPgAs as]] [[KeyPgInteger integer]] = 8, [[KeyPgByval byval]] //num_pages// [[KeyPgAs as]] [[KeyPgInteger integer]] = 1, [[KeyPgByval byval]] //flags// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0, [[KeyPgByval byval]] //refresh_rate// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0 ) [[KeyPgAs as]] [[KeyPgInteger integer]]
  ##
 {{fbdoc item="usage"}}##
 	**Screenres** //width//, //height// [, [//depth//] [, [//num_pages//] [, [//flags//] [, //refresh_rate// ]]]]
+	//result// = **Screenres**( //width//, //height// [, [//depth//] [, [//num_pages//] [, [//flags//] [, //refresh_rate// ]]]] )
 ##
 {{fbdoc item="param"}}
 	##//width//##, ##//height//##
@@ -19,8 +20,10 @@ Initializes a graphics mode by specifying horizontal and vertical resolution
 	##//refresh_rate//##
 		The refresh rate of the screen, defaults to an appropriate value. (invalid refresh rates will be ignored)
 
-{{fbdoc item="desc"}}
+{{fbdoc item="ret"}}
+	Returns zero (##0##) if successful, or a non-zero error code to indicate a failure. //[[ProPgErrorHandling (throws a runtime error)]]//
 
+{{fbdoc item="desc"}}
 	##**Screenres**## tells the compiler to link the [[GfxLib]] and initializes a QB-only, QB-on-GUI or ""OpenGL"" graphics mode, depending on the ##//flags//## setting
 
 	In non-fullscreen modes, the resolution does not have to match any resolution of the graphics card. Resolutions like ##555x111## are possible, ""GfxLib"" will create a window of such size. See Platform differences for DOS issues.
@@ -37,20 +40,21 @@ Initializes a graphics mode by specifying horizontal and vertical resolution
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/gfx/screenres.bas"}}%%(freebasic)
-dim a as integer, b as integer
+' Set the screen mode to 320*200, with 8 bits per pixel
+screenres 320, 200, 8
 
-ScreenRes 640, 480, 8       'This line will set the screen mode to 640x480x8.
-	                        'The following code block will draw diagonal lines over the whole screen.
-For a = 1 to 640
-	For b = 1 to 480
-	    Pset (a,b),(a + b) AND 255
-	Next b
-Next a
-	                        'The following line will print "Hello World!" over the lines we've drawn.
-Print "Hello world!!"
+' Draw color bands in a diagonal pattern over the whole screen
+for y as integer = 0 to 200-1
+	for x as integer = 0 to 320-1
+	    pset (x,y),(x + y) and 255
+	next x
+next y
 
-Sleep
-End
+' Display the text "Hello World!!" over the lines we've drawn, in the top-left hand corner
+print "Hello world!!"
+
+' Keep the window open until the user presses a key
+sleep
 %%
 
 {{fbdoc item="target"}}

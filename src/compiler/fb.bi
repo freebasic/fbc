@@ -2,7 +2,7 @@
 #define __FB_BI__
 
 const FB_VER_MAJOR          = 0
-const FB_VER_MINOR          = 25
+const FB_VER_MINOR          = 90
 const FB_VER_PATCH          = 0
 
 
@@ -337,13 +337,6 @@ const FB_INFOSEC_OBJNAME = "__fb_ct.inf"
 	const FB_INFOSEC_BASNAME = "__fb_ct.inf.bas"
 #endif
 
-enum IR_INFOSEC
-	FB_INFOSEC_EOL = 0
-	FB_INFOSEC_LIB
-	FB_INFOSEC_PTH
-	FB_INFOSEC_CMD
-end enum
-
 #include once "error.bi"
 
 declare sub fbInit(byval ismain as integer, byval restarts as integer)
@@ -353,6 +346,7 @@ declare sub fbCompile _
 	( _
 		byval infname as zstring ptr, _
 		byval outfname as zstring ptr, _
+		byref pponlyfile as string, _
 		byval ismain as integer _
 	)
 

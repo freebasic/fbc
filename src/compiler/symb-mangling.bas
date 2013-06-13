@@ -349,10 +349,27 @@ sub symbMangleType _
 		mangled += *symbGetMangledName( subtype )
 
 	case FB_DATATYPE_FUNCTION
-		'' F(return_type)(params - recursive, reuses hash)E
+		'' F(byref)(const)(return_type)(params - recursive, reuses hash)E
 		mangled += "F"
+
+		'' return BYREF?
+		if( symbProcReturnsByref( subtype ) ) then
+			'' const?
+			if( typeIsConst( symbGetFullType( subtype ) ) ) then
+				mangled += "RK"
+			else
+				mangled += "R"
+			end if
+		else
+			'' const?
+			if( typeIsConst( symbGetFullType( subtype ) ) ) then
+				mangled += "K"
+			end if
+		end if
+
 		symbMangleType( mangled, symbGetFullType( subtype ), symbGetSubtype( subtype ) )
 		hGetProcParamsTypeCode( mangled, subtype )
+
 		mangled += "E"
 
 	case FB_DATATYPE_STRING

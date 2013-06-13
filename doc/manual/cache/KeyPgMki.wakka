@@ -1,23 +1,27 @@
 {{fbdoc item="title" value="MKI"}}----
-Does a binary copy from a ##[[KeyPgInteger integer]]## variable to a ##[[KeyPgString string]]##, setting its length to 4 bytes
+Does a binary copy from an integer variable to a ##[[KeyPgString string]]## of the same length as the size of the input variable
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Mki** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgString string]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Mki**<//bits//> ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgInteger integer]]<//bits//> ) [[KeyPgAs as]] [[KeyPgString string]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Mki**[$]( //number// )
+	//result// = **Mki**[$]<//bits//>( //number// )
 ##
 {{fbdoc item="param"}}
 	##//number//##
-		A ##[[KeyPgInteger integer]]## variable to binary copy to a ##[[KeyPgString string]]##.
+		A ##[[KeyPgInteger integer]]## or ##[[KeyPgInteger Integer]]<//bits//>## variable to binary copy to a ##[[KeyPgString string]]##.
 
 {{fbdoc item="ret"}}
-	Returns a ##[[KeyPgString string]]## with a binary copy of the ##[[KeyPgInteger integer]]##.
+	Returns a ##[[KeyPgString string]]## containing a binary copy of ##//number//##.
 
 {{fbdoc item="desc"}}
-	Does a binary copy  from an ##[[KeyPgInteger Integer]]## variable to a ##[[KeyPgString string]]##, setting its length to 4 bytes. The resulting string can be read back to an ##[[KeyPgInteger Integer]]## by ##[[KeyPgCvi Cvi]]##
+	Does a binary copy from an ##[[KeyPgInteger Integer]]## or ##[[KeyPgInteger Integer]]<//bits//>## variable to a ##[[KeyPgString string]]##, setting its length to the number of bytes in the type. The resulting string can be read back to an integer type using ##[[KeyPgCvi Cvi]]## or ##[[KeyPgCvi Cvi]]<//bits//>##.
 
 	This function is useful to write numeric values to buffers without using a ##[[KeyPgType Type]]## definition.
+
+	##**mki**## supports an optional ##<//bits//>## parameter before the argument.  If ##//bits//## is ##16##, ##[[KeyPgMkshort Mkshort]]## will be called instead; if ##//bits//## is ##32##, ##[[KeyPgMkl Mkl]]## will be called; if ##//bits//## is ##64##, ##[[KeyPgMklongint Mklongint]]## will be called.  The length of the return value and the required ##//number//## argument type will depend on which function is called.  See each function's page for more information.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/strings/mki.bas"}}%%(freebasic)
@@ -25,15 +29,19 @@ dim a as integer, b as string
 a=4534
 b=mki(a)
 print a, cvi(b)
-sleep
 %%
 
 {{fbdoc item="lang"}}
 	- In the //[[CompilerOptlang -lang qb]]// dialect, ##**Mki**## returns a 2-byte-string, since a QB integer is only 16 bits.
 	- The string type suffix "$" is obligatory in the //[[CompilerOptlang -lang qb]]// dialect.
 	- The string type suffix "$" is optional in the //[[CompilerOptlang -lang fblite]]// and //[[CompilerOptlang -lang fb]]// dialects.
+	- QB did not support a ##<//bits//>## parameter.
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgCvi Cvi]]##
+	- ##[[KeyPgMkshort Mkshort]]##
+	- ##[[KeyPgMkl Mkl]]##
+	- ##[[KeyPgMklongint Mklongint]]##
+	- ##[[KeyPgInteger Integer]]##
 
 {{fbdoc item="back" value="CatPgString|String Functions"}}
