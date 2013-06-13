@@ -389,7 +389,8 @@ private function hCallCtorList _
 
 	dim as FBSYMBOL ptr subtype = any, fld = any
 	dim as ASTNODE ptr fldexpr = any
-	dim as integer dtype = any, elements = any
+	dim as integer dtype = any
+	dim as longint elements = any
 
 	fld = n->sym
 	if( fld <> NULL ) then

@@ -818,7 +818,8 @@ private function hCallCtorList _
 
 	dim as FBSYMBOL ptr cnt = any, label = any, iter = any, subtype = any
 	dim as ASTNODE ptr fldexpr = any, tree = any
-	dim as integer dtype = any, elements = any
+	dim as integer dtype = any
+	dim as longint elements = any
 
 	'' instance? (this function is also used by the static dtor wrapper)
 	if( fld <> NULL ) then
