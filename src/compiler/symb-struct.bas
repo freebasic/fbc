@@ -599,7 +599,8 @@ end sub
 
 private function hGetReturnType( byval sym as FBSYMBOL ptr ) as integer
 	dim as FBSYMBOL ptr fld = any
-	dim as integer res = any
+	dim as integer res = any, unpadlen = any
+	dim as longint unpadlen64 = any
 
 	'' UDT has a dtor, copy-ctor or virtual methods?
 	if( symbCompIsTrivial( sym ) = FALSE ) then
@@ -622,8 +623,21 @@ private function hGetReturnType( byval sym as FBSYMBOL ptr ) as integer
 
 	res = FB_DATATYPE_VOID
 
-	'' use the un-padded UDT len
-	select case as const symbGetUDTUnpadLen( sym )
+	'' Check whether the structure is small enough to be returned in
+	'' registers, and if so, select the proper dtype. For this, the
+	'' un-padded UDT length should be checked so we can handle the cases
+	'' where length=1/2/3.
+	unpadlen64 = symbGetUDTUnpadLen( sym )
+
+	'' Check for longint -> integer overflow, otherwise that could happen
+	'' to the SELECT's temp var below
+	unpadlen = unpadlen64
+	if( unpadlen <> unpadlen64 ) then
+		'' very big structure (> 2GiB), no way to return in registers
+		return FB_DATATYPE_STRUCT
+	end if
+
+	select case as const( unpadlen )
 	case 1
 		res = FB_DATATYPE_BYTE
 

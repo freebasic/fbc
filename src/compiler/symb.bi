@@ -438,7 +438,7 @@ type FBS_STRUCT
 	base			as FBSYMBOL_ ptr			'' base class
 	anonparent		as FBSYMBOL_ ptr
 	natalign		as integer					'' UDT's natural alignment based on largest natural field alignment
-	unpadlgt		as integer					'' unpadded len
+	unpadlgt		as longint					'' unpadded len
 	options			as short					'' FB_UDTOPT
 	bitpos			as ubyte
 	align			as ubyte
