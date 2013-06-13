@@ -590,8 +590,9 @@ function astBuildInstPtr _
 	) as ASTNODE ptr
 
 	dim as ASTNODE ptr expr = any
-	dim as integer dtype = any, ofs = any
+	dim as integer dtype = any
 	dim as FBSYMBOL ptr subtype = any
+	dim as longint ofs = any
 
 	dtype = symbGetFullType( sym )
 	subtype = symbGetSubtype( sym )
@@ -627,7 +628,6 @@ function astBuildInstPtr _
 	end if
 
 	function = expr
-
 end function
 
 function astBuildInstPtrAtOffset _

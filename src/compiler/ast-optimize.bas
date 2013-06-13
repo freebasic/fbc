@@ -518,7 +518,7 @@ end function
 
 private function hOptDerefAddr( byval n as ASTNODE ptr ) as ASTNODE ptr
 	dim as ASTNODE ptr l = n->l
-	dim as integer ofs = 0
+	dim as longint ofs = 0
 
 	select case l->class
 	case AST_NODECLASS_OFFSET
@@ -561,6 +561,7 @@ end function
 
 private function hOptConstIDX( byval n as ASTNODE ptr ) as ASTNODE ptr
 	dim as ASTNODE ptr l = any, r = any, accumval = any
+	dim as longint c = any
 
 	if( n = NULL ) then
 		return NULL
@@ -585,8 +586,7 @@ private function hOptConstIDX( byval n as ASTNODE ptr ) as ASTNODE ptr
 			n->l = hConstAccumADDSUB( n->l, accumval, 1 )
 
 			if( accumval ) then
-				dim as integer c = astConstFlushToInt( accumval )
-
+				c = astConstFlushToInt( accumval )
 				if( n->class = AST_NODECLASS_IDX ) then
 					n->idx.ofs += c * n->idx.mult
 				else
@@ -596,9 +596,8 @@ private function hOptConstIDX( byval n as ASTNODE ptr ) as ASTNODE ptr
 
 			'' remove l node if it's a const and add it to parent's offset
 			if( astIsCONST( n->l ) ) then
-				dim as integer c = astConstFlushToInt( n->l )
+				c = astConstFlushToInt( n->l )
 				n->l = NULL
-
 				if( n->class = AST_NODECLASS_IDX ) then
 					n->idx.ofs += c * n->idx.mult
 				else

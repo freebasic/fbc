@@ -45,7 +45,7 @@ end function
 
 function astLoadVAR( byval n as ASTNODE ptr ) as IRVREG ptr
     dim as FBSYMBOL ptr s = any
-    dim as integer ofs = any
+	dim as longint ofs = any
 	dim as IRVREG ptr vr = NULL
 
 	s = n->sym

@@ -58,7 +58,7 @@ sub astTypeIniEnd _
 	)
 
     dim as ASTNODE ptr n = any, p = any, l = any, r = any
-    dim as integer ofs = any
+	dim as longint ofs = any
 	dim as FBSYMBOL ptr sym = any
 
 	'' can't leave r pointing to the any node as the
@@ -354,7 +354,7 @@ private function hCallCtor _
 	) as ASTNODE ptr
 
 	dim as FBSYMBOL ptr fld = any
-	dim as integer ofs = n->typeini.ofs
+	dim as longint ofs = n->typeini.ofs
 
 	fld = n->sym
 	if( fld <> NULL ) then

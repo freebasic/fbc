@@ -42,7 +42,7 @@ function astLoadIDX( byval n as ASTNODE ptr ) as IRVREG ptr
 	dim as ASTNODE ptr var_ = any, idx = any
 	dim as IRVREG ptr vidx = any, vr = any
 	dim as FBSYMBOL ptr s = any
-	dim as integer ofs = any
+	dim as longint ofs = any
 
 	var_ = n->r
 	if( var_ = NULL ) then
