@@ -248,19 +248,16 @@ type FBSYMLIST
 end type
 
 type FBARRAYDIM
-	lower			as integer
-	upper			as integer
+	lower			as longint
+	upper			as longint
 end type
 
-'' Special upper bound value used to represent that ellipsis was specified
-'' for the upper bound. Should the user specify this value as array upper
-'' bound, we'll think it was an ellipsis. But using this as upper bound would
-'' not make sense anyways...
-const FB_ARRAYDIM_UNKNOWN = &h80000000
+'' Special value to represent the case where '...' ellipsis was given as ubound
+const FB_ARRAYDIM_UNKNOWN = &h8000000000000000ll
 
 type FBVARDIM
-	lower			as integer
-	upper			as integer
+	lower			as longint
+	upper			as longint
 	next			as FBVARDIM ptr
 end type
 
@@ -492,6 +489,7 @@ type FB_PROCOVL
 	next			as FBSYMBOL_ ptr
 end type
 
+'' used by x86 ASM emitter only
 type FB_PROCSTK
 	argofs			as integer
 	localofs		as integer
@@ -593,6 +591,7 @@ type FB_SCOPEDBG
 	endlabel		as FBSYMBOL_ ptr
 end type
 
+'' used by x86 ASM emitter only
 type FB_SCOPEEMIT
 	baseofs			as integer
 end type
@@ -609,8 +608,8 @@ type FBS_ARRAY
 	dims			as integer
 	dimhead 		as FBVARDIM ptr
 	dimtail			as FBVARDIM ptr
-	dif				as integer
-	elms			as integer
+	dif			as longint
+	elms			as longint
 	desc			as FBSYMBOL_ ptr
 	has_ellipsis    as integer
 end type
@@ -678,8 +677,8 @@ type FBSYMBOL
 	scope			as ushort
 	mangling		as short 					'' FB_MANGLING
 
-	lgt				as integer
-	ofs				as integer					'' for local vars, args, UDT's and fields
+	lgt			as longint
+	ofs			as longint					'' for local vars, args, UDT's and fields
 
 	union
 		var_		as FBS_VAR
