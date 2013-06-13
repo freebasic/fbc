@@ -1152,7 +1152,7 @@ function cVarDecl _
     dim as ASTNODE ptr initree = any
     dim as integer addsuffix = any, is_dynamic = any, is_multdecl = any
     dim as integer is_typeless = any, is_decl = any, check_exprtb = any
-    dim as integer dtype = any, lgt = any, ofs = any
+	dim as integer dtype = any, lgt = any
     dim as integer dimensions = any, suffix = any
     dim as zstring ptr palias = any
     dim as ASTNODE ptr assign_initree = any
