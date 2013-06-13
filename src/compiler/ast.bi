@@ -111,22 +111,22 @@ end type
 
 type AST_NODE_ARG
 	mode			as integer						'' to pass NULL's to byref args, etc
-	lgt				as integer						'' length, used to push UDT's by value
+	lgt				as longint						'' length, used to push UDT's by value
 end type
 
 type AST_NODE_VAR
-	ofs				as integer						'' offset
+	ofs				as longint						'' offset
 end type
 
 type AST_NODE_IDX
-	ofs				as integer						'' offset
+	ofs				as longint						'' offset
 	mult			as integer						'' multipler
 	'' Note: the multiplier field is used in combination with x86 ASM-backend specific
 	'' optimizations only, see hOptConstIdxMult().
 end type
 
 type AST_NODE_PTR
-	ofs				as integer						'' offset
+	ofs				as longint						'' offset
 end type
 
 type AST_NODE_IIF
@@ -170,7 +170,7 @@ type AST_NODE_OP  '' used by: bop, uop, addr
 end type
 
 type AST_NODE_OFFS
-	ofs				as integer
+	ofs				as longint
 end type
 
 type AST_NODE_JMPTB
@@ -180,8 +180,8 @@ type AST_NODE_JMPTB
 	labelcount			as integer
 
 	deflabel			as FBSYMBOL ptr
-	minval				as uinteger
-	maxval				as uinteger
+	minval				as ulongint
+	maxval				as ulongint
 end type
 
 type AST_NODE_DBG
@@ -190,7 +190,7 @@ type AST_NODE_DBG
 end type
 
 type AST_NODE_MEM
-	bytes			as integer
+	bytes				as longint
 	op				as integer
 end type
 
@@ -199,11 +199,11 @@ type AST_NODE_STACK
 end type
 
 type AST_NODE_TYPEINI
-	ofs				as integer
-    union
-    	bytes		as integer
-    	elements	as integer
-    end union
+	ofs				as longint
+	union
+		bytes		as longint
+		elements	as longint
+	end union
     scp				as FBSYMBOL ptr
     lastscp			as FBSYMBOL ptr
 end type
