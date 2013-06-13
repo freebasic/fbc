@@ -761,7 +761,7 @@ private function hDynArrayBoundChk _
 		byval idx as integer _
 	) as ASTNODE ptr
 
-	dim as integer dimoffset = any
+	dim as longint dimoffset = any
 
 	dimoffset = symb.fbarray_dimtb + (idx * symbGetLen( symb.fbarraydim ))
 
@@ -856,7 +856,7 @@ private function hArgArrayBoundChk _
 		byval idx as integer _
 	) as ASTNODE ptr
 
-	dim as integer dimoffset = any
+	dim as longint dimoffset = any
 
 	dimoffset = symb.fbarray_dimtb + (idx * symbGetLen( symb.fbarraydim ))
 

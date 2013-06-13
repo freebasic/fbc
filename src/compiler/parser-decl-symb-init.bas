@@ -114,14 +114,14 @@ private function hElmInit _
 
 end function
 
-'':::::
 private function hArrayInit _
 	( _
 		byref ctx as FB_INITCTX, _
 		byval no_fake as integer = FALSE _
 	) as integer
 
-    dim as integer dimensions = any, elements = any, elm_cnt = any
+    dim as integer dimensions = any, elm_cnt = any
+	dim as longint elements = any
     dim as integer isarray = any, dtype = any
     dim as FBVARDIM ptr old_dim = any
     dim as FBSYMBOL ptr subtype = any
@@ -360,8 +360,8 @@ private function hUDTInit _
 
 	static as integer rec_cnt
 
-	dim as integer elm_cnt = any
-	dim as integer lgt = any, baseofs = any, pad_lgt = any, dtype = any
+	dim as integer elm_cnt = any, dtype = any
+	dim as longint lgt = any, baseofs = any, pad_lgt = any
 	dim as FBSYMBOL ptr fld = any, first = any, subtype = any
 	dim as FBSYMBOL ptr oldsubtype = any
 	dim as integer olddtype = any
