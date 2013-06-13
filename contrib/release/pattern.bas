@@ -555,7 +555,11 @@ end function
 
 		select case( target )
 		case "dos", "dos-mini", "djgpp"
-			hShell( "zip -q " & title & ".zip -@ < " + manifest )
+			''hShell( "zip -q " & title & ".zip -@ < " + manifest )
+			'' Use 7z to create a .zip with small word size/fast bytes setting,
+			'' which should reduce the memory needed to extract (?),
+			'' which should be nice for DOS systems...
+			hShell( "7z a -tzip -mfb=8 " & title & ".zip -i@" + manifest + " > nul" )
 		case "win32", "win32-mini", "mingw32"
 			hShell( "zip -q " & title & ".zip -@ < " + manifest )
 			hShell( "7z a " & title & ".7z -i@" + manifest + " > nul" )
