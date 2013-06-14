@@ -887,8 +887,8 @@ sub cTypeDecl( byval attrib as integer )
 		lexSkipToken( )
 
 		'' SymbolType
-		dim as integer baseDtype, baseLgt
-		hSymbolType( baseDtype, baseSubtype, baseLgt )
+		dim as integer baseDtype
+		hSymbolType( baseDtype, baseSubtype, 0 )
 
 		'' is the base type a struct?
 		if( baseDType <> FB_DATATYPE_STRUCT ) then
