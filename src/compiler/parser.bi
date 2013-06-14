@@ -799,8 +799,8 @@ declare function cAnonType( ) as ASTNODE ptr
 declare function cConstIntExpr _
 	( _
 		byval expr as ASTNODE ptr, _
-		byval defaultvalue as integer = 0 _
-	) as integer
+		byval defaultvalue as longint = 0 _
+	) as longint
 declare function cOperatorNew( ) as ASTNODE ptr
 declare sub cOperatorDelete( )
 

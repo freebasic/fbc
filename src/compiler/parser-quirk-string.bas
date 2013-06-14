@@ -353,7 +353,7 @@ function cCVXFunct(byval tk as FB_TOKEN) as ASTNODE ptr
 	if( (tk = FB_TK_CVI) andalso hMatch( FB_TK_LT ) ) then
 
 		'' expr
-		dim as integer lgt = cConstIntExpr( cGtInParensOnlyExpr( ) )
+		var lgt = cConstIntExpr( cGtInParensOnlyExpr( ) )
 
 		 '' disallow BYTEs here (would need to use ASC)
 		if( lgt = 8 ) then lgt = 0
@@ -513,7 +513,7 @@ function cMKXFunct(byval tk as FB_TOKEN) as ASTNODE ptr
 	if( (tk = FB_TK_MKI) andalso hMatch( FB_TK_LT ) ) then
 
 		'' expr
-		dim as integer lgt = cConstIntExpr( cGtInParensOnlyExpr( ) )
+		var lgt = cConstIntExpr( cGtInParensOnlyExpr( ) )
 
 		 '' disallow BYTEs here (would need to use CHR)
 		if( lgt = 8 ) then lgt = 0

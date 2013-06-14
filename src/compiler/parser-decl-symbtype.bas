@@ -12,8 +12,8 @@
 function cConstIntExpr _
 	( _
 		byval expr as ASTNODE ptr, _
-		byval defaultvalue as integer _
-	) as integer
+		byval defaultvalue as longint _
+	) as longint
 
 	if( expr = NULL ) then
 		errReport( FB_ERRMSG_EXPECTEDEXPRESSION )

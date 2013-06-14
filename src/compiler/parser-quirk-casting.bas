@@ -81,10 +81,8 @@ function cTypeConvExpr _
 		'' ['<' lgt '>']
 		if( hMatch( FB_TK_LT ) ) then
 
-			dim as integer lgt = any
-
 			'' expr
-			lgt = cConstIntExpr( cGtInParensOnlyExpr( ) )
+			var lgt = cConstIntExpr( cGtInParensOnlyExpr( ) )
 
 			dtype = hIntegerTypeFromBitSize( lgt, (tk = FB_TK_CUINT) )
 
