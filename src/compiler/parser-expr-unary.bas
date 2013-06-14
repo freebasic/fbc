@@ -294,7 +294,7 @@ end function
 
 '' '(' DataType ',' Expression ')'
 private function hCast( byval options as AST_CONVOPT ) as ASTNODE ptr
-	dim as integer dtype = any, lgt = any, errmsg = any
+	dim as integer dtype = any, errmsg = any
 	dim as FBSYMBOL ptr subtype = any
 	dim as ASTNODE ptr expr = any
 
@@ -308,7 +308,7 @@ private function hCast( byval options as AST_CONVOPT ) as ASTNODE ptr
 	lexSkipToken( )
 
 	'' DataType
-	if( cSymbolType( dtype, subtype, lgt ) = FALSE ) then
+	if( cSymbolType( dtype, subtype, 0 ) = FALSE ) then
 		errReport( FB_ERRMSG_SYNTAXERROR )
 		'' error recovery: skip until ',', create a fake type
 		hSkipUntil( CHAR_COMMA )
