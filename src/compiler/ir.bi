@@ -183,7 +183,7 @@ type IR_VTBL
 	emitPushArg as sub _
 	( _
 		byval vr as IRVREG ptr, _
-		byval plen as integer, _
+		byval udtlen as longint, _
 		byval level as integer _
 	)
 

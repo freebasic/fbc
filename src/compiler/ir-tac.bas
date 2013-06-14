@@ -594,14 +594,14 @@ end sub
 private sub _emitPushArg _
 	( _
 		byval vr as IRVREG ptr, _
-		byval plen as integer, _
+		byval udtlen as longint, _
 		byval level as integer _
-	) static
+	)
 
-	if( plen = 0 ) then
+	if( udtlen = 0 ) then
 		_emitStack( AST_OP_PUSH, vr )
 	else
-		_emit( AST_OP_PUSHUDT, vr, NULL, NULL, NULL, plen )
+		_emit( AST_OP_PUSHUDT, vr, NULL, NULL, NULL, udtlen )
 	end if
 
 end sub

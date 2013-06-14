@@ -1902,11 +1902,11 @@ private sub _emitLoadRes _
 end sub
 
 private sub _emitPushArg _
-    ( _
-        byval vr as IRVREG ptr, _
-        byval plen as integer, _
-        byval level as integer _
-    )
+	( _
+		byval vr as IRVREG ptr, _
+		byval udtlen as longint, _
+		byval level as integer _
+	)
 
     '' Remember for later, so during _emitCall[Ptr] we can emit the whole
     '' call in one go
