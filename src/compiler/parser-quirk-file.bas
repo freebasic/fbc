@@ -362,7 +362,7 @@ function cInputStmt _
 	) as integer
 
     dim as ASTNODE ptr filestrexpr, dstexpr
-    dim as integer islast, isfile, addnewline, addquestion, lgt
+	dim as integer islast, isfile, addnewline, addquestion
 
 	function = FALSE
 
@@ -383,8 +383,7 @@ function cInputStmt _
     	isfile = FALSE
     	'' STRING_LIT?
     	if( lexGetClass( ) = FB_TKCLASS_STRLITERAL ) then
-			lgt = lexGetTextLen( )
-			filestrexpr = astNewVAR( symbAllocStrConst( *lexGetText( ), lgt ) )
+			filestrexpr = astNewVAR( symbAllocStrConst( *lexGetText( ), lexGetTextLen( ) ) )
 			lexSkipToken( )
     	else
     		filestrexpr = NULL
