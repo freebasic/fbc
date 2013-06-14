@@ -709,7 +709,8 @@ end function
 function ppTypeOf( ) as zstring ptr
 	'' get type's name
 	dim as zstring ptr res = any
-	dim as integer dtype = any, lgt = any
+	dim as integer dtype = any
+	dim as longint lgt = any
 	dim as FBSYMBOL ptr subtype = any
 
 	'' TYPEOF

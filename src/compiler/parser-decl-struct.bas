@@ -245,7 +245,8 @@ private sub hTypeMultElementDecl _
     static as zstring * FB_MAXNAMELEN+1 id
     static as FBARRAYDIM dTB(0 to FB_MAXARRAYDIMS-1)
     dim as FBSYMBOL ptr sym, subtype
-    dim as integer dims, dtype, lgt, bits
+    dim as integer dims, dtype, bits
+	dim as longint lgt
 
 	'' SymbolType
 	hSymbolType( dtype, subtype, lgt )
@@ -356,7 +357,8 @@ private sub hTypeElementDecl _
     static as zstring * FB_MAXNAMELEN+1 id
     static as FBARRAYDIM dTB(0 to FB_MAXARRAYDIMS-1)
     dim as FBSYMBOL ptr sym, subtype
-    dim as integer dims, dtype, lgt, bits
+	dim as integer dims, dtype, bits
+	dim as longint lgt
 
 	'' allow keywords as field names
 	select case as const lexGetClass( )

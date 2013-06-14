@@ -51,11 +51,11 @@ private sub hPtrDecl(byref dtype as integer)
 end sub
 
 private function hReadType _
-    ( _
-        byref dtype as integer, _
-        byref subtype as FBSYMBOL ptr, _
-        byref lgt as integer _
-    ) as zstring ptr
+	( _
+		byref dtype as integer, _
+		byref subtype as FBSYMBOL ptr, _
+		byref lgt as longint _
+	) as zstring ptr
 
     static as zstring * FB_MAXNAMELEN+1 tname
     dim as zstring ptr pfwdname = any
@@ -84,13 +84,13 @@ private function hReadType _
 end function
 
 private sub hAddForwardRef _
-    ( _
-        byval pid as zstring ptr, _
-        byval pfwdname as zstring ptr, _
-        byref dtype as integer, _
-        byref subtype as FBSYMBOL ptr, _
-        byref lgt as integer _
-    )
+	( _
+		byval pid as zstring ptr, _
+		byval pfwdname as zstring ptr, _
+		byref dtype as integer, _
+		byref subtype as FBSYMBOL ptr, _
+		byref lgt as longint _
+	)
 
     dim as integer ptrcount = typeGetPtrCnt( dtype )
     dim as integer constmask = typeGetConstMask( dtype )
@@ -156,13 +156,13 @@ private sub hAddForwardRef _
 end sub
 
 private sub hAddTypedef _
-    ( _
-        byval pid as zstring ptr, _
-        byval pfwdname as zstring ptr, _
-        byval dtype as integer, _
-        byval subtype as FBSYMBOL ptr, _
-        byval lgt as integer _
-    )
+	( _
+		byval pid as zstring ptr, _
+		byval pfwdname as zstring ptr, _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr, _
+		byval lgt as longint _
+	)
 
     '' Forward ref? Note: may update dtype & co
     if( pfwdname <> NULL ) then
@@ -230,7 +230,8 @@ end function
 '' MultipleTypedef  =  TYPE AS SymbolType symbol (',' symbol)*
 sub cTypedefMultDecl( )
     dim as zstring ptr pfwdname = any, pid = any
-    dim as integer dtype = any, lgt = any
+	dim as integer dtype = any
+	dim as longint lgt = any
     dim as FBSYMBOL ptr subtype = any
 
 	if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_DECL or FB_CMPSTMT_MASK_CODE ) = FALSE ) then
@@ -269,7 +270,8 @@ sub cTypedefSingleDecl( byval pid as zstring ptr )
 	end if
 
     dim as zstring ptr pfwdname = any
-    dim as integer dtype = any, lgt = any
+	dim as integer dtype = any
+	dim as longint lgt = any
     dim as FBSYMBOL ptr subtype = any
 
     do

@@ -79,7 +79,7 @@ function cTypeOrExpression _
 		byval is_len as integer, _
 		byref dtype as integer, _
 		byref subtype as FBSYMBOL ptr, _
-		byref lgt as integer _
+		byref lgt as longint _
 	) as ASTNODE ptr
 
 	dim as ASTNODE ptr expr = any
@@ -151,7 +151,7 @@ sub cTypeOf _
 	( _
 		byref dtype as integer, _
 		byref subtype as FBSYMBOL ptr, _
-		byref lgt as integer _
+		byref lgt as longint _
 	)
 
 	dim as ASTNODE ptr expr = any
@@ -225,7 +225,7 @@ function cSymbolType _
 	( _
 		byref dtype as integer, _
 		byref subtype as FBSYMBOL ptr, _
-		byref lgt as integer, _
+		byref lgt as longint, _
 		byval options as FB_SYMBTYPEOPT _
 	) as integer
 

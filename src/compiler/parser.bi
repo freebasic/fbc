@@ -308,21 +308,21 @@ declare function cTypeOrExpression _
 		byval is_len as integer, _
 		byref dtype as integer, _
 		byref subtype as FBSYMBOL ptr, _
-		byref lgt as integer _
+		byref lgt as longint _
 	) as ASTNODE ptr
 
 declare sub cTypeOf _
 	( _
 		byref dtype as integer, _
 		byref subtype as FBSYMBOL ptr, _
-		byref lgt as integer _
+		byref lgt as longint _
 	)
 
 declare function cSymbolType _
 	( _
 		byref dtype as integer, _
 		byref subtype as FBSYMBOL ptr, _
-		byref lgt as integer, _
+		byref lgt as longint, _
 		byval options as FB_SYMBTYPEOPT = FB_SYMBTYPEOPT_DEFAULT _
 	) as integer
 
@@ -842,7 +842,7 @@ declare sub hSymbolType _
 	( _
 		byref dtype as integer, _
 		byref subtype as FBSYMBOL ptr, _
-		byref lgt as integer _
+		byref lgt as longint _
 	)
 
 declare function hCheckForDefiniteTypes _
