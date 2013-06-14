@@ -72,8 +72,8 @@ end type
 type FB_CMPSTMT_SELCONST
 	base			as integer
 	deflabel 		as FBSYMBOL ptr
-	minval			as uinteger
-	maxval			as uinteger
+	minval			as ulongint
+	maxval			as ulongint
 end type
 
 type FB_CMPSTMT_SELECT

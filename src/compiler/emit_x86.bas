@@ -1394,12 +1394,12 @@ end sub
 private sub _emitJMPTB _
 	( _
 		byval tbsym as FBSYMBOL ptr, _
-		byval values1 as uinteger ptr, _
+		byval values1 as ulongint ptr, _
 		byval labels1 as FBSYMBOL ptr ptr, _
 		byval labelcount as integer, _
 		byval deflabel as FBSYMBOL ptr, _
-		byval minval as uinteger, _
-		byval maxval as uinteger _
+		byval minval as ulongint, _
+		byval maxval as ulongint _
 	)
 
 	dim as FBSYMBOL ptr label = any
@@ -1427,7 +1427,7 @@ private sub _emitJMPTB _
 
 	outEx( tb + ":" + NEWLINE )
 	i = 0
-	for value as uinteger = minval to maxval
+	for value as ulongint = minval to maxval
 		assert( i < labelcount )
 		if( value = values1[i] ) then
 			label = labels1[i]

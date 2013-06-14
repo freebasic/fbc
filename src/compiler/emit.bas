@@ -1388,23 +1388,23 @@ end sub
 function emitJMPTB _
 	( _
 		byval tbsym as FBSYMBOL ptr, _
-		byval values1 as uinteger ptr, _
+		byval values1 as ulongint ptr, _
 		byval labels1 as FBSYMBOL ptr ptr, _
 		byval labelcount as integer, _
 		byval deflabel as FBSYMBOL ptr, _
-		byval minval as uinteger, _
-		byval maxval as uinteger _
+		byval minval as ulongint, _
+		byval maxval as ulongint _
 	) as EMIT_NODE ptr
 
 	dim as EMIT_NODE ptr n = any
-	dim as uinteger ptr values = any
+	dim as ulongint ptr values = any
 	dim as FBSYMBOL ptr ptr labels = any
 
 	assert( labelcount > 0 )
 
 	'' Duplicate the values/labels arrays
-	values = callocate( sizeof( uinteger ) * labelcount )
-	labels = callocate( sizeof( FBSYMBOL ptr ) * labelcount )
+	values = callocate( sizeof( *values ) * labelcount )
+	labels = callocate( sizeof( *labels ) * labelcount )
 	for i as integer = 0 to labelcount - 1
 		values[i] = values1[i]
 		labels[i] = labels1[i]

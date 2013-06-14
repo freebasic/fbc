@@ -175,7 +175,7 @@ end type
 
 type AST_NODE_JMPTB
 	'' Dynamically allocated buffer holding the jmptb's value/label pairs
-	values				as uinteger ptr
+	values				as ulongint ptr
 	labels				as FBSYMBOL ptr ptr
 	labelcount			as integer
 
@@ -710,12 +710,12 @@ declare function astNewBRANCH _
 declare function astBuildJMPTB _
 	( _
 		byval tempvar as FBSYMBOL ptr, _
-		byval values1 as uinteger ptr, _
+		byval values1 as ulongint ptr, _
 		byval labels1 as FBSYMBOL ptr ptr, _
 		byval labelcount as integer, _
 		byval deflabel as FBSYMBOL ptr, _
-		byval minval as uinteger, _
-		byval maxval as uinteger _
+		byval minval as ulongint, _
+		byval maxval as ulongint _
 	) as ASTNODE ptr
 
 declare function astNewLOOP _
