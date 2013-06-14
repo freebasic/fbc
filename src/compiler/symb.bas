@@ -1744,7 +1744,7 @@ function symbTypeToStr _
 	( _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
-		byval length as integer _
+		byval length as longint _
 	) as zstring ptr
 
 	static as string res
