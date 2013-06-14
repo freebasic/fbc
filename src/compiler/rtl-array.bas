@@ -550,7 +550,7 @@ end function
 function rtlArrayRedim _
 	( _
 		byval s as FBSYMBOL ptr, _
-		byval elementlen as integer, _
+		byval elementlen as longint, _
 		byval dimensions as integer, _
 		exprTB() as ASTNODE ptr, _
 		byval dopreserve as integer, _
