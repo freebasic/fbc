@@ -13,7 +13,7 @@
 ''			   |	 NEW DataType[Expr] .
 ''
 function cOperatorNew( ) as ASTNODE ptr
-	dim as integer dtype = any, lgt = any
+	dim as integer dtype = any
 	dim as FBSYMBOL ptr subtype = any, tmp = any
 	dim as integer has_ctor = any, has_defctor = any, do_clear = any
 	dim as ASTNODE ptr initexpr = any, elementsexpr = any, placementexpr = any
@@ -44,7 +44,7 @@ function cOperatorNew( ) as ASTNODE ptr
 	end if
 
 	'' DataType
-	hSymbolType( dtype, subtype, lgt )
+	hSymbolType( dtype, subtype, 0 )
 
 	'' check for invalid types
 	select case as const typeGet( dtype )
