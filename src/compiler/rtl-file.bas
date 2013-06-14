@@ -1582,7 +1582,8 @@ function rtlFilePut _
 	) as ASTNODE ptr
 
     dim as ASTNODE ptr proc = any, bytes = any
-    dim as integer dtype = any, o_dtype = any, lgt = any, isstring = any, islarge = any
+	dim as integer dtype = any, o_dtype = any, isstring = any, islarge = any
+	dim as longint lgt = any
     dim as FBSYMBOL ptr f = any
 
     function = NULL
@@ -1757,7 +1758,8 @@ function rtlFileGet _
 	) as ASTNODE ptr
 
     dim as ASTNODE ptr proc = any, bytes = any
-    dim as integer dtype = any, o_dtype = any, lgt = any, isstring = any, islarge = any
+	dim as integer dtype = any, o_dtype = any, isstring = any, islarge = any
+	dim as longint lgt = any
     dim as FBSYMBOL ptr f = any
 
     function = NULL
@@ -1991,7 +1993,8 @@ function rtlFileLineInput _
 
     dim as ASTNODE ptr proc = any
     dim as FBSYMBOL ptr f = any
-    dim as integer args = any, lgt = any, dtype = any
+    dim as integer args = any, dtype = any
+	dim as longint lgt = any
 
 	function = FALSE
 
@@ -2064,7 +2067,8 @@ function rtlFileLineInputWstr _
 
     dim as ASTNODE ptr proc = any
     dim as FBSYMBOL ptr f = any
-    dim as integer args = any, lgt = any, dtype = any
+    dim as integer args = any, dtype = any
+	dim as longint lgt = any
 
 	function = FALSE
 
@@ -2181,7 +2185,8 @@ function rtlFileInputGet _
 
     dim as ASTNODE ptr proc = any
     dim as FBSYMBOL ptr f = any
-    dim as integer args = any, lgt = any, dtype = any
+    dim as integer args = any, dtype = any
+	dim as longint lgt = any
 
 	function = FALSE
 

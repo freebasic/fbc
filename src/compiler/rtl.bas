@@ -410,7 +410,7 @@ end function
 '':::::
 '' note: this function must be called *before* astNewARG(e) because the
 ''       expression 'e' can be changed inside the former (address-of string's etc)
-function rtlCalcExprLen( byval expr as ASTNODE ptr ) as integer
+function rtlCalcExprLen( byval expr as ASTNODE ptr ) as longint
 	dim as FBSYMBOL ptr s = any
 	dim as integer dtype = any
 
@@ -431,7 +431,7 @@ function rtlCalcStrLen _
 	( _
 		byval expr as ASTNODE ptr, _
 		byval dtype as integer _
-	) as integer
+	) as longint
 
 	dim as FBSYMBOL ptr s
 

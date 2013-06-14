@@ -889,13 +889,13 @@ declare function rtlOvlProcCall _
 		byval param2 as ASTNODE ptr = NULL _
 	) as ASTNODE ptr
 
-declare function rtlCalcExprLen( byval expr as ASTNODE ptr ) as integer
+declare function rtlCalcExprLen( byval expr as ASTNODE ptr ) as longint
 
 declare function rtlCalcStrLen _
 	( _
 		byval expr as ASTNODE ptr, _
 		byval dtype as integer _
-	) as integer
+	) as longint
 
 declare function rtlStrCompare _
 	( _

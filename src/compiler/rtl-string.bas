@@ -2579,7 +2579,7 @@ function rtlStrCompare _
 	) as ASTNODE ptr
 
     dim as ASTNODE ptr proc = any
-    dim as integer str1len = any, str2len = any
+	dim as longint str1len = any, str2len = any
 
 	function = NULL
 
@@ -2652,7 +2652,7 @@ function rtlStrConcat _
 	) as ASTNODE ptr
 
     dim as ASTNODE ptr proc = any
-    dim as integer str1len = any, str2len = any
+	dim as longint str1len = any, str2len = any
     dim as FBSYMBOL ptr tmp = any
 
 	function = NULL
@@ -2705,7 +2705,7 @@ function rtlWstrConcatWA _
 	) as ASTNODE ptr
 
     dim as ASTNODE ptr proc = any
-    dim as integer str2len = any
+	dim as longint str2len = any
 
 	function = NULL
 
@@ -2742,7 +2742,7 @@ function rtlWstrConcatAW _
 	) as ASTNODE ptr
 
     dim as ASTNODE ptr proc = any
-    dim as integer str1len = any
+	dim as longint str1len = any
 
 	function = NULL
 
@@ -2820,7 +2820,8 @@ function rtlStrConcatAssign _
 	) as ASTNODE ptr
 
     dim as ASTNODE ptr proc = any
-    dim as integer lgt = any, ddtype = any, sdtype = any
+	dim as integer ddtype = any, sdtype = any
+	dim as longint lgt = any
 
 	function = NULL
 
@@ -2873,7 +2874,7 @@ function rtlWstrConcatAssign _
 	) as ASTNODE ptr static
 
     dim as ASTNODE ptr proc
-    dim as integer lgt
+	dim as longint lgt = any
 
 	function = NULL
 
@@ -2911,7 +2912,7 @@ function rtlWstrAssignWA _
 	) as ASTNODE ptr
 
     dim as ASTNODE ptr proc = any
-    dim as integer dstlen = any, srclen = any
+	dim as longint dstlen = any, srclen = any
 
 	function = NULL
 
@@ -2955,7 +2956,7 @@ function rtlWstrAssignAW _
 	) as ASTNODE ptr
 
     dim as ASTNODE ptr proc = any
-    dim as integer lgt = any
+	dim as longint lgt = any
 
 	function = NULL
 
@@ -2999,7 +3000,8 @@ function rtlStrAssign _
 	) as ASTNODE ptr
 
     dim as ASTNODE ptr proc = any
-    dim as integer lgt = any, ddtype = any, sdtype = any
+	dim as integer ddtype = any, sdtype = any
+	dim as longint lgt = any
 
 	function = NULL
 
@@ -3066,7 +3068,8 @@ function rtlWstrAssign _
 	) as ASTNODE ptr
 
     dim as ASTNODE ptr proc = any
-    dim as integer lgt = any, ddtype = any, sdtype = any
+	dim as integer ddtype = any, sdtype = any
+	dim as longint lgt = any
 
 	function = NULL
 
@@ -3171,7 +3174,8 @@ function rtlStrAllocTmpDesc	_
 	) as ASTNODE ptr
 
     dim as ASTNODE ptr proc = any
-    dim as integer lgt = any, dtype = any
+	dim as integer dtype = any
+	dim as longint lgt = any
     dim as FBSYMBOL ptr litsym = any
 
     function = NULL
@@ -3692,7 +3696,7 @@ function rtlStrAssignMid _
 	) as ASTNODE ptr
 
     dim as ASTNODE ptr proc = any
-    dim as integer dst_len = any
+	dim as longint dst_len = any
 
     function = NULL
 
@@ -3846,7 +3850,7 @@ end function
 
 function rtlStrLen( byval expr as ASTNODE ptr ) as ASTNODE ptr
 	dim as ASTNODE ptr proc = any
-	dim as integer length = any
+	dim as longint length = any
 
 	function = NULL
 

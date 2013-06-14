@@ -502,7 +502,8 @@ function cMemberDeref _
 		byval check_array as integer _
 	) as ASTNODE ptr
 
-	dim as integer derefcnt = any, is_field = any, lgt = any
+	dim as integer derefcnt = any, is_field = any
+	dim as longint lgt = any
 	dim as ASTNODE ptr idxexpr = any
 
 	function = NULL

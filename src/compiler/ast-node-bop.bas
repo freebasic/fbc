@@ -438,7 +438,7 @@ private function hDoPointerArith _
 	) as ASTNODE ptr
 
     dim as integer edtype = any
-    dim as integer lgt = any
+	dim as longint lgt = any
 
     function = NULL
 

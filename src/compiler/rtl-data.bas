@@ -207,7 +207,8 @@ function rtlDataRead _
 
     dim as ASTNODE ptr proc = any
     dim as FBSYMBOL ptr f = any
-    dim as integer args = any, dtype = any, lgt = any
+	dim as integer args = any, dtype = any
+	dim as longint lgt = any
 
     function = FALSE
 

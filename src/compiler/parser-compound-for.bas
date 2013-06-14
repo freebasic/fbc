@@ -320,7 +320,7 @@ private function hStepExpression _
 		byval rhs as FB_CMPSTMT_FORELM ptr _
 	) as ASTNODE ptr
 
-	dim as integer length = any
+	dim as longint length = any
 
 	'' This function generates the AST node for
 	'' the STEP variable, which is used in hFlushSelfBOP

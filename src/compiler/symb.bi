@@ -1047,7 +1047,7 @@ declare function symbAddTypedef _
 		byval id as zstring ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
-		byval lgt as integer _
+		byval lgt as longint _
 	) as FBSYMBOL ptr
 
 declare function symbAddLabel _
@@ -1062,7 +1062,7 @@ declare function symbAddVar _
 		byval aliasname as const zstring ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
-		byval lgt as integer, _
+		byval lgt as longint, _
 		byval dimensions as integer, _
 		dTB() as FBARRAYDIM, _
 		byval attrib as integer, _
@@ -1127,7 +1127,7 @@ declare function symbAddField _
 		dTB() as FBARRAYDIM, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
-		byval lgt as integer, _
+		byval lgt as longint, _
 		byval bits as integer _
 	) as FBSYMBOL ptr
 
@@ -1247,16 +1247,16 @@ declare function symbCalcArgLen _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
 		byval mode as integer _
-	) as integer
+	) as longint
 
 declare function symbCalcParamLen _
 	( _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
 		byval mode as FB_PARAMMODE _
-	) as integer
+	) as longint
 
-declare function symbCalcProcParamsLen( byval proc as FBSYMBOL ptr ) as integer
+declare function symbCalcProcParamsLen( byval proc as FBSYMBOL ptr ) as longint
 
 declare function symbAddScope _
 	( _
@@ -1408,13 +1408,13 @@ declare function symbCalcLen _
 	( _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr _
-	) as integer
+	) as longint
 
 declare function symbCalcDerefLen _
 	( _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr  _
-	) as integer
+	) as longint
 
 declare function symbAllocFloatConst _
 	( _

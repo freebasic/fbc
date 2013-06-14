@@ -90,7 +90,7 @@ function symbCalcArgLen _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
 		byval mode as integer _
-	) as integer
+	) as longint
 
 	select case( mode )
 	case FB_PARAMMODE_BYREF, FB_PARAMMODE_BYDESC
@@ -118,7 +118,7 @@ function symbCalcParamLen _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
 		byval mode as FB_PARAMMODE _
-	) as integer
+	) as longint
 
 	'' VARARG params have 0 length for now,
 	'' only the VARARG args later have > 0 length...
@@ -130,8 +130,8 @@ function symbCalcParamLen _
 
 end function
 
-function symbCalcProcParamsLen( byval proc as FBSYMBOL ptr ) as integer
-	dim as integer length = any
+function symbCalcProcParamsLen( byval proc as FBSYMBOL ptr ) as longint
+	dim as longint length = any
 	dim as FBSYMBOL ptr param = any
 
 	'' Calculate the sum of the sizes of all "normal" parameters,

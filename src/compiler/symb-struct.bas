@@ -229,7 +229,7 @@ private function symbAddBitField _
 		byval bitpos as integer, _
 		byval bits as integer, _
 		byval dtype as integer, _
-		byval lgt as integer _
+		byval lgt as longint _
 	) as FBSYMBOL ptr
 
 	dim as FBSYMBOL ptr sym = any
@@ -260,7 +260,7 @@ function symbAddField _
 		dTB() as FBARRAYDIM, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
-		byval lgt as integer, _
+		byval lgt as longint, _
 		byval bits as integer _
 	) as FBSYMBOL ptr static
 
