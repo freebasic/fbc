@@ -15,14 +15,14 @@ function astNewMEM _
 		byval op as integer, _
 		byval l as ASTNODE ptr, _
 		byval r as ASTNODE ptr, _
-		byval bytes as integer _
+		byval bytes as longint _
 	) as ASTNODE ptr
 
     dim as ASTNODE ptr n = any
 
     var blkmaxlen = irGetOptionValue( IR_OPTIONVALUE_MAXMEMBLOCKLEN )
 
-	dim as integer lgt = bytes
+	dim as longint lgt = bytes
 	if( op = AST_OP_MEMCLEAR ) then
 		if( astIsCONST( r ) ) then
 			lgt = astConstGetInt( r )
@@ -50,7 +50,6 @@ function astNewMEM _
 	n->mem.bytes = bytes
 
 	function = n
-
 end function
 
 private function hCallCtorList _
