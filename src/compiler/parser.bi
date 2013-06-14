@@ -859,7 +859,7 @@ declare function cThreadCallFunc() as ASTNODE ptr
 
 declare function hIntegerTypeFromBitSize _
 	( _
-		byval bitsize as integer, _
+		byval bitsize as longint, _
 		byval is_unsigned as integer = FALSE _
 	) as FB_DATATYPE
 

@@ -180,7 +180,7 @@ end sub
 
 function hIntegerTypeFromBitSize _
 	( _
-		byval bitsize as integer, _
+		byval bitsize as longint, _
 		byval is_unsigned as integer _
 	) as FB_DATATYPE
 
