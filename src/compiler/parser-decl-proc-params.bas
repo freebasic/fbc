@@ -209,7 +209,7 @@ private function hParamDecl _
 	static as integer reclevel = 0
 	dim as zstring ptr id = any
 	dim as ASTNODE ptr optexpr = any
-	dim as integer dtype = any, mode = any, lgt = any
+	dim as integer dtype = any, mode = any
 	dim as integer attrib = any
 	dim as integer readid = any, dotpos = any, doskip = any, dontinit = any, use_default = any
 	dim as FBSYMBOL ptr subtype = any, param = any
@@ -369,7 +369,7 @@ private function hParamDecl _
 			options and= not FB_SYMBTYPEOPT_CHECKSTRPTR
 		end if
 
-		if( cSymbolType( dtype, subtype, lgt, options ) = FALSE ) then
+		if( cSymbolType( dtype, subtype, 0, options ) = FALSE ) then
 			hParamError( proc, id )
 			'' error recovery: fake type
 			dtype = FB_DATATYPE_INTEGER
