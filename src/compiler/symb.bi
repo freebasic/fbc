@@ -1464,8 +1464,8 @@ declare function symbCalcArrayDiff _
 	( _
 		byval dimensions as integer, _
 		dTB() as FBARRAYDIM, _
-		byval lgt as integer _
-	) as integer
+		byval lgt as longint _
+	) as longint
 
 declare function symbCheckArraySize _
 	( _

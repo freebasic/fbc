@@ -554,10 +554,11 @@ function symbCalcArrayDiff _
 	( _
 		byval dimensions as integer, _
 		dTB() as FBARRAYDIM, _
-		byval lgt as integer _
-	) as integer
+		byval lgt as longint _
+	) as longint
 
-    dim as integer d = any, diff = any, elms = any
+	dim as integer d = any
+	dim as longint diff = any, elms = any
 
 	if( dimensions <= 0 ) then
 		return 0
@@ -574,7 +575,6 @@ function symbCalcArrayDiff _
 	diff *= lgt
 
 	function = -diff
-
 end function
 
 '':::::
