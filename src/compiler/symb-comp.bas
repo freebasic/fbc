@@ -316,7 +316,7 @@ private sub hAssignList _
     astAdd( astBuildVarInc( src, 1 ) )
 
 	'' next
-	astAdd( astBuildForEnd( NULL, cnt, label, 1, astNewCONSTi( symbGetArrayElements( fld ) ) ) )
+	astAdd( astBuildForEnd( NULL, cnt, label, astNewCONSTi( symbGetArrayElements( fld ) ) ) )
 
 end sub
 

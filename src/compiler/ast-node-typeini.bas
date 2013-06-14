@@ -425,7 +425,7 @@ private function hCallCtorList _
 		flush_tree = astNewLINK( flush_tree, astBuildVarInc( iter, 1 ) )
 
 		'' next
-		flush_tree = astBuildForEnd( flush_tree, cnt, label, 1, astNewCONSTi( elements ) )
+		flush_tree = astBuildForEnd( flush_tree, cnt, label, astNewCONSTi( elements ) )
 	else
 		'' ctor( this )
 		flush_tree = astNewLINK( flush_tree, astBuildCtorCall( subtype, fldexpr ) )

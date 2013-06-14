@@ -230,12 +230,11 @@ function astBuildForEnd _
 		byval tree as ASTNODE ptr, _
 		byval cnt as FBSYMBOL ptr, _
 		byval label as FBSYMBOL ptr, _
-		byval stepvalue as integer, _
 		byval endvalue as ASTNODE ptr _
 	) as ASTNODE ptr
 
 	'' counter += stepvalue
-	tree = astNewLINK( tree, astBuildVarInc( cnt, stepvalue ) )
+	tree = astNewLINK( tree, astBuildVarInc( cnt, 1 ) )
 
 	'' if( counter = endvalue ) then
 	''     goto label

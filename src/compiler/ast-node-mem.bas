@@ -82,7 +82,7 @@ private function hCallCtorList _
 	tree = astNewLINK( tree, astBuildVarInc( iter, 1 ) )
 
 	'' next
-	tree = astBuildForEnd( tree, cnt, label, 1, elementsexpr )
+	tree = astBuildForEnd( tree, cnt, label, elementsexpr )
 
 	'' Wrap into LOOP node so astCloneTree() can clone the label and update
 	'' the loop code, because it's part of the new[] expression, and not
@@ -295,7 +295,7 @@ private function hCallDtorList _
 	tree = astNewLINK( tree, astBuildDtorCall( subtype, astBuildVarDeref( iter ) ) )
 
 	'' next
-	tree = astBuildForEnd( tree, cnt, label, 1, astNewVAR( elmts ) )
+	tree = astBuildForEnd( tree, cnt, label, astNewVAR( elmts ) )
 
 	function = tree
 end function

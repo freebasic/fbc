@@ -872,7 +872,7 @@ private function hCallCtorList _
 	tree = astNewLINK( tree, astBuildVarInc( iter, iif( is_ctor, 1, -1 ) ) )
 
 	'' next
-	tree = astBuildForEnd( tree, cnt, label, 1, astNewCONSTi( elements ) )
+	tree = astBuildForEnd( tree, cnt, label, astNewCONSTi( elements ) )
 
 	function = tree
 end function
