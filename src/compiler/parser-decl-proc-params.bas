@@ -31,7 +31,7 @@ sub cParameters _
 		byval isproto as integer _
 	)
 
-	dim as integer length = any
+	dim as longint length = any
 
 	length = 0
 
