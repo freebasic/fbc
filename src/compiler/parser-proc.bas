@@ -1047,7 +1047,7 @@ function cProcHeader _
 	dim as zstring ptr palias = any
 	dim as FBSYMBOL ptr head_proc = any, proc = any, parent = any, subtype = any
 	dim as FBSYMBOL ptr param = any
-	dim as integer dtype = any, lgt = any, is_outside = any, is_memberproc = any
+	dim as integer dtype = any, is_outside = any, is_memberproc = any
 	dim as integer mode = any, stats = any, op = any, is_get = any, is_indexed = any
 	dim as integer priority = any, idopt = any
 
@@ -1344,7 +1344,7 @@ function cProcHeader _
 			'' AS SymbolType
 			if( lexGetToken( ) = FB_TK_AS ) then
 				cProcRetType( attrib, proc, ((options and FB_PROCOPT_ISPROTO) <> 0), _
-				              dtype, subtype, lgt )
+				              dtype, subtype, 0 )
 			else
 				errReport( FB_ERRMSG_EXPECTEDRESTYPE )
 				'' error recovery: fake a type
@@ -1375,7 +1375,7 @@ function cProcHeader _
 		'' (AS SymbolType)?
 		if( lexGetToken( ) = FB_TK_AS ) then
 			cProcRetType( attrib, proc, ((options and FB_PROCOPT_ISPROTO) <> 0), _
-			              dtype, subtype, lgt )
+			              dtype, subtype, 0 )
 			is_indexed = (symbGetProcParams( proc ) = 1+1)
 			is_get = TRUE
 		else
@@ -1411,7 +1411,7 @@ function cProcHeader _
 				errReport( FB_ERRMSG_SYNTAXERROR )
 			end if
 			cProcRetType( attrib, proc, ((options and FB_PROCOPT_ISPROTO) <> 0), _
-			              dtype, subtype, lgt )
+			              dtype, subtype, 0 )
 		else
 			if( tk = FB_TK_FUNCTION ) then
 				if( fbLangOptIsSet( FB_LANG_OPT_DEFTYPE ) ) then
