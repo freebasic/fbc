@@ -30,7 +30,7 @@ function cConstIntExpr _
 end function
 
 private function cSymbolTypeFuncPtr( byval is_func as integer ) as FBSYMBOL ptr
-	dim as integer dtype = any, lgt = any, mode = any, attrib = any
+	dim as integer dtype = any, mode = any, attrib = any
 	dim as FBSYMBOL ptr proc = any, subtype = any
 
 	function = NULL
@@ -58,7 +58,7 @@ private function cSymbolTypeFuncPtr( byval is_func as integer ) as FBSYMBOL ptr
 			errReport( FB_ERRMSG_SYNTAXERROR )
 			dtype = FB_DATATYPE_VOID
 		else
-			cProcRetType( attrib, proc, TRUE, dtype, subtype, lgt )
+			cProcRetType( attrib, proc, TRUE, dtype, subtype )
 		end if
 	else
 		'' if it's a function and type was not given, it can't be guessed

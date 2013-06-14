@@ -367,8 +367,7 @@ sub cProcRetType _
 		byval proc as FBSYMBOL ptr, _
 		byval is_proto as integer, _
 		byref dtype as integer, _
-		byref subtype as FBSYMBOL ptr, _
-		byref lgt as integer _
+		byref subtype as FBSYMBOL ptr _
 	)
 
 	dim as integer options = any
@@ -389,7 +388,7 @@ sub cProcRetType _
 		options and= not FB_SYMBTYPEOPT_CHECKSTRPTR
 	end if
 
-	if( cSymbolType( dtype, subtype, lgt, options ) = FALSE ) then
+	if( cSymbolType( dtype, subtype, 0, options ) = FALSE ) then
 		errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
 		'' error recovery: fake a type
 		dtype = FB_DATATYPE_INTEGER
@@ -1344,7 +1343,7 @@ function cProcHeader _
 			'' AS SymbolType
 			if( lexGetToken( ) = FB_TK_AS ) then
 				cProcRetType( attrib, proc, ((options and FB_PROCOPT_ISPROTO) <> 0), _
-				              dtype, subtype, 0 )
+				              dtype, subtype )
 			else
 				errReport( FB_ERRMSG_EXPECTEDRESTYPE )
 				'' error recovery: fake a type
@@ -1375,7 +1374,7 @@ function cProcHeader _
 		'' (AS SymbolType)?
 		if( lexGetToken( ) = FB_TK_AS ) then
 			cProcRetType( attrib, proc, ((options and FB_PROCOPT_ISPROTO) <> 0), _
-			              dtype, subtype, 0 )
+			              dtype, subtype )
 			is_indexed = (symbGetProcParams( proc ) = 1+1)
 			is_get = TRUE
 		else
@@ -1411,7 +1410,7 @@ function cProcHeader _
 				errReport( FB_ERRMSG_SYNTAXERROR )
 			end if
 			cProcRetType( attrib, proc, ((options and FB_PROCOPT_ISPROTO) <> 0), _
-			              dtype, subtype, 0 )
+			              dtype, subtype )
 		else
 			if( tk = FB_TK_FUNCTION ) then
 				if( fbLangOptIsSet( FB_LANG_OPT_DEFTYPE ) ) then
