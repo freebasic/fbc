@@ -14,13 +14,12 @@
 private function hOptionalTypeAndFirstExpr _
 	( _
 		byref dtype as integer, _
-		byref subtype as FBSYMBOL ptr, _
-		byref lgt as integer _
+		byref subtype as FBSYMBOL ptr _
 	) as ASTNODE ptr
 
 	dim as ASTNODE ptr expr = any
 
-	expr = cTypeOrExpression( FALSE, dtype, subtype, lgt )
+	expr = cTypeOrExpression( FALSE, dtype, subtype, 0 )
 	if( expr = NULL ) then
 		'' SymbolType
 
@@ -57,7 +56,7 @@ end function
 ''
 function cPokeStmt( ) as integer
 	dim as ASTNODE ptr expr1 = any, expr2 = any
-	dim as integer poketype = any, lgt = any
+	dim as integer poketype = any
 	dim as FBSYMBOL ptr subtype = any
 
 	function = FALSE
@@ -66,7 +65,7 @@ function cPokeStmt( ) as integer
 	lexSkipToken( )
 
 	'' (SymbolType ',')? Expression
-	expr1 = hOptionalTypeAndFirstExpr( poketype, subtype, lgt )
+	expr1 = hOptionalTypeAndFirstExpr( poketype, subtype )
 
 	'' ','
 	hMatchCOMMA( )
@@ -110,7 +109,7 @@ end function
 ''
 function cPeekFunct( ) as ASTNODE ptr
 	dim as ASTNODE ptr expr = any
-	dim as integer dtype = any, lgt = any
+	dim as integer dtype = any
 	dim as FBSYMBOL ptr subtype = any
 
 	function = NULL
@@ -122,7 +121,7 @@ function cPeekFunct( ) as ASTNODE ptr
 	hMatchLPRNT( )
 
 	'' (SymbolType ',')? Expression
-	expr = hOptionalTypeAndFirstExpr( dtype, subtype, lgt )
+	expr = hOptionalTypeAndFirstExpr( dtype, subtype )
 
 	' ')'
 	hMatchRPRNT( )
