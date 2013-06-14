@@ -557,7 +557,7 @@ function symbCalcArrayDiff _
 		byval lgt as integer _
 	) as integer
 
-    dim as integer d = any, diff = any, elms = any, mult = any
+    dim as integer d = any, diff = any, elms = any
 
 	if( dimensions <= 0 ) then
 		return 0
