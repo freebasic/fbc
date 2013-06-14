@@ -284,7 +284,7 @@ type IR_VTBL
 		byval op as integer, _
 		byval v1 as IRVREG ptr, _
 		byval v2 as IRVREG ptr, _
-		byval bytes as integer _
+		byval bytes as longint _
 	)
 
 	emitScopeBegin as sub _
