@@ -236,12 +236,6 @@ type IR_VTBL
 		byval v1 as IRVREG ptr _
 	)
 
-	emitPushUDT as sub _
-	( _
-		byval v1 as IRVREG ptr, _
-		byval lgt as integer _
-	)
-
 	emitAddr as sub _
 	( _
 		byval op as integer, _
@@ -563,8 +557,6 @@ declare function vregDump( byval v as IRVREG ptr ) as string
 #define irEmitPUSH(v1) ir.vtbl.emitStack( AST_OP_PUSH, v1 )
 
 #define irEmitPOP(v1) ir.vtbl.emitStack( AST_OP_POP, v1 )
-
-#define irEmitPUSHUDT(v1, lgt) ir.vtbl.emitPushUDT( v1, lgt )
 
 #define irEmitADDR(op, v1, vr) ir.vtbl.emitAddr( op, v1, vr )
 

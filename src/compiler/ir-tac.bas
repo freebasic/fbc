@@ -591,17 +591,6 @@ private sub _emitStack _
 end sub
 
 '':::::
-private sub _emitPushUDT _
-	( _
-		byval v1 as IRVREG ptr, _
-		byval lgt as integer _
-	)
-
-	_emit( AST_OP_PUSHUDT, v1, NULL, NULL, NULL, lgt )
-
-end sub
-
-'':::::
 private sub _emitPushArg _
 	( _
 		byval vr as IRVREG ptr, _
@@ -612,7 +601,7 @@ private sub _emitPushArg _
 	if( plen = 0 ) then
 		_emitStack( AST_OP_PUSH, vr )
 	else
-		_emitPushUDT( vr, plen )
+		_emit( AST_OP_PUSHUDT, vr, NULL, NULL, NULL, plen )
 	end if
 
 end sub
@@ -2709,7 +2698,6 @@ dim shared as IR_VTBL irtac_vtbl = _
 	@_emitLoad, _
 	@_emitLoadRes, _
 	@_emitStack, _
-	@_emitPushUDT, _
 	@_emitAddr, _
 	@_emitCall, _
 	@_emitCallPtr, _

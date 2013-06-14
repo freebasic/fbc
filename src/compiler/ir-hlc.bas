@@ -3473,7 +3473,6 @@ dim shared as IR_VTBL irhlc_vtbl = _
 	@_emitLoad, _
 	@_emitLoadRes, _
 	NULL, _
-	NULL, _
 	@_emitAddr, _
 	@_emitCall, _
 	@_emitCallPtr, _
