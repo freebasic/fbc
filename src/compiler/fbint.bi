@@ -681,13 +681,6 @@ declare sub fbAddLib(byval libname as zstring ptr)
 declare sub fbAddLibPath(byval path as zstring ptr)
 
 ''
-'' macros
-''
-
-'' x86 assumption!
-#define FB_ROUNDLEN(lgt) ((lgt + (FB_INTEGERSIZE-1)) and not (FB_INTEGERSIZE-1))
-
-''
 '' super globals
 ''
 common shared as FBENV env

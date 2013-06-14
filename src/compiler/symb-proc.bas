@@ -110,7 +110,7 @@ function symbCalcArgLen _
 		end if
 	end select
 
-	function = FB_ROUNDLEN( symbCalcLen( dtype, subtype ) )
+	function = ((symbCalcLen( dtype, subtype ) + (FB_INTEGERSIZE-1)) and not (FB_INTEGERSIZE-1))
 end function
 
 function symbCalcParamLen _
