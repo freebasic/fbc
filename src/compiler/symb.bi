@@ -1452,13 +1452,13 @@ declare function symbCalcArrayElements overload _
 	( _
 		byval s as FBSYMBOL ptr, _
 		byval n as FBVARDIM ptr = NULL _
-	) as integer
+	) as longint
 
 declare function symbCalcArrayElements _
 	( _
 		byval dimensions as integer, _
 		dTB() as FBARRAYDIM _
-	) as integer
+	) as longint
 
 declare function symbCalcArrayDiff _
 	( _

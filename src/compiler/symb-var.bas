@@ -577,14 +577,13 @@ function symbCalcArrayDiff _
 	function = -diff
 end function
 
-'':::::
 function symbCalcArrayElements _
 	( _
 		byval s as FBSYMBOL ptr, _
 		byval n as FBVARDIM ptr = NULL _
-	) as integer
+	) as longint
 
-    dim as integer e = any, d = any
+	dim as longint e = any, d = any
 
 	if( n = NULL ) then
 		n = s->var_.array.dimhead
@@ -598,26 +597,23 @@ function symbCalcArrayElements _
 	loop
 
 	function = e
-
 end function
 
-'':::::
 function symbCalcArrayElements _
 	( _
 		byval dimensions as integer, _
 		dTB() as FBARRAYDIM _
-	) as integer
+	) as longint
 
-    dim as integer e = any, i = any, d = any
+	dim as longint e = any, d = any
 
 	e = 1
-	for i = 0 to dimensions-1
+	for i as integer = 0 to dimensions-1
 		d = (dTB(i).upper - dTB(i).lower) + 1
 		e = e * d
-	next i
+	next
 
 	function = e
-
 end function
 
 function symbCheckArraySize _
