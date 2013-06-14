@@ -1222,7 +1222,7 @@ declare function rtlMemCopy _
 	( _
 		byval dst as ASTNODE ptr, _
 		byval src as ASTNODE ptr, _
-		byval bytes as integer _
+		byval bytes as longint _
 	) as ASTNODE ptr
 
 declare function rtlMemSwap _
@@ -1246,9 +1246,9 @@ declare function rtlWstrSwap _
 declare function rtlMemCopyClear _
 	( _
 		byval dstexpr as ASTNODE ptr, _
-		byval dstlen as integer, _
+		byval dstlen as longint, _
 		byval srcexpr as ASTNODE ptr, _
-		byval srclen as integer _
+		byval srclen as longint _
 	) as integer
 
 declare function rtlMemNewOp _
