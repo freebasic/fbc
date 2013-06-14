@@ -69,7 +69,8 @@ private function hFieldArray _
 		byval idxexpr as ASTNODE ptr _
 	) as ASTNODE ptr
 
-    dim as integer maxdims = any, dims = any, diff = any
+	dim as integer maxdims = any, dims = any
+	dim as longint diff = any
     dim as ASTNODE ptr expr = any, dimexpr = any
     dim as FBVARDIM ptr d = any
 
