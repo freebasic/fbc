@@ -620,13 +620,13 @@ function symbCheckArraySize _
 	( _
 		byval dimensions as integer, _
 		dTB() as FBARRAYDIM, _
-		byval lgt as integer, _
+		byval lgt as longint, _
 		byval is_on_stack as integer, _
 		byval allow_ellipsis as integer _
 	) as integer
 
 	dim as ulongint allelements = any
-	dim as uinteger elements = any
+	dim as ulongint elements = any
 	dim as integer found_too_big = any
 
 	found_too_big = FALSE
