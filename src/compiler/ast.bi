@@ -925,7 +925,7 @@ declare sub astTypeIniEnd _
 declare function astTypeIniAddPad _
 	( _
 		byval tree as ASTNODE ptr, _
-		byval bytes as integer _
+		byval bytes as longint _
 	) as ASTNODE ptr
 
 declare function astTypeIniAddAssign _

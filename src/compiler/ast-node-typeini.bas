@@ -142,11 +142,10 @@ private function hAddNode _
 
 end function
 
-'':::::
 function astTypeIniAddPad _
 	( _
 		byval tree as ASTNODE ptr, _
-		byval bytes as integer _
+		byval bytes as longint _
 	) as ASTNODE ptr
 
 	dim as ASTNODE ptr n = any
