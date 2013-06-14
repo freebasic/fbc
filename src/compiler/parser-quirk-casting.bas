@@ -142,7 +142,7 @@ end function
 function cAnonType( ) as ASTNODE ptr
 	dim as ASTNODE ptr initree = any
 	dim as FBSYMBOL ptr sym = any, subtype = any
-	dim as integer dtype = any, lgt = any, is_explicit = any
+	dim as integer dtype = any, is_explicit = any
 
 	'' TYPE
 	lexSkipToken( )
@@ -152,7 +152,7 @@ function cAnonType( ) as ASTNODE ptr
 
 	if( is_explicit ) then
 		'' SymbolType
-		if( cSymbolType( dtype, subtype, lgt ) = FALSE ) then
+		if( cSymbolType( dtype, subtype, 0 ) = FALSE ) then
 			'' it would be nice to be able to fall back and do
 			'' a cExpression(), like typeof(), or len() do,
 			'' however the ambiguity with the "greater-than '>' operator"
