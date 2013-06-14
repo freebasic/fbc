@@ -329,7 +329,7 @@ private function hCopyUnionFields _
 	) as FBSYMBOL ptr
 
 	dim as FBSYMBOL ptr fld = any
-	dim as integer bytes = any, lgt = any, base_ofs = any
+	dim as longint bytes = any, lgt = any, base_ofs = any
 
 	'' merge all union fields
 	fld = base_fld
@@ -356,7 +356,6 @@ private function hCopyUnionFields _
     	  	  		   bytes ) )
 
 	function = fld
-
 end function
 
 private sub hAddLetOpBody _

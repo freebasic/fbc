@@ -924,7 +924,7 @@ private function hClearUnionFields _
 	) as ASTNODE ptr
 
 	dim as FBSYMBOL ptr fld = any
-	dim as integer bytes = any, lgt = any, base_ofs = any
+	dim as longint bytes = any, lgt = any, base_ofs = any
 
 	'' merge all union fields
 	fld = base_fld
