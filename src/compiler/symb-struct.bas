@@ -178,8 +178,8 @@ end function
 
 private function hCheckUDTSize _
 	( _
-		byval udtlen as uinteger, _
-		byval fieldlen as uinteger, _
+		byval udtlen as ulongint, _
+		byval fieldlen as ulongint, _
 		byval fieldpad as uinteger _
 	) as integer
 
