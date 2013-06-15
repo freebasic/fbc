@@ -1392,8 +1392,8 @@ declare sub symbDelFromChainList _
 declare sub symbAddArrayDim _
 	( _
 		byval s as FBSYMBOL ptr, _
-		byval lower as integer, _
-		byval upper as integer _
+		byval lower as longint, _
+		byval upper as longint _
 	)
 
 declare sub symbRecalcLen( byval sym as FBSYMBOL ptr )
