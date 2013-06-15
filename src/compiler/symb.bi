@@ -1154,7 +1154,7 @@ declare function symbAddEnumElement _
 	( _
 		byval parent as FBSYMBOL ptr, _
 		byval id as zstring ptr, _
-		byval value as integer, _
+		byval value as longint, _
 		byval attrib as integer _
 	) as FBSYMBOL ptr
 

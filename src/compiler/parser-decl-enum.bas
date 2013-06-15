@@ -11,7 +11,7 @@
 '':::
 ''EnumConstDecl     =   ID ('=' ConstExpression)? .
 ''
-private sub hEnumConstDecl(byval id as zstring ptr, byref value as integer)
+private sub hEnumConstDecl( byval id as zstring ptr, byref value as longint )
 	dim as ASTNODE ptr expr = any
 
 	'' '='?
@@ -46,7 +46,7 @@ end sub
 ''
 sub cEnumBody(byval s as FBSYMBOL ptr, byval attrib as integer)
 	static as zstring * FB_MAXNAMELEN+1 id
-	dim as integer value = any
+	dim as longint value = any
 
 	value = 0
 

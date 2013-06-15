@@ -67,7 +67,7 @@ function symbAddEnumElement _
 	( _
 		byval parent as FBSYMBOL ptr, _
 		byval id as zstring ptr, _
-		byval intval as integer, _
+		byval intval as longint, _
 		byval attrib as integer _
 	) as FBSYMBOL ptr
 
