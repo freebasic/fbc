@@ -901,7 +901,8 @@ private function hConstBound _
 
 	dim as FBSYMBOL ptr array = any
 	dim as FBVARDIM ptr d = any
-	dim as integer dimension = any, bound = any
+	dim as integer dimension = any
+	dim as longint bound = any
 
 	function = NULL
 
