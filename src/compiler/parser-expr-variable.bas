@@ -469,8 +469,8 @@ private function hStrIndexing _
 	'' add index
 	if( typeGet( dtype ) = FB_DATATYPE_WCHAR ) then
 		'' times sizeof( wchar ) if it's wstring
-		idxexpr = astNewBOP( AST_OP_SHL, idxexpr, _
-			astNewCONSTi( hToPow2( typeGetSize( FB_DATATYPE_WCHAR ) ) ) )
+		idxexpr = astNewBOP( AST_OP_MUL, idxexpr, _
+			astNewCONSTi( typeGetSize( FB_DATATYPE_WCHAR ) ) )
 	end if
 
 	'' null pointer checking
