@@ -3221,8 +3221,6 @@ private sub _emitVarIniStr _
 		byval litlength as integer _     '' without null terminator
 	)
 
-	dim as integer ch = any
-
 	'' Simple fixed-length string initialized from string literal
 	'' "..."
 
