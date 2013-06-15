@@ -202,7 +202,7 @@ function symbCheckBitField _
 	( _
 		byval udt as FBSYMBOL ptr, _
 		byval dtype as integer, _
-		byval lgt as integer, _
+		byval lgt as longint, _
 		byval bits as integer _
 	) as integer
 
