@@ -3216,9 +3216,9 @@ end sub
 
 private sub _emitVarIniStr _
 	( _
-		byval varlength as integer, _    '' without null terminator
+		byval varlength as longint, _    '' without null terminator
 		byval literal as zstring ptr, _
-		byval litlength as integer _     '' without null terminator
+		byval litlength as longint _     '' without null terminator
 	)
 
 	'' Simple fixed-length string initialized from string literal
@@ -3238,9 +3238,9 @@ end sub
 
 private sub _emitVarIniWstr _
 	( _
-		byval varlength as integer, _  '' without null terminator
+		byval varlength as longint, _  '' without null terminator
 		byval literal as wstring ptr, _
-		byval litlength as integer _   '' without null terminator
+		byval litlength as longint _   '' without null terminator
 	)
 
 	dim as uinteger ch = any
@@ -3286,7 +3286,7 @@ private sub _emitVarIniWstr _
 
 end sub
 
-private sub _emitVarIniPad( byval bytes as integer )
+private sub _emitVarIniPad( byval bytes as longint )
 	'' Nothing to do -- we're using {...} for structs and each array
 	'' dimension, and gcc will zero-initialize any uninitialized elements,
 	'' aswell as add padding between fields etc. where needed.

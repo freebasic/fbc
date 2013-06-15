@@ -314,19 +314,19 @@ type IR_VTBL
 
 	emitVarIniStr as sub _
 	( _
-		byval totlgt as integer, _
+		byval totlgt as longint, _
 		byval litstr as zstring ptr, _
-		byval litlgt as integer _
+		byval litlgt as longint _
 	)
 
 	emitVarIniWstr as sub _
 	( _
-		byval totlgt as integer, _
+		byval totlgt as longint, _
 		byval litstr as wstring ptr, _
-		byval litlgt as integer _
+		byval litlgt as longint _
 	)
 
-	emitVarIniPad as sub( byval bytes as integer )
+	emitVarIniPad as sub( byval bytes as longint )
 	emitVarIniScopeBegin as sub( )
 	emitVarIniScopeEnd as sub( )
 

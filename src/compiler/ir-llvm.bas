@@ -2261,9 +2261,9 @@ end sub
 
 private sub _emitVarIniStr _
 	( _
-		byval varlength as integer, _
+		byval varlength as longint, _
 		byval literal as zstring ptr, _
-		byval litlength as integer _
+		byval litlength as longint _
 	)
 
 	if( ctx.variniscopelevel > 0 ) then
@@ -2278,9 +2278,9 @@ end sub
 
 private sub _emitVarIniWstr _
 	( _
-		byval varlength as integer, _
+		byval varlength as longint, _
 		byval literal as wstring ptr, _
-		byval litlength as integer _
+		byval litlength as longint _
 	)
 
 	if( ctx.variniscopelevel > 0 ) then
@@ -2293,7 +2293,7 @@ private sub _emitVarIniWstr _
 
 end sub
 
-private sub _emitVarIniPad( byval bytes as integer )
+private sub _emitVarIniPad( byval bytes as longint )
 	'' Nothing to do -- we're using {...} for structs and each array
 	'' dimension, and gcc will zero-initialize any uninitialized elements,
 	'' aswell as add padding between fields etc. where needed.

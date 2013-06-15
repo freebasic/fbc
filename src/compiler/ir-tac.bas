@@ -769,9 +769,9 @@ end sub
 
 private sub _emitVarIniStr _
 	( _
-		byval totlgt as integer, _
+		byval totlgt as longint, _
 		byval litstr as zstring ptr, _
-		byval litlgt as integer _
+		byval litlgt as longint _
 	)
 
 	dim as const zstring ptr s
@@ -803,9 +803,9 @@ end sub
 '':::::
 private sub _emitVarIniWstr _
 	( _
-		byval totlgt as integer, _
+		byval totlgt as longint, _
 		byval litstr as wstring ptr, _
-		byval litlgt as integer _
+		byval litlgt as longint _
 	)
 
 	dim as zstring ptr s
@@ -837,7 +837,7 @@ private sub _emitVarIniWstr _
 
 end sub
 
-private sub _emitVarIniPad( byval bytes as integer )
+private sub _emitVarIniPad( byval bytes as longint )
 	emitVARINIPAD( bytes )
 end sub
 
