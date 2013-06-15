@@ -564,8 +564,6 @@ end function
 
 '' [FIELD '=' ConstExpression]
 private function cFieldAlignmentAttribute( ) as integer
-	dim as integer align = any
-
 	'' FIELD
 	if( lexGetToken( ) <> FB_TK_FIELD ) then
 		return 0
@@ -594,7 +592,7 @@ private function cFieldAlignmentAttribute( ) as integer
 	end if
 
 	'' follow the GCC 3.x ABI
-	align = astConstFlushToInt( expr )
+	var align = astConstFlushToInt( expr )
 	if( align < 0 ) then
 		align = 0
 	elseif( align > FB_INTEGERSIZE ) then
