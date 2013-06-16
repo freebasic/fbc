@@ -92,8 +92,8 @@ private sub hMainBegin( )
 
 	proc = symbPreAddProc( NULL )
 
-	'' byval argc as integer
-	symbAddProcParam( proc, "__FB_ARGC__", FB_DATATYPE_INTEGER, NULL, _
+	'' byval argc as long
+	symbAddProcParam( proc, "__FB_ARGC__", FB_DATATYPE_LONG, NULL, _
 	                  FB_PARAMMODE_BYVAL, 0 )
 
 	'' byval argv as zstring ptr ptr
@@ -111,8 +111,8 @@ private sub hMainBegin( )
 		end if
 	end if
 
-	'' function main cdecl( byval argc as integer, byval argv as zstring ptr ptr ) as integer
-	env.main.proc = symbAddProc( proc, NULL, id, FB_DATATYPE_INTEGER, NULL, _
+	'' function main cdecl( byval argc as long, byval argv as zstring ptr ptr ) as long
+	env.main.proc = symbAddProc( proc, NULL, id, FB_DATATYPE_LONG, NULL, _
 	                             attrib, FB_FUNCMODE_CDECL, FB_SYMBOPT_DECLARING )
 
 	'' Must be done before astProcBegin(), so it will add the fb_Init() call, etc.

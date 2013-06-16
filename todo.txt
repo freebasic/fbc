@@ -5,9 +5,6 @@ o 64bit
 
   - adjust cStrCHR() and cStrASC() to handle 64bit constants
 
-  - main() result and argc use INTEGER, that will be wrong on 64bit where they
-    are still 32bit
-
   - remove the FB_{POINTER/INTEGER/LONG}SIZE constants, at least when used
     outside the ASM emitter, and use typeGetSize( ... ) instead, to allow the
     them to be remapped through the symb_dtypeTB depending on fbc command line
