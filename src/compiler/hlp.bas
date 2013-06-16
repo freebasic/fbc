@@ -378,46 +378,6 @@ function pathIsAbsolute( byval path as zstring ptr ) as integer
 end function
 
 '':::::
-function hToPow2 _
-	( _
-		byval value as uinteger _
-	) as uinteger static
-
-    dim n as uinteger
-
-	static pow2tb(0 to 63) as uinteger = _
-	{ _
-		 0,  0,  0, 15,  0,  1, 28,  0, _
-		16,  0,  0,  0,  2, 21, 29,  0, _
-    	 0,  0, 19, 17, 10,  0, 12,  0, _
-    	 0,  3,  0,  6,  0, 22, 30,  0, _
-    	14,  0, 27,  0,  0,  0, 20,  0, _
-    	18,  9, 11,  0,  5,  0,  0, 13, _
-    	26,  0,  0,  8,  0,  4,  0, 25, _
-    	 0,   7, 24,  0, 23,  0, 31,  0 _
-	}
-
-	'' don't check if it's zero
-	if( value = 0 ) then
-		return 0
-	end if
-
-	'' (n^(n-1)) * Harley's magic number
-	n = ((value-1) xor value) * (7*255*255*255)
-
-    '' extract bits <31:26>
-    n = pow2tb(n shr 26)				'' translate into bit count - 1
-
-    '' is this really a power of 2?
-    if( value - (1 shl n) = 0 ) then
-    	function = n
-    else
-    	function = 0
-    end if
-
-end function
-
-'':::::
 function hCheckFileFormat _
 	( _
 		byval f as integer _

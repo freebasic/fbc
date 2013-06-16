@@ -74,11 +74,6 @@ declare sub hReplaceSlash( byval s as zstring ptr, byval char as integer )
 declare function pathStripDiv( byref path as string ) as string
 declare function pathIsAbsolute( byval path as zstring ptr ) as integer
 
-declare function hToPow2 _
-	( _
-		byval value as uinteger _
-	) as uinteger
-
 declare function hFloatToHex _
 	( _
 		byval value as double, _

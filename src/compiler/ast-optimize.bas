@@ -847,7 +847,6 @@ end function
 '' other optimizations
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-'':::::
 private sub hDivToShift_Signed _
 	( _
 		byval n as ASTNODE ptr, _
@@ -901,14 +900,21 @@ private sub hDivToShift_Signed _
 
 end sub
 
-'':::::
-private sub hOptToShift _
-	( _
-		byval n as ASTNODE ptr _
-	)
+private function hToPow2( byval v as ulongint ) as integer
+	'' Is it a power of 2? (2/4/8/16/32/...)
+	for i as integer = 1 to 63
+		if( v = (1ull shl i) ) then
+			'' return the exponent of the power of 2 (1/2/3/4/5/...)
+			return i
+		end if
+	next
+	function = 0
+end function
 
+private sub hOptToShift( byval n as ASTNODE ptr )
 	dim as ASTNODE ptr l = any, r = any
-	dim as integer const_val = any, op = any
+	dim as integer op = any, exponent = any
+	dim as longint value = any
 
 	if( n = NULL ) then
 		exit sub
@@ -920,46 +926,63 @@ private sub hOptToShift _
 	''         '     a MOD pow2 imm' to 'a AND pow2-1'
 	if( n->class = AST_NODECLASS_BOP ) then
 		op = n->op.op
+
 		select case op
 		case AST_OP_MUL, AST_OP_INTDIV, AST_OP_MOD
 			r = n->r
-			if( astIsCONST( r ) ) then
-				if( typeGetClass( astGetDataType( n ) ) = FB_DATACLASS_INTEGER ) then
-					if( typeGetSize( astGetDataType( r ) ) <= FB_INTEGERSIZE ) then
-						const_val = astConstGetInt( r )
-						if( const_val > 0 ) then
-							const_val = hToPow2( const_val )
-							if( const_val > 0 ) then
-								select case op
-								case AST_OP_MUL
-									if( const_val <= 32 ) then
-										n->op.op = AST_OP_SHL
-										astConstGetInt( r ) = const_val
-									end if
 
-								case AST_OP_INTDIV
-									if( const_val <= 32 ) then
-										l = n->l
-										if( typeIsSigned( astGetDataType( l ) ) = FALSE ) then
-											n->op.op = AST_OP_SHR
-											astConstGetInt( r ) = const_val
-										else
-											hDivToShift_Signed( n, const_val )
-										end if
-									end if
-
-								case AST_OP_MOD
-									'' unsigned types only
-									if( typeIsSigned( astGetDataType( n->l ) ) = FALSE ) then
-										n->op.op = AST_OP_AND
-										astConstGetInt( r ) -= 1
-									end if
-								end select
-							end if
-						end if
-					end if
-				end if
+			'' BOP result must be an integer, so no floats are involved
+			if( typeGetClass( n->dtype ) <> FB_DATACLASS_INTEGER ) then
+				exit select
 			end if
+
+			'' The rhs must be an integer constant > 0
+			'' (doesn't matter whether it's signed or unsigned)
+			if( astIsCONST( r ) = FALSE ) then
+				exit select
+			end if
+			value = astConstGetInt( r )
+			if( (value = 0) or _
+			    ((value < 0) and typeIsSigned( astGetFullType( r ) )) ) then
+				exit select
+			end if
+
+			'' Get the exponent if it's a power of 2
+			exponent = hToPow2( value )
+			if( exponent <= 0 ) then
+				exit select
+			end if
+
+			select case op
+			case AST_OP_MUL
+				if( exponent > typeGetBits( n->l->dtype ) ) then
+					exit select, select
+				end if
+
+				n->op.op = AST_OP_SHL
+				astConstGetInt( r ) = exponent
+
+			case AST_OP_INTDIV
+				if( exponent > typeGetBits( n->l->dtype ) ) then
+					exit select, select
+				end if
+
+				if( typeIsSigned( n->l->dtype ) = FALSE ) then
+					n->op.op = AST_OP_SHR
+					astConstGetInt( r ) = exponent
+				else
+					hDivToShift_Signed( n, exponent )
+				end if
+
+			case AST_OP_MOD
+				'' unsigned types only
+				if( typeIsSigned( astGetDataType( n->l ) ) ) then
+					exit select, select
+				end if
+
+				n->op.op = AST_OP_AND
+				astConstGetInt( r ) -= 1
+			end select
 		end select
 	end if
 
