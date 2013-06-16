@@ -6686,15 +6686,15 @@ private sub _procAllocStaticVars( byval s as FBSYMBOL ptr )
 	wend
 end sub
 
-'':::::
-private function _procAllocLocal _
+private sub _procAllocLocal _
 	( _
 		byval proc as FBSYMBOL ptr, _
-		byval sym as FBSYMBOL ptr, _
-		byval lgt as integer _
-	) as integer static
+		byval sym as FBSYMBOL ptr _
+	)
 
-    dim as integer ofs
+	dim as integer ofs = any, lgt = any
+
+	lgt = symbGetLen( sym ) * symbGetArrayElements( sym )
 
     proc->proc.ext->stk.localofs += ((lgt + 3) and not 3)
 
@@ -6704,23 +6704,30 @@ private function _procAllocLocal _
     	proc->proc.ext->stk.localmax = -ofs
     end if
 
-	function = ofs
+	sym->ofs = ofs
 
-end function
+end sub
 
-'':::::
-private function _procAllocArg _
+private sub _procAllocArg _
 	( _
 		byval proc as FBSYMBOL ptr, _
-		byval sym as FBSYMBOL ptr, _
-		byval lgt as integer _
-	) as integer static
+		byval sym as FBSYMBOL ptr _
+	)
 
-	function = proc->proc.ext->stk.argofs
+	dim as integer lgt = any
 
+	assert( symbIsParam( sym ) )
+
+	if( symbIsParamByVal( sym ) ) then
+		lgt = symbGetLen( sym )
+	else
+		lgt = FB_POINTERSIZE
+	end if
+
+	sym->ofs = proc->proc.ext->stk.argofs
     proc->proc.ext->stk.argofs += ((lgt + 3) and not 3)
 
-end function
+end sub
 
 '':::::
 private sub _procHeader _

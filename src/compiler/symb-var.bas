@@ -540,7 +540,7 @@ function symbAddAndAllocateTempVar( byval dtype as integer ) as FBSYMBOL ptr
 
 	assert( env.clopt.backend = FB_BACKEND_GAS )
 
-	s->ofs = irProcAllocLocal( parser.currproc, s, s->lgt )
+	irProcAllocLocal( parser.currproc, s )
 
 	function = s
 end function

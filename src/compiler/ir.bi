@@ -120,19 +120,17 @@ type IR_VTBL
 		byval proc as FBSYMBOL ptr _
 	)
 
-	procAllocArg as function _
+	procAllocArg as sub _
 	( _
 		byval proc as FBSYMBOL ptr, _
-		byval sym as FBSYMBOL ptr, _
-		byval lgt as integer _
-	) as integer
+		byval sym as FBSYMBOL ptr _
+	)
 
-	procAllocLocal as function _
+	procAllocLocal as sub _
 	( _
 		byval proc as FBSYMBOL ptr, _
-		byval sym as FBSYMBOL ptr, _
-		byval lgt as integer _
-	) as integer
+		byval sym as FBSYMBOL ptr _
+	)
 
 	procGetFrameRegName as function _
 	( _
@@ -484,9 +482,9 @@ declare function vregDump( byval v as IRVREG ptr ) as string
 
 #define irScopeEnd(s) ir.vtbl.scopeEnd( s )
 
-#define irProcAllocArg(proc, s, lgt) ir.vtbl.procAllocArg( proc, s, lgt )
+#define irProcAllocArg(proc, s) ir.vtbl.procAllocArg( proc, s )
 
-#define irProcAllocLocal(proc, s, lgt) ir.vtbl.procAllocLocal( proc, s, lgt )
+#define irProcAllocLocal(proc, s) ir.vtbl.procAllocLocal( proc, s )
 
 #define irProcAllocStaticVars(head_sym) ir.vtbl.procAllocStaticVars( head_sym )
 

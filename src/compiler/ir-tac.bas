@@ -357,29 +357,25 @@ private sub _procEnd _
 
 end sub
 
-''::::
-private function _procAllocArg _
+private sub _procAllocArg _
 	( _
 		byval proc as FBSYMBOL ptr, _
-		byval sym as FBSYMBOL ptr, _
-		byval lgt as integer _
-	) as integer
+		byval sym as FBSYMBOL ptr _
+	)
 
-	function = emitProcAllocArg( proc, sym, lgt )
+	emitProcAllocArg( proc, sym )
 
-end function
+end sub
 
-'':::::
-private function _procAllocLocal _
+private sub _procAllocLocal _
 	( _
 		byval proc as FBSYMBOL ptr, _
-		byval sym as FBSYMBOL ptr, _
-		byval lgt as integer _
-	) as integer
+		byval sym as FBSYMBOL ptr _
+	)
 
-	function = emitProcAllocLocal( proc, sym, lgt )
+	emitProcAllocLocal( proc, sym )
 
-end function
+end sub
 
 '':::::
 private function _procGetFrameRegName _

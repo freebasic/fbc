@@ -1061,12 +1061,11 @@ private sub _procEnd( byval proc as FBSYMBOL ptr )
 	proc->proc.ext->dbg.endline = lexLineNum( )
 end sub
 
-private function _procAllocArg _
+private sub _procAllocArg _
 	( _
 		byval proc as FBSYMBOL ptr, _
-		byval sym as FBSYMBOL ptr, _
-		byval lgt as integer _
-	) as integer
+		byval sym as FBSYMBOL ptr _
+	)
 
 	dim as string ln
 	dim as integer dtype = any, parammode = any
@@ -1105,19 +1104,17 @@ private function _procAllocArg _
 	ln += hEmitType( typeAddrOf( dtype ), subtype ) + " " + *symbGetMangledName( sym )
 	hWriteLine( ln )
 
-	function = 0
-end function
+end sub
 
-private function _procAllocLocal _
+private sub _procAllocLocal _
 	( _
 		byval proc as FBSYMBOL ptr, _
-		byval sym as FBSYMBOL ptr, _
-		byval lgt as integer _
-	) as integer
+		byval sym as FBSYMBOL ptr _
+	)
 
 	hEmitVariable( sym )
-	function = 0
-end function
+
+end sub
 
 private sub _scopeBegin( byval s as FBSYMBOL ptr )
 end sub

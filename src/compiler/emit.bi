@@ -337,19 +337,17 @@ type EMIT_VTBL
 		byval exitlabel as FBSYMBOL ptr _
 	)
 
-	procAllocArg as function _
+	procAllocArg as sub _
 	( _
 		byval proc as FBSYMBOL ptr, _
-		byval sym as FBSYMBOL ptr, _
-		byval lgt as integer _
-	) as integer
+		byval sym as FBSYMBOL ptr _
+	)
 
-	procAllocLocal as function _
+	procAllocLocal as sub _
 	( _
 		byval proc as FBSYMBOL ptr, _
-		byval sym as FBSYMBOL ptr, _
-		byval lgt as integer _
-	) as integer
+		byval sym as FBSYMBOL ptr _
+	)
 
 	procAllocStaticVars as sub(byval head_sym as FBSYMBOL ptr)
 
@@ -864,9 +862,9 @@ declare sub emitFlush _
 
 #define emitProcFooter( proc, bytestopop, initlabel, exitlabel ) emit.vtbl.procFooter( proc, bytestopop, initlabel, exitlabel )
 
-#define emitProcAllocArg( proc, s, lgt ) emit.vtbl.procAllocArg( proc, s, lgt )
+#define emitProcAllocArg( proc, s ) emit.vtbl.procAllocArg( proc, s )
 
-#define emitProcAllocLocal( proc, s, lgt ) emit.vtbl.procAllocLocal( proc, s, lgt )
+#define emitProcAllocLocal( proc, s ) emit.vtbl.procAllocLocal( proc, s )
 
 #define emitProcGetFrameRegName( ) emit.vtbl.procGetFrameRegName( )
 
