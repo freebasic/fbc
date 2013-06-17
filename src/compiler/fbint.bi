@@ -27,16 +27,6 @@ const FB_INITVARININODES	= 1000
 const FB_INITINCFILES		= 256
 const FB_INITSTMTSTACKNODES	= 128
 
-'' array descriptor
-'' x86 assumption
-type FB_ARRAYDESC
-    data			as any ptr
-	ptr				as any ptr
-    size			as integer
-    element_len		as integer
-    dimensions		as integer
-end type
-
 '' string descriptor
 '' x86 assumption
 type FB_STRDESC
