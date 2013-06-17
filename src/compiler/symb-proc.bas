@@ -1213,7 +1213,7 @@ function symbAddProcResultParam( byval proc as FBSYMBOL ptr ) as FBSYMBOL ptr
 	end if
 
 	id = *symbUniqueId( )
-	s = symbAddVar( id, NULL, FB_DATATYPE_STRUCT, proc->subtype, FB_POINTERSIZE, _
+	s = symbAddVar( id, NULL, FB_DATATYPE_STRUCT, proc->subtype, 0, _
 	                0, dTB(), FB_SYMBATTRIB_PARAMBYREF, FB_SYMBOPT_PRESERVECASE )
 
 	symbProcAllocExt( proc )
