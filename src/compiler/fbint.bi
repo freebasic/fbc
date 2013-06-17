@@ -27,14 +27,6 @@ const FB_INITVARININODES	= 1000
 const FB_INITINCFILES		= 256
 const FB_INITSTMTSTACKNODES	= 128
 
-'' string descriptor
-'' x86 assumption
-type FB_STRDESC
-	data			as zstring ptr
-	len				as integer
-	size			as integer
-end type
-
 '' DATA stmt internal format
 enum FB_DATASTMT_ID
 	FB_DATASTMT_ID_NULL		= &h0000

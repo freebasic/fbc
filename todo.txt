@@ -5,8 +5,6 @@ o 64bit
 
   - adjust cStrCHR() and cStrASC() to handle 64bit constants
   - cMKXFunct()
-  - fbint.bi contains various structs (e.g. FB_STRDESC) that are target-specific,
-    this would break when cross-compiling and the struct layout is different
   - check all size-sensitive rtl functions, mk*(), cv*()
   - search for any other "x86 assumption"'s
   - hDoOptRemConv() may need adjustment for 64bit,
