@@ -275,26 +275,22 @@ function cSymbolType _
 		case FB_TK_ANY
 			lexSkipToken( )
 			dtype = FB_DATATYPE_VOID
-			lgt = 0
 
 		case FB_TK_BYTE
 			lexSkipToken( )
 			dtype = FB_DATATYPE_BYTE
-			lgt = 1
+
 		case FB_TK_UBYTE
 			lexSkipToken( )
 			dtype = FB_DATATYPE_UBYTE
-			lgt = 1
 
 		case FB_TK_SHORT
 			lexSkipToken( )
 			dtype = FB_DATATYPE_SHORT
-			lgt = 2
 
 		case FB_TK_USHORT
 			lexSkipToken( )
 			dtype = FB_DATATYPE_USHORT
-			lgt = 2
 
 		case FB_TK_INTEGER
 			lexSkipToken( )
@@ -315,8 +311,6 @@ function cSymbolType _
 				dtype = fbLangGetType( INTEGER )
 
 			end if
-
-			lgt = typeGetSize( dtype )
 
 		case FB_TK_UINT
 			lexSkipToken( )
@@ -339,65 +333,53 @@ function cSymbolType _
 
 			end if
 
-			lgt = typeGetSize( dtype )
-
 		case FB_TK_LONG
 			lexSkipToken( )
 			dtype = fbLangGetType( LONG )
-			lgt = fbLangGetSize( LONG )
 
 		case FB_TK_ULONG
 			lexSkipToken( )
 			dtype = FB_DATATYPE_ULONG
-			lgt = FB_LONGSIZE
 
 		case FB_TK_LONGINT
 			lexSkipToken( )
 			dtype = FB_DATATYPE_LONGINT
-			lgt = typeGetSize( FB_DATATYPE_LONGINT )
 
 		case FB_TK_ULONGINT
 			lexSkipToken( )
 			dtype = FB_DATATYPE_ULONGINT
-			lgt = typeGetSize( FB_DATATYPE_ULONGINT )
 
 		case FB_TK_SINGLE
 			lexSkipToken( )
 			dtype = FB_DATATYPE_SINGLE
-			lgt = 4
 
 		case FB_TK_DOUBLE
 			lexSkipToken( )
 			dtype = FB_DATATYPE_DOUBLE
-			lgt = 8
 
 		case FB_TK_STRING
 			lexSkipToken( )
 
 			'' assume it's a var-len string, see below for fixed-len
 			dtype = FB_DATATYPE_STRING
-			lgt = FB_STRDESCLEN
 
 		case FB_TK_ZSTRING
 			lexSkipToken( )
 
 			'' assume it's a pointer, see below for fixed-len
 			dtype = FB_DATATYPE_CHAR
-			lgt = 0
 
 		case FB_TK_WSTRING
 			lexSkipToken( )
 
 			'' ditto
 			dtype = FB_DATATYPE_WCHAR
-			lgt = 0
 
 		case FB_TK_FUNCTION, FB_TK_SUB
 			isfunction = (lexGetToken( ) = FB_TK_FUNCTION)
 			lexSkipToken( )
 
 			dtype = typeAddrOf( FB_DATATYPE_FUNCTION )
-			lgt = FB_POINTERSIZE
 			ptr_cnt += 1
 
 			subtype = cSymbolTypeFuncPtr( isfunction )
@@ -405,7 +387,11 @@ function cSymbolType _
 				exit function
 			end if
 
-		case else
+		end select
+
+		if( dtype <> FB_DATATYPE_INVALID ) then
+			lgt = typeGetSize( dtype )
+		else
 			dim as FBSYMCHAIN ptr chain_ = NULL
 			dim as FBSYMBOL ptr base_parent = any
 			dim as integer check_id = TRUE
@@ -455,7 +441,7 @@ function cSymbolType _
 					chain_ = symbChainGetNext( chain_ )
 				loop while( chain_ <> NULL )
 			end if
-		end select
+		end if
 
 		'' no type?
 		if( dtype = FB_DATATYPE_INVALID ) then
@@ -589,7 +575,7 @@ function cSymbolType _
 	end if
 
 	if( ptr_cnt > 0 ) then
-		lgt = FB_POINTERSIZE
+		lgt = typeGetSize( dtype )
 	else
 		'' can't have forward typedef's if they aren't pointers
 		if( typeGet( dtype ) = FB_DATATYPE_FWDREF ) then
@@ -610,10 +596,8 @@ function cSymbolType _
 					errReport( FB_ERRMSG_EXPECTEDPOINTER )
 					'' error recovery: make pointer
 					dtype = typeAddrOf( dtype )
-					lgt = FB_POINTERSIZE
-				else
-					lgt = typeGetSize( dtype )
 				end if
+				lgt = typeGetSize( dtype )
 			end select
 		end if
 	end if

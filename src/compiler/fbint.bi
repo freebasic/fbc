@@ -58,8 +58,6 @@ type FB_STRDESC
 	size			as integer
 end type
 
-const FB_STRDESCLEN			= len( FB_STRDESC )
-
 '' DATA stmt internal format
 enum FB_DATASTMT_ID
 	FB_DATASTMT_ID_NULL		= &h0000
@@ -616,11 +614,6 @@ type FB_LANG_TYPEREMAP
 	long			as FB_DATATYPE
 end type
 
-type FB_LANG_SIZEREMAP
-	integer			as integer
-	long			as integer
-end type
-
 type FB_LANG_LITREMAP
 	short			as FB_DATATYPE
 	ushort			as FB_DATATYPE
@@ -632,7 +625,6 @@ end type
 type FB_LANG_CTX
 	opt				as FB_LANG_OPT				'' language supported features
 	typeremap		as FB_LANG_TYPEREMAP
-	sizeremap		as FB_LANG_SIZEREMAP
 	litremap		as FB_LANG_LITREMAP			'' default numeric literal data type
 end type
 

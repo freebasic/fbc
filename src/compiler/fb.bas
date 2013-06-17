@@ -317,9 +317,7 @@ sub fbInit( byval ismain as integer, byval restarts as integer )
 	'' data type remapping
 	if( env.clopt.lang <> FB_LANG_QB ) then
 		env.lang.typeremap.integer = FB_DATATYPE_INTEGER
-		env.lang.sizeremap.integer = FB_INTEGERSIZE
 		env.lang.typeremap.long = FB_DATATYPE_LONG
-		env.lang.sizeremap.long = FB_LONGSIZE
 
 		env.lang.litremap.short = FB_DATATYPE_INTEGER
 		env.lang.litremap.ushort = FB_DATATYPE_UINT
@@ -328,9 +326,7 @@ sub fbInit( byval ismain as integer, byval restarts as integer )
 		env.lang.litremap.double = FB_DATATYPE_DOUBLE
 	else
 		env.lang.typeremap.integer = FB_DATATYPE_SHORT
-		env.lang.sizeremap.integer = 2
 		env.lang.typeremap.long = FB_DATATYPE_INTEGER
-		env.lang.sizeremap.long = FB_INTEGERSIZE
 
 		env.lang.litremap.short = FB_DATATYPE_SHORT
 		env.lang.litremap.ushort = FB_DATATYPE_USHORT
