@@ -585,12 +585,12 @@ function cMKXFunct(byval tk as FB_TOKEN) as ASTNODE ptr
 				dtype = fbLangGetType( INTEGER )
 			end if
 
-			select case dtype
-			case FB_DATATYPE_INTEGER, FB_DATATYPE_LONG
+			select case( typeGetSizeType( dtype ) )
+			case FB_SIZETYPE_INT32
 				funcexpr = astNewCALL( PROCLOOKUP( MKI ) )
-			case FB_DATATYPE_LONGINT
+			case FB_SIZETYPE_INT64
 				funcexpr = astNewCALL( PROCLOOKUP( MKLONGINT ) )
-			case FB_DATATYPE_SHORT
+			case FB_SIZETYPE_INT16
 				funcexpr = astNewCALL( PROCLOOKUP( MKSHORT ) )
 			end select
 

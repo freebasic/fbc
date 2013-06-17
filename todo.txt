@@ -4,7 +4,6 @@ o 64bit
       - offsets on IRVREG need to be 64bit
 
   - adjust cStrCHR() and cStrASC() to handle 64bit constants
-  - cMKXFunct()
   - check all size-sensitive rtl functions, mk*(), cv*()
   - search for any other "x86 assumption"'s
   - hDoOptRemConv() may need adjustment for 64bit,
