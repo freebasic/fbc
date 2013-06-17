@@ -3351,9 +3351,9 @@ function rtlToStr _
 	select case as const astGetDataClass( expr )
 	case FB_DATACLASS_INTEGER
 
-		'' Convert pointer to ulong
+		'' Convert pointer to uinteger
 		if( typeIsPtr( dtype ) ) then
-			expr = astNewCONV( FB_DATATYPE_ULONG, NULL, expr )
+			expr = astNewCONV( FB_DATATYPE_UINT, NULL, expr )
 			dtype = astGetDatatype( expr )
 		end if
 
@@ -3458,9 +3458,9 @@ function rtlToWstr _
 
 	select case as const astGetDataClass( expr )
 	case FB_DATACLASS_INTEGER
-		'' Convert pointer to ulong
+		'' Convert pointer to uinteger
 		if( typeIsPtr( dtype ) ) then
-			expr = astNewCONV( FB_DATATYPE_ULONG, NULL, expr )
+			expr = astNewCONV( FB_DATATYPE_UINT, NULL, expr )
 			dtype = astGetDatatype( expr )
 		end if
 
@@ -3530,9 +3530,9 @@ function rtlStrToVal _
 
     function = NULL
 
-	'' Convert pointer to ulong
+	'' Convert pointer to uinteger
 	if( typeIsPtr( to_dtype ) ) then
-		expr = astNewCONV( FB_DATATYPE_ULONG, NULL, expr )
+		expr = astNewCONV( FB_DATATYPE_UINT, NULL, expr )
 	end if
 
 	select case as const typeGet( to_dtype )

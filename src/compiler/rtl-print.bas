@@ -935,9 +935,9 @@ function rtlPrint _
 			end if
 		end select
 
-		'' Convert pointer to ulong
+		'' Convert pointer to uinteger
 		if( typeIsPtr( astGetFullType( expr ) ) ) then
-			expr = astNewCONV( FB_DATATYPE_ULONG, NULL, expr )
+			expr = astNewCONV( FB_DATATYPE_UINT, NULL, expr )
 		end if
 
 		select case as const typeGet( astGetDataType( expr ) )
@@ -1169,9 +1169,9 @@ function rtlWrite _
 			end if
 		end select
 
-		'' Convert pointer to ulong
+		'' Convert pointer to uinteger
 		if( typeIsPtr( astGetFullType( expr ) ) ) then
-			expr = astNewCONV( FB_DATATYPE_ULONG, NULL, expr )
+			expr = astNewCONV( FB_DATATYPE_UINT, NULL, expr )
 		end if
 
 		select case as const typeGet( astGetDataType( expr ) )
