@@ -455,7 +455,7 @@ private sub hOptConstIdxMult( byval n as ASTNODE ptr )
 
 	'' convert to integer if needed
 	if( (typeGetClass( astGetDataType( l ) ) <> FB_DATACLASS_INTEGER) or _
-	    (typeGetSize( astGetDataType( l ) ) <> FB_POINTERSIZE) ) then
+	    (typeGetSize( astGetDataType( l ) ) <> env.pointersize) ) then
 		n->l = astNewCONV( FB_DATATYPE_INTEGER, NULL, l )
 	end if
 
@@ -1348,7 +1348,7 @@ private function hDoOptRemConv( byval n as ASTNODE ptr ) as ASTNODE ptr
 						end if
 
 						'' can't be a longint
-						if( typeGetSize( astGetDataType( t ) ) < FB_INTEGERSIZE*2 ) then
+						if( typeGetSize( astGetDataType( t ) ) < 8 ) then
 							dorem = FALSE
 
 							select case as const t->class

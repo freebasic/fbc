@@ -97,7 +97,7 @@ private sub _emitSTORF2I_SSE _
 	ddsize = typeGetSize( dvreg->dtype )
 
 	'' special case if the dst is uinteger
-	if( ( ddsize = FB_INTEGERSIZE ) and ( typeIsSigned( dvreg->dtype ) = 0 ) ) then
+	if( (ddsize = 4) and (typeIsSigned( dvreg->dtype ) = 0) ) then
 		outp "sub esp, 8"
 		if( svreg->typ <> IR_VREGTYPE_REG ) then
 			outp "fld " + src
@@ -135,7 +135,7 @@ private sub _emitSTORF2I_SSE _
 		exit sub
 	end if
 
-	if( dvreg->typ = IR_VREGTYPE_REG ) and ( ddsize = FB_INTEGERSIZE ) then
+	if( (dvreg->typ = IR_VREGTYPE_REG) and (ddsize = 4) ) then
 		'' dst is 32-bit register
 		isfree = TRUE
 		aux = dst
@@ -269,7 +269,7 @@ private sub _emitSTORI2F_SSE _
 	sdsize = typeGetSize( svreg->dtype )
 
 	'' special case for unsigned integers
-	if( typeIsSigned( svreg->dtype ) = 0) and ( sdsize = FB_INTEGERSIZE ) Then
+	if( (typeIsSigned( svreg->dtype ) = 0) and (sdsize = 4) ) then
 		hPUSH "0"
 		hPUSH src
 		outp "fild qword ptr [esp]"
@@ -278,7 +278,7 @@ private sub _emitSTORI2F_SSE _
 		exit sub
 	end if
 
-	if( svreg->typ <> IR_VREGTYPE_IMM ) and ( sdsize = FB_INTEGERSIZE ) Then
+	if( (svreg->typ <> IR_VREGTYPE_IMM) and (sdsize = 4) ) then
 		'' src is 32-bit reg or 32-bit mem
 		aux = src
 		isFree = TRUE
@@ -572,7 +572,7 @@ private sub _emitLOADF2I_SSE _
 		'' dst is a register
 		isfree = TRUE
 		'' not an integer? make it
-		if( ddsize < FB_INTEGERSIZE ) then
+		if( ddsize < 4 ) then
 			dst = *hGetRegName( FB_DATATYPE_INTEGER, dvreg->reg )
 		end if
 
@@ -731,7 +731,7 @@ private sub _emitLOADI2F_SSE _
 	ddsize = typeGetSize( dvreg->dtype )
 
 	'' special case for unsigned integers
-	if( typeIsSigned( svreg->dtype ) = 0) and ( sdsize = FB_INTEGERSIZE ) then
+	if( (typeIsSigned( svreg->dtype ) = 0) and (sdsize = 4) ) then
 		'' find a register
 		reg = hFindRegNotInVreg( svreg )
 		aux = *hGetRegName( FB_DATATYPE_INTEGER, reg )
@@ -770,7 +770,7 @@ private sub _emitLOADI2F_SSE _
 		exit sub
 	end if
 
-	if( svreg->typ <> IR_VREGTYPE_IMM ) and ( sdsize = FB_INTEGERSIZE ) then
+	if( (svreg->typ <> IR_VREGTYPE_IMM) and (sdsize = 4) ) then
 		'' src is 32-bit mem or register
 		isfree = TRUE
 		aux = src			'' just use it
@@ -786,7 +786,7 @@ private sub _emitLOADI2F_SSE _
 			hPUSH aux
 		end if
 
-		if( svreg->typ = IR_VREGTYPE_IMM ) or ( sdsize = FB_INTEGERSIZE ) then
+		if( (svreg->typ = IR_VREGTYPE_IMM) or (sdsize = 4) ) then
 			outp "mov " + aux + COMMA + src
 		else
 			if( typeIsSigned( svreg->dtype ) ) then

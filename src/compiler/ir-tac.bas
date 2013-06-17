@@ -478,7 +478,7 @@ private sub _emitProcEnd _
 	if( symbProcReturnsOnStack( proc ) ) then
 		if( (symbGetProcMode( proc ) <> FB_FUNCMODE_CDECL) or _
 		    (env.target.options and FB_TARGETOPT_CALLEEPOPSHIDDENPTR) ) then
-			bytestopop += typeGetSize( typeAddrOf( FB_DATATYPE_VOID ) )
+			bytestopop += env.pointersize
 		end if
 	end if
 

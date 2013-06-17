@@ -27,19 +27,6 @@ const FB_INITVARININODES	= 1000
 const FB_INITINCFILES		= 256
 const FB_INITSTMTSTACKNODES	= 128
 
-'' TODO: x86 specific
-const FB_INTEGERSIZE		= 4
-const FB_POINTERSIZE		= 4
-const FB_LONGSIZE			= FB_POINTERSIZE
-
-'' x86_64
-''const FB_INTEGERSIZE = 4
-''const FB_POINTERSIZE = 8
-''const FB_LONGSIZE    = 8
-'' But on win32 (ok, win64):
-''const FB_LONGSIZE    = 4
-'' These cannot be hard coded since we have -target and -arch options
-
 '' array descriptor
 '' x86 assumption
 type FB_ARRAYDESC
@@ -637,6 +624,8 @@ type FBENV
 	clopt			as FBCMMLINEOPT				'' cmm-line options
 	target			as FBTARGET					'' target specific
 	wchar_doconv		as integer				'' ok to convert literals at compile-time?
+
+	pointersize		as integer
 
 	'' Parse-specific things
 

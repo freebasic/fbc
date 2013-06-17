@@ -1061,7 +1061,7 @@ private function hInitVptr _
 	function = astNewASSIGN( _ 
 		astBuildInstPtr( this_, symbUdtGetFirstField( symb.rtti.fb_object ) ), _
 		astNewCONV( typeAddrOf( FB_DATATYPE_VOID ), NULL, _
-			astNewADDROF( astNewVAR( parent->udt.ext->vtable, FB_POINTERSIZE*2 ) ) ) )
+			astNewADDROF( astNewVAR( parent->udt.ext->vtable, env.pointersize * 2 ) ) ) )
 end function
 
 private sub hCallCtors( byval n as ASTNODE ptr, byval sym as FBSYMBOL ptr )

@@ -489,7 +489,7 @@ sub hPrepOperand _
 		'' offset
 		ofs += vreg->ofs
 		if( isaux ) then
-			ofs += FB_INTEGERSIZE
+			ofs += 4
 		end if
 
 		if( ofs > 0 ) then
@@ -1679,7 +1679,7 @@ private sub _emitSTORI2L _
 	end if
 
 	''
-	if( sdsize < FB_INTEGERSIZE ) then
+	if( sdsize < 4 ) then
 		ext = *hGetRegName( FB_DATATYPE_INTEGER, svreg->reg )
 
 		if( typeIsSigned( svreg->dtype ) ) then
@@ -1908,7 +1908,7 @@ private sub _emitSTORF2I _
 		'' unsigned.. try a bigger type
 		else
 			'' uint?
-			if( ddsize = FB_INTEGERSIZE ) then
+			if( ddsize = 4 ) then
 				outp "sub esp, 8"
 				outp "fistp qword ptr [esp]"
 				hPOP dst
@@ -2051,7 +2051,7 @@ private sub _emitSTORI2F _
 		if( typeIsSigned( svreg->dtype ) ) then
 
 			'' not an integer? make it
-			if( (svreg->typ = IR_VREGTYPE_REG) and (sdsize < FB_INTEGERSIZE) ) then
+			if( (svreg->typ = IR_VREGTYPE_REG) and (sdsize < 4) ) then
 				src = *hGetRegName( FB_DATATYPE_INTEGER, svreg->reg )
 			end if
 
@@ -2066,7 +2066,7 @@ private sub _emitSTORI2F _
 		else
 
 			'' uint..
-			if( sdsize = FB_INTEGERSIZE ) then
+			if( sdsize = 4 ) then
 				hPUSH "0"
 				hPUSH src
 				outp "fild qword ptr [esp]"
@@ -2101,7 +2101,7 @@ private sub _emitSTORI2F _
 		'' unsigned, try a bigger type..
 		else
 			'' uint..
-			if( sdsize = FB_INTEGERSIZE ) then
+			if( sdsize = 4 ) then
 				hPUSH "0"
 				hPUSH src
 				outp "fild qword ptr [esp]"
@@ -2240,7 +2240,7 @@ private sub _emitLOADI2L _
 	''
 	if( typeIsSigned( svreg->dtype ) ) then
 
-		if( sdsize < FB_INTEGERSIZE ) then
+		if( sdsize < 4 ) then
 			ostr = "movsx " + dst1 + COMMA + src1
 			outp ostr
 		else
@@ -2254,7 +2254,7 @@ private sub _emitLOADI2L _
 
 	else
 
-		if( sdsize < FB_INTEGERSIZE ) then
+		if( sdsize < 4 ) then
 			ostr = "movzx " + dst1 + COMMA + src1
 			outp ostr
 		else
@@ -2510,7 +2510,7 @@ private sub _emitLOADF2I _
 			outp ostr
 
 			'' not an integer? make it
-			if( ddsize < FB_INTEGERSIZE ) then
+			if( ddsize < 4 ) then
 				dst = *hGetRegName( FB_DATATYPE_INTEGER, dvreg->reg )
 			end if
 
@@ -2520,7 +2520,7 @@ private sub _emitLOADF2I _
 		else
 
 			'' uint?
-			if( ddsize = FB_INTEGERSIZE ) then
+			if( ddsize = 4 ) then
 				outp "sub esp, 8"
 				outp "fistp qword ptr [esp]"
 				hPOP dst
@@ -2660,7 +2660,7 @@ private sub _emitLOADI2F _
 		if( typeIsSigned( svreg->dtype ) ) then
 
 			'' not an integer? make it
-			if( (svreg->typ = IR_VREGTYPE_REG) and (sdsize < FB_INTEGERSIZE) ) then
+			if( (svreg->typ = IR_VREGTYPE_REG) and (sdsize < 4) ) then
 				src = *hGetRegName( FB_DATATYPE_INTEGER, svreg->reg )
 			end if
 
@@ -2675,7 +2675,7 @@ private sub _emitLOADI2F _
 		else
 
 			'' uint?
-			if( sdsize = FB_INTEGERSIZE ) then
+			if( sdsize = 4 ) then
 				hPUSH "0"
 				hPUSH src
 				outp "fild qword ptr [esp]"
@@ -2710,7 +2710,7 @@ private sub _emitLOADI2F _
 		'' unsigned, try a bigger type..
 		else
 			'' uint..
-			if( sdsize = FB_INTEGERSIZE ) then
+			if( sdsize = 4 ) then
 				hPUSH "0"
 				hPUSH src
 				outp "fild qword ptr [esp]"
@@ -3652,7 +3652,7 @@ private sub hSHIFTL _
 
 		if( (svreg->typ <> IR_VREGTYPE_REG) or (svreg->reg <> EMIT_REG_ECX) ) then
 			'' handle src < dword
-			if( typeGetSize( svreg->dtype ) <> FB_INTEGERSIZE ) then
+			if( typeGetSize( svreg->dtype ) <> 4 ) then
  				'' if it's not a reg, the right size was already set at the hPrepOperand() above
  				if( svreg->typ = IR_VREGTYPE_REG ) then
  					src = *hGetRegName( FB_DATATYPE_INTEGER, svreg->reg )
@@ -5601,7 +5601,7 @@ private sub _emitPOPI _
 			outp ostr
 		end if
 
-	elseif( dsize = FB_INTEGERSIZE ) then
+	elseif( dsize = 4 ) then
 		'' POP 4 bytes directly, no need for intermediate code
 		ostr = "pop " + dst
 		outp ostr
@@ -6721,7 +6721,7 @@ private sub _procAllocArg _
 	if( symbIsParamByVal( sym ) ) then
 		lgt = symbGetLen( sym )
 	else
-		lgt = FB_POINTERSIZE
+		lgt = 4    '' it's just a pointer
 	end if
 
 	sym->ofs = proc->proc.ext->stk.argofs

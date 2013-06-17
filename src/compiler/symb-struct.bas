@@ -125,7 +125,7 @@ function typeCalcNaturalAlign _
 
 	'' var-len string: largest field is the pointer at the front
 	case FB_DATATYPE_STRING
-		align = FB_POINTERSIZE
+		align = env.pointersize
 
 	case else
 		'' Anything else (including zstring/wstring/fixlen strings)
@@ -649,12 +649,12 @@ private function hGetReturnType( byval sym as FBSYMBOL ptr ) as integer
 		fld = symbUdtGetFirstField( sym )
 		if( fld->lgt = 2 ) then
 			'' and if the struct is not packed
-			if( sym->lgt >= FB_INTEGERSIZE ) then
+			if( sym->lgt >= 4 ) then
 				res = FB_DATATYPE_INTEGER
 			end if
 		end if
 
-	case FB_INTEGERSIZE
+	case 4
 		'' return in ST(0) if there's only one element and it's a SINGLE
 		do
 			fld = symbUdtGetFirstField( sym )
@@ -679,17 +679,17 @@ private function hGetReturnType( byval sym as FBSYMBOL ptr ) as integer
 			res = FB_DATATYPE_INTEGER
 		end if
 
-	case FB_INTEGERSIZE + 1, FB_INTEGERSIZE + 2, FB_INTEGERSIZE + 3
+	case 5, 6, 7
 		'' return as longint only if first is a int
 		fld = symbUdtGetFirstField( sym )
-		if( fld->lgt = FB_INTEGERSIZE ) then
+		if( fld->lgt = 4 ) then
 			'' and if the struct is not packed
-			if( sym->lgt >= FB_INTEGERSIZE*2 ) then
+			if( sym->lgt >= 8 ) then
 				res = FB_DATATYPE_LONGINT
 			end if
 		end if
 
-	case FB_INTEGERSIZE*2
+	case 8
 		'' return in ST(0) if there's only one element and it's a DOUBLE
 		do
 			fld = symbUdtGetFirstField( sym )

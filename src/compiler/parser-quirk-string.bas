@@ -543,7 +543,7 @@ function cMKXFunct(byval tk as FB_TOKEN) as ASTNODE ptr
 		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 			funcexpr = astNewCONSTstr( str( token( astConstGetAsDouble( expr1 ) ) ) )
 		case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
-			if( FB_LONGSIZE = len( integer ) ) then
+			if( 4 = len( integer ) ) then
 				funcexpr = astNewCONSTstr( str( token( astGetValueAsInt( expr1 ) ) ) )
 			else
 				funcexpr = astNewCONSTstr( str( token( astConstGetAsInt64( expr1 ) ) ) )

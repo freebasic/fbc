@@ -85,6 +85,14 @@ function symbProcReturnsOnStack( byval proc as FBSYMBOL ptr ) as integer
 	end if
 end function
 
+private function hAlignToPow2 _
+	( _
+		byval value as longint, _
+		byval align as integer _
+	) as longint
+	function = (value + (align-1)) and (not (align-1))
+end function
+
 function symbCalcArgLen _
 	( _
 		byval dtype as integer, _
@@ -94,7 +102,7 @@ function symbCalcArgLen _
 
 	select case( mode )
 	case FB_PARAMMODE_BYREF, FB_PARAMMODE_BYDESC
-		return FB_POINTERSIZE
+		return env.pointersize
 	end select
 
 	'' BYVAL/VARARG
@@ -102,15 +110,15 @@ function symbCalcArgLen _
 	select case( typeGetDtAndPtrOnly( dtype ) )
 	case FB_DATATYPE_STRING
 		'' BYVAL strings passed as pointer instead
-		return FB_POINTERSIZE
+		return env.pointersize
 	case FB_DATATYPE_STRUCT
 		'' BYVAL non-trivial UDTs passed BYREF implicitly
 		if( symbCompIsTrivial( subtype ) = FALSE ) then
-			return FB_POINTERSIZE
+			return env.pointersize
 		end if
 	end select
 
-	function = ((symbCalcLen( dtype, subtype ) + (FB_INTEGERSIZE-1)) and not (FB_INTEGERSIZE-1))
+	function = hAlignToPow2( symbCalcLen( dtype, subtype ), env.pointersize )
 end function
 
 function symbCalcParamLen _
@@ -1565,7 +1573,7 @@ private function hCalcTypesDiff _
 					end if
 
 					'' not native pointer width?
-					if( typeGetSize( arg_dtype ) <> FB_POINTERSIZE ) then
+					if( typeGetSize( arg_dtype ) <> env.pointersize ) then
 						return 0
 					end if
 
@@ -1739,8 +1747,8 @@ private function hCheckOvlParam _
 		if( arg_mode = FB_PARAMMODE_BYVAL ) then
 			'' invalid type? refuse..
 			if( (typeGetClass( arg_dtype ) <> FB_DATACLASS_INTEGER) or _
-				(typeGetSize( arg_dtype ) <> FB_POINTERSIZE) ) then
-               	return 0
+				(typeGetSize( arg_dtype ) <> env.pointersize) ) then
+				return 0
 			end if
 
 			'' pretend param is a pointer

@@ -13,7 +13,7 @@ const EMIT_MAXRNAMES  = REG_MAXREGS
 const EMIT_MAXRTABLES = 4				'' 8-bit, 16-bit, 32-bit, fpoint
 
 const EMIT_LOCSTART 	= 0
-const EMIT_ARGSTART 	= FB_POINTERSIZE + FB_INTEGERSIZE '' skip return address + saved ebp
+const EMIT_ARGSTART 	= 4 + 4 '' skip return address + saved ebp
 
 enum EMITREG_ENUM
 	EMIT_REG_FP0	= 0

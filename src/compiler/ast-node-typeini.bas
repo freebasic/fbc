@@ -789,21 +789,18 @@ private function hExprIsConst _
 
 		'' offset?
 		if( astIsOFFSET( expr ) ) then
-
 			'' different types?
 			if( (typeGetClass( sdtype ) <> FB_DATACLASS_INTEGER) or _
-				(typeGetSize( sdtype ) <> FB_POINTERSIZE) ) then
+				(typeGetSize( sdtype ) <> env.pointersize) ) then
 				errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE )
 				exit function
 			end if
-
 		else
 			'' not a constant?
 			if( astIsCONST( expr ) = FALSE ) then
 				errReport( FB_ERRMSG_EXPECTEDCONST, TRUE )
 				exit function
 			end if
-
 		end if
 
 	'' literal string..

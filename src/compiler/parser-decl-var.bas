@@ -36,7 +36,7 @@ sub hSymbolType _
 		'' error recovery: fake a type
 		dtype = FB_DATATYPE_INTEGER
 		subtype = NULL
-		lgt = FB_INTEGERSIZE
+		lgt = typeGetSize( dtype )
 	end if
 
 	'' ANY?
@@ -45,7 +45,7 @@ sub hSymbolType _
 		'' error recovery: fake a type
 		dtype = typeAddrOf( dtype )
 		subtype = NULL
-		lgt = FB_POINTERSIZE
+		lgt = typeGetSize( dtype )
 	end if
 
 end sub

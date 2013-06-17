@@ -95,7 +95,7 @@ function astLoadDEREF( byval n as ASTNODE ptr ) as IRVREG ptr
 		'' src is not a reg?
 		if( (irIsREG( v1 ) = FALSE) or _
 			(typeGetClass(v1->dtype) <> FB_DATACLASS_INTEGER) or _
-			(typeGetSize(v1->dtype) <> FB_POINTERSIZE) ) then
+			(typeGetSize(v1->dtype) <> env.pointersize) ) then
 
 			vp = irAllocVREG( typeAddrOf( astGetDataType( n ) ), n->subtype )
 			irEmitADDR( AST_OP_DEREF, v1, vp )

@@ -320,7 +320,7 @@ private sub hTypeMultElementDecl _
 				'' error recovery: fake type
 				dtype = FB_DATATYPE_INTEGER
 				subtype = NULL
-				lgt = FB_INTEGERSIZE
+				lgt = 0
 			end if
 		end if
 
@@ -455,7 +455,7 @@ private sub hTypeElementDecl _
 			'' error recovery: fake type
 			dtype = FB_DATATYPE_INTEGER
 			subtype = NULL
-			lgt = FB_INTEGERSIZE
+			lgt = 0
 		end if
 	end if
 
@@ -595,7 +595,7 @@ private function cFieldAlignmentAttribute( ) as integer
 	var align = astConstFlushToInt( expr )
 	if( align < 0 ) then
 		align = 0
-	elseif( align > FB_INTEGERSIZE ) then
+	elseif( align > env.pointersize ) then
 		align = 0
 	elseif( align = 3 ) then
 		align = 2

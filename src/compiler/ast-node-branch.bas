@@ -220,10 +220,10 @@ function astBuildJMPTB _
 		'' goto table[expr - minval]
 		tree = astNewLINK( tree, _
 			astNewBRANCH( AST_OP_JUMPPTR, NULL, _
-				astNewIDX( astNewVAR( tbsym, -minval * FB_POINTERSIZE ), _
+				astNewIDX( astNewVAR( tbsym, -minval * env.pointersize ), _
 					astNewBOP( AST_OP_MUL, _
 						astNewVAR( tempvar ), _
-						astNewCONSTi( FB_POINTERSIZE, FB_DATATYPE_UINT ) ), _
+						astNewCONSTi( env.pointersize, FB_DATATYPE_UINT ) ), _
 					typeAddrOf( FB_DATATYPE_VOID ), NULL ) ) )
 	else
 		tbsym = NULL
