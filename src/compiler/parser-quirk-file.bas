@@ -731,19 +731,14 @@ private function hFileGet _
 		if( iobexpr <> NULL ) then
 			s = astGetSymbol( iobexpr )
 			if( s <> NULL ) then
-				dim isint as integer = FALSE
+				'' It's for a BYREF parameter, so must be the
+				'' same size to be allowed by astNewARG()
+				select case( typeGetSizeType( symbGetType( s ) ) )
+				case FB_SIZETYPE_INT32, FB_SIZETYPE_UINT32
 
-				'' must be integer
-				select case symbGetType( s )
-				case FB_DATATYPE_INTEGER, FB_DATATYPE_UINT
-					isint = TRUE
-				case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
-					isint = ( FB_LONGSIZE = FB_INTEGERSIZE )
-				end select
-
-				if( isint = FALSE ) then
+				case else
 					errReport( FB_ERRMSG_INVALIDDATATYPES )
-				end if
+				end select
 			end if
 		else
 			errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )

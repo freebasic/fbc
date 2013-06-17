@@ -926,7 +926,6 @@ function rtlPrint _
 			f = PROCLOOKUP( PRINTVOID )
 		end if
 	else
-
 		'' UDT? try to convert to string with type casting op overloading
 		select case typeGet( astGetDataType( expr ) )
 		case FB_DATATYPE_STRUCT, FB_DATATYPE_ENUM
@@ -935,6 +934,11 @@ function rtlPrint _
 				exit function
 			end if
 		end select
+
+		'' Convert pointer to ulong
+		if( typeIsPtr( astGetFullType( expr ) ) ) then
+			expr = astNewCONV( FB_DATATYPE_ULONG, NULL, expr )
+		end if
 
 		select case as const typeGet( astGetDataType( expr ) )
 		case FB_DATATYPE_FIXSTR, FB_DATATYPE_STRING, FB_DATATYPE_CHAR
@@ -951,91 +955,69 @@ function rtlPrint _
 				f = PROCLOOKUP( PRINTWSTR )
 			end if
 
-		case FB_DATATYPE_BYTE
-			if( islprint ) then
-				f = PROCLOOKUP( LPRINTBYTE )
-			else
-				f = PROCLOOKUP( PRINTBYTE )
-			end if
+		case FB_DATATYPE_BYTE, FB_DATATYPE_UBYTE, _
+		     FB_DATATYPE_SHORT, FB_DATATYPE_USHORT, _
+		     FB_DATATYPE_INTEGER, FB_DATATYPE_ENUM, FB_DATATYPE_UINT, _
+		     FB_DATATYPE_LONG, FB_DATATYPE_ULONG, _
+		     FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 
-		case FB_DATATYPE_UBYTE
-			if( islprint ) then
-				f = PROCLOOKUP( LPRINTUBYTE )
-			else
-				f = PROCLOOKUP( PRINTUBYTE )
-			end if
+			select case as const( typeGetSizeType( astGetFullType( expr ) ) )
+			case FB_SIZETYPE_INT8
+				if( islprint ) then
+					f = PROCLOOKUP( LPRINTBYTE )
+				else
+					f = PROCLOOKUP( PRINTBYTE )
+				end if
 
-		case FB_DATATYPE_SHORT
-			if( islprint ) then
-				f = PROCLOOKUP( LPRINTSHORT )
-			else
-				f = PROCLOOKUP( PRINTSHORT )
-			end if
+			case FB_SIZETYPE_UINT8
+				if( islprint ) then
+					f = PROCLOOKUP( LPRINTUBYTE )
+				else
+					f = PROCLOOKUP( PRINTUBYTE )
+				end if
 
-		case FB_DATATYPE_USHORT
-			if( islprint ) then
-				f = PROCLOOKUP( LPRINTUSHORT )
-			else
-				f = PROCLOOKUP( PRINTUSHORT )
-			end if
+			case FB_SIZETYPE_INT16
+				if( islprint ) then
+					f = PROCLOOKUP( LPRINTSHORT )
+				else
+					f = PROCLOOKUP( PRINTSHORT )
+				end if
 
-		case FB_DATATYPE_INTEGER, FB_DATATYPE_ENUM
-			if( islprint ) then
-				f = PROCLOOKUP( LPRINTINT )
-			else
-				f = PROCLOOKUP( PRINTINT )
-			end if
+			case FB_SIZETYPE_UINT16
+				if( islprint ) then
+					f = PROCLOOKUP( LPRINTUSHORT )
+				else
+					f = PROCLOOKUP( PRINTUSHORT )
+				end if
 
-		case FB_DATATYPE_UINT
-			if( islprint ) then
-				f = PROCLOOKUP( LPRINTUINT )
-			else
-				f = PROCLOOKUP( PRINTUINT )
-			end if
-
-		case FB_DATATYPE_LONG
-			if( FB_LONGSIZE = FB_INTEGERSIZE ) then
+			case FB_SIZETYPE_INT32
 				if( islprint ) then
 					f = PROCLOOKUP( LPRINTINT )
 				else
 					f = PROCLOOKUP( PRINTINT )
 				end if
-			else
-				if( islprint ) then
-					f = PROCLOOKUP( LPRINTLONGINT )
-				else
-					f = PROCLOOKUP( PRINTLONGINT )
-				end if
-			end if
 
-		case FB_DATATYPE_ULONG
-			if( FB_LONGSIZE = FB_INTEGERSIZE ) then
+			case FB_SIZETYPE_UINT32
 				if( islprint ) then
 					f = PROCLOOKUP( LPRINTUINT )
 				else
 					f = PROCLOOKUP( PRINTUINT )
 				end if
-			else
+
+			case FB_SIZETYPE_INT64
+				if( islprint ) then
+					f = PROCLOOKUP( LPRINTLONGINT )
+				else
+					f = PROCLOOKUP( PRINTLONGINT )
+				end if
+
+			case FB_SIZETYPE_UINT64
 				if( islprint ) then
 					f = PROCLOOKUP( LPRINTULONGINT )
 				else
 					f = PROCLOOKUP( PRINTULONGINT )
 				end if
-			end if
-
-		case FB_DATATYPE_LONGINT
-			if( islprint ) then
-				f = PROCLOOKUP( LPRINTLONGINT )
-			else
-				f = PROCLOOKUP( PRINTLONGINT )
-			end if
-
-		case FB_DATATYPE_ULONGINT
-			if( islprint ) then
-				f = PROCLOOKUP( LPRINTULONGINT )
-			else
-				f = PROCLOOKUP( PRINTULONGINT )
-			end if
+			end select
 
 		case FB_DATATYPE_SINGLE
 			if( islprint ) then
@@ -1051,31 +1033,9 @@ function rtlPrint _
 				f = PROCLOOKUP( PRINTDOUBLE )
 			end if
 
-		case FB_DATATYPE_POINTER
-			if( FB_LONGSIZE = FB_INTEGERSIZE ) then
-				if( islprint ) then
-					f = PROCLOOKUP( LPRINTUINT )
-				else
-					f = PROCLOOKUP( PRINTUINT )
-				end if
-			else
-				if( islprint ) then
-					f = PROCLOOKUP( LPRINTULONGINT )
-				else
-					f = PROCLOOKUP( PRINTULONGINT )
-				end if
-			end if
-
-			'' cast(ulong, pointer) should always work
-			expr = astNewCONV( FB_DATATYPE_ULONG, NULL, expr )
-
 		case else
 			exit function
-
 		end select
-
-		'' Must have an expression for the call with 3 args
-		assert(expr)
 	end if
 
     ''
@@ -1200,7 +1160,6 @@ function rtlWrite _
 	if( expr = NULL ) then
 		f = PROCLOOKUP( WRITEVOID )
 	else
-
 		'' UDT? try to convert to string with type casting op overloading
 		select case astGetDataType( expr )
 		case FB_DATATYPE_STRUCT, FB_DATATYPE_ENUM
@@ -1210,6 +1169,11 @@ function rtlWrite _
 			end if
 		end select
 
+		'' Convert pointer to ulong
+		if( typeIsPtr( astGetFullType( expr ) ) ) then
+			expr = astNewCONV( FB_DATATYPE_ULONG, NULL, expr )
+		end if
+
 		select case as const typeGet( astGetDataType( expr ) )
 		case FB_DATATYPE_FIXSTR, FB_DATATYPE_STRING, FB_DATATYPE_CHAR
 			f = PROCLOOKUP( WRITESTR )
@@ -1217,43 +1181,22 @@ function rtlWrite _
 		case FB_DATATYPE_WCHAR
 			f = PROCLOOKUP( WRITEWSTR )
 
-		case FB_DATATYPE_BYTE
-			f = PROCLOOKUP( WRITEBYTE )
+		case FB_DATATYPE_BYTE, FB_DATATYPE_UBYTE, _
+		     FB_DATATYPE_SHORT, FB_DATATYPE_USHORT, _
+		     FB_DATATYPE_INTEGER, FB_DATATYPE_ENUM, FB_DATATYPE_UINT, _
+		     FB_DATATYPE_LONG, FB_DATATYPE_ULONG, _
+		     FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 
-		case FB_DATATYPE_UBYTE
-			f = PROCLOOKUP( WRITEUBYTE )
-
-		case FB_DATATYPE_SHORT
-			f = PROCLOOKUP( WRITESHORT )
-
-		case FB_DATATYPE_USHORT
-			f = PROCLOOKUP( WRITEUSHORT )
-
-		case FB_DATATYPE_INTEGER, FB_DATATYPE_ENUM
-			f = PROCLOOKUP( WRITEINT )
-
-		case FB_DATATYPE_UINT
-			f = PROCLOOKUP( WRITEUINT )
-
-		case FB_DATATYPE_LONG
-			if( FB_LONGSIZE = FB_INTEGERSIZE ) then
-				f = PROCLOOKUP( WRITEINT )
-			else
-				f = PROCLOOKUP( WRITELONGINT )
-			end if
-
-		case FB_DATATYPE_ULONG
-			if( FB_LONGSIZE = FB_INTEGERSIZE ) then
-				f = PROCLOOKUP( WRITEUINT )
-			else
-				f = PROCLOOKUP( WRITEULONGINT )
-			end if
-
-		case FB_DATATYPE_LONGINT
-			f = PROCLOOKUP( WRITELONGINT )
-
-		case FB_DATATYPE_ULONGINT
-			f = PROCLOOKUP( WRITEULONGINT )
+			select case as const( typeGetSizeType( astGetFullType( expr ) ) )
+			case FB_SIZETYPE_INT8   : f = PROCLOOKUP( WRITEBYTE )
+			case FB_SIZETYPE_UINT8  : f = PROCLOOKUP( WRITEUBYTE )
+			case FB_SIZETYPE_INT16  : f = PROCLOOKUP( WRITESHORT )
+			case FB_SIZETYPE_UINT16 : f = PROCLOOKUP( WRITEUSHORT )
+			case FB_SIZETYPE_INT32  : f = PROCLOOKUP( WRITEINT )
+			case FB_SIZETYPE_UINT32 : f = PROCLOOKUP( WRITEUINT )
+			case FB_SIZETYPE_INT64  : f = PROCLOOKUP( WRITELONGINT )
+			case FB_SIZETYPE_UINT64 : f = PROCLOOKUP( WRITEULONGINT )
+			end select
 
 		case FB_DATATYPE_SINGLE
 			f = PROCLOOKUP( WRITESINGLE )
@@ -1261,20 +1204,9 @@ function rtlWrite _
 		case FB_DATATYPE_DOUBLE
 			f = PROCLOOKUP( WRITEDOUBLE )
 
-		case FB_DATATYPE_POINTER
-			if( FB_LONGSIZE = FB_INTEGERSIZE ) then
-				f = PROCLOOKUP( WRITEUINT )
-			else
-				f = PROCLOOKUP( WRITEULONGINT )
-			end if
-
-			expr = astNewCONV( FB_DATATYPE_ULONG, NULL, expr )
-
 		case else
 			exit function
-
 		end select
-
 	end if
 
     ''

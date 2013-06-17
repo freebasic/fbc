@@ -1513,24 +1513,14 @@ function rtlFileSeek _
     dim as integer pos_dtype = any
 
 	function = FALSE
-    
+
     pos_dtype = astGetDataType( newpos )
-    
-	''
-	select case as const pos_dtype
-	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
+	assert( typeGetClass( pos_dtype ) = FB_DATACLASS_INTEGER )
+	if( typeGetSize( pos_dtype ) = 8 ) then
 		f = PROCLOOKUP( FILESEEKLARGE )
-
-	case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
-		if( FB_LONGSIZE = FB_INTEGERSIZE ) then
-			f = PROCLOOKUP( FILESEEK )
-		else
-			f = PROCLOOKUP( FILESEEKLARGE )
-		end if
-
-	case else
+	else
 	    f = PROCLOOKUP( FILESEEK )
-	end select
+	end if
 
 	proc = astNewCALL( f )
 
@@ -1597,18 +1587,9 @@ function rtlFilePut _
 	end if
 	o_dtype  = astGetDataType( offset )
 
-	select case as const o_dtype
-	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-		islarge = TRUE
+	assert( typeGetClass( o_dtype ) = FB_DATACLASS_INTEGER )
+	islarge = (typeGetSize( o_dtype ) = 8)
 
-	case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
-		islarge = (FB_LONGSIZE <> FB_INTEGERSIZE)
-
-	case else
-		islarge = FALSE
-	end select
-
-	''
 	if( isstring ) then
 		if( islarge ) then
 			f = PROCLOOKUP( FILEPUTSTRLARGE )
@@ -1686,7 +1667,7 @@ function rtlFilePutArray _
 
     dim as ASTNODE ptr proc = any
     dim as FBSYMBOL ptr f = any
-    dim as integer o_dtype = any, islarge = any
+	dim as integer o_dtype = any
 
     function = NULL
 
@@ -1695,18 +1676,8 @@ function rtlFilePutArray _
 	end if
     o_dtype  = astGetDataType( offset )
 
-	select case as const o_dtype
-	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-		islarge = TRUE
-
-	case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
-		islarge = (FB_LONGSIZE <> FB_INTEGERSIZE)
-
-	case else
-		islarge = FALSE
-	end select
-
-	if( islarge ) then
+	assert( typeGetClass( o_dtype ) = FB_DATACLASS_INTEGER )
+	if( typeGetSize( o_dtype ) = 8 ) then
 		f = PROCLOOKUP( FILEPUTARRAYLARGE )
 	else
 		f = PROCLOOKUP( FILEPUTARRAY )
@@ -1773,16 +1744,8 @@ function rtlFileGet _
 	end if
    	o_dtype  = astGetDataType( offset )
 
-	select case as const o_dtype
-	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-		islarge = TRUE
-
-	case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
-		islarge = (FB_LONGSIZE <> FB_INTEGERSIZE)
-
-	case else
-		islarge = FALSE
-	end select
+	assert( typeGetClass( o_dtype ) = FB_DATACLASS_INTEGER )
+	islarge = (typeGetSize( o_dtype ) = 8)
 
 	if( iobytes ) then
 		if( isstring ) then
@@ -1894,16 +1857,8 @@ function rtlFileGetArray _
 	end if
 	o_dtype  = astGetDataType( offset )
 
-	select case as const o_dtype
-	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-		islarge = TRUE
-
-	case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
-		islarge = (FB_LONGSIZE <> FB_INTEGERSIZE)
-
-	case else
-		islarge = FALSE
-	end select
+	assert( typeGetClass( o_dtype ) = FB_DATACLASS_INTEGER )
+	islarge = (typeGetSize( o_dtype ) = 8)
 
 	if( iobytes ) then
 		if( islarge ) then
@@ -2203,43 +2158,22 @@ function rtlFileInputGet _
 		f = PROCLOOKUP( INPUTWSTR )
 		args = 2
 
-	case FB_DATATYPE_BYTE
-		f = PROCLOOKUP( INPUTBYTE )
+	case FB_DATATYPE_BYTE, FB_DATATYPE_UBYTE, _
+	     FB_DATATYPE_SHORT, FB_DATATYPE_USHORT, _
+	     FB_DATATYPE_INTEGER, FB_DATATYPE_ENUM, FB_DATATYPE_UINT, _
+	     FB_DATATYPE_LONG, FB_DATATYPE_ULONG, FB_DATATYPE_POINTER, _
+	     FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 
-	case FB_DATATYPE_UBYTE
-		f = PROCLOOKUP( INPUTUBYTE )
-
-	case FB_DATATYPE_SHORT
-		f = PROCLOOKUP( INPUTSHORT )
-
-	case FB_DATATYPE_USHORT
-		f = PROCLOOKUP( INPUTUSHORT )
-
-	case FB_DATATYPE_INTEGER, FB_DATATYPE_ENUM
-		f = PROCLOOKUP( INPUTINT )
-
-	case FB_DATATYPE_UINT
-		f = PROCLOOKUP( INPUTUINT )
-
-	case FB_DATATYPE_LONG
-		if( FB_LONGSIZE = FB_INTEGERSIZE ) then
-			f = PROCLOOKUP( INPUTINT )
-		else
-			f = PROCLOOKUP( INPUTLONGINT )
-		end if
-
-	case FB_DATATYPE_ULONG, FB_DATATYPE_POINTER
-		if( FB_LONGSIZE = FB_INTEGERSIZE ) then
-			f = PROCLOOKUP( INPUTUINT )
-		else
-			f = PROCLOOKUP( INPUTULONGINT )
-		end if
-
-	case FB_DATATYPE_LONGINT
-		f = PROCLOOKUP( INPUTLONGINT )
-
-	case FB_DATATYPE_ULONGINT
-		f = PROCLOOKUP( INPUTULONGINT )
+		select case as const( typeGetSizeType( dtype ) )
+		case FB_SIZETYPE_INT8   : f = PROCLOOKUP( INPUTBYTE )
+		case FB_SIZETYPE_UINT8  : f = PROCLOOKUP( INPUTUBYTE )
+		case FB_SIZETYPE_INT16  : f = PROCLOOKUP( INPUTSHORT )
+		case FB_SIZETYPE_UINT16 : f = PROCLOOKUP( INPUTUSHORT )
+		case FB_SIZETYPE_INT32  : f = PROCLOOKUP( INPUTINT )
+		case FB_SIZETYPE_UINT32 : f = PROCLOOKUP( INPUTUINT )
+		case FB_SIZETYPE_INT64  : f = PROCLOOKUP( INPUTLONGINT )
+		case FB_SIZETYPE_UINT64 : f = PROCLOOKUP( INPUTULONGINT )
+		end select
 
 	case FB_DATATYPE_SINGLE
 		f = PROCLOOKUP( INPUTSINGLE )
@@ -2301,27 +2235,10 @@ function rtlFileLock _
 
 	i_dtype = astGetDataType( iniexpr )
 	e_dtype = astGetDataType( endexpr )
-	
-	''
-	select case as const i_dtype
-	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-		islarge = TRUE
 
-	case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
-		islarge = (FB_LONGSIZE <> FB_INTEGERSIZE)
-
-	case else
-		select case as const e_dtype
-		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-			islarge = TRUE
-
-		case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
-			islarge = (FB_LONGSIZE <> FB_INTEGERSIZE)
-
-		case else
-			islarge = FALSE
-		end select
-	end select
+	assert( typeGetClass( i_dtype ) = FB_DATACLASS_INTEGER )
+	assert( typeGetClass( e_dtype ) = FB_DATACLASS_INTEGER )
+	islarge = (typeGetSize( i_dtype ) = 8) or (typeGetSize( e_dtype ) = 8)
 
 	if( islock ) then
 		if( islarge ) then

@@ -3351,70 +3351,42 @@ function rtlToStr _
 	select case as const astGetDataClass( expr )
 	case FB_DATACLASS_INTEGER
 
-		select case as const dtype
-		case FB_DATATYPE_LONGINT
-			f = iif( pad = FALSE, _
-			         PROCLOOKUP( LONGINT2STR ), _
-			         PROCLOOKUP( LONGINT2STR_QB ) )
+		'' Convert pointer to ulong
+		if( typeIsPtr( dtype ) ) then
+			expr = astNewCONV( FB_DATATYPE_ULONG, NULL, expr )
+			dtype = astGetDatatype( expr )
+		end if
 
-		case FB_DATATYPE_ULONGINT
-			f = iif( pad = FALSE, _
-			         PROCLOOKUP( ULONGINT2STR ), _
-			         PROCLOOKUP( ULONGINT2STR_QB ) )
-
-		case FB_DATATYPE_LONG
-			if( FB_LONGSIZE = FB_INTEGERSIZE ) then
-				f = iif( pad = FALSE, _
-				         PROCLOOKUP( INT2STR ), _
-				         PROCLOOKUP( INT2STR_QB ) )
-			else
-				f = iif( pad = FALSE, _
-				         PROCLOOKUP( LONGINT2STR ), _
-				         PROCLOOKUP( LONGINT2STR_QB ) )
-			end if
-
-		case FB_DATATYPE_ULONG
-			if( FB_LONGSIZE = FB_INTEGERSIZE ) then
-				f = iif( pad = FALSE, _
-				         PROCLOOKUP( UINT2STR ), _
-				         PROCLOOKUP( UINT2STR_QB ) )
-			else
-				f = iif( pad = FALSE, _
-				         PROCLOOKUP( ULONGINT2STR ), _
-				         PROCLOOKUP( ULONGINT2STR_QB ) )
-			end if
-
-		case FB_DATATYPE_BYTE, FB_DATATYPE_SHORT, FB_DATATYPE_INTEGER, FB_DATATYPE_ENUM
-			f = iif( pad = FALSE, _
-			         PROCLOOKUP( INT2STR ), _
-			         PROCLOOKUP( INT2STR_QB ) )
-
-		case FB_DATATYPE_UBYTE, FB_DATATYPE_USHORT, FB_DATATYPE_UINT
-			f = iif( pad = FALSE, _
-			         PROCLOOKUP( UINT2STR ), _
-			         PROCLOOKUP( UINT2STR_QB ) )
-
+		select case( dtype )
 		'' zstring? do nothing
 		case FB_DATATYPE_CHAR
 			return expr
-
 		'' wstring? convert..
 		case FB_DATATYPE_WCHAR
 			return rtlWStrToA( expr )
+		end select
 
-		'' pointer..
-		case else
-			if( FB_LONGSIZE = FB_INTEGERSIZE ) then
-				f = iif( pad = FALSE, _
-				         PROCLOOKUP( UINT2STR ), _
-				         PROCLOOKUP( UINT2STR_QB ) )
-			else
-				f = iif( pad = FALSE, _
-				         PROCLOOKUP( ULONGINT2STR ), _
-				         PROCLOOKUP( ULONGINT2STR_QB ) )
-			end if
+		select case as const( typeGetSizeType( dtype ) )
+		case FB_SIZETYPE_INT64
+			f = iif( pad = FALSE, _
+				 PROCLOOKUP( LONGINT2STR ), _
+				 PROCLOOKUP( LONGINT2STR_QB ) )
 
-			expr = astNewCONV( FB_DATATYPE_ULONG, NULL, expr )
+		case FB_SIZETYPE_UINT64
+			f = iif( pad = FALSE, _
+				 PROCLOOKUP( ULONGINT2STR ), _
+				 PROCLOOKUP( ULONGINT2STR_QB ) )
+
+		case FB_SIZETYPE_INT8, FB_SIZETYPE_INT16, FB_SIZETYPE_INT32
+			f = iif( pad = FALSE, _
+				 PROCLOOKUP( INT2STR ), _
+				 PROCLOOKUP( INT2STR_QB ) )
+
+		case FB_SIZETYPE_UINT8, FB_SIZETYPE_UINT16, FB_SIZETYPE_UINT32
+			f = iif( pad = FALSE, _
+				 PROCLOOKUP( UINT2STR ), _
+				 PROCLOOKUP( UINT2STR_QB ) )
+
 		end select
 
 	case FB_DATACLASS_FPOINT
@@ -3484,54 +3456,32 @@ function rtlToWstr _
     	end if
     end if
 
-    ''
 	select case as const astGetDataClass( expr )
 	case FB_DATACLASS_INTEGER
+		'' Convert pointer to ulong
+		if( typeIsPtr( dtype ) ) then
+			expr = astNewCONV( FB_DATATYPE_ULONG, NULL, expr )
+			dtype = astGetDatatype( expr )
+		end if
 
-		select case as const dtype
-		case FB_DATATYPE_LONGINT
-			f = PROCLOOKUP( LONGINT2WSTR )
-
-		case FB_DATATYPE_ULONGINT
-			f = PROCLOOKUP( ULONGINT2WSTR )
-
-		case FB_DATATYPE_LONG
-			if( FB_LONGSIZE = FB_INTEGERSIZE ) then
-				f = PROCLOOKUP( INT2WSTR )
-			else
-				f = PROCLOOKUP( LONGINT2WSTR )
-			end if
-
-		case FB_DATATYPE_ULONG
-			if( FB_LONGSIZE = FB_INTEGERSIZE ) then
-				f = PROCLOOKUP( UINT2WSTR )
-			else
-				f = PROCLOOKUP( ULONGINT2WSTR )
-			end if
-
-		case FB_DATATYPE_BYTE, FB_DATATYPE_SHORT, FB_DATATYPE_INTEGER, FB_DATATYPE_ENUM
-			f = PROCLOOKUP( INT2WSTR )
-
-		case FB_DATATYPE_UBYTE, FB_DATATYPE_USHORT, FB_DATATYPE_UINT
-			f = PROCLOOKUP( UINT2WSTR )
-
+		select case( dtype )
 		'' wstring? do nothing
 		case FB_DATATYPE_WCHAR
 			return expr
-
 		'' zstring? convert..
 		case FB_DATATYPE_CHAR
 			return rtlAToWstr( expr )
+		end select
 
-		'' pointer..
-		case else
-			if( FB_LONGSIZE = FB_INTEGERSIZE ) then
-				f = PROCLOOKUP( UINT2WSTR )
-			else
-				f = PROCLOOKUP( ULONGINT2WSTR )
-			end if
-
-			expr = astNewCONV( FB_DATATYPE_ULONG, NULL, expr )
+		select case as const( typeGetSizeType( dtype ) )
+		case FB_SIZETYPE_INT64
+			f = PROCLOOKUP( LONGINT2WSTR )
+		case FB_SIZETYPE_UINT64
+			f = PROCLOOKUP( ULONGINT2WSTR )
+		case FB_SIZETYPE_INT8, FB_SIZETYPE_INT16, FB_SIZETYPE_INT32
+			f = PROCLOOKUP( INT2WSTR )
+		case FB_SIZETYPE_UINT8, FB_SIZETYPE_UINT16, FB_SIZETYPE_UINT32
+			f = PROCLOOKUP( UINT2WSTR )
 		end select
 
 	case FB_DATACLASS_FPOINT
@@ -3580,54 +3530,39 @@ function rtlStrToVal _
 
     function = NULL
 
-    ''
+	'' Convert pointer to ulong
+	if( typeIsPtr( to_dtype ) ) then
+		expr = astNewCONV( FB_DATATYPE_ULONG, NULL, expr )
+	end if
+
 	select case as const typeGet( to_dtype )
-	case FB_DATATYPE_LONGINT
-		f = PROCLOOKUP( STR2LNG )
-
-	case FB_DATATYPE_ULONGINT
-		f = PROCLOOKUP( STR2ULNG )
-
 	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 		f = PROCLOOKUP( STR2DBL )
 
-	case FB_DATATYPE_LONG
-		if( FB_LONGSIZE = FB_INTEGERSIZE ) then
-			f = PROCLOOKUP( STR2INT )
-		else
+	case FB_DATATYPE_BYTE, FB_DATATYPE_UBYTE, _
+	     FB_DATATYPE_SHORT, FB_DATATYPE_USHORT, _
+	     FB_DATATYPE_INTEGER, FB_DATATYPE_ENUM, FB_DATATYPE_UINT, _
+	     FB_DATATYPE_LONG, FB_DATATYPE_ULONG, FB_DATATYPE_POINTER, _
+	     FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
+
+		select case as const( typeGetSizeType( to_dtype ) )
+		case FB_SIZETYPE_INT64
 			f = PROCLOOKUP( STR2LNG )
-		end if
-
-	case FB_DATATYPE_ULONG
-		if( FB_LONGSIZE = FB_INTEGERSIZE ) then
-			f = PROCLOOKUP( STR2UINT )
-		else
+		case FB_SIZETYPE_UINT64
 			f = PROCLOOKUP( STR2ULNG )
-		end if
-
-	case FB_DATATYPE_BYTE, FB_DATATYPE_SHORT, FB_DATATYPE_INTEGER, FB_DATATYPE_ENUM
-		f = PROCLOOKUP( STR2INT )
-
-	case FB_DATATYPE_UBYTE, FB_DATATYPE_USHORT, FB_DATATYPE_UINT
-		f = PROCLOOKUP( STR2UINT )
+		case FB_SIZETYPE_INT8, FB_SIZETYPE_INT16, FB_SIZETYPE_INT32
+			f = PROCLOOKUP( STR2INT )
+		case FB_SIZETYPE_UINT8, FB_SIZETYPE_UINT16, FB_SIZETYPE_UINT32
+			f = PROCLOOKUP( STR2UINT )
+		end select
 
 	'' UDT's, classes: try cast(to_dtype) op overloading
 	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
 		return astNewCONV( to_dtype, NULL, expr )
 
-	case FB_DATATYPE_POINTER
-		if( FB_LONGSIZE = FB_INTEGERSIZE ) then
-			f = PROCLOOKUP( STR2INT )
-		else
-			f = PROCLOOKUP( STR2LNG )
-		end if
-
-		expr = astNewCONV( FB_DATATYPE_ULONG, NULL, expr )
-
 	case else
 		'' anything else..
 		exit function
-
 	end select
 
 	'' resolve zstring or wstring
