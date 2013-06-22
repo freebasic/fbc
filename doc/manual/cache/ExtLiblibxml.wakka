@@ -8,7 +8,7 @@ Header version: 2.6.17
 Examples: in examples/xml/
 
 {{fbdoc item="ex"}}
-{{fbdoc item="filename" value="examples/manual/libraries/"}}%%(freebasic)
+{{fbdoc item="filename" value="examples/manual/libraries/libxml.bas"}}%%(freebasic)
 #include once "libxml/xmlreader.bi"
 #define NULL 0
 

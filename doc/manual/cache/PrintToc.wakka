@@ -61,6 +61,7 @@
 		[[KeyPgDdtime __TIME__]]
 
 	{{fbdoc item="subsect" value="#"}}
+		[[KeyPgPpassert #ASSERT]]
 		[[KeyPgPpdefine #DEFINE]]
 		[[KeyPgPpelse #ELSE]]
 		[[KeyPgPpelseif #ELSEIF]]
@@ -88,6 +89,7 @@
 
 	{{fbdoc item="subsect" value="A"}}
 		[[KeyPgAbs ABS]]
+		[[KeyPgAbstract ABSTRACT (member)]]
 		[[KeyPgAccess ACCESS]]
 		[[KeyPgAcos ACOS]]
 		[[KeyPgAddGfx ADD (Graphics PUT)]]
@@ -119,7 +121,8 @@
 		[[KeyPgBitset BITSET]]
 		[[KeyPgBload BLOAD]]
 		[[KeyPgBsave BSAVE]]
-		[[KeyPgByref BYREF]]
+		[[KeyPgByref BYREF (parameters)]]
+		[[KeyPgByrefFunction BYREF (function results)]]
 		[[KeyPgByte BYTE]]
 		[[KeyPgByval BYVAL]]
 
@@ -392,6 +395,7 @@
 		[[KeyPgOut OUT]]
 		[[KeyPgOutput OUTPUT]]
 		[[KeyPgOverload OVERLOAD]]
+		[[KeyPgOverride OVERRIDE]]
 
 	{{fbdoc item="subsect" value="P"}}
 		[[KeyPgPaint PAINT]]
@@ -401,6 +405,7 @@
 		[[KeyPgPeek PEEK]]
 		[[KeyPgPmap PMAP]]
 		[[KeyPgPoint POINT]]
+		[[KeyPgPointCoord POINTCOORD]]
 		[[KeyPgPointer POINTER]]
 		[[KeyPgPoke POKE]]
 		[[KeyPgPos POS]]
@@ -547,6 +552,7 @@
 		[[KeyPgOpVarptr VARPTR]]
 		[[KeyPgViewtext VIEW PRINT]]
 		[[KeyPgViewgraphics VIEW (Graphics)]]
+		[[KeyPgVirtual VIRTUAL (member)]]
 
 	{{fbdoc item="subsect" value="W"}}
 		[[KeyPgWait WAIT]]
@@ -714,6 +720,7 @@
 	[[CatPgGfx2D 2D Drawing Functions]]
 	[[CatPgGfxInput User Input Functions]]
 	[[CatPgGfxScreen Screen Functions]]
+	[[GfxLib Supported graphics drivers (backends)]]
 	[[GfxScancodes Keyboard Scan Codes]]
 	[[GfxDefPalettes Default Palettes]]
 
@@ -910,6 +917,7 @@
 		[[ExtLibCRT C Runtime Library]]
 		[[ExtLibdos DOS API]]
 		[[ExtLibdisphelper disphelper]]
+		[[ExtLibGLib GLib]]
 		[[ExtLibwindows Windows API]]
 		[[ExtLibX11 X11]]
 
@@ -956,9 +964,12 @@
 		[[CompilerOptp -p < name >]]
 		[[CompilerOptpp -pp]]
 		[[CompilerOptprefix -prefix < path >]]
+		[[CompilerOptprint -print < option >]]
 		[[CompilerOptprofile -profile]]
 		[[CompilerOptr -r]]
 		[[CompilerOptrupp -R]]
+		[[CompilerOptrr -rr]]
+		[[CompilerOptrrupp -RR]]
 		[[CompilerOpts -s < name >]]
 		[[CompilerOptstatic -static]]
 		[[CompilerOpttarget -target < platform >]]
@@ -991,12 +1002,13 @@
 	[[FaqPgLinux Linux related FAQ]]
 
 {{fbdoc item="section" value="Miscellaneous"}}
-	[[ObsoletedKwds Obsoleted Keywords]]
+	[[ObsoletedKwds Obsolete Keywords]]
 	[[GlossaryIndex Glossary]]
 	[[CatPgMisc Miscellaneous Keywords]]
 	[[ProPgCruntime C Standard Library Functions]]
 	[[CptAscii ASCII Character Codes]]
 	[[TblRuntimeErrors Runtime Error Codes]]
+	[[TblComparisonC C/C++ vs. FreeBASIC comparison]]
 
 {{fbdoc item="section" value="Hacking on FreeBASIC"}}
 	[[DevToc Developer's Table of Contents]]

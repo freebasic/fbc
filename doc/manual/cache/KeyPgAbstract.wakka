@@ -12,7 +12,7 @@ Declare abstract methods
 	In order to call an abstract method, it must have been overridden and implemented by a derived data type, or else the program will abort.
 	As a result, only types that implement all the abstract methods are allowed to create objects. For the same reason, a constructor should not call an unimplemented method.
 	
-	##[[KeyPgConstructor Constructors]]## can not be abstract, since they cannot be virtual. In addition, abstract ##[[KeyPgDestructor destructors]]## are not supported either, because a destructor body (no matter whether implicit or explicit) is needed in order to call base and field destructors.
+	[[KeyPgConstructor Constructors]] cannot be abstract, since they cannot be virtual. In addition, abstract [[KeyPgDestructor destructors]] are not supported either, because a destructor body (no matter whether implicit or explicit) is needed in order to call base and field destructors.
 	
 	Abstracts are called "pure virtual" in ""C++"" (unlike ""FreeBASIC"", ""C++"" allows pure virtuals to have a body, but accessible only statically).
 

@@ -29,9 +29,9 @@ Converts a single-precision floating-point number or four-byte string to an inte
 {{fbdoc item="filename" value="examples/manual/strings/cvl.bas"}}%%(freebasic)
 dim l as long, s as string
 s = "ABCD"
-l = cvl(l)
+l = cvl(s)
 print using "s = ""&"""; s
-print using "l = _&H&"; hex(l)
+print using "l = &"; l
 %%
 
 {{fbdoc item="diff"}}
