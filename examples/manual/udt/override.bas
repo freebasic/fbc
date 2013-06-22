@@ -6,14 +6,26 @@
 '' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgOverride
 '' --------
 
-Type A extends object
-	Declare virtual Sub f1( )
-	Declare virtual Function f2( ) As Integer
+Type A Extends Object
+	Declare Virtual Sub f1( )
+	Declare Virtual Function f2( ) As Integer
 End Type
 
-Type B extends A
-	Declare Sub f1( ) override
-	Declare Function f2( ) As Integer override
+Type B Extends A
+	Declare Sub f1( ) Override
+	Declare Function f2( ) As Integer Override
 End Type
 
-'' Note: define four procedure bodies to compile without error
+Sub A.f1( )
+End Sub
+
+Function A.f2( ) As Integer
+	Function = 0
+End Function
+
+Sub B.f1( )
+End Sub
+
+Function B.f2( ) As Integer
+	Function = 0
+End Function

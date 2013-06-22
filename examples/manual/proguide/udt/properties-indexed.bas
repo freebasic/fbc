@@ -8,10 +8,10 @@
 
 Type IntArray
 	'' setters
-	Declare Property value(index As Integer, value As Integer)
-	Declare Property value(index As String, value As Integer)
-	Declare Property value(index As Integer, value As String)
-	Declare Property value(index As String, value As String)
+	Declare Property value(index As Integer, v As Integer)
+	Declare Property value(index As String, v As Integer)
+	Declare Property value(index As Integer, v As String)
+	Declare Property value(index As String, v As String)
 
 	'' getters
 	Declare Property value(index As Integer) As Integer
@@ -22,27 +22,27 @@ Private:
 End Type
 
 Property IntArray.value(index As Integer) As Integer
-	Return this.data_(index)
+	Return This.data_(index)
 End Property
 
 Property IntArray.value(index As String) As Integer
-	Return this.data_(CInt(index))
+	Return This.data_(CInt(index))
 End Property
 
-Property IntArray.value(index As Integer, value As Integer)
-	this.data_(index) = value
+Property IntArray.value(index As Integer, v As Integer)
+	This.data_(index) = v
 End Property
 
-Property IntArray.value(index As String, value As Integer)
-	this.data_(CInt(index)) = value
+Property IntArray.value(index As String, v As Integer)
+	This.data_(CInt(index)) = v
 End Property
 
-Property IntArray.value(index As Integer, value As String)
-	this.data_(index) = CInt(value)
+Property IntArray.value(index As Integer, v As String)
+	This.data_(index) = CInt(v)
 End Property
 
-Property IntArray.value(index As String, value As String)
-	this.data_(CInt(index)) = CInt(value)
+Property IntArray.value(index As String, v As String)
+	This.data_(CInt(index)) = CInt(v)
 End Property
 
 Dim a As IntArray
