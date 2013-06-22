@@ -9,4 +9,3 @@
 Dim n As Single
 n = 4 - 5
 Print n
-Sleep

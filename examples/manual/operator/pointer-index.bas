@@ -14,5 +14,6 @@ Dim p As Integer Ptr = @array(0)
 
 '' use pointer indexing to output array elements
 For index As Integer = 0 To 4
-	Print p[index]
+	Print p[index];
 Next
+Print

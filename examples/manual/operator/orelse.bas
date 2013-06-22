@@ -11,6 +11,6 @@ Dim As Integer numeric_value1, numeric_value2
 numeric_value1 = 15
 numeric_value2 = 30
 
-'Result =  -1
+'Result = -1
 Print numeric_value1 OrElse numeric_value2
 Sleep

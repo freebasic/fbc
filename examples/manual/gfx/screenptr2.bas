@@ -24,7 +24,7 @@ If (buffer = 0) Then
 	End -1
 End If
 
-'' Lock the screen to allow direct framebuffer access
+'' Lock the screen to allow direct frame buffer access
 ScreenLock()
 	
 	'' Set row address to the start of the buffer

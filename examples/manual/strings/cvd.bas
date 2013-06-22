@@ -6,8 +6,9 @@
 '' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgCvd
 '' --------
 
-Dim a As Double, b As String
-a=4534.4243
-b=MKD(a)
-Print a, CVD(b)
-Sleep
+Dim d As Double, l As LongInt
+d = 1.125
+l = CVLongInt(d)
+
+Print Using "l = _&H&"; Hex(l)
+Print Using "cvd(i) = &"; CVD(l)

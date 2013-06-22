@@ -11,7 +11,7 @@
 Dim As String A1, B1, A2, B2
 
 A1 = "Jane"
-B1 = "DOE"
+B1 = "Doe"
 A2 = "Bob"
 B2 = "Smith"
 

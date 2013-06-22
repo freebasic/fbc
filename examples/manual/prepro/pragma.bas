@@ -6,10 +6,8 @@
 '' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgPragma
 '' --------
 
-'' save the current pragma setting
+'' MSVC-compatible bitfields: save the current setting and then enable them
 #pragma push(msbitfields)
-'' switch to MSVC-compatible bitfields
-#pragma msbitfields=1
 
 '' do something that requires MS-compatible bitfields here
 

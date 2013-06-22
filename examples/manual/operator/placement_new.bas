@@ -10,7 +10,11 @@
 
 Type Rational
 	As Integer	numerator, denominator
+	Declare Destructor ( )
 End Type
+
+Destructor Rational ( )
+End Destructor
 
 Scope
 	

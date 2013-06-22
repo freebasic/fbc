@@ -8,7 +8,7 @@
 
 '' Example showing how the actual procedure invoked by a member can be set at runtime.
 '' using static member procedures.
-Type Object
+Type _Object
 
   Enum handlertype
 	ht_default
@@ -21,47 +21,47 @@ Type Object
   Declare Sub handler()
 
 Private:
-  Declare Static Sub handler_default( ByRef obj As Object )
-  Declare Static Sub handler_A( ByRef obj As Object )
-  Declare Static Sub handler_B( ByRef obj As Object )
-  handler_func As Sub( ByRef obj As Object )
+  Declare Static Sub handler_default( ByRef obj As _Object )
+  Declare Static Sub handler_A( ByRef obj As _Object )
+  Declare Static Sub handler_B( ByRef obj As _Object )
+  handler_func As Sub( ByRef obj As _Object )
 
 End Type
 
-Constructor Object( ByVal ht As handlertype )
+Constructor _Object( ByVal ht As handlertype )
   Select Case ht
   Case ht_A
-	handler_func = @Object.handler_A
+	handler_func = @_Object.handler_A
   Case ht_B
-	handler_func = @Object.handler_B
+	handler_func = @_Object.handler_B
   Case Else
-	handler_func = @Object.handler_default
+	handler_func = @_Object.handler_default
   End Select
 End Constructor
 
-Sub Object.handler()
+Sub _Object.handler()
   handler_func(This)
 End Sub
 
-Sub Object.handler_default( ByRef obj As Object )
+Sub _Object.handler_default( ByRef obj As _Object )
   Print "Handling using default method"
 End Sub
 
-Sub Object.handler_A( ByRef obj As Object )
+Sub _Object.handler_A( ByRef obj As _Object )
   Print "Handling using method A"
 End Sub
 
-Sub Object.handler_B( ByRef obj As Object )
+Sub _Object.handler_B( ByRef obj As _Object )
   Print "Handling using method B"
 End Sub
 
-Dim objects(1 To 4) As Object => _
+Dim objects(1 To 4) As _Object => _
   { _
-	Object.handlertype.ht_B, _
-	Object.handlertype.ht_default, _
-	Object.handlertype.ht_A _
+	_Object.handlertype.ht_B, _
+	_Object.handlertype.ht_default, _
+	_Object.handlertype.ht_A _
   }
-  '' 4th array item will be Object.handlertype.ht_default
+  '' 4th array item will be _Object.handlertype.ht_default
 
 For i As Integer = 1 To 4
   Print i,

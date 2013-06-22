@@ -10,6 +10,6 @@ Dim a As String = "Hello, world!"
 Dim i As Integer
 
 For i = 0 To Len(a) - 1
-	Print Chr(a[i]);
+	Print Chr(a[i]) & " ";
 Next i
 Print

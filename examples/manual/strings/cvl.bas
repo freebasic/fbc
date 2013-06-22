@@ -6,8 +6,8 @@
 '' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgCvl
 '' --------
 
-Dim a As Integer, b As String
-a=4534
-b=MKI(a)
-Print a, CVI(b)
-Sleep
+Dim l As Long, s As String
+s = "ABCD"
+l = CVL(s)
+Print Using "s = ""&"""; s
+Print Using "l = &"; l

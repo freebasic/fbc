@@ -1,4 +1,4 @@
-'' examples/manual/udt/extends.bas
+'' examples/manual/udt/extends1.bas
 ''
 '' NOTICE: This file is part of the FreeBASIC Compiler package and can't
 ''         be included in other distributions without authorization.

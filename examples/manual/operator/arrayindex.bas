@@ -6,8 +6,9 @@
 '' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgOpArrayIndex
 '' --------
 
-Dim array(4) As Integer = { 0, 1, 2, 3, 4 }
+Dim array(0 To 4) As Integer = { 0, 1, 2, 3, 4 }
 
 For index As Integer = 0 To 4
-	Print array(index)
+	Print array(index);
 Next
+Print

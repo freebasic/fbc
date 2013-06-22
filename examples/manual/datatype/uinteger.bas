@@ -6,6 +6,12 @@
 '' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgUinteger
 '' --------
 
-  Dim x As UInteger = 0
-  Dim y As UInteger = &HFFFFFFFF
-  Print "UInteger Range = "; x; " to "; y
+#if __FB_64BIT__
+	Dim x As UInteger = 0
+	Dim y As UInteger = &HFFFFFFFFFFFFFFFF
+	Print "UInteger Range = "; x; " to "; y
+#else
+	Dim x As UInteger = 0
+	Dim y As UInteger = &HFFFFFFFF
+	Print "UInteger Range = "; x; " to "; y
+#endif
