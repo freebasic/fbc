@@ -34,41 +34,66 @@
 #ifndef __ffi_bi__
 #define __ffi_bi__
 
-#ifdef __FB_WIN32__
-	' ---- System specific configurations ----------------------------------- 
 
-	' For code common to all platforms on x86 and x86_64. 
-	#define X86_ANY
+#define X86_ANY
 
-	#ifdef __FB_WIN64__
+type ffi_arg as uinteger
+type ffi_sarg as integer
+
+#if defined( __FB_WIN32__ ) and defined( __FB_64BIT__ )
 	#define FFI_SIZEOF_ARG 8
 	#define USE_BUILTIN_FFS 0
-	#endif
+#endif
 
-	type ffi_arg as uinteger
-	type ffi_sarg as integer
-
-	enum ffi_abi
-		FFI_FIRST_ABI = 0
+enum ffi_abi
+	FFI_FIRST_ABI = 0
+	#if defined( __FB_WIN32__ ) and defined( __FB_64BIT__ )
+		FFI_WIN64
+		FFI_LAST_ABI
+		FFI_DEFAULT_ABI = FFI_WIN64
+	#elseif defined( __FB_WIN32__ )
 		FFI_SYSV
 		FFI_STDCALL
 		FFI_LAST_ABI
 		FFI_DEFAULT_ABI = FFI_SYSV
-	end enum
+	#else
+		FFI_SYSV
+		FFI_UNIX64
+		FFI_LAST_ABI
+		#ifdef __FB_64BIT__
+			FFI_DEFAULT_ABI = FFI_UNIX64
+		#else
+			FFI_DEFAULT_ABI = FFI_SYSV
+		#endif
+	#endif
+end enum
 
-	#define FFI_CLOSURES 1
-	#define FFI_TYPE_SMALL_STRUCT_1B (FFI_TYPE_LAST+1)
-	#define FFI_TYPE_SMALL_STRUCT_2B (FFI_TYPE_LAST+2)
-	#define FFI_TYPE_SMALL_STRUCT_4B (FFI_TYPE_LAST+3)
-	#define FFI_TRAMPOLINE_SIZE 13
-	#define FFI_NATIVE_RAW_API 1
+#define FFI_CLOSURES 1
+#define FFI_TYPE_SMALL_STRUCT_1B (FFI_TYPE_LAST + 1)
+#define FFI_TYPE_SMALL_STRUCT_2B (FFI_TYPE_LAST + 2)
+#define FFI_TYPE_SMALL_STRUCT_4B (FFI_TYPE_LAST + 3)
+
+#ifdef __FB_64BIT__
+	#ifdef __FB_WIN32__
+		#define FFI_TRAMPOLINE_SIZE 29
+		#define FFI_NATIVE_RAW_API 0
+		#define FFI_NO_RAW_API 1
+	#else
+		#define FFI_TRAMPOLINE_SIZE 24
+		#define FFI_NATIVE_RAW_API 0
+	#endif
+#else
+	#ifdef __FB_WIN32__
+		#define FFI_TRAMPOLINE_SIZE 13
+		#define FFI_NATIVE_RAW_API 1
+	#else
+		#define FFI_TRAMPOLINE_SIZE 10
+		#define FFI_NATIVE_RAW_API 1
+	#endif
 #endif
 
 #include "crt/stddef.bi"
 #include "crt/limits.bi"
-
-#ifndef LIBFFI_ASM
-
 
 ' ---- System configuration information --------------------------------- 
 #define FFI_64_BIT_MAX 9223372036854775807
@@ -283,9 +308,6 @@ declare sub ffi_call cdecl alias "ffi_call" (byval cif as ffi_cif ptr, byval fn 
 
 ' Useful for eliminating compiler warnings 
 #define FFI_FN(f) (cptr(sub cdecl(), f))
-
-' ---- Definitions shared with assembly code ---------------------------- 
-#endif
 
 #define _FFI_TYPE_VOID 0
 #define _FFI_TYPE_INT 1
