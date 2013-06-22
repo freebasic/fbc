@@ -14,7 +14,6 @@
 #ifdef __FB_WIN32__
 # include once "win/wtypes.bi"
 #else
-type BYTE as ubyte
 type WORD as ushort
 type DWORD as uinteger
 type BOOL as integer
