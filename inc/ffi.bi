@@ -34,6 +34,7 @@
 #ifndef __ffi_bi__
 #define __ffi_bi__
 
+#inclib "ffi"
 
 #define X86_ANY
 
