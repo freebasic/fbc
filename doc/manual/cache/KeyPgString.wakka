@@ -23,37 +23,62 @@ Standard data type: 8 bit character string
 	Note: When passing ##**String**##s as parameters to ##[[CatPgProcedures Procedures]]##, they should always be passed by reference (##[[KeyPgByref ByRef]]##).  Currently, ##[[KeyPgByval ByVal]]## does not pass a copy of the string, but a ##[[KeyPgPtr Pointer]]## to the string data.  This can cause unexpected behavior including ##**String**## corruption. If you wish to prevent the value of the ##**String**## from being modified you should add the ##[[KeyPgConstQualifier Const Qualifier]]## to the relevant parameter.
 
 {{fbdoc item="ex"}}
-{{fbdoc item="filename" value="examples/manual/datatype/string.bas"}}%%(freebasic)
-'' Compile with -lang fblite or qb
 
-#lang "fblite"
-
-'' Variable-length
+{{fbdoc item="filename" value="examples/manual/datatype/string-varlen.bas"}}%%(freebasic)
+'' Variable length
 Dim a As String
+
 a = "Hello"
+Print a
 
-'' Or
-Dim b$
-b$ = "World"
+a += ", world!"
+Print a
 
-''Reserving space for a string
-var mybigstring = space(1024)
+Var b = "Welcome to FreeBASIC"
+Print b + "! " + a
+%%
 
-''Explicitly destroying a string
+{{fbdoc item="filename" value="examples/manual/datatype/string-qbsuffix.bas"}}%%(freebasic)
+'' QB-like $ suffixes
+#lang "qb"
+
+'' DIM based on $ suffix
+Dim a$
+a$ = "Hello"
+
+'' Implicit declaration based on $ suffix
+b$ = ", world!"
+
+print a$ + b$
+%%
+
+{{fbdoc item="filename" value="examples/manual/datatype/string-buffer.bas"}}%%(freebasic)
+'' Variable-length strings as buffers
+
+'' Reserving space for a string,
+'' using Space() to produce lots of space characters (ASCII 32)
+Var mybigstring = Space(1024)
+Print "buffer address: &h" & Hex( StrPtr( mybigstring ), 8 ) & ", length: " & Len( mybigstring )
+
+'' Explicitly destroying a string
 mybigstring = ""
+Print "buffer address: &h" & Hex( StrPtr( mybigstring ), 8 ) & ", length: " & Len( mybigstring )
+%%
 
-''Const qualifier preventing string from being modified
-sub silly_print( byref printme as const string )
-	print ".o0( " & printme & " )0o."
+{{fbdoc item="filename" value="examples/manual/datatype/string-constparam.bas"}}%%(freebasic)
+'' Variable-length string as Const parameter
+
+'' Const qualifier preventing string from being modified
+Sub silly_print( ByRef printme As Const String )
+	Print ".o0( " & printme & " )0o."
 	'next line will cause error if uncommented
 	'printme = "silly printed"
-end sub
+End Sub
+
+Var status = "OK"
 
 silly_print( "Hello FreeBASIC!" )
-
-'' Fixed-length
-Dim c As String * 32
-c = "Hello World"
+silly_print( "Status: " + status )
 %%
 
 {{fbdoc item="diff"}}

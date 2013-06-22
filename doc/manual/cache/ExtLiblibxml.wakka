@@ -21,7 +21,7 @@ end if
 dim as xmlTextReaderPtr reader = xmlReaderForFile( filename, NULL, 0 )
 if (reader = NULL) then
 	print "Unable to open "; filename
-	return
+	end 1
 end if
 
 dim as integer ret = xmlTextReaderRead( reader )
