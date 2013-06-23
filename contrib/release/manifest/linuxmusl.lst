@@ -346,6 +346,8 @@ examples/manual/array/redim2d.bas
 examples/manual/array/ubound.bas
 examples/manual/array/ubound2.bas
 examples/manual/array/ubound3.bas
+examples/manual/array/ubound4.bas
+examples/manual/array/ubound5.bas
 examples/manual/bits/bit.bas
 examples/manual/bits/bitreset.bas
 examples/manual/bits/bitset.bas
@@ -423,6 +425,8 @@ examples/manual/control/gotonum.bas
 examples/manual/control/if-then.bas
 examples/manual/control/iif.bas
 examples/manual/control/iif2.bas
+examples/manual/control/iif3.bas
+examples/manual/control/iif4.bas
 examples/manual/control/next.bas
 examples/manual/control/next2.bas
 examples/manual/control/next3.bas
@@ -451,7 +455,10 @@ examples/manual/datatype/pointer.bas
 examples/manual/datatype/ptr.bas
 examples/manual/datatype/short.bas
 examples/manual/datatype/single.bas
-examples/manual/datatype/string.bas
+examples/manual/datatype/string-buffer.bas
+examples/manual/datatype/string-constparam.bas
+examples/manual/datatype/string-qbsuffix.bas
+examples/manual/datatype/string-varlen.bas
 examples/manual/datatype/ubyte.bas
 examples/manual/datatype/ubyte2.bas
 examples/manual/datatype/uinteger.bas
@@ -599,6 +606,7 @@ examples/manual/fileio/write.bas
 examples/manual/gfx/bload.bas
 examples/manual/gfx/bload2.bas
 examples/manual/gfx/bload3.bas
+examples/manual/gfx/bload4.bas
 examples/manual/gfx/bsave.bas
 examples/manual/gfx/circle.bas
 examples/manual/gfx/cls-memset.bas
@@ -625,6 +633,7 @@ examples/manual/gfx/pcopy_cons.bas
 examples/manual/gfx/pixelptr.bas
 examples/manual/gfx/pmap.bas
 examples/manual/gfx/point.bas
+examples/manual/gfx/pointcoord.bas
 examples/manual/gfx/preset.bas
 examples/manual/gfx/pset.bas
 examples/manual/gfx/put-add.bas
@@ -647,6 +656,7 @@ examples/manual/gfx/screen-func3.bas
 examples/manual/gfx/screen.bas
 examples/manual/gfx/screen2.bas
 examples/manual/gfx/screencontrol.bas
+examples/manual/gfx/screencontrol2.bas
 examples/manual/gfx/screencopy.bas
 examples/manual/gfx/screenevent.bas
 examples/manual/gfx/screenglproc.bas
@@ -680,6 +690,7 @@ examples/manual/input/strig.bas
 examples/manual/libraries/aspell.bas
 examples/manual/libraries/bass.bas
 examples/manual/libraries/bassmod.bas
+examples/manual/libraries/big_int.bas
 examples/manual/libraries/cairo.bas
 examples/manual/libraries/cryptlib.bas
 examples/manual/libraries/curl.bas
@@ -702,9 +713,8 @@ examples/manual/libraries/il.bas
 examples/manual/libraries/jit/gcd.bas
 examples/manual/libraries/jit/mul_add.bas
 examples/manual/libraries/jni/mylib.bas
+examples/manual/libraries/libxml.bas
 examples/manual/libraries/lzo.bas
-examples/manual/libraries/openal.bas
-examples/manual/libraries/quicklz.bas
 examples/manual/libraries/spidermonkey1.bas
 examples/manual/libraries/spidermonkey2.bas
 examples/manual/libraries/zip.bas
@@ -782,6 +792,7 @@ examples/manual/operator/concat-assign.bas
 examples/manual/operator/concat.bas
 examples/manual/operator/concat_nocvt.bas
 examples/manual/operator/delete.bas
+examples/manual/operator/delete2.bas
 examples/manual/operator/divide-assign.bas
 examples/manual/operator/divide.bas
 examples/manual/operator/equal.bas
@@ -832,6 +843,7 @@ examples/manual/operator/varptr.bas
 examples/manual/operator/xor-assign.bas
 examples/manual/operator/xor-bitwise.bas
 examples/manual/operator/xor-logical.bas
+examples/manual/prepro/assert.bas
 examples/manual/prepro/concat.bas
 examples/manual/prepro/define.bas
 examples/manual/prepro/defined.bas
@@ -859,6 +871,9 @@ examples/manual/prepro/undef.bas
 examples/manual/prepro/variadic.bas
 examples/manual/procs/alias.bas
 examples/manual/procs/alias2.bas
+examples/manual/procs/byref-result.bas
+examples/manual/procs/byref-result2.bas
+examples/manual/procs/byref-result3.bas
 examples/manual/procs/byref.bas
 examples/manual/procs/byval.bas
 examples/manual/procs/call-fwd.bas
@@ -877,7 +892,8 @@ examples/manual/procs/lib.bas
 examples/manual/procs/mod-ctor.bas
 examples/manual/procs/mod-dtor.bas
 examples/manual/procs/mydll.bas
-examples/manual/procs/naked.bas
+examples/manual/procs/naked1.bas
+examples/manual/procs/naked2.bas
 examples/manual/procs/overload.bas
 examples/manual/procs/pascal.bas
 examples/manual/procs/stdcall.bas
@@ -962,6 +978,8 @@ examples/manual/proguide/procptrs/method-ptr.bas
 examples/manual/proguide/procptrs/passing.bas
 examples/manual/proguide/procptrs/pfunc.bi
 examples/manual/proguide/procptrs/procptrs.bas
+examples/manual/proguide/procs/byrefparam-explicit-byval.bas
+examples/manual/proguide/procs/byrefresult-explicit-byval.bas
 examples/manual/proguide/procs/functions.bas
 examples/manual/proguide/procs/passargs.bas
 examples/manual/proguide/procs/passbyref.bas
@@ -1107,6 +1125,7 @@ examples/manual/threads/threadcall.bas
 examples/manual/threads/threads1.bas
 examples/manual/threads/threads2.bas
 examples/manual/threads/threads3.bas
+examples/manual/udt/abstract1.bas
 examples/manual/udt/access.bas
 examples/manual/udt/base.bas
 examples/manual/udt/baseinit1.bas
@@ -1114,12 +1133,16 @@ examples/manual/udt/baseinit2.bas
 examples/manual/udt/const-proc.bas
 examples/manual/udt/constructor-ptr.bas
 examples/manual/udt/constructor.bas
+examples/manual/udt/copyconstructor.bas
 examples/manual/udt/destructor.bas
 examples/manual/udt/enum.bas
-examples/manual/udt/extends.bas
+examples/manual/udt/extends1.bas
+examples/manual/udt/extends2.bas
 examples/manual/udt/field.bas
 examples/manual/udt/function.bas
-examples/manual/udt/operator.bas
+examples/manual/udt/operator1.bas
+examples/manual/udt/operator2.bas
+examples/manual/udt/override.bas
 examples/manual/udt/private.bas
 examples/manual/udt/property.bas
 examples/manual/udt/property2.bas
@@ -1140,6 +1163,7 @@ examples/manual/udt/type-fwd.bas
 examples/manual/udt/type1.bas
 examples/manual/udt/type2.bas
 examples/manual/udt/union.bas
+examples/manual/udt/virtual1.bas
 examples/manual/udt/with-1.bas
 examples/manual/udt/with-2.bas
 examples/manual/udt/with-3.bas
@@ -1148,6 +1172,7 @@ examples/manual/variable/dim.bas
 examples/manual/variable/scope.bas
 examples/manual/variable/shared.bas
 examples/manual/variable/static.bas
+examples/manual/variable/static2.bas
 examples/manual/variable/var.bas
 examples/math/big_int/perftest.bas
 examples/math/cryptlib/hashing.bas
