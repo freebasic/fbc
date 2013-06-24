@@ -20,4 +20,3 @@ numeric_value = CInt(301.5)
 
 'Print the result, should return 302, because 301 is odd
 Print numeric_value
-Sleep

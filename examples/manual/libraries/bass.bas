@@ -20,7 +20,7 @@ If (BASS_Init(-1, 44100, 0, 0, 0) = 0) Then
 	End 1
 End If
 
-Dim As HMUSIC test = BASS_MusicLoad(FALSE, SOUND_FILE, 0, 0, BASS_MUSIC_LOOP, 0)
+Dim As HMUSIC test = BASS_MusicLoad(FALSE, @SOUND_FILE, 0, 0, BASS_MUSIC_LOOP, 0)
 If (test = 0) Then
 	Print "BASS could not load '" & SOUND_FILE & "'"
 	BASS_Free()

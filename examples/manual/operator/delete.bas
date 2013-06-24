@@ -7,32 +7,16 @@
 '' --------
 
 Type Rational
-	As Integer	numerator, denominator
+	As Integer numerator, denominator
 End Type
 
-Scope
+' Create and initialize a Rational, and store its address.
+Dim p As Rational Ptr = New Rational(3, 4)
 
-	' Create and initialize a Rational, and store its address.
-	Dim p As Rational Ptr = New Rational(3, 4)
+Print p->numerator & "/" & p->denominator
 
-	Print p->numerator & "/" & p->denominator
+' Destroy the rational and give its memory back to the system. 
+Delete p
 
-	' Destroy the rational and give its memory back to the system. 
-	Delete p
-
-End Scope
-
-Scope
-
-	' Allocate memory for 100 integers, store the address of the first one.
-	Dim p As Integer Ptr = New Integer[100]
-
-	' Assign some values to the integers in the array.
-	For i As Integer = 0 To 99
-		p[i] = i
-	Next
-
-	' Free the entire integer array.
-	Delete[] p
-
-End Scope
+' Set the pointer to null to guard against future accesses
+p = 0

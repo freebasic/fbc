@@ -29,10 +29,10 @@ If Left(h1->sig, 5) = "GIF89" Then Print "ok" Else Print "error"
 
 '' Using a ubyte array, we need an auxiliary function to convert it to a string
 Function ub2str( ub() As UByte ) As String
-	Dim As Integer length = UBound(ub) + 1
-	Dim As String res = Space(length)
-	For i As Integer = 0 To length-1
-	    res[i] = ub(i): Next
+	Dim As String res = Space(UBound(ub) - LBound(ub) + 1)
+	For i As Integer = LBound(ub) To UBound(ub)
+	    res[i - LBound(ub)] = ub(i)
+	Next
 	Function = res
 End Function
 

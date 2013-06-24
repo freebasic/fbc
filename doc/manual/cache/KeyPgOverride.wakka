@@ -19,17 +19,29 @@ Method attribute; specifies that a method must override a virtual
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/udt/override.bas"}}%%(freebasic)
-type A extends object
-	declare virtual sub f1( )
-	declare virtual function f2( ) as integer
-end type
+Type A Extends Object
+	Declare Virtual Sub f1( )
+	Declare Virtual Function f2( ) As Integer
+End Type
 
-type B extends A
-	declare sub f1( ) override
-	declare function f2( ) as integer override
-end type
+Type B Extends A
+	Declare Sub f1( ) Override
+	Declare Function f2( ) As Integer Override
+End Type
 
-'' Note: define four procedure bodies to compile without error
+Sub A.f1( )
+End Sub
+
+Function A.f2( ) As Integer
+	Function = 0
+End Function
+
+Sub B.f1( )
+End Sub
+
+Function B.f2( ) As Integer
+	Function = 0
+End Function
 %%
 
 {{fbdoc item="diff"}}

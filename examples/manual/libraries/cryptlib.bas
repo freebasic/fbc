@@ -43,7 +43,7 @@ Function calc_hash( ByVal filename As String, ByVal algo As CRYPT_ALGO_TYPE ) As
 
 	'' convert to hexadecimal
 	Dim As String result = ""
-	For i As Integer = 0 To length-1
+	For i As Integer = 0 To buffersize-1
 		result += Hex( buffer(i) )
 	Next
 	

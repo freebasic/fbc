@@ -6,8 +6,8 @@
 '' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgCvi
 '' --------
 
-Dim a As Integer, b As String
-a=4534
-b=MKI(a)
-Print a, CVI(b)
-Sleep
+Dim i As Integer, s As String
+s = "ABCD"
+i = CVI(s)
+Print Using "s = ""&"""; s
+Print Using "i = _&H&"; Hex(i)

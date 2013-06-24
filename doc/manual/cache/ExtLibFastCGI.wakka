@@ -17,7 +17,7 @@ while (FCGI_Accept() >= 0)
 	print !"\r\n"
 	print "<title>FastCGI Hello!</title>"
 	print "<h1>FastCGI Hello!</h1>"
-	print using "Request number ### running on host <i>&</i>"; count, *getenv("SERVER_NAME");
+	print using "Request number ### running on host <i>&</i>"; count; *getenv("SERVER_NAME");
 wend
 %%
 

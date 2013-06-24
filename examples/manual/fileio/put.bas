@@ -6,21 +6,21 @@
 '' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgPutfileio
 '' --------
 
-' Create integer variables (our buffer has just 4 bytes)
-Dim As Integer buffer , f 
+' Create variables for the file number, and the number to put
+Dim As Integer f
+Dim As Long value
 
-' Find the first free file file number.
-f = FreeFile
+' Find the first free file number
+f = FreeFile()
 
-' Open the file "file.ext" for binary usage, using the file number "f".
+' Open the file "file.ext" for binary usage, using the file number "f"
 Open "file.ext" For Binary As #f
-  buffer=10
-  ' Write 4 bytes from the buffer into the file, using file number "f"
-  ' starting at the beginning of the file (1).
-  Put #f, 1, buffer
 
-' Close the file.  
+  value= 10
+
+  ' Write the bytes of the integer 'value' into the file, using file number "f"
+  ' starting at the beginning of the file (position 1)
+  Put #f, 1, value
+
+' Close the file
 Close #f
-
-' End the program.
-End

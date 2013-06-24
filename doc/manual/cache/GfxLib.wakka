@@ -9,7 +9,7 @@ The library supports various drivers depending on the platform:
 
 	- ""Win32"":
 		- **##DirectX##** The default selection of FB ""GfxLib"". May not be available on old Windows installations. [[http://sourceforge.net/p/fbc/code/ci/master/tree/src/gfxlib2/win32/gfx_driver_ddraw.c (gfxlib2/win32/gfx_driver_ddraw.c)]]
-		- **##GDI##** The "safest" one, available in all ""Win32"" versions. Bug note: broken in FB versions 0.20 and (some ?) 0.18.x ("banding effects"), not fixed in 0.21 SVN (needs retest with 0.23). [[http://www.freebasic.net/forum/viewtopic.php?p=106600#106600 (forum discussion: p=106600)]] [[http://sourceforge.net/p/fbc/code/ci/master/tree/src/gfxlib2/win32/gfx_driver_gdi.c (gfxlib2/win32/gfx_driver_gdi.c)]]
+		- **##GDI##** The "safest" one, available in all ""Win32"" versions. Bug note: broken in FB versions 0.20 to 0.24 (crash) and 0.18.5 and 0.90rc2 ("banding effects"), [[http://www.freebasic.net/forum/viewtopic.php?p=106600#106600 (forum discussion: p=106600)]] [[http://sourceforge.net/p/fbc/code/ci/master/tree/src/gfxlib2/win32/gfx_driver_gdi.c (gfxlib2/win32/gfx_driver_gdi.c)]]
 		- **##OpenGL##** [[http://sourceforge.net/p/fbc/code/ci/master/tree/src/gfxlib2/win32/gfx_driver_opengl.c (gfxlib2/win32/gfx_driver_opengl.c)]]
 
 	- ""Linux & others"":

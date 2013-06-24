@@ -6,9 +6,10 @@
 '' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgWindowtitle
 '' --------
 
+'Set screen mode 
+Screen 13
+
 'Set the window title
 WindowTitle "FreeBASIC example program"
 
-'Set screen mode 
-Screen 13
 Sleep

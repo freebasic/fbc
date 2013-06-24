@@ -9,41 +9,67 @@
 '' include fbgfx.bi for some useful definitions
 #include "fbgfx.bi"
 
-Using fb
+'' use FB namespace for easy access to types/constants
+Using FB
 
 Dim e As EVENT
-Dim As Integer x, y, pressed, col
+Dim As Integer x0, y0, x, y
+Dim As Integer shakes = 0
 Dim As Any Ptr img
 
-ScreenRes 384, 64, 32,, GFX_SHAPED_WINDOW
+ScreenRes 320, 200, 32
+Print "Click to shake window"
 
-'' create a fancy window shape
-img = ImageCreate(48,8)
-Draw String img, (0, 0), "GfxLib"
-For y = 0 To 63
-	For x = 0 To 383
-		col = Point(x \ 8, y \ 8, img)
-		If (col <> RGB(255, 0, 255)) Then
-			col = RGB((x + y) And &hFF, (x + y) And &hFF, (x + y) And &hFF)
-		End If
-		PSet (x, y), col
-	Next x
-Next y
+'' find window coordinates
+ScreenControl GET_WINDOW_POS, x0, y0
 
-pressed = 0
 Do
-	If (ScreenEvent(@e)) Then
-		Select Case e.type
-		Case EVENT_MOUSE_BUTTON_PRESS
-			pressed = -1
-		Case EVENT_MOUSE_BUTTON_RELEASE
-			pressed = 0
-		Case EVENT_MOUSE_MOVE
-			If (pressed) Then
-				ScreenControl GET_WINDOW_POS, x, y
-				ScreenControl SET_WINDOW_POS, x + e.dx, y + e.dy
-			End If
-		End Select
+
+	If (shakes > 0) Then
+	    
+	    '' do a shake of the window
+
+	    If (shakes > 1) Then
+
+	        '' move window to a random position near its original coordinates
+	        x = x0 + Int(32 * (Rnd() - 0.5))
+	        y = y0 + Int(32 * (Rnd() - 0.5))
+	        ScreenControl SET_WINDOW_POS, x, y
+
+	    Else
+
+	        '' move window back to its original coordinates
+	        ScreenControl SET_WINDOW_POS, x0, y0
+
+	    End If
+
+	    shakes -= 1
+
 	End If
+
+	If (ScreenEvent(@e)) Then
+	    Select Case e.type
+	    
+	    '' user pressed the mouse button
+	    Case EVENT_MOUSE_BUTTON_PRESS
+
+	        If (shakes = 0) Then
+	            '' set to do 20 shakes
+	            shakes = 20
+
+	            '' find current window coordinates to shake around
+	            ScreenControl GET_WINDOW_POS, x0, y0
+	        End If
+
+	    '' user closed the window or pressed a key
+	    Case EVENT_WINDOW_CLOSE, EVENT_KEY_PRESS
+	        '' exit to end of program
+	        Exit Do
+
+	    End Select
+	End If
+
+	'' free up CPU for other programs
 	Sleep 5
-Loop While Not MultiKey(1)
+
+Loop

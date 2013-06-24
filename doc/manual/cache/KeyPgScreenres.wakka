@@ -4,10 +4,12 @@ Initializes a graphics mode by specifying horizontal and vertical resolution
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Screenres** ( [[KeyPgByval byval]] //width// [[KeyPgAs as]] [[KeyPgInteger integer]], [[KeyPgByval byval]] //height// [[KeyPgAs as]] [[KeyPgInteger integer]], [[KeyPgByval byval]] //depth// [[KeyPgAs as]] [[KeyPgInteger integer]] = 8, [[KeyPgByval byval]] //num_pages// [[KeyPgAs as]] [[KeyPgInteger integer]] = 1, [[KeyPgByval byval]] //flags// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0, [[KeyPgByval byval]] //refresh_rate// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0 ) [[KeyPgAs as]] [[KeyPgInteger integer]]
  ##
+
 {{fbdoc item="usage"}}##
 	**Screenres** //width//, //height// [, [//depth//] [, [//num_pages//] [, [//flags//] [, //refresh_rate// ]]]]
 	//result// = **Screenres**( //width//, //height// [, [//depth//] [, [//num_pages//] [, [//flags//] [, //refresh_rate// ]]]] )
 ##
+
 {{fbdoc item="param"}}
 	##//width//##, ##//height//##
 		The display width and height, respectively. For fullscreen mode, the user should check the availability of the resolution using ##[[KeyPgScreenlist Screenlist]]##.
@@ -18,7 +20,7 @@ Initializes a graphics mode by specifying horizontal and vertical resolution
 	##//flags//##
 		Used to set various properties of the screen, including fullscreen mode and the graphics driver used. (see ##[[KeyPgScreengraphics Screen]]## or the standard header "fbgfx.bi" for available flags)
 	##//refresh_rate//##
-		The refresh rate of the screen, defaults to an appropriate value. (invalid refresh rates will be ignored)
+		The desired refresh rate of the screen, only has an effect for fullscreen modes, and some systems and drivers only. Defaults to an appropriate value, invalid refresh rates will be ignored.
 
 {{fbdoc item="ret"}}
 	Returns zero (##0##) if successful, or a non-zero error code to indicate a failure. //[[ProPgErrorHandling (throws a runtime error)]]//
@@ -58,7 +60,7 @@ sleep
 %%
 
 {{fbdoc item="target"}}
-	- In DOS, Windowing and ""OpenGL"" related switches are not available, see also [[GfxLib GfxLib overview]]
+	- In DOS, refresh rate setting, and Windowing and ""OpenGL"" related switches are not available, see also [[GfxLib GfxLib overview]]
 
 {{fbdoc item="lang"}}
 	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Screenres""**##.

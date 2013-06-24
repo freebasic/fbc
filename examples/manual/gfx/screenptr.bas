@@ -24,7 +24,7 @@ If (buffer = 0) Then
 	End -1
 End If
 
-'' Lock the screen to allow direct framebuffer access
+'' Lock the screen to allow direct frame buffer access
 ScreenLock()
 	
 	'' Find the address of the pixel in the centre of the screen

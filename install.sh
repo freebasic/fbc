@@ -43,7 +43,7 @@ case "$1" in
 	cp -r "${dir}"include/freebasic/* "$prefix/include/freebasic"
 
 	mkdir -p -m 0755 "$prefix/lib/freebasic"
-	cp -r "${dir}"lib/freebasic/ "$prefix/lib/freebasic"
+	cp "${dir}"lib/freebasic/* "$prefix/lib/freebasic"
 
 	mkdir -p -m 0755 "$prefix/man/man1"
 	gzip -c "${dir}"doc/fbc.1 > "$prefix/man/man1/fbc.1.gz"

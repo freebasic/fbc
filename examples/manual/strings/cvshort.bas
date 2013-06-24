@@ -6,8 +6,8 @@
 '' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgCvshort
 '' --------
 
-Dim a As Short, b As String
-a=4534
-b=MKShort(a)
-Print a, CVShort(b)
-Sleep
+Dim si As Short, s As String
+s = "AB"
+si = CVShort(s)
+Print Using "s = ""&"""; s
+Print Using "si = _&H&"; Hex(si)

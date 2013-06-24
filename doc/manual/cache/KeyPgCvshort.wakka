@@ -2,50 +2,36 @@
 Converts a two-byte string to a ##[[KeypgShort Short]]## integer variable
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Cvshort** ( [[KeyPgByref byref]] //str// [[KeyPgAs 
-
-as]] [[KeyPgConstQualifier const]] [[KeyPgString string]] ) [[KeyPgAs as]] [[KeyPgShort Short]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Cvshort** ( [[KeyPgByref byref]] //str// [[KeyPgAs as]] [[KeyPgConstQualifier const]] [[KeyPgString string]] ) [[KeyPgAs as]] [[KeyPgShort Short]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Cvshort**( //str// )
 ##
 {{fbdoc item="param"}}
 	##//str//##
-		A ##[[KeyPgString String]]## at least two bytes in length with a binary copy of a ##[[KeyPgShort 
-
-Short]]## integer variable stored in it.
+		A ##[[KeyPgString String]]## at least two bytes in length with a binary copy of a ##[[KeyPgShort Short]]## integer variable stored in it.
 
 {{fbdoc item="ret"}}
-	An ##[[KeyPgShort Short]]## variable holding the binary copy of a ##[[KeyPgShort KeyPgShort]]##.
+	 ##[[KeyPgShort Short]]## variable holding the binary copy of a ##[[KeyPgShort KeyPgShort]]##.
 
 {{fbdoc item="desc"}}
-	Returns a 16-bit ##[[KeyPgInteger Integer]]## value using the binary data contained in a ##[[KeyPgString 
-
-string]]## of at least two bytes in length.  A value of zero (##0##) is returned if the string is less than two 
-
-bytes in length.
+	Returns a 16-bit ##[[KeyPgShort Short]]## integer value using the binary data contained in a ##[[KeyPgString string]]## of at least two bytes in length.  A value of zero (##0##) is returned if the string is less than two bytes in length.
 
 	##**Cvshort**## is used to convert 2-byte strings created with ##[[KeyPgMkshort Mkshort]]##.
 
-	This function can also be used to convert 16-bit integer values from a memory or file buffer without the 
-
-need for a ##[[KeyPgType Type]]## structure.  However, just as with the type structure, special care should be taken 
-
-when using ##**Cvshort**## to convert strings that have been read from a buffer.
+	This function can also be used to convert 16-bit integer values from a memory or file buffer without the need for a ##[[KeyPgType Type]]## structure.  However, just as with the type structure, special care should be taken when using ##**Cvshort**## to convert strings that have been read from a buffer.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/strings/cvshort.bas"}}%%(freebasic)
 dim si as short, s as string
 s = "AB"
-si = cvi(s)
+si = cvshort(s)
 print using "s = ""&"""; s
 print using "si = _&H&"; hex(si)
 %%
 
 {{fbdoc item="lang"}}
-	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias 
-
-##**""__Cvshort""**##.
+	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Cvshort""**##.
 
 {{fbdoc item="diff"}}
 	- In QB this function is called CVI
