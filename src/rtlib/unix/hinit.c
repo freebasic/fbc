@@ -18,6 +18,7 @@ FBCONSOLE __fb_con;
 
 typedef void (*SIGHANDLER)(int);
 static SIGHANDLER old_sighandler[NSIG];
+static volatile sig_atomic_t __fb_console_resized;
 static const char *seq[] = { "cm", "ho", "cs", "cl", "ce", "WS", "bl", "AF", "AB",
 							 "me", "md", "SF", "ve", "vi", "dc", "ks", "ke" };
 
@@ -84,14 +85,24 @@ int fb_hTermQuery( int code, int *val1, int *val2 )
 	return FALSE;
 }
 
-static void console_resize(int sig)
+/* If the SIGWINCH handler was called, re-query terminal width/height
+   - Assuming BG_LOCK() is acquired, because this can be called from
+     linux/io_mouse.c:mouse_handler() from the background thread
+   - Assuming __fb_con.inited */
+void fb_hRecheckConsoleSize( void )
 {
 	unsigned char *char_buffer, *attr_buffer;
 	struct winsize win;
 	int r, c, w, h;
 
-	if (!__fb_con.inited)
+	if( __fb_console_resized == FALSE )
 		return;
+
+	__fb_console_resized = FALSE;
+
+	/* __fb_console_resized may be set to TRUE again here if the signal
+	   handler is called right now, but it doesn't matter since we're about
+	   to update anyways */
 
 	win.ws_row = 0xFFFF;
 	ioctl( STDOUT_FILENO, TIOCGWINSZ, &win );
@@ -131,7 +142,15 @@ static void console_resize(int sig)
 		__fb_con.cur_y = __fb_con.cur_x = 1;
 	}
 
-	signal(SIGWINCH, console_resize);
+	/* If __fb_console_resized is set to TRUE only now (after the above
+	   check) then we will miss it for now, but it's ok because the next
+	   fb_hRecheckConsoleSize() will handle it. */
+}
+
+static void sigwinch_handler(int sig)
+{
+	__fb_console_resized = TRUE;
+	signal(SIGWINCH, sigwinch_handler);
 }
 
 int fb_hTermOut( int code, int param1, int param2 )
@@ -366,7 +385,10 @@ static void hInit( void )
 	__fb_con.char_buffer = NULL;
 	__fb_con.fg_color = 7;
 	__fb_con.bg_color = 0;
-	console_resize(SIGWINCH);
+
+	__fb_console_resized = TRUE;
+	fb_hRecheckConsoleSize( );
+	signal(SIGWINCH, sigwinch_handler);
 }
 
 void fb_hInit( void )
