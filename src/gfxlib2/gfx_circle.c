@@ -120,6 +120,11 @@ FBCALL void fb_GfxEllipse(void *target, float fx, float fy, float radius, unsign
 	
 	fb_hTranslateCoord(context, fx, fy, &x, &y);
 	
+	if (context->flags & CTX_WINDOW_ACTIVE) {
+		/* radius gets multiplied by the VIEW/WINDOW width ratio (aspect is unchanged) */
+		radius *= (context->view_w / context->win_w);
+	}
+
 	if (aspect == 0.0)
 		aspect = __fb_gfx->aspect;
 
@@ -130,11 +135,6 @@ FBCALL void fb_GfxEllipse(void *target, float fx, float fy, float radius, unsign
 	else {
 		a = radius;
 		b = (radius * aspect);
-	}
-	if (context->flags & CTX_WINDOW_ACTIVE) {
-		/* a and b both get multiplied by the width ratio */
-		a *= (context->view_w / context->win_w);
-		b *= (context->view_w / context->win_w);
 	}
 	
 	if ((start != 0.0) || (end != 3.141593f * 2.0)) {
