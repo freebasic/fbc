@@ -21,6 +21,10 @@ void fb_ConsolePrintBufferWstrEx( const FB_WCHAR *buffer, size_t chars, int mask
 
 	temp = alloca( chars * 4 + 1 );
 
+	BG_LOCK( );
+	fb_hRecheckConsoleSize( );
+	BG_UNLOCK( );
+
 	/* ToDo: handle scrolling for internal characters/attributes buffer? */
 	avail = (__fb_con.w * __fb_con.h) - (((__fb_con.cur_y - 1) * __fb_con.w) + __fb_con.cur_x - 1);
 	avail_len = chars;

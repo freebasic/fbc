@@ -3,11 +3,11 @@
 
 FBCALL void fb_ConsoleGetXY( int *col, int *row )
 {
-	int x = __fb_con.cur_x, y = __fb_con.cur_y;
+	int x, y;
 
 	if (__fb_con.inited) {
-		/* Note we read reply from stdin, NOT from __fb_con.f_in */
 		BG_LOCK();
+		fb_hRecheckConsoleSize( );
 
 #ifdef HOST_LINUX
 		if( fb_hTermQuery( SEQ_QUERY_CURSOR, &y, &x ) == FALSE )
@@ -18,7 +18,11 @@ FBCALL void fb_ConsoleGetXY( int *col, int *row )
 		}
 
 		BG_UNLOCK();
+	} else {
+		x = 1;
+		y = 1;
 	}
+
 	if (col)
 		*col = x;
 	if (row)

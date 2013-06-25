@@ -3,17 +3,16 @@
 
 FBCALL void fb_ConsoleGetSize( int *cols, int *rows )
 {
-	if (cols) {
-		if (__fb_con.inited)
-			*cols = __fb_con.w;
-		else
-			*cols = 80;
+	if( !__fb_con.inited ) {
+		if( cols ) *cols = 80;
+		if( rows ) *rows = 24;
+		return;
 	}
 
-    if (rows) {
-		if (__fb_con.inited)
-			*rows = __fb_con.h;
-		else
-			*rows = 24;
-    }
+	BG_LOCK( );
+	fb_hRecheckConsoleSize( );
+	BG_UNLOCK( );
+
+	if( cols ) *cols = __fb_con.w;
+	if( rows ) *rows = __fb_con.h;
 }
