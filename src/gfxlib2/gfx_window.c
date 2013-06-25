@@ -25,9 +25,9 @@ FBCALL void fb_GfxWindow(float x1, float y1, float x2, float y2, int screen)
 		}
 		
 		context->win_x = x1;
-		context->win_w = x2 - x1 + 1;
+		context->win_w = x2 - x1;
 		context->win_y = y1;
-		context->win_h = y2 - y1 + 1;
+		context->win_h = y2 - y1;
 		context->flags |= CTX_WINDOW_ACTIVE;
 		if (screen)
 			context->flags |= CTX_WINDOW_SCREEN;
