@@ -66,9 +66,9 @@ static void signal_handler(int sig)
 	raise(sig);
 }
 
+#ifdef HOST_LINUX
 int fb_hTermQuery( int code, int *val1, int *val2 )
 {
-#ifdef HOST_LINUX
 	if( fb_hTermOut( code, 0, 0 ) == FALSE )
 		return FALSE;
 
@@ -93,10 +93,8 @@ int fb_hTermQuery( int code, int *val1, int *val2 )
 
 	/* SEQ_QUERY_CURSOR */
 	return (fscanf( stdin, "[%d;%dR", val1, val2 ) == 2);
-#else
-	return fb_hTermOut( code, 0, 0 );
-#endif
 }
+#endif
 
 /* If the SIGWINCH handler was called, re-query terminal width/height
    - Assuming BG_LOCK() is acquired, because this can be called from
