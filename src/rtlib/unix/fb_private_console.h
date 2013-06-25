@@ -80,3 +80,4 @@ int fb_hConsoleGfxMode
 	);
 int fb_hInitConsole(void);
 void fb_hExitConsole(void);
+void fb_hStartBgThread( void );

@@ -166,6 +166,8 @@ int fb_ConsoleGetMouse(int *x, int *y, int *z, int *buttons, int *clip)
 
 	BG_LOCK();
 
+	fb_hStartBgThread( );
+
 	if (!__fb_con.mouse_handler) {
 		if (!mouse_init()) {
 			__fb_con.mouse_init = mouse_init;

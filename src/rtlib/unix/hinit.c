@@ -23,6 +23,7 @@ static const char *seq[] = { "cm", "ho", "cs", "cl", "ce", "WS", "bl", "AF", "AB
 							 "me", "md", "SF", "ve", "vi", "dc", "ks", "ke" };
 
 static pthread_t __fb_bg_thread;
+static int bgthread_inited = FALSE;
 static pthread_mutex_t __fb_bg_mutex;
 FBCALL void fb_BgLock   ( void ) { pthread_mutex_lock  ( &__fb_bg_mutex     ); }
 FBCALL void fb_BgUnlock ( void ) { pthread_mutex_unlock( &__fb_bg_mutex     ); }
@@ -52,6 +53,14 @@ static void *bg_thread(void *arg)
 		usleep(30000);
 	}
 	return NULL;
+}
+
+void fb_hStartBgThread( void )
+{
+	if( bgthread_inited == FALSE ) {
+		pthread_create( &__fb_bg_thread, NULL, bg_thread, NULL );
+		bgthread_inited = TRUE;
+	}
 }
 
 static int default_getch(void)
@@ -387,8 +396,6 @@ static void hInit( void )
 	}
 	__fb_con.keyboard_getch = default_getch;
 
-	pthread_create( &__fb_bg_thread, NULL, bg_thread, NULL );
-
 	/* Install signal handlers to quietly shut down */
 	for (i = 0; sigs[i] >= 0; i++)
 		old_sighandler[sigs[i]] = signal(sigs[i],  signal_handler);
@@ -415,9 +422,10 @@ void fb_hInit( void )
 void fb_hEnd( int unused )
 {
 	fb_hExitConsole();
-	if (__fb_con.inited) {
-		__fb_con.inited = FALSE;
+	__fb_con.inited = FALSE;
+	if( bgthread_inited ) {
 		pthread_join(__fb_bg_thread, NULL);
+		bgthread_inited = FALSE;
 	}
 	pthread_mutex_destroy(&__fb_bg_mutex);
 
