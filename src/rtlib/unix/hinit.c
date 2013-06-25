@@ -68,21 +68,34 @@ static void signal_handler(int sig)
 
 int fb_hTermQuery( int code, int *val1, int *val2 )
 {
-	fflush( stdin );
-
+#ifdef HOST_LINUX
 	if( fb_hTermOut( code, 0, 0 ) == FALSE )
 		return FALSE;
 
-#ifdef HOST_LINUX
-	switch( code ) {
-	case SEQ_QUERY_WINDOW:
-		return (fscanf( stdin, "\e[8;%d;%dt", val1, val2 ) == 2);
-	case SEQ_QUERY_CURSOR:
-		return (fscanf( stdin, "\e[%d;%dR", val1, val2 ) == 2);
-	}
-#endif
+	if( (code != SEQ_QUERY_WINDOW) && (code != SEQ_QUERY_CURSOR) )
+		return FALSE;
 
-	return FALSE;
+	/* The terminal should have sent its reply through stdin. However, it's
+	   possible that there's other data pending in stdin, e.g. if the user
+	   happened to press a key at the right time. */
+
+	/* Read until an ESC char is reached (ESC should be the begin of the
+	   terminal's answer string) */
+	int c;
+	do {
+		c = getchar( );
+		if( c == EOF )
+			return FALSE;
+	} while (c != '\e');
+
+	if( code == SEQ_QUERY_WINDOW )
+		return (fscanf( stdin, "[8;%d;%dt", val1, val2 ) == 2);
+
+	/* SEQ_QUERY_CURSOR */
+	return (fscanf( stdin, "[%d;%dR", val1, val2 ) == 2);
+#else
+	return fb_hTermOut( code, 0, 0 );
+#endif
 }
 
 /* If the SIGWINCH handler was called, re-query terminal width/height
