@@ -133,8 +133,8 @@ FBCALL void fb_GfxEllipse(void *target, float fx, float fy, float radius, unsign
 	}
 	if (context->flags & CTX_WINDOW_ACTIVE) {
 		/* a and b both get multiplied by the width ratio */
-		a *= (context->view_w / (context->win_w - 1));
-		b *= (context->view_w / (context->win_w - 1));
+		a *= (context->view_w / context->win_w);
+		b *= (context->view_w / context->win_w);
 	}
 	
 	if ((start != 0.0) || (end != 3.141593f * 2.0)) {

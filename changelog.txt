@@ -7,6 +7,7 @@ Version 0.90.1:
 [fixed]
 - Potential internal errors in Unix rtlib during SIGWINCH signal handling, due to calls to non-async-signal-safe functions
 - Any input on stdin could break the Unix rtlib's escape sequence communication with the terminal, e.g. typing very fast at an Input prompt
+- #679: WINDOW width/height were losing precision on very small Single values
 
 
 Version 0.90.0 (former 0.25.0):
