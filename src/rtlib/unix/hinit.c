@@ -81,27 +81,42 @@ int fb_hTermQuery( int code, int *val1, int *val2 )
 	if( fb_hTermOut( code, 0, 0 ) == FALSE )
 		return FALSE;
 
-	if( (code != SEQ_QUERY_WINDOW) && (code != SEQ_QUERY_CURSOR) )
-		return FALSE;
-
-	/* The terminal should have sent its reply through stdin. However, it's
-	   possible that there's other data pending in stdin, e.g. if the user
-	   happened to press a key at the right time. */
-
-	/* Read until an ESC char is reached (ESC should be the begin of the
-	   terminal's answer string) */
-	int c;
+	int filled;
 	do {
-		c = getchar( );
-		if( c == EOF )
-			return FALSE;
-	} while (c != '\e');
+		/* The terminal should have sent its reply through stdin. However, it's
+		   possible that there's other data pending in stdin, e.g. if the user
+		   happened to press a key at the right time. */
 
-	if( code == SEQ_QUERY_WINDOW )
-		return (fscanf( stdin, "[8;%d;%dt", val1, val2 ) == 2);
+		/* Read until an '\e[' (ESC char followed by '[') is reached,
+		   it should be the begin of the terminal's answer string) */
+		int c;
+		do {
+			do {
+				c = getchar( );
+				if( c == EOF ) return FALSE;
+				if( c == '\e' ) break;
 
-	/* SEQ_QUERY_CURSOR */
-	return (fscanf( stdin, "[%d;%dR", val1, val2 ) == 2);
+				/* Add skipped char to Inkey() buffer so it's not lost */
+				fb_hAddCh( c );
+			} while (1);
+
+			c = getchar( );
+			if( c == '[' ) break;
+
+			/* ditto */
+			fb_hAddCh( c );
+		} while (1);
+
+		const char *format;
+		if( code == SEQ_QUERY_WINDOW )
+			format = "8;%d;%dt";
+		else /* SEQ_QUERY_CURSOR */
+			format = "%d;%dR";
+
+		filled = scanf( format, val1, val2 );
+	} while (filled != 2);
+
+	return TRUE;
 }
 #endif
 

@@ -147,11 +147,7 @@ static int get_input()
 	int k, cb, cx, cy;
 
 	k = __fb_con.keyboard_getch();
-	if (k == 0x7F)
-		k = 8;
-	else if (k == '\n')
-		k = '\r';
-	else if (k == '\e') {
+	if (k == '\e') {
 		k = __fb_con.keyboard_getch();
 		if (k == EOF)
 			return 27;
@@ -194,22 +190,37 @@ static int get_input()
 	return k;
 }
 
+/* assumes BG_LOCK(), because it can be called from the background thread,
+   through fb_hTermQuery() */
+void fb_hAddCh( int k )
+{
+	if (k == 0x7F)
+		k = 8;
+	else if (k == '\n')
+		k = '\r';
+
+	key_buffer[key_tail] = k;
+	if (((key_tail + 1) & (KEY_BUFFER_LEN - 1)) == key_head)
+		key_head = (key_head + 1) & (KEY_BUFFER_LEN - 1);
+	key_tail = (key_tail + 1) & (KEY_BUFFER_LEN - 1);
+}
+
 int fb_hGetCh(int remove)
 {
 	int k;
 
 	k = get_input();
 	if (k >= 0) {
-		key_buffer[key_tail] = k;
-		if (((key_tail + 1) & (KEY_BUFFER_LEN - 1)) == key_head)
-			key_head = (key_head + 1) & (KEY_BUFFER_LEN - 1);
-		key_tail = (key_tail + 1) & (KEY_BUFFER_LEN - 1);
+		BG_LOCK();
+		fb_hAddCh( k );
+		BG_UNLOCK();
 	}
 	if (key_head != key_tail) {
 		k = key_buffer[key_head];
 		if (remove)
 			key_head = (key_head + 1) & (KEY_BUFFER_LEN - 1);
 	}
+
 	return k;
 }
 
