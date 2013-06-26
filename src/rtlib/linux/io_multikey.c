@@ -316,6 +316,8 @@ int fb_ConsoleMultikey(int scancode)
 
 	BG_LOCK();
 
+	fb_hStartBgThread( );
+
 	if ((!__fb_con.keyboard_handler) && (!keyboard_init())) {
 		/* Let the handler execute at least once to fill in states */
 		BG_UNLOCK();
@@ -339,6 +341,9 @@ int fb_hConsoleGfxMode
 	)
 {
 	BG_LOCK();
+
+	fb_hStartBgThread( );
+
 	__fb_con.gfx_exit = gfx_exit;
 	if (gfx_exit) {
 		__fb_ctx.hooks.multikeyproc = NULL;
@@ -361,6 +366,7 @@ int fb_hConsoleGfxMode
 			fb_hTermOut(SEQ_EXIT_GFX_MODE, 0, 0);
 		}
 	}
+
 	BG_UNLOCK();
 
 	return 0;

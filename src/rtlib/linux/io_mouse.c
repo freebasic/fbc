@@ -89,11 +89,15 @@ static void mouse_handler(void)
 		if (gpm.GetEvent(&event) > 0) {
 			mouse_x += event.dx;
 			mouse_y += event.dy;
+
+			fb_hRecheckConsoleSize( );
 			if (mouse_x < 0) mouse_x = 0;
 			if (mouse_x >= __fb_con.w) mouse_x = __fb_con.w - 1;
 			if (mouse_y < 0) mouse_y = 0;
 			if (mouse_y >= __fb_con.h) mouse_y = __fb_con.h - 1;
+
 			mouse_z += event.wdy;
+
 			if (event.type & GPM_DOWN)
 				mouse_buttons |= ((event.buttons & 0x4) >> 2) | ((event.buttons & 0x2) << 1) | ((event.buttons & 0x1) << 1);
 			else if (event.type & GPM_UP)
@@ -161,6 +165,8 @@ int fb_ConsoleGetMouse(int *x, int *y, int *z, int *buttons, int *clip)
 		buttons = &temp_buttons;
 
 	BG_LOCK();
+
+	fb_hStartBgThread( );
 
 	if (!__fb_con.mouse_handler) {
 		if (!mouse_init()) {

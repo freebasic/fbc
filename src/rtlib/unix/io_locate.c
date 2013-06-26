@@ -21,6 +21,8 @@ int fb_ConsoleLocate( int row, int col, int cursor )
 	if (row > 0)
 		y = row;
 
+	fb_hRecheckConsoleSize( );
+
 	if (x <= __fb_con.w)
 		__fb_con.cur_x = x;
 	else

@@ -132,8 +132,8 @@ void fb_hSetPixelTransfer(FB_GFXCTX *context, unsigned int color)
 void fb_hTranslateCoord(FB_GFXCTX *context, float fx, float fy, int *x, int *y)
 {
 	if (context->flags & CTX_WINDOW_ACTIVE) {
-		fx = ((fx - context->win_x) * context->view_w) / (context->win_w - 1);
-		fy = ((fy - context->win_y) * context->view_h) / (context->win_h - 1);
+		fx = ((fx - context->win_x) * context->view_w) / context->win_w;
+		fy = ((fy - context->win_y) * context->view_h) / context->win_h;
 	}
 	
 	*x = (int)(fx > 0 ? fx + 0.5 : fx - 0.5);

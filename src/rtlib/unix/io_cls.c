@@ -9,7 +9,11 @@ void fb_ConsoleClear( int mode )
 	
 	if (!__fb_con.inited || mode==1)
 		return;
-	
+
+	BG_LOCK( );
+	fb_hRecheckConsoleSize( );
+	BG_UNLOCK( );
+
 	fb_ConsoleGetView(&start, &end);
 	if ((mode != 2) && (mode != 0xFFFF0000)) {
 		start = 1;

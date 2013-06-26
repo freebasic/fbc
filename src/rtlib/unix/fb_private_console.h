@@ -62,8 +62,12 @@ typedef struct FBCONSOLE
 
 extern FBCONSOLE __fb_con;
 
+#ifdef HOST_LINUX
 int fb_hTermQuery( int code, int *val1, int *val2 );
+#endif
+void fb_hRecheckConsoleSize( void );
 int fb_hTermOut(int code, int param1, int param2);
+void fb_hAddCh( int k );
 int fb_hGetCh(int remove);
 int fb_hXTermInitFocus(void);
 void fb_hXTermExitFocus(void);
@@ -77,3 +81,4 @@ int fb_hConsoleGfxMode
 	);
 int fb_hInitConsole(void);
 void fb_hExitConsole(void);
+void fb_hStartBgThread( void );

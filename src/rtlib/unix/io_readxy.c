@@ -7,7 +7,14 @@ FBCALL unsigned int fb_ConsoleReadXY( int x, int y, int colorflag )
 {
 	unsigned char *buffer;
 
-	if ((!__fb_con.inited) || (x < 1) || (x > __fb_con.w) || (y < 1) || (y > __fb_con.h))
+	if( !__fb_con.inited )
+		return 0;
+
+	BG_LOCK( );
+	fb_hRecheckConsoleSize( );
+	BG_UNLOCK( );
+
+	if ((x < 1) || (x > __fb_con.w) || (y < 1) || (y > __fb_con.h))
 		return 0;
 
 	if (colorflag)
