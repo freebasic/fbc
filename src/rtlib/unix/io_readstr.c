@@ -17,12 +17,6 @@ char *fb_ConsoleReadStr( char *buffer, int len )
 		while( ((k = fb_hGetCh(TRUE)) == -1) || (k > 0xFF) )
 			fb_Delay( 10 );
 
-		/* drop subsequent keypresses, if any; this is needed to avoid escape
-		 * sequence parsing problems in the fb_ConsoleGetXY() call below.
-		 */
-		while( fb_hGetCh(TRUE) >= 0 )
-			fb_Delay( 10 );
-
 		fb_ConsoleGetXY(&x, &y);
 
 		if (k == 8) {
