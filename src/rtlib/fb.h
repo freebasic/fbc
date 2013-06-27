@@ -89,6 +89,12 @@
 
 #define SWAP(a,b)		((a) ^= (b), (b) ^= (a), (a) ^= (b))
 
+#ifdef HOST_64BIT
+	typedef long long fbinteger;
+#else
+	typedef int fbinteger;
+#endif
+
 #if defined HOST_DOS
 	#include "dos/fb_dos.h"
 #elif defined HOST_UNIX

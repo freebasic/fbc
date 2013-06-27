@@ -48,14 +48,17 @@
 	#define HOST_X86
 #elif defined __x86_64__
 	#define HOST_X86_64
+	#define HOST_64BIT
 #elif defined __sparc__
 	#ifdef __LP64__
 		#define HOST_SPARC64
+		#define HOST_64BIT
 	#else
 		#define HOST_SPARC
 	#endif
 #elif defined __ppc64__
 	#define HOST_POWERPC64
+	#define HOST_64BIT
 #endif
 
 #if defined HOST_MINGW && defined HOST_X86
