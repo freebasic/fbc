@@ -2,25 +2,19 @@
 
 #include "fb.h"
 
-/*:::::*/
-static void *hThrowError
-	( 
-		int linenum, 
-		const char *fname 
-	)
+static void *hThrowError( fbinteger linenum, const char *fname )
 {
 	/* call user handler if any defined */
     return (void *)fb_ErrorThrowEx( FB_RTERROR_OUTOFBOUNDS, linenum, fname, NULL, NULL );
 }
 
-/*:::::*/
 FBCALL void *fb_ArrayBoundChk
-	( 
-		int idx, 
-		int lbound, 
-		int ubound,
-		int linenum, 
-		const char *fname 
+	(
+		fbinteger idx,
+		fbinteger lbound,
+		fbinteger ubound,
+		fbinteger linenum,
+		const char *fname
 	)
 {
 	if( (idx < lbound) || (idx > ubound) )
@@ -29,13 +23,12 @@ FBCALL void *fb_ArrayBoundChk
 		return NULL;
 }
 
-/*:::::*/
 FBCALL void *fb_ArraySngBoundChk
-	( 
-		unsigned int idx, 
-		unsigned int ubound,
-		int linenum, 
-		const char *fname 
+	(
+		fbinteger idx,
+		fbinteger ubound,
+		fbinteger linenum,
+		const char *fname
 	)
 {
 	if( idx > ubound )

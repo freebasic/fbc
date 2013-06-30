@@ -3,13 +3,12 @@
 
 #include "fb.h"
 
-/*:::::*/
 FBCALL void fb_ArrayResetDesc
 	( 
 		FBARRAY *array 
 	)
 {
-    int	i;
+	fbinteger i;
     FBARRAYDIM *dim;
 
     dim = &array->dimTB[0];
@@ -26,4 +25,3 @@ FBCALL void fb_ArrayResetDesc
 
     FB_ARRAY_SETDESC( array, array->element_len, 0, 0, 0 );
 }
-

@@ -3,22 +3,20 @@
 
 #include "fb.h"
 
-
-/*:::::*/
 void fb_ArraySetDesc
 	( 
 		FBARRAY *array, 
 		void *ptr, 
-		int element_len, 
-		int dimensions, 
+		fbinteger element_len, 
+		fbinteger dimensions, 
 		... 
 	)
 {
     va_list ap;
-    int	i, elements, diff;
+	fbinteger i, elements, diff;
     FBARRAYDIM *dim;
-    int	lbTB[FB_MAXDIMENSIONS];
-    int	ubTB[FB_MAXDIMENSIONS];
+    fbinteger lbTB[FB_MAXDIMENSIONS];
+    fbinteger ubTB[FB_MAXDIMENSIONS];
 
     va_start( ap, dimensions );
 
@@ -26,8 +24,8 @@ void fb_ArraySetDesc
 
     for( i = 0; i < dimensions; i++ )
     {
-    	lbTB[i] = va_arg( ap, int );
-    	ubTB[i] = va_arg( ap, int );
+		lbTB[i] = va_arg( ap, fbinteger );
+		ubTB[i] = va_arg( ap, fbinteger );
 
     	dim->elements = (ubTB[i] - lbTB[i]) + 1;
     	dim->lbound = lbTB[i];
@@ -44,4 +42,3 @@ void fb_ArraySetDesc
 
     FB_ARRAY_SETDESC( array, element_len, dimensions, elements * element_len, diff );
 }
-

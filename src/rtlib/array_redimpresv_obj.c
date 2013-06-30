@@ -2,19 +2,18 @@
 
 #include "fb.h"
 
-/*:::::*/
-int fb_ArrayRedimPresvObj
-	( 
-		FBARRAY *array, 
-		int element_len, 
+fbinteger fb_ArrayRedimPresvObj
+	(
+		FBARRAY *array,
+		fbinteger element_len,
 		FB_DEFCTOR ctor,
 		FB_DEFCTOR dtor,
-		int dimensions, 
-		... 
+		fbinteger dimensions,
+		...
 	)
 {
 	va_list ap;
-	int res;
+	fbinteger res;
 	
 	va_start( ap, dimensions );
 

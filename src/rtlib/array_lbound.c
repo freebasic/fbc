@@ -2,7 +2,7 @@
 
 #include "fb.h"
 
-FBCALL int fb_ArrayLBound( FBARRAY *array, int dimension )
+FBCALL fbinteger fb_ArrayLBound( FBARRAY *array, fbinteger dimension )
 {
 	/* given dimension is 1-based */
 	dimension -= 1;
