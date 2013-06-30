@@ -2,7 +2,7 @@
 
 #include "fb.h"
 
-static void *hThrowError( fbinteger linenum, const char *fname )
+static void *hThrowError( fbint linenum, const char *fname )
 {
 	/* call user handler if any defined */
     return (void *)fb_ErrorThrowEx( FB_RTERROR_OUTOFBOUNDS, linenum, fname, NULL, NULL );
@@ -10,10 +10,10 @@ static void *hThrowError( fbinteger linenum, const char *fname )
 
 FBCALL void *fb_ArrayBoundChk
 	(
-		fbinteger idx,
-		fbinteger lbound,
-		fbinteger ubound,
-		fbinteger linenum,
+		fbint idx,
+		fbint lbound,
+		fbint ubound,
+		fbint linenum,
 		const char *fname
 	)
 {
@@ -25,9 +25,9 @@ FBCALL void *fb_ArrayBoundChk
 
 FBCALL void *fb_ArraySngBoundChk
 	(
-		fbinteger idx,
-		fbinteger ubound,
-		fbinteger linenum,
+		fbint idx,
+		fbint ubound,
+		fbint linenum,
 		const char *fname
 	)
 {

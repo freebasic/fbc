@@ -3,7 +3,7 @@
 
 #include "fb.h"
 
-FBCALL fbinteger fb_ArrayClear( FBARRAY *array, fbinteger isvarlen /* legacy */ )
+FBCALL fbint fb_ArrayClear( FBARRAY *array, fbint isvarlen /* legacy */ )
 {
 	if( array->ptr ) {
 		if( isvarlen )

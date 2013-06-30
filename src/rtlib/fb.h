@@ -90,9 +90,9 @@
 #define SWAP(a,b)		((a) ^= (b), (b) ^= (a), (a) ^= (b))
 
 #ifdef HOST_64BIT
-	typedef long long fbinteger;
+	typedef long long fbint;
 #else
-	typedef int fbinteger;
+	typedef int fbint;
 #endif
 
 #if defined HOST_DOS

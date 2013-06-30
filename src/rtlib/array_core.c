@@ -2,14 +2,14 @@
 
 #include "fb.h"
 
-fbinteger fb_hArrayCalcElements
+fbint fb_hArrayCalcElements
 	(
-		fbinteger dimensions,
-		const fbinteger *lboundTB,
-		const fbinteger *uboundTB
+		fbint dimensions,
+		const fbint *lboundTB,
+		const fbint *uboundTB
 	)
 {
-	fbinteger i, elements;
+	fbint i, elements;
 
     elements = (uboundTB[0] - lboundTB[0]) + 1;
     for( i = 1; i < dimensions; i++ )
@@ -18,14 +18,14 @@ fbinteger fb_hArrayCalcElements
     return elements;
 }
 
-fbinteger fb_hArrayCalcDiff
+fbint fb_hArrayCalcDiff
 	(
-		fbinteger dimensions,
-		const fbinteger *lboundTB,
-		const fbinteger *uboundTB
+		fbint dimensions,
+		const fbint *lboundTB,
+		const fbint *uboundTB
 	)
 {
-	fbinteger i, elements, diff = 0;
+	fbint i, elements, diff = 0;
 
 	if( dimensions <= 0 )
 		return 0;
