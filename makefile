@@ -94,7 +94,6 @@
 FBC := fbc
 CFLAGS := -Wfatal-errors -O2
 FBFLAGS := -maxerr 1
-AS = $(TARGET_PREFIX)as
 AR = $(TARGET_PREFIX)ar
 CC = $(TARGET_PREFIX)gcc
 prefix := /usr/local
