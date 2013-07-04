@@ -11,7 +11,7 @@
 #   1) the compiler - this requires a working FB installation, because it's
 #      written in FB itself.
 #          src/compiler/*.bas,
-#          compiled into fbc-new[.exe]
+#          compiled into fbc[.exe]
 #
 #   2) the rtlib
 #          all *.c and *.s files in src/rtlib/, src/rtlib/$(TARGET_OS),
