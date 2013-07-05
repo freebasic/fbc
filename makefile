@@ -274,27 +274,27 @@ else
   INSTALL_FILE := install -m 644
 endif
 
-newcompiler := src/compiler/obj
+fbcobjdir := src/compiler/obj
 ifdef ENABLE_STANDALONE
   FBC_EXE     := fbc$(EXEEXT)
   FBCNEW_EXE  := fbc-new$(EXEEXT)
-  newlibfb    := src/rtlib/$(TARGET_OS)-obj
-  newlibfbmt  := src/rtlib/$(TARGET_OS)-objmt
-  newlibfbgfx := src/gfxlib2/$(TARGET_OS)-obj
-  libdir      := lib/$(TARGET_OS)
+  libfbobjdir    := src/rtlib/$(TARGET_OS)-obj
+  libfbmtobjdir  := src/rtlib/$(TARGET_OS)-objmt
+  libfbgfxobjdir := src/gfxlib2/$(TARGET_OS)-obj
+  libdir         := lib/$(TARGET_OS)
   PREFIX_FBC_EXE := $(prefix)/fbc$(EXEEXT)
-  prefixinclude  := $(prefix)/inc
-  prefixlib      := $(prefix)/lib/$(TARGET_OS)
+  prefixincdir   := $(prefix)/inc
+  prefixlibdir   := $(prefix)/lib/$(TARGET_OS)
 else
   FBC_EXE     := bin/fbc$(ENABLE_SUFFIX)$(EXEEXT)
   FBCNEW_EXE  := bin/fbc$(ENABLE_SUFFIX)-new$(EXEEXT)
-  newlibfb    := src/rtlib/$(TARGET_PREFIX)obj
-  newlibfbmt  := src/rtlib/$(TARGET_PREFIX)objmt
-  newlibfbgfx := src/gfxlib2/$(TARGET_PREFIX)obj
-  libdir      := lib/$(TARGET_PREFIX)$(FB_NAME)$(ENABLE_SUFFIX)
+  libfbobjdir    := src/rtlib/$(TARGET_PREFIX)obj
+  libfbmtobjdir  := src/rtlib/$(TARGET_PREFIX)objmt
+  libfbgfxobjdir := src/gfxlib2/$(TARGET_PREFIX)obj
+  libdir         := lib/$(TARGET_PREFIX)$(FB_NAME)$(ENABLE_SUFFIX)
   PREFIX_FBC_EXE := $(prefix)/bin/fbc$(ENABLE_SUFFIX)$(EXEEXT)
-  prefixinclude  := $(prefix)/include/$(FB_NAME)
-  prefixlib      := $(prefix)/lib/$(TARGET_PREFIX)$(FB_NAME)$(ENABLE_SUFFIX)
+  prefixincdir   := $(prefix)/include/$(FB_NAME)
+  prefixlibdir   := $(prefix)/lib/$(TARGET_PREFIX)$(FB_NAME)$(ENABLE_SUFFIX)
 endif
 
 ALLFBCFLAGS := -e -m fbc -w pedantic
@@ -354,7 +354,7 @@ FBC_BI  :=        $(wildcard $(srcdir)/compiler/*.bi)
 FBC_BAS := $(sort $(wildcard $(srcdir)/compiler/*.bas))
 FBC_ASM := $(patsubst %.bas,%.asm,$(FBC_BAS))
 FBC_C   := $(patsubst %.bas,%.c,$(FBC_BAS))
-FBC_BAS := $(patsubst $(srcdir)/compiler/%.bas,$(newcompiler)/%.o,$(FBC_BAS))
+FBC_BAS := $(patsubst $(srcdir)/compiler/%.bas,$(fbcobjdir)/%.o,$(FBC_BAS))
 
 # rtlib/gfxlib2 headers and modules
 RTLIB_DIRS := $(srcdir)/rtlib $(srcdir)/rtlib/$(TARGET_OS) $(srcdir)/rtlib/$(TARGET_ARCH)
@@ -368,15 +368,15 @@ endif
 GFXLIB2_DIRS := $(patsubst $(srcdir)/rtlib%,$(srcdir)/gfxlib2%,$(RTLIB_DIRS))
 
 LIBFB_H := $(sort $(foreach i,$(RTLIB_DIRS),$(wildcard $(i)/*.h)))
-LIBFB_C := $(sort $(foreach i,$(RTLIB_DIRS),$(patsubst $(i)/%.c,$(newlibfb)/%.o,$(wildcard $(i)/*.c))))
-LIBFB_S := $(sort $(foreach i,$(RTLIB_DIRS),$(patsubst $(i)/%.s,$(newlibfb)/%.o,$(wildcard $(i)/*.s))))
+LIBFB_C := $(sort $(foreach i,$(RTLIB_DIRS),$(patsubst $(i)/%.c,$(libfbobjdir)/%.o,$(wildcard $(i)/*.c))))
+LIBFB_S := $(sort $(foreach i,$(RTLIB_DIRS),$(patsubst $(i)/%.s,$(libfbobjdir)/%.o,$(wildcard $(i)/*.s))))
 
-LIBFBMT_C := $(patsubst $(newlibfb)/%,$(newlibfbmt)/%,$(LIBFB_C))
-LIBFBMT_S := $(patsubst $(newlibfb)/%,$(newlibfbmt)/%,$(LIBFB_S))
+LIBFBMT_C := $(patsubst $(libfbobjdir)/%,$(libfbmtobjdir)/%,$(LIBFB_C))
+LIBFBMT_S := $(patsubst $(libfbobjdir)/%,$(libfbmtobjdir)/%,$(LIBFB_S))
 
 LIBFBGFX_H := $(sort $(foreach i,$(GFXLIB2_DIRS),$(wildcard $(i)/*.h)) $(LIBFB_H))
-LIBFBGFX_C := $(sort $(foreach i,$(GFXLIB2_DIRS),$(patsubst $(i)/%.c,$(newlibfbgfx)/%.o,$(wildcard $(i)/*.c))))
-LIBFBGFX_S := $(sort $(foreach i,$(GFXLIB2_DIRS),$(patsubst $(i)/%.s,$(newlibfbgfx)/%.o,$(wildcard $(i)/*.s))))
+LIBFBGFX_C := $(sort $(foreach i,$(GFXLIB2_DIRS),$(patsubst $(i)/%.c,$(libfbgfxobjdir)/%.o,$(wildcard $(i)/*.c))))
+LIBFBGFX_S := $(sort $(foreach i,$(GFXLIB2_DIRS),$(patsubst $(i)/%.s,$(libfbgfxobjdir)/%.o,$(wildcard $(i)/*.s))))
 
 #
 # Build rules
@@ -402,8 +402,8 @@ endif
 all: compiler rtlib gfxlib2
 
 src src/compiler src/rtlib src/gfxlib2 bin lib \
-$(newcompiler) $(newlibfb) $(newlibfbmt) $(newlibfbgfx) $(libdir) \
-$(prefix) $(prefix)/bin $(prefix)/inc $(prefix)/include $(prefix)/include/$(FB_NAME) $(prefix)/lib $(prefixlib):
+$(fbcobjdir) $(libfbobjdir) $(libfbmtobjdir) $(libfbgfxobjdir) $(libdir) \
+$(prefix) $(prefix)/bin $(prefix)/inc $(prefix)/include $(prefix)/include/$(FB_NAME) $(prefix)/lib $(prefixlibdir):
 	mkdir $@
 
 ################################################################################
@@ -413,22 +413,22 @@ compiler: src src/compiler
 ifndef ENABLE_STANDALONE
 compiler: bin
 endif
-compiler: $(newcompiler) $(FBC_EXE)
+compiler: $(fbcobjdir) $(FBC_EXE)
 
 $(FBC_EXE): $(FBC_BAS)
 	$(QUIET_LINK)$(FBC) $(ALLFBLFLAGS) -x $(FBCNEW_EXE) $^
 	$(QUIET)mv $(FBCNEW_EXE) $@
 
-$(FBC_BAS): $(newcompiler)/%.o: $(srcdir)/compiler/%.bas $(FBC_BI)
+$(FBC_BAS): $(fbcobjdir)/%.o: $(srcdir)/compiler/%.bas $(FBC_BI)
 	$(QUIET_FBC)$(FBC) $(ALLFBCFLAGS) -c $< -o $@
 
 ################################################################################
 
 .PHONY: rtlib
-rtlib: lib $(libdir) src src/rtlib $(newlibfb)
+rtlib: lib $(libdir) src src/rtlib $(libfbobjdir)
 rtlib: $(libdir)/$(FB_LDSCRIPT) $(libdir)/fbrt0.o $(libdir)/libfb.a
 ifndef DISABLE_MT
-rtlib: $(newlibfbmt) $(libdir)/libfbmt.a
+rtlib: $(libfbmtobjdir) $(libdir)/libfbmt.a
 endif
 ifeq ($(TARGET_OS),dos)
 rtlib: $(libdir)/libc.a
@@ -447,24 +447,24 @@ $(libdir)/libfb.a: $(LIBFB_C) $(LIBFB_S)
 ifeq ($(TARGET_OS),dos)
   # Avoid hitting the command line length limit (the libfb.a ar command line
   # is very long...)
-	$(QUIET_AR)$(AR) rcs $@ $(newlibfb)/*.o
+	$(QUIET_AR)$(AR) rcs $@ $(libfbobjdir)/*.o
 else
 	$(QUIET_AR)rm -f $@; $(AR) rcs $@ $^
 endif
 
-$(LIBFB_C): $(newlibfb)/%.o: %.c $(LIBFB_H)
+$(LIBFB_C): $(libfbobjdir)/%.o: %.c $(LIBFB_H)
 	$(QUIET_CC)$(CC) $(ALLCFLAGS) -c $< -o $@
 
-$(LIBFB_S): $(newlibfb)/%.o: %.s $(LIBFB_H)
+$(LIBFB_S): $(libfbobjdir)/%.o: %.s $(LIBFB_H)
 	$(QUIET_CPPAS)$(CC) -x assembler-with-cpp $(ALLCFLAGS) -c $< -o $@
 
 $(libdir)/libfbmt.a: $(LIBFBMT_C) $(LIBFBMT_S)
 	$(QUIET_AR)rm -f $@; $(AR) rcs $@ $^
 
-$(LIBFBMT_C): $(newlibfbmt)/%.o: %.c $(LIBFB_H)
+$(LIBFBMT_C): $(libfbmtobjdir)/%.o: %.c $(LIBFB_H)
 	$(QUIET_CC)$(CC) -DENABLE_MT $(ALLCFLAGS) -c $< -o $@
 
-$(LIBFBMT_S): $(newlibfbmt)/%.o: %.s $(LIBFB_H)
+$(LIBFBMT_S): $(libfbmtobjdir)/%.o: %.s $(LIBFB_H)
 	$(QUIET_CPPAS)$(CC) -x assembler-with-cpp -DENABLE_MT $(ALLCFLAGS) -c $< -o $@
 
 ifeq ($(TARGET_OS),dos)
@@ -483,15 +483,15 @@ endif
 
 .PHONY: gfxlib2
 gfxlib2: lib $(libdir) src src/gfxlib2
-gfxlib2: $(newlibfbgfx) $(libdir)/libfbgfx.a
+gfxlib2: $(libfbgfxobjdir) $(libdir)/libfbgfx.a
 
 $(libdir)/libfbgfx.a: $(LIBFBGFX_C) $(LIBFBGFX_S)
 	$(QUIET_AR)rm -f $@; $(AR) rcs $@ $^
 
-$(LIBFBGFX_C): $(newlibfbgfx)/%.o: %.c $(LIBFBGFX_H)
+$(LIBFBGFX_C): $(libfbgfxobjdir)/%.o: %.c $(LIBFBGFX_H)
 	$(QUIET_CC)$(CC) $(ALLCFLAGS) -c $< -o $@
 
-$(LIBFBGFX_S): $(newlibfbgfx)/%.o: %.s $(LIBFBGFX_H)
+$(LIBFBGFX_S): $(libfbgfxobjdir)/%.o: %.s $(LIBFBGFX_H)
 	$(QUIET_CPPAS)$(CC) -x assembler-with-cpp $(ALLCFLAGS) -c $< -o $@
 
 ################################################################################
@@ -507,47 +507,47 @@ endif
 	$(INSTALL_PROGRAM) $(FBC_EXE) $(PREFIX_FBC_EXE)
 
 ifdef ENABLE_STANDALONE
-install-includes: $(prefixinclude)
+install-includes: $(prefixincdir)
 else
-install-includes: $(prefix)/include $(prefixinclude)
+install-includes: $(prefix)/include $(prefixincdir)
 endif
-	cp -r $(rootdir)inc/* $(prefixinclude)
+	cp -r $(rootdir)inc/* $(prefixincdir)
 
-install-rtlib: $(prefix)/lib $(prefixlib)
-	$(INSTALL_FILE) $(libdir)/$(FB_LDSCRIPT) $(libdir)/fbrt0.o $(libdir)/libfb.a $(prefixlib)/
+install-rtlib: $(prefix)/lib $(prefixlibdir)
+	$(INSTALL_FILE) $(libdir)/$(FB_LDSCRIPT) $(libdir)/fbrt0.o $(libdir)/libfb.a $(prefixlibdir)/
   ifndef DISABLE_MT
-	$(INSTALL_FILE) $(libdir)/libfbmt.a $(prefixlib)/
+	$(INSTALL_FILE) $(libdir)/libfbmt.a $(prefixlibdir)/
   endif
   ifeq ($(TARGET_OS),dos)
-	$(INSTALL_FILE) $(libdir)/libc.a $(prefixlib)/
+	$(INSTALL_FILE) $(libdir)/libc.a $(prefixlibdir)/
   endif
 
-install-gfxlib2: $(prefix)/lib $(prefixlib)
-	$(INSTALL_FILE) $(libdir)/libfbgfx.a $(prefixlib)/
+install-gfxlib2: $(prefix)/lib $(prefixlibdir)
+	$(INSTALL_FILE) $(libdir)/libfbgfx.a $(prefixlibdir)/
 
 ################################################################################
 
 .PHONY: uninstall uninstall-compiler uninstall-includes uninstall-rtlib uninstall-gfxlib2
 uninstall:        uninstall-compiler uninstall-includes uninstall-rtlib uninstall-gfxlib2
-	-rmdir $(prefixlib)
+	-rmdir $(prefixlibdir)
 
 uninstall-compiler:
 	rm -f $(PREFIX_FBC_EXE)
 
 uninstall-includes:
-	rm -rf $(prefixinclude)
+	rm -rf $(prefixincdir)
 
 uninstall-rtlib:
-	rm -f $(prefixlib)/$(FB_LDSCRIPT) $(prefixlib)/fbrt0.o $(prefixlib)/libfb.a
+	rm -f $(prefixlibdir)/$(FB_LDSCRIPT) $(prefixlibdir)/fbrt0.o $(prefixlibdir)/libfb.a
   ifndef DISABLE_MT
-	rm -f $(prefixlib)/libfbmt.a
+	rm -f $(prefixlibdir)/libfbmt.a
   endif
   ifeq ($(TARGET_OS),dos)
 	rm -f $(libdir)/libc.a
   endif
 
 uninstall-gfxlib2:
-	rm -f $(prefixlib)/libfbgfx.a
+	rm -f $(prefixlibdir)/libfbgfx.a
 
 ################################################################################
 
@@ -555,25 +555,25 @@ uninstall-gfxlib2:
 clean:        clean-compiler clean-rtlib clean-gfxlib2
 
 clean-compiler:
-	rm -f $(FBC_EXE) $(newcompiler)/*.o
+	rm -f $(FBC_EXE) $(fbcobjdir)/*.o
   ifndef ENABLE_STANDALONE
 	-rmdir bin
   endif
 
 clean-rtlib:
-	rm -f $(libdir)/$(FB_LDSCRIPT) $(libdir)/fbrt0.o $(libdir)/libfb.a $(newlibfb)/*.o
-	-rmdir $(newlibfb)
+	rm -f $(libdir)/$(FB_LDSCRIPT) $(libdir)/fbrt0.o $(libdir)/libfb.a $(libfbobjdir)/*.o
+	-rmdir $(libfbobjdir)
   ifndef DISABLE_MT
-	rm -f $(libdir)/libfbmt.a $(newlibfbmt)/*.o
-	-rmdir $(newlibfbmt)
+	rm -f $(libdir)/libfbmt.a $(libfbmtobjdir)/*.o
+	-rmdir $(libfbmtobjdir)
   endif
   ifeq ($(TARGET_OS),dos)
 	rm -f $(libdir)/libc.a $(libcmaino)
   endif
 
 clean-gfxlib2:
-	rm -f $(libdir)/libfbgfx.a $(newlibfbgfx)/*.o
-	-rmdir $(newlibfbgfx)
+	rm -f $(libdir)/libfbgfx.a $(libfbgfxobjdir)/*.o
+	-rmdir $(libfbgfxobjdir)
 
 ################################################################################
 
