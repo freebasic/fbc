@@ -286,6 +286,7 @@ ifdef ENABLE_STANDALONE
   prefixincdir   := $(prefix)/inc
   prefixlibdir   := $(prefix)/lib/$(TARGET_OS)
 else
+  bindir      := bin
   FBC_EXE     := bin/fbc$(ENABLE_SUFFIX)$(EXEEXT)
   FBCNEW_EXE  := bin/fbc$(ENABLE_SUFFIX)-new$(EXEEXT)
   libfbobjdir    := src/rtlib/$(TARGET_PREFIX)obj
@@ -293,6 +294,7 @@ else
   libfbgfxobjdir := src/gfxlib2/$(TARGET_PREFIX)obj
   libdir         := lib/$(TARGET_PREFIX)$(FB_NAME)$(ENABLE_SUFFIX)
   PREFIX_FBC_EXE := $(prefix)/bin/fbc$(ENABLE_SUFFIX)$(EXEEXT)
+  prefixbindir   := $(prefix)/bin
   prefixincdir   := $(prefix)/include/$(FB_NAME)
   prefixlibdir   := $(prefix)/lib/$(TARGET_PREFIX)$(FB_NAME)$(ENABLE_SUFFIX)
 endif
@@ -401,19 +403,14 @@ endif
 .PHONY: all
 all: compiler rtlib gfxlib2
 
-src src/compiler src/rtlib src/gfxlib2 bin lib \
-$(fbcobjdir) $(libfbobjdir) $(libfbmtobjdir) $(libfbgfxobjdir) $(libdir) \
-$(prefix) $(prefix)/bin $(prefix)/inc $(prefix)/include $(prefix)/include/$(FB_NAME) $(prefix)/lib $(prefixlibdir):
-	mkdir $@
+$(fbcobjdir) $(libfbobjdir) $(libfbmtobjdir) $(libfbgfxobjdir) \
+$(bindir) $(libdir) $(prefixbindir) $(prefixincdir) $(prefixlibdir):
+	mkdir -p $@
 
 ################################################################################
 
 .PHONY: compiler
-compiler: src src/compiler
-ifndef ENABLE_STANDALONE
-compiler: bin
-endif
-compiler: $(fbcobjdir) $(FBC_EXE)
+compiler: $(bindir) $(fbcobjdir) $(FBC_EXE)
 
 $(FBC_EXE): $(FBC_BAS)
 	$(QUIET_LINK)$(FBC) $(ALLFBLFLAGS) -x $(FBCNEW_EXE) $^
@@ -425,7 +422,7 @@ $(FBC_BAS): $(fbcobjdir)/%.o: $(srcdir)/compiler/%.bas $(FBC_BI)
 ################################################################################
 
 .PHONY: rtlib
-rtlib: lib $(libdir) src src/rtlib $(libfbobjdir)
+rtlib: $(libdir) $(libfbobjdir)
 rtlib: $(libdir)/$(FB_LDSCRIPT) $(libdir)/fbrt0.o $(libdir)/libfb.a
 ifndef DISABLE_MT
 rtlib: $(libfbmtobjdir) $(libdir)/libfbmt.a
@@ -482,8 +479,7 @@ endif
 ################################################################################
 
 .PHONY: gfxlib2
-gfxlib2: lib $(libdir) src src/gfxlib2
-gfxlib2: $(libfbgfxobjdir) $(libdir)/libfbgfx.a
+gfxlib2: $(libdir) $(libfbgfxobjdir) $(libdir)/libfbgfx.a
 
 $(libdir)/libfbgfx.a: $(LIBFBGFX_C) $(LIBFBGFX_S)
 	$(QUIET_AR)rm -f $@; $(AR) rcs $@ $^
@@ -499,21 +495,13 @@ $(LIBFBGFX_S): $(libfbgfxobjdir)/%.o: %.s $(LIBFBGFX_H)
 .PHONY: install install-compiler install-includes install-rtlib install-gfxlib2
 install:        install-compiler install-includes install-rtlib install-gfxlib2
 
-ifdef ENABLE_STANDALONE
-install-compiler:
-else
-install-compiler: $(prefix)/bin
-endif
+install-compiler: $(prefixbindir)
 	$(INSTALL_PROGRAM) $(FBC_EXE) $(PREFIX_FBC_EXE)
 
-ifdef ENABLE_STANDALONE
 install-includes: $(prefixincdir)
-else
-install-includes: $(prefix)/include $(prefixincdir)
-endif
 	cp -r $(rootdir)inc/* $(prefixincdir)
 
-install-rtlib: $(prefix)/lib $(prefixlibdir)
+install-rtlib: $(prefixlibdir)
 	$(INSTALL_FILE) $(libdir)/$(FB_LDSCRIPT) $(libdir)/fbrt0.o $(libdir)/libfb.a $(prefixlibdir)/
   ifndef DISABLE_MT
 	$(INSTALL_FILE) $(libdir)/libfbmt.a $(prefixlibdir)/
@@ -557,7 +545,7 @@ clean:        clean-compiler clean-rtlib clean-gfxlib2
 clean-compiler:
 	rm -f $(FBC_EXE) $(fbcobjdir)/*.o
   ifndef ENABLE_STANDALONE
-	-rmdir bin
+	-rmdir $(bindir)
   endif
 
 clean-rtlib:
