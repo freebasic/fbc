@@ -11,15 +11,9 @@
 
 	dim shared as FB_RTL_PROCDEF funcdata( 0 to ... ) = _
 	{ _
-		/' function fb_ArrayRedimEx cdecl _
-			( _
-				array() as any, _
-				byval elementlen as integer, _
-				byval doclear as integer, _
-				byval isvarlen as integer, _
-				byval dimensions as integer, _
-				... _
-			) as integer '/ _
+		/' fb_ArrayRedimEx CDECL ( array() as ANY, byval elementlen as integer, _
+							   	   byval doclear as integer, byval isvarlen as integer, _
+							   	   byval dimensions as integer, ... ) as integer '/ _
 		( _
 			@FB_RTL_ARRAYREDIM, NULL, _
 			FB_DATATYPE_INTEGER, FB_FUNCMODE_CDECL, _
@@ -46,15 +40,9 @@
 				) _
 			} _
 		), _
-		/' function fb_ArrayRedimPresvEx cdecl _
-			( _
-				array() as any, _
-				byval elementlen as integer, _
-				byval doclear as integer, _
-				byval isvarlen as integer, _
-				byval dimensions as integer, _
-				... _
-			) as integer '/ _
+		/' fb_ArrayRedimPresvEx CDECL ( array() as ANY, byval elementlen as integer, _
+					            		byval doclear as integer, byval isvarlen as integer, _
+								        byval dimensions as integer, ... ) as integer '/ _
 		( _
 			@FB_RTL_ARRAYREDIMPRESV, NULL, _
 			FB_DATATYPE_INTEGER, FB_FUNCMODE_CDECL, _
@@ -81,15 +69,10 @@
 				) _
 			} _
 		), _
-		/' function fb_ArrayRedimObj cdecl _
-			( _
-				array() as any, _
-				byval elementlen as integer, _
-				byval ctor as sub cdecl( byval this_ as any ptr ), _
-				byval dtor as sub cdecl( byval this_ as any ptr ), _
-				byval dimensions as integer, _
-				... _
-			) as integer '/ _
+		/' fb_ArrayRedimObj CDECL ( array() as ANY, byval elementlen as integer, _
+							   	    byval ctor as sub cdecl( byval this_ as any ptr), _
+							   	    byval dtor as sub cdecl( byval this_ as any ptr), _
+							   	    byval dimensions as integer, ... ) as integer '/ _
 		( _
 			@FB_RTL_ARRAYREDIM_OBJ, NULL, _
 			FB_DATATYPE_INTEGER, FB_FUNCMODE_CDECL, _
@@ -116,15 +99,10 @@
 				) _
 			} _
 		), _
-		/' function fb_ArrayRedimPresvObj cdecl _
-			( _
-				array() as any, _
-				byval elementlen as integer, _
-				byval ctor as cdecl sub( ), _
-				byval dtor as cdecl sub( ), _
-				byval dimensions as integer, _
-				... _
-			) as integer '/ _
+		/' fb_ArrayRedimPresvObj CDECL ( array() as ANY, byval elementlen as integer, _
+					            		 byval ctor as cdecl sub(), _
+					            		 byval dtor as cdecl sub(), _
+								         byval dimensions as integer, ... ) as integer '/ _
 		( _
 			@FB_RTL_ARRAYREDIMPRESV_OBJ, NULL, _
 			FB_DATATYPE_INTEGER, FB_FUNCMODE_CDECL, _

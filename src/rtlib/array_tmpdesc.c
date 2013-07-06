@@ -48,17 +48,17 @@ FBARRAY *fb_ArrayAllocTempDesc
 	( 
 		FBARRAY **pdesc, 
 		void *arraydata, 
-		fbinteger element_len, 
-		fbinteger dimensions, 
+		int element_len, 
+		int dimensions, 
 		... 
 	)
 {
     va_list ap;
-	fbinteger i, elements, diff;
+    int	i, elements, diff;
     FBARRAY	*array;
     FBARRAYDIM *dim;
-	fbinteger lbTB[FB_MAXDIMENSIONS];
-	fbinteger ubTB[FB_MAXDIMENSIONS];
+    int	lbTB[FB_MAXDIMENSIONS];
+    int	ubTB[FB_MAXDIMENSIONS];
 
 	FB_LOCK();
     array = fb_hArrayAllocTmpDesc( );
@@ -82,8 +82,8 @@ FBARRAY *fb_ArrayAllocTempDesc
 
     for( i = 0; i < dimensions; i++ )
     {
-		lbTB[i] = va_arg( ap, fbinteger );
-		ubTB[i] = va_arg( ap, fbinteger );
+    	lbTB[i] = va_arg( ap, int );
+    	ubTB[i] = va_arg( ap, int );
 
     	dim->elements = (ubTB[i] - lbTB[i]) + 1;
     	dim->lbound = lbTB[i];

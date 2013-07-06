@@ -2,7 +2,7 @@
 
 #include "fb.h"
 
-FBCALL fbinteger fb_ArrayErase( FBARRAY *array, fbinteger isvarlen /* legacy */ )
+FBCALL int fb_ArrayErase( FBARRAY *array, int isvarlen /* legacy */ )
 {
 	/* ptr can be NULL, for global dynamic arrays that were never allocated,
 	   but will still be destroyed on program exit */
