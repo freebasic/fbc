@@ -2,16 +2,14 @@
 
 #include "fb.h"
 
-/*:::::*/
-int fb_hArrayCalcElements
-	( 
-		int dimensions, 
-		const int *lboundTB, 
-		const int *uboundTB 
+size_t fb_hArrayCalcElements
+	(
+		size_t dimensions,
+		const ssize_t *lboundTB,
+		const ssize_t *uboundTB
 	)
 {
-	int i;
-	int elements;
+	size_t i, elements;
 
     elements = (uboundTB[0] - lboundTB[0]) + 1;
     for( i = 1; i < dimensions; i++ )
@@ -20,17 +18,15 @@ int fb_hArrayCalcElements
     return elements;
 }
 
-/*:::::*/
-int fb_hArrayCalcDiff
-	( 
-		int dimensions, 
-		const int *lboundTB, 
-		const int *uboundTB 
+ssize_t fb_hArrayCalcDiff
+	(
+		size_t dimensions,
+		const ssize_t *lboundTB,
+		const ssize_t *uboundTB
 	)
 {
-	int i;
-	int elements;
-	int diff = 0;
+	size_t i, elements;
+	ssize_t diff = 0;
 
 	if( dimensions <= 0 )
 		return 0;
@@ -45,4 +41,3 @@ int fb_hArrayCalcDiff
 
 	return -diff;
 }
-

@@ -3,13 +3,13 @@
 #include "fb.h"
 
 int fb_ArrayRedimObj
-	( 
-		FBARRAY *array, 
-		int element_len, 
+	(
+		FBARRAY *array,
+		size_t element_len,
 		FB_DEFCTOR ctor,
 		FB_DEFCTOR dtor,
-		int dimensions, 
-		... 
+		size_t dimensions,
+		...
 	)
 {
 	va_list ap;

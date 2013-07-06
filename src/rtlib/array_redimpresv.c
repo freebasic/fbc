@@ -2,30 +2,30 @@
 
 #include "fb.h"
 
-/*:::::*/
 int fb_hArrayRealloc
-	( 
-		FBARRAY *array, 
-		int element_len, 
-		int doclear, 
+	(
+		FBARRAY *array,
+		size_t element_len,
+		int doclear,
 		FB_DEFCTOR ctor,
 		FB_DTORMULT dtor_mult,
 		FB_DEFCTOR dtor,
-		int dimensions, 
-		va_list ap 
+		size_t dimensions,
+		va_list ap
 	)
 {
-    int	i, elements, diff, size;
+	size_t i, elements, size;
+	ssize_t diff;
     FBARRAYDIM *dim;
-    int	lbTB[FB_MAXDIMENSIONS];
-    int	ubTB[FB_MAXDIMENSIONS];
+	ssize_t lbTB[FB_MAXDIMENSIONS];
+	ssize_t ubTB[FB_MAXDIMENSIONS];
     const char *this_;
     
     /* load bounds */
     for( i = 0; i < dimensions; i++ )
     {
-    	lbTB[i] = va_arg( ap, int );
-        ubTB[i] = va_arg( ap, int );
+		lbTB[i] = va_arg( ap, ssize_t );
+		ubTB[i] = va_arg( ap, ssize_t );
 
         if( lbTB[i] > ubTB[i] )
             return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
@@ -34,7 +34,7 @@ int fb_hArrayRealloc
 	/* shrinking the array? free unused elements */
     if( dtor_mult != NULL )
     {
-    	int new_lb = (ubTB[0] - lbTB[0]) + 1;
+		ssize_t new_lb = (ubTB[0] - lbTB[0]) + 1;
     	if( new_lb < array->dimTB[0].elements )
     	{
         	/* !!!FIXME!!! check exceptions (only if rewritten in C++) */
@@ -62,7 +62,7 @@ int fb_hArrayRealloc
         	
         if( ctor != NULL )
         {
-        	int objects = (size - array->size) / element_len;
+			size_t objects = (size - array->size) / element_len;
 			while( objects > 0 )
 			{
 				/* !!!FIXME!!! check exceptions (only if rewritten in C++) */
@@ -88,15 +88,14 @@ int fb_hArrayRealloc
     return fb_ErrorSetNum( FB_RTERROR_OK );
 }
 
-/*:::::*/
 static int hRedim
-	( 
-		FBARRAY *array, 
-		int element_len, 
-		int doclear, 
-		int isvarlen, 
-		int dimensions, 
-		va_list ap 
+	(
+		FBARRAY *array,
+		size_t element_len,
+		int doclear,
+		int isvarlen,
+		size_t dimensions,
+		va_list ap
 	)
 {
 	FB_DTORMULT dtor_mult;
@@ -114,20 +113,19 @@ static int hRedim
 	return fb_hArrayRealloc( array, element_len, doclear, NULL, dtor_mult, NULL, dimensions, ap );
 }
 
-/*:::::*/
 int fb_ArrayRedimPresvEx
-	( 
-		FBARRAY *array, 
-		int element_len, 
-		int doclear, 
-		int isvarlen, 
-		int dimensions, 
-		... 
+	(
+		FBARRAY *array,
+		size_t element_len,
+		int doclear,
+		int isvarlen,
+		size_t dimensions,
+		...
 	)
 {
 	va_list ap;
 	int res;
-	
+
 	va_start( ap, dimensions );
     res = hRedim( array, element_len, doclear, isvarlen, dimensions, ap );
     va_end( ap );
@@ -135,19 +133,18 @@ int fb_ArrayRedimPresvEx
     return res;
 }
 
-/*:::::*/
 int fb_ArrayRedimPresv
-	( 
-		FBARRAY *array, 
-		int element_len, 
-		int isvarlen, 
-		int dimensions, 
-		... 
+	(
+		FBARRAY *array,
+		size_t element_len,
+		int isvarlen,
+		size_t dimensions,
+		...
 	)
 {
 	va_list ap;
 	int res;
-	
+
 	va_start( ap, dimensions );
     res = hRedim( array, element_len, TRUE, isvarlen, dimensions, ap );
     va_end( ap );
