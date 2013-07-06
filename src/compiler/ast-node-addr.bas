@@ -146,8 +146,15 @@ private function hAddrofDerefConst2Const _
 	assert( ll->class <> AST_NODECLASS_CONST )
 
 	if( is_field = FALSE ) then
-		'' @[var] to nothing (can't be local or field)
 		if( deref->ptr.ofs = 0 ) then
+			'' @*x -> x
+			'' Preserve the DEREF's dtype, as it might be different from x
+			'' (as long as astNewDEREF() allows passing the dtype manually)
+			'' (using AST_CONVOPT_DONTCHKPTR to prevent pointer checks which could
+			'' cause the CONV to fail here with derived UDT pointers)
+			ll = astNewCONV( typeAddrOf( deref->dtype ), deref->subtype, ll, AST_CONVOPT_DONTCHKPTR )
+			assert( ll )
+
 			astDelNode( deref )
 			if( deref <> l ) then
 				astDelNode( l )
