@@ -2,9 +2,9 @@
 
 #include "fb.h"
 
-void fb_hArrayCtorObj( FBARRAY *array, FB_DEFCTOR ctor, fbint base_idx )
+void fb_hArrayCtorObj( FBARRAY *array, FB_DEFCTOR ctor, fbinteger base_idx )
 {
-	fbint i, elements, element_len;
+	fbinteger i, elements, element_len;
 	FBARRAYDIM *dim;
 	const char *this_;
 
@@ -30,12 +30,12 @@ void fb_hArrayCtorObj( FBARRAY *array, FB_DEFCTOR ctor, fbint base_idx )
 	}
 }
 
-FBCALL fbint fb_ArrayClearObj
+FBCALL fbinteger fb_ArrayClearObj
 	(
 		FBARRAY *array,
 		FB_DEFCTOR ctor,
 		FB_DEFCTOR dtor,
-		fbint dofill /* legacy */
+		fbinteger dofill /* legacy */
 	)
 {
 	/* destruct all objects in the array

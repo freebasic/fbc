@@ -2,7 +2,7 @@
 
 #include "fb.h"
 
-FBCALL fbint fb_ArrayEraseObj( FBARRAY *array, FB_DEFCTOR dtor )
+FBCALL fbinteger fb_ArrayEraseObj( FBARRAY *array, FB_DEFCTOR dtor )
 {
 	fb_ArrayDestructObj( array, dtor );
 	fb_ArrayErase( array, 0 );

@@ -8,7 +8,7 @@ FBCALL void fb_ArrayResetDesc
 		FBARRAY *array 
 	)
 {
-	fbint i;
+	fbinteger i;
     FBARRAYDIM *dim;
 
     dim = &array->dimTB[0];

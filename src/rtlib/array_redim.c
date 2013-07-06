@@ -2,27 +2,27 @@
 
 #include "fb.h"
 
-fbint fb_hArrayAlloc
+fbinteger fb_hArrayAlloc
 	(
 		FBARRAY *array,
-		fbint element_len,
-		fbint doclear,
+		fbinteger element_len,
+		fbinteger doclear,
 		FB_DEFCTOR ctor,
-		fbint dimensions,
+		fbinteger dimensions,
 		va_list ap
 	)
 {
-	fbint i, elements, diff, size;
+	fbinteger i, elements, diff, size;
     FBARRAYDIM *dim;
-	fbint lbTB[FB_MAXDIMENSIONS];
-	fbint ubTB[FB_MAXDIMENSIONS];
+	fbinteger lbTB[FB_MAXDIMENSIONS];
+	fbinteger ubTB[FB_MAXDIMENSIONS];
 
     /* load bounds */
     dim = &array->dimTB[0];
     for( i = 0; i < dimensions; i++ )
     {
-		lbTB[i] = va_arg( ap, fbint );
-		ubTB[i] = va_arg( ap, fbint );
+		lbTB[i] = va_arg( ap, fbinteger );
+		ubTB[i] = va_arg( ap, fbinteger );
 
         if( lbTB[i] > ubTB[i] )
             return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
@@ -67,13 +67,13 @@ fbint fb_hArrayAlloc
 	return fb_ErrorSetNum( FB_RTERROR_OK );
 }
 
-static fbint hRedim
+static fbinteger hRedim
 	(
 		FBARRAY *array,
-		fbint element_len,
-		fbint doclear,
-		fbint isvarlen,
-		fbint dimensions,
+		fbinteger element_len,
+		fbinteger doclear,
+		fbinteger isvarlen,
+		fbinteger dimensions,
 		va_list ap
 	)
 {
@@ -84,18 +84,18 @@ static fbint hRedim
     return fb_hArrayAlloc( array, element_len, doclear, NULL, dimensions, ap );
 }
 
-fbint fb_ArrayRedimEx
+fbinteger fb_ArrayRedimEx
 	(
 		FBARRAY *array,
-		fbint element_len,
-		fbint doclear,
-		fbint isvarlen,
-		fbint dimensions,
+		fbinteger element_len,
+		fbinteger doclear,
+		fbinteger isvarlen,
+		fbinteger dimensions,
 		...
 	)
 {
 	va_list ap;
-	fbint res;
+	fbinteger res;
 
 	va_start( ap, dimensions );
     res = hRedim( array, element_len, doclear, isvarlen, dimensions, ap );
@@ -104,17 +104,17 @@ fbint fb_ArrayRedimEx
     return res;
 }
 
-fbint fb_ArrayRedim
+fbinteger fb_ArrayRedim
 	(
 		FBARRAY *array,
-		fbint element_len,
-		fbint isvarlen,
-		fbint dimensions,
+		fbinteger element_len,
+		fbinteger isvarlen,
+		fbinteger dimensions,
 		...
 	)
 {
 	va_list ap;
-	fbint res;
+	fbinteger res;
 
 	va_start( ap, dimensions );
 	res = hRedim( array, element_len, TRUE, isvarlen, dimensions, ap );
