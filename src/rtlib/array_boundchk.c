@@ -38,6 +38,10 @@ FBCALL void *fb_ArraySngBoundChk
 		const char *fname 
 	)
 {
+	/* Assuming lbound is 0, we know ubound must be >= 0, and we can treat
+	   index as unsigned too, possibly letting it overflow to a very big
+	   value (if it was negative), reducing the bound check to a single
+	   unsigned comparison. */
 	if( idx > ubound )
 		return hThrowError( linenum, fname );
 	else
