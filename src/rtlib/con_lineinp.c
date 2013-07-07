@@ -6,8 +6,15 @@ static const char *pszDefaultQuestion = "? ";
 
 #if defined( HOST_WIN32 ) || defined( HOST_DOS ) || defined( HOST_LINUX )
 
-int fb_ConsoleLineInput( FBSTRING *text, void *dst, int dst_len, int fillrem,
-						 int addquestion, int addnewline )
+int fb_ConsoleLineInput
+	(
+		FBSTRING *text,
+		void *dst,
+		ssize_t dst_len,
+		int fillrem,
+		int addquestion,
+		int addnewline
+	)
 {
     FBSTRING *tmp_result;
 
@@ -51,20 +58,23 @@ int fb_ConsoleLineInput( FBSTRING *text, void *dst, int dst_len, int fillrem,
 
 #else
 
-static char *hWrapper( char *buffer,
-                                         size_t count,
-                                         FILE *fp )
+static char *hWrapper( char *buffer, size_t count, FILE *fp )
 {
     return fb_ReadString( buffer, count, fp );
 }
 
-/*:::::*/
-int fb_ConsoleLineInput( FBSTRING *text, void *dst, int dst_len, int fillrem,
-						 int addquestion, int addnewline )
+int fb_ConsoleLineInput
+	(
+		FBSTRING *text,
+		void *dst,
+		ssize_t dst_len,
+		int fillrem,
+		int addquestion,
+		int addnewline
+	)
 {
-	int res;
-    size_t len;
-    int old_x, old_y;
+	int res, old_x, old_y;
+	size_t len;
 
     fb_PrintBufferEx( NULL, 0, FB_PRINT_FORCE_ADJUST );
     fb_GetXY( &old_x, &old_y );
@@ -103,8 +113,7 @@ int fb_ConsoleLineInput( FBSTRING *text, void *dst, int dst_len, int fillrem,
         if( !addnewline ) {
             /* This is the easy and dumb method to do the position adjustment.
              * The problem is that it doesn't take TAB's into account. */
-            int cols, rows;
-            int old_y;
+            int cols, rows, old_y;
 
             fb_GetSize( &cols, &rows );
             fb_GetXY( NULL, &old_y );
@@ -122,7 +131,6 @@ int fb_ConsoleLineInput( FBSTRING *text, void *dst, int dst_len, int fillrem,
         fb_StrAssign( dst, dst_len, (void *)&str_result, -1, fillrem );
 
         fb_StrDelete( &str_result );
-
     }
 
 	FB_UNLOCK();

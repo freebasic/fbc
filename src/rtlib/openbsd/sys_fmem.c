@@ -2,7 +2,7 @@
 
 #include "../fb.h"
 
-FBCALL unsigned int fb_GetMemAvail( int mode )
+FBCALL size_t fb_GetMemAvail( int mode )
 {
 	/* !!!WRITEME!!! */
 	return 0;

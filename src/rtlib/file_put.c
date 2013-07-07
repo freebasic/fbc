@@ -2,7 +2,6 @@
 
 #include "fb.h"
 
-/*:::::*/
 int fb_FilePutDataEx
 	(
 		FB_FILE *handle,
@@ -129,7 +128,6 @@ int fb_FilePutDataEx
 	return fb_ErrorSetNum( res );
 }
 
-/*:::::*/
 int fb_FilePutData
 	(
 		int fnum,
@@ -144,27 +142,24 @@ int fb_FilePutData
     						 pos, data, length, adjust_rec_pos, checknewline, FALSE );
 }
 
-/*:::::*/
 FBCALL int fb_FilePut
 	(
 		int fnum,
-		long pos,
+		int pos,
 		void* value,
-		unsigned int valuelen
+		size_t valuelen
 	)
 {
 	return fb_FilePutData( fnum, pos, value, valuelen, TRUE, FALSE );
 }
 
-/*:::::*/
 FBCALL int fb_FilePutLarge
 	(
 		int fnum,
 		long long pos,
 		void *value,
-		unsigned int valuelen
+		size_t valuelen
 	)
 {
 	return fb_FilePutData( fnum, pos, value, valuelen, TRUE, FALSE );
 }
-

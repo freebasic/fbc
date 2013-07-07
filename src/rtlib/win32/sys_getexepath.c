@@ -3,7 +3,7 @@
 #include "../fb.h"
 #include <windows.h>
 
-char *fb_hGetExePath( char *dst, int maxlen )
+char *fb_hGetExePath( char *dst, ssize_t maxlen )
 {
 	GetModuleFileName( GetModuleHandle( NULL ), dst, maxlen );
 

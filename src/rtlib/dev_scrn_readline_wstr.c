@@ -2,7 +2,7 @@
 
 #include "fb.h"
 
-int fb_DevScrnReadLineWstr( FB_FILE *handle, FB_WCHAR *dst, int dst_chars )
+int fb_DevScrnReadLineWstr( FB_FILE *handle, FB_WCHAR *dst, ssize_t dst_chars )
 {
     int res;
     FBSTRING temp = { 0 };

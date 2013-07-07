@@ -2,9 +2,9 @@
 
 #include "fb.h"
 
-static void hCV( FBSTRING *str, int len, void *num )
+static void hCV( FBSTRING *str, ssize_t len, void *num )
 {
-	int	i;
+	ssize_t i;
 
 	if( str == NULL )
 		return;
@@ -61,9 +61,9 @@ FBCALL long long fb_CVLONGINT( FBSTRING *str )
 	return num;
 }
 
-static FBSTRING *hMK( int len, void *num )
+static FBSTRING *hMK( ssize_t len, void *num )
 {
-	int	i;
+	ssize_t i;
 	FBSTRING *dst;
 
 	/* alloc temp string */

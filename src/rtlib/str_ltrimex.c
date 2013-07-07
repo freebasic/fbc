@@ -2,8 +2,6 @@
 
 #include "fb.h"
 
-
-/*:::::*/
 FBCALL FBSTRING *fb_LTrimEx 
 	( 
 		FBSTRING *src, 
@@ -11,7 +9,7 @@ FBCALL FBSTRING *fb_LTrimEx
 	)
 {
 	FBSTRING *dst;
-	size_t len;
+	ssize_t len;
 	char *src_ptr = NULL;
 
     if( src == NULL ) 
@@ -24,7 +22,7 @@ FBCALL FBSTRING *fb_LTrimEx
 
 	if( src->data != NULL )
     {
-        size_t len_pattern = ((pattern != NULL) && (pattern->data != NULL)? FB_STRSIZE( pattern ) : 0);
+        ssize_t len_pattern = ((pattern != NULL) && (pattern->data != NULL)? FB_STRSIZE( pattern ) : 0);
         len = FB_STRSIZE( src );
         src_ptr = src->data;
         if( len >= len_pattern ) 
@@ -34,7 +32,7 @@ FBCALL FBSTRING *fb_LTrimEx
                 src_ptr = fb_hStrSkipChar( src_ptr,
                                      	   len,
                                      	   FB_CHAR_TO_INT(pattern->data[0]) );
-                len = len - (int)(src_ptr - src->data);
+                len = len - (ssize_t)(src_ptr - src->data);
 
             } 
             else

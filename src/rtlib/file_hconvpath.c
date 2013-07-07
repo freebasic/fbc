@@ -4,7 +4,7 @@
 
 void fb_hConvertPath( char *path )
 {
-	int i, len;
+	ssize_t i, len;
 
 	DBG_ASSERT( path != NULL );
 

@@ -2,10 +2,15 @@
 
 #include "fb.h"
 
-/*:::::*/
-FBCALL void fb_MemCopyClear( unsigned char *dst, int dstlen, unsigned char *src, int srclen )
+FBCALL void fb_MemCopyClear
+	(
+		unsigned char *dst,
+		ssize_t dstlen,
+		unsigned char *src,
+		ssize_t srclen
+	)
 {
-	int bytes;
+	ssize_t bytes;
 
 	if( (dst == NULL) || (src == NULL) || (dstlen <= 0) || (srclen <= 0) )
 		return;
@@ -19,9 +24,4 @@ FBCALL void fb_MemCopyClear( unsigned char *dst, int dstlen, unsigned char *src,
 	dstlen -= bytes;
 	if( dstlen > 0 )
 		memset( &dst[bytes], 0, dstlen );
-
 }
-
-
-
-

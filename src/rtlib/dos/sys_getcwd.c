@@ -3,9 +3,9 @@
 #include "../fb.h"
 #include <unistd.h>
 
-int fb_hGetCurrentDir( char *dst, int maxlen )
+ssize_t fb_hGetCurrentDir( char *dst, ssize_t maxlen )
 {
-	int len, i;
+	ssize_t len, i;
 	if( getcwd( dst, maxlen ) != NULL ) {
 		len = strlen( dst );
 		/* Always return path with native path separator (backslash).

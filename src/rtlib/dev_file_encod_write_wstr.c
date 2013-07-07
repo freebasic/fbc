@@ -6,12 +6,11 @@ int fb_DevFileWriteEncodWstr( FB_FILE *handle, const FB_WCHAR* buffer, size_t ch
 {
     FILE *fp;
     char *encod_buffer;
-    int bytes;
+	ssize_t bytes;
 
     FB_LOCK();
 
     fp = (FILE*) handle->opaque;
-
 	if( fp == NULL ) {
 		FB_UNLOCK();
 		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );

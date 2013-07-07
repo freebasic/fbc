@@ -2,10 +2,9 @@
 
 #include "fb.h"
 
-/*:::::*/
 char *fb_hFloat2Str( double val, char *buffer, int digits, int mask )
 {
-	int len, maxlen;
+	ssize_t len, maxlen;
 	char *p;
 	char fmtstr[16], *fstr;
 
@@ -58,6 +57,4 @@ char *fb_hFloat2Str( double val, char *buffer, int digits, int mask )
 	}
 	else
 		return p;
-
 }
-

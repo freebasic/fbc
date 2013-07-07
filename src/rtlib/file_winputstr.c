@@ -2,8 +2,7 @@
 
 #include "fb.h"
 
-/*:::::*/
-FBCALL FB_WCHAR *fb_FileWstrInput( int chars, int fnum )
+FBCALL FB_WCHAR *fb_FileWstrInput( ssize_t chars, int fnum )
 {
     FB_FILE *handle;
 	FB_WCHAR *dst;
@@ -72,4 +71,3 @@ FBCALL FB_WCHAR *fb_FileWstrInput( int chars, int fnum )
 
     return dst;
 }
-

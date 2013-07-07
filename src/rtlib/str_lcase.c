@@ -6,7 +6,8 @@
 FBCALL FBSTRING *fb_StrLcase2( FBSTRING *src, int mode )
 {
 	FBSTRING 	*dst;
-	int 		i, c, len = 0;
+	int		i, c;
+	ssize_t		len = 0;
 	char		*s, *d;
 
 	if( src == NULL )

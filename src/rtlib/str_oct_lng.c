@@ -2,7 +2,6 @@
 
 #include "fb.h"
 
-/*:::::*/
 static char *hFillDigits( char *buf, int digits, int totdigs, int cnt )
 {
 	if( digits > 0 )
@@ -18,12 +17,11 @@ static char *hFillDigits( char *buf, int digits, int totdigs, int cnt )
 	return buf;
 }
 
-/*:::::*/
 FBCALL FBSTRING *fb_OCTEx_l ( unsigned long long num, int digits )
 {
 	FBSTRING *dst;
 	char *buf;
-	int	i, totdigs;
+	int i, totdigs;
 
 	totdigs = ((sizeof(long long)*8) / 3) + 1;
 
@@ -96,9 +94,7 @@ FBCALL FBSTRING *fb_OCTEx_l ( unsigned long long num, int digits )
 	return dst;
 }
 
-/*:::::*/
 FBCALL FBSTRING *fb_OCT_l ( unsigned long long num )
 {
 	return fb_OCTEx_l( num, 0 );
 }
-

@@ -2,8 +2,7 @@
 
 #include "fb.h"
 
-/*:::::*/
-FBCALL FB_WCHAR *fb_WstrFill1 ( int chars, FB_WCHAR c )
+FBCALL FB_WCHAR *fb_WstrFill1( ssize_t chars, FB_WCHAR c )
 {
 	FB_WCHAR *dst;
 
@@ -21,9 +20,7 @@ FBCALL FB_WCHAR *fb_WstrFill1 ( int chars, FB_WCHAR c )
 	return dst;
 }
 
-
-/*:::::*/
-FBCALL FB_WCHAR *fb_WstrFill2 ( int chars, const FB_WCHAR *src )
+FBCALL FB_WCHAR *fb_WstrFill2( ssize_t chars, const FB_WCHAR *src )
 {
 	FB_WCHAR *dst;
 
@@ -36,4 +33,3 @@ FBCALL FB_WCHAR *fb_WstrFill2 ( int chars, const FB_WCHAR *src )
 
 	return dst;
 }
-

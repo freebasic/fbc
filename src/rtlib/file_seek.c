@@ -2,7 +2,6 @@
 
 #include "fb.h"
 
-/*:::::*/
 int fb_FileSeekEx( FB_FILE *handle, fb_off_t newpos )
 {
 	int res;
@@ -31,13 +30,11 @@ int fb_FileSeekEx( FB_FILE *handle, fb_off_t newpos )
 	return res;
 }
 
-/*:::::*/
-FBCALL int fb_FileSeek( int fnum, long newpos )
+FBCALL int fb_FileSeek( int fnum, int newpos )
 {
     return fb_FileSeekEx( FB_FILE_TO_HANDLE(fnum), newpos );
 }
 
-/*:::::*/
 FBCALL int fb_FileSeekLarge( int fnum, long long newpos )
 {
     return fb_FileSeekEx( FB_FILE_TO_HANDLE(fnum), newpos );

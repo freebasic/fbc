@@ -288,7 +288,7 @@ typedef struct _FB_LIST {
     FB_LISTELEM        *fhead;   /* First free element */
 } FB_LIST;
 
-void                fb_hListInit            ( FB_LIST *list, void *table, int elem_size, int size );
+void                fb_hListInit            ( FB_LIST *list, void *table, size_t elem_size, size_t size );
 FB_LISTELEM        *fb_hListAllocElem       ( FB_LIST *list );
 void                fb_hListFreeElem        ( FB_LIST *list, FB_LISTELEM *elem );
 void                fb_hListDynInit         ( FB_LIST *list );

@@ -2,12 +2,11 @@
 
 #include "fb.h"
 
-/*:::::*/
 FBCALL FBSTRING *fb_GetEnviron ( FBSTRING *varname )
 {
 	FBSTRING 	*dst;
 	char 		*tmp;
-	int			len;
+	ssize_t len;
 
 	if( (varname != NULL) && (varname->data != NULL) )
 		tmp = getenv( varname->data );
@@ -38,8 +37,6 @@ FBCALL FBSTRING *fb_GetEnviron ( FBSTRING *varname )
 	return dst;
 }
 
-
-/*:::::*/
 FBCALL int fb_SetEnviron ( FBSTRING *str )
 {
 	int res = 0;
@@ -58,4 +55,3 @@ FBCALL int fb_SetEnviron ( FBSTRING *str )
 
 	return res;
 }
-

@@ -2,19 +2,16 @@
 
 #include "fb.h"
 
-/*:::::*/
-FBCALL double fb_hStr2Double( char *src, int len )
+FBCALL double fb_hStr2Double( char *src, ssize_t len )
 {
 	char *p, *q, c;
-	int radix;
-	int i;
-	int skip;
+	int radix, i, skip;
 	double ret;
 
 	/* skip white spc */
 	p = fb_hStrSkipChar( src, len, 32 );
 
-	len -= (int)(p - src);
+	len -= (ssize_t)(p - src);
 	if( len < 1 )
 		return 0.0;
 
@@ -67,7 +64,6 @@ FBCALL double fb_hStr2Double( char *src, int len )
 	return ret;
 }
 
-/*:::::*/
 FBCALL double fb_VAL ( FBSTRING *str )
 {
     double	val;

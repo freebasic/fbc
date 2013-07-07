@@ -2,17 +2,15 @@
 
 #include "fb.h"
 
-/*:::::*/
-FBCALL unsigned int fb_hStr2UInt( char *src, int len )
+FBCALL unsigned int fb_hStr2UInt( char *src, ssize_t len )
 {
     char 	*p;
-    int 	radix;
-	int 	skip;
+	int radix, skip;
 
 	/* skip white spc */
 	p = fb_hStrSkipChar( src, len, 32 );
 
-	len -= (int)(p - src);
+	len -= (ssize_t)(p - src);
 	if( len < 1 )
 		return 0;
 
@@ -48,7 +46,6 @@ FBCALL unsigned int fb_hStr2UInt( char *src, int len )
 	return strtoul( p, NULL, radix );
 }
 
-/*:::::*/
 FBCALL unsigned int fb_VALUINT ( FBSTRING *str )
 {
     unsigned int	val;

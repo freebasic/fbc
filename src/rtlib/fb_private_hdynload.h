@@ -8,7 +8,7 @@
 #endif
 
 FB_DYLIB fb_hDynLoad    (const char *libname, const char **funcname, void **funcptr);
-int      fb_hDynLoadAlso(FB_DYLIB lib, const char **funcname, void **funcptr, int count);
+int      fb_hDynLoadAlso(FB_DYLIB lib, const char **funcname, void **funcptr, ssize_t count);
 void     fb_hDynUnload  (FB_DYLIB *lib);
 
 #endif

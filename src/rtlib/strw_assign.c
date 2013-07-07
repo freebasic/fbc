@@ -2,10 +2,9 @@
 
 #include "fb.h"
 
-/*:::::*/
-FBCALL FB_WCHAR *fb_WstrAssign ( FB_WCHAR *dst, int dst_chars, FB_WCHAR *src )
+FBCALL FB_WCHAR *fb_WstrAssign( FB_WCHAR *dst, ssize_t dst_chars, FB_WCHAR *src )
 {
-	int src_chars;
+	ssize_t src_chars;
 
 	if( dst == NULL )
 		return dst;
@@ -35,4 +34,3 @@ FBCALL FB_WCHAR *fb_WstrAssign ( FB_WCHAR *dst, int dst_chars, FB_WCHAR *src )
 
 	return dst;
 }
-

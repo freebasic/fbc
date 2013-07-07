@@ -18,7 +18,7 @@ static void *threadproc( void *param )
 	return (void *)1;
 }
 
-FBCALL FBTHREAD *fb_ThreadCreate( FB_THREADPROC proc, void *param, int stack_size )
+FBCALL FBTHREAD *fb_ThreadCreate( FB_THREADPROC proc, void *param, ssize_t stack_size )
 {
 	FBTHREAD *thread;
 	pthread_attr_t tattr;

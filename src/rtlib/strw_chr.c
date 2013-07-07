@@ -2,7 +2,6 @@
 
 #include "fb.h"
 
-/*:::::*/
 FB_WCHAR *fb_WstrChr ( int args, ... )
 {
 	FB_WCHAR 	*dst, *s;
@@ -34,4 +33,3 @@ FB_WCHAR *fb_WstrChr ( int args, ... )
 
 	return dst;
 }
-

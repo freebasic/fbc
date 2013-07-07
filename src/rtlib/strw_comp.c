@@ -2,14 +2,10 @@
 
 #include "fb.h"
 
-/*:::::*/
-FBCALL int fb_WstrCompare
-	(
-		const FB_WCHAR *str1,
-		const FB_WCHAR *str2
-	)
+FBCALL int fb_WstrCompare( const FB_WCHAR *str1, const FB_WCHAR *str2 )
 {
-	int res, str1_len, str2_len;
+	int res;
+	ssize_t str1_len, str2_len;
 
 	/* both not null? */
 	if( (str1 != NULL) && (str2 != NULL) )
@@ -41,7 +37,4 @@ FBCALL int fb_WstrCompare
 
 	/* return gt */
 	return 1;
-
 }
-
-

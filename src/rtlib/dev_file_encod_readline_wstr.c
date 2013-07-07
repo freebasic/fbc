@@ -2,7 +2,7 @@
 
 #include "fb.h"
 
-int fb_DevFileReadLineEncodWstr( FB_FILE *handle, FB_WCHAR *dst, int max_chars )
+int fb_DevFileReadLineEncodWstr( FB_FILE *handle, FB_WCHAR *dst, ssize_t max_chars )
 {
 	int res;
 

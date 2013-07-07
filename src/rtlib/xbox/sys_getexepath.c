@@ -2,7 +2,7 @@
 
 #include "../fb.h"
 
-char *fb_hGetExePath( char *dst, int maxlen )
+char *fb_hGetExePath( char *dst, ssize_t maxlen )
 {
 	/* !!!WRITEME!!! */
 	dst[0] = '\0';

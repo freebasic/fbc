@@ -2,11 +2,10 @@
 
 #include "fb.h"
 
-/*:::::*/
 FBCALL FB_WCHAR *fb_StrToWstr( const char *src )
 {
 	FB_WCHAR *dst;
-	int chars;
+	ssize_t chars;
 
     if( src == NULL )
     	return NULL;
@@ -23,4 +22,3 @@ FBCALL FB_WCHAR *fb_StrToWstr( const char *src )
 
 	return dst;
 }
-

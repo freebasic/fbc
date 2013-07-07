@@ -2,10 +2,10 @@
 
 #include "../fb.h"
 
-char *fb_hGetExePath( char *dst, int maxlen )
+char *fb_hGetExePath( char *dst, ssize_t maxlen )
 {
 	char *p;
-	int argv_len, len;
+	ssize_t argv_len, len;
 
 	argv_len = strlen( __fb_ctx.argv[0] );
 
@@ -34,7 +34,7 @@ char *fb_hGetExePath( char *dst, int maxlen )
 	/* no drive letter, no \, so relative path - get cur dir from startup */
 	else
 	{
-		int cwd_len;
+		ssize_t cwd_len;
 		cwd_len = strlen(__fb_startup_cwd);
 
 		len = cwd_len + 1 + argv_len;

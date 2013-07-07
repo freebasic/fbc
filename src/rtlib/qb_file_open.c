@@ -2,7 +2,6 @@
 
 #include "fb.h"
 
-/*:::::*/
 FBCALL int fb_FileOpenQB
 	(
 		FBSTRING *str,
@@ -16,15 +15,15 @@ FBCALL int fb_FileOpenQB
 	if( !FB_FILE_INDEX_VALID( fnum ) )
 		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 
-	int str_len = FB_STRSIZE( str );
-	
+	ssize_t str_len = FB_STRSIZE( str );
+
 	if( !str_len || (str->data == NULL) )
 		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );		
 		
 	/* serial? */
 	if( (str_len > 3) && (strncasecmp( str->data, "COM", 3 ) == 0) )
 	{
-		int i = 3;
+		ssize_t i = 3;
 		while( (i < str_len) && (str->data[i] >= '0') && (str->data[i] <= '9' ) )
 			++i;
 
@@ -43,7 +42,7 @@ FBCALL int fb_FileOpenQB
 	/* parallel? */
 	else if( (str_len > 3) && (strncasecmp( str->data, "LPT", 3 ) == 0) )
 	{
-		int i = 3;
+		ssize_t i = 3;
 		while( (i < str_len) && (str->data[i] >= '0') && (str->data[i] <= '9' ) )
 			++i;
 
@@ -114,4 +113,3 @@ FBCALL int fb_FileOpenQB
 	/* ordinary file */
 	return fb_FileOpenEx( FB_FILE_TO_HANDLE(fnum), str, mode, access, lock, len );
 }
-

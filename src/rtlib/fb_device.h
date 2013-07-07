@@ -13,7 +13,7 @@
        int          fb_DevFileRead          ( FB_FILE *handle, void *value, size_t *pLength );
        int          fb_DevFileReadWstr      ( FB_FILE *handle, FB_WCHAR *dst, size_t *pchars );
        int          fb_DevFileReadLine      ( FB_FILE *handle, FBSTRING *dst );
-       int          fb_DevFileReadLineWstr  ( FB_FILE *handle, FB_WCHAR *dst, int dst_chars );
+       int          fb_DevFileReadLineWstr  ( FB_FILE *handle, FB_WCHAR *dst, ssize_t dst_chars );
        int          fb_DevFileSeek          ( FB_FILE *handle, fb_off_t offset, int whence );
        int          fb_hDevFileSeekStart    ( FILE *fp, int mode, FB_FILE_ENCOD encod, int seek_zero );
        fb_off_t     fb_DevFileGetSize       ( FILE *fp, int mode, FB_FILE_ENCOD encod, int seek_back );
@@ -32,7 +32,7 @@
        int          fb_DevFileReadEncod     ( FB_FILE *handle, void *dst, size_t *max_chars );
        int          fb_DevFileReadEncodWstr ( FB_FILE *handle, FB_WCHAR *dst, size_t *max_chars );
        int          fb_DevFileReadLineEncod ( FB_FILE *handle, FBSTRING *dst );
-       int          fb_DevFileReadLineEncodWstr( FB_FILE *handle, FB_WCHAR *dst, int max_chars );
+       int          fb_DevFileReadLineEncodWstr( FB_FILE *handle, FB_WCHAR *dst, ssize_t max_chars );
        int          fb_DevFileWriteEncod    ( FB_FILE *handle, const void* buffer, size_t chars );
        int          fb_DevFileWriteEncodWstr( FB_FILE *handle, const FB_WCHAR* buffer, size_t len );
 
@@ -63,7 +63,7 @@ typedef struct {
        int          fb_DevScrnWrite         ( FB_FILE *handle, const void* value, size_t valuelen );
        int          fb_DevScrnWriteWstr     ( FB_FILE *handle, const FB_WCHAR* value, size_t valuelen );
        int          fb_DevScrnReadLine      ( FB_FILE *handle, FBSTRING *dst );
-       int          fb_DevScrnReadLineWstr  ( FB_FILE *handle, FB_WCHAR *dst, int dst_chars );
+       int          fb_DevScrnReadLineWstr  ( FB_FILE *handle, FB_WCHAR *dst, ssize_t dst_chars );
        void         fb_DevScrnFillInput     ( DEV_SCRN_INFO *info );
 
        /* STDIO */

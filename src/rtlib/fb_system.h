@@ -5,9 +5,9 @@ FBCALL void 		fb_RtInit 			( void );
 	   void 		fb_RtExit 			( void );
 FBCALL void         fb_InitSignals      ( void );
 
-FBCALL void         fb_MemSwap          ( unsigned char *dst, unsigned char *src, int bytes );
-FBCALL void         fb_StrSwap          ( void *str1, int size1, int fillrem1,
-                                          void *str2, int size2, int fillrem2 );
+FBCALL void         fb_MemSwap          ( unsigned char *dst, unsigned char *src, ssize_t bytes );
+FBCALL void         fb_StrSwap          ( void *str1, ssize_t size1, int fillrem1,
+                                          void *str2, ssize_t size2, int fillrem2 );
 
        void         fb_hInit            ( void );
        void         fb_hEnd             ( int errlevel );
@@ -22,19 +22,19 @@ FBCALL int          fb_Shell            ( FBSTRING *program );
 FBCALL int          fb_Run              ( FBSTRING *program, FBSTRING *args );
 FBCALL int          fb_Chain            ( FBSTRING *program );
 FBCALL int          fb_Exec             ( FBSTRING *program, FBSTRING *args );
-FBCALL int 			fb_ExecEx 			( FBSTRING *program, FBSTRING *args, int do_wait );
-       int          fb_hParseArgs       ( char *dst, const char *src, int length );
+FBCALL int          fb_ExecEx           ( FBSTRING *program, FBSTRING *args, int do_wait );
+       int          fb_hParseArgs       ( char *dst, const char *src, ssize_t length );
 
 FBCALL void        *fb_DylibLoad        ( FBSTRING *library );
 FBCALL void        *fb_DylibSymbol      ( void *library, FBSTRING *symbol );
 FBCALL void 	   *fb_DylibSymbolByOrd ( void *library, short int symbol );
 FBCALL void         fb_DylibFree        ( void *library );
 
-       char        *fb_hGetShortPath    ( char *src, char *dst, int maxlen );
+       char        *fb_hGetShortPath    ( char *src, char *dst, ssize_t maxlen );
 
-       int          fb_hGetCurrentDir   ( char *dst, int maxlen );
-       char        *fb_hGetExePath      ( char *dst, int maxlen );
-       char        *fb_hGetExeName      ( char *dst, int maxlen );
+       ssize_t      fb_hGetCurrentDir   ( char *dst, ssize_t maxlen );
+       char        *fb_hGetExePath      ( char *dst, ssize_t maxlen );
+       char        *fb_hGetExeName      ( char *dst, ssize_t maxlen );
 
        int          fb_hIn              ( unsigned short port );
        int          fb_hOut             ( unsigned short port, unsigned char value );

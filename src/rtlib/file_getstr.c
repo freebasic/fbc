@@ -2,8 +2,7 @@
 
 #include "fb.h"
 
-/*:::::*/
-int fb_FileGetStrEx( FB_FILE *handle, fb_off_t pos, void *str, int str_len, size_t *bytesread )
+int fb_FileGetStrEx( FB_FILE *handle, fb_off_t pos, void *str, ssize_t str_len, size_t *bytesread )
 {
     int res;
     size_t len;
@@ -36,27 +35,22 @@ int fb_FileGetStrEx( FB_FILE *handle, fb_off_t pos, void *str, int str_len, size
 	return res;
 }
 
-/*:::::*/
-FBCALL int fb_FileGetStr( int fnum, long pos, void *str, int str_len )
+FBCALL int fb_FileGetStr( int fnum, int pos, void *str, ssize_t str_len )
 {
 	return fb_FileGetStrEx(FB_FILE_TO_HANDLE(fnum), pos, str, str_len, NULL);
 }
 
-/*:::::*/
-FBCALL int fb_FileGetStrLarge( int fnum, long long pos, void *str, int str_len )
+FBCALL int fb_FileGetStrLarge( int fnum, long long pos, void *str, ssize_t str_len )
 {
 	return fb_FileGetStrEx(FB_FILE_TO_HANDLE(fnum), pos, str, str_len, NULL);
 }
 
-/*:::::*/
-FBCALL int fb_FileGetStrIOB( int fnum, long pos, void *str, int str_len, unsigned int *bytesread )
+FBCALL int fb_FileGetStrIOB( int fnum, int pos, void *str, ssize_t str_len, size_t *bytesread )
 {
 	return fb_FileGetStrEx(FB_FILE_TO_HANDLE(fnum), pos, str, str_len, bytesread);
 }
 
-/*:::::*/
-FBCALL int fb_FileGetStrLargeIOB( int fnum, long long pos, void *str, int str_len, unsigned int *bytesread )
+FBCALL int fb_FileGetStrLargeIOB( int fnum, long long pos, void *str, ssize_t str_len, size_t *bytesread )
 {
 	return fb_FileGetStrEx(FB_FILE_TO_HANDLE(fnum), pos, str, str_len, bytesread);
 }
-

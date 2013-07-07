@@ -2,8 +2,6 @@
 
 #include "fb.h"
 
-
-/*:::::*/
 FBCALL FBSTRING *fb_LTrimAny 
 	( 
 		FBSTRING *src, 
@@ -12,7 +10,7 @@ FBCALL FBSTRING *fb_LTrimAny
 {
     const char *pachText = NULL;
 	FBSTRING *dst;
-	size_t len;
+	ssize_t len;
 
     if( src == NULL ) 
     {
@@ -25,14 +23,14 @@ FBCALL FBSTRING *fb_LTrimAny
 	len = 0;
 	if( src->data != NULL )
     {
-        size_t len_pattern = ((pattern != NULL) && (pattern->data != NULL)? FB_STRSIZE( pattern ) : 0);
+        ssize_t len_pattern = ((pattern != NULL) && (pattern->data != NULL)? FB_STRSIZE( pattern ) : 0);
         pachText = src->data;
         len = FB_STRSIZE( src );
 		if( len_pattern != 0 )
 		{
 			while ( len != 0 )
 	        {
-	            size_t i;
+			ssize_t i;
 	            for( i=0; i!=len_pattern; ++i ) 
 	            {
 	                if( FB_MEMCHR( pattern->data, *pachText, len_pattern )!=NULL )
@@ -71,4 +69,3 @@ FBCALL FBSTRING *fb_LTrimAny
 
 	return dst;
 }
-

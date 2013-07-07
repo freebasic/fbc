@@ -2,17 +2,16 @@
 
 #include "fb.h"
 
-/*:::::*/
 FBCALL int fb_StrCompare
 	(
 		void *str1,
-		int str1_size,
+		ssize_t str1_size,
 		void *str2,
-		int str2_size
+		ssize_t str2_size
 	)
 {
 	const char *str1_ptr, *str2_ptr;
-	int	str1_len, str2_len;
+	ssize_t str1_len, str2_len;
 	int	res;
 
 	/* both not null? */
@@ -73,5 +72,3 @@ FBCALL int fb_StrCompare
 
 	return res;
 }
-
-

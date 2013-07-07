@@ -2,7 +2,7 @@
 
 #include "fb.h"
 
-FBCALL void fb_DataReadStr( void *dst, int dst_size, int fillrem )
+FBCALL void fb_DataReadStr( void *dst, ssize_t dst_size, int fillrem )
 {
 	FB_LOCK();
 

@@ -2,12 +2,10 @@
 
 #include "fb.h"
 
-
-/*:::::*/
-FBCALL FBSTRING *fb_StrMid ( FBSTRING *src, int start, int len )
+FBCALL FBSTRING *fb_StrMid( FBSTRING *src, ssize_t start, ssize_t len )
 {
     FBSTRING 	*dst;
-    int			src_len;
+	ssize_t src_len;
 
 	FB_STRLOCK();
 
@@ -49,4 +47,3 @@ FBCALL FBSTRING *fb_StrMid ( FBSTRING *src, int start, int len )
 
 	return dst;
 }
-

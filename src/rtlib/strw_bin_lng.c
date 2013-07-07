@@ -2,7 +2,6 @@
 
 #include "fb.h"
 
-/*:::::*/
 FBCALL FB_WCHAR *fb_WstrBinEx_l ( unsigned long long num, int digits )
 {
 	FB_WCHAR *dst, *buf;
@@ -62,7 +61,6 @@ FBCALL FB_WCHAR *fb_WstrBinEx_l ( unsigned long long num, int digits )
 	return dst;
 }
 
-/*:::::*/
 FBCALL FB_WCHAR *fb_WstrBin_l ( unsigned long long num )
 {
 	return fb_WstrBinEx_l( num, 0 );

@@ -2,8 +2,7 @@
 
 #include "fb.h"
 
-/*:::::*/
-FBCALL FBSTRING *fb_StrAllocTempDescF( char *str, int str_size )
+FBCALL FBSTRING *fb_StrAllocTempDescF( char *str, ssize_t str_size )
 {
 	FBSTRING *dsc;
 

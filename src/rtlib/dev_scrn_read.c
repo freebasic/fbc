@@ -4,9 +4,8 @@
 
 int fb_DevScrnRead( FB_FILE *handle, void* value, size_t *pLength )
 {
-    size_t length;
+    size_t length, copy_length;
     DEV_SCRN_INFO *info;
-    int copy_length;
     char *pachBuffer = (char*) value;
 
     FB_LOCK();

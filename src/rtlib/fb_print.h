@@ -38,7 +38,7 @@ static __inline__ int FB_PRINT_CONVERT_BIN_NEWLINE(int mask)
 #define FB_PRINTNUM_EX(handle, val, mask, fmt, type)                          \
     do {                                                                      \
         char buffer[80];                                                      \
-        int len;                                                              \
+        size_t len;                                                           \
                                                                               \
         if( mask & FB_PRINT_APPEND_SPACE ) {                                  \
             if( mask & FB_PRINT_BIN_NEWLINE )                                 \
@@ -131,7 +131,7 @@ FBCALL void         fb_LPrintString     ( int fnum, FBSTRING *s, int mask );
 FBCALL void         fb_LPrintWstr       ( int fnum, const FB_WCHAR *s, int mask );
 
 FBCALL void         fb_PrintTab         ( int fnum, int newcol );
-FBCALL void         fb_PrintSPC         ( int fnum, int n );
+FBCALL void         fb_PrintSPC         ( int fnum, ssize_t n );
 
 FBCALL void         fb_WriteVoid        ( int fnum, int mask );
 FBCALL void         fb_WriteByte        ( int fnum, char val, int mask );

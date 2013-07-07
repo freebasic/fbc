@@ -2,9 +2,7 @@
 
 #include "fb.h"
 
-
-/*:::::*/
-FBCALL FBSTRING *fb_StrFill1 ( int cnt, int fchar )
+FBCALL FBSTRING *fb_StrFill1( ssize_t cnt, int fchar )
 {
 	FBSTRING 	*dst;
 
@@ -28,15 +26,13 @@ FBCALL FBSTRING *fb_StrFill1 ( int cnt, int fchar )
 	return dst;
 }
 
-
-/*:::::*/
-FBCALL FBSTRING *fb_StrFill2 ( int cnt, FBSTRING *src )
+FBCALL FBSTRING *fb_StrFill2( ssize_t cnt, FBSTRING *src )
 {
 	FBSTRING 	*dst;
-	int			fchar;
+	int fchar;
 
 	if( (cnt > 0) && (src != NULL) && (src->data != NULL) && (FB_STRSIZE( src ) > 0) ) {
-		fchar = (int)src->data[0];
+		fchar = src->data[0];
 		dst = fb_StrFill1( cnt, fchar );
 	}
 	else
@@ -47,4 +43,3 @@ FBCALL FBSTRING *fb_StrFill2 ( int cnt, FBSTRING *src )
 
 	return dst;
 }
-

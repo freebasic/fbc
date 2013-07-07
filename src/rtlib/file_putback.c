@@ -2,10 +2,10 @@
 
 #include "fb.h"
 
-/*:::::*/
 int fb_FilePutBackEx( FB_FILE *handle, const void *src, size_t chars )
 {
-    int res, bytes;
+	int res;
+	size_t bytes;
 
     if( !FB_HANDLE_USED(handle) )
 		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
@@ -54,8 +54,7 @@ int fb_FilePutBackEx( FB_FILE *handle, const void *src, size_t chars )
 	return res;
 }
 
-/*:::::*/
-FBCALL int fb_FilePutBack( int fnum, const void *data, size_t length)
+FBCALL int fb_FilePutBack( int fnum, const void *data, size_t length )
 {
     return fb_FilePutBackEx( FB_FILE_TO_HANDLE(fnum), data, length );
 }

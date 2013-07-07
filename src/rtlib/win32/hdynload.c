@@ -9,7 +9,7 @@
 FB_DYLIB fb_hDynLoad(const char *libname, const char **funcname, void **funcptr)
 {
 	FB_DYLIB lib;
-	int i;
+	ssize_t i;
 
 	if (!(lib = LoadLibrary(libname)))
 		return NULL;
@@ -26,9 +26,9 @@ FB_DYLIB fb_hDynLoad(const char *libname, const char **funcname, void **funcptr)
 	return lib;
 }
 
-int fb_hDynLoadAlso(FB_DYLIB lib, const char **funcname, void **funcptr, int count)
+int fb_hDynLoadAlso( FB_DYLIB lib, const char **funcname, void **funcptr, ssize_t count )
 {
-	int i;
+	ssize_t i;
 
 	/* Load functions */
 	for (i = 0; i < count; i++) {

@@ -7,7 +7,6 @@
 #include <unistd.h>
 #endif
 
-/*:::::*/
 FBCALL int fb_ChDir( FBSTRING *path )
 {
 	int res;

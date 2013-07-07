@@ -2,10 +2,9 @@
 
 #include "fb.h"
 
-/*:::::*/
-FBCALL int fb_WstrInstr ( int start, const FB_WCHAR *src, const FB_WCHAR *patt )
+FBCALL ssize_t fb_WstrInstr( ssize_t start, const FB_WCHAR *src, const FB_WCHAR *patt )
 {
-	int r;
+	ssize_t r;
 	FB_WCHAR *p;
 
 	if( (src == NULL) || (patt == NULL) )

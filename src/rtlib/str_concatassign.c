@@ -2,19 +2,18 @@
 
 #include "fb.h"
 
-/*:::::*/
 FBCALL void *fb_StrConcatAssign
 	(
 		void *dst,
-		int dst_size,
+		ssize_t dst_size,
 		void *src,
-		int src_size,
+		ssize_t src_size,
 		int fillrem
 	)
 {
 	FBSTRING *dstr;
 	const char *src_ptr;
-	int src_len, dst_len;
+	ssize_t src_len, dst_len;
 
 	if( dst == NULL )
 	{

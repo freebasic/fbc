@@ -73,7 +73,7 @@ typedef int (*FnFileLock)           ( struct _FB_FILE *handle, fb_off_t position
 typedef int (*FnFileUnlock)         ( struct _FB_FILE *handle, fb_off_t position,
                                       fb_off_t size );
 typedef int (*FnFileReadLine)       ( struct _FB_FILE *handle, FBSTRING *dst );
-typedef int (*FnFileReadLineWstr)   ( struct _FB_FILE *handle, FB_WCHAR *dst, int dst_chars );
+typedef int (*FnFileReadLineWstr)   ( struct _FB_FILE *handle, FB_WCHAR *dst, ssize_t dst_chars );
 typedef int (*FnFileFlush)          ( struct _FB_FILE *handle );
 
 typedef struct _FB_FILE_HOOKS {
@@ -206,23 +206,23 @@ FBCALL int          fb_FileOpenShort    ( FBSTRING *str_file_mode, int fnum,
 FBCALL int          fb_FileClose        ( int fnum );
        int          fb_FileCloseEx      ( FB_FILE *handle );
 
-FBCALL int          fb_FilePut          ( int fnum, long pos, void* value, unsigned int valuelen );
-       int          fb_FilePutEx        ( FB_FILE *handle, fb_off_t pos, void* value, unsigned int valuelen );
-FBCALL int          fb_FilePutStr       ( int fnum, long pos, void *str, int str_len );
-       int          fb_FilePutStrEx     ( FB_FILE *handle, fb_off_t pos, void *str, int str_len );
-FBCALL int          fb_FilePutArray     ( int fnum, long pos, FBARRAY *src );
+FBCALL int          fb_FilePut          ( int fnum, int pos, void* value, size_t valuelen );
+       int          fb_FilePutEx        ( FB_FILE *handle, fb_off_t pos, void* value, size_t valuelen );
+FBCALL int          fb_FilePutStr       ( int fnum, int pos, void *str, ssize_t str_len );
+       int          fb_FilePutStrEx     ( FB_FILE *handle, fb_off_t pos, void *str, ssize_t str_len );
+FBCALL int          fb_FilePutArray     ( int fnum, int pos, FBARRAY *src );
 
-FBCALL int          fb_FileGet          ( int fnum, long pos, void* value, unsigned int valuelen );
-       int          fb_FileGetEx        ( FB_FILE *handle, fb_off_t pos, void* value, unsigned int valuelen );
-FBCALL int          fb_FileGetStr       ( int fnum, long pos, void *str, int str_len );
-       int          fb_FileGetStrEx     ( FB_FILE *handle, fb_off_t pos, void *str, int str_len, size_t *bytesread );
-FBCALL int          fb_FileGetArray     ( int fnum, long pos, FBARRAY *dst );
+FBCALL int          fb_FileGet          ( int fnum, int pos, void* value, size_t valuelen );
+       int          fb_FileGetEx        ( FB_FILE *handle, fb_off_t pos, void* value, size_t valuelen );
+FBCALL int          fb_FileGetStr       ( int fnum, int pos, void *str, ssize_t str_len );
+       int          fb_FileGetStrEx     ( FB_FILE *handle, fb_off_t pos, void *str, ssize_t str_len, size_t *bytesread );
+FBCALL int          fb_FileGetArray     ( int fnum, int pos, FBARRAY *dst );
 
 FBCALL int          fb_FileEof          ( int fnum );
        int          fb_FileEofEx        ( FB_FILE *handle );
 FBCALL long long    fb_FileTell         ( int fnum );
        fb_off_t     fb_FileTellEx       ( FB_FILE *handle );
-FBCALL int          fb_FileSeek         ( int fnum, long newpos );
+FBCALL int          fb_FileSeek         ( int fnum, int newpos );
        int          fb_FileSeekEx       ( FB_FILE *handle, fb_off_t newpos );
 FBCALL long long    fb_FileLocation     ( int fnum );
        fb_off_t     fb_FileLocationEx   ( FB_FILE *handle );
@@ -238,8 +238,8 @@ FBCALL int          fb_FilePutBackWstr  ( int fnum, const FB_WCHAR *src, size_t 
        int          fb_FilePutBackWstrEx( FB_FILE *handle, const FB_WCHAR *src, size_t chars );
 
 FBCALL int          fb_FileInput        ( int fnum );
-FBCALL FBSTRING    *fb_FileStrInput     ( int bytes, int fnum );
-FBCALL int          fb_FileLineInput    ( int fnum, void *dst, int dst_len, int fillrem );
+FBCALL FBSTRING    *fb_FileStrInput     ( ssize_t bytes, int fnum );
+FBCALL int          fb_FileLineInput    ( int fnum, void *dst, ssize_t dst_len, int fillrem );
 
        int          fb_hFilePrintBuffer ( int fnum, const char *buffer );
        int          fb_hFilePrintBufferWstr ( int fnum, const FB_WCHAR *buffer );
@@ -254,8 +254,8 @@ FBCALL int          fb_FileLineInput    ( int fnum, void *dst, int dst_len, int 
 
 FBCALL int          fb_SetPos           ( FB_FILE *handle, int line_length );
 
-       int          fb_FileInputNextToken  ( char *buffer, int maxlen, int isstring, int *isfp );
-       void         fb_FileInputNextTokenWstr  ( FB_WCHAR *buffer, int max_chars, int is_string );
+       int          fb_FileInputNextToken( char *buffer, ssize_t maxlen, int isstring, int *isfp );
+       void         fb_FileInputNextTokenWstr( FB_WCHAR *buffer, ssize_t max_chars, int is_string );
 
 FBCALL FBSTRING    *fb_Dir              ( FBSTRING *filespec, int attrib, int *out_attrib );
 FBCALL FBSTRING    *fb_DirNext          ( int *attrib );
@@ -285,11 +285,11 @@ FBCALL FBSTRING    *fb_DirNext          ( int *attrib );
 
 extern const UTF_8 __fb_utf8_bmarkTb[7];
 
-       void         fb_hCharToUTF8      ( const char *src, int chars, char *dst, int *bytes );
-       char        *fb_CharToUTF        ( FB_FILE_ENCOD encod, const char *src, int chars, char *dst, int *bytes );
-       char        *fb_WCharToUTF       ( FB_FILE_ENCOD encod, const FB_WCHAR *src, int chars, char *dst, int *bytes );
-       int          fb_hFileRead_UTFToChar( FILE *fp, FB_FILE_ENCOD encod, char *dst, int max_chars );
-       int          fb_hFileRead_UTFToWchar( FILE *fp, FB_FILE_ENCOD encod, FB_WCHAR *dst, int max_chars );
+       void         fb_hCharToUTF8      ( const char *src, ssize_t chars, char *dst, ssize_t *bytes );
+       char        *fb_CharToUTF        ( FB_FILE_ENCOD encod, const char *src, ssize_t chars, char *dst, ssize_t *bytes );
+       char        *fb_WCharToUTF       ( FB_FILE_ENCOD encod, const FB_WCHAR *src, ssize_t chars, char *dst, ssize_t *bytes );
+       ssize_t      fb_hFileRead_UTFToChar( FILE *fp, FB_FILE_ENCOD encod, char *dst, ssize_t max_chars );
+       ssize_t      fb_hFileRead_UTFToWchar( FILE *fp, FB_FILE_ENCOD encod, FB_WCHAR *dst, ssize_t max_chars );
 
 /**************************************************************************************************
  * VB-compatible functions
