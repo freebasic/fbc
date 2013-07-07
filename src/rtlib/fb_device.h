@@ -15,6 +15,7 @@
        int          fb_DevFileReadLine      ( FB_FILE *handle, FBSTRING *dst );
        int          fb_DevFileReadLineWstr  ( FB_FILE *handle, FB_WCHAR *dst, int dst_chars );
        int          fb_DevFileSeek          ( FB_FILE *handle, fb_off_t offset, int whence );
+       int          fb_hDevFileSeekStart    ( FILE *fp, int mode, FB_FILE_ENCOD encod, int seek_zero );
        fb_off_t     fb_DevFileGetSize       ( FILE *fp, int mode, FB_FILE_ENCOD encod, int seek_back );
        int          fb_DevFileTell          ( FB_FILE *handle, fb_off_t *pOffset );
        int          fb_DevFileUnlock        ( FB_FILE *handle, fb_off_t position, fb_off_t size );

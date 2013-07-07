@@ -2,8 +2,6 @@
 
 #include "fb.h"
 
-FBCALL int fb_FileInput( int fnum );
-
 /*:::::*/
 FBCALL int fb_ConsoleInput( FBSTRING *text, int addquestion, int addnewline )
 {
