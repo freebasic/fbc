@@ -237,6 +237,7 @@ FBCALL int          fb_FilePutBackWstr  ( int fnum, const FB_WCHAR *src, size_t 
        int          fb_FilePutBackEx    ( FB_FILE *handle, const void *data, size_t length );
        int          fb_FilePutBackWstrEx( FB_FILE *handle, const FB_WCHAR *src, size_t chars );
 
+FBCALL int          fb_FileInput        ( int fnum );
 FBCALL FBSTRING    *fb_FileStrInput     ( int bytes, int fnum );
 FBCALL int          fb_FileLineInput    ( int fnum, void *dst, int dst_len, int fillrem );
 
