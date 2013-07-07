@@ -2,14 +2,6 @@
 
 #include "fb.h"
 
-int fb_hDevFileSeekStart
-	(
-		FILE *fp,
-		int mode,
-		FB_FILE_ENCOD encod,
-		int seek_zero
-	);
-
 static FB_FILE_HOOKS hooks_dev_file = {
     fb_DevFileEof,
     fb_DevFileClose,
