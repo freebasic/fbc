@@ -5,8 +5,6 @@
 #include "fb_gfx.h"
 #include "fb_gfx_lzw.h"
 
-
-/*:::::*/
 static LZW_ENTRY *find_match(unsigned short prefix, unsigned char value)
 {
 	unsigned short index, offset = 1;
@@ -22,13 +20,18 @@ static LZW_ENTRY *find_match(unsigned short prefix, unsigned char value)
 	}
 }
 
-/*:::::*/
-FBCALL int fb_hEncode(const unsigned char *in_buffer, int in_size, unsigned char *out_buffer, int *out_size)
+FBCALL int fb_hEncode
+	(
+		const unsigned char *in_buffer,
+		ssize_t in_size,
+		unsigned char *out_buffer,
+		ssize_t *out_size
+	)
 {
 	LZW_ENTRY *e;
 	unsigned short string_code, next_code = 256;
 	unsigned char bit = 0;
-	int size;
+	ssize_t size;
 
 	size = 0;
 	fb_hMemSet(fb_lzw_entry, -1, sizeof(fb_lzw_entry));

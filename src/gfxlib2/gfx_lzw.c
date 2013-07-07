@@ -5,11 +5,8 @@
 #include "fb_gfx.h"
 #include "fb_gfx_lzw.h"
 
-
 LZW_ENTRY fb_lzw_entry[TABLE_SIZE];
 
-
-/*:::::*/
 static unsigned char *decode_string(unsigned char *buffer, int code)
 {
 	int index = 0;
@@ -24,9 +21,13 @@ static unsigned char *decode_string(unsigned char *buffer, int code)
 	return buffer;
 }
 
-
-/*:::::*/
-FBCALL int fb_hDecode(const unsigned char *in_buffer, int in_size, unsigned char *out_buffer, int *out_size)
+FBCALL int fb_hDecode
+	(
+		const unsigned char *in_buffer,
+		ssize_t in_size,
+		unsigned char *out_buffer,
+		ssize_t *out_size
+	)
 {
 	unsigned short new_code, old_code, next_code = 256;
 	unsigned char *limit, decode_stack[MAX_CODE], *string, byte, bit = 0;
@@ -64,4 +65,3 @@ FBCALL int fb_hDecode(const unsigned char *in_buffer, int in_size, unsigned char
 	}
 	return -1;
 }
-

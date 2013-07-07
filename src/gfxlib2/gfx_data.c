@@ -30,7 +30,7 @@ void fb_hSetupData()
 	if (inited)
 		return;
 
-	int size = DATA_SIZE;
+	ssize_t size = DATA_SIZE;
 	fb_hDecode(compressed_data, sizeof(compressed_data), internal_data, &size);
 
 	inited = TRUE;
