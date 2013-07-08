@@ -173,7 +173,7 @@ declare function hPorts_cb _
 		 						byval y2 as single = 0, byval screenflag as integer = 0 ) as integer '/ _
 		( _
 			@FB_RTL_GFXWINDOW, NULL, _
-			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
 	 		@hGfxlib_cb, FB_RTL_OPT_NONE, _
 			5, _
 			{ _
@@ -397,7 +397,7 @@ declare function hPorts_cb _
 		/' fb_GfxFlip ( byval frompage as integer = -1, byval topage as integer = -1 ) as void '/ _
 		( _
 			@"flip", @"fb_GfxFlip", _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
 	 		@hGfxlib_cb, FB_RTL_OPT_NOQB, _
 			2, _
 			{ _
@@ -407,7 +407,7 @@ declare function hPorts_cb _
 		), _
 		( _
 			@"screencopy", @"fb_GfxFlip", _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
 	 		@hGfxlib_cb, FB_RTL_OPT_NOQB, _
 			2, _
 			{ _
@@ -479,7 +479,7 @@ declare function hPorts_cb _
 		/' fb_GfxPageSet cdecl ( byval work_page as integer = -1, byval visible_page as integer = -1 ) as void '/ _
 		( _
 			@"screenset", @"fb_GfxPageSet", _
-			FB_DATATYPE_VOID, FB_FUNCMODE_CDECL, _
+			FB_DATATYPE_INTEGER, FB_FUNCMODE_CDECL, _
 	 		@hGfxlib_cb, FB_RTL_OPT_NOQB, _
 			2, _
 			{ _

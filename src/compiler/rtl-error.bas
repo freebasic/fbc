@@ -60,10 +60,10 @@
 			NULL, FB_RTL_OPT_NONE, _
 			0 _
 		), _
-		/' fb_ErrorSetNum( byval errnum as integer ) as void '/ _
+		/' function fb_ErrorSetNum( byval errnum as integer ) as integer '/ _
 		( _
 			@FB_RTL_ERRORSETNUM, NULL, _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			1, _
 	 		{ _

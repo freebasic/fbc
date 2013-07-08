@@ -25,7 +25,7 @@
 		/' fb_MemCopy cdecl ( dst as any, src as any, byval bytes as integer ) as void '/ _
 		( _
 			@FB_RTL_MEMCOPY, @"memcpy", _
-			FB_DATATYPE_VOID, FB_FUNCMODE_CDECL, _
+			typeAddrOf( FB_DATATYPE_VOID ), FB_FUNCMODE_CDECL, _
 	 		NULL, FB_RTL_OPT_GCCBUILTIN, _
 			3, _
 			{ _
@@ -114,7 +114,7 @@
 		/' clear cdecl ( dst as any, byval value as integer = 0, byval bytes as integer ) as void '/ _
 		( _
 			@"clear", @"memset", _
-			FB_DATATYPE_VOID, FB_FUNCMODE_CDECL, _
+			typeAddrOf( FB_DATATYPE_VOID ), FB_FUNCMODE_CDECL, _
 	 		NULL, FB_RTL_OPT_GCCBUILTIN, _
 			3, _
 			{ _
