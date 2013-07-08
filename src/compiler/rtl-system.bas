@@ -67,7 +67,7 @@ declare function 	hThreadCall_cb		( byval sym as FBSYMBOL ptr ) as integer
 		/' atexit CDECL ( byval proc as sub cdecl() ) as void '/ _
 		( _
 			@FB_RTL_ATEXIT, @"atexit", _
-	 		FB_DATATYPE_VOID, FB_FUNCMODE_CDECL, _
+			FB_DATATYPE_INTEGER, FB_FUNCMODE_CDECL, _
 	 		NULL, FB_RTL_OPT_NONE, _
 	 		1, _
 	 		{ _
