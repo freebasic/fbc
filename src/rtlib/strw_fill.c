@@ -2,7 +2,7 @@
 
 #include "fb.h"
 
-FBCALL FB_WCHAR *fb_WstrFill1( ssize_t chars, FB_WCHAR c )
+FBCALL FB_WCHAR *fb_WstrFill1( ssize_t chars, int c )
 {
 	FB_WCHAR *dst;
 

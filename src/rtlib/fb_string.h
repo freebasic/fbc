@@ -297,7 +297,7 @@ FBCALL FB_WCHAR    *fb_WstrTrimEx       ( const FB_WCHAR *str, const FB_WCHAR *p
 FBCALL FB_WCHAR    *fb_WstrTrimAny      ( const FB_WCHAR *str, const FB_WCHAR *pattern );
 FBCALL FB_WCHAR    *fb_WstrLcase2       ( const FB_WCHAR *src, int mode );
 FBCALL FB_WCHAR    *fb_WstrUcase2       ( const FB_WCHAR *src, int mode );
-FBCALL FB_WCHAR    *fb_WstrFill1        ( ssize_t cnt, FB_WCHAR c );
+FBCALL FB_WCHAR    *fb_WstrFill1        ( ssize_t chars, int c );
 FBCALL FB_WCHAR    *fb_WstrFill2        ( ssize_t cnt, const FB_WCHAR *src );
 FBCALL ssize_t      fb_WstrInstr        ( ssize_t start, const FB_WCHAR *src, const FB_WCHAR *patt );
 FBCALL ssize_t      fb_WstrInstrAny     ( ssize_t start, const FB_WCHAR *src, const FB_WCHAR *patt );
