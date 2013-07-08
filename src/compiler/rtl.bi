@@ -345,7 +345,6 @@
 #define FB_RTL_GFXGETQB					"fb_GfxGetQB"
 #define FB_RTL_GFXSCREENSET 			"fb_GfxScreen"
 #define FB_RTL_GFXSCREENSETQB 			"fb_GfxScreenQB"
-#define FB_RTL_GFXSCREENRES 			"fb_GfxScreenRes"
 #define FB_RTL_GFXIMAGECREATE			"fb_GfxImageCreate"
 #define FB_RTL_GFXIMAGECREATEQB			"fb_GfxImageCreateQB"
 

@@ -10,7 +10,7 @@
 
 	dim shared as FB_RTL_PROCDEF funcdata( 0 to ... ) = _
 	{ _
-		/' fb_GosubPush ( byval ctx as any ptr ptr ) as any ptr '/ _
+		/' function fb_GosubPush( byval ctx as any ptr ptr ) as any ptr '/ _
 		( _
 			@FB_RTL_GOSUBPUSH, NULL, _
 	 		typeAddrOf( FB_DATATYPE_VOID ), FB_USE_FUNCMODE_FBCALL, _
@@ -20,27 +20,27 @@
 				( typeMultAddrOf( FB_DATATYPE_VOID, 2 ), FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 	 	), _
-		/' fb_GosubPop ( byval ctx as any ptr ptr ) as integer '/ _
+		/' function fb_GosubPop( byval ctx as any ptr ptr ) as long '/ _
 		( _
 			@FB_RTL_GOSUBPOP, NULL, _
-	 		FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_LONG, FB_USE_FUNCMODE_FBCALL, _
 	 		NULL, FB_RTL_OPT_NONE, _
 	 		1, _
 	 		{ _
 				( typeMultAddrOf( FB_DATATYPE_VOID, 2 ), FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 	 	), _
-		/' fb_GosubReturn ( byval ctx as any ptr ptr ) as integer '/ _
+		/' function fb_GosubReturn( byval ctx as any ptr ptr ) as long '/ _
 		( _
 			@FB_RTL_GOSUBRETURN, NULL, _
-	 		FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_LONG, FB_USE_FUNCMODE_FBCALL, _
 	 		NULL, FB_RTL_OPT_NONE, _
 	 		1, _
 	 		{ _
 				( typeMultAddrOf( FB_DATATYPE_VOID, 2 ), FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 	 	), _
-		/' fb_GosubExit ( byval ctx as any ptr ptr ) as void '/ _
+		/' sub fb_GosubExit( byval ctx as any ptr ptr ) '/ _
 		( _
 			@FB_RTL_GOSUBEXIT, NULL, _
 	 		FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _

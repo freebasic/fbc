@@ -11,7 +11,7 @@
 '' globals
 	dim shared as FB_RTL_PROCDEF funcdata( 0 to ... ) = _
 	{ _
-		/' fb_DataRestore ( byval labeladdrs as void ptr ) as void '/ _
+		/' sub fb_DataRestore( byval labeladdr as FB_DATADESC ptr ) '/ _
 		( _
 			@FB_RTL_DATARESTORE, NULL, _
 	 		FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
@@ -21,8 +21,12 @@
 				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
-		/' fb_DataReadStr ( byref dst as any, byval dst_size as integer, _
-							byval fillrem as integer = 1 ) as void '/ _
+		/' sub fb_DataReadStr _
+			( _
+				byref dst as any, _
+				byval dst_size as integer, _
+				byval fillrem as long = 1 _
+			) '/ _
 		( _
 			@FB_RTL_DATAREADSTR, NULL, _
 	 		FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
@@ -31,11 +35,10 @@
 	 		{ _
 				( FB_DATATYPE_VOID, FB_PARAMMODE_BYREF, FALSE ), _
 				( FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, 1 ) _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, 1 ) _
 	 		} _
 		), _
-		/' fb_DataReadWstr ( byval dst as wstring ptr, _
-							 byval dst_size as integer ) as void '/ _
+		/' sub fb_DataReadWstr( byval dst as wstring ptr, byval dst_size as integer ) '/ _
 		( _
 			@FB_RTL_DATAREADWSTR, NULL, _
 	 		FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
@@ -46,7 +49,7 @@
 				( FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
-		/' fb_DataReadByte ( byref dst as byte ) as void '/ _
+		/' sub fb_DataReadByte( byref dst as byte ) '/ _
 		( _
 			@FB_RTL_DATAREADBYTE, NULL, _
 	 		FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
@@ -56,7 +59,7 @@
 				( FB_DATATYPE_BYTE, FB_PARAMMODE_BYREF, FALSE ) _
 	 		} _
 		), _
-		/' fb_DataReadShort ( byref dst as short ) as void '/ _
+		/' sub fb_DataReadShort( byref dst as short ) '/ _
 		( _
 			@FB_RTL_DATAREADSHORT, NULL, _
 	 		FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
@@ -66,17 +69,17 @@
 				( FB_DATATYPE_SHORT, FB_PARAMMODE_BYREF, FALSE ) _
 	 		} _
 		), _
-		/' fb_DataReadInt ( byref dst as integer ) as void '/ _
+		/' sub fb_DataReadInt( byref dst as long ) '/ _
 		( _
 			@FB_RTL_DATAREADINT, NULL, _
 	 		FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
 	 		NULL, FB_RTL_OPT_NONE, _
 	 		1, _
 	 		{ _
-				( FB_DATATYPE_INTEGER, FB_PARAMMODE_BYREF, FALSE ) _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYREF, FALSE ) _
 	 		} _
 		), _
-		/' fb_DataReadLongint ( byref dst as longint ) as void '/ _
+		/' sub fb_DataReadLongint( byref dst as longint ) '/ _
 		( _
 			@FB_RTL_DATAREADLONGINT, NULL, _
 	 		FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
@@ -86,7 +89,7 @@
 				( FB_DATATYPE_LONGINT, FB_PARAMMODE_BYREF, FALSE ) _
 	 		} _
 		), _
-		/' fb_DataReadUByte ( byref dst as ubyte ) as void '/ _
+		/' sub fb_DataReadUByte( byref dst as ubyte ) '/ _
 		( _
 			@FB_RTL_DATAREADUBYTE, NULL, _
 	 		FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
@@ -96,7 +99,7 @@
 				( FB_DATATYPE_UBYTE, FB_PARAMMODE_BYREF, FALSE ) _
 	 		} _
 		), _
-		/' fb_DataReadUShort ( byref dst as ushort ) as void '/ _
+		/' sub fb_DataReadUShort( byref dst as ushort ) '/ _
 		( _
 			@FB_RTL_DATAREADUSHORT, NULL, _
 	 		FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
@@ -106,17 +109,17 @@
 				( FB_DATATYPE_USHORT, FB_PARAMMODE_BYREF, FALSE ) _
 	 		} _
 		), _
-		/' fb_DataReadUInt ( byref dst as uinteger ) as void '/ _
+		/' sub fb_DataReadUInt( byref dst as ulong ) '/ _
 		( _
 			@FB_RTL_DATAREADUINT, NULL, _
 	 		FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
 	 		NULL, FB_RTL_OPT_NONE, _
 	 		1, _
 	 		{ _
-				( FB_DATATYPE_UINT, FB_PARAMMODE_BYREF, FALSE ) _
+				( FB_DATATYPE_ULONG, FB_PARAMMODE_BYREF, FALSE ) _
 	 		} _
 		), _
-		/' fb_DataReadULongint ( byref dst as ulongint ) as void '/ _
+		/' sub fb_DataReadULongint( byref dst as ulongint ) '/ _
 		( _
 			@FB_RTL_DATAREADULONGINT, NULL, _
 	 		FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
@@ -126,7 +129,7 @@
 				( FB_DATATYPE_ULONGINT, FB_PARAMMODE_BYREF, FALSE ) _
 	 		} _
 		), _
-		/' fb_DataReadSingle ( byref dst as single ) as void '/ _
+		/' sub fb_DataReadSingle( byref dst as single ) '/ _
 		( _
 			@FB_RTL_DATAREADSINGLE, NULL, _
 	 		FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
@@ -136,7 +139,7 @@
 				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYREF, FALSE ) _
 	 		} _
 		), _
-		/' fb_DataReadDouble ( byref dst as single ) as void '/ _
+		/' sub fb_DataReadDouble( byref dst as single ) '/ _
 		( _
 			@FB_RTL_DATAREADDOUBLE, NULL, _
 	 		FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
@@ -165,7 +168,6 @@ sub rtlDataModEnd( )
 	'' procs will be deleted when symbEnd is called
 
 end sub
-
 
 '':::::
 function rtlDataRead _
