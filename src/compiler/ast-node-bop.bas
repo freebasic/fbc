@@ -1401,11 +1401,12 @@ function astNewBOP _
 
 		return l
 
-#if 0 '' this optimization causes bug #2099245
-	elseif( astIsCONST( l ) ) then
+	elseif( astIsCONST( l ) and ldtype = rdtype ) then
 		select case op
-		case AST_OP_ADD, AST_OP_MUL
-			'' ? + c = c + ?  |  ? * c = ? * c
+			case AST_OP_ADD, AST_OP_MUL, _
+			     AST_OP_AND, AST_OP_OR, AST_OP_XOR, AST_OP_EQV, _
+			     AST_OP_EQ, AST_OP_NE
+			'' ? OP c = c OP ?
 			astSwap( r, l )
 
 		case AST_OP_SUB
@@ -1417,7 +1418,6 @@ function astNewBOP _
 			astSwap( r, l )
 			op = AST_OP_ADD
 		end select
-#endif
 
 	elseif( astIsCONST( r ) ) then
 		select case op
