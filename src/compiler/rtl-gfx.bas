@@ -283,7 +283,7 @@ declare function hPorts_cb _
 		 						byval y2 as single = 0, byval screenflag as integer = 0 ) as integer '/ _
 		( _
 			@FB_RTL_GFXWINDOW, NULL, _
-			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
 	 		@hGfxlib_cb, FB_RTL_OPT_NONE, _
 			5, _
 			{ _
