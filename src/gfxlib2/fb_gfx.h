@@ -509,6 +509,7 @@ extern FBCALL int fb_GfxScreen(int mode, int depth, int num_pages, int flags, in
 extern FBCALL int fb_GfxScreenQB(int mode, int visible, int active);
 extern FBCALL int fb_GfxScreenRes(int width, int height, int depth, int num_pages, int flags, int refresh_rate);
 extern FBCALL void fb_GfxScreenInfo(int *width, int *height, int *depth, int *bpp, int *pitch, int *refresh_rate, FBSTRING *driver);
+extern FBCALL int fb_GfxScreenList(int depth);
 extern FBCALL void *fb_GfxImageCreate(int width, int height, unsigned int color, int depth, int flags);
 extern FBCALL void *fb_GfxImageCreateQB(int width, int height, unsigned int color, int depth, int flags);
 extern FBCALL void fb_GfxImageDestroy(void *image);
@@ -544,6 +545,7 @@ extern FBCALL void fb_GfxControl_i(int what, int *param1, int *param2, int *para
 extern FBCALL int fb_GfxBload(FBSTRING *filename, void *dest, void *pal);
 extern FBCALL int fb_GfxBloadQB(FBSTRING *filename, void *dest, void *pal);
 extern FBCALL int fb_GfxBsave(FBSTRING *filename, void *src, unsigned int size, void *pal);
+extern FBCALL int fb_GfxBsaveEx(FBSTRING *filename, void *src, unsigned int size, void *pal, int bitsperpixel);
 extern FBCALL void *fb_GfxGetGLProcAddress(const char *proc);
 
 /* Public API - QB compatibility */
@@ -597,6 +599,17 @@ void fb_image_convert_32bgrto16(const unsigned char *src, unsigned char *dest, i
 void fb_image_convert_32bgrto32(const unsigned char *src, unsigned char *dest, int w);
 
 FBCALL void fb_GfxImageConvertRow( const unsigned char *src, int src_bpp, unsigned char *dest, int dst_bpp, int width, int isrgb );
+
+void fb_hPutTrans (unsigned char *src, unsigned char *dest, int w, int h, int src_pitch, int dest_pitch, int alpha, BLENDER *blender, void *param);
+void fb_hPutPSet  (unsigned char *src, unsigned char *dest, int w, int h, int src_pitch, int dest_pitch, int alpha, BLENDER *blender, void *param);
+void fb_hPutPReset(unsigned char *src, unsigned char *dest, int w, int h, int src_pitch, int dest_pitch, int alpha, BLENDER *blender, void *param);
+void fb_hPutAnd   (unsigned char *src, unsigned char *dest, int w, int h, int src_pitch, int dest_pitch, int alpha, BLENDER *blender, void *param);
+void fb_hPutOr    (unsigned char *src, unsigned char *dest, int w, int h, int src_pitch, int dest_pitch, int alpha, BLENDER *blender, void *param);
+void fb_hPutXor   (unsigned char *src, unsigned char *dest, int w, int h, int src_pitch, int dest_pitch, int alpha, BLENDER *blender, void *param);
+void fb_hPutAlpha (unsigned char *src, unsigned char *dest, int w, int h, int src_pitch, int dest_pitch, int alpha, BLENDER *blender, void *param);
+void fb_hPutBlend (unsigned char *src, unsigned char *dest, int w, int h, int src_pitch, int dest_pitch, int alpha, BLENDER *blender, void *param);
+void fb_hPutAdd   (unsigned char *src, unsigned char *dest, int w, int h, int src_pitch, int dest_pitch, int alpha, BLENDER *blender, void *param);
+void fb_hPutCustom(unsigned char *src, unsigned char *dest, int w, int h, int src_pitch, int dest_pitch, int alpha, BLENDER *blender, void *param);
 
 /** Returns TRUE if application is in graphics mode.
  */

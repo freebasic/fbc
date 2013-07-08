@@ -8,6 +8,9 @@ FBCALL void         fb_InitSignals      ( void );
 FBCALL void         fb_MemSwap          ( unsigned char *dst, unsigned char *src, ssize_t bytes );
 FBCALL void         fb_StrSwap          ( void *str1, ssize_t size1, int fillrem1,
                                           void *str2, ssize_t size2, int fillrem2 );
+FBCALL void         fb_WstrSwap         ( FB_WCHAR *str1, ssize_t size1, FB_WCHAR *str2, ssize_t size2 );
+FBCALL void         fb_MemCopyClear     ( unsigned char *dst, ssize_t dstlen,
+                                          unsigned char *src, ssize_t srclen );
 
        void         fb_hInit            ( void );
        void         fb_hEnd             ( int errlevel );
@@ -15,6 +18,8 @@ FBCALL void         fb_StrSwap          ( void *str1, ssize_t size1, int fillrem
 FBCALL void         fb_Beep             ( void );
 
 FBCALL FBSTRING    *fb_Command          ( int argc );
+FBCALL FBSTRING    *fb_GetEnviron       ( FBSTRING *varname );
+FBCALL int          fb_SetEnviron       ( FBSTRING *str );
 FBCALL FBSTRING    *fb_CurDir           ( void );
 FBCALL FBSTRING    *fb_ExePath          ( void );
 FBCALL int          fb_Shell            ( FBSTRING *program );
@@ -24,6 +29,8 @@ FBCALL int          fb_Chain            ( FBSTRING *program );
 FBCALL int          fb_Exec             ( FBSTRING *program, FBSTRING *args );
 FBCALL int          fb_ExecEx           ( FBSTRING *program, FBSTRING *args, int do_wait );
        int          fb_hParseArgs       ( char *dst, const char *src, ssize_t length );
+
+FBCALL size_t       fb_GetMemAvail      ( int mode );
 
 FBCALL void        *fb_DylibLoad        ( FBSTRING *library );
 FBCALL void        *fb_DylibSymbol      ( void *library, FBSTRING *symbol );

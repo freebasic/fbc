@@ -115,6 +115,7 @@ FBCALL void         fb_PrintWstr        ( int fnum, const FB_WCHAR *s, int mask 
 FBCALL void         fb_PrintFixString   ( int fnum, const char *s, int mask );
        void         fb_PrintFixStringEx ( FB_FILE *handle, const char *s, int mask );
 
+FBCALL int          fb_LPos             ( int printer_index );
        int          fb_LPrintInit       ( void );
 FBCALL void         fb_LPrintVoid       ( int fnum, int mask );
 FBCALL void         fb_LPrintByte       ( int fnum, char val, int mask );
