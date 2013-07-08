@@ -761,7 +761,7 @@ declare function hPorts_cb _
 		/' fb_GfxPageSet cdecl ( byval work_page as integer = -1, byval visible_page as integer = -1 ) as void '/ _
 		( _
 			@"screenset", @"fb_GfxPageSet", _
-			FB_DATATYPE_VOID, FB_FUNCMODE_CDECL, _
+			FB_DATATYPE_INTEGER, FB_FUNCMODE_CDECL, _
 	 		@hGfxlib_cb, FB_RTL_OPT_NOQB, _
 			2, _
 			{ _
