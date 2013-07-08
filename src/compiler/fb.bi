@@ -113,7 +113,7 @@ enum FB_PDCHECK
 end enum
 
 '' cpu types
-'' When changing, update fbc.bas:gcc_architectures()
+'' When changing, update fb.bas:cputypeinfo()
 enum FB_CPUTYPE
 	FB_CPUTYPE_386 = 3
 	FB_CPUTYPE_486
@@ -132,6 +132,7 @@ enum FB_CPUTYPE
 	FB_CPUTYPE_32  '' just to identify -arch 32/64, as a shortcut for the default arch for 32/64bit
 	FB_CPUTYPE_64
 	FB_CPUTYPE_NATIVE
+	FB_CPUTYPE__COUNT
 end enum
 
 '' fpu types
@@ -370,6 +371,8 @@ declare sub fbIncludeFile(byval filename as zstring ptr, byval isonce as integer
 declare function fbGetTargetId( ) as zstring ptr
 declare function fbIsTarget64bit( ) as integer
 declare function fbGetOppositeBitsTarget( ) as integer
+declare function fbGetGccArch( ) as zstring ptr
+declare function fbIsTargetX86( ) as integer
 
 declare function fbGetEntryPoint _
 	( _

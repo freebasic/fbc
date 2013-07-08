@@ -825,6 +825,7 @@ enum FB_RTL_OPT
 	FB_RTL_OPT_IRHLCBUILTIN   = &h00000800                  '' proc will be emitted by ir-hlc as needed, not declared as if it was a public one from rtlib
  	FB_RTL_OPT_GCCBUILTIN = &h00001000					'' GCC builtin, don't redeclare, create a wrapper
 	FB_RTL_OPT_NOGCC	  = &h00002000                  '' anything but -gen gcc
+	FB_RTL_OPT_X86ONLY        = &h00004000  '' on x86 only
 end enum
 
 enum FB_RTL_TCTYPES

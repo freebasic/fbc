@@ -17,7 +17,7 @@ declare function 	hThreadCall_cb		( byval sym as FBSYMBOL ptr ) as integer
 		( _
 			@FB_RTL_CPUDETECT, NULL, _
 	   	 	FB_DATATYPE_UINT, FB_FUNCMODE_CDECL, _
-	   	 	NULL, FB_RTL_OPT_NONE, _
+			NULL, FB_RTL_OPT_X86ONLY, _
 	   	 	0 _
 		), _
 		/' fb_Init ( byval argc as integer, byval argv as zstring ptr ptr, byval lang as integer ) as void '/ _
@@ -633,7 +633,7 @@ sub rtlSystemModEnd( )
 
 end sub
 
-private function rtlCpuCheck( ) as integer
+private function rtlX86CpuCheck( ) as integer
 	dim as ASTNODE ptr proc = any, cpu = any
 	dim as FBSYMBOL ptr s = any, label = any
 	dim as integer family = any
@@ -745,12 +745,11 @@ function rtlInitApp _
 		'' fb_InitSignals( )
 		astAdd( astNewCALL( PROCLOOKUP( INITSIGNALS ), NULL ) )
 
-		'' Checking the CPU for features is only needed on x86
-		'' TODO: x86 assumption
-		'if( fbIsX86( ) ) then
+		'' Checking the CPU for features on x86
+		if( fbIsTargetX86( ) ) then
 			'' Check CPU type
-			rtlCpuCheck( )
-		'end if
+			rtlX86CpuCheck( )
+		end if
 	end if
 
 	function = proc

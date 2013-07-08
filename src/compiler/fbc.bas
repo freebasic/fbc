@@ -1998,14 +1998,18 @@ private sub hParseArgs( byval argc as integer, byval argv as zstring ptr ptr )
 
 	'' "-arch native" given? Re-map to real cputype
 	if( cputype = FB_CPUTYPE_NATIVE ) then
-		cputype = (fb_CpuDetect( ) shr 28)
+		#ifdef __FB_64BIT__
+			cputype = FB_CPUTYPE_64
+		#else
+			cputype = (fb_CpuDetect( ) shr 28)
 
-		'' Not 386..686?
-		if( (cputype < 3) or (cputype > 6) ) then
-			'' Don't change the FB compiler's default - since it
-			'' defaults to the host
-			cputype = -1
-		end if
+			'' Not 386..686?
+			if( (cputype < 3) or (cputype > 6) ) then
+				'' Don't change the FB compiler's default - since it
+				'' defaults to the host
+				cputype = -1
+			end if
+		#endif
 	end if
 
 	'' -arch given (or identified via -arch native)?
@@ -2503,27 +2507,6 @@ private function hCompileXpm( ) as integer
 	function = TRUE
 end function
 
-dim shared as const zstring ptr gcc_architectures(FB_CPUTYPE_386 to FB_CPUTYPE_NATIVE) = _
-{ _
-	@"i386", _
-	@"i486", _
-	@"i586", _
-	@"i686", _
-	@"athlon", _
-	@"athlon-xp", _
-	@"athlon-fx", _
-	@"k8-sse3", _
-	@"pentium-mmx", _
-	@"pentium2", _
-	@"pentium3", _
-	@"pentium4", _
-	@"prescott", _
-	@"k8", _
-	NULL, _
-	NULL, _
-	NULL _
-}
-
 private function hCompileStage2Module( byval module as FBCIOFILE ptr ) as integer
 	dim as string ln, asmfile
 
@@ -2576,7 +2559,7 @@ private function hCompileStage2Module( byval module as FBCIOFILE ptr ) as intege
 		if( fbc.cputype = FB_CPUTYPE_NATIVE ) then
 			ln += "-mtune=native "
 		else
-			ln += "-mtune=" + *gcc_architectures(fbGetOption( FB_COMPOPT_CPUTYPE )) + " "
+			ln += "-mtune=" + *fbGetGccArch( ) + " "
 		end if
 
 		if( fbGetOption( FB_COMPOPT_FPUTYPE ) = FB_FPUTYPE_SSE ) then

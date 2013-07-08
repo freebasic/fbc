@@ -127,6 +127,10 @@ sub rtlAddIntrinsicProcs _
 			doadd = fbLangOptIsSet( FB_LANG_OPT_MT )
 		end if
 
+		if( procdef->options and FB_RTL_OPT_X86ONLY ) then
+			doadd and= fbIsTargetX86( )
+		end if
+
 		if( doadd ) then
 			if( (procdef->options and FB_RTL_OPT_QBONLY) <> 0 ) then
 				doadd = ( env.clopt.lang = FB_LANG_QB )
