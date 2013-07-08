@@ -17,15 +17,9 @@
 	 		NULL, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
-				( _
-					typeAddrOf( FB_DATATYPE_VOID ),FB_PARAMMODE_BYVAL, FALSE _
-	 			), _
-	 			( _
-					FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE _
-	 			), _
-	 			( _
-					typeAddrOf( FB_DATATYPE_CHAR ),FB_PARAMMODE_BYVAL, FALSE _
-	 			) _
+				( typeAddrOf( FB_DATATYPE_VOID ),FB_PARAMMODE_BYVAL, FALSE ), _
+				( FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeAddrOf( FB_DATATYPE_CHAR ),FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
 		/' fb_MemCopy cdecl ( dst as any, src as any, byval bytes as integer ) as void '/ _
@@ -35,15 +29,9 @@
 	 		NULL, FB_RTL_OPT_GCCBUILTIN, _
 			3, _
 			{ _
-				( _
-					FB_DATATYPE_VOID,FB_PARAMMODE_BYREF, FALSE _
-	 			), _
-	 			( _
-					FB_DATATYPE_VOID,FB_PARAMMODE_BYREF, FALSE _
-	 			), _
-	 			( _
-					FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE _
-	 			) _
+				( FB_DATATYPE_VOID,FB_PARAMMODE_BYREF, FALSE ), _
+				( FB_DATATYPE_VOID,FB_PARAMMODE_BYREF, FALSE ), _
+				( FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
 		/' fb_MemSwap ( dst as any, src as any, byval bytes as integer ) as void '/ _
@@ -53,15 +41,9 @@
 	 		NULL, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
-				( _
-					FB_DATATYPE_VOID,FB_PARAMMODE_BYREF, FALSE _
-	 			), _
-	 			( _
-					FB_DATATYPE_VOID,FB_PARAMMODE_BYREF, FALSE _
-	 			), _
-	 			( _
-					FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE _
-	 			) _
+				( FB_DATATYPE_VOID,FB_PARAMMODE_BYREF, FALSE ), _
+				( FB_DATATYPE_VOID,FB_PARAMMODE_BYREF, FALSE ), _
+				( FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
 		/' fb_MemCopyClear ( dst as any, byval dstlen as integer, src as any, byval srclen as integer ) as void '/ _
@@ -71,18 +53,10 @@
 	 		NULL, FB_RTL_OPT_NONE, _
 			4, _
 			{ _
-				( _
-					FB_DATATYPE_VOID,FB_PARAMMODE_BYREF, FALSE _
-	 			), _
-	 			( _
-					FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE _
-	 			), _
-	 			( _
-					FB_DATATYPE_VOID,FB_PARAMMODE_BYREF, FALSE _
-	 			), _
-	 			( _
-					FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE _
-	 			) _
+				( FB_DATATYPE_VOID,FB_PARAMMODE_BYREF, FALSE ), _
+				( FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE ), _
+				( FB_DATATYPE_VOID,FB_PARAMMODE_BYREF, FALSE ), _
+				( FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
 		/' fre ( ) as uinteger '/ _
@@ -92,9 +66,7 @@
 	 		NULL, FB_RTL_OPT_NONE, _
 			1, _
 			{ _
-				( _
-					FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, TRUE, 0 _
-	 			) _
+				( FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, TRUE, 0 ) _
 	 		} _
 		), _
 		/' allocate cdecl ( byval bytes as uinteger ) as any ptr '/ _
@@ -104,9 +76,7 @@
 	 		NULL, FB_RTL_OPT_NOQB, _
 			1, _
 			{ _
-				( _
-					FB_DATATYPE_UINT,FB_PARAMMODE_BYVAL, FALSE _
-	 			) _
+				( FB_DATATYPE_UINT,FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
 		/' callocate cdecl ( byval bytes as uinteger ) as any ptr '/ _
@@ -116,12 +86,8 @@
  			NULL, FB_RTL_OPT_NOQB, _
 			2, _
 			{ _
-				( _
-					FB_DATATYPE_UINT,FB_PARAMMODE_BYVAL, FALSE _
-	 			), _
-	 			( _
-					FB_DATATYPE_UINT,FB_PARAMMODE_BYVAL, TRUE, 1 _
-	 			) _
+				( FB_DATATYPE_UINT,FB_PARAMMODE_BYVAL, FALSE ), _
+				( FB_DATATYPE_UINT,FB_PARAMMODE_BYVAL, TRUE, 1 ) _
 	 		} _
 		), _
 		/' reallocate cdecl ( byval p as any ptr, byval bytes as uinteger ) as any ptr '/ _
@@ -131,12 +97,8 @@
  			NULL, FB_RTL_OPT_NOQB, _
 			2, _
 			{ _
-				( _
-					typeAddrOf( FB_DATATYPE_VOID ),FB_PARAMMODE_BYVAL, FALSE _
-	 			), _
-	 			( _
-					FB_DATATYPE_UINT,FB_PARAMMODE_BYVAL, FALSE _
-	 			) _
+				( typeAddrOf( FB_DATATYPE_VOID ),FB_PARAMMODE_BYVAL, FALSE ), _
+				( FB_DATATYPE_UINT,FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
 		/' deallocate cdecl ( byval p as any ptr ) as void '/ _
@@ -146,9 +108,7 @@
 	 		NULL, FB_RTL_OPT_NOQB, _
 			1, _
 			{ _
-				( _
-					typeAddrOf( FB_DATATYPE_VOID ),FB_PARAMMODE_BYVAL, FALSE _
-	 			) _
+				( typeAddrOf( FB_DATATYPE_VOID ),FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
 		/' clear cdecl ( dst as any, byval value as integer = 0, byval bytes as integer ) as void '/ _
@@ -158,15 +118,9 @@
 	 		NULL, FB_RTL_OPT_GCCBUILTIN, _
 			3, _
 			{ _
-				( _
-					FB_DATATYPE_VOID,FB_PARAMMODE_BYREF, FALSE _
-	 			), _
-	 			( _
-					FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, TRUE, 0 _
-	 			), _
-	 			( _
-					FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE _
-	 			) _
+				( FB_DATATYPE_VOID,FB_PARAMMODE_BYREF, FALSE ), _
+				( FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, TRUE, 0 ), _
+				( FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 	 	), _
 		/' new cdecl ( byval bytes as uinteger ) as any ptr '/ _
@@ -176,9 +130,7 @@
 	 		NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_OPERATOR, _
 			1, _
 			{ _
-				( _
-					FB_DATATYPE_UINT, FB_PARAMMODE_BYVAL, FALSE _
-	 			) _
+				( FB_DATATYPE_UINT, FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
 		/' new[] cdecl ( byval bytes as uinteger ) as any ptr '/ _
@@ -188,9 +140,7 @@
 	 		NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_OPERATOR, _
 			1, _
 			{ _
-				( _
-					FB_DATATYPE_UINT, FB_PARAMMODE_BYVAL, FALSE _
-	 			) _
+				( FB_DATATYPE_UINT, FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
 		/' delete cdecl ( byval ptr as any ptr ) '/ _
@@ -200,9 +150,7 @@
 	 		NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_OPERATOR, _
 			1, _
 			{ _
-				( _
-					typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE _
-	 			) _
+				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
 		/' delete[] cdecl ( byval ptr as any ptr ) '/ _
@@ -212,9 +160,7 @@
 	 		NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_OPERATOR, _
 			1, _
 			{ _
-				( _
-					typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE _
-	 			) _
+				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
 	 	/' EOL '/ _

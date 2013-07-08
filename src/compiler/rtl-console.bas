@@ -23,12 +23,8 @@
 	 		NULL, FB_RTL_OPT_NONE, _
 	 		2, _
 	 		{ _
-	 			( _
-	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, 0 _
-	 			), _
-	 			( _
-	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, 0 _
-	 			) _
+				( FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, 0 ), _
+				( FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, 0 ) _
 	 		} _
 		), _
 		/' fb_ReadXY ( byval x as integer, byval y as integer, _
@@ -39,15 +35,9 @@
 	 		NULL, FB_RTL_OPT_NONE, _
 	 		3, _
 	 		{ _
-	 			( _
-	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-	 			), _
-	 			( _
-	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-	 			), _
-	 			( _
-	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, 0 _
-	 			) _
+				( FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE ), _
+				( FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE ), _
+				( FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, 0 ) _
 	 		} _
 		), _
         /' fb_Width( byval cols as integer = -1, _
@@ -58,12 +48,8 @@
 	 		NULL, FB_RTL_OPT_NONE, _
 	 		2, _
 	 		{ _
-	 			( _
-	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, -1 _
-	 			), _
-	 			( _
-	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, -1 _
-	 			) _
+				( FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, -1 ), _
+				( FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, -1 ) _
 	 		} _
 		), _
 		/' fb_WidthDev( dev as string, byval width_arg as integer = -1 ) as integer '/ _
@@ -73,12 +59,8 @@
 	 		NULL, FB_RTL_OPT_NONE, _
 	 		2, _
 	 		{ _
-	 			( _
-	 				FB_DATATYPE_STRING, FB_PARAMMODE_BYREF, FALSE _
-	 			), _
-	 			( _
-	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, -1 _
-	 			) _
+				( FB_DATATYPE_STRING, FB_PARAMMODE_BYREF, FALSE ), _
+				( FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, -1 ) _
 	 		} _
 		), _
 		/' fb_WidthFile( byval fnum as integer, byval width_arg as integer = -1 ) as integer '/ _
@@ -88,12 +70,8 @@
 	 		NULL, FB_RTL_OPT_NONE, _
 	 		2, _
 	 		{ _
-	 			( _
-	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-	 			), _
-	 			( _
-	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, -1 _
-	 			) _
+				( FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE ), _
+				( FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, -1 ) _
 	 		} _
 		), _
 		/' locate( byval row as integer = 0, byval col as integer = 0, _
@@ -105,21 +83,11 @@
 	 		NULL, FB_RTL_OPT_NONE, _
 	 		5, _
 	 		{ _
-	 			( _
-	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE,0 _
-	 			), _
-	 			( _
-	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE,0 _
-	 			), _
-	 			( _
-	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, -1 _
-	 			), _
-	 			( _
-	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, 0 _
-	 			), _
-	 			( _
-	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, 0 _
-	 			) _
+				( FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE,0 ), _
+				( FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE,0 ), _
+				( FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, -1 ), _
+				( FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, 0 ), _
+				( FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, 0 ) _
 	 		} _
 		), _
 		/' pos( ) as integer '/ _
@@ -136,9 +104,7 @@
 	 		NULL, FB_RTL_OPT_OVER, _
      		1, _
 	 		{ _
-	 			( _
-		     		FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-	 			) _
+				( FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
 		/' csrlin( ) as integer '/ _
@@ -155,9 +121,7 @@
 	 		NULL, FB_RTL_OPT_NONE, _
 	 		1, _
 	 		{ _
-	 			( _
-	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, &hFFFF0000 _
-	 			) _
+				( FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, &hFFFF0000 ) _
 	 		} _
 		), _
 		/' fb_Color( byval fc as integer, byval bc as integer, byval flags as integer ) as integer '/ _
@@ -167,15 +131,9 @@
 	 		NULL, FB_RTL_OPT_NONE, _
 	 		3, _
 	 		{ _
-	 			( _
-	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-	 			), _
-	 			( _
-	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-	 			), _
-	 			( _
-	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-	 			) _
+				( FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE ), _
+				( FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE ), _
+				( FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
 		/' inkey ( ) as string '/ _
@@ -206,12 +164,8 @@
 	 		NULL, FB_RTL_OPT_NONE, _
 			2, _
 			{ _
-				( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, -1 _
-				), _
-				( _
- 					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, -1 _
-	 			) _
+				( FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, -1 ), _
+				( FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, -1 ) _
 	 		} _
 		), _
 		/' page ( byval src as integer = -1, byval dst as integer = -1 ) as integer '/ _
@@ -221,12 +175,8 @@
 	 		NULL, FB_RTL_OPT_NONE, _
 			2, _
 			{ _
-				( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, -1 _
-				), _
-				( _
- 					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, -1 _
-	 			) _
+				( FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, -1 ), _
+				( FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, -1 ) _
 	 		} _
 		), _
 	 	/' EOL '/ _

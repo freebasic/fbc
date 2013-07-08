@@ -16,12 +16,8 @@
 	 		NULL, FB_RTL_OPT_NONE, _
 			2, _
 			{ _
-				( _
-					FB_DATATYPE_VOID,FB_PARAMMODE_BYREF, FALSE _
-	 			), _
-	 			( _
-					FB_DATATYPE_VOID,FB_PARAMMODE_BYREF, FALSE _
-	 			) _
+				( FB_DATATYPE_VOID,FB_PARAMMODE_BYREF, FALSE ), _
+				( FB_DATATYPE_VOID,FB_PARAMMODE_BYREF, FALSE ) _
 	 		} _
 		), _
 	 	/' EOL '/ _

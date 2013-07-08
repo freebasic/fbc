@@ -17,9 +17,7 @@
 	 		NULL, FB_RTL_OPT_NONE, _
 	 		1, _
 	 		{ _
-	 			( _
-	 				typeMultAddrOf( FB_DATATYPE_VOID, 2 ), FB_PARAMMODE_BYVAL, FALSE _
-	 			) _
+				( typeMultAddrOf( FB_DATATYPE_VOID, 2 ), FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 	 	), _
 		/' fb_GosubPop ( byval ctx as any ptr ptr ) as integer '/ _
@@ -29,9 +27,7 @@
 	 		NULL, FB_RTL_OPT_NONE, _
 	 		1, _
 	 		{ _
-	 			( _
-	 				typeMultAddrOf( FB_DATATYPE_VOID, 2 ), FB_PARAMMODE_BYVAL, FALSE _
-	 			) _
+				( typeMultAddrOf( FB_DATATYPE_VOID, 2 ), FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 	 	), _
 		/' fb_GosubReturn ( byval ctx as any ptr ptr ) as integer '/ _
@@ -41,9 +37,7 @@
 	 		NULL, FB_RTL_OPT_NONE, _
 	 		1, _
 	 		{ _
-	 			( _
-	 				typeMultAddrOf( FB_DATATYPE_VOID, 2 ), FB_PARAMMODE_BYVAL, FALSE _
-	 			) _
+				( typeMultAddrOf( FB_DATATYPE_VOID, 2 ), FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 	 	), _
 		/' fb_GosubExit ( byval ctx as any ptr ptr ) as void '/ _
@@ -53,9 +47,7 @@
 	 		NULL, FB_RTL_OPT_NONE, _
 	 		1, _
 	 		{ _
-	 			( _
-	 				typeMultAddrOf( FB_DATATYPE_VOID, 2 ), FB_PARAMMODE_BYVAL, FALSE _
-	 			) _
+				( typeMultAddrOf( FB_DATATYPE_VOID, 2 ), FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 	 	), _
 	 	/' EOL '/ _
@@ -73,9 +65,7 @@
 	 		NULL, FB_RTL_OPT_NONE, _
 	 		1, _
 	 		{ _
-	 			( _
-	 				typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE _
-	 			) _
+				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 	 	), _
 	 	/' EOL '/ _
@@ -93,9 +83,7 @@
 	 		NULL, FB_RTL_OPT_NONE, _
 	 		1, _
 	 		{ _
-	 			( _
-	 				typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE _
-	 			) _
+				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 	 	), _
 	 	/' EOL '/ _

@@ -18,9 +18,7 @@
 	 		NULL, FB_RTL_OPT_NONE, _
 	 		1, _
 	 		{ _
-	 			( _
-	 				typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE _
-	 			) _
+				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
 		/' fb_DataReadStr ( byref dst as any, byval dst_size as integer, _
@@ -31,15 +29,9 @@
 	 		NULL, FB_RTL_OPT_NONE, _
 	 		3, _
 	 		{ _
-	 			( _
-	 				FB_DATATYPE_VOID, FB_PARAMMODE_BYREF, FALSE _
-	 			), _
-	 			( _
-	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-	 			), _
-	 			( _
-	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, 1 _
-	 			) _
+				( FB_DATATYPE_VOID, FB_PARAMMODE_BYREF, FALSE ), _
+				( FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE ), _
+				( FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, 1 ) _
 	 		} _
 		), _
 		/' fb_DataReadWstr ( byval dst as wstring ptr, _
@@ -50,12 +42,8 @@
 	 		NULL, FB_RTL_OPT_NONE, _
 	 		2, _
 	 		{ _
-	 			( _
-	 				typeAddrOf( FB_DATATYPE_WCHAR ),FB_PARAMMODE_BYVAL, FALSE _
-	 			), _
-	 			( _
-	 				FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE _
-	 			) _
+				( typeAddrOf( FB_DATATYPE_WCHAR ),FB_PARAMMODE_BYVAL, FALSE ), _
+				( FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
 		/' fb_DataReadByte ( byref dst as byte ) as void '/ _
@@ -65,9 +53,7 @@
 	 		NULL, FB_RTL_OPT_NONE, _
 	 		1, _
 	 		{ _
-	 			( _
-	 				FB_DATATYPE_BYTE, FB_PARAMMODE_BYREF, FALSE _
-	 			) _
+				( FB_DATATYPE_BYTE, FB_PARAMMODE_BYREF, FALSE ) _
 	 		} _
 		), _
 		/' fb_DataReadShort ( byref dst as short ) as void '/ _
@@ -77,9 +63,7 @@
 	 		NULL, FB_RTL_OPT_NONE, _
 	 		1, _
 	 		{ _
-	 			( _
-	 				FB_DATATYPE_SHORT, FB_PARAMMODE_BYREF, FALSE _
-	 			) _
+				( FB_DATATYPE_SHORT, FB_PARAMMODE_BYREF, FALSE ) _
 	 		} _
 		), _
 		/' fb_DataReadInt ( byref dst as integer ) as void '/ _
@@ -89,9 +73,7 @@
 	 		NULL, FB_RTL_OPT_NONE, _
 	 		1, _
 	 		{ _
-	 			( _
-	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYREF, FALSE _
-	 			) _
+				( FB_DATATYPE_INTEGER, FB_PARAMMODE_BYREF, FALSE ) _
 	 		} _
 		), _
 		/' fb_DataReadLongint ( byref dst as longint ) as void '/ _
@@ -101,9 +83,7 @@
 	 		NULL, FB_RTL_OPT_NONE, _
 	 		1, _
 	 		{ _
-	 			( _
-	 				FB_DATATYPE_LONGINT, FB_PARAMMODE_BYREF, FALSE _
-	 			) _
+				( FB_DATATYPE_LONGINT, FB_PARAMMODE_BYREF, FALSE ) _
 	 		} _
 		), _
 		/' fb_DataReadUByte ( byref dst as ubyte ) as void '/ _
@@ -113,9 +93,7 @@
 	 		NULL, FB_RTL_OPT_NONE, _
 	 		1, _
 	 		{ _
-	 			( _
-	 				FB_DATATYPE_UBYTE, FB_PARAMMODE_BYREF, FALSE _
-	 			) _
+				( FB_DATATYPE_UBYTE, FB_PARAMMODE_BYREF, FALSE ) _
 	 		} _
 		), _
 		/' fb_DataReadUShort ( byref dst as ushort ) as void '/ _
@@ -125,9 +103,7 @@
 	 		NULL, FB_RTL_OPT_NONE, _
 	 		1, _
 	 		{ _
-	 			( _
-	 				FB_DATATYPE_USHORT, FB_PARAMMODE_BYREF, FALSE _
-	 			) _
+				( FB_DATATYPE_USHORT, FB_PARAMMODE_BYREF, FALSE ) _
 	 		} _
 		), _
 		/' fb_DataReadUInt ( byref dst as uinteger ) as void '/ _
@@ -137,9 +113,7 @@
 	 		NULL, FB_RTL_OPT_NONE, _
 	 		1, _
 	 		{ _
-	 			( _
-	 				FB_DATATYPE_UINT, FB_PARAMMODE_BYREF, FALSE _
-	 			) _
+				( FB_DATATYPE_UINT, FB_PARAMMODE_BYREF, FALSE ) _
 	 		} _
 		), _
 		/' fb_DataReadULongint ( byref dst as ulongint ) as void '/ _
@@ -149,9 +123,7 @@
 	 		NULL, FB_RTL_OPT_NONE, _
 	 		1, _
 	 		{ _
-	 			( _
-	 				FB_DATATYPE_ULONGINT, FB_PARAMMODE_BYREF, FALSE _
-	 			) _
+				( FB_DATATYPE_ULONGINT, FB_PARAMMODE_BYREF, FALSE ) _
 	 		} _
 		), _
 		/' fb_DataReadSingle ( byref dst as single ) as void '/ _
@@ -161,9 +133,7 @@
 	 		NULL, FB_RTL_OPT_NONE, _
 	 		1, _
 	 		{ _
-	 			( _
-	 				FB_DATATYPE_SINGLE, FB_PARAMMODE_BYREF, FALSE _
-	 			) _
+				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYREF, FALSE ) _
 	 		} _
 		), _
 		/' fb_DataReadDouble ( byref dst as single ) as void '/ _
@@ -173,9 +143,7 @@
 	 		NULL, FB_RTL_OPT_NONE, _
 	 		1, _
 	 		{ _
-	 			( _
-	 				FB_DATATYPE_DOUBLE, FB_PARAMMODE_BYREF, FALSE _
-	 			) _
+				( FB_DATATYPE_DOUBLE, FB_PARAMMODE_BYREF, FALSE ) _
 	 		} _
 	 	), _
 	 	/' EOL '/ _
