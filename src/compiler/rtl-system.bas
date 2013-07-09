@@ -524,6 +524,7 @@ private function rtlX86CpuCheck( ) as integer
 	dim as ASTNODE ptr proc = any, cpu = any
 	dim as FBSYMBOL ptr s = any, label = any
 	dim as integer family = any
+	dim as string familystr
 
 	function = FALSE
 
@@ -534,6 +535,17 @@ private function rtlX86CpuCheck( ) as integer
 	if( family > FB_CPUTYPE_686 ) then
 		family = FB_CPUTYPE_686
 	end if
+
+	select case( family )
+	case FB_CPUTYPE_386
+		familystr = "386"
+	case FB_CPUTYPE_486
+		familystr = "486"
+	case FB_CPUTYPE_586
+		familystr = "586"
+	case else '' FB_CPUTYPE_686
+		familystr = "686"
+	end select
 
 	''
 	proc = astNewCALL( PROCLOOKUP( CPUDETECT ), NULL )
@@ -546,7 +558,7 @@ private function rtlX86CpuCheck( ) as integer
 	astAdd( astNewBOP( AST_OP_GE, cpu, astNewCONSTi( family, FB_DATATYPE_UINT ), label, AST_OPOPT_NONE ) )
 
 	'' print "This program requires at least a <cpu> to run."
-	s = symbAllocStrConst( "This program requires at least a " & family & "86 to run.", -1 )
+	s = symbAllocStrConst( "This program requires at least a " + familystr + " to run.", -1 )
 	rtlPrint( astNewCONSTi( 0 ), FALSE, FALSE, astNewVAR( s ) )
 
 	'' end 1

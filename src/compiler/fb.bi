@@ -115,7 +115,7 @@ end enum
 '' cpu types
 '' When changing, update fb.bas:cputypeinfo()
 enum FB_CPUTYPE
-	FB_CPUTYPE_386 = 3
+	FB_CPUTYPE_386 = 0
 	FB_CPUTYPE_486
 	FB_CPUTYPE_586
 	FB_CPUTYPE_686
