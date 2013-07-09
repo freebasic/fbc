@@ -490,6 +490,17 @@ private function hLinkFiles( ) as integer
 
 	hSetOutName( )
 
+	select case as const fbGetOption( FB_COMPOPT_TARGET )
+	case FB_COMPTARGET_WIN32
+		ldcline += " -m i386pe"
+	case FB_COMPTARGET_WIN64
+		ldcline += " -m i386pep"
+	case FB_COMPTARGET_LINUX
+		ldcline += " -m elf_i386"
+	case FB_COMPTARGET_LINUX64
+		ldcline += " -m elf_x86_64"
+	end select
+
 	'' Set executable name
 	ldcline = "-o " + QUOTE + fbc.outname + QUOTE
 
@@ -578,10 +589,6 @@ private function hLinkFiles( ) as integer
 			deffile = hStripExt( fbc.outname ) + ".def"
 			ldcline += " --output-def """ + deffile + """"
 		end if
-
-	case FB_COMPTARGET_LINUX
-		'' set emulation
-		ldcline += " -m elf_i386"
 
 	case FB_COMPTARGET_XBOX
 		'' set entry point
