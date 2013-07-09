@@ -90,6 +90,7 @@ type FBCCTX
 	extopt				as FBC_EXTOPT
 #ifndef ENABLE_STANDALONE
 	targetprefix 			as zstring * FB_MAXNAMELEN+1  '' Target system identifier (e.g. a name like "win32", or a GNU triplet) to prefix in front of cross-compiling tool names
+	multilibsuffix			as zstring * FB_MAXNAMELEN+1  '' Empty (native compilation), "32"/"64" (cross-compiling to 32bit/64bit with gcc -m32/-m64 instead of target-gcc)
 #endif
 	xbe_title 			as zstring * FB_MAXNAMELEN+1  '' For the '-title <title>' xbox option
 	nodeflibs			as integer
@@ -2031,6 +2032,18 @@ private sub hParseArgs( byval argc as integer, byval argv as zstring ptr ptr )
 		end select
 
 		if( switch_target ) then
+			#ifndef ENABLE_STANDALONE
+				'' Since -arch caused us to switch away from the
+				'' target's default arch, add the multilib suffix,
+				'' so the target's multilib-specific library directory
+				'' will be used (like gcc does with -m32/-m64).
+				if( genericcputype = FB_CPUTYPE_32 ) then
+					fbc.multilibsuffix = "32"
+				else
+					fbc.multilibsuffix = "64"
+				end if
+			#endif
+
 			if( fbGetOppositeBitsTarget( ) < 0 ) then
 				errReportEx( errmsg, "", -1 )
 				fbcEnd( 1 )
@@ -2114,7 +2127,7 @@ private sub fbcInit2( )
 	''
 	''    bin/[targetid-]
 	''    include/freebasic/
-	''    lib/[targetid-]freebasic[suffix]/
+	''    lib/[targetid-]freebasic[suffix][multilibsuffix]/
 	''
 	'' - Standalone always uses target-specific sub-directories in bin/
 	''   and lib/, Normal uses target-specific names only for
@@ -2132,6 +2145,11 @@ private sub fbcInit2( )
 	''
 	'' - The Normal layout can use GNU triplets as targetid, while the
 	''   standalone layout only uses the FB target names
+	''
+	'' - The multilibsuffix is "32" or "64" when cross-compiling to 32bit
+	''   or 64bit respectively, just like a gcc multilib toolchain.
+	''   For native compilation and when cross-compiling with a full
+	''   targetid cross-compiler, the multilibsuffix is empty.
 	''
 
 #ifdef ENABLE_STANDALONE
@@ -2167,6 +2185,8 @@ private sub fbcInit2( )
 	#ifdef ENABLE_SUFFIX
 		fbc.libpath += ENABLE_SUFFIX
 	#endif
+
+	fbc.libpath += fbc.multilibsuffix
 #endif
 
 	'' Tell the compiler about the default include path (added after
