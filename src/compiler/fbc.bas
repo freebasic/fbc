@@ -191,11 +191,12 @@ private sub hSetOutName( )
 		end select
 	case FB_OUTTYPE_DYNAMICLIB
 		select case( fbGetOption( FB_COMPOPT_TARGET ) )
-		case FB_COMPTARGET_CYGWIN, FB_COMPTARGET_WIN32
+		case FB_COMPTARGET_CYGWIN, _
+		     FB_COMPTARGET_WIN32, FB_COMPTARGET_WIN64
 			fbc.outname += ".dll"
 		case FB_COMPTARGET_FREEBSD, FB_COMPTARGET_DARWIN, _
-		     FB_COMPTARGET_LINUX, FB_COMPTARGET_NETBSD, _
-		     FB_COMPTARGET_OPENBSD
+		     FB_COMPTARGET_LINUX, FB_COMPTARGET_LINUX64, _
+		     FB_COMPTARGET_NETBSD, FB_COMPTARGET_OPENBSD
 			fbc.outname = hStripFilename( fbc.outname ) + _
 				"lib" + hStripPath( fbc.outname ) + ".so"
 		end select
