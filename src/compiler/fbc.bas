@@ -1243,44 +1243,16 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 		fbcAddObj( arg )
 
 	case OPT_ARCH
-		select case( arg )
-		case "386"
-			fbc.cputype = FB_CPUTYPE_386
-		case "486"
-			fbc.cputype = FB_CPUTYPE_486
-		case "586"
-			fbc.cputype = FB_CPUTYPE_586
-		case "686"
-			fbc.cputype = FB_CPUTYPE_686
-		case "athlon"
-			fbc.cputype = FB_CPUTYPE_ATHLON
-		case "athlon-xp"
-			fbc.cputype = FB_CPUTYPE_ATHLONXP
-		case "athlon-fx"
-			fbc.cputype = FB_CPUTYPE_ATHLONFX
-		case "k8-sse3"
-			fbc.cputype = FB_CPUTYPE_ATHLONSSE3
-		case "pentium-mmx"
-			fbc.cputype = FB_CPUTYPE_PENTIUMMMX
-		case "pentium2"
-			fbc.cputype = FB_CPUTYPE_PENTIUM2
-		case "pentium3"
-			fbc.cputype = FB_CPUTYPE_PENTIUM3
-		case "pentium4"
-			fbc.cputype = FB_CPUTYPE_PENTIUM4
-		case "pentium4-sse3"
-			fbc.cputype = FB_CPUTYPE_PENTIUMSSE3
-		case "x86-64", "x86_64", "amd64"
-			fbc.cputype = FB_CPUTYPE_X86_64
-		case "32"
-			fbc.cputype = FB_CPUTYPE_32
-		case "64"
-			fbc.cputype = FB_CPUTYPE_64
-		case "native"
-			fbc.cputype = FB_CPUTYPE_NATIVE
-		case else
-			hFatalInvalidOption( arg )
-		end select
+		fbc.cputype = fbIdentifyFbcArch( arg )
+		if( fbc.cputype < 0 ) then
+			'' Check some extra arguments not handled by the above
+			select case( arg )
+			case "x86-64", "amd64"
+				fbc.cputype = FB_CPUTYPE_X86_64
+			case else
+				hFatalInvalidOption( arg )
+			end select
+		end if
 
 	case OPT_ASM
 		select case( arg )
@@ -2188,6 +2160,17 @@ private sub fbcInit2( )
 
 	fbc.libpath += fbc.multilibsuffix
 #endif
+
+	if( fbc.verbose ) then
+		var s = *fbGetTargetId( )
+		#ifndef ENABLE_STANDALONE
+			if( len( fbc.targetprefix ) > 0 ) then
+				s += " (" + left( fbc.targetprefix, len( fbc.targetprefix ) - 1 ) + ")"
+			end if
+		#endif
+		s += ", " + *fbGetFbcArch( )
+		print "target:", s
+	end if
 
 	'' Tell the compiler about the default include path (added after
 	'' the command line ones, so those will be searched first)

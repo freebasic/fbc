@@ -372,7 +372,9 @@ declare function fbGetTargetId( ) as zstring ptr
 declare function fbIsTarget64bit( ) as integer
 declare function fbGetOppositeBitsTarget( ) as integer
 declare function fbGetGccArch( ) as zstring ptr
+declare function fbGetFbcArch( ) as zstring ptr
 declare function fbIsTargetX86( ) as integer
+declare function fbIdentifyFbcArch( byref fbcarch as string ) as integer
 
 declare function fbGetEntryPoint _
 	( _
