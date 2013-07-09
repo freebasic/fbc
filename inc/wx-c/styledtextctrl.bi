@@ -101,7 +101,7 @@ Declare Sub wxStyledTextCtrl_StyleSetForeground WXCALL Alias "wxStyledTextCtrl_S
 Declare Sub wxStyledTextCtrl_StyleSetBackground WXCALL Alias "wxStyledTextCtrl_StyleSetBackground" (self As wxStyledTextCtrl Ptr, style As wxInt, bg As wxColour Ptr)
 Declare Sub wxStyledTextCtrl_StyleSetBold WXCALL Alias "wxStyledTextCtrl_StyleSetBold" (self As wxStyledTextCtrl Ptr, style As wxInt, boold As wxBool)
 Declare Sub wxStyledTextCtrl_StyleSetItalic WXCALL Alias "wxStyledTextCtrl_StyleSetItalic" (self As wxStyledTextCtrl Ptr, style As wxInt, italic As wxBool)
-Declare Sub wxStyledTextCtrl_StyleSetSize WXCALL Alias "wxStyledTextCtrl_StyleSetSize" (self As wxStyledTextCtrl Ptr, style As wxInt, sizePoints As wxBool)
+Declare Sub wxStyledTextCtrl_StyleSetSize WXCALL Alias "wxStyledTextCtrl_StyleSetSize" (self As wxStyledTextCtrl Ptr, style As wxInt, sizePoints As wxInt)
 Declare Sub wxStyledTextCtrl_StyleSetFaceName WXCALL Alias "wxStyledTextCtrl_StyleSetFaceName" (self As wxStyledTextCtrl Ptr, style As wxInt, fontName As wxString Ptr)
 Declare Sub wxStyledTextCtrl_StyleSetEOLFilled WXCALL Alias "wxStyledTextCtrl_StyleSetEOLFilled" (self As wxStyledTextCtrl Ptr, style As wxInt, filled As wxBool)
 Declare Sub wxStyledTextCtrl_StyleResetDefault WXCALL Alias "wxStyledTextCtrl_StyleResetDefault" (self As wxStyledTextCtrl Ptr)
