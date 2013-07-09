@@ -195,7 +195,8 @@ function cVariableDecl( byval attrib as FB_SYMBATTRIB ) as integer
 
 			'' only if target is Windows
 			select case env.clopt.target
-			case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN
+			case FB_COMPTARGET_WIN32, FB_COMPTARGET_WIN64, _
+			     FB_COMPTARGET_CYGWIN
 				attrib or= FB_SYMBATTRIB_IMPORT
 			end select
 		end if
