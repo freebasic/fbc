@@ -2543,6 +2543,12 @@ private function hCompileStage2Module( byval module as FBCIOFILE ptr ) as intege
 			ln += "-m32 "
 		end if
 
+		if( fbc.cputype = FB_CPUTYPE_NATIVE ) then
+			ln += "-march=native "
+		else
+			ln += "-march=" + *fbGetGccArch( ) + " "
+		end if
+
 		ln += "-S -nostdlib -nostdinc -Wall -Wno-unused-label " + _
 		      "-Wno-unused-function -Wno-unused-variable "
 
@@ -2574,12 +2580,6 @@ private function hCompileStage2Module( byval module as FBCIOFILE ptr ) as intege
 
 		if( fbGetOption( FB_COMPOPT_DEBUG ) ) then
 			ln += "-g "
-		end if
-
-		if( fbc.cputype = FB_CPUTYPE_NATIVE ) then
-			ln += "-mtune=native "
-		else
-			ln += "-mtune=" + *fbGetGccArch( ) + " "
 		end if
 
 		if( fbGetOption( FB_COMPOPT_FPUTYPE ) = FB_FPUTYPE_SSE ) then
