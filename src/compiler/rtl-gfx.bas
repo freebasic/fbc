@@ -1283,7 +1283,8 @@ private function hPorts_cb _
 		libsAdded = TRUE
 
 		select case env.clopt.target
-		case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN
+		case FB_COMPTARGET_WIN32, FB_COMPTARGET_WIN64, _
+		     FB_COMPTARGET_CYGWIN
 			fbAddLib("advapi32")
 		end select
 	end if
@@ -1304,7 +1305,8 @@ function rtlMultinput_cb _
 		libsAdded = TRUE
 
 		select case env.clopt.target
-		case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN
+		case FB_COMPTARGET_WIN32, FB_COMPTARGET_WIN64, _
+		     FB_COMPTARGET_CYGWIN
 			fbAddLib("user32")
 		end select
 	end if
@@ -1327,13 +1329,15 @@ private function hGfxlib_cb _
 		fbAddLib("fbgfx")
 
 		select case as const fbGetOption( FB_COMPOPT_TARGET )
-		case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN
+		case FB_COMPTARGET_WIN32, FB_COMPTARGET_WIN64, _
+		     FB_COMPTARGET_CYGWIN
 			fbAddLib("user32")
 			fbAddLib("gdi32")
 			fbAddLib("winmm")
 
-		case FB_COMPTARGET_LINUX, FB_COMPTARGET_FREEBSD, _
-		     FB_COMPTARGET_OPENBSD, FB_COMPTARGET_NETBSD
+		case FB_COMPTARGET_LINUX, FB_COMPTARGET_LINUX64, _
+		     FB_COMPTARGET_FREEBSD, FB_COMPTARGET_OPENBSD, _
+		     FB_COMPTARGET_NETBSD
 
 			#if defined(__FB_LINUX__) or _
 			    defined(__FB_FREEBSD__) or _

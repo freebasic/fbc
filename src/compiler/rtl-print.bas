@@ -1169,7 +1169,8 @@ function rtlPrinter_cb _
         libsAdded = TRUE
 
 		select case env.clopt.target
-		case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN
+		case FB_COMPTARGET_WIN32, FB_COMPTARGET_WIN64, _
+		     FB_COMPTARGET_CYGWIN
 			fbAddLib("winspool")
 			fbAddLib("gdi32")
 		end select

@@ -958,7 +958,8 @@ private function hRndCallback( byval sym as FBSYMBOL ptr ) as integer
 	if( added = FALSE ) then
 		added = TRUE
 		select case env.clopt.target
-		case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN
+		case FB_COMPTARGET_WIN32, FB_COMPTARGET_WIN64, _
+		     FB_COMPTARGET_CYGWIN
 			fbAddLib( "advapi32" )
 		end select
 	end if
