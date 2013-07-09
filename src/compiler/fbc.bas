@@ -2847,7 +2847,7 @@ private sub hSetDefaultLibPaths( )
 		'' Note: Can't use libc here, we have a fixed copy of that in
 		'' the compiler's lib/ dir.
 		fbcAddLibPathFor( "libm.a" )
-	case FB_COMPTARGET_WIN32
+	case FB_COMPTARGET_WIN32, FB_COMPTARGET_WIN64
 		'' Help the MinGW linker to find MinGW's lib/ dir, allowing
 		'' the C:\MinGW dir to be renamed and linking to still work.
 		fbcAddLibPathFor( "libmingw32.a" )
@@ -2904,7 +2904,7 @@ private sub hAddDefaultLibs( )
 		fbcAddDefLib( "ncurses" )
 		fbcAddDefLib( "supc++" )
 
-	case FB_COMPTARGET_LINUX
+	case FB_COMPTARGET_LINUX, FB_COMPTARGET_LINUX64
 		''
 		'' Notes:
 		''
@@ -2953,7 +2953,7 @@ private sub hAddDefaultLibs( )
 		fbcAddDefLib( "ncurses" )
 		fbcAddDefLib( "supc++" )
 
-	case FB_COMPTARGET_WIN32
+	case FB_COMPTARGET_WIN32, FB_COMPTARGET_WIN64
 		fbcAddDefLib( "gcc" )
 		fbcAddDefLib( "msvcrt" )
 		fbcAddDefLib( "kernel32" )
