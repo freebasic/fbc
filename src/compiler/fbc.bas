@@ -505,7 +505,7 @@ private function hLinkFiles( ) as integer
 	ldcline = "-o " + QUOTE + fbc.outname + QUOTE
 
 	select case as const fbGetOption( FB_COMPOPT_TARGET )
-	case FB_COMPTARGET_CYGWIN, FB_COMPTARGET_WIN32
+	case FB_COMPTARGET_CYGWIN, FB_COMPTARGET_WIN32, FB_COMPTARGET_WIN64
 
 		'' set default subsystem mode
 		if( len( fbc.subsystem ) = 0 ) then
@@ -530,8 +530,8 @@ private function hLinkFiles( ) as integer
 		end if
 
 	case FB_COMPTARGET_FREEBSD, FB_COMPTARGET_DARWIN, _
-	     FB_COMPTARGET_LINUX, FB_COMPTARGET_NETBSD, _
-	     FB_COMPTARGET_OPENBSD
+	     FB_COMPTARGET_LINUX, FB_COMPTARGET_LINUX64, _
+	     FB_COMPTARGET_NETBSD, FB_COMPTARGET_OPENBSD
 
 		if( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB ) then
 			dllname = hStripPath( hStripExt( fbc.outname ) )
@@ -542,6 +542,8 @@ private function hLinkFiles( ) as integer
 				ldcline += " -dynamic-linker /libexec/ld-elf.so.1"
 			case FB_COMPTARGET_LINUX
 				ldcline += " -dynamic-linker /lib/ld-linux.so.2"
+			case FB_COMPTARGET_LINUX64
+				ldcline += " -dynamic-linker /lib64/ld-linux-x86-64.so.2"
 			case FB_COMPTARGET_NETBSD
 				ldcline += " -dynamic-linker /usr/libexec/ld.elf_so"
 			case FB_COMPTARGET_OPENBSD
@@ -572,7 +574,7 @@ private function hLinkFiles( ) as integer
 	end if
 
 	select case as const fbGetOption( FB_COMPOPT_TARGET )
-	case FB_COMPTARGET_CYGWIN, FB_COMPTARGET_WIN32
+	case FB_COMPTARGET_CYGWIN, FB_COMPTARGET_WIN32, FB_COMPTARGET_WIN64
 		'' stack size
 		dim as integer stacksize = fbGetOption(FB_COMPOPT_STACKSIZE)
 		ldcline += " --stack " + str(stacksize) + "," + str(stacksize)
@@ -654,8 +656,8 @@ private function hLinkFiles( ) as integer
 		end if
 
 	case FB_COMPTARGET_FREEBSD, FB_COMPTARGET_DARWIN, _
-	     FB_COMPTARGET_LINUX, FB_COMPTARGET_NETBSD, _
-	     FB_COMPTARGET_OPENBSD
+	     FB_COMPTARGET_LINUX, FB_COMPTARGET_LINUX64, _
+	     FB_COMPTARGET_NETBSD, FB_COMPTARGET_OPENBSD
 
 		if( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_EXECUTABLE) then
 			if( fbGetOption( FB_COMPOPT_PROFILE ) ) then
