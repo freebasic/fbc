@@ -635,7 +635,7 @@ private function hLinkFiles( ) as integer
 			end if
 		end if
 
-	case FB_COMPTARGET_WIN32
+	case FB_COMPTARGET_WIN32, FB_COMPTARGET_WIN64
 		if( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB ) then
 			ldcline += hFindLib( "dllcrt2.o" )
 		else
@@ -740,14 +740,14 @@ private function hLinkFiles( ) as integer
 	'' crt end
 	select case as const fbGetOption( FB_COMPOPT_TARGET )
 	case FB_COMPTARGET_FREEBSD, FB_COMPTARGET_DARWIN, _
-	     FB_COMPTARGET_LINUX, FB_COMPTARGET_NETBSD, _
-	     FB_COMPTARGET_OPENBSD
+	     FB_COMPTARGET_LINUX, FB_COMPTARGET_LINUX64, _
+	     FB_COMPTARGET_NETBSD, FB_COMPTARGET_OPENBSD
 		ldcline += hFindLib( "crtend.o" )
 		if (fbGetOption( FB_COMPOPT_TARGET ) <> FB_COMPTARGET_OPENBSD) then
 			ldcline += hFindLib( "crtn.o" )
 		end if
 
-	case FB_COMPTARGET_WIN32
+	case FB_COMPTARGET_WIN32, FB_COMPTARGET_WIN64
 		ldcline += hFindLib( "crtend.o" )
 
 	end select
