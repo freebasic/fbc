@@ -2103,8 +2103,6 @@ end sub
 
 '' After command line parsing
 private sub fbcInit2( )
-	dim as string targetid
-
 	''
 	'' Determine base/prefix path
 	''
@@ -2166,20 +2164,10 @@ private sub fbcInit2( )
 
 #ifdef ENABLE_STANDALONE
 	'' Use default target name
-	targetid = *fbGetTargetId( )
-
-	fbc.binpath = fbc.prefix + "bin" + FB_HOST_PATHDIV + targetid + FB_HOST_PATHDIV
+	fbc.binpath = fbc.prefix + "bin" + FB_HOST_PATHDIV + *fbGetTargetId( ) + FB_HOST_PATHDIV
 	fbc.incpath = fbc.prefix + "inc"
-	fbc.libpath = fbc.prefix + "lib" + FB_HOST_PATHDIV + targetid
+	fbc.libpath = fbc.prefix + "lib" + FB_HOST_PATHDIV + *fbGetTargetId( )
 #else
-	if( len( fbc.targetprefix ) > 0 ) then
-		'' Prefix tools with the id from -target
-		targetid = fbc.targetprefix
-	else
-		'' No -target used, using "native" tools without prefix
-		targetid = ""
-	end if
-
 	dim as zstring ptr fbname = any
 	if( fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_DOS ) then
 		'' Our subdirectory in include/ and lib/ is usually called
@@ -2190,9 +2178,9 @@ private sub fbcInit2( )
 		fbname = @"freebasic"
 	end if
 
-	fbc.binpath = fbc.prefix + "bin"     + FB_HOST_PATHDIV + targetid
+	fbc.binpath = fbc.prefix + "bin"     + FB_HOST_PATHDIV + fbc.targetprefix
 	fbc.incpath = fbc.prefix + "include" + FB_HOST_PATHDIV + *fbname
-	fbc.libpath = fbc.prefix + "lib"     + FB_HOST_PATHDIV + targetid + *fbname
+	fbc.libpath = fbc.prefix + "lib"     + FB_HOST_PATHDIV + fbc.targetprefix + *fbname
 
 	#ifdef ENABLE_SUFFIX
 		fbc.libpath += ENABLE_SUFFIX
