@@ -2085,9 +2085,9 @@ private sub hParseArgs( byval argc as integer, byval argv as zstring ptr ptr )
 
 	'' The embedded .xpm is only useful for the X11 gfxlib
 	select case as const (fbGetOption(FB_COMPOPT_TARGET))
-	case FB_COMPTARGET_LINUX, FB_COMPTARGET_FREEBSD, _
-	     FB_COMPTARGET_OPENBSD, FB_COMPTARGET_DARWIN, _
-	     FB_COMPTARGET_NETBSD
+	case FB_COMPTARGET_LINUX, FB_COMPTARGET_LINUX64, _
+	     FB_COMPTARGET_FREEBSD, FB_COMPTARGET_OPENBSD, _
+	     FB_COMPTARGET_NETBSD, FB_COMPTARGET_DARWIN
 
 	case else
 		if (len(fbc.xpm.srcfile) > 0) then
