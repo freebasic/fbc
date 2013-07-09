@@ -2072,7 +2072,8 @@ private sub hParseArgs( byval argc as integer, byval argv as zstring ptr ptr )
 
 	'' Resource scripts are only allowed for win32 & co,
 	select case as const (fbGetOption(FB_COMPOPT_TARGET))
-	case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN, FB_COMPTARGET_XBOX
+	case FB_COMPTARGET_WIN32, FB_COMPTARGET_WIN64, _
+	     FB_COMPTARGET_CYGWIN, FB_COMPTARGET_XBOX
 
 	case else
 		dim as FBCIOFILE ptr rc = listGetHead(@fbc.rcs)
