@@ -182,8 +182,9 @@ private sub hSetOutName( )
 	select case( fbGetOption( FB_COMPOPT_OUTTYPE ) )
 	case FB_OUTTYPE_EXECUTABLE
 		select case( fbGetOption( FB_COMPOPT_TARGET ) )
-		case FB_COMPTARGET_CYGWIN, FB_COMPTARGET_WIN32, _
-		     FB_COMPTARGET_DOS, FB_COMPTARGET_XBOX
+		case FB_COMPTARGET_DOS, FB_COMPTARGET_CYGWIN, _
+		     FB_COMPTARGET_WIN32, FB_COMPTARGET_WIN64, _
+		     FB_COMPTARGET_XBOX
 			'' Note: XBox target creates an .exe first,
 			'' then uses cxbe to turn it into an .xbe later
 			fbc.outname += ".exe"
