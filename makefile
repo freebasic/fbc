@@ -48,6 +48,7 @@
 #   CFLAGS           same for the rtlib and gfxlib2 build
 #   prefix           install/uninstall directory, default: /usr/local
 #   TARGET           GNU triplet for cross-compiling
+#   FBMULTILIB       "32", "64" or empty for cross-compiling using a gcc multilib toolchain
 #   FBC, CC, AR      fbc, gcc, ar programs (TARGET may be prefixed to CC/AR)
 #   V=1              to see full command lines
 #   ENABLE_STANDALONE=1    build source tree into self-contained FB installation
@@ -289,19 +290,32 @@ else
   bindir      := bin
   FBC_EXE     := bin/fbc$(ENABLE_SUFFIX)$(EXEEXT)
   FBCNEW_EXE  := bin/fbc$(ENABLE_SUFFIX)-new$(EXEEXT)
-  libfbobjdir    := src/rtlib/$(TARGET_PREFIX)obj
-  libfbmtobjdir  := src/rtlib/$(TARGET_PREFIX)objmt
-  libfbgfxobjdir := src/gfxlib2/$(TARGET_PREFIX)obj
-  libdir         := lib/$(TARGET_PREFIX)$(FB_NAME)$(ENABLE_SUFFIX)
+  libfbobjdir    := src/rtlib/$(TARGET_PREFIX)obj$(FBMULTILIB)
+  libfbmtobjdir  := src/rtlib/$(TARGET_PREFIX)objmt$(FBMULTILIB)
+  libfbgfxobjdir := src/gfxlib2/$(TARGET_PREFIX)obj$(FBMULTILIB)
+  libdir         := lib/$(TARGET_PREFIX)$(FB_NAME)$(ENABLE_SUFFIX)$(FBMULTILIB)
   PREFIX_FBC_EXE := $(prefix)/bin/fbc$(ENABLE_SUFFIX)$(EXEEXT)
   prefixbindir   := $(prefix)/bin
   prefixincdir   := $(prefix)/include/$(FB_NAME)
   prefixlibdir   := $(prefix)/lib/$(TARGET_PREFIX)$(FB_NAME)$(ENABLE_SUFFIX)
 endif
 
-ALLFBCFLAGS := -e -m fbc -w pedantic
-ALLFBLFLAGS := -e -m fbc -w pedantic
-ALLCFLAGS := -Wall -Werror-implicit-function-declaration
+# If cross-compiling, use -target
+ifdef TARGET
+  ALLFBCFLAGS += -target $(TARGET)
+  ALLFBLFLAGS += -target $(TARGET)
+endif
+ifndef ENABLE_STANDALONE
+  ifdef FBMULTILIB
+    ALLFBCFLAGS += -arch $(FBMULTILIB)
+    ALLFBLFLAGS += -arch $(FBMULTILIB)
+    ALLCFLAGS   += -m$(FBMULTILIB)
+  endif
+endif
+
+ALLFBCFLAGS += -e -m fbc -w pedantic
+ALLFBLFLAGS += -e -m fbc -w pedantic
+ALLCFLAGS += -Wall -Werror-implicit-function-declaration
 
 ifeq ($(TARGET_OS),xbox)
   ifeq ($(OPENXDK),)
@@ -323,12 +337,6 @@ ifeq ($(TARGET_OS),xbox)
 
   # -DENABLE_MT parts of rtlib XBox code aren't finished
   DISABLE_MT := YesPlease
-endif
-
-# If cross-compiling, use -target
-ifdef TARGET
-  ALLFBCFLAGS += -target $(TARGET)
-  ALLFBLFLAGS += -target $(TARGET)
 endif
 
 ifneq ($(filter cygwin win32,$(TARGET_OS)),)
@@ -358,8 +366,26 @@ FBC_ASM := $(patsubst %.bas,%.asm,$(FBC_BAS))
 FBC_C   := $(patsubst %.bas,%.c,$(FBC_BAS))
 FBC_BAS := $(patsubst $(srcdir)/compiler/%.bas,$(fbcobjdir)/%.o,$(FBC_BAS))
 
+# Determine rtlib/gfxlib2 arch-specific directory
+# It depends on the target's arch, but also the multilib selection, if any
+ifeq ($(TARGET_ARCH),x86_64)
+  ifeq ($(FBMULTILIB),32)
+    # Cross-compiling from 64bit to 32bit using -m32
+    RTLIB_ARCHDIR := x86
+  endif
+endif
+ifeq ($(TARGET_ARCH),x86)
+  ifeq ($(FBMULTILIB),64)
+    # Cross-compiling from 32bit to 64bit using -m64
+    RTLIB_ARCHDIR := x86_64
+  endif
+endif
+ifndef RTLIB_ARCHDIR
+  RTLIB_ARCHDIR := $(TARGET_ARCH)
+endif
+
 # rtlib/gfxlib2 headers and modules
-RTLIB_DIRS := $(srcdir)/rtlib $(srcdir)/rtlib/$(TARGET_OS) $(srcdir)/rtlib/$(TARGET_ARCH)
+RTLIB_DIRS := $(srcdir)/rtlib $(srcdir)/rtlib/$(TARGET_OS) $(srcdir)/rtlib/$(RTLIB_ARCHDIR)
 ifeq ($(TARGET_OS),cygwin)
   RTLIB_DIRS += $(srcdir)/rtlib/win32
 endif
