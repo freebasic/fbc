@@ -790,7 +790,7 @@ private function hLinkFiles( ) as integer
 
 		close #f
 
-	case FB_COMPTARGET_CYGWIN, FB_COMPTARGET_WIN32
+	case FB_COMPTARGET_CYGWIN, FB_COMPTARGET_WIN32, FB_COMPTARGET_WIN64
 		if( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB ) then
 			'' Create the .dll.a import library from the generated .def
 			if (makeImpLib(dllname, deffile) = FALSE) then
