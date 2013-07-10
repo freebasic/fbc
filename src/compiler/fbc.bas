@@ -52,7 +52,8 @@ type FBCCTX
 	lastmodule			as FBCIOFILE ptr '' module for last input file, so the default .o name can be overwritten with a following -o filename
 	objfile				as string '' -o filename waiting for next input file
 	backend				as integer  '' FB_BACKEND_* given via -gen, or -1 if -gen wasn't given
-	cputype				as integer  '' FB_CPUTYPE_* given via -arch, or -1 if -arch wasn't given
+	bits				as integer  '' -1 (not specified), 32, 64
+	arch				as zstring * FB_MAXNAMELEN+1  '' Argument given to -arch, for checking when the backend is known
 
 	emitasmonly			as integer  '' write out FB backend output file only (.asm/.c)
 	keepasm				as integer  '' preserve FB backend output file (.asm/.c)
@@ -143,7 +144,7 @@ private sub fbcInit( )
 	const FBC_INITFILES = 64
 
 	fbc.backend = -1
-	fbc.cputype = -1
+	fbc.bits = -1
 
 	listInit( @fbc.modules, FBC_INITFILES, sizeof(FBCIOFILE) )
 	listInit( @fbc.rcs, FBC_INITFILES\4, sizeof(FBCIOFILE) )
@@ -1120,7 +1121,9 @@ private function hParseTargetArch _
 end function
 
 enum
-	OPT_A = 0
+	OPT_32 = 0
+	OPT_64
+	OPT_A
 	OPT_ARCH
 	OPT_ASM
 	OPT_B
@@ -1180,6 +1183,8 @@ end enum
 
 dim shared as integer option_takes_argument(0 to (OPT__COUNT - 1)) = _
 { _
+	FALSE, _ '' OPT_32
+	FALSE, _ '' OPT_64
 	TRUE , _ '' OPT_A
 	TRUE , _ '' OPT_ARCH
 	TRUE , _ '' OPT_ASM
@@ -1239,20 +1244,17 @@ dim shared as integer option_takes_argument(0 to (OPT__COUNT - 1)) = _
 
 private sub handleOpt(byval optid as integer, byref arg as string)
 	select case as const (optid)
+	case OPT_32
+		fbc.bits = 32
+
+	case OPT_64
+		fbc.bits = 64
+
 	case OPT_A
 		fbcAddObj( arg )
 
 	case OPT_ARCH
-		fbc.cputype = fbIdentifyFbcArch( arg )
-		if( fbc.cputype < 0 ) then
-			'' Check some extra arguments not handled by the above
-			select case( arg )
-			case "x86-64", "amd64"
-				fbc.cputype = FB_CPUTYPE_X86_64
-			case else
-				hFatalInvalidOption( arg )
-			end select
-		end if
+		fbc.arch = arg
 
 	case OPT_ASM
 		select case( arg )
@@ -1631,6 +1633,12 @@ private function parseOption(byval opt as zstring ptr) as integer
 	#endmacro
 
 	select case as const (cptr(ubyte ptr, opt)[0])
+	case asc("3")
+		CHECK("32", OPT_32)
+
+	case asc("6")
+		CHECK("64", OPT_64)
+
 	case asc("a")
 		ONECHAR(OPT_A)
 		CHECK("arch", OPT_ARCH)
@@ -1926,9 +1934,6 @@ private sub parseArgsFromFile(byref filename as string)
 end sub
 
 private sub hParseArgs( byval argc as integer, byval argv as zstring ptr ptr )
-	dim as integer cputype = any, genericcputype = any
-	dim as integer switch_target = any, errmsg = any
-
 	fbc.optid = -1
 
 	'' Note: ignoring argv[0], assuming it's the path used to run fbc
@@ -1961,6 +1966,37 @@ private sub hParseArgs( byval argc as integer, byval argv as zstring ptr ptr )
 		end if
 	end if
 
+	'' Check the -32/-64 options
+	''
+	'' If target is 32bit, but -64 was given, then switch to 64bit target,
+	'' and vice-versa, but without changing the fbc.targetprefix. Instead,
+	'' we will rely only on "gcc -m32/-m64" and "as --32/--64" to work.
+	if( fbc.bits >= 0 ) then
+		if( (fbc.bits = 64) <> fbIsTarget64bit( ) ) then
+			#ifndef ENABLE_STANDALONE
+				'' Since -32/-64 caused us to switch away from the target's default arch,
+				'' add the multilib suffix, so the target's multilib-specific libdir will
+				'' be used (like gcc does with -m32/-m64).
+				if( fbc.bits = 32 ) then
+					fbc.multilibsuffix = "32"
+				else
+					fbc.multilibsuffix = "64"
+				end if
+			#endif
+
+			if( fbGetOppositeBitsTarget( ) < 0 ) then
+				'' Selected target doesn't have a 64bit counterpart (e.g. dos)
+				'' Note: currently all our 64bit targets have a 32bit version,
+				'' so no need to worry about lack of 32bit counterpart.
+				errReportEx( FB_ERRMSG_TARGETDOESNOTSUPPORT64, "", -1 )
+				fbcEnd( 1 )
+			end if
+
+			'' Switch target
+			fbSetOption( FB_COMPOPT_TARGET, fbGetOppositeBitsTarget( ) )
+		end if
+	end if
+
 	'' -gen given?
 	if( fbc.backend >= 0 ) then
 		'' non-x86 with -gen gas is not possible
@@ -1975,69 +2011,38 @@ private sub hParseArgs( byval argc as integer, byval argv as zstring ptr ptr )
 		fbSetOption( FB_COMPOPT_BACKEND, fbc.backend )
 	end if
 
-	''
-	'' Check the -arch option
-	''
-	cputype = fbc.cputype
+	'' -arch given?
+	if( len( fbc.arch ) > 0 ) then
+		dim as integer cputype
 
-	'' "-arch native" given? Re-map to real cputype
-	if( cputype = FB_CPUTYPE_NATIVE ) then
-		#ifdef __FB_64BIT__
-			cputype = FB_CPUTYPE_64
-		#else
-			cputype = (fb_CpuDetect( ) shr 28)
-
-			'' Not 386..686?
-			if( (cputype < 3) or (cputype > 6) ) then
-				'' Don't change the FB compiler's default - since it
-				'' defaults to the host
-				cputype = -1
-			end if
-		#endif
-	end if
-
-	'' -arch given (or identified via -arch native)?
-	if( cputype >= 0 ) then
-		'' If target is 32bit, but -arch x86_64 was given, then switch
-		'' to 64bit target, and vice-versa, but without changing the
-		'' fbc.targetprefix. Instead, we will rely only on
-		'' "gcc -m32/-m64" and "as --32/--64" to work.
-
-		select case( cputype )
-		case FB_CPUTYPE_X86_64, FB_CPUTYPE_64
-			genericcputype = FB_CPUTYPE_64
-			switch_target = (not fbIsTarget64bit( ))
-			errmsg = FB_ERRMSG_64ARCHWITH32TARGET
-		case else
-			genericcputype = FB_CPUTYPE_32
-			switch_target = fbIsTarget64bit( )
-			errmsg = FB_ERRMSG_32ARCHWITH64TARGET
-		end select
-
-		if( switch_target ) then
-			#ifndef ENABLE_STANDALONE
-				'' Since -arch caused us to switch away from the
-				'' target's default arch, add the multilib suffix,
-				'' so the target's multilib-specific library directory
-				'' will be used (like gcc does with -m32/-m64).
-				if( genericcputype = FB_CPUTYPE_32 ) then
-					fbc.multilibsuffix = "32"
-				else
-					fbc.multilibsuffix = "64"
-				end if
+		select case( fbc.arch )
+		case "native"
+			#ifdef __FB_64BIT__
+				cputype = FB_CPUTYPE_X86_64
+			#else
+				select case( fb_CpuDetect( ) shr 28 )
+				case 3 : cputype = FB_CPUTYPE_386
+				case 4 : cputype = FB_CPUTYPE_486
+				case 5 : cputype = FB_CPUTYPE_586
+				case 6 : cputype = FB_CPUTYPE_686
+				case else
+					'' Use compiler's default (it defaults
+					'' to the host, so it's a good guess)
+					cputype = -1
+				end select
 			#endif
 
-			if( fbGetOppositeBitsTarget( ) < 0 ) then
-				errReportEx( errmsg, "", -1 )
-				fbcEnd( 1 )
+		case "x86-64", "amd64"
+			cputype = FB_CPUTYPE_X86_64
+
+		case else
+			cputype = fbIdentifyFbcArch( arg )
+			if( cputype < 0 ) then
+				hFatalInvalidOption( "-arch " + arg )
 			end if
+		end select
 
-			'' Switch target
-			fbSetOption( FB_COMPOPT_TARGET, fbGetOppositeBitsTarget( ) )
-		end if
-
-		'' If a specific arch was given, overwrite the default
-		if( cputype <> genericcputype ) then
+		if( cputype >= 0 ) then
 			fbSetOption( FB_COMPOPT_CPUTYPE, cputype )
 		end if
 	end if
@@ -2533,7 +2538,7 @@ private function hCompileStage2Module( byval module as FBCIOFILE ptr ) as intege
 			ln += "-m32 "
 		end if
 
-		if( fbc.cputype = FB_CPUTYPE_NATIVE ) then
+		if( fbc.arch = "native" ) then
 			ln += "-march=native "
 		else
 			ln += "-march=" + *fbGetGccArch( ) + " "
@@ -2983,6 +2988,7 @@ private sub hPrintOptions( )
 	print "  *.xpm = icon resource (*nix/*bsd)"
 	print "options:"
 	print "  @<file>          Read more command line arguments from a file"
+	print "  -32, -64         Compile for 32bit/64bit"
 	print "  -a <file>        Treat file as .o/.a input file"
 	print "  -arch <type>     Set target architecture (default: 486)"
 	print "  -asm att|intel   Set asm format (-gen gcc)"

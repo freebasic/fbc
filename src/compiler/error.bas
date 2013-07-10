@@ -160,8 +160,7 @@ declare function hMakeParamDesc _
 		@"Macro text too long", _
 		@"Invalid command-line option", _
 		@"GAS ASM backend selected for non-x86 target", _
-		@"32bit architecture selected for 64bit target", _
-		@"64bit architecture selected for 32bit target", _
+		@"64bit selected, but target does not support it", _
 		@"Var-len strings cannot be initialized", _
 		@"Recursive TYPE or UNION not allowed", _
 		@"Recursive DEFINE not allowed", _
