@@ -537,14 +537,10 @@ private function rtlX86CpuCheck( ) as integer
 	end if
 
 	select case( family )
-	case FB_CPUTYPE_386
-		familystr = "386"
-	case FB_CPUTYPE_486
-		familystr = "486"
-	case FB_CPUTYPE_586
-		familystr = "586"
-	case else '' FB_CPUTYPE_686
-		familystr = "686"
+	case FB_CPUTYPE_386 : familystr = "386" : family = 3
+	case FB_CPUTYPE_486 : familystr = "486" : family = 4
+	case FB_CPUTYPE_586 : familystr = "586" : family = 5
+	case else           : familystr = "686" : family = 6
 	end select
 
 	''
