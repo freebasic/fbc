@@ -1963,10 +1963,10 @@ private sub hParseArgs( byval argc as integer, byval argv as zstring ptr ptr )
 
 	'' -gen given?
 	if( fbc.backend >= 0 ) then
-		'' 64bit target? -gen gas not supported
-		if( fbIsTarget64bit( ) ) then
+		'' non-x86 with -gen gas is not possible
+		if( fbIsTargetX86( ) = FALSE ) then
 			if( fbc.backend = FB_BACKEND_GAS ) then
-				errReportEx( FB_ERRMSG_ASMBACKEND64, "", -1 )
+				errReportEx( FB_ERRMSG_ASMBACKENDFORNONX86, fbGetTargetId( ), -1 )
 				fbcEnd( 1 )
 			end if
 		end if

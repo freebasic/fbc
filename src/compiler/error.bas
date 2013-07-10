@@ -159,7 +159,7 @@ declare function hMakeParamDesc _
 		@"Too many parameters", _
 		@"Macro text too long", _
 		@"Invalid command-line option", _
-		@"GAS ASM backend selected for 64bit target (not supported)", _
+		@"GAS ASM backend selected for non-x86 target", _
 		@"32bit architecture selected for 64bit target", _
 		@"64bit architecture selected for 32bit target", _
 		@"Var-len strings cannot be initialized", _
