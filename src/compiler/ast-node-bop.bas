@@ -1403,9 +1403,9 @@ function astNewBOP _
 
 	elseif( astIsCONST( l ) and ldtype = rdtype ) then
 		select case op
-			case AST_OP_ADD, AST_OP_MUL, _
-			     AST_OP_AND, AST_OP_OR, AST_OP_XOR, AST_OP_EQV, _
-			     AST_OP_EQ, AST_OP_NE
+		case AST_OP_ADD, AST_OP_MUL, _
+		     AST_OP_AND, AST_OP_OR, AST_OP_XOR, AST_OP_EQV, _
+		     AST_OP_EQ, AST_OP_NE
 			'' ? OP c = c OP ?
 			astSwap( r, l )
 
