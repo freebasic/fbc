@@ -2169,6 +2169,13 @@ private sub fbcInit2( )
 			end if
 		#endif
 		s += ", " + *fbGetFbcArch( )
+		s += ", "
+		if( fbIsTarget64Bit( ) ) then
+			s += "64"
+		else
+			s += "32"
+		end if
+		s += "bit"
 		print "target:", s
 	end if
 
