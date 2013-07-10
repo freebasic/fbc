@@ -493,17 +493,17 @@ private function hLinkFiles( ) as integer
 
 	select case as const fbGetOption( FB_COMPOPT_TARGET )
 	case FB_COMPTARGET_WIN32
-		ldcline += " -m i386pe"
+		ldcline += "-m i386pe "
 	case FB_COMPTARGET_WIN64
-		ldcline += " -m i386pep"
+		ldcline += "-m i386pep "
 	case FB_COMPTARGET_LINUX
-		ldcline += " -m elf_i386"
+		ldcline += "-m elf_i386 "
 	case FB_COMPTARGET_LINUX64
-		ldcline += " -m elf_x86_64"
+		ldcline += "-m elf_x86_64 "
 	end select
 
 	'' Set executable name
-	ldcline = "-o " + QUOTE + fbc.outname + QUOTE
+	ldcline += "-o " + QUOTE + fbc.outname + QUOTE
 
 	select case as const fbGetOption( FB_COMPOPT_TARGET )
 	case FB_COMPTARGET_CYGWIN, FB_COMPTARGET_WIN32, FB_COMPTARGET_WIN64
