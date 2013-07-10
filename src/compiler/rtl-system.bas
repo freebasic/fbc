@@ -617,8 +617,9 @@ function rtlInitApp _
 
 	if( env.clopt.backend = FB_BACKEND_GAS ) then
 		'' call __monstartup() on win32/cygwin if profiling
-		select case env.clopt.target
-		case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN
+		select case( env.clopt.target )
+		case FB_COMPTARGET_WIN32, FB_COMPTARGET_WIN64, _
+		     FB_COMPTARGET_CYGWIN
 			if( env.clopt.profile ) then
 				'' __monstartup()
 				rtlProfileCall_monstartup( )
