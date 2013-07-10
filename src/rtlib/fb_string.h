@@ -5,7 +5,11 @@
  * This flag is stored in struct _FBSTRING::len so it's absolutely required
  * to use FB_STRSIZE(s) to query a strings length.
  */
-#define FB_TEMPSTRBIT 0x80000000L
+#ifdef HOST_64BIT
+	#define FB_TEMPSTRBIT 0x8000000000000000ll
+#else
+	#define FB_TEMPSTRBIT 0x80000000
+#endif
 
 /** Returns if the string is a temporary string.
  */

@@ -17,21 +17,10 @@ o 64bit
     disallow stdcall/pascal and use cdecl as default for everything.
 
   - Adjust rtlib
-    - Replace all "int" by "fbint", except where it really wants to use 32bit int (DWORD)
     - %d/%i printf format specifiers need adjustment for 64bit fbint
-    - Replace all size_t by fbint
-    - Replace all unsigned [int] by fbuint
-    - Replace fb_off_t by long long?
     - How to handle functions using long? (e.g. fb_CVL())
-    - When done, search for remaining "int", and adjust the src/compiler/rtl-* modules to use
-      FB_DATATYPE_LONG in these cases
-    - Colors could stay 32bit ints
-    - what about ports like fb_hIn() parameter?
     - Careful about any enum parameters (e.g. FB_FILE_ENCOD on Open functions),
       should be changed to fbint too perhaps to prevent them from being 32bit
-    - FBSTRING, FBARRAY, FB_DATADESC, must be adjusted too (support arrays/strings > 2 GiB)
-    - should rename rtlib functions to use int8/int16/int32/int64 instead of byte/short/int[eger]/long[int]
-      (e.g. fb_PrintInteger -> fb_PrintInt32, fb_PrintLongint -> fb_PrintInt64)
     - also, get#/put# should just always use the fb_FileGet/Put*Large* versions,
       with the 64bit parameter, instead of the old fb_FileGet/Put* versions,
       because behind the scenes they map to the same function anyways already.
