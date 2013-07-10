@@ -627,10 +627,11 @@ function rtlInitApp _
 		end select
 
 		'' call default CRT0 constructors (only required for Win32)
-		if( env.clopt.target = FB_COMPTARGET_WIN32 ) then
+		select case( env.clopt.target )
+		case FB_COMPTARGET_WIN32, FB_COMPTARGET_WIN64
 			'' __main()
 			astAdd( astNewCALL( PROCLOOKUP( INITCRTCTOR ), NULL ) )
-		end if
+		end select
 	end if
 
 	'' fb_Init( argc, argv, lang )
