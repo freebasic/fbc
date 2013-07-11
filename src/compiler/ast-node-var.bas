@@ -21,7 +21,11 @@ function astNewVAR _
 			subtype = NULL
 		case FB_SYMBCLASS_PROC
 			dtype = FB_DATATYPE_FUNCTION
-			subtype = sym
+			if( symbGetIsFuncPtr( sym ) ) then
+				subtype = sym
+			else
+				subtype = symbAddProcPtrFromFunction( sym )
+			end if
 		case else
 			dtype = symbGetFullType( sym )
 			subtype = symbGetSubtype( sym )
