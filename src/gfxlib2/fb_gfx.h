@@ -501,7 +501,7 @@ extern void fb_hSoftCursorUnput(int x, int y);
 extern void fb_hSoftCursorPaletteChanged(void);
 extern int fb_hColorDistance(int index, int r, int g, int b);
 extern void *fb_hPixelSetAlpha4(void *dest, int color, size_t size);
-extern int fb_hGetWindowHandle(void);
+extern ssize_t fb_hGetWindowHandle(void);
 
 
 /* Public API */
@@ -541,7 +541,7 @@ extern FBCALL void fb_GfxSetWindowTitle(FBSTRING *title);
 extern FBCALL int fb_GfxGetJoystick(int id, int *buttons, float *a1, float *a2, float *a3, float *a4, float *a5, float *a6, float *a7, float *a8);
 extern FBCALL int fb_GfxEvent(EVENT *event);
 extern FBCALL void fb_GfxControl_s(int what, FBSTRING *param);
-extern FBCALL void fb_GfxControl_i(int what, int *param1, int *param2, int *param3, int *param4);
+extern FBCALL void fb_GfxControl_i(int what, ssize_t *param1, ssize_t *param2, ssize_t *param3, ssize_t *param4);
 extern FBCALL int fb_GfxBload(FBSTRING *filename, void *dest, void *pal);
 extern FBCALL int fb_GfxBloadQB(FBSTRING *filename, void *dest, void *pal);
 extern FBCALL int fb_GfxBsave(FBSTRING *filename, void *src, unsigned int size, void *pal);

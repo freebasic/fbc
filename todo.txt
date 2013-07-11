@@ -17,7 +17,6 @@ o 64bit
     disallow stdcall/pascal and use cdecl as default for everything.
 
   - Adjust rtlib
-    - %d/%i printf format specifiers need adjustment for 64bit fbint
     - How to handle functions using long? (e.g. fb_CVL())
     - Careful about any enum parameters (e.g. FB_FILE_ENCOD on Open functions),
       should be changed to fbint too perhaps to prevent them from being 32bit

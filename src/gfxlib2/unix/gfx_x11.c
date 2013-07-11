@@ -847,14 +847,14 @@ int fb_hX11ScreenInfo(int *width, int *height, int *depth, int *refresh)
 	return 0;
 }
 
-int fb_hGetWindowHandle(void)
+ssize_t fb_hGetWindowHandle(void)
 {
 	return (fb_x11.display ? (int)fb_x11.window : 0);
 }
 
 #else
 
-int fb_hGetWindowHandle(void)
+ssize_t fb_hGetWindowHandle(void)
 {
 	return 0;
 }

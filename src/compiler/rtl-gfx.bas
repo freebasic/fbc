@@ -933,10 +933,10 @@ declare function hPorts_cb _
 		/' sub screencontrol overload _
 			( _
 				byval what as long, _
-				byref param1 as long = &h80000000, _
-				byref param2 as long = &h80000000, _
-				byref param3 as long = &h80000000, _
-				byref param4 as long = &h80000000 _
+				byref param1 as integer = &h80000000, _
+				byref param2 as integer = &h80000000, _
+				byref param3 as integer = &h80000000, _
+				byref param4 as integer = &h80000000 _
 			) '/ _
 		( _
 			@"screencontrol", @"fb_GfxControl_i", _
@@ -945,10 +945,10 @@ declare function hPorts_cb _
 			5, _
 			{ _
 				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYREF, TRUE, &h80000000 ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYREF, TRUE, &h80000000 ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYREF, TRUE, &h80000000 ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYREF, TRUE, &h80000000 ) _
+				( FB_DATATYPE_INTEGER, FB_PARAMMODE_BYREF, TRUE, &h80000000 ), _
+				( FB_DATATYPE_INTEGER, FB_PARAMMODE_BYREF, TRUE, &h80000000 ), _
+				( FB_DATATYPE_INTEGER, FB_PARAMMODE_BYREF, TRUE, &h80000000 ), _
+				( FB_DATATYPE_INTEGER, FB_PARAMMODE_BYREF, TRUE, &h80000000 ) _
 	 		} _
 		), _
 		/' function screenglproc( byval proc as zstring ptr ) as any ptr '/ _
