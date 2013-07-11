@@ -29,25 +29,9 @@ sub testRvalueByref cdecl( )
 	CU_ASSERT( f4( @f3 )( ) = 123 )
 end sub
 
-sub sub1( )
-end sub
-
-sub sub2( )
-end sub
-
-sub testSubtract cdecl( )
-	CU_ASSERT( (@sub1 - @sub2) <> 0 )
-	CU_ASSERT( (@sub2 - @sub1) <> 0 )
-
-	dim as sub( ) p1 = @sub1, p2 = @sub2
-	CU_ASSERT( (@sub1 - @sub2) = (p1 - p2) )
-	CU_ASSERT( (@sub2 - @sub1) = (p2 - p1) )
-end sub
-
 private sub ctor () constructor
 	fbcu.add_suite( "tests/pointers/funcptr-expr" )
 	fbcu.add_test( "@proc passed to BYREF param", @testRvalueByref )
-	fbcu.add_test( "procptr expr/var subtraction", @testSubtract )
 end sub
 
 end namespace
