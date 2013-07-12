@@ -553,8 +553,7 @@ private sub hMangleVariable( byval sym as FBSYMBOL ptr )
 		end if
 
 		select case( env.clopt.target )
-		case FB_COMPTARGET_WIN32, FB_COMPTARGET_WIN64, _
-		     FB_COMPTARGET_CYGWIN
+		case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN
 			'' Win32 import? Don't add the prefix under the C backend; it will use
 			'' __declspec(dllimport) instead in order to let gcc do it.
 			if( (env.clopt.backend = FB_BACKEND_GAS) and symbIsImport( sym ) ) then

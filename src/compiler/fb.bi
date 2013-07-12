@@ -129,6 +129,8 @@ enum FB_CPUTYPE
 	FB_CPUTYPE_PENTIUM4
 	FB_CPUTYPE_PENTIUMSSE3
 	FB_CPUTYPE_X86_64
+	FB_CPUTYPE_32  '' just to identify -arch 32/64, as a shortcut for the default arch for 32/64bit
+	FB_CPUTYPE_64
 	FB_CPUTYPE_NATIVE
 	FB_CPUTYPE__COUNT
 end enum
@@ -170,10 +172,8 @@ const FB_DEFAULT_OUTTYPE    = FB_OUTTYPE_EXECUTABLE
 '' target platform
 enum FB_COMPTARGET
 	FB_COMPTARGET_WIN32
-	FB_COMPTARGET_WIN64
 	FB_COMPTARGET_CYGWIN
 	FB_COMPTARGET_LINUX
-	FB_COMPTARGET_LINUX64
 	FB_COMPTARGET_DOS
 	FB_COMPTARGET_XBOX
 	FB_COMPTARGET_FREEBSD
@@ -327,6 +327,17 @@ const FB_DEFAULT_TARGET     = FB_COMPTARGET_NETBSD
 #error Unsupported host
 #endif
 
+#ifdef __FB_64BIT__
+	const FB_DEFAULT_CPUTYPE = FB_CPUTYPE_X86_64
+	const FB_DEFAULT_BACKEND = FB_BACKEND_GCC
+#else
+	const FB_DEFAULT_CPUTYPE = FB_CPUTYPE_486
+	const FB_DEFAULT_BACKEND = FB_BACKEND_GAS
+#endif
+
+const FB_DEFAULT_CPUTYPE32 = FB_CPUTYPE_486
+const FB_DEFAULT_CPUTYPE64 = FB_CPUTYPE_X86_64
+
 '' info section
 const FB_INFOSEC_NAME = "fbctinf"
 const FB_INFOSEC_OBJNAME = "__fb_ct.inf"
@@ -367,11 +378,10 @@ declare sub fbPragmaOnce()
 declare sub fbIncludeFile(byval filename as zstring ptr, byval isonce as integer)
 
 declare function fbGetTargetId( ) as zstring ptr
-declare function fbIsTarget64bit( ) as integer
-declare function fbGetOppositeBitsTarget( ) as integer
 declare function fbGetGccArch( ) as zstring ptr
 declare function fbGetFbcArch( ) as zstring ptr
-declare function fbIsTargetX86( ) as integer
+declare function fbCpuTypeIs64bit( ) as integer
+declare function fbCpuTypeIsX86( ) as integer
 declare function fbIdentifyFbcArch( byref fbcarch as string ) as integer
 
 declare function fbGetEntryPoint _

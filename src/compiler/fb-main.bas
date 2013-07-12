@@ -143,12 +143,11 @@ sub fbMainBegin( )
 
 	'' Generate a DllMain() or global ctor that calls main()/modlevel() in DLLs/shared libs
 	if( env.outf.ismain and (env.clopt.outtype = FB_OUTTYPE_DYNAMICLIB) ) then
-		select case( env.clopt.target )
-		case FB_COMPTARGET_WIN32, FB_COMPTARGET_WIN64
+		if( env.clopt.target = FB_COMPTARGET_WIN32 ) then
 			hBuildDllMainWin32( )
-		case else
+		else
 			hBuildDllMainCtor( )
-		end select
+		end if
 	end if
 end sub
 

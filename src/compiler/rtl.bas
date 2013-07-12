@@ -128,7 +128,7 @@ sub rtlAddIntrinsicProcs _
 		end if
 
 		if( procdef->options and FB_RTL_OPT_X86ONLY ) then
-			doadd and= fbIsTargetX86( )
+			doadd and= fbCpuTypeIsX86( )
 		end if
 
 		if( doadd ) then

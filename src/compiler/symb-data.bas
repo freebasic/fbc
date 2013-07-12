@@ -55,7 +55,7 @@ dim shared symb_dtypeTB( 0 to FB_DATATYPES-1 ) as SYMB_DATATYPE => _
 '' or unsigned + signed, we need to have this kind of rule to decide)
 
 sub symbDataInit( )
-	if( env.target.options and FB_TARGETOPT_64BIT ) then
+	if( fbCpuTypeIs64bit( ) ) then
 		'' 64bit
 		symb_dtypeTB(FB_DATATYPE_INTEGER ).size = 8
 		symb_dtypeTB(FB_DATATYPE_UINT    ).size = 8

@@ -343,7 +343,7 @@ sub symbDefineInit _
 	end if
 
 	'' 64bit?
-	if( env.target.options and FB_TARGETOPT_64BIT ) then
+	if( fbCpuTypeIs64bit( ) ) then
 		symbAddDefine( @"__FB_64BIT__", NULL, 0 )
 	end if
 

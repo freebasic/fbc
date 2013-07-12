@@ -110,22 +110,9 @@ dim shared as FBTARGET targetinfo(0 to FB_COMPTARGETS-1) = _
 		FB_DATATYPE_USHORT, _   '' wchar
 		FB_FUNCMODE_STDCALL, _  '' fbcall
 		FB_FUNCMODE_STDCALL, _  '' stdcall
-		FB_COMPTARGET_WIN64, _  '' "opposite" bits target
 		0	or FB_TARGETOPT_UNDERSCORE _
 			or FB_TARGETOPT_EXPORT _
 			or FB_TARGETOPT_RETURNINREGS _
-	), _
-	( _
-		@"win64", _
-		FB_DATATYPE_UINT, _
-		FB_DATATYPE_USHORT, _
-		FB_FUNCMODE_STDCALL, _
-		FB_FUNCMODE_STDCALL, _
-		FB_COMPTARGET_WIN32, _
-		0	or FB_TARGETOPT_UNDERSCORE _
-			or FB_TARGETOPT_EXPORT _
-			or FB_TARGETOPT_RETURNINREGS _
-			or FB_TARGETOPT_64BIT _
 	), _
 	( _
 		@"cygwin", _
@@ -133,7 +120,6 @@ dim shared as FBTARGET targetinfo(0 to FB_COMPTARGETS-1) = _
 		FB_DATATYPE_USHORT, _
 		FB_FUNCMODE_STDCALL, _
 		FB_FUNCMODE_STDCALL, _
-		-1, _
 		0	or FB_TARGETOPT_UNIX _
 			or FB_TARGETOPT_UNDERSCORE _
 			or FB_TARGETOPT_EXPORT _
@@ -145,20 +131,8 @@ dim shared as FBTARGET targetinfo(0 to FB_COMPTARGETS-1) = _
 		FB_DATATYPE_UINT, _
 		FB_FUNCMODE_CDECL, _
 		FB_FUNCMODE_STDCALL_MS, _
-		FB_COMPTARGET_LINUX64, _
 		0	or FB_TARGETOPT_UNIX _
 			or FB_TARGETOPT_CALLEEPOPSHIDDENPTR _
-	), _
-	( _
-		@"linux64", _
-		FB_DATATYPE_UINT, _
-		FB_DATATYPE_UINT, _
-		FB_FUNCMODE_CDECL, _
-		FB_FUNCMODE_STDCALL_MS, _
-		FB_COMPTARGET_LINUX, _
-		0	or FB_TARGETOPT_UNIX _
-			or FB_TARGETOPT_CALLEEPOPSHIDDENPTR _
-			or FB_TARGETOPT_64BIT _
 	), _
 	( _
 		@"dos", _
@@ -166,7 +140,6 @@ dim shared as FBTARGET targetinfo(0 to FB_COMPTARGETS-1) = _
 		FB_DATATYPE_UBYTE, _
 		FB_FUNCMODE_CDECL, _
 		FB_FUNCMODE_STDCALL_MS, _
-		-1, _
 		0	or FB_TARGETOPT_UNDERSCORE _
 			or FB_TARGETOPT_CALLEEPOPSHIDDENPTR _
 	), _
@@ -176,7 +149,6 @@ dim shared as FBTARGET targetinfo(0 to FB_COMPTARGETS-1) = _
 		FB_DATATYPE_UINT, _
 		FB_FUNCMODE_STDCALL, _
 		FB_FUNCMODE_STDCALL, _
-		-1, _
 		0	or FB_TARGETOPT_UNDERSCORE _
 			or FB_TARGETOPT_RETURNINREGS _
 	), _
@@ -186,7 +158,6 @@ dim shared as FBTARGET targetinfo(0 to FB_COMPTARGETS-1) = _
 		FB_DATATYPE_UINT, _
 		FB_FUNCMODE_CDECL, _
 		FB_FUNCMODE_STDCALL_MS, _
-		-1, _
 		0	or FB_TARGETOPT_UNIX _
 			or FB_TARGETOPT_CALLEEPOPSHIDDENPTR _
 			or FB_TARGETOPT_RETURNINREGS _
@@ -197,7 +168,6 @@ dim shared as FBTARGET targetinfo(0 to FB_COMPTARGETS-1) = _
 		FB_DATATYPE_UINT, _
 		FB_FUNCMODE_CDECL, _
 		FB_FUNCMODE_STDCALL_MS, _
-		-1, _
 		0	or FB_TARGETOPT_UNIX _
 			or FB_TARGETOPT_CALLEEPOPSHIDDENPTR _
 			or FB_TARGETOPT_RETURNINREGS _
@@ -208,7 +178,6 @@ dim shared as FBTARGET targetinfo(0 to FB_COMPTARGETS-1) = _
 		FB_DATATYPE_UINT, _
 		FB_FUNCMODE_CDECL, _
 		FB_FUNCMODE_STDCALL_MS, _
-		-1, _
 		0	or FB_TARGETOPT_UNIX _
 			or FB_TARGETOPT_CALLEEPOPSHIDDENPTR _
 			or FB_TARGETOPT_RETURNINREGS _
@@ -219,7 +188,6 @@ dim shared as FBTARGET targetinfo(0 to FB_COMPTARGETS-1) = _
 		FB_DATATYPE_UINT, _
 		FB_FUNCMODE_CDECL, _
 		FB_FUNCMODE_STDCALL_MS, _
-		-1, _
 		0	or FB_TARGETOPT_UNIX _
 			or FB_TARGETOPT_CALLEEPOPSHIDDENPTR _
 			or FB_TARGETOPT_RETURNINREGS _
@@ -227,28 +195,31 @@ dim shared as FBTARGET targetinfo(0 to FB_COMPTARGETS-1) = _
 }
 
 type FBCPUTYPEINFO
-	gccarch		as zstring ptr  '' gcc -mtune argument (used for -gen gcc)
+	gccarch		as zstring ptr  '' gcc -march argument (used for -gen gcc)
 	fbcarch		as zstring ptr  '' fbc -arch argument
 	is_x86		as integer
+	bits		as integer
 end type
 
 dim shared as FBCPUTYPEINFO cputypeinfo(0 to FB_CPUTYPE__COUNT-1) = _
 { _
-	( @"i386"       , @"386"          , TRUE  ), _ '' FB_CPUTYPE_386
-	( @"i486"       , @"486"          , TRUE  ), _ '' FB_CPUTYPE_486
-	( @"i586"       , @"586"          , TRUE  ), _ '' FB_CPUTYPE_586
-	( @"i686"       , @"686"          , TRUE  ), _ '' FB_CPUTYPE_686
-	( @"athlon"     , @"athlon"       , TRUE  ), _ '' FB_CPUTYPE_ATHLON
-	( @"athlon-xp"  , @"athlon-xp"    , TRUE  ), _ '' FB_CPUTYPE_ATHLONXP
-	( @"athlon-fx"  , @"athlon-fx"    , TRUE  ), _ '' FB_CPUTYPE_ATHLONFX
-	( @"k8-sse3"    , @"k8-sse3"      , TRUE  ), _ '' FB_CPUTYPE_ATHLONSSE3
-	( @"pentium-mmx", @"pentium-mmx"  , TRUE  ), _ '' FB_CPUTYPE_PENTIUMMMX
-	( @"pentium2"   , @"pentium2"     , TRUE  ), _ '' FB_CPUTYPE_PENTIUM2
-	( @"pentium3"   , @"pentium3"     , TRUE  ), _ '' FB_CPUTYPE_PENTIUM3
-	( @"pentium4"   , @"pentium4"     , TRUE  ), _ '' FB_CPUTYPE_PENTIUM4
-	( @"prescott"   , @"pentium4-sse3", TRUE  ), _ '' FB_CPUTYPE_PENTIUMSSE3
-	( @"x86-64"     , @"x86_64"       , FALSE ), _ '' FB_CPUTYPE_X86_64
-	( NULL          , NULL            , FALSE )  _ '' FB_CPUTYPE_NATIVE
+	( @"i386"       , @"386"          , TRUE , 32 ), _ '' FB_CPUTYPE_386
+	( @"i486"       , @"486"          , TRUE , 32 ), _ '' FB_CPUTYPE_486
+	( @"i586"       , @"586"          , TRUE , 32 ), _ '' FB_CPUTYPE_586
+	( @"i686"       , @"686"          , TRUE , 32 ), _ '' FB_CPUTYPE_686
+	( @"athlon"     , @"athlon"       , TRUE , 32 ), _ '' FB_CPUTYPE_ATHLON
+	( @"athlon-xp"  , @"athlon-xp"    , TRUE , 32 ), _ '' FB_CPUTYPE_ATHLONXP
+	( @"athlon-fx"  , @"athlon-fx"    , TRUE , 32 ), _ '' FB_CPUTYPE_ATHLONFX
+	( @"k8-sse3"    , @"k8-sse3"      , TRUE , 32 ), _ '' FB_CPUTYPE_ATHLONSSE3
+	( @"pentium-mmx", @"pentium-mmx"  , TRUE , 32 ), _ '' FB_CPUTYPE_PENTIUMMMX
+	( @"pentium2"   , @"pentium2"     , TRUE , 32 ), _ '' FB_CPUTYPE_PENTIUM2
+	( @"pentium3"   , @"pentium3"     , TRUE , 32 ), _ '' FB_CPUTYPE_PENTIUM3
+	( @"pentium4"   , @"pentium4"     , TRUE , 32 ), _ '' FB_CPUTYPE_PENTIUM4
+	( @"prescott"   , @"pentium4-sse3", TRUE , 32 ), _ '' FB_CPUTYPE_PENTIUMSSE3
+	( @"x86-64"     , @"x86-64"       , FALSE, 64 ), _ '' FB_CPUTYPE_X86_64
+	( NULL          , @"32"           , FALSE, 32 ), _ '' FB_CPUTYPE_32
+	( NULL          , @"64"           , FALSE, 64 ), _ '' FB_CPUTYPE_64
+	( NULL          , NULL            , FALSE, 0  )  _ '' FB_CPUTYPE_NATIVE
 }
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -413,20 +384,6 @@ end sub
 
 private sub hUpdateTargetOptions( )
 	env.target = targetinfo(env.clopt.target)
-
-	'' When setting the target, also set the default backend
-	if( env.target.options and FB_TARGETOPT_64BIT ) then
-		env.clopt.backend = FB_BACKEND_GCC
-	else
-		env.clopt.backend = FB_BACKEND_GAS
-	end if
-
-	'' Same for default arch
-	if( env.target.options and FB_TARGETOPT_64BIT ) then
-		env.clopt.cputype = FB_CPUTYPE_X86_64
-	else
-		env.clopt.cputype = FB_CPUTYPE_486
-	end if
 end sub
 
 sub fbGlobalInit()
@@ -438,7 +395,9 @@ sub fbGlobalInit()
 	env.clopt.outtype       = FB_DEFAULT_OUTTYPE
 	env.clopt.pponly        = FALSE
 
+	env.clopt.backend       = FB_DEFAULT_BACKEND
 	env.clopt.target        = FB_DEFAULT_TARGET
+	env.clopt.cputype       = FB_DEFAULT_CPUTYPE
 	env.clopt.fputype       = FB_DEFAULT_FPUTYPE
 	env.clopt.fpmode        = FB_DEFAULT_FPMODE
 	env.clopt.vectorize     = FB_DEFAULT_VECTORIZELEVEL
@@ -678,14 +637,6 @@ function fbGetTargetId( ) as zstring ptr
 	function = env.target.id
 end function
 
-function fbIsTarget64bit( ) as integer
-	function = ((env.target.options and FB_TARGETOPT_64BIT) <> 0)
-end function
-
-function fbGetOppositeBitsTarget( ) as integer
-	function = env.target.oppositebits
-end function
-
 function fbGetGccArch( ) as zstring ptr
 	function = cputypeinfo(env.clopt.cputype).gccarch
 end function
@@ -694,17 +645,51 @@ function fbGetFbcArch( ) as zstring ptr
 	function = cputypeinfo(env.clopt.cputype).fbcarch
 end function
 
-function fbIsTargetX86( ) as integer
+function fbCpuTypeIs64bit( ) as integer
+	function = (cputypeinfo(env.clopt.cputype).bits = 64)
+end function
+
+function fbCpuTypeIsX86( ) as integer
 	function = cputypeinfo(env.clopt.cputype).is_x86
 end function
 
 function fbIdentifyFbcArch( byref fbcarch as string ) as integer
-	for i as integer = lbound( cputypeinfo ) to ubound( cputypeinfo )
+	select case( fbcarch )
+	case "native"
+		'' On x86 we can check fb_CpuDetect(), otherwise just use the
+		'' default, which is always safe for the host.
+		function = FB_DEFAULT_CPUTYPE
+
+		#ifndef __FB_64BIT__
+			select case( fb_CpuDetect( ) shr 28 )
+			case 3 : function = FB_CPUTYPE_386
+			case 4 : function = FB_CPUTYPE_486
+			case 5 : function = FB_CPUTYPE_586
+			case 6 : function = FB_CPUTYPE_686
+			end select
+		#endif
+
+		exit function
+
+	case "32"
+		return FB_DEFAULT_CPUTYPE32
+	case "64"
+		return FB_DEFAULT_CPUTYPE64
+	end select
+
+	for i as integer = 0 to FB_CPUTYPE__COUNT-1
 		if( *cputypeinfo(i).fbcarch = fbcarch ) then
 			return i
 		end if
 	next
-	function = -1
+
+	'' Extra names to be recognized by -arch to make it nicer to use
+	select case( fbcarch )
+	case "x86_64", "amd64"
+		function = FB_CPUTYPE_X86_64
+	case else
+		function = -1
+	end select
 end function
 
 '':::::

@@ -1150,8 +1150,7 @@ function rtlFileOpen _
 		f = PROCLOOKUP( FILEOPEN_QB )
 		doencoding = FALSE
 		select case env.clopt.target
-		case FB_COMPTARGET_WIN32, FB_COMPTARGET_WIN64, _
-		     FB_COMPTARGET_CYGWIN
+		case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN
 			fbAddLib("user32")
 			fbAddLib("gdi32")
 			fbAddLib("winspool")

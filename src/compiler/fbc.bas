@@ -52,8 +52,7 @@ type FBCCTX
 	lastmodule			as FBCIOFILE ptr '' module for last input file, so the default .o name can be overwritten with a following -o filename
 	objfile				as string '' -o filename waiting for next input file
 	backend				as integer  '' FB_BACKEND_* given via -gen, or -1 if -gen wasn't given
-	bits				as integer  '' -1 (not specified), 32, 64
-	arch				as zstring * FB_MAXNAMELEN+1  '' Argument given to -arch, for checking when the backend is known
+	cputype				as integer  '' FB_CPUTYPE_* (-arch's argument), or -1
 
 	emitasmonly			as integer  '' write out FB backend output file only (.asm/.c)
 	keepasm				as integer  '' preserve FB backend output file (.asm/.c)
@@ -92,6 +91,7 @@ type FBCCTX
 #ifndef ENABLE_STANDALONE
 	targetprefix 			as zstring * FB_MAXNAMELEN+1  '' Target system identifier (e.g. a name like "win32", or a GNU triplet) to prefix in front of cross-compiling tool names
 	multilibsuffix			as zstring * FB_MAXNAMELEN+1  '' Empty (native compilation), "32"/"64" (cross-compiling to 32bit/64bit with gcc -m32/-m64 instead of target-gcc)
+	targetcputype			as integer  '' FB_CPUTYPE_* (arch determined from -target triplet) or -1
 #endif
 	xbe_title 			as zstring * FB_MAXNAMELEN+1  '' For the '-title <title>' xbox option
 	nodeflibs			as integer
@@ -144,7 +144,8 @@ private sub fbcInit( )
 	const FBC_INITFILES = 64
 
 	fbc.backend = -1
-	fbc.bits = -1
+	fbc.cputype = -1
+	fbc.targetcputype = -1
 
 	listInit( @fbc.modules, FBC_INITFILES, sizeof(FBCIOFILE) )
 	listInit( @fbc.rcs, FBC_INITFILES\4, sizeof(FBCIOFILE) )
@@ -184,20 +185,18 @@ private sub hSetOutName( )
 	case FB_OUTTYPE_EXECUTABLE
 		select case( fbGetOption( FB_COMPOPT_TARGET ) )
 		case FB_COMPTARGET_DOS, FB_COMPTARGET_CYGWIN, _
-		     FB_COMPTARGET_WIN32, FB_COMPTARGET_WIN64, _
-		     FB_COMPTARGET_XBOX
+		     FB_COMPTARGET_WIN32, FB_COMPTARGET_XBOX
 			'' Note: XBox target creates an .exe first,
 			'' then uses cxbe to turn it into an .xbe later
 			fbc.outname += ".exe"
 		end select
 	case FB_OUTTYPE_DYNAMICLIB
 		select case( fbGetOption( FB_COMPOPT_TARGET ) )
-		case FB_COMPTARGET_CYGWIN, _
-		     FB_COMPTARGET_WIN32, FB_COMPTARGET_WIN64
+		case FB_COMPTARGET_CYGWIN, FB_COMPTARGET_WIN32
 			fbc.outname += ".dll"
-		case FB_COMPTARGET_FREEBSD, FB_COMPTARGET_DARWIN, _
-		     FB_COMPTARGET_LINUX, FB_COMPTARGET_LINUX64, _
-		     FB_COMPTARGET_NETBSD, FB_COMPTARGET_OPENBSD
+		case FB_COMPTARGET_LINUX, FB_COMPTARGET_DARWIN, _
+		     FB_COMPTARGET_FREEBSD, FB_COMPTARGET_OPENBSD, _
+		     FB_COMPTARGET_NETBSD
 			fbc.outname = hStripFilename( fbc.outname ) + _
 				"lib" + hStripPath( fbc.outname ) + ".so"
 		end select
@@ -283,7 +282,7 @@ private function fbcFindLibFile( byval file as zstring ptr ) as string
 	dim as string path
 	fbcFindBin( FBCTOOL_GCC, path )
 
-	if( fbIsTarget64bit( ) ) then
+	if( fbCpuTypeIs64bit( ) ) then
 		path += " -m64"
 	else
 		path += " -m32"
@@ -491,22 +490,26 @@ private function hLinkFiles( ) as integer
 
 	hSetOutName( )
 
-	select case as const fbGetOption( FB_COMPOPT_TARGET )
+	select case( fbGetOption( FB_COMPOPT_TARGET ) )
 	case FB_COMPTARGET_WIN32
-		ldcline += "-m i386pe "
-	case FB_COMPTARGET_WIN64
-		ldcline += "-m i386pep "
+		if( fbCpuTypeIs64bit( ) ) then
+			ldcline += "-m i386pep "
+		else
+			ldcline += "-m i386pe "
+		end if
 	case FB_COMPTARGET_LINUX
-		ldcline += "-m elf_i386 "
-	case FB_COMPTARGET_LINUX64
-		ldcline += "-m elf_x86_64 "
+		if( fbCpuTypeIs64bit( ) ) then
+			ldcline += "-m elf_x86_64 "
+		else
+			ldcline += "-m elf_i386 "
+		end if
 	end select
 
 	'' Set executable name
 	ldcline += "-o " + QUOTE + fbc.outname + QUOTE
 
 	select case as const fbGetOption( FB_COMPOPT_TARGET )
-	case FB_COMPTARGET_CYGWIN, FB_COMPTARGET_WIN32, FB_COMPTARGET_WIN64
+	case FB_COMPTARGET_CYGWIN, FB_COMPTARGET_WIN32
 
 		'' set default subsystem mode
 		if( len( fbc.subsystem ) = 0 ) then
@@ -530,9 +533,9 @@ private function hLinkFiles( ) as integer
 			ldcline += " -e _DllMainCRTStartup@12"
 		end if
 
-	case FB_COMPTARGET_FREEBSD, FB_COMPTARGET_DARWIN, _
-	     FB_COMPTARGET_LINUX, FB_COMPTARGET_LINUX64, _
-	     FB_COMPTARGET_NETBSD, FB_COMPTARGET_OPENBSD
+	case FB_COMPTARGET_LINUX, FB_COMPTARGET_DARWIN, _
+	     FB_COMPTARGET_FREEBSD, FB_COMPTARGET_OPENBSD, _
+	     FB_COMPTARGET_NETBSD
 
 		if( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB ) then
 			dllname = hStripPath( hStripExt( fbc.outname ) )
@@ -542,9 +545,11 @@ private function hLinkFiles( ) as integer
 			case FB_COMPTARGET_FREEBSD
 				ldcline += " -dynamic-linker /libexec/ld-elf.so.1"
 			case FB_COMPTARGET_LINUX
-				ldcline += " -dynamic-linker /lib/ld-linux.so.2"
-			case FB_COMPTARGET_LINUX64
-				ldcline += " -dynamic-linker /lib64/ld-linux-x86-64.so.2"
+				if( fbCpuTypeIs64bit( ) ) then
+					ldcline += " -dynamic-linker /lib64/ld-linux-x86-64.so.2"
+				else
+					ldcline += " -dynamic-linker /lib/ld-linux.so.2"
+				end if
 			case FB_COMPTARGET_NETBSD
 				ldcline += " -dynamic-linker /usr/libexec/ld.elf_so"
 			case FB_COMPTARGET_OPENBSD
@@ -575,7 +580,7 @@ private function hLinkFiles( ) as integer
 	end if
 
 	select case as const fbGetOption( FB_COMPOPT_TARGET )
-	case FB_COMPTARGET_CYGWIN, FB_COMPTARGET_WIN32, FB_COMPTARGET_WIN64
+	case FB_COMPTARGET_CYGWIN, FB_COMPTARGET_WIN32
 		'' stack size
 		dim as integer stacksize = fbGetOption(FB_COMPOPT_STACKSIZE)
 		ldcline += " --stack " + str(stacksize) + "," + str(stacksize)
@@ -636,7 +641,7 @@ private function hLinkFiles( ) as integer
 			end if
 		end if
 
-	case FB_COMPTARGET_WIN32, FB_COMPTARGET_WIN64
+	case FB_COMPTARGET_WIN32
 		if( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB ) then
 			ldcline += hFindLib( "dllcrt2.o" )
 		else
@@ -656,9 +661,9 @@ private function hLinkFiles( ) as integer
 			ldcline += hFindLib( "crt0.o" )
 		end if
 
-	case FB_COMPTARGET_FREEBSD, FB_COMPTARGET_DARWIN, _
-	     FB_COMPTARGET_LINUX, FB_COMPTARGET_LINUX64, _
-	     FB_COMPTARGET_NETBSD, FB_COMPTARGET_OPENBSD
+	case FB_COMPTARGET_LINUX, FB_COMPTARGET_DARWIN, _
+	     FB_COMPTARGET_FREEBSD, FB_COMPTARGET_OPENBSD, _
+	     FB_COMPTARGET_NETBSD
 
 		if( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_EXECUTABLE) then
 			if( fbGetOption( FB_COMPOPT_PROFILE ) ) then
@@ -740,15 +745,15 @@ private function hLinkFiles( ) as integer
 
 	'' crt end
 	select case as const fbGetOption( FB_COMPOPT_TARGET )
-	case FB_COMPTARGET_FREEBSD, FB_COMPTARGET_DARWIN, _
-	     FB_COMPTARGET_LINUX, FB_COMPTARGET_LINUX64, _
-	     FB_COMPTARGET_NETBSD, FB_COMPTARGET_OPENBSD
+	case FB_COMPTARGET_LINUX, FB_COMPTARGET_DARWIN, _
+	     FB_COMPTARGET_FREEBSD, FB_COMPTARGET_OPENBSD, _
+	     FB_COMPTARGET_NETBSD
 		ldcline += hFindLib( "crtend.o" )
 		if (fbGetOption( FB_COMPOPT_TARGET ) <> FB_COMPTARGET_OPENBSD) then
 			ldcline += hFindLib( "crtn.o" )
 		end if
 
-	case FB_COMPTARGET_WIN32, FB_COMPTARGET_WIN64
+	case FB_COMPTARGET_WIN32
 		ldcline += hFindLib( "crtend.o" )
 
 	end select
@@ -791,7 +796,7 @@ private function hLinkFiles( ) as integer
 
 		close #f
 
-	case FB_COMPTARGET_CYGWIN, FB_COMPTARGET_WIN32, FB_COMPTARGET_WIN64
+	case FB_COMPTARGET_CYGWIN, FB_COMPTARGET_WIN32
 		if( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB ) then
 			'' Create the .dll.a import library from the generated .def
 			if (makeImpLib(dllname, deffile) = FALSE) then
@@ -1035,8 +1040,6 @@ private function hParseTargetOS( byref os as string ) as integer
 	#endmacro
 #endif
 
-	'' Assuming 32bit for now; if it's 64bit, hParseTargetArch() will
-	'' remap the target to the corresponding 64bit one.
 	select case as const( os[0] )
 	case asc( "c" )
 		MAYBE( "cygwin", FB_COMPTARGET_CYGWIN )
@@ -1052,9 +1055,6 @@ private function hParseTargetOS( byref os as string ) as integer
 		MAYBE( "freebsd", FB_COMPTARGET_FREEBSD )
 
 	case asc( "l" )
-		'' Checking linux64 first because it also starts with "linux",
-		'' but is a different target
-		MAYBE( "linux64", FB_COMPTARGET_LINUX64 )
 		MAYBE( "linux", FB_COMPTARGET_LINUX )
 
 #ifndef ENABLE_STANDALONE
@@ -1075,7 +1075,6 @@ private function hParseTargetOS( byref os as string ) as integer
 
 	case asc( "w" )
 		MAYBE( "win32", FB_COMPTARGET_WIN32 )
-		MAYBE( "win64", FB_COMPTARGET_WIN64 )
 #ifndef ENABLE_STANDALONE
 		MAYBE( "windows", FB_COMPTARGET_WIN32 )
 #endif
@@ -1088,42 +1087,8 @@ private function hParseTargetOS( byref os as string ) as integer
 	function = -1
 end function
 
-private function hParseTargetArch _
-	( _
-		byval target as integer, _
-		byref arch as string _
-	) as integer
-
-	select case( arch )
-	'' 64bit architecture?
-	case "x86_64", "amd64"
-		'' Remap targets to their 64bit version if supported
-		select case as const( target )
-		case FB_COMPTARGET_WIN32
-			'' This happens e.g. with x86_64-w64-mingw32, where the
-			'' mingw32 looks like win32 at first, but then due to
-			'' the x86_64 we know it's win64.
-			target = FB_COMPTARGET_WIN64
-
-		case FB_COMPTARGET_LINUX
-			target = FB_COMPTARGET_LINUX64
-
-		case FB_COMPTARGET_WIN64, FB_COMPTARGET_LINUX64
-			'' Already 64bit? Leave as-is
-
-		case else
-			'' Others not yet supported, or impossible (dos, xbox)
-			target = -1
-		end select
-	end select
-
-	function = target
-end function
-
 enum
-	OPT_32 = 0
-	OPT_64
-	OPT_A
+	OPT_A = 0
 	OPT_ARCH
 	OPT_ASM
 	OPT_B
@@ -1183,8 +1148,6 @@ end enum
 
 dim shared as integer option_takes_argument(0 to (OPT__COUNT - 1)) = _
 { _
-	FALSE, _ '' OPT_32
-	FALSE, _ '' OPT_64
 	TRUE , _ '' OPT_A
 	TRUE , _ '' OPT_ARCH
 	TRUE , _ '' OPT_ASM
@@ -1244,17 +1207,14 @@ dim shared as integer option_takes_argument(0 to (OPT__COUNT - 1)) = _
 
 private sub handleOpt(byval optid as integer, byref arg as string)
 	select case as const (optid)
-	case OPT_32
-		fbc.bits = 32
-
-	case OPT_64
-		fbc.bits = 64
-
 	case OPT_A
 		fbcAddObj( arg )
 
 	case OPT_ARCH
-		fbc.arch = arg
+		fbc.cputype = fbIdentifyFbcArch( arg )
+		if( fbc.cputype < 0 ) then
+			hFatalInvalidOption( "-arch " + arg )
+		end if
 
 	case OPT_ASM
 		select case( arg )
@@ -1490,18 +1450,19 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 		fbSetOption(FB_COMPOPT_STACKSIZE, valint(arg) * 1024)
 
 	case OPT_TARGET
-		'' For Standalone, the argument given to -target is used just
-		'' to identify the compilation target. For Normal, it's used as
-		'' a prefix for the executable names of cross-compilation tools,
-		'' for example:
-		''    fbc -target dos
-		'' will try to use:
-		''    bin/dos-ld[.exe]  (normal build)
-		''    bin/dos/ld[.exe]  (standalone build)
-		'' This allows fbc to work well with gcc/binutils
-		'' cross-toolchains via e.g. "fbc -target i686-pc-mingw32".
-		'' Normal: recognizes FB's target names and GNU triplets
-		'' Standalone: FB names only
+		'' Standalone: -target <osname>, accepts only the traditional
+		'' FB target OS names, and uses the bin/<osname>/ and
+		'' lib/<osname>/ subdirs.
+		''
+		'' Normal: -target <id>, accepts gcc target ids such as
+		'' "i686-pc-mingw32", "x86_64-pc-linux-gnu" or simply "mingw32",
+		'' and uses the given target id as prefix for cross-compilation
+		'' tools, such as i686-pc-mingw32-ld instead of just ld.
+		''
+		'' This allows normal fbc to work well with gcc/binutils
+		'' cross-compiling toolchains while for standalone the
+		'' gcc/binutils executables need to be re-arranged into
+		'' standalone FB's dir layout.
 		dim as string os
 		dim as integer target = any
 
@@ -1519,17 +1480,9 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 
 			'' Identify the target
 			target = hParseTargetOS( os )
-
-			#ifndef ENABLE_STANDALONE
-				'' Maybe remap to 64bit version
-				target = hParseTargetArch( target, arch )
-			#endif
-
-			'' Not recognized?
 			if( target < 0 ) then
 				hFatalInvalidOption( arg )
 			end if
-
 			fbSetOption( FB_COMPOPT_TARGET, target )
 
 			#ifndef ENABLE_STANDALONE
@@ -1537,6 +1490,22 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 				'' prefixing to tool file names, because of
 				'' case-sensitive file systems
 				fbc.targetprefix = arg + "-"
+
+				'' Identify architecture given in the triplet, if any
+				select case( arch )
+				case "i386"
+					fbc.targetcputype = FB_CPUTYPE_386
+				case "i486"
+					fbc.targetcputype = FB_CPUTYPE_486
+				case "i586"
+					fbc.targetcputype = FB_CPUTYPE_586
+				case "i686"
+					fbc.targetcputype = FB_CPUTYPE_686
+				case "x86_64", "amd64"
+					fbc.targetcputype = FB_CPUTYPE_X86_64
+				case else
+					fbc.targetcputype = -1
+				end select
 			#endif
 		end if
 
@@ -1633,12 +1602,6 @@ private function parseOption(byval opt as zstring ptr) as integer
 	#endmacro
 
 	select case as const (cptr(ubyte ptr, opt)[0])
-	case asc("3")
-		CHECK("32", OPT_32)
-
-	case asc("6")
-		CHECK("64", OPT_64)
-
 	case asc("a")
 		ONECHAR(OPT_A)
 		CHECK("arch", OPT_ARCH)
@@ -1966,91 +1929,52 @@ private sub hParseArgs( byval argc as integer, byval argv as zstring ptr ptr )
 		end if
 	end if
 
-	'' Check the -32/-64 options
-	''
-	'' If target is 32bit, but -64 was given, then switch to 64bit target,
-	'' and vice-versa, but without changing the fbc.targetprefix. Instead,
-	'' we will rely only on "gcc -m32/-m64" and "as --32/--64" to work.
-	if( fbc.bits >= 0 ) then
-		if( (fbc.bits = 64) <> fbIsTarget64bit( ) ) then
-			#ifndef ENABLE_STANDALONE
-				'' Since -32/-64 caused us to switch away from the target's default arch,
-				'' add the multilib suffix, so the target's multilib-specific libdir will
-				'' be used (like gcc does with -m32/-m64).
-				if( fbc.bits = 32 ) then
-					fbc.multilibsuffix = "32"
-				else
-					fbc.multilibsuffix = "64"
-				end if
-			#endif
+	'' 1. The compiler (fb.bas) starts with default target settings for
+	''    native compilation.
 
-			if( fbGetOppositeBitsTarget( ) < 0 ) then
-				'' Selected target doesn't have a 64bit counterpart (e.g. dos)
-				'' Note: currently all our 64bit targets have a 32bit version,
-				'' so no need to worry about lack of 32bit counterpart.
-				errReportEx( FB_ERRMSG_TARGETDOESNOTSUPPORT64, "", -1 )
-				fbcEnd( 1 )
-			end if
+	'' 2. -target option handling has already switched the target if given.
 
-			'' Switch target
-			fbSetOption( FB_COMPOPT_TARGET, fbGetOppositeBitsTarget( ) )
-		end if
+	'' 3. An architecture given via a -target triplet (e.g. i686 from
+	''    i686-pc-mingw32) overrides the default arch.
+	if( fbc.targetcputype >= 0 ) then
+		fbSetOption( FB_COMPOPT_CPUTYPE, fbc.targetcputype )
 	end if
 
-	'' -gen given?
-	if( fbc.backend >= 0 ) then
-		'' non-x86 with -gen gas is not possible
-		if( fbIsTargetX86( ) = FALSE ) then
-			if( fbc.backend = FB_BACKEND_GAS ) then
-				errReportEx( FB_ERRMSG_ASMBACKENDFORNONX86, fbGetTargetId( ), -1 )
-				fbcEnd( 1 )
-			end if
-		end if
+	'' 4. -arch overrides any other arch settings.
+	if( fbc.cputype >= 0 ) then
+		fbSetOption( FB_COMPOPT_CPUTYPE, fbc.cputype )
+	end if
 
-		'' Override the compiler's target-based default
+	'' 5. Check for target/arch conflicts, e.g. dos and non-x86
+	if( (fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_DOS) and _
+	    (not fbCpuTypeIsX86( )) ) then
+		errReportEx( FB_ERRMSG_DOSWITHNONX86, fbGetFbcArch( ), -1 )
+		fbcEnd( 1 )
+	end if
+
+	'' 6. Adjust default backend to selected arch, e.g. when compiling for
+	''    x86_64, we shouldn't default to -gen gas anymore.
+	if( (fbGetOption( FB_COMPOPT_BACKEND ) = FB_BACKEND_GAS) and _
+	    (not fbCpuTypeIsX86( )) ) then
+		fbSetOption( FB_COMPOPT_BACKEND, FB_BACKEND_GCC )
+	end if
+
+	'' 7. -gen overrides any other backend setting.
+	if( fbc.backend >= 0 ) then
 		fbSetOption( FB_COMPOPT_BACKEND, fbc.backend )
 	end if
 
-	'' -arch given?
-	if( len( fbc.arch ) > 0 ) then
-		dim as integer cputype
-
-		select case( fbc.arch )
-		case "native"
-			#ifdef __FB_64BIT__
-				cputype = FB_CPUTYPE_X86_64
-			#else
-				select case( fb_CpuDetect( ) shr 28 )
-				case 3 : cputype = FB_CPUTYPE_386
-				case 4 : cputype = FB_CPUTYPE_486
-				case 5 : cputype = FB_CPUTYPE_586
-				case 6 : cputype = FB_CPUTYPE_686
-				case else
-					'' Use compiler's default (it defaults
-					'' to the host, so it's a good guess)
-					cputype = -1
-				end select
-			#endif
-
-		case "x86-64", "amd64"
-			cputype = FB_CPUTYPE_X86_64
-
-		case else
-			cputype = fbIdentifyFbcArch( arg )
-			if( cputype < 0 ) then
-				hFatalInvalidOption( "-arch " + arg )
-			end if
-		end select
-
-		if( cputype >= 0 ) then
-			fbSetOption( FB_COMPOPT_CPUTYPE, cputype )
-		end if
+	'' 8. Check whether backend supports the target/arch
+	'' -gen gas with non-x86 arch isn't possible
+	if( (fbGetOption( FB_COMPOPT_BACKEND ) = FB_BACKEND_GAS) and _
+	    (not fbCpuTypeIsX86( )) ) then
+		errReportEx( FB_ERRMSG_GENGASWITHNONX86, fbGetFbcArch( ), -1 )
+		fbcEnd( 1 )
 	end if
 
 	'' Resource scripts are only allowed for win32 & co,
 	select case as const (fbGetOption(FB_COMPOPT_TARGET))
-	case FB_COMPTARGET_WIN32, FB_COMPTARGET_WIN64, _
-	     FB_COMPTARGET_CYGWIN, FB_COMPTARGET_XBOX
+	case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN, FB_COMPTARGET_XBOX
 
 	case else
 		dim as FBCIOFILE ptr rc = listGetHead(@fbc.rcs)
@@ -2062,9 +1986,9 @@ private sub hParseArgs( byval argc as integer, byval argv as zstring ptr ptr )
 
 	'' The embedded .xpm is only useful for the X11 gfxlib
 	select case as const (fbGetOption(FB_COMPOPT_TARGET))
-	case FB_COMPTARGET_LINUX, FB_COMPTARGET_LINUX64, _
+	case FB_COMPTARGET_LINUX, FB_COMPTARGET_DARWIN, _
 	     FB_COMPTARGET_FREEBSD, FB_COMPTARGET_OPENBSD, _
-	     FB_COMPTARGET_NETBSD, FB_COMPTARGET_DARWIN
+	     FB_COMPTARGET_NETBSD
 
 	case else
 		if (len(fbc.xpm.srcfile) > 0) then
@@ -2175,7 +2099,7 @@ private sub fbcInit2( )
 		#endif
 		s += ", " + *fbGetFbcArch( )
 		s += ", "
-		if( fbIsTarget64Bit( ) ) then
+		if( fbCpuTypeIs64bit( ) ) then
 			s += "64"
 		else
 			s += "32"
@@ -2532,13 +2456,13 @@ private function hCompileStage2Module( byval module as FBCIOFILE ptr ) as intege
 
 	select case( fbGetOption( FB_COMPOPT_BACKEND ) )
 	case FB_BACKEND_GCC
-		if( fbIsTarget64bit( ) ) then
+		if( fbCpuTypeIs64bit( ) ) then
 			ln += "-m64 "
 		else
 			ln += "-m32 "
 		end if
 
-		if( fbc.arch = "native" ) then
+		if( fbc.cputype = FB_CPUTYPE_NATIVE ) then
 			ln += "-march=native "
 		else
 			ln += "-march=" + *fbGetGccArch( ) + " "
@@ -2586,7 +2510,7 @@ private function hCompileStage2Module( byval module as FBCIOFILE ptr ) as intege
 		end if
 
 	case FB_BACKEND_LLVM
-		if( fbIsTarget64bit( ) ) then
+		if( fbCpuTypeIs64bit( ) ) then
 			ln += "-march=x86-64 "
 		else
 			ln += "-march=x86 "
@@ -2625,7 +2549,7 @@ end sub
 private function hAssembleModule( byval module as FBCIOFILE ptr ) as integer
 	dim as string ln
 
-	if( fbIsTarget64bit( ) ) then
+	if( fbCpuTypeIs64bit( ) ) then
 		ln = "--64 "
 	else
 		ln = "--32 "
@@ -2830,7 +2754,7 @@ private sub hSetDefaultLibPaths( )
 		'' Note: Can't use libc here, we have a fixed copy of that in
 		'' the compiler's lib/ dir.
 		fbcAddLibPathFor( "libm.a" )
-	case FB_COMPTARGET_WIN32, FB_COMPTARGET_WIN64
+	case FB_COMPTARGET_WIN32
 		'' Help the MinGW linker to find MinGW's lib/ dir, allowing
 		'' the C:\MinGW dir to be renamed and linking to still work.
 		fbcAddLibPathFor( "libmingw32.a" )
@@ -2887,7 +2811,7 @@ private sub hAddDefaultLibs( )
 		fbcAddDefLib( "ncurses" )
 		fbcAddDefLib( "supc++" )
 
-	case FB_COMPTARGET_LINUX, FB_COMPTARGET_LINUX64
+	case FB_COMPTARGET_LINUX
 		''
 		'' Notes:
 		''
@@ -2936,7 +2860,7 @@ private sub hAddDefaultLibs( )
 		fbcAddDefLib( "ncurses" )
 		fbcAddDefLib( "supc++" )
 
-	case FB_COMPTARGET_WIN32, FB_COMPTARGET_WIN64
+	case FB_COMPTARGET_WIN32
 		fbcAddDefLib( "gcc" )
 		fbcAddDefLib( "msvcrt" )
 		fbcAddDefLib( "kernel32" )
@@ -2988,7 +2912,6 @@ private sub hPrintOptions( )
 	print "  *.xpm = icon resource (*nix/*bsd)"
 	print "options:"
 	print "  @<file>          Read more command line arguments from a file"
-	print "  -32, -64         Compile for 32bit/64bit"
 	print "  -a <file>        Treat file as .o/.a input file"
 	print "  -arch <type>     Set target architecture (default: 486)"
 	print "  -asm att|intel   Set asm format (-gen gcc)"

@@ -614,8 +614,7 @@ function rtlInitApp _
 	if( env.clopt.backend = FB_BACKEND_GAS ) then
 		'' call __monstartup() on win32/cygwin if profiling
 		select case( env.clopt.target )
-		case FB_COMPTARGET_WIN32, FB_COMPTARGET_WIN64, _
-		     FB_COMPTARGET_CYGWIN
+		case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN
 			if( env.clopt.profile ) then
 				'' __monstartup()
 				rtlProfileCall_monstartup( )
@@ -623,11 +622,10 @@ function rtlInitApp _
 		end select
 
 		'' call default CRT0 constructors (only required for Win32)
-		select case( env.clopt.target )
-		case FB_COMPTARGET_WIN32, FB_COMPTARGET_WIN64
+		if( env.clopt.target = FB_COMPTARGET_WIN32 ) then
 			'' __main()
 			astAdd( astNewCALL( PROCLOOKUP( INITCRTCTOR ), NULL ) )
-		end select
+		end if
 	end if
 
 	'' fb_Init( argc, argv, lang )
@@ -643,7 +641,7 @@ function rtlInitApp _
 		astAdd( astNewCALL( PROCLOOKUP( INITSIGNALS ), NULL ) )
 
 		'' Checking the CPU for features on x86
-		if( fbIsTargetX86( ) ) then
+		if( fbCpuTypeIsX86( ) ) then
 			'' Check CPU type
 			rtlX86CpuCheck( )
 		end if

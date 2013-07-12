@@ -175,7 +175,7 @@ private sub _init( )
 	irSetOption( IR_OPT_FPUIMMEDIATES or IR_OPT_NOINLINEOPS )
 
 	'' 64bit?
-	if( env.target.options and FB_TARGETOPT_64BIT ) then
+	if( fbCpuTypeIs64bit( ) ) then
 		dtypeName(FB_DATATYPE_INTEGER) = @"int64"
 		dtypeName(FB_DATATYPE_UINT   ) = @"uint64"
 	else
