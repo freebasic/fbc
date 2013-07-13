@@ -629,7 +629,7 @@ private function hEmitArrayDecl( byval sym as FBSYMBOL ptr ) as string
 
 	'' If it's a fixed-length string, add an extra array dimension
 	'' (zstring * 5 becomes char[5])
-	dim as integer length = 0
+	dim as longint length = 0
 	select case( symbGetType( sym ) )
 	case FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR
 		length = symbGetStrLen( sym )
