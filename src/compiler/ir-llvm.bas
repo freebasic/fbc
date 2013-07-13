@@ -232,6 +232,13 @@ private function hEmitProcCallConv( byval proc as FBSYMBOL ptr ) as string
 	'' The symbGetProc*Param() macros take care of changing the order when
 	'' cycling through parameters of Pascal functions. Together with Stdcall
 	'' this results in a double-reverse resulting in the proper ABI.
+	''
+	'' For non-x86, don't emit any calling convention at all, it would just
+	'' be ignored anyways (for x86_64 and ARM it seems that way at least).
+
+	if( fbCpuTypeIsX86( ) = FALSE ) then
+		exit function
+	end if
 
 	select case as const( symbGetProcMode( proc ) )
 	case FB_FUNCMODE_STDCALL, FB_FUNCMODE_STDCALL_MS, FB_FUNCMODE_PASCAL

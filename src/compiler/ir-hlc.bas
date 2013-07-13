@@ -384,17 +384,22 @@ private function hEmitProcHeader _
 	'' cycling through parameters of Pascal functions. Together with Stdcall
 	'' this results in a double-reverse resulting in the proper ABI.
 	''
-	select case( symbGetProcMode( proc ) )
-	case FB_FUNCMODE_STDCALL, FB_FUNCMODE_STDCALL_MS, FB_FUNCMODE_PASCAL
-		select case( env.clopt.target )
-		case FB_COMPTARGET_WIN32, FB_COMPTARGET_XBOX
-			'' MinGW recognizes this shorter & prettier version
-			ln += " __stdcall"
-		case else
-			'' Linux GCC only accepts this
-			ln += " __attribute__((stdcall))"
+	'' For non-x86, don't emit any calling convention at all, it would just
+	'' be ignored anyways (for x86_64 and ARM it seems that way at least).
+	''
+	if( fbCpuTypeIsX86( ) ) then
+		select case( symbGetProcMode( proc ) )
+		case FB_FUNCMODE_STDCALL, FB_FUNCMODE_STDCALL_MS, FB_FUNCMODE_PASCAL
+			select case( env.clopt.target )
+			case FB_COMPTARGET_WIN32, FB_COMPTARGET_XBOX
+				'' MinGW recognizes this shorter & prettier version
+				ln += " __stdcall"
+			case else
+				'' Linux GCC only accepts this
+				ln += " __attribute__((stdcall))"
+			end select
 		end select
-	end select
+	end if
 
 	ln += " "
 
