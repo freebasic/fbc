@@ -1035,19 +1035,18 @@ private sub hWriteFTOI _
 
 	dim as string rtype_str, rtype_suffix
 	select case rtype
-	case FB_DATATYPE_INTEGER
-		rtype_str = "integer"
+	case FB_DATATYPE_LONG
+		rtype_str = "int32"
 		rtype_suffix = "l"
-
 	case FB_DATATYPE_LONGINT
-		rtype_str = "longint"
+		rtype_str = "int64"
 		rtype_suffix = "q"
 	end select
 
 	dim as string ptype_str, ptype_suffix
 	select case ptype
 	case FB_DATATYPE_SINGLE
-		ptype_str = "single"
+		ptype_str = "float"
 		ptype_suffix = "s"
 
 	case FB_DATATYPE_DOUBLE
@@ -1109,11 +1108,11 @@ private sub hEmitFTOIBuiltins( )
 	end if
 
 	if( symbGetIsAccessed( PROCLOOKUP( FTOUL ) ) ) then
-		hWriteLine( "#define fb_ftoul( v ) (ulongint)fb_ftosl( v )", TRUE )
+		hWriteLine( "#define fb_ftoul( v ) (uint64)fb_ftosl( v )", TRUE )
 	end if
 
 	if( symbGetIsAccessed( PROCLOOKUP( FTOUI ) ) ) then
-		hWriteLine( "#define fb_ftoui( v ) (uinteger)fb_ftosl( v )", TRUE )
+		hWriteLine( "#define fb_ftoui( v ) (uint32)fb_ftosl( v )", TRUE )
 	end if
 
 	if( symbGetIsAccessed( PROCLOOKUP( FTOSI ) ) or _
@@ -1121,23 +1120,23 @@ private sub hEmitFTOIBuiltins( )
 	    symbGetIsAccessed( PROCLOOKUP( FTOUS ) ) or _
 	    symbGetIsAccessed( PROCLOOKUP( FTOSB ) ) or _
 	    symbGetIsAccessed( PROCLOOKUP( FTOUB ) ) ) then
-		hWriteFTOI( "ftosi", FB_DATATYPE_INTEGER, FB_DATATYPE_SINGLE )
+		hWriteFTOI( "ftosi", FB_DATATYPE_LONG, FB_DATATYPE_SINGLE )
 	end if
 
 	if( symbGetIsAccessed( PROCLOOKUP( FTOSS ) ) ) then
-		hWriteLine( "#define fb_ftoss( v ) (short)fb_ftosi( v )", TRUE )
+		hWriteLine( "#define fb_ftoss( v ) (int16)fb_ftosi( v )", TRUE )
 	end if
 
 	if( symbGetIsAccessed( PROCLOOKUP( FTOUS ) ) ) then
-		hWriteLine( "#define fb_ftous( v ) (ushort)fb_ftosi( v )", TRUE )
+		hWriteLine( "#define fb_ftous( v ) (uint16)fb_ftosi( v )", TRUE )
 	end if
 
 	if( symbGetIsAccessed( PROCLOOKUP( FTOSB ) ) ) then
-		hWriteLine( "#define fb_ftosb( v ) (byte)fb_ftosi( v )", TRUE )
+		hWriteLine( "#define fb_ftosb( v ) (int8)fb_ftosi( v )", TRUE )
 	end if
 
 	if( symbGetIsAccessed( PROCLOOKUP( FTOUB ) ) ) then
-		hWriteLine( "#define fb_ftoub( v ) (ubyte)fb_ftosi( v )", TRUE )
+		hWriteLine( "#define fb_ftoub( v ) (uint8)fb_ftosi( v )", TRUE )
 	end if
 
 	'' double
@@ -1148,11 +1147,11 @@ private sub hEmitFTOIBuiltins( )
 	end if
 
 	if( symbGetIsAccessed( PROCLOOKUP( DTOUL ) ) ) then
-		hWriteLine( "#define fb_dtoul( v ) (ulongint)fb_dtosl( v )", TRUE )
+		hWriteLine( "#define fb_dtoul( v ) (uint64)fb_dtosl( v )", TRUE )
 	end if
 
 	if( symbGetIsAccessed( PROCLOOKUP( DTOUI ) ) ) then
-		hWriteLine( "#define fb_dtoui( v ) (uinteger)fb_dtosl( v )", TRUE )
+		hWriteLine( "#define fb_dtoui( v ) (uint32)fb_dtosl( v )", TRUE )
 	end if
 
 	if( symbGetIsAccessed( PROCLOOKUP( DTOSI ) ) or _
@@ -1160,23 +1159,23 @@ private sub hEmitFTOIBuiltins( )
 	    symbGetIsAccessed( PROCLOOKUP( DTOUS ) ) or _
 	    symbGetIsAccessed( PROCLOOKUP( DTOSB ) ) or _
 	    symbGetIsAccessed( PROCLOOKUP( DTOUB ) ) ) then
-		hWriteFTOI( "dtosi", FB_DATATYPE_INTEGER, FB_DATATYPE_DOUBLE )
+		hWriteFTOI( "dtosi", FB_DATATYPE_LONG, FB_DATATYPE_DOUBLE )
 	end if
 
 	if( symbGetIsAccessed( PROCLOOKUP( DTOSS ) ) ) then
-		hWriteLine( "#define fb_dtoss( v ) (short)fb_dtosi( v )", TRUE )
+		hWriteLine( "#define fb_dtoss( v ) (int16)fb_dtosi( v )", TRUE )
 	end if
 
 	if( symbGetIsAccessed( PROCLOOKUP( DTOUS ) ) ) then
-		hWriteLine( "#define fb_dtous( v ) (ushort)fb_dtosi( v )", TRUE )
+		hWriteLine( "#define fb_dtous( v ) (uint16)fb_dtosi( v )", TRUE )
 	end if
 
 	if( symbGetIsAccessed( PROCLOOKUP( DTOSB ) ) ) then
-		hWriteLine( "#define fb_dtosb( v ) (byte)fb_dtosi( v )", TRUE )
+		hWriteLine( "#define fb_dtosb( v ) (int8)fb_dtosi( v )", TRUE )
 	end if
 
 	if( symbGetIsAccessed( PROCLOOKUP( DTOUB ) ) ) then
-		hWriteLine( "#define fb_dtoub( v ) (ubyte)fb_dtosi( v )", TRUE )
+		hWriteLine( "#define fb_dtoub( v ) (uint8)fb_dtosi( v )", TRUE )
 	end if
 
 end sub
