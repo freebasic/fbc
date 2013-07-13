@@ -89,8 +89,8 @@ type FBCCTX
 	subsystem			as zstring * FB_MAXNAMELEN+1
 	extopt				as FBC_EXTOPT
 #ifndef ENABLE_STANDALONE
-	targetprefix 			as zstring * FB_MAXNAMELEN+1  '' Target system identifier (e.g. a name like "win32", or a GNU triplet) to prefix in front of cross-compiling tool names
-	multilibsuffix			as zstring * FB_MAXNAMELEN+1  '' Empty (native compilation), "32"/"64" (cross-compiling to 32bit/64bit with gcc -m32/-m64 instead of target-gcc)
+	target	 			as zstring * FB_MAXNAMELEN+1  '' Target system identifier (e.g. a name like "win32", or a GNU triplet) to prefix in front of cross-compiling tool names
+	targetprefix 			as zstring * FB_MAXNAMELEN+1  '' same, but with "-" appended, if there was a target id given; otherwise empty.
 	targetcputype			as integer  '' FB_CPUTYPE_* (arch determined from -target triplet) or -1
 #endif
 	xbe_title 			as zstring * FB_MAXNAMELEN+1  '' For the '-title <title>' xbox option
@@ -1489,7 +1489,8 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 				'' Should use the -target argument as-is when
 				'' prefixing to tool file names, because of
 				'' case-sensitive file systems
-				fbc.targetprefix = arg + "-"
+				fbc.target = arg
+				fbc.targetprefix = fbc.target + "-"
 
 				'' Identify architecture given in the triplet, if any
 				select case( arch )
@@ -2030,23 +2031,31 @@ private sub fbcInit2( )
 	''
 	'' Standalone (classic FB):
 	''
-	''    bin/targetid/
+	''    bin/[arch-]os/
 	''    inc/
-	''    lib/targetid[suffix]/
+	''    lib/[arch-]os/
 	''
 	'' Normal (unix-style):
 	''
-	''    bin/[targetid-]
-	''    include/freebasic/
-	''    lib/[targetid-]freebasic[suffix][multilibsuffix]/
+	''    bin/[target-]
+	''    include/freebasic[suffix]/
+	''    lib/freebasic[suffix]/{target|{[arch-]os}}/
 	''
-	'' - Standalone always uses target-specific sub-directories in bin/
-	''   and lib/, Normal uses target-specific names only for
-	''   cross-compiling (matching the behaviour of binutils/gcc).
+	'' x86 standalone traditionally uses the win32/dos/linux subdirs in bin/
+	'' and lib/, named after the target OS. For other architectures, the
+	'' arch name needs to be added to distinguish the subdir from the x86
+	'' version. (especially for cross-compiling)
 	''
-	'' - Normal uses include/freebasic/ to hold FB includes, to stay out
-	''   of the way of the C ones in include/ and to conform to Linux
-	''   distro packaging standards.
+	'' Normal has additional support for gcc targets (e.g. i686-pc-mingw32),
+	'' which have to be prefixed to the executable names of cross-compiling
+	'' tools in the bin/ directory (e.g. bin/i686-pc-mingw32-ld) and have
+	'' their own subdirs in lib/freebasic/ (containing the libfb.a etc.
+	'' built with that exact cross-compiler toolchain). For native
+	'' compilation, no target id is prefixed to bin/ tools at all.
+	''
+	'' Normal uses include/freebasic/ and lib/freebasic/ to hold FB includes
+	'' and libraries, to stay out of the way of the C ones in include/ and
+	'' lib/ and to conform to Linux distro packaging standards.
 	''
 	'' - The paths are not terminated with [back]slashes here,
 	''   except for the bin/ path. fbcFindBin() expects to only have to
@@ -2054,49 +2063,43 @@ private sub fbcInit2( )
 	''     "prefix/bin/win32/" + "as.exe"
 	''     "prefix/bin/win32-" + "as.exe"
 	''
-	'' - The Normal layout can use GNU triplets as targetid, while the
-	''   standalone layout only uses the FB target names
-	''
-	'' - The multilibsuffix is "32" or "64" when cross-compiling to 32bit
-	''   or 64bit respectively, just like a gcc multilib toolchain.
-	''   For native compilation and when cross-compiling with a full
-	''   targetid cross-compiler, the multilibsuffix is empty.
-	''
+
+	dim as string archprefix
+	if( fbCpuTypeIs64bit( ) ) then
+		archprefix = "x86_64-"
+	end if
 
 #ifdef ENABLE_STANDALONE
 	'' Use default target name
-	fbc.binpath = fbc.prefix + "bin" + FB_HOST_PATHDIV + *fbGetTargetId( ) + FB_HOST_PATHDIV
+	fbc.binpath = fbc.prefix + "bin" + FB_HOST_PATHDIV + archprefix + *fbGetTargetId( ) + FB_HOST_PATHDIV
 	fbc.incpath = fbc.prefix + "inc"
-	fbc.libpath = fbc.prefix + "lib" + FB_HOST_PATHDIV + *fbGetTargetId( )
+	fbc.libpath = fbc.prefix + "lib" + FB_HOST_PATHDIV + archprefix + *fbGetTargetId( )
 #else
-	dim as zstring ptr fbname = any
+	dim as string fbname
 	if( fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_DOS ) then
 		'' Our subdirectory in include/ and lib/ is usually called
 		'' freebasic/, but on DOS that's too long... of course almost
 		'' no targetid or suffix can be used either.
-		fbname = @"freebas"
+		fbname = "freebas"
 	else
-		fbname = @"freebasic"
+		fbname = "freebasic"
 	end if
-
-	fbc.binpath = fbc.prefix + "bin"     + FB_HOST_PATHDIV + fbc.targetprefix
-	fbc.incpath = fbc.prefix + "include" + FB_HOST_PATHDIV + *fbname
-	fbc.libpath = fbc.prefix + "lib"     + FB_HOST_PATHDIV + fbc.targetprefix + *fbname
-
 	#ifdef ENABLE_SUFFIX
-		fbc.libpath += ENABLE_SUFFIX
+		fbname += ENABLE_SUFFIX
 	#endif
 
-	fbc.libpath += fbc.multilibsuffix
+	fbc.binpath = fbc.prefix + "bin"     + FB_HOST_PATHDIV + fbc.targetprefix
+	fbc.incpath = fbc.prefix + "include" + FB_HOST_PATHDIV + fbname
+	fbc.libpath = fbc.prefix + "lib"     + FB_HOST_PATHDIV + fbname + FB_HOST_PATHDIV
+	if( len( fbc.target ) > 0 ) then
+		fbc.libpath += fbc.target
+	else
+		fbc.libpath += archprefix + *fbGetTargetId( )
+	end if
 #endif
 
 	if( fbc.verbose ) then
 		var s = *fbGetTargetId( )
-		#ifndef ENABLE_STANDALONE
-			if( len( fbc.targetprefix ) > 0 ) then
-				s += " (" + left( fbc.targetprefix, len( fbc.targetprefix ) - 1 ) + ")"
-			end if
-		#endif
 		s += ", " + *fbGetFbcArch( )
 		s += ", "
 		if( fbCpuTypeIs64bit( ) ) then
@@ -2105,6 +2108,11 @@ private sub fbcInit2( )
 			s += "32"
 		end if
 		s += "bit"
+		#ifndef ENABLE_STANDALONE
+			if( len( fbc.target ) > 0 ) then
+				s += " (" + fbc.target + ")"
+			end if
+		#endif
 		print "target:", s
 	end if
 
