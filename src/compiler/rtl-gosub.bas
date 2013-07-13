@@ -56,12 +56,13 @@
 	 	) _
 	 }
 
+	'' Win32 _setjmp()
 	dim shared as FB_RTL_PROCDEF funcdata1( 0 to ... ) = _
 	{ _
-		/' fb_SetJmp cdecl ( byval buf as any ptr ) as integer '/ _
+		/' function fb_SetJmp cdecl( byval buf as any ptr ) as long '/ _
 		( _
 			@FB_RTL_SETJMP, @"_setjmp", _
-	 		FB_DATATYPE_INTEGER, FB_FUNCMODE_CDECL, _
+			FB_DATATYPE_LONG, FB_FUNCMODE_CDECL, _
 	 		NULL, FB_RTL_OPT_NONE, _
 	 		1, _
 	 		{ _
@@ -74,12 +75,13 @@
 	 	) _
 	 }
 
+	'' Linux/DOS setjmp()
 	dim shared as FB_RTL_PROCDEF funcdata2( 0 to ... ) = _
 	{ _
-		/' fb_SetJmp cdecl ( byval buf as any ptr ) as integer '/ _
+		/' function fb_SetJmp cdecl( byval buf as any ptr ) as long '/ _
 		( _
 			@FB_RTL_SETJMP, @"setjmp", _
-	 		FB_DATATYPE_INTEGER, FB_FUNCMODE_CDECL, _
+			FB_DATATYPE_LONG, FB_FUNCMODE_CDECL, _
 	 		NULL, FB_RTL_OPT_NONE, _
 	 		1, _
 	 		{ _

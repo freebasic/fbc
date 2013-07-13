@@ -1,10 +1,4 @@
 o 64bit
-  - C/LLVM backends:
-      - ensure BOPs/UOPs/constants are emitted using the correct types
-      - offsets on IRVREG need to be 64bit
-      - check FB_COMPTARGET_* references
-
-  - rtl-gosub.bas still has unfixed setjmp() declarations
   - remove env.target.size_t and just use FB_DATATYPE_UINT instead
   - adjust cStrCHR() and cStrASC() to handle 64bit constants
   - check all size-sensitive rtl functions, mk*(), cv*()
