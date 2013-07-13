@@ -2007,7 +2007,7 @@ private function hEmitInt _
 		if( typeGetSize( dtype ) = 8 ) then
 			s = str( culngint( value ) ) + "ull"
 		else
-			s = str( cuint( value ) ) + "u"
+			s = str( culng( value ) ) + "u"
 		end if
 	end if
 
