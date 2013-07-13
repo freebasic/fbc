@@ -2021,22 +2021,22 @@ private function hEmitFloat _
 	) as string
 
 	dim as string s
-	dim as integer expval = any
+	dim as ulong expval = any
 
 	'' x86 little-endian assumption
-	expval = cast( integer ptr, @value )[1]
+	expval = cast( ulong ptr, @value )[1]
 
 	select case( expval )
 	'' +/- infinity?
 	case &h7FF00000UL, &hFFF00000UL
 		if( dtype = FB_DATATYPE_DOUBLE ) then
-			if( expval and &h80000000 ) then
+			if( expval and &h80000000ul ) then
 				s += "(-__builtin_inf())"
 			else
 				s += "__builtin_inf()"
 			end if
 		else
-			if( expval and &h80000000 ) then
+			if( expval and &h80000000ul ) then
 				s += "(-__builtin_inff())"
 			else
 				s += "__builtin_inff()"
@@ -2046,13 +2046,13 @@ private function hEmitFloat _
 	'' +/- NaN? Quiet-NaN's only
 	case &h7FF80000UL, &hFFF80000UL
 		if( dtype = FB_DATATYPE_DOUBLE ) then
-			if( expval and &h80000000 ) then
+			if( expval and &h80000000ul ) then
 				s += "(-__builtin_nan( """" ))"
 			else
 				s += "__builtin_nan( """" )"
 			end if
 		else
-			if( expval and &h80000000 ) then
+			if( expval and &h80000000ul ) then
 				s += "(-__builtin_nanf( """" ))"
 			else
 				s += "__builtin_nanf( """" )"
