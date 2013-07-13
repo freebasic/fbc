@@ -12,6 +12,7 @@ Version 0.90.1:
 - C backend: Passing @proc (taking address of procedures) expressions to BYREF parameters caused bad C code to be generated
 - Pointer arithmetic on procedure pointers is now disallowed. It is not meaningful, because procedures do not have a fixed size and are not arranged like array elements.
 - A bug in array index parsing could cause the compiler to crash due to arrays being used without index, instead of showing an error message
+- ON GOTO was broken due to the compiler generating bad jump tables for it
 
 
 Version 0.90.0 (former 0.25.0):

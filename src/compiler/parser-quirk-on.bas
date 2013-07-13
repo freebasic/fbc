@@ -36,7 +36,7 @@ function cGOTBStmt _
 	'' expr = 1   ->   label1
 	'' expr = 2   ->   label2
 	'' etc.
-	'' This means: minval = 1, maxval = labelcount - 1.
+	'' This means: minval = 1, maxval = labelcount.
 
 	'' convert to uinteger if needed
 	if( astGetDataType( expr ) <> FB_DATATYPE_UINT ) then
@@ -91,10 +91,13 @@ function cGOTBStmt _
 
 	exitlabel = symbAddLabel( NULL )
 
-	for i as integer = 1 to l
-		values(i) = i
+	'' Fill beginning of values buffer with the 1,2,3,4,... values
+	for i as integer = 0 to l - 1
+		values(i) = i + 1
 	next
-	expr = astBuildJMPTB( sym, @values(0), @labels(0), l, exitlabel, 1, l - 1 )
+
+	'' labelcount = l, minval = 1, maxval = l
+	expr = astBuildJMPTB( sym, @values(0), @labels(0), l, exitlabel, 1, l )
 
 	if( isgoto ) then
 		astAdd( expr )
