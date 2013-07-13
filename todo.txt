@@ -1,5 +1,9 @@
 o 64bit
-  - remove env.target.size_t and just use FB_DATATYPE_UINT instead
+  - May have to specify C++ mangled name for new/new[]/delete/delete[] operators
+    manually instead of using env.target.size_t, because our C++ mangling won't
+    be fully compatible. On Linux, new probably uses size_t, which is unsigned long,
+    but none of FB types will be mangled as long on 64bit. It could work on Win64
+    at least, if new uses a long long param there...
   - adjust cStrCHR() and cStrASC() to handle 64bit constants
   - check all size-sensitive rtl functions, mk*(), cv*()
   - search for any other "x86 assumption"'s
@@ -12,7 +16,8 @@ o 64bit
   - Adjust rtlib
     - How to handle functions using long? (e.g. fb_CVL())
     - Careful about any enum parameters (e.g. FB_FILE_ENCOD on Open functions),
-      should be changed to fbint too perhaps to prevent them from being 32bit
+      will they still be 32bit int on 64bit? Then we'd have to use FB_DATATYPE_LONG
+      in rtl-* definitions
     - also, get#/put# should just always use the fb_FileGet/Put*Large* versions,
       with the 64bit parameter, instead of the old fb_FileGet/Put* versions,
       because behind the scenes they map to the same function anyways already.
