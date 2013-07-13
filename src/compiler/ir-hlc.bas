@@ -1213,7 +1213,11 @@ private function _emitBegin( ) as integer
 	hWriteLine( "typedef unsigned int       uint32;", TRUE )
 	hWriteLine( "typedef   signed long long  int64;", TRUE )
 	hWriteLine( "typedef unsigned long long uint64;", TRUE )
-	hWriteLine( "typedef struct { char *data; int len; int size; } FBSTRING;", TRUE )
+	if( fbCpuTypeIs64bit( ) ) then
+		hWriteLine( "typedef struct { char *data; int64 len; int64 size; } FBSTRING;", TRUE )
+	else
+		hWriteLine( "typedef struct { char *data; int32 len; int32 size; } FBSTRING;", TRUE )
+	end if
 
 	'' body
 	sectionBegin( )
