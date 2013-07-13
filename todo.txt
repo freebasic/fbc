@@ -3,8 +3,6 @@ o 64bit
   - adjust cStrCHR() and cStrASC() to handle 64bit constants
   - check all size-sensitive rtl functions, mk*(), cv*()
   - search for any other "x86 assumption"'s
-  - hDoOptRemConv() may need adjustment for 64bit,
-    or could it even be removed completely?
   - struct packing, cFieldAlignmentAttribute()
   - structs returned in registers, hGetReturnType()
   - 64bit calling convention? There's only the specialized cdecl with arguments

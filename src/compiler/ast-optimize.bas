@@ -1328,6 +1328,23 @@ private function hDoOptRemConv( byval n as ASTNODE ptr ) as ASTNODE ptr
 	end if
 
 	'' convert l{float} op cast(float, r{var}) to l op r
+	''
+	'' For example:
+	''    dim i as integer
+	''    print f + cast( single, i )
+	''
+	'' The cast can be optimized out, because the x86 FPU supports fiadd
+	'' which can add together float/integer directly, so we don't need to
+	'' convert integer to float first and then do a float+float addition.
+	''
+	'' fiadd only supports 16bit and 32bit operands though, thus LONGINTs
+	'' are disallowed below.
+	''
+	'' This all is only useful for the ASM backend since it's making
+	'' assumptions about the x86 FPU. For the other backends, we can aswell
+	'' do the cast, ensure we're getting the behaviour we want, and let
+	'' gcc/llvm worry about good code generation.
+
 	if( n->class = AST_NODECLASS_BOP ) then
 		select case astGetDataType( n )
 		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
@@ -1883,7 +1900,8 @@ function astOptimizeTree( byval n as ASTNODE ptr ) as ASTNODE ptr
 
 	n = hOptSelfCompare( n )
 
-	if( irGetOption( IR_OPT_FPUCONV ) = FALSE ) then
+	if( (irGetOption( IR_OPT_FPUCONV ) = FALSE) and _
+	    (env.clopt.backend = FB_BACKEND_GAS) ) then
 		n = hDoOptRemConv( n )
 	end if
 
