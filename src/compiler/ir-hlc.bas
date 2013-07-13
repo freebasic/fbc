@@ -2087,7 +2087,7 @@ private sub hBuildStrLit _
 	( _
 		byref ln as string, _
 		byval z as zstring ptr, _
-		byval length as integer _  '' including null terminator
+		byval length as longint _  '' including null terminator
 	)
 
 	dim as integer ch = any
@@ -2133,7 +2133,7 @@ private sub hBuildWstrLit _
 	( _
 		byref ln as string, _
 		byval w as wstring ptr, _
-		byval length as integer _  '' including null terminator
+		byval length as longint _  '' including null terminator
 	)
 
 	dim as integer ch = any
