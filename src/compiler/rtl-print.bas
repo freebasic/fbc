@@ -13,7 +13,7 @@
 		/' sub fb_PrintVoid( byval fnum as long = 0, byval mask as long ) '/ _
 		( _
 			@FB_RTL_PRINTVOID, NULL, _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			2, _
 			{ _
@@ -24,7 +24,7 @@
 		/' sub fb_PrintByte( byval fnum as long = 0, byval x as byte, byval mask as long ) '/ _
 		( _
 			@FB_RTL_PRINTBYTE, NULL, _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
@@ -36,7 +36,7 @@
 		/' sub fb_PrintUByte( byval fnum as long = 0, byval x as ubyte, byval mask as long ) '/ _
 		( _
 			@FB_RTL_PRINTUBYTE, NULL, _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
@@ -48,7 +48,7 @@
 		/' sub fb_PrintShort( byval fnum as long = 0, byval x as short, byval mask as long ) '/ _
 		( _
 			@FB_RTL_PRINTSHORT, NULL, _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
@@ -60,7 +60,7 @@
 		/' sub fb_PrintUShort( byval fnum as long = 0, byval x as ushort, byval mask as long ) '/ _
 		( _
 			@FB_RTL_PRINTUSHORT, NULL, _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
@@ -72,7 +72,7 @@
 		/' sub fb_PrintInt( byval fnum as long = 0, byval x as long, byval mask as long ) '/ _
 		( _
 			@FB_RTL_PRINTINT, NULL, _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
@@ -84,7 +84,7 @@
 		/' sub fb_PrintUInt( byval fnum as long = 0, byval x as ulong, byval mask as long ) '/ _
 		( _
 			@FB_RTL_PRINTUINT, NULL, _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
@@ -96,7 +96,7 @@
 		/' sub fb_PrintLongint( byval fnum as integer = 0, byval x as longint, byval mask as long ) '/ _
 		( _
 			@FB_RTL_PRINTLONGINT, NULL, _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
@@ -108,7 +108,7 @@
 		/' sub fb_PrintULongint( byval fnum as long = 0, byval x as ulongint, byval mask as long ) '/ _
 		( _
 			@FB_RTL_PRINTULONGINT, NULL, _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
@@ -120,7 +120,7 @@
 		/' sub fb_PrintSingle( byval fnum as long = 0, byval x as single, byval mask as long ) '/ _
 		( _
 			@FB_RTL_PRINTSINGLE, NULL, _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
@@ -132,7 +132,7 @@
 		/' sub fb_PrintDouble( byval fnum as long = 0, byval x as double, byval mask as long ) '/ _
 		( _
 			@FB_RTL_PRINTDOUBLE, NULL, _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
@@ -144,7 +144,7 @@
 		/' sub fb_PrintString( byval fnum as long = 0, byref x as string, byval mask as long ) '/ _
 		( _
 			@FB_RTL_PRINTSTR, NULL, _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
@@ -156,7 +156,7 @@
 		/' sub fb_PrintWstr( byval fnum as long = 0, byval x as wstring ptr, byval mask as long ) '/ _
 		( _
 			@FB_RTL_PRINTWSTR, NULL, _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
@@ -168,7 +168,7 @@
 		/' sub fb_LPrintVoid( byval fnum as long = 0, byval mask as long ) '/ _
 		( _
 			@FB_RTL_LPRINTVOID, NULL, _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 	 		@rtlPrinter_cb, FB_RTL_OPT_NONE, _
 			2, _
 			{ _
@@ -179,7 +179,7 @@
 		/' sub fb_LPrintByte( byval fnum as long = 0, byval x as byte, byval mask as long ) '/ _
 		( _
 			@FB_RTL_LPRINTBYTE, NULL, _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 	 		@rtlPrinter_cb, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
@@ -191,7 +191,7 @@
 		/' sub fb_LPrintUByte( byval fnum as long = 0, byval x as ubyte, byval mask as long ) '/ _
 		( _
 			@FB_RTL_LPRINTUBYTE, NULL, _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 	 		@rtlPrinter_cb, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
@@ -203,7 +203,7 @@
 		/' sub fb_LPrintShort( byval fnum as long = 0, byval x as short, byval mask as long ) '/ _
 		( _
 			@FB_RTL_LPRINTSHORT, NULL, _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 	 		@rtlPrinter_cb, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
@@ -215,7 +215,7 @@
 		/' sub fb_LPrintUShort( byval fnum as long = 0, byval x as ushort, byval mask as long ) '/ _
 		( _
 			@FB_RTL_LPRINTUSHORT, NULL, _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 	 		@rtlPrinter_cb, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
@@ -227,7 +227,7 @@
 		/' sub fb_LPrintInt( byval fnum as long = 0, byval x as long, byval mask as long ) '/ _
 		( _
 			@FB_RTL_LPRINTINT, NULL, _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 	 		@rtlPrinter_cb, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
@@ -239,7 +239,7 @@
 		/' sub fb_LPrintUInt( byval fnum as long = 0, byval x as ulong, byval mask as long ) '/ _
 		( _
 			@FB_RTL_LPRINTUINT, NULL, _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 	 		@rtlPrinter_cb, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
@@ -251,7 +251,7 @@
 		/' sub fb_LPrintLongint( byval fnum as long = 0, byval x as longint, byval mask as long ) '/ _
 		( _
 			@FB_RTL_LPRINTLONGINT, NULL, _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 	 		@rtlPrinter_cb, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
@@ -263,7 +263,7 @@
 		/' sub fb_LPrintULongint( byval fnum as long = 0, byval x as ulongint, byval mask as long ) '/ _
 		( _
 			@FB_RTL_LPRINTULONGINT, NULL, _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 	 		@rtlPrinter_cb, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
@@ -275,7 +275,7 @@
 		/' sub fb_LPrintSingle( byval fnum as long = 0, byval x as single, byval mask as long ) '/ _
 		( _
 			@FB_RTL_LPRINTSINGLE, NULL, _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 	 		@rtlPrinter_cb, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
@@ -287,7 +287,7 @@
 		/' sub fb_LPrintDouble( byval fnum as long = 0, byval x as double, byval mask as long ) '/ _
 		( _
 			@FB_RTL_LPRINTDOUBLE, NULL, _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 	 		@rtlPrinter_cb, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
@@ -299,7 +299,7 @@
 		/' sub fb_LPrintString( byval fnum as long = 0, byref x as string, byval mask as long ) '/ _
 		( _
 			@FB_RTL_LPRINTSTR, NULL, _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 	 		@rtlPrinter_cb, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
@@ -311,7 +311,7 @@
 		/' sub fb_LPrintWstr( byval fnum as long = 0, byval x as wstring ptr, byval mask as long ) '/ _
 		( _
 			@FB_RTL_LPRINTWSTR, NULL, _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 	 		@rtlPrinter_cb, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
@@ -323,7 +323,7 @@
 		/' sub fb_PrintSPC( byval fnum as long = 0, byval n as integer ) '/ _
 		( _
 			@FB_RTL_PRINTSPC, NULL, _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			2, _
 			{ _
@@ -334,7 +334,7 @@
 		/' sub fb_PrintTab( byval fnum as long = 0, byval newcol as long ) '/ _
 		( _
 			@FB_RTL_PRINTTAB, NULL, _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			2, _
 			{ _
@@ -345,7 +345,7 @@
 		/' sub fb_WriteVoid( byval fnum as long = 0, byval mask as long ) '/ _
 		( _
 			@FB_RTL_WRITEVOID, NULL, _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			2, _
 			{ _
@@ -356,7 +356,7 @@
 		/' sub fb_WriteByte( byval fnum as long = 0, byval x as byte, byval mask as long ) '/ _
 		( _
 			@FB_RTL_WRITEBYTE, NULL, _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
@@ -368,7 +368,7 @@
 		/' sub fb_WriteUByte( byval fnum as long = 0, byval x as ubyte, byval mask as long ) '/ _
 		( _
 			@FB_RTL_WRITEUBYTE, NULL, _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
@@ -380,7 +380,7 @@
 		/' sub fb_WriteShort( byval fnum as long = 0, byval x as short, byval mask as long ) '/ _
 		( _
 			@FB_RTL_WRITESHORT, NULL, _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
@@ -392,7 +392,7 @@
 		/' sub fb_WriteUShort( byval fnum as long = 0, byval x as ushort, byval mask as long ) '/ _
 		( _
 			@FB_RTL_WRITEUSHORT, NULL, _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
@@ -404,7 +404,7 @@
 		/' sub fb_WriteInt( byval fnum as long = 0, byval x as long, byval mask as long ) '/ _
 		( _
 			@FB_RTL_WRITEINT, NULL, _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
@@ -416,7 +416,7 @@
 		/' sub fb_WriteUInt( byval fnum as long = 0, byval x as ulong, byval mask as long ) '/ _
 		( _
 			@FB_RTL_WRITEUINT, NULL, _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
@@ -428,7 +428,7 @@
 		/' sub fb_WriteLongint( byval fnum as long = 0, byval x as longint, byval mask as long ) '/ _
 		( _
 			@FB_RTL_WRITELONGINT, NULL, _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
@@ -440,7 +440,7 @@
 		/' sub fb_WriteULongint( byval fnum as long = 0, byval x as ulongint, byval mask as long ) '/ _
 		( _
 			@FB_RTL_WRITEULONGINT, NULL, _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
@@ -452,7 +452,7 @@
 		/' sub fb_WriteSingle( byval fnum as long = 0, byval x as single, byval mask as long ) '/ _
 		( _
 			@FB_RTL_WRITESINGLE, NULL, _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
@@ -464,7 +464,7 @@
 		/' sub fb_WriteDouble( byval fnum as long = 0, byval x as double, byval mask as long ) '/ _
 		( _
 			@FB_RTL_WRITEDOUBLE, NULL, _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
@@ -476,7 +476,7 @@
 		/' sub fb_WriteString( byval fnum as long = 0, byref x as string, byval mask as long ) '/ _
 		( _
 			@FB_RTL_WRITESTR, NULL, _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
@@ -488,7 +488,7 @@
 		/' sub fb_WriteWstr( byval fnum as long = 0, byval x as wstring ptr, byval mask as long ) '/ _
 		( _
 			@FB_RTL_WRITEWSTR, NULL, _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
@@ -500,7 +500,7 @@
 		/' function fb_PrintUsingInit( byref fmtstr as string ) as long '/ _
 		( _
 			@FB_RTL_PRINTUSGINIT, NULL, _
-			FB_DATATYPE_LONG, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			1, _
 			{ _
@@ -510,7 +510,7 @@
 		/' function fb_PrintUsingStr( byval fnum as long, byref s as string, byval mask as long ) as long '/ _
 		( _
 			@FB_RTL_PRINTUSGSTR, NULL, _
-			FB_DATATYPE_LONG, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
@@ -522,7 +522,7 @@
 		/' function fb_PrintUsingWstr( byval fnum as long, byval s as wstring ptr, byval mask as long ) as long '/ _
 		( _
 			@FB_RTL_PRINTUSGWSTR, NULL, _
-			FB_DATATYPE_LONG, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
@@ -534,7 +534,7 @@
 		/' function fb_PrintUsingSingle( byval fnum as long, byval v as single, byval mask as long ) as long '/ _
 		( _
 			@FB_RTL_PRINTUSG_SNG, NULL, _
-			FB_DATATYPE_LONG, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
@@ -546,7 +546,7 @@
 		/' function fb_PrintUsingDouble( byval fnum as long, byval v as double, byval mask as long ) as long '/ _
 		( _
 			@FB_RTL_PRINTUSG_DBL, NULL, _
-			FB_DATATYPE_LONG, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
@@ -558,7 +558,7 @@
 		/' function fb_PrintUsingLongint( byval fnum as long, byval v as longint, byval mask as long ) as long '/ _
 		( _
 			@FB_RTL_PRINTUSG_LL, NULL, _
-			FB_DATATYPE_LONG, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
@@ -570,7 +570,7 @@
 		/' function fb_PrintUsingULongint( byval fnum as long, byval v as ulongint, byval mask as long ) as long '/ _
 		( _
 			@FB_RTL_PRINTUSG_ULL, NULL, _
-			FB_DATATYPE_LONG, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
@@ -582,7 +582,7 @@
 		/' function fb_PrintUsingEnd( byval fnum as long ) as long '/ _
 		( _
 			@FB_RTL_PRINTUSGEND, NULL, _
-			FB_DATATYPE_LONG, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			1, _
 			{ _
@@ -592,7 +592,7 @@
 		/' function fb_LPrintUsingInit( byref fmtstr as string ) as long '/ _
 		( _
 			@FB_RTL_LPRINTUSGINIT, NULL, _
-			FB_DATATYPE_LONG, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 	 		@rtlPrinter_cb, FB_RTL_OPT_NONE, _
 			1, _
 			{ _

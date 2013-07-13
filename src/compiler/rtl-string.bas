@@ -15,7 +15,7 @@
 				byval fillrem as long = 1 ) as string '/ _
 		( _
 			@FB_RTL_STRINIT, NULL, _
-			FB_DATATYPE_STRING, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			5, _
 			{ _
@@ -30,7 +30,7 @@
 				byval src as wstring ptr, byval fillrem as integer ) as string '/ _
 		( _
 			@FB_RTL_WSTRASSIGNAW_INIT, NULL, _
-			FB_DATATYPE_STRING, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			4, _
 			{ _
@@ -45,7 +45,7 @@
 				byval fillrem as long = 1 ) as string '/ _
 		( _
 			@FB_RTL_STRASSIGN, NULL, _
-			FB_DATATYPE_STRING, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			5, _
 			{ _
@@ -60,7 +60,7 @@
 				byval src as wstring ptr) as wstring ptr '/ _
 		( _
 			@FB_RTL_WSTRASSIGN, NULL, _
-			typeAddrOf( FB_DATATYPE_WCHAR ), FB_USE_FUNCMODE_FBCALL, _
+			typeAddrOf( FB_DATATYPE_WCHAR ), FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
@@ -73,7 +73,7 @@
 				byref src as any, byval src_len as integer ) as wstring ptr '/ _
 		( _
 			@FB_RTL_WSTRASSIGNWA, NULL, _
-			typeAddrOf( FB_DATATYPE_WCHAR ), FB_USE_FUNCMODE_FBCALL, _
+			typeAddrOf( FB_DATATYPE_WCHAR ), FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			4, _
 			{ _
@@ -87,7 +87,7 @@
 				byval src as wstring ptr, byval fillrem as long ) as string '/ _
 		( _
 			@FB_RTL_WSTRASSIGNAW, NULL, _
-			FB_DATATYPE_STRING, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			4, _
 			{ _
@@ -100,7 +100,7 @@
 		/' sub fb_StrDelete( byref str as string ) '/ _
 		( _
 			@FB_RTL_STRDELETE, NULL, _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			1, _
 			{ _
@@ -110,7 +110,7 @@
 		/' sub fb_WstrDelete( byval str as wstring ptr ) '/ _
 		( _
 			@FB_RTL_WSTRDELETE, NULL, _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			1, _
 			{ _
@@ -122,7 +122,7 @@
 				byref str2 as any, byval str2_size as integer ) as string '/ _
 		( _
 			@FB_RTL_STRCONCAT, NULL, _
-			FB_DATATYPE_STRING, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			5, _
 			{ _
@@ -136,7 +136,7 @@
 		/' function fb_WstrConcat( byval str1 as wstring ptr, byval str2 as wstring ptr ) as wstring '/ _
 		( _
 			@FB_RTL_WSTRCONCAT, NULL, _
-			FB_DATATYPE_WCHAR, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_WCHAR, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			2, _
 			{ _
@@ -148,7 +148,7 @@
 				byref str2 as any, byval str2_size as integer ) as wstring '/ _
 		( _
 			@FB_RTL_WSTRCONCATWA, NULL, _
-			FB_DATATYPE_WCHAR, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_WCHAR, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
@@ -161,7 +161,7 @@
 				byval str2 as wstring ptr ) as wstring '/ _
 		( _
 			@FB_RTL_WSTRCONCATAW, NULL, _
-			FB_DATATYPE_WCHAR, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_WCHAR, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
@@ -174,7 +174,7 @@
 				byref str2 as any, byval str2_size as integer ) as long '/ _
 		( _
 			@FB_RTL_STRCOMPARE, NULL, _
-			FB_DATATYPE_LONG, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			4, _
 			{ _
@@ -187,7 +187,7 @@
 		/' function fb_WstrCompare( byval str1 as wstring ptr, byval str2 as wstring ptr ) as long '/ _
 		( _
 			@FB_RTL_WSTRCOMPARE, NULL, _
-			FB_DATATYPE_LONG, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			2, _
 			{ _
@@ -200,7 +200,7 @@
 				byval fillrem as long = 1 ) as string '/ _
 		( _
 			@FB_RTL_STRCONCATASSIGN, NULL, _
-			FB_DATATYPE_STRING, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			5, _
 			{ _
@@ -215,7 +215,7 @@
 				byval src as wstring ptr ) as wstring ptr '/ _
 		( _
 			@FB_RTL_WSTRCONCATASSIGN, NULL, _
-			typeAddrOf( FB_DATATYPE_WCHAR ), FB_USE_FUNCMODE_FBCALL, _
+			typeAddrOf( FB_DATATYPE_WCHAR ), FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
@@ -227,7 +227,7 @@
 		/' function fb_StrAllocTempResult( byref str as string ) as string '/ _
 		( _
 			@FB_RTL_STRALLOCTMPRES, NULL, _
-			FB_DATATYPE_STRING, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			1, _
 			{ _
@@ -237,7 +237,7 @@
 		/' function fb_StrAllocTempDescV( byref str as string ) as string '/ _
 		( _
 			@FB_RTL_STRALLOCTMPDESCV, NULL, _
-			FB_DATATYPE_STRING, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			1, _
 			{ _
@@ -247,7 +247,7 @@
 		/' function fb_StrAllocTempDescF( byref str as any, byval str_size as integer ) as string '/ _
 		( _
 			@FB_RTL_STRALLOCTMPDESCF, NULL, _
-			FB_DATATYPE_STRING, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			2, _
 			{ _
@@ -258,7 +258,7 @@
 		/' function fb_StrAllocTempDescZ( byval str as zstring ptr ) as string '/ _
 		( _
 			@FB_RTL_STRALLOCTMPDESCZ, NULL, _
-			FB_DATATYPE_STRING, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			1, _
 			{ _
@@ -268,7 +268,7 @@
 		/' function fb_StrAllocTempDescZEx( byval str as zstring ptr, byval len as integer ) as string '/ _
 		( _
 			@FB_RTL_STRALLOCTMPDESCZEX, NULL, _
-			FB_DATATYPE_STRING, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			2, _
 			{ _
@@ -279,7 +279,7 @@
 		/' function fb_WstrAlloc( byval chars as integer ) as wstring ptr '/ _
 		( _
 			@FB_RTL_WSTRALLOC, NULL, _
-			typeAddrOf( FB_DATATYPE_WCHAR ), FB_USE_FUNCMODE_FBCALL, _
+			typeAddrOf( FB_DATATYPE_WCHAR ), FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			1, _
 			{ _
@@ -289,7 +289,7 @@
 		/' function fb_IntToStr( byval num as long ) as string '/ _
 		( _
 			@FB_RTL_INT2STR, NULL, _
-			FB_DATATYPE_STRING, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			1, _
 			{ _
@@ -299,7 +299,7 @@
 		/' function fb_IntToStrQB( byval num as long ) as string '/ _
 		( _
 			@FB_RTL_INT2STR_QB, NULL, _
-			FB_DATATYPE_STRING, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_QBONLY, _
 			1, _
 			{ _
@@ -309,7 +309,7 @@
 		/' function fb_IntToWstr( byval num as long ) as wstring '/ _
 		( _
 			@FB_RTL_INT2WSTR, NULL, _
-			FB_DATATYPE_WCHAR, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_WCHAR, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			1, _
 			{ _
@@ -319,7 +319,7 @@
 		/' function fb_UIntToStr( byval num as ulong ) as string '/ _
 		( _
 			@FB_RTL_UINT2STR, NULL, _
-			FB_DATATYPE_STRING, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			1, _
 			{ _
@@ -329,7 +329,7 @@
 		/' function fb_UIntToStrQB( byval num as ulong ) as string '/ _
 		( _
 			@FB_RTL_UINT2STR_QB, NULL, _
-			FB_DATATYPE_STRING, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_QBONLY, _
 			1, _
 			{ _
@@ -339,7 +339,7 @@
 		/' function fb_UIntToWstr( byval num as ulong ) as wstring '/ _
 		( _
 			@FB_RTL_UINT2WSTR, NULL, _
-			FB_DATATYPE_WCHAR, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_WCHAR, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			1, _
 			{ _
@@ -349,7 +349,7 @@
 		/' function fb_LongintToStr( byval num as longint ) as string '/ _
 		( _
 			@FB_RTL_LONGINT2STR, NULL, _
-			FB_DATATYPE_STRING, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			1, _
 			{ _
@@ -359,7 +359,7 @@
 		/' function fb_LongintToStrQB( byval num as longint ) as string '/ _
 		( _
 			@FB_RTL_LONGINT2STR_QB, NULL, _
-			FB_DATATYPE_STRING, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_QBONLY, _
 			1, _
 			{ _
@@ -369,7 +369,7 @@
 		/' function fb_LongintToWstr( byval num as longint ) as wstring '/ _
 		( _
 			@FB_RTL_LONGINT2WSTR, NULL, _
-			FB_DATATYPE_WCHAR, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_WCHAR, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			1, _
 			{ _
@@ -379,7 +379,7 @@
 		/' function fb_ULongintToStr( byval num as ulongint ) as string '/ _
 		( _
 			@FB_RTL_ULONGINT2STR, NULL, _
-			FB_DATATYPE_STRING, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			1, _
 			{ _
@@ -389,7 +389,7 @@
 		/' function fb_ULongintToStrQB( byval num as ulongint ) as string '/ _
 		( _
 			@FB_RTL_ULONGINT2STR_QB, NULL, _
-			FB_DATATYPE_STRING, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_QBONLY, _
 			1, _
 			{ _
@@ -399,7 +399,7 @@
 		/' function fb_ULongintToWstr( byval num as ulongint ) as wstring '/ _
 		( _
 			@FB_RTL_ULONGINT2WSTR, NULL, _
-			FB_DATATYPE_WCHAR, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_WCHAR, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			1, _
 			{ _
@@ -409,7 +409,7 @@
 		/' function fb_FloatToStr( byval num as single ) as string '/ _
 		( _
 			@FB_RTL_FLT2STR, NULL, _
-			FB_DATATYPE_STRING, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			1, _
 			{ _
@@ -419,7 +419,7 @@
 		/' function fb_FloatToStrQB( byval num as single ) as string '/ _
 		( _
 			@FB_RTL_FLT2STR_QB, NULL, _
-			FB_DATATYPE_STRING, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_QBONLY, _
 			1, _
 			{ _
@@ -429,7 +429,7 @@
 		/' function fb_FloatToWstr( byval num as single ) as wstring '/ _
 		( _
 			@FB_RTL_FLT2WSTR, NULL, _
-			FB_DATATYPE_WCHAR, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_WCHAR, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			1, _
 			{ _
@@ -439,7 +439,7 @@
 		/' function fb_DoubleToStr( byval num as double ) as string '/ _
 		( _
 			@FB_RTL_DBL2STR, NULL, _
-			FB_DATATYPE_STRING, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			1, _
 			{ _
@@ -449,7 +449,7 @@
 		/' function fb_DoubleToStrQB( byval num as double ) as string '/ _
 		( _
 			@FB_RTL_DBL2STR_QB, NULL, _
-			FB_DATATYPE_STRING, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_QBONLY, _
 			1, _
 			{ _
@@ -459,7 +459,7 @@
 		/' function fb_DoubleToWstr( byval num as double ) as wstring '/ _
 		( _
 			@FB_RTL_DBL2WSTR, NULL, _
-			FB_DATATYPE_WCHAR, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_WCHAR, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			1, _
 			{ _
@@ -469,7 +469,7 @@
 		/' function fb_WstrToStr( byval str as wstring ptr ) as string '/ _
 		( _
 			@FB_RTL_WSTR2STR, NULL, _
-			FB_DATATYPE_STRING, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			1, _
 			{ _
@@ -479,7 +479,7 @@
 		/' function fb_StrToWstr( byval str as zstring ptr ) as wstring '/ _
 		( _
 			@FB_RTL_STR2WSTR, NULL, _
-			FB_DATATYPE_WCHAR, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_WCHAR, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			1, _
 			{ _
@@ -490,7 +490,7 @@
 				byval len as integer ) as string '/ _
 		( _
 			@FB_RTL_STRMID, NULL, _
-			FB_DATATYPE_STRING, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
@@ -503,7 +503,7 @@
 				byval len as integer ) as wstring '/ _
 		( _
 			@FB_RTL_WSTRMID, NULL, _
-			FB_DATATYPE_WCHAR, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_WCHAR, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
@@ -516,7 +516,7 @@
 				byval len as integer, byref src as string ) '/ _
 		( _
 			@FB_RTL_STRASSIGNMID, NULL, _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			4, _
 			{ _
@@ -531,7 +531,7 @@
 				byval src as wstring ptr ) '/ _
 		( _
 			@FB_RTL_WSTRASSIGNMID, NULL, _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			5, _
 			{ _
@@ -545,7 +545,7 @@
 		/' function fb_StrFill1( byval cnt as integer, byval char as long ) as string '/ _
 		( _
 			@FB_RTL_STRFILL1, NULL, _
-			FB_DATATYPE_STRING, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			2, _
 			{ _
@@ -556,7 +556,7 @@
 		/' function fb_WstrFill1( byval chars as integer, byval c as long ) as wstring '/ _
 		( _
 			@FB_RTL_WSTRFILL1, NULL, _
-			FB_DATATYPE_WCHAR, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_WCHAR, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			2, _
 			{ _
@@ -567,7 +567,7 @@
 		/' fb_StrFill2( byval cnt as integer, byref src as string ) as string '/ _
 		( _
 			@FB_RTL_STRFILL2, NULL, _
-			FB_DATATYPE_STRING, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			2, _
 			{ _
@@ -578,7 +578,7 @@
 		/' function fb_WstrFill2( byval cnt as integer, byval src as wstring ptr ) as wstring '/ _
 		( _
 			@FB_RTL_WSTRFILL2, NULL, _
-			FB_DATATYPE_WCHAR, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_WCHAR, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			2, _
 			{ _
@@ -589,7 +589,7 @@
 		/' function fb_StrLen( byref str as any, byval str_size as integer ) as integer '/ _
 		( _
 			@FB_RTL_STRLEN, NULL, _
-			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_INTEGER, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			2, _
 			{ _
@@ -600,7 +600,7 @@
 		/' function fb_WstrLen( byval str as wstring ptr ) as integer '/ _
 		( _
 			@FB_RTL_WSTRLEN, NULL, _
-			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_INTEGER, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			1, _
 			{ _
@@ -610,7 +610,7 @@
 		/' sub fb_StrLset( byref dst as string, byref src as string ) '/ _
 		( _
 			@FB_RTL_STRLSET, NULL, _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			2, _
 			{ _
@@ -621,7 +621,7 @@
 		/' sub fb_WstrLset( byval dst as wstring ptr, byval src as wstring ptr ) '/ _
 		( _
 			@FB_RTL_WSTRLSET, NULL, _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			2, _
 			{ _
@@ -632,7 +632,7 @@
 		/' sub fb_StrRset overload( byref dst as string, byref src as string ) '/ _
 		( _
 			@FB_RTL_STRRSET, NULL, _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER, _
 			2, _
 			{ _
@@ -643,7 +643,7 @@
 		/' sub fb_WstrRset( byval dst as wstring ptr, byval src as wstring ptr ) '/ _
 		( _
 			@FB_RTL_WSTRRSET, NULL, _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
 			2, _
 			{ _
@@ -654,7 +654,7 @@
 		/' function fb_ASC( byref str as string, byval pos as integer = 0 ) as ulong '/ _
 		( _
 			@FB_RTL_STRASC, NULL, _
-			FB_DATATYPE_ULONG, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_ULONG, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			2, _
 			{ _
@@ -665,7 +665,7 @@
 		/' function fb_WstrAsc( byval str as wstring ptr, byval pos as integer = 0 ) as ulong '/ _
 		( _
 			@FB_RTL_WSTRASC, NULL, _
-			FB_DATATYPE_ULONG, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_ULONG, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			2, _
 			{ _
@@ -699,7 +699,7 @@
 				byref patt as string ) as integer '/ _
 		( _
 			@FB_RTL_STRINSTR, NULL, _
-			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_INTEGER, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
@@ -712,7 +712,7 @@
 				byval patt as wstring ptr ) as integer '/ _
 		( _
 			@FB_RTL_WSTRINSTR, NULL, _
-			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_INTEGER, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
@@ -725,7 +725,7 @@
 				byref pattern as string ) as integer '/ _
 		( _
 			@FB_RTL_STRINSTRANY, NULL, _
-			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_INTEGER, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
@@ -738,7 +738,7 @@
 				byval pattern as wstring ptr ) as integer '/ _
 		( _
 			@FB_RTL_WSTRINSTRANY, NULL, _
-			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_INTEGER, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
@@ -751,7 +751,7 @@
 				byval start as integer ) as integer '/ _
 		( _
 			@FB_RTL_STRINSTRREV, NULL, _
-			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_INTEGER, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
@@ -764,7 +764,7 @@
 				byval start as integer ) as integer '/ _
 		( _
 			@FB_RTL_WSTRINSTRREV, NULL, _
-			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_INTEGER, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
@@ -777,7 +777,7 @@
 				byval start as integer ) as integer '/ _
 		( _
 			@FB_RTL_STRINSTRREVANY, NULL, _
-			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_INTEGER, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
@@ -790,7 +790,7 @@
 				byval start as integer ) as integer '/ _
 		( _
 			@FB_RTL_WSTRINSTRREVANY, NULL, _
-			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_INTEGER, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
@@ -802,7 +802,7 @@
 		/' function fb_TRIM( byref str as string ) as string '/ _
 		( _
 			@FB_RTL_STRTRIM, NULL, _
-			FB_DATATYPE_STRING, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			1, _
 			{ _
@@ -812,7 +812,7 @@
 		/' function fb_WstrTrim( byval str as wstring ptr ) as wstring '/ _
 		( _
 			@FB_RTL_WSTRTRIM, NULL, _
-			FB_DATATYPE_WCHAR, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_WCHAR, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			1, _
 			{ _
@@ -822,7 +822,7 @@
 		/' function fb_TrimAny( byref str as string, byref pattern as string ) as string '/ _
 		( _
 			@FB_RTL_STRTRIMANY, NULL, _
-			FB_DATATYPE_STRING, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			2, _
 			{ _
@@ -833,7 +833,7 @@
 		/' function fb_WstrTrimAny( byval str as wstring ptr, byval pattern as wstring ptr ) as wstring '/ _
 		( _
 			@FB_RTL_WSTRTRIMANY, NULL, _
-			FB_DATATYPE_WCHAR, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_WCHAR, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			2, _
 			{ _
@@ -844,7 +844,7 @@
 		/' function fb_TrimEx( byref str as string, byref pattern as string ) as string '/ _
 		( _
 			@FB_RTL_STRTRIMEX, NULL, _
-			FB_DATATYPE_STRING, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			2, _
 			{ _
@@ -855,7 +855,7 @@
 		/' function fb_WstrTrimEx( byval str as wstring ptr, byval pattern as wstring ptr ) as wstring '/ _
 		( _
 			@FB_RTL_WSTRTRIMEX, NULL, _
-			FB_DATATYPE_WCHAR, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_WCHAR, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			2, _
 			{ _
@@ -866,7 +866,7 @@
 		/' function fb_RTRIM( byref str as string ) as string '/ _
 		( _
 			@FB_RTL_STRRTRIM, NULL, _
-			FB_DATATYPE_STRING, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			1, _
 			{ _
@@ -876,7 +876,7 @@
 		/' function fb_WstrRTrim( byval str as wstring ptr ) as wstring '/ _
 		( _
 			@FB_RTL_WSTRRTRIM, NULL, _
-			FB_DATATYPE_WCHAR, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_WCHAR, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			1, _
 			{ _
@@ -886,7 +886,7 @@
 		/' function fb_RTrimAny( byref str as string, byref pattern as string ) as string '/ _
 		( _
 			@FB_RTL_STRRTRIMANY, NULL, _
-			FB_DATATYPE_STRING, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			2, _
 			{ _
@@ -897,7 +897,7 @@
 		/' function fb_WstrRTrimAny( byval str as wstring ptr, byval pattern as wstring ptr ) as wstring '/ _
 		( _
 			@FB_RTL_WSTRRTRIMANY, NULL, _
-			FB_DATATYPE_WCHAR, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_WCHAR, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			2, _
 			{ _
@@ -908,7 +908,7 @@
 		/' function fb_RTrimEx( byref str as string, byref pattern as string ) as string '/ _
 		( _
 			@FB_RTL_STRRTRIMEX, NULL, _
-			FB_DATATYPE_STRING, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			2, _
 			{ _
@@ -919,7 +919,7 @@
 		/' function fb_WstrRTrimEx( byval str as wstring ptr, byval pattern as wstring ptr ) as wstring '/ _
 		( _
 			@FB_RTL_WSTRRTRIMEX, NULL, _
-			FB_DATATYPE_WCHAR, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_WCHAR, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			2, _
 			{ _
@@ -930,7 +930,7 @@
 		/' function fb_LTRIM( byref str as string ) as string '/ _
 		( _
 			@FB_RTL_STRLTRIM, NULL, _
-			FB_DATATYPE_STRING, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			1, _
 			{ _
@@ -940,7 +940,7 @@
 		/' function fb_WstrLTrim( byval str as wstring ptr ) as wstring '/ _
 		( _
 			@FB_RTL_WSTRLTRIM, NULL, _
-			FB_DATATYPE_WCHAR, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_WCHAR, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			1, _
 			{ _
@@ -950,7 +950,7 @@
 		/' function fb_LTrimAny( byref str as string, byref pattern as string ) as string '/ _
 		( _
 			@FB_RTL_STRLTRIMANY, NULL, _
-			FB_DATATYPE_STRING, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			2, _
 			{ _
@@ -961,7 +961,7 @@
 		/' function fb_WstrLTrimAny( byval str as wstring ptr, byval pattern as wstring ptr ) as wstring '/ _
 		( _
 			@FB_RTL_WSTRLTRIMANY, NULL, _
-			FB_DATATYPE_WCHAR, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_WCHAR, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			2, _
 			{ _
@@ -972,7 +972,7 @@
 		/' function fb_LTrimEx( byref str as string, byref pattern as string ) as string '/ _
 		( _
 			@FB_RTL_STRLTRIMEX, NULL, _
-			FB_DATATYPE_STRING, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			2, _
 			{ _
@@ -983,7 +983,7 @@
 		/' function fb_WstrLTrimEx( byval str as wstring ptr, byval pattern as wstring ptr ) as wstring '/ _
 		( _
 			@FB_RTL_WSTRLTRIMEX, NULL, _
-			FB_DATATYPE_WCHAR, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_WCHAR, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			2, _
 			{ _
@@ -995,7 +995,7 @@
 				   byref str2 as any, byval size2 as integer, byval fillrem2 as long ) '/ _
 		( _
 			@FB_RTL_STRSWAP, NULL, _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			6, _
 			{ _
@@ -1011,7 +1011,7 @@
 				    byval str2 as wstring ptr, byval size2 as integer ) '/ _
 		( _
 			@FB_RTL_WSTRSWAP, NULL, _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			4, _
 			{ _
@@ -1024,7 +1024,7 @@
 		/' function val overload( byref str as string ) as double '/ _
 		( _
 			@FB_RTL_STR2DBL, @"fb_VAL", _
-			FB_DATATYPE_DOUBLE, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_DOUBLE, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER, _
 			1, _
 			{ _
@@ -1034,7 +1034,7 @@
 		/' function val overload( byval str as wstring ptr ) as double '/ _
 		( _
 			@FB_RTL_STR2DBL, @"fb_WstrVal", _
-			FB_DATATYPE_DOUBLE, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_DOUBLE, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
 			1, _
 			{ _
@@ -1044,7 +1044,7 @@
 		/' function valint overload( byref str as string ) as long '/ _
 		( _
 			@FB_RTL_STR2INT, @"fb_VALINT", _
-			FB_DATATYPE_LONG, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
 			1, _
 			{ _
@@ -1054,7 +1054,7 @@
 		/' function valint overload( byval str as wstring ptr ) as long '/ _
 		( _
 			@FB_RTL_STR2INT, @"fb_WstrValInt", _
-			FB_DATATYPE_LONG, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
 			1, _
 			{ _
@@ -1064,7 +1064,7 @@
 		/' function valuint overload( byref str as string ) as ulong '/ _
 		( _
 			@FB_RTL_STR2UINT, @"fb_VALUINT", _
-			FB_DATATYPE_ULONG, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_ULONG, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
 			1, _
 			{ _
@@ -1074,7 +1074,7 @@
 		/' function valuint overload( byval str as wstring ptr ) as ulong '/ _
 		( _
 			@FB_RTL_STR2UINT, @"fb_WstrValUInt", _
-			FB_DATATYPE_ULONG, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_ULONG, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
 			1, _
 			{ _
@@ -1084,7 +1084,7 @@
 		/' function vallng overload( byref str as string ) as longint '/ _
 		( _
 			@FB_RTL_STR2LNG, @"fb_VALLNG", _
-			FB_DATATYPE_LONGINT, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_LONGINT, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
 			1, _
 			{ _
@@ -1094,7 +1094,7 @@
 		/' function vallng overload( byval str as wstring ptr ) as longint '/ _
 		( _
 			@FB_RTL_STR2LNG, @"fb_WstrValLng", _
-			FB_DATATYPE_LONGINT, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_LONGINT, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
 			1, _
 			{ _
@@ -1104,7 +1104,7 @@
 		/' function valulng overload( byref str as string ) as ulongint '/ _
 		( _
 			@FB_RTL_STR2ULNG, @"fb_VALULNG", _
-			FB_DATATYPE_ULONGINT, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_ULONGINT, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
 			1, _
 			{ _
@@ -1114,7 +1114,7 @@
 		/' function valulng overload( byval str as wstring ptr ) as ulongint '/ _
 		( _
 			@FB_RTL_STR2ULNG, @"fb_WstrValULng", _
-			FB_DATATYPE_ULONGINT, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_ULONGINT, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
 			1, _
 			{ _
@@ -1124,7 +1124,7 @@
 		/' function hex overload( byval number as ubyte ) as string '/ _
 		( _
 			@"hex", @"fb_HEX_b", _
-			FB_DATATYPE_STRING, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_STRSUFFIX, _
 			1, _
 			{ _
@@ -1134,7 +1134,7 @@
 		/' function hex overload( byval number as ushort ) as string '/ _
 		( _
 			@"hex", @"fb_HEX_s", _
-			FB_DATATYPE_STRING, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_STRSUFFIX, _
 			1, _
 			{ _
@@ -1144,7 +1144,7 @@
 		/' function hex overload( byval number as ulong ) as string '/ _
 		( _
 			@"hex", @"fb_HEX_i", _
-			FB_DATATYPE_STRING, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_STRSUFFIX, _
 			1, _
 			{ _
@@ -1154,7 +1154,7 @@
 		/' function hex overload( byval number as any ptr ) as string '/ _
 		( _
 			@"hex", @"fb_HEX_p", _
-			FB_DATATYPE_STRING, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_STRSUFFIX, _
 			1, _
 			{ _
@@ -1164,7 +1164,7 @@
 		/' function hex overload( byval number as ulong, byval digits as long ) as string '/ _
 		( _
 			@"hex", @"fb_HEXEx_i", _
-			FB_DATATYPE_STRING, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_STRSUFFIX, _
 			2, _
 			{ _
@@ -1175,7 +1175,7 @@
 		/' function hex overload( byval number as any ptr, byval digits as long ) as string '/ _
 		( _
 			@"hex", @"fb_HEXEx_p", _
-			FB_DATATYPE_STRING, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_STRSUFFIX, _
 			2, _
 			{ _
@@ -1186,7 +1186,7 @@
 		/' function hex overload( byval number as ulongint ) as string '/ _
 		( _
 			@"hex", @"fb_HEX_l", _
-			FB_DATATYPE_STRING, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_STRSUFFIX, _
 			1, _
 			{ _
@@ -1196,7 +1196,7 @@
 		/' function hex overload( byval number as ulongint, byval digits as long ) as string '/ _
 		( _
 			@"hex", @"fb_HEXEx_l", _
-			FB_DATATYPE_STRING, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_STRSUFFIX, _
 			2, _
 			{ _
@@ -1207,7 +1207,7 @@
 		/' function whex overload( byval number as ubyte ) as wstring '/ _
 		( _
 			@"whex", @"fb_WstrHex_b", _
-			FB_DATATYPE_WCHAR, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_WCHAR, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
 			1, _
 			{ _
@@ -1217,7 +1217,7 @@
 		/' function whex overload( byval number as ushort ) as wstring '/ _
 		( _
 			@"whex", @"fb_WstrHex_s", _
-			FB_DATATYPE_WCHAR, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_WCHAR, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
 			1, _
 			{ _
@@ -1227,7 +1227,7 @@
 		/' function whex overload( byval number as ulong ) as wstring '/ _
 		( _
 			@"whex", @"fb_WstrHex_i", _
-			FB_DATATYPE_WCHAR, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_WCHAR, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
 			1, _
 			{ _
@@ -1237,7 +1237,7 @@
 		/' function whex overload( byval number as any ptr ) as wstring '/ _
 		( _
 			@"whex", @"fb_WstrHex_p", _
-			FB_DATATYPE_WCHAR, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_WCHAR, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
 			1, _
 			{ _
@@ -1247,7 +1247,7 @@
 		/' function whex overload( byval number as ulong, byval digits as long ) as wstring '/ _
 		( _
 			@"whex", @"fb_WstrHexEx_i", _
-			FB_DATATYPE_WCHAR, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_WCHAR, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
 			2, _
 			{ _
@@ -1258,7 +1258,7 @@
 		/' function whex overload( byval number as any ptr, byval digits as long ) as wstring '/ _
 		( _
 			@"whex", @"fb_WstrHexEx_p", _
-			FB_DATATYPE_WCHAR, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_WCHAR, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
 			2, _
 			{ _
@@ -1269,7 +1269,7 @@
 		/' function whex overload( byval number as ulongint ) as wstring '/ _
 		( _
 			@"whex", @"fb_WstrHex_l", _
-			FB_DATATYPE_WCHAR, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_WCHAR, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
 			1, _
 			{ _
@@ -1279,7 +1279,7 @@
 		/' function whex overload( byval number as ulongint, byval digits as long ) as wstring '/ _
 		( _
 			@"whex", @"fb_WstrHexEx_l", _
-			FB_DATATYPE_WCHAR, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_WCHAR, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
 			2, _
 			{ _
@@ -1290,7 +1290,7 @@
 		/' function oct overload( byval number as ubyte ) as string '/ _
 		( _
 			@"oct", @"fb_OCT_b", _
-			FB_DATATYPE_STRING, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_STRSUFFIX, _
 			1, _
 			{ _
@@ -1300,7 +1300,7 @@
 		/' function oct overload( byval number as ubyte, byval digits as long ) as string '/ _
 		( _
 			@"oct", @"fb_OCTEx_b", _
-			FB_DATATYPE_STRING, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_STRSUFFIX, _
 			2, _
 			{ _
@@ -1311,7 +1311,7 @@
 		/' function oct overload( byval number as ushort ) as string '/ _
 		( _
 			@"oct", @"fb_OCT_s", _
-			FB_DATATYPE_STRING, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_STRSUFFIX, _
 			1, _
 			{ _
@@ -1321,7 +1321,7 @@
 		/' function oct overload( byval number as ushort, byval digits as long ) as string '/ _
 		( _
 			@"oct", @"fb_OCTEx_s", _
-			FB_DATATYPE_STRING, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_STRSUFFIX, _
 			2, _
 			{ _
@@ -1332,7 +1332,7 @@
 		/' function oct overload( byval number as ulong ) as string '/ _
 		( _
 			@"oct", @"fb_OCT_i", _
-			FB_DATATYPE_STRING, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_STRSUFFIX, _
 			1, _
 			{ _
@@ -1342,7 +1342,7 @@
 		/' function oct overload( byval number as any ptr ) as string '/ _
 		( _
 			@"oct", @"fb_OCT_p", _
-			FB_DATATYPE_STRING, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_STRSUFFIX, _
 			1, _
 			{ _
@@ -1352,7 +1352,7 @@
 		/' function oct overload( byval number as ulong, byval digits as long ) as string '/ _
 		( _
 			@"oct", @"fb_OCTEx_i", _
-			FB_DATATYPE_STRING, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_STRSUFFIX, _
 			2, _
 			{ _
@@ -1363,7 +1363,7 @@
 		/' function oct overload( byval number as any ptr, byval digits as long ) as string '/ _
 		( _
 			@"oct", @"fb_OCTEx_p", _
-			FB_DATATYPE_STRING, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_STRSUFFIX, _
 			2, _
 			{ _
@@ -1374,7 +1374,7 @@
 		/' function oct overload( byval number as ulongint ) as string '/ _
 		( _
 			@"oct", @"fb_OCT_l", _
-			FB_DATATYPE_STRING, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_STRSUFFIX, _
 			1, _
 			{ _
@@ -1384,7 +1384,7 @@
 		/' function oct overload( byval number as ulongint, byval digits as long ) as string '/ _
 		( _
 			@"oct", @"fb_OCTEx_l", _
-			FB_DATATYPE_STRING, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_STRSUFFIX, _
 			2, _
 			{ _
@@ -1395,7 +1395,7 @@
 		/' function woct overload( byval number as ubyte ) as wstring '/ _
 		( _
 			@"woct", @"fb_WstrOct_b", _
-			FB_DATATYPE_WCHAR, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_WCHAR, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
 			1, _
 			{ _
@@ -1405,7 +1405,7 @@
 		/' function woct overload( byval number as ubyte, byval digits as long ) as wstring '/ _
 		( _
 			@"woct", @"fb_WstrOctEx_b", _
-			FB_DATATYPE_WCHAR, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_WCHAR, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
 			2, _
 			{ _
@@ -1416,7 +1416,7 @@
 		/' function woct overload( byval number as ushort ) as wstring '/ _
 		( _
 			@"woct", @"fb_WstrOct_s", _
-			FB_DATATYPE_WCHAR, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_WCHAR, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
 			1, _
 			{ _
@@ -1426,7 +1426,7 @@
 		/' function woct overload( byval number as ushort, byval digits as long ) as wstring '/ _
 		( _
 			@"woct", @"fb_WstrOctEx_s", _
-			FB_DATATYPE_WCHAR, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_WCHAR, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
 			2, _
 			{ _
@@ -1437,7 +1437,7 @@
 		/' function woct overload( byval number as ulong ) as wstring '/ _
 		( _
 			@"woct", @"fb_WstrOct_i", _
-			FB_DATATYPE_WCHAR, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_WCHAR, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
 			1, _
 			{ _
@@ -1447,7 +1447,7 @@
 		/' function woct overload( byval number as any ptr ) as wstring '/ _
 		( _
 			@"woct", @"fb_WstrOct_p", _
-			FB_DATATYPE_WCHAR, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_WCHAR, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
 			1, _
 			{ _
@@ -1457,7 +1457,7 @@
 		/' function woct overload( byval number as ulong, byval digits as long ) as wstring '/ _
 		( _
 			@"woct", @"fb_WstrOctEx_i", _
-			FB_DATATYPE_WCHAR, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_WCHAR, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
 			2, _
 			{ _
@@ -1468,7 +1468,7 @@
 		/' function woct overload( byval number as any ptr, byval digits as long ) as wstring '/ _
 		( _
 			@"woct", @"fb_WstrOctEx_p", _
-			FB_DATATYPE_WCHAR, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_WCHAR, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
 			2, _
 			{ _
@@ -1479,7 +1479,7 @@
 		/' function woct overload( byval number as ulongint ) as wstring '/ _
 		( _
 			@"woct", @"fb_WstrOct_l", _
-			FB_DATATYPE_WCHAR, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_WCHAR, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
 			1, _
 			{ _
@@ -1489,7 +1489,7 @@
 		/' function woct overload( byval number as ulongint, byval digits as long ) as wstring '/ _
 		( _
 			@"woct", @"fb_WstrOctEx_l", _
-			FB_DATATYPE_WCHAR, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_WCHAR, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
 			2, _
 			{ _
@@ -1500,7 +1500,7 @@
 		/' function bin overload( byval number as ubyte ) as string '/ _
 		( _
 			@"bin", @"fb_BIN_b", _
-			FB_DATATYPE_STRING, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
 			1, _
 			{ _
@@ -1510,7 +1510,7 @@
 		/' function bin overload( byval number as ushort ) as string '/ _
 		( _
 			@"bin", @"fb_BIN_s", _
-			FB_DATATYPE_STRING, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
 			1, _
 			{ _
@@ -1520,7 +1520,7 @@
 		/' function bin overload( byval number as ulong ) as string '/ _
 		( _
 			@"bin", @"fb_BIN_i", _
-			FB_DATATYPE_STRING, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
 			1, _
 			{ _
@@ -1530,7 +1530,7 @@
 		/' function bin overload( byval number as any ptr ) as string '/ _
 		( _
 			@"bin", @"fb_BIN_p", _
-			FB_DATATYPE_STRING, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
 			1, _
 			{ _
@@ -1540,7 +1540,7 @@
 		/' function bin overload( byval number as ulong, byval digits as long ) as string '/ _
 		( _
 			@"bin", @"fb_BINEx_i", _
-			FB_DATATYPE_STRING, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
 			2, _
 			{ _
@@ -1551,7 +1551,7 @@
 		/' function bin overload( byval number as any ptr, byval digits as long ) as string '/ _
 		( _
 			@"bin", @"fb_BINEx_p", _
-			FB_DATATYPE_STRING, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
 			2, _
 			{ _
@@ -1562,7 +1562,7 @@
 		/' function bin overload( byval number as ulongint ) as string '/ _
 		( _
 			@"bin", @"fb_BIN_l", _
-			FB_DATATYPE_STRING, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
 			1, _
 			{ _
@@ -1572,7 +1572,7 @@
 		/' function bin overload( byval number as ulongint, byval digits as long ) as string '/ _
 		( _
 			@"bin", @"fb_BINEx_l", _
-			FB_DATATYPE_STRING, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
 			2, _
 			{ _
@@ -1583,7 +1583,7 @@
 		/' function wbin overload( byval number as ubyte ) as wstring '/ _
 		( _
 			@"wbin", @"fb_WstrBin_b", _
-			FB_DATATYPE_WCHAR, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_WCHAR, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
 			1, _
 			{ _
@@ -1593,7 +1593,7 @@
 		/' function wbin overload( byval number as ushort ) as wstring '/ _
 		( _
 			@"wbin", @"fb_WstrBin_s", _
-			FB_DATATYPE_WCHAR, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_WCHAR, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
 			1, _
 			{ _
@@ -1603,7 +1603,7 @@
 		/' function wbin overload( byval number as ulong ) as wstring '/ _
 		( _
 			@"wbin", @"fb_WstrBin_i", _
-			FB_DATATYPE_WCHAR, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_WCHAR, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
 			1, _
 			{ _
@@ -1613,7 +1613,7 @@
 		/' function wbin overload( byval number as any ptr ) as wstring '/ _
 		( _
 			@"wbin", @"fb_WstrBin_p", _
-			FB_DATATYPE_WCHAR, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_WCHAR, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
 			1, _
 			{ _
@@ -1623,7 +1623,7 @@
 		/' function wbin overload( byval number as ulong, byval digits as long ) as wstring '/ _
 		( _
 			@"wbin", @"fb_WstrBinEx_i", _
-			FB_DATATYPE_WCHAR, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_WCHAR, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
 			2, _
 			{ _
@@ -1634,7 +1634,7 @@
 		/' function wbin overload( byval number as any ptr, byval digits as long ) as wstring '/ _
 		( _
 			@"wbin", @"fb_WstrBinEx_p", _
-			FB_DATATYPE_WCHAR, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_WCHAR, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
 			2, _
 			{ _
@@ -1645,7 +1645,7 @@
 		/' function wbin overload( byval number as ulongint ) as wstring '/ _
 		( _
 			@"wbin", @"fb_WstrBin_l", _
-			FB_DATATYPE_WCHAR, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_WCHAR, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
 			1, _
 			{ _
@@ -1655,7 +1655,7 @@
 		/' function wbin overload( byval number as ulongint, byval digits as long ) as wstring '/ _
 		( _
 			@"wbin", @"fb_WstrBinEx_l", _
-			FB_DATATYPE_WCHAR, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_WCHAR, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
 			2, _
 			{ _
@@ -1666,7 +1666,7 @@
 		/' function fb_MKD( byval number as double ) as string '/ _
 		( _
 			@FB_RTL_MKD, NULL, _
-			FB_DATATYPE_STRING, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			1, _
 			{ _
@@ -1676,7 +1676,7 @@
 		/' function fb_MKS( byval number as single ) as string '/ _
 		( _
 			@FB_RTL_MKS, NULL, _
-			FB_DATATYPE_STRING, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			1, _
 			{ _
@@ -1686,7 +1686,7 @@
 		/' function fb_MKSHORT( byval number as short ) as string '/ _
 		( _
 			@FB_RTL_MKSHORT, NULL, _
-			FB_DATATYPE_STRING, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NOQB, _
 			1, _
 			{ _
@@ -1696,7 +1696,7 @@
 		/' function fb_MKI( byval number as long ) as string '/ _
 		( _
 			@FB_RTL_MKI, NULL, _
-			FB_DATATYPE_STRING, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			1, _
 			{ _
@@ -1706,7 +1706,7 @@
 		/' function fb_MKL( byval number as long ) as string '/ _
 		( _
 			@FB_RTL_MKL, NULL, _
-			FB_DATATYPE_STRING, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			1, _
 			{ _
@@ -1716,7 +1716,7 @@
 		/' function fb_MKLONGINT( byval number as longint ) as string '/ _
 		( _
 			@FB_RTL_MKLONGINT, NULL, _
-			FB_DATATYPE_STRING, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NOQB, _
 			1, _
 			{ _
@@ -1726,7 +1726,7 @@
 		/' function left overload( byref str as string, byval chars as integer ) as string '/ _
 		( _
 			@"left", @"fb_LEFT", _
-			FB_DATATYPE_STRING, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_STRSUFFIX, _
 			2, _
 			{ _
@@ -1737,7 +1737,7 @@
 		/' function left overload( byval str as wstring ptr, byval chars as integer ) as wstring '/ _
 		( _
 			@"left", @"fb_WstrLeft", _
-			FB_DATATYPE_WCHAR, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_WCHAR, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
 			2, _
 			{ _
@@ -1748,7 +1748,7 @@
 		/' function right overload( byref str as string, byval chars as integer ) as string '/ _
 		( _
 			@"right", @"fb_RIGHT", _
-			FB_DATATYPE_STRING, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_STRSUFFIX, _
 			2, _
 			{ _
@@ -1759,7 +1759,7 @@
 		/' function right overload( byval str as wstring ptr, byval chars as integer ) as wstring '/ _
 		( _
 			@"right", @"fb_WstrRight", _
-			FB_DATATYPE_WCHAR, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_WCHAR, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
 			2, _
 			{ _
@@ -1770,7 +1770,7 @@
 		/' function space( byval chars as integer ) as string '/ _
 		( _
 			@"space", @"fb_SPACE", _
-			FB_DATATYPE_STRING, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_STRSUFFIX, _
 			1, _
 			{ _
@@ -1780,7 +1780,7 @@
 		/' function wspace( byval chars as integer ) as wstring '/ _
 		( _
 			@"wspace", @"fb_WstrSpace", _
-			FB_DATATYPE_WCHAR, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_WCHAR, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NOQB, _
 			1, _
 			{ _
@@ -1790,7 +1790,7 @@
 		/' function fb_StrLcase2( byref src as string, byval mode as long = 0 ) as string '/ _
 		( _
 			@FB_RTL_STRLCASE2, NULL, _
-			FB_DATATYPE_STRING, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			2, _
 			{ _
@@ -1801,7 +1801,7 @@
 		/' function fb_WstrLcase2( byval src as wstring ptr, byval mode as long = 0 ) as wstring '/ _
 		( _
 			@FB_RTL_WSTRLCASE2, NULL, _
-			FB_DATATYPE_WCHAR, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_WCHAR, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			2, _
 			{ _
@@ -1812,7 +1812,7 @@
 		/' function fb_StrUcase2( byref src as string, byval mode as long = 0 ) as string '/ _
 		( _
 			@FB_RTL_STRUCASE2, NULL, _
-			FB_DATATYPE_STRING, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			2, _
 			{ _
@@ -1823,7 +1823,7 @@
 		/' function fb_WstrUcase2( byval src as wstring ptr, byval mode as long = 0 ) as wstring '/ _
 		( _
 			@FB_RTL_WSTRUCASE2, NULL, _
-			FB_DATATYPE_WCHAR, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_WCHAR, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			2, _
 			{ _
@@ -1834,7 +1834,7 @@
 		/' function fb_CVD( byref str as string ) as double '/ _
 		( _
 			@FB_RTL_CVD, @"fb_CVD", _
-			FB_DATATYPE_DOUBLE, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_DOUBLE, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			1, _
 			{ _
@@ -1844,7 +1844,7 @@
 		/' function fb_CVS( byref str as string ) as single '/ _
 		( _
 			@FB_RTL_CVS, @"fb_CVS", _
-			FB_DATATYPE_SINGLE, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_SINGLE, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			1, _
 			{ _
@@ -1854,7 +1854,7 @@
 		/' function fb_CVSHORT( byref str as string ) as short '/ _
 		( _
 			@FB_RTL_CVSHORT, @"fb_CVSHORT", _
-			FB_DATATYPE_SHORT, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_SHORT, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NOQB, _
 			1, _
 			{ _
@@ -1864,7 +1864,7 @@
 		/' function fb_CVI( byref str as string ) as long '/ _
 		( _
 			@FB_RTL_CVI, @"fb_CVI", _
-			FB_DATATYPE_LONG, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			1, _
 			{ _
@@ -1874,7 +1874,7 @@
 		/' function fb_CVL( byref str as string ) as long '/ _
 		( _
 			@FB_RTL_CVL, NULL, _
-			FB_DATATYPE_LONG, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			1, _
 			{ _
@@ -1884,7 +1884,7 @@
 		/' function fb_CVLONGINT( byref str as string ) as longint '/ _
 		( _
 			@FB_RTL_CVLONGINT, @"fb_CVLONGINT", _
-			FB_DATATYPE_LONGINT, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_LONGINT, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NOQB, _
 			1, _
 			{ _
@@ -1894,7 +1894,7 @@
 		/' function fb_CVDFROMLONGINT( byval num as longint ) as double '/ _
 		( _
 			@FB_RTL_CVDFROMLONGINT, @"fb_CVDFROMLONGINT", _
-			FB_DATATYPE_DOUBLE, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_DOUBLE, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NOQB, _
 			1, _
 			{ _
@@ -1904,7 +1904,7 @@
 		/' function fb_CVSFROML( byref num as long ) as single '/ _
 		( _
 			@FB_RTL_CVSFROML, @"fb_CVSFROML", _
-			FB_DATATYPE_SINGLE, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_SINGLE, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NOQB, _
 			1, _
 			{ _
@@ -1914,7 +1914,7 @@
 		/' function fb_CVLFROMS( byval num as single ) as long '/ _
 		( _
 			@FB_RTL_CVLFROMS, @"fb_CVLFROMS", _
-			FB_DATATYPE_LONG, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NOQB, _
 			1, _
 			{ _
@@ -1924,7 +1924,7 @@
 		/' function fb_CVLONGINTFROMD( byval num as double ) as longint '/ _
 		( _
 			@FB_RTL_CVLONGINTFROMD, @"fb_CVLONGINTFROMD", _
-			FB_DATATYPE_LONGINT, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_LONGINT, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NOQB, _
 			1, _
 			{ _

@@ -523,7 +523,7 @@ end function
 
 function cProcCallingConv( byval default as FB_FUNCMODE ) as FB_FUNCMODE
     '' Use the default FBCALL?
-    if( default = FB_USE_FUNCMODE_FBCALL ) then
+    if( default = FB_FUNCMODE_FBCALL ) then
         default = env.target.fbcall
     end if
 
@@ -1233,7 +1233,7 @@ function cProcHeader _
 		'' the rtlib's REDIM or ERASE functions by procptr
 		mode = FB_FUNCMODE_CDECL
 	case else
-		mode = FB_USE_FUNCMODE_FBCALL
+		mode = FB_FUNCMODE_FBCALL
 	end select
 	mode = cProcCallingConv( mode )
 

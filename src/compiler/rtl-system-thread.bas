@@ -212,7 +212,7 @@ function rtlThreadCall(byval callexpr as ASTNODE ptr) as ASTNODE ptr
     '' get calling convention
     dim as integer procmode, procmode_fb
     procmode_fb = symbGetProcMode( proc )
-    if procmode_fb = FB_USE_FUNCMODE_FBCALL then procmode_fb = env.target.fbcall
+    if procmode_fb = FB_FUNCMODE_FBCALL then procmode_fb = env.target.fbcall
     if( procmode_fb = FB_FUNCMODE_CDECL ) then
         procmode = FB_RTL_TCTYPES_CDECL
     elseif( procmode_fb = FB_FUNCMODE_STDCALL _

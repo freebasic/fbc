@@ -79,7 +79,7 @@ declare function hRndCallback( byval sym as FBSYMBOL ptr ) as integer
 		/' sub randomize( byval seed as double = -1.0, byval algorithm as long = 0 ) '/ _
 		( _
 			@"randomize", @"fb_Randomize", _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 			@hRndCallback, FB_RTL_OPT_NONE, _
 			2, _
 	 		{ _
@@ -90,7 +90,7 @@ declare function hRndCallback( byval sym as FBSYMBOL ptr ) as integer
 		/' rnd ( byval n as single ) as double '/ _
 		( _
 			@"rnd", @"fb_Rnd", _
-			FB_DATATYPE_DOUBLE, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_DOUBLE, FB_FUNCMODE_FBCALL, _
 			@hRndCallback, FB_RTL_OPT_NONE, _
 			1, _
 	 		{ _
@@ -340,7 +340,7 @@ declare function hRndCallback( byval sym as FBSYMBOL ptr ) as integer
 		/' function sgn overload( byval x as byte ) as long '/ _
 		( _
 			@FB_RTL_sgn, @"fb_SGNb", _
-			FB_DATATYPE_LONG, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER, _
 			1, _
 	 		{ _
@@ -350,7 +350,7 @@ declare function hRndCallback( byval sym as FBSYMBOL ptr ) as integer
 		/' function sgn overload( byval x as short ) as long '/ _
 		( _
 			@FB_RTL_sgn, @"fb_SGNs", _
-			FB_DATATYPE_LONG, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER, _
 			1, _
 	 		{ _
@@ -360,7 +360,7 @@ declare function hRndCallback( byval sym as FBSYMBOL ptr ) as integer
 		/' function sgn overload( byval x as long ) as long '/ _
 		( _
 			@FB_RTL_sgn, @"fb_SGNi", _
-			FB_DATATYPE_LONG, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER, _
 			1, _
 	 		{ _
@@ -370,7 +370,7 @@ declare function hRndCallback( byval sym as FBSYMBOL ptr ) as integer
 		/' function sgn overload( byval x as longint ) as long '/ _
 		( _
 			@FB_RTL_sgn, @"fb_SGNl", _
-			FB_DATATYPE_LONG, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER, _
 			1, _
 	 		{ _
@@ -380,7 +380,7 @@ declare function hRndCallback( byval sym as FBSYMBOL ptr ) as integer
 		/' function sgn overload( byval x as single ) as long '/ _
 		( _
 			@FB_RTL_sgn, @"fb_SGNSingle", _
-			FB_DATATYPE_LONG, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER, _
 			1, _
 	 		{ _
@@ -390,7 +390,7 @@ declare function hRndCallback( byval sym as FBSYMBOL ptr ) as integer
 		/' function sgn overload( byval x as double ) as long '/ _
 		( _
 			@FB_RTL_sgn, @"fb_SGNDouble", _
-			FB_DATATYPE_LONG, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER, _
 			1, _
 	 		{ _
@@ -400,7 +400,7 @@ declare function hRndCallback( byval sym as FBSYMBOL ptr ) as integer
 		/' fix overload ( byval x as single ) as single '/ _
 		( _
 			@FB_RTL_fix, @"fb_FIXSingle", _
-			FB_DATATYPE_SINGLE, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_SINGLE, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER, _
 			1, _
 	 		{ _
@@ -410,7 +410,7 @@ declare function hRndCallback( byval sym as FBSYMBOL ptr ) as integer
 		/' fix overload ( byval x as double ) as double '/ _
 		( _
 			@FB_RTL_fix, @"fb_FIXDouble", _
-			FB_DATATYPE_DOUBLE, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_DOUBLE, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER, _
 			1, _
 	 		{ _
@@ -420,7 +420,7 @@ declare function hRndCallback( byval sym as FBSYMBOL ptr ) as integer
 		/' frac overload ( byval x as single ) as single '/ _
 		( _
 			@FB_RTL_frac, @"fb_FRACf", _
-			FB_DATATYPE_SINGLE, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_SINGLE, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER, _
 			1, _
 	 		{ _
@@ -430,7 +430,7 @@ declare function hRndCallback( byval sym as FBSYMBOL ptr ) as integer
 		/' frac overload ( byval x as double ) as double '/ _
 		( _
 			@FB_RTL_frac, @"fb_FRACd", _
-			FB_DATATYPE_DOUBLE, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_DOUBLE, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER, _
 			1, _
 	 		{ _

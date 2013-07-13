@@ -53,7 +53,7 @@
 		/' function fb_ErrorSetHandler( byval newhandler as FB_ERRHANDLER ) as FB_ERRHANDLER '/ _
 		( _
 			@FB_RTL_ERRORSETHANDLER, NULL, _
-			typeAddrOf( FB_DATATYPE_VOID ), FB_USE_FUNCMODE_FBCALL, _
+			typeAddrOf( FB_DATATYPE_VOID ), FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			1, _
 	 		{ _
@@ -63,14 +63,14 @@
 		/' function fb_ErrorGetNum( ) as long '/ _
 		( _
 			@FB_RTL_ERRORGETNUM, NULL, _
-			FB_DATATYPE_LONG, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			0 _
 		), _
 		/' function fb_ErrorSetNum( byval errnum as long ) as long '/ _
 		( _
 			@FB_RTL_ERRORSETNUM, NULL, _
-			FB_DATATYPE_LONG, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			1, _
 	 		{ _
@@ -94,28 +94,28 @@
 		/' function erl( ) as long '/ _
 		( _
 			@"erl", @"fb_ErrorGetLineNum", _
-			FB_DATATYPE_LONG, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			0 _
 		), _
 		/' function erfn( ) as zstring ptr '/ _
 		( _
 			@"erfn", @"fb_ErrorGetFuncName", _
-			typeAddrOf( FB_DATATYPE_CHAR ), FB_USE_FUNCMODE_FBCALL, _
+			typeAddrOf( FB_DATATYPE_CHAR ), FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NOQB, _
 			0 _
 		), _
 		/' function ermn( ) as zstring ptr '/ _
 		( _
 			@"ermn", @"fb_ErrorGetModName", _
-			typeAddrOf( FB_DATATYPE_CHAR ), FB_USE_FUNCMODE_FBCALL, _
+			typeAddrOf( FB_DATATYPE_CHAR ), FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NOQB, _
 			0 _
 		), _
 		/' function fb_ErrorSetModName( byval mod_name as zstring ptr ) as zstring ptr '/ _
 		( _
 			@FB_RTL_ERRORSETMODNAME, NULL, _
-			typeAddrOf( FB_DATATYPE_CHAR ), FB_USE_FUNCMODE_FBCALL, _
+			typeAddrOf( FB_DATATYPE_CHAR ), FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			1, _
 	 		{ _
@@ -125,7 +125,7 @@
 		/' function fb_ErrorSetFuncName( byval fun_name as zstring ptr ) as zstring ptr '/ _
 		( _
 			@FB_RTL_ERRORSETFUNCNAME, NULL, _
-			typeAddrOf( FB_DATATYPE_CHAR ), FB_USE_FUNCMODE_FBCALL, _
+			typeAddrOf( FB_DATATYPE_CHAR ), FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			1, _
 	 		{ _
@@ -141,7 +141,7 @@
 			) '/ _
 		( _
 			@"fb_Assert", NULL, _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER, _
 			4, _
 	 		{ _
@@ -160,7 +160,7 @@
 			) '/ _
 		( _
 			@"fb_Assert", @"fb_AssertW", _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER, _
 			4, _
 	 		{ _
@@ -179,7 +179,7 @@
 			) '/ _
 		( _
 			@"fb_AssertWarn", NULL, _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER, _
 			4, _
 	 		{ _
@@ -198,7 +198,7 @@
 			) '/ _
 		( _
 			@"fb_AssertWarn", @"fb_AssertWarnW", _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER, _
 			4, _
 	 		{ _

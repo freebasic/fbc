@@ -105,7 +105,7 @@
 		/' sub fb_ArrayDestructObj( array() as any, byval dtor as sub cdecl( ) ) '/ _
 		( _
 			@FB_RTL_ARRAYDESTRUCTOBJ, NULL, _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			2, _
 			{ _
@@ -116,7 +116,7 @@
 		/' sub fb_ArrayDestructStr( array() as any ) '/ _
 		( _
 			@FB_RTL_ARRAYDESTRUCTSTR, NULL, _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			1, _
 			{ _
@@ -126,7 +126,7 @@
 		/' function fb_ArrayClear( array() as any, byval isvarlen as long ) as long '/ _
 		( _
 			@FB_RTL_ARRAYCLEAR, NULL, _
-			FB_DATATYPE_LONG, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			2, _
 			{ _
@@ -143,7 +143,7 @@
 			) as long '/ _
 		( _
 			@FB_RTL_ARRAYCLEAROBJ, NULL, _
-			FB_DATATYPE_LONG, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			4, _
 			{ _
@@ -156,7 +156,7 @@
 		/' function fb_ArrayErase( array() as any, byval isvarlen as long ) as long '/ _
 		( _
 			@FB_RTL_ARRAYERASE, NULL, _
-			FB_DATATYPE_LONG, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			2, _
 			{ _
@@ -167,7 +167,7 @@
 		/' function fb_ArrayEraseObj( array() as any, byval dtor as sub cdecl( ) ) as long '/ _
 		( _
 			@FB_RTL_ARRAYERASEOBJ, NULL, _
-			FB_DATATYPE_LONG, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			2, _
 			{ _
@@ -178,7 +178,7 @@
 		/' sub fb_ArrayStrErase( array() as any ) '/ _
 		( _
 			@FB_RTL_ARRAYERASESTR, NULL, _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			1, _
 			{ _
@@ -188,7 +188,7 @@
 		/' function fb_ArrayLBound( array() as any, byval dimension as integer ) as integer '/ _
 		( _
 			@FB_RTL_ARRAYLBOUND, NULL, _
-			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_INTEGER, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			2, _
 			{ _
@@ -199,7 +199,7 @@
 		/' function fb_ArrayUBound( array() as any, byval dimension as integer ) as integer '/ _
 		( _
 			@FB_RTL_ARRAYUBOUND, NULL, _
-			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_INTEGER, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			2, _
 			{ _
@@ -216,7 +216,7 @@
 			) as any ptr '/ _
 		( _
 			@FB_RTL_ARRAYSNGBOUNDCHK, NULL, _
-			typeAddrOf( FB_DATATYPE_VOID ), FB_USE_FUNCMODE_FBCALL, _
+			typeAddrOf( FB_DATATYPE_VOID ), FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			4, _
 			{ _
@@ -236,7 +236,7 @@
 			) as any ptr '/ _
 		( _
 			@FB_RTL_ARRAYBOUNDCHK, NULL, _
-			typeAddrOf( FB_DATATYPE_VOID ), FB_USE_FUNCMODE_FBCALL, _
+			typeAddrOf( FB_DATATYPE_VOID ), FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			5, _
 			{ _

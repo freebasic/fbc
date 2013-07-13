@@ -118,7 +118,7 @@ sub rtlAddIntrinsicProcs _
         callconv = procdef->callconv
 
         '' Use the default FBCALL?
-        if( callconv = FB_USE_FUNCMODE_FBCALL ) then
+        if( callconv = FB_FUNCMODE_FBCALL ) then
             callconv = env.target.fbcall
         end if
 

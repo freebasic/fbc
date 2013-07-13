@@ -31,7 +31,7 @@ declare function hPorts_cb _
 			) '/ _
 		( _
 			@FB_RTL_GFXPSET, NULL, _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 	 		@hGfxlib_cb, FB_RTL_OPT_NONE, _
 			6, _
 			{ _
@@ -51,7 +51,7 @@ declare function hPorts_cb _
 			) as long '/ _
 		( _
 			@FB_RTL_GFXPOINT, NULL, _
-			FB_DATATYPE_LONG, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 	 		@hGfxlib_cb, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
@@ -74,7 +74,7 @@ declare function hPorts_cb _
 			) '/ _
 		( _
 			@FB_RTL_GFXLINE, NULL, _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 	 		@hGfxlib_cb, FB_RTL_OPT_NONE, _
 			9, _
 			{ _
@@ -104,7 +104,7 @@ declare function hPorts_cb _
 			) '/ _
 		( _
 			@FB_RTL_GFXCIRCLE, NULL, _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 	 		@hGfxlib_cb, FB_RTL_OPT_NONE, _
 			10, _
 			{ _
@@ -133,7 +133,7 @@ declare function hPorts_cb _
 			) '/ _
 		( _
 			@FB_RTL_GFXPAINT, NULL, _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 	 		@hGfxlib_cb, FB_RTL_OPT_NONE, _
 			8, _
 			{ _
@@ -150,7 +150,7 @@ declare function hPorts_cb _
 		/' sub fb_GfxDraw( byref target as any, byref cmd as string ) '/ _
 		( _
 			@FB_RTL_GFXDRAW, NULL, _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 	 		@hGfxlib_cb, FB_RTL_OPT_NONE, _
 			2, _
 			{ _
@@ -174,7 +174,7 @@ declare function hPorts_cb _
 			) '/ _
 		( _
 			@FB_RTL_GFXDRAWSTRING, NULL, _
-			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_INTEGER, FB_FUNCMODE_FBCALL, _
 	 		@hGfxlib_cb, FB_RTL_OPT_ERROR, _
 			11, _
 			{ _
@@ -203,7 +203,7 @@ declare function hPorts_cb _
 			) '/ _
 		( _
 			@FB_RTL_GFXVIEW, NULL, _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 	 		@hGfxlib_cb, FB_RTL_OPT_NONE, _
 			7, _
 			{ _
@@ -226,7 +226,7 @@ declare function hPorts_cb _
 			) '/ _
 		( _
 			@FB_RTL_GFXWINDOW, NULL, _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 	 		@hGfxlib_cb, FB_RTL_OPT_NONE, _
 			5, _
 			{ _
@@ -246,7 +246,7 @@ declare function hPorts_cb _
 			) '/ _
 		( _
 			@FB_RTL_GFXPALETTE, NULL, _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 	 		@hGfxlib_cb, FB_RTL_OPT_NONE, _
 			4, _
 			{ _
@@ -259,7 +259,7 @@ declare function hPorts_cb _
 		/' sub fb_GfxPaletteUsing( byref data as long ) '/ _
 		( _
 			@FB_RTL_GFXPALETTEUSING, NULL, _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 	 		@hGfxlib_cb, FB_RTL_OPT_NONE, _
 			1, _
 			{ _
@@ -275,7 +275,7 @@ declare function hPorts_cb _
 			) '/ _
 		( _
 			@FB_RTL_GFXPALETTEGET, NULL, _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 	 		@hGfxlib_cb, FB_RTL_OPT_NONE, _
 			4, _
 			{ _
@@ -288,7 +288,7 @@ declare function hPorts_cb _
 		/' sub fb_GfxPaletteGetUsing( byref data as long ) '/ _
 		( _
 			@FB_RTL_GFXPALETTEGETUSING, NULL, _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 	 		@hGfxlib_cb, FB_RTL_OPT_NONE, _
 			1, _
 			{ _
@@ -314,7 +314,7 @@ declare function hPorts_cb _
 			) as long '/ _
 		( _
 			@FB_RTL_GFXPUT, NULL, _
-			FB_DATATYPE_LONG, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 	 		@hGfxlib_cb, FB_RTL_OPT_ERROR, _
 			14, _
 			{ _
@@ -347,7 +347,7 @@ declare function hPorts_cb _
 			) as long '/ _
 		( _
 			@FB_RTL_GFXGET, NULL, _
-			FB_DATATYPE_LONG, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 	 		@hGfxlib_cb, FB_RTL_OPT_ERROR or FB_RTL_OPT_FBONLY, _
 			8, _
 			{ _
@@ -374,7 +374,7 @@ declare function hPorts_cb _
 			) as long '/ _
 		( _
 			@FB_RTL_GFXGETQB, NULL, _
-			FB_DATATYPE_LONG, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 	 		@hGfxlib_cb, FB_RTL_OPT_ERROR or FB_RTL_OPT_NOFB, _
 			8, _
 			{ _
@@ -398,7 +398,7 @@ declare function hPorts_cb _
 			) as long '/ _
 		( _
 			@FB_RTL_GFXSCREENSET, NULL, _
-			FB_DATATYPE_LONG, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 	 		@hGfxlib_cb, FB_RTL_OPT_NONE, _
 			5, _
 			{ _
@@ -417,7 +417,7 @@ declare function hPorts_cb _
 			) as long '/ _
 		( _
 			@FB_RTL_GFXSCREENSETQB, NULL, _
-			FB_DATATYPE_LONG, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 	 		@hGfxlib_cb, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
@@ -437,7 +437,7 @@ declare function hPorts_cb _
 			) as long '/ _
 		( _
 			@"screenres", @"fb_GfxScreenRes", _
-			FB_DATATYPE_LONG, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 	 		@hGfxlib_cb, FB_RTL_OPT_ERROR or FB_RTL_OPT_NOQB, _
 			6, _
 			{ _
@@ -457,7 +457,7 @@ declare function hPorts_cb _
 			) as long '/ _
 		( _
 			@"bload", @"fb_GfxBload", _
-			FB_DATATYPE_LONG, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 	 		@hGfxlib_cb, FB_RTL_OPT_ERROR or FB_RTL_OPT_FBONLY, _
 			3, _
 			{ _
@@ -474,7 +474,7 @@ declare function hPorts_cb _
 			) as long '/ _
 		( _
 			@"bload", @"fb_GfxBloadQB", _
-			FB_DATATYPE_LONG, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 	 		@hGfxlib_cb, FB_RTL_OPT_ERROR or FB_RTL_OPT_NOFB, _
 			3, _
 			{ _
@@ -492,7 +492,7 @@ declare function hPorts_cb _
 			) as long '/ _
 		( _
 			@"bsave", @"fb_GfxBsave", _
-			FB_DATATYPE_LONG, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 	 		@hGfxlib_cb, FB_RTL_OPT_OVER or FB_RTL_OPT_ERROR, _
 			4, _
 			{ _
@@ -512,7 +512,7 @@ declare function hPorts_cb _
 			) as long '/ _
 		( _
 			@"bsave", @"fb_GfxBsaveEx", _
-			FB_DATATYPE_LONG, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 	 		@hGfxlib_cb, FB_RTL_OPT_OVER or FB_RTL_OPT_ERROR, _
 			5, _
 			{ _
@@ -530,7 +530,7 @@ declare function hPorts_cb _
 			) as long '/ _
 		( _
 			@"flip", @"fb_GfxFlip", _
-			FB_DATATYPE_LONG, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 	 		@hGfxlib_cb, FB_RTL_OPT_NOQB, _
 			2, _
 			{ _
@@ -545,7 +545,7 @@ declare function hPorts_cb _
 			) as long '/ _
 		( _
 			@"screencopy", @"fb_GfxFlip", _
-			FB_DATATYPE_LONG, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 	 		@hGfxlib_cb, FB_RTL_OPT_NOQB, _
 			2, _
 			{ _
@@ -556,7 +556,7 @@ declare function hPorts_cb _
 		/' function pointcoord( byval func as long ) as single '/ _
 		( _
 			@"pointcoord", @"fb_GfxCursor", _
-			FB_DATATYPE_SINGLE, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_SINGLE, FB_FUNCMODE_FBCALL, _
 	 		@hGfxlib_cb, FB_RTL_OPT_NOQB, _
 			1, _
 			{ _
@@ -566,7 +566,7 @@ declare function hPorts_cb _
 		/' function pmap( byval coord as single, byval func as long ) as single '/ _
 		( _
 			@"pmap", @"fb_GfxPMap", _
-			FB_DATATYPE_SINGLE, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_SINGLE, FB_FUNCMODE_FBCALL, _
 	 		@hGfxlib_cb, FB_RTL_OPT_NONE, _
 			2, _
 			{ _
@@ -577,7 +577,7 @@ declare function hPorts_cb _
 		/' function out( byval port as ushort, byval value as ubyte ) as long '/ _
 		( _
 			@"out", @"fb_Out", _
-			FB_DATATYPE_LONG, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 			 @hPorts_cb, FB_RTL_OPT_ERROR, _
 			2, _
 			{ _
@@ -588,7 +588,7 @@ declare function hPorts_cb _
 		/' function inp( byval port as ushort ) as long '/ _
 		( _
 			@"inp", @"fb_In", _
-			FB_DATATYPE_LONG, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 			@hPorts_cb, FB_RTL_OPT_NONE, _
 			1, _
 			{ _
@@ -603,7 +603,7 @@ declare function hPorts_cb _
 			) as long '/ _
 		( _
 			@"wait", @"fb_Wait", _
-			FB_DATATYPE_LONG, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 			@hPorts_cb, FB_RTL_OPT_ERROR, _
 			3, _
 			{ _
@@ -615,7 +615,7 @@ declare function hPorts_cb _
 		/' function screensync( ) as long '/ _
 		( _
 			@"screensync", @"fb_GfxWaitVSync", _
-			FB_DATATYPE_LONG, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 			@hGfxlib_cb, FB_RTL_OPT_NOQB, _
 			0 _
 		), _
@@ -637,14 +637,14 @@ declare function hPorts_cb _
 		/' sub screenlock( ) '/ _
 		( _
 			@"screenlock", @"fb_GfxLock", _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 	 		@hGfxlib_cb, FB_RTL_OPT_NOQB, _
 			0 _
 		), _
 		/' sub screenunlock( byval start_line as long, byval end_line as long ) '/ _
 		( _
 			@"screenunlock", @"fb_GfxUnlock", _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 			@hGfxlib_cb, FB_RTL_OPT_NOQB, _
 			2, _
 			{ _
@@ -655,14 +655,14 @@ declare function hPorts_cb _
 		/' function screenptr( ) as any ptr '/ _
 		( _
 			@"screenptr", @"fb_GfxScreenPtr", _
-			typeAddrOf( FB_DATATYPE_VOID ), FB_USE_FUNCMODE_FBCALL, _
+			typeAddrOf( FB_DATATYPE_VOID ), FB_FUNCMODE_FBCALL, _
 	 		@hGfxlib_cb, FB_RTL_OPT_NOQB, _
 			0 _
 		), _
 		/' sub windowtitle( byref title as string ) '/ _
 		( _
 			@"windowtitle", @"fb_GfxSetWindowTitle", _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 	 		@hGfxlib_cb, FB_RTL_OPT_NOQB, _
 			1, _
 			{ _
@@ -672,7 +672,7 @@ declare function hPorts_cb _
 		/' function multikey( byval scancode as long ) as long '/ _
 		( _
 			@"multikey", @"fb_Multikey", _
-			FB_DATATYPE_LONG, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 	 		@rtlMultinput_cb, FB_RTL_OPT_NOQB, _
 			1, _
 			{ _
@@ -689,7 +689,7 @@ declare function hPorts_cb _
 			) as long '/ _
 		( _
 			@"getmouse", @"fb_GetMouse", _
-			FB_DATATYPE_LONG, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 			@rtlMultinput_cb, FB_RTL_OPT_NOQB, _
 			5, _
 			{ _
@@ -709,7 +709,7 @@ declare function hPorts_cb _
 			) as long '/ _
 		( _
 			@"setmouse", @"fb_SetMouse", _
-			FB_DATATYPE_LONG, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 	 		@rtlMultinput_cb, FB_RTL_OPT_NOQB, _
 			4, _
 			{ _
@@ -734,7 +734,7 @@ declare function hPorts_cb _
 			) as long '/ _
 		( _
 			@"getjoystick", @"fb_GfxGetJoystick", _
-			FB_DATATYPE_LONG, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 	 		@hGfxlib_cb, FB_RTL_OPT_NOQB, _
 			10, _
 			{ _
@@ -753,7 +753,7 @@ declare function hPorts_cb _
 		/' function stick( byval n as long ) as long '/ _
 		( _
 			@"stick", @"fb_GfxStickQB", _
-			FB_DATATYPE_LONG, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 	 		@hGfxlib_cb, FB_RTL_OPT_QBONLY, _
 			1, _
 			{ _
@@ -763,7 +763,7 @@ declare function hPorts_cb _
 		/' function strig( byval n as long ) as long '/ _
 		( _
 			@"strig", @"fb_GfxStrigQB", _
-			FB_DATATYPE_LONG, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 	 		@hGfxlib_cb, FB_RTL_OPT_QBONLY, _
 			1, _
 			{ _
@@ -782,7 +782,7 @@ declare function hPorts_cb _
 			) '/ _
 		( _
 			@"screeninfo", @"fb_GfxScreenInfo", _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 	 		@hGfxlib_cb, FB_RTL_OPT_NOQB, _
 			7, _
 			{ _
@@ -798,7 +798,7 @@ declare function hPorts_cb _
 		/' function screenlist( byval depth as long = 0 ) as long '/ _
 		( _
 			@"screenlist", @"fb_GfxScreenList", _
-			FB_DATATYPE_LONG, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 	 		@hGfxlib_cb, FB_RTL_OPT_NOQB, _
 			1, _
 			{ _
@@ -815,7 +815,7 @@ declare function hPorts_cb _
 			) as any ptr '/ _
 		( _
 			@FB_RTL_GFXIMAGECREATE, NULL, _
-			typeAddrOf( FB_DATATYPE_VOID ), FB_USE_FUNCMODE_FBCALL, _
+			typeAddrOf( FB_DATATYPE_VOID ), FB_FUNCMODE_FBCALL, _
 	 		@hGfxlib_cb, FB_RTL_OPT_FBONLY, _
 			5, _
 			{ _
@@ -836,7 +836,7 @@ declare function hPorts_cb _
 			) as any ptr '/ _
 		( _
 			@FB_RTL_GFXIMAGECREATEQB, NULL, _
-			typeAddrOf( FB_DATATYPE_VOID ), FB_USE_FUNCMODE_FBCALL, _
+			typeAddrOf( FB_DATATYPE_VOID ), FB_FUNCMODE_FBCALL, _
 	 		@hGfxlib_cb, FB_RTL_OPT_NOQB, _
 			5, _
 			{ _
@@ -850,7 +850,7 @@ declare function hPorts_cb _
 		/' sub imagedestroy( byval image as any ptr ) '/ _
 		( _
 			@"imagedestroy", @"fb_GfxImageDestroy", _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 	 		@hGfxlib_cb, FB_RTL_OPT_NOQB, _
 			1, _
 			{ _
@@ -869,7 +869,7 @@ declare function hPorts_cb _
 			) as long '/ _
 		( _
 			@"imageinfo", @"fb_GfxImageInfo", _
-			FB_DATATYPE_LONG, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 			@hGfxlib_cb, FB_RTL_OPT_NOQB, _
 			7, _
 			{ _
@@ -893,7 +893,7 @@ declare function hPorts_cb _
 			) '/ _
 		( _
 			@"imageconvertrow", @"fb_GfxImageConvertRow", _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 	 		@hGfxlib_cb, FB_RTL_OPT_NOQB, _
 			6, _
 			{ _
@@ -908,7 +908,7 @@ declare function hPorts_cb _
 		/' function screenevent( byval event as EVENT ptr ) as long '/ _
 		( _
 			@"screenevent", @"fb_GfxEvent", _
-			FB_DATATYPE_LONG, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 	 		@hGfxlib_cb, FB_RTL_OPT_NOQB, _
 			1, _
 			{ _
@@ -922,7 +922,7 @@ declare function hPorts_cb _
 			) '/ _
 		( _
 			@"screencontrol", @"fb_GfxControl_s", _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 	 		@hGfxlib_cb, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
 			2, _
 			{ _
@@ -940,7 +940,7 @@ declare function hPorts_cb _
 			) '/ _
 		( _
 			@"screencontrol", @"fb_GfxControl_i", _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 	 		@hGfxlib_cb, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
 			5, _
 			{ _
@@ -954,7 +954,7 @@ declare function hPorts_cb _
 		/' function screenglproc( byval proc as zstring ptr ) as any ptr '/ _
 		( _
 			@"screenglproc", @"fb_GfxGetGLProcAddress", _
-			typeAddrOf( FB_DATATYPE_VOID ), FB_USE_FUNCMODE_FBCALL, _
+			typeAddrOf( FB_DATATYPE_VOID ), FB_FUNCMODE_FBCALL, _
 	 		@hGfxlib_cb, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
 			1, _
 			{ _

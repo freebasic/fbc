@@ -193,10 +193,11 @@ enum FB_FUNCMODE
 	FB_FUNCMODE_CDECL
 	FB_FUNCMODE_PASCAL
 
-    '' This constant is used to tell cProcCallingConv() and the RTL procedure
-    '' definitions to use env.target.fbcall (which cannot be a constant because
-    '' it depends on the [cross-compiling] target).
-    FB_USE_FUNCMODE_FBCALL = -1
+	'' Symbolic constant to represent FBCALL, telling cProcCallingConv()
+	'' and the RTL procedure definitions to use env.target.fbcall which
+	'' will be the real FB_FUNCMODE_* implementing FBCALL depending on the
+	'' compilation target.
+	FB_FUNCMODE_FBCALL = -1
 end enum
 
 '' options when adding new symbols

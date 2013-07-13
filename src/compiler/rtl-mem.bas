@@ -17,7 +17,7 @@
 			) as any ptr '/ _
 		( _
 			@FB_RTL_NULLPTRCHK, NULL, _
-	 		typeAddrOf( FB_DATATYPE_VOID ), FB_USE_FUNCMODE_FBCALL, _
+	 		typeAddrOf( FB_DATATYPE_VOID ), FB_FUNCMODE_FBCALL, _
 	 		NULL, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
@@ -46,7 +46,7 @@
 		/' sub fb_MemSwap( byref dst as any, byref src as any, byval bytes as integer ) '/ _
 		( _
 			@FB_RTL_MEMSWAP, NULL, _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 	 		NULL, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
@@ -64,7 +64,7 @@
 			) '/ _
 		( _
 			@FB_RTL_MEMCOPYCLEAR, NULL, _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 	 		NULL, FB_RTL_OPT_NONE, _
 			4, _
 			{ _
@@ -77,7 +77,7 @@
 		/' function fre( byval mode as long = 0 ) as uinteger '/ _
 		( _
 			@"fre", @"fb_GetMemAvail", _
-			FB_DATATYPE_UINT, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_UINT, FB_FUNCMODE_FBCALL, _
 	 		NULL, FB_RTL_OPT_NONE, _
 			1, _
 			{ _
