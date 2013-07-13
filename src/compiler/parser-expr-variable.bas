@@ -11,10 +11,12 @@
 
 private function hIndexExpr( ) as ASTNODE ptr
 	dim as ASTNODE ptr expr = any
+	dim as integer check_array = any
 
+	check_array = fbGetCheckArray( )
 	fbSetCheckArray( TRUE )
 	expr = cExpression( )
-	fbSetCheckArray( FALSE )
+	fbSetCheckArray( check_array )
 	if( expr = NULL ) then
 		errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
 		'' error recovery: faken an expr
@@ -1492,16 +1494,21 @@ function cVarOrDeref _
 		byval options as FB_VAREXPROPT _
 	) as ASTNODE ptr
 
-	dim as integer last_isexpr = any
+	dim as integer last_isexpr = any, check_array = any
+
 	if( options and FB_VAREXPROPT_ISEXPR ) then
 		last_isexpr = fbGetIsExpression( )
 		fbSetIsExpression( TRUE )
 	end if
-
-	dim as FB_PARSEROPT parseroptions = parser.options
+	check_array = fbGetCheckArray( )
 	fbSetCheckArray( ((options and FB_VAREXPROPT_NOARRAYCHECK) = 0) )
+
 	dim as ASTNODE ptr expr = cHighestPrecExpr( NULL, NULL )
-	parser.options = parseroptions
+
+	fbSetCheckArray( check_array )
+	if( options and FB_VAREXPROPT_ISEXPR ) then
+		fbSetIsExpression( last_isexpr )
+	end if
 
 	if( expr <> NULL ) then
 		'' skip any casting if they won't do any conversion
@@ -1542,9 +1549,5 @@ function cVarOrDeref _
 	end if
 
 	function = expr
-
-	if( options and FB_VAREXPROPT_ISEXPR ) then
-		fbSetIsExpression( last_isexpr )
-	end if
 
 end function
