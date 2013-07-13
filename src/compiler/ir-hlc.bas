@@ -2384,7 +2384,7 @@ end sub
 private function exprNewOFFSET _
 	( _
 		byval sym as FBSYMBOL ptr, _
-		byval ofs as integer _
+		byval ofs as longint _
 	) as EXPRNODE ptr
 
 	dim as EXPRNODE ptr l = any
