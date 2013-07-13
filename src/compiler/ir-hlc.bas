@@ -1978,42 +1978,40 @@ private function exprLookup( byval vregid as integer ) as EXPRNODE ptr
 	end if
 end function
 
-private function hEmitInt( byval dtype as integer, byval value as integer ) as string
+private function hEmitInt _
+	( _
+		byval dtype as integer, _
+		byval value as longint _
+	) as string
+
 	dim as string s
 
 	if( typeIsSigned( dtype ) ) then
 		s = str( value )
 
-		if( value = -2147483648u ) then
-			'' Prevent GCC warnings for INT_MIN:
-			'' The '-' minus sign doesn't count as part of the number
-			'' literal, and 2147483648 is too big for an integer, so it
-			'' must be marked as unsigned.
-			s += "u"
+		'' Prevent GCC warnings for INT_MIN/LLONG_MIN:
+		'' The '-' minus sign doesn't count as part of the number
+		'' literal, and 2147483648 is too big for a 32bit integer,
+		'' so it must be marked as unsigned.
+		if( typeGetSize( dtype ) = 8 ) then
+			if( value = -9223372036854775808ull ) then
+				s += "u"
+			end if
+			s += "ll"
+		else
+			if( value = -2147483648u ) then
+				s += "u"
+			end if
 		end if
-
-		function = s
 	else
-		function = str( cuint( value ) ) + "u"
-	end if
-end function
-
-private function hEmitLong( byval dtype as integer, byval value as longint ) as string
-	dim as string s
-
-	if( typeIsSigned( dtype ) ) then
-		s = str( value )
-		if( value = -9223372036854775808ull ) then
-			'' Ditto, prevent warnings for LLONG_MIN
-			s += "u"
+		if( typeGetSize( dtype ) = 8 ) then
+			s = str( culngint( value ) ) + "ull"
+		else
+			s = str( cuint( value ) ) + "u"
 		end if
-		s += "ll"
-	else
-		s = str( culngint( value ) )
-		s += "ull"
 	end if
 
-	return s
+	function = s
 end function
 
 private function hEmitFloat _
@@ -2218,8 +2216,6 @@ private sub hExprFlush( byval n as EXPRNODE ptr, byval need_parens as integer )
 	case EXPRCLASS_IMM
 		if( typeGetClass( n->dtype ) = FB_DATACLASS_FPOINT ) then
 			ctx.exprtext += hEmitFloat( n->dtype, n->val.f )
-		elseif( typeGetSize( n->dtype ) = 8 ) then
-			ctx.exprtext += hEmitLong( n->dtype, n->val.i )
 		else
 			ctx.exprtext += hEmitInt( n->dtype, n->val.i )
 		end if
@@ -2322,8 +2318,6 @@ private sub exprDump( byval n as EXPRNODE ptr )
 	case EXPRCLASS_IMM
 		if( typeGetClass( n->dtype ) = FB_DATACLASS_FPOINT ) then
 			s = "IMM( " + hEmitFloat( n->dtype, n->val.f ) + " )"
-		elseif( typeGetSize( n->dtype ) = 8 ) then
-			s = "IMM( " + hEmitLong( n->dtype, n->val.i ) + " )"
 		else
 			s = "IMM( " + hEmitInt( n->dtype, n->val.i ) + " )"
 		end if
@@ -3192,11 +3186,7 @@ private sub hVarIniSeparator( )
 end sub
 
 private sub _emitVarIniI( byval dtype as integer, byval value as longint )
-	if( typeGetSize( dtype ) = 8 ) then
-		ctx.varini += hEmitLong( dtype, value )
-	else
-		ctx.varini += hEmitInt( dtype, value )
-	end if
+	ctx.varini += hEmitInt( dtype, value )
 	hVarIniSeparator( )
 end sub
 
