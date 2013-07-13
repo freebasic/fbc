@@ -1733,6 +1733,15 @@ private function exprNewCAST _
 		return l
 	end if
 
+	'' Don't cast if l has a compatible type (e.g. 32bit int vs. 32bit long)
+	'' (same class, same size, same signedness, and no pointers involved)
+	if( (typeGetClass( l->dtype ) = typeGetClass( dtype )) and _
+	    (typeIsSigned( l->dtype ) = typeIsSigned( dtype )) and _
+	    (not typeIsPtr( l->dtype )) and (not typeIsPtr( dtype )) and _
+	    (typeGetSize( l->dtype ) = typeGetSize( dtype )) ) then
+		return l
+	end if
+
 	'' "(foo*)(bar*)"? Discard the bar* cast and cast only to foo*,
 	'' pointers are pointers, such double casts are useless.
 	if( l->class = EXPRCLASS_CAST ) then
