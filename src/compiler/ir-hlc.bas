@@ -1799,7 +1799,7 @@ private function typeCBop _
 	'' Result of relational/comparison operators is int
 	select case( op )
 	case AST_OP_EQ, AST_OP_NE, AST_OP_GT, AST_OP_LT, AST_OP_GE, AST_OP_LE
-		return FB_DATATYPE_INTEGER
+		return FB_DATATYPE_LONG
 	end select
 
 	'' This tries to do C operand type promotion (and is probably not
@@ -1820,46 +1820,41 @@ private function typeCBop _
 
 	'' Float types take precedence (?)
 	if( (a = FB_DATATYPE_DOUBLE) or (b = FB_DATATYPE_DOUBLE) ) then
-		function = FB_DATATYPE_DOUBLE
-	elseif( (a = FB_DATATYPE_SINGLE) or (b = FB_DATATYPE_SINGLE) ) then
-		function = FB_DATATYPE_SINGLE
-	else
-		'' Remap to allow types to be compared as integer values
-		'' Note: C pointer becomes FB ulong (FB vs. C x86 assumption)
-		a = typeRemap( a, asubtype )
-		if( typeIsSigned( a ) ) then
-			if( a < FB_DATATYPE_INTEGER ) then
-				a = FB_DATATYPE_INTEGER
-			end if
-		else
-			if( a < FB_DATATYPE_UINT ) then
-				a = FB_DATATYPE_UINT
-			end if
-		end if
-
-		select case( op )
-		case AST_OP_SHL, AST_OP_SHR
-			return a
-		end select
-
-		b = typeRemap( b, bsubtype )
-		if( typeIsSigned( b ) ) then
-			if( b < FB_DATATYPE_INTEGER ) then
-				b = FB_DATATYPE_INTEGER
-			end if
-		else
-			if( b < FB_DATATYPE_UINT ) then
-				b = FB_DATATYPE_UINT
-			end if
-		end if
-
-		if( a > b ) then
-			function = a
-		else
-			function = b
-		end if
+		return FB_DATATYPE_DOUBLE
+	end if
+	if( (a = FB_DATATYPE_SINGLE) or (b = FB_DATATYPE_SINGLE) ) then
+		return FB_DATATYPE_SINGLE
 	end if
 
+	'' Promote 8bit/16bit types to 32bit,
+	'' and normalize 32bit types to FB_DATATYPE_LONG
+	if( typeGetSize( a ) <= 4 ) then
+		a = iif( typeIsSigned( a ), FB_DATATYPE_LONG, FB_DATATYPE_ULONG )
+	end if
+	if( typeGetSize( b ) <= 4 ) then
+		b = iif( typeIsSigned( b ), FB_DATATYPE_LONG, FB_DATATYPE_ULONG )
+	end if
+
+	'' Promote signed to unsigned
+	if( (not typeIsSigned( a )) or (not typeIsSigned( b )) ) then
+		a = typeToUnsigned( a )
+		b = typeToUnsigned( b )
+	end if
+
+	'' Promote to 64bit, iff a 64bit operand is involved,
+	'' and normalize to FB_DATATYPE_LONGINT
+	if( (typeGetSize( a ) = 8) or (typeGetSize( b ) = 8) ) then
+		a = iif( typeIsSigned( a ), FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT )
+		b = iif( typeIsSigned( b ), FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT )
+	end if
+
+	'' Promote signed to unsigned
+	if( (not typeIsSigned( a )) or (not typeIsSigned( b )) ) then
+		a = typeToUnsigned( a )
+		b = typeToUnsigned( b )
+	end if
+
+	function = a
 end function
 
 private function exprNewUOP _
@@ -2427,7 +2422,7 @@ private function exprNewVREG _
 			'' but just the "offset".
 			''    *(vregtype*)offset
 			''    *(vregtype*)vidx
-			''    *(vregtype*)((ubyte*)vidx + offset)
+			''    *(vregtype*)((uint8*)vidx + offset)
 
 			if( vreg->vidx ) then
 				'' recursion
@@ -2467,12 +2462,12 @@ private function exprNewVREG _
 		''        (vregtype)sym
 		'' ptr derefs:
 		''        *(vregtype*)sym
-		''        *(vregtype*)((ubyte*)sym + offset)
+		''        *(vregtype*)((uint8*)sym + offset)
 		'' array accesses (idx):
-		''        *(vregtype*)((ubyte*)sym + vidx + offset)
+		''        *(vregtype*)((uint8*)sym + vidx + offset)
 		'' field accesses:
 		''        *(vregtype*)&sym
-		''        *(vregtype*)((ubyte*)&sym + offset)
+		''        *(vregtype*)((uint8*)&sym + offset)
 
 		have_offset = ((vreg->ofs <> 0) or (vreg->vidx <> NULL))
 
