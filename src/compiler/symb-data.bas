@@ -171,8 +171,6 @@ function typeRemap _
     dim as integer nd = any
     
 	select case typeGet( dtype )
-	case FB_DATATYPE_POINTER
-		nd = FB_DATATYPE_ULONG
 	case FB_DATATYPE_BITFIELD
 		nd = subtype->typ
 	case else
