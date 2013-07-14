@@ -3,6 +3,7 @@ Version 0.91.0:
 [changed]
 
 [added]
+- Updated header for libzip 0.11.1
 
 [fixed]
 - Potential internal errors in Unix rtlib during SIGWINCH signal handling, due to calls to non-async-signal-safe functions
