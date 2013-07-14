@@ -1,8 +1,13 @@
 Version 0.91.0:
 
 [changed]
+- The normal (non-standalone) compiler now uses target-specific sub-directories in lib/freebasic/ again, for example lib/freebasic/linux/, to allow libs for other targets to be installed into the same directory, for example lib/freebasic/x86_64-linux/, instead of having to use a separate directory like lib/x86_64-linux-freebasic/. Same goes for the FB makefile: the *.o files go into target-specific subdirs in src/{compiler,rtlib,gfxlib2}/obj/, to avoid trashing the source dirs with tons of separate <target>-obj/ subdirs.
 
 [added]
+- 64bit support (-arch x86_64) based on -gen gcc: INTEGER/POINTER = 64bit, LONG = 32bit DWORD. Compiler #define: __FB_64BIT__
+- -arch 32|64 options to support easy switching between 32bit and 64bit, by selecting a default arch that supports 32/64 bits respectively.
+- fbc -v now prints out the target system and architecture
+- Improved multiplication/division/modulus to bitwise shift/and optimizations to handle operations with 64bit and unsigned right hand operand better
 
 [fixed]
 - Potential internal errors in Unix rtlib during SIGWINCH signal handling, due to calls to non-async-signal-safe functions
