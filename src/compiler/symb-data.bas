@@ -30,7 +30,7 @@ dim shared symb_dtypeTB( 0 to FB_DATATYPES-1 ) as SYMB_DATATYPE => _
 	( FB_DATACLASS_STRING ,  1, FALSE,  0, FB_DATATYPE_FIXSTR  , -1                 , @"string"   ), _
 	( FB_DATACLASS_UDT    ,  0, FALSE,  0, FB_DATATYPE_STRUCT  , -1                 , @"type"     ), _
 	( FB_DATACLASS_UDT    ,  0, FALSE,  0, FB_DATATYPE_NAMESPC , -1                 , @"namepace" ), _
-	( FB_DATACLASS_INTEGER, -1, FALSE,  0, FB_DATATYPE_UINT    , -1                 , @"function" ), _
+	( FB_DATACLASS_INTEGER,  0, FALSE,  0, FB_DATATYPE_UINT    , -1                 , @"function" ), _
 	( FB_DATACLASS_UNKNOWN,  0, FALSE,  0, FB_DATATYPE_VOID    , -1                 , @"fwdref"   ), _
 	( FB_DATACLASS_INTEGER, -1, FALSE,  0, FB_DATATYPE_UINT    , -1                 , @"pointer"  ), _
 	( FB_DATACLASS_INTEGER, 16, FALSE,  0, FB_DATATYPE_XMMWORD , -1                 , @"xmmword"  )  _
@@ -62,14 +62,12 @@ sub symbDataInit( )
 		symb_dtypeTB(FB_DATATYPE_ENUM    ).size = 8
 		symb_dtypeTB(FB_DATATYPE_BITFIELD).size = 8
 		symb_dtypeTB(FB_DATATYPE_STRING  ).size = 24
-		symb_dtypeTB(FB_DATATYPE_FUNCTION).size = 8
 		symb_dtypeTB(FB_DATATYPE_POINTER ).size = 8
 
 		symb_dtypeTB(FB_DATATYPE_INTEGER ).sizetype = FB_SIZETYPE_INT64
 		symb_dtypeTB(FB_DATATYPE_UINT    ).sizetype = FB_SIZETYPE_UINT64
 		symb_dtypeTB(FB_DATATYPE_ENUM    ).sizetype = FB_SIZETYPE_INT64
 		symb_dtypeTB(FB_DATATYPE_BITFIELD).sizetype = FB_SIZETYPE_UINT64
-		symb_dtypeTB(FB_DATATYPE_FUNCTION).sizetype = FB_SIZETYPE_UINT64
 		symb_dtypeTB(FB_DATATYPE_POINTER ).sizetype = FB_SIZETYPE_UINT64
 
 		symb_dtypeTB(FB_DATATYPE_INTEGER ).intrank = 81
@@ -81,14 +79,12 @@ sub symbDataInit( )
 		symb_dtypeTB(FB_DATATYPE_ENUM    ).size = 4
 		symb_dtypeTB(FB_DATATYPE_BITFIELD).size = 4
 		symb_dtypeTB(FB_DATATYPE_STRING  ).size = 12
-		symb_dtypeTB(FB_DATATYPE_FUNCTION).size = 4
 		symb_dtypeTB(FB_DATATYPE_POINTER ).size = 4
 
 		symb_dtypeTB(FB_DATATYPE_INTEGER ).sizetype = FB_SIZETYPE_INT32
 		symb_dtypeTB(FB_DATATYPE_UINT    ).sizetype = FB_SIZETYPE_UINT32
 		symb_dtypeTB(FB_DATATYPE_ENUM    ).sizetype = FB_SIZETYPE_INT32
 		symb_dtypeTB(FB_DATATYPE_BITFIELD).sizetype = FB_SIZETYPE_UINT32
-		symb_dtypeTB(FB_DATATYPE_FUNCTION).sizetype = FB_SIZETYPE_UINT32
 		symb_dtypeTB(FB_DATATYPE_POINTER ).sizetype = FB_SIZETYPE_UINT32
 
 		symb_dtypeTB(FB_DATATYPE_INTEGER ).intrank = 41

@@ -1491,16 +1491,17 @@ sub symbDelSymbol _
 
 end sub
 
-'':::::
-function symbCloneSymbol _
-	( _
-		byval s as FBSYMBOL ptr _
-	) as FBSYMBOL ptr
-
+function symbCloneSymbol( byval s as FBSYMBOL ptr ) as FBSYMBOL ptr
 	'' assuming only non-complex symbols will be passed,
 	'' for use by astTypeIniClone() mainly
 
 	select case as const s->class
+	case FB_SYMBCLASS_PROC
+		'' Only procptr subtype PROC symbols, but no real PROCs,
+		'' should appear in TYPEINI scopes.
+		assert( symbGetIsFuncPtr( s ) )
+		function = symbAddProcPtrFromFunction( s )
+
     case FB_SYMBCLASS_VAR
     	function = symbCloneVar( s )
 
@@ -1514,7 +1515,7 @@ function symbCloneSymbol _
     	function = symbCloneStruct( s )
 
     case else
-    	errReportEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
+		assert( FALSE )
     	function = NULL
     end select
 
