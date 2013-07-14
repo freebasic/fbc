@@ -9,9 +9,6 @@ o 64bit
   - search for any other "x86 assumption"'s
   - struct packing, cFieldAlignmentAttribute()
   - structs returned in registers, hGetReturnType()
-  - 64bit calling convention? There's only the specialized cdecl with arguments
-    passed in registers etc. -gen gcc will handle that for us, but we'll have to
-    disallow stdcall/pascal and use cdecl as default for everything.
 
   - Adjust rtlib
     - How to handle functions using long? (e.g. fb_CVL())
@@ -23,8 +20,6 @@ o 64bit
       because behind the scenes they map to the same function anyways already.
       (the old ones must be retained in legacy_* modules though)
       same for fb_FileSeek*... and probably others
-    - FB_DATADESC offset field needs to support 64bit? there still are several
-      (unsigned long) casts in fb_Data* functions around
 
   - Also, all FB includes must be adjusted for 64bit compatibility (if the
     corresponding library even is available on 64bit)

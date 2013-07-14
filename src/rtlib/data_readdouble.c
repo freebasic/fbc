@@ -8,11 +8,11 @@ FBCALL void fb_DataReadDouble( double *dst )
 
 	if( __fb_data_ptr ) {
 		if( __fb_data_ptr->len == FB_DATATYPE_OFS ) {
-			*dst = (double)(unsigned long)__fb_data_ptr->ofs;
+			*dst = (size_t)__fb_data_ptr->ofs;
 		} else if( __fb_data_ptr->len & FB_DATATYPE_WSTR ) {
-			*dst = (double)fb_WstrToDouble( __fb_data_ptr->wstr, __fb_data_ptr->len & 0x7FFF );
+			*dst = fb_WstrToDouble( __fb_data_ptr->wstr, __fb_data_ptr->len & 0x7FFF );
 		} else {
-			*dst = (double)fb_hStr2Double( __fb_data_ptr->zstr, __fb_data_ptr->len );
+			*dst = fb_hStr2Double( __fb_data_ptr->zstr, __fb_data_ptr->len );
 		}
 	} else {
 		/* no more DATA */
