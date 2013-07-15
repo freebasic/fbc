@@ -573,10 +573,14 @@ end sub
 			'' - is given a toplevel dir to prevent extracted files
 			''   from spilling all over the current dir
 			''   (tar bombs, especially annoying for "tar xf" users)
+			'' - is made available in two formats: old school (.zip,
+			''   .tar.gz) and new fancy (.tar.xz, .7z)
 			''
 			'' Add-on packages:
 			'' - no toplevel dir, so they can be extracted right
 			''   into the main FB dir
+			'' - only old school format, to avoid making them even
+			''   more complicated, since there are so many add-ons
 			''
 
 			if( i = 0 ) then
@@ -606,10 +610,8 @@ end sub
 					hShell( "7z a -tzip -mfb=8 " + title + ".zip -i@" + manifest + " > nul" )
 				case "win32", "win32-mini", "mingw32"
 					hShell( "zip -q " + title + ".zip -@ < " + manifest )
-					hShell( "7z a " + title + ".7z -i@" + manifest + " > nul" )
 				case else
 					hShell( "tar -czf " + title + ".tar.gz -T " + manifest )
-					hShell( "tar -cJf " + title + ".tar.xz -T " + manifest )
 				end select
 			end if
 		next
