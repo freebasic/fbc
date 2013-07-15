@@ -4,8 +4,6 @@ o 64bit
     be fully compatible. On Linux, new probably uses size_t, which is unsigned long,
     but none of FB types will be mangled as long on 64bit. It could work on Win64
     at least, if new uses a long long param there...
-  - search for any other "x86 assumption"'s
-  - structs returned in registers, hGetReturnType()
 
   - Adjust rtlib
     - also, get#/put# should just always use the fb_FileGet/Put*Large* versions,
@@ -18,6 +16,8 @@ o 64bit
     corresponding library even is available on 64bit)
 
 o LLVM backend
+  - returning structs in registers? Disabled for -gen gcc in hGetReturnType(),
+    can the same be done for -gen llvm?
   - structs should be emitted as byte arrays, to let the FB side handle
     packing/alignment, unless the fields must be emitted individually as with
     the C backend due to global varinis with procptrs that can't be emitted in
