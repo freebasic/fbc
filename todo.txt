@@ -4,7 +4,6 @@ o 64bit
     be fully compatible. On Linux, new probably uses size_t, which is unsigned long,
     but none of FB types will be mangled as long on 64bit. It could work on Win64
     at least, if new uses a long long param there...
-  - adjust cStrCHR() and cStrASC() to handle 64bit constants
   - check all size-sensitive rtl functions, mk*(), cv*()
   - search for any other "x86 assumption"'s
   - struct packing, cFieldAlignmentAttribute()

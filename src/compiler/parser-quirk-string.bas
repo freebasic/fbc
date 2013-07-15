@@ -184,7 +184,7 @@ private function cStrCHR(byval is_wstr as integer) as ASTNODE ptr
 	static as zstring * 32*6+1 zs
 	static as wstring * 32*6+1 ws
 	static as zstring * 8+1 o
-	dim as integer v = any, i = any, cnt = any, isconst = any
+	dim as longint v = any, i = any, cnt = any, isconst = any
 	dim as ASTNODE ptr exprtb(0 to 31) = any
 
 	hMatchLPRNT( )
@@ -233,7 +233,7 @@ private function cStrCHR(byval is_wstr as integer) as ASTNODE ptr
 			exprtb(i) = NULL
 
 			if( is_wstr = FALSE ) then
-				if( cuint( v ) > 255 ) then
+				if( culngint( v ) > 255 ) then
 					v = 255
 				end if
 				if( (v < CHAR_SPACE) or (v > 127) ) then
@@ -244,7 +244,6 @@ private function cStrCHR(byval is_wstr as integer) as ASTNODE ptr
 				else
 					zs += chr( v )
 				end if
-
 			else
 				if( (v < CHAR_SPACE) or (v > 127) ) then
 					ws += ESCCHAR
@@ -269,7 +268,7 @@ end function
 
 private function cStrASC() as ASTNODE ptr
 	dim as ASTNODE ptr expr1 = any, posexpr = any
-	dim as integer p = any
+	dim as longint p = any
 
 	hMatchLPRNT( )
 	hMatchExpressionEx( expr1, FB_DATATYPE_STRING )
