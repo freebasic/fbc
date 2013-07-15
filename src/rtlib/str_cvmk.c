@@ -40,17 +40,17 @@ FBCALL short fb_CVSHORT( FBSTRING *str )
 	return num;
 }
 
-FBCALL int fb_CVI( FBSTRING *str )
+FBCALL ssize_t fb_CVI( FBSTRING *str )
 {
-	int num = 0;
-	hCV( str, sizeof( int ), &num );
+	ssize_t num = 0;
+	hCV( str, sizeof( ssize_t ), &num );
 	return num;
 }
 
-FBCALL long fb_CVL( FBSTRING *str )
+FBCALL int fb_CVL( FBSTRING *str )
 {
 	int num = 0;
-	hCV( str, sizeof( long ), &num );
+	hCV( str, sizeof( int ), &num );
 	return num;
 }
 
@@ -97,14 +97,14 @@ FBCALL FBSTRING *fb_MKSHORT( short num )
 	return hMK( sizeof( short ), &num );
 }
 
-FBCALL FBSTRING *fb_MKI( int num )
+FBCALL FBSTRING *fb_MKI( ssize_t num )
 {
-	return hMK( sizeof( int ), &num );
+	return hMK( sizeof( num ), &num );
 }
 
-FBCALL FBSTRING *fb_MKL( long num )
+FBCALL FBSTRING *fb_MKL( int num )
 {
-	return hMK( sizeof( long ), &num );
+	return hMK( sizeof( num ), &num );
 }
 
 FBCALL FBSTRING *fb_MKLONGINT( long long num )
