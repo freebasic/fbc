@@ -14,6 +14,7 @@ Version 0.91.0:
 - Pointer arithmetic on procedure pointers is now disallowed. It is not meaningful, because procedures do not have a fixed size and are not arranged like array elements.
 - 0.90.0 regression: A bug in array index parsing could cause the compiler to crash due to arrays being used without index, instead of showing an error message
 - 0.90.0 regression: ON GOTO was broken due to the compiler generating bad jump tables for it
+- dlltool syntax error when building a DLL without any EXPORTs
 
 
 Version 0.90.0 (former 0.25.0):
