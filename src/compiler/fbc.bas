@@ -2416,6 +2416,9 @@ private function hCompileStage2Module( byval module as FBCIOFILE ptr ) as intege
 		'' subtraction, however with the C backend with, gcc -ffast-math
 		'' optimizes out the subtraction (even under -O0) and inserts 0 instead.
 
+		'' Avoid gcc exception handling bloat
+		ln += "-fno-exceptions -fno-unwind-tables -fno-asynchronous-unwind-tables "
+
 		if( fbGetOption( FB_COMPOPT_DEBUG ) ) then
 			ln += "-g "
 		end if
