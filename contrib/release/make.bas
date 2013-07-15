@@ -568,21 +568,50 @@ end sub
 
 			dim as string manifest = packs.list(i).manifest
 
-			select case( target )
-			case "dos", "dos-mini", "djgpp"
-				''hShell( "zip -q " & title & ".zip -@ < " + manifest )
-				'' Use 7z to create a .zip with small word size/fast bytes setting,
-				'' which should reduce the memory needed to extract (?),
-				'' which should be nice for DOS systems...
-				hShell( "7z a -tzip -mfb=8 " & title & ".zip -i@" + manifest + " > nul" )
-			case "win32", "win32-mini", "mingw32"
-				hShell( "zip -q " & title & ".zip -@ < " + manifest )
-				hShell( "7z a " & title & ".7z -i@" + manifest + " > nul" )
-			case else
-				hShell( "tar -czf " & title & ".tar.gz -T " + manifest )
-				hShell( "tar -cJf " & title & ".tar.xz -T " + manifest )
-				''hShell( "7z a " & title & ".7z -i@" + manifest + " > /dev/null" )
-			end select
+			''
+			'' Main package:
+			'' - is given a toplevel dir to prevent extracted files
+			''   from spilling all over the current dir
+			''   (tar bombs, especially annoying for "tar xf" users)
+			''
+			'' Add-on packages:
+			'' - no toplevel dir, so they can be extracted right
+			''   into the main FB dir
+			''
+
+			if( i = 0 ) then
+				hShell( "tar -cf temp.tar -T " + manifest )
+				mkdir( title )
+				hShell( "tar xf temp.tar -C " + title )
+				kill( "temp.tar" )
+
+				select case( target )
+				case "dos", "dos-mini", "djgpp"
+					'' Using 7z to create a .zip with small word size/fast bytes setting,
+					'' which should reduce the memory needed to extract (?),
+					'' which should be nice for DOS systems...
+					hShell( "7z a -tzip -mfb=8 " + title + ".zip " + title + " > nul" )
+				case "win32", "win32-mini", "mingw32"
+					hShell( "zip -q " + title + ".zip " + title )
+					hShell( "7z a " + title + ".7z " + title + " > nul" )
+				case else
+					hShell( "tar -czf " + title + ".tar.gz " + title )
+					hShell( "tar -cJf " + title + ".tar.xz " + title )
+				end select
+
+				hShell( "rm -rf " + title )
+			else
+				select case( target )
+				case "dos", "dos-mini", "djgpp"
+					hShell( "7z a -tzip -mfb=8 " + title + ".zip -i@" + manifest + " > nul" )
+				case "win32", "win32-mini", "mingw32"
+					hShell( "zip -q " + title + ".zip -@ < " + manifest )
+					hShell( "7z a " + title + ".7z -i@" + manifest + " > nul" )
+				case else
+					hShell( "tar -czf " + title + ".tar.gz -T " + manifest )
+					hShell( "tar -cJf " + title + ".tar.xz -T " + manifest )
+				end select
+			end if
 		next
 	end if
 
