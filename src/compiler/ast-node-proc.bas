@@ -1057,7 +1057,6 @@ private function hInitVptr _
 
 	'' this.vptr = cast( any ptr, (cast(byte ptr, @vtable) + sizeof(void *) * 2) )
 	'' assuming that everything with a vptr extends fb_Object
-	'' Also, x86 assumption
 	function = astNewASSIGN( _ 
 		astBuildInstPtr( this_, symbUdtGetFirstField( symb.rtti.fb_object ) ), _
 		astNewCONV( typeAddrOf( FB_DATATYPE_VOID ), NULL, _
