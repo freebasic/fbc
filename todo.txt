@@ -9,9 +9,6 @@ o 64bit
   - structs returned in registers, hGetReturnType()
 
   - Adjust rtlib
-    - Careful about any enum parameters (e.g. FB_FILE_ENCOD on Open functions),
-      will they still be 32bit int on 64bit? Then we'd have to use FB_DATATYPE_LONG
-      in rtl-* definitions
     - also, get#/put# should just always use the fb_FileGet/Put*Large* versions,
       with the 64bit parameter, instead of the old fb_FileGet/Put* versions,
       because behind the scenes they map to the same function anyways already.
