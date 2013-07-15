@@ -15,7 +15,7 @@ all: $(INSTALLER_EXE)
 $(INSTALLER_EXE): installer.nsi $(ZIP_FILE) \
                     open-console.exe fblogo-header.bmp \
                     fblogo.ico $(MANIFEST)
-	unzip -q -o $(ZIP_FILE) -d $(ZIP_TITLE)
+	unzip -q -o $(ZIP_FILE)
 	cp installer.nsi open-console.exe fblogo.ico $(ZIP_TITLE)
 	$(MAKENSIS) -V2 $(ZIP_TITLE)/installer.nsi
 	rm -r $(ZIP_TITLE)
