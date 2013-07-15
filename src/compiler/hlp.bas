@@ -377,19 +377,14 @@ function pathIsAbsolute( byval path as zstring ptr ) as integer
 #endif
 end function
 
-'':::::
-function hCheckFileFormat _
-	( _
-		byval f as integer _
-	) as integer
-
-    dim as integer BOM
+function hCheckFileFormat( byval f as integer ) as integer
+	dim as long BOM
     dim as FBFILE_FORMAT fmt
 
 	'' little-endian assumptions
 	fmt = FBFILE_FORMAT_ASCII
 
-	if( get( #f, 0, BOM ) = 0 ) then
+	if( get( #f, 0, BOM, 4 ) = 0 ) then
 		if( BOM = &hFFFE0000 ) then
 			fmt = FBFILE_FORMAT_UTF32BE
 
@@ -426,7 +421,6 @@ function hCheckFileFormat _
 	end if
 
 	function = fmt
-
 end function
 
 function hCurDir( ) as string
