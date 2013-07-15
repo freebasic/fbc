@@ -93,6 +93,8 @@
 
 FBC := fbc
 CFLAGS := -Wfatal-errors -O2
+# Avoid gcc exception handling bloat
+CFLAGS += -fno-exceptions -fno-unwind-tables -fno-asynchronous-unwind-tables
 FBFLAGS := -maxerr 1
 AR = $(TARGET_PREFIX)ar
 CC = $(TARGET_PREFIX)gcc
