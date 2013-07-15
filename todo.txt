@@ -5,7 +5,6 @@ o 64bit
     but none of FB types will be mangled as long on 64bit. It could work on Win64
     at least, if new uses a long long param there...
   - search for any other "x86 assumption"'s
-  - struct packing, cFieldAlignmentAttribute()
   - structs returned in registers, hGetReturnType()
 
   - Adjust rtlib

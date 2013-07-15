@@ -133,10 +133,13 @@ function typeCalcNaturalAlign _
 		align = typeGetSize( dtype )
 	end select
 
-	if( align = 8 ) then
-		'' LONGINT/DOUBLE are 4-byte aligned on Unix (x86 assumption)
-		if( env.clopt.target <> FB_COMPTARGET_WIN32 ) then
-			align = 4
+	if( fbCpuTypeIs64bit( ) = FALSE ) then
+		'' LONGINT/DOUBLE are 4-byte aligned on 32bit, except on Win32
+		'' (i.e. we don't have anything 8-byte aligned in this case)
+		if( align = 8 ) then
+			if( env.clopt.target <> FB_COMPTARGET_WIN32 ) then
+				align = 4
+			end if
 		end if
 	end if
 
