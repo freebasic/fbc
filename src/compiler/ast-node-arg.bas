@@ -497,13 +497,12 @@ private function hCheckVarargParam _
 
 		case else
 			'' if < sizeof(int), convert to int (C ABI)
-			'' 32bit assumption
+			'' Even for 64bit, varargs are promoted to 32bit int.
 			if( typeGetSize( arg_dtype ) < 4 ) then
 				n->l = astNewCONV( iif( typeIsSigned( arg_dtype ), _
-									   	FB_DATATYPE_INTEGER, _
-									   	FB_DATATYPE_UINT ), _
-								   NULL, _
-								   arg )
+							FB_DATATYPE_LONG, _
+							FB_DATATYPE_ULONG ), _
+						NULL, arg )
 			end if
 		end select
 
