@@ -95,7 +95,7 @@ function hFloatToHex _
 		function = "0x" + hex( *cptr( ulongint ptr, @value ), 16 )
 	else
 		singlevalue = value
-		function = "0x" + hex( *cptr( uinteger ptr, @singlevalue ), 8 )
+		function = "0x" + hex( *cptr( ulong ptr, @singlevalue ), 8 )
 	end if
 end function
 
