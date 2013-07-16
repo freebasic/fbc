@@ -23,35 +23,46 @@ Sets new physical coordinate mapping and clipping region
 
 	The second and third statements both allow a new viewport to be defined. The corners of the viewport are specified by the ##//x1//##, ##//y1//##, ##//x2//## and ##//y2//## parameters. ##//fill_color//## and ##//border_color//## are both in the format accepted by ##[[KeyPgColor Color]]##. The indicated effects for each parameter only occur if that parameter is specified.
 
-	The second statement modifies the co-ordinate mapping of the graphics screen such that co-ordinates specified for drawing statements and procedures are relative to the top-left corner of the viewport.
+	The second statement modifies the coordinate mapping of the graphics screen such that coordinates specified for drawing statements and procedures are relative to the top-left corner of the viewport.
 
-	The third statement modifies the co-ordinate mapping of the graphics screen such that co-ordinates specified for drawing statements and procedures are relative to the top-left corner of the screen.
+	The third statement modifies the coordinate mapping of the graphics screen such that coordinates specified for drawing statements and procedures are relative to the top-left corner of the screen.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/gfx/view.bas"}}%%(freebasic)
 screen 12
-dim ip as integer ptr
-dim as integer i, j, k
+dim ip as any ptr
+dim as integer x, y
+
 'simple sprite
-for i=0 to 63: for j=0 to 63:pset (i,j), (i\4) xor (j\4):next j,i
-ip=imagecreate(64,64)
-get (0,0)-(63,63),ip
-cls
-'viewport
-line (215,135)-(425,345),1,bf
-view  (220,140)-(420,340)
-k=0
-'move sprite
+ip = imagecreate(64,64)
+for y = 0 to 63
+  for x = 0 to 63
+	pset ip, (x, y), (x\4) Xor (y\4)
+  next x
+next y
+
+'viewport with blue border
+line (215,135)-(425,345), 1, bf
+view (220,140)-(420,340)
+
+'move sprite around the viewport
 do
-  i=100*sin(k*.02)+50:  j=100* sin(k*.027)+50
+
+  x = 100*sin(timer*2.0)+50
+  y = 100*sin(timer*2.7)+50
+  
   screensync
   screenlock
-  cls 1: put (i,j),ip ,pset
+  
+  'clear viewport and put image
+  cls 1
+  put (x, y), ip, pset
+	
   screenunlock
-  k=k+1
-loop until len(inkey)
-imagedestroy(ip)
 
+loop while inkey = ""
+
+imagedestroy(ip)
 %%
 
 {{fbdoc item="diff"}}

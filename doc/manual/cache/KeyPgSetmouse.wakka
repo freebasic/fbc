@@ -22,7 +22,7 @@ Sets the position and visibility of the mouse cursor
 	Zero (##0##) on success, non-zero to indicate failure.
 
 {{fbdoc item="desc"}}
-	##**Setmouse**## will set the (##//x//##, ##//y//##) coordinates of the mouse pointer, as well as setting its visibility.  THe mouse position is set using the ##//x//## and ##//y//## parameters.  The mouse will be visible if visibility is set to ##1##, and invisible if visibility is set to ##0##.  ##**Setmouse**## is intended for graphics modes initiated using the ##[[KeyPgScreengraphics Screen (Graphics)]]## statement only.
+	##**Setmouse**## will set the (##//x//##, ##//y//##) coordinates of the mouse pointer, as well as setting its visibility.  The mouse position is set using the ##//x//## and ##//y//## parameters.  The mouse will be visible if visibility is set to ##1##, and invisible if ##//visibility//## is set to ##0##.  ##**Setmouse**## is intended for graphics modes initiated using the ##[[KeyPgScreengraphics Screen (Graphics)]]## statement only.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/input/setmouse.bas"}}%%(freebasic)
@@ -41,8 +41,8 @@ Do
 	    SetMouse 320, 240
 	End If
 
-	' run loop until Escape is pressed
-Loop Until Inkey = Chr(27)
+	' run loop until a key is pressed or the window is closed
+Loop While Inkey = ""
 %%
 
 
