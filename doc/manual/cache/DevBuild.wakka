@@ -31,7 +31,7 @@ On Windows, ""MinGW""/""MSYS"" is used to compile ""FreeBASIC"". Linux users wil
 
 {{anchor name="GettingTheSource"}}{{fbdoc item="section" value="Getting the current source code"}}
 
-	The current source (""FreeBASIC"" 0.24 [versions after September 20, 2011]) is available from these Git repositories:
+	The current source (""FreeBASIC"" 0.24+ [versions after September 20, 2011]) is available from these Git repositories:
 		- main repository at Sourceforge:
 			Git clone URL: ##""git://git.code.sf.net/p/fbc/code""##
 			Web view: http://sourceforge.net/p/fbc/code/
@@ -223,6 +223,9 @@ $ make
 set PATH=%PATH%;C:\FB-win32
 C:\TDM-GCC\msys\1.0\msys.bat
 %%
+	1) The rtlib source code additionally depends on [[http://sourceware.org/libffi/ libffi]] headers (##ffi.h## and ##ffitarget.h##) to be available in ##""C:\TDM-GCC\include""##. Furthermore, the ##libffi.a## library will be needed later when compiling FB programs that use [[KeyPgThreadCall ThreadCall]]. Prebuilt versions of libffi are available from the [[http://sourceforge.net/projects/fbc/files/Binaries%20-%20Windows/Libraries/ fbc downloads area]].
+	
+	
 	1) In order to compile ""FreeBASIC""'s gfxlib2, ""DirectX"" headers are needed in ##""C:\TDM-GCC\include""##, specifically ##ddraw.h## and ##dinput.h##. You can get the headers from here: [[http://alleg.sourceforge.net/files/dx80_mgw.zip]]
 	
 	
@@ -253,6 +256,7 @@ $ make
 		- ##""C:\TDM-GCC\lib\gcc\mingw32\version\{crtbegin,crtend}.o""##
 		- ##""C:\TDM-GCC\lib\gcc\mingw32\version\lib{gcc,supc++}.a""##
 		- ##""C:\TDM-GCC\lib\lib{advapi32,gdi32,kernel32,msvcrt,user32,winmm,winspool}.a""## //(rename to ##lib*.dll.a##)//
+		- ##""C:\TDM-GCC\lib\libffi.a""##
 		- and any additional libraries you want to use
 	
 	1) Rename ##""C:\fbc\fbc-new.exe""## to ##""C:\fbc\fbc.exe""##, if wanted
@@ -296,6 +300,9 @@ set PATH=C:\FB-win32;%PATH%
 C:\MinGW\msys\1.0\msys.bat
 %%
 		It is also possible to use ""MinGW/MSYS"" programs from the cmd.exe command prompt, if you prefer. For that it may be worth it to add ##""C:\MinGW\bin""##, ##""C:\MinGW\msys\1.0\bin""## and ##""C:\FB-win32""## to the system's global PATH environment variable.
+	
+	1) The rtlib source code additionally depends on [[http://sourceware.org/libffi/ libffi]] headers (##ffi.h## and ##ffitarget.h##) to be available in ##""C:\MinGW\include""##. Furthermore, the ##libffi.a## library will be needed later when compiling FB programs that use [[KeyPgThreadCall ThreadCall]]. Prebuilt versions of libffi are available from the [[http://sourceforge.net/projects/fbc/files/Binaries%20-%20Windows/Libraries/ fbc downloads area]].
+	
 	
 	1) In order to compile ""FreeBASIC""'s gfxlib2, ""DirectX"" headers are needed in ##""C:\MinGW\include""##, specifically ##ddraw.h## and ##dinput.h##. You can get the headers from here: [[http://alleg.sourceforge.net/files/dx80_mgw.zip]]
 	
@@ -482,14 +489,6 @@ src/rtlib/win32/hinit.c:21:17: error: '_PC_64' undeclared (first use in this fun
 	{{fbdoc item="subsect" value="MinGW binutils ld versions 2.18 to 2.21"}}
 	
 		fbc triggers a bug (ld/12614) in the mentioned linker versions causing it to produce broken binaries. It's fixed in binutils 2.21.1 and up.
-	
-	{{fbdoc item="subsect" value="MinGW GCC 4.7.0  __attribute__((packed)) broken"}}
-	
-		The FB rtlib's FB_DATADESC structure which uses ""__attribute__((packed))"" is miscompiled by default under ""MinGW"" GCC 4.7.0, due to the -mms-bitfields option being enabled by default since gcc 4.7.0. See also [[http://gcc.gnu.org/bugzilla/show_bug.cgi?id=52991 GCC bug 52991]] and [[http://www.freebasic.net/forum/viewtopic.php?f=6&t=20233 this FB forum thread]]. The work-around for now is to compile the rtlib with -mno-ms-bitfields, for example with this in config.mk:
-		
-		%%# work around new gcc 4.7 default (see gcc bug 52991)
-CFLAGS := -O2 -mno-ms-bitfields
-%%
 	
 	{{fbdoc item="subsect" value="-lXpm not found on Debian x86_64"}}
 	

@@ -13,6 +13,7 @@ Declares a user-defined type.
 		[[[KeyPgVisPrivate Private:]]|[[KeyPgVisPublic Public:]]|[[KeyPgVisProtected Protected:]]]
 		
 		[[KeyPgDeclare Declare]] [[KeyPgMemberSub Sub]]|[[KeyPgMemberFunction Function]]|[[KeyPgConstructor Constructor]]|[[KeyPgDestructor Destructor]]|[[KeyPgProperty Property]]|[[KeyPgOperator Operator]] ...
+		[[KeyPgStatic Static]] //variablename// [[KeyPgAs As]] //[[DataType DataType]]//
 		
 		//fieldname// [[KeyPgAs As]] //[[DataType DataType]]// [= //initializer//]
 		//fieldname//(//array dimensions//) [[KeyPgAs As]] //[[DataType DataType]]// [= //initializer//]

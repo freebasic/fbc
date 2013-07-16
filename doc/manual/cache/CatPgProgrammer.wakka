@@ -17,6 +17,7 @@
 	{{fbdoc item="keyword" value="ProPgIdentifierRules|Identifier Rules"}}
 	{{fbdoc item="keyword" value="ProPgLiterals|Literals"}}
 	{{fbdoc item="keyword" value="ProPgLabels|Labels"}}
+	{{fbdoc item="keyword" value="ProPgLineContinuation|Line continuation"}}
 
 {{fbdoc item="section" value="Variables and Datatypes"}}
 	Constants and Enumerations

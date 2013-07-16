@@ -2,25 +2,27 @@
 Defines variables, objects and arrays having static storage
 
 {{fbdoc item="syntax"}}##
-	**Static** //symbol// [ ( [ //subscripts// ] ) ] [ [[KeyPgAs as]] [[DataType DataType]] ] [ , ... ]
+	**Static** //symbol// [ (//array-dimensions//) ] [[KeyPgAs As]] [[DataType DataType]] [, ...]
+	
 		//or//
-	{ [[KeyPgSub sub]]|[[KeyPgFunction function]] } //proc_header// **Static**
-		[ ... ]
-	[[KeyPgEndblock end]] { [[KeyPgSub sub]]|[[KeyPgFunction function]] }
-		//or//
-	{ [[KeyPgType Type]] | [[KeyPgClass Class]] } //typename//
-		**Static** //symbol// [ ( [ //subscripts// ] ) ] [ [[KeyPgAs as]] [[DataType DataType]] ] [ , ... ]
+		
+	[[KeyPgType Type]] //typename//
+		**Static** //symbol// [ (//array-dimensions//) ] [[KeyPgAs As]] [[DataType DataType]] [, ...]
 		...
-	End { [[KeyPgType Type]] | [[KeyPgClass Class]] }
-	[[KeyPgDim Dim]] //typename.symbol// [ ( [ //subscripts// ] ) ] [ [[KeyPgAs as]] [[DataType DataType]] ] [ , ... ]
+	[[KeyPgEndblock End]] [[KeyPgType Type]]
+	[[KeyPgDim Dim]] //typename.symbol// [ (//array-dimensions//) ] [[KeyPgAs As]] [[DataType DataType]] [= //initial-value//] [, ...]
+
+		//or//
+
+	[[KeyPgSub Sub]]|[[KeyPgFunction Function]] //procedurename// ( //parameters// ) [[[KeyPgAs As]] [[DataType DataType]]] **Static**
+		...
+	[[KeyPgEndblock End]] [[KeyPgSub Sub]]|[[KeyPgFunction Function]]
 ##
 {{fbdoc item="param"}}
 	##//symbol//##
 		variable or array symbol name.
-	##//subscripts//##
-		a comma-separated list of subscript ranges.
-	##//proc_header//##
-		procedure header for a procedure definition.
+	##//array-dimensions//##
+		##//lower-bound// [[KeyPgTo To]] //upper-bound// [, ...]##
 
 {{fbdoc item="desc"}}
 	Specifies [[ProPgStorageClasses static storage]] for variables, objects and arrays; they are allocated at program startup and deallocated upon exit. Objects are constructed once when they are defined, and destructed upon program exit.
