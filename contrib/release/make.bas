@@ -499,18 +499,39 @@ private sub hKill( byref path as string )
 end sub
 
 private sub hShowUsage( )
-	print "usage: contrib/release/make [<id>] [manifest]"
+	print "usage: contrib/release/make [options] [<id>]"
 	print "<id> = dos|linux|win32|etc., from pattern.txt"
-	print "If ""manifest"" is given, generate manifest only"
+	print "options:"
+	print "  -m            Generate manifests only, no packages"
+	print "  -v <version>  Specify FB version number, e.g. 0.90.0"
 	end 1
 end sub
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
 	var manifest_only = FALSE
+	var fbversion = format( now( ), "yyyy.mm.dd" )
 
-	select case( __FB_ARGC__ )
-	case 1
+	for i as integer = 1 to __FB_ARGC__-1
+		var arg = *__FB_ARGV__[i]
+		select case( arg )
+		case "-m"
+			manifest_only = TRUE
+		case "-v"
+			i += 1
+			if( i >= __FB_ARGC__ ) then
+				hShowUsage( )
+			end if
+			fbversion = *__FB_ARGV__[i]
+		case else
+			if( left( arg, 1 ) = "-" ) then
+				hShowUsage( )
+			end if
+			target = arg
+		end select
+	next
+
+	if( len( target ) = 0 ) then
 		#if defined( __FB_WIN32__ )
 			target = "win32"
 		#elseif defined( __FB_DOS__ )
@@ -519,20 +540,7 @@ end sub
 			target = "linux"
 		#endif
 		print "using default target '" & target & "'"
-
-	case 2
-		target = *__FB_ARGV__[1]
-
-	case 3
-		target = *__FB_ARGV__[1]
-		if( *__FB_ARGV__[2] <> "manifest" ) then
-			hShowUsage( )
-		end if
-		manifest_only = TRUE
-
-	case else
-		hShowUsage( )
-	end select
+	end if
 
 	dim as string rootdir = strReplace( pathAddDiv( exepath( ) ) + "../..", "\", "/" )
 	chdir( rootdir )
@@ -578,7 +586,6 @@ end sub
 		for i as integer = 0 to packs.count-1
 			dim as string title
 			if( i = 0 ) then
-				dim as string fbversion = format( now( ), "yyyy-mm-dd" )
 				title = "FreeBASIC-" & fbversion & "-" & packs.list(i).id
 			else
 				title = "FB-" & packs.list(i).id
