@@ -477,6 +477,27 @@ private function hShell( byref ln as string ) as integer
 	end if
 end function
 
+private sub hMkdir( byref path as string )
+	print "$ mkdir " + path
+	if( mkdir( path ) <> 0 ) then
+		print "  (failed)"
+	end if
+end sub
+
+private sub hChdir( byref path as string )
+	print "$ cd " + path
+	if( chdir( path ) <> 0 ) then
+		print "  (failed)"
+	end if
+end sub
+
+private sub hKill( byref path as string )
+	print "$ rm " + path
+	if( kill( path ) <> 0 ) then
+		print "  (failed)"
+	end if
+end sub
+
 private sub hShowUsage( )
 	print "usage: contrib/release/make [<id>] [manifest]"
 	print "<id> = dos|linux|win32|etc., from pattern.txt"
@@ -519,12 +540,12 @@ end sub
 	'' For non-standalone releases, copy the includes into the proper directory
 	select case( target )
 	case "linux", "mingw32"
-		mkdir( "include" )
-		mkdir( "include/freebasic" )
+		hMkdir( "include" )
+		hMkdir( "include/freebasic" )
 		hShell( "cp -r inc/* include/freebasic" )
 	case "djgpp"
-		mkdir( "include" )
-		mkdir( "include/freebas" )
+		hMkdir( "include" )
+		hMkdir( "include/freebas" )
 		hShell( "cp -r inc/* include/freebas" )
 	end select
 
@@ -584,10 +605,23 @@ end sub
 			''
 
 			if( i = 0 ) then
-				hShell( "tar -cf temp.tar -T " + manifest )
-				mkdir( title )
-				hShell( "tar xf temp.tar -C " + title )
-				kill( "temp.tar" )
+				select case( target )
+				case "dos", "dos-mini", "djgpp", _
+				     "win32", "win32-mini", "mingw32"
+					'' Can't use tar on Win32/DOS because it doesn't handle CRLF line endings in the manifest
+					hShell( "zip -q temp.zip -@ < " + manifest )
+					hMkdir( title )
+					hChdir( title )
+					hShell( "unzip -q ../temp.zip" )
+					hChdir( ".." )
+					hKill( "temp.zip" )
+				case else
+					'' Must use tar on Linux to preserve file permissions
+					hShell( "tar -cf temp.tar -T " + manifest )
+					hMkdir( title )
+					hShell( "tar xf temp.tar -C " + title )
+					hKill( "temp.tar" )
+				end select
 
 				select case( target )
 				case "dos", "dos-mini", "djgpp"
@@ -596,7 +630,7 @@ end sub
 					'' which should be nice for DOS systems...
 					hShell( "7z a -tzip -mfb=8 " + title + ".zip " + title + " > nul" )
 				case "win32", "win32-mini", "mingw32"
-					hShell( "zip -q " + title + ".zip " + title )
+					hShell( "zip -q -r " + title + ".zip " + title )
 					hShell( "7z a " + title + ".7z " + title + " > nul" )
 				case else
 					hShell( "tar -czf " + title + ".tar.gz " + title )
