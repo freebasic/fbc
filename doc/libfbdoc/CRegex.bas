@@ -59,6 +59,9 @@ namespace fb
 		
 		ctx = new CRegexCtx
 
+		'' Support any CR/LF/CRLF, no matter how libpcre was compiled
+		options or= PCRE_NEWLINE_ANYCRLF
+
 		ctx->reg = pcre_compile( pattern, options, @err_msg, @err_ofs, NULL ) 
 		ctx->extra = pcre_study( ctx->reg, 0, @err_msg )
 		pcre_fullinfo( ctx->reg, ctx->extra, PCRE_INFO_CAPTURECOUNT, @ctx->substrcnt )
@@ -142,7 +145,10 @@ namespace fb
 		
 		ctx->subject = subject
 		ctx->sublen = iif( lgt >= 0, lgt, len( *subject ) )
-		
+
+		'' Support any CR/LF/CRLF, no matter how libpcre was compiled
+		options or= PCRE_NEWLINE_ANYCRLF
+
 		function = ( pcre_exec( ctx->reg, ctx->extra, _
 								subject, ctx->sublen, _
 								0, options, _
@@ -162,6 +168,9 @@ namespace fb
 
 		_Clearsubstrlist( ctx )
          
+		'' Support any CR/LF/CRLF, no matter how libpcre was compiled
+		options or= PCRE_NEWLINE_ANYCRLF
+
 		function = ( pcre_exec( ctx->reg, ctx->extra, _
 								ctx->subject, ctx->sublen, _
 								ctx->vectb[1], options, _
