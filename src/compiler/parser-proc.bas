@@ -1594,6 +1594,13 @@ function cProcHeader _
 				errReport( FB_ERRMSG_ILLEGALPARAMSPEC, TRUE )
 			end if
 
+			'' Check ALIAS id
+			if( (palias <> NULL) and ((head_proc->stats and FB_SYMBSTATS_HASALIAS) <> 0) ) then
+				if( *palias <> *head_proc->id.alias ) then
+					errReportEx( FB_ERRNUM_DIFFERENTALIASTHANPROTO, """" + *palias + """" )
+				end if
+			end if
+
 			'' use the prototype
 			proc = head_proc
 

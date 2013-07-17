@@ -8,6 +8,7 @@ Version 0.91.0:
 [fixed]
 - dlltool syntax error when building a DLL without any EXPORTs
 - ImageDestroy() won't crash anymore if given a NULL pointer
+- The compiler didn't check ALIAS names (if given in both DECLARE prototype and procedure body) for equality
 
 
 Version 0.90.1:

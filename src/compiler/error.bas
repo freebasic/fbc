@@ -372,7 +372,8 @@ declare function hMakeParamDesc _
 		@"UDT has unimplemented abstract methods", _
 		@"#ASSERT condition failed", _
 		@"Expected '>'", _
-		@"Invalid size" _
+		@"Invalid size", _
+		@"ALIAS name here is different from ALIAS given in DECLARE prototype" _
 	}
 
 
