@@ -12,9 +12,9 @@ my_fetch()
 	local url="$2"
 
 	# download
-	if [ ! -f src/$tarball ]; then
+	if [ ! -f $srcdir/$tarball ]; then
 		my_report "downloading $tarball"
-		wget $url -O src/$tarball
+		wget $url -O $srcdir/$tarball
 	fi
 }
 
@@ -61,9 +61,9 @@ my_extract()
 		cd tmpextract
 
 		if [ -n "`echo $tarball | grep '\.zip$'`" ]; then
-			unzip -q ../src/$tarball
+			unzip -q $srcdir/$tarball
 		else
-			tar -xf ../src/$tarball
+			tar -xf $srcdir/$tarball
 		fi
 
 		cd ..
