@@ -15,7 +15,8 @@ function symbAddEnum _
 	( _
 		byval id as zstring ptr, _
 		byval id_alias as zstring ptr, _
-		byval attrib as integer _
+		byval attrib as integer, _
+		byval use_hashtb as integer _
 	) as FBSYMBOL ptr
 
     dim as FBSYMBOL ptr e = any
@@ -41,8 +42,10 @@ function symbAddEnum _
 	'' init tables
 	symbSymbTbInit( e->enum_.ns.symtb, e )
 
-	'' create a new hash if in BASIC mangling mode
-	if( parser.mangling = FB_MANGLING_BASIC ) then
+	'' Create a new hash if in BASIC mangling mode or if Explicit, otherwise
+	'' the hashtb will be unused and there's no point allocating one.
+	'' (check via symbEnumHasHashTb() later)
+	if( use_hashtb ) then
 		symbHashTbInit( e->enum_.ns.hashtb, e, FB_INITFIELDNODES )
 	else
 		symbHashTbInit( e->enum_.ns.hashtb, e, 0 )
@@ -94,7 +97,7 @@ function symbAddEnumElement _
 end function
 
 sub symbDelEnum( byval s as FBSYMBOL ptr )
-	symbDelNamespaceMembers( s, (symbGetMangling( s ) = FB_MANGLING_BASIC) )
+	symbDelNamespaceMembers( s, symbEnumHasHashTb( s ) )
 	symbFreeSymbol( s )
 end sub
 

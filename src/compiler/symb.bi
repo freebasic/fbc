@@ -1143,7 +1143,8 @@ declare function symbAddEnum _
 	( _
 		byval id as zstring ptr, _
 		byval id_alias as zstring ptr, _
-		byval attrib as integer _
+		byval attrib as integer, _
+		byval use_hashtb as integer _
 	) as FBSYMBOL ptr
 
 declare function symbAddEnumElement _
@@ -1820,6 +1821,8 @@ declare function symbGetUDTBaseLevel _
 
 	if( (_nodes) <> 0 ) then
 		hashInit( @_hashtb.tb, _nodes )
+	else
+		clear( _hashtb.tb, 0, sizeof( _hashtb.tb ) )
 	end if
 
 #endmacro
@@ -2170,8 +2173,8 @@ declare function symbGetUDTBaseLevel _
 #define symbGetUDTOpOvlTb(s) s->udt.ext->opovlTb
 
 #define symbGetEnumSymbTbHead(s) s->enum_.ns.symtb.head
-
 #define symbGetEnumElements(s) s->enum_.elements
+#define symbEnumHasHashTb( s ) ((s)->enum_.ns.hashtb.tb.nodes <> 0)
 
 #define symbGetScope(s) s->scope
 

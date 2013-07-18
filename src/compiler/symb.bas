@@ -1001,8 +1001,7 @@ function symbLookupAt _
 
 	assert( symbIsStruct( ns ) or symbIsNamespace( ns ) or symbIsEnum( ns ) )
 
-	'' symbAddEnum() doesn't init the hashtb for ENUMs in EXTERN blocks
-	if( symbIsEnum( ns ) and (symbGetMangling( ns ) <> FB_MANGLING_BASIC) ) then
+	if( symbIsEnum( ns ) and (not symbEnumHasHashTb( ns )) ) then
 		exit function
 	end if
 
