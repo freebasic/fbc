@@ -55,14 +55,11 @@ sub test4 cdecl static
 end sub
 
 private sub ctor () constructor
-
 	fbcu.add_suite("fbc_tests.dim.static")
 	fbcu.add_test("test 1", @test1)
 	fbcu.add_test("test 2", @test2)
 	fbcu.add_test("test 3", @test3)
-	fbcu.add_test("test 1", @test4)
-
+	fbcu.add_test("test 4", @test4)
 end sub
 
 end namespace
-	
