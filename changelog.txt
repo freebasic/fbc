@@ -13,6 +13,7 @@ Version 0.91.0:
 - Compiler crash after showing error for "dim shared E as E" where E is an Enum declared inside an Extern block
 - Compiler crash on Explicit Enum declared inside Extern block
 - #if typeof() and #print typeof() will now take the full procedure pointer type including parameters, calling convention (if non-default), etc. into account, instead of just treating everything as "FUNCTION PTR".
+- #669: Compiler crash instead of error message for Static member variables declared inside anonymous UDTs
 
 
 Version 0.90.1:

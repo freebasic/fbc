@@ -228,6 +228,7 @@ declare function hMakeParamDesc _
 		@"Operator cannot be a member function", _
 		@"Method declared in anonymous UDT", _
 		@"Constant declared in anonymous UDT", _
+		@"Static variable declared in anonymous UDT", _
 		@"Expected operator", _
 		@"Declaration outside the original namespace or class", _
 		@"A destructor should not have any parameters", _

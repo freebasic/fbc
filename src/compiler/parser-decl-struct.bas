@@ -480,6 +480,14 @@ sub hTypeStaticVarDecl _
 		byval attrib as integer _
 	)
 
+	'' Disallow Static member vars inside anonymous UDTs
+	if( symbGetUDTIsAnon( parent ) ) then
+		errReport( FB_ERRMSG_STATICVARINANONUDT )
+		'' error recovery: skip stmt
+		hSkipStmt( )
+		exit sub
+	end if
+
 	'' The UDT becomes a "class"
 	hBeginNesting( parent )
 
