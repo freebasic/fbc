@@ -226,7 +226,8 @@ declare function hMakeParamDesc _
 		@"Invalid array index", _
 		@"Operator must be a member function", _
 		@"Operator cannot be a member function", _
-		@"Member function not allowed in anonymous UDT's", _
+		@"Method declared in anonymous UDT", _
+		@"Constant declared in anonymous UDT", _
 		@"Expected operator", _
 		@"Declaration outside the original namespace or class", _
 		@"A destructor should not have any parameters", _

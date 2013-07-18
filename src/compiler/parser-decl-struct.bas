@@ -107,7 +107,7 @@ private sub hTypeEnumDecl _
 
 	'' anon?
 	if( symbGetUDTIsAnon( parent ) ) then
-		errReport( FB_ERRMSG_METHODINANONUDT )
+		errReport( FB_ERRMSG_CONSTINANONUDT )
 		'' error recovery: skip stmt
 		hSkipStmt( )
 		exit sub
