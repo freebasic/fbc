@@ -1647,23 +1647,15 @@ declare sub symbMangleType _
 	)
 declare sub symbMangleParam( byref mangled as string, byval param as FBSYMBOL ptr )
 
-declare function symbDemangleFunctionPtr _
-	( _
-		byval proc as FBSYMBOL ptr _
-	) as zstring ptr
-
-declare function symbDemangleMethod _
-	( _
-		byval proc as FBSYMBOL ptr _
-	) as zstring ptr
+declare function symbProcPtrToStr( byval proc as FBSYMBOL ptr ) as string
+declare function symbMethodToStr( byval proc as FBSYMBOL ptr ) as string
 
 declare function symbTypeToStr _
 	( _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
 		byval lgt as integer = 0 _
-	) as zstring ptr
-
+	) as string
 
 declare function symbGetDefType _
 	( _

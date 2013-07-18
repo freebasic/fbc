@@ -810,14 +810,18 @@ private function hMakeParamDesc _
 				showname = FALSE
 			end if
 		else
+			static s as string
+
 			'' function pointer?
 			if( symbGetIsFuncPtr( proc ) ) then
-				pname = symbDemangleFunctionPtr( proc )
+				s = symbProcPtrToStr( proc )
+				pname = strptr( s )
 			'' method?
 			elseif( (symbGetAttrib( proc ) and (FB_SYMBATTRIB_CONSTRUCTOR or _
 											    FB_SYMBATTRIB_DESTRUCTOR or _
 											    FB_SYMBATTRIB_OPERATOR)) <> 0 ) then
-				pname = symbDemangleMethod( proc )
+				s = symbMethodToStr( proc )
+				pname = strptr( s )
 			end if
 		end if
 

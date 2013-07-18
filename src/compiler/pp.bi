@@ -67,7 +67,7 @@ declare function ppDefineLoad _
 declare sub ppPragmaInit( )
 declare sub ppPragmaEnd( )
 declare sub ppPragma( )
-declare function ppTypeOf( ) as zstring ptr
+declare function ppTypeOf( ) as string
 
 declare sub ppCondInit _
 	( _

@@ -9,7 +9,7 @@
 '' same order as FB_DATATYPE
 dim shared symb_dtypeTB( 0 to FB_DATATYPES-1 ) as SYMB_DATATYPE => _
 { _
-	(FB_DATACLASS_UNKNOWN, 0               , 0                 , FALSE,  0, FB_DATATYPE_VOID    , @"void"     ), _
+	(FB_DATACLASS_UNKNOWN, 0               , 0                 , FALSE,  0, FB_DATATYPE_VOID    , @"any"      ), _
 	(FB_DATACLASS_INTEGER, 1               , 8*1               , TRUE , 10, FB_DATATYPE_BYTE    , @"byte"     ), _
 	(FB_DATACLASS_INTEGER, 1               , 8*1               , FALSE, 15, FB_DATATYPE_UBYTE   , @"ubyte"    ), _
 	(FB_DATACLASS_INTEGER, 1               , 8*1               , FALSE,  0, FB_DATATYPE_UBYTE   , @"zstring"  ), _

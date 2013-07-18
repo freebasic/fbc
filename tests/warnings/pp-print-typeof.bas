@@ -49,3 +49,97 @@ end type
 
 dim x1 as UDT1
 #print typeof( UDT1 )
+
+#print
+#print "procptr parameter types:"
+#print typeof( sub( ) )
+#print typeof( sub( as byte     ) )
+#print typeof( sub( as ubyte    ) )
+#print typeof( sub( as zstring  ) )
+#print typeof( sub( as short    ) )
+#print typeof( sub( as ushort   ) )
+#print typeof( sub( as wstring  ) )
+#print typeof( sub( as integer  ) )
+#print typeof( sub( as uinteger ) )
+#print typeof( sub( as long     ) )
+#print typeof( sub( as ulong    ) )
+#print typeof( sub( as longint  ) )
+#print typeof( sub( as ulongint ) )
+#print typeof( sub( as string   ) )
+#print typeof( sub( as any ptr  ) )
+#print typeof( sub( as integer ptr ptr ptr ) )
+#print typeof( sub( as sub( )   ) )
+#print typeof( sub( as function( as byte ) as short ) )
+#print typeof( sub( as UDT1     ) )
+
+#print
+#print "procptr parameter modes:"
+#print typeof( sub( byref as any ) )
+#print typeof( sub( as integer ) )
+#print typeof( sub( byval as integer ) )
+#print typeof( sub( byref as integer ) )
+#print typeof( sub( () as integer ) )
+#print typeof( sub( as integer, ... ) )
+
+#print
+#print "procptr function results:"
+#print typeof( function( ) as byte     )
+#print typeof( function( ) as ubyte    )
+#print typeof( function( ) as short    )
+#print typeof( function( ) as ushort   )
+#print typeof( function( ) as integer  )
+#print typeof( function( ) as uinteger )
+#print typeof( function( ) as long     )
+#print typeof( function( ) as ulong    )
+#print typeof( function( ) as longint  )
+#print typeof( function( ) as ulongint )
+#print typeof( function( ) as string   )
+#print typeof( function( ) as any ptr  )
+#print typeof( function( ) as integer ptr ptr ptr )
+#print typeof( function( ) as sub( )   )
+#print typeof( function( ) as function( as byte ) as short )
+#print typeof( function( ) as UDT1     )
+
+#print
+#print "procptr return byref:"
+#print typeof( function( ) byref as byte     )
+#print typeof( function( ) byref as ubyte    )
+#print typeof( function( ) byref as zstring  )
+#print typeof( function( ) byref as short    )
+#print typeof( function( ) byref as ushort   )
+#print typeof( function( ) byref as wstring  )
+#print typeof( function( ) byref as integer  )
+#print typeof( function( ) byref as uinteger )
+#print typeof( function( ) byref as long     )
+#print typeof( function( ) byref as ulong    )
+#print typeof( function( ) byref as longint  )
+#print typeof( function( ) byref as ulongint )
+#print typeof( function( ) byref as string   )
+#print typeof( function( ) byref as any ptr  )
+#print typeof( function( ) byref as integer ptr ptr ptr )
+#print typeof( function( ) byref as sub( )   )
+#print typeof( function( ) byref as function( as byte ) as short )
+#print typeof( function( ) byref as UDT1     )
+
+#print
+#print "CONST bits, 0 PTRs:"
+#print typeof(       integer )
+#print typeof( const integer )
+
+#print
+#print "CONST bits, 1 PTR:"
+#print typeof(       integer       ptr )
+#print typeof(       integer const ptr )
+#print typeof( const integer       ptr )
+#print typeof( const integer const ptr )
+
+#print
+#print "CONST bits, 2 PTRs:"
+#print typeof(       integer       ptr       ptr )
+#print typeof(       integer       ptr const ptr )
+#print typeof(       integer const ptr       ptr )
+#print typeof(       integer const ptr const ptr )
+#print typeof( const integer       ptr       ptr )
+#print typeof( const integer       ptr const ptr )
+#print typeof( const integer const ptr       ptr )
+#print typeof( const integer const ptr const ptr )
