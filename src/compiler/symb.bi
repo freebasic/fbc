@@ -1143,8 +1143,7 @@ declare function symbAddEnum _
 	( _
 		byval id as zstring ptr, _
 		byval id_alias as zstring ptr, _
-		byval attrib as integer, _
-		byval use_hashtb as integer _
+		byval attrib as integer _
 	) as FBSYMBOL ptr
 
 declare function symbAddEnumElement _
@@ -1807,60 +1806,27 @@ declare function symbGetUDTBaseLevel _
 '' macros
 ''
 
-'':::::
-#macro symbHashTbInit _
-	( _
-		_hashtb, _
-		_owner, _
-		_nodes _
-	)
-
+#macro symbHashTbInit( _hashtb, _owner, _nodes )
 	_hashtb.owner = _owner
 	_hashtb.prev = NULL
 	_hashtb.next = NULL
-
-	if( (_nodes) <> 0 ) then
-		hashInit( @_hashtb.tb, _nodes )
-	else
-		clear( _hashtb.tb, 0, sizeof( _hashtb.tb ) )
-	end if
-
+	hashInit( @_hashtb.tb, _nodes )
 #endmacro
 
-'':::::
-#macro symbSymbTbInit _
-	( _
-		_symtb, _
-		_owner _
-	)
-
+#macro symbSymbTbInit( _symtb, _owner )
 	_symtb.owner = _owner
 	_symtb.head = NULL
 	_symtb.tail = NULL
-
 #endmacro
 
-'':::::
-#macro symbHashListMove _
-	( _
-		hashtb _
-	)
-
+#macro symbHashListMove( hashtb )
 	symbHashListDel( hashtb )
 	symbHashListAdd( hashtb )
-
 #endmacro
 
-'':::::
-#macro symbHashListMoveBefore _
-	( _
-		lasttb, _
-		hashtb _
-	)
-
+#macro symbHashListMoveBefore( lasttb, hashtb )
 	symbHashListDel( hashtb )
 	symbHashListAddBefore( lasttb, hashtb )
-
 #endmacro
 
 #define symbGetGlobalNamespc( ) symb.globnspc
@@ -2174,7 +2140,6 @@ declare function symbGetUDTBaseLevel _
 
 #define symbGetEnumSymbTbHead(s) s->enum_.ns.symtb.head
 #define symbGetEnumElements(s) s->enum_.elements
-#define symbEnumHasHashTb( s ) ((s)->enum_.ns.hashtb.tb.nodes <> 0)
 
 #define symbGetScope(s) s->scope
 

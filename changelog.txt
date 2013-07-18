@@ -1,6 +1,7 @@
 Version 0.91.0:
 
 [changed]
+- Enums declared inside Extern blocks now behave like ones declared outside: The Enum's constants don't collide with previously declared global constants, instead they can be accessed through "EnumName.MyConstant".
 
 [added]
 - Updated header for libzip 0.11.1

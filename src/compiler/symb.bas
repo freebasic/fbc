@@ -1001,10 +1001,6 @@ function symbLookupAt _
 
 	assert( symbIsStruct( ns ) or symbIsNamespace( ns ) or symbIsEnum( ns ) )
 
-	if( symbIsEnum( ns ) and (not symbEnumHasHashTb( ns )) ) then
-		exit function
-	end if
-
     if( preserve_case = FALSE ) then
     	hUcase( *id, sname )
     	id = @sname
