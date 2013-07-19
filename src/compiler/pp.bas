@@ -708,7 +708,7 @@ end function
 
 function ppTypeOf( ) as string
 	'' get type's name
-	dim as integer dtype = any, lgt = any, is_sym = any
+	dim as integer dtype = any, lgt = any
 	dim as FBSYMBOL ptr subtype = any
 
 	'' TYPEOF
@@ -721,9 +721,9 @@ function ppTypeOf( ) as string
 		lexSkipToken( LEXCHECK_NODEFINE )
 	end if
 
-	cTypeOf( dtype, subtype, lgt, is_sym )
+	cTypeOf( dtype, subtype, lgt )
 
-	function = ucase( symbTypeToStr( dtype, subtype, lgt, is_sym ) )
+	function = ucase( symbTypeToStr( dtype, subtype, lgt ) )
 
 	'' ')'
 	if( lexGetToken( ) <> CHAR_RPRNT ) then

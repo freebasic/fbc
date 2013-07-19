@@ -1745,8 +1745,7 @@ function symbTypeToStr _
 	( _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
-		byval length as integer, _
-		byval is_sym as integer _
+		byval length as integer _
 	) as string
 
 	dim as string s
@@ -1754,10 +1753,6 @@ function symbTypeToStr _
     
 	if( dtype = FB_DATATYPE_INVALID ) then
 		exit function
-	end if
-
-	if( length <= 0 ) then
-		length = symbCalcLen( dtype, subtype )
 	end if
 
 	ptrcount = typeGetPtrCnt( dtype )
@@ -1775,7 +1770,7 @@ function symbTypeToStr _
 
 	case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR, FB_DATATYPE_FIXSTR
 		s += *symb_dtypeTB(dtypeonly).name
-		if( is_sym ) then
+		if( length > 0 ) then
 			select case( dtypeonly )
 			case FB_DATATYPE_FIXSTR
 				'' For STRING*N the null terminator is
@@ -2455,10 +2450,10 @@ function symbDump( byval sym as FBSYMBOL ptr ) as string
 			case FB_DATATYPE_ENUM
 				s += "<enum>"
 			case else
-				s += symbTypeToStr( sym->typ, NULL, sym->lgt, TRUE )
+				s += symbTypeToStr( sym->typ, NULL, sym->lgt )
 			end select
 		else
-			s += symbTypeToStr( sym->typ, sym->subtype, sym->lgt, TRUE )
+			s += symbTypeToStr( sym->typ, sym->subtype, sym->lgt )
 		end if
 	end if
 

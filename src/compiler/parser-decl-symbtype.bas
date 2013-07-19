@@ -152,8 +152,7 @@ sub cTypeOf _
 	( _
 		byref dtype as integer, _
 		byref subtype as FBSYMBOL ptr, _
-		byref lgt as integer, _
-		byref is_sym as integer _
+		byref lgt as integer _
 	)
 
 	dim as ASTNODE ptr expr = any
@@ -163,7 +162,6 @@ sub cTypeOf _
 
 	'' Was it a type?
 	if( expr = NULL ) then
-		is_sym = FALSE
 		exit sub
 	end if
 
@@ -176,7 +174,7 @@ sub cTypeOf _
 
 	dtype   = astGetFullType( expr )
 	subtype = astGetSubtype( expr )
-	lgt     = astSizeOf( expr, is_sym )
+	lgt     = astSizeOf( expr )
 
 	astDelTree( expr )
 end sub
@@ -255,7 +253,7 @@ function cSymbolType _
 		end if
 
 		'' datatype
-		cTypeOf( dtype, subtype, lgt, FALSE )
+		cTypeOf( dtype, subtype, lgt )
 
 		'' ')'
 		if( hMatch( CHAR_RPRNT ) = FALSE ) then
