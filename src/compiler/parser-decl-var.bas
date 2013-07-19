@@ -924,21 +924,55 @@ private function hVarInit _
 
 	'' static or shared?
 	if( (symbGetAttrib( sym ) and (FB_SYMBATTRIB_STATIC or FB_SYMBATTRIB_SHARED)) <> 0 ) then
-		'' only if it's not an object, static or global instances are allowed
-		if( symbHasCtor( sym ) = FALSE ) then
+		''
+		'' Most static/shared var initializers must be constants,
+		'' because they're emitted into .data/.bss sections, so no code
+		'' can be allowed. "Constants" includes OFFSETs (address of
+		'' other global symbols).
+		''
+		'' For vars with constructors,
+		'' - the constructor must be called with certain parameters
+		'' - so code is executed, and the initializer can aswell allow
+		''   more than just constants
+		'' - temp vars are ok, because they will be duplicated as
+		''   needed by the TYPEINI scope handling
+		'' - local non-static vars cannot be allowed, since they're
+		''   from a different scope
+		''
+		'' SHARED var initializers (no matter whether ctorcall or
+		'' "constant"), must not reference local statics, because those
+		'' symbols will be deleted by the time the global is emitted.
+		'' Normally that's not possible anyways, because static locals
+		'' from inside procs aren't visible in the toplevel namespace,
+		'' the only exception is the implicit main().
+		''
+		'' The other way round (STATIC non-SHARED initializer using a
+		'' non-STATIC SHARED) is ok though; it will be "forward
+		'' referenced" in the .asm output, but it works.
+		''
+
+		var expect_const = not symbHasCtor( sym )
+		var ignoreattribs = 0
+
+		if( expect_const = FALSE ) then
+			'' Allow temp vars and temp array descriptors
+			ignoreattribs or= FB_SYMBATTRIB_TEMP or FB_SYMBATTRIB_DESCRIPTOR
+		end if
+
+		'' Allow non-shared statics to reference statics
+		if( symbIsShared( sym ) = FALSE ) then
+			ignoreattribs or= FB_SYMBATTRIB_STATIC
+		end if
+
+		if( astTypeIniUsesLocals( initree, ignoreattribs ) ) then
+			errReport( FB_ERRMSG_INVALIDREFERENCETOLOCAL )
+			'' error recovery: discard the tree
+			astDelTree( initree )
+			initree = NULL
+			symbGetStats( sym ) and= not FB_SYMBSTATS_INITIALIZED
+		elseif( expect_const ) then
 			if( astTypeIniIsConst( initree ) = FALSE ) then
 				errReport( FB_ERRMSG_EXPECTEDCONST )
-				'' error recovery: discard the tree
-				astDelTree( initree )
-				initree = NULL
-				symbGetStats( sym ) and= not FB_SYMBSTATS_INITIALIZED
-			end if
-		'' if it is an object, don't allow local references
-		else
-			if( astTypeIniUsesLocals( initree, FB_SYMBATTRIB_TEMP or _
-							FB_SYMBATTRIB_STATIC or _
-							FB_SYMBATTRIB_DESCRIPTOR ) ) then
-				errReport( FB_ERRMSG_INVALIDREFERENCETOLOCAL )
 				'' error recovery: discard the tree
 				astDelTree( initree )
 				initree = NULL

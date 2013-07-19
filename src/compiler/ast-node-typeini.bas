@@ -890,16 +890,26 @@ function astTypeIniUsesLocals _
 
 	'' Some TYPEINI expressions (like param/field initializers) can not
 	'' reference local vars because they may be duplicated into other scope
-	'' contexts, where those locals do not exist.
+	'' contexts, where those locals do not exist. In their case, only temp
+	'' vars/descriptors can be allowed, because they're handled by the
+	'' TYPEINI's implicit scope and will be duplicated along with the
+	'' expression. Local STATICs can be allowed too, because they're not
+	'' allocated on stack but instead as globals.
 	''
-	'' Temp vars/descriptors however can be allowed, because they're
-	'' handled by the TYPEINI's implicit scope.
-	'' Local STATICs can be allowed too, because they're not allocated on
-	'' stack but instead as globals.
+	'' For other TYPEINI expressions such as global var initializers,
+	'' no locals (including local statics) can be allowed at all, because by
+	'' the time the global vars will be emitted, procs and their locals are
+	'' emitted and deleted already.
 	''
-	'' ignoreattrib = these attributes a LOCAL must have to be ignored here
+	'' TYPEINI expressions for local vars don't even need to be checked with
+	'' this function because they stay in the scope where they are found
+	'' and thus can use as many locals as they want.
 
 	if( astIsVAR( n ) ) then
+		'' ignoreattrib = the "good" attributes that should be allowed,
+		'' i.e. don't count as "locals" to this function. If we find
+		'' a LOCAL here, we only report it back to the caller if it
+		'' has none of these attributes.
 		if( symbIsLocal( n->sym ) and _
 		    ((symbGetAttrib( n->sym ) and ignoreattrib) = 0) ) then
 			return TRUE
