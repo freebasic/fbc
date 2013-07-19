@@ -385,12 +385,11 @@ Type wxWeekDay   As wxInt
 Type wxTextCoord As wxLong
 
 #Ifdef wxHAS_HUGE_FILES
-Type off_t As LongInt
+Type wxFileOffset As LongInt
 #Else
-Type off_t As Integer
+Type wxFileOffset As Integer
 #EndIf
 
-Type wxFileOffset As off_t
 Type _wxWidget As Any  : Type wxWidget As _wxWidget
 ' callbacks used by many wx classes
 Type Virtual_Dispose   As Sub      WXCALL 
