@@ -1654,7 +1654,8 @@ declare function symbTypeToStr _
 	( _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
-		byval lgt as integer = 0 _
+		byval length as integer = 0, _
+		byval is_sym as integer = FALSE _
 	) as string
 
 declare function symbGetDefType _

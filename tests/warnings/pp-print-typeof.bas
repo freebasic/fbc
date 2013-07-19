@@ -43,6 +43,12 @@ dim w   as wstring * 32
 #print typeof( z )
 #print typeof( w )
 
+dim pz as zstring ptr
+dim pw as wstring ptr
+
+#print typeof( *pz )
+#print typeof( *pw )
+
 type UDT1
 	i as integer
 end type

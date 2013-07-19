@@ -1242,7 +1242,7 @@ declare sub astSetType _
 		byval subtype as FBSYMBOL ptr _
 	)
 
-declare function astSizeOf( byval n as ASTNODE ptr ) as integer
+declare function astSizeOf( byval n as ASTNODE ptr, byref is_sym as integer = FALSE ) as integer
 declare function astIsAccessToLocal( byval expr as ASTNODE ptr ) as integer
 
 declare function astGetOFFSETChildOfs _

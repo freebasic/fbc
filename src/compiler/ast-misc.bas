@@ -1218,8 +1218,9 @@ sub astSetType _
 
 end sub
 
-function astSizeOf( byval n as ASTNODE ptr ) as integer
+function astSizeOf( byval n as ASTNODE ptr, byref is_sym as integer ) as integer
 	function = symbCalcLen( n->dtype, n->subtype )
+	is_sym = FALSE
 
 	'' If it's a STRING * N, we must get the real length from the
 	'' associated symbol, since the N isn't encoded in the dtype/subtype.
@@ -1227,6 +1228,7 @@ function astSizeOf( byval n as ASTNODE ptr ) as integer
 	case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR, FB_DATATYPE_FIXSTR
 		if( n->sym ) then
 			function = symbGetLen( n->sym )
+			is_sym = TRUE
 		end if
 	end select
 end function

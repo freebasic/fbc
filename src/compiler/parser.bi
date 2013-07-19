@@ -315,7 +315,8 @@ declare sub cTypeOf _
 	( _
 		byref dtype as integer, _
 		byref subtype as FBSYMBOL ptr, _
-		byref lgt as integer _
+		byref lgt as integer, _
+		byref is_sym as integer _
 	)
 
 declare function cSymbolType _
