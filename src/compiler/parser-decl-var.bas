@@ -1025,6 +1025,7 @@ private function hCallStaticCtor _
 	'' create a static flag
 	flag = symbAddVar( symbUniqueLabel( ), NULL, FB_DATATYPE_INTEGER, NULL, 0, _
 	                   0, dTB(), FB_SYMBATTRIB_STATIC )
+	symbSetIsImplicit( flag )
 
 	tree = astNewLINK( tree, astNewDECL( flag, TRUE ) )
 

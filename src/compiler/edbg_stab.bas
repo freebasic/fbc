@@ -571,9 +571,11 @@ private sub hDeclLocalVars _
     		   	  FB_SYMBATTRIB_TEMP or _
     		   	  FB_SYMBATTRIB_DESCRIPTOR or _
     		   	  FB_SYMBATTRIB_FUNCRESULT)) = 0 ) then
-
-				edbgEmitLocalVar( s, symbIsStatic( s ) )
-
+				'' And nothing marked IMPLICIT either (e.g. symbAddImplicitVar(),
+				'' some implicitly generated vars are not TEMPs)
+				if( symbGetIsImplicit( s ) = FALSE ) then
+					edbgEmitLocalVar( s, symbIsStatic( s ) )
+				end if
 			end if
 
 		'' scope? must be emitted later, due the GDB quirks
