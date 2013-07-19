@@ -1,8 +1,6 @@
 #include "fbcu.bi"
 
-namespace fbc_tests.optimizations.float_bop_cast_rhs
-
-sub testCodeGeneration cdecl( )
+private sub testCodeGeneration cdecl( )
 	'' -gen gas should generate good code for all of these
 
 	#macro check( TL, TR, rhsexpr )
@@ -108,9 +106,24 @@ sub testCodeGeneration cdecl( )
 	check( double, double, csng( r ) )
 end sub
 
+private sub testNoConvCasts cdecl( )
+	dim d as double, i as integer = -1, u as uinteger = -1
+
+	CU_ASSERT(     cint(i) = -1 )
+	CU_ASSERT( d + cint(i) = -1 )
+
+	CU_ASSERT(     cuint(i) = 4294967295u )
+	CU_ASSERT( d + cuint(i) = 4294967295u )
+
+	CU_ASSERT(     cint(u) = -1 )
+	CU_ASSERT( d + cint(u) = -1 )
+
+	CU_ASSERT(     cuint(u) = 4294967295u )
+	CU_ASSERT( d + cuint(u) = 4294967295u )
+end sub
+
 private sub ctor( ) constructor
 	fbcu.add_suite( "tests/optimizations/float-bop-cast-rhs" )
 	fbcu.add_test( "code generation", @testCodeGeneration )
+	fbcu.add_test( "noconv CASTs", @testNoConvCasts )
 end sub
-
-end namespace

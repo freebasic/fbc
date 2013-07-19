@@ -1361,7 +1361,7 @@ private function hDoOptRemConv( byval n as ASTNODE ptr ) as ASTNODE ptr
 	'' convert l{float} op cast(float, r{var}) to l op r
 	''
 	'' For example:
-	''    dim i as integer
+	''    dim f as single, i as integer
 	''    print f + cast( single, i )
 	''
 	'' The cast can be optimized out, because the x86 FPU's fiadd, fisub,
@@ -1383,24 +1383,23 @@ private function hDoOptRemConv( byval n as ASTNODE ptr ) as ASTNODE ptr
 					case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 						l = r->l
 
-						'' skip any casting if they won't do any conversion
-						dim as ASTNODE ptr t = l
-						if( l->class = AST_NODECLASS_CONV ) then
-							if( l->cast.doconv = FALSE ) then
-								t = l->l
-							end if
-						end if
+						'' Note: should not skip noconv CASTs here,
+						'' because it could be a sign conversion such as
+						'' from integer VAR to uinteger. Without that CAST
+						'' to unsigned, it would pass the signed check below,
+						'' and then a signed operation would be done while
+						'' an unsigned one was intended.
 
 						'' Disallow BYTEs and LONGINTs
-						select case( typeGetSize( astGetDataType( t ) ) )
+						select case( typeGetSize( astGetDataType( l ) ) )
 						case 2, 4
 							dorem = FALSE
 
-							select case as const t->class
+							select case( l->class )
 							case AST_NODECLASS_VAR, AST_NODECLASS_IDX, _
 								 AST_NODECLASS_FIELD, AST_NODECLASS_DEREF
 								'' can't be unsigned either
-								if( typeIsSigned( astGetDataType( t ) ) ) then
+								if( typeIsSigned( astGetDataType( l ) ) ) then
 									dorem = TRUE
 								end if
 							end select
