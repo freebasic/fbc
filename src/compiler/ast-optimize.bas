@@ -1359,6 +1359,19 @@ private function hDoOptRemConv( byval n as ASTNODE ptr ) as ASTNODE ptr
 	end if
 
 	'' convert l{float} op cast(float, r{var}) to l op r
+	''
+	'' For example:
+	''    dim i as integer
+	''    print f + cast( single, i )
+	''
+	'' The cast can be optimized out, because the x86 FPU's fiadd, fisub,
+	'' fimul, fidiv instructions can work with integer operands directly,
+	'' so we don't need to convert integer to float first and then do
+	'' regular float+float BOPs afterwards.
+	''
+	'' Apparently these instructions only support 16bit and 32bit memory
+	'' operands though, thus BYTEs and LONGINTs have to be disallowed below.
+
 	if( n->class = AST_NODECLASS_BOP ) then
 		select case astGetDataType( n )
 		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
@@ -1378,8 +1391,9 @@ private function hDoOptRemConv( byval n as ASTNODE ptr ) as ASTNODE ptr
 							end if
 						end if
 
-						'' can't be a longint
-						if( typeGetSize( astGetDataType( t ) ) < FB_INTEGERSIZE*2 ) then
+						'' Disallow BYTEs and LONGINTs
+						select case( typeGetSize( astGetDataType( t ) ) )
+						case 2, 4
 							dorem = FALSE
 
 							select case as const t->class
@@ -1395,8 +1409,7 @@ private function hDoOptRemConv( byval n as ASTNODE ptr ) as ASTNODE ptr
 								astDelNode( r )
 								n->r = l
 							end if
-
-						end if
+						end select
 					end select
 				end if
 			end if

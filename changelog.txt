@@ -16,6 +16,7 @@ Version 0.91.0:
 - #669: Compiler crash instead of error message for Static member variables declared inside anonymous UDTs
 - #675: SHARED variable initializers referencing a non-SHARED STATIC from the implicit main() scope triggered an internal compiler error (dangling pointer), instead of resulting in an error message.
 - Various implicitly generated variables (such as FOR/WITH/SELECT CASE temp vars) won't appear in -g stabs output anymore
+- #597: Illegal ASM generated for +,-,*,/ floating point operations when the right hand-side operand was a byte or ubyte variable enclosed in a cast to double or single
 
 
 Version 0.90.1:

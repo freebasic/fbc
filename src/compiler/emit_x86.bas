@@ -2888,6 +2888,8 @@ private sub _emitADDF _
 			ostr = "fadd " + src
 			outp ostr
 		else
+			'' Relying on hDoOptRemConv()
+			assert( (typeGetSize( svreg->dtype ) = 2) or (typeGetSize( svreg->dtype ) = 4) )
 			ostr = "fiadd " + src
 			outp ostr
 		end if
@@ -2976,6 +2978,8 @@ private sub _emitSUBF _
 			ostr = "fsub " + src
 			outp ostr
 		else
+			'' Relying on hDoOptRemConv()
+			assert( (typeGetSize( svreg->dtype ) = 2) or (typeGetSize( svreg->dtype ) = 4) )
 			ostr = "fisub " + src
 			outp ostr
 		end if
@@ -3154,6 +3158,8 @@ private sub _emitMULF _
 			ostr = "fmul " + src
 			outp ostr
 		else
+			'' Relying on hDoOptRemConv()
+			assert( (typeGetSize( svreg->dtype ) = 2) or (typeGetSize( svreg->dtype ) = 4) )
 			ostr = "fimul " + src
 			outp ostr
 		end if
@@ -3182,6 +3188,8 @@ private sub _emitDIVF _
 			ostr = "fdiv " + src
 			outp ostr
 		else
+			'' Relying on hDoOptRemConv()
+			assert( (typeGetSize( svreg->dtype ) = 2) or (typeGetSize( svreg->dtype ) = 4) )
 			ostr = "fidiv " + src
 			outp ostr
 		end if
