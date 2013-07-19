@@ -209,7 +209,7 @@ sub test cdecl( )
 	#if typeof( sub( as integer, byval as integer ) ) = typeof( sub( as integer, byref as integer ) )
 		CU_FAIL( )
 	#endif
-	#if typeof( sub( as integer, ... ) ) <> typeof( sub( as integer, ... ) )
+	#if typeof( sub cdecl( as integer, ... ) ) <> typeof( sub cdecl( as integer, ... ) )
 		CU_FAIL( )
 	#endif
 	'' -lang fb defaults to BYVAL, so this should be the same
