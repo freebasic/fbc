@@ -1306,11 +1306,6 @@ declare sub symbDelSymbol _
 		byval is_tbdel as integer = FALSE _
 	)
 
-declare function symbDelKeyword _
-	( _
-		byval s as FBSYMBOL ptr _
-	) as integer
-
 declare function symbDelDefine _
 	( _
 		byval s as FBSYMBOL ptr _

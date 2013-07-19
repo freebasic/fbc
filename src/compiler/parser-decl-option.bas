@@ -113,7 +113,10 @@ private sub hUndefSymbol()
 
 	select case as const lexGetClass( LEXCHECK_NODEFINE )
 	case FB_TKCLASS_KEYWORD, FB_TKCLASS_QUIRKWD
-		if( symbDelKeyword( lexGetSymChain( )->sym ) = FALSE ) then
+		s = lexGetSymChain( )->sym
+		if( s ) then
+			symbFreeSymbol( s )
+		else
 			errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
 		end if
 

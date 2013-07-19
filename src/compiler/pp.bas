@@ -110,7 +110,7 @@ sub ppEnd( )
     		exit for
     	end if
 
-    	symbDelKeyword( kwdTb(i).sym )
+		symbFreeSymbol( kwdTb(i).sym )
     	kwdTb(i).sym = NULL
     next
 
