@@ -26,6 +26,7 @@ Version 0.91.0:
 - #670: Functions returning a Byref result weren't allowed to return references to elements from array parameters
 - Mid() statement didn't allow some string expressions as destination, such as <Mid( *StrPtr( s ), ... ) = ...>
 - The UINT_MAX from crt/limits.bi was an INTEGER instead of UINTEGER
+- #defines with invalid or missing identifiers were ignored instead of causing a compiler error
 
 
 Version 0.90.1:
