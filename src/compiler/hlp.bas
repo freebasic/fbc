@@ -384,7 +384,7 @@ function hCheckFileFormat( byval f as integer ) as integer
 	'' little-endian assumptions
 	fmt = FBFILE_FORMAT_ASCII
 
-	if( get( #f, 0, BOM, 4 ) = 0 ) then
+	if( get( #f, 0, BOM ) = 0 ) then
 		if( BOM = &hFFFE0000 ) then
 			fmt = FBFILE_FORMAT_UTF32BE
 
