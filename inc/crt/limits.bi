@@ -19,7 +19,7 @@
 #define CHAR_MAX 255
 #define INT_MAX 2147483647
 #define INT_MIN (-2147483647-1)
-#define UINT_MAX &hffffffff
+#define UINT_MAX &hFFFFFFFFu
 #define SHRT_MAX 32767
 #define SHRT_MIN (-32767-1)
 #define USHRT_MAX &hffff

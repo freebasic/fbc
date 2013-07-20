@@ -24,6 +24,7 @@ Version 0.91.0:
 - #671: Arguments weren't always converted to the parameters' data type, causing gcc pointer mismatch warnings under -gen gcc
 - #670: Functions returning a Byref result weren't allowed to return references to elements from array parameters
 - Mid() statement didn't allow some string expressions as destination, such as <Mid( *StrPtr( s ), ... ) = ...>
+- The UINT_MAX from crt/limits.bi was an INTEGER instead of UINTEGER
 
 
 Version 0.90.1:
