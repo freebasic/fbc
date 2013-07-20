@@ -182,6 +182,7 @@ type IR_VTBL
 
 	emitPushArg as sub _
 	( _
+		byval param as FBSYMBOL ptr, _
 		byval vr as IRVREG ptr, _
 		byval plen as integer, _
 		byval level as integer _
@@ -548,7 +549,7 @@ declare function vregDump( byval v as IRVREG ptr ) as string
 
 #define irEmitRETURN(bytestopop) ir.vtbl.emitReturn( bytestopop )
 
-#define irEmitPUSHARG(vr, plen, level) ir.vtbl.emitPushArg( vr, plen, level )
+#define irEmitPUSHARG( param, vr, plen, level ) ir.vtbl.emitPushArg( param, vr, plen, level )
 
 #define irEmitAsmBegin( )     ir.vtbl.emitAsmBegin( )
 #define irEmitAsmText( text ) ir.vtbl.emitAsmText( text )

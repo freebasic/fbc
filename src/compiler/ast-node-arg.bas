@@ -1092,6 +1092,7 @@ function astNewARG _
 	n = astNewNode( AST_NODECLASS_ARG, FB_DATATYPE_INVALID )
 	function = n
 
+	n->sym = param
 	n->l = arg
 	n->arg.mode = mode
 	n->arg.lgt = 0
@@ -1162,6 +1163,7 @@ sub astReplaceInstanceArg _
 	'' Delete the old argument expression
 	astDelTree( n->l )
 
+	assert( n->sym = param )
 	n->l = expr
 	n->arg.mode = mode
 	n->arg.lgt = 0

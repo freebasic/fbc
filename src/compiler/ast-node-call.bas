@@ -179,7 +179,7 @@ function astLoadCALL( byval n as ASTNODE ptr ) as IRVREG ptr
 		astDelNode( l )
 
 		if( ast.doemit ) then
-			irEmitPUSHARG( v1, arg->arg.lgt, reclevel )
+			irEmitPUSHARG( arg->sym, v1, arg->arg.lgt, reclevel )
 		end if
 
 		astDelNode( arg )
@@ -207,7 +207,9 @@ function astLoadCALL( byval n as ASTNODE ptr ) as IRVREG ptr
 			l = astNewVAR( n->call.tmpres )
 			l = astNewADDROF( l )
 			v1 = astLoad( l )
-			irEmitPUSHARG( v1, 0, reclevel )
+			'' (passing NULL param, because no PARAM symbol exists
+			'' for the hidden struct result param)
+			irEmitPUSHARG( NULL, v1, 0, reclevel )
 		end if
 	end if
 

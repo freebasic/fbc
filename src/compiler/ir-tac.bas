@@ -601,13 +601,13 @@ private sub _emitPushUDT _
 
 end sub
 
-'':::::
 private sub _emitPushArg _
 	( _
+		byval param as FBSYMBOL ptr, _
 		byval vr as IRVREG ptr, _
 		byval plen as integer, _
 		byval level as integer _
-	) static
+	)
 
 	if( plen = 0 ) then
 		_emitStack( AST_OP_PUSH, vr )
