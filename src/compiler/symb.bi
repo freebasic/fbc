@@ -745,7 +745,7 @@ type FB_RTTICTX
 	fb_object		as FBSYMBOL ptr
 End Type
 
-const CHAINPOOL_SIZE = 32
+const CHAINPOOL_SIZE = 1 shl 12
 
 type SYMBCTX
 	inited			as integer
