@@ -29,11 +29,9 @@ obj/%.o : %.bas
 
 all: $(LIBRARY)
 
-
 $(LIBRARY): $(OBJS)
-	$(FBC) $(FBCFLAGS) -lib -x $(LIBDEST)$(LIBNAME) $(OBJS)
-	
-	
+	$(FBC) $(FBCFLAGS) -lib -x $@ $(OBJS)
+
 .PHONY : clean
 clean:
 	-rm -f $(OBJS) $(LIBRARY)

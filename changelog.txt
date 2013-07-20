@@ -8,6 +8,13 @@ Version 0.91.0:
 - -arch 32|64 options to support easy switching between 32bit and 64bit, by selecting a default arch that supports 32/64 bits respectively.
 - fbc -v now prints out the target system and architecture
 - Improved multiplication/division/modulus to bitwise shift/and optimizations to handle operations with 64bit and unsigned right hand operand better
+- Updated header for libzip 0.11.1
+
+[fixed]
+- dlltool syntax error when building a DLL without any EXPORTs
+
+
+Version 0.90.1:
 
 [fixed]
 - Potential internal errors in Unix rtlib during SIGWINCH signal handling, due to calls to non-async-signal-safe functions
@@ -16,8 +23,9 @@ Version 0.91.0:
 - Taking the address of a PEEK expression (e.g. "@peek( integer, myptr )") ignored the PEEK data type. This could also break WITH when used on a PEEK expression.
 - C backend: Passing @proc (taking address of procedures) expressions to BYREF parameters caused bad C code to be generated
 - Pointer arithmetic on procedure pointers is now disallowed. It is not meaningful, because procedures do not have a fixed size and are not arranged like array elements.
-- A bug in array index parsing could cause the compiler to crash due to arrays being used without index, instead of showing an error message
-- ON GOTO was broken due to the compiler generating bad jump tables for it
+- 0.90.0 regression: A bug in array index parsing could cause the compiler to crash due to arrays being used without index, instead of showing an error message
+- 0.90.0 regression: ON GOTO was broken due to the compiler generating bad jump tables for it
+- 0.90.0 regression: Some Win32 API libs were missing (e.g. libstrmiids.dll.a)
 
 
 Version 0.90.0 (former 0.25.0):

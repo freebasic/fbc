@@ -12,12 +12,6 @@ gitk --all
 git gui &
 %%
 
-	To get nice anti-aliased fonts in git-gui and gitk on Debian/Ubuntu, you might need to install [[http://www.tcl.tk/ Tcl/Tk]] version 8.5 and enable it explicitly:
-
-		%%apt-get install tcl8.5 tk8.5
-update-alternatives --config wish
-%%
-
 {{fbdoc item="section" value="Linux file explorer integration"}}
 
 	[[http://rabbitvcs.org/ RabbitVCS]] is a useful tool that acts as GUI frontend for several programs such as Git. It can integrate into the Nautilus file explorer much like ""TortoiseSVN"" on Windows. Install the ##rabbitvcs-nautilus## package on Debian/Ubuntu to get it.

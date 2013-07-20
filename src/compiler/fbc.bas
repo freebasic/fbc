@@ -10,6 +10,8 @@
 #include once "list.bi"
 #include once "objinfo.bi"
 
+#include once "file.bi"
+
 #if defined( ENABLE_STANDALONE ) and defined( __FB_WIN32__ )
 	#define ENABLE_GORC
 #endif
@@ -446,6 +448,18 @@ private function clearDefList(byref deffile as string) as integer
 	return (name(cleaned, deffile) = 0)
 end function
 
+private function hGenerateEmptyDefFile( byref deffile as string ) as integer
+	var f = freefile( )
+	if( open( deffile, for output, as #f ) ) then
+		exit function
+	end if
+
+	print #f, "EXPORTS"
+
+	close #f
+	function = TRUE
+end function
+
 private function makeImpLib _
 	( _
 		byref dllname as string, _
@@ -456,6 +470,16 @@ private function makeImpLib _
 	'' from DATA segment, causing an exception (UPPERCASE'd symbols assumption??)
 	if( clearDefList( deffile ) = FALSE ) then
 		exit function
+	end if
+
+	'' If the .def file is empty (happens if there were no EXPORTs),
+	'' then add a single "EXPORTS" line, otherwise dlltool will complain
+	'' about a syntax error. (ld --output-def should probably do this
+	'' automatically, or dlltool should be fixed, but oh well)
+	if( filelen( deffile ) = 0 ) then
+		if( hGenerateEmptyDefFile( deffile ) = FALSE ) then
+			exit function
+		end if
 	end if
 
 	dim as string ln
@@ -2504,6 +2528,9 @@ private function hCompileStage2Module( byval module as FBCIOFILE ptr ) as intege
 		'' prints -NaN (IND) under the ASM backend because the FPU does the
 		'' subtraction, however with the C backend with, gcc -ffast-math
 		'' optimizes out the subtraction (even under -O0) and inserts 0 instead.
+
+		'' Avoid gcc exception handling bloat
+		ln += "-fno-exceptions -fno-unwind-tables -fno-asynchronous-unwind-tables "
 
 		if( fbGetOption( FB_COMPOPT_DEBUG ) ) then
 			ln += "-g "

@@ -131,7 +131,7 @@
     - GoRC          http://www.godevtool.com/
     - LibFFI        http://sourceware.org/libffi/
     - MinGW         http://www.mingw.org/
-    - OpenXDK       http://www.openxdk.org/
+    - OpenXDK       http://openxdk.maturion.de/
     - TDM-GCC       http://tdm-gcc.tdragon.net/
 
   o Credits

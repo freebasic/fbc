@@ -477,10 +477,61 @@ private function hShell( byref ln as string ) as integer
 	end if
 end function
 
+private sub hMkdir( byref path as string )
+	print "$ mkdir " + path
+	if( mkdir( path ) <> 0 ) then
+		print "  (failed)"
+	end if
+end sub
+
+private sub hChdir( byref path as string )
+	print "$ cd " + path
+	if( chdir( path ) <> 0 ) then
+		print "  (failed)"
+	end if
+end sub
+
+private sub hKill( byref path as string )
+	print "$ rm " + path
+	if( kill( path ) <> 0 ) then
+		print "  (failed)"
+	end if
+end sub
+
+private sub hShowUsage( )
+	print "usage: contrib/release/make [options] [<id>]"
+	print "<id> = dos|linux|win32|etc., from pattern.txt"
+	print "options:"
+	print "  -m            Generate manifests only, no packages"
+	print "  -v <version>  Specify FB version number, e.g. 0.90.0"
+	end 1
+end sub
+
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
-	select case( __FB_ARGC__ )
-	case 1
+	var manifest_only = FALSE
+	var fbversion = format( now( ), "yyyy.mm.dd" )
+
+	for i as integer = 1 to __FB_ARGC__-1
+		var arg = *__FB_ARGV__[i]
+		select case( arg )
+		case "-m"
+			manifest_only = TRUE
+		case "-v"
+			i += 1
+			if( i >= __FB_ARGC__ ) then
+				hShowUsage( )
+			end if
+			fbversion = *__FB_ARGV__[i]
+		case else
+			if( left( arg, 1 ) = "-" ) then
+				hShowUsage( )
+			end if
+			target = arg
+		end select
+	next
+
+	if( len( target ) = 0 ) then
 		#if defined( __FB_WIN32__ )
 			target = "win32"
 		#elseif defined( __FB_DOS__ )
@@ -489,15 +540,7 @@ end function
 			target = "linux"
 		#endif
 		print "using default target '" & target & "'"
-
-	case 2
-		target = *__FB_ARGV__[1]
-
-	case else
-		print "usage: ./release [<id>]"
-		print "<id> = dos|linux|win32|etc., from pattern.txt"
-		end 1
-	end select
+	end if
 
 	dim as string rootdir = strReplace( pathAddDiv( exepath( ) ) + "../..", "\", "/" )
 	chdir( rootdir )
@@ -505,12 +548,12 @@ end function
 	'' For non-standalone releases, copy the includes into the proper directory
 	select case( target )
 	case "linux", "mingw32"
-		mkdir( "include" )
-		mkdir( "include/freebasic" )
+		hMkdir( "include" )
+		hMkdir( "include/freebasic" )
 		hShell( "cp -r inc/* include/freebasic" )
 	case "djgpp"
-		mkdir( "include" )
-		mkdir( "include/freebas" )
+		hMkdir( "include" )
+		hMkdir( "include/freebas" )
 		hShell( "cp -r inc/* include/freebas" )
 	end select
 
@@ -538,37 +581,82 @@ end function
 	next
 	print hCountPackFiles( -1 ) & " files = unpackaged"
 
-	'' Create zip/tar packages
-	for i as integer = 0 to packs.count-1
-		dim as string title
-		if( i = 0 ) then
-			dim as string fbversion = format( now( ), "yyyy-mm-dd" )
-			title = "FreeBASIC-" & fbversion & "-" & packs.list(i).id
-		else
-			title = "FB-" & packs.list(i).id
-			if( len( (packs.list(i).version) ) > 0 ) then
-				title &= "-" & packs.list(i).version
+	if( manifest_only = FALSE ) then
+		'' Create zip/tar packages
+		for i as integer = 0 to packs.count-1
+			dim as string title
+			if( i = 0 ) then
+				title = "FreeBASIC-" & fbversion & "-" & packs.list(i).id
+			else
+				title = "FB-" & packs.list(i).id
+				if( len( (packs.list(i).version) ) > 0 ) then
+					title &= "-" & packs.list(i).version
+				end if
 			end if
-		end if
 
-		dim as string manifest = packs.list(i).manifest
+			dim as string manifest = packs.list(i).manifest
 
-		select case( target )
-		case "dos", "dos-mini", "djgpp"
-			''hShell( "zip -q " & title & ".zip -@ < " + manifest )
-			'' Use 7z to create a .zip with small word size/fast bytes setting,
-			'' which should reduce the memory needed to extract (?),
-			'' which should be nice for DOS systems...
-			hShell( "7z a -tzip -mfb=8 " & title & ".zip -i@" + manifest + " > nul" )
-		case "win32", "win32-mini", "mingw32"
-			hShell( "zip -q " & title & ".zip -@ < " + manifest )
-			hShell( "7z a " & title & ".7z -i@" + manifest + " > nul" )
-		case else
-			hShell( "tar -czf " & title & ".tar.gz -T " + manifest )
-			hShell( "tar -cJf " & title & ".tar.xz -T " + manifest )
-			''hShell( "7z a " & title & ".7z -i@" + manifest + " > /dev/null" )
-		end select
-	next
+			''
+			'' Main package:
+			'' - is given a toplevel dir to prevent extracted files
+			''   from spilling all over the current dir
+			''   (tar bombs, especially annoying for "tar xf" users)
+			'' - is made available in two formats: old school (.zip,
+			''   .tar.gz) and new fancy (.tar.xz, .7z)
+			''
+			'' Add-on packages:
+			'' - no toplevel dir, so they can be extracted right
+			''   into the main FB dir
+			'' - only old school format, to avoid making them even
+			''   more complicated, since there are so many add-ons
+			''
+
+			if( i = 0 ) then
+				select case( target )
+				case "dos", "dos-mini", "djgpp", _
+				     "win32", "win32-mini", "mingw32"
+					'' Can't use tar on Win32/DOS because it doesn't handle CRLF line endings in the manifest
+					hShell( "zip -q temp.zip -@ < " + manifest )
+					hMkdir( title )
+					hChdir( title )
+					hShell( "unzip -q ../temp.zip" )
+					hChdir( ".." )
+					hKill( "temp.zip" )
+				case else
+					'' Must use tar on Linux to preserve file permissions
+					hShell( "tar -cf temp.tar -T " + manifest )
+					hMkdir( title )
+					hShell( "tar xf temp.tar -C " + title )
+					hKill( "temp.tar" )
+				end select
+
+				select case( target )
+				case "dos", "dos-mini", "djgpp"
+					'' Using 7z to create a .zip with small word size/fast bytes setting,
+					'' which should reduce the memory needed to extract (?),
+					'' which should be nice for DOS systems...
+					hShell( "7z a -tzip -mfb=8 " + title + ".zip " + title + " > nul" )
+				case "win32", "win32-mini", "mingw32"
+					hShell( "zip -q -r " + title + ".zip " + title )
+					hShell( "7z a " + title + ".7z " + title + " > nul" )
+				case else
+					hShell( "tar -czf " + title + ".tar.gz " + title )
+					hShell( "tar -cJf " + title + ".tar.xz " + title )
+				end select
+
+				hShell( "rm -rf " + title )
+			else
+				select case( target )
+				case "dos", "dos-mini", "djgpp"
+					hShell( "7z a -tzip -mfb=8 " + title + ".zip -i@" + manifest + " > nul" )
+				case "win32", "win32-mini", "mingw32"
+					hShell( "zip -q " + title + ".zip -@ < " + manifest )
+				case else
+					hShell( "tar -czf " + title + ".tar.gz -T " + manifest )
+				end select
+			end if
+		next
+	end if
 
 	'' Remove the non-standalone include directory again (if any)
 	select case( target )
