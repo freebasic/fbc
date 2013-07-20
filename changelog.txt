@@ -7,6 +7,7 @@ Version 0.91.0:
 [added]
 - Updated header for libzip 0.11.1
 - Indexing/member dereferencing operators ([], ->) can now be applied to VARPTR/PROCPTR/STRPTR/SADD() expressions (for example: print strptr(s)[1]), instead of requiring the address expression to be wrapped in parentheses first.
+- FLT_MAX and DBL_MAX to crt/limits.bi
 
 [fixed]
 - dlltool syntax error when building a DLL without any EXPORTs
