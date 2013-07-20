@@ -11,8 +11,9 @@
 #include once "lex.bi"
 
 type IRCALLARG
-    vr as IRVREG ptr
-    level as integer
+	param	as FBSYMBOL ptr
+	vr	as IRVREG ptr
+	level	as integer
 end type
 
 '' The stack of nested sections allows us to go back and emit text to
@@ -168,7 +169,7 @@ dim shared as const zstring ptr dtypeName(0 to FB_DATATYPES-1) = _
 
 private sub _init( )
 	flistInit( @ctx.vregTB, IR_INITVREGNODES, len( IRVREG ) )
-	listInit( @ctx.callargs, 32, sizeof(IRCALLARG), LIST_FLAGS_NOCLEAR )
+	listInit( @ctx.callargs, 32, sizeof( IRCALLARG ), LIST_FLAGS_NOCLEAR )
 	listInit( @ctx.anonstack, 8, sizeof( FBSYMBOL ptr ), LIST_FLAGS_NOCLEAR )
 	listInit( @ctx.exprnodes, 32, sizeof( EXPRNODE ), LIST_FLAGS_CLEAR )
 	listInit( @ctx.exprcache, 8, sizeof( EXPRCACHENODE ), LIST_FLAGS_NOCLEAR )
@@ -2833,7 +2834,22 @@ private sub hDoCall _
 	while( arg andalso (arg->level = level) )
 		dim as IRCALLARG ptr prev = listGetPrev( arg )
 
-		s += exprFlush( exprNewVREG( arg->vr ) )
+		var expr = exprNewVREG( arg->vr )
+
+		'' param will be NULL for hidden struct result arg, since
+		'' no corresponding PARAM exists.
+		if( arg->param ) then
+			'' Cast arg to param's type to prevent gcc warning.
+			'' (this will be done by astNewARG() already, except for
+			'' BYREF AS ANY params, where the exact type will only
+			'' be known later, or never)
+			var dtype = symbGetType( arg->param )
+			var subtype = arg->param->subtype
+			symbGetRealParamDtype( arg->param->param.mode, dtype, subtype )
+			expr = exprNewCAST( dtype, subtype, expr )
+		end if
+
+		s += exprFlush( expr )
 
 		listDelNode( @ctx.callargs, arg )
 
@@ -3398,6 +3414,7 @@ private sub _emitPushArg _
 	'' Remember for later, so during _emitCall[Ptr] we can emit the whole
 	'' call in one go
 	dim as IRCALLARG ptr arg = listNewNode( @ctx.callargs )
+	arg->param = param
 	arg->vr = vr
 	arg->level = level
 
