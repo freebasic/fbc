@@ -706,9 +706,8 @@ function ppReadLiteralW _
 
 end function
 
-function ppTypeOf( ) as zstring ptr
+function ppTypeOf( ) as string
 	'' get type's name
-	dim as zstring ptr res = any
 	dim as integer dtype = any
 	dim as longint lgt = any
 	dim as FBSYMBOL ptr subtype = any
@@ -725,10 +724,7 @@ function ppTypeOf( ) as zstring ptr
 
 	cTypeOf( dtype, subtype, lgt )
 
-	res = symbTypeToStr( dtype, subtype, lgt )
-	if( res ) then
-		*res = ucase( *res )
-	end if
+	function = ucase( symbTypeToStr( dtype, subtype, lgt ) )
 
 	'' ')'
 	if( lexGetToken( ) <> CHAR_RPRNT ) then
@@ -738,6 +734,4 @@ function ppTypeOf( ) as zstring ptr
 	else
 		lexSkipToken( LEXCHECK_NODEFINE )
 	end if
-
-	function = res
 end function

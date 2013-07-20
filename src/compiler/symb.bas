@@ -1746,30 +1746,30 @@ function symbTypeToStr _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
 		byval length as longint _
-	) as zstring ptr
+	) as string
 
-	static as string res
+	dim as string s
 	dim as integer dtypeonly = any, ptrcount = any
     
 	if( dtype = FB_DATATYPE_INVALID ) then
-		return NULL
+		exit function
 	end if
 
 	ptrcount = typeGetPtrCnt( dtype )
 	if( typeIsConstAt( dtype, ptrcount ) ) then
-		res = "const "
+		s = "const "
 	else
-		res = ""
+		s = ""
 	end if
 
 	dtypeonly = typeGetDtOnly( dtype )
 
 	select case as const( dtypeonly )
 	case FB_DATATYPE_FWDREF, FB_DATATYPE_STRUCT, FB_DATATYPE_ENUM
-		res += *symbGetName( subtype )
+		s += *symbGetName( subtype )
 
 	case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR, FB_DATATYPE_FIXSTR
-		res += *symb_dtypeTB(dtypeonly).name
+		s += *symb_dtypeTB(dtypeonly).name
 		if( length > 0 ) then
 			select case( dtypeonly )
 			case FB_DATATYPE_FIXSTR
@@ -1781,21 +1781,44 @@ function symbTypeToStr _
 				'' Convert bytes back to chars
 				length \= typeGetSize( FB_DATATYPE_WCHAR )
 			end select
-			res += " * " + str( length )
+			s += " * " + str( length )
+		end if
+
+	case FB_DATATYPE_FUNCTION
+		'' Procedure pointer
+
+		'' The sub() or function() already implies one PTR
+		assert( ptrcount > 0 )
+		ptrcount -= 1
+
+		'' If there are any more PTRs, i.e. a PTR to a proc PTR,
+		'' then it must be emitted inside a typeof():
+		''    typeof( function( ) as integer ) ptr
+		'' otherwise, the PTR would be seen as part of the
+		'' function result type:
+		''    function( ) as integer ptr
+		if( ptrcount > 0 ) then
+			s += "typeof("
+		end if
+
+		s += symbProcPtrToStr( subtype )
+
+		if( ptrcount > 0 ) then
+			s += ")"
 		end if
 
 	case else
-		res += *symb_dtypeTB(dtypeonly).name
+		s += *symb_dtypeTB(dtypeonly).name
 	end select
 
 	for i as integer = ptrcount-1 to 0 step -1
 		if( typeIsConstAt( dtype, i ) ) then
-			res += " const"
+			s += " const"
 		end if
-		res += " ptr"
+		s += " ptr"
 	next
 
-	function = strptr( res )
+	function = s
 end function
 
 '':::::
@@ -2427,10 +2450,10 @@ function symbDump( byval sym as FBSYMBOL ptr ) as string
 			case FB_DATATYPE_ENUM
 				s += "<enum>"
 			case else
-				s += *symbTypeToStr( sym->typ, NULL, sym->lgt )
+				s += symbTypeToStr( sym->typ, NULL, sym->lgt )
 			end select
 		else
-			s += *symbTypeToStr( sym->typ, sym->subtype, sym->lgt )
+			s += symbTypeToStr( sym->typ, sym->subtype, sym->lgt )
 		end if
 	end if
 

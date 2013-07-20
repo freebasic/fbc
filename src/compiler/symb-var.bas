@@ -174,6 +174,7 @@ function symbAddArrayDesc _
 		end if
 
 		attrib = FB_SYMBATTRIB_LOCAL
+		stats = FB_SYMBSTATS_IMPLICIT
 
 		'' can't be ever static, the address has to be always
 		'' calculated at runtime
@@ -200,6 +201,7 @@ function symbAddArrayDesc _
 			if( array->mangling <> FB_MANGLING_BASIC ) then
 				id_alias = id
 			end if
+			stats = FB_SYMBSTATS_IMPLICIT
 		end if
 
 		attrib = array->attrib and (FB_SYMBATTRIB_SHARED or _
@@ -506,8 +508,11 @@ function symbAddTempVar _
 		options or= FB_SYMBOPT_UNSCOPE
 	end if
 
-	function = symbAddVar( symbUniqueId( ), NULL, dtype, subtype, 0, 0, _
-	                       dTB(), FB_SYMBATTRIB_TEMP, options )
+	var sym = symbAddVar( symbUniqueId( ), NULL, dtype, subtype, 0, 0, _
+	                      dTB(), FB_SYMBATTRIB_TEMP, options )
+	symbSetIsImplicit( sym )
+
+	function = sym
 end function
 
 '' For implicit variables that should live in the current scope, longer than
@@ -529,8 +534,11 @@ function symbAddImplicitVar _
 	assert( typeGetDtAndPtrOnly( dtype ) <> FB_DATATYPE_CHAR )
 	assert( typeGetDtAndPtrOnly( dtype ) <> FB_DATATYPE_WCHAR )
 
-	function = symbAddVar( symbUniqueId( ), NULL, dtype, subtype, 0, 0, _
-	                       dTB(), 0, options )
+	var sym = symbAddVar( symbUniqueId( ), NULL, dtype, subtype, 0, 0, _
+	                      dTB(), 0, options )
+	symbSetIsImplicit( sym )
+
+	function = sym
 end function
 
 function symbAddAndAllocateTempVar( byval dtype as integer ) as FBSYMBOL ptr

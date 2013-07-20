@@ -2374,7 +2374,7 @@ private sub exprDump( byval n as EXPRNODE ptr )
 
 	end select
 
-	s += " as " + *symbTypeToStr( n->dtype, n->subtype ) + ", " + hex( n->subtype, 8 )
+	s += " as " + symbTypeToStr( n->dtype, n->subtype ) + ", " + hex( n->subtype, 8 )
 
 	print str( level ), string( level, " " ) + s
 

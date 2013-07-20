@@ -252,16 +252,6 @@ function cIdentifier _
     		exit do
     	end if
 
-    	if( symbGetClass( sym ) = FB_SYMBCLASS_ENUM ) then
-    		'' not in BASIC mangling mode?
-    		if( symbGetMangling( sym ) <> FB_MANGLING_BASIC ) then
-    			if( (options and FB_IDOPT_SHOWERROR) <> 0 ) then
-					errReport( FB_ERRMSG_NONSCOPEDENUM )
-    			end if
-    			exit do
-    		end if
-    	end if
-
     	'' skip id
     	lexSkipToken( LEXCHECK_NOPERIOD )
 
@@ -423,14 +413,6 @@ function cParentId _
 			errReport( FB_ERRMSG_EXPECTEDPERIOD )
 			exit do
     	end if
-
-		if( symbGetClass( sym ) = FB_SYMBCLASS_ENUM ) then
-			'' not in BASIC mangling mode?
-			if( symbGetMangling( sym ) <> FB_MANGLING_BASIC ) then
-				errReport( FB_ERRMSG_NONSCOPEDENUM )
-				exit do
-			end if
-		end if
 
     	'' skip id
     	lexSkipToken( LEXCHECK_NOPERIOD )

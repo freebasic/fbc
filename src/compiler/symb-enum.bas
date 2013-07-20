@@ -40,13 +40,7 @@ function symbAddEnum _
 
 	'' init tables
 	symbSymbTbInit( e->enum_.ns.symtb, e )
-
-	'' create a new hash if in BASIC mangling mode
-	if( parser.mangling = FB_MANGLING_BASIC ) then
-		symbHashTbInit( e->enum_.ns.hashtb, e, FB_INITFIELDNODES )
-	else
-		symbHashTbInit( e->enum_.ns.hashtb, e, 0 )
-	end if
+	symbHashTbInit( e->enum_.ns.hashtb, e, FB_INITFIELDNODES )
 
     '' unused (while mixins aren't supported)
     e->enum_.ns.ext = NULL
@@ -84,7 +78,7 @@ function symbAddEnumElement _
 end function
 
 sub symbDelEnum( byval s as FBSYMBOL ptr )
-	symbDelNamespaceMembers( s, (symbGetMangling( s ) = FB_MANGLING_BASIC) )
+	symbDelNamespaceMembers( s, TRUE )
 	symbFreeSymbol( s )
 end sub
 

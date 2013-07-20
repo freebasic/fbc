@@ -228,7 +228,9 @@ declare function hMakeParamDesc _
 		@"Invalid array index", _
 		@"Operator must be a member function", _
 		@"Operator cannot be a member function", _
-		@"Member function not allowed in anonymous UDT's", _
+		@"Method declared in anonymous UDT", _
+		@"Constant declared in anonymous UDT", _
+		@"Static variable declared in anonymous UDT", _
 		@"Expected operator", _
 		@"Declaration outside the original namespace or class", _
 		@"A destructor should not have any parameters", _
@@ -323,7 +325,6 @@ declare function hMakeParamDesc _
 		@"Illegal outside a FUNCTION block", _
 		@"Ambiguous symbol access, explicit scope resolution required", _
 		@"An ENUM, TYPE or UNION cannot be empty", _
-		@"ENUM's declared inside EXTERN .. END EXTERN blocks don't open new scopes", _
 		@"STATIC used on non-member procedure", _
 		@"CONST used on non-member procedure", _
 		@"ABSTRACT used on non-member procedure", _
@@ -374,7 +375,8 @@ declare function hMakeParamDesc _
 		@"UDT has unimplemented abstract methods", _
 		@"#ASSERT condition failed", _
 		@"Expected '>'", _
-		@"Invalid size" _
+		@"Invalid size", _
+		@"ALIAS name here is different from ALIAS given in DECLARE prototype" _
 	}
 
 
@@ -812,14 +814,18 @@ private function hMakeParamDesc _
 				showname = FALSE
 			end if
 		else
+			static s as string
+
 			'' function pointer?
 			if( symbGetIsFuncPtr( proc ) ) then
-				pname = symbDemangleFunctionPtr( proc )
+				s = symbProcPtrToStr( proc )
+				pname = strptr( s )
 			'' method?
 			elseif( (symbGetAttrib( proc ) and (FB_SYMBATTRIB_CONSTRUCTOR or _
 											    FB_SYMBATTRIB_DESTRUCTOR or _
 											    FB_SYMBATTRIB_OPERATOR)) <> 0 ) then
-				pname = symbDemangleMethod( proc )
+				s = symbMethodToStr( proc )
+				pname = strptr( s )
 			end if
 		end if
 

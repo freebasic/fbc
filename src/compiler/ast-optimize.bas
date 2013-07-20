@@ -1330,15 +1330,16 @@ private function hDoOptRemConv( byval n as ASTNODE ptr ) as ASTNODE ptr
 	'' convert l{float} op cast(float, r{var}) to l op r
 	''
 	'' For example:
-	''    dim i as integer
+	''    dim f as single, i as integer
 	''    print f + cast( single, i )
 	''
-	'' The cast can be optimized out, because the x86 FPU supports fiadd
-	'' which can add together float/integer directly, so we don't need to
-	'' convert integer to float first and then do a float+float addition.
+	'' The cast can be optimized out, because the x86 FPU's fiadd, fisub,
+	'' fimul, fidiv instructions can work with integer operands directly,
+	'' so we don't need to convert integer to float first and then do
+	'' regular float+float BOPs afterwards.
 	''
-	'' fiadd only supports 16bit and 32bit operands though, thus LONGINTs
-	'' are disallowed below.
+	'' Apparently these instructions only support 16bit and 32bit memory
+	'' operands though, thus BYTEs and LONGINTs have to be disallowed below.
 	''
 	'' This all is only useful for the ASM backend since it's making
 	'' assumptions about the x86 FPU. For the other backends, we can aswell
@@ -1356,23 +1357,23 @@ private function hDoOptRemConv( byval n as ASTNODE ptr ) as ASTNODE ptr
 					case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 						l = r->l
 
-						'' skip any casting if they won't do any conversion
-						dim as ASTNODE ptr t = l
-						if( l->class = AST_NODECLASS_CONV ) then
-							if( l->cast.doconv = FALSE ) then
-								t = l->l
-							end if
-						end if
+						'' Note: should not skip noconv CASTs here,
+						'' because it could be a sign conversion such as
+						'' from integer VAR to uinteger. Without that CAST
+						'' to unsigned, it would pass the signed check below,
+						'' and then a signed operation would be done while
+						'' an unsigned one was intended.
 
-						'' can't be a longint
-						if( typeGetSize( astGetDataType( t ) ) < 8 ) then
+						'' Disallow BYTEs and LONGINTs
+						select case( typeGetSize( astGetDataType( l ) ) )
+						case 2, 4
 							dorem = FALSE
 
-							select case as const t->class
+							select case( l->class )
 							case AST_NODECLASS_VAR, AST_NODECLASS_IDX, _
 								 AST_NODECLASS_FIELD, AST_NODECLASS_DEREF
 								'' can't be unsigned either
-								if( typeIsSigned( astGetDataType( t ) ) ) then
+								if( typeIsSigned( astGetDataType( l ) ) ) then
 									dorem = TRUE
 								end if
 							end select
@@ -1381,8 +1382,7 @@ private function hDoOptRemConv( byval n as ASTNODE ptr ) as ASTNODE ptr
 								astDelNode( r )
 								n->r = l
 							end if
-
-						end if
+						end select
 					end select
 				end if
 			end if

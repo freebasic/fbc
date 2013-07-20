@@ -707,6 +707,15 @@ function cAddrOfExpression( ) as ASTNODE ptr
 
 	end select
 
-	function = expr
+	if( expr ) then
+		'' Allow indexing on VARPTR()/STRPTR()/etc. directly, they look
+		'' like functions so this isn't ambigious, while for @ it would
+		'' mess up the operator precedence:
+		''    @expr[i]  should be  @(expr[i]), not (@expr)[i]
+		'' but for
+		''    varptr(expr)[i], that problem doesn't exist.
+		expr = cStrIdxOrMemberDeref( expr )
+	end if
 
+	function = expr
 end function

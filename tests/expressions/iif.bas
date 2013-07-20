@@ -987,6 +987,38 @@ namespace iifStringIndexingOrMemberAccess
 	end sub
 end namespace
 
+namespace procptrs
+	sub sub1( )
+	end sub
+
+	sub sub2( )
+	end sub
+
+	function f1( ) as integer
+		function = 1
+	end function
+
+	function f2( ) as integer
+		function = 2
+	end function
+
+	sub test cdecl( )
+		dim as sub( ) psub1, psub2
+		CU_ASSERT( iif( condtrue, psub1, psub2 ) = 0 )
+
+		psub1 = @sub1
+		psub2 = @sub2
+		CU_ASSERT( iif( condtrue , psub1, psub2 ) = @sub1 )
+		CU_ASSERT( iif( condfalse, psub1, psub2 ) = @sub2 )
+		(iif( condtrue , psub1, psub2 ))( )
+		(iif( condfalse, psub1, psub2 ))( )
+
+		dim as function( ) as integer pf1 = @f1, pf2 = @f2
+		CU_ASSERT( (iif( condtrue , pf1, pf2 ))( ) = 1 )
+		CU_ASSERT( (iif( condfalse, pf1, pf2 ))( ) = 2 )
+	end sub
+end namespace
+
 sub ctor( ) constructor
 	fbcu.add_suite( "tests/expressions/iif" )
 	fbcu.add_test( "int BOP", @testIntBop )
@@ -1004,6 +1036,7 @@ sub ctor( ) constructor
 	fbcu.add_test( "iif() ctors 4", @iifTempVarIntCtorAndCopyCtor.test )
 	fbcu.add_test( "iif() ctors 5", @iifTempVarDefCtorAndIntCtor.test )
 	fbcu.add_test( "member access", @iifStringIndexingOrMemberAccess.test )
+	fbcu.add_test( "procptrs", @procptrs.test )
 end sub
 
 end namespace

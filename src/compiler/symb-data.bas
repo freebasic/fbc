@@ -9,7 +9,7 @@
 '' same order as FB_DATATYPE
 dim shared symb_dtypeTB( 0 to FB_DATATYPES-1 ) as SYMB_DATATYPE => _
 { _
-	( FB_DATACLASS_UNKNOWN,  0, FALSE,  0, FB_DATATYPE_VOID    , -1                 , @"void"     ), _
+	( FB_DATACLASS_UNKNOWN,  0, FALSE,  0, FB_DATATYPE_VOID    , -1                 , @"any"      ), _
 	( FB_DATACLASS_INTEGER,  1, TRUE , 10, FB_DATATYPE_BYTE    , FB_SIZETYPE_INT8   , @"byte"     ), _
 	( FB_DATACLASS_INTEGER,  1, FALSE, 15, FB_DATATYPE_UBYTE   , FB_SIZETYPE_UINT8  , @"ubyte"    ), _
 	( FB_DATACLASS_INTEGER,  1, FALSE,  0, FB_DATATYPE_UBYTE   , FB_SIZETYPE_UINT8  , @"zstring"  ), _
@@ -30,7 +30,7 @@ dim shared symb_dtypeTB( 0 to FB_DATATYPES-1 ) as SYMB_DATATYPE => _
 	( FB_DATACLASS_STRING ,  1, FALSE,  0, FB_DATATYPE_FIXSTR  , -1                 , @"string"   ), _
 	( FB_DATACLASS_UDT    ,  0, FALSE,  0, FB_DATATYPE_STRUCT  , -1                 , @"type"     ), _
 	( FB_DATACLASS_UDT    ,  0, FALSE,  0, FB_DATATYPE_NAMESPC , -1                 , @"namepace" ), _
-	( FB_DATACLASS_INTEGER,  0, FALSE,  0, FB_DATATYPE_UINT    , -1                 , @"function" ), _
+	( FB_DATACLASS_INTEGER,  0, FALSE,  0, FB_DATATYPE_UINT    , -1                 , @"function" ), _  '' FB_DATATYPE_FUNCTION has zero size, so function pointer arithmetic is disallowed (-> symbCalcDerefLen())
 	( FB_DATACLASS_UNKNOWN,  0, FALSE,  0, FB_DATATYPE_VOID    , -1                 , @"fwdref"   ), _
 	( FB_DATACLASS_INTEGER, -1, FALSE,  0, FB_DATATYPE_UINT    , -1                 , @"pointer"  ), _
 	( FB_DATACLASS_INTEGER, 16, FALSE,  0, FB_DATATYPE_XMMWORD , -1                 , @"xmmword"  )  _
@@ -53,6 +53,15 @@ dim shared symb_dtypeTB( 0 to FB_DATATYPES-1 ) as SYMB_DATATYPE => _
 '' even though they store the same number of bits. (for the sake of a '+' BOP's
 '' result type being the same no matter whether we're doing signed + unsigned
 '' or unsigned + signed, we need to have this kind of rule to decide)
+
+dim shared symb_dtypeMatchTB( FB_DATATYPE_BYTE to FB_DATATYPE_DOUBLE, FB_DATATYPE_BYTE to FB_DATATYPE_DOUBLE ) as integer
+
+declare function closestType _
+	( _
+		byval dtype as FB_DATATYPE, _
+		byval dtype1 as FB_DATATYPE, _
+		byval dtype2 as FB_DATATYPE _
+	) as FB_DATATYPE
 
 sub symbDataInit( )
 	if( fbCpuTypeIs64bit( ) ) then
@@ -98,6 +107,39 @@ sub symbDataInit( )
 	symb_dtypeTB(FB_DATATYPE_WCHAR).size      = symb_dtypeTB(env.target.wchar).size
 	symb_dtypeTB(FB_DATATYPE_WCHAR).signed    = symb_dtypeTB(env.target.wchar).signed
 	symb_dtypeTB(FB_DATATYPE_WCHAR).remaptype = symb_dtypeTB(env.target.wchar).remaptype
+
+
+	'' Create symb_dtypeMatchTB(), used to score overload resolutions
+	const NUMTYPES = FB_DATATYPE_DOUBLE - FB_DATATYPE_BYTE + 1
+	dim as FB_DATATYPE rank(0 to NUMTYPES - 1)
+
+	dim as FB_DATATYPE dtype1 = any, dtype2 = any
+	dim as integer i = any, j = any
+
+	for dtype1 = FB_DATATYPE_BYTE to FB_DATATYPE_DOUBLE
+
+		'' fill the rank() table with data types
+		for dtype2 = FB_DATATYPE_BYTE to FB_DATATYPE_DOUBLE
+			rank(dtype2 - FB_DATATYPE_BYTE) = dtype2
+		next
+
+		'' sort the table in order of closeness
+		for i = 0 to NUMTYPES - 2
+			for j = i + 1 to NUMTYPES - 1
+				if( closestType( dtype1, rank(i), rank(j) ) = rank(j) ) then
+					swap rank(i), rank(j)
+				end if
+			next
+		next
+
+		'' populate symb_dtypeMatchTB() with ranking numbers
+		for i = 0 to NUMTYPES - 1
+			dtype2 = rank(i)
+			symb_dtypeMatchTB( dtype1, dtype2 ) = i
+		next
+
+	next
+
 end sub
 
 sub typeMax _
@@ -344,4 +386,73 @@ function typeMerge _
 	         typeGetConstMask( dtype1 )
 
 	function = dtype1
+end function
+
+'' Return the closest (most "compatible") type to dtype,
+'' out of dtype1 and dtype2
+function closestType _
+	( _
+		byval dtype as FB_DATATYPE, _
+		byval dtype1 as FB_DATATYPE, _
+		byval dtype2 as FB_DATATYPE _
+	) as FB_DATATYPE
+
+	'' prefer non-bitfield/enum/zstring/wstring, let them be handled elsewhere
+	if( dtype1 <> FB_DATATYPE_ENUM and dtype2 = FB_DATATYPE_ENUM ) then return dtype1
+	if( dtype2 <> FB_DATATYPE_ENUM and dtype1 = FB_DATATYPE_ENUM ) then return dtype2
+
+	if( dtype1 <> FB_DATATYPE_BITFIELD and dtype2 = FB_DATATYPE_BITFIELD ) then return dtype1
+	if( dtype2 <> FB_DATATYPE_BITFIELD and dtype1 = FB_DATATYPE_BITFIELD ) then return dtype2
+
+	if( dtype1 <> FB_DATATYPE_CHAR and dtype2 = FB_DATATYPE_CHAR ) then return dtype1
+	if( dtype2 <> FB_DATATYPE_CHAR and dtype1 = FB_DATATYPE_CHAR ) then return dtype2
+
+	if( dtype1 <> FB_DATATYPE_WCHAR and dtype2 = FB_DATATYPE_WCHAR ) then return dtype1
+	if( dtype2 <> FB_DATATYPE_WCHAR and dtype1 = FB_DATATYPE_WCHAR ) then return dtype2
+
+
+	'' prefer same dataclass (integer / floating-point)
+	dim as integer sameclass1 = (typeGetClass(dtype1) = typeGetClass(dtype))
+	dim as integer sameclass2 = (typeGetClass(dtype2) = typeGetClass(dtype))
+
+	if ( sameclass1 and not sameclass2 ) then return dtype1
+	if ( sameclass2 and not sameclass1 ) then return dtype2
+
+
+	'' prefer a type that's at least as large as dtype
+	dim as integer larger1 = (typeGetSize( dtype1 ) >= typeGetSize( dtype ))
+	dim as integer larger2 = (typeGetSize( dtype1 ) >= typeGetSize( dtype ))
+
+	if( larger1 and not larger2 ) then return dtype1
+	if( larger2 and not larger1 ) then return dtype2
+
+
+	'' prefer closer size (if larger, then the smallest; if smaller, then the largest)
+	dim as integer sizediff1 = abs( typeGetSize( dtype1 ) - typeGetSize( dtype ) )
+	dim as integer sizediff2 = abs( typeGetSize( dtype2 ) - typeGetSize( dtype ) )
+
+	if( sizediff1 < sizediff2 ) then return dtype1
+	if( sizediff2 < sizediff1 ) then return dtype2
+
+
+	'' prefer [U]Integer type if both same size
+	dim as integer isint1 = (typeToSigned( dtype1 ) = FB_DATATYPE_INTEGER)
+	dim as integer isint2 = (typeToSigned( dtype2 ) = FB_DATATYPE_INTEGER)
+
+	if( isint1 and not isint2 ) then return dtype1
+	if( isint2 and not isint1 ) then return dtype2
+
+
+	'' prefer same signedness
+	dim as integer samesign1 = (typeIsSigned( dtype1 ) = typeIsSigned( dtype ))
+	dim as integer samesign2 = (typeIsSigned( dtype2 ) = typeIsSigned( dtype ))
+
+	if( samesign1 and not samesign2 ) then return dtype1
+	if( samesign2 and not samesign1 ) then return dtype2
+
+
+	'' should be no other differences
+	assert( dtype1 = dtype2 )
+	return dtype1
+
 end function

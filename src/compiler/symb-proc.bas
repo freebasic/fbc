@@ -20,11 +20,6 @@ declare function hMangleFunctionPtr	_
 		byval mode as integer _
 	) as zstring ptr
 
-declare function hDemangleParams _
-	( _
-		byval proc as FBSYMBOL ptr _
-	) as zstring ptr
-
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' init
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -1228,6 +1223,7 @@ function symbAddProcResultParam( byval proc as FBSYMBOL ptr ) as FBSYMBOL ptr
 	proc->proc.ext->res = s
 
 	symbSetIsDeclared( s )
+	symbSetIsImplicit( s )
 
 	function = s
 end function
@@ -1262,6 +1258,7 @@ function symbAddProcResult( byval proc as FBSYMBOL ptr ) as FBSYMBOL ptr
 	astAdd( astNewDECL( res, TRUE ) )
 
 	symbSetIsDeclared( res )
+	symbSetIsImplicit( res )
 
 	function = res
 end function
@@ -1603,7 +1600,7 @@ private function hCalcTypesDiff _
 				return 0
 			end if
 
-			return FB_OVLPROC_HALFMATCH - abs( typeGet( param_dtype ) - typeGet( arg_dtype ) )
+			return FB_OVLPROC_HALFMATCH - symb_dtypeMatchTB( typeGet( arg_dtype ), typeGet( param_dtype ) )
 
 		'' float? (ok due the auto-coercion, unless it's a pointer)
 		case FB_DATACLASS_FPOINT
@@ -1611,7 +1608,7 @@ private function hCalcTypesDiff _
 				return 0
 			end if
 
-			return FB_OVLPROC_HALFMATCH - abs( typeGet( param_dtype ) - typeGet( arg_dtype ) )
+			return FB_OVLPROC_HALFMATCH - symb_dtypeMatchTB( typeGet( arg_dtype ), typeGet( param_dtype ) )
 
 		'' string? only if it's a w|zstring ptr arg
 		case FB_DATACLASS_STRING
@@ -1646,11 +1643,11 @@ private function hCalcTypesDiff _
 				arg_dtype = typeRemap( arg_dtype, arg_subtype )
 			end select
 
-			return FB_OVLPROC_HALFMATCH - abs( typeGet( param_dtype ) - typeGet( arg_dtype ) )
+			return FB_OVLPROC_HALFMATCH - symb_dtypeMatchTB( typeGet( arg_dtype ), typeGet( param_dtype ) )
 
 		'' or if another float..
 		case FB_DATACLASS_FPOINT
-			return FB_OVLPROC_HALFMATCH - abs( typeGet( param_dtype ) - typeGet( arg_dtype ) )
+			return FB_OVLPROC_HALFMATCH - symb_dtypeMatchTB( typeGet( arg_dtype ), typeGet( param_dtype ) )
 
 		'' refuse anything else
 		case else
@@ -2668,91 +2665,109 @@ private function hMangleFunctionPtr _
 	function = strptr( id )
 end function
 
-private function hDemangleParams _
-	( _
-		byval proc as FBSYMBOL ptr _
-	) as zstring ptr
+private sub hSubOrFuncToStr( byref s as string, byval proc as FBSYMBOL ptr )
+	if( symbGetType( proc ) = FB_DATATYPE_VOID ) then
+		s += "sub"
+	else
+		s += "function"
+	end if
+end sub
 
-	static as string res
-	dim as FBSYMBOL ptr param = any
+private sub hProcModeToStr( byref s as string, byval proc as FBSYMBOL ptr )
+	'' Calling convention, but only if different from default FBCALL
+	select case( symbGetProcMode( proc ) )
+	case FB_FUNCMODE_STDCALL, FB_FUNCMODE_STDCALL_MS
+		select case( env.target.fbcall )
+		case FB_FUNCMODE_STDCALL, FB_FUNCMODE_STDCALL_MS
 
-	static as const zstring ptr parammodeTb( FB_PARAMMODE_BYVAL to FB_PARAMMODE_VARARG ) = _
-	{ _
-		@"byval", _
-		@"byref", _
-		@"bydesc", _
-		@"vararg" _
-	}
+		case else
+			s += " stdcall"
+		end select
+	case FB_FUNCMODE_PASCAL
+		if( env.target.fbcall <> FB_FUNCMODE_PASCAL ) then
+			s += " pascal"
+		end if
+	case FB_FUNCMODE_CDECL
+		if( env.target.fbcall <> FB_FUNCMODE_CDECL ) then
+			s += " cdecl"
+		end if
+	end select
+end sub
 
-    res = ""
+private sub hParamsToStr( byref s as string, byval proc as FBSYMBOL ptr )
+	s += "("
 
-    '' for each param..
-    param = symbGetProcHeadParam( proc )
+	var param = symbGetProcHeadParam( proc )
 
-    '' method? skip the instance pointer
-    if( param <> NULL ) then
-    	if( symbIsMethod( proc ) ) then
-    		param = symbGetParamNext( param )
-    	end if
-    end if
+	'' Method? Skip the instance pointer
+	if( (param <> NULL) and symbIsMethod( proc ) ) then
+		param = symbGetParamNext( param )
+	end if
 
-    do while( param <> NULL )
-    	select case as const param->param.mode
-    	case FB_PARAMMODE_BYVAL, FB_PARAMMODE_BYREF, FB_PARAMMODE_BYDESC
-			res += *parammodeTb(param->param.mode)
-			res += " as "
-			res += *symbTypeToStr( param->typ, param->subtype )
+	while( param )
+		var parammode = symbGetParamMode( param )
+		select case( parammode )
+		case FB_PARAMMODE_BYVAL, FB_PARAMMODE_BYREF
+			'' Byval/Byref, if different from default, at least in -lang fb.
+			'' In other -langs it depends on OPTION BYVAL, and it seems best to
+			'' always include Byval/Byref in that case, otherwise it'd depend on
+			'' source code context.
+			if( fbLangIsSet( FB_LANG_FB ) and _
+			    (symbGetDefaultCallConv( symbGetType( param ), param->subtype ) <> parammode) ) then
+				if( parammode = FB_PARAMMODE_BYVAL ) then
+					s += "byval "
+				else
+					s += "byref "
+				end if
+			end if
 
+		case FB_PARAMMODE_BYDESC
 		case FB_PARAMMODE_VARARG
-			res += "..."
 		end select
 
-    	param = symbGetParamNext( param )
+		if( parammode = FB_PARAMMODE_VARARG ) then
+			s += "..."
+		else
+			'' Array parentheses, instead of "Bydesc"
+			if( parammode = FB_PARAMMODE_BYDESC ) then
+				s += "() "
+			end if
 
-    	if( param <> NULL ) then
-    		res += ", "
-    	end if
-    loop
+			'' Parameter's data type
+			s += "as " + symbTypeToStr( param->typ, param->subtype )
+		end if
 
-    function = strptr( res )
+		param = symbGetParamNext( param )
+		if( param ) then
+			s += ", "
+		end if
+	wend
 
+	s += ")"
+end sub
+
+private sub hResultToStr( byref s as string, byval proc as FBSYMBOL ptr )
+	'' Function result
+	if( symbGetType( proc ) <> FB_DATATYPE_VOID ) then
+		if( symbProcReturnsByref( proc ) ) then
+			s += " byref"
+		end if
+		s += " as " + symbTypeToStr( proc->typ, proc->subtype )
+	end if
+end sub
+
+function symbProcPtrToStr( byval proc as FBSYMBOL ptr ) as string
+	dim s as string
+
+	hSubOrFuncToStr( s, proc )
+	hProcModeToStr( s, proc )
+	hParamsToStr( s, proc )
+	hResultToStr( s, proc )
+
+	function = s
 end function
 
-'':::::
-function symbDemangleFunctionPtr _
-	( _
-		byval proc as FBSYMBOL ptr _
-	) as zstring ptr
-
-	static as string res
-
-	'' sub or function?
-	if( proc->typ <> FB_DATATYPE_VOID ) then
-		res = "function("
-	else
-		res = "sub("
-	end if
-
-	res += *hDemangleParams( proc )
-
-	res += ")"
-
-	'' any return type?
-	if( proc->typ <> FB_DATATYPE_VOID ) then
-    	res += " as "
-    	res += *symbTypeToStr( proc->typ, proc->subtype )
-	end if
-
-	function = strptr( res )
-
-end function
-
-'':::::
-function symbGetFullProcName _
-	( _
-		byval proc as FBSYMBOL ptr _
-	) as zstring ptr
-
+function symbGetFullProcName( byval proc as FBSYMBOL ptr ) as zstring ptr
 	static as string res
 
 	res = ""
@@ -2766,58 +2781,34 @@ function symbGetFullProcName _
 
 	if( symbIsConstructor( proc ) ) then
 	 	res += "constructor"
-
 	elseif( symbIsDestructor( proc ) ) then
 		res += "destructor"
-
 	elseif( symbIsOperator( proc ) ) then
 		res += "operator."
 		if( proc->proc.ext <> NULL ) then
 			res += *astGetOpId( symbGetProcOpOvl( proc ) )
 		end if
-
 	elseif( symbIsProperty( proc ) ) then
 		res += *symbGetName( proc )
-
 		res += ".property."
 		if( symbGetType( proc ) <> FB_DATATYPE_VOID ) then
 			res += "get"
 		else
 			res += "set"
 		end if
-
 	else
 		res += *symbGetName( proc )
 	end if
 
 	function = strptr( res )
-
 end function
 
-'':::::
-function symbDemangleMethod _
-	( _
-		byval proc as FBSYMBOL ptr _
-	) as zstring ptr
-
-	static as string res
-
-	res = *symbGetFullProcName( proc )
-
-	res += "("
-
-	res += *hDemangleParams( proc )
-
-	res += ")"
-
-	'' any return type?
-	if( proc->typ <> FB_DATATYPE_VOID ) then
-    	res += " as "
-    	res += *symbTypeToStr( proc->typ, proc->subtype )
-	end if
-
-	function = strptr( res )
-
+function symbMethodToStr( byval proc as FBSYMBOL ptr ) as string
+	var s = *symbGetFullProcName( proc )
+	hProcModeToStr( s, proc )
+	hParamsToStr( s, proc )
+	hResultToStr( s, proc )
+	function = s
 end function
 
 '':::::

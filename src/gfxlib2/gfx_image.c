@@ -88,5 +88,6 @@ FBCALL void *fb_GfxImageCreateQB(int width, int height, unsigned int color, int 
 
 FBCALL void fb_GfxImageDestroy(void *image)
 {
+	if( image == NULL ) return;
 	free(((void **)image)[-1]);
 }

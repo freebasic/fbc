@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-scriptdir="`dirname \"$0\"`"
+scriptdir="`pwd`/`dirname \"$0\"`"
 source "$scriptdir/../common.sh"
 
 toplevel="$PWD"
@@ -119,10 +119,10 @@ my_patch()
 			autoreconf
 			;;
 		glib-*)
-			patch -p1 < "$srcdir/glib.patch"
+			patch -p1 < "$srcdir/glib-linuxmusl.patch"
 			;;
 		grx-*-con)
-			patch -p0 < "$srcdir/grx-con.patch"
+			patch -p0 < "$srcdir/grx-con-linuxmusl.patch"
 			;;
 		jasper-*)
 			patch -p0 < "$srcdir/jasper.patch"

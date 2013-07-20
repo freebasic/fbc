@@ -173,18 +173,26 @@ sub cEnumDecl( byval attrib as integer )
 	'' [ALIAS "id"]
 	dim as zstring ptr palias = cAliasAttribute()
 
-	e = symbAddEnum( @id, palias, attrib )
-	if( e = NULL ) then
-		errReportEx( FB_ERRMSG_DUPDEFINITION, id )
-		'' error recovery: create a fake symbol
-		e = symbAddEnum( symbUniqueLabel( ), NULL, FB_SYMBATTRIB_NONE )
-	end if
-
 	'' EXPLICIT?
 	dim as integer isexplicit = FALSE
 	if( lexGetToken( ) = FB_TK_EXPLICIT ) then
 		lexSkipToken( )
 		isexplicit = TRUE
+	end if
+
+	'' Enums are namespaces containing their constants, and a Using will
+	'' automatically be done below to import the constants into the parent
+	'' namespace unless the Enum was declared Explicit.
+	''
+	'' This way, an Enum's constants can be accessed via "constid" or
+	'' "enumid.constid", and an Explicit Enum's constants can only be
+	'' accessed via the latter.
+
+	e = symbAddEnum( @id, palias, attrib )
+	if( e = NULL ) then
+		errReportEx( FB_ERRMSG_DUPDEFINITION, id )
+		'' error recovery: create a fake symbol
+		e = symbAddEnum( symbUniqueLabel( ), NULL, FB_SYMBATTRIB_NONE )
 	end if
 
 	'' Comment? SttSeparator
@@ -199,18 +207,14 @@ sub cEnumDecl( byval attrib as integer )
 		hSkipUntil( INVALID, TRUE )
 	end if
 
-	'' if in BASIC mangling mode, start a new scope
-	if( (symbGetMangling( e ) = FB_MANGLING_BASIC) or (isexplicit = TRUE) ) then
-		symbNestBegin( e, FALSE )
-	end if
+	'' Start a new scope
+	symbNestBegin( e, FALSE )
 
 	'' EnumBody
 	cEnumBody( e, attrib )
 
 	'' close scope
-	if( (symbGetMangling( e ) = FB_MANGLING_BASIC) or (isexplicit = TRUE) ) then
-		symbNestEnd( FALSE )
-	end if
+	symbNestEnd( FALSE )
 
 	'' END ENUM
 	if( lexGetToken( ) <> FB_TK_END ) then
@@ -227,11 +231,9 @@ sub cEnumDecl( byval attrib as integer )
 		else
 			lexSkipToken( )
 
+			'' Do an implicit 'USING enum', unless it's an EXPLICIT enum
 			if( isexplicit = FALSE ) then
-				'' if in BASIC mangling mode, do an implicit 'USING enum'
-				if( symbGetMangling( e ) = FB_MANGLING_BASIC ) then
-					symbNamespaceImport( e )
-				end if
+				symbNamespaceImport( e )
 			end if
 		end if
 	end if
