@@ -1231,19 +1231,32 @@ function astSizeOf( byval n as ASTNODE ptr ) as integer
 	end select
 end function
 
+private function hSymbIsOnLocalStack( byval sym as FBSYMBOL ptr ) as integer
+	function = symbIsLocal( sym ) and (not symbIsStatic( sym ))
+end function
+
 function astIsAccessToLocal( byval expr as ASTNODE ptr ) as integer
 	function = FALSE
 
 	select case( astGetClass( expr ) )
-	case AST_NODECLASS_VAR, AST_NODECLASS_IDX
-		'' Disallow local vars/arrays
-		function = symbIsLocal( expr->sym ) and (not symbIsStatic( expr->sym ))
+	case AST_NODECLASS_VAR
+		'' Disallow local var accesses
+		'' Note: accesses to byref params are automatically allowed,
+		'' because they have DEREFs at the top, not VARs.
+		function = hSymbIsOnLocalStack( expr->sym )
+
+	case AST_NODECLASS_IDX
+		'' Disallow local array accesses, unless it's a bydesc param
+		'' (accesses to them also have an IDX at the top)
+		if( symbIsParamBydesc( expr->sym ) = FALSE ) then
+			function = hSymbIsOnLocalStack( expr->sym )
+		end if
 
 	case AST_NODECLASS_CALL
 		'' No CALLs can be allowed - either their result
 		'' is in registers or in a local temp var.
-		'' Note: functions returning BYREF are ok,
-		'' they appear here as DEREFs.
+		'' Note: functions returning BYREF are ok, because they have
+		'' DEREFs at the top, not CALLs.
 		function = TRUE
 
 	case AST_NODECLASS_FIELD

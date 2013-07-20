@@ -302,6 +302,31 @@ namespace returnProcptr
 	end sub
 end namespace
 
+namespace returnBydescArrayElement
+	function f1( array() as integer ) byref as integer
+		function = array(0)
+	end function
+
+	function f2( array() as integer, byval index as integer ) byref as integer
+		function = array(index)
+	end function
+
+	sub test cdecl( )
+		dim array(0 to 3) as integer = { 111, 222, 333, 444 }
+		CU_ASSERT( f1( array() ) = 111 )
+		CU_ASSERT( f2( array(), 0 ) = 111 )
+		CU_ASSERT( f2( array(), 1 ) = 222 )
+		CU_ASSERT( f2( array(), 2 ) = 333 )
+		CU_ASSERT( f2( array(), 3 ) = 444 )
+
+		f2( array(), 0 ) = 555
+		CU_ASSERT( array(0) = 555 )
+
+		f2( array(), 3 ) = 666
+		CU_ASSERT( array(3) = 666 )
+	end sub
+end namespace
+
 namespace toByvalParam
 	function f( ) byref as integer
 		static i as integer = 3344
@@ -792,6 +817,7 @@ private sub ctor( ) constructor
 	fbcu.add_test( "ptr indexing", @resultPtrIndexing.test )
 	fbcu.add_test( "indexing", @resultIndexing.test )
 	fbcu.add_test( "procptr", @returnProcptr.test )
+	fbcu.add_test( "returning bydesc array element", @returnBydescArrayElement.test )
 	fbcu.add_test( "byref result -> byval param", @toByvalParam.test )
 	fbcu.add_test( "byref result -> byref param", @toByrefParam.test )
 	fbcu.add_test( "properties", @properties.test )
