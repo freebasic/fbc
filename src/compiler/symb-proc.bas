@@ -1137,6 +1137,39 @@ function symbPreAddProc( byval symbol as zstring ptr ) as FBSYMBOL ptr
 	function = proc
 end function
 
+sub symbGetRealParamDtype _
+	( _
+		byval parammode as integer, _
+		byref dtype as integer, _
+		byref subtype as FBSYMBOL ptr _
+	)
+
+	assert( parammode <> FB_PARAMMODE_VARARG )
+
+	select case( parammode )
+	case FB_PARAMMODE_BYVAL
+		select case( dtype )
+		'' byval string? it's actually an pointer to a zstring
+		case FB_DATATYPE_STRING
+			dtype = typeAddrOf( FB_DATATYPE_CHAR )
+
+		case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
+			'' non-trivial classes are always passed byref
+			if( symbCompIsTrivial( subtype ) = FALSE ) then
+				dtype = typeAddrOf( dtype )
+			end if
+		end select
+
+	case FB_PARAMMODE_BYREF
+		dtype = typeAddrOf( dtype )
+
+	case FB_PARAMMODE_BYDESC
+		dtype = typeAddrOf( FB_DATATYPE_STRUCT )
+		subtype = symb.arrdesctype
+	end select
+
+end sub
+
 function symbAddVarForParam( byval param as FBSYMBOL ptr ) as FBSYMBOL ptr
     dim as FBARRAYDIM dTB(0) = any
     dim as FBSYMBOL ptr s = any
