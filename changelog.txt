@@ -27,6 +27,7 @@ Version 0.91.0:
 - Mid() statement didn't allow some string expressions as destination, such as <Mid( *StrPtr( s ), ... ) = ...>
 - The UINT_MAX from crt/limits.bi was an INTEGER instead of UINTEGER
 - #defines with invalid or missing identifiers were ignored instead of causing a compiler error
+- #686: Statements with lots of identifier/keyword tokens (such as procedure pointer variable declarations with 10 parameters) could cause unexpected compiler behaviour, e.g. compiler errors even though the code was good.
 
 
 Version 0.90.1:
