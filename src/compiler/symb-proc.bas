@@ -1144,8 +1144,6 @@ sub symbGetRealParamDtype _
 		byref subtype as FBSYMBOL ptr _
 	)
 
-	assert( parammode <> FB_PARAMMODE_VARARG )
-
 	select case( parammode )
 	case FB_PARAMMODE_BYVAL
 		select case( dtype )
