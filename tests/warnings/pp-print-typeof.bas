@@ -79,7 +79,10 @@ dim x1 as UDT1
 #print typeof( sub( byval as integer ) )
 #print typeof( sub( byref as integer ) )
 #print typeof( sub( () as integer ) )
-#print typeof( sub( as integer, ... ) )
+'' Vararg functions must be CDECL, but those will currently be printed
+'' differently by #print typeof() on Linux vs. Win32, because CDECL is the
+'' default on Linux, but not on Win32.
+''#print typeof( sub cdecl( as integer, ... ) )
 
 #print
 #print "procptr function results:"

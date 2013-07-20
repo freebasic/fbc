@@ -1176,8 +1176,6 @@ declare sub symbMakeParamOptional _
 		byval optexpr as ASTNODE ptr _
 	)
 
-declare function symbAddProcResultParam( byval proc as FBSYMBOL ptr ) as FBSYMBOL ptr
-
 declare function symbAddProc _
 	( _
 		byval proc as FBSYMBOL ptr, _
@@ -1230,8 +1228,16 @@ declare function symbPreAddProc _
 		byval symbol as zstring ptr _
 	) as FBSYMBOL ptr
 
-declare function symbAddProcResult( byval f as FBSYMBOL ptr ) as FBSYMBOL ptr
+declare sub symbGetRealParamDtype _
+	( _
+		byval parammode as integer, _
+		byref dtype as integer, _
+		byref subtype as FBSYMBOL ptr _
+	)
+
 declare function symbAddVarForParam( byval param as FBSYMBOL ptr ) as FBSYMBOL ptr
+declare function symbAddProcResultParam( byval proc as FBSYMBOL ptr ) as FBSYMBOL ptr
+declare function symbAddProcResult( byval f as FBSYMBOL ptr ) as FBSYMBOL ptr
 
 declare sub symbAddProcInstancePtr _
 	( _
@@ -1310,11 +1316,6 @@ declare sub symbDelSymbol _
 		byval s as FBSYMBOL ptr, _
 		byval is_tbdel as integer = FALSE _
 	)
-
-declare function symbDelKeyword _
-	( _
-		byval s as FBSYMBOL ptr _
-	) as integer
 
 declare function symbDelDefine _
 	( _

@@ -29,6 +29,9 @@ all: $(TXT)
 $(TXT): %.txt: %.bas force-rebuild
 	$(QUIET)$(FBC) $< -r -m $* | sed -e 's/[0-9a-z\-]*\.bas([0-9]*) warning [0-9]*([0-9]*): /\t/g' > $@ \
 		&& rm -f $*.asm $*.c
+ifneq (,$(filter dos win32,$(shell $(FBC) -print host)))
+	@unix2dos -q $@
+endif
 
 .PHONY: force-rebuild
 force-rebuild:

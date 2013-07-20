@@ -967,8 +967,12 @@ private function hCheckParam _
 		errReportWarn( FB_WARNINGMSG_PASSINGPTRTOSCALAR )
 	end if
 
-	'' different types? convert..
-	if( param_dtype <> arg_dtype ) then
+	'' If types are still different, then try to convert the arg to the
+	'' param's type. This is important for astLoadCALL() which determines
+	'' the number of bytes to push/pop based on the ARG dtypes, and also
+	'' helps the GCC/LLVM backends, which need to emit code with proper
+	'' types to avoid errors/warnings from GCC/LLVM, unlike the ASM backend.
+	if( (param_dtype <> arg_dtype) or (param->subtype <> arg->subtype) ) then
 		'' Cannot pass BYREF if different size/class, but we do allow
 		'' passing INTEGER vars to BYREF AS UINTEGER params etc.
 		if( (typeGetSize( param_dtype ) <> typeGetSize( arg_dtype )) or _
@@ -1088,6 +1092,7 @@ function astNewARG _
 	n = astNewNode( AST_NODECLASS_ARG, FB_DATATYPE_INVALID )
 	function = n
 
+	n->sym = param
 	n->l = arg
 	n->arg.mode = mode
 	n->arg.lgt = 0
@@ -1158,6 +1163,7 @@ sub astReplaceInstanceArg _
 	'' Delete the old argument expression
 	astDelTree( n->l )
 
+	assert( n->sym = param )
 	n->l = expr
 	n->arg.mode = mode
 	n->arg.lgt = 0

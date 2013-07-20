@@ -1459,9 +1459,6 @@ sub symbDelSymbol _
 	case FB_SYMBCLASS_DEFINE
 		symbDelDefine( s )
 
-	case FB_SYMBCLASS_KEYWORD
-		symbDelKeyword( s )
-
     case FB_SYMBCLASS_LABEL
 		symbDelLabel( s )
 

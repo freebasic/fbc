@@ -179,47 +179,6 @@ private function hEmitParamName( byval sym as FBSYMBOL ptr ) as string
 	function = *symbGetMangledName( sym ) + "$"
 end function
 
-private sub hGetRealParamType _
-	( _
-		byval sym as FBSYMBOL ptr, _
-		byval parammode as integer, _
-		byref dtype as integer, _
-		byref subtype as FBSYMBOL ptr _
-	)
-
-	'' Either it's a param symbol or a paramvar
-	assert( (sym->class = FB_SYMBCLASS_PARAM) or _
-	        (symbIsVar( sym ) and symbIsParam( sym )) )
-
-	dtype = symbGetType( sym )
-	subtype = symbGetSubtype( sym )
-
-	'' Remap type for byref parameters etc.
-	select case( parammode )
-	case FB_PARAMMODE_BYVAL
-		select case( symbGetType( sym ) )
-		'' byval string? it's actually an pointer to a zstring
-		case FB_DATATYPE_STRING
-			dtype = typeAddrOf( FB_DATATYPE_CHAR )
-
-		case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-			'' byval struct with dtor/copy ctor/virtuals? it's really byref.
-			if( symbCompIsTrivial( symbGetSubtype( sym ) ) = FALSE ) then
-				dtype = typeAddrOf( dtype )
-			end if
-		end select
-
-	case FB_PARAMMODE_BYREF
-		dtype = typeAddrOf( dtype )
-
-	case FB_PARAMMODE_BYDESC
-		dtype = typeAddrOf( FB_DATATYPE_STRUCT )
-		subtype = symb.fbarray
-
-	end select
-
-end sub
-
 private function hEmitProcCallConv( byval proc as FBSYMBOL ptr ) as string
 	'' Calling convention
 	'' - default if none specified is Cdecl as in C
@@ -253,8 +212,6 @@ private function hEmitProcHeader _
 	) as string
 
 	dim as string ln
-	dim as integer dtype = any
-	dim as FBSYMBOL ptr subtype = any, paramvar = any
 
 	assert( symbIsProc( proc ) )
 
@@ -294,7 +251,9 @@ private function hEmitProcHeader _
 		if( symbGetParamMode( param ) = FB_PARAMMODE_VARARG ) then
 			ln += "..."
 		else
-			hGetRealParamType( param, param->param.mode, dtype, subtype )
+			var dtype = symbGetType( param )
+			var subtype = param->subtype
+			symbGetRealParamDtype( param->param.mode, dtype, subtype )
 			ln += hEmitType( dtype, subtype )
 
 			if( is_proto = FALSE ) then
@@ -1075,8 +1034,7 @@ private sub _procAllocArg _
 	)
 
 	dim as string ln
-	dim as integer dtype = any, parammode = any
-	dim as FBSYMBOL ptr subtype = any
+	dim as integer parammode = any
 
 	''
 	'' Load the parameter values into local stack vars, to support taking
@@ -1097,7 +1055,9 @@ private sub _procAllocArg _
 		parammode = FB_PARAMMODE_BYVAL
 	end if
 
-	hGetRealParamType( sym, parammode, dtype, subtype )
+	var dtype = symbGetType( sym )
+	var subtype = sym->subtype
+	symbGetRealParamDtype( parammode, dtype, subtype )
 
 	'' %myparam = alloca type
 	ln = *symbGetMangledName( sym ) + " = alloca "
@@ -1907,6 +1867,7 @@ end sub
 
 private sub _emitPushArg _
 	( _
+		byval param as FBSYMBOL ptr, _
 		byval vr as IRVREG ptr, _
 		byval udtlen as longint, _
 		byval level as integer _

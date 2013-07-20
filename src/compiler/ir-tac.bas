@@ -589,6 +589,7 @@ end sub
 '':::::
 private sub _emitPushArg _
 	( _
+		byval param as FBSYMBOL ptr, _
 		byval vr as IRVREG ptr, _
 		byval udtlen as longint, _
 		byval level as integer _

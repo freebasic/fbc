@@ -444,36 +444,13 @@ private function hEmitProcHeader _
 		if( symbGetParamMode( param ) = FB_PARAMMODE_VARARG ) then
 			ln += "..."
 		else
-			var pvar = iif( options and EMITPROC_ISPROTO, param, symbGetParamVar( param ) )
-			var dtype = symbGetType( pvar )
-			var subtype = symbGetSubType( pvar )
-
-			select case( param->param.mode )
-			case FB_PARAMMODE_BYVAL
-				select case( symbGetType( param ) )
-				'' byval string? it's actually an pointer to a zstring
-				case FB_DATATYPE_STRING
-					dtype = typeAddrOf( typeJoin( dtype, FB_DATATYPE_CHAR ) )
-
-				case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-					'' has a dtor, copy ctor or virtual methods? it's a copy..
-					if( symbCompIsTrivial( symbGetSubtype( param ) ) = FALSE ) then
-						dtype = typeAddrOf( dtype )
-					end if
-				end select
-
-			case FB_PARAMMODE_BYREF
-				dtype = typeAddrOf( dtype )
-
-			case FB_PARAMMODE_BYDESC
-				dtype = typeAddrOf( FB_DATATYPE_STRUCT )
-				subtype = symb.fbarray
-			end select
-
+			var dtype = symbGetType( param )
+			var subtype = param->subtype
+			symbGetRealParamDtype( param->param.mode, dtype, subtype )
 			ln += hEmitType( dtype, subtype )
 
 			if( (options and EMITPROC_ISPROTO) = 0 ) then
-				ln += " " + *symbGetMangledName( pvar )
+				ln += " " + *symbGetMangledName( symbGetParamVar( param ) )
 			end if
 		end if
 
@@ -3412,6 +3389,7 @@ end sub
 
 private sub _emitPushArg _
 	( _
+		byval param as FBSYMBOL ptr, _
 		byval vr as IRVREG ptr, _
 		byval udtlen as longint, _
 		byval level as integer _

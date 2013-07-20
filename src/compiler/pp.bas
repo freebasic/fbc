@@ -110,7 +110,7 @@ sub ppEnd( )
     		exit for
     	end if
 
-    	symbDelKeyword( kwdTb(i).sym )
+		symbFreeSymbol( kwdTb(i).sym )
     	kwdTb(i).sym = NULL
     next
 
@@ -212,7 +212,9 @@ sub ppParse( )
 							lexPPOnlyEmitToken( )
 						end if
 					end if
-					symbDelSymbol( sym )
+					'' Forget the symbol so it's no longer found by lookups,
+					'' but don't fully delete it, since it might already be used somewhere.
+					symbDelFromHash( sym )
 				end if
 			end if
 		end if

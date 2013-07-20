@@ -25,6 +25,8 @@ Version 0.91.0:
 - Various implicitly generated variables (such as FOR/WITH/SELECT CASE temp vars) won't appear in -g stabs output anymore
 - #597: Illegal ASM generated for +,-,*,/ floating point operations when the right hand-side operand was a byte or ubyte variable enclosed in a cast to double or single
 - #677: Casts changing only signedness on the rhs of a +,-,*,/ floating point operation could be ignored
+- Using #undef (or Option NoKeyWord) on symbols which are already in use somewhere won't cause internal compiler errors anymore: The compiler will now simply forget the symbol's identifier, so it cannot be used from input code anymore, instead of fully deleting the symbol and possibly corrupting the compiler's internal data structures.
+- #671: Arguments weren't always converted to the parameters' data type, causing gcc pointer mismatch warnings under -gen gcc
 
 
 Version 0.90.1:
