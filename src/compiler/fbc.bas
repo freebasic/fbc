@@ -2412,7 +2412,8 @@ private function hCompileStage2Module( byval module as FBCIOFILE ptr ) as intege
 		ln += "-m32 "
 
 		ln += "-S -nostdlib -nostdinc -Wall -Wno-unused-label " + _
-		      "-Wno-unused-function -Wno-unused-variable "
+		      "-Wno-unused-function -Wno-unused-variable " + _
+		      "-Wno-unused-but-set-variable "
 
 		'' Don't warn about non-standard main() signature
 		'' (we emit "ubyte **argv" instead of "char **argv")
