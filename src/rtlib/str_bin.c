@@ -2,8 +2,7 @@
 
 #include "fb.h"
 
-/*:::::*/
-static FBSTRING *hBIN ( unsigned int num, int len, int digits )
+static FBSTRING *hBIN( unsigned int num, ssize_t len, int digits )
 {
 	FBSTRING *dst;
 	char *buf;
@@ -65,27 +64,22 @@ static FBSTRING *hBIN ( unsigned int num, int len, int digits )
 	return dst;
 }
 
-/*:::::*/
 FBCALL FBSTRING *fb_BIN_b ( unsigned char num )
 {
 	return hBIN( num, sizeof( char ), 0 );
 }
 
-/*:::::*/
 FBCALL FBSTRING *fb_BIN_s ( unsigned short num )
 {
 	return hBIN( num, sizeof( short ), 0 );
 }
 
-/*:::::*/
 FBCALL FBSTRING *fb_BIN_i ( unsigned int num )
 {
 	return hBIN( num, sizeof( int ), 0 );
 }
 
-/*:::::*/
 FBCALL FBSTRING *fb_BINEx_i ( unsigned int num, int digits )
 {
 	return hBIN( num, sizeof( int ), digits );
 }
-

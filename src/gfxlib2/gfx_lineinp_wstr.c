@@ -2,9 +2,14 @@
 
 #include "fb_gfx.h"
 
-/*:::::*/
-int fb_GfxLineInputWstr( const FB_WCHAR *text, FB_WCHAR *dst, int max_chars,
-						 int addquestion, int addnewline )
+int fb_GfxLineInputWstr
+	(
+		const FB_WCHAR *text,
+		FB_WCHAR *dst,
+		ssize_t max_chars,
+		int addquestion,
+		int addnewline
+	)
 {
     FBSTRING *tmp_result;
 

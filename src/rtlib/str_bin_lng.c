@@ -2,7 +2,6 @@
 
 #include "fb.h"
 
-/*:::::*/
 FBCALL FBSTRING *fb_BINEx_l ( unsigned long long num, int digits )
 {
 	FBSTRING *dst;
@@ -64,9 +63,7 @@ FBCALL FBSTRING *fb_BINEx_l ( unsigned long long num, int digits )
 	return dst;
 }
 
-/*:::::*/
 FBCALL FBSTRING *fb_BIN_l ( unsigned long long num )
 {
 	return fb_BINEx_l( num, 0 );
 }
-

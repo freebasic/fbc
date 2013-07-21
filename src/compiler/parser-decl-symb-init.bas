@@ -114,14 +114,14 @@ private function hElmInit _
 
 end function
 
-'':::::
 private function hArrayInit _
 	( _
 		byref ctx as FB_INITCTX, _
 		byval no_fake as integer = FALSE _
 	) as integer
 
-    dim as integer dimensions = any, elements = any, elm_cnt = any
+    dim as integer dimensions = any, elm_cnt = any
+	dim as longint elements = any
     dim as integer isarray = any, dtype = any
     dim as FBVARDIM ptr old_dim = any
     dim as FBSYMBOL ptr subtype = any
@@ -316,7 +316,7 @@ private function hArrayInit _
 		if( ctor <> NULL ) then
 			astTypeIniAddCtorList( ctx.tree, ctx.sym, elements )
 		else
-			dim as integer pad_lgt = any
+			dim as longint pad_lgt = any
 			'' calc len.. handle fixed-len strings
 			select case as const dtype
 			case FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
@@ -360,8 +360,8 @@ private function hUDTInit _
 
 	static as integer rec_cnt
 
-	dim as integer elm_cnt = any
-	dim as integer lgt = any, baseofs = any, pad_lgt = any, dtype = any
+	dim as integer elm_cnt = any, dtype = any
+	dim as longint lgt = any, baseofs = any, pad_lgt = any
 	dim as FBSYMBOL ptr fld = any, first = any, subtype = any
 	dim as FBSYMBOL ptr oldsubtype = any
 	dim as integer olddtype = any
@@ -580,7 +580,7 @@ private function hUDTInit _
 
 	'' Padding at the end of the UDT -- this zeroes tail padding bytes,
 	'' and also any uninited fields and/or uninited parts of unions.
-	dim as integer sym_len = symbCalcLen( dtype, subtype )
+	dim as longint sym_len = symbCalcLen( dtype, subtype )
 	pad_lgt = sym_len - lgt
 	if( pad_lgt > 0 ) then
 		astTypeIniAddPad( ctx.tree, pad_lgt )

@@ -2,10 +2,9 @@
 
 #include "fb.h"
 
-/*:::::*/
 FBCALL void fb_WstrLset ( FB_WCHAR *dst, FB_WCHAR *src )
 {
-    int slen, dlen, len;
+	ssize_t slen, dlen, len;
 
 	if( (dst != NULL) && (src != NULL) )
 	{
@@ -23,13 +22,11 @@ FBCALL void fb_WstrLset ( FB_WCHAR *dst, FB_WCHAR *src )
 				fb_wstr_Fill( &dst[slen], 32, len );
 		}
 	}
-
 }
 
-/*:::::*/
 FBCALL void fb_WstrRset ( FB_WCHAR *dst, FB_WCHAR *src )
 {
-    int slen, dlen, len, padlen;
+	ssize_t slen, dlen, len, padlen;
 
 	if( (dst != NULL) && (src != NULL) )
 	{
@@ -50,4 +47,3 @@ FBCALL void fb_WstrRset ( FB_WCHAR *dst, FB_WCHAR *src )
 		}
 	}
 }
-

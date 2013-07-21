@@ -3,9 +3,10 @@
 #include "../fb.h"
 #include "fb_private_console.h"
 
-char *fb_ConsoleReadStr( char *buffer, int len )
+char *fb_ConsoleReadStr( char *buffer, ssize_t len )
 {
-	int k, x, y, cols, pos = 0;
+	int k, x, y, cols;
+	ssize_t pos = 0;
 	char ch[2] = { 0, '\0' };
 
 	if (!__fb_con.inited)

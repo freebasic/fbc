@@ -31,7 +31,7 @@ sub cParameters _
 		byval isproto as integer _
 	)
 
-	dim as integer length = any
+	dim as longint length = any
 
 	length = 0
 
@@ -39,7 +39,7 @@ sub cParameters _
 	'' to check for dups)
 	if( symbIsMethod( proc ) ) then
 		symbAddProcInstancePtr( parent, proc )
-		length += typeGetSize( typeAddrOf( FB_DATATYPE_VOID ) )
+		length += env.pointersize
 	end if
 
 	'' '('?
@@ -209,7 +209,7 @@ private function hParamDecl _
 	static as integer reclevel = 0
 	dim as zstring ptr id = any
 	dim as ASTNODE ptr optexpr = any
-	dim as integer dtype = any, mode = any, lgt = any
+	dim as integer dtype = any, mode = any
 	dim as integer attrib = any
 	dim as integer readid = any, dotpos = any, doskip = any, dontinit = any, use_default = any
 	dim as FBSYMBOL ptr subtype = any, param = any
@@ -374,7 +374,7 @@ private function hParamDecl _
 			options and= not FB_SYMBTYPEOPT_CHECKSTRPTR
 		end if
 
-		if( cSymbolType( dtype, subtype, lgt, options ) = FALSE ) then
+		if( cSymbolType( dtype, subtype, 0, options ) = FALSE ) then
 			hParamError( proc, id )
 			'' error recovery: fake type
 			dtype = FB_DATATYPE_INTEGER
@@ -474,7 +474,7 @@ private function hParamDecl _
 	end if
 
 	if( isproto = FALSE ) then
-		if( symbGetLen( param ) > (FB_INTEGERSIZE * 4) ) then
+		if( symbGetLen( param ) > (env.pointersize * 4) ) then
 			if( fbPdCheckIsSet( FB_PDCHECK_PARAMSIZE ) ) then
 				hParamWarning( proc, id, FB_WARNINGMSG_PARAMSIZETOOBIG, 0 )
 			end if

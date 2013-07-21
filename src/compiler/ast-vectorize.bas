@@ -10,7 +10,6 @@
 dim shared as integer			vectorWidth
 dim shared as integer			maxVectorWidth			'' 2 if doubles are found anywhere, otherwise 4
 
-''::::
 private function hNodesMatch _
 	( _
 		byval vn as ASTNODE ptr, _
@@ -27,30 +26,25 @@ private function hNodesMatch _
 		end if
 	end if
 
-	if( vn->class = AST_NODECLASS_CONST ) then
+	if( astIsCONST( vn ) ) then
 		if( astGetDataType( vn ) <> astGetDataType( n ) ) then
 			return FALSE
 		end if
 
-		select case typeGetClass( astGetDataType( vn ) )
-			case FB_DATACLASS_INTEGER
-				if( vn->con.val.int <> n->con.val.int ) then
-					return FALSE
-				end if
-			case FB_DATACLASS_FPOINT
-				if( vn->con.val.float <> n->con.val.float ) then
-					return FALSE
-				end if
-			case else
-		end select
+		if( typeGetClass( vn->dtype ) = FB_DATACLASS_FPOINT ) then
+			if( astConstGetFloat( vn ) <> astConstGetFloat( n ) ) then
+				return FALSE
+			end if
+		else
+			if( astConstGetInt( vn ) <> astConstGetInt( n ) ) then
+				return FALSE
+			end if
+		end if
 	end if
 
 	return TRUE
-
 end function
 
-
-''::::
 private function hAllowedInVectorize _
 	( _
 		byval n as ASTNODE ptr, _

@@ -2,16 +2,10 @@
 
 #include "fb.h"
 
-
-/*:::::*/
-FBCALL FBSTRING *fb_RTrimEx 
-	( 
-		FBSTRING *src, 
-		FBSTRING *pattern 
-	)
+FBCALL FBSTRING *fb_RTrimEx( FBSTRING *src, FBSTRING *pattern )
 {
 	FBSTRING *dst;
-	int len;
+	ssize_t len;
 
     if( src == NULL ) 
     {
@@ -23,7 +17,7 @@ FBCALL FBSTRING *fb_RTrimEx
 
 	if( src->data != NULL )
 	{
-        size_t len_pattern = ((pattern != NULL) && (pattern->data != NULL)? FB_STRSIZE( pattern ) : 0);
+		ssize_t len_pattern = ((pattern != NULL) && (pattern->data != NULL)? FB_STRSIZE( pattern ) : 0);
 		len = FB_STRSIZE( src );		
 		if( len >= len_pattern )
 		{
@@ -32,12 +26,12 @@ FBCALL FBSTRING *fb_RTrimEx
                 char *src_ptr = fb_hStrSkipCharRev( src->data,
                                         	  		len,
                                         	  		FB_CHAR_TO_INT(pattern->data[0]) );
-                len = (int)(src_ptr - src->data) + 1;
+                len = (ssize_t)(src_ptr - src->data) + 1;
             } 
             else if( len_pattern != 0 ) 
             {
                 char *src_ptr = src->data;
-                size_t test_index = len - len_pattern;
+                ssize_t test_index = len - len_pattern;
                 while (len >= len_pattern ) 
                 {
                     if( FB_MEMCMP( src_ptr + test_index,
@@ -76,4 +70,3 @@ FBCALL FBSTRING *fb_RTrimEx
 
 	return dst;
 }
-

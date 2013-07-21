@@ -183,7 +183,7 @@ function astNewIIF _
 		''    iif( 0, mystr, myfixstr )
 		'' produce? myfixstr is a fix-len string, it cannot just be
 		'' treated as a var-len string, and there is no temp var...
-		if( astConstIsZero( condexpr ) ) then
+		if( astConstEqZero( condexpr ) ) then
 			astDelTree( truexpr )
 			function = falsexpr
 			astDtorListUnscope( falsecookie )

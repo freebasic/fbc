@@ -66,7 +66,7 @@ int fb_DevFileReadLineDumb
             }
         }
 
-        int tmp_buf_len;
+        ssize_t tmp_buf_len;
         
         if( !found )
         {

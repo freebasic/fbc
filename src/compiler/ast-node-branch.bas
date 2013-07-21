@@ -89,16 +89,16 @@ private function astNewJMPTB _
 	( _
 		byval l as ASTNODE ptr, _
 		byval tbsym as FBSYMBOL ptr, _
-		byval values1 as uinteger ptr, _
+		byval values1 as ulongint ptr, _
 		byval labels1 as FBSYMBOL ptr ptr, _
 		byval labelcount as integer, _
 		byval deflabel as FBSYMBOL ptr, _
-		byval minval as uinteger, _
-		byval maxval as uinteger _
+		byval minval as ulongint, _
+		byval maxval as ulongint _
 	) as ASTNODE ptr
 
 	dim as ASTNODE ptr n = any, tree = any
-	dim as uinteger ptr values = any
+	dim as ulongint ptr values = any
 	dim as FBSYMBOL ptr ptr labels = any
 
 	tree = NULL
@@ -108,8 +108,8 @@ private function astNewJMPTB _
 	'' case, but it must still be handled without crashing the compiler...)
 	if( labelcount > 0 ) then
 		'' Duplicate the values/labels arrays
-		values = callocate( sizeof( uinteger ) * labelcount )
-		labels = callocate( sizeof( FBSYMBOL ptr ) * labelcount )
+		values = callocate( sizeof( *values ) * labelcount )
+		labels = callocate( sizeof( *labels ) * labelcount )
 		for i as integer = 0 to labelcount - 1
 			values[i] = values1[i]
 			labels[i] = labels1[i]
@@ -154,12 +154,12 @@ end function
 function astBuildJMPTB _
 	( _
 		byval tempvar as FBSYMBOL ptr, _
-		byval values1 as uinteger ptr, _
+		byval values1 as ulongint ptr, _
 		byval labels1 as FBSYMBOL ptr ptr, _
 		byval labelcount as integer, _
 		byval deflabel as FBSYMBOL ptr, _
-		byval minval as uinteger, _
-		byval maxval as uinteger _
+		byval minval as ulongint, _
+		byval maxval as ulongint _
 	) as ASTNODE ptr
 
 	dim as ASTNODE ptr tree = any, l = any
@@ -220,10 +220,10 @@ function astBuildJMPTB _
 		'' goto table[expr - minval]
 		tree = astNewLINK( tree, _
 			astNewBRANCH( AST_OP_JUMPPTR, NULL, _
-				astNewIDX( astNewVAR( tbsym, -minval * FB_POINTERSIZE ), _
+				astNewIDX( astNewVAR( tbsym, -minval * env.pointersize ), _
 					astNewBOP( AST_OP_MUL, _
 						astNewVAR( tempvar ), _
-						astNewCONSTi( FB_POINTERSIZE, FB_DATATYPE_UINT ) ), _
+						astNewCONSTi( env.pointersize, FB_DATATYPE_UINT ) ), _
 					typeAddrOf( FB_DATATYPE_VOID ), NULL ) ) )
 	else
 		tbsym = NULL

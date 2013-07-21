@@ -148,12 +148,11 @@ function astBuildVarDtorCall _
 
 end function
 
-'':::::
 function astBuildVarField _
 	( _
 		byval sym as FBSYMBOL ptr, _
 		byval fld as FBSYMBOL ptr, _
-		byval ofs as integer _
+		byval ofs as longint _
 	) as ASTNODE ptr
 
 	dim as ASTNODE ptr expr = any
@@ -231,12 +230,11 @@ function astBuildForEnd _
 		byval tree as ASTNODE ptr, _
 		byval cnt as FBSYMBOL ptr, _
 		byval label as FBSYMBOL ptr, _
-		byval stepvalue as integer, _
 		byval endvalue as ASTNODE ptr _
 	) as ASTNODE ptr
 
 	'' counter += stepvalue
-	tree = astNewLINK( tree, astBuildVarInc( cnt, stepvalue ) )
+	tree = astNewLINK( tree, astBuildVarInc( cnt, 1 ) )
 
 	'' if( counter = endvalue ) then
 	''     goto label
@@ -591,8 +589,9 @@ function astBuildInstPtr _
 	) as ASTNODE ptr
 
 	dim as ASTNODE ptr expr = any
-	dim as integer dtype = any, ofs = any
+	dim as integer dtype = any
 	dim as FBSYMBOL ptr subtype = any
+	dim as longint ofs = any
 
 	dtype = symbGetFullType( sym )
 	subtype = symbGetSubtype( sym )
@@ -628,15 +627,13 @@ function astBuildInstPtr _
 	end if
 
 	function = expr
-
 end function
 
-'':::::
 function astBuildInstPtrAtOffset _
 	( _
 		byval sym as FBSYMBOL ptr, _
 		byval fld as FBSYMBOL ptr, _
-		byval ofs as integer _
+		byval ofs as longint _
 	) as ASTNODE ptr
 
 	dim as ASTNODE ptr expr = any
@@ -666,7 +663,6 @@ function astBuildInstPtrAtOffset _
 	end if
 
 	function = expr
-
 end function
 
 ''
@@ -879,7 +875,7 @@ function astBuildArrayDescIniTree _
 		end if
 
 		'' Clear all dimTB entries
-		astTypeIniAddPad( tree, dims * len( FB_ARRAYDESCDIM ) )
+		astTypeIniAddPad( tree, dims * symbGetLen( symb.fbarraydim ) )
 	end if
 
     astTypeIniScopeEnd( tree, NULL )
@@ -905,7 +901,8 @@ private function hConstBound _
 
 	dim as FBSYMBOL ptr array = any
 	dim as FBVARDIM ptr d = any
-	dim as integer dimension = any, bound = any
+	dim as integer dimension = any
+	dim as longint bound = any
 
 	function = NULL
 
@@ -934,7 +931,7 @@ private function hConstBound _
 
 	'' dimension is 1-based
 	assert( astGetDataType( dimexpr ) = FB_DATATYPE_INTEGER )
-	dimension = astGetValInt( dimexpr )
+	dimension = astConstGetInt( dimexpr )
 
 	'' Find the referenced dimension
 	if( dimension >= 1 ) then

@@ -194,6 +194,34 @@ dim shared as FBTARGET targetinfo(0 to FB_COMPTARGETS-1) = _
 	) _
 }
 
+type FBCPUTYPEINFO
+	gccarch		as zstring ptr  '' gcc -march argument (used for -gen gcc)
+	fbcarch		as zstring ptr  '' fbc -arch argument
+	is_x86		as integer
+	bits		as integer
+end type
+
+dim shared as FBCPUTYPEINFO cputypeinfo(0 to FB_CPUTYPE__COUNT-1) = _
+{ _
+	( @"i386"       , @"386"          , TRUE , 32 ), _ '' FB_CPUTYPE_386
+	( @"i486"       , @"486"          , TRUE , 32 ), _ '' FB_CPUTYPE_486
+	( @"i586"       , @"586"          , TRUE , 32 ), _ '' FB_CPUTYPE_586
+	( @"i686"       , @"686"          , TRUE , 32 ), _ '' FB_CPUTYPE_686
+	( @"athlon"     , @"athlon"       , TRUE , 32 ), _ '' FB_CPUTYPE_ATHLON
+	( @"athlon-xp"  , @"athlon-xp"    , TRUE , 32 ), _ '' FB_CPUTYPE_ATHLONXP
+	( @"athlon-fx"  , @"athlon-fx"    , TRUE , 32 ), _ '' FB_CPUTYPE_ATHLONFX
+	( @"k8-sse3"    , @"k8-sse3"      , TRUE , 32 ), _ '' FB_CPUTYPE_ATHLONSSE3
+	( @"pentium-mmx", @"pentium-mmx"  , TRUE , 32 ), _ '' FB_CPUTYPE_PENTIUMMMX
+	( @"pentium2"   , @"pentium2"     , TRUE , 32 ), _ '' FB_CPUTYPE_PENTIUM2
+	( @"pentium3"   , @"pentium3"     , TRUE , 32 ), _ '' FB_CPUTYPE_PENTIUM3
+	( @"pentium4"   , @"pentium4"     , TRUE , 32 ), _ '' FB_CPUTYPE_PENTIUM4
+	( @"prescott"   , @"pentium4-sse3", TRUE , 32 ), _ '' FB_CPUTYPE_PENTIUMSSE3
+	( @"x86-64"     , @"x86-64"       , FALSE, 64 ), _ '' FB_CPUTYPE_X86_64
+	( NULL          , @"32"           , FALSE, 32 ), _ '' FB_CPUTYPE_32
+	( NULL          , @"64"           , FALSE, 64 ), _ '' FB_CPUTYPE_64
+	( NULL          , NULL            , FALSE, 0  )  _ '' FB_CPUTYPE_NATIVE
+}
+
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' interface
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -285,9 +313,7 @@ sub fbInit( byval ismain as integer, byval restarts as integer )
 	'' data type remapping
 	if( env.clopt.lang <> FB_LANG_QB ) then
 		env.lang.typeremap.integer = FB_DATATYPE_INTEGER
-		env.lang.sizeremap.integer = FB_INTEGERSIZE
 		env.lang.typeremap.long = FB_DATATYPE_LONG
-		env.lang.sizeremap.long = FB_LONGSIZE
 
 		env.lang.litremap.short = FB_DATATYPE_INTEGER
 		env.lang.litremap.ushort = FB_DATATYPE_UINT
@@ -296,9 +322,7 @@ sub fbInit( byval ismain as integer, byval restarts as integer )
 		env.lang.litremap.double = FB_DATATYPE_DOUBLE
 	else
 		env.lang.typeremap.integer = FB_DATATYPE_SHORT
-		env.lang.sizeremap.integer = 2
 		env.lang.typeremap.long = FB_DATATYPE_INTEGER
-		env.lang.sizeremap.long = FB_INTEGERSIZE
 
 		env.lang.litremap.short = FB_DATATYPE_SHORT
 		env.lang.litremap.ushort = FB_DATATYPE_USHORT
@@ -314,8 +338,6 @@ sub fbInit( byval ismain as integer, byval restarts as integer )
 	env.opt.base = 0
 	env.opt.gosub = (env.clopt.lang = FB_LANG_QB)
 
-	env.wchar_doconv = (sizeof( wstring ) = typeGetSize( env.target.wchar ))
-
 	env.fbctinf_started = FALSE
 
 	parserSetCtx( )
@@ -323,6 +345,10 @@ sub fbInit( byval ismain as integer, byval restarts as integer )
 	errInit( )
 	astInit( )
 	irInit( )
+
+	'' After symbInit(), we can use typeGetSize()
+	env.wchar_doconv = (sizeof( wstring ) = typeGetSize( env.target.wchar ))
+	env.pointersize = typeGetSize( typeAddrOf( FB_DATATYPE_VOID ) )
 
 	hashInit( @env.incfilehash, FB_INITINCFILES )
 	hashInit( @env.inconcehash, FB_INITINCFILES )
@@ -352,11 +378,11 @@ sub fbEnd()
 	strsetEnd(@env.libpaths)
 end sub
 
-private sub updateLangOptions( )
+private sub hUpdateLangOptions( )
 	env.lang.opt = langTb(env.clopt.lang).options
 end sub
 
-private sub updateTargetOptions( )
+private sub hUpdateTargetOptions( )
 	env.target = targetinfo(env.clopt.target)
 end sub
 
@@ -398,8 +424,8 @@ sub fbGlobalInit()
 	env.clopt.msbitfields   = FALSE
 	env.clopt.stacksize     = FB_DEFSTACKSIZE
 
-	updateLangOptions( )
-	updateTargetOptions( )
+	hUpdateLangOptions( )
+	hUpdateTargetOptions( )
 end sub
 
 sub fbAddIncludePath(byref path as string)
@@ -425,7 +451,7 @@ sub fbSetOption( byval opt as integer, byval value as integer )
 		env.clopt.backend = value
 	case FB_COMPOPT_TARGET
 		env.clopt.target = value
-		updateTargetOptions( )
+		hUpdateTargetOptions( )
 	case FB_COMPOPT_CPUTYPE
 		env.clopt.cputype = value
 	case FB_COMPOPT_FPUTYPE
@@ -441,7 +467,7 @@ sub fbSetOption( byval opt as integer, byval value as integer )
 
 	case FB_COMPOPT_LANG
 		env.clopt.lang = value
-		updateLangOptions( )
+		hUpdateLangOptions( )
 	case FB_COMPOPT_FORCELANG
 		env.clopt.forcelang = value
 
@@ -609,6 +635,61 @@ end function
 
 function fbGetTargetId( ) as zstring ptr
 	function = env.target.id
+end function
+
+function fbGetGccArch( ) as zstring ptr
+	function = cputypeinfo(env.clopt.cputype).gccarch
+end function
+
+function fbGetFbcArch( ) as zstring ptr
+	function = cputypeinfo(env.clopt.cputype).fbcarch
+end function
+
+function fbCpuTypeIs64bit( ) as integer
+	function = (cputypeinfo(env.clopt.cputype).bits = 64)
+end function
+
+function fbCpuTypeIsX86( ) as integer
+	function = cputypeinfo(env.clopt.cputype).is_x86
+end function
+
+function fbIdentifyFbcArch( byref fbcarch as string ) as integer
+	select case( fbcarch )
+	case "native"
+		'' On x86 we can check fb_CpuDetect(), otherwise just use the
+		'' default, which is always safe for the host.
+		function = FB_DEFAULT_CPUTYPE
+
+		#ifndef __FB_64BIT__
+			select case( fb_CpuDetect( ) shr 28 )
+			case 3 : function = FB_CPUTYPE_386
+			case 4 : function = FB_CPUTYPE_486
+			case 5 : function = FB_CPUTYPE_586
+			case 6 : function = FB_CPUTYPE_686
+			end select
+		#endif
+
+		exit function
+
+	case "32"
+		return FB_DEFAULT_CPUTYPE32
+	case "64"
+		return FB_DEFAULT_CPUTYPE64
+	end select
+
+	for i as integer = 0 to FB_CPUTYPE__COUNT-1
+		if( *cputypeinfo(i).fbcarch = fbcarch ) then
+			return i
+		end if
+	next
+
+	'' Extra names to be recognized by -arch to make it nicer to use
+	select case( fbcarch )
+	case "x86_64", "amd64"
+		function = FB_CPUTYPE_X86_64
+	case else
+		function = -1
+	end select
 end function
 
 '':::::

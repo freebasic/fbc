@@ -1307,10 +1307,10 @@ end function
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 function emitSTACKALIGN( byval bytes as integer ) as EMIT_NODE ptr
-	static as IRVREG vr
+	dim as IRVREG vr
 
 	vr.typ = IR_VREGTYPE_IMM
-	vr.value.int = bytes
+	vr.value.i = bytes
 
 	function = hNewSTK( EMIT_OP_STACKALIGN, @vr )
 end function
@@ -1388,23 +1388,23 @@ end sub
 function emitJMPTB _
 	( _
 		byval tbsym as FBSYMBOL ptr, _
-		byval values1 as uinteger ptr, _
+		byval values1 as ulongint ptr, _
 		byval labels1 as FBSYMBOL ptr ptr, _
 		byval labelcount as integer, _
 		byval deflabel as FBSYMBOL ptr, _
-		byval minval as uinteger, _
-		byval maxval as uinteger _
+		byval minval as ulongint, _
+		byval maxval as ulongint _
 	) as EMIT_NODE ptr
 
 	dim as EMIT_NODE ptr n = any
-	dim as uinteger ptr values = any
+	dim as ulongint ptr values = any
 	dim as FBSYMBOL ptr ptr labels = any
 
 	assert( labelcount > 0 )
 
 	'' Duplicate the values/labels arrays
-	values = callocate( sizeof( uinteger ) * labelcount )
-	labels = callocate( sizeof( FBSYMBOL ptr ) * labelcount )
+	values = callocate( sizeof( *values ) * labelcount )
+	labels = callocate( sizeof( *labels ) * labelcount )
 	for i as integer = 0 to labelcount - 1
 		values[i] = values1[i]
 		labels[i] = labels1[i]
@@ -1476,18 +1476,13 @@ function emitJUMPPTR _
 
 end function
 
-'':::::
-function emitRET _
-	( _
-		byval bytestopop as integer _
-	) as EMIT_NODE ptr static
-    static as IRVREG vr
+function emitRET( byval bytestopop as integer ) as EMIT_NODE ptr
+	dim as IRVREG vr
 
 	vr.typ = IR_VREGTYPE_IMM
-	vr.value.int = bytestopop
+	vr.value.i = bytestopop
 
 	function = hNewUOP( EMIT_OP_RET, @vr )
-
 end function
 
 '':::::

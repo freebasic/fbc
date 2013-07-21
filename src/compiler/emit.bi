@@ -175,13 +175,13 @@ type EMIT_JTBNODE
 	tbsym				as FBSYMBOL ptr
 
 	'' Dynamically allocated buffer holding the jmptb's value/label pairs
-	values				as uinteger ptr
+	values				as ulongint ptr
 	labels				as FBSYMBOL ptr ptr
 	labelcount			as integer
 
 	deflabel			as FBSYMBOL ptr
-	minval				as uinteger
-	maxval				as uinteger
+	minval				as ulongint
+	maxval				as ulongint
 end type
 
 type EMIT_MEMNODE
@@ -243,12 +243,12 @@ type EMIT_LITCB as sub( byval text as zstring ptr )
 type EMIT_JTBCB as sub _
 	( _
 		byval tbsym as FBSYMBOL ptr, _
-		byval values1 as uinteger ptr, _
+		byval values1 as ulongint ptr, _
 		byval labels1 as FBSYMBOL ptr ptr, _
 		byval labelcount as integer, _
 		byval deflabel as FBSYMBOL ptr, _
-		byval minval as uinteger, _
-		byval maxval as uinteger _
+		byval minval as ulongint, _
+		byval maxval as ulongint _
 	)
 
 type EMIT_MEMCB as sub( byval dvreg as IRVREG ptr, _
@@ -337,19 +337,17 @@ type EMIT_VTBL
 		byval exitlabel as FBSYMBOL ptr _
 	)
 
-	procAllocArg as function _
+	procAllocArg as sub _
 	( _
 		byval proc as FBSYMBOL ptr, _
-		byval sym as FBSYMBOL ptr, _
-		byval lgt as integer _
-	) as integer
+		byval sym as FBSYMBOL ptr _
+	)
 
-	procAllocLocal as function _
+	procAllocLocal as sub _
 	( _
 		byval proc as FBSYMBOL ptr, _
-		byval sym as FBSYMBOL ptr, _
-		byval lgt as integer _
-	) as integer
+		byval sym as FBSYMBOL ptr _
+	)
 
 	procAllocStaticVars as sub(byval head_sym as FBSYMBOL ptr)
 
@@ -424,12 +422,12 @@ declare sub emitASM( byval text as zstring ptr )
 declare function emitJMPTB _
 	( _
 		byval tbsym as FBSYMBOL ptr, _
-		byval values1 as uinteger ptr, _
+		byval values1 as ulongint ptr, _
 		byval labels1 as FBSYMBOL ptr ptr, _
 		byval labelcount as integer, _
 		byval deflabel as FBSYMBOL ptr, _
-		byval minval as uinteger, _
-		byval maxval as uinteger _
+		byval minval as ulongint, _
+		byval maxval as ulongint _
 	) as EMIT_NODE ptr
 
 declare function emitCALL _
@@ -459,10 +457,7 @@ declare function emitLABEL _
 		byval label as FBSYMBOL ptr _
 	) as EMIT_NODE ptr
 
-declare function emitRET _
-	( _
-		byval bytestopop as integer _
-	) as EMIT_NODE ptr
+declare function emitRET( byval bytestopop as integer ) as EMIT_NODE ptr
 
 declare function emitPUBLIC _
 	( _
@@ -867,9 +862,9 @@ declare sub emitFlush _
 
 #define emitProcFooter( proc, bytestopop, initlabel, exitlabel ) emit.vtbl.procFooter( proc, bytestopop, initlabel, exitlabel )
 
-#define emitProcAllocArg( proc, s, lgt ) emit.vtbl.procAllocArg( proc, s, lgt )
+#define emitProcAllocArg( proc, s ) emit.vtbl.procAllocArg( proc, s )
 
-#define emitProcAllocLocal( proc, s, lgt ) emit.vtbl.procAllocLocal( proc, s, lgt )
+#define emitProcAllocLocal( proc, s ) emit.vtbl.procAllocLocal( proc, s )
 
 #define emitProcGetFrameRegName( ) emit.vtbl.procGetFrameRegName( )
 

@@ -2,11 +2,10 @@
 
 #include "fb.h"
 
-/*:::::*/
 FBCALL FB_WCHAR *fb_FloatToWstr ( float num )
 {
 	FB_WCHAR *dst, *d;
-    int len;
+	ssize_t len;
 
 	/* alloc temp string */
     dst = fb_wstr_AllocTemp( 7+8 );
@@ -28,11 +27,10 @@ FBCALL FB_WCHAR *fb_FloatToWstr ( float num )
 	return dst;
 }
 
-/*:::::*/
 FBCALL FB_WCHAR *fb_DoubleToWstr ( double num )
 {
 	FB_WCHAR *dst, *d;
-	int len;
+	ssize_t len;
 
 	/* alloc temp string */
     dst = fb_wstr_AllocTemp( 16+8 );
@@ -53,6 +51,3 @@ FBCALL FB_WCHAR *fb_DoubleToWstr ( double num )
 
 	return dst;
 }
-
-
-

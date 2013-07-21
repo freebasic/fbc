@@ -118,13 +118,17 @@ sub rtlAddIntrinsicProcs _
         callconv = procdef->callconv
 
         '' Use the default FBCALL?
-        if( callconv = FB_USE_FUNCMODE_FBCALL ) then
+        if( callconv = FB_FUNCMODE_FBCALL ) then
             callconv = env.target.fbcall
         end if
 
 		dim as integer doadd = TRUE
 		if( procdef->options and FB_RTL_OPT_MT ) then
 			doadd = fbLangOptIsSet( FB_LANG_OPT_MT )
+		end if
+
+		if( procdef->options and FB_RTL_OPT_X86ONLY ) then
+			doadd and= fbCpuTypeIsX86( )
 		end if
 
 		if( doadd ) then
@@ -410,7 +414,7 @@ end function
 '':::::
 '' note: this function must be called *before* astNewARG(e) because the
 ''       expression 'e' can be changed inside the former (address-of string's etc)
-function rtlCalcExprLen( byval expr as ASTNODE ptr ) as integer
+function rtlCalcExprLen( byval expr as ASTNODE ptr ) as longint
 	dim as FBSYMBOL ptr s = any
 	dim as integer dtype = any
 
@@ -431,7 +435,7 @@ function rtlCalcStrLen _
 	( _
 		byval expr as ASTNODE ptr, _
 		byval dtype as integer _
-	) as integer
+	) as longint
 
 	dim as FBSYMBOL ptr s
 

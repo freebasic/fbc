@@ -4,9 +4,10 @@
    src     - source string for arguments, may contain embedded null chars
    length  - length of src
    returns -1 on error, or number of arguments */
-int fb_hParseArgs( char *dst, const char *src, int length )
+int fb_hParseArgs( char *dst, const char *src, ssize_t length )
 {
-	int in_quote = 0, bs_count = 0, argc = 0, i = 0;
+	int in_quote = 0, argc = 0;
+	ssize_t bs_count = 0, i = 0;
 	const char *s = src;
 	char *p = dst;
 

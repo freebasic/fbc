@@ -18,7 +18,7 @@ function astTypeIniBegin _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
 		byval is_local as integer, _
-		byval ofs as integer _
+		byval ofs as longint _
 	) as ASTNODE ptr
 
     dim as ASTNODE ptr n = any
@@ -58,7 +58,7 @@ sub astTypeIniEnd _
 	)
 
     dim as ASTNODE ptr n = any, p = any, l = any, r = any
-    dim as integer ofs = any
+	dim as longint ofs = any
 	dim as FBSYMBOL ptr sym = any
 
 	'' can't leave r pointing to the any node as the
@@ -142,11 +142,10 @@ private function hAddNode _
 
 end function
 
-'':::::
 function astTypeIniAddPad _
 	( _
 		byval tree as ASTNODE ptr, _
-		byval bytes as integer _
+		byval bytes as longint _
 	) as ASTNODE ptr
 
 	dim as ASTNODE ptr n = any
@@ -213,12 +212,11 @@ function astTypeIniAddCtorCall _
 
 end function
 
-'':::::
 function astTypeIniAddCtorList _
 	( _
 		byval tree as ASTNODE ptr, _
 		byval sym as FBSYMBOL ptr, _
-		byval elements as integer _
+		byval elements as longint _
 	) as ASTNODE ptr
 
 	dim as ASTNODE ptr n = any
@@ -235,7 +233,6 @@ function astTypeIniAddCtorList _
 	tree->typeini.ofs += symbGetLen( sym ) * elements
 
 	function = n
-
 end function
 
 '':::::
@@ -356,7 +353,7 @@ private function hCallCtor _
 	) as ASTNODE ptr
 
 	dim as FBSYMBOL ptr fld = any
-	dim as integer ofs = n->typeini.ofs
+	dim as longint ofs = n->typeini.ofs
 
 	fld = n->sym
 	if( fld <> NULL ) then
@@ -391,7 +388,8 @@ private function hCallCtorList _
 
 	dim as FBSYMBOL ptr subtype = any, fld = any
 	dim as ASTNODE ptr fldexpr = any
-	dim as integer dtype = any, elements = any
+	dim as integer dtype = any
+	dim as longint elements = any
 
 	fld = n->sym
 	if( fld <> NULL ) then
@@ -426,7 +424,7 @@ private function hCallCtorList _
 		flush_tree = astNewLINK( flush_tree, astBuildVarInc( iter, 1 ) )
 
 		'' next
-		flush_tree = astBuildForEnd( flush_tree, cnt, label, 1, astNewCONSTi( elements ) )
+		flush_tree = astBuildForEnd( flush_tree, cnt, label, astNewCONSTi( elements ) )
 	else
 		'' ctor( this )
 		flush_tree = astNewLINK( flush_tree, astBuildCtorCall( subtype, fldexpr ) )
@@ -591,11 +589,9 @@ private function hFlushExprStatic _
 
 	'' not a literal string?
 	if( litsym = NULL ) then
-
     	'' offset?
 		if( astIsOFFSET( expr ) ) then
 			irEmitVARINIOFS( astGetSymbol( expr ), expr->ofs.ofs )
-
 		'' anything else
 		else
 			'' different types?
@@ -618,23 +614,12 @@ private function hFlushExprStatic _
 				end if
 			end if
 
-			select case as const( sdtype )
-			case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-				irEmitVARINI64( sdtype, astGetValLong( expr ) )
-
-			case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-				irEmitVARINIf( sdtype, astGetValFloat( expr ) )
-
-			case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
-				if( FB_LONGSIZE = len( integer ) ) then
-					irEmitVARINIi( sdtype, astGetValInt( expr ) )
-				else
-					irEmitVARINI64( sdtype, astGetValLong( expr ) )
-				end if
-
-			case else
-				irEmitVARINIi( sdtype, astGetValInt( expr ) )
-			end select
+			assert( astIsCONST( expr ) )
+			if( typeGetClass( sdtype ) = FB_DATACLASS_FPOINT ) then
+				irEmitVARINIf( sdtype, astConstGetFloat( expr ) )
+			else
+				irEmitVARINIi( sdtype, astConstGetInt( expr ) )
+			end if
 		end if
 
 	'' literal string..
@@ -804,21 +789,18 @@ private function hExprIsConst _
 
 		'' offset?
 		if( astIsOFFSET( expr ) ) then
-
 			'' different types?
 			if( (typeGetClass( sdtype ) <> FB_DATACLASS_INTEGER) or _
-				(typeGetSize( sdtype ) <> FB_POINTERSIZE) ) then
+				(typeGetSize( sdtype ) <> env.pointersize) ) then
 				errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE )
 				exit function
 			end if
-
 		else
 			'' not a constant?
 			if( astIsCONST( expr ) = FALSE ) then
 				errReport( FB_ERRMSG_EXPECTEDCONST, TRUE )
 				exit function
 			end if
-
 		end if
 
 	'' literal string..

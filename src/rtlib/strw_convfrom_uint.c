@@ -2,11 +2,10 @@
 
 #include "fb.h"
 
-/*:::::*/
-FBCALL unsigned int fb_WstrToUInt( const FB_WCHAR *src, int len )
+FBCALL unsigned int fb_WstrToUInt( const FB_WCHAR *src, ssize_t len )
 {
     const FB_WCHAR *p, *r;
-    int radix;
+	int radix;
 
 	/* skip white spc */
 	p = fb_wstr_SkipChar( src, len, 32 );
@@ -47,11 +46,10 @@ FBCALL unsigned int fb_WstrToUInt( const FB_WCHAR *src, int len )
 	return wcstoul( p, NULL, radix );
 }
 
-/*:::::*/
 FBCALL unsigned int fb_WstrValUInt ( const FB_WCHAR *str )
 {
     unsigned int val;
-    int len;
+	ssize_t len;
 
 	if( str == NULL )
 	    return 0;

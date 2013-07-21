@@ -15,21 +15,21 @@ function astNewMEM _
 		byval op as integer, _
 		byval l as ASTNODE ptr, _
 		byval r as ASTNODE ptr, _
-		byval bytes as integer _
+		byval bytes as longint _
 	) as ASTNODE ptr
 
     dim as ASTNODE ptr n = any
 
     var blkmaxlen = irGetOptionValue( IR_OPTIONVALUE_MAXMEMBLOCKLEN )
 
-	dim as integer lgt = bytes
-    if( op = AST_OP_MEMCLEAR ) then
-    	if( astIsCONST( r ) ) then
-    		lgt = r->con.val.int
-    	else
-    		lgt = blkmaxlen + 1
-    	end if
-    end if
+	dim as longint lgt = bytes
+	if( op = AST_OP_MEMCLEAR ) then
+		if( astIsCONST( r ) ) then
+			lgt = astConstGetInt( r )
+		else
+			lgt = blkmaxlen + 1
+		end if
+	end if
 
 	'' when clearing/moving more than IR_MEMBLOCK_MAXLEN bytes, take
 	'' the adress-of and let emit() do the rest
@@ -50,7 +50,6 @@ function astNewMEM _
 	n->mem.bytes = bytes
 
 	function = n
-
 end function
 
 private function hCallCtorList _
@@ -83,7 +82,7 @@ private function hCallCtorList _
 	tree = astNewLINK( tree, astBuildVarInc( iter, 1 ) )
 
 	'' next
-	tree = astBuildForEnd( tree, cnt, label, 1, elementsexpr )
+	tree = astBuildForEnd( tree, cnt, label, elementsexpr )
 
 	'' Wrap into LOOP node so astCloneTree() can clone the label and update
 	'' the loop code, because it's part of the new[] expression, and not
@@ -194,7 +193,7 @@ function astBuildNewOp _
 		if( save_elmts ) then
 			'' length + sizeof( integer )   (to store the vector size)
 			lenexpr = astNewBOP( AST_OP_ADD, lenexpr, _
-					astNewCONSTi( FB_INTEGERSIZE, FB_DATATYPE_UINT ) )
+					astNewCONSTi( typeGetSize( FB_DATATYPE_INTEGER ), FB_DATATYPE_UINT ) )
 		end if
 
 		newexpr = rtlMemNewOp( op, lenexpr, dtype, subtype )
@@ -218,7 +217,7 @@ function astBuildNewOp _
 		tree = astNewLINK( tree, _
 			astNewSelfBOP( AST_OP_ADD_SELF, _
 				astNewVAR( tmp, , typeAddrOf( FB_DATATYPE_VOID ) ), _
-				astNewCONSTi( FB_INTEGERSIZE ), _
+				astNewCONSTi( typeGetSize( FB_DATATYPE_INTEGER ) ), _
 				NULL ) )
 	end if
 
@@ -278,7 +277,7 @@ private function hCallDtorList _
 		astNewCONV( typeAddrOf( FB_DATATYPE_INTEGER ), NULL, _
 			astNewBOP( AST_OP_ADD, _
 				astCloneTree( ptrexpr ), _
-				astNewCONSTi( -FB_INTEGERSIZE ) ), _
+				astNewCONSTi( -typeGetSize( FB_DATATYPE_INTEGER ) ) ), _
 			AST_CONVOPT_DONTCHKPTR ) ) )
 
 	'' iter = @vector[elmts]
@@ -296,7 +295,7 @@ private function hCallDtorList _
 	tree = astNewLINK( tree, astBuildDtorCall( subtype, astBuildVarDeref( iter ) ) )
 
 	'' next
-	tree = astBuildForEnd( tree, cnt, label, 1, astNewVAR( elmts ) )
+	tree = astBuildForEnd( tree, cnt, label, astNewVAR( elmts ) )
 
 	function = tree
 end function
@@ -332,7 +331,7 @@ function astBuildDeleteOp _
 		if( op = AST_OP_DEL_VEC ) then
 			tree = astNewLINK( tree, hCallDtorList( astCloneTree( ptrexpr ), dtype, subtype ) )
 			'' ptr -= len( integer )
-			ptrexpr = astNewBOP( AST_OP_SUB, ptrexpr, astNewCONSTi( FB_INTEGERSIZE ) )
+			ptrexpr = astNewBOP( AST_OP_SUB, ptrexpr, astNewCONSTi( typeGetSize( FB_DATATYPE_INTEGER ) ) )
 		else
 			tree = astNewLINK( tree, astBuildDtorCall( subtype, astNewDEREF( astCloneTree( ptrexpr ) ) ) )
 		end if

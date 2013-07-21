@@ -496,13 +496,13 @@ private function hCheckVarargParam _
 			hStrArgToStrPtrParam( parent, n, FALSE )
 
 		case else
-			'' if < len(integer), convert to int (C ABI)
-			if( typeGetSize( arg_dtype ) < FB_INTEGERSIZE ) then
+			'' if < sizeof(int), convert to int (C ABI)
+			'' Even for 64bit, varargs are promoted to 32bit int.
+			if( typeGetSize( arg_dtype ) < 4 ) then
 				n->l = astNewCONV( iif( typeIsSigned( arg_dtype ), _
-									   	FB_DATATYPE_INTEGER, _
-									   	FB_DATATYPE_UINT ), _
-								   NULL, _
-								   arg )
+							FB_DATATYPE_LONG, _
+							FB_DATATYPE_ULONG ), _
+						NULL, arg )
 			end if
 		end select
 
@@ -838,7 +838,7 @@ private function hCheckParam _
 		'' passing a BYVAL ptr to an BYREF arg?
 		if( n->arg.mode = FB_PARAMMODE_BYVAL ) then
 			if( (typeGetClass( arg_dtype ) <> FB_DATACLASS_INTEGER) or _
-				(typeGetSize( arg_dtype ) <> FB_POINTERSIZE) ) then
+				(typeGetSize( arg_dtype ) <> env.pointersize) ) then
 				errReport( FB_ERRMSG_PARAMTYPEMISMATCHAT )
 				exit function
 			end if

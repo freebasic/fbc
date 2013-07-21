@@ -2,10 +2,9 @@
 
 #include "fb.h"
 
-/*:::::*/
-FBCALL void fb_MemSwap( unsigned char *dst, unsigned char *src, int bytes )
+FBCALL void fb_MemSwap( unsigned char *dst, unsigned char *src, ssize_t bytes )
 {
-	int i;
+	ssize_t i;
 	unsigned int ti;
 	unsigned char tb;
 
@@ -35,7 +34,3 @@ FBCALL void fb_MemSwap( unsigned char *dst, unsigned char *src, int bytes )
 	
 	FB_UNLOCK();
 }
-
-
-
-

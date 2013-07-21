@@ -25,7 +25,7 @@
 
 static FB_TLSENTRY __fb_tls_ctxtb[FB_TLSKEYS];
 
-FBCALL void *fb_TlsGetCtx( int index, int len )
+FBCALL void *fb_TlsGetCtx( int index, size_t len )
 {
 	void *ctx = (void *)FB_TLSGET( __fb_tls_ctxtb[index] );
 

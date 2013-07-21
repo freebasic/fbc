@@ -40,34 +40,6 @@ declare sub hGetProcParamsTypeCode _
 '' globals
 	dim shared as FB_MANGLECTX ctx
 
-	dim shared as zstring * 1+1 typecodeTB( 0 to FB_DATATYPES-1 ) => _
-	{ _
-		"v", _					'' void
-		"a", _					'' byte
-		"h", _					'' ubyte
-		"c", _                  '' char
-		"s", _                  '' short
-		"t", _                  '' ushort
-		"w", _                  '' wchar
-		"i", _                  '' integer
-		"j", _                  '' uinteger
-		"!", _                  '' enum
-		"!", _                  '' bitfield
-		"l", _                  '' long
-		"m", _                  '' ulong
-		"x", _                  '' longint
-		"y", _                  '' ulongint
-		"f", _                  '' single
-		"d", _                  '' double
-		"r", _                  '' var-len string
-		"!", _                  '' fix-len string
-		"!", _                  '' struct
-		"!", _                  '' namespace
-		"F", _					'' function
-		"!", _                  '' fwd-ref
-		"P" _                   '' pointer
-	}
-
 sub symbMangleInit( )
 	flistInit( @ctx.flist, FB_INITMANGARGS, len( FB_MANGLEABBR ) )
 	ctx.cnt = 0
@@ -302,6 +274,77 @@ private sub hAbbrevGet( byref mangled as string, byval idx as integer )
 	mangled += "_"
 end sub
 
+private function hMangleBuiltInType( byval dtype as integer ) as zstring ptr
+	assert( dtype = typeGetDtOnly( dtype ) )
+
+	if( fbCpuTypeIs64bit( ) ) then
+		'' By default on x86 we mangle INTEGER to "int", but on 64bit
+		'' our INTEGER becomes 64bit, while int stays 32bit, so we
+		'' really shouldn't use the same mangling in that case.
+		''
+		'' Mangling the 64bit INTEGER as "long long" would conflict
+		'' with the LONGINT mangling though (we cannot allow separate
+		'' INTEGER/LONGINT overloads in code but then generate the same
+		'' mangled id for them, the assembler/linker would complain).
+		''
+		'' Besides that, our LONG stays 32bit always, but "long" on
+		'' 64bit Linux changes to 64bit, so we shouldn't mangle LONG
+		'' to "long" in that case. It would still be possible on 64bit
+		'' Windows, because there "long" stays 32bit, but it seems best
+		'' to mangle LONG to "int" on 64bit consistently, since "int"
+		'' stays 32bit on both Linux and Windows.
+		''
+		'' Itanium C++ ABI compatible mangling of non-C++ built-in
+		'' types (vendor extended types):
+		''    u <length-of-id> <id>
+
+		select case( dtype )
+		case FB_DATATYPE_INTEGER : return @"u7INTEGER"  '' seems like a good choice
+		case FB_DATATYPE_UINT    : return @"u8UINTEGER"
+		case FB_DATATYPE_LONG    : return @"i"  '' int
+		case FB_DATATYPE_ULONG   : return @"j"  '' unsigned int
+		end select
+	else
+		select case( dtype )
+		case FB_DATATYPE_INTEGER : return @"i"  '' int
+		case FB_DATATYPE_UINT    : return @"j"  '' unsigned int
+		case FB_DATATYPE_LONG    : return @"l"  '' long
+		case FB_DATATYPE_ULONG   : return @"m"  '' unsigned long
+		end select
+	end if
+
+	static as zstring ptr typecodes(0 to FB_DATATYPES-1) => _
+	{ _
+		@"v", _ '' void
+		@"a", _ '' byte (signed char)
+		@"h", _ '' ubyte (unsigned char)
+		@"c", _ '' char
+		@"s", _ '' short
+		@"t", _ '' ushort
+		@"w", _ '' wchar
+		NULL, _ '' integer
+		NULL, _ '' uinteger
+		NULL, _ '' enum
+		NULL, _ '' bitfield
+		NULL, _ '' long
+		NULL, _ '' ulong
+		@"x", _ '' longint (long long)
+		@"y", _ '' ulongint (unsigned long long)
+		@"f", _ '' single
+		@"d", _ '' double
+		NULL, _ '' var-len string
+		NULL, _ '' fix-len string
+		NULL, _ '' struct
+		NULL, _ '' namespace
+		NULL, _ '' function
+		NULL, _ '' fwd-ref
+		NULL  _ '' pointer
+	}
+
+	assert( typecodes(dtype) <> NULL )
+	function = typecodes(dtype)
+end function
+
 sub symbMangleType _
 	( _
 		byref mangled as string, _
@@ -377,8 +420,8 @@ sub symbMangleType _
 
 	case else
 		'' builtin?
-		if( typeGet( dtype ) = dtype ) then
-			mangled += typecodeTB( dtype )
+		if( dtype = typeGetDtOnly( dtype ) ) then
+			mangled += *hMangleBuiltInType( dtype )
 			exit sub
 		end if
 
@@ -609,7 +652,7 @@ private sub hMangleVariable( byval sym as FBSYMBOL ptr )
 
 			'' suffixed?
 			if( symbIsSuffixed( sym ) ) then
-				id += typecodeTB( symbGetType( sym ) )
+				id += *hMangleBuiltInType( symbGetType( sym ) )
 				if( env.clopt.backend = FB_BACKEND_GCC ) then
 					id += "$"
 				end if
@@ -636,7 +679,7 @@ private sub hMangleVariable( byval sym as FBSYMBOL ptr )
 						if( symbIsSuffixed( sym ) ) then
 							'' Encode the type to prevent collisions with other variables
 							'' using the same base id but different type suffix.
-							id += typecodeTB( symbGetType( sym ) )
+							id += *hMangleBuiltInType( symbGetType( sym ) )
 							id += "$"
 						end if
 
@@ -659,7 +702,7 @@ private sub hMangleVariable( byval sym as FBSYMBOL ptr )
 
 					'' Type suffix?
 					if( symbIsSuffixed( sym ) ) then
-						id += typecodeTB( symbGetType( sym ) )
+						id += *hMangleBuiltInType( symbGetType( sym ) )
 					end if
 
 					'' Make the symbol unique - LLVM IR doesn't have scopes.

@@ -2,8 +2,7 @@
 
 #include "fb.h"
 
-/*:::::*/
-FBCALL FBSTRING *fb_SPACE ( int len )
+FBCALL FBSTRING *fb_SPACE( ssize_t len )
 {
 	FBSTRING 	*dst;
 
@@ -27,4 +26,3 @@ FBCALL FBSTRING *fb_SPACE ( int len )
 
 	return dst;
 }
-

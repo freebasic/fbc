@@ -2,11 +2,17 @@
 
 #include "fb_gfx.h"
 
-
 static const char *pszDefaultQuestion = "? ";
 
-int fb_GfxLineInput( FBSTRING *text, void *dst, int dst_len, int fillrem,
-					 int addquestion, int addnewline )
+int fb_GfxLineInput
+	(
+		FBSTRING *text,
+		void *dst,
+		ssize_t dst_len,
+		int fillrem,
+		int addquestion,
+		int addnewline
+	)
 {
     FBSTRING *tmp_result;
 

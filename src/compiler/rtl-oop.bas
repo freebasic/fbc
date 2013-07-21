@@ -9,19 +9,15 @@
 
 	dim shared as FB_RTL_PROCDEF funcdata( 0 to 3 ) = _
 	{ _
-		/' fb_IsTypeOf ( byref obj as any, byref rtti as $fb_RTTI ) as integer '/ _
+		/' function fb_IsTypeOf( byref obj as any, byref rtti as $fb_RTTI ) as long '/ _
 		( _
 			@FB_RTL_ISTYPEOF, NULL, _
-	 		FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 	 		NULL, FB_RTL_OPT_NONE, _
 			2, _
 			{ _
-				( _
-					FB_DATATYPE_VOID,FB_PARAMMODE_BYREF, FALSE _
-	 			), _
-	 			( _
-					FB_DATATYPE_VOID,FB_PARAMMODE_BYREF, FALSE _
-	 			) _
+				( FB_DATATYPE_VOID,FB_PARAMMODE_BYREF, FALSE ), _
+				( FB_DATATYPE_VOID,FB_PARAMMODE_BYREF, FALSE ) _
 	 		} _
 		), _
 	 	/' EOL '/ _

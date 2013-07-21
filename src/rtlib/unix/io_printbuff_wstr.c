@@ -44,7 +44,7 @@ void fb_ConsolePrintBufferWstrEx( const FB_WCHAR *buffer, size_t chars, int mask
 	        avail_len );
 
 	/* convert wchar_t to UTF-8 */
-	int bytes;
+	ssize_t bytes;
 
 	fb_WCharToUTF( FB_FILE_ENCOD_UTF8, buffer, chars, temp, &bytes );
 	/* add null-term */

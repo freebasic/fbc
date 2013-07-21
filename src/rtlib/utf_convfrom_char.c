@@ -2,8 +2,7 @@
 
 #include "fb.h"
 
-/*:::::*/
-static char *hToUTF8( const char *src, int chars, char *dst, int *bytes )
+static char *hToUTF8( const char *src, ssize_t chars, char *dst, ssize_t *bytes )
 {
 	if( chars > 0 )
 	{
@@ -22,8 +21,7 @@ static char *hToUTF8( const char *src, int chars, char *dst, int *bytes )
 	return dst;
 }
 
-/*:::::*/
-static char *hToUTF16( const char *src, int chars, char *dst, int *bytes )
+static char *hToUTF16( const char *src, ssize_t chars, char *dst, ssize_t *bytes )
 {
 	UTF_16 *p;
 
@@ -51,8 +49,7 @@ static char *hToUTF16( const char *src, int chars, char *dst, int *bytes )
 	return dst;
 }
 
-/*:::::*/
-static char *hToUTF32( const char *src, int chars, char *dst, int *bytes )
+static char *hToUTF32( const char *src, ssize_t chars, char *dst, ssize_t *bytes )
 {
 	UTF_32 *p;
 
@@ -80,10 +77,14 @@ static char *hToUTF32( const char *src, int chars, char *dst, int *bytes )
 	return dst;
 }
 
-/*:::::*/
-char *fb_CharToUTF( FB_FILE_ENCOD encod,
-					const char *src, int chars,
-					char *dst, int *bytes )
+char *fb_CharToUTF
+	(
+		FB_FILE_ENCOD encod,
+		const char *src,
+		ssize_t chars,
+		char *dst,
+		ssize_t *bytes
+	)
 {
 	switch( encod )
 	{

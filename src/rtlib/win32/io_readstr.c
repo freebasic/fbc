@@ -3,7 +3,7 @@
 #include "../fb.h"
 #include "fb_private_console.h"
 
-char *fb_ConsoleReadStr( char *buffer, int len )
+char *fb_ConsoleReadStr( char *buffer, ssize_t len )
 {
 	char *res;
 

@@ -357,29 +357,25 @@ private sub _procEnd _
 
 end sub
 
-''::::
-private function _procAllocArg _
+private sub _procAllocArg _
 	( _
 		byval proc as FBSYMBOL ptr, _
-		byval sym as FBSYMBOL ptr, _
-		byval lgt as integer _
-	) as integer
+		byval sym as FBSYMBOL ptr _
+	)
 
-	function = emitProcAllocArg( proc, sym, lgt )
+	emitProcAllocArg( proc, sym )
 
-end function
+end sub
 
-'':::::
-private function _procAllocLocal _
+private sub _procAllocLocal _
 	( _
 		byval proc as FBSYMBOL ptr, _
-		byval sym as FBSYMBOL ptr, _
-		byval lgt as integer _
-	) as integer
+		byval sym as FBSYMBOL ptr _
+	)
 
-	function = emitProcAllocLocal( proc, sym, lgt )
+	emitProcAllocLocal( proc, sym )
 
-end function
+end sub
 
 '':::::
 private function _procGetFrameRegName _
@@ -482,7 +478,7 @@ private sub _emitProcEnd _
 	if( symbProcReturnsOnStack( proc ) ) then
 		if( (symbGetProcMode( proc ) <> FB_FUNCMODE_CDECL) or _
 		    (env.target.options and FB_TARGETOPT_CALLEEPOPSHIDDENPTR) ) then
-			bytestopop += typeGetSize( typeAddrOf( FB_DATATYPE_VOID ) )
+			bytestopop += env.pointersize
 		end if
 	end if
 
@@ -537,7 +533,7 @@ private sub _emitUop _
 end sub
 
 private sub _emitConvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
-	select case( symb_dtypeTB(typeGet( v1->dtype )).class )
+	select case( typeGetClass( v1->dtype ) )
 	case FB_DATACLASS_INTEGER
 		_emit( AST_OP_TOINT, v1, v2, NULL )
 	case FB_DATACLASS_FPOINT
@@ -591,28 +587,18 @@ private sub _emitStack _
 end sub
 
 '':::::
-private sub _emitPushUDT _
-	( _
-		byval v1 as IRVREG ptr, _
-		byval lgt as integer _
-	)
-
-	_emit( AST_OP_PUSHUDT, v1, NULL, NULL, NULL, lgt )
-
-end sub
-
 private sub _emitPushArg _
 	( _
 		byval param as FBSYMBOL ptr, _
 		byval vr as IRVREG ptr, _
-		byval plen as integer, _
+		byval udtlen as longint, _
 		byval level as integer _
 	)
 
-	if( plen = 0 ) then
+	if( udtlen = 0 ) then
 		_emitStack( AST_OP_PUSH, vr )
 	else
-		_emitPushUDT( vr, plen )
+		_emit( AST_OP_PUSHUDT, vr, NULL, NULL, NULL, udtlen )
 	end if
 
 end sub
@@ -687,12 +673,12 @@ private sub _emitJmpTb _
 	( _
 		byval v1 as IRVREG ptr, _
 		byval tbsym as FBSYMBOL ptr, _
-		byval values as uinteger ptr, _
+		byval values as ulongint ptr, _
 		byval labels as FBSYMBOL ptr ptr, _
 		byval labelcount as integer, _
 		byval deflabel as FBSYMBOL ptr, _
-		byval minval as uinteger, _
-		byval maxval as uinteger _
+		byval minval as ulongint, _
+		byval maxval as ulongint _
 	)
 
 	_flush( )
@@ -706,7 +692,7 @@ private sub _emitMem _
 		byval op as integer, _
 		byval v1 as IRVREG ptr, _
 		byval v2 as IRVREG ptr, _
-		byval bytes as integer _
+		byval bytes as longint _
 	)
 
 	_emit( op, v1, v2, NULL, 0, bytes )
@@ -762,27 +748,27 @@ end sub
 private sub _emitVarIniEnd( byval sym as FBSYMBOL ptr )
 end sub
 
-private sub _emitVarIniI( byval dtype as integer, byval value as integer )
-	emitVARINIi( dtype, value )
+private sub _emitVarIniI( byval dtype as integer, byval value as longint )
+	if( ISLONGINT( dtype ) ) then
+		emitVARINI64( dtype, value )
+	else
+		emitVARINIi( dtype, value )
+	end if
 end sub
 
 private sub _emitVarIniF( byval dtype as integer, byval value as double )
 	emitVARINIf( dtype, value )
 end sub
 
-private sub _emitVarIniI64( byval dtype as integer, byval value as longint )
-	emitVARINI64( dtype, value )
-end sub
-
-private sub _emitVarIniOfs( byval sym as FBSYMBOL ptr, byval ofs as integer )
+private sub _emitVarIniOfs( byval sym as FBSYMBOL ptr, byval ofs as longint )
 	emitVARINIOFS( symbGetMangledName( sym ), ofs )
 end sub
 
 private sub _emitVarIniStr _
 	( _
-		byval totlgt as integer, _
+		byval totlgt as longint, _
 		byval litstr as zstring ptr, _
-		byval litlgt as integer _
+		byval litlgt as longint _
 	)
 
 	dim as const zstring ptr s
@@ -814,9 +800,9 @@ end sub
 '':::::
 private sub _emitVarIniWstr _
 	( _
-		byval totlgt as integer, _
+		byval totlgt as longint, _
 		byval litstr as wstring ptr, _
-		byval litlgt as integer _
+		byval litlgt as longint _
 	)
 
 	dim as zstring ptr s
@@ -848,7 +834,7 @@ private sub _emitVarIniWstr _
 
 end sub
 
-private sub _emitVarIniPad( byval bytes as integer )
+private sub _emitVarIniPad( byval bytes as longint )
 	emitVARINIPAD( bytes )
 end sub
 
@@ -930,32 +916,7 @@ private function _allocVreg _
 
 end function
 
-'':::::
 private function _allocVrImm _
-	( _
-		byval dtype as integer, _
-		byval subtype as FBSYMBOL ptr, _
-		byval value as integer _
-	) as IRVREG ptr
-
-	dim as IRVREG ptr vr = any
-
-	vr = hNewVR( dtype, subtype, IR_VREGTYPE_IMM )
-
-	vr->value.int = value
-
-	'' longint?
-	if( ISLONGINT( dtype ) ) then
-		 vr->vaux = hNewVR( FB_DATATYPE_INTEGER, NULL, IR_VREGTYPE_IMM )
-		 vr->vaux->value.int = 0
-	end if
-
-	function = vr
-
-end function
-
-'':::::
-private function _allocVrImm64 _
 	( _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
@@ -966,18 +927,20 @@ private function _allocVrImm64 _
 
 	vr = hNewVR( dtype, subtype, IR_VREGTYPE_IMM )
 
-	vr->value.int = cuint( value )
+	if( ISLONGINT( dtype ) ) then
+		'' Only the low 32bits go in the main vreg
+		vr->value.i = cuint( value )
 
-	'' aux
-	vr->vaux = hNewVR( FB_DATATYPE_INTEGER, NULL, IR_VREGTYPE_IMM )
-
-	vr->vaux->value.int = cint( value shr 32 )
+		'' The aux vreg takes the high 32bits
+		vr->vaux = hNewVR( FB_DATATYPE_INTEGER, NULL, IR_VREGTYPE_IMM )
+		vr->vaux->value.i = cint( value shr 32 )
+	else
+		vr->value.i = value
+	end if
 
 	function = vr
-
 end function
 
-'':::::
 private function _allocVrImmF _
 	( _
 		byval dtype as integer, _
@@ -986,19 +949,19 @@ private function _allocVrImmF _
 	) as IRVREG ptr
 
 	dim as IRVREG ptr vr = any
+	dim as FBSYMBOL ptr s = any
 
-	'' the FPU doesn't support immediates? create a temp const var_..
-	if( irGetOption( IR_OPT_FPUIMMEDIATES ) = FALSE ) then
-		dim as FBSYMBOL ptr s = symbAllocFloatConst( value, dtype )
-		return irAllocVRVAR( dtype, subtype, s, symbGetOfs( s ) )
+	'' float immediates supported by the FPU?
+	if( irGetOption( IR_OPT_FPUIMMEDIATES ) ) then
+		vr = hNewVR( dtype, subtype, IR_VREGTYPE_IMM )
+		vr->value.f = value
+	else
+		'' create a temp const var
+		s = symbAllocFloatConst( value, dtype )
+		vr = irAllocVRVAR( dtype, subtype, s, symbGetOfs( s ) )
 	end if
 
-	vr = hNewVR( dtype, subtype, IR_VREGTYPE_IMM )
-
-	vr->value.float = value
-
 	function = vr
-
 end function
 
 '':::::
@@ -1007,7 +970,7 @@ private function _allocVrVar _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
 		byval symbol as FBSYMBOL ptr, _
-		byval ofs as integer _
+		byval ofs as longint _
 	) as IRVREG ptr
 
 	dim as IRVREG ptr vr = any, va = any
@@ -1023,7 +986,7 @@ private function _allocVrVar _
 	if( ISLONGINT( dtype ) ) then
 		va = hNewVR( FB_DATATYPE_INTEGER, NULL, IR_VREGTYPE_VAR )
 		vr->vaux = va
-		va->ofs = ofs + FB_INTEGERSIZE
+		va->ofs = ofs + 4  '' vaux = the upper 4 bytes
 	end if
 
 	function = vr
@@ -1036,7 +999,7 @@ private function _allocVrIdx _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
 		byval symbol as FBSYMBOL ptr, _
-		byval ofs as integer, _
+		byval ofs as longint, _
 		byval mult as integer, _
 		byval vidx as IRVREG ptr _
 	) as IRVREG ptr
@@ -1054,7 +1017,7 @@ private function _allocVrIdx _
 	if( ISLONGINT( dtype ) ) then
 		va = hNewVR( FB_DATATYPE_INTEGER, NULL, IR_VREGTYPE_IDX )
 		vr->vaux= va
-		va->ofs = ofs + FB_INTEGERSIZE
+		va->ofs = ofs + 4  '' vaux = the upper 4 bytes
 	end if
 
 	function = vr
@@ -1066,7 +1029,7 @@ private function _allocVrPtr _
 	( _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
-		byval ofs as integer, _
+		byval ofs as longint, _
 		byval vidx as IRVREG ptr _
 	) as IRVREG ptr
 
@@ -1082,7 +1045,7 @@ private function _allocVrPtr _
 	if( ISLONGINT( dtype ) ) then
 		va = hNewVR( FB_DATATYPE_INTEGER, NULL, IR_VREGTYPE_IDX )
 		vr->vaux= va
-		va->ofs = ofs + FB_INTEGERSIZE
+		va->ofs = ofs + 4  '' vaux = the upper 4 bytes
 	end if
 
 	function = vr
@@ -1095,7 +1058,7 @@ private function _allocVrOfs _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
 		byval symbol as FBSYMBOL ptr, _
-		byval ofs as integer _
+		byval ofs as longint _
 	) as IRVREG ptr
 
 	dim as IRVREG ptr vr = any
@@ -2302,11 +2265,11 @@ private sub hFlushCONVERT _
 		if( irGetDistance( v2 ) = IR_MAXDIST ) then
 			'' don't reuse if any operand is a byte (because [E]SI/[E]DI) or longint
 			select case typeGetSize( v1_dtype )
-			case 1, FB_INTEGERSIZE*2
+			case 1, 8
 
 			case else
 				select case typeGetSize( v2_dtype )
-				case 1, FB_INTEGERSIZE*2
+				case 1, 8
 
 				case else
 					reuse = TRUE
@@ -2670,7 +2633,7 @@ private sub _storeVR _
 			regTB(FB_DATACLASS_INTEGER)->free( regTB(FB_DATACLASS_INTEGER), vareg->reg )
 			vareg->reg = INVALID
 			vareg->typ = IR_VREGTYPE_VAR
-			vareg->ofs = vreg->ofs + FB_INTEGERSIZE
+			vareg->ofs = vreg->ofs + 4  '' vaux = the upper 4 bytes
 		end if
 	end if
 
@@ -2732,7 +2695,6 @@ dim shared as IR_VTBL irtac_vtbl = _
 	@_emitLoad, _
 	@_emitLoadRes, _
 	@_emitStack, _
-	@_emitPushUDT, _
 	@_emitAddr, _
 	@_emitCall, _
 	@_emitCallPtr, _
@@ -2749,7 +2711,6 @@ dim shared as IR_VTBL irtac_vtbl = _
 	@_emitVarIniEnd, _
 	@_emitVarIniI, _
 	@_emitVarIniF, _
-	@_emitVarIniI64, _
 	@_emitVarIniOfs, _
 	@_emitVarIniStr, _
 	@_emitVarIniWstr, _
@@ -2761,7 +2722,6 @@ dim shared as IR_VTBL irtac_vtbl = _
 	@_emitFbctinfEnd, _
 	@_allocVreg, _
 	@_allocVrImm, _
-	@_allocVrImm64, _
 	@_allocVrImmF, _
 	@_allocVrVar, _
 	@_allocVrIdx, _

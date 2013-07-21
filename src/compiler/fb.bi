@@ -113,9 +113,9 @@ enum FB_PDCHECK
 end enum
 
 '' cpu types
-'' When changing, update fbc.bas:gcc_architectures()
+'' When changing, update fb.bas:cputypeinfo()
 enum FB_CPUTYPE
-	FB_CPUTYPE_386 = 3
+	FB_CPUTYPE_386 = 0
 	FB_CPUTYPE_486
 	FB_CPUTYPE_586
 	FB_CPUTYPE_686
@@ -128,11 +128,12 @@ enum FB_CPUTYPE
 	FB_CPUTYPE_PENTIUM3
 	FB_CPUTYPE_PENTIUM4
 	FB_CPUTYPE_PENTIUMSSE3
+	FB_CPUTYPE_X86_64
+	FB_CPUTYPE_32  '' just to identify -arch 32/64, as a shortcut for the default arch for 32/64bit
+	FB_CPUTYPE_64
 	FB_CPUTYPE_NATIVE
+	FB_CPUTYPE__COUNT
 end enum
-
-const FB_DEFAULT_CPUTYPE    = FB_CPUTYPE_486
-
 
 '' fpu types
 enum FB_FPUTYPE
@@ -204,8 +205,6 @@ enum FB_BACKEND
 
 	FB_BACKENDS
 end enum
-
-const FB_DEFAULT_BACKEND = FB_BACKEND_GAS
 
 enum FB_ASMSYNTAX
 	FB_ASMSYNTAX_INTEL = 0
@@ -328,6 +327,17 @@ const FB_DEFAULT_TARGET     = FB_COMPTARGET_NETBSD
 #error Unsupported host
 #endif
 
+#ifdef __FB_64BIT__
+	const FB_DEFAULT_CPUTYPE = FB_CPUTYPE_X86_64
+	const FB_DEFAULT_BACKEND = FB_BACKEND_GCC
+#else
+	const FB_DEFAULT_CPUTYPE = FB_CPUTYPE_486
+	const FB_DEFAULT_BACKEND = FB_BACKEND_GAS
+#endif
+
+const FB_DEFAULT_CPUTYPE32 = FB_CPUTYPE_486
+const FB_DEFAULT_CPUTYPE64 = FB_CPUTYPE_X86_64
+
 '' info section
 const FB_INFOSEC_NAME = "fbctinf"
 const FB_INFOSEC_OBJNAME = "__fb_ct.inf"
@@ -358,16 +368,8 @@ declare sub fbAddIncludePath(byref path as string)
 declare sub fbAddPreDefine(byref def as string)
 declare sub fbAddPreInclude(byref file as string)
 
-declare sub fbSetOption _
-	( _
-		byval opt as integer, _
-		byval value as integer _
-	)
-
-declare function fbGetOption _
-	( _
-		byval opt as integer _
-	) as integer
+declare sub fbSetOption( byval opt as integer, byval value as integer )
+declare function fbGetOption( byval opt as integer ) as integer
 
 declare sub fbChangeOption(byval opt as integer, byval value as integer)
 declare sub fbSetLibs(byval libs as TSTRSET ptr, byval libpaths as TSTRSET ptr)
@@ -376,6 +378,11 @@ declare sub fbPragmaOnce()
 declare sub fbIncludeFile(byval filename as zstring ptr, byval isonce as integer)
 
 declare function fbGetTargetId( ) as zstring ptr
+declare function fbGetGccArch( ) as zstring ptr
+declare function fbGetFbcArch( ) as zstring ptr
+declare function fbCpuTypeIs64bit( ) as integer
+declare function fbCpuTypeIsX86( ) as integer
+declare function fbIdentifyFbcArch( byref fbcarch as string ) as integer
 
 declare function fbGetEntryPoint _
 	( _
@@ -428,8 +435,6 @@ declare function fbGetLangId _
 #define fbLangIsSet( op ) (env.clopt.lang = op)
 
 #define fbLangGetType( tp ) env.lang.typeremap.tp
-
-#define fbLangGetSize( tp ) env.lang.sizeremap.tp
 
 #define fbLangGetDefLiteral( tp ) env.lang.litremap.tp
 

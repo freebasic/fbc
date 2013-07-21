@@ -2,7 +2,6 @@
 ''
 '' chng: sep/2004 written [v1ctor]
 
-
 #include once "fb.bi"
 #include once "fbint.bi"
 #include once "parser.bi"
@@ -14,7 +13,7 @@ const FB_MAXSWTCASERANGE= 4096
 
 type SELECTCTX
 	base		as integer
-	casevalues(0 to FB_MAXSWTCASEEXPR-1) as uinteger
+	casevalues(0 to FB_MAXSWTCASEEXPR-1) as ulongint
 	caselabels(0 to FB_MAXSWTCASEEXPR-1) as FBSYMBOL ptr
 end type
 
@@ -120,16 +119,15 @@ sub cSelConstStmtBegin()
 	stk->select.outerscopenode = outerscopenode
 end sub
 
-'':::::
 private function hSelConstAddCase _
 	( _
 		byval swtbase as integer, _
-		byval value as uinteger, _
+		byval value as ulongint, _
 		byval label as FBSYMBOL ptr _
 	) as integer static
 
 	dim as integer probe, high, low, i
-	dim as uinteger v
+	dim as ulongint v
 
 	'' nothing left?
 	if( ctx.base >= FB_MAXSWTCASEEXPR ) then
@@ -164,12 +162,11 @@ private function hSelConstAddCase _
 	ctx.base += 1
 
 	function = TRUE
-
 end function
 
 '' cSelConstStmtNext  =  CASE (ELSE | (ConstExpression{int} (',' ConstExpression{int})*)) .
 sub cSelConstStmtNext( byval stk as FB_CMPSTMTSTK ptr )
-	dim as uinteger value, tovalue, maxval, minval
+	dim as ulongint value, tovalue, maxval, minval
 	dim as FBSYMBOL ptr label
 	dim as integer swtbase
 
@@ -231,7 +228,7 @@ sub cSelConstStmtNext( byval stk as FB_CMPSTMTSTK ptr )
 				'' too big?
 				if( (minval > maxval) or _
 					(maxval - minval > FB_MAXSWTCASERANGE) or _
-					(culngint(minval) * FB_INTEGERSIZE > 4294967292ULL) ) then
+					(culngint(minval) * typeGetSize( FB_DATATYPE_INTEGER ) > 4294967292ULL) ) then
 
 					errReport( FB_ERRMSG_RANGETOOLARGE )
 					'' error recovery: reset values
@@ -244,7 +241,6 @@ sub cSelConstStmtNext( byval stk as FB_CMPSTMTSTK ptr )
 					end if
 				end if
 			next
-
 		else
 			if( value < minval ) then
 				minval = value
@@ -256,7 +252,7 @@ sub cSelConstStmtNext( byval stk as FB_CMPSTMTSTK ptr )
 			'' too big?
 			if( (minval > maxval) or _
 				(maxval - minval > FB_MAXSWTCASERANGE) or _
-				(culngint(minval) * FB_INTEGERSIZE > 4294967292ULL) ) then
+				(culngint(minval) * typeGetSize( FB_DATATYPE_INTEGER ) > 4294967292ULL) ) then
 
 				errReport( FB_ERRMSG_RANGETOOLARGE )
 				'' error recovery: reset values
@@ -268,12 +264,10 @@ sub cSelConstStmtNext( byval stk as FB_CMPSTMTSTK ptr )
 					errReport( FB_ERRMSG_DUPDEFINITION )
 				end if
 			end if
-
 		end if
 
 		stk->select.const_.minval = minval
 		stk->select.const_.maxval = maxval
-
 	loop while( hMatch( CHAR_COMMA ) )
 
 	''
@@ -287,11 +281,7 @@ end sub
 
 '' SelConstStmtEnd =   END SELECT .
 sub cSelConstStmtEnd( byval stk as FB_CMPSTMTSTK ptr )
-	dim as uinteger minval = any, maxval = any
 	dim as FBSYMBOL ptr deflabel = any
-
-    minval = stk->select.const_.minval
-    maxval = stk->select.const_.maxval
 
 	'' END SELECT
 	lexSkipToken( )
@@ -317,7 +307,9 @@ sub cSelConstStmtEnd( byval stk as FB_CMPSTMTSTK ptr )
 	                       @ctx.casevalues(stk->select.const_.base), _
 	                       @ctx.caselabels(stk->select.const_.base), _
 	                       ctx.base - stk->select.const_.base, _
-	                       deflabel, minval, maxval ) )
+	                       deflabel, _
+	                       stk->select.const_.minval, _
+	                       stk->select.const_.maxval ) )
 
     ctx.base = stk->select.const_.base
 

@@ -191,6 +191,13 @@ private function hEmitProcCallConv( byval proc as FBSYMBOL ptr ) as string
 	'' The symbGetProc*Param() macros take care of changing the order when
 	'' cycling through parameters of Pascal functions. Together with Stdcall
 	'' this results in a double-reverse resulting in the proper ABI.
+	''
+	'' For non-x86, don't emit any calling convention at all, it would just
+	'' be ignored anyways (for x86_64 and ARM it seems that way at least).
+
+	if( fbCpuTypeIsX86( ) = FALSE ) then
+		exit function
+	end if
 
 	select case as const( symbGetProcMode( proc ) )
 	case FB_FUNCMODE_STDCALL, FB_FUNCMODE_STDCALL_MS, FB_FUNCMODE_PASCAL
@@ -1020,12 +1027,11 @@ private sub _procEnd( byval proc as FBSYMBOL ptr )
 	proc->proc.ext->dbg.endline = lexLineNum( )
 end sub
 
-private function _procAllocArg _
+private sub _procAllocArg _
 	( _
 		byval proc as FBSYMBOL ptr, _
-		byval sym as FBSYMBOL ptr, _
-		byval lgt as integer _
-	) as integer
+		byval sym as FBSYMBOL ptr _
+	)
 
 	dim as string ln
 	dim as integer parammode = any
@@ -1065,19 +1071,17 @@ private function _procAllocArg _
 	ln += hEmitType( typeAddrOf( dtype ), subtype ) + " " + *symbGetMangledName( sym )
 	hWriteLine( ln )
 
-	function = 0
-end function
+end sub
 
-private function _procAllocLocal _
+private sub _procAllocLocal _
 	( _
 		byval proc as FBSYMBOL ptr, _
-		byval sym as FBSYMBOL ptr, _
-		byval lgt as integer _
-	) as integer
+		byval sym as FBSYMBOL ptr _
+	)
 
 	hEmitVariable( sym )
-	function = 0
-end function
+
+end sub
 
 private sub _scopeBegin( byval s as FBSYMBOL ptr )
 end sub
@@ -1130,30 +1134,15 @@ private function _allocVrImm _
 	( _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
-		byval value as integer _
-	) as IRVREG ptr
-
-	dim as IRVREG ptr vr = hNewVR( dtype, subtype, IR_VREGTYPE_IMM )
-
-	vr->value.int = value
-
-	function = vr
-
-end function
-
-private function _allocVrImm64 _
-	( _
-		byval dtype as integer, _
-		byval subtype as FBSYMBOL ptr, _
 		byval value as longint _
 	) as IRVREG ptr
 
-	dim as IRVREG ptr vr = hNewVR( dtype, subtype, IR_VREGTYPE_IMM )
+	dim as IRVREG ptr vr = any
 
-	vr->value.long = value
+	vr = hNewVR( dtype, subtype, IR_VREGTYPE_IMM )
+	vr->value.i = value
 
 	function = vr
-
 end function
 
 private function _allocVrImmF _
@@ -1163,12 +1152,12 @@ private function _allocVrImmF _
 		byval value as double _
 	) as IRVREG ptr
 
-	dim as IRVREG ptr vr = hNewVR( dtype, subtype, IR_VREGTYPE_IMM )
+	dim as IRVREG ptr vr = any
 
-	vr->value.float = value
+	vr = hNewVR( dtype, subtype, IR_VREGTYPE_IMM )
+	vr->value.f = value
 
 	function = vr
-
 end function
 
 private function _allocVrVar _
@@ -1176,7 +1165,7 @@ private function _allocVrVar _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
 		byval symbol as FBSYMBOL ptr, _
-		byval ofs as integer _
+		byval ofs as longint _
 	) as IRVREG ptr
 
 	dim as IRVREG ptr vr = hNewVR( dtype, subtype, IR_VREGTYPE_VAR )
@@ -1193,7 +1182,7 @@ private function _allocVrIdx _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
 		byval symbol as FBSYMBOL ptr, _
-		byval ofs as integer, _
+		byval ofs as longint, _
 		byval mult as integer, _
 		byval vidx as IRVREG ptr _
 	) as IRVREG ptr
@@ -1212,7 +1201,7 @@ private function _allocVrPtr _
 	( _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
-		byval ofs as integer, _
+		byval ofs as longint, _
 		byval vidx as IRVREG ptr _
 	) as IRVREG ptr
 
@@ -1230,7 +1219,7 @@ private function _allocVrOfs _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
 		byval symbol as FBSYMBOL ptr, _
-		byval ofs as integer _
+		byval ofs as longint _
 	) as IRVREG ptr
 
 	dim as IRVREG ptr vr = hNewVR( dtype, subtype, IR_VREGTYPE_OFS )
@@ -1521,20 +1510,13 @@ private function hVregToStr( byval v as IRVREG ptr ) as string
 		end if
 
 	case IR_VREGTYPE_IMM
-		select case as const( v->dtype )
-		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-			s = hEmitLong( v->value.long )
-		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-			s = hEmitFloat( v->value.float )
-		case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
-			if( FB_LONGSIZE = len( integer ) ) then
-				s = hEmitInt( v->dtype, v->subtype, v->value.int )
-			else
-				s = hEmitLong( v->value.long )
-			end if
-		case else
-			s = hEmitInt( v->dtype, v->subtype, v->value.int )
-		end select
+		if( typeGetClass( v->dtype ) = FB_DATACLASS_FPOINT ) then
+			s = hEmitFloat( v->value.f )
+		elseif( typeGetSize( v->dtype ) = 8 ) then
+			s = hEmitLong( v->value.i )
+		else
+			s = hEmitInt( v->dtype, v->subtype, v->value.i )
+		end if
 
 	case IR_VREGTYPE_REG
 		if( v->sym ) then
@@ -1887,7 +1869,7 @@ private sub _emitPushArg _
 	( _
 		byval param as FBSYMBOL ptr, _
 		byval vr as IRVREG ptr, _
-		byval plen as integer, _
+		byval udtlen as longint, _
 		byval level as integer _
 	)
 
@@ -2074,12 +2056,12 @@ private sub _emitJmpTb _
 	( _
 		byval v1 as IRVREG ptr, _
 		byval tbsym as FBSYMBOL ptr, _
-		byval values as uinteger ptr, _
+		byval values as ulongint ptr, _
 		byval labels as FBSYMBOL ptr ptr, _
 		byval labelcount as integer, _
 		byval deflabel as FBSYMBOL ptr, _
-		byval minval as uinteger, _
-		byval maxval as uinteger _
+		byval minval as ulongint, _
+		byval maxval as ulongint _
 	)
 
 	dim as string ln
@@ -2112,7 +2094,7 @@ private sub _emitMem _
 		byval op as integer, _
 		byval v1 as IRVREG ptr, _
 		byval v2 as IRVREG ptr, _
-		byval bytes as integer _
+		byval bytes as longint _
 	)
 
 	dim as string ln
@@ -2221,9 +2203,13 @@ private sub hVarIniSeparator( )
 	end if
 end sub
 
-private sub _emitVarIniI( byval dtype as integer, byval value as integer )
+private sub _emitVarIniI( byval dtype as integer, byval value as longint )
 	hVarIniElementType( dtype )
-	ctx.varini += hEmitInt( dtype, NULL, value )
+	if( typeGetSize( dtype ) = 8 ) then
+		ctx.varini += hEmitLong( value )
+	else
+		ctx.varini += hEmitInt( dtype, NULL, value )
+	end if
 	hVarIniSeparator( )
 end sub
 
@@ -2233,22 +2219,16 @@ private sub _emitVarIniF( byval dtype as integer, byval value as double )
 	hVarIniSeparator( )
 end sub
 
-private sub _emitVarIniI64( byval dtype as integer, byval value as longint )
-	hVarIniElementType( dtype )
-	ctx.varini += hEmitLong( value )
-	hVarIniSeparator( )
-end sub
-
-private sub _emitVarIniOfs( byval sym as FBSYMBOL ptr, byval ofs as integer )
+private sub _emitVarIniOfs( byval sym as FBSYMBOL ptr, byval ofs as longint )
 	ctx.varini += "TODO offset " + *symbGetMangledName( sym ) + " + " + str( ofs )
 	hVarIniSeparator( )
 end sub
 
 private sub _emitVarIniStr _
 	( _
-		byval varlength as integer, _
+		byval varlength as longint, _
 		byval literal as zstring ptr, _
-		byval litlength as integer _
+		byval litlength as longint _
 	)
 
 	if( ctx.variniscopelevel > 0 ) then
@@ -2263,9 +2243,9 @@ end sub
 
 private sub _emitVarIniWstr _
 	( _
-		byval varlength as integer, _
+		byval varlength as longint, _
 		byval literal as wstring ptr, _
-		byval litlength as integer _
+		byval litlength as longint _
 	)
 
 	if( ctx.variniscopelevel > 0 ) then
@@ -2278,7 +2258,7 @@ private sub _emitVarIniWstr _
 
 end sub
 
-private sub _emitVarIniPad( byval bytes as integer )
+private sub _emitVarIniPad( byval bytes as longint )
 	'' Nothing to do -- we're using {...} for structs and each array
 	'' dimension, and gcc will zero-initialize any uninitialized elements,
 	'' aswell as add padding between fields etc. where needed.
@@ -2422,7 +2402,6 @@ static as IR_VTBL irllvm_vtbl = _
 	@_emitLoad, _
 	@_emitLoadRes, _
 	NULL, _
-	NULL, _
 	@_emitAddr, _
 	@_emitCall, _
 	@_emitCallPtr, _
@@ -2439,7 +2418,6 @@ static as IR_VTBL irllvm_vtbl = _
 	@_emitVarIniEnd, _
 	@_emitVarIniI, _
 	@_emitVarIniF, _
-	@_emitVarIniI64, _
 	@_emitVarIniOfs, _
 	@_emitVarIniStr, _
 	@_emitVarIniWstr, _
@@ -2451,7 +2429,6 @@ static as IR_VTBL irllvm_vtbl = _
 	@_emitFbctinfEnd, _
 	@_allocVreg, _
 	@_allocVrImm, _
-	@_allocVrImm64, _
 	@_allocVrImmF, _
 	@_allocVrVar, _
 	@_allocVrIdx, _

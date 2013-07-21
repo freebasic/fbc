@@ -125,7 +125,7 @@ function typeCalcNaturalAlign _
 
 	'' var-len string: largest field is the pointer at the front
 	case FB_DATATYPE_STRING
-		align = FB_POINTERSIZE
+		align = env.pointersize
 
 	case else
 		'' Anything else (including zstring/wstring/fixlen strings)
@@ -133,10 +133,13 @@ function typeCalcNaturalAlign _
 		align = typeGetSize( dtype )
 	end select
 
-	if( align = 8 ) then
-		'' LONGINT/DOUBLE are 4-byte aligned on Unix (x86 assumption)
-		if( env.clopt.target <> FB_COMPTARGET_WIN32 ) then
-			align = 4
+	if( fbCpuTypeIs64bit( ) = FALSE ) then
+		'' LONGINT/DOUBLE are 4-byte aligned on 32bit, except on Win32
+		'' (i.e. we don't have anything 8-byte aligned in this case)
+		if( align = 8 ) then
+			if( env.clopt.target <> FB_COMPTARGET_WIN32 ) then
+				align = 4
+			end if
 		end if
 	end if
 
@@ -147,7 +150,7 @@ end function
 
 private function hCalcPadding _
 	( _
-		byval ofs as integer, _
+		byval ofs as longint, _
 		byval align as integer, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr _
@@ -178,8 +181,8 @@ end function
 
 private function hCheckUDTSize _
 	( _
-		byval udtlen as uinteger, _
-		byval fieldlen as uinteger, _
+		byval udtlen as ulongint, _
+		byval fieldlen as ulongint, _
 		byval fieldpad as uinteger _
 	) as integer
 
@@ -202,7 +205,7 @@ function symbCheckBitField _
 	( _
 		byval udt as FBSYMBOL ptr, _
 		byval dtype as integer, _
-		byval lgt as integer, _
+		byval lgt as longint, _
 		byval bits as integer _
 	) as integer
 
@@ -229,7 +232,7 @@ private function symbAddBitField _
 		byval bitpos as integer, _
 		byval bits as integer, _
 		byval dtype as integer, _
-		byval lgt as integer _
+		byval lgt as longint _
 	) as FBSYMBOL ptr
 
 	dim as FBSYMBOL ptr sym = any
@@ -260,7 +263,7 @@ function symbAddField _
 		dTB() as FBARRAYDIM, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
-		byval lgt as integer, _
+		byval lgt as longint, _
 		byval bits as integer _
 	) as FBSYMBOL ptr static
 
@@ -599,7 +602,8 @@ end sub
 
 private function hGetReturnType( byval sym as FBSYMBOL ptr ) as integer
 	dim as FBSYMBOL ptr fld = any
-	dim as integer res = any
+	dim as integer res = any, unpadlen = any
+	dim as longint unpadlen64 = any
 
 	'' UDT has a dtor, copy-ctor or virtual methods?
 	if( symbCompIsTrivial( sym ) = FALSE ) then
@@ -622,8 +626,21 @@ private function hGetReturnType( byval sym as FBSYMBOL ptr ) as integer
 
 	res = FB_DATATYPE_VOID
 
-	'' use the un-padded UDT len
-	select case as const symbGetUDTUnpadLen( sym )
+	'' Check whether the structure is small enough to be returned in
+	'' registers, and if so, select the proper dtype. For this, the
+	'' un-padded UDT length should be checked so we can handle the cases
+	'' where length=1/2/3.
+	unpadlen64 = symbGetUDTUnpadLen( sym )
+
+	'' Check for longint -> integer overflow, otherwise that could happen
+	'' to the SELECT's temp var below
+	unpadlen = unpadlen64
+	if( unpadlen <> unpadlen64 ) then
+		'' very big structure (> 2GiB), no way to return in registers
+		return FB_DATATYPE_STRUCT
+	end if
+
+	select case as const( unpadlen )
 	case 1
 		res = FB_DATATYPE_BYTE
 
@@ -635,12 +652,12 @@ private function hGetReturnType( byval sym as FBSYMBOL ptr ) as integer
 		fld = symbUdtGetFirstField( sym )
 		if( fld->lgt = 2 ) then
 			'' and if the struct is not packed
-			if( sym->lgt >= FB_INTEGERSIZE ) then
+			if( sym->lgt >= 4 ) then
 				res = FB_DATATYPE_INTEGER
 			end if
 		end if
 
-	case FB_INTEGERSIZE
+	case 4
 		'' return in ST(0) if there's only one element and it's a SINGLE
 		do
 			fld = symbUdtGetFirstField( sym )
@@ -665,17 +682,17 @@ private function hGetReturnType( byval sym as FBSYMBOL ptr ) as integer
 			res = FB_DATATYPE_INTEGER
 		end if
 
-	case FB_INTEGERSIZE + 1, FB_INTEGERSIZE + 2, FB_INTEGERSIZE + 3
+	case 5, 6, 7
 		'' return as longint only if first is a int
 		fld = symbUdtGetFirstField( sym )
-		if( fld->lgt = FB_INTEGERSIZE ) then
+		if( fld->lgt = 4 ) then
 			'' and if the struct is not packed
-			if( sym->lgt >= FB_INTEGERSIZE*2 ) then
+			if( sym->lgt >= 8 ) then
 				res = FB_DATATYPE_LONGINT
 			end if
 		end if
 
-	case FB_INTEGERSIZE*2
+	case 8
 		'' return in ST(0) if there's only one element and it's a DOUBLE
 		do
 			fld = symbUdtGetFirstField( sym )

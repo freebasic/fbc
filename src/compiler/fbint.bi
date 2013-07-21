@@ -27,54 +27,6 @@ const FB_INITVARININODES	= 1000
 const FB_INITINCFILES		= 256
 const FB_INITSTMTSTACKNODES	= 128
 
-'' TODO: x86 specific
-const FB_INTEGERSIZE		= 4
-const FB_POINTERSIZE		= 4
-const FB_LONGSIZE			= FB_POINTERSIZE
-
-'' x86_64
-''const FB_INTEGERSIZE = 4
-''const FB_POINTERSIZE = 8
-''const FB_LONGSIZE    = 8
-'' But on win32 (ok, win64):
-''const FB_LONGSIZE    = 4
-'' These cannot be hard coded since we have -target and -arch options
-
-'' array descriptor
-'' x86 assumption
-type FB_ARRAYDESC
-    data			as any ptr
-	ptr				as any ptr
-    size			as integer
-    element_len		as integer
-    dimensions		as integer
-end type
-
-const FB_ARRAYDESCLEN		= len( FB_ARRAYDESC )
-
-const FB_ARRAYDESC_DATAOFFS = offsetof( FB_ARRAYDESC, data )
-
-'' x86 assumption
-type FB_ARRAYDESCDIM
-	elements		as integer
-	lbound			as integer
-	ubound			as integer
-end type
-
-const FB_ARRAYDESC_DIMLEN	= len( FB_ARRAYDESCDIM )
-const FB_ARRAYDESC_LBOUNDOFS= offsetof( FB_ARRAYDESCDIM, lbound )
-const FB_ARRAYDESC_UBOUNDOFS= offsetof( FB_ARRAYDESCDIM, ubound )
-
-'' string descriptor
-'' x86 assumption
-type FB_STRDESC
-	data			as zstring ptr
-	len				as integer
-	size			as integer
-end type
-
-const FB_STRDESCLEN			= len( FB_STRDESC )
-
 '' DATA stmt internal format
 enum FB_DATASTMT_ID
 	FB_DATASTMT_ID_NULL		= &h0000
@@ -628,11 +580,6 @@ type FB_LANG_TYPEREMAP
 	long			as FB_DATATYPE
 end type
 
-type FB_LANG_SIZEREMAP
-	integer			as integer
-	long			as integer
-end type
-
 type FB_LANG_LITREMAP
 	short			as FB_DATATYPE
 	ushort			as FB_DATATYPE
@@ -644,7 +591,6 @@ end type
 type FB_LANG_CTX
 	opt				as FB_LANG_OPT				'' language supported features
 	typeremap		as FB_LANG_TYPEREMAP
-	sizeremap		as FB_LANG_SIZEREMAP
 	litremap		as FB_LANG_LITREMAP			'' default numeric literal data type
 end type
 
@@ -657,6 +603,8 @@ type FBENV
 	clopt			as FBCMMLINEOPT				'' cmm-line options
 	target			as FBTARGET					'' target specific
 	wchar_doconv		as integer				'' ok to convert literals at compile-time?
+
+	pointersize		as integer
 
 	'' Parse-specific things
 
@@ -691,13 +639,6 @@ end type
 declare function fbGetInputFileParentDir( ) as string
 declare sub fbAddLib(byval libname as zstring ptr)
 declare sub fbAddLibPath(byval path as zstring ptr)
-
-''
-'' macros
-''
-
-'' x86 assumption!
-#define FB_ROUNDLEN(lgt) ((lgt + (FB_INTEGERSIZE-1)) and not (FB_INTEGERSIZE-1))
 
 ''
 '' super globals

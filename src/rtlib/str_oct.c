@@ -2,7 +2,6 @@
 
 #include "fb.h"
 
-/*:::::*/
 static char *hFillDigits( char *buf, int digits, int totdigs, int cnt )
 {
 	if( digits > 0 )
@@ -18,12 +17,11 @@ static char *hFillDigits( char *buf, int digits, int totdigs, int cnt )
 	return buf;
 }
 
-/*:::::*/
-static FBSTRING *hOCT ( unsigned int num, int len, int digits )
+static FBSTRING *hOCT( unsigned int num, ssize_t len, int digits )
 {
 	FBSTRING *dst;
 	char *buf;
-	int	i, totdigs;
+	int i, totdigs;
 
 	totdigs = ((len * 8) / 3) + 1;
 
@@ -95,39 +93,32 @@ static FBSTRING *hOCT ( unsigned int num, int len, int digits )
 	return dst;
 }
 
-/*:::::*/
 FBCALL FBSTRING *fb_OCT_b ( unsigned char num )
 {
 	return hOCT( num, sizeof( char ), 0 );
 }
 
-/*:::::*/
 FBCALL FBSTRING *fb_OCT_s ( unsigned short num )
 {
 	return hOCT( num, sizeof( short ), 0 );
 }
 
-/*:::::*/
 FBCALL FBSTRING *fb_OCT_i ( unsigned int num )
 {
 	return hOCT( num, sizeof( int ), 0 );
 }
 
-/*:::::*/
 FBCALL FBSTRING *fb_OCTEx_b ( unsigned char num, int digits )
 {
 	return hOCT( num, sizeof( char ), digits );
 }
 
-/*:::::*/
 FBCALL FBSTRING *fb_OCTEx_s ( unsigned short num, int digits )
 {
 	return hOCT( num, sizeof( short ), digits );
 }
 
-/*:::::*/
 FBCALL FBSTRING *fb_OCTEx_i ( unsigned int num, int digits )
 {
 	return hOCT( num, sizeof( int ), digits );
 }
-

@@ -17,7 +17,7 @@ static void NTAPI threadproc(void *param1, void *param2)
 #endif
 }
 
-FBCALL FBTHREAD *fb_ThreadCreate( FB_THREADPROC proc, void *param, int stack_size )
+FBCALL FBTHREAD *fb_ThreadCreate( FB_THREADPROC proc, void *param, ssize_t stack_size )
 {
 	NTSTATUS status;
 	FBTHREAD *thread;

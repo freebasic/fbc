@@ -2,11 +2,11 @@
 
 #include "../fb.h"
 
-char *fb_hGetExePath( char *dst, int maxlen )
+char *fb_hGetExePath( char *dst, ssize_t maxlen )
 {
 	const char *p = strrchr( __fb_ctx.argv[0], '/' );
 	if( p ) {
-		int len = p - __fb_ctx.argv[0];
+		ssize_t len = p - __fb_ctx.argv[0];
 		if( len > maxlen ) {
 			len = maxlen;
 		}

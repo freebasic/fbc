@@ -2,8 +2,7 @@
 
 #include "fb.h"
 
-/*:::::*/
-static FB_WCHAR *hBin ( unsigned int num, int len, int digits )
+static FB_WCHAR *hBin( unsigned int num, ssize_t len, int digits )
 {
 	FB_WCHAR *dst, *buf;
 	int i, totdigs;
@@ -62,27 +61,22 @@ static FB_WCHAR *hBin ( unsigned int num, int len, int digits )
 	return dst;
 }
 
-/*:::::*/
 FBCALL FB_WCHAR *fb_WstrBin_b ( unsigned char num )
 {
 	return hBin( num, sizeof( char ), 0 );
 }
 
-/*:::::*/
 FBCALL FB_WCHAR *fb_WstrBin_s ( unsigned short num )
 {
 	return hBin( num, sizeof( short ), 0 );
 }
 
-/*:::::*/
 FBCALL FB_WCHAR *fb_WstrBin_i ( unsigned int num )
 {
 	return hBin( num, sizeof( int ), 0 );
 }
 
-/*:::::*/
 FBCALL FB_WCHAR *fb_WstrBinEx_i ( unsigned int num, int digits )
 {
 	return hBin( num, sizeof( int ), digits );
 }
-

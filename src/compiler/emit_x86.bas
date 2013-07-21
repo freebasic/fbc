@@ -49,31 +49,31 @@ declare function _getTypeString( byval dtype as integer ) as const zstring ptr
 	'' same order as FB_DATATYPE
 	dim shared dtypeTB(0 to FB_DATATYPES-1) as EMITDATATYPE => _
 	{ _
-		( FB_DATACLASS_INTEGER, 0 			    , 0, "void ptr"  ), _	'' void
-		( FB_DATACLASS_INTEGER, 1			    , 0, "byte ptr"  ), _	'' byte
-		( FB_DATACLASS_INTEGER, 1			    , 0, "byte ptr"  ), _	'' ubyte
-		( FB_DATACLASS_INTEGER, 1               , 0, "byte ptr"  ), _	'' char
-		( FB_DATACLASS_INTEGER, 2               , 1, "word ptr"  ), _	'' short
-		( FB_DATACLASS_INTEGER, 2               , 1, "word ptr"  ), _	'' ushort
-		( FB_DATACLASS_INTEGER, 2  				, 1, "word ptr" ), _	'' wchar
-		( FB_DATACLASS_INTEGER, FB_INTEGERSIZE  , 2, "dword ptr" ), _	'' int
-		( FB_DATACLASS_INTEGER, FB_INTEGERSIZE  , 2, "dword ptr" ), _   '' uint
-		( FB_DATACLASS_INTEGER, FB_INTEGERSIZE  , 2, "dword ptr" ), _	'' enum
-		( FB_DATACLASS_INTEGER, FB_INTEGERSIZE  , 2, "dword ptr" ), _	'' bitfield
-		( FB_DATACLASS_INTEGER, FB_LONGSIZE  	, 2, "dword ptr" ), _	'' long
-		( FB_DATACLASS_INTEGER, FB_LONGSIZE  	, 2, "dword ptr" ), _   '' ulong
-		( FB_DATACLASS_INTEGER, FB_INTEGERSIZE*2, 2, "qword ptr" ), _	'' longint
-		( FB_DATACLASS_INTEGER, FB_INTEGERSIZE*2, 2, "qword ptr" ), _	'' ulongint
-		( FB_DATACLASS_FPOINT , 4			    , 3, "dword ptr" ), _	'' single
-		( FB_DATACLASS_FPOINT , 8			    , 3, "qword ptr" ), _	'' double
-		( FB_DATACLASS_STRING , FB_STRDESCLEN	, 0, ""          ), _	'' string
-		( FB_DATACLASS_STRING , 1               , 0, "byte ptr"  ), _	'' fix-len string
-		( FB_DATACLASS_INTEGER, FB_INTEGERSIZE  , 2, "dword ptr" ), _	'' struct
-		( FB_DATACLASS_INTEGER, 0  				, 0, "" 		), _	'' namespace
-		( FB_DATACLASS_INTEGER, FB_INTEGERSIZE  , 2, "dword ptr" ), _	'' function
-		( FB_DATACLASS_INTEGER, 1			    , 0, "byte ptr"  ), _	'' fwd-ref
-		( FB_DATACLASS_INTEGER, FB_POINTERSIZE  , 2, "dword ptr" ), _	'' pointer
-		( FB_DATACLASS_INTEGER, 16              , 3, "xmmword ptr" ) _	'' 128-bit
+		( 0, "void ptr"  ), _ '' void
+		( 0, "byte ptr"  ), _ '' byte
+		( 0, "byte ptr"  ), _ '' ubyte
+		( 0, "byte ptr"  ), _ '' char
+		( 1, "word ptr"  ), _ '' short
+		( 1, "word ptr"  ), _ '' ushort
+		( 1, "word ptr"  ), _ '' wchar
+		( 2, "dword ptr" ), _ '' int
+		( 2, "dword ptr" ), _ '' uint
+		( 2, "dword ptr" ), _ '' enum
+		( 2, "dword ptr" ), _ '' bitfield
+		( 2, "dword ptr" ), _ '' long
+		( 2, "dword ptr" ), _ '' ulong
+		( 2, "qword ptr" ), _ '' longint
+		( 2, "qword ptr" ), _ '' ulongint
+		( 3, "dword ptr" ), _ '' single
+		( 3, "qword ptr" ), _ '' double
+		( 0, ""          ), _ '' string
+		( 0, "byte ptr"  ), _ '' fix-len string
+		( 2, "dword ptr" ), _ '' struct
+		( 0, ""          ), _ '' namespace
+		( 2, "dword ptr" ), _ '' function
+		( 0, "byte ptr"  ), _ '' fwd-ref
+		( 2, "dword ptr" ), _ '' pointer
+		( 3, "xmmword ptr" ) _ '' 128-bit
 	}
 
 const EMIT_MAXKEYWORDS = 600
@@ -489,7 +489,7 @@ sub hPrepOperand _
 		'' offset
 		ofs += vreg->ofs
 		if( isaux ) then
-			ofs += FB_INTEGERSIZE
+			ofs += 4
 		end if
 
 		if( ofs > 0 ) then
@@ -526,9 +526,9 @@ sub hPrepOperand _
 
 	case IR_VREGTYPE_IMM
 		if( isaux = FALSE ) then
-			operand = str( vreg->value.int )
+			operand = str( vreg->value.i )
 		else
-			operand = str( vreg->vaux->value.int )
+			operand = str( vreg->vaux->value.i )
 		end if
 
 	case else
@@ -957,7 +957,9 @@ private sub hEmitVarConst _
 	case FB_DATATYPE_WCHAR
 		stext = QUOTE
 		stext += *hEscapeW( symbGetVarLitTextW( s ) )
-		stext += *hGetWstrNull( )
+		for i as integer = 1 to typeGetSize( FB_DATATYPE_WCHAR )
+			stext += RSLASH + "0"
+		next
 		stext += QUOTE
 
 	case else
@@ -1392,12 +1394,12 @@ end sub
 private sub _emitJMPTB _
 	( _
 		byval tbsym as FBSYMBOL ptr, _
-		byval values1 as uinteger ptr, _
+		byval values1 as ulongint ptr, _
 		byval labels1 as FBSYMBOL ptr ptr, _
 		byval labelcount as integer, _
 		byval deflabel as FBSYMBOL ptr, _
-		byval minval as uinteger, _
-		byval maxval as uinteger _
+		byval minval as ulongint, _
+		byval maxval as ulongint _
 	)
 
 	dim as FBSYMBOL ptr label = any
@@ -1425,7 +1427,7 @@ private sub _emitJMPTB _
 
 	outEx( tb + ":" + NEWLINE )
 	i = 0
-	for value as uinteger = minval to maxval
+	for value as ulongint = minval to maxval
 		assert( i < labelcount )
 		if( value = values1[i] ) then
 			label = labels1[i]
@@ -1554,7 +1556,7 @@ private sub _emitRET _
 
     dim ostr as string
 
-    ostr = "ret " + str( vreg->value.int )
+	ostr = "ret " + str( vreg->value.i )
     outp( ostr )
 
 end sub
@@ -1667,7 +1669,7 @@ private sub _emitSTORI2L _
 		hMOV dst1, src1
 
 		'' negative?
-		if( typeIsSigned( svreg->dtype ) and (svreg->value.int and &h80000000) ) then
+		if( typeIsSigned( svreg->dtype ) and (svreg->value.i < 0) ) then
 			hMOV dst2, "-1"
 		else
 			hMOV dst2, "0"
@@ -1677,7 +1679,7 @@ private sub _emitSTORI2L _
 	end if
 
 	''
-	if( sdsize < FB_INTEGERSIZE ) then
+	if( sdsize < 4 ) then
 		ext = *hGetRegName( FB_DATATYPE_INTEGER, svreg->reg )
 
 		if( typeIsSigned( svreg->dtype ) ) then
@@ -1906,7 +1908,7 @@ private sub _emitSTORF2I _
 		'' unsigned.. try a bigger type
 		else
 			'' uint?
-			if( ddsize = FB_INTEGERSIZE ) then
+			if( ddsize = 4 ) then
 				outp "sub esp, 8"
 				outp "fistp qword ptr [esp]"
 				hPOP dst
@@ -2049,7 +2051,7 @@ private sub _emitSTORI2F _
 		if( typeIsSigned( svreg->dtype ) ) then
 
 			'' not an integer? make it
-			if( (svreg->typ = IR_VREGTYPE_REG) and (sdsize < FB_INTEGERSIZE) ) then
+			if( (svreg->typ = IR_VREGTYPE_REG) and (sdsize < 4) ) then
 				src = *hGetRegName( FB_DATATYPE_INTEGER, svreg->reg )
 			end if
 
@@ -2064,7 +2066,7 @@ private sub _emitSTORI2F _
 		else
 
 			'' uint..
-			if( sdsize = FB_INTEGERSIZE ) then
+			if( sdsize = 4 ) then
 				hPUSH "0"
 				hPUSH src
 				outp "fild qword ptr [esp]"
@@ -2099,7 +2101,7 @@ private sub _emitSTORI2F _
 		'' unsigned, try a bigger type..
 		else
 			'' uint..
-			if( sdsize = FB_INTEGERSIZE ) then
+			if( sdsize = 4 ) then
 				hPUSH "0"
 				hPUSH src
 				outp "fild qword ptr [esp]"
@@ -2223,11 +2225,10 @@ private sub _emitLOADI2L _
 
 	'' immediate?
 	if( svreg->typ = IR_VREGTYPE_IMM ) then
-
         hMOV dst1, src1
 
 		'' negative?
-		if( typeIsSigned( svreg->dtype ) and (svreg->value.int and &h80000000) ) then
+		if( typeIsSigned( svreg->dtype ) and (svreg->value.i < 0) ) then
 			hMOV dst2, "-1"
 		else
 			hMOV dst2, "0"
@@ -2239,7 +2240,7 @@ private sub _emitLOADI2L _
 	''
 	if( typeIsSigned( svreg->dtype ) ) then
 
-		if( sdsize < FB_INTEGERSIZE ) then
+		if( sdsize < 4 ) then
 			ostr = "movsx " + dst1 + COMMA + src1
 			outp ostr
 		else
@@ -2253,7 +2254,7 @@ private sub _emitLOADI2L _
 
 	else
 
-		if( sdsize < FB_INTEGERSIZE ) then
+		if( sdsize < 4 ) then
 			ostr = "movzx " + dst1 + COMMA + src1
 			outp ostr
 		else
@@ -2509,7 +2510,7 @@ private sub _emitLOADF2I _
 			outp ostr
 
 			'' not an integer? make it
-			if( ddsize < FB_INTEGERSIZE ) then
+			if( ddsize < 4 ) then
 				dst = *hGetRegName( FB_DATATYPE_INTEGER, dvreg->reg )
 			end if
 
@@ -2519,7 +2520,7 @@ private sub _emitLOADF2I _
 		else
 
 			'' uint?
-			if( ddsize = FB_INTEGERSIZE ) then
+			if( ddsize = 4 ) then
 				outp "sub esp, 8"
 				outp "fistp qword ptr [esp]"
 				hPOP dst
@@ -2659,7 +2660,7 @@ private sub _emitLOADI2F _
 		if( typeIsSigned( svreg->dtype ) ) then
 
 			'' not an integer? make it
-			if( (svreg->typ = IR_VREGTYPE_REG) and (sdsize < FB_INTEGERSIZE) ) then
+			if( (svreg->typ = IR_VREGTYPE_REG) and (sdsize < 4) ) then
 				src = *hGetRegName( FB_DATATYPE_INTEGER, svreg->reg )
 			end if
 
@@ -2674,7 +2675,7 @@ private sub _emitLOADI2F _
 		else
 
 			'' uint?
-			if( sdsize = FB_INTEGERSIZE ) then
+			if( sdsize = 4 ) then
 				hPUSH "0"
 				hPUSH src
 				outp "fild qword ptr [esp]"
@@ -2709,7 +2710,7 @@ private sub _emitLOADI2F _
 		'' unsigned, try a bigger type..
 		else
 			'' uint..
-			if( sdsize = FB_INTEGERSIZE ) then
+			if( sdsize = 4 ) then
 				hPUSH "0"
 				hPUSH src
 				outp "fild qword ptr [esp]"
@@ -2845,7 +2846,7 @@ private sub _emitADDI _
 	doinc = FALSE
 	dodec = FALSE
 	if( svreg->typ = IR_VREGTYPE_IMM ) then
-		select case svreg->value.int
+		select case svreg->value.i
 		case 1
 			doinc = TRUE
 		case -1
@@ -2935,7 +2936,7 @@ private sub _emitSUBI _
 	doinc = FALSE
 	dodec = FALSE
 	if( svreg->typ = IR_VREGTYPE_IMM ) then
-		select case svreg->value.int
+		select case svreg->value.i
 		case 1
 			dodec = TRUE
 		case -1
@@ -3215,15 +3216,15 @@ private sub _emitDIVI _
 	hPrepOperand( dvreg, dst )
 	hPrepOperand( svreg, src )
 
-    if( dtypeTB(dvreg->dtype).size = 4 ) then
-    	eax = "eax"
-    	ecx = "ecx"
-    	edx = "edx"
-    else
-    	eax = "ax"
-    	ecx = "cx"
-    	edx = "dx"
-    end if
+	if( typeGetSize( dvreg->dtype ) = 4 ) then
+		eax = "eax"
+		ecx = "ecx"
+		edx = "edx"
+	else
+		eax = "ax"
+		ecx = "cx"
+		edx = "dx"
+	end if
 
 	ecxtrashed = FALSE
 
@@ -3282,7 +3283,7 @@ private sub _emitDIVI _
 	end if
 
 	if( typeIsSigned( dvreg->dtype ) ) then
-		if( dtypeTB(dvreg->dtype).size = 4 ) then
+		if( typeGetSize( dvreg->dtype ) = 4 ) then
 			outp "cdq"
 		else
 			outp "cwd"
@@ -3369,15 +3370,15 @@ private sub _emitMODI _
 	hPrepOperand( dvreg, dst )
 	hPrepOperand( svreg, src )
 
-    if( dtypeTB(dvreg->dtype).size = 4 ) then
-    	eax = "eax"
-    	ecx = "ecx"
-    	edx = "edx"
-    else
-    	eax = "ax"
-    	ecx = "cx"
-    	edx = "dx"
-    end if
+	if( typeGetSize( dvreg->dtype ) = 4 ) then
+		eax = "eax"
+		ecx = "ecx"
+		edx = "edx"
+	else
+		eax = "ax"
+		ecx = "cx"
+		edx = "dx"
+	end if
 
 	ecxtrashed = FALSE
 
@@ -3436,7 +3437,7 @@ private sub _emitMODI _
 	end if
 
 	if( typeIsSigned( dvreg->dtype ) ) then
-		if( dtypeTB(dvreg->dtype).size = 4 ) then
+		if( typeGetSize( dvreg->dtype ) = 4 ) then
 			outp "cdq"
 		else
 			outp "cwd"
@@ -3552,7 +3553,7 @@ private sub hSHIFTL _
 	end if
 
 	if( svreg->typ = IR_VREGTYPE_IMM ) then
-		if( svreg->value.int >= 64 ) then
+		if( svreg->value.i >= 64 ) then
 			'' zero both result halves
 			if( bv->typ = IR_VREGTYPE_REG ) then
 				outp "xor " + b + ", " + b
@@ -3565,7 +3566,7 @@ private sub hSHIFTL _
 			else
 				outp "mov " + a + ", 0"
 			end if
-		elseif( svreg->value.int >= 32 ) then
+		elseif( svreg->value.i >= 32 ) then
 			tmpisfree = TRUE
 			if( (bv->typ = IR_VREGTYPE_REG) or (av->typ = IR_VREGTYPE_REG) ) then
 				'' a or b is a reg
@@ -3595,8 +3596,8 @@ private sub hSHIFTL _
 				outp "mov " + b + ", 0"
 			end if
 
-			if( svreg->value.int > 32 ) then
-				src = str( svreg->value.int - 32 )
+			if( svreg->value.i > 32 ) then
+				src = str( svreg->value.i - 32 )
 				outp mnemonic32 + a + ", " + src
 			end if
 
@@ -3659,7 +3660,7 @@ private sub hSHIFTL _
 
 		if( (svreg->typ <> IR_VREGTYPE_REG) or (svreg->reg <> EMIT_REG_ECX) ) then
 			'' handle src < dword
-			if( typeGetSize( svreg->dtype ) <> FB_INTEGERSIZE ) then
+			if( typeGetSize( svreg->dtype ) <> 4 ) then
  				'' if it's not a reg, the right size was already set at the hPrepOperand() above
  				if( svreg->typ = IR_VREGTYPE_REG ) then
  					src = *hGetRegName( FB_DATATYPE_INTEGER, svreg->reg )
@@ -4306,7 +4307,7 @@ private sub hCMPI _
 	'' optimize "cmp" to "test"
 	dotest = FALSE
 	if( (svreg->typ = IR_VREGTYPE_IMM) and (dvreg->typ = IR_VREGTYPE_REG) ) then
-		if( svreg->value.int = 0 ) then
+		if( svreg->value.i = 0 ) then
 			dotest = TRUE
 		end if
 	end if
@@ -4968,7 +4969,7 @@ private sub _emitABSI _
 		hPUSH( rname )
 	end if
 
-	bits = (dtypeTB(dvreg->dtype).size * 8)-1
+	bits = typeGetBits( dvreg->dtype ) - 1
 
 	hMOV( rname, dst )
 
@@ -5323,10 +5324,10 @@ end sub
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 private sub _emitSTACKALIGN( byval vreg as IRVREG ptr, byval unused as integer )
-	if( vreg->value.int > 0 ) then
-		outp( "sub esp, " + str( vreg->value.int ) )
+	if( vreg->value.i > 0 ) then
+		outp( "sub esp, " + str( vreg->value.i ) )
 	else
-		outp( "add esp, " + str( -vreg->value.int ) )
+		outp( "add esp, " + str( -vreg->value.i ) )
 	end if
 end sub
 
@@ -5597,18 +5598,18 @@ private sub _emitPOPI _
 		'' gosub quirk: return-to-label needs to pop return address from the stack
 		'' see ast-gosub.bas::astGosubAddReturn() - (jeffm)
 
-		if( dvreg->value.int = 4 ) then
+		if( dvreg->value.i = 4 ) then
 			if( hIsRegFree( FB_DATACLASS_INTEGER, EMIT_REG_EAX ) ) then
 				hPOP "eax"
 			else
 				outp "add esp, 4"
 			end if
 		else
-			ostr = "add esp, " + str( dvreg->value.int )
+			ostr = "add esp, " + str( dvreg->value.i )
 			outp ostr
 		end if
 
-	elseif( dsize = FB_INTEGERSIZE ) then
+	elseif( dsize = 4 ) then
 		'' POP 4 bytes directly, no need for intermediate code
 		ostr = "pop " + dst
 		outp ostr
@@ -6149,7 +6150,7 @@ private sub _emitMEMCLEAR _
 
 	'' handle the assumption done at ast-node-mem::newMEM()
 	if( irIsIMM( svreg ) ) then
-		dim as integer bytes = svreg->value.int
+		dim as integer bytes = svreg->value.i
 		if( bytes > EMIT_MEMBLOCK_MAXLEN ) then
 			hMemClearRepIMM( dvreg, bytes )
 		else
@@ -6290,7 +6291,9 @@ sub emitVARINIWSTR( byval s as zstring ptr )
 	static as string ostr
 	ostr = ".ascii " + QUOTE
 	ostr += *s
-	ostr += *hGetWstrNull( )
+	for i as integer = 1 to typeGetSize( FB_DATATYPE_WCHAR )
+		ostr += RSLASH + "0"
+	next
 	ostr += QUOTE + NEWLINE
 	outEx( ostr )
 end sub
@@ -6691,15 +6694,15 @@ private sub _procAllocStaticVars( byval s as FBSYMBOL ptr )
 	wend
 end sub
 
-'':::::
-private function _procAllocLocal _
+private sub _procAllocLocal _
 	( _
 		byval proc as FBSYMBOL ptr, _
-		byval sym as FBSYMBOL ptr, _
-		byval lgt as integer _
-	) as integer static
+		byval sym as FBSYMBOL ptr _
+	)
 
-    dim as integer ofs
+	dim as integer ofs = any, lgt = any
+
+	lgt = symbGetLen( sym ) * symbGetArrayElements( sym )
 
     proc->proc.ext->stk.localofs += ((lgt + 3) and not 3)
 
@@ -6709,23 +6712,30 @@ private function _procAllocLocal _
     	proc->proc.ext->stk.localmax = -ofs
     end if
 
-	function = ofs
+	sym->ofs = ofs
 
-end function
+end sub
 
-'':::::
-private function _procAllocArg _
+private sub _procAllocArg _
 	( _
 		byval proc as FBSYMBOL ptr, _
-		byval sym as FBSYMBOL ptr, _
-		byval lgt as integer _
-	) as integer static
+		byval sym as FBSYMBOL ptr _
+	)
 
-	function = proc->proc.ext->stk.argofs
+	dim as integer lgt = any
 
+	assert( symbIsParam( sym ) )
+
+	if( symbIsParamByVal( sym ) ) then
+		lgt = symbGetLen( sym )
+	else
+		lgt = 4    '' it's just a pointer
+	end if
+
+	sym->ofs = proc->proc.ext->stk.argofs
     proc->proc.ext->stk.argofs += ((lgt + 3) and not 3)
 
-end function
+end sub
 
 '':::::
 private sub _procHeader _

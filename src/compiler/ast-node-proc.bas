@@ -818,7 +818,8 @@ private function hCallCtorList _
 
 	dim as FBSYMBOL ptr cnt = any, label = any, iter = any, subtype = any
 	dim as ASTNODE ptr fldexpr = any, tree = any
-	dim as integer dtype = any, elements = any
+	dim as integer dtype = any
+	dim as longint elements = any
 
 	'' instance? (this function is also used by the static dtor wrapper)
 	if( fld <> NULL ) then
@@ -871,7 +872,7 @@ private function hCallCtorList _
 	tree = astNewLINK( tree, astBuildVarInc( iter, iif( is_ctor, 1, -1 ) ) )
 
 	'' next
-	tree = astBuildForEnd( tree, cnt, label, 1, astNewCONSTi( elements ) )
+	tree = astBuildForEnd( tree, cnt, label, astNewCONSTi( elements ) )
 
 	function = tree
 end function
@@ -923,7 +924,7 @@ private function hClearUnionFields _
 	) as ASTNODE ptr
 
 	dim as FBSYMBOL ptr fld = any
-	dim as integer bytes = any, lgt = any, base_ofs = any
+	dim as longint bytes = any, lgt = any, base_ofs = any
 
 	'' merge all union fields
 	fld = base_fld
@@ -1056,11 +1057,10 @@ private function hInitVptr _
 
 	'' this.vptr = cast( any ptr, (cast(byte ptr, @vtable) + sizeof(void *) * 2) )
 	'' assuming that everything with a vptr extends fb_Object
-	'' Also, x86 assumption
 	function = astNewASSIGN( _ 
 		astBuildInstPtr( this_, symbUdtGetFirstField( symb.rtti.fb_object ) ), _
 		astNewCONV( typeAddrOf( FB_DATATYPE_VOID ), NULL, _
-			astNewADDROF( astNewVAR( parent->udt.ext->vtable, FB_POINTERSIZE*2 ) ) ) )
+			astNewADDROF( astNewVAR( parent->udt.ext->vtable, env.pointersize * 2 ) ) ) )
 end function
 
 private sub hCallCtors( byval n as ASTNODE ptr, byval sym as FBSYMBOL ptr )

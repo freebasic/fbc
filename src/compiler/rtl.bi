@@ -345,7 +345,6 @@
 #define FB_RTL_GFXGETQB					"fb_GfxGetQB"
 #define FB_RTL_GFXSCREENSET 			"fb_GfxScreen"
 #define FB_RTL_GFXSCREENSETQB 			"fb_GfxScreenQB"
-#define FB_RTL_GFXSCREENRES 			"fb_GfxScreenRes"
 #define FB_RTL_GFXIMAGECREATE			"fb_GfxImageCreate"
 #define FB_RTL_GFXIMAGECREATEQB			"fb_GfxImageCreateQB"
 
@@ -825,6 +824,7 @@ enum FB_RTL_OPT
 	FB_RTL_OPT_IRHLCBUILTIN   = &h00000800                  '' proc will be emitted by ir-hlc as needed, not declared as if it was a public one from rtlib
  	FB_RTL_OPT_GCCBUILTIN = &h00001000					'' GCC builtin, don't redeclare, create a wrapper
 	FB_RTL_OPT_NOGCC	  = &h00002000                  '' anything but -gen gcc
+	FB_RTL_OPT_X86ONLY        = &h00004000  '' on x86 only
 end enum
 
 enum FB_RTL_TCTYPES
@@ -889,13 +889,13 @@ declare function rtlOvlProcCall _
 		byval param2 as ASTNODE ptr = NULL _
 	) as ASTNODE ptr
 
-declare function rtlCalcExprLen( byval expr as ASTNODE ptr ) as integer
+declare function rtlCalcExprLen( byval expr as ASTNODE ptr ) as longint
 
 declare function rtlCalcStrLen _
 	( _
 		byval expr as ASTNODE ptr, _
 		byval dtype as integer _
-	) as integer
+	) as longint
 
 declare function rtlStrCompare _
 	( _
@@ -1096,7 +1096,7 @@ declare function rtlArrayErase _
 declare function rtlArrayRedim _
 	( _
 		byval s as FBSYMBOL ptr, _
-		byval elementlen as integer, _
+		byval elementlen as longint, _
 		byval dimensions as integer, _
 		exprTB() as ASTNODE ptr, _
 		byval dopreserve as integer, _
@@ -1222,7 +1222,7 @@ declare function rtlMemCopy _
 	( _
 		byval dst as ASTNODE ptr, _
 		byval src as ASTNODE ptr, _
-		byval bytes as integer _
+		byval bytes as longint _
 	) as ASTNODE ptr
 
 declare function rtlMemSwap _
@@ -1246,9 +1246,9 @@ declare function rtlWstrSwap _
 declare function rtlMemCopyClear _
 	( _
 		byval dstexpr as ASTNODE ptr, _
-		byval dstlen as integer, _
+		byval dstlen as longint, _
 		byval srcexpr as ASTNODE ptr, _
-		byval srclen as integer _
+		byval srclen as longint _
 	) as integer
 
 declare function rtlMemNewOp _

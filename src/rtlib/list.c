@@ -11,9 +11,9 @@
  * @param elem_size Size of elements in the array.
  * @param size      Number of elements in the array.
  */
-void fb_hListInit( FB_LIST *list, void *table, int elem_size, int size )
+void fb_hListInit( FB_LIST *list, void *table, size_t elem_size, size_t size )
 {
-	int i;
+	size_t i;
 	FB_LISTELEM *next;
     unsigned char *elem = (unsigned char *)table;
 

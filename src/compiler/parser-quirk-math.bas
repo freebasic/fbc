@@ -48,7 +48,7 @@ end function
 private function hLen _
 	( _
 		byval expr as ASTNODE ptr, _
-		byref lgt as integer _
+		byref lgt as longint _
 	) as ASTNODE ptr
 
 	dim as FBSYMBOL ptr litsym = any
@@ -99,7 +99,8 @@ private function hLenSizeof _
 	) as ASTNODE ptr
 
 	dim as ASTNODE ptr expr = any, expr2 = any, initree = any
-	dim as integer dtype = any, lgt = any
+	dim as integer dtype = any
+	dim as longint lgt = any
 	dim as FBSYMBOL ptr subtype = any
 
 	'' LEN | SIZEOF

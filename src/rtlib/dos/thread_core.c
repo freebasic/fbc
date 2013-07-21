@@ -2,7 +2,7 @@
 
 #include "../fb.h"
 
-FBCALL FBTHREAD *fb_ThreadCreate( FB_THREADPROC proc, void *param, int stack_size )
+FBCALL FBTHREAD *fb_ThreadCreate( FB_THREADPROC proc, void *param, ssize_t stack_size )
 {
 	return NULL;
 }

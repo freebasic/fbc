@@ -27,7 +27,7 @@ sub hSymbolType _
 	( _
 		byref dtype as integer, _
 		byref subtype as FBSYMBOL ptr, _
-		byref lgt as integer _
+		byref lgt as longint _
 	)
 
 	'' parse the symbol type (INTEGER, STRING, etc...)
@@ -36,7 +36,7 @@ sub hSymbolType _
 		'' error recovery: fake a type
 		dtype = FB_DATATYPE_INTEGER
 		subtype = NULL
-		lgt = FB_INTEGERSIZE
+		lgt = typeGetSize( dtype )
 	end if
 
 	'' ANY?
@@ -45,7 +45,7 @@ sub hSymbolType _
 		'' error recovery: fake a type
 		dtype = typeAddrOf( dtype )
 		subtype = NULL
-		lgt = FB_POINTERSIZE
+		lgt = typeGetSize( dtype )
 	end if
 
 end sub
@@ -381,7 +381,7 @@ private function hDeclStaticVar _
 		byval idalias as zstring ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
-		byval lgt as integer, _
+		byval lgt as longint, _
 		byval addsuffix as integer, _
 		byval attrib as integer, _
 		byval dimensions as integer, _
@@ -438,7 +438,7 @@ private function hDeclDynArray _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
 		byval is_typeless as integer, _
-		byval lgt as integer, _
+		byval lgt as longint, _
 		byval addsuffix as integer, _
 		byval attrib as integer, _
 		byval dimensions as integer _
@@ -1187,7 +1187,8 @@ function cVarDecl _
     dim as ASTNODE ptr initree = any
     dim as integer addsuffix = any, is_dynamic = any, is_multdecl = any
     dim as integer is_typeless = any, is_decl = any, check_exprtb = any
-    dim as integer dtype = any, lgt = any, ofs = any
+	dim as integer dtype = any
+	dim as longint lgt = any
     dim as integer dimensions = any, suffix = any
     dim as zstring ptr palias = any
     dim as ASTNODE ptr assign_initree = any

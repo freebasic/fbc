@@ -2,11 +2,10 @@
 
 #include "fb.h"
 
-/*:::::*/
-FBCALL int fb_WstrToInt( const FB_WCHAR *src, int len )
+FBCALL int fb_WstrToInt( const FB_WCHAR *src, ssize_t len )
 {
     const FB_WCHAR *p, *r;
-    int radix;
+	int radix;
 
 	/* skip white spc */
 	p = fb_wstr_SkipChar( src, len, 32 );
@@ -46,13 +45,13 @@ FBCALL int fb_WstrToInt( const FB_WCHAR *src, int len )
 
 	/* wcstol() saturates values outside [-2^31, 2^31)
 	so use wcstoul() instead */
-	return (int)wcstoul( p, NULL, radix );
+	return wcstoul( p, NULL, radix );
 }
 
-/*:::::*/
-FBCALL int fb_WstrValInt ( const FB_WCHAR *str )
+FBCALL int fb_WstrValInt( const FB_WCHAR *str )
 {
-    int	val, len;
+	ssize_t len;
+	int val;
 
 	if( str == NULL )
 	    return 0;

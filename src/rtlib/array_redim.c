@@ -3,26 +3,27 @@
 #include "fb.h"
 
 int fb_hArrayAlloc
-	( 
-		FBARRAY *array, 
-		int element_len, 
-		int doclear, 
+	(
+		FBARRAY *array,
+		size_t element_len,
+		int doclear,
 		FB_DEFCTOR ctor,
-		int dimensions, 
-		va_list ap 
+		size_t dimensions,
+		va_list ap
 	)
 {
-    int	i, elements, diff, size;
+	size_t i, elements, size;
+	ssize_t diff;
     FBARRAYDIM *dim;
-    int	lbTB[FB_MAXDIMENSIONS];
-    int	ubTB[FB_MAXDIMENSIONS];
+	ssize_t lbTB[FB_MAXDIMENSIONS];
+	ssize_t ubTB[FB_MAXDIMENSIONS];
 
     /* load bounds */
     dim = &array->dimTB[0];
     for( i = 0; i < dimensions; i++ )
     {
-    	lbTB[i] = va_arg( ap, int );
-        ubTB[i] = va_arg( ap, int );
+		lbTB[i] = va_arg( ap, ssize_t );
+		ubTB[i] = va_arg( ap, ssize_t );
 
         if( lbTB[i] > ubTB[i] )
             return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
@@ -68,13 +69,13 @@ int fb_hArrayAlloc
 }
 
 static int hRedim
-	( 
-		FBARRAY *array, 
-		int element_len, 
-		int doclear, 
-		int isvarlen, 
-		int dimensions, 
-		va_list ap 
+	(
+		FBARRAY *array,
+		size_t element_len,
+		int doclear,
+		int isvarlen,
+		size_t dimensions,
+		va_list ap
 	)
 {
 
@@ -85,13 +86,13 @@ static int hRedim
 }
 
 int fb_ArrayRedimEx
-	( 
-		FBARRAY *array, 
-		int element_len, 
-		int doclear, 
-		int isvarlen, 
-		int dimensions, 
-		... 
+	(
+		FBARRAY *array,
+		size_t element_len,
+		int doclear,
+		int isvarlen,
+		size_t dimensions,
+		...
 	)
 {
 	va_list ap;
@@ -105,12 +106,12 @@ int fb_ArrayRedimEx
 }
 
 int fb_ArrayRedim
-	( 
-		FBARRAY *array, 
-		int element_len, 
-		int isvarlen, 
-		int dimensions, 
-		... 
+	(
+		FBARRAY *array,
+		size_t element_len,
+		int isvarlen,
+		size_t dimensions,
+		...
 	)
 {
 	va_list ap;

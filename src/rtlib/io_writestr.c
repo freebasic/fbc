@@ -2,11 +2,10 @@
 
 #include "fb.h"
 
-/*:::::*/
 static void hWriteStrEx( FB_FILE *handle, const char *s, size_t len, int mask )
 {
     const char *buff;
-    int bufflen;
+	ssize_t bufflen;
 
     /* close quote + new-line or comma */
     if( mask & FB_PRINT_BIN_NEWLINE )
@@ -38,7 +37,6 @@ static void hWriteStrEx( FB_FILE *handle, const char *s, size_t len, int mask )
     FB_UNLOCK( );
 }
 
-/*:::::*/
 FBCALL void fb_WriteString ( int fnum, FBSTRING *s, int mask )
 {
 	FB_FILE *handle = FB_FILE_TO_HANDLE( fnum );
@@ -59,7 +57,6 @@ FBCALL void fb_WriteString ( int fnum, FBSTRING *s, int mask )
 	fb_hStrDelTemp( s );
 }
 
-/*:::::*/
 FBCALL void fb_WriteFixString ( int fnum, char *s, int mask )
 {
 	FB_FILE *handle = FB_FILE_TO_HANDLE( fnum );

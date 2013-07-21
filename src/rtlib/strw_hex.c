@@ -7,12 +7,10 @@ static FB_WCHAR hex_table[16] = {_LC('0'),_LC('1'),_LC('2'),_LC('3'),
 								 _LC('8'),_LC('9'),_LC('A'),_LC('B'),
 								 _LC('C'),_LC('D'),_LC('E'),_LC('F')};
 
-
-/*:::::*/
-static FB_WCHAR *hHEX ( unsigned int num, int len, int digits )
+static FB_WCHAR *hHEX( unsigned int num, ssize_t len, int digits )
 {
 	FB_WCHAR *dst, *buf;
-	int	i, totdigs;
+	int i, totdigs;
 
 	if( digits > 0 )
 	{
@@ -64,27 +62,22 @@ static FB_WCHAR *hHEX ( unsigned int num, int len, int digits )
 	return dst;
 }
 
-/*:::::*/
 FBCALL FB_WCHAR *fb_WstrHex_b ( unsigned char num )
 {
 	return hHEX( num, sizeof( char ), 0 );
 }
 
-/*:::::*/
 FBCALL FB_WCHAR *fb_WstrHex_s ( unsigned short num )
 {
 	return hHEX( num, sizeof( short ), 0 );
 }
 
-/*:::::*/
 FBCALL FB_WCHAR *fb_WstrHex_i ( unsigned int num )
 {
 	return hHEX( num, sizeof( int ), 0 );
 }
 
-/*:::::*/
 FBCALL FB_WCHAR *fb_WstrHexEx_i ( unsigned int num, int digits )
 {
 	return hHEX( num, sizeof( int ), digits );
 }
-

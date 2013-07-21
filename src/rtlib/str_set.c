@@ -2,11 +2,9 @@
 
 #include "fb.h"
 
-
-/*:::::*/
 FBCALL void fb_StrLset ( FBSTRING *dst, FBSTRING *src )
 {
-    int slen, dlen, len;
+	ssize_t slen, dlen, len;
 
 	if( (dst != NULL) && (dst->data != NULL) && (src != NULL) && (src->data != NULL) )
 	{
@@ -37,10 +35,9 @@ FBCALL void fb_StrLset ( FBSTRING *dst, FBSTRING *src )
 	fb_hStrDelTemp( dst );
 }
 
-/*:::::*/
 FBCALL void fb_StrRset ( FBSTRING *dst, FBSTRING *src )
 {
-    int slen, dlen, len, padlen;
+	ssize_t slen, dlen, len, padlen;
 
 	if( (dst != NULL) && (dst->data != NULL) && (src != NULL) && (src->data != NULL) )
 	{
@@ -67,4 +64,3 @@ FBCALL void fb_StrRset ( FBSTRING *dst, FBSTRING *src )
 	/* del if temp */
 	fb_hStrDelTemp( dst );
 }
-

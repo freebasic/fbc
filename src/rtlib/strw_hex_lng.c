@@ -8,11 +8,10 @@ static FB_WCHAR hex_table[16] = {_LC('0'),_LC('1'),_LC('2'),_LC('3'),
 								 _LC('C'),_LC('D'),_LC('E'),_LC('F')};
 
 
-/*:::::*/
 FBCALL FB_WCHAR *fb_WstrHexEx_l ( unsigned long long num, int digits )
 {
 	FB_WCHAR *dst, *buf;
-	int	i, totdigs;
+	int i, totdigs;
 
 	if( digits > 0 )
 	{
@@ -64,7 +63,6 @@ FBCALL FB_WCHAR *fb_WstrHexEx_l ( unsigned long long num, int digits )
 	return dst;
 }
 
-/*:::::*/
 FBCALL FB_WCHAR *fb_WstrHex_l ( unsigned long long num )
 {
 	return fb_WstrHexEx_l( num, 0 );

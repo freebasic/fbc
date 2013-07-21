@@ -1,6 +1,6 @@
 #include "fb.h"
 
-FBCALL char *fb_hStrSkipChar( char *s, int len, int c )
+FBCALL char *fb_hStrSkipChar( char *s, ssize_t len, int c )
 {
 	char *p = s;
 
@@ -11,7 +11,7 @@ FBCALL char *fb_hStrSkipChar( char *s, int len, int c )
     return p;
 }
 
-FBCALL char *fb_hStrSkipCharRev( char *s, int len, int c )
+FBCALL char *fb_hStrSkipCharRev( char *s, ssize_t len, int c )
 {
 	char *p;
 

@@ -1742,7 +1742,7 @@ function symbTypeToStr _
 	( _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
-		byval length as integer _
+		byval length as longint _
 	) as string
 
 	dim as string s
@@ -1920,7 +1920,7 @@ function symbCalcLen _
 	( _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr _
-	) as integer
+	) as longint
 
 	dtype = typeGet( dtype )
 
@@ -1941,9 +1941,9 @@ function symbCalcDerefLen _
 	( _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr  _
-	) as integer
+	) as longint
 
-	dim as integer length = any
+	dim as longint length = any
 
 	assert( typeIsPtr( dtype ) )
 

@@ -201,7 +201,7 @@ function symbAddTypedef _
 		byval id as zstring ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
-		byval lgt as integer _
+		byval lgt as longint _
 	) as FBSYMBOL ptr
 
     dim as FBSYMBOL ptr t = any

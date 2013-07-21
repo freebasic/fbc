@@ -2,17 +2,15 @@
 
 #include "fb.h"
 
-/*:::::*/
-FBCALL long long fb_hStr2Longint( char *src, int len )
+FBCALL long long fb_hStr2Longint( char *src, ssize_t len )
 {
     char 	*p;
-    int 	radix;
-	int skip;
+	int radix, skip;
 
 	/* skip white spc */
 	p = fb_hStrSkipChar( src, len, 32 );
 
-	len -= (int)(p - src);
+	len -= (ssize_t)(p - src);
 	if( len < 1 )
 		return 0;
 
@@ -55,7 +53,6 @@ FBCALL long long fb_hStr2Longint( char *src, int len )
 	return (long long)strtoull( p, NULL, radix );
 }
 
-/*:::::*/
 FBCALL long long fb_VALLNG ( FBSTRING *str )
 {
     long long val;

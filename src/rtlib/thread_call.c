@@ -24,7 +24,7 @@
 /* TODO: Add support for non-x86 */
 #if defined DISABLE_FFI || defined HOST_DOS || !defined HOST_X86
 
-FBTHREAD *fb_ThreadCall( void *proc, int abi, int stack_size, int num_args, ... )
+FBTHREAD *fb_ThreadCall( void *proc, int abi, ssize_t stack_size, int num_args, ... )
 {
 	return NULL;
 }
@@ -61,7 +61,6 @@ enum {
     FB_THREADCALL_PTR
 };
 
-/*:::::*/
 static void freeType( ffi_type *arg )
 {
     int i = 0;
@@ -87,7 +86,6 @@ static void freeType( ffi_type *arg )
 
 static ffi_type *getArgument( va_list *args_list );
 
-/*:::::*/
 static ffi_type *getType( va_list *args_list )
 {
     int num_elems = va_arg( (*args_list), int );
@@ -123,7 +121,6 @@ static ffi_type *getType( va_list *args_list )
     return ffi_arg;
 }
 
-/*:::::*/
 static ffi_type *getArgument( va_list *args_list )
 {
     int arg_type = va_arg( (*args_list), int );
@@ -160,8 +157,7 @@ static ffi_type *getArgument( va_list *args_list )
 
 static FBCALL void threadproc( void *param );
 
-/*:::::*/
-FBTHREAD *fb_ThreadCall( void *proc, int abi, int stack_size, int num_args, ... )
+FBTHREAD *fb_ThreadCall( void *proc, int abi, ssize_t stack_size, int num_args, ... )
 {
     ffi_type     **ffi_args;
     void         **values;
@@ -204,7 +200,6 @@ FBTHREAD *fb_ThreadCall( void *proc, int abi, int stack_size, int num_args, ... 
     return fb_ThreadCreate( threadproc, (void *)param, stack_size );
 }
 
-/*:::::*/
 static FBCALL void threadproc( void *param )
 {
     FBTHREADCALL *info = ( FBTHREADCALL * )param;

@@ -2,16 +2,14 @@
 
 #include "fb.h"
 
-/*:::::*/
-FBCALL int fb_StrInstrRevAny ( FBSTRING *src, FBSTRING *patt, int start )
+FBCALL ssize_t fb_StrInstrRevAny( FBSTRING *src, FBSTRING *patt, ssize_t start )
 {
-	int r = 0;
+	ssize_t r = 0;
 
 	if( (src != NULL) && (src->data != NULL) && (patt != NULL) && (patt->data != NULL) ) 
 	{
-
-		size_t size_src = FB_STRSIZE(src);
-		size_t size_patt = FB_STRSIZE(patt);
+		ssize_t size_src = FB_STRSIZE(src);
+		ssize_t size_patt = FB_STRSIZE(patt);
 
 		if( (size_src != 0) && (size_patt != 0) && (start != 0) )
 		{
@@ -22,7 +20,7 @@ FBCALL int fb_StrInstrRevAny ( FBSTRING *src, FBSTRING *patt, int start )
 
 			while( start-- && (r == 0) )
 			{
-				size_t i;
+				ssize_t i;
 				for( i = 0; i != size_patt; ++i )
 				{
 					if( src->data[start] == patt->data[i] )

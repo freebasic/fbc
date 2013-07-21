@@ -18,7 +18,7 @@ function cGOTBStmt _
 
 	dim as integer l = any
 	dim as FBSYMBOL ptr sym = any, exitlabel = any
-	dim as uinteger values(0 to FB_MAXGOTBITEMS-1) = any
+	dim as ulongint values(0 to FB_MAXGOTBITEMS-1) = any
 	dim as FBSYMBOL ptr labels(0 to FB_MAXGOTBITEMS-1) = any
 	dim as FBSYMCHAIN ptr chain_ = any
 	dim as FBSYMBOL ptr base_parent = any

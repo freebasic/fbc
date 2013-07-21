@@ -80,16 +80,24 @@ function symbProcReturnsOnStack( byval proc as FBSYMBOL ptr ) as integer
 	end if
 end function
 
+private function hAlignToPow2 _
+	( _
+		byval value as longint, _
+		byval align as integer _
+	) as longint
+	function = (value + (align-1)) and (not (align-1))
+end function
+
 function symbCalcArgLen _
 	( _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
 		byval mode as integer _
-	) as integer
+	) as longint
 
 	select case( mode )
 	case FB_PARAMMODE_BYREF, FB_PARAMMODE_BYDESC
-		return FB_POINTERSIZE
+		return env.pointersize
 	end select
 
 	'' BYVAL/VARARG
@@ -97,15 +105,15 @@ function symbCalcArgLen _
 	select case( typeGetDtAndPtrOnly( dtype ) )
 	case FB_DATATYPE_STRING
 		'' BYVAL strings passed as pointer instead
-		return FB_POINTERSIZE
+		return env.pointersize
 	case FB_DATATYPE_STRUCT
 		'' BYVAL non-trivial UDTs passed BYREF implicitly
 		if( symbCompIsTrivial( subtype ) = FALSE ) then
-			return FB_POINTERSIZE
+			return env.pointersize
 		end if
 	end select
 
-	function = FB_ROUNDLEN( symbCalcLen( dtype, subtype ) )
+	function = hAlignToPow2( symbCalcLen( dtype, subtype ), env.pointersize )
 end function
 
 function symbCalcParamLen _
@@ -113,7 +121,7 @@ function symbCalcParamLen _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
 		byval mode as FB_PARAMMODE _
-	) as integer
+	) as longint
 
 	'' VARARG params have 0 length for now,
 	'' only the VARARG args later have > 0 length...
@@ -125,8 +133,8 @@ function symbCalcParamLen _
 
 end function
 
-function symbCalcProcParamsLen( byval proc as FBSYMBOL ptr ) as integer
-	dim as integer length = any
+function symbCalcProcParamsLen( byval proc as FBSYMBOL ptr ) as longint
+	dim as longint length = any
 	dim as FBSYMBOL ptr param = any
 
 	'' Calculate the sum of the sizes of all "normal" parameters,
@@ -1163,7 +1171,7 @@ sub symbGetRealParamDtype _
 
 	case FB_PARAMMODE_BYDESC
 		dtype = typeAddrOf( FB_DATATYPE_STRUCT )
-		subtype = symb.arrdesctype
+		subtype = symb.fbarray
 	end select
 
 end sub
@@ -1239,7 +1247,7 @@ function symbAddProcResultParam( byval proc as FBSYMBOL ptr ) as FBSYMBOL ptr
 	end if
 
 	id = *symbUniqueId( )
-	s = symbAddVar( id, NULL, FB_DATATYPE_STRUCT, proc->subtype, FB_POINTERSIZE, _
+	s = symbAddVar( id, NULL, FB_DATATYPE_STRUCT, proc->subtype, 0, _
 	                0, dTB(), FB_SYMBATTRIB_PARAMBYREF, FB_SYMBOPT_PRESERVECASE )
 
 	symbProcAllocExt( proc )
@@ -1631,18 +1639,12 @@ private function hCalcTypesDiff _
 					end if
 
 					'' not 0 (NULL)?
-					if( arg_dtype = FB_DATATYPE_INTEGER ) then
-						if( astGetValInt( arg_expr ) <> 0 ) then
-							return 0
-						end if
-					else
-						if( astGetValLong( arg_expr ) <> 0 ) then
-							return 0
-						end if
+					if( astConstEqZero( arg_expr ) = FALSE ) then
+						return 0
 					end if
 
 					'' not native pointer width?
-					if( typeGetSize( arg_dtype ) <> FB_POINTERSIZE ) then
+					if( typeGetSize( arg_dtype ) <> env.pointersize ) then
 						return 0
 					end if
 
@@ -1801,8 +1803,8 @@ private function hCheckOvlParam _
 		if( arg_mode = FB_PARAMMODE_BYVAL ) then
 			'' invalid type? refuse..
 			if( (typeGetClass( arg_dtype ) <> FB_DATACLASS_INTEGER) or _
-				(typeGetSize( arg_dtype ) <> FB_POINTERSIZE) ) then
-               	return 0
+				(typeGetSize( arg_dtype ) <> env.pointersize) ) then
+				return 0
 			end if
 
 			'' pretend param is a pointer

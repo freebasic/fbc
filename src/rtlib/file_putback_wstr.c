@@ -2,10 +2,10 @@
 
 #include "fb.h"
 
-/*:::::*/
 int fb_FilePutBackWstrEx( FB_FILE *handle, const FB_WCHAR *src, size_t chars )
 {
-    int res, bytes;
+	int res;
+	size_t bytes;
     char *dst;
 
     if( !FB_HANDLE_USED(handle) )
@@ -52,9 +52,7 @@ int fb_FilePutBackWstrEx( FB_FILE *handle, const FB_WCHAR *src, size_t chars )
 	return res;
 }
 
-/*:::::*/
 FBCALL int fb_FilePutBackWstr( int fnum, const FB_WCHAR *src, size_t chars )
 {
     return fb_FilePutBackWstrEx( FB_FILE_TO_HANDLE(fnum), src, chars );
 }
-

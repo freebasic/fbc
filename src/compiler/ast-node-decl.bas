@@ -36,7 +36,7 @@ private function hCtorList _
 	tree = astNewLINK( tree, astBuildVarInc( this_, 1 ) )
 
 	'' next
-	tree = astBuildForEnd( tree, cnt, label, 1, astNewCONSTi( symbGetArrayElements( sym ) ) )
+	tree = astBuildForEnd( tree, cnt, label, astNewCONSTi( symbGetArrayElements( sym ) ) )
 
 	function = tree
 

@@ -2,7 +2,6 @@
 ''
 '' chng: oct/2004 written [v1ctor]
 
-
 #include once "fb.bi"
 #include once "fbint.bi"
 #include once "ast.bi"
@@ -11,875 +10,593 @@
 
 	dim shared as FB_RTL_PROCDEF funcdata( 0 to ... ) = _
 	{ _
-		/' fb_PrintVoid ( byval filenum as integer = 0, byval mask as integer ) as void '/ _
+		/' sub fb_PrintVoid( byval fnum as long = 0, byval mask as long ) '/ _
 		( _
 			@FB_RTL_PRINTVOID, NULL, _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			2, _
 			{ _
-				( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, 0 _
-	 			), _
-	 			( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-	 			) _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, 0 ), _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
-		/' fb_PrintByte ( byval filenum as integer = 0, byval x as byte, byval mask as integer ) as void '/ _
+		/' sub fb_PrintByte( byval fnum as long = 0, byval x as byte, byval mask as long ) '/ _
 		( _
 			@FB_RTL_PRINTBYTE, NULL, _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
-				( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, 0 _
-	 			), _
-	 			( _
-					FB_DATATYPE_BYTE, FB_PARAMMODE_BYVAL, FALSE _
-	 			), _
-	 			( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-	 			) _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, 0 ), _
+				( FB_DATATYPE_BYTE, FB_PARAMMODE_BYVAL, FALSE ), _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
-		/' fb_PrintUByte ( byval filenum as integer = 0, byval x as ubyte, byval mask as integer ) as void '/ _
+		/' sub fb_PrintUByte( byval fnum as long = 0, byval x as ubyte, byval mask as long ) '/ _
 		( _
 			@FB_RTL_PRINTUBYTE, NULL, _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
-				( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, 0 _
-	 			), _
-	 			( _
-					FB_DATATYPE_UBYTE, FB_PARAMMODE_BYVAL, FALSE _
-	 			), _
-	 			( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-	 			) _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, 0 ), _
+				( FB_DATATYPE_UBYTE, FB_PARAMMODE_BYVAL, FALSE ), _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
-		/' fb_PrintShort ( byval filenum as integer = 0, byval x as short, byval mask as integer ) as void '/ _
+		/' sub fb_PrintShort( byval fnum as long = 0, byval x as short, byval mask as long ) '/ _
 		( _
 			@FB_RTL_PRINTSHORT, NULL, _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
-				( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, 0 _
-	 			), _
-	 			( _
-					FB_DATATYPE_SHORT, FB_PARAMMODE_BYVAL, FALSE _
-	 			), _
-	 			( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-	 			) _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, 0 ), _
+				( FB_DATATYPE_SHORT, FB_PARAMMODE_BYVAL, FALSE ), _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
-		/' fb_PrintUShort ( byval filenum as integer = 0, byval x as ushort, byval mask as integer ) as void '/ _
+		/' sub fb_PrintUShort( byval fnum as long = 0, byval x as ushort, byval mask as long ) '/ _
 		( _
 			@FB_RTL_PRINTUSHORT, NULL, _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
-				( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, 0 _
-	 			), _
-	 			( _
-					FB_DATATYPE_USHORT, FB_PARAMMODE_BYVAL, FALSE _
-	 			), _
-	 			( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-	 			) _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, 0 ), _
+				( FB_DATATYPE_USHORT, FB_PARAMMODE_BYVAL, FALSE ), _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
-		/' fb_PrintInt ( byval filenum as integer = 0, byval x as integer, byval mask as integer ) as void '/ _
+		/' sub fb_PrintInt( byval fnum as long = 0, byval x as long, byval mask as long ) '/ _
 		( _
 			@FB_RTL_PRINTINT, NULL, _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
-				( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, 0 _
-	 			), _
-	 			( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-	 			), _
-	 			( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-	 			) _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, 0 ), _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
-		/' fb_PrintUInt ( byval filenum as integer = 0, byval x as uinteger, byval mask as integer ) as void '/ _
+		/' sub fb_PrintUInt( byval fnum as long = 0, byval x as ulong, byval mask as long ) '/ _
 		( _
 			@FB_RTL_PRINTUINT, NULL, _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
-				( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, 0 _
-	 			), _
-	 			( _
-					FB_DATATYPE_UINT, FB_PARAMMODE_BYVAL, FALSE _
-	 			), _
-	 			( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-	 			) _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, 0 ), _
+				( FB_DATATYPE_ULONG, FB_PARAMMODE_BYVAL, FALSE ), _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
-		/' fb_PrintLongint ( byval filenum as integer = 0, byval x as longint, byval mask as integer ) as void '/ _
+		/' sub fb_PrintLongint( byval fnum as integer = 0, byval x as longint, byval mask as long ) '/ _
 		( _
 			@FB_RTL_PRINTLONGINT, NULL, _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
-				( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, 0 _
-	 			), _
-	 			( _
-					FB_DATATYPE_LONGINT, FB_PARAMMODE_BYVAL, FALSE _
-	 			), _
-	 			( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-	 			) _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, 0 ), _
+				( FB_DATATYPE_LONGINT, FB_PARAMMODE_BYVAL, FALSE ), _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
-		/' fb_PrintULongint ( byval filenum as integer = 0, byval x as ulongint, byval mask as integer ) as void '/ _
+		/' sub fb_PrintULongint( byval fnum as long = 0, byval x as ulongint, byval mask as long ) '/ _
 		( _
 			@FB_RTL_PRINTULONGINT, NULL, _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
-				( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, 0 _
-	 			), _
-	 			( _
-					FB_DATATYPE_ULONGINT, FB_PARAMMODE_BYVAL, FALSE _
-	 			), _
-	 			( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-	 			) _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, 0 ), _
+				( FB_DATATYPE_ULONGINT, FB_PARAMMODE_BYVAL, FALSE ), _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
-		/' fb_PrintSingle ( byval filenum as integer = 0, byval x as single, byval mask as integer ) as void '/ _
+		/' sub fb_PrintSingle( byval fnum as long = 0, byval x as single, byval mask as long ) '/ _
 		( _
 			@FB_RTL_PRINTSINGLE, NULL, _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
-				( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, 0 _
-	 			), _
-	 			( _
-					FB_DATATYPE_SINGLE, FB_PARAMMODE_BYVAL, FALSE _
-	 			), _
-	 			( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-	 			) _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, 0 ), _
+				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYVAL, FALSE ), _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
-		/' fb_PrintDouble ( byval filenum as integer = 0, byval x as double, byval mask as integer ) as void '/ _
+		/' sub fb_PrintDouble( byval fnum as long = 0, byval x as double, byval mask as long ) '/ _
 		( _
 			@FB_RTL_PRINTDOUBLE, NULL, _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
-				( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, 0 _
-	 			), _
-	 			( _
-					FB_DATATYPE_DOUBLE, FB_PARAMMODE_BYVAL, FALSE _
-	 			), _
-	 			( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-	 			) _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, 0 ), _
+				( FB_DATATYPE_DOUBLE, FB_PARAMMODE_BYVAL, FALSE ), _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
-		/' fb_PrintString ( byval filenum as integer = 0, x as string, byval mask as integer ) as void '/ _
+		/' sub fb_PrintString( byval fnum as long = 0, byref x as string, byval mask as long ) '/ _
 		( _
 			@FB_RTL_PRINTSTR, NULL, _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
-				( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, 0 _
-	 			), _
-	 			( _
-					FB_DATATYPE_STRING, FB_PARAMMODE_BYREF, FALSE _
-	 			), _
-	 			( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-	 			) _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, 0 ), _
+				( FB_DATATYPE_STRING, FB_PARAMMODE_BYREF, FALSE ), _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
-		/' fb_PrintWstr ( byval filenum as integer = 0, byval x as wstring ptr, byval mask as integer ) as void '/ _
+		/' sub fb_PrintWstr( byval fnum as long = 0, byval x as wstring ptr, byval mask as long ) '/ _
 		( _
 			@FB_RTL_PRINTWSTR, NULL, _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
-				( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, 0 _
-	 			), _
-	 			( _
-					typeAddrOf( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYVAL, FALSE _
-	 			), _
-	 			( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-	 			) _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, 0 ), _
+				( typeAddrOf( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
-		/' fb_LPrintVoid ( byval filenum as integer = 0, byval mask as integer ) as void '/ _
+		/' sub fb_LPrintVoid( byval fnum as long = 0, byval mask as long ) '/ _
 		( _
 			@FB_RTL_LPRINTVOID, NULL, _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 	 		@rtlPrinter_cb, FB_RTL_OPT_NONE, _
 			2, _
 			{ _
-				( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, 0 _
-	 			), _
-	 			( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-	 			) _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, 0 ), _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
-		/' fb_LPrintByte ( byval filenum as integer = 0, byval x as byte, byval mask as integer ) as void '/ _
+		/' sub fb_LPrintByte( byval fnum as long = 0, byval x as byte, byval mask as long ) '/ _
 		( _
 			@FB_RTL_LPRINTBYTE, NULL, _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 	 		@rtlPrinter_cb, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
-				( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, 0 _
-	 			), _
-	 			( _
-					FB_DATATYPE_BYTE, FB_PARAMMODE_BYVAL, FALSE _
-	 			), _
-	 			( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-	 			) _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, 0 ), _
+				( FB_DATATYPE_BYTE, FB_PARAMMODE_BYVAL, FALSE ), _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
-		/' fb_LPrintUByte ( byval filenum as integer = 0, byval x as ubyte, byval mask as integer ) as void '/ _
+		/' sub fb_LPrintUByte( byval fnum as long = 0, byval x as ubyte, byval mask as long ) '/ _
 		( _
 			@FB_RTL_LPRINTUBYTE, NULL, _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 	 		@rtlPrinter_cb, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
-				( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, 0 _
-	 			), _
-	 			( _
-					FB_DATATYPE_UBYTE, FB_PARAMMODE_BYVAL, FALSE _
-	 			), _
-	 			( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-	 			) _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, 0 ), _
+				( FB_DATATYPE_UBYTE, FB_PARAMMODE_BYVAL, FALSE ), _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
-		/' fb_LPrintShort ( byval filenum as integer = 0, byval x as short, byval mask as integer ) as void '/ _
+		/' sub fb_LPrintShort( byval fnum as long = 0, byval x as short, byval mask as long ) '/ _
 		( _
 			@FB_RTL_LPRINTSHORT, NULL, _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 	 		@rtlPrinter_cb, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
-				( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, 0 _
-	 			), _
-	 			( _
-					FB_DATATYPE_SHORT, FB_PARAMMODE_BYVAL, FALSE _
-	 			), _
-	 			( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-	 			) _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, 0 ), _
+				( FB_DATATYPE_SHORT, FB_PARAMMODE_BYVAL, FALSE ), _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
-		/' fb_LPrintUShort ( byval filenum as integer = 0, byval x as ushort, byval mask as integer ) as void '/ _
+		/' sub fb_LPrintUShort( byval fnum as long = 0, byval x as ushort, byval mask as long ) '/ _
 		( _
 			@FB_RTL_LPRINTUSHORT, NULL, _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 	 		@rtlPrinter_cb, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
-				( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, 0 _
-	 			), _
-	 			( _
-					FB_DATATYPE_USHORT, FB_PARAMMODE_BYVAL, FALSE _
-	 			), _
-	 			( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-	 			) _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, 0 ), _
+				( FB_DATATYPE_USHORT, FB_PARAMMODE_BYVAL, FALSE ), _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
-		/' fb_LPrintInt ( byval filenum as integer = 0, byval x as integer, byval mask as integer ) as void '/ _
+		/' sub fb_LPrintInt( byval fnum as long = 0, byval x as long, byval mask as long ) '/ _
 		( _
 			@FB_RTL_LPRINTINT, NULL, _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 	 		@rtlPrinter_cb, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
-				( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, 0 _
-	 			), _
-	 			( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-	 			), _
-	 			( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-	 			) _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, 0 ), _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
-		/' fb_LPrintUInt ( byval filenum as integer = 0, byval x as uinteger, byval mask as integer ) as void '/ _
+		/' sub fb_LPrintUInt( byval fnum as long = 0, byval x as ulong, byval mask as long ) '/ _
 		( _
 			@FB_RTL_LPRINTUINT, NULL, _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 	 		@rtlPrinter_cb, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
-				( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, 0 _
-	 			), _
-	 			( _
-					FB_DATATYPE_UINT, FB_PARAMMODE_BYVAL, FALSE _
-	 			), _
-	 			( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-	 			) _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, 0 ), _
+				( FB_DATATYPE_ULONG, FB_PARAMMODE_BYVAL, FALSE ), _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
-		/' fb_LPrintLongint ( byval filenum as integer = 0, byval x as longint, byval mask as integer ) as void '/ _
+		/' sub fb_LPrintLongint( byval fnum as long = 0, byval x as longint, byval mask as long ) '/ _
 		( _
 			@FB_RTL_LPRINTLONGINT, NULL, _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 	 		@rtlPrinter_cb, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
-				( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, 0 _
-	 			), _
-	 			( _
-					FB_DATATYPE_LONGINT, FB_PARAMMODE_BYVAL, FALSE _
-	 			), _
-	 			( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-	 			) _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, 0 ), _
+				( FB_DATATYPE_LONGINT, FB_PARAMMODE_BYVAL, FALSE ), _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
-		/' fb_LPrintULongint ( byval filenum as integer = 0, byval x as ulongint, byval mask as integer ) as void '/ _
+		/' sub fb_LPrintULongint( byval fnum as long = 0, byval x as ulongint, byval mask as long ) '/ _
 		( _
 			@FB_RTL_LPRINTULONGINT, NULL, _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 	 		@rtlPrinter_cb, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
-				( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, 0 _
-	 			), _
-	 			( _
-					FB_DATATYPE_ULONGINT, FB_PARAMMODE_BYVAL, FALSE _
-	 			), _
-	 			( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-	 			) _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, 0 ), _
+				( FB_DATATYPE_ULONGINT, FB_PARAMMODE_BYVAL, FALSE ), _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
-		/' fb_LPrintSingle ( byval filenum as integer = 0, byval x as single, byval mask as integer ) as void '/ _
+		/' sub fb_LPrintSingle( byval fnum as long = 0, byval x as single, byval mask as long ) '/ _
 		( _
 			@FB_RTL_LPRINTSINGLE, NULL, _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 	 		@rtlPrinter_cb, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
-				( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, 0 _
-	 			), _
-	 			( _
-					FB_DATATYPE_SINGLE, FB_PARAMMODE_BYVAL, FALSE _
-	 			), _
-	 			( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-	 			) _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, 0 ), _
+				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYVAL, FALSE ), _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
-		/' fb_LPrintDouble ( byval filenum as integer = 0, byval x as double, byval mask as integer ) as void '/ _
+		/' sub fb_LPrintDouble( byval fnum as long = 0, byval x as double, byval mask as long ) '/ _
 		( _
 			@FB_RTL_LPRINTDOUBLE, NULL, _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 	 		@rtlPrinter_cb, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
-				( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, 0 _
-	 			), _
-	 			( _
-					FB_DATATYPE_DOUBLE, FB_PARAMMODE_BYVAL, FALSE _
-	 			), _
-	 			( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-	 			) _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, 0 ), _
+				( FB_DATATYPE_DOUBLE, FB_PARAMMODE_BYVAL, FALSE ), _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
-		/' fb_LPrintString ( byval filenum as integer = 0, x as string, byval mask as integer ) as void '/ _
+		/' sub fb_LPrintString( byval fnum as long = 0, byref x as string, byval mask as long ) '/ _
 		( _
 			@FB_RTL_LPRINTSTR, NULL, _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 	 		@rtlPrinter_cb, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
-				( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, 0 _
-	 			), _
-	 			( _
-					FB_DATATYPE_STRING, FB_PARAMMODE_BYREF, FALSE _
-	 			), _
-	 			( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-	 			) _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, 0 ), _
+				( FB_DATATYPE_STRING, FB_PARAMMODE_BYREF, FALSE ), _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
-		/' fb_LPrintWstr ( byval filenum as integer = 0, byval x as wstring ptr, byval mask as integer ) as void '/ _
+		/' sub fb_LPrintWstr( byval fnum as long = 0, byval x as wstring ptr, byval mask as long ) '/ _
 		( _
 			@FB_RTL_LPRINTWSTR, NULL, _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 	 		@rtlPrinter_cb, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
-				( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, 0 _
-	 			), _
-	 			( _
-					typeAddrOf( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYVAL, FALSE _
-	 			), _
-	 			( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-	 			) _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, 0 ), _
+				( typeAddrOf( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
-		/' spc ( byval filenum as integer = 0, byval n as integer ) as void '/ _
+		/' sub fb_PrintSPC( byval fnum as long = 0, byval n as integer ) '/ _
 		( _
 			@FB_RTL_PRINTSPC, NULL, _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			2, _
 			{ _
-				( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, 0 _
-	 			), _
-	 			( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-	 			) _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, 0 ), _
+				( FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
-		/' tab ( byval filenum as integer = 0, byval newcol as integer ) as void '/ _
+		/' sub fb_PrintTab( byval fnum as long = 0, byval newcol as long ) '/ _
 		( _
 			@FB_RTL_PRINTTAB, NULL, _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			2, _
 			{ _
-				( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, 0 _
-	 			), _
-	 			( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-	 			) _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, 0 ), _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
-		/' fb_WriteVoid ( byval filenum as integer = 0, byval mask as integer ) as void '/ _
+		/' sub fb_WriteVoid( byval fnum as long = 0, byval mask as long ) '/ _
 		( _
 			@FB_RTL_WRITEVOID, NULL, _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			2, _
 			{ _
-				( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, 0 _
-	 			), _
-	 			( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-	 			) _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, 0 ), _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
-		/' fb_WriteByte ( byval filenum as integer = 0, byval x as byte, byval mask as integer ) as void '/ _
+		/' sub fb_WriteByte( byval fnum as long = 0, byval x as byte, byval mask as long ) '/ _
 		( _
 			@FB_RTL_WRITEBYTE, NULL, _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
-				( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, 0 _
-	 			), _
-	 			( _
-					FB_DATATYPE_BYTE, FB_PARAMMODE_BYVAL, FALSE _
-	 			), _
-	 			( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-	 			) _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, 0 ), _
+				( FB_DATATYPE_BYTE, FB_PARAMMODE_BYVAL, FALSE ), _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
-		/' fb_WriteUByte ( byval filenum as integer = 0, byval x as ubyte, byval mask as integer ) as void '/ _
+		/' sub fb_WriteUByte( byval fnum as long = 0, byval x as ubyte, byval mask as long ) '/ _
 		( _
 			@FB_RTL_WRITEUBYTE, NULL, _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
-				( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, 0 _
-	 			), _
-	 			( _
-					FB_DATATYPE_UBYTE, FB_PARAMMODE_BYVAL, FALSE _
-	 			), _
-	 			( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-	 			) _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, 0 ), _
+				( FB_DATATYPE_UBYTE, FB_PARAMMODE_BYVAL, FALSE ), _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
-		/' fb_WriteShort ( byval filenum as integer = 0, byval x as short, byval mask as integer ) as void '/ _
+		/' sub fb_WriteShort( byval fnum as long = 0, byval x as short, byval mask as long ) '/ _
 		( _
 			@FB_RTL_WRITESHORT, NULL, _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
-				( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, 0 _
-	 			), _
-	 			( _
-					FB_DATATYPE_SHORT, FB_PARAMMODE_BYVAL, FALSE _
-	 			), _
-	 			( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-	 			) _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, 0 ), _
+				( FB_DATATYPE_SHORT, FB_PARAMMODE_BYVAL, FALSE ), _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
-		/' fb_WriteUShort ( byval filenum as integer = 0, byval x as ushort, byval mask as integer ) as void '/ _
+		/' sub fb_WriteUShort( byval fnum as long = 0, byval x as ushort, byval mask as long ) '/ _
 		( _
 			@FB_RTL_WRITEUSHORT, NULL, _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
-				( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, 0 _
-	 			), _
-	 			( _
-					FB_DATATYPE_USHORT, FB_PARAMMODE_BYVAL, FALSE _
-	 			), _
-	 			( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-	 			) _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, 0 ), _
+				( FB_DATATYPE_USHORT, FB_PARAMMODE_BYVAL, FALSE ), _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
-		/' fb_WriteInt ( byval filenum as integer = 0, byval x as integer, byval mask as integer ) as void '/ _
+		/' sub fb_WriteInt( byval fnum as long = 0, byval x as long, byval mask as long ) '/ _
 		( _
 			@FB_RTL_WRITEINT, NULL, _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
-				( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, 0 _
-	 			), _
-	 			( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-	 			), _
-	 			( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-	 			) _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, 0 ), _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
-		/' fb_WriteUInt ( byval filenum as integer = 0, byval x as uinteger, byval mask as integer ) as void '/ _
+		/' sub fb_WriteUInt( byval fnum as long = 0, byval x as ulong, byval mask as long ) '/ _
 		( _
 			@FB_RTL_WRITEUINT, NULL, _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
-				( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, 0 _
-	 			), _
-	 			( _
-					FB_DATATYPE_UINT, FB_PARAMMODE_BYVAL, FALSE _
-	 			), _
-	 			( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-	 			) _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, 0 ), _
+				( FB_DATATYPE_ULONG, FB_PARAMMODE_BYVAL, FALSE ), _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
-		/' fb_WriteLongint ( byval filenum as integer = 0, byval x as longint, byval mask as integer ) as void '/ _
+		/' sub fb_WriteLongint( byval fnum as long = 0, byval x as longint, byval mask as long ) '/ _
 		( _
 			@FB_RTL_WRITELONGINT, NULL, _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
-				( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, 0 _
-	 			), _
-	 			( _
-					FB_DATATYPE_LONGINT, FB_PARAMMODE_BYVAL, FALSE _
-	 			), _
-	 			( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-	 			) _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, 0 ), _
+				( FB_DATATYPE_LONGINT, FB_PARAMMODE_BYVAL, FALSE ), _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
-		/' fb_WriteULongint ( byval filenum as integer = 0, byval x as ulongint, byval mask as integer ) as void '/ _
+		/' sub fb_WriteULongint( byval fnum as long = 0, byval x as ulongint, byval mask as long ) '/ _
 		( _
 			@FB_RTL_WRITEULONGINT, NULL, _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
-				( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, 0 _
-	 			), _
-	 			( _
-					FB_DATATYPE_ULONGINT, FB_PARAMMODE_BYVAL, FALSE _
-	 			), _
-	 			( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-	 			) _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, 0 ), _
+				( FB_DATATYPE_ULONGINT, FB_PARAMMODE_BYVAL, FALSE ), _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
-		/' fb_WriteSingle ( byval filenum as integer = 0, byval x as single, byval mask as integer ) as void '/ _
+		/' sub fb_WriteSingle( byval fnum as long = 0, byval x as single, byval mask as long ) '/ _
 		( _
 			@FB_RTL_WRITESINGLE, NULL, _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
-				( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, 0 _
-	 			), _
-	 			( _
-					FB_DATATYPE_SINGLE, FB_PARAMMODE_BYVAL, FALSE _
-	 			), _
-	 			( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-	 			) _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, 0 ), _
+				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYVAL, FALSE ), _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
-		/' fb_WriteDouble ( byval filenum as integer = 0, byval x as double, byval mask as integer ) as void '/ _
+		/' sub fb_WriteDouble( byval fnum as long = 0, byval x as double, byval mask as long ) '/ _
 		( _
 			@FB_RTL_WRITEDOUBLE, NULL, _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
-				( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, 0 _
-	 			), _
-	 			( _
-					FB_DATATYPE_DOUBLE, FB_PARAMMODE_BYVAL, FALSE _
-	 			), _
-	 			( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-	 			) _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, 0 ), _
+				( FB_DATATYPE_DOUBLE, FB_PARAMMODE_BYVAL, FALSE ), _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
-		/' fb_WriteString ( byval filenum as integer = 0, x as string, byval mask as integer ) as void '/ _
+		/' sub fb_WriteString( byval fnum as long = 0, byref x as string, byval mask as long ) '/ _
 		( _
 			@FB_RTL_WRITESTR, NULL, _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
-				( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, 0 _
-	 			), _
-	 			( _
-					FB_DATATYPE_STRING, FB_PARAMMODE_BYREF, FALSE _
-	 			), _
-	 			( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-	 			) _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, 0 ), _
+				( FB_DATATYPE_STRING, FB_PARAMMODE_BYREF, FALSE ), _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
-		/' fb_WriteWstr ( byval filenum as integer = 0, byval x as wstring ptr, byval mask as integer ) as void '/ _
+		/' sub fb_WriteWstr( byval fnum as long = 0, byval x as wstring ptr, byval mask as long ) '/ _
 		( _
 			@FB_RTL_WRITEWSTR, NULL, _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
-				( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, 0 _
-	 			), _
-	 			( _
-					typeAddrOf( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYVAL, FALSE _
-	 			), _
-	 			( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-	 			) _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, 0 ), _
+				( typeAddrOf( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
-		/' fb_PrintUsingInit ( fmtstr as string ) as integer '/ _
+		/' function fb_PrintUsingInit( byref fmtstr as string ) as long '/ _
 		( _
 			@FB_RTL_PRINTUSGINIT, NULL, _
-			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			1, _
 			{ _
-				( _
-					FB_DATATYPE_STRING, FB_PARAMMODE_BYREF, FALSE _
-	 			) _
+				( FB_DATATYPE_STRING, FB_PARAMMODE_BYREF, FALSE ) _
 	 		} _
 		), _
-		/' fb_PrintUsingStr ( byval filenum as integer, s as string, byval mask as integer ) as integer '/ _
+		/' function fb_PrintUsingStr( byval fnum as long, byref s as string, byval mask as long ) as long '/ _
 		( _
 			@FB_RTL_PRINTUSGSTR, NULL, _
-			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
-				( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-	 			), _
-	 			( _
-					FB_DATATYPE_STRING, FB_PARAMMODE_BYREF, FALSE _
-	 			), _
-	 			( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-	 			) _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
+				( FB_DATATYPE_STRING, FB_PARAMMODE_BYREF, FALSE ), _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
-		/' fb_PrintUsingWstr ( byval filenum as integer, byval s as wstring ptr, byval mask as integer ) as integer '/ _
+		/' function fb_PrintUsingWstr( byval fnum as long, byval s as wstring ptr, byval mask as long ) as long '/ _
 		( _
 			@FB_RTL_PRINTUSGWSTR, NULL, _
-			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
-				( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-	 			), _
-	 			( _
-					typeAddrOf( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYVAL, FALSE _
-	 			), _
-	 			( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-	 			) _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeAddrOf( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
-		/' fb_PrintUsingSingle ( byval filenum as integer, byval v as single, _
-		  							byval mask as integer ) as integer '/ _
+		/' function fb_PrintUsingSingle( byval fnum as long, byval v as single, byval mask as long ) as long '/ _
 		( _
 			@FB_RTL_PRINTUSG_SNG, NULL, _
-			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
-				( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-	 			), _
-	 			( _
-					FB_DATATYPE_SINGLE, FB_PARAMMODE_BYVAL, FALSE _
-	 			), _
-	 			( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-	 			) _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
+				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYVAL, FALSE ), _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
-		/' fb_PrintUsingDouble ( byval filenum as integer, byval v as double, _
-		  							byval mask as integer ) as integer '/ _
+		/' function fb_PrintUsingDouble( byval fnum as long, byval v as double, byval mask as long ) as long '/ _
 		( _
 			@FB_RTL_PRINTUSG_DBL, NULL, _
-			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
-				( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-	 			), _
-	 			( _
-					FB_DATATYPE_DOUBLE, FB_PARAMMODE_BYVAL, FALSE _
-	 			), _
-	 			( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-	 			) _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
+				( FB_DATATYPE_DOUBLE, FB_PARAMMODE_BYVAL, FALSE ), _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
-		/' fb_PrintUsingLongint ( byval filenum as integer, byval v as longint, _
-		  							byval mask as integer ) as integer '/ _
+		/' function fb_PrintUsingLongint( byval fnum as long, byval v as longint, byval mask as long ) as long '/ _
 		( _
 			@FB_RTL_PRINTUSG_LL, NULL, _
-			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
-				( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-				), _
-				( _
-					FB_DATATYPE_LONGINT, FB_PARAMMODE_BYVAL, FALSE _
-				), _
-				( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-				) _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
+				( FB_DATATYPE_LONGINT, FB_PARAMMODE_BYVAL, FALSE ), _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
 			} _
 		), _
-		/' fb_PrintUsingULongint ( byval filenum as integer, byval v as ulongint, _
-		  							byval mask as integer ) as integer '/ _
+		/' function fb_PrintUsingULongint( byval fnum as long, byval v as ulongint, byval mask as long ) as long '/ _
 		( _
 			@FB_RTL_PRINTUSG_ULL, NULL, _
-			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
-				( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-				), _
-				( _
-					FB_DATATYPE_ULONGINT, FB_PARAMMODE_BYVAL, FALSE _
-				), _
-				( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-				) _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
+				( FB_DATATYPE_ULONGINT, FB_PARAMMODE_BYVAL, FALSE ), _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
 			} _
 		), _
-		/' fb_PrintUsingEnd ( byval filenum as integer ) as integer '/ _
+		/' function fb_PrintUsingEnd( byval fnum as long ) as long '/ _
 		( _
 			@FB_RTL_PRINTUSGEND, NULL, _
-			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			1, _
 			{ _
-				( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-	 			) _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
-		/' fb_LPrintUsingInit ( fmtstr as string ) as integer '/ _
+		/' function fb_LPrintUsingInit( byref fmtstr as string ) as long '/ _
 		( _
 			@FB_RTL_LPRINTUSGINIT, NULL, _
-			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 	 		@rtlPrinter_cb, FB_RTL_OPT_NONE, _
 			1, _
 			{ _
-				( _
-					FB_DATATYPE_STRING, FB_PARAMMODE_BYREF, FALSE _
-	 			) _
+				( FB_DATATYPE_STRING, FB_PARAMMODE_BYREF, FALSE ) _
 	 		} _
 	 	), _
 	 	/' EOL '/ _
@@ -887,7 +604,6 @@
 	 		NULL _
 	 	) _
 	 }
-
 
 '':::::
 sub rtlPrintModInit( )
@@ -926,7 +642,6 @@ function rtlPrint _
 			f = PROCLOOKUP( PRINTVOID )
 		end if
 	else
-
 		'' UDT? try to convert to string with type casting op overloading
 		select case typeGet( astGetDataType( expr ) )
 		case FB_DATATYPE_STRUCT, FB_DATATYPE_ENUM
@@ -935,6 +650,11 @@ function rtlPrint _
 				exit function
 			end if
 		end select
+
+		'' Convert pointer to uinteger
+		if( typeIsPtr( astGetFullType( expr ) ) ) then
+			expr = astNewCONV( FB_DATATYPE_UINT, NULL, expr )
+		end if
 
 		select case as const typeGet( astGetDataType( expr ) )
 		case FB_DATATYPE_FIXSTR, FB_DATATYPE_STRING, FB_DATATYPE_CHAR
@@ -951,91 +671,69 @@ function rtlPrint _
 				f = PROCLOOKUP( PRINTWSTR )
 			end if
 
-		case FB_DATATYPE_BYTE
-			if( islprint ) then
-				f = PROCLOOKUP( LPRINTBYTE )
-			else
-				f = PROCLOOKUP( PRINTBYTE )
-			end if
+		case FB_DATATYPE_BYTE, FB_DATATYPE_UBYTE, _
+		     FB_DATATYPE_SHORT, FB_DATATYPE_USHORT, _
+		     FB_DATATYPE_INTEGER, FB_DATATYPE_ENUM, FB_DATATYPE_UINT, _
+		     FB_DATATYPE_LONG, FB_DATATYPE_ULONG, _
+		     FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 
-		case FB_DATATYPE_UBYTE
-			if( islprint ) then
-				f = PROCLOOKUP( LPRINTUBYTE )
-			else
-				f = PROCLOOKUP( PRINTUBYTE )
-			end if
+			select case as const( typeGetSizeType( astGetFullType( expr ) ) )
+			case FB_SIZETYPE_INT8
+				if( islprint ) then
+					f = PROCLOOKUP( LPRINTBYTE )
+				else
+					f = PROCLOOKUP( PRINTBYTE )
+				end if
 
-		case FB_DATATYPE_SHORT
-			if( islprint ) then
-				f = PROCLOOKUP( LPRINTSHORT )
-			else
-				f = PROCLOOKUP( PRINTSHORT )
-			end if
+			case FB_SIZETYPE_UINT8
+				if( islprint ) then
+					f = PROCLOOKUP( LPRINTUBYTE )
+				else
+					f = PROCLOOKUP( PRINTUBYTE )
+				end if
 
-		case FB_DATATYPE_USHORT
-			if( islprint ) then
-				f = PROCLOOKUP( LPRINTUSHORT )
-			else
-				f = PROCLOOKUP( PRINTUSHORT )
-			end if
+			case FB_SIZETYPE_INT16
+				if( islprint ) then
+					f = PROCLOOKUP( LPRINTSHORT )
+				else
+					f = PROCLOOKUP( PRINTSHORT )
+				end if
 
-		case FB_DATATYPE_INTEGER, FB_DATATYPE_ENUM
-			if( islprint ) then
-				f = PROCLOOKUP( LPRINTINT )
-			else
-				f = PROCLOOKUP( PRINTINT )
-			end if
+			case FB_SIZETYPE_UINT16
+				if( islprint ) then
+					f = PROCLOOKUP( LPRINTUSHORT )
+				else
+					f = PROCLOOKUP( PRINTUSHORT )
+				end if
 
-		case FB_DATATYPE_UINT
-			if( islprint ) then
-				f = PROCLOOKUP( LPRINTUINT )
-			else
-				f = PROCLOOKUP( PRINTUINT )
-			end if
-
-		case FB_DATATYPE_LONG
-			if( FB_LONGSIZE = FB_INTEGERSIZE ) then
+			case FB_SIZETYPE_INT32
 				if( islprint ) then
 					f = PROCLOOKUP( LPRINTINT )
 				else
 					f = PROCLOOKUP( PRINTINT )
 				end if
-			else
-				if( islprint ) then
-					f = PROCLOOKUP( LPRINTLONGINT )
-				else
-					f = PROCLOOKUP( PRINTLONGINT )
-				end if
-			end if
 
-		case FB_DATATYPE_ULONG
-			if( FB_LONGSIZE = FB_INTEGERSIZE ) then
+			case FB_SIZETYPE_UINT32
 				if( islprint ) then
 					f = PROCLOOKUP( LPRINTUINT )
 				else
 					f = PROCLOOKUP( PRINTUINT )
 				end if
-			else
+
+			case FB_SIZETYPE_INT64
+				if( islprint ) then
+					f = PROCLOOKUP( LPRINTLONGINT )
+				else
+					f = PROCLOOKUP( PRINTLONGINT )
+				end if
+
+			case FB_SIZETYPE_UINT64
 				if( islprint ) then
 					f = PROCLOOKUP( LPRINTULONGINT )
 				else
 					f = PROCLOOKUP( PRINTULONGINT )
 				end if
-			end if
-
-		case FB_DATATYPE_LONGINT
-			if( islprint ) then
-				f = PROCLOOKUP( LPRINTLONGINT )
-			else
-				f = PROCLOOKUP( PRINTLONGINT )
-			end if
-
-		case FB_DATATYPE_ULONGINT
-			if( islprint ) then
-				f = PROCLOOKUP( LPRINTULONGINT )
-			else
-				f = PROCLOOKUP( PRINTULONGINT )
-			end if
+			end select
 
 		case FB_DATATYPE_SINGLE
 			if( islprint ) then
@@ -1051,31 +749,9 @@ function rtlPrint _
 				f = PROCLOOKUP( PRINTDOUBLE )
 			end if
 
-		case FB_DATATYPE_POINTER
-			if( FB_LONGSIZE = FB_INTEGERSIZE ) then
-				if( islprint ) then
-					f = PROCLOOKUP( LPRINTUINT )
-				else
-					f = PROCLOOKUP( PRINTUINT )
-				end if
-			else
-				if( islprint ) then
-					f = PROCLOOKUP( LPRINTULONGINT )
-				else
-					f = PROCLOOKUP( PRINTULONGINT )
-				end if
-			end if
-
-			'' cast(ulong, pointer) should always work
-			expr = astNewCONV( FB_DATATYPE_ULONG, NULL, expr )
-
 		case else
 			exit function
-
 		end select
-
-		'' Must have an expression for the call with 3 args
-		assert(expr)
 	end if
 
     ''
@@ -1200,7 +876,6 @@ function rtlWrite _
 	if( expr = NULL ) then
 		f = PROCLOOKUP( WRITEVOID )
 	else
-
 		'' UDT? try to convert to string with type casting op overloading
 		select case astGetDataType( expr )
 		case FB_DATATYPE_STRUCT, FB_DATATYPE_ENUM
@@ -1210,6 +885,11 @@ function rtlWrite _
 			end if
 		end select
 
+		'' Convert pointer to uinteger
+		if( typeIsPtr( astGetFullType( expr ) ) ) then
+			expr = astNewCONV( FB_DATATYPE_UINT, NULL, expr )
+		end if
+
 		select case as const typeGet( astGetDataType( expr ) )
 		case FB_DATATYPE_FIXSTR, FB_DATATYPE_STRING, FB_DATATYPE_CHAR
 			f = PROCLOOKUP( WRITESTR )
@@ -1217,43 +897,22 @@ function rtlWrite _
 		case FB_DATATYPE_WCHAR
 			f = PROCLOOKUP( WRITEWSTR )
 
-		case FB_DATATYPE_BYTE
-			f = PROCLOOKUP( WRITEBYTE )
+		case FB_DATATYPE_BYTE, FB_DATATYPE_UBYTE, _
+		     FB_DATATYPE_SHORT, FB_DATATYPE_USHORT, _
+		     FB_DATATYPE_INTEGER, FB_DATATYPE_ENUM, FB_DATATYPE_UINT, _
+		     FB_DATATYPE_LONG, FB_DATATYPE_ULONG, _
+		     FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 
-		case FB_DATATYPE_UBYTE
-			f = PROCLOOKUP( WRITEUBYTE )
-
-		case FB_DATATYPE_SHORT
-			f = PROCLOOKUP( WRITESHORT )
-
-		case FB_DATATYPE_USHORT
-			f = PROCLOOKUP( WRITEUSHORT )
-
-		case FB_DATATYPE_INTEGER, FB_DATATYPE_ENUM
-			f = PROCLOOKUP( WRITEINT )
-
-		case FB_DATATYPE_UINT
-			f = PROCLOOKUP( WRITEUINT )
-
-		case FB_DATATYPE_LONG
-			if( FB_LONGSIZE = FB_INTEGERSIZE ) then
-				f = PROCLOOKUP( WRITEINT )
-			else
-				f = PROCLOOKUP( WRITELONGINT )
-			end if
-
-		case FB_DATATYPE_ULONG
-			if( FB_LONGSIZE = FB_INTEGERSIZE ) then
-				f = PROCLOOKUP( WRITEUINT )
-			else
-				f = PROCLOOKUP( WRITEULONGINT )
-			end if
-
-		case FB_DATATYPE_LONGINT
-			f = PROCLOOKUP( WRITELONGINT )
-
-		case FB_DATATYPE_ULONGINT
-			f = PROCLOOKUP( WRITEULONGINT )
+			select case as const( typeGetSizeType( astGetFullType( expr ) ) )
+			case FB_SIZETYPE_INT8   : f = PROCLOOKUP( WRITEBYTE )
+			case FB_SIZETYPE_UINT8  : f = PROCLOOKUP( WRITEUBYTE )
+			case FB_SIZETYPE_INT16  : f = PROCLOOKUP( WRITESHORT )
+			case FB_SIZETYPE_UINT16 : f = PROCLOOKUP( WRITEUSHORT )
+			case FB_SIZETYPE_INT32  : f = PROCLOOKUP( WRITEINT )
+			case FB_SIZETYPE_UINT32 : f = PROCLOOKUP( WRITEUINT )
+			case FB_SIZETYPE_INT64  : f = PROCLOOKUP( WRITELONGINT )
+			case FB_SIZETYPE_UINT64 : f = PROCLOOKUP( WRITEULONGINT )
+			end select
 
 		case FB_DATATYPE_SINGLE
 			f = PROCLOOKUP( WRITESINGLE )
@@ -1261,20 +920,9 @@ function rtlWrite _
 		case FB_DATATYPE_DOUBLE
 			f = PROCLOOKUP( WRITEDOUBLE )
 
-		case FB_DATATYPE_POINTER
-			if( FB_LONGSIZE = FB_INTEGERSIZE ) then
-				f = PROCLOOKUP( WRITEUINT )
-			else
-				f = PROCLOOKUP( WRITEULONGINT )
-			end if
-
-			expr = astNewCONV( FB_DATATYPE_ULONG, NULL, expr )
-
 		case else
 			exit function
-
 		end select
-
 	end if
 
     ''
@@ -1531,5 +1179,3 @@ function rtlPrinter_cb _
     function = TRUE
 
 end function
-
-

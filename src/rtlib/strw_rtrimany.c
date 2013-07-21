@@ -2,13 +2,11 @@
 
 #include "fb.h"
 
-
-/*:::::*/
 FBCALL FB_WCHAR *fb_WstrRTrimAny ( const FB_WCHAR *src, const FB_WCHAR *pattern )
 {
     const FB_WCHAR *pachText;
 	FB_WCHAR 	*dst;
-	size_t 		len;
+	ssize_t len;
 
     if( src == NULL ) {
         return NULL;
@@ -16,11 +14,11 @@ FBCALL FB_WCHAR *fb_WstrRTrimAny ( const FB_WCHAR *src, const FB_WCHAR *pattern 
 
 	len = fb_wstr_Len( src );
     {
-        size_t len_pattern = fb_wstr_Len( pattern );
+        ssize_t len_pattern = fb_wstr_Len( pattern );
         pachText = src;
 		while ( len != 0 )
         {
-            size_t i;
+            ssize_t i;
             --len;
             for( i=0; i!=len_pattern; ++i ) {
                 if( wcschr( pattern, pachText[len] )!=NULL ) {
@@ -51,4 +49,3 @@ FBCALL FB_WCHAR *fb_WstrRTrimAny ( const FB_WCHAR *src, const FB_WCHAR *pattern 
 
 	return dst;
 }
-

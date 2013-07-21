@@ -71,7 +71,8 @@ private function hFieldArray _
 		byval idxexpr as ASTNODE ptr _
 	) as ASTNODE ptr
 
-    dim as integer maxdims = any, dims = any, diff = any
+	dim as integer maxdims = any, dims = any
+	dim as longint diff = any
     dim as ASTNODE ptr expr = any, dimexpr = any
     dim as FBVARDIM ptr d = any
 
@@ -209,18 +210,6 @@ private function hUdtDataMember _
 
 end function
 
-private function hUdtConstMember( byval fld as FBSYMBOL ptr ) as ASTNODE ptr
-	'' string constant?
-	select case symbGetType( fld )
-	case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
-		function = astNewVAR( symbGetConstValStr( fld ) )
-	case else
-		function = astNewCONST( @symbGetConstVal( fld ), _
-								symbGetFullType( fld ), _
-								symbGetSubType( fld ) )
-	end select
-end function
-
 '':::::
 '' MemberId       =   ID ArrayIdx?
 ''
@@ -331,7 +320,7 @@ function cUdtMember _
 			lexSkipToken( )
 
 			astDeltree(	varexpr	)
-			return hUdtConstMember(	fld	)
+			return astBuildConst( fld )
 
 		'' enum?
 		case FB_SYMBCLASS_ENUM
@@ -482,8 +471,8 @@ private function hStrIndexing _
 	'' add index
 	if( typeGet( dtype ) = FB_DATATYPE_WCHAR ) then
 		'' times sizeof( wchar ) if it's wstring
-		idxexpr = astNewBOP( AST_OP_SHL, idxexpr, _
-			astNewCONSTi( hToPow2( typeGetSize( FB_DATATYPE_WCHAR ) ) ) )
+		idxexpr = astNewBOP( AST_OP_MUL, idxexpr, _
+			astNewCONSTi( typeGetSize( FB_DATATYPE_WCHAR ) ) )
 	end if
 
 	'' null pointer checking
@@ -516,7 +505,8 @@ function cMemberDeref _
 		byval check_array as integer _
 	) as ASTNODE ptr
 
-	dim as integer derefcnt = any, is_field = any, lgt = any
+	dim as integer derefcnt = any, is_field = any
+	dim as longint lgt = any
 	dim as ASTNODE ptr idxexpr = any
 
 	function = NULL
@@ -775,9 +765,13 @@ private function hDynArrayBoundChk _
 		byval idx as integer _
 	) as ASTNODE ptr
 
+	dim as longint dimoffset = any
+
+	dimoffset = symb.fbarray_dimtb + (idx * symbGetLen( symb.fbarraydim ))
+
 	function = astBuildBOUNDCHK( expr, _
-			astNewVAR( desc, FB_ARRAYDESCLEN + idx*FB_ARRAYDESC_DIMLEN + FB_ARRAYDESC_LBOUNDOFS, FB_DATATYPE_INTEGER ), _
-			astNewVAR( desc, FB_ARRAYDESCLEN + idx*FB_ARRAYDESC_DIMLEN + FB_ARRAYDESC_UBOUNDOFS, FB_DATATYPE_INTEGER ) )
+			astNewVAR( desc, dimoffset + symb.fbarraydim_lbound, FB_DATATYPE_INTEGER ), _
+			astNewVAR( desc, dimoffset + symb.fbarraydim_ubound, FB_DATATYPE_INTEGER ) )
 
 end function
 
@@ -838,12 +832,10 @@ private function cDynArrayIdx( byval sym as FBSYMBOL ptr ) as ASTNODE ptr
 
     	i += 1
 
-    	'' times desc(i).elements
-    	expr = astNewBOP( AST_OP_MUL, _
-    					  expr, _
-    					  astNewVAR( desc, _
-    						 		 FB_ARRAYDESCLEN + i*FB_ARRAYDESC_DIMLEN, _
-    						 		 FB_DATATYPE_INTEGER ) )
+		'' times desc(i).elements
+		expr = astNewBOP( AST_OP_MUL, expr, _
+				astNewVAR( desc, symb.fbarray_dimtb + (i * symbGetLen( symb.fbarraydim )), _
+						FB_DATATYPE_INTEGER ) )
 	loop
 
 	'' times length
@@ -856,10 +848,9 @@ private function cDynArrayIdx( byval sym as FBSYMBOL ptr ) as ASTNODE ptr
     	end if
     end if
 
-   	'' plus desc.data (= ptr + diff)
-    function = astNewBOP( AST_OP_ADD, _
-    				  	  expr, _
-    				  	  astNewVAR( desc, FB_ARRAYDESC_DATAOFFS, FB_DATATYPE_INTEGER ) )
+	'' plus desc.data (= ptr + diff)
+	function = astNewBOP( AST_OP_ADD, expr, _
+			astNewVAR( desc, symb.fbarray_data, FB_DATATYPE_INTEGER ) )
 end function
 
 private function hArgArrayBoundChk _
@@ -869,13 +860,17 @@ private function hArgArrayBoundChk _
 		byval idx as integer _
 	) as ASTNODE ptr
 
+	dim as longint dimoffset = any
+
+	dimoffset = symb.fbarray_dimtb + (idx * symbGetLen( symb.fbarraydim ))
+
 	function = astBuildBOUNDCHK( expr, _
 			astNewDEREF( astNewVAR( desc, 0, FB_DATATYPE_INTEGER ), _
 				FB_DATATYPE_INTEGER, NULL, _
-				FB_ARRAYDESCLEN + idx*FB_ARRAYDESC_DIMLEN + FB_ARRAYDESC_LBOUNDOFS ), _
+				dimoffset + symb.fbarraydim_lbound ), _
 			astNewDEREF( astNewVAR( desc, 0, FB_DATATYPE_INTEGER ), _
 				FB_DATATYPE_INTEGER, NULL, _
-				FB_ARRAYDESCLEN + idx*FB_ARRAYDESC_DIMLEN + FB_ARRAYDESC_UBOUNDOFS ) )
+				dimoffset + symb.fbarraydim_ubound ) )
 
 
 end function
@@ -919,25 +914,20 @@ private function cArgArrayIdx( byval sym as FBSYMBOL ptr ) as ASTNODE ptr
 
     	'' it's a descriptor pointer, dereference (only with DAG this will be optimized)
 
-    	'' times desc[i].elements
-    	expr = astNewBOP( AST_OP_MUL, _
-    					  expr, _
-    					  astNewDEREF( astNewVAR( sym, 0, FB_DATATYPE_INTEGER ), _
-    						   		   FB_DATATYPE_INTEGER, _
-    						   		   NULL, _
-    						   		   FB_ARRAYDESCLEN + i*FB_ARRAYDESC_DIMLEN ) )
+		'' times desc[i].elements
+		expr = astNewBOP( AST_OP_MUL, expr, _
+				astNewDEREF( astNewVAR( sym, 0, FB_DATATYPE_INTEGER ), _
+					FB_DATATYPE_INTEGER, NULL, _
+					symb.fbarray_dimtb + (i * symbGetLen( symb.fbarraydim )) ) )
 	loop
 
 	'' times length
 	expr = astNewBOP( AST_OP_MUL, expr, astNewCONSTi( symbGetLen( sym ) ) )
 
-   	'' plus desc->data (= ptr + diff)
-    function = astNewBOP( AST_OP_ADD, _
-    					  expr, _
-    					  astNewDEREF( astNewVAR( sym, 0, FB_DATATYPE_INTEGER ), _
-    					   			   FB_DATATYPE_INTEGER, _
-    					   			   NULL, _
-    					   			   FB_ARRAYDESC_DATAOFFS ) )
+	'' plus desc->data (= ptr + diff)
+	function = astNewBOP( AST_OP_ADD, expr, _
+			astNewDEREF( astNewVAR( sym, 0, FB_DATATYPE_INTEGER ), _
+				FB_DATATYPE_INTEGER, NULL, symb.fbarray_data ) )
 end function
 
 '':::::
@@ -1088,32 +1078,23 @@ private function hVarAddUndecl _
 	function = s
 end function
 
-'':::::
-private function hMakeArrayIdx _
-	( _
-		byval sym as FBSYMBOL ptr _
-	) as ASTNODE ptr
-
+private function hMakeArrayIdx( byval sym as FBSYMBOL ptr ) as ASTNODE ptr
     ''  argument passed by descriptor?
     if( symbIsParamByDesc( sym ) ) then
-    	'' return descriptor->data
-    	return astNewDEREF( astNewVAR( sym, 0, FB_DATATYPE_INTEGER ), _
-    					  	FB_DATATYPE_INTEGER, _
-    					  	NULL, _
-    					  	FB_ARRAYDESC_DATAOFFS )
+		'' return descriptor->data
+		return astNewDEREF( astNewVAR( sym, 0, FB_DATATYPE_INTEGER ), _
+				FB_DATATYPE_INTEGER, NULL, symb.fbarray_data )
     end if
 
     '' dynamic array? (this will handle common's too)
     if( symbGetIsDynamic( sym ) ) then
-    	'' return descriptor.data
-    	return astNewVAR( symbGetArrayDescriptor( sym ), _
-    					  FB_ARRAYDESC_DATAOFFS, _
-    					  FB_DATATYPE_INTEGER )
+		'' return descriptor.data
+		return astNewVAR( symbGetArrayDescriptor( sym ), _
+				symb.fbarray_data, FB_DATATYPE_INTEGER )
     end if
 
     '' static array, return lbound( array )
     function = astNewCONSTi( symbGetArrayFirstDim( sym )->lower )
-
 end function
 
 '':::::

@@ -232,338 +232,141 @@ private sub hToStr(byref l as ASTNODE ptr, byref r as ASTNODE ptr)
    	end select
 end sub
 
-private function hBOPConstFoldInt _
+private function hConstBop _
 	( _
 		byval op as integer, _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr, _
 		byval l as ASTNODE ptr, _
 		byval r as ASTNODE ptr _
 	) as ASTNODE ptr
 
-	dim as integer issigned = any, ldfull = any
-	dim as FBSYMBOL ptr lsubtype = any
-
-	issigned = typeIsSigned( l->dtype )
-
-	select case as const op
-	case AST_OP_ADD
-		l->con.val.int = l->con.val.int + r->con.val.int
-
-	case AST_OP_SUB
-		l->con.val.int = l->con.val.int - r->con.val.int
-
-	case AST_OP_MUL
-		if( issigned ) then
-			l->con.val.int = l->con.val.int * r->con.val.int
-		else
-			l->con.val.int = cunsg(l->con.val.int) * cunsg(r->con.val.int)
-		end if
-
-	case AST_OP_INTDIV
-		if( r->con.val.int <> 0 ) then
-			if( issigned ) then
-				l->con.val.int = l->con.val.int \ r->con.val.int
+	if( typeGetClass( l->dtype ) = FB_DATACLASS_FPOINT ) then
+		select case as const( op )
+		case AST_OP_ADD
+			l->val.f = l->val.f + r->val.f
+		case AST_OP_SUB
+			l->val.f = l->val.f - r->val.f
+		case AST_OP_MUL
+			l->val.f = l->val.f * r->val.f
+		case AST_OP_DIV
+			'' Note: no division by zero error here - we should return
+			'' INF instead, just like with (l / r) at runtime
+			l->val.f = l->val.f / r->val.f
+		case AST_OP_POW
+			l->val.f = l->val.f ^ r->val.f
+		case AST_OP_NE
+			l->val.i = l->val.f <> r->val.f
+		case AST_OP_EQ
+			l->val.i = l->val.f = r->val.f
+		case AST_OP_GT
+			l->val.i = l->val.f > r->val.f
+		case AST_OP_LT
+			l->val.i = l->val.f < r->val.f
+		case AST_OP_LE
+			l->val.i = l->val.f <= r->val.f
+		case AST_OP_GE
+			l->val.i = l->val.f >= r->val.f
+		case AST_OP_ATAN2
+			l->val.f = atan2( l->val.f, r->val.f )
+		case AST_OP_ANDALSO
+			if l->val.f then
+				l->val.i = (r->val.f <> 0)
 			else
-				l->con.val.int = cunsg( l->con.val.int ) \ cunsg( r->con.val.int )
+				l->val.i = 0
 			end if
-		else
-			l->con.val.int = 0
-			errReport( FB_ERRMSG_DIVBYZERO )
-		end if
-
-	case AST_OP_MOD
-		if( r->con.val.int <> 0 ) then
-			if( issigned ) then
-				l->con.val.int = l->con.val.int mod r->con.val.int
+		case AST_OP_ORELSE
+			if l->val.f then
+				l->val.i = -1
 			else
-				l->con.val.int = cunsg( l->con.val.int ) mod cunsg( r->con.val.int )
+				l->val.i = (r->val.f <> 0)
 			end if
-		else
-			l->con.val.int = 0
-			errReport( FB_ERRMSG_DIVBYZERO )
-		end if
+		case else
+			assert( FALSE )
+		end select
 
-	case AST_OP_SHL
-		if( issigned ) then
-			l->con.val.int = l->con.val.int shl r->con.val.int
-		else
-			l->con.val.int = cunsg( l->con.val.int ) shl r->con.val.int
-		end if
+	elseif( typeIsSigned( l->dtype ) ) then
+		select case as const( op )
+		case AST_OP_ADD : l->val.i = l->val.i +   r->val.i
+		case AST_OP_SUB : l->val.i = l->val.i -   r->val.i
+		case AST_OP_MUL : l->val.i = l->val.i *   r->val.i
+		case AST_OP_SHL : l->val.i = l->val.i shl r->val.i
+		case AST_OP_SHR : l->val.i = l->val.i shr r->val.i
+		case AST_OP_AND : l->val.i = l->val.i and r->val.i
+		case AST_OP_OR  : l->val.i = l->val.i or  r->val.i
+		case AST_OP_XOR : l->val.i = l->val.i xor r->val.i
+		case AST_OP_EQV : l->val.i = l->val.i eqv r->val.i
+		case AST_OP_IMP : l->val.i = l->val.i imp r->val.i
+		case AST_OP_NE  : l->val.i = l->val.i <>  r->val.i
+		case AST_OP_EQ  : l->val.i = l->val.i =   r->val.i
+		case AST_OP_GT  : l->val.i = l->val.i >   r->val.i
+		case AST_OP_LT  : l->val.i = l->val.i <   r->val.i
+		case AST_OP_LE  : l->val.i = l->val.i <=  r->val.i
+		case AST_OP_GE  : l->val.i = l->val.i >=  r->val.i
+		case AST_OP_ANDALSO : l->val.i = iif( l->val.i <> 0, r->val.i <> 0, 0 )
+		case AST_OP_ORELSE  : l->val.i = iif( l->val.i <> 0, -1, r->val.i <> 0 )
+		case AST_OP_INTDIV
+			if( r->val.i <> 0 ) then
+				l->val.i = l->val.i \ r->val.i
+			else
+				l->val.i = 0
+				errReport( FB_ERRMSG_DIVBYZERO )
+			end if
+		case AST_OP_MOD
+			if( r->val.i <> 0 ) then
+				l->val.i = l->val.i mod r->val.i
+			else
+				l->val.i = 0
+				errReport( FB_ERRMSG_DIVBYZERO )
+			end if
+		case else
+			assert( FALSE )
+		end select
 
-	case AST_OP_SHR
-		if( issigned ) then
-			l->con.val.int = l->con.val.int shr r->con.val.int
-		else
-			l->con.val.int = cunsg( l->con.val.int ) shr r->con.val.int
-		end if
+		l = astConvertRawCONSTi( dtype, subtype, l )
+	else
+		select case as const( op )
+		case AST_OP_ADD : l->val.i = cunsg( l->val.i ) +   cunsg( r->val.i )
+		case AST_OP_SUB : l->val.i = cunsg( l->val.i ) -   cunsg( r->val.i )
+		case AST_OP_MUL : l->val.i = cunsg( l->val.i ) *   cunsg( r->val.i )
+		case AST_OP_SHL : l->val.i = cunsg( l->val.i ) shl cunsg( r->val.i )
+		case AST_OP_SHR : l->val.i = cunsg( l->val.i ) shr cunsg( r->val.i )
+		case AST_OP_AND : l->val.i = cunsg( l->val.i ) and cunsg( r->val.i )
+		case AST_OP_OR  : l->val.i = cunsg( l->val.i ) or  cunsg( r->val.i )
+		case AST_OP_XOR : l->val.i = cunsg( l->val.i ) xor cunsg( r->val.i )
+		case AST_OP_EQV : l->val.i = cunsg( l->val.i ) eqv cunsg( r->val.i )
+		case AST_OP_IMP : l->val.i = cunsg( l->val.i ) imp cunsg( r->val.i )
+		case AST_OP_NE  : l->val.i = cunsg( l->val.i ) <>  cunsg( r->val.i )
+		case AST_OP_EQ  : l->val.i = cunsg( l->val.i ) =   cunsg( r->val.i )
+		case AST_OP_GT  : l->val.i = cunsg( l->val.i ) >   cunsg( r->val.i )
+		case AST_OP_LT  : l->val.i = cunsg( l->val.i ) <   cunsg( r->val.i )
+		case AST_OP_LE  : l->val.i = cunsg( l->val.i ) <=  cunsg( r->val.i )
+		case AST_OP_GE  : l->val.i = cunsg( l->val.i ) >=  cunsg( r->val.i )
+		case AST_OP_ANDALSO : l->val.i = iif( l->val.i <> 0, r->val.i <> 0, 0 )
+		case AST_OP_ORELSE  : l->val.i = iif( l->val.i <> 0, -1, r->val.i <> 0 )
+		case AST_OP_INTDIV
+			if( r->val.i <> 0 ) then
+				l->val.i = cunsg( l->val.i ) \ cunsg( r->val.i )
+			else
+				l->val.i = 0
+				errReport( FB_ERRMSG_DIVBYZERO )
+			end if
+		case AST_OP_MOD
+			if( r->val.i <> 0 ) then
+				l->val.i = cunsg( l->val.i ) mod cunsg( r->val.i )
+			else
+				l->val.i = 0
+				errReport( FB_ERRMSG_DIVBYZERO )
+			end if
+		case else
+			assert( FALSE )
+		end select
 
-	case AST_OP_AND
-		l->con.val.int = l->con.val.int and r->con.val.int
+		l = astConvertRawCONSTi( dtype, subtype, l )
+	end if
 
-	case AST_OP_OR
-		l->con.val.int = l->con.val.int or r->con.val.int
-
-	case AST_OP_ANDALSO
-		if l->con.val.int then
-			l->con.val.int = (r->con.val.int <> 0)
-		else
-			l->con.val.int = 0
-		end if
-
-	case AST_OP_ORELSE
-		if l->con.val.int then
-			l->con.val.int = -1
-		else
-			l->con.val.int = (r->con.val.int <> 0)
-		end if
-
-	case AST_OP_XOR
-		l->con.val.int = l->con.val.int xor r->con.val.int
-
-	case AST_OP_EQV
-		l->con.val.int = l->con.val.int eqv r->con.val.int
-
-	case AST_OP_IMP
-		l->con.val.int = l->con.val.int imp r->con.val.int
-
-	case AST_OP_NE
-		l->con.val.int = l->con.val.int <> r->con.val.int
-
-	case AST_OP_EQ
-		l->con.val.int = l->con.val.int = r->con.val.int
-
-	case AST_OP_GT
-		if( issigned ) then
-			l->con.val.int = l->con.val.int > r->con.val.int
-		else
-			l->con.val.int = cunsg( l->con.val.int ) > cunsg( r->con.val.int )
-		end if
-
-	case AST_OP_LT
-		if( issigned ) then
-			l->con.val.int = l->con.val.int < r->con.val.int
-		else
-			l->con.val.int = cunsg( l->con.val.int ) < cunsg( r->con.val.int )
-		end if
-
-	case AST_OP_LE
-		if( issigned ) then
-			l->con.val.int = l->con.val.int <= r->con.val.int
-		else
-			l->con.val.int = cunsg( l->con.val.int ) <= cunsg( r->con.val.int )
-		end if
-
-	case AST_OP_GE
-		if( issigned ) then
-			l->con.val.int = l->con.val.int >= r->con.val.int
-		else
-			l->con.val.int = cunsg( l->con.val.int ) >= cunsg( r->con.val.int )
-		end if
-	end select
-
-	'' Pretend the CONST is an integer for a moment, since the result was
-	'' calculated and stored at INTEGER precision above, then do a CONV
-	'' back to the original type and let it show any overflow warnings in
-	'' case the real type cannot hold the calculated value.
-	ldfull = l->dtype
-	lsubtype = l->subtype
-	l->dtype = FB_DATATYPE_INTEGER
-	l->subtype = NULL
-
-	function = astNewCONV( ldfull, lsubtype, l )
+	function = l
 end function
-
-'':::::
-private sub hBOPConstFoldFlt _
-	( _
-		byval op as integer, _
-		byval l as ASTNODE ptr, _
-		byval r as ASTNODE ptr _
-	) static
-
-	select case as const op
-	case AST_OP_ADD
-		l->con.val.float = l->con.val.float + r->con.val.float
-
-	case AST_OP_SUB
-		l->con.val.float = l->con.val.float - r->con.val.float
-
-	case AST_OP_MUL
-		l->con.val.float = l->con.val.float * r->con.val.float
-
-	case AST_OP_DIV
-		'' Note: no division by zero error here - we should return
-		'' INF instead, just like with (l / r) at runtime
-		l->con.val.float = l->con.val.float / r->con.val.float
-
-    case AST_OP_POW
-		l->con.val.float = l->con.val.float ^ r->con.val.float
-
-	case AST_OP_NE
-		l->con.val.int = l->con.val.float <> r->con.val.float
-
-	case AST_OP_EQ
-		l->con.val.int = l->con.val.float = r->con.val.float
-
-	case AST_OP_GT
-		l->con.val.int = l->con.val.float > r->con.val.float
-
-	case AST_OP_LT
-		l->con.val.int = l->con.val.float < r->con.val.float
-
-	case AST_OP_LE
-		l->con.val.int = l->con.val.float <= r->con.val.float
-
-	case AST_OP_GE
-		l->con.val.int = l->con.val.float >= r->con.val.float
-
-    case AST_OP_ATAN2
-		l->con.val.float = atan2( l->con.val.float, r->con.val.float )
-
-	case AST_OP_ANDALSO
-		if l->con.val.float then
-			l->con.val.int = (r->con.val.float <> 0)
-		else
-			l->con.val.int = 0
-		end if
-
-	case AST_OP_ORELSE
-		if l->con.val.float then
-			l->con.val.int = -1
-		else
-			l->con.val.int = (r->con.val.float <> 0)
-		end if
-	end select
-
-end sub
-
-private sub hBOPConstFold64 _
-	( _
-		byval op as integer, _
-		byval l as ASTNODE ptr, _
-		byval r as ASTNODE ptr _
-	)
-
-	dim as integer issigned = any
-
-	issigned = typeIsSigned( l->dtype )
-
-	select case as const op
-	case AST_OP_ADD
-		l->con.val.long = l->con.val.long + r->con.val.long
-
-	case AST_OP_SUB
-		l->con.val.long = l->con.val.long - r->con.val.long
-
-	case AST_OP_MUL
-		if( issigned ) then
-			l->con.val.long = l->con.val.long * r->con.val.long
-		else
-			l->con.val.long = cunsg(l->con.val.long) * cunsg(r->con.val.long)
-		end if
-
-	case AST_OP_INTDIV
-		if( r->con.val.long <> 0 ) then
-			if( issigned ) then
-				l->con.val.long = l->con.val.long \ r->con.val.long
-			else
-				l->con.val.long = cunsg( l->con.val.long ) \ cunsg( r->con.val.long )
-			end if
-		else
-			l->con.val.long = 0
-			errReport( FB_ERRMSG_DIVBYZERO )
-		end if
-
-	case AST_OP_MOD
-		if( r->con.val.long <> 0 ) then
-			if( issigned ) then
-				l->con.val.long = l->con.val.long mod r->con.val.long
-			else
-				l->con.val.long = cunsg( l->con.val.long ) mod cunsg( r->con.val.long )
-			end if
-		else
-			l->con.val.long = 0
-			errReport( FB_ERRMSG_DIVBYZERO )
-		end if
-
-	case AST_OP_SHL
-		if( issigned ) then
-			l->con.val.long = l->con.val.long shl r->con.val.int
-		else
-			l->con.val.long = cunsg( l->con.val.long ) shl r->con.val.int
-		end if
-
-	case AST_OP_SHR
-		if( issigned ) then
-			l->con.val.long = l->con.val.long shr r->con.val.int
-		else
-			l->con.val.long = cunsg( l->con.val.long ) shr r->con.val.int
-		end if
-
-	case AST_OP_AND
-		l->con.val.long = l->con.val.long and r->con.val.long
-
-	case AST_OP_OR
-		l->con.val.long = l->con.val.long or r->con.val.long
-
-	case AST_OP_ANDALSO
-		if l->con.val.long then
-			l->con.val.long = (r->con.val.long <> 0)
-		else
-			l->con.val.long = 0
-		end if
-
-	case AST_OP_ORELSE
-		if l->con.val.long then
-			l->con.val.long = -1
-		else
-			l->con.val.long = (r->con.val.long <> 0)
-		end if
-
-	case AST_OP_XOR
-		l->con.val.long = l->con.val.long xor r->con.val.long
-
-	case AST_OP_EQV
-		l->con.val.long = l->con.val.long eqv r->con.val.long
-
-	case AST_OP_IMP
-		l->con.val.long = l->con.val.long imp r->con.val.long
-
-	case AST_OP_NE
-		l->con.val.int = l->con.val.long <> r->con.val.long
-
-	case AST_OP_EQ
-		l->con.val.int = l->con.val.long = r->con.val.long
-
-	case AST_OP_GT
-		if( issigned ) then
-			l->con.val.int = l->con.val.long > r->con.val.long
-		else
-			l->con.val.int = cunsg( l->con.val.long ) > cunsg( r->con.val.long )
-		end if
-
-	case AST_OP_LT
-		if( issigned ) then
-			l->con.val.int = l->con.val.long < r->con.val.long
-		else
-			l->con.val.int = cunsg( l->con.val.long ) < cunsg( r->con.val.long )
-		end if
-
-	case AST_OP_LE
-		if( issigned ) then
-			l->con.val.int = l->con.val.long <= r->con.val.long
-		else
-			l->con.val.int = cunsg( l->con.val.long ) <= cunsg( r->con.val.long )
-		end if
-
-	case AST_OP_GE
-		if( issigned ) then
-			l->con.val.int = l->con.val.long >= r->con.val.long
-		else
-			l->con.val.int = cunsg( l->con.val.long ) >= cunsg( r->con.val.long )
-		end if
-	end select
-
-end sub
 
 '':::::
 private function hCheckPointer _
@@ -621,7 +424,7 @@ private function hDoPointerArith _
 	) as ASTNODE ptr
 
     dim as integer edtype = any
-    dim as integer lgt = any
+	dim as longint lgt = any
 
     function = NULL
 
@@ -1353,8 +1156,8 @@ function astNewBOP _
 		if( astIsCONST( r ) ) then
 			'' warn if shift is greater than or equal to the number of bits in ldtype
 			'' !!!FIXME!!! prevent asm error when value is higher than 255
-			select case astGetValueAsLongInt( r )
-			case 0 to (typeGetSize( ldtype ) * 8)-1
+			select case astConstGetAsInt64( r )
+			case 0 to typeGetBits( ldtype )-1
 
 			case else
 				errReportWarn( FB_WARNINGMSG_SHIFTEXCEEDSBITSINDATATYPE )
@@ -1374,25 +1177,7 @@ function astNewBOP _
 
 	'' constant folding (won't handle commutation, ie: "1+a+2+3" will become "1+a+5", not "a+6")
 	if( astIsCONST( l ) and astIsCONST( r ) ) then
-
-		select case as const typeGet( ldtype )
-		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-		    hBOPConstFold64( op, l, r )
-
-		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-			hBOPConstFoldFlt( op, l, r )
-
-		case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
-			if( FB_LONGSIZE = len( integer ) ) then
-				l = hBOPConstFoldInt( op, l, r )
-			else
-				hBOPConstFold64( op, l, r )
-			end if
-
-		case else
-			'' byte's, short's, int's and enum's
-			l = hBOPConstFoldInt( op, l, r )
-		end select
+		l = hConstBop( op, dtype, subtype, l, r )
 
 		astGetFullType( l ) = dtype
 		l->subtype = subtype
@@ -1427,7 +1212,7 @@ function astNewBOP _
 				'' no need to check for other values, floats aren't
 				'' allowed and if longints were used, this wouldn't be
 				'' an ofs node
-				l->ofs.ofs += r->con.val.int
+				l->ofs.ofs += r->val.i
 				astDelNode( r )
 
 				return l
@@ -1437,7 +1222,7 @@ function astNewBOP _
 			'' offset?
 			if( l->class = AST_NODECLASS_OFFSET ) then
 				'' see above
-				l->ofs.ofs -= r->con.val.int
+				l->ofs.ofs -= r->val.i
 				astDelNode( r )
 
 				return l
@@ -1450,15 +1235,13 @@ function astNewBOP _
 		'' report error for 'x \ 0', 'x mod 0'
 		'' Note: no error for 'x / 0', that should just return INF
 		case AST_OP_INTDIV, AST_OP_MOD
-			if( r->con.val.int = 0 ) then
+			if( r->val.i = 0 ) then
 				errReport( FB_ERRMSG_DIVBYZERO )
 			end if
 
 		case AST_OP_POW
-
 			'' convert var ^ 2 to var * var
-			if( r->con.val.float = 2.0 ) then
-
+			if( r->val.f = 2.0 ) then
 				'' operands will be converted to DOUBLE if not floats..
 				if( l->class = AST_NODECLASS_CONV ) then
 					select case l->l->class
@@ -1566,7 +1349,6 @@ function astNewBOP _
 	n->op.options = options
 
 	function = n
-
 end function
 
 '':::::
@@ -1651,12 +1433,7 @@ function astNewSelfBOP _
 
 end function
 
-'':::::
-function astLoadBOP _
-	( _
-		byval n as ASTNODE ptr _
-	) as IRVREG ptr
-
+function astLoadBOP( byval n as ASTNODE ptr ) as IRVREG ptr
     dim as ASTNODE ptr l = any, r = any
     dim as integer op = any
     dim as IRVREG ptr v1 = any, v2 = any, vr = any
@@ -1711,6 +1488,4 @@ function astLoadBOP _
 	astDelNode( r )
 
 	function = vr
-
 end function
-

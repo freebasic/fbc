@@ -192,7 +192,7 @@ function astLoadCALL( byval n as ASTNODE ptr ) as IRVREG ptr
 		'' to do it, despite it being cdecl.
 		if( (symbGetProcMode( proc ) = FB_FUNCMODE_CDECL) and _
 		    ((env.target.options and FB_TARGETOPT_CALLEEPOPSHIDDENPTR) = 0) ) then
-			bytestopop += typeGetSize( typeAddrOf( FB_DATATYPE_VOID ) )
+			bytestopop += env.pointersize
 		end if
 		if( ast.doemit ) then
 			'' Clear the temp struct (so the function can safely

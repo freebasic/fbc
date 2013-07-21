@@ -2,14 +2,13 @@
 
 #include "fb.h"
 
-/*:::::*/
-FBCALL void fb_WstrSwap( FB_WCHAR *str1, int size1, FB_WCHAR *str2, int size2 )
+FBCALL void fb_WstrSwap( FB_WCHAR *str1, ssize_t size1, FB_WCHAR *str2, ssize_t size2 )
 {
 	if( (str1 == NULL) || (str2 == NULL) )
 		return;
 
 	/* Retrieve lengths */
-	int len1, len2;
+	ssize_t len1, len2;
 
 	/* user-allocated wstring? */
 	if( size1 <= 0 )
@@ -42,13 +41,13 @@ FBCALL void fb_WstrSwap( FB_WCHAR *str1, int size1, FB_WCHAR *str2, int size2 )
 		}
 
 		{
-			int len = len1;
+			ssize_t len = len1;
 			len1 = len2;
 			len2 = len;
 		}
 
 		{
-			int size = size1;
+			ssize_t size = size1;
 			size1 = size2;
 			size2 = size;
 		}

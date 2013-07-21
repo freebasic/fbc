@@ -72,8 +72,8 @@ end type
 type FB_CMPSTMT_SELCONST
 	base			as integer
 	deflabel 		as FBSYMBOL ptr
-	minval			as uinteger
-	maxval			as uinteger
+	minval			as ulongint
+	maxval			as ulongint
 end type
 
 type FB_CMPSTMT_SELECT
@@ -308,21 +308,21 @@ declare function cTypeOrExpression _
 		byval is_len as integer, _
 		byref dtype as integer, _
 		byref subtype as FBSYMBOL ptr, _
-		byref lgt as integer _
+		byref lgt as longint _
 	) as ASTNODE ptr
 
 declare sub cTypeOf _
 	( _
 		byref dtype as integer, _
 		byref subtype as FBSYMBOL ptr, _
-		byref lgt as integer _
+		byref lgt as longint _
 	)
 
 declare function cSymbolType _
 	( _
 		byref dtype as integer, _
 		byref subtype as FBSYMBOL ptr, _
-		byref lgt as integer, _
+		byref lgt as longint, _
 		byval options as FB_SYMBTYPEOPT = FB_SYMBTYPEOPT_DEFAULT _
 	) as integer
 
@@ -596,20 +596,8 @@ declare function cEnumConstant _
 		byval sym as FBSYMBOL ptr _
 	) as ASTNODE ptr
 
-declare function cLiteral _
-	( _
-		_
-	) as ASTNODE ptr
-
-declare function cNumLiteral _
-	( _
-		byval skiptoken as integer = TRUE _
-	) as ASTNODE ptr
-
-declare function cStrLiteral _
-	( _
-		byval skiptoken as integer = TRUE _
-	) as ASTNODE ptr
+declare function cStrLiteral( byval skiptoken as integer = TRUE ) as ASTNODE ptr
+declare function cNumLiteral( byval skiptoken as integer = TRUE ) as ASTNODE ptr
 
 declare function cProcArgList _
 	( _
@@ -639,8 +627,7 @@ declare sub cProcRetType _
 		byval proc as FBSYMBOL ptr, _
 		byval is_proto as integer, _
 		byref dtype as integer, _
-		byref subtype as FBSYMBOL ptr, _
-		byref lgt as integer _
+		byref subtype as FBSYMBOL ptr _
 	)
 
 declare function cProcReturnMethod _
@@ -650,7 +637,7 @@ declare function cProcReturnMethod _
 
 declare function cProcCallingConv _
 	( _
-		byval default as FB_FUNCMODE = FB_USE_FUNCMODE_FBCALL _
+		byval default as FB_FUNCMODE = FB_FUNCMODE_FBCALL _
 	) as FB_FUNCMODE
 
 declare sub cByrefAttribute( byref attrib as integer, byval is_func as integer )
@@ -812,8 +799,8 @@ declare function cAnonType( ) as ASTNODE ptr
 declare function cConstIntExpr _
 	( _
 		byval expr as ASTNODE ptr, _
-		byval defaultvalue as integer = 0 _
-	) as integer
+		byval defaultvalue as longint = 0 _
+	) as longint
 declare function cOperatorNew( ) as ASTNODE ptr
 declare sub cOperatorDelete( )
 
@@ -855,7 +842,7 @@ declare sub hSymbolType _
 	( _
 		byref dtype as integer, _
 		byref subtype as FBSYMBOL ptr, _
-		byref lgt as integer _
+		byref lgt as longint _
 	)
 
 declare function hCheckForDefiniteTypes _
@@ -872,7 +859,7 @@ declare function cThreadCallFunc() as ASTNODE ptr
 
 declare function hIntegerTypeFromBitSize _
 	( _
-		byval bitsize as integer, _
+		byval bitsize as longint, _
 		byval is_unsigned as integer = FALSE _
 	) as FB_DATATYPE
 

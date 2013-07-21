@@ -9,7 +9,7 @@ FBCALL FBSTRING *fb_CurDir( void )
 {
 	FBSTRING 	*dst;
 	char		tmp[MAX_PATH];
-	int			len;
+	ssize_t len;
 
 	FB_LOCK();
 

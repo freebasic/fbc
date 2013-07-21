@@ -9,10 +9,10 @@ typedef struct _FBMUTEX FBMUTEX;
 struct _FBCOND;
 typedef struct _FBCOND FBCOND;
 
-FBCALL FBTHREAD         *fb_ThreadCreate( FB_THREADPROC proc, void *param, int stack_size );
+FBCALL FBTHREAD         *fb_ThreadCreate( FB_THREADPROC proc, void *param, ssize_t stack_size );
 FBCALL void              fb_ThreadWait  ( FBTHREAD *thread );
 
-       FBTHREAD         *fb_ThreadCall  ( void *proc, int abi, int stack_size, int num_args, ... );
+       FBTHREAD         *fb_ThreadCall  ( void *proc, int abi, ssize_t stack_size, int num_args, ... );
 
 FBCALL FBMUTEX          *fb_MutexCreate ( void );
 FBCALL void              fb_MutexDestroy( FBMUTEX *mutex );
@@ -38,7 +38,7 @@ enum {
 	FB_TLSKEYS
 };
 
-FBCALL void             *fb_TlsGetCtx   ( int index, int len );
+FBCALL void             *fb_TlsGetCtx   ( int index, size_t len );
 FBCALL void              fb_TlsDelCtx   ( int index );
 FBCALL void              fb_TlsFreeCtxTb( void );
 #ifdef ENABLE_MT

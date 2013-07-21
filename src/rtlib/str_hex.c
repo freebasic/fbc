@@ -4,13 +4,11 @@
 
 static char hex_table[16] = {'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'};
 
-
-/*:::::*/
-static FBSTRING *hHEX ( unsigned int num, int len, int digits )
+static FBSTRING *hHEX( unsigned int num, ssize_t len, int digits )
 {
 	FBSTRING *dst;
 	char *buf;
-	int	i, totdigs;
+	int i, totdigs;
 
 	if( digits > 0 )
 	{
@@ -64,27 +62,22 @@ static FBSTRING *hHEX ( unsigned int num, int len, int digits )
 	return dst;
 }
 
-/*:::::*/
 FBCALL FBSTRING *fb_HEX_b ( unsigned char num )
 {
 	return hHEX( num, sizeof( char ), 0 );
 }
 
-/*:::::*/
 FBCALL FBSTRING *fb_HEX_s ( unsigned short num )
 {
 	return hHEX( num, sizeof( short ), 0 );
 }
 
-/*:::::*/
 FBCALL FBSTRING *fb_HEX_i ( unsigned int num )
 {
 	return hHEX( num, sizeof( int ), 0 );
 }
 
-/*:::::*/
 FBCALL FBSTRING *fb_HEXEx_i ( unsigned int num, int digits )
 {
 	return hHEX( num, sizeof( int ), digits );
 }
-

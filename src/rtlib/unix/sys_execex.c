@@ -5,7 +5,8 @@
 FBCALL int fb_ExecEx( FBSTRING *program, FBSTRING *args, int do_fork )
 {
 	char buffer[MAX_PATH+1], *application, *arguments, **argv, *p;
-	int i, argc = 0, res = -1, status, len_program, len_arguments;
+	int i, argc = 0, res = -1, status;
+	ssize_t len_program, len_arguments;
 	pid_t pid;
 
 	if( (program == NULL) || (program->data == NULL) ) 

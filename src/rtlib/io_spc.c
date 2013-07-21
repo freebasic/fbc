@@ -2,7 +2,6 @@
 
 #include "fb.h"
 
-/*:::::*/
 FBCALL void fb_PrintTab( int fnum, int newcol )
 {
     FB_FILE *handle;
@@ -79,9 +78,7 @@ FBCALL void fb_PrintTab( int fnum, int newcol )
     FB_UNLOCK();
 }
 
-
-/*:::::*/
-FBCALL void fb_PrintSPC( int fnum, int n )
+FBCALL void fb_PrintSPC( int fnum, ssize_t n )
 {
     FB_FILE *handle;
     int col, row, cols, rows, newcol;
@@ -127,4 +124,3 @@ FBCALL void fb_PrintSPC( int fnum, int n )
 
     FB_UNLOCK();
 }
-

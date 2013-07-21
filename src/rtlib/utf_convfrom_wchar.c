@@ -4,16 +4,15 @@
 
 #include "fb.h"
 
-/*:::::*/
-static void hUTF16ToUTF8( const FB_WCHAR *src, int chars, UTF_8 *dst, int *total_bytes )
+static void hUTF16ToUTF8( const FB_WCHAR *src, ssize_t chars, UTF_8 *dst, ssize_t *total_bytes )
 {
 	UTF_32 c;
-	int bytes;
+	ssize_t bytes;
 
 	*total_bytes = 0;
 	while( chars > 0 )
 	{
-		c = (UTF_32)*src++;
+		c = *src++;
 		if( c >= UTF16_SUR_HIGH_START && c <= UTF16_SUR_HIGH_END )
 		{
 			c = ((c - UTF16_SUR_HIGH_START) << UTF16_HALFSHIFT) +
@@ -54,11 +53,10 @@ static void hUTF16ToUTF8( const FB_WCHAR *src, int chars, UTF_8 *dst, int *total
 	}
 }
 
-/*:::::*/
-static void hUTF32ToUTF8( const FB_WCHAR *src, int chars, UTF_8 *dst, int *total_bytes )
+static void hUTF32ToUTF8( const FB_WCHAR *src, ssize_t chars, UTF_8 *dst, ssize_t *total_bytes )
 {
 	UTF_32 c;
-	int bytes;
+	ssize_t bytes;
 
 	*total_bytes = 0;
 	while( chars > 0 )
@@ -96,8 +94,7 @@ static void hUTF32ToUTF8( const FB_WCHAR *src, int chars, UTF_8 *dst, int *total
 	}
 }
 
-/*:::::*/
-static char *hToUTF8( const FB_WCHAR *src, int chars, char *dst, int *bytes )
+static char *hToUTF8( const FB_WCHAR *src, ssize_t chars, char *dst, ssize_t *bytes )
 {
 	if( chars > 0 )
 	{
@@ -127,22 +124,19 @@ static char *hToUTF8( const FB_WCHAR *src, int chars, char *dst, int *bytes )
 	return dst;
 }
 
-/*:::::*/
-static void hCharToUTF16( const FB_WCHAR *src, int chars, UTF_16 *dst, int *bytes )
+static void hCharToUTF16( const FB_WCHAR *src, ssize_t chars, UTF_16 *dst, ssize_t *bytes )
 {
 	while( chars > 0 )
 	{
 		*dst++ = (unsigned char)*src++;
 		--chars;
 	}
-
 }
 
-/*:::::*/
-static UTF_16 *hUTF32ToUTF16( const FB_WCHAR *src, int chars, UTF_16 *dst, int *bytes )
+static UTF_16 *hUTF32ToUTF16( const FB_WCHAR *src, ssize_t chars, UTF_16 *dst, ssize_t *bytes )
 {
 	UTF_16 *buffer = dst;
-	int i, dst_size = *bytes;
+	ssize_t i, dst_size = *bytes;
 	UTF_32 c;
 
 	i = 0;
@@ -172,8 +166,7 @@ static UTF_16 *hUTF32ToUTF16( const FB_WCHAR *src, int chars, UTF_16 *dst, int *
 	return buffer;
 }
 
-/*:::::*/
-static char *hToUTF16( const FB_WCHAR *src, int chars, char *dst, int *bytes )
+static char *hToUTF16( const FB_WCHAR *src, ssize_t chars, char *dst, ssize_t *bytes )
 {
 	/* !!!FIXME!!! only litle-endian supported */
 
@@ -215,8 +208,7 @@ static char *hToUTF16( const FB_WCHAR *src, int chars, char *dst, int *bytes )
 	return dst;
 }
 
-/*:::::*/
-static void hCharToUTF32( const FB_WCHAR *src, int chars, UTF_32 *dst, int *bytes )
+static void hCharToUTF32( const FB_WCHAR *src, ssize_t chars, UTF_32 *dst, ssize_t *bytes )
 {
 	while( chars > 0 )
 	{
@@ -225,8 +217,7 @@ static void hCharToUTF32( const FB_WCHAR *src, int chars, UTF_32 *dst, int *byte
 	}
 }
 
-/*:::::*/
-static void hUTF16ToUTF32( const FB_WCHAR *src, int chars, UTF_32 *dst, int *bytes )
+static void hUTF16ToUTF32( const FB_WCHAR *src, ssize_t chars, UTF_32 *dst, ssize_t *bytes )
 {
 	UTF_32 c;
 
@@ -248,8 +239,7 @@ static void hUTF16ToUTF32( const FB_WCHAR *src, int chars, UTF_32 *dst, int *byt
 	}
 }
 
-/*:::::*/
-static char *hToUTF32( const FB_WCHAR *src, int chars, char *dst, int *bytes )
+static char *hToUTF32( const FB_WCHAR *src, ssize_t chars, char *dst, ssize_t *bytes )
 {
 	/* !!!FIXME!!! only litle-endian supported */
 
@@ -291,10 +281,14 @@ static char *hToUTF32( const FB_WCHAR *src, int chars, char *dst, int *bytes )
 	return dst;
 }
 
-/*:::::*/
-char *fb_WCharToUTF( FB_FILE_ENCOD encod,
-					 const FB_WCHAR *src, int chars,
-					 char *dst, int *bytes )
+char *fb_WCharToUTF
+	(
+		FB_FILE_ENCOD encod,
+		const FB_WCHAR *src,
+		ssize_t chars,
+		char *dst,
+		ssize_t *bytes
+	)
 {
 	switch( encod )
 	{
@@ -311,5 +305,3 @@ char *fb_WCharToUTF( FB_FILE_ENCOD encod,
 		return NULL;
 	}
 }
-
-

@@ -475,8 +475,8 @@ extern const PALETTE __fb_palette[FB_PALETTE_COUNT];
 extern FB_GFXCTX *fb_hGetContext(void);
 extern void fb_hSetupFuncs(int bpp);
 extern void fb_hSetupData(void);
-extern FBCALL int fb_hEncode(const unsigned char *in_buffer, int in_size, unsigned char *out_buffer, int *out_size);
-extern FBCALL int fb_hDecode(const unsigned char *in_buffer, int in_size, unsigned char *out_buffer, int *out_size);
+extern FBCALL int fb_hEncode(const unsigned char *in_buffer, ssize_t in_size, unsigned char *out_buffer, ssize_t *out_size);
+extern FBCALL int fb_hDecode(const unsigned char *in_buffer, ssize_t in_size, unsigned char *out_buffer, ssize_t *out_size);
 extern void fb_hPostEvent(EVENT *e);
 extern void fb_hPostKey(int key);
 extern BLITTER *fb_hGetBlitter(int device_depth, int is_rgb);
@@ -501,7 +501,7 @@ extern void fb_hSoftCursorUnput(int x, int y);
 extern void fb_hSoftCursorPaletteChanged(void);
 extern int fb_hColorDistance(int index, int r, int g, int b);
 extern void *fb_hPixelSetAlpha4(void *dest, int color, size_t size);
-extern int fb_hGetWindowHandle(void);
+extern ssize_t fb_hGetWindowHandle(void);
 
 
 /* Public API */
@@ -509,6 +509,7 @@ extern FBCALL int fb_GfxScreen(int mode, int depth, int num_pages, int flags, in
 extern FBCALL int fb_GfxScreenQB(int mode, int visible, int active);
 extern FBCALL int fb_GfxScreenRes(int width, int height, int depth, int num_pages, int flags, int refresh_rate);
 extern FBCALL void fb_GfxScreenInfo(int *width, int *height, int *depth, int *bpp, int *pitch, int *refresh_rate, FBSTRING *driver);
+extern FBCALL int fb_GfxScreenList(int depth);
 extern FBCALL void *fb_GfxImageCreate(int width, int height, unsigned int color, int depth, int flags);
 extern FBCALL void *fb_GfxImageCreateQB(int width, int height, unsigned int color, int depth, int flags);
 extern FBCALL void fb_GfxImageDestroy(void *image);
@@ -540,10 +541,11 @@ extern FBCALL void fb_GfxSetWindowTitle(FBSTRING *title);
 extern FBCALL int fb_GfxGetJoystick(int id, int *buttons, float *a1, float *a2, float *a3, float *a4, float *a5, float *a6, float *a7, float *a8);
 extern FBCALL int fb_GfxEvent(EVENT *event);
 extern FBCALL void fb_GfxControl_s(int what, FBSTRING *param);
-extern FBCALL void fb_GfxControl_i(int what, int *param1, int *param2, int *param3, int *param4);
+extern FBCALL void fb_GfxControl_i(int what, ssize_t *param1, ssize_t *param2, ssize_t *param3, ssize_t *param4);
 extern FBCALL int fb_GfxBload(FBSTRING *filename, void *dest, void *pal);
 extern FBCALL int fb_GfxBloadQB(FBSTRING *filename, void *dest, void *pal);
 extern FBCALL int fb_GfxBsave(FBSTRING *filename, void *src, unsigned int size, void *pal);
+extern FBCALL int fb_GfxBsaveEx(FBSTRING *filename, void *src, unsigned int size, void *pal, int bitsperpixel);
 extern FBCALL void *fb_GfxGetGLProcAddress(const char *proc);
 
 /* Public API - QB compatibility */
@@ -568,14 +570,14 @@ void fb_GfxPrintBuffer(const char *buffer, int mask);
 void fb_GfxPrintBufferWstr(const FB_WCHAR *buffer, int mask);
 void fb_GfxPrintBufferEx(const void *buffer, size_t len, int mask);
 void fb_GfxPrintBufferWstrEx(const FB_WCHAR *buffer, size_t len, int mask);
-char *fb_GfxReadStr(char *buffer, int maxlen);
+char *fb_GfxReadStr(char *buffer, ssize_t maxlen);
 int fb_GfxMultikey(int scancode);
 int fb_GfxGetMouse(int *x, int *y, int *z, int *buttons, int *clip);
 int fb_GfxSetMouse(int x, int y, int cursor, int clip);
 int fb_GfxOut(unsigned short port, unsigned char value);
 int fb_GfxIn(unsigned short port);
-int fb_GfxLineInput( FBSTRING *text, void *dst, int dst_len, int fillrem, int addquestion, int addnewline );
-int fb_GfxLineInputWstr( const FB_WCHAR *text, FB_WCHAR *dst, int max_chars, int addquestion, int addnewline );
+int fb_GfxLineInput( FBSTRING *text, void *dst, ssize_t dst_len, int fillrem, int addquestion, int addnewline );
+int fb_GfxLineInputWstr( const FB_WCHAR *text, FB_WCHAR *dst, ssize_t max_chars, int addquestion, int addnewline );
 unsigned int fb_GfxReadXY( int col, int row, int colorflag );
 void fb_GfxSleep( int msecs );
 int fb_GfxIsRedir( int is_input );
@@ -597,6 +599,17 @@ void fb_image_convert_32bgrto16(const unsigned char *src, unsigned char *dest, i
 void fb_image_convert_32bgrto32(const unsigned char *src, unsigned char *dest, int w);
 
 FBCALL void fb_GfxImageConvertRow( const unsigned char *src, int src_bpp, unsigned char *dest, int dst_bpp, int width, int isrgb );
+
+void fb_hPutTrans (unsigned char *src, unsigned char *dest, int w, int h, int src_pitch, int dest_pitch, int alpha, BLENDER *blender, void *param);
+void fb_hPutPSet  (unsigned char *src, unsigned char *dest, int w, int h, int src_pitch, int dest_pitch, int alpha, BLENDER *blender, void *param);
+void fb_hPutPReset(unsigned char *src, unsigned char *dest, int w, int h, int src_pitch, int dest_pitch, int alpha, BLENDER *blender, void *param);
+void fb_hPutAnd   (unsigned char *src, unsigned char *dest, int w, int h, int src_pitch, int dest_pitch, int alpha, BLENDER *blender, void *param);
+void fb_hPutOr    (unsigned char *src, unsigned char *dest, int w, int h, int src_pitch, int dest_pitch, int alpha, BLENDER *blender, void *param);
+void fb_hPutXor   (unsigned char *src, unsigned char *dest, int w, int h, int src_pitch, int dest_pitch, int alpha, BLENDER *blender, void *param);
+void fb_hPutAlpha (unsigned char *src, unsigned char *dest, int w, int h, int src_pitch, int dest_pitch, int alpha, BLENDER *blender, void *param);
+void fb_hPutBlend (unsigned char *src, unsigned char *dest, int w, int h, int src_pitch, int dest_pitch, int alpha, BLENDER *blender, void *param);
+void fb_hPutAdd   (unsigned char *src, unsigned char *dest, int w, int h, int src_pitch, int dest_pitch, int alpha, BLENDER *blender, void *param);
+void fb_hPutCustom(unsigned char *src, unsigned char *dest, int w, int h, int src_pitch, int dest_pitch, int alpha, BLENDER *blender, void *param);
 
 /** Returns TRUE if application is in graphics mode.
  */

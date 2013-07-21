@@ -11,10 +11,6 @@
 #include once "list.bi"
 #include once "ast.bi"
 
-type FB_SYMVAR_CTX
-	array_dimtype		as FBSYMBOL ptr
-end type
-
 declare sub hCreateArrayDescriptorType( )
 declare function hCreateDescType _
 	( _
@@ -25,9 +21,6 @@ declare function hCreateDescType _
 		byval subtype as FBSYMBOL ptr, _
 		byval attrib as integer _
 	) as FBSYMBOL ptr
-
-'' globals
-	dim shared as FB_SYMVAR_CTX ctx
 
 sub symbVarInit( )
 	listInit( @symb.dimlist, FB_INITDIMNODES, len( FBVARDIM ), LIST_FLAGS_NOCLEAR )
@@ -48,25 +41,51 @@ end sub
 
 private sub hCreateArrayDescriptorType( )
 	static as FBARRAYDIM dTB(0)
+	dim as FBSYMBOL ptr fld = any
 
-	'' type TDimtTb
-	ctx.array_dimtype = symbStructBegin( NULL, NULL, "__FB_ARRAYDIMTB$", NULL, FALSE, 0, NULL, 0 )
+	'' type FBARRAYDIM
+	symb.fbarraydim = symbStructBegin( NULL, NULL, "__FB_ARRAYDIMTB$", NULL, FALSE, 0, NULL, 0 )
 
 	'' elements		as integer
-	symbAddField( ctx.array_dimtype, "elements", 0, dTB(), _
-	              FB_DATATYPE_INTEGER, NULL, FB_INTEGERSIZE, 0 )
+	symbAddField( symb.fbarraydim, "elements", 0, dTB(), _
+	              FB_DATATYPE_INTEGER, NULL, 0, 0 )
 
 	'' lbound		as integer
-	symbAddField( ctx.array_dimtype, "lbound", 0, dTB(), _
-	              FB_DATATYPE_INTEGER, NULL, FB_INTEGERSIZE, 0 )
+	symbAddField( symb.fbarraydim, "lbound", 0, dTB(), _
+	              FB_DATATYPE_INTEGER, NULL, 0, 0 )
 
 	'' ubound		as integer
-	symbAddField( ctx.array_dimtype, "ubound", 0, dTB(), _
-	              FB_DATATYPE_INTEGER, NULL, FB_INTEGERSIZE, 0 )
+	symbAddField( symb.fbarraydim, "ubound", 0, dTB(), _
+	              FB_DATATYPE_INTEGER, NULL, 0, 0 )
 
-	symbStructEnd( ctx.array_dimtype )
+	'' end type
+	symbStructEnd( symb.fbarraydim )
 
-	symb.arrdesctype = hCreateDescType( NULL, -1, "__FB_ARRAYDESC$", FB_DATATYPE_VOID, NULL, 0 )
+	'' type FBARRAY
+	''     ...
+	'' end type
+	symb.fbarray = hCreateDescType( NULL, -1, "__FB_ARRAYDESC$", FB_DATATYPE_VOID, NULL, 0 )
+
+	''
+	'' Store some field offsets into globals for easy access
+	''
+
+	'' FBARRAY
+	fld = symbUdtGetFirstField( symb.fbarray )  '' data
+	symb.fbarray_data = symbGetOfs( fld )
+	fld = symbUdtGetNextField( fld )         '' ptr
+	fld = symbUdtGetNextField( fld )         '' size
+	fld = symbUdtGetNextField( fld )         '' element_len
+	fld = symbUdtGetNextField( fld )         '' dimensions
+	fld = symbUdtGetNextField( fld )         '' dimTB
+	symb.fbarray_dimtb = symbGetOfs( fld )
+
+	'' FBVARDIM
+	fld = symbUdtGetFirstField( symb.fbarraydim )  '' elements
+	fld = symbUdtGetNextField( fld )                  '' lbound
+	symb.fbarraydim_lbound = symbGetOfs( fld )
+	fld = symbUdtGetNextField( fld )                  '' ubound
+	symb.fbarraydim_ubound = symbGetOfs( fld )
 end sub
 
 private function hCreateDescType _
@@ -80,29 +99,29 @@ private function hCreateDescType _
 	) as FBSYMBOL ptr
 
 	static as FBARRAYDIM dTB(0)
-	dim as FBSYMBOL ptr sym = any, dimtype = any
+	dim as FBSYMBOL ptr sym = any
 
 	sym = symbStructBegin( symtb, NULL, id, NULL, FALSE, 0, NULL, attrib )
 
 	'' data			as any ptr
 	symbAddField( sym, "data", 0, dTB(), _
-	              typeAddrOf( dtype ), subtype, FB_POINTERSIZE, 0 )
+	              typeAddrOf( dtype ), subtype, 0, 0 )
 
 	'' ptr			as any ptr
 	symbAddField( sym, "ptr", 0, dTB(), _
-	              typeAddrOf( dtype ), subtype, FB_POINTERSIZE, 0 )
+	              typeAddrOf( dtype ), subtype, 0, 0 )
 
 	'' size			as integer
 	symbAddField( sym, "size", 0, dTB(), _
-	              FB_DATATYPE_INTEGER, NULL, FB_INTEGERSIZE, 0 )
+	              FB_DATATYPE_INTEGER, NULL, 0, 0 )
 
 	'' element_len		as integer
 	symbAddField( sym, "element_len", 0, dTB(), _
-	              FB_DATATYPE_INTEGER, NULL, FB_INTEGERSIZE, 0 )
+	              FB_DATATYPE_INTEGER, NULL, 0, 0 )
 
 	'' dimensions		as integer
 	symbAddField( sym, "dimensions", 0, dTB(), _
-	              FB_DATATYPE_INTEGER, NULL, FB_INTEGERSIZE, 0 )
+	              FB_DATATYPE_INTEGER, NULL, 0, 0 )
 
 	'' If the dimension count is unknown, reserve room for the max amount
 	if( dims = -1 ) then
@@ -113,10 +132,8 @@ private function hCreateDescType _
 	dTB(0).lower = 0
 	dTB(0).upper = dims-1
 
-	dimtype = ctx.array_dimtype
-
-	symbAddField( sym, "dimTB", 1, dTB(), _
-	              FB_DATATYPE_STRUCT, dimtype, symbGetLen( dimtype ), 0 )
+	symbAddField( sym, "dimTB", 1, dTB(), FB_DATATYPE_STRUCT, _
+	              symb.fbarraydim, 0, 0 )
 
 	symbStructEnd( sym )
 
@@ -264,8 +281,8 @@ end function
 sub symbAddArrayDim _
 	( _
 		byval s as FBSYMBOL ptr, _
-		byval lower as integer, _
-		byval upper as integer _
+		byval lower as longint, _
+		byval upper as longint _
 	)
 
     dim as FBVARDIM ptr d = any, n = any
@@ -355,7 +372,7 @@ function symbAddVar _
 		byval id_alias as const zstring ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
-		byval lgt as integer, _
+		byval lgt as longint, _
 		byval dimensions as integer, _
 		dTB() as FBARRAYDIM, _
 		byval attrib as integer, _
@@ -531,7 +548,7 @@ function symbAddAndAllocateTempVar( byval dtype as integer ) as FBSYMBOL ptr
 
 	assert( env.clopt.backend = FB_BACKEND_GAS )
 
-	s->ofs = irProcAllocLocal( parser.currproc, s, s->lgt )
+	irProcAllocLocal( parser.currproc, s )
 
 	function = s
 end function
@@ -545,10 +562,11 @@ function symbCalcArrayDiff _
 	( _
 		byval dimensions as integer, _
 		dTB() as FBARRAYDIM, _
-		byval lgt as integer _
-	) as integer
+		byval lgt as longint _
+	) as longint
 
-    dim as integer d = any, diff = any, elms = any, mult = any
+	dim as integer d = any
+	dim as longint diff = any, elms = any
 
 	if( dimensions <= 0 ) then
 		return 0
@@ -565,17 +583,15 @@ function symbCalcArrayDiff _
 	diff *= lgt
 
 	function = -diff
-
 end function
 
-'':::::
 function symbCalcArrayElements _
 	( _
 		byval s as FBSYMBOL ptr, _
 		byval n as FBVARDIM ptr = NULL _
-	) as integer
+	) as longint
 
-    dim as integer e = any, d = any
+	dim as longint e = any, d = any
 
 	if( n = NULL ) then
 		n = s->var_.array.dimhead
@@ -589,39 +605,36 @@ function symbCalcArrayElements _
 	loop
 
 	function = e
-
 end function
 
-'':::::
 function symbCalcArrayElements _
 	( _
 		byval dimensions as integer, _
 		dTB() as FBARRAYDIM _
-	) as integer
+	) as longint
 
-    dim as integer e = any, i = any, d = any
+	dim as longint e = any, d = any
 
 	e = 1
-	for i = 0 to dimensions-1
+	for i as integer = 0 to dimensions-1
 		d = (dTB(i).upper - dTB(i).lower) + 1
 		e = e * d
-	next i
+	next
 
 	function = e
-
 end function
 
 function symbCheckArraySize _
 	( _
 		byval dimensions as integer, _
 		dTB() as FBARRAYDIM, _
-		byval lgt as integer, _
+		byval lgt as longint, _
 		byval is_on_stack as integer, _
 		byval allow_ellipsis as integer _
 	) as integer
 
 	dim as ulongint allelements = any
-	dim as uinteger elements = any
+	dim as ulongint elements = any
 	dim as integer found_too_big = any
 
 	found_too_big = FALSE

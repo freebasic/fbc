@@ -367,8 +367,7 @@ sub cProcRetType _
 		byval proc as FBSYMBOL ptr, _
 		byval is_proto as integer, _
 		byref dtype as integer, _
-		byref subtype as FBSYMBOL ptr, _
-		byref lgt as integer _
+		byref subtype as FBSYMBOL ptr _
 	)
 
 	dim as integer options = any
@@ -389,7 +388,7 @@ sub cProcRetType _
 		options and= not FB_SYMBTYPEOPT_CHECKSTRPTR
 	end if
 
-	if( cSymbolType( dtype, subtype, lgt, options ) = FALSE ) then
+	if( cSymbolType( dtype, subtype, 0, options ) = FALSE ) then
 		errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
 		'' error recovery: fake a type
 		dtype = FB_DATATYPE_INTEGER
@@ -524,7 +523,7 @@ end function
 
 function cProcCallingConv( byval default as FB_FUNCMODE ) as FB_FUNCMODE
     '' Use the default FBCALL?
-    if( default = FB_USE_FUNCMODE_FBCALL ) then
+    if( default = FB_FUNCMODE_FBCALL ) then
         default = env.target.fbcall
     end if
 
@@ -1047,7 +1046,7 @@ function cProcHeader _
 	dim as zstring ptr palias = any
 	dim as FBSYMBOL ptr head_proc = any, proc = any, parent = any, subtype = any
 	dim as FBSYMBOL ptr param = any
-	dim as integer dtype = any, lgt = any, is_outside = any, is_memberproc = any
+	dim as integer dtype = any, is_outside = any, is_memberproc = any
 	dim as integer mode = any, stats = any, op = any, is_get = any, is_indexed = any
 	dim as integer priority = any, idopt = any
 
@@ -1234,7 +1233,7 @@ function cProcHeader _
 		'' the rtlib's REDIM or ERASE functions by procptr
 		mode = FB_FUNCMODE_CDECL
 	case else
-		mode = FB_USE_FUNCMODE_FBCALL
+		mode = FB_FUNCMODE_FBCALL
 	end select
 	mode = cProcCallingConv( mode )
 
@@ -1344,7 +1343,7 @@ function cProcHeader _
 			'' AS SymbolType
 			if( lexGetToken( ) = FB_TK_AS ) then
 				cProcRetType( attrib, proc, ((options and FB_PROCOPT_ISPROTO) <> 0), _
-				              dtype, subtype, lgt )
+				              dtype, subtype )
 			else
 				errReport( FB_ERRMSG_EXPECTEDRESTYPE )
 				'' error recovery: fake a type
@@ -1375,7 +1374,7 @@ function cProcHeader _
 		'' (AS SymbolType)?
 		if( lexGetToken( ) = FB_TK_AS ) then
 			cProcRetType( attrib, proc, ((options and FB_PROCOPT_ISPROTO) <> 0), _
-			              dtype, subtype, lgt )
+			              dtype, subtype )
 			is_indexed = (symbGetProcParams( proc ) = 1+1)
 			is_get = TRUE
 		else
@@ -1411,7 +1410,7 @@ function cProcHeader _
 				errReport( FB_ERRMSG_SYNTAXERROR )
 			end if
 			cProcRetType( attrib, proc, ((options and FB_PROCOPT_ISPROTO) <> 0), _
-			              dtype, subtype, lgt )
+			              dtype, subtype )
 		else
 			if( tk = FB_TK_FUNCTION ) then
 				if( fbLangOptIsSet( FB_LANG_OPT_DEFTYPE ) ) then

@@ -13,11 +13,10 @@ static void move_back(void)
 	}
 }
 
-
-/*:::::*/
-char *fb_GfxReadStr(char *buffer, int maxlen)
+char *fb_GfxReadStr(char *buffer, ssize_t maxlen)
 {
-	int key, len = 0;
+	int key;
+	ssize_t len = 0;
 	char cursor_normal[2] = { 219, '\0' };
 	char cursor_backspace[3] = { 219, ' ', '\0' };
 	char space[2] = { ' ', '\0' };

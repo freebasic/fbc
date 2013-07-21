@@ -2,11 +2,9 @@
 
 #include "fb.h"
 
-
-/*:::::*/
-FBCALL void fb_StrAssignMid ( FBSTRING *dst, int start, int len, FBSTRING *src )
+FBCALL void fb_StrAssignMid( FBSTRING *dst, ssize_t start, ssize_t len, FBSTRING *src )
 {
-    int 	src_len, dst_len;
+	ssize_t src_len, dst_len;
 
 	FB_STRLOCK();
 
@@ -24,7 +22,6 @@ FBCALL void fb_StrAssignMid ( FBSTRING *dst, int start, int len, FBSTRING *src )
     	FB_STRUNLOCK();
     	return ;
     }
-
 
 	src_len = FB_STRSIZE( src );
 	dst_len = FB_STRSIZE( dst );

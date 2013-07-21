@@ -967,7 +967,7 @@ int fb_SerialOpen
 
 int fb_SerialGetRemaining( FB_FILE *handle, void *pvHandle, fb_off_t *pLength )
 {
-	int bytes;
+	size_t bytes;
 	DOS_SERIAL_INFO *pInfo = (DOS_SERIAL_INFO *) pvHandle;
 
 	bytes = comm_bytes_remaining( pInfo->com_num );
@@ -975,7 +975,7 @@ int fb_SerialGetRemaining( FB_FILE *handle, void *pvHandle, fb_off_t *pLength )
 		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 
 	if( pLength )
-		*pLength = (long) bytes;
+		*pLength = bytes;
 
 	return fb_ErrorSetNum( FB_RTERROR_OK );
 }
@@ -990,7 +990,8 @@ int fb_SerialWrite
 {
 	DOS_SERIAL_INFO *pInfo = (DOS_SERIAL_INFO *) pvHandle;
 	unsigned char * p = (unsigned char *)data;
-	int ch, i;
+	int ch;
+	size_t i;
 
 	/* TODO: Support for ASC/LF options */
 
@@ -1012,7 +1013,8 @@ int fb_SerialRead
 	)
 {
 	DOS_SERIAL_INFO *pInfo = (DOS_SERIAL_INFO *) pvHandle;
-	int n = *pLength, ch, i, count = 0;
+	size_t n = *pLength, i, count = 0;
+	int ch;
 	unsigned char * p = (unsigned char *)data;
 	int res = FB_RTERROR_OK;
 
@@ -1028,7 +1030,7 @@ int fb_SerialRead
 		count++;
 	}
 
-	*pLength = (size_t) count;
+	*pLength = count;
 	
 	return fb_ErrorSetNum( res );
 }

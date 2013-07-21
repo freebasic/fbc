@@ -13,7 +13,11 @@
 #define alloca(x) _alloca(x)
 #endif
 
+#ifdef HOST_X86
 #define FBCALL __stdcall
+#else
+#define FBCALL
+#endif
 
 /* newline for console/file I/O */
 #define FB_NEWLINE "\r\n"

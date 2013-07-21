@@ -48,17 +48,17 @@ FBCALL unsigned int fb_ReadXY           ( int col, int row, int colorflag );
 typedef void        (*FB_PRINTBUFFPROC) ( const void *buffer, size_t len, int mask );
 typedef void        (*FB_PRINTBUFFWPROC)( const FB_WCHAR *buffer, size_t len, int mask );
 
-typedef char        *(*FB_READSTRPROC)  ( char *buffer, int len );
-        char        *fb_ReadString      ( char *buffer, int len, FILE *f );
+typedef char        *(*FB_READSTRPROC)  ( char *buffer, ssize_t len );
+        char        *fb_ReadString      ( char *buffer, ssize_t len, FILE *f );
 
-typedef int         (*FB_LINEINPUTPROC) ( FBSTRING *text, void *dst, int dst_len,
+typedef int         (*FB_LINEINPUTPROC) ( FBSTRING *text, void *dst, ssize_t dst_len,
 										  int fillrem, int addquestion, int addnewline );
 typedef int         (*FB_LINEINPUTWPROC)( const FB_WCHAR *text, FB_WCHAR *dst,
-										  int max_chars, int addquestion, int addnewline );
-FBCALL int          fb_LineInput        ( FBSTRING *text, void *dst, int dst_len,
+                                          ssize_t max_chars, int addquestion, int addnewline );
+FBCALL int          fb_LineInput        ( FBSTRING *text, void *dst, ssize_t dst_len,
 										  int fillrem, int addquestion, int addnewline );
 FBCALL int          fb_LineInputWstr    ( const FB_WCHAR *text, FB_WCHAR *dst,
-										  int max_chars, int addquestion, int addnewline );
+                                          ssize_t max_chars, int addquestion, int addnewline );
 
 FBCALL int          fb_Multikey         ( int scancode );
 FBCALL int          fb_GetMouse         ( int *x, int *y, int *z, int *buttons_, int *clip );

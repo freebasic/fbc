@@ -2,8 +2,7 @@
 
 #include "fb.h"
 
-/*:::::*/
-FBCALL FBSTRING *fb_FileStrInput( int bytes, int fnum )
+FBCALL FBSTRING *fb_FileStrInput( ssize_t bytes, int fnum )
 {
     FB_FILE   *handle;
 	FBSTRING  *dst;

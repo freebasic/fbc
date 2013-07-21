@@ -392,8 +392,8 @@ int fb_SerialGetRemaining( FB_FILE *handle, void *pvHandle, fb_off_t *pLength )
     if( ioctl(SerialFD, FIONREAD, &rBytes) )
 	    return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
     
-    if( pLength )
-    	*pLength = (long) rBytes;
+	if( pLength )
+		*pLength = rBytes;
 
     return fb_ErrorSetNum( FB_RTERROR_OK );
 }

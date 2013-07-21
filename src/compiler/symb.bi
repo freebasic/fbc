@@ -57,6 +57,18 @@ const FB_DT_PTRLEVELS		= 8					'' max levels of pointer indirection
 const FB_DT_PTRPOS			= 5
 const FB_DT_CONSTPOS		= FB_DT_PTRPOS + 4
 
+enum
+	FB_SIZETYPE_INT8 = 0
+	FB_SIZETYPE_UINT8
+	FB_SIZETYPE_INT16
+	FB_SIZETYPE_UINT16
+	FB_SIZETYPE_INT32
+	FB_SIZETYPE_UINT32
+	FB_SIZETYPE_INT64
+	FB_SIZETYPE_UINT64
+	FB_SIZETYPE_FLOAT32
+	FB_SIZETYPE_FLOAT64
+end enum
 
 '' symbol classes
 '' When changing, update symb.bas:symbDump():classnames
@@ -181,10 +193,11 @@ enum FB_FUNCMODE
 	FB_FUNCMODE_CDECL
 	FB_FUNCMODE_PASCAL
 
-    '' This constant is used to tell cProcCallingConv() and the RTL procedure
-    '' definitions to use env.target.fbcall (which cannot be a constant because
-    '' it depends on the [cross-compiling] target).
-    FB_USE_FUNCMODE_FBCALL = -1
+	'' Symbolic constant to represent FBCALL, telling cProcCallingConv()
+	'' and the RTL procedure definitions to use env.target.fbcall which
+	'' will be the real FB_FUNCMODE_* implementing FBCALL depending on the
+	'' compilation target.
+	FB_FUNCMODE_FBCALL = -1
 end enum
 
 '' options when adding new symbols
@@ -236,19 +249,16 @@ type FBSYMLIST
 end type
 
 type FBARRAYDIM
-	lower			as integer
-	upper			as integer
+	lower			as longint
+	upper			as longint
 end type
 
-'' Special upper bound value used to represent that ellipsis was specified
-'' for the upper bound. Should the user specify this value as array upper
-'' bound, we'll think it was an ellipsis. But using this as upper bound would
-'' not make sense anyways...
-const FB_ARRAYDIM_UNKNOWN = &h80000000
+'' Special value to represent the case where '...' ellipsis was given as ubound
+const FB_ARRAYDIM_UNKNOWN = &h8000000000000000ll
 
 type FBVARDIM
-	lower			as integer
-	upper			as integer
+	lower			as longint
+	upper			as longint
 	next			as FBVARDIM ptr
 end type
 
@@ -303,12 +313,9 @@ type FBNAMESPC
 end type
 
 union FBVALUE
-	str				as FBSYMBOL_ ptr
-	int				as integer
-	uint			as uinteger
-	float			as double
-	long			as longint
-	ulong			as ulongint
+	s			as FBSYMBOL_ ptr
+	i			as longint
+	f			as double
 end union
 
 '' keyword
@@ -429,7 +436,7 @@ type FBS_STRUCT
 	base			as FBSYMBOL_ ptr			'' base class
 	anonparent		as FBSYMBOL_ ptr
 	natalign		as integer					'' UDT's natural alignment based on largest natural field alignment
-	unpadlgt		as integer					'' unpadded len
+	unpadlgt		as longint					'' unpadded len
 	options			as short					'' FB_UDTOPT
 	bitpos			as ubyte
 	align			as ubyte
@@ -455,12 +462,6 @@ type FBS_ENUM
 	dbg				as FB_STRUCT_DBG
 end type
 
-'' constant
-type FBS_CONST
-	val				as FBVALUE
-end type
-
-''
 type FB_CALL_ARG								'' used by overloaded function calls
 	expr			as ASTNODE_ ptr
 	mode			as FB_PARAMMODE
@@ -489,6 +490,7 @@ type FB_PROCOVL
 	next			as FBSYMBOL_ ptr
 end type
 
+'' used by x86 ASM emitter only
 type FB_PROCSTK
 	argofs			as integer
 	localofs		as integer
@@ -590,6 +592,7 @@ type FB_SCOPEDBG
 	endlabel		as FBSYMBOL_ ptr
 end type
 
+'' used by x86 ASM emitter only
 type FB_SCOPEEMIT
 	baseofs			as integer
 end type
@@ -606,8 +609,8 @@ type FBS_ARRAY
 	dims			as integer
 	dimhead 		as FBVARDIM ptr
 	dimtail			as FBVARDIM ptr
-	dif				as integer
-	elms			as integer
+	dif			as longint
+	elms			as longint
 	desc			as FBSYMBOL_ ptr
 	has_ellipsis    as integer
 end type
@@ -675,12 +678,12 @@ type FBSYMBOL
 	scope			as ushort
 	mangling		as short 					'' FB_MANGLING
 
-	lgt				as integer
-	ofs				as integer					'' for local vars, args, UDT's and fields
+	lgt			as longint
+	ofs			as longint					'' for local vars, args, UDT's and fields
 
 	union
 		var_		as FBS_VAR
-		con			as FBS_CONST
+		val			as FBVALUE  '' constants
 		udt			as FBS_STRUCT
 		bitfld		as FBS_BITFLD
 		enum_		as FBS_ENUM
@@ -788,15 +791,19 @@ type SYMBCTX
 					0 to AST_OPCODES-1 _
 				)	as SYMB_OVLOP				'' global operator overloading
 
-	arrdesctype		as FBSYMBOL ptr				'' array descriptor type
-	
+	fbarray			as FBSYMBOL ptr			'' FBARRAY (array descriptor)
+	fbarray_data		as integer			'' offsetof( FBARRAY, data )
+	fbarray_dimtb		as integer			'' offsetof( FBARRAY, dimTB )
+	fbarraydim		as FBSYMBOL ptr			'' FBARRAYDIM (dimTB element structure)
+	fbarraydim_lbound	as integer			'' offsetof( FBARRAYDIM, lbound )
+	fbarraydim_ubound	as integer			'' offsetof( FBARRAYDIM, ubound )
+
 	rtti			as FB_RTTICTX 
 end type
 
 type SYMB_DATATYPE
 	class			as FB_DATACLASS				'' INTEGER, FPOINT
 	size			as integer					'' in bytes
-	bits			as integer					'' number of bits
 	signed			as integer					'' TRUE or FALSE
 
 	'' For basic integer types only: ranking value, to establish a proper
@@ -805,6 +812,7 @@ type SYMB_DATATYPE
 	intrank			as integer
 
 	remaptype		as FB_DATATYPE				'' remapped type for ENUM, POINTER, etc
+	sizetype		as integer      '' FB_SIZETYPE_*
 	name			as const zstring ptr
 end type
 
@@ -972,11 +980,6 @@ declare function symbAreProcModesEqual _
 		byval procb as FBSYMBOL ptr _
 	) as integer
 
-declare function symbGetConstValueAsStr _
-	( _
-		byval s as FBSYMBOL ptr _
-	) as string
-
 declare function symbAddKeyword _
 	( _
 		byval symbol as const zstring ptr, _
@@ -1045,7 +1048,7 @@ declare function symbAddTypedef _
 		byval id as zstring ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
-		byval lgt as integer _
+		byval lgt as longint _
 	) as FBSYMBOL ptr
 
 declare function symbAddLabel _
@@ -1060,7 +1063,7 @@ declare function symbAddVar _
 		byval aliasname as const zstring ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
-		byval lgt as integer, _
+		byval lgt as longint, _
 		byval dimensions as integer, _
 		dTB() as FBARRAYDIM, _
 		byval attrib as integer, _
@@ -1097,6 +1100,8 @@ declare function symbAddConst _
 		byval attrib as integer = FB_SYMBATTRIB_NONE _
 	) as FBSYMBOL ptr
 
+declare function symbGetConstValueAsStr( byval s as FBSYMBOL ptr ) as string
+
 declare function symbStructBegin _
 	( _
 		byval symtb as FBSYMBOLTB ptr, _
@@ -1123,7 +1128,7 @@ declare function symbAddField _
 		dTB() as FBARRAYDIM, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
-		byval lgt as integer, _
+		byval lgt as longint, _
 		byval bits as integer _
 	) as FBSYMBOL ptr
 
@@ -1150,7 +1155,7 @@ declare function symbAddEnumElement _
 	( _
 		byval parent as FBSYMBOL ptr, _
 		byval id as zstring ptr, _
-		byval value as integer, _
+		byval value as longint, _
 		byval attrib as integer _
 	) as FBSYMBOL ptr
 
@@ -1249,16 +1254,16 @@ declare function symbCalcArgLen _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
 		byval mode as integer _
-	) as integer
+	) as longint
 
 declare function symbCalcParamLen _
 	( _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
 		byval mode as FB_PARAMMODE _
-	) as integer
+	) as longint
 
-declare function symbCalcProcParamsLen( byval proc as FBSYMBOL ptr ) as integer
+declare function symbCalcProcParamsLen( byval proc as FBSYMBOL ptr ) as longint
 
 declare function symbAddScope _
 	( _
@@ -1389,8 +1394,8 @@ declare sub symbDelFromChainList _
 declare sub symbAddArrayDim _
 	( _
 		byval s as FBSYMBOL ptr, _
-		byval lower as integer, _
-		byval upper as integer _
+		byval lower as longint, _
+		byval upper as longint _
 	)
 
 declare sub symbRecalcLen( byval sym as FBSYMBOL ptr )
@@ -1405,13 +1410,13 @@ declare function symbCalcLen _
 	( _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr _
-	) as integer
+	) as longint
 
 declare function symbCalcDerefLen _
 	( _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr  _
-	) as integer
+	) as longint
 
 declare function symbAllocFloatConst _
 	( _
@@ -1449,26 +1454,26 @@ declare function symbCalcArrayElements overload _
 	( _
 		byval s as FBSYMBOL ptr, _
 		byval n as FBVARDIM ptr = NULL _
-	) as integer
+	) as longint
 
 declare function symbCalcArrayElements _
 	( _
 		byval dimensions as integer, _
 		dTB() as FBARRAYDIM _
-	) as integer
+	) as longint
 
 declare function symbCalcArrayDiff _
 	( _
 		byval dimensions as integer, _
 		dTB() as FBARRAYDIM, _
-		byval lgt as integer _
-	) as integer
+		byval lgt as longint _
+	) as longint
 
 declare function symbCheckArraySize _
 	( _
 		byval dimensions as integer, _
 		dTB() as FBARRAYDIM, _
-		byval lgt as integer, _
+		byval lgt as longint, _
 		byval is_on_stack as integer, _
 		byval allow_ellipsis as integer _
 	) as integer
@@ -1482,7 +1487,7 @@ declare function symbCheckBitField _
 	( _
 		byval udt as FBSYMBOL ptr, _
 		byval dtype as integer, _
-		byval lgt as integer, _
+		byval lgt as longint, _
 		byval bits as integer _
 	) as integer
 
@@ -1655,7 +1660,7 @@ declare function symbTypeToStr _
 	( _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
-		byval lgt as integer = 0 _
+		byval lgt as longint = 0 _
 	) as string
 
 declare function symbGetDefType _
@@ -1705,11 +1710,7 @@ declare function symbCloneSymbol _
 		byval s as FBSYMBOL ptr _
 	) as FBSYMBOL ptr
 
-declare function symbCloneConst _
-	( _
-		byval sym as FBSYMBOL ptr _
-	) as FBSYMBOL ptr
-
+declare function symbCloneConst( byval sym as FBSYMBOL ptr ) as FBSYMBOL ptr
 declare function symbCloneVar( byval sym as FBSYMBOL ptr ) as FBSYMBOL ptr
 declare function symbCloneStruct( byval sym as FBSYMBOL ptr ) as FBSYMBOL ptr
 
@@ -1994,15 +1995,10 @@ declare function symbGetUDTBaseLevel _
 
 #define symbIsNameSpace(s) (s->class = FB_SYMBCLASS_NAMESPACE)
 
-#define symbGetConstVal(s) s->con.val
-
-#define symbGetConstValStr(s) s->con.val.str
-
-#define symbGetConstValInt(s) s->con.val.int
-
-#define symbGetConstValFloat(s) s->con.val.float
-
-#define symbGetConstValLong(s) s->con.val.long
+#define symbGetConstVal( sym )   (@((sym)->val))
+#define symbGetConstStr( sym )   ((sym)->val.s)
+#define symbGetConstInt( sym )   ((sym)->val.i)
+#define symbGetConstFloat( sym ) ((sym)->val.f)
 
 #define symbGetDefineText(d) d->def.text
 
@@ -2338,10 +2334,11 @@ declare sub symbProcRecalcRealType( byval proc as FBSYMBOL ptr )
 
 #define typeGetClass( dt ) symb_dtypeTB(typeGet( dt )).class
 #define typeGetSize( dt ) symb_dtypeTB(typeGet( dt )).size
-#define typeGetBits( dt ) symb_dtypeTB(typeGet( dt )).bits
+#define typeGetBits( dt ) (typeGetSize( dt ) * 8)
 #define typeIsSigned( dt ) symb_dtypeTB(typeGet( dt )).signed
-#define typeGetRemapType( dt ) symb_dtypeTB(typeGet( dt )).remaptype
 #define typeGetIntRank( dt ) symb_dtypeTB(typeGet( dt )).intrank
+#define typeGetRemapType( dt ) symb_dtypeTB(typeGet( dt )).remaptype
+#define typeGetSizeType( dt ) symb_dtypeTB(typeGet( dt )).sizetype
 
 #define typeGet( dt ) iif( dt and FB_DT_PTRMASK, FB_DATATYPE_POINTER, dt and FB_DT_TYPEMASK )
 #define typeGetDtOnly( dt ) (dt and FB_DT_TYPEMASK)

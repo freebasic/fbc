@@ -2,8 +2,7 @@
 
 #include "fb.h"
 
-/*:::::*/
-char *fb_ReadString( char *buffer, int len, FILE *f )
+char *fb_ReadString( char *buffer, ssize_t len, FILE *f )
 {
 	if( f != stdin )
 		return fgets( buffer, len, f );

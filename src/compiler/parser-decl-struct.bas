@@ -245,7 +245,8 @@ private sub hTypeMultElementDecl _
     static as zstring * FB_MAXNAMELEN+1 id
     static as FBARRAYDIM dTB(0 to FB_MAXARRAYDIMS-1)
     dim as FBSYMBOL ptr sym, subtype
-    dim as integer dims, dtype, lgt, bits
+    dim as integer dims, dtype, bits
+	dim as longint lgt
 
 	'' SymbolType
 	hSymbolType( dtype, subtype, lgt )
@@ -319,7 +320,7 @@ private sub hTypeMultElementDecl _
 				'' error recovery: fake type
 				dtype = FB_DATATYPE_INTEGER
 				subtype = NULL
-				lgt = FB_INTEGERSIZE
+				lgt = 0
 			end if
 		end if
 
@@ -356,7 +357,8 @@ private sub hTypeElementDecl _
     static as zstring * FB_MAXNAMELEN+1 id
     static as FBARRAYDIM dTB(0 to FB_MAXARRAYDIMS-1)
     dim as FBSYMBOL ptr sym, subtype
-    dim as integer dims, dtype, lgt, bits
+	dim as integer dims, dtype, bits
+	dim as longint lgt
 
 	'' allow keywords as field names
 	select case as const lexGetClass( )
@@ -453,7 +455,7 @@ private sub hTypeElementDecl _
 			'' error recovery: fake type
 			dtype = FB_DATATYPE_INTEGER
 			subtype = NULL
-			lgt = FB_INTEGERSIZE
+			lgt = 0
 		end if
 	end if
 
@@ -570,8 +572,6 @@ end function
 
 '' [FIELD '=' ConstExpression]
 private function cFieldAlignmentAttribute( ) as integer
-	dim as integer align = any
-
 	'' FIELD
 	if( lexGetToken( ) <> FB_TK_FIELD ) then
 		return 0
@@ -600,10 +600,10 @@ private function cFieldAlignmentAttribute( ) as integer
 	end if
 
 	'' follow the GCC 3.x ABI
-	align = astConstFlushToInt( expr )
+	var align = astConstFlushToInt( expr )
 	if( align < 0 ) then
 		align = 0
-	elseif( align > FB_INTEGERSIZE ) then
+	elseif( align > env.pointersize ) then
 		align = 0
 	elseif( align = 3 ) then
 		align = 2
@@ -895,8 +895,8 @@ sub cTypeDecl( byval attrib as integer )
 		lexSkipToken( )
 
 		'' SymbolType
-		dim as integer baseDtype, baseLgt
-		hSymbolType( baseDtype, baseSubtype, baseLgt )
+		dim as integer baseDtype
+		hSymbolType( baseDtype, baseSubtype, 0 )
 
 		'' is the base type a struct?
 		if( baseDType <> FB_DATATYPE_STRUCT ) then

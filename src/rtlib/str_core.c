@@ -70,10 +70,10 @@ FBCALL int fb_hStrDelTempDesc( FBSTRING *str )
 /* alloc every 32-bytes */
 #define hStrRoundSize( size ) (((size) + 31) & ~31)
 
-FBCALL FBSTRING *fb_hStrAlloc( FBSTRING *str, int size )
+FBCALL FBSTRING *fb_hStrAlloc( FBSTRING *str, ssize_t size )
 {
-	int newsize = hStrRoundSize( size );
-	
+	ssize_t newsize = hStrRoundSize( size );
+
 	str->data = (char *)malloc( newsize + 1 );
 	/* failed? try the original request */
 	if( str->data == NULL )
@@ -94,9 +94,9 @@ FBCALL FBSTRING *fb_hStrAlloc( FBSTRING *str, int size )
     return str;
 }
 
-FBCALL FBSTRING *fb_hStrRealloc( FBSTRING *str, int size, int preserve )
+FBCALL FBSTRING *fb_hStrRealloc( FBSTRING *str, ssize_t size, int preserve )
 {
-	int newsize = hStrRoundSize( size );
+	ssize_t newsize = hStrRoundSize( size );
 	/* plus 12.5% more */
 	newsize += (newsize >> 3);
 
@@ -148,9 +148,9 @@ FBCALL FBSTRING *fb_hStrRealloc( FBSTRING *str, int size, int preserve )
     return str;
 }
 
-FBCALL FBSTRING *fb_hStrAllocTemp_NoLock( FBSTRING *str, int size )
+FBCALL FBSTRING *fb_hStrAllocTemp_NoLock( FBSTRING *str, ssize_t size )
 {
-    int try_alloc = str==NULL;
+	int try_alloc = str==NULL;
 
     if( try_alloc )
     {
@@ -171,7 +171,7 @@ FBCALL FBSTRING *fb_hStrAllocTemp_NoLock( FBSTRING *str, int size )
     return str;
 }
 
-FBCALL FBSTRING *fb_hStrAllocTemp( FBSTRING *str, int size )
+FBCALL FBSTRING *fb_hStrAllocTemp( FBSTRING *str, ssize_t size )
 {
     FBSTRING *res;
 
@@ -210,7 +210,7 @@ FBCALL int fb_hStrDelTemp( FBSTRING *str )
 	return res;
 }
 
-FBCALL void fb_hStrCopy( char *dst, const char *src, int bytes )
+FBCALL void fb_hStrCopy( char *dst, const char *src, ssize_t bytes )
 {
     if( (src != NULL) && (bytes > 0) )
     {

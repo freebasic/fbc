@@ -2,9 +2,9 @@
 
 #include "fb.h"
 
-void fb_hArrayCtorObj( FBARRAY *array, FB_DEFCTOR ctor, int base_idx )
+void fb_hArrayCtorObj( FBARRAY *array, FB_DEFCTOR ctor, size_t base_idx )
 {
-	int	elements, element_len, i;
+	size_t i, elements, element_len;
 	FBARRAYDIM *dim;
 	const char *this_;
 

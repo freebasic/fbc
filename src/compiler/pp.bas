@@ -710,7 +710,8 @@ end function
 
 function ppTypeOf( ) as string
 	'' get type's name
-	dim as integer dtype = any, lgt = any
+	dim as integer dtype = any
+	dim as longint lgt = any
 	dim as FBSYMBOL ptr subtype = any
 
 	'' TYPEOF

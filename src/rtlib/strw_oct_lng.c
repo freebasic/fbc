@@ -2,7 +2,6 @@
 
 #include "fb.h"
 
-/*:::::*/
 static FB_WCHAR *hFillDigits( FB_WCHAR *buf, int digits, int totdigs, int cnt )
 {
 	if( digits > 0 )
@@ -18,11 +17,10 @@ static FB_WCHAR *hFillDigits( FB_WCHAR *buf, int digits, int totdigs, int cnt )
 	return buf;
 }
 
-/*:::::*/
 FBCALL FB_WCHAR *fb_WstrOctEx_l ( unsigned long long num, int digits )
 {
 	FB_WCHAR *dst, *buf;
-	int	i, totdigs;
+	int i, totdigs;
 
 	totdigs = ((sizeof(long long)*8) / 3) + 1;
 
@@ -93,9 +91,7 @@ FBCALL FB_WCHAR *fb_WstrOctEx_l ( unsigned long long num, int digits )
 	return dst;
 }
 
-/*:::::*/
 FBCALL FB_WCHAR *fb_WstrOct_l ( unsigned long long num )
 {
 	return fb_WstrOctEx_l( num, 0 );
 }
-

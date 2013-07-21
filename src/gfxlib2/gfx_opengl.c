@@ -44,7 +44,7 @@ FBCALL void *fb_GfxGetGLProcAddress(const char *proc)
 
 int fb_hGL_ExtensionSupported(const char *extension)
 {
-	int len;
+	ssize_t len;
 	char *string = __fb_gl.extensions;
 
 	len = strlen(extension);

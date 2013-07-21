@@ -80,7 +80,7 @@ type IRVREG
 	value		as FBVALUE						'' imm value (hi-word of longint's at vaux->value)
 
 	sym			as FBSYMBOL ptr					'' symbol
-	ofs			as integer						'' +offset
+	ofs			as longint					'' +offset
 	mult		as integer						'' multipler, only valid for IDX and PTR under ir-tac
 
 	vidx		as IRVREG ptr					'' index vreg
@@ -120,19 +120,17 @@ type IR_VTBL
 		byval proc as FBSYMBOL ptr _
 	)
 
-	procAllocArg as function _
+	procAllocArg as sub _
 	( _
 		byval proc as FBSYMBOL ptr, _
-		byval sym as FBSYMBOL ptr, _
-		byval lgt as integer _
-	) as integer
+		byval sym as FBSYMBOL ptr _
+	)
 
-	procAllocLocal as function _
+	procAllocLocal as sub _
 	( _
 		byval proc as FBSYMBOL ptr, _
-		byval sym as FBSYMBOL ptr, _
-		byval lgt as integer _
-	) as integer
+		byval sym as FBSYMBOL ptr _
+	)
 
 	procGetFrameRegName as function _
 	( _
@@ -184,7 +182,7 @@ type IR_VTBL
 	( _
 		byval param as FBSYMBOL ptr, _
 		byval vr as IRVREG ptr, _
-		byval plen as integer, _
+		byval udtlen as longint, _
 		byval level as integer _
 	)
 
@@ -237,12 +235,6 @@ type IR_VTBL
 		byval v1 as IRVREG ptr _
 	)
 
-	emitPushUDT as sub _
-	( _
-		byval v1 as IRVREG ptr, _
-		byval lgt as integer _
-	)
-
 	emitAddr as sub _
 	( _
 		byval op as integer, _
@@ -278,12 +270,12 @@ type IR_VTBL
 	( _
 		byval v1 as IRVREG ptr, _
 		byval tbsym as FBSYMBOL ptr, _
-		byval values as uinteger ptr, _
+		byval values as ulongint ptr, _
 		byval labels as FBSYMBOL ptr ptr, _
 		byval labelcount as integer, _
 		byval deflabel as FBSYMBOL ptr, _
-		byval minval as uinteger, _
-		byval maxval as uinteger _
+		byval minval as ulongint, _
+		byval maxval as ulongint _
 	)
 
 	emitMem as sub _
@@ -291,7 +283,7 @@ type IR_VTBL
 		byval op as integer, _
 		byval v1 as IRVREG ptr, _
 		byval v2 as IRVREG ptr, _
-		byval bytes as integer _
+		byval bytes as longint _
 	)
 
 	emitScopeBegin as sub _
@@ -315,26 +307,25 @@ type IR_VTBL
 
 	emitVarIniBegin as sub( byval sym as FBSYMBOL ptr )
 	emitVarIniEnd as sub( byval sym as FBSYMBOL ptr )
-	emitVarIniI as sub( byval dtype as integer, byval value as integer )
+	emitVarIniI as sub( byval dtype as integer, byval value as longint )
 	emitVarIniF as sub( byval dtype as integer, byval value as double )
-	emitVarIniI64 as sub( byval dtype as integer, byval value as longint )
-	emitVarIniOfs as sub( byval sym as FBSYMBOL ptr, byval ofs as integer )
+	emitVarIniOfs as sub( byval sym as FBSYMBOL ptr, byval ofs as longint )
 
 	emitVarIniStr as sub _
 	( _
-		byval totlgt as integer, _
+		byval totlgt as longint, _
 		byval litstr as zstring ptr, _
-		byval litlgt as integer _
+		byval litlgt as longint _
 	)
 
 	emitVarIniWstr as sub _
 	( _
-		byval totlgt as integer, _
+		byval totlgt as longint, _
 		byval litstr as wstring ptr, _
-		byval litlgt as integer _
+		byval litlgt as longint _
 	)
 
-	emitVarIniPad as sub( byval bytes as integer )
+	emitVarIniPad as sub( byval bytes as longint )
 	emitVarIniScopeBegin as sub( )
 	emitVarIniScopeEnd as sub( )
 
@@ -349,13 +340,6 @@ type IR_VTBL
 	) as IRVREG ptr
 
 	allocVrImm as function _
-	( _
-		byval dtype as integer, _
-		byval subtype as FBSYMBOL ptr, _
-		byval value as integer _
-	) as IRVREG ptr
-
-	allocVrImm64 as function _
 	( _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
@@ -374,7 +358,7 @@ type IR_VTBL
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
 		byval symbol as FBSYMBOL ptr, _
-		byval ofs as integer _
+		byval ofs as longint _
 	) as IRVREG ptr
 
 	allocVrIdx as function _
@@ -382,7 +366,7 @@ type IR_VTBL
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
 		byval symbol as FBSYMBOL ptr, _
-		byval ofs as integer, _
+		byval ofs as longint, _
 		byval mult as integer, _
 		byval vidx as IRVREG ptr _
 	) as IRVREG ptr
@@ -391,7 +375,7 @@ type IR_VTBL
 	( _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
-		byval ofs as integer, _
+		byval ofs as longint, _
 		byval vidx as IRVREG ptr _
 	) as IRVREG ptr
 
@@ -400,7 +384,7 @@ type IR_VTBL
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
 		byval symbol as FBSYMBOL ptr, _
-		byval ofs as integer _
+		byval ofs as longint _
 	) as IRVREG ptr
 
 	setVregDataType as sub _
@@ -481,8 +465,6 @@ declare function vregDump( byval v as IRVREG ptr ) as string
 
 #define irAllocVrImm(dtype, stype, value) ir.vtbl.allocVrImm( dtype, stype, value )
 
-#define irAllocVrImm64(dtype, stype, value) ir.vtbl.allocVrImm64( dtype, stype, value )
-
 #define irAllocVrImmF(dtype, stype, value) ir.vtbl.allocVrImmF( dtype, stype, value )
 
 #define irAllocVrVar(dtype, stype, sym, ofs) ir.vtbl.allocVrVar( dtype, stype, sym, ofs )
@@ -501,9 +483,9 @@ declare function vregDump( byval v as IRVREG ptr ) as string
 
 #define irScopeEnd(s) ir.vtbl.scopeEnd( s )
 
-#define irProcAllocArg(proc, s, lgt) ir.vtbl.procAllocArg( proc, s, lgt )
+#define irProcAllocArg(proc, s) ir.vtbl.procAllocArg( proc, s )
 
-#define irProcAllocLocal(proc, s, lgt) ir.vtbl.procAllocLocal( proc, s, lgt )
+#define irProcAllocLocal(proc, s) ir.vtbl.procAllocLocal( proc, s )
 
 #define irProcAllocStaticVars(head_sym) ir.vtbl.procAllocStaticVars( head_sym )
 
@@ -518,25 +500,14 @@ declare function vregDump( byval v as IRVREG ptr ) as string
 #define irEmitPROCEND(proc, initlabel, exitlabel) ir.vtbl.emitProcEnd( proc, initlabel, exitlabel )
 
 #define irEmitVARINIBEGIN(sym) ir.vtbl.emitVarIniBegin( sym )
-
 #define irEmitVARINIEND(sym) ir.vtbl.emitVarIniEnd( sym )
-
 #define irEmitVARINIi(dtype, value) ir.vtbl.emitVarIniI( dtype, value )
-
 #define irEmitVARINIf(dtype, value) ir.vtbl.emitVarIniF( dtype, value )
-
-#define irEmitVARINI64(dtype, value) ir.vtbl.emitVarIniI64( dtype, value )
-
 #define irEmitVARINIOFS(sym, ofs) ir.vtbl.emitVarIniOfs( sym, ofs )
-
 #define irEmitVARINISTR(totlgt, litstr, litlgt) ir.vtbl.emitVarIniStr( totlgt, litstr, litlgt )
-
 #define irEmitVARINIWSTR(totlgt, litstr, litlgt) ir.vtbl.emitVarIniWstr( totlgt, litstr, litlgt )
-
 #define irEmitVARINIPAD(bytes) ir.vtbl.emitVarIniPad( bytes )
-
 #define irEmitVARINISCOPEBEGIN( ) ir.vtbl.emitVarIniScopeBegin( )
-
 #define irEmitVARINISCOPEEND( ) ir.vtbl.emitVarIniScopeEnd( )
 
 #define irEmitFBCTINFBEGIN( )    ir.vtbl.emitFbctinfBegin( )
@@ -585,8 +556,6 @@ declare function vregDump( byval v as IRVREG ptr ) as string
 #define irEmitPUSH(v1) ir.vtbl.emitStack( AST_OP_PUSH, v1 )
 
 #define irEmitPOP(v1) ir.vtbl.emitStack( AST_OP_POP, v1 )
-
-#define irEmitPUSHUDT(v1, lgt) ir.vtbl.emitPushUDT( v1, lgt )
 
 #define irEmitADDR(op, v1, vr) ir.vtbl.emitAddr( op, v1, vr )
 

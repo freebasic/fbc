@@ -2,7 +2,6 @@
 
 #include "fb.h"
 
-/*:::::*/
 static FB_WCHAR *hFillDigits( FB_WCHAR *buf, int digits, int totdigs, int cnt )
 {
 	if( digits > 0 )
@@ -18,11 +17,10 @@ static FB_WCHAR *hFillDigits( FB_WCHAR *buf, int digits, int totdigs, int cnt )
 	return buf;
 }
 
-/*:::::*/
-static FB_WCHAR *hOCT ( unsigned int num, int len, int digits )
+static FB_WCHAR *hOCT( unsigned int num, ssize_t len, int digits )
 {
 	FB_WCHAR *dst, *buf;
-	int	i, totdigs;
+	int i, totdigs;
 
 	totdigs = ((len * 8) / 3) + 1;
 
@@ -92,39 +90,32 @@ static FB_WCHAR *hOCT ( unsigned int num, int len, int digits )
 	return dst;
 }
 
-/*:::::*/
 FBCALL FB_WCHAR *fb_WstrOct_b ( unsigned char num )
 {
 	return hOCT( num, sizeof( char ), 0 );
 }
 
-/*:::::*/
 FBCALL FB_WCHAR *fb_WstrOct_s ( unsigned short num )
 {
 	return hOCT( num, sizeof( short ), 0 );
 }
 
-/*:::::*/
 FBCALL FB_WCHAR *fb_WstrOct_i ( unsigned int num )
 {
 	return hOCT( num, sizeof( int ), 0 );
 }
 
-/*:::::*/
 FBCALL FB_WCHAR *fb_WstrOctEx_b ( unsigned char num, int digits )
 {
 	return hOCT( num, sizeof( char ), digits );
 }
 
-/*:::::*/
 FBCALL FB_WCHAR *fb_WstrOctEx_s ( unsigned short num, int digits )
 {
 	return hOCT( num, sizeof( short ), digits );
 }
 
-/*:::::*/
 FBCALL FB_WCHAR *fb_WstrOctEx_i ( unsigned int num, int digits )
 {
 	return hOCT( num, sizeof( int ), digits );
 }
-

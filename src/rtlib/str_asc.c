@@ -2,11 +2,10 @@
 
 #include "fb.h"
 
-/*:::::*/
-FBCALL unsigned int fb_ASC ( FBSTRING *str, int pos )
+FBCALL unsigned int fb_ASC( FBSTRING *str, ssize_t pos )
 {
     unsigned int a;
-    int len;
+	ssize_t len;
 
 	if( str == NULL )
 		return 0;
@@ -22,4 +21,3 @@ FBCALL unsigned int fb_ASC ( FBSTRING *str, int pos )
 
 	return a;
 }
-

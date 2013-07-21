@@ -80,7 +80,7 @@ FBCALL int          fb_ConsoleView      ( int toprow, int botrow );
        void         fb_ConsolePrintBufferEx( const void *buffer, size_t len, int mask );
        void         fb_ConsolePrintBufferWstrEx( const FB_WCHAR *buffer, size_t len, int mask );
 
-       char        *fb_ConsoleReadStr   ( char *buffer, int len );
+       char        *fb_ConsoleReadStr   ( char *buffer, ssize_t len );
 
        int          fb_ConsoleGetTopRow ( void );
        int          fb_ConsoleGetBotRow ( void );
@@ -96,7 +96,7 @@ FBCALL int          fb_ConsoleView      ( int toprow, int botrow );
 FBCALL FBSTRING    *fb_ConReadLine      ( int soft_cursor );
 
 FBCALL int          fb_ConsoleInput     ( FBSTRING *text, int addquestion, int addnewline );
-       int          fb_ConsoleLineInput ( FBSTRING *text, void *dst, int dst_len, int fillrem, int addquestion, int addnewline );
-       int          fb_ConsoleLineInputWstr( const FB_WCHAR *text, FB_WCHAR *dst, int max_chars, int addquestion, int addnewline );
+       int          fb_ConsoleLineInput ( FBSTRING *text, void *dst, ssize_t dst_len, int fillrem, int addquestion, int addnewline );
+       int          fb_ConsoleLineInputWstr( const FB_WCHAR *text, FB_WCHAR *dst, ssize_t max_chars, int addquestion, int addnewline );
 
        int          fb_hConsoleInputBufferChanged( void );

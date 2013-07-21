@@ -2,7 +2,7 @@
 
 #include "fb.h"
 
-FBCALL int fb_InputWstr( FB_WCHAR *str, int length )
+FBCALL int fb_InputWstr( FB_WCHAR *str, ssize_t length )
 {
 	FB_WCHAR buffer[FB_INPUT_MAXSTRINGLEN+1];
 

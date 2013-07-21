@@ -2,8 +2,7 @@
 
 #include "fb.h"
 
-/*:::::*/
-int fb_FilePutWstrEx( FB_FILE *handle, fb_off_t pos, FB_WCHAR *str, int len )
+int fb_FilePutWstrEx( FB_FILE *handle, fb_off_t pos, FB_WCHAR *str, ssize_t len )
 {
     int res;
 
@@ -16,14 +15,12 @@ int fb_FilePutWstrEx( FB_FILE *handle, fb_off_t pos, FB_WCHAR *str, int len )
 	return res;
 }
 
-/*:::::*/
-FBCALL int fb_FilePutWstr( int fnum, long pos, FB_WCHAR *str, int str_len )
+FBCALL int fb_FilePutWstr( int fnum, int pos, FB_WCHAR *str, ssize_t str_len )
 {
 	return fb_FilePutWstrEx(FB_FILE_TO_HANDLE(fnum), pos, str, str_len);
 }
 
-/*:::::*/
-FBCALL int fb_FilePutWstrLarge( int fnum, long long pos, FB_WCHAR *str, int str_len )
+FBCALL int fb_FilePutWstrLarge( int fnum, long long pos, FB_WCHAR *str, ssize_t str_len )
 {
 	return fb_FilePutWstrEx(FB_FILE_TO_HANDLE(fnum), pos, str, str_len);
 }

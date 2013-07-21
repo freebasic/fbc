@@ -3,12 +3,12 @@
 #include "../fb.h"
 #include <sys/stat.h>
 
-char *fb_hGetExePath( char *dst, int maxlen )
+char *fb_hGetExePath( char *dst, ssize_t maxlen )
 {
 	char *p;
 	char linkname[1024];
 	struct stat finfo;
-	int len;
+	ssize_t len;
 
 	sprintf(linkname, "/proc/%d/exe", getpid());
 	if ((stat(linkname, &finfo) == 0) && ((len = readlink(linkname, dst, maxlen - 1)) > -1)) {

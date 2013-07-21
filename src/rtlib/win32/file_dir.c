@@ -69,7 +69,8 @@ FBCALL FBSTRING *fb_Dir( FBSTRING *filespec, int attrib, int *out_attrib )
 {
 	FB_DIRCTX *ctx;
 	FBSTRING *res;
-	int len, tmp_attrib;
+	ssize_t len;
+	int tmp_attrib;
     char *name;
     int handle_ok;
 

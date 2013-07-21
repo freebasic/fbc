@@ -2,10 +2,9 @@
 
 #include "fb.h"
 
-/*:::::*/
-FBCALL int fb_StrInstrAny ( int start, FBSTRING *src, FBSTRING *patt )
+FBCALL ssize_t fb_StrInstrAny( ssize_t start, FBSTRING *src, FBSTRING *patt )
 {
-	int r;
+	ssize_t r;
 
 	if( (src == NULL) || (src->data == NULL) || (patt == NULL) || (patt->data == NULL) ) 
 	{
@@ -13,8 +12,8 @@ FBCALL int fb_StrInstrAny ( int start, FBSTRING *src, FBSTRING *patt )
 	}
 	else
 	{
-		size_t size_src = FB_STRSIZE(src);
-		size_t size_patt = FB_STRSIZE(patt);
+		ssize_t size_src = FB_STRSIZE(src);
+		ssize_t size_patt = FB_STRSIZE(patt);
 
 		if( (size_src == 0) || (size_patt == 0) || (start < 1) || (start > size_src) )
 		{
@@ -22,7 +21,7 @@ FBCALL int fb_StrInstrAny ( int start, FBSTRING *src, FBSTRING *patt )
 		} 
 		else 
 		{
-			size_t i, found, search_len = size_src - start + 1;
+			ssize_t i, found, search_len = size_src - start + 1;
 			const char *pachText = src->data + start - 1;
 			r = search_len;
 			

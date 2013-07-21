@@ -57,34 +57,24 @@ function symbAddEnum _
 
 end function
 
-'':::::
 function symbAddEnumElement _
 	( _
 		byval parent as FBSYMBOL ptr, _
 		byval id as zstring ptr, _
-		byval intval as integer, _
+		byval intval as longint, _
 		byval attrib as integer _
 	) as FBSYMBOL ptr
 
 	dim as FBSYMBOL ptr s = any
 
-    s = symbNewSymbol( FB_SYMBOPT_DOHASH, _
-    				   NULL, _
-    				   NULL, NULL, _
-    				   FB_SYMBCLASS_CONST, _
-    				   id, NULL, _
-    				   FB_DATATYPE_ENUM, parent, _
-    				   attrib )
-	if( s = NULL ) then
-		return NULL
-	end if
+	dim as FBVALUE v
+	v.i = intval
 
-	s->con.val.int = intval
+	s = symbAddConst( id, FB_DATATYPE_ENUM, parent, @v, attrib )
 
 	parent->enum_.elements += 1
 
 	function = s
-
 end function
 
 sub symbDelEnum( byval s as FBSYMBOL ptr )

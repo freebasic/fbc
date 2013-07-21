@@ -9,4 +9,6 @@ bin/*
 doc/licenses/*
 lib/*/i386go32.x
 lib/*/fbextra.x
+lib/freebas/*
+lib/freebasic/*
 config.mk

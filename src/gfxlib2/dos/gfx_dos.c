@@ -670,7 +670,7 @@ void fb_hScreenInfo(int *width, int *height, int *depth, int *refresh)
 	*refresh = fb_dos.refresh;
 }
 
-int fb_hGetWindowHandle(void)
+ssize_t fb_hGetWindowHandle(void)
 {
 	return 0;
 }

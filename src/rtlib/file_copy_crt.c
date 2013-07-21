@@ -7,7 +7,7 @@
 FBCALL int fb_CrtFileCopy( const char *source, const char *destination )
 {
 	FILE *src, *dst = NULL;
-	long len;
+	int len;
 	size_t bytes_to_copy;
 	char buf[FILE_COPY_BUF_SIZE];
 

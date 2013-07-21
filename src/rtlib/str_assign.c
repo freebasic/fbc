@@ -2,20 +2,19 @@
 
 #include "fb.h"
 
-/*:::::*/
 FBCALL void *fb_StrAssignEx
 	(
 		void *dst,
-		int dst_size,
+		ssize_t dst_size,
 		void *src,
-		int src_size,
+		ssize_t src_size,
 		int fill_rem,
 		int is_init
 	)
 {
 	FBSTRING *dstr;
 	const char *src_ptr;
-	int src_len;
+	ssize_t src_len;
 
 	FB_STRLOCK();
 
@@ -130,31 +129,26 @@ FBCALL void *fb_StrAssignEx
 	return dst;
 }
 
-/*:::::*/
 FBCALL void *fb_StrAssign
 	(
 		void *dst,
-		int dst_size,
+		ssize_t dst_size,
 		void *src,
-		int src_size,
+		ssize_t src_size,
 		int fill_rem
 	)
 {
 	return fb_StrAssignEx( dst, dst_size, src, src_size, fill_rem, FB_FALSE );
 }
 
-/*:::::*/
 FBCALL void *fb_StrInit
 	(
 		void *dst,
-		int dst_size,
+		ssize_t dst_size,
 		void *src,
-		int src_size,
+		ssize_t src_size,
 		int fill_rem
 	)
 {
 	return fb_StrAssignEx( dst, dst_size, src, src_size, fill_rem, FB_TRUE );
 }
-
-
-

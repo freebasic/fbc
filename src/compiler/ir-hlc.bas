@@ -69,9 +69,7 @@ type EXPRNODE
 
 	union
 		text		as zstring ptr  '' TEXT
-		int		as integer      '' IMM
-		long		as longint      '' IMM
-		float		as double       '' IMM
+		val		as FBVALUE      '' IMM
 		sym		as FBSYMBOL ptr '' SYM
 		op		as integer      '' UOP/BOP
 	end union
@@ -140,6 +138,35 @@ declare sub exprDump( byval n as EXPRNODE ptr )
 '' globals
 dim shared as IRHLCCTX ctx
 
+'' same order as FB_DATATYPE
+dim shared as const zstring ptr dtypeName(0 to FB_DATATYPES-1) = _
+{ _
+	@"void"     , _ '' void
+	@"int8"     , _ '' byte
+	@"uint8"    , _ '' ubyte
+	NULL        , _ '' char
+	@"int16"    , _ '' short
+	@"uint16"   , _ '' ushort
+	NULL        , _ '' wchar
+	NULL        , _ '' integer
+	NULL        , _ '' uint
+	NULL        , _ '' enum
+	NULL        , _ '' bitfield
+	@"int32"    , _ '' long
+	@"uint32"   , _ '' ulong
+	@"int64"    , _ '' longint
+	@"uint64"   , _ '' ulongint
+	@"float"    , _ '' single
+	@"double"   , _ '' double
+	@"FBSTRING" , _ '' string
+	NULL        , _ '' fix-len string
+	NULL        , _ '' struct
+	NULL        , _ '' namespace
+	NULL        , _ '' function
+	@"void"     , _ '' fwdref (needed for any un-resolved fwdrefs)
+	NULL          _ '' pointer
+}
+
 private sub _init( )
 	flistInit( @ctx.vregTB, IR_INITVREGNODES, len( IRVREG ) )
 	listInit( @ctx.callargs, 32, sizeof( IRCALLARG ), LIST_FLAGS_NOCLEAR )
@@ -147,6 +174,15 @@ private sub _init( )
 	listInit( @ctx.exprnodes, 32, sizeof( EXPRNODE ), LIST_FLAGS_CLEAR )
 	listInit( @ctx.exprcache, 8, sizeof( EXPRCACHENODE ), LIST_FLAGS_NOCLEAR )
 	irSetOption( IR_OPT_FPUIMMEDIATES or IR_OPT_NOINLINEOPS )
+
+	'' 64bit?
+	if( fbCpuTypeIs64bit( ) ) then
+		dtypeName(FB_DATATYPE_INTEGER) = @"int64"
+		dtypeName(FB_DATATYPE_UINT   ) = @"uint64"
+	else
+		dtypeName(FB_DATATYPE_INTEGER) = @"int32"
+		dtypeName(FB_DATATYPE_UINT   ) = @"uint32"
+	end if
 end sub
 
 private sub _end( )
@@ -349,17 +385,22 @@ private function hEmitProcHeader _
 	'' cycling through parameters of Pascal functions. Together with Stdcall
 	'' this results in a double-reverse resulting in the proper ABI.
 	''
-	select case( symbGetProcMode( proc ) )
-	case FB_FUNCMODE_STDCALL, FB_FUNCMODE_STDCALL_MS, FB_FUNCMODE_PASCAL
-		select case( env.clopt.target )
-		case FB_COMPTARGET_WIN32, FB_COMPTARGET_XBOX
-			'' MinGW recognizes this shorter & prettier version
-			ln += " __stdcall"
-		case else
-			'' Linux GCC only accepts this
-			ln += " __attribute__((stdcall))"
+	'' For non-x86, don't emit any calling convention at all, it would just
+	'' be ignored anyways (for x86_64 and ARM it seems that way at least).
+	''
+	if( fbCpuTypeIsX86( ) ) then
+		select case( symbGetProcMode( proc ) )
+		case FB_FUNCMODE_STDCALL, FB_FUNCMODE_STDCALL_MS, FB_FUNCMODE_PASCAL
+			select case( env.clopt.target )
+			case FB_COMPTARGET_WIN32, FB_COMPTARGET_XBOX
+				'' MinGW recognizes this shorter & prettier version
+				ln += " __stdcall"
+			case else
+				'' Linux GCC only accepts this
+				ln += " __attribute__((stdcall))"
+			end select
 		end select
-	end select
+	end if
 
 	ln += " "
 
@@ -480,6 +521,20 @@ private function hGetUdtName( byval sym as FBSYMBOL ptr ) as string
 	function = hGetUdtTag( sym ) + hGetUdtId( sym )
 end function
 
+private sub hEmitEnum( byval s as FBSYMBOL ptr )
+	dim as string ln
+
+	symbSetIsEmitted( s )
+
+	ln = "typedef "
+	'' no subtype, to avoid infinite recursion
+	ln += hEmitType( FB_DATATYPE_ENUM, NULL )
+	ln += " "
+	ln += hGetUdtName( s )
+	ln += ";"
+	hWriteLine( ln )
+end sub
+
 private sub hEmitUDT( byval s as FBSYMBOL ptr, byval is_ptr as integer )
 	dim as integer section = any
 
@@ -519,8 +574,7 @@ private sub hEmitUDT( byval s as FBSYMBOL ptr, byval is_ptr as integer )
 
 	select case as const symbGetClass( s )
 	case FB_SYMBCLASS_ENUM
-		symbSetIsEmitted( s )
-		hWriteLine( "typedef int " + hGetUdtName( s ) + ";" )
+		hEmitEnum( s )
 
 	case FB_SYMBCLASS_STRUCT
 		hEmitStruct( s, is_ptr )
@@ -558,7 +612,7 @@ private function hEmitArrayDecl( byval sym as FBSYMBOL ptr ) as string
 
 	'' If it's a fixed-length string, add an extra array dimension
 	'' (zstring * 5 becomes char[5])
-	dim as integer length = 0
+	dim as longint length = 0
 	select case( symbGetType( sym ) )
 	case FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR
 		length = symbGetStrLen( sym )
@@ -955,20 +1009,6 @@ private sub hEmitDataStmt( )
 	loop
 end sub
 
-private sub hEmitTypedefs( )
-	'' typedef's for debugging
-	hWriteLine( "typedef signed char byte;", TRUE )
-	hWriteLine( "typedef unsigned char ubyte;", TRUE )
-	hWriteLine( "typedef unsigned short ushort;", TRUE )
-	hWriteLine( "typedef signed int integer;", TRUE )
-	hWriteLine( "typedef unsigned int uinteger;", TRUE )
-	hWriteLine( "typedef unsigned long ulong;", TRUE )
-	hWriteLine( "typedef signed long long longint;", TRUE )
-	hWriteLine( "typedef unsigned long long ulongint;", TRUE )
-	hWriteLine( "typedef float single;", TRUE )
-	hWriteLine( "typedef struct _string { char *data; int len; int size; } string;", TRUE )
-end sub
-
 private sub hWriteFTOI _
 	( _
 		byref fname as string, _
@@ -978,19 +1018,18 @@ private sub hWriteFTOI _
 
 	dim as string rtype_str, rtype_suffix
 	select case rtype
-	case FB_DATATYPE_INTEGER
-		rtype_str = "integer"
+	case FB_DATATYPE_LONG
+		rtype_str = "int32"
 		rtype_suffix = "l"
-
 	case FB_DATATYPE_LONGINT
-		rtype_str = "longint"
+		rtype_str = "int64"
 		rtype_suffix = "q"
 	end select
 
 	dim as string ptype_str, ptype_suffix
 	select case ptype
 	case FB_DATATYPE_SINGLE
-		ptype_str = "single"
+		ptype_str = "float"
 		ptype_suffix = "s"
 
 	case FB_DATATYPE_DOUBLE
@@ -1052,11 +1091,11 @@ private sub hEmitFTOIBuiltins( )
 	end if
 
 	if( symbGetIsAccessed( PROCLOOKUP( FTOUL ) ) ) then
-		hWriteLine( "#define fb_ftoul( v ) (ulongint)fb_ftosl( v )", TRUE )
+		hWriteLine( "#define fb_ftoul( v ) (uint64)fb_ftosl( v )", TRUE )
 	end if
 
 	if( symbGetIsAccessed( PROCLOOKUP( FTOUI ) ) ) then
-		hWriteLine( "#define fb_ftoui( v ) (uinteger)fb_ftosl( v )", TRUE )
+		hWriteLine( "#define fb_ftoui( v ) (uint32)fb_ftosl( v )", TRUE )
 	end if
 
 	if( symbGetIsAccessed( PROCLOOKUP( FTOSI ) ) or _
@@ -1064,23 +1103,23 @@ private sub hEmitFTOIBuiltins( )
 	    symbGetIsAccessed( PROCLOOKUP( FTOUS ) ) or _
 	    symbGetIsAccessed( PROCLOOKUP( FTOSB ) ) or _
 	    symbGetIsAccessed( PROCLOOKUP( FTOUB ) ) ) then
-		hWriteFTOI( "ftosi", FB_DATATYPE_INTEGER, FB_DATATYPE_SINGLE )
+		hWriteFTOI( "ftosi", FB_DATATYPE_LONG, FB_DATATYPE_SINGLE )
 	end if
 
 	if( symbGetIsAccessed( PROCLOOKUP( FTOSS ) ) ) then
-		hWriteLine( "#define fb_ftoss( v ) (short)fb_ftosi( v )", TRUE )
+		hWriteLine( "#define fb_ftoss( v ) (int16)fb_ftosi( v )", TRUE )
 	end if
 
 	if( symbGetIsAccessed( PROCLOOKUP( FTOUS ) ) ) then
-		hWriteLine( "#define fb_ftous( v ) (ushort)fb_ftosi( v )", TRUE )
+		hWriteLine( "#define fb_ftous( v ) (uint16)fb_ftosi( v )", TRUE )
 	end if
 
 	if( symbGetIsAccessed( PROCLOOKUP( FTOSB ) ) ) then
-		hWriteLine( "#define fb_ftosb( v ) (byte)fb_ftosi( v )", TRUE )
+		hWriteLine( "#define fb_ftosb( v ) (int8)fb_ftosi( v )", TRUE )
 	end if
 
 	if( symbGetIsAccessed( PROCLOOKUP( FTOUB ) ) ) then
-		hWriteLine( "#define fb_ftoub( v ) (ubyte)fb_ftosi( v )", TRUE )
+		hWriteLine( "#define fb_ftoub( v ) (uint8)fb_ftosi( v )", TRUE )
 	end if
 
 	'' double
@@ -1091,11 +1130,11 @@ private sub hEmitFTOIBuiltins( )
 	end if
 
 	if( symbGetIsAccessed( PROCLOOKUP( DTOUL ) ) ) then
-		hWriteLine( "#define fb_dtoul( v ) (ulongint)fb_dtosl( v )", TRUE )
+		hWriteLine( "#define fb_dtoul( v ) (uint64)fb_dtosl( v )", TRUE )
 	end if
 
 	if( symbGetIsAccessed( PROCLOOKUP( DTOUI ) ) ) then
-		hWriteLine( "#define fb_dtoui( v ) (uinteger)fb_dtosl( v )", TRUE )
+		hWriteLine( "#define fb_dtoui( v ) (uint32)fb_dtosl( v )", TRUE )
 	end if
 
 	if( symbGetIsAccessed( PROCLOOKUP( DTOSI ) ) or _
@@ -1103,23 +1142,23 @@ private sub hEmitFTOIBuiltins( )
 	    symbGetIsAccessed( PROCLOOKUP( DTOUS ) ) or _
 	    symbGetIsAccessed( PROCLOOKUP( DTOSB ) ) or _
 	    symbGetIsAccessed( PROCLOOKUP( DTOUB ) ) ) then
-		hWriteFTOI( "dtosi", FB_DATATYPE_INTEGER, FB_DATATYPE_DOUBLE )
+		hWriteFTOI( "dtosi", FB_DATATYPE_LONG, FB_DATATYPE_DOUBLE )
 	end if
 
 	if( symbGetIsAccessed( PROCLOOKUP( DTOSS ) ) ) then
-		hWriteLine( "#define fb_dtoss( v ) (short)fb_dtosi( v )", TRUE )
+		hWriteLine( "#define fb_dtoss( v ) (int16)fb_dtosi( v )", TRUE )
 	end if
 
 	if( symbGetIsAccessed( PROCLOOKUP( DTOUS ) ) ) then
-		hWriteLine( "#define fb_dtous( v ) (ushort)fb_dtosi( v )", TRUE )
+		hWriteLine( "#define fb_dtous( v ) (uint16)fb_dtosi( v )", TRUE )
 	end if
 
 	if( symbGetIsAccessed( PROCLOOKUP( DTOSB ) ) ) then
-		hWriteLine( "#define fb_dtosb( v ) (byte)fb_dtosi( v )", TRUE )
+		hWriteLine( "#define fb_dtosb( v ) (int8)fb_dtosi( v )", TRUE )
 	end if
 
 	if( symbGetIsAccessed( PROCLOOKUP( DTOUB ) ) ) then
-		hWriteLine( "#define fb_dtoub( v ) (ubyte)fb_dtosi( v )", TRUE )
+		hWriteLine( "#define fb_dtoub( v ) (uint8)fb_dtosi( v )", TRUE )
 	end if
 
 end sub
@@ -1149,7 +1188,19 @@ private function _emitBegin( ) as integer
 	hWriteLine( "// Compilation of " + env.inf.name + " started at " + time( ) + " on " + date( ), TRUE )
 	hWriteLine( "", TRUE )
 
-	hEmitTypedefs( )
+	hWriteLine( "typedef   signed char       int8;", TRUE )
+	hWriteLine( "typedef unsigned char      uint8;", TRUE )
+	hWriteLine( "typedef   signed short      int16;", TRUE )
+	hWriteLine( "typedef unsigned short     uint16;", TRUE )
+	hWriteLine( "typedef   signed int        int32;", TRUE )
+	hWriteLine( "typedef unsigned int       uint32;", TRUE )
+	hWriteLine( "typedef   signed long long  int64;", TRUE )
+	hWriteLine( "typedef unsigned long long uint64;", TRUE )
+	if( fbCpuTypeIs64bit( ) ) then
+		hWriteLine( "typedef struct { char *data; int64 len; int64 size; } FBSTRING;", TRUE )
+	else
+		hWriteLine( "typedef struct { char *data; int32 len; int32 size; } FBSTRING;", TRUE )
+	end if
 
 	'' body
 	sectionBegin( )
@@ -1351,39 +1402,21 @@ private function _allocVreg _
 
 end function
 
-'':::::
 private function _allocVrImm _
-	( _
-		byval dtype as integer, _
-		byval subtype as FBSYMBOL ptr, _
-		byval value as integer _
-	) as IRVREG ptr
-
-	dim as IRVREG ptr vr = hNewVR( dtype, subtype, IR_VREGTYPE_IMM )
-
-	vr->value.int = value
-
-	function = vr
-
-end function
-
-'':::::
-private function _allocVrImm64 _
 	( _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
 		byval value as longint _
 	) as IRVREG ptr
 
-	dim as IRVREG ptr vr = hNewVR( dtype, subtype, IR_VREGTYPE_IMM )
+	dim as IRVREG ptr vr = any
 
-	vr->value.long = value
+	vr = hNewVR( dtype, subtype, IR_VREGTYPE_IMM )
+	vr->value.i = value
 
 	function = vr
-
 end function
 
-'':::::
 private function _allocVrImmF _
 	( _
 		byval dtype as integer, _
@@ -1391,12 +1424,12 @@ private function _allocVrImmF _
 		byval value as double _
 	) as IRVREG ptr
 
-	dim as IRVREG ptr vr = hNewVR( dtype, subtype, IR_VREGTYPE_IMM )
+	dim as IRVREG ptr vr = any
 
-	vr->value.float = value
+	vr = hNewVR( dtype, subtype, IR_VREGTYPE_IMM )
+	vr->value.f = value
 
 	function = vr
-
 end function
 
 '':::::
@@ -1405,7 +1438,7 @@ private function _allocVrVar _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
 		byval symbol as FBSYMBOL ptr, _
-		byval ofs as integer _
+		byval ofs as longint _
 	) as IRVREG ptr
 
 	dim as IRVREG ptr vr = hNewVR( dtype, subtype, IR_VREGTYPE_VAR )
@@ -1423,7 +1456,7 @@ private function _allocVrIdx _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
 		byval symbol as FBSYMBOL ptr, _
-		byval ofs as integer, _
+		byval ofs as longint, _
 		byval mult as integer, _
 		byval vidx as IRVREG ptr _
 	) as IRVREG ptr
@@ -1443,7 +1476,7 @@ private function _allocVrPtr _
 	( _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
-		byval ofs as integer, _
+		byval ofs as longint, _
 		byval vidx as IRVREG ptr _
 	) as IRVREG ptr
 
@@ -1462,7 +1495,7 @@ private function _allocVrOfs _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
 		byval symbol as FBSYMBOL ptr, _
-		byval ofs as integer _
+		byval ofs as longint _
 	) as IRVREG ptr
 
 	dim as IRVREG ptr vr = hNewVR( dtype, subtype, IR_VREGTYPE_OFS )
@@ -1516,35 +1549,6 @@ private function hEmitType _
 		byval subtype as FBSYMBOL ptr _
 	) as string
 
-	'' same order as FB_DATATYPE
-	static as const zstring ptr dtypeName(0 to FB_DATATYPES-1) = _
-	{ _
-		@"void"     , _ '' void
-		@"byte"     , _ '' byte
-		@"ubyte"    , _ '' ubyte
-		NULL        , _ '' char
-		@"short"    , _ '' short
-		@"ushort"   , _ '' ushort
-		NULL        , _ '' wchar
-		@"integer"  , _ '' int
-		@"uinteger" , _ '' uint
-		NULL        , _ '' enum
-		NULL        , _ '' bitfield
-		@"long"     , _ '' long
-		@"ulong"    , _ '' ulong
-		@"longint"  , _ '' longint
-		@"ulongint" , _ '' ulongint
-		@"single"   , _ '' single
-		@"double"   , _ '' double
-		@"string"   , _ '' string
-		NULL        , _ '' fix-len string
-		NULL        , _ '' struct
-		NULL        , _ '' namespace
-		NULL        , _ '' function
-		@"void"     , _ '' fwd-ref (needed for any un-resolved fwdrefs)
-		NULL          _ '' pointer
-	}
-
 	dim as string s
 	dim as integer ptrcount = any
 
@@ -1557,7 +1561,7 @@ private function hEmitType _
 			hEmitUDT( subtype, (ptrcount > 0) )
 			s = hGetUdtName( subtype )
 		elseif( dtype = FB_DATATYPE_ENUM ) then
-			s = *dtypeName(FB_DATATYPE_INTEGER)
+			s = *dtypeName(typeGetRemapType( dtype ))
 		else
 			s = *dtypeName(FB_DATATYPE_VOID)
 		end if
@@ -1643,28 +1647,14 @@ end function
 
 private function exprNewIMMi _
 	( _
-		byval i as integer, _
+		byval i as longint, _
 		byval dtype as integer = FB_DATATYPE_INTEGER _
 	) as EXPRNODE ptr
 
 	dim as EXPRNODE ptr n = any
 
 	n = exprNew( EXPRCLASS_IMM, dtype, NULL )
-	n->int = i
-
-	function = n
-end function
-
-private function exprNewIMMl _
-	( _
-		byval l as longint, _
-		byval dtype as integer _
-	) as EXPRNODE ptr
-
-	dim as EXPRNODE ptr n = any
-
-	n = exprNew( EXPRCLASS_IMM, dtype, NULL )
-	n->long = l
+	n->val.i = i
 
 	function = n
 end function
@@ -1678,7 +1668,7 @@ private function exprNewIMMf _
 	dim as EXPRNODE ptr n = any
 
 	n = exprNew( EXPRCLASS_IMM, dtype, NULL )
-	n->float = f
+	n->val.f = f
 
 	function = n
 end function
@@ -1723,6 +1713,15 @@ private function exprNewCAST _
 
 	'' Don't add a CAST if l already has the desired type
 	if( (dtype = l->dtype) and (subtype = l->subtype) ) then
+		return l
+	end if
+
+	'' Don't cast if l has a compatible type (e.g. 32bit int vs. 32bit long)
+	'' (same class, same size, same signedness, and no pointers involved)
+	if( (typeGetClass( l->dtype ) = typeGetClass( dtype )) and _
+	    (typeIsSigned( l->dtype ) = typeIsSigned( dtype )) and _
+	    (not typeIsPtr( l->dtype )) and (not typeIsPtr( dtype )) and _
+	    (typeGetSize( l->dtype ) = typeGetSize( dtype )) ) then
 		return l
 	end if
 
@@ -1792,7 +1791,7 @@ private function typeCBop _
 	'' Result of relational/comparison operators is int
 	select case( op )
 	case AST_OP_EQ, AST_OP_NE, AST_OP_GT, AST_OP_LT, AST_OP_GE, AST_OP_LE
-		return FB_DATATYPE_INTEGER
+		return FB_DATATYPE_LONG
 	end select
 
 	'' This tries to do C operand type promotion (and is probably not
@@ -1813,46 +1812,41 @@ private function typeCBop _
 
 	'' Float types take precedence (?)
 	if( (a = FB_DATATYPE_DOUBLE) or (b = FB_DATATYPE_DOUBLE) ) then
-		function = FB_DATATYPE_DOUBLE
-	elseif( (a = FB_DATATYPE_SINGLE) or (b = FB_DATATYPE_SINGLE) ) then
-		function = FB_DATATYPE_SINGLE
-	else
-		'' Remap to allow types to be compared as integer values
-		'' Note: C pointer becomes FB ulong (FB vs. C x86 assumption)
-		a = typeRemap( a, asubtype )
-		if( typeIsSigned( a ) ) then
-			if( a < FB_DATATYPE_INTEGER ) then
-				a = FB_DATATYPE_INTEGER
-			end if
-		else
-			if( a < FB_DATATYPE_UINT ) then
-				a = FB_DATATYPE_UINT
-			end if
-		end if
-
-		select case( op )
-		case AST_OP_SHL, AST_OP_SHR
-			return a
-		end select
-
-		b = typeRemap( b, bsubtype )
-		if( typeIsSigned( b ) ) then
-			if( b < FB_DATATYPE_INTEGER ) then
-				b = FB_DATATYPE_INTEGER
-			end if
-		else
-			if( b < FB_DATATYPE_UINT ) then
-				b = FB_DATATYPE_UINT
-			end if
-		end if
-
-		if( a > b ) then
-			function = a
-		else
-			function = b
-		end if
+		return FB_DATATYPE_DOUBLE
+	end if
+	if( (a = FB_DATATYPE_SINGLE) or (b = FB_DATATYPE_SINGLE) ) then
+		return FB_DATATYPE_SINGLE
 	end if
 
+	'' Promote 8bit/16bit types to 32bit,
+	'' and normalize 32bit types to FB_DATATYPE_LONG
+	if( typeGetSize( a ) <= 4 ) then
+		a = iif( typeIsSigned( a ), FB_DATATYPE_LONG, FB_DATATYPE_ULONG )
+	end if
+	if( typeGetSize( b ) <= 4 ) then
+		b = iif( typeIsSigned( b ), FB_DATATYPE_LONG, FB_DATATYPE_ULONG )
+	end if
+
+	'' Promote signed to unsigned
+	if( (not typeIsSigned( a )) or (not typeIsSigned( b )) ) then
+		a = typeToUnsigned( a )
+		b = typeToUnsigned( b )
+	end if
+
+	'' Promote to 64bit, iff a 64bit operand is involved,
+	'' and normalize to FB_DATATYPE_LONGINT
+	if( (typeGetSize( a ) = 8) or (typeGetSize( b ) = 8) ) then
+		a = iif( typeIsSigned( a ), FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT )
+		b = iif( typeIsSigned( b ), FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT )
+	end if
+
+	'' Promote signed to unsigned
+	if( (not typeIsSigned( a )) or (not typeIsSigned( b )) ) then
+		a = typeToUnsigned( a )
+		b = typeToUnsigned( b )
+	end if
+
+	function = a
 end function
 
 private function exprNewUOP _
@@ -1971,42 +1965,40 @@ private function exprLookup( byval vregid as integer ) as EXPRNODE ptr
 	end if
 end function
 
-private function hEmitInt( byval dtype as integer, byval value as integer ) as string
+private function hEmitInt _
+	( _
+		byval dtype as integer, _
+		byval value as longint _
+	) as string
+
 	dim as string s
 
 	if( typeIsSigned( dtype ) ) then
 		s = str( value )
 
-		if( value = -2147483648u ) then
-			'' Prevent GCC warnings for INT_MIN:
-			'' The '-' minus sign doesn't count as part of the number
-			'' literal, and 2147483648 is too big for an integer, so it
-			'' must be marked as unsigned.
-			s += "u"
+		'' Prevent GCC warnings for INT_MIN/LLONG_MIN:
+		'' The '-' minus sign doesn't count as part of the number
+		'' literal, and 2147483648 is too big for a 32bit integer,
+		'' so it must be marked as unsigned.
+		if( typeGetSize( dtype ) = 8 ) then
+			if( value = -9223372036854775808ull ) then
+				s += "u"
+			end if
+			s += "ll"
+		else
+			if( value = -2147483648u ) then
+				s += "u"
+			end if
 		end if
-
-		function = s
 	else
-		function = str( cuint( value ) ) + "u"
-	end if
-end function
-
-private function hEmitLong( byval dtype as integer, byval value as longint ) as string
-	dim as string s
-
-	if( typeIsSigned( dtype ) ) then
-		s = str( value )
-		if( value = -9223372036854775808ull ) then
-			'' Ditto, prevent warnings for LLONG_MIN
-			s += "u"
+		if( typeGetSize( dtype ) = 8 ) then
+			s = str( culngint( value ) ) + "ull"
+		else
+			s = str( culng( value ) ) + "u"
 		end if
-		s += "ll"
-	else
-		s = str( culngint( value ) )
-		s += "ull"
 	end if
 
-	return s
+	function = s
 end function
 
 private function hEmitFloat _
@@ -2016,22 +2008,22 @@ private function hEmitFloat _
 	) as string
 
 	dim as string s
-	dim as integer expval = any
+	dim as ulong expval = any
 
 	'' x86 little-endian assumption
-	expval = cast( integer ptr, @value )[1]
+	expval = cast( ulong ptr, @value )[1]
 
 	select case( expval )
 	'' +/- infinity?
 	case &h7FF00000UL, &hFFF00000UL
 		if( dtype = FB_DATATYPE_DOUBLE ) then
-			if( expval and &h80000000 ) then
+			if( expval and &h80000000ul ) then
 				s += "(-__builtin_inf())"
 			else
 				s += "__builtin_inf()"
 			end if
 		else
-			if( expval and &h80000000 ) then
+			if( expval and &h80000000ul ) then
 				s += "(-__builtin_inff())"
 			else
 				s += "__builtin_inff()"
@@ -2041,13 +2033,13 @@ private function hEmitFloat _
 	'' +/- NaN? Quiet-NaN's only
 	case &h7FF80000UL, &hFFF80000UL
 		if( dtype = FB_DATATYPE_DOUBLE ) then
-			if( expval and &h80000000 ) then
+			if( expval and &h80000000ul ) then
 				s += "(-__builtin_nan( """" ))"
 			else
 				s += "__builtin_nan( """" )"
 			end if
 		else
-			if( expval and &h80000000 ) then
+			if( expval and &h80000000ul ) then
 				s += "(-__builtin_nanf( """" ))"
 			else
 				s += "__builtin_nanf( """" )"
@@ -2082,7 +2074,7 @@ private sub hBuildStrLit _
 	( _
 		byref ln as string, _
 		byval z as zstring ptr, _
-		byval length as integer _  '' including null terminator
+		byval length as longint _  '' including null terminator
 	)
 
 	dim as integer ch = any
@@ -2128,7 +2120,7 @@ private sub hBuildWstrLit _
 	( _
 		byref ln as string, _
 		byval w as wstring ptr, _
-		byval length as integer _  '' including null terminator
+		byval length as longint _  '' including null terminator
 	)
 
 	dim as integer ch = any
@@ -2210,11 +2202,9 @@ private sub hExprFlush( byval n as EXPRNODE ptr, byval need_parens as integer )
 
 	case EXPRCLASS_IMM
 		if( typeGetClass( n->dtype ) = FB_DATACLASS_FPOINT ) then
-			ctx.exprtext += hEmitFloat( n->dtype, n->float )
-		elseif( typeGetSize( n->dtype ) = 8 ) then
-			ctx.exprtext += hEmitLong( n->dtype, n->long )
+			ctx.exprtext += hEmitFloat( n->dtype, n->val.f )
 		else
-			ctx.exprtext += hEmitInt( n->dtype, n->int )
+			ctx.exprtext += hEmitInt( n->dtype, n->val.i )
 		end if
 
 	case EXPRCLASS_SYM
@@ -2314,11 +2304,9 @@ private sub exprDump( byval n as EXPRNODE ptr )
 
 	case EXPRCLASS_IMM
 		if( typeGetClass( n->dtype ) = FB_DATACLASS_FPOINT ) then
-			s = "IMM( " + hEmitFloat( n->dtype, n->float ) + " )"
-		elseif( typeGetSize( n->dtype ) = 8 ) then
-			s = "IMM( " + hEmitLong( n->dtype, n->long ) + " )"
+			s = "IMM( " + hEmitFloat( n->dtype, n->val.f ) + " )"
 		else
-			s = "IMM( " + hEmitInt( n->dtype, n->int ) + " )"
+			s = "IMM( " + hEmitInt( n->dtype, n->val.i ) + " )"
 		end if
 
 	case EXPRCLASS_SYM
@@ -2383,7 +2371,7 @@ end sub
 private function exprNewOFFSET _
 	( _
 		byval sym as FBSYMBOL ptr, _
-		byval ofs as integer _
+		byval ofs as longint _
 	) as EXPRNODE ptr
 
 	dim as EXPRNODE ptr l = any
@@ -2426,7 +2414,7 @@ private function exprNewVREG _
 			'' but just the "offset".
 			''    *(vregtype*)offset
 			''    *(vregtype*)vidx
-			''    *(vregtype*)((ubyte*)vidx + offset)
+			''    *(vregtype*)((uint8*)vidx + offset)
 
 			if( vreg->vidx ) then
 				'' recursion
@@ -2466,12 +2454,12 @@ private function exprNewVREG _
 		''        (vregtype)sym
 		'' ptr derefs:
 		''        *(vregtype*)sym
-		''        *(vregtype*)((ubyte*)sym + offset)
+		''        *(vregtype*)((uint8*)sym + offset)
 		'' array accesses (idx):
-		''        *(vregtype*)((ubyte*)sym + vidx + offset)
+		''        *(vregtype*)((uint8*)sym + vidx + offset)
 		'' field accesses:
 		''        *(vregtype*)&sym
-		''        *(vregtype*)((ubyte*)&sym + offset)
+		''        *(vregtype*)((uint8*)&sym + offset)
 
 		have_offset = ((vreg->ofs <> 0) or (vreg->vidx <> NULL))
 
@@ -2559,31 +2547,11 @@ private function exprNewVREG _
 
 		dtype = vreg->dtype
 
-		select case as const( dtype )
-		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-			l = exprNewIMMl( vreg->value.long, dtype )
-		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-			l = exprNewIMMf( vreg->value.float, dtype )
-		case FB_DATATYPE_LONG
-			if( FB_LONGSIZE = len( integer ) ) then
-				l = exprNewIMMi( vreg->value.int, dtype )
-			else
-				l = exprNewIMMl( vreg->value.long, dtype )
-			end if
-		case FB_DATATYPE_ULONG
-			if( FB_LONGSIZE = len( integer ) ) then
-				l = exprNewIMMi( vreg->value.int, dtype )
-			else
-				l = exprNewIMMl( vreg->value.long, dtype )
-			end if
-		case FB_DATATYPE_UINT
-			l = exprNewIMMi( vreg->value.int, dtype )
-		case else
-			'' integers, bytes, shorts, pointers, enums
-			'' Emit them as integer literals, then let the CAST
-			'' below take care of the rest if needed.
-			l = exprNewIMMi( vreg->value.int )
-		end select
+		if( typeGetClass( dtype ) = FB_DATACLASS_FPOINT ) then
+			l = exprNewIMMf( vreg->value.f, dtype )
+		else
+			l = exprNewIMMi( vreg->value.i, dtype )
+		end if
 
 	case IR_VREGTYPE_REG
 		'' Access to existing vreg (e.g. BOP result)
@@ -2948,12 +2916,12 @@ private sub _emitJmpTb _
 	( _
 		byval v1 as IRVREG ptr, _
 		byval tbsym as FBSYMBOL ptr, _
-		byval values as uinteger ptr, _
+		byval values as ulongint ptr, _
 		byval labels as FBSYMBOL ptr ptr, _
 		byval labelcount as integer, _
 		byval deflabel as FBSYMBOL ptr, _
-		byval minval as uinteger, _
-		byval maxval as uinteger _
+		byval minval as ulongint, _
+		byval maxval as ulongint _
 	)
 
 	dim as string tb, temp, ln
@@ -2981,7 +2949,7 @@ private sub _emitJmpTb _
 	sectionIndent( )
 
 	i = 0
-	for value as uinteger = minval to maxval
+	for value as ulongint = minval to maxval
 		assert( i < labelcount )
 		if( value = values[i] ) then
 			label = labels[i]
@@ -3019,7 +2987,7 @@ private sub _emitMem _
 		byval op as integer, _
 		byval v1 as IRVREG ptr, _
 		byval v2 as IRVREG ptr, _
-		byval bytes as integer _
+		byval bytes as longint _
 	)
 
 	select case op
@@ -3219,7 +3187,7 @@ private sub hVarIniSeparator( )
 	end if
 end sub
 
-private sub _emitVarIniI( byval dtype as integer, byval value as integer )
+private sub _emitVarIniI( byval dtype as integer, byval value as longint )
 	ctx.varini += hEmitInt( dtype, value )
 	hVarIniSeparator( )
 end sub
@@ -3229,12 +3197,7 @@ private sub _emitVarIniF( byval dtype as integer, byval value as double )
 	hVarIniSeparator( )
 end sub
 
-private sub _emitVarIniI64( byval dtype as integer, byval value as longint )
-	ctx.varini += hEmitLong( dtype, value )
-	hVarIniSeparator( )
-end sub
-
-private sub _emitVarIniOfs( byval sym as FBSYMBOL ptr, byval ofs as integer )
+private sub _emitVarIniOfs( byval sym as FBSYMBOL ptr, byval ofs as longint )
 	dim as EXPRNODE ptr l = any
 
 	l = exprNewOFFSET( sym, ofs )
@@ -3248,12 +3211,10 @@ end sub
 
 private sub _emitVarIniStr _
 	( _
-		byval varlength as integer, _    '' without null terminator
+		byval varlength as longint, _    '' without null terminator
 		byval literal as zstring ptr, _
-		byval litlength as integer _     '' without null terminator
+		byval litlength as longint _     '' without null terminator
 	)
-
-	dim as integer ch = any
 
 	'' Simple fixed-length string initialized from string literal
 	'' "..."
@@ -3272,9 +3233,9 @@ end sub
 
 private sub _emitVarIniWstr _
 	( _
-		byval varlength as integer, _  '' without null terminator
+		byval varlength as longint, _  '' without null terminator
 		byval literal as wstring ptr, _
-		byval litlength as integer _   '' without null terminator
+		byval litlength as longint _   '' without null terminator
 	)
 
 	dim as uinteger ch = any
@@ -3320,7 +3281,7 @@ private sub _emitVarIniWstr _
 
 end sub
 
-private sub _emitVarIniPad( byval bytes as integer )
+private sub _emitVarIniPad( byval bytes as longint )
 	'' Nothing to do -- we're using {...} for structs and each array
 	'' dimension, and gcc will zero-initialize any uninitialized elements,
 	'' aswell as add padding between fields etc. where needed.
@@ -3446,7 +3407,7 @@ private sub _emitPushArg _
 	( _
 		byval param as FBSYMBOL ptr, _
 		byval vr as IRVREG ptr, _
-		byval plen as integer, _
+		byval udtlen as longint, _
 		byval level as integer _
 	)
 
@@ -3507,7 +3468,6 @@ dim shared as IR_VTBL irhlc_vtbl = _
 	@_emitLoad, _
 	@_emitLoadRes, _
 	NULL, _
-	NULL, _
 	@_emitAddr, _
 	@_emitCall, _
 	@_emitCallPtr, _
@@ -3524,7 +3484,6 @@ dim shared as IR_VTBL irhlc_vtbl = _
 	@_emitVarIniEnd, _
 	@_emitVarIniI, _
 	@_emitVarIniF, _
-	@_emitVarIniI64, _
 	@_emitVarIniOfs, _
 	@_emitVarIniStr, _
 	@_emitVarIniWstr, _
@@ -3536,7 +3495,6 @@ dim shared as IR_VTBL irhlc_vtbl = _
 	@_emitFbctinfEnd, _
 	@_allocVreg, _
 	@_allocVrImm, _
-	@_allocVrImm64, _
 	@_allocVrImmF, _
 	@_allocVrVar, _
 	@_allocVrIdx, _

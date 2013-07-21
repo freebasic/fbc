@@ -38,57 +38,11 @@ function astNewIDX _
 
 end function
 
-'':::::
-private function hEmitIDX _
-	( _
-		byval n as ASTNODE ptr, _
-		byval var_ as ASTNODE ptr, _
-		byval vidx as IRVREG ptr _
-	) as IRVREG ptr static
-
-    dim as FBSYMBOL ptr s
-    dim as IRVREG ptr vd
-    dim as integer ofs
-
-	'' ofs * length + difference (non-base 0 indexes) + offset (UDT's offset)
-    s = var_->sym
-
-    symbSetIsAccessed( s )
-
-    ofs = n->idx.ofs
-	if( symbGetIsDynamic( s ) = FALSE ) then
-		ofs += symbGetArrayDiff( s ) + symbGetOfs( s ) + var_->var_.ofs
-	else
-		s = NULL
-	end if
-
-    ''
-    if( ast.doemit ) then
-		if( vidx <> NULL ) then
-			'' not a reg already? load
-			if( irIsREG( vidx ) = FALSE ) then
-				irEmitLOAD( vidx )
-			end if
-
-			vd = irAllocVRIDX( astGetDataType( n ), n->subtype, s, ofs, n->idx.mult, vidx )
-
-		else
-			vd = irAllocVRVAR( astGetDataType( n ), n->subtype, s, ofs )
-		end if
-	end if
-
-	function = vd
-
-end function
-
-'':::::
-function astLoadIDX _
-	( _
-		byval n as ASTNODE ptr _
-	) as IRVREG ptr
-
-    dim as ASTNODE ptr var_ = any, idx = any
-    dim as IRVREG ptr vidx = any, vr = any
+function astLoadIDX( byval n as ASTNODE ptr ) as IRVREG ptr
+	dim as ASTNODE ptr var_ = any, idx = any
+	dim as IRVREG ptr vidx = any, vr = any
+	dim as FBSYMBOL ptr s = any
+	dim as longint ofs = any
 
 	var_ = n->r
 	if( var_ = NULL ) then
@@ -103,7 +57,29 @@ function astLoadIDX _
 	end if
 
 	if( ast.doemit ) then
-		vr = hEmitIDX( n, var_, vidx )
+		'' ofs * length + difference (non-base 0 indexes) + offset (UDT's offset)
+		s = var_->sym
+
+		symbSetIsAccessed( s )
+
+		ofs = n->idx.ofs
+		if( symbGetIsDynamic( s ) = FALSE ) then
+			ofs += symbGetArrayDiff( s ) + symbGetOfs( s ) + var_->var_.ofs
+		else
+			s = NULL
+		end if
+
+		if( vidx <> NULL ) then
+			'' not a reg already? load
+			if( irIsREG( vidx ) = FALSE ) then
+				irEmitLOAD( vidx )
+			end if
+
+			vr = irAllocVRIDX( astGetDataType( n ), n->subtype, s, ofs, n->idx.mult, vidx )
+		else
+			vr = irAllocVRVAR( astGetDataType( n ), n->subtype, s, ofs )
+		end if
+
 		vr->vector = n->vector
 	end if
 
@@ -111,6 +87,4 @@ function astLoadIDX _
 	astDelNode( var_ )
 
 	function = vr
-
 end function
-

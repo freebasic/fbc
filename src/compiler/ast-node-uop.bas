@@ -3,129 +3,74 @@
 ''
 '' chng: sep/2004 written [v1ctor]
 
-
 #include once "fb.bi"
 #include once "fbint.bi"
 #include once "ir.bi"
 #include once "rtl.bi"
 #include once "ast.bi"
 
-private function hUOPConstFoldInt _
+private function hConstUop _
 	( _
 		byval op as integer, _
-		byval v as ASTNODE ptr _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr, _
+		byval l as ASTNODE ptr _
 	) as ASTNODE ptr
 
-	dim as integer ldfull = any
-	dim as FBSYMBOL ptr lsubtype = any
+	if( typeGetClass( l->dtype ) = FB_DATACLASS_FPOINT ) then
+		select case as const( op )
+		case AST_OP_NEG
+			l->val.f = -l->val.f
+		case AST_OP_ABS
+			l->val.f = abs( l->val.f )
+		case AST_OP_SGN
+			l->val.f = sgn( l->val.f )
+		case AST_OP_SIN
+			l->val.f = sin( l->val.f )
+		case AST_OP_ASIN
+			l->val.f = asin( l->val.f )
+		case AST_OP_COS
+			l->val.f = cos( l->val.f )
+		case AST_OP_ACOS
+			l->val.f = acos( l->val.f )
+		case AST_OP_TAN
+			l->val.f = tan( l->val.f )
+		case AST_OP_ATAN
+			l->val.f = atn( l->val.f )
+		case AST_OP_SQRT
+			l->val.f = sqr( l->val.f )
+		case AST_OP_LOG
+			l->val.f = log( l->val.f )
+		case AST_OP_EXP
+			l->val.f = exp( l->val.f )
+		case AST_OP_FLOOR
+			l->val.f = int( l->val.f )
+		case AST_OP_FIX
+			l->val.f = fix( l->val.f )
+		case AST_OP_FRAC
+			l->val.f = frac( l->val.f )
+		case else
+			assert( FALSE )
+		end select
+	else
+		select case as const( op )
+		case AST_OP_NOT
+			l->val.i = not l->val.i
+		case AST_OP_NEG
+			l->val.i = -l->val.i
+		case AST_OP_ABS
+			l->val.i = abs( l->val.i )
+		case AST_OP_SGN
+			l->val.i = sgn( l->val.i )
+		case else
+			assert( FALSE )
+		end select
 
-	select case as const op
-	case AST_OP_NOT
-		v->con.val.int = not v->con.val.int
+		l = astConvertRawCONSTi( dtype, subtype, l )
+	end if
 
-	case AST_OP_NEG
-		v->con.val.int = -v->con.val.int
-
-	case AST_OP_ABS
-		v->con.val.int = abs( v->con.val.int )
-
-	case AST_OP_SGN
-		v->con.val.int = sgn( v->con.val.int )
-	end select
-
-	'' Pretend the CONST is an integer for a moment, since the result was
-	'' calculated and stored at INTEGER precision above, then do a CONV
-	'' back to the original type and let it show any overflow warnings in
-	'' case the real type cannot hold the calculated value.
-	ldfull = v->dtype
-	lsubtype = v->subtype
-	v->dtype = FB_DATATYPE_INTEGER
-	v->subtype = NULL
-
-	function = astNewCONV( ldfull, lsubtype, v )
+	function = l
 end function
-
-'':::::
-private sub hUOPConstFoldFlt _
-	( _
-		byval op as integer, _
-		byval v as ASTNODE ptr _
-	) static
-
-	select case as const op
-	case AST_OP_NOT
-		v->con.val.int = not cint( v->con.val.float )
-
-	case AST_OP_NEG
-		v->con.val.float = -v->con.val.float
-
-	case AST_OP_ABS
-		v->con.val.float = abs( v->con.val.float )
-
-	case AST_OP_SGN
-		v->con.val.float = sgn( v->con.val.float )
-
-	case AST_OP_SIN
-		v->con.val.float = sin( v->con.val.float )
-
-	case AST_OP_ASIN
-		v->con.val.float = asin( v->con.val.float )
-
-	case AST_OP_COS
-		v->con.val.float = cos( v->con.val.float )
-
-	case AST_OP_ACOS
-		v->con.val.float = acos( v->con.val.float )
-
-	case AST_OP_TAN
-		v->con.val.float = tan( v->con.val.float )
-
-	case AST_OP_ATAN
-		v->con.val.float = atn( v->con.val.float )
-
-	case AST_OP_SQRT
-		v->con.val.float = sqr( v->con.val.float )
-
-	case AST_OP_LOG
-		v->con.val.float = log( v->con.val.float )
-
-	case AST_OP_EXP
-		v->con.val.float = exp( v->con.val.float )
-
-	case AST_OP_FLOOR
-		v->con.val.float = int( v->con.val.float )
-
-	case AST_OP_FIX
-		v->con.val.float = fix( v->con.val.float )
-
-	case AST_OP_FRAC
-		v->con.val.float = frac( v->con.val.float )
-	end select
-
-end sub
-
-'':::::
-private sub hUOPConstFold64 _
-	( _
-		byval op as integer, _
-		byval v as ASTNODE ptr _
-	) static
-
-	select case as const op
-	case AST_OP_NOT
-		v->con.val.long = not v->con.val.long
-
-	case AST_OP_NEG
-		v->con.val.long = -v->con.val.long
-
-	case AST_OP_ABS
-		v->con.val.long = abs( v->con.val.long )
-
-	case AST_OP_SGN
-		v->con.val.long = sgn( v->con.val.long )
-	end select
-
-end sub
 
 function astNewUOP _
 	( _
@@ -290,64 +235,23 @@ function astNewUOP _
 
 	'' constant folding
 	if( astIsCONST( o ) ) then
-
 		if( op = AST_OP_NEG ) then
-			if( typeGetClass( o->dtype ) = FB_DATACLASS_INTEGER ) then
-				if( typeIsSigned( o->dtype ) = FALSE ) then
-					'' test overflow
-					select case( typeGetDtAndPtrOnly( o->dtype ) )
-					case FB_DATATYPE_UINT
-chk_uint:
-						if( astGetValInt( o ) and &h80000000 ) then
-							if( astGetValInt( o ) <> &h80000000 ) then
-								errReportWarn( FB_WARNINGMSG_IMPLICITCONVERSION )
-							end if
-						end if
+			if( typeIsSigned( o->dtype ) = FALSE ) then
+				'' Check for overflows, for example:
+				'' NEG( cushort( 32769 ) ) is -32769,
+				'' but the lowest short is -32768.
 
-					case FB_DATATYPE_ULONGINT
-chk_ulong:
-						if( astGetValLong( o ) and &h8000000000000000 ) then
-							if( astGetValLong( o ) <> &h8000000000000000 ) then
-								errReportWarn( FB_WARNINGMSG_IMPLICITCONVERSION )
-							end if
-						end if
-
-					case FB_DATATYPE_ULONG
-						if( FB_LONGSIZE = len( integer ) ) then
-							goto chk_uint
-						else
-							goto chk_ulong
-						end if
-
-					case else
-						if( -astGetValueAsLongint( o ) < ast_minlimitTB(typeGet( o->dtype )) ) then
-							errReportWarn( FB_WARNINGMSG_IMPLICITCONVERSION )
-						end if
-					end select
-
-					dtype = typeToSigned( dtype )
+				'' Highest bit set? (meaning the negation cannot be represented,
+				'' since the highest bit will be overwritten with the sign bit)
+				if( astConstGetUint( o ) > (1ull shl (typeGetBits( dtype ) - 1)) ) then
+					errReportWarn( FB_WARNINGMSG_IMPLICITCONVERSION )
 				end if
+
+				dtype = typeToSigned( dtype )
 			end if
 		end if
 
-		select case as const astGetDataType( o )
-		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-		    hUOPConstFold64( op, o )
-
-		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-			hUOPConstFoldFlt( op, o )
-
-		case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
-			if( FB_LONGSIZE = len( integer ) ) then
-				hUOPConstFoldInt( op, o )
-			else
-				hUOPConstFold64( op, o )
-			end if
-
-		case else
-			'' byte's, short's, int's and enum's
-			hUOPConstFoldInt( op, o )
-		end select
+		o = hConstUop( op, dtype, subtype, o )
 
 		o->dtype = dtype
 		return o

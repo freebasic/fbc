@@ -32,9 +32,10 @@ static char *find_next ( int *out_attrib )
 FBCALL FBSTRING *fb_Dir( FBSTRING *filespec, int attrib, int *out_attrib )
 {
 	FBSTRING  *res;
-	int       len, out_attrib_fake;
+	int        out_attrib_fake;
 	char      *name = NULL;
 	FB_DIRCTX *ctx = FB_TLSGETCTX( DIR );
+	ssize_t    len;
 
 	if( !out_attrib )
 		out_attrib = &out_attrib_fake;
