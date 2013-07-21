@@ -333,3 +333,18 @@ o classes
 	- dynamic_cast<toType>(ptr) is converted to: ptr = (ptr != NULL? __dynamic_cast(void *ptr, RTTI *fromType, RTTI *toType, void *nullPtr): NULL);
 
   - exceptions - with stack unwind support?
+
+- FBSYMCHAINs are currently allocated from a fixed-size pool. If used up, it
+  wraps around and starts re-using nodes. This is dangerous because it could
+  overwrite nodes that are still in use.
+    - A huge CHAINPOOL_SIZE value should prevent any issues in practice
+    - But still the compiler should have a way to detect the overflow and report
+      an error, instead of running into "random" bugs
+    - Refcounting seems impossible though, because for that we'd have to unref
+      FBSYMCHAINs at proper places in lexer/parser/..., but symbLookup() can
+      return FBSYMCHAINs from imported namespaces that weren't allocated from
+      the chainpool, and even worse FBSYMCHAINs have references to each-other
+      through next/prev links...
+    - To really fix this, FBSYMCHAINs should be unique nodes allocated from a
+      dynamic list, and have clear ownership/lifetime, perhaps wrapped in some
+      kind of parent object

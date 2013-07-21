@@ -12,6 +12,7 @@ Version 0.91.0:
 - Improved multiplication/division/modulus to bitwise shift/and optimizations to handle operations with 64bit and unsigned right hand operand better
 - Updated header for libzip 0.11.1
 - Indexing/member dereferencing operators ([], ->) can now be applied to VARPTR/PROCPTR/STRPTR/SADD() expressions (for example: print strptr(s)[1]), instead of requiring the address expression to be wrapped in parentheses first.
+- FLT_MAX and DBL_MAX to crt/limits.bi
 
 [fixed]
 - dlltool syntax error when building a DLL without any EXPORTs
@@ -27,6 +28,14 @@ Version 0.91.0:
 - #677: Casts changing only signedness on the rhs of a +,-,*,/ floating point operation could be ignored
 - Using #undef (or Option NoKeyWord) on symbols which are already in use somewhere won't cause internal compiler errors anymore: The compiler will now simply forget the symbol's identifier, so it cannot be used from input code anymore, instead of fully deleting the symbol and possibly corrupting the compiler's internal data structures.
 - #671: Arguments weren't always converted to the parameters' data type, causing gcc pointer mismatch warnings under -gen gcc
+- #670: Functions returning a Byref result weren't allowed to return references to elements from array parameters
+- Mid() statement didn't allow some string expressions as destination, such as <Mid( *StrPtr( s ), ... ) = ...>
+- The UINT_MAX from crt/limits.bi was an INTEGER instead of UINTEGER
+- #defines with invalid or missing identifiers were ignored instead of causing a compiler error
+- #686: Statements with lots of identifier/keyword tokens (such as procedure pointer variable declarations with 10 parameters) could cause unexpected compiler behaviour, e.g. compiler errors even though the code was good.
+- The compiler allowed integer arguments to be passed to BYREF AS Z/WSTRING parameters, treating them as pointers
+- #603: Optional parameters for which no arguments were given could break overload resolution. Now, overload resolution will only search for matching overloads based on the given arguments.
+- Overload resolution if no arguments were given will no longer prefer a parameter-less overload over one with only optional parameters. This is now an ambigious call error, as in C++, for consistency with overload resolution with one argument given between two overloads, both with the same first parameter, and one having a second optional parameter.
 
 
 Version 0.90.1:

@@ -9,14 +9,8 @@
 #include once "rtl.bi"
 #include once "ast.bi"
 
-'':::::
-''MidStmt   	  =   MID '(' Expression{str}, Expression{int} (',' Expression{int}) ')' '=' Expression{str} .
-''
-function cMidStmt _
-	( _
-		_
-	) as integer
-
+'' MidStmt  =  MID '(' Expression{str}, Expression{int} (',' Expression{int}) ')' '=' Expression{str} .
+function cMidStmt( ) as integer
 	dim as ASTNODE ptr expr1 = any, expr2 = any, expr3 = any, expr4 = any
 
 	function = FALSE
@@ -24,47 +18,41 @@ function cMidStmt _
 	'' MID
 	lexSkipToken( )
 
+	'' '('
 	hMatchLPRNT()
 
+	'' Expression{str}
 	hMatchExpressionEx( expr1, FB_DATATYPE_STRING )
-
-	dim as FBSYMBOL ptr sym = astGetSymbol( expr1 )
-	if( sym = NULL ) then
-		'' deref... 
-		select case as const astGetClass( expr1 )
-		case AST_NODECLASS_DEREF
-			sym = iif( astGetLeft( expr1 ), astGetSymbol( astGetLeft( expr1 ) ), NULL )
-		end select
+	if( astIsConstant( expr1 ) ) then
+		errReport( FB_ERRMSG_CONSTANTCANTBECHANGED, TRUE )
 	end if
 
-	if( sym = NULL ) then
-		errReport( FB_ERRMSG_EXPECTEDIDENTIFIER, TRUE )
-	else
-		if( symbIsConstant( sym ) or typeIsConst( astGetFullType( expr1 ) ) ) then
-			errReport( FB_ERRMSG_CONSTANTCANTBECHANGED, TRUE )
-	 	end if
-	end if
-
+	'' ','
 	hMatchCOMMA( )
 
+	'' Expression{int}
 	hMatchExpressionEx( expr2, FB_DATATYPE_INTEGER )
 
+	'' ','?
 	if( hMatch( CHAR_COMMA ) ) then
+		'' Expression{int}
 		hMatchExpressionEx( expr3, FB_DATATYPE_INTEGER )
 	else
 		expr3 = astNewCONSTi( -1 )
 	end if
 
+	'' ')'
 	hMatchRPRNT( )
 
+	'' '='
 	if( cAssignToken( ) = FALSE ) then
 		errReport( FB_ERRMSG_EXPECTEDEQ )
 	end if
 
+	'' Expression{str}
 	hMatchExpressionEx( expr4, FB_DATATYPE_STRING )
 
 	function = rtlStrAssignMid( expr1, expr2, expr3, expr4 ) <> NULL
-
 end function
 
 #define CREATEFAKEID() _

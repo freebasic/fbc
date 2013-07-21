@@ -842,7 +842,6 @@ private function hCheckParam _
 				errReport( FB_ERRMSG_PARAMTYPEMISMATCHAT )
 				exit function
 			end if
-
 			return TRUE
 		end if
 
@@ -888,6 +887,22 @@ private function hCheckParam _
     '' string param?
     case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR
 		return hCheckStrParam( parent, param, n )
+
+	'' z/wstring param?
+	case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
+		assert( symbGetParamMode( param ) = FB_PARAMMODE_BYREF )
+
+		'' arg must be a string too (for z/wstring: it doesn't matter
+		'' whether it's a DEREF or not, since DEREF can be handled as
+		'' string just fine)
+		select case( arg_dtype )
+		case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, _
+		     FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
+			'' Rest will be handled below
+		case else
+			errReport( FB_ERRMSG_PARAMTYPEMISMATCHAT )
+			exit function
+		end select
 
 	'' UDT param? check if the same, can't convert
 	case FB_DATATYPE_STRUCT

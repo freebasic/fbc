@@ -233,10 +233,15 @@ private function hParamDecl _
 				lexSkipToken( )
 			end if
 
-			'' not cdecl or is it the first arg?
-			if( (proc_mode <> FB_FUNCMODE_CDECL) or _
-				(symbGetProcParams( proc ) = 0) ) then
-				hParamError( proc, "..." )
+			'' is it the first arg?
+			if( symbGetProcParams( proc ) = 0 ) then
+				hParamError( proc, "...", FB_ERRNUM_VARARGNOTALLOWEDASFIRSTPARAM )
+				return hMockParam( proc, FB_PARAMMODE_VARARG )
+			end if
+
+			'' not cdecl?
+			if( proc_mode <> FB_FUNCMODE_CDECL ) then
+				hParamError( proc, "...", FB_ERRNUM_VARARGONLYALLOWEDINCDECL )
 				return hMockParam( proc, FB_PARAMMODE_VARARG )
 			end if
 

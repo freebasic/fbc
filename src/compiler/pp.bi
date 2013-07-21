@@ -54,10 +54,7 @@ declare sub ppDefineEnd _
 	( _
 	)
 
-declare function ppDefine _
-	( _
-		byval ismultiline as integer _
-	) as integer
+declare sub ppDefine( byval ismultiline as integer )
 
 declare function ppDefineLoad _
 	( _

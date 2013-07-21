@@ -776,7 +776,7 @@ declare function cWriteStmt() as integer
 declare function cErrorStmt() as integer
 declare function cErrSetStmt() as integer
 declare function cViewStmt(byval is_func as integer) as ASTNODE ptr
-declare function cMidStmt() as integer
+declare function cMidStmt( ) as integer
 declare function cLRSetStmt(byval tk as FB_TOKEN) as integer
 declare function cWidthStmt(byval isfunc as integer) as ASTNODE ptr
 declare function cColorStmt(byval isfunc as integer) as ASTNODE ptr
