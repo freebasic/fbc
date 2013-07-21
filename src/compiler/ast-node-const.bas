@@ -273,7 +273,12 @@ function astConvertRawCONSTi _
 			FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT )
 	l->subtype = NULL
 
+	var old_warn_convoverflow = ast.warn_convoverflow
+	ast.warn_convoverflow = FALSE
+
 	l = astNewCONV( dtype, subtype, l, AST_CONVOPT_DONTCHKPTR )
+
+	ast.warn_convoverflow = old_warn_convoverflow
 
 	function = l
 end function
