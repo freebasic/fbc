@@ -433,8 +433,6 @@ sub astCheckConst _
 	result = TRUE
 
 	''
-	'' x86/32-bit assumptions
-	''
 	'' We don't want to show overflow warnings for conversions where only
 	'' the sign differs, such as integer <-> uinteger, because in that case
 	'' there is no data/precision loss. Technically speaking there can be
