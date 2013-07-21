@@ -1873,6 +1873,9 @@ end function
 function astOptimizeTree( byval n as ASTNODE ptr ) as ASTNODE ptr
 	'' The order of calls below matters!
 
+	var old_warn_convoverflow = ast.warn_convoverflow
+	ast.warn_convoverflow = FALSE
+
 	'' Optimize nested field accesses
 	n = hMergeNestedFIELDs( n )
 
@@ -1910,6 +1913,8 @@ function astOptimizeTree( byval n as ASTNODE ptr ) as ASTNODE ptr
 			n = hOptReciprocal( n )
 		end if
 	end if
+
+	ast.warn_convoverflow = old_warn_convoverflow
 
 	function = n
 end function

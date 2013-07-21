@@ -372,6 +372,13 @@ type ASTCTX
 	flushdtorlist	as integer
 
 	asmtoklist		as TLIST  '' inline ASM token nodes
+
+	'' Whether astCheckConst() (called from astNewCONV() called from astNewBOP() etc.)
+	'' should show warnings or not, allowing them to be disabled during optimizations,
+	'' because there overflows (wrap-arounds) can happen due to constant accumulation etc.,
+	'' and the user may not be able to see what the reason for the warning is.
+	'' The warning should only be shown for the user's code, not internals.
+	warn_convoverflow	as integer
 end Type
 
 #include once "ir.bi"
