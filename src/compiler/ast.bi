@@ -624,6 +624,12 @@ declare function astConstFlushToWstr( byval n as ASTNODE ptr ) as wstring ptr
 declare function astConstGetAsInt64( byval n as ASTNODE ptr ) as longint
 declare function astConstGetAsDouble( byval n as ASTNODE ptr ) as double
 declare function astBuildConst( byval sym as FBSYMBOL ptr ) as ASTNODE ptr
+declare function astConvertRawCONSTi _
+	( _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr, _
+		byval l as ASTNODE ptr _
+	) as ASTNODE ptr
 
 declare function astNewVAR _
 	( _

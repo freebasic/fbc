@@ -244,3 +244,36 @@ function astBuildConst( byval sym as FBSYMBOL ptr ) as ASTNODE ptr
 		function = astNewCONST( symbGetConstVal( sym ), dtype, subtype )
 	end select
 end function
+
+function astConvertRawCONSTi _
+	( _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr, _
+		byval l as ASTNODE ptr _
+	) as ASTNODE ptr
+
+	assert( typeGetClass( l->dtype ) = FB_DATACLASS_INTEGER )
+
+	'' Pretend the CONST is a 64bit value for a moment, then do a CONV to
+	'' the destination type. This is useful for code that stores values into
+	'' the 64bit ASTNODE.val.i field directly and wants to convert it to
+	'' a certain type, possibly with truncation.
+	''
+	'' The reason for having this is that the compiler now uses 64bit
+	'' LONGINTs for all the internal constant evaluation etc. If someone
+	'' was compiling something like "&hFFFFFFFFu + &hFFFFFFFFu", the 64bit
+	'' value temporarily stored would be &h1FFFFFFFE which is too big to
+	'' fit in 32bit. If compiling that for 32bit, the stored value must be
+	'' converted from 64bit LONGINT to some 32bit type (INTEGER/LONG) in
+	'' order to be truncated. This is done here with the help of
+	'' astNewCONV(). When compiling for 64bit, it would be converted from
+	'' 64bit LONGINT to 64bit INTEGER, thus stay the same.
+
+	l->dtype = iif( typeIsSigned( l->dtype ), _
+			FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT )
+	l->subtype = NULL
+
+	l = astNewCONV( dtype, subtype, l, AST_CONVOPT_DONTCHKPTR )
+
+	function = l
+end function

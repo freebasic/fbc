@@ -323,16 +323,7 @@ private function hConstBop _
 			assert( FALSE )
 		end select
 
-		'' Pretend the CONST is a 64bit value for a moment, since the
-		'' result was calculated and stored at 64bit precision above,
-		'' then do a CONV back to the original type and let it show any
-		'' overflow warnings in case the real type cannot hold the
-		'' calculated value.
-		l->dtype = FB_DATATYPE_LONGINT
-		l->subtype = NULL
-
-		l = astNewCONV( dtype, subtype, l, AST_CONVOPT_DONTCHKPTR )
-
+		l = astConvertRawCONSTi( dtype, subtype, l )
 	else
 		select case as const( op )
 		case AST_OP_ADD : l->val.i = cunsg( l->val.i ) +   cunsg( r->val.i )
@@ -371,12 +362,7 @@ private function hConstBop _
 			assert( FALSE )
 		end select
 
-		'' (ditto)
-		l->dtype = FB_DATATYPE_ULONGINT
-		l->subtype = NULL
-
-		l = astNewCONV( dtype, subtype, l, AST_CONVOPT_DONTCHKPTR )
-
+		l = astConvertRawCONSTi( dtype, subtype, l )
 	end if
 
 	function = l

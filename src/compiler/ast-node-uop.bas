@@ -66,14 +66,7 @@ private function hConstUop _
 			assert( FALSE )
 		end select
 
-		'' Pretend the CONST is an integer for a moment, since the result was
-		'' calculated and stored at INTEGER precision above, then do a CONV
-		'' back to the original type and let it show any overflow warnings in
-		'' case the real type cannot hold the calculated value.
-		l->dtype = FB_DATATYPE_INTEGER
-		l->subtype = NULL
-
-		l = astNewCONV( dtype, subtype, l )
+		l = astConvertRawCONSTi( dtype, subtype, l )
 	end if
 
 	function = l
