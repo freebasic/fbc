@@ -1170,7 +1170,7 @@ function cProcHeader _
 
 	case FB_TK_OPERATOR
 		'' Operator (instead of an ID)
-		op = cOperator( )
+		op = cOperator( TRUE )
 		select case( op )
 		case INVALID, _
 		     AST_OP_ANDALSO, AST_OP_ANDALSO_SELF, _

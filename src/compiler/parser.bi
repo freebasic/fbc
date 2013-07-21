@@ -197,18 +197,6 @@ enum FB_SYMBTYPEOPT
 	FB_SYMBTYPEOPT_DEFAULT		= FB_SYMBTYPEOPT_CHECKSTRPTR
 end enum
 
-'' cOperator flags
-enum FB_OPEROPTS
-	FB_OPEROPTS_NONE			= &h00000000
-
-	FB_OPEROPTS_UNARY			= &h00000001
-	FB_OPEROPTS_SELF			= &h00000002
-	FB_OPEROPTS_ASSIGN			= &h00000004
-	FB_OPEROPTS_RELATIVE		= &h00000008
-
-	FB_OPEROPTS_DEFAULT			= &hffffffff
-end enum
-
 '' cIdentifier flags
 enum FB_IDOPT
 	FB_IDOPT_NONE				= &h00000000
@@ -445,10 +433,7 @@ declare function cAssignmentOrPtrCallEx _
 declare function hIsAssignToken( ) as integer
 declare function cAssignToken( ) as integer
 
-declare function cOperator _
-	( _
-		byval options as FB_OPEROPTS = FB_OPEROPTS_DEFAULT _
-	) as integer
+declare function cOperator( byval is_overload as integer ) as integer
 
 declare function cExpression _
 	( _
