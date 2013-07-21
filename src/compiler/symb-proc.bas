@@ -1534,6 +1534,8 @@ private function hCalcTypesDiff _
 
 	dim as integer arg_dclass = any
 
+	function = 0
+
     '' don't take the const qualifier into account
     param_dtype = typeGetDtAndPtrOnly( param_dtype )
     arg_dtype = typeGetDtAndPtrOnly( arg_dtype )
@@ -1549,28 +1551,69 @@ private function hCalcTypesDiff _
 		'' another integer..
 		case FB_DATACLASS_INTEGER
 
-			'' handle special cases..
-			select case as const arg_dtype
+			'' z/wstring param:
+			'' - allow any z/wstring arg, doesn't matter whether
+			''   it's a DEREF or not (it can all be treated as string)
+			'' - disallow other args (passing BYVAL explicitly
+			''   should be handled by caller already)
+			select case( param_dtype )
 			case FB_DATATYPE_CHAR
-				select case param_dtype
-				case typeAddrOf( FB_DATATYPE_CHAR ), FB_DATATYPE_CHAR
+				select case( arg_dtype )
+				case FB_DATATYPE_CHAR
 					return FB_OVLPROC_FULLMATCH
-				case typeAddrOf( FB_DATATYPE_WCHAR ), FB_DATATYPE_WCHAR
+				case FB_DATATYPE_WCHAR
 					return FB_OVLPROC_HALFMATCH
 				end select
-
+				return 0
 			case FB_DATATYPE_WCHAR
-				select case param_dtype
-				case typeAddrOf( FB_DATATYPE_WCHAR ), FB_DATATYPE_WCHAR
+				select case( arg_dtype )
+				case FB_DATATYPE_CHAR
+					return FB_OVLPROC_HALFMATCH
+				case FB_DATATYPE_WCHAR
 					return FB_OVLPROC_FULLMATCH
-				case typeAddrOf( FB_DATATYPE_CHAR ), FB_DATATYPE_CHAR
+				end select
+				return 0
+
+			'' z/wstring ptr params:
+			'' - allow z/wstring or z/wstring ptr args, corresponding
+			''   to hStrArgToStrPtrParam(), explicitly here
+			'' - leave rest to pointer checks below
+			case typeAddrOf( FB_DATATYPE_CHAR )
+				select case( arg_dtype )
+				case FB_DATATYPE_CHAR
+					return FB_OVLPROC_FULLMATCH
+				case FB_DATATYPE_WCHAR
 					return FB_OVLPROC_HALFMATCH
 				end select
+			case typeAddrOf( FB_DATATYPE_WCHAR )
+				select case( arg_dtype )
+				case FB_DATATYPE_CHAR
+					return FB_OVLPROC_HALFMATCH
+				case FB_DATATYPE_WCHAR
+					return FB_OVLPROC_FULLMATCH
+				end select
 
+			'' Any other non-z/wstring param from FB_DATACLASS_INTEGER:
+			'' - Only allow z/wstring arg if it's a DEREF that can
+			''   be treated as integer
+			case else
+				select case( arg_dtype )
+				case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
+					if( arg_expr = NULL ) then
+						return 0
+					end if
+
+					if( astIsDEREF( arg_expr ) = FALSE ) then
+						return 0
+					end if
+				end select
+			end select
+
+			'' Remap bitfields/enums
+			select case( arg_dtype )
 			case FB_DATATYPE_BITFIELD, FB_DATATYPE_ENUM
 				'' enum args can be passed to integer params (as in C++)
 				arg_dtype = typeRemap( arg_dtype, arg_subtype )
-
 			end select
 
 			'' check pointers..
@@ -1639,20 +1682,17 @@ private function hCalcTypesDiff _
 
 			return FB_OVLPROC_HALFMATCH - symb_dtypeMatchTB( typeGet( arg_dtype ), typeGet( param_dtype ) )
 
-		'' string? only if it's a w|zstring ptr arg
+		'' string arg to integer param? only if the param is a w|zstring
+		'' (treated as strings) or w|zstring ptr (auto string to ptr conversion,
+		'' corresponding to hStrArgToStrPtrParam())
 		case FB_DATACLASS_STRING
 			select case param_dtype
-			case typeAddrOf( FB_DATATYPE_CHAR )
+			case FB_DATATYPE_CHAR, typeAddrOf( FB_DATATYPE_CHAR )
 				return FB_OVLPROC_FULLMATCH
-			case typeAddrOf( FB_DATATYPE_WCHAR )
+			case FB_DATATYPE_WCHAR, typeAddrOf( FB_DATATYPE_WCHAR )
 				return FB_OVLPROC_HALFMATCH
-			case else
-				return 0
 			end select
 
-		'' refuse anything else
-		case else
-			return 0
 		end select
 
 	'' floating-point?
@@ -1678,10 +1718,6 @@ private function hCalcTypesDiff _
 		case FB_DATACLASS_FPOINT
 			return FB_OVLPROC_HALFMATCH - symb_dtypeMatchTB( typeGet( arg_dtype ), typeGet( param_dtype ) )
 
-		'' refuse anything else
-		case else
-			return 0
-
 		end select
 
 	'' string?
@@ -1690,27 +1726,19 @@ private function hCalcTypesDiff _
 		select case arg_dclass
 		'' okay if it's a fixed-len string
 		case FB_DATACLASS_STRING
-			return FB_OVLPROC_FULLMATCH
+			function = FB_OVLPROC_FULLMATCH
 
-		'' integer only if it's a w|zstring
+		'' integer if it's a z/wstring (no matter whether a
+		'' variable/literal or DEREF, it can all be treated as string)
 		case FB_DATACLASS_INTEGER
 			select case arg_dtype
 			case FB_DATATYPE_CHAR
-				return FB_OVLPROC_FULLMATCH
+				function = FB_OVLPROC_FULLMATCH
 			case FB_DATATYPE_WCHAR
-				return FB_OVLPROC_HALFMATCH
-			case else
-				return 0
+				function = FB_OVLPROC_HALFMATCH
 			end select
 
-		'' refuse anything else
-		case else
-			return 0
 		end select
-
-	'' anything else, this function is only used when nothing matches
-	case else
-		return 0
 
 	end select
 
