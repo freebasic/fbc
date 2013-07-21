@@ -28,6 +28,7 @@ Version 0.91.0:
 - The UINT_MAX from crt/limits.bi was an INTEGER instead of UINTEGER
 - #defines with invalid or missing identifiers were ignored instead of causing a compiler error
 - #686: Statements with lots of identifier/keyword tokens (such as procedure pointer variable declarations with 10 parameters) could cause unexpected compiler behaviour, e.g. compiler errors even though the code was good.
+- The compiler allowed integer arguments to be passed to BYREF AS Z/WSTRING parameters, treating them as pointers
 
 
 Version 0.90.1:
