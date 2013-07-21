@@ -933,3 +933,61 @@ sub astDumpList _
 	loop
 
 end sub
+
+#if __FB_DEBUG__
+function astDumpInline( byval n as ASTNODE ptr ) as string
+	static reclevel as integer
+
+	reclevel += 1
+
+	dim s as string
+	if( n = NULL ) then
+		s = "<NULL>"
+	else
+		s += hAstNodeClassToStr( n->class )
+		's += typeDump( n->dtype, n->subtype )
+
+		var have_data = (n->sym <> NULL) or (n->l <> NULL) or (n->r <> NULL)
+		select case as const( n->class )
+		case AST_NODECLASS_BOP, AST_NODECLASS_UOP, AST_NODECLASS_CONST
+			have_data or= TRUE
+		end select
+
+		if( have_data ) then
+			s += "( "
+		end if
+
+		select case as const( n->class )
+		case AST_NODECLASS_BOP, AST_NODECLASS_UOP
+			s += astDumpOp( n->op.op ) + ", "
+		case AST_NODECLASS_CONST
+			if( typeGetClass( n->dtype ) = FB_DATACLASS_FPOINT ) then
+				s += str( astConstGetFloat( n ) ) + ", "
+			else
+				s += str( astConstGetInt( n ) ) + ", "
+			end if
+		end select
+
+		if( n->sym ) then
+			s += *symbGetName( n->sym ) + ", "
+		end if
+		if( n->l ) then
+			s += astDumpInline( n->l ) + ", "
+		end if
+		if( n->r ) then
+			s += astDumpInline( n->r ) + ", "
+		end if
+
+		if( have_data ) then
+			if( right( s, 2 ) = ", " ) then
+				s = left( s, len( s ) - 2 )
+			end if
+			s += " )"
+		end if
+	end if
+
+	reclevel -= 1
+
+	function = s
+end function
+#endif

@@ -1444,4 +1444,8 @@ declare sub astDumpList _
 		byval col as integer = 0 _
 	)
 
+#if __FB_DEBUG__
+declare function astDumpInline( byval n as ASTNODE ptr ) as string
+#endif
+
 #endif '' __AST_BI__
