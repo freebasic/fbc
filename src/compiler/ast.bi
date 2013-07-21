@@ -1430,6 +1430,8 @@ extern ast_minlimitTB( FB_DATATYPE_BYTE to FB_DATATYPE_ULONGINT ) as longint
 
 extern ast_opTB( 0 to AST_OPCODES-1 ) as AST_OPINFO
 
+declare function astDumpOp( byval op as AST_OP ) as string
+
 declare sub astDumpTree _
 	( _
 		byval n as ASTNODE ptr, _

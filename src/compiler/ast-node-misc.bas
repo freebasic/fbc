@@ -773,18 +773,11 @@ dim shared dbg_astNodeOpNames( 0 to AST_OPCODES - 1 ) as NameInfo = _
 	( /' @"AST_OP_TOUNSIGNED"      , '/ @"TOUNSIGNED"   /' , 0 '/ ) _
 }
 
-'':::::
-private function hAstNodeOpToStr _
-	( _
-		byval op as AST_OP _
-	) as string
-
+function astDumpOp( byval op as AST_OP ) as string
 	if(( op > AST_OPCODES - 1 ) or ( op < 0 )) then
 		return "OP:" + str(op)
 	end if
-
 	return *dbg_astNodeOpNames( op ).name
-
 end function
 
 '':::::
@@ -824,10 +817,10 @@ private function hAstNodeToStr _
 
 	select case as const n->class
 	case AST_NODECLASS_BOP
-		return hAstNodeOpToStr( n->op.op ) & " =-= " & hSymbToStr( n->op.ex )
+		return astDumpOp( n->op.op ) & " =-= " & hSymbToStr( n->op.ex )
 
 	case AST_NODECLASS_UOP
-		return hAstNodeOpToStr( n->op.op )
+		return astDumpOp( n->op.op )
 
 	case AST_NODECLASS_CONST
 		select case as const astGetDataType( n )
@@ -858,7 +851,7 @@ private function hAstNodeToStr _
 		return "LABEL: " & hSymbToStr( n->sym )
 
 	case AST_NODECLASS_BRANCH
-		return "BRANCH: " & hAstNodeOpToStr( n->op.op ) & " " & hSymbToStr( n->op.ex )
+		return "BRANCH: " & astDumpOp( n->op.op ) & " " & hSymbToStr( n->op.ex )
 
 	case AST_NODECLASS_SCOPEBEGIN
 		return "SCOPEBEGIN: " & hSymbToStr( n->sym )
