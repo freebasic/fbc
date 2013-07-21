@@ -112,9 +112,6 @@ o -exx should catch...
 
 o BYREF function results
   - hPatchByvalResultToSelf() should probably check symbProcReturnsByref() now
-  - "f( 1 ) = 2" will be parsed as "f( (1) = 2 )", could parse BYREF proc params
-    differently, e.g. with cEqInParensOnlyExpr(), or just always require ()'s
-    to call BYREF procs?
 
 [ ] quirks:
     [ ] OPEN ... FOR is not checking for mode
