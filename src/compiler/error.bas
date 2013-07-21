@@ -374,7 +374,9 @@ declare function hMakeParamDesc _
 		@"#ASSERT condition failed", _
 		@"Expected '>'", _
 		@"Invalid size", _
-		@"ALIAS name here is different from ALIAS given in DECLARE prototype" _
+		@"ALIAS name here is different from ALIAS given in DECLARE prototype", _
+		@"vararg parameters are only allowed in CDECL procedures", _
+		@"the first parameter in a procedure may not be vararg" _
 	}
 
 
