@@ -29,6 +29,7 @@ Version 0.91.0:
 - #defines with invalid or missing identifiers were ignored instead of causing a compiler error
 - #686: Statements with lots of identifier/keyword tokens (such as procedure pointer variable declarations with 10 parameters) could cause unexpected compiler behaviour, e.g. compiler errors even though the code was good.
 - The compiler allowed integer arguments to be passed to BYREF AS Z/WSTRING parameters, treating them as pointers
+- #603: Optional parameters for which no arguments were given could break overload resolution. Now, overload resolution will only search for matching overloads based on the given arguments.
 
 
 Version 0.90.1:

@@ -1920,8 +1920,9 @@ function symbFindClosestOvlProc _
 	) as FBSYMBOL ptr
 
 	dim as FBSYMBOL ptr ovl = any, closest_proc = any, param = any
-	dim as integer i = any, arg_matches = any, matches = any
-	dim as integer max_matches = any, amb_cnt = any, exact_matches = any
+	dim as integer arg_matches = any, matches = any
+	dim as integer max_matches = any, exact_matches = any
+	dim as integer matchcount = any
 	dim as integer constonly_diff = any
 	dim as FB_CALL_ARG ptr arg = any
 
@@ -1933,7 +1934,7 @@ function symbFindClosestOvlProc _
 
 	closest_proc = NULL
 	max_matches = 0
-	amb_cnt = 0
+	matchcount = 0  '' number of matching procedures found
 
 	dim as integer is_property = symbIsProperty( ovl_head_proc )
 
@@ -1962,6 +1963,7 @@ function symbFindClosestOvlProc _
 			end if
 		end if
 
+		'' Only consider overloads with enough params
 		if( args <= params ) then
 			'' arg-less? exit..
 			if( params = 0 ) then
@@ -1978,8 +1980,7 @@ function symbFindClosestOvlProc _
 
 			'' for each arg..
 			arg = arg_head
-			for i = 0 to args-1
-
+			for i as integer = 0 to args-1
 				arg_matches = hCheckOvlParam( ovl, param, arg->expr, arg->mode, constonly_diff )
 				if( arg_matches = 0 ) then
 					matches = 0
@@ -2000,53 +2001,48 @@ function symbFindClosestOvlProc _
 				arg = arg->next
 			next
 
-			'' fewer params? check if the ones missing are optional
-			dim as integer total_args = args
-			if( args < params ) then
-				if( (matches > 0) or (args = 0) ) then
-					do while( param <> NULL )
-			    		'' not optional? exit
-			    		if( symbGetIsOptional( param ) = FALSE ) then
-			    			matches = 0
-			    			exit do
-			    		else
-			    			matches += FB_OVLPROC_FULLMATCH
-			    		end if
-						total_args += 1
-						'' next param
-						param = param->next
-					loop
+			'' If there were no args, then assume it's a match and
+			'' then check the remaining params, if any.
+			var is_match = iif( args = 0, TRUE, matches > 0 )
+
+			'' Fewer args than params? Check whether the missing ones are optional.
+			for i as integer = args to params-1
+				'' not optional? exit
+				if( symbGetIsOptional( param ) = FALSE ) then
+					'' Missing arg for this param - not a match afterall.
+					is_match = FALSE
+					exit for
 				end if
-			end if
-			matches /= total_args
 
-		    '' closer?
-		    if( matches > max_matches ) then
+				'' next param
+				param = param->next
+			next
 
-				dim as integer eligible = TRUE
+			if( is_match ) then
+				'' First match, or better match than any previous overload?
+				if( (matchcount = 0) or (matches > max_matches) ) then
+					dim as integer eligible = TRUE
 
-				'' an operator overload candidate is only eligible if
-				'' there is at least one exact arg match
-				if( options and FB_SYMBLOOKUPOPT_BOP_OVL ) then
-					if( exact_matches = 0 and constonly_diff = FALSE ) then
-						eligible = FALSE
+					'' an operator overload candidate is only eligible if
+					'' there is at least one exact arg match
+					if( options and FB_SYMBLOOKUPOPT_BOP_OVL ) then
+						if( exact_matches = 0 and constonly_diff = FALSE ) then
+							eligible = FALSE
+						end if
 					end if
-				end if
 
-				'' it's eligible, update
-				if( eligible ) then
-				   	closest_proc = ovl
-				   	max_matches = matches
-				   	amb_cnt = 0
-				end if
+					'' it's eligible, update
+					if( eligible ) then
+						closest_proc = ovl
+						max_matches = matches
+						matchcount = 1
+					end if
 
-			'' same? ambiguity..
-			elseif( matches = max_matches ) then
-				if( max_matches > 0 ) then
-					amb_cnt += 1
+				'' Same score than best previous overload?
+				elseif( matches = max_matches ) then
+					matchcount += 1
 				end if
 			end if
-
 		end if
 
 		'' next overloaded proc
@@ -2054,7 +2050,7 @@ function symbFindClosestOvlProc _
 	loop while( ovl <> NULL )
 
 	'' more than one possibility?
-	if( amb_cnt > 0 ) then
+	if( matchcount > 1 ) then
 		*err_num = FB_ERRMSG_AMBIGUOUSCALLTOPROC
 		function = NULL
 	else
@@ -2357,12 +2353,12 @@ function symbFindCastOvlProc _
    	end if
 
 	dim as FBSYMBOL ptr p = any, proc = any, closest_proc = any
-	dim as integer matches = any, max_matches = any, amb_cnt = any
+	dim as integer matches = any, max_matches = any, matchcount = any
 
 	'' must check the return type, not the parameter..
 	closest_proc = NULL
 	max_matches = 0
-	amb_cnt = 0
+	matchcount = 0
 
 	if( typeGet( to_dtype ) <> FB_DATATYPE_VOID ) then
 		'' for each overloaded proc..
@@ -2373,12 +2369,12 @@ function symbFindCastOvlProc _
 			if( matches > max_matches ) then
 		   		closest_proc = proc
 		   		max_matches = matches
-		   		amb_cnt = 0
+				matchcount = 1
 
 			'' same? ambiguity..
 			elseif( matches = max_matches ) then
 				if( max_matches > 0 ) then
-					amb_cnt += 1
+					matchcount += 1
 				end if
 			end if
 
@@ -2410,11 +2406,10 @@ function symbFindCastOvlProc _
 	end if
 
 	'' more than one possibility?
-	if( amb_cnt > 0 ) then
+	if( matchcount > 1 ) then
 		*err_num = FB_ERRMSG_AMBIGUOUSCALLTOPROC
 		errReportParam( proc_head, 0, NULL, FB_ERRMSG_AMBIGUOUSCALLTOPROC )
 		closest_proc = NULL
-
 	else
 		if( closest_proc <> NULL ) then
 			'' check visibility
