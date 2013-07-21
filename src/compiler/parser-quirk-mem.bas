@@ -98,7 +98,7 @@ function cOperatorNew( ) as ASTNODE ptr
 
 			'' '}'
 			if( lexGetToken( ) <> CHAR_RBRACE ) then
-				errReport( FB_ERRMSG_EXPECTEDRBRACKET )
+				errReport( FB_ERRMSG_EXPECTEDRBRACE )
 				'' error recovery: skip until next '}'
 				hSkipUntil( CHAR_RBRACE, TRUE )
 			else

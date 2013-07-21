@@ -146,6 +146,7 @@ declare function hMakeParamDesc _
 		@"Expected array", _
 		@"Expected '{'", _
 		@"Expected '}'", _
+		@"Expected ']'", _
 		@"Too many expressions", _
 		@"Expected explicit result type", _
 		@"Range too large", _

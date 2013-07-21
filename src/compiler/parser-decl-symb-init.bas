@@ -200,7 +200,7 @@ private function hArrayInit _
 	else
 		'' not the last dimension?
 		if( ctx.dimcnt < dimensions ) then
-			errReport( FB_ERRMSG_EXPECTEDLBRACKET )
+			errReport( FB_ERRMSG_EXPECTEDLBRACE )
 			ctx.dimcnt += 1
 			if( ctx.dim_ = NULL ) then
 				ctx.dim_ = symbGetArrayFirstDim( ctx.sym )
@@ -337,7 +337,7 @@ private function hArrayInit _
 
 		'' '}'
 		if( lexGetToken( ) <> CHAR_RBRACE ) then
-			errReport( FB_ERRMSG_EXPECTEDRBRACKET )
+			errReport( FB_ERRMSG_EXPECTEDRBRACE )
 			'' error recovery: skip until next '}'
 			hSkipUntil( CHAR_RBRACE, TRUE )
 		else
