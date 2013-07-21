@@ -27,7 +27,7 @@ declare function WCharToUTF alias "fb_WCharToUTF" _
 		byval bytes as integer ptr _
 	) as any ptr
 
-declare function UTFToChar alias "fb_UTFToChar"
+declare function UTFToChar alias "fb_UTFToChar" _
 	( _
 		byval encod as long, _ '' UTF_ENCOD
 		byval src as any ptr, _
@@ -35,7 +35,7 @@ declare function UTFToChar alias "fb_UTFToChar"
 		byval chars as integer ptr _
 	) as zstring ptr
 
-declare function UTFToWChar alias "fb_UTFToWChar"
+declare function UTFToWChar alias "fb_UTFToWChar" _
 	( _
 		byval encod as long, _ '' UTF_ENCOD
 		byval src as any ptr, _
