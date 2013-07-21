@@ -977,6 +977,9 @@ private function hGetOperatorName( byval proc as FBSYMBOL ptr ) as const zstring
 	case AST_OP_FLDDEREF
 		function = @"pt"
 
+	case AST_OP_PTRINDEX
+		function = @"ix"
+
 	case AST_OP_ADDROF
 		function = @"ad"
 

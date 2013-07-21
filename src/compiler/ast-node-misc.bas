@@ -680,6 +680,7 @@ dim shared dbg_astNodeOpNames( 0 to AST_OPCODES - 1 ) as NameInfo = _
 	( /' @"AST_OP_DEL_SELF"        , '/ @"del="         /' , 0 '/ ), _
 	( /' @"AST_OP_DEL_VEC_SELF"    , '/ @"del[]="       /' , 0 '/ ), _
 	( /' @"AST_OP_ADDROF"          , '/ @"ADDROF"       /' , 0 '/ ), _
+	( /' @"AST_OP_PTRINDEX"        , '/ @"PTRINDEX"     /' , 0 '/ ), _
 	( /' @"AST_OP_FOR"             , '/ @"FOR"          /' , 0 '/ ), _
 	( /' @"AST_OP_STEP"            , '/ @"STEP"         /' , 0 '/ ), _
 	( /' @"AST_OP_NEXT"            , '/ @"NEXT"         /' , 0 '/ ), _

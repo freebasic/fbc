@@ -107,7 +107,6 @@ o -exx should catch...
       members could be accessed
 
 [ ] operator overloading:
-    - add 'operator []' (or string-ish classes won't allow 'direct' char access)
     - OPERATOR foo.() ( lb1, lb2, ..... ) AS TYPE -- array indexing, not functor
 
 o BYREF function results

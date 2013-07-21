@@ -280,6 +280,14 @@ function cIdentifier _
     		return NULL
 
     	case else
+			'' Allow '[' for '[]' operator overloads, it's not part
+			'' of FB_TKCLASS_OPERATOR since it's not a real op.
+			if( lexGetToken( ) = CHAR_LBRACKET ) then
+				if( (options and FB_IDOPT_ISOPERATOR ) <> 0 ) then
+					exit do
+				end if
+			end if
+
     		if( (options and FB_IDOPT_SHOWERROR) <> 0 ) then
     			errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
     		end if
@@ -439,6 +447,14 @@ function cParentId _
 			exit do
 
     	case else
+			'' Allow '[' for '[]' operator overloads, it's not part
+			'' of FB_TKCLASS_OPERATOR since it's not a real op.
+			if( lexGetToken( ) = CHAR_LBRACKET ) then
+				if( (options and FB_IDOPT_ISOPERATOR ) <> 0 ) then
+					exit do
+				end if
+			end if
+
 			errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
     			exit do
     	end select

@@ -94,6 +94,7 @@ dim shared ast_opTB( 0 to AST_OPCODES-1 ) as AST_OPINFO => _
 	(AST_NODECLASS_MEM   , AST_OPFLAGS_SELF or AST_OPFLAGS_NORES, @"delete"  ), _ '' AST_OP_DEL_SELF
 	(AST_NODECLASS_MEM   , AST_OPFLAGS_SELF or AST_OPFLAGS_NORES, @"delete[]"), _ '' AST_OP_DEL_VEC_SELF
 	(AST_NODECLASS_ADDROF, AST_OPFLAGS_SELF, @"@"                            ), _ '' AST_OP_ADDROF
+	(AST_NODECLASS_BOP   , AST_OPFLAGS_SELF, @"[]"                           ), _ '' AST_OP_PTRINDEX
 	(AST_NODECLASS_COMP  , AST_OPFLAGS_SELF or AST_OPFLAGS_NORES, @"for"     ), _ '' AST_OP_FOR
 	(AST_NODECLASS_COMP  , AST_OPFLAGS_SELF or AST_OPFLAGS_NORES, @"step"    ), _ '' AST_OP_STEP
 	(AST_NODECLASS_COMP  , AST_OPFLAGS_SELF, @"next"                         ), _ '' AST_OP_NEXT

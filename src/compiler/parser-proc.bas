@@ -854,7 +854,7 @@ private function hCheckOpOvlParams _
 
 		case else
 			assert( op = AST_OP_DEREF )
-			'' return type can't be a void
+			'' Must be a function, not a sub
 			found_mismatch = (symbGetType( proc ) = FB_DATATYPE_VOID)
 
 		end select
@@ -877,6 +877,9 @@ private function hCheckOpOvlParams _
 		'' relational? it must return an integer
 		case AST_OP_EQ, AST_OP_NE, AST_OP_GT, AST_OP_LT, AST_OP_GE, AST_OP_LE
 			found_mismatch = (symbGetType( proc ) <> FB_DATATYPE_INTEGER)
+		case AST_OP_PTRINDEX
+			'' Must be a function, not a sub
+			found_mismatch = (symbGetType( proc ) = FB_DATATYPE_VOID)
 		case else
 			'' self? must be a SUB
 			if( astGetOpIsSelf( op ) ) then

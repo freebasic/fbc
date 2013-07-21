@@ -147,7 +147,8 @@ function cStrIdxOrMemberDeref _
 
 	'' udt '.' ?
 	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-		if( lexGetToken( ) = CHAR_DOT ) then
+		select case( lexGetToken( ) )
+		case CHAR_DOT
     		lexSkipToken( LEXCHECK_NOPERIOD )
 
 			expr = cMemberAccess( dtype, subtype, expr )
@@ -157,7 +158,11 @@ function cStrIdxOrMemberDeref _
 
  			dtype = astGetFullType( expr )
  			subtype = astGetSubType( expr )
-		end if
+
+		'' '['?
+		case CHAR_LBRACKET
+			expr = cMemberDeref( dtype, subtype, expr, TRUE )
+		end select
 
 	end select
 

@@ -23,6 +23,10 @@ private function hIndexExpr( ) as ASTNODE ptr
 		expr = astNewCONSTi( 0 )
 	end if
 
+	function = expr
+end function
+
+private function hCheckIntegerIndex( byval expr as ASTNODE ptr ) as ASTNODE ptr
 	'' if index isn't an integer, convert
 	select case( typeGet( astGetDataType( expr ) ) )
 	case FB_DATATYPE_INTEGER
@@ -92,7 +96,7 @@ private function hFieldArray _
     	end if
 
 		'' Expression
-		dimexpr = hIndexExpr( )
+		dimexpr = hCheckIntegerIndex( hIndexExpr( ) )
 
 		'' bounds checking
 		if( env.clopt.extraerrchk ) then
@@ -588,17 +592,38 @@ function cMemberDeref _
 				lexSkipToken( )
 			end if
 
+
 			'' string, fixstr, w|zstring?
-			if( typeIsPtr( dtype ) = FALSE ) then
-				select case as const typeGet( dtype )
-				case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, _
-					 FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
-					varexpr = hStrIndexing( dtype, varexpr, idxexpr )
-				case else
-					errReport( FB_ERRMSG_EXPECTEDPOINTER, TRUE )
-				end select
+			select case( typeGetDtAndPtrOnly( dtype ) )
+			case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, _
+				 FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
+				idxexpr = hCheckIntegerIndex( idxexpr )
+				varexpr = hStrIndexing( dtype, varexpr, idxexpr )
 				exit do
-			end if
+
+			case FB_DATATYPE_STRUCT
+				'' [] overloaded for UDT?
+				dim as FB_ERRMSG err_num = any
+				var proc = symbFindSelfBopOvlProc( AST_OP_PTRINDEX, varexpr, idxexpr, @err_num )
+				if( proc ) then
+					varexpr = astBuildCall( proc, varexpr, idxexpr )
+				else
+					if( err_num = FB_ERRMSG_OK ) then
+						errReport( FB_ERRMSG_EXPECTEDPOINTER, TRUE )
+					end if
+				end if
+
+				exit do
+
+			case else
+				if( typeIsPtr( dtype ) = FALSE ) then
+					errReport( FB_ERRMSG_EXPECTEDPOINTER, TRUE )
+					exit do
+				end if
+
+				'' If [] isn't overloaded, then the index must be an INTEGER
+				idxexpr = hCheckIntegerIndex( idxexpr )
+			end select
 
 			'' times length
 			lgt = symbCalcLen( typeDeref( dtype ), subtype )
@@ -807,7 +832,7 @@ private function cDynArrayIdx( byval sym as FBSYMBOL ptr ) as ASTNODE ptr
     	end if
 
 		'' Expression
-		dimexpr = hIndexExpr( )
+		dimexpr = hCheckIntegerIndex( hIndexExpr( ) )
 
     	'' bounds checking
     	if( env.clopt.extraerrchk ) then
@@ -887,7 +912,7 @@ private function cArgArrayIdx( byval sym as FBSYMBOL ptr ) as ASTNODE ptr
     expr = NULL
     do
 		'' Expression
-		dimexpr = hIndexExpr( )
+		dimexpr = hCheckIntegerIndex( hIndexExpr( ) )
 
     	'' bounds checking
     	if( env.clopt.extraerrchk ) then
@@ -962,7 +987,7 @@ private function cArrayIdx( byval sym as FBSYMBOL ptr ) as ASTNODE ptr
     	end if
 
 		'' Expression
-		dimexpr = hIndexExpr( )
+		dimexpr = hCheckIntegerIndex( hIndexExpr( ) )
 
 		'' bounds checking
 		if( env.clopt.extraerrchk ) then

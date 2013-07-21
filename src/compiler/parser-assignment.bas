@@ -44,6 +44,7 @@ function cOperator( byval is_overload as integer ) as integer
 	dim as integer op = any, tk = any
 
 	function = INVALID
+	op = INVALID
 
 	tk = lexGetToken( )
 	select case as const( tk )
@@ -64,15 +65,13 @@ function cOperator( byval is_overload as integer ) as integer
 	case CHAR_SLASH    : op = AST_OP_DIV
 	case CHAR_CART     : op = AST_OP_POW
 	case CHAR_AMP      : op = AST_OP_CONCAT
-
-
 	case FB_TK_EQ, FB_TK_GT, FB_TK_LT, FB_TK_NE, FB_TK_LE, FB_TK_GE, _
 	     FB_TK_LET, FB_TK_NOT, FB_TK_CAST, _
 	     FB_TK_ABS, FB_TK_SGN, FB_TK_FIX, FB_TK_FRAC, _
 	     FB_TK_INT, FB_TK_EXP, FB_TK_LOG, FB_TK_SIN, _
 	     FB_TK_ASIN, FB_TK_COS, FB_TK_ACOS, FB_TK_TAN, _
 	     FB_TK_ATN, _
-	     FB_TK_ADDROFCHAR, FB_TK_FIELDDEREF, _
+	     FB_TK_ADDROFCHAR, FB_TK_FIELDDEREF, CHAR_LBRACKET, _
 	     FB_TK_NEW, FB_TK_DELETE, _
 	     FB_TK_FOR, FB_TK_STEP, FB_TK_NEXT
 
@@ -107,18 +106,22 @@ function cOperator( byval is_overload as integer ) as integer
 		case FB_TK_ATN  : op = AST_OP_ATAN
 		case FB_TK_ADDROFCHAR : op = AST_OP_ADDROF
 		case FB_TK_FIELDDEREF : op = AST_OP_FLDDEREF
+		case CHAR_LBRACKET  '' '['
+			'' ']'
+			if( hMatch( CHAR_RBRACKET ) = FALSE ) then
+				errReport( FB_ERRMSG_EXPECTEDRBRACKET )
+			end if
+
+			op = AST_OP_PTRINDEX
+
 		case FB_TK_NEW, FB_TK_DELETE
 			dim as integer is_new = (tk = FB_TK_NEW)
 
 			'' '['?
-			if( lexGetToken( ) = CHAR_LBRACKET ) then
-				lexSkipToken( )
-
+			if( hMatch( CHAR_LBRACKET ) ) then
 				'' ']'
-				if( lexGetToken( ) <> CHAR_RBRACKET ) then
+				if( hMatch( CHAR_RBRACKET ) = FALSE  ) then
 					errReport( FB_ERRMSG_EXPECTEDRBRACKET )
-				else
-					lexSkipToken( )
 				end if
 
 				op = iif( is_new, AST_OP_NEW_VEC_SELF, AST_OP_DEL_VEC_SELF )
