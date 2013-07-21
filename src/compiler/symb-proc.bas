@@ -1965,11 +1965,6 @@ function symbFindClosestOvlProc _
 
 		'' Only consider overloads with enough params
 		if( args <= params ) then
-			'' arg-less? exit..
-			if( params = 0 ) then
-				return ovl
-			end if
-
 			param = symbGetProcHeadParam( ovl )
 			if( symbIsMethod( ovl ) ) then
 				param = param->next
