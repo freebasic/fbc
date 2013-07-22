@@ -1009,7 +1009,7 @@ private sub hEmitDataStmt( )
 	loop
 end sub
 
-private sub hWriteFTOI _
+private sub hWriteX86FTOI _
 	( _
 		byref fname as string, _
 		byval rtype as integer, _
@@ -1042,7 +1042,6 @@ private sub hWriteFTOI _
 		ptype_suffix = ""
 	end if
 
-	'' TODO: x86 specific
 	hWriteLine( "", TRUE )
 	hWriteLine( "static inline " + rtype_str + " fb_" + fname +  "( " + ptype_str + " value )", TRUE )
 	hWriteLine( "{", TRUE )
@@ -1059,6 +1058,48 @@ private sub hWriteFTOI _
 		hWriteLine( "return result;", TRUE )
 	sectionUnindent( )
 	hWriteLine( "}", TRUE )
+
+end sub
+
+private sub hWriteGenericFTOI _
+	( _
+		byref fname as string, _
+		byval rtype as integer, _
+		byval ptype as integer _
+	)
+
+	dim as string resulttype, callname
+
+	select case rtype
+	case FB_DATATYPE_LONG
+		resulttype = "int32"
+	case FB_DATATYPE_LONGINT
+		resulttype = "int64"
+	end select
+
+	select case ptype
+	case FB_DATATYPE_SINGLE
+		callname = "rintf"
+	case FB_DATATYPE_DOUBLE
+		callname = "rint"
+	end select
+
+	hWriteLine( "#define fb_" + fname +  "( value ) ((" + resulttype + ")__builtin_" + callname + "( value ))", TRUE )
+
+end sub
+
+private sub hWriteFTOI _
+	( _
+		byref fname as string, _
+		byval rtype as integer, _
+		byval ptype as integer _
+	)
+
+	if( fbCpuTypeIsX86( ) ) then
+		hWriteX86FTOI( fname, rtype, ptype )
+	else
+		hWriteGenericFTOI( fname, rtype, ptype )
+	end if
 
 end sub
 
@@ -1091,11 +1132,11 @@ private sub hEmitFTOIBuiltins( )
 	end if
 
 	if( symbGetIsAccessed( PROCLOOKUP( FTOUL ) ) ) then
-		hWriteLine( "#define fb_ftoul( v ) (uint64)fb_ftosl( v )", TRUE )
+		hWriteLine( "#define fb_ftoul( v ) ((uint64)fb_ftosl( v ))", TRUE )
 	end if
 
 	if( symbGetIsAccessed( PROCLOOKUP( FTOUI ) ) ) then
-		hWriteLine( "#define fb_ftoui( v ) (uint32)fb_ftosl( v )", TRUE )
+		hWriteLine( "#define fb_ftoui( v ) ((uint32)fb_ftosl( v ))", TRUE )
 	end if
 
 	if( symbGetIsAccessed( PROCLOOKUP( FTOSI ) ) or _
@@ -1107,19 +1148,19 @@ private sub hEmitFTOIBuiltins( )
 	end if
 
 	if( symbGetIsAccessed( PROCLOOKUP( FTOSS ) ) ) then
-		hWriteLine( "#define fb_ftoss( v ) (int16)fb_ftosi( v )", TRUE )
+		hWriteLine( "#define fb_ftoss( v ) ((int16)fb_ftosi( v ))", TRUE )
 	end if
 
 	if( symbGetIsAccessed( PROCLOOKUP( FTOUS ) ) ) then
-		hWriteLine( "#define fb_ftous( v ) (uint16)fb_ftosi( v )", TRUE )
+		hWriteLine( "#define fb_ftous( v ) ((uint16)fb_ftosi( v ))", TRUE )
 	end if
 
 	if( symbGetIsAccessed( PROCLOOKUP( FTOSB ) ) ) then
-		hWriteLine( "#define fb_ftosb( v ) (int8)fb_ftosi( v )", TRUE )
+		hWriteLine( "#define fb_ftosb( v ) ((int8)fb_ftosi( v ))", TRUE )
 	end if
 
 	if( symbGetIsAccessed( PROCLOOKUP( FTOUB ) ) ) then
-		hWriteLine( "#define fb_ftoub( v ) (uint8)fb_ftosi( v )", TRUE )
+		hWriteLine( "#define fb_ftoub( v ) ((uint8)fb_ftosi( v ))", TRUE )
 	end if
 
 	'' double
@@ -1130,11 +1171,11 @@ private sub hEmitFTOIBuiltins( )
 	end if
 
 	if( symbGetIsAccessed( PROCLOOKUP( DTOUL ) ) ) then
-		hWriteLine( "#define fb_dtoul( v ) (uint64)fb_dtosl( v )", TRUE )
+		hWriteLine( "#define fb_dtoul( v ) ((uint64)fb_dtosl( v ))", TRUE )
 	end if
 
 	if( symbGetIsAccessed( PROCLOOKUP( DTOUI ) ) ) then
-		hWriteLine( "#define fb_dtoui( v ) (uint32)fb_dtosl( v )", TRUE )
+		hWriteLine( "#define fb_dtoui( v ) ((uint32)fb_dtosl( v ))", TRUE )
 	end if
 
 	if( symbGetIsAccessed( PROCLOOKUP( DTOSI ) ) or _
@@ -1146,19 +1187,19 @@ private sub hEmitFTOIBuiltins( )
 	end if
 
 	if( symbGetIsAccessed( PROCLOOKUP( DTOSS ) ) ) then
-		hWriteLine( "#define fb_dtoss( v ) (int16)fb_dtosi( v )", TRUE )
+		hWriteLine( "#define fb_dtoss( v ) ((int16)fb_dtosi( v ))", TRUE )
 	end if
 
 	if( symbGetIsAccessed( PROCLOOKUP( DTOUS ) ) ) then
-		hWriteLine( "#define fb_dtous( v ) (uint16)fb_dtosi( v )", TRUE )
+		hWriteLine( "#define fb_dtous( v ) ((uint16)fb_dtosi( v ))", TRUE )
 	end if
 
 	if( symbGetIsAccessed( PROCLOOKUP( DTOSB ) ) ) then
-		hWriteLine( "#define fb_dtosb( v ) (int8)fb_dtosi( v )", TRUE )
+		hWriteLine( "#define fb_dtosb( v ) ((int8)fb_dtosi( v ))", TRUE )
 	end if
 
 	if( symbGetIsAccessed( PROCLOOKUP( DTOUB ) ) ) then
-		hWriteLine( "#define fb_dtoub( v ) (uint8)fb_dtosi( v )", TRUE )
+		hWriteLine( "#define fb_dtoub( v ) ((uint8)fb_dtosi( v ))", TRUE )
 	end if
 
 end sub
