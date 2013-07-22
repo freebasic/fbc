@@ -147,7 +147,9 @@ private sub fbcInit( )
 
 	fbc.backend = -1
 	fbc.cputype = -1
+#ifndef ENABLE_STANDALONE
 	fbc.targetcputype = -1
+#endif
 
 	listInit( @fbc.modules, FBC_INITFILES, sizeof(FBCIOFILE) )
 	listInit( @fbc.rcs, FBC_INITFILES\4, sizeof(FBCIOFILE) )
@@ -1049,7 +1051,7 @@ private function hParseTargetOS( byref os as string ) as integer
 
 #ifdef ENABLE_STANDALONE
 	#macro MAYBE( s, comptarget )
-		if( id = s ) then
+		if( os = s ) then
 			return comptarget
 		end if
 	#endmacro
@@ -1961,9 +1963,11 @@ private sub hParseArgs( byval argc as integer, byval argv as zstring ptr ptr )
 
 	'' 3. An architecture given via a -target triplet (e.g. i686 from
 	''    i686-pc-mingw32) overrides the default arch.
+#ifndef ENABLE_STANDALONE
 	if( fbc.targetcputype >= 0 ) then
 		fbSetOption( FB_COMPOPT_CPUTYPE, fbc.targetcputype )
 	end if
+#endif
 
 	'' 4. -arch overrides any other arch settings.
 	if( fbc.cputype >= 0 ) then
