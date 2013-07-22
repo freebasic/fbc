@@ -864,73 +864,57 @@ function rtlMathFTOI _
 
 	var from_dtype = astGetDataType( expr )
 
-	select case as const typeGet( to_dtype )
-	case FB_DATATYPE_BYTE
+	select case as const( typeGetSizeType( to_dtype ) )
+	case FB_SIZETYPE_INT8
 		if( from_dtype = FB_DATATYPE_SINGLE ) then
 			sym = PROCLOOKUP( FTOSB )
 		else
 			sym = PROCLOOKUP( DTOSB )
 		end if
 
-	case FB_DATATYPE_UBYTE
+	case FB_SIZETYPE_UINT8
 		if( from_dtype = FB_DATATYPE_SINGLE ) then
 			sym = PROCLOOKUP( FTOUB )
 		else
 			sym = PROCLOOKUP( DTOUB )
 		end if
 
-	case FB_DATATYPE_SHORT
+	case FB_SIZETYPE_INT16
 		if( from_dtype = FB_DATATYPE_SINGLE ) then
 			sym = PROCLOOKUP( FTOSS )
 		else
 			sym = PROCLOOKUP( DTOSS )
 		end if
 
-	case FB_DATATYPE_USHORT
+	case FB_SIZETYPE_UINT16
 		if( from_dtype = FB_DATATYPE_SINGLE ) then
 			sym = PROCLOOKUP( FTOUS )
 		else
 			sym = PROCLOOKUP( DTOUS )
 		end if
 
-	case FB_DATATYPE_INTEGER
+	case FB_SIZETYPE_INT32
 		if( from_dtype = FB_DATATYPE_SINGLE ) then
 			sym = PROCLOOKUP( FTOSI )
 		else
 			sym = PROCLOOKUP( DTOSI )
 		end if
 
-	case FB_DATATYPE_UINT
+	case FB_SIZETYPE_UINT32
 		if( from_dtype = FB_DATATYPE_SINGLE ) then
 			sym = PROCLOOKUP( FTOUI )
 		else
 			sym = PROCLOOKUP( DTOUI )
 		end if
 
-	case FB_DATATYPE_LONG
-		'' TODO: Use longint versions when compiling for 64bit
-		if( from_dtype = FB_DATATYPE_SINGLE ) then
-			sym = PROCLOOKUP( FTOSI )
-		else
-			sym = PROCLOOKUP( DTOSI )
-		end if
-
-	case FB_DATATYPE_ULONG
-		'' TODO: Use longint versions when compiling for 64bit
-		if( from_dtype = FB_DATATYPE_SINGLE ) then
-			sym = PROCLOOKUP( FTOUI )
-		else
-			sym = PROCLOOKUP( DTOUI )
-		end if
-
-	case FB_DATATYPE_LONGINT
+	case FB_SIZETYPE_INT64
 		if( from_dtype = FB_DATATYPE_SINGLE ) then
 			sym = PROCLOOKUP( FTOSL )
 		else
 			sym = PROCLOOKUP( DTOSL )
 		end if
 
-	case FB_DATATYPE_ULONGINT
+	case FB_SIZETYPE_UINT64
 		if( from_dtype = FB_DATATYPE_SINGLE ) then
 			sym = PROCLOOKUP( FTOUL )
 		else
