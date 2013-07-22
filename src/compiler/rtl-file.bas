@@ -1693,6 +1693,13 @@ function rtlFileGetArray _
     	exit function
     end if
 
+	if( iobytes ) then
+		'' byref iobytes as uinteger
+		if( astNewARG( proc, iobytes ) = NULL ) then
+			exit function
+		end if
+	end if
+
 	if( isfunc = FALSE ) then
 		function = iif( rtlErrorCheck( proc ), proc, NULL )
 	else
