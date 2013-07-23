@@ -1694,6 +1694,10 @@ private function exprNewIMMi _
 
 	dim as EXPRNODE ptr n = any
 
+	assert( (dtype = FB_DATATYPE_LONG   ) or (dtype = FB_DATATYPE_ULONG   ) or _
+	        (dtype = FB_DATATYPE_LONGINT) or (dtype = FB_DATATYPE_ULONGINT) or _
+	        (dtype = FB_DATATYPE_INTEGER) or (dtype = FB_DATATYPE_UINT    ) )
+
 	n = exprNew( EXPRCLASS_IMM, dtype, NULL )
 	n->val.i = i
 
@@ -2393,7 +2397,7 @@ private sub exprDump( byval n as EXPRNODE ptr )
 
 	end select
 
-	s += " as " + symbTypeToStr( n->dtype, n->subtype ) + ", " + hex( n->subtype, 8 )
+	s += " as " + typeDump( n->dtype, n->subtype )
 
 	print str( level ), string( level, " " ) + s
 
@@ -2581,16 +2585,22 @@ private function exprNewVREG _
 		static as string s
 
 		'' An immediate -- a constant value
-		'' It should be cast to the vreg's type for cases like
+		'' The integer literal can be emitted as 32bit or 64bit,
+		'' signed or unsigned, and afterwards it should be cast to the
+		'' vreg's type for cases like
 		''    "cptr(any ptr, 0)"
 		'' where the constant has some pointer type, and we'd like to
 		'' avoid gcc warnings about pointers...
 
 		dtype = vreg->dtype
-
 		if( typeGetClass( dtype ) = FB_DATACLASS_FPOINT ) then
 			l = exprNewIMMf( vreg->value.f, dtype )
 		else
+			if( typeGetSize( dtype ) = 8 ) then
+				dtype = iif( typeIsSigned( dtype ), FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT )
+			else
+				dtype = iif( typeIsSigned( dtype ), FB_DATATYPE_LONG, FB_DATATYPE_ULONG )
+			end if
 			l = exprNewIMMi( vreg->value.i, dtype )
 		end if
 
