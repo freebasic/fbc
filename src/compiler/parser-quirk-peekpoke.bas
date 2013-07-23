@@ -156,6 +156,8 @@ function cPeekFunct( ) as ASTNODE ptr
 
 		case else
 			errReport( FB_ERRMSG_EXPECTEDUDT, TRUE )
+			hSkipStmt( )
+			exit function
 		end select
 
 		lexSkipToken( LEXCHECK_NOPERIOD )

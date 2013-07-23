@@ -1242,6 +1242,8 @@ function cVariableEx overload _
 
 				case else
 					errReport( FB_ERRMSG_EXPECTEDUDT, TRUE )
+					hSkipStmt( )
+					return varexpr
 				end select
 
    				lexSkipToken( LEXCHECK_NOPERIOD )
