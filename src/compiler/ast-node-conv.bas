@@ -325,7 +325,8 @@ function astNewCONV _
 	hDoGlobOpOverload( to_dtype, to_subtype, l )
 
 	select case as const typeGet( to_dtype )
-	case FB_DATATYPE_VOID, FB_DATATYPE_STRING
+	case FB_DATATYPE_VOID, FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, _
+	     FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
 		'' refuse void (used by uop/bop to cast to be most precise
 		'' possible) and strings, as op overloading already failed
 		exit function

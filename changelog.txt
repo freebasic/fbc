@@ -38,6 +38,7 @@ Version 0.91.0:
 - #603: Optional parameters for which no arguments were given could break overload resolution. Now, overload resolution will only search for matching overloads based on the given arguments.
 - Overload resolution if no arguments were given will no longer prefer a parameter-less overload over one with only optional parameters. This is now an ambigious call error, as in C++, for consistency with overload resolution with one argument given between two overloads, both with the same first parameter, and one having a second optional parameter.
 - #689: Bad code generated for GET #, , array(), , bytesread (bytesread variable not passed on to fb_FileGetArrayIOB(): the last argument was completely missing)
+- The compiler allowed fixed-length z/w/string variables to be initialized with integers, leading to bad code generation or runtime crashes. Now only strings should be allowed.
 
 
 Version 0.90.1:
