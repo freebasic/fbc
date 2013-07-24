@@ -1296,8 +1296,6 @@ end sub
 
 private sub hLoadVreg( byval v as IRVREG ptr )
 	dim as string ln
-	dim as integer dtype = any
-	dim as FBSYMBOL ptr subtype = any
 	dim as IRVREG ptr temp0 = any
 
 	'' LLVM instructions take registers or immediates (including offsets,
@@ -1328,7 +1326,7 @@ private sub hLoadVreg( byval v as IRVREG ptr )
 			_emitBop( AST_OP_ADD, temp0, _allocVrImm( FB_DATATYPE_INTEGER, NULL, v->ofs ), NULL, NULL )
 
 			'' temp0 = inttoptr temp0
-			_setVregDataType( temp0, typeAddrOf( dtype ), subtype )
+			_setVregDataType( temp0, v->dtype, v->subtype )
 
 			*v = *temp0
 		end if
