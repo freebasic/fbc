@@ -2886,7 +2886,7 @@ private sub hDoCall _
 
 		'' param will be NULL for hidden struct result arg, since
 		'' no corresponding PARAM exists.
-		if( arg->param ) then
+		if( arg->param andalso (arg->param->param.mode <> FB_PARAMMODE_VARARG)  ) then
 			'' Cast arg to param's type to prevent gcc warning.
 			'' (this will be done by astNewARG() already, except for
 			'' BYREF AS ANY params, where the exact type will only
