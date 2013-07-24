@@ -731,14 +731,20 @@ private function hFileGet _
 		if( iobexpr <> NULL ) then
 			s = astGetSymbol( iobexpr )
 			if( s <> NULL ) then
-				'' It's for a BYREF parameter, so must be the
-				'' same size to be allowed by astNewARG()
-				select case( typeGetSizeType( symbGetType( s ) ) )
-				case FB_SIZETYPE_INT32, FB_SIZETYPE_UINT32
-
-				case else
+				'' It's for a BYREF AS INTEGER parameter, so it
+				'' must be an integer type of the same size to
+				'' be allowed by astNewARG().
+				'' (Note: normally astNewARG() would do these
+				'' checks already, but this is a quirk RTL function,
+				'' and astNewARG()'s error reports may be confusing
+				'' if the RTL function parameters and the quirk syntax
+				'' arguments don't match up)
+				var dtype = symbGetType( s )
+				if( (typeGetSize( dtype ) <> env.pointersize) or _
+				    (typeGetClass( dtype ) <> FB_DATACLASS_INTEGER) or _
+				    typeIsPtr( dtype ) ) then
 					errReport( FB_ERRMSG_INVALIDDATATYPES )
-				end select
+				end if
 			end if
 		else
 			errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
