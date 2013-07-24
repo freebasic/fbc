@@ -1937,7 +1937,7 @@ private function exprNewUOP _
 			solved_out = (l->op = op)
 		end if
 
-		dtype = typeCBop( op, l->dtype, l->subtype, FB_DATATYPE_INTEGER, NULL )
+		dtype = typeCBop( op, l->dtype, l->subtype, l->dtype, l->subtype )
 
 	case else
 		assert( FALSE )
