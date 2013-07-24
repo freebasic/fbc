@@ -2262,10 +2262,8 @@ private sub hExprFlush( byval n as EXPRNODE ptr, byval need_parens as integer )
 		'' String literal?
 		if( symbGetIsLiteral( sym ) ) then
 			if( symbGetType( sym ) = FB_DATATYPE_WCHAR ) then
-				ctx.exprtext += "(" + hEmitType( typeAddrOf( FB_DATATYPE_WCHAR ), NULL ) + ")"
 				hBuildWstrLit( ctx.exprtext, hUnescapeW( symbGetVarLitTextW( sym ) ), symbGetWstrLen( sym ) )
 			else
-				ctx.exprtext += "(" + hEmitType( typeAddrOf( FB_DATATYPE_CHAR ), NULL ) + ")"
 				hBuildStrLit( ctx.exprtext, hUnescape( symbGetVarLitText( sym ) ), symbGetStrLen( sym ) )
 			end if
 		else
