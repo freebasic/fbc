@@ -277,6 +277,13 @@ end sub
 private function hMangleBuiltInType( byval dtype as integer ) as zstring ptr
 	assert( dtype = typeGetDtOnly( dtype ) )
 
+	'' STRING isn't mangled as built-in type, but as UDT, but it still needs
+	'' to be handled from here because this function is also used to mangle
+	'' type suffixes under the C backend, and that includes STRINGs...
+	if( dtype = FB_DATATYPE_STRING ) then
+		return @"8FBSTRING"
+	end if
+
 	if( fbCpuTypeIs64bit( ) ) then
 		'' By default on x86 we mangle INTEGER to "int", but on 64bit
 		'' our INTEGER becomes 64bit, while int stays 32bit, so we
@@ -414,9 +421,6 @@ sub symbMangleType _
 		hGetProcParamsTypeCode( mangled, subtype )
 
 		mangled += "E"
-
-	case FB_DATATYPE_STRING
-		mangled += "8FBSTRING"
 
 	case else
 		'' builtin?
