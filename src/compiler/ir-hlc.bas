@@ -1694,9 +1694,13 @@ private function exprNewIMMi _
 
 	dim as EXPRNODE ptr n = any
 
-	assert( (dtype = FB_DATATYPE_LONG   ) or (dtype = FB_DATATYPE_ULONG   ) or _
-	        (dtype = FB_DATATYPE_LONGINT) or (dtype = FB_DATATYPE_ULONGINT) or _
-	        (dtype = FB_DATATYPE_INTEGER) or (dtype = FB_DATATYPE_UINT    ) )
+	'' Integer literals can only be emitted as either 32bit int or 64bit long long,
+	'' if other types are needed, an exprNewCAST() should be done afterwards.
+	if( typeGetSize( dtype ) = 8 ) then
+		dtype = iif( typeIsSigned( dtype ), FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT )
+	else
+		dtype = iif( typeIsSigned( dtype ), FB_DATATYPE_LONG, FB_DATATYPE_ULONG )
+	end if
 
 	n = exprNew( EXPRCLASS_IMM, dtype, NULL )
 	n->val.i = i
@@ -2596,11 +2600,6 @@ private function exprNewVREG _
 		if( typeGetClass( dtype ) = FB_DATACLASS_FPOINT ) then
 			l = exprNewIMMf( vreg->value.f, dtype )
 		else
-			if( typeGetSize( dtype ) = 8 ) then
-				dtype = iif( typeIsSigned( dtype ), FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT )
-			else
-				dtype = iif( typeIsSigned( dtype ), FB_DATATYPE_LONG, FB_DATATYPE_ULONG )
-			end if
 			l = exprNewIMMi( vreg->value.i, dtype )
 		end if
 
@@ -3238,13 +3237,19 @@ private sub hVarIniSeparator( )
 	end if
 end sub
 
-private sub _emitVarIniI( byval dtype as integer, byval value as longint )
-	ctx.varini += hEmitInt( dtype, value )
+private sub _emitVarIniI( byval sym as FBSYMBOL ptr, byval value as longint )
+	var dtype = symbGetType( sym )
+	var l = exprNewIMMi( value, dtype )
+	l = exprNewCAST( dtype, sym->subtype, l )
+	ctx.varini += exprFlush( l )
 	hVarIniSeparator( )
 end sub
 
-private sub _emitVarIniF( byval dtype as integer, byval value as double )
-	ctx.varini += hEmitFloat( dtype, value )
+private sub _emitVarIniF( byval sym as FBSYMBOL ptr, byval value as double )
+	var dtype = symbGetType( sym )
+	var l = exprNewIMMf( value, dtype )
+	l = exprNewCAST( dtype, sym->subtype, l )
+	ctx.varini += exprFlush( l )
 	hVarIniSeparator( )
 end sub
 

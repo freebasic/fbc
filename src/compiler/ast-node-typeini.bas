@@ -602,9 +602,9 @@ private function hFlushExprStatic _
 
 			assert( astIsCONST( expr ) )
 			if( typeGetClass( sdtype ) = FB_DATACLASS_FPOINT ) then
-				irEmitVARINIf( sdtype, astConstGetFloat( expr ) )
+				irEmitVARINIf( sym, astConstGetFloat( expr ) )
 			else
-				irEmitVARINIi( sdtype, astConstGetInt( expr ) )
+				irEmitVARINIi( sym, astConstGetInt( expr ) )
 			end if
 		end if
 

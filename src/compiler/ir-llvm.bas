@@ -2189,9 +2189,13 @@ private sub _emitVarIniEnd( byval sym as FBSYMBOL ptr )
 	ctx.varini = ""
 end sub
 
-private sub hVarIniElementType( byval dtype as integer )
+private sub hVarIniElementType _
+	( _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr _
+	)
 	if( ctx.variniscopelevel > 0 ) then
-		ctx.varini += hEmitType( dtype, NULL ) + " "
+		ctx.varini += hEmitType( dtype, subtype ) + " "
 	end if
 end sub
 
@@ -2201,18 +2205,20 @@ private sub hVarIniSeparator( )
 	end if
 end sub
 
-private sub _emitVarIniI( byval dtype as integer, byval value as longint )
-	hVarIniElementType( dtype )
+private sub _emitVarIniI( byval sym as FBSYMBOL ptr, byval value as longint )
+	var dtype = symbGetType( sym )
+	hVarIniElementType( dtype, sym->subtype )
 	if( typeGetSize( dtype ) = 8 ) then
 		ctx.varini += hEmitLong( value )
 	else
-		ctx.varini += hEmitInt( dtype, NULL, value )
+		ctx.varini += hEmitInt( dtype, sym->subtype, value )
 	end if
 	hVarIniSeparator( )
 end sub
 
-private sub _emitVarIniF( byval dtype as integer, byval value as double )
-	hVarIniElementType( dtype )
+private sub _emitVarIniF( byval sym as FBSYMBOL ptr, byval value as double )
+	var dtype = symbGetType( sym )
+	hVarIniElementType( dtype, sym->subtype )
 	ctx.varini += hEmitFloat( value )
 	hVarIniSeparator( )
 end sub
