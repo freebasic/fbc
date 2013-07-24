@@ -87,15 +87,15 @@ function hFloatToHex _
 		byval dtype as integer _
 	) as string
 
-	dim as single singlevalue = any
-
 	'' Emit the raw bytes that make up the float
 	'' x86 little-endian assumption
 	if( typeGet( dtype ) = FB_DATATYPE_DOUBLE ) then
 		function = "0x" + hex( *cptr( ulongint ptr, @value ), 16 )
 	else
-		singlevalue = value
-		function = "0x" + hex( *cptr( ulong ptr, @singlevalue ), 8 )
+		dim as single singlevalue = value
+		'' Using an intermediate uinteger to allow compiling with FB
+		'' versions before the overload resolution overhaul
+		function = "0x" + hex( cuint( *cptr( ulong ptr, @singlevalue ) ), 8 )
 	end if
 end function
 
