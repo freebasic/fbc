@@ -596,22 +596,8 @@ private function hFlushExprStatic _
 		else
 			'' different types?
 			if( edtype <> sdtype ) then
-				if( typeIsPtr( symbGetFullType( sym ) ) ) then
-					'' Cast pointers to ANY PTR first to prevent issues with derived UDT ptrs,
-					'' which astNewCONV() currently doesn't allow to be casted to/from other ptr
-					'' types directly. Used at least by array descriptor initialization.
-					'' Pointer is pointer anyways, it shouldn't make a difference to the backend.
-					expr = astNewCONV( typeAddrOf( FB_DATATYPE_VOID ), NULL, expr )
-				end if
-
-				expr = astNewCONV( symbGetFullType( sym ), symbGetSubtype( sym ), expr )
+				expr = astNewCONV( symbGetFullType( sym ), symbGetSubtype( sym ), expr, AST_CONVOPT_DONTCHKPTR )
 				assert( expr <> NULL )
-
-				'' shouldn't happen, but..
-				if( expr = NULL ) then
-					errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE )
-					expr = astNewCONSTi( 0 )
-				end if
 			end if
 
 			assert( astIsCONST( expr ) )
