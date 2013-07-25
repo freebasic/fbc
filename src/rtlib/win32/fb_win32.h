@@ -1,6 +1,13 @@
 #ifdef HOST_MINGW
 #include <malloc.h> /* for _alloca() */
 
+/* not MinGW-w64? It already has ssize_t instead of _ssize_t */
+#ifndef __MINGW64_VERSION_MAJOR
+	/* for _ssize_t with MinGW.org toolchain under -D_NO_OLDNAMES */
+	#include <sys/types.h>
+	#define ssize_t _ssize_t
+#endif
+
 /* These defines let us use the same code for all platforms while still mapping
    to the proper win32 functions. Of those, we prefer to use the non-oldnames
    versions, which is also why we #define NO_OLDNAMES and _NO_OLDNAMES.
