@@ -566,6 +566,11 @@ private function hLinkFiles( ) as integer
 		if( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB ) then
 			dllname = hStripPath( hStripExt( fbc.outname ) )
 			ldcline += " -shared -h" + hStripPath( fbc.outname )
+
+			'' Turn libfoo into foo, so it can be checked against -l foo below
+			if( left( dllname, 3 ) = "lib" ) then
+				dllname = right( dllname, len( dllname ) - 3 )
+			end if
 		else
 			select case as const fbGetOption( FB_COMPOPT_TARGET )
 			case FB_COMPTARGET_FREEBSD
@@ -754,11 +759,9 @@ private function hLinkFiles( ) as integer
 		dim as TSTRSETITEM ptr i = listGetHead(@fbc.finallibs.list)
 		dim as integer checkdllname = (fbGetOption(FB_COMPOPT_OUTTYPE) = FB_OUTTYPE_DYNAMICLIB)
 		while (i)
-			'' Prevent linking DLLs against their own import library
-			'' (normally this shouldn't be needed though, even if
-			'' the lib is given to ld, it shouldn't be used normally
-			'' since the DLL will have all symbols itself already,
-			'' but safe is safe, with #inclib etc.)
+			'' Prevent linking DLLs against their own import library,
+			'' or .so's against themselves (ld will fail to read in
+			'' its output file...)
 			if ((checkdllname = FALSE) orelse (i->s <> dllname)) then
 				ldcline += " -l" + i->s
 			end if
