@@ -40,6 +40,7 @@ Version 0.91.0:
 - #689: Bad code generated for GET #, , array(), , bytesread (bytesread variable not passed on to fb_FileGetArrayIOB(): the last argument was completely missing)
 - The compiler allowed fixed-length z/w/string variables to be initialized with integers, leading to bad code generation or runtime crashes. Now only strings should be allowed.
 - #691: 0.24 regression: The compiler didn't prevent linking .so's against themselves, causing an ld error
+- 0.90.0 regression: When dragging a window on Win32 with the OpenGL gfxlib2 driver, it was resized to minimum size
 
 
 Version 0.90.1:

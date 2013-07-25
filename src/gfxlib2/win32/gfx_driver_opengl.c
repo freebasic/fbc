@@ -231,7 +231,9 @@ static int opengl_init(void)
 		x = monitor_info.rcMonitor.left;
 		y = monitor_info.rcMonitor.top;
 	}
-	SetWindowPos(fb_win32.wnd, 0, x, y, rect.right - rect.left, rect.bottom - rect.top, flags);
+	fb_win32.fullw = rect.right - rect.left;
+	fb_win32.fullh = rect.bottom - rect.top;
+	SetWindowPos(fb_win32.wnd, 0, x, y, fb_win32.fullw, fb_win32.fullh, flags);
 	ShowWindow(fb_win32.wnd, SW_SHOW);
 	SetForegroundWindow(fb_win32.wnd);
 	fb_win32.is_active = TRUE;
@@ -288,7 +290,7 @@ static int driver_init(char *title, int w, int h, int depth_arg, int refresh_rat
 	if (GL_init(&pfd))
 		return -1;
 	
-	if (fb_hInitWindow((WS_CLIPSIBLINGS | WS_CLIPCHILDREN) & ~WS_THICKFRAME, 0, 0, 0, 8, 8))
+	if (fb_hInitWindow((WS_CLIPSIBLINGS | WS_CLIPCHILDREN) & ~WS_THICKFRAME, 0, 0, 0, w, h))
 		return -1;
 	
 	if (opengl_init())
