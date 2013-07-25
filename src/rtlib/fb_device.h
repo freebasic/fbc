@@ -5,6 +5,7 @@
        int          fb_DevErrOpen           ( FB_FILE *handle, const char *filename, size_t filename_len );
 
        /* FILE */
+       void         fb_hSetFileBufSize      ( FILE *fp );
        int          fb_DevFileOpen          ( FB_FILE *handle, const char *filename, size_t filename_len );
        int          fb_DevFileClose         ( FB_FILE *handle );
        int          fb_DevFileEof           ( FB_FILE *handle );
