@@ -374,6 +374,7 @@ declare function hMakeParamDesc _
 		@"ALIAS name string is empty", _
 		@"LIB name string is empty", _
 		@"UDT has unimplemented abstract methods", _
+		@"Non-virtual call to ABSTRACT method", _
 		@"#ASSERT condition failed", _
 		@"Expected '>'", _
 		@"Invalid size", _
