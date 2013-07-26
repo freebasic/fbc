@@ -162,6 +162,7 @@ enum FB_PARSEROPT
 	FB_PARSEROPT_EQINPARENSONLY	= &h00000100	'' only check for '=' if inside parentheses
 	FB_PARSEROPT_GTINPARENSONLY	= &h00000200	'' only check for '>' if inside parentheses
 	FB_PARSEROPT_ISPP               = &h00000400  '' PP expression? (e.g. #if condition)
+	FB_PARSEROPT_EXPLICITBASE       = &h00000800  '' Used to tell cProcArgList() & co about explicit BASE accesses from hBaseMemberAccess() functions
 end enum
 
 type PARSERCTX
@@ -555,7 +556,8 @@ declare function cImplicitDataMember _
 	( _
 		byval base_parent as FBSYMBOL ptr, _
 		byval chain_ as FBSYMCHAIN ptr, _
-		byval checkarray as integer _
+		byval checkarray as integer, _
+		byval options as FB_PARSEROPT _
 	) as ASTNODE ptr
 
 declare function cVarOrDeref _
@@ -566,7 +568,8 @@ declare function cVarOrDeref _
 declare function cFunctionEx _
 	( _
 		byval base_parent as FBSYMBOL ptr, _
-		byval sym as FBSYMBOL ptr _
+		byval sym as FBSYMBOL ptr, _
+		byval options as FB_PARSEROPT = 0 _
 	) as ASTNODE ptr
 
 declare function cQuirkFunction _
@@ -632,7 +635,8 @@ declare function cFunctionCall _
 		byval base_parent as FBSYMBOL ptr, _
 		byval sym as FBSYMBOL ptr, _
 		byval ptrexpr as ASTNODE ptr, _
-		byval thisexpr as ASTNODE ptr = NULL _
+		byval thisexpr as ASTNODE ptr = NULL, _
+		byval options as FB_PARSEROPT = 0 _
 	) as ASTNODE ptr
 
 declare sub hMethodCallAddInstPtrOvlArg _
@@ -649,13 +653,15 @@ declare function cProcCall _
 		byval sym as FBSYMBOL ptr, _
 		byval ptrexpr as ASTNODE ptr, _
 		byval thisexpr as ASTNODE ptr = NULL, _
-		byval checkprnts as integer = FALSE _
+		byval checkprnts as integer = FALSE, _
+		byval options as FB_PARSEROPT = 0 _
 	) as ASTNODE ptr
 
 declare function cMethodCall _
 	( _
 		byval sym as FBSYMBOL ptr, _
-		byval thisexpr as ASTNODE ptr _
+		byval thisexpr as ASTNODE ptr, _
+		byval options as FB_PARSEROPT _
 	) as ASTNODE ptr
 
 declare function cCtorCall _
@@ -668,7 +674,8 @@ declare function cUdtMember _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
 		byval varexpr as ASTNODE ptr, _
-		byval check_array as integer _
+		byval check_array as integer, _
+		byval options as FB_PARSEROPT = 0 _
 	) as ASTNODE ptr
 
 declare function cMemberAccess _

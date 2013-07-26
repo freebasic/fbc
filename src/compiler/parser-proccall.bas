@@ -186,7 +186,8 @@ function cProcCall _
 		byval sym as FBSYMBOL ptr, _
 		byval ptrexpr as ASTNODE ptr, _
 		byval thisexpr as ASTNODE ptr, _
-		byval checkprnts as integer = FALSE _
+		byval checkprnts as integer, _
+		byval options as FB_PARSEROPT _
 	) as ASTNODE ptr
 
 	dim as integer dtype = any, is_propset = FALSE
@@ -194,8 +195,6 @@ function cProcCall _
 	dim as FB_CALL_ARG_LIST arg_list = ( 0, NULL, NULL )
 
 	function = NULL
-
-	dim as FB_PARSEROPT options = FB_PARSEROPT_NONE
 
     hMethodCallAddInstPtrOvlArg( sym, thisexpr, @arg_list, @options )
 
@@ -403,7 +402,8 @@ private function hProcSymbol _
 	( _
 		byval base_parent as FBSYMBOL ptr, _
 		byval sym as FBSYMBOL ptr, _
-		byval iscall as integer _
+		byval iscall as integer, _
+		byval options as FB_PARSEROPT = 0 _
 	) as integer
 
 	dim as integer do_call = any
@@ -439,7 +439,7 @@ private function hProcSymbol _
 	'' ID ProcParamList?
 	if( do_call ) then
 		dim as ASTNODE ptr expr = any
-		expr = cProcCall( base_parent, sym, NULL, NULL )
+		expr = cProcCall( base_parent, sym, NULL, NULL, FALSE, options )
 
 		'' assignment of a function deref?
 		if( expr <> NULL ) then
@@ -660,7 +660,8 @@ private function hAssignOrCall _
 	( _
 		byval base_parent as FBSYMBOL ptr, _
 		byval chain_ as FBSYMCHAIN ptr, _
-		byval iscall as integer _
+		byval iscall as integer, _
+		byval options as FB_PARSEROPT = 0 _
 	) as integer
 
 	function = FALSE
@@ -672,7 +673,7 @@ private function hAssignOrCall _
 	    	select case as const symbGetClass( sym )
 	    	'' proc?
 	    	case FB_SYMBCLASS_PROC
-				return hProcSymbol( base_parent, sym, iscall )
+				return hProcSymbol( base_parent, sym, iscall, options )
 
 			case FB_SYMBCLASS_VAR
 				'' must process variables here, multiple calls to
@@ -681,7 +682,7 @@ private function hAssignOrCall _
 				return hAssignOrPtrCall( cVariableEx( chain_, TRUE ), iscall )
 
 			case FB_SYMBCLASS_FIELD
-				return hAssignOrPtrCall( cImplicitDataMember( base_parent, chain_, TRUE ), iscall )
+				return hAssignOrPtrCall( cImplicitDataMember( base_parent, chain_, TRUE, options ), iscall )
 
 			case FB_SYMBCLASS_CONST
 				'' This covers misuse of constants as "statements",
@@ -1059,7 +1060,7 @@ private function hBaseMemberAccess( ) as integer
 	loop
 
 	dim as FBSYMCHAIN chain_ = (base_, NULL, FALSE)
-	return hAssignOrCall( symbGetSubType( base_ ), @chain_, FALSE )
+	function = hAssignOrCall( symbGetSubType( base_ ), @chain_, FALSE, FB_PARSEROPT_EXPLICITBASE )
 end function
 
 function hForwardCall( ) as integer

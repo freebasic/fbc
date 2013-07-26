@@ -25,7 +25,8 @@ function cFunctionCall _
 		byval base_parent as FBSYMBOL ptr, _
 		byval sym as FBSYMBOL ptr, _
 		byval ptrexpr as ASTNODE ptr, _
-		byval thisexpr as ASTNODE ptr _
+		byval thisexpr as ASTNODE ptr, _
+		byval options as FB_PARSEROPT _
 	) as ASTNODE ptr
 
 	dim as ASTNODE ptr funcexpr = any
@@ -37,7 +38,7 @@ function cFunctionCall _
     	exit function
     end if
 
-	dim as FB_PARSEROPT options = FB_PARSEROPT_ISFUNC
+	options or= FB_PARSEROPT_ISFUNC
 
     hMethodCallAddInstPtrOvlArg( sym, thisexpr, @arg_list, @options )
 
@@ -128,13 +129,14 @@ end function
 function cFunctionEx _
 	( _
 		byval base_parent as FBSYMBOL ptr, _
-		byval sym as FBSYMBOL ptr _
+		byval sym as FBSYMBOL ptr, _
+		byval options as FB_PARSEROPT _
 	) as ASTNODE ptr
 
 	'' ID
 	lexSkipToken( )
 
-	function = cFunctionCall( base_parent, sym, NULL, NULL )
+	function = cFunctionCall( base_parent, sym, NULL, NULL, options )
 
 end function
 
@@ -142,7 +144,8 @@ end function
 function cMethodCall _
 	( _
 		byval sym as FBSYMBOL ptr, _
-		byval thisexpr as ASTNODE ptr _
+		byval thisexpr as ASTNODE ptr, _
+		byval options as FB_PARSEROPT _
 	) as ASTNODE ptr
 
 	dim as ASTNODE ptr expr = any
@@ -152,13 +155,13 @@ function cMethodCall _
 
 	'' inside an expression? (can't check sym type, it could be an overloaded proc)
 	if( fbGetIsExpression( ) ) then
-		expr = cFunctionCall( NULL, sym, NULL, thisexpr )
+		expr = cFunctionCall( NULL, sym, NULL, thisexpr, options )
 
 		'' no need to check expr, cFunctionCall() will handle VOID calls
 
 	'' assignment..
 	else
-		expr = cProcCall( NULL, sym, NULL, thisexpr )
+		expr = cProcCall( NULL, sym, NULL, thisexpr, FALSE, options )
 
 		'' ditto
 	end if
@@ -227,5 +230,3 @@ function cCtorCall _
 	end if
 
 end function
-
-

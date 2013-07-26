@@ -41,6 +41,7 @@ Version 0.91.0:
 - The compiler allowed fixed-length z/w/string variables to be initialized with integers, leading to bad code generation or runtime crashes. Now only strings should be allowed.
 - #691: 0.24 regression: The compiler didn't prevent linking .so's against themselves, causing an ld error
 - 0.90.0 regression: When dragging a window on Win32 with the OpenGL gfxlib2 driver, it was resized to minimum size
+- #663: For virtual methods, base.method() called the overriding method, instead of the base's own method
 
 
 Version 0.90.1:

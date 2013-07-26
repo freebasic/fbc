@@ -354,6 +354,8 @@ private function hOvlProcArgList _
 		return astNewCONSTz( symbGetType( proc ), symbGetSubType( proc ) )
 	end if
 
+	procexpr = NULL
+
     '' method?
 	if( symbIsMethod( proc ) ) then
 		'' calling a method without the instance ptr?
@@ -378,8 +380,10 @@ private function hOvlProcArgList _
 		args += 1
 
 		'' Build vtable lookup (function pointer access to be used
-		'' by the CALL), if needed
-		procexpr = astBuildVtableLookup( proc, arg_list->head->expr )
+		'' by the CALL), unless it was an explicit BASE.* access.
+		if( (options and FB_PARSEROPT_EXPLICITBASE) = 0 ) then
+			procexpr = astBuildVtableLookup( proc, arg_list->head->expr )
+		end if
 	else
 		'' remove the instance ptr
 		if( (options and FB_PARSEROPT_HASINSTPTR) <> 0 ) then
@@ -388,7 +392,6 @@ private function hOvlProcArgList _
 			astDelTree( arg->expr )
 			symbFreeOvlCallArg( @parser.ovlarglist, arg )
 		end if
-		procexpr = NULL
 	end if
 
 	procexpr = astNewCALL( proc, procexpr )
@@ -490,8 +493,10 @@ function cProcArgList _
 		assert( ptrexpr = NULL )
 
 		'' Build vtable lookup (function pointer access to be used
-		'' by the CALL), if needed
-		ptrexpr = astBuildVtableLookup( proc, arg_list->head->expr )
+		'' by the CALL), unless it was an explicit BASE.* access.
+		if( (options and FB_PARSEROPT_EXPLICITBASE) = 0 ) then
+			ptrexpr = astBuildVtableLookup( proc, arg_list->head->expr )
+		end if
 	else
 		'' remove the instance ptr
 		if( (options and FB_PARSEROPT_HASINSTPTR) <> 0 ) then

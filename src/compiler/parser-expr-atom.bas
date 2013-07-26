@@ -263,7 +263,8 @@ end function
 private function hFindId _
 	( _
 		byval base_parent as FBSYMBOL ptr, _
-		byval chain_ as FBSYMCHAIN ptr _
+		byval chain_ as FBSYMCHAIN ptr, _
+		byval options as FB_PARSEROPT = 0 _
 	) as ASTNODE ptr
 
     '' QB mode?
@@ -279,13 +280,13 @@ private function hFindId _
 				return cConstant( sym )
 
 			case FB_SYMBCLASS_PROC
-				return cFunctionEx( base_parent, sym )
+				return cFunctionEx( base_parent, sym, options )
 
 			case FB_SYMBCLASS_VAR
 	      		return cVariableEx( chain_, fbGetCheckArray( ) )
 
        		case FB_SYMBCLASS_FIELD
-       			return cImplicitDataMember( base_parent, chain_, fbGetCheckArray( ) )
+				return cImplicitDataMember( base_parent, chain_, fbGetCheckArray( ), options )
 
   			'' quirk-keyword?
   			case FB_SYMBCLASS_KEYWORD
@@ -378,7 +379,7 @@ private function hBaseMemberAccess _
 	loop
 
 	dim as FBSYMCHAIN chain_ = (base_, NULL, FALSE)
-	return hFindId( symbGetSubtype( base_ ), @chain_ ) 
+	function = hFindId( symbGetSubtype( base_ ), @chain_, FB_PARSEROPT_EXPLICITBASE )
 end function
 
 private function hCheckId _

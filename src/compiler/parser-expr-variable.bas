@@ -306,7 +306,8 @@ function cUdtMember _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
 		byval varexpr as ASTNODE ptr, _
-		byval check_array as integer _
+		byval check_array as integer, _
+		byval options as FB_PARSEROPT _
 	) as ASTNODE ptr
 
 	'' note: assuming a pointer is being passed to this function
@@ -415,7 +416,7 @@ function cUdtMember _
 				varexpr	= astNewDEREF( varexpr,	dtype, subtype )
 			end if
 
-			return cMethodCall( fld, varexpr )
+			return cMethodCall( fld, varexpr, options )
 
 		case else
 			errReportEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
@@ -1379,7 +1380,8 @@ private function hImpField _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
 		byval check_array as integer, _
-		byval is_ptr as integer _
+		byval is_ptr as integer, _
+		byval options as FB_PARSEROPT _
 	) as ASTNODE ptr
 
 	dim as ASTNODE ptr varexpr = any
@@ -1390,7 +1392,7 @@ private function hImpField _
 		varexpr = astNewADDROF( astNewVAR( this_, , dtype, subtype ) )
 	end if
 
-	varexpr = cUdtMember( dtype, subtype, varexpr, check_array )
+	varexpr = cUdtMember( dtype, subtype, varexpr, check_array, options )
 
    	if( varexpr = NULL ) then
    		return NULL
@@ -1433,7 +1435,7 @@ function cWithVariable( byval check_array as integer ) as ASTNODE ptr
 	end if
 
 	function = hImpField( sym, dtype, symbGetSubtype( sym ), check_array, _
-				parser.stmt.with.is_ptr )
+				parser.stmt.with.is_ptr, 0 )
 end function
 
 '':::::
@@ -1472,7 +1474,8 @@ function cImplicitDataMember _
 	( _
 		byval base_parent as FBSYMBOL ptr, _
 		byval chain_ as FBSYMCHAIN ptr, _
-		byval check_array as integer _
+		byval check_array as integer, _
+		byval options as FB_PARSEROPT _
 	) as ASTNODE ptr
 
 	dim as FBSYMBOL ptr this_ = NULL
@@ -1492,7 +1495,7 @@ function cImplicitDataMember _
 	End If
 
 	function = hImpField( this_, symbGetFullType( this_ ), base_parent, _
-				check_array, TRUE )
+				check_array, TRUE, options )
 
 end function
 

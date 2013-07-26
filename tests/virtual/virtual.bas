@@ -1328,6 +1328,55 @@ namespace externWindowsMs
 	end sub
 end namespace
 
+namespace explicitBase
+	type A extends object
+		i as integer
+		declare virtual function f1( ) as integer
+		declare virtual sub f2( byref as integer )
+	end type
+
+	function A.f1( ) as integer
+		function = &hA
+	end function
+
+	sub A.f2( byref i as integer )
+		i = &hA
+	end sub
+
+	type B extends A
+		declare function f1( ) as integer override
+		declare sub f2( byref as integer ) override
+	end type
+
+	function B.f1( ) as integer
+		'' base.f1() should call A.f1(), not B.f1() recursively
+		function = base.f1( ) + &hB
+	end function
+
+	sub B.f2( byref i as integer )
+		base.f2( i )
+		i += &hB
+	end sub
+
+	sub test cdecl( )
+		dim i as integer
+
+		dim as A ptr pa = new B
+		CU_ASSERT( pa->f1( ) = &hA + &hB )
+		pa->f2( i )
+		CU_ASSERT( i = &hA + &hB )
+		delete pa
+
+		i = 0
+
+		dim as B ptr pb = new B
+		CU_ASSERT( pb->f1( ) = &hA + &hB )
+		pb->f2( i )
+		CU_ASSERT( i = &hA + &hB )
+		delete pb
+	end sub
+end namespace
+
 private sub ctor( ) constructor
 	fbcu.add_suite( "tests/virtual/virtual" )
 	fbcu.add_test( "basic overriding", @overridingWorks.test )
@@ -1353,6 +1402,7 @@ private sub ctor( ) constructor
 	fbcu.add_test( "overriding an EXTERN C++ method", @externCxx.test )
 	fbcu.add_test( "overriding an EXTERN Windows method", @externWindows.test )
 	fbcu.add_test( "overriding an EXTERN Windows-MS method", @externWindowsMs.test )
+	fbcu.add_test( "explicit BASE access", @explicitBase.test )
 end sub
 
 end namespace
