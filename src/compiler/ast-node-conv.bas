@@ -115,13 +115,17 @@ private function hCheckPtr _
 
 	function = FB_ERRMSG_OK
 
-	'' to pointer? only allow integers and pointers
+	'' to pointer? only allow integers of same size, and pointers
 	if( typeIsPtr( to_dtype ) ) then
 		select case as const typeGet( expr_dtype )
 		case FB_DATATYPE_INTEGER, FB_DATATYPE_UINT, FB_DATATYPE_ENUM, _
-		     FB_DATATYPE_LONG, FB_DATATYPE_ULONG
-			'' Allow integer/long-to-pointer casts
-			exit function
+		     FB_DATATYPE_LONG, FB_DATATYPE_ULONG, _
+		     FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
+			'' Allow integer-to-pointer casts if same size
+			if( typeGetSize( expr_dtype ) = env.pointersize ) then
+				exit function
+			end if
+			return hGetTypeMismatchErrMsg( options )
 
 		'' only allow other int dtypes if it's 0 (due QB's INTEGER = short)
 		case FB_DATATYPE_BYTE, FB_DATATYPE_UBYTE, _
@@ -143,13 +147,17 @@ private function hCheckPtr _
 			return hGetTypeMismatchErrMsg( options )
 		end select
 
-	'' from pointer? only allow integers and pointers
+	'' from pointer? only allow integers of same size and pointers
 	elseif( typeIsPtr( expr_dtype ) ) then
 		select case as const typeGet( to_dtype )
 		case FB_DATATYPE_INTEGER, FB_DATATYPE_UINT, FB_DATATYPE_ENUM, _
-		     FB_DATATYPE_LONG, FB_DATATYPE_ULONG
-			'' Allow pointer-to-integer/long casts
-			exit function
+		     FB_DATATYPE_LONG, FB_DATATYPE_ULONG, _
+		     FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
+			'' Allow integer-to-pointer casts if same size
+			if( typeGetSize( to_dtype ) = env.pointersize ) then
+				exit function
+			end if
+			return hGetTypeMismatchErrMsg( options )
 
 		case FB_DATATYPE_POINTER
 			'' Both are pointers, fall through to checks below
