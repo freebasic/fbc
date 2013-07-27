@@ -301,13 +301,27 @@ private function hMangleBuiltInType( byval dtype as integer ) as zstring ptr
 		'' to mangle LONG to "int" on 64bit consistently, since "int"
 		'' stays 32bit on both Linux and Windows.
 		''
+		'' That allows 64bit INTEGER to be mangled as 64bit long on
+		'' Linux & co, making GCC compatibility easier, it's only Win64
+		'' where we need a custom mangling.
+		''
 		'' Itanium C++ ABI compatible mangling of non-C++ built-in
 		'' types (vendor extended types):
 		''    u <length-of-id> <id>
 
+		if( env.target.options and FB_TARGETOPT_UNIX ) then
+			select case( dtype )
+			case FB_DATATYPE_INTEGER : return @"l"  '' long
+			case FB_DATATYPE_UINT    : return @"m"  '' unsigned long
+			end select
+		else
+			select case( dtype )
+			case FB_DATATYPE_INTEGER : return @"u7INTEGER"  '' seems like a good choice
+			case FB_DATATYPE_UINT    : return @"u8UINTEGER"
+			end select
+		end if
+
 		select case( dtype )
-		case FB_DATATYPE_INTEGER : return @"u7INTEGER"  '' seems like a good choice
-		case FB_DATATYPE_UINT    : return @"u8UINTEGER"
 		case FB_DATATYPE_LONG    : return @"i"  '' int
 		case FB_DATATYPE_ULONG   : return @"j"  '' unsigned int
 		end select
