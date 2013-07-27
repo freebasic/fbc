@@ -195,7 +195,9 @@ private sub hUpdateNewOpSizeParamType( byval op as AST_OP )
 	if( sym ) then
 		sym = symbGetProcHeadParam( sym )
 		if( sym ) then
-			symbGetFullType( sym ) = env.target.size_t
+			symbGetFullType( sym ) = iif( fbCpuTypeIs64bit( ), _
+							env.target.size_t64, _
+							env.target.size_t32 )
 		end if
 	end if
 end sub

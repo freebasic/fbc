@@ -106,7 +106,8 @@ dim shared as FBTARGET targetinfo(0 to FB_COMPTARGETS-1) = _
 { _
 	( _
 		@"win32", _             '' id
-		FB_DATATYPE_UINT, _     '' size_t
+		FB_DATATYPE_UINT, _     '' 32bit size_t
+		FB_DATATYPE_ULONGINT, _ '' 64bit size_t
 		FB_DATATYPE_USHORT, _   '' wchar
 		FB_FUNCMODE_STDCALL, _  '' fbcall
 		FB_FUNCMODE_STDCALL, _  '' stdcall
@@ -117,6 +118,7 @@ dim shared as FBTARGET targetinfo(0 to FB_COMPTARGETS-1) = _
 	( _
 		@"cygwin", _
 		FB_DATATYPE_UINT, _
+		FB_DATATYPE_ULONGINT, _
 		FB_DATATYPE_USHORT, _
 		FB_FUNCMODE_STDCALL, _
 		FB_FUNCMODE_STDCALL, _
@@ -129,6 +131,7 @@ dim shared as FBTARGET targetinfo(0 to FB_COMPTARGETS-1) = _
 		@"linux", _
 		FB_DATATYPE_UINT, _
 		FB_DATATYPE_UINT, _
+		FB_DATATYPE_UINT, _
 		FB_FUNCMODE_CDECL, _
 		FB_FUNCMODE_STDCALL_MS, _
 		0	or FB_TARGETOPT_UNIX _
@@ -136,6 +139,7 @@ dim shared as FBTARGET targetinfo(0 to FB_COMPTARGETS-1) = _
 	), _
 	( _
 		@"dos", _
+		FB_DATATYPE_ULONG, _
 		FB_DATATYPE_ULONG, _
 		FB_DATATYPE_UBYTE, _
 		FB_FUNCMODE_CDECL, _
@@ -146,6 +150,7 @@ dim shared as FBTARGET targetinfo(0 to FB_COMPTARGETS-1) = _
 	( _
 		@"xbox", _
 		FB_DATATYPE_ULONG, _
+		FB_DATATYPE_ULONG, _
 		FB_DATATYPE_UINT, _
 		FB_FUNCMODE_STDCALL, _
 		FB_FUNCMODE_STDCALL, _
@@ -154,6 +159,7 @@ dim shared as FBTARGET targetinfo(0 to FB_COMPTARGETS-1) = _
 	), _
 	( _
 		@"freebsd", _
+		FB_DATATYPE_UINT, _
 		FB_DATATYPE_UINT, _
 		FB_DATATYPE_UINT, _
 		FB_FUNCMODE_CDECL, _
@@ -166,6 +172,7 @@ dim shared as FBTARGET targetinfo(0 to FB_COMPTARGETS-1) = _
 		@"openbsd", _
 		FB_DATATYPE_UINT, _
 		FB_DATATYPE_UINT, _
+		FB_DATATYPE_UINT, _
 		FB_FUNCMODE_CDECL, _
 		FB_FUNCMODE_STDCALL_MS, _
 		0	or FB_TARGETOPT_UNIX _
@@ -176,6 +183,7 @@ dim shared as FBTARGET targetinfo(0 to FB_COMPTARGETS-1) = _
 		@"darwin", _
 		FB_DATATYPE_UINT, _
 		FB_DATATYPE_UINT, _
+		FB_DATATYPE_UINT, _
 		FB_FUNCMODE_CDECL, _
 		FB_FUNCMODE_STDCALL_MS, _
 		0	or FB_TARGETOPT_UNIX _
@@ -184,6 +192,7 @@ dim shared as FBTARGET targetinfo(0 to FB_COMPTARGETS-1) = _
 	), _
 	( _
 		@"netbsd", _
+		FB_DATATYPE_UINT, _
 		FB_DATATYPE_UINT, _
 		FB_DATATYPE_UINT, _
 		FB_FUNCMODE_CDECL, _
