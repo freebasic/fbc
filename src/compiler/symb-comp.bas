@@ -102,7 +102,8 @@ private sub hBuildRtti( byval udt as FBSYMBOL ptr )
 	dim as string id
 
 	'' static shared id as $fb_RTTI
-	id = "_ZTS" + *symbGetMangledName( udt )
+	id = "_ZTS"
+	hMangleUdtId( id, udt )
 	rtti = symbAddVar( NULL, id, FB_DATATYPE_STRUCT, symb.rtti.fb_rtti, 0, 0, dTB(), _
 	                   FB_SYMBATTRIB_CONST or FB_SYMBATTRIB_STATIC or FB_SYMBATTRIB_SHARED, _
 	                   FB_SYMBOPT_PRESERVECASE )
@@ -152,7 +153,8 @@ private sub hBuildVtable( byval udt as FBSYMBOL ptr )
 	assert( udt->udt.ext->vtableelements >= 2 )
 
 	'' static shared vtable(0 to elements-1) as any ptr
-	id = "_ZTV" + *symbGetMangledName( udt )
+	id = "_ZTV"
+	hMangleUdtId( id, udt )
 	dTB(0).upper = udt->udt.ext->vtableelements - 1
 	vtable = symbAddVar( NULL, id, typeAddrOf( FB_DATATYPE_VOID ), NULL, 0, 1, dTB(), _
 	                     FB_SYMBATTRIB_CONST or FB_SYMBATTRIB_STATIC or FB_SYMBATTRIB_SHARED, _

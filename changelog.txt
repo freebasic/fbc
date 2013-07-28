@@ -42,6 +42,7 @@ Version 0.91.0:
 - #691: 0.24 regression: The compiler didn't prevent linking .so's against themselves, causing an ld error
 - 0.90.0 regression: When dragging a window on Win32 with the OpenGL gfxlib2 driver, it was resized to minimum size
 - #663: For virtual methods, base.method() called the overriding method, instead of the base's own method
+- The Is operator (RTTI) treated UDTs with the same identifier but from different namespaces as being equal
 
 
 Version 0.90.1:

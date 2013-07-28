@@ -27,7 +27,6 @@ end type
 
 const FB_INITMANGARGS = 96
 
-
 declare function hDoCppMangling( byval sym as FBSYMBOL ptr ) as integer
 declare sub hMangleProc( byval sym as FBSYMBOL ptr )
 declare sub hMangleVariable( byval sym as FBSYMBOL ptr )
@@ -36,6 +35,16 @@ declare sub hGetProcParamsTypeCode _
 		byref mangled as string, _
 		byval sym as FBSYMBOL ptr _
 	)
+declare sub hMangleNamespace _
+	( _
+		byref mangled as string, _
+		byval ns as FBSYMBOL ptr, _
+		byval dohashing as integer, _
+		byval isconst as integer _
+	)
+
+'' inside a namespace or class?
+#define hIsNested(s) (symbGetNamespace( s ) <> @symbGetGlobalNamespc( ))
 
 '' globals
 	dim shared as FB_MANGLECTX ctx
@@ -129,33 +138,15 @@ sub symbSetName( byval s as FBSYMBOL ptr, byval name_ as zstring ptr )
 	end if
 end sub
 
-private sub hMangleCompType( byval sym as FBSYMBOL ptr )
-	dim as zstring ptr id = any, p = any
-	dim as integer length = any
-
-	id = sym->id.alias
-	if( id = NULL ) then
-		id = sym->id.name
-	end if
-
-	length = len( *id )
-
-	'' Store the mangled id into the symbol
-	p = ZStrAllocate( length + 2 )
-	sym->id.mangled = p
-
-	'' id length
-	if( length < 10 ) then
-		p[0] = asc( "0" ) + length
-		p += 1
+sub hMangleUdtId( byref mangled as string, byval sym as FBSYMBOL ptr )
+	'' <length><id>E
+	if( sym->id.alias ) then
+		mangled += str( len( *sym->id.alias ) )
+		mangled += *sym->id.alias
 	else
-		p[0] = asc( "0" ) + (length \ 10)
-		p[1] = asc( "0" ) + (length mod 10)
-		p += 2
+		mangled += str( len( *sym->id.name ) )
+		mangled += *sym->id.name
 	end if
-
-	'' id
-	*p = *id
 end sub
 
 function symbGetMangledName( byval sym as FBSYMBOL ptr ) as zstring ptr
@@ -168,7 +159,15 @@ function symbGetMangledName( byval sym as FBSYMBOL ptr ) as zstring ptr
 		hMangleProc( sym )
 	case FB_SYMBCLASS_ENUM, FB_SYMBCLASS_STRUCT, FB_SYMBCLASS_FWDREF, _
 	     FB_SYMBCLASS_CLASS, FB_SYMBCLASS_NAMESPACE
-		hMangleCompType( sym )
+		dim as string mangled
+		hMangleNamespace( mangled, symbGetNamespace( sym ), TRUE, FALSE )
+		hMangleUdtId( mangled, sym )
+		if( hIsNested( sym ) ) then
+			mangled += "E"
+		end if
+		'' Store the mangled id into the symbol
+		sym->id.mangled = ZStrAllocate( len( mangled ) )
+		*sym->id.mangled = mangled
 	case FB_SYMBCLASS_VAR
 		hMangleVariable( sym )
 	case else
@@ -393,11 +392,11 @@ sub symbMangleType _
 	case FB_DATATYPE_STRUCT, FB_DATATYPE_ENUM ', FB_DATATYPE_CLASS
 		ns = symbGetNamespace( subtype )
 		if( ns = @symbGetGlobalNamespc( ) ) then
-			mangled += *symbGetMangledName( subtype )
+			hMangleUdtId( mangled, subtype )
 		else
 			mangled += "N"
 			symbMangleType( mangled, symbGetFullType( ns ), ns )
-			mangled += *symbGetMangledName( subtype )
+			hMangleUdtId( mangled, subtype )
 			mangled += "E"
 		end if
 
@@ -410,7 +409,7 @@ sub symbMangleType _
 		if( ns ) then
 			symbMangleType( mangled, FB_DATATYPE_NAMESPC, ns )
 		end if
-		mangled += *symbGetMangledName( subtype )
+		hMangleUdtId( mangled, subtype )
 
 	case FB_DATATYPE_FUNCTION
 		'' F(byref)(const)(return_type)(params - recursive, reuses hash)E
@@ -513,9 +512,6 @@ private function hAddUnderscore( ) as integer
 	end if
 end function
 
-'' inside a namespace or class?
-#define hIsNested(s) (symbGetNamespace( s ) <> @symbGetGlobalNamespc( ))
-
 private function hDoCppMangling( byval sym as FBSYMBOL ptr ) as integer
     '' C++?
     if( symbGetMangling( sym ) = FB_MANGLING_CPP ) then
@@ -584,7 +580,7 @@ private sub hMangleNamespace _
 	end if
 	do
 		ns = nsStk(tos)
-		mangled += *symbGetMangledName( ns )
+		hMangleUdtId( mangled, ns )
 		tos -= 1
 	loop until( tos < 0 )
 end sub
