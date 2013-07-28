@@ -4,7 +4,7 @@
 
 FBCALL FBSTRING *fb_OCT_p( void *p )
 {
-#if defined HOST_X86_64 || defined HOST_SPARC64 || defined HOST_POWERPC64
+#ifdef HOST_64BIT
 	return fb_OCT_l( (unsigned long long int)p );
 #else
 	return fb_OCT_i( (unsigned int)p );
@@ -13,7 +13,7 @@ FBCALL FBSTRING *fb_OCT_p( void *p )
 
 FBCALL FBSTRING *fb_OCTEx_p( void *p, int digits )
 {
-#if defined HOST_X86_64 || defined HOST_SPARC64 || defined HOST_POWERPC64
+#ifdef HOST_64BIT
 	return fb_OCTEx_l( (unsigned long long int)p, digits );
 #else
 	return fb_OCTEx_i( (unsigned int)p, digits );
