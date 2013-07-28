@@ -117,78 +117,50 @@ srcdir := $(rootdir)src
 ifdef TARGET
   # TARGET given, so parse it
 
-  # os = iif(has >= 3 words, words 3..EOL, last word)
-  # 'i686 pc linux gnu' -> 'linux gnu'
-  # 'mingw32'           -> 'mingw32'
-  extract-os = $(if $(word 3,$(1)),$(wordlist 3,$(words $(1)),$(1)),$(lastword $(1)))
-
-  # arch = iif(has >= 2 words, first word, unknown)
-  # 'i686 pc linux gnu' -> 'i686'
-  # 'mingw32'           -> 'unknown'
-  extract-arch = $(if $(word 2,$(1)),$(firstword $(1)),unknown)
-
-  # In autoconf we used a shell case statement and checked for *-*-mingw*, but
-  # here we convert 'i686-pc-mingw32' to 'i686 pc mingw32' and then use make's
-  # word/text processing functions to take it apart.
-  extract-triplet-os = $(call extract-os,$(subst -, ,$(1)))
-  extract-triplet-arch = $(call extract-arch,$(subst -, ,$(1)))
-
+  triplet := $(subst -, ,$(TARGET))
   TARGET_PREFIX := $(TARGET)-
 
   ifndef TARGET_OS
-    triplet_os := $(call extract-triplet-os,$(TARGET))
-    ifneq ($(filter cygwin%,$(triplet_os)),)
+    ifneq ($(filter cygwin%,$(triplet)),)
       TARGET_OS := cygwin
     endif
-    ifneq ($(filter darwin%,$(triplet_os)),)
+    ifneq ($(filter darwin%,$(triplet)),)
       TARGET_OS := darwin
     endif
-    ifneq ($(filter djgpp%,$(triplet_os)),)
+    ifneq ($(filter djgpp%,$(triplet)),)
       TARGET_OS := dos
     endif
-    ifneq ($(filter msdos%,$(triplet_os)),)
+    ifneq ($(filter msdos%,$(triplet)),)
       TARGET_OS := dos
     endif
-    ifneq ($(filter freebsd%,$(triplet_os)),)
+    ifneq ($(filter freebsd%,$(triplet)),)
       TARGET_OS := freebsd
     endif
-    ifneq ($(filter linux%,$(triplet_os)),)
+    ifneq ($(filter linux%,$(triplet)),)
       TARGET_OS := linux
     endif
-    ifneq ($(filter mingw%,$(triplet_os)),)
+    ifneq ($(filter mingw%,$(triplet)),)
       TARGET_OS := win32
     endif
-    ifneq ($(filter netbsd%,$(triplet_os)),)
+    ifneq ($(filter netbsd%,$(triplet)),)
       TARGET_OS := netbsd
     endif
-    ifneq ($(filter openbsd%,$(triplet_os)),)
+    ifneq ($(filter openbsd%,$(triplet)),)
       TARGET_OS := openbsd
     endif
-    ifneq ($(filter solaris%,$(triplet_os)),)
+    ifneq ($(filter solaris%,$(triplet)),)
       TARGET_OS := solaris
     endif
-    ifneq ($(filter xbox%,$(triplet_os)),)
+    ifneq ($(filter xbox%,$(triplet)),)
       TARGET_OS := xbox
     endif
   endif
 
   ifndef TARGET_ARCH
-    triplet_arch := $(call extract-triplet-arch,$(TARGET))
-    ifneq ($(filter i386 i486 i586 i686,$(triplet_arch)),)
-      TARGET_ARCH := x86
-    endif
-    ifeq ($(triplet_arch),x86_64)
-      TARGET_ARCH := x86_64
-    endif
-    ifeq ($(triplet_arch),sparc)
-      TARGET_ARCH := sparc
-    endif
-    ifeq ($(triplet_arch),sparc64)
-      TARGET_ARCH := sparc64
-    endif
-    ifeq ($(triplet_arch),powerpc64)
-      TARGET_ARCH := powerpc64
-    endif
+    # arch = iif(has >= 2 words, first word, empty)
+    # 'i686 pc linux gnu' -> 'i686'
+    # 'mingw32'           -> ''
+    TARGET_ARCH := $(if $(word 2,$(triplet)),$(firstword $(triplet)))
   endif
 else
   # No TARGET given, so try to detect the native system with 'uname'
@@ -221,23 +193,13 @@ else
   endif
 
   ifndef TARGET_ARCH
-    uname_m := $(shell uname -m)
-    ifneq ($(filter i386 i486 i586 i686,$(uname_m)),)
-      TARGET_ARCH = x86
-    endif
-    ifeq ($(uname_m),x86_64)
-      TARGET_ARCH = x86_64
-    endif
-    ifeq ($(uname_m),sparc)
-      TARGET_ARCH = sparc
-    endif
-    ifeq ($(uname_m),sparc64)
-      TARGET_ARCH = sparc64
-    endif
-    ifeq ($(uname_m),powerpc64)
-      TARGET_ARCH = powerpc64
-    endif
+    TARGET_ARCH = $(shell uname -m)
   endif
+endif
+
+# Normalize TARGET_ARCH to x86
+ifneq ($(filter 386 486 586 686 i386 i486 i586 i686,$(TARGET_ARCH)),)
+  TARGET_ARCH := x86
 endif
 
 # For some targets we can choose good default archs
@@ -252,6 +214,7 @@ ifndef TARGET_ARCH
   endif
 endif
 
+# Switch TARGET_ARCH depending on MULTILIB
 ifeq ($(MULTILIB),32)
   ifeq ($(TARGET_ARCH),x86_64)
     TARGET_ARCH := x86
@@ -384,26 +347,8 @@ FBC_ASM := $(patsubst %.bas,%.asm,$(FBC_BAS))
 FBC_C   := $(patsubst %.bas,%.c,$(FBC_BAS))
 FBC_BAS := $(patsubst $(srcdir)/compiler/%.bas,$(fbcobjdir)/%.o,$(FBC_BAS))
 
-# Determine rtlib/gfxlib2 arch-specific directory
-# It depends on the target's arch, but also the multilib selection, if any
-ifeq ($(TARGET_ARCH),x86_64)
-  ifeq ($(FBMULTILIB),32)
-    # Cross-compiling from 64bit to 32bit using -m32
-    RTLIB_ARCHDIR := x86
-  endif
-endif
-ifeq ($(TARGET_ARCH),x86)
-  ifeq ($(FBMULTILIB),64)
-    # Cross-compiling from 32bit to 64bit using -m64
-    RTLIB_ARCHDIR := x86_64
-  endif
-endif
-ifndef RTLIB_ARCHDIR
-  RTLIB_ARCHDIR := $(TARGET_ARCH)
-endif
-
 # rtlib/gfxlib2 headers and modules
-RTLIB_DIRS := $(srcdir)/rtlib $(srcdir)/rtlib/$(TARGET_OS) $(srcdir)/rtlib/$(RTLIB_ARCHDIR)
+RTLIB_DIRS := $(srcdir)/rtlib $(srcdir)/rtlib/$(TARGET_OS) $(srcdir)/rtlib/$(TARGET_ARCH)
 ifeq ($(TARGET_OS),cygwin)
   RTLIB_DIRS += $(srcdir)/rtlib/win32
 endif
