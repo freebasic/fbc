@@ -51,13 +51,9 @@
 	#define HOST_64BIT
 #elif defined __sparc__
 	#ifdef __LP64__
-		#define HOST_SPARC64
 		#define HOST_64BIT
-	#else
-		#define HOST_SPARC
 	#endif
 #elif defined __ppc64__
-	#define HOST_POWERPC64
 	#define HOST_64BIT
 #endif
 
