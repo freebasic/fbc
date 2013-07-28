@@ -138,6 +138,12 @@ sub symbSetName( byval s as FBSYMBOL ptr, byval name_ as zstring ptr )
 	end if
 end sub
 
+private sub symbSetMangledId( byval sym as FBSYMBOL ptr, byref mangled as string )
+	assert( sym->id.mangled = NULL )
+	sym->id.mangled = ZStrAllocate( len( mangled ) )
+	*sym->id.mangled = mangled
+end sub
+
 sub hMangleUdtId( byref mangled as string, byval sym as FBSYMBOL ptr )
 	'' <length><id>E
 	if( sym->id.alias ) then
@@ -165,9 +171,7 @@ function symbGetMangledName( byval sym as FBSYMBOL ptr ) as zstring ptr
 		if( hIsNested( sym ) ) then
 			mangled += "E"
 		end if
-		'' Store the mangled id into the symbol
-		sym->id.mangled = ZStrAllocate( len( mangled ) )
-		*sym->id.mangled = mangled
+		symbSetMangledId( sym, mangled )
 	case FB_SYMBCLASS_VAR
 		hMangleVariable( sym )
 	case else
@@ -751,9 +755,7 @@ private sub hMangleVariable( byval sym as FBSYMBOL ptr )
 		end if
 	end if
 
-	'' Store the mangled id into the symbol
-	sym->id.mangled = ZStrAllocate( len( mangled ) )
-	*sym->id.mangled = mangled
+	symbSetMangledId( sym, mangled )
 end sub
 
 private sub hGetProcParamsTypeCode _
@@ -1140,7 +1142,5 @@ private sub hMangleProc( byval sym as FBSYMBOL ptr )
 
 	symbMangleEndAbbrev( )
 
-	'' Store the mangled id into the symbol
-	sym->id.mangled = ZStrAllocate( len( mangled ) )
-	*sym->id.mangled = mangled
+	symbSetMangledId( sym, mangled )
 end sub
