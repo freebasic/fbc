@@ -428,7 +428,7 @@ void fb_hInit( void )
 {
 	hInit( );
 
-#ifdef HOST_LINUX
+#if defined HOST_LINUX && (defined HOST_X86 || defined HOST_X86_64)
 	/* Permissions for port I/O */
 	__fb_con.has_perm = ioperm(0, 0x400, 1) ? FALSE : TRUE;
 #endif
