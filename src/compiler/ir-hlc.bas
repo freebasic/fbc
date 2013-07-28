@@ -498,23 +498,9 @@ private function hGetUdtTag( byval sym as FBSYMBOL ptr ) as string
 end function
 
 private function hGetUdtId( byval sym as FBSYMBOL ptr ) as string
-	dim as FBSYMBOL ptr ns = any
-	dim as string id
-
-	ns = symbGetNamespace( sym )
-	do until( ns = @symbGetGlobalNamespc( ) )
-		id += *symbGetName( ns )
-		id += "$"
-		ns = symbGetNamespace( ns )
-	loop
-
-	if( sym->id.alias ) then
-		id += *sym->id.alias
-	else
-		id += *symbGetName( sym )
-	end if
-
-	function = id
+	'' Prefixing the mangled name with a $ because it may start with a
+	'' number which isn't allowed in C.
+	function = "$" + *symbGetMangledName( sym )
 end function
 
 private function hGetUdtName( byval sym as FBSYMBOL ptr ) as string
