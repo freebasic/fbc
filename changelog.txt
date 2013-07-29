@@ -43,6 +43,7 @@ Version 0.91.0:
 - 0.90.0 regression: When dragging a window on Win32 with the OpenGL gfxlib2 driver, it was resized to minimum size
 - #663: For virtual methods, base.method() called the overriding method, instead of the base's own method
 - The Is operator (RTTI) treated UDTs with the same identifier but from different namespaces as being equal
+- RTTI/Vtables inside namespaces used GCC-incompatible name mangling
 
 
 Version 0.90.1:

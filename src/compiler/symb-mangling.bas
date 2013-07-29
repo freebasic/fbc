@@ -632,6 +632,12 @@ private sub hMangleVariable( byval sym as FBSYMBOL ptr )
 			'' unlike GCC, which does C++ mangling only for globals inside
 			'' namespaces, but not globals from the toplevel namespace.
 			mangled += "_Z"
+
+			if( sym->stats and FB_SYMBSTATS_RTTITABLE ) then
+				mangled += "TS"
+			elseif( sym->stats and FB_SYMBSTATS_VTABLE ) then
+				mangled += "TV"
+			end if
 		end if
 	else
 		'' LLVM: % prefix for local symbols
@@ -647,8 +653,12 @@ private sub hMangleVariable( byval sym as FBSYMBOL ptr )
 
 	'' class (once static member variables are added)
 
+	'' rtti/vtables don't have an id, their mangled name is just the prefixes
+	'' plus the parent UDT namespace(s), all done above already
+	if( sym->stats and (FB_SYMBSTATS_RTTITABLE or FB_SYMBSTATS_VTABLE) ) then
+		id = ""
 	'' id
-	if( (sym->stats and FB_SYMBSTATS_HASALIAS) <> 0 ) then
+	elseif( sym->stats and FB_SYMBSTATS_HASALIAS ) then
 		'' Explicit var ALIAS given, overriding the default id
 		id = *sym->id.alias
 	else
@@ -742,11 +752,13 @@ private sub hMangleVariable( byval sym as FBSYMBOL ptr )
 		end if
 	end if
 
-	'' id length (C++ only) followed by the id itself
-	if( docpp ) then
-		mangled += str( len( id ) )
+	if( len( id ) > 0 ) then
+		'' id length (C++ only) followed by the id itself
+		if( docpp ) then
+			mangled += str( len( id ) )
+		end if
+		mangled += id
 	end if
-	mangled += id
 
 	if( docpp ) then
 		'' nested? (namespace or class)

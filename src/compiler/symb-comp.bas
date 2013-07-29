@@ -99,14 +99,15 @@ private sub hBuildRtti( byval udt as FBSYMBOL ptr )
 	static as FBARRAYDIM dTB(0)
 	dim as ASTNODE ptr initree = any, rttibase = any
 	dim as FBSYMBOL ptr rtti = any, fld = any
-	dim as string id
 
-	'' static shared id as $fb_RTTI
-	id = "_ZTS"
-	hMangleUdtId( id, udt )
-	rtti = symbAddVar( NULL, id, FB_DATATYPE_STRUCT, symb.rtti.fb_rtti, 0, 0, dTB(), _
+	'' static shared UDT.rtti as $fb_RTTI
+	'' (real identifier given later during mangling)
+	symbNestBegin( udt, TRUE )
+	rtti = symbAddVar( NULL, NULL, FB_DATATYPE_STRUCT, symb.rtti.fb_rtti, 0, 0, dTB(), _
 	                   FB_SYMBATTRIB_CONST or FB_SYMBATTRIB_STATIC or FB_SYMBATTRIB_SHARED, _
 	                   FB_SYMBOPT_PRESERVECASE )
+	rtti->stats or= FB_SYMBSTATS_RTTITABLE
+	symbNestEnd( TRUE )
 	udt->udt.ext->rtti = rtti
 
 	'' initializer
@@ -142,7 +143,6 @@ private sub hBuildVtable( byval udt as FBSYMBOL ptr )
 	dim as ASTNODE ptr initree = any, basevtableinitree = any
 	dim as FBSYMBOL ptr member = any, rtti = any, vtable = any
 	dim as integer i = any, basevtableelements = any
-	dim as string id
 
 	'' The vtable is an array of pointers:
 	''    0. null pointer (why? just following GCC...)
@@ -152,13 +152,15 @@ private sub hBuildVtable( byval udt as FBSYMBOL ptr )
 
 	assert( udt->udt.ext->vtableelements >= 2 )
 
-	'' static shared vtable(0 to elements-1) as any ptr
-	id = "_ZTV"
-	hMangleUdtId( id, udt )
+	'' static shared UDT.vtable(0 to elements-1) as any ptr
+	'' (real identifier given later during mangling)
+	symbNestBegin( udt, TRUE )
 	dTB(0).upper = udt->udt.ext->vtableelements - 1
-	vtable = symbAddVar( NULL, id, typeAddrOf( FB_DATATYPE_VOID ), NULL, 0, 1, dTB(), _
+	vtable = symbAddVar( NULL, NULL, typeAddrOf( FB_DATATYPE_VOID ), NULL, 0, 1, dTB(), _
 	                     FB_SYMBATTRIB_CONST or FB_SYMBATTRIB_STATIC or FB_SYMBATTRIB_SHARED, _
 	                     FB_SYMBOPT_PRESERVECASE )
+	vtable->stats or= FB_SYMBSTATS_VTABLE
+	symbNestEnd( TRUE )
 
 	'' Find information about the base UDT's vtable:
 	''    the number of elements,

@@ -102,9 +102,9 @@ enum FB_SYMBSTATS
     FB_SYMBSTATS_RTL          = &h00000020
     FB_SYMBSTATS_THROWABLE    = &h00000040
     FB_SYMBSTATS_PARSED       = &h00000080
-                            ''= &h00000100
+    FB_SYMBSTATS_RTTITABLE    = &h00000100 '' VARs only: it's an rtti table (used for name mangling)
     FB_SYMBSTATS_HASALIAS     = &h00000200
-                            ''= &h00000400
+    FB_SYMBSTATS_VTABLE       = &h00000400 '' VARs only: it's a vtable (used for name mangling)
     FB_SYMBSTATS_DONTINIT     = &h00000800
     FB_SYMBSTATS_MAINPROC     = &H00001000
     FB_SYMBSTATS_MODLEVELPROC = &h00002000
