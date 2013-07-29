@@ -189,39 +189,54 @@ private sub hCheckEnumOps _
 
 end sub
 
-'':::::
-private sub hCheckConstAndPointerOps _
+private function hCheckConstAndPointerOps _
 	( _
 		byval l as ASTNODE ptr, _
 		byval ldtype as FB_DATATYPE, _
 		byval r as ASTNODE ptr, _
 		byval rdtype as FB_DATATYPE _
-	)
+	) as integer
+
+	function = FALSE
 
 	'' lhs marked CONST? disallow the assignment then.
 	if( symbCheckConstAssign( ldtype, rdtype, l->subtype, r->subtype ) = FALSE ) then
 		errReport( FB_ERRMSG_ILLEGALASSIGNMENT, TRUE )
-		return
+		exit function
 	end if
 
 	if( typeIsPtr( ldtype ) ) then
+		'' Disallow ptr = float
+		if( typeGetClass( rdtype ) = FB_DATACLASS_FPOINT ) then
+			exit function
+		end if
+
 		if( astPtrCheck( ldtype, l->subtype, r ) = FALSE ) then
 			'' if both are UDT, a derived lhs can't be assigned from a base rhs
 			if( typeGetDtOnly( ldtype ) = FB_DATATYPE_STRUCT and typeGetDtOnly( rdtype ) = FB_DATATYPE_STRUCT ) then
 				if( symbGetUDTBaseLevel( astGetSubType( l ), astGetSubType( r ) ) > 0 ) then
 					errReport( FB_ERRMSG_ILLEGALASSIGNMENT, TRUE )
-					return
+					exit function
 				end if
 			end if
-			errReportWarn( FB_WARNINGMSG_SUSPICIOUSPTRASSIGN )
+
+			'' Only show the warning if the coming astNewCONV() will probably succeed
+			if( astCheckCONV( l->dtype, l->subtype, r ) ) then
+				errReportWarn( FB_WARNINGMSG_SUSPICIOUSPTRASSIGN )
+			end if
 		end if
-		
+
 	'' r-side expr is a ptr?
 	elseif( typeIsPtr( rdtype ) ) then
+		'' Disallow float = ptr
+		if( typeGetClass( ldtype ) = FB_DATACLASS_FPOINT ) then
+			exit function
+		end if
 		errReportWarn( FB_WARNINGMSG_IMPLICITCONVERSION )
 	end if
 
-end sub
+	function = TRUE
+end function
 
 '':::::
 function astCheckASSIGN _
@@ -314,7 +329,9 @@ function astCheckASSIGN _
 	end if
 
     '' check pointers
-	hCheckConstAndPointerOps( l, ldfull, r, rdfull )
+	if( hCheckConstAndPointerOps( l, ldfull, r, rdfull ) = FALSE ) then
+		exit function
+	end if
 
 	'' convert types if needed
 	if( ldtype <> rdtype ) then
@@ -599,7 +616,9 @@ function astNewASSIGN _
 
     '' check pointers
     if( (options and AST_OPOPT_DONTCHKPTR) = 0 ) then
-		hCheckConstAndPointerOps( l, ldfull, r, rdfull )
+		if( hCheckConstAndPointerOps( l, ldfull, r, rdfull ) = FALSE ) then
+			exit function
+		end if
     end if
 
 	'' convert types if needed

@@ -44,6 +44,7 @@ Version 0.91.0:
 - #663: For virtual methods, base.method() called the overriding method, instead of the base's own method
 - The Is operator (RTTI) treated UDTs with the same identifier but from different namespaces as being equal
 - RTTI/Vtables inside namespaces used GCC-incompatible name mangling
+- #616: Assignments between pointers and floats are now disallowed, matching the behaviour for assignments between pointers and other incompatible data types
 
 
 Version 0.90.1:
