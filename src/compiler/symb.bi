@@ -1640,7 +1640,6 @@ declare function symbCanDuplicate _
 declare function symbUniqueId( ) as zstring ptr
 declare function symbUniqueLabel( ) as zstring ptr
 declare function symbMakeProfileLabelName( ) as zstring ptr
-declare sub hMangleUdtId( byref mangled as string, byval sym as FBSYMBOL ptr )
 declare function symbGetMangledName( byval sym as FBSYMBOL ptr ) as zstring ptr
 declare function symbGetDBGName( byval sym as FBSYMBOL ptr ) as zstring ptr
 declare sub symbSetName( byval s as FBSYMBOL ptr, byval name_ as zstring ptr )

@@ -144,7 +144,7 @@ private sub symbSetMangledId( byval sym as FBSYMBOL ptr, byref mangled as string
 	*sym->id.mangled = mangled
 end sub
 
-sub hMangleUdtId( byref mangled as string, byval sym as FBSYMBOL ptr )
+private sub hMangleUdtId( byref mangled as string, byval sym as FBSYMBOL ptr )
 	'' <length><id>E
 	if( sym->id.alias ) then
 		mangled += str( len( *sym->id.alias ) )
