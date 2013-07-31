@@ -894,7 +894,7 @@ private sub hDeclUDT( byval sym as FBSYMBOL ptr )
 
 	desc = *symbGetDBGName( sym )
 
-	desc += ":Tt" + str( sym->udt.dbg.typenum ) + "=s" + str( symbGetUDTUnpadLen( sym ) )
+	desc += ":Tt" + str( sym->udt.dbg.typenum ) + "=s" + str( symbGetLen( sym ) )
 
 	fld = symbUdtGetFirstField( sym )
 	while( fld )

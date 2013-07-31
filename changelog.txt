@@ -45,6 +45,7 @@ Version 0.91.0:
 - The Is operator (RTTI) treated UDTs with the same identifier but from different namespaces as being equal
 - RTTI/Vtables inside namespaces used GCC-incompatible name mangling
 - #616: Assignments between pointers and floats are now disallowed, matching the behaviour for assignments between pointers and other incompatible data types
+- fbc -g generated wrong stabs definitions for UDTs whose size had to be rounded up (tail padding), preventing gdb from properly showing the content of arrays of such UDTs
 
 
 Version 0.90.1:
