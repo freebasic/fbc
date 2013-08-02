@@ -5,6 +5,7 @@
 #include once "fb.bi"
 #include once "fbint.bi"
 #include once "ir.bi"
+#include once "emit.bi"
 
 dim shared ir as IRCTX
 
@@ -26,12 +27,9 @@ sub irEnd( )
 end sub
 
 #if __FB_DEBUG__
-#include once "reg.bi"
-#include once "emit-private.bi"
-
 function vregDump( byval v as IRVREG ptr ) as string
 	dim as string s
-	dim as zstring ptr regname = any
+	dim as string regname
 
 	if( v = NULL ) then
 		return "<NULL>"
@@ -59,9 +57,9 @@ function vregDump( byval v as IRVREG ptr ) as string
 
 	case IR_VREGTYPE_REG
 		if( env.clopt.backend = FB_BACKEND_GAS ) then
-			regname = hGetRegName( v->dtype, v->reg )
-			if( len( *regname ) > 0 ) then
-				s += " " + ucase( *regname )
+			regname = emitDumpRegName( v->dtype, v->reg )
+			if( len( regname ) > 0 ) then
+				s += " " + ucase( regname )
 			else
 				s += " " + str( v->reg )
 			end if

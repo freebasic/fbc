@@ -183,6 +183,7 @@ private sub regClear _
 
 	for n = 0 to this_->regs - 1
 		this_->vregTB(n) = NULL
+		this_->vauxparent(n) = NULL
 		this_->regctx.nextTB(n) = 0
 
 		r = @this_->regctx.regTB(n)
@@ -230,19 +231,26 @@ private function regAllocate _
 	( _
 		byval this_ as REGCLASS ptr, _
 		byval vreg as IRVREG ptr, _
+		byval vauxparent as IRVREG ptr, _
 		byval size as uinteger _				'' in bytes
-	) as integer static
+	) as integer
 
-    dim as integer r
+	dim as integer r = any
 
 	r = regPop( this_, size )
 	if( r = INVALID ) then
 		r = regFindFarest( this_, size )
-	    irStoreVR( this_->vregTB(r), r )
+
+		'' This will regFree() the register
+		irStoreVR( this_->vregTB(r), this_->vauxparent(r) )
+
+		'' So remove it from the free list
+		regPopReg( this_, r )
 	end if
 
 	REG_SETUSED( this_->regctx.freeTB, r )
 	this_->vregTB(r) = vreg
+	this_->vauxparent(r) = vauxparent
 	this_->regctx.nextTB(r) = irGetDistance( vreg )
 
 	function = r
@@ -254,8 +262,9 @@ private function regAllocateReg _
 	( _
 		byval this_ as REGCLASS ptr, _
 		byval r as integer, _
-		byval vreg as IRVREG ptr _
-	) as integer static
+		byval vreg as IRVREG ptr, _
+		byval vauxparent as IRVREG ptr _
+	) as integer
 
 	if( REG_ISFREE( this_->regctx.freeTB, r ) ) then
 		regPopReg( this_, r )
@@ -263,6 +272,7 @@ private function regAllocateReg _
 	end if
 
 	this_->vregTB(r) = vreg
+	this_->vauxparent(r) = vauxparent
 	this_->regctx.nextTB(r) = irGetDistance( vreg )
 
 	function = r
@@ -274,16 +284,16 @@ private function regEnsure _
 	( _
 		byval this_ as REGCLASS ptr, _
 		byval vreg as IRVREG ptr, _
-		byval size as uinteger, _
-		byval doload as integer _
-	) as integer static
+		byval vauxparent as IRVREG ptr, _
+		byval size as uinteger _
+	) as integer
 
-    dim as integer r
+	dim as integer r = any
 
     r = vreg->reg
     if( r = INVALID ) then
-    	r = regAllocate( this_, vreg, size )
-    	irLoadVR( r, vreg, doload )
+		r = regAllocate( this_, vreg, vauxparent, size )
+		irLoadVR( r, vreg, vauxparent )
     end if
 
     function = r
@@ -295,11 +305,13 @@ private sub regSetOwner _
 	( _
 		byval this_ as REGCLASS ptr, _
 		byval r as integer, _
-		byval vreg as IRVREG ptr _
+		byval vreg as IRVREG ptr, _
+		byval vauxparent as IRVREG ptr _
 	)
 
 	REG_SETUSED( this_->regctx.freeTB, r )
 	this_->vregTB(r) = vreg
+	this_->vauxparent(r) = vauxparent
 	this_->regctx.nextTB(r) = irGetDistance( vreg )
 
 end sub
@@ -314,6 +326,7 @@ private sub regFree _
 	if( REG_ISUSED( this_->regctx.freeTB, r ) ) then
 		REG_SETFREE( this_->regctx.freeTB, r )
 		this_->vregTB(r) = NULL
+		this_->vauxparent(r) = NULL
 		this_->regctx.nextTB(r) = 0
 		regPush( this_, r )
 	end if
@@ -373,10 +386,12 @@ end function
 private function regGetVreg _
 	( _
 		byval this_ as REGCLASS ptr, _
-		byval r as integer _
+		byval r as integer, _
+		byref vauxparent as IRVREG ptr _
 	) as IRVREG ptr static
 
 	function = this_->vregTB(r)
+	vauxparent = this_->vauxparent(r)
 
 end function
 
@@ -559,26 +574,25 @@ private function sregFindTOSReg _
 
 end function
 
-'':::::
 private function sregAllocate _
 	( _
 		byval this_ as REGCLASS ptr, _
 		byval vreg as IRVREG ptr, _
+		byval vauxparent as IRVREG ptr, _
 		byval size as uinteger _				'' unused
-	) as integer Static
+	) as integer
 
-	dim as integer r, i
+	dim as integer r = any
 
 	r = sregFindFreeReg( this_ )
 	if( r = INVALID ) then
-
-	    r = sregFindTOSReg( this_ )
-	    irStoreVR( this_->vregTB(r), r )
-
+		r = sregFindTOSReg( this_ )
+		'' This will sregFree() the register
+		irStoreVR( this_->vregTB(r), this_->vauxparent(r) )
 	else
 		this_->stkctx.fregs -= 1
 
-		for i = 0 to this_->regs - 1
+		for i as integer = 0 to this_->regs - 1
 			if( this_->stkctx.regTB(i) <> INVALID ) then
 				this_->stkctx.regTB(i) += 1
 			end If
@@ -586,40 +600,39 @@ private function sregAllocate _
 	end If
 
 	this_->vregTB(r) = vreg
+	this_->vauxparent(r) = vauxparent
 	this_->stkctx.regTB(r)  = 0
 
 	function = r
+end function
 
-End Function
-
-'':::::
 private function sregAllocateReg _
 	( _
 		byval this_ as REGCLASS ptr, _
 		byval r as integer, _
-		byval vreg as IRVREG ptr _
-	) as integer Static
+		byval vreg as IRVREG ptr, _
+		byval vauxparent as IRVREG ptr _
+	) as integer
 
 	'' assuming r will be always 0 (result, TOS)
-    function = sregAllocate( this_, vreg, REG_SIZEMASK_64 )
+	function = sregAllocate( this_, vreg, vauxparent, REG_SIZEMASK_64 )
 
 end function
 
-'':::::
 private function sregEnsure _
 	( _
 		byval this_ as REGCLASS ptr, _
 		byval vreg as IRVREG ptr, _
-		byval size as uinteger, _				'' unused
-		byval doload as integer _
-	) as integer Static
+		byval vauxparent as IRVREG ptr, _
+		byval size as uinteger _				'' unused
+	) as integer
 
-	dim as integer r
+	dim as integer r = any
 
 	r = sregFindReg( this_, vreg )
 	if( r = INVALID ) then
-		r = sregAllocate( this_, vreg, REG_SIZEMASK_64 )
-		irLoadVR( r, vreg, doload )
+		r = sregAllocate( this_, vreg, vauxparent, REG_SIZEMASK_64 )
+		irLoadVR( r, vreg, vauxparent )
 	else
 		assert( vreg->reg = r )
 		if( this_->stkctx.regTB(r) <> 0 ) then
@@ -628,15 +641,13 @@ private function sregEnsure _
 	end if
 
 	function = r
-
 end function
 
-'':::::
 private sub sregFree _
 	( _
 		byval this_ as REGCLASS ptr, _
 		byval r as integer _
-	) static
+	)
 
 	dim as integer i, realreg
 
@@ -647,6 +658,7 @@ private sub sregFree _
 	realreg = this_->stkctx.regTB(r)
 	this_->stkctx.regTB(r) = INVALID
 	this_->vregTB(r) = NULL
+	this_->vauxparent(r) = NULL
 
 	for i = 0 to this_->regs - 1
 		if( this_->stkctx.regTB(i) <> INVALID ) then
@@ -676,10 +688,12 @@ private sub sregSetOwner _
 	( _
 		byval this_ as REGCLASS ptr, _
 		byval r as integer, _
-		byval vreg as IRVREG ptr _
-	) static
+		byval vreg as IRVREG ptr, _
+		byval vauxparent as IRVREG ptr _
+	)
 
 	this_->vregTB(r) = vreg
+	this_->vauxparent(r) = vauxparent
 
 end sub
 
@@ -733,10 +747,12 @@ end function
 private function sregGetVreg _
 	( _
 		byval this_ as REGCLASS ptr, _
-		byval r as integer _
-	) as IRVREG ptr static
+		byval r as integer, _
+		byref vauxparent as IRVREG ptr _
+	) as IRVREG ptr
 
 	function = this_->vregTB(r)
+	vauxparent = this_->vauxparent(r)
 
 end function
 
@@ -773,6 +789,7 @@ private sub sregClear _
 	for r = 0 to reg->regs - 1
 		reg->stkctx.regTB(r) = INVALID
 		reg->vregTB(r) = NULL
+		reg->vauxparent(r) = NULL
 	next
 
 end sub
@@ -803,5 +820,3 @@ private sub sregInitClass _
 	this_->dump	= @sregDump
 
 end sub
-
-

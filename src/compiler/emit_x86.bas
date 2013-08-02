@@ -166,6 +166,12 @@ const EMIT_MAXKEYWORDS = 600
 '':::::
 #define hEmitExportHeader( ) _setSection( IR_SECTION_DIRECTIVE, 0 )
 
+#if __FB_DEBUG__
+function emitDumpRegName( byval dtype as integer, byval reg as integer ) as string
+	function = *hGetRegName( dtype, reg )
+end function
+#endif
+
 '':::::
 function hIsRegFree _
 	( _

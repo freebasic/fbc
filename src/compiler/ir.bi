@@ -44,7 +44,7 @@ type IRTAC_ as IRTAC
 
 type IRTACVREG
 	vreg		as IRVREG_ ptr
-	pParent		as IRVREG_ ptr ptr              '' pointer to parent if idx or aux
+	parent		as IRVREG_ ptr  '' pointer to parent if idx or aux
 	next		as IRTACVREG ptr				'' next in tac (-> vr, v1 or v2)
 end type
 
@@ -403,14 +403,14 @@ type IR_VTBL
 	( _
 		byval reg as integer, _
 		byval vreg as IRVREG ptr, _
-		byval doload as integer _
+		byval vauxparent as IRVREG ptr _
 	)
 
 	storeVr as sub _
-	( _
-		byval vreg as IRVREG ptr, _
-		byval reg as integer _
-	)
+		( _
+			byval vreg as IRVREG ptr, _
+			byval vauxparent as IRVREG ptr _
+		)
 
 	xchgTOS as sub _
 	( _
@@ -533,9 +533,9 @@ declare function vregDump( byval v as IRVREG ptr ) as string
 
 #define irGetDistance(vreg) ir.vtbl.getDistance( vreg )
 
-#define irLoadVR(reg, vreg, doload) ir.vtbl.loadVR( reg, vreg, doload )
+#define irLoadVR(reg, vreg, vauxparent) ir.vtbl.loadVR( reg, vreg, vauxparent )
 
-#define irStoreVR(vreg, reg) ir.vtbl.storeVR( vreg, reg )
+#define irStoreVR(vreg, vauxparent) ir.vtbl.storeVR( vreg, vauxparent )
 
 #define irXchgTOS(reg) ir.vtbl.xchgTOS( reg )
 
