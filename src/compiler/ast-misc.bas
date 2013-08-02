@@ -490,7 +490,7 @@ sub astCheckConst _
 
 		case FB_SIZETYPE_INT32, FB_SIZETYPE_UINT32
 			lval = astConstGetAsInt64( n )
-			result = ((lval >= -2147483648u) and (lval <= 4294967295u))
+			result = ((lval >= -2147483648ll) and (lval <= 4294967295ll))
 
 		case FB_SIZETYPE_INT64, FB_SIZETYPE_UINT64
 			'' longints can hold most other type's values, except floats
