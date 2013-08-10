@@ -11,7 +11,7 @@
 
 #inclib "ole32"
 
-type OLE_LPCSTR as LPSTR
+type OLE_LPCSTR as const zstring ptr
 #define OLE_CONST
 #ifndef LRESULT
 type LRESULT as LONG

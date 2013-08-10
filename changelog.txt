@@ -47,6 +47,7 @@ Version 0.91.0:
 - #616: Assignments between pointers and floats are now disallowed, matching the behaviour for assignments between pointers and other incompatible data types
 - fbc -g generated wrong stabs definitions for UDTs whose size had to be rounded up (tail padding), preventing gdb from properly showing the content of arrays of such UDTs
 - #651: Multiple cases of bad ASM code generation for expressions involving LONGINTs, observable mostly when compiled under -exx due to the additional register spilling due to calls to pointer/bound checking functions (affected -gen gas only)
+- inc/win/*.bi headers: PC* and LPC* typedefs were not marked as const ptrs
 
 
 Version 0.90.1:
