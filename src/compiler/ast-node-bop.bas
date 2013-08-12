@@ -676,6 +676,7 @@ function astNewBOP _
 	) as ASTNODE ptr
 
     dim as ASTNODE ptr n = any
+    dim as integer ldtype0 = any, rdtype0 = any
     dim as integer ldtype = any, rdtype = any, dtype = any
     dim as integer ldclass = any, rdclass = any
 	dim as integer lrank = any, rrank = any, intrank = any, uintrank = any
@@ -995,6 +996,9 @@ function astNewBOP _
 	''   so enums never arrive here.
 	''
 
+	ldtype0 = ldtype
+	rdtype0 = rdtype
+
 	if( (env.clopt.lang <> FB_LANG_QB) and (is_str = FALSE) ) then
 		intrank = typeGetIntRank( FB_DATATYPE_INTEGER )
 		uintrank = typeGetIntRank( FB_DATATYPE_UINT )
@@ -1142,6 +1146,45 @@ function astNewBOP _
 		dtype   = ldtype
 		subtype = l->subtype
 	end if
+
+	'' warn on mixing signed and unsigned ops on comparisons/intdiv/mod/shr (unless signed value was a positive constant)
+	select case as const op
+	case AST_OP_EQ, AST_OP_GT, AST_OP_LT, AST_OP_NE, AST_OP_LE, AST_OP_GE, _
+	     AST_OP_INTDIV, AST_OP_MOD, AST_OP_SHR
+
+	    dim as integer warn = FALSE
+
+		'' lhs signed->unsigned?
+		if( typeIsSigned( ldtype0 ) ) then
+			if( typeIsSigned( ldtype ) = FALSE ) then
+				if( astIsConst( l ) = FALSE ) then
+					'' lhs var may have been negative
+					warn = TRUE
+				elseif( culngint( astConstGetAsInt64( l ) ) > ast_maxlimitTB( ldtype0 ) ) then
+					'' lhs const was negative
+					warn = TRUE
+				end if
+			end if
+		end if
+
+		'' lhs signed->unsigned?  (Except in SHR)
+		if( (warn = FALSE) andalso op <> AST_OP_SHR andalso typeIsSigned( rdtype0 ) ) then
+			if( typeIsSigned( rdtype ) = FALSE ) then
+				if( astIsConst( r ) = FALSE ) then
+					'' rhs var may have been negative
+					warn = TRUE
+				elseif( culngint( astConstGetAsInt64( r ) ) > ast_maxlimitTB( rdtype0 ) ) then
+					'' rhs const was negative
+					warn = TRUE
+				end if
+			end if
+		end if
+
+		if( warn ) then
+			errReportWarn( FB_WARNINGMSG_OPERANDSMIXEDSIGNEDNESS )
+		end if
+
+	end select
 
 	'' post check
 	select case as const op
