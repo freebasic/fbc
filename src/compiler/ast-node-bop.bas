@@ -1194,6 +1194,26 @@ function astNewBOP _
 			'' ? OP c = c OP ?
 			astSwap( r, l )
 
+		case AST_OP_GE
+			'' c >= ?  =  ? =< c
+			op = AST_OP_LE
+			astSwap( r, l )
+
+		case AST_OP_GT
+			'' c > ?  =  ? < c
+			op = AST_OP_LT
+			astSwap( r, l )
+
+		case AST_OP_LE
+			'' c <= ?  =  ? >= c
+			op = AST_OP_LT
+			astSwap( r, l )
+
+		case AST_OP_LT
+			'' c < ?  =  ? > c
+			op = AST_OP_GT
+			astSwap( r, l )
+
 		case AST_OP_SUB
 			'' c - ? = -? + c (this will removed later if no const folding can be done)
 			r = astNewUOP( AST_OP_NEG, r )
