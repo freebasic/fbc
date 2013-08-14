@@ -1195,7 +1195,7 @@ function astNewBOP _
 			astSwap( r, l )
 
 		case AST_OP_GE
-			'' c >= ?  =  ? =< c
+			'' c >= ?  =  ? <= c
 			op = AST_OP_LE
 			astSwap( r, l )
 
@@ -1206,7 +1206,7 @@ function astNewBOP _
 
 		case AST_OP_LE
 			'' c <= ?  =  ? >= c
-			op = AST_OP_LT
+			op = AST_OP_GE
 			astSwap( r, l )
 
 		case AST_OP_LT
