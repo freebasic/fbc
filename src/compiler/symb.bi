@@ -2066,7 +2066,7 @@ declare function symbGetUDTBaseLevel _
 									  0) )
 
 #define symbGetUDTElmBitLen(e) iif( e->typ = FB_DATATYPE_BITFIELD, _
-									e->subtype->bitfld.bits, _
+									clngint( e->subtype->bitfld.bits ), _ '' clngint needed for older versions of fbc
 									e->lgt * e->var_.array.elms * 8 )
 
 #define symbSetUDTIsUnion(s) (s)->udt.options or= FB_UDTOPT_ISUNION
