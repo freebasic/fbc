@@ -97,6 +97,7 @@ type IRHLCCTX
 	vregTB				as TFLIST
 	callargs			as TLIST        '' IRCALLARG's during emitPushArg/emitCall[Ptr]
 	linenum				as integer
+	escapedinputfilename		as string
 
 	anonstack			as TLIST  '' stack of nested anonymous structs/unions in a struct/union
 
@@ -298,7 +299,7 @@ private sub hWriteLine _
 
 	if( env.clopt.debug and (noline = FALSE) ) then
 		ln = "#line " + str( ctx.linenum )
-		ln += " """ + hReplace( env.inf.name, "\", $"\\" ) + """"
+		ln += " """ + ctx.escapedinputfilename + """"
 		sectionWriteLine( ln )
 	end if
 
@@ -1191,6 +1192,8 @@ private sub hEmitFTOIBuiltins( )
 end sub
 
 private function _emitBegin( ) as integer
+	ctx.escapedinputfilename = hReplace( env.inf.name, "\", $"\\" )
+
 	if( hFileExists( env.outf.name ) ) then
 		kill env.outf.name
 	end if
