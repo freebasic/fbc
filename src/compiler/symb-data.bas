@@ -102,7 +102,7 @@ sub symbDataInit( )
 
 	'' Remap wchar to target-specific type
 	'' (all fields except the name, so symbTypeToStr() returns WSTRING
-	'' instead of USHORT/UINTEGER...)
+	'' instead of USHORT/ULONG...)
 	symb_dtypeTB(FB_DATATYPE_WCHAR).class     = symb_dtypeTB(env.target.wchar).class
 	symb_dtypeTB(FB_DATATYPE_WCHAR).size      = symb_dtypeTB(env.target.wchar).size
 	symb_dtypeTB(FB_DATATYPE_WCHAR).signed    = symb_dtypeTB(env.target.wchar).signed
