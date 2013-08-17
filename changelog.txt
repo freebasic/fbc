@@ -51,6 +51,7 @@ Version 0.91.0:
 - inc/win/*.bi headers: PC* and LPC* typedefs were not marked as const ptrs
 - -gen gas asm error when the rhs operand to SHL/SHR is a constant value greater than 255
 - C backend: Won't generate #line 0 at the top of procedures under -g anymore
+- C backend: Will now generate #lines for procedure headers under -g (improved debugging support under -gen gcc)
 
 
 Version 0.90.1:

@@ -3393,8 +3393,8 @@ private sub _emitProcBegin _
 	'' __attribute__((naked)) on x86
 	if( symbIsNaked( proc ) ) then
 		mangled = hGetMangledNameForASM( proc )
-		hWriteLine( "__asm__( "".globl " + mangled + """ );", TRUE )
-		hWriteLine( "__asm__( """ + mangled + ":"" );", TRUE )
+		hWriteLine( "__asm__( "".globl " + mangled + """ );" )
+		hWriteLine( "__asm__( """ + mangled + ":"" );" )
 		exit sub
 	end if
 
@@ -3405,15 +3405,15 @@ private sub _emitProcBegin _
 	'' prototypes.
 	select case( symbGetProcMode( proc ) )
 	case FB_FUNCMODE_STDCALL_MS, FB_FUNCMODE_PASCAL
-		hWriteLine( hEmitProcHeader( proc, EMITPROC_ISPROTO ), TRUE )
+		hWriteLine( hEmitProcHeader( proc, EMITPROC_ISPROTO ) )
 	end select
 #endif
 
 	sectionBegin( )
 
-	hWriteLine( hEmitProcHeader( proc, 0 ), TRUE )
+	hWriteLine( hEmitProcHeader( proc, 0 ) )
 
-	hWriteLine( "{", TRUE )
+	hWriteLine( "{" )
 	sectionIndent( )
 
 end sub
@@ -3439,7 +3439,7 @@ private sub _emitProcEnd _
 	end if
 
 	sectionUnindent( )
-	hWriteLine( "}", TRUE )
+	hWriteLine( "}" )
 
 	sectionEnd( )
 
