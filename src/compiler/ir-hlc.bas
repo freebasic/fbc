@@ -3387,7 +3387,6 @@ private sub _emitProcBegin _
 
 	if( env.clopt.debug ) then
 		_emitDBG( AST_OP_DBG_LINEINI, proc, proc->proc.ext->dbg.iniline )
-		ctx.linenum = 0
 	end if
 
 	'' NAKED procedure? Use inline asm, since gcc doesn't support

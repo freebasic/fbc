@@ -50,6 +50,7 @@ Version 0.91.0:
 - #651: Multiple cases of bad ASM code generation for expressions involving LONGINTs, observable mostly when compiled under -exx due to the additional register spilling due to calls to pointer/bound checking functions (affected -gen gas only)
 - inc/win/*.bi headers: PC* and LPC* typedefs were not marked as const ptrs
 - -gen gas asm error when the rhs operand to SHL/SHR is a constant value greater than 255
+- C backend: Won't generate #line 0 at the top of procedures under -g anymore
 
 
 Version 0.90.1:
