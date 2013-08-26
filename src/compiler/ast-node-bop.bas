@@ -1157,11 +1157,14 @@ function astNewBOP _
 		'' lhs signed->unsigned?
 		if( typeIsSigned( ldtype0 ) ) then
 			if( typeIsSigned( ldtype ) = FALSE ) then
-				if( astIsConst( l ) = FALSE ) then
+				if( astIsConst( l ) ) then
+					'' check for negative const lhs
+					if( astConstGetAsInt64( l ) < 0 ) then
+						'' lhs const int was negative
+						warn = TRUE
+					end if
+				else
 					'' lhs var may have been negative
-					warn = TRUE
-				elseif( culngint( astConstGetAsInt64( l ) ) > ast_maxlimitTB( ldtype0 ) ) then
-					'' lhs const was negative
 					warn = TRUE
 				end if
 			end if
@@ -1170,11 +1173,13 @@ function astNewBOP _
 		'' lhs signed->unsigned?  (Except in SHR)
 		if( (warn = FALSE) andalso op <> AST_OP_SHR andalso typeIsSigned( rdtype0 ) ) then
 			if( typeIsSigned( rdtype ) = FALSE ) then
-				if( astIsConst( r ) = FALSE ) then
+				if( astIsConst( r ) ) then
+					if( astConstGetAsInt64( r ) < 0 ) then
+						'' rhs const int was negative
+						warn = TRUE
+					end if
+				else
 					'' rhs var may have been negative
-					warn = TRUE
-				elseif( culngint( astConstGetAsInt64( r ) ) > ast_maxlimitTB( rdtype0 ) ) then
-					'' rhs const was negative
 					warn = TRUE
 				end if
 			end if
