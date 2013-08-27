@@ -678,7 +678,7 @@ function symbCheckArraySize _
 	if( found_too_big ) then
 		function = FALSE
 	else
-		if( is_on_stack and (allelements > env.clopt.stacksize) ) then
+		if( is_on_stack and (allelements > culngint( env.clopt.stacksize )) ) then
 			errReportWarn( FB_WARNINGMSG_HUGEARRAYONSTACK )
 		end if
 		function = TRUE
