@@ -1933,7 +1933,7 @@ declare function symbGetUDTBaseLevel _
 
 #define symbGetStrLen(s) symbGetLen(s)
 
-#define symbGetWstrLen(s) (cunsg(s->lgt) \ typeGetSize( FB_DATATYPE_WCHAR ))
+#define symbGetWstrLen(s) ((s)->lgt \ typeGetSize( FB_DATATYPE_WCHAR ))
 
 #define symbGetFullType(s) s->typ
 #define symbGetType(s) typeGetDtAndPtrOnly( symbGetFullType( s ) )
