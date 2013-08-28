@@ -1152,7 +1152,7 @@ function astNewBOP _
 	case AST_OP_EQ, AST_OP_GT, AST_OP_LT, AST_OP_NE, AST_OP_LE, AST_OP_GE, _
 	     AST_OP_INTDIV, AST_OP_MOD, AST_OP_SHR
 
-	    dim as integer warn = FALSE
+	    dim as FB_WARNINGMSG warning = 0
 
 		'' lhs signed->unsigned?
 		if( typeIsSigned( ldtype0 ) ) then
@@ -1161,32 +1161,38 @@ function astNewBOP _
 					'' check for negative const lhs
 					if( astConstGetAsInt64( l ) < 0 ) then
 						'' lhs const int was negative
-						warn = TRUE
+						warning = FB_WARNINGMSG_OPERANDSMIXEDSIGNEDNESS
 					end if
 				else
 					'' lhs var may have been negative
-					warn = TRUE
+					'' (only a pedantic warning)
+					if( fbPdCheckIsSet( FB_PDCHECK_SIGNEDNESS ) ) then
+						warning = FB_WARNINGMSG_OPERANDSMIXEDSIGNEDNESS
+					end if
 				end if
 			end if
 		end if
 
 		'' lhs signed->unsigned?  (Except in SHR)
-		if( (warn = FALSE) andalso op <> AST_OP_SHR andalso typeIsSigned( rdtype0 ) ) then
+		if( (warning = 0) andalso op <> AST_OP_SHR andalso typeIsSigned( rdtype0 ) ) then
 			if( typeIsSigned( rdtype ) = FALSE ) then
 				if( astIsConst( r ) ) then
 					if( astConstGetAsInt64( r ) < 0 ) then
 						'' rhs const int was negative
-						warn = TRUE
+						warning = FB_WARNINGMSG_OPERANDSMIXEDSIGNEDNESS
 					end if
 				else
 					'' rhs var may have been negative
-					warn = TRUE
+					'' (only a pedantic warning)
+					if( fbPdCheckIsSet( FB_PDCHECK_SIGNEDNESS ) ) then
+						warning = FB_WARNINGMSG_OPERANDSMIXEDSIGNEDNESS
+					end if
 				end if
 			end if
 		end if
 
-		if( warn ) then
-			errReportWarn( FB_WARNINGMSG_OPERANDSMIXEDSIGNEDNESS )
+		if( warning <> 0 ) then
+			errReportWarn( warning )
 		end if
 
 	end select
@@ -1236,7 +1242,7 @@ function astNewBOP _
 
 		return l
 
-	elseif( astIsCONST( l ) and ldtype = rdtype ) then
+	elseif( astIsCONST( l ) and ldtype = rdtype and is_str = FALSE ) then
 		select case op
 		case AST_OP_ADD, AST_OP_MUL, _
 		     AST_OP_AND, AST_OP_OR, AST_OP_XOR, AST_OP_EQV, _

@@ -844,7 +844,7 @@ private function hLinkFiles( ) as integer
 		end if
 
 		cxbecline = "-TITLE:" + QUOTE + fbc.xbe_title + (QUOTE + " ")
-		
+
 		if( fbGetOption( FB_COMPOPT_DEBUG ) ) then
 			cxbecline += "-DUMPINFO:" + QUOTE + hStripExt(fbc.outname) + (".cxbe" + QUOTE)
 		end if
@@ -1582,6 +1582,10 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 		case "next"
 			fbSetOption( FB_COMPOPT_PEDANTICCHK, _
 						 fbGetOption( FB_COMPOPT_PEDANTICCHK ) or FB_PDCHECK_NEXTVAR )
+
+		case "signedness"
+			fbSetOption( FB_COMPOPT_PEDANTICCHK, _
+						 fbGetOption( FB_COMPOPT_PEDANTICCHK ) or FB_PDCHECK_SIGNEDNESS )
 
 		case "pedantic"
 			fbSetOption( FB_COMPOPT_PEDANTICCHK, FB_PDCHECK_DEFAULT )
