@@ -1,7 +1,5 @@
 # include "fbcu.bi"
 
-
-
 namespace fbc_tests.pointers.casting1
 
 const TEST_VAL = &hDeadC0de
@@ -26,11 +24,9 @@ function realfunc( ) as funcudt ptr
 	static as funcudt t = ( TEST_VAL )
 
 	function = @t
-
 end function
 
 sub test cdecl ()
-
 	dim as udttype t
 	
 	dim as any ptr p
@@ -44,18 +40,20 @@ sub test cdecl ()
 	t.fparray[10] = @realfunc
 	
 	CU_ASSERT( cast(udttype ptr, *cast(any ptr ptr, pptr))->fparray[10]()->field = TEST_VAL )
-	
 
 	'' Bug #3269771 regression test (casting derived class pointers to integers)
 	dim as DerivedClass ptr pclass
-	dim as ulong l = culng(pclass)
+	#ifdef __FB_64BIT__
+		dim as ulongint ull = culngint( pclass )
+	#else
+		dim as ulong ul = culng( pclass )
+	#endif
+	dim as uinteger ui = cuint( pclass )
 end sub
 
 private sub ctor () constructor
-
 	fbcu.add_suite("fbc_tests.pointers.casting1")
 	fbcu.add_test("test", @test)
-
 end sub
 
 end namespace
