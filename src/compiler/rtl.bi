@@ -337,7 +337,8 @@
 #define FB_RTL_GFXVIEW 					"fb_GfxView"
 #define FB_RTL_GFXWINDOW 				"fb_GfxWindow"
 #define FB_RTL_GFXPALETTE 				"fb_GfxPalette"
-#define FB_RTL_GFXPALETTEUSING 			"fb_GfxPaletteUsing"
+#define FB_RTL_GFXPALETTEUSING				"fb_GfxPaletteUsing"
+#define FB_RTL_GFXPALETTEUSING64			"fb_GfxPaletteUsing64"
 #define FB_RTL_GFXPALETTEGET 			"fb_GfxPaletteGet"
 #define FB_RTL_GFXPALETTEGETUSING 		"fb_GfxPaletteGetUsing"
 #define FB_RTL_GFXPUT 					"fb_GfxPut"
@@ -741,6 +742,7 @@ enum FB_RTL_IDX
 	FB_RTL_IDX_GFXWINDOW
 	FB_RTL_IDX_GFXPALETTE
 	FB_RTL_IDX_GFXPALETTEUSING
+	FB_RTL_IDX_GFXPALETTEUSING64
 	FB_RTL_IDX_GFXPALETTEGET
 	FB_RTL_IDX_GFXPALETTEGETUSING
 	FB_RTL_IDX_GFXPUT

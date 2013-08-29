@@ -260,11 +260,21 @@ declare function hPorts_cb _
 		( _
 			@FB_RTL_GFXPALETTEUSING, NULL, _
 			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
-	 		@hGfxlib_cb, FB_RTL_OPT_NONE, _
+			@hGfxlib_cb, FB_RTL_OPT_NONE, _
 			1, _
 			{ _
 				( FB_DATATYPE_LONG, FB_PARAMMODE_BYREF, FALSE ) _
-	 		} _
+			} _
+		), _
+		/' sub fb_GfxPaletteUsing64( byref data as longint ) '/ _
+		( _
+			@FB_RTL_GFXPALETTEUSING64, NULL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
+			@hGfxlib_cb, FB_RTL_OPT_NONE, _
+			1, _
+			{ _
+				( FB_DATATYPE_LONGINT, FB_PARAMMODE_BYREF, FALSE ) _
+			} _
 		), _
 		/' sub fb_GfxPaletteGet _
 			( _
