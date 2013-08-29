@@ -244,6 +244,16 @@ declare function 	hThreadCall_cb		( byval sym as FBSYMBOL ptr ) as integer
 				( FB_DATATYPE_LONG, FB_PARAMMODE_BYREF, FALSE ) _
 	 		} _
 	 	), _
+		/' function dir overload( byref out_attrib as longint ) as string '/ _
+		( _
+			@"dir", @"fb_DirNext64", _
+			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
+			1, _
+			{ _
+				( FB_DATATYPE_LONGINT, FB_PARAMMODE_BYREF, FALSE ) _
+			} _
+		), _
 		/' function dir overload( byref mask as string, _
 				byval attrib_mask as long = &h21, _
 				byval out_attrib as long ptr = NULL ) as string '/ _
