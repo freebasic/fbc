@@ -286,14 +286,33 @@ declare function hPorts_cb _
 		( _
 			@FB_RTL_GFXPALETTEGET, NULL, _
 			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
-	 		@hGfxlib_cb, FB_RTL_OPT_NONE, _
+			@hGfxlib_cb, FB_RTL_OPT_NONE, _
 			4, _
 			{ _
 				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
 				( FB_DATATYPE_LONG, FB_PARAMMODE_BYREF, FALSE ), _
 				( FB_DATATYPE_LONG, FB_PARAMMODE_BYREF, FALSE ), _
 				( FB_DATATYPE_LONG, FB_PARAMMODE_BYREF, FALSE ) _
-	 		} _
+			} _
+		), _
+		/' sub fb_GfxPaletteGet64 _
+			( _
+				byval index as long, _
+				byref r as longint, _
+				byref g as longint, _
+				byref b as longint _
+			) '/ _
+		( _
+			@FB_RTL_GFXPALETTEGET64, NULL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
+			@hGfxlib_cb, FB_RTL_OPT_NONE, _
+			4, _
+			{ _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
+				( FB_DATATYPE_LONGINT, FB_PARAMMODE_BYREF, FALSE ), _
+				( FB_DATATYPE_LONGINT, FB_PARAMMODE_BYREF, FALSE ), _
+				( FB_DATATYPE_LONGINT, FB_PARAMMODE_BYREF, FALSE ) _
+			} _
 		), _
 		/' sub fb_GfxPaletteGetUsing( byref data as long ) '/ _
 		( _
@@ -2086,7 +2105,6 @@ function rtlGfxWindow _
 
 end function
 
-'':::::
 function rtlGfxPalette  _
 	( _
 		byval attexpr as ASTNODE ptr, _
@@ -2102,59 +2120,68 @@ function rtlGfxPalette  _
 
 	function = FALSE
 
-    if( isget ) then
-    	f = PROCLOOKUP( GFXPALETTEGET )
-    else
-    	f = PROCLOOKUP( GFXPALETTE )
-    end if
-	proc = astNewCALL( f )
-
 	if( isget ) then
+		'' Choose one of these two:
+		''
+		'' fb_GfxPaletteGet():   r/g/b BYREF parameters = 32bit integers
+		'' fb_GfxPaletteGet64(): r/g/b BYREF parameters = 64bit integers
+		''
+		'' There are only these two overloads available, so we can
+		'' choose one based on the r parameter's type.
+		''
+		'' It probably wouldn't be useful to have overloads where the
+		'' r/g/b BYREF parameters have mixed types, because who'd use
+		'' a 32bit r/g and 64bit b, or similar?
+		if( typeGetSize( astGetDataType( rexpr ) ) = 8 ) then
+			f = PROCLOOKUP( GFXPALETTEGET64 )
+		else
+			f = PROCLOOKUP( GFXPALETTEGET )
+		end if
 		targetmode = FB_PARAMMODE_BYREF
 		defval = 0
 	else
+		f = PROCLOOKUP( GFXPALETTE )
 		targetmode = FB_PARAMMODE_BYVAL
 		defval = -1
 	end if
 
- 	'' byval attr as integer
- 	if( attexpr = NULL ) then
-		attexpr = astNewCONSTi( -1 )
-    end if
- 	if( astNewARG( proc, attexpr ) = NULL ) then
- 		exit function
- 	end if
+	proc = astNewCALL( f )
 
- 	'' byval r as integer
+	'' byval index as long
+	if( attexpr = NULL ) then
+		attexpr = astNewCONSTi( -1 )
+	end if
+	if( astNewARG( proc, attexpr ) = NULL ) then
+		exit function
+	end if
+
+	'' byval r as long|longint
  	if( rexpr = NULL ) then
 		rexpr = astNewCONSTi( -1 )
-    end if
- 	if( astNewARG( proc, rexpr ) = NULL ) then
- 		exit function
- 	end if
+	end if
+	if( astNewARG( proc, rexpr ) = NULL ) then
+		exit function
+	end if
 
- 	'' byval g as integer
- 	if( gexpr = NULL ) then
- 		targetmode = FB_PARAMMODE_BYVAL
+	'' byval g as long|longint
+	if( gexpr = NULL ) then
+		targetmode = FB_PARAMMODE_BYVAL
 		gexpr = astNewCONSTi( defval )
-    end if
+	end if
 	if( astNewARG( proc, gexpr, , targetmode ) = NULL ) then
- 		exit function
- 	end if
+		exit function
+	end if
 
- 	'' byval b as integer
- 	if( bexpr = NULL ) then
+	'' byval b as long|longint
+	if( bexpr = NULL ) then
 		bexpr = astNewCONSTi( defval )
-    end if
+	end if
 	if( astNewARG( proc, bexpr, , targetmode ) = NULL ) then
- 		exit function
- 	end if
+		exit function
+	end if
 
- 	''
- 	astAdd( proc )
-
+	astAdd( proc )
 	function = TRUE
-
 end function
 
 '':::::
