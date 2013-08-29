@@ -85,8 +85,8 @@ sub cParameters _
 		lexSkipToken( )
 	end if
 
-	'' param list too large?
-	if( length > 256 ) then
+	'' param list too large? (pretty arbitrary limit)
+	if( length > (env.pointersize * 64) ) then
 		errReportWarn( FB_WARNINGMSG_PARAMLISTSIZETOOBIG, symbGetName( proc ) )
 	end if
 end sub
