@@ -544,6 +544,7 @@ extern FBCALL void fb_GfxUnlock(int start_line, int end_line);
 extern FBCALL void *fb_GfxScreenPtr(void);
 extern FBCALL void fb_GfxSetWindowTitle(FBSTRING *title);
 extern FBCALL int fb_GfxGetJoystick(int id, int *buttons, float *a1, float *a2, float *a3, float *a4, float *a5, float *a6, float *a7, float *a8);
+extern FBCALL int fb_GfxGetJoystick64(int id, long long *buttons, float *a1, float *a2, float *a3, float *a4, float *a5, float *a6, float *a7, float *a8);
 extern FBCALL int fb_GfxEvent(EVENT *event);
 extern FBCALL void fb_GfxControl_s(int what, FBSTRING *param);
 extern FBCALL void fb_GfxControl_i(int what, ssize_t *param1, ssize_t *param2, ssize_t *param3, ssize_t *param4);
