@@ -305,6 +305,7 @@ FBCALL int          fb_SetPos           ( FB_FILE *handle, int line_length );
        void         fb_FileInputNextTokenWstr( FB_WCHAR *buffer, ssize_t max_chars, int is_string );
 
 FBCALL FBSTRING    *fb_Dir              ( FBSTRING *filespec, int attrib, int *out_attrib );
+FBCALL FBSTRING    *fb_Dir64            ( FBSTRING *filespec, int attrib, long long *outattrib );
 FBCALL FBSTRING    *fb_DirNext          ( int *outattrib );
 FBCALL FBSTRING    *fb_DirNext64        ( long long *outattrib );
 
