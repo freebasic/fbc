@@ -318,11 +318,21 @@ declare function hPorts_cb _
 		( _
 			@FB_RTL_GFXPALETTEGETUSING, NULL, _
 			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
-	 		@hGfxlib_cb, FB_RTL_OPT_NONE, _
+			@hGfxlib_cb, FB_RTL_OPT_NONE, _
 			1, _
 			{ _
 				( FB_DATATYPE_LONG, FB_PARAMMODE_BYREF, FALSE ) _
-	 		} _
+			} _
+		), _
+		/' sub fb_GfxPaletteGetUsing64( byref data as longint ) '/ _
+		( _
+			@FB_RTL_GFXPALETTEGETUSING64, NULL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
+			@hGfxlib_cb, FB_RTL_OPT_NONE, _
+			1, _
+			{ _
+				( FB_DATATYPE_LONGINT, FB_PARAMMODE_BYREF, FALSE ) _
+			} _
 		), _
 		/' function fb_GfxPut _
 			( _
@@ -2184,7 +2194,6 @@ function rtlGfxPalette  _
 	function = TRUE
 end function
 
-'':::::
 function rtlGfxPaletteUsing  _
 	( _
 		byval arrayexpr as ASTNODE ptr, _
@@ -2198,24 +2207,29 @@ function rtlGfxPaletteUsing  _
 
 	function = FALSE
 
-    if( isget ) then
-    	f = PROCLOOKUP( GFXPALETTEGETUSING )
-    else
-    	f = PROCLOOKUP( GFXPALETTEUSING )
-    end if
+	if( typeGetSize( astGetDataType( arrayexpr ) ) = 8 ) then
+		if( isget ) then
+			f = PROCLOOKUP( GFXPALETTEGETUSING64 )
+		else
+			f = PROCLOOKUP( GFXPALETTEUSING64 )
+		end if
+	else
+		if( isget ) then
+			f = PROCLOOKUP( GFXPALETTEGETUSING )
+		else
+			f = PROCLOOKUP( GFXPALETTEUSING )
+		end if
+	end if
 	proc = astNewCALL( f )
 
- 	'' byref array as integer
- 	mode = iif( isptr, FB_PARAMMODE_BYVAL, INVALID )
+	'' byref array as long|longint
+	mode = iif( isptr, FB_PARAMMODE_BYVAL, INVALID )
 	if( astNewARG( proc, arrayexpr, , mode ) = NULL ) then
- 		exit function
- 	end if
+		exit function
+	end if
 
- 	''
- 	astAdd( proc )
-
+	astAdd( proc )
 	function = TRUE
-
 end function
 
 '':::::
