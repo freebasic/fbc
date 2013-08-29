@@ -62,6 +62,7 @@ FBCALL int          fb_LineInputWstr    ( const FB_WCHAR *text, FB_WCHAR *dst,
 
 FBCALL int          fb_Multikey         ( int scancode );
 FBCALL int          fb_GetMouse         ( int *x, int *y, int *z, int *buttons_, int *clip );
+FBCALL int          fb_GetMouse64       ( long long *x, long long *y, long long *z, long long *buttons_, long long *clip );
 FBCALL int          fb_SetMouse         ( int x, int y, int cursor, int clip );
 typedef int         (*FB_MULTIKEYPROC)  ( int scancode );
 typedef int         (*FB_GETMOUSEPROC)  ( int *x, int *y, int *z, int *buttons_, int *clip );

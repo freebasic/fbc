@@ -718,7 +718,7 @@ declare function hPorts_cb _
 				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
-		/' function getmouse _
+		/' function getmouse overload _
 			( _
 				byref x as long = 0, _
 				byref y as long = 0, _
@@ -729,7 +729,7 @@ declare function hPorts_cb _
 		( _
 			@"getmouse", @"fb_GetMouse", _
 			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
-			@rtlMultinput_cb, FB_RTL_OPT_NOQB, _
+			@rtlMultinput_cb, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
 			5, _
 			{ _
 				( FB_DATATYPE_LONG, FB_PARAMMODE_BYREF, FALSE, 0, TRUE ), _
@@ -737,7 +737,28 @@ declare function hPorts_cb _
 				( FB_DATATYPE_LONG, FB_PARAMMODE_BYREF, TRUE, 0, TRUE ), _
 				( FB_DATATYPE_LONG, FB_PARAMMODE_BYREF, TRUE, 0, TRUE ), _
 				( FB_DATATYPE_LONG, FB_PARAMMODE_BYREF, TRUE, 0, TRUE ) _
-	 		} _
+			} _
+		), _
+		/' function getmouse overload _
+			( _
+				byref x as longint = 0, _
+				byref y as longint = 0, _
+				byref z as longint = 0, _
+				byref buttons as longint = 0, _
+				byref clip as longint = 0 _
+			) as long '/ _
+		( _
+			@"getmouse", @"fb_GetMouse64", _
+			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
+			@rtlMultinput_cb, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
+			5, _
+			{ _
+				( FB_DATATYPE_LONGINT, FB_PARAMMODE_BYREF, FALSE, 0, TRUE ), _
+				( FB_DATATYPE_LONGINT, FB_PARAMMODE_BYREF, FALSE, 0, TRUE ), _
+				( FB_DATATYPE_LONGINT, FB_PARAMMODE_BYREF, TRUE, 0, TRUE ), _
+				( FB_DATATYPE_LONGINT, FB_PARAMMODE_BYREF, TRUE, 0, TRUE ), _
+				( FB_DATATYPE_LONGINT, FB_PARAMMODE_BYREF, TRUE, 0, TRUE ) _
+			} _
 		), _
 		/' function setmouse _
 			( _
