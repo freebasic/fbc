@@ -41,7 +41,7 @@ void fb_hRestorePalette(void)
 	}
 }
 
-static void set_color_rgb(int index, int r, int g, int b)
+void fb_hSetPaletteColorRgb(int index, int r, int g, int b)
 {
 	index &= (__fb_gfx->default_palette->colors - 1);
 
@@ -51,7 +51,7 @@ static void set_color_rgb(int index, int r, int g, int b)
 		__fb_gfx->driver->set_palette(index, r, g, b);
 }
 
-static void set_color(int index, unsigned int color)
+void fb_hSetPaletteColor(int index, unsigned int color)
 {
 	int r, g, b;
 
@@ -69,7 +69,7 @@ static void set_color(int index, unsigned int color)
 		__fb_gfx->color_association[index] = color;
 	}
 
-	set_color_rgb(index, r, g, b);
+	fb_hSetPaletteColorRgb(index, r, g, b);
 }
 
 FBCALL void fb_GfxPalette(int index, int red, int green, int blue)
@@ -123,9 +123,9 @@ FBCALL void fb_GfxPalette(int index, int red, int green, int blue)
 		}
 	} else {
 		if ((green < 0) || (blue < 0))
-			set_color(index, (unsigned int)red);
+			fb_hSetPaletteColor(index, (unsigned int)red);
 		else
-			set_color_rgb(index, red, green, blue);
+			fb_hSetPaletteColorRgb(index, red, green, blue);
 	}
 
 	fb_hMemSet(__fb_gfx->dirty, TRUE, __fb_gfx->h);
@@ -144,7 +144,7 @@ FBCALL void fb_GfxPaletteUsing(int *data)
 
 	for (i = 0; i < (1 << __fb_gfx->depth); i++) {
 		if (data[i] >= 0)
-			set_color(i, data[i]);
+			fb_hSetPaletteColor(i, data[i]);
 	}
 
 	fb_hMemSet(__fb_gfx->dirty, TRUE, __fb_gfx->h);

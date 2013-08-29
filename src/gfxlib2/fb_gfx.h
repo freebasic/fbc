@@ -483,6 +483,8 @@ extern BLITTER *fb_hGetBlitter(int device_depth, int is_rgb);
 extern unsigned int fb_hMakeColor(int bpp, unsigned int index, int r, int g, int b);
 extern unsigned int fb_hFixColor(int bpp, unsigned int color);
 extern void fb_hRestorePalette(void);
+extern void fb_hSetPaletteColorRgb(int index, int r, int g, int b);
+extern void fb_hSetPaletteColor(int index, unsigned int color);
 extern void fb_hPrepareTarget(FB_GFXCTX *ctx, void *target);
 extern void fb_hSetPixelTransfer(FB_GFXCTX *ctx, unsigned int color);
 extern void fb_hTranslateCoord(FB_GFXCTX *ctx, float fx, float fy, int *x, int *y);
