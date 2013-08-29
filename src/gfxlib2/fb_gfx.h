@@ -511,6 +511,7 @@ extern FBCALL int fb_GfxScreen(int mode, int depth, int num_pages, int flags, in
 extern FBCALL int fb_GfxScreenQB(int mode, int visible, int active);
 extern FBCALL int fb_GfxScreenRes(int width, int height, int depth, int num_pages, int flags, int refresh_rate);
 extern FBCALL void fb_GfxScreenInfo(int *width, int *height, int *depth, int *bpp, int *pitch, int *refresh_rate, FBSTRING *driver);
+extern FBCALL void fb_GfxScreenInfo64(long long *width, long long *height, long long *depth, long long *bpp, long long *pitch, long long *refresh, FBSTRING *driver );
 extern FBCALL int fb_GfxScreenList(int depth);
 extern FBCALL void *fb_GfxImageCreate(int width, int height, unsigned int color, int depth, int flags);
 extern FBCALL void *fb_GfxImageCreateQB(int width, int height, unsigned int color, int depth, int flags);
