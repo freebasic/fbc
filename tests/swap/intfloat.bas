@@ -314,8 +314,8 @@ sub testMixups cdecl( )
 
 			dim as TA ptr ptr_a = callocate( sizeof(TA) * 3 )
 			dim as TB ptr ptr_b = callocate( sizeof(TB) * 3 )
-			CU_ASSERT( ptr_a )
-			CU_ASSERT( ptr_b )
+			CU_ASSERT( ptr_a <> NULL )
+			CU_ASSERT( ptr_b <> NULL )
 
 			scope
 				var_a = 1
