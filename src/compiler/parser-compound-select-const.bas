@@ -73,7 +73,11 @@ sub cSelConstStmtBegin()
 	end if
 
 	if( astGetDataType( expr ) <> FB_DATATYPE_UINT ) then
-		expr = astNewCONV( FB_DATATYPE_UINT, NULL, expr )
+		if( typeGetSize( astGetDataType( expr ) ) <= typeGetSize( FB_DATATYPE_UINT ) ) then
+			expr = astNewCONV( FB_DATATYPE_UINT, NULL, expr )
+		else
+			expr = astNewCONV( FB_DATATYPE_ULONGINT, NULL, expr )
+		end if
 	end if
 
 	'' add labels
@@ -86,7 +90,7 @@ sub cSelConstStmtBegin()
 	end if
 
 	'' dim temp as uinteger = expr
-	sym = symbAddImplicitVar( FB_DATATYPE_UINT, NULL, options )
+	sym = symbAddImplicitVar( astGetDataType( expr ), NULL, options )
 
 	'' a) Don't bother clearing the temp var, it's just an integer
 	'' b) Silence "branch crossing" warnings, the temp var won't be

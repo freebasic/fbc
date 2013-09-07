@@ -65,6 +65,7 @@ Version 0.91.0:
 - crt/stdint.bi: WCHAR_MIN/WCHAR_MAX/WINT_MIN/WINT_MAX declarations were incomplete
 - Debugging help: For dynamic arrays, the compiler will now always name the array descriptor symbol after the original array name
 - datetime.bi: DateDiff() was declared to return a 32bit integer while the rtlib actually returns a 64bit integer
+- SELECT CASE AS CONST was ignoring the upper 32 bits of 64bit integer expressions in 32bit mode
 
 
 Version 0.90.1:

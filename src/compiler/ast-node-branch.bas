@@ -166,7 +166,7 @@ function astBuildJMPTB _
 	static as FBARRAYDIM dTB(0)
 	dim as FBSYMBOL ptr tbsym = any
 
-	assert( symbGetType( tempvar ) = FB_DATATYPE_UINT )
+	assert( symbGetType( tempvar ) = FB_DATATYPE_UINT or symbGetType( tempvar ) = FB_DATATYPE_ULONGINT )
 
 	tree = NULL
 
