@@ -218,7 +218,10 @@ sub cIfStmtNext( )
 		astAdd( astNewBRANCH( AST_OP_JMP, stk->if.endlabel ) )
 
 		'' emit next label
-		astAdd( astNewLABEL( stk->if.nxtlabel ) )
+		'' (can be NULL in case of error recovery, e.g. ELSEIF after ELSE)
+		if( stk->if.nxtlabel ) then
+			astAdd( astNewLABEL( stk->if.nxtlabel ) )
+		end if
 
 		'' add next label (at ELSE/ELSEIF)
 		stk->if.nxtlabel = symbAddLabel( NULL, FB_SYMBOPT_NONE )

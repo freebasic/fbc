@@ -52,6 +52,7 @@ Version 0.91.0:
 - -gen gas asm error when the rhs operand to SHL/SHR is a constant value greater than 255
 - C backend: Won't generate #line 0 at the top of procedures under -g anymore
 - C backend: Will now generate #lines for procedure headers under -g (improved debugging support under -gen gcc)
+- #703: Compiler crash after recovering from "ElseIf behind Else" error
 
 
 Version 0.90.1:
