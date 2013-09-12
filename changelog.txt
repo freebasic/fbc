@@ -53,6 +53,7 @@ Version 0.91.0:
 - C backend: Won't generate #line 0 at the top of procedures under -g anymore
 - C backend: Will now generate #lines for procedure headers under -g (improved debugging support under -gen gcc)
 - #703: Compiler crash after recovering from "ElseIf behind Else" error
+- The Win32 gfxlib2 will now use a (more) unique name for the window class it registers to create the graphics window, to prevent issues when using multiple gfxlib2 instances in parallel in the same process.
 
 
 Version 0.90.1:

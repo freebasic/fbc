@@ -5,7 +5,9 @@
 
 #include <windows.h>
 
+/* see also fb_win32.window_class setup in fb_hWin32Init() */
 #define WINDOW_CLASS_PREFIX "fbgfxclass_"
+#define WINDOW_CLASS_SIZE (sizeof( WINDOW_CLASS_PREFIX ) + (sizeof( void * ) * 2))
 
 /* This must match the original FLASHWINFO from the Win32 headers.
    MinGW-w64 declares it *all* the time, while MinGW does it only if the
@@ -40,7 +42,7 @@ typedef struct {
 	int is_running, is_palette_changed, is_active;
 	int w, h, depth, flags, refresh_rate;
 	char *window_title;
-	char window_class[WINDOW_TITLE_SIZE+sizeof( WINDOW_CLASS_PREFIX )];
+	char window_class[WINDOW_CLASS_SIZE];
 	int (*init)(void);
 	void (*exit)(void);
 	void (*paint)(void);

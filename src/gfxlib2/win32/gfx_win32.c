@@ -549,8 +549,12 @@ int fb_hWin32Init(char *title, int w, int h, int depth, int refresh_rate, int fl
 
 	fb_win32.hinstance = (HINSTANCE)GetModuleHandle(NULL);
 	fb_win32.window_title = title;
-	strcpy( fb_win32.window_class, WINDOW_CLASS_PREFIX );
-	strncat( fb_win32.window_class, fb_win32.window_title, WINDOW_TITLE_SIZE + sizeof(WINDOW_CLASS_PREFIX) - 1 );
+
+	/* Make a unique name for the window class, by encoding the address of the global context into it,
+	   so that the window class won't be re-used by other instances of gfxlib2 (e.g. from DLLs). */
+	snprintf( fb_win32.window_class, WINDOW_CLASS_SIZE-1, "%s%p", WINDOW_CLASS_PREFIX, &fb_win32 );
+	fb_win32.window_class[WINDOW_CLASS_SIZE-1] = '\0';
+
 	fb_win32.w = w;
 	fb_win32.h = h;
 	fb_win32.depth = depth;
