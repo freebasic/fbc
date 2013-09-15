@@ -229,10 +229,10 @@ function hashAdd _
 
     dim as HASHITEM ptr item = any
 
-    '' calc hash?
-    if( index = INVALID ) then
-    	index = hashHash( symbol )
-    end if
+	'' calc hash?
+	if( index = cuint( INVALID ) ) then
+		index = hashHash( symbol )
+	end if
 
     index mod= hash->nodes
 
