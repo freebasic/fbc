@@ -23,7 +23,7 @@ screenres 640, 480, 32
 
 dim e as EVENT
 do
-	if screenevent( @e ) <> 0 then
+	while screenevent( @e ) <> 0
 		select case as const e.type
 		case EVENT_KEY_PRESS
 			if e.scancode = SC_ESCAPE then
@@ -57,5 +57,7 @@ do
 		case fb.EVENT_MOUSE_HWHEEL
 			print "horizontal mouse wheel moved to position " & e.w
 		end select
-	end if
+	wend
+
+	sleep 50, 1
 loop
