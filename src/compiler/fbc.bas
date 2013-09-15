@@ -126,7 +126,12 @@ static shared as zstring * 8 toolnames(0 to FBCTOOL__COUNT-1) = _
 	"as", "ar", "ld", "gcc", "llc", "dlltool", "GoRC", "windres", "cxbe" _
 }
 
-declare function fbcFindBin( byval tool as integer, byref path as string ) as integer
+declare sub fbcFindBin _
+	( _
+		byval tool as integer, _
+		byref path as string, _
+		byref relying_on_system as integer = FALSE _
+	)
 
 declare function fbcRunBin _
 	( _
@@ -324,17 +329,24 @@ private sub fbcAddLibPathFor( byval libname as zstring ptr )
 	end if
 end sub
 
-function fbcFindBin( byval tool as integer, byref path as string ) as integer
-	static as integer lasttool = -1
-	static as string lastpath
+sub fbcFindBin _
+	( _
+		byval tool as integer, _
+		byref path as string, _
+		byref relying_on_system as integer _
+	)
 
-	function = TRUE
+	static as integer lasttool = -1, last_relying_on_system
+	static as string lastpath
 
 	'' Re-use path from last time if possible
 	if( lasttool = tool ) then
 		path = lastpath
-		exit function
+		relying_on_system = last_relying_on_system
+		exit sub
 	end if
+
+	relying_on_system = FALSE
 
 	'' a) Use the path from the corresponding environment variable if it's set
 	path = environ( ucase( toolnames(tool) ) )
@@ -346,14 +358,15 @@ function fbcFindBin( byval tool as integer, byref path as string ) as integer
 			if( hFileExists( path ) = FALSE ) then
 				'' c) Rely on PATH
 				path = fbc.targetprefix + toolnames(tool) + FB_HOST_EXEEXT
-				function = FALSE
+				relying_on_system = TRUE
 			end if
 		#endif
 	end if
 
 	lasttool = tool
 	lastpath = path
-end function
+	last_relying_on_system = relying_on_system
+end sub
 
 function fbcRunBin _
 	( _
@@ -362,10 +375,10 @@ function fbcRunBin _
 		byref ln as string _
 	) as integer
 
-	dim as integer result = any
+	dim as integer result = any, relying_on_system = any
 	dim as string path
 
-	result = fbcFindBin( tool, path )
+	fbcFindBin( tool, path, relying_on_system )
 
 	if( fbc.verbose ) then
 		print *action + ": ", path + " " + ln
@@ -378,7 +391,7 @@ function fbcRunBin _
 		result = exec( path, ln )
 	#else
 		'' Found at bin/?
-		if( result ) then
+		if( relying_on_system = FALSE ) then
 			result = exec( path, ln )
 		else
 			result = shell( path + " " + ln )

@@ -54,6 +54,7 @@ Version 0.91.0:
 - C backend: Will now generate #lines for procedure headers under -g (improved debugging support under -gen gcc)
 - #703: Compiler crash after recovering from "ElseIf behind Else" error
 - The Win32 gfxlib2 will now use a (more) unique name for the window class it registers to create the graphics window, to prevent issues when using multiple gfxlib2 instances in parallel in the same process.
+- Non-standalone fbc builds failed with a "not found" error when having to execute compiler tools repeatedly (i.e. when compiling multiple modules instead of just one), if the tools weren't present in the same directory tree as fbc, such that fbc had to rely on the PATH environment to find them, on systems where exec() won't search the PATH (i.e. DOS/Win32)
 
 
 Version 0.90.1:
