@@ -11,11 +11,11 @@
 #DEFINE __SIZEOF_PTHREAD_BARRIER_T 20
 #DEFINE __SIZEOF_PTHREAD_BARRIERATTR_T 4
 
-TYPE pthread_t AS ULONGINT
+TYPE pthread_t AS UINTEGER
 
 UNION pthread_attr_t
   AS ZSTRING*__SIZEOF_PTHREAD_ATTR_T __size
-  AS LONGINT __align
+  AS INTEGER __align
 END UNION
 
 TYPE __pthread_internal_slist
@@ -36,12 +36,12 @@ END TYPE
 UNION pthread_mutex_t
   AS pthread_mutex_t___pthread_mutex_s __data
   AS ZSTRING*__SIZEOF_PTHREAD_MUTEX_T __size
-  AS LONGINT __align
+  AS INTEGER __align
 END UNION
 
 UNION pthread_mutexattr_t
   AS ZSTRING*__SIZEOF_PTHREAD_MUTEXATTR_T __size
-  AS LONGINT __align
+  AS INTEGER __align
 END UNION
 
 TYPE pthread_cond_t___data
@@ -63,7 +63,7 @@ END UNION
 
 UNION pthread_condattr_t
   AS ZSTRING*__SIZEOF_PTHREAD_CONDATTR_T __size
-  AS LONGINT __align
+  AS INTEGER __align
 END UNION
 
 TYPE pthread_key_t AS UINTEGER
@@ -88,12 +88,12 @@ END TYPE
 UNION pthread_rwlock_t
   AS pthread_rwlock_t___data __data
   AS ZSTRING*__SIZEOF_PTHREAD_RWLOCK_T __size
-  AS LONGINT __align
+  AS INTEGER __align
 END UNION
 
 UNION pthread_rwlockattr_t
   AS ZSTRING*__SIZEOF_PTHREAD_RWLOCKATTR_T __size
-  AS LONGINT __align
+  AS INTEGER __align
 END UNION
 
 #ENDIF ' DEFINED __USE_U...
@@ -104,7 +104,7 @@ TYPE pthread_spinlock_t AS INTEGER
 
 UNION pthread_barrier_t
   AS ZSTRING*__SIZEOF_PTHREAD_BARRIER_T __size
-  AS LONGINT __align
+  AS INTEGER __align
 END UNION
 
 UNION pthread_barrierattr_t
