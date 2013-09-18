@@ -30,8 +30,7 @@ declare function isupper cdecl alias "isupper" (byval as integer) as integer
 declare function isxdigit cdecl alias "isxdigit" (byval as integer) as integer
 declare function tolower cdecl alias "tolower" (byval as integer) as integer
 declare function toupper cdecl alias "toupper" (byval as integer) as integer
-
-declare function isascii (byval as integer) as integer
-declare function toascii (byval as integer) as integer
+declare function isascii cdecl alias "isascii" (byval as integer) as integer
+declare function toascii cdecl alias "toascii" (byval as integer) as integer
 
 #endif
