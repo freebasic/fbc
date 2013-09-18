@@ -15,6 +15,7 @@ Version 0.91.0:
 - FLT_MAX and DBL_MAX to crt/limits.bi
 - operator [] overloading support, for example: type MyStringClass : declare operator []( index as integer ) byref as integer : ...
 - warning message when mixing signed and unsigned operands in comparisons or integer divide/MOD/SHR operations, where the signedness could change the result
+- crt/long.bi, which provides the CLONG and CULONG type aliases that always match C's long and unsigned long data types (for use when making FB bindings for C libraries that use C's long data type, because 64bit FB doesn't have a built-in type that matches 64bit C's long on all platforms)
 
 [fixed]
 - dlltool syntax error when building a DLL without any EXPORTs
