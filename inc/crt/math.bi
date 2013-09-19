@@ -9,6 +9,8 @@
 #ifndef __crt_math_bi__
 #define __crt_math_bi__
 
+#include once "crt/long.bi"
+
 #define _DOMAIN 1
 #define _SING 2
 #define _OVERFLOW 3
@@ -69,8 +71,8 @@ declare function sqrt (byval as double) as double
 declare function ceil (byval as double) as double
 declare function floor (byval as double) as double
 declare function fabs (byval as double) as double
-declare function ldexp (byval as double, byval as integer) as double
-declare function frexp (byval as double, byval as integer ptr) as double
+declare function ldexp (byval as double, byval as long) as double
+declare function frexp (byval as double, byval as long ptr) as double
 declare function modf (byval as double, byval as double ptr) as double
 declare function fmod (byval as double, byval as double) as double
 declare function sinf (byval as single) as single
@@ -98,13 +100,13 @@ declare function expl (byval as double) as double
 declare function exp2 (byval as double) as double
 declare function exp2f (byval as single) as single
 declare function exp2l (byval as double) as double
-declare function frexpf (byval x as single, byval expn as integer ptr) as single
-declare function frexpl (byval as double, byval as integer ptr) as double
-declare function ilogb (byval as double) as integer
-declare function ilogbf (byval as single) as integer
-declare function ilogbl (byval as double) as integer
-declare function ldexpf (byval x as single, byval expn as integer) as single
-declare function ldexpl (byval as double, byval as integer) as double
+declare function frexpf (byval as single, byval as long ptr) as single
+declare function frexpl (byval as double, byval as long ptr) as double
+declare function ilogb (byval as double) as long
+declare function ilogbf (byval as single) as long
+declare function ilogbl (byval as double) as long
+declare function ldexpf (byval as single, byval as long) as single
+declare function ldexpl (byval as double, byval as long) as double
 declare function logf (byval as single) as single
 declare function logl (byval as double) as double
 declare function log10f (byval as single) as single
@@ -120,12 +122,12 @@ declare function logbf (byval x as single) as single
 declare function logbl (byval x as double) as double
 declare function modff (byval as single, byval as single ptr) as single
 declare function modfl (byval as double, byval as double ptr) as double
-declare function scalbn (byval as double, byval as integer) as double
-declare function scalbnf (byval as single, byval as integer) as single
-declare function scalbnl (byval as double, byval as integer) as double
-declare function scalbln (byval as double, byval as integer) as double
-declare function scalblnf (byval as single, byval as integer) as single
-declare function scalblnl (byval as double, byval as integer) as double
+declare function scalbn (byval as double, byval as long) as double
+declare function scalbnf (byval as single, byval as long) as single
+declare function scalbnl (byval as double, byval as long) as double
+declare function scalbln (byval as double, byval as clong) as double
+declare function scalblnf (byval as single, byval as clong) as single
+declare function scalblnl (byval as double, byval as clong) as double
 declare function cbrt (byval as double) as double
 declare function cbrtf (byval as single) as single
 declare function cbrtl (byval as double) as double
@@ -158,18 +160,18 @@ declare function nearbyintl (byval as double) as double
 declare function rint (byval x as double) as double
 declare function rintf (byval x as single) as single
 declare function rintl (byval x as double) as double
-declare function lrint (byval x as double) as integer
-declare function lrintf (byval x as single) as integer
-declare function lrintl (byval x as double) as integer
+declare function lrint (byval x as double) as clong
+declare function lrintf (byval x as single) as clong
+declare function lrintl (byval x as double) as clong
 declare function llrint (byval x as double) as longint
 declare function llrintf (byval x as single) as longint
 declare function llrintl (byval x as double) as longint
 declare function round (byval as double) as double
 declare function roundf (byval as single) as single
 declare function roundl (byval as double) as double
-declare function lround (byval as double) as integer
-declare function lroundf (byval as single) as integer
-declare function lroundl (byval as double) as integer
+declare function lround (byval as double) as clong
+declare function lroundf (byval as single) as clong
+declare function lroundl (byval as double) as clong
 declare function llround (byval as double) as longint
 declare function llroundf (byval as single) as longint
 declare function llroundl (byval as double) as longint
@@ -181,9 +183,9 @@ declare function fmodl (byval as double, byval as double) as double
 declare function remainder (byval as double, byval as double) as double
 declare function remainderf (byval as single, byval as single) as single
 declare function remainderl (byval as double, byval as double) as double
-declare function remquo (byval as double, byval as double, byval as integer ptr) as double
-declare function remquof (byval as single, byval as single, byval as integer ptr) as single
-declare function remquol (byval as double, byval as double, byval as integer ptr) as double
+declare function remquo (byval as double, byval as double, byval as long ptr) as double
+declare function remquof (byval as single, byval as single, byval as long ptr) as single
+declare function remquol (byval as double, byval as double, byval as long ptr) as double
 declare function copysign (byval as double, byval as double) as double
 declare function copysignf (byval as single, byval as single) as single
 declare function copysignl (byval as double, byval as double) as double
@@ -210,7 +212,7 @@ end extern
 extern import _HUGE alias "_HUGE" as double ptr
 
 type _exception
-	type as integer
+	type as long
 	name as zstring ptr
 	arg1 as double
 	arg2 as double
@@ -227,28 +229,28 @@ declare function _cabs (byval as _complex) as double
 declare function _hypot (byval as double, byval as double) as double
 declare function _j0 (byval as double) as double
 declare function _j1 (byval as double) as double
-declare function _jn (byval as integer, byval as double) as double
+declare function _jn (byval as long, byval as double) as double
 declare function _y0 (byval as double) as double
 declare function _y1 (byval as double) as double
-declare function _yn (byval as integer, byval as double) as double
-declare function _matherr (byval as _exception ptr) as integer
+declare function _yn (byval as long, byval as double) as double
+declare function _matherr (byval as _exception ptr) as long
 declare function _chgsign (byval as double) as double
 declare function _copysign (byval as double, byval as double) as double
 declare function _logb (byval as double) as double
 declare function _nextafter (byval as double, byval as double) as double
-declare function _scalb (byval as double, byval as integer) as double
-declare function _finite (byval as double) as integer
-declare function _fpclass (byval as double) as integer
-declare function _isnan (byval as double) as integer
-declare function __fpclassifyf (byval as single) as integer
-declare function __fpclassify (byval as double) as integer
-declare function __fpclassifyl (byval x as double) as integer
-declare function __isnan (byval _x as double) as integer
-declare function __isnanf (byval _x as single) as integer
-declare function __isnanl (byval _x as double) as integer
-declare function __signbit (byval x as double) as integer
-declare function __signbitf (byval x as single) as integer
-declare function __signbitl (byval x as double) as integer
+declare function _scalb (byval as double, byval as clong) as double
+declare function _finite (byval as double) as long
+declare function _fpclass (byval as double) as long
+declare function _isnan (byval as double) as long
+declare function __fpclassifyf (byval as single) as long
+declare function __fpclassify (byval as double) as long
+declare function __fpclassifyl (byval x as double) as long
+declare function __isnan (byval _x as double) as long
+declare function __isnanf (byval _x as single) as long
+declare function __isnanl (byval _x as double) as long
+declare function __signbit (byval x as double) as long
+declare function __signbitf (byval x as single) as long
+declare function __signbitl (byval x as double) as long
 end extern
 #endif
 

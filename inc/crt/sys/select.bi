@@ -20,17 +20,19 @@
 type sigset_t as __sigset_t
 
 #include once "crt/sys/time.bi"
+#include once "crt/long.bi"
 
 type suseconds_t as __suseconds_t
 
-type __fd_mask as integer
+type __fd_mask as clong
 
 #define __NFDBITS (8 * len(__fd_mask))
 #define	__FDELT(d) ((d) \ __NFDBITS)
 #define	__FDMASK(d) cast(__fd_mask, 1 shl ((d) mod __NFDBITS))
+#define __FD_SETSIZE 1024
 
 type fd_set
-	___fds_bits(0 to 1024 \ (8 * len(__fd_mask))-1) as __fd_mask
+	___fds_bits(0 to (__FD_SETSIZE \ __NFDBITS)-1) as __fd_mask
 	#define __FDS_BITS(set) (set)->___fds_bits
 end type
 
@@ -44,7 +46,10 @@ type fd_mask as __fd_mask
 #define	FD_ISSET(fd, fdsetp) __FD_ISSET(fd, fdsetp)
 #define	FD_ZERO(fdsetp) __FD_ZERO(fdsetp)
 
-declare function select_ cdecl alias "select" (byval __nfds as integer, byval __readfds as fd_set ptr, byval __writefds as fd_set ptr, byval __exceptfds as fd_set ptr, byval __timeout as timeval ptr) as integer
+extern "C"
+declare function select_ alias "select" (byval __nfds as long, byval __readfds as fd_set ptr, byval __writefds as fd_set ptr, byval __exceptfds as fd_set ptr, byval __timeout as timeval ptr) as long
+end extern
+
 #define selectsocket select_
 
 #endif

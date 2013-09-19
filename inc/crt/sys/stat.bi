@@ -18,8 +18,12 @@
 #error Unsupported platform
 #endif
 
-declare function fstat cdecl alias "fstat" (byval as integer, byval as _stat ptr) as integer
-declare function chmod cdecl alias "chmod" (byval as zstring ptr, byval as integer) as integer
-declare function stat cdecl alias "stat" (byval as zstring ptr, byval as _stat ptr) as integer
+extern "C"
+
+declare function fstat (byval as long, byval as _stat ptr) as long
+declare function chmod (byval as zstring ptr, byval as long) as long
+declare function stat (byval as zstring ptr, byval as _stat ptr) as long
+
+end extern
 
 #endif

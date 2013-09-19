@@ -25,15 +25,15 @@
 #endif
 
 extern "c"
-declare function btowc (byval as integer) as wint_t
+declare function btowc (byval as long) as wint_t
 declare function mbrlen (byval as zstring ptr, byval as size_t, byval as mbstate_t ptr) as size_t
 declare function mbrtowc (byval as wchar_t ptr, byval as zstring ptr, byval as size_t, byval as mbstate_t ptr) as size_t
 declare function mbsrtowcs (byval as wchar_t ptr, byval as zstring ptr ptr, byval as size_t, byval as mbstate_t ptr) as size_t
 declare function wcrtomb (byval as zstring ptr, byval as wchar_t, byval as mbstate_t ptr) as size_t
 declare function wcsrtombs (byval as zstring ptr, byval as wchar_t ptr ptr, byval as size_t, byval as mbstate_t ptr) as size_t
 declare function wctob (byval as wint_t) as integer
-declare function fwide (byval stream as FILE ptr, byval mode as integer) as integer
-declare function mbsinit (byval ps as mbstate_t ptr) as integer
+declare function fwide (byval stream as FILE ptr, byval mode as long) as long
+declare function mbsinit (byval ps as mbstate_t ptr) as long
 declare function wmemset (byval s as wchar_t ptr, byval c as wchar_t, byval n as size_t) as wchar_t ptr
 declare function wmemchr (byval s as wchar_t ptr, byval c as wchar_t, byval n as size_t) as wchar_t ptr
 declare function wmemcmp (byval s1 as wchar_t ptr, byval s2 as wchar_t ptr, byval n as size_t) as integer

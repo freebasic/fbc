@@ -19,24 +19,21 @@
 #define L_tmpnam 20
 #define TMP_MAX 238328
 
-type _IO_FILE
-	_flags as integer
-	'' incomplete, shouldn't be used by user apps anyways..
-end type
 type FILE as _IO_FILE
 
-extern stdin alias "stdin" as _IO_FILE ptr
-extern stdout alias "stdout" as _IO_FILE ptr
-extern stderr alias "stderr" as _IO_FILE ptr
+extern stdin alias "stdin" as FILE ptr
+extern stdout alias "stdout" as FILE ptr
+extern stderr alias "stderr" as FILE ptr
 
 type fpos_t as longint
 
 extern "c"
-declare function snprintf (byval s as zstring ptr, byval n as size_t, byval format as zstring ptr, ...) as integer
-declare function vsnprintf (byval s as zstring ptr, byval n as size_t, byval format as zstring ptr, byval arg as va_list) as integer
+declare function snprintf (byval s as zstring ptr, byval n as size_t, byval format as zstring ptr, ...) as long
+declare function vsnprintf (byval s as zstring ptr, byval n as size_t, byval format as zstring ptr, byval arg as va_list) as long
 declare function popen (byval as zstring ptr, byval as zstring ptr) as FILE ptr
-declare function pclose (byval as FILE ptr) as integer
-declare function getw (byval as FILE ptr) as integer
-declare function putw (byval as integer, byval as FILE ptr) as integer
+declare function pclose (byval as FILE ptr) as long
+declare function getw (byval as FILE ptr) as long
+declare function putw (byval as long, byval as FILE ptr) as long
 end extern
+
 #endif

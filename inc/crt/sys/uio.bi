@@ -20,7 +20,11 @@ type iovec
 end type
 '' end include: bits/uio.bi
 
-declare function readv cdecl alias "readv" (byval __fd as integer, byval __iovec as iovec ptr, byval __count as integer) as ssize_t
-declare function writev cdecl alias "writev" (byval __fd as integer, byval __iovec as iovec ptr, byval __count as integer) as ssize_t
+extern "C"
+
+declare function readv (byval __fd as long, byval __iovec as iovec ptr, byval __count as long) as ssize_t
+declare function writev (byval __fd as long, byval __iovec as iovec ptr, byval __count as long) as ssize_t
+
+end extern
 
 #endif

@@ -140,13 +140,13 @@ type msghdr
 	msg_iovlen as size_t
 	msg_control as any ptr
 	msg_controllen as size_t
-	msg_flags as integer
+	msg_flags as long
 end type
 
 type cmsghdr
 	cmsg_len as size_t
-	cmsg_level as integer
-	cmsg_type as integer
+	cmsg_level as long
+	cmsg_type as long
 	__cmsg_data(0 to 0) as ubyte
 end type
 
@@ -209,8 +209,8 @@ end type
 '' end include: asm/socket.bi
 
 type linger
-	l_onoff as integer
-	l_linger as integer
+	l_onoff as long
+	l_linger as long
 end type
 
 #endif

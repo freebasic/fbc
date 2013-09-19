@@ -58,11 +58,11 @@ end type
 type ip_mreqn
 	imr_multiaddr as in_addr
 	imr_address as in_addr
-	imr_ifindex as integer
+	imr_ifindex as long
 end type
 
 type in_pktinfo
-	ipi_ifindex as integer
+	ipi_ifindex as long
 	ipi_spec_dst as in_addr
 	ipi_addr as in_addr
 end type

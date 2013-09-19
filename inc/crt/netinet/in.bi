@@ -171,7 +171,7 @@ end type
 
 type ipv6_mreq
 	ipv6mr_multiaddr as in6_addr
-	ipv6mr_interface as uinteger
+	ipv6mr_interface as ulong
 end type
 
 type group_req
@@ -207,17 +207,18 @@ end type
 #error Platform unsupported
 #endif
 
-declare function ntohl cdecl alias "ntohl" (byval __netlong as uint32_t) as uint32_t
-declare function ntohs cdecl alias "ntohs" (byval __netshort as uint16_t) as uint16_t
-declare function htonl cdecl alias "htonl" (byval __hostlong as uint32_t) as uint32_t
-declare function htons cdecl alias "htons" (byval __hostshort as uint16_t) as uint16_t
-
-declare function bindresvport cdecl alias "bindresvport" (byval __sockfd as integer, byval __sock_in as sockaddr_in ptr) as integer
-declare function bindresvport6 cdecl alias "bindresvport6" (byval __sockfd as integer, byval __sock_in as sockaddr_in6 ptr) as integer
+extern "C"
+declare function ntohl (byval __netlong as uint32_t) as uint32_t
+declare function ntohs (byval __netshort as uint16_t) as uint16_t
+declare function htonl (byval __hostlong as uint32_t) as uint32_t
+declare function htons (byval __hostshort as uint16_t) as uint16_t
+declare function bindresvport (byval __sockfd as integer, byval __sock_in as sockaddr_in ptr) as long
+declare function bindresvport6 (byval __sockfd as integer, byval __sock_in as sockaddr_in6 ptr) as long
+end extern
 
 type in6_pktinfo
 	ipi6_addr as in6_addr
-	ipi6_ifindex as uinteger
+	ipi6_ifindex as ulong
 end type
 
 #endif

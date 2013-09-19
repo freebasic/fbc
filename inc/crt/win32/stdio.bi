@@ -31,49 +31,57 @@
 
 type _iobuf
 	_ptr as zstring ptr
-	_cnt as integer
+	_cnt as long
 	_base as zstring ptr
-	_flag as integer
-	_file as integer
-	_charbuf as integer
-	_bufsiz as integer
+	_flag as long
+	_file as long
+	_charbuf as long
+	_bufsiz as long
 	_tmpfname as zstring ptr
 end type
 
 type FILE as _iobuf
 
-extern import _iob(0 to 2) alias "_iob" as FILE
-#define stdin (@_iob(STDIN_FILENO))
-#define stdout (@_iob(STDOUT_FILENO))
-#define stderr (@_iob(STDERR_FILENO))
+extern "c"
+
+#ifdef __FB_64BIT__
+	declare function __iob_func() as FILE ptr
+	#define stdin (@__iob_func()[STDIN_FILENO])
+	#define stdout (@__iob_func()[STDOUT_FILENO])
+	#define stderr (@__iob_func()[STDERR_FILENO])
+#else
+	extern import _iob(0 to 2) alias "_iob" as FILE
+	#define stdin (@_iob(STDIN_FILENO))
+	#define stdout (@_iob(STDOUT_FILENO))
+	#define stderr (@_iob(STDERR_FILENO))
+#endif
 
 type fpos_t as longint
 
-extern "c"
-declare function snprintf (byval as zstring ptr, byval as size_t, byval as zstring ptr, ...) as integer
-declare function vsnprintf (byval as zstring ptr, byval as size_t, byval as zstring ptr, byval as va_list) as integer
+declare function snprintf (byval as zstring ptr, byval as size_t, byval as zstring ptr, ...) as long
+declare function vsnprintf (byval as zstring ptr, byval as size_t, byval as zstring ptr, byval as va_list) as long
 declare function popen (byval as zstring ptr, byval as zstring ptr) as FILE ptr
-declare function pclose (byval as FILE ptr) as integer
-declare function _flushall () as integer
-declare function _fgetchar () as integer
-declare function _fputchar (byval as integer) as integer
-declare function _fdopen (byval as integer, byval as zstring ptr) as FILE ptr
-declare function _fileno (byval as FILE ptr) as integer
-declare function _fcloseall () as integer
-declare function _getmaxstdio () as integer
-declare function _setmaxstdio (byval as integer) as integer
-declare function _snwprintf (byval as wchar_t ptr, byval as size_t, byval as wchar_t ptr, ...) as integer
-declare function _vsnwprintf (byval as wchar_t ptr, byval as size_t, byval as wchar_t ptr, byval as va_list) as integer
+declare function pclose (byval as FILE ptr) as long
+declare function _flushall () as long
+declare function _fgetchar () as long
+declare function _fputchar (byval as long) as long
+declare function _fdopen (byval as long, byval as zstring ptr) as FILE ptr
+declare function _fileno (byval as FILE ptr) as long
+declare function _fcloseall () as long
+declare function _getmaxstdio () as long
+declare function _setmaxstdio (byval as long) as long
+declare function _snwprintf (byval as wchar_t ptr, byval as size_t, byval as wchar_t ptr, ...) as long
+declare function _vsnwprintf (byval as wchar_t ptr, byval as size_t, byval as wchar_t ptr, byval as va_list) as long
 declare function _getws (byval as wchar_t ptr) as wchar_t ptr
-declare function _putws (byval as wchar_t ptr) as integer
-declare function _wfdopen (byval as integer, byval as wchar_t ptr) as FILE ptr
+declare function _putws (byval as wchar_t ptr) as long
+declare function _wfdopen (byval as long, byval as wchar_t ptr) as FILE ptr
 declare function _wfopen (byval as wchar_t ptr, byval as wchar_t ptr) as FILE ptr
 declare function _wfreopen (byval as wchar_t ptr, byval as wchar_t ptr, byval as FILE ptr) as FILE ptr
-declare function _wfsopen (byval as wchar_t ptr, byval as wchar_t ptr, byval as integer) as FILE ptr
+declare function _wfsopen (byval as wchar_t ptr, byval as wchar_t ptr, byval as long) as FILE ptr
 declare function _wtmpnam (byval as wchar_t ptr) as wchar_t ptr
 declare function _wtempnam (byval as wchar_t ptr, byval as wchar_t ptr) as wchar_t ptr
-declare function _wrename (byval as wchar_t ptr, byval as wchar_t ptr) as integer
-declare function _wremove (byval as wchar_t ptr) as integer
+declare function _wrename (byval as wchar_t ptr, byval as wchar_t ptr) as long
+declare function _wremove (byval as wchar_t ptr) as long
 declare sub _wperror (byval as wchar_t ptr)
 declare function _wpopen (byval as wchar_t ptr, byval as wchar_t ptr) as FILE ptr
 declare function _fgetwchar () as wint_t

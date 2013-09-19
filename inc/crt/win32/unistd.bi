@@ -28,7 +28,7 @@
 
 extern "c"
 
-declare function ftruncate (byval as integer, byval as off_t) as integer
+declare function ftruncate (byval as long, byval as off_t) as long
 
 end extern
 
