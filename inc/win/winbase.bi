@@ -9,6 +9,8 @@
 #ifndef __win_winbase_bi__
 #define __win_winbase_bi__
 
+#include once "crt/string.bi"  '' For memmove() and memset()
+
 #define SP_SERIALCOMM 1
 #define PST_UNSPECIFIED 0
 #define PST_RS232 1
@@ -1918,11 +1920,10 @@ declare function SetVolumeMountPoint alias "SetVolumeMountPointA" (byval as LPCS
 
 #endif ''UNICODE
 
-declare function RtlMoveMemory cdecl alias "memmove" (byval as any ptr, byval as any ptr, byval as integer) as any ptr
-declare function RtlCopyMemory cdecl alias "memcpy" (byval as any ptr, byval as any ptr, byval as integer) as any ptr
-declare function RtlFillMemory cdecl alias "memset" (byval as any ptr, byval as integer, byval as integer) as any ptr
+#define RtlMoveMemory(Destination, Source, Length) memmove((Destination), (Source), (Length))
+#define RtlFillMemory(Destination, Length, Fill) memset((Destination), (Fill), (Length))
+#define RtlZeroMemory(Destination, Length) memset((Destination), 0, (Length))
 
-#define RtlZeroMemory(d,l) RtlFillMemory((d),(l),0)
 #define MoveMemory RtlMoveMemory
 #define CopyMemory RtlCopyMemory
 #define FillMemory RtlFillMemory
