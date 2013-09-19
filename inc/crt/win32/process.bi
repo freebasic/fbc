@@ -49,7 +49,7 @@ declare function _spawnlpe (byval as integer, byval as zstring ptr, byval as zst
 declare function _spawnv (byval as integer, byval as zstring ptr, byval as zstring ptr ptr) as integer
 declare function _spawnve (byval as integer, byval as zstring ptr, byval as zstring ptr ptr, byval as zstring ptr ptr) as integer
 declare function _spawnvp (byval as integer, byval as zstring ptr, byval as zstring ptr ptr) as integer
-declare function _spawnvpe (byval as integer, byval as zstring ptr, byval as zstring ptr ptr, byval as zstring ptr) as integer
+declare function _spawnvpe (byval as integer, byval as zstring ptr, byval as zstring ptr ptr, byval as zstring ptr ptr) as integer
 
 declare function _beginthread (byval as sub(byval as any ptr), byval as uinteger, byval as any ptr) as ulong
 declare sub _endthread()
@@ -70,7 +70,7 @@ declare function spawnlpe (byval as integer, byval as zstring ptr, byval as zstr
 declare function spawnv (byval as integer, byval as zstring ptr, byval as zstring ptr ptr) as integer
 declare function spawnve (byval as integer, byval as zstring ptr, byval as zstring ptr ptr, byval as zstring ptr ptr) as integer
 declare function spawnvp (byval as integer, byval as zstring ptr, byval as zstring ptr ptr) as integer
-declare function spawnvpe (byval as integer, byval as zstring ptr, byval as zstring ptr ptr, byval as zstring ptr) as integer
+declare function spawnvpe (byval as integer, byval as zstring ptr, byval as zstring ptr ptr, byval as zstring ptr ptr) as integer
 
 end extern
 

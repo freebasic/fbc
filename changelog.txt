@@ -58,6 +58,7 @@ Version 0.91.0:
 - Non-standalone fbc builds failed with a "not found" error when having to execute compiler tools repeatedly (i.e. when compiling multiple modules instead of just one), if the tools weren't present in the same directory tree as fbc, such that fbc had to rely on the PATH environment to find them, on systems where exec() won't search the PATH (i.e. DOS/Win32)
 - crt/ctype.bi: The isascii() and toascii() CRT function declarations used wrong name mangling, and on Win32 the wrong calling convention too
 - crt/bits/pthreadtypes.bi: Various type aliases (including pthread_t) and UDT fields were wrong (used a 64bit integer type instead of a 32bit type like the original C header, assuming a 32bit system)
+- crt/win32/process.bi: spawnvpe()'s and _spawnvpe()'s last parameter type was wrong
 
 
 Version 0.90.1:
