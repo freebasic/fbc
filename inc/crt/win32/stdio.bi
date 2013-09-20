@@ -46,9 +46,9 @@ extern "c"
 
 #ifdef __FB_64BIT__
 	declare function __iob_func() as FILE ptr
-	#define stdin (@__iob_func()[STDIN_FILENO])
-	#define stdout (@__iob_func()[STDOUT_FILENO])
-	#define stderr (@__iob_func()[STDERR_FILENO])
+	#define stdin (@(__iob_func())[STDIN_FILENO])
+	#define stdout (@(__iob_func())[STDOUT_FILENO])
+	#define stderr (@(__iob_func())[STDERR_FILENO])
 #else
 	extern import _iob(0 to 2) alias "_iob" as FILE
 	#define stdin (@_iob(STDIN_FILENO))
