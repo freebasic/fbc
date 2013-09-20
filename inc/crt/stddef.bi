@@ -28,7 +28,7 @@ type ptrdiff_t as integer
 #elseif defined( __FB_WIN32__ ) or defined( __FB_CYGWIN__ )
 	type wchar_t as ushort
 #else
-	type wchar_t as ulong
+	type wchar_t as long
 #endif
 
 type wint_t as wchar_t

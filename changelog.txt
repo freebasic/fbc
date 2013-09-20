@@ -61,6 +61,7 @@ Version 0.91.0:
 - crt/bits/pthreadtypes.bi: Various type aliases (including pthread_t) and UDT fields were wrong (used a 64bit integer type instead of a 32bit type like the original C header, assuming a 32bit system)
 - crt/win32/process.bi: spawnvpe()'s and _spawnvpe()'s last parameter type was wrong
 - #434: win/winbase.bi's RtlFillMemory() declaration was wrong (it was just an alias for memset(), but actually it should be memset() with swapped fill/length parameters)
+- crt/stddef.bi: Now uses signed 32bit wchar_t for Linux, to match glibc, instead of unsigned 32bit
 
 
 Version 0.90.1:
