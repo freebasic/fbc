@@ -13,6 +13,7 @@
 #include once "crt/stdarg.bi"
 #include once "crt/stddef.bi"
 #include once "crt/long.bi"
+#include once "crt/stdint.bi"
 
 union mbstate_t__value
 	__wch as wint_t
@@ -23,9 +24,6 @@ type mbstate_t
 	__count as long
 	__value as mbstate_t__value
 end type
-
-#define WCHAR_MIN (-2147483647l-1l)
-#define WCHAR_MAX (2147483647l)
 
 #ifndef WEOF
 #define WEOF &hfffffffful

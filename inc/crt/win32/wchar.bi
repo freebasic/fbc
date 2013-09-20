@@ -11,9 +11,7 @@
 
 #include once "crt/win32/ctype.bi"
 #include once "crt/long.bi"
-
-#define WCHAR_MIN 0
-#define WCHAR_MAX &hffff
+#include once "crt/stdint.bi"
 
 #ifndef WEOF
 #define	WEOF cast(wchar_t,&hFFFF)

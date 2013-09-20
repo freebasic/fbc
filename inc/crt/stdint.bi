@@ -124,13 +124,18 @@ type uintmax_t as uint64_t
 	#define SIZE_MAX UINT32_MAX
 #endif
 
-#ifndef WCHAR_MIN
-#  define WCHAR_MIN __WCHAR_MIN
-#  define WCHAR_MAX __WCHAR_MAX
+#ifdef __FB_DOS__
+	#define WCHAR_MIN (0u)
+	#define WCHAR_MAX UINT8_MAX
+#elseif defined( __FB_WIN32__ ) or defined( __FB_CYGWIN__ )
+	#define WCHAR_MIN (0u)
+	#define WCHAR_MAX UINT16_MAX
+#else
+	#define WCHAR_MIN INT32_MIN
+	#define WCHAR_MAX INT32_MAX
 #endif
-
-#define WINT_MIN (0u)
-#define WINT_MAX UINT32_MAX
+#define WINT_MIN WCHAR_MIN
+#define WINT_MAX WCHAR_MAX
 
 #define INT8_C(c) c
 #define INT16_C(c) c

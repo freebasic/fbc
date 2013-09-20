@@ -62,6 +62,7 @@ Version 0.91.0:
 - crt/win32/process.bi: spawnvpe()'s and _spawnvpe()'s last parameter type was wrong
 - #434: win/winbase.bi's RtlFillMemory() declaration was wrong (it was just an alias for memset(), but actually it should be memset() with swapped fill/length parameters)
 - crt/stddef.bi: Now uses signed 32bit wchar_t for Linux, to match glibc, instead of unsigned 32bit
+- crt/stdint.bi: WCHAR_MIN/WCHAR_MAX/WINT_MIN/WINT_MAX declarations were incomplete
 
 
 Version 0.90.1:
