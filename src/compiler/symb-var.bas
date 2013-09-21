@@ -184,15 +184,18 @@ function symbAddArrayDesc _
 		isdynamic = symbIsDynamic( array )
 		ispubext = (array->attrib and (FB_SYMBATTRIB_PUBLIC or FB_SYMBATTRIB_EXTERN)) <> 0
 
-		'' common or public and dynamic? use the array name for the descriptor,
-		'' as only it will be allocated or seen by other modules
-		if( symbIsCommon( array ) or (ispubext and isdynamic) ) then
+		'' common or dynamic? Use the array's name/alias for the
+		'' descriptor, allowing it to be a from other modules if
+		'' Extern, and making debugging nicer.
+		if( symbIsCommon( array ) or isdynamic ) then
 			id = array->id.name
 			id_alias = array->id.alias
 			'' Preserve FB_SYMBSTATS_HASALIAS stat too
 			stats = array->stats and FB_SYMBSTATS_HASALIAS
 
-		'' otherwise, create a temporary name..
+		'' otherwise, create a temporary name for the descriptor,
+		'' as it will be used privately only, and must co-exist with
+		'' the static array symbol.
 		else
 			static as string tmp
 			tmp = *symbUniqueId( )
