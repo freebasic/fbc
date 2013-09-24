@@ -166,10 +166,10 @@ private function hUTF8ToUTF32LE( ) as integer static
     dim as ubyte src(0 to 6)
     dim as ubyte ptr p
     dim as uinteger c
-    dim as uinteger ptr dst
+    dim as ulong ptr dst
     dim as integer chars, extbytes, i
 
-	dst = cast( uinteger ptr, @lex.ctx->buffw )
+	dst = cast( ulong ptr, @lex.ctx->buffw )
 	chars = 0
 
 	do while( chars < LEX_MAXBUFFCHARS )
@@ -214,13 +214,13 @@ end function
 
 '':::::
 private function hUTF8ToUTF32BE( ) as integer static
-    dim as uinteger ptr dst
+    dim as ulong ptr dst
     dim as uinteger c
     dim as integer i, chars
 
 	chars = hUTF8ToUTF32LE( )
 
-	dst = cast( uinteger ptr, @lex.ctx->buffw )
+	dst = cast( ulong ptr, @lex.ctx->buffw )
 	for i = 1 to chars
 		c = *dst
 		*dst = U32_SWAP( c )
@@ -311,10 +311,10 @@ end function
 private function hUTF16LEToUTF32LE( ) as integer static
     dim as ushort c
     dim as uinteger wc
-    dim as uinteger ptr dst
+    dim as ulong ptr dst
     dim as integer chars
 
-	dst = cast( uinteger ptr, @lex.ctx->buffw )
+	dst = cast( ulong ptr, @lex.ctx->buffw )
 	chars = 0
 
 	do while( chars < LEX_MAXBUFFCHARS )
@@ -350,13 +350,13 @@ end function
 
 '':::::
 private function hUTF16LEToUTF32BE( ) as integer static
-    dim as uinteger ptr dst
+    dim as ulong ptr dst
     dim as uinteger c
     dim as integer i, chars
 
 	chars = hUTF16LEToUTF32LE( )
 
-	dst = cast( uinteger ptr, @lex.ctx->buffw )
+	dst = cast( ulong ptr, @lex.ctx->buffw )
 	for i = 1 to chars
 		c = *dst
 		*dst = U32_SWAP( c )
@@ -457,10 +457,10 @@ end function
 private function hUTF16BEToUTF32LE( ) as integer static
     dim as ushort c
     dim as uinteger wc
-    dim as uinteger ptr dst
+    dim as ulong ptr dst
     dim as integer chars
 
-	dst = cast( uinteger ptr, @lex.ctx->buffw )
+	dst = cast( ulong ptr, @lex.ctx->buffw )
 	chars = 0
 
 	do while( chars < LEX_MAXBUFFCHARS )
@@ -609,13 +609,13 @@ end function
 
 '':::::
 private function hUTF32LEToUTF32BE( ) as integer static
-    dim as uinteger ptr dst
+    dim as ulong ptr dst
     dim as uinteger c
     dim as integer i, chars
 
 	chars = hUTF32LEToUTF32LE( )
 
-	dst = cast( uinteger ptr, @lex.ctx->buffw )
+	dst = cast( ulong ptr, @lex.ctx->buffw )
 	for i = 1 to chars
 		c = *dst
 		*dst = U32_SWAP( c )
@@ -726,13 +726,13 @@ end function
 
 '':::::
 private function hUTF32BEToUTF32LE( ) as integer static
-    dim as uinteger ptr dst
+    dim as ulong ptr dst
     dim as uinteger c
     dim as integer i, chars
 
 	chars = hUTF32LEToUTF32LE( )
 
-	dst = cast( uinteger ptr, @lex.ctx->buffw )
+	dst = cast( ulong ptr, @lex.ctx->buffw )
 	for i = 1 to chars
 		c = *dst
 		*dst = U32_SWAP( c )
