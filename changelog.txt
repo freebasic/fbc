@@ -64,6 +64,7 @@ Version 0.91.0:
 - crt/stddef.bi: Now uses signed 32bit wchar_t for Linux, to match glibc, instead of unsigned 32bit
 - crt/stdint.bi: WCHAR_MIN/WCHAR_MAX/WINT_MIN/WINT_MAX declarations were incomplete
 - Debugging help: For dynamic arrays, the compiler will now always name the array descriptor symbol after the original array name
+- datetime.bi: DateDiff() was declared to return a 32bit integer while the rtlib actually returns a 64bit integer
 
 
 Version 0.90.1:

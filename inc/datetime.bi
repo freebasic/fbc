@@ -79,7 +79,7 @@ declare function DateDiff            alias "fb_DateDiff" _
             byval serial1 as double, _
             byval serial2 as double, _
             byval FirstDayOfWeek as long = fbUseSystem, _
-            byval FirstDayOfYear as long = fbUseSystem ) as long
+            byval FirstDayOfYear as long = fbUseSystem ) as __longint
 
 declare function MonthName           alias "fb_MonthName" _
           ( byval month as long, _
@@ -152,7 +152,7 @@ declare function DateDiff            alias "fb_DateDiff" _
             byval serial1 as double, _
             byval serial2 as double, _
             byval FirstDayOfWeek as integer = fbUseSystem, _
-            byval FirstDayOfYear as integer = fbUseSystem ) as integer
+            byval FirstDayOfYear as integer = fbUseSystem ) as longint
 
 declare function MonthName           alias "fb_MonthName" _
           ( byval month as integer, _
