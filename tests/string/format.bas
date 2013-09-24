@@ -149,7 +149,7 @@ tests_dt:
     data "Aug. 9, 2005",      "ddd dddd ddddd",   "Tue Tuesday 08/09/2005"
     data "."
 
-declare sub fb_I18nSet alias "fb_I18nSet"( byval on_off as integer )
+declare sub fb_I18nSet alias "fb_I18nSet"( byval on_off as long )
 
 namespace fbc_tests.string_.format_
 

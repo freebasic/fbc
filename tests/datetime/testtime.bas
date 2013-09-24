@@ -1,11 +1,7 @@
 # include once "fbcu.bi"
-
 # include once "vbcompat.bi"
 
-
-
-
-declare sub fb_I18nSet alias "fb_I18nSet"( byval on_off as integer )
+declare sub fb_I18nSet alias "fb_I18nSet"( byval on_off as long )
 
 #define DBL_CUT(v,digits) _
     (cdbl(cint((v) * 10.0^(digits))) / 10.0^(digits))
