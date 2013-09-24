@@ -116,21 +116,21 @@ namespace FB
 	'' Event structure, to be used with ScreenEvent
 	''
 	type EVENT field = 1
-		type as integer
+		type as long
 		union
 			type
-				scancode as integer
-				ascii as integer
+				scancode as long
+				ascii as long
 			end type
 			type
-				x as integer
-				y as integer 
-				dx as integer
-				dy as integer
+				x as long
+				y as long
+				dx as long
+				dy as long
 			end type
-			button as integer
-			z as integer
-			w as integer
+			button as long
+			z as long
+			w as long
 		end union
 	end type
 
@@ -149,12 +149,12 @@ namespace FB
 	type IMAGE field = 1
 		union
 			old as _OLD_HEADER
-			type as uinteger
+			type as ulong
 		end union
-		bpp as integer
-		width as uinteger
-		height as uinteger
-		pitch as uinteger
+		bpp as long
+		width as ulong
+		height as ulong
+		pitch as ulong
 		_reserved(1 to 12) as ubyte
 		
 '		'' properties
