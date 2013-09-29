@@ -203,18 +203,14 @@ function astBuildJMPTB _
 		symbSetIsJumpTb( tbsym )
 		symbSetIsInitialized( tbsym )
 
-		if( minval > 0 ) then
-			'' if( expr < minval ) then goto deflabel
-			tree = astNewLINK( tree, _
-				astNewBOP( AST_OP_LT, astNewVAR( tempvar ), _
-					astNewCONSTi( minval, FB_DATATYPE_UINT ), _
-					deflabel, AST_OPOPT_NONE ) )
-		end if
-
-		'' if( expr > maxval ) then goto deflabel
+		'' if( expr < minval or expr > maxval ) then goto deflabel
+		'' optimised to:
+		'' if( cunsg(expr - minval) > (maxval - minval) ) then goto deflabel
 		tree = astNewLINK( tree, _
-			astNewBOP( AST_OP_GT, astNewVAR( tempvar ), _
-				astNewCONSTi( maxval, FB_DATATYPE_UINT ), _
+			astNewBOP( AST_OP_GT, astNewBOP( AST_OP_SUB, _
+					astNewVAR( tempvar ), _
+					astNewCONSTi( minval, FB_DATATYPE_UINT ) ), _
+				astNewCONSTi( maxval - minval, FB_DATATYPE_UINT ), _
 				deflabel, AST_OPOPT_NONE ) )
 
 		'' goto table[expr - minval]
