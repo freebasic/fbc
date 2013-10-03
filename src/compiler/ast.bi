@@ -1314,14 +1314,15 @@ declare function astLoadNIDXARRAY( byval n as ASTNODE ptr ) as IRVREG ptr
 ''
 '' macros
 ''
-#define astInitNode(n, class_, dtype, subtype) :_
-	    n->class            = class_           :_
-	    astGetFullType( n ) = dtype            :_
-	    n->subtype          = subtype          :_
-	    n->l                = NULL             :_
-	    n->r                = NULL             :_
-	    n->sym              = NULL             :_
-	    n->vector           = 0
+#macro astInitNode( n, class_, dtype_, subtype_ )
+	(n)->class = class_
+	(n)->dtype = dtype_
+	(n)->subtype = subtype_
+	(n)->l = NULL
+	(n)->r = NULL
+	(n)->sym = NULL
+	(n)->vector = 0
+#endmacro
 
 #define astCopy(dst, src) *dst = *src
 
