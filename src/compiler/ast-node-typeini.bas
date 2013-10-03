@@ -918,14 +918,13 @@ private function hWalk _
 
 		'' Update the parent node in the original tree to access the
 		'' temporary variable, instead of the TYPEINI. (it could be an
-		'' ASSIGN, ADDROF, ARG, etc...)
-		if( parent ) then
-			expr = astNewVAR( sym )
-			if( parent->l = n ) then
-				parent->l = expr
-			else
-				parent->r = expr
-			end if
+		'' ASSIGN, ADDROF, ARG, etc, or a fake temporary parent node in
+		'' case that TYPEINI was the root of the original tree)
+		expr = astNewVAR( sym )
+		if( parent->l = n ) then
+			parent->l = expr
+		else
+			parent->r = expr
 		end if
 
 		'' Turn this TYPEINI into real code
@@ -962,18 +961,35 @@ end function
 #endif
 
 function astTypeIniUpdate( byval tree as ASTNODE ptr ) as ASTNODE ptr
-	'' Shouldn't miss any
+	dim as ASTNODE ptr tempvarinitcode = any
+	dim as ASTNODE treeparent = any
+
+	'' Shouldn't miss any TYPEINIs
 	assert( astCountTypeinis( tree ) <= ast.typeinicount )
 
+	'' Shortcut if there are no TYPEINIs
 	if( ast.typeinicount <= 0 ) then
 		return tree
 	end if
 
+	'' Wrap the tree in a fake temporary parent node, so hWalk() has a
+	'' parent node to update in case the tree's root already is a TYPEINI.
+	'' (Set it to NOP, to add some consistency with real ASTNODEs, better
+	'' than nothing. NOPs don't require any other ASTNODE fields to be set)
+	astInitNode( (@treeparent), AST_NODECLASS_NOP, FB_DATATYPE_INVALID, NULL )
+	treeparent.l = tree
+
 	'' Walk to expand any TYPEINIs. Note that the original tree will be
-	'' updated too, and both are needed.
-	'' Returning the rhs from the LINK, so astTypeIniUpdate() can be used
-	'' in the middle of an expression.
-	return astNewLINK( hWalk( tree, NULL ), tree, FALSE )
+	'' updated too, and both are needed. The new tree built up by hWalk()
+	'' initializes the temp var with the TYPEINI data; the original tree
+	'' must be updated to now access that temp var instead of the TYPEINI.
+	tempvarinitcode = hWalk( tree, @treeparent )
+
+	'' The temp var initialization must be first in the LINK because it must
+	'' be executed before the tree which accesses that temp var. The LINK
+	'' as a whole should still return the result of the tree though, so that
+	'' astTypeIniUpdate() can be used in the middle of an expression.
+	function = astNewLINK( tempvarinitcode, treeparent.l, FALSE )
 end function
 
 '' Duplicates a TYPEINI initializer into the current context. The cloned TYPEINI
