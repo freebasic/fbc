@@ -72,6 +72,18 @@ sub test5 cdecl( )
 	CU_ASSERT( *procstatic_pi2 = 111 )
 end sub
 
+sub testVariableSubscripts cdecl( )
+	dim as integer l = 5, u = 6
+
+	dim array1(l to u) as integer
+	CU_ASSERT( lbound( array1 ) = 5 )
+	CU_ASSERT( ubound( array1 ) = 6 )
+
+	static array2(l to u) as integer
+	CU_ASSERT( lbound( array2 ) = 5 )
+	CU_ASSERT( ubound( array2 ) = 6 )
+end sub
+
 private sub ctor () constructor
 	fbcu.add_suite("fbc_tests.dim.static")
 	fbcu.add_test("test 1", @test1)
@@ -79,6 +91,7 @@ private sub ctor () constructor
 	fbcu.add_test("test 3", @test3)
 	fbcu.add_test("test 4", @test4)
 	fbcu.add_test("test 5", @test5)
+	fbcu.add_test( "STATIC + non-constant array subscripts", @testVariableSubscripts )
 end sub
 
 end namespace

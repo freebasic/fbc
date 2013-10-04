@@ -1260,69 +1260,50 @@ function cVarDecl _
 
 			is_dynamic = (attrib and FB_SYMBATTRIB_DYNAMIC) <> 0
 
-			'' ID()
+			'' '()'
 			if( lexGetToken( ) = CHAR_RPRNT ) then
 				'' fake it
 				dimensions = -1
 				is_dynamic = TRUE
 
-			'' , ID( expr, (TO expr)? )
+			'' '(' ArrayDecl ')'
 			else
-				'' only allow subscripts if not COMMON
-				if( (attrib and FB_SYMBATTRIB_COMMON) = 0 ) then
-					'' static?
-					if( token = FB_TK_STATIC ) then
-						cStaticArrayDecl( dimensions, dTB(), FALSE )
-
-						'' If there were any ellipsises in the
-						'' array decl then we mark the symbol before initializing
-						for i as integer = 0 to dimensions - 1
-							if( dTB(i).upper = FB_ARRAYDIM_UNKNOWN ) then
-								has_ellipsis = TRUE
-							end if
-						next
-
-						is_dynamic = FALSE
-
-					'' can be static or dynamic..
-					else
-						cArrayDecl( dimensions, exprTB() )
-
-						check_exprtb = TRUE
-
-						'' If there were any ellipsises in the
-						'' array decl then we mark the symbol before initializing
-						for i as integer = 0 to dimensions - 1
-							if( exprTB(i,1) = NULL ) then
-								has_ellipsis = TRUE
-							end if
-						next
-					end if
-
-    			'' COMMON.. no subscripts
-    			else
+				'' COMMON? No subscripts allowed
+				if( attrib and FB_SYMBATTRIB_COMMON ) then
 					errReport( FB_ERRMSG_SYNTAXERROR )
 					'' error recovery: skip until next ')'
 					hSkipUntil( CHAR_RPRNT )
-    			end if
-    		end if
+				else
+					cArrayDecl( dimensions, exprTB() )
+
+					check_exprtb = TRUE
+
+					'' If there were any ellipsises in the
+					'' array decl then we mark the symbol before initializing
+					for i as integer = 0 to dimensions - 1
+						if( exprTB(i,1) = NULL ) then
+							has_ellipsis = TRUE
+						end if
+					next
+				end if
+			end if
 
 			'' ')'
-    		if( lexGetToken( ) <> CHAR_RPRNT ) then
+			if( lexGetToken( ) <> CHAR_RPRNT ) then
 				errReport( FB_ERRMSG_EXPECTEDRPRNT )
-    		else
-    			lexSkipToken( )
-    		end if
+			else
+				lexSkipToken( )
+			end if
 
-    	'' scalar..
-    	else
-    		'' REDIM and scalar passed?
-    		if( token = FB_TK_REDIM ) then
+		'' Scalar, no array subscripts
+		else
+			'' With REDIM it must have array subscripts though
+			if( token = FB_TK_REDIM ) then
 				errReportEx( FB_ERRMSG_EXPECTEDARRAY, @id )
-    		end if
+			end if
 
-    		is_dynamic = FALSE
-    	end if
+			is_dynamic = FALSE
+		end if
 
 		palias = NULL
 		if( (attrib and (FB_SYMBATTRIB_PUBLIC or FB_SYMBATTRIB_EXTERN)) <> 0 ) then
