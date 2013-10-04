@@ -202,9 +202,7 @@ function cVariableDecl( byval attrib as FB_SYMBATTRIB ) as integer
 	end if
 
 	if( symbGetProcStaticLocals( parser.currproc ) ) then
-		if( (attrib and FB_SYMBATTRIB_DYNAMIC) = 0 ) then
-			attrib or= FB_SYMBATTRIB_STATIC
-		end if
+		attrib or= FB_SYMBATTRIB_STATIC
 	end if
 
 	cVarDecl( attrib, dopreserve, tk, FALSE )
@@ -1891,9 +1889,7 @@ sub cAutoVarDecl(byval attrib as FB_SYMBATTRIB)
 
 	'' this proc static?
 	if( symbGetProcStaticLocals( parser.currproc ) ) then
-		if( (attrib and FB_SYMBATTRIB_DYNAMIC) = 0 ) then
-			attrib or= FB_SYMBATTRIB_STATIC
-		end if
+		attrib or= FB_SYMBATTRIB_STATIC
 	end if
 
 	'' inside a namespace but outside a proc?

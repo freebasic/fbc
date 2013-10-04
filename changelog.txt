@@ -67,6 +67,7 @@ Version 0.91.0:
 - datetime.bi: DateDiff() was declared to return a 32bit integer while the rtlib actually returns a 64bit integer
 - SELECT CASE AS CONST was ignoring the upper 32 bits of 64bit integer expressions in 32bit mode
 - ICE (dangling pointer) with type initializer expressions, which is known to at least cause a compiler hang during error recovery
+- #705: REDIM in a procedure marked with STATIC did not create a STATIC dynamic array (on heap, preserved to next call), but only a local dynamic array (on stack)
 
 
 Version 0.90.1:
