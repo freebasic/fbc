@@ -1301,11 +1301,9 @@ function cVarDecl _
 
     			'' COMMON.. no subscripts
     			else
-    				if( lexGetToken( ) <> CHAR_RPRNT ) then
-						errReport( FB_ERRMSG_SYNTAXERROR )
-						'' error recovery: skip until next ')'
-						hSkipUntil( CHAR_RPRNT )
-    				end if
+					errReport( FB_ERRMSG_SYNTAXERROR )
+					'' error recovery: skip until next ')'
+					hSkipUntil( CHAR_RPRNT )
     			end if
     		end if
 
