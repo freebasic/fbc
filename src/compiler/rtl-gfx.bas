@@ -779,7 +779,7 @@ declare function hPorts_cb _
 				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, -1 ) _
 	 		} _
 		), _
-		/' function getjoystick overload _
+		/' function getjoystick _
 			( _
 				byval id as long = 0, _
 				byref buttons as long = 0, _
@@ -795,7 +795,7 @@ declare function hPorts_cb _
 		( _
 			@"getjoystick", @"fb_GfxGetJoystick", _
 			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
-			@hGfxlib_cb, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
+	 		@hGfxlib_cb, FB_RTL_OPT_NOQB, _
 			10, _
 			{ _
 				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE, 0, TRUE ), _
@@ -808,38 +808,7 @@ declare function hPorts_cb _
 				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYREF, TRUE, 0, TRUE ), _
 				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYREF, TRUE, 0, TRUE ), _
 				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYREF, TRUE, 0, TRUE ) _
-			} _
-		), _
-		/' function getjoystick overload _
-			( _
-				byval id as long = 0, _
-				byref buttons as longint = 0, _
-				byref a1 as single = 0, _
-				byref a2 as single = 0, _
-				byref a3 as single = 0, _
-				byref a4 as single = 0, _
-				byref a5 as single = 0, _
-				byref a6 as single = 0, _
-				byref a7 as single = 0, _
-				byref a8 as single = 0 _
-			) as long '/ _
-		( _
-			@"getjoystick", @"fb_GfxGetJoystick64", _
-			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
-			@hGfxlib_cb, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
-			10, _
-			{ _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE, 0, TRUE ), _
-				( FB_DATATYPE_LONGINT, FB_PARAMMODE_BYREF, TRUE, 0, TRUE ), _
-				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYREF, TRUE, 0, TRUE ), _
-				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYREF, TRUE, 0, TRUE ), _
-				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYREF, TRUE, 0, TRUE ), _
-				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYREF, TRUE, 0, TRUE ), _
-				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYREF, TRUE, 0, TRUE ), _
-				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYREF, TRUE, 0, TRUE ), _
-				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYREF, TRUE, 0, TRUE ), _
-				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYREF, TRUE, 0, TRUE ) _
-			} _
+	 		} _
 		), _
 		/' function stick( byval n as long ) as long '/ _
 		( _
