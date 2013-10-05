@@ -115,59 +115,10 @@ private sub hRemoveNullPtrCheck( byval l as ASTNODE ptr )
 	end select
 end sub
 
-private function hAddrofDerefConst2Const _
-	( _
-		byval l as ASTNODE ptr, _
-		byval deref as ASTNODE ptr, _
-		byval is_field as integer _
-	) as ASTNODE ptr
-
-	dim as ASTNODE ptr ll = any
-
-	assert( deref->class = AST_NODECLASS_DEREF )
-
-	if( env.clopt.extraerrchk ) then
-		hRemoveNullPtrCheck( deref )
-	end if
-
-	ll = deref->l
-
-	'' @*cptr( foo ptr, const )  ->  cast( foo ptr, const )
-	'' Note: astNewDEREF() stores the CONST value into its
-	'' ASTNODE.ptr.ofs field and then uses a NULL lhs.
-	if( ll = NULL ) then
-		ll = astNewCONV( typeAddrOf( l->dtype ), l->subtype, astNewCONSTi( deref->ptr.ofs ) )
-		astDelTree( l )
-		return ll
-	end if
-
-	'' assuming a CONST lhs is always put into ASTNODE.ptr.ofs
-	'' and then deleted by astNewDEREF()
-	assert( ll->class <> AST_NODECLASS_CONST )
-
-	if( is_field = FALSE ) then
-		if( deref->ptr.ofs = 0 ) then
-			'' @*x -> x
-			'' Preserve the DEREF's dtype, as it might be different from x
-			'' (as long as astNewDEREF() allows passing the dtype manually)
-			'' (using AST_CONVOPT_DONTCHKPTR to prevent pointer checks which could
-			'' cause the CONV to fail here with derived UDT pointers)
-			ll = astNewCONV( typeAddrOf( deref->dtype ), deref->subtype, ll, AST_CONVOPT_DONTCHKPTR )
-			assert( ll )
-
-			astDelNode( deref )
-			if( deref <> l ) then
-				astDelNode( l )
-			end if
-			return ll
-		end if
-	end if
-
-	function = NULL
-end function
-
 function astNewADDROF( byval l as ASTNODE ptr ) as ASTNODE ptr
 	dim as ASTNODE ptr n = any
+	dim as integer dtype = any
+	dim as FBSYMBOL ptr subtype = any
 
 	if( l = NULL ) then
 		return NULL
@@ -185,15 +136,39 @@ function astNewADDROF( byval l as ASTNODE ptr ) as ASTNODE ptr
 
 	select case( t->class )
 	case AST_NODECLASS_DEREF
-		n = hAddrofDerefConst2Const( l, t, FALSE )
+		if( env.clopt.extraerrchk ) then
+			hRemoveNullPtrCheck( t )
+		end if
+
+		'' astNewDEREF() on a CONST stores the CONST's value into its
+		'' ASTNODE.ptr.ofs field and then uses a NULL lhs.
+		if( t->l ) then
+			'' @*nonconst  ->  nonconst
+			if( t->ptr.ofs = 0 ) then
+				n = t->l
+				astDelNode( t ) '' DEREF
+			end if
+		else
+			'' @*const  ->  const
+			n = astNewCONSTi( t->ptr.ofs )
+			astDelNode( t )  '' DEREF
+		end if
 
 	case AST_NODECLASS_FIELD
 		'' @0->field to const
-		n = t->l
-		if( n->class = AST_NODECLASS_DEREF ) then
-			n = hAddrofDerefConst2Const( l, n, TRUE )
-		else
-			n = NULL
+		if( t->l->class = AST_NODECLASS_DEREF ) then
+			if( env.clopt.extraerrchk ) then
+				hRemoveNullPtrCheck( t->l )
+			end if
+
+			'' astNewDEREF() on a CONST stores the CONST's value into its
+			'' ASTNODE.ptr.ofs field and then uses a NULL lhs.
+			if( t->l->l = NULL ) then
+				'' @*const  ->  const
+				n = astNewCONSTi( t->l->ptr.ofs )
+				astDelNode( t->l )  '' DEREF
+				astDelNode( t )     '' FIELD
+			end if
 		end if
 
 	case AST_NODECLASS_VAR
@@ -206,11 +181,7 @@ function astNewADDROF( byval l as ASTNODE ptr ) as ASTNODE ptr
 				 ((symbGetAttrib( s ) and (FB_SYMBATTRIB_SHARED or _
 				 						   FB_SYMBATTRIB_COMMON or _
 				 						   FB_SYMBATTRIB_STATIC)) <> 0) ) then
-				if( t <> l ) then
-					astDelNode( l )
-				end if
-
-				return astNewOFFSET( t )
+				n = astNewOFFSET( t )
 			end if
 		end if
 
@@ -235,22 +206,27 @@ function astNewADDROF( byval l as ASTNODE ptr ) as ASTNODE ptr
 				 						   FB_SYMBATTRIB_STATIC)) <> 0) ) then
 				'' can't be dynamic either
 				if( symbGetIsDynamic( s ) = FALSE ) then
-					if( t <> l ) then
-						astDelNode( l )
-					end if
-					return astNewOFFSET( t )
+					n = astNewOFFSET( t )
 				end if
 			end if
 		end if
 
 	end select
 
+	'' ADDROF's data type should always be determined based on the data type
+	'' of the top level node of its lhs.
+	dtype = typeAddrOf( l->dtype )
+	subtype = l->subtype
+
 	if( n ) then
-		return n
+		if( t <> l ) then
+			astDelNode( l )  '' CONV that was skipped above
+		end if
+		return astNewCONV( dtype, subtype, n, AST_CONVOPT_DONTCHKPTR )
 	end if
 
 	'' alloc new node
-	n = astNewNode( AST_NODECLASS_ADDROF, typeAddrOf( l->dtype ), l->subtype )
+	n = astNewNode( AST_NODECLASS_ADDROF, dtype, subtype )
 	n->op.op = AST_OP_ADDROF
 	n->l = l
 
