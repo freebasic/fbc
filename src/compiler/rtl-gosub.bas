@@ -161,15 +161,8 @@ function rtlGosubPop _
 
 end function
 
-'':::::
-function rtlGosubReturn _
-	( _
-		byval ctx as ASTNODE ptr _
-	) as ASTNODE ptr
-
+function rtlGosubReturn( byval ctx as ASTNODE ptr ) as integer
     dim as ASTNODE ptr proc = any
-
-	function = NULL
 
     proc = astNewCALL( PROCLOOKUP( GOSUBRETURN ) )
 
@@ -179,7 +172,7 @@ function rtlGosubReturn _
     end if
 
 	rtlErrorCheck( proc )
-	function = proc
+	function = TRUE
 end function
 
 '':::::

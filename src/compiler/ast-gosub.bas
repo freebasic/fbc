@@ -212,7 +212,7 @@ function astGosubAddReturn _
 		if( l = NULL ) then
 
 			'' fb_GosubReturn( @ctx )
-			function = (NULL <> rtlGosubReturn( astNewADDROF( astNewVAR( symbGetProcGosubSym( proc ) ) ) ))
+			function = rtlGosubReturn( astNewADDROF( astNewVAR( symbGetProcGosubSym( proc ) ) ) )
 
 		'' RETURN [label]
 		else

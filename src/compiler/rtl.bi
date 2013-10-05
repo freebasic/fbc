@@ -1745,10 +1745,7 @@ declare function rtlGosubPop _
 		byval ctx as ASTNODE ptr _
 	) as ASTNODE ptr
 
-declare function rtlGosubReturn _
-	( _
-		byval ctx as ASTNODE ptr _
-	) as ASTNODE ptr
+declare function rtlGosubReturn( byval ctx as ASTNODE ptr ) as integer
 
 declare function rtlGosubExit _
 	( _
