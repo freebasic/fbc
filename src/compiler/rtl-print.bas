@@ -1150,10 +1150,10 @@ function rtlWidthDev _
     end if
 
 	if( isfunc = FALSE ) then
-		function = iif( rtlErrorCheck( proc ), proc, NULL )
-	else
-		function = proc
+		rtlErrorCheck( proc )
 	end if
+
+	function = proc
 end function
 
 '':::::

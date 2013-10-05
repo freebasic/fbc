@@ -228,11 +228,48 @@ sub rtlErrorModEnd( )
 
 end sub
 
-function rtlErrorCheck(byval resexpr as ASTNODE ptr) as integer
-	dim as ASTNODE ptr proc = any, param = any, dst = any
-	dim as FBSYMBOL ptr nxtlabel = any, reslabel = any
+private function hErrorThrow _
+	( _
+		byval reslabel as FBSYMBOL ptr, _
+		byval nxtlabel as FBSYMBOL ptr _
+	) as ASTNODE ptr
 
-	function = FALSE
+	dim as ASTNODE ptr proc = any, param = any
+
+	'' fb_ErrorThrow( linenum, module, reslabel, resnxtlabel )
+	proc = astNewCALL( PROCLOOKUP( ERRORTHROW ) )
+
+	'' linenum
+	astNewARG( proc, astNewCONSTi( lexLineNum() ) )
+
+	'' module
+	astNewARG( proc, astNewCONSTstr( env.inf.name ) )
+
+	'' reslabel
+	if( reslabel ) then
+		param = astNewADDROF( astNewVAR( reslabel ) )
+	else
+		param = astNewCONSTi( NULL, FB_DATATYPE_UINT )
+	end if
+	astNewARG( proc, param )
+
+	'' resnxtlabel
+	if( env.clopt.resumeerr ) then
+		param = astNewADDROF( astNewVAR( nxtlabel ) )
+	else
+		param = astNewCONSTi( NULL, FB_DATATYPE_UINT )
+	end if
+	astNewARG( proc, param )
+
+	'' All the astNewARG()'s should succeed, they're hard-coded, not
+	'' supplied by the input code
+	assert( proc->call.args = 4 )
+
+	function = proc
+end function
+
+sub rtlErrorCheck( byval expr as ASTNODE ptr )
+	dim as FBSYMBOL ptr nxtlabel = any, reslabel = any
 
 	if( env.clopt.resumeerr ) then
 		reslabel = symbAddLabel( NULL )
@@ -241,70 +278,21 @@ function rtlErrorCheck(byval resexpr as ASTNODE ptr) as integer
 		reslabel = NULL
 	end if
 
-	if( env.clopt.errorcheck = FALSE ) then
-		astAdd( resexpr )
-		return TRUE
-	end if
+	if( env.clopt.errorcheck ) then
+		'' if expr = 0 then
+		nxtlabel = symbAddLabel( NULL )
+		astAdd( astNewBOP( AST_OP_EQ, expr, astNewCONSTi( 0 ), nxtlabel, AST_OPOPT_NONE ) )
 
-	''
-	proc = astNewCALL( PROCLOOKUP( ERRORTHROW ) )
+		'' fb_ErrorThrow()
+		astAdd( astNewBRANCH( AST_OP_JUMPPTR, NULL, hErrorThrow( reslabel, nxtlabel ) ) )
 
-	''
-	nxtlabel = symbAddLabel( NULL )
-
-	'' result >= FB_RTERROR_OK? skip..
-	resexpr = astNewBOP( AST_OP_EQ, resexpr, astNewCONSTi( 0 ), nxtlabel, AST_OPOPT_NONE )
-
-	astAdd( resexpr )
-
-	'' else, fb_ErrorThrow( linenum, module, reslabel, resnxtlabel ); -- CDECL
-
-	'' linenum
-	if( astNewARG( proc, astNewCONSTi( lexLineNum() ) ) = NULL ) then
-		exit function
-	end if
-
-	'' module
-	if( astNewARG( proc, astNewCONSTstr( env.inf.name ) ) = NULL ) then
-		exit function
-	end if
-
-	'' reslabel
-	if( reslabel <> NULL ) then
-		param = astNewADDROF( astNewVAR( reslabel ) )
+		'' end if
+		astAdd( astNewLABEL( nxtlabel ) )
 	else
-		param = astNewCONSTi( NULL, FB_DATATYPE_UINT )
+		astAdd( expr )
 	end if
-	if( astNewARG( proc, param ) = NULL ) then
-		exit function
-	end if
+end sub
 
-	'' resnxtlabel
-	if( env.clopt.resumeerr ) then
-		param = astNewADDROF( astNewVAR( nxtlabel ) )
-	else
-		param = astNewCONSTi( NULL, FB_DATATYPE_UINT )
-	end if
-	if( astNewARG( proc, param ) = NULL ) then
-		exit function
-	end if
-
-    '' dst
-    dst = astNewBRANCH( AST_OP_JUMPPTR, NULL, proc )
-
-    astAdd( dst )
-
-	''
-	astAdd( astNewLABEL( nxtlabel ) )
-
-	'''''symbDelLabel nxtlabel
-	'''''symbDelLabel reslabel
-
-	function = TRUE
-
-end function
-
-'':::::
 sub rtlErrorThrow _
 	( _
 		byval errexpr as ASTNODE ptr, _
@@ -312,7 +300,7 @@ sub rtlErrorThrow _
 		byval module as zstring ptr _
 	)
 
-	dim as ASTNODE ptr proc = any, param = any, dst = any
+	dim as ASTNODE ptr proc = any, param = any
 	dim as FBSYMBOL ptr nxtlabel = any, reslabel = any
 
 	''
@@ -361,17 +349,10 @@ sub rtlErrorThrow _
 		exit sub
 	end if
 
-    '' dst
-    dst = astNewBRANCH( AST_OP_JUMPPTR, NULL, proc )
+	'' dst
+	astAdd( astNewBRANCH( AST_OP_JUMPPTR, NULL, proc ) )
 
-    astAdd( dst )
-
-	''
 	astAdd( astNewLABEL( nxtlabel ) )
-
-	'''''symbDelLabel nxtlabel
-	'''''symbDelLabel reslabel
-
 end sub
 
 '':::::
@@ -443,16 +424,10 @@ sub rtlErrorSetNum _
 
 end sub
 
-'':::::
-sub rtlErrorResume _
-	( _
-		byval isnext as integer _
-	)
-
-    dim as ASTNODE ptr proc = any, dst = any
+sub rtlErrorResume( byval isnext as integer )
+	dim as ASTNODE ptr proc = any
     dim as FBSYMBOL ptr f = any
 
-	''
 	if( isnext = FALSE ) then
 		f = PROCLOOKUP( ERRORRESUME )
 	else
@@ -461,11 +436,7 @@ sub rtlErrorResume _
 
 	proc = astNewCALL( f )
 
-    ''
-    dst = astNewBRANCH( AST_OP_JUMPPTR, NULL, proc )
-
-    astAdd( dst )
-
+	astAdd( astNewBRANCH( AST_OP_JUMPPTR, NULL, proc ) )
 end sub
 
 '':::::

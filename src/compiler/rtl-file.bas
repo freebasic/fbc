@@ -1200,10 +1200,10 @@ function rtlFileOpen _
 	end if
 
 	if( isfunc = FALSE ) then
-		function = iif( rtlErrorCheck( proc ), proc, NULL )
-	else
-		function = proc
+		rtlErrorCheck( proc )
 	end if
+
+	function = proc
 end function
 
 '':::::
@@ -1257,10 +1257,10 @@ function rtlFileOpenShort _
 	end if
 
 	if( isfunc = FALSE ) then
-		function = iif( rtlErrorCheck( proc ), proc, NULL )
-	else
-		function = proc
+		rtlErrorCheck( proc )
 	end if
+
+	function = proc
 end function
 
 '':::::
@@ -1287,10 +1287,10 @@ function rtlFileClose _
 	end if
 
 	if( isfunc = FALSE ) then
-		function = iif( rtlErrorCheck( proc ), proc, NULL )
-	else
-		function = proc
+		rtlErrorCheck( proc )
 	end if
+
+	function = proc
 end function
 
 '':::::
@@ -1326,8 +1326,8 @@ function rtlFileSeek _
  		exit function
  	end if
 
-    function = rtlErrorCheck( proc )
-
+	rtlErrorCheck( proc )
+	function = TRUE
 end function
 
 '':::::
@@ -1442,10 +1442,10 @@ function rtlFilePut _
 	end if
 
 	if( isfunc = FALSE ) then
-		function = iif( rtlErrorCheck( proc ), proc, NULL )
-	else
-		function = proc
+		rtlErrorCheck( proc )
 	end if
+
+	function = proc
 end function
 
 '':::::
@@ -1503,10 +1503,10 @@ function rtlFilePutArray _
     end if
 
 	if( isfunc = FALSE ) then
-		function = iif( rtlErrorCheck( proc ), proc, NULL )
-	else
-		function = proc
+		rtlErrorCheck( proc )
 	end if
+
+	function = proc
 end function
 
 '':::::
@@ -1622,10 +1622,10 @@ function rtlFileGet _
 	end if
 
 	if( isfunc = FALSE ) then
-		function = iif( rtlErrorCheck( proc ), proc, NULL )
-	else
-		function = proc
+		rtlErrorCheck( proc )
 	end if
+
+	function = proc
 end function
 
 '':::::
@@ -1701,10 +1701,10 @@ function rtlFileGetArray _
 	end if
 
 	if( isfunc = FALSE ) then
-		function = iif( rtlErrorCheck( proc ), proc, NULL )
-	else
-		function = proc
+		rtlErrorCheck( proc )
 	end if
+
+	function = proc
 end function
 
 function rtlFileStrInput _
@@ -2101,10 +2101,10 @@ function rtlFileRename _
  	end if
 
 	if( isfunc = FALSE ) then
-		function = iif( rtlErrorCheck( proc ), proc, NULL )
-	else
-		function = proc
+		rtlErrorCheck( proc )
 	end if
+
+	function = proc
 end function
 
 '':::::
@@ -2133,8 +2133,8 @@ function rtlWidthFile _
     end if
 
 	if( isfunc = FALSE ) then
-		function = iif( rtlErrorCheck( proc ), proc, NULL )
-	else
-		function = proc
+		rtlErrorCheck( proc )
 	end if
+
+	function = proc
 end function

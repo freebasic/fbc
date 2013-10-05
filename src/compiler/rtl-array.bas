@@ -601,7 +601,8 @@ function rtlArrayRedim _
 		end if
 	next
 
-	function = rtlErrorCheck( proc )
+	rtlErrorCheck( proc )
+	function = TRUE
 end function
 
 function rtlArrayBound _

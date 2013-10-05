@@ -178,8 +178,8 @@ function rtlGosubReturn _
     	exit function
     end if
 
-    function = iif( rtlErrorCheck( proc ), proc, NULL )
-
+	rtlErrorCheck( proc )
+	function = proc
 end function
 
 '':::::
