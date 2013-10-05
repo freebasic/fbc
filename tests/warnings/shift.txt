@@ -19,7 +19,6 @@ shl huge integer value:
 	Shift value greater than or equal to number of bits in data type
 shl huge longint value:
 	Shift value greater than or equal to number of bits in data type
-	Overflow in constant conversion
 ----------------------------
 shr negative:
 	Shift value greater than or equal to number of bits in data type
@@ -42,4 +41,3 @@ shr huge integer value:
 	Shift value greater than or equal to number of bits in data type
 shr huge longint value:
 	Shift value greater than or equal to number of bits in data type
-	Overflow in constant conversion
