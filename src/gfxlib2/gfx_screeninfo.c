@@ -2,16 +2,9 @@
 
 #include "fb_gfx.h"
 
-FBCALL void fb_GfxScreenInfo
-	(
-		int *width,
-		int *height,
-		int *depth,
-		int *bpp,
-		int *pitch,
-		int *refresh,
-		FBSTRING *driver
-	)
+
+/*:::::*/
+FBCALL void fb_GfxScreenInfo(int *width, int *height, int *depth, int *bpp, int *pitch, int *refresh, FBSTRING *driver)
 {
 	char *name;
 	
