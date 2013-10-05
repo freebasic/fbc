@@ -510,7 +510,7 @@ extern ssize_t fb_hGetWindowHandle(void);
 extern FBCALL int fb_GfxScreen(int mode, int depth, int num_pages, int flags, int refresh_rate);
 extern FBCALL int fb_GfxScreenQB(int mode, int visible, int active);
 extern FBCALL int fb_GfxScreenRes(int width, int height, int depth, int num_pages, int flags, int refresh_rate);
-extern FBCALL void fb_GfxScreenInfo(int *width, int *height, int *depth, int *bpp, int *pitch, int *refresh_rate, FBSTRING *driver);
+extern FBCALL void fb_GfxScreenInfo(ssize_t *width, ssize_t *height, ssize_t *depth, ssize_t *bpp, ssize_t *pitch, ssize_t *refresh_rate, FBSTRING *driver);
 extern FBCALL int fb_GfxScreenList(int depth);
 extern FBCALL void *fb_GfxImageCreate(int width, int height, unsigned int color, int depth, int flags);
 extern FBCALL void *fb_GfxImageCreateQB(int width, int height, unsigned int color, int depth, int flags);

@@ -863,28 +863,28 @@ declare function hPorts_cb _
 		), _
 		/' sub screeninfo _
 			( _
-				byref width as long, _
-				byref height as long, _
-				byref depth as long, _
-				byref bpp as long, _
-				byref pitch as long, _
-				byref refresh_rate as long, _
-				byref driver as string _
+				byref width as integer = 0, _
+				byref height as integer = 0, _
+				byref depth as integer = 0, _
+				byref bpp as integer = 0, _
+				byref pitch as integer = 0, _
+				byref refresh_rate as integer = 0, _
+				byref driver as string = byval NULL _
 			) '/ _
 		( _
 			@"screeninfo", @"fb_GfxScreenInfo", _
 			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
-	 		@hGfxlib_cb, FB_RTL_OPT_NOQB, _
+			@hGfxlib_cb, FB_RTL_OPT_NOQB, _
 			7, _
 			{ _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYREF, TRUE, 0 ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYREF, TRUE, 0 ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYREF, TRUE, 0 ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYREF, TRUE, 0 ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYREF, TRUE, 0 ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYREF, TRUE, 0 ), _
+				( FB_DATATYPE_INTEGER, FB_PARAMMODE_BYREF, TRUE, 0 ), _
+				( FB_DATATYPE_INTEGER, FB_PARAMMODE_BYREF, TRUE, 0 ), _
+				( FB_DATATYPE_INTEGER, FB_PARAMMODE_BYREF, TRUE, 0 ), _
+				( FB_DATATYPE_INTEGER, FB_PARAMMODE_BYREF, TRUE, 0 ), _
+				( FB_DATATYPE_INTEGER, FB_PARAMMODE_BYREF, TRUE, 0 ), _
+				( FB_DATATYPE_INTEGER, FB_PARAMMODE_BYREF, TRUE, 0 ), _
 				( FB_DATATYPE_STRING, FB_PARAMMODE_BYREF, TRUE, NULL ) _
-	 		} _
+			} _
 		), _
 		/' function screenlist( byval depth as long = 0 ) as long '/ _
 		( _
