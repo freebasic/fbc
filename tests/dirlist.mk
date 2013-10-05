@@ -17,6 +17,7 @@ dim \
 expressions \
 file \
 functions \
+gfx \
 interactive \
 namespace \
 numbers \
