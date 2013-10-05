@@ -1538,29 +1538,14 @@ function cVarDecl _
 					end if
 				end if
 
-				'' dynamic? if the dimensions are known, redim it
-				if( is_dynamic ) then
-					if( dimensions > 0 ) then
-						rtlArrayRedim( sym, _
-									   symbGetLen( sym ), _
-									   dimensions, _
-									   exprTB(), _
-									   dopreserve, _
-									   symbGetDontInit( sym ) = FALSE )
-					end if
-				end if
-
 				'' all set as declared
 				symbSetIsDeclared( sym )
 
 				'' not declared already?
-    			if( is_decl = FALSE ) then
-
+				if( is_decl = FALSE ) then
 					if( fbLangOptIsSet( FB_LANG_OPT_SCOPE ) ) then
-
             			'' flush the init tree (must be done after adding the decl node)
 						astAdd( hFlushInitializer( sym, var_decl, initree, has_dtor ) )
-
 					'' unscoped
 					else
 						'' flush the init tree (must be done after adding the decl node)
@@ -1583,14 +1568,22 @@ function cVarDecl _
 												astTypeIniFlush( assign_initree, _
 											 	 		 		 sym, _
 											  	 		 		 AST_INIOPT_ISINI ) ) )
-
 						end if
-
 					end if
+				end if
 
+				'' dynamic? if the dimensions are known, redim it
+				if( is_dynamic ) then
+					if( dimensions > 0 ) then
+						rtlArrayRedim( sym, _
+									   symbGetLen( sym ), _
+									   dimensions, _
+									   exprTB(), _
+									   dopreserve, _
+									   symbGetDontInit( sym ) = FALSE )
+					end if
 				end if
 			end if
-
 		end if
 
 		''
