@@ -169,10 +169,7 @@ function cVariableDecl( byval attrib as FB_SYMBATTRIB ) as integer
 
 	'' OPTION DYNAMIC enabled?
 	if( env.opt.dynamic ) then
-		'' not forced STATIC?
-		if( (attrib and FB_SYMBATTRIB_STATIC) = 0 ) then
-			attrib or= FB_SYMBATTRIB_DYNAMIC
-		end if
+		attrib or= FB_SYMBATTRIB_DYNAMIC
 	end if
 
 	if( (attrib and FB_SYMBATTRIB_EXTERN) = 0 ) then

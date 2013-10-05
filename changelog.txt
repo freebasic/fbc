@@ -69,6 +69,7 @@ Version 0.91.0:
 - ICE (dangling pointer) with type initializer expressions, which is known to at least cause a compiler hang during error recovery
 - #705: REDIM in a procedure marked with STATIC did not create a STATIC dynamic array (on heap, preserved to next call), but only a local dynamic array (on stack)
 - STATIC declarations couldn't use variables for array bounds, but only compile-time constants
+- STATIC declarations ignored OPTION DYNAMIC
 
 
 Version 0.90.1:
