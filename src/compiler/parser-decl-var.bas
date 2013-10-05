@@ -838,7 +838,7 @@ private function hVarInit _
         byval isdecl as integer _
 	) as ASTNODE ptr
 
-    dim as integer attrib = any
+	dim as integer attrib = any, ignoreattribs = any
 	dim as ASTNODE ptr initree = any
 
 	function = NULL
@@ -910,12 +910,12 @@ private function hVarInit _
 	'' static or shared?
 	if( (symbGetAttrib( sym ) and (FB_SYMBATTRIB_STATIC or FB_SYMBATTRIB_SHARED)) <> 0 ) then
 		''
-		'' Most static/shared var initializers must be constants,
+		'' In general, STATIC/SHARED var initializers must be constants,
+		'' that includes OFFSETs (address of other global symbols),
 		'' because they're emitted into .data/.bss sections, so no code
-		'' can be allowed. "Constants" includes OFFSETs (address of
-		'' other global symbols).
+		'' (that needs to be executed) can be allowed.
 		''
-		'' For vars with constructors,
+		'' (Currently) the only exception are vars with constructors:
 		'' - the constructor must be called with certain parameters
 		'' - so code is executed, and the initializer can aswell allow
 		''   more than just constants
@@ -924,27 +924,41 @@ private function hVarInit _
 		'' - local non-static vars cannot be allowed, since they're
 		''   from a different scope
 		''
-		'' SHARED var initializers (no matter whether ctorcall or
-		'' "constant"), must not reference local statics, because those
-		'' symbols will be deleted by the time the global is emitted.
-		'' Normally that's not possible anyways, because static locals
-		'' from inside procs aren't visible in the toplevel namespace,
-		'' the only exception is the implicit main().
+		'' SHARED var initializers must not reference local STATICs,
+		'' because those symbols will be deleted by the time the global
+		'' is emitted. This can only happen with STATICs from the
+		'' implicit main() because those from inside procedures aren't
+		'' visible to SHARED declarations at the toplevel.
 		''
 		'' The other way round (STATIC non-SHARED initializer using a
 		'' non-STATIC SHARED) is ok though; it will be "forward
-		'' referenced" in the .asm output, but it works.
+		'' referenced" in the .asm output, because STATICs are emitted
+		'' before globals, but it works.
+		''
+		'' Even constant initializers can reference other global vars,
+		'' in form of OFFSETs (address-of), because of this the
+		'' astTypeIniUsesLocals() check must run in both constant and
+		'' non-constant initializer cases.
 		''
 
-		var expect_const = not symbHasCtor( sym )
-		var ignoreattribs = 0
-
-		if( expect_const = FALSE ) then
-			'' Allow temp vars and temp array descriptors
-			ignoreattribs or= FB_SYMBATTRIB_TEMP or FB_SYMBATTRIB_DESCRIPTOR
+		'' Check for constant initializer?
+		'' (doing this check first, it results in a nicer error message)
+		if( symbHasCtor( sym ) = FALSE ) then
+			if( astTypeIniIsConst( initree ) = FALSE ) then
+				errReport( FB_ERRMSG_EXPECTEDCONST )
+				'' error recovery: discard the tree
+				astDelTree( initree )
+				symbGetStats( sym ) and= not FB_SYMBSTATS_INITIALIZED
+				exit function
+			end if
 		end if
 
-		'' Allow non-shared statics to reference statics
+		'' Ensure the initializer doesn't reference any vars it mustn't
+
+		'' Allow temp vars and temp array descriptors
+		ignoreattribs = FB_SYMBATTRIB_TEMP or FB_SYMBATTRIB_DESCRIPTOR
+
+		'' Allow only non-SHARED STATICs to reference STATICs
 		if( symbIsShared( sym ) = FALSE ) then
 			ignoreattribs or= FB_SYMBATTRIB_STATIC
 		end if
@@ -953,21 +967,12 @@ private function hVarInit _
 			errReport( FB_ERRMSG_INVALIDREFERENCETOLOCAL )
 			'' error recovery: discard the tree
 			astDelTree( initree )
-			initree = NULL
 			symbGetStats( sym ) and= not FB_SYMBSTATS_INITIALIZED
-		elseif( expect_const ) then
-			if( astTypeIniIsConst( initree ) = FALSE ) then
-				errReport( FB_ERRMSG_EXPECTEDCONST )
-				'' error recovery: discard the tree
-				astDelTree( initree )
-				initree = NULL
-				symbGetStats( sym ) and= not FB_SYMBSTATS_INITIALIZED
-			end if
+			exit function
 		end if
 	end if
 
 	function = initree
-
 end function
 
 '':::::
