@@ -1019,6 +1019,37 @@ namespace procptrs
 	end sub
 end namespace
 
+sub testRtlErrorChecking cdecl( )
+	scope
+		dim as string ln
+		CU_ASSERT( ln = "" )
+
+		var i = -1
+
+		var f = freefile( )
+		open iif( i, "data/123.txt", "data/empty.txt" ) for input as #f
+		line input #f, ln
+		close #f
+
+		CU_ASSERT( ln = "1234567890" )
+	end scope
+
+	scope
+		dim as string ln
+		CU_ASSERT( ln = "" )
+
+		var a = 1, b = 0
+		var ext = ".txt"
+
+		var f = freefile( )
+		open "data/" + iif( a, str( a ) + "2", "x" ) + iif( b, "x", "3" + ext ) for input as #f
+		line input #f, ln
+		close #f
+
+		CU_ASSERT( ln = "1234567890" )
+	end scope
+end sub
+
 sub ctor( ) constructor
 	fbcu.add_suite( "tests/expressions/iif" )
 	fbcu.add_test( "int BOP", @testIntBop )
@@ -1037,6 +1068,7 @@ sub ctor( ) constructor
 	fbcu.add_test( "iif() ctors 5", @iifTempVarDefCtorAndIntCtor.test )
 	fbcu.add_test( "member access", @iifStringIndexingOrMemberAccess.test )
 	fbcu.add_test( "procptrs", @procptrs.test )
+	fbcu.add_test( "string iif vs. rtl error checking", @testRtlErrorChecking )
 end sub
 
 end namespace

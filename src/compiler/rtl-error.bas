@@ -268,6 +268,14 @@ private function hErrorThrow _
 	function = proc
 end function
 
+'' Note: The rtl error checking code needs to be LINKed with the statement it
+'' checks, in order to ensure the resulting single astAdd() will clean up any
+'' temp vars from the statement after the whole rtl error checking code,
+'' not in the middle of it, where it'd be either too early (during the astAdd()
+'' for the reslabel, that'd be before the statement even was executed), or
+'' just on one code path of the IF (if it's the astAdd() for the IF check).
+'' (astBuildBranch() could be used to fix the 2nd issue, but that still leaves
+'' the 1st)
 function rtlErrorCheck( byval expr as ASTNODE ptr ) as ASTNODE ptr
 	dim as FBSYMBOL ptr nxtlabel = any, reslabel = any
 	dim as ASTNODE ptr t = NULL
