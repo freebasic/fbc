@@ -79,7 +79,7 @@ Version 0.90.1:
 - Potential internal errors in Unix rtlib during SIGWINCH signal handling, due to calls to non-async-signal-safe functions
 - Any input on stdin could break the Unix rtlib's escape sequence communication with the terminal, e.g. typing very fast at an Input prompt
 - #679: WINDOW width/height were losing precision on very small Single values
-- Taking the address of a PEEK expression (e.g. "@peek( integer, myptr )") ignored the PEEK data type. This could also break WITH when used on a PEEK expression.
+- Taking the address of a PEEK, [] indexing, or * dereferencing expression could ignore the PEEK/indexing/derefenced data type (e.g. "@peek( integer, myptr )" returned myptr's type instead of an INTEGER PTR, and "@string[index]" returned a ZSTRING PTR instead of an UBYTE PTR). This could also break WITH when used on a PEEK expression.
 - C backend: Passing @proc (taking address of procedures) expressions to BYREF parameters caused bad C code to be generated
 - Pointer arithmetic on procedure pointers is now disallowed. It is not meaningful, because procedures do not have a fixed size and are not arranged like array elements.
 - 0.90.0 regression: A bug in array index parsing could cause the compiler to crash due to arrays being used without index, instead of showing an error message
