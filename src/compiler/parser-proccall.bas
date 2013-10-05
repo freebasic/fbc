@@ -384,7 +384,7 @@ function cProcCall _
 	sym = astGetSymbol( procexpr )
 	if( sym <> NULL ) then
 		if( symbGetIsThrowable( sym ) ) then
-			rtlErrorCheck( procexpr )
+			astAdd( rtlErrorCheck( procexpr ) )
 			exit function
 		end if
 	end if

@@ -992,7 +992,34 @@ function hFlushDecl _
 
 end function
 
-'':::::
+private function hWrapInStaticFlag( byval code as ASTNODE ptr ) as ASTNODE ptr
+	dim as ASTNODE ptr t = any
+	dim as FBARRAYDIM dTB(0) = any
+	dim as FBSYMBOL ptr flag = any, label = any
+
+	'' static flag as integer
+	flag = symbAddVar( symbUniqueLabel( ), NULL, FB_DATATYPE_INTEGER, NULL, 0, _
+	                   0, dTB(), FB_SYMBATTRIB_STATIC )
+	symbSetIsImplicit( flag )
+	t = astNewDECL( flag, TRUE )
+
+	'' if flag = 0 then
+	label = symbAddLabel( NULL )
+	t = astNewLINK( t, _
+		astBuildBranch( _
+			astNewBOP( AST_OP_EQ, astNewVAR( flag ), astNewCONSTi( 0 ) ), _
+			label, FALSE ) )
+
+	'' flag = 1
+	t = astNewLINK( t, astBuildVarAssign( flag, 1 ) )
+
+	'' <code>
+	t = astNewLINK( t, code )
+
+	'' end if
+	function = astNewLINK( t, astNewLABEL( label ) )
+end function
+
 private function hCallStaticCtor _
 	( _
 		byval sym as FBSYMBOL ptr, _
@@ -1001,53 +1028,33 @@ private function hCallStaticCtor _
 		byval has_dtor as integer _
 	) as ASTNODE ptr
 
-	dim as FBARRAYDIM dTB(0) = any
-	dim as FBSYMBOL ptr flag = any, label = any
+	dim as ASTNODE ptr t = any, initcode = any
+	dim as FBSYMBOL ptr proc = any
 
-	dim as ASTNODE ptr tree = hFlushDecl( var_decl )
+	t = hFlushDecl( var_decl )
+	initcode = NULL
 
-	if( (initree = NULL) and (has_dtor = FALSE) ) then
-		return tree
+	if( initree ) then
+		'' static var's initializer
+		initcode = astTypeIniFlush( initree, sym, AST_INIOPT_ISINI )
 	end if
 
-	'' create a static flag
-	flag = symbAddVar( symbUniqueLabel( ), NULL, FB_DATATYPE_INTEGER, NULL, 0, _
-	                   0, dTB(), FB_SYMBATTRIB_STATIC )
-	symbSetIsImplicit( flag )
-
-	tree = astNewLINK( tree, astNewDECL( flag, TRUE ) )
-
-	'' if flag = 0 then
-	label = symbAddLabel( NULL )
-
-	tree = astNewLINK( tree, _
-		astBuildBranch( _
-			astNewBOP( AST_OP_EQ, astNewVAR( flag ), astNewCONSTi( 0 ) ), _
-			label, FALSE ) )
-
-	'' flag = 1
-	tree = astNewLINK( tree, _
-					   astBuildVarAssign( flag, 1 ) )
-
-	if( initree <> NULL ) then
-		'' initialize it
-		tree = astNewLINK( tree, _
-						   astTypeIniFlush( initree, sym, AST_INIOPT_ISINI ) )
-	end if
-
-	'' has a dtor?
 	if( has_dtor ) then
-	    dim as FBSYMBOL ptr proc
-	    proc = astProcAddStaticInstance( sym )
-
-	    '' atexit( @static_proc )
-	    tree = astNewLINK( tree, _
-	    				   rtlAtExit( astBuildProcAddrof( proc ) ) )
+		'' Register an atexit() handler to call the static var's dtor
+		'' at program exit.
+		'' atexit( @static_proc )
+		proc = astProcAddStaticInstance( sym )
+		initcode = astNewLINK( initcode, rtlAtExit( astBuildProcAddrof( proc ) ) )
 	end if
 
-	'' end if
-	function = astNewLINK( tree, astNewLABEL( label ) )
+	'' Any initialization code for a static var must be wrapped with a
+	'' static flag, to ensure it'll be only executed once, not everytime the
+	'' parent procedure is called.
+	if( initcode ) then
+		t = astNewLINK( t, hWrapInStaticFlag( initcode ) )
+	end if
 
+	function = t
 end function
 
 '':::::
@@ -1172,7 +1179,7 @@ function cVarDecl _
     static as ASTNODE ptr exprTB(0 to FB_MAXARRAYDIMS-1, 0 to 1)
     static as FBARRAYDIM dTB(0 to FB_MAXARRAYDIMS-1)
     dim as FBSYMBOL ptr sym, subtype = any
-    dim as ASTNODE ptr initree = any
+	dim as ASTNODE ptr initree = any, redimcall = any
 	dim as integer addsuffix = any, is_multdecl = any
     dim as integer is_typeless = any, is_decl = any, check_exprtb = any
 	dim as integer dtype = any
@@ -1563,16 +1570,22 @@ function cVarDecl _
 					end if
 				end if
 
-				'' dynamic? if the dimensions are known, redim it
-				if( attrib and FB_SYMBATTRIB_DYNAMIC ) then
-					if( dimensions > 0 ) then
-						rtlArrayRedim( sym, _
-									   symbGetLen( sym ), _
-									   dimensions, _
-									   exprTB(), _
-									   dopreserve, _
-									   symbGetDontInit( sym ) = FALSE )
+				'' Dynamic array? If the dimensions are known, redim it.
+				if( ((attrib and FB_SYMBATTRIB_DYNAMIC) <> 0) and (dimensions > 0) ) then
+					redimcall = rtlArrayRedim( sym, symbGetLen( sym ), dimensions, exprTB(), _
+								dopreserve, symbGetDontInit( sym ) = FALSE )
+
+					'' If this is a local STATIC (not SHARED/COMMON) array declaration (and not
+					'' a typeless REDIM), then the redim call should be executed only once, not
+					'' during every call to the parent procedure.
+					if( symbIsStatic( sym ) and symbIsLocal( sym ) and _
+					    ((symbGetAttrib( sym ) and (FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_COMMON)) = 0) and _
+					    (not is_decl) ) then
+						redimcall = hWrapInStaticFlag( redimcall )
 					end if
+
+					astAdd( redimcall )
+					redimcall = NULL
 				end if
 			end if
 		end if

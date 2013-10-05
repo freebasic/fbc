@@ -490,15 +490,13 @@ function rtlArrayRedim _
 		exprTB() as ASTNODE ptr, _
 		byval dopreserve as integer, _
 		byval doclear as integer _
-	) as integer
+	) as ASTNODE ptr
 	
 	'' no const filtering needed... dynamic arrays can't be const
 	
     dim as ASTNODE ptr proc = any, expr = any
     dim as FBSYMBOL ptr f = any, ctor = any, dtor = any, subtype = any
     dim as integer dtype = any
-
-    function = FALSE
 
     dtype = symbGetFullType( s )
 
@@ -601,8 +599,7 @@ function rtlArrayRedim _
 		end if
 	next
 
-	rtlErrorCheck( proc )
-	function = TRUE
+	function = rtlErrorCheck( proc )
 end function
 
 function rtlArrayBound _

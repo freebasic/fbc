@@ -171,7 +171,7 @@ function rtlGosubReturn( byval ctx as ASTNODE ptr ) as integer
     	exit function
     end if
 
-	rtlErrorCheck( proc )
+	astAdd( rtlErrorCheck( proc ) )
 	function = TRUE
 end function
 

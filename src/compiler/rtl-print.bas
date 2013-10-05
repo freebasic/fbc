@@ -1150,7 +1150,7 @@ function rtlWidthDev _
     end if
 
 	if( isfunc = FALSE ) then
-		rtlErrorCheck( proc )
+		astAdd( rtlErrorCheck( proc ) )
 	end if
 
 	function = proc

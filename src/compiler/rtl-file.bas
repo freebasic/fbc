@@ -1200,7 +1200,7 @@ function rtlFileOpen _
 	end if
 
 	if( isfunc = FALSE ) then
-		rtlErrorCheck( proc )
+		astAdd( rtlErrorCheck( proc ) )
 	end if
 
 	function = proc
@@ -1257,7 +1257,7 @@ function rtlFileOpenShort _
 	end if
 
 	if( isfunc = FALSE ) then
-		rtlErrorCheck( proc )
+		astAdd( rtlErrorCheck( proc ) )
 	end if
 
 	function = proc
@@ -1287,7 +1287,7 @@ function rtlFileClose _
 	end if
 
 	if( isfunc = FALSE ) then
-		rtlErrorCheck( proc )
+		astAdd( rtlErrorCheck( proc ) )
 	end if
 
 	function = proc
@@ -1326,7 +1326,7 @@ function rtlFileSeek _
  		exit function
  	end if
 
-	rtlErrorCheck( proc )
+	astAdd( rtlErrorCheck( proc ) )
 	function = TRUE
 end function
 
@@ -1442,7 +1442,7 @@ function rtlFilePut _
 	end if
 
 	if( isfunc = FALSE ) then
-		rtlErrorCheck( proc )
+		astAdd( rtlErrorCheck( proc ) )
 	end if
 
 	function = proc
@@ -1503,7 +1503,7 @@ function rtlFilePutArray _
     end if
 
 	if( isfunc = FALSE ) then
-		rtlErrorCheck( proc )
+		astAdd( rtlErrorCheck( proc ) )
 	end if
 
 	function = proc
@@ -1622,7 +1622,7 @@ function rtlFileGet _
 	end if
 
 	if( isfunc = FALSE ) then
-		rtlErrorCheck( proc )
+		astAdd( rtlErrorCheck( proc ) )
 	end if
 
 	function = proc
@@ -1701,7 +1701,7 @@ function rtlFileGetArray _
 	end if
 
 	if( isfunc = FALSE ) then
-		rtlErrorCheck( proc )
+		astAdd( rtlErrorCheck( proc ) )
 	end if
 
 	function = proc
@@ -2101,7 +2101,7 @@ function rtlFileRename _
  	end if
 
 	if( isfunc = FALSE ) then
-		rtlErrorCheck( proc )
+		astAdd( rtlErrorCheck( proc ) )
 	end if
 
 	function = proc
@@ -2133,7 +2133,7 @@ function rtlWidthFile _
     end if
 
 	if( isfunc = FALSE ) then
-		rtlErrorCheck( proc )
+		astAdd( rtlErrorCheck( proc ) )
 	end if
 
 	function = proc

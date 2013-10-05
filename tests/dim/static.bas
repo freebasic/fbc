@@ -84,6 +84,30 @@ sub testVariableSubscripts cdecl( )
 	CU_ASSERT( ubound( array2 ) = 6 )
 end sub
 
+private sub fTestDynamic( byval pass as integer ) static
+	'' STATIC dynamic array, should be initialized to those default
+	'' dimensions only once
+	redim array(1 to 2) as integer
+
+	if( pass = 2 ) then
+		redim array(3 to 4)
+	end if
+
+	if( pass = 1 ) then
+		CU_ASSERT( lbound( array ) = 1 )
+		CU_ASSERT( ubound( array ) = 2 )
+	else
+		CU_ASSERT( lbound( array ) = 3 )
+		CU_ASSERT( ubound( array ) = 4 )
+	end if
+end sub
+
+sub testDynamic cdecl( )
+	fTestDynamic( 1 )
+	fTestDynamic( 2 )
+	fTestDynamic( 3 )
+end sub
+
 private sub ctor () constructor
 	fbcu.add_suite("fbc_tests.dim.static")
 	fbcu.add_test("test 1", @test1)
@@ -92,6 +116,7 @@ private sub ctor () constructor
 	fbcu.add_test("test 4", @test4)
 	fbcu.add_test("test 5", @test5)
 	fbcu.add_test( "STATIC + non-constant array subscripts", @testVariableSubscripts )
+	fbcu.add_test( "STATIC dynamic array REDIM at declaration", @testDynamic )
 end sub
 
 end namespace

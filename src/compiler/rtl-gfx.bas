@@ -2050,7 +2050,7 @@ function rtlGfxDrawString _
  		exit function
  	end if
 
-	rtlErrorCheck( proc )
+	astAdd( rtlErrorCheck( proc ) )
 	function = TRUE
 end function
 
@@ -2430,7 +2430,7 @@ function rtlGfxPut _
  		exit function
  	end if
 
-	rtlErrorCheck( proc )
+	astAdd( rtlErrorCheck( proc ) )
 	function = TRUE
 end function
 
@@ -2525,7 +2525,7 @@ function rtlGfxGet _
  		exit function
  	end if
 
-	rtlErrorCheck( proc )
+	astAdd( rtlErrorCheck( proc ) )
 	function = TRUE
 end function
 
@@ -2582,7 +2582,7 @@ function rtlGfxScreenSet _
  		exit function
  	end if
 
-	rtlErrorCheck( proc )
+	astAdd( rtlErrorCheck( proc ) )
 	function = TRUE
 end function
 
@@ -2621,7 +2621,7 @@ function rtlGfxScreenSetQB _
  		exit function
  	end if
 
-	rtlErrorCheck( proc )
+	astAdd( rtlErrorCheck( proc ) )
 	function = TRUE
 end function
 

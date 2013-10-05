@@ -268,12 +268,13 @@ private function hErrorThrow _
 	function = proc
 end function
 
-sub rtlErrorCheck( byval expr as ASTNODE ptr )
+function rtlErrorCheck( byval expr as ASTNODE ptr ) as ASTNODE ptr
 	dim as FBSYMBOL ptr nxtlabel = any, reslabel = any
+	dim as ASTNODE ptr t = NULL
 
 	if( env.clopt.resumeerr ) then
 		reslabel = symbAddLabel( NULL )
-		astAdd( astNewLABEL( reslabel ) )
+		t = astNewLINK( t, astNewLABEL( reslabel ) )
 	else
 		reslabel = NULL
 	end if
@@ -281,17 +282,19 @@ sub rtlErrorCheck( byval expr as ASTNODE ptr )
 	if( env.clopt.errorcheck ) then
 		'' if expr = 0 then
 		nxtlabel = symbAddLabel( NULL )
-		astAdd( astNewBOP( AST_OP_EQ, expr, astNewCONSTi( 0 ), nxtlabel, AST_OPOPT_NONE ) )
+		t = astNewLINK( t, astNewBOP( AST_OP_EQ, expr, astNewCONSTi( 0 ), nxtlabel, AST_OPOPT_NONE ) )
 
 		'' fb_ErrorThrow()
-		astAdd( astNewBRANCH( AST_OP_JUMPPTR, NULL, hErrorThrow( reslabel, nxtlabel ) ) )
+		t = astNewLINK( t, astNewBRANCH( AST_OP_JUMPPTR, NULL, hErrorThrow( reslabel, nxtlabel ) ) )
 
 		'' end if
-		astAdd( astNewLABEL( nxtlabel ) )
+		t = astNewLINK( t, astNewLABEL( nxtlabel ) )
 	else
-		astAdd( expr )
+		t = astNewLINK( t, expr )
 	end if
-end sub
+
+	function = t
+end function
 
 sub rtlErrorThrow _
 	( _

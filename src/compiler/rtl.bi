@@ -1107,7 +1107,7 @@ declare function rtlArrayRedim _
 		exprTB() as ASTNODE ptr, _
 		byval dopreserve as integer, _
 		byval doclear as integer _
-	) as integer
+	) as ASTNODE ptr
 
 declare function rtlArrayBound _
 	( _
@@ -1495,7 +1495,7 @@ declare function rtlFileLock _
 		byval endexpr as ASTNODE ptr _
 	) as integer
 
-declare sub rtlErrorCheck( byval expr as ASTNODE ptr )
+declare function rtlErrorCheck( byval expr as ASTNODE ptr ) as ASTNODE ptr
 
 declare sub rtlErrorThrow _
 	( _
