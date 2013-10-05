@@ -70,6 +70,7 @@ Version 0.91.0:
 - #705: REDIM in a procedure marked with STATIC did not create a STATIC dynamic array (on heap, preserved to next call), but only a local dynamic array (on stack)
 - STATIC declarations couldn't use variables for array bounds, but only compile-time constants
 - STATIC declarations ignored OPTION DYNAMIC
+- zlib example tried to modify a string literal, which would cause it to crash on Linux or with -gen gcc
 
 
 Version 0.90.1:
