@@ -20,9 +20,9 @@ function astNewMEM _
 
     dim as ASTNODE ptr n = any
 
-    var blkmaxlen = irGetOptionValue( IR_OPTIONVALUE_MAXMEMBLOCKLEN )
+	dim as uinteger blkmaxlen = irGetOptionValue( IR_OPTIONVALUE_MAXMEMBLOCKLEN )
 
-	dim as longint lgt = bytes
+	dim as ulongint lgt = bytes
 	if( op = AST_OP_MEMCLEAR ) then
 		if( astIsCONST( r ) ) then
 			lgt = astConstGetInt( r )

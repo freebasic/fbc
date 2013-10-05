@@ -3031,7 +3031,7 @@ private sub _emitMem _
 	case AST_OP_MEMCLEAR
 		hWriteLine("__builtin_memset( " + exprFlush( exprNewVREG( v1 ) ) + ", 0, " + exprFlush( exprNewVREG( v2 ) ) + " );" )
 	case AST_OP_MEMMOVE
-		hWriteLine("__builtin_memcpy( " + exprFlush( exprNewVREG( v1 ) ) + ", " + exprFlush( exprNewVREG( v2 ) ) + ", " + str( bytes ) + " );" )
+		hWriteLine("__builtin_memcpy( " + exprFlush( exprNewVREG( v1 ) ) + ", " + exprFlush( exprNewVREG( v2 ) ) + ", " + str( cunsg( bytes ) ) + " );" )
 	end select
 
 end sub

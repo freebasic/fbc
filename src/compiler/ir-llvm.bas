@@ -2124,7 +2124,7 @@ private sub _emitMem _
 		ln += "@llvm.memmove.p0i8.p0i8.i32( "
 		ln += "i8* " + hVregToStr( v1 ) + ", "
 		ln += "i8* " + hVregToStr( v2 ) + ", "
-		ln += "i32 " + str( bytes ) + ", "
+		ln += "i32 " + str( cunsg( bytes ) ) + ", "
 
 	end select
 

@@ -5938,7 +5938,7 @@ private sub _emitMEMMOVE _
 	) static
 
 	'' handle the assumption done at ast-node-mem::newMEM()
-	if( bytes > EMIT_MEMBLOCK_MAXLEN ) then
+	if( culng( bytes ) > EMIT_MEMBLOCK_MAXLEN ) then
 		hMemMoveRep( dvreg, svreg, bytes )
 	else
 		hMemMoveBlk( dvreg, svreg, bytes )
@@ -5963,7 +5963,7 @@ end sub
 private sub hMemClearRepIMM _
 	( _
 		byval dvreg as IRVREG ptr, _
-		byval bytes as integer _
+		byval bytes as ulong _
 	) static
 
 	dim as string dst
@@ -5998,7 +5998,7 @@ private sub hMemClearRepIMM _
 	outp "xor eax, eax"
 
 	if( bytes > 4 ) then
-		ostr = "mov ecx, " + str( cunsg(bytes) \ 4 )
+		ostr = "mov ecx, " + str( bytes \ 4 )
 		outp ostr
 		outp "rep stosd"
 
@@ -6039,7 +6039,7 @@ end sub
 private sub hMemClearBlkIMM _
 	( _
 		byval dvreg as IRVREG ptr, _
-		byval bytes as integer _
+		byval bytes as ulong _
 	) static
 
 	dim as string dst
@@ -6047,7 +6047,7 @@ private sub hMemClearBlkIMM _
 
 	ofs = 0
 	'' move dwords
-	for i = 1 to cunsg(bytes) \ 4
+	for i = 1 to bytes \ 4
 		hPrepOperand( dvreg, dst, FB_DATATYPE_INTEGER, ofs )
 		hMOV( dst, "0" )
 		ofs += 4
@@ -6156,7 +6156,7 @@ private sub _emitMEMCLEAR _
 
 	'' handle the assumption done at ast-node-mem::newMEM()
 	if( irIsIMM( svreg ) ) then
-		dim as integer bytes = svreg->value.i
+		dim as ulong bytes = svreg->value.i
 		if( bytes > EMIT_MEMBLOCK_MAXLEN ) then
 			hMemClearRepIMM( dvreg, bytes )
 		else
