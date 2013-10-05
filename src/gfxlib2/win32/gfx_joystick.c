@@ -16,7 +16,7 @@ static int inited = FALSE;
 
 #define POV_LAP 2250
 
-FBCALL int fb_GfxGetJoystick(int id, int *buttons, float *a1, float *a2, float *a3, float *a4, float *a5, float *a6, float *a7, float *a8)
+FBCALL int fb_GfxGetJoystick(int id, ssize_t *buttons, float *a1, float *a2, float *a3, float *a4, float *a5, float *a6, float *a7, float *a8)
 {
 	JOYINFOEX info;
 	JOYDATA *j;

@@ -173,7 +173,7 @@ void fb_hScreenInfo(int *width, int *height, int *depth, int *refresh)
 }
 
 /*:::::*/
-FBCALL int fb_GfxGetJoystick(int id, int *buttons, float *a1, float *a2, float *a3, float *a4, float *a5, float *a6, float *a7, float *a8)
+FBCALL int fb_GfxGetJoystick(int id, ssize_t *buttons, float *a1, float *a2, float *a3, float *a4, float *a5, float *a6, float *a7, float *a8)
 {
 	static int inited = 0;
 

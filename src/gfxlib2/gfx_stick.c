@@ -26,7 +26,7 @@ FBCALL int fb_GfxStickQB( int n )
 			for( i=0; i<2; i++ )
 			{
 				float x, y, a;
-				int buttons;
+				ssize_t buttons;
 				int ret = fb_GfxGetJoystick( i, &buttons, &x, &y, &a, &a, &a, &a, &a, &a );
 				if( ret == FB_RTERROR_OK )
 				{
@@ -72,8 +72,7 @@ FBCALL int fb_GfxStrigQB( int n )
 		if( n & 1 )
 		{
 			float a;
-			int buttons;
-
+			ssize_t buttons;
 			if( FB_RTERROR_OK == fb_GfxGetJoystick( i, &buttons, &a, &a, &a, &a, &a, &a, &a, &a ))
 			{
 				stick_btns[i] |= buttons;

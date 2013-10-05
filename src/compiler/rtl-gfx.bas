@@ -782,7 +782,7 @@ declare function hPorts_cb _
 		/' function getjoystick _
 			( _
 				byval id as long = 0, _
-				byref buttons as long = 0, _
+				byref buttons as integer = 0, _
 				byref a1 as single = 0, _
 				byref a2 as single = 0, _
 				byref a3 as single = 0, _
@@ -799,7 +799,7 @@ declare function hPorts_cb _
 			10, _
 			{ _
 				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE, 0, TRUE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYREF, TRUE, 0, TRUE ), _
+				( FB_DATATYPE_INTEGER, FB_PARAMMODE_BYREF, TRUE, 0, TRUE ), _
 				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYREF, TRUE, 0, TRUE ), _
 				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYREF, TRUE, 0, TRUE ), _
 				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYREF, TRUE, 0, TRUE ), _

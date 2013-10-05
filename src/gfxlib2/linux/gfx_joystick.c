@@ -29,7 +29,7 @@ typedef struct _JOYDATA {
 static JOYDATA joydata[16];
 static int inited = FALSE;
 
-FBCALL int fb_GfxGetJoystick(int id, int *buttons, float *a1, float *a2, float *a3, float *a4, float *a5, float *a6, float *a7, float *a8)
+FBCALL int fb_GfxGetJoystick(int id, ssize_t *buttons, float *a1, float *a2, float *a3, float *a4, float *a5, float *a6, float *a7, float *a8)
 {
 	const char *device[] = { "/dev/input/js",
 							 "/dev/js",

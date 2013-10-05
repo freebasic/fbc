@@ -21,7 +21,7 @@ static int max_x1 = 0, max_y1 = 0, max_x2 = 0, max_y2 = 0;
 
 __dpmi_regs regs;
 
-FBCALL int fb_GfxGetJoystick(int id, int *buttons, float *a1, float *a2, float *a3, float *a4, float *a5, float *a6, float *a7, float *a8)
+FBCALL int fb_GfxGetJoystick(int id, ssize_t *buttons, float *a1, float *a2, float *a3, float *a4, float *a5, float *a6, float *a7, float *a8)
 {
 	unsigned char status;
 	int count;
