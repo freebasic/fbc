@@ -148,6 +148,11 @@ sub test cdecl( )
 	testZstr( globalz , globalx2, z  )
 	testZstr( globalfs, globalx2, fs )
 	testWstr( globalw , globalx2, w  )
+
+	dim as string s
+	#assert typeof( @s[0] ) = typeof( ubyte ptr )
+	#assert typeof( @s[1] ) = typeof( ubyte ptr )
+	#assert typeof( @s[i] ) = typeof( ubyte ptr )
 end sub
 
 private sub ctor( ) constructor
