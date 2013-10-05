@@ -394,9 +394,6 @@ private function hDeclStaticVar _
     	is_extern = FALSE
     end if
 
-    '' remove attrib, because COMMON and $dynamic..
-    attrib and= (not FB_SYMBATTRIB_DYNAMIC)
-
     '' new (or dup) var?
     if( is_extern = FALSE ) then
 		dim as FB_SYMBOPT options = FB_SYMBOPT_NONE
@@ -427,7 +424,6 @@ private function hDeclStaticVar _
 
 end function
 
-'':::::
 private function hDeclDynArray _
 	( _
 		byval sym as FBSYMBOL ptr, _
@@ -439,12 +435,11 @@ private function hDeclDynArray _
 		byval lgt as longint, _
 		byval addsuffix as integer, _
 		byval attrib as integer, _
-		byval dimensions as integer _
+		byval dimensions as integer, _
+		byval token as integer _
 	) as FBSYMBOL ptr
 
     static as FBARRAYDIM dTB(0 to FB_MAXARRAYDIMS-1)		'' always 0
-
-	dim as integer is_redim = (attrib and FB_SYMBATTRIB_DYNAMIC) <> 0
 
     function = NULL
 
@@ -456,11 +451,8 @@ private function hDeclDynArray _
     	end if
 	end if
 
-    attrib or= FB_SYMBATTRIB_DYNAMIC
-
     '' any variable already defined?
     if( sym <> NULL ) then
-
     	'' array in a udt?
     	if( symbIsField( sym ) ) then
     		errReportEx( FB_ERRMSG_CANTREDIMARRAYFIELDS, *id )
@@ -514,9 +506,8 @@ private function hDeclDynArray _
 				sym = NULL
 
 			'' dim foo(variable)? (without a preceeding COMMON)
-			elseif( (is_redim = FALSE) and (symbIsCommon( sym ) = FALSE) ) then
+			elseif( (token <> FB_TK_REDIM) and (symbIsCommon( sym ) = FALSE) ) then
 				sym = NULL
-
 			end if
 		end if
 	end if
@@ -570,7 +561,6 @@ private function hDeclDynArray _
 	end if
 
     function = sym
-
 end function
 
 '':::::
@@ -1183,7 +1173,7 @@ function cVarDecl _
     static as FBARRAYDIM dTB(0 to FB_MAXARRAYDIMS-1)
     dim as FBSYMBOL ptr sym, subtype = any
     dim as ASTNODE ptr initree = any
-    dim as integer addsuffix = any, is_dynamic = any, is_multdecl = any
+	dim as integer addsuffix = any, is_multdecl = any
     dim as integer is_typeless = any, is_decl = any, check_exprtb = any
 	dim as integer dtype = any
 	dim as longint lgt = any
@@ -1258,13 +1248,11 @@ function cVarDecl _
 		if( (lexGetToken( ) = CHAR_LPRNT) and (is_fordecl = FALSE) ) then
 			lexSkipToken( )
 
-			is_dynamic = (attrib and FB_SYMBATTRIB_DYNAMIC) <> 0
-
 			'' '()'
 			if( lexGetToken( ) = CHAR_RPRNT ) then
 				'' fake it
 				dimensions = -1
-				is_dynamic = TRUE
+				attrib or= FB_SYMBATTRIB_DYNAMIC
 
 			'' '(' ArrayDecl ')'
 			else
@@ -1302,7 +1290,9 @@ function cVarDecl _
 				errReportEx( FB_ERRMSG_EXPECTEDARRAY, @id )
 			end if
 
-			is_dynamic = FALSE
+			'' (could have been added due to OPTION DYNAMIC,
+			'' but if it's not an array, then it can't be DYNAMIC)
+			attrib and= not FB_SYMBATTRIB_DYNAMIC
 		end if
 
 		palias = NULL
@@ -1357,10 +1347,12 @@ function cVarDecl _
 			'' QB quirk: when the symbol was defined already by a preceeding COMMON
 			'' statement, then a DIM will work the same way as a REDIM
 			if( token = FB_TK_DIM ) then
-				if( is_dynamic = FALSE ) then
+				if( (attrib and FB_SYMBATTRIB_DYNAMIC) = 0 ) then
 					if( sym <> NULL ) then
 						if( symbIsCommon( sym ) ) then
-							is_dynamic = (symbGetArrayDimensions( sym ) <> 0)
+							if( symbGetArrayDimensions( sym ) <> 0 ) then
+								attrib or= FB_SYMBATTRIB_DYNAMIC
+							end if
 						end if
 					end if
 				end if
@@ -1370,16 +1362,17 @@ function cVarDecl _
 				'' if subscripts are constants, convert exprTB to dimTB
 				if( hIsConst( dimensions, exprTB() ) ) then
 					'' only if not explicitly dynamic (ie: not REDIM, COMMON)
-					if( is_dynamic = FALSE ) then
+					if( (attrib and FB_SYMBATTRIB_DYNAMIC) = 0 ) then
 						hMakeArrayDimTB( dimensions, exprTB(), dTB() )
-		    		end if
+					end if
 				else
-					is_dynamic = TRUE
+					'' Non-constant array bounds, must be dynamic
+					attrib or= FB_SYMBATTRIB_DYNAMIC
 				end if
 			end if
 
 			'' "array too big/huge array on stack" check
-			if( is_dynamic = FALSE ) then
+			if( (attrib and FB_SYMBATTRIB_DYNAMIC) = 0 ) then
 				if( symbCheckArraySize( dimensions, dTB(), lgt, _
 				                        ((attrib and (FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_STATIC)) = 0), _
 				                        has_ellipsis ) = FALSE ) then
@@ -1405,12 +1398,10 @@ function cVarDecl _
 			end if
 		end if
 
-    	if( is_dynamic ) then
-    		sym = hDeclDynArray( sym, id, palias, _
-    							 dtype, subtype, is_typeless, _
-    							 lgt, addsuffix, attrib, _
-    							 dimensions )
-    	else
+		if( attrib and FB_SYMBATTRIB_DYNAMIC ) then
+			sym = hDeclDynArray( sym, id, palias, dtype, subtype, is_typeless, _
+					lgt, addsuffix, attrib, dimensions, token )
+		else
 			sym = hDeclStaticVar( sym, id, palias, _
 								  dtype, subtype, _
     							  lgt, addsuffix, attrib, _
@@ -1510,7 +1501,7 @@ function cVarDecl _
 			if( token <> FB_TK_EXTERN ) then
 
 				'' array?
-				if( is_dynamic or (dimensions > 0) ) then
+				if( ((attrib and FB_SYMBATTRIB_DYNAMIC) <> 0) or (dimensions > 0) ) then
 					'' not declared yet?
 					if( is_decl = FALSE ) then
 						'' local?
@@ -1573,7 +1564,7 @@ function cVarDecl _
 				end if
 
 				'' dynamic? if the dimensions are known, redim it
-				if( is_dynamic ) then
+				if( attrib and FB_SYMBATTRIB_DYNAMIC ) then
 					if( dimensions > 0 ) then
 						rtlArrayRedim( sym, _
 									   symbGetLen( sym ), _
