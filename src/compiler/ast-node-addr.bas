@@ -216,10 +216,11 @@ function astNewADDROF( byval l as ASTNODE ptr ) as ASTNODE ptr
 
 	case AST_NODECLASS_IDX
 		'' try to remove the idx node if it's a constant expr
-		t = astOptimizeTree( t )
 		if( t <> l ) then
+			t = astOptimizeTree( t )
 			l->l = t
 		else
+			t = astOptimizeTree( t )
 			l = t
 		end if
 
