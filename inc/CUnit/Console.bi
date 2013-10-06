@@ -12,6 +12,10 @@
 #include once "CUnit/CUnit.bi"
 #include once "CUnit/TestDB.bi"
 
-declare sub CU_console_run_tests cdecl alias "CU_console_run_tests" ()
+extern "C"
+
+declare sub CU_console_run_tests()
+
+end extern
 
 #endif

@@ -12,8 +12,12 @@
 #include once "CUnit/CUnit.bi"
 #include once "CUnit/TestDB.bi"
 
-declare sub CU_automated_run_tests cdecl alias "CU_automated_run_tests" ()
-declare function CU_list_tests_to_file cdecl alias "CU_list_tests_to_file" () as CU_ErrorCode
-declare sub CU_set_output_filename cdecl alias "CU_set_output_filename" (byval szFilenameRoot as zstring ptr)
+extern "C"
+
+declare sub CU_automated_run_tests()
+declare function CU_list_tests_to_file() as CU_ErrorCode
+declare sub CU_set_output_filename(byval szFilenameRoot as zstring ptr)
+
+end extern
 
 #endif

@@ -10,6 +10,9 @@
 #define __CUnit_CUError_bi__
 
 #include once "crt/errno.bi"
+#include once "CUnit/CUnit.bi"
+
+extern "C"
 
 enum CU_ErrorCode
 	CUE_SUCCESS = 0
@@ -31,20 +34,18 @@ enum CU_ErrorCode
 	CUE_WRITE_ERROR = 43
 end enum
 
-
 enum CU_ErrorAction
 	CUEA_IGNORE
 	CUEA_FAIL
 	CUEA_ABORT
 end enum
 
+declare function CU_get_error() as CU_ErrorCode
+declare function CU_get_error_msg() as zstring ptr
+declare sub CU_set_error_action(byval action as CU_ErrorAction)
+declare function CU_get_error_action() as CU_ErrorAction
+declare sub CU_set_error(byval error as CU_ErrorCode)
 
-#include once "CUnit/CUnit.bi"
-
-declare function CU_get_error cdecl alias "CU_get_error" () as CU_ErrorCode
-declare function CU_get_error_msg cdecl alias "CU_get_error_msg" () as zstring ptr
-declare sub CU_set_error_action cdecl alias "CU_set_error_action" (byval action as CU_ErrorAction)
-declare function CU_get_error_action cdecl alias "CU_get_error_action" () as CU_ErrorAction
-declare sub CU_set_error cdecl alias "CU_set_error" (byval error as CU_ErrorCode)
+end extern
 
 #endif
