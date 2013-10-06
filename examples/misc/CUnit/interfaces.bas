@@ -7,10 +7,10 @@
 #define FALSE 0
 #define TRUE 1
 
-function init_suite_success cdecl() as integer : return 0 : end function
-function init_suite_failure cdecl() as integer : return -1: end function
-function clean_suite_success cdecl() as integer : return 0: end function
-function clean_suite_failure cdecl() as integer : return -1: end function
+function init_suite_success cdecl() as long : return 0 : end function
+function init_suite_failure cdecl() as long : return -1: end function
+function clean_suite_success cdecl() as long : return 0: end function
+function clean_suite_failure cdecl() as long : return -1: end function
 
 sub test_success1 cdecl()
    CU_ASSERT(TRUE)

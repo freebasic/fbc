@@ -5,6 +5,6 @@
 
 extern "C"
 
-declare sub CU_console_run_tests()
+declare sub CU_curses_run_tests()
 
 end extern
