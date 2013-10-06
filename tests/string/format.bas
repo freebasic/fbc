@@ -189,24 +189,22 @@ sub dateFormatTest cdecl ()
 
 end sub
 
-function init cdecl () as integer
+function init cdecl () as long
 	' Turn off I18N and L10N
 	fb_I18nSet 0
 	return 0
 end function
 
-function cleanup cdecl () as integer
+function cleanup cdecl () as long
 	' Turn on I18N and L10N
 	fb_I18nSet 1
 	return 0
 end function
 
 sub ctor () constructor
-
 	fbcu.add_suite("fbc_tests.string_.format_", @init, @cleanup)
 	fbcu.add_test("number format test", @numberFormatTest)
 	fbcu.add_test("date format test", @dateFormatTest)
-
 end sub
 
 end namespace

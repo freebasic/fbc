@@ -52,21 +52,16 @@ namespace fbc_tests.ns.dim_.outer2
 
 end namespace
 
-private function init cdecl () as integer
-	
+private function init cdecl () as long
 	redim fbc_tests.ns.dim_.inner.array(0 to 2)
-	
 	function = 0
-	
 end function
 
 private sub ctor () constructor
-
 	fbcu.add_suite("fbc_tests.namespace.dim_array", @init)
 	
 	fbcu.add_test("test 1", @fbc_tests.ns.dim_.outer2.dotest)
 	
 	using fbc_tests.ns.dim_.outer1
 	fbcu.add_test("test 2", @dotest)
-
 end sub

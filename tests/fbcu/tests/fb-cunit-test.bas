@@ -1,14 +1,12 @@
 # include once "fbcu.bi"
 
-
-
 namespace fbcu.fbcu_test
 
-	function init cdecl () as integer
+	function init cdecl () as long
 		return 0
 	end function
 
-	function cleanup cdecl () as integer
+	function cleanup cdecl () as long
 		return 0
 	end function
 
