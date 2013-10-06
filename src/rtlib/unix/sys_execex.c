@@ -66,7 +66,9 @@ FBCALL int fb_ExecEx( FBSTRING *program, FBSTRING *args, int do_fork )
 
 
 	/* Launch */
+	FB_LOCK( );
 	fb_hExitConsole();
+	FB_UNLOCK( );
 
 	if( do_fork ) {
 		pid = fork();
@@ -96,7 +98,9 @@ FBCALL int fb_ExecEx( FBSTRING *program, FBSTRING *args, int do_fork )
 		res = execvp( application, argv );
 	}
 
+	FB_LOCK( );
 	fb_hInitConsole();
+	FB_UNLOCK( );
 
 	return res;
 }
