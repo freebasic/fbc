@@ -163,6 +163,7 @@ declare function hMakeParamDesc _
 		@"Invalid command-line option", _
 		@"Selected non-x86 CPU when compiling for DOS", _
 		@"Selected -gen gas ASM backend for non-x86 CPU", _
+		@"-asm att used for -gen gas, but -gen gas only supports -asm intel", _
 		@"Var-len strings cannot be initialized", _
 		@"Recursive TYPE or UNION not allowed", _
 		@"Recursive DEFINE not allowed", _

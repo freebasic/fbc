@@ -55,6 +55,7 @@ type FBCCTX
 	objfile				as string '' -o filename waiting for next input file
 	backend				as integer  '' FB_BACKEND_* given via -gen, or -1 if -gen wasn't given
 	cputype				as integer  '' FB_CPUTYPE_* (-arch's argument), or -1
+	asmsyntax			as integer  '' FB_ASMSYNTAX_* from -asm, or -1 if not given
 
 	emitasmonly			as integer  '' write out FB backend output file only (.asm/.c)
 	keepasm				as integer  '' preserve FB backend output file (.asm/.c)
@@ -152,6 +153,7 @@ private sub fbcInit( )
 
 	fbc.backend = -1
 	fbc.cputype = -1
+	fbc.asmsyntax = -1
 #ifndef ENABLE_STANDALONE
 	fbc.targetcputype = -1
 #endif
@@ -1261,9 +1263,9 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 	case OPT_ASM
 		select case( arg )
 		case "att"
-			fbSetOption( FB_COMPOPT_ASMSYNTAX, FB_ASMSYNTAX_ATT )
+			fbc.asmsyntax = FB_ASMSYNTAX_ATT
 		case "intel"
-			fbSetOption( FB_COMPOPT_ASMSYNTAX, FB_ASMSYNTAX_INTEL )
+			fbc.asmsyntax = FB_ASMSYNTAX_INTEL
 		case else
 			hFatalInvalidOption( arg )
 		end select
@@ -2045,6 +2047,16 @@ private sub hParseArgs( byval argc as integer, byval argv as zstring ptr ptr )
 			fbcEnd(1)
 		end if
 	end select
+
+	'' -asm overrides the target's default
+	if( fbc.asmsyntax >= 0 ) then
+		'' -gen gas only supports -asm intel
+		if( (fbGetOption( FB_COMPOPT_BACKEND ) = FB_BACKEND_GAS) and _
+		    (fbc.asmsyntax <> FB_ASMSYNTAX_INTEL) ) then
+			errReportEx( FB_ERRMSG_GENGASWITHOUTINTEL, "", -1 )
+		end if
+		fbSetOption( FB_COMPOPT_ASMSYNTAX, fbc.asmsyntax )
+	end if
 
 	'' TODO: Check whether subsystem/stacksize/xboxtitle were set and
 	'' complain about it when the target doesn't allow it, or just

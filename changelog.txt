@@ -78,6 +78,7 @@ Version 0.91.0:
 - On Linux/*BSD, shell(), exec(), run(), chain(), dylibload(), dylibunload() weren't thread-safe (due to Unix rtlib's console I/O handling)
 - C backend: Nested anonymous structures could be emitted incorrectly, potentially causing them to be too small, which could easily result in buffer overflows on stack due to local variables of that struct type being smaller than expected
 - filecopy() (for DOS/Linux/*BSD) can now handle large files (> 2 GiB)
+- Using -asm att together with the ASM backend (-gen gas) now results in an error, because it only supports -asm intel
 
 
 Version 0.90.1:

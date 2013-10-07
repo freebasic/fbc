@@ -393,6 +393,14 @@ end sub
 
 private sub hUpdateTargetOptions( )
 	env.target = targetinfo(env.clopt.target)
+
+	'' -gen gas defaults to -asm intel, because that's all it supports,
+	'' -gen gcc/llvm defaults to -asm att, because that's GCC's/LLVM's standard
+	if( env.clopt.target = FB_BACKEND_GAS ) then
+		env.clopt.asmsyntax = FB_ASMSYNTAX_INTEL
+	else
+		env.clopt.asmsyntax = FB_ASMSYNTAX_ATT
+	end if
 end sub
 
 sub fbGlobalInit()
@@ -411,7 +419,6 @@ sub fbGlobalInit()
 	env.clopt.fpmode        = FB_DEFAULT_FPMODE
 	env.clopt.vectorize     = FB_DEFAULT_VECTORIZELEVEL
 	env.clopt.optlevel      = 0
-	env.clopt.asmsyntax     = FB_ASMSYNTAX_ATT '' Note: does not affect -gen gas
 
 	env.clopt.lang          = FB_DEFAULT_LANG
 	env.clopt.forcelang     = FALSE
