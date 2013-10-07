@@ -76,6 +76,7 @@ Version 0.91.0:
 - #699: "New Integer[-1]" or similar uses of New[] with negative size, that will wrap around to a massively huge value because the size is treated as unsigned, caused the ASM backend to try to emit GiBs of MOV instructions (one for each 4 bytes...), seemingly causing the compiler to hang.
 - #696: Bad code generated for temporary variable destruction (such as temporary strings from String IIf()) used as argument to built-in statements such as Open or Draw String when -e/ex/exx error checking was enabled
 - On Linux/*BSD, shell(), exec(), run(), chain(), dylibload(), dylibunload() weren't thread-safe (due to Unix rtlib's console I/O handling)
+- C backend: Nested anonymous structures could be emitted incorrectly, potentially causing them to be too small, which could easily result in buffer overflows on stack due to local variables of that struct type being smaller than expected
 
 
 Version 0.90.1:

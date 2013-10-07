@@ -775,6 +775,32 @@ private sub hEmitFuncProto( byval s as FBSYMBOL ptr )
 	sectionReturn( section )
 end sub
 
+private function hFindParentAnonAlreadyOnStack _
+	( _
+		byval fld as FBSYMBOL ptr _
+	) as FBSYMBOL ptr ptr
+
+	dim as FBSYMBOL ptr ptr anonnode = any
+	dim as FBSYMBOL ptr parent = any
+
+	'' For each parent, starting with the inner-most...
+	parent = fld->parent
+	do
+		'' Check whether it's already on the stack...
+		anonnode = listGetTail( @ctx.anonstack )
+		while( anonnode )
+			if( *anonnode = parent ) then
+				return anonnode
+			end if
+			anonnode = listGetPrev( anonnode )
+		wend
+
+		parent = parent->parent
+	loop while( parent )
+
+	function = NULL
+end function
+
 private sub hPushAnonParents _
 	( _
 		byval baseparent as FBSYMBOL ptr, _
@@ -873,33 +899,28 @@ private sub hEmitStruct _
 	'' Write out the elements
 	fld = symbUdtGetFirstField( s )
 	while( fld )
+
 		if( fld->parent = s ) then
 			'' Field from main UDT
 			hPopAnonParents( NULL )
 		else
-			'' Field from a nested anonymous union/struct
+			'' Field from a nested anonymous union/struct.
 			'' Check the stack to decide whether we have to start
 			'' nesting further, or instead go upwards, or stay at
 			'' the current level.
 
-			'' Already on stack?
-			anonnode = listGetTail( @ctx.anonstack )
-			while( anonnode )
-				if( *anonnode = fld->parent ) then
-					exit while
-				end if
-				anonnode = listGetPrev( anonnode )
-			wend
+			'' Find the field's inner-most parent that's already on
+			'' stack, if any.
+			anonnode = hFindParentAnonAlreadyOnStack( fld )
 
-			if( anonnode ) then
-				'' Already on stack, i.e. we go upwards
-				'' Pop the stack until we reach the proper level
-				hPopAnonParents( anonnode )
-			else
-				'' Not yet on stack, i.e. deeper nesting
-				'' Push each new nested struct/union onto the stack
-				hPushAnonParents( s, fld->parent )
-			end if
+			'' a) Pop the stack until we reach the proper level,
+			''    or stay at the current level.
+			'' b) Reset the stack to the main UDT's level
+			hPopAnonParents( anonnode )
+
+			'' a) Push any parents that are inside the one that's on stack
+			'' b) Push each new nested anon struct/union
+			hPushAnonParents( iif( anonnode, *anonnode, s ), fld->parent )
 		end if
 
 		'' For bitfields, emit only the container field, not the
