@@ -960,6 +960,12 @@ private sub hEmitStruct _
 
 	symbResetIsBeingEmitted( s )
 
+	'' Static assertion to ensure the struct has been emitted correctly,
+	'' at least with the correct sizeof(), because if it'd be too small,
+	'' that could easily cause stack trashing etc., because local vars
+	'' allocated by gcc would be smaller than expected, etc.
+	hWriteStaticAssert( "sizeof( " + hGetUdtTag( s ) + hGetUdtId( s ) + " ) == " + str( culngint( symbGetLen( s ) ) ) )
+
 end sub
 
 private sub hEmitDecls( byval s as FBSYMBOL ptr, byval procs as integer )
