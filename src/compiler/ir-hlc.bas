@@ -98,6 +98,7 @@ type IRHLCCTX
 	callargs			as TLIST        '' IRCALLARG's during emitPushArg/emitCall[Ptr]
 	linenum				as integer
 	escapedinputfilename		as string
+	static_assert_declared		as integer
 
 	anonstack			as TLIST  '' stack of nested anonymous structs/unions in a struct/union
 
@@ -305,6 +306,21 @@ private sub hWriteLine _
 
 	sectionWriteLine( s )
 
+end sub
+
+private sub hWriteStaticAssert( byref expr as string )
+	dim as integer section = any
+
+	if( ctx.static_assert_declared = FALSE ) then
+		ctx.static_assert_declared = TRUE
+
+		'' Emit the #define into the header section, not inside procedures
+		section = sectionGosub( 0 )
+		hWriteLine( "#define __FB_STATIC_ASSERT( expr ) extern int __$fb_structsizecheck[(expr) ? 1 : -1]", TRUE )
+		sectionReturn( section )
+	end if
+
+	hWriteLine( "__FB_STATIC_ASSERT( " + expr + " );" )
 end sub
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -1207,6 +1223,7 @@ private function _emitBegin( ) as integer
 	ctx.sectiongosublevel = 0
 	ctx.regcnt = 0
 	ctx.linenum = 0
+	ctx.static_assert_declared = FALSE
 
 	'' header
 	sectionBegin( )
