@@ -236,7 +236,7 @@ int fb_hProcessMask
         char chTimeSep
 	)
 {
-    char FixPart[128], FracPart[128], ExpPart[128], chSign;
+    char FixPart[128], FracPart[128], ExpPart[128], chSign = 0;
     ssize_t LenFix, LenFrac, LenExp = 0, IndexFix, IndexFrac, IndexExp = 0;
     ssize_t ExpValue, ExpAdjust = 0, NumSkipFix = 0, NumSkipExp = 0;
     int do_skip = FALSE, do_exp = FALSE, do_string = FALSE;

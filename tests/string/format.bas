@@ -187,6 +187,7 @@ sub dateFormatTest cdecl ()
         read sValue
 	wend
 
+	CU_ASSERT( len( format(now(), "yyyy.mm.dd") ) > 0 )
 end sub
 
 function init cdecl () as long
