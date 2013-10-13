@@ -171,6 +171,7 @@ Version 0.91.0:
 - C/LLVM backends: Procedures using forward references in their signatures could be emitted with ANY PTRs in place of the forward references, while prototypes/calls could end up using the signature with resolved forward references, causing the generated C/LLVM code to have type conflicts.
 - #719: Compiler crash when passing an upcasted class/UDT function result to a Byref parameter
 - #698: sizeof() now allows string expressions (note: it returns sizeof(string), not the string length - len() should be used for that)
+- #685: SETMOUSE had differing behaviour between platforms when x and y were not both present and within the window
 
 
 Version 0.90.1:

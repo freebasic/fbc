@@ -278,21 +278,30 @@ int fb_dos_get_mouse(int *x, int *y, int *z, int *buttons, int *clip)
 
 void fb_dos_set_mouse(int x, int y, int cursor, int clip)
 {
-	int new_x, new_y;
-	
+
 	if (!fb_dos.mouse_ok) return;
-	
-	new_x = ((x >= 0) ? x : fb_dos_mouse_x);
-	new_y = ((y >= 0) ? y : fb_dos_mouse_y);
-	fb_dos.mouse_cursor = cursor;
-	
-	fb_dos.regs.x.ax = 0x4;
-	fb_dos.regs.x.cx = new_x;
-	fb_dos.regs.x.dx = new_y;
-	__dpmi_int(0x33, &fb_dos.regs);
-	
-	fb_dos_mouse_x = new_x;
-	fb_dos_mouse_y = new_y;
+
+	if (x != 0x80000000 || y != 0x80000000) {
+		if (x == 0x80000000) {
+			x = fb_dos_mouse_x;
+		}
+		else if (y == 0x80000000) {
+			y = fb_dos_mouse_y;
+		}
+
+		x = MID(0, x, fb_dos.w - 1);
+		y = MID(0, y, fb_dos.h - 1);
+
+		fb_dos_mouse_x = x;
+		fb_dos_mouse_y = y;
+
+		fb_dos.mouse_cursor = cursor;
+
+		fb_dos.regs.x.ax = 0x4;
+		fb_dos.regs.x.cx = x;
+		fb_dos.regs.x.dx = y;
+		__dpmi_int(0x33, &fb_dos.regs);
+	}
 	
 	if (clip == 0)
 		fb_dos.mouse_clip = FALSE;

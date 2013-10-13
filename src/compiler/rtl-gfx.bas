@@ -762,8 +762,8 @@ declare function hPorts_cb _
 		), _
 		/' function setmouse _
 			( _
-				byval x as long = -1, _
-				byval y as long = -1, _
+				byval x as long = &h80000000, _
+				byval y as long = &h80000000, _
 				byval cursor as long = -1, _
 				byval clip as long = -1 _
 			) as long '/ _
@@ -773,8 +773,8 @@ declare function hPorts_cb _
 	 		@rtlMultinput_cb, FB_RTL_OPT_NOQB, _
 			4, _
 			{ _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, -1 ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, -1 ), _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, &h80000000 ), _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, &h80000000 ), _
 				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, -1 ), _
 				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, -1 ) _
 	 		} _
