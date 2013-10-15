@@ -15,7 +15,7 @@ const TEST_L_VAL = 1.2345
 const TEST_R_VAL = 1234.5
 
 type foo
-    bar as double = any
+	bar as double
     declare operator cast ( ) as byte
     declare operator cast ( ) as short
     declare operator cast ( ) as integer
@@ -51,19 +51,14 @@ hGenTest( longint )
 hGenTest( single )
 hGenTest( double )
   
-sub test cdecl	
+sub test cdecl( )
 	dim as foo l = ( TEST_L_VAL ), r = ( TEST_R_VAL )
-	
 	CU_ASSERT_EQUAL( func( l + r ), TEST_RES_DOUBLE )
-	
 end sub
 
 private sub ctor () constructor
-
 	fbcu.add_suite("fb-tests-overload:bop_coersion2")
 	fbcu.add_test("test_basic", @test)
-
 end sub
 
 end namespace
-	

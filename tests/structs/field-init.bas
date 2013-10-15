@@ -87,10 +87,30 @@ namespace anyinit
 		CU_ASSERT( ctor_count = 1 )
 	end constructor
 
+	'' Even the =Any initializer should cause an implicit ctor to be added,
+	'' for consistency
+	type A
+		i as integer = any
+	end type
+
+	type B
+		i as integer = any
+		declare constructor( )
+	end type
+
+	constructor B( )
+		i = 111
+	end constructor
+
 	private sub test cdecl( )
 		CU_ASSERT( ctor_count = 0 )
 		dim as Parent x
 		CU_ASSERT( ctor_count = 1 )
+
+		dim xa as A = A( )
+
+		dim xb as B
+		CU_ASSERT( xb.i = 111 )
 	end sub
 end namespace
 

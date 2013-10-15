@@ -1,7 +1,7 @@
 ' TEST_MODE : COMPILE_ONLY_OK
 
 type foo
-    bar as double = any
+	bar as double
     declare operator cast ( ) as double
     declare operator cast ( ) as string
 end type

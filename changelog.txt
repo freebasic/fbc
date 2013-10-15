@@ -80,6 +80,7 @@ Version 0.91.0:
 - filecopy() (for DOS/Linux/*BSD) can now handle large files (> 2 GiB)
 - Using -asm att together with the ASM backend (-gen gas) now results in an error, because it only supports -asm intel
 - Uninitialized variable accessed in format()
+- =Any initializer on fields didn't cause an implicit constructor to be added as for other field initializers
 
 
 Version 0.90.1:

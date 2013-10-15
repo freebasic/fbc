@@ -4,7 +4,7 @@
 namespace fbc_tests.overload_.op_concat
 
 type foo
-	as integer value = any
+	as integer value
 	declare operator cast() as string
 end type
 

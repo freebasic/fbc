@@ -189,6 +189,11 @@ private sub hFieldInit( byval parent as FBSYMBOL ptr, byval sym as FBSYMBOL ptr 
 		exit sub
 	end if
 
+	'' Field initializers are only used in constructors (replacing the
+	'' implicit default initialization), so we make sure to add a default
+	'' constructor, if no constructor was specified.
+	symbSetUDTHasInitedField( parent )
+
     '' ANY?
 	if( lexGetToken( ) = FB_TK_ANY ) then
 		'' don't allow var-len strings
@@ -221,11 +226,6 @@ private sub hFieldInit( byval parent as FBSYMBOL ptr, byval sym as FBSYMBOL ptr 
 	'' Remove bitfields from the AST's bitfield counter - the field
 	'' initializer will never be astAdd()ed itself, only cloned.
 	astForgetBitfields( initree )
-
-	'' Field initializers are only used in constructors (replacing the
-	'' implicit default initialization), so we make sure to add a default
-	'' constructor, if no constructor was specified.
-	symbSetUDTHasInitedField( parent )
 
 	if( initree ) then
 		symbSetTypeIniTree( sym, initree )
