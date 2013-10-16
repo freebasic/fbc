@@ -1,17 +1,18 @@
 # include "fbcu.bi"
 
-
-
-
 namespace fbc_tests.string_.cvi_mki
 
 	const as double  cv_d  = 1.646488698019057e+098
 	const as single  cv_s  = 3.629605e+012         
-	const as integer cv_i  = 1414743380            
 	const as long    cv_l  = 1414743380            
 	const as short   cv_sh = 17748                 
 	const as longint cv_li = 6076276550747243860   
-	
+	#ifdef __FB_64BIT__
+		const as integer cv_i = cv_li
+	#else
+		const as integer cv_i = cv_l
+	#endif
+
 	sub CVXtest cdecl ()
 
 		dim as double d = cvd("TESTTEST")
@@ -30,12 +31,12 @@ namespace fbc_tests.string_.cvi_mki
 		CU_ASSERT_EQUAL( mklongint(cv_li), "TESTTEST" )
 
 	end sub
-	
+
 	const as double  m_d  = 10000
 	const as integer m_i  = 10000
 	const as long    m_l  = 10000
 	const as longint m_li = 10000
-	
+
 	sub MKXtest cdecl ()
 	
 		dim as string mkd_d, mkd_i, mkd_l, mkd_li

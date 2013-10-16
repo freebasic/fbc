@@ -54,11 +54,11 @@ private sub test_ll( _
 		byref cmp as string, _
 		byval do_fp as integer = 1)
 
-	if num = cint(num) then
-		PRINT_USING_( fmt & "%", cint(num), cmp & "%" )
+	if num = clng(num) then
+		PRINT_USING_( fmt & "%", clng(num), cmp & "%" )
 	end if
-	if num = cuint(num) then
-		PRINT_USING_( fmt & "u", cuint(num), cmp & "u" )
+	if num = culng(num) then
+		PRINT_USING_( fmt & "u", culng(num), cmp & "u" )
 	end if
 	if cunsg(abs(num)) <= 1 shl 23 then
 		PRINT_USING_( fmt & "_!", csng(num), cmp & "!" )
@@ -81,10 +81,10 @@ private sub test_ull( _
 		byval do_fp as integer = 1)
 
 	if num < 1ull shl 31 then
-		PRINT_USING_( fmt & "%", cint(num), cmp & "%" )
+		PRINT_USING_( fmt & "%", clng(num), cmp & "%" )
 	end if
 	if num < 1ull shl 32 then
-		PRINT_USING_( fmt & "u", cuint(num), cmp & "u" )
+		PRINT_USING_( fmt & "u", culng(num), cmp & "u" )
 	end if
 	if num <= 1ull shl 23 then
 		PRINT_USING_( fmt & "_!", cdbl(num), cmp & "!" )
