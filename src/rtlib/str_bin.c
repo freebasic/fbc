@@ -79,6 +79,16 @@ FBCALL FBSTRING *fb_BIN_i ( unsigned int num )
 	return hBIN( num, sizeof( int ), 0 );
 }
 
+FBCALL FBSTRING *fb_BINEx_b( unsigned char num, int digits )
+{
+	return hBIN( num, sizeof( unsigned char ), digits );
+}
+
+FBCALL FBSTRING *fb_BINEx_s( unsigned short num, int digits )
+{
+	return hBIN( num, sizeof( unsigned short ), digits );
+}
+
 FBCALL FBSTRING *fb_BINEx_i ( unsigned int num, int digits )
 {
 	return hBIN( num, sizeof( int ), digits );

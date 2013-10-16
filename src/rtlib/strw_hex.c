@@ -77,6 +77,16 @@ FBCALL FB_WCHAR *fb_WstrHex_i ( unsigned int num )
 	return hHEX( num, sizeof( int ), 0 );
 }
 
+FBCALL FB_WCHAR *fb_WstrHexEx_b( unsigned char num, int digits )
+{
+	return hHEX( num, sizeof( unsigned char ), digits );
+}
+
+FBCALL FB_WCHAR *fb_WstrHexEx_s( unsigned short num, int digits )
+{
+	return hHEX( num, sizeof( unsigned short ), digits );
+}
+
 FBCALL FB_WCHAR *fb_WstrHexEx_i ( unsigned int num, int digits )
 {
 	return hHEX( num, sizeof( int ), digits );

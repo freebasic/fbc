@@ -77,6 +77,16 @@ FBCALL FBSTRING *fb_HEX_i ( unsigned int num )
 	return hHEX( num, sizeof( int ), 0 );
 }
 
+FBCALL FBSTRING *fb_HEXEx_b( unsigned char num, int digits )
+{
+	return hHEX( num, sizeof( unsigned char ), digits );
+}
+
+FBCALL FBSTRING *fb_HEXEx_s( unsigned short num, int digits )
+{
+	return hHEX( num, sizeof( unsigned short ), digits );
+}
+
 FBCALL FBSTRING *fb_HEXEx_i ( unsigned int num, int digits )
 {
 	return hHEX( num, sizeof( int ), digits );

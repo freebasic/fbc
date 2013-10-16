@@ -1130,7 +1130,7 @@
 			{ _
 				( FB_DATATYPE_UBYTE, FB_PARAMMODE_BYVAL, FALSE ) _
 			} _
- 		), _
+		), _
 		/' function hex overload( byval number as ushort ) as string '/ _
 		( _
 			@"hex", @"fb_HEX_s", _
@@ -1140,7 +1140,7 @@
 			{ _
 				( FB_DATATYPE_USHORT, FB_PARAMMODE_BYVAL, FALSE ) _
 			} _
- 		), _
+		), _
 		/' function hex overload( byval number as ulong ) as string '/ _
 		( _
 			@"hex", @"fb_HEX_i", _
@@ -1150,7 +1150,17 @@
 			{ _
 				( FB_DATATYPE_ULONG, FB_PARAMMODE_BYVAL, FALSE ) _
 			} _
- 		), _
+		), _
+		/' function hex overload( byval number as ulongint ) as string '/ _
+		( _
+			@"hex", @"fb_HEX_l", _
+			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_STRSUFFIX, _
+			1, _
+			{ _
+				( FB_DATATYPE_ULONGINT, FB_PARAMMODE_BYVAL, FALSE ) _
+			} _
+		), _
 		/' function hex overload( byval number as any ptr ) as string '/ _
 		( _
 			@"hex", @"fb_HEX_p", _
@@ -1160,7 +1170,29 @@
 			{ _
 				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ) _
 			} _
- 		), _
+		), _
+		/' function hex overload( byval number as ubyte, byval digits as long ) as string '/ _
+		( _
+			@"hex", @"fb_HEXEx_b", _
+			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_STRSUFFIX, _
+			2, _
+			{ _
+				( FB_DATATYPE_UBYTE, FB_PARAMMODE_BYVAL, FALSE ), _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
+			} _
+		), _
+		/' function hex overload( byval number as ushort, byval digits as long ) as string '/ _
+		( _
+			@"hex", @"fb_HEXEx_s", _
+			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_STRSUFFIX, _
+			2, _
+			{ _
+				( FB_DATATYPE_USHORT, FB_PARAMMODE_BYVAL, FALSE ), _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
+			} _
+		), _
 		/' function hex overload( byval number as ulong, byval digits as long ) as string '/ _
 		( _
 			@"hex", @"fb_HEXEx_i", _
@@ -1171,28 +1203,7 @@
 				( FB_DATATYPE_ULONG, FB_PARAMMODE_BYVAL, FALSE ), _
 				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
 			} _
- 		), _
-		/' function hex overload( byval number as any ptr, byval digits as long ) as string '/ _
-		( _
-			@"hex", @"fb_HEXEx_p", _
-			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
-			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_STRSUFFIX, _
-			2, _
-			{ _
-				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
-			} _
- 		), _
-		/' function hex overload( byval number as ulongint ) as string '/ _
-		( _
-			@"hex", @"fb_HEX_l", _
-			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
-			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_STRSUFFIX, _
-			1, _
-			{ _
-				( FB_DATATYPE_ULONGINT, FB_PARAMMODE_BYVAL, FALSE ) _
-			} _
- 		), _
+		), _
 		/' function hex overload( byval number as ulongint, byval digits as long ) as string '/ _
 		( _
 			@"hex", @"fb_HEXEx_l", _
@@ -1203,7 +1214,18 @@
 				( FB_DATATYPE_ULONGINT, FB_PARAMMODE_BYVAL, FALSE ), _
 				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
 			} _
- 		), _
+		), _
+		/' function hex overload( byval number as any ptr, byval digits as long ) as string '/ _
+		( _
+			@"hex", @"fb_HEXEx_p", _
+			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_STRSUFFIX, _
+			2, _
+			{ _
+				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
+			} _
+		), _
 		/' function whex overload( byval number as ubyte ) as wstring '/ _
 		( _
 			@"whex", @"fb_WstrHex_b", _
@@ -1213,7 +1235,7 @@
 			{ _
 				( FB_DATATYPE_UBYTE, FB_PARAMMODE_BYVAL, FALSE ) _
 			} _
- 		), _
+		), _
 		/' function whex overload( byval number as ushort ) as wstring '/ _
 		( _
 			@"whex", @"fb_WstrHex_s", _
@@ -1223,7 +1245,7 @@
 			{ _
 				( FB_DATATYPE_USHORT, FB_PARAMMODE_BYVAL, FALSE ) _
 			} _
- 		), _
+		), _
 		/' function whex overload( byval number as ulong ) as wstring '/ _
 		( _
 			@"whex", @"fb_WstrHex_i", _
@@ -1233,7 +1255,17 @@
 			{ _
 				( FB_DATATYPE_ULONG, FB_PARAMMODE_BYVAL, FALSE ) _
 			} _
- 		), _
+		), _
+		/' function whex overload( byval number as ulongint ) as wstring '/ _
+		( _
+			@"whex", @"fb_WstrHex_l", _
+			FB_DATATYPE_WCHAR, FB_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
+			1, _
+			{ _
+				( FB_DATATYPE_ULONGINT, FB_PARAMMODE_BYVAL, FALSE ) _
+			} _
+		), _
 		/' function whex overload( byval number as any ptr ) as wstring '/ _
 		( _
 			@"whex", @"fb_WstrHex_p", _
@@ -1243,7 +1275,29 @@
 			{ _
 				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ) _
 			} _
- 		), _
+		), _
+		/' function whex overload( byval number as ubyte, byval digits as long ) as wstring '/ _
+		( _
+			@"whex", @"fb_WstrHexEx_b", _
+			FB_DATATYPE_WCHAR, FB_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
+			2, _
+			{ _
+				( FB_DATATYPE_UBYTE, FB_PARAMMODE_BYVAL, FALSE ), _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
+			} _
+		), _
+		/' function whex overload( byval number as ushort, byval digits as long ) as wstring '/ _
+		( _
+			@"whex", @"fb_WstrHexEx_s", _
+			FB_DATATYPE_WCHAR, FB_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
+			2, _
+			{ _
+				( FB_DATATYPE_USHORT, FB_PARAMMODE_BYVAL, FALSE ), _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
+			} _
+		), _
 		/' function whex overload( byval number as ulong, byval digits as long ) as wstring '/ _
 		( _
 			@"whex", @"fb_WstrHexEx_i", _
@@ -1254,28 +1308,7 @@
 				( FB_DATATYPE_ULONG, FB_PARAMMODE_BYVAL, FALSE ), _
 				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
 			} _
- 		), _
-		/' function whex overload( byval number as any ptr, byval digits as long ) as wstring '/ _
-		( _
-			@"whex", @"fb_WstrHexEx_p", _
-			FB_DATATYPE_WCHAR, FB_FUNCMODE_FBCALL, _
-			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
-			2, _
-			{ _
-				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
-			} _
- 		), _
-		/' function whex overload( byval number as ulongint ) as wstring '/ _
-		( _
-			@"whex", @"fb_WstrHex_l", _
-			FB_DATATYPE_WCHAR, FB_FUNCMODE_FBCALL, _
-			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
-			1, _
-			{ _
-				( FB_DATATYPE_ULONGINT, FB_PARAMMODE_BYVAL, FALSE ) _
-			} _
- 		), _
+		), _
 		/' function whex overload( byval number as ulongint, byval digits as long ) as wstring '/ _
 		( _
 			@"whex", @"fb_WstrHexEx_l", _
@@ -1286,7 +1319,18 @@
 				( FB_DATATYPE_ULONGINT, FB_PARAMMODE_BYVAL, FALSE ), _
 				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
 			} _
- 		), _
+		), _
+		/' function whex overload( byval number as any ptr, byval digits as long ) as wstring '/ _
+		( _
+			@"whex", @"fb_WstrHexEx_p", _
+			FB_DATATYPE_WCHAR, FB_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
+			2, _
+			{ _
+				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
+			} _
+		), _
 		/' function oct overload( byval number as ubyte ) as string '/ _
 		( _
 			@"oct", @"fb_OCT_b", _
@@ -1296,7 +1340,47 @@
 			{ _
 				( FB_DATATYPE_UBYTE, FB_PARAMMODE_BYVAL, FALSE ) _
 			} _
- 		), _
+		), _
+		/' function oct overload( byval number as ushort ) as string '/ _
+		( _
+			@"oct", @"fb_OCT_s", _
+			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_STRSUFFIX, _
+			1, _
+			{ _
+				( FB_DATATYPE_USHORT, FB_PARAMMODE_BYVAL, FALSE ) _
+			} _
+		), _
+		/' function oct overload( byval number as ulong ) as string '/ _
+		( _
+			@"oct", @"fb_OCT_i", _
+			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_STRSUFFIX, _
+			1, _
+			{ _
+				( FB_DATATYPE_ULONG, FB_PARAMMODE_BYVAL, FALSE ) _
+			} _
+		), _
+		/' function oct overload( byval number as ulongint ) as string '/ _
+		( _
+			@"oct", @"fb_OCT_l", _
+			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_STRSUFFIX, _
+			1, _
+			{ _
+				( FB_DATATYPE_ULONGINT, FB_PARAMMODE_BYVAL, FALSE ) _
+			} _
+		), _
+		/' function oct overload( byval number as any ptr ) as string '/ _
+		( _
+			@"oct", @"fb_OCT_p", _
+			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_STRSUFFIX, _
+			1, _
+			{ _
+				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ) _
+			} _
+		), _
 		/' function oct overload( byval number as ubyte, byval digits as long ) as string '/ _
 		( _
 			@"oct", @"fb_OCTEx_b", _
@@ -1307,17 +1391,7 @@
 				( FB_DATATYPE_UBYTE, FB_PARAMMODE_BYVAL, FALSE ), _
 				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
 			} _
- 		), _
-		/' function oct overload( byval number as ushort ) as string '/ _
-		( _
-			@"oct", @"fb_OCT_s", _
-			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
-			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_STRSUFFIX, _
-			1, _
-			{ _
-				( FB_DATATYPE_USHORT, FB_PARAMMODE_BYVAL, FALSE ) _
-			} _
- 		), _
+		), _
 		/' function oct overload( byval number as ushort, byval digits as long ) as string '/ _
 		( _
 			@"oct", @"fb_OCTEx_s", _
@@ -1328,27 +1402,7 @@
 				( FB_DATATYPE_USHORT, FB_PARAMMODE_BYVAL, FALSE ), _
 				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
 			} _
- 		), _
-		/' function oct overload( byval number as ulong ) as string '/ _
-		( _
-			@"oct", @"fb_OCT_i", _
-			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
-			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_STRSUFFIX, _
-			1, _
-			{ _
-				( FB_DATATYPE_ULONG, FB_PARAMMODE_BYVAL, FALSE ) _
-			} _
- 		), _
-		/' function oct overload( byval number as any ptr ) as string '/ _
-		( _
-			@"oct", @"fb_OCT_p", _
-			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
-			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_STRSUFFIX, _
-			1, _
-			{ _
-				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ) _
-			} _
- 		), _
+		), _
 		/' function oct overload( byval number as ulong, byval digits as long ) as string '/ _
 		( _
 			@"oct", @"fb_OCTEx_i", _
@@ -1359,28 +1413,7 @@
 				( FB_DATATYPE_ULONG, FB_PARAMMODE_BYVAL, FALSE ), _
 				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
 			} _
- 		), _
-		/' function oct overload( byval number as any ptr, byval digits as long ) as string '/ _
-		( _
-			@"oct", @"fb_OCTEx_p", _
-			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
-			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_STRSUFFIX, _
-			2, _
-			{ _
-				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
-			} _
- 		), _
-		/' function oct overload( byval number as ulongint ) as string '/ _
-		( _
-			@"oct", @"fb_OCT_l", _
-			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
-			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_STRSUFFIX, _
-			1, _
-			{ _
-				( FB_DATATYPE_ULONGINT, FB_PARAMMODE_BYVAL, FALSE ) _
-			} _
- 		), _
+		), _
 		/' function oct overload( byval number as ulongint, byval digits as long ) as string '/ _
 		( _
 			@"oct", @"fb_OCTEx_l", _
@@ -1391,7 +1424,18 @@
 				( FB_DATATYPE_ULONGINT, FB_PARAMMODE_BYVAL, FALSE ), _
 				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
 			} _
- 		), _
+		), _
+		/' function oct overload( byval number as any ptr, byval digits as long ) as string '/ _
+		( _
+			@"oct", @"fb_OCTEx_p", _
+			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_STRSUFFIX, _
+			2, _
+			{ _
+				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
+			} _
+		), _
 		/' function woct overload( byval number as ubyte ) as wstring '/ _
 		( _
 			@"woct", @"fb_WstrOct_b", _
@@ -1401,7 +1445,47 @@
 			{ _
 				( FB_DATATYPE_UBYTE, FB_PARAMMODE_BYVAL, FALSE ) _
 			} _
- 		), _
+		), _
+		/' function woct overload( byval number as ushort ) as wstring '/ _
+		( _
+			@"woct", @"fb_WstrOct_s", _
+			FB_DATATYPE_WCHAR, FB_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
+			1, _
+			{ _
+				( FB_DATATYPE_USHORT, FB_PARAMMODE_BYVAL, FALSE ) _
+			} _
+		), _
+		/' function woct overload( byval number as ulong ) as wstring '/ _
+		( _
+			@"woct", @"fb_WstrOct_i", _
+			FB_DATATYPE_WCHAR, FB_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
+			1, _
+			{ _
+				( FB_DATATYPE_ULONG, FB_PARAMMODE_BYVAL, FALSE ) _
+			} _
+		), _
+		/' function woct overload( byval number as ulongint ) as wstring '/ _
+		( _
+			@"woct", @"fb_WstrOct_l", _
+			FB_DATATYPE_WCHAR, FB_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
+			1, _
+			{ _
+				( FB_DATATYPE_ULONGINT, FB_PARAMMODE_BYVAL, FALSE ) _
+			} _
+		), _
+		/' function woct overload( byval number as any ptr ) as wstring '/ _
+		( _
+			@"woct", @"fb_WstrOct_p", _
+			FB_DATATYPE_WCHAR, FB_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
+			1, _
+			{ _
+				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ) _
+			} _
+		), _
 		/' function woct overload( byval number as ubyte, byval digits as long ) as wstring '/ _
 		( _
 			@"woct", @"fb_WstrOctEx_b", _
@@ -1412,17 +1496,7 @@
 				( FB_DATATYPE_UBYTE, FB_PARAMMODE_BYVAL, FALSE ), _
 				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
 			} _
- 		), _
-		/' function woct overload( byval number as ushort ) as wstring '/ _
-		( _
-			@"woct", @"fb_WstrOct_s", _
-			FB_DATATYPE_WCHAR, FB_FUNCMODE_FBCALL, _
-			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
-			1, _
-			{ _
-				( FB_DATATYPE_USHORT, FB_PARAMMODE_BYVAL, FALSE ) _
-			} _
- 		), _
+		), _
 		/' function woct overload( byval number as ushort, byval digits as long ) as wstring '/ _
 		( _
 			@"woct", @"fb_WstrOctEx_s", _
@@ -1433,27 +1507,7 @@
 				( FB_DATATYPE_USHORT, FB_PARAMMODE_BYVAL, FALSE ), _
 				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
 			} _
- 		), _
-		/' function woct overload( byval number as ulong ) as wstring '/ _
-		( _
-			@"woct", @"fb_WstrOct_i", _
-			FB_DATATYPE_WCHAR, FB_FUNCMODE_FBCALL, _
-			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
-			1, _
-			{ _
-				( FB_DATATYPE_ULONG, FB_PARAMMODE_BYVAL, FALSE ) _
-			} _
- 		), _
-		/' function woct overload( byval number as any ptr ) as wstring '/ _
-		( _
-			@"woct", @"fb_WstrOct_p", _
-			FB_DATATYPE_WCHAR, FB_FUNCMODE_FBCALL, _
-			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
-			1, _
-			{ _
-				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ) _
-			} _
- 		), _
+		), _
 		/' function woct overload( byval number as ulong, byval digits as long ) as wstring '/ _
 		( _
 			@"woct", @"fb_WstrOctEx_i", _
@@ -1464,28 +1518,7 @@
 				( FB_DATATYPE_ULONG, FB_PARAMMODE_BYVAL, FALSE ), _
 				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
 			} _
- 		), _
-		/' function woct overload( byval number as any ptr, byval digits as long ) as wstring '/ _
-		( _
-			@"woct", @"fb_WstrOctEx_p", _
-			FB_DATATYPE_WCHAR, FB_FUNCMODE_FBCALL, _
-			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
-			2, _
-			{ _
-				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
-			} _
- 		), _
-		/' function woct overload( byval number as ulongint ) as wstring '/ _
-		( _
-			@"woct", @"fb_WstrOct_l", _
-			FB_DATATYPE_WCHAR, FB_FUNCMODE_FBCALL, _
-			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
-			1, _
-			{ _
-				( FB_DATATYPE_ULONGINT, FB_PARAMMODE_BYVAL, FALSE ) _
-			} _
- 		), _
+		), _
 		/' function woct overload( byval number as ulongint, byval digits as long ) as wstring '/ _
 		( _
 			@"woct", @"fb_WstrOctEx_l", _
@@ -1496,7 +1529,18 @@
 				( FB_DATATYPE_ULONGINT, FB_PARAMMODE_BYVAL, FALSE ), _
 				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
 			} _
- 		), _
+		), _
+		/' function woct overload( byval number as any ptr, byval digits as long ) as wstring '/ _
+		( _
+			@"woct", @"fb_WstrOctEx_p", _
+			FB_DATATYPE_WCHAR, FB_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
+			2, _
+			{ _
+				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
+			} _
+		), _
 		/' function bin overload( byval number as ubyte ) as string '/ _
 		( _
 			@"bin", @"fb_BIN_b", _
@@ -1506,7 +1550,7 @@
 			{ _
 				( FB_DATATYPE_UBYTE, FB_PARAMMODE_BYVAL, FALSE ) _
 			} _
- 		), _
+		), _
 		/' function bin overload( byval number as ushort ) as string '/ _
 		( _
 			@"bin", @"fb_BIN_s", _
@@ -1516,7 +1560,7 @@
 			{ _
 				( FB_DATATYPE_USHORT, FB_PARAMMODE_BYVAL, FALSE ) _
 			} _
- 		), _
+		), _
 		/' function bin overload( byval number as ulong ) as string '/ _
 		( _
 			@"bin", @"fb_BIN_i", _
@@ -1526,7 +1570,17 @@
 			{ _
 				( FB_DATATYPE_ULONG, FB_PARAMMODE_BYVAL, FALSE ) _
 			} _
- 		), _
+		), _
+		/' function bin overload( byval number as ulongint ) as string '/ _
+		( _
+			@"bin", @"fb_BIN_l", _
+			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
+			1, _
+			{ _
+				( FB_DATATYPE_ULONGINT, FB_PARAMMODE_BYVAL, FALSE ) _
+			} _
+		), _
 		/' function bin overload( byval number as any ptr ) as string '/ _
 		( _
 			@"bin", @"fb_BIN_p", _
@@ -1536,7 +1590,29 @@
 			{ _
 				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ) _
 			} _
- 		), _
+		), _
+		/' function bin overload( byval number as ubyte, byval digits as long ) as string '/ _
+		( _
+			@"bin", @"fb_BINEx_b", _
+			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
+			2, _
+			{ _
+				( FB_DATATYPE_UBYTE, FB_PARAMMODE_BYVAL, FALSE ), _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
+			} _
+		), _
+		/' function bin overload( byval number as ushort, byval digits as long ) as string '/ _
+		( _
+			@"bin", @"fb_BINEx_s", _
+			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
+			2, _
+			{ _
+				( FB_DATATYPE_USHORT, FB_PARAMMODE_BYVAL, FALSE ), _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
+			} _
+		), _
 		/' function bin overload( byval number as ulong, byval digits as long ) as string '/ _
 		( _
 			@"bin", @"fb_BINEx_i", _
@@ -1547,28 +1623,7 @@
 				( FB_DATATYPE_ULONG, FB_PARAMMODE_BYVAL, FALSE ), _
 				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
 			} _
- 		), _
-		/' function bin overload( byval number as any ptr, byval digits as long ) as string '/ _
-		( _
-			@"bin", @"fb_BINEx_p", _
-			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
-			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
-			2, _
-			{ _
-				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
-			} _
- 		), _
-		/' function bin overload( byval number as ulongint ) as string '/ _
-		( _
-			@"bin", @"fb_BIN_l", _
-			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
-			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
-			1, _
-			{ _
-				( FB_DATATYPE_ULONGINT, FB_PARAMMODE_BYVAL, FALSE ) _
-			} _
- 		), _
+		), _
 		/' function bin overload( byval number as ulongint, byval digits as long ) as string '/ _
 		( _
 			@"bin", @"fb_BINEx_l", _
@@ -1579,7 +1634,18 @@
 				( FB_DATATYPE_ULONGINT, FB_PARAMMODE_BYVAL, FALSE ), _
 				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
 			} _
- 		), _
+		), _
+		/' function bin overload( byval number as any ptr, byval digits as long ) as string '/ _
+		( _
+			@"bin", @"fb_BINEx_p", _
+			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
+			2, _
+			{ _
+				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
+			} _
+		), _
 		/' function wbin overload( byval number as ubyte ) as wstring '/ _
 		( _
 			@"wbin", @"fb_WstrBin_b", _
@@ -1589,7 +1655,7 @@
 			{ _
 				( FB_DATATYPE_UBYTE, FB_PARAMMODE_BYVAL, FALSE ) _
 			} _
- 		), _
+		), _
 		/' function wbin overload( byval number as ushort ) as wstring '/ _
 		( _
 			@"wbin", @"fb_WstrBin_s", _
@@ -1599,7 +1665,7 @@
 			{ _
 				( FB_DATATYPE_USHORT, FB_PARAMMODE_BYVAL, FALSE ) _
 			} _
- 		), _
+		), _
 		/' function wbin overload( byval number as ulong ) as wstring '/ _
 		( _
 			@"wbin", @"fb_WstrBin_i", _
@@ -1609,7 +1675,17 @@
 			{ _
 				( FB_DATATYPE_ULONG, FB_PARAMMODE_BYVAL, FALSE ) _
 			} _
- 		), _
+		), _
+		/' function wbin overload( byval number as ulongint ) as wstring '/ _
+		( _
+			@"wbin", @"fb_WstrBin_l", _
+			FB_DATATYPE_WCHAR, FB_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
+			1, _
+			{ _
+				( FB_DATATYPE_ULONGINT, FB_PARAMMODE_BYVAL, FALSE ) _
+			} _
+		), _
 		/' function wbin overload( byval number as any ptr ) as wstring '/ _
 		( _
 			@"wbin", @"fb_WstrBin_p", _
@@ -1619,7 +1695,29 @@
 			{ _
 				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ) _
 			} _
- 		), _
+		), _
+		/' function wbin overload( byval number as ubyte, byval digits as long ) as wstring '/ _
+		( _
+			@"wbin", @"fb_WstrBinEx_b", _
+			FB_DATATYPE_WCHAR, FB_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
+			2, _
+			{ _
+				( FB_DATATYPE_UBYTE, FB_PARAMMODE_BYVAL, FALSE ), _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
+			} _
+		), _
+		/' function wbin overload( byval number as ushort, byval digits as long ) as wstring '/ _
+		( _
+			@"wbin", @"fb_WstrBinEx_s", _
+			FB_DATATYPE_WCHAR, FB_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
+			2, _
+			{ _
+				( FB_DATATYPE_USHORT, FB_PARAMMODE_BYVAL, FALSE ), _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
+			} _
+		), _
 		/' function wbin overload( byval number as ulong, byval digits as long ) as wstring '/ _
 		( _
 			@"wbin", @"fb_WstrBinEx_i", _
@@ -1630,28 +1728,7 @@
 				( FB_DATATYPE_ULONG, FB_PARAMMODE_BYVAL, FALSE ), _
 				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
 			} _
- 		), _
-		/' function wbin overload( byval number as any ptr, byval digits as long ) as wstring '/ _
-		( _
-			@"wbin", @"fb_WstrBinEx_p", _
-			FB_DATATYPE_WCHAR, FB_FUNCMODE_FBCALL, _
-			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
-			2, _
-			{ _
-				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
-			} _
- 		), _
-		/' function wbin overload( byval number as ulongint ) as wstring '/ _
-		( _
-			@"wbin", @"fb_WstrBin_l", _
-			FB_DATATYPE_WCHAR, FB_FUNCMODE_FBCALL, _
-			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
-			1, _
-			{ _
-				( FB_DATATYPE_ULONGINT, FB_PARAMMODE_BYVAL, FALSE ) _
-			} _
- 		), _
+		), _
 		/' function wbin overload( byval number as ulongint, byval digits as long ) as wstring '/ _
 		( _
 			@"wbin", @"fb_WstrBinEx_l", _
@@ -1662,7 +1739,18 @@
 				( FB_DATATYPE_ULONGINT, FB_PARAMMODE_BYVAL, FALSE ), _
 				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
 			} _
- 		), _
+		), _
+		/' function wbin overload( byval number as any ptr, byval digits as long ) as wstring '/ _
+		( _
+			@"wbin", @"fb_WstrBinEx_p", _
+			FB_DATATYPE_WCHAR, FB_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
+			2, _
+			{ _
+				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
+			} _
+		), _
 		/' function fb_MKD( byval number as double ) as string '/ _
 		( _
 			@FB_RTL_MKD, NULL, _

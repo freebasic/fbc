@@ -76,6 +76,16 @@ FBCALL FB_WCHAR *fb_WstrBin_i ( unsigned int num )
 	return hBin( num, sizeof( int ), 0 );
 }
 
+FBCALL FB_WCHAR *fb_WstrBinEx_b( unsigned char num, int digits )
+{
+	return hBin( num, sizeof( unsigned char ), digits );
+}
+
+FBCALL FB_WCHAR *fb_WstrBinEx_s( unsigned short num, int digits )
+{
+	return hBin( num, sizeof( unsigned short ), digits );
+}
+
 FBCALL FB_WCHAR *fb_WstrBinEx_i ( unsigned int num, int digits )
 {
 	return hBin( num, sizeof( int ), digits );
