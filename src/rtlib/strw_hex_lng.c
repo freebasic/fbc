@@ -7,60 +7,39 @@ static FB_WCHAR hex_table[16] = {_LC('0'),_LC('1'),_LC('2'),_LC('3'),
 								 _LC('8'),_LC('9'),_LC('A'),_LC('B'),
 								 _LC('C'),_LC('D'),_LC('E'),_LC('F')};
 
-
 FBCALL FB_WCHAR *fb_WstrHexEx_l ( unsigned long long num, int digits )
 {
-	FB_WCHAR *dst, *buf;
-	int i, totdigs;
+	FB_WCHAR *s;
+	int i;
+	unsigned long long num2;
 
-	if( digits > 0 )
-	{
-		totdigs = (digits < sizeof( long long ) << 1? digits: sizeof( long long ) << 1);
-		if( digits > sizeof( long long ) << 1 )
-			digits = sizeof( long long ) << 1;
+	if( digits <= 0 ) {
+		/* Only use the minimum amount of digits needed; need to count
+		   the important 4-bit (base 16) chunks in the number.
+		   And if it's zero, use 1 digit for 1 zero. */
+		digits = 0;
+		num2 = num;
+		while( num2 ) {
+			digits += 1;
+			num2 >>= 4;
+		}
+		if( digits == 0 )
+			digits = 1;
 	}
-	else
-		totdigs = sizeof( long long ) << 1;
 
-	/* alloc temp string */
-    dst = fb_wstr_AllocTemp( totdigs );
-	if( dst == NULL )
+	s = fb_wstr_AllocTemp( digits );
+	if( s == NULL )
 		return NULL;
 
-	/* convert */
-	buf = dst;
-
-	if( num == 0ULL )
-	{
-		if( digits <= 0 )
-			digits = 1;
-
-		while( digits-- )
-			*buf++ = _LC('0');
-	}
-	else
-	{
-		num <<= ((sizeof( long long ) << 3) - (totdigs << 2));
-
-		for( i = 0; i < totdigs; i++, num <<= 4 )
-			if( num > 0x0FFFFFFFFFFFFFFFULL )
-				break;
-
-		if( digits > 0 )
-		{
-			digits -= totdigs - i;
-			while( digits-- )
-				*buf++ = _LC('0');
-		}
-
-		for( ; i < totdigs; i++, num <<= 4 )
-			*buf++ = hex_table[(num & 0xF000000000000000ULL) >> 60];
+	i = digits - 1;
+	while( i >= 0 ) {
+		s[i] = hex_table[num & 0xF];
+		num >>= 4;
+		i -= 1;
 	}
 
-	/* add null-term */
-	*buf = _LC('\0');
-
-	return dst;
+	s[digits] = _LC('\0');
+	return s;
 }
 
 FBCALL FB_WCHAR *fb_WstrHex_l ( unsigned long long num )

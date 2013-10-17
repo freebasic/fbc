@@ -2,93 +2,39 @@
 
 #include "fb.h"
 
-static FB_WCHAR *hFillDigits( FB_WCHAR *buf, int digits, int totdigs, int cnt )
-{
-	if( digits > 0 )
-	{
-		digits -= totdigs - cnt;
-		while( digits > 0 )
-		{
-			*buf++ = _LC('0');
-			--digits;
-		}
-	}
-
-	return buf;
-}
-
 FBCALL FB_WCHAR *fb_WstrOctEx_l ( unsigned long long num, int digits )
 {
-	FB_WCHAR *dst, *buf;
-	int i, totdigs;
+	FB_WCHAR *s;
+	int i;
+	unsigned long long num2;
 
-	totdigs = ((sizeof(long long)*8) / 3) + 1;
-
-	if( digits > 0 )
-	{
-		if( digits < totdigs )
-			totdigs = digits;
-		else if( digits > totdigs )
-			digits = totdigs;
+	if( digits <= 0 ) {
+		/* Only use the minimum amount of digits needed; need to count
+		   the important 3-bit (base 8) chunks in the number.
+		   And if it's zero, use 1 digit for 1 zero. */
+		digits = 0;
+		num2 = num;
+		while( num2 ) {
+			digits += 1;
+			num2 >>= 3;
+		}
+		if( digits == 0 )
+			digits = 1;
 	}
 
-	/* alloc temp string */
-    dst = fb_wstr_AllocTemp( totdigs );
-	if( dst == NULL )
+	s = fb_wstr_AllocTemp( digits );
+	if( s == NULL )
 		return NULL;
 
-	/* convert */
-	buf = dst;
-
-	if( num == 0 )
-	{
-		if( digits <= 0 )
-			digits = 1;
-
-		while( digits-- )
-			*buf++ = _LC('0');
-	}
-	else
-	{
-		/* enough to fit? */
-		if( (totdigs * 3 < (sizeof(long long)*8)) )
-		{
-			num <<= (sizeof(long long)*8) - (totdigs*3);
-			i = 0;
-        }
-		/* too big.. */
-		else
-		{
-			if( num > (0xFFFFFFFFFFFFFFFFULL >> 1) )
-			{
-				buf = hFillDigits( buf, digits, totdigs, 0 );
-				*buf++ = _LC('0') + ((num & ~(0xFFFFFFFFFFFFFFFFULL >> 1))
-									 >> (sizeof(long long)*8-1));
-			}
-
-			num <<= 1;
-			i = 1;
-		}
-
-		/* check for 0's at msb? */
-		if( buf == dst )
-		{
-			for( ; i < totdigs; i++, num <<= 3 )
-				if( num > 0x1FFFFFFFFFFFFFFFULL )
-					break;
-
-			buf = hFillDigits( buf, digits, totdigs, i );
-		}
-
-		/* convert.. */
-		for( ; i < totdigs; i++, num <<= 3 )
-			*buf++ = _LC('0') + ((num & 0xE000000000000000ULL) >> (sizeof(long long)*8-3));
+	i = digits - 1;
+	while( i >= 0 ) {
+		s[i] = _LC('0') + (num & 7); /* '0'..'7' */
+		num >>= 3;
+		i -= 1;
 	}
 
-	/* add null-term */
-	*buf = _LC('\0');
-
-	return dst;
+	s[digits] = _LC('\0');
+	return s;
 }
 
 FBCALL FB_WCHAR *fb_WstrOct_l ( unsigned long long num )

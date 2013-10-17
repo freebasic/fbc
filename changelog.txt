@@ -4,6 +4,7 @@ Version 0.91.0:
 - The normal (non-standalone) compiler now uses target-specific sub-directories in lib/freebasic/ again, for example lib/freebasic/linux/, to allow libs for other targets to be installed into the same directory, for example lib/freebasic/x86_64-linux/, instead of having to use a separate directory like lib/x86_64-linux-freebasic/. Same goes for the FB makefile: the *.o files go into target-specific subdirs in src/{compiler,rtlib,gfxlib2}/obj/, to avoid trashing the source dirs with tons of separate <target>-obj/ subdirs.
 - Enums declared inside Extern blocks now behave like ones declared outside: The Enum's constants don't collide with previously declared global constants, instead they can be accessed through "EnumName.MyConstant".
 - More predictable overload resolution for primitive types, preferring: the same dataclass >> a type that's at least as large >> the closest in size >> the [U]INTEGER type >> the same signedness
+- Bin/Oct/Hex(x, digits) functions now prepend zeroes, even if it's more than the data type size, if needed to fill the result string up to the requested amount of digits
 
 [added]
 - 64bit support (-arch x86_64) based on -gen gcc: INTEGER/POINTER = 64bit, LONG = 32bit DWORD. Compiler #define: __FB_64BIT__
