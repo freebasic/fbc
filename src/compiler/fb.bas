@@ -788,13 +788,10 @@ private sub fbParsePreIncludes()
 end sub
 
 private sub hAppendFbctinf( byval value as zstring ptr )
-	static as string s
-
 	if( env.fbctinf_started = FALSE ) then
 		env.fbctinf_started = TRUE
 		irEmitFBCTINFBEGIN( )
 	end if
-
 	irEmitFBCTINFSTRING( value )
 end sub
 
