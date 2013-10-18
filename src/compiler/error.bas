@@ -362,7 +362,7 @@ declare function hMakeParamDesc _
 		@"Expected '#ENDIF'", _
 		@"Resource file given for target system that does not support them", _
 		@"-o <file> option without corresponding input file", _
-		@"TYPE can only extend other TYPE symbols", _
+		@"Not extending a TYPE/UNION (a TYPE/UNION can only extend other TYPEs/UNIONs)", _
 		@"Illegal outside a CLASS, TYPE or UNION method", _
 		@"CLASS, TYPE or UNION not derived", _
 		@"CLASS, TYPE or UNION has no constructor", _
