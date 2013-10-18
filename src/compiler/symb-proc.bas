@@ -2000,7 +2000,7 @@ function symbFindClosestOvlProc _
 
 			'' If there were no args, then assume it's a match and
 			'' then check the remaining params, if any.
-			var is_match = iif( args = 0, TRUE, matches > 0 )
+			var is_match = (args = 0) or (matches > 0)
 
 			'' Fewer args than params? Check whether the missing ones are optional.
 			for i as integer = args to params-1
