@@ -100,12 +100,7 @@ sub rtlEnd
 
 end sub
 
-'':::::
-sub rtlAddIntrinsicProcs _
-	( _
-		byval procdef as FB_RTL_PROCDEF ptr _
-	)
-
+sub rtlAddIntrinsicProcs( byval procdef as const FB_RTL_PROCDEF ptr )
 	dim as FBSYMBOL ptr param = any
     dim as integer callconv = any
 
@@ -148,9 +143,9 @@ sub rtlAddIntrinsicProcs _
 
 			'' for each parameter..
 			for i as integer = 0 to procdef->params-1
-				dim as FBSYMBOL ptr subtype = NULL
 				with procdef->paramTb(i)
-					dim as integer attrib = any
+					dim as FBSYMBOL ptr subtype = NULL
+					dim as integer attrib = any, dtype = any
 					dim as ASTNODE ptr param_optval = any
 					if( .isopt ) then
 						attrib = FB_SYMBATTRIB_OPTIONAL
@@ -228,11 +223,12 @@ sub rtlAddIntrinsicProcs _
 						param_optval = NULL
 					end if
 
-					if( .dtype = FB_DATATYPE_INVALID ) then
-						.dtype = typeAddrOf( FB_DATATYPE_VOID )
+					dtype = .dtype
+					if( dtype = FB_DATATYPE_INVALID ) then
+						dtype = typeAddrOf( FB_DATATYPE_VOID )
 					end if
 
-					param = symbAddProcParam( proc, NULL, .dtype, subtype, .mode, attrib )
+					param = symbAddProcParam( proc, NULL, dtype, subtype, .mode, attrib )
 
 					if( .check_const ) then
 						symbSetIsRTLConst( param )
@@ -254,16 +250,17 @@ sub rtlAddIntrinsicProcs _
 
 			'' Note: for operators, this is the AST_OP_* value, not a valid zstring ptr
 			dim as const zstring ptr pname = procdef->name
+			dim as const zstring ptr palias = procdef->alias
 
 			'' ordinary proc?
 			if( (procdef->options and FB_RTL_OPT_OPERATOR) = 0 ) then
 				'' add the '__' prefix if the proc wasn't present in QB and we are in '-lang qb' mode
 				if( (procdef->options and FB_RTL_OPT_NOQB) <> 0 ) then
 					if( fbLangIsSet( FB_LANG_QB ) ) then
-						if( procdef->alias = NULL ) then
+						if( palias = NULL ) then
 							static as string tmp_alias
 							tmp_alias = *pname
-							procdef->alias = strptr( tmp_alias )
+							palias = strptr( tmp_alias )
 						end if
 
 						static as string tmp_name
@@ -272,11 +269,11 @@ sub rtlAddIntrinsicProcs _
 					end if
 				end if
 
-				if( procdef->alias = NULL ) then
-					procdef->alias = pname
+				if( palias = NULL ) then
+					palias = pname
 				end if
 
-				proc = symbAddProc( proc, pname, procdef->alias, _
+				proc = symbAddProc( proc, pname, palias, _
 				                    procdef->dtype, NULL, attrib, callconv, _
 				                    FB_SYMBOPT_DECLARING or FB_SYMBOPT_RTL )
 
@@ -316,7 +313,6 @@ sub rtlAddIntrinsicProcs _
 		'' next
 		procdef += 1
 	loop
-
 end sub
 
 '':::::

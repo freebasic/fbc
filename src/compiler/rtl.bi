@@ -877,10 +877,7 @@ declare sub rtlEnd _
 	( _
 	)
 
-declare sub rtlAddIntrinsicProcs _
-	( _
-		byval procdef as FB_RTL_PROCDEF ptr _
-	)
+declare sub rtlAddIntrinsicProcs( byval procdef as const FB_RTL_PROCDEF ptr )
 
 declare function rtlProcLookup _
 	( _
