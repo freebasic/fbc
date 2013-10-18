@@ -357,15 +357,8 @@ private function hAddOvlProc _
 	end if
 
 	'' only one them is a property?
-	if( (attrib and FB_SYMBATTRIB_PROPERTY) <> 0 ) then
-    	if( symbIsProperty( ovl_head_proc ) = FALSE ) then
-			exit function
-    	end if
-
-	elseif( symbIsProperty( ovl_head_proc ) ) then
-		if( (attrib and FB_SYMBATTRIB_PROPERTY) = 0 ) then
-			exit function
-		end if
+	if( ((attrib and FB_SYMBATTRIB_PROPERTY) <> 0) <> symbIsProperty( ovl_head_proc ) ) then
+		exit function
 	end if
 
 	'' not arg-less?
