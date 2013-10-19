@@ -207,9 +207,9 @@ function cCtorCall _
 					  		 iif( isprnt = FALSE, _
 					  		 	  FB_PARSEROPT_OPTONLY, _
 					  		 	  FB_PARSEROPT_NONE ) )
-	if( procexpr = NULL ) then
-		return NULL
-	end if
+
+	'' Try to parse the ')' even in case of error recovery; it belongs to
+	'' the type() construct afterall, and nothing else would handle it.
 
 	if( isprnt ) then
 		'' ')'?
@@ -222,11 +222,13 @@ function cCtorCall _
 		end if
 	end if
 
-	'' check if it's a call (because error recovery)..
-	if( astIsCALL( procexpr ) ) then
-		function = astNewCALLCTOR( procexpr, astBuildVarField( tmp ) )
-	else
+	'' cProcArgList() usually returns a CALL, but it can be NULL or a CONST
+	'' etc. in case of error recovery
+	if( procexpr = NULL ) then
+		function = NULL
+	elseif( astIsCALL( procexpr ) = FALSE ) then
 		function = procexpr
+	else
+		function = astNewCALLCTOR( procexpr, astBuildVarField( tmp ) )
 	end if
-
 end function
