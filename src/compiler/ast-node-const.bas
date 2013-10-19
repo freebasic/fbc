@@ -64,7 +64,11 @@ function astNewCONSTi _
 	n = astNewNode( AST_NODECLASS_CONST, FB_DATATYPE_LONGINT, NULL )
 	n->val.i = value
 
-	function = astNewCONV( dtype, subtype, n, AST_CONVOPT_DONTCHKPTR )
+	n = astNewCONV( dtype, subtype, n, AST_CONVOPT_DONTCHKPTR )
+	assert( n )
+	assert( n->class = AST_NODECLASS_CONST )
+
+	function = n
 end function
 
 function astNewCONSTf _
@@ -106,6 +110,12 @@ function astNewCONSTz _
 	dim as FBSYMBOL ptr fld = any
 
 	select case as const( typeGetDtAndPtrOnly( dtype ) )
+	case FB_DATATYPE_VOID
+		'' A CONST expression with VOID type doesn't make sense,
+		'' but some callers of astNewCONSTz() can call it for SUBs,
+		'' which have a VOID result type.
+		function = NULL
+
 	case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR
 		function = astNewCONSTstr( NULL )
 
