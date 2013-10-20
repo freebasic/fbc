@@ -354,6 +354,140 @@ ULONGINT
 ULONGINT
 
 --------------------------------------------------------------------------------
+% suffix
+
+dec:
+INTEGER
+INTEGER
+INTEGER
+INTEGER
+INTEGER
+INTEGER
+INTEGER
+INTEGER
+	Literal number too big, truncated
+LONGINT
+	Literal number too big, truncated
+ULONGINT
+	Literal number too big, truncated
+ULONGINT
+
+bin:
+INTEGER
+INTEGER
+INTEGER
+INTEGER
+INTEGER
+INTEGER
+INTEGER
+INTEGER
+	Literal number too big, truncated
+LONGINT
+	Literal number too big, truncated
+LONGINT
+	Literal number too big, truncated
+LONGINT
+
+oct:
+INTEGER
+INTEGER
+INTEGER
+INTEGER
+INTEGER
+INTEGER
+INTEGER
+INTEGER
+	Literal number too big, truncated
+LONGINT
+	Literal number too big, truncated
+LONGINT
+	Literal number too big, truncated
+LONGINT
+
+hex:
+INTEGER
+INTEGER
+INTEGER
+INTEGER
+INTEGER
+INTEGER
+INTEGER
+INTEGER
+	Literal number too big, truncated
+LONGINT
+	Literal number too big, truncated
+LONGINT
+	Literal number too big, truncated
+LONGINT
+
+--------------------------------------------------------------------------------
+& suffix
+
+dec:
+LONG
+LONG
+LONG
+LONG
+LONG
+LONG
+LONG
+LONG
+	Literal number too big, truncated
+LONGINT
+	Literal number too big, truncated
+ULONGINT
+	Literal number too big, truncated
+ULONGINT
+
+bin:
+LONG
+LONG
+LONG
+LONG
+LONG
+LONG
+LONG
+LONG
+	Literal number too big, truncated
+LONGINT
+	Literal number too big, truncated
+LONGINT
+	Literal number too big, truncated
+LONGINT
+
+oct:
+LONG
+LONG
+LONG
+LONG
+LONG
+LONG
+LONG
+LONG
+	Literal number too big, truncated
+LONGINT
+	Literal number too big, truncated
+LONGINT
+	Literal number too big, truncated
+LONGINT
+
+hex:
+LONG
+LONG
+LONG
+LONG
+LONG
+LONG
+LONG
+LONG
+	Literal number too big, truncated
+LONGINT
+	Literal number too big, truncated
+LONGINT
+	Literal number too big, truncated
+LONGINT
+
+--------------------------------------------------------------------------------
 f suffix
 
 dec:
@@ -425,6 +559,116 @@ DOUBLE
 DOUBLE
 
 oct:
+DOUBLE
+DOUBLE
+DOUBLE
+DOUBLE
+DOUBLE
+DOUBLE
+DOUBLE
+DOUBLE
+DOUBLE
+DOUBLE
+DOUBLE
+
+--------------------------------------------------------------------------------
+! suffix
+
+dec:
+SINGLE
+SINGLE
+SINGLE
+SINGLE
+SINGLE
+SINGLE
+SINGLE
+SINGLE
+SINGLE
+SINGLE
+SINGLE
+
+bin:
+SINGLE
+SINGLE
+SINGLE
+SINGLE
+SINGLE
+SINGLE
+SINGLE
+SINGLE
+SINGLE
+SINGLE
+SINGLE
+
+oct:
+SINGLE
+SINGLE
+SINGLE
+SINGLE
+SINGLE
+SINGLE
+SINGLE
+SINGLE
+SINGLE
+SINGLE
+SINGLE
+
+hex:
+SINGLE
+SINGLE
+SINGLE
+SINGLE
+SINGLE
+SINGLE
+SINGLE
+SINGLE
+SINGLE
+SINGLE
+SINGLE
+
+--------------------------------------------------------------------------------
+# suffix
+
+dec:
+DOUBLE
+DOUBLE
+DOUBLE
+DOUBLE
+DOUBLE
+DOUBLE
+DOUBLE
+DOUBLE
+DOUBLE
+DOUBLE
+DOUBLE
+
+bin:
+DOUBLE
+DOUBLE
+DOUBLE
+DOUBLE
+DOUBLE
+DOUBLE
+DOUBLE
+DOUBLE
+DOUBLE
+DOUBLE
+DOUBLE
+
+oct:
+DOUBLE
+DOUBLE
+DOUBLE
+DOUBLE
+DOUBLE
+DOUBLE
+DOUBLE
+DOUBLE
+DOUBLE
+DOUBLE
+DOUBLE
+
+hex:
 DOUBLE
 DOUBLE
 DOUBLE

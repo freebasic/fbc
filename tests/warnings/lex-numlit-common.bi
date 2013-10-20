@@ -112,6 +112,22 @@ checkHex( ull )
 
 #print
 #print "--------------------------------------------------------------------------------"
+#print "% suffix"
+checkDec( % )
+checkBin( % )
+checkOct( % )
+checkHex( % )
+
+#print
+#print "--------------------------------------------------------------------------------"
+#print "& suffix"
+checkDec( & )
+checkBin( & )
+checkOct( & )
+checkHex( & )
+
+#print
+#print "--------------------------------------------------------------------------------"
 #print "f suffix"
 checkDec( f )
 checkBin( f )
@@ -123,6 +139,22 @@ checkOct( f )
 checkDec( d )
 checkBin( d )
 checkOct( d )
+
+#print
+#print "--------------------------------------------------------------------------------"
+#print "! suffix"
+checkDec( ! )
+checkBin( ! )
+checkOct( ! )
+checkHex( ! )
+
+#print
+#print "--------------------------------------------------------------------------------"
+#print "# suffix"
+checkDec( # )
+checkBin( # )
+checkOct( # )
+checkHex( # )
 
 #print
 #print "--------------------------------------------------------------------------------"
