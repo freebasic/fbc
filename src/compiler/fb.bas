@@ -333,8 +333,8 @@ sub fbInit( byval ismain as integer, byval restarts as integer )
 
 		env.lang.litremap.short = FB_DATATYPE_SHORT
 		env.lang.litremap.ushort = FB_DATATYPE_USHORT
-		env.lang.litremap.integer = FB_DATATYPE_INTEGER
-		env.lang.litremap.uint = FB_DATATYPE_UINT
+		env.lang.litremap.integer = FB_DATATYPE_LONG
+		env.lang.litremap.uint = FB_DATATYPE_ULONG
 		env.lang.litremap.double = FB_DATATYPE_SINGLE
 	end if
 

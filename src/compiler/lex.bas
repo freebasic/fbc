@@ -502,7 +502,7 @@ private function hReadNonDecNumber _
 	dim as integer lgt = any
 	dim as integer skipchar = any
 
-	dtype = FB_DATATYPE_SHORT
+	assert( dtype = FB_DATATYPE_SHORT )
 
 	value = 0
 	lgt = 0
