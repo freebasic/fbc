@@ -2715,25 +2715,36 @@ private sub hSubOrFuncToStr( byref s as string, byval proc as FBSYMBOL ptr )
 	end if
 end sub
 
+'' Append calling convention, if it differs from the default
 private sub hProcModeToStr( byref s as string, byval proc as FBSYMBOL ptr )
-	'' Calling convention, but only if different from default FBCALL
-	select case( symbGetProcMode( proc ) )
-	case FB_FUNCMODE_STDCALL, FB_FUNCMODE_STDCALL_MS
-		select case( env.target.fbcall )
+	'' Ctors/Dtors currently always default to CDECL, see cProcHeader()
+	if( symbIsConstructor( proc ) or symbIsDestructor( proc ) ) then
+		select case( symbGetProcMode( proc ) )
 		case FB_FUNCMODE_STDCALL, FB_FUNCMODE_STDCALL_MS
-
-		case else
 			s += " stdcall"
-		end select
-	case FB_FUNCMODE_PASCAL
-		if( env.target.fbcall <> FB_FUNCMODE_PASCAL ) then
+		case FB_FUNCMODE_PASCAL
 			s += " pascal"
-		end if
-	case FB_FUNCMODE_CDECL
-		if( env.target.fbcall <> FB_FUNCMODE_CDECL ) then
-			s += " cdecl"
-		end if
-	end select
+		end select
+	else
+		'' Others default to FBCALL
+		select case( symbGetProcMode( proc ) )
+		case FB_FUNCMODE_STDCALL, FB_FUNCMODE_STDCALL_MS
+			select case( env.target.fbcall )
+			case FB_FUNCMODE_STDCALL, FB_FUNCMODE_STDCALL_MS
+
+			case else
+				s += " stdcall"
+			end select
+		case FB_FUNCMODE_PASCAL
+			if( env.target.fbcall <> FB_FUNCMODE_PASCAL ) then
+				s += " pascal"
+			end if
+		case FB_FUNCMODE_CDECL
+			if( env.target.fbcall <> FB_FUNCMODE_CDECL ) then
+				s += " cdecl"
+			end if
+		end select
+	end if
 end sub
 
 private sub hParamsToStr( byref s as string, byval proc as FBSYMBOL ptr )
