@@ -2181,13 +2181,25 @@ private sub hBuildStrLit _
 			ln += $"\x" + hex( ch, 2 )
 
 			'' Is there an 0-9, a-f or A-F char following?
-			if( i < (length - 1) ) then
-				if( hIsValidHexDigit( (*z)[i + 1] ) ) then
-					'' Split up the string literal to prevent
-					'' the compiler from treating this following
-					'' char as part of the escape sequence
+			if( hIsValidHexDigit( (*z)[i+1] ) ) then
+				'' Split up the string literal to prevent
+				'' the compiler from treating this following
+				'' char as part of the escape sequence
+				ln += """ """
+			end if
+		elseif( ch = asc( "?" ) ) then
+			ln += "?"
+			'' If the following string literal content would form a
+			'' trigraph, it must be escaped
+			if( (*z)[i+1] = asc( "?" ) ) then
+				assert( (i+2) < length )  '' null terminator not yet reached
+				select case( (*z)[i+2] )
+				case asc( "=" ), asc( "/" ), asc( "'" ), _
+				     asc( "(" ), asc( ")" ), asc( "!" ), _
+				     asc( "<" ), asc( ">" ), asc( "-" )
+					'' Split up the string literal between the two '??', ditto
 					ln += """ """
-				end if
+				end select
 			end if
 		else
 			'' Emit as-is
@@ -2220,11 +2232,19 @@ private sub hBuildWstrLit _
 
 		if( hCharNeedsEscaping( ch, asc( """" ) ) ) then
 			ln += $"\x" + hex( ch, wcharsize * 2 )
-
-			if( i < (length - 1) ) then
-				if( hIsValidHexDigit( (*w)[i + 1] ) ) then
+			if( hIsValidHexDigit( (*w)[i+1] ) ) then
+				ln += """ L"""
+			end if
+		elseif( ch = asc( "?" ) ) then
+			ln += "?"
+			if( (*w)[i+1] = asc( "?" ) ) then
+				assert( (i+2) < length )  '' null terminator not yet reached
+				select case( (*w)[i+2] )
+				case asc( "=" ), asc( "/" ), asc( "'" ), _
+				     asc( "(" ), asc( ")" ), asc( "!" ), _
+				     asc( "<" ), asc( ">" ), asc( "-" )
 					ln += """ L"""
-				end if
+				end select
 			end if
 		else
 			ln += chr( ch )
