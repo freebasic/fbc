@@ -7,6 +7,6 @@
 
 extern GFXDRIVER fb_gfxDriverFBDev;
 
-extern int fb_hFBDevInfo(int *width, int *height, int *depth, int *refresh);
+extern int fb_hFBDevInfo(ssize_t *width, ssize_t *height, ssize_t *depth, ssize_t *refresh);
 
 #endif

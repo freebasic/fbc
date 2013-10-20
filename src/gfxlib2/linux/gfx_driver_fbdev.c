@@ -20,7 +20,7 @@
 typedef struct FBDEVDRIVER
 {
 	int w, h, depth, flags;
-	int refresh_rate;
+	ssize_t refresh_rate;
 	int mouse_clip;
 } FBDEVDRIVER;
 
@@ -310,7 +310,8 @@ static void driver_key_handler( int pressed, int repeated, int scancode, int key
 static int driver_init(char *title, int w, int h, int depth, int refresh_rate, int flags)
 {
 	const char *device_name;
-	int try, res_index, dummy, i, j, r, g, b, dist, best_dist, best_index = 0;
+	int try, res_index, i, j, r, g, b, dist, best_dist, best_index = 0;
+	ssize_t dummy;
 	int palette_len;
 	struct fb_vblank vblank;
 	const char *mouse_device[] = { "/dev/input/mice", "/dev/usbmouse", "/dev/psaux", NULL };
@@ -652,7 +653,7 @@ static int *driver_fetch_modes(int depth, int *size)
 	return sizes;
 }
 
-int fb_hFBDevInfo(int *width, int *height, int *depth, int *refresh)
+int fb_hFBDevInfo(ssize_t *width, ssize_t *height, ssize_t *depth, ssize_t *refresh)
 {
 	struct fb_var_screeninfo temp, *info;
 	int fd = -1, htotal, vtotal, flags, res;

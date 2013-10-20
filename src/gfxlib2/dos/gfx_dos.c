@@ -662,7 +662,7 @@ static void fb_dos_restore_video_mode(void)
 	fb_dos.old_rows = fb_dos.old_cols = 0;
 }
 
-void fb_hScreenInfo(int *width, int *height, int *depth, int *refresh)
+void fb_hScreenInfo(ssize_t *width, ssize_t *height, ssize_t *depth, ssize_t *refresh)
 {
 	*width = fb_dos.w;
 	*height = fb_dos.h;

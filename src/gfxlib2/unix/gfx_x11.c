@@ -815,7 +815,7 @@ int *fb_hX11FetchModes(int depth, int *size)
 	return sizes;
 }
 
-int fb_hX11ScreenInfo(int *width, int *height, int *depth, int *refresh)
+int fb_hX11ScreenInfo(ssize_t *width, ssize_t *height, ssize_t *depth, ssize_t *refresh)
 {
 	XRRScreenConfiguration *cfg;
 	Display *dpy;

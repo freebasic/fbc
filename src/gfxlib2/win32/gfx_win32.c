@@ -749,7 +749,7 @@ int fb_hWin32SetWindowPos(int x, int y)
 	return 0;
 }
 
-void fb_hScreenInfo(int *width, int *height, int *depth, int *refresh)
+void fb_hScreenInfo(ssize_t *width, ssize_t *height, ssize_t *depth, ssize_t *refresh)
 {
 	HDC hdc;
 

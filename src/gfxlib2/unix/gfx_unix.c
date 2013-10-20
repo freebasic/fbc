@@ -23,7 +23,7 @@ const GFXDRIVER *__fb_gfx_drivers_list[] = {
 	NULL
 };
 
-void fb_hScreenInfo(int *width, int *height, int *depth, int *refresh)
+void fb_hScreenInfo(ssize_t *width, ssize_t *height, ssize_t *depth, ssize_t *refresh)
 {
 #ifndef DISABLE_X11
 	if (fb_hX11ScreenInfo(width, height, depth, refresh))

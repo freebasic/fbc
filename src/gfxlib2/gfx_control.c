@@ -78,7 +78,7 @@ FBCALL void fb_GfxControl_i( int what, ssize_t *param1, ssize_t *param2, ssize_t
 
 	case GET_DESKTOP_SIZE:
 		{
-			int w = 0, h = 0, depth = 0, refresh = 0;
+			ssize_t w = 0, h = 0, depth = 0, refresh = 0;
 			fb_hScreenInfo( &w, &h, &depth, &refresh );
 			res1 = w;
 			res2 = h;
