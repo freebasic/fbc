@@ -916,7 +916,7 @@ private sub hReadNumber _
 	)
 
 	dim as uinteger c = any
-	dim as integer have_u_suffix = any, have_d_suffix = any
+	dim as integer have_u_suffix = any
 	dim as ulongint value = any, value_prev = any
 	dim as integer skipchar = any, hasdot = any
 
