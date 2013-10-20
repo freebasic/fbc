@@ -5,6 +5,7 @@ Version 0.91.0:
 - Enums declared inside Extern blocks now behave like ones declared outside: The Enum's constants don't collide with previously declared global constants, instead they can be accessed through "EnumName.MyConstant".
 - More predictable overload resolution for primitive types, preferring: the same dataclass >> a type that's at least as large >> the closest in size >> the [U]INTEGER type >> the same signedness
 - Bin/Oct/Hex(x, digits) functions now prepend zeroes, even if it's more than the data type size, if needed to fill the result string up to the requested amount of digits
+- Number literal suffixes are now followed more strictly. For example, a number with L suffix will now always be a 32bit LONG (previously it could be 32bit or 64bit, signed or unsigned, depending on the value), and the % integer suffix will always produce the FB dialect mode's default INTEGER type (INTEGER, or SHORT in -lang qb), but never a [U]LONGINT anymore.
 
 [added]
 - 64bit support (-arch x86_64) based on -gen gcc: INTEGER/POINTER = 64bit, LONG = 32bit DWORD. Compiler #define: __FB_64BIT__

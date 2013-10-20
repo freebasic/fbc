@@ -113,135 +113,151 @@ ULONGINT
 l suffix
 
 dec:
-SHORT
-SHORT
-SHORT
-INTEGER
-INTEGER
-INTEGER
-UINTEGER
-UINTEGER
+LONG
+LONG
+LONG
+LONG
+LONG
+LONG
+LONG
+LONG
 	Literal number too big, truncated
-LONGINT
+	Overflow in constant conversion
+LONG
 	Literal number too big, truncated
-ULONGINT
+	Overflow in constant conversion
+LONG
 	Literal number too big, truncated
-ULONGINT
+LONG
 
 bin:
-SHORT
-SHORT
-SHORT
-SHORT
-SHORT
-INTEGER
-INTEGER
-INTEGER
+LONG
+LONG
+LONG
+LONG
+LONG
+LONG
+LONG
+LONG
 	Literal number too big, truncated
-LONGINT
+	Overflow in constant conversion
+LONG
 	Literal number too big, truncated
-LONGINT
+	Overflow in constant conversion
+LONG
 	Literal number too big, truncated
-LONGINT
+LONG
 
 oct:
-SHORT
-SHORT
-SHORT
-SHORT
-SHORT
-INTEGER
-INTEGER
-INTEGER
+LONG
+LONG
+LONG
+LONG
+LONG
+LONG
+LONG
+LONG
 	Literal number too big, truncated
-LONGINT
+	Overflow in constant conversion
+LONG
 	Literal number too big, truncated
-LONGINT
+	Overflow in constant conversion
+LONG
 	Literal number too big, truncated
-LONGINT
+LONG
 
 hex:
-SHORT
-SHORT
-SHORT
-SHORT
-SHORT
-INTEGER
-INTEGER
-INTEGER
+LONG
+LONG
+LONG
+LONG
+LONG
+LONG
+LONG
+LONG
 	Literal number too big, truncated
-LONGINT
+	Overflow in constant conversion
+LONG
 	Literal number too big, truncated
-LONGINT
+	Overflow in constant conversion
+LONG
 	Literal number too big, truncated
-LONGINT
+LONG
 
 --------------------------------------------------------------------------------
 ul suffix
 
 dec:
-USHORT
-USHORT
-USHORT
-UINTEGER
-UINTEGER
-UINTEGER
-UINTEGER
-UINTEGER
+ULONG
+ULONG
+ULONG
+ULONG
+ULONG
+ULONG
+ULONG
+ULONG
 	Literal number too big, truncated
-ULONGINT
+	Overflow in constant conversion
+ULONG
 	Literal number too big, truncated
-ULONGINT
+	Overflow in constant conversion
+ULONG
 	Literal number too big, truncated
-ULONGINT
+ULONG
 
 bin:
-USHORT
-USHORT
-USHORT
-USHORT
-USHORT
-UINTEGER
-UINTEGER
-UINTEGER
+ULONG
+ULONG
+ULONG
+ULONG
+ULONG
+ULONG
+ULONG
+ULONG
 	Literal number too big, truncated
-ULONGINT
+	Overflow in constant conversion
+ULONG
 	Literal number too big, truncated
-ULONGINT
+	Overflow in constant conversion
+ULONG
 	Literal number too big, truncated
-ULONGINT
+ULONG
 
 oct:
-USHORT
-USHORT
-USHORT
-USHORT
-USHORT
-UINTEGER
-UINTEGER
-UINTEGER
+ULONG
+ULONG
+ULONG
+ULONG
+ULONG
+ULONG
+ULONG
+ULONG
 	Literal number too big, truncated
-ULONGINT
+	Overflow in constant conversion
+ULONG
 	Literal number too big, truncated
-ULONGINT
+	Overflow in constant conversion
+ULONG
 	Literal number too big, truncated
-ULONGINT
+ULONG
 
 hex:
-USHORT
-USHORT
-USHORT
-USHORT
-USHORT
-UINTEGER
-UINTEGER
-UINTEGER
+ULONG
+ULONG
+ULONG
+ULONG
+ULONG
+ULONG
+ULONG
+ULONG
 	Literal number too big, truncated
-ULONGINT
+	Overflow in constant conversion
+ULONG
 	Literal number too big, truncated
-ULONGINT
+	Overflow in constant conversion
+ULONG
 	Literal number too big, truncated
-ULONGINT
+ULONG
 
 --------------------------------------------------------------------------------
 ll suffix
@@ -256,8 +272,8 @@ LONGINT
 LONGINT
 LONGINT
 LONGINT
-ULONGINT
-ULONGINT
+LONGINT
+LONGINT
 
 bin:
 LONGINT
@@ -369,11 +385,13 @@ SHORT
 	Overflow in constant conversion
 SHORT
 	Literal number too big, truncated
-LONGINT
+	Overflow in constant conversion
+SHORT
 	Literal number too big, truncated
-ULONGINT
+	Overflow in constant conversion
+SHORT
 	Literal number too big, truncated
-ULONGINT
+SHORT
 
 bin:
 SHORT
@@ -388,11 +406,13 @@ SHORT
 	Overflow in constant conversion
 SHORT
 	Literal number too big, truncated
-LONGINT
+	Overflow in constant conversion
+SHORT
 	Literal number too big, truncated
-LONGINT
+	Overflow in constant conversion
+SHORT
 	Literal number too big, truncated
-LONGINT
+SHORT
 
 oct:
 SHORT
@@ -407,11 +427,13 @@ SHORT
 	Overflow in constant conversion
 SHORT
 	Literal number too big, truncated
-LONGINT
+	Overflow in constant conversion
+SHORT
 	Literal number too big, truncated
-LONGINT
+	Overflow in constant conversion
+SHORT
 	Literal number too big, truncated
-LONGINT
+SHORT
 
 hex:
 SHORT
@@ -426,78 +448,88 @@ SHORT
 	Overflow in constant conversion
 SHORT
 	Literal number too big, truncated
-LONGINT
+	Overflow in constant conversion
+SHORT
 	Literal number too big, truncated
-LONGINT
+	Overflow in constant conversion
+SHORT
 	Literal number too big, truncated
-LONGINT
+SHORT
 
 --------------------------------------------------------------------------------
 & suffix
 
 dec:
-INTEGER
-INTEGER
-INTEGER
-INTEGER
-INTEGER
-INTEGER
-INTEGER
-INTEGER
+LONG
+LONG
+LONG
+LONG
+LONG
+LONG
+LONG
+LONG
 	Literal number too big, truncated
-LONGINT
+	Overflow in constant conversion
+LONG
 	Literal number too big, truncated
-ULONGINT
+	Overflow in constant conversion
+LONG
 	Literal number too big, truncated
-ULONGINT
+LONG
 
 bin:
-INTEGER
-INTEGER
-INTEGER
-INTEGER
-INTEGER
-INTEGER
-INTEGER
-INTEGER
+LONG
+LONG
+LONG
+LONG
+LONG
+LONG
+LONG
+LONG
 	Literal number too big, truncated
-LONGINT
+	Overflow in constant conversion
+LONG
 	Literal number too big, truncated
-LONGINT
+	Overflow in constant conversion
+LONG
 	Literal number too big, truncated
-LONGINT
+LONG
 
 oct:
-INTEGER
-INTEGER
-INTEGER
-INTEGER
-INTEGER
-INTEGER
-INTEGER
-INTEGER
+LONG
+LONG
+LONG
+LONG
+LONG
+LONG
+LONG
+LONG
 	Literal number too big, truncated
-LONGINT
+	Overflow in constant conversion
+LONG
 	Literal number too big, truncated
-LONGINT
+	Overflow in constant conversion
+LONG
 	Literal number too big, truncated
-LONGINT
+LONG
 
 hex:
-INTEGER
-INTEGER
-INTEGER
-INTEGER
-INTEGER
-INTEGER
-INTEGER
-INTEGER
+LONG
+LONG
+LONG
+LONG
+LONG
+LONG
+LONG
+LONG
 	Literal number too big, truncated
-LONGINT
+	Overflow in constant conversion
+LONG
 	Literal number too big, truncated
-LONGINT
+	Overflow in constant conversion
+LONG
 	Literal number too big, truncated
-LONGINT
+LONG
 
 --------------------------------------------------------------------------------
 f suffix

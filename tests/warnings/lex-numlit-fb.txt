@@ -113,135 +113,151 @@ ULONGINT
 l suffix
 
 dec:
-INTEGER
-INTEGER
-INTEGER
-INTEGER
-INTEGER
-INTEGER
-UINTEGER
-UINTEGER
+LONG
+LONG
+LONG
+LONG
+LONG
+LONG
+LONG
+LONG
 	Literal number too big, truncated
-LONGINT
+	Overflow in constant conversion
+LONG
 	Literal number too big, truncated
-ULONGINT
+	Overflow in constant conversion
+LONG
 	Literal number too big, truncated
-ULONGINT
+LONG
 
 bin:
-INTEGER
-INTEGER
-INTEGER
-INTEGER
-INTEGER
-INTEGER
-INTEGER
-INTEGER
+LONG
+LONG
+LONG
+LONG
+LONG
+LONG
+LONG
+LONG
 	Literal number too big, truncated
-LONGINT
+	Overflow in constant conversion
+LONG
 	Literal number too big, truncated
-LONGINT
+	Overflow in constant conversion
+LONG
 	Literal number too big, truncated
-LONGINT
+LONG
 
 oct:
-INTEGER
-INTEGER
-INTEGER
-INTEGER
-INTEGER
-INTEGER
-INTEGER
-INTEGER
+LONG
+LONG
+LONG
+LONG
+LONG
+LONG
+LONG
+LONG
 	Literal number too big, truncated
-LONGINT
+	Overflow in constant conversion
+LONG
 	Literal number too big, truncated
-LONGINT
+	Overflow in constant conversion
+LONG
 	Literal number too big, truncated
-LONGINT
+LONG
 
 hex:
-INTEGER
-INTEGER
-INTEGER
-INTEGER
-INTEGER
-INTEGER
-INTEGER
-INTEGER
+LONG
+LONG
+LONG
+LONG
+LONG
+LONG
+LONG
+LONG
 	Literal number too big, truncated
-LONGINT
+	Overflow in constant conversion
+LONG
 	Literal number too big, truncated
-LONGINT
+	Overflow in constant conversion
+LONG
 	Literal number too big, truncated
-LONGINT
+LONG
 
 --------------------------------------------------------------------------------
 ul suffix
 
 dec:
-UINTEGER
-UINTEGER
-UINTEGER
-UINTEGER
-UINTEGER
-UINTEGER
-UINTEGER
-UINTEGER
+ULONG
+ULONG
+ULONG
+ULONG
+ULONG
+ULONG
+ULONG
+ULONG
 	Literal number too big, truncated
-ULONGINT
+	Overflow in constant conversion
+ULONG
 	Literal number too big, truncated
-ULONGINT
+	Overflow in constant conversion
+ULONG
 	Literal number too big, truncated
-ULONGINT
+ULONG
 
 bin:
-UINTEGER
-UINTEGER
-UINTEGER
-UINTEGER
-UINTEGER
-UINTEGER
-UINTEGER
-UINTEGER
+ULONG
+ULONG
+ULONG
+ULONG
+ULONG
+ULONG
+ULONG
+ULONG
 	Literal number too big, truncated
-ULONGINT
+	Overflow in constant conversion
+ULONG
 	Literal number too big, truncated
-ULONGINT
+	Overflow in constant conversion
+ULONG
 	Literal number too big, truncated
-ULONGINT
+ULONG
 
 oct:
-UINTEGER
-UINTEGER
-UINTEGER
-UINTEGER
-UINTEGER
-UINTEGER
-UINTEGER
-UINTEGER
+ULONG
+ULONG
+ULONG
+ULONG
+ULONG
+ULONG
+ULONG
+ULONG
 	Literal number too big, truncated
-ULONGINT
+	Overflow in constant conversion
+ULONG
 	Literal number too big, truncated
-ULONGINT
+	Overflow in constant conversion
+ULONG
 	Literal number too big, truncated
-ULONGINT
+ULONG
 
 hex:
-UINTEGER
-UINTEGER
-UINTEGER
-UINTEGER
-UINTEGER
-UINTEGER
-UINTEGER
-UINTEGER
+ULONG
+ULONG
+ULONG
+ULONG
+ULONG
+ULONG
+ULONG
+ULONG
 	Literal number too big, truncated
-ULONGINT
+	Overflow in constant conversion
+ULONG
 	Literal number too big, truncated
-ULONGINT
+	Overflow in constant conversion
+ULONG
 	Literal number too big, truncated
-ULONGINT
+ULONG
 
 --------------------------------------------------------------------------------
 ll suffix
@@ -256,8 +272,8 @@ LONGINT
 LONGINT
 LONGINT
 LONGINT
-ULONGINT
-ULONGINT
+LONGINT
+LONGINT
 
 bin:
 LONGINT
@@ -366,11 +382,13 @@ INTEGER
 INTEGER
 INTEGER
 	Literal number too big, truncated
-LONGINT
+	Overflow in constant conversion
+INTEGER
 	Literal number too big, truncated
-ULONGINT
+	Overflow in constant conversion
+INTEGER
 	Literal number too big, truncated
-ULONGINT
+INTEGER
 
 bin:
 INTEGER
@@ -382,11 +400,13 @@ INTEGER
 INTEGER
 INTEGER
 	Literal number too big, truncated
-LONGINT
+	Overflow in constant conversion
+INTEGER
 	Literal number too big, truncated
-LONGINT
+	Overflow in constant conversion
+INTEGER
 	Literal number too big, truncated
-LONGINT
+INTEGER
 
 oct:
 INTEGER
@@ -398,11 +418,13 @@ INTEGER
 INTEGER
 INTEGER
 	Literal number too big, truncated
-LONGINT
+	Overflow in constant conversion
+INTEGER
 	Literal number too big, truncated
-LONGINT
+	Overflow in constant conversion
+INTEGER
 	Literal number too big, truncated
-LONGINT
+INTEGER
 
 hex:
 INTEGER
@@ -414,11 +436,13 @@ INTEGER
 INTEGER
 INTEGER
 	Literal number too big, truncated
-LONGINT
+	Overflow in constant conversion
+INTEGER
 	Literal number too big, truncated
-LONGINT
+	Overflow in constant conversion
+INTEGER
 	Literal number too big, truncated
-LONGINT
+INTEGER
 
 --------------------------------------------------------------------------------
 & suffix
@@ -433,11 +457,13 @@ LONG
 LONG
 LONG
 	Literal number too big, truncated
-LONGINT
+	Overflow in constant conversion
+LONG
 	Literal number too big, truncated
-ULONGINT
+	Overflow in constant conversion
+LONG
 	Literal number too big, truncated
-ULONGINT
+LONG
 
 bin:
 LONG
@@ -449,11 +475,13 @@ LONG
 LONG
 LONG
 	Literal number too big, truncated
-LONGINT
+	Overflow in constant conversion
+LONG
 	Literal number too big, truncated
-LONGINT
+	Overflow in constant conversion
+LONG
 	Literal number too big, truncated
-LONGINT
+LONG
 
 oct:
 LONG
@@ -465,11 +493,13 @@ LONG
 LONG
 LONG
 	Literal number too big, truncated
-LONGINT
+	Overflow in constant conversion
+LONG
 	Literal number too big, truncated
-LONGINT
+	Overflow in constant conversion
+LONG
 	Literal number too big, truncated
-LONGINT
+LONG
 
 hex:
 LONG
@@ -481,11 +511,13 @@ LONG
 LONG
 LONG
 	Literal number too big, truncated
-LONGINT
+	Overflow in constant conversion
+LONG
 	Literal number too big, truncated
-LONGINT
+	Overflow in constant conversion
+LONG
 	Literal number too big, truncated
-LONGINT
+LONG
 
 --------------------------------------------------------------------------------
 f suffix
