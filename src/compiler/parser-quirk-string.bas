@@ -389,7 +389,7 @@ function cCVXFunct(byval tk as FB_TOKEN) as ASTNODE ptr
 		if( dtype <> FB_DATATYPE_INVALID ) then
 			functype = dtype
 		else
-			functype = fbLangGetType( INTEGER )
+			functype = env.lang.integerkeyworddtype
 		end if
 
 	case FB_TK_CVL
@@ -569,7 +569,7 @@ function cMKXFunct(byval tk as FB_TOKEN) as ASTNODE ptr
 			funcexpr = astNewCALL( PROCLOOKUP( MKS ) )
 		case FB_TK_MKI
 			if( dtype = FB_DATATYPE_INVALID ) then
-				dtype = fbLangGetType( INTEGER )
+				dtype = env.lang.integerkeyworddtype
 			end if
 
 			if( typeGetDtAndPtrOnly( dtype ) = FB_DATATYPE_INTEGER ) then

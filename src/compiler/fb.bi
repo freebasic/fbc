@@ -435,10 +435,6 @@ declare function fbGetLangId _
 
 #define fbLangIsSet( op ) (env.clopt.lang = op)
 
-#define fbLangGetType( tp ) env.lang.typeremap.tp
-
-#define fbLangGetDefLiteral( tp ) env.lang.litremap.tp
-
 #define fbPdCheckIsSet( op ) ((env.clopt.pdcheckopt and (op)) <> 0)
 
 

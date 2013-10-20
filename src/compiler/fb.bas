@@ -321,21 +321,30 @@ sub fbInit( byval ismain as integer, byval restarts as integer )
 
 	'' data type remapping
 	if( env.clopt.lang <> FB_LANG_QB ) then
-		env.lang.typeremap.integer = FB_DATATYPE_INTEGER
+		'' In FB, the INTEGER keyword produces FB_DATATYPE_INTEGER
+		env.lang.integerkeyworddtype = FB_DATATYPE_INTEGER
 
-		env.lang.litremap.short = FB_DATATYPE_INTEGER
-		env.lang.litremap.ushort = FB_DATATYPE_UINT
-		env.lang.litremap.integer = FB_DATATYPE_INTEGER
-		env.lang.litremap.uint = FB_DATATYPE_UINT
-		env.lang.litremap.double = FB_DATATYPE_DOUBLE
+		'' In FB, both 16bit/32bit number literals are made INTEGERs,
+		'' and floats are DOUBLE by default.
+		env.lang.int15literaldtype = FB_DATATYPE_INTEGER
+		env.lang.int16literaldtype = FB_DATATYPE_UINT
+		env.lang.int31literaldtype = FB_DATATYPE_INTEGER
+		env.lang.int32literaldtype = FB_DATATYPE_UINT
+		env.lang.floatliteraldtype = FB_DATATYPE_DOUBLE
 	else
-		env.lang.typeremap.integer = FB_DATATYPE_SHORT
+		'' In QB, the INTEGER keyword produces FB_DATATYPE_SHORT
+		'' (Note: FB_DATATYPE_INTEGER remains unchanged, it's just that
+		'' FB_DATATYPE_SHORT is being used instead in some places)
+		env.lang.integerkeyworddtype = FB_DATATYPE_SHORT
 
-		env.lang.litremap.short = FB_DATATYPE_SHORT
-		env.lang.litremap.ushort = FB_DATATYPE_USHORT
-		env.lang.litremap.integer = FB_DATATYPE_LONG
-		env.lang.litremap.uint = FB_DATATYPE_ULONG
-		env.lang.litremap.double = FB_DATATYPE_SINGLE
+		'' In QB, 16bit number literals are made SHORTs (i.e. QB's
+		'' 16bit INTEGERs), and 32bit number literals are 32bit LONGs,
+		'' not FB 32bit/64bit INTEGERs. Floats are SINGLEs by default.
+		env.lang.int15literaldtype = FB_DATATYPE_SHORT
+		env.lang.int16literaldtype = FB_DATATYPE_USHORT
+		env.lang.int31literaldtype = FB_DATATYPE_LONG
+		env.lang.int32literaldtype = FB_DATATYPE_ULONG
+		env.lang.floatliteraldtype = FB_DATATYPE_SINGLE
 	end if
 
 	env.opt.parammode       = FB_PARAMMODE_BYREF

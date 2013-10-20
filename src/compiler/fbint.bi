@@ -576,22 +576,14 @@ type FBMAIN
 	initnode		as ASTNODE ptr
 end type
 
-type FB_LANG_TYPEREMAP
-	integer			as FB_DATATYPE
-end type
-
-type FB_LANG_LITREMAP
-	short			as FB_DATATYPE
-	ushort			as FB_DATATYPE
-	integer			as FB_DATATYPE
-	uint			as FB_DATATYPE
-	double			as FB_DATATYPE
-end type
-
 type FB_LANG_CTX
 	opt				as FB_LANG_OPT				'' language supported features
-	typeremap		as FB_LANG_TYPEREMAP
-	litremap		as FB_LANG_LITREMAP			'' default numeric literal data type
+	integerkeyworddtype		as FB_DATATYPE  '' dtype produced by INTEGER (and related) keywords
+	int15literaldtype		as FB_DATATYPE  '' default dtype for integer number literals that fit into 15 bits
+	int16literaldtype		as FB_DATATYPE  '' etc.
+	int31literaldtype		as FB_DATATYPE
+	int32literaldtype		as FB_DATATYPE
+	floatliteraldtype		as FB_DATATYPE  '' default dtype for float number literals
 end type
 
 type FBENV

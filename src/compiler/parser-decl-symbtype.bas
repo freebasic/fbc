@@ -309,7 +309,7 @@ function cSymbolType _
 				end if
 			else
 
-				dtype = fbLangGetType( INTEGER )
+				dtype = env.lang.integerkeyworddtype
 
 			end if
 

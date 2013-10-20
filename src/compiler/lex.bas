@@ -454,7 +454,7 @@ private sub hReadIdentifier _
 		select case as const lexCurrentChar( )
 		'' '%'?
 		case FB_TK_INTTYPECHAR
-			dtype = fbLangGetType( INTEGER )
+			dtype = env.lang.integerkeyworddtype
 			c = lexEatChar( )
 
 		'' '&'?
@@ -750,7 +750,7 @@ private sub hReadFloatNumber _
 	dim as integer llen = any
 	dim as integer skipchar = any
 
-	dtype = fbLangGetDefLiteral( DOUBLE )
+	dtype = env.lang.floatliteraldtype
 	llen = tlen
 	skipchar = FALSE
 
@@ -1083,13 +1083,13 @@ read_char:
 
 	select case( dtype )
 	case FB_DATATYPE_SHORT
-		dtype = fbLangGetDefLiteral( SHORT )
+		dtype = env.lang.int15literaldtype
 	case FB_DATATYPE_USHORT
-		dtype = fbLangGetDefLiteral( USHORT )
+		dtype = env.lang.int16literaldtype
 	case FB_DATATYPE_LONG
-		dtype = fbLangGetDefLiteral( INTEGER )
+		dtype = env.lang.int31literaldtype
 	case FB_DATATYPE_ULONG
-		dtype = fbLangGetDefLiteral( UINT )
+		dtype = env.lang.int32literaldtype
 #if __FB_DEBUG__
 	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT, _
 	     FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
@@ -1158,14 +1158,14 @@ read_char:
 
 			'' '%'
 			case FB_TK_INTTYPECHAR
-				if( typeGetSize( dtype ) > fbLangGetType( INTEGER ) ) then
+				if( typeGetSize( dtype ) > env.lang.integerkeyworddtype ) then
 					if( skipchar = FALSE ) then
 						if( (flags and LEXCHECK_NOLINECONT) = 0 ) then
 							errReportWarn( FB_WARNINGMSG_NUMBERTOOBIG )
 						end if
 					end if
 				end if
-				dtype = fbLangGetType( INTEGER )
+				dtype = env.lang.integerkeyworddtype
 
 				lexEatChar( )
 

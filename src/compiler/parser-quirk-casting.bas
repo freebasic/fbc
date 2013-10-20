@@ -37,7 +37,7 @@ function cTypeConvExpr _
 		dtype = FB_DATATYPE_USHORT
 
 	case FB_TK_CINT
-		dtype = fbLangGetType( integer )
+		dtype = env.lang.integerkeyworddtype
 
 	case FB_TK_CUINT
 		dtype = FB_DATATYPE_UINT
