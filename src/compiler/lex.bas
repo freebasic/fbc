@@ -1158,7 +1158,7 @@ read_char:
 
 			'' '%'
 			case FB_TK_INTTYPECHAR
-				if( typeGetSize( dtype ) > env.lang.integerkeyworddtype ) then
+				if( typeGetSize( dtype ) > typeGetSize( env.lang.integerkeyworddtype ) ) then
 					if( skipchar = FALSE ) then
 						if( (flags and LEXCHECK_NOLINECONT) = 0 ) then
 							errReportWarn( FB_WARNINGMSG_NUMBERTOOBIG )
