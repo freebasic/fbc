@@ -376,9 +376,7 @@ dec:
 SHORT
 SHORT
 SHORT
-	Literal number too big, truncated
 SHORT
-	Literal number too big, truncated
 SHORT
 	Literal number too big, truncated
 	Overflow in constant conversion

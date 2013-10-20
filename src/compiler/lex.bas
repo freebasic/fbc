@@ -918,9 +918,14 @@ private sub hReadNumber _
 	dim as uinteger c = any
 	dim as integer have_u_suffix = any
 	dim as ulongint value = any, value_prev = any
-	dim as integer skipchar = any, hasdot = any
+	dim as integer skipchar = any, hasdot = any, warn = any
 
+	'' Starting with SHORT for the integer literal parser,
+	'' may be changed to USHORT, LONG, ULONG, LONGINT, ULONGINT,
+	'' depending on the literal's size.
+	'' The float literal parser will change this to SINGLE/DOUBLE.
 	dtype = FB_DATATYPE_SHORT
+
 	have_u_suffix = FALSE
 	value	   = 0
 
@@ -1125,7 +1130,8 @@ read_char:
 						dtype = iif( have_u_suffix, FB_DATATYPE_ULONGINT, FB_DATATYPE_LONGINT )
 					'' 'L' only
 					else
-						if( typeGetSize( dtype ) > 4 ) then
+						'' LONG is 32bit; warn if number is > 32bit
+						if( value > &hFFFFFFFFull ) then
 							if( skipchar = FALSE ) then
 								if( (flags and LEXCHECK_NOLINECONT) = 0 ) then
 									errReportWarn( FB_WARNINGMSG_NUMBERTOOBIG )
@@ -1158,7 +1164,15 @@ read_char:
 
 			'' '%'
 			case FB_TK_INTTYPECHAR
-				if( typeGetSize( dtype ) > typeGetSize( env.lang.integerkeyworddtype ) ) then
+				'' Assuming it'll be either SHORT (16bit) or INTEGER (32bit or 64bit).
+				'' So, no need to worry about 8bit. And if it's 64bit, no need to warn
+				'' either - because it's always big enough.
+				select case( typeGetSize( env.lang.integerkeyworddtype ) )
+				case 2    : warn = (value > &hFFFFull)
+				case 4    : warn = (value > &hFFFFFFFFull)
+				case else : warn = FALSE
+				end select
+				if( warn ) then
 					if( skipchar = FALSE ) then
 						if( (flags and LEXCHECK_NOLINECONT) = 0 ) then
 							errReportWarn( FB_WARNINGMSG_NUMBERTOOBIG )
