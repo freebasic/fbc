@@ -43,7 +43,7 @@ function cTypeConvExpr _
 		dtype = FB_DATATYPE_UINT
 
 	case FB_TK_CLNG
-		dtype = fbLangGetType( long )
+		dtype = FB_DATATYPE_LONG
 
 	case FB_TK_CULNG
 		dtype = FB_DATATYPE_ULONG

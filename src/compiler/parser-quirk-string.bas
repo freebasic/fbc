@@ -393,7 +393,7 @@ function cCVXFunct(byval tk as FB_TOKEN) as ASTNODE ptr
 		end if
 
 	case FB_TK_CVL
-		functype = fbLangGetType( LONG )
+		functype = FB_DATATYPE_LONG
 	case FB_TK_CVSHORT
 		functype = FB_DATATYPE_SHORT
 	case else

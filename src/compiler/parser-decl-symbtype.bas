@@ -336,7 +336,7 @@ function cSymbolType _
 
 		case FB_TK_LONG
 			lexSkipToken( )
-			dtype = fbLangGetType( LONG )
+			dtype = FB_DATATYPE_LONG
 
 		case FB_TK_ULONG
 			lexSkipToken( )

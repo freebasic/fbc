@@ -459,7 +459,7 @@ private sub hReadIdentifier _
 
 		'' '&'?
 		case FB_TK_LNGTYPECHAR
-			dtype = fbLangGetType( LONG )
+			dtype = FB_DATATYPE_LONG
 			c = lexEatChar( )
 
 		'' '!'?
@@ -1176,7 +1176,7 @@ read_char:
 						end if
 					end if
 				else
-					dtype = fbLangGetType( LONG )
+					dtype = FB_DATATYPE_LONG
 				end if
 
 				lexEatChar( )

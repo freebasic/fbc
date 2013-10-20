@@ -49,7 +49,7 @@ sub cDefDecl( )
 		dtype = FB_DATATYPE_UINT
 
 	case FB_TK_DEFLNG
-		dtype = fbLangGetType( LONG )
+		dtype = FB_DATATYPE_LONG
 
 	case FB_TK_DEFULNG
 		dtype = FB_DATATYPE_ULONG

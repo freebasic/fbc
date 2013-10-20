@@ -578,7 +578,6 @@ end type
 
 type FB_LANG_TYPEREMAP
 	integer			as FB_DATATYPE
-	long			as FB_DATATYPE
 end type
 
 type FB_LANG_LITREMAP
