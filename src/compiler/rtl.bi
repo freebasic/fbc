@@ -47,7 +47,6 @@
 #define FB_RTL_CVD                      "fb_CVD"
 #define FB_RTL_CVS                      "fb_CVS"
 #define FB_RTL_CVSHORT                  "fb_CVSHORT"
-#define FB_RTL_CVI                      "fb_CVI"
 #define FB_RTL_CVL                      "fb_CVL"
 #define FB_RTL_CVLONGINT                "fb_CVLONGINT"
 
@@ -452,7 +451,6 @@ enum FB_RTL_IDX
 
 	FB_RTL_IDX_CVD
 	FB_RTL_IDX_CVS
-	FB_RTL_IDX_CVI
 	FB_RTL_IDX_CVL
 	FB_RTL_IDX_CVSHORT
 	FB_RTL_IDX_CVLONGINT

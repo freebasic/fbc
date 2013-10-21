@@ -1949,16 +1949,6 @@
 				( FB_DATATYPE_STRING, FB_PARAMMODE_BYREF, FALSE ) _
 			} _
 		), _
-		/' function fb_CVI( byref str as string ) as integer '/ _
-		( _
-			@FB_RTL_CVI, @"fb_CVI", _
-			FB_DATATYPE_INTEGER, FB_FUNCMODE_FBCALL, _
-			NULL, FB_RTL_OPT_NONE, _
-			1, _
-			{ _
-				( FB_DATATYPE_STRING, FB_PARAMMODE_BYREF, FALSE ) _
-			} _
- 		), _
 		/' function fb_CVL( byref str as string ) as long '/ _
 		( _
 			@FB_RTL_CVL, NULL, _
