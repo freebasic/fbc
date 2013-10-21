@@ -25,7 +25,11 @@ namespace fbc_tests.string_.cvi_mki
 		CU_ASSERT_EQUAL( cv_sh, cvshort  ("TESTTEST") )
 		CU_ASSERT_EQUAL( cv_li, cvlongint("TESTTEST") )
 
+#ifdef __FB_64BIT__
+		CU_ASSERT_EQUAL( mki      (cv_i ), "TESTTEST" )
+#else
 		CU_ASSERT_EQUAL( mki      (cv_i ), "TEST" )
+#endif
 		CU_ASSERT_EQUAL( mkl      (cv_l ), "TEST" )
 		CU_ASSERT_EQUAL( mkshort  (cv_sh), "TE" )
 		CU_ASSERT_EQUAL( mklongint(cv_li), "TESTTEST" )

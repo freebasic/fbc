@@ -112,14 +112,27 @@ private sub testNoConvCasts cdecl( )
 	CU_ASSERT(     cint(i) = -1 )
 	CU_ASSERT( d + cint(i) = -1 )
 
+#ifdef __FB_64BIT__
+	CU_ASSERT(     cuint(i) = 18446744073709551615u )
+	'' The + BOP result is DOUBLE, but that can't fully represent &hFFFFFFFFFFFFFFFFull,
+	'' and even an epsilon check is difficult because DOUBLE has bad precision at this high value
+	'CU_ASSERT( d + cuint(i) = 18446744073709551615u )
+#else
 	CU_ASSERT(     cuint(i) = 4294967295u )
 	CU_ASSERT( d + cuint(i) = 4294967295u )
+#endif
 
 	CU_ASSERT(     cint(u) = -1 )
 	CU_ASSERT( d + cint(u) = -1 )
 
+#ifdef __FB_64BIT__
+	CU_ASSERT(     cuint(u) = 18446744073709551615u )
+	'' ditto
+	'CU_ASSERT( d + cuint(u) = 18446744073709551615u )
+#else
 	CU_ASSERT(     cuint(u) = 4294967295u )
 	CU_ASSERT( d + cuint(u) = 4294967295u )
+#endif
 end sub
 
 private sub ctor( ) constructor

@@ -6,6 +6,7 @@ o 64bit
     at least, if new uses a long long param there...
   - FB includes must be adjusted for 64bit compatibility (if the corresponding
     library even is available on 64bit)
+  - rtlib's ThreadCall implementation is currently x86-only
 
 o LLVM backend
   - returning structs in registers? Disabled for -gen gcc in hGetReturnType(),

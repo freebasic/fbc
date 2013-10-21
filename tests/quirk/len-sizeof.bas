@@ -272,7 +272,7 @@ sub sizeofVar cdecl( )
 	CU_ASSERT( sizeof( wstr( "" ) ) = sizeof( wstring ) )
 	CU_ASSERT( sizeof( "test" ) = 5 )
 	CU_ASSERT( sizeof( wstr( "test" ) ) = 5 * sizeof( wstring ) )
-	CU_ASSERT( sizeof( s ) = 12 )
+	CU_ASSERT( sizeof( s ) = sizeof( string ) )
 	CU_ASSERT( sizeof( fixstr31 ) = 32 ) '' 31 + implicit null terminator
 	CU_ASSERT( sizeof( z32 ) = 32 )
 	CU_ASSERT( sizeof( w32 ) = 32 * sizeof( wstring ) )
@@ -291,10 +291,10 @@ sub sizeofVar cdecl( )
 	CU_ASSERT( sizeof( w32 ) = 128 )
 #endif
 
-	CU_ASSERT(    len( x1 ) = 16 )
-	CU_ASSERT( sizeof( x1 ) = 16 )
-	CU_ASSERT(    len( x2 ) = 5 )
-	CU_ASSERT( sizeof( x2 ) = 5 )
+	CU_ASSERT(    len( x1 ) = sizeof( integer ) * 4 )
+	CU_ASSERT( sizeof( x1 ) = sizeof( integer ) * 4 )
+	CU_ASSERT(    len( x2 ) = sizeof( integer ) + 1 )
+	CU_ASSERT( sizeof( x2 ) = sizeof( integer ) + 1 )
 end sub
 
 private sub sizeofType cdecl( )
@@ -340,8 +340,13 @@ private sub sizeofType cdecl( )
 #endif
 	CU_ASSERT(    len( integer ptr ) = sizeof( any ptr ) )
 
+#ifdef __FB_64BIT__
+	CU_ASSERT(    len( string ) = 24 )
+	CU_ASSERT( sizeof( string ) = 24 )
+#else
 	CU_ASSERT(    len( string ) = 12 )
 	CU_ASSERT( sizeof( string ) = 12 )
+#endif
 	CU_ASSERT(    len( string * 5 ) = 5 + 1 ) '' + the implicit null terminator
 	CU_ASSERT( sizeof( string * 5 ) = 5 + 1 )
 	CU_ASSERT(    len( zstring ) = 1 )

@@ -49,8 +49,12 @@ sub test cdecl()
 		CU_ASSERT( abs(int1) =   1 )
 		CU_ASSERT( abs(int2) =   1 )
 		CU_ASSERT( abs(int3) =   2147483647 )
+#ifdef __FB_64BIT__
+		CU_ASSERT( abs(int4) = 2147483648u )
+#else
 		CU_ASSERT( abs(int4) = - 2147483648u ) '' overflows back to same number
 		CU_ASSERT( abs(clngint(int4)) = 2147483648ll ) '' this one should work though
+#endif
 	end scope
 
 	scope

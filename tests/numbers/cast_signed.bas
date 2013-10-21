@@ -1,44 +1,30 @@
 # include "fbcu.bi"
 
-
-
-
 namespace fbc_tests.numbers.cast_signed
 
-sub test1 cdecl ()
-	dim as integer dst, src
-	
-	src = &hFFFFFFFF
-	dst = cbyte( src )
-	
-	CU_ASSERT_EQUAL( dst, -1 )
+private sub test cdecl( )
+	dim as integer i, i0
+
+	i0 = &hFF               : i = cbyte  ( i0 ) : CU_ASSERT( i = -1 ) : i = 0
+	i0 = &hFFFF             : i = cbyte  ( i0 ) : CU_ASSERT( i = -1 ) : i = 0
+	i0 = &hFFFF             : i = cshort ( i0 ) : CU_ASSERT( i = -1 ) : i = 0
+	i0 = &hFFFFFFFF         : i = cbyte  ( i0 ) : CU_ASSERT( i = -1 ) : i = 0
+	i0 = &hFFFFFFFF         : i = cshort ( i0 ) : CU_ASSERT( i = -1 ) : i = 0
+	i0 = &hFFFFFFFF         : i = clng   ( i0 ) : CU_ASSERT( i = -1 ) : i = 0
+#ifdef __FB_64BIT__
+	i0 = &hFFFFFFFFFFFFFFFF : i = cbyte  ( i0 ) : CU_ASSERT( i = -1 ) : i = 0
+	i0 = &hFFFFFFFFFFFFFFFF : i = cshort ( i0 ) : CU_ASSERT( i = -1 ) : i = 0
+	i0 = &hFFFFFFFFFFFFFFFF : i = clngint( i0 ) : CU_ASSERT( i = -1 ) : i = 0
+	i0 = &hFFFFFFFFFFFFFFFF : i = cint   ( i0 ) : CU_ASSERT( i = -1 ) : i = 0
+#else
+	i0 = &hFFFFFFFF         : i = cint   ( i0 ) : CU_ASSERT( i = -1 ) : i = 0
+#endif
+
 end sub
 
-sub test2 cdecl ()
-	dim as integer dst, src
-	
-	src = &hFFFFFFFF
-	dst = cshort( src )
-	
-	CU_ASSERT_EQUAL( dst, -1 )
-end sub
-
-sub test3 cdecl ()
-	dim as integer dst, src
-	
-	src = &hFFFFFFFF
-	dst = cint( src )
-	
-	CU_ASSERT_EQUAL( dst, -1 )
-end sub
-
-sub ctor () constructor
-
-	fbcu.add_suite("fbc_tests.numbers.cast_signed")
-	fbcu.add_test("test1", @test1)
-	fbcu.add_test("test2", @test2)
-	fbcu.add_test("test3", @test3)
-
+private sub ctor( ) constructor
+	fbcu.add_suite( "tests/numbers/cast_signed" )
+	fbcu.add_test( "test", @test )
 end sub
 
 end namespace
