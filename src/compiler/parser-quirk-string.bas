@@ -416,33 +416,37 @@ function cCVXFunct(byval tk as FB_TOKEN) as ASTNODE ptr
 	'' string parameter, or CVSHORT/CVI<16> (which can only take strings)
 	if( is_str orelse (functype = FB_DATATYPE_SHORT) ) then
 		if( zslen >= typeGetSize( functype ) ) then
-			select case as const functype
+			select case( functype )
 			case FB_DATATYPE_DOUBLE
 				funcexpr = astNewCONSTf( cvd( *zs ), FB_DATATYPE_DOUBLE )
 			case FB_DATATYPE_SINGLE
 				funcexpr = astNewCONSTf( cvs( *zs ), FB_DATATYPE_SINGLE )
-			case FB_DATATYPE_SHORT
-				funcexpr = astNewCONSTi( cvshort( *zs ), FB_DATATYPE_SHORT )
 			case else
-				if( typeGetSize( functype ) = 8 ) then
-					funcexpr = astNewCONSTi( cvlongint( *zs ), functype )
-				else
+				select case( typeGetSize( functype ) )
+				case 2
+					funcexpr = astNewCONSTi( cvshort( *zs ), FB_DATATYPE_SHORT )
+				case 4
 					funcexpr = astNewCONSTi( cvl( *zs ), functype )
-				end if
+				case else
+					funcexpr = astNewCONSTi( cvlongint( *zs ), functype )
+				end select
 			end select
 			astDelNode( expr1 )
 		else
-			select case as const functype
+			select case( functype )
 			case FB_DATATYPE_DOUBLE
 				funcexpr = astNewCALL( PROCLOOKUP( CVD ) )
 			case FB_DATATYPE_SINGLE
 				funcexpr = astNewCALL( PROCLOOKUP( CVS ) )
-			case FB_DATATYPE_INTEGER, FB_DATATYPE_LONG
-				funcexpr = astNewCALL( PROCLOOKUP( CVL ) )
-			case FB_DATATYPE_SHORT
-				funcexpr = astNewCALL( PROCLOOKUP( CVSHORT ) )
-			case FB_DATATYPE_LONGINT
-				funcexpr = astNewCALL( PROCLOOKUP( CVLONGINT ) )
+			case else
+				select case( typeGetSize( functype ) )
+				case 2
+					funcexpr = astNewCALL( PROCLOOKUP( CVSHORT ) )
+				case 4
+					funcexpr = astNewCALL( PROCLOOKUP( CVL ) )
+				case else
+					funcexpr = astNewCALL( PROCLOOKUP( CVLONGINT ) )
+				end select
 			end select
 
 			'' byref expr as string
@@ -451,15 +455,17 @@ function cCVXFunct(byval tk as FB_TOKEN) as ASTNODE ptr
 			end if
 		end if
 	else
-		select case as const functype
+		select case( functype )
 		case FB_DATATYPE_DOUBLE
 			funcexpr = astNewCALL( PROCLOOKUP( CVDFROMLONGINT ) )
 		case FB_DATATYPE_SINGLE
 			funcexpr = astNewCALL( PROCLOOKUP( CVSFROML ) )
-		case FB_DATATYPE_INTEGER, FB_DATATYPE_LONG
-			funcexpr = astNewCALL( PROCLOOKUP( CVLFROMS ) )
-		case FB_DATATYPE_LONGINT
-			funcexpr = astNewCALL( PROCLOOKUP( CVLONGINTFROMD ) )
+		case else
+			if( typeGetSize( functype ) = 4 ) then
+				funcexpr = astNewCALL( PROCLOOKUP( CVLFROMS ) )
+			else
+				funcexpr = astNewCALL( PROCLOOKUP( CVLONGINTFROMD ) )
+			end if
 		end select
 
 		if( funcexpr <> NULL ) then

@@ -4,16 +4,8 @@ o 64bit
     be fully compatible. On Linux, new probably uses size_t, which is unsigned long,
     but none of FB types will be mangled as long on 64bit. It could work on Win64
     at least, if new uses a long long param there...
-
-  - Adjust rtlib
-    - also, get#/put# should just always use the fb_FileGet/Put*Large* versions,
-      with the 64bit parameter, instead of the old fb_FileGet/Put* versions,
-      because behind the scenes they map to the same function anyways already.
-      (the old ones must be retained in legacy_* modules though)
-      same for fb_FileSeek*... and probably others
-
-  - Also, all FB includes must be adjusted for 64bit compatibility (if the
-    corresponding library even is available on 64bit)
+  - FB includes must be adjusted for 64bit compatibility (if the corresponding
+    library even is available on 64bit)
 
 o LLVM backend
   - returning structs in registers? Disabled for -gen gcc in hGetReturnType(),
