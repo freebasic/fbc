@@ -3,6 +3,9 @@
 #include "../fb_gfx.h"
 #include "fb_gfx_linux.h"
 #include "../../rtlib/unix/fb_private_console.h"
+
+#ifndef DISABLE_FBDEV
+
 #include <fcntl.h>
 #include <sys/ioctl.h>
 #include <sys/mman.h>
@@ -687,3 +690,5 @@ int fb_hFBDevInfo(ssize_t *width, ssize_t *height, ssize_t *depth, ssize_t *refr
 	
 	return 0;
 }
+
+#endif

@@ -66,6 +66,7 @@
 #   -DDISABLE_GPM    build without gpm.h (disables Linux GetMouse)
 #   -DDISABLE_FFI    build without ffi.h (disables ThreadCall)
 #   -DDISABLE_OPENGL build without OpenGL headers (disables OpenGL gfx drivers)
+#   -DDISABLE_FBDEV  build without Linux framebuffer device headers (disables Linux fbdev gfx driver)
 #
 # makefile variables may either be set on the make command line,
 # or (in a more permanent way) inside a 'config.mk' file.
