@@ -161,7 +161,7 @@ FBCALL double       fb_VAL              ( FBSTRING *str );
 FBCALL double       fb_CVD              ( FBSTRING *str );
 FBCALL float        fb_CVS              ( FBSTRING *str );
 FBCALL short        fb_CVSHORT          ( FBSTRING *str );
-FBCALL ssize_t      fb_CVI              ( FBSTRING *str );
+FBCALL int          fb_CVI              ( FBSTRING *str ); /* 32bit legacy */
 FBCALL int          fb_CVL              ( FBSTRING *str );
 FBCALL long long    fb_CVLONGINT        ( FBSTRING *str );
 FBCALL FBSTRING    *fb_HEX              ( int num );

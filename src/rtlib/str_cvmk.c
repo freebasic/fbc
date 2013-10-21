@@ -40,10 +40,11 @@ FBCALL short fb_CVSHORT( FBSTRING *str )
 	return num;
 }
 
-FBCALL ssize_t fb_CVI( FBSTRING *str )
+/* 32bit legacy, fbc after 64bit port always calls fb_CVL() or fb_CVLONGINT() */
+FBCALL int fb_CVI( FBSTRING *str )
 {
-	ssize_t num = 0;
-	hCV( str, sizeof( ssize_t ), &num );
+	int num = 0;
+	hCV( str, sizeof( int ), &num );
 	return num;
 }
 
