@@ -1111,9 +1111,7 @@ sub ppDefine( byval ismultiline as integer )
 			lexSkipToken( LEX_FLAGS and (not LEXCHECK_NOWHITESPC) )
 		end if
 	else
-		if( ismultiline ) then
-			errReport( FB_ERRMSG_EXPECTEDLPRNT )
-		else
+		if( ismultiline = FALSE ) then
 			if( lexGetToken( LEX_FLAGS ) = CHAR_SPACE ) then
 				'' skip white-spaces
 				lexSkipToken( LEX_FLAGS and not LEXCHECK_NOWHITESPC )

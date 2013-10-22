@@ -20,6 +20,7 @@ Version 0.91.0:
 - crt/long.bi, which provides the CLONG and CULONG type aliases that always match C's long and unsigned long data types (for use when making FB bindings for C libraries that use C's long data type, because 64bit FB doesn't have a built-in type that matches 64bit C's long on all platforms)
 - Adjusted CRT headers for 64bit support
 - Updated CUnit 2.1-2 headers, with 64bit support
+- #macro can now also be used to #define macros without a '()' macro parameter list
 
 [fixed]
 - dlltool syntax error when building a DLL without any EXPORTs
