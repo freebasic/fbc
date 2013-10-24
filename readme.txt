@@ -216,6 +216,8 @@
     - Marzec
         SDL headers, SDL_bassgl, SDL_opengl and SDL_key examples
         First file routines for FB's rtlib
+    - MJK
+        big_int header fixes
     - MOD
         wx-c, BASS headers; -lang qb support for built-in macros,
         "real" Rnd() algorithm

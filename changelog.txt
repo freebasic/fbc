@@ -87,6 +87,7 @@ Version 0.91.0:
 - UByte/UShort versions of Bin/Hex/WBin/WHex( n, digits ) functions were missing
 - Miscompilation of runtime library function calls for ImageCreate(), Mki() and ThreadCall, in modules except the first when compiling multiple modules in one invocation of fbc, if -lang qb was given on the fbc command line (not as #lang "qb" in the source).
 - C backend: String literal emitting now also escapes characters that would otherwise form trigraphs
+- big_int binding: Some function declarations were missing parameters; also added some missing functions
 
 
 Version 0.90.1:
