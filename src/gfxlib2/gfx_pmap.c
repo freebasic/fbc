@@ -25,7 +25,7 @@ FBCALL float fb_GfxPMap(float coord, int func)
 			if (context->flags & CTX_WINDOW_ACTIVE) {
 				coord = ((coord - context->win_y) * context->view_h) / context->win_h;
 				if ((context->flags & CTX_WINDOW_SCREEN) == 0)
-					coord = context->view_h - coord;
+					coord = context->view_h - 1 - coord;
 			}
 			return coord;
 		
