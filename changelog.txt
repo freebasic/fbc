@@ -88,6 +88,7 @@ Version 0.91.0:
 - Miscompilation of runtime library function calls for ImageCreate(), Mki() and ThreadCall, in modules except the first when compiling multiple modules in one invocation of fbc, if -lang qb was given on the fbc command line (not as #lang "qb" in the source).
 - C backend: String literal emitting now also escapes characters that would otherwise form trigraphs
 - big_int binding: Some function declarations were missing parameters; also added some missing functions
+- 0.90.1 regression: PMAP was returning bad values for func values of 0 or 1.
 
 
 Version 0.90.1:

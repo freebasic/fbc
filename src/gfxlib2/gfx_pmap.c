@@ -18,14 +18,14 @@ FBCALL float fb_GfxPMap(float coord, int func)
 		
 		case 0:
 			if (context->flags & CTX_WINDOW_ACTIVE)
-				coord = ((coord - context->win_x) * context->view_w) / (context->win_w - 1);
+				coord = ((coord - context->win_x) * context->view_w) / context->win_w;
 			return coord;
 		
 		case 1:
 			if (context->flags & CTX_WINDOW_ACTIVE) {
-				coord = ((coord - context->win_y) * context->view_h) / (context->win_h - 1);
+				coord = ((coord - context->win_y) * context->view_h) / context->win_h;
 				if ((context->flags & CTX_WINDOW_SCREEN) == 0)
-					coord = context->view_h - 1 - coord;
+					coord = context->view_h - coord;
 			}
 			return coord;
 		
