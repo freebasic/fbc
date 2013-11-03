@@ -122,14 +122,24 @@ private function hCheckPrototype _
 	( _
 		byval proto as FBSYMBOL ptr, _
 		byval proc as FBSYMBOL ptr, _
+		byval palias as zstring ptr, _
 		byval proc_dtype as integer, _
-		byval proc_subtype as FBSYMBOL ptr _
+		byval proc_subtype as FBSYMBOL ptr, _
+		byval mode as integer _
 	) as integer
 
     dim as FBSYMBOL ptr param = any, proto_param = any
     dim as integer params = any, proto_params = any, i = any
 
 	function = FALSE
+
+	'' Check ALIAS id
+	if( (palias <> NULL) and ((proto->stats and FB_SYMBSTATS_HASALIAS) <> 0) ) then
+		if( *palias <> *proto->id.alias ) then
+			errReportEx( FB_ERRNUM_DIFFERENTALIASTHANPROTO, """" + *palias + """" )
+			exit function
+		end if
+	end if
 
 	'' check arg count
 	param = symbGetProcHeadParam( proc )
@@ -170,6 +180,12 @@ private function hCheckPrototype _
 	if( proc->proc.returnMethod <> FB_RETURN_DEFAULT) and _
 		( proto->proc.returnMethod <> proc->proc.returnMethod ) then
 			errReportWarn( FB_WARNINGMSG_RETURNMETHODMISMATCH )
+	end if
+
+	'' check calling convention
+	if( symbGetProcMode( proto ) <> mode ) then
+		errReport( FB_ERRMSG_ILLEGALPARAMSPEC, TRUE )
+		exit function
 	end if
 
 	'' check each arg
@@ -1587,20 +1603,8 @@ function cProcHeader _
 
 			'' There already is a prototype for this proc, check for
 			'' declaration conflicts and fix up the parameters
-			if( hCheckPrototype( head_proc, proc, dtype, subtype ) = FALSE ) then
+			if( hCheckPrototype( head_proc, proc, palias, dtype, subtype, mode ) = FALSE ) then
 				return CREATEFAKE( )
-			end if
-
-			'' check calling convention
-			if( symbGetProcMode( head_proc ) <> mode ) then
-				errReport( FB_ERRMSG_ILLEGALPARAMSPEC, TRUE )
-			end if
-
-			'' Check ALIAS id
-			if( (palias <> NULL) and ((head_proc->stats and FB_SYMBSTATS_HASALIAS) <> 0) ) then
-				if( *palias <> *head_proc->id.alias ) then
-					errReportEx( FB_ERRNUM_DIFFERENTALIASTHANPROTO, """" + *palias + """" )
-				end if
 			end if
 
 			'' use the prototype
