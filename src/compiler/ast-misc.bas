@@ -17,43 +17,6 @@ declare sub astReplaceSymbolOnCALL _
 		byval new_sym as FBSYMBOL ptr _
 	)
 
-'' globals
-	dim shared as longint ast_minlimitTB( FB_DATATYPE_BYTE to FB_DATATYPE_ULONGINT ) = _
-	{ _
-		-128LL, _								'' byte
-		0LL, _                                  '' ubyte
-		0LL, _                                  '' char
-		-32768LL, _                             '' short
-		0LL, _                                  '' ushort
-		0LL, _                                  '' wchar
-		-2147483648LL, _                        '' int
-		0LL, _                                  '' uint
-		-2147483648LL, _                        '' enum
-		0LL, _                                  '' bitfield
-		-2147483648LL, _                        '' long
-		0LL, _                                  '' ulong
-		-9223372036854775808LL, _               '' longint
-		0LL _                                   '' ulongint
-	}
-
-	dim shared as ulongint ast_maxlimitTB( FB_DATATYPE_BYTE to FB_DATATYPE_ULONGINT ) = _
-	{ _
-		127ULL, _                               '' ubyte
-		255ULL, _                               '' byte
-		255ULL, _                               '' char
-		32767ULL, _                             '' short
-		65535ULL, _                             '' ushort
-		65535ULL, _                             '' wchar
-		2147483647ULL, _                        '' int
-		4294967295ULL, _                        '' uint
-		2147483647ULL, _                        '' enum
-		4294967295ULL, _                        '' bitfield
-		2147483647ULL, _                        '' long
-		4294967295ULL, _                        '' ulong
-		9223372036854775807ULL, _               '' longint
-		18446744073709551615ULL _               '' ulongint
-	}
-
 sub astMiscInit( )
 	listInit( @ast.dtorlist, 64, len( AST_DTORLIST_ITEM ), LIST_FLAGS_NOCLEAR )
 	with( ast.dtorlistscopes )
@@ -63,12 +26,6 @@ sub astMiscInit( )
 	end with
 	ast.dtorlistcookies = 0
 	ast.flushdtorlist = TRUE
-
-	'' Remap wchar to target-specific type
-	ast_minlimitTB(FB_DATATYPE_WCHAR) = ast_minlimitTB(env.target.wchar)
-	ast_maxlimitTB(FB_DATATYPE_WCHAR) = ast_maxlimitTB(env.target.wchar)
-
-    '' !!!FIXME!!! remap [u]long to [u]longint if target = 64-bit
 end sub
 
 sub astMiscEnd( )
