@@ -98,7 +98,10 @@ sub edbgInit( )
 	'' Remap wchar to target-specific type
 	remapTB(FB_DATATYPE_WCHAR) = remapTB(env.target.wchar)
 
-	'' !!!FIXME!!! remap [u]long to [u]longint if target = 64-bit
+	'' The above tables assume 32bit, but that's ok because -gen gas
+	'' currently only supports 32bit x86 anyways, and this stabs emitter
+	'' is only used with -gen gas.
+	assert( fbCpuTypeIs64bit( ) = FALSE )
 end sub
 
 '':::::
