@@ -1,6 +1,6 @@
 #include "fbcu.bi"
 
-namespace fbc_tests.functions.param_initializer
+namespace fbc_tests.functions.paraminit
 
 #macro hScopeChecks( code )
 	sub check1( )
@@ -93,25 +93,25 @@ dim shared as integer cond
 
 namespace udtByref
 	#define PARAM_MODE byref
-	#include "param-initializer-udt.bi"
+	#include "paraminit-udt.bi"
 	#undef PARAM_MODE
 end namespace
 
 namespace udtByval
 	#define PARAM_MODE byval
-	#include "param-initializer-udt.bi"
+	#include "paraminit-udt.bi"
 	#undef PARAM_MODE
 end namespace
 
 namespace intByref
 	#define PARAM_MODE byref
-	#include "param-initializer-int.bi"
+	#include "paraminit-int.bi"
 	#undef PARAM_MODE
 end namespace
 
 namespace intByval
 	#define PARAM_MODE byval
-	#include "param-initializer-int.bi"
+	#include "paraminit-int.bi"
 	#undef PARAM_MODE
 end namespace
 
@@ -274,7 +274,7 @@ namespace vectorNewCtorList
 end namespace
 
 private sub ctor( ) constructor
-	fbcu.add_suite( "tests/functions/param-initializer" )
+	fbcu.add_suite( "tests/functions/paraminit" )
 
 	fbcu.add_test( "101", @udtByref.anon                         .test )
 	fbcu.add_test( "102", @udtByref.global                       .test )
