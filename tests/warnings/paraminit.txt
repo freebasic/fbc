@@ -1,0 +1,70 @@
+no warning:
+no warning:
+no warning:
+no warning:
+no warning:
+no warning:
+no warning:
+no warning:
+no warning:
+no warning:
+no warning:
+no warning:
+no warning:
+no warning:
+no warning:
+no warning:
+no warning:
+no warning:
+no warning:
+no warning:
+no warning:
+no warning:
+mismatch addrof var:
+	Mismatching parameter initializer, at parameter 1 (n) of test23()
+mismatch addrof proc:
+	Mismatching parameter initializer, at parameter 1 (n) of test24()
+mismatch anon type:
+	Mismatching parameter initializer, at parameter 1 (n) of test25()
+mismatch anon type:
+	Mismatching parameter initializer, at parameter 1 (n) of test26()
+mismatch bop:
+	Mismatching parameter initializer, at parameter 1 (n) of test27()
+mismatch const:
+	Mismatching parameter initializer, at parameter 1 (n) of test28()
+mismatch call:
+	Mismatching parameter initializer, at parameter 1 (n) of test29()
+mismatch arg:
+	Mismatching parameter initializer, at parameter 1 (n) of test30()
+mismatch arg:
+	Mismatching parameter initializer, at parameter 1 (n) of test31()
+mismatch const:
+	Mismatching parameter initializer, at parameter 1 (n) of test32()
+mismatch ctorcall:
+	Mismatching parameter initializer, at parameter 1 (x) of test33()
+mismatch field:
+	Mismatching parameter initializer, at parameter 1 (i) of test34()
+mismatch array:
+	Mismatching parameter initializer, at parameter 1 (n) of test35()
+mismatch idx:
+	Mismatching parameter initializer, at parameter 1 (n) of test36()
+mismatch iif:
+	Mismatching parameter initializer, at parameter 1 (n) of test37()
+mismatch const:
+	Mismatching parameter initializer, at parameter 1 (n) of test38()
+mismatch const:
+	Mismatching parameter initializer, at parameter 1 (n) of test39()
+mismatch const:
+	Mismatching parameter initializer, at parameter 1 (n) of test40()
+mismatch const:
+	Mismatching parameter initializer, at parameter 1 (n) of test41()
+mismatch string:
+	Mismatching parameter initializer, at parameter 1 (n) of test42()
+mismatch string:
+	Mismatching parameter initializer, at parameter 1 (n) of test43()
+mismatch string:
+	Mismatching parameter initializer, at parameter 1 (n) of test44()
+mismatch uop:
+	Mismatching parameter initializer, at parameter 1 (n) of test45()
+mismatch var:
+	Mismatching parameter initializer, at parameter 1 (n) of test46()

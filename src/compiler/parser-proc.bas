@@ -232,6 +232,15 @@ private function hCheckPrototype _
     		end if
     	end if
 
+		'' Warn about mismatching param initializers?
+		'' If both params are optional, compare the two initializers
+		if( symbGetIsOptional( proto_param ) and symbGetIsOptional( param ) ) then
+			if( astIsEqualParamInit( proto_param->param.optexpr, param->param.optexpr ) = FALSE ) then
+				errReportParamWarn( proc, i, NULL, FB_WARNINGMSG_MISMATCHINGPARAMINIT )
+				exit function
+			end if
+		end if
+
     	'' next arg
     	proto_param = proto_param->next
     	param = param->next

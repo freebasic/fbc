@@ -434,6 +434,12 @@ declare function astIsTreeEqual _
 		byval r as ASTNODE ptr _
 	) as integer
 
+declare function astIsEqualParamInit _
+	( _
+		byval l as ASTNODE ptr, _
+		byval r as ASTNODE ptr _
+	) as integer
+
 declare function astIsConstant( byval expr as ASTNODE ptr ) as integer
 
 declare sub astProcBegin( byval proc as FBSYMBOL ptr, byval ismain as integer )

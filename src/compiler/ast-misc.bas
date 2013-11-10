@@ -176,6 +176,174 @@ function astIsTreeEqual _
 
 end function
 
+''
+'' Check whether two parameter initializers are the same (for comparing
+'' initializer expressions from prototype and body). This is basically the same
+'' as astIsTreeEqual(), except it allows CALLs and such aswell as temp vars,
+'' because for a param initializer those things can be treated equal.
+''
+'' For example, two calls f(1) and f(1) are equal as far as param initializers
+'' are concerned, but astIsTreeEqual() wouldn't treat them as equal, so we need
+'' a custom function.
+''
+'' Also, two expressions such as iif(a,b,c) and iif(a,b,c) are equal for param
+'' initializers. The two iif()'s will use separate temp vars, causing
+'' astIsTreeEqual() to treat them as different, but that doesn't matter for
+'' param initializers where the expression and the temp vars it uses will be
+'' duplicated & inserted into the call scopes.
+''
+'' Temp labels stored in BOP's or LOOP's ASTNODE.op.ex field should be treated
+'' equal too (e.g. used by iif()).
+''
+function astIsEqualParamInit _
+	( _
+		byval l as ASTNODE ptr, _
+		byval r as ASTNODE ptr _
+	) as integer
+
+	function = FALSE
+
+	if( (l = NULL) or (r = NULL) ) then
+		if( l = r ) then
+			function = TRUE
+		end if
+		exit function
+	end if
+
+	if( l->class <> r->class ) then
+		exit function
+	end if
+
+	if( l->dtype <> r->dtype ) then
+		exit function
+	end if
+
+	if( l->subtype <> r->subtype ) then
+		'' If it's a function pointer, the subtype may point to different proc
+		'' symbols, but if they have the same signature they should still be
+		'' treated equal here.
+		if( typeGetDtOnly( l->dtype ) = FB_DATATYPE_FUNCTION ) then
+			if( symbIsEqual( l->subtype, r->subtype ) = FALSE ) then
+				exit function
+			end if
+		else
+			exit function
+		end if
+	end if
+
+	select case as const( l->class )
+	case AST_NODECLASS_LINK
+		if( l->link.ret_left <> r->link.ret_left ) then
+			exit function
+		end if
+
+	case AST_NODECLASS_VAR
+		'' VARs must access the same symbol, unless they're accessing
+		'' temp vars. Those will be duplicated anyways when the param
+		'' initializer is inserted in a call.
+		if( l->sym <> r->sym ) then
+			if( symbIsTemp( l->sym ) = FALSE ) then
+				exit function
+			end if
+			if( symbIsTemp( r->sym ) = FALSE ) then
+				exit function
+			end if
+		end if
+
+		if( l->var_.ofs <> r->var_.ofs ) then
+			exit function
+		end if
+
+	case AST_NODECLASS_FIELD
+		if( l->sym <> r->sym ) then
+			if( symbIsTemp( l->sym ) = FALSE ) then
+				exit function
+			end if
+			if( symbIsTemp( r->sym ) = FALSE ) then
+				exit function
+			end if
+		end if
+
+	case AST_NODECLASS_CONST
+		if( typeGetClass( l->dtype ) = FB_DATACLASS_FPOINT ) then
+			if( l->val.f <> r->val.f ) then
+				exit function
+			end if
+		else
+			assert( typeGetClass( l->dtype ) = FB_DATACLASS_INTEGER )
+			if( l->val.i <> r->val.i ) then
+				exit function
+			end if
+		end if
+
+	case AST_NODECLASS_DEREF
+		if( l->ptr.ofs <> r->ptr.ofs ) then
+			exit function
+		end if
+
+	case AST_NODECLASS_IDX
+		if( l->idx.ofs <> r->idx.ofs ) then
+			exit function
+		end if
+
+		if( l->idx.mult <> r->idx.mult ) then
+			exit function
+		end if
+
+	case AST_NODECLASS_BOP, AST_NODECLASS_UOP
+		if( l->op.op <> r->op.op ) then
+			exit function
+		end if
+
+		if( l->op.options <> r->op.options ) then
+			exit function
+		end if
+
+	case AST_NODECLASS_ADDROF
+		if( l->sym <> r->sym ) then
+			if( symbIsTemp( l->sym ) = FALSE ) then
+				exit function
+			end if
+			if( symbIsTemp( r->sym ) = FALSE ) then
+				exit function
+			end if
+		end if
+
+		if( l->op.op <> r->op.op ) then
+			exit function
+		end if
+
+	case AST_NODECLASS_OFFSET
+		if( l->sym <> r->sym ) then
+			if( symbIsTemp( l->sym ) = FALSE ) then
+				exit function
+			end if
+			if( symbIsTemp( r->sym ) = FALSE ) then
+				exit function
+			end if
+		end if
+
+		if( l->ofs.ofs <> r->ofs.ofs ) then
+			exit function
+		end if
+
+	case AST_NODECLASS_CALL
+		if( l->sym <> r->sym ) then
+			exit function
+		end if
+	end select
+
+	if( astIsEqualParamInit( l->l, r->l ) = FALSE ) then
+		exit function
+	end if
+
+	if( astIsEqualParamInit( l->r, r->r ) = FALSE ) then
+		exit function
+	end if
+
+	function = TRUE
+end function
+
 '':::::
 function astIsClassOnTree _
 	( _
