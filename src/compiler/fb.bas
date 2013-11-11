@@ -400,10 +400,12 @@ end sub
 
 private sub hUpdateTargetOptions( )
 	env.target = targetinfo(env.clopt.target)
+end sub
 
+private sub hUpdateBackendOptions( )
 	'' -gen gas defaults to -asm intel, because that's all it supports,
 	'' -gen gcc/llvm defaults to -asm att, because that's GCC's/LLVM's standard
-	if( env.clopt.target = FB_BACKEND_GAS ) then
+	if( env.clopt.backend = FB_BACKEND_GAS ) then
 		env.clopt.asmsyntax = FB_ASMSYNTAX_INTEL
 	else
 		env.clopt.asmsyntax = FB_ASMSYNTAX_ATT
@@ -449,6 +451,7 @@ sub fbGlobalInit()
 
 	hUpdateLangOptions( )
 	hUpdateTargetOptions( )
+	hUpdateBackendOptions( )
 end sub
 
 sub fbAddIncludePath(byref path as string)
@@ -472,6 +475,7 @@ sub fbSetOption( byval opt as integer, byval value as integer )
 
 	case FB_COMPOPT_BACKEND
 		env.clopt.backend = value
+		hUpdateBackendOptions( )
 	case FB_COMPOPT_TARGET
 		env.clopt.target = value
 		hUpdateTargetOptions( )
