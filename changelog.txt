@@ -90,6 +90,7 @@ Version 0.91.0:
 - C backend: String literal emitting now also escapes characters that would otherwise form trigraphs
 - big_int binding: Some function declarations were missing parameters; also added some missing functions
 - 0.90.1 regression: PMAP was returning bad values for func values of 0 or 1.
+- #701: fbc didn't escape \ as \\ in @files (response files) sometimes used when invoking ld
 
 
 Version 0.90.1:

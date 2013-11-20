@@ -426,7 +426,22 @@ private function createArgsFile _
 		return FALSE
 	end if
 
-	print #f, ln
+	'' ld treats \ in @files (response files) as escape sequence, so \ must
+	'' be escaped as \\. ld seems to behave pretty much like Unixish shells
+	'' would: all \'s indicate an escape sequence. (For reference,
+	'' binutils/libiberty source code: expandargv(), buildargv())
+	''
+	'' With DJGPP however, @files are handled automagically and ld doesn't
+	'' get to see it, that's why there are differences in escaping rules
+	'' when doing @file with a DJGPP ld when compared to a MinGW ld. Not all
+	'' \ chars indicate escape sequences, only some special cases such as \\
+	'' or \" do. (at least that's what I gathered from the DJGPP FAQ and
+	'' some testing)
+	''
+	'' Here we only need the \\ though, at least for now, which works with
+	'' both types of @file processing, so there's no need to worry about
+	'' the escaping differences.
+	print #f, hReplace( ln, $"\", $"\\" )
 
 	close #f
 
