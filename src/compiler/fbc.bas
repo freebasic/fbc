@@ -250,21 +250,6 @@ private function fbcAddObj( byref file as string ) as string ptr
 	function = s
 end function
 
-private function hCanDeleteAsm( byval stage as integer ) as integer
-	if( stage = 1 ) then
-		'' Stage 1 output (the FB backend output, which also happens to
-		'' be the final asm for -gen gas) can be preserved by -R,
-		'' and additionally for -gen gas with -RR aswell.
-		function = ((not fbc.keepasm) and _
-		            ((fbGetOption( FB_COMPOPT_BACKEND ) <> FB_BACKEND_GAS) or _
-		             (not fbc.keepfinalasm)))
-	else
-		'' Stage 2 output (the final .asm for -gen gcc) can be
-		'' preserved with -RR only.
-		function = (not fbc.keepfinalasm)
-	end if
-end function
-
 '' Find a file in our lib/ or in the system somewhere
 private function fbcFindLibFile( byval file as zstring ptr ) as string
 	dim as string found
@@ -445,7 +430,10 @@ private function hPutLdArgsIntoFile( byref ldcline as string ) as integer
 
 	close #f
 
-	fbcAddTemp( argsfile )
+	'' Clean up the @file if -R wasn't given
+	if( fbc.keepasm = FALSE ) then
+		fbcAddTemp( argsfile )
+	end if
 
 	if( fbc.verbose ) then
 		print "ld options in '" & argsfile & "': ", ldcline
@@ -530,7 +518,8 @@ private function makeImpLib _
 		exit function
 	end if
 
-	if( hCanDeleteAsm( 1 ) ) then
+	'' Clean up the .def file if -R wasn't given
+	if( fbc.keepasm = FALSE ) then
 		fbcAddTemp( deffile )
 	end if
 
@@ -2303,7 +2292,14 @@ private sub hCompileBas _
 	dim as string asmfile, pponlyfile
 
 	asmfile = hGetAsmName( module, 1 )
-	if( hCanDeleteAsm( 1 ) ) then
+
+	'' Clean up stage 1 output (FB backend's output, *.asm/*.c/*.ll),
+	'' unless -R was given, and additionally in case of -gen gas, unless -RR
+	'' was given (because for -gen gas, the FB backend's .asm output is also
+	'' the final .asm which -RR is supposed to preserve).
+	if( (not fbc.keepasm) and _
+	    ((fbGetOption( FB_COMPOPT_BACKEND ) <> FB_BACKEND_GAS) or _
+	     (not fbc.keepfinalasm)) ) then
 		fbcAddTemp( asmfile )
 	end if
 
@@ -2337,7 +2333,6 @@ private sub hCompileBas _
 	'' but that shouldn't affect other modules)
 	prevlang = fbGetOption( FB_COMPOPT_LANG )
 	prevouttype = fbGetOption( FB_COMPOPT_OUTTYPE )
-
 
 	if( is_fbctinf ) then
 		'' Switch to -c mode temporarily to get the compiler to write objinfo
@@ -2560,8 +2555,8 @@ private function hCompileXpm( ) as integer
 	print #fo, code;
 	close #fo
 
-	'' Clean up the temp .bas too
-	if( hCanDeleteAsm( 1 ) ) then
+	'' Clean up the temp .bas if -R wasn't given
+	if( fbc.keepasm = FALSE ) then
 		fbcAddTemp( fbc.xpm.srcfile )
 	end if
 
@@ -2573,7 +2568,9 @@ private function hCompileStage2Module( byval module as FBCIOFILE ptr ) as intege
 	dim as string ln, asmfile
 
 	asmfile = hGetAsmName( module, 2 )
-	if( hCanDeleteAsm( 2 ) ) then
+	'' Clean up stage 2 output (the final .asm for -gen gcc/llvm) unless
+	'' -RR was given.
+	if( fbc.keepfinalasm = FALSE ) then
 		fbcAddTemp( asmfile )
 	end if
 
@@ -2693,6 +2690,7 @@ private function hAssembleModule( byval module as FBCIOFILE ptr ) as integer
 		exit function
 	end if
 
+	'' Clean up the .o if -C wasn't given
 	if( fbc.keepobj = FALSE ) then
 		fbcAddTemp( *module->objfile )
 	end if
@@ -2764,6 +2762,7 @@ private function hAssembleRc( byval rc as FBCIOFILE ptr ) as integer
 	function = fbcRunBin( "compiling rc", FBCTOOL_WINDRES, ln )
 #endif
 
+	'' Clean up the .o if -C wasn't given
 	if( fbc.keepobj = FALSE ) then
 		fbcAddTemp( *rc->objfile )
 	end if
@@ -2813,8 +2812,8 @@ private function hCompileFbctinf( ) as integer
 	end if
 	close #fo
 
-	'' Clean up the temp .bas too
-	if( hCanDeleteAsm( 1 ) ) then
+	'' Clean up the temp .bas if -R wasn't given
+	if( fbc.keepasm = FALSE ) then
 		fbcAddTemp( fbctinf.srcfile )
 	end if
 
