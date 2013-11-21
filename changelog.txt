@@ -91,6 +91,7 @@ Version 0.91.0:
 - big_int binding: Some function declarations were missing parameters; also added some missing functions
 - 0.90.1 regression: PMAP was returning bad values for func values of 0 or 1.
 - #701: fbc didn't escape \ as \\ in @files (response files) sometimes used when invoking ld
+- Win32 fbc will now avoid hitting Win32 command line length limits when invoking ld with a long command line, by using "ld @file" (response files)
 
 
 Version 0.90.1:

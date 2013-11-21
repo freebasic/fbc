@@ -414,16 +414,16 @@ function fbcRunBin _
 	end if
 end function
 
-#if defined(__FB_WIN32__) or defined(__FB_DOS__)
-private function createArgsFile _
-	( _
-		byref argsfile as string, _
-		byref ln as string _
-	) as integer
+#if defined( __FB_WIN32__ ) or defined( __FB_DOS__ )
+private function hPutLdArgsIntoFile( byref ldcline as string ) as integer
+	dim as string argsfile
+	dim as integer f = any
 
-	dim as integer f = freefile()
-	if (open(argsfile, for output, as #f)) then
-		return FALSE
+	argsfile = hStripFilename( fbc.outname ) + "ldopt.tmp"
+
+	f = freefile( )
+	if( open( argsfile, for output, as #f ) ) then
+		exit function
 	end if
 
 	'' ld treats \ in @files (response files) as escape sequence, so \ must
@@ -441,11 +441,18 @@ private function createArgsFile _
 	'' Here we only need the \\ though, at least for now, which works with
 	'' both types of @file processing, so there's no need to worry about
 	'' the escaping differences.
-	print #f, hReplace( ln, $"\", $"\\" )
+	print #f, hReplace( ldcline, $"\", $"\\" )
 
 	close #f
 
-	return TRUE
+	fbcAddTemp( argsfile )
+
+	if( fbc.verbose ) then
+		print "ld options in '" & argsfile & "': ", ldcline
+	end if
+
+	ldcline = "@" + argsfile
+	function = TRUE
 end function
 #endif
 
@@ -820,22 +827,55 @@ private function hLinkFiles( ) as integer
 	'' extra options
 	ldcline += " " + fbc.extopt.ld
 
-#if defined(__FB_WIN32__) or defined(__FB_DOS__)
-	'' When using the DOS DJGPP tools, the command line length might be
-	'' limited, and with our generally long ld command lines (especially
-	'' when linking fbc) the line must be passed to ld through an @file.
-	if (fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_DOS) then
-		dim as string argsfile = hStripFilename(fbc.outname) + "temp.res"
-		if (createArgsFile(argsfile, ldcline) = FALSE) then
+	'' On some systems there are certain command line length limits which we
+	'' can easily hit with our ld invocation, especially when linking huge
+	'' programs, with lots of *.o files with long file names, such as the
+	'' FB test suite.
+	'' Typically > 127 chars but < 8k, but with huge programs, even > 32k.
+	''
+	'' On DOS there's a 127 char command line length limit. Our ld command
+	'' line will typically be much longer than that, so we use ld's @file
+	'' feature ("ld @file") and put the command line into that file.
+	''
+	'' The same happens on Win32 when we're invoking DOS .exes (some people
+	'' use DOS binutils, instead of proper Win32-to-DOS binutils, to compile
+	'' for DOS on Win32).
+	''
+	'' On Win32, there are multiple command line length limits to worry
+	'' about:
+	''    - cmd.exe (applies to FB shell()): 8192 on Windows XP+,
+	''      2047 on Windows NT 4.0/2000
+	''    - 32767 for CreateProcess() (applies to FB exec())
+	'' fbcRunBin() can use either shell() or exec() depending on whether
+	'' it's a normal/standalone build and whether the binutils were found.
+	'' For standalone, it will always use exec(), but for non-standalone,
+	'' we don't know what it'll do, so we should use the minimum limit.
+	'' For shell() the full command line will also include the ld.exe
+	'' command, i.e. "[<target>-]ld.exe ", which reduces the amount of room
+	'' left over for the ld arguments.
+	''
+	'' On Linux/BSD systems there's typically some 100k or 200k limit which
+	'' we usually don't hit.
+	#ifdef __FB_DOS__
+		if( hPutLdArgsIntoFile( ldcline ) = FALSE ) then
 			exit function
 		end if
-		fbcAddTemp(argsfile)
-		if (fbc.verbose) then
-			print "ld options in '" & argsfile & "': ", ldcline
-		end if
-		ldcline = "@" + argsfile
-	end if
-#endif
+	#elseif defined( __FB_WIN32__ )
+		#ifdef ENABLE_STANDALONE
+			if( fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_DOS ) then
+				if( hPutLdArgsIntoFile( ldcline ) = FALSE ) then
+					exit function
+				end if
+			end if
+		#else
+			if( (fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_DOS) or _
+			    (len( ldcline ) > (2047 - len( "ld.exe " ) - len( fbc.targetprefix ))) ) then
+				if( hPutLdArgsIntoFile( ldcline ) = FALSE ) then
+					exit function
+				end if
+			end if
+		#endif
+	#endif
 
 	'' invoke ld
 	if( fbcRunBin( "linking", FBCTOOL_LD, ldcline ) = FALSE ) then
