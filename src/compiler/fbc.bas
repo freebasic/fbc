@@ -880,7 +880,7 @@ private function hLinkFiles( ) as integer
 			exit function
 		end if
 
-		put #f, 533, fbGetOption(FB_COMPOPT_STACKSIZE)
+		put #f, 533, clng( fbGetOption( FB_COMPOPT_STACKSIZE ) )
 
 		close #f
 
