@@ -1,5 +1,6 @@
 /*
  * Tiny Windows kernel driver to enable I/O ports access
+ * (currently 32bit only)
  *
  * This code (plus the .rc) is compiled into fbportio.sys, the driver binary
  * that can be put into '%windir%\system32\drivers'. libfb includes the driver

@@ -5,6 +5,9 @@
 #include "fbportio.h"
 #include <windows.h>
 #include <winioctl.h>
+
+#ifdef HOST_X86
+
 #include "fbportio_inline.h"
 
 static int inited = FALSE;
@@ -153,3 +156,17 @@ int fb_hOut( unsigned short port, unsigned char value )
 
 	return FB_RTERROR_OK;
 }
+
+#else
+
+int fb_hIn( unsigned short port )
+{
+	return -fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
+}
+
+int fb_hOut( unsigned short port, unsigned char value )
+{
+	return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
+}
+
+#endif
