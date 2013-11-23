@@ -219,6 +219,7 @@ private function hCheck##ELF_SH _
 
 	'' Enough room for the header?
 	if( (culngint( headeroffset ) + sizeof( ELF_SH )) > objdata.size ) then
+		INFO( "elf: no room for section header" )
 		exit function
 	end if
 
@@ -226,6 +227,7 @@ private function hCheck##ELF_SH _
 
 	'' Verify the sh_offset/sh_size fields
 	if( (culngint( sh->sh_offset ) + sh->sh_size) > objdata.size ) then
+		INFO( "elf: invalid sh_offset/sh_size fields" )
 		exit function
 	end if
 
@@ -277,6 +279,7 @@ private sub hLoadFbctinfFrom##ELF_H( )
 	fbctinf.size = 0
 
 	if( objdata.size < sizeof( ELF_H ) ) then
+		INFO( "elf: no room for main header" )
 		exit sub
 	end if
 
@@ -285,42 +288,50 @@ private sub hLoadFbctinfFrom##ELF_H( )
 	elfmagic(4) = ELF_MAGIC_4
 	for i as integer = 0 to 15
 		if( h->e_ident(i) <> elfmagic(i) ) then
+			INFO( "elf: magic mismatch" )
 			exit sub
 		end if
 	next
 
 	'' matching header size?
 	if( h->e_ehsize <> sizeof( ELF_H ) ) then
+		INFO( "elf: header size mismatch" )
 		exit sub
 	end if
 
 	'' relocatable .o?
 	if( h->e_type <> ET_REL ) then
+		INFO( "elf: not a relocatable .o" )
 		exit sub
 	end if
 
 	'' x86/x86_64?
 	if( h->e_machine <> ELF_MACHINE ) then
+		INFO( "elf: machine mismatch" )
 		exit sub
 	end if
 
 	'' section header tb entry size
 	if( h->e_shentsize <> sizeof( ELF_SH ) ) then
+		INFO( "elf: invalid e_shentsize" )
 		exit sub
 	end if
 
 	'' number of section headers
 	if( (culngint( h->e_shnum ) * sizeof( ELF_SH )) > objdata.size ) then
+		INFO( "elf: invalid e_shnum" )
 		exit sub
 	end if
 
 	'' index of .shstrtab's section header
 	if( (h->e_shstrndx < 0) or (h->e_shstrndx >= h->e_shnum) ) then
+		INFO( "elf: invalid e_shstrndx" )
 		exit sub
 	end if
 
 	'' section header tb file offset
 	if( (culngint( h->e_shoff ) + (h->e_shnum * sizeof( ELF_SH ))) > objdata.size ) then
+		INFO( "elf: invalid e_shoff" )
 		exit sub
 	end if
 
@@ -328,6 +339,7 @@ private sub hLoadFbctinfFrom##ELF_H( )
 	'' is given as head->e_shstrndx), and find the offset to the section's content.
 	nametb = hCheck##ELF_SH( h, h->e_shstrndx )
 	if( nametb = NULL ) then
+		INFO( "elf: can't read string table" )
 		exit sub
 	end if
 
@@ -336,6 +348,7 @@ private sub hLoadFbctinfFrom##ELF_H( )
 	for i as integer = 1 to h->e_shnum - 1
 		sectionname = hGetSectionName##ELF_SH( h, i, nametb->sh_offset )
 		if( sectionname ) then
+			INFO( "elf: seeing section '" + *sectionname + "'" )
 			if( *sectionname = fbctinfname ) then
 				sh = hCheck##ELF_SH( h, i )
 				if( sh ) then
@@ -387,6 +400,7 @@ private sub hLoadFbctinfFromCOFF( byval magic as ushort )
 	fbctinf.size = 0
 
 	if( objdata.size < sizeof( COFF_H ) ) then
+		INFO( "coff: no room for main header" )
 		exit sub
 	end if
 
@@ -394,16 +408,19 @@ private sub hLoadFbctinfFromCOFF( byval magic as ushort )
 
 	'' COFF magic
 	if( h->magic <> magic ) then
+		INFO( "coff: magic mismatch" )
 		exit sub
 	end if
 
 	'' Should be 0 for relocatable obj file
 	if( h->optheadsize <> 0 ) then
+		INFO( "coff: optheadsize field <> 0" )
 		exit sub
 	end if
 
 	'' Enough room for whole section header table?
 	if( (culngint( h->seccount ) * sizeof( COFF_SH )) > objdata.size ) then
+		INFO( "coff: no room for section header table" )
 		exit sub
 	end if
 
@@ -411,6 +428,19 @@ private sub hLoadFbctinfFromCOFF( byval magic as ushort )
 
 	for i as integer = 0 to (h->seccount - 1)
 		sh = shbase + i
+
+		#ifdef DEBUG_OBJINFO
+			dim temp as zstring * 9
+			for j as integer = 0 to 7
+				temp[j] = sh->name(j)
+			next
+			INFO( "coff: seeing section '" + temp + "'" )
+		#endif
+
+		'' The section name can hold 8 chars. Unused chars should be
+		'' padded with nulls. If it takes up all 8 chars, there's no
+		'' null padding at the end. Since ".fbctinf" takes up all 8
+		'' chars we can simply compare each char 1 by 1.
 		for j as integer = 0 to 7
 			if( sh->name(j) <> fbctinfname[j] ) then
 				continue for, for
@@ -418,6 +448,7 @@ private sub hLoadFbctinfFromCOFF( byval magic as ushort )
 		next
 
 		if( (culngint( sh->dataoffset ) + sh->size) > objdata.size ) then
+			INFO( "coff: invalid section header data offset" )
 			exit sub
 		end if
 
