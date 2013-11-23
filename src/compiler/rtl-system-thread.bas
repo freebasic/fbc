@@ -54,7 +54,11 @@ private function hThreadCallMapType _
 		else
 			function = FB_THREADCALL_STRUCT
 		end if
-	case else
+	case FB_DATATYPE_BYTE, FB_DATATYPE_CHAR, FB_DATATYPE_UBYTE, _
+	     FB_DATATYPE_SHORT, FB_DATATYPE_WCHAR, FB_DATATYPE_USHORT, _
+	     FB_DATATYPE_INTEGER, FB_DATATYPE_ENUM, FB_DATATYPE_UINT, _
+	     FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT, _
+	     FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 		select case as const( typeGetSizeType( dtype ) )
 		case FB_SIZETYPE_INT8    : function = FB_THREADCALL_INT8
 		case FB_SIZETYPE_UINT8   : function = FB_THREADCALL_UINT8
@@ -66,9 +70,10 @@ private function hThreadCallMapType _
 		case FB_SIZETYPE_UINT64  : function = FB_THREADCALL_UINT64
 		case FB_SIZETYPE_FLOAT32 : function = FB_THREADCALL_FLOAT32
 		case FB_SIZETYPE_FLOAT64 : function = FB_THREADCALL_FLOAT64
-		case else
-			exit function
+		case else                : assert( FALSE )
 		end select
+	case else
+		exit function
 	end select
 
 end function
