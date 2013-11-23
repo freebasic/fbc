@@ -128,7 +128,7 @@ dim shared as OBJINFOPARSERCTX parser
 
 dim shared as zstring * 9 fbctinfname = ".fbctinf"
 
-'' ELF32 main header
+'' ELF main headers
 type ELF32_H field = 1
 	e_ident(0 to 15)  as ubyte
 	e_type            as ushort
@@ -145,17 +145,34 @@ type ELF32_H field = 1
 	e_shnum           as ushort
 	e_shstrndx        as ushort
 end type
+type ELF64_H field = 1
+	e_ident(0 to 15)  as ubyte
+	e_type            as ushort
+	e_machine         as ushort
+	e_version         as ulong
+	e_entry           as ulongint
+	e_phoff           as ulongint
+	e_shoff           as ulongint
+	e_flags           as ulong
+	e_ehsize          as ushort
+	e_phentsize       as ushort
+	e_phnum           as ushort
+	e_shentsize       as ushort
+	e_shnum           as ushort
+	e_shstrndx        as ushort
+end type
 
-dim shared as ubyte elf32magic(0 to 15) = _
+dim shared as ubyte elfmagic(0 to 15) = _
 { _
-	&h7f, &h45, &h4c, &h46, &h01, &h01, _
+	&h7f, &h45, &h4c, &h46,    0, &h01, _  '' index 4 is set to 1 (32bit) or 2 (64bit)
 	&h01, &h00, &h00, &h00, &h00, &h00 _
 }
 
 const ET_REL = 1
 const EM_386 = 3
+const EM_X86_64 = 62
 
-'' ELF32 section header
+'' ELF section headers
 type ELF32_SH field = 1
 	sh_name         as ulong
 	sh_type         as ulong
@@ -168,20 +185,40 @@ type ELF32_SH field = 1
 	sh_addralign    as ulong
 	sh_entsize      as ulong
 end type
+type ELF64_SH field = 1
+	sh_name         as ulong
+	sh_type         as ulong
+	sh_flags        as ulongint
+	sh_addr         as ulongint
+	sh_offset       as ulongint
+	sh_size         as ulongint
+	sh_link         as ulong
+	sh_info         as ulong
+	sh_addralign    as ulongint
+	sh_entsize      as ulongint
+end type
 
-private function hCheckELF32_SH _
+'' Template for ELF32/64 loading code, which can be shared at the source level
+'' with almost no differences. Only the typenames need to be re-#defined, to
+'' make this code use either the 32bit or 64bit ELF headers (which have
+'' different field offsets and sizes), and there are a few constant values that
+'' are different too.
+
+#macro ELFLOADINGCODE(ELF_H, ELF_SH, ELF_MAGIC_4, ELF_MACHINE)
+
+private function hCheck##ELF_SH _
 	( _
-		byval h as ELF32_H ptr, _
+		byval h as ELF_H ptr, _
 		byval index as integer _
-	) as ELF32_SH ptr
+	) as ELF_SH ptr
 
-	dim as ELF32_SH ptr sh = any
+	dim as ELF_SH ptr sh = any
 	dim as integer headeroffset = any
 
-	headeroffset = h->e_shoff + (index * sizeof( ELF32_SH ))
+	headeroffset = h->e_shoff + (index * sizeof( ELF_SH ))
 
 	'' Enough room for the header?
-	if( (culngint( headeroffset ) + sizeof( ELF32_SH )) > objdata.size ) then
+	if( (culngint( headeroffset ) + sizeof( ELF_SH )) > objdata.size ) then
 		exit function
 	end if
 
@@ -195,9 +232,9 @@ private function hCheckELF32_SH _
 	function = sh
 end function
 
-private function hGetELF32SectionName _
+private function hGetSectionName##ELF_SH _
 	( _
-		byval h as ELF32_H ptr, _
+		byval h as ELF_H ptr, _
 		byval index as integer, _
 		byval nametb as integer _
 	) as zstring ptr
@@ -205,10 +242,10 @@ private function hGetELF32SectionName _
 	const MAXNAMELEN = 32
 	static as zstring * MAXNAMELEN+1 sectionname
 
-	dim as ELF32_SH ptr sh = any
+	dim as ELF_SH ptr sh = any
 	dim as integer i = any, j = any, ch = any
 
-	sh = hCheckELF32_SH( h, index )
+	sh = hCheck##ELF_SH( h, index )
 	if( sh = NULL ) then
 		exit function
 	end if
@@ -231,28 +268,29 @@ private function hGetELF32SectionName _
 	function = @sectionname
 end function
 
-private sub hLoadFbctinfFromELF32( )
-	dim as ELF32_H ptr h = any
-	dim as ELF32_SH ptr sh = any, nametb = any
+private sub hLoadFbctinfFrom##ELF_H( )
+	dim as ELF_H ptr h = any
+	dim as ELF_SH ptr sh = any, nametb = any
 	dim as zstring ptr sectionname = any
 
 	fbctinf.p = NULL
 	fbctinf.size = 0
 
-	if( objdata.size < sizeof( ELF32_H ) ) then
+	if( objdata.size < sizeof( ELF_H ) ) then
 		exit sub
 	end if
 
 	h = cptr( any ptr, objdata.p )
 
+	elfmagic(4) = ELF_MAGIC_4
 	for i as integer = 0 to 15
-		if( h->e_ident(i) <> elf32magic(i) ) then
+		if( h->e_ident(i) <> elfmagic(i) ) then
 			exit sub
 		end if
 	next
 
 	'' matching header size?
-	if( h->e_ehsize <> sizeof( ELF32_H ) ) then
+	if( h->e_ehsize <> sizeof( ELF_H ) ) then
 		exit sub
 	end if
 
@@ -261,18 +299,18 @@ private sub hLoadFbctinfFromELF32( )
 		exit sub
 	end if
 
-	'' x86?
-	if( h->e_machine <> EM_386 ) then
+	'' x86/x86_64?
+	if( h->e_machine <> ELF_MACHINE ) then
 		exit sub
 	end if
 
 	'' section header tb entry size
-	if( h->e_shentsize <> sizeof( ELF32_SH ) ) then
+	if( h->e_shentsize <> sizeof( ELF_SH ) ) then
 		exit sub
 	end if
 
 	'' number of section headers
-	if( (culngint( h->e_shnum ) * sizeof( ELF32_SH )) > objdata.size ) then
+	if( (culngint( h->e_shnum ) * sizeof( ELF_SH )) > objdata.size ) then
 		exit sub
 	end if
 
@@ -282,13 +320,13 @@ private sub hLoadFbctinfFromELF32( )
 	end if
 
 	'' section header tb file offset
-	if( (culngint( h->e_shoff ) + (h->e_shnum * sizeof( ELF32_SH ))) > objdata.size ) then
+	if( (culngint( h->e_shoff ) + (h->e_shnum * sizeof( ELF_SH ))) > objdata.size ) then
 		exit sub
 	end if
 
 	'' Look up the section header for .shstrtab (index in section header tb
 	'' is given as head->e_shstrndx), and find the offset to the section's content.
-	nametb = hCheckELF32_SH( h, h->e_shstrndx )
+	nametb = hCheck##ELF_SH( h, h->e_shstrndx )
 	if( nametb = NULL ) then
 		exit sub
 	end if
@@ -296,10 +334,10 @@ private sub hLoadFbctinfFromELF32( )
 	'' Look up section names (relies on knowing the .shstrtab data, the section name tb)
 	'' Starting at section header 1 because 0 always is an empty (NULL) section header
 	for i as integer = 1 to h->e_shnum - 1
-		sectionname = hGetELF32SectionName( h, i, nametb->sh_offset )
+		sectionname = hGetSectionName##ELF_SH( h, i, nametb->sh_offset )
 		if( sectionname ) then
 			if( *sectionname = fbctinfname ) then
-				sh = hCheckELF32_SH( h, i )
+				sh = hCheck##ELF_SH( h, i )
 				if( sh ) then
 					fbctinf.p = objdata.p + sh->sh_offset
 					fbctinf.size = sh->sh_size
@@ -309,6 +347,11 @@ private sub hLoadFbctinfFromELF32( )
 		end if
 	next
 end sub
+
+#endmacro
+
+ELFLOADINGCODE( ELF32_H, ELF32_SH, 1, EM_386 )
+ELFLOADINGCODE( ELF64_H, ELF64_SH, 2, EM_X86_64 )
 
 '' COFF main header
 type COFF_H field = 1
@@ -546,8 +589,13 @@ private sub hLoadFbctinfFromObj( )
 	case FB_COMPTARGET_DARWIN, FB_COMPTARGET_FREEBSD, _
 	     FB_COMPTARGET_LINUX, FB_COMPTARGET_NETBSD, _
 	     FB_COMPTARGET_OPENBSD
-		INFO( "reading ELF32: " + parser.filename )
-		hLoadFbctinfFromELF32( )
+		if( fbCpuTypeIs64bit( ) ) then
+			INFO( "reading ELF64: " + parser.filename )
+			hLoadFbctinfFromELF64_H( )
+		else
+			INFO( "reading ELF32: " + parser.filename )
+			hLoadFbctinfFromELF32_H( )
+		end if
 
 	end select
 
