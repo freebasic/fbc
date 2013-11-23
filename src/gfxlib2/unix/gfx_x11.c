@@ -620,20 +620,35 @@ void fb_hX11Exit(void)
 		if (arrow_cursor != None) {
 			XUndefineCursor(fb_x11.display, fb_x11.window);
 			XFreeCursor(fb_x11.display, arrow_cursor);
+			arrow_cursor = None;
 			XFreeCursor(fb_x11.display, blank_cursor);
+			blank_cursor = None;
 		}
-		if (color_map != None)
+		if (color_map != None) {
 			XFreeColormap(fb_x11.display, color_map);
-		if (wm_intern_hints != None)
+			color_map = None;
+		}
+		if (wm_intern_hints != None) {
 			XDeleteProperty(fb_x11.display, fb_x11.window, wm_intern_hints);
-		if (fb_x11.window != None) XDestroyWindow(fb_x11.display, fb_x11.window);
-		if (fb_x11.fswindow != None) XDestroyWindow(fb_x11.display, fb_x11.fswindow);
-		if (fb_x11.wmwindow != None) XDestroyWindow(fb_x11.display, fb_x11.wmwindow);
+			wm_intern_hints = None;
+		}
+		if (fb_x11.window != None) {
+			XDestroyWindow(fb_x11.display, fb_x11.window);
+			fb_x11.window = None;
+		}
+		if (fb_x11.fswindow != None) {
+			XDestroyWindow(fb_x11.display, fb_x11.fswindow);
+			fb_x11.fswindow = None;
+		}
+		if (fb_x11.wmwindow != None) {
+			XDestroyWindow(fb_x11.display, fb_x11.wmwindow);
+			fb_x11.wmwindow = None;
+		}
 		if (fb_x11.config) {
 			XRRFreeScreenConfigInfo(fb_x11.config);
 			fb_x11.config = NULL;
 		}
-		if(fb_x11.display) XCloseDisplay(fb_x11.display);
+		XCloseDisplay(fb_x11.display);
 		fb_x11.display = NULL;
 	}
 }

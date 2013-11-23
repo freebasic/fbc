@@ -128,7 +128,6 @@ static int driver_init(char *title, int w, int h, int depth, int refresh_rate, i
 		"glXChooseVisual", "glXCreateContext", "glXDestroyContext",
 		"glXMakeCurrent", "glXSwapBuffers", NULL
 	};
-	static Display * dpy = 0;
 	GLXFUNCS *funcs = &__fb_glX;
 	void **funcs_ptr = (void **)funcs;
 	XVisualInfo *info;
@@ -180,20 +179,19 @@ static int driver_init(char *title, int w, int h, int depth, int refresh_rate, i
 	fb_x11.exit = opengl_window_exit;
 	fb_x11.update = opengl_window_update;
 	fb_hXlibInit();
-	if(!dpy)
-		dpy = XOpenDisplay(NULL);
-	if (!dpy)
+	fb_x11.display = XOpenDisplay(NULL);
+	if (!fb_x11.display)
 		return -1;
-	fb_x11.screen = XDefaultScreen(dpy);
+	fb_x11.screen = XDefaultScreen(fb_x11.display);
 	if (!gl_lib) gl_lib = fb_hDynLoad("libGL.so.1", glx_funcs, funcs_ptr);
 
 	if (!gl_lib)
 		return -1;
 
 	do {
-		if ((info = __fb_glX.ChooseVisual(dpy, fb_x11.screen, attribs))) {
+		if ((info = __fb_glX.ChooseVisual(fb_x11.display, fb_x11.screen, attribs))) {
 			fb_x11.visual = info->visual;
-			context = __fb_glX.CreateContext(dpy, info, NULL, True);
+			context = __fb_glX.CreateContext(fb_x11.display, info, NULL, True);
 			if (context)
 				break;
 			XFree(info);
@@ -205,7 +203,6 @@ static int driver_init(char *title, int w, int h, int depth, int refresh_rate, i
 		return -1;
 	}
 
-	fb_x11.display = dpy;
 	result = fb_hX11Init(title, w, h, info->depth, refresh_rate, flags);
 
 	XFree(info);
