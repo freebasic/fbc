@@ -379,7 +379,7 @@ type COFF_SH field = 1
 	flags		as ulong
 end type
 
-private sub hLoadFbctinfFromCOFF( )
+private sub hLoadFbctinfFromCOFF( byval magic as ushort )
 	dim as COFF_H ptr h = any
 	dim as COFF_SH ptr sh = any, shbase = any
 
@@ -392,8 +392,8 @@ private sub hLoadFbctinfFromCOFF( )
 
 	h = cptr( any ptr, objdata.p )
 
-	'' COFF i386 magic
-	if( h->magic <> &h014C ) then
+	'' COFF magic
+	if( h->magic <> magic ) then
 		exit sub
 	end if
 
@@ -583,17 +583,22 @@ private sub hLoadFbctinfFromObj( )
 	select case as const( fbGetOption( FB_COMPOPT_TARGET ) )
 	case FB_COMPTARGET_CYGWIN, FB_COMPTARGET_DOS, _
 	     FB_COMPTARGET_WIN32, FB_COMPTARGET_XBOX
-		INFO( "reading COFF: " + parser.filename )
-		hLoadFbctinfFromCOFF( )
+		if( fbCpuTypeIs64bit( ) ) then
+			INFO( "reading x86-64 COFF: " + parser.filename )
+			hLoadFbctinfFromCOFF( &h8664 )
+		else
+			INFO( "reading i386 COFF: " + parser.filename )
+			hLoadFbctinfFromCOFF( &h014C )
+		end if
 
 	case FB_COMPTARGET_DARWIN, FB_COMPTARGET_FREEBSD, _
 	     FB_COMPTARGET_LINUX, FB_COMPTARGET_NETBSD, _
 	     FB_COMPTARGET_OPENBSD
 		if( fbCpuTypeIs64bit( ) ) then
-			INFO( "reading ELF64: " + parser.filename )
+			INFO( "reading x86-64 ELF: " + parser.filename )
 			hLoadFbctinfFromELF64_H( )
 		else
-			INFO( "reading ELF32: " + parser.filename )
+			INFO( "reading i386 ELF: " + parser.filename )
 			hLoadFbctinfFromELF32_H( )
 		end if
 
