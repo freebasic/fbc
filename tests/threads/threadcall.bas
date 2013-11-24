@@ -38,6 +38,11 @@ namespace fbc_tests.threads.threadcall_tests
         CU_ASSERT_TRUE( us = 2 )
     end sub
 
+    extern "Windows-MS"
+        sub testWindowsMs( )
+        end sub
+    end extern
+
     sub BigInt cdecl( byref i as integer, byref ui as uinteger, _
         byref l as longint, byref ul as ulongint )
         
@@ -118,6 +123,7 @@ namespace fbc_tests.threads.threadcall_tests
         '' call threads
 #ifdef __FB_WIN32__
         SmallInt_Thread = threadcall SmallInt( 20, 1, 19, 2 )
+        testWindowsMs_thread = threadcall testWindowsMs( )
 #endif
         BigInt_Thread = threadcall BigInt( i, ui, l, ul )
         FloatStr_Thread = threadcall FloatStr( 15.00, d, "fourteen", strref )
@@ -131,6 +137,7 @@ namespace fbc_tests.threads.threadcall_tests
 
 #ifdef __FB_WIN32__
         threadwait SmallInt_Thread
+        threadwait testWindowsMs_thread
 #endif
         threadwait BigInt_Thread
         threadwait FloatStr_Thread

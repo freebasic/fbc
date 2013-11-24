@@ -93,6 +93,7 @@ Version 0.91.0:
 - #701: fbc didn't escape \ as \\ in @files (response files) sometimes used when invoking ld
 - Win32 fbc will now avoid hitting Win32 command line length limits when invoking ld with a long command line, by using "ld @file" (response files)
 - #713: gfxlib2 crashed when closing and re-opening an X11 OpenGL graphics screen
+- ThreadCall on Win32 couldn't be used with procedures declared inside Extern "Windows-MS" blocks
 
 
 Version 0.90.1:

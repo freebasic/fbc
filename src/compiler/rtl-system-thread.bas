@@ -210,7 +210,8 @@ function rtlThreadCall(byval callexpr as ASTNODE ptr) as ASTNODE ptr
     if procmode_fb = FB_FUNCMODE_FBCALL then procmode_fb = env.target.fbcall
     if( procmode_fb = FB_FUNCMODE_CDECL ) then
         procmode = FB_THREADCALL_CDECL
-    elseif( procmode_fb = FB_FUNCMODE_STDCALL _
+    elseif( ((procmode_fb = FB_FUNCMODE_STDCALL) or _
+             (procmode_fb = FB_FUNCMODE_STDCALL_MS)) _
         and env.clopt.target = FB_COMPTARGET_WIN32 ) then
         procmode = FB_THREADCALL_STDCALL
     else
