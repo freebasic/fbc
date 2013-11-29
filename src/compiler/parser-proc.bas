@@ -136,7 +136,7 @@ private function hCheckPrototype _
 	'' Check ALIAS id
 	if( (palias <> NULL) and ((proto->stats and FB_SYMBSTATS_HASALIAS) <> 0) ) then
 		if( *palias <> *proto->id.alias ) then
-			errReportEx( FB_ERRNUM_DIFFERENTALIASTHANPROTO, """" + *palias + """" )
+			errReportEx( FB_ERRMSG_DIFFERENTALIASTHANPROTO, """" + *palias + """" )
 			exit function
 		end if
 	end if
@@ -1670,6 +1670,19 @@ sub hDisallowAbstractDtor( byref attrib as integer )
 	end if
 end sub
 
+sub hDisallowConstCtorDtor( byval tk as integer, byref attrib as integer )
+	'' It doesn't make sense for ctors/dtors to be CONST. It's a ctor's
+	'' purpose to initialize an object and it couldn't do that if it used
+	'' a CONST This. And as for dtors, they need to be able to destroy all
+	'' objects, CONST or not. It doesn't matter whether the dtor modifies
+	'' the object in the process since it's dead afterwards anyways.
+	if( attrib and FB_SYMBATTRIB_CONST ) then
+		errReport( iif( tk = FB_TK_CONSTRUCTOR, _
+			FB_ERRMSG_CONSTCTOR, FB_ERRMSG_CONSTDTOR ) )
+		attrib and= not FB_SYMBATTRIB_CONST
+	end if
+end sub
+
 '' ProcStmtBegin  =  (PRIVATE|PUBLIC)? (STATIC? | CONST? VIRTUAL?)
 ''                   (SUB|FUNCTION|CONSTRUCTOR|DESTRUCTOR|OPERATOR) ProcHeader .
 sub cProcStmtBegin( byval attrib as integer )
@@ -1687,7 +1700,7 @@ sub cProcStmtBegin( byval attrib as integer )
 
 	cMethodAttributes( NULL, attrib )
 
-	'' SUB | FUNCTION
+	'' SUB|FUNCTION|CONSTRUCTOR|DESTRUCTOR|OPERATOR
 	tkn = lexGetToken( )
 	select case as const tkn
 	case FB_TK_SUB, FB_TK_FUNCTION
@@ -1701,6 +1714,7 @@ sub cProcStmtBegin( byval attrib as integer )
 
 		hDisallowStaticAttrib( attrib )
 		hDisallowVirtualCtor( attrib )
+		hDisallowConstCtorDtor( tkn, attrib )
 
 	case FB_TK_DESTRUCTOR
 		if( fbLangOptIsSet( FB_LANG_OPT_CLASS ) = FALSE ) then
@@ -1711,6 +1725,7 @@ sub cProcStmtBegin( byval attrib as integer )
 
 		hDisallowStaticAttrib( attrib )
 		hDisallowAbstractDtor( attrib )
+		hDisallowConstCtorDtor( tkn, attrib )
 
 	case FB_TK_OPERATOR
 		if( fbLangOptIsSet( FB_LANG_OPT_OPEROVL ) = FALSE ) then

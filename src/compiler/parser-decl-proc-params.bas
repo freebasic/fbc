@@ -235,13 +235,13 @@ private function hParamDecl _
 
 			'' is it the first arg?
 			if( symbGetProcParams( proc ) = 0 ) then
-				hParamError( proc, "...", FB_ERRNUM_VARARGNOTALLOWEDASFIRSTPARAM )
+				hParamError( proc, "...", FB_ERRMSG_VARARGNOTALLOWEDASFIRSTPARAM )
 				return hMockParam( proc, FB_PARAMMODE_VARARG )
 			end if
 
 			'' not cdecl?
 			if( proc_mode <> FB_FUNCMODE_CDECL ) then
-				hParamError( proc, "...", FB_ERRNUM_VARARGONLYALLOWEDINCDECL )
+				hParamError( proc, "...", FB_ERRMSG_VARARGONLYALLOWEDINCDECL )
 				return hMockParam( proc, FB_PARAMMODE_VARARG )
 			end if
 

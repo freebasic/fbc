@@ -383,7 +383,9 @@ declare function hMakeParamDesc _
 		@"Invalid size", _
 		@"ALIAS name here is different from ALIAS given in DECLARE prototype", _
 		@"vararg parameters are only allowed in CDECL procedures", _
-		@"the first parameter in a procedure may not be vararg" _
+		@"the first parameter in a procedure may not be vararg", _
+		@"CONST used on constructor (not needed)", _
+		@"CONST used on destructor (not needed)" _
 	}
 
 

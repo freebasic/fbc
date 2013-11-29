@@ -74,9 +74,11 @@ private sub hTypeProtoDecl _
 	case FB_TK_CONSTRUCTOR
 		hDisallowStaticAttrib( attrib )
 		hDisallowVirtualCtor( attrib )
+		hDisallowConstCtorDtor( tk, attrib )
 	case FB_TK_DESTRUCTOR
 		hDisallowStaticAttrib( attrib )
 		hDisallowAbstractDtor( attrib )
+		hDisallowConstCtorDtor( tk, attrib )
 	case FB_TK_PROPERTY
 		hDisallowStaticAttrib( attrib )
 	end select

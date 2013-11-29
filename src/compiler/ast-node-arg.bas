@@ -1091,8 +1091,15 @@ function astNewARG _
 		dtype = astGetFullType( arg )
 	end if
 
-	'' check const arg to non-const non-byval param (if not rtl)
-	if( (symbGetIsRTL( sym ) = FALSE) or (symbGetIsRTLConst( param )) ) then
+	'' Complain about const arg passed to non-const non-byval param,
+	'' unless it's a RTL function or the instance arg of a ctor/dtor call.
+	'' (ctors/dtors should be able to operate even on const objects, because
+	'' a ctor that can't initialize the object would be useless, and after
+	'' dtors run the object is dead anyways, so modifications made by the
+	'' dtor don't matter)
+	if( ((symbGetIsRTL( sym ) = FALSE) or symbGetIsRTLConst( param )) and _
+	    ((not symbIsParamInstance( param )) or _
+	     ((not symbIsConstructor( sym )) and (not symbIsDestructor( sym )))) ) then
 		if( symbCheckConstAssign( symbGetFullType( param ), dtype, param->subtype, arg->subtype, symbGetParamMode( param ) ) = FALSE ) then
 			if( symbIsParamInstance( param ) ) then
 				errReportParam( parent->sym, 0, NULL, FB_ERRMSG_CONSTUDTTONONCONSTMETHOD )
