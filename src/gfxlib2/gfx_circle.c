@@ -26,8 +26,18 @@ static void draw_scanline(FB_GFXCTX *ctx, int y, int x1, int x2, unsigned int co
 }
 
 
-/*:::::*/
-static void draw_ellipse(FB_GFXCTX *ctx, int x, int y, float a, float b, unsigned int color, int fill)
+static void draw_ellipse
+	(
+		FB_GFXCTX *ctx,
+		int x,
+		int y,
+		float a,
+		float b,
+		unsigned int color,
+		int fill,
+		int *top,
+		int *bottom
+	)
 {
 	int d, x1, y1, x2, y2;
 	long long dx, dy, aq, bq, r, rx, ry;
@@ -37,14 +47,16 @@ static void draw_ellipse(FB_GFXCTX *ctx, int x, int y, float a, float b, unsigne
 	x2 = x + a;
 	y1 = y2 = y;
 	fb_hMemSet(filled, 0, ctx->view_h);
-	
+
 	if (!b) {
 		draw_scanline(ctx, y, x1, x2, color, TRUE, filled);
+		*top = y;
+		*bottom = y;
 		return;
 	}
-	else
-		draw_scanline(ctx, y, x1, x2, color, fill, filled);
-	
+
+	draw_scanline(ctx, y, x1, x2, color, fill, filled);
+
 	aq = a * a;
 	bq = b * b;
 	dx = aq << 1;
@@ -53,7 +65,7 @@ static void draw_ellipse(FB_GFXCTX *ctx, int x, int y, float a, float b, unsigne
 	rx = r << 1;
 	ry = 0;
 	d = a;
-	
+
 	while (d > 0) {
 		if (r > 0) {
 			y1++;
@@ -71,8 +83,12 @@ static void draw_ellipse(FB_GFXCTX *ctx, int x, int y, float a, float b, unsigne
 		draw_scanline(ctx, y1, x1, x2, color, fill, filled);
 		draw_scanline(ctx, y2, x1, x2, color, fill, filled);
 	}
-}
 
+	/* Tell caller exactly which rows were drawn so the SET_DIRTY() will be
+	   correct */
+	*top = y2;
+	*bottom = y1;
+}
 
 /*:::::*/
 static void get_arc_point(float angle, float a, float b, int *x, int *y)
@@ -91,18 +107,16 @@ static void get_arc_point(float angle, float a, float b, int *x, int *y)
 		*y = (int)(s - 0.5);
 }
 
-
-/*:::::*/
 FBCALL void fb_GfxEllipse(void *target, float fx, float fy, float radius, unsigned int color, float aspect, float start, float end, int fill, int flags)
 {
 	FB_GFXCTX *context = fb_hGetContext();
 	int x, y, x1, y1, top, bottom;
 	unsigned int orig_color;
 	float a, b, orig_x, orig_y, increment;
-	
+
 	if (!__fb_gfx || radius <= 0.0)
 		return;
-	
+
 	orig_x = fx;
 	orig_y = fy;
 
@@ -115,11 +129,11 @@ FBCALL void fb_GfxEllipse(void *target, float fx, float fy, float radius, unsign
 		color = fb_hFixColor(context->target_bpp, color);
 	
 	fb_hSetPixelTransfer(context, color);
-	
+
 	fb_hFixRelative(context, flags, &fx, &fy, NULL, NULL);
-	
+
 	fb_hTranslateCoord(context, fx, fy, &x, &y);
-	
+
 	if (context->flags & CTX_WINDOW_ACTIVE) {
 		/* radius gets multiplied by the VIEW/WINDOW width ratio (aspect is unchanged) */
 		radius *= (context->view_w / context->win_w);
@@ -136,9 +150,8 @@ FBCALL void fb_GfxEllipse(void *target, float fx, float fy, float radius, unsign
 		a = radius;
 		b = (radius * aspect);
 	}
-	
+
 	if ((start != 0.0) || (end != 3.141593f * 2.0)) {
-		
 		if (start < 0) {
 			start = -start;
 			get_arc_point(start, a, b, &x1, &y1);
@@ -180,17 +193,15 @@ FBCALL void fb_GfxEllipse(void *target, float fx, float fy, float radius, unsign
 	}
 	else {
 		DRIVER_LOCK();
-		
-		draw_ellipse(context, x, y, a, b, color, fill);
-		top = y - b;
-		bottom = y + b;
+		draw_ellipse(context, x, y, a, b, color, fill, &top, &bottom);
 	}
-	
+
 	top = MID(context->view_y, top, context->view_y + context->view_h - 1);
 	bottom = MID(context->view_y, bottom, context->view_y + context->view_h - 1);
 	if( top > bottom )
 		SWAP( top, bottom );
+
 	SET_DIRTY(context, top, bottom - top + 1);
-	
+
 	DRIVER_UNLOCK();
 }
