@@ -2879,7 +2879,6 @@ private sub _emitAddr _
 		byval vr as IRVREG ptr _
 	)
 
-	static as string s
 	dim as EXPRNODE ptr l = NULL
 
 	hLoadVreg( v1 )
