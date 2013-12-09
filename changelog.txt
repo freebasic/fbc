@@ -96,6 +96,7 @@ Version 0.91.0:
 - #713: gfxlib2 crashed when closing and re-opening an X11 OpenGL graphics screen
 - ThreadCall on Win32 couldn't be used with procedures declared inside Extern "Windows-MS" blocks
 - CIRCLE did sometimes not fully update the screen immediately, causing the last scan line of the circle to remain invisible until the screen was updated some other way
+- crt/linux/fnctl.bi: Broken declaration of open_ ALIAS "open"() (0.90.0 regression)
 
 
 Version 0.90.1:

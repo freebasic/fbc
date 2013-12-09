@@ -167,7 +167,7 @@ declare function open_by_handle_at (byval __mountdirfd as long, byval __handle a
 #define F_OK 0
 
 declare function fcntl (byval __fd as long, byval __cmd as long, ...) as long
-declare function open_  (byval __file as const zstring ptr, byval __oflag as long, ...) as long
+declare function open_ alias "open" (byval __file as const zstring ptr, byval __oflag as long, ...) as long
 declare function open64 (byval __file as const zstring ptr, byval __oflag as long, ...) as long
 declare function openat   (byval __fd as long, byval __file as const zstring ptr, byval __oflag as long, ...) as long
 declare function openat64 (byval __fd as long, byval __file as const zstring ptr, byval __oflag as long, ...) as long
