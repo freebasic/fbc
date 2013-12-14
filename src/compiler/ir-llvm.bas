@@ -1267,7 +1267,6 @@ private sub hPrepareAddress( byval v as IRVREG ptr )
 
 	select case( v->typ )
 	case IR_VREGTYPE_PTR
-		assert( vidx->dtype = typeAddrOf( v->dtype ) )
 		assert( irIsREG( vidx ) )
 		*v = *vidx
 	case else
