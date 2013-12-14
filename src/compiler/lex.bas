@@ -144,6 +144,33 @@ sub lexEnd( )
 
 end sub
 
+private sub hCollectCharForDebugOutput( byval char as uinteger )
+	if( char < 32 ) then
+		'' Filter out ASCII control chars, as they really shouldn't be
+		'' emitted into .asm/.c, because, for example, &h17 (ETB, end of
+		'' transmission block) apparently causes GAS to stop early,
+		'' instead of reading until the rest of the .asm file, even if
+		'' it's inside a comment.
+		select case as const( char )
+		case 0, CHAR_CR, CHAR_LF
+			exit sub
+
+		'' Those white-space chars should be ok though
+		case CHAR_TAB, CHAR_VTAB, CHAR_FORMFEED
+
+		case else
+			char = asc( "?" )
+		end select
+
+	'' Unicode char? Can't be stored into lex.ctx->currline zstring,
+	'' and .asm/.c output files are ANSI/ASCII-only anyways.
+	elseif( char > 255 ) then
+		char = asc( "?" )
+	end if
+
+	DZstrConcatAssignC( lex.ctx->currline, char )
+end sub
+
 '':::::
 private function hReadChar _
 	( _
@@ -169,12 +196,7 @@ private function hReadChar _
 					DZstrConcatAssign( lex.ctx->currline, " [Macro Expansion: " )
 				end if
 
-				select case as const char
-				case 0, CHAR_CR, CHAR_LF
-
-				case else
-					DZstrConcatAssignC( lex.ctx->currline, char )
-				end select
+				hCollectCharForDebugOutput( char )
 			end if
 		end if
 
@@ -232,12 +254,7 @@ private function hReadChar _
 					DZstrConcatAssign( lex.ctx->currline, " ] " )
 				end if
 
-				select case as const char
-				case 0, CHAR_CR, CHAR_LF
-
-				case else
-					DZstrConcatAssignC( lex.ctx->currline, char )
-				end select
+				hCollectCharForDebugOutput( char )
 			end if
 		end if
 
