@@ -36,9 +36,13 @@ void fb_hRtInit( void )
 	 * of the codepage <-> Unicode conversion functions, but not for
 	 * example LC_NUMERIC, which would affect things like the decimal
 	 * separator used by float <-> string conversion functions.
+	 *
+	 * Don't bother doing it under DJGPP - there we don't really support
+	 * wstrings anyways, and the setlocale() reference increases .exe size.
 	 */
+#ifndef HOST_DOS
 	setlocale( LC_CTYPE, "" );
-
+#endif
 }
 
 /* called from fbrt0 */
