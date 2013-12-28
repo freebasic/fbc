@@ -526,6 +526,173 @@ namespace vectorNewComplexElements
 	end sub
 end namespace
 
+namespace placementNewPod
+	sub test cdecl( )
+		dim as integer ptr buffer = callocate( sizeof( integer ) * 3 )
+
+		dim as integer ptr p = new(buffer+1) integer (111)
+		CU_ASSERT( p = buffer+1 )
+		CU_ASSERT( buffer[0] = 0 )
+		CU_ASSERT( buffer[1] = 111 )
+		CU_ASSERT( buffer[2] = 0 )
+
+		deallocate( buffer )
+	end sub
+end namespace
+
+namespace placementNewCtor
+	dim shared as integer ctors
+
+	type CtorUdt
+		i as integer
+		declare constructor( )
+	end type
+
+	constructor CtorUdt( )
+		ctors += 1
+		i = 111
+	end constructor
+
+	sub test cdecl( )
+		dim as CtorUdt ptr buffer = callocate( sizeof( CtorUdt ) * 3 )
+
+		dim as CtorUdt ptr p = new(buffer+1) CtorUdt
+		CU_ASSERT( ctors = 1 )
+		CU_ASSERT( p = buffer+1 )
+		CU_ASSERT( buffer[0].i = 0 )
+		CU_ASSERT( buffer[1].i = 111 )
+		CU_ASSERT( buffer[2].i = 0 )
+
+		deallocate( buffer )
+	end sub
+end namespace
+
+namespace placementNewCtorDtor
+	dim shared as integer ctors, dtors
+
+	type CtorDtorUdt
+		i as integer
+		declare constructor( )
+		declare destructor( )
+	end type
+
+	constructor CtorDtorUdt( )
+		ctors += 1
+		i = 111
+	end constructor
+
+	destructor CtorDtorUdt( )
+		dtors += 1
+	end destructor
+
+	sub test cdecl( )
+		dim as CtorDtorUdt ptr buffer = callocate( sizeof( CtorDtorUdt ) * 3 )
+
+		dim as CtorDtorUdt ptr p = new(buffer+1) CtorDtorUdt
+		CU_ASSERT( ctors = 1 )
+		CU_ASSERT( dtors = 0 )
+		CU_ASSERT( p = buffer+1 )
+		CU_ASSERT( buffer[0].i = 0 )
+		CU_ASSERT( buffer[1].i = 111 )
+		CU_ASSERT( buffer[2].i = 0 )
+
+		deallocate( buffer )
+	end sub
+end namespace
+
+namespace placementVectorNewPod
+	sub test cdecl( )
+		dim as integer ptr buffer = callocate( sizeof( integer ) * 5 )
+		buffer[0] = &hAA
+		buffer[1] = &hBB
+		buffer[2] = &hCC
+		buffer[3] = &hDD
+		buffer[4] = &hEE
+
+		dim as integer ptr p = new(buffer+1) integer[3]
+		CU_ASSERT( p = buffer+1 )
+		CU_ASSERT( buffer[0] = &hAA )  '' no cookie should be written to p[-1]
+		CU_ASSERT( buffer[1] = 0 )
+		CU_ASSERT( buffer[2] = 0 )
+		CU_ASSERT( buffer[3] = 0 )
+		CU_ASSERT( buffer[4] = &hEE )
+
+		deallocate( buffer )
+	end sub
+end namespace
+
+namespace placementVectorNewCtor
+	dim shared as integer ctors
+
+	type CtorUdt
+		i as integer
+		declare constructor( )
+	end type
+
+	constructor CtorUdt( )
+		ctors += 1
+	end constructor
+
+	sub test cdecl( )
+		dim as CtorUdt ptr buffer = callocate( sizeof( CtorUdt ) * 5 )
+		buffer[0].i = &hAA
+		buffer[1].i = &hBB
+		buffer[2].i = &hCC
+		buffer[3].i = &hDD
+		buffer[4].i = &hEE
+
+		dim as CtorUdt ptr p = new(buffer+1) CtorUdt[3]
+		CU_ASSERT( ctors = 3 )
+		CU_ASSERT( p = buffer+1 )
+		CU_ASSERT( buffer[0].i = &hAA )  '' no cookie should be written to p[-1]
+		CU_ASSERT( buffer[1].i = 0 )
+		CU_ASSERT( buffer[2].i = 0 )
+		CU_ASSERT( buffer[3].i = 0 )
+		CU_ASSERT( buffer[4].i = &hEE )
+
+		deallocate( buffer )
+	end sub
+end namespace
+
+namespace placementVectorNewCtorDtor
+	dim shared as integer ctors, dtors
+
+	type CtorDtorUdt
+		i as integer
+		declare constructor( )
+		declare destructor( )
+	end type
+
+	constructor CtorDtorUdt( )
+		ctors += 1
+	end constructor
+
+	destructor CtorDtorUdt( )
+		dtors += 1
+	end destructor
+
+	sub test cdecl( )
+		dim as CtorDtorUdt ptr buffer = callocate( sizeof( CtorDtorUdt ) * 5 )
+		buffer[0].i = &hAA
+		buffer[1].i = &hBB
+		buffer[2].i = &hCC
+		buffer[3].i = &hDD
+		buffer[4].i = &hEE
+
+		dim as CtorDtorUdt ptr p = new(buffer+1) CtorDtorUdt[3]
+		CU_ASSERT( ctors = 3 )
+		CU_ASSERT( dtors = 0 )
+		CU_ASSERT( p = buffer+1 )
+		CU_ASSERT( buffer[0].i = &hAA )  '' no cookie should be written to p[-1]
+		CU_ASSERT( buffer[1].i = 0 )
+		CU_ASSERT( buffer[2].i = 0 )
+		CU_ASSERT( buffer[3].i = 0 )
+		CU_ASSERT( buffer[4].i = &hEE )
+
+		deallocate( buffer )
+	end sub
+end namespace
+
 '' #3509495 regression test
 namespace deleteDerivedPtr
 	type Parent
@@ -680,6 +847,12 @@ private sub ctor( ) constructor
 	fbcu.add_test( "New + side-effects", @newSideFx.test )
 	fbcu.add_test( "New[sidefx]", @vectorNewSideFx.test )
 	fbcu.add_test( "new[iif + TYPEINIs]", @vectorNewComplexElements.test )
+	fbcu.add_test( "new(address) integer", @placementNewPod.test )
+	fbcu.add_test( "new(address) CtorUdt", @placementNewCtor.test )
+	fbcu.add_test( "new(address) CtorDtorUdt", @placementNewCtorDtor.test )
+	fbcu.add_test( "new(address) integer[]", @placementVectorNewPod.test )
+	fbcu.add_test( "new(address) CtorUdt[]", @placementVectorNewCtor.test )
+	fbcu.add_test( "new(address) CtorDtorUdt[]", @placementVectorNewCtorDtor.test )
 	fbcu.add_test( "Delete on derived UDT pointers", @deleteDerivedPtr.test )
 	fbcu.add_test( "Delete + side-effects 1", @deleteSideFx1.test )
 	fbcu.add_test( "Delete + side-effects 2", @deleteSideFx2.test )

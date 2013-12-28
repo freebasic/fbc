@@ -100,6 +100,7 @@ Version 0.91.0:
 - CIRCLE did sometimes not fully update the screen immediately, causing the last scan line of the circle to remain invisible until the screen was updated some other way
 - crt/linux/fnctl.bi: Broken declaration of open_ ALIAS "open"() (0.90.0 regression)
 - Using Unicode characters in comments and compiling with -g could lead to junk bytes being emitted into the generated .asm/.c files
+- #710: Operator Placement New[] ("new(address) DataType[N]") will no longer store a cookie containing the number of vector elements (N) in front of the allocated buffer, as done by normal New[]. The cookie is an implementation detail that the coder can't be expected to know, especially because it only applies to New[] when used with data type that has a destructor, so the buffer given to Placement New[] will likely be too small. Besides that, the cookie is only useful to Delete[], which however can only be used with New[], but not Placement New[] (no way to be sure that the given buffer even can be Delete[]'d).
 
 
 Version 0.90.1:

@@ -165,7 +165,13 @@ function astBuildNewOp _
 	'' new[] stores the element count, if there is a destructor,
 	'' so delete[] knows how many objects to destroy
 	if( op = AST_OP_NEW_VEC ) then
-		save_elmts = typeHasDtor( dtype, subtype )
+		'' Not placement new[] though, because
+		'' 1) we can't assume the given buffer to have room for the cookie at buffer[-1],
+		'' 2) and the cookie is only needed for the built-in delete[] which can only be
+		''    used with new[], but not placement new[]
+		if( newexpr = NULL ) then
+			save_elmts = typeHasDtor( dtype, subtype )
+		end if
 	end if
 
 	if( newexpr = NULL ) then
