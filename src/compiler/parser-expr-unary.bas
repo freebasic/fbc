@@ -502,7 +502,8 @@ private function hVarPtrBody _
 	end if
 
 	select case as const astGetClass( t )
-	case AST_NODECLASS_VAR, AST_NODECLASS_IDX, AST_NODECLASS_DEREF, AST_NODECLASS_TYPEINI
+	case AST_NODECLASS_VAR, AST_NODECLASS_IDX, AST_NODECLASS_DEREF, _
+	     AST_NODECLASS_TYPEINI, AST_NODECLASS_CALLCTOR
 
 	case AST_NODECLASS_FIELD
 		'' can't take address of bitfields..
