@@ -1896,37 +1896,16 @@ private sub _emitAddr _
 		'' If a different type is wanted we can do a bitcast,
 		'' but without loading the vreg, and if it's the same type
 		'' the expression can be re-used as-is.
-
-		assert( irIsREG( vr ) )
-
-		'' Treat memory access as address - turn it into a REG
-		'' Note: we do not allocate a v1->reg value like _allocVreg()
-		'' would do, but instead leave v1->sym set, to be able to
-		'' access that LLVM value.
-		assert( v1->typ = IR_VREGTYPE_VAR )
-		assert( v1->ofs = 0 )
-		assert( v1->vidx = NULL )
-		v1->typ = IR_VREGTYPE_REG
-		v1->dtype = typeAddrOf( v1->dtype )
-		v1->reg = INVALID
-
-		'' Add bitcast if types differ
-		if( (vr->dtype <> v1->dtype) or (vr->subtype <> v1->subtype) ) then
-			ln = hVregToStr( vr ) + " = bitcast "
-			ln += hEmitType( v1->dtype, v1->subtype )
-			ln += " " + hVregToStr( v1 ) + " to "
-			ln += hEmitType( vr->dtype, vr->subtype )
-			hWriteLine( ln )
-		else
-			*vr = *v1
-		end if
+		hPrepareAddress( v1 )
+		_setVregDataType( v1, vr->dtype, vr->subtype )
 
 	case AST_OP_DEREF
 		hLoadVreg( v1 )
-		assert( irIsREG( vr ) and irIsREG( v1 ) )
-		*vr = *v1
 
 	end select
+
+	assert( irIsREG( vr ) and irIsREG( v1 ) )
+	*vr = *v1
 
 end sub
 
