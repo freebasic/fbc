@@ -830,7 +830,7 @@ private function hAstNodeToStr _
 		return str( astConstGetInt( n ) )
 
 	case AST_NODECLASS_VAR
-		return "VAR( " & *symbGetName( n->sym ) & " )"
+		return "VAR( " & *iif( n->sym, symbGetName( n->sym ), @"<NULL>" ) & " )"
 
 	case AST_NODECLASS_DECL
 		if( n->sym ) then
