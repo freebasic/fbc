@@ -358,27 +358,29 @@ private sub hCheckByrefParam _
 		end if
 	end if
 
-	select case as const t->class
-	'' var, array index or pointer? pass as-is (assuming the type was already checked)
-	case AST_NODECLASS_VAR, AST_NODECLASS_IDX, _
-	     AST_NODECLASS_FIELD, AST_NODECLASS_DEREF, _
-	     AST_NODECLASS_IIF
-
-	case else
-		'' string? do nothing (ie: functions returning var-len string's)
+	'' If it's a CALL returning a STRING, it actually returns a pointer,
+	'' which can be passed to the BYREF param as-is
+	if( astIsCALL( t ) ) then
 		select case as const( astGetDataType( arg ) )
 		case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, _
-			 FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
-			return
-
-		'' UDT? do nothing, just take the address of
-		case FB_DATATYPE_STRUCT
-
-		case else
-			'' scalars: store arg to a temp var and pass it
-			arg = astNewASSIGN( astNewVAR( symbAddTempVar( arg->dtype, arg->subtype ) ), _
-			                    arg, AST_OPOPT_DONTCHKPTR )
+		     FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
+			exit sub
 		end select
+	end if
+
+	select case as const( t->class )
+	'' variable/object? take address and pass (BYREF semantics)
+	'' also iif() and TYPEINIs/CALLCTORs whose temp vars can be passed.
+	case AST_NODECLASS_VAR, AST_NODECLASS_IDX, _
+	     AST_NODECLASS_FIELD, AST_NODECLASS_DEREF, _
+	     AST_NODECLASS_IIF, _
+	     AST_NODECLASS_TYPEINI, AST_NODECLASS_CALLCTOR
+
+	case else
+		'' Other expressions (especially BOPs, CONSTs, etc. that aren't variables/objects):
+		'' store arg to a temp var, take address and pass
+		arg = astNewASSIGN( astNewVAR( symbAddTempVar( arg->dtype, arg->subtype ) ), _
+		                    arg, AST_OPOPT_DONTCHKPTR )
 
 	end select
 
