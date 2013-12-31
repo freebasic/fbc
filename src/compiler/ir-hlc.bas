@@ -1456,13 +1456,16 @@ private function hNewVR _
 	v->typ = vtype
 	v->dtype = dtype
 	v->subtype = subtype
-	v->sym = NULL
 	v->reg = INVALID
-	v->vidx	= NULL
+	v->regFamily = 0
+	v->vector = 0
+	v->sym = NULL
 	v->ofs = 0
+	v->mult = 0
+	v->vidx = NULL
+	v->vaux = NULL
 
 	function = v
-
 end function
 
 '':::::

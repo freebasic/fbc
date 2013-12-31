@@ -1107,15 +1107,19 @@ private function hNewVR _
 	v->typ = vtype
 	v->dtype = dtype
 	v->subtype = subtype
-	v->sym = NULL
 	if( vtype = IR_VREGTYPE_REG ) then
 		v->reg = ctx.regcnt
 		ctx.regcnt += 1
 	else
 		v->reg = INVALID
 	end if
-	v->vidx	= NULL
+	v->regFamily = 0
+	v->vector = 0
+	v->sym = NULL
 	v->ofs = 0
+	v->mult = 0
+	v->vidx = NULL
+	v->vaux = NULL
 
 	function = v
 end function

@@ -868,25 +868,23 @@ private function hNewVR _
 	v->typ = vtype
 	v->dtype = typeGet( dtype )
 	v->subtype = subtype
-	v->sym = NULL
 	v->reg = INVALID
-	v->vidx	= NULL
-	v->vaux	= NULL
-	v->ofs = 0
-	v->vector = 0
-
 	if( env.clopt.fputype = FB_FPUTYPE_FPU ) then
 		v->regFamily = IR_REG_FPU_STACK
 	else
 		v->regFamily = IR_REG_SSE
 	end if
-
+	v->vector = 0
+	v->sym = NULL
+	v->ofs = 0
+	v->mult = 0
+	v->vidx	= NULL
+	v->vaux	= NULL
 	v->tacvhead = NULL
 	v->tacvtail = NULL
 	v->taclast = NULL
 
 	function = v
-
 end function
 
 '':::::
