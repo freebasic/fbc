@@ -1666,8 +1666,8 @@ private sub _emitBop _
 		exit sub
 	end if
 
-	'' If it's a self-bop, we need to allocate a result REG and then
-	'' store that into v1 later.
+	'' If a result REG was given, use it. Otherwise, it's a self-BOP, and
+	'' we need to allocate a result REG and then store that into v1 later.
 	if( vr ) then
 		'' vr = v1 bop b2
 		assert( irIsREG( vr ) )
@@ -1723,19 +1723,46 @@ private sub _emitUop _
 		byval vr as IRVREG ptr _
 	)
 
-	dim as IRVREG ptr v2 = any
+	dim as IRVREG ptr v2 = any, vresult = any
 
-	'' LLVM IR doesn't have unary operations,
-	'' corresponding BOPs are supposed to be used instead
+	'' LLVM IR doesn't have unary operations, corresponding BOPs are
+	'' supposed to be used instead.
 	select case( op )
 	case AST_OP_NEG
 		'' vr = 0 - v1
-		v2 = _allocVrImm( FB_DATATYPE_INTEGER, NULL, 0 )
-		_emitBop( AST_OP_SUB, v2, v1, vr, NULL )
+
+		'' If a result REG was given, use it. Otherwise, it's a self-UOP, and
+		'' we need to allocate a result REG and then store that into v1 later.
+		'' Unfortunately we can't let _emitBop() handle this stuff, because in
+		'' case of a self-BOP it expects the lhs to be the variable, while here
+		'' it's the rhs. So we need to do it manually, by always using a non-self-BOP.
+		if( vr ) then
+			assert( irIsREG( vr ) )
+			vresult = vr
+		else
+			vresult = _allocVreg( v1->dtype, v1->subtype )
+		end if
+
+		v2 = _allocVrImm( FB_DATATYPE_INTEGER, NULL, 0 )  '' 0 for the lhs
+		_emitBop( AST_OP_SUB, v2, v1, vresult, NULL )     '' v1/v2 swapped, v1 goes to rhs
+
+		'' self-uop? (see above)
+		if( vr = NULL ) then
+			if( irIsREG( v1 ) ) then
+				*v1 = *vresult
+			else
+				_emitStore( v1, vresult )
+			end if
+		end if
+
 	case AST_OP_NOT
 		'' vr = v1 xor -1
+
+		'' Just pass on as BOP. Works even for self-UOPs, as v1 will be
+		'' the lhs of the self-BOP as expected by _emitBop().
 		v2 = _allocVrImm( FB_DATATYPE_INTEGER, NULL, -1 )
 		_emitBop( AST_OP_XOR, v1, v2, vr, NULL )
+
 	end select
 
 end sub
