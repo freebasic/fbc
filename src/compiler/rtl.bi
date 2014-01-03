@@ -1220,13 +1220,6 @@ declare function rtlInitApp _
 
 declare function rtlExitApp( byval errlevel as ASTNODE ptr ) as integer
 
-declare function rtlMemCopy _
-	( _
-		byval dst as ASTNODE ptr, _
-		byval src as ASTNODE ptr, _
-		byval bytes as longint _
-	) as ASTNODE ptr
-
 declare function rtlMemSwap _
 	( _
 		byval dst as ASTNODE ptr, _

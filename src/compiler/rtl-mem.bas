@@ -26,23 +26,6 @@
 				( typeAddrOf( FB_DATATYPE_CHAR ),FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
-		/' function fb_MemCopy cdecl _
-			( _
-				byref dst as any, _
-				byref src as any, _
-				byval bytes as uinteger _
-			) as any ptr '/ _
-		( _
-			@FB_RTL_MEMCOPY, @"memcpy", _
-			typeAddrOf( FB_DATATYPE_VOID ), FB_FUNCMODE_CDECL, _
-	 		NULL, FB_RTL_OPT_GCCBUILTIN, _
-			3, _
-			{ _
-				( FB_DATATYPE_VOID,FB_PARAMMODE_BYREF, FALSE ), _
-				( FB_DATATYPE_VOID,FB_PARAMMODE_BYREF, FALSE ), _
-				( FB_DATATYPE_UINT, FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
-		), _
 		/' sub fb_MemSwap( byref dst as any, byref src as any, byval bytes as integer ) '/ _
 		( _
 			@FB_RTL_MEMSWAP, NULL, _
@@ -257,41 +240,6 @@ function rtlNullPtrCheck _
     	exit function
     end if
 
-    function = proc
-
-end function
-
-'':::::
-function rtlMemCopy _
-	( _
-		byval dst as ASTNODE ptr, _
-		byval src as ASTNODE ptr, _
-		byval bytes as longint _
-	) as ASTNODE ptr
-
-    dim as ASTNODE ptr proc = any
-
-	function = NULL
-
-	''
-    proc = astNewCALL( PROCLOOKUP( MEMCOPY ) )
-
-    '' dst as any
-    if( astNewARG( proc, dst ) = NULL ) then
-    	exit function
-    end if
-
-    '' src as any
-    if( astNewARG( proc, src ) = NULL ) then
-    	exit function
-    end if
-
-	'' byval bytes as integer
-	if( astNewARG( proc, astNewCONSTi( bytes ) ) = NULL ) then
-		exit function
-	end if
-
-    ''
     function = proc
 
 end function
