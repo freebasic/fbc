@@ -329,8 +329,8 @@ private sub hEmitStoreFreg2F_SSE _
 	dim as string dst, src
 	dim as integer ddsize
 
-	hPrepOperand( dvreg, dst, , , FALSE )
-	hPrepOperand( svreg, src, , , FALSE )
+	hPrepOperand( dvreg, dst, , , , FALSE )
+	hPrepOperand( svreg, src, , , , FALSE )
 
 	ddsize = typeGetSize( dvreg->dtype )
 
@@ -364,8 +364,8 @@ private sub _emitSTORF2F_SSE _
 	dim as integer ddsize, sdsize, src_vec
 	dim as string ostr
 
-	hPrepOperand( dvreg, dst )
-	hPrepOperand( svreg, src )
+	hPrepOperand( dvreg, dst, , , , FALSE )
+	hPrepOperand( svreg, src, , , , FALSE )
 
 	ddsize = typeGetSize( dvreg->dtype )
 	sdsize = typeGetSize( svreg->dtype )
@@ -375,6 +375,7 @@ private sub _emitSTORF2F_SSE _
 	if( svreg->typ = IR_VREGTYPE_REG ) then
 		'' if the src was returned from a function, it is in st(0)
 		if( svreg->regFamily = IR_REG_FPU_STACK ) then
+			hPrepOperand( dvreg, dst )
 			outp "fstp " + dst
 			exit sub
 		end if
@@ -403,8 +404,8 @@ private sub _emitSTORF2F_SSE _
 		'' same size? just copy..
 		if( sdsize = ddsize ) then
 			if( src_vec ) then
-				hPrepOperand( dvreg, dst, , , FALSE )
-				hPrepOperand( svreg, src, , , FALSE )
+				hPrepOperand( dvreg, dst, , , , FALSE )
+				hPrepOperand( svreg, src, , , , FALSE )
 				if( ddsize > 4 ) then
 					outp "movupd xmm7" + COMMA + src
 					outp "movupd " + dst + COMMA + "xmm7"
@@ -832,13 +833,15 @@ private sub _emitLOADF2F_SSE _
 	dim as string src, dst
 	dim as integer sdsize, ddsize
 
-	hPrepOperand( dvreg, dst )
-	hPrepOperand( svreg, src )
+	hPrepOperand( dvreg, dst, , , , FALSE )
 
 	if( dvreg->regFamily = IR_REG_FPU_STACK ) then
+		hPrepOperand( svreg, src )
 		outp "fld " + src
 		exit sub
 	end if
+
+	hPrepOperand( svreg, src, , , , FALSE )
 
 	sdsize = typeGetSize( svreg->dtype )
 	ddsize = typeGetSize( dvreg->dtype )
@@ -891,8 +894,8 @@ private sub _emitMOVF_SSE _
 	dim as string dst, src
 	dim as integer sdsize, ddsize
 
-	hPrepOperand( dvreg, dst )
-	hPrepOperand( svreg, src )
+	hPrepOperand( dvreg, dst, , , , FALSE )
+	hPrepOperand( svreg, src, , , , FALSE )
 
 	sdsize = typeGetSize( svreg->dtype )
 	ddsize = typeGetSize( dvreg->dtype )
@@ -1684,7 +1687,7 @@ private sub _emitNEGF_SSE _
 			outp "movlpd " + dst + COMMA + "qword ptr [esp]"
 		else
 			outp "fstp dword ptr [esp]"
-			outp "movlpd " + dst + COMMA + "dword ptr [esp]"
+			outp "movss " + dst + COMMA + "dword ptr [esp]"
 		end if
 		outp "add esp" + COMMA + str( ddsize )
 	end if
@@ -1810,7 +1813,7 @@ private sub _emitSGNF_SSE _
 			outp "movlpd " + dst + COMMA + "qword ptr [esp]"
 		else
 			outp "fstp dword ptr [esp]"
-			outp "movlpd " + dst + COMMA + "dword ptr [esp]"
+			outp "movss " + dst + COMMA + "dword ptr [esp]"
 		end if
 		outp "add esp" + COMMA + str( ddsize )
 	end if
@@ -2347,7 +2350,7 @@ private sub _emitSQRT_SSE _
 		outp "sub esp" + COMMA + str( ddsize )
 		if( ddsize > 4 ) then
 			outp "fstp qword ptr [esp]"
-			outp "movlpd " + dst + COMMA + "dword ptr [esp]"
+			outp "movlpd " + dst + COMMA + "qword ptr [esp]"
 		else
 			outp "fstp dword ptr [esp]"
 			outp "movss " + dst + COMMA + "dword ptr [esp]"
@@ -2382,7 +2385,7 @@ private sub _emitRSQRT_SSE _
 		outp "sub esp" + COMMA + str( ddsize )
 		if( ddsize > 4 ) then
 			outp "fstp qword ptr [esp]"
-			outp "movlpd " + dst + COMMA + "dword ptr [esp]"
+			outp "movlpd " + dst + COMMA + "qword ptr [esp]"
 		else
 			outp "fstp dword ptr [esp]"
 			outp "movss " + dst + COMMA + "dword ptr [esp]"
@@ -2417,7 +2420,7 @@ private sub _emitRCP_SSE _
 		outp "sub esp" + COMMA + str( ddsize )
 		if( ddsize > 4 ) then
 			outp "fstp qword ptr [esp]"
-			outp "movlpd " + dst + COMMA + "dword ptr [esp]"
+			outp "movlpd " + dst + COMMA + "qword ptr [esp]"
 		else
 			outp "fstp dword ptr [esp]"
 			outp "movss " + dst + COMMA + "dword ptr [esp]"
