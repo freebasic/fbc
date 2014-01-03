@@ -1,14 +1,21 @@
 ''
-'' IR backend for emitting LLVM IR to output file
+'' IR interface for emitting LLVM IR to output file
 ''
 '' For comparison, see
-''    - LLVM IR language reference: http://llvm.org/docs/LangRef.html
-''    - clang output:   $ clang -Wall -emit-llvm -S test.c -o test.ll
-''    - llc compiler:   $ llc -O2 test.ll -o test.asm
+''
+''    - LLVM IR language reference:
+''          http://llvm.org/docs/LangRef.html
+''
+''    - clang's LLVM IR output (useful to see what LLVM IR code it will produce
+''      for certain C constructs):
+''          $ clang test.c -S -emit-llvm -o test.ll
+''
+''    - llc (compiles LLVM IR to native ASM):
+''          $ llc -O2 test.ll -o test.asm
 ''
 '' LLVM IR instructions inside procedures look like this:
 ''
-''    %var = alloca i32          ; dim var as integer ptr = alloca( sizeof( integer ) )
+''    %var = alloca i32          ; dim var as int32 ptr = alloca( 4 )
 ''    store %i32 0, i32* %var    ; *var = 0
 ''  loop:
 ''    %temp0 = load %i32* %var               ; temp0 = *var

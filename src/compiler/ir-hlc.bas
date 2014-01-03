@@ -1,4 +1,14 @@
-'' intermediate representation - high-level, direct to "C" output
+'' "high level" IR interface for emitting C code
+''
+'' The C backend is called "high level" in comparison to the ASM backend, but
+'' actually produces pretty low-level, ABI-dependant C code, using gcc as the
+'' "assembler". It works with mostly the same low-level operations that would
+'' be sent to the ASM backend (for example: labels and jumps instead of if/else
+'' blocks).
+''
+'' - Some math operations are transparently implemented using gcc __builtin_*()
+''   functions. For others, we let the AST know that we can't handle them here,
+''   and it will call RTL functions instead.
 ''
 '' chng: dec/2006 written [v1ctor]
 '' chng: apr/2008 function calling implemented / most operators implemented [sir_mud - sir_mud(at)users(dot)sourceforge(dot)net]
