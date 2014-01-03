@@ -1098,7 +1098,7 @@ function astNewBOP _
 
     ''::::::
 
-	if( ldtype <> rdtype ) then
+	if( (ldtype <> rdtype) or (l->subtype <> r->subtype) ) then
 		'' Pointer arithmetic (but not handled above by hDoPointerArith())?
 		'' (assuming hCheckPointers() checks were already done)
 		if( (typeIsPtr( ldtype ) or typeIsPtr( rdtype )) and _

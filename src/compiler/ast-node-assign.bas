@@ -334,7 +334,7 @@ function astCheckASSIGN _
 	end if
 
 	'' convert types if needed
-	if( ldtype <> rdtype ) then
+	if( (ldtype <> rdtype) or (l->subtype <> r->subtype) ) then
 		'' don't convert strings
 		if( rdclass <> FB_DATACLASS_STRING ) then
 			'' constant?
@@ -622,7 +622,7 @@ function astNewASSIGN _
     end if
 
 	'' convert types if needed
-	if( ldtype <> rdtype ) then
+	if( (ldtype <> rdtype) or (l->subtype <> r->subtype) ) then
 		'' don't convert strings
 		if( rdclass <> FB_DATACLASS_STRING ) then
 			'' constant?
