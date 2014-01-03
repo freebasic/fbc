@@ -106,6 +106,7 @@ Version 0.91.0:
 - -fpu sse: Bad code generated when calling sgn() on Single function result returned through FPU stack
 - -fpu sse: Bad code generated when calling sqr() on Double function result returned through FPU stack
 - -fpu sse and -vec 1|2: Various cases of bad code generation resulting in operand size mismatch errors
+- fbc crashed after showing the error message when using -vec 1|2 without -fpu sse
 
 
 Version 0.90.1:

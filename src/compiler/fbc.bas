@@ -2018,7 +2018,7 @@ private sub hParseArgs( byval argc as integer, byval argv as zstring ptr ptr )
 		if( fbGetOption( FB_COMPOPT_VECTORIZE ) >= FB_VECTORIZE_NORMAL ) or _
 			( fbGetOption( FB_COMPOPT_FPMODE ) = FB_FPMODE_FAST ) then
 				errReportEx( FB_ERRMSG_OPTIONREQUIRESSSE, "", -1 )
-				return
+			fbcEnd( 1 )
 		end if
 	end if
 
