@@ -113,7 +113,7 @@ enum FB_SYMBSTATS
     FB_SYMBSTATS_GLOBALCTOR   = &h00010000
     FB_SYMBSTATS_GLOBALDTOR   = &h00020000
     FB_SYMBSTATS_CANTDUP      = &h00040000
-    FB_SYMBSTATS_GCCBUILTIN   = &h00080000  '' procs only
+                            ''= &h00080000
     FB_SYMBSTATS_IRHLCBUILTIN = &h00100000  '' procs only
                             ''= &h00200000
     FB_SYMBSTATS_HASRTTI      = &h00400000
@@ -1920,9 +1920,6 @@ declare function symbGetUDTBaseLevel _
 
 #define symbGetIsIrHlcBuiltin(s) ((s->stats and FB_SYMBSTATS_IRHLCBUILTIN) <> 0)
 #define symbSetIsIrHlcBuiltin(s) s->stats or= FB_SYMBSTATS_IRHLCBUILTIN
-
-#define symbGetIsGccBuiltin(s) ((s->stats and FB_SYMBSTATS_GCCBUILTIN) <> 0)
-#define symbSetIsGccBuiltin(s) s->stats or= FB_SYMBSTATS_GCCBUILTIN
 
 #define symbGetIsWstring(s) (((s)->stats and FB_SYMBSTATS_WSTRING) <> 0)
 #define symbSetIsWstring(s) (s)->stats or= FB_SYMBSTATS_WSTRING

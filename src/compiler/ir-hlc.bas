@@ -185,7 +185,7 @@ private sub _init( )
 	listInit( @ctx.anonstack, 8, sizeof( FBSYMBOL ptr ), LIST_FLAGS_NOCLEAR )
 	listInit( @ctx.exprnodes, 32, sizeof( EXPRNODE ), LIST_FLAGS_CLEAR )
 	listInit( @ctx.exprcache, 8, sizeof( EXPRCACHENODE ), LIST_FLAGS_NOCLEAR )
-	irSetOption( IR_OPT_FPUIMMEDIATES or IR_OPT_NOINLINEOPS )
+	irSetOption( IR_OPT_FPUIMMEDIATES or IR_OPT_MISSINGOPS )
 
 	'' 64bit?
 	if( fbCpuTypeIs64bit( ) ) then
@@ -731,30 +731,6 @@ private sub hEmitVariable( byval s as FBSYMBOL ptr )
 	hEmitVar( s, NULL )
 end sub
 
-private sub hEmitGccBuiltinWrapper( byval sym as FBSYMBOL ptr )
-	dim as integer count = any
-	dim as FBSYMBOL ptr param = any
-	dim as string params
-
-	count = 0
-	param = symbGetProcLastParam( sym )
-
-	while( param )
-		params += "temp_ppparam$" + str( count )
-
-		param = symbGetProcPrevParam( sym, param )
-		if( param ) then
-			params += ", "
-		end if
-
-		count += 1
-	wend
-
-	params = *symbGetMangledName( sym ) + "( " + params + " )"
-
-	hWriteLine( "#define " + params + " __builtin_" + params, TRUE )
-end sub
-
 private sub hEmitFuncProto( byval s as FBSYMBOL ptr )
 	dim as integer section = any
 
@@ -775,12 +751,7 @@ private sub hEmitFuncProto( byval s as FBSYMBOL ptr )
 	'' All procedure declarations go into the toplevel header
 	section = sectionGosub( 0 )
 
-	'' gcc builtin? gen a wrapper..
-	if( symbGetIsGccBuiltin( s ) ) then
-		hEmitGccBuiltinWrapper( s )
-	else
-		hWriteLine( hEmitProcHeader( s, EMITPROC_ISPROTO ) + ";" )
-	end if
+	hWriteLine( hEmitProcHeader( s, EMITPROC_ISPROTO ) + ";" )
 
 	sectionReturn( section )
 end sub
@@ -1377,6 +1348,20 @@ private function _getOptionValue _
 
 end function
 
+private function _supportsOp _
+	( _
+		byval op as integer, _
+		byval dtype as integer _
+	) as integer
+	'' Only these aren't available as either C ops or __builtin_*'s
+	select case as const( op )
+	case AST_OP_SGN, AST_OP_FIX, AST_OP_FRAC, AST_OP_RSQRT, AST_OP_RCP
+		function = FALSE
+	case else
+		function = TRUE
+	end select
+end function
+
 private sub _procBegin( byval proc as FBSYMBOL ptr )
 	proc->proc.ext->dbg.iniline = lexLineNum( )
 end sub
@@ -1957,7 +1942,7 @@ private function exprNewUOP _
 
 	'' Similar to BOPs, the C type promotion rules should be applied
 	'' to determine the UOP's result type.
-	select case( op )
+	select case as const( op )
 	case AST_OP_ADDROF
 		'' peep-hole optimization:
 		'' ADDROF( DEREF( x ) ) -> x
@@ -1988,6 +1973,16 @@ private function exprNewUOP _
 		end if
 
 		dtype = typeCBop( op, l->dtype, l->subtype, l->dtype, l->subtype )
+
+
+	case AST_OP_ABS, AST_OP_FLOOR, _
+	     AST_OP_SIN, AST_OP_ASIN, _
+	     AST_OP_COS, AST_OP_ACOS, _
+	     AST_OP_TAN, AST_OP_ATAN, _
+	     AST_OP_SQRT, AST_OP_LOG, AST_OP_EXP
+		'' Builtin float ops (sin/cos/tan etc.) return what they're given,
+		'' abs() works with long & longint too, but same behaviour
+		dtype = l->dtype
 
 	case else
 		assert( FALSE )
@@ -2269,47 +2264,97 @@ end sub
 
 private function hBopToStr( byval op as integer ) as zstring ptr
 	select case as const( op )
-	case AST_OP_ADD
-		function = @" + "
-	case AST_OP_SUB
-		function = @" - "
-	case AST_OP_MUL
-		function = @" * "
-	case AST_OP_DIV
-		function = @" / "
-	case AST_OP_INTDIV
-		function = @" / "
-	case AST_OP_MOD
-		function = @" % "
-	case AST_OP_SHL
-		function = @" << "
-	case AST_OP_SHR
-		function = @" >> "
-	case AST_OP_AND
-		function = @" & "
-	case AST_OP_OR
-		function = @" | "
-	case AST_OP_XOR
-		function = @" ^ "
-	case AST_OP_EQ
-		function = @" == "
-	case AST_OP_GT
-		function = @" > "
-	case AST_OP_LT
-		function = @" < "
-	case AST_OP_NE
-		function = @" != "
-	case AST_OP_GE
-		function = @" >= "
-	case AST_OP_LE
-		function = @" <= "
+	case AST_OP_ADD : function = @" + "
+	case AST_OP_SUB : function = @" - "
+	case AST_OP_MUL : function = @" * "
+	case AST_OP_DIV : function = @" / "
+	case AST_OP_INTDIV : function = @" / "
+	case AST_OP_MOD : function = @" % "
+	case AST_OP_SHL : function = @" << "
+	case AST_OP_SHR : function = @" >> "
+	case AST_OP_AND : function = @" & "
+	case AST_OP_OR  : function = @" | "
+	case AST_OP_XOR : function = @" ^ "
+	case AST_OP_EQ  : function = @" == "
+	case AST_OP_GT  : function = @" > "
+	case AST_OP_LT  : function = @" < "
+	case AST_OP_NE  : function = @" != "
+	case AST_OP_GE  : function = @" >= "
+	case AST_OP_LE  : function = @" <= "
 	end select
+end function
+
+private function hUopToStr _
+	( _
+		byval op as integer, _
+		byval dtype as integer, _
+		byref is_builtin as integer _
+	) as zstring ptr
+
+	is_builtin = FALSE
+
+	select case( op )
+	case AST_OP_ADDROF : function = @"&"
+	case AST_OP_DEREF  : function = @"*"
+	case AST_OP_NEG    : function = @"-"
+	case AST_OP_NOT    : function = @"~"
+
+	case AST_OP_ABS
+		is_builtin = TRUE
+
+		select case as const( typeGetSizeType( dtype ) )
+		case FB_SIZETYPE_FLOAT32
+			function = @"__builtin_fabsf"
+		case FB_SIZETYPE_FLOAT64
+			function = @"__builtin_fabs"
+		case FB_SIZETYPE_INT64, FB_SIZETYPE_UINT64
+			function = @"__builtin_llabs"
+		case else
+			function = @"__builtin_abs"
+		end select
+
+	case else
+		is_builtin = TRUE
+
+		if( dtype = FB_DATATYPE_SINGLE ) then
+			select case as const( op )
+			case AST_OP_SIN   : function = @"__builtin_sinf"
+			case AST_OP_ASIN  : function = @"__builtin_asinf"
+			case AST_OP_COS   : function = @"__builtin_cosf"
+			case AST_OP_ACOS  : function = @"__builtin_acosf"
+			case AST_OP_TAN   : function = @"__builtin_tanf"
+			case AST_OP_ATAN  : function = @"__builtin_atanf"
+			case AST_OP_SQRT  : function = @"__builtin_sqrtf"
+			case AST_OP_LOG   : function = @"__builtin_logf"
+			case AST_OP_EXP   : function = @"__builtin_expf"
+			case AST_OP_FLOOR : function = @"__builtin_floorf"
+			case else          : assert( FALSE )
+			end select
+		else
+			assert( dtype = FB_DATATYPE_DOUBLE )
+			select case as const( op )
+			case AST_OP_SIN   : function = @"__builtin_sin"
+			case AST_OP_ASIN  : function = @"__builtin_asin"
+			case AST_OP_COS   : function = @"__builtin_cos"
+			case AST_OP_ACOS  : function = @"__builtin_acos"
+			case AST_OP_TAN   : function = @"__builtin_tan"
+			case AST_OP_ATAN  : function = @"__builtin_atan"
+			case AST_OP_SQRT  : function = @"__builtin_sqrt"
+			case AST_OP_LOG   : function = @"__builtin_log"
+			case AST_OP_EXP   : function = @"__builtin_exp"
+			case AST_OP_FLOOR : function = @"__builtin_floor"
+			case else          : assert( FALSE )
+			end select
+		end if
+	end select
+
 end function
 
 '' Builds up final expression text, walking the EXPRNODE tree
 private sub hExprFlush( byval n as EXPRNODE ptr, byval need_parens as integer )
 	dim as EXPRNODE ptr l = any
 	dim as FBSYMBOL ptr sym = any
+	dim as integer is_builtin = any
 
 	select case as const( n->class )
 	case EXPRCLASS_TEXT
@@ -2348,45 +2393,54 @@ private sub hExprFlush( byval n as EXPRNODE ptr, byval need_parens as integer )
 		hExprFlush( n->l, TRUE )
 
 	case EXPRCLASS_UOP
-		select case( n->op )
-		case AST_OP_ADDROF
-			ctx.exprtext += "&"
-		case AST_OP_DEREF
-			ctx.exprtext += "*"
-		case AST_OP_NEG
-			ctx.exprtext += "-"
-		case AST_OP_NOT
-			ctx.exprtext += "~"
-		case else
-			assert( FALSE )
-		end select
+		ctx.exprtext += *hUopToStr( n->op, n->dtype, is_builtin )
 
 		'' Add parentheses around UOPs to avoid -(-(foo)) looking like
-		'' --foo which looks like the -- operator to gcc...
-		need_parens = (n->l->class = EXPRCLASS_UOP)
+		'' --foo which looks like the -- operator to gcc. Or, add the
+		'' parentheses for __builtin_* calls.
+		need_parens = (n->l->class = EXPRCLASS_UOP) or is_builtin
 		if( need_parens ) then
 			ctx.exprtext += "("
+			if( is_builtin ) then
+				ctx.exprtext += " "
+			end if
 		end if
 		hExprFlush( n->l, TRUE )
 		if( need_parens ) then
+			if( is_builtin ) then
+				ctx.exprtext += " "
+			end if
 			ctx.exprtext += ")"
 		end if
 
 	case EXPRCLASS_BOP
-		'' Add parentheses around BOPs if the parent needs it
-		'' (looks like parentheses are unnecessary for all the other
-		'' expressions though, CAST/UOP should work fine without
-		'' parentheses around their operand)
-		if( need_parens ) then
+		select case( n->op )
+		case AST_OP_ATAN2
+			if( n->dtype = FB_DATATYPE_SINGLE ) then
+				ctx.exprtext += "__builtin_atan2f"
+			else
+				ctx.exprtext += "__builtin_atan2"
+			end if
 			ctx.exprtext += "("
-		end if
-		hExprFlush( n->l, TRUE )
-		ctx.exprtext += *hBopToStr( n->op )
-		hExprFlush( n->r, TRUE )
-		if( need_parens ) then
+			hExprFlush( n->l, FALSE )
+			ctx.exprtext += ", "
+			hExprFlush( n->r, FALSE )
 			ctx.exprtext += ")"
-		end if
-
+		case else
+			'' Add parentheses around BOPs if the parent needs it
+			'' (looks like parentheses are unnecessary for all the other
+			'' expressions though, CAST/UOP should work fine without
+			'' parentheses around their operand)
+			if( need_parens ) then
+				ctx.exprtext += "("
+			end if
+			hExprFlush( n->l, TRUE )
+			ctx.exprtext += *hBopToStr( n->op )
+			hExprFlush( n->r, TRUE )
+			if( need_parens ) then
+				ctx.exprtext += ")"
+			end if
+		end select
 	end select
 end sub
 
@@ -2447,21 +2501,21 @@ private sub exprDump( byval n as EXPRNODE ptr )
 		s = "CAST( " + hEmitType( n->dtype, n->subtype ) + " )"
 
 	case EXPRCLASS_UOP
-		s = "UOP( "
-		select case( n->op )
-		case AST_OP_ADDROF
-			s += "&"
-		case AST_OP_DEREF
-			s += "*"
-		case AST_OP_NEG
-			s += "-"
-		case AST_OP_NOT
-			s += "~"
-		end select
-		s += " )"
+		s = "UOP( " + *hUopToStr( n->op, n->dtype, FALSE ) + " )"
 
 	case EXPRCLASS_BOP
-		s = "BOP( " + *hBopToStr( n->op ) + " )"
+		s = "BOP( "
+		select case( n->op )
+		case AST_OP_ATAN2
+			if( n->dtype = FB_DATATYPE_SINGLE ) then
+				s += "__builtin_atan2f"
+			else
+				s += "__builtin_atan2"
+			end if
+		case else
+			s += *hBopToStr( n->op )
+		end select
+		s += " )"
 
 	end select
 
@@ -3559,6 +3613,7 @@ dim shared as IR_VTBL irhlc_vtbl = _
 	@_emitBegin, _
 	@_emitEnd, _
 	@_getOptionValue, _
+	@_supportsOp, _
 	@_procBegin, _
 	@_procEnd, _
 	NULL, _

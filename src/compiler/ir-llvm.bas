@@ -63,6 +63,16 @@
 ''   it has to alloca a stack variable to hold the parameter value.
 ''   (that's what clang does)
 ''
+'' - LLVM has some built-in functions (llvm.sin.f32, llvm.sin.f64,
+''   llvm.memset.p0i8.i32, etc.) that we can use to implement various operations
+''   instead of calling RTL functions (although, LLVM may implement them by
+''   calling RTL functions if no optimization possible). Despite being intrinsic
+''   these need to be declared globally and called just like normal procedures.
+''   It seems best to handle them from here though instead of through the rtl
+''   modules (e.g. rtlMathUop() and rtlMathBop()) because, for example, some use
+''   i1 parameters (no corresponding FB type), and they're not really external
+''   functions anyways (rtl reserved for functions from libc/libfb).
+''
 
 #include once "fb.bi"
 #include once "fbint.bi"
@@ -82,7 +92,52 @@ type IRCALLARG
     level as integer
 end type
 
-type IRHLCCTX
+enum
+	BUILTIN_MEMSET = 0
+	BUILTIN_MEMMOVE
+	BUILTIN_SINF
+	BUILTIN_SIN
+	BUILTIN_COSF
+	BUILTIN_COS
+	BUILTIN_EXPF
+	BUILTIN_EXP
+	BUILTIN_LOGF
+	BUILTIN_LOG
+	BUILTIN_SQRTF
+	BUILTIN_SQRT
+	BUILTIN_FLOORF
+	BUILTIN_FLOOR
+	BUILTIN_ABS
+	BUILTIN_ABSF
+	BUILTIN__COUNT
+end enum
+
+type BUILTIN
+	decl as zstring ptr
+	used as integer
+end type
+
+dim shared as BUILTIN builtins(0 to BUILTIN__COUNT-1) => _
+{ _
+	(@"declare void @llvm.memset.p0i8.i32(i8*, i8, i32, i32, i1) nounwind"), _
+	(@"declare void @llvm.memmove.p0i8.p0i8.i32(i8*, i8*, i32, i32, i1) nounwind"), _
+	(@"declare float  @llvm.sin.f32(float ) nounwind"), _
+	(@"declare double @llvm.sin.f64(double) nounwind"), _
+	(@"declare float  @llvm.cos.f32(float ) nounwind"), _
+	(@"declare double @llvm.cos.f64(double) nounwind"), _
+	(@"declare float  @llvm.exp.f32(float ) nounwind"), _
+	(@"declare double @llvm.exp.f64(double) nounwind"), _
+	(@"declare float  @llvm.log.f32(float ) nounwind"), _
+	(@"declare double @llvm.log.f64(double) nounwind"), _
+	(@"declare float  @llvm.sqrt.f32(float ) nounwind"), _
+	(@"declare double @llvm.sqrt.f64(double) nounwind"), _
+	(@"declare float  @llvm.floor.f32(float ) nounwind"), _
+	(@"declare double @llvm.floor.f64(double) nounwind"), _
+	(@"declare float  @llvm.fabs.f32(float ) nounwind"), _
+	(@"declare double @llvm.fabs.f64(double) nounwind")  _
+}
+
+type IRLLVMCONTEXT
 	identcnt			as integer     ' how many levels of indent
 	regcnt				as integer     ' temporary labels counter
 	lblcnt				as integer
@@ -104,9 +159,6 @@ type IRHLCCTX
 	head_txt			as string
 	body_txt			as string
 	foot_txt			as string
-
-	memset_used			as integer
-	memmove_used			as integer
 end type
 
 declare function hEmitType _
@@ -139,14 +191,14 @@ declare sub _emitBop _
 	)
 
 '' globals
-dim shared as IRHLCCTX ctx
+dim shared as IRLLVMCONTEXT ctx
 
 private sub _init( )
 	flistInit( @ctx.vregTB, IR_INITVREGNODES, len( IRVREG ) )
 	flistInit( @ctx.forwardlist, 32, len( FBSYMBOL ptr ) )
 	listInit( @ctx.callargs, 32, sizeof(IRCALLARG), LIST_FLAGS_NOCLEAR )
 
-	irSetOption( IR_OPT_CPUSELFBOPS or IR_OPT_FPUIMMEDIATES or IR_OPT_NOINLINEOPS )
+	irSetOption( IR_OPT_CPUSELFBOPS or IR_OPT_FPUIMMEDIATES or IR_OPT_MISSINGOPS )
 
 	' initialize the current section
 	ctx.section = SECTION_HEAD
@@ -608,36 +660,16 @@ private sub hEmitFuncProto( byval s as FBSYMBOL ptr )
 	var oldsection = ctx.section
 	ctx.section = SECTION_HEAD
 
-	'' gcc builtin? gen a wrapper..
-	if( symbGetIsGccBuiltin( s ) ) then
-		var cnt = 0
-		var param = symbGetProcLastParam( s )
-		var params = ""
-		do while( param <> NULL )
-			params += "temp_ppparam$" & cnt
+	dim as string ln = "declare "
+	ln += hEmitProcHeader( s, TRUE )
 
-			param = symbGetProcPrevParam( s, param )
-			if param then
-				params += ", "
-			end if
-
-			cnt += 1
-		loop
-
-		hWriteLine( "#define " & *symbGetMangledName( s ) & "( " & params & " ) " & _
-					"__builtin_" & *symbGetMangledName( s ) & "( " & params & " )" )
-	else
-		dim as string ln = "declare "
-		ln += hEmitProcHeader( s, TRUE )
-
-		if( symbGetIsGlobalCtor( s ) ) then
-			ln += " __attribute__ ((constructor)) "
-		elseif( symbGetIsGlobalDtor( s ) ) then
-			ln += " __attribute__ ((destructor)) "
-		end if
-
-		hWriteLine( ln )
+	if( symbGetIsGlobalCtor( s ) ) then
+		ln += " __attribute__ ((constructor)) "
+	elseif( symbGetIsGlobalDtor( s ) ) then
+		ln += " __attribute__ ((destructor)) "
 	end if
+
+	hWriteLine( ln )
 
 	ctx.section = oldsection
 end sub
@@ -943,8 +975,10 @@ private function _emitBegin( ) as integer
 	ctx.foot_txt = ""
 	ctx.linenum = 0
 	ctx.section = SECTION_HEAD
-	ctx.memset_used = FALSE
-	ctx.memmove_used = FALSE
+
+	for i as integer = 0 to BUILTIN__COUNT-1
+		builtins(i).used = FALSE
+	next
 
 	if( env.clopt.debug ) then
 		_emitDBG( AST_OP_DBG_LINEINI, NULL, 0 )
@@ -976,12 +1010,11 @@ private sub _emitEnd( byval tottime as double )
 	' Add the decls on the end of the header
 	ctx.section = SECTION_HEAD
 
-	if( ctx.memset_used ) then
-		hWriteLine( "declare void @llvm.memset.p0i8.i32(i8*, i8, i32, i32, i1) nounwind" )
-	end if
-	if( ctx.memmove_used ) then
-		hWriteLine( "declare void @llvm.memmove.p0i8.p0i8.i32(i8*, i8*, i32, i32, i1) nounwind" )
-	end if
+	for i as integer = 0 to BUILTIN__COUNT-1
+		if( builtins(i).used ) then
+			hWriteLine( *builtins(i).decl )
+		end if
+	next
 
 	hEmitFTOIBuiltins( )
 
@@ -1024,6 +1057,29 @@ private function _getOptionValue( byval opt as IR_OPTIONVALUE ) as integer
 	case else
 		errReportEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
 	end select
+end function
+
+private function _supportsOp _
+	( _
+		byval op as integer, _
+		byval dtype as integer _
+	) as integer
+
+	'' These aren't available as llvm.*() built-ins:
+	select case as const( op )
+	case AST_OP_SGN, AST_OP_FIX, AST_OP_FRAC, _
+	     AST_OP_ASIN, AST_OP_ACOS, AST_OP_TAN, AST_OP_ATAN, _
+	     AST_OP_RSQRT, AST_OP_RCP
+		function = FALSE
+
+	case AST_OP_ABS
+		'' There is @llvm.fabs.* for floats, but no @llvm.abs.* for integers
+		function = (typeGetClass( dtype ) = FB_DATACLASS_FPOINT)
+
+	case else
+		function = TRUE
+	end select
+
 end function
 
 private sub _procBegin( byval proc as FBSYMBOL ptr )
@@ -1723,6 +1779,53 @@ private sub _emitBop _
 	end if
 end sub
 
+private sub hBuiltInUop _
+	( _
+		byval op as integer, _
+		byval v1 as IRVREG ptr, _
+		byval vr as IRVREG ptr _
+	)
+
+	dim as string ln
+
+	hLoadVreg( v1 )
+
+	ln = hVregToStr( vr ) + " = call "
+
+	if( v1->dtype = FB_DATATYPE_SINGLE ) then
+		ln += "float @llvm."
+		select case( op )
+		case AST_OP_ABS : builtins(BUILTIN_ABSF).used = TRUE : ln += "fabs"
+		case AST_OP_SIN : builtins(BUILTIN_SINF).used = TRUE : ln += "sin"
+		case AST_OP_COS : builtins(BUILTIN_COSF).used = TRUE : ln += "cos"
+		case AST_OP_EXP : builtins(BUILTIN_EXPF).used = TRUE : ln += "exp"
+		case AST_OP_LOG : builtins(BUILTIN_LOGF).used = TRUE : ln += "log"
+		case AST_OP_SQRT : builtins(BUILTIN_SQRTF).used = TRUE : ln += "sqrt"
+		case AST_OP_FLOOR : builtins(BUILTIN_FLOORF).used = TRUE : ln += "floor"
+		case else : assert( FALSE )
+		end select
+		ln += ".f32(float "
+	else
+		assert( v1->dtype = FB_DATATYPE_DOUBLE )
+		ln += "double @llvm."
+		select case( op )
+		case AST_OP_ABS : builtins(BUILTIN_ABS).used = TRUE : ln += "fabs"
+		case AST_OP_SIN : builtins(BUILTIN_SIN).used = TRUE : ln += "sin"
+		case AST_OP_COS : builtins(BUILTIN_COS).used = TRUE : ln += "cos"
+		case AST_OP_EXP : builtins(BUILTIN_EXP).used = TRUE : ln += "exp"
+		case AST_OP_LOG : builtins(BUILTIN_LOG).used = TRUE : ln += "log"
+		case AST_OP_SQRT : builtins(BUILTIN_SQRT).used = TRUE : ln += "sqrt"
+		case AST_OP_FLOOR : builtins(BUILTIN_FLOOR).used = TRUE : ln += "floor"
+		case else : assert( FALSE )
+		end select
+		ln += ".f64(double "
+	end if
+
+	ln += hVregToStr( v1 ) + ")"
+	hWriteLine( ln )
+
+end sub
+
 private sub _emitUop _
 	( _
 		byval op as integer, _
@@ -1733,7 +1836,8 @@ private sub _emitUop _
 	dim as IRVREG ptr v2 = any, vresult = any
 
 	'' LLVM IR doesn't have unary operations, corresponding BOPs are
-	'' supposed to be used instead.
+	'' supposed to be used instead. However there are built-in functions
+	'' for sin() & co.
 	select case( op )
 	case AST_OP_NEG
 		'' vr = 0 - v1
@@ -1770,6 +1874,8 @@ private sub _emitUop _
 		v2 = _allocVrImm( FB_DATATYPE_INTEGER, NULL, -1 )
 		_emitBop( AST_OP_XOR, v1, v2, vr, NULL )
 
+	case else
+		hBuiltInUop( op, v1, vr )
 	end select
 
 end sub
@@ -2115,12 +2221,12 @@ private sub _emitMem _
 
 	ln = "call void "
 
+	hLoadVreg( v1 )
+	hLoadVreg( v2 )
+
 	select case( op )
 	case AST_OP_MEMCLEAR
-		ctx.memset_used = TRUE
-
-		hLoadVreg( v1 )
-		hLoadVreg( v2 )
+		builtins(BUILTIN_MEMSET).used = TRUE
 		_setVregDataType( v1, typeAddrOf( FB_DATATYPE_BYTE ), NULL )
 		_setVregDataType( v2, FB_DATATYPE_INTEGER, NULL )
 
@@ -2130,10 +2236,7 @@ private sub _emitMem _
 		ln += "i32 " + hVregToStr( v2 ) + ", "
 
 	case AST_OP_MEMMOVE
-		ctx.memmove_used = TRUE
-
-		hLoadVreg( v1 )
-		hLoadVreg( v2 )
+		builtins(BUILTIN_MEMMOVE).used = TRUE
 		_setVregDataType( v1, typeAddrOf( FB_DATATYPE_BYTE ), NULL )
 		_setVregDataType( v2, typeAddrOf( FB_DATATYPE_BYTE ), NULL )
 
@@ -2395,6 +2498,7 @@ static as IR_VTBL irllvm_vtbl = _
 	@_emitBegin, _
 	@_emitEnd, _
 	@_getOptionValue, _
+	@_supportsOp, _
 	@_procBegin, _
 	@_procEnd, _
 	@_procAllocArg, _

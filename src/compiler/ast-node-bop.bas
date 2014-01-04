@@ -1358,9 +1358,12 @@ function astNewBOP _
 	    return rtlMathPow( l, r )
 
 	case AST_OP_ATAN2
-	    if( irGetOption( IR_OPT_NOINLINEOPS ) ) then
-	    	return rtlMathBop( op, l, r )
-	    end if
+		'' Call RTL function if backend doesn't support this op directly
+		if( irGetOption( IR_OPT_MISSINGOPS ) ) then
+			'' (not even checking irSupportsOp() here, because neither
+			'' C/LLVM backends support atan2())
+			return rtlMathBop( op, l, r )
+		end if
 
 	case AST_OP_INTDIV
 		'' longint?

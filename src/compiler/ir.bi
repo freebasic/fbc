@@ -110,6 +110,12 @@ type IR_VTBL
 		byval opt as IR_OPTIONVALUE _
 	) as integer
 
+	supportsOp as function _
+	( _
+		byval op as integer, _
+		byval dtype as integer _
+	) as integer
+
 	procBegin as sub _
 	( _
 		byval proc as FBSYMBOL ptr _
@@ -429,7 +435,7 @@ enum IR_OPT
 	IR_OPT_64BITCPUREGS  = &h00000400  '' 64-bit wide registers?
 
 	IR_OPT_ADDRCISC      = &h00010000  '' complex addressing modes (base+idx*disp)
-	IR_OPT_NOINLINEOPS   = &h00020000  '' "Complex" math operators unavailable?
+	IR_OPT_MISSINGOPS    = &h00020000  '' Some "complex" math operators unavailable? (call irSupportsOp() for details)
 end enum
 
 type IRCTX
@@ -458,6 +464,8 @@ declare function vregDump( byval v as IRVREG ptr ) as string
 #define irSetOption( op ) ir.options or= op
 
 #define irGetOptionValue( opt ) ir.vtbl.getOptionValue( opt )
+
+#define irSupportsOp( op, dtype ) ir.vtbl.supportsOp( op, dtype )
 
 #define irAllocVreg(dtype, stype) ir.vtbl.allocVreg( dtype, stype )
 

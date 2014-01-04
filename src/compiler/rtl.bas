@@ -297,10 +297,6 @@ sub rtlAddIntrinsicProcs( byval procdef as const FB_RTL_PROCDEF ptr )
 				if( (procdef->options and FB_RTL_OPT_IRHLCBUILTIN) <> 0 ) then
 					symbSetIsIrHlcBuiltin( proc )
 				end if
-
-				if( (procdef->options and FB_RTL_OPT_GCCBUILTIN) <> 0 ) then
-					symbSetIsGccBuiltin( proc )
-				end if
 			else
 				if( (procdef->options and FB_RTL_OPT_OPERATOR) = 0 ) then
 					errReportEx( FB_ERRMSG_DUPDEFINITION, *procdef->name )

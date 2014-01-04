@@ -97,31 +97,11 @@ declare function hRndCallback( byval sym as FBSYMBOL ptr ) as integer
 				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYVAL, TRUE, 1.0 ) _
 	 		} _
 	 	), _
-		/' sinf CDECL overload ( byval x as single ) as single '/ _
-		( _
-			@FB_RTL_SIN, @"sinf", _
-			FB_DATATYPE_SINGLE, FB_FUNCMODE_CDECL, _
-			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_GCCBUILTIN, _
-			1, _
-	 		{ _
-				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
-		), _
-		/' sin CDECL overload ( byval x as double ) as double '/ _
-		( _
-			@FB_RTL_SIN, @"sin", _
-			FB_DATATYPE_DOUBLE, FB_FUNCMODE_CDECL, _
-			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_GCCBUILTIN, _
-			1, _
-	 		{ _
-				( FB_DATATYPE_DOUBLE, FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
-		), _
 		/' asinf CDECL overload ( byval x as single ) as single '/ _
 		( _
 			@FB_RTL_ASIN, @"asinf", _
 			FB_DATATYPE_SINGLE, FB_FUNCMODE_CDECL, _
-			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_GCCBUILTIN, _
+			NULL, FB_RTL_OPT_OVER, _
 			1, _
 	 		{ _
 				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYVAL, FALSE ) _
@@ -131,27 +111,7 @@ declare function hRndCallback( byval sym as FBSYMBOL ptr ) as integer
 		( _
 			@FB_RTL_ASIN, @"asin", _
 			FB_DATATYPE_DOUBLE, FB_FUNCMODE_CDECL, _
-			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_GCCBUILTIN, _
-			1, _
-	 		{ _
-				( FB_DATATYPE_DOUBLE, FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
-		), _
-		/' cosf CDECL overload ( byval x as single ) as single '/ _
-		( _
-			@FB_RTL_COS, @"cosf", _
-			FB_DATATYPE_SINGLE, FB_FUNCMODE_CDECL, _
-			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_GCCBUILTIN, _
-			1, _
-	 		{ _
-				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
-		), _
-		/' cos CDECL overload ( byval x as double ) as double '/ _
-		( _
-			@FB_RTL_COS, @"cos", _
-			FB_DATATYPE_DOUBLE, FB_FUNCMODE_CDECL, _
-			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_GCCBUILTIN, _
+			NULL, FB_RTL_OPT_OVER, _
 			1, _
 	 		{ _
 				( FB_DATATYPE_DOUBLE, FB_PARAMMODE_BYVAL, FALSE ) _
@@ -161,7 +121,7 @@ declare function hRndCallback( byval sym as FBSYMBOL ptr ) as integer
 		( _
 			@FB_RTL_ACOS, @"acosf", _
 			FB_DATATYPE_SINGLE, FB_FUNCMODE_CDECL, _
-			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_GCCBUILTIN, _
+			NULL, FB_RTL_OPT_OVER, _
 			1, _
 	 		{ _
 				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYVAL, FALSE ) _
@@ -171,7 +131,7 @@ declare function hRndCallback( byval sym as FBSYMBOL ptr ) as integer
 		( _
 			@FB_RTL_ACOS, @"acos", _
 			FB_DATATYPE_DOUBLE, FB_FUNCMODE_CDECL, _
-			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_GCCBUILTIN, _
+			NULL, FB_RTL_OPT_OVER, _
 			1, _
 	 		{ _
 				( FB_DATATYPE_DOUBLE, FB_PARAMMODE_BYVAL, FALSE ) _
@@ -181,7 +141,7 @@ declare function hRndCallback( byval sym as FBSYMBOL ptr ) as integer
 		( _
 			@FB_RTL_TAN, @"tanf", _
 			FB_DATATYPE_SINGLE, FB_FUNCMODE_CDECL, _
-			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_GCCBUILTIN, _
+			NULL, FB_RTL_OPT_OVER, _
 			1, _
 	 		{ _
 				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYVAL, FALSE ) _
@@ -191,7 +151,7 @@ declare function hRndCallback( byval sym as FBSYMBOL ptr ) as integer
 		( _
 			@FB_RTL_TAN, @"tan", _
 			FB_DATATYPE_DOUBLE, FB_FUNCMODE_CDECL, _
-			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_GCCBUILTIN, _
+			NULL, FB_RTL_OPT_OVER, _
 			1, _
 	 		{ _
 				( FB_DATATYPE_DOUBLE, FB_PARAMMODE_BYVAL, FALSE ) _
@@ -201,7 +161,7 @@ declare function hRndCallback( byval sym as FBSYMBOL ptr ) as integer
 		( _
 			@FB_RTL_ATAN, @"atanf", _
 			FB_DATATYPE_SINGLE, FB_FUNCMODE_CDECL, _
-			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_GCCBUILTIN, _
+			NULL, FB_RTL_OPT_OVER, _
 			1, _
 	 		{ _
 				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYVAL, FALSE ) _
@@ -211,87 +171,7 @@ declare function hRndCallback( byval sym as FBSYMBOL ptr ) as integer
 		( _
 			@FB_RTL_ATAN, @"atan", _
 			FB_DATATYPE_DOUBLE, FB_FUNCMODE_CDECL, _
-			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_GCCBUILTIN, _
-			1, _
-	 		{ _
-				( FB_DATATYPE_DOUBLE, FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
-		), _
-		/' sqrtf CDECL overload ( byval x as single ) as single '/ _
-		( _
-			@FB_RTL_sqrt, @"sqrtf", _
-			FB_DATATYPE_SINGLE, FB_FUNCMODE_CDECL, _
-			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_GCCBUILTIN, _
-			1, _
-	 		{ _
-				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
-		), _
-		/' sqrt CDECL overload ( byval x as double ) as double '/ _
-		( _
-			@FB_RTL_sqrt, @"sqrt", _
-			FB_DATATYPE_DOUBLE, FB_FUNCMODE_CDECL, _
-			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_GCCBUILTIN, _
-			1, _
-	 		{ _
-				( FB_DATATYPE_DOUBLE, FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
-		), _
-		/' logf CDECL overload ( byval x as single ) as single '/ _
-		( _
-			@FB_RTL_log, @"logf", _
-			FB_DATATYPE_SINGLE, FB_FUNCMODE_CDECL, _
-			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_GCCBUILTIN, _
-			1, _
-	 		{ _
-				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
-		), _
-		/' log CDECL overload ( byval x as double ) as double '/ _
-		( _
-			@FB_RTL_log, @"log", _
-			FB_DATATYPE_DOUBLE, FB_FUNCMODE_CDECL, _
-			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_GCCBUILTIN, _
-			1, _
-	 		{ _
-				( FB_DATATYPE_DOUBLE, FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
-		), _
-		/' expf CDECL overload ( byval x as single ) as single '/ _
-		( _
-			@FB_RTL_exp, @"expf", _
-			FB_DATATYPE_SINGLE, FB_FUNCMODE_CDECL, _
-			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_GCCBUILTIN, _
-			1, _
-	 		{ _
-				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
-		), _
-		/' exp CDECL overload ( byval x as double ) as double '/ _
-		( _
-			@FB_RTL_exp, @"exp", _
-			FB_DATATYPE_DOUBLE, FB_FUNCMODE_CDECL, _
-			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_GCCBUILTIN, _
-			1, _
-	 		{ _
-				( FB_DATATYPE_DOUBLE, FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
-		), _
-		/' floorf CDECL overload ( byval x as single ) as single '/ _
-		( _
-			@FB_RTL_floor, @"floorf", _
-			FB_DATATYPE_SINGLE, FB_FUNCMODE_CDECL, _
-			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_GCCBUILTIN, _
-			1, _
-	 		{ _
-				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
-		), _
-		/' floor CDECL overload ( byval x as double ) as double '/ _
-		( _
-			@FB_RTL_floor, @"floor", _
-			FB_DATATYPE_DOUBLE, FB_FUNCMODE_CDECL, _
-			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_GCCBUILTIN, _
+			NULL, FB_RTL_OPT_OVER, _
 			1, _
 	 		{ _
 				( FB_DATATYPE_DOUBLE, FB_PARAMMODE_BYVAL, FALSE ) _
@@ -299,9 +179,9 @@ declare function hRndCallback( byval sym as FBSYMBOL ptr ) as integer
 		), _
 		/' function abs cdecl overload( byval x as long ) as long '/ _
 		( _
-			@FB_RTL_abs, @"abs", _
+			@FB_RTL_ABS, @"abs", _
 			FB_DATATYPE_LONG, FB_FUNCMODE_CDECL, _
-			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_GCCBUILTIN, _
+			NULL, FB_RTL_OPT_OVER, _
 			1, _
 	 		{ _
 				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
@@ -309,9 +189,9 @@ declare function hRndCallback( byval sym as FBSYMBOL ptr ) as integer
 		), _
 		/' function abs cdecl overload( byval x as longint ) as longint '/ _
 		( _
-			@FB_RTL_abs, @"llabs", _
+			@FB_RTL_ABS, @"llabs", _
 			FB_DATATYPE_LONGINT, FB_FUNCMODE_CDECL, _
-			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_GCCBUILTIN, _
+			NULL, FB_RTL_OPT_OVER, _
 			1, _
 	 		{ _
 				( FB_DATATYPE_LONGINT, FB_PARAMMODE_BYVAL, FALSE ) _
@@ -319,9 +199,9 @@ declare function hRndCallback( byval sym as FBSYMBOL ptr ) as integer
 		), _
 		/' fabsf CDECL overload ( byval x as single ) as single '/ _
 		( _
-			@FB_RTL_abs, @"fabsf", _
+			@FB_RTL_ABS, @"fabsf", _
 			FB_DATATYPE_SINGLE, FB_FUNCMODE_CDECL, _
-			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_GCCBUILTIN, _
+			NULL, FB_RTL_OPT_OVER, _
 			1, _
 	 		{ _
 				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYVAL, FALSE ) _
@@ -329,9 +209,9 @@ declare function hRndCallback( byval sym as FBSYMBOL ptr ) as integer
 		), _
 		/' fabs CDECL overload ( byval x as double ) as double '/ _
 		( _
-			@FB_RTL_abs, @"fabs", _
+			@FB_RTL_ABS, @"fabs", _
 			FB_DATATYPE_DOUBLE, FB_FUNCMODE_CDECL, _
-			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_GCCBUILTIN, _
+			NULL, FB_RTL_OPT_OVER, _
 			1, _
 	 		{ _
 				( FB_DATATYPE_DOUBLE, FB_PARAMMODE_BYVAL, FALSE ) _
@@ -339,7 +219,7 @@ declare function hRndCallback( byval sym as FBSYMBOL ptr ) as integer
 		), _
 		/' function sgn overload( byval x as byte ) as long '/ _
 		( _
-			@FB_RTL_sgn, @"fb_SGNb", _
+			@FB_RTL_SGN, @"fb_SGNb", _
 			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER, _
 			1, _
@@ -349,7 +229,7 @@ declare function hRndCallback( byval sym as FBSYMBOL ptr ) as integer
 		), _
 		/' function sgn overload( byval x as short ) as long '/ _
 		( _
-			@FB_RTL_sgn, @"fb_SGNs", _
+			@FB_RTL_SGN, @"fb_SGNs", _
 			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER, _
 			1, _
@@ -359,7 +239,7 @@ declare function hRndCallback( byval sym as FBSYMBOL ptr ) as integer
 		), _
 		/' function sgn overload( byval x as long ) as long '/ _
 		( _
-			@FB_RTL_sgn, @"fb_SGNi", _
+			@FB_RTL_SGN, @"fb_SGNi", _
 			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER, _
 			1, _
@@ -369,7 +249,7 @@ declare function hRndCallback( byval sym as FBSYMBOL ptr ) as integer
 		), _
 		/' function sgn overload( byval x as longint ) as long '/ _
 		( _
-			@FB_RTL_sgn, @"fb_SGNl", _
+			@FB_RTL_SGN, @"fb_SGNl", _
 			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER, _
 			1, _
@@ -379,7 +259,7 @@ declare function hRndCallback( byval sym as FBSYMBOL ptr ) as integer
 		), _
 		/' function sgn overload( byval x as single ) as long '/ _
 		( _
-			@FB_RTL_sgn, @"fb_SGNSingle", _
+			@FB_RTL_SGN, @"fb_SGNSingle", _
 			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER, _
 			1, _
@@ -389,7 +269,7 @@ declare function hRndCallback( byval sym as FBSYMBOL ptr ) as integer
 		), _
 		/' function sgn overload( byval x as double ) as long '/ _
 		( _
-			@FB_RTL_sgn, @"fb_SGNDouble", _
+			@FB_RTL_SGN, @"fb_SGNDouble", _
 			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER, _
 			1, _
@@ -399,7 +279,7 @@ declare function hRndCallback( byval sym as FBSYMBOL ptr ) as integer
 		), _
 		/' fix overload ( byval x as single ) as single '/ _
 		( _
-			@FB_RTL_fix, @"fb_FIXSingle", _
+			@FB_RTL_FIX, @"fb_FIXSingle", _
 			FB_DATATYPE_SINGLE, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER, _
 			1, _
@@ -409,7 +289,7 @@ declare function hRndCallback( byval sym as FBSYMBOL ptr ) as integer
 		), _
 		/' fix overload ( byval x as double ) as double '/ _
 		( _
-			@FB_RTL_fix, @"fb_FIXDouble", _
+			@FB_RTL_FIX, @"fb_FIXDouble", _
 			FB_DATATYPE_DOUBLE, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER, _
 			1, _
@@ -419,7 +299,7 @@ declare function hRndCallback( byval sym as FBSYMBOL ptr ) as integer
 		), _
 		/' frac overload ( byval x as single ) as single '/ _
 		( _
-			@FB_RTL_frac, @"fb_FRACf", _
+			@FB_RTL_FRAC, @"fb_FRACf", _
 			FB_DATATYPE_SINGLE, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER, _
 			1, _
@@ -429,7 +309,7 @@ declare function hRndCallback( byval sym as FBSYMBOL ptr ) as integer
 		), _
 		/' frac overload ( byval x as double ) as double '/ _
 		( _
-			@FB_RTL_frac, @"fb_FRACd", _
+			@FB_RTL_FRAC, @"fb_FRACd", _
 			FB_DATATYPE_DOUBLE, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER, _
 			1, _
@@ -437,22 +317,22 @@ declare function hRndCallback( byval sym as FBSYMBOL ptr ) as integer
 				( FB_DATATYPE_DOUBLE, FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
-		/' atan2f CDECL overload ( byval x as single, byval y as single ) as single '/ _
+		/' function {atan2} alias "atan2f" cdecl overload( byval x as single, byval y as single ) as single '/ _
 		( _
 			@FB_RTL_ATAN2, @"atan2f", _
 			FB_DATATYPE_SINGLE, FB_FUNCMODE_CDECL, _
-			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_GCCBUILTIN, _
+			NULL, FB_RTL_OPT_OVER, _
 			2, _
 	 		{ _
 				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYVAL, FALSE ), _
 				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
-		/' atan2 CDECL overload ( byval x as double, byval y as double ) as double '/ _
+		/' function {atan2} alias "atan2" cdecl overload( byval x as double, byval y as double ) as double '/ _
 		( _
 			@FB_RTL_ATAN2, @"atan2", _
 			FB_DATATYPE_DOUBLE, FB_FUNCMODE_CDECL, _
-			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_GCCBUILTIN, _
+			NULL, FB_RTL_OPT_OVER, _
 			2, _
 	 		{ _
 				( FB_DATATYPE_DOUBLE, FB_PARAMMODE_BYVAL, FALSE ), _
@@ -762,8 +642,8 @@ function rtlMathFp2ULongint _
 
 end function
 
-
-'':::::
+'' RTL functions to implement UOPs not directly supported by C/LLVM backends
+'' (for reference: irSupportsOp() implementations)
 function rtlMathUop _
 	( _
 		byval op as integer, _
@@ -772,61 +652,31 @@ function rtlMathUop _
 
 	dim as FBSYMBOL ptr sym = any
 
-	function = NULL
-
-	select case as const op
-	case AST_OP_SGN
-		sym = PROCLOOKUP( SGN )
-
-	case AST_OP_ABS
-		sym = PROCLOOKUP( ABS )
-
-	case AST_OP_FIX
-		sym = PROCLOOKUP( FIX )
-
-	case AST_OP_FRAC
-		sym = PROCLOOKUP( FRAC )
-
-	case AST_OP_SIN
-    	sym = PROCLOOKUP( SIN )
-
-	case AST_OP_ASIN
-    	sym = PROCLOOKUP( ASIN )
-
-	case AST_OP_COS
-    	sym = PROCLOOKUP( COS )
-
-	case AST_OP_ACOS
-    	sym = PROCLOOKUP( ACOS )
-
-	case AST_OP_TAN
-    	sym = PROCLOOKUP( TAN )
-
-	case AST_OP_ATAN
-    	sym = PROCLOOKUP( ATAN )
-
-	case AST_OP_SQRT
-    	sym = PROCLOOKUP( SQRT )
-
-	case AST_OP_LOG
-    	sym = PROCLOOKUP( LOG )
-
-	case AST_OP_EXP
-    	sym = PROCLOOKUP( EXP )
-
-	case AST_OP_FLOOR
-    	sym = PROCLOOKUP( FLOOR )
-
+	select case as const( op )
+	case AST_OP_SGN  : sym = PROCLOOKUP( SGN  )  '' C/LLVM
+	case AST_OP_ABS  : sym = PROCLOOKUP( ABS  )  '' LLVM (abs/llabs integer versions only, not fabs)
+	case AST_OP_FIX  : sym = PROCLOOKUP( FIX  )  '' C/LLVM
+	case AST_OP_FRAC : sym = PROCLOOKUP( FRAC )  '' C/LLVM
+	'case AST_OP_SIN  : sym = PROCLOOKUP( SIN  )  '' unused
+	case AST_OP_ASIN : sym = PROCLOOKUP( ASIN )  '' LLVM
+	'case AST_OP_COS  : sym = PROCLOOKUP( COS  )  '' unused
+	case AST_OP_ACOS : sym = PROCLOOKUP( ACOS )  '' LLVM
+	case AST_OP_TAN  : sym = PROCLOOKUP( TAN  )  '' LLVM
+	case AST_OP_ATAN : sym = PROCLOOKUP( ATAN )  '' LLVM
+	'case AST_OP_SQRT : sym = PROCLOOKUP( SQRT )  '' unused
+	'case AST_OP_LOG  : sym = PROCLOOKUP( LOG  )  '' unused
+	'case AST_OP_EXP  : sym = PROCLOOKUP( EXP  )  '' unused
+	'case AST_OP_FLOOR : sym = PROCLOOKUP( FLOOR )  '' unused
 	case else
+		assert( FALSE )
 		exit function
-
 	end select
 
 	function = rtlOvlProcCall( sym, expr )
-
 end function
 
-'':::::
+'' RTL functions to implement BOPs not directly supported by C/LLVM backends
+'' (for reference: irSupportsOp() implementations)
 function rtlMathBop _
 	( _
 		byval op as integer, _
@@ -836,19 +686,15 @@ function rtlMathBop _
 
 	dim as FBSYMBOL ptr sym = any
 
-	function = NULL
-
-	select case as const op
+	select case as const( op )
 	case AST_OP_ATAN2
-		sym = PROCLOOKUP( ATAN2 )
-
+		sym = PROCLOOKUP( ATAN2 )  '' LLVM
 	case else
+		assert( FALSE )
 		exit function
-
 	end select
 
 	function = rtlOvlProcCall( sym, lexpr, rexpr )
-
 end function
 
 '':::::

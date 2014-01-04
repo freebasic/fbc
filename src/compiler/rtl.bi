@@ -370,20 +370,14 @@
 #define FB_RTL_GOSUBEXIT                "fb_GosubExit"
 #define FB_RTL_SETJMP                   "fb_SetJmp"
 
-#define FB_RTL_SGN						"{sgn}"
-#define FB_RTL_SIN                      "{sin}"
+#define FB_RTL_SGN                      "{sgn}"
 #define FB_RTL_ASIN                     "{asin}"
-#define FB_RTL_COS                      "{cos}"
 #define FB_RTL_ACOS                     "{acos}"
 #define FB_RTL_TAN                      "{tan}"
 #define FB_RTL_ATAN                     "{atan}"
-#define FB_RTL_SQRT                     "{sqrt}"
-#define FB_RTL_LOG                      "{log}"
-#define FB_RTL_EXP                      "{exp}"
-#define FB_RTL_FLOOR                    "{floor}"
-#define FB_RTL_ABS                    	"{abs}"
-#define FB_RTL_FIX                    	"{fix}"
-#define FB_RTL_FRAC                    	"{frac}"
+#define FB_RTL_ABS                      "{abs}"
+#define FB_RTL_FIX                      "{fix}"
+#define FB_RTL_FRAC                     "{frac}"
 #define FB_RTL_ATAN2                    "{atan2}"
 
 #define FB_RTL_FTOSB                    "fb_ftosb"
@@ -775,16 +769,10 @@ enum FB_RTL_IDX
 	FB_RTL_IDX_SETJMP
 
 	FB_RTL_IDX_SGN
-	FB_RTL_IDX_SIN
 	FB_RTL_IDX_ASIN
-	FB_RTL_IDX_COS
 	FB_RTL_IDX_ACOS
 	FB_RTL_IDX_TAN
 	FB_RTL_IDX_ATAN
-	FB_RTL_IDX_SQRT
-	FB_RTL_IDX_LOG
-	FB_RTL_IDX_EXP
-	FB_RTL_IDX_FLOOR
 	FB_RTL_IDX_ABS
 	FB_RTL_IDX_FIX
 	FB_RTL_IDX_FRAC
@@ -826,7 +814,7 @@ enum FB_RTL_OPT
 	FB_RTL_OPT_NOFB		  = &h00000200                  '' anything but -lang fb
 	FB_RTL_OPT_FBONLY	  = &h00000400                  ''
 	FB_RTL_OPT_IRHLCBUILTIN   = &h00000800                  '' proc will be emitted by ir-hlc as needed, not declared as if it was a public one from rtlib
- 	FB_RTL_OPT_GCCBUILTIN = &h00001000					'' GCC builtin, don't redeclare, create a wrapper
+	                          ''&h00001000
 	FB_RTL_OPT_NOGCC	  = &h00002000                  '' anything but -gen gcc
 	FB_RTL_OPT_X86ONLY        = &h00004000  '' on x86 only
 end enum

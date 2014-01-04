@@ -1908,7 +1908,9 @@ function astOptimizeTree( byval n as ASTNODE ptr ) as ASTNODE ptr
 		n = hDoOptRemConv( n )
 	end if
 
-	if( irGetOption( IR_OPT_NOINLINEOPS ) = FALSE ) then
+	'' (not even checking irSupportsOp() here, because neither
+	'' C/LLVM backends support reciprocal ops)
+	if( irGetOption( IR_OPT_MISSINGOPS ) = FALSE ) then
 		if( env.clopt.fpmode = FB_FPMODE_FAST ) then
 			n = hOptReciprocal( n )
 		end if

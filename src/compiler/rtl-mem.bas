@@ -118,7 +118,7 @@
 		( _
 			@"clear", @"memset", _
 			typeAddrOf( FB_DATATYPE_VOID ), FB_FUNCMODE_CDECL, _
-	 		NULL, FB_RTL_OPT_GCCBUILTIN, _
+			NULL, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
 				( FB_DATATYPE_VOID,FB_PARAMMODE_BYREF, FALSE ), _

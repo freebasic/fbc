@@ -2648,6 +2648,7 @@ dim shared as IR_VTBL irtac_vtbl = _
 	@_emitBegin, _
 	@_emitEnd, _
 	@_getOptionValue, _
+	NULL, _  '' supportsOp() unimplemented, because the ASM backend supports all ops anyways, and doesn't use IR_OPT_MISSINGOPS
 	@_procBegin, _
 	@_procEnd, _
 	@_procAllocArg, _
