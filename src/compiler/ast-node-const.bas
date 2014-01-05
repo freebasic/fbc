@@ -217,13 +217,10 @@ end function
 
 function astConstGetAsInt64( byval n as ASTNODE ptr ) as longint
 	assert( astIsCONST( n ) )
-
 	if( typeGetClass( n->dtype ) = FB_DATACLASS_FPOINT ) then
 		function = clngint( n->val.f )
-	elseif( typeIsSigned( n->dtype ) ) then
-		function = n->val.i
 	else
-		function = cunsg( n->val.i )
+		function = n->val.i
 	end if
 end function
 
