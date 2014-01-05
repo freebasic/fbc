@@ -171,8 +171,8 @@ namespace fbc_tests.optimizations.vector
 		f.x = (d.x + e.x) * (d.x - e.x)
 		f.y = (d.y + e.y) * (d.y - e.y)
 
-		CU_ASSERT_EQUAL( c2.x,  2.1875d  )
-		CU_ASSERT_EQUAL( c2.y,  -5.6875d )
+		CU_ASSERT_EQUAL( f.x,  2.1875d )
+		CU_ASSERT_EQUAL( f.y, -5.6875d )
 
 	end sub
 
@@ -187,8 +187,8 @@ namespace fbc_tests.optimizations.vector
 		f.x = (d.x + e.x) / (d.x * e.y)
 		f.y = (d.y + e.y) / (d.y * e.y)
 
-		CU_ASSERT_EQUAL( c2.x, 16.0d )
-		CU_ASSERT_EQUAL( c2.y,  3.5d )
+		CU_ASSERT_EQUAL( f.x, 16.0d )
+		CU_ASSERT_EQUAL( f.y,  3.5d )
 
 	end sub
 
