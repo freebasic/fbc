@@ -278,8 +278,8 @@ private function hConstBop _
 		case AST_OP_ADD : l->val.i = l->val.i +   r->val.i
 		case AST_OP_SUB : l->val.i = l->val.i -   r->val.i
 		case AST_OP_MUL : l->val.i = l->val.i *   r->val.i
-		case AST_OP_SHL : l->val.i = l->val.i shl r->val.i
-		case AST_OP_SHR : l->val.i = l->val.i shr r->val.i
+		case AST_OP_SHL : l->val.i = l->val.i shl r->val.i : assert( cunsg( r->val.i ) < typeGetBits( l->dtype ) )
+		case AST_OP_SHR : l->val.i = l->val.i shr r->val.i : assert( cunsg( r->val.i ) < typeGetBits( l->dtype ) )
 		case AST_OP_AND : l->val.i = l->val.i and r->val.i
 		case AST_OP_OR  : l->val.i = l->val.i or  r->val.i
 		case AST_OP_XOR : l->val.i = l->val.i xor r->val.i
@@ -317,8 +317,8 @@ private function hConstBop _
 		case AST_OP_ADD : l->val.i = cunsg( l->val.i ) +   cunsg( r->val.i )
 		case AST_OP_SUB : l->val.i = cunsg( l->val.i ) -   cunsg( r->val.i )
 		case AST_OP_MUL : l->val.i = cunsg( l->val.i ) *   cunsg( r->val.i )
-		case AST_OP_SHL : l->val.i = cunsg( l->val.i ) shl cunsg( r->val.i )
-		case AST_OP_SHR : l->val.i = cunsg( l->val.i ) shr cunsg( r->val.i )
+		case AST_OP_SHL : l->val.i = cunsg( l->val.i ) shl cunsg( r->val.i ) : assert( cunsg( r->val.i ) < typeGetBits( l->dtype ) )
+		case AST_OP_SHR : l->val.i = cunsg( l->val.i ) shr cunsg( r->val.i ) : assert( cunsg( r->val.i ) < typeGetBits( l->dtype ) )
 		case AST_OP_AND : l->val.i = cunsg( l->val.i ) and cunsg( r->val.i )
 		case AST_OP_OR  : l->val.i = cunsg( l->val.i ) or  cunsg( r->val.i )
 		case AST_OP_XOR : l->val.i = cunsg( l->val.i ) xor cunsg( r->val.i )
@@ -1196,16 +1196,15 @@ function astNewBOP _
 	'' right-operand must be an integer, so pow2 opts can be done on longint's
 	case AST_OP_SHL, AST_OP_SHR
 		if( astIsCONST( r ) ) then
-			'' warn if shift is greater than or equal to the number of bits in ldtype
-			select case astConstGetAsInt64( r )
-			case 0 to typeGetBits( ldtype )-1
-
-			case else
+			'' Ensure the shift amount is in the range 0..bitsize-1.
+			'' - x86 only supports 0..31 shifts
+			'' - GAS will show errors if outside 0..255 (byte operand)
+			'' - C backend: anything outside the 0..bitsize-1 range is undefined behaviour
+			assert( typeGetClass( r->dtype ) = FB_DATACLASS_INTEGER )
+			if( cunsg( r->val.i ) >= typeGetBits( ldtype ) ) then
 				errReportWarn( FB_WARNINGMSG_SHIFTEXCEEDSBITSINDATATYPE )
-
-				'' prevent gas asm error when value is higher than 255
-				r = astNewBOP(AST_OP_AND, r, astNewCONSTi(255))
-			end select
+				r = astNewBOP( AST_OP_AND, r, astNewCONSTi( typeGetBits( ldtype )-1 ) )
+			end if
 		end if
 
 		if( typeGetDtAndPtrOnly( rdtype ) <> FB_DATATYPE_INTEGER ) then
