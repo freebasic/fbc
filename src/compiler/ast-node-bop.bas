@@ -243,32 +243,20 @@ private function hConstBop _
 
 	if( typeGetClass( l->dtype ) = FB_DATACLASS_FPOINT ) then
 		select case as const( op )
-		case AST_OP_ADD
-			l->val.f = l->val.f + r->val.f
-		case AST_OP_SUB
-			l->val.f = l->val.f - r->val.f
-		case AST_OP_MUL
-			l->val.f = l->val.f * r->val.f
-		case AST_OP_DIV
-			'' Note: no division by zero error here - we should return
-			'' INF instead, just like with (l / r) at runtime
-			l->val.f = l->val.f / r->val.f
-		case AST_OP_POW
-			l->val.f = l->val.f ^ r->val.f
-		case AST_OP_NE
-			l->val.i = l->val.f <> r->val.f
-		case AST_OP_EQ
-			l->val.i = l->val.f = r->val.f
-		case AST_OP_GT
-			l->val.i = l->val.f > r->val.f
-		case AST_OP_LT
-			l->val.i = l->val.f < r->val.f
-		case AST_OP_LE
-			l->val.i = l->val.f <= r->val.f
-		case AST_OP_GE
-			l->val.i = l->val.f >= r->val.f
-		case AST_OP_ATAN2
-			l->val.f = atan2( l->val.f, r->val.f )
+		case AST_OP_ADD : l->val.f = l->val.f +  r->val.f
+		case AST_OP_SUB : l->val.f = l->val.f -  r->val.f
+		case AST_OP_MUL : l->val.f = l->val.f *  r->val.f
+		'' Note: no division by zero error here - we should return
+		'' INF instead, just like with (l / r) at runtime
+		case AST_OP_DIV : l->val.f = l->val.f /  r->val.f
+		case AST_OP_POW : l->val.f = l->val.f ^  r->val.f
+		case AST_OP_NE  : l->val.i = l->val.f <> r->val.f
+		case AST_OP_EQ  : l->val.i = l->val.f =  r->val.f
+		case AST_OP_GT  : l->val.i = l->val.f >  r->val.f
+		case AST_OP_LT  : l->val.i = l->val.f <  r->val.f
+		case AST_OP_LE  : l->val.i = l->val.f <= r->val.f
+		case AST_OP_GE  : l->val.i = l->val.f >= r->val.f
+		case AST_OP_ATAN2 : l->val.f = atan2( l->val.f, r->val.f )
 		case AST_OP_ANDALSO
 			if l->val.f then
 				l->val.i = (r->val.f <> 0)

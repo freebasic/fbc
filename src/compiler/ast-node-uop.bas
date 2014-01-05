@@ -17,55 +17,40 @@ private function hConstUop _
 		byval l as ASTNODE ptr _
 	) as ASTNODE ptr
 
-	if( typeGetClass( l->dtype ) = FB_DATACLASS_FPOINT ) then
-		select case as const( op )
-		case AST_OP_NEG
-			l->val.f = -l->val.f
-		case AST_OP_ABS
-			l->val.f = abs( l->val.f )
-		case AST_OP_SGN
-			l->val.f = sgn( l->val.f )
-		case AST_OP_SIN
-			l->val.f = sin( l->val.f )
-		case AST_OP_ASIN
-			l->val.f = asin( l->val.f )
-		case AST_OP_COS
-			l->val.f = cos( l->val.f )
-		case AST_OP_ACOS
-			l->val.f = acos( l->val.f )
-		case AST_OP_TAN
-			l->val.f = tan( l->val.f )
-		case AST_OP_ATAN
-			l->val.f = atn( l->val.f )
-		case AST_OP_SQRT
-			l->val.f = sqr( l->val.f )
-		case AST_OP_LOG
-			l->val.f = log( l->val.f )
-		case AST_OP_EXP
-			l->val.f = exp( l->val.f )
-		case AST_OP_FLOOR
-			l->val.f = int( l->val.f )
-		case AST_OP_FIX
-			l->val.f = fix( l->val.f )
-		case AST_OP_FRAC
-			l->val.f = frac( l->val.f )
-		case else
-			assert( FALSE )
-		end select
-	else
-		select case as const( op )
-		case AST_OP_NOT
-			l->val.i = not l->val.i
-		case AST_OP_NEG
-			l->val.i = -l->val.i
-		case AST_OP_ABS
-			l->val.i = abs( l->val.i )
-		case AST_OP_SGN
-			l->val.i = sgn( l->val.i )
-		case else
-			assert( FALSE )
-		end select
+	dim as double d = any
+	dim as longint i = any
 
+	if( typeGetClass( l->dtype ) = FB_DATACLASS_FPOINT ) then
+		d = l->val.f
+		select case as const( op )
+		case AST_OP_NEG   : d =      -d
+		case AST_OP_ABS   : d =  abs( d )
+		case AST_OP_SGN   : d =  sgn( d )
+		case AST_OP_SIN   : d =  sin( d )
+		case AST_OP_ASIN  : d = asin( d )
+		case AST_OP_COS   : d =  cos( d )
+		case AST_OP_ACOS  : d = acos( d )
+		case AST_OP_TAN   : d =  tan( d )
+		case AST_OP_ATAN  : d =  atn( d )
+		case AST_OP_SQRT  : d =  sqr( d )
+		case AST_OP_LOG   : d =  log( d )
+		case AST_OP_EXP   : d =  exp( d )
+		case AST_OP_FLOOR : d =  int( d )
+		case AST_OP_FIX   : d =  fix( d )
+		case AST_OP_FRAC  : d = frac( d )
+		case else         : assert( FALSE )
+		end select
+		l->val.f = d
+	else
+		i = l->val.i
+		select case as const( op )
+		case AST_OP_NOT : i = not i
+		case AST_OP_NEG : i = -i
+		case AST_OP_ABS : i = abs( i )
+		case AST_OP_SGN : i = sgn( i )
+		case else       : assert( FALSE )
+		end select
+		l->val.i = i
 		l = astConvertRawCONSTi( dtype, subtype, l )
 	end if
 
