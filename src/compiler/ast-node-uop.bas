@@ -43,13 +43,25 @@ private function hConstUop _
 		l->val.f = d
 	else
 		i = l->val.i
-		select case as const( op )
-		case AST_OP_NOT : i = not i
-		case AST_OP_NEG : i = -i
-		case AST_OP_ABS : i = abs( i )
-		case AST_OP_SGN : i = sgn( i )
-		case else       : assert( FALSE )
-		end select
+
+		if( typeGetSize( l->dtype ) = 8 ) then
+			select case as const( op )
+			case AST_OP_NOT : i = not i
+			case AST_OP_NEG : i = -i
+			case AST_OP_ABS : i = abs( i )
+			case AST_OP_SGN : i = sgn( i )
+			case else       : assert( FALSE )
+			end select
+		else
+			select case as const( op )
+			case AST_OP_NOT : i = not  clng( i )
+			case AST_OP_NEG : i = -    clng( i )
+			case AST_OP_ABS : i = abs( clng( i ) )
+			case AST_OP_SGN : i = sgn( clng( i ) )
+			case else       : assert( FALSE )
+			end select
+		end if
+
 		l->val.i = i
 		l = astConvertRawCONSTi( dtype, subtype, l )
 	end if
