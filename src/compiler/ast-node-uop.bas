@@ -9,6 +9,19 @@
 #include once "rtl.bi"
 #include once "ast.bi"
 
+'' Need to use replacement function for sgn(longint) constant evaluation,
+'' because the built-in sgn(longint) was bugged in older fbc versions.
+'' This way we can bootstrap safely even using those older versions.
+private function hSgnLongInt( byval x as longint ) as longint
+	if( x = 0 ) then
+		function = 0
+	elseif( x > 0 ) then
+		function = 1
+	else
+		function = -1
+	end if
+end function
+
 private function hConstUop _
 	( _
 		byval op as integer, _
@@ -49,7 +62,7 @@ private function hConstUop _
 			case AST_OP_NOT : i = not i
 			case AST_OP_NEG : i = -i
 			case AST_OP_ABS : i = abs( i )
-			case AST_OP_SGN : i = sgn( i )
+			case AST_OP_SGN : i = hSgnLongInt( i )
 			case else       : assert( FALSE )
 			end select
 		else

@@ -5005,73 +5005,85 @@ private sub _emitABSF _
 
 end sub
 
-'':::::
-private sub _emitSGNL _
-	( _
-		byval dvreg as IRVREG ptr _
-	) static
+''
+'' Algorithm:
+''	select case( highdword )
+''	case is < 0
+''		highdword = -1
+''		lowdword  = -1
+''	case is > 0
+''		highdword = 0
+''		lowdword  = 1
+''	case else
+''		if( lowdword <> 0 ) then
+''			highdword = 0
+''			lowdword  = 1
+''		else
+''			highdword = 0
+''			lowdword  = 0
+''		end if
+''	end select
+''
+'' - Result is stored into the input registers, so must be careful
+''   about overwriting
+''
+'' - For 1/-1 it's enough to check the high dword only, but to determine
+''   whether the LONGINT is 0, both dwords must be checked
+''
+'' - Should have as few jumps/assignments as possible
+''
+private sub _emitSGNL( byval dvreg as IRVREG ptr )
+	dim as string low, high, exitlabel, tmp32
+	dim as integer tmpreg = any, istmpfree = any
 
-    dim dst1 as string, dst2 as string
-    dim ostr as string
-    dim label1 as string, label2 as string
+	hPrepOperand64( dvreg, low, high )
+	exitlabel = *symbUniqueLabel( )
+	tmpreg = hFindRegNotInVreg( dvreg )
+	istmpfree = hIsRegFree( FB_DATACLASS_INTEGER, tmpreg )
+	tmp32 = *hGetRegName( FB_DATATYPE_INTEGER, tmpreg )
 
-	hPrepOperand64( dvreg, dst1, dst2 )
+	if( istmpfree = FALSE ) then
+		hPUSH( tmp32 )
+	end if
 
-	label1 = *symbUniqueLabel( )
-	label2 = *symbUniqueLabel( )
+	hMOV( tmp32, low )              '' tmp = low (backup the low dword)
+	outp( "cmp " + high + ", 0" )   '' select case high
+	hMOV( low , "-1" )              '' low  = -1
+	hMOV( high, "-1" )              '' high = -1
+	hBRANCH( "jl", exitlabel )      '' case is < 0 goto exit
+	hMOV( low , "1" )               '' low  = 1
+	hMOV( high, "0" )               '' high = 0
+	hBRANCH( "jg", exitlabel )      '' case is > 0 goto exit
+	outp( "cmp " + tmp32 + ", 0" )  '' select case tmp (high = 0, but must check original low dword too)
+	'hMOV( low , "1" )              '' (low  = 1)
+	'hMOV( high, "0" )              '' (high = 0)
+	hBRANCH( "jne", exitlabel )     '' case is <> 0 goto exit
+	hMOV( low , "0" )               '' low  = 0
+	'hMOV( high, "0" )              '' (high = 0)
+	hLABEL( exitlabel )             '' exit:
 
-	ostr = "cmp " + dst2 + ", 0"
-	outp ostr
-	hBRANCH( "jne", label1 )
-
-	ostr = "cmp " + dst1 + ", 0"
-	outp ostr
-	hBRANCH( "je", label2 )
-
-	hLABEL( label1 )
-	hMOV( dst1, "1" )
-	hMOV( dst2, "0" )
-	hBRANCH( "jg", label2 )
-	hMOV( dst1, "-1" )
-	hMOV( dst2, "-1" )
-
-	hLABEL( label2 )
-
+	if( istmpfree = FALSE ) then
+		hPOP( tmp32 )
+	end if
 end sub
 
-'':::::
-private sub _emitSGNI _
-	( _
-		byval dvreg as IRVREG ptr _
-	) static
-
-    dim as string dst, label, ostr
+private sub _emitSGNI( byval dvreg as IRVREG ptr )
+	dim as string dst, exitlabel
 
 	hPrepOperand( dvreg, dst )
+	exitlabel = *symbUniqueLabel( )
 
-	label = *symbUniqueLabel( )
-
-	ostr = "cmp " + dst + ", 0"
-	outp ostr
-
-	hBRANCH( "je", label )
-	hMOV( dst, "1" )
-	hBRANCH( "jg", label )
-	hMOV( dst, "-1" )
-
-	hLABEL( label )
-
+	outp( "cmp " + dst + ", 0" )  '' select case x
+	hBRANCH( "je", exitlabel )    '' case 0 goto exit (x = 0)
+	hMOV( dst, "1" )              '' x = 1
+	hBRANCH( "jg", exitlabel )    '' case is > 0 goto exit
+	hMOV( dst, "-1" )             '' x = -1
+	hLABEL( exitlabel )           '' exit:
 end sub
 
-
-'':::::
-private sub _emitSGNF _
-	( _
-		byval dvreg as IRVREG ptr _
-	) static
-
-	dim as string dst, label, ostr
-	dim as integer iseaxfree
+private sub _emitSGNF( byval dvreg as IRVREG ptr )
+	dim as string dst, label
+	dim as integer iseaxfree = any
 
 	hPrepOperand( dvreg, dst )
 
@@ -5101,7 +5113,6 @@ private sub _emitSGNF _
 	outp "fchs"
 
 	hLABEL( label )
-
 end sub
 
 '':::::
