@@ -88,6 +88,7 @@
 #include once "rtl.bi"
 #include once "flist.bi"
 #include once "lex.bi"
+#include once "ir-private.bi"
 
 enum
 	SECTION_HEAD  '' global declarations
@@ -156,6 +157,11 @@ type IRLLVMCONTEXT
 
 	varini				as string
 	variniscopelevel		as integer
+
+	ctors				as string
+	dtors				as string
+	ctorcount			as integer
+	dtorcount			as integer
 
 	fbctinf				as string
 	fbctinf_len			as integer
@@ -653,8 +659,20 @@ private sub hEmitVariable( byval sym as FBSYMBOL ptr )
 	hWriteLine( ln )
 end sub
 
-private sub hEmitFuncProto( byval s as FBSYMBOL ptr )
-	if( symbGetIsAccessed( s ) = FALSE ) then
+private sub hMaybeEmitGlobalVar( byval sym as FBSYMBOL ptr )
+	'' Skip DATA descriptor arrays here,
+	'' they're handled by hEmitDataStmt()
+	if( symbGetType( sym ) = FB_DATATYPE_STRUCT ) then
+		if( symbGetSubtype( sym ) = ast.data.desc ) then
+			exit sub
+		end if
+	end if
+
+	hEmitVariable( sym )
+end sub
+
+private sub hMaybeEmitProcProto( byval s as FBSYMBOL ptr )
+	if( symbGetIsFuncPtr( s ) or (not symbGetIsAccessed( s )) ) then
 		exit sub
 	end if
 
@@ -662,19 +680,15 @@ private sub hEmitFuncProto( byval s as FBSYMBOL ptr )
 		exit sub
 	end if
 
-	'' Only declare functions that won't be defined (don't have a body)
+	'' Only declare functions that won't be defined (don't have a body),
+	'' llc doesn't seem to allow DECLARE+DEFINE with the same id
 	if( symbGetIsParsed( s ) ) then
 		exit sub
 	end if
 
 	var oldsection = ctx.section
 	ctx.section = SECTION_HEAD
-
-	dim as string ln = "declare "
-	ln += hEmitProcHeader( s, TRUE )
-
-	hWriteLine( ln )
-
+	hWriteLine( "declare " + hEmitProcHeader( s, TRUE ) )
 	ctx.section = oldsection
 end sub
 
@@ -764,36 +778,6 @@ private sub hEmitStruct( byval s as FBSYMBOL ptr )
 	symbResetIsBeingEmitted( s )
 end sub
 
-private sub hEmitDecls( byval s as FBSYMBOL ptr, byval procs as integer = FALSE )
-	while( s )
-		select case as const( symbGetClass( s ) )
-		case FB_SYMBCLASS_NAMESPACE
-			hEmitDecls( symbGetNamespaceTbHead( s ), procs )
-
-		case FB_SYMBCLASS_STRUCT
-			hEmitDecls( symbGetCompSymbTb( s ).head, procs )
-
-		case FB_SYMBCLASS_SCOPE
-			hEmitDecls( symbGetScopeSymbTbHead( s ), procs )
-
-		case FB_SYMBCLASS_VAR
-			if( procs = FALSE ) then
-				hEmitVariable( s )
-			end if
-
-		case FB_SYMBCLASS_PROC
-			if( procs ) then
-				if( symbGetIsFuncPtr( s ) = FALSE ) then
-					hEmitFuncProto( s )
-				end if
-			end if
-
-		end select
-
-		s = s->next
-	wend
-end sub
-
 private sub hEmitCtorDtorArrayElement _
 	( _
 		byval proc as FBSYMBOL ptr, _
@@ -812,65 +796,23 @@ private sub hEmitCtorDtorArrayElement _
 
 end sub
 
-private sub hFindCtorsDtors _
-	( _
-		byval sym as FBSYMBOL ptr, _
-		byref ctors as string, _
-		byref ctorcount as integer, _
-		byref dtors as string, _
-		byref dtorcount as integer _
-	)
-
-	while( sym )
-		select case as const( symbGetClass( sym ) )
-		case FB_SYMBCLASS_NAMESPACE
-			hFindCtorsDtors( symbGetNamespaceTbHead( sym ), ctors, ctorcount, dtors, dtorcount )
-
-		case FB_SYMBCLASS_STRUCT
-			hFindCtorsDtors( symbGetCompSymbTb( sym ).head, ctors, ctorcount, dtors, dtorcount )
-
-		case FB_SYMBCLASS_PROC
-			if( symbGetIsFuncPtr( sym ) = FALSE ) then
-				if( symbGetIsGlobalCtor( sym ) ) then
-					ctorcount += 1
-					hEmitCtorDtorArrayElement( sym, ctors )
-				elseif( symbGetIsGlobalDtor( sym ) ) then
-					dtorcount += 1
-					hEmitCtorDtorArrayElement( sym, dtors )
-				end if
-			end if
-
-		end select
-
-		sym = sym->next
-	wend
-
-end sub
-
-private sub hEmitCtorDtorLists( byval sym as FBSYMBOL ptr )
-	dim as string ctors, dtors, ln
-	dim as integer ctorcount, dtorcount
-	hFindCtorsDtors( sym, ctors, ctorcount, dtors, dtorcount )
-
-	if( ctorcount > 0 ) then
-		ln = "@llvm.global_ctors = appending global ["
-		ln += str( ctorcount )
-		ln += " x { i32, void ()* }] ["
-		ln += ctors
-		ln += "]"
-		hWriteLine( ln )
+private sub hAddGlobalCtorDtor( byval proc as FBSYMBOL ptr )
+	if( symbGetIsFuncPtr( proc ) ) then
+		exit sub
 	end if
 
-	if( dtorcount > 0 ) then
-		ln = "@llvm.global_dtors = appending global ["
-		ln += str( dtorcount )
-		ln += " x { i32, void ()* }] ["
-		ln += dtors
-		ln += "]"
-		hWriteLine( ln )
+	if( symbGetIsGlobalCtor( proc ) ) then
+		ctx.ctorcount += 1
+		hEmitCtorDtorArrayElement( proc, ctx.ctors )
+	elseif( symbGetIsGlobalDtor( proc ) ) then
+		ctx.dtorcount += 1
+		hEmitCtorDtorArrayElement( proc, ctx.dtors )
 	end if
 end sub
 
+'' DATA descriptor arrays must be emitted based on the order indicated by the
+'' FBSYMBOL.var_.data.prev linked list, and not in the symtb order as done by
+'' hEmitDecls().
 private sub hEmitDataStmt( )
 	var s = astGetLastDataStmtSymbol( )
 	while( s )
@@ -1037,6 +979,10 @@ private function _emitBegin( ) as integer
 	ctx.regcnt = 0
 	ctx.lblcnt = 0
 	ctx.tmpcnt = 0
+	ctx.ctors = ""
+	ctx.dtors = ""
+	ctx.ctorcount = 0
+	ctx.dtorcount = 0
 	ctx.head_txt = ""
 	ctx.body_txt = ""
 	ctx.foot_txt = ""
@@ -1074,7 +1020,9 @@ private function _emitBegin( ) as integer
 end function
 
 private sub _emitEnd( byval tottime as double )
-	' Add the decls on the end of the header
+	'' Append global declarations to the header section.
+	'' This must be done during _emitEnd() instead of _emitBegin() because
+	'' _emitBegin() is called even before any input code is parsed.
 	ctx.section = SECTION_HEAD
 
 	for i as integer = 0 to BUILTIN__COUNT-1
@@ -1085,18 +1033,26 @@ private sub _emitEnd( byval tottime as double )
 
 	hEmitFTOIBuiltins( )
 
-	hEmitDataStmt( )
-
 	'' Emit proc decls first (because of function pointer initializers referencing procs)
 	hWriteLine( "" )
-	hEmitDecls( symbGetGlobalTbHead( ), TRUE )
+	irForEachGlobal( FB_SYMBCLASS_PROC, @hMaybeEmitProcProto )
 
 	'' Then the variables
 	hWriteLine( "" )
-	hEmitDecls( symbGetGlobalTbHead( ), FALSE )
+	irForEachGlobal( FB_SYMBCLASS_PROC, @hMaybeEmitGlobalVar )
 
-	'' Global lists for global ctors/dtors
-	hEmitCtorDtorLists( symbGetGlobalTbHead( ) )
+	'' DATA array initializers can reference globals by taking their address,
+	'' so they must be emitted after the other global declarations.
+	hEmitDataStmt( )
+
+	'' Global arrays for global ctors/dtors
+	irForEachGlobal( FB_SYMBCLASS_PROC, @hAddGlobalCtorDtor )
+	if( ctx.ctorcount > 0 ) then
+		hWriteLine( "@llvm.global_ctors = appending global [" & ctx.ctorcount & " x { i32, void ()* }] [" + ctx.ctors + "]" )
+	end if
+	if( ctx.dtorcount > 0 ) then
+		hWriteLine( "@llvm.global_dtors = appending global [" & ctx.dtorcount & " x { i32, void ()* }] [" + ctx.dtors + "]" )
+	end if
 
 	ctx.section = SECTION_FOOT
 

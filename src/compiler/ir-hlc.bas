@@ -19,6 +19,7 @@
 #include once "rtl.bi"
 #include once "flist.bi"
 #include once "lex.bi"
+#include once "ir-private.bi"
 
 type IRCALLARG
 	param	as FBSYMBOL ptr
@@ -731,21 +732,33 @@ private sub hEmitVariable( byval s as FBSYMBOL ptr )
 	hEmitVar( s, NULL )
 end sub
 
-private sub hEmitFuncProto( byval s as FBSYMBOL ptr )
+private sub hMaybeEmitGlobalVar( byval sym as FBSYMBOL ptr )
+	'' Skip DATA descriptor arrays here,
+	'' they're handled by hEmitDataStmt()
+	if( symbGetType( sym ) = FB_DATATYPE_STRUCT ) then
+		if( symbGetSubtype( sym ) = ast.data.desc ) then
+			exit sub
+		end if
+	end if
+
+	hEmitVariable( sym )
+end sub
+
+private sub hMaybeEmitProcProto( byval s as FBSYMBOL ptr )
 	dim as integer section = any
 
-	if( symbGetIsAccessed( s ) = FALSE ) then
-		return
+	if( symbGetIsFuncPtr( s ) or (not symbGetIsAccessed( s )) ) then
+		exit sub
 	end if
 
 	if( symbGetMangledName( s ) = NULL ) then
-		return
+		exit sub
 	end if
 
 	'' One of our built-in FTOI routines? Those are declared by
 	'' hEmitFTOIBuiltins(), not here.
 	if( symbGetIsIrHlcBuiltin( s ) ) then
-		return
+		exit sub
 	end if
 
 	'' All procedure declarations go into the toplevel header
@@ -970,54 +983,15 @@ private sub hEmitStruct _
 
 end sub
 
-private sub hEmitDecls( byval s as FBSYMBOL ptr, byval procs as integer )
-	while( s )
-		select case as const( symbGetClass( s ) )
-		case FB_SYMBCLASS_NAMESPACE
-			hEmitDecls( symbGetNamespaceTbHead( s ), procs )
-
-		case FB_SYMBCLASS_STRUCT
-			hEmitDecls( symbGetCompSymbTb( s ).head, procs )
-
-		case FB_SYMBCLASS_SCOPE
-			hEmitDecls( symbGetScopeSymbTbHead( s ), procs )
-
-		case FB_SYMBCLASS_VAR
-			if( procs ) then
-				exit select
-			end if
-
-			'' Skip DATA descriptor arrays here,
-			'' they're handled by hEmitDataStmt()
-			if( symbGetType( s ) = FB_DATATYPE_STRUCT ) then
-				if( symbGetSubtype( s ) = ast.data.desc ) then
-					exit select
-				end if
-			end if
-
-			hEmitVariable( s )
-
-		case FB_SYMBCLASS_PROC
-			if( procs = FALSE ) then
-				exit select
-			end if
-
-			if( symbGetIsFuncPtr( s ) = FALSE ) then
-				hEmitFuncProto( s )
-			end if
-
-		end select
-
-		s = s->next
-	wend
-end sub
-
+'' DATA descriptor arrays must be emitted based on the order indicated by the
+'' FBSYMBOL.var_.data.prev linked list, and not in the symtb order as done by
+'' hEmitDecls().
 private sub hEmitDataStmt( )
 	var s = astGetLastDataStmtSymbol( )
-	do while( s <> NULL )
+	while( s )
  		hEmitVariable( s )
 		s = s->var_.data.prev
-	loop
+	wend
 end sub
 
 private sub hWriteX86FTOI _
@@ -1277,16 +1251,13 @@ private sub _emitEnd( byval tottime as double )
 
 	'' Emit proc decls first (because of function pointer initializers
 	'' taking the address of procedures)
-	hEmitDecls( symbGetGlobalTbHead( ), TRUE )
+	irForEachGlobal( FB_SYMBCLASS_PROC, @hMaybeEmitProcProto )
 
 	'' Then the variables
-	hEmitDecls( symbGetGlobalTbHead( ), FALSE )
+	irForEachGlobal( FB_SYMBCLASS_VAR, @hMaybeEmitGlobalVar )
 
-	'' DATA descriptor arrays must be emitted based on the order indicated
-	'' by the FBSYMBOL.var_.data.prev linked list, and not in the symtb
-	'' order as done by hEmitDecls().
-	'' Also, DATA array initializers can reference globals by taking their
-	'' address, so they must be emitted after the other global declarations.
+	'' DATA array initializers can reference globals by taking their address,
+	'' so they must be emitted after the other global declarations.
 	hEmitDataStmt( )
 
 	hEmitFTOIBuiltins( )

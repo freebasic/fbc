@@ -26,6 +26,43 @@ sub irEnd( )
 	ir.vtbl.end( )
 end sub
 
+private sub hForEachGlobal _
+	( _
+		byval sym as FBSYMBOL ptr, _
+		byval symclass as integer, _
+		byval callback as sub( byval as FBSYMBOL ptr ) _
+	)
+
+	while( sym )
+		select case( symbGetClass( sym ) )
+		case FB_SYMBCLASS_NAMESPACE
+			hForEachGlobal( symbGetNamespaceTbHead( sym ), symclass, callback )
+
+		case FB_SYMBCLASS_STRUCT
+			hForEachGlobal( symbGetCompSymbTb( sym ).head, symclass, callback )
+
+		case FB_SYMBCLASS_SCOPE
+			hForEachGlobal( symbGetScopeSymbTbHead( sym ), symclass, callback )
+
+		case symclass
+			callback( sym )
+		end select
+
+		sym = sym->next
+	wend
+
+end sub
+
+sub irForEachGlobal _
+	( _
+		byval symclass as integer, _
+		byval callback as sub( byval as FBSYMBOL ptr ) _
+	)
+
+	hForEachGlobal( symbGetGlobalTbHead( ), symclass, callback )
+
+end sub
+
 #if __FB_DEBUG__
 function vregDump( byval v as IRVREG ptr ) as string
 	dim as string s
