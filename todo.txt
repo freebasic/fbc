@@ -9,6 +9,7 @@ o 64bit
   - Windows port I/O driver? Can it be ported to 64bit? is it needed?
 
 o LLVM backend
+  - Use built-in fixed-size types only, ie. i32 instead of %integer (similar to C backend)
   - returning structs in registers? Disabled for -gen gcc in hGetReturnType(),
     can the same be done for -gen llvm?
   - structs should be emitted as byte arrays, to let the FB side handle
@@ -30,6 +31,7 @@ o LLVM backend
   - va_arg: Same issue as with C backend
 
 o C backend
+  - Need to emit main() with proper dtypes; clang is very strict about that
   - MinGW gcc doesn't have STDCALL_MS or PASCAL; we could use 'asm("<alias>")' to
     rename symbols, however that doesn't work with DLL export tables:
     gcc inserts the full <alias> into '.ascii " -export:<alias>"', without stripping

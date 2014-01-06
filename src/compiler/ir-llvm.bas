@@ -73,6 +73,11 @@
 ''   i1 parameters (no corresponding FB type), and they're not really external
 ''   functions anyways (rtl reserved for functions from libc/libfb).
 ''
+'' - Global constructors/destructors must be added to the llvm.global_ctors or
+''   llvm.global_dtors arrays (each element = priority + function pointer).
+''   There can be only one declaration of either per module, so all ctors/dtors
+''   must be emitted into one of the two lists.
+''
 
 #include once "fb.bi"
 #include once "fbint.bi"
@@ -660,12 +665,6 @@ private sub hEmitFuncProto( byval s as FBSYMBOL ptr )
 	dim as string ln = "declare "
 	ln += hEmitProcHeader( s, TRUE )
 
-	if( symbGetIsGlobalCtor( s ) ) then
-		ln += " __attribute__ ((constructor)) "
-	elseif( symbGetIsGlobalDtor( s ) ) then
-		ln += " __attribute__ ((destructor)) "
-	end if
-
 	hWriteLine( ln )
 
 	ctx.section = oldsection
@@ -785,6 +784,83 @@ private sub hEmitDecls( byval s as FBSYMBOL ptr, byval procs as integer = FALSE 
 
 		s = s->next
 	wend
+end sub
+
+private sub hEmitCtorDtorArrayElement _
+	( _
+		byval proc as FBSYMBOL ptr, _
+		byref s as string _
+	)
+
+	if( len( s ) > 0 ) then
+		s += ", "
+	end if
+
+	s += "{ i32, void ()* } { i32 "
+	s += str( symbGetProcPriority( proc ) )
+	s += ", void ()* "
+	s += *symbGetMangledName( proc )
+	s += " }"
+
+end sub
+
+private sub hFindCtorsDtors _
+	( _
+		byval sym as FBSYMBOL ptr, _
+		byref ctors as string, _
+		byref ctorcount as integer, _
+		byref dtors as string, _
+		byref dtorcount as integer _
+	)
+
+	while( sym )
+		select case as const( symbGetClass( sym ) )
+		case FB_SYMBCLASS_NAMESPACE
+			hFindCtorsDtors( symbGetNamespaceTbHead( sym ), ctors, ctorcount, dtors, dtorcount )
+
+		case FB_SYMBCLASS_STRUCT
+			hFindCtorsDtors( symbGetCompSymbTb( sym ).head, ctors, ctorcount, dtors, dtorcount )
+
+		case FB_SYMBCLASS_PROC
+			if( symbGetIsFuncPtr( sym ) = FALSE ) then
+				if( symbGetIsGlobalCtor( sym ) ) then
+					ctorcount += 1
+					hEmitCtorDtorArrayElement( sym, ctors )
+				elseif( symbGetIsGlobalDtor( sym ) ) then
+					dtorcount += 1
+					hEmitCtorDtorArrayElement( sym, dtors )
+				end if
+			end if
+
+		end select
+
+		sym = sym->next
+	wend
+
+end sub
+
+private sub hEmitCtorDtorLists( byval sym as FBSYMBOL ptr )
+	dim as string ctors, dtors, ln
+	dim as integer ctorcount, dtorcount
+	hFindCtorsDtors( sym, ctors, ctorcount, dtors, dtorcount )
+
+	if( ctorcount > 0 ) then
+		ln = "@llvm.global_ctors = appending global ["
+		ln += str( ctorcount )
+		ln += " x { i32, void ()* }] ["
+		ln += ctors
+		ln += "]"
+		hWriteLine( ln )
+	end if
+
+	if( dtorcount > 0 ) then
+		ln = "@llvm.global_dtors = appending global ["
+		ln += str( dtorcount )
+		ln += " x { i32, void ()* }] ["
+		ln += dtors
+		ln += "]"
+		hWriteLine( ln )
+	end if
 end sub
 
 private sub hEmitDataStmt( )
@@ -1010,6 +1086,9 @@ private sub _emitEnd( byval tottime as double )
 	'' Then the variables
 	hWriteLine( "" )
 	hEmitDecls( symbGetGlobalTbHead( ), FALSE )
+
+	'' Global lists for global ctors/dtors
+	hEmitCtorDtorLists( symbGetGlobalTbHead( ) )
 
 	ctx.section = SECTION_FOOT
 
