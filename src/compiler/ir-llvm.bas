@@ -78,6 +78,9 @@
 ''   There can be only one declaration of either per module, so all ctors/dtors
 ''   must be emitted into one of the two lists.
 ''
+'' - Procedures can either be declared (if they're extern) or defined (with a
+''   body) but not both.
+''
 
 #include once "fb.bi"
 #include once "fbint.bi"
@@ -652,11 +655,16 @@ end sub
 
 private sub hEmitFuncProto( byval s as FBSYMBOL ptr )
 	if( symbGetIsAccessed( s ) = FALSE ) then
-		return
+		exit sub
 	end if
 
 	if( symbGetMangledName( s ) = NULL ) then
-		return
+		exit sub
+	end if
+
+	'' Only declare functions that won't be defined (don't have a body)
+	if( symbGetIsParsed( s ) ) then
+		exit sub
 	end if
 
 	var oldsection = ctx.section
