@@ -1511,6 +1511,7 @@ declare function symbIsProcOverloadOf _
 declare function symbHasCtor( byval sym as FBSYMBOL ptr ) as integer
 declare function symbHasDefCtor( byval sym as FBSYMBOL ptr ) as integer
 declare function symbHasDtor( byval sym as FBSYMBOL ptr ) as integer
+declare function symbIsDataDesc( byval sym as FBSYMBOL ptr ) as integer
 
 declare function symbIsArray _
 	( _

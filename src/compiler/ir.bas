@@ -63,6 +63,16 @@ sub irForEachGlobal _
 
 end sub
 
+'' DATA descriptor arrays must be emitted based on the order indicated by the
+'' FBSYMBOL.var_.data.prev linked list, not in the symtb order.
+sub irForEachDataStmt( byval callback as sub( byval as FBSYMBOL ptr ) )
+	var sym = astGetLastDataStmtSymbol( )
+	while( sym )
+		callback( sym )
+		sym = sym->var_.data.prev
+	wend
+end sub
+
 #if __FB_DEBUG__
 function vregDump( byval v as IRVREG ptr ) as string
 	dim as string s

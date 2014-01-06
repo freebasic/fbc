@@ -660,15 +660,10 @@ private sub hEmitVariable( byval sym as FBSYMBOL ptr )
 end sub
 
 private sub hMaybeEmitGlobalVar( byval sym as FBSYMBOL ptr )
-	'' Skip DATA descriptor arrays here,
-	'' they're handled by hEmitDataStmt()
-	if( symbGetType( sym ) = FB_DATATYPE_STRUCT ) then
-		if( symbGetSubtype( sym ) = ast.data.desc ) then
-			exit sub
-		end if
+	'' Skip DATA descriptor arrays here, they're handled by irForEachDataStmt()
+	if( symbIsDataDesc( sym ) = FALSE ) then
+		hEmitVariable( sym )
 	end if
-
-	hEmitVariable( sym )
 end sub
 
 private sub hMaybeEmitProcProto( byval s as FBSYMBOL ptr )
@@ -808,17 +803,6 @@ private sub hAddGlobalCtorDtor( byval proc as FBSYMBOL ptr )
 		ctx.dtorcount += 1
 		hEmitCtorDtorArrayElement( proc, ctx.dtors )
 	end if
-end sub
-
-'' DATA descriptor arrays must be emitted based on the order indicated by the
-'' FBSYMBOL.var_.data.prev linked list, and not in the symtb order as done by
-'' hEmitDecls().
-private sub hEmitDataStmt( )
-	var s = astGetLastDataStmtSymbol( )
-	while( s )
- 		hEmitVariable( s )
-		s = s->var_.data.prev
-	wend
 end sub
 
 private sub hWriteFTOI _
@@ -1043,7 +1027,7 @@ private sub _emitEnd( byval tottime as double )
 
 	'' DATA array initializers can reference globals by taking their address,
 	'' so they must be emitted after the other global declarations.
-	hEmitDataStmt( )
+	irForEachDataStmt( @hEmitVariable )
 
 	'' Global arrays for global ctors/dtors
 	irForEachGlobal( FB_SYMBCLASS_PROC, @hAddGlobalCtorDtor )

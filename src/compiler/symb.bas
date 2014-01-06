@@ -1591,6 +1591,12 @@ function symbHasDtor( byval sym as FBSYMBOL ptr ) as integer
 	function = typeHasDtor( sym->typ, sym->subtype )
 end function
 
+function symbIsDataDesc( byval sym as FBSYMBOL ptr ) as integer
+	if( symbGetType( sym ) = FB_DATATYPE_STRUCT ) then
+		function = (symbGetSubtype( sym ) = ast.data.desc)
+	end if
+end function
+
 '':::::
 function symbIsArray _
 	( _

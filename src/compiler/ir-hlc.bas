@@ -733,15 +733,10 @@ private sub hEmitVariable( byval s as FBSYMBOL ptr )
 end sub
 
 private sub hMaybeEmitGlobalVar( byval sym as FBSYMBOL ptr )
-	'' Skip DATA descriptor arrays here,
-	'' they're handled by hEmitDataStmt()
-	if( symbGetType( sym ) = FB_DATATYPE_STRUCT ) then
-		if( symbGetSubtype( sym ) = ast.data.desc ) then
-			exit sub
-		end if
+	'' Skip DATA descriptor arrays here, they're handled by irForEachDataStmt()
+	if( symbIsDataDesc( sym ) = FALSE ) then
+		hEmitVariable( sym )
 	end if
-
-	hEmitVariable( sym )
 end sub
 
 private sub hMaybeEmitProcProto( byval s as FBSYMBOL ptr )
@@ -981,17 +976,6 @@ private sub hEmitStruct _
 	'' allocated by gcc would be smaller than expected, etc.
 	hWriteStaticAssert( "sizeof( " + hGetUdtTag( s ) + hGetUdtId( s ) + " ) == " + str( culngint( symbGetLen( s ) ) ) )
 
-end sub
-
-'' DATA descriptor arrays must be emitted based on the order indicated by the
-'' FBSYMBOL.var_.data.prev linked list, and not in the symtb order as done by
-'' hEmitDecls().
-private sub hEmitDataStmt( )
-	var s = astGetLastDataStmtSymbol( )
-	while( s )
- 		hEmitVariable( s )
-		s = s->var_.data.prev
-	wend
 end sub
 
 private sub hWriteX86FTOI _
@@ -1258,7 +1242,7 @@ private sub _emitEnd( byval tottime as double )
 
 	'' DATA array initializers can reference globals by taking their address,
 	'' so they must be emitted after the other global declarations.
-	hEmitDataStmt( )
+	irForEachDataStmt( @hEmitVariable )
 
 	hEmitFTOIBuiltins( )
 
