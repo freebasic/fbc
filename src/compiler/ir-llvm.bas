@@ -143,7 +143,6 @@ type IRLLVMCONTEXT
 	lblcnt				as integer
 	tmpcnt				as integer
 	vregTB				as TFLIST
-	forwardlist			as TFLIST
 	callargs			as TLIST        '' IRCALLARG's during emitPushArg/emitCall[Ptr]
 	linenum				as integer
 
@@ -195,7 +194,6 @@ dim shared as IRLLVMCONTEXT ctx
 
 private sub _init( )
 	flistInit( @ctx.vregTB, IR_INITVREGNODES, len( IRVREG ) )
-	flistInit( @ctx.forwardlist, 32, len( FBSYMBOL ptr ) )
 	listInit( @ctx.callargs, 32, sizeof(IRCALLARG), LIST_FLAGS_NOCLEAR )
 
 	irSetOption( IR_OPT_CPUSELFBOPS or IR_OPT_FPUIMMEDIATES or IR_OPT_MISSINGOPS )
@@ -206,7 +204,6 @@ end sub
 
 private sub _end( )
 	listEnd( @ctx.callargs )
-	flistEnd( @ctx.forwardlist )
 	flistEnd( @ctx.vregTB )
 end sub
 
@@ -798,20 +795,6 @@ private sub hEmitDataStmt( )
 	wend
 end sub
 
-private sub hEmitForwardDecls( )
-	if( ctx.forwardlist.lastitem = NULL ) then
-		return
-	end if
-
-	dim as FBSYMBOL ptr s = flistGetHead( @ctx.forwardlist )
-	while( s )
-		hEmitUDT( s )
-		s = flistGetNext( s )
-	wend
-
-	flistReset( @ctx.forwardlist )
-end sub
-
 private sub hWriteFTOI _
 	( _
 		byref fname as string, _
@@ -1027,8 +1010,6 @@ private sub _emitEnd( byval tottime as double )
 	'' Then the variables
 	hWriteLine( "" )
 	hEmitDecls( symbGetGlobalTbHead( ), FALSE )
-
-	hEmitForwardDecls( )
 
 	ctx.section = SECTION_FOOT
 
