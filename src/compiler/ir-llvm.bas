@@ -212,8 +212,6 @@ private sub _init( )
 
 	irSetOption( IR_OPT_CPUSELFBOPS or IR_OPT_FPUIMMEDIATES or IR_OPT_MISSINGOPS )
 
-	' initialize the current section
-	ctx.section = SECTION_HEAD
 end sub
 
 private sub _end( )
