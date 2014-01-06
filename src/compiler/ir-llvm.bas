@@ -177,8 +177,7 @@ end type
 declare function hEmitType _
 	( _
 		byval dtype as integer, _
-		byval subtype as FBSYMBOL ptr, _
-		byval is_result as integer = FALSE _
+		byval subtype as FBSYMBOL ptr _
 	) as string
 
 declare sub hEmitStruct( byval s as FBSYMBOL ptr )
@@ -206,12 +205,48 @@ declare sub _emitBop _
 '' globals
 dim shared as IRLLVMCONTEXT ctx
 
+'' same order as FB_DATATYPE
+dim shared as const zstring ptr dtypeName(0 to FB_DATATYPES-1) = _
+{ _
+	@"i8"       , _ '' void
+	@"i8"       , _ '' byte
+	@"i8"       , _ '' ubyte
+	@"i8"       , _ '' char
+	@"i16"      , _ '' short
+	@"i16"      , _ '' ushort
+	NULL        , _ '' wchar
+	NULL        , _ '' int
+	NULL        , _ '' uint
+	NULL        , _ '' enum
+	NULL        , _ '' bitfield
+	@"i32"      , _ '' long
+	@"i32"      , _ '' ulong
+	@"i64"      , _ '' longint
+	@"i64"      , _ '' ulongint
+	@"float"    , _ '' single
+	@"double"   , _ '' double
+	@"%FBSTRING", _ '' string
+	@"i8"       , _ '' fix-len string
+	NULL        , _ '' struct
+	NULL        , _ '' namespace
+	NULL        , _ '' function
+	NULL        , _ '' fwd-ref
+	NULL          _ '' pointer
+}
+
 private sub _init( )
 	flistInit( @ctx.vregTB, IR_INITVREGNODES, len( IRVREG ) )
 	listInit( @ctx.callargs, 32, sizeof(IRCALLARG), LIST_FLAGS_NOCLEAR )
 
 	irSetOption( IR_OPT_CPUSELFBOPS or IR_OPT_FPUIMMEDIATES or IR_OPT_MISSINGOPS )
 
+	if( fbCpuTypeIs64bit( ) ) then
+		dtypeName(FB_DATATYPE_INTEGER) = dtypeName(FB_DATATYPE_LONGINT)
+		dtypeName(FB_DATATYPE_UINT   ) = dtypeName(FB_DATATYPE_ULONGINT)
+	else
+		dtypeName(FB_DATATYPE_INTEGER) = dtypeName(FB_DATATYPE_LONG)
+		dtypeName(FB_DATATYPE_UINT   ) = dtypeName(FB_DATATYPE_ULONG)
+	end if
 end sub
 
 private sub _end( )
@@ -287,7 +322,7 @@ private function hEmitProcHeader _
 
 	'' Function result type (is 'void' for subs)
 	ln += hEmitType( typeGetDtAndPtrOnly( symbGetProcRealType( proc ) ), _
-				symbGetProcRealSubtype( proc ), TRUE )
+				symbGetProcRealSubtype( proc ) )
 
 	ln += " "
 
@@ -387,7 +422,8 @@ private sub hEmitUDT( byval s as FBSYMBOL ptr )
 	select case as const( symbGetClass( s ) )
 	case FB_SYMBCLASS_ENUM
 		symbSetIsEmitted( s )
-		hWriteLine( hGetUDTName( s ) + " = type %integer" )
+		'' no subtype, to avoid infinite recursion
+		hWriteLine( hGetUDTName( s ) + " = type " + hEmitType( FB_DATATYPE_ENUM, NULL ) )
 
 	case FB_SYMBCLASS_STRUCT
 		hEmitStruct( s )
@@ -980,21 +1016,13 @@ private function _emitBegin( ) as integer
 	end if
 
 	hWriteLine( "; Compilation of " + env.inf.name + " started at " + time( ) + " on " + date( ) )
-
-	'' Some named types we use to make the output more readable
 	hWriteLine( "" )
-	hWriteLine( "%any = type i8" )
-	hWriteLine( "%byte = type i8" )
-	hWriteLine( "%short = type i16" )
-	hWriteLine( "%integer = type i32" )
-	hWriteLine( "%long = type i32" ) '' TODO: 64-bit
-	hWriteLine( "%longint = type i64" )
-	hWriteLine( "%single = type float" )
-	hWriteLine( "%double = type double" )
-	hWriteLine( "%string = type { i8*, i32, i32 }" )
-	hWriteLine( "%fixstr = type i8" )
-	hWriteLine( "%char = type i8" )
-	hWriteLine( "%wchar = type i" + str( typeGetBits( FB_DATATYPE_WCHAR ) ) )
+
+	if( fbCpuTypeIs64bit( ) ) then
+		hWriteLine( "%FBSTRING = type { i8*, i64, i64 }" )
+	else
+		hWriteLine( "%FBSTRING = type { i8*, i32, i32 }" )
+	end if
 
 	ctx.section = SECTION_BODY
 
@@ -1419,86 +1447,58 @@ end sub
 private function hEmitType _
 	( _
 		byval dtype as integer, _
-		byval subtype as FBSYMBOL ptr, _
-		byval is_result as integer _
+		byval subtype as FBSYMBOL ptr _
 	) as string
 
-	'' same order as FB_DATATYPE
-	static as const zstring ptr dtypeName(0 to FB_DATATYPES-1) = _
-	{ _
-		@"%any"     , _ '' void
-		@"%byte"    , _ '' byte
-		@"%byte"    , _ '' ubyte
-		@"%char"    , _ '' char
-		@"%short"   , _ '' short
-		@"%short"   , _ '' ushort
-		@"%wchar"   , _ '' wchar
-		@"%integer" , _ '' int
-		@"%integer" , _ '' uint
-		NULL        , _ '' enum
-		NULL        , _ '' bitfield
-		@"%long"    , _ '' long
-		@"%long"    , _ '' ulong
-		@"%longint" , _ '' longint
-		@"%longint" , _ '' ulongint
-		@"%single"  , _ '' single
-		@"%double"   , _ '' double
-		@"%string"  , _ '' string
-		@"%fixstr"  , _ '' fix-len string
-		NULL        , _ '' struct
-		NULL        , _ '' namespace
-		NULL        , _ '' function
-		NULL        , _ '' fwd-ref
-		NULL          _ '' pointer
-	}
-
 	dim as string s
-	dim as integer ptrcount = typeGetPtrCnt( dtype )
+	dim as integer ptrcount = any
+
+	ptrcount = typeGetPtrCnt( dtype )
 	dtype = typeGetDtOnly( dtype )
 
 	select case as const( dtype )
+	case FB_DATATYPE_VOID
+		'' "void*" isn't allowed in LLVM IR, "i8*" must be used instead,
+		'' that's why FB_DATATYPE_VOID is mapped to "i8" in the above
+		'' table. "void" can only be used for subs.
+		if( ptrcount = 0 ) then
+			s = "void"
+		else
+			s = *dtypeName(FB_DATATYPE_VOID)
+		end if
+
 	case FB_DATATYPE_STRUCT, FB_DATATYPE_ENUM
 		if( subtype ) then
 			hEmitUDT( subtype )
-			s = hGetUDTName( subtype )
+			s = hGetUdtName( subtype )
 		elseif( dtype = FB_DATATYPE_ENUM ) then
-			dtype = FB_DATATYPE_INTEGER
+			s = *dtypeName(typeGetRemapType( dtype ))
 		else
-			dtype = FB_DATATYPE_VOID
+			s = *dtypeName(FB_DATATYPE_VOID)
 		end if
 
 	case FB_DATATYPE_FUNCTION
+		assert( ptrcount > 0 )
 		ptrcount -= 1
 		hEmitUDT( subtype )
 		s = *symbGetMangledName( subtype )
 
-	case FB_DATATYPE_STRING, FB_DATATYPE_WCHAR
-		if( is_result ) then
-			if( ptrcount = 0 ) then
-				ptrcount = 1
-			end if
-		end if
+	case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
+		'' Emit ubyte instead of char,
+		'' and ubyte/ushort/uinteger instead of wchar_t
+		s = *dtypeName(typeGetRemapType( dtype ))
+
+	case FB_DATATYPE_FIXSTR
+		'' Ditto (but typeGetRemapType() returns FB_DATATYPE_FIXSTR,
+		'' so do it manually)
+		s = *dtypeName(FB_DATATYPE_UBYTE)
 
 	case FB_DATATYPE_BITFIELD
-		if( subtype ) then
-			dtype = symbGetType( subtype )
-		else
-			dtype = FB_DATATYPE_INTEGER
-		end if
+		s = *dtypeName(symbGetType( subtype ))
 
-	case FB_DATATYPE_VOID
-		'' void* isn't allowed in LLVM IR, i8* can be used instead,
-		'' that's why %any is aliased to i8. "void" will almost never
-		'' be used, except for subs.
-		if( ptrcount = 0 ) then
-			s = "void"
-		end if
-
-	end select
-
-	if( len( s ) = 0 ) then
+	case else
 		s = *dtypeName(dtype)
-	end if
+	end select
 
 	if( ptrcount > 0 ) then
 		s += string( ptrcount, "*" )

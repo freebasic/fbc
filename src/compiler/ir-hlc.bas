@@ -188,13 +188,12 @@ private sub _init( )
 	listInit( @ctx.exprcache, 8, sizeof( EXPRCACHENODE ), LIST_FLAGS_NOCLEAR )
 	irSetOption( IR_OPT_FPUIMMEDIATES or IR_OPT_MISSINGOPS )
 
-	'' 64bit?
 	if( fbCpuTypeIs64bit( ) ) then
-		dtypeName(FB_DATATYPE_INTEGER) = @"int64"
-		dtypeName(FB_DATATYPE_UINT   ) = @"uint64"
+		dtypeName(FB_DATATYPE_INTEGER) = dtypeName(FB_DATATYPE_LONGINT)
+		dtypeName(FB_DATATYPE_UINT   ) = dtypeName(FB_DATATYPE_ULONGINT)
 	else
-		dtypeName(FB_DATATYPE_INTEGER) = @"int32"
-		dtypeName(FB_DATATYPE_UINT   ) = @"uint32"
+		dtypeName(FB_DATATYPE_INTEGER) = dtypeName(FB_DATATYPE_LONG)
+		dtypeName(FB_DATATYPE_UINT   ) = dtypeName(FB_DATATYPE_ULONG)
 	end if
 end sub
 
@@ -535,20 +534,6 @@ private function hGetUdtName( byval sym as FBSYMBOL ptr ) as string
 	function = hGetUdtTag( sym ) + hGetUdtId( sym )
 end function
 
-private sub hEmitEnum( byval s as FBSYMBOL ptr )
-	dim as string ln
-
-	symbSetIsEmitted( s )
-
-	ln = "typedef "
-	'' no subtype, to avoid infinite recursion
-	ln += hEmitType( FB_DATATYPE_ENUM, NULL )
-	ln += " "
-	ln += hGetUdtName( s )
-	ln += ";"
-	hWriteLine( ln )
-end sub
-
 private sub hEmitUDT( byval s as FBSYMBOL ptr, byval is_ptr as integer )
 	dim as integer section = any
 
@@ -588,7 +573,9 @@ private sub hEmitUDT( byval s as FBSYMBOL ptr, byval is_ptr as integer )
 
 	select case as const symbGetClass( s )
 	case FB_SYMBCLASS_ENUM
-		hEmitEnum( s )
+		symbSetIsEmitted( s )
+		'' no subtype, to avoid infinite recursion
+		hWriteLine( "typedef " + hEmitType( FB_DATATYPE_ENUM, NULL ) + " " + hGetUdtName( s ) + ";" )
 
 	case FB_SYMBCLASS_STRUCT
 		hEmitStruct( s, is_ptr )
