@@ -418,12 +418,6 @@ function astNewCONV _
 		'' special case: if it's a float to int, use a builtin function
 		if( (ldclass = FB_DATACLASS_FPOINT) and (typeGetClass( to_dtype ) = FB_DATACLASS_INTEGER) ) then
 			return rtlMathFTOI( l, to_dtype )
-		else
-			select case( typeGetDtAndPtrOnly( to_dtype ) )
-			case FB_DATATYPE_STRUCT '', FB_DATATYPE_CLASS
-				'' C (not C++) doesn't support casting from a UDT to another, so do this instead: lhs = *((typeof(lhs)*)&rhs)
-				return astNewDEREF( astNewCONV( typeAddrOf( to_dtype ), to_subtype, astNewADDROF( l ) ) )   
-			end select
 		end if
 	end if
 
