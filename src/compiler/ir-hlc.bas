@@ -1393,7 +1393,12 @@ private function hNewVR _
 	v->typ = vtype
 	v->dtype = dtype
 	v->subtype = subtype
-	v->reg = INVALID
+	if( vtype = IR_VREGTYPE_REG ) then
+		v->reg = ctx.regcnt
+		ctx.regcnt += 1
+	else
+		v->reg = INVALID
+	end if
 	v->regFamily = 0
 	v->vector = 0
 	v->sym = NULL
@@ -1534,27 +1539,6 @@ private sub _setVregDataType _
 		vreg->subtype = subtype
 	end if
 
-end sub
-
-private sub hLoadVreg( byval vreg as IRVREG ptr )
-	if( vreg = NULL ) then
-		exit sub
-	end if
-
-	'' reg?
-	if( vreg->typ = IR_VREGTYPE_REG ) then
-		if( vreg->reg <> INVALID ) then
-			exit sub
-		end if
-
-		vreg->reg = ctx.regcnt
-		ctx.regcnt += 1
-	end if
-
-	'' index?
-	if( vreg->vidx <> NULL ) then
-		hLoadVreg( vreg->vidx )
-	end if
 end sub
 
 private function hEmitType _
@@ -2776,10 +2760,6 @@ private sub _emitBop _
 
 	dim as EXPRNODE ptr l = any, r = any
 
-	hLoadVreg( v1 )
-	hLoadVreg( v2 )
-	hLoadVreg( vr )
-
 	l = exprNewVREG( v1 )
 	r = exprNewVREG( v2 )
 
@@ -2851,9 +2831,6 @@ private sub _emitUop _
 		byval vr as IRVREG ptr _
 	)
 
-	hLoadVreg( v1 )
-	hLoadVreg( vr )
-
 	if( vr = NULL ) then
 		vr = v1
 	end if
@@ -2863,8 +2840,6 @@ private sub _emitUop _
 end sub
 
 private sub _emitStore( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
-	hLoadVreg( v1 )
-	hLoadVreg( v2 )
 	exprSTORE( v1, exprNewVREG( v2 ) )
 end sub
 
@@ -2889,9 +2864,6 @@ private sub _emitAddr _
 	)
 
 	dim as EXPRNODE ptr l = NULL
-
-	hLoadVreg( v1 )
-	hLoadVreg( vr )
 
 	select case( op )
 	case AST_OP_ADDROF
@@ -2976,7 +2948,6 @@ private sub hDoCall _
 		s += ";"
 		hWriteLine( s )
 	else
-		hLoadVreg( vr )
 		exprSTORE( vr, exprNewTEXT( vr->dtype, vr->subtype, s ), TRUE )
 	end if
 
