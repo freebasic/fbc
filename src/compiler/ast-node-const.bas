@@ -23,8 +23,11 @@ function astConstGeZero( byval n as ASTNODE ptr ) as integer
 	assert( astIsCONST( n ) )
 	if( typeGetClass( n->dtype ) = FB_DATACLASS_FPOINT ) then
 		function = (n->val.f >= 0.0)
-	else
+	elseif( typeIsSigned( n->dtype ) ) then
 		function = (n->val.i >= 0)
+	else
+		'' Unsigned always is >= 0
+		function = TRUE
 	end if
 end function
 

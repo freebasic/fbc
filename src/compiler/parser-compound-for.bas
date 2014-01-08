@@ -542,21 +542,6 @@ private sub hForTo _
 
 end sub
 
-private function hStepIsNonNegative _
-	( _
-		byval dtype as integer, _
-		byval expr as ASTNODE ptr _
-	) as integer
-
-	'' don't test unsigned values for non-negativity
-	if( typeIsSigned( dtype ) = FALSE ) then
-		return TRUE
-	end if
-
-	'' const >= 0?
-	function = astConstGeZero( expr )
-end function
-
 '':::::
 private sub hForStep _
 	( _
@@ -612,8 +597,8 @@ private sub hForStep _
 				expr = astNewCONSTi( 0 )
 			end if
 
-			'' get step's positivity
-			stk->for.ispos.value.i = hStepIsNonNegative( dtype, expr )
+			'' get step's positivity: >= 0?
+			stk->for.ispos.value.i = astConstGeZero( expr )
 
 			'' get constant step
 			stk->for.stp.sym = NULL
