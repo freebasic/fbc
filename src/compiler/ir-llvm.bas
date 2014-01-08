@@ -147,7 +147,7 @@ dim shared as BUILTIN builtins(0 to BUILTIN__COUNT-1) => _
 }
 
 type IRLLVMCONTEXT
-	identcnt			as integer     ' how many levels of indent
+	indent				as integer  '' current indentation used by hWriteLine()
 	callargs			as TLIST        '' IRCALLARG's during emitPushArg/emitCall[Ptr]
 	linenum				as integer
 
@@ -251,8 +251,8 @@ private sub _end( )
 end sub
 
 private sub hWriteLine( byref ln as string )
-	if( ctx.identcnt > 0 ) then
-		ln = string( ctx.identcnt, TABCHAR ) + ln
+	if( ctx.indent > 0 ) then
+		ln = string( ctx.indent, TABCHAR ) + ln
 	end if
 
 	ln += NEWLINE
@@ -269,9 +269,9 @@ private sub hWriteLine( byref ln as string )
 end sub
 
 private sub hWriteLabel( byval id as zstring ptr )
-	ctx.identcnt -= 1
+	ctx.indent -= 1
 	hWriteLine( *id + ":" )
-	ctx.identcnt += 1
+	ctx.indent += 1
 end sub
 
 private function hEmitParamName( byval sym as FBSYMBOL ptr ) as string
@@ -989,7 +989,7 @@ private function _emitBegin( ) as integer
 		return FALSE
 	end if
 
-	ctx.identcnt = 0
+	ctx.indent = 0
 	ctx.ctors = ""
 	ctx.dtors = ""
 	ctx.ctorcount = 0
@@ -2054,13 +2054,13 @@ private sub _emitJmpTb _
 	ln += "["
 	hWriteLine( ln )
 
-	ctx.identcnt += 1
+	ctx.indent += 1
 	for i as integer = 0 to labelcount - 1
 		ln = "%integer " + str( values[i] ) + ", "
 		ln += "label %" + *symbGetMangledName( labels[i] )
 		hWriteLine( ln )
 	next
-	ctx.identcnt -= 1
+	ctx.indent -= 1
 
 	hWriteLine( "]" )
 
@@ -2323,7 +2323,7 @@ private sub _emitProcBegin _
 	hWriteLine( ln )
 
 	hWriteLine( "{" )
-	ctx.identcnt += 1
+	ctx.indent += 1
 
 end sub
 
@@ -2339,7 +2339,7 @@ private sub _emitProcEnd _
 		hWriteLine( "ret void" )
 	end if
 
-	ctx.identcnt -= 1
+	ctx.indent -= 1
 	hWriteLine( "}" )
 
 	irhlEmitProcEnd( )
