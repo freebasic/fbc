@@ -149,8 +149,6 @@ dim shared as BUILTIN builtins(0 to BUILTIN__COUNT-1) => _
 type IRLLVMCONTEXT
 	identcnt			as integer     ' how many levels of indent
 	regcnt				as integer     ' temporary labels counter
-	lblcnt				as integer
-	tmpcnt				as integer
 	vregTB				as TFLIST
 	callargs			as TLIST        '' IRCALLARG's during emitPushArg/emitCall[Ptr]
 	linenum				as integer
@@ -994,8 +992,6 @@ private function _emitBegin( ) as integer
 	end if
 
 	ctx.identcnt = 0
-	ctx.lblcnt = 0
-	ctx.tmpcnt = 0
 	ctx.ctors = ""
 	ctx.dtors = ""
 	ctx.ctorcount = 0
