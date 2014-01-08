@@ -104,8 +104,6 @@ type IRHLCCTX
 	section				as integer '' Current section to write to
 	sectiongosublevel		as integer
 
-	regcnt				as integer      '' register counter used to name vregs
-	vregTB				as TFLIST
 	callargs			as TLIST        '' IRCALLARG's during emitPushArg/emitCall[Ptr]
 	linenum				as integer
 	escapedinputfilename		as string
@@ -181,7 +179,7 @@ dim shared as const zstring ptr dtypeName(0 to FB_DATATYPES-1) = _
 }
 
 private sub _init( )
-	flistInit( @ctx.vregTB, IR_INITVREGNODES, len( IRVREG ) )
+	irhlInit( )
 	listInit( @ctx.callargs, 32, sizeof( IRCALLARG ), LIST_FLAGS_NOCLEAR )
 	listInit( @ctx.anonstack, 8, sizeof( FBSYMBOL ptr ), LIST_FLAGS_NOCLEAR )
 	listInit( @ctx.exprnodes, 32, sizeof( EXPRNODE ), LIST_FLAGS_CLEAR )
@@ -202,7 +200,7 @@ private sub _end( )
 	listEnd( @ctx.exprnodes )
 	listEnd( @ctx.anonstack )
 	listEnd( @ctx.callargs )
-	flistEnd( @ctx.vregTB )
+	irhlEnd( )
 end sub
 
 '' "Begin/end" to be used to opening/closing sections whenever opening/closing
@@ -1360,157 +1358,6 @@ private sub _procAllocStaticVars( byval sym as FBSYMBOL ptr )
 	sectionReturn( section )
 end sub
 
-''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-
-'':::::
-private function hNewVR _
-	( _
-		byval dtype as integer, _
-		byval subtype as FBSYMBOL ptr, _
-		byval vtype as integer _
-	) as IRVREG ptr
-
-	dim as IRVREG ptr v = any
-
-	v = flistNewItem( @ctx.vregTB )
-
-	v->typ = vtype
-	v->dtype = dtype
-	v->subtype = subtype
-	if( vtype = IR_VREGTYPE_REG ) then
-		v->reg = ctx.regcnt
-		ctx.regcnt += 1
-	else
-		v->reg = INVALID
-	end if
-	v->regFamily = 0
-	v->vector = 0
-	v->sym = NULL
-	v->ofs = 0
-	v->mult = 0
-	v->vidx = NULL
-	v->vaux = NULL
-
-	function = v
-end function
-
-'':::::
-private function _allocVreg _
-	( _
-		byval dtype as integer, _
-		byval subtype as FBSYMBOL ptr _
-	) as IRVREG ptr
-
-	function = hNewVR( dtype, subtype, IR_VREGTYPE_REG )
-
-end function
-
-private function _allocVrImm _
-	( _
-		byval dtype as integer, _
-		byval subtype as FBSYMBOL ptr, _
-		byval value as longint _
-	) as IRVREG ptr
-
-	dim as IRVREG ptr vr = any
-
-	vr = hNewVR( dtype, subtype, IR_VREGTYPE_IMM )
-	vr->value.i = value
-
-	function = vr
-end function
-
-private function _allocVrImmF _
-	( _
-		byval dtype as integer, _
-		byval subtype as FBSYMBOL ptr, _
-		byval value as double _
-	) as IRVREG ptr
-
-	dim as IRVREG ptr vr = any
-
-	vr = hNewVR( dtype, subtype, IR_VREGTYPE_IMM )
-	vr->value.f = value
-
-	function = vr
-end function
-
-'':::::
-private function _allocVrVar _
-	( _
-		byval dtype as integer, _
-		byval subtype as FBSYMBOL ptr, _
-		byval symbol as FBSYMBOL ptr, _
-		byval ofs as longint _
-	) as IRVREG ptr
-
-	dim as IRVREG ptr vr = hNewVR( dtype, subtype, IR_VREGTYPE_VAR )
-
-	vr->sym = symbol
-	vr->ofs = ofs
-
-	function = vr
-
-end function
-
-'':::::
-private function _allocVrIdx _
-	( _
-		byval dtype as integer, _
-		byval subtype as FBSYMBOL ptr, _
-		byval symbol as FBSYMBOL ptr, _
-		byval ofs as longint, _
-		byval mult as integer, _
-		byval vidx as IRVREG ptr _
-	) as IRVREG ptr
-
-	dim as IRVREG ptr vr = hNewVR( dtype, subtype, IR_VREGTYPE_IDX )
-
-	vr->sym = symbol
-	vr->ofs = ofs
-	vr->vidx = vidx
-
-	function = vr
-
-end function
-
-'':::::
-private function _allocVrPtr _
-	( _
-		byval dtype as integer, _
-		byval subtype as FBSYMBOL ptr, _
-		byval ofs as longint, _
-		byval vidx as IRVREG ptr _
-	) as IRVREG ptr
-
-	dim as IRVREG ptr vr = hNewVR( dtype, subtype, IR_VREGTYPE_PTR )
-
-	vr->ofs = ofs
-	vr->vidx = vidx
-
-	function = vr
-
-end function
-
-'':::::
-private function _allocVrOfs _
-	( _
-		byval dtype as integer, _
-		byval subtype as FBSYMBOL ptr, _
-		byval symbol as FBSYMBOL ptr, _
-		byval ofs as longint _
-	) as IRVREG ptr
-
-	dim as IRVREG ptr vr = hNewVR( dtype, subtype, IR_VREGTYPE_OFS )
-
-	vr->sym = symbol
-	vr->ofs = ofs
-
-	function = vr
-
-end function
-
-'':::::
 private sub _setVregDataType _
 	( _
 		byval vreg as IRVREG ptr, _
@@ -3405,7 +3252,7 @@ private sub _emitProcBegin _
 		byval initlabel as FBSYMBOL ptr _
 	)
 
-	ctx.regcnt = 0
+	irhlEmitProcBegin( )
 
 	dim as string mangled
 
@@ -3485,8 +3332,7 @@ private sub _emitProcEnd _
 	assert( listGetHead( @ctx.exprcache ) = NULL )
 	assert( listGetHead( @ctx.exprnodes ) = NULL )
 
-	flistReset( @ctx.vregTB )
-	ctx.regcnt = 0
+	irhlEmitProcEnd( )
 
 end sub
 
@@ -3581,13 +3427,13 @@ dim shared as IR_VTBL irhlc_vtbl = _
 	@_emitFbctinfBegin, _
 	@_emitFbctinfString, _
 	@_emitFbctinfEnd, _
-	@_allocVreg, _
-	@_allocVrImm, _
-	@_allocVrImmF, _
-	@_allocVrVar, _
-	@_allocVrIdx, _
-	@_allocVrPtr, _
-	@_allocVrOfs, _
+	@irhlAllocVreg, _
+	@irhlAllocVrImm, _
+	@irhlAllocVrImmF, _
+	@irhlAllocVrVar, _
+	@irhlAllocVrIdx, _
+	@irhlAllocVrPtr, _
+	@irhlAllocVrOfs, _
 	@_setVregDataType, _
 	NULL, _
 	NULL, _

@@ -26,6 +26,165 @@ sub irEnd( )
 	ir.vtbl.end( )
 end sub
 
+type IRHLCONTEXT
+	regcount	as integer  '' vreg id counter
+	vregs		as TFLIST   '' IRVREG allocation
+end type
+
+dim shared hl as IRHLCONTEXT
+
+sub irhlInit( )
+	flistInit( @hl.vregs, IR_INITVREGNODES, sizeof( IRVREG ) )
+end sub
+
+sub irhlEnd( )
+	flistEnd( @hl.vregs )
+end sub
+
+sub irhlEmitProcBegin( )
+	hl.regcount = 0
+end sub
+
+sub irhlEmitProcEnd( )
+	flistReset( @hl.vregs )
+end sub
+
+function irhlNewVreg _
+	( _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr, _
+		byval vtype as integer _
+	) as IRVREG ptr
+
+	dim as IRVREG ptr v = any
+
+	v = flistNewItem( @hl.vregs )
+
+	v->typ = vtype
+	v->dtype = dtype
+	v->subtype = subtype
+	if( vtype = IR_VREGTYPE_REG ) then
+		v->reg = hl.regcount
+		hl.regcount += 1
+	else
+		v->reg = INVALID
+	end if
+	v->regFamily = 0
+	v->vector = 0
+	v->sym = NULL
+	v->ofs = 0
+	v->mult = 0
+	v->vidx = NULL
+	v->vaux = NULL
+
+	function = v
+end function
+
+function irhlAllocVreg _
+	( _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr _
+	) as IRVREG ptr
+	function = irhlNewVreg( dtype, subtype, IR_VREGTYPE_REG )
+end function
+
+function irhlAllocVrImm _
+	( _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr, _
+		byval value as longint _
+	) as IRVREG ptr
+
+	dim as IRVREG ptr vr = any
+
+	vr = irhlNewVreg( dtype, subtype, IR_VREGTYPE_IMM )
+	vr->value.i = value
+
+	function = vr
+end function
+
+function irhlAllocVrImmF _
+	( _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr, _
+		byval value as double _
+	) as IRVREG ptr
+
+	dim as IRVREG ptr vr = any
+
+	vr = irhlNewVreg( dtype, subtype, IR_VREGTYPE_IMM )
+	vr->value.f = value
+
+	function = vr
+end function
+
+function irhlAllocVrVar _
+	( _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr, _
+		byval symbol as FBSYMBOL ptr, _
+		byval ofs as longint _
+	) as IRVREG ptr
+
+	dim as IRVREG ptr vr = irhlNewVreg( dtype, subtype, IR_VREGTYPE_VAR )
+
+	vr->sym = symbol
+	vr->ofs = ofs
+
+	function = vr
+end function
+
+function irhlAllocVrIdx _
+	( _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr, _
+		byval symbol as FBSYMBOL ptr, _
+		byval ofs as longint, _
+		byval mult as integer, _
+		byval vidx as IRVREG ptr _
+	) as IRVREG ptr
+
+	dim as IRVREG ptr vr = irhlNewVreg( dtype, subtype, IR_VREGTYPE_IDX )
+
+	vr->sym = symbol
+	vr->ofs = ofs
+	vr->vidx = vidx
+
+	function = vr
+end function
+
+function irhlAllocVrPtr _
+	( _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr, _
+		byval ofs as longint, _
+		byval vidx as IRVREG ptr _
+	) as IRVREG ptr
+
+	dim as IRVREG ptr vr = irhlNewVreg( dtype, subtype, IR_VREGTYPE_PTR )
+
+	vr->ofs = ofs
+	vr->vidx = vidx
+
+	function = vr
+end function
+
+function irhlAllocVrOfs _
+	( _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr, _
+		byval symbol as FBSYMBOL ptr, _
+		byval ofs as longint _
+	) as IRVREG ptr
+
+	dim as IRVREG ptr vr = irhlNewVreg( dtype, subtype, IR_VREGTYPE_OFS )
+
+	vr->sym = symbol
+	vr->ofs = ofs
+
+	function = vr
+end function
+
 private sub hForEachGlobal _
 	( _
 		byval sym as FBSYMBOL ptr, _

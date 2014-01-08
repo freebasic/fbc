@@ -148,8 +148,6 @@ dim shared as BUILTIN builtins(0 to BUILTIN__COUNT-1) => _
 
 type IRLLVMCONTEXT
 	identcnt			as integer     ' how many levels of indent
-	regcnt				as integer     ' temporary labels counter
-	vregTB				as TFLIST
 	callargs			as TLIST        '' IRCALLARG's during emitPushArg/emitCall[Ptr]
 	linenum				as integer
 
@@ -233,7 +231,7 @@ dim shared as const zstring ptr dtypeName(0 to FB_DATATYPES-1) = _
 }
 
 private sub _init( )
-	flistInit( @ctx.vregTB, IR_INITVREGNODES, len( IRVREG ) )
+	irhlInit( )
 	listInit( @ctx.callargs, 32, sizeof(IRCALLARG), LIST_FLAGS_NOCLEAR )
 
 	irSetOption( IR_OPT_CPUSELFBOPS or IR_OPT_FPUIMMEDIATES or IR_OPT_MISSINGOPS )
@@ -249,7 +247,7 @@ end sub
 
 private sub _end( )
 	listEnd( @ctx.callargs )
-	flistEnd( @ctx.vregTB )
+	irhlEnd( )
 end sub
 
 private sub hWriteLine( byref ln as string )
@@ -1185,148 +1183,6 @@ private sub _procAllocStaticVars(byval head_sym as FBSYMBOL ptr)
 	/' do nothing '/
 end sub
 
-private function hNewVR _
-	( _
-		byval dtype as integer, _
-		byval subtype as FBSYMBOL ptr, _
-		byval vtype as integer _
-	) as IRVREG ptr
-
-	dim as IRVREG ptr v = any
-
-	v = flistNewItem( @ctx.vregTB )
-
-	v->typ = vtype
-	v->dtype = dtype
-	v->subtype = subtype
-	if( vtype = IR_VREGTYPE_REG ) then
-		v->reg = ctx.regcnt
-		ctx.regcnt += 1
-	else
-		v->reg = INVALID
-	end if
-	v->regFamily = 0
-	v->vector = 0
-	v->sym = NULL
-	v->ofs = 0
-	v->mult = 0
-	v->vidx = NULL
-	v->vaux = NULL
-
-	function = v
-end function
-
-private function _allocVreg _
-	( _
-		byval dtype as integer, _
-		byval subtype as FBSYMBOL ptr _
-	) as IRVREG ptr
-
-	function = hNewVR( dtype, subtype, IR_VREGTYPE_REG )
-
-end function
-
-private function _allocVrImm _
-	( _
-		byval dtype as integer, _
-		byval subtype as FBSYMBOL ptr, _
-		byval value as longint _
-	) as IRVREG ptr
-
-	dim as IRVREG ptr vr = any
-
-	vr = hNewVR( dtype, subtype, IR_VREGTYPE_IMM )
-	vr->value.i = value
-
-	function = vr
-end function
-
-private function _allocVrImmF _
-	( _
-		byval dtype as integer, _
-		byval subtype as FBSYMBOL ptr, _
-		byval value as double _
-	) as IRVREG ptr
-
-	dim as IRVREG ptr vr = any
-
-	vr = hNewVR( dtype, subtype, IR_VREGTYPE_IMM )
-	vr->value.f = value
-
-	function = vr
-end function
-
-private function _allocVrVar _
-	( _
-		byval dtype as integer, _
-		byval subtype as FBSYMBOL ptr, _
-		byval symbol as FBSYMBOL ptr, _
-		byval ofs as longint _
-	) as IRVREG ptr
-
-	dim as IRVREG ptr vr = hNewVR( dtype, subtype, IR_VREGTYPE_VAR )
-
-	vr->sym = symbol
-	vr->ofs = ofs
-
-	function = vr
-
-end function
-
-private function _allocVrIdx _
-	( _
-		byval dtype as integer, _
-		byval subtype as FBSYMBOL ptr, _
-		byval symbol as FBSYMBOL ptr, _
-		byval ofs as longint, _
-		byval mult as integer, _
-		byval vidx as IRVREG ptr _
-	) as IRVREG ptr
-
-	dim as IRVREG ptr vr = hNewVR( dtype, subtype, IR_VREGTYPE_IDX )
-
-	vr->sym = symbol
-	vr->ofs = ofs
-	vr->vidx = vidx
-
-	function = vr
-
-end function
-
-private function _allocVrPtr _
-	( _
-		byval dtype as integer, _
-		byval subtype as FBSYMBOL ptr, _
-		byval ofs as longint, _
-		byval vidx as IRVREG ptr _
-	) as IRVREG ptr
-
-	dim as IRVREG ptr vr = hNewVR( dtype, subtype, IR_VREGTYPE_PTR )
-
-	vr->ofs = ofs
-	vr->vidx = vidx
-
-	function = vr
-
-end function
-
-private function _allocVrOfs _
-	( _
-		byval dtype as integer, _
-		byval subtype as FBSYMBOL ptr, _
-		byval symbol as FBSYMBOL ptr, _
-		byval ofs as longint _
-	) as IRVREG ptr
-
-	dim as IRVREG ptr vr = hNewVR( dtype, subtype, IR_VREGTYPE_OFS )
-
-	vr->sym = symbol
-	vr->ofs = ofs
-
-	function = vr
-
-end function
-
 private sub _setVregDataType _
 	( _
 		byval v as IRVREG ptr, _
@@ -1337,7 +1193,7 @@ private sub _setVregDataType _
 	dim as IRVREG ptr temp0 = any
 
 	if( (v->dtype <> dtype) or (v->subtype <> subtype) ) then
-		temp0 = _allocVreg( dtype, subtype )
+		temp0 = irhlAllocVreg( dtype, subtype )
 		_emitConvert( temp0, v )
 		*v = *temp0
 	end if
@@ -1374,12 +1230,12 @@ private sub hPrepareAddress( byval v as IRVREG ptr )
 
 	if( (vidx <> NULL) or (ofs <> 0) ) then
 		'' temp0 = ptrtoint l
-		temp0 = _allocVreg( FB_DATATYPE_INTEGER, NULL )
+		temp0 = irhlAllocVreg( FB_DATATYPE_INTEGER, NULL )
 		_emitConvert( temp0, v )
 
 		if( ofs <> 0 ) then
 			'' temp0 add= <offset>
-			_emitBop( AST_OP_ADD, temp0, _allocVrImm( FB_DATATYPE_INTEGER, NULL, ofs ), NULL, NULL )
+			_emitBop( AST_OP_ADD, temp0, irhlAllocVrImm( FB_DATATYPE_INTEGER, NULL, ofs ), NULL, NULL )
 		end if
 
 		'' temp0 = inttoptr temp0
@@ -1414,11 +1270,11 @@ private sub hLoadVreg( byval v as IRVREG ptr )
 		''    @global
 		if( v->ofs <> 0 ) then
 			'' temp0 = ptrtoint v
-			temp0 = _allocVreg( FB_DATATYPE_INTEGER, NULL )
+			temp0 = irhlAllocVreg( FB_DATATYPE_INTEGER, NULL )
 			_emitConvert( temp0, v )
 
 			'' temp0 add= <offset>
-			_emitBop( AST_OP_ADD, temp0, _allocVrImm( FB_DATATYPE_INTEGER, NULL, v->ofs ), NULL, NULL )
+			_emitBop( AST_OP_ADD, temp0, irhlAllocVrImm( FB_DATATYPE_INTEGER, NULL, v->ofs ), NULL, NULL )
 
 			'' temp0 = inttoptr temp0
 			_setVregDataType( temp0, v->dtype, v->subtype )
@@ -1432,7 +1288,7 @@ private sub hLoadVreg( byval v as IRVREG ptr )
 
 		hPrepareAddress( v )
 
-		temp0 = _allocVreg( typeDeref( v->dtype ), v->subtype )
+		temp0 = irhlAllocVreg( typeDeref( v->dtype ), v->subtype )
 		hWriteLine( hVregToStr( temp0 ) + " = load " + hEmitType( v->dtype, v->subtype ) + " " + hVregToStr( v ) )
 		*v = *temp0
 
@@ -1697,7 +1553,7 @@ private sub _emitBop _
 		hLoadVreg( v1 )
 		hLoadVreg( v2 )
 		_setVregDataType( v2, v1->dtype, v1->subtype )
-		vresult = _allocVreg( FB_DATATYPE_INTEGER, NULL )
+		vresult = irhlAllocVreg( FB_DATATYPE_INTEGER, NULL )
 
 		'' condition = comparison expression
 		ln = hVregToStr( vresult ) + " = "
@@ -1738,7 +1594,7 @@ private sub _emitBop _
 		vresult = vr
 	else
 		'' v1 bop= b2
-		vresult = _allocVreg( v1->dtype, v1->subtype )
+		vresult = irhlAllocVreg( v1->dtype, v1->subtype )
 	end if
 
 	hLoadVreg( v1 )
@@ -1760,7 +1616,7 @@ private sub _emitBop _
 	'' LLVM comparison ops return i1, but we usually want i32,
 	'' so do an sign-extending cast (i1 -1 to i32 -1).
 	if( is_comparison ) then
-		vtemp = _allocVreg( vresult->dtype, vresult->subtype )
+		vtemp = irhlAllocVreg( vresult->dtype, vresult->subtype )
 		ln = hVregToStr( vtemp )
 		ln += " = sext "
 		ln += "i1 " + hVregToStr( vresult )
@@ -1852,10 +1708,10 @@ private sub _emitUop _
 			assert( irIsREG( vr ) )
 			vresult = vr
 		else
-			vresult = _allocVreg( v1->dtype, v1->subtype )
+			vresult = irhlAllocVreg( v1->dtype, v1->subtype )
 		end if
 
-		v2 = _allocVrImm( FB_DATATYPE_INTEGER, NULL, 0 )  '' 0 for the lhs
+		v2 = irhlAllocVrImm( FB_DATATYPE_INTEGER, NULL, 0 )  '' 0 for the lhs
 		_emitBop( AST_OP_SUB, v2, v1, vresult, NULL )     '' v1/v2 swapped, v1 goes to rhs
 
 		'' self-uop? (see above)
@@ -1872,7 +1728,7 @@ private sub _emitUop _
 
 		'' Just pass on as BOP. Works even for self-UOPs, as v1 will be
 		'' the lhs of the self-BOP as expected by _emitBop().
-		v2 = _allocVrImm( FB_DATATYPE_INTEGER, NULL, -1 )
+		v2 = irhlAllocVrImm( FB_DATATYPE_INTEGER, NULL, -1 )
 		_emitBop( AST_OP_XOR, v1, v2, vr, NULL )
 
 	case else
@@ -1953,7 +1809,7 @@ private sub _emitConvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 	if( irIsREG( v1 ) ) then
 		v0 = v1
 	else
-		v0 = _allocVreg( v1->dtype, v1->subtype )
+		v0 = irhlAllocVreg( v1->dtype, v1->subtype )
 	end if
 
 	hLoadVreg( v2 )
@@ -2073,7 +1929,7 @@ private sub hDoCall _
 		'' Result discarded? Not allowed in LLVM, so assign to a
 		'' temporary result vreg that will be unused.
 		if( symbGetType( proc ) <> FB_DATATYPE_VOID ) then
-			vr = _allocVreg( typeGetDtAndPtrOnly( symbGetProcRealType( proc ) ), _
+			vr = irhlAllocVreg( typeGetDtAndPtrOnly( symbGetProcRealType( proc ) ), _
 						symbGetProcRealSubtype( proc ) )
 		end if
 	end if
@@ -2082,7 +1938,7 @@ private sub hDoCall _
 		if( irIsREG( vr ) ) then
 			v0 = vr
 		else
-			v0 = _allocVreg( vr->dtype, vr->subtype )
+			v0 = irhlAllocVreg( vr->dtype, vr->subtype )
 		end if
 
 		ln = hVregToStr( v0 ) + " = call "
@@ -2449,7 +2305,7 @@ private sub _emitProcBegin _
 		byval initlabel as FBSYMBOL ptr _
 	)
 
-	ctx.regcnt = 0
+	irhlEmitProcBegin( )
 
 	hWriteLine( "" )
 
@@ -2486,8 +2342,7 @@ private sub _emitProcEnd _
 	ctx.identcnt -= 1
 	hWriteLine( "}" )
 
-	flistReset( @ctx.vregTB )
-	ctx.regcnt = 0
+	irhlEmitProcEnd( )
 
 end sub
 
@@ -2557,13 +2412,13 @@ static as IR_VTBL irllvm_vtbl = _
 	@_emitFbctinfBegin, _
 	@_emitFbctinfString, _
 	@_emitFbctinfEnd, _
-	@_allocVreg, _
-	@_allocVrImm, _
-	@_allocVrImmF, _
-	@_allocVrVar, _
-	@_allocVrIdx, _
-	@_allocVrPtr, _
-	@_allocVrOfs, _
+	@irhlAllocVreg, _
+	@irhlAllocVrImm, _
+	@irhlAllocVrImmF, _
+	@irhlAllocVrVar, _
+	@irhlAllocVrIdx, _
+	@irhlAllocVrPtr, _
+	@irhlAllocVrOfs, _
 	@_setVregDataType, _
 	NULL, _
 	NULL, _
