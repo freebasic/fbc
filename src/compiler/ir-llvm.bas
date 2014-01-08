@@ -994,7 +994,6 @@ private function _emitBegin( ) as integer
 	end if
 
 	ctx.identcnt = 0
-	ctx.regcnt = 0
 	ctx.lblcnt = 0
 	ctx.tmpcnt = 0
 	ctx.ctors = ""
@@ -2454,6 +2453,8 @@ private sub _emitProcBegin _
 		byval initlabel as FBSYMBOL ptr _
 	)
 
+	ctx.regcnt = 0
+
 	hWriteLine( "" )
 
 	dim as string ln
@@ -2488,6 +2489,9 @@ private sub _emitProcEnd _
 
 	ctx.identcnt -= 1
 	hWriteLine( "}" )
+
+	flistReset( @ctx.vregTB )
+	ctx.regcnt = 0
 
 end sub
 

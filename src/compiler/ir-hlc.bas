@@ -1174,7 +1174,6 @@ private function _emitBegin( ) as integer
 
 	ctx.section = -1
 	ctx.sectiongosublevel = 0
-	ctx.regcnt = 0
 	ctx.linenum = 0
 	ctx.static_assert_declared = FALSE
 
@@ -1210,8 +1209,6 @@ end function
 
 private sub _emitEnd( byval tottime as double )
 	dim as integer section = any
-	dim as EXPRCACHENODE ptr cachenode = any
-	dim as EXPRNODE ptr node = any
 
 	'' Switch to header section temporarily
 	section = sectionGosub( 0 )
@@ -1256,21 +1253,8 @@ private sub _emitEnd( byval tottime as double )
 	assert( ctx.sectiongosublevel = 0 )
 	assert( ctx.section = -1 )
 
-	do
-		cachenode = listGetHead( @ctx.exprcache )
-		if( cachenode = NULL ) then
-			exit do
-		end if
-		listDelNode( @ctx.exprcache, cachenode )
-	loop
-
-	do
-		node = listGetHead( @ctx.exprnodes )
-		if( node = NULL ) then
-			exit do
-		end if
-		exprFreeNode( node )
-	loop
+	assert( listGetHead( @ctx.exprcache ) = NULL )
+	assert( listGetHead( @ctx.exprnodes ) = NULL )
 end sub
 
 '':::::
@@ -3421,7 +3405,12 @@ private sub _emitProcBegin _
 		byval initlabel as FBSYMBOL ptr _
 	)
 
+	ctx.regcnt = 0
+
 	dim as string mangled
+
+	assert( listGetHead( @ctx.exprcache ) = NULL )
+	assert( listGetHead( @ctx.exprnodes ) = NULL )
 
 	hWriteLine( "", TRUE )
 
@@ -3466,6 +3455,7 @@ private sub _emitProcEnd _
 	)
 
 	dim as string mangled
+	dim as EXPRCACHENODE ptr cachenode = any
 
 	'' NAKED procedure? Use inline asm, since gcc doesn't support
 	'' __attribute__((naked)) on x86
@@ -3482,6 +3472,21 @@ private sub _emitProcEnd _
 	hWriteLine( "}" )
 
 	sectionEnd( )
+
+	'' Forget any left-over expression nodes (unused function results)
+	do
+		cachenode = listGetHead( @ctx.exprcache )
+		if( cachenode = NULL ) then
+			exit do
+		end if
+		exprFreeTree( cachenode->expr )
+		listDelNode( @ctx.exprcache, cachenode )
+	loop
+	assert( listGetHead( @ctx.exprcache ) = NULL )
+	assert( listGetHead( @ctx.exprnodes ) = NULL )
+
+	flistReset( @ctx.vregTB )
+	ctx.regcnt = 0
 
 end sub
 
