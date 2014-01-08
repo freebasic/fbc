@@ -297,7 +297,7 @@ function astLoadLOAD( byval n as ASTNODE ptr ) as IRVREG ptr
 
 	if( ast.doemit ) then
 		if( n->lod.isres ) then
-			vr = irAllocVREG( irGetVRDataType( v1 ), irGetVRSubType( v1 ) )
+			vr = irAllocVREG( v1->dtype, v1->subtype )
 			irEmitLOADRES( v1, vr )
 		else
 			irEmitLOAD( v1 )
