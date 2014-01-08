@@ -2566,20 +2566,12 @@ private function exprNewVREG _
 		'' - symbol is an array in the C code? (arrays, fixlen strings...)
 		''   cannot just do (elementtype)carray, it must always be
 		''   *(elementtype*)carray to access the memory in these cases.
-		dim as integer is_carray = symbIsCArray( vreg->sym )
-		dim as integer do_deref = have_offset or is_carray
-
-		dim as integer is_ptr = typeIsPtr( symbGetType( vreg->sym ) )
-		dim as integer symdtype = symbGetType( vreg->sym )
-		dim as FBSYMBOL ptr symsubtype = symbGetSubtype( vreg->sym )
-
-		'' Emitted as pointer?
-		if( symbIsParamByRef( vreg->sym ) or symbIsImport( vreg->sym ) or is_carray ) then
-			is_ptr = TRUE
-			symdtype = typeAddrOf( symdtype )
-		end if
+		dim as integer do_deref = have_offset or symbIsCArray( vreg->sym )
 
 		l = exprNewSYM( vreg->sym )
+
+		dim as integer symdtype = l->dtype
+		dim as FBSYMBOL ptr symsubtype = l->subtype
 
 		'' Different types?
 		if( (vreg->dtype <> symdtype) or (vreg->subtype <> symsubtype) ) then
@@ -2609,7 +2601,7 @@ private function exprNewVREG _
 		'' Deref/addrof trick
 
 		'' Add '&' for things that aren't pointers already
-		if( is_ptr = FALSE ) then
+		if( typeIsPtr( symdtype ) = FALSE ) then
 			l = exprNewUOP( AST_OP_ADDROF, l )
 		end if
 		if( have_offset ) then
