@@ -1771,6 +1771,11 @@ private function exprNewSYM( byval sym as FBSYMBOL ptr ) as EXPRNODE ptr
 	else
 		dtype = symbGetType( sym )
 		subtype = symbGetSubtype( sym )
+
+		'' Emitted as pointer?
+		if( symbIsParamByRef( sym ) or symbIsImport( sym ) ) then
+			dtype = typeAddrOf( dtype )
+		end if
 	end if
 
 	n = exprNew( EXPRCLASS_SYM, dtype, subtype )
