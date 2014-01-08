@@ -217,26 +217,6 @@ declare function hRndCallback( byval sym as FBSYMBOL ptr ) as integer
 				( FB_DATATYPE_DOUBLE, FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
-		/' function sgn overload( byval x as byte ) as long '/ _
-		( _
-			@FB_RTL_SGN, @"fb_SGNb", _
-			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
-			NULL, FB_RTL_OPT_OVER, _
-			1, _
-	 		{ _
-				( FB_DATATYPE_BYTE, FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
-		), _
-		/' function sgn overload( byval x as short ) as long '/ _
-		( _
-			@FB_RTL_SGN, @"fb_SGNs", _
-			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
-			NULL, FB_RTL_OPT_OVER, _
-			1, _
-	 		{ _
-				( FB_DATATYPE_SHORT, FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
-		), _
 		/' function sgn overload( byval x as long ) as long '/ _
 		( _
 			@FB_RTL_SGN, @"fb_SGNi", _
