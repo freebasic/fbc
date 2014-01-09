@@ -1,3 +1,4 @@
+''
 '' "high level" IR interface for emitting C code
 ''
 '' The C backend is called "high level" in comparison to the ASM backend, but
@@ -10,8 +11,12 @@
 ''   functions. For others, we let the AST know that we can't handle them here,
 ''   and it will call RTL functions instead.
 ''
-'' chng: dec/2006 written [v1ctor]
-'' chng: apr/2008 function calling implemented / most operators implemented [sir_mud - sir_mud(at)users(dot)sourceforge(dot)net]
+'' - Float to int conversions need special treatment to achieve FB's rounding
+''   behaviour. Simple C casting as in '(int)floatvar' cannot be used because it
+''   just truncates instead of rounding to nearest. Thus we use 4 helper
+''   routines (float|double -> int32|int64) that are implemented in x86 ASM
+''   (as done by the ASM backend) or using __builtin_rint[f]().
+''
 
 #include once "fb.bi"
 #include once "fbint.bi"
@@ -99,6 +104,14 @@ type EXPRCACHENODE
 	expr		as EXPRNODE ptr
 end type
 
+enum
+	BUILTIN_F2I           = (1 shl 0)
+	BUILTIN_F2L           = (1 shl 1)
+	BUILTIN_D2I           = (1 shl 2)
+	BUILTIN_D2L           = (1 shl 3)
+	BUILTIN_STATICASSERT  = (1 shl 4)
+end enum
+
 type IRHLCCTX
 	sections(0 to MAX_SECTIONS-1)	as SECTIONENTRY
 	section				as integer '' Current section to write to
@@ -107,7 +120,7 @@ type IRHLCCTX
 	callargs			as TLIST        '' IRCALLARG's during emitPushArg/emitCall[Ptr]
 	linenum				as integer
 	escapedinputfilename		as string
-	static_assert_declared		as integer
+	usedbuiltins			as uinteger  '' BUILTIN_*
 
 	anonstack			as TLIST  '' stack of nested anonymous structs/unions in a struct/union
 
@@ -319,10 +332,12 @@ end sub
 private sub hWriteStaticAssert( byref expr as string )
 	dim as integer section = any
 
-	if( ctx.static_assert_declared = FALSE ) then
-		ctx.static_assert_declared = TRUE
+	if( (ctx.usedbuiltins and BUILTIN_STATICASSERT) = 0 ) then
+		ctx.usedbuiltins or= BUILTIN_STATICASSERT
 
-		'' Emit the #define into the header section, not inside procedures
+		'' Emit the #define into the header section, not inside procedures,
+		'' and above the 1st use (can't be emitted from _emitEnd() because
+		'' then it could appear behind struct declarations...)
 		section = sectionGosub( 0 )
 		hWriteLine( "#define __FB_STATIC_ASSERT( expr ) extern int __$fb_structsizecheck[(expr) ? 1 : -1]", TRUE )
 		sectionReturn( section )
@@ -735,12 +750,6 @@ private sub hMaybeEmitProcProto( byval s as FBSYMBOL ptr )
 		exit sub
 	end if
 
-	'' One of our built-in FTOI routines? Those are declared by
-	'' hEmitFTOIBuiltins(), not here.
-	if( symbGetIsIrHlcBuiltin( s ) ) then
-		exit sub
-	end if
-
 	'' All procedure declarations go into the toplevel header
 	section = sectionGosub( 0 )
 
@@ -963,7 +972,7 @@ private sub hEmitStruct _
 
 end sub
 
-private sub hWriteX86FTOI _
+private sub hWriteX86F2I _
 	( _
 		byref fname as string, _
 		byval rtype as integer, _
@@ -971,25 +980,22 @@ private sub hWriteX86FTOI _
 	)
 
 	dim as string rtype_str, rtype_suffix
-	select case rtype
-	case FB_DATATYPE_LONG
+	if( rtype = FB_DATATYPE_LONG ) then
 		rtype_str = "int32"
 		rtype_suffix = "l"
-	case FB_DATATYPE_LONGINT
+	else
 		rtype_str = "int64"
 		rtype_suffix = "q"
-	end select
+	end if
 
 	dim as string ptype_str, ptype_suffix
-	select case ptype
-	case FB_DATATYPE_SINGLE
+	if( ptype = FB_DATATYPE_SINGLE ) then
 		ptype_str = "float"
 		ptype_suffix = "s"
-
-	case FB_DATATYPE_DOUBLE
+	else
 		ptype_str = "double"
 		ptype_suffix = "l"
-	end select
+	end if
 
 	if( env.clopt.asmsyntax = FB_ASMSYNTAX_INTEL ) then
 		rtype_suffix = ""
@@ -1015,7 +1021,7 @@ private sub hWriteX86FTOI _
 
 end sub
 
-private sub hWriteGenericFTOI _
+private sub hWriteGenericF2I _
 	( _
 		byref fname as string, _
 		byval rtype as integer, _
@@ -1024,25 +1030,23 @@ private sub hWriteGenericFTOI _
 
 	dim as string resulttype, callname
 
-	select case rtype
-	case FB_DATATYPE_LONG
+	if( rtype = FB_DATATYPE_LONG ) then
 		resulttype = "int32"
-	case FB_DATATYPE_LONGINT
+	else
 		resulttype = "int64"
-	end select
+	end if
 
-	select case ptype
-	case FB_DATATYPE_SINGLE
+	if( ptype = FB_DATATYPE_SINGLE ) then
 		callname = "rintf"
-	case FB_DATATYPE_DOUBLE
+	else
 		callname = "rint"
-	end select
+	end if
 
 	hWriteLine( "#define fb_" + fname +  "( value ) ((" + resulttype + ")__builtin_" + callname + "( value ))", TRUE )
 
 end sub
 
-private sub hWriteFTOI _
+private sub hWriteF2I _
 	( _
 		byref fname as string, _
 		byval rtype as integer, _
@@ -1050,110 +1054,9 @@ private sub hWriteFTOI _
 	)
 
 	if( fbCpuTypeIsX86( ) ) then
-		hWriteX86FTOI( fname, rtype, ptype )
+		hWriteX86F2I( fname, rtype, ptype )
 	else
-		hWriteGenericFTOI( fname, rtype, ptype )
-	end if
-
-end sub
-
-private sub hEmitFTOIBuiltins( )
-	'' Special conversion routines for:
-	''    single/double -> [unsigned] byte/short/integer/longint
-	'' (which one will be used where is determined at AST/RTL)
-	''
-	'' Simple C casting as in '(int)floatvar' cannot be used because it
-	'' just truncates instead of rounding to nearest.
-	''
-	'' There are at max 4 routines generated:
-	''    single -> int
-	''    single -> longint
-	''    double -> int
-	''    double -> longint
-	'' and all other cases reuse those.
-	''
-	'' A special case to watch out for: float -> unsigned int conversions.
-	'' When converting to unsigned integer, it has to be converted to
-	'' longint first, to avoid truncating to signed integer. That's a
-	'' limitation of the ASM routines, and the ASM emitter is having the
-	'' same problem, see emit_x86.bas:_emitLOADF2I() & co.
-
-	'' single
-	if( symbGetIsAccessed( PROCLOOKUP( FTOSL ) ) or _
-	    symbGetIsAccessed( PROCLOOKUP( FTOUL ) ) or _
-	    symbGetIsAccessed( PROCLOOKUP( FTOUI ) ) ) then
-		hWriteFTOI( "ftosl", FB_DATATYPE_LONGINT, FB_DATATYPE_SINGLE )
-	end if
-
-	if( symbGetIsAccessed( PROCLOOKUP( FTOUL ) ) ) then
-		hWriteLine( "#define fb_ftoul( v ) ((uint64)fb_ftosl( v ))", TRUE )
-	end if
-
-	if( symbGetIsAccessed( PROCLOOKUP( FTOUI ) ) ) then
-		hWriteLine( "#define fb_ftoui( v ) ((uint32)fb_ftosl( v ))", TRUE )
-	end if
-
-	if( symbGetIsAccessed( PROCLOOKUP( FTOSI ) ) or _
-	    symbGetIsAccessed( PROCLOOKUP( FTOSS ) ) or _
-	    symbGetIsAccessed( PROCLOOKUP( FTOUS ) ) or _
-	    symbGetIsAccessed( PROCLOOKUP( FTOSB ) ) or _
-	    symbGetIsAccessed( PROCLOOKUP( FTOUB ) ) ) then
-		hWriteFTOI( "ftosi", FB_DATATYPE_LONG, FB_DATATYPE_SINGLE )
-	end if
-
-	if( symbGetIsAccessed( PROCLOOKUP( FTOSS ) ) ) then
-		hWriteLine( "#define fb_ftoss( v ) ((int16)fb_ftosi( v ))", TRUE )
-	end if
-
-	if( symbGetIsAccessed( PROCLOOKUP( FTOUS ) ) ) then
-		hWriteLine( "#define fb_ftous( v ) ((uint16)fb_ftosi( v ))", TRUE )
-	end if
-
-	if( symbGetIsAccessed( PROCLOOKUP( FTOSB ) ) ) then
-		hWriteLine( "#define fb_ftosb( v ) ((int8)fb_ftosi( v ))", TRUE )
-	end if
-
-	if( symbGetIsAccessed( PROCLOOKUP( FTOUB ) ) ) then
-		hWriteLine( "#define fb_ftoub( v ) ((uint8)fb_ftosi( v ))", TRUE )
-	end if
-
-	'' double
-	if( symbGetIsAccessed( PROCLOOKUP( DTOSL ) ) or _
-	    symbGetIsAccessed( PROCLOOKUP( DTOUL ) ) or _
-	    symbGetIsAccessed( PROCLOOKUP( DTOUI ) ) ) then
-		hWriteFTOI( "dtosl", FB_DATATYPE_LONGINT, FB_DATATYPE_DOUBLE )
-	end if
-
-	if( symbGetIsAccessed( PROCLOOKUP( DTOUL ) ) ) then
-		hWriteLine( "#define fb_dtoul( v ) ((uint64)fb_dtosl( v ))", TRUE )
-	end if
-
-	if( symbGetIsAccessed( PROCLOOKUP( DTOUI ) ) ) then
-		hWriteLine( "#define fb_dtoui( v ) ((uint32)fb_dtosl( v ))", TRUE )
-	end if
-
-	if( symbGetIsAccessed( PROCLOOKUP( DTOSI ) ) or _
-	    symbGetIsAccessed( PROCLOOKUP( DTOSS ) ) or _
-	    symbGetIsAccessed( PROCLOOKUP( DTOUS ) ) or _
-	    symbGetIsAccessed( PROCLOOKUP( DTOSB ) ) or _
-	    symbGetIsAccessed( PROCLOOKUP( DTOUB ) ) ) then
-		hWriteFTOI( "dtosi", FB_DATATYPE_LONG, FB_DATATYPE_DOUBLE )
-	end if
-
-	if( symbGetIsAccessed( PROCLOOKUP( DTOSS ) ) ) then
-		hWriteLine( "#define fb_dtoss( v ) ((int16)fb_dtosi( v ))", TRUE )
-	end if
-
-	if( symbGetIsAccessed( PROCLOOKUP( DTOUS ) ) ) then
-		hWriteLine( "#define fb_dtous( v ) ((uint16)fb_dtosi( v ))", TRUE )
-	end if
-
-	if( symbGetIsAccessed( PROCLOOKUP( DTOSB ) ) ) then
-		hWriteLine( "#define fb_dtosb( v ) ((int8)fb_dtosi( v ))", TRUE )
-	end if
-
-	if( symbGetIsAccessed( PROCLOOKUP( DTOUB ) ) ) then
-		hWriteLine( "#define fb_dtoub( v ) ((uint8)fb_dtosi( v ))", TRUE )
+		hWriteGenericF2I( fname, rtype, ptype )
 	end if
 
 end sub
@@ -1173,7 +1076,7 @@ private function _emitBegin( ) as integer
 	ctx.section = -1
 	ctx.sectiongosublevel = 0
 	ctx.linenum = 0
-	ctx.static_assert_declared = FALSE
+	ctx.usedbuiltins = 0
 
 	'' header
 	sectionBegin( )
@@ -1211,6 +1114,19 @@ private sub _emitEnd( byval tottime as double )
 	'' Switch to header section temporarily
 	section = sectionGosub( 0 )
 
+	if( ctx.usedbuiltins and BUILTIN_F2I ) then
+		hWriteF2I( "F2I", FB_DATATYPE_LONG, FB_DATATYPE_SINGLE )
+	end if
+	if( ctx.usedbuiltins and BUILTIN_F2L ) then
+		hWriteF2I( "F2L", FB_DATATYPE_LONGINT, FB_DATATYPE_SINGLE )
+	end if
+	if( ctx.usedbuiltins and BUILTIN_D2I ) then
+		hWriteF2I( "D2I", FB_DATATYPE_LONG, FB_DATATYPE_DOUBLE )
+	end if
+	if( ctx.usedbuiltins and BUILTIN_D2L ) then
+		hWriteF2I( "D2L", FB_DATATYPE_LONGINT, FB_DATATYPE_DOUBLE )
+	end if
+
 	'' Append global declarations to the header of the toplevel section.
 	'' This must be done during _emitEnd() instead of _emitBegin() because
 	'' _emitBegin() is called even before any input code is parsed.
@@ -1225,8 +1141,6 @@ private sub _emitEnd( byval tottime as double )
 	'' DATA array initializers can reference globals by taking their address,
 	'' so they must be emitted after the other global declarations.
 	irForEachDataStmt( @hEmitVariable )
-
-	hEmitFTOIBuiltins( )
 
 	sectionReturn( section )
 
@@ -2149,9 +2063,8 @@ private sub hExprFlush( byval n as EXPRNODE ptr, byval need_parens as integer )
 		end if
 
 	case EXPRCLASS_CAST
-		ctx.exprtext += "("
-		ctx.exprtext += hEmitType( n->dtype, n->subtype )
-		ctx.exprtext += ")"
+		'' (type)l
+		ctx.exprtext += "(" + hEmitType( n->dtype, n->subtype ) + ")"
 		hExprFlush( n->l, TRUE )
 
 	case EXPRCLASS_UOP
@@ -2665,6 +2578,51 @@ private sub _emitUop _
 
 	exprSTORE( vr, exprNewUOP( op, exprNewVREG( v1 ) ) )
 
+end sub
+
+'' v1 = cast( <v1's type>, v2 )
+private sub _emitConvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
+	dim as integer dtype = any
+	dim as EXPRNODE ptr expr = any
+	dim as string s
+
+	expr = exprNewVREG( v2 )
+
+	'' Converting float to int? Needs special treatment to achieve FB's rounding behaviour
+	if( (typeGetClass( v2->dtype ) = FB_DATACLASS_FPOINT) and _
+	    (typeGetClass( v1->dtype ) = FB_DATACLASS_INTEGER) ) then
+
+		'' ((type)fb_F2I( l ))
+		''
+		'' If converting to integer <= int32: use fb_*2I()
+		'' If converting to integer >= uint32: use fb_*2L()
+		''
+		'' Treating uint32 like [u]int64 as a special case:
+		'' float|double -> uint32 conversions must be done as float|double -> int64 -> uint32,
+		'' otherwise the value will be truncated to int32. (This is a limitation of the F2I ASM routines,
+		'' and the ASM emitter is having the same problem, see emit_x86.bas:_emitLOADF2I() & co)
+
+		if( typeGetSizeType( v1->dtype ) < FB_SIZETYPE_UINT32 ) then
+			if( v2->dtype = FB_DATATYPE_SINGLE ) then
+				s = "fb_F2I" : ctx.usedbuiltins or= BUILTIN_F2I
+			else
+				s = "fb_D2I" : ctx.usedbuiltins or= BUILTIN_D2I
+			end if
+			dtype = FB_DATATYPE_LONG
+		else
+			if( v2->dtype = FB_DATATYPE_SINGLE ) then
+				s = "fb_F2L" : ctx.usedbuiltins or= BUILTIN_F2L
+			else
+				s = "fb_D2L" : ctx.usedbuiltins or= BUILTIN_D2L
+			end if
+			dtype = FB_DATATYPE_LONGINT
+		end if
+		s += "( " + exprFlush( expr ) + " )"
+
+		expr = exprNewTEXT( dtype, NULL, s )
+	end if
+
+	exprSTORE( v1, expr )
 end sub
 
 private sub _emitStore( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
@@ -3383,7 +3341,7 @@ dim shared as IR_VTBL irhlc_vtbl = _
 	@_scopeBegin, _
 	@_scopeEnd, _
 	@_procAllocStaticVars, _
-	@_emitStore, _
+	@_emitConvert, _
 	@_emitLabel, _
 	@_emitLabel, _
 	NULL, _

@@ -2370,9 +2370,6 @@ function symbDump( byval sym as FBSYMBOL ptr ) as string
 	checkStat( GLOBALCTOR )
 	checkStat( GLOBALDTOR )
 	checkStat( CANTDUP )
-	if( symbIsProc( sym ) ) then
-		checkStat( IRHLCBUILTIN )
-	end if
 	checkStat( HASRTTI )
 	checkStat( CANTUNDEF )
 	if( symbIsField( sym ) ) then

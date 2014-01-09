@@ -813,7 +813,7 @@ enum FB_RTL_OPT
 	FB_RTL_OPT_QBONLY	  = &h00000100                  '' -lang qb only
 	FB_RTL_OPT_NOFB		  = &h00000200                  '' anything but -lang fb
 	FB_RTL_OPT_FBONLY	  = &h00000400                  ''
-	FB_RTL_OPT_IRHLCBUILTIN   = &h00000800                  '' proc will be emitted by ir-hlc as needed, not declared as if it was a public one from rtlib
+	                          ''&h00000800
 	                          ''&h00001000
 	FB_RTL_OPT_NOGCC	  = &h00002000                  '' anything but -gen gcc
 	FB_RTL_OPT_X86ONLY        = &h00004000  '' on x86 only
@@ -1187,12 +1187,6 @@ declare function rtlMathBop _
 		byval op as integer, _
 		byval lexpr as ASTNODE ptr, _
 		byval rexpr as ASTNODE ptr _
-	) as ASTNODE ptr
-
-declare function rtlMathFTOI _
-	( _
-		byval expr as ASTNODE ptr, _
-		byval to_dtype as integer _
 	) as ASTNODE ptr
 
 declare function rtlInitMain _

@@ -3,11 +3,13 @@
 
 declare sub fb_I18nSet alias "fb_I18nSet"( byval on_off as long )
 
+const EPSILON_DBL = 2.2204460492503131e-016
+
 #define DBL_CUT(v,digits) _
     (cdbl(cint((v) * 10.0^(digits))) / 10.0^(digits))
 
 #define DBL_COMPARE(v1,v2) _
-    DBL_CUT(v1,10)=DBL_CUT(v2,10)
+    (abs( DBL_CUT(v1,10) - DBL_CUT(v2,10) ) < EPSILON_DBL)
 
 tests_timeserial:
 	data   0,   0,   0, 0
