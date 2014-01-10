@@ -16,12 +16,12 @@
 '' LLVM IR instructions inside procedures look like this:
 ''
 ''    %var = alloca i32          ; dim var as int32 ptr = alloca( 4 )
-''    store %i32 0, i32* %var    ; *var = 0
+''    store i32 0, i32* %var     ; *var = 0
 ''  loop:
-''    %temp0 = load %i32* %var               ; temp0 = *var
+''    %temp0 = load i32* %var                ; temp0 = *var
 ''    %temp1 = add i32 %temp0, 1             ; temp1 = temp0 + 1
-''    store %i32 %temp1, i32* %var           ; *var = temp1
-''    %temp2 = load %i32* %var               ; temp2 = *var
+''    store i32 %temp1, i32* %var            ; *var = temp1
+''    %temp2 = load i32* %var                ; temp2 = *var
 ''    %cond = icmp lt i32 %temp2, 10         ; condition = (temp2 < 10)
 ''    br i1 %cond, label %loop, label %exit  ; if condition then goto loop else goto exit
 ''  exit:
@@ -1912,7 +1912,7 @@ private sub _emitJmpTb _
 
 	ctx.indent += 1
 	for i as integer = 0 to labelcount - 1
-		ln = "%integer " + str( values[i] ) + ", "
+		ln = "i32 " + str( values[i] ) + ", "
 		ln += "label %" + *symbGetMangledName( labels[i] )
 		hWriteLine( ln )
 	next
