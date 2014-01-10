@@ -2382,6 +2382,12 @@ declare sub symbProcRecalcRealType( byval proc as FBSYMBOL ptr )
 
 #define	typeSetIsRefAndArray( dt ) (dt or (FB_DATATYPE_REFERENCE or FB_DATATYPE_ARRAY))
 
+declare sub symbForEachGlobal _
+	( _
+		byval symclass as integer, _
+		byval callback as sub( byval as FBSYMBOL ptr ) _
+	)
+
 #if __FB_DEBUG__
 declare function typeDump _
 	( _

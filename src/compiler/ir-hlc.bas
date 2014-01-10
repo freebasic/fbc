@@ -1133,10 +1133,10 @@ private sub _emitEnd( byval tottime as double )
 
 	'' Emit proc decls first (because of function pointer initializers
 	'' taking the address of procedures)
-	irForEachGlobal( FB_SYMBCLASS_PROC, @hMaybeEmitProcProto )
+	symbForEachGlobal( FB_SYMBCLASS_PROC, @hMaybeEmitProcProto )
 
 	'' Then the variables
-	irForEachGlobal( FB_SYMBCLASS_VAR, @hMaybeEmitGlobalVar )
+	symbForEachGlobal( FB_SYMBCLASS_VAR, @hMaybeEmitGlobalVar )
 
 	'' DATA array initializers can reference globals by taking their address,
 	'' so they must be emitted after the other global declarations.

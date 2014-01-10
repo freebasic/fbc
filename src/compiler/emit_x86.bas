@@ -915,34 +915,6 @@ private sub hWriteHeader( ) static
 
 end sub
 
-private sub hWriteBss( byval s as FBSYMBOL ptr )
-	while( s )
-		select case( symbGetClass( s ) )
-		'' name space?
-		case FB_SYMBCLASS_NAMESPACE
-			hWriteBss( symbGetNamespaceTbHead( s ) )
-
-		'' UDT namespace? (static member vars)
-		case FB_SYMBCLASS_STRUCT
-			'' "Class"?
-			if( symbGetIsUnique( s ) ) then
-				hWriteBss( symbGetCompSymbTb( s ).head )
-			end if
-
-		'' scope block?
-		case FB_SYMBCLASS_SCOPE
-			hWriteBss( symbGetScopeSymbTbHead( s ) )
-
-		'' variable?
-		case FB_SYMBCLASS_VAR
-			hDeclVariable( s )
-
-		end select
-
-		s = s->next
-	wend
-end sub
-
 '':::::
 private sub hEmitVarConst _
 	( _
@@ -993,61 +965,6 @@ private sub hEmitVarConst _
 
 end sub
 
-private sub hWriteConst( byval s as FBSYMBOL ptr )
-	while( s )
-		select case( symbGetClass( s ) )
-		'' name space?
-		case FB_SYMBCLASS_NAMESPACE
-			hWriteConst( symbGetNamespaceTbHead( s ) )
-
-		'' UDT namespace? (static member vars)
-		case FB_SYMBCLASS_STRUCT
-			'' "Class"?
-			if( symbGetIsUnique( s ) ) then
-				hWriteConst( symbGetCompSymbTb( s ).head )
-			end if
-
-		'' scope block?
-		case FB_SYMBCLASS_SCOPE
-			hWriteConst( symbGetScopeSymbTbHead( s ) )
-
-		'' variable?
-		case FB_SYMBCLASS_VAR
-			hDeclVariable( s )
-		end select
-
-		s = s->next
-	wend
-end sub
-
-private sub hWriteData( byval s as FBSYMBOL ptr )
-	while( s )
-		select case( symbGetClass( s ) )
-		'' name space?
-		case FB_SYMBCLASS_NAMESPACE
-			hWriteData( symbGetNamespaceTbHead( s ) )
-
-		'' UDT namespace? (static member vars)
-		case FB_SYMBCLASS_STRUCT
-			'' "Class"?
-			if( symbGetIsUnique( s ) ) then
-				hWriteData( symbGetCompSymbTb( s ).head )
-			end if
-
-		'' scope block?
-		case FB_SYMBCLASS_SCOPE
-			hWriteData( symbGetScopeSymbTbHead( s ) )
-
-		'' variable?
-		case FB_SYMBCLASS_VAR
-			hDeclVariable( s )
-
-		end select
-
-		s = s->next
-	wend
-end sub
-
 '':::::
 private sub hWriteCtor _
 	( _
@@ -1087,35 +1004,6 @@ private sub hEmitExport( byval s as FBSYMBOL ptr )
                       *sname + (QUOTE + NEWLINE), _
                       TRUE )
     end if
-end sub
-
-private sub hWriteExport( byval s as FBSYMBOL ptr )
-
-    '' for each proc exported..
-    do while( s )
-
-    	select case symbGetClass( s )
-		'' name space?
-		case FB_SYMBCLASS_NAMESPACE
-			hWriteExport( symbGetNamespaceTbHead( s ) )
-
-		case FB_SYMBCLASS_STRUCT
-			'' does struct have exports?
-			dim as FBSYMBOL ptr walk = symbGetUDTSymbTbHead( s )
-			while( walk )
-                hEmitExport( walk )
-				walk = symbGetNext( walk )
-			wend
-
-    	case FB_SYMBCLASS_PROC
-    		if( symbGetIsDeclared( s ) ) then
-                hEmitExport( s )
-    		end if
-    	end select
-
-    	s = s->next
-    loop
-
 end sub
 
 '':::::
@@ -6538,21 +6426,15 @@ private sub _close _
 	'' file name) before emitting the global vars
 	edbgInclude( NULL )
 
-	'' const
-	hWriteConst( symbGetGlobalTbHead( ) )
+	'' const/data/bss
+	symbForEachGlobal( FB_SYMBCLASS_VAR, @hDeclVariable )
 
-	'' data
-	hWriteData( symbGetGlobalTbHead( ) )
-
-	'' bss
-	hWriteBss( symbGetGlobalTbHead( ) )
-
-	''
+	'' DLL export table
 	if( env.clopt.export and (env.target.options and FB_TARGETOPT_EXPORT) ) then
-		hWriteExport( symbGetGlobalTbHead( ) )
+		symbForEachGlobal( FB_SYMBCLASS_PROC, @hEmitExport )
 	end if
 
-	''
+	'' Global ctor/dtor lists
 	hWriteCtor( symbGetGlobCtorListHead( ), TRUE )
 	hWriteCtor( symbGetGlobDtorListHead( ), FALSE )
 

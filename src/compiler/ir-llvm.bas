@@ -892,18 +892,18 @@ private sub _emitEnd( byval tottime as double )
 
 	'' Emit proc decls first (because of function pointer initializers referencing procs)
 	hWriteLine( "" )
-	irForEachGlobal( FB_SYMBCLASS_PROC, @hMaybeEmitProcProto )
+	symbForEachGlobal( FB_SYMBCLASS_PROC, @hMaybeEmitProcProto )
 
 	'' Then the variables
 	hWriteLine( "" )
-	irForEachGlobal( FB_SYMBCLASS_PROC, @hMaybeEmitGlobalVar )
+	symbForEachGlobal( FB_SYMBCLASS_PROC, @hMaybeEmitGlobalVar )
 
 	'' DATA array initializers can reference globals by taking their address,
 	'' so they must be emitted after the other global declarations.
 	irForEachDataStmt( @hEmitVariable )
 
 	'' Global arrays for global ctors/dtors
-	irForEachGlobal( FB_SYMBCLASS_PROC, @hAddGlobalCtorDtor )
+	symbForEachGlobal( FB_SYMBCLASS_PROC, @hAddGlobalCtorDtor )
 	if( ctx.ctorcount > 0 ) then
 		hWriteLine( "@llvm.global_ctors = appending global [" & ctx.ctorcount & " x { i32, void ()* }] [" + ctx.ctors + "]" )
 	end if
