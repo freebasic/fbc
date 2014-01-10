@@ -17,6 +17,49 @@
 ''   routines (float|double -> int32|int64) that are implemented in x86 ASM
 ''   (as done by the ASM backend) or using __builtin_rint[f]().
 ''
+'' - Field accesses, pointer indexing, struct layout/field alignment, etc. is
+''   all still calculated on the FB side, i.e. the generated C code is
+''   ABI-dependant. sizeof()/offsetof() are evaluated purely on the FB side,
+''   it's impossible to pass all constant expressions on to the C backend.
+''   (constants, array bounds, fixstr lengths, multi-dim indexing, ...)
+''
+'' - va_* vararg macros can't be supported with the C backend, they are too
+''   different from C's va_*() macros.
+''   1. For example, FB's va_first/va_arg can be called repeatedly, that's not
+''      possible with C's va_start/va_arg. Acccessing the current arg and
+''      advancing to the next is two separate functions in FB, but combined in
+''      one in C. It's impossible to reliably & automatically translate from one
+''      to the other.
+''   2. It's not possible to implement va_first() as "address-of last named
+''      parameter" as done for the ASM backend, because gcc sometimes puts
+''      parameters into temp vars, and then addrof on that parameter returns the
+''      temp var, not the parameter.
+''   3. On x86 va_list is just a pointer (exactly what's needed for va_first())
+''      but for x86_64 it's not that easy. Varargs may be passed in registers.
+''   4. It'd be "nice" to be able to read out all var args into a buffer and
+''      allow that to be accessed through FB's va_* macros, but that's not
+''      possible because there's no way to know how many varargs there are.
+''
+'' - Calling conventions/name mangling:
+''   1. Cdecl and Stdcall (stdcall with @N) are easily emitted for GCC on
+''      individual functions.
+''   2. StdcallMs (stdcall without @N) is not directly supported by gcc, only at
+''      the linker level through ld --kill-at etc. We need it for individual
+''      functions though, not the entire executable/DLL. As a work-around we
+''      use gcc's asm("nameToUseInAsm") feature which is similar to ALIAS.
+''      Because gcc inserts these asm() names as-is into DLL export tables,
+''      without stripping the underscore prefix, we must emit the exports
+''      manually using inline ASM instead of __attribute__((dllexport)) to get
+''      them to work correctly.
+''   3. Pascal is like StdcallMs except that arguments are pushed left-to-right
+''      (same order as written in code, not reversed like Cdecl/Stdcall). The
+''      symbGetProc*Param() macros take care of changing the order when cycling
+''      through parameters of Pascal functions, and by together with such
+''      functions being emitted as Stdcall this results in a double-reverse
+''      resulting in the proper ABI.
+''   4. For non-x86, there's no need to emit cdecl/stdcall/... at all because
+''      they don't exist (on x86_64 or ARM etc.) and gcc ignores the attributes.
+''
 
 #include once "fb.bi"
 #include once "fbint.bi"
@@ -128,6 +171,7 @@ type IRHLCCTX
 	variniscopelevel		as integer
 
 	fbctinf				as string
+	exports				as string
 
 	asm_line			as string  '' line of inline asm built up by _emitAsm*()
 	asm_i				as integer '' next operand/symbol index
@@ -385,6 +429,35 @@ private sub hAppendCtorAttrib _
 	end if
 end sub
 
+'' Helper function to add underscore prefix or @N stdcall suffix to mangled
+'' procedure names (because symb-mangling doesn't do it for -gen gcc), for use
+'' in inline ASM and such.
+private function hGetMangledNameForASM _
+	( _
+		byval sym as FBSYMBOL ptr, _
+		byval underscore_prefix as integer _
+	) as string
+
+	dim as string mangled
+
+	mangled = *symbGetMangledName( sym )
+
+	if( underscore_prefix and _
+	    ((env.target.options and FB_TARGETOPT_UNDERSCORE) <> 0) ) then
+		mangled  = "_" + mangled
+	end if
+
+	if( symbIsProc( sym ) ) then
+		if( symbGetProcMode( sym ) = FB_FUNCMODE_STDCALL ) then
+			'' Add the @N suffix for STDCALL
+			mangled += "@"
+			mangled += str( symbCalcProcParamsLen( sym ) )
+		end if
+	end if
+
+	function = mangled
+end function
+
 private function hEmitProcHeader _
 	( _
 		byval proc as FBSYMBOL ptr, _
@@ -399,12 +472,6 @@ private function hEmitProcHeader _
 	end if
 
 	if( (options and EMITPROC_ISPROCPTR) = 0 ) then
-		if( env.clopt.export and (env.target.options and FB_TARGETOPT_EXPORT) ) then
-			if( symbIsExport( proc ) ) then
-				ln += "__declspec( dllexport ) "
-			end if
-		end if
-
 		if( symbIsPrivate( proc ) ) then
 			ln += "static "
 		end if
@@ -414,20 +481,8 @@ private function hEmitProcHeader _
 	ln += hEmitType( typeGetDtAndPtrOnly( symbGetProcRealType( proc ) ), _
 					symbGetProcRealSubtype( proc ) )
 
-	''
 	'' Calling convention if needed (for function pointers it's usually not
 	'' put in this place, but should work nonetheless)
-	''
-	'' Note: Pascal is like Stdcall (callee cleans up stack), except that
-	'' arguments are pushed left-to-right (same order as written in code,
-	'' not reversed like Cdecl/Stdcall).
-	'' The symbGetProc*Param() macros take care of changing the order when
-	'' cycling through parameters of Pascal functions. Together with Stdcall
-	'' this results in a double-reverse resulting in the proper ABI.
-	''
-	'' For non-x86, don't emit any calling convention at all, it would just
-	'' be ignored anyways (for x86_64 and ARM it seems that way at least).
-	''
 	if( fbCpuTypeIsX86( ) ) then
 		select case( symbGetProcMode( proc ) )
 		case FB_FUNCMODE_STDCALL, FB_FUNCMODE_STDCALL_MS, FB_FUNCMODE_PASCAL
@@ -505,21 +560,14 @@ private function hEmitProcHeader _
 
 	if( ((options and EMITPROC_ISPROCPTR) = 0) and _
 	    ((options and EMITPROC_ISPROTO) <> 0)        ) then
-#if 0
 		'' Add an extra <asm("mangledname")> to prevent gcc
 		'' from adding the stdcall @N suffix. asm() can only
 		'' be used on prototypes.
 		select case( symbGetProcMode( proc ) )
 		case FB_FUNCMODE_STDCALL_MS, FB_FUNCMODE_PASCAL
-			'' Must manually add an underscore prefix if the
-			'' target requires it, because symb-mangling
-			'' won't do that for -gen gcc.
-			if( env.target.options and FB_TARGETOPT_UNDERSCORE ) then
-				mangled  = "_" + mangled
-			end if
-			ln += " asm(""" + mangled + """)"
+			ln += " asm(""" + hGetMangledNameForASM( proc, TRUE ) + """)"
 		end select
-#endif
+
 		'' ctor/dtor flags on prototypes
 		hAppendCtorAttrib( ln, proc, FALSE )
 	end if
@@ -1061,6 +1109,28 @@ private sub hWriteF2I _
 
 end sub
 
+private sub hMaybeEmitProcExport( byval proc as FBSYMBOL ptr )
+	if( symbIsExport( proc ) = FALSE ) then
+		exit sub
+	end if
+
+	'' Code we want in the final ASM file:
+	''
+	''	.section .drectve
+	''	.ascii " -export:\"MangledProcNameWithoutUnderscorePrefix\""
+	''
+	'' Since that includes double-quotes and backslashes we need to do
+	'' lots of escaping when emitting this in strings in GCC inline ASM.
+
+	ctx.exports += !"\t"""
+	ctx.exports += $"\t.ascii "
+	ctx.exports += $"\"" -export:\\\"""
+	ctx.exports += hGetMangledNameForASM( proc, FALSE )
+	ctx.exports += $"\\\""\"""
+	ctx.exports += $"\n"
+	ctx.exports += !"""\n"
+end sub
+
 private function _emitBegin( ) as integer
 	ctx.escapedinputfilename = hReplace( env.inf.name, "\", $"\\" )
 
@@ -1144,11 +1214,19 @@ private sub _emitEnd( byval tottime as double )
 
 	sectionReturn( section )
 
+	'' DLL export table
+	if( env.clopt.export and (env.target.options and FB_TARGETOPT_EXPORT) ) then
+		symbForEachGlobal( FB_SYMBCLASS_PROC, @hMaybeEmitProcExport )
+		if( len( ctx.exports ) > 0 ) then
+			hWriteLine( !"\n__asm__( \n\t\".section .drectve\\n\"\n" + ctx.exports + ");", TRUE )
+		end if
+		ctx.exports = ""
+	end if
+
 	'' body (is appended to header section)
 	sectionEnd( )
 
-	hWriteLine( "", TRUE )
-	hWriteLine( "// Total compilation time: " + str( tottime ) + " seconds.", TRUE )
+	hWriteLine( !"\n// Total compilation time: " + str( tottime ) + " seconds.", TRUE )
 
 	'' Emit & close the main section
 	if( ctx.sections(0).old = FALSE ) then
@@ -2917,33 +2995,6 @@ private sub _emitComment( byval text as zstring ptr )
 	end if
 end sub
 
-private function hGetMangledNameForASM( byval sym as FBSYMBOL ptr ) as string
-	dim as string mangled
-
-	mangled = *symbGetMangledName( sym )
-
-	''
-	'' Must manually add an underscore prefix if the target requires it,
-	'' because symb-mangling won't do that for -gen gcc.
-	''
-	'' (assuming this function will only be used by NAKED procedures,
-	''  which cannot have local variables or parameters)
-	''
-	if( env.target.options and FB_TARGETOPT_UNDERSCORE ) then
-		mangled  = "_" + mangled
-	end if
-
-	if( symbIsProc( sym ) ) then
-		if( symbGetProcMode( sym ) = FB_FUNCMODE_STDCALL ) then
-			'' Add the @N suffix for STDCALL
-			mangled += "@"
-			mangled += str( symbCalcProcParamsLen( sym ) )
-		end if
-	end if
-
-	function = mangled
-end function
-
 private sub _emitAsmBegin( )
 	'' -asm intel: FB asm blocks are expected to be in Intel format as
 	''             usual; we have to convert them to the GCC format here.
@@ -2979,7 +3030,7 @@ private sub _emitAsmSymb( byval sym as FBSYMBOL ptr )
 
 	'' In NAKED procedure?
 	if( sectionInsideProc( ) = FALSE ) then
-		ctx.asm_line += hGetMangledNameForASM( sym )
+		ctx.asm_line += hGetMangledNameForASM( sym, TRUE )
 		exit sub
 	end if
 
@@ -3226,13 +3277,14 @@ private sub _emitProcBegin _
 	'' NAKED procedure? Use inline asm, since gcc doesn't support
 	'' __attribute__((naked)) on x86
 	if( symbIsNaked( proc ) ) then
-		mangled = hGetMangledNameForASM( proc )
+		mangled = hGetMangledNameForASM( proc, TRUE )
 		hWriteLine( "__asm__( "".globl " + mangled + """ );" )
 		hWriteLine( "__asm__( """ + mangled + ":"" );" )
 		exit sub
 	end if
 
-#if 0
+	sectionBegin( )
+
 	'' If the asm("mangledname") work-around is needed to tell gcc to not
 	'' add the @N suffix for stdcall  procedures, emit an extra prototype
 	'' right above the procedure body, because asm() is only allowed on
@@ -3241,9 +3293,6 @@ private sub _emitProcBegin _
 	case FB_FUNCMODE_STDCALL_MS, FB_FUNCMODE_PASCAL
 		hWriteLine( hEmitProcHeader( proc, EMITPROC_ISPROTO ) )
 	end select
-#endif
-
-	sectionBegin( )
 
 	hWriteLine( hEmitProcHeader( proc, 0 ) )
 
@@ -3267,7 +3316,7 @@ private sub _emitProcEnd _
 	if( symbIsNaked( proc ) ) then
 		'' Emit .size like ASM backend, for Linux
 		if( env.clopt.target = FB_COMPTARGET_LINUX ) then
-			mangled = hGetMangledNameForASM( proc )
+			mangled = hGetMangledNameForASM( proc, TRUE )
 			hWriteLine( "__asm__( "".size " + mangled + ", .-" + mangled + """ );", TRUE )
 		end if
 		exit sub

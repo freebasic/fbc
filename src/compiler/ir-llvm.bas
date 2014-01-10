@@ -81,6 +81,8 @@
 '' - Procedures can either be declared (if they're extern) or defined (with a
 ''   body) but not both.
 ''
+'' - va_*() macros: Same issues as with the C backend
+''
 
 #include once "fb.bi"
 #include once "fbint.bi"

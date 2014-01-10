@@ -108,6 +108,7 @@ Version 0.91.0:
 - -fpu sse and -vec 1|2: Various cases of bad code generation resulting in operand size mismatch errors
 - fbc crashed after showing the error message when using -vec 1|2 without -fpu sse
 - ASM backend: Sgn(LongInt) returned wrong values
+- C backend: Extern "Windows-MS" is now supported, including DLL exports (stdcall procedures without @N suffix)
 
 
 Version 0.90.1:

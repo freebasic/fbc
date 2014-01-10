@@ -9,7 +9,7 @@ o 64bit
   - Windows port I/O driver? Can it be ported to 64bit? is it needed?
 
 o LLVM backend
-  - Use built-in fixed-size types only, ie. i32 instead of %integer (similar to C backend)
+  - implement F2I conversions with FB's rounding behaviour
   - returning structs in registers? Disabled for -gen gcc in hGetReturnType(),
     can the same be done for -gen llvm?
   - structs should be emitted as byte arrays, to let the FB side handle
@@ -26,30 +26,11 @@ o LLVM backend
      - LLVM doesn't have unions, it'd be easier to emit them as byte arrays
        (instead of a struct containing the biggest member only)
   - Debugging metadata
-  - Inline ASM = inline LLVM IR? It'd be possible to allow x86 asm though,
-    llc even has -x86-asm-syntax=intel (should find out how well it works)
-  - va_arg: Same issue as with C backend
+  - Inline ASM
+  - va_*() macros can't be implemented, so must be disallowed just like with -gen gcc
 
 o C backend
   - Need to emit main() with proper dtypes; clang is very strict about that
-  - MinGW gcc doesn't have STDCALL_MS or PASCAL; we could use 'asm("<alias>")' to
-    rename symbols, however that doesn't work with DLL export tables:
-    gcc inserts the full <alias> into '.ascii " -export:<alias>"', without stripping
-    the leading underscore, causing ld errors
-  - field accesses, pointer indexing, struct layout/field alignment, etc. is all
-    still calculated on the FB side
-     - i.e. the generated C code is ABI-dependant.
-     - sizeof()/offsetof() are evaluated purely on the FB side,
-       impossible to pass all constant expressions on to the C backend...
-       (constants, array bounds, fixstr lengths, multi-dim indexing, ...)
-  - va_* is too hard to translate to C:
-     - FB has    p = va_first( )   always returns pointer to head
-                 v = va_arg( p )   always returns arg value for given pointer
-                 p = va_next( p )  returns pointer to next arg
-     - C has     va_start( );      init
-                 v = va_arg( );    returns current arg value and moves to next
-                 va_end( );        end
-     - FB allows va_* to be used like a linked list, that's not possible in C
 
 o ABI
   - MinGW GCC 4.7 C++ defaults to __thiscall for methods like MSVC,
