@@ -194,25 +194,25 @@ else
   endif
 
   ifndef TARGET_ARCH
-    TARGET_ARCH = $(shell uname -m)
+    # For DJGPP, always use x86 (DJGPP's uname -m returns just "pc")
+    ifeq ($(TARGET_OS),dos)
+      TARGET_ARCH := x86
+    else
+      TARGET_ARCH = $(shell uname -m)
+	endif
   endif
+endif
+
+ifndef TARGET_OS
+  $(error couldn't identify TARGET_OS automatically)
+endif
+ifndef TARGET_ARCH
+  $(error couldn't identify TARGET_ARCH automatically)
 endif
 
 # Normalize TARGET_ARCH to x86
 ifneq ($(filter 386 486 586 686 i386 i486 i586 i686,$(TARGET_ARCH)),)
   TARGET_ARCH := x86
-endif
-
-# For some targets we can choose good default archs
-# (this also handles automatically setting TARGET_ARCH to x86 under DJGPP,
-# whose uname -m returns just "pc")
-ifndef TARGET_ARCH
-  ifeq ($(TARGET_OS),dos)
-    TARGET_ARCH := x86
-  endif
-  ifeq ($(TARGET_OS),win32)
-    TARGET_ARCH := x86
-  endif
 endif
 
 # Switch TARGET_ARCH depending on MULTILIB
@@ -225,13 +225,6 @@ ifeq ($(MULTILIB),64)
   ifeq ($(TARGET_ARCH),x86)
     TARGET_ARCH := x86_64
   endif
-endif
-
-ifndef TARGET_OS
-  $(error couldn't identify TARGET_OS automatically)
-endif
-ifndef TARGET_ARCH
-  $(error couldn't identify TARGET_ARCH automatically)
 endif
 
 ifeq ($(TARGET_OS),dos)
