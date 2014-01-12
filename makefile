@@ -260,13 +260,13 @@ fbcobjdir := src/compiler/obj
 ifdef ENABLE_STANDALONE
   FBC_EXE     := fbc$(EXEEXT)
   FBCNEW_EXE  := fbc-new$(EXEEXT)
-  libfbobjdir    := src/rtlib/obj/$(TARGET_OS)
-  libfbmtobjdir  := src/rtlib/obj/mt/$(TARGET_OS)
-  libfbgfxobjdir := src/gfxlib2/obj/$(TARGET_OS)
-  libdir         := lib/$(TARGET_OS)
+  libfbobjdir    := src/rtlib/obj/$(libsubdir)
+  libfbmtobjdir  := src/rtlib/obj/mt/$(libsubdir)
+  libfbgfxobjdir := src/gfxlib2/obj/$(libsubdir)
+  libdir         := lib/$(libsubdir)
   PREFIX_FBC_EXE := $(prefix)/fbc$(EXEEXT)
   prefixincdir   := $(prefix)/inc
-  prefixlibdir   := $(prefix)/lib/$(TARGET_OS)
+  prefixlibdir   := $(prefix)/lib/$(libsubdir)
 else
   ifdef TARGET
     libsubdir := $(TARGET)
