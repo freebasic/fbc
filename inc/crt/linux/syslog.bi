@@ -66,13 +66,13 @@ extern "C"
 declare sub closelog()
 
 'Open connection to system logger.
-declare sub openlog (byval __ident as const zstring ptr, byval __option as integer, byval __facility as integer )
+declare sub openlog(byval __ident as const zstring ptr, byval __option as long, byval __facility as long)
 
 'Set the log mask level
-declare function setlogmask( byval __mask as integer ) as integer
+declare function setlogmask(byval __mask as long) as long
 
 'Generate a log message using FMT string and option arguments.
-declare sub syslog( byval __pri as integer, byval __fmt as const zstring ptr, ... )
+declare sub syslog(byval __pri as long, byval __fmt as const zstring ptr, ...)
 
 end extern
 
