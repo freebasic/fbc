@@ -3637,7 +3637,7 @@ function rtlStrLTrim _
 end function
 
 '' Takes the text from a string literal symbol and performs ASCII-only
-'' Lcase/AscUcase on it. The result is a new literal symbol holding the
+'' Lcase/Ucase on it. The result is a new literal symbol holding the
 '' lcased/ucased text.
 private function hEvalAscCase _
 	( _
