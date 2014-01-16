@@ -3660,7 +3660,7 @@ private function hEvalAscCase _
 	else
 		chara = asc( "a" )
 		charz = asc( "z" )
-		chardiff = asc( "A" ) - asc( "a" )
+		chardiff = cint( asc( "A" ) ) - cint( asc( "a" ) )
 	end if
 
 	if( symbGetType( literal ) = FB_DATATYPE_WCHAR ) then
