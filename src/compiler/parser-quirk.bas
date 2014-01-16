@@ -150,6 +150,24 @@ function cQuirkFunction(byval sym as FBSYMBOL ptr) as ASTNODE ptr
 	dim as ASTNODE ptr funcexpr = NULL
 	dim as FB_TOKEN tk = sym->key.id
 
+	''
+	'' Allow quirk function names to be used as literals in PP expressions,
+	'' if not followed by '(', or '<' (for type<...>(...)).
+	''
+	'' There are some cases of quirk functions below that can be called
+	'' without ()'s (ERR, THREADCALL, SCREEN) but none of them make sense
+	'' in PP expressions anyways, as they can't be evaluated at
+	'' compile-time, so there's no harm done disallowing them to be used.
+	''
+	if( fbGetIsPP( ) ) then
+		if( (lexGetLookAhead( 1 ) <> CHAR_LPRNT) and _
+		    ((tk <> FB_TK_TYPE) or (lexGetLookAhead( 1 ) <> FB_TK_LT)) ) then
+			funcexpr = astNewCONSTstr( ucase( *lexGetText( ) ) )
+			lexSkipToken( )
+			return funcexpr
+		end if
+	end if
+
 	select case as const tk
 	case FB_TK_MKD, FB_TK_MKS, FB_TK_MKI, FB_TK_MKL, _
 	     FB_TK_MKSHORT, FB_TK_MKLONGINT
