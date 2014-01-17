@@ -41,16 +41,16 @@ typedef struct _FormatMaskInfo {
  */
 static
 void fb_hGetNumberParts
-	(
-		double number,
-		char *pachFixPart,
-		ssize_t *pcchLenFix,
-		char *pachFracPart,
-		ssize_t *pcchLenFrac,
+    (
+        double number,
+        char *pachFixPart,
+        ssize_t *pcchLenFix,
+        char *pachFracPart,
+        ssize_t *pcchLenFrac,
         char *pchSign,
         char chDecimalPoint,
         int precision
-	)
+    )
 {
     char *pszFracStart, *pszFracEnd;
     char chSign;
@@ -120,15 +120,15 @@ void fb_hGetNumberParts
 
 static
 FBSTRING *fb_hBuildDouble
-	(
-		double num,
+    (
+        double num,
         char decimal_point,
         char thousands_separator
-	)
+    )
 {
     char FixPart[128], FracPart[128], chSign;
     ssize_t LenFix, LenFrac, LenSign, LenDecPoint, LenTotal;
-    FBSTRING 	*dst;
+    FBSTRING    *dst;
 
     fb_hGetNumberParts( num,
                         FixPart, &LenFix,
@@ -141,10 +141,10 @@ FBSTRING *fb_hBuildDouble
     LenDecPoint = ( ( LenFrac!=0 ) ? 1 : 0 );
     LenTotal = LenSign + LenFix + LenDecPoint + LenFrac;
 
-	/* alloc temp string */
+    /* alloc temp string */
     dst = fb_hStrAllocTemp_NoLock( NULL, LenTotal );
-	if( dst != NULL )
-	{
+    if( dst != NULL )
+    {
         if( LenSign!=0 ) {
             dst->data[0] = chSign;
         }
@@ -156,58 +156,58 @@ FBSTRING *fb_hBuildDouble
                    FracPart,
                    LenFrac );
         dst->data[LenTotal] = 0;
-	}
-	else
-		dst = &__fb_ctx.null_desc;
+    }
+    else
+        dst = &__fb_ctx.null_desc;
 
-	return dst;
+    return dst;
 }
 
 static double hRound
-	(
-		double value,
-		const FormatMaskInfo *pInfo
-	)
+    (
+        double value,
+        const FormatMaskInfo *pInfo
+    )
 {
-	double fix, frac = modf( value, &fix );
+    double fix, frac = modf( value, &fix );
 
     if( pInfo->num_digits_frac == 0 )
     {
-    	/* round it here, because modf() at GetNumParts won't */
+        /* round it here, because modf() at GetNumParts won't */
 
-    	/* convert to fixed-point because the imprecision and the optimizations
-    	   that can be done by gcc (ie: keeping values on fpu stack as twords) */
-    	long long int intfrac = (long long int)(frac * 1.E+15);
-    	if( intfrac > (long long int)(5.E+14) )
-        	value = ceil( value );
-		else if( intfrac < -(long long int)(5.E+14) )
-        	value = floor( value );
-	}
-	else
+        /* convert to fixed-point because the imprecision and the optimizations
+           that can be done by gcc (ie: keeping values on fpu stack as twords) */
+        long long int intfrac = (long long int)(frac * 1.E+15);
+        if( intfrac > (long long int)(5.E+14) )
+            value = ceil( value );
+        else if( intfrac < -(long long int)(5.E+14) )
+            value = floor( value );
+    }
+    else
     {
-		/* remove the fraction of the fraction to be compatible with
-		   VBDOS (ie: 2.55 -> 2.5, not 2.6 as in VB6) */
-		if( frac != 0.0 )
-		{
-	    	double p10 = pow( 10.0, pInfo->num_digits_frac );
+        /* remove the fraction of the fraction to be compatible with
+           VBDOS (ie: 2.55 -> 2.5, not 2.6 as in VB6) */
+        if( frac != 0.0 )
+        {
+            double p10 = pow( 10.0, pInfo->num_digits_frac );
 
-	        double fracfrac = modf( frac * p10, &frac );
+            double fracfrac = modf( frac * p10, &frac );
 
-	        /* convert to fixed-point, see above */
-	        long long int intfrac = (long long int)(fracfrac * (1.E+15 / p10) );
+            /* convert to fixed-point, see above */
+            long long int intfrac = (long long int)(fracfrac * (1.E+15 / p10) );
 
-	        if( intfrac > (long long int)(5.E+14 / p10) )
-	        	frac += 1.0;
-	        else if( intfrac < -(long long int)(5.E+14 / p10) )
-	        	frac += -1.0;
+            if( intfrac > (long long int)(5.E+14 / p10) )
+                frac += 1.0;
+            else if( intfrac < -(long long int)(5.E+14 / p10) )
+                frac += -1.0;
 
-	        frac /= p10;
+            frac /= p10;
 
-	        value = fix + frac;
-		}
-	}
+            value = fix + frac;
+        }
+    }
 
-	return value;
+    return value;
 }
 
 /** Processes a FORMAT mask.
@@ -224,17 +224,17 @@ static double hRound
  */
 static
 int fb_hProcessMask
-	(
-		FBSTRING *dst,
-		const char *mask,
-		ssize_t mask_length,
+    (
+        FBSTRING *dst,
+        const char *mask,
+        ssize_t mask_length,
         double value,
         FormatMaskInfo *pInfo,
         char chThousandsSep,
         char chDecimalPoint,
         char chDateSep,
         char chTimeSep
-	)
+    )
 {
     char FixPart[128], FracPart[128], ExpPart[128], chSign = 0;
     ssize_t LenFix, LenFrac, LenExp = 0, IndexFix, IndexFrac, IndexExp = 0;
@@ -264,10 +264,10 @@ int fb_hProcessMask
         LenOut = FB_STRSIZE( dst );
     }
 
-	if( value != 0.0 )
-		ExpValue = (int)floor( log10( fabs( value ) ) ) + 1;
-	else
-		ExpValue = 0;
+    if( value != 0.0 )
+        ExpValue = (int)floor( log10( fabs( value ) ) ) + 1;
+    else
+        ExpValue = 0;
 
     if( do_output )
     {
@@ -278,110 +278,110 @@ int fb_hProcessMask
              * on the number of digits required by the number as a textual
              * representation. */
 
-			if( pInfo->has_exponent )
-			{
-				/* exponent too big? scale (up or down) */
-				if( ExpValue <= 0 )
-				{
-					ExpValue -= pInfo->num_digits_fix;
-				}
-				else
-				{
-					if( pInfo->num_digits_frac > 0 )
-					{
-						if( ExpValue > pInfo->num_digits_fix )
-							ExpValue -= pInfo->num_digits_fix;
-						else
-							ExpValue = 0;
-					}
-					else
-					{
-						if( ExpValue > FB_MAXFIXLEN )
-							ExpValue -= FB_MAXFIXLEN;
-						else
-							ExpValue = 0;
-					}
-				}
+            if( pInfo->has_exponent )
+            {
+                /* exponent too big? scale (up or down) */
+                if( ExpValue <= 0 )
+                {
+                    ExpValue -= pInfo->num_digits_fix;
+                }
+                else
+                {
+                    if( pInfo->num_digits_frac > 0 )
+                    {
+                        if( ExpValue > pInfo->num_digits_fix )
+                            ExpValue -= pInfo->num_digits_fix;
+                        else
+                            ExpValue = 0;
+                    }
+                    else
+                    {
+                        if( ExpValue > FB_MAXFIXLEN )
+                            ExpValue -= FB_MAXFIXLEN;
+                        else
+                            ExpValue = 0;
+                    }
+                }
 
-				if( ExpValue != 0 )
-					value *= pow( 10.0, -ExpValue );
+                if( ExpValue != 0 )
+                    value *= pow( 10.0, -ExpValue );
 
-				LenExp = sprintf( ExpPart, "%d", (int)ExpValue );
+                LenExp = sprintf( ExpPart, "%d", (int)ExpValue );
 
-	            if( ExpValue < 0 )
-					IndexExp = ExpAdjust = 1;
-				else
-					IndexExp = ExpAdjust = 0;
+                if( ExpValue < 0 )
+                    IndexExp = ExpAdjust = 1;
+                else
+                    IndexExp = ExpAdjust = 0;
 
-				NumSkipExp = pInfo->exp_digits - ( LenExp - ExpAdjust );
-			}
-			/* value between (+|-)0.0..1.0 */
-			else if( ExpValue < 0 )
-			{
-				/* too small? */
-				if( -ExpValue >= pInfo->num_digits_frac )
-				{
+                NumSkipExp = pInfo->exp_digits - ( LenExp - ExpAdjust );
+            }
+            /* value between (+|-)0.0..1.0 */
+            else if( ExpValue < 0 )
+            {
+                /* too small? */
+                if( -ExpValue >= pInfo->num_digits_frac )
+                {
 #if 0
-					/* can't scale? */
-					if( (pInfo->num_digits_frac == 0 ) ||
-						(-ExpValue > pInfo->num_digits_fix +
-									 pInfo->num_digits_frac -
-									 pInfo->num_digits_omit) )
-						value = 0.0;
-					else
-						value *= pow( 10.0, -ExpValue + pInfo->num_digits_fix );
+                    /* can't scale? */
+                    if( (pInfo->num_digits_frac == 0 ) ||
+                        (-ExpValue > pInfo->num_digits_fix +
+                                     pInfo->num_digits_frac -
+                                     pInfo->num_digits_omit) )
+                        value = 0.0;
+                    else
+                        value *= pow( 10.0, -ExpValue + pInfo->num_digits_fix );
 #else
-					value = 0.0;
+                    value = 0.0;
 #endif
-					ExpValue = 0;
-				}
+                    ExpValue = 0;
+                }
 
-			}
-			/* value is 0.0 or (+|-)1.0... */
-			else
-			{
-				/* too big to fit on a long long? */
-				if( ExpValue > FB_MAXFIXLEN )
-				{
-					ExpValue -= FB_MAXFIXLEN;
-					value *= pow( 10.0, -ExpValue );
-				}
-				else
-					ExpValue = 0;
-			}
+            }
+            /* value is 0.0 or (+|-)1.0... */
+            else
+            {
+                /* too big to fit on a long long? */
+                if( ExpValue > FB_MAXFIXLEN )
+                {
+                    ExpValue -= FB_MAXFIXLEN;
+                    value *= pow( 10.0, -ExpValue );
+                }
+                else
+                    ExpValue = 0;
+            }
 
-			value = hRound( value, pInfo );
+            value = hRound( value, pInfo );
 
-			fb_hGetNumberParts( value,
-            					FixPart, &LenFix,
+            fb_hGetNumberParts( value,
+                                FixPart, &LenFix,
                                 FracPart, &LenFrac,
                                 &chSign,
                                 '.',
                                 pInfo->num_digits_frac );
 
 
-			/* handle too big numbers */
-			if( (ExpValue > 0) && !pInfo->has_exponent )
-			{
-				int i;
-				for( i = 0; i < ExpValue; i++ )
-					FixPart[LenFix+i] = '0';
+            /* handle too big numbers */
+            if( (ExpValue > 0) && !pInfo->has_exponent )
+            {
+                int i;
+                for( i = 0; i < ExpValue; i++ )
+                    FixPart[LenFix+i] = '0';
 
-				LenFix += ExpValue;
+                LenFix += ExpValue;
 
-				FixPart[LenFix] = '\0';
-			}
+                FixPart[LenFix] = '\0';
+            }
 
-			/* Number of digits to skip on output */
+            /* Number of digits to skip on output */
             NumSkipFix = pInfo->num_digits_fix - LenFix;
 
         }
     }
     else
     {
-		/* just assume the max possible */
-		LenFix = (ExpValue > FB_MAXFIXLEN? ExpValue : FB_MAXFIXLEN);
-		LenFrac = 0;
+        /* just assume the max possible */
+        LenFix = (ExpValue > FB_MAXFIXLEN? ExpValue : FB_MAXFIXLEN);
+        LenFrac = 0;
     }
 
     IndexFix = IndexFrac = 0;
@@ -453,7 +453,7 @@ int fb_hProcessMask
                         DBG_ASSERT( IndexFix!=LenFix );
                         pszAdd = FixPart + IndexFix;
                         if( pInfo->has_thousand_sep ) {
-                            int remaining = LenFix - IndexFix;
+                            int remaining = LenFix - IndexFix -1;
                             if( (remaining % 3)==0 ) {
                                 if( did_thousandsep ) {
                                     did_thousandsep = FALSE;
@@ -1116,11 +1116,11 @@ int fb_hProcessMask
 }
 
 FBCALL FBSTRING *fb_hStrFormat
-	(
-		double value,
+    (
+        double value,
         const char *mask,
         size_t mask_length
-	)
+    )
 {
     FBSTRING *dst = &__fb_ctx.null_desc;
     const char *pszIntlResult;
@@ -1138,7 +1138,7 @@ FBCALL FBSTRING *fb_hStrFormat
     pszIntlResult = fb_IntlGet( eFIL_TimeDivider, FALSE );
     chTimeSep = (( pszIntlResult==NULL ) ? ':' : *pszIntlResult );
     FB_UNLOCK();
-    
+
     if( chDecimalPoint==0 )
         chDecimalPoint = '.';
     if( chThousandsSep==0 )
@@ -1146,11 +1146,11 @@ FBCALL FBSTRING *fb_hStrFormat
 
     FB_STRLOCK();
 
-    if( mask == NULL || mask_length==0 ) 
+    if( mask == NULL || mask_length==0 )
     {
         dst = fb_hBuildDouble( value, chDecimalPoint, 0 );
-    } 
-    else 
+    }
+    else
     {
         FormatMaskInfo info;
 
@@ -1159,15 +1159,15 @@ FBCALL FBSTRING *fb_hStrFormat
                               mask, mask_length,
                               value, &info,
                               chThousandsSep, chDecimalPoint,
-                              chDateSep, chTimeSep ) ) 
+                              chDateSep, chTimeSep ) )
         {
             dst = fb_hStrAllocTemp_NoLock( NULL, info.length_min + info.length_opt );
-            if( dst == NULL ) 
+            if( dst == NULL )
             {
                 fb_ErrorSetNum( FB_RTERROR_OUTOFMEM );
                 dst = &__fb_ctx.null_desc;
             }
-		    else
+            else
             {
                 /* Build the new string according to the mask */
                 fb_hProcessMask( dst,
@@ -1185,17 +1185,17 @@ FBCALL FBSTRING *fb_hStrFormat
 }
 
 FBCALL FBSTRING *fb_StrFormat
-	(
-		double value,
-		FBSTRING *mask
-	)
+    (
+        double value,
+        FBSTRING *mask
+    )
 {
     FBSTRING *dst;
 
     dst = fb_hStrFormat( value, mask->data, FB_STRSIZE(mask) );
 
-	/* del if temp */
-	fb_hStrDelTemp( mask );
+    /* del if temp */
+    fb_hStrDelTemp( mask );
 
     return dst;
 }
