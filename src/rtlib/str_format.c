@@ -453,7 +453,7 @@ int fb_hProcessMask
                         DBG_ASSERT( IndexFix!=LenFix );
                         pszAdd = FixPart + IndexFix;
                         if( pInfo->has_thousand_sep ) {
-                            int remaining = LenFix - IndexFix;
+                            int remaining = LenFix - IndexFix - 1;
                             if( (remaining % 3)==0 ) {
                                 if( did_thousandsep ) {
                                     did_thousandsep = FALSE;
