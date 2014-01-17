@@ -111,7 +111,7 @@ Version 0.91.0:
 - fbc crashed after showing the error message when using -vec 1|2 without -fpu sse
 - ASM backend: Sgn(LongInt) returned wrong values
 - C backend: Extern "Windows-MS" is now supported, including DLL exports (stdcall procedures without @N suffix)
-
+- #709: format() adds erroneous thousands delimiter, was affecting all number strings that were multiple of 3. 
 
 Version 0.90.1:
 
