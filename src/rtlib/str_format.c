@@ -454,14 +454,16 @@ int fb_hProcessMask
                         pszAdd = FixPart + IndexFix;
                         if( pInfo->has_thousand_sep ) {
                             int remaining = LenFix - IndexFix;
-                            if( (remaining % 3)==0 ) {
+                            if( IndexFix != LenFix && (remaining % 3)==0 ) {
                                 if( did_thousandsep ) {
                                     did_thousandsep = FALSE;
                                     LenAdd = 3;
                                 } else {
-                                    did_thousandsep = TRUE;
-                                    pszAdd = &chThousandsSep;
-                                    LenAdd = 1;
+                                    if( IndexFix >= 1 ) {
+                                        did_thousandsep = TRUE;
+                                        pszAdd = &chThousandsSep;
+                                        LenAdd = 1;
+                                    }
                                 }
                             } else {
                                 LenAdd = remaining % 3;
