@@ -453,15 +453,17 @@ int fb_hProcessMask
                         DBG_ASSERT( IndexFix!=LenFix );
                         pszAdd = FixPart + IndexFix;
                         if( pInfo->has_thousand_sep ) {
-                            int remaining = LenFix - IndexFix - 1;
-                            if( (remaining % 3)==0 ) {
+                            int remaining = LenFix - IndexFix;
+                            if( IndexFix != LenFix && (remaining % 3)==0 ) {
                                 if( did_thousandsep ) {
                                     did_thousandsep = FALSE;
                                     LenAdd = 3;
                                 } else {
-                                    did_thousandsep = TRUE;
-                                    pszAdd = &chThousandsSep;
-                                    LenAdd = 1;
+                                    if( IndexFix >= 1 ) {
+                                        did_thousandsep = TRUE;
+                                        pszAdd = &chThousandsSep;
+                                        LenAdd = 1;
+                                    }
                                 }
                             } else {
                                 LenAdd = remaining % 3;
@@ -1138,7 +1140,7 @@ FBCALL FBSTRING *fb_hStrFormat
     pszIntlResult = fb_IntlGet( eFIL_TimeDivider, FALSE );
     chTimeSep = (( pszIntlResult==NULL ) ? ':' : *pszIntlResult );
     FB_UNLOCK();
-    
+
     if( chDecimalPoint==0 )
         chDecimalPoint = '.';
     if( chThousandsSep==0 )
@@ -1146,11 +1148,11 @@ FBCALL FBSTRING *fb_hStrFormat
 
     FB_STRLOCK();
 
-    if( mask == NULL || mask_length==0 ) 
+    if( mask == NULL || mask_length==0 )
     {
         dst = fb_hBuildDouble( value, chDecimalPoint, 0 );
-    } 
-    else 
+    }
+    else
     {
         FormatMaskInfo info;
 
@@ -1159,10 +1161,10 @@ FBCALL FBSTRING *fb_hStrFormat
                               mask, mask_length,
                               value, &info,
                               chThousandsSep, chDecimalPoint,
-                              chDateSep, chTimeSep ) ) 
+                              chDateSep, chTimeSep ) )
         {
             dst = fb_hStrAllocTemp_NoLock( NULL, info.length_min + info.length_opt );
-            if( dst == NULL ) 
+            if( dst == NULL )
             {
                 fb_ErrorSetNum( FB_RTERROR_OUTOFMEM );
                 dst = &__fb_ctx.null_desc;
