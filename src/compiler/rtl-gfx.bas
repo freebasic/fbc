@@ -22,7 +22,7 @@ declare function hPorts_cb _
 	{ _
 		/' sub fb_GfxPset _
 			( _
-				byref target as any, _
+				byval target as any ptr = 0, _
 				byval x as single, _
 				byval y as single, _
 				byval color as ulong, _
@@ -35,7 +35,7 @@ declare function hPorts_cb _
 	 		@hGfxlib_cb, FB_RTL_OPT_NONE, _
 			6, _
 			{ _
-				( FB_DATATYPE_VOID, FB_PARAMMODE_BYREF, FALSE ), _
+				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, TRUE, 0 ), _
 				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYVAL, FALSE ), _
 				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYVAL, FALSE ), _
 				( FB_DATATYPE_ULONG, FB_PARAMMODE_BYVAL, FALSE ), _
@@ -45,7 +45,7 @@ declare function hPorts_cb _
 		), _
 		/' function fb_GfxPoint _
 			( _
-				byref target as any, _
+				byval target as any ptr = 0, _
 				byval x as single, _
 				byval y as single _
 			) as long '/ _
@@ -55,14 +55,14 @@ declare function hPorts_cb _
 	 		@hGfxlib_cb, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
-				( FB_DATATYPE_VOID, FB_PARAMMODE_BYREF, FALSE ), _
+				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, TRUE, 0 ), _
 				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYVAL, FALSE ), _
 				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
 		/' sub fb_GfxLine _
 			( _
-				byref target as any, _
+				byval target as any ptr = 0, _
 				byval x1 as single = 0, _
 				byval y1 as single = 0, _
 				byval x2 as single = 0, _
@@ -78,7 +78,7 @@ declare function hPorts_cb _
 	 		@hGfxlib_cb, FB_RTL_OPT_NONE, _
 			9, _
 			{ _
-				( FB_DATATYPE_VOID, FB_PARAMMODE_BYREF, FALSE ), _
+				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, TRUE, 0 ), _
 				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYVAL, FALSE ), _
 				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYVAL, FALSE ), _
 				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYVAL, FALSE ), _
@@ -91,7 +91,7 @@ declare function hPorts_cb _
 		), _
 		/' sub fb_GfxEllipse _
 			( _
-				byref target as any, _
+				byval target as any ptr = 0, _
 				byval x as single, _
 				byval y as single, _
 				byval radius as single, _
@@ -108,7 +108,7 @@ declare function hPorts_cb _
 	 		@hGfxlib_cb, FB_RTL_OPT_NONE, _
 			10, _
 			{ _
-				( FB_DATATYPE_VOID, FB_PARAMMODE_BYREF, FALSE ), _
+				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, TRUE, 0 ), _
 				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYVAL, FALSE ), _
 				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYVAL, FALSE ), _
 				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYVAL, FALSE ), _
@@ -122,7 +122,7 @@ declare function hPorts_cb _
 		), _
 		/' sub fb_GfxPaint _
 			( _
-				byref target as any, _
+				byval target as any ptr = 0, _
 				byval fx as single, _
 				byval fy as single, _
 				byval color as ulong = DEFAULT_COLOR, _
@@ -137,7 +137,7 @@ declare function hPorts_cb _
 	 		@hGfxlib_cb, FB_RTL_OPT_NONE, _
 			8, _
 			{ _
-				( FB_DATATYPE_VOID, FB_PARAMMODE_BYREF, FALSE ), _
+				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, TRUE, 0 ), _
 				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYVAL, FALSE ), _
 				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYVAL, FALSE ), _
 				( FB_DATATYPE_ULONG, FB_PARAMMODE_BYVAL, FALSE ), _
@@ -147,26 +147,26 @@ declare function hPorts_cb _
 				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
-		/' sub fb_GfxDraw( byref target as any, byref cmd as string ) '/ _
+		/' sub fb_GfxDraw( byval target as any ptr = 0, byref cmd as string ) '/ _
 		( _
 			@FB_RTL_GFXDRAW, NULL, _
 			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 	 		@hGfxlib_cb, FB_RTL_OPT_NONE, _
 			2, _
 			{ _
-				( FB_DATATYPE_VOID, FB_PARAMMODE_BYREF, FALSE ), _
+				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, TRUE, 0 ), _
 				( FB_DATATYPE_STRING, FB_PARAMMODE_BYREF, FALSE ) _
 	 		} _
 		), _
 		/' function fb_GfxDrawString _
 			( _
-				byref target as any, _
+				byval target as any ptr = 0, _
 				byval fx as single, _
 				byval fy as single, _
 				byval coord_type as long = COORD_TYPE_A, _
 				byref string as string, _
 				byval color as ulong = DEFAULT_COLOR, _
-				byval font as any = NULL, _
+				byval font as any ptr = 0, _
 				byval mode as long, _
 				byval putter as PUTTER ptr, _
 				byval blender as BLENDER ptr, _
@@ -178,13 +178,13 @@ declare function hPorts_cb _
 	 		@hGfxlib_cb, FB_RTL_OPT_ERROR, _
 			11, _
 			{ _
-				( FB_DATATYPE_VOID, FB_PARAMMODE_BYREF, FALSE ), _
+				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, TRUE, 0 ), _
 				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYVAL, FALSE ), _
 				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYVAL, FALSE ), _
 				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
 				( FB_DATATYPE_STRING, FB_PARAMMODE_BYREF, FALSE ), _
 				( FB_DATATYPE_ULONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_VOID, FB_PARAMMODE_BYREF, FALSE ), _
+				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, TRUE, 0 ), _
 				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ), _
@@ -256,24 +256,24 @@ declare function hPorts_cb _
 				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, -1 ) _
 	 		} _
 		), _
-		/' sub fb_GfxPaletteUsing( byref data as long ) '/ _
+		/' sub fb_GfxPaletteUsing( byval data as long ptr ) '/ _
 		( _
 			@FB_RTL_GFXPALETTEUSING, NULL, _
 			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 			@hGfxlib_cb, FB_RTL_OPT_NONE, _
 			1, _
 			{ _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYREF, FALSE ) _
+				( typeAddrOf( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ) _
 			} _
 		), _
-		/' sub fb_GfxPaletteUsing64( byref data as longint ) '/ _
+		/' sub fb_GfxPaletteUsing64( byval data as longint ptr ) '/ _
 		( _
 			@FB_RTL_GFXPALETTEUSING64, NULL, _
 			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 			@hGfxlib_cb, FB_RTL_OPT_NONE, _
 			1, _
 			{ _
-				( FB_DATATYPE_LONGINT, FB_PARAMMODE_BYREF, FALSE ) _
+				( typeAddrOf( FB_DATATYPE_LONGINT ), FB_PARAMMODE_BYVAL, FALSE ) _
 			} _
 		), _
 		/' sub fb_GfxPaletteGet _
@@ -314,32 +314,32 @@ declare function hPorts_cb _
 				( FB_DATATYPE_LONGINT, FB_PARAMMODE_BYREF, FALSE ) _
 			} _
 		), _
-		/' sub fb_GfxPaletteGetUsing( byref data as long ) '/ _
+		/' sub fb_GfxPaletteGetUsing( byval data as long ptr ) '/ _
 		( _
 			@FB_RTL_GFXPALETTEGETUSING, NULL, _
 			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 			@hGfxlib_cb, FB_RTL_OPT_NONE, _
 			1, _
 			{ _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYREF, FALSE ) _
+				( typeAddrOf( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ) _
 			} _
 		), _
-		/' sub fb_GfxPaletteGetUsing64( byref data as longint ) '/ _
+		/' sub fb_GfxPaletteGetUsing64( byval data as longint ptr ) '/ _
 		( _
 			@FB_RTL_GFXPALETTEGETUSING64, NULL, _
 			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 			@hGfxlib_cb, FB_RTL_OPT_NONE, _
 			1, _
 			{ _
-				( FB_DATATYPE_LONGINT, FB_PARAMMODE_BYREF, FALSE ) _
+				( typeAddrOf( FB_DATATYPE_LONGINT ), FB_PARAMMODE_BYVAL, FALSE ) _
 			} _
 		), _
 		/' function fb_GfxPut _
 			( _
-				byref target as any, _
+				byval target as any ptr = 0, _
 				byval x as single, _
 				byval y as single, _
-				byref src as any, _
+				byval src as any ptr, _
 				byval x1 as long, _
 				byval y1 as long, _
 				byval x2 as long, _
@@ -357,10 +357,10 @@ declare function hPorts_cb _
 	 		@hGfxlib_cb, FB_RTL_OPT_ERROR, _
 			14, _
 			{ _
-				( FB_DATATYPE_VOID, FB_PARAMMODE_BYREF, FALSE ), _
+				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, TRUE, 0 ), _
 				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYVAL, FALSE ), _
 				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_VOID, FB_PARAMMODE_BYREF, FALSE ), _
+				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
 				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
 				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
@@ -375,12 +375,12 @@ declare function hPorts_cb _
 		), _
 		/' function fb_GfxGet _
 			( _
-				byref target as any, _
+				byval target as any ptr = 0, _
 				byval x1 as single, _
 				byval y1 as single, _
 				byval x2 as single, _
 				byval y2 as single, _
-				byref dest as any, _
+				byval dest as any ptr, _
 				byval coord_type as long, _
 				array() as any _
 			) as long '/ _
@@ -390,24 +390,24 @@ declare function hPorts_cb _
 	 		@hGfxlib_cb, FB_RTL_OPT_ERROR or FB_RTL_OPT_FBONLY, _
 			8, _
 			{ _
-				( FB_DATATYPE_VOID, FB_PARAMMODE_BYREF, FALSE ), _
+				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, TRUE, 0 ), _
 				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYVAL, FALSE ), _
 				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYVAL, FALSE ), _
 				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYVAL, FALSE ), _
 				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_VOID, FB_PARAMMODE_BYREF, FALSE ), _
+				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
 				( FB_DATATYPE_VOID, FB_PARAMMODE_BYDESC, FALSE ) _
 	 		} _
 		), _
 		/' function fb_GfxGetQB _
 			( _
-				byref target as any, _
+				byval target as any ptr = 0, _
 				byval x1 as single, _
 				byval y1 as single, _
 				byval x2 as single, _
 				byval y2 as single, _
-				byref dest as any, _
+				byval dest as any ptr, _
 				byval coord_type as long, _
 				array() as any _
 			) as long '/ _
@@ -417,12 +417,12 @@ declare function hPorts_cb _
 	 		@hGfxlib_cb, FB_RTL_OPT_ERROR or FB_RTL_OPT_NOFB, _
 			8, _
 			{ _
-				( FB_DATATYPE_VOID, FB_PARAMMODE_BYREF, FALSE ), _
+				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, TRUE, 0 ), _
 				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYVAL, FALSE ), _
 				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYVAL, FALSE ), _
 				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYVAL, FALSE ), _
 				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_VOID, FB_PARAMMODE_BYREF, FALSE ), _
+				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
 				( FB_DATATYPE_VOID, FB_PARAMMODE_BYDESC, FALSE ) _
 	 		} _
@@ -1450,11 +1450,9 @@ private function hGetPutter _
 	function = astBuildProcAddrof( proc )
 end function
 
-'':::::
 function rtlGfxPset _
 	( _
 		byval target as ASTNODE ptr, _
-		byval targetisptr as integer, _
 		byval xexpr as ASTNODE ptr, _
 		byval yexpr as ASTNODE ptr, _
 		byval cexpr as ASTNODE ptr, _
@@ -1463,24 +1461,13 @@ function rtlGfxPset _
 	) as integer
 
     dim as ASTNODE ptr proc = any
-    dim as integer targetmode = any
 
 	function = FALSE
 
     proc = astNewCALL( PROCLOOKUP( GFXPSET ) )
 
- 	'' byref target as any
- 	if( target = NULL ) then
-		target = astNewCONSTi( 0 )
- 		targetmode = FB_PARAMMODE_BYVAL
- 	else
-		if( targetisptr ) then
-			targetmode = FB_PARAMMODE_BYVAL
-		else
-			targetmode = INVALID
-		end if
-	end if
-	if( astNewARG( proc, target, , targetmode ) = NULL ) then
+	'' byval target as any ptr
+	if( astNewARG( proc, target ) = NULL ) then
  		exit function
  	end if
 
@@ -1509,41 +1496,25 @@ function rtlGfxPset _
  		exit function
  	end if
 
- 	''
  	astAdd( proc )
-
 	function = TRUE
-
 end function
 
-'':::::
 function rtlGfxPoint _
 	( _
 		byval target as ASTNODE ptr, _
-		byval targetisptr as integer, _
 		byval xexpr as ASTNODE ptr, _
 		byval yexpr as ASTNODE ptr _
 	) as ASTNODE ptr
 
 	dim as ASTNODE ptr proc = any
-	dim as integer targetmode = any
 
 	function = NULL
 
 	proc = astNewCALL( PROCLOOKUP( GFXPOINT ) )
 
-	'' byref target as any
-	if( target = NULL ) then
-		target = astNewCONSTi( 0 )
- 		targetmode = FB_PARAMMODE_BYVAL
- 	else
-		if( targetisptr ) then
-			targetmode = FB_PARAMMODE_BYVAL
-		else
-			targetmode = INVALID
-		end if
-	end if
-	if( astNewARG( proc, target, , targetmode ) = NULL ) then
+	'' byval target as any ptr
+	if( astNewARG( proc, target ) = NULL ) then
  		exit function
  	end if
 
@@ -1564,11 +1535,9 @@ function rtlGfxPoint _
 
 end function
 
-'':::::
 function rtlGfxLine _
 	( _
 		byval target as ASTNODE ptr, _
-		byval targetisptr as integer, _
 		byval x1expr as ASTNODE ptr, _
 		byval y1expr as ASTNODE ptr, _
 		byval x2expr as ASTNODE ptr, _
@@ -1580,24 +1549,13 @@ function rtlGfxLine _
 	) as integer
 
     dim as ASTNODE ptr proc = any
-    dim as integer targetmode = any
 
 	function = FALSE
 
     proc = astNewCALL( PROCLOOKUP( GFXLINE ) )
 
- 	'' byref target as any
- 	if( target = NULL ) then
-		target = astNewCONSTi( 0 )
- 		targetmode = FB_PARAMMODE_BYVAL
- 	else
-		if( targetisptr ) then
-			targetmode = FB_PARAMMODE_BYVAL
-		else
-			targetmode = INVALID
-		end if
-	end if
-	if( astNewARG( proc, target, , targetmode ) = NULL ) then
+	'' byval target as any ptr
+	if( astNewARG( proc, target ) = NULL ) then
  		exit function
  	end if
 
@@ -1644,18 +1602,14 @@ function rtlGfxLine _
  		exit function
  	end if
 
- 	''
  	astAdd( proc )
-
 	function = TRUE
-
 end function
 
 '':::::
 function rtlGfxCircle _
 	( _
 		byval target as ASTNODE ptr, _
-		byval targetisptr as integer, _
 		byval xexpr as ASTNODE ptr, _
 		byval yexpr as ASTNODE ptr, _
 		byval radexpr as ASTNODE ptr, _
@@ -1668,24 +1622,13 @@ function rtlGfxCircle _
 	) as integer
 
     dim as ASTNODE ptr proc = any
-    dim as integer targetmode = any
 
 	function = FALSE
 
     proc = astNewCALL( PROCLOOKUP( GFXCIRCLE ) )
 
- 	'' byref target as any
- 	if( target = NULL ) then
-		target = astNewCONSTi( 0 )
- 		targetmode = FB_PARAMMODE_BYVAL
- 	else
-		if( targetisptr ) then
-			targetmode = FB_PARAMMODE_BYVAL
-		else
-			targetmode = INVALID
-		end if
-	end if
-	if( astNewARG( proc, target, , targetmode ) = NULL ) then
+	'' byval target as any ptr
+	if( astNewARG( proc, target ) = NULL ) then
  		exit function
  	end if
 
@@ -1743,18 +1686,13 @@ function rtlGfxCircle _
  		exit function
  	end if
 
- 	''
  	astAdd( proc )
-
 	function = TRUE
-
 end function
 
-'':::::
 function rtlGfxPaint _
 	( _
 		byval target as ASTNODE ptr, _
-		byval targetisptr as integer, _
 		byval xexpr as ASTNODE ptr, _
 		byval yexpr as ASTNODE ptr, _
 		byval pexpr as ASTNODE ptr, _
@@ -1763,24 +1701,14 @@ function rtlGfxPaint _
 	) as integer
 
     dim as ASTNODE ptr proc = any
-    dim as integer targetmode = any, pattern = any
+	dim as integer pattern = any
 
     function = FALSE
 
 	proc = astNewCALL( PROCLOOKUP( GFXPAINT ) )
 
- 	'' byref target as any
- 	if( target = NULL ) then
-		target = astNewCONSTi( 0 )
- 		targetmode = FB_PARAMMODE_BYVAL
- 	else
-		if( targetisptr ) then
-			targetmode = FB_PARAMMODE_BYVAL
-		else
-			targetmode = INVALID
-		end if
-	end if
-	if( astNewARG( proc, target, , targetmode ) = NULL ) then
+	'' byval target as any ptr
+	if( astNewARG( proc, target ) = NULL ) then
  		exit function
  	end if
 
@@ -1834,40 +1762,24 @@ function rtlGfxPaint _
  		exit function
  	end if
 
- 	''
  	astAdd( proc )
-
 	function = TRUE
-
 end function
 
-'':::::
 function rtlGfxDraw _
 	( _
 		byval target as ASTNODE ptr, _
-		byval targetisptr as integer, _
 		byval cexpr as ASTNODE ptr _
 	) as integer
 
     dim as ASTNODE ptr proc = any
-    dim as integer targetmode = any
 
 	function = FALSE
 
     proc = astNewCALL( PROCLOOKUP( GFXDRAW ) )
 
- 	'' byref target as any
- 	if( target = NULL ) then
-		target = astNewCONSTi( 0 )
- 		targetmode = FB_PARAMMODE_BYVAL
- 	else
-		if( targetisptr ) then
-			targetmode = FB_PARAMMODE_BYVAL
-		else
-			targetmode = INVALID
-		end if
-	end if
-	if( astNewARG( proc, target, , targetmode ) = NULL ) then
+	'' byval target as any ptr
+	if( astNewARG( proc, target ) = NULL ) then
  		exit function
  	end if
 
@@ -1876,24 +1788,18 @@ function rtlGfxDraw _
  		exit function
  	end if
 
- 	''
  	astAdd( proc )
-
 	function = TRUE
-
 end function
 
-'':::::
 function rtlGfxDrawString _
 	( _
 		byval target as ASTNODE ptr, _
-		byval targetisptr as integer, _
 		byval xexpr as ASTNODE ptr, _
 		byval yexpr as ASTNODE ptr, _
 		byval sexpr as ASTNODE ptr, _
 		byval cexpr as ASTNODE ptr, _
 		byval fexpr as ASTNODE ptr, _
-		byval fisptr as integer, _
 		byval coord_type as integer, _
 		byval mode as integer, _
 		byval alphaexpr as ASTNODE ptr, _
@@ -1902,24 +1808,13 @@ function rtlGfxDrawString _
 	) as integer
 
     dim as ASTNODE ptr proc = any, putter = any
-    dim as integer targetmode = any
 
     function = FALSE
 
 	proc = astNewCALL( PROCLOOKUP( GFXDRAWSTRING ) )
 
- 	'' byref target as any
- 	if( target = NULL ) then
-		target = astNewCONSTi( 0 )
- 		targetmode = FB_PARAMMODE_BYVAL
- 	else
-		if( targetisptr ) then
-			targetmode = FB_PARAMMODE_BYVAL
-		else
-			targetmode = INVALID
-		end if
-	end if
-	if( astNewARG( proc, target, , targetmode ) = NULL ) then
+	'' byval target as any ptr
+	if( astNewARG( proc, target ) = NULL ) then
  		exit function
  	end if
 
@@ -1952,19 +1847,7 @@ function rtlGfxDrawString _
  	end if
 
  	'' byref font as any
- 	if( fexpr = NULL ) then
-		fexpr = astNewCONSTi( 0 )
- 		targetmode = FB_PARAMMODE_BYVAL
-		putter = astNewCONSTi( 0 )
- 	else
-		if( fisptr ) then
-			targetmode = FB_PARAMMODE_BYVAL
-		else
-			targetmode = INVALID
-		end if
-		putter = hGetPutter( mode )
-	end if
-	if( astNewARG( proc, fexpr, , targetmode ) = NULL ) then
+	if( astNewARG( proc, fexpr ) = NULL ) then
  		exit function
  	end if
 
@@ -1974,7 +1857,7 @@ function rtlGfxDrawString _
  	end if
 
  	'' byval putter as integer
- 	if( astNewARG( proc, putter ) = NULL ) then
+	if( astNewARG( proc, iif( fexpr, hGetPutter( mode ), astNewCONSTi( 0 ) ) ) = NULL ) then
  		exit function
  	end if
 
@@ -1998,7 +1881,6 @@ function rtlGfxDrawString _
 	function = TRUE
 end function
 
-'':::::
 function rtlGfxView _
 	( _
 		byval x1expr as ASTNODE ptr, _
@@ -2069,14 +1951,10 @@ function rtlGfxView _
  		exit function
  	end if
 
- 	''
  	astAdd( proc )
-
 	function = TRUE
-
 end function
 
-'':::::
 function rtlGfxWindow _
 	( _
 		byval x1expr as ASTNODE ptr, _
@@ -2129,11 +2007,8 @@ function rtlGfxWindow _
  		exit function
  	end if
 
- 	''
  	astAdd( proc )
-
 	function = TRUE
-
 end function
 
 function rtlGfxPalette  _
@@ -2218,13 +2093,11 @@ end function
 function rtlGfxPaletteUsing  _
 	( _
 		byval arrayexpr as ASTNODE ptr, _
-		byval isptr as integer, _
 		byval isget as integer _
 	) as integer
 
     dim as ASTNODE ptr proc = any
     dim as FBSYMBOL ptr f = any
-    dim as integer mode = any
 
 	function = FALSE
 
@@ -2243,9 +2116,8 @@ function rtlGfxPaletteUsing  _
 	end if
 	proc = astNewCALL( f )
 
-	'' byref array as long|longint
-	mode = iif( isptr, FB_PARAMMODE_BYVAL, INVALID )
-	if( astNewARG( proc, arrayexpr, , mode ) = NULL ) then
+	'' byval array as long|longint ptr
+	if( astNewARG( proc, arrayexpr ) = NULL ) then
 		exit function
 	end if
 
@@ -2253,15 +2125,12 @@ function rtlGfxPaletteUsing  _
 	function = TRUE
 end function
 
-'':::::
 function rtlGfxPut _
 	( _
 		byval target as ASTNODE ptr, _
-		byval targetisptr as integer, _
 		byval xexpr as ASTNODE ptr, _
 		byval yexpr as ASTNODE ptr, _
 		byval arrayexpr as ASTNODE ptr, _
-		byval isptr as integer, _
 		byval x1expr as ASTNODE ptr, _
 		byval x2expr as ASTNODE ptr, _
 		byval y1expr as ASTNODE ptr, _
@@ -2274,24 +2143,13 @@ function rtlGfxPut _
 	) as integer
 
     dim as ASTNODE ptr proc = any
-    dim as integer targetmode = any, argmode = any
 
     function = FALSE
 
     proc = astNewCALL( PROCLOOKUP( GFXPUT ) )
 
- 	'' byref target as any
- 	if( target = NULL ) then
-		target = astNewCONSTi( 0 )
- 		targetmode = FB_PARAMMODE_BYVAL
- 	else
-		if( targetisptr ) then
-			targetmode = FB_PARAMMODE_BYVAL
-		else
-			targetmode = INVALID
-		end if
-	end if
-	if( astNewARG( proc, target, , targetmode ) = NULL ) then
+	'' byval target as any ptr
+	if( astNewARG( proc, target ) = NULL ) then
  		exit function
  	end if
 
@@ -2305,13 +2163,8 @@ function rtlGfxPut _
  		exit function
  	end if
 
- 	'' byref array as any
-	if( isptr ) then
-		argmode = FB_PARAMMODE_BYVAL
-	else
-		argmode = INVALID
-	end if
-	if( astNewARG( proc, arrayexpr, , argmode ) = NULL ) then
+	'' byval array as any ptr
+	if( astNewARG( proc, arrayexpr ) = NULL ) then
  		exit function
  	end if
 
@@ -2378,41 +2231,27 @@ function rtlGfxPut _
 	function = TRUE
 end function
 
-'':::::
 function rtlGfxGet _
 	( _
 		byval target as ASTNODE ptr, _
-		byval targetisptr as integer, _
 		byval x1expr as ASTNODE ptr, _
 		byval y1expr as ASTNODE ptr, _
 		byval x2expr as ASTNODE ptr, _
 		byval y2expr as ASTNODE ptr, _
 		byval arrayexpr as ASTNODE ptr, _
-		byval isptr as integer, _
-		byval symbol as FBSYMBOL ptr, _
-		byval coordtype as integer _
+		byval coordtype as integer, _
+		byval descexpr as ASTNODE ptr _
 	) as integer
 
-    dim as ASTNODE ptr proc = any, descexpr = any
-    dim as integer targetmode = any, argmode = any
+	dim as ASTNODE ptr proc = any
 
     function = FALSE
 
 	'' use new header in -lang fb, otherwise old header
     proc = astNewCALL( iif( fbLangIsSet( FB_LANG_FB ), PROCLOOKUP( GFXGET ), PROCLOOKUP( GFXGETQB ) ) )
 
- 	'' byref target as any
- 	if( target = NULL ) then
-		target = astNewCONSTi( 0 )
- 		targetmode = FB_PARAMMODE_BYVAL
- 	else
-		if( targetisptr ) then
-			targetmode = FB_PARAMMODE_BYVAL
-		else
-			targetmode = INVALID
-		end if
-	end if
-	if( astNewARG( proc, target, , targetmode ) = NULL ) then
+	'' byval target as any ptr
+	if( astNewARG( proc, target ) = NULL ) then
  		exit function
  	end if
 
@@ -2436,26 +2275,8 @@ function rtlGfxGet _
  		exit function
  	end if
 
- 	'' byref array as any
-	if( isptr ) then
-		argmode = FB_PARAMMODE_BYVAL
-		descexpr = astNewCONSTi( NULL, typeAddrOf( FB_DATATYPE_VOID ) )
-	else
-		argmode = INVALID
-
-		if( astIsFIELD( arrayexpr ) = FALSE ) then
-			descexpr = astNewVAR( symbol )
-		else
-			'' side-effect?
-			if( astIsClassOnTree( AST_NODECLASS_CALL, arrayexpr ) <> NULL ) then
-				astAdd( astRemSideFx( arrayexpr ) )
-			end if
-
-			descexpr = astCloneTree( arrayexpr )
-		end if
-	end if
-
-	if( astNewARG( proc, arrayexpr, , argmode ) = NULL ) then
+	'' byval array as any ptr
+	if( astNewARG( proc, arrayexpr ) = NULL ) then
  		exit function
  	end if
 
@@ -2464,16 +2285,23 @@ function rtlGfxGet _
  		exit function
  	end if
 
- 	'' array() as any
-	if( astNewARG( proc, descexpr, , argmode ) = NULL ) then
- 		exit function
- 	end if
+	'' array() as any
+	if( descexpr ) then
+		'' Pass array BYDESC, so a temp array descriptor will
+		'' automatically be used if needed.
+		if( astNewARG( proc, descexpr ) = NULL ) then
+			exit function
+		end if
+	else
+		if( astNewARG( proc, astNewCONSTi( 0 ), , FB_PARAMMODE_BYVAL ) = NULL ) then
+			exit function
+		end if
+	end if
 
 	astAdd( rtlErrorCheck( proc ) )
 	function = TRUE
 end function
 
-'':::::
 function rtlGfxScreenSet _
 	( _
 		byval mexpr as ASTNODE ptr, _

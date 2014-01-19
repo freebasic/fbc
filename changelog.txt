@@ -112,6 +112,7 @@ Version 0.91.0:
 - ASM backend: Sgn(LongInt) returned wrong values
 - C backend: Extern "Windows-MS" is now supported, including DLL exports (stdcall procedures without @N suffix)
 - #709: format() adds erroneous thousands delimiter, was affecting all number strings that were multiple of 3. 
+- #715: GFX statements (Get, Put, Line, Circle, ...) are now more strict about their target/source image parameters. Arrays are still accepted as in QB, but besides that, the argument must be some pointer expression now, that is expected to point to an FB.IMAGE buffer of the proper size. Previously non-pointer expressions were accepted but could cause bad code to be generated or could be silently miscompiled.
 
 Version 0.90.1:
 

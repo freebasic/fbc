@@ -1529,7 +1529,6 @@ declare function rtlAtExit _
 declare function rtlGfxPset _
 	( _
 		byval target as ASTNODE ptr, _
-		byval targetisptr as integer, _
 		byval xexpr as ASTNODE ptr, _
 		byval yexpr as ASTNODE ptr, _
 		byval cexpr as ASTNODE ptr, _
@@ -1540,7 +1539,6 @@ declare function rtlGfxPset _
 declare function rtlGfxPoint _
 	( _
 		byval target as ASTNODE ptr, _
-		byval targetisptr as integer, _
 		byval xexpr as ASTNODE ptr, _
 		byval yexpr as ASTNODE ptr _
 	) as ASTNODE ptr
@@ -1548,7 +1546,6 @@ declare function rtlGfxPoint _
 declare function rtlGfxLine _
 	( _
 		byval target as ASTNODE ptr, _
-		byval targetisptr as integer, _
 		byval x1expr as ASTNODE ptr, _
 		byval y1expr as ASTNODE ptr, _
 		byval x2expr as ASTNODE ptr, _
@@ -1562,7 +1559,6 @@ declare function rtlGfxLine _
 declare function rtlGfxCircle _
 	( _
 		byval target as ASTNODE ptr, _
-		byval targetisptr as integer, _
 		byval xexpr as ASTNODE ptr, _
 		byval yexpr as ASTNODE ptr, _
 		byval radexpr as ASTNODE ptr, _
@@ -1577,7 +1573,6 @@ declare function rtlGfxCircle _
 declare function rtlGfxPaint _
 	( _
 		byval target as ASTNODE ptr, _
-		byval targetisptr as integer, _
 		byval xexpr as ASTNODE ptr, _
 		byval yexpr as ASTNODE ptr, _
 		byval pexpr as ASTNODE ptr, _
@@ -1588,20 +1583,17 @@ declare function rtlGfxPaint _
 declare function rtlGfxDraw _
 	( _
 		byval target as ASTNODE ptr, _
-		byval targetisptr as integer, _
 		byval cexpr as ASTNODE ptr _
 	) as integer
 
 declare function rtlGfxDrawString _
 	( _
 		byval target as ASTNODE ptr, _
-		byval targetisptr as integer, _
 		byval xexpr as ASTNODE ptr, _
 		byval texpr as ASTNODE ptr, _
 		byval sexpr as ASTNODE ptr, _
 		byval cexpr as ASTNODE ptr, _
 		byval fexpr as ASTNODE ptr, _
-		byval fisptr as integer, _
 		byval coord_type as integer, _
 		byval mode as integer, _
 		byval alphaexpr as ASTNODE ptr, _
@@ -1641,18 +1633,15 @@ declare function rtlGfxPalette _
 declare function rtlGfxPaletteUsing _
 	( _
 		byval arrayexpr as ASTNODE ptr, _
-		byval isptr as integer, _
 		byval isget as integer _
 	) as integer
 
 declare function rtlGfxPut _
 	( _
 		byval target as ASTNODE ptr, _
-		byval targetisptr as integer, _
 		byval xexpr as ASTNODE ptr, _
 		byval yexpr as ASTNODE ptr, _
 		byval arrayexpr as ASTNODE ptr, _
-		byval isptr as integer, _
 		byval x1expr as ASTNODE ptr, _
 		byval x2expr as ASTNODE ptr, _
 		byval y1expr as ASTNODE ptr, _
@@ -1667,15 +1656,13 @@ declare function rtlGfxPut _
 declare function rtlGfxGet _
 	( _
 		byval target as ASTNODE ptr, _
-		byval targetisptr as integer, _
 		byval x1expr as ASTNODE ptr, _
 		byval y1expr as ASTNODE ptr, _
 		byval x2expr as ASTNODE ptr, _
 		byval y2expr as ASTNODE ptr, _
 		byval arrayexpr as ASTNODE ptr, _
-		byval isptr as integer, _
-		byval symbol as FBSYMBOL ptr, _
-		byval coordtype as integer _
+		byval coordtype as integer, _
+		byval descexpr as ASTNODE ptr _
 	) as integer
 
 declare function rtlGfxScreenSet _

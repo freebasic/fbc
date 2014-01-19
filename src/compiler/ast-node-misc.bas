@@ -311,7 +311,7 @@ end function
 
 '' Field accesses - used in expression trees to be able to identify bitfield
 '' assignments/accesses, and also by astOptimizeTree() to optimize nested field
-'' accesses.
+'' accesses, and by hFbImageExpr() to identify array field accesses.
 '' l = field access; r = NULL
 function astNewFIELD _
 	( _
