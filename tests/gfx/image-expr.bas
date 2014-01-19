@@ -656,6 +656,130 @@ private sub hTestProperty( )
 	imagedestroy( x.p )
 end sub
 
+namespace castOverloadAnyPtr
+	dim shared as integer casts_anyptr
+
+	type UDT
+		p as any ptr
+		declare operator cast( ) as any ptr
+	end type
+
+	operator UDT.cast( ) as any ptr
+		casts_anyptr += 1
+		operator = p
+	end operator
+
+	private sub hTest( )
+		dim x as UDT
+		x.p = imagecreate( SCREEN_W, SCREEN_H, rgb(255,0,0) )
+		CU_ASSERT( hImageIsFilledWithColor( x.p, rgb(255,0,0) ) )
+
+		CU_ASSERT( casts_anyptr = 0 )
+		line x, (0, 0) - (SCREEN_W-1, SCREEN_H-1), rgb(0,0,255), bf
+		CU_ASSERT( casts_anyptr = 1 )
+		CU_ASSERT( hImageIsFilledWithColor( x.p, rgb(0,0,255) ) )
+
+		imagedestroy( x.p )
+	end sub
+end namespace
+
+namespace castOverloadFbImagePtr
+	dim shared as integer casts_fbimageptr
+
+	type UDT
+		p as any ptr
+		declare operator cast( ) as FB.IMAGE ptr
+	end type
+
+	operator UDT.cast( ) as FB.IMAGE ptr
+		casts_fbimageptr += 1
+		operator = p
+	end operator
+
+	private sub hTest( )
+		dim x as UDT
+		x.p = imagecreate( SCREEN_W, SCREEN_H, rgb(255,0,0) )
+		CU_ASSERT( hImageIsFilledWithColor( x.p, rgb(255,0,0) ) )
+
+		CU_ASSERT( casts_fbimageptr = 0 )
+		line x, (0, 0) - (SCREEN_W-1, SCREEN_H-1), rgb(0,0,255), bf
+		CU_ASSERT( casts_fbimageptr = 1 )
+		CU_ASSERT( hImageIsFilledWithColor( x.p, rgb(0,0,255) ) )
+
+		imagedestroy( x.p )
+	end sub
+end namespace
+
+namespace castOverloadAnyPtrFbImagePtr
+	dim shared as integer casts_anyptr, casts_fbimageptr
+
+	type UDT
+		p as any ptr
+		declare operator cast( ) as any ptr
+		declare operator cast( ) as FB.IMAGE ptr
+	end type
+
+	operator UDT.cast( ) as any ptr
+		casts_anyptr += 1
+		operator = p
+	end operator
+
+	operator UDT.cast( ) as FB.IMAGE ptr
+		casts_fbimageptr += 1
+		operator = p
+	end operator
+
+	private sub hTest( )
+		dim x as UDT
+		x.p = imagecreate( SCREEN_W, SCREEN_H, rgb(255,0,0) )
+		CU_ASSERT( hImageIsFilledWithColor( x.p, rgb(255,0,0) ) )
+
+		CU_ASSERT( casts_anyptr = 0 )
+		CU_ASSERT( casts_fbimageptr = 0 )
+		line x, (0, 0) - (SCREEN_W-1, SCREEN_H-1), rgb(0,0,255), bf
+		CU_ASSERT( casts_anyptr = 1 )
+		CU_ASSERT( casts_fbimageptr = 0 )
+		CU_ASSERT( hImageIsFilledWithColor( x.p, rgb(0,0,255) ) )
+
+		imagedestroy( x.p )
+	end sub
+end namespace
+
+namespace castOverloadAnyPtrInteger
+	dim shared as integer casts_anyptr, casts_integer
+
+	type UDT
+		p as any ptr
+		declare operator cast( ) as any ptr
+		declare operator cast( ) as integer
+	end type
+
+	operator UDT.cast( ) as any ptr
+		casts_anyptr += 1
+		operator = p
+	end operator
+
+	operator UDT.cast( ) as integer
+		casts_integer += 1
+		operator = 0
+	end operator
+
+	private sub hTest( )
+		dim x as UDT
+		x.p = imagecreate( SCREEN_W, SCREEN_H, rgb(255,0,0) )
+		CU_ASSERT( hImageIsFilledWithColor( x.p, rgb(255,0,0) ) )
+
+		CU_ASSERT( casts_anyptr = 0 )
+		CU_ASSERT( casts_integer = 0 )
+		line x, (0, 0) - (SCREEN_W-1, SCREEN_H-1), rgb(0,0,255), bf
+		CU_ASSERT( casts_anyptr = 1 )
+		CU_ASSERT( casts_integer = 0 )
+		CU_ASSERT( hImageIsFilledWithColor( x.p, rgb(0,0,255) ) )
+
+		imagedestroy( x.p )
+	end sub
+end namespace
+
 private sub test cdecl( )
 	CU_ASSERT( screenres( SCREEN_W, SCREEN_H, 32, , fb.GFX_NULL ) = 0 )
 
@@ -672,6 +796,10 @@ private sub test cdecl( )
 	hTestFieldTarget( )
 	hTestConstSource( )
 	hTestProperty( )
+	castOverloadAnyPtr.hTest( )
+	castOverloadFbImagePtr.hTest( )
+	castOverloadAnyPtrFbImagePtr.hTest( )
+	castOverloadAnyPtrInteger.hTest( )
 end sub
 
 private sub ctor( ) constructor

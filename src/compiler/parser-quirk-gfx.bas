@@ -179,6 +179,30 @@ private function hFbImageExpr _
 		end if
 	end select
 
+	'' If an UDT was given, check for cast() AS ANY PTR or compatible overloads
+	'' (cannot check for FB.IMAGE directly because it's not a built-in type)
+	if( typeGetDtAndPtrOnly( expr->dtype ) = FB_DATATYPE_STRUCT ) then
+		dim as FB_ERRMSG err_num = any
+		dim as FBSYMBOL ptr castproc = any
+		castproc = symbFindCastOvlProc( typeAddrOf( FB_DATATYPE_VOID ), NULL, expr, @err_num )
+		if( castproc ) then
+			'' cast() overload found, call it
+			expr = astBuildCall( castproc, expr )
+		else
+			'' No cast() found
+
+			'' No error shown yet? (would have happened for multiple/mismatching overloads)
+			if( err_num = FB_ERRMSG_OK ) then
+				'' Manually show a nicer error than "expected pointer"
+				errReport( FB_ERRMSG_NOMATCHINGPROC, TRUE, _
+				           " """ & *symbGetName( expr->subtype ) & ".cast() as any ptr""" )
+			end if
+
+			astDelTree( expr )
+			expr = astNewCONSTi( 0, typeAddrOf( FB_DATATYPE_VOID ) )
+		end if
+	end if
+
 	'' Besides that though, only pointer expressions are accepted, and they
 	'' will be passed BYVAL through the BYREF AS ANY parameter...
 	if( typeIsPtr( expr->dtype ) = FALSE ) then
