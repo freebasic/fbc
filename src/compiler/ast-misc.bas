@@ -805,12 +805,9 @@ function astBuildBranch _
 			if( ovlProc = NULL ) then
 				ovlProc = symbGetCompOpOvlHead( expr->subtype, AST_OP_CAST )
 				if( ovlProc = NULL ) then
-					if( expr->subtype ) then
-						errReport( FB_ERRMSG_NOMATCHINGPROC, _
-								   TRUE, _
-								   " """ & *symbGetName( expr->subtype ) & ".cast()""" )
-						return NULL
-					end if
+					errReport( FB_ERRMSG_NOMATCHINGPROC, TRUE, _
+					           " """ & *symbGetName( expr->subtype ) & ".cast()""" )
+					return NULL
 				end if
 
 				errReport( FB_ERRMSG_NOMATCHINGPROC, TRUE )
