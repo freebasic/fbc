@@ -42,6 +42,13 @@ function cExpression _
 
 end function
 
+function cExpressionWithNIDXARRAY( byval allow_nidxarray as integer ) as ASTNODE ptr
+	dim as integer oldcheckarray = any
+	oldcheckarray = fbGetCheckArray( )
+	fbSetCheckArray( not allow_nidxarray )
+	function = cExpression( )
+	fbSetCheckArray( oldcheckarray )
+end function
 
 '':::::
 ''BoolExpression      =   LogExpression ( (ANDALSO | ORELSE ) LogExpression )* .

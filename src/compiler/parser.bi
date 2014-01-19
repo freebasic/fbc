@@ -442,6 +442,8 @@ declare function cExpression _
 		_
 	) as ASTNODE ptr
 
+declare function cExpressionWithNIDXARRAY( byval allow_nidxarray as integer ) as ASTNODE ptr
+
 declare function cCatExpression _
 	( _
 		_

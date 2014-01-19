@@ -111,16 +111,8 @@ private function hFbImageExpr _
 	) as ASTNODE ptr
 
 	dim as ASTNODE ptr expr = any
-	dim as integer oldcheckarray = any
 
-	'' Allow nidx arrays
-	oldcheckarray = fbGetCheckArray( )
-	fbSetCheckArray( FALSE )
-
-	expr = cExpression( )
-
-	fbSetCheckArray( oldcheckarray )
-
+	expr = cExpressionWithNIDXARRAY( TRUE )
 	if( expr = NULL ) then
 		exit function
 	end if

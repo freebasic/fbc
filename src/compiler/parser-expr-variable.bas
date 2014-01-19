@@ -11,12 +11,8 @@
 
 private function hIndexExpr( ) as ASTNODE ptr
 	dim as ASTNODE ptr expr = any
-	dim as integer check_array = any
 
-	check_array = fbGetCheckArray( )
-	fbSetCheckArray( TRUE )
-	expr = cExpression( )
-	fbSetCheckArray( check_array )
+	expr = cExpressionWithNIDXARRAY( FALSE )
 	if( expr = NULL ) then
 		errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
 		'' error recovery: faken an expr

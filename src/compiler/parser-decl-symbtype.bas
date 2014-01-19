@@ -83,7 +83,7 @@ function cTypeOrExpression _
 	) as ASTNODE ptr
 
 	dim as ASTNODE ptr expr = any
-	dim as integer maybe_type = any, check_array = any
+	dim as integer maybe_type = any
 
 	'' This is ambiguous because functions/variables may use the same name
 	'' as types, for example STRING and STRING(). The same can happen with
@@ -135,10 +135,7 @@ function cTypeOrExpression _
 	end if
 
 	'' Parse as expression, allowing NIDXARRAYs
-	check_array = fbGetCheckArray( )
-	fbSetCheckArray( FALSE )
-	expr = cExpression( )
-	fbSetCheckArray( check_array )
+	expr = cExpressionWithNIDXARRAY( TRUE )
 	if( expr = NULL ) then
 		errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
 		'' error recovery: fake an expr
