@@ -2224,7 +2224,8 @@ function typeDump _
 		dump += "invalid"
 		ok = (subtype = NULL)
 	else
-		ptrcount = abs( typeGetPtrCnt( dtype ) )
+		ptrcount = typeGetPtrCnt( dtype )
+		assert( ptrcount >= 0 )
 
 		if( typeIsConstAt( dtype, ptrcount ) ) then
 			dump += "const "
