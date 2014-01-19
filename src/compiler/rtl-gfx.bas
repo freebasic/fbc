@@ -85,7 +85,7 @@ declare function hPorts_cb _
 				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYVAL, FALSE ), _
 				( FB_DATATYPE_ULONG, FB_PARAMMODE_BYVAL, FALSE ), _
 				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_ULONG, FB_PARAMMODE_BYVAL, FALSE ), _
+				( FB_DATATYPE_ULONG, FB_PARAMMODE_BYVAL, TRUE, &hFFFF ), _
 				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
@@ -169,7 +169,7 @@ declare function hPorts_cb _
 				byval font as any ptr = 0, _
 				byval mode as long, _
 				byval putter as PUTTER ptr, _
-				byval blender as BLENDER ptr, _
+				byval blender as BLENDER ptr = 0, _
 				byval param as any ptr _
 			) '/ _
 		( _
@@ -187,18 +187,18 @@ declare function hPorts_cb _
 				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, TRUE, 0 ), _
 				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ), _
-				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, TRUE, 0 ), _
 				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
 		/' sub fb_GfxView _
 			( _
-				byval x1 as long, _
-				byval y1 as long, _
-				byval x2 as long, _
-				byval y2 as long, _
-				byval fill_color as ulong, _
-				byval border_color as ulong, _
+				byval x1 as long = -32768, _
+				byval y1 as long = -32768, _
+				byval x2 as long = -32768, _
+				byval y2 as long = -32768, _
+				byval fill_color as ulong = 0, _
+				byval border_color as ulong = 0, _
 				byval screen as long _
 			) '/ _
 		( _
@@ -207,12 +207,12 @@ declare function hPorts_cb _
 	 		@hGfxlib_cb, FB_RTL_OPT_NONE, _
 			7, _
 			{ _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_ULONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_ULONG, FB_PARAMMODE_BYVAL, FALSE ), _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, -32768 ), _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, -32768 ), _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, -32768 ), _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, -32768 ), _
+				( FB_DATATYPE_ULONG, FB_PARAMMODE_BYVAL, TRUE, 0 ), _
+				( FB_DATATYPE_ULONG, FB_PARAMMODE_BYVAL, TRUE, 0 ), _
 				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
@@ -278,7 +278,7 @@ declare function hPorts_cb _
 		), _
 		/' sub fb_GfxPaletteGet _
 			( _
-				byval index as long, _
+				byval index as long = -1, _
 				byref r as long, _
 				byref g as long, _
 				byref b as long _
@@ -289,7 +289,7 @@ declare function hPorts_cb _
 			@hGfxlib_cb, FB_RTL_OPT_NONE, _
 			4, _
 			{ _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, -1 ), _
 				( FB_DATATYPE_LONG, FB_PARAMMODE_BYREF, FALSE ), _
 				( FB_DATATYPE_LONG, FB_PARAMMODE_BYREF, FALSE ), _
 				( FB_DATATYPE_LONG, FB_PARAMMODE_BYREF, FALSE ) _
@@ -297,7 +297,7 @@ declare function hPorts_cb _
 		), _
 		/' sub fb_GfxPaletteGet64 _
 			( _
-				byval index as long, _
+				byval index as long = -1, _
 				byref r as longint, _
 				byref g as longint, _
 				byref b as longint _
@@ -308,7 +308,7 @@ declare function hPorts_cb _
 			@hGfxlib_cb, FB_RTL_OPT_NONE, _
 			4, _
 			{ _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, -1 ), _
 				( FB_DATATYPE_LONGINT, FB_PARAMMODE_BYREF, FALSE ), _
 				( FB_DATATYPE_LONGINT, FB_PARAMMODE_BYREF, FALSE ), _
 				( FB_DATATYPE_LONGINT, FB_PARAMMODE_BYREF, FALSE ) _
@@ -340,16 +340,16 @@ declare function hPorts_cb _
 				byval x as single, _
 				byval y as single, _
 				byval src as any ptr, _
-				byval x1 as long, _
-				byval y1 as long, _
-				byval x2 as long, _
-				byval y2 as long, _
+				byval x1 as long = &hFFFF0000, _
+				byval y1 as long = &hFFFF0000, _
+				byval x2 as long = &hFFFF0000, _
+				byval y2 as long = &hFFFF0000, _
 				byval coord_type as long, _
 				byval mode as long, _
 				byval putter as PUTTER ptr, _
-				byval alpha as long, _
-				byval blender as BLENDER ptr,
-				byval param as any ptr _
+				byval alpha as long = -1, _
+				byval blender as BLENDER ptr = 0, _
+				byval param as any ptr = 0 _
 			) as long '/ _
 		( _
 			@FB_RTL_GFXPUT, NULL, _
@@ -361,16 +361,16 @@ declare function hPorts_cb _
 				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYVAL, FALSE ), _
 				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, &hFFFF0000 ), _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, &hFFFF0000 ), _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, &hFFFF0000 ), _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, &hFFFF0000 ), _
 				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
 				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ), _
-				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ) _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, -1 ), _
+				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, TRUE, 0 ), _
+				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, TRUE, 0 ) _
 	 		} _
 		), _
 		/' function fb_GfxGet _
@@ -430,7 +430,7 @@ declare function hPorts_cb _
 		/' function fb_GfxScreen _
 			( _
 				byval mode as long, _
-				byval depth as long = 0, _
+				byval depth as long = 8, _
 				byval num_pages as long = 0, _
 		                byval flags as long = 0, _
 				byval refresh_rate as long = 0 _
@@ -442,7 +442,7 @@ declare function hPorts_cb _
 			5, _
 			{ _
 				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, 0 ), _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, 8 ), _
 				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, 0 ), _
 				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, 0 ), _
 				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, 0 ) _
@@ -1590,9 +1590,6 @@ function rtlGfxLine _
  	end if
 
  	'' byval style as uinteger
- 	if( styleexpr = NULL ) then
- 		styleexpr = astNewCONSTi( &h0000FFFF, FB_DATATYPE_UINT )
- 	end if
  	if( astNewARG( proc, styleexpr ) = NULL ) then
  		exit function
  	end if
@@ -1740,21 +1737,20 @@ function rtlGfxPaint _
  		exit function
  	end if
 
-	'' pattern as string, byval mode as integer
-	if( pattern = TRUE ) then
+	'' pattern as string
+	if( pattern ) then
 		if( astNewARG( proc, pexpr ) = NULL ) then
- 			exit function
- 		end if
-		if( astNewARG( proc, astNewCONSTi( 1 ) ) = NULL ) then
  			exit function
  		end if
 	else
 		if( astNewARG( proc, astNewVAR( symbAllocStrConst( "", 0 ) ) ) = NULL ) then
  			exit function
  		end if
-		if( astNewARG( proc, astNewCONSTi( 0 ) ) = NULL ) then
- 			exit function
- 		end if
+	end if
+
+	'' byval mode as integer
+	if( astNewARG( proc, astNewCONSTi( iif( pattern, 1, 0 ) ) ) = NULL ) then
+		exit function
 	end if
 
 	'' byval coord_type as integer
@@ -1862,9 +1858,6 @@ function rtlGfxDrawString _
  	end if
 
  	'' byval func as function( src as uinteger, dest as uinteger ) as uinteger
- 	if( funcexpr = NULL ) then
-		funcexpr = astNewCONSTi( 0 )
- 	end if
  	if( astNewARG( proc, funcexpr ) = NULL ) then
  		exit function
  	end if
@@ -1899,49 +1892,31 @@ function rtlGfxView _
     proc = astNewCALL( PROCLOOKUP( GFXVIEW ) )
 
  	'' byval x1 as integer
- 	if( x1expr = NULL ) then
-		x1expr = astNewCONSTi( -32768 )
-    end if
  	if( astNewARG( proc, x1expr ) = NULL ) then
  		exit function
  	end if
 
  	'' byval y1 as integer
- 	if( y1expr = NULL ) then
-		y1expr = astNewCONSTi( -32768 )
-    end if
  	if( astNewARG( proc, y1expr ) = NULL ) then
  		exit function
  	end if
 
  	'' byval x2 as integer
- 	if( x2expr = NULL ) then
-		x2expr = astNewCONSTi( -32768 )
-    end if
  	if( astNewARG( proc, x2expr ) = NULL ) then
  		exit function
  	end if
 
  	'' byval y2 as integer
- 	if( y2expr = NULL ) then
-		y2expr = astNewCONSTi( -32768 )
-    end if
  	if( astNewARG( proc, y2expr ) = NULL ) then
  		exit function
  	end if
 
  	'' byval fillcolor as uinteger
- 	if( fillexpr = NULL ) then
- 		fillexpr = astNewCONSTi( 0, FB_DATATYPE_UINT )
- 	end if
  	if( astNewARG( proc, fillexpr ) = NULL ) then
  		exit function
  	end if
 
  	'' byval bordercolor as uinteger
- 	if( bordexpr = NULL ) then
- 		bordexpr = astNewCONSTi( 0, FB_DATATYPE_UINT )
- 	end if
  	if( astNewARG( proc, bordexpr ) = NULL ) then
  		exit function
  	end if
@@ -2022,7 +1997,7 @@ function rtlGfxPalette  _
 
     dim as ASTNODE ptr proc = any
     dim as FBSYMBOL ptr f = any
-    dim as integer defval = any, targetmode = any
+	dim as integer gbdefval = any, gbmode = any
 
 	function = FALSE
 
@@ -2043,25 +2018,18 @@ function rtlGfxPalette  _
 		else
 			f = PROCLOOKUP( GFXPALETTEGET )
 		end if
-		targetmode = FB_PARAMMODE_BYREF
-		defval = 0
 	else
 		f = PROCLOOKUP( GFXPALETTE )
-		targetmode = FB_PARAMMODE_BYVAL
-		defval = -1
 	end if
 
 	proc = astNewCALL( f )
 
 	'' byval index as long
-	if( attexpr = NULL ) then
-		attexpr = astNewCONSTi( -1 )
-	end if
 	if( astNewARG( proc, attexpr ) = NULL ) then
 		exit function
 	end if
 
-	'' byval r as long|longint
+	'' byval|byref r as long|longint
  	if( rexpr = NULL ) then
 		rexpr = astNewCONSTi( -1 )
 	end if
@@ -2069,20 +2037,33 @@ function rtlGfxPalette  _
 		exit function
 	end if
 
-	'' byval g as long|longint
-	if( gexpr = NULL ) then
-		targetmode = FB_PARAMMODE_BYVAL
-		gexpr = astNewCONSTi( defval )
+	'' The g/b parameters can be omitted. In that case r is the (whole) color.
+	''    PALETTE [GET] index, color
+	''    PALETTE [GET] index, r, g, b
+	assert( (gexpr <> NULL) = (bexpr <> NULL) )
+	if( gexpr ) then
+		gbmode = INVALID  '' Let astNewARG() use the param's default
+	else
+		'' In case of PALETTE, g/b are BYVAL params and we pass BYVAL -1 as
+		'' default value. In case of PALETTE GET, they're BYREF params and we
+		'' pass BYVAL null pointers.
+		if( isget ) then
+			gbdefval = 0    '' BYVAL null arg to BYREF param
+		else
+			gbdefval = -1   '' BYVAL -1 arg to BYVAL param
+		end if
+		gexpr = astNewCONSTi( gbdefval )
+		bexpr = astNewCONSTi( gbdefval )
+		gbmode = FB_PARAMMODE_BYVAL
 	end if
-	if( astNewARG( proc, gexpr, , targetmode ) = NULL ) then
+
+	'' byval|byref g as long|longint
+	if( astNewARG( proc, gexpr, , gbmode ) = NULL ) then
 		exit function
 	end if
 
-	'' byval b as long|longint
-	if( bexpr = NULL ) then
-		bexpr = astNewCONSTi( defval )
-	end if
-	if( astNewARG( proc, bexpr, , targetmode ) = NULL ) then
+	'' byval|byref b as long|longint
+	if( astNewARG( proc, bexpr, , gbmode ) = NULL ) then
 		exit function
 	end if
 
@@ -2169,12 +2150,6 @@ function rtlGfxPut _
  	end if
 
  	'' area coordinates, if any
- 	if( x1expr = NULL ) then
-		x1expr = astNewCONSTi( &hFFFF0000 )
-		x2expr = astNewCONSTi( &hFFFF0000 )
-		y1expr = astNewCONSTi( &hFFFF0000 )
-		y2expr = astNewCONSTi( &hFFFF0000 )
- 	end if
   	if( astNewARG( proc, x1expr ) = NULL ) then
  		exit function
  	end if
@@ -2204,25 +2179,16 @@ function rtlGfxPut _
  	end if
 
 	'' byval alpha as integer
-	if( alphaexpr = NULL ) then
-		alphaexpr = astNewCONSTi( -1 )
-	end if
  	if( astNewARG( proc, alphaexpr ) = NULL ) then
  		exit function
  	end if
 
  	'' byval func as function( src as uinteger, dest as uinteger ) as uinteger
- 	if( funcexpr = NULL ) then
-		funcexpr = astNewCONSTi( 0 )
- 	end if
  	if( astNewARG( proc, funcexpr ) = NULL ) then
  		exit function
  	end if
 
  	'' byval param as any ptr
- 	if( paramexpr = NULL ) then
-		paramexpr = astNewCONSTi( 0 )
- 	end if
  	if( astNewARG( proc, paramexpr ) = NULL ) then
  		exit function
  	end if
@@ -2323,33 +2289,21 @@ function rtlGfxScreenSet _
  	end if
 
  	'' byval d as integer
- 	if( dexpr = NULL ) then
-		dexpr = astNewCONSTi( 8 )
- 	end if
  	if( astNewARG( proc, dexpr ) = NULL ) then
  		exit function
  	end if
 
  	'' byval depth as integer
- 	if( pexpr = NULL ) then
-		pexpr = astNewCONSTi( 0 )
- 	end if
  	if( astNewARG( proc, pexpr ) = NULL ) then
  		exit function
  	end if
 
  	'' byval flags as integer
- 	if( fexpr = NULL ) then
-		fexpr = astNewCONSTi( 0 )
- 	end if
  	if( astNewARG( proc, fexpr ) = NULL ) then
  		exit function
  	end if
 
 	'' byval refresh_rate as integer
-	if( rexpr = NULL ) then
-		rexpr = astNewCONSTi( 0 )
-	end if
  	if( astNewARG( proc, rexpr ) = NULL ) then
  		exit function
  	end if
@@ -2358,7 +2312,6 @@ function rtlGfxScreenSet _
 	function = TRUE
 end function
 
-'':::::
 function rtlGfxScreenSetQB _
 	( _
 		byval mode as ASTNODE ptr, _
@@ -2378,17 +2331,11 @@ function rtlGfxScreenSetQB _
  	end if
 
  	'' byval active as integer
- 	if( active = NULL ) then
-		active = astNewCONSTi( -1 )
- 	end if
  	if( astNewARG( proc, active ) = NULL ) then
  		exit function
  	end if
 
  	'' byval visible as integer
- 	if( visible = NULL ) then
-		visible = astNewCONSTi( -1 )
- 	end if
  	if( astNewARG( proc, visible ) = NULL ) then
  		exit function
  	end if
@@ -2397,7 +2344,6 @@ function rtlGfxScreenSetQB _
 	function = TRUE
 end function
 
-'':::::
 function rtlGfxImageCreate _
 	( _
 		byval wexpr as ASTNODE ptr, _
@@ -2425,17 +2371,11 @@ function rtlGfxImageCreate _
  	end if
 
 	'' byval c as integer
-	if( cexpr = NULL ) then
-		cexpr = astNewCONSTi( 0 )
-	end if
  	if( astNewARG( proc, cexpr ) = NULL ) then
  		exit function
  	end if
 
 	'' byval d as integer
-	if( dexpr = NULL ) then
-		dexpr = astNewCONSTi( 0 )
-	end if
  	if( astNewARG( proc, dexpr ) = NULL ) then
  		exit function
  	end if
@@ -2446,5 +2386,4 @@ function rtlGfxImageCreate _
  	end if
 
 	function = proc
-
 end function
