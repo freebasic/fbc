@@ -2460,7 +2460,7 @@ function symbDump( byval sym as FBSYMBOL ptr ) as string
 	s += " mangled """ + *symbGetMangledName( sym ) + """"
 #endif
 
-	s += " as "
+	s += " "
 
 	if( sym->typ and FB_DATATYPE_INVALID ) then
 		if( sym->class = FB_SYMBCLASS_KEYWORD ) then
@@ -2488,10 +2488,10 @@ function symbDump( byval sym as FBSYMBOL ptr ) as string
 			case FB_DATATYPE_ENUM
 				s += "<enum>"
 			case else
-				s += symbTypeToStr( sym->typ, NULL, sym->lgt )
+				s += typeDump( sym->typ, NULL )
 			end select
 		else
-			s += symbTypeToStr( sym->typ, sym->subtype, sym->lgt )
+			s += typeDump( sym->typ, sym->subtype )
 		end if
 	end if
 
