@@ -1540,15 +1540,6 @@ function cVarOrDeref _
 		case AST_NODECLASS_CALL, AST_NODECLASS_NIDXARRAY
 			complain = ((options and FB_VAREXPROPT_ISASSIGN) <> 0)
 
-		case AST_NODECLASS_ADDROF, AST_NODECLASS_OFFSET
-			complain = ((options and FB_VAREXPROPT_ALLOWADDROF) = 0)
-
-		case AST_NODECLASS_BOP
-			'' allow addresses?
-			if( options and FB_VAREXPROPT_ALLOWADDROF ) then
-				'' not a pointer? (@foo[bar] will be converted to foo + bar)
-				complain = not typeIsPtr( astGetDataType( expr ) )
-			end if
 		end select
 
 		if( complain ) then
