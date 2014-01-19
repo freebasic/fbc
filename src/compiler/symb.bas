@@ -2169,6 +2169,24 @@ sub symbForEachGlobal _
 end sub
 
 #if __FB_DEBUG__
+private function hGetNamespacePrefix( byval sym as FBSYMBOL ptr ) as string
+	dim as FBSYMBOL ptr ns = any
+	dim as string s
+
+	ns = symbGetNamespace( sym )
+	while( ns <> @symbGetGlobalNamespc( ) )
+		s = *symbGetName( ns ) + "." + s
+
+		if( symbGetHashtb( ns ) = NULL ) then
+			exit while
+		end if
+
+		ns = symbGetNamespace( ns )
+	wend
+
+	function = s
+end function
+
 static shared as zstring ptr classnames(FB_SYMBCLASS_VAR to FB_SYMBCLASS_NSIMPORT) = _
 { _
 	@"var"      , _
@@ -2226,7 +2244,9 @@ function typeDump _
 		case FB_DATATYPE_STRUCT, FB_DATATYPE_ENUM
 			if( subtype ) then
 				if( symbIsStruct( subtype ) ) then
-					dump += " " + *symbGetName( subtype )
+					dump += " "
+					dump += hGetNamespacePrefix( subtype )
+					dump += *symbGetName( subtype )
 				end if
 			end if
 		end select
@@ -2285,24 +2305,6 @@ function typeDump _
 	dump += "]"
 
 	function = dump
-end function
-
-private function hGetNamespacePrefix( byval sym as FBSYMBOL ptr ) as string
-	dim as FBSYMBOL ptr ns = any
-	dim as string s
-
-	ns = symbGetNamespace( sym )
-	while( ns <> @symbGetGlobalNamespc( ) )
-		s = *symbGetName( ns ) + "." + s
-
-		if( symbGetHashtb( ns ) = NULL ) then
-			exit while
-		end if
-
-		ns = symbGetNamespace( ns )
-	wend
-
-	function = s
 end function
 
 function symbDump( byval sym as FBSYMBOL ptr ) as string
