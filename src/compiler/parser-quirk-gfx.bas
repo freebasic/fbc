@@ -111,11 +111,7 @@ private function hFbImageExpr _
 	) as ASTNODE ptr
 
 	dim as ASTNODE ptr expr = any
-	dim as integer oldisexpr = any, oldcheckarray = any
-
-	'' Help properties to choose getters instead of setters
-	oldisexpr = fbGetIsExpression( )
-	fbSetIsExpression( TRUE )
+	dim as integer oldcheckarray = any
 
 	'' Allow nidx arrays
 	oldcheckarray = fbGetCheckArray( )
@@ -124,7 +120,6 @@ private function hFbImageExpr _
 	expr = cExpression( )
 
 	fbSetCheckArray( oldcheckarray )
-	fbSetIsExpression( oldisexpr )
 
 	if( expr = NULL ) then
 		exit function
