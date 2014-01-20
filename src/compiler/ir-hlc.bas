@@ -373,6 +373,10 @@ private sub hWriteLine _
 
 end sub
 
+private sub hUpdateCurrentFileName( )
+	ctx.escapedinputfilename = hReplace( env.inf.name, "\", $"\\" )
+end sub
+
 private sub hWriteStaticAssert( byref expr as string )
 	dim as integer section = any
 
@@ -1132,8 +1136,6 @@ private sub hMaybeEmitProcExport( byval proc as FBSYMBOL ptr )
 end sub
 
 private function _emitBegin( ) as integer
-	ctx.escapedinputfilename = hReplace( env.inf.name, "\", $"\\" )
-
 	if( hFileExists( env.outf.name ) ) then
 		kill env.outf.name
 	end if
@@ -1147,6 +1149,7 @@ private function _emitBegin( ) as integer
 	ctx.sectiongosublevel = 0
 	ctx.linenum = 0
 	ctx.usedbuiltins = 0
+	hUpdateCurrentFileName( )
 
 	'' header
 	sectionBegin( )
@@ -1180,6 +1183,8 @@ end function
 
 private sub _emitEnd( byval tottime as double )
 	dim as integer section = any
+
+	hUpdateCurrentFileName( )
 
 	'' Switch to header section temporarily
 	section = sectionGosub( 0 )
@@ -1245,6 +1250,7 @@ private sub _emitEnd( byval tottime as double )
 
 	assert( listGetHead( @ctx.exprcache ) = NULL )
 	assert( listGetHead( @ctx.exprnodes ) = NULL )
+
 end sub
 
 '':::::
@@ -3261,6 +3267,7 @@ private sub _emitProcBegin _
 		byval initlabel as FBSYMBOL ptr _
 	)
 
+	hUpdateCurrentFileName( )
 	irhlEmitProcBegin( )
 
 	dim as string mangled
