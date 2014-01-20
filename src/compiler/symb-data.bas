@@ -421,7 +421,7 @@ function closestType _
 
 	'' prefer a type that's at least as large as dtype
 	dim as integer larger1 = (typeGetSize( dtype1 ) >= typeGetSize( dtype ))
-	dim as integer larger2 = (typeGetSize( dtype1 ) >= typeGetSize( dtype ))
+	dim as integer larger2 = (typeGetSize( dtype2 ) >= typeGetSize( dtype ))
 
 	if( larger1 and not larger2 ) then return dtype1
 	if( larger2 and not larger1 ) then return dtype2
