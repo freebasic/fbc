@@ -116,6 +116,7 @@ Version 0.91.0:
 - #715: GFX statements (Get, Put, Line, Circle, ...) are now more strict about their target/source image parameters. Arrays are still accepted as in QB, but besides that, the argument must be some pointer expression now, that is expected to point to an FB.IMAGE buffer of the proper size. Previously non-pointer expressions were accepted but could cause bad code to be generated or could be silently miscompiled.
 - #665: DRAW statement now accepts the same target image expressions as the rest of GFX statements (not just simple pointer variables or 'a.b' field accesses anymore)
 - #687: DRAW statement now remembers the subpixel position between commands.
+- #717: REDIM [PRESERVE] did not clear array elements with destructor but no constructor
 
 Version 0.90.1:
 
