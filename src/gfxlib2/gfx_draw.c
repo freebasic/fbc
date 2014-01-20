@@ -51,8 +51,8 @@ FBCALL void fb_GfxDraw(void *target, FBSTRING *command)
 	fb_hPrepareTarget(context, target);
 	fb_hSetPixelTransfer(context, MASK_A_32);
 
-	x = context->last_x + 0.5;
-	y = context->last_y + 0.5;
+	x = context->last_x;
+	y = context->last_y;
 
 	DRIVER_LOCK();
 
@@ -108,13 +108,10 @@ FBCALL void fb_GfxDraw(void *target, FBSTRING *command)
 				 * resides at location FB_NAN (0x80000000) */
 				if ((value1 = parse_number(&c)) == FB_NAN)
 					goto error;
-				context->last_x = x - 0.5;
-				context->last_y = y - 0.5;
+				
 				DRIVER_UNLOCK();
 				fb_GfxDraw(target, (FBSTRING *)value1);
 				DRIVER_LOCK();
-				x = context->last_x + 0.5;
-				y = context->last_y + 0.5;
 				break;
 
 			case 'P':
@@ -167,8 +164,8 @@ FBCALL void fb_GfxDraw(void *target, FBSTRING *command)
 					DRIVER_LOCK();
 				}
 				if (move) {
-					x = floor(x2) + 0.5;
-					y = floor(y2) + 0.5;
+					x = x2;
+					y = y2;
 				}
 				move = draw = TRUE;
 				break;
@@ -222,8 +219,8 @@ FBCALL void fb_GfxDraw(void *target, FBSTRING *command)
 				}
 			}
 			if (move) {
-				x = floor(dx) + 0.5;
-				y = floor(dy) + 0.5;
+				x = dx;
+				y = dy;
 			}
 			angle = 0.0;
 			scale = 1.0;
@@ -232,8 +229,8 @@ FBCALL void fb_GfxDraw(void *target, FBSTRING *command)
 		}
 	}
 
-	context->last_x = floor(x);
-	context->last_y = floor(y);
+	context->last_x = x;
+	context->last_y = y;
 
 error:
 	context->flags = flags;
