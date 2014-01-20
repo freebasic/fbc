@@ -97,6 +97,48 @@ sub testMangled cdecl( )
 	CU_ASSERT( global2(0) = 123 )
 end sub
 
+namespace dtorOnlyElementsAreCleared
+	type DtorUdt
+		i as integer
+		declare destructor( )
+	end type
+
+	destructor DtorUdt( )
+	end destructor
+
+	'' Any number, just large enough to hopefully not be all zero when
+	'' allocating this many DtorUdt's from heap
+	const ARRAY_SIZE = 1024
+
+	sub testRedim cdecl( )
+		'' new array
+		redim array(0 to ARRAY_SIZE-1) as DtorUdt
+		for i as integer = lbound( array ) to ubound( array )
+			CU_ASSERT( array(i).i = 0 )
+		next
+
+		'' increase size of existing array (at least remainder needs to be cleared)
+		redim array(0 to (ARRAY_SIZE*2)-1) as DtorUdt
+		for i as integer = lbound( array ) to ubound( array )
+			CU_ASSERT( array(i).i = 0 )
+		next
+	end sub
+
+	sub testRedimPreserve cdecl( )
+		'' new array
+		redim preserve array(0 to ARRAY_SIZE-1) as DtorUdt
+		for i as integer = lbound( array ) to ubound( array )
+			CU_ASSERT( array(i).i = 0 )
+		next
+
+		'' increase size of existing array (remainder needs to be cleared)
+		redim preserve array(0 to (ARRAY_SIZE*2)-1) as DtorUdt
+		for i as integer = lbound( array ) to ubound( array )
+			CU_ASSERT( array(i).i = 0 )
+		next
+	end sub
+end namespace
+
 private sub ctor( ) constructor
 	fbcu.add_suite("fbc_tests.dim.redim")
 	fbcu.add_test("test", @test)
@@ -104,6 +146,8 @@ private sub ctor( ) constructor
 	fbcu.add_test( "Common/Redim/Redim", @commonRedimRedim.test )
 	fbcu.add_test( "Common/Dim", @commonDim.test )
 	fbcu.add_test( "array + desc using non-default mangling", @testMangled )
+	fbcu.add_test( "dtorOnlyElementsAreCleared.testRedim", @dtorOnlyElementsAreCleared.testRedim )
+	fbcu.add_test( "dtorOnlyElementsAreCleared.testRedimPreserve", @dtorOnlyElementsAreCleared.testRedimPreserve )
 end sub
 
 end namespace

@@ -1069,13 +1069,13 @@ private sub hCallCtors( byval n as ASTNODE ptr, byval sym as FBSYMBOL ptr )
 
 	parent = symbGetNamespace( sym )
 
-	'' 1st) base ctor
+	'' 1. base ctor (will set vtable ptr according to base)
 	tree = hCallBaseCtor( parent, sym )
 
-	'' 2nd) field ctors
+	'' 2. fields (each field will be constructed, or initialized, or cleared unless =ANY was used on it)
 	tree = astNewLINK( tree, hCallFieldCtors( parent, sym ) )
 
-	'' 3rd) setup the vtable ptr
+	'' 3. vtable ptr (to point to this class's vtable instead of the base's)
 	tree = astNewLINK( tree, hInitVptr( parent, sym ) )
 
 	'' Find the first statement that is executable code,

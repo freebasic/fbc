@@ -52,27 +52,25 @@ int fb_hArrayRealloc
     if( array->ptr == NULL )
     	return fb_ErrorSetNum( FB_RTERROR_OUTOFMEM );
 
-	/* clear remainder */
-    if( size > array->size )
-    {
-    	this_ = ((const char*)array->ptr) + array->size;
-    	
-    	if( doclear )            	
-        	memset( (void *)this_, 0, size - array->size );
-        	
-        if( ctor != NULL )
-        {
+	/* Have remainder? */
+	if( size > array->size ) {
+		/* Construct or clear new array elements: */
+		/* Clearing is not needed if not requested, or if ctors will be called
+		   (ctors take care of clearing themselves) */
+		this_ = ((const char*)array->ptr) + array->size;
+		if( ctor ) {
 			size_t objects = (size - array->size) / element_len;
-			while( objects > 0 )
-			{
+			while( objects > 0 ) {
 				/* !!!FIXME!!! check exceptions (only if rewritten in C++) */
 				ctor( this_ );
 				
 				this_ += element_len;
 				--objects;
 			}
-        }
-    }
+		} else if( doclear ) {
+			memset( (void *)this_, 0, size - array->size );
+		}
+	}
 
     /* set descriptor */
     dim = &array->dimTB[0];

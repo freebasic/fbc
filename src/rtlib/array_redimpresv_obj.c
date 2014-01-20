@@ -17,17 +17,16 @@ int fb_ArrayRedimPresvObj
 
 	va_start( ap, dimensions );
 
-    /* new? */
-    if( array->ptr == NULL )
-    {
-    	res = fb_hArrayAlloc( array, element_len, FB_FALSE, ctor, dimensions, ap );
-    }	
-    /* realloc.. */
-    else
-	{	
+	/* Have to assume doclear=TRUE, because we have no doclear parameter here,
+	   and don't know what to do, so better be safe. */
+
+	/* new? */
+	if( array->ptr == NULL ) {
+		res = fb_hArrayAlloc( array, element_len, TRUE, ctor, dimensions, ap );
+	} else {
+		/* realloc.. */
 		FB_DTORMULT dtor_mult = (dtor != NULL? &fb_hArrayDtorObj : NULL );
-		
-		res = fb_hArrayRealloc( array, element_len, FB_FALSE, ctor, dtor_mult, dtor, dimensions, ap );
+		res = fb_hArrayRealloc( array, element_len, TRUE, ctor, dtor_mult, dtor, dimensions, ap );
 	}
 
     va_end( ap );

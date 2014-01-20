@@ -1575,7 +1575,7 @@ function cVarDecl _
 				'' Dynamic array? If the dimensions are known, redim it.
 				if( ((attrib and FB_SYMBATTRIB_DYNAMIC) <> 0) and (dimensions > 0) ) then
 					redimcall = rtlArrayRedim( sym, symbGetLen( sym ), dimensions, exprTB(), _
-								dopreserve, symbGetDontInit( sym ) = FALSE )
+								dopreserve, (not symbGetDontInit( sym )) )
 
 					'' If this is a local STATIC (not SHARED/COMMON) array declaration (and not
 					'' a typeless REDIM), then the redim call should be executed only once, not
