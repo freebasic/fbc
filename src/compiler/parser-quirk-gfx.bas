@@ -104,18 +104,12 @@ private function hTurnNIDXARRAYIntoArrayAccess( byval nidxarray as ASTNODE ptr )
     					  astGetFullType( varexpr ), astGetSubType( varexpr ) )
 end function
 
-private function hFbImageExpr _
+private function hCheckFbImageExpr _
 	( _
+		byval expr as ASTNODE ptr, _
 		byval allow_const as integer, _
 		byval pdescexpr as ASTNODE ptr ptr = NULL _
 	) as ASTNODE ptr
-
-	dim as ASTNODE ptr expr = any
-
-	expr = cExpressionWithNIDXARRAY( TRUE )
-	if( expr = NULL ) then
-		exit function
-	end if
 
 	'' remove any casting if they won't do any conversion
 	if( astIsCAST( expr ) ) then
@@ -210,6 +204,22 @@ private function hFbImageExpr _
 	end if
 
 	function = expr
+end function
+
+private function hFbImageExpr _
+	( _
+		byval allow_const as integer, _
+		byval pdescexpr as ASTNODE ptr ptr = NULL _
+	) as ASTNODE ptr
+
+	dim as ASTNODE ptr expr = any
+
+	expr = cExpressionWithNIDXARRAY( TRUE )
+	if( expr = NULL ) then
+		exit function
+	end if
+
+	function = hCheckFbImageExpr( expr, allow_const, pdescexpr )
 end function
 
 '' [Expr ','] '('
@@ -696,11 +706,26 @@ function cGfxDrawString as integer
 	                             flags, mode, alphaexpr, funcexpr, paramexpr )
 end function
 
-'':::::
-'' GfxDraw    =   DRAW ( Expr ',' )? Expr
+''
+'' GfxDraw    =    DRAW [Expression1 ','] Expression2
+''
+'' Expression1 = target FB.IMAGE expression, can be NIDXARRAY
+'' Expression2 = string expression (no NIDXARRAYs allowed)
+''
+'' This is difficult to parse because it's difficult to detect whether we're
+'' given two expressions or just one expression. Specifically because the 1st
+'' expression has slightly different rules (allows NIDXARRAY) than the 2nd,
+'' but only if there are 2 expressions. We'd need infinite look-ahead to check
+'' for the ',' separating the 2 expressions...
+''
+'' Luckily allowing NIDXARRAY is the only difference, and it's a rather tiny
+'' difference. We can always parse the 1st expression allowing NIDXARRAY.
+'' Then if there's a 2nd one, parse that as normal expression, and all is well.
+'' Otherwise if there's no 2nd one, the 1st expression wasn't allowed to have
+'' NIDXARRAY, and we can check it with astIsNIDXARRAY().
 ''
 function cGfxDraw as integer
-	dim as ASTNODE ptr cexpr, texpr
+	dim as ASTNODE ptr expr1, expr2
 
 	function = FALSE
 
@@ -709,21 +734,31 @@ function cGfxDraw as integer
 		return cGfxDrawString( )
 	end if
 
-	select case lexGetLookAhead( 1 )
-        '' dot handling needed because of the
-        '' "period in symbol" ambiguity -cha0s
-        case CHAR_COMMA, CHAR_DOT
-		texpr = hFbImageExpr( FALSE )
-		if( texpr = NULL ) then
-			errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
+	'' Parse 1st expression, allowing NIDXARRAYs
+	expr1 = cExpressionWithNIDXARRAY( TRUE )
+	if( expr1 = NULL ) then
+		errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
+		exit function
+	end if
+
+	'' ','? (have 2nd expression?)
+	if( hMatch( CHAR_COMMA ) ) then
+		'' 1st was the target image expression, process it as such
+		expr1 = hCheckFbImageExpr( expr1, FALSE )
+
+		'' Parse 2nd expression normally
+		hMatchExpression( expr2 )
+	else
+		'' 1st was the string expression, disallow NIDXARRAYs
+		if( astIsNIDXARRAY( expr1 ) ) then
+			errReport( FB_ERRMSG_EXPECTEDINDEX, TRUE )
 			exit function
 		end if
-		hMatch( CHAR_COMMA )
-	end select
+		expr2 = expr1
+		expr1 = NULL
+	end if
 
-	hMatchExpression( cexpr )
-
-	function = rtlGfxDraw( texpr, cexpr )
+	function = rtlGfxDraw( expr1, expr2 )
 end function
 
 '':::::

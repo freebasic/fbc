@@ -649,6 +649,7 @@ private sub hTestProperty( )
 	CU_ASSERT( hScreenIsFilledWithColor( rgb(0,255,0) ) )
 	put (0, 0), x.image, pset
 	CU_ASSERT( hScreenIsFilledWithColor( rgb(255,0,0) ) )
+	line (0, 0) - (SCREEN_W-1, SCREEN_H-1), rgb(0,255,0), bf
 
 	CU_ASSERT( x.sets = 0 )
 	CU_ASSERT( x.gets = 2 )
@@ -780,6 +781,87 @@ namespace castOverloadAnyPtrInteger
 	end sub
 end namespace
 
+private sub hTestDrawSyntax( )
+	scope
+		CU_ASSERT( hScreenIsFilledWithColor( rgb(0,255,0) ) )
+		draw "BM 0,0 P " & rgb(0,0,255) & "," & rgb(255,255,255)
+		CU_ASSERT( hScreenIsFilledWithColor( rgb(0,0,255) ) )
+		line (0, 0) - (SCREEN_W-1, SCREEN_H-1), rgb(0,255,0), bf
+	end scope
+
+	scope
+		var s = "BM 0,0 P " & rgb(0,0,255) & "," & rgb(255,255,255)
+		CU_ASSERT( hScreenIsFilledWithColor( rgb(0,255,0) ) )
+		draw s
+		CU_ASSERT( hScreenIsFilledWithColor( rgb(0,0,255) ) )
+		line (0, 0) - (SCREEN_W-1, SCREEN_H-1), rgb(0,255,0), bf
+	end scope
+
+	scope
+		dim s(0 to 0) as string = { "BM 0,0 P " & rgb(0,0,255) & "," & rgb(255,255,255) }
+		CU_ASSERT( hScreenIsFilledWithColor( rgb(0,255,0) ) )
+		draw s(0)
+		CU_ASSERT( hScreenIsFilledWithColor( rgb(0,0,255) ) )
+		line (0, 0) - (SCREEN_W-1, SCREEN_H-1), rgb(0,255,0), bf
+	end scope
+
+	scope
+		type UDT
+			p as any ptr
+		end type
+		dim x as UDT
+		var px = @x
+		var p = imagecreate( SCREEN_W, SCREEN_H, rgb(255,0,0) )
+		x.p = p
+		dim array(0 to 0) as any ptr = { p }
+
+		CU_ASSERT( hImageIsFilledWithColor( p, rgb(255,0,0) ) )
+		draw p, "BM 0,0 P " & rgb(0,255,0) & "," & rgb(255,255,255)
+		CU_ASSERT( hImageIsFilledWithColor( p, rgb(0,255,0) ) )
+		line p, (0, 0) - (SCREEN_W-1, SCREEN_H-1), rgb(255,0,0), bf
+
+		CU_ASSERT( hImageIsFilledWithColor( p, rgb(255,0,0) ) )
+		draw x.p, "BM 0,0 P " & rgb(0,255,0) & "," & rgb(255,255,255)
+		CU_ASSERT( hImageIsFilledWithColor( p, rgb(0,255,0) ) )
+		line p, (0, 0) - (SCREEN_W-1, SCREEN_H-1), rgb(255,0,0), bf
+
+		CU_ASSERT( hImageIsFilledWithColor( p, rgb(255,0,0) ) )
+		draw px->p, "BM 0,0 P " & rgb(0,255,0) & "," & rgb(255,255,255)
+		CU_ASSERT( hImageIsFilledWithColor( p, rgb(0,255,0) ) )
+		line p, (0, 0) - (SCREEN_W-1, SCREEN_H-1), rgb(255,0,0), bf
+
+		imagedestroy( p )
+	end scope
+
+	scope
+		dim array(0 to IMAGE_BUFFER_SIZE-1) as ubyte
+		scope
+			var a = imagecreate( SCREEN_W, SCREEN_H, rgb(255,0,0) )
+			memcpy( @array(0), a, IMAGE_BUFFER_SIZE )
+			imagedestroy( a )
+		end scope
+		CU_ASSERT( hImageIsFilledWithColor( @array(0), rgb(255,0,0) ) )
+
+		'' NIDXARRAY
+		CU_ASSERT( hImageIsFilledWithColor( @array(0), rgb(255,0,0) ) )
+		draw array, "BM 0,0 P " & rgb(0,255,0) & "," & rgb(255,255,255)
+		CU_ASSERT( hImageIsFilledWithColor( @array(0), rgb(0,255,0) ) )
+		line array, (0, 0) - (SCREEN_W-1, SCREEN_H-1), rgb(255,0,0), bf
+
+		'' array(0)
+		CU_ASSERT( hImageIsFilledWithColor( @array(0), rgb(255,0,0) ) )
+		draw array(0), "BM 0,0 P " & rgb(0,255,0) & "," & rgb(255,255,255)
+		CU_ASSERT( hImageIsFilledWithColor( @array(0), rgb(0,255,0) ) )
+		line array, (0, 0) - (SCREEN_W-1, SCREEN_H-1), rgb(255,0,0), bf
+
+		'' @array(0)
+		CU_ASSERT( hImageIsFilledWithColor( @array(0), rgb(255,0,0) ) )
+		draw @array(0), "BM 0,0 P " & rgb(0,255,0) & "," & rgb(255,255,255)
+		CU_ASSERT( hImageIsFilledWithColor( @array(0), rgb(0,255,0) ) )
+		line array, (0, 0) - (SCREEN_W-1, SCREEN_H-1), rgb(255,0,0), bf
+	end scope
+end sub
+
 private sub test cdecl( )
 	CU_ASSERT( screenres( SCREEN_W, SCREEN_H, 32, , fb.GFX_NULL ) = 0 )
 
@@ -800,6 +882,7 @@ private sub test cdecl( )
 	castOverloadFbImagePtr.hTest( )
 	castOverloadAnyPtrFbImagePtr.hTest( )
 	castOverloadAnyPtrInteger.hTest( )
+	hTestDrawSyntax( )
 end sub
 
 private sub ctor( ) constructor
