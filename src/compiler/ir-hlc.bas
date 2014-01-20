@@ -373,8 +373,8 @@ private sub hWriteLine _
 
 end sub
 
-private sub hUpdateCurrentFileName( )
-	ctx.escapedinputfilename = hReplace( env.inf.name, "\", $"\\" )
+private sub hUpdateCurrentFileName( byval filename as zstring ptr )
+	ctx.escapedinputfilename = hReplace( filename, "\", $"\\" )
 end sub
 
 private sub hWriteStaticAssert( byref expr as string )
@@ -1149,7 +1149,7 @@ private function _emitBegin( ) as integer
 	ctx.sectiongosublevel = 0
 	ctx.linenum = 0
 	ctx.usedbuiltins = 0
-	hUpdateCurrentFileName( )
+	hUpdateCurrentFileName( env.inf.name )
 
 	'' header
 	sectionBegin( )
@@ -1184,7 +1184,7 @@ end function
 private sub _emitEnd( byval tottime as double )
 	dim as integer section = any
 
-	hUpdateCurrentFileName( )
+	hUpdateCurrentFileName( env.inf.name )
 
 	'' Switch to header section temporarily
 	section = sectionGosub( 0 )
@@ -3267,7 +3267,14 @@ private sub _emitProcBegin _
 		byval initlabel as FBSYMBOL ptr _
 	)
 
-	hUpdateCurrentFileName( )
+	dim as zstring ptr incfile = any
+
+	incfile = symbGetProcIncFile( proc )
+	if( incfile = NULL ) then
+		incfile = @env.inf.name
+	end if
+	hUpdateCurrentFileName( incfile )
+
 	irhlEmitProcBegin( )
 
 	dim as string mangled
