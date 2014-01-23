@@ -623,18 +623,18 @@ function cMemberDeref _
 			end select
 
 			'' times length
-			lgt = symbCalcLen( typeDeref( dtype ), subtype )
+			dtype = typeDeref( dtype )
+			lgt = symbCalcLen( dtype, subtype )
 
 			if( lgt = 0 ) then
 				errReport( FB_ERRMSG_INCOMPLETETYPE, TRUE )
 				'' error recovery: fake a type
-				dtype = typeAddrOf( FB_DATATYPE_BYTE )
+				dtype = FB_DATATYPE_BYTE
 				subtype = NULL
 				lgt = 1
 			end if
 
 			idxexpr = astNewBOP( AST_OP_MUL, idxexpr, astNewCONSTi( lgt ) )
-			dtype = typeDeref( dtype )
 
 			'' '.'?
 			is_field = (lexGetToken( ) = CHAR_DOT)
