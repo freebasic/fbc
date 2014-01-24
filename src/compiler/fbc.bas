@@ -218,7 +218,7 @@ private sub fbcEnd( byval errnum as integer )
 	if( errnum = 0 ) then
 		select case( fbc.print )
 		case PRINT_HOST
-			print FB_HOST
+			print FB_HOST_TARGETID
 		case PRINT_TARGET
 			print *fbGetTargetId( )
 		case PRINT_X
@@ -1559,7 +1559,7 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 
 		'' Ignore it if it matches the host id; this adds backwards-
 		'' compatibility with fbc 0.23
-		if( os <> FB_HOST ) then
+		if( os <> FB_HOST_TARGETID ) then
 			#ifndef ENABLE_STANDALONE
 				'' Handle i686-pc-mingw32 triplets
 				dim as string arch
@@ -3107,7 +3107,7 @@ private sub hPrintVersion( )
 	dim as string config
 
 	print "FreeBASIC Compiler - Version " + FB_VERSION + _
-		" (" + FB_BUILD_DATE + ") for " + FB_HOST
+		" (" + FB_BUILD_DATE + "), built for " + FB_HOST_ARCHPREFIX + FB_HOST_TARGETID + " (" + str( FB_HOST_BITS ) + "bit)"
 	print "Copyright (C) 2004-2014 The FreeBASIC development team."
 
 	#ifdef ENABLE_STANDALONE

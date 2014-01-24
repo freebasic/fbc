@@ -285,42 +285,42 @@ enum FB_LANG_OPT
 end enum
 
 #if defined(__FB_WIN32__)
-const FB_HOST               = "win32"
+const FB_HOST_TARGETID      = "win32"
 const FB_HOST_EXEEXT        = ".exe"
 const FB_HOST_PATHDIV       = RSLASH
 const FB_DEFAULT_TARGET     = FB_COMPTARGET_WIN32
 #elseif defined(__FB_CYGWIN__)
-const FB_HOST               = "cygwin"
+const FB_HOST_TARGETID      = "cygwin"
 const FB_HOST_EXEEXT        = ".exe"
 const FB_HOST_PATHDIV       = "/"
 const FB_DEFAULT_TARGET     = FB_COMPTARGET_CYGWIN
 #elseif defined(__FB_LINUX__)
-const FB_HOST               = "linux"
+const FB_HOST_TARGETID      = "linux"
 const FB_HOST_EXEEXT        = ""
 const FB_HOST_PATHDIV       = "/"
 const FB_DEFAULT_TARGET     = FB_COMPTARGET_LINUX
 #elseif defined(__FB_DOS__)
-const FB_HOST               = "dos"
+const FB_HOST_TARGETID      = "dos"
 const FB_HOST_EXEEXT        = ".exe"
 const FB_HOST_PATHDIV       = RSLASH
 const FB_DEFAULT_TARGET     = FB_COMPTARGET_DOS
 #elseif defined(__FB_FREEBSD__)
-const FB_HOST               = "freebsd"
+const FB_HOST_TARGETID      = "freebsd"
 const FB_HOST_EXEEXT        = ""
 const FB_HOST_PATHDIV       = "/"
 const FB_DEFAULT_TARGET     = FB_COMPTARGET_FREEBSD
 #elseif defined(__FB_OPENBSD__)
-const FB_HOST               = "openbsd"
+const FB_HOST_TARGETID      = "openbsd"
 const FB_HOST_EXEEXT        = ""
 const FB_HOST_PATHDIV       = "/"
 const FB_DEFAULT_TARGET     = FB_COMPTARGET_OPENBSD
 #elseif defined(__FB_DARWIN__)
-const FB_HOST               = "darwin"
+const FB_HOST_TARGETID      = "darwin"
 const FB_HOST_EXEEXT        = ""
 const FB_HOST_PATHDIV       = "/"
 const FB_DEFAULT_TARGET     = FB_COMPTARGET_DARWIN
 #elseif defined(__FB_NETBSD__)
-const FB_HOST               = "netbsd"
+const FB_HOST_TARGETID      = "netbsd"
 const FB_HOST_EXEEXT        = ""
 const FB_HOST_PATHDIV       = "/"
 const FB_DEFAULT_TARGET     = FB_COMPTARGET_NETBSD
@@ -331,9 +331,13 @@ const FB_DEFAULT_TARGET     = FB_COMPTARGET_NETBSD
 #ifdef __FB_64BIT__
 	const FB_DEFAULT_CPUTYPE = FB_CPUTYPE_X86_64
 	const FB_DEFAULT_BACKEND = FB_BACKEND_GCC
+	const FB_HOST_ARCHPREFIX = "x86_64-"
+	const FB_HOST_BITS = 64
 #else
 	const FB_DEFAULT_CPUTYPE = FB_CPUTYPE_486
 	const FB_DEFAULT_BACKEND = FB_BACKEND_GAS
+	const FB_HOST_ARCHPREFIX = ""
+	const FB_HOST_BITS = 32
 #endif
 
 const FB_DEFAULT_CPUTYPE32 = FB_CPUTYPE_486
