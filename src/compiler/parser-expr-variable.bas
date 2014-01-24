@@ -495,6 +495,16 @@ private function hStrIndexing _
 
 end function
 
+'' '*'*
+private function hMultiDeref( ) as integer
+	dim as integer derefs
+	while( lexGetToken( ) = FB_TK_DEREFCHAR )
+		lexSkipToken( LEXCHECK_NOPERIOD )
+		derefs += 1
+	wend
+	function = derefs
+end function
+
 '':::::
 ''MemberDeref	=   (('->' DREF* | '[' Expression ']' '.'?) UdtMember)* .
 ''
@@ -506,7 +516,7 @@ function cMemberDeref _
 		byval check_array as integer _
 	) as ASTNODE ptr
 
-	dim as integer derefcnt = any, is_field = any
+	dim as integer derefcnt = any
 	dim as longint lgt = any
 	dim as ASTNODE ptr idxexpr = any
 
@@ -514,63 +524,98 @@ function cMemberDeref _
 
 	do
 		idxexpr = NULL
-		derefcnt = 0
 
-        select case lexGetToken( )
-        '' ('->' DREF* UdtMember)*
-        case FB_TK_FIELDDEREF
-        	is_field = TRUE
+		select case( lexGetToken( ) )
+		'' ('->' DREF* UdtMember)*
+		case FB_TK_FIELDDEREF
+			derefcnt = 0
 
-			dim as integer is_ovl = FALSE
-			if( typeIsPtr( dtype ) = FALSE ) then
+			if( typeIsPtr( dtype ) ) then
+				'' '->'
+				lexSkipToken( LEXCHECK_NOPERIOD )
+				dtype = typeDeref( dtype )
+
+				select case( typeGetDtAndPtrOnly( dtype ) )
+				'' incomplete type?
+				case FB_DATATYPE_VOID, FB_DATATYPE_FWDREF
+					errReport( FB_ERRMSG_INCOMPLETETYPE, TRUE )
+					dtype = FB_DATATYPE_INTEGER
+					subtype = NULL
+
+				case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
+
+				case else
+					errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE )
+					dtype = FB_DATATYPE_INTEGER
+					subtype = NULL
+				end select
+
+				if( env.clopt.extraerrchk ) then
+					varexpr = astBuildPTRCHK( varexpr )
+				end if
+
+				'' DREF*
+				derefcnt += hMultiDeref( )
+
+				'' UdtMember
+				varexpr = cUdtMember( dtype, subtype, varexpr, check_array )
+			else
 				'' check op overloading
-    			if( symb.globOpOvlTb(AST_OP_FLDDEREF).head = NULL ) then
+				if( symb.globOpOvlTb(AST_OP_FLDDEREF).head = NULL ) then
 					errReport( FB_ERRMSG_EXPECTEDPOINTER, TRUE )
 					exit do
 				end if
 
-    			dim as FBSYMBOL ptr proc = any
-    			dim as FB_ERRMSG err_num = any
+				dim as FBSYMBOL ptr proc = any
+				dim as FB_ERRMSG err_num = any
 
 				proc = symbFindUopOvlProc( AST_OP_FLDDEREF, varexpr, @err_num )
-				if( proc <> NULL ) then
-    				'' build a proc call
-					varexpr = astBuildCall( proc, varexpr )
-					if( varexpr = NULL ) then
-						exit function
-					end if
-
-    				lexSkipToken( LEXCHECK_NOPERIOD )
-
-    				varexpr = cMemberAccess( astGetFullType( varexpr ), _
-    										 astGetSubType( varexpr ), _
-    										 varexpr )
-					if( varexpr = NULL ) then
-						exit function
-					end if
-
-    				dtype = astGetFullType( varexpr )
-    				subtype = astGetSubType( varexpr )
-    				is_ovl = TRUE
-
-				else
+				if( proc = NULL ) then
 					errReport( FB_ERRMSG_EXPECTEDPOINTER, TRUE )
 					exit do
 				end if
 
-			else
-       			lexSkipToken( LEXCHECK_NOPERIOD )
-				dtype = typeDeref( dtype )
+				'' build a proc call
+				varexpr = astBuildCall( proc, varexpr )
+				if( varexpr = NULL ) then
+					exit function
+				end if
+
+				'' '->'
+				lexSkipToken( LEXCHECK_NOPERIOD )
+
+				'' DREF*
+				derefcnt += hMultiDeref( )
+
+				'' MemberAccess
+				varexpr = cMemberAccess( astGetFullType( varexpr ), _
+						astGetSubType( varexpr ), varexpr )
 			end if
 
-       		'' DREF*
-			do while( lexGetToken( ) = FB_TK_DEREFCHAR )
-				lexSkipToken( LEXCHECK_NOPERIOD )
-				derefcnt += 1
-			loop
+			if( varexpr = NULL ) then
+				exit function
+			end if
 
-			if( is_ovl ) then
-				goto check_deref
+			'' non-indexed array?
+			if( astIsNIDXARRAY( varexpr ) ) then
+				if( derefcnt > 0 ) then
+					errReport( FB_ERRMSG_EXPECTEDPOINTER, TRUE )
+				end if
+
+				exit do
+			end if
+
+			dtype = astGetFullType( varexpr )
+			subtype = astGetSubType( varexpr )
+
+			if( derefcnt > 0 ) then
+				varexpr = astBuildMultiDeref( derefcnt, varexpr, dtype, subtype )
+				if( varexpr = NULL ) then
+					exit function
+				end if
+
+				dtype = astGetFullType( varexpr )
+				subtype = astGetSubType( varexpr )
 			end if
 
 		'' '['
@@ -589,17 +634,18 @@ function cMemberDeref _
 				lexSkipToken( )
 			end if
 
-
-			'' string, fixstr, w|zstring?
 			select case( typeGetDtAndPtrOnly( dtype ) )
+			'' string, fixstr, w|zstring? In that case '[]' means string indexing, not MemberDeref.
 			case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, _
 				 FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
-				idxexpr = hCheckIntegerIndex( idxexpr )
-				varexpr = hStrIndexing( dtype, varexpr, idxexpr )
-				exit do
+				varexpr = hStrIndexing( dtype, varexpr, hCheckIntegerIndex( idxexpr ) )
+				idxexpr = NULL
 
+				dtype = astGetFullType( varexpr )
+				subtype = astGetSubType( varexpr )
+
+			'' [] overloaded for UDT?
 			case FB_DATATYPE_STRUCT
-				'' [] overloaded for UDT?
 				dim as FB_ERRMSG err_num = any
 				var proc = symbFindSelfBopOvlProc( AST_OP_PTRINDEX, varexpr, idxexpr, @err_num )
 				if( proc ) then
@@ -610,108 +656,92 @@ function cMemberDeref _
 					end if
 				end if
 
-				exit do
+				'' '.'?
+				if( lexGetToken( ) = CHAR_DOT ) then
+					lexSkipToken( LEXCHECK_NOPERIOD )
+
+					'' MemberAccess
+					varexpr = cMemberAccess( astGetFullType( varexpr ), _
+							astGetSubType( varexpr ), varexpr )
+					if( varexpr = NULL ) then
+						exit function
+					end if
+
+					'' non-indexed array?
+					if( astIsNIDXARRAY( varexpr ) ) then
+						exit do
+					end if
+				end if
+
+				dtype = astGetFullType( varexpr )
+				subtype = astGetSubType( varexpr )
 
 			case else
-				if( typeIsPtr( dtype ) = FALSE ) then
-					errReport( FB_ERRMSG_EXPECTEDPOINTER, TRUE )
-					exit do
+				select case( typeGetDtAndPtrOnly( dtype ) )
+				'' Incomplete type? (nicer error message)
+				case FB_DATATYPE_VOID, FB_DATATYPE_FWDREF
+					errReport( FB_ERRMSG_INCOMPLETETYPE, TRUE )
+					dtype = typeAddrOf( FB_DATATYPE_INTEGER )
+					subtype = NULL
+
+				case else
+					if( typeIsPtr( dtype ) = FALSE ) then
+						errReport( FB_ERRMSG_EXPECTEDPOINTER, TRUE )
+						dtype = typeAddrOf( FB_DATATYPE_INTEGER )
+						subtype = NULL
+					end if
+				end select
+
+				'' Determine sizeof(...)
+				dtype = typeDeref( dtype )
+				lgt = symbCalcLen( dtype, subtype )
+				if( lgt = 0 ) then
+					errReport( FB_ERRMSG_INCOMPLETETYPE, TRUE )
+					dtype = FB_DATATYPE_INTEGER
+					subtype = NULL
+					lgt = typeGetSize( FB_DATATYPE_INTEGER )
 				end if
 
-				'' If [] isn't overloaded, then the index must be an INTEGER
+				'' For the normal ptr[index] operation, the index must be an INTEGER
 				idxexpr = hCheckIntegerIndex( idxexpr )
+
+				'' null pointer checking
+				if( env.clopt.extraerrchk ) then
+					varexpr = astBuildPTRCHK( varexpr )
+				end if
+
+				'' ptr[index] = ptr + (index * sizeof( typeof( *ptr ) ))
+				varexpr = astNewBOP( AST_OP_ADD, varexpr, _
+					astNewBOP( AST_OP_MUL, idxexpr, astNewCONSTi( lgt ) ) )
+
+				'' '.'?
+				if( lexGetToken( ) = CHAR_DOT ) then
+					lexSkipToken( LEXCHECK_NOPERIOD )
+
+					varexpr = cUdtMember( dtype, subtype, varexpr, check_array )
+					if( varexpr = NULL ) then
+						exit function
+					end if
+
+					'' non-indexed array?
+					if( astIsNIDXARRAY( varexpr ) ) then
+						exit do
+					end if
+
+					dtype = astGetFullType( varexpr )
+					subtype = astGetSubType( varexpr )
+				else
+					varexpr = astNewDEREF( varexpr, dtype, subtype )
+				end if
 			end select
 
-			'' times length
-			dtype = typeDeref( dtype )
-			lgt = symbCalcLen( dtype, subtype )
-
-			if( lgt = 0 ) then
-				errReport( FB_ERRMSG_INCOMPLETETYPE, TRUE )
-				'' error recovery: fake a type
-				dtype = FB_DATATYPE_BYTE
-				subtype = NULL
-				lgt = 1
-			end if
-
-			idxexpr = astNewBOP( AST_OP_MUL, idxexpr, astNewCONSTi( lgt ) )
-
-			'' '.'?
-			is_field = (lexGetToken( ) = CHAR_DOT)
-			if( is_field ) then
-				lexSkipToken( LEXCHECK_NOPERIOD )
-			end if
-
-		'' exit..
+		'' Only processing -> and [] here...
 		case else
 			exit do
-
 		end select
-
-		select case as const typeGet( dtype )
-		'' incomplete type?
-		case FB_DATATYPE_VOID, FB_DATATYPE_FWDREF
-			errReport( FB_ERRMSG_INCOMPLETETYPE, TRUE )
-			'' error recovery: fake a type
-			dtype = typeAddrOf( FB_DATATYPE_BYTE )
-			subtype = NULL
-
-		case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-
-		case else
-			if( is_field ) then
-				errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE )
-				exit do
-			end if
-
-		end select
-
-		'' null pointer checking
-		if( env.clopt.extraerrchk ) then
-			varexpr = astBuildPTRCHK( varexpr )
-		end if
-
-		''
-		if( idxexpr <> NULL ) then
-			varexpr = astNewBOP( AST_OP_ADD, varexpr, idxexpr )
-		end if
-
-		if( is_field ) then
-			varexpr = cUdtMember( dtype, subtype, varexpr, check_array )
-			if( varexpr = NULL ) then
-				exit function
-			end if
-
-			'' non-indexed array?
-			if( astIsNIDXARRAY( varexpr ) ) then
-				if( derefcnt > 0 ) then
-					errReport( FB_ERRMSG_EXPECTEDPOINTER, TRUE )
-				end if
-
-				exit do
-			end if
-
-    		dtype = astGetFullType( varexpr )
-    		subtype = astGetSubType( varexpr )
-
-		else
-			varexpr = astNewDEREF( varexpr, dtype, subtype )
-		end if
-
-check_deref:
-		if( derefcnt > 0 ) then
-			varexpr = astBuildMultiDeref( derefcnt, varexpr, dtype, subtype )
-			if( varexpr = NULL ) then
-				exit function
-			end if
-
-    		dtype = astGetFullType( varexpr )
-    		subtype = astGetSubType( varexpr )
-		end if
 	loop
 
 	function = varexpr
-
 end function
 
 '':::::

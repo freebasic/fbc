@@ -117,6 +117,9 @@ Version 0.91.0:
 - #665: DRAW statement now accepts the same target image expressions as the rest of GFX statements (not just simple pointer variables or 'a.b' field accesses anymore)
 - #687: DRAW statement now remembers the subpixel position between commands.
 - #717: REDIM [PRESERVE] did not clear array elements with destructor but no constructor
+- x->*field syntax wasn't working if operator -> was overloaded
+- x[a][b] syntax wasn't working if operator [] was overloaded
+- x[a].field syntax wasn't working if operator [] was overloaded
 
 Version 0.90.1:
 

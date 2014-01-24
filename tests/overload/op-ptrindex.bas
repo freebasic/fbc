@@ -95,12 +95,56 @@ namespace stringResult
 	end sub
 end namespace
 
+namespace multiPtrIndexSyntax
+	type UDT
+		i as integer
+		declare operator [](byval i as integer) as integer ptr
+	end type
+
+	operator UDT.[](byval i as integer) as integer ptr
+		this.i += i
+		operator = @this.i
+	end operator
+
+	sub test cdecl( )
+		dim x as UDT
+		x.i = 100
+		CU_ASSERT( x[1] = @x.i )
+		CU_ASSERT( x.i = 101 )
+		CU_ASSERT( x[1][0] = 102 )
+		CU_ASSERT( x.i = 102 )
+	end sub
+end namespace
+
+namespace ptrIndexFollowedByFieldSyntax
+	type UDT
+		i as integer
+		declare operator [](byval i as integer) byref as UDT
+	end type
+
+	operator UDT.[](byval i as integer) byref as UDT
+		this.i += i
+		operator = this
+	end operator
+
+	sub test cdecl( )
+		dim x as UDT
+		x.i = 100
+		CU_ASSERT( @x[1] = @x )
+		CU_ASSERT( x.i = 101 )
+		CU_ASSERT( x[1].i = 102 )
+		CU_ASSERT( x.i = 102 )
+	end sub
+end namespace
+
 private sub ctor( ) constructor
 	fbcu.add_suite( "tests/overload/op-ptrindex" )
 	fbcu.add_test( "simple", @simple.test )
 	fbcu.add_test( "returning BYREF", @byrefResult.test )
 	fbcu.add_test( "multiple overloads", @multipleOverloads.test )
 	fbcu.add_test( "returning strings", @stringResult.test )
+	fbcu.add_test( "multiPtrIndexSyntax", @multiPtrIndexSyntax.test )
+	fbcu.add_test( "ptrIndexFollowedByFieldSyntax", @ptrIndexFollowedByFieldSyntax.test )
 end sub
 
 end namespace
