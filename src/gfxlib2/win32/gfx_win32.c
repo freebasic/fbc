@@ -753,7 +753,7 @@ void fb_hScreenInfo(ssize_t *width, ssize_t *height, ssize_t *depth, ssize_t *re
 {
 	DEVMODE cur;
 
-	EnumDisplaySettings(NULL,-1,&cur);
+	EnumDisplaySettings(NULL,ENUM_CURRENT_SETTINGS,&cur);
 	*width = cur.dmPelsWidth;
 	*height = cur.dmPelsHeight;
 	*depth = cur.dmBitsPerPel;
