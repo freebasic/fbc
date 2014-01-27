@@ -462,6 +462,23 @@ private function hGetMangledNameForASM _
 	function = mangled
 end function
 
+private function hNeedStdcallMsHack( byval proc as FBSYMBOL ptr ) as integer
+	'' Only x86, because elsewhere gcc won't use @N suffixes anyways
+	if( fbCpuTypeIsX86( ) ) then
+		'' Only stdcallms/pascal which must be emitted as stdcall with
+		'' the hack to avoid the @N suffix
+		select case( symbGetProcMode( proc ) )
+		case FB_FUNCMODE_STDCALL_MS, FB_FUNCMODE_PASCAL
+			'' Only on systems where gcc would use the @N suffix
+			select case( env.clopt.target )
+			case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN, _
+			     FB_COMPTARGET_XBOX
+				function = TRUE
+			end select
+		end select
+	end if
+end function
+
 private function hEmitProcHeader _
 	( _
 		byval proc as FBSYMBOL ptr, _
@@ -567,10 +584,9 @@ private function hEmitProcHeader _
 		'' Add an extra <asm("mangledname")> to prevent gcc
 		'' from adding the stdcall @N suffix. asm() can only
 		'' be used on prototypes.
-		select case( symbGetProcMode( proc ) )
-		case FB_FUNCMODE_STDCALL_MS, FB_FUNCMODE_PASCAL
+		if( hNeedStdcallMsHack( proc ) ) then
 			ln += " asm(""" + hGetMangledNameForASM( proc, TRUE ) + """)"
-		end select
+		end if
 
 		'' ctor/dtor flags on prototypes
 		hAppendCtorAttrib( ln, proc, FALSE )
@@ -3303,10 +3319,9 @@ private sub _emitProcBegin _
 	'' add the @N suffix for stdcall  procedures, emit an extra prototype
 	'' right above the procedure body, because asm() is only allowed on
 	'' prototypes.
-	select case( symbGetProcMode( proc ) )
-	case FB_FUNCMODE_STDCALL_MS, FB_FUNCMODE_PASCAL
+	if( hNeedStdcallMsHack( proc ) ) then
 		hWriteLine( hEmitProcHeader( proc, EMITPROC_ISPROTO ) + ";" )
-	end select
+	end if
 
 	hWriteLine( hEmitProcHeader( proc, 0 ) )
 
