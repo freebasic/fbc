@@ -751,14 +751,14 @@ int fb_hWin32SetWindowPos(int x, int y)
 
 void fb_hScreenInfo(ssize_t *width, ssize_t *height, ssize_t *depth, ssize_t *refresh)
 {
-	HDC hdc;
+	DEVMODE cur;
 
-	hdc = GetDC(NULL);
-	*width = GetDeviceCaps(hdc, HORZRES);
-	*height = GetDeviceCaps(hdc, VERTRES);
-	*depth = GetDeviceCaps(hdc, BITSPIXEL);
-	*refresh = GetDeviceCaps(hdc, VREFRESH);
-	ReleaseDC(NULL, hdc);
+	EnumDisplaySettings(NULL,-1,&cur);
+	*width = cur.dmPelsWidth;
+	*height = cur.dmPelsHeight;
+	*depth = cur.dmBitsPerPel;
+	*refresh = cur.dmDisplayFrequency;
+	
 }
 
 ssize_t fb_hGetWindowHandle(void)
