@@ -3305,7 +3305,7 @@ private sub _emitProcBegin _
 	'' prototypes.
 	select case( symbGetProcMode( proc ) )
 	case FB_FUNCMODE_STDCALL_MS, FB_FUNCMODE_PASCAL
-		hWriteLine( hEmitProcHeader( proc, EMITPROC_ISPROTO ) )
+		hWriteLine( hEmitProcHeader( proc, EMITPROC_ISPROTO ) + ";" )
 	end select
 
 	hWriteLine( hEmitProcHeader( proc, 0 ) )
