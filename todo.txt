@@ -13,7 +13,9 @@ o 64bit
   - Windows port I/O driver? Can it be ported to 64bit? is it needed?
 
 o LLVM backend
-  - implement F2I conversions with FB's rounding behaviour
+  - Check whether F2I conversions work correctly for unsigned integers (compare
+    to issues in C/ASM backends), and overall can't trigger fptosi/fptoui's
+    conditions for undefined behaviour
   - returning structs in registers? Disabled for -gen gcc in hGetReturnType(),
     can the same be done for -gen llvm?
   - structs should be emitted as byte arrays, to let the FB side handle

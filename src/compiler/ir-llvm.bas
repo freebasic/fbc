@@ -120,6 +120,8 @@ enum
 	BUILTIN_FLOOR
 	BUILTIN_ABSF
 	BUILTIN_ABS
+	BUILTIN_NEARBYINTF
+	BUILTIN_NEARBYINT
 	BUILTIN__COUNT
 end enum
 
@@ -145,7 +147,9 @@ dim shared as BUILTIN builtins(0 to BUILTIN__COUNT-1) => _
 	(@"declare float  @llvm.floor.f32(float ) nounwind"), _
 	(@"declare double @llvm.floor.f64(double) nounwind"), _
 	(@"declare float  @llvm.fabs.f32(float ) nounwind"), _
-	(@"declare double @llvm.fabs.f64(double) nounwind")  _
+	(@"declare double @llvm.fabs.f64(double) nounwind"), _
+	(@"declare float  @llvm.nearbyint.f32(float ) nounwind"), _
+	(@"declare double @llvm.nearbyint.f64(double) nounwind")  _
 }
 
 type IRLLVMCONTEXT
@@ -1599,14 +1603,38 @@ private sub _emitConvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 	dim as zstring ptr op = any
 	dim as IRVREG ptr v0 = any
 
+	'' Converting float to int? Needs special treatment to achieve FB's rounding behaviour,
+	'' because LLVM's fptosi/fptoui just truncate.
+	if( (typeGetClass( v2->dtype ) = FB_DATACLASS_FPOINT) and _
+	    (typeGetClass( v1->dtype ) = FB_DATACLASS_INTEGER) ) then
+		'' Round v2 by calling llvm.nearbyint() and then using the result
+		'' as the new v2. This rounding does float to float, then we can feed
+		'' that into fptosi/fptoui to get the [u]int.
+		v0 = irhlAllocVreg( v2->dtype, v2->subtype )
+		hLoadVreg( v2 )
+
+		ln = hVregToStr( v0 ) + " = call "
+		if( v2->dtype = FB_DATATYPE_SINGLE ) then
+			builtins(BUILTIN_NEARBYINTF).used = TRUE
+			ln += "float @llvm.nearbyint.f32(float "
+		else
+			assert( v2->dtype = FB_DATATYPE_DOUBLE )
+			builtins(BUILTIN_NEARBYINT).used = TRUE
+			ln += "double @llvm.nearbyint.f64(double "
+		end if
+		ln += hVregToStr( v2 ) + ")"
+		hWriteLine( ln )
+
+		*v2 = *v0
+	end if
+
 	ldtype = v1->dtype
 	rdtype = v2->dtype
 	assert( (ldtype <> rdtype) or (v1->subtype <> v2->subtype) )
 
 	if( typeGetClass( ldtype ) = FB_DATACLASS_FPOINT ) then
 		if( typeGetClass( rdtype ) = FB_DATACLASS_FPOINT ) then
-			'' float = float
-			'' i.e. single <-> double
+			'' float to float (i.e. single <-> double)
 			if( typeGetSize( ldtype ) < typeGetSize( rdtype ) ) then
 				op = @"fptrunc"
 			else
@@ -1614,7 +1642,7 @@ private sub _emitConvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 				op = @"fpext"
 			end if
 		else
-			'' float = int
+			'' int to float
 			if( typeIsSigned( rdtype ) ) then
 				op = @"sitofp"
 			else
@@ -1623,14 +1651,14 @@ private sub _emitConvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 		end if
 	else
 		if( typeGetClass( rdtype ) = FB_DATACLASS_FPOINT ) then
-			'' int = float
+			'' float to int (rounding was taken care of above)
 			if( typeIsSigned( ldtype ) ) then
 				op = @"fptosi"
 			else
 				op = @"fptoui"
 			end if
 		else
-			'' int = int
+			'' int to int
 			if( typeIsPtr( ldtype ) ) then
 				if( typeIsPtr( rdtype ) ) then
 					'' both are pointers, just convert the type
