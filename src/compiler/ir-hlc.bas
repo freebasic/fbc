@@ -15,7 +15,7 @@
 ''   behaviour. Simple C casting as in '(int)floatvar' cannot be used because it
 ''   just truncates instead of rounding to nearest. Thus we use 4 helper
 ''   routines (float|double -> int32|int64) that are implemented in x86 ASM
-''   (as done by the ASM backend) or using __builtin_rint[f]().
+''   (as done by the ASM backend) or using __builtin_nearbyint[f]().
 ''
 '' - Field accesses, pointer indexing, struct layout/field alignment, etc. is
 ''   all still calculated on the FB side, i.e. the generated C code is
@@ -1105,9 +1105,9 @@ private sub hWriteGenericF2I _
 	end if
 
 	if( ptype = FB_DATATYPE_SINGLE ) then
-		callname = "rintf"
+		callname = "nearbyintf"
 	else
-		callname = "rint"
+		callname = "nearbyint"
 	end if
 
 	hWriteLine( "#define fb_" + fname +  "( value ) ((" + resulttype + ")__builtin_" + callname + "( value ))", TRUE )
