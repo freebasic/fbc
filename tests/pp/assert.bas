@@ -66,6 +66,13 @@ sub test cdecl( )
 
 	'' procedure
 	#assert defined( test )
+
+	'' The #assert directive should be accepted inside #if 0 blocks.
+	'' (it shouldn't be evaluated there though)
+	#if 0
+		#assert 1
+		#assert 0
+	#endif
 end sub
 
 private sub ctor( ) constructor
