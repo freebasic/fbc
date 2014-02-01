@@ -8,22 +8,20 @@ sub test cdecl( )
 
 	#assert 1
 
-	'#assert "test"
-
-	'#assert 1 = 2
+	#assert 1 <> 2
 
 	#assert 1 = 5 - (((4 * 2) + 8) / 4)
 
-	'#assert (1 + 2 + 3) <> 6
+	#assert (1 + 2 + 3) = 6
 
-	'#assert (1 + (2 * 3)) <> 7
+	#assert (1 + (2 * 3)) = 7
 
-	'#assert (1 + 2 + 3 - 4) <> 2
+	#assert (1 + 2 + 3 - 4) = 2
 
 	CU_ASSERT( (1/2) > .49 )
 	#assert (1/2) > .49
 
-	'#assert (10\5) <> 2
+	#assert (10\5) = 2
 
 	CU_ASSERT( &hFFFFFFFFu > 0 )
 	#assert &hFFFFFFFFu > 0
@@ -48,15 +46,13 @@ sub test cdecl( )
 	const S1 = "abc"
 	#assert "abc" = S1
 
-	'#assert undeclaredid
-
 	#assert undeclaredid = undeclaredid
 
 	#assert undeclaredid = UNDECLAREDID
 
 	#assert UNDECLAREDID = undeclaredid
 
-	'#assert undeclaredid1 = undeclaredid2
+	#assert undeclaredid1 <> undeclaredid2
 
 	'' constant
 	#assert defined( N1 )
