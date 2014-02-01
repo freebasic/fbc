@@ -256,6 +256,15 @@ sub test cdecl( )
 	#assert typeof(myInteger myPtr) = typeof(integer ptr)
 	#assert typeof(myInteger myPtr) <> typeof(integer)
 	#assert typeof(myInteger myPtr) <> typeof(any ptr)
+
+	'' typeof() should do macro expansion when skipping its closing ')'
+	#define isInteger = typeof(integer)
+	#assert typeof(integer) isInteger
+
+	#define isntInteger <> typeof(integer)
+	#if typeof(integer) isntInteger
+		CU_FAIL( )
+	#endif
 end sub
 
 private sub ctor( ) constructor

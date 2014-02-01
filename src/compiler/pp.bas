@@ -734,6 +734,6 @@ function ppTypeOf( ) as string
 		'' error recovery: skip until next ')'
 		hSkipUntil( CHAR_RPRNT )
 	else
-		lexSkipToken( LEXCHECK_NODEFINE )
+		lexSkipToken( )
 	end if
 end function
