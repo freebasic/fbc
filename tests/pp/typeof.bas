@@ -229,6 +229,33 @@ sub test cdecl( )
 	#if typeof( function( ) byref as integer ) <> typeof( function( ) byref as integer )
 		CU_FAIL( )
 	#endif
+
+	'' Macro expansion of PP typeof()'s argument
+	#define myInteger integer
+	#if typeof(myInteger) <> typeof(integer)
+		CU_FAIL( )
+	#endif
+	'' myInteger should be expanded instead of being treated as
+	'' undeclared identifier. Any undeclared identifiers are implicitly
+	'' converted to string literals, so if myInteger wouldn't be expanded,
+	'' we'd get typeof("MYINTEGER") which is <> typeof(integer).
+	#assert typeof(myInteger) = typeof(integer)
+
+	#define myString string
+	#assert typeof(myString) = typeof(string)
+
+	#define nopMacro(x) x
+	#assert typeof(nopMacro(byte)) = typeof(byte)
+	#assert typeof(nopMacro(longint)) = typeof(longint)
+	#assert typeof(nopMacro(integer)) = typeof(integer)
+	#assert typeof(nopMacro(double)) = typeof(double)
+	#assert typeof(nopMacro(string)) = typeof(string)
+
+	'' Not only the 1st token should be macro expanded; also the following ones.
+	#define myPtr ptr
+	#assert typeof(myInteger myPtr) = typeof(integer ptr)
+	#assert typeof(myInteger myPtr) <> typeof(integer)
+	#assert typeof(myInteger myPtr) <> typeof(any ptr)
 end sub
 
 private sub ctor( ) constructor

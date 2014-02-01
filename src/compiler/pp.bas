@@ -721,7 +721,7 @@ function ppTypeOf( ) as string
 	if( lexGetToken( ) <> CHAR_LPRNT ) then
 		errReport( FB_ERRMSG_EXPECTEDLPRNT )
 	else
-		lexSkipToken( LEXCHECK_NODEFINE )
+		lexSkipToken( )
 	end if
 
 	cTypeOf( dtype, subtype, lgt )

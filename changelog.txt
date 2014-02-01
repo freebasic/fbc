@@ -122,6 +122,8 @@ Version 0.91.0:
 - x[a].field syntax wasn't working if operator [] was overloaded
 - Win32 ScreenInfo() reimplemented to report screen size more accurately (the old version returned incorrect values on Windows 8.1). Also, it will now report the size of the screen assigned to the program, rather than always the primary monitor.
 - #assert inside #if 0 blocks caused a syntax error
+- PP typeof()'s argument was not being macro-expanded properly (e.g. the x in <#if typeof(x) = ...>)
+
 
 Version 0.90.1:
 
