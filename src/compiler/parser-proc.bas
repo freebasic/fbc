@@ -1392,8 +1392,10 @@ function cProcHeader _
 			end if
 		end if
 
-		'' check params
-		hCheckOpOvlParams( parent, op, proc )
+		'' Check param/result types
+		if( hCheckOpOvlParams( parent, op, proc ) = FALSE ) then
+			exit function
+		end if
 
 	case FB_TK_PROPERTY
 		'' BYREF?
@@ -1756,6 +1758,7 @@ sub cProcStmtBegin( byval attrib as integer )
 	'' ProcHeader
 	proc = cProcHeader( attrib, is_nested, FB_PROCOPT_NONE, tkn )
 	if( proc = NULL ) then
+		hSkipCompound( tkn )
 		exit sub
 	end if
 
