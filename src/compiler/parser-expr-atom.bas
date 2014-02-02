@@ -398,6 +398,12 @@ private function hCheckId _
 		end if
 	end if
 
+	'' If there's a namespace prefix, cIdentifier() should have parsed it
+	'' and the id, and verified that the id exists in that namespace. And
+	'' then hFindId() should have succeeded. Otherwise the namespace would
+	'' be lost here.
+	assert( (base_parent = NULL) or (errGetCount( ) > 0) )
+
 	'' Undeclared identifiers in PP expressions are upper-cased and then
 	'' turned into string literals, allowing them to be compared
 	if( fbGetIsPP( ) ) then
