@@ -6,7 +6,7 @@
     Forum:              http://www.freebasic.net/forum/
     Online manual:      http://www.freebasic.net/wiki/DocToc
     fbc project page:   http://www.sourceforge.net/projects/fbc/
-    IRC channel:        ##freebasic at irc.freenode.net
+    IRC channel:        ##freebasic at chat.freenode.net
 
     FreeBASIC consists of fbc (the command line compiler), the runtime libraries
     (included into FB programs by fbc), compiler tools (assembler, linker) used
