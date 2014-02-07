@@ -23,7 +23,11 @@ void FB_CONPRINTTTY
     int fGotNewCoordinate = FALSE;
     int BorderWidth = pBorder->Right - pBorder->Left + 1;
 
-    DBG_ASSERT( BorderWidth != 0 );
+    /* Do nothing (and prevent division by zero below) if width == 0.
+       (can happen with tiny gfxlib2 screens at least) */
+    if( BorderWidth == 0 ) {
+        return;
+    }
 
     memcpy( &dwCurrentCoord, pCoord, sizeof( fb_Coord ) );
 
