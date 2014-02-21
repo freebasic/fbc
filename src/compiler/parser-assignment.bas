@@ -272,9 +272,7 @@ function cAssignmentOrPtrCallEx _
 	end if
 
     '' flush the call
-    if( expr <> NULL ) then
-    	astAdd( expr )
-    end if
+	astAdd( expr )
 
     function = TRUE
 
