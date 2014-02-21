@@ -190,7 +190,7 @@ function cProcCall _
 		byval options as FB_PARSEROPT _
 	) as ASTNODE ptr
 
-	dim as integer dtype = any, is_propset = FALSE
+	dim as integer is_propset = FALSE
 	dim as ASTNODE ptr procexpr = any
 	dim as FB_CALL_ARG_LIST arg_list = ( 0, NULL, NULL )
 
@@ -358,26 +358,12 @@ function cProcCall _
 		procexpr = astRemoveByrefResultDeref( procexpr )
 	end if
 
-	dtype = astGetDataType( procexpr )
-
 	'' can proc's result be skipped?
-	if( dtype <> FB_DATATYPE_VOID ) then
-		if( typeGetClass( dtype ) <> FB_DATACLASS_INTEGER ) then
-			errReport( FB_ERRMSG_VARIABLEREQUIRED )
-			'' error recovery: skip
-			astDelTree( procexpr )
-			exit function
-
-		'' CHAR and WCHAR literals are also from the INTEGER class
-		else
-			select case as const dtype
-			case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
-				errReport( FB_ERRMSG_VARIABLEREQUIRED )
-				'' error recovery: skip
-				astDelTree( procexpr )
-				exit function
-			end select
-		end if
+	if( astCanIgnoreCallResult( procexpr ) = FALSE ) then
+		errReport( FB_ERRMSG_VARIABLEREQUIRED )
+		'' error recovery: skip
+		astDelTree( procexpr )
+		exit function
 	end if
 
 	'' check error?

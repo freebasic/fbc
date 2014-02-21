@@ -254,21 +254,11 @@ function cAssignmentOrPtrCallEx _
 	'' calling a function ptr..
 
 	'' can the result be skipped?
-	if( typeGetClass( astGetDataType( t ) ) <> FB_DATACLASS_INTEGER ) then
+	if( astCanIgnoreCallResult( t ) = FALSE ) then
 		errReport( FB_ERRMSG_VARIABLEREQUIRED )
 		'' error recovery: skip call
 		astDelTree( expr )
 		return TRUE
-
-    '' CHAR and WCHAR literals are also from the INTEGER class
-    else
-    	select case astGetDataType( t )
-    	case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
-			errReport( FB_ERRMSG_VARIABLEREQUIRED )
-			'' error recovery: skip call
-			astDelTree( expr )
-			return TRUE
-		end select
 	end if
 
     '' flush the call

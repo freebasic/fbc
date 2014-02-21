@@ -451,3 +451,27 @@ function astRemoveByrefResultDeref( byval expr as ASTNODE ptr ) as ASTNODE ptr
 	function = expr->l
 	astDelNode( expr )
 end function
+
+function astCanIgnoreCallResult( byval n as ASTNODE ptr ) as integer
+	dim as integer dtype = any
+
+	assert( astIsCALL( n ) )
+	dtype = astGetDataType( n )
+
+	'' If it's a SUB, there's no result so it's always "ignored"
+	if( dtype = FB_DATATYPE_VOID ) then
+		return TRUE
+	end if
+
+	'' Only integers (excluding char/wchar) can be ignored
+	if( typeGetClass( dtype ) = FB_DATACLASS_INTEGER ) then
+		select case( dtype )
+		case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
+
+		case else
+			return TRUE
+		end select
+	end if
+
+	function = FALSE
+end function

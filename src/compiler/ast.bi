@@ -1254,6 +1254,7 @@ declare function astBuildCallResultUdt( byval expr as ASTNODE ptr ) as ASTNODE p
 declare function astBuildByrefResultDeref( byval expr as ASTNODE ptr ) as ASTNODE ptr
 declare function astIsByrefResultDeref( byval expr as ASTNODE ptr ) as integer
 declare function astRemoveByrefResultDeref( byval expr as ASTNODE ptr ) as ASTNODE ptr
+declare function astCanIgnoreCallResult( byval n as ASTNODE ptr ) as integer
 
 declare sub astGosubAddInit( byval proc as FBSYMBOL ptr )
 
