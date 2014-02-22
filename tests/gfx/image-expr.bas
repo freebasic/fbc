@@ -22,7 +22,7 @@ private function hScreenIsFilledWithColor( byval col as ulong ) as integer
 	screenlock( )
 
 	dim as ulong ptr p = screenptr( )
-	CU_ASSERT( p )
+	CU_ASSERT( p <> NULL )
 
 	function = TRUE
 	for i as integer = 0 to (w * h)-1
