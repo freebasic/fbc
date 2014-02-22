@@ -128,6 +128,7 @@ Version 0.91.0:
 - pdflib.bi was missing #inclib "gdi32"
 - Methods with CONST function results are no longer allowed to override virtual methods with non-CONST function results, and vice-versa (the return type must be the exact same, as for function pointers)
 - CONST-member methods are no longer allowed to override non-CONST-member virtual methods, and vice-versa
+- The compiler no longer crashes (SIGFPE) on constant expressions containing signed integer division overflows, e.g. -2147483648 \ -1, which triggers SIGFPE when calculated on x86. The compiler now inserts 0 (-2147483648 \ -1 = 2147483648 which doesn't fit into a 32bit signed integer, and in theory overflows to 0) and shows a warning. Note: FB programs doing such divisions at run-time (e.g. <dim a as integer = -2147483648, b as integer = -1 : print a \ b>) may still run into SIGFPE crashes; this change just affects the compiler itself, not the generated code.
 
 
 Version 0.90.1:

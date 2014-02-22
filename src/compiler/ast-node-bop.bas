@@ -242,6 +242,7 @@ private function hConstBop _
 	) as ASTNODE ptr
 
 	if( typeGetClass( l->dtype ) = FB_DATACLASS_FPOINT ) then
+		'' Float BOP
 		select case as const( op )
 		case AST_OP_ADD : l->val.f = l->val.f +  r->val.f
 		case AST_OP_SUB : l->val.f = l->val.f -  r->val.f
@@ -258,13 +259,13 @@ private function hConstBop _
 		case AST_OP_GE  : l->val.i = l->val.f >= r->val.f
 		case AST_OP_ATAN2 : l->val.f = atan2( l->val.f, r->val.f )
 		case AST_OP_ANDALSO
-			if l->val.f then
+			if( l->val.f ) then
 				l->val.i = (r->val.f <> 0)
 			else
 				l->val.i = 0
 			end if
 		case AST_OP_ORELSE
-			if l->val.f then
+			if( l->val.f ) then
 				l->val.i = -1
 			else
 				l->val.i = (r->val.f <> 0)
@@ -274,6 +275,7 @@ private function hConstBop _
 		end select
 
 	elseif( typeIsSigned( l->dtype ) ) then
+		'' Signed integer BOP
 		select case as const( op )
 		case AST_OP_ADD : l->val.i = l->val.i +   r->val.i
 		case AST_OP_SUB : l->val.i = l->val.i -   r->val.i
@@ -293,19 +295,32 @@ private function hConstBop _
 		case AST_OP_GE  : l->val.i = l->val.i >=  r->val.i
 		case AST_OP_ANDALSO : l->val.i = iif( l->val.i <> 0, r->val.i <> 0, 0 )
 		case AST_OP_ORELSE  : l->val.i = iif( l->val.i <> 0, -1, r->val.i <> 0 )
-		case AST_OP_INTDIV
-			if( r->val.i <> 0 ) then
-				l->val.i = l->val.i \ r->val.i
-			else
+		case AST_OP_INTDIV, AST_OP_MOD
+			'' Division by zero?
+			if( r->val.i = 0 ) then
 				l->val.i = 0
 				errReport( FB_ERRMSG_DIVBYZERO )
-			end if
-		case AST_OP_MOD
-			if( r->val.i <> 0 ) then
+
+			'' Avoid incorrect result (x86) or SIGFPE crash (x86_64) for:
+			'' -9223372036854775808 \ -1 = 9223372036854775808,
+			'' which cannot be represented in a 64bit signed integer,
+			'' and, in theory, overflows to 0. Also affects MOD.
+			''
+			'' Also, avoid SIGFPE crash (x86, if the const folding
+			'' arithmetic wasn't implemented using LongInts) for:
+			'' -2147483648 \ -1 = 2147483648,
+			'' which cannot be represented in a 32bit signed integer,
+			'' ditto.
+			elseif( (r->val.i = -1) and _
+			        (((typeGetSize( l->dtype ) = 8) and (l->val.i = -9223372036854775808ull)) or _
+			         ((typeGetSize( l->dtype ) = 4) and (l->val.i = -2147483648u))) ) then
+				l->val.i = 0
+				errReportWarn( FB_WARNINGMSG_CONVOVERFLOW )
+
+			elseif( op = AST_OP_INTDIV ) then
+				l->val.i = l->val.i \   r->val.i
+			else
 				l->val.i = l->val.i mod r->val.i
-			else
-				l->val.i = 0
-				errReport( FB_ERRMSG_DIVBYZERO )
 			end if
 		case else
 			assert( FALSE )
@@ -313,6 +328,7 @@ private function hConstBop _
 
 		l = astConvertRawCONSTi( dtype, subtype, l )
 	else
+		'' Unsigned integer BOP
 		select case as const( op )
 		case AST_OP_ADD : l->val.i = cunsg( l->val.i ) +   cunsg( r->val.i )
 		case AST_OP_SUB : l->val.i = cunsg( l->val.i ) -   cunsg( r->val.i )
@@ -332,19 +348,15 @@ private function hConstBop _
 		case AST_OP_GE  : l->val.i = cunsg( l->val.i ) >=  cunsg( r->val.i )
 		case AST_OP_ANDALSO : l->val.i = iif( l->val.i <> 0, r->val.i <> 0, 0 )
 		case AST_OP_ORELSE  : l->val.i = iif( l->val.i <> 0, -1, r->val.i <> 0 )
-		case AST_OP_INTDIV
-			if( r->val.i <> 0 ) then
-				l->val.i = cunsg( l->val.i ) \ cunsg( r->val.i )
-			else
+		case AST_OP_INTDIV, AST_OP_MOD
+			'' Division by zero?
+			if( r->val.i = 0 ) then
 				l->val.i = 0
 				errReport( FB_ERRMSG_DIVBYZERO )
-			end if
-		case AST_OP_MOD
-			if( r->val.i <> 0 ) then
+			elseif( op = AST_OP_INTDIV ) then
+				l->val.i = cunsg( l->val.i ) \   cunsg( r->val.i )
+			else
 				l->val.i = cunsg( l->val.i ) mod cunsg( r->val.i )
-			else
-				l->val.i = 0
-				errReport( FB_ERRMSG_DIVBYZERO )
 			end if
 		case else
 			assert( FALSE )

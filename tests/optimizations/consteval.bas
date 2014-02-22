@@ -776,6 +776,9 @@ private sub testBopS32 cdecl( )
 	l_check2( \,  2, 3 )
 	l_check2( \,  1, 3 )
 
+	CU_ASSERT( (-2147483648u \   -1) = 0 )  '' = 2147483648, overflows to 0
+	CU_ASSERT( (-2147483648u mod -1) = 0 )  '' remainder = 0
+
 	#macro l_shift1( bop, val1 )
 		l_check2( bop, val1, 0 )
 		l_check2( bop, val1, 1 )
@@ -925,6 +928,9 @@ private sub testBopS64 cdecl( )
 	ll_check( >= )
 	ll_check( andalso )
 	ll_check( orelse  )
+
+	CU_ASSERT( (-9223372036854775808ull \   -1ull) = 0 )  '' = 9223372036854775808, overflows to 0
+	CU_ASSERT( (-9223372036854775808ull mod -1ull) = 0 )  '' remainder = 0
 
 	#macro ll_shift1( bop, val1 )
 		ll_check2( bop, val1, 0 )
