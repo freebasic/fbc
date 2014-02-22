@@ -729,10 +729,10 @@ private sub testBopS32 cdecl( )
 		'' &h80000000 \ -1 cannot be represented in 32bit, and triggers SIGFPE
 		'' during the runtime calculation on x86. fbc's compile-time calculation
 		'' should work though and is tested separately below.
-		#if (#bop <> "\") or (#val1 <> "&h80000000l")
+		#if ((#bop <> "\") and (#bop <> "mod")) or (#val1 <> "&h80000000l")
 		l_check2( bop, val1, &hFFFFFFFFl )
 		#endif
-		#if #bop <> "\"
+		#if ((#bop <> "\") and (#bop <> "mod"))
 		l_check2( bop, val1, 0l )
 		#endif
 		l_check2( bop, val1, 1l )
@@ -751,6 +751,7 @@ private sub testBopS32 cdecl( )
 	l_check( - )
 	l_check( * )
 	l_check( \ )
+	l_check( mod )
 	l_check( and )
 	l_check( or )
 	l_check( xor )
@@ -807,7 +808,7 @@ private sub testBopU32 cdecl( )
 	#macro ul_check1( bop, val1 )
 		ul_check2( bop, val1, &h80000000ul )
 		ul_check2( bop, val1, &hFFFFFFFFul )
-		#if #bop <> "\"
+		#if ((#bop <> "\") and (#bop <> "mod"))
 		ul_check2( bop, val1, 0ul )
 		#endif
 		ul_check2( bop, val1, 1ul )
@@ -826,6 +827,7 @@ private sub testBopU32 cdecl( )
 	ul_check( - )
 	ul_check( * )
 	ul_check( \ )
+	ul_check( mod )
 	ul_check( and )
 	ul_check( or )
 	ul_check( xor )
@@ -881,12 +883,12 @@ private sub testBopS64 cdecl( )
 		'' &h8000000000000000 \ -1 cannot be represented in 64bit, and triggers SIGFPE
 		'' during the runtime calculation on x86_64. fbc's compile-time calculation
 		'' should work though and is tested separately below.
-		#if (#bop <> "\") or (#val1 <> "&h8000000000000000ll")
+		#if ((#bop <> "\") and (#bop <> "mod")) or (#val1 <> "&h8000000000000000ll")
 		ll_check2( bop, val1, &hFFFFFFFFFFFFFFFFll )
 		#endif
 		ll_check2( bop, val1,         &h80000000ll )
 		ll_check2( bop, val1,         &hFFFFFFFFll )
-		#if #bop <> "\"
+		#if ((#bop <> "\") and (#bop <> "mod"))
 		ll_check2( bop, val1,                  0ll )
 		#endif
 		ll_check2( bop, val1,                  1ll )
@@ -909,6 +911,7 @@ private sub testBopS64 cdecl( )
 	ll_check( - )
 	ll_check( * )
 	ll_check( \ )
+	ll_check( mod )
 	ll_check( and )
 	ll_check( or )
 	ll_check( xor )
@@ -960,7 +963,7 @@ private sub testBopU64 cdecl( )
 		ull_check2( bop, val1, &hFFFFFFFFFFFFFFFFull )
 		ull_check2( bop, val1,         &h80000000ull )
 		ull_check2( bop, val1,         &hFFFFFFFFull )
-		#if #bop <> "\"
+		#if ((#bop <> "\") and (#bop <> "mod"))
 		ull_check2( bop, val1,                  0ull )
 		#endif
 		ull_check2( bop, val1,                  1ull )
@@ -983,6 +986,7 @@ private sub testBopU64 cdecl( )
 	ull_check( - )
 	ull_check( * )
 	ull_check( \ )
+	ull_check( mod )
 	ull_check( and )
 	ull_check( or )
 	ull_check( xor )
