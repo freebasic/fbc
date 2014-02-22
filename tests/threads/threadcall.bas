@@ -119,6 +119,7 @@ namespace fbc_tests.threads.threadcall_tests
         dim as any ptr TypeArray_Thread, NoArgsA_Thread, NoArgsB_Thread
         dim as any ptr OvlInt_Thread, OvlStr_Thread
         dim as any ptr Namespace_Thread, ONamespace_Thread
+        dim as any ptr testWindowsMs_thread
 
         '' call threads
 #ifdef __FB_WIN32__
