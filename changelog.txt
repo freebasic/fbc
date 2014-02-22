@@ -125,6 +125,7 @@ Version 0.91.0:
 - PP typeof()'s argument was not being macro-expanded properly (e.g. the x in <#if typeof(x) = ...>)
 - Macro expansion right behind a PP typeof() wasn't working (e.g. the foo in <#if typeof(x) foo>)
 - Crash (division by zero) when PRINTing onto tiny graphics screens (e.g. screenres 1, 1)
+- pdflib.bi was missing #inclib "gdi32"
 
 
 Version 0.90.1:
