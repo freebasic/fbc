@@ -2529,8 +2529,13 @@ private function hAreMethodsCompatible _
 	assert( symbIsProc( v ) and symbIsMethod( v ) )
 	assert( symbIsProc( o ) and symbIsMethod( o ) )
 
-	'' Different result type? (Note: SUBs have VOID result type)
-	if( (symbGetType   ( v ) <> symbGetType   ( o )) or _
+	'' Different result type?
+	'' - It must be the exact same (even CONSTs), as for procedure pointers
+	'' - This isn't checked already when searching the overridden method,
+	''   because that search is just based on finding compatible overloads
+	''   which doesn't take result type into account.
+	'' - SUBs have VOID result type and will be handled here too
+	if( (symbGetFullType( v ) <> symbGetFullType( o )) or _
 	    (symbGetSubtype( v ) <> symbGetSubtype( o )) ) then
 		return FB_ERRMSG_OVERRIDERETTYPEDIFFERS
 	end if
