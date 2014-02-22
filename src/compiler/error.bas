@@ -305,6 +305,8 @@ declare function hMakeParamDesc _
 		@"Override has different calling convention than overridden method", _
 		@"Implicit destructor override would have different calling convention", _
 		@"Implicit LET operator override would have different calling convention", _
+		@"Override is not a CONST member like the overridden method", _
+		@"Override is a CONST member, but the overridden method is not", _
 		@"Override has different parameters than overridden method", _
 		@"This operator cannot be STATIC", _
 		@"Parameter must be an integer", _

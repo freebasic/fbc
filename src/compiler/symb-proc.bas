@@ -2550,6 +2550,14 @@ private function hAreMethodsCompatible _
 		return FB_ERRMSG_OVERRIDECALLCONVDIFFERS
 	end if
 
+	'' If one is a CONST member method, the other must be too
+	if( symbIsConstant( v ) <> symbIsConstant( o ) ) then
+		if( symbIsConstant( v ) ) then
+			return FB_ERRMSG_OVERRIDEISNTCONSTMEMBER
+		end if
+		return FB_ERRMSG_OVERRIDEISCONSTMEMBER
+	end if
+
 	'' Different parameter count?
 	if( symbGetProcParams( v ) <> symbGetProcParams( o ) ) then
 		return FB_ERRMSG_OVERRIDEPARAMSDIFFER
