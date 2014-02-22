@@ -726,7 +726,10 @@ private sub testBopS32 cdecl( )
 
 	#macro l_check1( bop, val1 )
 		l_check2( bop, val1, &h80000000l )
-		#if (#bop <> "\") or (#val1 <> "&h80000000l")   '' &h80000000 \ -1 cannot be represented in 32bit => SIGFPE
+		'' &h80000000 \ -1 cannot be represented in 32bit, and triggers SIGFPE
+		'' during the runtime calculation on x86. fbc's compile-time calculation
+		'' should work though and is tested separately below.
+		#if (#bop <> "\") or (#val1 <> "&h80000000l")
 		l_check2( bop, val1, &hFFFFFFFFl )
 		#endif
 		#if #bop <> "\"
@@ -875,7 +878,12 @@ private sub testBopS64 cdecl( )
 
 	#macro ll_check1( bop, val1 )
 		ll_check2( bop, val1, &h8000000000000000ll )
+		'' &h8000000000000000 \ -1 cannot be represented in 64bit, and triggers SIGFPE
+		'' during the runtime calculation on x86_64. fbc's compile-time calculation
+		'' should work though and is tested separately below.
+		#if (#bop <> "\") or (#val1 <> "&h8000000000000000ll")
 		ll_check2( bop, val1, &hFFFFFFFFFFFFFFFFll )
+		#endif
 		ll_check2( bop, val1,         &h80000000ll )
 		ll_check2( bop, val1,         &hFFFFFFFFll )
 		#if #bop <> "\"
