@@ -832,6 +832,9 @@ private function hAstNodeToStr _
 	case AST_NODECLASS_VAR
 		return "VAR( " & *iif( n->sym, symbGetName( n->sym ), @"<NULL>" ) & " )"
 
+	case AST_NODECLASS_FIELD
+		return "FIELD( " & *symbGetName( n->sym ) & " )"
+
 	case AST_NODECLASS_DECL
 		if( n->sym ) then
 			return "DECL( " & *symbGetName( n->sym ) & " )"
