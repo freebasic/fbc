@@ -650,6 +650,8 @@ declare sub hMethodCallAddInstPtrOvlArg _
         byval options as FB_PARSEROPT ptr _
     )
 
+declare function cMaybeIgnoreCallResult( byval expr as ASTNODE ptr ) as integer
+
 declare function cProcCall _
 	( _
 		byval base_parent as FBSYMBOL ptr, _

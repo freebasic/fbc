@@ -452,7 +452,7 @@ function astRemoveByrefResultDeref( byval expr as ASTNODE ptr ) as ASTNODE ptr
 	astDelNode( expr )
 end function
 
-function astCanIgnoreCallResult( byval n as ASTNODE ptr ) as integer
+private function astCanIgnoreCallResult( byval n as ASTNODE ptr ) as integer
 	dim as integer dtype = any
 
 	assert( astIsCALL( n ) )
@@ -474,4 +474,28 @@ function astCanIgnoreCallResult( byval n as ASTNODE ptr ) as integer
 	end if
 
 	function = FALSE
+end function
+
+function astIgnoreCallResult( byval n as ASTNODE ptr ) as ASTNODE ptr
+	assert( astIsCALL( n ) )
+
+	'' can proc's result be skipped?
+	if( astCanIgnoreCallResult( n ) = FALSE ) then
+		errReport( FB_ERRMSG_VARIABLEREQUIRED )
+		'' error recovery: skip
+		astDelTree( n )
+		exit function
+	end if
+
+	'' check error?
+	if( n->sym ) then
+		if( symbGetIsThrowable( n->sym ) ) then
+			return rtlErrorCheck( n )
+		end if
+	end if
+
+	'' tell the emitter to not allocate a result
+	astSetType( n, FB_DATATYPE_VOID, NULL )
+
+	function = n
 end function

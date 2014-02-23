@@ -179,6 +179,39 @@ sub hMethodCallAddInstPtrOvlArg _
 
 end sub
 
+private function hLooksLikeEndOfStatement( ) as integer
+	select case( lexGetToken( ) )
+	case FB_TK_STMTSEP, FB_TK_EOL, FB_TK_EOF, _
+	     FB_TK_COMMENT, FB_TK_REM
+		function = TRUE
+	case else
+		function = FALSE
+	end select
+end function
+
+function cMaybeIgnoreCallResult( byval expr as ASTNODE ptr ) as integer
+	dim as ASTNODE ptr t = any
+
+	'' Allow no-conv casts on top of the call, and still ignore the result
+	t = astSkipNoConvCAST( expr )
+
+	'' Normal CALL at the beginning of a statement? This is only
+	'' possible if its result is being ignored.
+	if( astIsCALL( t ) ) then
+		astAdd( astIgnoreCallResult( astRemoveNoConvCAST( expr ) ) )
+		function = TRUE
+
+	'' Call to byref function? Either it's the lhs of an assignment,
+	'' or the result is being ignored: need to disambiguate.
+	elseif( astIsByrefResultDeref( t ) and hLooksLikeEndOfStatement( ) ) then
+		astAdd( astIgnoreCallResult( astRemoveByrefResultDeref( astRemoveNoConvCAST( expr ) ) ) )
+		function = TRUE
+
+	else
+		function = FALSE
+	end if
+end function
+
 '':::::
 function cProcCall _
 	( _
@@ -335,52 +368,12 @@ function cProcCall _
 		end if
 	end if
 
-	'' not a function? (because StrIdxOrMemberDeref())
-	if( astIsCALL( procexpr ) = FALSE ) then
-		'' And not a DEREF( CALL( function-with-byref-result ) ) either?
-		if( astIsByrefResultDeref( procexpr ) = FALSE ) then
-			'' Cannot ignore this
-			return procexpr
-		end if
-
-		select case( lexGetToken( ) )
-		case FB_TK_STMTSEP, FB_TK_EOL, FB_TK_EOF, _
-		     FB_TK_COMMENT, FB_TK_REM
-			'' It seems like the result is being ignored,
-			'' i.e. no assignment following
-
-		case else
-			return procexpr
-		end select
-
-		'' Remove the DEREF and turn it into a plain CALL,
-		'' whose result can be ignored.
-		procexpr = astRemoveByrefResultDeref( procexpr )
+	'' If it's a CALL, ignore the result
+	if( cMaybeIgnoreCallResult( procexpr ) ) then
+		function = NULL
+	else
+		function = procexpr
 	end if
-
-	'' can proc's result be skipped?
-	if( astCanIgnoreCallResult( procexpr ) = FALSE ) then
-		errReport( FB_ERRMSG_VARIABLEREQUIRED )
-		'' error recovery: skip
-		astDelTree( procexpr )
-		exit function
-	end if
-
-	'' check error?
-	sym = astGetSymbol( procexpr )
-	if( sym <> NULL ) then
-		if( symbGetIsThrowable( sym ) ) then
-			astAdd( rtlErrorCheck( procexpr ) )
-			exit function
-		end if
-	end if
-
-	'' tell the emitter to not allocate a result
-	astSetType( procexpr, FB_DATATYPE_VOID, NULL )
-
-	astAdd( procexpr )
-
-	function = NULL
 
 end function
 

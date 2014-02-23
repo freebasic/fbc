@@ -219,12 +219,7 @@ sub cAssignment( byval l as ASTNODE ptr )
 	end if
 end sub
 
-'':::::
-function cAssignmentOrPtrCallEx _
-	( _
-		byval expr as ASTNODE ptr _
-	) as integer
-
+function cAssignmentOrPtrCallEx( byval expr as ASTNODE ptr ) as integer
     function = FALSE
 
     if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_CODE ) = FALSE ) then
@@ -232,35 +227,16 @@ function cAssignmentOrPtrCallEx _
     	exit function
     end if
 
-    '' calling a SUB ptr?
-    if( expr = NULL ) then
-    	return TRUE
-    end if
-
-	'' skip any casting if they won't do any conversion
-	dim as ASTNODE ptr t = astSkipNoConvCAST( expr )
-
-    '' ordinary assignment?
-    if( astIsCALL( t ) = FALSE ) then
-		cAssignment( expr )
-		return TRUE
-    end if
-
-	'' calling a function ptr..
-
-	'' can the result be skipped?
-	if( astCanIgnoreCallResult( t ) = FALSE ) then
-		errReport( FB_ERRMSG_VARIABLEREQUIRED )
-		'' error recovery: skip call
-		astDelTree( expr )
-		return TRUE
+	'' Not just calling a SUB?
+	if( expr ) then
+		'' If it's a CALL, ignore the result.
+		'' Otherwise it must be an ordinary assignment.
+		if( cMaybeIgnoreCallResult( expr ) = FALSE ) then
+			cAssignment( expr )
+		end if
 	end if
 
-    '' flush the call
-	astAdd( expr )
-
     function = TRUE
-
 end function
 
 '':::::
