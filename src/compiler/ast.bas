@@ -223,8 +223,6 @@ sub astEnd( )
 end sub
 
 function astCloneTree( byval n as ASTNODE ptr ) as ASTNODE ptr
-	'' note: never clone a tree with side-effects (ie: function call nodes)
-
 	dim as ASTNODE ptr c = any, t = any
 
 	''

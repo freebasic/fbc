@@ -1334,7 +1334,7 @@ function astNewBOP _
 					 AST_NODECLASS_FIELD, AST_NODECLASS_DEREF
 
 					'' can't clone if there's a side-effect in the tree
-					if( astIsClassOnTree( AST_NODECLASS_CALL, l ) = NULL ) then
+					if( astHasSideFx( l ) = FALSE ) then
 						' A pow should always promote l and r to
 						' float, and return a float
 						if( typeGetClass( astGetDataType( l ) ) <> FB_DATACLASS_FPOINT ) then
@@ -1472,7 +1472,7 @@ function astNewSelfBOP _
 	op = astGetOpSelfVer( op )
 
 	'' if there's a function call in lvalue, convert to tmp = @lvalue, *tmp = *tmp op rhs:
-	if( astIsClassOnTree( AST_NODECLASS_CALL, l ) ) then
+	if( astHasSideFx( l ) ) then
 		dim as FBSYMBOL ptr tmp = any
 		dim as ASTNODE ptr ll = any, lr = any
 

@@ -52,7 +52,7 @@ function astBuildFakeWstringAssign _
 	t = NULL
 
 	'' side-effect?
-	if( astIsClassOnTree( AST_NODECLASS_CALL, expr ) <> NULL ) then
+	if( astHasSideFx( expr ) ) then
 		t = astNewLINK( t, astRemSideFx( expr ), FALSE )
 	end if
 

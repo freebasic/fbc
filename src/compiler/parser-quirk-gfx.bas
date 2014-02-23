@@ -145,7 +145,7 @@ private function hCheckFbImageExpr _
 				'' If the expression contains CALLs (side-effects) though, we mustn't duplicate it,
 				'' and unfortunately astRemSideFx() only works for scalars, not entire arrays,
 				'' so must show an error in that case...
-				if( astIsClassOnTree( AST_NODECLASS_CALL, expr ) ) then
+				if( astHasSideFx( expr ) ) then
 					errReport( FB_ERRMSG_EXPECTEDPOINTER, TRUE )
 					astDelTree( expr )
 					expr = astNewCONSTi( 0, typeAddrOf( FB_DATATYPE_VOID ) )

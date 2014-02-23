@@ -913,11 +913,7 @@ declare function astCheckCONV _
 
 declare function astUpdStrConcat( byval n as ASTNODE ptr ) as ASTNODE ptr
 
-declare function astIsClassOnTree _
-	( _
-		byval class_ as integer, _
-		byval n as ASTNODE ptr _
-	) as ASTNODE ptr
+declare function astHasSideFx( byval n as ASTNODE ptr ) as integer
 
 declare function astIsSymbolOnTree _
 	( _

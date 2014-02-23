@@ -185,11 +185,11 @@ function cSwapStmt() as integer
 	dim as ASTNODE ptr t = NULL
 
 	'' Side effects? Then use references to be able to read/write...
-	if( astIsClassOnTree( AST_NODECLASS_CALL, l ) <> NULL ) then
+	if( astHasSideFx( l ) ) then
 		t = hMakeRef( t, l )
 	end if
 
-	if( astIsClassOnTree( AST_NODECLASS_CALL, r ) <> NULL ) then
+	if( astHasSideFx( r ) ) then
 		t = hMakeRef( t, r )
 	end if
 

@@ -185,7 +185,7 @@ function astBuildNewOp _
 	'' If the elementsexpr will be cloned, take care of side-effects
 	if( elementstreecount > 1 ) then
 		'' side-effect?
-		if( astIsClassOnTree( AST_NODECLASS_CALL, elementsexpr ) ) then
+		if( astHasSideFx( elementsexpr ) ) then
 			tree = astRemSideFx( elementsexpr )
 		end if
 	end if
@@ -320,7 +320,7 @@ function astBuildDeleteOp _
 	tree = NULL
 
 	'' side-effect?
-	if( astIsClassOnTree( AST_NODECLASS_CALL, ptrexpr ) ) then
+	if( astHasSideFx( ptrexpr ) ) then
 		tree = astRemSideFx( ptrexpr )
 	end if
 

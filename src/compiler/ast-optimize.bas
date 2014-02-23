@@ -1050,8 +1050,8 @@ private function hOptNullOp _
 		r = n->r
 
 		'' don't allow exprs with side-effects to be deleted
-		keep_l = ( astIsClassOnTree( AST_NODECLASS_CALL, l ) <> NULL )
-		keep_r = ( astIsClassOnTree( AST_NODECLASS_CALL, r ) <> NULL )
+		keep_l = astHasSideFx( l )
+		keep_r = astHasSideFx( r )
 
 		if( typeGetClass( astGetDataType( n ) ) = FB_DATACLASS_INTEGER ) then
 			if( astIsCONST( r ) ) then

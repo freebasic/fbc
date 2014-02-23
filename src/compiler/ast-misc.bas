@@ -344,37 +344,20 @@ function astIsEqualParamInit _
 	function = TRUE
 end function
 
-'':::::
-function astIsClassOnTree _
-	( _
-		byval class_ as integer, _
-		byval n as ASTNODE ptr _
-	) as ASTNODE ptr
-
-	dim as ASTNODE ptr m = any
-
-	''
+function astHasSideFx( byval n as ASTNODE ptr ) as integer
 	if( n = NULL ) then
-		return NULL
+		exit function
 	end if
 
-	if( n->class = class_ ) then
-		return n
+	select case( n->class )
+	case AST_NODECLASS_CALL
+		return TRUE
+	end select
+
+	if( astHasSideFx( n->l ) ) then
+		return TRUE
 	end if
-
-	'' walk
-	m = astIsClassOnTree( class_, n->l )
-	if( m <> NULL ) then
-		return m
-	end if
-
-	m = astIsClassOnTree( class_, n->r )
-	if( m <> NULL ) then
-		return m
-	end if
-
-	function = NULL
-
+	function = astHasSideFx( n->r )
 end function
 
 ''::::
