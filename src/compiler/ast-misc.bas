@@ -349,10 +349,16 @@ function astHasSideFx( byval n as ASTNODE ptr ) as integer
 		exit function
 	end if
 
-	select case( n->class )
-	case AST_NODECLASS_CALL
-		return TRUE
-	end select
+	'' Most CALLs are treated as having side-effects, i.e. mustn't be
+	'' duplicated. But for some RTL procedures we know that it's safe to
+	'' duplicate calls to them, so they can be excluded here (but the CALL's
+	'' arguments must still be checked recursively)
+	if( n->class = AST_NODECLASS_CALL ) then
+		assert( symbIsProc( n->sym ) )
+		if( (n->sym->stats and FB_SYMBSTATS_CANBECLONED) = 0 ) then
+			return TRUE
+		end if
+	end if
 
 	if( astHasSideFx( n->l ) ) then
 		return TRUE

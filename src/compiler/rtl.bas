@@ -293,6 +293,9 @@ sub rtlAddIntrinsicProcs( byval procdef as const FB_RTL_PROCDEF ptr )
 				if( (procdef->options and FB_RTL_OPT_ERROR) <> 0 ) then
 					symbSetIsThrowable( proc )
 				end if
+				if( procdef->options and FB_RTL_OPT_CANBECLONED ) then
+					proc->stats or= FB_SYMBSTATS_CANBECLONED
+				end if
 			else
 				if( (procdef->options and FB_RTL_OPT_OPERATOR) = 0 ) then
 					errReportEx( FB_ERRMSG_DUPDEFINITION, *procdef->name )

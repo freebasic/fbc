@@ -113,7 +113,7 @@ enum FB_SYMBSTATS
     FB_SYMBSTATS_GLOBALCTOR   = &h00010000
     FB_SYMBSTATS_GLOBALDTOR   = &h00020000
     FB_SYMBSTATS_CANTDUP      = &h00040000
-                            ''= &h00080000
+    FB_SYMBSTATS_CANBECLONED  = &h00080000  '' procedures: It's safe to duplicate CALLs to procedures with this flag, no problems with side effects. Useful for RTL procedures where we can be sure about this.
                             ''= &h00100000
                             ''= &h00200000
     FB_SYMBSTATS_HASRTTI      = &h00400000

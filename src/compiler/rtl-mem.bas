@@ -18,7 +18,7 @@
 		( _
 			@FB_RTL_NULLPTRCHK, NULL, _
 	 		typeAddrOf( FB_DATATYPE_VOID ), FB_FUNCMODE_FBCALL, _
-	 		NULL, FB_RTL_OPT_NONE, _
+			NULL, FB_RTL_OPT_CANBECLONED, _
 			3, _
 			{ _
 				( typeAddrOf( FB_DATATYPE_VOID ),FB_PARAMMODE_BYVAL, FALSE ), _

@@ -813,7 +813,7 @@ enum FB_RTL_OPT
 	FB_RTL_OPT_QBONLY	  = &h00000100                  '' -lang qb only
 	FB_RTL_OPT_NOFB		  = &h00000200                  '' anything but -lang fb
 	FB_RTL_OPT_FBONLY	  = &h00000400                  ''
-	                          ''&h00000800
+	FB_RTL_OPT_CANBECLONED    = &h00000800  '' -> FB_PROCSTATS_CANBECLONED
 	                          ''&h00001000
 	FB_RTL_OPT_NOGCC	  = &h00002000                  '' anything but -gen gcc
 	FB_RTL_OPT_X86ONLY        = &h00004000  '' on x86 only
