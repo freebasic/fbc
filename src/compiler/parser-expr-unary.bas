@@ -494,12 +494,7 @@ private function hVarPtrBody _
 	end if
 
 	'' skip any casting if they won't do any conversion
-	dim as ASTNODE ptr t = expr
-	if( astIsCAST( expr ) ) then
-		if( astGetCASTDoConv( expr ) = FALSE ) then
-			t = astGetLeft( expr )
-		end if
-	end if
+	dim as ASTNODE ptr t = astSkipNoConvCAST( expr )
 
 	select case as const astGetClass( t )
 	case AST_NODECLASS_VAR, AST_NODECLASS_IDX, AST_NODECLASS_DEREF, _
@@ -677,12 +672,7 @@ function cAddrOfExpression( ) as ASTNODE ptr
 		'' check for invalid classes (functions, etc)
 
 		'' skip any casting if they won't do any conversion
-		dim as ASTNODE ptr t = expr
-		if( astIsCAST( expr ) ) then
-			if( astGetCASTDoConv( expr ) = FALSE ) then
-				t = astGetLeft( expr )
-			end if
-		end if
+		dim as ASTNODE ptr t = astSkipNoConvCAST( expr )
 
 		select case as const astGetClass( t )
 		case AST_NODECLASS_VAR, AST_NODECLASS_IDX, _

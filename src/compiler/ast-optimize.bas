@@ -1676,12 +1676,7 @@ function astOptAssignment( byval n as ASTNODE ptr ) as ASTNODE ptr
 	'' is left side a var, idx or ptr?
 
 	'' skip any casting if they won't do any conversion
-	dim as ASTNODE ptr t = l
-	if( l->class = AST_NODECLASS_CONV ) then
-		if( l->cast.doconv = FALSE ) then
-			t = l->l
-		end if
-	end if
+	dim as ASTNODE ptr t = astSkipNoConvCAST( l )
 
 	select case as const t->class
 	case AST_NODECLASS_VAR, AST_NODECLASS_IDX, AST_NODECLASS_DEREF

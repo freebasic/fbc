@@ -26,12 +26,7 @@ function astNewDEREF _
 
 		if( ofs = 0 ) then
 			'' skip any casting if they won't do any conversion
-			dim as ASTNODE ptr t = l
-			if( l->class = AST_NODECLASS_CONV ) then
-				if( l->cast.doconv = FALSE ) then
-					t = l->l
-				end if
-			end if
+			dim as ASTNODE ptr t = astSkipNoConvCAST( l )
 
 			'' convert *@ to nothing
     		dim as integer delchild = any

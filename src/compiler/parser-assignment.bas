@@ -238,12 +238,7 @@ function cAssignmentOrPtrCallEx _
     end if
 
 	'' skip any casting if they won't do any conversion
-	dim as ASTNODE ptr t = expr
-	if( astIsCAST( expr ) ) then
-		if( astGetCASTDoConv( expr ) = FALSE ) then
-			t = astGetLeft( expr )
-		end if
-	end if
+	dim as ASTNODE ptr t = astSkipNoConvCAST( expr )
 
     '' ordinary assignment?
     if( astIsCALL( t ) = FALSE ) then

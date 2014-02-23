@@ -508,12 +508,7 @@ function astNewASSIGN _
 		'' type ini tree?
 		if( astIsTYPEINI( r ) ) then
 			'' skip any casting if they won't do any conversion
-			dim as ASTNODE ptr t = l
-			if( l->class = AST_NODECLASS_CONV ) then
-				if( l->cast.doconv = FALSE ) then
-					t = l->l
-				end if
-			end if
+			dim as ASTNODE ptr t = astSkipNoConvCAST( l )
 
 			'' Initialize the lhs with the TYPEINI directly,
 			'' instead of using a temp var and then copying that,

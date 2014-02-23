@@ -351,12 +351,7 @@ private sub hCheckByrefParam _
     dim as ASTNODE ptr arg = n->l
 
 	'' skip any casting if they won't do any conversion
-	dim as ASTNODE ptr t = arg
-	if( arg->class = AST_NODECLASS_CONV ) then
-		if( arg->cast.doconv = FALSE ) then
-			t = arg->l
-		end if
-	end if
+	dim as ASTNODE ptr t = astSkipNoConvCAST( arg )
 
 	'' If it's a CALL returning a STRING, it actually returns a pointer,
 	'' which can be passed to the BYREF param as-is
@@ -996,12 +991,7 @@ private function hCheckParam _
 		    (typeGetClass( param_dtype ) <> typeGetClass( arg_dtype ))    ) then
 			if( symbGetParamMode( param ) = FB_PARAMMODE_BYREF ) then
 				'' skip any casting if they won't do any conversion
-				dim as ASTNODE ptr t = arg
-				if( arg->class = AST_NODECLASS_CONV ) then
-					if( arg->cast.doconv = FALSE ) then
-						t = arg->l
-					end if
-				end if
+				dim as ASTNODE ptr t = astSkipNoConvCAST( arg )
 
 				'' param diff than arg can't be passed by ref if it's a var/array/ptr
 				'' (cannot pass a bytevar (1 byte) to BYREF INTEGER (4 bytes) param,

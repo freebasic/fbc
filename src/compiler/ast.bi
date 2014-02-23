@@ -561,6 +561,7 @@ declare sub astUpdateCONVFD2FS _
 		byval is_expr as integer _
 	)
 
+declare function astSkipNoConvCAST( byval n as ASTNODE ptr ) as ASTNODE ptr
 declare function astRemoveNoConvCAST( byval n as ASTNODE ptr ) as ASTNODE ptr
 
 declare function astNewBOP _
@@ -1410,8 +1411,6 @@ declare function astLoadNIDXARRAY( byval n as ASTNODE ptr ) as IRVREG ptr
 #define astGetLastDataStmtSymbol( ) ast.data.lastsym
 
 #define astDTorListIsEmpty( ) (listGetHead( @ast.dtorlist ) = NULL)
-
-#define astGetCastDoConv( n ) n->cast.doconv
 
 #define astIsUOP( n, uop ) ( ((n)->class = AST_NODECLASS_UOP) andalso ((n)->op.op = (uop)) )
 

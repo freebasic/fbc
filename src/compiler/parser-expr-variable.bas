@@ -1549,12 +1549,7 @@ function cVarOrDeref _
 
 	if( expr <> NULL ) then
 		'' skip any casting if they won't do any conversion
-		dim as ASTNODE ptr t = expr
-		if( astIsCAST( expr ) ) then
-			if( astGetCASTDoConv( expr ) = FALSE ) then
-				t = astGetLeft( expr )
-			end if
-		end if
+		dim as ASTNODE ptr t = astSkipNoConvCAST( expr )
 
 		dim as integer complain = TRUE
 

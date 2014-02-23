@@ -125,12 +125,7 @@ function astNewADDROF( byval l as ASTNODE ptr ) as ASTNODE ptr
 	end if
 
 	'' skip any casting if they won't do any conversion
-	dim as ASTNODE ptr t = l
-	if( l->class = AST_NODECLASS_CONV ) then
-		if( l->cast.doconv = FALSE ) then
-			t = l->l
-		end if
-	end if
+	dim as ASTNODE ptr t = astSkipNoConvCAST( l )
 
 	n = NULL
 
