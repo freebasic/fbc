@@ -575,3 +575,13 @@ function astLoadCONV _
 end function
 
 
+function astRemoveNoConvCAST( byval n as ASTNODE ptr ) as ASTNODE ptr
+	function = n
+	if( n->class = AST_NODECLASS_CONV ) then
+		if( n->cast.doconv = FALSE ) then
+			function = n->l
+			n->l = NULL
+			astDelTree( n )
+		end if
+	end if
+end function

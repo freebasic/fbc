@@ -561,6 +561,8 @@ declare sub astUpdateCONVFD2FS _
 		byval is_expr as integer _
 	)
 
+declare function astRemoveNoConvCAST( byval n as ASTNODE ptr ) as ASTNODE ptr
+
 declare function astNewBOP _
 	( _
 		byval op as integer, _

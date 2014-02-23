@@ -112,13 +112,7 @@ private function hCheckFbImageExpr _
 	) as ASTNODE ptr
 
 	'' remove any casting if they won't do any conversion
-	if( astIsCAST( expr ) ) then
-		if( astGetCASTDoConv( expr ) = FALSE ) then
-			dim as ASTNODE ptr l = astGetLeft( expr )
-			astDelNode( expr )
-			expr = l
-		end if
-	end if
+	expr = astRemoveNoConvCAST( expr )
 
 	'' Support non-indexed arrays as in QB: The image will be stored at the
 	'' front of the array.
