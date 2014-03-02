@@ -1,3 +1,6 @@
+'' This example works with both fb and fblite dialects
+'#lang "fblite"
+
 #include once "fbgfx.bi"
 #include once "jpeglib.bi"
 #include once "crt.bi"
@@ -10,7 +13,7 @@ declare function imageread_jpg _
 	( _
 		byref filename as string, _
 		byval bpp as integer _
-	) as FB.IMAGE ptr
+	) as any ptr
 
 
 	screenres SCR_W, SCR_H, SCR_BPP
@@ -26,7 +29,7 @@ declare function imageread_jpg _
 			palette i, i, i, i
 		next
 
-		dim as FB.IMAGE ptr img1
+		dim as any ptr img1
 		img1 = imageread_jpg( exepath( ) & "/../../fblogo.jpg", SCR_BPP )
 
 		put (0,0), img1, pset
@@ -35,7 +38,7 @@ declare function imageread_jpg _
 
 		imagedestroy( img1 )
 	#else
-		dim as FB.IMAGE ptr img1, img2
+		dim as any ptr img1, img2
 
 		img1 = imageread_jpg( exepath( ) & "/../../fblogo.jpg", SCR_BPP )
 		img2 = imageread_jpg( exepath( ) & "/color.jpg", SCR_BPP )
@@ -54,7 +57,7 @@ function imageread_jpg _
 	( _
 		byref filename as string, _
 		byval bpp as integer _
-	) as FB.IMAGE ptr
+	) as any ptr
 
 	dim as FILE ptr fp = fopen( filename, "rb" )
 	if( fp = NULL ) then
@@ -108,39 +111,51 @@ function imageread_jpg _
 	rows[0] = callocate( rowbytes )
 	src = rows[0]
 
+#if __FB_LANG__ = "fb"
 	dim img as FB.IMAGE ptr
 	img = imagecreate( jinfo.output_width, jinfo.output_height )
 
+	dim pitch as integer = img->pitch
 	dim as ubyte ptr dst = cast( ubyte ptr, img + 1 )
+#else
+	dim img as byte ptr
+	img = imagecreate( jinfo.output_width, jinfo.output_height )
+
+	dim pitch as integer
+	imageinfo img, , , , pitch
+
+	dim as ubyte ptr dst = cast( ubyte ptr, img + 4 )
+#endif
 
 	while( jinfo.output_scanline < jinfo.output_height )
 		jpeg_read_scanlines( @jinfo, rows, 1 )
 
 		select case( jinfo.out_color_space )
 		case JCS_GRAYSCALE
+			dim i as integer
 			select case( bpp )
 			case 24, 32
-				for i as integer = 0 to rowbytes-1
+				for i = 0 to rowbytes-1
 					*cptr( ulong ptr, dst ) = rgb( src[i], src[i], src[i] )
 					dst += 4
 				next
 			case 15, 16
-				for i as integer = 0 to rowbytes-1
+				for i = 0 to rowbytes-1
 					pset img, (i, jinfo.output_scanline-1), rgb( src[i], src[i], src[i] )
 				next
 			case else
 				'' 8 bpp and less require a proper global palette,
 				'' which contains the colors used in the image
-				'for i as integer = 0 to rowbytes-1
+				'for i = 0 to rowbytes-1
 				'	pset img, (i, jinfo.output_scanline-1), src[i]
 				'next
 				memcpy( dst, src, rowbytes )
-				dst += img->pitch
+				dst += pitch
 			end select
 
 		case JCS_RGB
 			imageconvertrow( src, 24, dst, bpp, jinfo.output_width )
-			dst += img->pitch
+			dst += pitch
 		end select
 	wend
 

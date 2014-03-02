@@ -28,6 +28,7 @@ Version 0.91.0:
 - Taking the address of an anonymous object created by constructor call is now allowed by the compiler: @UdtWithCtor( <ctor-params...> )  It already worked for anonymous objects of UDTs without constructor: @type<UdtWithoutCtor>( ... )
 - crt/linux/syslog.bi header
 - GFX statements now accept UDTs as target/source images, if the UDT has cast() AS ANY PTR (or other PTR types) operator overloads
+- jpeglib example now works with both fb and fblite dialects
 
 [fixed]
 - dlltool syntax error when building a DLL without any EXPORTs
