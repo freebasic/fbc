@@ -76,6 +76,15 @@ type DerivedUdt2 extends object
 	d as double
 end type
 
+type ByteUdtWithMatchingCast field = 1
+	b as ubyte
+	declare operator cast( ) as any ptr
+end type
+
+operator ByteUdtWithMatchingCast.cast( ) as any ptr
+	operator = 0
+end operator
+
 const IMAGE_BUFFER_SIZE = sizeof(fb.IMAGE) + (SCREEN_W*SCREEN_H*4)
 
 '' All the quirk gfx commands which have target/source image parameters
@@ -275,6 +284,100 @@ private sub hTestArrayTarget( )
 		line @pudt->array(0), (0, 0) - (SCREEN_W-1, SCREEN_H-1), rgb(255,0,0), bf
 		CU_ASSERT( hImageIsFilledWithColor( @pudt->array(0), rgb(255,0,0) ) )
 	end scope
+end sub
+
+private sub hTestPtrArrayTarget( )
+	'' An array access (excluding NIDXARRAY) with pointer type however is
+	'' treated like any other pointer expression - i.e. the image is written
+	'' into the pointed-to address, not into the array.
+	scope
+		dim array(0 to 1) as any ptr
+		array(0) = imagecreate( SCREEN_W, SCREEN_H, rgb(0,0,0) )
+		CU_ASSERT( hImageIsFilledWithColor( array(0), rgb(0,0,0) ) )
+
+		'' array(0)
+		line array(0), (0, 0) - (SCREEN_W-1, SCREEN_H-1), rgb(0,0,255), bf
+		CU_ASSERT( hImageIsFilledWithColor( array(0), rgb(0,0,255) ) )
+
+		'' GET into pointer from array access
+		get (0, 0) - (SCREEN_W-1, SCREEN_H-1), array(0)
+		CU_ASSERT( hImageIsFilledWithColor( array(0), rgb(0,255,0) ) )
+
+		imagedestroy( array(0) )
+	end scope
+
+	'' NIDXARRAY: The image data is still stored into the array,
+	'' regardless of what the array's dtype is.
+	scope
+		dim array(0 to (IMAGE_BUFFER_SIZE\sizeof(any ptr))-1) as any ptr
+
+		get (0, 0) - (SCREEN_W-1, SCREEN_H-1), array
+		CU_ASSERT( hImageIsFilledWithColor( @array(0), rgb(0,255,0) ) )
+
+		line array, (0, 0) - (SCREEN_W-1, SCREEN_H-1), rgb(0,0,255), bf
+		CU_ASSERT( hImageIsFilledWithColor( @array(0), rgb(0,0,255) ) )
+	end scope
+
+	'' @array(0): The type is an ANY PTR PTR which should be accepted too.
+	scope
+		dim array(0 to (IMAGE_BUFFER_SIZE\sizeof(any ptr))-1) as any ptr
+
+		get (0, 0) - (SCREEN_W-1, SCREEN_H-1), @array(0)
+		CU_ASSERT( hImageIsFilledWithColor( @array(0), rgb(0,255,0) ) )
+
+		line @array(0), (0, 0) - (SCREEN_W-1, SCREEN_H-1), rgb(0,0,255), bf
+		CU_ASSERT( hImageIsFilledWithColor( @array(0), rgb(0,0,255) ) )
+	end scope
+
+	'' @udt.array(0): Same as @array(0)
+	scope
+		type UDT
+			array(0 to (IMAGE_BUFFER_SIZE\sizeof(any ptr))-1) as any ptr
+		end type
+		dim udt as UDT
+
+		get (0, 0) - (SCREEN_W-1, SCREEN_H-1), @udt.array(0)
+		CU_ASSERT( hImageIsFilledWithColor( @udt.array(0), rgb(0,255,0) ) )
+
+		line @udt.array(0), (0, 0) - (SCREEN_W-1, SCREEN_H-1), rgb(0,0,255), bf
+		CU_ASSERT( hImageIsFilledWithColor( @udt.array(0), rgb(0,0,255) ) )
+	end scope
+end sub
+
+private sub hTestUdtWithoutMatchingCastArrayTarget( )
+	type UDT field = 1
+		b as ubyte
+	end type
+
+	dim array(0 to IMAGE_BUFFER_SIZE-1) as UDT
+
+	'' These cases should work despite the UDT not having a cast() overload
+
+	'' NIDXARRAY
+	get (0, 0) - (SCREEN_W-1, SCREEN_H-1), array
+	CU_ASSERT( hImageIsFilledWithColor( @array(0), rgb(0,255,0) ) )
+
+	'' array(0)
+	get (0, 0) - (SCREEN_W-1, SCREEN_H-1), array(0)
+	CU_ASSERT( hImageIsFilledWithColor( @array(0), rgb(0,255,0) ) )
+
+	'' @array(0)
+	get (0, 0) - (SCREEN_W-1, SCREEN_H-1), @array(0)
+	CU_ASSERT( hImageIsFilledWithColor( @array(0), rgb(0,255,0) ) )
+end sub
+
+private sub hTestUdtWithMatchingCastArrayTarget( )
+	dim array(0 to IMAGE_BUFFER_SIZE-1) as ByteUdtWithMatchingCast
+
+	'' The cast() overload shouldn't be used in these cases
+
+	'' NIDXARRAY
+	get (0, 0) - (SCREEN_W-1, SCREEN_H-1), array
+	CU_ASSERT( hImageIsFilledWithColor( @array(0), rgb(0,255,0) ) )
+
+	'' @array(0)
+	get (0, 0) - (SCREEN_W-1, SCREEN_H-1), @array(0)
+	CU_ASSERT( hImageIsFilledWithColor( @array(0), rgb(0,255,0) ) )
 end sub
 
 '' GET from screen into some array...
@@ -533,53 +636,6 @@ private sub hTestGetIntoULongArray( )
 		var i = 50
 		get (0, 0) - (SCREEN_W-1, SCREEN_H-1), @udt.array(i)
 		CU_ASSERT( hImageIsFilledWithColor( @udt.array(i), rgb(0,255,0) ) )
-	end scope
-end sub
-
-'' GET from screen into an array of pointers: The image data should still be
-'' stored into the array, regardless of what the array's dtype is. The only
-'' thing that matters is that the array is large enough to hold all the image
-'' data.
-private sub hTestGetIntoPtrArray( )
-	'' NIDXARRAY
-	scope
-		dim array(0 to (IMAGE_BUFFER_SIZE\sizeof(any ptr))-1) as any ptr
-		get (0, 0) - (SCREEN_W-1, SCREEN_H-1), array
-		CU_ASSERT( hImageIsFilledWithColor( @array(0), rgb(0,255,0) ) )
-	end scope
-
-	'' array(0)
-	scope
-		dim array(0 to (IMAGE_BUFFER_SIZE\sizeof(any ptr))-1) as any ptr
-		get (0, 0) - (SCREEN_W-1, SCREEN_H-1), array(0)
-		CU_ASSERT( hImageIsFilledWithColor( @array(0), rgb(0,255,0) ) )
-	end scope
-
-	'' @array(0)
-	scope
-		dim array(0 to (IMAGE_BUFFER_SIZE\sizeof(any ptr))-1) as any ptr
-		get (0, 0) - (SCREEN_W-1, SCREEN_H-1), @array(0)
-		CU_ASSERT( hImageIsFilledWithColor( @array(0), rgb(0,255,0) ) )
-	end scope
-
-	'' udt.array(0)
-	scope
-		type UDT
-			array(0 to (IMAGE_BUFFER_SIZE\sizeof(any ptr))-1) as any ptr
-		end type
-		dim udt as UDT
-		get (0, 0) - (SCREEN_W-1, SCREEN_H-1), udt.array(0)
-		CU_ASSERT( hImageIsFilledWithColor( @udt.array(0), rgb(0,255,0) ) )
-	end scope
-
-	'' @udt.array(0)
-	scope
-		type UDT
-			array(0 to (IMAGE_BUFFER_SIZE\sizeof(any ptr))-1) as any ptr
-		end type
-		dim udt as UDT
-		get (0, 0) - (SCREEN_W-1, SCREEN_H-1), @udt.array(0)
-		CU_ASSERT( hImageIsFilledWithColor( @udt.array(0), rgb(0,255,0) ) )
 	end scope
 end sub
 
@@ -872,9 +928,11 @@ private sub test cdecl( )
 	hTestAllGfxCommands( )
 	hTestPointerTypes( )
 	hTestArrayTarget( )
+	hTestPtrArrayTarget( )
+	hTestUdtWithoutMatchingCastArrayTarget( )
+	hTestUdtWithMatchingCastArrayTarget( )
 	hTestGetIntoUByteArray( )
 	hTestGetIntoULongArray( )
-	hTestGetIntoPtrArray( )
 	hTestFieldTarget( )
 	hTestConstSource( )
 	hTestProperty( )

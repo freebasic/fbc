@@ -24,9 +24,8 @@ const FBGFX_DEFAULT_COLOR_FLAG     = &h80000000
 const FBGFX_DEFAULT_AUX_COLOR_FLAG = &h40000000
 const FBGFX_VIEW_SCREEN_FLAG       = &h00000001
 
-'' Check for cast() AS ANY PTR or compatible overloads.
-'' (cannot check for FB.IMAGE directly because it's not a built-in type)
-private function hUdt2Ptr( byval expr as ASTNODE ptr ) as ASTNODE ptr
+'' Check for cast() AS ANY PTR or compatible overloads, and call them, if any.
+private function hMaybeUdt2Ptr( byval expr as ASTNODE ptr ) as ASTNODE ptr
 	dim as FB_ERRMSG err_num = any
 	dim as FBSYMBOL ptr castproc = any
 
@@ -37,15 +36,11 @@ private function hUdt2Ptr( byval expr as ASTNODE ptr ) as ASTNODE ptr
 	else
 		'' No cast() found
 
-		'' No error shown yet? (would have happened for multiple/mismatching overloads)
-		if( err_num = FB_ERRMSG_OK ) then
-			'' Manually show a nicer error than "expected pointer"
-			errReport( FB_ERRMSG_NOMATCHINGPROC, TRUE, _
-				   " """ & *symbGetName( expr->subtype ) & ".cast() as any ptr""" )
+		'' An error was shown? (multiple/mismatching overloads)
+		if( err_num <> FB_ERRMSG_OK ) then
+			astDelTree( expr )
+			expr = astNewCONSTi( 0, typeAddrOf( FB_DATATYPE_VOID ) )
 		end if
-
-		astDelTree( expr )
-		expr = astNewCONSTi( 0, typeAddrOf( FB_DATATYPE_VOID ) )
 	end if
 
 	function = expr
@@ -140,8 +135,7 @@ private function hMaybeArrayAccess2Ptr _
 	select case( expr->class )
 	'' Support array accesses as in QB: The image will be stored into the
 	'' array starting at the given array element, not at the address stored
-	'' in the given array element. (Unfortunately, this makes it impossible
-	'' to feed the gfx commands with a pointer from an array of pointers)
+	'' in the given array element.
 	case AST_NODECLASS_IDX
 		if( pdescexpr ) then
 			'' Simply access the array, will be passed BYDESC in rtlGfxGet()
@@ -177,6 +171,18 @@ private function hMaybeArrayAccess2Ptr _
 	function = expr
 end function
 
+''
+'' Various GFX quirk statements accept an "fb.IMAGE" source and/or destination
+'' parameter. We accept the following expressions here:
+''
+''  - pointer or UDT (with matching cast()) expression: use pointer as-is
+''
+''  - array access (non-pointer type, and UDTs without matching cast()): use
+''    array itself as image buffer, starting at given element (QB compatibility)
+''
+''  - NIDXARRAY: use array itself as image buffer, starting at the front,
+''    regardless of array's dtype. (QB compatibility)
+''
 private function hCheckFbImageExpr _
 	( _
 		byval expr as ASTNODE ptr, _
@@ -187,25 +193,34 @@ private function hCheckFbImageExpr _
 	'' remove any casting if they won't do any conversion
 	expr = astRemoveNoConvCAST( expr )
 
-	'' Support non-indexed arrays as in QB: The image will be stored at the
-	'' front of the array.
 	if( astIsNIDXARRAY( expr ) ) then
-		'' Build an array access to the 1st element; rest will be handled
-		'' by IDX/FIELD checks below
-		expr = hNidxArray2ArrayAccess( expr )
+		'' Support non-indexed arrays as in QB: Build an array access to
+		'' the 1st element and turn into pointer, regardless of array's dtype.
+		expr = hMaybeArrayAccess2Ptr( hNidxArray2ArrayAccess( expr ), pdescexpr )
+	else
+		'' UDT expression? Turn into pointer if it has a matching cast()
+		'' (cannot check for FB.IMAGE directly because it's not a built-in type)
+		if( typeGetDtAndPtrOnly( expr->dtype ) = FB_DATATYPE_STRUCT ) then
+			expr = hMaybeUdt2Ptr( expr )
+		end if
+
+		'' Special handling for array accesses
+		if( typeIsPtr( expr->dtype ) = FALSE ) then
+			expr = hMaybeArrayAccess2Ptr( expr, pdescexpr )
+		end if
 	end if
 
-	expr = hMaybeArrayAccess2Ptr( expr, pdescexpr )
-
-	'' UDT? Check for cast() overload
-	if( typeGetDtAndPtrOnly( expr->dtype ) = FB_DATATYPE_STRUCT ) then
-		expr = hUdt2Ptr( expr )
-	end if
-
-	'' Besides that though, only pointer expressions are accepted, and they
-	'' will be passed BYVAL through the BYREF AS ANY parameter...
+	'' Ultimately it always has to be a pointer, that will be passed BYVAL
+	'' to the BYREF AS ANY parameters
 	if( typeIsPtr( expr->dtype ) = FALSE ) then
-		errReport( FB_ERRMSG_EXPECTEDPOINTER, TRUE )
+		'' UDT?
+		if( typeGetDtAndPtrOnly( expr->dtype ) = FB_DATATYPE_STRUCT ) then
+			'' Show a nicer error than "expected pointer"
+			errReport( FB_ERRMSG_NOMATCHINGPROC, TRUE, _
+				   " """ & *symbGetName( expr->subtype ) & ".cast() as any ptr""" )
+		else
+			errReport( FB_ERRMSG_EXPECTEDPOINTER, TRUE )
+		end if
 		expr = astNewADDROF( expr )
 	end if
 
