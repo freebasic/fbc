@@ -1008,21 +1008,19 @@ function astBuildStrPtr( byval lhs as ASTNODE ptr ) as ASTNODE ptr
 	dim as ASTNODE ptr expr = any
 	dim as integer dtype = any
 
-	'' *cast( [const] zstring ptr ptr, @lhs )
-	'' (preserving string's CONSTness, like string indexing, or field
-	''  access for UDTs)
+	'' *cast( [const] zstring const ptr ptr, @lhs )
+	'' - preserving string's CONSTness, like string indexing, or field
+	''   access for UDTs
+	'' - making result pointer CONST too, to prevent assignments like
+	''   <STRPTR(s) = 0>
 	dtype = FB_DATATYPE_CHAR
 	if( typeIsConst( lhs->dtype ) ) then
 		dtype = typeSetIsConst( dtype )
 	end if
-	dtype = typeMultAddrOf( dtype, 2 )
+	dtype = typeSetIsConst( typeAddrOf( dtype ) )
+	dtype = typeAddrOf( dtype )
 
 	expr = astNewDEREF( astNewCONV( dtype, NULL, astNewADDROF( lhs ) ) )
-
-	'' HACK: make it return an immutable value by returning (expr + 0)
-	'' in order to prevent things like STRPTR(s) = 0
-	'' (TODO: find a better way of doing this?)
-	expr = astNewBOP( AST_OP_ADD, expr, astNewCONSTi( 0 ), NULL )
 
 	return expr
 end function
