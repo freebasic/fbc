@@ -1006,10 +1006,18 @@ end function
 function astBuildStrPtr( byval lhs as ASTNODE ptr ) as ASTNODE ptr
 	'' note: only var-len strings expressions should be passed
 	dim as ASTNODE ptr expr = any
+	dim as integer dtype = any
 
-	'' *cast( zstring ptr ptr, @lhs )
-	expr = astNewDEREF( astNewCONV( typeMultAddrOf( FB_DATATYPE_CHAR, 2 ), NULL, _
-	                                astNewADDROF( lhs ) ) )
+	'' *cast( [const] zstring ptr ptr, @lhs )
+	'' (preserving string's CONSTness, like string indexing, or field
+	''  access for UDTs)
+	dtype = FB_DATATYPE_CHAR
+	if( typeIsConst( lhs->dtype ) ) then
+		dtype = typeSetIsConst( dtype )
+	end if
+	dtype = typeMultAddrOf( dtype, 2 )
+
+	expr = astNewDEREF( astNewCONV( dtype, NULL, astNewADDROF( lhs ) ) )
 
 	'' HACK: make it return an immutable value by returning (expr + 0)
 	'' in order to prevent things like STRPTR(s) = 0
