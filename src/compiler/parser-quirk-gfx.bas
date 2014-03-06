@@ -131,23 +131,11 @@ private function hNidxArray2ArrayAccess( byval nidxarray as ASTNODE ptr ) as AST
     					  astGetFullType( varexpr ), astGetSubType( varexpr ) )
 end function
 
-private function hCheckFbImageExpr _
+private function hMaybeArrayAccess2Ptr _
 	( _
 		byval expr as ASTNODE ptr, _
-		byval allow_const as integer, _
-		byval pdescexpr as ASTNODE ptr ptr = NULL _
+		byval pdescexpr as ASTNODE ptr ptr _
 	) as ASTNODE ptr
-
-	'' remove any casting if they won't do any conversion
-	expr = astRemoveNoConvCAST( expr )
-
-	'' Support non-indexed arrays as in QB: The image will be stored at the
-	'' front of the array.
-	if( astIsNIDXARRAY( expr ) ) then
-		'' Build an array access to the 1st element; rest will be handled
-		'' by IDX/FIELD checks below
-		expr = hNidxArray2ArrayAccess( expr )
-	end if
 
 	select case( expr->class )
 	'' Support array accesses as in QB: The image will be stored into the
@@ -185,6 +173,29 @@ private function hCheckFbImageExpr _
 			end if
 		end if
 	end select
+
+	function = expr
+end function
+
+private function hCheckFbImageExpr _
+	( _
+		byval expr as ASTNODE ptr, _
+		byval allow_const as integer, _
+		byval pdescexpr as ASTNODE ptr ptr = NULL _
+	) as ASTNODE ptr
+
+	'' remove any casting if they won't do any conversion
+	expr = astRemoveNoConvCAST( expr )
+
+	'' Support non-indexed arrays as in QB: The image will be stored at the
+	'' front of the array.
+	if( astIsNIDXARRAY( expr ) ) then
+		'' Build an array access to the 1st element; rest will be handled
+		'' by IDX/FIELD checks below
+		expr = hNidxArray2ArrayAccess( expr )
+	end if
+
+	expr = hMaybeArrayAccess2Ptr( expr, pdescexpr )
 
 	'' UDT? Check for cast() overload
 	if( typeGetDtAndPtrOnly( expr->dtype ) = FB_DATATYPE_STRUCT ) then
