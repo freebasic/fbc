@@ -24,6 +24,33 @@ const FBGFX_DEFAULT_COLOR_FLAG     = &h80000000
 const FBGFX_DEFAULT_AUX_COLOR_FLAG = &h40000000
 const FBGFX_VIEW_SCREEN_FLAG       = &h00000001
 
+'' Check for cast() AS ANY PTR or compatible overloads.
+'' (cannot check for FB.IMAGE directly because it's not a built-in type)
+private function hUdt2Ptr( byval expr as ASTNODE ptr ) as ASTNODE ptr
+	dim as FB_ERRMSG err_num = any
+	dim as FBSYMBOL ptr castproc = any
+
+	castproc = symbFindCastOvlProc( typeAddrOf( FB_DATATYPE_VOID ), NULL, expr, @err_num )
+	if( castproc ) then
+		'' cast() overload found, call it
+		expr = astBuildCall( castproc, expr )
+	else
+		'' No cast() found
+
+		'' No error shown yet? (would have happened for multiple/mismatching overloads)
+		if( err_num = FB_ERRMSG_OK ) then
+			'' Manually show a nicer error than "expected pointer"
+			errReport( FB_ERRMSG_NOMATCHINGPROC, TRUE, _
+				   " """ & *symbGetName( expr->subtype ) & ".cast() as any ptr""" )
+		end if
+
+		astDelTree( expr )
+		expr = astNewCONSTi( 0, typeAddrOf( FB_DATATYPE_VOID ) )
+	end if
+
+	function = expr
+end function
+
 private function hTurnNIDXARRAYIntoArrayAccess( byval nidxarray as ASTNODE ptr ) as ASTNODE ptr
 	dim as ASTNODE ptr varexpr = any, idxexpr = any, dataOffset = any
 	dim as FBSYMBOL ptr sym = any
@@ -159,28 +186,9 @@ private function hCheckFbImageExpr _
 		end if
 	end select
 
-	'' If an UDT was given, check for cast() AS ANY PTR or compatible overloads
-	'' (cannot check for FB.IMAGE directly because it's not a built-in type)
+	'' UDT? Check for cast() overload
 	if( typeGetDtAndPtrOnly( expr->dtype ) = FB_DATATYPE_STRUCT ) then
-		dim as FB_ERRMSG err_num = any
-		dim as FBSYMBOL ptr castproc = any
-		castproc = symbFindCastOvlProc( typeAddrOf( FB_DATATYPE_VOID ), NULL, expr, @err_num )
-		if( castproc ) then
-			'' cast() overload found, call it
-			expr = astBuildCall( castproc, expr )
-		else
-			'' No cast() found
-
-			'' No error shown yet? (would have happened for multiple/mismatching overloads)
-			if( err_num = FB_ERRMSG_OK ) then
-				'' Manually show a nicer error than "expected pointer"
-				errReport( FB_ERRMSG_NOMATCHINGPROC, TRUE, _
-				           " """ & *symbGetName( expr->subtype ) & ".cast() as any ptr""" )
-			end if
-
-			astDelTree( expr )
-			expr = astNewCONSTi( 0, typeAddrOf( FB_DATATYPE_VOID ) )
-		end if
+		expr = hUdt2Ptr( expr )
 	end if
 
 	'' Besides that though, only pointer expressions are accepted, and they
