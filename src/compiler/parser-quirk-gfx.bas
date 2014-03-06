@@ -51,7 +51,7 @@ private function hUdt2Ptr( byval expr as ASTNODE ptr ) as ASTNODE ptr
 	function = expr
 end function
 
-private function hTurnNIDXARRAYIntoArrayAccess( byval nidxarray as ASTNODE ptr ) as ASTNODE ptr
+private function hNidxArray2ArrayAccess( byval nidxarray as ASTNODE ptr ) as ASTNODE ptr
 	dim as ASTNODE ptr varexpr = any, idxexpr = any, dataOffset = any
 	dim as FBSYMBOL ptr sym = any
 
@@ -146,7 +146,7 @@ private function hCheckFbImageExpr _
 	if( astIsNIDXARRAY( expr ) ) then
 		'' Build an array access to the 1st element; rest will be handled
 		'' by IDX/FIELD checks below
-		expr = hTurnNIDXARRAYIntoArrayAccess( expr )
+		expr = hNidxArray2ArrayAccess( expr )
 	end if
 
 	select case( expr->class )
