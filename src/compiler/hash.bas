@@ -284,7 +284,7 @@ end sub
 sub strsetAdd _
 	( _
 		byval set as TSTRSET ptr, _
-		byref s as const string, _
+		byref s as string, _
 		byval userdata as integer _
 	)
 
