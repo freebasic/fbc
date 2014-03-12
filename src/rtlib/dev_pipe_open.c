@@ -23,7 +23,9 @@ static FB_FILE_HOOKS hooks_dev_pipe = {
     NULL,
     NULL,
     fb_DevFileReadLine,
-    fb_DevFileReadLineWstr
+    fb_DevFileReadLineWstr,
+    NULL,
+    NULL
 };
 
 int fb_DevPipeOpen( FB_FILE *handle, const char *filename, size_t filename_len )
@@ -46,7 +48,7 @@ int fb_DevPipeOpen( FB_FILE *handle, const char *filename, size_t filename_len )
     case FB_FILE_MODE_INPUT:
         if ( handle->access == FB_FILE_ACCESS_ANY)
             handle->access = FB_FILE_ACCESS_READ;
-        
+
         if( handle->access != FB_FILE_ACCESS_READ )
             res = fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 
@@ -59,23 +61,23 @@ int fb_DevPipeOpen( FB_FILE *handle, const char *filename, size_t filename_len )
 
         if( handle->access != FB_FILE_ACCESS_WRITE )
             res = fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
-        
+
         strcpy( openmask, "w" );
         break;
 
     case FB_FILE_MODE_BINARY:
         if ( handle->access == FB_FILE_ACCESS_ANY)
             handle->access = FB_FILE_ACCESS_WRITE;
-        
+
 		strcpy( openmask, (handle->access == FB_FILE_ACCESS_WRITE? "wb" : "rb") );
 
         break;
-    
+
     default:
     	res = fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
     }
 
-    if( res == FB_RTERROR_OK ) 
+    if( res == FB_RTERROR_OK )
     {
         /* try to open/create pipe */
 #ifdef HOST_MINGW
