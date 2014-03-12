@@ -18,7 +18,7 @@ static int hReadChar( FB_INPUTCTX *ctx )
     /* console.. */
     else
     {
-		if( ctx->index >= FB_STRSIZE( &ctx->str ) )
+		if( (size_t)ctx->index >= FB_STRSIZE( &ctx->str ) )
 			return EOF;
 		else
 			return ctx->str.data[ctx->index++];

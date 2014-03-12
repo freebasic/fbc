@@ -31,12 +31,12 @@ typedef struct _LINUX_SERIAL_INFO {
     FB_SERIAL_OPTIONS	*pOptions;
 } LINUX_SERIAL_INFO;
 
-static void alrm() 
+static void alrm()
 {
 	/* signal callback, do nothing */
 }
 
-static speed_t get_speed( int speed ) 
+static speed_t get_speed( int speed )
 {
 	static unsigned int sp[][2] =
     {
@@ -83,11 +83,11 @@ static speed_t get_speed( int speed )
         {ENDSPD, 0},
         {0, 0}
 	};
-	
+
     int n;
     speed_t Rspeed;
 
-    for (n = 0; sp[n][0] != speed; n++) 
+    for (n = 0; sp[n][0] != (unsigned int)speed; n++)
     {
     	if (sp[n][0] == ENDSPD)		/*invalid speed */
         	return (BADSPEED);
@@ -117,14 +117,14 @@ int fb_SerialOpen
 #endif
 
     /* The IRQ stuff is not supported on Linux ... */
-    if( options->IRQNumber != 0 ) 
+    if( options->IRQNumber != 0 )
     {
     	return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
     }
 
     res = fb_ErrorSetNum( FB_RTERROR_OK );
-	
-    switch( handle->access ) 
+
+    switch( handle->access )
     {
     case FB_FILE_ACCESS_READ:
         DesiredAccess |= O_RDONLY;
@@ -145,7 +145,7 @@ int fb_SerialOpen
 	{
 		if( strcasecmp(pszDevice, "COM") == 0 )
 		{
-			strcpy( DeviceName, "/dev/modem" );      
+			strcpy( DeviceName, "/dev/modem" );
 		}
 		else
 		{
@@ -154,24 +154,24 @@ int fb_SerialOpen
 	}
 	else
 	{
-		sprintf(DeviceName, "/dev/ttyS%d", (iPort-1));      
+		sprintf(DeviceName, "/dev/ttyS%d", (iPort-1));
 	}
-    
+
     /* Setting speed baud line */
     TermSpeed = get_speed(options->uiSpeed);
-    if( TermSpeed == BADSPEED ) 
+    if( TermSpeed == BADSPEED )
     {
         return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
     }
 
 #ifdef HAS_LOCKDEV
-    if( dev_testlock(DeviceName) ) 
+    if( dev_testlock(DeviceName) )
     {
         return fb_ErrorSetNum( FB_RTERROR_FILENOTFOUND );
     }
-    
+
     plckid = dev_lock(DeviceName);
-    if( plckid < 0 ) 
+    if( plckid < 0 )
     {
         return fb_ErrorSetNum( FB_RTERROR_FILENOTFOUND );
     }
@@ -180,38 +180,38 @@ int fb_SerialOpen
     alarm(SERIAL_TIMEOUT);
     SerialFD =  open( DeviceName, DesiredAccess );
     alarm(0);
-    if( SerialFD < 0) 
+    if( SerialFD < 0)
     {
 #ifdef HAS_LOCKDEV
 		dev_unlock(DeviceName, plckid);
 #endif
         return fb_ErrorSetNum( FB_RTERROR_FILENOTFOUND );
     }
-    
+
 	/* !!!FIXME!!! Lock file handle (handle->lock) pending, you can use fcnctl or flock functions */
- 
+
     /* Make the file descriptor asynchronous */
     /* fcntl(SerialFD, F_SETFL, FASYNC); */
 
-    /* Save old status of serial port discipline */    
-    if( tcgetattr ( SerialFD, &oldserp ) ) 
+    /* Save old status of serial port discipline */
+    if( tcgetattr ( SerialFD, &oldserp ) )
     {
         res = fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
     }
 
     /* Discard data write/read in serial port not transmitted */
-    if( tcflush( SerialFD, TCIOFLUSH)  ) 
-    { 
+    if( tcflush( SerialFD, TCIOFLUSH)  )
+    {
         res = fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
     }
 
     /* Inittialize new struct termios with old values */
-    if( tcgetattr ( SerialFD, &nwserp ) ) 
+    if( tcgetattr ( SerialFD, &nwserp ) )
     {
         res = fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
     }
-    
-	/* Set timeouts 
+
+	/* Set timeouts
 	 * Timeout not are defined in UNIX termio/s
 	 * set CTS > 0 enable CTSRTS flow control,
 	 * other are ignored are setting for default in open function
@@ -219,46 +219,46 @@ int fb_SerialOpen
 	 */
 
 	/* setup generic serial port configuration */
-    if( res == FB_RTERROR_OK ) 
+    if( res == FB_RTERROR_OK )
     {
 		/* Initialize */
     	nwserp.c_cflag |= CREAD; /* Enable receiver */
 		nwserp.c_iflag &= ~(IXON | IXOFF | IXANY); /* Disable Software Flow Control */
     	nwserp.c_cflag |= CREAD; /* Enable receiver */
 
-	    if( options->AddLF ) 
+	    if( options->AddLF )
 	    {
 			/*With AddFl Set, Process Canonical output/input */
 			nwserp.c_lflag |= (ICANON|OPOST|ONLCR); /* Postprocess output and map newline at nl/cr */
 		}
-		else 
+		else
 		{
 			/* Set raw tty settings */
 	    		cfmakeraw(&nwserp);
 			nwserp.c_cc[VMIN] = 1 ; /* Wait min for 1 char */
 			nwserp.c_cc[VTIME] = 0 ; /* Not use timeout */
 		}
-	
+
 		if( options->KeepDTREnabled )
-			nwserp.c_cflag &= ~(HUPCL); /* Not Hangup (set DTR) on last close */ 
+			nwserp.c_cflag &= ~(HUPCL); /* Not Hangup (set DTR) on last close */
 		else
 			nwserp.c_cflag |= (HUPCL); /* Hangup (drop DTR) on last close */
-			
+
 		/* CD (Carrier Detect) and DS (Data Set Ready) are modem signal
 		 * in UNIXes the flag CLOCAL attend the modem signals. Quickly, if your conection is
 		 * a modem telephony device active CD[0-n] and DS[0-n]
 		 * else for local conections set CD0 or DS0
 		 */
 		 /* DS and CD are ignored */
-		if( options->DurationDSR || options->DurationCD ) 
+		if( options->DurationDSR || options->DurationCD )
 		{
 			nwserp.c_cflag &= ~(CLOCAL);
-		} 
-		else 
+		}
+		else
 		{
 		 	nwserp.c_cflag |= CLOCAL; /* Ignore modem control Lines */
 		}
-	
+
 		/* Termios not manage timeout for CTS, but understand RTSCTS flow control
 		 * if DurationCTS is greater zero CTSRTS flow will be activate
 		 */
@@ -266,105 +266,105 @@ int fb_SerialOpen
 			nwserp.c_cflag |= CRTSCTS;
 		else
 			nwserp.c_cflag &= ~CRTSCTS;
-	
+
 		/* Setting speed baud and other serial parameters */
 		nwserp.c_cflag |= TermSpeed ;
 		/* Set size word 5,6,7,8 sonly support */
 		nwserp.c_cflag &= ~(CSIZE);
-		
-		switch ( options->uiDataBits)  
+
+		switch ( options->uiDataBits)
 		{
-		case 5:  
+		case 5:
 			nwserp.c_cflag |= CS5 ;
 			break;
-		case 6:  
+		case 6:
 			nwserp.c_cflag |= CS6 ;
 			break;
-		case 7:  
+		case 7:
 			nwserp.c_cflag |= CS7 ;
 			break;
-		case 8:  
+		case 8:
 			/* fall through */
-		default: 
+		default:
 			nwserp.c_cflag |= CS8 ;
 		}
-		
+
 		/* Setting parity, 1.5 StopBit not supported */
-		switch ( options->Parity ) 
+		switch ( options->Parity )
 		{
 	    case FB_SERIAL_PARITY_NONE:
 	        nwserp.c_cflag &= ~(PARENB);
 			break;
-	    
+
 	    /* 7bits and Space parity is the same (7S1) that (8N1) 8 bits without parity */
-	    case FB_SERIAL_PARITY_SPACE: 
+	    case FB_SERIAL_PARITY_SPACE:
 	        nwserp.c_cflag &= ~(PARENB);
 			nwserp.c_cflag |= CS8;
 	        break;
-	
+
 		/* !!!FIXME!!! I'm not sure for mark parity, set the input line. Fix me! for output */
-	    case FB_SERIAL_PARITY_MARK:  
+	    case FB_SERIAL_PARITY_MARK:
 		    nwserp.c_iflag |= (PARMRK);
 		    /* fall through */
-	    
+
 	    case FB_SERIAL_PARITY_EVEN:
 			nwserp.c_iflag |= (INPCK | ISTRIP);
 	        nwserp.c_cflag |= PARENB;
 			break;
-	    
+
 	    case FB_SERIAL_PARITY_ODD:
 			nwserp.c_iflag |= (INPCK | ISTRIP);
 	        nwserp.c_cflag |= (PARENB|PARODD);
 	    	break;
 		}
-	
+
 		/* Ignore all parity errors, can be dangerous */
 		if ( options->IgnoreAllErrors ) {
 			nwserp.c_iflag |= (IGNPAR);
 		} else {
 			nwserp.c_iflag &= ~(IGNPAR);
 		}
-		
-	    switch ( options->StopBits ) 
+
+	    switch ( options->StopBits )
 	    {
 	    case FB_SERIAL_STOP_BITS_1:
 			nwserp.c_cflag &= ~(CSTOPB);
 	        break;
-		
+
 		/* 1.5 Stop not support 2 Stop bits assumed */
 		case FB_SERIAL_STOP_BITS_1_5:
 	    	/* fall through */
-	
+
 	    case FB_SERIAL_STOP_BITS_2:
 			nwserp.c_cflag |= CSTOPB;
 	        break;
 		}
-		
+
 		/* If not RTS hardware flow, sotfware IXANY softflow assumed */
-		if( options->SuppressRTS ) 
-		{ 
+		if( options->SuppressRTS )
+		{
 			nwserp.c_iflag &= ~(IXON | IXOFF | IXANY);
 			nwserp.c_iflag |= (IXON | IXANY);
 		}
-		
-		if( res == FB_RTERROR_OK ) 
+
+		if( res == FB_RTERROR_OK )
 		{
 			/* Active set serial parameters */
-			if( tcsetattr( SerialFD, TCSAFLUSH, &nwserp ) ) 
-		   		res = fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL ); 
+			if( tcsetattr( SerialFD, TCSAFLUSH, &nwserp ) )
+		   		res = fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 	    }
 	}
 
     /* error? */
-    if( res != FB_RTERROR_OK ) 
+    if( res != FB_RTERROR_OK )
     {
 #ifdef HAS_LOCKDEV
 		dev_unlock(DeviceName, plckid);
 #endif
         tcsetattr( SerialFD, TCSAFLUSH, &oldserp); /* Restore old parameter of serial line */
     	close(SerialFD);
-    } 
-    else 
+    }
+    else
     {
 	    LINUX_SERIAL_INFO *pInfo = (LINUX_SERIAL_INFO *) calloc( 1, sizeof(LINUX_SERIAL_INFO) );
 	    DBG_ASSERT( ppvHandle!=NULL );
@@ -391,7 +391,7 @@ int fb_SerialGetRemaining( FB_FILE *handle, void *pvHandle, fb_off_t *pLength )
     SerialFD = pInfo->sfd;
     if( ioctl(SerialFD, FIONREAD, &rBytes) )
 	    return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
-    
+
 	if( pLength )
 		*pLength = rBytes;
 
@@ -414,11 +414,11 @@ int fb_SerialWrite
     alarm( SERIAL_TIMEOUT );
     rlng=write(SerialFD, data, length);
     alarm(0);
-    
+
     if( rlng <= 0 )
         return fb_ErrorSetNum( FB_RTERROR_FILEIO );
-    
-    if( length != rlng  )
+
+    if( length != (size_t)rlng  )
         return fb_ErrorSetNum( FB_RTERROR_FILEIO );
 
     return fb_ErrorSetNum( FB_RTERROR_OK );
@@ -436,18 +436,18 @@ int fb_SerialRead( FB_FILE *handle, void *pvHandle, void *data, size_t *pLength 
 
     FD_ZERO( &rfds );
     FD_SET( SerialFD, &rfds );
-    
+
     tmout.tv_sec = 0;
     tmout.tv_usec = (SREAD_TIMEOUT*1000L); /* convert to microsecs */
-    
+
     select( SerialFD+1, &rfds, NULL, NULL, &tmout );
-    if ( FD_ISSET(SerialFD, &rfds) ) 
+    if ( FD_ISSET(SerialFD, &rfds) )
     {
-    	if ( (count = read(SerialFD, data, *pLength)) < 0 ) 
+    	if ( (count = read(SerialFD, data, *pLength)) < 0 )
     	{
     		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 		}
-    } 
+    }
 
     *pLength = count;
 
@@ -471,12 +471,12 @@ int fb_SerialClose( FB_FILE *handle, void *pvHandle )
 #ifdef HAS_LOCKDEV
 	dev_unlock(DeviceName, plckid);
 #endif
-	
+
 	/* Restore old parameter of serial line */
-	tcsetattr( SerialFD, TCSAFLUSH, &oserp); 
-    
+	tcsetattr( SerialFD, TCSAFLUSH, &oserp);
+
     close(SerialFD);
 	free(pInfo);
-    
+
     return fb_ErrorSetNum( FB_RTERROR_OK );
 }

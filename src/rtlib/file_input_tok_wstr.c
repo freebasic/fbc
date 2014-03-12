@@ -20,7 +20,7 @@ static FB_WCHAR hReadChar( FB_INPUTCTX *ctx )
     /* console.. */
     else
     {
-		if( ctx->index >= FB_STRSIZE( &ctx->str.len ) )
+		if( (size_t)ctx->index >= FB_STRSIZE( &ctx->str.len ) )
 			return FB_WEOF;
 		else
 			return (unsigned char)ctx->str.data[ctx->index++];
@@ -56,7 +56,7 @@ static FB_WCHAR hSkipWhiteSpc( FB_INPUTCTX *ctx )
 	do
 	{
 		c = hReadChar( ctx );
-		if( c == FB_WEOF )
+		if( c == (FB_WCHAR)FB_WEOF )
 			break;
 	} while( (c == _LC(' ')) || (c == _LC('\t')) );
 
@@ -106,7 +106,7 @@ void fb_FileInputNextTokenWstr( FB_WCHAR *buffer, ssize_t max_chars, int is_stri
 
 	c = hSkipWhiteSpc( ctx );
 
-	while( (c != FB_WEOF) && (len < max_chars) )
+	while( (c != (FB_WCHAR)FB_WEOF) && (len < max_chars) )
 	{
 		switch( c )
 		{

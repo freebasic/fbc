@@ -91,7 +91,7 @@ static int hIsInf(double d)
 
 static int hIsInd(double d)
 {
-	return hDoubleToLongBits(d) == 0xfff8000000000000ll;
+	return (hDoubleToLongBits(d) == (long long)0xfff8000000000000ll);
 }
 
 static int hIsNan(double d)
@@ -360,7 +360,7 @@ FBCALL int fb_PrintUsingStr( int fnum, FBSTRING *s, int mask )
 				{
 					++strchars;
 
-					if( FB_STRSIZE( s ) < strchars )
+					if( FB_STRSIZE( s ) < (size_t)strchars )
 					{
 						fb_PrintFixString( fnum, s->data, 0 );
 

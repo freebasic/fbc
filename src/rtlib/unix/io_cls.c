@@ -6,7 +6,7 @@
 void fb_ConsoleClear( int mode )
 {
 	int start, end, i;
-	
+
 	if (!__fb_con.inited || mode==1)
 		return;
 
@@ -15,7 +15,7 @@ void fb_ConsoleClear( int mode )
 	BG_UNLOCK( );
 
 	fb_ConsoleGetView(&start, &end);
-	if ((mode != 2) && (mode != 0xFFFF0000)) {
+	if ((mode != 2) && (mode != (int)0xFFFF0000)) {
 		start = 1;
 		end = fb_ConsoleGetMaxRow();
 	}
