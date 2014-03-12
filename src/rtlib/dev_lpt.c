@@ -59,6 +59,8 @@ static FB_FILE_HOOKS hooks_dev_lpt = {
     NULL,
     NULL,
     NULL,
+    NULL,
+    NULL,
     NULL
 };
 
