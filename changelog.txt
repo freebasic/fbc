@@ -132,6 +132,7 @@ Version 0.91.0:
 - The compiler no longer crashes (SIGFPE) on constant expressions containing signed integer division overflows, e.g. -2147483648 \ -1, which triggers SIGFPE when calculated on x86. The compiler now inserts 0 (-2147483648 \ -1 = 2147483648 which doesn't fit into a 32bit signed integer, and in theory overflows to 0) and shows a warning. Note: FB programs doing such divisions at run-time (e.g. <dim a as integer = -2147483648, b as integer = -1 : print a \ b>) may still run into SIGFPE crashes; this change just affects the compiler itself, not the generated code.
 - When calling a byref function through a function pointer, the result may now be ignored, just like with normal function calls, or when calling normal functions through function pointers.
 - STRPTR() on a CONST STRING (DIM s AS CONST STRING) did not preserve CONSTness and allowed modifying the string
+- win/objbase.bi: Wrong IsEqualGUID() declaration, producing wrong result value (subsequently, all aliases such as IsEqualIID() were wrong too)
 
 
 Version 0.90.1:
