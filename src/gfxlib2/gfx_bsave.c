@@ -64,7 +64,7 @@ static int save_bmp(FB_GFXCTX *ctx, FILE *f, void *src, void *pal, int outbpp)
 		/* Something wrong with the image header */
 		return FB_RTERROR_ILLEGALFUNCTIONCALL;
 	}
-	
+
 	switch (inbpp) {
 	case 1: /* 8-bit or 24-bit output (default to 8) */
 		if (outbpp > 8) {
@@ -254,7 +254,7 @@ FBCALL int fb_GfxBsaveEx(FBSTRING *filename, void *src, unsigned int size, void 
 
 		if (!src) {
 			DRIVER_LOCK();
-			size = MIN(size, __fb_gfx->pitch * __fb_gfx->h);
+			size = MIN(size, (unsigned int)(__fb_gfx->pitch * __fb_gfx->h));
 			if (!fwrite(context->line[0], size, 1, f))
 				result = FB_RTERROR_FILEIO;
 			DRIVER_UNLOCK();

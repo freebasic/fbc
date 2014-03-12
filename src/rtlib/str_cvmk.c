@@ -9,7 +9,7 @@ static void hCV( FBSTRING *str, ssize_t len, void *num )
 	if( str == NULL )
 		return;
 
-	if( (str->data != NULL) && (FB_STRSIZE( str ) >= len) )
+	if( (str->data != NULL) && (FB_STRSIZE( str ) >= (size_t)len) )
 	{
 		for( i = 0; i < len; i++ )
 			((char *)num)[i] = str->data[i];

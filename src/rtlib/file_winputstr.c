@@ -26,7 +26,7 @@ FBCALL FB_WCHAR *fb_FileWstrInput( ssize_t chars, int fnum )
         size_t read_chars = 0;
         if( FB_HANDLE_IS_SCREEN(handle) )
         {
-            while( read_chars != chars )
+            while( read_chars != (size_t)chars )
             {
                 res = fb_FileGetDataEx( handle,
                                         0,

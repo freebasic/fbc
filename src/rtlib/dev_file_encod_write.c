@@ -27,7 +27,7 @@ int fb_DevFileWriteEncod( FB_FILE *handle, const void* buffer, size_t chars )
 	if( encod_buffer != NULL )
 	{
 		/* do write */
-		if( fwrite( encod_buffer, 1, bytes, fp ) != bytes )
+		if( fwrite( encod_buffer, 1, bytes, fp ) != (size_t)bytes )
 		{
 			FB_UNLOCK();
 			return fb_ErrorSetNum( FB_RTERROR_FILEIO );
