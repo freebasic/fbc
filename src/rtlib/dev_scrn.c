@@ -16,7 +16,9 @@ static FB_FILE_HOOKS hooks_dev_scrn = {
     NULL,
     NULL,
     fb_DevScrnReadLine,
-    fb_DevScrnReadLineWstr
+    fb_DevScrnReadLineWstr,
+    NULL,
+    NULL
 };
 
 int fb_DevScrnOpen( FB_FILE *handle, const char *filename, size_t filename_len )
