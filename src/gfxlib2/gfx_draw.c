@@ -22,13 +22,13 @@ static intptr_t parse_number(char **str)
 		c++;
 	}
 	while ((*c >= '0') && (*c <= '9')) {
-		if (n == FB_NAN)
+		if (n == (intptr_t)FB_NAN)
 			n = 0;
 		n = (n * 10) + (*c - '0');
 		c++;
 	}
 	*str = c;
-	if ((negative) && (n != FB_NAN))
+	if ((negative) && (n != (intptr_t)FB_NAN))
 		n = -n;
 
 	return n;
@@ -73,21 +73,21 @@ FBCALL void fb_GfxDraw(void *target, FBSTRING *command)
 
 			case 'C':
 				c++;
-				if ((value1 = parse_number(&c)) == FB_NAN)
+				if ((value1 = parse_number(&c)) == (intptr_t)FB_NAN)
 					goto error;
 				context->fg_color = fb_hFixColor(context->target_bpp, value1);
 				break;
 
 			case 'S':
 				c++;
-				if ((value1 = parse_number(&c)) == FB_NAN)
+				if ((value1 = parse_number(&c)) == (intptr_t)FB_NAN)
 					goto error;
 				base_scale = (float)value1 / 4.0;
 				break;
 
 			case 'A':
 				c++;
-				if ((value1 = parse_number(&c)) == FB_NAN)
+				if ((value1 = parse_number(&c)) == (intptr_t)FB_NAN)
 					goto error;
 				base_angle = (float)(value1 & 0x3) * PI * 0.5;
 				break;
@@ -97,7 +97,7 @@ FBCALL void fb_GfxDraw(void *target, FBSTRING *command)
 				if (toupper(*c) != 'A')
 					goto error;
 				c++;
-				if ((value1 = parse_number(&c)) == FB_NAN)
+				if ((value1 = parse_number(&c)) == (intptr_t)FB_NAN)
 					goto error;
 				base_angle = (float)value1 * PI / 180.0;
 				break;
@@ -106,9 +106,9 @@ FBCALL void fb_GfxDraw(void *target, FBSTRING *command)
 				c++;
 				/* Here we could be more severe with checking, but it's unlikely our substring
 				 * resides at location FB_NAN (0x80000000) */
-				if ((value1 = parse_number(&c)) == FB_NAN)
+				if ((value1 = parse_number(&c)) == (intptr_t)FB_NAN)
 					goto error;
-				
+
 				DRIVER_UNLOCK();
 				fb_GfxDraw(target, (FBSTRING *)value1);
 				DRIVER_LOCK();
@@ -116,12 +116,12 @@ FBCALL void fb_GfxDraw(void *target, FBSTRING *command)
 
 			case 'P':
 				c++;
-				if ((value1 = parse_number(&c)) == FB_NAN)
+				if ((value1 = parse_number(&c)) == (intptr_t)FB_NAN)
 					goto error;
 				value2 = value1;
 				if (*c == ',') {
 					c++;
-					if ((value2 = parse_number(&c)) == FB_NAN)
+					if ((value2 = parse_number(&c)) == (intptr_t)FB_NAN)
 						goto error;
 				}
 				DRIVER_UNLOCK();
@@ -138,11 +138,11 @@ FBCALL void fb_GfxDraw(void *target, FBSTRING *command)
 				{
 					rel = TRUE;
 				}
-				if ((value1 = parse_number(&c)) == FB_NAN)
+				if ((value1 = parse_number(&c)) == (intptr_t)FB_NAN)
 					goto error;
 				if (*c++ != ',')
 					goto error;
-				if ((value2 = parse_number(&c)) == FB_NAN)
+				if ((value2 = parse_number(&c)) == (intptr_t)FB_NAN)
 					goto error;
 				x2 = (float)value1;
 				y2 = (float)value2;
@@ -181,7 +181,7 @@ FBCALL void fb_GfxDraw(void *target, FBSTRING *command)
 				if ((toupper(*c) >= 'E') && (toupper(*c) <= 'H'))
 					scale = SQRT_2;
 				c++;
-				if ((value1 = parse_number(&c)) != FB_NAN)
+				if ((value1 = parse_number(&c)) != (intptr_t)FB_NAN)
 					length = value1;
 				else
 					length = 1;
