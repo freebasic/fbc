@@ -8,7 +8,7 @@ FBCALL ssize_t fb_ArrayLBound( FBARRAY *array, ssize_t dimension )
 	dimension -= 1;
 
 	/* out-of-bound dimension? */
-	if( (dimension < 0) || (dimension >= array->dimensions) ) {
+	if( (dimension < 0) || (dimension >= (ssize_t)array->dimensions) ) {
 		/*
 		 * lbound( a, 0 ) returns the lower bound of the array's dimTB,
 		 * always 1. Any other out-of-bound dimension value returns 0.

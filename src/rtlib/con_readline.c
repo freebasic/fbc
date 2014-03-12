@@ -158,7 +158,7 @@ FBCALL FBSTRING *fb_ConReadLine( int soft_cursor )
 			break;
 
 		case KEY_UP:  /* Move cursor up */
-			if( pos >= cols ) {
+			if( pos >= (size_t)cols ) {
 				DoMove( &current_x, &current_y, -cols, 0, cols, rows );
 				pos -= cols;
 			}
