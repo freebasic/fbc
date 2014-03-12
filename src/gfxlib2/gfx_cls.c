@@ -11,13 +11,13 @@ void fb_GfxClear(int mode)
     int reset_gfx_pos;
     int reset_console_start = 0, reset_console_end = 0;
     int new_x = -1, new_y = -1;
-	
+
 	fb_hPrepareTarget(context, NULL);
 	fb_hSetPixelTransfer(context, context->bg_color);
-	
+
     DRIVER_LOCK();
 
-    if( mode == 0xFFFF0000 ) {
+    if( (unsigned)mode == 0xFFFF0000 ) {
         if( context->flags & CTX_VIEWPORT_SET )
             mode = 1;
         else {
@@ -30,9 +30,9 @@ void fb_GfxClear(int mode)
                 mode = 2;
         }
     }
-	
+
 	switch (mode) {
-		
+
 		case 0:
 			/* Clear entire screen */
             {
@@ -50,7 +50,7 @@ void fb_GfxClear(int mode)
                 reset_gfx_pos = TRUE;
             }
 			break;
-		
+
 		case 2:
             /* Clear text viewport */
             {
@@ -91,7 +91,7 @@ void fb_GfxClear(int mode)
 			break;
 	}
 	SET_DIRTY(context, dirty, dirty_len);
-	
+
     if( reset_gfx_pos ) {
         context->last_x = context->view_x + (context->view_w >> 1);
         context->last_y = context->view_y + (context->view_h >> 1);

@@ -217,7 +217,7 @@ static int load_bmp(FB_GFXCTX *ctx, FILE *f, void *dest, void *pal, int usenewhe
 		    (!fread_16_le(&biPlanes, f)) ||
 		    (!fread_16_le(&biBitCount, f)))
 			return FB_RTERROR_FILEIO;
-		
+
 		if (biSize >= 20) {
 			if (!fread_32_le(&biCompression, f)) {
 				return FB_RTERROR_FILEIO;
@@ -285,8 +285,8 @@ static int load_bmp(FB_GFXCTX *ctx, FILE *f, void *dest, void *pal, int usenewhe
 		put_header = (PUT_HEADER *)dest;
 		/* do not overwrite pre-allocated image buffer header */
 		if (put_header->type == PUT_HEADER_NEW) {
-			width = MIN(put_header->width, biWidth);
-			height = MIN(put_header->height, biHeight);
+			width = MIN(put_header->width, (unsigned int)biWidth);
+			height = MIN(put_header->height, (unsigned int)biHeight);
 			bpp = put_header->bpp;
 		} else {
 			bpp = put_header->old.bpp;
@@ -302,8 +302,8 @@ static int load_bmp(FB_GFXCTX *ctx, FILE *f, void *dest, void *pal, int usenewhe
 					put_header->height = biHeight;
 					put_header->pitch = ((put_header->width * put_header->bpp) + 0xF) & ~0xF;
 
-					width = MIN(put_header->width, biWidth);
-					height = MIN(put_header->height, biHeight);
+					width = MIN(put_header->width, (unsigned int)biWidth);
+					height = MIN(put_header->height, (unsigned int)biHeight);
 					bpp = put_header->bpp;
 				}
 				else {
@@ -311,7 +311,7 @@ static int load_bmp(FB_GFXCTX *ctx, FILE *f, void *dest, void *pal, int usenewhe
 					put_header->old.width = biWidth;
 					put_header->old.height = biHeight;
 					put_header->pitch = ((put_header->width * put_header->bpp) + 0xF) & ~0xF;
-					
+
 					width = MIN(put_header->old.width, biWidth);
 					height = MIN(put_header->old.height, biHeight);
 					bpp = put_header->old.bpp;
@@ -500,7 +500,7 @@ static int gfx_bload(FBSTRING *filename, void *dest, void *pal, int usenewheader
 	if (result == FB_RTERROR_OK) {
 		if (!dest) {
 			DRIVER_LOCK();
-			size = MIN(size, __fb_gfx->pitch * __fb_gfx->h);
+			size = MIN(size, (unsigned int)(__fb_gfx->pitch * __fb_gfx->h));
 			if ((!fread(context->line[0], size, 1, f)) && (!feof(f)))
 				result = FB_RTERROR_FILEIO;
 			SET_DIRTY(context, 0, __fb_gfx->h);
