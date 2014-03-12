@@ -14,7 +14,9 @@ static FB_FILE_HOOKS hooks_dev_cons = {
     NULL,
     NULL,
     fb_DevFileReadLine,
-    fb_DevFileReadLineWstr
+    fb_DevFileReadLineWstr,
+    NULL,
+    NULL
 };
 
 int fb_DevConsOpen( FB_FILE *handle, const char *filename, size_t filename_len )
