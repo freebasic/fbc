@@ -81,7 +81,7 @@ int fb_ConsoleLineInputWstr
     }
 
     {
-        FBSTRING str_result = { 0 };
+        FBSTRING str_result = { 0, 0, 0 };
 
         res = fb_DevFileReadLineDumb( stdin, &str_result, hWrapper );
 

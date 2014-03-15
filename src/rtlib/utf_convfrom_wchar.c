@@ -275,7 +275,10 @@ static char *hToUTF32( const FB_WCHAR *src, ssize_t chars, char *dst, ssize_t *b
 
 	case sizeof( UTF_16 ):
         hUTF16ToUTF32( src, chars, (UTF_32 *)dst, bytes );
-        break;
+		break;
+
+	default:
+		break;
 	}
 
 	return dst;

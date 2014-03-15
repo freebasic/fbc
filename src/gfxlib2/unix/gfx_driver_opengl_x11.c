@@ -54,7 +54,7 @@ typedef struct {
 } GLXFUNCS;
 
 static FB_DYLIB gl_lib = NULL;
-static GLXFUNCS __fb_glX = { NULL };
+static GLXFUNCS __fb_glX = { NULL, NULL, NULL, NULL, NULL };
 static GLXContext context;
 
 void *fb_hGL_GetProcAddress(const char *proc)

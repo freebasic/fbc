@@ -28,7 +28,7 @@ typedef struct {
 } GPM_FUNCS;
 
 static FB_DYLIB gpm_lib = NULL;
-static GPM_FUNCS gpm = { NULL };
+static GPM_FUNCS gpm = { NULL, NULL, NULL, NULL };
 static Gpm_Connect conn;
 static int has_focus = TRUE;
 static int mouse_x = 0, mouse_y = 0, mouse_z = 0, mouse_buttons = 0;

@@ -28,7 +28,7 @@ typedef struct {
 
 static Display *display;
 static FB_DYLIB xlib = NULL;
-static X_FUNCS X = { NULL };
+static X_FUNCS X = { NULL, NULL, NULL, NULL, NULL };
 #endif
 
 static pid_t main_pid;

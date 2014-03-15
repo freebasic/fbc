@@ -751,7 +751,7 @@ void fb_hX11SetWindowTitle(char *title)
 int fb_hX11SetWindowPos(int x, int y)
 {
 	Window window, root, parent, *children;
-	XWindowAttributes attribs = { 0 };
+	XWindowAttributes attribs = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 	XEvent event;
 	unsigned int num_children;
 	int dx = 0, dy = 0;
