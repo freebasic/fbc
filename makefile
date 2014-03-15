@@ -290,7 +290,7 @@ endif
 
 ALLFBCFLAGS += -e -m fbc -w pedantic
 ALLFBLFLAGS += -e -m fbc -w pedantic
-ALLCFLAGS += -Wall -Werror-implicit-function-declaration
+ALLCFLAGS += -Wall -Wextra -Wno-unused-parameter -Werror-implicit-function-declaration
 
 ifeq ($(TARGET_OS),xbox)
   ifeq ($(OPENXDK),)
