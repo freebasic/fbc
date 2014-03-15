@@ -265,7 +265,7 @@ function symbAddArrayDesc( byval array as FBSYMBOL ptr ) as FBSYMBOL ptr
 	function = desc
 end function
 
-sub symbAddArrayDim _
+private sub hAddArrayDim _
 	( _
 		byval s as FBSYMBOL ptr, _
 		byval lower as longint, _
@@ -311,7 +311,7 @@ sub symbSetArrayDimTb _
 			symbDelVarDims( s )
 
 			for i = 0 to dimensions-1
-				symbAddArrayDim( s, dTB(i).lower, dTB(i).upper )
+				hAddArrayDim( s, dTB(i).lower, dTB(i).upper )
 
 				'' If any dimension size is unknown yet (ellipsis), hold off on the actual build
 				'' until called later when it's known.
