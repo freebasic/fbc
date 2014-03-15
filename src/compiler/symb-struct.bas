@@ -410,22 +410,15 @@ function symbAddField _
     end if
 
 	sym->lgt = lgt
-
 	if( updateudt or symbGetUDTIsUnion( parent ) ) then
 		sym->ofs = parent->ofs
 	else
 		sym->ofs = parent->ofs - lgt
 	end if
 	symbVarInitFields( sym )
-
-	sym->var_.array.dif = symbCalcArrayDiff( dimensions, dTB(), lgt )
-	symbSetArrayDimensions( sym, dimensions )
-	if( dimensions > 0 ) then
-		for i as integer = 0 to dimensions-1
-			symbAddArrayDim( sym, dTB(i).lower, dTB(i).upper )
-		next
+	if( dimensions <> 0 ) then
+		symbSetArrayDimTb( sym, dimensions, dTB() )
 	end if
-	sym->var_.array.elms = symbCalcArrayElements( sym )
 
 	'' multiple len by all array elements (if any)
 	lgt *= sym->var_.array.elms

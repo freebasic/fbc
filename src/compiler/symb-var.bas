@@ -291,7 +291,6 @@ sub symbAddArrayDim _
 
 end sub
 
-'':::::
 sub symbSetArrayDimTb _
 	( _
 		byval s as FBSYMBOL ptr, _
@@ -301,7 +300,7 @@ sub symbSetArrayDimTb _
 
     dim as integer i = any
     dim as FBVARDIM ptr d = any
-	dim as integer do_build = TRUE
+	dim as integer have_unknowns = FALSE
 
 	if( dimensions > 0 ) then
 		s->var_.array.dif = symbCalcArrayDiff( dimensions, dTB(), s->lgt )
@@ -316,7 +315,7 @@ sub symbSetArrayDimTb _
 
 				'' If any dimension size is unknown yet (ellipsis), hold off on the actual build
 				'' until called later when it's known.
-				if( dTB(i).upper = FB_ARRAYDIM_UNKNOWN ) then do_build = FALSE
+				if( dTB(i).upper = FB_ARRAYDIM_UNKNOWN ) then have_unknowns = TRUE
 			next
 		else
 			d = s->var_.array.dimhead
@@ -325,7 +324,7 @@ sub symbSetArrayDimTb _
 				d->upper = dTB(i).upper
 				'' If any dimension size is unknown yet (ellipsis), hold off on the actual build
 				'' until called later when it's known.
-				if( d->upper = FB_ARRAYDIM_UNKNOWN ) then do_build = FALSE
+				if( d->upper = FB_ARRAYDIM_UNKNOWN ) then have_unknowns = TRUE
 				d = d->next
 			next
 		end if
@@ -338,17 +337,22 @@ sub symbSetArrayDimTb _
 
 	s->var_.array.dims = dimensions
 
-	'' dims can be -1 with COMMON arrays..
-	if( dimensions <> 0 ) then
-		if( do_build ) then
-			if( s->var_.array.desc = NULL ) then
-				s->var_.array.desc = symbAddArrayDesc( s )
-				s->var_.array.desc->var_.initree = _
-					astBuildArrayDescIniTree( s->var_.array.desc, s, NULL )
-			end if
+	''
+	'' Allocate the companion array descriptor for VARs, if there are no
+	'' more FB_ARRAYDIM_UNKNOWN's. VARs are "unique", they map to runtime
+	'' memory 1:1, it's ok to have exactly 1 descriptor per VAR.
+	''
+	'' But not for FIELDs, because they are not unique: There can be many
+	'' instances of a field in memory at runtime, so there is no single
+	'' descriptor per FIELD. Instead, astNewARG() has to call
+	'' symbAddArrayDesc() on-demand and create a new descriptor everytime.
+	''
+	if( (s->class <> FB_SYMBCLASS_FIELD) and (not have_unknowns) and (dimensions <> 0) ) then
+		if( s->var_.array.desc = NULL ) then
+			s->var_.array.desc = symbAddArrayDesc( s )
+			s->var_.array.desc->var_.initree = _
+				astBuildArrayDescIniTree( s->var_.array.desc, s, NULL )
 		end if
-	else
-		s->var_.array.desc = NULL
 	end if
 
 end sub
