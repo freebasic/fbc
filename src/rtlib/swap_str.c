@@ -51,7 +51,7 @@ FBCALL void fb_StrSwap( void *str1, ssize_t size1, int fillrem1,
 	/* Is one of them a var-len string? Might need to be (re)allocated */
 	if( (size1 == -1) || (size2 == -1) )
 	{
-		FBSTRING td = { 0 };
+		FBSTRING td = { 0, 0, 0 };
 		fb_StrAssign( &td, -1, str1, size1, FALSE );
 		fb_StrAssign( str1, size1, str2, size2, fillrem1 );
 		fb_StrAssign( str2, size2, &td, -1, fillrem2 );

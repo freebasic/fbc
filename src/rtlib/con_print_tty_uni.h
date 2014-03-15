@@ -31,7 +31,7 @@ void FB_CONPRINTTTY
 
     memcpy( &dwCurrentCoord, pCoord, sizeof( fb_Coord ) );
 
-    fb_Coord dwMoveCoord = { 0 };
+    fb_Coord dwMoveCoord = { 0, 0 };
     for( IndexText=0; IndexText!=TextLength; ++IndexText )
     {
         const FB_TCHAR *pachOutputData = pachText;

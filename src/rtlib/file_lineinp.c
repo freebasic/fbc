@@ -103,7 +103,7 @@ static int fb_hFileLineInputEx
             /* fixed-len or unknown size (ie: pointers)? use a temp var-len */
             else
             {
-            	FBSTRING str_result = { 0 };
+			FBSTRING str_result = { 0, 0, 0 };
 
             	/* read complete line (may include NULs) */
             	handle->hooks->pfnReadLine( handle, &str_result );

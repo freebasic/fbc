@@ -21,7 +21,7 @@ FBCALL void *fb_GfxGetGLProcAddress(const char *proc)
 #endif
 
 FB_GL __fb_gl;
-FB_GL_PARAMS __fb_gl_params = { 0 };
+FB_GL_PARAMS __fb_gl_params = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
 static int next_pow2(int n)
 {

@@ -46,7 +46,7 @@ static void DoMove
 
 FBCALL FBSTRING *fb_ConReadLine( int soft_cursor )
 {
-	FBSTRING result = { 0 };
+	FBSTRING result = { 0, 0, 0 };
 
     int current_x, current_y;
     int cols, rows;

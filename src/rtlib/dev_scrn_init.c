@@ -2,7 +2,7 @@
 
 #include "fb.h"
 
-static FB_FILE_HOOKS hooks_dev_scrn_null = { 0 };
+static FB_FILE_HOOKS hooks_dev_scrn_null = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
 void fb_DevScrnInit_Screen( void )
 {

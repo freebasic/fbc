@@ -5,7 +5,7 @@
 int fb_DevScrnReadLineWstr( FB_FILE *handle, FB_WCHAR *dst, ssize_t dst_chars )
 {
     int res;
-    FBSTRING temp = { 0 };
+    FBSTRING temp = { 0, 0, 0 };
 
     /* !!!FIXME!!! no unicode input supported */
 

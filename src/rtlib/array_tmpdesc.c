@@ -8,7 +8,7 @@
  * temp array descriptors
  **********/
 
-static FB_LIST tmpdsList = { 0 };
+static FB_LIST tmpdsList = { 0, 0, 0, 0 };
 
 static FB_ARRAY_TMPDESC fb_tmpdsTB[FB_ARRAY_TMPDESCRIPTORS];
 
