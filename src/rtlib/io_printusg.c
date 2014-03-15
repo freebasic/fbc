@@ -360,7 +360,7 @@ FBCALL int fb_PrintUsingStr( int fnum, FBSTRING *s, int mask )
 				{
 					++strchars;
 
-					if( FB_STRSIZE( s ) < (size_t)strchars )
+					if( FB_STRSIZE( s ) < strchars )
 					{
 						fb_PrintFixString( fnum, s->data, 0 );
 

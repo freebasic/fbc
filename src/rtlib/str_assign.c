@@ -76,7 +76,7 @@ FBCALL void *fb_StrAssignEx
         	/* else, realloc dst if needed and copy src */
         	if( is_init == FB_FALSE )
         	{
-				if( FB_STRSIZE( dst ) != (size_t)src_len )
+				if( FB_STRSIZE( dst ) != src_len )
 					fb_hStrRealloc( dstr, src_len, FB_FALSE );
         	}
         	else

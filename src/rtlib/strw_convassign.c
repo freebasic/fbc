@@ -79,7 +79,7 @@ FBCALL void *fb_WstrAssignToAEx
         	/* realloc dst if needed and copy src */
 			if( is_init == FB_FALSE )
 			{
-				if( FB_STRSIZE( dst ) != (size_t)src_chars )
+				if( FB_STRSIZE( dst ) != src_chars )
 					fb_hStrRealloc( (FBSTRING *)dst, src_chars, FB_FALSE );
 			}
 			else
