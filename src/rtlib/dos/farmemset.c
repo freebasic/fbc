@@ -6,7 +6,7 @@
 void fb_hFarMemSet(unsigned short selector, unsigned long dest, unsigned char char_to_set, size_t bytes)
 {
 	unsigned long addr = dest;
-	int i;
+	size_t i;
 
 	_farsetsel(selector);
 
@@ -18,7 +18,7 @@ void fb_hFarMemSet(unsigned short selector, unsigned long dest, unsigned char ch
 void fb_hFarMemSetW(unsigned short selector, unsigned long dest, unsigned short word_to_set, size_t words)
 {
 	unsigned long addr = dest;
-	int i;
+	size_t i;
 
 	_farsetsel(selector);
 
