@@ -601,23 +601,6 @@ function symbCalcArrayElements _
 	function = e
 end function
 
-function symbCalcArrayElements _
-	( _
-		byval dimensions as integer, _
-		dTB() as FBARRAYDIM _
-	) as longint
-
-	dim as longint e = any, d = any
-
-	e = 1
-	for i as integer = 0 to dimensions-1
-		d = (dTB(i).upper - dTB(i).lower) + 1
-		e = e * d
-	next
-
-	function = e
-end function
-
 function symbCheckArraySize _
 	( _
 		byval dimensions as integer, _

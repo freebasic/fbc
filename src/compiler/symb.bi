@@ -1440,16 +1440,10 @@ declare function symbAllocWstrConst _
 		byval lgt as integer _
 	) as FBSYMBOL ptr
 
-declare function symbCalcArrayElements overload _
+declare function symbCalcArrayElements _
 	( _
 		byval s as FBSYMBOL ptr, _
 		byval n as FBVARDIM ptr = NULL _
-	) as longint
-
-declare function symbCalcArrayElements _
-	( _
-		byval dimensions as integer, _
-		dTB() as FBARRAYDIM _
 	) as longint
 
 declare function symbCalcArrayDiff _
