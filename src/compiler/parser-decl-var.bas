@@ -1637,11 +1637,9 @@ function cStaticArrayDecl _
 		dTB() as FBARRAYDIM _
 	) as integer
 
-    dim as integer i = any
-
     function = FALSE
 
-    dimensions = 0
+	dimensions = 0
 
 	'' '('
 	if( lexGetToken() <> CHAR_LPRNT ) then
@@ -1650,31 +1648,29 @@ function cStaticArrayDecl _
 
 	lexSkipToken( )
 
-    i = 0
     do
 		'' First value, may be lbound or ubound: Expression (integer constant)
-		dTB(i).lower = cConstIntExpr( cExpression( ), env.opt.base )
+		dTB(dimensions).lower = cConstIntExpr( cExpression( ), env.opt.base )
 
 		'' TO?
 		if( lexGetToken( ) = FB_TK_TO ) then
 			lexSkipToken( )
 
 			'' Second value, ubound: Expression (integer constant)
-			dTB(i).upper = cConstIntExpr( cExpression( ), dTB(i).lower )
+			dTB(dimensions).upper = cConstIntExpr( cExpression( ), dTB(dimensions).lower )
 		else
 			'' First value was ubound, use default for lbound
-			dTB(i).upper = dTB(i).lower
-			dTB(i).lower = env.opt.base
+			dTB(dimensions).upper = dTB(dimensions).lower
+			dTB(dimensions).lower = env.opt.base
 		end if
 
 		'' Besides the upper < lower case, also complain about FB_ARRAYDIM_UNKNOWN being
 		'' specified, otherwise we'd think ellipsis was given...
-		if( (dTB(i).upper < dTB(i).lower) or (dTB(i).upper = FB_ARRAYDIM_UNKNOWN) ) then
+		if( (dTB(dimensions).upper < dTB(dimensions).lower) or (dTB(dimensions).upper = FB_ARRAYDIM_UNKNOWN) ) then
 			errReport( FB_ERRMSG_INVALIDSUBSCRIPT )
 		end if
 
-    	dimensions += 1
-    	i += 1
+		dimensions += 1
 
     	'' separator
     	if( lexGetToken( ) <> CHAR_COMMA ) then
@@ -1683,7 +1679,7 @@ function cStaticArrayDecl _
 
     	lexSkipToken( )
 
-		if( i >= FB_MAXARRAYDIMS ) then
+		if( dimensions >= FB_MAXARRAYDIMS ) then
 			errReport( FB_ERRMSG_TOOMANYDIMENSIONS )
 			'' error recovery: skip to next ')'
 			hSkipUntil( CHAR_RPRNT )
@@ -1742,20 +1738,17 @@ end function
 ''				      ')' .
 ''
 sub cArrayDecl( byref dimensions as integer, exprTB() as ASTNODE ptr )
-	dim as integer i = any
-
 	dimensions = 0
 
-	i = 0
 	do
 		dim as integer dimension_has_ellipsis = FALSE
 
 		if( hMatchEllipsis( ) ) then
 			dimension_has_ellipsis = TRUE
-			exprTB(i,0) = NULL
+			exprTB(dimensions,0) = NULL
 		else
 			'' Expression
-			exprTB(i,0) = hIntExpr( NULL )
+			exprTB(dimensions,0) = hIntExpr( NULL )
 		end if
 
 		'' TO
@@ -1764,23 +1757,22 @@ sub cArrayDecl( byref dimensions as integer, exprTB() as ASTNODE ptr )
 
 			if( dimension_has_ellipsis ) then
 				errReport( FB_ERRMSG_CANTUSEELLIPSISASLOWERBOUND )
-				exprTB(i,0) = astNewCONSTi( 0 )
+				exprTB(dimensions,0) = astNewCONSTi( 0 )
 			end if
 
 			if( hMatchEllipsis( ) ) then
 				dimension_has_ellipsis = TRUE
-				exprTB(i,1) = NULL
+				exprTB(dimensions,1) = NULL
 			else
 				'' Expression
-				exprTB(i,1) = hIntExpr( exprTB(i,0) )
+				exprTB(dimensions,1) = hIntExpr( exprTB(dimensions,0) )
 			end if
 		else
-			exprTB(i,1) = exprTB(i,0)
-			exprTB(i,0) = astNewCONSTi( env.opt.base )
+			exprTB(dimensions,1) = exprTB(dimensions,0)
+			exprTB(dimensions,0) = astNewCONSTi( env.opt.base )
 		end if
 
 		dimensions += 1
-		i += 1
 
 		'' separator
 		if( lexGetToken( ) <> CHAR_COMMA ) then
@@ -1789,7 +1781,7 @@ sub cArrayDecl( byref dimensions as integer, exprTB() as ASTNODE ptr )
 
 		lexSkipToken( )
 
-		if( i >= FB_MAXARRAYDIMS ) then
+		if( dimensions >= FB_MAXARRAYDIMS ) then
 			errReport( FB_ERRMSG_TOOMANYDIMENSIONS )
 			'' error recovery: skip to next ')'
 			hSkipUntil( CHAR_RPRNT )
