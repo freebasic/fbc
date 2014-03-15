@@ -800,7 +800,7 @@ function astBuildArrayDescIniTree _
     '' .data = @array(0) + diff
 	astTypeIniAddAssign( tree, _
 		astNewBOP( AST_OP_ADD, astCloneTree( array_expr ), _
-			astNewCONSTi( symbGetArrayOffset( array ) ) ), _
+			astNewCONSTi( symbGetArrayDiff( array ) ) ), _
 		elm )
 
 	elm = symbGetNext( elm )

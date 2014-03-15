@@ -2047,8 +2047,6 @@ declare function symbGetUDTBaseLevel _
 
 #define symbGetArrayDescriptor(s) s->var_.array.desc
 
-#define symbGetArrayOffset(s) s->var_.array.dif
-
 #define symbGetArrayFirstDim(s) s->var_.array.dimhead
 
 #define symbGetArrayElements(s) s->var_.array.elms
