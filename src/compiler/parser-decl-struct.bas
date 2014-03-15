@@ -234,21 +234,12 @@ private sub hFieldInit( byval parent as FBSYMBOL ptr, byval sym as FBSYMBOL ptr 
 	end if
 end sub
 
-'':::::
-''TypeMultElementDecl =   AS SymbolType ID (ArrayDecl | ':' NUMLIT)? ('=' Expression)?
-''							 (',' ID (ArrayDecl | ':' NUMLIT)? ('=' Expression)?)*
-''
-private sub hTypeMultElementDecl _
+private sub hFieldType _
 	( _
-		byval parent as FBSYMBOL ptr, _
-		byval attrib as integer _
-	) static
-
-    static as zstring * FB_MAXNAMELEN+1 id
-    static as FBARRAYDIM dTB(0 to FB_MAXARRAYDIMS-1)
-    dim as FBSYMBOL ptr sym, subtype
-    dim as integer dims, dtype, bits
-	dim as longint lgt
+		byref dtype as integer, _
+		byref subtype as FBSYMBOL ptr, _
+		byref lgt as longint _
+	)
 
 	'' SymbolType
 	hSymbolType( dtype, subtype, lgt )
@@ -256,154 +247,17 @@ private sub hTypeMultElementDecl _
 	'' Disallow creating objects of abstract classes
 	hComplainIfAbstractClass( dtype, subtype )
 
-	do
-		'' allow keywords as field names
-		select case as const lexGetClass( )
-		case FB_TKCLASS_IDENTIFIER, FB_TKCLASS_KEYWORD, FB_TKCLASS_QUIRKWD
-			if( lexGetType( ) <> FB_DATATYPE_INVALID ) then
-				errReport( FB_ERRMSG_SYNTAXERROR )
-			end if
-
-			'' contains a period?
-			if( lexGetPeriodPos( ) > 0 ) then
-				errReport( FB_ERRMSG_CANTINCLUDEPERIODS )
-			end if
-
-    		'' but don't allow keywords if it's an object (because the implicit inst. ptr)
-    		if( lexGetClass( ) = FB_TKCLASS_KEYWORD ) then
-    			if( symbGetIsUnique( parent ) ) then
-					errReport( FB_ERRMSG_KEYWORDFIELDSNOTALLOWEDINCLASSES )
-    			else
-    				symbSetUDTHasKwdField( parent )
-    			end if
-    		end if
-
-			id = *lexGetText( )
-			lexSkipToken( )
-
-		case else
-			errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
-			'' error recovery: fake an id
-			id = *symbUniqueLabel( )
-		end select
-
-	    bits = 0
-
-		'' ArrayDecl?
-		if( cStaticArrayDecl( dims, dTB() ) = FALSE ) then
-			'' ':' NUMLIT?
-			if( lexGetToken( ) = FB_TK_STMTSEP ) then
-				if( lexGetLookAheadClass( 1 ) = FB_TKCLASS_NUMLITERAL ) then
-					lexSkipToken( )
-					bits = valint( *lexGetText( ) )
-					lexSkipToken( )
-
-					if( symbCheckBitField( parent, dtype, lgt, bits ) = FALSE ) then
-						errReport( FB_ERRMSG_INVALIDBITFIELD, TRUE )
-						'' error recovery: no bits
-						bits = 0
-					end if
-				end if
-			end if
-		end if
-
-		'' array?
-		if( dims > 0 ) then
-			'' "array too big" check
-			if( symbCheckArraySize( dims, dTB(), lgt, FALSE, FALSE ) = FALSE ) then
-				errReport( FB_ERRMSG_ARRAYTOOBIG )
-				'' error recovery: use small array
-				dims = 1
-				dTB(0).lower = 0
-				dTB(0).upper = 0
-			end if
-		end if
-
-		'' ref to self?
-		if( typeGet( dtype ) = FB_DATATYPE_STRUCT ) then
-			if( subtype = parent ) then
-				errReport( FB_ERRMSG_RECURSIVEUDT )
-				'' error recovery: fake type
-				dtype = FB_DATATYPE_INTEGER
-				subtype = NULL
-				lgt = 0
-			end if
-		end if
-
-        ''
-		sym = symbAddField( parent, @id, _
-						  	dims, dTB(), _
-						  	dtype, subtype, _
-						  	lgt, bits )
-		if( sym = NULL ) then
-			errReportEx( FB_ERRMSG_DUPDEFINITION, id )
-		else
-			symbGetAttrib( sym ) or= attrib
-			hFieldInit( parent, sym )
-		end if
-
-		'' ','?
-	    if( lexGetToken( ) <> CHAR_COMMA ) then
-	    	exit do
-	    end if
-
-	    lexSkipToken( )
-	loop
 end sub
 
-'':::::
-'' TypeElementDecl	= ID (ArrayDecl| ':' NUMLIT)? AS SymbolType ('=' Expression)?
-''
-private sub hTypeElementDecl _
+private sub hArrayOrBitfield _
 	( _
-		byval parent as FBSYMBOL ptr, _
-		byval attrib as integer _
-	) static
+		byref bits as integer, _
+		byref dims as integer, _
+		dTB() as FBARRAYDIM _
+	)
 
-    static as zstring * FB_MAXNAMELEN+1 id
-    static as FBARRAYDIM dTB(0 to FB_MAXARRAYDIMS-1)
-    dim as FBSYMBOL ptr sym, subtype
-	dim as integer dims, dtype, bits
-	dim as longint lgt
-
-	'' allow keywords as field names
-	select case as const lexGetClass( )
-	case FB_TKCLASS_IDENTIFIER, FB_TKCLASS_KEYWORD, FB_TKCLASS_QUIRKWD
-
-		'' ID
-		id = *lexGetText( )
-
-    	if( lexGetType( ) <> FB_DATATYPE_INVALID ) then
-			errReport( FB_ERRMSG_SYNTAXERROR )
-    	end if
-
-    	'' contains a period?
-    	if( lexGetPeriodPos( ) > 0 ) then
-			errReport( FB_ERRMSG_CANTINCLUDEPERIODS )
-    	end if
-
-    	'' but don't allow keywords if it's an object (because the implicit inst. ptr)
-    	if( lexGetClass( ) = FB_TKCLASS_KEYWORD ) then
-    		if( symbGetIsUnique( parent ) ) then
-				errReport( FB_ERRMSG_KEYWORDFIELDSNOTALLOWEDINCLASSES )
-    		else
-    			symbSetUDTHasKwdField( parent )
-    		end if
-    	end if
-
-		lexSkipToken( )
-
-    case else
-		errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
-		'' error recovery: fake an id
-		id = *symbUniqueLabel( )
-		dtype = FB_DATATYPE_INVALID
-    end select
-
-	subtype = NULL
 	bits = 0
 
-	'' ArrayDecl?
 	if( cStaticArrayDecl( dims, dTB() ) = FALSE ) then
 		'' ':' NUMLIT?
 		if( lexGetToken( ) = FB_TK_STMTSEP ) then
@@ -420,18 +274,24 @@ private sub hTypeElementDecl _
 		end if
 	end if
 
-    '' AS
-    if( lexGetToken( ) <> FB_TK_AS ) then
-		errReport( FB_ERRMSG_SYNTAXERROR )
-    else
-    	lexSkipToken( )
-    end if
+end sub
 
-	'' SymbolType
-	hSymbolType( dtype, subtype, lgt )
+private function hAddAndInitField _
+	( _
+		byval parent as FBSYMBOL ptr, _
+		byval id as zstring ptr, _
+		byval dims as integer, _
+		dTB() as FBARRAYDIM, _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr, _
+		byval lgt as longint, _
+		byval bits as integer, _
+		byval attrib as integer _
+	) as integer
 
-	'' Disallow creating objects of abstract classes
-	hComplainIfAbstractClass( dtype, subtype )
+	dim as FBSYMBOL ptr sym = any
+
+	function = FALSE
 
 	'' array?
 	if( dims > 0 ) then
@@ -445,8 +305,7 @@ private sub hTypeElementDecl _
 		end if
 	end if
 
-	''
-	if( bits <> 0 ) then
+	if( bits > 0 ) then
 		if( symbCheckBitField( parent, dtype, lgt, bits ) = FALSE ) then
 			errReport( FB_ERRMSG_INVALIDBITFIELD, TRUE )
 			'' error recovery: no bits
@@ -465,21 +324,129 @@ private sub hTypeElementDecl _
 		end if
 	end if
 
-	''
-	sym = symbAddField( parent, @id, _
-					  	dims, dTB(), _
-					  	dtype, subtype, _
-					  	lgt, bits )
-
+	sym = symbAddField( parent, id, dims, dTB(), dtype, subtype, lgt, bits )
 	if( sym = NULL ) then
 		errReportEx( FB_ERRMSG_DUPDEFINITION, id )
-		'' error recovery: pretend the field was added
-		return
+		exit function
 	end if
+
 	sym->attrib or= attrib
 
-	'' initializer
+	'' Initializer?
 	hFieldInit( parent, sym )
+
+	function = TRUE
+end function
+
+private function hFieldId( byval parent as FBSYMBOL ptr ) as zstring ptr
+	static as zstring * FB_MAXNAMELEN+1 id
+
+	'' allow keywords as field names
+	select case( lexGetClass( ) )
+	case FB_TKCLASS_IDENTIFIER, FB_TKCLASS_KEYWORD, FB_TKCLASS_QUIRKWD
+		'' Disallow type suffixes on fields
+		if( lexGetType( ) <> FB_DATATYPE_INVALID ) then
+			errReport( FB_ERRMSG_SYNTAXERROR )
+		end if
+
+		'' contains a period?
+		if( lexGetPeriodPos( ) > 0 ) then
+			errReport( FB_ERRMSG_CANTINCLUDEPERIODS )
+		end if
+
+		'' but don't allow keywords if it's an object (because the implicit inst. ptr)
+		if( lexGetClass( ) = FB_TKCLASS_KEYWORD ) then
+			if( symbGetIsUnique( parent ) ) then
+				errReport( FB_ERRMSG_KEYWORDFIELDSNOTALLOWEDINCLASSES )
+			else
+				symbSetUDTHasKwdField( parent )
+			end if
+		end if
+
+		id = *lexGetText( )
+		lexSkipToken( )
+
+	case else
+		errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
+		'' error recovery: fake an id
+		id = *symbUniqueLabel( )
+	end select
+
+	function = @id
+end function
+
+''
+'' FieldSymbol =
+''    Identifier [ArrayDimensions | ':' BitfieldSize] ['=' InitializerExpression]
+''
+'' TypeMultElementDecl =
+''    AS SymbolType FieldSymbol (',' FieldSymbol)*
+''
+private sub hTypeMultElementDecl _
+	( _
+		byval parent as FBSYMBOL ptr, _
+		byval attrib as integer _
+	)
+
+    static as FBARRAYDIM dTB(0 to FB_MAXARRAYDIMS-1)
+	dim as zstring ptr id = any
+	dim as FBSYMBOL ptr subtype = any
+	dim as integer dtype = any, bits = any, dims = any
+	dim as longint lgt = any
+
+	'' AS SymbolType
+	lexSkipToken( )
+	hFieldType( dtype, subtype, lgt )
+
+	do
+		'' Identifier
+		id = hFieldId( parent )
+
+		'' [ArrayDimensions | ':' BitfieldSize]
+		hArrayOrBitfield( bits, dims, dTB() )
+
+		'' symbAddField()
+		'' ['=' InitializerExpression]
+		hAddAndInitField( parent, id, dims, dTB(), dtype, subtype, lgt, bits, attrib )
+
+		'' ','?
+	loop while( hMatch( CHAR_COMMA ) )
+
+end sub
+
+''
+'' TypeElementDecl =
+''    Identifier [ArrayDimensions | ':' BitfieldSize] AS SymbolType ['=' InitializerExpression]
+''
+private sub hTypeElementDecl _
+	( _
+		byval parent as FBSYMBOL ptr, _
+		byval attrib as integer _
+	)
+
+    static as FBARRAYDIM dTB(0 to FB_MAXARRAYDIMS-1)
+	dim as zstring ptr id = any
+	dim as FBSYMBOL ptr subtype = any
+	dim as integer dtype = any, bits = any, dims = any
+	dim as longint lgt = any
+
+	'' Identifier
+	id = hFieldId( parent )
+
+	'' [ArrayDimensions | ':' BitfieldSize]
+	hArrayOrBitfield( bits, dims, dTB() )
+
+	'' AS SymbolType
+	if( lexGetToken( ) <> FB_TK_AS ) then
+		errReport( FB_ERRMSG_SYNTAXERROR )
+	else
+		lexSkipToken( )
+	end if
+	hFieldType( dtype, subtype, lgt )
+
+	'' symbAddField()
+	'' ['=' InitializerExpression]
+	hAddAndInitField( parent, id, dims, dTB(), dtype, subtype, lgt, bits, attrib )
 end sub
 
 sub hTypeStaticVarDecl _
@@ -745,7 +712,6 @@ decl_inner:		'' it's an anonymous inner UDT
 		'' AS?
 		case FB_TK_AS
 			'' it's a multi-declaration
-			lexSkipToken( )
 			hTypeMultElementDecl( s, attrib )
 
 		case FB_TK_DECLARE
@@ -760,7 +726,6 @@ decl_inner:		'' it's an anonymous inner UDT
 
 			'' multi-decl?
 			if( lexGetToken( ) = FB_TK_AS ) then
-				lexSkipToken( )
 				hTypeMultElementDecl( s, attrib )
 			else
 				hTypeElementDecl( s, attrib )
