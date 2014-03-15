@@ -279,9 +279,7 @@ declare sub cAutoVarDecl(byval attrib as FB_SYMBATTRIB)
 declare function cStaticArrayDecl _
 	( _
 		byref dimensions as integer, _
-		dTB() as FBARRAYDIM, _
-		byval checkprnts as integer = TRUE, _
-		byval allow_ellipsis as integer = TRUE _
+		dTB() as FBARRAYDIM _
 	) as integer
 
 declare sub cArrayDecl( byref dimensions as integer, exprTB() as ASTNODE ptr )

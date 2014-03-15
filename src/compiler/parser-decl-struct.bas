@@ -286,7 +286,7 @@ private sub hTypeMultElementDecl _
 	    bits = 0
 
 		'' ArrayDecl?
-		if( cStaticArrayDecl( dims, dTB(), , FALSE ) = FALSE ) then
+		if( cStaticArrayDecl( dims, dTB() ) = FALSE ) then
 			'' ':' NUMLIT?
 			if( lexGetToken( ) = FB_TK_STMTSEP ) then
 				if( lexGetLookAheadClass( 1 ) = FB_TKCLASS_NUMLITERAL ) then
@@ -400,7 +400,7 @@ private sub hTypeElementDecl _
 	bits = 0
 
 	'' ArrayDecl?
-	if( cStaticArrayDecl( dims, dTB(), , FALSE ) = FALSE ) then
+	if( cStaticArrayDecl( dims, dTB() ) = FALSE ) then
 		'' ':' NUMLIT?
 		if( lexGetToken( ) = FB_TK_STMTSEP ) then
 			if( lexGetLookAheadClass( 1 ) = FB_TKCLASS_NUMLITERAL ) then

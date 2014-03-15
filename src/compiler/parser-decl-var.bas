@@ -1634,9 +1634,7 @@ end function
 function cStaticArrayDecl _
 	( _
 		byref dimensions as integer, _
-		dTB() as FBARRAYDIM, _
-		byval checkprnts as integer, _
-		byval allow_ellipsis as integer _
+		dTB() as FBARRAYDIM _
 	) as integer
 
     dim as integer i = any
@@ -1645,61 +1643,34 @@ function cStaticArrayDecl _
 
     dimensions = 0
 
-    if( checkprnts ) then
-    	'' '('
-    	if( lexGetToken() <> CHAR_LPRNT ) then
-    		exit function
-    	end if
+	'' '('
+	if( lexGetToken() <> CHAR_LPRNT ) then
+		exit function
+	end if
 
-    	lexSkipToken( )
-    end if
+	lexSkipToken( )
 
     i = 0
     do
-		dim as integer dimension_has_ellipsis = FALSE
+		'' First value, may be lbound or ubound: Expression (integer constant)
+		dTB(i).lower = cConstIntExpr( cExpression( ), env.opt.base )
 
-		'' First value - lower bound or upper bound
-		if( iif( allow_ellipsis, hMatchEllipsis( ), FALSE ) ) then
-			dimension_has_ellipsis = TRUE
-			'' This is for the case of '( ... )' with the lower bound being
-			'' automatically chosen based on OPTION BASE. It will be given
-			'' to dTB(i).upper below.
-			dTB(i).lower = FB_ARRAYDIM_UNKNOWN
-		else
-			'' Expression (integer constant)
-			dTB(i).lower = cConstIntExpr( cExpression( ), env.opt.base )
-		end if
-
-		'' TO
+		'' TO?
 		if( lexGetToken( ) = FB_TK_TO ) then
 			lexSkipToken( )
 
-			if( dimension_has_ellipsis ) then
-				errReport( FB_ERRMSG_CANTUSEELLIPSISASLOWERBOUND )
-				dTB(i).lower = 0
-			end if
-
-			'' Second value - upper bound
-			if( iif( allow_ellipsis, hMatchEllipsis( ), FALSE ) ) then
-				dimension_has_ellipsis = TRUE
-				dTB(i).upper = FB_ARRAYDIM_UNKNOWN
-			else
-				'' Expression (integer constant)
-				dTB(i).upper = cConstIntExpr( cExpression( ), dTB(i).lower )
-			end if
+			'' Second value, ubound: Expression (integer constant)
+			dTB(i).upper = cConstIntExpr( cExpression( ), dTB(i).lower )
 		else
-			'' First value was upper bound, not lower, use default for lower
+			'' First value was ubound, use default for lbound
 			dTB(i).upper = dTB(i).lower
 			dTB(i).lower = env.opt.base
 		end if
 
-		'' Don't check when we have ellipsis, as upper will be set to FB_ARRAYDIM_UNKNOWN
-		if( dimension_has_ellipsis = FALSE ) then
-			'' Besides the upper < lower case, also complain about FB_ARRAYDIM_UNKNOWN being
-			'' specified, otherwise we'd think ellipsis was given...
-			if( (dTB(i).upper < dTB(i).lower) or (dTB(i).upper = FB_ARRAYDIM_UNKNOWN) ) then
-				errReport( FB_ERRMSG_INVALIDSUBSCRIPT )
-			end if
+		'' Besides the upper < lower case, also complain about FB_ARRAYDIM_UNKNOWN being
+		'' specified, otherwise we'd think ellipsis was given...
+		if( (dTB(i).upper < dTB(i).lower) or (dTB(i).upper = FB_ARRAYDIM_UNKNOWN) ) then
+			errReport( FB_ERRMSG_INVALIDSUBSCRIPT )
 		end if
 
     	dimensions += 1
@@ -1720,14 +1691,12 @@ function cStaticArrayDecl _
 		end if
 	loop
 
-	if( checkprnts ) then
-		'' ')'
-    	if( lexGetToken( ) <> CHAR_RPRNT ) then
-    		errReport( FB_ERRMSG_EXPECTEDRPRNT )
-    	else
-    		lexSkipToken( )
-    	end if
-    end if
+	'' ')'
+	if( lexGetToken( ) <> CHAR_RPRNT ) then
+		errReport( FB_ERRMSG_EXPECTEDRPRNT )
+	else
+		lexSkipToken( )
+	end if
 
 	function = TRUE
 
