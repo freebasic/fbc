@@ -259,18 +259,8 @@ function symbAddArrayDesc( byval array as FBSYMBOL ptr ) as FBSYMBOL ptr
 
 	desc->stats = stats or (array->stats and (FB_SYMBSTATS_VARALLOCATED or FB_SYMBSTATS_ACCESSED))
 
-	desc->var_.initree = NULL
-	desc->var_.array.dims = 0
-	desc->var_.array.dimhead = NULL
-	desc->var_.array.dimtail = NULL
-	desc->var_.array.dif = 0
-	desc->var_.array.elms = 1
-	desc->var_.array.desc = NULL
-	desc->var_.array.has_ellipsis = FALSE
+	symbVarInitFields( desc )
 	desc->var_.desc.array = array '' back link
-	desc->var_.stmtnum = parser.stmt.cnt
-	desc->var_.align = 0	'' default alignment
-	desc->var_.data.prev = NULL
 
 	function = desc
 end function
