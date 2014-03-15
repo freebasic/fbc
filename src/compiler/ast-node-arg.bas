@@ -22,7 +22,7 @@ private function hAllocTmpArrayDesc _
 	dim as FBSYMBOL ptr desc = any
 
 	'' create
-	desc = symbAddArrayDesc( array, symbGetArrayDimensions( array ) )
+	desc = symbAddArrayDesc( array )
 
 	'' don't let NewDECL() fill it
 	symbGetTypeIniTree( desc ) = astBuildArrayDescIniTree( desc, _

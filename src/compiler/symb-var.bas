@@ -140,13 +140,7 @@ private function hCreateDescType _
 	function = sym
 end function
 
-'':::::
-function symbAddArrayDesc _
-	( _
-		byval array as FBSYMBOL ptr, _
-		byval dimensions as integer _
-	) as FBSYMBOL ptr
-
+function symbAddArrayDesc( byval array as FBSYMBOL ptr ) as FBSYMBOL ptr
 	dim as zstring ptr id = any, id_alias = any
 	dim as FBSYMBOL ptr desc = any, desctype = any
 	dim as FB_SYMBATTRIB attrib = any
@@ -249,7 +243,7 @@ function symbAddArrayDesc _
 
 	'' Create descriptor UDT in same symtb, and preserving the
 	'' FB_SYMBATTRIB_LOCAL too if the descriptor has it.
-	desctype = hCreateDescType( symtb, dimensions, symbUniqueId( ), _
+	desctype = hCreateDescType( symtb, symbGetArrayDimensions( array ), symbUniqueId( ), _
 	                            symbGetType( array ), symbGetSubType( array ), _
 	                            attrib and FB_SYMBATTRIB_LOCAL )
 
@@ -358,7 +352,7 @@ sub symbSetArrayDimTb _
 	if( dimensions <> 0 ) then
 		if( do_build ) then
 			if( s->var_.array.desc = NULL ) then
-				s->var_.array.desc = symbAddArrayDesc( s, dimensions )
+				s->var_.array.desc = symbAddArrayDesc( s )
 				s->var_.array.desc->var_.initree = _
 					astBuildArrayDescIniTree( s->var_.array.desc, s, NULL )
 			end if
@@ -775,8 +769,7 @@ function symbCloneVar( byval sym as FBSYMBOL ptr ) as FBSYMBOL ptr
 
 	'' assuming only temp vars or temp array descs will be cloned
 	if( symbIsDescriptor( sym ) ) then
-		function = symbAddArrayDesc( sym->var_.desc.array, _
-				symbGetArrayDimensions( sym->var_.desc.array ) )
+		function = symbAddArrayDesc( sym->var_.desc.array )
 		'' no need to dup desc.initree, it was flushed in newARG() and
 		'' should be fixed up with the new symbol in TypeIniFlush()
 	elseif( symbIsTemp( sym ) ) then
