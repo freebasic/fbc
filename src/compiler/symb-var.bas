@@ -844,20 +844,19 @@ sub symbDelVar( byval s as FBSYMBOL ptr, byval is_tbdel as integer )
 		end if
 	end if
 
-    if( symbGetIsLiteral( s ) ) then
-    	'' not a wchar literal?
-    	if( s->typ <> FB_DATATYPE_WCHAR ) then
-    		if( s->var_.littext <> NULL ) then
-    			ZstrFree( s->var_.littext )
-    		end if
-    	else
-    		if( s->var_.littextw <> NULL ) then
-    			WstrFree( s->var_.littextw )
-    		end if
-    	end if
+	if( symbGetIsLiteral( s ) ) then
+		if( typeGetDtAndPtrOnly( s->typ ) = FB_DATATYPE_WCHAR ) then
+			if( s->var_.littextw <> NULL ) then
+				WstrFree( s->var_.littextw )
+			end if
+		else
+			if( s->var_.littext <> NULL ) then
+				ZstrFree( s->var_.littext )
+			end if
+		end if
+	end if
 
 	'' Note: FBSYMBOL.var_.initree will be free'ed by astEnd() already
-    end if
 
     ''
     symbFreeSymbol( s )
