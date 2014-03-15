@@ -189,7 +189,7 @@ static int set_mode
 	if( (mode == 0) || (w == 0) ) {
         memset(&__fb_ctx.hooks, 0, sizeof(__fb_ctx.hooks));
 
-        if (flags != (int)SCREEN_EXIT) {
+        if (flags != SCREEN_EXIT) {
             /* set and clear text screen mode or the width and line_len will be wrong */
             fb_Width( 80, 25 );
             fb_Cls( 0 );
@@ -351,7 +351,7 @@ static int set_mode
         }
     }
 
-    if( flags != (int)SCREEN_EXIT ) {
+    if( flags != SCREEN_EXIT ) {
         /* Reset VIEW PRINT
          *
          * Normally, resetting VIEW PRINT should also result in setting the cursor
