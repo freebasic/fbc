@@ -4,7 +4,8 @@
 
 void fb_hArrayDtorStr( FBARRAY *array, FB_DEFCTOR dtor, size_t base_idx )
 {
-	ssize_t i, elements;
+    size_t i;
+	ssize_t elements;
 	FBARRAYDIM *dim;
 	FBSTRING *this_;
 

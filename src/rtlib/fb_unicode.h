@@ -20,7 +20,7 @@ typedef uint8_t  UTF_8;
 #	include <ctype.h>
 #	define FB_WCHAR char
 #	define _LC(c) c
-#	define FB_WEOF EOF
+#	define FB_WEOF ((FB_WCHAR)EOF)
 #	define wcslen(s) strlen(s)
 #	define iswlower(c) islower(c)
 #	define iswupper(c) isupper(c)
@@ -67,7 +67,7 @@ typedef uint8_t  UTF_8;
 #	define FB_WCHAR wchar_t
 #	define _LC(c) L ## c
 #	if defined HOST_MINGW
-#		define FB_WEOF WEOF
+#		define FB_WEOF ((FB_WCHAR)WEOF)
 #		define swprintf _snwprintf
 #		define FB_WSTR_FROM_INT( buffer, num )        _itow( num, buffer, 10 )
 #		define FB_WSTR_FROM_UINT( buffer, num )       _ultow( (unsigned int) num, buffer, 10 )
@@ -98,7 +98,7 @@ typedef uint8_t  UTF_8;
 #	include <wctype.h>
 #	define FB_WCHAR wchar_t
 #	define _LC(c) L ## c
-#	define FB_WEOF WEOF
+#	define FB_WEOF ((FB_WCHAR)WEOF)
 #endif
 
 #ifndef FB_WSTR_FROM_INT

@@ -2,11 +2,11 @@
 
 #include "fb.h"
 
-FBCALL FB_WCHAR *fb_WstrAssignFromA 
-	( 
-		FB_WCHAR *dst, 
+FBCALL FB_WCHAR *fb_WstrAssignFromA
+	(
+		FB_WCHAR *dst,
 		ssize_t dst_chars,
-		void *src, 
+		void *src,
 		ssize_t src_size
 	)
 {
@@ -39,10 +39,10 @@ FBCALL FB_WCHAR *fb_WstrAssignFromA
 }
 
 FBCALL void *fb_WstrAssignToAEx
-	( 
-		void *dst, 
+	(
+		void *dst,
 		ssize_t dst_chars,
-		FB_WCHAR *src, 
+		FB_WCHAR *src,
 		int fill_rem,
 		int is_init
 	)
@@ -121,22 +121,22 @@ FBCALL void *fb_WstrAssignToAEx
 	return dst;
 }
 
-FBCALL void *fb_WstrAssignToA 
-	( 
-		void *dst, 
+FBCALL void *fb_WstrAssignToA
+	(
+		void *dst,
 		ssize_t dst_chars,
-		FB_WCHAR *src, 
+		FB_WCHAR *src,
 		int fill_rem
 	)
 {
 	return fb_WstrAssignToAEx( dst, dst_chars, src, fill_rem, FB_FALSE );
 }
 
-FBCALL void *fb_WstrAssignToA_Init 
-	( 
-		void *dst, 
+FBCALL void *fb_WstrAssignToA_Init
+	(
+		void *dst,
 		ssize_t dst_chars,
-		FB_WCHAR *src, 
+		FB_WCHAR *src,
 		int fill_rem
 	)
 {

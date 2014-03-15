@@ -157,15 +157,15 @@ FBCALL void fb_GfxControl_i( int what, ssize_t *param1, ssize_t *param2, ssize_t
 
 	case SET_PEN_POS:
 		if (__fb_gfx) {
-			if (*param1 != 0x80000000)
+			if (*param1 != (ssize_t)0x80000000)
 				context->last_x = *param1;
-			if (*param2 != 0x80000000)
+			if (*param2 != (ssize_t)0x80000000)
 				context->last_y = *param2;
 		}
 		break;
 
 	case SET_ALPHA_PRIMITIVES:
-		if ((__fb_gfx) && (*param1 != 0x80000000)) {
+		if ((__fb_gfx) && (*param1 != (ssize_t)0x80000000)) {
 			if (*param1)
 				__fb_gfx->flags |= ALPHA_PRIMITIVES;
 			else

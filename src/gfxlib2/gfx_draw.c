@@ -4,7 +4,7 @@
 #include <math.h>
 #include <ctype.h>
 
-#define FB_NAN		0x80000000
+#define FB_NAN		((intptr_t)0x80000000)
 #define SQRT_2		1.4142135623730950488016
 
 static float base_scale = 1.0, base_angle = 0.0;
@@ -108,7 +108,7 @@ FBCALL void fb_GfxDraw(void *target, FBSTRING *command)
 				 * resides at location FB_NAN (0x80000000) */
 				if ((value1 = parse_number(&c)) == FB_NAN)
 					goto error;
-				
+
 				DRIVER_UNLOCK();
 				fb_GfxDraw(target, (FBSTRING *)value1);
 				DRIVER_LOCK();

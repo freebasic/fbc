@@ -6,9 +6,9 @@
  * to use FB_STRSIZE(s) to query a strings length.
  */
 #ifdef HOST_64BIT
-	#define FB_TEMPSTRBIT 0x8000000000000000ll
+	#define FB_TEMPSTRBIT ((long long)0x8000000000000000ll)
 #else
-	#define FB_TEMPSTRBIT 0x80000000
+	#define FB_TEMPSTRBIT ((int)0x80000000)
 #endif
 
 /** Returns if the string is a temporary string.
@@ -17,7 +17,7 @@
 
 /** Returns a string length.
  */
-#define FB_STRSIZE(s) (((FBSTRING *)s)->len & ~FB_TEMPSTRBIT)
+#define FB_STRSIZE(s) ((ssize_t)(((FBSTRING *)s)->len & ~FB_TEMPSTRBIT))
 
 /** Returns the string data.
  */

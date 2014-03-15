@@ -48,10 +48,10 @@ static void copy_cursor_area(int x, int y, int from_area)
 {
 	unsigned char *s, *d;
 	int w, h, s_pitch, d_pitch;
-	
+
 	w = (MIN(CURSOR_W, __fb_gfx->w - x) * __fb_gfx->bpp);
 	h = MIN(CURSOR_H, __fb_gfx->h - y);
-	
+
 	if (from_area) {
 		s = cursor_area;
 		d = __fb_gfx->framebuffer + (y * __fb_gfx->pitch) + (x * __fb_gfx->bpp);
@@ -64,7 +64,7 @@ static void copy_cursor_area(int x, int y, int from_area)
 		s_pitch = __fb_gfx->pitch;
 		d_pitch = w;
 	}
-	
+
 	for (; h; h--) {
 		fb_hMemCpy(d, s, w);
 		s += s_pitch;
@@ -119,9 +119,9 @@ void fb_hSoftCursorPut(int x, int y)
 	int w, h, px, py, pixel, count;
 	unsigned int data;
 	const unsigned int *cursor;
-	
+
 	copy_cursor_area(x, y, FALSE);
-	
+
 	w = MIN(CURSOR_W, __fb_gfx->w - x);
 	h = MIN(CURSOR_H, __fb_gfx->h - y);
 	dest = __fb_gfx->framebuffer + (y * __fb_gfx->pitch) + (x * __fb_gfx->bpp);
@@ -131,7 +131,7 @@ void fb_hSoftCursorPut(int x, int y)
 		data = *cursor++;
 		for (px = 0; px < w;) {
 			pixel = data & 0x3;
-			for (count = 0; (px < w) && ((data & 0x3) == pixel); px++, data >>= 2)
+			for (count = 0; (px < w) && ((int)(data & 0x3) == pixel); px++, data >>= 2)
 				count++;
 			if (pixel == 0x3) {
 				if (__fb_gfx->bpp == 4)
@@ -161,7 +161,7 @@ void fb_hSoftCursorUnput(int x, int y)
 void fb_hSoftCursorPaletteChanged(void)
 {
 	int i, dist, min_wdist = 1000000, min_bdist = 1000000;
-	
+
 	if (__fb_gfx->bpp > 1)
 		return;
 	for (i = 0; i < 256; i++) {

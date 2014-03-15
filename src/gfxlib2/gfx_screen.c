@@ -351,7 +351,7 @@ static int set_mode
         }
     }
 
-    if( flags!=SCREEN_EXIT ) {
+    if( flags != SCREEN_EXIT ) {
         /* Reset VIEW PRINT
          *
          * Normally, resetting VIEW PRINT should also result in setting the cursor

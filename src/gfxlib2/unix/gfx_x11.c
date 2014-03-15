@@ -768,11 +768,11 @@ int fb_hX11SetWindowPos(int x, int y)
 		XQueryTree(fb_x11.display, window, &root, &parent, &children, &num_children);
 		if (children) XFree(children);
 	} while (parent != root_window);
-	if (x == 0x80000000)
+	if (x == (int)0x80000000)
 		x = attribs.x;
 	else
 		x -= dx;
-	if (y == 0x80000000)
+	if (y == (int)0x80000000)
 		y = attribs.y;
 	else
 		y -= dy;

@@ -20,7 +20,7 @@ int fb_hArrayRealloc
 	ssize_t lbTB[FB_MAXDIMENSIONS];
 	ssize_t ubTB[FB_MAXDIMENSIONS];
     const char *this_;
-    
+
     /* load bounds */
     for( i = 0; i < dimensions; i++ )
     {
@@ -34,7 +34,7 @@ int fb_hArrayRealloc
 	/* shrinking the array? free unused elements */
     if( dtor_mult != NULL )
     {
-		ssize_t new_lb = (ubTB[0] - lbTB[0]) + 1;
+		size_t new_lb = (ubTB[0] - lbTB[0]) + 1;
     	if( new_lb < array->dimTB[0].elements )
     	{
         	/* !!!FIXME!!! check exceptions (only if rewritten in C++) */
@@ -63,7 +63,7 @@ int fb_hArrayRealloc
 			while( objects > 0 ) {
 				/* !!!FIXME!!! check exceptions (only if rewritten in C++) */
 				ctor( this_ );
-				
+
 				this_ += element_len;
 				--objects;
 			}
@@ -97,17 +97,17 @@ static int hRedim
 	)
 {
 	FB_DTORMULT dtor_mult;
-	
+
     /* new? */
     if( array->ptr == NULL )
     	return fb_hArrayAlloc( array, element_len, doclear, NULL, dimensions, ap );
-    	
+
 	/* realloc.. */
 	if( isvarlen )
 		dtor_mult = &fb_hArrayDtorStr;
 	else
 		dtor_mult = NULL;
-	
+
 	return fb_hArrayRealloc( array, element_len, doclear, NULL, dtor_mult, NULL, dimensions, ap );
 }
 
@@ -127,7 +127,7 @@ int fb_ArrayRedimPresvEx
 	va_start( ap, dimensions );
     res = hRedim( array, element_len, doclear, isvarlen, dimensions, ap );
     va_end( ap );
-    
+
     return res;
 }
 
@@ -146,6 +146,6 @@ int fb_ArrayRedimPresv
 	va_start( ap, dimensions );
     res = hRedim( array, element_len, TRUE, isvarlen, dimensions, ap );
     va_end( ap );
-    
+
     return res;
 }

@@ -24,7 +24,7 @@ int fb_FileGetDataEx
 		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 
 	if( pos < 0 )
-		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );		
+		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 
     FB_LOCK();
 
@@ -133,7 +133,7 @@ int fb_FileGetDataEx
          * The device must also support the SEEK method and the length
          * must be non-null */
 
-		if( length != handle->len )
+		if( length != (size_t)handle->len )
 			res = fb_ErrorSetNum( FB_RTERROR_FILEIO );
 
 
@@ -189,44 +189,44 @@ int fb_FileGetData( int fnum, fb_off_t pos, void *dst, size_t chars, int adjust_
 
 FBCALL int fb_FileGet( int fnum, int pos, void *dst, size_t chars )
 {
-	return fb_FileGetDataEx( FB_FILE_TO_HANDLE(fnum), 
-							 pos, 
-							 dst, 
-							 chars, 
-							 NULL, 
-							 TRUE, 
+	return fb_FileGetDataEx( FB_FILE_TO_HANDLE(fnum),
+							 pos,
+							 dst,
+							 chars,
+							 NULL,
+							 TRUE,
 							 FALSE );
 }
 
 FBCALL int fb_FileGetLarge( int fnum, long long pos, void *dst, size_t chars )
 {
-	return fb_FileGetDataEx( FB_FILE_TO_HANDLE(fnum), 
-							 pos, 
-							 dst, 
-							 chars, 
-							 NULL, 
-							 TRUE, 
+	return fb_FileGetDataEx( FB_FILE_TO_HANDLE(fnum),
+							 pos,
+							 dst,
+							 chars,
+							 NULL,
+							 TRUE,
 							 FALSE );
 }
 
 FBCALL int fb_FileGetIOB( int fnum, int pos, void *dst, size_t chars, size_t *bytesread )
 {
-	return fb_FileGetDataEx( FB_FILE_TO_HANDLE(fnum), 
-							 pos, 
-							 dst, 
-							 chars, 
-							 bytesread, 
-							 TRUE, 
+	return fb_FileGetDataEx( FB_FILE_TO_HANDLE(fnum),
+							 pos,
+							 dst,
+							 chars,
+							 bytesread,
+							 TRUE,
 							 FALSE );
 }
 
 FBCALL int fb_FileGetLargeIOB( int fnum, long long pos, void *dst, size_t chars, size_t *bytesread )
 {
-	return fb_FileGetDataEx( FB_FILE_TO_HANDLE(fnum), 
-							 pos, 
-							 dst, 
-							 chars, 
-							 bytesread, 
-							 TRUE, 
+	return fb_FileGetDataEx( FB_FILE_TO_HANDLE(fnum),
+							 pos,
+							 dst,
+							 chars,
+							 bytesread,
+							 TRUE,
 							 FALSE );
 }

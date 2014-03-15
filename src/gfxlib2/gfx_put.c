@@ -112,7 +112,7 @@ FBCALL int fb_GfxPut(void *target, float fx, float fy, unsigned char *src, int x
 			return fb_ErrorSetNum(FB_RTERROR_ILLEGALFUNCTIONCALL);
 	}
 
-	if (x1 != 0xFFFF0000) {
+	if (x1 != (int)0xFFFF0000) {
 		fb_hFixCoordsOrder(&x1, &y1, &x2, &y2);
 
 		x1 = MID(0, x1, w-1);

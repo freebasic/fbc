@@ -129,7 +129,7 @@ FBCALL int fb_GfxDrawString
 			goto exit_error;
 		}
 
-		for (i = 0; i < FB_STRSIZE(string); i++) {
+		for (i = 0; i < (int)FB_STRSIZE(string); i++) {
 
 			if (x >= context->view_x + context->view_w)
 				break;
@@ -168,7 +168,7 @@ FBCALL int fb_GfxDrawString
 		bytes_count = BYTES_PER_PIXEL(w);
 		offset = 0;
 
-		if ((x + (w * FB_STRSIZE(string)) <= context->view_x) || (x >= context->view_x + context->view_w) ||
+		if ((x + (w * (int)FB_STRSIZE(string)) <= context->view_x) || (x >= context->view_x + context->view_w) ||
 		    (y + font_height <= context->view_y) || (y >= context->view_y + context->view_h)) {
 			goto exit_error;
 		}

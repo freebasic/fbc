@@ -91,7 +91,7 @@ static int hIsInf(double d)
 
 static int hIsInd(double d)
 {
-	return hDoubleToLongBits(d) == 0xfff8000000000000ll;
+	return (hDoubleToLongBits(d) == (long long)0xfff8000000000000ll);
 }
 
 static int hIsNan(double d)

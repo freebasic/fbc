@@ -67,7 +67,7 @@ FBCALL int fb_GfxGetJoystick(int id, ssize_t *buttons, float *a1, float *a2, flo
 
 		if(( info.dwPOV > 13500 - POV_LAP ) && ( info.dwPOV < 22500 + POV_LAP ))
 			*a8 = 1;
-		else if(( info.dwPOV >= 0 ) && ( info.dwPOV < 4500 + POV_LAP ))
+		else if( info.dwPOV < 4500 + POV_LAP )
 			*a8 = -1;
 		else if(( info.dwPOV > 31500 - POV_LAP ) && ( info.dwPOV < 36000 ))
 			*a8 = -1;
