@@ -133,6 +133,7 @@ Version 0.91.0:
 - When calling a byref function through a function pointer, the result may now be ignored, just like with normal function calls, or when calling normal functions through function pointers.
 - STRPTR() on a CONST STRING (DIM s AS CONST STRING) did not preserve CONSTness and allowed modifying the string
 - win/objbase.bi: Wrong IsEqualGUID() declaration, producing wrong result value (subsequently, all aliases such as IsEqualIID() were wrong too)
+- Fields were allowed to have type suffixes when declared using the "AS DataType a, b, c" syntax instead of "a AS DataType"
 
 
 Version 0.90.1:

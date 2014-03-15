@@ -260,6 +260,10 @@ private sub hTypeMultElementDecl _
 		'' allow keywords as field names
 		select case as const lexGetClass( )
 		case FB_TKCLASS_IDENTIFIER, FB_TKCLASS_KEYWORD, FB_TKCLASS_QUIRKWD
+			if( lexGetType( ) <> FB_DATATYPE_INVALID ) then
+				errReport( FB_ERRMSG_SYNTAXERROR )
+			end if
+
 			'' contains a period?
 			if( lexGetPeriodPos( ) > 0 ) then
 				errReport( FB_ERRMSG_CANTINCLUDEPERIODS )
