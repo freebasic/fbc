@@ -164,11 +164,11 @@ static int comm_init_count = 0;
 
 #ifndef FB_MANAGED_IRQ
 static irq_props_t irq_props[IRQ_COUNT] = {
-	{ 0, 0, 0, 3, 0xb, comm_handler_irq_3 },
-	{ 0, 0, 0, 4, 0xc, comm_handler_irq_4 },
-	{ 0, 0, 0, 5, 0xd, comm_handler_irq_5 },
-	{ 0, 0, 0, 6, 0xe, comm_handler_irq_6 },
-	{ 0, 0, 0, 7, 0xf, comm_handler_irq_7 }
+	{ 0, 0, 0, 3, 0xb, comm_handler_irq_3, { 0 }, { 0 }, { 0 }, { 0 }, { { 0 } } },
+	{ 0, 0, 0, 4, 0xc, comm_handler_irq_4, { 0 }, { 0 }, { 0 }, { 0 }, { { 0 } } },
+	{ 0, 0, 0, 5, 0xd, comm_handler_irq_5, { 0 }, { 0 }, { 0 }, { 0 }, { { 0 } } },
+	{ 0, 0, 0, 6, 0xe, comm_handler_irq_6, { 0 }, { 0 }, { 0 }, { 0 }, { { 0 } } },
+	{ 0, 0, 0, 7, 0xf, comm_handler_irq_7, { 0 }, { 0 }, { 0 }, { 0 }, { { 0 } } }
 };
 #else
 static irq_props_t irq_props[IRQ_COUNT] = {
@@ -181,10 +181,10 @@ static irq_props_t irq_props[IRQ_COUNT] = {
 #endif
 
 static comm_props_t comm_props[MAX_COMM] = {
-	{ 0x3f8, 4, 4, 0, 0, 0, 0, 0 },
-	{ 0x2f8, 3, 3, 0, 0, 0, 0, 0 },
-	{ 0x3e8, 4, 4, 0, 0, 0, 0, 0 },
-	{ 0x2e8, 3, 3, 0, 0, 0, 0, 0 }
+	{ 0x3f8, 4, 4, 0, 0, 0, 0, 0, { 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0 }, 0, 0 },
+	{ 0x2f8, 3, 3, 0, 0, 0, 0, 0, { 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0 }, 0, 0 },
+	{ 0x3e8, 4, 4, 0, 0, 0, 0, 0, { 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0 }, 0, 0 },
+	{ 0x2e8, 3, 3, 0, 0, 0, 0, 0, { 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0 }, 0, 0 }
 };
 
 static inline unsigned int next_pow2( unsigned int n )
