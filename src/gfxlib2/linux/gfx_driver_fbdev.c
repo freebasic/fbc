@@ -353,7 +353,7 @@ static int driver_init(char *title, int w, int h, int depth, int refresh_rate, i
 #if defined(i386) && defined(FB_TYPE_VGA_PLANES)
 	if ((device_info.type == FB_TYPE_VGA_PLANES) && (device_info.type_aux == FB_AUX_VGA_PLANES_VGA4)) {
 		mode = orig_mode;
-		if ((orig_mode.xres >= (size_t)w) && (orig_mode.yres >= (size_t)h) && (__fb_con.has_perm) && (depth <= 8)) {
+		if ((orig_mode.xres >= (unsigned int)w) && (orig_mode.yres >= (unsigned int)h) && __fb_con.has_perm && (depth <= 8)) {
 			/* we are in vga16 mode, got to live with it */
 			goto got_mode;
 		}
@@ -424,7 +424,7 @@ static int driver_init(char *title, int w, int h, int depth, int refresh_rate, i
 	}
 
 	mode = orig_mode;
-	if ((mode.xres >= (size_t)w) && (mode.yres >= (size_t)h))
+	if ((mode.xres >= (unsigned int)w) && (mode.yres >= (unsigned int)h))
 		goto got_mode;
 
 	close(device_fd);

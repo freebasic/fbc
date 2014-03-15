@@ -47,7 +47,7 @@ FBCALL void fb_PrintTab( int fnum, int newcol )
 
         } else {
 
-            if( (size_t)newcol > handle->line_length ) {
+            if( (newcol >= 0) && ((unsigned int)newcol > handle->line_length) ) {
                 fb_PrintStringEx( handle,
                                   fb_StrFill1( newcol - handle->line_length - 1, ' ' ),
                                   0 );

@@ -23,11 +23,11 @@ FBCALL FBSTRING *fb_FileStrInput( ssize_t bytes, int fnum )
     dst = fb_hStrAllocTemp( NULL, bytes );
     if( dst!=NULL )
     {
-        size_t read_count = 0;
+        ssize_t read_count = 0;
         if( FB_HANDLE_IS_SCREEN(handle) )
         {
             dst->data[0] = 0;
-            while( read_count!=(size_t)bytes ) {
+            while( read_count != bytes ) {
                 res = fb_FileGetDataEx( handle,
                                         0,
                                         dst->data + read_count,
@@ -61,7 +61,7 @@ FBCALL FBSTRING *fb_FileStrInput( ssize_t bytes, int fnum )
         /* add the null-term */
         dst->data[read_count] = '\0';
 
-        if( read_count != (size_t)bytes )
+        if( read_count != bytes )
         {
             fb_hStrSetLength( dst, read_count );
         }

@@ -285,14 +285,14 @@ static int load_bmp(FB_GFXCTX *ctx, FILE *f, void *dest, void *pal, int usenewhe
 		put_header = (PUT_HEADER *)dest;
 		/* do not overwrite pre-allocated image buffer header */
 		if (put_header->type == PUT_HEADER_NEW) {
-			width = MIN(put_header->width, (unsigned int)biWidth);
-			height = MIN(put_header->height, (unsigned int)biHeight);
+			width = MIN((int)put_header->width, biWidth);
+			height = MIN((int)put_header->height, biHeight);
 			bpp = put_header->bpp;
 		} else {
 			bpp = put_header->old.bpp;
 			if (bpp == 1 || bpp == 2 || bpp == 4) {
-				width = MIN(put_header->old.width, biWidth);
-				height = MIN(put_header->old.height, biHeight);
+				width = MIN((int)put_header->old.width, biWidth);
+				height = MIN((int)put_header->old.height, biHeight);
 			}
 			else {
 				if (usenewheader) {
@@ -302,8 +302,8 @@ static int load_bmp(FB_GFXCTX *ctx, FILE *f, void *dest, void *pal, int usenewhe
 					put_header->height = biHeight;
 					put_header->pitch = ((put_header->width * put_header->bpp) + 0xF) & ~0xF;
 
-					width = MIN(put_header->width, (unsigned int)biWidth);
-					height = MIN(put_header->height, (unsigned int)biHeight);
+					width = MIN((int)put_header->width, biWidth);
+					height = MIN((int)put_header->height, biHeight);
 					bpp = put_header->bpp;
 				}
 				else {
@@ -312,8 +312,8 @@ static int load_bmp(FB_GFXCTX *ctx, FILE *f, void *dest, void *pal, int usenewhe
 					put_header->old.height = biHeight;
 					put_header->pitch = ((put_header->width * put_header->bpp) + 0xF) & ~0xF;
 
-					width = MIN(put_header->old.width, biWidth);
-					height = MIN(put_header->old.height, biHeight);
+					width = MIN((int)put_header->old.width, biWidth);
+					height = MIN((int)put_header->old.height, biHeight);
 					bpp = put_header->old.bpp;
 				}
 			}

@@ -17,7 +17,7 @@ void fb_GfxClear(int mode)
 
     DRIVER_LOCK();
 
-    if( (unsigned)mode == 0xFFFF0000 ) {
+    if( mode == (int)0xFFFF0000 ) {
         if( context->flags & CTX_VIEWPORT_SET )
             mode = 1;
         else {
