@@ -1057,6 +1057,8 @@ declare function symbAddLabel _
 		byval options as FB_SYMBOPT = FB_SYMBOPT_DECLARING _
 	) as FBSYMBOL ptr
 
+declare sub symbVarInitFields( byval sym as FBSYMBOL ptr )
+
 declare function symbAddVar _
 	( _
 		byval symbol as const zstring ptr, _

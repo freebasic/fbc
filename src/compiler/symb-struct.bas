@@ -416,24 +416,15 @@ function symbAddField _
 	else
 		sym->ofs = parent->ofs - lgt
 	end if
+	symbVarInitFields( sym )
 
-	''
-	sym->var_.initree = NULL
-
-	'' array fields
-	sym->var_.array.desc = NULL
 	sym->var_.array.dif = symbCalcArrayDiff( dimensions, dTB(), lgt )
-	sym->var_.array.dimhead = NULL
-	sym->var_.array.dimtail = NULL
-	sym->var_.array.has_ellipsis = FALSE
-
 	symbSetArrayDimensions( sym, dimensions )
 	if( dimensions > 0 ) then
 		for i as integer = 0 to dimensions-1
 			symbAddArrayDim( sym, dTB(i).lower, dTB(i).upper )
 		next
 	end if
-
 	sym->var_.array.elms = symbCalcArrayElements( sym )
 
 	'' multiple len by all array elements (if any)

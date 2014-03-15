@@ -369,6 +369,21 @@ sub symbSetArrayDimTb _
 
 end sub
 
+sub symbVarInitFields( byval sym as FBSYMBOL ptr )
+	sym->var_.initree = NULL
+	sym->var_.array.dims = 0
+	sym->var_.array.dimhead = NULL
+	sym->var_.array.dimtail = NULL
+	sym->var_.array.dif = 0
+	sym->var_.array.elms = 1
+	sym->var_.array.desc = NULL
+	sym->var_.array.has_ellipsis = FALSE
+	sym->var_.desc.array = NULL
+	sym->var_.stmtnum = parser.stmt.cnt
+	sym->var_.align = 0
+	sym->var_.data.prev = NULL
+end sub
+
 function symbAddVar _
 	( _
 		byval id as const zstring ptr, _
@@ -453,23 +468,11 @@ function symbAddVar _
 	s->stats or= stats
 	s->lgt = lgt
 	s->ofs = 0
-	'' array fields
-	s->var_.array.dimhead = NULL
-	s->var_.array.dimtail = NULL
-	s->var_.array.desc = NULL
+	symbVarInitFields( s )
+
 	if( dimensions <> 0 ) then
 		symbSetArrayDimTb( s, dimensions, dTB() )
-	else
-		s->var_.array.dims = 0
-		s->var_.array.dif = 0
-		s->var_.array.elms = 1
 	end if
-	s->var_.array.has_ellipsis = FALSE
-	s->var_.desc.array = NULL
-	s->var_.initree = NULL
-	s->var_.align = 0	'' default alignment
-	s->var_.stmtnum = parser.stmt.cnt
-	s->var_.data.prev = NULL
 
 	'' QB quirk: see above
 	if( (options and FB_SYMBOPT_UNSCOPE) <> 0 ) then
