@@ -524,7 +524,7 @@ int fb_hWin32Init(char *title, int w, int h, int depth, int refresh_rate, int fl
 	fb_win32.version = (info.dwMajorVersion << 8) | info.dwMinorVersion;
 
 	module = GetModuleHandle("USER32");
-	for (i = 0; i < sizeof(user32_procs) / sizeof(user32_procs[0]); i++) {
+	for (i = 0; i < ((int)sizeof(user32_procs)) / ((int)sizeof(user32_procs[0])); i++) {
 		*user32_procs[i].proc = GetProcAddress(module, user32_procs[i].name);
 	}
 
@@ -732,7 +732,7 @@ int fb_hWin32SetWindowPos(int x, int y)
 	if (fb_win32.flags & DRIVER_FULLSCREEN)
 		return 0;
 
-	if( (x == 0x80000000) && (y == 0x80000000) ) {
+	if( (x == (int)0x80000000) && (y == (int)0x80000000) ) {
 		/* Querying window position */
 		RECT rc;
 		if( GetWindowRect( fb_win32.wnd, &rc ) ) {

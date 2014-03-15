@@ -432,7 +432,7 @@ static int *driver_fetch_modes(int depth, int *size)
 		if (!EnumDisplaySettings(NULL, index, &devmode))
 			break;
 		index++;
-		if (devmode.dmBitsPerPel == depth) {
+		if (devmode.dmBitsPerPel == (unsigned int)depth) {
 			(*size)++;
 			modes = (int *)realloc(modes, *size * sizeof(int));
 			modes[(*size) - 1] = (devmode.dmPelsWidth << 16) | devmode.dmPelsHeight;
