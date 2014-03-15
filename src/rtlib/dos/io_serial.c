@@ -905,12 +905,12 @@ int fb_SerialOpen
 
 	if( options->TransmitBuffer == 0 )
 		options->TransmitBuffer = DEFAULT_BUFFERSIZE;
-	else if( options->TransmitBuffer < 0 || options->TransmitBuffer > MAX_BUFFERSIZE )
+	else if( options->TransmitBuffer > MAX_BUFFERSIZE )
 		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 
 	if( options->ReceiveBuffer == 0 )
 		options->ReceiveBuffer = DEFAULT_BUFFERSIZE;
-	else if( options->ReceiveBuffer < 0 || options->ReceiveBuffer > MAX_BUFFERSIZE )
+	else if( options->ReceiveBuffer > MAX_BUFFERSIZE )
 		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 
 	if( options->KeepDTREnabled )
