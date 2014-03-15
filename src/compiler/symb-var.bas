@@ -845,8 +845,6 @@ sub symbDelVar( byval s as FBSYMBOL ptr, byval is_tbdel as integer )
 	end if
 
     if( symbGetIsLiteral( s ) ) then
-    	s->attrib and= not FB_SYMBATTRIB_LITERAL
-
     	'' not a wchar literal?
     	if( s->typ <> FB_DATATYPE_WCHAR ) then
     		if( s->var_.littext <> NULL ) then
@@ -858,10 +856,7 @@ sub symbDelVar( byval s as FBSYMBOL ptr, byval is_tbdel as integer )
     		end if
     	end if
 
-    ''
-    elseif( symbGetIsInitialized( s ) ) then
-    	s->stats and= not FB_SYMBSTATS_INITIALIZED
-		'' Note: astEnd() will already free the initree
+	'' Note: FBSYMBOL.var_.initree will be free'ed by astEnd() already
     end if
 
     ''
