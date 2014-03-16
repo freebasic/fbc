@@ -1731,10 +1731,9 @@ sub cArrayDecl( byref dimensions as integer, exprTB() as ASTNODE ptr )
 	dimensions = 0
 
 	do
-		dim as integer dimension_has_ellipsis = FALSE
-
+		'' 1st expression: lbound or ubound
+		'' (depends on whether there's a TO and a 2nd expression following)
 		if( hMatchEllipsis( ) ) then
-			dimension_has_ellipsis = TRUE
 			exprTB(dimensions,0) = NULL
 		else
 			'' Expression
@@ -1745,26 +1744,28 @@ sub cArrayDecl( byref dimensions as integer, exprTB() as ASTNODE ptr )
 		if( lexGetToken( ) = FB_TK_TO ) then
 			lexSkipToken( )
 
-			if( dimension_has_ellipsis ) then
+			'' lbound can't be unknown
+			if( exprTB(dimensions,0) = NULL ) then
 				errReport( FB_ERRMSG_CANTUSEELLIPSISASLOWERBOUND )
 				exprTB(dimensions,0) = astNewCONSTi( 0 )
 			end if
 
+			'' ubound
 			if( hMatchEllipsis( ) ) then
-				dimension_has_ellipsis = TRUE
 				exprTB(dimensions,1) = NULL
 			else
 				'' Expression
 				exprTB(dimensions,1) = hIntExpr( exprTB(dimensions,0) )
 			end if
 		else
+			'' 1st expression was ubound, not lbound
 			exprTB(dimensions,1) = exprTB(dimensions,0)
 			exprTB(dimensions,0) = astNewCONSTi( env.opt.base )
 		end if
 
 		dimensions += 1
 
-		'' separator
+		'' ','?
 		if( lexGetToken( ) <> CHAR_COMMA ) then
 			exit do
 		end if
