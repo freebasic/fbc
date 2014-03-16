@@ -1446,45 +1446,19 @@ sub symbDelSymbol _
 	'' symbol table, any attached symbols might be deleted *before* their
 	'' parents, which then can not use the dangling pointers...
 
-	select case as const s->class
-    case FB_SYMBCLASS_VAR
-		symbDelVar( s, is_tbdel )
-
-    case FB_SYMBCLASS_CONST
-		symbDelConst( s )
-
-    case FB_SYMBCLASS_PROC
-		symbDelPrototype( s )
-
-	case FB_SYMBCLASS_DEFINE
-		symbDelDefine( s )
-
-    case FB_SYMBCLASS_LABEL
-		symbDelLabel( s )
-
-    case FB_SYMBCLASS_ENUM
-		symbDelEnum( s )
-
-    case FB_SYMBCLASS_STRUCT
-		symbDelStruct( s )
-
-    case FB_SYMBCLASS_SCOPE
-		symbDelScope( s )
-
-    case FB_SYMBCLASS_NAMESPACE
-		symbDelNamespace( s )
-
-	case FB_SYMBCLASS_NSIMPORT
-		symbNamespaceRemove( s, FALSE )
-
-	case FB_SYMBCLASS_FIELD
-		assert( is_tbdel )  '' symbDelField() assumption
-		symbDelField( s )
-
-	case else
-		symbFreeSymbol( s )
-
-    end select
+	select case as const( s->class )
+	case FB_SYMBCLASS_VAR, FB_SYMBCLASS_FIELD : symbDelVar( s, is_tbdel )
+	case FB_SYMBCLASS_CONST     : symbDelConst( s )
+	case FB_SYMBCLASS_PROC      : symbDelPrototype( s )
+	case FB_SYMBCLASS_DEFINE    : symbDelDefine( s )
+	case FB_SYMBCLASS_LABEL     : symbDelLabel( s )
+	case FB_SYMBCLASS_ENUM      : symbDelEnum( s )
+	case FB_SYMBCLASS_STRUCT    : symbDelStruct( s )
+	case FB_SYMBCLASS_SCOPE     : symbDelScope( s )
+	case FB_SYMBCLASS_NAMESPACE : symbDelNamespace( s )
+	case FB_SYMBCLASS_NSIMPORT  : symbNamespaceRemove( s, FALSE )
+	case else                   : symbFreeSymbol( s )
+	end select
 
 end sub
 

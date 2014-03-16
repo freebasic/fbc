@@ -833,6 +833,5 @@ sub symbDelVar( byval s as FBSYMBOL ptr, byval is_tbdel as integer )
 
 	'' Note: FBSYMBOL.var_.initree will be free'ed by astEnd() already
 
-    ''
-    symbFreeSymbol( s )
+	symbFreeSymbol( s )
 end sub
