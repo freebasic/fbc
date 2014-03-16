@@ -290,9 +290,9 @@ private sub hCheckExternArrayDimensions _
 	i = 0
 	while( d )
 
-		if( ((d->lower <> dTB(i).lower) or _
-		     (d->upper <> dTB(i).upper)      ) and _
-		    (dTB(i).upper <> FB_ARRAYDIM_UNKNOWN)    ) then
+		if( (d->lower <> dTB(i).lower) or _
+		    ((d->upper <> dTB(i).upper) and _
+		     (dTB(i).upper <> FB_ARRAYDIM_UNKNOWN)) ) then
 			errReportEx( FB_ERRMSG_BOUNDSDIFFERFROMEXTERN, *id )
 			exit sub
 		end if
