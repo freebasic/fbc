@@ -23,8 +23,6 @@ declare function hCreateDescType _
 	) as FBSYMBOL ptr
 
 sub symbVarInit( )
-	listInit( @symb.dimlist, FB_INITDIMNODES, len( FBVARDIM ), LIST_FLAGS_NOCLEAR )
-
 	'' assuming it's safe to create UDT symbols here, the array
 	'' dimension type must be allocated at module-level or it
 	'' would be removed when going out scope
@@ -32,7 +30,6 @@ sub symbVarInit( )
 end sub
 
 sub symbVarEnd( )
-	listEnd( @symb.dimlist )
 end sub
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -265,109 +262,133 @@ function symbAddArrayDesc( byval array as FBSYMBOL ptr ) as FBSYMBOL ptr
 	function = desc
 end function
 
-private sub hAddArrayDim _
-	( _
-		byval s as FBSYMBOL ptr, _
-		byval lower as longint, _
-		byval upper as longint _
-	)
+private sub symbDropArrayDims( byval s as FBSYMBOL ptr )
+	deallocate( s->var_.array.dimtb )
+	s->var_.array.dimensions = 0
+	s->var_.array.dimtb = NULL
+end sub
 
-    dim as FBVARDIM ptr d = any, n = any
+private sub symbRecalcArrayDiff( byval sym as FBSYMBOL ptr )
+	dim as longint diff = any, elements = any
+	dim as integer last = any
+	dim as FBARRAYDIM ptr dimtb = any
 
-    d = listNewNode( @symb.dimlist )
-
-    d->lower = lower
-    d->upper = upper
-
-	n = s->var_.array.dimtail
-	if( n <> NULL ) then
-		n->next = d
-	else
-		s->var_.array.dimhead = d
+	if( sym->var_.array.dimensions <= 0 ) then
+		sym->var_.array.diff = 0
+		exit sub
 	end if
 
-	d->next = NULL
-	s->var_.array.dimtail = d
+	dimtb = sym->var_.array.dimtb
+	diff = 0
+	last = sym->var_.array.dimensions - 1
+	for i as integer = 0 to last - 1
+		elements = (dimtb[i+1].upper - dimtb[i+1].lower) + 1
+		diff = (diff + dimtb[i].lower) * elements
+	next
 
+	diff = (diff + dimtb[last].lower) * sym->lgt
+
+	sym->var_.array.diff = -diff
+end sub
+
+private sub symbRecalcArrayDiffAndElements( byval sym as FBSYMBOL ptr )
+	if( sym->var_.array.dimensions > 0 ) then
+		symbRecalcArrayDiff( sym )
+		sym->var_.array.elements = symbCalcArrayElements( sym, 0 )
+	else
+		sym->var_.array.diff = 0
+		sym->var_.array.elements = 1
+	end if
+end sub
+
+function symbArrayHasUnknownDimensions( byval sym as FBSYMBOL ptr ) as integer
+	assert( symbIsVar( sym ) or symbIsField( sym ) )
+	function = FALSE
+	for i as integer = 0 to sym->var_.array.dimensions - 1
+		if( symbArrayUbound( sym, i ) = FB_ARRAYDIM_UNKNOWN ) then
+			return TRUE
+		end if
+	next
+end function
+
+''
+'' Allocate the companion array descriptor for VARs, if there are no more
+'' FB_ARRAYDIM_UNKNOWN's in the dimensions. VARs are "unique", they map to
+'' runtime memory 1:1, it's ok to have exactly 1 descriptor per VAR.
+''
+'' But not for FIELDs, because they are not unique: There can be many instances
+'' of a field in memory at runtime, so there is no single descriptor per FIELD.
+'' Instead, astNewARG() has to call symbAddArrayDesc() on-demand and create a
+'' new descriptor everytime.
+''
+private sub symbMaybeAddArrayDesc( byval sym as FBSYMBOL ptr )
+	if( symbIsField( sym ) or (sym->var_.array.dimensions = 0) ) then
+		exit sub
+	end if
+
+	if( symbArrayHasUnknownDimensions( sym ) ) then
+		'' Not yet; there still are unknown array dimensions
+		exit sub
+	end if
+
+	if( sym->var_.array.desc = NULL ) then
+		sym->var_.array.desc = symbAddArrayDesc( sym )
+		sym->var_.array.desc->var_.initree = _
+			astBuildArrayDescIniTree( sym->var_.array.desc, sym, NULL )
+	end if
 end sub
 
 sub symbSetArrayDimTb _
 	( _
-		byval s as FBSYMBOL ptr, _
+		byval sym as FBSYMBOL ptr, _
 		byval dimensions as integer, _
 		dTB() as FBARRAYDIM _
 	)
 
-    dim as integer i = any
-    dim as FBVARDIM ptr d = any
-	dim as integer have_unknowns = FALSE
+	'' Delete existing dimensions, if any
+	symbDropArrayDims( sym )
 
-	assert( iif( symbIsDynamic( s ), dimensions = -1, TRUE ) )
+	assert( iif( symbIsDynamic( sym ), dimensions = -1, TRUE ) )
 
+	sym->var_.array.dimensions = dimensions
 	if( dimensions > 0 ) then
-		s->var_.array.dif = symbCalcArrayDiff( dimensions, dTB(), s->lgt )
-
-		if( (s->var_.array.dimhead = NULL) or _
-			(symbGetArrayDimensions( s ) <> dimensions) ) then
-
-			symbDelVarDims( s )
-
-			for i = 0 to dimensions-1
-				hAddArrayDim( s, dTB(i).lower, dTB(i).upper )
-
-				'' If any dimension size is unknown yet (ellipsis), hold off on the actual build
-				'' until called later when it's known.
-				if( dTB(i).upper = FB_ARRAYDIM_UNKNOWN ) then have_unknowns = TRUE
-			next
-		else
-			d = s->var_.array.dimhead
-			for i = 0 to dimensions-1
-				d->lower = dTB(i).lower
-				d->upper = dTB(i).upper
-				'' If any dimension size is unknown yet (ellipsis), hold off on the actual build
-				'' until called later when it's known.
-				if( d->upper = FB_ARRAYDIM_UNKNOWN ) then have_unknowns = TRUE
-				d = d->next
-			next
-		end if
-
-		s->var_.array.elms = symbCalcArrayElements( s )
-	else
-		s->var_.array.dif = 0
-		s->var_.array.elms = 1
+		'' Copy the dTB() into the FBSYMBOL
+		sym->var_.array.dimtb = xallocate( dimensions * sizeof( FBARRAYDIM ) )
+		for i as integer = 0 to dimensions - 1
+			sym->var_.array.dimtb[i] = dTB(i)
+		next
 	end if
 
-	s->var_.array.dims = dimensions
+	symbRecalcArrayDiffAndElements( sym )
+	symbMaybeAddArrayDesc( sym )
 
-	''
-	'' Allocate the companion array descriptor for VARs, if there are no
-	'' more FB_ARRAYDIM_UNKNOWN's. VARs are "unique", they map to runtime
-	'' memory 1:1, it's ok to have exactly 1 descriptor per VAR.
-	''
-	'' But not for FIELDs, because they are not unique: There can be many
-	'' instances of a field in memory at runtime, so there is no single
-	'' descriptor per FIELD. Instead, astNewARG() has to call
-	'' symbAddArrayDesc() on-demand and create a new descriptor everytime.
-	''
-	if( (s->class <> FB_SYMBCLASS_FIELD) and (not have_unknowns) and (dimensions <> 0) ) then
-		if( s->var_.array.desc = NULL ) then
-			s->var_.array.desc = symbAddArrayDesc( s )
-			s->var_.array.desc->var_.initree = _
-				astBuildArrayDescIniTree( s->var_.array.desc, s, NULL )
-		end if
-	end if
+end sub
+
+sub symbSetArrayDimensionElements _
+	( _
+		byval sym as FBSYMBOL ptr, _
+		byval dimension as integer, _
+		byval elements as longint _
+	)
+
+	assert( (dimension >= 0) and (dimension < symbGetArrayDimensions( sym )) )
+
+	with( symbGetArrayDim( sym, dimension ) )
+		.upper = .lower + elements - 1
+	end with
+
+	symbRecalcArrayDiffAndElements( sym )
+	symbMaybeAddArrayDesc( sym )
 
 end sub
 
 sub symbVarInitFields( byval sym as FBSYMBOL ptr )
 	sym->var_.initree = NULL
-	sym->var_.array.dims = 0
-	sym->var_.array.dimhead = NULL
-	sym->var_.array.dimtail = NULL
-	sym->var_.array.dif = 0
-	sym->var_.array.elms = 1
+	sym->var_.array.dimensions = 0
+	sym->var_.array.dimtb = NULL
+	sym->var_.array.diff = 0
+	sym->var_.array.elements = 1
 	sym->var_.array.desc = NULL
-	sym->var_.array.has_ellipsis = FALSE
 	sym->var_.desc.array = NULL
 	sym->var_.stmtnum = parser.stmt.cnt
 	sym->var_.align = 0
@@ -553,63 +574,31 @@ end function
 '' misc
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-'':::::
-function symbCalcArrayDiff _
-	( _
-		byval dimensions as integer, _
-		dTB() as FBARRAYDIM, _
-		byval lgt as longint _
-	) as longint
-
-	dim as integer d = any
-	dim as longint diff = any, elms = any
-
-	if( dimensions <= 0 ) then
-		return 0
-	end if
-
-	diff = 0
-	for d = 0 to (dimensions-1)-1
-		elms = (dTB(d+1).upper - dTB(d+1).lower) + 1
-		diff = (diff+dTB(d).lower) * elms
-	next
-
-	diff += dTB(dimensions-1).lower
-
-	diff *= lgt
-
-	function = -diff
-end function
-
+'' Calculate a static array's total number of elements, all dimensions together.
+'' <first> may be specified to calculate only the elements for <first> and the
+'' following dimensions.
 function symbCalcArrayElements _
 	( _
-		byval s as FBSYMBOL ptr, _
-		byval n as FBVARDIM ptr = NULL _
+		byval sym as FBSYMBOL ptr, _
+		byval first as integer _
 	) as longint
 
-	dim as longint e = any, d = any
+	dim as longint totalelements = any
 
-	if( n = NULL ) then
-		n = s->var_.array.dimhead
-	end if
+	totalelements = 1
+	for i as integer = first to sym->var_.array.dimensions - 1
+		totalelements *= (sym->var_.array.dimtb[i].upper - sym->var_.array.dimtb[i].lower) + 1
+	next
 
-	e = 1
-	do while( n <> NULL )
-		d = (n->upper - n->lower) + 1
-		e = e * d
-		n = n->next
-	loop
-
-	function = e
+	function = totalelements
 end function
 
 function symbCheckArraySize _
 	( _
 		byval dimensions as integer, _
-		dTB() as FBARRAYDIM, _
+		byval dimtb as FBARRAYDIM ptr, _
 		byval lgt as longint, _
-		byval is_on_stack as integer, _
-		byval allow_ellipsis as integer _
+		byval is_on_stack as integer _
 	) as integer
 
 	dim as ulongint allelements = any
@@ -619,16 +608,16 @@ function symbCheckArraySize _
 	found_too_big = FALSE
 	allelements = 1
 
-	for i as integer = 0 to dimensions-1
+	for i as integer = 0 to dimensions - 1
 		'' ellipsis upper bound?
-		if( allow_ellipsis and (dTB(i).upper = FB_ARRAYDIM_UNKNOWN) ) then
+		if( dimtb[i].upper = FB_ARRAYDIM_UNKNOWN ) then
 			'' Each dimension using ellipsis will have at least 1 element,
 			'' this is what can be assumed for now. (The check will need
 			'' to be repeated later when the real size is known)
 			elements = 1
 		else
 			'' elements for this array dimension
-			elements = (dTB(i).upper - dTB(i).lower) + 1
+			elements = (dimtb[i].upper - dimtb[i].lower) + 1
 		end if
 
 		'' Too many elements in this dimension?
@@ -743,8 +732,6 @@ end function
 
 function symbCloneVar( byval sym as FBSYMBOL ptr ) as FBSYMBOL ptr
 	static as FBARRAYDIM dTB(0 to FB_MAXARRAYDIMS-1)
-	dim as FBVARDIM ptr d = any
-	dim as integer dimensions = any
 
 	'' assuming only temp vars or temp array descs will be cloned
 	if( symbIsDescriptor( sym ) ) then
@@ -755,17 +742,13 @@ function symbCloneVar( byval sym as FBSYMBOL ptr ) as FBSYMBOL ptr
 		function = symbAddTempVar( symbGetType( sym ), symbGetSubType( sym ) )
 	else
 		'' Fill the dTB() with the array's dimensions, if any
-		dimensions = symbGetArrayDimensions( sym )
-		d = symbGetArrayFirstDim( sym )
-		for i as integer = 0 to dimensions-1
-			dTB(i).lower = d->lower
-			dTB(i).upper = d->upper
-			d = d->next
+		for i as integer = 0 to symbGetArrayDimensions( sym ) - 1
+			dTB(i) = symbGetArrayDim( sym, i )
 		next
 
 		function = symbAddVar( symbGetName( sym ), NULL, _
 				symbGetType( sym ), symbGetSubType( sym ), 0, _
-				dimensions, dTB(), symbGetAttrib( sym ), 0 )
+				symbGetArrayDimensions( sym ), dTB(), symbGetAttrib( sym ), 0 )
 	end if
 end function
 
@@ -791,31 +774,12 @@ end function
 '' del
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-sub symbDelVarDims( byval s as FBSYMBOL ptr )
-    dim as FBVARDIM ptr n = any, nxt = any
-
-    n = s->var_.array.dimhead
-    do while( n <> NULL )
-    	nxt = n->next
-
-    	listDelNode( @symb.dimlist, n )
-
-    	n = nxt
-    loop
-
-	s->var_.array.dimhead = NULL
-	s->var_.array.dimtail = NULL
-	s->var_.array.dims = 0
-end sub
-
 sub symbDelVar( byval s as FBSYMBOL ptr, byval is_tbdel as integer )
-	if( symbGetArrayDimensions( s ) > 0 ) then
-		symbDelVarDims( s )
-		if( is_tbdel = FALSE ) then
-			'' del the array descriptor, recursively
-			if( s->var_.array.desc ) then
-				symbDelSymbol( s->var_.array.desc, FALSE )
-			end if
+	symbDropArrayDims( s )
+	if( is_tbdel = FALSE ) then
+		'' del the array descriptor, recursively
+		if( s->var_.array.desc ) then
+			symbDelSymbol( s->var_.array.desc, FALSE )
 		end if
 	end if
 

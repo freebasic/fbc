@@ -686,8 +686,7 @@ end function
 
 private function hDeclDynArray( byval sym as FBSYMBOL ptr ) as string static
     dim as string desc, dimdesc
-    dim as FBVARDIM ptr d = any
-	dim as integer baseoffset = any, i = any
+	dim as integer baseoffset = any, i = any, dimension = any
 	dim as FBSYMBOL ptr fld = any
 
 	'' declare the array descriptor
@@ -724,7 +723,7 @@ private function hDeclDynArray( byval sym as FBSYMBOL ptr ) as string static
 	fld = symbUdtGetNextField( fld )
 	baseoffset = symbGetOfs( fld )
 	i = 1
-	d = symbGetArrayFirstDim( sym )
+	dimension = 0
 	do
 		dimdesc = "dim" + str( i ) + "_"
 
@@ -744,12 +743,8 @@ private function hDeclDynArray( byval sym as FBSYMBOL ptr ) as string static
 
 		baseoffset += symbGetLen( symb.fbarraydim )
 
-		if( d = NULL ) then
-			exit do
-		end if
-
-		d = d->next
-	loop while( d )
+		dimension += 1
+	loop while( dimension < symbGetArrayDimensions( sym ) )
 
 	desc += ";"
 
@@ -775,28 +770,19 @@ private function hDeclPointer _
 
 end function
 
-'':::::
-private function hDeclArrayDims _
-	( _
-		byval sym as FBSYMBOL ptr _
-	) as string static
-
-	dim as FBVARDIM ptr d
-    dim as string desc
+private function hDeclArrayDims( byval sym as FBSYMBOL ptr ) as string
+	static as string desc
 
     desc = str( ctx.typecnt ) + "="
     ctx.typecnt += 1
 
-    d = symbGetArrayFirstDim( sym )
-    do while( d <> NULL )
-    	desc += "ar1;"
-    	desc += str( d->lower ) + ";"
-    	desc += str( d->upper ) + ";"
-    	d = d->next
-    loop
+	for i as integer = 0 to symbGetArrayDimensions( sym ) - 1
+		desc += "ar1;"
+		desc += str( symbArrayLbound( sym, i ) ) + ";"
+		desc += str( symbArrayUbound( sym, i ) ) + ";"
+	next
 
     function = desc
-
 end function
 
 '':::::

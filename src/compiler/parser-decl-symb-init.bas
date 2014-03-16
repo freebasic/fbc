@@ -12,8 +12,7 @@
 
 type FB_INITCTX
 	sym			as FBSYMBOL ptr
-	dim_ 		as FBVARDIM ptr
-	dimcnt		as integer
+	dimension 		as integer
 	tree		as ASTNODE ptr
 	options		as FB_INIOPT
 	init_expr   as ASTNODE ptr
@@ -114,18 +113,17 @@ private function hElmInit _
 
 end function
 
+'' Parse variable initializer: may be an array, or not.
 private function hArrayInit _
 	( _
 		byref ctx as FB_INITCTX, _
 		byval no_fake as integer = FALSE _
 	) as integer
 
-    dim as integer dimensions = any, elm_cnt = any
+	dim as integer elm_cnt = any
 	dim as longint elements = any
-    dim as integer isarray = any, dtype = any
-    dim as FBVARDIM ptr old_dim = any
-    dim as FBSYMBOL ptr subtype = any
-	static as FBARRAYDIM dTB(0 to FB_MAXARRAYDIMS - 1)
+	dim as integer isarray = any, dtype = any
+	dim as FBSYMBOL ptr subtype = any
 
 	function = FALSE
 
@@ -161,63 +159,51 @@ private function hArrayInit _
 	'' and recursively descends into the next (inner) dimension.
 	'' The first '}' seen is that of the first group of elements in the
 	'' inner-most dimension, corresponding to the last dimension listed in
-	'' the array declaration and the dTB(). Thus, the dimension's sizes are
-	'' filled in "backwards" - inner-most first, outer-most last.
+	'' the array declaration. Thus, the dimension's sizes are filled in
+	'' "backwards" - inner-most first, outer-most last.
 	''
-
-	dimensions = symbGetArrayDimensions( ctx.sym )
-	old_dim = ctx.dim_
 
 	'' '{'?
 	isarray = FALSE
 	if( lexGetToken( ) = CHAR_LBRACE ) then
 		lexSkipToken( )
 
-		ctx.dimcnt += 1
-
-		astTypeIniScopeBegin( ctx.tree, ctx.sym )
+		ctx.dimension += 1
+		isarray = TRUE
 
 		'' too many dimensions?
-		if( ctx.dimcnt > dimensions ) then
-			errReport( iif( dimensions > 0, _
+		if( ctx.dimension >= symbGetArrayDimensions( ctx.sym ) ) then
+			errReport( iif( symbGetArrayDimensions( ctx.sym ) > 0, _
 			                FB_ERRMSG_TOOMANYEXPRESSIONS, _
 			                FB_ERRMSG_EXPECTEDARRAY ) )
 			'' error recovery: skip until next '}'
 			hSkipUntil( CHAR_RBRACE, TRUE )
-			ctx.dim_ = NULL
-		else
-			'' first dim?
-			if( ctx.dim_ = NULL ) then
-				ctx.dim_ = symbGetArrayFirstDim( ctx.sym )
-
-			'' next..
-			else
-				ctx.dim_ = ctx.dim_->next
-			end if
-
-			isarray = TRUE
+			ctx.dimension -= 1
+			exit function
 		end if
 	else
 		'' not the last dimension?
-		if( ctx.dimcnt < dimensions ) then
+		'' Initializing a non-array variable is ok even without {}'s,
+		'' but for arrays the {}'s are required.
+		if( ctx.dimension < (symbGetArrayDimensions( ctx.sym ) - 1) ) then
 			errReport( FB_ERRMSG_EXPECTEDLBRACE )
-			ctx.dimcnt += 1
-			if( ctx.dim_ = NULL ) then
-				ctx.dim_ = symbGetArrayFirstDim( ctx.sym )
-			else
-				ctx.dim_ = ctx.dim_->next
-			end if
+			ctx.dimension += 1
+			isarray = TRUE
 		end if
 	end if
 
-	if( ctx.dim_ <> NULL ) then
-		dTB(ctx.dimcnt - 1).lower = ctx.dim_->lower
-		dTB(ctx.dimcnt - 1).upper = ctx.dim_->upper
-		'' Ellipsis?
-		if( ctx.dim_->upper = FB_ARRAYDIM_UNKNOWN ) then
+	if( isarray ) then
+		astTypeIniScopeBegin( ctx.tree, ctx.sym )
+	end if
+
+	'' Determine the expected number of initializer elements
+	if( ctx.dimension >= 0 ) then
+		assert( ctx.dimension < symbGetArrayDimensions( ctx.sym ) )
+		'' Ellipsis at this dimension?
+		if( symbArrayUbound( ctx.sym, ctx.dimension ) = FB_ARRAYDIM_UNKNOWN ) then
 			elements = -1
 		else
-			elements = (ctx.dim_->upper - ctx.dim_->lower) + 1
+			elements = symbArrayUbound( ctx.sym, ctx.dimension ) - symbArrayLbound( ctx.sym, ctx.dimension ) + 1
 		end if
 	else
 		elements = 1
@@ -230,11 +216,11 @@ private function hArrayInit _
 		dtype = typeDeref( dtype )
 	end if
 
-	'' for each array element..
+	'' For each initializer element...
 	elm_cnt = 0
 	do
 		'' not the last dimension?
-		if( ctx.dimcnt < dimensions ) then
+		if( ctx.dimension < (symbGetArrayDimensions( ctx.sym ) - 1) ) then
 			if( hArrayInit( ctx ) = FALSE ) then
 				exit function
 			end if
@@ -252,53 +238,45 @@ private function hArrayInit _
 			end select
 		end if
 
+		'' Stop parsing elements if the expected number was reached,
+		'' unless it's an ellipsis array dimension, for which we need
+		'' to keep parsing all available elements to determine how
+		'' big the dimension should be.
 		elm_cnt += 1
-		if( elements = -1 ) then
-			'' ellipsis elements...
-			if( lexGetToken( ) <> CHAR_COMMA ) then
-				'' Fill in this dimension's upper bound
-				elements = elm_cnt
-				ctx.dim_->upper = ctx.dim_->lower + elm_cnt - 1
-				dTB(ctx.dimcnt - 1).upper = ctx.dim_->upper
-
-				'' "array too big" check
-				'' Note: the dTB() was initialized by now by the recursive parsing,
-				'' but there can still be ellipsis upper bounds if some of the other
-				'' dimensions used them, because their respective initializers haven't
-				'' been fully parsed yet, unless this is the outer-most dimension.
-				if( symbCheckArraySize( dimensions, dTB(), ctx.sym->lgt, _
-				                        ((ctx.sym->attrib and (FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_STATIC)) = 0), _
-				                        (ctx.dimcnt > 1) ) = FALSE ) then
-					errReport( FB_ERRMSG_ARRAYTOOBIG )
-					'' error recovery: set this dimension to 1 element
-					dTB(ctx.dimcnt - 1).lower = 0
-					dTB(ctx.dimcnt - 1).upper = 0
-				end if
-
-				symbSetArrayDimTb( ctx.sym, dimensions, dTB() )
-				exit do
-			end if
-		else
-			if( elm_cnt >= elements ) then
-				exit do
-			end if
-		end if
-
-		'' ','
-		if( hMatch( CHAR_COMMA ) = FALSE ) then
+		if( (elm_cnt >= elements) and (elements <> -1) ) then
 			exit do
 		end if
-	loop
 
-	'' Any array elements not initialized by this '{...}'?
+		'' ','?
+	loop while( hMatch( CHAR_COMMA ) )
+
+	'' Finished parsing initializer for ellipsis array dimension?
+	if( elements = -1 ) then
+		'' Update the array symbol with the new info about this dimension's upper bound
+		elements = elm_cnt
+		symbSetArrayDimensionElements( ctx.sym, ctx.dimension, elements )
+
+		'' "array too big" check
+		'' Note: If currently parsing an inner dimension, then there can still be
+		'' outer dimensions with ellipsis upper bounds because the outer bounds'
+		'' initializers haven't been fully parsed yet. But it's ok because
+		'' symbCheckArraySize() handles this special case. (The check will be incomplete,
+		'' but ultimately
+		if( symbCheckArraySize( symbGetArrayDimensions( ctx.sym ), @symbGetArrayDim( ctx.sym, 0 ), ctx.sym->lgt, _
+					((ctx.sym->attrib and (FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_STATIC)) = 0) ) = FALSE ) then
+			errReport( FB_ERRMSG_ARRAYTOOBIG )
+			'' error recovery: set this dimension to 1 element
+			symbSetArrayDimensionElements( ctx.sym, ctx.dimension, 1 )
+		end if
+	end if
+
+	'' Not all elements initialized in this dimension?
 	'' Then default-initialize/zero them. With multi-dimensional arrays,
 	'' this may happen "in the middle" of the array.
 	elements -= elm_cnt
 	if( elements > 0 ) then
-		'' not the last dimension?
-		if( ctx.dim_->next ) then
-			elements *= symbCalcArrayElements( ctx.sym, ctx.dim_->next )
-		end if
+		'' Add elements for remaining uninitialized dimensions, if any
+		elements *= symbCalcArrayElements( ctx.sym, ctx.dimension + 1 )
 
 		dim as FBSYMBOL ptr ctor = NULL
 		if( (ctx.options and FB_INIOPT_ISOBJ) <> 0 ) then
@@ -344,12 +322,10 @@ private function hArrayInit _
 			lexSkipToken( )
 		end if
 
-		ctx.dim_ = old_dim
-		ctx.dimcnt -= 1
+		ctx.dimension -= 1
 	end if
 
 	function = TRUE
-
 end function
 
 '':::::
@@ -464,8 +440,7 @@ private function hUDTInit _
 	old_ctx = ctx
 
 	ctx.options and= not FB_INIOPT_DODEREF
-	ctx.dim_ = NULL
-	ctx.dimcnt = 0
+	ctx.dimension = -1
 
 	'' for each initializable UDT field...
 	'' (for unions, only the first field can be initialized)
@@ -634,8 +609,7 @@ function cInitializer _
 	''
 	ctx.options = options
 	ctx.sym = sym
-	ctx.dim_ = NULL
-	ctx.dimcnt = 0
+	ctx.dimension = -1
 	ctx.init_expr = NULL
 
 	ctx.tree = astTypeIniBegin( symbGetFullType( sym ), subtype, is_local, symbGetOfs( sym ) )

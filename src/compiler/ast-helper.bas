@@ -838,31 +838,26 @@ function astBuildArrayDescIniTree _
     if( symbGetIsDynamic( array ) = FALSE ) then
 		assert( dims <> -1 )
 
-    	dim as FBVARDIM ptr d
-
-    	d = symbGetArrayFirstDim( array )
-    	do while( d <> NULL )
+		for i as integer = 0 to dims - 1
 			elm = dimtb
 
 			astTypeIniScopeBegin( tree, NULL )
 
 			'' .elements = (ubound( array, d ) - lbound( array, d )) + 1
-			astTypeIniAddAssign( tree, astNewCONSTi( d->upper - d->lower + 1 ), elm )
+			astTypeIniAddAssign( tree, astNewCONSTi( symbArrayUbound( array, i ) - symbArrayLbound( array, i ) + 1 ), elm )
 
 			elm = symbGetNext( elm )
 
 			'' .lbound = lbound( array, d )
-			astTypeIniAddAssign( tree, astNewCONSTi( d->lower ), elm )
+			astTypeIniAddAssign( tree, astNewCONSTi( symbArrayLbound( array, i ) ), elm )
 
 			elm = symbGetNext( elm )
 
 			'' .ubound = ubound( array, d )
-			astTypeIniAddAssign( tree, astNewCONSTi( d->upper ), elm )
+			astTypeIniAddAssign( tree, astNewCONSTi( symbArrayUbound( array, i ) ), elm )
 
 			astTypeIniScopeEnd( tree, NULL )
-
-			d = d->next
-    	loop
+		next
 
 	'' dynamic..
 	else
@@ -898,7 +893,6 @@ private function hConstBound _
 	) as ASTNODE ptr
 
 	dim as FBSYMBOL ptr array = any
-	dim as FBVARDIM ptr d = any
 	dim as integer dimension = any
 	dim as longint bound = any
 
@@ -927,42 +921,31 @@ private function hConstBound _
 		exit function
 	end if
 
-	'' dimension is 1-based
+	'' u/lbound()'s dimension argument is 1-based, turn into 0-based
 	assert( astGetDataType( dimexpr ) = FB_DATATYPE_INTEGER )
-	dimension = astConstGetInt( dimexpr )
+	dimension = astConstGetInt( dimexpr ) - 1
 
-	'' Find the referenced dimension
-	if( dimension >= 1 ) then
-		d = symbGetArrayFirstDim( array )
-		while( (d <> NULL) and (dimension > 1) )
-			dimension -= 1
-			d = d->next
-		wend
-	else
-		d = NULL
-	end if
-
-	if( d ) then
+	if( (dimension >= 0) and (dimension < symbGetArrayDimensions( array )) ) then
 		if( is_lbound ) then
-			bound = d->lower
+			bound = symbArrayLbound( array, dimension )
 		else
+			bound = symbArrayUbound( array, dimension )
 			'' Ellipsis ubound? can happen if ubound() is used in
 			'' an array initializer, when the ubound isn't fully
 			'' known yet, e.g. in this case:
 			''    dim array(0 to ...) as integer = { 1, ubound( array ), 3 }
-			if( d->upper = FB_ARRAYDIM_UNKNOWN ) then
+			if( bound = FB_ARRAYDIM_UNKNOWN ) then
 				exit function
 			end if
-			bound = d->upper
 		end if
 	else
-		'' Out-of-bounds dimension argument: For dimension = 0 we
-		'' return l/ubound of the array's dimTB, with lbound=1 and
-		'' ubound=dimensions. For other out-of-bound dimension values,
-		'' we return lbound=0 and ubound=-1.
-		if( dimension = 0 ) then
+		'' Out-of-bounds dimension argument
+		'' For 0 (1-based, that's -1 when 0-based) we return l/ubound of the
+		'' array's dimTB, with lbound=1 and ubound=dimensions.
+		if( dimension = -1 ) then
 			bound = iif( is_lbound, 1, symbGetArrayDimensions( array ) )
 		else
+			'' Otherwise, return lbound=0 and ubound=-1.
 			bound = iif( is_lbound, 0, -1 )
 		end if
 	end if

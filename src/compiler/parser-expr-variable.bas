@@ -48,13 +48,12 @@ end function
 
 '' StaticArrayIndex = '(' Expression (',' Expression)* ')'
 private function cStaticArrayIndex( byval sym as FBSYMBOL ptr ) as ASTNODE ptr
-	dim as integer dimension = any
     dim as ASTNODE ptr expr = any, dimexpr = any
-    dim as FBVARDIM ptr d = any
+	dim as integer dimension = any
+	dim as longint lower = any, upper = any
 
 	dimension = -1
-    d = symbGetArrayFirstDim( sym )
-    expr = NULL
+	expr = NULL
 	do
 		dimension += 1
 
@@ -65,27 +64,28 @@ private function cStaticArrayIndex( byval sym as FBSYMBOL ptr ) as ASTNODE ptr
 			return astNewCONSTi( 0 )
 		end if
 
+		lower = symbArrayLbound( sym, dimension )
+		upper = symbArrayUbound( sym, dimension )
+
 		'' Expression
 		dimexpr = hCheckIntegerIndex( hIndexExpr( ) )
 
 		'' bounds checking
 		if( env.clopt.extraerrchk ) then
-			dimexpr = astBuildBOUNDCHK( dimexpr, astNewCONSTi( d->lower ), astNewCONSTi( d->upper ) )
+			dimexpr = astBuildBOUNDCHK( dimexpr, astNewCONSTi( lower ), astNewCONSTi( upper ) )
 			if( dimexpr = NULL ) then
 				errReport( FB_ERRMSG_ARRAYOUTOFBOUNDS )
 				'' error recovery: fake an expr
-				dimexpr = astNewCONSTi( d->lower )
+				dimexpr = astNewCONSTi( lower )
 			end if
 		end if
 
 		if( expr = NULL ) then
 			expr = dimexpr
 		else
-			expr = astNewBOP( AST_OP_MUL, expr, astNewCONSTi( d->upper - d->lower + 1 ) )
+			expr = astNewBOP( AST_OP_MUL, expr, astNewCONSTi( upper - lower + 1 ) )
 			expr = astNewBOP( AST_OP_ADD, expr, dimexpr )
 		end if
-
-		d = d->next
 
 		'' ','?
 	loop while( hMatch( CHAR_COMMA ) )
@@ -960,7 +960,8 @@ private function hMakeArrayIdx( byval sym as FBSYMBOL ptr ) as ASTNODE ptr
     end if
 
     '' static array, return lbound( array )
-    function = astNewCONSTi( symbGetArrayFirstDim( sym )->lower )
+	assert( symbGetArrayDimensions( sym ) > 0 )
+	function = astNewCONSTi( symbArrayLbound( sym, 0 ) )
 end function
 
 '':::::

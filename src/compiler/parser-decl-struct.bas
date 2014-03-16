@@ -296,7 +296,7 @@ private function hAddAndInitField _
 	'' array?
 	if( dims > 0 ) then
 		'' "array too big" check
-		if( symbCheckArraySize( dims, dTB(), lgt, FALSE, FALSE ) = FALSE ) then
+		if( symbCheckArraySize( dims, @dTB(0), lgt, FALSE ) = FALSE ) then
 			errReport( FB_ERRMSG_ARRAYTOOBIG )
 			'' error recovery: use small array
 			dims = 1

@@ -256,12 +256,6 @@ end type
 '' Special value to represent the case where '...' ellipsis was given as ubound
 const FB_ARRAYDIM_UNKNOWN = &h8000000000000000ll
 
-type FBVARDIM
-	lower			as longint
-	upper			as longint
-	next			as FBVARDIM ptr
-end type
-
 ''
 type FBSYMCHAIN
 	sym				as FBSYMBOL_ ptr			'' first symbol
@@ -606,13 +600,11 @@ end type
 
 '' variable
 type FBS_ARRAY
-	dims			as integer
-	dimhead 		as FBVARDIM ptr
-	dimtail			as FBVARDIM ptr
-	dif			as longint
-	elms			as longint
+	dimensions		as integer         '' -1 = dynamic array, 0 = none, 1..n = static array (with known dimtb)
+	dimtb			as FBARRAYDIM ptr  '' Dynamically allocated array of dimension bounds
+	diff			as longint
+	elements		as longint
 	desc			as FBSYMBOL_ ptr
-	has_ellipsis    as integer
 end type
 
 type FBVAR_DESC
@@ -771,8 +763,6 @@ type SYMBCTX
 	imphashlist		as TLIST					'' (of FBSYMHASH)
 
 	namepool		as TPOOL
-
-	dimlist			as TLIST					'' array dimensions
 
 	fwdlist			as TLIST					'' forward typedef refs
 
@@ -1057,6 +1047,13 @@ declare function symbAddLabel _
 		byval options as FB_SYMBOPT = FB_SYMBOPT_DECLARING _
 	) as FBSYMBOL ptr
 
+declare sub symbSetArrayDimensionElements _
+	( _
+		byval sym as FBSYMBOL ptr, _
+		byval dimension as integer, _
+		byval elements as longint _
+	)
+
 declare sub symbVarInitFields( byval sym as FBSYMBOL ptr )
 
 declare function symbAddVar _
@@ -1290,6 +1287,8 @@ declare sub symbRecalcUDTSize _
 		byval t as FBSYMBOL ptr _
 	)
 
+declare function symbArrayHasUnknownDimensions( byval sym as FBSYMBOL ptr ) as integer
+
 declare sub symbSetArrayDimTb _
 	( _
 		byval s as FBSYMBOL ptr, _
@@ -1324,7 +1323,6 @@ declare sub symbDelLabel _
 		byval s as FBSYMBOL ptr _
 	)
 
-declare sub symbDelVarDims( byval s as FBSYMBOL ptr )
 declare sub symbDelVar( byval s as FBSYMBOL ptr, byval is_tbdel as integer )
 declare sub symbDelPrototype( byval s as FBSYMBOL ptr )
 declare sub symbDelEnum( byval s as FBSYMBOL ptr )
@@ -1441,24 +1439,16 @@ declare function symbAllocWstrConst _
 
 declare function symbCalcArrayElements _
 	( _
-		byval s as FBSYMBOL ptr, _
-		byval n as FBVARDIM ptr = NULL _
-	) as longint
-
-declare function symbCalcArrayDiff _
-	( _
-		byval dimensions as integer, _
-		dTB() as FBARRAYDIM, _
-		byval lgt as longint _
+		byval sym as FBSYMBOL ptr, _
+		byval first as integer _
 	) as longint
 
 declare function symbCheckArraySize _
 	( _
 		byval dimensions as integer, _
-		dTB() as FBARRAYDIM, _
+		byval dimtb as FBARRAYDIM ptr, _
 		byval lgt as longint, _
-		byval is_on_stack as integer, _
-		byval allow_ellipsis as integer _
+		byval is_on_stack as integer _
 	) as integer
 
 declare function symbCheckLabels _
@@ -2023,15 +2013,13 @@ declare function symbGetUDTBaseLevel _
 #define symbSetTypeIniTree(s, t) s->var_.initree = t
 #define symbGetTypeIniTree(s) s->var_.initree
 
-#define symbGetArrayDiff(s) s->var_.array.dif
-
-#define symbGetArrayDimensions(s) s->var_.array.dims
-
-#define symbGetArrayDescriptor(s) s->var_.array.desc
-
-#define symbGetArrayFirstDim(s) s->var_.array.dimhead
-
-#define symbGetArrayElements(s) s->var_.array.elms
+#define symbGetArrayDimensions( s )  ((s)->var_.array.dimensions)
+#define symbGetArrayDim( s, i )      ((s)->var_.array.dimtb[i])
+#define symbArrayLbound( s, i )      ((s)->var_.array.dimtb[i].lower)
+#define symbArrayUbound( s, i )      ((s)->var_.array.dimtb[i].upper)
+#define symbGetArrayDiff( s )        ((s)->var_.array.diff)
+#define symbGetArrayElements( s )    ((s)->var_.array.elements)
+#define symbGetArrayDescriptor( s )  ((s)->var_.array.desc)
 
 #define symbGetUDTSymbTbHead(s) s->udt.ns.symtb.head
 
@@ -2040,9 +2028,10 @@ declare function symbGetUDTBaseLevel _
 									  e->subtype->bitfld.bitpos, _
 									  0) )
 
-#define symbGetUDTElmBitLen(e) iif( e->typ = FB_DATATYPE_BITFIELD, _
-									clngint( e->subtype->bitfld.bits ), _ '' clngint needed for older versions of fbc
-									e->lgt * e->var_.array.elms * 8 )
+#define symbGetUDTElmBitLen(e) _
+	iif( e->typ = FB_DATATYPE_BITFIELD, _
+		clngint( e->subtype->bitfld.bits ), _ '' clngint needed for older versions of fbc
+		e->lgt * symbGetArrayElements( e ) * 8 )
 
 #define symbSetUDTIsUnion(s) (s)->udt.options or= FB_UDTOPT_ISUNION
 #define symbGetUDTIsUnion(s) ((s->udt.options and FB_UDTOPT_ISUNION) <> 0)

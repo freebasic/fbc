@@ -114,12 +114,11 @@ private function hNidxArray2ArrayAccess( byval nidxarray as ASTNODE ptr ) as AST
 
     '' static array..
     else
-
-      idxexpr = astNewBOP( AST_OP_MUL, _
-                           astNewCONSTi( symbGetArrayFirstDim( sym )->lower ), _
-                           astNewCONSTi( symbCalcLen( astGetDataType( varexpr ), _
-                           				 astGetSubType( varexpr ) ), FB_DATATYPE_UINT ) )
-
+		assert( symbGetArrayDimensions( sym ) > 0 )
+		idxexpr = astNewBOP( AST_OP_MUL, _
+			astNewCONSTi( symbArrayLbound( sym, 0 ) ), _
+			astNewCONSTi( symbCalcLen( astGetDataType( varexpr ), astGetSubType( varexpr ) ), _
+					FB_DATATYPE_UINT ) )
     end if
 
     function = astNewIDX( varexpr, idxexpr, _

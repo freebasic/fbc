@@ -450,14 +450,11 @@ private function hEmitArrayDecl( byval sym as FBSYMBOL ptr ) as string
 	'' elements with zeroes)
 	select case( symbGetClass( sym ) )
 	case FB_SYMBCLASS_VAR, FB_SYMBCLASS_FIELD
-		if( (symbGetIsDynamic( sym ) = FALSE) and _
-		    (symbGetArrayDimensions( sym ) <> 0) ) then
-			dim as FBVARDIM ptr d = symbGetArrayFirstDim( sym )
-			while( d )
+		if( symbGetIsDynamic( sym ) = FALSE ) then
+			for i as integer = 0 to symbGetArrayDimensions( sym ) - 1
 				'' elements = ubound( array, d ) - lbound( array, d ) + 1
-				s += "[" + str( d->upper - d->lower + 1 ) + "]"
-				d = d->next
-			wend
+				s += "[" + str( symbArrayUbound( sym, i ) - symbArrayLbound( sym, i ) + 1 ) + "]"
+			next
 		end if
 	end select
 

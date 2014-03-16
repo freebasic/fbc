@@ -271,9 +271,6 @@ private sub hCheckExternArrayDimensions _
 		dTB() as FBARRAYDIM _
 	)
 
-	dim as FBVARDIM ptr d = any
-	dim as integer i = any
-
 	'' Not an array?
 	if( symbGetArrayDimensions( sym ) = 0 ) then
 		exit sub
@@ -286,20 +283,14 @@ private sub hCheckExternArrayDimensions _
 	end if
 
 	'' Same lbound/ubound for each dimension?
-	d = symbGetArrayFirstDim( sym )
-	i = 0
-	while( d )
-
-		if( (d->lower <> dTB(i).lower) or _
-		    ((d->upper <> dTB(i).upper) and _
+	for i as integer = 0 to dimensions - 1
+		if( (symbArrayLbound( sym, i ) <> dTB(i).lower) or _
+		    ((symbArrayUbound( sym, i ) <> dTB(i).upper) and _
 		     (dTB(i).upper <> FB_ARRAYDIM_UNKNOWN)) ) then
 			errReportEx( FB_ERRMSG_BOUNDSDIFFERFROMEXTERN, *id )
 			exit sub
 		end if
-
-		d = d->next
-		i += 1
-	wend
+	next
 
 end sub
 
@@ -804,23 +795,6 @@ private function hVarInitDefault _
 
 end function
 
-function hHasEllipsis _
-	( _
-		byval sym as FBSYMBOL ptr _
-	) as integer
-
-	function = FALSE
-
-	if( sym <> NULL ) then
-		if symbIsArray( sym ) then
-			if sym->var_.array.has_ellipsis then
-				function = TRUE
-			end if
-		end if
-	end if
-
-end function
-
 '':::::
 private function hVarInit _
 	( _
@@ -868,7 +842,7 @@ private function hVarInit _
 	if( lexGetToken( ) = FB_TK_ANY ) then
 
 		'' don't allow arrays with ellipsis denoting unknown size at this time
-		if hHasEllipsis( sym ) = TRUE then
+		if( symbArrayHasUnknownDimensions( sym ) ) then
 			errReport( FB_ERRMSG_CANTUSEANYINITELLIPSIS )
 			exit function
 		end if
@@ -1180,7 +1154,6 @@ function cVarDecl _
     dim as zstring ptr palias = any
     dim as ASTNODE ptr assign_initree = any
 	dim as integer doassign = any
-	dim as integer has_ellipsis = FALSE
 	dim as FB_IDOPT options = any
 
     function = NULL
@@ -1262,16 +1235,7 @@ function cVarDecl _
 					hSkipUntil( CHAR_RPRNT )
 				else
 					cArrayDecl( dimensions, exprTB() )
-
 					check_exprtb = TRUE
-
-					'' If there were any ellipsises in the
-					'' array decl then we mark the symbol before initializing
-					for i as integer = 0 to dimensions - 1
-						if( exprTB(i,1) = NULL ) then
-							has_ellipsis = TRUE
-						end if
-					next
 				end if
 			end if
 
@@ -1372,9 +1336,8 @@ function cVarDecl _
 
 			'' "array too big/huge array on stack" check
 			if( (attrib and FB_SYMBATTRIB_DYNAMIC) = 0 ) then
-				if( symbCheckArraySize( dimensions, dTB(), lgt, _
-				                        ((attrib and (FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_STATIC)) = 0), _
-				                        has_ellipsis ) = FALSE ) then
+				if( symbCheckArraySize( dimensions, @dTB(0), lgt, _
+				                        ((attrib and (FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_STATIC)) = 0) ) = FALSE ) then
 					errReport( FB_ERRMSG_ARRAYTOOBIG )
 					'' error recovery: use small array
 					dimensions = 1
@@ -1413,9 +1376,6 @@ function cVarDecl _
 			is_decl = symbGetIsDeclared( sym )
 			has_defctor = symbHasDefCtor( sym )
 			has_dtor = symbHasDtor( sym )
-			if( has_ellipsis ) then
-				sym->var_.array.has_ellipsis = TRUE
-			end if
 		else
 			is_decl = FALSE
 		end if
@@ -1460,10 +1420,12 @@ function cVarDecl _
 				end if
 			else
 				'' default initialization
-				if( hHasEllipsis( sym ) ) then
-					errReport( FB_ERRMSG_MUSTHAVEINITWITHELLIPSIS )
-					hSkipStmt( )
-					exit function
+				if( sym ) then
+					if( symbArrayHasUnknownDimensions( sym ) ) then
+						errReport( FB_ERRMSG_MUSTHAVEINITWITHELLIPSIS )
+						hSkipStmt( )
+						exit function
+					end if
 				end if
 
 				initree = hVarInitDefault( sym, is_decl, has_defctor )

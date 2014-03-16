@@ -421,7 +421,7 @@ function symbAddField _
 	end if
 
 	'' multiple len by all array elements (if any)
-	lgt *= sym->var_.array.elms
+	lgt *= symbGetArrayElements( sym )
 
 	select case as const typeGet( dtype )
 	'' var-len string fields? must add a ctor, copyctor and dtor
