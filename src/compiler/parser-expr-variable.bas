@@ -46,104 +46,82 @@ private function hCheckIntegerIndex( byval expr as ASTNODE ptr ) as ASTNODE ptr
 	function = expr
 end function
 
-private function hStaticArrayBoundChk _
-	( _
-		byval dimexpr as ASTNODE ptr, _
-		byval d as FBVARDIM ptr _
-	) as ASTNODE ptr
-
-	dimexpr = astBuildBOUNDCHK( dimexpr, astNewCONSTi( d->lower ), astNewCONSTi( d->upper ) )
-	if( dimexpr = NULL ) then
-		errReport( FB_ERRMSG_ARRAYOUTOFBOUNDS )
-		'' error recovery: fake an expr
-		dimexpr = astNewCONSTi( d->lower )
-	end if
-
-	function = dimexpr
-end function
-
-'':::::
-''FieldArray    =   '(' Expression (',' Expression)* ')' .
-''
-private function hFieldArray _
-	( _
-		byval sym as FBSYMBOL ptr, _
-		byval idxexpr as ASTNODE ptr _
-	) as ASTNODE ptr
-
-	dim as integer maxdims = any, dims = any
-	dim as longint diff = any
+'' StaticArrayIndex = '(' Expression (',' Expression)* ')'
+private function cStaticArrayIndex( byval sym as FBSYMBOL ptr ) as ASTNODE ptr
+	dim as integer dimension = any
     dim as ASTNODE ptr expr = any, dimexpr = any
     dim as FBVARDIM ptr d = any
 
-    function = NULL
-
-    ''
-    maxdims = symbGetArrayDimensions( sym )
-    dims = 0
+	dimension = -1
     d = symbGetArrayFirstDim( sym )
     expr = NULL
-    do
-    	dims += 1
-    	if( dims > maxdims ) then
+	do
+		dimension += 1
+
+		'' Too many indices given?
+		if( dimension >= symbGetArrayDimensions( sym ) ) then
 			errReport( FB_ERRMSG_WRONGDIMENSIONS )
 			'' error recovery: fake an expr
 			return astNewCONSTi( 0 )
-    	end if
+		end if
 
 		'' Expression
 		dimexpr = hCheckIntegerIndex( hIndexExpr( ) )
 
 		'' bounds checking
 		if( env.clopt.extraerrchk ) then
-			dimexpr = hStaticArrayBoundChk( dimexpr, d )
+			dimexpr = astBuildBOUNDCHK( dimexpr, astNewCONSTi( d->lower ), astNewCONSTi( d->upper ) )
+			if( dimexpr = NULL ) then
+				errReport( FB_ERRMSG_ARRAYOUTOFBOUNDS )
+				'' error recovery: fake an expr
+				dimexpr = astNewCONSTi( d->lower )
+			end if
 		end if
 
-    	''
-    	if( expr = NULL ) then
-    		expr = dimexpr
-    	else
-    		expr = astNewBOP( AST_OP_ADD, expr, dimexpr )
-    	end if
+		if( expr = NULL ) then
+			expr = dimexpr
+		else
+			expr = astNewBOP( AST_OP_MUL, expr, astNewCONSTi( d->upper - d->lower + 1 ) )
+			expr = astNewBOP( AST_OP_ADD, expr, dimexpr )
+		end if
 
-    	'' separator
-    	if( lexGetToken( ) <> FB_TK_DECLSEPCHAR ) then
-    		exit do
-    	end if
+		d = d->next
 
-    	lexSkipToken( )
+		'' ','?
+	loop while( hMatch( CHAR_COMMA ) )
 
-        '' next
-        d = d->next
-    	if( d = NULL ) then
-			errReport( FB_ERRMSG_WRONGDIMENSIONS )
-			exit do
-    	end if
-
-    	expr = astNewBOP( AST_OP_MUL, expr, astNewCONSTi( (d->upper - d->lower)+1 ) )
-	loop
-
-    ''
-    if( dims < maxdims ) then
+	'' Not enough indices given?
+	if( dimension < (symbGetArrayDimensions( sym ) - 1) ) then
 		errReport( FB_ERRMSG_WRONGDIMENSIONS )
-    end if
+	end if
 
 	'' times length
 	expr = astNewBOP( AST_OP_MUL, expr, astNewCONSTi( symbGetLen( sym ) ) )
 
-    '' plus difference
-    diff = symbGetArrayDiff( sym )
-    if( diff <> 0 ) then
-    	expr = astNewBOP( AST_OP_ADD, expr, astNewCONSTi( diff ) )
-    end if
+	function = expr
+end function
 
-    '' plus initial expression
-    if( idxexpr <> NULL ) then
-    	function = astNewBOP( AST_OP_ADD, idxexpr, expr )
-    else
-    	function = expr
-    end if
+private function cFieldArrayIndex _
+	( _
+		byval fld as FBSYMBOL ptr, _
+		byval fldexpr as ASTNODE ptr _
+	) as ASTNODE ptr
 
+	dim as ASTNODE ptr expr = any
+	dim as longint diff = any
+
+	expr = cStaticArrayIndex( fld )
+
+	'' plus difference
+	diff = symbGetArrayDiff( fld )
+	if( diff <> 0 ) then
+		expr = astNewBOP( AST_OP_ADD, expr, astNewCONSTi( diff ) )
+	end if
+
+	'' plus initial expression
+	expr = astNewBOP( AST_OP_ADD, fldexpr, expr )
+
+	function = expr
 end function
 
 '':::::
@@ -172,7 +150,7 @@ private function hUdtDataMember _
 
     	lexSkipToken( )
 
-		expr = hFieldArray( fld, expr )
+		expr = cFieldArrayIndex( fld, expr )
 		if( expr = NULL ) then
 			return NULL
 		end if
@@ -810,225 +788,85 @@ function cFuncPtrOrMemberDeref _
 
 end function
 
-private function hDynArrayBoundChk _
-	( _
-		byval expr as ASTNODE ptr, _
-		byval desc as FBSYMBOL ptr, _
-		byval idx as integer _
-	) as ASTNODE ptr
-
-	dim as longint dimoffset = any
-
-	dimoffset = symb.fbarray_dimtb + (idx * symbGetLen( symb.fbarraydim ))
-
-	function = astBuildBOUNDCHK( expr, _
-			astNewVAR( desc, dimoffset + symb.fbarraydim_lbound, FB_DATATYPE_INTEGER ), _
-			astNewVAR( desc, dimoffset + symb.fbarraydim_ubound, FB_DATATYPE_INTEGER ) )
-
-end function
-
-'':::::
-''DynArrayIdx     =   '(' Expression (',' Expression)* ')' .
-''
-private function cDynArrayIdx( byval sym as FBSYMBOL ptr ) as ASTNODE ptr
-	dim as integer i = any
-    dim as ASTNODE ptr expr = any, dimexpr = any
-    dim as FBSYMBOL ptr desc = any
-
-    desc = symbGetArrayDescriptor( sym )
-
-    ''
-    i = 0
-    expr = NULL
-    do
-		'' Expression
-		dimexpr = hCheckIntegerIndex( hIndexExpr( ) )
-
-    	'' bounds checking
-    	if( env.clopt.extraerrchk ) then
-            dimexpr = hDynArrayBoundChk( dimexpr, desc, i )
-			if( dimexpr = NULL ) then
-				return NULL
-			end if
-    	end if
-
-    	if( expr = NULL ) then
-    		expr = dimexpr
-    	else
-    		expr = astNewBOP( AST_OP_ADD, expr, dimexpr )
-    	end if
-
-    	'' separator
-    	if( lexGetToken( ) <> FB_TK_DECLSEPCHAR ) then
-    		exit do
-    	else
-    		lexSkipToken( )
-    	end if
-
-    	i += 1
-
-		'' times desc(i).elements
-		expr = astNewBOP( AST_OP_MUL, expr, _
-				astNewVAR( desc, symb.fbarray_dimtb + (i * symbGetLen( symb.fbarraydim )), _
-						FB_DATATYPE_INTEGER ) )
-	loop
-
-	'' times length
-	expr = astNewBOP( AST_OP_MUL, expr, astNewCONSTi( symbGetLen( sym ) ) )
-
-	'' plus desc.data (= ptr + diff)
-	function = astNewBOP( AST_OP_ADD, expr, _
-			astNewVAR( desc, symb.fbarray_data, FB_DATATYPE_INTEGER ) )
-end function
-
-private function hArgArrayBoundChk _
-	( _
-		byval expr as ASTNODE ptr, _
-		byval desc as FBSYMBOL ptr, _
-		byval idx as integer _
-	) as ASTNODE ptr
-
-	dim as longint dimoffset = any
-
-	dimoffset = symb.fbarray_dimtb + (idx * symbGetLen( symb.fbarraydim ))
-
-	function = astBuildBOUNDCHK( expr, _
-			astNewDEREF( astNewVAR( desc, 0, FB_DATATYPE_INTEGER ), _
-				FB_DATATYPE_INTEGER, NULL, _
-				dimoffset + symb.fbarraydim_lbound ), _
-			astNewDEREF( astNewVAR( desc, 0, FB_DATATYPE_INTEGER ), _
-				FB_DATATYPE_INTEGER, NULL, _
-				dimoffset + symb.fbarraydim_ubound ) )
-
-
-end function
-
-'':::::
-''ArgArrayIdx     =   '(' Expression (',' Expression)* ')' .
-''
-private function cArgArrayIdx( byval sym as FBSYMBOL ptr ) as ASTNODE ptr
-    dim as ASTNODE ptr expr = any, dimexpr = any
-    dim as integer i = any
-
-    ''
-    i = 0
-    expr = NULL
-    do
-		'' Expression
-		dimexpr = hCheckIntegerIndex( hIndexExpr( ) )
-
-    	'' bounds checking
-    	if( env.clopt.extraerrchk ) then
-            dimexpr = hArgArrayBoundChk( dimexpr, sym, i )
-			if( dimexpr = NULL ) then
-				return NULL
-			end if
-    	end if
-
-    	if( expr = NULL ) then
-    		expr = dimexpr
-    	else
-    		expr = astNewBOP( AST_OP_ADD, expr, dimexpr )
-    	end if
-
-    	'' separator
-    	if( lexGetToken( ) <> FB_TK_DECLSEPCHAR ) then
-    		exit do
-    	else
-    		lexSkipToken( )
-    	end if
-
-    	i += 1
-
-    	'' it's a descriptor pointer, dereference (only with DAG this will be optimized)
-
-		'' times desc[i].elements
-		expr = astNewBOP( AST_OP_MUL, expr, _
-				astNewDEREF( astNewVAR( sym, 0, FB_DATATYPE_INTEGER ), _
-					FB_DATATYPE_INTEGER, NULL, _
-					symb.fbarray_dimtb + (i * symbGetLen( symb.fbarraydim )) ) )
-	loop
-
-	'' times length
-	expr = astNewBOP( AST_OP_MUL, expr, astNewCONSTi( symbGetLen( sym ) ) )
-
-	'' plus desc->data (= ptr + diff)
-	function = astNewBOP( AST_OP_ADD, expr, _
-			astNewDEREF( astNewVAR( sym, 0, FB_DATATYPE_INTEGER ), _
-				FB_DATATYPE_INTEGER, NULL, symb.fbarray_data ) )
-end function
-
-'':::::
-''ArrayIdx        =   '(' Expression (',' Expression)* ')' .
-''
-private function cArrayIdx( byval sym as FBSYMBOL ptr ) as ASTNODE ptr
-    dim as FBVARDIM ptr d = any
-	dim as integer dims = any, maxdims = any
+'' DynamicArrayIndex = '(' Expression (',' Expression)* ')'
+private function cDynamicArrayIndex( byval sym as FBSYMBOL ptr ) as ASTNODE ptr
 	dim as ASTNODE ptr expr = any, dimexpr = any
+	dim as integer dimension = any
+	dim as longint dimoffset = any
 
-    ''  argument passed by descriptor?
-    if( symbIsParamByDesc( sym ) ) then
-    	return cArgArrayIdx( sym )
-
-    '' dynamic array? (will handle common's too)
-    elseif( symbGetIsDynamic( sym ) ) then
-    	return cDynArrayIdx( sym )
-    end if
-
-    ''
-    maxdims = symbGetArrayDimensions( sym )
-    dims = 0
-
-    ''
-    d = symbGetArrayFirstDim( sym )
-    expr = NULL
-    do
-    	dims += 1
-    	if( dims > maxdims ) then
-			errReport( FB_ERRMSG_WRONGDIMENSIONS )
-			return NULL
-    	end if
+	dimension = -1
+	expr = NULL
+	do
+		dimension += 1
+		dimoffset = symb.fbarray_dimtb + (dimension * symbGetLen( symb.fbarraydim ))
 
 		'' Expression
 		dimexpr = hCheckIntegerIndex( hIndexExpr( ) )
 
 		'' bounds checking
 		if( env.clopt.extraerrchk ) then
-			dimexpr = hStaticArrayBoundChk( dimexpr, d )
+			if( symbIsParamBydesc( sym ) ) then
+				dimexpr = astBuildBOUNDCHK( dimexpr, _
+						astNewDEREF( astNewVAR( sym, 0, FB_DATATYPE_INTEGER ), _
+							FB_DATATYPE_INTEGER, NULL, _
+							dimoffset + symb.fbarraydim_lbound ), _
+						astNewDEREF( astNewVAR( sym, 0, FB_DATATYPE_INTEGER ), _
+							FB_DATATYPE_INTEGER, NULL, _
+							dimoffset + symb.fbarraydim_ubound ) )
+			else
+				dimexpr = astBuildBOUNDCHK( dimexpr, _
+						astNewVAR( symbGetArrayDescriptor( sym ), dimoffset + symb.fbarraydim_lbound, FB_DATATYPE_INTEGER ), _
+						astNewVAR( symbGetArrayDescriptor( sym ), dimoffset + symb.fbarraydim_ubound, FB_DATATYPE_INTEGER ) )
+			end if
+			if( dimexpr = NULL ) then
+				return NULL
+			end if
 		end if
 
-    	''
-    	if( expr = NULL ) then
-    		expr = dimexpr
-    	else
-    		expr = astNewBOP( AST_OP_ADD, expr, dimexpr )
-    	end if
+		if( expr = NULL ) then
+			expr = dimexpr
+		else
+			if( symbIsParamBydesc( sym ) ) then
+				'' times desc[i].elements
+				expr = astNewBOP( AST_OP_MUL, expr, _
+						astNewDEREF( astNewVAR( sym, 0, FB_DATATYPE_INTEGER ), _
+							FB_DATATYPE_INTEGER, NULL, dimoffset ) )
+			else
+				'' times desc(i).elements
+				expr = astNewBOP( AST_OP_MUL, expr, _
+						astNewVAR( symbGetArrayDescriptor( sym ), _
+							dimoffset, FB_DATATYPE_INTEGER ) )
+			end if
+			expr = astNewBOP( AST_OP_ADD, expr, dimexpr )
+		end if
 
-    	'' separator
-    	if( lexGetToken( ) <> FB_TK_DECLSEPCHAR ) then
-    		exit do
-    	else
-    		lexSkipToken( )
-    	end if
+		'' ','?
+	loop while( hMatch( CHAR_COMMA ) )
 
-        '' next
-        d = d->next
-    	if( d = NULL ) then
-			errReport( FB_ERRMSG_WRONGDIMENSIONS )
-			exit do
-    	end if
+	'' times length
+	expr = astNewBOP( AST_OP_MUL, expr, astNewCONSTi( symbGetLen( sym ) ) )
 
-    	expr = astNewBOP( AST_OP_MUL, expr, astNewCONSTi( (d->upper - d->lower) + 1 ) )
-	loop
+	if( symbIsParamBydesc( sym ) ) then
+		'' plus desc->data (= ptr + diff)
+		expr = astNewBOP( AST_OP_ADD, expr, _
+				astNewDEREF( astNewVAR( sym, 0, FB_DATATYPE_INTEGER ), _
+					FB_DATATYPE_INTEGER, NULL, symb.fbarray_data ) )
+	else
+		'' plus desc.data (= ptr + diff)
+		expr = astNewBOP( AST_OP_ADD, expr, _
+				astNewVAR( symbGetArrayDescriptor( sym ), symb.fbarray_data, FB_DATATYPE_INTEGER ) )
+	end if
 
-    ''
-    if( dims < maxdims ) then
-		errReport( FB_ERRMSG_WRONGDIMENSIONS )
-    end if
+	function = expr
+end function
 
-	'' times length (this will be optimized if len < 10 and there are
-	'' no arrays on following fields)
-	function = astNewBOP( AST_OP_MUL, expr, astNewCONSTi( symbGetLen( sym ) ) )
+private function cArrayIndex( byval sym as FBSYMBOL ptr ) as ASTNODE ptr
+	'' dynamic/bydescparam array?
+	if( symbGetIsDynamic( sym ) ) then
+		function = cDynamicArrayIndex( sym )
+	else
+		function = cStaticArrayIndex( sym )
+	end if
 end function
 
 '':::::
@@ -1170,7 +1008,7 @@ function cVariableEx overload _
     			'' '('
     			lexSkipToken( )
 
-    			idxexpr = cArrayIdx( sym )
+				idxexpr = cArrayIndex( sym )
 
 				'' ')'
     			if( hMatch( CHAR_RPRNT ) = FALSE ) then
