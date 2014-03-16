@@ -302,6 +302,8 @@ sub symbSetArrayDimTb _
     dim as FBVARDIM ptr d = any
 	dim as integer have_unknowns = FALSE
 
+	assert( iif( symbIsDynamic( s ), dimensions = -1, TRUE ) )
+
 	if( dimensions > 0 ) then
 		s->var_.array.dif = symbCalcArrayDiff( dimensions, dTB(), s->lgt )
 

@@ -831,32 +831,20 @@ end function
 ''DynArrayIdx     =   '(' Expression (',' Expression)* ')' .
 ''
 private function cDynArrayIdx( byval sym as FBSYMBOL ptr ) as ASTNODE ptr
-    dim as integer i = any, dims = any, maxdims = any
+    dim as integer i = any, dims = any
     dim as ASTNODE ptr expr = any, dimexpr = any
     dim as FBSYMBOL ptr desc = any
 
     desc = symbGetArrayDescriptor( sym )
     dims = 0
 
-    if( symbIsCommon( sym ) = FALSE ) then
-    	maxdims = symbGetArrayDimensions( sym )
-    else
-    	maxdims = INVALID
-    end if
+	assert( symbGetArrayDimensions( sym ) = -1 )
 
     ''
     i = 0
     expr = NULL
     do
     	dims += 1
-
-    	'' check dimensions, if not common
-    	if( maxdims <> -1 ) then
-    		if( dims > maxdims ) then
-				errReport( FB_ERRMSG_WRONGDIMENSIONS )
-    			return NULL
-    		end if
-    	end if
 
 		'' Expression
 		dimexpr = hCheckIntegerIndex( hIndexExpr( ) )
@@ -892,13 +880,6 @@ private function cDynArrayIdx( byval sym as FBSYMBOL ptr ) as ASTNODE ptr
 
 	'' times length
 	expr = astNewBOP( AST_OP_MUL, expr, astNewCONSTi( symbGetLen( sym ) ) )
-
-    '' check dimensions, if not common
-    if( maxdims <> -1 ) then
-    	if( dims < maxdims ) then
-			errReport( FB_ERRMSG_WRONGDIMENSIONS )
-    	end if
-    end if
 
 	'' plus desc.data (= ptr + diff)
 	function = astNewBOP( AST_OP_ADD, expr, _

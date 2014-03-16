@@ -477,7 +477,7 @@ private function hDeclDynArray _
 		end if
 
 		sym = symbAddVar( id, idalias, dtype, subtype, lgt, _
-		                  dimensions, dTB(), attrib, options )
+		                  -1, dTB(), attrib, options )
 
 	'' check reallocation..
 	else
@@ -545,16 +545,6 @@ private function hDeclDynArray _
 				exit function
 			end if
 		end if
-	end if
-
-	'' if COMMON, check for max dimensions used
-	if( (attrib and FB_SYMBATTRIB_COMMON) <> 0 ) then
-		if( dimensions > symbGetArrayDimensions( sym ) ) then
-			symbSetArrayDimensions( sym, dimensions )
-		end if
-	'' or if dims = -1 (cause of "DIM|REDIM array()")
-	elseif( symbGetArrayDimensions( sym ) = -1 ) then
-		symbSetArrayDimensions( sym, dimensions )
 	end if
 
     function = sym
