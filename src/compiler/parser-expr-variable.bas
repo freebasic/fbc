@@ -831,21 +831,16 @@ end function
 ''DynArrayIdx     =   '(' Expression (',' Expression)* ')' .
 ''
 private function cDynArrayIdx( byval sym as FBSYMBOL ptr ) as ASTNODE ptr
-    dim as integer i = any, dims = any
+	dim as integer i = any
     dim as ASTNODE ptr expr = any, dimexpr = any
     dim as FBSYMBOL ptr desc = any
 
     desc = symbGetArrayDescriptor( sym )
-    dims = 0
-
-	assert( symbGetArrayDimensions( sym ) = -1 )
 
     ''
     i = 0
     expr = NULL
     do
-    	dims += 1
-
 		'' Expression
 		dimexpr = hCheckIntegerIndex( hIndexExpr( ) )
 
@@ -968,8 +963,8 @@ end function
 ''
 private function cArrayIdx( byval sym as FBSYMBOL ptr ) as ASTNODE ptr
     dim as FBVARDIM ptr d = any
-    dim as integer dtype = any, dims = any, maxdims = any
-    dim as ASTNODE ptr expr = any, dimexpr = any, varexpr = any
+	dim as integer dims = any, maxdims = any
+	dim as ASTNODE ptr expr = any, dimexpr = any
 
     ''  argument passed by descriptor?
     if( symbIsParamByDesc( sym ) ) then
