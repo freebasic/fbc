@@ -234,16 +234,6 @@
 				( FB_DATATYPE_STRING, FB_PARAMMODE_BYREF, FALSE ) _
 			} _
  		), _
-		/' function fb_StrAllocTempDescV( byref str as string ) as string '/ _
-		( _
-			@FB_RTL_STRALLOCTMPDESCV, NULL, _
-			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
-			NULL, FB_RTL_OPT_NONE, _
-			1, _
-			{ _
-				( FB_DATATYPE_STRING, FB_PARAMMODE_BYREF, FALSE ) _
-			} _
- 		), _
 		/' function fb_StrAllocTempDescF( byref str as any, byval str_size as integer ) as string '/ _
 		( _
 			@FB_RTL_STRALLOCTMPDESCF, NULL, _
@@ -2644,14 +2634,6 @@ function rtlStrAllocTmpDesc	_
    	dtype = astGetDataType( strexpr )
 
 	select case as const dtype
-	case FB_DATATYPE_STRING
-    	proc = astNewCALL( PROCLOOKUP( STRALLOCTMPDESCV ) )
-
-    	'' str as string
-    	if( astNewARG( proc, strexpr ) = NULL ) then
-    		exit function
-    	end if
-
 	case FB_DATATYPE_CHAR
 
     	'' literal?
