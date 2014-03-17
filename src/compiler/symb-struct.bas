@@ -227,7 +227,6 @@ function symbCheckBitField _
 
 end function
 
-'':::::
 function symbAddField _
 	( _
 		byval parent as FBSYMBOL ptr, _
@@ -242,7 +241,6 @@ function symbAddField _
 
 	dim as FBSYMBOL ptr sym = any, tail = any, base_parent = any
 	dim as integer pad = any, updateudt = any, elen = any
-	dim as FBHASHTB ptr hashtb
 
     function = NULL
 
@@ -358,21 +356,13 @@ function symbAddField _
     	base_parent = symbGetUDTAnonParent( base_parent )
 	loop
 
-	hashtb = @symbGetUDTHashTb( base_parent )
-
-    ''
-    sym = symbNewSymbol( FB_SYMBOPT_DOHASH, _
-    				     NULL, _
-    				     @symbGetUDTSymbTb( parent ), hashtb, _
-    				     FB_SYMBCLASS_FIELD, _
-    				     id, NULL, _
-    				     dtype, subtype, _
-    				     iif( symbIsLocal( parent ), _
-    				     	  FB_SYMBATTRIB_LOCAL, _
-    				     	  FB_SYMBATTRIB_NONE ) )
-    if( sym = NULL ) then
-    	exit function
-    end if
+	sym = symbNewSymbol( FB_SYMBOPT_DOHASH, NULL, _
+			@symbGetUDTSymbTb( parent ), @symbGetUDTHashTb( base_parent ), _
+			FB_SYMBCLASS_FIELD, id, NULL, dtype, subtype, _
+			iif( symbIsLocal( parent ), FB_SYMBATTRIB_LOCAL, FB_SYMBATTRIB_NONE ) )
+	if( sym = NULL ) then
+		exit function
+	end if
 
 	sym->lgt = lgt
 	if( updateudt or symbGetUDTIsUnion( parent ) ) then
