@@ -234,13 +234,6 @@ o BYREF function results
     - no null-term, temporaries always created when passing to functions
     - probably will need their own assign and concat functions
 
-[ ] "byval as string" arguments should make a temp copy (including descriptor)
-    of the param passed:
-    - must pass (?) the address of the temp descriptor, not the string data, what
-      will break *all* functions assuming the latter - they would have to be
-      declared as zstring ptr, what will need more changes in users' code, because
-      the non-implicit pointer deref
-
 [ ] proc def:
     - when checking the prototype, the access modifiers must be checked too: PUBLIC, PRIVATE
     - to support params > 64k, "ret" can't be used

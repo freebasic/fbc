@@ -102,16 +102,10 @@ function symbCalcArgLen _
 
 	'' BYVAL/VARARG
 
-	select case( typeGetDtAndPtrOnly( dtype ) )
-	case FB_DATATYPE_STRING
-		'' BYVAL strings passed as pointer instead
+	'' Byval non-trivial type? Implicitly passing a copy Byref.
+	if( typeIsTrivial( dtype, subtype ) = FALSE ) then
 		return env.pointersize
-	case FB_DATATYPE_STRUCT
-		'' BYVAL non-trivial UDTs passed BYREF implicitly
-		if( symbCompIsTrivial( subtype ) = FALSE ) then
-			return env.pointersize
-		end if
-	end select
+	end if
 
 	function = hAlignToPow2( symbCalcLen( dtype, subtype ), env.pointersize )
 end function
@@ -1147,17 +1141,10 @@ sub symbGetRealParamDtype _
 
 	select case( parammode )
 	case FB_PARAMMODE_BYVAL
-		select case( dtype )
-		'' byval string? it's actually an pointer to a zstring
-		case FB_DATATYPE_STRING
-			dtype = typeAddrOf( FB_DATATYPE_CHAR )
-
-		case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-			'' non-trivial classes are always passed byref
-			if( symbCompIsTrivial( subtype ) = FALSE ) then
-				dtype = typeAddrOf( dtype )
-			end if
-		end select
+		'' Byval non-trivial type? Passed Byref implicitly.
+		if( typeIsTrivial( dtype, subtype ) = FALSE ) then
+			dtype = typeAddrOf( dtype )
+		end if
 
 	case FB_PARAMMODE_BYREF
 		dtype = typeAddrOf( dtype )
@@ -1182,18 +1169,10 @@ function symbAddVarForParam( byval param as FBSYMBOL ptr ) as FBSYMBOL ptr
 	case FB_PARAMMODE_BYVAL
 		attrib = FB_SYMBATTRIB_PARAMBYVAL
 
-		select case( symbGetType( param ) )
-		'' byval string? it's actually an pointer to a zstring
-		case FB_DATATYPE_STRING
+		'' Byval non-trivial type? Passed Byref implicitly.
+		if( typeIsTrivial( dtype, param->subtype ) = FALSE ) then
 			attrib = FB_SYMBATTRIB_PARAMBYREF
-			dtype = typeJoin( dtype, FB_DATATYPE_CHAR )
-
-		case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-			'' has a dtor, copy ctor or virtual methods? it's a copy..
-			if( symbCompIsTrivial( symbGetSubtype( param ) ) = FALSE ) then
-				attrib = FB_SYMBATTRIB_PARAMBYREF
-			end if
-		end select
+		end if
 
 	case FB_PARAMMODE_BYREF
 		attrib = FB_SYMBATTRIB_PARAMBYREF

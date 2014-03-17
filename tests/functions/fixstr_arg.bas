@@ -32,8 +32,7 @@ sub test_val_1 cdecl ()
 	
 	s = TEST_LC
 	ucaseme_val( s )
-	'' use TEST_LC when byval strings become true copies
-	CU_ASSERT( s = TEST_UC )
+	CU_ASSERT( s = TEST_LC )
 	
 end sub	
 
@@ -51,8 +50,7 @@ sub test_val_2 cdecl ()
 	
 	f(0).s = TEST_LC
 	ucaseme_val( f(0).s )
-	'' use TEST_LC when byval strings become true copies
-	CU_ASSERT( f(0).s = TEST_UC )
+	CU_ASSERT( f(0).s = TEST_LC )
 	
 end sub	
 
