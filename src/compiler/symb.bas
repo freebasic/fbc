@@ -2490,6 +2490,8 @@ function symbDump( byval sym as FBSYMBOL ptr ) as string
 		if( sym->var_.bits > 0 ) then
 			s += " bitfield : " & sym->var_.bits & " (" & sym->var_.bitpos & ".." & sym->var_.bitpos + sym->var_.bits - 1 & ")"
 		end if
+
+		s += " offset=" & sym->ofs
 	end if
 
 	function = s
