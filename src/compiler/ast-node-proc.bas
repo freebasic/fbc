@@ -906,7 +906,7 @@ private function hCallFieldCtor _
 	end if
 
 	'' bitfield?
-	if( symbGetType( fld ) = FB_DATATYPE_BITFIELD ) then
+	if( symbFieldIsBitfield( fld ) ) then
 		function = astNewASSIGN( astBuildInstPtr( this_, fld ), _
 		                         astNewCONSTi( 0, FB_DATATYPE_UINT ) )
 	else

@@ -502,7 +502,7 @@ private function hVarPtrBody _
 
 	case AST_NODECLASS_FIELD
 		'' can't take address of bitfields..
-		if( astGetDataType( astGetLeft( t ) ) = FB_DATATYPE_BITFIELD ) then
+		if( symbFieldIsBitfield( t->sym ) ) then
 			errReport( FB_ERRMSG_INVALIDDATATYPES )
 			'' error recovery: fake a node
 			astDelTree( expr )

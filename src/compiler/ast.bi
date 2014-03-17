@@ -1360,7 +1360,7 @@ declare function astLoadNIDXARRAY( byval n as ASTNODE ptr ) as IRVREG ptr
 
 #define astIsFIELD(n) (n->class = AST_NODECLASS_FIELD)
 
-#define astIsBITFIELD(n) iif( astIsFIELD(n), (astGetDataType( astGetLeft( n ) ) = FB_DATATYPE_BITFIELD), FALSE )
+#define astIsBITFIELD(n) iif( astIsFIELD( n ), symbFieldIsBitfield( (n)->sym ), FALSE )
 
 #define astIsNIDXARRAY(n) (n->class = AST_NODECLASS_NIDXARRAY)
 

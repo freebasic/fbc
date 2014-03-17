@@ -276,7 +276,7 @@ function astCloneTree( byval n as ASTNODE ptr ) as ASTNODE ptr
 		c->typeini.scp = NULL
 
 	case AST_NODECLASS_FIELD
-		if( astGetDataType( c->l ) = FB_DATATYPE_BITFIELD ) then
+		if( symbFieldIsBitfield( c->sym ) ) then
 			ast.bitfieldcount += 1
 		end if
 

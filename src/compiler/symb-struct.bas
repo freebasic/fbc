@@ -227,33 +227,6 @@ function symbCheckBitField _
 
 end function
 
-private function symbAddBitField _
-	( _
-		byval bitpos as integer, _
-		byval bits as integer, _
-		byval dtype as integer, _
-		byval lgt as longint _
-	) as FBSYMBOL ptr
-
-	dim as FBSYMBOL ptr sym = any
-
-	'' table must be the global one, if the UDT is been defined
-	'' at main(), it will be deleted before some private function
-	'' accessing the bitfield
-
-	sym = symbNewSymbol( FB_SYMBOPT_NONE, NULL, NULL, NULL, _
-	                     FB_SYMBCLASS_BITFIELD, NULL, NULL, dtype, NULL )
-	if( sym = NULL ) then
-		return NULL
-	end if
-
-	sym->bitfld.bitpos = bitpos
-	sym->bitfld.bits = bits
-	sym->lgt = lgt
-
-	function = sym
-end function
-
 '':::::
 function symbAddField _
 	( _
@@ -267,7 +240,7 @@ function symbAddField _
 		byval bits as integer _
 	) as FBSYMBOL ptr static
 
-	dim as FBSYMBOL ptr sym = any, tail = any, base_parent = any, prevbitfield = any
+	dim as FBSYMBOL ptr sym = any, tail = any, base_parent = any
 	dim as integer pad = any, updateudt = any, elen = any
 	dim as FBHASHTB ptr hashtb
 
@@ -289,12 +262,10 @@ function symbAddField _
 				tail = tail->prev
 			wend
 
-			assert( symbGetType( tail ) = FB_DATATYPE_BITFIELD )
-			prevbitfield = tail->subtype
-			assert( symbIsBitfield( prevbitfield ) )
+			assert( symbIsBitfield( tail ) )
 
 			'' Too many bits to fit into previous bitfield container field?
-			if( parent->udt.bitpos + bits > prevbitfield->lgt*8 ) then
+			if( parent->udt.bitpos + bits > tail->lgt*8 ) then
 				'' Start new container field, this bitfield will be at bitpos 0 in it
 				parent->udt.bitpos = 0
 			else
@@ -309,9 +280,9 @@ function symbAddField _
 				'' have a different length, but maybe then this
 				'' check shouldn't just be done for different lengths,
 				'' but always if the dtypes are different?
-				if( lgt <> prevbitfield->lgt ) then
-					dtype = symbGetType( prevbitfield )
-					lgt = prevbitfield->lgt
+				if( lgt <> tail->lgt ) then
+					dtype = symbGetType( tail )
+					lgt = tail->lgt
 				end if
 			end if
 		end if
@@ -381,12 +352,6 @@ function symbAddField _
 		end if
 	end if
 
-	'' bitfield?
-	if( bits > 0 ) then
-		subtype = symbAddBitField( parent->udt.bitpos, bits, dtype, lgt )
-		dtype = FB_DATATYPE_BITFIELD
-	end if
-
     '' use the base parent hashtb if it's an anonymous type
     base_parent = parent
     do while( symbGetUDTIsAnon( base_parent ) )
@@ -419,6 +384,8 @@ function symbAddField _
 	if( dimensions <> 0 ) then
 		symbSetArrayDimTb( sym, dimensions, dTB() )
 	end if
+	sym->var_.bitpos = parent->udt.bitpos
+	sym->var_.bits = bits
 
 	'' multiple len by all array elements (if any)
 	lgt *= symbGetArrayElements( sym )

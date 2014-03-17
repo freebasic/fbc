@@ -19,7 +19,6 @@ dim shared symb_dtypeTB( 0 to FB_DATATYPES-1 ) as SYMB_DATATYPE => _
 	( FB_DATACLASS_INTEGER, -1, TRUE , -1, FB_DATATYPE_INTEGER , -1                 , @"integer"  ), _
 	( FB_DATACLASS_INTEGER, -1, FALSE, -1, FB_DATATYPE_UINT    , -1                 , @"uinteger" ), _
 	( FB_DATACLASS_INTEGER, -1, TRUE ,  0, FB_DATATYPE_INTEGER , -1                 , @"enum"     ), _
-	( FB_DATACLASS_INTEGER, -1, FALSE,  0, FB_DATATYPE_UINT    , -1                 , @"bitfield" ), _
 	( FB_DATACLASS_INTEGER,  4, TRUE , 40, FB_DATATYPE_LONG    , FB_SIZETYPE_INT32  , @"long"     ), _
 	( FB_DATACLASS_INTEGER,  4, FALSE, 45, FB_DATATYPE_ULONG   , FB_SIZETYPE_UINT32 , @"ulong"    ), _
 	( FB_DATACLASS_INTEGER,  8, TRUE , 80, FB_DATATYPE_LONGINT , FB_SIZETYPE_INT64  , @"longint"  ), _
@@ -69,14 +68,12 @@ sub symbDataInit( )
 		symb_dtypeTB(FB_DATATYPE_INTEGER ).size = 8
 		symb_dtypeTB(FB_DATATYPE_UINT    ).size = 8
 		symb_dtypeTB(FB_DATATYPE_ENUM    ).size = 8
-		symb_dtypeTB(FB_DATATYPE_BITFIELD).size = 8
 		symb_dtypeTB(FB_DATATYPE_STRING  ).size = 24
 		symb_dtypeTB(FB_DATATYPE_POINTER ).size = 8
 
 		symb_dtypeTB(FB_DATATYPE_INTEGER ).sizetype = FB_SIZETYPE_INT64
 		symb_dtypeTB(FB_DATATYPE_UINT    ).sizetype = FB_SIZETYPE_UINT64
 		symb_dtypeTB(FB_DATATYPE_ENUM    ).sizetype = FB_SIZETYPE_INT64
-		symb_dtypeTB(FB_DATATYPE_BITFIELD).sizetype = FB_SIZETYPE_UINT64
 		symb_dtypeTB(FB_DATATYPE_POINTER ).sizetype = FB_SIZETYPE_UINT64
 
 		symb_dtypeTB(FB_DATATYPE_INTEGER ).intrank = 81
@@ -86,14 +83,12 @@ sub symbDataInit( )
 		symb_dtypeTB(FB_DATATYPE_INTEGER ).size = 4
 		symb_dtypeTB(FB_DATATYPE_UINT    ).size = 4
 		symb_dtypeTB(FB_DATATYPE_ENUM    ).size = 4
-		symb_dtypeTB(FB_DATATYPE_BITFIELD).size = 4
 		symb_dtypeTB(FB_DATATYPE_STRING  ).size = 12
 		symb_dtypeTB(FB_DATATYPE_POINTER ).size = 4
 
 		symb_dtypeTB(FB_DATATYPE_INTEGER ).sizetype = FB_SIZETYPE_INT32
 		symb_dtypeTB(FB_DATATYPE_UINT    ).sizetype = FB_SIZETYPE_UINT32
 		symb_dtypeTB(FB_DATATYPE_ENUM    ).sizetype = FB_SIZETYPE_INT32
-		symb_dtypeTB(FB_DATATYPE_BITFIELD).sizetype = FB_SIZETYPE_UINT32
 		symb_dtypeTB(FB_DATATYPE_POINTER ).sizetype = FB_SIZETYPE_UINT32
 
 		symb_dtypeTB(FB_DATATYPE_INTEGER ).intrank = 41
@@ -198,26 +193,6 @@ sub typeMax _
 	end if
 
 end sub
-
-'':::::
-function typeRemap _
-	( _
-		byval dtype as integer, _
-		byval subtype as FBSYMBOL ptr _
-	) as integer
-    
-    dim as integer nd = any
-    
-	select case typeGet( dtype )
-	case FB_DATATYPE_BITFIELD
-		nd = subtype->typ
-	case else
-		nd = symb_dtypeTB(dtype).remaptype
-	end select
-	
-	function = typeJoin( dtype, nd )
-
-end function
 
 '':::::
 function typeToSigned _
@@ -397,12 +372,9 @@ function closestType _
 		byval dtype2 as FB_DATATYPE _
 	) as FB_DATATYPE
 
-	'' prefer non-bitfield/enum/zstring/wstring, let them be handled elsewhere
+	'' prefer non-enum/zstring/wstring, let them be handled elsewhere
 	if( dtype1 <> FB_DATATYPE_ENUM and dtype2 = FB_DATATYPE_ENUM ) then return dtype1
 	if( dtype2 <> FB_DATATYPE_ENUM and dtype1 = FB_DATATYPE_ENUM ) then return dtype2
-
-	if( dtype1 <> FB_DATATYPE_BITFIELD and dtype2 = FB_DATATYPE_BITFIELD ) then return dtype1
-	if( dtype2 <> FB_DATATYPE_BITFIELD and dtype1 = FB_DATATYPE_BITFIELD ) then return dtype2
 
 	if( dtype1 <> FB_DATATYPE_CHAR and dtype2 = FB_DATATYPE_CHAR ) then return dtype1
 	if( dtype2 <> FB_DATATYPE_CHAR and dtype1 = FB_DATATYPE_CHAR ) then return dtype2

@@ -443,7 +443,6 @@ private function hFlushTree _
 	) as ASTNODE ptr
 
 	dim as ASTNODE ptr n = any, nxt = any, flush_tree = any, lside = any
-	dim as FBSYMBOL ptr bitfield = any
 	dim as integer dtype = any
 
 	flush_tree = NULL
@@ -504,19 +503,13 @@ private function hFlushTree _
 						'' If it's a bitfield, clear the whole field containing this bitfield,
 						'' otherwise the bitfield assignment(s) would leave unused bits
 						'' uninitialized.
-
-						'' Bitfield?
-						if( astGetDataType( lside ) = FB_DATATYPE_BITFIELD ) then
-							bitfield = astGetSubType( lside )
-							assert( symbIsBitfield( bitfield ) )
-							assert( typeGetClass( symbGetType( bitfield ) ) = FB_DATACLASS_INTEGER )
-
+						if( symbFieldIsBitfield( n->sym ) ) then
 							'' Beginning of a field containing one or more bitfields?
-							if( bitfield->bitfld.bitpos = 0 ) then
+							if( n->sym->var_.bitpos = 0 ) then
 								flush_tree = astNewLINK( flush_tree, _
 									astNewMEM( AST_OP_MEMCLEAR, _
 										astCloneTree( lside ), _
-										astNewCONSTi( typeGetSize( symbGetType( bitfield ) ) ) ) )
+										astNewCONSTi( typeGetSize( symbGetType( n->sym ) ) ) ) )
 							end if
 						end if
 
@@ -766,11 +759,9 @@ private function hExprIsConst _
 		end if
 
 		'' bit field?
-		if( symbIsField( sym ) ) then
-		    if( symbGetType( sym ) = FB_DATATYPE_BITFIELD ) then
-		    	errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE )
-				exit function
-			end if
+		if( symbIsBitfield( sym ) ) then
+			errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE )
+			exit function
 		end if
 
 		'' offset?

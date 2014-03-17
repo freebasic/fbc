@@ -26,7 +26,6 @@ enum FB_DATATYPE
 	FB_DATATYPE_INTEGER
 	FB_DATATYPE_UINT
 	FB_DATATYPE_ENUM
-	FB_DATATYPE_BITFIELD
 	FB_DATATYPE_LONG
 	FB_DATATYPE_ULONG
 	FB_DATATYPE_LONGINT
@@ -85,7 +84,6 @@ enum FB_SYMBCLASS
 	FB_SYMBCLASS_STRUCT
 	FB_SYMBCLASS_CLASS
 	FB_SYMBCLASS_FIELD
-	FB_SYMBCLASS_BITFIELD
 	FB_SYMBCLASS_TYPEDEF
 	FB_SYMBCLASS_FWDREF							'' forward definition
 	FB_SYMBCLASS_SCOPE
@@ -442,11 +440,6 @@ type FBS_STRUCT
 	ext				as FB_STRUCTEXT ptr
 end type
 
-type FBS_BITFLD
-	bitpos			as integer
-	bits			as integer
-end type
-
 '' enumeration
 type FBS_ENUM
 	'' extends FBNAMESPC
@@ -626,6 +619,8 @@ type FBS_VAR
 	stmtnum			as integer					'' can't use colnum as it's unreliable
 	align			as integer					'' 0 = use default alignment
 	data			as FBVAR_DATA				'' used with DATA stmts
+	bitpos			as integer  '' bitfields only: bit offset in container field
+	bits			as integer  '' bitfields only: size in bits
 end type
 
 '' namespace
@@ -677,7 +672,6 @@ type FBSYMBOL
 		var_		as FBS_VAR
 		val			as FBVALUE  '' constants
 		udt			as FBS_STRUCT
-		bitfld		as FBS_BITFLD
 		enum_		as FBS_ENUM
 		proc		as FBS_PROC
 		param		as FBS_PARAM
@@ -1526,12 +1520,6 @@ declare function typeToUnsigned _
 		byval dtype as integer _
 	) as integer
 
-declare function typeRemap _
-	( _
-		byval dtype as integer, _
-		byval subtype as FBSYMBOL ptr _
-	) as integer
-
 declare function typeHasCtor _
 	( _
 		byval dtype as integer, _
@@ -1953,8 +1941,6 @@ declare function symbGetUDTBaseLevel _
 
 #define symbIsField(s) (s->class = FB_SYMBCLASS_FIELD)
 
-#define symbIsBitfield( s ) ((s)->class = FB_SYMBCLASS_BITFIELD)
-
 #define symbIsTypedef(s) (s->class = FB_SYMBCLASS_TYPEDEF)
 
 #define symbIsFwdRef(s) (s->class = FB_SYMBCLASS_FWDREF)
@@ -2021,17 +2007,17 @@ declare function symbGetUDTBaseLevel _
 #define symbGetArrayElements( s )    ((s)->var_.array.elements)
 #define symbGetArrayDescriptor( s )  ((s)->var_.array.desc)
 
+#define symbFieldIsBitfield( s )     ((s)->var_.bits > 0)
+#define symbIsBitfield( s ) _
+	iif( symbIsField( s ), symbFieldIsBitfield( s ), FALSE )
+#define symbGetFieldBitOffset( fld ) _
+	((fld)->ofs * 8 + iif( (fld)->var_.bits > 0, (fld)->var_.bitpos, 0 ))
+#define symbGetFieldBitLength( fld ) _
+	iif( (fld)->var_.bits > 0, _
+		clngint( (fld)->var_.bits ), _ '' clngint needed for older versions of fbc
+		(fld)->lgt * symbGetArrayElements( fld ) * 8 )
+
 #define symbGetUDTSymbTbHead(s) s->udt.ns.symtb.head
-
-#define symbGetUDTElmBitOfs(e) ( e->ofs * 8 + _
-								 iif( e->typ = FB_DATATYPE_BITFIELD, _
-									  e->subtype->bitfld.bitpos, _
-									  0) )
-
-#define symbGetUDTElmBitLen(e) _
-	iif( e->typ = FB_DATATYPE_BITFIELD, _
-		clngint( e->subtype->bitfld.bits ), _ '' clngint needed for older versions of fbc
-		e->lgt * symbGetArrayElements( e ) * 8 )
 
 #define symbSetUDTIsUnion(s) (s)->udt.options or= FB_UDTOPT_ISUNION
 #define symbGetUDTIsUnion(s) ((s->udt.options and FB_UDTOPT_ISUNION) <> 0)
@@ -2303,6 +2289,8 @@ declare sub symbProcRecalcRealType( byval proc as FBSYMBOL ptr )
 #define typeGetIntRank( dt ) symb_dtypeTB(typeGet( dt )).intrank
 #define typeGetRemapType( dt ) symb_dtypeTB(typeGet( dt )).remaptype
 #define typeGetSizeType( dt ) symb_dtypeTB(typeGet( dt )).sizetype
+
+#define typeRemap( dtype ) typeJoin( dtype, symb_dtypeTB(dtype).remaptype )
 
 #define typeGet( dt ) iif( dt and FB_DT_PTRMASK, FB_DATATYPE_POINTER, dt and FB_DT_TYPEMASK )
 #define typeGetDtOnly( dt ) (dt and FB_DT_TYPEMASK)

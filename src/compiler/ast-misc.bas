@@ -556,6 +556,8 @@ sub astCheckConst _
 	''    dim a as uinteger = -1
 	''    dim b as uinteger = 1 shl 31
 	''
+	'' TODO: handle bitfields
+	''
 
 	select case as const( typeGetDtAndPtrOnly( dtype ) )
 	''case FB_DATATYPE_DOUBLE
@@ -588,9 +590,6 @@ sub astCheckConst _
 				result = TRUE
 			end if
 		end select
-
-	case FB_DATATYPE_BITFIELD
-		'' !!!WRITEME!!! use ->subtype's
 
 	case else
 		select case as const( typeGetSizeType( dtype ) )
@@ -957,7 +956,7 @@ function astBuildBranch _
 	'' string, or the comparison against zero to be a string comparison...
 	select case( dtype )
 	case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
-		dtype = typeRemap( dtype, expr->subtype )
+		dtype = typeRemap( dtype )
 	end select
 
 	if( call_dtors ) then

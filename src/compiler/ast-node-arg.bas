@@ -845,7 +845,7 @@ private function hCheckParam _
 		'' Passing a bitfield arg to a byref param? Can't be allowed,
 		'' @udt.bitfield isn't possible either...
 		if( astGetClass( arg ) = AST_NODECLASS_FIELD ) then
-			if( astGetDataType( astGetLeft( arg ) ) = FB_DATATYPE_BITFIELD ) then
+			if( symbFieldIsBitfield( arg->sym ) ) then
 				errReport( FB_ERRMSG_PARAMTYPEMISMATCHAT )
 				exit function
 			end if

@@ -1679,11 +1679,12 @@ function astOptAssignment( byval n as ASTNODE ptr ) as ASTNODE ptr
 	dim as ASTNODE ptr t = astSkipNoConvCAST( l )
 
 	select case as const t->class
-	case AST_NODECLASS_VAR, AST_NODECLASS_IDX, AST_NODECLASS_DEREF
+	case AST_NODECLASS_VAR, AST_NODECLASS_IDX, AST_NODECLASS_DEREF, _
+	     AST_NODECLASS_IIF
 
-	case AST_NODECLASS_FIELD, AST_NODECLASS_IIF
+	case AST_NODECLASS_FIELD
 		'' isn't it a bitfield?
-		if( astGetDataType( t->l ) = FB_DATATYPE_BITFIELD ) then
+		if( symbFieldIsBitfield( t->sym ) ) then
 			exit function
 		end if
 

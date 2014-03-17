@@ -393,6 +393,8 @@ sub symbVarInitFields( byval sym as FBSYMBOL ptr )
 	sym->var_.stmtnum = parser.stmt.cnt
 	sym->var_.align = 0
 	sym->var_.data.prev = NULL
+	sym->var_.bitpos = 0
+	sym->var_.bits = 0
 end sub
 
 function symbAddVar _

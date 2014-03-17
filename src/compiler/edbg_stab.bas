@@ -64,7 +64,6 @@ declare function hGetDataType _
 		 1, _                                   '' int
 		 8, _                                   '' uint
 		 1, _                                   '' enum
-		 8, _                                   '' bitfield
 		 1, _                                   '' long
 		 8, _                                   '' ulong
 		 9, _                                   '' longint
@@ -860,10 +859,6 @@ private function hGetDataType _
     case FB_DATATYPE_FWDREF
     	desc += str( remapTB(FB_DATATYPE_VOID) )
 
-    '' bitfield?
-    case FB_DATATYPE_BITFIELD
-    	desc += hGetDataType( subtype )
-
     '' ordinary type..
     case else
     	desc += str( remapTB(dtype) )
@@ -888,8 +883,8 @@ private sub hDeclUDT( byval sym as FBSYMBOL ptr )
 	fld = symbUdtGetFirstField( sym )
 	while( fld )
 		desc += *symbGetName( fld ) + ":" + hGetDataType( fld )
-		desc += "," + str( symbGetUDTElmBitOfs( fld ) )
-		desc += "," + str( symbGetUDTElmBitLen( fld ) )
+		desc += "," + str( symbGetFieldBitOffset( fld ) )
+		desc += "," + str( symbGetFieldBitLength( fld ) )
 		desc += ";"
 		fld = symbUdtGetNextField( fld )
 	wend

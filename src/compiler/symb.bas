@@ -1908,7 +1908,7 @@ function symbCalcLen _
 	case FB_DATATYPE_FIXSTR
 		function = 0  '' zero-length literal-strings
 
-	case FB_DATATYPE_STRUCT, FB_DATATYPE_BITFIELD
+	case FB_DATATYPE_STRUCT
 		function = subtype->lgt
 
 	case else
@@ -2175,7 +2175,6 @@ static shared as zstring ptr classnames(FB_SYMBCLASS_VAR to FB_SYMBCLASS_NSIMPOR
 	@"struct"   , _
 	@"class"    , _
 	@"field"    , _
-	@"bitfield" , _
 	@"typedef"  , _
 	@"fwdref"   , _
 	@"scope"    , _
@@ -2242,8 +2241,6 @@ function typeDump _
 				ok = symbIsEnum( subtype )
 			case FB_DATATYPE_NAMESPC
 				ok = symbIsNamespace( subtype )
-			case FB_DATATYPE_BITFIELD
-				ok = symbIsBitfield( subtype )
 			case FB_DATATYPE_FUNCTION
 				ok = symbIsProc( subtype )
 			case FB_DATATYPE_FWDREF
@@ -2254,7 +2251,7 @@ function typeDump _
 		else
 			select case( typeGetDtOnly( dtype ) )
 			case FB_DATATYPE_STRUCT, FB_DATATYPE_ENUM, _
-			     FB_DATATYPE_NAMESPC, FB_DATATYPE_BITFIELD, _
+			     FB_DATATYPE_NAMESPC, _
 			     FB_DATATYPE_FUNCTION, FB_DATATYPE_FWDREF
 				ok = FALSE
 			case else
@@ -2467,6 +2464,12 @@ function symbDump( byval sym as FBSYMBOL ptr ) as string
 			end select
 		else
 			s += typeDump( sym->typ, sym->subtype )
+		end if
+	end if
+
+	if( symbIsField( sym ) ) then
+		if( sym->var_.bits > 0 ) then
+			s += " bitfield : " & sym->var_.bits & " (" & sym->var_.bitpos & ".." & sym->var_.bitpos + sym->var_.bits - 1 & ")"
 		end if
 	end if
 

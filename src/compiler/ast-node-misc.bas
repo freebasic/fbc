@@ -326,7 +326,8 @@ function astNewFIELD _
 	dtype = l->dtype
 	subtype = l->subtype
 
-	if( typeGetDtAndPtrOnly( dtype ) = FB_DATATYPE_BITFIELD ) then
+	assert( symbIsField( sym ) )
+	if( symbFieldIsBitfield( sym ) ) then
 		'' final type is always an unsigned int
 		dtype = typeJoin( dtype, FB_DATATYPE_UINT )
 		subtype = NULL
@@ -363,11 +364,10 @@ end sub
 
 private function astSetBitfield _
 	( _
+		byval bitfield as FBSYMBOL ptr, _
 		byval l as ASTNODE ptr, _
 		byval r as ASTNODE ptr _
 	) as ASTNODE ptr
-
-	dim as FBSYMBOL ptr s = any
 
 	''
 	''    l<bitfield> = r
@@ -375,19 +375,17 @@ private function astSetBitfield _
 	''    l<int> = (l<int> and mask) or ((r and bits) shl bitpos)
 	''
 
-	s = l->subtype
-	assert( symbIsBitfield( s ) )
-
 	'' Remap type from bitfield to short/integer/etc., whichever was given
 	'' on the bitfield, to do a "full" field access.
-	astGetFullType( l ) = symbGetFullType( s )
-	l->subtype = s->subtype
+	l->dtype = bitfield->typ
+	l->subtype = bitfield->subtype
 
 	'' l is reused on the rhs and thus must be duplicated
 	l = astCloneTree( l )
 
 	'' Apply a mask to retrieve all bits but the bitfield's ones
-	l = astNewBOP( AST_OP_AND, l, astNewCONSTi( not (ast_bitmaskTB(s->bitfld.bits) shl s->bitfld.bitpos) ) )
+	l = astNewBOP( AST_OP_AND, l, _
+		astNewCONSTi( not (ast_bitmaskTB(bitfield->var_.bits) shl bitfield->var_.bitpos) ) )
 
 	'' This ensures the bitfield is zeroed & clean before the new value
 	'' is ORed in below. Since the new value may contain zeroes while the
@@ -396,41 +394,41 @@ private function astSetBitfield _
 
 	'' Truncate r if it's too big, ensuring the OR below won't touch any
 	'' other bits outside the target bitfield.
-	r = astNewBOP( AST_OP_AND, r, astNewCONSTi( ast_bitmaskTB(s->bitfld.bits) ) )
+	r = astNewBOP( AST_OP_AND, r, astNewCONSTi( ast_bitmaskTB(bitfield->var_.bits) ) )
 
 	'' Move r into position if the bitfield doesn't lie at the beginning of
 	'' the accessed field.
-	if( s->bitfld.bitpos > 0 ) then
-		r = astNewBOP( AST_OP_SHL, r, astNewCONSTi( s->bitfld.bitpos ) )
+	if( bitfield->var_.bitpos > 0 ) then
+		r = astNewBOP( AST_OP_SHL, r, astNewCONSTi( bitfield->var_.bitpos ) )
 	end if
 
 	'' OR in the new bitfield value r
 	function = astNewBOP( AST_OP_OR, l, r )
 end function
 
-private function astAccessBitfield( byval l as ASTNODE ptr ) as ASTNODE ptr
-	dim as FBSYMBOL ptr s = any
+private function astAccessBitfield _
+	( _
+		byval bitfield as FBSYMBOL ptr, _
+		byval l as ASTNODE ptr _
+	) as ASTNODE ptr
 
 	''    l<bitfield>
 	'' becomes:
 	''    (l<int> shr bitpos) and mask
 
-	s = l->subtype
-	assert( symbIsBitfield( s ) )
-
 	'' Remap type from bitfield to short/integer/etc, while keeping in
 	'' mind that the bitfield may have been casted, so the FIELD's type
 	'' can't just be discarded.
-	l->dtype = typeJoin( l->dtype, s->typ )
-	l->subtype = s->subtype
+	l->dtype = typeJoin( l->dtype, bitfield->typ )
+	l->subtype = bitfield->subtype
 
 	'' Shift into position, other bits to the right are shifted out
-	if( s->bitfld.bitpos > 0 ) then
-		l = astNewBOP( AST_OP_SHR, l, astNewCONSTi( s->bitfld.bitpos ) )
+	if( bitfield->var_.bitpos > 0 ) then
+		l = astNewBOP( AST_OP_SHR, l, astNewCONSTi( bitfield->var_.bitpos ) )
 	end if
 
 	'' Mask out other bits to the left
-	return astNewBOP( AST_OP_AND, l, astNewCONSTi( ast_bitmaskTB(s->bitfld.bits) ) )
+	return astNewBOP( AST_OP_AND, l, astNewCONSTi( ast_bitmaskTB(bitfield->var_.bits) ) )
 end function
 
 #if __FB_DEBUG__
@@ -458,6 +456,7 @@ end function
 '' they're used by astProcVectorize().
 function astUpdateBitfields( byval n as ASTNODE ptr ) as ASTNODE ptr
 	dim as ASTNODE ptr l = any
+	dim as FBSYMBOL ptr bitfield = any
 
 	'' Shouldn't miss any bitfields
 	assert( astCountBitfields( n ) <= ast.bitfieldcount )
@@ -474,7 +473,8 @@ function astUpdateBitfields( byval n as ASTNODE ptr ) as ASTNODE ptr
 	case AST_NODECLASS_ASSIGN
 		'' Assigning to a bitfield?
 		if( n->l->class = AST_NODECLASS_FIELD ) then
-			if( astGetDataType( n->l->l ) = FB_DATATYPE_BITFIELD ) then
+			bitfield = n->l->sym
+			if( symbFieldIsBitfield( bitfield ) ) then
 				'' Delete and link out the FIELD
 				ast.bitfieldcount -= 1
 				astDelNode( n->l )
@@ -482,14 +482,14 @@ function astUpdateBitfields( byval n as ASTNODE ptr ) as ASTNODE ptr
 
 				'' The lhs' type is adjusted, and the new rhs
 				'' is returned.
-				n->r = astSetBitfield( n->l, n->r )
+				n->r = astSetBitfield( bitfield, n->l, n->r )
 			end if
 		end if
 
 	case AST_NODECLASS_FIELD
 		l = n->l
-		if( astGetDataType( l ) = FB_DATATYPE_BITFIELD ) then
-			l = astAccessBitfield( l )
+		if( symbFieldIsBitfield( n->sym ) ) then
+			l = astAccessBitfield( n->sym, l )
 
 			'' Delete and link out the FIELD
 			ast.bitfieldcount -= 1

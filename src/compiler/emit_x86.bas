@@ -59,7 +59,6 @@ declare function _getTypeString( byval dtype as integer ) as const zstring ptr
 		( 2, "dword ptr" ), _ '' int
 		( 2, "dword ptr" ), _ '' uint
 		( 2, "dword ptr" ), _ '' enum
-		( 2, "dword ptr" ), _ '' bitfield
 		( 2, "dword ptr" ), _ '' long
 		( 2, "dword ptr" ), _ '' ulong
 		( 2, "qword ptr" ), _ '' longint

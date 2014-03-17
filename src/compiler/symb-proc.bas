@@ -1610,12 +1610,11 @@ private function hCalcTypesDiff _
 				end select
 			end select
 
-			'' Remap bitfields/enums
-			select case( arg_dtype )
-			case FB_DATATYPE_BITFIELD, FB_DATATYPE_ENUM
+			'' Remap enums
+			if( arg_dtype = FB_DATATYPE_ENUM ) then
 				'' enum args can be passed to integer params (as in C++)
-				arg_dtype = typeRemap( arg_dtype, arg_subtype )
-			end select
+				arg_dtype = typeRemap( arg_dtype )
+			end if
 
 			'' check pointers..
 			if( typeIsPtr( param_dtype ) ) then
@@ -1700,12 +1699,10 @@ private function hCalcTypesDiff _
 				return 0
 			end if
 
-			'' remap to real type if it's a bitfield..
-			select case arg_dtype
-			case FB_DATATYPE_BITFIELD, FB_DATATYPE_ENUM
+			if( arg_dtype = FB_DATATYPE_ENUM ) then
 				'' enum args can be passed to fpoint params (as in C++)
-				arg_dtype = typeRemap( arg_dtype, arg_subtype )
-			end select
+				arg_dtype = typeRemap( arg_dtype )
+			end if
 
 			return FB_OVLPROC_HALFMATCH - symb_dtypeMatchTB( typeGet( arg_dtype ), typeGet( param_dtype ) )
 

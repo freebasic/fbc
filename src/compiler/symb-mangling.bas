@@ -349,7 +349,6 @@ private function hMangleBuiltInType( byval dtype as integer ) as zstring ptr
 		NULL, _ '' integer
 		NULL, _ '' uinteger
 		NULL, _ '' enum
-		NULL, _ '' bitfield
 		NULL, _ '' long
 		NULL, _ '' ulong
 		@"x", _ '' longint (long long)

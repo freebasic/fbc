@@ -30,6 +30,11 @@ private function hThreadCallMapType _
 		return iif( udt, -1, FB_THREADCALL_PTR )
 	end if
     
+	'' Bitfields not supported
+	if( symbIsBitfield( sym ) ) then
+		exit function
+	end if
+
 	if( typeIsPtr( dtype ) ) then
 		return FB_THREADCALL_PTR
 	end if

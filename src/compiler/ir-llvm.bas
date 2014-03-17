@@ -220,7 +220,6 @@ dim shared as const zstring ptr dtypeName(0 to FB_DATATYPES-1) = _
 	NULL        , _ '' int
 	NULL        , _ '' uint
 	NULL        , _ '' enum
-	NULL        , _ '' bitfield
 	@"i32"      , _ '' long
 	@"i32"      , _ '' ulong
 	@"i64"      , _ '' longint
@@ -1200,9 +1199,6 @@ private function hEmitType _
 		'' Ditto (but typeGetRemapType() returns FB_DATATYPE_FIXSTR,
 		'' so do it manually)
 		s = *dtypeName(FB_DATATYPE_UBYTE)
-
-	case FB_DATATYPE_BITFIELD
-		s = *dtypeName(symbGetType( subtype ))
 
 	case else
 		s = *dtypeName(dtype)
