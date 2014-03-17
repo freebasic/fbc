@@ -2769,6 +2769,7 @@ private sub hParamsToStr( byref s as string, byval proc as FBSYMBOL ptr )
 
 	while( param )
 		var parammode = symbGetParamMode( param )
+
 		select case( parammode )
 		case FB_PARAMMODE_BYVAL, FB_PARAMMODE_BYREF
 			'' Byval/Byref, if different from default, at least in -lang fb.
@@ -2783,9 +2784,6 @@ private sub hParamsToStr( byref s as string, byval proc as FBSYMBOL ptr )
 					s += "byref "
 				end if
 			end if
-
-		case FB_PARAMMODE_BYDESC
-		case FB_PARAMMODE_VARARG
 		end select
 
 		if( parammode = FB_PARAMMODE_VARARG ) then
