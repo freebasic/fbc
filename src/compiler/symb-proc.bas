@@ -1212,14 +1212,12 @@ end function
 function symbAddProcResultParam( byval proc as FBSYMBOL ptr ) as FBSYMBOL ptr
     dim as FBARRAYDIM dTB(0) = any
     dim as FBSYMBOL ptr s = any
-    static as string id
 
 	if( symbProcReturnsOnStack( proc ) = FALSE ) then
 		return NULL
 	end if
 
-	id = *symbUniqueId( )
-	s = symbAddVar( id, NULL, FB_DATATYPE_STRUCT, proc->subtype, 0, _
+	s = symbAddVar( symbUniqueId( ), NULL, FB_DATATYPE_STRUCT, proc->subtype, 0, _
 	                0, dTB(), FB_SYMBATTRIB_PARAMBYREF, FB_SYMBOPT_PRESERVECASE )
 
 	symbProcAllocExt( proc )
