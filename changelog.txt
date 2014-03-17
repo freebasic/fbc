@@ -138,6 +138,7 @@ Version 0.91.0:
 - Fields were allowed to have type suffixes when declared using the "AS DataType a, b, c" syntax instead of "a AS DataType"
 - When DIM'ing an EXTERN array, the DIM statement was allowed to have different lbound than the EXTERN
 - When passing a ZSTRING/WSTRING to a BYREF AS STRING parameter, and the procedure modifies the string data, the ZSTRING/WSTRING was not updated to with the changed string data. This was only done for STRING*N variables. Now it will also work for ZSTRINGs/WSTRINGs.
+- Compiler crash during error recovery if a dynamic array declaration/REDIM contained '...' ellipsis upper bounds
 
 
 Version 0.90.1:

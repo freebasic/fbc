@@ -1330,8 +1330,18 @@ function cVarDecl _
 				attrib or= FB_SYMBATTRIB_DYNAMIC
 			end if
 
-			'' "array too big/huge array on stack" check
-			if( (attrib and FB_SYMBATTRIB_DYNAMIC) = 0 ) then
+			if( attrib and FB_SYMBATTRIB_DYNAMIC ) then
+				'' Disallow ellipsis dimensions (nicer than "ellipsis requires initializer" +
+				'' "cannot initialize dynamic array" errors)
+				for i as integer = 0 to dimensions - 1
+					if( exprTB(i,1) = NULL ) then
+						errReport( FB_ERRMSG_DYNAMICARRAYWITHELLIPSIS )
+						'' Error recovery: Allow further use of the exprTB() as if there were no ellipsis
+						exprTB(i,1) = astNewCONSTi( 0 )
+					end if
+				next
+			else
+				'' "array too big/huge array on stack" check
 				if( symbCheckArraySize( dimensions, @dTB(0), lgt, _
 				                        ((attrib and (FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_STATIC)) = 0) ) = FALSE ) then
 					errReport( FB_ERRMSG_ARRAYTOOBIG )

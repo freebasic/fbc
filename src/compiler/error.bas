@@ -157,6 +157,7 @@ declare function hMakeParamDesc _
 		@"Array access, index expected", _
 		@"Expected 'END ENUM'", _
 		@"Var-len arrays cannot be initialized", _
+		@"'...' ellipsis upper bound given for dynamic array (this is not supported)", _
 		@"Invalid bitfield", _
 		@"Too many parameters", _
 		@"Macro text too long", _
