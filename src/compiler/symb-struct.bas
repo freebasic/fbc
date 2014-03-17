@@ -227,7 +227,6 @@ function symbCheckBitField _
 
 end function
 
-'':::::
 function symbAddField _
 	( _
 		byval parent as FBSYMBOL ptr, _
@@ -245,6 +244,11 @@ function symbAddField _
 	dim as FBHASHTB ptr hashtb
 
     function = NULL
+
+	'' Dynamic array field?
+	if( dimensions = -1 ) then
+		'' Add descriptor too
+	end if
 
     '' calc length if it wasn't given
 	if( lgt <= 0 ) then

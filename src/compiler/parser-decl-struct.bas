@@ -122,9 +122,9 @@ private sub hTypeEnumDecl _
 	else
 		cEnumDecl( attrib )
 	end if
+
 end sub
 
-'':::::
 private sub hFieldInit( byval parent as FBSYMBOL ptr, byval sym as FBSYMBOL ptr )
 	dim as FBSYMBOL ptr defctor = any, subtype = any
 
@@ -256,23 +256,46 @@ private sub hArrayOrBitfield _
 		dTB() as FBARRAYDIM _
 	)
 
-	bits = 0
+	''static as ASTNODE ptr exprTB(0 to FB_MAXARRAYDIMS-1, 0 to 1)
 
-	if( cStaticArrayDecl( dims, dTB() ) = FALSE ) then
-		'' ':' NUMLIT?
-		if( lexGetToken( ) = FB_TK_STMTSEP ) then
-			if( lexGetLookAheadClass( 1 ) = FB_TKCLASS_NUMLITERAL ) then
+	bits = 0
+	dims = 0
+
+	select case( lexGetToken( ) )
+	'' '('? (array dimensions)
+	case CHAR_LPRNT
+		lexSkipToken( )
+
+		'' just '()'?
+		if( lexGetToken( ) = CHAR_RPRNT ) then
+			lexSkipToken( )
+			dims = -1
+		else
+			cStaticArrayDecl( dims, dTB() )
+			'cArrayDecl( dims, exprTB() )
+
+			'' ')'
+			if( lexGetToken( ) <> CHAR_RPRNT ) then
+				errReport( FB_ERRMSG_EXPECTEDRPRNT )
+			else
 				lexSkipToken( )
-				bits = valint( *lexGetText( ) )
-				lexSkipToken( )
-				if( bits <= 0 ) then
-					errReport( FB_ERRMSG_SYNTAXERROR, TRUE )
-					'' error recovery: no bits
-					bits = 0
-				end if
 			end if
 		end if
-	end if
+
+	'' ':' NUMLIT? (bitfield size)
+	case FB_TK_STMTSEP
+		if( lexGetLookAheadClass( 1 ) = FB_TKCLASS_NUMLITERAL ) then
+			lexSkipToken( )
+			bits = valint( *lexGetText( ) )
+			lexSkipToken( )
+
+			if( bits <= 0 ) then
+				errReport( FB_ERRMSG_SYNTAXERROR, TRUE )
+				'' error recovery: no bits
+				bits = 0
+			end if
+		end if
+	end select
 
 end sub
 

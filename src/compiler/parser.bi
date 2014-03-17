@@ -275,13 +275,7 @@ declare function cVariableDecl _
 	) as integer
 
 declare sub cAutoVarDecl(byval attrib as FB_SYMBATTRIB)
-
-declare function cStaticArrayDecl _
-	( _
-		byref dimensions as integer, _
-		dTB() as FBARRAYDIM _
-	) as integer
-
+declare sub cStaticArrayDecl( byref dimensions as integer, dTB() as FBARRAYDIM )
 declare sub cArrayDecl( byref dimensions as integer, exprTB() as ASTNODE ptr )
 
 declare function cInitializer _

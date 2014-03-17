@@ -1578,29 +1578,28 @@ private function hMatchEllipsis( ) as integer
 	end if
 end function
 
-'':::::
-''ArrayDecl       =   '(' Expression (TO Expression)?
-''                             (',' Expression (TO Expression)?)*
-''				      ')' .
 ''
-function cStaticArrayDecl _
-	( _
-		byref dimensions as integer, _
-		dTB() as FBARRAYDIM _
-	) as integer
-
-    function = FALSE
-
+'' ArrayDimension =
+''    Expression [TO Expression]
+''
+'' ArrayDecl =
+''    '(' ArrayDimension (',' ArrayDimension)* ')'
+''
+sub cStaticArrayDecl( byref dimensions as integer, dTB() as FBARRAYDIM )
 	dimensions = 0
 
 	'' '('
-	if( lexGetToken() <> CHAR_LPRNT ) then
-		exit function
-	end if
-
+	assert( lexGetToken( ) = CHAR_LPRNT )
 	lexSkipToken( )
 
-    do
+	do
+		if( dimensions >= FB_MAXARRAYDIMS ) then
+			errReport( FB_ERRMSG_TOOMANYDIMENSIONS )
+			'' error recovery: skip to next ')'
+			hSkipUntil( CHAR_RPRNT )
+			exit do
+		end if
+
 		'' First value, may be lbound or ubound: Expression (integer constant)
 		dTB(dimensions).lower = cConstIntExpr( cExpression( ), env.opt.base )
 
@@ -1624,20 +1623,8 @@ function cStaticArrayDecl _
 
 		dimensions += 1
 
-    	'' separator
-    	if( lexGetToken( ) <> CHAR_COMMA ) then
-    		exit do
-    	end if
-
-    	lexSkipToken( )
-
-		if( dimensions >= FB_MAXARRAYDIMS ) then
-			errReport( FB_ERRMSG_TOOMANYDIMENSIONS )
-			'' error recovery: skip to next ')'
-			hSkipUntil( CHAR_RPRNT )
-			exit do
-		end if
-	loop
+		'' ','?
+	loop while( hMatch( CHAR_COMMA ) )
 
 	'' ')'
 	if( lexGetToken( ) <> CHAR_RPRNT ) then
@@ -1645,10 +1632,7 @@ function cStaticArrayDecl _
 	else
 		lexSkipToken( )
 	end if
-
-	function = TRUE
-
-end function
+end sub
 
 private function hIntExpr( byval defaultexpr as ASTNODE ptr ) as ASTNODE ptr
 	dim as ASTNODE ptr expr = any, intexpr = any
@@ -1684,15 +1668,24 @@ private function hIntExpr( byval defaultexpr as ASTNODE ptr ) as ASTNODE ptr
 	function = expr
 end function
 
-'':::::
-''ArrayDecl    	  =   '(' Expression (TO Expression)?
-''                             (',' Expression (TO Expression)?)*
-''				      ')' .
+''
+'' ArrayDimension =
+''    Expression [TO Expression]
+''
+'' ArrayDecl =
+''    ArrayDimension (',' ArrayDimension)*
 ''
 sub cArrayDecl( byref dimensions as integer, exprTB() as ASTNODE ptr )
 	dimensions = 0
 
 	do
+		if( dimensions >= FB_MAXARRAYDIMS ) then
+			errReport( FB_ERRMSG_TOOMANYDIMENSIONS )
+			'' error recovery: skip to next ')'
+			hSkipUntil( CHAR_RPRNT )
+			exit do
+		end if
+
 		'' 1st expression: lbound or ubound
 		'' (depends on whether there's a TO and a 2nd expression following)
 		if( hMatchEllipsis( ) ) then
@@ -1728,19 +1721,7 @@ sub cArrayDecl( byref dimensions as integer, exprTB() as ASTNODE ptr )
 		dimensions += 1
 
 		'' ','?
-		if( lexGetToken( ) <> CHAR_COMMA ) then
-			exit do
-		end if
-
-		lexSkipToken( )
-
-		if( dimensions >= FB_MAXARRAYDIMS ) then
-			errReport( FB_ERRMSG_TOOMANYDIMENSIONS )
-			'' error recovery: skip to next ')'
-			hSkipUntil( CHAR_RPRNT )
-			exit do
-		end if
-	loop
+	loop while( hMatch( CHAR_COMMA ) )
 end sub
 
 '':::::
