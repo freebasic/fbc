@@ -228,10 +228,16 @@ function symbAddArrayDesc( byval array as FBSYMBOL ptr ) as FBSYMBOL ptr
 		symtb = array->symtb
 	end if
 
-	'' Create descriptor UDT in same symtb, and preserving the
-	'' FB_SYMBATTRIB_LOCAL too if the descriptor has it.
-	desctype = hCreateDescType( symtb, symbGetArrayDimensions( array ), _
-			symbUniqueId( ), attrib and FB_SYMBATTRIB_LOCAL )
+	'' Dynamic array? Just re-use the global descriptor created at
+	'' hCreateArrayDescriptorType(), instead of making a new one.
+	if( symbGetArrayDimensions( array ) = -1 ) then
+		desctype = symb.fbarray
+	else
+		'' Create descriptor UDT in same symtb, and preserving the
+		'' FB_SYMBATTRIB_LOCAL too if the descriptor has it.
+		desctype = hCreateDescType( symtb, symbGetArrayDimensions( array ), _
+				symbUniqueId( ), attrib and FB_SYMBATTRIB_LOCAL )
+	end if
 
 	desc = symbNewSymbol( FB_SYMBOPT_PRESERVECASE, NULL, symtb, NULL, _
 	                      FB_SYMBCLASS_VAR, id, id_alias, _
