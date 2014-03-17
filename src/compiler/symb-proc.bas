@@ -2776,7 +2776,7 @@ private sub hParamsToStr( byref s as string, byval proc as FBSYMBOL ptr )
 			'' always include Byval/Byref in that case, otherwise it'd depend on
 			'' source code context.
 			if( fbLangIsSet( FB_LANG_FB ) and _
-			    (symbGetDefaultCallConv( symbGetType( param ), param->subtype ) <> parammode) ) then
+			    (symbGetDefaultParamMode( symbGetType( param ), param->subtype ) <> parammode) ) then
 				if( parammode = FB_PARAMMODE_BYVAL ) then
 					s += "byval "
 				else
@@ -2874,8 +2874,7 @@ function symbMethodToStr( byval proc as FBSYMBOL ptr ) as string
 	function = s
 end function
 
-'':::::
-function symbGetDefaultCallConv _
+function symbGetDefaultParamMode _
 	( _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr _
@@ -2888,14 +2887,10 @@ function symbGetDefaultCallConv _
          FB_DATATYPE_FIXSTR, FB_DATATYPE_STRING, _
 	     FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR, _
          FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-
          return FB_PARAMMODE_BYREF
-
     case else
          return FB_PARAMMODE_BYVAL
-
     end select
-
 
 end function
 

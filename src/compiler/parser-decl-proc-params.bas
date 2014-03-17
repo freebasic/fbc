@@ -408,7 +408,7 @@ private function hParamDecl _
 		'' we have to delay the true default until now, since
 		'' byval/byref depends on the symbol type
 		if( use_default ) then
-			mode = symbGetDefaultCallConv( typeGet( dtype ), subtype )
+			mode = symbGetDefaultParamMode( typeGetDtAndPtrOnly( dtype ), subtype )
 		end if
 	end if
 
