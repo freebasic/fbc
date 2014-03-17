@@ -163,8 +163,7 @@ private function hCheckArgForStringParam _
 
 	copyback = FALSE
 
-	select case( symbGetParamMode( param ) )
-	case FB_PARAMMODE_BYREF
+	if( symbGetParamMode( param ) = FB_PARAMMODE_BYREF ) then
 		select case( argdtype )
 		'' Fixed-length string to BYREF AS STRING param
 		case FB_DATATYPE_FIXSTR
@@ -181,6 +180,25 @@ private function hCheckArgForStringParam _
 			'' fixed-length strings from functions.
 			assert( astIsCALL( arg ) = FALSE )
 
+		'' ZSTRINGs too
+		case FB_DATATYPE_CHAR
+			'' ditto, but must exclude string literals which have
+			'' CHAR type (string literals are allowed to be passed
+			'' to BYREF AS STRING parameters, through an implicitly
+			'' created copy, but of course the string data can't be
+			'' copied back into the read-only string literal).
+			copyback = (astGetStrLitSymbol( arg ) = NULL)
+
+			'' ditto
+			assert( astIsCALL( arg ) = FALSE )
+
+		'' WSTRINGs too
+		case FB_DATATYPE_WCHAR
+			'' ditto, but excluding WSTRING literals, and also
+			'' WSTRING function results (no need to copy back into
+			'' function results, they'll be discarded anyways).
+			copyback = (astGetStrLitSymbol( arg ) = NULL) and (not astIsCALL( arg ))
+
 		'' STRING to BYREF AS STRING
 		case FB_DATATYPE_STRING
 			'' Can pass as-is (preserving BYREF semantics) unless
@@ -190,7 +208,7 @@ private function hCheckArgForStringParam _
 				return arg
 			end if
 		end select
-	end select
+	end if
 
 	'' Copy arg to temp STRING, then pass that temp
 	function = hAllocTmpString( parent, arg, copyback )
