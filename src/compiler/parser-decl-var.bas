@@ -1147,7 +1147,7 @@ function cVarDecl _
     dim as FBSYMBOL ptr sym, subtype = any
 	dim as ASTNODE ptr initree = any, redimcall = any
 	dim as integer addsuffix = any, is_multdecl = any
-    dim as integer is_typeless = any, is_decl = any, check_exprtb = any
+	dim as integer is_typeless = any, is_decl = any
 	dim as integer dtype = any
 	dim as longint lgt = any
     dim as integer dimensions = any, suffix = any
@@ -1216,7 +1216,6 @@ function cVarDecl _
 
 		'' ('(' ArrayDecl? ')')?
 		dimensions = 0
-		check_exprtb = FALSE
 		if( (lexGetToken( ) = CHAR_LPRNT) and (is_fordecl = FALSE) ) then
 			lexSkipToken( )
 
@@ -1235,7 +1234,6 @@ function cVarDecl _
 					hSkipUntil( CHAR_RPRNT )
 				else
 					cArrayDecl( dimensions, exprTB() )
-					check_exprtb = TRUE
 				end if
 			end if
 
@@ -1321,17 +1319,15 @@ function cVarDecl _
 				end if
 			end if
 
-			if( check_exprtb ) then
-				'' if subscripts are constants, convert exprTB to dimTB
-				if( hIsConst( dimensions, exprTB() ) ) then
-					'' only if not explicitly dynamic (ie: not REDIM, COMMON)
-					if( (attrib and FB_SYMBATTRIB_DYNAMIC) = 0 ) then
-						hMakeArrayDimTB( dimensions, exprTB(), dTB() )
-					end if
-				else
-					'' Non-constant array bounds, must be dynamic
-					attrib or= FB_SYMBATTRIB_DYNAMIC
+			'' if subscripts are constants, convert exprTB to dimTB
+			if( hIsConst( dimensions, exprTB() ) ) then
+				'' only if not explicitly dynamic (ie: not REDIM, COMMON)
+				if( (attrib and FB_SYMBATTRIB_DYNAMIC) = 0 ) then
+					hMakeArrayDimTB( dimensions, exprTB(), dTB() )
 				end if
+			else
+				'' Non-constant array bounds, must be dynamic
+				attrib or= FB_SYMBATTRIB_DYNAMIC
 			end if
 
 			'' "array too big/huge array on stack" check
