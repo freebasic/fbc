@@ -11,7 +11,6 @@
 #include once "rtl.bi"
 #include once "ast.bi"
 
-'':::::
 private function hAllocTmpArrayDesc _
 	( _
 		byval array as FBSYMBOL ptr, _
@@ -20,30 +19,19 @@ private function hAllocTmpArrayDesc _
 	) as FBSYMBOL ptr
 
 	dim as FBSYMBOL ptr desc = any
+	dim as ASTNODE ptr initree = any
 
 	'' create
 	desc = symbAddArrayDesc( array )
+	initree = astBuildArrayDescIniTree( desc, array, array_expr )
 
-	'' don't let NewDECL() fill it
-	symbGetTypeIniTree( desc ) = astBuildArrayDescIniTree( desc, _
-														   array, _
-														   array_expr )
-
-
-
-	'' declare
-	tree = astNewDECL( desc, (symbGetTypeIniTree( desc ) = NULL) )
+	'' declare, no clear
+	tree = astNewDECL( desc, FALSE )
 
 	'' flush (see symbAddArrayDesc(), the desc can't never be static)
-	tree = astNewLINK( tree, _
-					   astTypeIniFlush( symbGetTypeIniTree( desc ), _
-					   					desc, _
-					   					AST_INIOPT_ISINI ) )
-
-	symbSetTypeIniTree( desc, NULL )
+	tree = astNewLINK( tree, astTypeIniFlush( initree, desc, AST_INIOPT_ISINI ) )
 
 	function = desc
-
 end function
 
 '':::::
