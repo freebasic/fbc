@@ -1066,7 +1066,7 @@ private sub hDeclVariable _
 		astTypeIniFlush( s->var_.initree, _
 						 s, _
 						 AST_INIOPT_ISINI or AST_INIOPT_ISSTATIC )
-
+		s->var_.initree = NULL
 		return
 	end if
 
