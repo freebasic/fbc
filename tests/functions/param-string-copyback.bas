@@ -28,10 +28,10 @@ namespace simple
 
 		s = "var" : copyback( s   ) : CU_ASSERT( s = "VAR" )
 		f = "fix" : copyback( f   ) : CU_ASSERT( f = "FIX" )
-		z = "zer" : copyback( z   ) : CU_ASSERT( z = "ZER" )
-		z = "zer" : copyback( *pz ) : CU_ASSERT( z = "ZER" )
-		w = "foo" : copyback( w   ) : CU_ASSERT( w = "FOO" )
-		w = "foo" : copyback( *pw ) : CU_ASSERT( w = "FOO" )
+		z = "zer" : copyback( z   ) : CU_ASSERT( z = "zer" )  '' no copy back should be done for z/wstrings
+		z = "zer" : copyback( *pz ) : CU_ASSERT( z = "zer" )
+		w = "foo" : copyback( w   ) : CU_ASSERT( w = "foo" )
+		w = "foo" : copyback( *pw ) : CU_ASSERT( w = "foo" )
 
 		'' Special cases with string literals (passed via implicitly
 		'' created temp STRING): can't ever copy back, because string
@@ -65,21 +65,21 @@ namespace differentLength
 		f = "a" : appendChars( f, 3 ) : CU_ASSERT( f = "a!!!" )
 		f = "a" : appendChars( f, 5 ) : CU_ASSERT( f = "a!!!!" )  '' truncated
 
-		z = "a" : appendChars( z, 1 ) : CU_ASSERT( z = "a!" )
-		z = "a" : appendChars( z, 3 ) : CU_ASSERT( z = "a!!!" )
-		z = "a" : appendChars( z, 5 ) : CU_ASSERT( z = "a!!!!" )  '' truncated
+		z = "a" : appendChars( z, 1 ) : CU_ASSERT( z = "a" )
+		z = "a" : appendChars( z, 3 ) : CU_ASSERT( z = "a" )
+		z = "a" : appendChars( z, 5 ) : CU_ASSERT( z = "a" )
 
-		w = "a" : appendChars( w, 1 ) : CU_ASSERT( w = "a!" )
-		w = "a" : appendChars( w, 3 ) : CU_ASSERT( w = "a!!!" )
-		w = "a" : appendChars( w, 5 ) : CU_ASSERT( w = "a!!!!" )  '' truncated
+		w = "a" : appendChars( w, 1 ) : CU_ASSERT( w = "a" )
+		w = "a" : appendChars( w, 3 ) : CU_ASSERT( w = "a" )
+		w = "a" : appendChars( w, 5 ) : CU_ASSERT( w = "a" )
 
-		z = "a" : appendChars( *pz, 1 ) : CU_ASSERT( z = "a!" )
-		z = "a" : appendChars( *pz, 3 ) : CU_ASSERT( z = "a!!!" )
-		z = "a" : appendChars( *pz, 4 ) : CU_ASSERT( z = "a!!!!" )  '' 5 wouldn't be safe (no length check)
+		z = "a" : appendChars( *pz, 1 ) : CU_ASSERT( z = "a" )
+		z = "a" : appendChars( *pz, 3 ) : CU_ASSERT( z = "a" )
+		z = "a" : appendChars( *pz, 4 ) : CU_ASSERT( z = "a" )
 
-		w = "a" : appendChars( *pw, 1 ) : CU_ASSERT( w = "a!" )
-		w = "a" : appendChars( *pw, 3 ) : CU_ASSERT( w = "a!!!" )
-		w = "a" : appendChars( *pw, 4 ) : CU_ASSERT( w = "a!!!!" )  '' 5 wouldn't be safe (no length check)
+		w = "a" : appendChars( *pw, 1 ) : CU_ASSERT( w = "a" )
+		w = "a" : appendChars( *pw, 3 ) : CU_ASSERT( w = "a" )
+		w = "a" : appendChars( *pw, 4 ) : CU_ASSERT( w = "a" )
 	end sub
 end namespace
 
@@ -100,11 +100,27 @@ namespace functionResults
 	end sub
 end namespace
 
+namespace derefZWstringLiteral
+	sub copyback( byref s as string )
+		s = ucase( s )
+	end sub
+
+	sub test cdecl( )
+		dim pz as zstring ptr = @"aaa"
+		dim pw as wstring ptr = @wstr( "bbb" )
+
+		'' should not copy back into string literals
+		CU_ASSERT( *pz = "aaa" ) : copyback( *pz ) : CU_ASSERT( *pz = "aaa" )
+		CU_ASSERT( *pw = wstr( "bbb" ) ) : copyback( *pw ) : CU_ASSERT( *pw = wstr( "bbb" ) )
+	end sub
+end namespace
+
 private sub ctor( ) constructor
 	fbcu.add_suite( "tests/functions/param-string-copyback" )
 	fbcu.add_test( "simple", @simple.test )
 	fbcu.add_test( "different length", @differentLength.test )
 	fbcu.add_test( "function results", @functionResults.test )
+	fbcu.add_test( "DEREF z/wstring pointing to literal", @derefZWstringLiteral.test )
 end sub
 
 end namespace

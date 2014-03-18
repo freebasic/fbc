@@ -180,24 +180,58 @@ private function hCheckArgForStringParam _
 			'' fixed-length strings from functions.
 			assert( astIsCALL( arg ) = FALSE )
 
+#if 0
+		''
+		'' Copy back for z/wstrings can't be done safely.
+		''
+		'' If given a DEREF'ed zstring pointer, there's no way of
+		'' knowing what it points to:
+		''
+		'' It could be a read-only string literal which we must never
+		'' write to. It'd be nice right here if we could rely on
+		'' CONSTness to detect that, but we can't because FB doesn't
+		'' enforce CONSTness on string literals.
+		''
+		'' And either way, there's no way of knowing whether the given
+		'' buffer will be big enough to hold the string that's supposed
+		'' to be copied back.
+		''
+		'' Both these issues could be avoided by only copying back when
+		'' given z/wstring vars, but then the behaviour is too
+		'' inconsistent. It's better if z/wstring always behave the
+		'' same, as opposed to copyback here, no copyback there.
+		''
+		'' I.e. copyback should only work for FIXSTR which is acceptable
+		'' because FIXSTR can only appear on variables (not literals,
+		'' and not DEREFs/CALLs), and STRING * N is arguable the same
+		'' data type as STRING; or at least they're closer related than
+		'' Z/WSTRING.
+		''
+
 		'' ZSTRINGs too
 		case FB_DATATYPE_CHAR
 			'' ditto, but must exclude string literals which have
 			'' CHAR type (string literals are allowed to be passed
 			'' to BYREF AS STRING parameters, through an implicitly
 			'' created copy, but of course the string data can't be
-			'' copied back into the read-only string literal).
-			copyback = (astGetStrLitSymbol( arg ) = NULL)
+			'' copied back into the read-only string literal), and
+			'' DEREF'ed zstring pointers, because there's no way of
+			'' knowing whether we can safely copyback in this case.
+			copyback = (astGetStrLitSymbol( arg ) = NULL) and _
+				(not astIsDEREF( arg ))
 
 			'' ditto
 			assert( astIsCALL( arg ) = FALSE )
 
 		'' WSTRINGs too
 		case FB_DATATYPE_WCHAR
-			'' ditto, but excluding WSTRING literals, and also
-			'' WSTRING function results (no need to copy back into
-			'' function results, they'll be discarded anyways).
-			copyback = (astGetStrLitSymbol( arg ) = NULL) and (not astIsCALL( arg ))
+			'' ditto, and also excluding CALLs because of the
+			'' special WSTRING function results (no need to copy
+			'' back into function results, they'll be discarded).
+			copyback = (astGetStrLitSymbol( arg ) = NULL) and _
+				(not astIsDEREF( arg )) and _
+				(not astIsCALL( arg ))
+#endif
 
 		'' STRING to BYREF AS STRING
 		case FB_DATATYPE_STRING
