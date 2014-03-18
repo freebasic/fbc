@@ -503,24 +503,21 @@ sub symbInsertInnerUDT _
 
     symtb = @parent->udt.ns.symtb
 
-	if( symbGetUDTIsUnion( parent ) ) then
-    	'' link to parent
-    	do while( fld <> NULL )
-    		fld->symtb = symtb
+	'' Link fields to the parent, so lookups will find them, but without
+	'' breaking their FBSYMBOL.parent pointers which are needed for
+	'' correct traversal of the tree of nested structs/unions.
+	while( fld )
+
+		fld->symtb = symtb
+
+		if( symbGetUDTIsUnion( parent ) ) then
 			symbSetIsUnionField( fld )
-    		'' next
-    		fld = fld->next
-    	loop
-    else
-    	'' link to parent
-    	do while( fld <> NULL )
-    		fld->symtb = symtb
-			'' update the offset
+		else
 			fld->ofs += parent->ofs
-    		'' next
-    		fld = fld->next
-    	loop
-    end if
+		end if
+
+		fld = fld->next
+	wend
 
     parent->udt.ns.symtb.tail = inner->udt.ns.symtb.tail
 
