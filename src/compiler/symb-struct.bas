@@ -359,7 +359,7 @@ function symbAddField _
 	sym = symbNewSymbol( FB_SYMBOPT_DOHASH, NULL, _
 			@symbGetUDTSymbTb( parent ), @symbGetUDTHashTb( base_parent ), _
 			FB_SYMBCLASS_FIELD, id, NULL, dtype, subtype, _
-			iif( symbIsLocal( parent ), FB_SYMBATTRIB_LOCAL, FB_SYMBATTRIB_NONE ) )
+			parent->attrib and FB_SYMBATTRIB_LOCAL )
 	if( sym = NULL ) then
 		exit function
 	end if
