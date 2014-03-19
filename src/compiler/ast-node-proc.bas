@@ -883,6 +883,8 @@ private function hCallFieldCtor _
 		byval fld as FBSYMBOL ptr _
 	) as ASTNODE ptr
 
+	assert( symbIsDynamic( fld ) = FALSE )
+
 	'' Do not initialize?
 	if( symbGetDontInit( fld ) ) then
 		exit function
@@ -890,8 +892,6 @@ private function hCallFieldCtor _
 
 	'' has a default ctor too?
 	if( symbHasDefCtor( fld ) ) then
-		'' !!!FIXME!!! assuming only static arrays will be allowed in fields
-
 		'' not an array?
 		if( symbGetArrayDimensions( fld ) = 0 ) then
 			'' ctor( this.field )
@@ -900,7 +900,6 @@ private function hCallFieldCtor _
 		else
 			function = hCallCtorList( TRUE, this_, fld )
 		end if
-
 		exit function
 	end if
 
@@ -1107,27 +1106,27 @@ private sub hCallFieldDtor _
 		byval fld as FBSYMBOL ptr _
 	)
 
+	assert( symbIsDescriptor( fld ) = FALSE )
+
 	if( symbGetType( fld ) = FB_DATATYPE_STRING ) then
-		var fldexpr = astBuildInstPtr( this_, fld )
-
-		'' assuming fields cannot be dynamic arrays
-
-		'' not an array?
-		if( symbGetArrayDimensions( fld ) = 0 ) then
-			astAdd( rtlStrDelete( fldexpr ) )
+		if( symbGetArrayDimensions( fld ) <> 0 ) then
+			astAdd( rtlArrayErase( astBuildInstPtr( this_, fld ), symbIsDynamic( fld ), FALSE ) )
 		else
-			astAdd( rtlArrayErase( fldexpr, FALSE, FALSE ) )
+			astAdd( rtlStrDelete( astBuildInstPtr( this_, fld ) ) )
 		end if
+	'' UDT field with dtor?
+	elseif( symbHasDtor( fld ) ) then
+		select case( symbGetArrayDimensions( fld ) )
+		case -1
+		case 0
+			'' dtor( this.field )
+			astAdd( astBuildDtorCall( symbGetSubtype( fld ), astBuildInstPtr( this_, fld ) ) )
+		case else
+			astAdd( hCallCtorList( FALSE, this_, fld ) )
+		end select
 	else
-		'' UDT field with dtor?
-		if( symbHasDtor( fld ) ) then
-			'' not an array?
-			if( symbGetArrayDimensions( fld ) = 0 ) then
-				'' dtor( this.field )
-				astAdd( astBuildDtorCall( symbGetSubtype( fld ), astBuildInstPtr( this_, fld ) ) )
-			else
-				astAdd( hCallCtorList( FALSE, this_, fld ) )
-			end if
+		if( symbGetArrayDimensions( fld ) = -1 ) then
+			astAdd( rtlArrayErase( astBuildInstPtr( this_, fld ), TRUE, FALSE ) )
 		end if
 	end if
 
@@ -1143,20 +1142,23 @@ private sub hCallFieldDtors _
 
 	this_ = symbGetParamVar( symbGetProcHeadParam( proc ) )
 
-    '' for each field (in inverse order)..
-    fld = symbGetCompSymbTb( parent ).tail
-    do while( fld <> NULL )
-		'' !!!FIXME!!! assuming only static arrays will be allowed in fields
+	'' For each field (in inverse order)
+	''  - excluding non-field members (e.g. methods)
+	''  - excluding the base field, that will be destructed separately
+	''  - dynamic array descriptor fields: hCallFieldDtor() frees dynamic
+	''    array fields by calling ERASE on the fake dynamic array field,
+	''    for which astNewARG() will automagically pass the descriptor.
+	fld = symbGetCompSymbTb( parent ).tail
+	while( fld )
 
 		if( symbIsField( fld ) ) then
-			'' super class 'base' field? skip.. dtor must be called from derived class' dtor
-			if( fld <> parent->udt.base ) Then
+			if( (not symbIsDescriptor( fld )) and (fld <> parent->udt.base) ) then
 				hCallFieldDtor( this_, fld )
 			end if
 		end if
 
 		fld = fld->prev
-	loop
+	wend
 
 end sub
 
