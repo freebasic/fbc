@@ -1044,13 +1044,13 @@ private sub hDeclVariable _
     	return
 	end if
 
+	'' Don't emit the fake jump-table vars, see also astBuildJMPTB()
+	if( symbGetIsJumpTb( s ) ) then
+		return
+	end if
+
 	'' initialized?
 	if( symbGetIsInitialized( s ) ) then
-		'' jump-tb?
-		if( symbGetIsJumpTb( s ) ) then
-			return
-		end if
-
     	'' never referenced?
     	if( symbGetIsAccessed( s ) = FALSE ) then
 			'' not public?
