@@ -2419,6 +2419,25 @@ function symbDump( byval sym as FBSYMBOL ptr ) as string
 		end if
 	end if
 
+	'' Array dimensions, if any
+	if( symbIsVar( sym ) or symbIsField( sym ) ) then
+		if( symbGetArrayDimensions( sym ) = -1 ) then
+			s += "()"
+		elseif( symbGetArrayDimensions( sym ) > 0 ) then
+			s += "("
+			for i as integer = 0 to symbGetArrayDimensions( sym ) - 1
+				s &= symbArrayLbound( sym, i )
+				s += " to "
+				if( symbArrayUbound( sym, i ) = FB_ARRAYDIM_UNKNOWN ) then
+					s += "..."
+				else
+					s &= symbArrayUbound( sym, i )
+				end if
+			next
+			s += ")"
+		end if
+	end if
+
 #if 1
 	if( sym->id.alias ) then
 		s += " alias """ + *sym->id.alias + """"
@@ -2471,6 +2490,8 @@ function symbDump( byval sym as FBSYMBOL ptr ) as string
 		if( sym->var_.bits > 0 ) then
 			s += " bitfield : " & sym->var_.bits & " (" & sym->var_.bitpos & ".." & sym->var_.bitpos + sym->var_.bits - 1 & ")"
 		end if
+
+		s += " offset=" & sym->ofs
 	end if
 
 	function = s

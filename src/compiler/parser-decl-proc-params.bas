@@ -408,7 +408,7 @@ private function hParamDecl _
 		'' we have to delay the true default until now, since
 		'' byval/byref depends on the symbol type
 		if( use_default ) then
-			mode = symbGetDefaultCallConv( typeGet( dtype ), subtype )
+			mode = symbGetDefaultParamMode( dtype, subtype )
 		end if
 	end if
 
@@ -452,13 +452,6 @@ private function hParamDecl _
 				hParamError( proc, id )
     		end if
     	end if
-
-	case FB_DATATYPE_STRING
-		if( mode = FB_PARAMMODE_BYVAL ) then
-			if( fbPdCheckIsSet( FB_PDCHECK_PARAMMODE ) ) then
-				hParamWarning( proc, id, FB_WARNINGMSG_BYVALASSTRING )
-			end if
-		end if
 
     end select
 

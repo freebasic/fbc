@@ -227,6 +227,20 @@ function symbCheckBitField _
 
 end function
 
+''
+'' Add a new field, it can be one of:
+''
+'' a) A real field taking up memory in the structure, i.e. struct layout always
+''    changes in this case. The new field is appended to the end of the
+''    structure, possibly preceded by padding bytes between the previous field
+''    and the new one.
+''
+'' b) A bitfield, which is either merged into an existing memory chunk at the
+''    end of the structure (conceptually: container field, as represented by
+''    by the first bitfield in the memory chunk), or causes a new "container
+''    field" to be started and becomes the first bitfield in it. In the former
+''    case, the struct layout doesn't change; in the latter, it changes.
+''
 function symbAddField _
 	( _
 		byval parent as FBSYMBOL ptr, _
@@ -237,13 +251,13 @@ function symbAddField _
 		byval subtype as FBSYMBOL ptr, _
 		byval lgt as longint, _
 		byval bits as integer _
-	) as FBSYMBOL ptr static
+	) as FBSYMBOL ptr
 
 	dim as FBSYMBOL ptr sym = any, tail = any, base_parent = any
 	dim as integer pad = any, updateudt = any, elen = any
-	dim as FBHASHTB ptr hashtb
+	dim as longint offset = any
 
-    function = NULL
+	function = NULL
 
 	'' Dynamic array field?
 	if( dimensions = -1 ) then
@@ -255,8 +269,11 @@ function symbAddField _
 		lgt	= symbCalcLen( dtype, subtype )
 	end if
 
-	'' check if the parent ofs must be updated
-	updateudt = TRUE
+	'' All fields default to the next available offset,
+	'' except bitfields which are given special treatment below.
+	offset = parent->ofs
+
+	'' Check for bitfield
 	if( bits > 0 ) then
 		'' last field was a bitfield too? try to merge..
 		if( parent->udt.bitpos > 0 ) then
@@ -288,12 +305,11 @@ function symbAddField _
 					dtype = symbGetType( tail )
 					lgt = tail->lgt
 				end if
-			end if
-		end if
 
-		'' don't update if there are enough bits left
-		if( parent->udt.bitpos <> 0 ) then
-			updateudt = FALSE
+				'' Put this bitfield into the same container as the previous bitfield,
+				'' i.e. same base offset as the previous bitfield.
+				offset = tail->ofs
+			end if
 		end if
 	else
 		'' Normal fields are not merged into bitfield containers,
@@ -301,9 +317,10 @@ function symbAddField _
 		parent->udt.bitpos = 0
 	end if
 
-	''
-	if( updateudt ) then
-		pad = hCalcPadding( parent->ofs, parent->udt.align, dtype, subtype )
+	'' Add padding for normal fields (neither bitfield nor fake array)
+	assert( offset <= parent->ofs )
+	if( offset = parent->ofs ) then
+		pad = hCalcPadding( offset, parent->udt.align, dtype, subtype )
 		if( pad > 0 ) then
 
 			'' bitfield?
@@ -341,8 +358,8 @@ function symbAddField _
 		end if
 
 		'' Check whether adding this field would make the UDT be too big
-		if( hCheckUDTSize( parent->ofs, lgt, pad ) ) then
-			parent->ofs += pad
+		if( hCheckUDTSize( offset, lgt, pad ) ) then
+			offset += pad
 		else
 			'' error recovery: don't add this field
 			updateudt = FALSE
@@ -362,28 +379,16 @@ function symbAddField _
     	base_parent = symbGetUDTAnonParent( base_parent )
 	loop
 
-	hashtb = @symbGetUDTHashTb( base_parent )
-
-    ''
-    sym = symbNewSymbol( FB_SYMBOPT_DOHASH, _
-    				     NULL, _
-    				     @symbGetUDTSymbTb( parent ), hashtb, _
-    				     FB_SYMBCLASS_FIELD, _
-    				     id, NULL, _
-    				     dtype, subtype, _
-    				     iif( symbIsLocal( parent ), _
-    				     	  FB_SYMBATTRIB_LOCAL, _
-    				     	  FB_SYMBATTRIB_NONE ) )
-    if( sym = NULL ) then
-    	exit function
-    end if
+	sym = symbNewSymbol( FB_SYMBOPT_DOHASH, NULL, _
+			@symbGetUDTSymbTb( parent ), @symbGetUDTHashTb( base_parent ), _
+			FB_SYMBCLASS_FIELD, id, NULL, dtype, subtype, _
+			parent->attrib and FB_SYMBATTRIB_LOCAL )
+	if( sym = NULL ) then
+		exit function
+	end if
 
 	sym->lgt = lgt
-	if( updateudt or symbGetUDTIsUnion( parent ) ) then
-		sym->ofs = parent->ofs
-	else
-		sym->ofs = parent->ofs - lgt
-	end if
+	sym->ofs = offset
 	symbVarInitFields( sym )
 	if( dimensions <> 0 ) then
 		symbSetArrayDimTb( sym, dimensions, dTB() )
@@ -439,36 +444,33 @@ function symbAddField _
 		symbSetUDTHasPtrField( base_parent )
 	end if
 
-	'' struct?
-	if( symbGetUDTIsUnion( parent ) = FALSE ) then
-		if( updateudt ) then
-			parent->ofs += lgt
-			parent->lgt = parent->ofs
-		end if
-
-		'' update the bit position, wrapping around
-		if( bits > 0 ) then
-			parent->udt.bitpos += bits
-			parent->udt.bitpos and= (typeGetBits( dtype ) - 1)
-		end if
-
-	'' union..
-	else
+	'' Union?
+	if( symbGetUDTIsUnion( parent ) ) then
 		symbSetIsUnionField( sym )
 
-		'' always update, been it a bitfield or not
-		parent->ofs = 0
-		if( lgt > parent->lgt ) then
+		'' All fields start at offset 0 again; bitfield bitpos never increases
+		assert( parent->ofs = 0 )
+		assert( parent->udt.bitpos = 0 )
+
+		'' Union's size is the max field size
+		if( parent->lgt < lgt ) then
 			parent->lgt = lgt
 		end if
+	else
+		'' Update struct size, if a new (non-fake) field was started
+		if( offset >= parent->ofs ) then
+			offset += lgt
+			parent->ofs = offset
+			parent->lgt = offset
+		end if
 
-		'' bit position doesn't change in a union
+		'' Update bitpos if non-zero
+		parent->udt.bitpos += bits
 	end if
 
-    function = sym
+	sym->parent = parent
 
-    sym->parent = parent
-
+	function = sym
 end function
 
 sub symbInsertInnerUDT _
@@ -506,24 +508,21 @@ sub symbInsertInnerUDT _
 
     symtb = @parent->udt.ns.symtb
 
-	if( symbGetUDTIsUnion( parent ) ) then
-    	'' link to parent
-    	do while( fld <> NULL )
-    		fld->symtb = symtb
+	'' Link fields to the parent, so lookups will find them, but without
+	'' breaking their FBSYMBOL.parent pointers which are needed for
+	'' correct traversal of the tree of nested structs/unions.
+	while( fld )
+
+		fld->symtb = symtb
+
+		if( symbGetUDTIsUnion( parent ) ) then
 			symbSetIsUnionField( fld )
-    		'' next
-    		fld = fld->next
-    	loop
-    else
-    	'' link to parent
-    	do while( fld <> NULL )
-    		fld->symtb = symtb
-			'' update the offset
+		else
 			fld->ofs += parent->ofs
-    		'' next
-    		fld = fld->next
-    	loop
-    end if
+		end if
+
+		fld = fld->next
+	wend
 
     parent->udt.ns.symtb.tail = inner->udt.ns.symtb.tail
 

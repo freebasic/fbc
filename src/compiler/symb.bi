@@ -1538,6 +1538,12 @@ declare function typeHasDtor _
 		byval subtype as FBSYMBOL ptr _
 	) as integer
 
+declare function typeIsTrivial _
+	( _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr _
+	) as integer
+
 declare function typeMerge _
 	( _
 		byval dtype1 as integer, _
@@ -1718,7 +1724,7 @@ declare sub symbHashListRemoveNamespace _
 		byval ns as FBSYMBOL ptr _
 	)
 
-declare function symbGetDefaultCallConv _
+declare function symbGetDefaultParamMode _
 	( _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr _

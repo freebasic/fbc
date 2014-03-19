@@ -308,6 +308,28 @@ function typeHasDtor _
 
 end function
 
+'' Check for "trivial" types, i.e. those that will really be passed Byval when
+'' used with Byval params.
+'' Non-trivial types (class-like types with dtor or copy-ctor, etc.) are always
+'' passed Byref implicitly. In case of Byval, a copy is made, but it's still
+'' passed Byref, so that the caller can destroy the copy.
+function typeIsTrivial _
+	( _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr _
+	) as integer
+
+	function = TRUE
+
+	select case( typeGetDtAndPtrOnly( dtype ) )
+	case FB_DATATYPE_STRING
+		function = FALSE
+	case FB_DATATYPE_STRUCT
+		function = symbCompIsTrivial( subtype )
+	end select
+
+end function
+
 ''
 '' Replace/merge a type with another type; used to replace forward references
 '' (FB_DATATYPE_FWDREF) by the real dtype once its known (when the forward

@@ -102,16 +102,10 @@ function symbCalcArgLen _
 
 	'' BYVAL/VARARG
 
-	select case( typeGetDtAndPtrOnly( dtype ) )
-	case FB_DATATYPE_STRING
-		'' BYVAL strings passed as pointer instead
+	'' Byval non-trivial type? Implicitly passing a copy Byref.
+	if( typeIsTrivial( dtype, subtype ) = FALSE ) then
 		return env.pointersize
-	case FB_DATATYPE_STRUCT
-		'' BYVAL non-trivial UDTs passed BYREF implicitly
-		if( symbCompIsTrivial( subtype ) = FALSE ) then
-			return env.pointersize
-		end if
-	end select
+	end if
 
 	function = hAlignToPow2( symbCalcLen( dtype, subtype ), env.pointersize )
 end function
@@ -1147,17 +1141,10 @@ sub symbGetRealParamDtype _
 
 	select case( parammode )
 	case FB_PARAMMODE_BYVAL
-		select case( dtype )
-		'' byval string? it's actually an pointer to a zstring
-		case FB_DATATYPE_STRING
-			dtype = typeAddrOf( FB_DATATYPE_CHAR )
-
-		case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-			'' non-trivial classes are always passed byref
-			if( symbCompIsTrivial( subtype ) = FALSE ) then
-				dtype = typeAddrOf( dtype )
-			end if
-		end select
+		'' Byval non-trivial type? Passed Byref implicitly.
+		if( typeIsTrivial( dtype, subtype ) = FALSE ) then
+			dtype = typeAddrOf( dtype )
+		end if
 
 	case FB_PARAMMODE_BYREF
 		dtype = typeAddrOf( dtype )
@@ -1182,18 +1169,10 @@ function symbAddVarForParam( byval param as FBSYMBOL ptr ) as FBSYMBOL ptr
 	case FB_PARAMMODE_BYVAL
 		attrib = FB_SYMBATTRIB_PARAMBYVAL
 
-		select case( symbGetType( param ) )
-		'' byval string? it's actually an pointer to a zstring
-		case FB_DATATYPE_STRING
+		'' Byval non-trivial type? Passed Byref implicitly.
+		if( typeIsTrivial( dtype, param->subtype ) = FALSE ) then
 			attrib = FB_SYMBATTRIB_PARAMBYREF
-			dtype = typeJoin( dtype, FB_DATATYPE_CHAR )
-
-		case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-			'' has a dtor, copy ctor or virtual methods? it's a copy..
-			if( symbCompIsTrivial( symbGetSubtype( param ) ) = FALSE ) then
-				attrib = FB_SYMBATTRIB_PARAMBYREF
-			end if
-		end select
+		end if
 
 	case FB_PARAMMODE_BYREF
 		attrib = FB_SYMBATTRIB_PARAMBYREF
@@ -1233,14 +1212,12 @@ end function
 function symbAddProcResultParam( byval proc as FBSYMBOL ptr ) as FBSYMBOL ptr
     dim as FBARRAYDIM dTB(0) = any
     dim as FBSYMBOL ptr s = any
-    static as string id
 
 	if( symbProcReturnsOnStack( proc ) = FALSE ) then
 		return NULL
 	end if
 
-	id = *symbUniqueId( )
-	s = symbAddVar( id, NULL, FB_DATATYPE_STRUCT, proc->subtype, 0, _
+	s = symbAddVar( symbUniqueId( ), NULL, FB_DATATYPE_STRUCT, proc->subtype, 0, _
 	                0, dTB(), FB_SYMBATTRIB_PARAMBYREF, FB_SYMBOPT_PRESERVECASE )
 
 	symbProcAllocExt( proc )
@@ -2769,6 +2746,7 @@ private sub hParamsToStr( byref s as string, byval proc as FBSYMBOL ptr )
 
 	while( param )
 		var parammode = symbGetParamMode( param )
+
 		select case( parammode )
 		case FB_PARAMMODE_BYVAL, FB_PARAMMODE_BYREF
 			'' Byval/Byref, if different from default, at least in -lang fb.
@@ -2776,16 +2754,13 @@ private sub hParamsToStr( byref s as string, byval proc as FBSYMBOL ptr )
 			'' always include Byval/Byref in that case, otherwise it'd depend on
 			'' source code context.
 			if( fbLangIsSet( FB_LANG_FB ) and _
-			    (symbGetDefaultCallConv( symbGetType( param ), param->subtype ) <> parammode) ) then
+			    (symbGetDefaultParamMode( param->typ, param->subtype ) <> parammode) ) then
 				if( parammode = FB_PARAMMODE_BYVAL ) then
 					s += "byval "
 				else
 					s += "byref "
 				end if
 			end if
-
-		case FB_PARAMMODE_BYDESC
-		case FB_PARAMMODE_VARARG
 		end select
 
 		if( parammode = FB_PARAMMODE_VARARG ) then
@@ -2874,28 +2849,21 @@ function symbMethodToStr( byval proc as FBSYMBOL ptr ) as string
 	function = s
 end function
 
-'':::::
-function symbGetDefaultCallConv _
+function symbGetDefaultParamMode _
 	( _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr _
 	) as integer
 
-	'' assumes dtype has const info stripped
-
-	select case as const dtype
+	select case as const( typeGetDtAndPtrOnly( dtype ) )
     case FB_DATATYPE_FWDREF, _
          FB_DATATYPE_FIXSTR, FB_DATATYPE_STRING, _
 	     FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR, _
          FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-
          return FB_PARAMMODE_BYREF
-
     case else
          return FB_PARAMMODE_BYVAL
-
     end select
-
 
 end function
 

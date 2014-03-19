@@ -15,6 +15,7 @@ Version 0.91.0:
 - 64bit support (-arch x86_64) based on -gen gcc: INTEGER/POINTER = 64bit, LONG = 32bit DWORD. Compiler #define: __FB_64BIT__
 - -arch 32|64 options to support easy switching between 32bit and 64bit, by selecting a default arch that supports 32/64 bits respectively.
 - fbc -v now prints out the target system and architecture
+- BYVAL AS STRING is now working properly: it now has BYVAL semantics and no longer behaves like BYREF AS ZSTRING. Modifications made by the callee are not visible to the caller, as for other BYVAL parameters. (BYVAL AS STRING is implemented by copying the string argument into a temporary STRING, whose descriptor is then passed BYREF to the procedure)
 - Improved multiplication/division/modulus to bitwise shift/and optimizations to handle operations with 64bit and unsigned right hand operand better
 - Updated header for libzip 0.11.1
 - Indexing/member dereferencing operators ([], ->) can now be applied to VARPTR/PROCPTR/STRPTR/SADD() expressions (for example: print strptr(s)[1]), instead of requiring the address expression to be wrapped in parentheses first.
@@ -136,6 +137,8 @@ Version 0.91.0:
 - win/objbase.bi: Wrong IsEqualGUID() declaration, producing wrong result value (subsequently, all aliases such as IsEqualIID() were wrong too)
 - Fields were allowed to have type suffixes when declared using the "AS DataType a, b, c" syntax instead of "a AS DataType"
 - When DIM'ing an EXTERN array, the DIM statement was allowed to have different lbound than the EXTERN
+- Compiler crash during error recovery if a dynamic array declaration/REDIM contained '...' ellipsis upper bounds
+- EOF() didn't work properly with files bigger than 4 GB
 
 
 Version 0.90.1:

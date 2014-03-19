@@ -17,8 +17,6 @@ declare function hCreateDescType _
 		byval symtb as FBSYMBOLTB ptr, _
 		byval dims as integer, _
 		byval id as zstring ptr, _
-		byval dtype as integer, _
-		byval subtype as FBSYMBOL ptr, _
 		byval attrib as integer _
 	) as FBSYMBOL ptr
 
@@ -61,7 +59,7 @@ private sub hCreateArrayDescriptorType( )
 	'' type FBARRAY
 	''     ...
 	'' end type
-	symb.fbarray = hCreateDescType( NULL, -1, "__FB_ARRAYDESC$", FB_DATATYPE_VOID, NULL, 0 )
+	symb.fbarray = hCreateDescType( NULL, -1, "__FB_ARRAYDESC$", 0 )
 
 	''
 	'' Store some field offsets into globals for easy access
@@ -90,8 +88,6 @@ private function hCreateDescType _
 		byval symtb as FBSYMBOLTB ptr, _
 		byval dims as integer, _
 		byval id as zstring ptr, _
-		byval dtype as integer, _
-		byval subtype as FBSYMBOL ptr, _
 		byval attrib as integer _
 	) as FBSYMBOL ptr
 
@@ -101,24 +97,19 @@ private function hCreateDescType _
 	sym = symbStructBegin( symtb, NULL, id, NULL, FALSE, 0, NULL, attrib )
 
 	'' data			as any ptr
-	symbAddField( sym, "data", 0, dTB(), _
-	              typeAddrOf( dtype ), subtype, 0, 0 )
+	symbAddField( sym, "data", 0, dTB(), typeAddrOf( FB_DATATYPE_VOID ), NULL, 0, 0 )
 
 	'' ptr			as any ptr
-	symbAddField( sym, "ptr", 0, dTB(), _
-	              typeAddrOf( dtype ), subtype, 0, 0 )
+	symbAddField( sym, "ptr", 0, dTB(), typeAddrOf( FB_DATATYPE_VOID ), NULL, 0, 0 )
 
 	'' size			as integer
-	symbAddField( sym, "size", 0, dTB(), _
-	              FB_DATATYPE_INTEGER, NULL, 0, 0 )
+	symbAddField( sym, "size", 0, dTB(), FB_DATATYPE_INTEGER, NULL, 0, 0 )
 
 	'' element_len		as integer
-	symbAddField( sym, "element_len", 0, dTB(), _
-	              FB_DATATYPE_INTEGER, NULL, 0, 0 )
+	symbAddField( sym, "element_len", 0, dTB(), FB_DATATYPE_INTEGER, NULL, 0, 0 )
 
 	'' dimensions		as integer
-	symbAddField( sym, "dimensions", 0, dTB(), _
-	              FB_DATATYPE_INTEGER, NULL, 0, 0 )
+	symbAddField( sym, "dimensions", 0, dTB(), FB_DATATYPE_INTEGER, NULL, 0, 0 )
 
 	'' If the dimension count is unknown, reserve room for the max amount
 	if( dims = -1 ) then
@@ -129,8 +120,7 @@ private function hCreateDescType _
 	dTB(0).lower = 0
 	dTB(0).upper = dims-1
 
-	symbAddField( sym, "dimTB", 1, dTB(), FB_DATATYPE_STRUCT, _
-	              symb.fbarraydim, 0, 0 )
+	symbAddField( sym, "dimTB", 1, dTB(), FB_DATATYPE_STRUCT, symb.fbarraydim, 0, 0 )
 
 	symbStructEnd( sym )
 
@@ -238,11 +228,16 @@ function symbAddArrayDesc( byval array as FBSYMBOL ptr ) as FBSYMBOL ptr
 		symtb = array->symtb
 	end if
 
-	'' Create descriptor UDT in same symtb, and preserving the
-	'' FB_SYMBATTRIB_LOCAL too if the descriptor has it.
-	desctype = hCreateDescType( symtb, symbGetArrayDimensions( array ), symbUniqueId( ), _
-	                            symbGetType( array ), symbGetSubType( array ), _
-	                            attrib and FB_SYMBATTRIB_LOCAL )
+	'' Dynamic array? Just re-use the global descriptor created at
+	'' hCreateArrayDescriptorType(), instead of making a new one.
+	if( symbGetArrayDimensions( array ) = -1 ) then
+		desctype = symb.fbarray
+	else
+		'' Create descriptor UDT in same symtb, and preserving the
+		'' FB_SYMBATTRIB_LOCAL too if the descriptor has it.
+		desctype = hCreateDescType( symtb, symbGetArrayDimensions( array ), _
+				symbUniqueId( ), attrib and FB_SYMBATTRIB_LOCAL )
+	end if
 
 	desc = symbNewSymbol( FB_SYMBOPT_PRESERVECASE, NULL, symtb, NULL, _
 	                      FB_SYMBCLASS_VAR, id, id_alias, _

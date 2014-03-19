@@ -76,7 +76,6 @@ declare function hMakeParamDesc _
 		( 0, @"Directive ignored after first pass" ), _
 		( 0, @"'IF' statement found directly after multi-line 'ELSE'" ), _
 		( 0, @"Shift value greater than or equal to number of bits in data type" ), _
-		( 0, @"'BYVAL AS STRING' actually behaves like 'BYREF AS ZSTRING' (this is hoped to change in future releases)" ), _
 		( 0, @"'=' parsed as equality operator in function argument, not assignment to BYREF function result" ), _
 		( 0, @"Mixing signed/unsigned operands" ), _
 		( 0, @"Mismatching parameter initializer" ) _
@@ -158,6 +157,7 @@ declare function hMakeParamDesc _
 		@"Array access, index expected", _
 		@"Expected 'END ENUM'", _
 		@"Var-len arrays cannot be initialized", _
+		@"'...' ellipsis upper bound given for dynamic array (this is not supported)", _
 		@"Invalid bitfield", _
 		@"Too many parameters", _
 		@"Macro text too long", _

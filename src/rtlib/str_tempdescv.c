@@ -1,4 +1,4 @@
-/* temp string descriptor allocation for var-len strings */
+/* legacy: temp string descriptor allocation for var-len strings */
 
 #include "fb.h"
 

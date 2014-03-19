@@ -11,7 +11,6 @@
 #include once "rtl.bi"
 #include once "ast.bi"
 
-'':::::
 private function hAllocTmpArrayDesc _
 	( _
 		byval array as FBSYMBOL ptr, _
@@ -20,30 +19,19 @@ private function hAllocTmpArrayDesc _
 	) as FBSYMBOL ptr
 
 	dim as FBSYMBOL ptr desc = any
+	dim as ASTNODE ptr initree = any
 
 	'' create
 	desc = symbAddArrayDesc( array )
+	initree = astBuildArrayDescIniTree( desc, array, array_expr )
 
-	'' don't let NewDECL() fill it
-	symbGetTypeIniTree( desc ) = astBuildArrayDescIniTree( desc, _
-														   array, _
-														   array_expr )
-
-
-
-	'' declare
-	tree = astNewDECL( desc, (symbGetTypeIniTree( desc ) = NULL) )
+	'' declare, no clear
+	tree = astNewDECL( desc, FALSE )
 
 	'' flush (see symbAddArrayDesc(), the desc can't never be static)
-	tree = astNewLINK( tree, _
-					   astTypeIniFlush( symbGetTypeIniTree( desc ), _
-					   					desc, _
-					   					AST_INIOPT_ISINI ) )
-
-	symbSetTypeIniTree( desc, NULL )
+	tree = astNewLINK( tree, astTypeIniFlush( initree, desc, AST_INIOPT_ISINI ) )
 
 	function = desc
-
 end function
 
 '':::::
@@ -121,152 +109,139 @@ private function hAllocTmpWstrPtr _
 	function = astNewASSIGN( astNewVAR( t->sym ), n )
 end function
 
-'':::::
-private function hCheckStringArg _
+private function hCheckArgForStringParam _
 	( _
 		byval parent as ASTNODE ptr, _
 		byval param as FBSYMBOL ptr, _
 		byval arg as ASTNODE ptr _
 	) as ASTNODE ptr
 
-    dim as integer arg_dtype = any, copyback = any
+	dim as integer argdtype = any, copyback = any
 
-	function = arg
+	argdtype = astGetDatatype( arg )
 
-	arg_dtype = astGetDatatype( arg )
-
-	'' calling the runtime lib?
+	'' Calling an rtlib function?
 	if( parent->call.isrtl ) then
-
 		'' passed byref?
 		if( symbGetParamMode( param ) = FB_PARAMMODE_BYREF ) then
-
-			select case arg_dtype
-			'' var-len param: all rtlib procs will free the
-			'' temporary strings and descriptors automatically
+			select case( argdtype )
+			'' rtlib functions with BYREF AS STRING parameters will
+			'' automatically free temp strings (i.e. CALL results),
+			'' thus we don't need to do anything manually here in
+			'' that case.
 			case FB_DATATYPE_STRING
-				exit function
-
-			'' wstring? convert and let rtl to free the temp
-			'' var-len result..
-			case FB_DATATYPE_WCHAR
-				return hAllocTmpString( parent, arg, FALSE )
-
-			'' anything else, just alloc a temp descriptor (assuming
-			'' here that no rtlib function will EVER change the
-			'' strings passed as param)
-			case else
-				return rtlStrAllocTmpDesc( arg )
-			end select
-
-		'' passed byval..
-		else
-
-			'' var-len?
-			select case arg_dtype
-			case FB_DATATYPE_STRING
-				'' not a temp var-len returned by functions? skip..
-				if( arg->class <> AST_NODECLASS_CALL ) then
-					exit function
+				if( astIsCALL( arg ) ) then
+					assert( symbGetType( param ) = FB_DATATYPE_STRING )
+					return arg
 				end if
 
-			'' wstring? convert and add it delete list or the
-			'' temp var-len result would leak
-			case FB_DATATYPE_WCHAR
-				'' let hAllocTmpString() do it..
-
-			'' anything else, do nothing..
-			case else
-				exit function
+			'' Passing a fixed-length string or string literal to an
+			'' rtlib function with BYREF AS STRING parameter.
+			'' Optimization: Instead of creating a temp STRING to
+			'' hold a copy of the string data, just create a temp
+			'' string descriptor that references the existing data,
+			'' but with read-only access. That's assuming the rtlib
+			'' functions don't ever modify it.
+			case FB_DATATYPE_CHAR, FB_DATATYPE_FIXSTR
+				assert( symbGetType( param ) = FB_DATATYPE_STRING )
+				return rtlStrAllocTmpDesc( arg )
 			end select
-
-			'' create temp string to pass as parameter
-			return hAllocTmpString( parent, arg, FALSE )
-
 		end if
-
 	end if
 
-	'' it's not a rtl function.. var-len strings won't be automatically
-	'' removed nor it's safe to pass non fixed-len strings to var-len
-	'' params as they can be modified inside the callee function..
 	copyback = FALSE
 
-	select case symbGetParamMode( param )
-	'' passed by reference?
-	case FB_PARAMMODE_BYREF
+	if( symbGetParamMode( param ) = FB_PARAMMODE_BYREF ) then
+		select case( argdtype )
+		'' Fixed-length string to BYREF AS STRING param
+		case FB_DATATYPE_FIXSTR
+			'' must be copied to a temp STRING, which is then passed
+			'' to the procedure. It may modify the given STRING,
+			'' and the modified string should be copied back to the
+			'' original fixed-length string after the procedure has
+			'' returned.
+			copyback = TRUE
 
-    	select case arg_dtype
-    	'' fixed-length?
-    	case FB_DATATYPE_FIXSTR
-    		'' byref arg and fixed-len param: alloc a temp string, copy
-    		'' fixed to temp and pass temp
-			'' (ast will have to copy temp back to fixed when function
-			'' returns and delete temp)
+			'' If the fixed-length string were a function result,
+			'' then it'd be discarded and copying back wouldn't be
+			'' needed. But currently we don't support returning
+			'' fixed-length strings from functions.
+			assert( astIsCALL( arg ) = FALSE )
 
-			'' don't copy back if it's a function returning a fixed-len
-			if( arg->class <> AST_NODECLASS_CALL ) then
-				copyback = TRUE
-			end if
+#if 0
+		''
+		'' Copy back for z/wstrings can't be done safely.
+		''
+		'' If given a DEREF'ed zstring pointer, there's no way of
+		'' knowing what it points to:
+		''
+		'' It could be a read-only string literal which we must never
+		'' write to. It'd be nice right here if we could rely on
+		'' CONSTness to detect that, but we can't because FB doesn't
+		'' enforce CONSTness on string literals.
+		''
+		'' And either way, there's no way of knowing whether the given
+		'' buffer will be big enough to hold the string that's supposed
+		'' to be copied back.
+		''
+		'' Both these issues could be avoided by only copying back when
+		'' given z/wstring vars, but then the behaviour is too
+		'' inconsistent. It's better if z/wstring always behave the
+		'' same, as opposed to copyback here, no copyback there.
+		''
+		'' I.e. copyback should only work for FIXSTR which is acceptable
+		'' because FIXSTR can only appear on variables (not literals,
+		'' and not DEREFs/CALLs), and STRING * N is arguable the same
+		'' data type as STRING; or at least they're closer related than
+		'' Z/WSTRING.
+		''
 
-    	'' var-len?
-    	case FB_DATATYPE_STRING
-    		'' if not a function's result, skip..
-    		if( arg->class <> AST_NODECLASS_CALL ) then
-    			exit function
-            end if
+		'' ZSTRINGs too
+		case FB_DATATYPE_CHAR
+			'' ditto, but must exclude string literals which have
+			'' CHAR type (string literals are allowed to be passed
+			'' to BYREF AS STRING parameters, through an implicitly
+			'' created copy, but of course the string data can't be
+			'' copied back into the read-only string literal), and
+			'' DEREF'ed zstring pointers, because there's no way of
+			'' knowing whether we can safely copyback in this case.
+			copyback = (astGetStrLitSymbol( arg ) = NULL) and _
+				(not astIsDEREF( arg ))
 
-		'' wstring? it must be converted and the temp var-len result
-		'' have to be deleted when the function return
+			'' ditto
+			assert( astIsCALL( arg ) = FALSE )
+
+		'' WSTRINGs too
 		case FB_DATATYPE_WCHAR
-			'' let hAllocTmpString() do it..
+			'' ditto, and also excluding CALLs because of the
+			'' special WSTRING function results (no need to copy
+			'' back into function results, they'll be discarded).
+			copyback = (astGetStrLitSymbol( arg ) = NULL) and _
+				(not astIsDEREF( arg )) and _
+				(not astIsCALL( arg ))
+#endif
 
-    	'' anything else..
-    	case else
-    		'' byref arg and byte/w|zstring/ptr param: alloc a temp
-    		'' string, copy byte ptr to temp and pass temp
-
-    	end select
-
-    '' passed by value?
-    case FB_PARAMMODE_BYVAL
-
-		select case arg_dtype
-		'' var-len?
+		'' STRING to BYREF AS STRING
 		case FB_DATATYPE_STRING
-
-			'' not a temp var-len function result? do nothing..
-			if( arg->class <> AST_NODECLASS_CALL ) then
-				exit function
+			'' Can pass as-is (preserving BYREF semantics) unless
+			'' it's a function result, in which case a temp STRING
+			'' is needed. (STRING results are special temp strings)
+			if( astIsCALL( arg ) = FALSE ) then
+				return arg
 			end if
-
-		'' wstring? it must be converted and the temp var-len result
-		'' have to be deleted when the function return
-		case FB_DATATYPE_WCHAR
-			'' let hAllocTmpString() do it..
-
-		'' anything else, do nothing..
-		case else
-			exit function
 		end select
+	end if
 
-	end select
-
-	'' create temp string to pass as parameter
+	'' Copy arg to temp STRING, then pass that temp
 	function = hAllocTmpString( parent, arg, copyback )
-
 end function
 
-'':::::
 private sub hStrArgToStrPtrParam _
 	( _
 		byval parent as ASTNODE ptr, _
 		byval n as ASTNODE ptr, _
 		byval checkrtl as integer _
 	)
-
-	dim as ASTNODE ptr arg = n->l
-	dim as integer arg_dtype = astGetDatatype( arg )
 
 	if( checkrtl = FALSE ) then
 		'' rtl? don't mess..
@@ -275,55 +250,38 @@ private sub hStrArgToStrPtrParam _
 		end if
 	end if
 
-	'' var- or fixed-len string param?
-	if( typeGetClass( arg_dtype ) = FB_DATACLASS_STRING ) then
-		'' if it's a function returning a STRING, it will have to be
-		'' deleted automagically when the proc being called return
-		if( astIsCALL( arg ) ) then
-			'' create a temp string to pass as parameter (no copy is
-			'' done at rtlib, as the returned string is a temp too)
-			n->l = hAllocTmpString( parent, arg, FALSE )
-			arg_dtype = FB_DATATYPE_STRING
+	select case( astGetDatatype( n->l ) )
+	case FB_DATATYPE_STRING
+		'' If it's a STRING function result, copy to temp STRING so
+		'' that the result is automatically freed later.
+		if( astIsCALL( n->l ) ) then
+			n->l = hAllocTmpString( parent, n->l, FALSE )
 		end if
 
-		'' not fixed-len? deref var-len
-		if( arg_dtype <> FB_DATATYPE_FIXSTR ) then
-			n->l = astBuildStrPtr( n->l )
-		'' fixed-len..
+		n->l = astBuildStrPtr( n->l )
+		n->dtype = n->l->dtype
+
+	case FB_DATATYPE_FIXSTR
+		assert( astIsCALL( n->l ) = FALSE )
+
+		n->l = astNewCONV( typeAddrOf( FB_DATATYPE_CHAR ), NULL, astNewADDROF( n->l ) )
+		n->dtype = n->l->dtype
+
+	case FB_DATATYPE_CHAR
+		n->l = astNewADDROF( n->l )
+		n->dtype = n->l->dtype
+
+	case FB_DATATYPE_WCHAR
+		'' If it's a WSTRING function result, copy to temp WSTRING so
+		'' that the result is automatically freed later.
+		if( astIsCALL( n->l ) ) then
+			n->l = hAllocTmpWstrPtr( parent, n->l )
 		else
-			'' get the address of
-			n->l = astNewCONV( typeAddrOf( FB_DATATYPE_CHAR ), _
-    					   	   NULL, _
-						   	   astNewADDROF( n->l ) )
+			n->l = astNewADDROF( n->l )
 		end if
 
-		astGetFullType( n ) = astGetFullType( astGetLeft( n ) )
-
-	'' w- or z-string
-	else
-		select case arg_dtype
-		'' zstring? take the address of
-		case FB_DATATYPE_CHAR
-			n->l = astNewADDROF( arg )
-			astGetFullType( n ) = astGetFullType( astGetLeft( n ) )
-
-		'' wstring?
-		case FB_DATATYPE_WCHAR
-
-			'' if it's a function returning a WSTRING, it will have to be
-			'' deleted automatically when the proc being called return
-			if( astIsCALL( arg ) ) then
-				n->l = hAllocTmpWstrPtr( parent, arg )
-
-			'' not a temporary..
-			else
-				'' take the address of
-				n->l = astNewADDROF( arg )
-			end if
-
-			astGetFullType( n ) = astGetFullType( astGetLeft( n ) )
-		end select
-	end if
+		n->dtype = n->l->dtype
+	end select
 end sub
 
 sub hBuildByrefArg _
@@ -545,7 +503,6 @@ private sub hCheckVoidParam _
 	hCheckByrefParam( param, n )
 end sub
 
-'':::::
 private function hCheckStrParam _
 	( _
 		byval parent as ASTNODE ptr, _
@@ -553,11 +510,10 @@ private function hCheckStrParam _
 		byval n as ASTNODE ptr _
 	) as integer
 
-	dim as ASTNODE ptr arg = n->l
-	dim as integer arg_dtype = astGetDatatype( arg )
+	dim as integer argdtype = astGetDatatype( n->l )
 
 	'' check arg type
-	select case as const arg_dtype
+	select case as const( argdtype )
 	case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR
 
 	'' a z|wstring?
@@ -569,41 +525,23 @@ private function hCheckStrParam _
 		return FALSE
 	end select
 
-	'' byval and variable:
-	''   pass the pointer at ofs 0 of the string descriptor
-	'' byval and fixed/zstring:
-	''   pass the pointer as-is
-	'' byval and wstring
-	''	 same as above but convert to ascii first
+	n->l = hCheckArgForStringParam( parent, param, n->l )
 
-	'' byref and variable:
-	''   pass the pointer to descriptor
-	'' byref and fixed/zstring:
-	''   alloc a temp string, copy fixed to temp, pass temp,
-	''	 copy temp back to fixed when func returns, del temp
-	'' byref and wstring
-	''	 same as above but convert to ascii first
-
-	'' alloc a temp string if needed
-	arg = hCheckStringArg( parent, param, arg )
-	n->l = arg
-
-	'' byval param?
-	if( symbGetParamMode( param ) = FB_PARAMMODE_BYVAL ) then
-		'' var-len? deref..
-		if( arg_dtype = FB_DATATYPE_STRING ) then
-			n->l = astBuildStrPtr( arg )
-			return TRUE
+	select case( symbGetParamMode( param ) )
+	'' BYREF AS STRING? Do the implicit address-of
+	case FB_PARAMMODE_BYREF
+		'' Unless it's a STRING function result, then it already is a
+		'' pointer implicitly
+		if( astIsCALL( n->l ) = FALSE ) then
+			hBuildByrefArg( param, n, n->l )
 		end if
-	end if
-
-	'' if it's a function returning a STRING, it's actually a pointer
-	if( arg->class <> AST_NODECLASS_CALL ) then
-		n->l = astNewADDROF( arg )
-	end if
+	'' BYVAL AS STRING? Ditto (STRINGs are non-trivial, so a temp copy is
+	'' passed BYREF implicitly)
+	case FB_PARAMMODE_BYVAL
+		hBuildByrefArg( param, n, n->l )
+	end select
 
 	function = TRUE
-
 end function
 
 private sub hByteByByte( byval param as FBSYMBOL ptr, byval n as ASTNODE ptr )
@@ -880,9 +818,11 @@ private function hCheckParam _
 		end if
 	end select
 
-    select case param_dtype
-    '' string param?
-    case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR
+	assert( param_dtype <> FB_DATATYPE_FIXSTR )
+
+	select case( param_dtype )
+	'' string param?
+	case FB_DATATYPE_STRING
 		return hCheckStrParam( parent, param, n )
 
 	'' z/wstring param?
@@ -904,7 +844,6 @@ private function hCheckParam _
 	'' UDT param? check if the same, can't convert
 	case FB_DATATYPE_STRUCT
 		return hCheckUDTParam( param, n )
-
 	end select
 
 	select case as const arg_dtype
