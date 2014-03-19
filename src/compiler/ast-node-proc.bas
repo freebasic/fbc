@@ -904,8 +904,7 @@ private function hCallFieldCtor _
 	end if
 
 	'' Descriptor of a dynamic array field?
-	if( (symbGetType( fld ) = FB_DATATYPE_STRUCT) and _
-	    (symbGetSubtype( fld ) = symb.fbarray) ) then
+	if( symbIsDescriptor( fld ) ) then
 		return astTypeIniFlush( _
 				astBuildArrayDescIniTree( _
 					fld, _
