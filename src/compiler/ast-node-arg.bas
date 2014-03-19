@@ -383,16 +383,14 @@ private function hCheckByDescParam _
 		if( symbIsParamByDesc( s ) ) then
 			'' it's a pointer, but it will be seen as anything else
 			'' (ie: "array() as string"), so, remap the type
-			astDelTree( n->l )
-			n->l = astNewVAR( s, 0, typeAddrOf( FB_DATATYPE_VOID ) )
+			astSetType( n->l, typeAddrOf( FB_DATATYPE_STRUCT ), symb.fbarray )
 			return TRUE
 		end if
 
 		'' Variable: If it's an array, then it will have an array descriptor
 		if( symbGetArrayDimensions( s ) <> 0 ) then
 			astDelTree( n->l )
-			n->l = astNewCONV( typeAddrOf( FB_DATATYPE_VOID ), NULL, _
-					astNewADDROF( astNewVAR( symbGetArrayDescriptor( s ) ) ) )
+			n->l = astNewADDROF( astNewVAR( symbGetArrayDescriptor( s ) ) )
 			return TRUE
 		end if
 
@@ -419,10 +417,7 @@ private function hCheckByDescParam _
 		case is > 0
 			'' Static array field: Create a temp array descriptor
 			desc = hAllocTmpArrayDesc( s, n->l, desc_tree )
-			n->l = astNewLINK( _
-				astNewCONV( typeAddrOf( FB_DATATYPE_VOID ), NULL, _
-					astNewADDROF( astNewVAR( desc ) ) ), _
-				desc_tree )
+			n->l = astNewLINK( astNewADDROF( astNewVAR( desc ) ), desc_tree )
 			return TRUE
 		end select
 	end if
