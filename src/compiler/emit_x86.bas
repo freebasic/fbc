@@ -15,6 +15,7 @@
 #include once "hash.bi"
 #include once "symb.bi"
 #include once "emit-private.bi"
+#include once "ir-private.bi"
 
 declare sub hDeclVariable _
 	( _
@@ -1060,8 +1061,7 @@ private sub hDeclVariable _
 		end if
 
 		hEmitDataHeader( )
-		astLoadStaticInitializer( symbGetTypeIniTree( s ), s )
-		symbSetTypeIniTree( s, NULL )
+		irhlFlushStaticInitializer( s )
 		return
 	end if
 

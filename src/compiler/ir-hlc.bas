@@ -772,8 +772,7 @@ private sub hEmitVariable( byval s as FBSYMBOL ptr )
 			end if
 		end if
 
-		astLoadStaticInitializer( symbGetTypeIniTree( s ), s )
-		symbSetTypeIniTree( s, NULL )
+		irhlFlushStaticInitializer( s )
 		return
 	end if
 

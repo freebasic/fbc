@@ -67,3 +67,4 @@ declare function irhlAllocVrOfs _
 	) as IRVREG ptr
 
 declare sub irForEachDataStmt( byval callback as sub( byval as FBSYMBOL ptr ) )
+declare sub irhlFlushStaticInitializer( byval sym as FBSYMBOL ptr )

@@ -195,6 +195,11 @@ sub irForEachDataStmt( byval callback as sub( byval as FBSYMBOL ptr ) )
 	wend
 end sub
 
+sub irhlFlushStaticInitializer( byval sym as FBSYMBOL ptr )
+	astLoadStaticInitializer( symbGetTypeIniTree( sym ), sym )
+	symbSetTypeIniTree( sym, NULL )
+end sub
+
 #if __FB_DEBUG__
 function vregDump( byval v as IRVREG ptr ) as string
 	dim as string s
