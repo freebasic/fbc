@@ -353,23 +353,16 @@ private function hCallCtor _
 	) as ASTNODE ptr
 
 	dim as FBSYMBOL ptr fld = any
-	dim as longint ofs = n->typeini.ofs
 
 	fld = n->sym
 	if( fld <> NULL ) then
 		if( symbIsField( fld ) = FALSE ) then
 			fld = NULL
-		else
-			'' Hack'ish, but astBuildVarField() adds
-			'' this back on if fld <> NULL even
-			'' n->typeini.ofs is the offset needed.
-			ofs -= symbGetOfs( fld )
 		end if
 	end if
 
 	'' replace the instance pointer
-	n->l = astPatchCtorCall( n->l, _
-							 astBuildVarField( basesym, fld, ofs ) )
+	n->l = astPatchCtorCall( n->l, astBuildVarFieldAtOffset( basesym, fld, n->typeini.ofs ) )
 
 	'' do call
 	flush_tree = astNewLINK( flush_tree, n->l )
