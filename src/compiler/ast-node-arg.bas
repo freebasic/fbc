@@ -393,7 +393,7 @@ private function hCheckByDescParam _
 		if( symbIsParamByDesc( s ) ) then
 			'' it's a pointer, but it will be seen as anything else
 			'' (ie: "array() as string"), so, remap the type
-			astSetType( arg, typeAddrOf( FB_DATATYPE_VOID ), NULL )
+			astSetType( arg, typeAddrOf( FB_DATATYPE_STRUCT ), symb.fbarray )
         	return TRUE
         end if
 
@@ -418,10 +418,7 @@ private function hCheckByDescParam _
     end if
 
 	'' create a new
-	n->l = astNewLINK( _
-		astNewCONV( typeAddrOf( FB_DATATYPE_VOID ), NULL, _
-			astNewADDROF( astNewVAR( desc ) ) ), _
-		desc_tree )
+	n->l = astNewLINK( astNewADDROF( astNewVAR( desc ) ), desc_tree )
 
     function = TRUE
 
