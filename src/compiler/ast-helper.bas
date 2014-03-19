@@ -578,43 +578,6 @@ end function
 '' instance ptr
 ''
 
-'':::::
-function astBuildInstPtr _
-	( _
-		byval sym as FBSYMBOL ptr, _
-		byval fld as FBSYMBOL ptr, _
-		byval ofs as longint _
-	) as ASTNODE ptr
-
-	dim as ASTNODE ptr expr = any
-	dim as integer dtype = any
-	dim as FBSYMBOL ptr subtype = any
-
-	dtype = symbGetFullType( sym )
-	subtype = symbGetSubtype( sym )
-
-	'' it's always a param
-	expr = astNewVAR( sym, 0, typeAddrOf( dtype ), subtype )
-
-	if( fld <> NULL ) then
-		dtype = symbGetFullType( fld )
-		subtype = symbGetSubtype( fld )
-
-		ofs += symbGetOfs( fld )
-		if( ofs <> 0 ) then
-			expr = astNewBOP( AST_OP_ADD, expr, astNewCONSTi( ofs ) )
-		end if
-	end if
-
-	expr = astNewDEREF( expr, dtype, subtype )
-
-	if( fld <> NULL ) then
-		expr = astNewFIELD( expr, fld )
-	end if
-
-	function = expr
-end function
-
 function astBuildInstPtrAtOffset _
 	( _
 		byval sym as FBSYMBOL ptr, _
@@ -649,6 +612,20 @@ function astBuildInstPtrAtOffset _
 	end if
 
 	function = expr
+end function
+
+function astBuildInstPtr _
+	( _
+		byval sym as FBSYMBOL ptr, _
+		byval fld as FBSYMBOL ptr, _
+		byval ofs as longint _
+	) as ASTNODE ptr
+
+	if( fld <> NULL ) then
+		ofs += symbGetOfs( fld )
+	end if
+
+	function = astBuildInstPtrAtOffset( sym, fld, ofs )
 end function
 
 ''

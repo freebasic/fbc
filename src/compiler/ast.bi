@@ -1130,14 +1130,14 @@ declare function astBuildForEnd _
 		byval endvalue as ASTNODE ptr _
 	) as ASTNODE ptr
 
-declare function astBuildInstPtr _
+declare function astBuildInstPtrAtOffset _
 	( _
 		byval sym as FBSYMBOL ptr, _
-		byval fld as FBSYMBOL ptr = NULL, _
-		byval ofs as longint = 0 _
+		byval fld as FBSYMBOL ptr, _
+		byval ofs as longint _
 	) as ASTNODE ptr
 
-declare function astBuildInstPtrAtOffset _
+declare function astBuildInstPtr _
 	( _
 		byval sym as FBSYMBOL ptr, _
 		byval fld as FBSYMBOL ptr = NULL, _
