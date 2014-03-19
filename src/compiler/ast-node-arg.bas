@@ -393,8 +393,7 @@ private function hCheckByDescParam _
 		if( symbIsParamByDesc( s ) ) then
 			'' it's a pointer, but it will be seen as anything else
 			'' (ie: "array() as string"), so, remap the type
-  			astDelTree( arg )
-			n->l = astNewVAR( s, 0, typeAddrOf( FB_DATATYPE_VOID ) )
+			astSetType( arg, typeAddrOf( FB_DATATYPE_VOID ), NULL )
         	return TRUE
         end if
 
