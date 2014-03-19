@@ -982,7 +982,7 @@ private sub hEmitStruct _
 			skip = (fld->var_.bitpos <> 0)
 		else
 			'' Don't emit fake dynamic array fields either
-			skip = (symbGetArrayDimensions( fld ) = -1)
+			skip = symbIsDynamic( fld )
 		end if
 
 		if( skip = FALSE ) then

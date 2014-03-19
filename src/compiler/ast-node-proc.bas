@@ -983,8 +983,8 @@ private function hCallFieldCtors _
 	fld = symbGetCompSymbTb( parent ).head
 	while( fld )
 
-		if( symbIsField( fld ) and (fld <> parent->udt.base) ) then
-			if( symbGetArrayDimensions( fld ) <> -1 ) then
+		if( symbIsField( fld ) ) then
+			if( (not symbIsDynamic( fld )) and (fld <> parent->udt.base) ) then
 				'' part of an union?
 				if( symbGetIsUnionField( fld ) ) then
 					tree = astNewLINK( tree, hClearUnionFields( this_, fld, @fld ) )

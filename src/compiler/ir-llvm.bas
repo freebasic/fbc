@@ -789,7 +789,7 @@ private sub hEmitStruct( byval s as FBSYMBOL ptr )
 	while( fld )
 
 		'' Don't emit fake dynamic array fields
-		if( symbGetArrayDimensions( fld ) <> -1 ) then
+		if( symbIsDynamic( fld ) = FALSE ) then
 			ln += hEmitSymType( fld )
 			ln += hEmitArrayDecl( fld )
 			ln += attrib
