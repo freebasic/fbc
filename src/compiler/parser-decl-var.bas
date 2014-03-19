@@ -1148,7 +1148,6 @@ function cVarDecl _
     dim as integer dimensions = any, suffix = any
     dim as zstring ptr palias = any
     dim as ASTNODE ptr assign_initree = any
-	dim as integer doassign = any
 	dim as FB_IDOPT options = any
 
     function = NULL
@@ -1385,7 +1384,6 @@ function cVarDecl _
 		if( is_fordecl = FALSE ) then
 
 			'' assume no assignment
-			doassign = FALSE
 			assign_initree = NULL
 
 			'' '=' | '=>' ?
@@ -1397,7 +1395,6 @@ function cVarDecl _
 					if( (symbGetAttrib( sym ) and (FB_SYMBATTRIB_STATIC or _
 												   FB_SYMBATTRIB_SHARED or _
 												   FB_SYMBATTRIB_COMMON)) = 0 ) then
-						doassign = TRUE
 
 						''
 						'' The variable will be unscoped, i.e. it needs a default initree
@@ -1434,7 +1431,6 @@ function cVarDecl _
 		else
 			initree = NULL
 			assign_initree = NULL
-			doassign = FALSE
 		end if
 
 		'' add to AST
@@ -1505,7 +1501,7 @@ function cVarDecl _
 						astAddUnscoped( hFlushInitializer( sym, var_decl, initree, has_dtor ) )
 
 						'' initializer as assignment?
-						if( doassign ) then
+						if( assign_initree ) then
 							dim as ASTNODE ptr assign_vardecl = any
 
 							'' clear it before it's initialized?
@@ -1513,7 +1509,7 @@ function cVarDecl _
 								astAdd( astBuildVarDtorCall( sym, TRUE ) )
 							end if
 
-							assign_vardecl = astNewDECL( sym, (assign_initree = NULL) )
+							assign_vardecl = astNewDECL( sym, FALSE )
 							assign_vardecl = hFlushDecl( assign_vardecl )
 
 							'' use the initializer as an assignment
