@@ -180,9 +180,6 @@ function cOperatorNew( ) as ASTNODE ptr
 				end if
 			else
 				initexpr = cInitializer( tmp, FB_INIOPT_ISINI or FB_INIOPT_DODEREF )
-
-        		symbGetStats( tmp ) and= not FB_SYMBSTATS_INITIALIZED
-
 				if( initexpr = NULL ) then
 					errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
 				end if

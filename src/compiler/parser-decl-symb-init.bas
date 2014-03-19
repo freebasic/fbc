@@ -633,9 +633,5 @@ function cInitializer _
 
 	astTypeIniEnd( ctx.tree, (options and FB_INIOPT_ISINI) <> 0 )
 
-	if( symbIsVar( ctx.sym ) ) then
-		symbSetIsInitialized( ctx.sym )
-	end if
-
 	function = iif( ok, ctx.tree, NULL )
 end function

@@ -135,7 +135,6 @@ private sub hBuildRtti( byval udt as FBSYMBOL ptr )
 	astTypeIniEnd( initree, TRUE )
 
 	symbSetTypeIniTree( rtti, initree )
-	symbSetIsInitialized( rtti )
 end sub
 
 private sub hBuildVtable( byval udt as FBSYMBOL ptr )
@@ -220,7 +219,6 @@ private sub hBuildVtable( byval udt as FBSYMBOL ptr )
 	astTypeIniEnd( initree, TRUE )
 
 	symbSetTypeIniTree( vtable, initree )
-	symbSetIsInitialized( vtable )
 
 	'' 1. new (and not inherited) entries for ...
 	''  - virtuals: must be set to point to their bodies for now.

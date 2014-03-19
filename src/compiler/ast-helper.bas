@@ -878,9 +878,6 @@ function astBuildArrayDescIniTree _
 
     astTypeIniEnd( tree, TRUE )
 
-    ''
-    symbSetIsInitialized( desc )
-
     function = tree
 
 end function

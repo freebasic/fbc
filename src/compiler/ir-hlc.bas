@@ -761,7 +761,7 @@ private sub hEmitVariable( byval s as FBSYMBOL ptr )
 	end if
 
 	'' initialized? only if not local or local and static
-	if( symbGetIsInitialized( s ) and (symbIsLocal( s ) = FALSE or symbIsStatic( s ))  ) then
+	if( (symbGetTypeIniTree( s ) <> NULL) and (symbIsLocal( s ) = FALSE or symbIsStatic( s ))  ) then
 		'' never referenced?
 		if( symbIsLocal( s ) = FALSE ) then
 			if( symbGetIsAccessed( s ) = FALSE ) then
@@ -772,9 +772,8 @@ private sub hEmitVariable( byval s as FBSYMBOL ptr )
 			end if
 		end if
 
-		astTypeIniFlush( s->var_.initree, s, AST_INIOPT_ISINI or AST_INIOPT_ISSTATIC )
-
-		s->var_.initree = NULL
+		astTypeIniFlush( symbGetTypeIniTree( s ), s, AST_INIOPT_ISINI or AST_INIOPT_ISSTATIC )
+		symbSetTypeIniTree( s, NULL )
 		return
 	end if
 

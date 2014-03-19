@@ -1050,7 +1050,7 @@ private sub hDeclVariable _
 	end if
 
 	'' initialized?
-	if( symbGetIsInitialized( s ) ) then
+	if( symbGetTypeIniTree( s ) ) then
     	'' never referenced?
     	if( symbGetIsAccessed( s ) = FALSE ) then
 			'' not public?
@@ -1060,10 +1060,8 @@ private sub hDeclVariable _
 		end if
 
 		hEmitDataHeader( )
-		astTypeIniFlush( s->var_.initree, _
-						 s, _
-						 AST_INIOPT_ISINI or AST_INIOPT_ISSTATIC )
-		s->var_.initree = NULL
+		astTypeIniFlush( symbGetTypeIniTree( s ), s, AST_INIOPT_ISINI or AST_INIOPT_ISSTATIC )
+		symbSetTypeIniTree( s, NULL )
 		return
 	end if
 

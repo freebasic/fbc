@@ -912,7 +912,6 @@ private function hVarInit _
 				errReport( FB_ERRMSG_EXPECTEDCONST )
 				'' error recovery: discard the tree
 				astDelTree( initree )
-				symbGetStats( sym ) and= not FB_SYMBSTATS_INITIALIZED
 				exit function
 			end if
 		end if
@@ -931,7 +930,6 @@ private function hVarInit _
 			errReport( FB_ERRMSG_INVALIDREFERENCETOLOCAL )
 			'' error recovery: discard the tree
 			astDelTree( initree )
-			symbGetStats( sym ) and= not FB_SYMBSTATS_INITIALIZED
 			exit function
 		end if
 	end if
@@ -1111,9 +1109,6 @@ private function hFlushInitializer _
 
 		'' must be added to the dtor list..
 		initree = NULL
-	else
-		'' Don't let the backend emit the initializer for this global/static
-		symbGetStats( sym ) and= not FB_SYMBSTATS_INITIALIZED
 	end if
 
     '' local?
@@ -1913,9 +1908,6 @@ sub cAutoVarDecl(byval attrib as FB_SYMBATTRIB)
 			end if
 
         	astTypeIniEnd( initree, TRUE )
-
-        	''
-        	symbSetIsInitialized( sym )
 
 			'' add to AST
 			dim as ASTNODE ptr var_decl = astNewDECL( sym, FALSE )
