@@ -893,8 +893,7 @@ private function hCallFieldCtor _
 		'' !!!FIXME!!! assuming only static arrays will be allowed in fields
 
 		'' not an array?
-		if( (symbGetArrayDimensions( fld ) = 0) or _
-		    (symbGetArrayElements( fld ) = 1) ) then
+		if( symbGetArrayDimensions( fld ) = 0 ) then
 			'' ctor( this.field )
 			function = astBuildCtorCall( symbGetSubtype( fld ), astBuildInstPtr( this_, fld ) )
 		'' array..
@@ -1099,8 +1098,7 @@ private sub hCallFieldDtor _
 		'' assuming fields cannot be dynamic arrays
 
 		'' not an array?
-		if( (symbGetArrayDimensions( fld ) = 0) or _
-		    (symbGetArrayElements( fld ) = 1) ) then
+		if( symbGetArrayDimensions( fld ) = 0 ) then
 			astAdd( rtlStrDelete( fldexpr ) )
 		else
 			astAdd( rtlArrayErase( fldexpr, FALSE, FALSE ) )
@@ -1109,8 +1107,7 @@ private sub hCallFieldDtor _
 		'' UDT field with dtor?
 		if( symbHasDtor( fld ) ) then
 			'' not an array?
-			if( (symbGetArrayDimensions( fld ) = 0) or _
-			    (symbGetArrayElements( fld ) = 1) ) then
+			if( symbGetArrayDimensions( fld ) = 0 ) then
 				'' dtor( this.field )
 				astAdd( astBuildDtorCall( symbGetSubtype( fld ), astBuildInstPtr( this_, fld ) ) )
 			else
@@ -1224,8 +1221,7 @@ private sub hCallStaticDtor( byval sym as FBSYMBOL ptr )
 		astAdd( rtlArrayErase( astBuildVarField( sym, NULL, 0 ), TRUE, FALSE ) )
 	else
 		'' not an array?
-		if( (symbGetArrayDimensions( sym ) = 0) or _
-		    (symbGetArrayElements( sym ) = 1) ) then
+		if( symbGetArrayDimensions( sym ) = 0 ) then
 			'' dtor( var )
 			astAdd( astBuildDtorCall( symbGetSubtype( sym ), astBuildVarField( sym, NULL, 0 ) ) )
 		else

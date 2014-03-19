@@ -66,8 +66,7 @@ private function hDefaultInit( byval sym as FBSYMBOL ptr ) as ASTNODE ptr
 		end if
 
 		'' scalar?
-		if( (symbGetArrayDimensions( sym ) = 0) or _
-		    (symbGetArrayElements( sym ) = 1) ) then
+		if( symbGetArrayDimensions( sym ) = 0 ) then
 			'' sym.constructor( )
 			function = astBuildCtorCall( symbGetSubtype( sym ), astNewVAR( sym ) )
 		'' array..

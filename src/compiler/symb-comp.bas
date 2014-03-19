@@ -390,8 +390,7 @@ private sub hAddLetOpBody _
 			srcexpr = astBuildInstPtr( rhs, fld )
 
 			'' not an array?
-			if( (symbGetArrayDimensions( fld ) = 0) or _
-			    (symbGetArrayElements( fld ) = 1) ) then
+			if( symbGetArrayDimensions( fld ) = 0 ) then
 				'' this.field = rhs.field
 				astAdd( astNewASSIGN( dstexpr, srcexpr ) )
 			'' array..
