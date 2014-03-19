@@ -207,8 +207,6 @@ function astBuildJMPTB _
 		'' It shouldn't have an array descriptor, because it would never be used
 		assert( symbGetArrayDescriptor( tbsym ) = NULL )
 
-		symbSetIsInitialized( tbsym )
-
 		'' if( expr < minval or expr > maxval ) then goto deflabel
 		'' optimised to:
 		'' if( cunsg(expr - minval) > (maxval - minval) ) then goto deflabel
