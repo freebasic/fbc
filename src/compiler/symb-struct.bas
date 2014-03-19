@@ -468,6 +468,17 @@ function symbAddField _
 
 	end select
 
+	'' Dynamic array? Same restrictions as STRINGs
+	if( dimensions = -1 ) then
+		if( symbGetUDTIsUnionOrAnon( parent ) ) then
+			errReport( FB_ERRMSG_DYNAMICARRAYINUNION )
+		else
+			symbSetUDTHasCtorField( parent )
+			symbSetUDTHasDtorField( parent )
+			symbSetUDTHasPtrField( parent )
+		end if
+	end if
+
 	'' check pointers
 	if( typeIsPtr( dtype ) ) then
 		symbSetUDTHasPtrField( base_parent )

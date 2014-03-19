@@ -240,6 +240,7 @@ declare function hMakeParamDesc _
 		@"A destructor should not have any parameters", _
 		@"Expected class or UDT identifier", _
 		@"Var-len strings cannot be part of UNION's or nested TYPE's", _
+		@"Dynamic arrays cannot be part of UNION's or nested TYPE's", _
 		@"Fields with constructors cannot be part of UNION's or nested TYPE's", _
 		@"Fields with destructors cannot be part of UNION's or nested TYPE's", _
 		@"Illegal outside a CONSTRUCTOR block", _
