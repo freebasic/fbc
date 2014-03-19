@@ -905,6 +905,18 @@ private function hCallFieldCtor _
 		exit function
 	end if
 
+	'' Descriptor of a dynamic array field?
+	if( (symbGetType( fld ) = FB_DATATYPE_STRUCT) and _
+	    (symbGetSubtype( fld ) = symb.fbarray) ) then
+		return astTypeIniFlush( _
+				astBuildArrayDescIniTree( _
+					fld, _
+					fld->var_.desc.array, _
+					NULL ), _
+				this_, _
+				AST_INIOPT_ISINI )
+	end if
+
 	'' bitfield?
 	if( symbFieldIsBitfield( fld ) ) then
 		function = astNewASSIGN( astBuildInstPtr( this_, fld ), _
@@ -960,21 +972,24 @@ private function hCallFieldCtors _
 
 	dim as FBSYMBOL ptr fld = any, this_ = any
 	dim as ASTNODE ptr tree = NULL
+	dim as integer skip = any
 
 	this_ = symbGetParamVar( symbGetProcHeadParam( proc ) )
 
-	'' for each field..
+	'' For all real fields, excluding...
+	''  - other members like procedures,
+	''  - the base field if any; it's initialized separately already
+	''  - fake dynamic array fields
 	fld = symbGetCompSymbTb( parent ).head
-	do while( fld <> NULL )
+	while( fld )
 
-		if( symbIsField( fld ) ) then
-			'' super class 'base' field? skip.. ctor must be called from derived class' ctor
-			if( fld <> parent->udt.base ) then
+		if( symbIsField( fld ) and (fld <> parent->udt.base) ) then
+			if( symbGetArrayDimensions( fld ) <> -1 ) then
 				'' part of an union?
 				if( symbGetIsUnionField( fld ) ) then
 					tree = astNewLINK( tree, hClearUnionFields( this_, fld, @fld ) )
-					'' skip next
-					continue do
+					'' hClearUnionFields() already skipped to the next field behind the union
+					continue while
 				else
 					'' not initialized?
 					if( symbGetTypeIniTree( fld ) = NULL ) then
@@ -990,7 +1005,7 @@ private function hCallFieldCtors _
 		end if
 
 		fld = fld->next
-	loop
+	wend
 
 	function = tree
 end function

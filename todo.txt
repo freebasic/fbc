@@ -96,6 +96,16 @@ o Dynamic array fields
   - The descriptor contains non-zero data by default (e.g. sizeof(array element))
     so it must be initialized in a constructor.
 
+  - Implicit LET overload implementation
+      - must add fb_CopyDynamicArray(dest, source, dest dtor or NULL, dest<-source letoverload or NULL)
+      - ERASE dest, calling dtor or fb_StrDelete() if needed
+      - REDIM dest to same size as source, initializing all elements? (how else to do it?)
+      - loop to copy each element over, a) using the supplied LET overload (including strings), or b) bitwise copy
+
+      - while in the process, let all STRING arrays be handled as "objects", passing fb_StrDelete() as dtor?
+
+  - Need auto-ERASE in destructors
+
   - Any REDIMs to bounds given in the field declaration must be done in the
     constructor too. The expressions should be copied just like field initializers.
     (ensuring to clone temp vars etc.)

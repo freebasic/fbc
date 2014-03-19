@@ -404,10 +404,17 @@ function symbAddField _
     	base_parent = symbGetUDTAnonParent( base_parent )
 	loop
 
+	'' Preserve LOCAL
+	attrib = parent->attrib and FB_SYMBATTRIB_LOCAL
+
+	if( dimensions = -1 ) then
+		attrib or= FB_SYMBATTRIB_DYNAMIC
+	end if
+
 	sym = symbNewSymbol( FB_SYMBOPT_DOHASH, NULL, _
 			@symbGetUDTSymbTb( parent ), @symbGetUDTHashTb( base_parent ), _
 			FB_SYMBCLASS_FIELD, id, NULL, dtype, subtype, _
-			parent->attrib and FB_SYMBATTRIB_LOCAL )
+			attrib )
 	if( sym = NULL ) then
 		exit function
 	end if

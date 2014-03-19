@@ -775,6 +775,9 @@ function astBuildArrayDescIniTree _
 		return NULL
 	end if
 
+	assert( symbGetType( desc ) = FB_DATATYPE_STRUCT )
+	assert( symbIsStruct( symbGetSubtype( desc ) ) )
+
     ''
     tree = astTypeIniBegin( symbGetFullType( desc ), symbGetSubtype( desc ), TRUE )
 
@@ -782,8 +785,8 @@ function astBuildArrayDescIniTree _
     subtype = symbGetSubType( array )
     dims = symbGetArrayDimensions( array )
 
-	'' note: assuming the arrays descriptors won't be objects with methods
 	elm = symbGetUDTSymbTbHead( symbGetSubtype( desc ) )
+	assert( symbIsField( elm ) )
 
     if( array_expr = NULL ) then
     	if( symbGetIsDynamic( array ) ) then
