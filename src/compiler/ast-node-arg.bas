@@ -349,26 +349,25 @@ private function hCheckByDescParam _
 		byval n as ASTNODE ptr _
 	) as integer
 
-    dim as ASTNODE ptr arg = n->l, desc_tree = any
-    dim as integer arg_dtype = astGetDatatype( arg ), sym_dtype = any
+	dim as ASTNODE ptr desc_tree = any
+	dim as integer arg_dtype = any, sym_dtype = any
+	dim as FBSYMBOL ptr s = any, desc = any
+
+	arg_dtype = astGetDatatype( n->l )
 
 	'' is arg a pointer?
 	if( n->arg.mode = FB_PARAMMODE_BYVAL ) then
 		return TRUE
 	end if
 
-	dim as FBSYMBOL ptr s = any, desc = any
-
-	s = astGetSymbol( arg )
-
+	s = astGetSymbol( n->l )
 	if( s = NULL ) then
 		errReport( FB_ERRMSG_PARAMTYPEMISMATCHAT )
 		return FALSE
 	end if
 
-	sym_dtype = symbGetType( param )
-
 	'' same type? (don't check if it's a rtl proc, or a forward call)
+	sym_dtype = symbGetType( param )
 	if( (parent->call.isrtl = FALSE) and (sym_dtype <> FB_DATATYPE_VOID) ) then
 		if( (typeGetClass( arg_dtype ) <> typeGetClass( sym_dtype )) or _
 			(typeGetSize( arg_dtype ) <> typeGetSize( sym_dtype )) ) then
@@ -377,55 +376,59 @@ private function hCheckByDescParam _
 		end if
 	end if
 
-	'' type field?
-	if( symbGetClass( s ) = FB_SYMBCLASS_FIELD ) then
-		'' not an array?
-		if( symbGetArrayDimensions( s ) = 0 ) then
-			errReport( FB_ERRMSG_PARAMTYPEMISMATCHAT )
-			return FALSE
-		end if
+	if( astIsVAR( n->l ) ) then
+		assert( symbIsVar( s ) )
 
-		'' create a temp array descriptor
-		desc = hAllocTmpArrayDesc( s, arg, desc_tree )
-
-	else
-		'' an argument passed by descriptor?
+		'' BYDESC param passed to BYDESC param?
 		if( symbIsParamByDesc( s ) ) then
 			'' it's a pointer, but it will be seen as anything else
 			'' (ie: "array() as string"), so, remap the type
-  			astDelTree( arg )
+			astDelTree( n->l )
 			n->l = astNewVAR( s, 0, typeAddrOf( FB_DATATYPE_VOID ) )
-        	return TRUE
-        end if
-
-		'' it's a var? !!!WRITEME!!! (this probably needs to change
-		'' if functions return arrays...)
-		if( symbIsVar( s ) ) then
-			'' not an array?
-			desc = symbGetArrayDescriptor( s )
-			if( desc = NULL ) then
-				errReport( FB_ERRMSG_PARAMTYPEMISMATCHAT )
-				return FALSE
-			end if
-		else
-			errReport( FB_ERRMSG_PARAMTYPEMISMATCHAT )
-			return FALSE
+			return TRUE
 		end if
 
-    	desc_tree = NULL
+		'' Variable: If it's an array, then it will have an array descriptor
+		if( symbGetArrayDimensions( s ) <> 0 ) then
+			astDelTree( n->l )
+			n->l = astNewCONV( typeAddrOf( FB_DATATYPE_VOID ), NULL, _
+					astNewADDROF( astNewVAR( symbGetArrayDescriptor( s ) ) ) )
+			return TRUE
+		end if
 
-    	'' remove node
-    	astDelTree( arg )
-    end if
+	elseif( astIsFIELD( n->l ) ) then
+		assert( symbIsField( s ) )
 
-	'' create a new
-	n->l = astNewLINK( _
-		astNewCONV( typeAddrOf( FB_DATATYPE_VOID ), NULL, _
-			astNewADDROF( astNewVAR( desc ) ) ), _
-		desc_tree )
+		select case( symbGetArrayDimensions( s ) )
+		case -1
+			'' Dynamic array fields: If an access to the fake array field is given,
+			'' how to build the access to descriptor? The FIELD node may be optimized
+			'' already, and there probably is no way to tell the UDT access expression
+			'' apart from the field offset expression.
+			''
+			'' Luckily the fake dynamic array field is given the same field offset as
+			'' the descriptor, so the expressions would be the same, except for the
+			'' data types, which we can fix up here though.
+			desc = symbGetArrayDescriptor( s )
+			astSetType( n->l, symbGetFullType( desc ), symbGetSubtype( desc ) )
 
-    function = TRUE
+			'' + the implicit ADDROF
+			n->l = astNewADDROF( n->l )
+			return TRUE
 
+		case is > 0
+			'' Static array field: Create a temp array descriptor
+			desc = hAllocTmpArrayDesc( s, n->l, desc_tree )
+			n->l = astNewLINK( _
+				astNewCONV( typeAddrOf( FB_DATATYPE_VOID ), NULL, _
+					astNewADDROF( astNewVAR( desc ) ) ), _
+				desc_tree )
+			return TRUE
+		end select
+	end if
+
+	errReport( FB_ERRMSG_PARAMTYPEMISMATCHAT )
+	function = FALSE
 end function
 
 '':::::

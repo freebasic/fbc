@@ -290,8 +290,9 @@ function symbAddField _
 				FB_DATATYPE_STRUCT, symb.fbarray, -1, 0 )
 		desc->attrib or= FB_SYMBATTRIB_DESCRIPTOR
 
-		'' No offset for the fake array field, the descriptor should be used instead
-		offset = -1
+		'' Same offset for the fake array field as for the descriptor,
+		'' to make astNewARG()'s job easier
+		offset = desc->ofs
 		assert( offset < parent->ofs ) '' indicating that no new field should be started
 	else
 		'' All other fields default to the next available offset,
