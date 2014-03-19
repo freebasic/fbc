@@ -401,8 +401,7 @@ end type
 enum AST_INIOPT
 	AST_INIOPT_NONE			= &h00000000
 	AST_INIOPT_ISINI		= &h00000001
-	AST_INIOPT_ISSTATIC		= &h00000002
-	AST_INIOPT_DODEREF		= &h00000004
+	AST_INIOPT_DODEREF		= &h00000002
 end enum
 
 
@@ -991,6 +990,12 @@ declare sub astTypeIniReplaceElement _
 		byval tree as ASTNODE ptr, _
 		byval element as integer, _
 		byval expr as ASTNODE ptr _
+	)
+
+declare sub astLoadStaticInitializer _
+	( _
+		byval tree as ASTNODE ptr, _
+		byval basesym as FBSYMBOL ptr _
 	)
 
 declare function astTypeIniFlush _

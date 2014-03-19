@@ -1060,7 +1060,7 @@ private sub hDeclVariable _
 		end if
 
 		hEmitDataHeader( )
-		astTypeIniFlush( symbGetTypeIniTree( s ), s, AST_INIOPT_ISINI or AST_INIOPT_ISSTATIC )
+		astLoadStaticInitializer( symbGetTypeIniTree( s ), s )
 		symbSetTypeIniTree( s, NULL )
 		return
 	end if

@@ -647,7 +647,7 @@ private sub hEmitVariable( byval sym as FBSYMBOL ptr )
 			end if
 		end if
 
-		astTypeIniFlush( symbGetTypeIniTree( sym ), sym, AST_INIOPT_ISINI or AST_INIOPT_ISSTATIC )
+		astLoadStaticInitializer( symbGetTypeIniTree( sym ), sym )
 		symbSetTypeIniTree( sym, NULL )
 		exit sub
 	end if

@@ -647,16 +647,13 @@ private function hFlushExprStatic _
 
 end function
 
-'':::::
-private function hFlushTreeStatic _
+sub astLoadStaticInitializer _
 	( _
 		byval tree as ASTNODE ptr, _
 		byval basesym as FBSYMBOL ptr _
-	) as integer
+	)
 
     dim as ASTNODE ptr n = any, nxt = any
-
-	function = FALSE
 
 	irEmitVARINIBEGIN( basesym )
 
@@ -684,9 +681,8 @@ private function hFlushTreeStatic _
 
 	irEmitVARINIEND( basesym )
 
-	function = TRUE
-
-end function
+	astDelNode( tree )
+end sub
 
 function astTypeIniFlush _
 	( _
@@ -707,12 +703,7 @@ function astTypeIniFlush _
 		ast.typeinicount -= 1
 	end if
 
-	if( (options and AST_INIOPT_ISSTATIC) <> 0 ) then
-		hFlushTreeStatic( tree, basesym )
-		function = NULL
-	else
-		function = hFlushTree( tree, basesym, ((options and AST_INIOPT_DODEREF) <> 0) )
-	end if
+	function = hFlushTree( tree, basesym, ((options and AST_INIOPT_DODEREF) <> 0) )
 
 	astDelNode( tree )
 
