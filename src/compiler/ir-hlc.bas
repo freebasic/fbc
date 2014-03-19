@@ -762,11 +762,6 @@ private sub hEmitVariable( byval s as FBSYMBOL ptr )
 
 	'' initialized? only if not local or local and static
 	if( symbGetIsInitialized( s ) and (symbIsLocal( s ) = FALSE or symbIsStatic( s ))  ) then
-		'' extern?
-		if( symbIsExtern( s ) ) then
-			return
-		end if
-
 		'' never referenced?
 		if( symbIsLocal( s ) = FALSE ) then
 			if( symbGetIsAccessed( s ) = FALSE ) then

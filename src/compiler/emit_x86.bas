@@ -1046,11 +1046,8 @@ private sub hDeclVariable _
 
 	'' initialized?
 	if( symbGetIsInitialized( s ) ) then
-
-		'' extern or jump-tb?
-    	if( symbIsExtern( s ) ) then
-			return
-		elseif( symbGetIsJumpTb( s ) ) then
+		'' jump-tb?
+		if( symbGetIsJumpTb( s ) ) then
 			return
 		end if
 
