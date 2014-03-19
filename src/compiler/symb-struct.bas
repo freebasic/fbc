@@ -287,7 +287,7 @@ function symbAddField _
 		id = strptr( arrayid )
 
 		desc = symbAddField( parent, symbUniqueId( ), 0, emptydTB(), _
-				FB_DATATYPE_STRUCT, symb.fbarray, -1, 0 )
+				FB_DATATYPE_STRUCT, symb.fbarray, 0, 0 )
 		desc->attrib or= FB_SYMBATTRIB_DESCRIPTOR
 
 		'' Same offset for the fake array field as for the descriptor,
