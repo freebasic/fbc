@@ -583,13 +583,12 @@ function astBuildInstPtr _
 	( _
 		byval sym as FBSYMBOL ptr, _
 		byval fld as FBSYMBOL ptr, _
-		byval idxexpr as ASTNODE ptr _
+		byval ofs as longint _
 	) as ASTNODE ptr
 
 	dim as ASTNODE ptr expr = any
 	dim as integer dtype = any
 	dim as FBSYMBOL ptr subtype = any
-	dim as longint ofs = any
 
 	dtype = symbGetFullType( sym )
 	subtype = symbGetSubtype( sym )
@@ -601,21 +600,10 @@ function astBuildInstPtr _
 		dtype = symbGetFullType( fld )
 		subtype = symbGetSubtype( fld )
 
-		'' build sym.field( index )
-
-		ofs = symbGetOfs( fld )
+		ofs += symbGetOfs( fld )
 		if( ofs <> 0 ) then
 			expr = astNewBOP( AST_OP_ADD, expr, astNewCONSTi( ofs ) )
 		end if
-
-		'' array access?
-		if( idxexpr <> NULL ) then
-			'' times length
-			expr = astNewBOP( AST_OP_ADD, expr, _
-				astNewBOP( AST_OP_MUL, idxexpr, _
-					astNewCONSTi( symbGetLen( fld ) ) ) )
-		end if
-
 	end if
 
 	expr = astNewDEREF( expr, dtype, subtype )

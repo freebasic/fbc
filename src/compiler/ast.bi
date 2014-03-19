@@ -1134,7 +1134,7 @@ declare function astBuildInstPtr _
 	( _
 		byval sym as FBSYMBOL ptr, _
 		byval fld as FBSYMBOL ptr = NULL, _
-		byval idxexpr as ASTNODE ptr = NULL _
+		byval ofs as longint = 0 _
 	) as ASTNODE ptr
 
 declare function astBuildInstPtrAtOffset _

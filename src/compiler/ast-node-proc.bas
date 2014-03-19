@@ -832,6 +832,7 @@ private function hCallCtorList _
 		elements = symbGetArrayElements( this_ )
 	end if
 
+	assert( elements > 0 )
 	cnt = symbAddTempVar( FB_DATATYPE_INTEGER )
 	label = symbAddLabel( NULL )
 	iter = symbAddTempVar( typeAddrOf( dtype ), subtype )
@@ -843,7 +844,7 @@ private function hCallCtorList _
 			fldexpr = astBuildInstPtr( this_, fld )
 		else
 			'' iter = @this.field(elements-1)
-			fldexpr = astBuildInstPtr( this_, fld, astNewCONSTi( elements - 1 ) )
+			fldexpr = astBuildInstPtr( this_, fld, (elements - 1) * symbGetLen( fld ) )
 		end if
 	else
 		if( is_ctor ) then
