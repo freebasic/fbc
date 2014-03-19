@@ -467,7 +467,7 @@ private function hFlushTree _
 
 			if( symbIsParamInstance( basesym ) ) then
 				'' Assigning to object through THIS pointer, a DEREF is done.
-				lside = astBuildInstPtrAtOffset( basesym, n->sym, n->typeini.ofs )
+				lside = astBuildVarFieldAtOffset( basesym, n->sym, n->typeini.ofs )
 			else
 				'' Note: n->sym may be NULL from a astReplaceSymbolOnTree(),
 				'' so n's dtype/subtype are used instead.
@@ -526,7 +526,7 @@ private function hFlushTree _
 			'' Clear some padding bytes...
 			if( symbIsParamInstance( basesym ) ) then
 				'' through THIS pointer
-				lside = astBuildInstPtrAtOffset( basesym, NULL, n->typeini.ofs )
+				lside = astBuildVarFieldAtOffset( basesym, NULL, n->typeini.ofs )
 			else
 				if( do_deref ) then
 					'' through a pointer

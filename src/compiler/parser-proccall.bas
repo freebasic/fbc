@@ -916,7 +916,7 @@ private sub hCtorChain( )
 	lexSkipToken( )
 
 	cProcCall( NULL, symbGetCompCtorHead( parent ), NULL, _
-	           astBuildInstPtr( symbGetParamVar( symbGetProcHeadParam( parser.currproc ) ) ) )
+	           astBuildVarField( symbGetParamVar( symbGetProcHeadParam( parser.currproc ) ) ) )
 end sub
 
 ''  BaseInit  =  BASE (CtorCall | Initializer)

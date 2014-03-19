@@ -148,7 +148,7 @@ function astBuildVarDtorCall _
 
 end function
 
-function astBuildVarField _
+function astBuildVarFieldAtOffset _
 	( _
 		byval sym as FBSYMBOL ptr, _
 		byval fld as FBSYMBOL ptr, _
@@ -156,34 +156,43 @@ function astBuildVarField _
 	) as ASTNODE ptr
 
 	dim as ASTNODE ptr expr = any
+	dim as integer do_deref = any
+
+	'' Do a DEREF if it's a byref symbol
+	do_deref = symbIsParamInstance( sym ) or symbIsParamByRef( sym ) or symbIsImport( sym )
 
 	if( fld ) then
-		ofs += symbGetOfs( fld )
-
-		'' byref or import?
-		if( symbIsParamByRef( sym ) or symbIsImport( sym ) ) then
-			expr = astNewDEREF( _
-				astNewVAR( sym, , typeAddrOf( symbGetFullType( sym ) ), _
-					symbGetSubtype( sym ) ), _
-				symbGetFullType( fld ), symbGetSubtype( fld ), ofs )
+		if( do_deref ) then
+			expr = astNewVAR( sym, , typeAddrOf( symbGetFullType( sym ) ), symbGetSubtype( sym ) )
+			expr = astNewDEREF( expr, symbGetFullType( fld ), symbGetSubtype( fld ), ofs )
 		else
 			expr = astNewVAR( sym, ofs, symbGetFullType( fld ), symbGetSubtype( fld ) )
 		end if
-
 		expr = astNewFIELD( expr, fld )
 	else
-		'' byref or import?
-		if( symbIsParamByRef( sym ) or symbIsImport( sym ) ) then
-			expr = astNewDEREF( _
-				astNewVAR( sym, , typeAddrOf( symbGetFullType( sym ) ), _
-					symbGetSubtype( sym ) ), _
-				, , ofs )
+		if( do_deref ) then
+			expr = astNewVAR( sym, , typeAddrOf( symbGetFullType( sym ) ), symbGetSubtype( sym ) )
+			expr = astNewDEREF( expr, , , ofs )
 		else
 			expr = astNewVAR( sym, ofs )
 		end if
 	end if
 
 	function = expr
+end function
+
+function astBuildVarField _
+	( _
+		byval sym as FBSYMBOL ptr, _
+		byval fld as FBSYMBOL ptr, _
+		byval ofs as longint _
+	) as ASTNODE ptr
+
+	if( fld ) then
+		ofs += symbGetOfs( fld )
+	end if
+
+	function = astBuildVarFieldAtOffset( sym, fld, ofs )
 end function
 
 function astBuildTempVarClear( byval sym as FBSYMBOL ptr ) as ASTNODE ptr
@@ -572,60 +581,6 @@ function astBuildProcResultVar _
 		function = astNewVAR( res )
 	end if
 
-end function
-
-''
-'' instance ptr
-''
-
-function astBuildInstPtrAtOffset _
-	( _
-		byval sym as FBSYMBOL ptr, _
-		byval fld as FBSYMBOL ptr, _
-		byval ofs as longint _
-	) as ASTNODE ptr
-
-	dim as ASTNODE ptr expr = any
-	dim as integer dtype = any
-	dim as FBSYMBOL ptr subtype = any
-
-	dtype = symbGetFullType( sym )
-	subtype = symbGetSubtype( sym )
-
-	'' THIS is a BYREF AS UDT parameter, the typeAddrOf() is needed to
-	'' make the expression be an UDT PTR.
-	expr = astNewVAR( sym, 0, typeAddrOf( dtype ), subtype )
-
-	if( fld <> NULL ) then
-		dtype = symbGetFullType( fld )
-		subtype = symbGetSubtype( fld )
-	end if
-
-	if( ofs <> 0 ) then
-		expr = astNewBOP( AST_OP_ADD, expr, astNewCONSTi( ofs ) )
-	end if
-
-	expr = astNewDEREF( expr, dtype, subtype )
-
-	if( fld <> NULL ) then
-		expr = astNewFIELD( expr, fld )
-	end if
-
-	function = expr
-end function
-
-function astBuildInstPtr _
-	( _
-		byval sym as FBSYMBOL ptr, _
-		byval fld as FBSYMBOL ptr, _
-		byval ofs as longint _
-	) as ASTNODE ptr
-
-	if( fld <> NULL ) then
-		ofs += symbGetOfs( fld )
-	end if
-
-	function = astBuildInstPtrAtOffset( sym, fld, ofs )
 end function
 
 ''

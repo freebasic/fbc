@@ -841,10 +841,10 @@ private function hCallCtorList _
 	if( fld <> NULL ) then
 		if( is_ctor ) then
 			'' iter = @this.field(0)
-			fldexpr = astBuildInstPtr( this_, fld )
+			fldexpr = astBuildVarField( this_, fld )
 		else
 			'' iter = @this.field(elements-1)
-			fldexpr = astBuildInstPtr( this_, fld, (elements - 1) * symbGetLen( fld ) )
+			fldexpr = astBuildVarField( this_, fld, (elements - 1) * symbGetLen( fld ) )
 		end if
 	else
 		if( is_ctor ) then
@@ -896,7 +896,7 @@ private function hCallFieldCtor _
 		'' not an array?
 		if( symbGetArrayDimensions( fld ) = 0 ) then
 			'' ctor( this.field )
-			function = astBuildCtorCall( symbGetSubtype( fld ), astBuildInstPtr( this_, fld ) )
+			function = astBuildCtorCall( symbGetSubtype( fld ), astBuildVarField( this_, fld ) )
 		'' array..
 		else
 			function = hCallCtorList( TRUE, this_, fld )
@@ -907,11 +907,11 @@ private function hCallFieldCtor _
 
 	'' bitfield?
 	if( symbFieldIsBitfield( fld ) ) then
-		function = astNewASSIGN( astBuildInstPtr( this_, fld ), _
+		function = astNewASSIGN( astBuildVarField( this_, fld ), _
 		                         astNewCONSTi( 0, FB_DATATYPE_UINT ) )
 	else
 		function = astNewMEM( AST_OP_MEMCLEAR, _
-		                      astBuildInstPtr( this_, fld ), _
+		                      astBuildVarField( this_, fld ), _
 		                      astNewCONSTi( symbGetLen( fld ) * symbGetArrayElements( fld ) ) )
 	end if
 end function
@@ -948,7 +948,7 @@ private function hClearUnionFields _
 
 	'' clear all them at once
 	function = astNewMEM( AST_OP_MEMCLEAR, _
-	                      astBuildInstPtr( this_, base_fld ), _
+	                      astBuildVarField( this_, base_fld ), _
 	                      astNewCONSTi( bytes ) )
 end function
 
@@ -1058,7 +1058,7 @@ private function hInitVptr _
 	'' this.vptr = cast( any ptr, (cast(byte ptr, @vtable) + sizeof(void *) * 2) )
 	'' assuming that everything with a vptr extends fb_Object
 	function = astNewASSIGN( _ 
-		astBuildInstPtr( this_, symbUdtGetFirstField( symb.rtti.fb_object ) ), _
+		astBuildVarField( this_, symbUdtGetFirstField( symb.rtti.fb_object ) ), _
 		astNewCONV( typeAddrOf( FB_DATATYPE_VOID ), NULL, _
 			astNewADDROF( astNewVAR( parent->udt.ext->vtable, env.pointersize * 2 ) ) ) )
 end function
@@ -1094,7 +1094,7 @@ private sub hCallFieldDtor _
 	)
 
 	if( symbGetType( fld ) = FB_DATATYPE_STRING ) then
-		var fldexpr = astBuildInstPtr( this_, fld )
+		var fldexpr = astBuildVarField( this_, fld )
 
 		'' assuming fields cannot be dynamic arrays
 
@@ -1110,7 +1110,7 @@ private sub hCallFieldDtor _
 			'' not an array?
 			if( symbGetArrayDimensions( fld ) = 0 ) then
 				'' dtor( this.field )
-				astAdd( astBuildDtorCall( symbGetSubtype( fld ), astBuildInstPtr( this_, fld ) ) )
+				astAdd( astBuildDtorCall( symbGetSubtype( fld ), astBuildVarField( this_, fld ) ) )
 			else
 				astAdd( hCallCtorList( FALSE, this_, fld ) )
 			end if
@@ -1189,7 +1189,7 @@ private sub hCallBaseDtor _
 
 	this_ = symbGetParamVar( symbGetProcHeadParam( proc ) )
 	astAdd( astBuildDtorCall( symbGetSubtype( base_ ), _
-				astBuildInstPtr( this_, base_ ), _
+				astBuildVarField( this_, base_ ), _
 				TRUE ) )
 end sub
 

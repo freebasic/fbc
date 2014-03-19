@@ -1077,6 +1077,13 @@ declare function astBuildFakeWstringAssign _
 		byval options as integer = 0 _
 	) as ASTNODE ptr
 
+declare function astBuildVarFieldAtOffset _
+	( _
+		byval sym as FBSYMBOL ptr, _
+		byval fld as FBSYMBOL ptr, _
+		byval ofs as longint _
+	) as ASTNODE ptr
+
 declare function astBuildVarField _
 	( _
 		byval sym as FBSYMBOL ptr, _
@@ -1128,20 +1135,6 @@ declare function astBuildForEnd _
 		byval cnt as FBSYMBOL ptr, _
 		byval label as FBSYMBOL ptr, _
 		byval endvalue as ASTNODE ptr _
-	) as ASTNODE ptr
-
-declare function astBuildInstPtrAtOffset _
-	( _
-		byval sym as FBSYMBOL ptr, _
-		byval fld as FBSYMBOL ptr, _
-		byval ofs as longint _
-	) as ASTNODE ptr
-
-declare function astBuildInstPtr _
-	( _
-		byval sym as FBSYMBOL ptr, _
-		byval fld as FBSYMBOL ptr = NULL, _
-		byval ofs as longint = 0 _
 	) as ASTNODE ptr
 
 declare function astBuildVarDtorCall _
