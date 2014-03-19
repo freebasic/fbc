@@ -199,8 +199,14 @@ function astBuildJMPTB _
 	if( env.clopt.backend = FB_BACKEND_GAS ) then
 		tbsym = symbAddVar( symbUniqueLabel( ), NULL, _
 		                    typeAddrOf( FB_DATATYPE_VOID ), NULL, 0, _
-		                    1, dTB(), FB_SYMBATTRIB_SHARED )
+		                    0, dTB(), FB_SYMBATTRIB_SHARED )
+
+		'' Prevent the jumptb symbol from being emitted
 		symbSetIsJumpTb( tbsym )
+
+		'' It shouldn't have an array descriptor, because it would never be used
+		assert( symbGetArrayDescriptor( tbsym ) = NULL )
+
 		symbSetIsInitialized( tbsym )
 
 		'' if( expr < minval or expr > maxval ) then goto deflabel
