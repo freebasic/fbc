@@ -12,13 +12,6 @@
 #include once "ast.bi"
 
 declare sub hCreateArrayDescriptorType( )
-declare function hCreateDescType _
-	( _
-		byval symtb as FBSYMBOLTB ptr, _
-		byval dims as integer, _
-		byval id as zstring ptr, _
-		byval attrib as integer _
-	) as FBSYMBOL ptr
 
 sub symbVarInit( )
 	'' assuming it's safe to create UDT symbols here, the array
@@ -59,7 +52,7 @@ private sub hCreateArrayDescriptorType( )
 	'' type FBARRAY
 	''     ...
 	'' end type
-	symb.fbarray = hCreateDescType( NULL, -1, "__FB_ARRAYDESC$", 0 )
+	symb.fbarray = symbAddArrayDescriptorType( NULL, -1, "__FB_ARRAYDESC$", 0 )
 
 	''
 	'' Store some field offsets into globals for easy access
@@ -83,7 +76,7 @@ private sub hCreateArrayDescriptorType( )
 	symb.fbarraydim_ubound = symbGetOfs( fld )
 end sub
 
-private function hCreateDescType _
+function symbAddArrayDescriptorType _
 	( _
 		byval symtb as FBSYMBOLTB ptr, _
 		byval dims as integer, _
@@ -235,7 +228,7 @@ function symbAddArrayDesc( byval array as FBSYMBOL ptr ) as FBSYMBOL ptr
 	else
 		'' Create descriptor UDT in same symtb, and preserving the
 		'' FB_SYMBATTRIB_LOCAL too if the descriptor has it.
-		desctype = hCreateDescType( symtb, symbGetArrayDimensions( array ), _
+		desctype = symbAddArrayDescriptorType( symtb, symbGetArrayDimensions( array ), _
 				symbUniqueId( ), attrib and FB_SYMBATTRIB_LOCAL )
 	end if
 
@@ -312,12 +305,15 @@ end function
 '' runtime memory 1:1, it's ok to have exactly 1 descriptor per VAR.
 ''
 '' But not for FIELDs, because they are not unique: There can be many instances
-'' of a field in memory at runtime, so there is no single descriptor per FIELD.
-'' Instead, astNewARG() has to call symbAddArrayDesc() on-demand and create a
-'' new descriptor everytime.
+'' of a field in memory at runtime, so there is no single descriptor per FIELD
+'' symbol. Instead, astNewARG() has to call symbAddArrayDesc() on-demand and
+'' create a new descriptor everytime. And dynamic array fields have their own
+'' descriptor associated anyways.
 ''
-private sub symbMaybeAddArrayDesc( byval sym as FBSYMBOL ptr )
-	if( symbIsField( sym ) or (sym->var_.array.dimensions = 0) ) then
+sub symbMaybeAddArrayDesc( byval sym as FBSYMBOL ptr )
+	assert( symbIsField( sym ) = FALSE )
+
+	if( symbGetArrayDimensions( sym ) = 0 ) then
 		exit sub
 	end if
 
@@ -355,7 +351,6 @@ sub symbSetArrayDimTb _
 	end if
 
 	symbRecalcArrayDiffAndElements( sym )
-	symbMaybeAddArrayDesc( sym )
 
 end sub
 
@@ -373,7 +368,6 @@ sub symbSetArrayDimensionElements _
 	end with
 
 	symbRecalcArrayDiffAndElements( sym )
-	symbMaybeAddArrayDesc( sym )
 
 end sub
 
@@ -480,6 +474,7 @@ function symbAddVar _
 
 	if( dimensions <> 0 ) then
 		symbSetArrayDimTb( s, dimensions, dTB() )
+		symbMaybeAddArrayDesc( s )
 	end if
 
 	'' QB quirk: see above

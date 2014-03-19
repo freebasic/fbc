@@ -248,6 +248,7 @@ function astDataStmtAdd _
 		if( label = NULL ) then
 			'' reset the array dimensions
 			symbSetArrayDimTb( sym, 1, dTB() )
+			symbMaybeAddArrayDesc( sym )
 		end if
 		return sym
 	end if

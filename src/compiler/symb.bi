@@ -1077,6 +1077,13 @@ declare function symbAddImplicitVar _
 	) as FBSYMBOL ptr
 
 declare function symbAddAndAllocateTempVar( byval dtype as integer ) as FBSYMBOL ptr
+declare function symbAddArrayDescriptorType _
+	( _
+		byval symtb as FBSYMBOLTB ptr, _
+		byval dims as integer, _
+		byval id as zstring ptr, _
+		byval attrib as integer _
+	) as FBSYMBOL ptr
 declare function symbAddArrayDesc( byval array as FBSYMBOL ptr ) as FBSYMBOL ptr
 
 declare function symbAddConst _
@@ -1289,6 +1296,8 @@ declare sub symbSetArrayDimTb _
 		byval dimensions as integer, _
 		dTB() as FBARRAYDIM _
 	)
+
+declare sub symbMaybeAddArrayDesc( byval sym as FBSYMBOL ptr )
 
 declare sub symbDelSymbolTb _
 	( _

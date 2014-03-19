@@ -255,6 +255,7 @@ private function hArrayInit _
 		'' Update the array symbol with the new info about this dimension's upper bound
 		elements = elm_cnt
 		symbSetArrayDimensionElements( ctx.sym, ctx.dimension, elements )
+		symbMaybeAddArrayDesc( ctx.sym )
 
 		'' "array too big" check
 		'' Note: If currently parsing an inner dimension, then there can still be

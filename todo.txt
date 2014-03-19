@@ -72,27 +72,17 @@ o Dynamic array fields
     dynamic arrays work internally...
     http://www.freebasic.net/forum/viewtopic.php?f=17&t=19566
 
-    a) symbAddField() with dimensions=-1 builds an array descriptor type
-       and then does a recursive call to add the descriptor field,
-       and then the fake array field re-uses the descriptor's offset and
-       doesn't touch the parent anymore itself.
-         -> lookups would arrive at the fake array field, then symbGetArrayDescriptor()
-            points to the descriptor field
-
-    b) Add a new dtype for dynamic array, with subtype pointing to a helper
-       FBSYMBOL that holds the array's dtype etc. (similar to the former FB_DATATYPE_BITFIELD)
-         - lookups arrive at the field, then if dtype = FB_DATATYPE_DYNARRAY,
-           follow through to the subtype if needed
-         - FB_DATATYPE_BITFIELD was unnecessary, as it wasn't really a data type,
-           and could only appear on symbols, not expressions... it'd be the same
-           for a FB_DATATYPE_DYNARRAY dtype.
-
-    c) Use single FBSYMBOL to represent dynamic arrays, with descriptor type
-       being stored as realdtype/realsubtype or calculated on-demand, similar to
-       what's already done for PROC results and params, e.g. symbGetRealParamDtype())
-         -> lookups arrive at the symbol, see the proper dtype immediately,
-            only emitters have to worry about using the realdtype
-            But sizeof() calculations need to take extra care.
+      - symbAddField() with dimensions=-1 creates a fake array field
+        (that does not affect struct layout and doesn't have an offset),
+        and recursively adds the descriptor field, much like symbAddVar().
+      - lookups arrive at the fake array field, then symbGetArrayDescriptor()
+        points to the descriptor field, same as vars, can probably re-use code.
+      - Dynamic array descriptor = always room for FB_MAXARRAYDIMs, so it can
+        always be built immediately, it doesn't depend on the array declaration
+        and doesn't change later.
+      - Ellipsis for field arrays: Not supported for fixed-size, because the
+        struct layout would have to be recalculated everytime, and dynamic
+        arrays don't allow ellipsis anyways.
 
     * Ideally it'd be similar to STRINGs because it will need the same kind of
       special handling in ctors/dtors.

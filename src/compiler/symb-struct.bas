@@ -241,6 +241,12 @@ end function
 ''    field" to be started and becomes the first bitfield in it. In the former
 ''    case, the struct layout doesn't change; in the latter, it changes.
 ''
+'' c) A fake dynamic array field, which causes a corresponding real descriptor
+''    field to be added recursively. The fake array field does not use up any
+''    memory, only the descriptor will actually be emitted. While adding the
+''    fake array field, the struct layout doesn't change. When adding the
+''    descriptor, it changes, as with any other real field.
+''
 function symbAddField _
 	( _
 		byval parent as FBSYMBOL ptr, _
@@ -253,25 +259,44 @@ function symbAddField _
 		byval bits as integer _
 	) as FBSYMBOL ptr
 
-	dim as FBSYMBOL ptr sym = any, tail = any, base_parent = any
-	dim as integer pad = any, updateudt = any, elen = any
+	dim as FBSYMBOL ptr sym = any, tail = any, base_parent = any, desc = any
+	dim as integer pad = any, updateudt = any, elen = any, attrib = any
 	dim as longint offset = any
+	dim as string arrayid
 
 	function = NULL
-
-	'' Dynamic array field?
-	if( dimensions = -1 ) then
-		'' Add descriptor too
-	end if
+	desc = NULL
 
     '' calc length if it wasn't given
 	if( lgt <= 0 ) then
 		lgt	= symbCalcLen( dtype, subtype )
 	end if
 
-	'' All fields default to the next available offset,
-	'' except bitfields which are given special treatment below.
-	offset = parent->ofs
+	'' Dynamic array field? Recursively add the corresponding descriptor field.
+	if( dimensions = -1 ) then
+		'' Because this is done here at the top:
+		''  - the descriptor will be added before the fake array,
+		''    allowing the fake array to be "merged" into the descriptor
+		''  - we have to worry about the symbUniqueId() call
+		dim as FBARRAYDIM emptydTB(0 to 0)
+
+		'' Using symbUniqueId() below, which may overwrite the array's
+		'' own id if it was generated with symbUniqueId() aswell, unless
+		'' it's saved separately.
+		arrayid = *id
+		id = strptr( arrayid )
+
+		desc = symbAddField( parent, symbUniqueId( ), 0, emptydTB(), _
+				FB_DATATYPE_STRUCT, symb.fbarray, -1, 0 )
+
+		'' No offset for the fake array field, the descriptor should be used instead
+		offset = -1
+		assert( offset < parent->ofs ) '' indicating that no new field should be started
+	else
+		'' All other fields default to the next available offset,
+		'' except bitfields which are given special treatment below.
+		offset = parent->ofs
+	end if
 
 	'' Check for bitfield
 	if( bits > 0 ) then
@@ -392,6 +417,10 @@ function symbAddField _
 	symbVarInitFields( sym )
 	if( dimensions <> 0 ) then
 		symbSetArrayDimTb( sym, dimensions, dTB() )
+	end if
+	if( desc ) then
+		sym->var_.array.desc = desc
+		desc->var_.desc.array = sym  '' desc's backlink
 	end if
 	sym->var_.bitpos = parent->udt.bitpos
 	sym->var_.bits = bits
