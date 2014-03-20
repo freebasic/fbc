@@ -518,7 +518,8 @@ function astNewASSIGN _
 			'' because astTypeIniFlush() takes a symbol, not an expression...
 			if( t->class = AST_NODECLASS_VAR ) then
 				if( (symbHasCtor( t->sym ) or symbHasDtor( t->sym )) = FALSE ) then
-					return astTypeIniFlush( r, t->sym, AST_INIOPT_NONE )
+					l = astRemoveNoConvCAST( l )
+					return astTypeIniFlush( r, l->sym, AST_INIOPT_NONE )
 				end if
 			end if
 		end if
