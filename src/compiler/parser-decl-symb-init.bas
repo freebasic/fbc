@@ -483,6 +483,12 @@ private function hUDTInit( byref ctx as FB_INITCTX ) as integer
 					hSkipUntil( CHAR_RPRNT, TRUE )
 				end if
 				lexSkipToken( )
+
+				'' Undo the astTypeIniScopeBegin() done above.
+				'' We're assigning to the UDT, not to a field,
+				'' so there should be no typeini scope.
+				assert( ctx.tree->r->class = AST_NODECLASS_TYPEINI_SCOPEINI )
+				astTypeIniRemoveLastNode( ctx.tree )
 			end if
 
 			rec_cnt -= 1

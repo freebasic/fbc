@@ -938,6 +938,8 @@ declare sub astTypeIniEnd _
 		byval is_initializer as integer _
 	)
 
+declare sub astTypeIniRemoveLastNode( byval tree as ASTNODE ptr )
+
 declare function astTypeIniAddPad _
 	( _
 		byval tree as ASTNODE ptr, _

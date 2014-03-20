@@ -145,6 +145,33 @@ private function hAddNode _
 	function = n
 end function
 
+sub astTypeIniRemoveLastNode( byval tree as ASTNODE ptr )
+	dim as ASTNODE ptr prev = any, n = any
+
+	'' Find the last node, and the previous one
+	prev = NULL
+	n = tree->l
+	while( n )
+
+		'' Last node reached?
+		if( n->r = NULL ) then
+			'' Unlink from the TYPEINI tree
+			if( prev ) then
+				prev->r = NULL
+			else
+				tree->l = NULL
+			end if
+			tree->r = prev
+
+			astDelTree( n )
+			exit while
+		end if
+
+		n = n->r
+		prev = n
+	wend
+end sub
+
 function astTypeIniAddPad _
 	( _
 		byval tree as ASTNODE ptr, _
@@ -417,8 +444,6 @@ function astTypeIniFlush overload _
 
 			l = astBuildAddrOfDeref( astCloneTree( target ), n->typeini.ofs, n->dtype, n->subtype, n->sym )
 
-			'astDumpTree( l )
-			'astDumpTree( n->l )
 			l = astNewASSIGN( l, n->l, AST_OPOPT_ISINI or AST_OPOPT_DONTCHKPTR )
 			assert( l )
 			t = astNewLINK( t, l )
