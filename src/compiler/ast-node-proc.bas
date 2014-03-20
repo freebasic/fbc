@@ -1111,6 +1111,7 @@ private sub hCallFieldDtor _
 	elseif( symbHasDtor( fld ) ) then
 		select case( symbGetArrayDimensions( fld ) )
 		case -1
+			astAdd( rtlArrayErase( astBuildVarField( this_, fld ), TRUE, FALSE ) )
 		case 0
 			'' dtor( this.field )
 			astAdd( astBuildDtorCall( symbGetSubtype( fld ), astBuildVarField( this_, fld ) ) )
