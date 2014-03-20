@@ -179,7 +179,7 @@ function cOperatorNew( ) as ASTNODE ptr
 					lexSkipToken( )
 				end if
 			else
-				initexpr = cInitializer( tmp, FB_INIOPT_ISINI or FB_INIOPT_DODEREF )
+				initexpr = cInitializer( tmp, FB_INIOPT_ISINI, dtype, subtype )
 				if( initexpr = NULL ) then
 					errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
 				end if

@@ -117,16 +117,21 @@ sub astTypeIniEnd _
 
 end sub
 
-'':::::
 private function hAddNode _
 	( _
 		byval tree as ASTNODE ptr, _
-		byval class_ as AST_NODECLASS, _
-		byval dtype as FB_DATATYPE, _
-		byval subtype as FBSYMBOL ptr _
-	) as ASTNODE ptr static
+		byval class_ as integer, _
+		byval sym as FBSYMBOL ptr = NULL, _
+		byval dtype as integer = FB_DATATYPE_INVALID, _
+		byval subtype as FBSYMBOL ptr = NULL _
+	) as ASTNODE ptr
 
-	dim as ASTNODE ptr n
+	dim as ASTNODE ptr n = any
+
+	if( (dtype = FB_DATATYPE_INVALID) and (sym <> NULL) ) then
+		dtype = symbGetFullType( sym )
+		subtype = symbGetSubtype( sym )
+	end if
 
 	n = astNewNode( class_, dtype, subtype )
 
@@ -135,11 +140,9 @@ private function hAddNode _
 	else
 		tree->l = n
 	end if
+	tree->r = n
 
-    tree->r = n
-
-    function = n
-
+	function = n
 end function
 
 function astTypeIniAddPad _
@@ -150,32 +153,25 @@ function astTypeIniAddPad _
 
 	dim as ASTNODE ptr n = any
 
-	n = hAddNode( tree, _
-				  AST_NODECLASS_TYPEINI_PAD, _
-				  FB_DATATYPE_INVALID, _
-				  NULL )
-
+	n = hAddNode( tree, AST_NODECLASS_TYPEINI_PAD )
 	n->typeini.bytes = bytes
 	n->typeini.ofs = tree->typeini.ofs
 
 	function = n
-
 end function
 
-'':::::
 function astTypeIniAddAssign _
 	( _
 		byval tree as ASTNODE ptr, _
 		byval expr as ASTNODE ptr, _
-		byval sym as FBSYMBOL ptr _
+		byval sym as FBSYMBOL ptr, _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr _
 	) as ASTNODE ptr
 
 	dim as ASTNODE ptr n = any
 
-	n = hAddNode( tree, _
-				  AST_NODECLASS_TYPEINI_ASSIGN, _
-				  symbGetFullType( sym ), _
-				  symbGetSubtype( sym ) )
+	n = hAddNode( tree, AST_NODECLASS_TYPEINI_ASSIGN, sym, dtype, subtype )
 
 	n->l = expr
 	n->sym = sym
@@ -184,23 +180,20 @@ function astTypeIniAddAssign _
 	tree->typeini.ofs += symbGetLen( sym )
 
 	function = n
-
 end function
 
-'':::::
 function astTypeIniAddCtorCall _
 	( _
 		byval tree as ASTNODE ptr, _
 		byval sym as FBSYMBOL ptr, _
-		byval procexpr as ASTNODE ptr _
+		byval procexpr as ASTNODE ptr, _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr _
 	) as ASTNODE ptr
 
 	dim as ASTNODE ptr n = any
 
-	n = hAddNode( tree, _
-				  AST_NODECLASS_TYPEINI_CTORCALL, _
-				  symbGetFullType( sym ), _
-				  symbGetSubtype( sym ) )
+	n = hAddNode( tree, AST_NODECLASS_TYPEINI_CTORCALL, sym, dtype, subtype )
 
 	n->sym = sym
 	n->typeini.ofs = tree->typeini.ofs
@@ -209,22 +202,20 @@ function astTypeIniAddCtorCall _
 	tree->typeini.ofs += symbGetLen( sym )
 
 	function = n
-
 end function
 
 function astTypeIniAddCtorList _
 	( _
 		byval tree as ASTNODE ptr, _
 		byval sym as FBSYMBOL ptr, _
-		byval elements as longint _
+		byval elements as longint, _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr _
 	) as ASTNODE ptr
 
 	dim as ASTNODE ptr n = any
 
-	n = hAddNode( tree, _
-				  AST_NODECLASS_TYPEINI_CTORLIST, _
-				  symbGetFullType( sym ), _
-				  symbGetSubtype( sym ) )
+	n = hAddNode( tree, AST_NODECLASS_TYPEINI_CTORLIST, sym, dtype, subtype )
 
 	n->sym = sym
 	n->typeini.ofs = tree->typeini.ofs
@@ -235,7 +226,6 @@ function astTypeIniAddCtorList _
 	function = n
 end function
 
-'':::::
 function astTypeIniScopeBegin _
 	( _
 		byval tree as ASTNODE ptr, _
@@ -244,18 +234,12 @@ function astTypeIniScopeBegin _
 
 	dim as ASTNODE ptr n = any
 
-	n = hAddNode( tree, _
-				  AST_NODECLASS_TYPEINI_SCOPEINI, _
-				  FB_DATATYPE_INVALID, _
-				  NULL )
-
+	n = hAddNode( tree, AST_NODECLASS_TYPEINI_SCOPEINI )
 	n->sym = sym
 
 	function = n
-
 end function
 
-'':::::
 function astTypeIniScopeEnd _
 	( _
 		byval tree as ASTNODE ptr, _
@@ -264,15 +248,10 @@ function astTypeIniScopeEnd _
 
 	dim as ASTNODE ptr n = any
 
-	n = hAddNode( tree, _
-				  AST_NODECLASS_TYPEINI_SCOPEEND, _
-				  FB_DATATYPE_INVALID, _
-				  NULL )
-
+	n = hAddNode( tree, AST_NODECLASS_TYPEINI_SCOPEEND )
 	n->sym = sym
 
 	function = n
-
 end function
 
 '' Takes an array elements initializer and adds the same TYPEINI_ASSIGN's to
@@ -344,212 +323,147 @@ sub astTypeIniReplaceElement _
 	assert( FALSE )
 end sub
 
-'':::::
-private function hCallCtor _
-	( _
-		byval flush_tree as ASTNODE ptr, _
-		byval n as ASTNODE ptr, _
-		byval basesym as FBSYMBOL ptr _
-	) as ASTNODE ptr
-
-	dim as FBSYMBOL ptr fld = any
-
-	fld = n->sym
-	if( fld <> NULL ) then
-		if( symbIsField( fld ) = FALSE ) then
-			fld = NULL
-		end if
-	end if
-
-	'' replace the instance pointer
-	n->l = astPatchCtorCall( n->l, astBuildVarFieldAtOffset( basesym, fld, n->typeini.ofs ) )
-
-	'' do call
-	flush_tree = astNewLINK( flush_tree, n->l )
-
-	function = flush_tree
-
-end function
-
-'':::::
 private function hCallCtorList _
 	( _
-		byval flush_tree as ASTNODE ptr, _
+		byval t as ASTNODE ptr, _
 		byval n as ASTNODE ptr, _
-		byval basesym as FBSYMBOL ptr _
+		byval target as ASTNODE ptr _
 	) as ASTNODE ptr
 
-	dim as FBSYMBOL ptr subtype = any, fld = any
 	dim as ASTNODE ptr fldexpr = any
-	dim as integer dtype = any
-	dim as longint elements = any
-
-	fld = n->sym
-	if( fld <> NULL ) then
-		if( symbIsField( fld ) = FALSE ) then
-			fld = NULL
-		end if
-	end if
-
-	dtype = astGetDataType( n )
-	subtype = n->subtype
-	elements = n->typeini.elements
 
 	'' iter = *cast( subtype ptr, cast( byte ptr, @array(0) ) + ofs) )
-	fldexpr = astBuildVarField( basesym, fld, n->typeini.ofs )
+	fldexpr = astBuildAddrOfDeref( astCloneTree( target ), n->typeini.ofs, n->dtype, n->subtype, n->sym )
 
-	if( elements > 1 ) then
+	if( n->typeini.elements > 1 ) then
 		dim as FBSYMBOL ptr cnt, label, iter
 
 		cnt = symbAddTempVar( FB_DATATYPE_INTEGER )
 		label = symbAddLabel( NULL )
-		iter = symbAddTempVar( typeAddrOf( dtype ), subtype )
+		iter = symbAddTempVar( typeAddrOf( n->dtype ), n->subtype )
 
-		flush_tree = astNewLINK( flush_tree, astBuildVarAssign( iter, astNewADDROF( fldexpr ) ) )
+		t = astNewLINK( t, astBuildVarAssign( iter, astNewADDROF( fldexpr ) ) )
 
 		'' for cnt = 0 to elements-1
-		flush_tree = astBuildForBegin( flush_tree, cnt, label, 0 )
+		t = astBuildForBegin( t, cnt, label, 0 )
 
 		'' ctor( *iter )
-		flush_tree = astNewLINK( flush_tree, astBuildCtorCall( subtype, astBuildVarDeref( iter ) ) )
+		t = astNewLINK( t, astBuildCtorCall( n->subtype, astBuildVarDeref( iter ) ) )
 
 		'' iter += 1
-		flush_tree = astNewLINK( flush_tree, astBuildVarInc( iter, 1 ) )
+		t = astNewLINK( t, astBuildVarInc( iter, 1 ) )
 
 		'' next
-		flush_tree = astBuildForEnd( flush_tree, cnt, label, astNewCONSTi( elements ) )
+		t = astBuildForEnd( t, cnt, label, astNewCONSTi( n->typeini.elements ) )
 	else
 		'' ctor( this )
-		flush_tree = astNewLINK( flush_tree, astBuildCtorCall( subtype, fldexpr ) )
+		t = astNewLINK( t, astBuildCtorCall( n->subtype, fldexpr ) )
 	end if
 
-	function = flush_tree
-
+	function = t
 end function
 
-'':::::
-private function hFlushTree _
+'' Builds up code to write a TYPEINI tree into a target variable/deref,
+'' and deletes the TYPEINI tree.
+function astTypeIniFlush overload _
 	( _
-		byval tree as ASTNODE ptr, _
-		byval basesym as FBSYMBOL ptr, _
-		byval do_deref as integer _
+		byval target as ASTNODE ptr, _
+		byval initree as ASTNODE ptr, _
+		byval options as AST_INIOPT _
 	) as ASTNODE ptr
 
-	dim as ASTNODE ptr n = any, nxt = any, flush_tree = any, lside = any
-	dim as integer dtype = any
+	dim as ASTNODE ptr n = any, nxt = any, t = any, l = any
 
-	flush_tree = NULL
-	n = tree->l
-	do while( n <> NULL )
-		nxt = n->r
+	assert( astIsVAR( target ) or astIsDEREF( target ) or _
+	        astIsFIELD( target ) or astIsIDX( target ) )
 
-		select case as const n->class
+	if( (options and AST_INIOPT_ISINI) = 0 ) then
+		ast.typeinicount -= 1
+	end if
+
+	t = NULL
+	n = initree->l
+
+	'' Remove side-effects, if there's more than one initializer element,
+	'' because every element uses one "instance" of the target expression.
+	if( n ) then
+		if( n->r ) then
+			if( astHasSideFx( target ) ) then
+				t = astRemSideFx( target )
+			end if
+		end if
+	end if
+
+	while( n )
+		select case( n->class )
+		'' Write the given initializer expression to the given offset in the target
 		case AST_NODECLASS_TYPEINI_ASSIGN
-			''
-			'' basesym is the initialization target,
-			'' either the object itself or a pointer to the target.
-			''
-			'' n->sym (symbol associated with the TYPEINI_ASSIGN) is
-			'' the symbol that's directly initialized by this
-			'' TYPEINI_ASSIGN.
-			'' It can be the same as basesym, e.g. when initializing
-			'' a simple integer, or it can be a field while basesym
-			'' is the UDT or a pointer to it, and it can be NULL too,
-			'' at least with some parameter initializers.
-			''
-
-			if( symbIsParamInstance( basesym ) ) then
-				'' Assigning to object through THIS pointer, a DEREF is done.
-				lside = astBuildVarFieldAtOffset( basesym, n->sym, n->typeini.ofs )
-			else
-				'' Note: n->sym may be NULL from a astReplaceSymbolOnTree(),
-				'' so n's dtype/subtype are used instead.
-
-				if( do_deref ) then
-					'' Assigning to object through pointer, a DEREF is done.
-					assert( typeIsPtr( symbGetType( basesym ) ) )
-
-					''
-					'' Must make sure to have the proper type on the DEREF,
-					'' otherwise the ASSIGN to it will fail or be wrong and
-					'' possibly cause trouble with the backends.
-					''
-					'' We need to do a typeDeref() if it's the basesym pointer,
-					'' but not if it's something else (e.g. a field).
-					'' TODO: is this check correct/enough?
-					''
-					dtype = n->dtype
-					if( n->sym = basesym ) then
-						assert( typeIsPtr( dtype ) )
-						dtype = typeDeref( dtype )
-					end if
-
-					lside = astNewDEREF( astNewVAR( basesym ), dtype, n->subtype, n->typeini.ofs )
-				else
-					'' Assigning to object directly
-					lside = astNewVAR( basesym, n->typeini.ofs, astGetFullType( n ), n->subtype )
-				end if
-
-				if( n->sym ) then
-					'' Field?
-					if( symbIsField( n->sym ) ) then
-						'' If it's a bitfield, clear the whole field containing this bitfield,
-						'' otherwise the bitfield assignment(s) would leave unused bits
-						'' uninitialized.
-						if( symbFieldIsBitfield( n->sym ) ) then
-							'' Beginning of a field containing one or more bitfields?
-							if( n->sym->var_.bitpos = 0 ) then
-								flush_tree = astNewLINK( flush_tree, _
-									astNewMEM( AST_OP_MEMCLEAR, _
-										astCloneTree( lside ), _
-										astNewCONSTi( typeGetSize( symbGetType( n->sym ) ) ) ) )
-							end if
+			if( n->sym ) then
+				'' Field?
+				if( symbIsField( n->sym ) ) then
+					'' If it's a bitfield, clear the whole field containing this bitfield,
+					'' otherwise the bitfield assignment(s) would leave unused bits
+					'' uninitialized.
+					if( symbFieldIsBitfield( n->sym ) ) then
+						'' Beginning of a field containing one or more bitfields?
+						if( n->sym->var_.bitpos = 0 ) then
+							l = astBuildAddrOfDeref( astCloneTree( target ), n->typeini.ofs, n->dtype, n->subtype )
+							l = astNewMEM( AST_OP_MEMCLEAR, l, astNewCONSTi( typeGetSize( symbGetFullType( n->sym ) ) ) )
+							t = astNewLINK( t, l )
 						end if
-
-						lside = astNewFIELD( lside, n->sym )
 					end if
 				end if
 			end if
 
-			lside = astNewASSIGN( lside, n->l, AST_OPOPT_ISINI or AST_OPOPT_DONTCHKPTR )
-			assert( lside <> NULL )
-			flush_tree = astNewLINK( flush_tree, lside )
+			l = astBuildAddrOfDeref( astCloneTree( target ), n->typeini.ofs, n->dtype, n->subtype, n->sym )
 
+			'astDumpTree( l )
+			'astDumpTree( n->l )
+			l = astNewASSIGN( l, n->l, AST_OPOPT_ISINI or AST_OPOPT_DONTCHKPTR )
+			assert( l )
+			t = astNewLINK( t, l )
+
+		'' Clear the given amount of bytes at the given offset in the target
 		case AST_NODECLASS_TYPEINI_PAD
-			'' Clear some padding bytes...
-			if( symbIsParamInstance( basesym ) ) then
-				'' through THIS pointer
-				lside = astBuildVarFieldAtOffset( basesym, NULL, n->typeini.ofs )
-			else
-				if( do_deref ) then
-					'' through a pointer
-					assert( typeIsPtr( symbGetFullType( basesym ) ) )
-					lside = astNewDEREF( astNewVAR( basesym ), , , n->typeini.ofs )
-				else
-					'' directly
-					lside = astNewVAR( basesym, n->typeini.ofs )
-				end if
-			end if
+			l = astBuildAddrOfDeref( astCloneTree( target ), n->typeini.ofs, n->dtype, n->subtype )
+			l = astNewMEM( AST_OP_MEMCLEAR, l, astNewCONSTi( n->typeini.bytes ) )
+			t = astNewLINK( t, l )
 
-			flush_tree = astNewLINK( flush_tree, _
-				astNewMEM( AST_OP_MEMCLEAR, lside, astNewCONSTi( n->typeini.bytes ) ) )
-
+		'' Use the given CALL (and its ARGs) as-is, but insert the byref instance argument,
+		'' pointing to the given offset in the target
 		case AST_NODECLASS_TYPEINI_CTORCALL
-			flush_tree = hCallCtor( flush_tree, n, basesym )
+			l = astBuildAddrOfDeref( astCloneTree( target ), n->typeini.ofs, n->dtype, n->subtype, n->sym )
 
+			l = astPatchCtorCall( n->l, l )
+			t = astNewLINK( t, l )
+
+		'' Build constructor calls for an array of elements
 		case AST_NODECLASS_TYPEINI_CTORLIST
-			flush_tree = hCallCtorList( flush_tree, n, basesym )
+			t = hCallCtorList( t, n, target )
 
 		end select
 
+		nxt = n->r
 		astDelNode( n )
 		n = nxt
-	loop
+	wend
 
-	function = flush_tree
+	astDelNode( initree )
+
+	astDelTree( target )
+	function = t
 end function
 
-'':::::
+function astTypeIniFlush overload _
+	( _
+		byval target as FBSYMBOL ptr, _
+		byval initree as ASTNODE ptr, _
+		byval options as AST_INIOPT _
+	) as ASTNODE ptr
+	assert( symbIsVar( target ) )
+	function = astTypeIniFlush( astNewVAR( target ), initree, options )
+end function
+
 private function hFlushExprStatic _
 	( _
 		byval n as ASTNODE ptr, _
@@ -676,23 +590,6 @@ sub astLoadStaticInitializer _
 
 	astDelNode( tree )
 end sub
-
-function astTypeIniFlush _
-	( _
-		byval tree as ASTNODE ptr, _
-		byval basesym as FBSYMBOL ptr, _
-		byval options as AST_INIOPT _
-	) as ASTNODE ptr
-
-	if( (options and AST_INIOPT_ISINI) = 0 ) then
-		ast.typeinicount -= 1
-	end if
-
-	function = hFlushTree( tree, basesym, ((options and AST_INIOPT_DODEREF) <> 0) )
-
-	astDelNode( tree )
-
-end function
 
 '':::::
 private function hExprIsConst _
@@ -895,7 +792,7 @@ private function hWalk _
 		end if
 
 		'' Turn this TYPEINI into real code
-		n = astTypeIniFlush( n, sym, AST_INIOPT_NONE )
+		n = astTypeIniFlush( sym, n, AST_INIOPT_NONE )
 
 		'' Also update any nested TYPEINIs, for example this can be a
 		'' TYPEINI CTORCALL, which carries a CALL with ARGs that can

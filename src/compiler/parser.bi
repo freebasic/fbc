@@ -216,10 +216,8 @@ end enum
 '' cInitializer flags
 enum FB_INIOPT
 	FB_INIOPT_NONE              = &h00000000
-
 	FB_INIOPT_ISINI             = &h00000001
-	FB_INIOPT_DODEREF           = &h00000002
-	FB_INIOPT_ISOBJ             = &h00000004
+	FB_INIOPT_ISOBJ             = &h00000002
 end enum
 
 '' cProcHeader() flags
@@ -286,8 +284,10 @@ declare sub cArrayDecl( byref dimensions as integer, exprTB() as ASTNODE ptr )
 
 declare function cInitializer _
 	( _
-		byval s as FBSYMBOL ptr, _
-		byval options as FB_INIOPT _
+		byval sym as FBSYMBOL ptr, _
+		byval options as FB_INIOPT, _
+		byval dtype as integer = FB_DATATYPE_INVALID, _
+		byval subtype as FBSYMBOL ptr = NULL _
 	) as ASTNODE ptr
 
 declare function cTypeOrExpression _

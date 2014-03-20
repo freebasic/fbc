@@ -148,51 +148,58 @@ function astBuildVarDtorCall _
 
 end function
 
-function astBuildVarFieldAtOffset _
+'' Build a field access on the target:
+''    n = *cptr( dtype ptr, @n + offset )
+'' If offset = 0, then it's basically just a type cast.
+function astBuildAddrOfDeref _
 	( _
-		byval sym as FBSYMBOL ptr, _
-		byval fld as FBSYMBOL ptr, _
-		byval ofs as longint _
+		byval n as ASTNODE ptr, _
+		byval offset as longint, _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr, _
+		byval maybeafield as FBSYMBOL ptr _
 	) as ASTNODE ptr
 
-	dim as ASTNODE ptr expr = any
-	dim as integer do_deref = any
+	n = astNewADDROF( n )
+	if( offset <> 0 ) then
+		n = astNewBOP( AST_OP_ADD, n, astNewCONSTi( offset ) )
+	end if
+	n = astNewCONV( typeAddrOf( dtype ), subtype, n, AST_CONVOPT_DONTCHKPTR )
+	n = astNewDEREF( n )
 
-	'' Do a DEREF if it's a byref symbol
-	do_deref = symbIsParamInstance( sym ) or symbIsParamByRef( sym ) or symbIsImport( sym )
-
-	if( fld ) then
-		if( do_deref ) then
-			expr = astNewVAR( sym, , typeAddrOf( symbGetFullType( sym ) ), symbGetSubtype( sym ) )
-			expr = astNewDEREF( expr, symbGetFullType( fld ), symbGetSubtype( fld ), ofs )
-		else
-			expr = astNewVAR( sym, ofs, symbGetFullType( fld ), symbGetSubtype( fld ) )
-		end if
-		expr = astNewFIELD( expr, fld )
-	else
-		if( do_deref ) then
-			expr = astNewVAR( sym, , typeAddrOf( symbGetFullType( sym ) ), symbGetSubtype( sym ) )
-			expr = astNewDEREF( expr, , , ofs )
-		else
-			expr = astNewVAR( sym, ofs )
+	if( maybeafield ) then
+		if( symbIsField( maybeafield ) ) then
+			n = astNewFIELD( n, maybeafield )
 		end if
 	end if
 
-	function = expr
+	function = n
 end function
 
 function astBuildVarField _
 	( _
 		byval sym as FBSYMBOL ptr, _
 		byval fld as FBSYMBOL ptr, _
-		byval ofs as longint _
+		byval offset as longint _
 	) as ASTNODE ptr
 
-	if( fld ) then
-		ofs += symbGetOfs( fld )
+	dim as ASTNODE ptr n = any
+
+	'' Do implicit DEREF if it's a byref symbol
+	if( symbIsParamInstance( sym ) or symbIsParamByRef( sym ) or symbIsImport( sym ) ) then
+		n = astNewDEREF( astNewVAR( sym, , typeAddrOf( symbGetFullType( sym ) ), symbGetSubtype( sym ) ) )
+	else
+		n = astNewVAR( sym )
 	end if
 
-	function = astBuildVarFieldAtOffset( sym, fld, ofs )
+	if( fld ) then
+		offset += symbGetOfs( fld )
+		n = astBuildAddrOfDeref( n, offset, symbGetFullType( fld ), symbGetSubtype( fld ), fld )
+	else
+		n = astBuildAddrOfDeref( n, offset, symbGetFullType( sym ), symbGetSubtype( sym ), NULL )
+	end if
+
+	function = n
 end function
 
 function astBuildTempVarClear( byval sym as FBSYMBOL ptr ) as ASTNODE ptr

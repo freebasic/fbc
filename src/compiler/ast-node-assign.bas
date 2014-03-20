@@ -514,13 +514,9 @@ function astNewASSIGN _
 			'' instead of using a temp var and then copying that,
 			'' unless there are ctors/dtors (let/cast overloads were
 			'' already handled above).
-			'' FIXME: This currently only works with VAR on the lhs,
-			'' because astTypeIniFlush() takes a symbol, not an expression...
-			if( t->class = AST_NODECLASS_VAR ) then
-				if( (symbHasCtor( t->sym ) or symbHasDtor( t->sym )) = FALSE ) then
-					l = astRemoveNoConvCAST( l )
-					return astTypeIniFlush( r, l->sym, AST_INIOPT_NONE )
-				end if
+			if( (typeHasCtor( t->dtype, t->subtype ) or typeHasDtor( t->dtype, t->subtype )) = FALSE ) then
+				l = astRemoveNoConvCAST( l )
+				return astTypeIniFlush( l, r, AST_INIOPT_NONE )
 			end if
 		end if
 

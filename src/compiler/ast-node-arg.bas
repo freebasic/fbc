@@ -29,7 +29,7 @@ private function hAllocTmpArrayDesc _
 	tree = astNewDECL( desc, FALSE )
 
 	'' flush (see symbAddArrayDesc(), the desc can't never be static)
-	tree = astNewLINK( tree, astTypeIniFlush( initree, desc, AST_INIOPT_ISINI ) )
+	tree = astNewLINK( tree, astTypeIniFlush( desc, initree, AST_INIOPT_ISINI ) )
 
 	function = desc
 end function
@@ -590,7 +590,7 @@ private sub hUDTPassByval _
 		'' TYPEINI (e.g. from parameter initializer), assign to the temp
 		'' directly (it will probably always be a ctor call too, since
 		'' the parameter initializer wouldn't have allowed anything else)
-		arg = astNewLINK( astTypeIniFlush( arg, tmp, AST_INIOPT_NONE ), astNewVAR( tmp ), FALSE )
+		arg = astNewLINK( astTypeIniFlush( tmp, arg, AST_INIOPT_NONE ), astNewVAR( tmp ), FALSE )
 	else
 		'' Otherwise, call a constructor
 		arg = astBuildImplicitCtorCallEx( param, n->l, n->arg.mode, is_ctorcall )

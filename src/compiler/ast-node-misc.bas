@@ -853,6 +853,9 @@ private function hAstNodeToStr _
 	case AST_NODECLASS_SCOPEBEGIN
 		return "SCOPEBEGIN: " & hSymbToStr( n->sym )
 
+	case AST_NODECLASS_TYPEINI_ASSIGN
+		return "TYPEINI_ASSIGN( offset=" & n->typeini.ofs & " )"
+
 	case else
 		return hAstNodeClassToStr( n->class )
 	end select
