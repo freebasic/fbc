@@ -705,8 +705,9 @@ function astBuildArrayDescIniTree _
 	assert( symbGetType( desc ) = FB_DATATYPE_STRUCT )
 	assert( symbIsStruct( symbGetSubtype( desc ) ) )
 
-    ''
-    tree = astTypeIniBegin( symbGetFullType( desc ), symbGetSubtype( desc ), TRUE )
+	assert( symbIsVar( desc ) or symbIsField( desc ) )
+
+	tree = astTypeIniBegin( symbGetFullType( desc ), symbGetSubtype( desc ), not symbIsField( desc ), symbGetOfs( desc ) )
 
     dtype = symbGetFullType( array )
     subtype = symbGetSubType( array )
