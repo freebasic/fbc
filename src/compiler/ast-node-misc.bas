@@ -883,7 +883,9 @@ private sub astDumpTreeEx _
 	dim as string s
 	's += "[" + hex( n, 8 ) + "] "
 	s += hAstNodeToStr( n )
+#if __FB_DEBUG__
 	s += " " + typeDump( n->dtype, n->subtype )
+#endif
 	dbg_astOutput( s, col, just, depth )
 
 	depth += 1
