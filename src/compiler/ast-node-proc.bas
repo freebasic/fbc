@@ -885,6 +885,7 @@ private function hCallFieldCtor _
 	) as ASTNODE ptr
 
 	assert( symbIsDynamic( fld ) = FALSE )
+	assert( symbIsDescriptor( fld ) = FALSE )  '' should have had an initree
 
 	'' Do not initialize?
 	if( symbGetDontInit( fld ) ) then
@@ -902,17 +903,6 @@ private function hCallFieldCtor _
 			function = hCallCtorList( TRUE, this_, fld )
 		end if
 		exit function
-	end if
-
-	'' Descriptor of a dynamic array field?
-	if( symbIsDescriptor( fld ) ) then
-		return astTypeIniFlush( _
-				astBuildVarField( this_ ), _
-				astBuildArrayDescIniTree( _
-					fld, _
-					fld->var_.desc.array, _
-					NULL ), _
-				AST_INIOPT_ISINI )
 	end if
 
 	'' bitfield?

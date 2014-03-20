@@ -430,6 +430,8 @@ function symbAddField _
 	if( desc ) then
 		sym->var_.array.desc = desc
 		desc->var_.desc.array = sym  '' desc's backlink
+
+		symbSetTypeIniTree( desc, astBuildArrayDescIniTree( desc, sym, NULL ) )
 	end if
 	sym->var_.bitpos = parent->udt.bitpos
 	sym->var_.bits = bits
