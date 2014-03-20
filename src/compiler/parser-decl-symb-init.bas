@@ -12,6 +12,8 @@
 
 type FB_INITCTX
 	sym			as FBSYMBOL ptr
+	dtype			as integer
+	subtype			as FBSYMBOL ptr
 	dimension 		as integer
 	tree		as ASTNODE ptr
 	options		as FB_INIOPT
@@ -23,7 +25,23 @@ declare function hUDTInit _
 		byref ctx as FB_INITCTX _
 	) as integer
 
-'':::::
+private sub hUpdateContextDtype _
+	( _
+		byref ctx as FB_INITCTX, _
+		byval dtype as integer = FB_DATATYPE_INVALID, _
+		byval subtype as FBSYMBOL ptr = NULL _
+	)
+
+	if( dtype = FB_DATATYPE_INVALID ) then
+		ctx.dtype = symbGetFullType( ctx.sym )
+		ctx.subtype = symbGetSubtype( ctx.sym )
+	else
+		ctx.dtype = dtype
+		ctx.subtype = subtype
+	end if
+
+end sub
+
 private function hDoAssign _
 	( _
 		byref ctx as FB_INITCTX, _
@@ -31,19 +49,9 @@ private function hDoAssign _
 		byval no_fake as integer = FALSE _
 	) as integer
 
-	dim as integer dtype = any
-	dim as FBSYMBOL ptr subtype = any
-
-	dtype = symbGetFullType( ctx.sym )
-	subtype = symbGetSubtype( ctx.sym )
-
-	if( (ctx.options and FB_INIOPT_DODEREF) <> 0 ) then
-		dtype = typeDeref( dtype )
-	end if
-
-	if( astCheckASSIGNToType( dtype, subtype, expr ) = FALSE ) then
+	if( astCheckASSIGNToType( ctx.dtype, ctx.subtype, expr ) = FALSE ) then
 		'' check if it's a cast
-		expr = astNewCONV( dtype, subtype, expr )
+		expr = astNewCONV( ctx.dtype, ctx.subtype, expr )
 		if( expr = NULL ) then
 			'' hand it back...
 			'' (used with UDTs; if an UDT var is given in an UDT initializer,
@@ -56,11 +64,11 @@ private function hDoAssign _
 			errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE )
 			'' error recovery: create a fake expression
 			astDelTree( expr )
-			expr = astNewCONSTz( dtype, subtype )
+			expr = astNewCONSTz( ctx.dtype, ctx.subtype )
 		end if
 	end if
 
-	astTypeIniAddAssign( ctx.tree, expr, ctx.sym )
+	astTypeIniAddAssign( ctx.tree, expr, ctx.sym, ctx.dtype, ctx.subtype )
 
 	function = TRUE
 end function
@@ -95,11 +103,7 @@ private function hElmInit _
 		hSkipUntil( CHAR_COMMA )
 
 		'' generate an expression matching the symbol's type
-		dim as integer dtype = symbGetType( ctx.sym )
-		if( (ctx.options and FB_INIOPT_DODEREF) <> 0 ) then
-			dtype = typeDeref( dtype )
-		end if
-		expr = astNewCONSTz( dtype, symbGetSubtype( ctx.sym ) )
+		expr = astNewCONSTz( ctx.dtype, ctx.subtype )
 	end if
 
 	'' to hand it back if necessary
@@ -122,8 +126,7 @@ private function hArrayInit _
 
 	dim as integer elm_cnt = any
 	dim as longint elements = any
-	dim as integer isarray = any, dtype = any
-	dim as FBSYMBOL ptr subtype = any
+	dim as integer isarray = any
 
 	function = FALSE
 
@@ -209,13 +212,6 @@ private function hArrayInit _
 		elements = 1
 	end if
 
-	''
-	dtype = symbGetType( ctx.sym )
-	subtype = symbGetSubtype( ctx.sym )
-	if( (ctx.options and FB_INIOPT_DODEREF) <> 0 ) then
-		dtype = typeDeref( dtype )
-	end if
-
 	'' For each initializer element...
 	elm_cnt = 0
 	do
@@ -225,17 +221,15 @@ private function hArrayInit _
 				exit function
 			end if
 		else
-			select case as const dtype
-			case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
+			if( typeGetDtAndPtrOnly( ctx.dtype ) = FB_DATATYPE_STRUCT ) then
 				if( hUDTInit( ctx ) = FALSE ) then
 					exit function
 				end if
-
-			case else
+			else
 				if( hElmInit( ctx, no_fake ) = FALSE ) then
 					exit function
 				end if
-			end select
+			end if
 		end if
 
 		'' Stop parsing elements if the expected number was reached,
@@ -281,7 +275,7 @@ private function hArrayInit _
 
 		dim as FBSYMBOL ptr ctor = NULL
 		if( (ctx.options and FB_INIOPT_ISOBJ) <> 0 ) then
-			ctor = symbGetCompDefCtor( subtype )
+			ctor = symbGetCompDefCtor( ctx.subtype )
 			if( ctor = NULL ) then
 				errReport( FB_ERRMSG_NODEFAULTCTORDEFINED )
 			else
@@ -293,15 +287,15 @@ private function hArrayInit _
 		end if
 
 		if( ctor <> NULL ) then
-			astTypeIniAddCtorList( ctx.tree, ctx.sym, elements )
+			astTypeIniAddCtorList( ctx.tree, ctx.sym, elements, ctx.dtype, ctx.subtype )
 		else
 			dim as longint pad_lgt = any
 			'' calc len.. handle fixed-len strings
-			select case as const dtype
+			select case as const( typeGetDtAndPtrOnly( ctx.dtype ) )
 			case FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
 				pad_lgt = symbGetLen( ctx.sym )
 			case else
-				pad_lgt = symbCalcLen( dtype, subtype )
+				pad_lgt = symbCalcLen( ctx.dtype, ctx.subtype )
 			end select
 
 			pad_lgt *= elements
@@ -329,17 +323,12 @@ private function hArrayInit _
 	function = TRUE
 end function
 
-'':::::
-private function hUDTInit _
-	( _
-		byref ctx as FB_INITCTX _
-	) as integer
-
+private function hUDTInit( byref ctx as FB_INITCTX ) as integer
 	static as integer rec_cnt
 
-	dim as integer elm_cnt = any, dtype = any
+	dim as integer elm_cnt = any
 	dim as longint lgt = any, baseofs = any, pad_lgt = any
-	dim as FBSYMBOL ptr fld = any, first = any, subtype = any
+	dim as FBSYMBOL ptr fld = any, first = any
 	dim as FBSYMBOL ptr oldsubtype = any
 	dim as integer olddtype = any
     dim as FB_INITCTX old_ctx = any
@@ -347,12 +336,6 @@ private function hUDTInit _
     function = FALSE
 
     rec_cnt += 1
-
-	dtype = symbGetType( ctx.sym )
-	subtype = symbGetSubtype( ctx.sym )
-	if( (ctx.options and FB_INIOPT_DODEREF) <> 0 ) then
-		dtype = typeDeref( dtype )
-	end if
 
     '' ctor?
     if( (ctx.options and FB_INIOPT_ISOBJ) <> 0 ) then
@@ -362,8 +345,8 @@ private function hUDTInit _
 		'' work for UDTs with constructors here
 		oldsubtype = parser.ctxsym
 		olddtype   = parser.ctx_dtype
-		parser.ctx_dtype = dtype
-		parser.ctxsym    = subtype
+		parser.ctx_dtype = ctx.dtype
+		parser.ctxsym    = ctx.subtype
 
 	    '' Expression
 	    expr = cExpression( )
@@ -386,8 +369,8 @@ private function hUDTInit _
 		'' couldn't be passed BYREF anyways.
 		if( symbGetClass( ctx.sym ) = FB_SYMBCLASS_PARAM ) then
 			if( symbGetParamMode( ctx.sym ) = FB_PARAMMODE_BYREF ) then
-				if( (astGetDataType( expr ) = dtype) and _
-				    (astGetSubtype( expr ) = subtype) ) then
+				if( (astGetDataType( expr ) = typeGetDtAndPtrOnly( ctx.dtype )) and _
+				    (astGetSubtype( expr ) = ctx.subtype) ) then
 					rec_cnt -= 1
 					return hDoAssign( ctx, expr )
 				end if
@@ -401,15 +384,15 @@ private function hUDTInit _
 			exit function
 		end if
 
-    	if( is_ctorcall ) then
-    		rec_cnt -= 1
-    		return astTypeIniAddCtorCall( ctx.tree, ctx.sym, expr ) <> NULL
-    	else
-    		'' try to assign it (do a shallow copy)
-    		rec_cnt -= 1
-        	return hDoAssign( ctx, expr )
-        end if
-    end if
+		if( is_ctorcall ) then
+			rec_cnt -= 1
+			return astTypeIniAddCtorCall( ctx.tree, ctx.sym, expr, ctx.dtype, ctx.subtype ) <> NULL
+		else
+			'' try to assign it (do a shallow copy)
+			rec_cnt -= 1
+			return hDoAssign( ctx, expr )
+		end if
+	end if
 
 	dim as integer parenth = TRUE, comma = FALSE
 
@@ -425,13 +408,10 @@ private function hUDTInit _
 		parenth = FALSE
 	else
 		astTypeIniScopeBegin( ctx.tree, ctx.sym )
-	end if
-
-	if( parenth ) then
 		lexSkipToken( )
 	end if
 
-	first = symbUdtGetFirstField( subtype )
+	first = symbUdtGetFirstField( ctx.subtype )
 	fld = first
 
 	lgt = 0
@@ -440,7 +420,6 @@ private function hUDTInit _
 	'' save parent
 	old_ctx = ctx
 
-	ctx.options and= not FB_INIOPT_DODEREF
 	ctx.dimension = -1
 
 	'' for each initializable UDT field...
@@ -468,6 +447,7 @@ private function hUDTInit _
 			errReport( FB_ERRMSG_ILLEGALMEMBERACCESS )
 		end if
 		ctx.sym = fld
+		hUpdateContextDtype( ctx )
 
 		'' has ctor?
 		ctx.options and= not FB_INIOPT_ISOBJ
@@ -504,12 +484,18 @@ private function hUDTInit _
 					hSkipUntil( CHAR_RPRNT, TRUE )
 				end if
 				lexSkipToken( )
+
+				'' Undo the astTypeIniScopeBegin() done above.
+				'' We're assigning to the UDT, not to a field,
+				'' so there should be no typeini scope.
+				assert( ctx.tree->r->class = AST_NODECLASS_TYPEINI_SCOPEINI )
+				astTypeIniRemoveLastNode( ctx.tree )
 			end if
 
 			rec_cnt -= 1
 
 			if( is_ctorcall ) then
-				return astTypeIniAddCtorCall( ctx.tree, ctx.sym, expr ) <> NULL
+				return astTypeIniAddCtorCall( ctx.tree, ctx.sym, expr, ctx.dtype, ctx.subtype ) <> NULL
 			else
 				'' try to assign it (do a shallow copy)
 				return hDoAssign( ctx, expr )
@@ -556,7 +542,7 @@ private function hUDTInit _
 
 	'' Padding at the end of the UDT -- this zeroes tail padding bytes,
 	'' and also any uninited fields and/or uninited parts of unions.
-	dim as longint sym_len = symbCalcLen( dtype, subtype )
+	dim as longint sym_len = symbCalcLen( ctx.dtype, ctx.subtype )
 	pad_lgt = sym_len - lgt
 	if( pad_lgt > 0 ) then
 		astTypeIniAddPad( ctx.tree, pad_lgt )
@@ -568,15 +554,15 @@ private function hUDTInit _
 	function = TRUE
 end function
 
-'':::::
 function cInitializer _
 	( _
 		byval sym as FBSYMBOL ptr, _
-		byval options as FB_INIOPT _
+		byval options as FB_INIOPT, _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr _
 	) as ASTNODE ptr
 
-	dim as integer is_local = any, dtype = any, ok = any
-    dim as FBSYMBOL ptr subtype = any
+	dim as integer is_local = any, ok = any
     dim as FB_INITCTX ctx = any
 
 	function = NULL
@@ -601,22 +587,16 @@ function cInitializer _
 		is_local = FALSE
 	end if
 
-	dtype = symbGetType( sym )
-	subtype = symbGetSubtype( sym )
-	if( (options and FB_INIOPT_DODEREF) <> 0 ) then
-		dtype = typeDeref( dtype )
-	end if
-
-	''
 	ctx.options = options
 	ctx.sym = sym
 	ctx.dimension = -1
 	ctx.init_expr = NULL
+	hUpdateContextDtype( ctx, dtype, subtype )
 
-	ctx.tree = astTypeIniBegin( symbGetFullType( sym ), subtype, is_local, symbGetOfs( sym ) )
+	ctx.tree = astTypeIniBegin( ctx.dtype, ctx.subtype, is_local, symbGetOfs( sym ) )
 
 	'' has ctor?
-	if( typeHasCtor( dtype, subtype ) ) then
+	if( typeHasCtor( ctx.dtype, ctx.subtype ) ) then
 		ctx.options or= FB_INIOPT_ISOBJ
 	end if
 
@@ -625,7 +605,7 @@ function cInitializer _
 		ok = hArrayInit( ctx )
 	else
 		'' Everything else (e.g. params)
-		if( dtype = FB_DATATYPE_STRUCT ) then
+		if( typeGetDtAndPtrOnly( ctx.dtype ) = FB_DATATYPE_STRUCT ) then
 			ok = hUDTInit( ctx )
 		else
 			ok = hElmInit( ctx )
@@ -633,10 +613,6 @@ function cInitializer _
 	end if
 
 	astTypeIniEnd( ctx.tree, (options and FB_INIOPT_ISINI) <> 0 )
-
-	if( symbIsVar( ctx.sym ) ) then
-		symbSetIsInitialized( ctx.sym )
-	end if
 
 	function = iif( ok, ctx.tree, NULL )
 end function

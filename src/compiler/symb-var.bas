@@ -129,11 +129,6 @@ function symbAddArrayDesc( byval array as FBSYMBOL ptr ) as FBSYMBOL ptr
 
 	function = NULL
 
-	'' don't add if it's a jump table
-	if( (env.clopt.backend = FB_BACKEND_GAS) and symbGetIsJumpTb( array ) ) then
-		exit function
-	end if
-
 	id_alias = NULL
 	stats = 0
 

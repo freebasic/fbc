@@ -401,8 +401,6 @@ end type
 enum AST_INIOPT
 	AST_INIOPT_NONE			= &h00000000
 	AST_INIOPT_ISINI		= &h00000001
-	AST_INIOPT_ISSTATIC		= &h00000002
-	AST_INIOPT_DODEREF		= &h00000004
 end enum
 
 
@@ -940,6 +938,8 @@ declare sub astTypeIniEnd _
 		byval is_initializer as integer _
 	)
 
+declare sub astTypeIniRemoveLastNode( byval tree as ASTNODE ptr )
+
 declare function astTypeIniAddPad _
 	( _
 		byval tree as ASTNODE ptr, _
@@ -950,21 +950,27 @@ declare function astTypeIniAddAssign _
 	( _
 		byval tree as ASTNODE ptr, _
 		byval expr as ASTNODE ptr, _
-		byval sym as FBSYMBOL ptr _
+		byval sym as FBSYMBOL ptr, _
+		byval dtype as integer = FB_DATATYPE_INVALID, _
+		byval subtype as FBSYMBOL ptr = NULL _
 	) as ASTNODE ptr
 
 declare function astTypeIniAddCtorCall _
 	( _
 		byval tree as ASTNODE ptr, _
 		byval sym as FBSYMBOL ptr, _
-		byval procexpr as ASTNODE ptr _
+		byval procexpr as ASTNODE ptr, _
+		byval dtype as integer = FB_DATATYPE_INVALID, _
+		byval subtype as FBSYMBOL ptr = NULL _
 	) as ASTNODE ptr
 
 declare function astTypeIniAddCtorList _
 	( _
 		byval tree as ASTNODE ptr, _
 		byval sym as FBSYMBOL ptr, _
-		byval elements as longint _
+		byval elements as longint, _
+		byval dtype as integer = FB_DATATYPE_INVALID, _
+		byval subtype as FBSYMBOL ptr = NULL _
 	) as ASTNODE ptr
 
 declare function astTypeIniScopeBegin _
@@ -993,10 +999,23 @@ declare sub astTypeIniReplaceElement _
 		byval expr as ASTNODE ptr _
 	)
 
-declare function astTypeIniFlush _
+declare sub astLoadStaticInitializer _
 	( _
 		byval tree as ASTNODE ptr, _
-		byval basesym as FBSYMBOL ptr, _
+		byval basesym as FBSYMBOL ptr _
+	)
+
+declare function astTypeIniFlush overload _
+	( _
+		byval target as ASTNODE ptr, _
+		byval initree as ASTNODE ptr, _
+		byval options as AST_INIOPT _
+	) as ASTNODE ptr
+
+declare function astTypeIniFlush overload _
+	( _
+		byval target as FBSYMBOL ptr, _
+		byval initree as ASTNODE ptr, _
 		byval options as AST_INIOPT _
 	) as ASTNODE ptr
 
@@ -1072,11 +1091,20 @@ declare function astBuildFakeWstringAssign _
 		byval options as integer = 0 _
 	) as ASTNODE ptr
 
+declare function astBuildAddrOfDeref _
+	( _
+		byval n as ASTNODE ptr, _
+		byval offset as longint, _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr, _
+		byval maybeafield as FBSYMBOL ptr = NULL _
+	) as ASTNODE ptr
+
 declare function astBuildVarField _
 	( _
 		byval sym as FBSYMBOL ptr, _
 		byval fld as FBSYMBOL ptr = NULL, _
-		byval ofs as longint = 0 _
+		byval offset as longint = 0 _
 	) as ASTNODE ptr
 
 declare function astBuildTempVarClear( byval sym as FBSYMBOL ptr ) as ASTNODE ptr
@@ -1123,20 +1151,6 @@ declare function astBuildForEnd _
 		byval cnt as FBSYMBOL ptr, _
 		byval label as FBSYMBOL ptr, _
 		byval endvalue as ASTNODE ptr _
-	) as ASTNODE ptr
-
-declare function astBuildInstPtr _
-	( _
-		byval sym as FBSYMBOL ptr, _
-		byval fld as FBSYMBOL ptr = NULL, _
-		byval idxexpr as ASTNODE ptr = NULL _
-	) as ASTNODE ptr
-
-declare function astBuildInstPtrAtOffset _
-	( _
-		byval sym as FBSYMBOL ptr, _
-		byval fld as FBSYMBOL ptr = NULL, _
-		byval ofs as longint = 0 _
 	) as ASTNODE ptr
 
 declare function astBuildVarDtorCall _

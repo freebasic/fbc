@@ -853,6 +853,9 @@ private function hAstNodeToStr _
 	case AST_NODECLASS_SCOPEBEGIN
 		return "SCOPEBEGIN: " & hSymbToStr( n->sym )
 
+	case AST_NODECLASS_TYPEINI_ASSIGN
+		return "TYPEINI_ASSIGN( offset=" & n->typeini.ofs & " )"
+
 	case else
 		return hAstNodeClassToStr( n->class )
 	end select
@@ -880,7 +883,9 @@ private sub astDumpTreeEx _
 	dim as string s
 	's += "[" + hex( n, 8 ) + "] "
 	s += hAstNodeToStr( n )
-	's += " " + typeDump( n->dtype, n->subtype )
+#if __FB_DEBUG__
+	s += " " + typeDump( n->dtype, n->subtype )
+#endif
 	dbg_astOutput( s, col, just, depth )
 
 	depth += 1

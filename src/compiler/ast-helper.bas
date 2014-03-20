@@ -148,42 +148,58 @@ function astBuildVarDtorCall _
 
 end function
 
+'' Build a field access on the target:
+''    n = *cptr( dtype ptr, @n + offset )
+'' If offset = 0, then it's basically just a type cast.
+function astBuildAddrOfDeref _
+	( _
+		byval n as ASTNODE ptr, _
+		byval offset as longint, _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr, _
+		byval maybeafield as FBSYMBOL ptr _
+	) as ASTNODE ptr
+
+	n = astNewADDROF( n )
+	if( offset <> 0 ) then
+		n = astNewBOP( AST_OP_ADD, n, astNewCONSTi( offset ) )
+	end if
+	n = astNewCONV( typeAddrOf( dtype ), subtype, n, AST_CONVOPT_DONTCHKPTR )
+	n = astNewDEREF( n )
+
+	if( maybeafield ) then
+		if( symbIsField( maybeafield ) ) then
+			n = astNewFIELD( n, maybeafield )
+		end if
+	end if
+
+	function = n
+end function
+
 function astBuildVarField _
 	( _
 		byval sym as FBSYMBOL ptr, _
 		byval fld as FBSYMBOL ptr, _
-		byval ofs as longint _
+		byval offset as longint _
 	) as ASTNODE ptr
 
-	dim as ASTNODE ptr expr = any
+	dim as ASTNODE ptr n = any
 
-	if( fld ) then
-		ofs += symbGetOfs( fld )
-
-		'' byref or import?
-		if( symbIsParamByRef( sym ) or symbIsImport( sym ) ) then
-			expr = astNewDEREF( _
-				astNewVAR( sym, , typeAddrOf( symbGetFullType( sym ) ), _
-					symbGetSubtype( sym ) ), _
-				symbGetFullType( fld ), symbGetSubtype( fld ), ofs )
-		else
-			expr = astNewVAR( sym, ofs, symbGetFullType( fld ), symbGetSubtype( fld ) )
-		end if
-
-		expr = astNewFIELD( expr, fld )
+	'' Do implicit DEREF if it's a byref symbol
+	if( symbIsParamInstance( sym ) or symbIsParamByRef( sym ) or symbIsImport( sym ) ) then
+		n = astNewDEREF( astNewVAR( sym, , typeAddrOf( symbGetFullType( sym ) ), symbGetSubtype( sym ) ) )
 	else
-		'' byref or import?
-		if( symbIsParamByRef( sym ) or symbIsImport( sym ) ) then
-			expr = astNewDEREF( _
-				astNewVAR( sym, , typeAddrOf( symbGetFullType( sym ) ), _
-					symbGetSubtype( sym ) ), _
-				, , ofs )
-		else
-			expr = astNewVAR( sym, ofs )
-		end if
+		n = astNewVAR( sym )
 	end if
 
-	function = expr
+	if( fld ) then
+		offset += symbGetOfs( fld )
+		n = astBuildAddrOfDeref( n, offset, symbGetFullType( fld ), symbGetSubtype( fld ), fld )
+	else
+		n = astBuildAddrOfDeref( n, offset, symbGetFullType( sym ), symbGetSubtype( sym ), NULL )
+	end if
+
+	function = n
 end function
 
 function astBuildTempVarClear( byval sym as FBSYMBOL ptr ) as ASTNODE ptr
@@ -575,95 +591,6 @@ function astBuildProcResultVar _
 end function
 
 ''
-'' instance ptr
-''
-
-'':::::
-function astBuildInstPtr _
-	( _
-		byval sym as FBSYMBOL ptr, _
-		byval fld as FBSYMBOL ptr, _
-		byval idxexpr as ASTNODE ptr _
-	) as ASTNODE ptr
-
-	dim as ASTNODE ptr expr = any
-	dim as integer dtype = any
-	dim as FBSYMBOL ptr subtype = any
-	dim as longint ofs = any
-
-	dtype = symbGetFullType( sym )
-	subtype = symbGetSubtype( sym )
-
-	'' it's always a param
-	expr = astNewVAR( sym, 0, typeAddrOf( dtype ), subtype )
-
-	if( fld <> NULL ) then
-		dtype = symbGetFullType( fld )
-		subtype = symbGetSubtype( fld )
-
-		'' build sym.field( index )
-
-		ofs = symbGetOfs( fld )
-		if( ofs <> 0 ) then
-			expr = astNewBOP( AST_OP_ADD, expr, astNewCONSTi( ofs ) )
-		end if
-
-		'' array access?
-		if( idxexpr <> NULL ) then
-			'' times length
-			expr = astNewBOP( AST_OP_ADD, expr, _
-				astNewBOP( AST_OP_MUL, idxexpr, _
-					astNewCONSTi( symbGetLen( fld ) ) ) )
-		end if
-
-	end if
-
-	expr = astNewDEREF( expr, dtype, subtype )
-
-	if( fld <> NULL ) then
-		expr = astNewFIELD( expr, fld )
-	end if
-
-	function = expr
-end function
-
-function astBuildInstPtrAtOffset _
-	( _
-		byval sym as FBSYMBOL ptr, _
-		byval fld as FBSYMBOL ptr, _
-		byval ofs as longint _
-	) as ASTNODE ptr
-
-	dim as ASTNODE ptr expr = any
-	dim as integer dtype = any
-	dim as FBSYMBOL ptr subtype = any
-
-	dtype = symbGetFullType( sym )
-	subtype = symbGetSubtype( sym )
-
-	'' THIS is a BYREF AS UDT parameter, the typeAddrOf() is needed to
-	'' make the expression be an UDT PTR.
-	expr = astNewVAR( sym, 0, typeAddrOf( dtype ), subtype )
-
-	if( fld <> NULL ) then
-		dtype = symbGetFullType( fld )
-		subtype = symbGetSubtype( fld )
-	end if
-
-	if( ofs <> 0 ) then
-		expr = astNewBOP( AST_OP_ADD, expr, astNewCONSTi( ofs ) )
-	end if
-
-	expr = astNewDEREF( expr, dtype, subtype )
-
-	if( fld <> NULL ) then
-		expr = astNewFIELD( expr, fld )
-	end if
-
-	function = expr
-end function
-
-''
 '' misc
 ''
 
@@ -880,9 +807,6 @@ function astBuildArrayDescIniTree _
     astTypeIniScopeEnd( tree, NULL )
 
     astTypeIniEnd( tree, TRUE )
-
-    ''
-    symbSetIsInitialized( desc )
 
     function = tree
 

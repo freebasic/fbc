@@ -166,7 +166,6 @@ sub astDataStmtEnd( byval tree as ASTNODE ptr )
     astTypeIniEnd( initree, TRUE )
 
     symbSetTypeIniTree( array, initree )
-    symbSetIsInitialized( array )
 
 	'' Link the previous DATA stmt to this new one
 	if( ast.data.lastsym <> NULL ) then

@@ -135,7 +135,6 @@ private sub hBuildRtti( byval udt as FBSYMBOL ptr )
 	astTypeIniEnd( initree, TRUE )
 
 	symbSetTypeIniTree( rtti, initree )
-	symbSetIsInitialized( rtti )
 end sub
 
 private sub hBuildVtable( byval udt as FBSYMBOL ptr )
@@ -220,7 +219,6 @@ private sub hBuildVtable( byval udt as FBSYMBOL ptr )
 	astTypeIniEnd( initree, TRUE )
 
 	symbSetTypeIniTree( vtable, initree )
-	symbSetIsInitialized( vtable )
 
 	'' 1. new (and not inherited) entries for ...
 	''  - virtuals: must be set to point to their bodies for now.
@@ -267,18 +265,15 @@ private sub hAddCtorBody _
 		byval is_copyctor as integer _
 	)
 
-	dim as FBSYMBOL ptr this_ = any, src = any
-
 	'' The AST will add any implicit base/field construction/destruction
 	'' code automatically
 	hProcBegin( udt, proc )
 
 	if( is_copyctor ) then
-		this_ = symbGetParamVar( symbGetProcHeadParam( proc ) )
-		src = symbGetParamVar( symbGetProcTailParam( proc ) )
-
 		'' assign op overload will do the rest
-		astAdd( astNewASSIGN( astBuildInstPtr( this_ ), astBuildInstPtr( src ) ) )
+		astAdd( astNewASSIGN( _
+			astBuildVarField( symbGetParamVar( symbGetProcHeadParam( proc ) ) ), _
+			astBuildVarField( symbGetParamVar( symbGetProcTailParam( proc ) ) ) ) )
 	end if
 
 	hProcEnd( )
@@ -355,9 +350,9 @@ private function hCopyUnionFields _
 
     '' copy all them at once
 	astAdd( astNewMEM( AST_OP_MEMMOVE, _
-    	  	  		   astBuildInstPtr( this_, base_fld ), _
-    	  	  		   astBuildInstPtr( rhs, base_fld ), _
-    	  	  		   bytes ) )
+				astBuildVarField( this_, base_fld ), _
+				astBuildVarField( rhs, base_fld ), _
+				bytes ) )
 
 	function = fld
 end function
@@ -386,8 +381,8 @@ private sub hAddLetOpBody _
 				continue while
 			end if
 
-			dstexpr = astBuildInstPtr( this_, fld )
-			srcexpr = astBuildInstPtr( rhs, fld )
+			dstexpr = astBuildVarField( this_, fld )
+			srcexpr = astBuildVarField( rhs, fld )
 
 			'' not an array?
 			if( symbGetArrayDimensions( fld ) = 0 ) then

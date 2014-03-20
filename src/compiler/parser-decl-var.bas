@@ -912,7 +912,6 @@ private function hVarInit _
 				errReport( FB_ERRMSG_EXPECTEDCONST )
 				'' error recovery: discard the tree
 				astDelTree( initree )
-				symbGetStats( sym ) and= not FB_SYMBSTATS_INITIALIZED
 				exit function
 			end if
 		end if
@@ -931,7 +930,6 @@ private function hVarInit _
 			errReport( FB_ERRMSG_INVALIDREFERENCETOLOCAL )
 			'' error recovery: discard the tree
 			astDelTree( initree )
-			symbGetStats( sym ) and= not FB_SYMBSTATS_INITIALIZED
 			exit function
 		end if
 	end if
@@ -1002,7 +1000,7 @@ private function hCallStaticCtor _
 
 	if( initree ) then
 		'' static var's initializer
-		initcode = astTypeIniFlush( initree, sym, AST_INIOPT_ISINI )
+		initcode = astTypeIniFlush( sym, initree, AST_INIOPT_ISINI )
 	end if
 
 	if( has_dtor ) then
@@ -1095,8 +1093,7 @@ private function hFlushInitializer _
 
 		var_decl = hFlushDecl( var_decl )
 
-		return astNewLINK( var_decl, _
-						   astTypeIniFlush( initree, sym, AST_INIOPT_ISINI ) )
+		return astNewLINK( var_decl, astTypeIniFlush( sym, initree, AST_INIOPT_ISINI ) )
 	end if
 
 	'' not an object?
@@ -1111,9 +1108,6 @@ private function hFlushInitializer _
 
 		'' must be added to the dtor list..
 		initree = NULL
-	else
-		'' Don't let the backend emit the initializer for this global/static
-		symbGetStats( sym ) and= not FB_SYMBSTATS_INITIALIZED
 	end if
 
     '' local?
@@ -1153,7 +1147,6 @@ function cVarDecl _
     dim as integer dimensions = any, suffix = any
     dim as zstring ptr palias = any
     dim as ASTNODE ptr assign_initree = any
-	dim as integer doassign = any
 	dim as FB_IDOPT options = any
 
     function = NULL
@@ -1390,7 +1383,6 @@ function cVarDecl _
 		if( is_fordecl = FALSE ) then
 
 			'' assume no assignment
-			doassign = FALSE
 			assign_initree = NULL
 
 			'' '=' | '=>' ?
@@ -1402,7 +1394,6 @@ function cVarDecl _
 					if( (symbGetAttrib( sym ) and (FB_SYMBATTRIB_STATIC or _
 												   FB_SYMBATTRIB_SHARED or _
 												   FB_SYMBATTRIB_COMMON)) = 0 ) then
-						doassign = TRUE
 
 						''
 						'' The variable will be unscoped, i.e. it needs a default initree
@@ -1439,33 +1430,32 @@ function cVarDecl _
 		else
 			initree = NULL
 			assign_initree = NULL
-			doassign = FALSE
 		end if
 
 		'' add to AST
 		if( sym <> NULL ) then
-
-			dim as FBSYMBOL ptr desc = NULL
-    		dim as ASTNODE ptr var_decl = NULL
-
-			'' not declared already?
-			if( is_decl = FALSE ) then
-				'' Don't init if it's a temp FOR var, it will
-				'' have the start condition put into it.
-				var_decl = astNewDECL( sym, _
-						((initree = NULL) and (not is_fordecl)) )
-
-				'' add the descriptor too, if any
-				desc = symbGetArrayDescriptor( sym )
-				if( desc <> NULL ) then
-					var_decl = astNewLINK( var_decl, astNewDECL( desc, (symbGetTypeIniTree( desc ) = NULL) ) )
-				end if
-			end if
-
-			'' handle arrays (must be done after adding the decl node)
-
 			'' do nothing if it's EXTERN
 			if( token <> FB_TK_EXTERN ) then
+				dim as FBSYMBOL ptr desc = NULL
+				dim as ASTNODE ptr var_decl = NULL
+
+				'' not declared already?
+				if( is_decl = FALSE ) then
+					'' Don't init if it's a temp FOR var, it will
+					'' have the start condition put into it.
+					var_decl = astNewDECL( sym, _
+							((initree = NULL) and (not is_fordecl)) )
+
+					'' add the descriptor too, if any
+					desc = symbGetArrayDescriptor( sym )
+					if( desc <> NULL ) then
+						'' Note: descriptor may not have an initree here, in case it's COMMON
+						'' FIXME: should probably not add DECL nodes for COMMONs/SHAREDs in the first place (not done for EXTERNs either)
+						var_decl = astNewLINK( var_decl, astNewDECL( desc, (symbGetTypeIniTree( desc ) = NULL) ) )
+					end if
+				end if
+
+				'' handle arrays (must be done after adding the decl node)
 
 				'' array?
 				if( ((attrib and FB_SYMBATTRIB_DYNAMIC) <> 0) or (dimensions > 0) ) then
@@ -1482,7 +1472,7 @@ function cVarDecl _
 
 							'' bydesc array params have no descriptor
 							if( desc <> NULL ) then
-								var_decl = astNewLINK( var_decl, astTypeIniFlush( symbGetTypeIniTree( desc ), desc, AST_INIOPT_ISINI ) )
+								var_decl = astNewLINK( var_decl, astTypeIniFlush( desc, symbGetTypeIniTree( desc ), AST_INIOPT_ISINI ) )
 								symbSetTypeIniTree( desc, NULL )
 							end if
 
@@ -1510,7 +1500,7 @@ function cVarDecl _
 						astAddUnscoped( hFlushInitializer( sym, var_decl, initree, has_dtor ) )
 
 						'' initializer as assignment?
-						if( doassign ) then
+						if( assign_initree ) then
 							dim as ASTNODE ptr assign_vardecl = any
 
 							'' clear it before it's initialized?
@@ -1518,14 +1508,12 @@ function cVarDecl _
 								astAdd( astBuildVarDtorCall( sym, TRUE ) )
 							end if
 
-							assign_vardecl = astNewDECL( sym, (assign_initree = NULL) )
+							assign_vardecl = astNewDECL( sym, FALSE )
 							assign_vardecl = hFlushDecl( assign_vardecl )
 
 							'' use the initializer as an assignment
 							astAdd( astNewLINK( assign_vardecl, _
-												astTypeIniFlush( assign_initree, _
-											 	 		 		 sym, _
-											  	 		 		 AST_INIOPT_ISINI ) ) )
+								astTypeIniFlush( sym, assign_initree, AST_INIOPT_ISINI ) ) )
 						end if
 					end if
 				end if
@@ -1807,7 +1795,7 @@ sub cAutoVarDecl(byval attrib as FB_SYMBATTRIB)
 			errReport( FB_ERRMSG_EXPECTEDEQ )
 		end if
 
-    	'' parse expression
+		'' parse expression
 		dim as ASTNODE ptr expr = cExpression( )
 		if( expr = NULL ) then
 			errReport( FB_ERRMSG_AUTONEEDSINITIALIZER )
@@ -1852,51 +1840,46 @@ sub cAutoVarDecl(byval attrib as FB_SYMBATTRIB)
 		                      symbCalcLen( dtype, subtype ), FALSE, attrib, _
 		                      0, dTB() )
 
-        if( sym <> NULL ) then
-
-        	'' build a ini-tree
+		if( sym <> NULL ) then
+			'' build a ini-tree
 			dim as ASTNODE ptr initree = any
 
-        	initree = astTypeIniBegin( astGetFullType( expr ), subtype, symbIsLocal( sym ) )
+			initree = astTypeIniBegin( astGetFullType( expr ), subtype, symbIsLocal( sym ) )
 
-        	'' not an object?
-        	if( has_ctor = FALSE ) then
-        		astTypeIniAddAssign( initree, expr, sym )
-
-        	'' handle constructors..
-        	else
+			'' not an object?
+			if( has_ctor = FALSE ) then
+				astTypeIniAddAssign( initree, expr, sym )
+			'' handle constructors..
+			else
 				dim as integer is_ctorcall = any
 				expr = astBuildImplicitCtorCallEx( sym, expr, cBydescArrayArgParens( expr ), is_ctorcall )
 
-        		if( expr <> NULL ) then
-    				if( is_ctorcall ) then
-    					astTypeIniAddCtorCall( initree, sym, expr )
-	        		else
-	        			'' no proper ctor, try an assign
-	        			astTypeIniAddAssign( initree, expr, sym )
-        			end if
-        		end if
-        	end if
+				if( expr <> NULL ) then
+					if( is_ctorcall ) then
+						astTypeIniAddCtorCall( initree, sym, expr )
+					else
+						'' no proper ctor, try an assign
+						astTypeIniAddAssign( initree, expr, sym )
+					end if
+				end if
+			end if
 
 			if( (symbGetAttrib( sym ) and (FB_SYMBATTRIB_STATIC or _
-		  						   	   	   FB_SYMBATTRIB_SHARED)) <> 0 ) then
+							FB_SYMBATTRIB_SHARED)) <> 0 ) then
 				'' only if it's not an object, static or global instances are allowed
 				if( has_ctor = FALSE ) then
 					if( astTypeIniIsConst( initree ) = FALSE ) then
 						'' error recovery: discard the tree
 						astDelTree( expr )
 						expr = astNewCONSTz( dtype, subtype )
-		    	    	dtype = FB_DATATYPE_INTEGER
-		    	    	subtype = NULL
+						dtype = FB_DATATYPE_INTEGER
+						subtype = NULL
 						has_dtor = FALSE
 					end if
 				end if
 			end if
 
-        	astTypeIniEnd( initree, TRUE )
-
-        	''
-        	symbSetIsInitialized( sym )
+			astTypeIniEnd( initree, TRUE )
 
 			'' add to AST
 			dim as ASTNODE ptr var_decl = astNewDECL( sym, FALSE )
@@ -1906,7 +1889,6 @@ sub cAutoVarDecl(byval attrib as FB_SYMBATTRIB)
 
 			'' flush the init tree (must be done after adding the decl node)
 			astAdd( hFlushInitializer( sym, var_decl, initree, has_dtor ) )
-
 		end if
 
 		'' (',' SymbolDef)*

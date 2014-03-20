@@ -1018,7 +1018,7 @@ sub edbgEmitLocalVar _
     		exit sub
     	end if
 
-		if( symbGetIsInitialized( sym ) ) then
+		if( symbGetTypeIniTree( sym ) ) then
 			t = STAB_TYPE_STSYM
 		else
 			t = STAB_TYPE_LCSYM

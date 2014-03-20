@@ -832,6 +832,7 @@ private function hCallCtorList _
 		elements = symbGetArrayElements( this_ )
 	end if
 
+	assert( elements > 0 )
 	cnt = symbAddTempVar( FB_DATATYPE_INTEGER )
 	label = symbAddLabel( NULL )
 	iter = symbAddTempVar( typeAddrOf( dtype ), subtype )
@@ -840,10 +841,10 @@ private function hCallCtorList _
 	if( fld <> NULL ) then
 		if( is_ctor ) then
 			'' iter = @this.field(0)
-			fldexpr = astBuildInstPtr( this_, fld )
+			fldexpr = astBuildVarField( this_, fld )
 		else
 			'' iter = @this.field(elements-1)
-			fldexpr = astBuildInstPtr( this_, fld, astNewCONSTi( elements - 1 ) )
+			fldexpr = astBuildVarField( this_, fld, (elements - 1) * symbGetLen( fld ) )
 		end if
 	else
 		if( is_ctor ) then
@@ -895,7 +896,7 @@ private function hCallFieldCtor _
 		'' not an array?
 		if( symbGetArrayDimensions( fld ) = 0 ) then
 			'' ctor( this.field )
-			function = astBuildCtorCall( symbGetSubtype( fld ), astBuildInstPtr( this_, fld ) )
+			function = astBuildCtorCall( symbGetSubtype( fld ), astBuildVarField( this_, fld ) )
 		'' array..
 		else
 			function = hCallCtorList( TRUE, this_, fld )
@@ -906,21 +907,21 @@ private function hCallFieldCtor _
 	'' Descriptor of a dynamic array field?
 	if( symbIsDescriptor( fld ) ) then
 		return astTypeIniFlush( _
+				astBuildVarField( this_ ), _
 				astBuildArrayDescIniTree( _
 					fld, _
 					fld->var_.desc.array, _
 					NULL ), _
-				this_, _
 				AST_INIOPT_ISINI )
 	end if
 
 	'' bitfield?
 	if( symbFieldIsBitfield( fld ) ) then
-		function = astNewASSIGN( astBuildInstPtr( this_, fld ), _
+		function = astNewASSIGN( astBuildVarField( this_, fld ), _
 		                         astNewCONSTi( 0, FB_DATATYPE_UINT ) )
 	else
 		function = astNewMEM( AST_OP_MEMCLEAR, _
-		                      astBuildInstPtr( this_, fld ), _
+		                      astBuildVarField( this_, fld ), _
 		                      astNewCONSTi( symbGetLen( fld ) * symbGetArrayElements( fld ) ) )
 	end if
 end function
@@ -957,7 +958,7 @@ private function hClearUnionFields _
 
 	'' clear all them at once
 	function = astNewMEM( AST_OP_MEMCLEAR, _
-	                      astBuildInstPtr( this_, base_fld ), _
+	                      astBuildVarField( this_, base_fld ), _
 	                      astNewCONSTi( bytes ) )
 end function
 
@@ -993,9 +994,12 @@ private function hCallFieldCtors _
 						tree = astNewLINK( tree, hCallFieldCtor( this_, fld ) )
 					'' flush the tree..
 					else
+						'' Note: flushing the field's TYPEINI against the whole "THIS" instance,
+						'' not against "THIS.thefield", because the TYPEINI contains absolute offsets.
 						tree = astNewLINK( tree, _
-							astTypeIniFlush( astTypeIniClone( symbGetTypeIniTree( fld ) ), _
-							                 this_, AST_INIOPT_ISINI ) )
+							astTypeIniFlush( astBuildVarField( this_ ), _
+								astTypeIniClone( symbGetTypeIniTree( fld ) ), _
+								AST_INIOPT_ISINI ) )
 					end if
 				end if
 			end if
@@ -1029,7 +1033,7 @@ private function hCallBaseCtor _
 	initree = proc->proc.ext->base_initree
 	if( initree ) then
 		proc->proc.ext->base_initree = NULL
-		return astTypeIniFlush( initree, this_, AST_INIOPT_ISINI )
+		return astTypeIniFlush( astBuildVarField( this_ ), initree, AST_INIOPT_ISINI )
 	end if
 
 	subtype = symbGetSubtype( base_ )
@@ -1070,7 +1074,7 @@ private function hInitVptr _
 	'' this.vptr = cast( any ptr, (cast(byte ptr, @vtable) + sizeof(void *) * 2) )
 	'' assuming that everything with a vptr extends fb_Object
 	function = astNewASSIGN( _ 
-		astBuildInstPtr( this_, symbUdtGetFirstField( symb.rtti.fb_object ) ), _
+		astBuildVarField( this_, symbUdtGetFirstField( symb.rtti.fb_object ) ), _
 		astNewCONV( typeAddrOf( FB_DATATYPE_VOID ), NULL, _
 			astNewADDROF( astNewVAR( parent->udt.ext->vtable, env.pointersize * 2 ) ) ) )
 end function
@@ -1109,9 +1113,9 @@ private sub hCallFieldDtor _
 
 	if( symbGetType( fld ) = FB_DATATYPE_STRING ) then
 		if( symbGetArrayDimensions( fld ) <> 0 ) then
-			astAdd( rtlArrayErase( astBuildInstPtr( this_, fld ), symbIsDynamic( fld ), FALSE ) )
+			astAdd( rtlArrayErase( astBuildVarField( this_, fld ), symbIsDynamic( fld ), FALSE ) )
 		else
-			astAdd( rtlStrDelete( astBuildInstPtr( this_, fld ) ) )
+			astAdd( rtlStrDelete( astBuildVarField( this_, fld ) ) )
 		end if
 	'' UDT field with dtor?
 	elseif( symbHasDtor( fld ) ) then
@@ -1119,13 +1123,13 @@ private sub hCallFieldDtor _
 		case -1
 		case 0
 			'' dtor( this.field )
-			astAdd( astBuildDtorCall( symbGetSubtype( fld ), astBuildInstPtr( this_, fld ) ) )
+			astAdd( astBuildDtorCall( symbGetSubtype( fld ), astBuildVarField( this_, fld ) ) )
 		case else
 			astAdd( hCallCtorList( FALSE, this_, fld ) )
 		end select
 	else
 		if( symbGetArrayDimensions( fld ) = -1 ) then
-			astAdd( rtlArrayErase( astBuildInstPtr( this_, fld ), TRUE, FALSE ) )
+			astAdd( rtlArrayErase( astBuildVarField( this_, fld ), TRUE, FALSE ) )
 		end if
 	end if
 
@@ -1204,7 +1208,7 @@ private sub hCallBaseDtor _
 
 	this_ = symbGetParamVar( symbGetProcHeadParam( proc ) )
 	astAdd( astBuildDtorCall( symbGetSubtype( base_ ), _
-				astBuildInstPtr( this_, base_ ), _
+				astBuildVarField( this_, base_ ), _
 				TRUE ) )
 end sub
 
@@ -1226,7 +1230,7 @@ private sub hCallStaticCtor _
 		byval initree as ASTNODE ptr _
 	)
 
-	astAdd( astTypeIniFlush( astTypeIniClone( initree ), sym, AST_INIOPT_ISINI ) )
+	astAdd( astTypeIniFlush( sym, astTypeIniClone( initree ), AST_INIOPT_ISINI ) )
 	astTypeIniDelete( initree )
 
 end sub

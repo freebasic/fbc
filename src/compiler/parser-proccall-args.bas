@@ -391,9 +391,7 @@ private function hOvlProcArgList _
 
 			'' pass the instance ptr of the current method
 			arg = symbAllocOvlCallArg( @parser.ovlarglist, arg_list, TRUE )
-			arg->expr = astBuildInstPtr( _
-							symbGetParamVar( _
-								symbGetProcHeadParam( parser.currproc ) ) )
+			arg->expr = astBuildVarField( symbGetParamVar( symbGetProcHeadParam( parser.currproc ) ) )
 			arg->mode = INVALID
 		end if
 
@@ -499,9 +497,7 @@ function cProcArgList _
 
 			'' pass the instance ptr of the current method
 			arg = symbAllocOvlCallArg( @parser.ovlarglist, arg_list, TRUE )
-			arg->expr = astBuildInstPtr( _
-							symbGetParamVar( _
-								symbGetProcHeadParam( parser.currproc ) ) )
+			arg->expr = astBuildVarField( symbGetParamVar( symbGetProcHeadParam( parser.currproc ) ) )
 			arg->mode = INVALID
 		end if
 

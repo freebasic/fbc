@@ -2361,8 +2361,6 @@ function symbDump( byval sym as FBSYMBOL ptr ) as string
 	checkStat( ACCESSED )
 	if( symbIsProc( sym ) ) then
 		checkStat( CTORINITED )
-	else
-		checkStat( INITIALIZED )
 	end if
 	checkStat( DECLARED )
 	checkStat( RTL )

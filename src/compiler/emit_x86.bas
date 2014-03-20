@@ -15,6 +15,7 @@
 #include once "hash.bi"
 #include once "symb.bi"
 #include once "emit-private.bi"
+#include once "ir-private.bi"
 
 declare sub hDeclVariable _
 	( _
@@ -1044,16 +1045,13 @@ private sub hDeclVariable _
     	return
 	end if
 
+	'' Don't emit the fake jump-table vars, see also astBuildJMPTB()
+	if( symbGetIsJumpTb( s ) ) then
+		return
+	end if
+
 	'' initialized?
-	if( symbGetIsInitialized( s ) ) then
-
-		'' extern or jump-tb?
-    	if( symbIsExtern( s ) ) then
-			return
-		elseif( symbGetIsJumpTb( s ) ) then
-			return
-		end if
-
+	if( symbGetTypeIniTree( s ) ) then
     	'' never referenced?
     	if( symbGetIsAccessed( s ) = FALSE ) then
 			'' not public?
@@ -1063,10 +1061,7 @@ private sub hDeclVariable _
 		end if
 
 		hEmitDataHeader( )
-		astTypeIniFlush( s->var_.initree, _
-						 s, _
-						 AST_INIOPT_ISINI or AST_INIOPT_ISSTATIC )
-		s->var_.initree = NULL
+		irhlFlushStaticInitializer( s )
 		return
 	end if
 
