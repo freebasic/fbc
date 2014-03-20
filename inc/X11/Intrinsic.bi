@@ -11,8 +11,6 @@
 
 #define XtSpecificationRelease 6
 
-type String as byte ptr
-
 #define FALSE 0
 #define TRUE 1
 
@@ -49,11 +47,11 @@ type Opaque as XtPointer
 type XtTranslations as _TranslationData ptr
 type XtAccelerators as _TranslationData ptr
 type Modifiers as uinteger
-type XtActionProc as sub cdecl(byval as Widget, byval as XEvent ptr, byval as String ptr, byval as Cardinal ptr)
+type XtActionProc as sub cdecl(byval as Widget, byval as XEvent ptr, byval as zstring ptr ptr, byval as Cardinal ptr)
 type XtBoundActions as XtActionProc ptr
 
 type _XtActionsRec
-	string as String
+	string as zstring ptr
 	proc as XtActionProc
 end type
 
@@ -98,7 +96,7 @@ type XtTypeConverter as function cdecl(byval as Display ptr, byval as XrmValue p
 type XtDestructor as sub cdecl(byval as XtAppContext, byval as XrmValue ptr, byval as XtPointer, byval as XrmValue ptr, byval as Cardinal ptr)
 type XtCacheRef as Opaque
 type XtActionHookId as Opaque
-type XtActionHookProc as sub cdecl(byval as Widget, byval as XtPointer, byval as String, byval as XEvent ptr, byval as String ptr, byval as Cardinal ptr)
+type XtActionHookProc as sub cdecl(byval as Widget, byval as XtPointer, byval as zstring ptr, byval as XEvent ptr, byval as zstring ptr ptr, byval as Cardinal ptr)
 type XtBlockHookId as uinteger
 type XtBlockHookProc as sub cdecl(byval as XtPointer)
 type XtKeyProc as sub cdecl(byval as Display ptr, byval as KeyCode, byval as Modifiers, byval as Modifiers ptr, byval as KeySym ptr)
@@ -123,7 +121,7 @@ type XtInputCallbackProc as sub cdecl(byval as XtPointer, byval as integer ptr, 
 type XtSignalCallbackProc as sub cdecl(byval as XtPointer, byval as XtSignalId ptr)
 
 type Arg
-	name as String
+	name as zstring ptr
 	value as XtArgVal
 end type
 
@@ -169,31 +167,31 @@ end type
 type XtPopdownID as XtPopdownIDRec ptr
 
 type _XtResource
-	resource_name as String
-	resource_class as String
-	resource_type as String
+	resource_name as zstring ptr
+	resource_class as zstring ptr
+	resource_type as zstring ptr
 	resource_size as Cardinal
 	resource_offset as Cardinal
-	default_type as String
+	default_type as zstring ptr
 	default_addr as XtPointer
 end type
 
 type XtResource as _XtResource
 type XtResourceList as _XtResource ptr
 type XtResourceDefaultProc as sub cdecl(byval as Widget, byval as integer, byval as XrmValue ptr)
-type XtLanguageProc as function cdecl(byval as Display ptr, byval as String, byval as XtPointer) as String
-type XtErrorMsgHandler as sub cdecl(byval as String, byval as String, byval as String, byval as String, byval as String ptr, byval as Cardinal ptr)
-type XtErrorHandler as sub cdecl(byval as String)
+type XtLanguageProc as function cdecl(byval as Display ptr, byval as zstring ptr, byval as XtPointer) as zstring ptr
+type XtErrorMsgHandler as sub cdecl(byval as zstring ptr, byval as zstring ptr, byval as zstring ptr, byval as zstring ptr, byval as zstring ptr ptr, byval as Cardinal ptr)
+type XtErrorHandler as sub cdecl(byval as zstring ptr)
 type XtCreatePopupChildProc as sub cdecl(byval as Widget)
 type XtWorkProc as function cdecl(byval as XtPointer) as Boolean
 
 type SubstitutionRec
 	match as byte
-	substitution as String
+	substitution as zstring ptr
 end type
 
 type Substitution as SubstitutionRec ptr
-type XtFilePredicate as function cdecl(byval as String) as Boolean
+type XtFilePredicate as function cdecl(byval as zstring ptr) as Boolean
 type XtRequestId as XtPointer
 type XtConvertSelectionProc as function cdecl(byval as Widget, byval as Atom ptr, byval as Atom ptr, byval as Atom ptr, byval as XtPointer ptr, byval as uinteger ptr, byval as integer ptr) as Boolean
 type XtLoseSelectionProc as sub cdecl(byval as Widget, byval as Atom ptr)
@@ -315,7 +313,7 @@ declare function XtScreen cdecl alias "XtScreen" (byval as Widget) as Screen ptr
 declare function XtScreenOfObject cdecl alias "XtScreenOfObject" (byval as Widget) as Screen ptr
 declare function XtWindow cdecl alias "XtWindow" (byval as Widget) as Window
 declare function XtWindowOfObject cdecl alias "XtWindowOfObject" (byval as Widget) as Window
-declare function XtName cdecl alias "XtName" (byval as Widget) as String
+declare function XtName cdecl alias "XtName" (byval as Widget) as zstring ptr
 declare function XtSuperclass cdecl alias "XtSuperclass" (byval as Widget) as WidgetClass
 declare function XtClass cdecl alias "XtClass" (byval as Widget) as WidgetClass
 declare function XtParent cdecl alias "XtParent" (byval as Widget) as Widget
@@ -331,11 +329,11 @@ declare sub XtCallbackNonexclusive cdecl alias "XtCallbackNonexclusive" (byval a
 declare sub XtCallbackExclusive cdecl alias "XtCallbackExclusive" (byval as Widget, byval as XtPointer, byval as XtPointer)
 declare sub XtPopdown cdecl alias "XtPopdown" (byval as Widget)
 declare sub XtCallbackPopdown cdecl alias "XtCallbackPopdown" (byval as Widget, byval as XtPointer, byval as XtPointer)
-declare sub XtMenuPopupAction cdecl alias "XtMenuPopupAction" (byval as Widget, byval as XEvent ptr, byval as String ptr, byval as Cardinal ptr)
+declare sub XtMenuPopupAction cdecl alias "XtMenuPopupAction" (byval as Widget, byval as XEvent ptr, byval as zstring ptr ptr, byval as Cardinal ptr)
 declare sub XtToolkitInitialize cdecl alias "XtToolkitInitialize" ()
 declare function XtSetLanguageProc cdecl alias "XtSetLanguageProc" (byval as XtAppContext, byval as XtLanguageProc, byval as XtPointer) as XtLanguageProc
 declare function XtCreateApplicationContext cdecl alias "XtCreateApplicationContext" () as XtAppContext
-declare sub XtAppSetFallbackResources cdecl alias "XtAppSetFallbackResources" (byval as XtAppContext, byval as String ptr)
+declare sub XtAppSetFallbackResources cdecl alias "XtAppSetFallbackResources" (byval as XtAppContext, byval as zstring ptr ptr)
 declare sub XtDestroyApplicationContext cdecl alias "XtDestroyApplicationContext" (byval as XtAppContext)
 declare sub XtInitializeWidgetClass cdecl alias "XtInitializeWidgetClass" (byval as WidgetClass)
 declare function XtWidgetToApplicationContext cdecl alias "XtWidgetToApplicationContext" (byval as Widget) as XtAppContext
@@ -392,7 +390,7 @@ declare function XtMalloc cdecl alias "XtMalloc" (byval as Cardinal) as zstring 
 declare function XtCalloc cdecl alias "XtCalloc" (byval as Cardinal, byval as Cardinal) as zstring ptr
 declare function XtRealloc cdecl alias "XtRealloc" (byval as zstring ptr, byval as Cardinal) as zstring ptr
 declare sub XtFree cdecl alias "XtFree" (byval as zstring ptr)
-declare function XtNewString cdecl alias "XtNewString" (byval as String) as String
+declare function XtNewString cdecl alias "XtNewString" (byval as zstring ptr) as zstring ptr
 declare function XtAddWorkProc cdecl alias "XtAddWorkProc" (byval as XtWorkProc, byval as XtPointer) as XtWorkProcId
 declare function XtAppAddWorkProc cdecl alias "XtAppAddWorkProc" (byval as XtAppContext, byval as XtWorkProc, byval as XtPointer) as XtWorkProcId
 declare sub XtRemoveWorkProc cdecl alias "XtRemoveWorkProc" (byval as XtWorkProcId)
@@ -429,13 +427,13 @@ declare sub XtGrabButton cdecl alias "XtGrabButton" (byval as Widget, byval as i
 declare sub XtUngrabButton cdecl alias "XtUngrabButton" (byval as Widget, byval as uinteger, byval as Modifiers)
 declare function XtGrabPointer cdecl alias "XtGrabPointer" (byval as Widget, byval as Boolean, byval as uinteger, byval as integer, byval as integer, byval as Window, byval as Cursor, byval as Time) as integer
 declare sub XtUngrabPointer cdecl alias "XtUngrabPointer" (byval as Widget, byval as Time)
-declare sub XtGetApplicationNameAndClass cdecl alias "XtGetApplicationNameAndClass" (byval as Display ptr, byval as String ptr, byval as String ptr)
+declare sub XtGetApplicationNameAndClass cdecl alias "XtGetApplicationNameAndClass" (byval as Display ptr, byval as zstring ptr ptr, byval as zstring ptr ptr)
 declare sub XtRegisterDrawable cdecl alias "XtRegisterDrawable" (byval as Display ptr, byval as Drawable, byval as Widget)
 declare sub XtUnregisterDrawable cdecl alias "XtUnregisterDrawable" (byval as Display ptr, byval as Drawable)
 declare function XtHooksOfDisplay cdecl alias "XtHooksOfDisplay" (byval as Display ptr) as Widget
 
 type XtCreateHookDataRec
-	type as String
+	type as zstring ptr
 	widget as Widget
 	args as ArgList
 	num_args as Cardinal
@@ -444,7 +442,7 @@ end type
 type XtCreateHookData as XtCreateHookDataRec ptr
 
 type XtChangeHookDataRec
-	type as String
+	type as zstring ptr
 	widget as Widget
 	event_data as XtPointer
 	num_event_data as Cardinal
@@ -462,7 +460,7 @@ end type
 type XtChangeHookSetValuesData as XtChangeHookSetValuesDataRec ptr
 
 type XtConfigureHookDataRec
-	type as String
+	type as zstring ptr
 	widget as Widget
 	changeMask as XtGeometryMask
 	changes as XWindowChanges
@@ -471,7 +469,7 @@ end type
 type XtConfigureHookData as XtConfigureHookDataRec ptr
 
 type XtGeometryHookDataRec
-	type as String
+	type as zstring ptr
 	widget as Widget
 	request as XtWidgetGeometry ptr
 	reply as XtWidgetGeometry ptr
@@ -481,7 +479,7 @@ end type
 type XtGeometryHookData as XtGeometryHookDataRec ptr
 
 type XtDestroyHookDataRec
-	type as String
+	type as zstring ptr
 	widget as Widget
 end type
 

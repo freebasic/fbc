@@ -111,7 +111,7 @@ declare function 	hThreadCall_cb		( byval sym as FBSYMBOL ptr ) as integer
 	 		NULL, FB_RTL_OPT_STRSUFFIX, _
 	 		0 _
 	 	), _
-		/' function shell( byval program as string = "" ) as long '/ _
+		/' function shell( byref program as string = "" ) as long '/ _
 		( _
 			@"shell", @"fb_Shell", _
 	 		FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _

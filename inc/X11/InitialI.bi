@@ -103,7 +103,7 @@ type _XtAppStruct
 	error_inited as Boolean
 	identify_windows as Boolean
 	heap as Heap
-	fallback_resources as String ptr
+	fallback_resources as zstring ptr ptr
 	action_hook_list as _ActionHookRec ptr
 	block_hook_list as _BlockHookRec ptr
 	destroy_list_size as integer
@@ -113,7 +113,7 @@ type _XtAppStruct
 	in_phase2_destroy as Widget
 	langProcRec as LangProcRec
 	free_bindings as _TMBindCacheRec ptr
-	display_name_tried as String
+	display_name_tried as zstring ptr
 	dpy_destroy_list as Display ptr ptr
 	dpy_destroy_count as integer
 	exit_flag as Boolean
@@ -129,7 +129,7 @@ declare sub _XtSetDefaultErrorHandlers cdecl alias "_XtSetDefaultErrorHandlers" 
 declare sub _XtSetDefaultSelectionTimeout cdecl alias "_XtSetDefaultSelectionTimeout" (byval as uinteger ptr)
 declare function _XtDefaultAppContext cdecl alias "_XtDefaultAppContext" () as XtAppContext
 declare function _XtGetProcessContext cdecl alias "_XtGetProcessContext" () as ProcessContext
-declare function _XtAppInit cdecl alias "_XtAppInit" (byval as XtAppContext ptr, byval as String, byval as XrmOptionDescRec ptr, byval as Cardinal, byval as integer ptr, byval as String ptr ptr, byval as String ptr) as Display ptr
+declare function _XtAppInit cdecl alias "_XtAppInit" (byval as XtAppContext ptr, byval as zstring ptr, byval as XrmOptionDescRec ptr, byval as Cardinal, byval as integer ptr, byval as zstring ptr ptr ptr, byval as zstring ptr ptr) as Display ptr
 declare sub _XtDestroyAppContexts cdecl alias "_XtDestroyAppContexts" ()
 declare sub _XtCloseDisplays cdecl alias "_XtCloseDisplays" (byval as XtAppContext)
 extern _XtAppDestroyCount alias "_XtAppDestroyCount" as integer
@@ -179,7 +179,7 @@ type _XtPerDisplayStruct
 	heap as Heap
 	GClist as _GCrec ptr
 	pixmap_tab as Drawable ptr ptr
-	language as String
+	language as zstring ptr
 	last_event as XEvent
 	last_timestamp as Time
 	multi_click_time as integer
@@ -221,7 +221,7 @@ declare sub _XtDoFreeBindings cdecl alias "_XtDoFreeBindings" (byval as XtAppCon
 declare sub _XtExtensionSelect cdecl alias "_XtExtensionSelect" (byval as Widget)
 declare sub _XtAllocWWTable cdecl alias "_XtAllocWWTable" (byval pd as XtPerDisplay)
 declare sub _XtFreeWWTable cdecl alias "_XtFreeWWTable" (byval pd as XtPerDisplay)
-declare function _XtGetUserName cdecl alias "_XtGetUserName" (byval dest as String, byval len as integer) as String
-declare function _XtPreparseCommandLine cdecl alias "_XtPreparseCommandLine" (byval urlist as XrmOptionDescRec ptr, byval num_urs as Cardinal, byval argc as integer, byval argv as String ptr, byval applName as String ptr, byval displayName as String ptr, byval language as String ptr) as XrmDatabase
+declare function _XtGetUserName cdecl alias "_XtGetUserName" (byval dest as zstring ptr, byval len as integer) as zstring ptr
+declare function _XtPreparseCommandLine cdecl alias "_XtPreparseCommandLine" (byval urlist as XrmOptionDescRec ptr, byval num_urs as Cardinal, byval argc as integer, byval argv as zstring ptr ptr, byval applName as zstring ptr ptr, byval displayName as zstring ptr ptr, byval language as zstring ptr ptr) as XrmDatabase
 
 #endif

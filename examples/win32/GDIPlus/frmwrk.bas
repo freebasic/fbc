@@ -76,7 +76,7 @@ namespace frmwrk
 		( _
 			byval hInstance as HINSTANCE, _
 	        byval hPrevInstance as HINSTANCE, _
-	        byval szCmdLine as string, _
+			byval szCmdLine as zstring ptr, _
 	        byval iCmdShow as integer _
 		) as integer    
 	     

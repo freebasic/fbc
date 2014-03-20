@@ -34,7 +34,7 @@ extern _XA_TIMESTAMP alias "_XA_TIMESTAMP" as AtomPtr
 extern _XA_USER alias "_XA_USER" as AtomPtr
 extern _XA_UTF8_STRING alias "_XA_UTF8_STRING" as AtomPtr
 
-declare sub XmuInternStrings cdecl alias "XmuInternStrings" (byval dpy as Display ptr, byval names as String ptr, byval count as Cardinal, byval atoms_return as Atom ptr)
+declare sub XmuInternStrings cdecl alias "XmuInternStrings" (byval dpy as Display ptr, byval names as zstring ptr ptr, byval count as Cardinal, byval atoms_return as Atom ptr)
 declare function XmuNameOfAtom cdecl alias "XmuNameOfAtom" (byval atom_ptr as AtomPtr) as zstring ptr
 
 #endif

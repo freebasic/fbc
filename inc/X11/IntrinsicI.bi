@@ -21,7 +21,7 @@
 #define XTWARNING_PREFIX ""
 #define ERRORDB "/usr/lib/X11/XtErrorDB"
 
-declare sub _XtAllocError cdecl alias "_XtAllocError" (byval as String)
+declare sub _XtAllocError cdecl alias "_XtAllocError" (byval as zstring ptr)
 declare sub _XtCompileResourceList cdecl alias "_XtCompileResourceList" (byval as XtResourceList, byval as Cardinal)
 declare function _XtMakeGeometryRequest cdecl alias "_XtMakeGeometryRequest" (byval as Widget, byval as XtWidgetGeometry ptr, byval as XtWidgetGeometry ptr, byval as Boolean ptr) as XtGeometryResult
 declare function _XtIsHookObject cdecl alias "_XtIsHookObject" (byval as Widget) as Boolean

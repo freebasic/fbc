@@ -47,7 +47,7 @@ type XtExposeProc as sub cdecl(byval as Widget, byval as XEvent ptr, byval as Re
 
 type XtRealizeProc as sub cdecl(byval as Widget, byval as XtValueMask ptr, byval as XSetWindowAttributes ptr)
 type XtGeometryHandler as function cdecl(byval as Widget, byval as XtWidgetGeometry ptr, byval as XtWidgetGeometry ptr) as XtGeometryResult
-type XtStringProc as sub cdecl(byval as Widget, byval as String)
+type XtStringProc as sub cdecl(byval as Widget, byval as zstring ptr)
 
 type XtTypedArg
 	name as String
