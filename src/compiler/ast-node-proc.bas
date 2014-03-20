@@ -1101,28 +1101,29 @@ private sub hCallFieldDtor _
 
 	assert( symbIsDescriptor( fld ) = FALSE )
 
-	if( symbGetType( fld ) = FB_DATATYPE_STRING ) then
-		if( symbGetArrayDimensions( fld ) <> 0 ) then
-			astAdd( rtlArrayErase( astBuildVarField( this_, fld ), symbIsDynamic( fld ), FALSE ) )
-		else
+	select case( symbGetArrayDimensions( fld ) )
+	'' Dynamic array field? Always needs clean up, regardless of dtype
+	case -1
+		astAdd( rtlArrayErase( astBuildVarField( this_, fld ), TRUE, FALSE ) )
+
+	'' Normal field
+	case 0
+		if( symbGetType( fld ) = FB_DATATYPE_STRING ) then
 			astAdd( rtlStrDelete( astBuildVarField( this_, fld ) ) )
-		end if
-	'' UDT field with dtor?
-	elseif( symbHasDtor( fld ) ) then
-		select case( symbGetArrayDimensions( fld ) )
-		case -1
-			astAdd( rtlArrayErase( astBuildVarField( this_, fld ), TRUE, FALSE ) )
-		case 0
+		elseif( symbHasDtor( fld ) ) then
 			'' dtor( this.field )
 			astAdd( astBuildDtorCall( symbGetSubtype( fld ), astBuildVarField( this_, fld ) ) )
-		case else
-			astAdd( hCallCtorList( FALSE, this_, fld ) )
-		end select
-	else
-		if( symbGetArrayDimensions( fld ) = -1 ) then
-			astAdd( rtlArrayErase( astBuildVarField( this_, fld ), TRUE, FALSE ) )
 		end if
-	end if
+
+	'' Fixed-size array field
+	case else
+		if( symbGetType( fld ) = FB_DATATYPE_STRING ) then
+			astAdd( rtlArrayErase( astBuildVarField( this_, fld ), FALSE, FALSE ) )
+		elseif( symbHasDtor( fld ) ) then
+			astAdd( hCallCtorList( FALSE, this_, fld ) )
+		end if
+	end select
+
 
 end sub
 
