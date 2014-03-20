@@ -67,34 +67,11 @@ o static member vars
 
 o Dynamic array fields
 
-  - The UDT will contain only the array descriptor, but we can keep a fake
-    dynamic array field symbol at the same offset if needed. Or change how
-    dynamic arrays work internally...
-    http://www.freebasic.net/forum/viewtopic.php?f=17&t=19566
-
-      - symbAddField() with dimensions=-1 creates a fake array field
-        (that does not affect struct layout and doesn't have an offset),
-        and recursively adds the descriptor field, much like symbAddVar().
-      - lookups arrive at the fake array field, then symbGetArrayDescriptor()
-        points to the descriptor field, same as vars, can probably re-use code.
-      - Dynamic array descriptor = always room for FB_MAXARRAYDIMs, so it can
-        always be built immediately, it doesn't depend on the array declaration
-        and doesn't change later.
-      - Ellipsis for field arrays: Not supported for fixed-size, because the
-        struct layout would have to be recalculated everytime, and dynamic
-        arrays don't allow ellipsis anyways.
-
-    * Ideally it'd be similar to STRINGs because it will need the same kind of
-      special handling in ctors/dtors.
-    * Dynamic array descriptors will always be created with room for FB_MAXARRAYDIMS,
-      and the only array-specific thing about them is the data ptr's dtype.
-    * Bydesc params already use a single global descriptor type (void data ptr)
-    * All dynamic arrays could perhaps re-use the same global descriptor type?
-      Otherwise, the descriptor types created for fields would end up in the
-      UDT namespace
-
-  - The descriptor contains non-zero data by default (e.g. sizeof(array element))
-    so it must be initialized in a constructor.
+  - REDIM must accept expressions (not only identifiers), so it can be used to
+    redim "this.array" or "pudt->array" etc.
+    http://www.freebasic.net/forum/viewtopic.php?f=3&t=22327
+    i.e. cVarDecl() must be cleaned up.
+    - FB_SYMBATTRIB_DYNAMIC should perhaps be removed, can just check dimensions = -1 instead.
 
   - Implicit LET overload implementation
       - must add fb_CopyDynamicArray(dest, source, dest dtor or NULL, dest<-source letoverload or NULL)
@@ -104,25 +81,15 @@ o Dynamic array fields
 
       - while in the process, let all STRING arrays be handled as "objects", passing fb_StrDelete() as dtor?
 
-  - Need auto-ERASE in destructors
-
-  - Any REDIMs to bounds given in the field declaration must be done in the
-    constructor too. The expressions should be copied just like field initializers.
-    (ensuring to clone temp vars etc.)
-
-  - Should accept any bounds, just like normal DIM/REDIM:
+  - Should accept any bounds, just like normal DIM/REDIM. The bounds or at least
+    the whole REDIM call must be preserved on the array field and then emitted
+    into each constructor, like a field initializer. (add new TYPEINI node class
+    for REDIM, or just treat as CTORCALL which it basically is?)
 	type UDT
 		array() as integer
 		redim array(0 to 1) as integer
 		array(global1 to global2) as integer
 	end type
-
-  - REDIM must accept expressions (not only identifiers), so it can be used to
-    redim "this.array" or "pudt->array" etc.
-    http://www.freebasic.net/forum/viewtopic.php?f=3&t=22327
-    i.e. cVarDecl() must be cleaned up.
-
-  - FB_SYMBATTRIB_DYNAMIC should perhaps be removed, can just check dimensions = -1 instead.
 
 o -exx should catch...
   - access to ERASEd or uninited (unREDIMed) dyn array
