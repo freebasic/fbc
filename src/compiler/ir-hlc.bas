@@ -1625,9 +1625,7 @@ private function typeCBop _
 	( _
 		byval op as integer, _
 		byval a as integer, _
-		byval asubtype as FBSYMBOL ptr, _
-		byval b as integer, _
-		byval bsubtype as FBSYMBOL ptr _
+		byval b as integer _
 	) as integer
 
 	'' Result of relational/comparison operators is int
@@ -1734,7 +1732,7 @@ private function exprNewUOP _
 			solved_out = (l->op = op)
 		end if
 
-		dtype = typeCBop( op, l->dtype, l->subtype, l->dtype, l->subtype )
+		dtype = typeCBop( op, l->dtype, l->dtype )
 
 
 	case AST_OP_ABS, AST_OP_FLOOR, _
@@ -1774,7 +1772,7 @@ private function exprNewBOP _
 	dim as integer dtype = any
 
 	'' To find out the BOPs result type, apply C type promotion rules
-	dtype = typeCBop( op, l->dtype, l->subtype, r->dtype, r->subtype )
+	dtype = typeCBop( op, l->dtype, r->dtype )
 
 	'' BOPs should only be done on simple int/float types,
 	'' and on pointers only after casting to ubyte* first,
