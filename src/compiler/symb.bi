@@ -2359,6 +2359,7 @@ declare function typeDump _
 #define symbTrace( s ) print __FUNCTION__ + "(" & __LINE__ & "): "; symbDump( s )
 declare function symbDump( byval s as FBSYMBOL ptr ) as string
 declare sub symbDumpNamespace( byval ns as FBSYMBOL ptr )
+declare sub symbDumpChain( byval chain_ as FBSYMCHAIN ptr )
 #endif
 
 ''
