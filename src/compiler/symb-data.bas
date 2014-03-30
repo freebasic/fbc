@@ -63,7 +63,7 @@ declare function closestType _
 	) as FB_DATATYPE
 
 sub symbDataInit( )
-	if( fbCpuTypeIs64bit( ) ) then
+	if( fbIs64bit( ) ) then
 		'' 64bit
 		symb_dtypeTB(FB_DATATYPE_INTEGER ).size = 8
 		symb_dtypeTB(FB_DATATYPE_UINT    ).size = 8

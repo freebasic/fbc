@@ -279,7 +279,7 @@ private function fbcFindLibFile( byval file as zstring ptr ) as string
 	dim as string path
 	fbcFindBin( FBCTOOL_GCC, path )
 
-	if( fbCpuTypeIs64bit( ) ) then
+	if( fbIs64Bit( ) ) then
 		path += " -m64"
 	else
 		path += " -m32"
@@ -545,13 +545,13 @@ private function hLinkFiles( ) as integer
 
 	select case( fbGetOption( FB_COMPOPT_TARGET ) )
 	case FB_COMPTARGET_WIN32
-		if( fbCpuTypeIs64bit( ) ) then
+		if( fbIs64Bit( ) ) then
 			ldcline += "-m i386pep "
 		else
 			ldcline += "-m i386pe "
 		end if
 	case FB_COMPTARGET_LINUX
-		if( fbCpuTypeIs64bit( ) ) then
+		if( fbIs64Bit( ) ) then
 			ldcline += "-m elf_x86_64 "
 		else
 			ldcline += "-m elf_i386 "
@@ -603,7 +603,7 @@ private function hLinkFiles( ) as integer
 			case FB_COMPTARGET_FREEBSD
 				ldcline += " -dynamic-linker /libexec/ld-elf.so.1"
 			case FB_COMPTARGET_LINUX
-				if( fbCpuTypeIs64bit( ) ) then
+				if( fbIs64Bit( ) ) then
 					ldcline += " -dynamic-linker /lib64/ld-linux-x86-64.so.2"
 				else
 					ldcline += " -dynamic-linker /lib/ld-linux.so.2"
@@ -2171,7 +2171,7 @@ private sub fbcInit2( )
 	''
 
 	dim as string archprefix
-	if( fbCpuTypeIs64bit( ) ) then
+	if( fbIs64Bit( ) ) then
 		archprefix = "x86_64-"
 	end if
 
@@ -2208,7 +2208,7 @@ private sub fbcInit2( )
 		var s = *fbGetTargetId( )
 		s += ", " + *fbGetFbcArch( )
 		s += ", "
-		if( fbCpuTypeIs64bit( ) ) then
+		if( fbIs64Bit( ) ) then
 			s += "64"
 		else
 			s += "32"
@@ -2578,7 +2578,7 @@ private function hCompileStage2Module( byval module as FBCIOFILE ptr ) as intege
 
 	select case( fbGetOption( FB_COMPOPT_BACKEND ) )
 	case FB_BACKEND_GCC
-		if( fbCpuTypeIs64bit( ) ) then
+		if( fbIs64Bit( ) ) then
 			ln += "-m64 "
 		else
 			ln += "-m32 "
@@ -2636,7 +2636,7 @@ private function hCompileStage2Module( byval module as FBCIOFILE ptr ) as intege
 		end if
 
 	case FB_BACKEND_LLVM
-		if( fbCpuTypeIs64bit( ) ) then
+		if( fbIs64Bit( ) ) then
 			ln += "-march=x86-64 "
 		else
 			ln += "-march=x86 "
@@ -2675,7 +2675,7 @@ end sub
 private function hAssembleModule( byval module as FBCIOFILE ptr ) as integer
 	dim as string ln
 
-	if( fbCpuTypeIs64bit( ) ) then
+	if( fbIs64Bit( ) ) then
 		ln = "--64 "
 	else
 		ln = "--32 "

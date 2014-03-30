@@ -242,7 +242,7 @@ private sub _init( )
 	listInit( @ctx.exprcache, 8, sizeof( EXPRCACHENODE ), LIST_FLAGS_NOCLEAR )
 	irSetOption( IR_OPT_FPUIMMEDIATES or IR_OPT_MISSINGOPS )
 
-	if( fbCpuTypeIs64bit( ) ) then
+	if( fbIs64bit( ) ) then
 		dtypeName(FB_DATATYPE_INTEGER) = dtypeName(FB_DATATYPE_LONGINT)
 		dtypeName(FB_DATATYPE_UINT   ) = dtypeName(FB_DATATYPE_ULONGINT)
 	else
@@ -1174,7 +1174,7 @@ private function _emitBegin( ) as integer
 	hWriteLine( "typedef unsigned int       uint32;", TRUE )
 	hWriteLine( "typedef   signed long long  int64;", TRUE )
 	hWriteLine( "typedef unsigned long long uint64;", TRUE )
-	if( fbCpuTypeIs64bit( ) ) then
+	if( fbIs64bit( ) ) then
 		hWriteLine( "typedef struct { char *data; int64 len; int64 size; } FBSTRING;", TRUE )
 	else
 		hWriteLine( "typedef struct { char *data; int32 len; int32 size; } FBSTRING;", TRUE )

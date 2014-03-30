@@ -287,7 +287,7 @@ private function hMangleBuiltInType( byval dtype as integer ) as zstring ptr
 		return @"8FBSTRING"
 	end if
 
-	if( fbCpuTypeIs64bit( ) ) then
+	if( fbIs64bit( ) ) then
 		'' By default on x86 we mangle INTEGER to "int", but on 64bit
 		'' our INTEGER becomes 64bit, while int stays 32bit, so we
 		'' really shouldn't use the same mangling in that case.

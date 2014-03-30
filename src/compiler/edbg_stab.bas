@@ -100,7 +100,7 @@ sub edbgInit( )
 	'' The above tables assume 32bit, but that's ok because -gen gas
 	'' currently only supports 32bit x86 anyways, and this stabs emitter
 	'' is only used with -gen gas.
-	assert( fbCpuTypeIs64bit( ) = FALSE )
+	assert( fbIs64bit( ) = FALSE )
 end sub
 
 '':::::

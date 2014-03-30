@@ -385,7 +385,7 @@ declare sub fbIncludeFile(byval filename as zstring ptr, byval isonce as integer
 declare function fbGetTargetId( ) as zstring ptr
 declare function fbGetGccArch( ) as zstring ptr
 declare function fbGetFbcArch( ) as zstring ptr
-declare function fbCpuTypeIs64bit( ) as integer
+declare function fbIs64Bit( ) as integer
 declare function fbCpuTypeIsX86( ) as integer
 declare function fbIdentifyFbcArch( byref fbcarch as string ) as integer
 

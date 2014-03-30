@@ -342,8 +342,7 @@ sub symbDefineInit _
 		symbAddDefine( @"__FB_PCOS__", NULL, 0 )
 	end if
 
-	'' 64bit?
-	if( fbCpuTypeIs64bit( ) ) then
+	if( fbIs64bit( ) ) then
 		symbAddDefine( @"__FB_64BIT__", NULL, 0 )
 	end if
 

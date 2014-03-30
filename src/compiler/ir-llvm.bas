@@ -241,7 +241,7 @@ private sub _init( )
 
 	irSetOption( IR_OPT_CPUSELFBOPS or IR_OPT_FPUIMMEDIATES or IR_OPT_MISSINGOPS )
 
-	if( fbCpuTypeIs64bit( ) ) then
+	if( fbIs64bit( ) ) then
 		dtypeName(FB_DATATYPE_INTEGER) = dtypeName(FB_DATATYPE_LONGINT)
 		dtypeName(FB_DATATYPE_UINT   ) = dtypeName(FB_DATATYPE_ULONGINT)
 	else
@@ -863,7 +863,7 @@ private function _emitBegin( ) as integer
 	hWriteLine( "; Compilation of " + env.inf.name + " started at " + time( ) + " on " + date( ) )
 	hWriteLine( "" )
 
-	if( fbCpuTypeIs64bit( ) ) then
+	if( fbIs64bit( ) ) then
 		hWriteLine( "%FBSTRING = type { i8*, i64, i64 }" )
 	else
 		hWriteLine( "%FBSTRING = type { i8*, i32, i32 }" )
