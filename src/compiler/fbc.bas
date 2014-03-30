@@ -1084,101 +1084,98 @@ private sub hAddBas( byref basfile as string )
 	hSetIofile( listNewNode( @fbc.modules ), basfile, FALSE )
 end sub
 
-#ifndef ENABLE_STANDALONE
-'' To support GNU triplets, we need to parse them, to identify which target
-'' of ours it could mean. A triplet is made up of these components:
-''    [arch-[vendor-]]os[-...]
-private sub hParseTargetId _
-	( _
-		byref os as string, _
-		byref arch as string _
-	)
+private sub hHandleTarget( byref arg as string )
+	dim as integer target = any
+	dim as string t, arch
 
-	dim as integer i = any, j = any
+	'' Standalone: -target <osname>, accepts only the traditional
+	'' FB target OS names, and uses the bin/<osname>/ and
+	'' lib/<osname>/ subdirs.
+	''
+	'' Normal: -target <id>, accepts gcc target ids such as
+	'' "i686-pc-mingw32", "x86_64-pc-linux-gnu" or simply "mingw32",
+	'' and uses the given target id as prefix for cross-compilation
+	'' tools, such as i686-pc-mingw32-ld instead of just ld.
+	''
+	'' This allows normal fbc to work well with gcc/binutils cross-compiling
+	'' toolchains while for standalone the gcc/binutils executables need to
+	'' be re-arranged into standalone FB's dir layout.
 
-	i = instr( 1, os, "-" )
-	if( i > 0 ) then
-		arch = left( os, i - 1 )
+	'' The -target option should be case-insensitive
+	t = lcase( arg )
 
-		j = instr( i + 1, os, "-" )
-		if( j > 0 ) then
-			i = j
-		end if
-
-		os = right( os, len( os ) - i )
+	'' Ignore it if it matches the host id; this adds backwards-
+	'' compatibility with fbc 0.23
+	if( t = *fbGetHostId( ) ) then
+		exit sub
 	end if
 
-end sub
-#endif
+	target = -1
 
-private function hParseTargetOS( byref os as string ) as integer
-	if( len( os ) = 0 ) then
-		return -1
+#ifndef ENABLE_STANDALONE
+	'' Should use the -target argument as-is when prefixing to tool file
+	'' names, because of case-sensitive file systems
+	fbc.target = arg
+	fbc.targetprefix = fbc.target + "-"
+
+	'' To support GNU triplets, we need to parse them, to identify which
+	'' target & arch of ours it could mean.
+
+	'' Check for certain OS ids, simply by checking whether the toolchain id
+	'' contains them. We could actually match toolchain ids as in
+	'' *-*-mingw32* here, but as long as this works without issues, then
+	'' it's good enough. Hopefully there's no toolchain named something like
+	'' "linuxmingw32", otherwise the order of checks here would matter.
+	if(     instr( t, "linux"   ) > 0 ) then : target = FB_COMPTARGET_LINUX
+	elseif( instr( t, "mingw"   ) > 0 ) then : target = FB_COMPTARGET_WIN32
+	elseif( instr( t, "djgpp"   ) > 0 ) then : target = FB_COMPTARGET_DOS
+	elseif( instr( t, "cygwin"  ) > 0 ) then : target = FB_COMPTARGET_CYGWIN
+	elseif( instr( t, "darwin"  ) > 0 ) then : target = FB_COMPTARGET_DARWIN
+	elseif( instr( t, "freebsd" ) > 0 ) then : target = FB_COMPTARGET_FREEBSD
+	elseif( instr( t, "netbsd"  ) > 0 ) then : target = FB_COMPTARGET_NETBSD
+	elseif( instr( t, "openbsd" ) > 0 ) then : target = FB_COMPTARGET_OPENBSD
+	elseif( instr( t, "xbox"    ) > 0 ) then : target = FB_COMPTARGET_XBOX
 	end if
 
-#ifdef ENABLE_STANDALONE
-	#macro MAYBE( s, comptarget )
-		if( os = s ) then
-			return comptarget
+	'' Identify architecture given in the triplet, if any
+	arch = left( t, instr( t, "-" ) - 1 )
+	select case( arch )
+	case "i386" : fbc.targetcputype = FB_CPUTYPE_386
+	case "i486" : fbc.targetcputype = FB_CPUTYPE_486
+	case "i586" : fbc.targetcputype = FB_CPUTYPE_586
+	case "i686" : fbc.targetcputype = FB_CPUTYPE_686
+
+	case "x86"  : fbc.targetcputype = FB_DEFAULT_CPUTYPE_X86
+	case "x86_64", "amd64" : fbc.targetcputype = FB_DEFAULT_CPUTYPE_X86_64
+
+	case else
+		'' Don't complain if the arch is missing (sometimes, the gcc
+		'' toolchain ids don't contain an arch, for example "mingw32").
+		if( len( arch ) > 0 ) then
+			hFatalInvalidOption( arg )
 		end if
-	#endmacro
-#else
-	#macro MAYBE( s, comptarget )
-		'' Allow incomplete matches, e.g.:
-		'' 'linux' matches 'linux-gnu',
-		'' 'mingw' matches 'mingw32msvc', etc.
-		if( left( os, len( s ) ) = s ) then
-			return comptarget
-		end if
-	#endmacro
-#endif
 
-	select case as const( os[0] )
-	case asc( "c" )
-		MAYBE( "cygwin", FB_COMPTARGET_CYGWIN )
-
-	case asc( "d" )
-		MAYBE( "darwin", FB_COMPTARGET_DARWIN )
-#ifndef ENABLE_STANDALONE
-		MAYBE( "djgpp", FB_COMPTARGET_DOS )
-#endif
-		MAYBE( "dos", FB_COMPTARGET_DOS )
-
-	case asc( "f" )
-		MAYBE( "freebsd", FB_COMPTARGET_FREEBSD )
-
-	case asc( "l" )
-		MAYBE( "linux", FB_COMPTARGET_LINUX )
-
-#ifndef ENABLE_STANDALONE
-	case asc( "m" )
-		MAYBE( "mingw", FB_COMPTARGET_WIN32 )
-		MAYBE( "msdos", FB_COMPTARGET_DOS )
-#endif
-
-	case asc( "n" )
-		MAYBE( "netbsd", FB_COMPTARGET_NETBSD )
-
-	case asc( "o" )
-		MAYBE( "openbsd", FB_COMPTARGET_OPENBSD )
-
-	case asc( "s" )
-		'' TODO (not yet implemented in the compiler)
-		''MAYBE( "solaris", FB_COMPTARGET_SOLARIS )
-
-	case asc( "w" )
-		MAYBE( "win32", FB_COMPTARGET_WIN32 )
-#ifndef ENABLE_STANDALONE
-		MAYBE( "windows", FB_COMPTARGET_WIN32 )
-#endif
-
-	case asc( "x" )
-		MAYBE( "xbox", FB_COMPTARGET_XBOX )
-
+		'' Otherwise just overwrite the value from any previous -target
+		'' options, and later we will use the default arch.
+		fbc.targetcputype = -1
 	end select
+#endif
 
-	function = -1
-end function
+	'' Always check for -target <FB's id>. This is mostly needed for the
+	'' standalone build which doesn't support gcc toolchain ids at all,
+	'' but has limited usefulness for non-standalone, because for example
+	'' -target win32 would require a "win32-ld" which is usually not what
+	'' the toolchain is called. Nevertheless this is useful for debugging
+	'' purposes or with the -print option even for non-standalone.
+	if( target < 0 ) then
+		target = fbIdentifyTargetId( t )
+	end if
+
+	if( target < 0 ) then
+		hFatalInvalidOption( arg )
+	end if
+	fbSetOption( FB_COMPOPT_TARGET, target )
+end sub
 
 enum
 	OPT_A = 0
@@ -1544,65 +1541,7 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 		fbSetOption(FB_COMPOPT_STACKSIZE, valint(arg) * 1024)
 
 	case OPT_TARGET
-		'' Standalone: -target <osname>, accepts only the traditional
-		'' FB target OS names, and uses the bin/<osname>/ and
-		'' lib/<osname>/ subdirs.
-		''
-		'' Normal: -target <id>, accepts gcc target ids such as
-		'' "i686-pc-mingw32", "x86_64-pc-linux-gnu" or simply "mingw32",
-		'' and uses the given target id as prefix for cross-compilation
-		'' tools, such as i686-pc-mingw32-ld instead of just ld.
-		''
-		'' This allows normal fbc to work well with gcc/binutils
-		'' cross-compiling toolchains while for standalone the
-		'' gcc/binutils executables need to be re-arranged into
-		'' standalone FB's dir layout.
-		dim as string os
-		dim as integer target = any
-
-		'' The -target option should be case-insensitive
-		os = lcase( arg )
-
-		'' Ignore it if it matches the host id; this adds backwards-
-		'' compatibility with fbc 0.23
-		if( os <> *fbGetHostId( ) ) then
-			#ifndef ENABLE_STANDALONE
-				'' Handle i686-pc-mingw32 triplets
-				dim as string arch
-				hParseTargetId( os, arch )
-			#endif
-
-			'' Identify the target
-			target = hParseTargetOS( os )
-			if( target < 0 ) then
-				hFatalInvalidOption( arg )
-			end if
-			fbSetOption( FB_COMPOPT_TARGET, target )
-
-			#ifndef ENABLE_STANDALONE
-				'' Should use the -target argument as-is when
-				'' prefixing to tool file names, because of
-				'' case-sensitive file systems
-				fbc.target = arg
-				fbc.targetprefix = fbc.target + "-"
-
-				'' Identify architecture given in the triplet, if any
-				select case( arch )
-				case "i386"
-					fbc.targetcputype = FB_CPUTYPE_386
-				case "i486"
-					fbc.targetcputype = FB_CPUTYPE_486
-				case "i586"
-					fbc.targetcputype = FB_CPUTYPE_586
-				case "i686"
-					fbc.targetcputype = FB_CPUTYPE_686
-				case "x86_64", "amd64"
-					fbc.targetcputype = FB_CPUTYPE_X86_64
-				case else
-					fbc.targetcputype = -1
-				end select
-			#endif
-		end if
+		hHandleTarget( arg )
 
 	case OPT_TITLE
 		fbc.xbe_title = arg

@@ -322,16 +322,23 @@ const FB_DEFAULT_TARGET     = FB_COMPTARGET_NETBSD
 #error Unsupported host
 #endif
 
+const FB_DEFAULT_CPUTYPE_X86     = FB_CPUTYPE_486
+const FB_DEFAULT_CPUTYPE_X86_64  = FB_CPUTYPE_X86_64
+
+const FB_DEFAULT_CPUTYPE32 = FB_DEFAULT_CPUTYPE_X86
+const FB_DEFAULT_CPUTYPE64 = FB_DEFAULT_CPUTYPE_X86_64
+
 #ifdef __FB_64BIT__
-	const FB_DEFAULT_CPUTYPE = FB_CPUTYPE_X86_64
 	const FB_DEFAULT_BACKEND = FB_BACKEND_GCC
 #else
-	const FB_DEFAULT_CPUTYPE = FB_CPUTYPE_486
 	const FB_DEFAULT_BACKEND = FB_BACKEND_GAS
 #endif
 
-const FB_DEFAULT_CPUTYPE32 = FB_CPUTYPE_486
-const FB_DEFAULT_CPUTYPE64 = FB_CPUTYPE_X86_64
+#ifdef __FB_64BIT__
+	const FB_DEFAULT_CPUTYPE = FB_DEFAULT_CPUTYPE64
+#else
+	const FB_DEFAULT_CPUTYPE = FB_DEFAULT_CPUTYPE32
+#endif
 
 '' info section
 const FB_INFOSEC_NAME = "fbctinf"
@@ -374,6 +381,7 @@ declare sub fbIncludeFile(byval filename as zstring ptr, byval isonce as integer
 
 declare function fbGetTargetId( ) as zstring ptr
 declare function fbGetHostId( ) as zstring ptr
+declare function fbIdentifyTargetId( byref targetid as string ) as integer
 declare function fbGetGccArch( ) as zstring ptr
 declare function fbGetFbcArch( ) as zstring ptr
 declare function fbGetArchDirPrefix( ) as zstring ptr

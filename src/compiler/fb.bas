@@ -666,6 +666,15 @@ function fbGetHostId( ) as zstring ptr
 	function = targetinfo(FB_DEFAULT_TARGET).id
 end function
 
+function fbIdentifyTargetId( byref targetid as string ) as integer
+	for i as integer = 0 to FB_COMPTARGETS-1
+		if( *targetinfo(i).id = targetid ) then
+			return i
+		end if
+	next
+	function = -1
+end function
+
 function fbGetGccArch( ) as zstring ptr
 	dim as zstring ptr gccarch = any
 	gccarch = cputypeinfo(env.clopt.cputype).gccarch
