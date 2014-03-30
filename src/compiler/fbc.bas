@@ -546,17 +546,19 @@ private function hLinkFiles( ) as integer
 
 	select case( fbGetOption( FB_COMPOPT_TARGET ) )
 	case FB_COMPTARGET_WIN32
-		if( fbIs64Bit( ) ) then
-			ldcline += "-m i386pep "
-		else
+		select case( fbGetCpuFamily( ) )
+		case FB_CPUFAMILY_X86
 			ldcline += "-m i386pe "
-		end if
+		case FB_CPUFAMILY_X86_64
+			ldcline += "-m i386pep "
+		end select
 	case FB_COMPTARGET_LINUX
-		if( fbIs64Bit( ) ) then
-			ldcline += "-m elf_x86_64 "
-		else
+		select case( fbGetCpuFamily( ) )
+		case FB_CPUFAMILY_X86
 			ldcline += "-m elf_i386 "
-		end if
+		case FB_CPUFAMILY_X86_64
+			ldcline += "-m elf_x86_64 "
+		end select
 	end select
 
 	'' Set executable name
@@ -604,11 +606,12 @@ private function hLinkFiles( ) as integer
 			case FB_COMPTARGET_FREEBSD
 				ldcline += " -dynamic-linker /libexec/ld-elf.so.1"
 			case FB_COMPTARGET_LINUX
-				if( fbIs64Bit( ) ) then
-					ldcline += " -dynamic-linker /lib64/ld-linux-x86-64.so.2"
-				else
+				select case( fbGetCpuFamily( ) )
+				case FB_CPUFAMILY_X86
 					ldcline += " -dynamic-linker /lib/ld-linux.so.2"
-				end if
+				case FB_CPUFAMILY_X86_64
+					ldcline += " -dynamic-linker /lib64/ld-linux-x86-64.so.2"
+				end select
 			case FB_COMPTARGET_NETBSD
 				ldcline += " -dynamic-linker /usr/libexec/ld.elf_so"
 			case FB_COMPTARGET_OPENBSD
@@ -2635,11 +2638,12 @@ private function hCompileStage2Module( byval module as FBCIOFILE ptr ) as intege
 		end if
 
 	case FB_BACKEND_LLVM
-		if( fbIs64Bit( ) ) then
-			ln += "-march=x86-64 "
-		else
+		select case( fbGetCpuFamily( ) )
+		case FB_CPUFAMILY_X86
 			ln += "-march=x86 "
-		end if
+		case FB_CPUFAMILY_X86_64
+			ln += "-march=x86-64 "
+		end select
 
 		ln += "-O" + str( fbGetOption( FB_COMPOPT_OPTIMIZELEVEL ) ) + " "
 
