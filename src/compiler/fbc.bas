@@ -558,6 +558,8 @@ private function hLinkFiles( ) as integer
 			ldcline += "-m elf_i386 "
 		case FB_CPUFAMILY_X86_64
 			ldcline += "-m elf_x86_64 "
+		case FB_CPUFAMILY_ARM
+			ldcline += "-m armelf_linux_eabi "
 		end select
 	end select
 
@@ -611,6 +613,10 @@ private function hLinkFiles( ) as integer
 					ldcline += " -dynamic-linker /lib/ld-linux.so.2"
 				case FB_CPUFAMILY_X86_64
 					ldcline += " -dynamic-linker /lib64/ld-linux-x86-64.so.2"
+				case FB_CPUFAMILY_ARM
+					ldcline += " -dynamic-linker /lib/ld-linux-armhf.so.3"
+				case FB_CPUFAMILY_AARCH64
+					ldcline += " -dynamic-linker /lib/ld-linux-aarch64.so.1"
 				end select
 			case FB_COMPTARGET_NETBSD
 				ldcline += " -dynamic-linker /usr/libexec/ld.elf_so"
@@ -1147,6 +1153,16 @@ private sub hHandleTarget( byref arg as string )
 
 	case "x86"  : fbc.targetcputype = FB_DEFAULT_CPUTYPE_X86
 	case "x86_64", "amd64" : fbc.targetcputype = FB_DEFAULT_CPUTYPE_X86_64
+
+	case "armv6"   : fbc.targetcputype = FB_CPUTYPE_ARMV6
+	case "armv7a"  : fbc.targetcputype = FB_CPUTYPE_ARMV7A
+
+	'' There are arm-*-* toolchains (e.g. arm-linux-gnueabihf)
+	'' where the exact arm version isn't known (at least not based
+	'' on the triplet alone), so we fall back our default for arm.
+	'' Same for aarch64.
+	case "arm"     : fbc.targetcputype = FB_DEFAULT_CPUTYPE_ARM
+	case "aarch64" : fbc.targetcputype = FB_DEFAULT_CPUTYPE_AARCH64
 
 	case else
 		'' Don't complain if the arch is missing (sometimes, the gcc
@@ -1993,7 +2009,8 @@ private sub hParseArgs( byval argc as integer, byval argv as zstring ptr ptr )
 	end if
 
 	'' 6. Adjust default backend to selected arch, e.g. when compiling for
-	''    x86_64, we shouldn't default to -gen gas anymore.
+	''    x86-64 or ARM, we shouldn't default to -gen gas anymore (as long
+	''    as it doesn't support it).
 	if( (fbGetOption( FB_COMPOPT_BACKEND ) = FB_BACKEND_GAS) and _
 	    (fbGetCpuFamily( ) <> FB_CPUFAMILY_X86) ) then
 		fbSetOption( FB_COMPOPT_BACKEND, FB_BACKEND_GCC )
@@ -2576,6 +2593,10 @@ private function hCompileStage2Module( byval module as FBCIOFILE ptr ) as intege
 			ln += "-march=x86 "
 		case FB_CPUFAMILY_X86_64
 			ln += "-march=x86-64 "
+		case FB_CPUFAMILY_ARM
+			ln += "-march=arm "
+		case FB_CPUFAMILY_AARCH64
+			ln += "-march=aarch64 "
 		end select
 
 		ln += "-O" + str( fbGetOption( FB_COMPOPT_OPTIMIZELEVEL ) ) + " "

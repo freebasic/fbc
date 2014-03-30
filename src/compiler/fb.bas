@@ -226,7 +226,10 @@ dim shared as FBCPUTYPEINFO cputypeinfo(0 to FB_CPUTYPE__COUNT-1) = _
 	( NULL       , @"pentium3"     , @""        , FB_CPUFAMILY_X86    , 32 ), _ '' FB_CPUTYPE_PENTIUM3
 	( NULL       , @"pentium4"     , @""        , FB_CPUFAMILY_X86    , 32 ), _ '' FB_CPUTYPE_PENTIUM4
 	( @"prescott", @"pentium4-sse3", @""        , FB_CPUFAMILY_X86    , 32 ), _ '' FB_CPUTYPE_PENTIUMSSE3
-	( NULL       , @"x86-64"       , @"x86_64-" , FB_CPUFAMILY_X86_64 , 64 )  _ '' FB_CPUTYPE_X86_64
+	( NULL       , @"x86-64"       , @"x86_64-" , FB_CPUFAMILY_X86_64 , 64 ), _ '' FB_CPUTYPE_X86_64
+	( NULL       , @"armv6"        , @"armv6-"  , FB_CPUFAMILY_ARM    , 32 ), _ '' FB_CPUTYPE_ARMV6
+	( NULL       , @"armv7-a"      , @"armv7a-" , FB_CPUFAMILY_ARM    , 32 ), _ '' FB_CPUTYPE_ARMV7A
+	( NULL       , @"aarch64"      , @"aarch64-", FB_CPUFAMILY_AARCH64, 64 )  _ '' FB_CPUTYPE_AARCH64
 }
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -719,7 +722,7 @@ function fbIdentifyFbcArch( byref fbcarch as string ) as integer
 		'' default, which is always safe for the host.
 		function = FB_DEFAULT_CPUTYPE
 
-		#ifndef __FB_64BIT__
+		#if (not defined( __FB_64BIT__ )) and (not defined( __FB_ARM__ ))
 			select case( fb_CpuDetect( ) shr 28 )
 			case 3 : function = FB_CPUTYPE_386
 			case 4 : function = FB_CPUTYPE_486
