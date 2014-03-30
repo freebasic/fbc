@@ -279,11 +279,12 @@ private function fbcFindLibFile( byval file as zstring ptr ) as string
 	dim as string path
 	fbcFindBin( FBCTOOL_GCC, path )
 
-	if( fbIs64Bit( ) ) then
-		path += " -m64"
-	else
+	select case( fbGetCpuFamily( ) )
+	case FB_CPUFAMILY_X86
 		path += " -m32"
-	end if
+	case FB_CPUFAMILY_X86_64
+		path += " -m64"
+	end select
 
 	path += " -print-file-name=" + *file
 
@@ -2575,11 +2576,12 @@ private function hCompileStage2Module( byval module as FBCIOFILE ptr ) as intege
 
 	select case( fbGetOption( FB_COMPOPT_BACKEND ) )
 	case FB_BACKEND_GCC
-		if( fbIs64Bit( ) ) then
-			ln += "-m64 "
-		else
+		select case( fbGetCpuFamily( ) )
+		case FB_CPUFAMILY_X86
 			ln += "-m32 "
-		end if
+		case FB_CPUFAMILY_X86_64
+			ln += "-m64 "
+		end select
 
 		if( fbc.cputype_is_native ) then
 			ln += "-march=native "
