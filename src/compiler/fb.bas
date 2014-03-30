@@ -225,10 +225,7 @@ dim shared as FBCPUTYPEINFO cputypeinfo(0 to FB_CPUTYPE__COUNT-1) = _
 	( @"pentium3"   , @"pentium3"     , TRUE , 32 ), _ '' FB_CPUTYPE_PENTIUM3
 	( @"pentium4"   , @"pentium4"     , TRUE , 32 ), _ '' FB_CPUTYPE_PENTIUM4
 	( @"prescott"   , @"pentium4-sse3", TRUE , 32 ), _ '' FB_CPUTYPE_PENTIUMSSE3
-	( @"x86-64"     , @"x86-64"       , FALSE, 64 ), _ '' FB_CPUTYPE_X86_64
-	( NULL          , @"32"           , FALSE, 32 ), _ '' FB_CPUTYPE_32
-	( NULL          , @"64"           , FALSE, 64 ), _ '' FB_CPUTYPE_64
-	( NULL          , NULL            , FALSE, 0  )  _ '' FB_CPUTYPE_NATIVE
+	( @"x86-64"     , @"x86-64"       , FALSE, 64 )  _ '' FB_CPUTYPE_X86_64
 }
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
