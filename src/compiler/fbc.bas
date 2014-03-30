@@ -2147,13 +2147,7 @@ private sub fbcInit2( )
 	if( fbc.verbose ) then
 		var s = *fbGetTargetId( )
 		s += ", " + *fbGetFbcArch( )
-		s += ", "
-		if( fbIs64Bit( ) ) then
-			s += "64"
-		else
-			s += "32"
-		end if
-		s += "bit"
+		s += ", " & fbGetBits( ) & "bit"
 		#ifndef ENABLE_STANDALONE
 			if( len( fbc.target ) > 0 ) then
 				s += " (" + fbc.target + ")"
