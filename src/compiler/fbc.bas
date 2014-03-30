@@ -2170,16 +2170,13 @@ private sub fbcInit2( )
 	''     "prefix/bin/win32-" + "as.exe"
 	''
 
-	dim as string archprefix
-	if( fbIs64Bit( ) ) then
-		archprefix = "x86_64-"
-	end if
+	dim as string targetdirname = *fbGetArchDirPrefix( ) + *fbGetTargetId( )
 
 #ifdef ENABLE_STANDALONE
 	'' Use default target name
-	fbc.binpath = fbc.prefix + "bin" + FB_HOST_PATHDIV + archprefix + *fbGetTargetId( ) + FB_HOST_PATHDIV
+	fbc.binpath = fbc.prefix + "bin" + FB_HOST_PATHDIV + targetdirname + FB_HOST_PATHDIV
 	fbc.incpath = fbc.prefix + "inc"
-	fbc.libpath = fbc.prefix + "lib" + FB_HOST_PATHDIV + archprefix + *fbGetTargetId( )
+	fbc.libpath = fbc.prefix + "lib" + FB_HOST_PATHDIV + targetdirname
 #else
 	dim as string fbname
 	if( fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_DOS ) then
@@ -2200,7 +2197,7 @@ private sub fbcInit2( )
 	if( len( fbc.target ) > 0 ) then
 		fbc.libpath += fbc.target
 	else
-		fbc.libpath += archprefix + *fbGetTargetId( )
+		fbc.libpath += targetdirname
 	end if
 #endif
 
@@ -3109,7 +3106,7 @@ private sub hPrintVersion( )
 	dim as string config
 
 	print "FreeBASIC Compiler - Version " + FB_VERSION + _
-		" (" + FB_BUILD_DATE + "), built for " + FB_HOST_ARCHPREFIX + *fbGetHostId( ) + " (" + str( fbGetHostBits( ) ) + "bit)"
+		" (" + FB_BUILD_DATE + "), built for " + *fbGetHostArchDirPrefix( ) + *fbGetHostId( ) + " (" & fbGetHostBits( ) & "bit)"
 	print "Copyright (C) 2004-2014 The FreeBASIC development team."
 
 	#ifdef ENABLE_STANDALONE

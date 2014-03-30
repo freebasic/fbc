@@ -320,11 +320,9 @@ const FB_DEFAULT_TARGET     = FB_COMPTARGET_NETBSD
 #ifdef __FB_64BIT__
 	const FB_DEFAULT_CPUTYPE = FB_CPUTYPE_X86_64
 	const FB_DEFAULT_BACKEND = FB_BACKEND_GCC
-	const FB_HOST_ARCHPREFIX = "x86_64-"
 #else
 	const FB_DEFAULT_CPUTYPE = FB_CPUTYPE_486
 	const FB_DEFAULT_BACKEND = FB_BACKEND_GAS
-	const FB_HOST_ARCHPREFIX = ""
 #endif
 
 const FB_DEFAULT_CPUTYPE32 = FB_CPUTYPE_486
@@ -373,6 +371,8 @@ declare function fbGetTargetId( ) as zstring ptr
 declare function fbGetHostId( ) as zstring ptr
 declare function fbGetGccArch( ) as zstring ptr
 declare function fbGetFbcArch( ) as zstring ptr
+declare function fbGetArchDirPrefix( ) as zstring ptr
+declare function fbGetHostArchDirPrefix( ) as zstring ptr
 declare function fbIs64Bit( ) as integer
 declare function fbCpuTypeIsX86( ) as integer
 declare function fbGetBits( ) as integer

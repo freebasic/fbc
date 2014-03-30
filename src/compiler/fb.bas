@@ -204,28 +204,29 @@ dim shared as FBTARGET targetinfo(0 to FB_COMPTARGETS-1) = _
 }
 
 type FBCPUTYPEINFO
-	gccarch		as zstring ptr  '' gcc -march argument (used for -gen gcc)
+	gccarch		as zstring ptr  '' gcc -march argument (used for -gen gcc), or NULL if same as fbcarch
 	fbcarch		as zstring ptr  '' fbc -arch argument
+	dirprefix	as zstring ptr  '' prefix string to use for bin/ and lib/ sub-directories, if any
 	is_x86		as integer
 	bits		as integer
 end type
 
 dim shared as FBCPUTYPEINFO cputypeinfo(0 to FB_CPUTYPE__COUNT-1) = _
 { _
-	( @"i386"       , @"386"          , TRUE , 32 ), _ '' FB_CPUTYPE_386
-	( @"i486"       , @"486"          , TRUE , 32 ), _ '' FB_CPUTYPE_486
-	( @"i586"       , @"586"          , TRUE , 32 ), _ '' FB_CPUTYPE_586
-	( @"i686"       , @"686"          , TRUE , 32 ), _ '' FB_CPUTYPE_686
-	( @"athlon"     , @"athlon"       , TRUE , 32 ), _ '' FB_CPUTYPE_ATHLON
-	( @"athlon-xp"  , @"athlon-xp"    , TRUE , 32 ), _ '' FB_CPUTYPE_ATHLONXP
-	( @"athlon-fx"  , @"athlon-fx"    , TRUE , 32 ), _ '' FB_CPUTYPE_ATHLONFX
-	( @"k8-sse3"    , @"k8-sse3"      , TRUE , 32 ), _ '' FB_CPUTYPE_ATHLONSSE3
-	( @"pentium-mmx", @"pentium-mmx"  , TRUE , 32 ), _ '' FB_CPUTYPE_PENTIUMMMX
-	( @"pentium2"   , @"pentium2"     , TRUE , 32 ), _ '' FB_CPUTYPE_PENTIUM2
-	( @"pentium3"   , @"pentium3"     , TRUE , 32 ), _ '' FB_CPUTYPE_PENTIUM3
-	( @"pentium4"   , @"pentium4"     , TRUE , 32 ), _ '' FB_CPUTYPE_PENTIUM4
-	( @"prescott"   , @"pentium4-sse3", TRUE , 32 ), _ '' FB_CPUTYPE_PENTIUMSSE3
-	( @"x86-64"     , @"x86-64"       , FALSE, 64 )  _ '' FB_CPUTYPE_X86_64
+	( @"i386"       , @"386"          , @""       , TRUE , 32 ), _ '' FB_CPUTYPE_386
+	( @"i486"       , @"486"          , @""       , TRUE , 32 ), _ '' FB_CPUTYPE_486
+	( @"i586"       , @"586"          , @""       , TRUE , 32 ), _ '' FB_CPUTYPE_586
+	( @"i686"       , @"686"          , @""       , TRUE , 32 ), _ '' FB_CPUTYPE_686
+	( @"athlon"     , @"athlon"       , @""       , TRUE , 32 ), _ '' FB_CPUTYPE_ATHLON
+	( @"athlon-xp"  , @"athlon-xp"    , @""       , TRUE , 32 ), _ '' FB_CPUTYPE_ATHLONXP
+	( @"athlon-fx"  , @"athlon-fx"    , @""       , TRUE , 32 ), _ '' FB_CPUTYPE_ATHLONFX
+	( @"k8-sse3"    , @"k8-sse3"      , @""       , TRUE , 32 ), _ '' FB_CPUTYPE_ATHLONSSE3
+	( @"pentium-mmx", @"pentium-mmx"  , @""       , TRUE , 32 ), _ '' FB_CPUTYPE_PENTIUMMMX
+	( @"pentium2"   , @"pentium2"     , @""       , TRUE , 32 ), _ '' FB_CPUTYPE_PENTIUM2
+	( @"pentium3"   , @"pentium3"     , @""       , TRUE , 32 ), _ '' FB_CPUTYPE_PENTIUM3
+	( @"pentium4"   , @"pentium4"     , @""       , TRUE , 32 ), _ '' FB_CPUTYPE_PENTIUM4
+	( @"prescott"   , @"pentium4-sse3", @""       , TRUE , 32 ), _ '' FB_CPUTYPE_PENTIUMSSE3
+	( @"x86-64"     , @"x86-64"       , @"x86_64-", FALSE, 64 )  _ '' FB_CPUTYPE_X86_64
 }
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -671,6 +672,14 @@ end function
 
 function fbGetFbcArch( ) as zstring ptr
 	function = cputypeinfo(env.clopt.cputype).fbcarch
+end function
+
+function fbGetArchDirPrefix( ) as zstring ptr
+	function = cputypeinfo(env.clopt.cputype).dirprefix
+end function
+
+function fbGetHostArchDirPrefix( ) as zstring ptr
+	function = cputypeinfo(FB_DEFAULT_CPUTYPE).dirprefix
 end function
 
 function fbIs64Bit( ) as integer
