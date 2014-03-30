@@ -463,7 +463,7 @@ end function
 
 private function hNeedStdcallMsHack( byval proc as FBSYMBOL ptr ) as integer
 	'' Only x86, because elsewhere gcc won't use @N suffixes anyways
-	if( fbCpuTypeIsX86( ) ) then
+	if( fbGetCpuFamily( ) = FB_CPUFAMILY_X86 ) then
 		'' Only stdcallms/pascal which must be emitted as stdcall with
 		'' the hack to avoid the @N suffix
 		select case( symbGetProcMode( proc ) )
@@ -503,7 +503,7 @@ private function hEmitProcHeader _
 
 	'' Calling convention if needed (for function pointers it's usually not
 	'' put in this place, but should work nonetheless)
-	if( fbCpuTypeIsX86( ) ) then
+	if( fbGetCpuFamily( ) = FB_CPUFAMILY_X86 ) then
 		select case( symbGetProcMode( proc ) )
 		case FB_FUNCMODE_STDCALL, FB_FUNCMODE_STDCALL_MS, FB_FUNCMODE_PASCAL
 			select case( env.clopt.target )
@@ -1110,7 +1110,7 @@ private sub hWriteF2I _
 		byval ptype as integer _
 	)
 
-	if( fbCpuTypeIsX86( ) ) then
+	if( fbGetCpuFamily( ) = FB_CPUFAMILY_X86 ) then
 		hWriteX86F2I( fname, rtype, ptype )
 	else
 		hWriteGenericF2I( fname, rtype, ptype )

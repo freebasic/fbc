@@ -299,7 +299,7 @@ private function hEmitProcCallConv( byval proc as FBSYMBOL ptr ) as string
 	'' For non-x86, don't emit any calling convention at all, it would just
 	'' be ignored anyways (for x86_64 and ARM it seems that way at least).
 
-	if( fbCpuTypeIsX86( ) = FALSE ) then
+	if( fbGetCpuFamily( ) <> FB_CPUFAMILY_X86 ) then
 		exit function
 	end if
 

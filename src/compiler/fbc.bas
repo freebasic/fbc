@@ -2044,7 +2044,7 @@ private sub hParseArgs( byval argc as integer, byval argv as zstring ptr ptr )
 
 	'' 5. Check for target/arch conflicts, e.g. dos and non-x86
 	if( (fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_DOS) and _
-	    (not fbCpuTypeIsX86( )) ) then
+	    (fbGetCpuFamily( ) <> FB_CPUFAMILY_X86) ) then
 		errReportEx( FB_ERRMSG_DOSWITHNONX86, fbGetFbcArch( ), -1 )
 		fbcEnd( 1 )
 	end if
@@ -2052,7 +2052,7 @@ private sub hParseArgs( byval argc as integer, byval argv as zstring ptr ptr )
 	'' 6. Adjust default backend to selected arch, e.g. when compiling for
 	''    x86_64, we shouldn't default to -gen gas anymore.
 	if( (fbGetOption( FB_COMPOPT_BACKEND ) = FB_BACKEND_GAS) and _
-	    (not fbCpuTypeIsX86( )) ) then
+	    (fbGetCpuFamily( ) <> FB_CPUFAMILY_X86) ) then
 		fbSetOption( FB_COMPOPT_BACKEND, FB_BACKEND_GCC )
 	end if
 
@@ -2064,7 +2064,7 @@ private sub hParseArgs( byval argc as integer, byval argv as zstring ptr ptr )
 	'' 8. Check whether backend supports the target/arch
 	'' -gen gas with non-x86 arch isn't possible
 	if( (fbGetOption( FB_COMPOPT_BACKEND ) = FB_BACKEND_GAS) and _
-	    (not fbCpuTypeIsX86( )) ) then
+	    (fbGetCpuFamily( ) <> FB_CPUFAMILY_X86) ) then
 		errReportEx( FB_ERRMSG_GENGASWITHNONX86, fbGetFbcArch( ), -1 )
 		fbcEnd( 1 )
 	end if

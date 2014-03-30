@@ -123,7 +123,7 @@ sub rtlAddIntrinsicProcs( byval procdef as const FB_RTL_PROCDEF ptr )
 		end if
 
 		if( procdef->options and FB_RTL_OPT_X86ONLY ) then
-			doadd and= fbCpuTypeIsX86( )
+			doadd and= (fbGetCpuFamily( ) = FB_CPUFAMILY_X86)
 		end if
 
 		if( doadd ) then

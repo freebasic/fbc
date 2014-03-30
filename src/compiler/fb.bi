@@ -133,6 +133,11 @@ enum FB_CPUTYPE
 	FB_CPUTYPE__COUNT
 end enum
 
+enum
+	FB_CPUFAMILY_X86 = 0
+	FB_CPUFAMILY_X86_64
+end enum
+
 '' fpu types
 enum FB_FPUTYPE
 	FB_FPUTYPE_FPU
@@ -374,9 +379,9 @@ declare function fbGetFbcArch( ) as zstring ptr
 declare function fbGetArchDirPrefix( ) as zstring ptr
 declare function fbGetHostArchDirPrefix( ) as zstring ptr
 declare function fbIs64Bit( ) as integer
-declare function fbCpuTypeIsX86( ) as integer
 declare function fbGetBits( ) as integer
 declare function fbGetHostBits( ) as integer
+declare function fbGetCpuFamily( ) as integer
 declare function fbIdentifyFbcArch( byref fbcarch as string ) as integer
 
 declare function fbGetEntryPoint _

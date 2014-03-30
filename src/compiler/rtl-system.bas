@@ -665,7 +665,7 @@ function rtlInitApp _
 		astAdd( astNewCALL( PROCLOOKUP( INITSIGNALS ), NULL ) )
 
 		'' Checking the CPU for features on x86
-		if( fbCpuTypeIsX86( ) ) then
+		if( fbGetCpuFamily( ) = FB_CPUFAMILY_X86 ) then
 			'' Check CPU type
 			rtlX86CpuCheck( )
 		end if
