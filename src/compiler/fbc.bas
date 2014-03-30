@@ -2674,11 +2674,12 @@ end sub
 private function hAssembleModule( byval module as FBCIOFILE ptr ) as integer
 	dim as string ln
 
-	if( fbIs64Bit( ) ) then
-		ln = "--64 "
-	else
-		ln = "--32 "
-	end if
+	select case( fbGetCpuFamily( ) )
+	case FB_CPUFAMILY_X86
+		ln += "--32 "
+	case FB_CPUFAMILY_X86_64
+		ln += "--64 "
+	end select
 
 	if( fbGetOption( FB_COMPOPT_DEBUG ) = FALSE ) then
 		ln += "--strip-local-absolute "
