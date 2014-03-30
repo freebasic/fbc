@@ -661,6 +661,10 @@ function fbGetTargetId( ) as zstring ptr
 	function = env.target.id
 end function
 
+function fbGetHostId( ) as zstring ptr
+	function = targetinfo(FB_DEFAULT_TARGET).id
+end function
+
 function fbGetGccArch( ) as zstring ptr
 	function = cputypeinfo(env.clopt.cputype).gccarch
 end function
