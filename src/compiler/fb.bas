@@ -670,7 +670,15 @@ function fbGetFbcArch( ) as zstring ptr
 end function
 
 function fbIs64Bit( ) as integer
-	function = (cputypeinfo(env.clopt.cputype).bits = 64)
+	function = (fbGetBits( ) = 64)
+end function
+
+function fbGetBits( ) as integer
+	function = cputypeinfo(env.clopt.cputype).bits
+end function
+
+function fbGetHostBits( ) as integer
+	function = cputypeinfo(FB_DEFAULT_CPUTYPE).bits
 end function
 
 function fbCpuTypeIsX86( ) as integer
