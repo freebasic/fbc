@@ -55,6 +55,7 @@ type FBCCTX
 	objfile				as string '' -o filename waiting for next input file
 	backend				as integer  '' FB_BACKEND_* given via -gen, or -1 if -gen wasn't given
 	cputype				as integer  '' FB_CPUTYPE_* (-arch's argument), or -1
+	cputype_is_native		as integer  '' Whether -arch native was used
 	asmsyntax			as integer  '' FB_ASMSYNTAX_* from -asm, or -1 if not given
 
 	emitasmonly			as integer  '' write out FB backend output file only (.asm/.c)
@@ -1299,6 +1300,7 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 		fbcAddObj( arg )
 
 	case OPT_ARCH
+		fbc.cputype_is_native = (arg = "native")
 		fbc.cputype = fbIdentifyFbcArch( arg )
 		if( fbc.cputype < 0 ) then
 			hFatalInvalidOption( "-arch " + arg )
@@ -2582,7 +2584,7 @@ private function hCompileStage2Module( byval module as FBCIOFILE ptr ) as intege
 			ln += "-m32 "
 		end if
 
-		if( fbc.cputype = FB_CPUTYPE_NATIVE ) then
+		if( fbc.cputype_is_native ) then
 			ln += "-march=native "
 		else
 			ln += "-march=" + *fbGetGccArch( ) + " "
