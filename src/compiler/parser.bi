@@ -272,7 +272,6 @@ declare function cVariableDecl _
 		byval attrib as FB_SYMBATTRIB = FB_SYMBATTRIB_NONE _
 	) as integer
 
-declare sub cAutoVarDecl(byval attrib as FB_SYMBATTRIB)
 declare sub cStaticArrayDecl( byref dimensions as integer, dTB() as FBARRAYDIM )
 declare sub cArrayDecl( byref dimensions as integer, exprTB() as ASTNODE ptr )
 

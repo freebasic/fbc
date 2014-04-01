@@ -9,6 +9,8 @@
 #include once "rtl.bi"
 #include once "ast.bi"
 
+declare sub cAutoVarDecl( byval attrib as FB_SYMBATTRIB )
+
 sub hComplainIfAbstractClass _
 	( _
 		byval dtype as integer, _
@@ -156,6 +158,11 @@ function cVariableDecl( byval attrib as FB_SYMBATTRIB ) as integer
 			cAutoVarDecl( attrib )
 			return TRUE
 		end if
+
+	'' VAR
+	case FB_TK_VAR
+		cAutoVarDecl( attrib )
+		return TRUE
 
 	case else
 		if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_DECL or FB_CMPSTMT_MASK_CODE ) = FALSE ) then
@@ -1718,10 +1725,14 @@ sub cArrayDecl( byref dimensions as integer, exprTB() as ASTNODE ptr )
 	loop while( hMatch( CHAR_COMMA ) )
 end sub
 
-'':::::
-''AutoVarDecl    =   VAR SHARED? SymbolDef '=' VarInitializer
-''                   (',' SymbolDef)* .
-sub cAutoVarDecl(byval attrib as FB_SYMBATTRIB)
+''
+'' AutoVar =
+''    SymbolDef '=' Initializer
+''
+'' AutoVarDecl =
+''    VAR [SHARED] AutoVar (',' AutoVar)*
+''
+private sub cAutoVarDecl( byval attrib as FB_SYMBATTRIB )
 	static as FBARRAYDIM dTB(0 to FB_MAXARRAYDIMS-1) '' needed for hDeclStaticVar()
 	static as zstring * FB_MAXNAMELEN+1 id
 	dim as FBSYMBOL ptr parent = any, sym = any
