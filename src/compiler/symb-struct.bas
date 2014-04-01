@@ -260,7 +260,7 @@ function symbAddField _
 	) as FBSYMBOL ptr
 
 	dim as FBSYMBOL ptr sym = any, tail = any, base_parent = any, desc = any
-	dim as integer pad = any, updateudt = any, elen = any, attrib = any
+	dim as integer pad = any, alloc_field = any, elen = any, attrib = any
 	dim as longint offset = any
 	dim as string arrayid
 
@@ -293,11 +293,12 @@ function symbAddField _
 		'' Same offset for the fake array field as for the descriptor,
 		'' to make astNewARG()'s job easier
 		offset = desc->ofs
-		assert( offset < parent->ofs ) '' indicating that no new field should be started
+		alloc_field = FALSE
 	else
 		'' All other fields default to the next available offset,
 		'' except bitfields which are given special treatment below.
 		offset = parent->ofs
+		alloc_field = TRUE
 	end if
 
 	'' Check for bitfield
@@ -336,6 +337,7 @@ function symbAddField _
 				'' Put this bitfield into the same container as the previous bitfield,
 				'' i.e. same base offset as the previous bitfield.
 				offset = tail->ofs
+				alloc_field = FALSE
 			end if
 		end if
 	else
@@ -345,8 +347,7 @@ function symbAddField _
 	end if
 
 	'' Add padding for normal fields (neither bitfield nor fake array)
-	assert( offset <= parent->ofs )
-	if( offset = parent->ofs ) then
+	if( alloc_field ) then
 		pad = hCalcPadding( offset, parent->udt.align, dtype, subtype )
 		if( pad > 0 ) then
 
@@ -389,7 +390,7 @@ function symbAddField _
 			offset += pad
 		else
 			'' error recovery: don't add this field
-			updateudt = FALSE
+			alloc_field = FALSE
 		end if
 
 		'' update largest field len
@@ -503,13 +504,15 @@ function symbAddField _
 		assert( parent->ofs = 0 )
 		assert( parent->udt.bitpos = 0 )
 
-		'' Union's size is the max field size
-		if( parent->lgt < lgt ) then
-			parent->lgt = lgt
+		if( alloc_field ) then
+			'' Union's size is the max field size
+			if( parent->lgt < lgt ) then
+				parent->lgt = lgt
+			end if
 		end if
 	else
 		'' Update struct size, if a new (non-fake) field was started
-		if( offset >= parent->ofs ) then
+		if( alloc_field ) then
 			offset += lgt
 			parent->ofs = offset
 			parent->lgt = offset
