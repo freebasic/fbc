@@ -387,10 +387,13 @@ private function hCheckByDescParam _
 			return TRUE
 		end if
 
-		'' Variable: If it's an array, then it will have an array descriptor
-		if( symbGetArrayDimensions( s ) <> 0 ) then
+		'' Variable: If it's an array, then it will have an array descriptor,
+		'' except if it's still incomplete (during initialization of array with
+		'' ellipsis)
+		desc = symbGetArrayDescriptor( s )
+		if( desc ) then
 			astDelTree( n->l )
-			n->l = astNewADDROF( astNewVAR( symbGetArrayDescriptor( s ) ) )
+			n->l = astNewADDROF( astNewVAR( desc ) )
 			return TRUE
 		end if
 
