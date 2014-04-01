@@ -1589,10 +1589,6 @@ end function
 sub cStaticArrayDecl( byref dimensions as integer, dTB() as FBARRAYDIM )
 	dimensions = 0
 
-	'' '('
-	assert( lexGetToken( ) = CHAR_LPRNT )
-	lexSkipToken( )
-
 	do
 		if( dimensions >= FB_MAXARRAYDIMS ) then
 			errReport( FB_ERRMSG_TOOMANYDIMENSIONS )
@@ -1626,13 +1622,6 @@ sub cStaticArrayDecl( byref dimensions as integer, dTB() as FBARRAYDIM )
 
 		'' ','?
 	loop while( hMatch( CHAR_COMMA ) )
-
-	'' ')'
-	if( lexGetToken( ) <> CHAR_RPRNT ) then
-		errReport( FB_ERRMSG_EXPECTEDRPRNT )
-	else
-		lexSkipToken( )
-	end if
 end sub
 
 private function hIntExpr( byval defaultexpr as ASTNODE ptr ) as ASTNODE ptr
