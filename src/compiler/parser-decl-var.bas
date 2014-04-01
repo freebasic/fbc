@@ -548,94 +548,75 @@ private function hDeclDynArray _
     function = sym
 end function
 
-'':::::
-private function hGetId _
-	( _
-		byval parent as FBSYMBOL ptr, _
-		byval id as zstring ptr, _
-		byref suffix as integer, _
-		byval options as FB_IDOPT _
-	) as FBSYMCHAIN ptr
+private function hCheckForIdToken( byval parent as FBSYMBOL ptr ) as integer
+	function = FB_ERRMSG_OK
 
-	dim as FBSYMCHAIN ptr chain_ = any
-
-	'' no parent? read as-is
-	if( parent = NULL ) then
-		chain_ = lexGetSymChain( )
-	else
-		chain_ = symbLookupAt( parent, _
-							   lexGetText( ), _
-							   FALSE, _
-							   (options and FB_IDOPT_ISDECL) = 0 )
-	end if
-
-	'' ID
-	select case as const lexGetClass( )
+	select case as const( lexGetClass( ) )
 	case FB_TKCLASS_IDENTIFIER
 		if( fbLangOptIsSet( FB_LANG_OPT_PERIODS ) ) then
 			'' if inside a namespace, symbols can't contain periods (.)'s
 			if( symbIsGlobalNamespc( ) = FALSE ) then
 				if( lexGetPeriodPos( ) > 0 ) then
-					errReport( FB_ERRMSG_CANTINCLUDEPERIODS )
+					function = FB_ERRMSG_CANTINCLUDEPERIODS
 				end if
 			end if
 		end if
 
-		*id = *lexGetText( )
-		suffix = lexGetType( )
-
 	case FB_TKCLASS_QUIRKWD
+		'' Ok in -lang qb, but otherwise, need additional checks
 		if( env.clopt.lang <> FB_LANG_QB ) then
 			'' only if inside a ns and if not local
 			if( (parent = NULL) or (parser.scope > FB_MAINSCOPE) ) then
-				errReport( FB_ERRMSG_DUPDEFINITION )
-				'' error recovery: fake an id
-				*id = *symbUniqueLabel( )
-				suffix = FB_DATATYPE_INVALID
-			else
-				*id = *lexGetText( )
-				suffix = lexGetType( )
+				function = FB_ERRMSG_DUPDEFINITION
 			end if
-
-		'' QB mode..
-		else
-			*id = *lexGetText( )
-			suffix = lexGetType( )
 		end if
 
 	case FB_TKCLASS_KEYWORD, FB_TKCLASS_OPERATOR
 		if( env.clopt.lang <> FB_LANG_QB ) then
-			errReport( FB_ERRMSG_DUPDEFINITION )
-			'' error recovery: fake an id
-			*id = *symbUniqueLabel( )
-			suffix = FB_DATATYPE_INVALID
-
-		'' QB mode..
+			function = FB_ERRMSG_DUPDEFINITION
 		else
-			*id = *lexGetText( )
-			suffix = lexGetType( )
-
-			'' must have a suffix if it is a keyword
-			if( suffix = FB_DATATYPE_INVALID ) then
-				errReport( FB_ERRMSG_DUPDEFINITION )
-				'' error recovery: fake an id
-				*id = *symbUniqueLabel( )
-				suffix = FB_DATATYPE_INVALID
+			'' Ok in -lang qb if it has a suffix
+			if( lexGetType( ) = FB_DATATYPE_INVALID ) then
+				function = FB_ERRMSG_DUPDEFINITION
 			end if
 		end if
 
 	case else
-		errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
+		function = FB_ERRMSG_EXPECTEDIDENTIFIER
+	end select
+end function
+
+private function hGetId _
+	( _
+		byval parent as FBSYMBOL ptr, _
+		byval id as zstring ptr, _
+		byref suffix as integer, _
+		byval is_decl as integer _
+	) as FBSYMCHAIN ptr
+
+	dim as integer errmsg = any
+
+	errmsg = hCheckForIdToken( parent )
+	if( errmsg = FB_ERRMSG_OK ) then
+		*id = *lexGetText( )
+		suffix = lexGetType( )
+		hCheckSuffix( suffix )
+
+		'' no parent? read as-is
+		if( parent = NULL ) then
+			function = lexGetSymChain( )
+		else
+			function = symbLookupAt( parent, lexGetText( ), FALSE, not is_decl )
+		end if
+	else
+		errReport( errmsg )
 		'' error recovery: fake an id
 		*id = *symbUniqueLabel( )
 		suffix = FB_DATATYPE_INVALID
-	end select
-
-	hCheckSuffix( suffix )
+		function = NULL
+	end if
 
 	lexSkipToken( )
-
-	function = chain_
 
 end function
 
@@ -1192,7 +1173,7 @@ function cVarDecl _
 
     do
 		dim as FBSYMBOL ptr parent = cParentId( options )
-		dim as FBSYMCHAIN ptr chain_ = hGetId( parent, @id, suffix, options )
+		dim as FBSYMCHAIN ptr chain_ = hGetId( parent, @id, suffix, (options and FB_IDOPT_ISDECL) = 0 )
 
 		is_typeless = FALSE
 
@@ -1774,7 +1755,7 @@ private sub cAutoVarDecl( byval attrib as FB_SYMBATTRIB )
 
 		'' get id
 		dim as integer suffix = any
-		dim as FBSYMCHAIN ptr chain_ = hGetId( parent, @id, suffix, 0 )
+		dim as FBSYMCHAIN ptr chain_ = hGetId( parent, @id, suffix, TRUE )
 
 		if( suffix <> FB_DATATYPE_INVALID ) then
 			errReportEx( FB_ERRMSG_SYNTAXERROR, @id )
