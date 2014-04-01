@@ -53,6 +53,8 @@ namespace descriptorInitAndCleanUp
 	'' dynamic strings, and the parent UDT must be given a ctor/dtor if
 	'' it has none.
 
+	dim shared dtorudt_dtors as integer
+
 	type DtorUdt
 		i as integer
 		declare destructor( )
