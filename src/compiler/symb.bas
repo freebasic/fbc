@@ -2527,6 +2527,11 @@ end sub
 
 sub symbDumpChain( byval chain_ as FBSYMCHAIN ptr )
 	print "symchain [" + hex( chain_ ) + "]:"
+
+	if( chain_ = NULL ) then
+		exit sub
+	end if
+
 	do
 		print "    " + symbDump( chain_->sym )
 		chain_ = chain_->next
