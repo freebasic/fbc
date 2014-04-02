@@ -2524,4 +2524,12 @@ sub symbDumpNamespace( byval ns as FBSYMBOL ptr )
 		wend
 	next
 end sub
+
+sub symbDumpChain( byval chain_ as FBSYMCHAIN ptr )
+	print "symchain [" + hex( chain_ ) + "]:"
+	do
+		print "    " + symbDump( chain_->sym )
+		chain_ = chain_->next
+	loop while( chain_ )
+end sub
 #endif

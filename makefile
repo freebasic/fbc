@@ -199,7 +199,7 @@ else
       TARGET_ARCH := x86
     else
       TARGET_ARCH = $(shell uname -m)
-	endif
+    endif
   endif
 endif
 

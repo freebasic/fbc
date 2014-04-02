@@ -242,7 +242,7 @@ private sub _init( )
 	listInit( @ctx.exprcache, 8, sizeof( EXPRCACHENODE ), LIST_FLAGS_NOCLEAR )
 	irSetOption( IR_OPT_FPUIMMEDIATES or IR_OPT_MISSINGOPS )
 
-	if( fbCpuTypeIs64bit( ) ) then
+	if( fbIs64bit( ) ) then
 		dtypeName(FB_DATATYPE_INTEGER) = dtypeName(FB_DATATYPE_LONGINT)
 		dtypeName(FB_DATATYPE_UINT   ) = dtypeName(FB_DATATYPE_ULONGINT)
 	else
@@ -463,7 +463,7 @@ end function
 
 private function hNeedStdcallMsHack( byval proc as FBSYMBOL ptr ) as integer
 	'' Only x86, because elsewhere gcc won't use @N suffixes anyways
-	if( fbCpuTypeIsX86( ) ) then
+	if( fbGetCpuFamily( ) = FB_CPUFAMILY_X86 ) then
 		'' Only stdcallms/pascal which must be emitted as stdcall with
 		'' the hack to avoid the @N suffix
 		select case( symbGetProcMode( proc ) )
@@ -503,7 +503,7 @@ private function hEmitProcHeader _
 
 	'' Calling convention if needed (for function pointers it's usually not
 	'' put in this place, but should work nonetheless)
-	if( fbCpuTypeIsX86( ) ) then
+	if( fbGetCpuFamily( ) = FB_CPUFAMILY_X86 ) then
 		select case( symbGetProcMode( proc ) )
 		case FB_FUNCMODE_STDCALL, FB_FUNCMODE_STDCALL_MS, FB_FUNCMODE_PASCAL
 			select case( env.clopt.target )
@@ -1111,7 +1111,7 @@ private sub hWriteF2I _
 		byval ptype as integer _
 	)
 
-	if( fbCpuTypeIsX86( ) ) then
+	if( fbGetCpuFamily( ) = FB_CPUFAMILY_X86 ) then
 		hWriteX86F2I( fname, rtype, ptype )
 	else
 		hWriteGenericF2I( fname, rtype, ptype )
@@ -1175,7 +1175,7 @@ private function _emitBegin( ) as integer
 	hWriteLine( "typedef unsigned int       uint32;", TRUE )
 	hWriteLine( "typedef   signed long long  int64;", TRUE )
 	hWriteLine( "typedef unsigned long long uint64;", TRUE )
-	if( fbCpuTypeIs64bit( ) ) then
+	if( fbIs64bit( ) ) then
 		hWriteLine( "typedef struct { char *data; int64 len; int64 size; } FBSTRING;", TRUE )
 	else
 		hWriteLine( "typedef struct { char *data; int32 len; int32 size; } FBSTRING;", TRUE )
@@ -1626,9 +1626,7 @@ private function typeCBop _
 	( _
 		byval op as integer, _
 		byval a as integer, _
-		byval asubtype as FBSYMBOL ptr, _
-		byval b as integer, _
-		byval bsubtype as FBSYMBOL ptr _
+		byval b as integer _
 	) as integer
 
 	'' Result of relational/comparison operators is int
@@ -1735,7 +1733,7 @@ private function exprNewUOP _
 			solved_out = (l->op = op)
 		end if
 
-		dtype = typeCBop( op, l->dtype, l->subtype, l->dtype, l->subtype )
+		dtype = typeCBop( op, l->dtype, l->dtype )
 
 
 	case AST_OP_ABS, AST_OP_FLOOR, _
@@ -1775,7 +1773,7 @@ private function exprNewBOP _
 	dim as integer dtype = any
 
 	'' To find out the BOPs result type, apply C type promotion rules
-	dtype = typeCBop( op, l->dtype, l->subtype, r->dtype, r->subtype )
+	dtype = typeCBop( op, l->dtype, r->dtype )
 
 	'' BOPs should only be done on simple int/float types,
 	'' and on pointers only after casting to ubyte* first,

@@ -204,31 +204,32 @@ dim shared as FBTARGET targetinfo(0 to FB_COMPTARGETS-1) = _
 }
 
 type FBCPUTYPEINFO
-	gccarch		as zstring ptr  '' gcc -march argument (used for -gen gcc)
+	gccarch		as zstring ptr  '' gcc -march argument (used for -gen gcc), or NULL if same as fbcarch
 	fbcarch		as zstring ptr  '' fbc -arch argument
-	is_x86		as integer
+	dirprefix	as zstring ptr  '' prefix string to use for bin/ and lib/ sub-directories, if any
+	family		as integer
 	bits		as integer
 end type
 
 dim shared as FBCPUTYPEINFO cputypeinfo(0 to FB_CPUTYPE__COUNT-1) = _
 { _
-	( @"i386"       , @"386"          , TRUE , 32 ), _ '' FB_CPUTYPE_386
-	( @"i486"       , @"486"          , TRUE , 32 ), _ '' FB_CPUTYPE_486
-	( @"i586"       , @"586"          , TRUE , 32 ), _ '' FB_CPUTYPE_586
-	( @"i686"       , @"686"          , TRUE , 32 ), _ '' FB_CPUTYPE_686
-	( @"athlon"     , @"athlon"       , TRUE , 32 ), _ '' FB_CPUTYPE_ATHLON
-	( @"athlon-xp"  , @"athlon-xp"    , TRUE , 32 ), _ '' FB_CPUTYPE_ATHLONXP
-	( @"athlon-fx"  , @"athlon-fx"    , TRUE , 32 ), _ '' FB_CPUTYPE_ATHLONFX
-	( @"k8-sse3"    , @"k8-sse3"      , TRUE , 32 ), _ '' FB_CPUTYPE_ATHLONSSE3
-	( @"pentium-mmx", @"pentium-mmx"  , TRUE , 32 ), _ '' FB_CPUTYPE_PENTIUMMMX
-	( @"pentium2"   , @"pentium2"     , TRUE , 32 ), _ '' FB_CPUTYPE_PENTIUM2
-	( @"pentium3"   , @"pentium3"     , TRUE , 32 ), _ '' FB_CPUTYPE_PENTIUM3
-	( @"pentium4"   , @"pentium4"     , TRUE , 32 ), _ '' FB_CPUTYPE_PENTIUM4
-	( @"prescott"   , @"pentium4-sse3", TRUE , 32 ), _ '' FB_CPUTYPE_PENTIUMSSE3
-	( @"x86-64"     , @"x86-64"       , FALSE, 64 ), _ '' FB_CPUTYPE_X86_64
-	( NULL          , @"32"           , FALSE, 32 ), _ '' FB_CPUTYPE_32
-	( NULL          , @"64"           , FALSE, 64 ), _ '' FB_CPUTYPE_64
-	( NULL          , NULL            , FALSE, 0  )  _ '' FB_CPUTYPE_NATIVE
+	( @"i386"    , @"386"          , @""        , FB_CPUFAMILY_X86    , 32 ), _ '' FB_CPUTYPE_386
+	( @"i486"    , @"486"          , @""        , FB_CPUFAMILY_X86    , 32 ), _ '' FB_CPUTYPE_486
+	( @"i586"    , @"586"          , @""        , FB_CPUFAMILY_X86    , 32 ), _ '' FB_CPUTYPE_586
+	( @"i686"    , @"686"          , @""        , FB_CPUFAMILY_X86    , 32 ), _ '' FB_CPUTYPE_686
+	( NULL       , @"athlon"       , @""        , FB_CPUFAMILY_X86    , 32 ), _ '' FB_CPUTYPE_ATHLON
+	( NULL       , @"athlon-xp"    , @""        , FB_CPUFAMILY_X86    , 32 ), _ '' FB_CPUTYPE_ATHLONXP
+	( NULL       , @"athlon-fx"    , @""        , FB_CPUFAMILY_X86    , 32 ), _ '' FB_CPUTYPE_ATHLONFX
+	( NULL       , @"k8-sse3"      , @""        , FB_CPUFAMILY_X86    , 32 ), _ '' FB_CPUTYPE_ATHLONSSE3
+	( NULL       , @"pentium-mmx"  , @""        , FB_CPUFAMILY_X86    , 32 ), _ '' FB_CPUTYPE_PENTIUMMMX
+	( NULL       , @"pentium2"     , @""        , FB_CPUFAMILY_X86    , 32 ), _ '' FB_CPUTYPE_PENTIUM2
+	( NULL       , @"pentium3"     , @""        , FB_CPUFAMILY_X86    , 32 ), _ '' FB_CPUTYPE_PENTIUM3
+	( NULL       , @"pentium4"     , @""        , FB_CPUFAMILY_X86    , 32 ), _ '' FB_CPUTYPE_PENTIUM4
+	( @"prescott", @"pentium4-sse3", @""        , FB_CPUFAMILY_X86    , 32 ), _ '' FB_CPUTYPE_PENTIUMSSE3
+	( NULL       , @"x86-64"       , @"x86_64-" , FB_CPUFAMILY_X86_64 , 64 ), _ '' FB_CPUTYPE_X86_64
+	( NULL       , @"armv6"        , @"armv6-"  , FB_CPUFAMILY_ARM    , 32 ), _ '' FB_CPUTYPE_ARMV6
+	( NULL       , @"armv7-a"      , @"armv7a-" , FB_CPUFAMILY_ARM    , 32 ), _ '' FB_CPUTYPE_ARMV7A
+	( NULL       , @"aarch64"      , @"aarch64-", FB_CPUFAMILY_AARCH64, 64 )  _ '' FB_CPUTYPE_AARCH64
 }
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -664,20 +665,54 @@ function fbGetTargetId( ) as zstring ptr
 	function = env.target.id
 end function
 
+function fbGetHostId( ) as zstring ptr
+	function = targetinfo(FB_DEFAULT_TARGET).id
+end function
+
+function fbIdentifyTargetId( byref targetid as string ) as integer
+	for i as integer = 0 to FB_COMPTARGETS-1
+		if( *targetinfo(i).id = targetid ) then
+			return i
+		end if
+	next
+	function = -1
+end function
+
 function fbGetGccArch( ) as zstring ptr
-	function = cputypeinfo(env.clopt.cputype).gccarch
+	dim as zstring ptr gccarch = any
+	gccarch = cputypeinfo(env.clopt.cputype).gccarch
+	if( gccarch = NULL ) then
+		gccarch = cputypeinfo(env.clopt.cputype).fbcarch
+	end if
+	function = gccarch
 end function
 
 function fbGetFbcArch( ) as zstring ptr
 	function = cputypeinfo(env.clopt.cputype).fbcarch
 end function
 
-function fbCpuTypeIs64bit( ) as integer
-	function = (cputypeinfo(env.clopt.cputype).bits = 64)
+function fbGetArchDirPrefix( ) as zstring ptr
+	function = cputypeinfo(env.clopt.cputype).dirprefix
 end function
 
-function fbCpuTypeIsX86( ) as integer
-	function = cputypeinfo(env.clopt.cputype).is_x86
+function fbGetHostArchDirPrefix( ) as zstring ptr
+	function = cputypeinfo(FB_DEFAULT_CPUTYPE).dirprefix
+end function
+
+function fbIs64Bit( ) as integer
+	function = (fbGetBits( ) = 64)
+end function
+
+function fbGetBits( ) as integer
+	function = cputypeinfo(env.clopt.cputype).bits
+end function
+
+function fbGetHostBits( ) as integer
+	function = cputypeinfo(FB_DEFAULT_CPUTYPE).bits
+end function
+
+function fbGetCpuFamily( ) as integer
+	function = cputypeinfo(env.clopt.cputype).family
 end function
 
 function fbIdentifyFbcArch( byref fbcarch as string ) as integer
@@ -687,7 +722,7 @@ function fbIdentifyFbcArch( byref fbcarch as string ) as integer
 		'' default, which is always safe for the host.
 		function = FB_DEFAULT_CPUTYPE
 
-		#ifndef __FB_64BIT__
+		#if (not defined( __FB_64BIT__ )) and (not defined( __FB_ARM__ ))
 			select case( fb_CpuDetect( ) shr 28 )
 			case 3 : function = FB_CPUTYPE_386
 			case 4 : function = FB_CPUTYPE_486

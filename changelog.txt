@@ -14,6 +14,7 @@ Version 0.91.0:
 [added]
 - 64bit support (-arch x86_64) based on -gen gcc: INTEGER/POINTER = 64bit, LONG = 32bit DWORD. Compiler #define: __FB_64BIT__
 - -arch 32|64 options to support easy switching between 32bit and 64bit, by selecting a default arch that supports 32/64 bits respectively.
+- ARM support (-arch armv6|armv7-a|aarch64) based on -gen gcc. Compiler #define: __FB_ARM__
 - fbc -v now prints out the target system and architecture
 - BYVAL AS STRING is now working properly: it now has BYVAL semantics and no longer behaves like BYREF AS ZSTRING. Modifications made by the callee are not visible to the caller, as for other BYVAL parameters. (BYVAL AS STRING is implemented by copying the string argument into a temporary STRING, whose descriptor is then passed BYREF to the procedure)
 - Improved multiplication/division/modulus to bitwise shift/and optimizations to handle operations with 64bit and unsigned right hand operand better
@@ -23,6 +24,7 @@ Version 0.91.0:
 - operator [] overloading support, for example: type MyStringClass : declare operator []( index as integer ) byref as integer : ...
 - warning message when mixing signed and unsigned operands in comparisons or integer divide/MOD/SHR operations, where the signedness could change the result
 - crt/long.bi, which provides the CLONG and CULONG type aliases that always match C's long and unsigned long data types (for use when making FB bindings for C libraries that use C's long data type, because 64bit FB doesn't have a built-in type that matches 64bit C's long on all platforms)
+- crt/longdouble.bi, which provides a CLONGDOUBLE type that (at least in size) matches C's long double type, for use by bindings.
 - Adjusted CRT headers for 64bit support
 - Updated CUnit 2.1-2 headers, with 64bit support
 - #macro can now also be used to #define macros without a '()' macro parameter list

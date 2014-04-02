@@ -44,9 +44,10 @@ FBCALL FBTHREAD *fb_ThreadCreate( FB_THREADPROC proc, void *param, ssize_t stack
 
 	if( pthread_create( &thread->id, &tattr, threadproc, (void *)thread ) ) {
 		free( (void *)thread );
-		return NULL;
+		thread = NULL;
 	}
 
+	pthread_attr_destroy( &tattr );
 	return thread;
 }
 

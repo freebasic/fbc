@@ -342,10 +342,14 @@ sub symbDefineInit _
 		symbAddDefine( @"__FB_PCOS__", NULL, 0 )
 	end if
 
-	'' 64bit?
-	if( fbCpuTypeIs64bit( ) ) then
+	if( fbIs64bit( ) ) then
 		symbAddDefine( @"__FB_64BIT__", NULL, 0 )
 	end if
+
+	select case( fbGetCpuFamily( ) )
+	case FB_CPUFAMILY_ARM, FB_CPUFAMILY_AARCH64
+		symbAddDefine( @"__FB_ARM__", NULL, 0 )
+	end select
 
 	'' add "main" define
 	if( ismain ) then

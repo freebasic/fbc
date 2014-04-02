@@ -55,6 +55,7 @@ type FBCCTX
 	objfile				as string '' -o filename waiting for next input file
 	backend				as integer  '' FB_BACKEND_* given via -gen, or -1 if -gen wasn't given
 	cputype				as integer  '' FB_CPUTYPE_* (-arch's argument), or -1
+	cputype_is_native		as integer  '' Whether -arch native was used
 	asmsyntax			as integer  '' FB_ASMSYNTAX_* from -asm, or -1 if not given
 
 	emitasmonly			as integer  '' write out FB backend output file only (.asm/.c)
@@ -218,7 +219,7 @@ private sub fbcEnd( byval errnum as integer )
 	if( errnum = 0 ) then
 		select case( fbc.print )
 		case PRINT_HOST
-			print FB_HOST_TARGETID
+			print *fbGetHostId( )
 		case PRINT_TARGET
 			print *fbGetTargetId( )
 		case PRINT_X
@@ -278,11 +279,12 @@ private function fbcFindLibFile( byval file as zstring ptr ) as string
 	dim as string path
 	fbcFindBin( FBCTOOL_GCC, path )
 
-	if( fbCpuTypeIs64bit( ) ) then
-		path += " -m64"
-	else
+	select case( fbGetCpuFamily( ) )
+	case FB_CPUFAMILY_X86
 		path += " -m32"
-	end if
+	case FB_CPUFAMILY_X86_64
+		path += " -m64"
+	end select
 
 	path += " -print-file-name=" + *file
 
@@ -544,17 +546,21 @@ private function hLinkFiles( ) as integer
 
 	select case( fbGetOption( FB_COMPOPT_TARGET ) )
 	case FB_COMPTARGET_WIN32
-		if( fbCpuTypeIs64bit( ) ) then
-			ldcline += "-m i386pep "
-		else
+		select case( fbGetCpuFamily( ) )
+		case FB_CPUFAMILY_X86
 			ldcline += "-m i386pe "
-		end if
+		case FB_CPUFAMILY_X86_64
+			ldcline += "-m i386pep "
+		end select
 	case FB_COMPTARGET_LINUX
-		if( fbCpuTypeIs64bit( ) ) then
-			ldcline += "-m elf_x86_64 "
-		else
+		select case( fbGetCpuFamily( ) )
+		case FB_CPUFAMILY_X86
 			ldcline += "-m elf_i386 "
-		end if
+		case FB_CPUFAMILY_X86_64
+			ldcline += "-m elf_x86_64 "
+		case FB_CPUFAMILY_ARM
+			ldcline += "-m armelf_linux_eabi "
+		end select
 	end select
 
 	'' Set executable name
@@ -602,11 +608,16 @@ private function hLinkFiles( ) as integer
 			case FB_COMPTARGET_FREEBSD
 				ldcline += " -dynamic-linker /libexec/ld-elf.so.1"
 			case FB_COMPTARGET_LINUX
-				if( fbCpuTypeIs64bit( ) ) then
-					ldcline += " -dynamic-linker /lib64/ld-linux-x86-64.so.2"
-				else
+				select case( fbGetCpuFamily( ) )
+				case FB_CPUFAMILY_X86
 					ldcline += " -dynamic-linker /lib/ld-linux.so.2"
-				end if
+				case FB_CPUFAMILY_X86_64
+					ldcline += " -dynamic-linker /lib64/ld-linux-x86-64.so.2"
+				case FB_CPUFAMILY_ARM
+					ldcline += " -dynamic-linker /lib/ld-linux-armhf.so.3"
+				case FB_CPUFAMILY_AARCH64
+					ldcline += " -dynamic-linker /lib/ld-linux-aarch64.so.1"
+				end select
 			case FB_COMPTARGET_NETBSD
 				ldcline += " -dynamic-linker /usr/libexec/ld.elf_so"
 			case FB_COMPTARGET_OPENBSD
@@ -1079,101 +1090,108 @@ private sub hAddBas( byref basfile as string )
 	hSetIofile( listNewNode( @fbc.modules ), basfile, FALSE )
 end sub
 
-#ifndef ENABLE_STANDALONE
-'' To support GNU triplets, we need to parse them, to identify which target
-'' of ours it could mean. A triplet is made up of these components:
-''    [arch-[vendor-]]os[-...]
-private sub hParseTargetId _
-	( _
-		byref os as string, _
-		byref arch as string _
-	)
+private sub hHandleTarget( byref arg as string )
+	dim as integer target = any
+	dim as string t, arch
 
-	dim as integer i = any, j = any
+	'' Standalone: -target <osname>, accepts only the traditional
+	'' FB target OS names, and uses the bin/<osname>/ and
+	'' lib/<osname>/ subdirs.
+	''
+	'' Normal: -target <id>, accepts gcc target ids such as
+	'' "i686-pc-mingw32", "x86_64-pc-linux-gnu" or simply "mingw32",
+	'' and uses the given target id as prefix for cross-compilation
+	'' tools, such as i686-pc-mingw32-ld instead of just ld.
+	''
+	'' This allows normal fbc to work well with gcc/binutils cross-compiling
+	'' toolchains while for standalone the gcc/binutils executables need to
+	'' be re-arranged into standalone FB's dir layout.
 
-	i = instr( 1, os, "-" )
-	if( i > 0 ) then
-		arch = left( os, i - 1 )
+	'' The -target option should be case-insensitive
+	t = lcase( arg )
 
-		j = instr( i + 1, os, "-" )
-		if( j > 0 ) then
-			i = j
-		end if
-
-		os = right( os, len( os ) - i )
+	'' Ignore it if it matches the host id; this adds backwards-
+	'' compatibility with fbc 0.23
+	if( t = *fbGetHostId( ) ) then
+		exit sub
 	end if
 
-end sub
-#endif
+	target = -1
 
-private function hParseTargetOS( byref os as string ) as integer
-	if( len( os ) = 0 ) then
-		return -1
+#ifndef ENABLE_STANDALONE
+	'' Should use the -target argument as-is when prefixing to tool file
+	'' names, because of case-sensitive file systems
+	fbc.target = arg
+	fbc.targetprefix = fbc.target + "-"
+
+	'' To support GNU triplets, we need to parse them, to identify which
+	'' target & arch of ours it could mean.
+
+	'' Check for certain OS ids, simply by checking whether the toolchain id
+	'' contains them. We could actually match toolchain ids as in
+	'' *-*-mingw32* here, but as long as this works without issues, then
+	'' it's good enough. Hopefully there's no toolchain named something like
+	'' "linuxmingw32", otherwise the order of checks here would matter.
+	if(     instr( t, "linux"   ) > 0 ) then : target = FB_COMPTARGET_LINUX
+	elseif( instr( t, "mingw"   ) > 0 ) then : target = FB_COMPTARGET_WIN32
+	elseif( instr( t, "djgpp"   ) > 0 ) then : target = FB_COMPTARGET_DOS
+	elseif( instr( t, "cygwin"  ) > 0 ) then : target = FB_COMPTARGET_CYGWIN
+	elseif( instr( t, "darwin"  ) > 0 ) then : target = FB_COMPTARGET_DARWIN
+	elseif( instr( t, "freebsd" ) > 0 ) then : target = FB_COMPTARGET_FREEBSD
+	elseif( instr( t, "netbsd"  ) > 0 ) then : target = FB_COMPTARGET_NETBSD
+	elseif( instr( t, "openbsd" ) > 0 ) then : target = FB_COMPTARGET_OPENBSD
+	elseif( instr( t, "xbox"    ) > 0 ) then : target = FB_COMPTARGET_XBOX
 	end if
 
-#ifdef ENABLE_STANDALONE
-	#macro MAYBE( s, comptarget )
-		if( os = s ) then
-			return comptarget
+	'' Identify architecture given in the triplet, if any
+	arch = left( t, instr( t, "-" ) - 1 )
+	select case( arch )
+	case "i386" : fbc.targetcputype = FB_CPUTYPE_386
+	case "i486" : fbc.targetcputype = FB_CPUTYPE_486
+	case "i586" : fbc.targetcputype = FB_CPUTYPE_586
+	case "i686" : fbc.targetcputype = FB_CPUTYPE_686
+
+	case "x86"  : fbc.targetcputype = FB_DEFAULT_CPUTYPE_X86
+	case "x86_64", "amd64" : fbc.targetcputype = FB_DEFAULT_CPUTYPE_X86_64
+
+	case "armv6"   : fbc.targetcputype = FB_CPUTYPE_ARMV6
+	case "armv7a"  : fbc.targetcputype = FB_CPUTYPE_ARMV7A
+
+	'' There are arm-*-* toolchains (e.g. arm-linux-gnueabihf)
+	'' where the exact arm version isn't known (at least not based
+	'' on the triplet alone), so we fall back our default for arm.
+	'' Same for aarch64.
+	case "arm"     : fbc.targetcputype = FB_DEFAULT_CPUTYPE_ARM
+	case "aarch64" : fbc.targetcputype = FB_DEFAULT_CPUTYPE_AARCH64
+
+	case else
+		'' Don't complain if the arch is missing (sometimes, the gcc
+		'' toolchain ids don't contain an arch, for example "mingw32").
+		if( len( arch ) > 0 ) then
+			hFatalInvalidOption( arg )
 		end if
-	#endmacro
-#else
-	#macro MAYBE( s, comptarget )
-		'' Allow incomplete matches, e.g.:
-		'' 'linux' matches 'linux-gnu',
-		'' 'mingw' matches 'mingw32msvc', etc.
-		if( left( os, len( s ) ) = s ) then
-			return comptarget
-		end if
-	#endmacro
-#endif
 
-	select case as const( os[0] )
-	case asc( "c" )
-		MAYBE( "cygwin", FB_COMPTARGET_CYGWIN )
-
-	case asc( "d" )
-		MAYBE( "darwin", FB_COMPTARGET_DARWIN )
-#ifndef ENABLE_STANDALONE
-		MAYBE( "djgpp", FB_COMPTARGET_DOS )
-#endif
-		MAYBE( "dos", FB_COMPTARGET_DOS )
-
-	case asc( "f" )
-		MAYBE( "freebsd", FB_COMPTARGET_FREEBSD )
-
-	case asc( "l" )
-		MAYBE( "linux", FB_COMPTARGET_LINUX )
-
-#ifndef ENABLE_STANDALONE
-	case asc( "m" )
-		MAYBE( "mingw", FB_COMPTARGET_WIN32 )
-		MAYBE( "msdos", FB_COMPTARGET_DOS )
-#endif
-
-	case asc( "n" )
-		MAYBE( "netbsd", FB_COMPTARGET_NETBSD )
-
-	case asc( "o" )
-		MAYBE( "openbsd", FB_COMPTARGET_OPENBSD )
-
-	case asc( "s" )
-		'' TODO (not yet implemented in the compiler)
-		''MAYBE( "solaris", FB_COMPTARGET_SOLARIS )
-
-	case asc( "w" )
-		MAYBE( "win32", FB_COMPTARGET_WIN32 )
-#ifndef ENABLE_STANDALONE
-		MAYBE( "windows", FB_COMPTARGET_WIN32 )
-#endif
-
-	case asc( "x" )
-		MAYBE( "xbox", FB_COMPTARGET_XBOX )
-
+		'' Otherwise just overwrite the value from any previous -target
+		'' options, and later we will use the default arch.
+		fbc.targetcputype = -1
 	end select
+#endif
 
-	function = -1
-end function
+	'' Always check for -target <FB's id>. This is mostly needed for the
+	'' standalone build which doesn't support gcc toolchain ids at all,
+	'' but has limited usefulness for non-standalone, because for example
+	'' -target win32 would require a "win32-ld" which is usually not what
+	'' the toolchain is called. Nevertheless this is useful for debugging
+	'' purposes or with the -print option even for non-standalone.
+	if( target < 0 ) then
+		target = fbIdentifyTargetId( t )
+	end if
+
+	if( target < 0 ) then
+		hFatalInvalidOption( arg )
+	end if
+	fbSetOption( FB_COMPOPT_TARGET, target )
+end sub
 
 enum
 	OPT_A = 0
@@ -1299,6 +1317,7 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 		fbcAddObj( arg )
 
 	case OPT_ARCH
+		fbc.cputype_is_native = (arg = "native")
 		fbc.cputype = fbIdentifyFbcArch( arg )
 		if( fbc.cputype < 0 ) then
 			hFatalInvalidOption( "-arch " + arg )
@@ -1538,65 +1557,7 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 		fbSetOption(FB_COMPOPT_STACKSIZE, valint(arg) * 1024)
 
 	case OPT_TARGET
-		'' Standalone: -target <osname>, accepts only the traditional
-		'' FB target OS names, and uses the bin/<osname>/ and
-		'' lib/<osname>/ subdirs.
-		''
-		'' Normal: -target <id>, accepts gcc target ids such as
-		'' "i686-pc-mingw32", "x86_64-pc-linux-gnu" or simply "mingw32",
-		'' and uses the given target id as prefix for cross-compilation
-		'' tools, such as i686-pc-mingw32-ld instead of just ld.
-		''
-		'' This allows normal fbc to work well with gcc/binutils
-		'' cross-compiling toolchains while for standalone the
-		'' gcc/binutils executables need to be re-arranged into
-		'' standalone FB's dir layout.
-		dim as string os
-		dim as integer target = any
-
-		'' The -target option should be case-insensitive
-		os = lcase( arg )
-
-		'' Ignore it if it matches the host id; this adds backwards-
-		'' compatibility with fbc 0.23
-		if( os <> FB_HOST_TARGETID ) then
-			#ifndef ENABLE_STANDALONE
-				'' Handle i686-pc-mingw32 triplets
-				dim as string arch
-				hParseTargetId( os, arch )
-			#endif
-
-			'' Identify the target
-			target = hParseTargetOS( os )
-			if( target < 0 ) then
-				hFatalInvalidOption( arg )
-			end if
-			fbSetOption( FB_COMPOPT_TARGET, target )
-
-			#ifndef ENABLE_STANDALONE
-				'' Should use the -target argument as-is when
-				'' prefixing to tool file names, because of
-				'' case-sensitive file systems
-				fbc.target = arg
-				fbc.targetprefix = fbc.target + "-"
-
-				'' Identify architecture given in the triplet, if any
-				select case( arch )
-				case "i386"
-					fbc.targetcputype = FB_CPUTYPE_386
-				case "i486"
-					fbc.targetcputype = FB_CPUTYPE_486
-				case "i586"
-					fbc.targetcputype = FB_CPUTYPE_586
-				case "i686"
-					fbc.targetcputype = FB_CPUTYPE_686
-				case "x86_64", "amd64"
-					fbc.targetcputype = FB_CPUTYPE_X86_64
-				case else
-					fbc.targetcputype = -1
-				end select
-			#endif
-		end if
+		hHandleTarget( arg )
 
 	case OPT_TITLE
 		fbc.xbe_title = arg
@@ -2042,15 +2003,16 @@ private sub hParseArgs( byval argc as integer, byval argv as zstring ptr ptr )
 
 	'' 5. Check for target/arch conflicts, e.g. dos and non-x86
 	if( (fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_DOS) and _
-	    (not fbCpuTypeIsX86( )) ) then
+	    (fbGetCpuFamily( ) <> FB_CPUFAMILY_X86) ) then
 		errReportEx( FB_ERRMSG_DOSWITHNONX86, fbGetFbcArch( ), -1 )
 		fbcEnd( 1 )
 	end if
 
 	'' 6. Adjust default backend to selected arch, e.g. when compiling for
-	''    x86_64, we shouldn't default to -gen gas anymore.
+	''    x86-64 or ARM, we shouldn't default to -gen gas anymore (as long
+	''    as it doesn't support it).
 	if( (fbGetOption( FB_COMPOPT_BACKEND ) = FB_BACKEND_GAS) and _
-	    (not fbCpuTypeIsX86( )) ) then
+	    (fbGetCpuFamily( ) <> FB_CPUFAMILY_X86) ) then
 		fbSetOption( FB_COMPOPT_BACKEND, FB_BACKEND_GCC )
 	end if
 
@@ -2062,7 +2024,7 @@ private sub hParseArgs( byval argc as integer, byval argv as zstring ptr ptr )
 	'' 8. Check whether backend supports the target/arch
 	'' -gen gas with non-x86 arch isn't possible
 	if( (fbGetOption( FB_COMPOPT_BACKEND ) = FB_BACKEND_GAS) and _
-	    (not fbCpuTypeIsX86( )) ) then
+	    (fbGetCpuFamily( ) <> FB_CPUFAMILY_X86) ) then
 		errReportEx( FB_ERRMSG_GENGASWITHNONX86, fbGetFbcArch( ), -1 )
 		fbcEnd( 1 )
 	end if
@@ -2168,16 +2130,13 @@ private sub fbcInit2( )
 	''     "prefix/bin/win32-" + "as.exe"
 	''
 
-	dim as string archprefix
-	if( fbCpuTypeIs64bit( ) ) then
-		archprefix = "x86_64-"
-	end if
+	dim as string targetdirname = *fbGetArchDirPrefix( ) + *fbGetTargetId( )
 
 #ifdef ENABLE_STANDALONE
 	'' Use default target name
-	fbc.binpath = fbc.prefix + "bin" + FB_HOST_PATHDIV + archprefix + *fbGetTargetId( ) + FB_HOST_PATHDIV
+	fbc.binpath = fbc.prefix + "bin" + FB_HOST_PATHDIV + targetdirname + FB_HOST_PATHDIV
 	fbc.incpath = fbc.prefix + "inc"
-	fbc.libpath = fbc.prefix + "lib" + FB_HOST_PATHDIV + archprefix + *fbGetTargetId( )
+	fbc.libpath = fbc.prefix + "lib" + FB_HOST_PATHDIV + targetdirname
 #else
 	dim as string fbname
 	if( fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_DOS ) then
@@ -2198,20 +2157,14 @@ private sub fbcInit2( )
 	if( len( fbc.target ) > 0 ) then
 		fbc.libpath += fbc.target
 	else
-		fbc.libpath += archprefix + *fbGetTargetId( )
+		fbc.libpath += targetdirname
 	end if
 #endif
 
 	if( fbc.verbose ) then
 		var s = *fbGetTargetId( )
 		s += ", " + *fbGetFbcArch( )
-		s += ", "
-		if( fbCpuTypeIs64bit( ) ) then
-			s += "64"
-		else
-			s += "32"
-		end if
-		s += "bit"
+		s += ", " & fbGetBits( ) & "bit"
 		#ifndef ENABLE_STANDALONE
 			if( len( fbc.target ) > 0 ) then
 				s += " (" + fbc.target + ")"
@@ -2576,13 +2529,14 @@ private function hCompileStage2Module( byval module as FBCIOFILE ptr ) as intege
 
 	select case( fbGetOption( FB_COMPOPT_BACKEND ) )
 	case FB_BACKEND_GCC
-		if( fbCpuTypeIs64bit( ) ) then
-			ln += "-m64 "
-		else
+		select case( fbGetCpuFamily( ) )
+		case FB_CPUFAMILY_X86
 			ln += "-m32 "
-		end if
+		case FB_CPUFAMILY_X86_64
+			ln += "-m64 "
+		end select
 
-		if( fbc.cputype = FB_CPUTYPE_NATIVE ) then
+		if( fbc.cputype_is_native ) then
 			ln += "-march=native "
 		else
 			ln += "-march=" + *fbGetGccArch( ) + " "
@@ -2634,17 +2588,25 @@ private function hCompileStage2Module( byval module as FBCIOFILE ptr ) as intege
 		end if
 
 	case FB_BACKEND_LLVM
-		if( fbCpuTypeIs64bit( ) ) then
-			ln += "-march=x86-64 "
-		else
+		select case( fbGetCpuFamily( ) )
+		case FB_CPUFAMILY_X86
 			ln += "-march=x86 "
-		end if
+		case FB_CPUFAMILY_X86_64
+			ln += "-march=x86-64 "
+		case FB_CPUFAMILY_ARM
+			ln += "-march=arm "
+		case FB_CPUFAMILY_AARCH64
+			ln += "-march=aarch64 "
+		end select
 
 		ln += "-O" + str( fbGetOption( FB_COMPOPT_OPTIMIZELEVEL ) ) + " "
 
-		if( fbGetOption( FB_COMPOPT_ASMSYNTAX ) = FB_ASMSYNTAX_INTEL ) then
-			ln += "--x86-asm-syntax=intel "
-		end if
+		select case( fbGetCpuFamily( ) )
+		case FB_CPUFAMILY_X86, FB_CPUFAMILY_X86_64
+			if( fbGetOption( FB_COMPOPT_ASMSYNTAX ) = FB_ASMSYNTAX_INTEL ) then
+				ln += "--x86-asm-syntax=intel "
+			end if
+		end select
 
 	end select
 
@@ -2673,11 +2635,12 @@ end sub
 private function hAssembleModule( byval module as FBCIOFILE ptr ) as integer
 	dim as string ln
 
-	if( fbCpuTypeIs64bit( ) ) then
-		ln = "--64 "
-	else
-		ln = "--32 "
-	end if
+	select case( fbGetCpuFamily( ) )
+	case FB_CPUFAMILY_X86
+		ln += "--32 "
+	case FB_CPUFAMILY_X86_64
+		ln += "--64 "
+	end select
 
 	if( fbGetOption( FB_COMPOPT_DEBUG ) = FALSE ) then
 		ln += "--strip-local-absolute "
@@ -3107,7 +3070,7 @@ private sub hPrintVersion( )
 	dim as string config
 
 	print "FreeBASIC Compiler - Version " + FB_VERSION + _
-		" (" + FB_BUILD_DATE + "), built for " + FB_HOST_ARCHPREFIX + FB_HOST_TARGETID + " (" + str( FB_HOST_BITS ) + "bit)"
+		" (" + FB_BUILD_DATE + "), built for " + *fbGetHostArchDirPrefix( ) + *fbGetHostId( ) + " (" & fbGetHostBits( ) & "bit)"
 	print "Copyright (C) 2004-2014 The FreeBASIC development team."
 
 	#ifdef ENABLE_STANDALONE

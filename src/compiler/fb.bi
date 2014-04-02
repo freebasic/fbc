@@ -130,10 +130,17 @@ enum FB_CPUTYPE
 	FB_CPUTYPE_PENTIUM4
 	FB_CPUTYPE_PENTIUMSSE3
 	FB_CPUTYPE_X86_64
-	FB_CPUTYPE_32  '' just to identify -arch 32/64, as a shortcut for the default arch for 32/64bit
-	FB_CPUTYPE_64
-	FB_CPUTYPE_NATIVE
+	FB_CPUTYPE_ARMV6
+	FB_CPUTYPE_ARMV7A
+	FB_CPUTYPE_AARCH64
 	FB_CPUTYPE__COUNT
+end enum
+
+enum
+	FB_CPUFAMILY_X86 = 0
+	FB_CPUFAMILY_X86_64
+	FB_CPUFAMILY_ARM
+	FB_CPUFAMILY_AARCH64
 end enum
 
 '' fpu types
@@ -285,42 +292,34 @@ enum FB_LANG_OPT
 end enum
 
 #if defined(__FB_WIN32__)
-const FB_HOST_TARGETID      = "win32"
 const FB_HOST_EXEEXT        = ".exe"
 const FB_HOST_PATHDIV       = RSLASH
 const FB_DEFAULT_TARGET     = FB_COMPTARGET_WIN32
 #elseif defined(__FB_CYGWIN__)
-const FB_HOST_TARGETID      = "cygwin"
 const FB_HOST_EXEEXT        = ".exe"
 const FB_HOST_PATHDIV       = "/"
 const FB_DEFAULT_TARGET     = FB_COMPTARGET_CYGWIN
 #elseif defined(__FB_LINUX__)
-const FB_HOST_TARGETID      = "linux"
 const FB_HOST_EXEEXT        = ""
 const FB_HOST_PATHDIV       = "/"
 const FB_DEFAULT_TARGET     = FB_COMPTARGET_LINUX
 #elseif defined(__FB_DOS__)
-const FB_HOST_TARGETID      = "dos"
 const FB_HOST_EXEEXT        = ".exe"
 const FB_HOST_PATHDIV       = RSLASH
 const FB_DEFAULT_TARGET     = FB_COMPTARGET_DOS
 #elseif defined(__FB_FREEBSD__)
-const FB_HOST_TARGETID      = "freebsd"
 const FB_HOST_EXEEXT        = ""
 const FB_HOST_PATHDIV       = "/"
 const FB_DEFAULT_TARGET     = FB_COMPTARGET_FREEBSD
 #elseif defined(__FB_OPENBSD__)
-const FB_HOST_TARGETID      = "openbsd"
 const FB_HOST_EXEEXT        = ""
 const FB_HOST_PATHDIV       = "/"
 const FB_DEFAULT_TARGET     = FB_COMPTARGET_OPENBSD
 #elseif defined(__FB_DARWIN__)
-const FB_HOST_TARGETID      = "darwin"
 const FB_HOST_EXEEXT        = ""
 const FB_HOST_PATHDIV       = "/"
 const FB_DEFAULT_TARGET     = FB_COMPTARGET_DARWIN
 #elseif defined(__FB_NETBSD__)
-const FB_HOST_TARGETID      = "netbsd"
 const FB_HOST_EXEEXT        = ""
 const FB_HOST_PATHDIV       = "/"
 const FB_DEFAULT_TARGET     = FB_COMPTARGET_NETBSD
@@ -328,20 +327,30 @@ const FB_DEFAULT_TARGET     = FB_COMPTARGET_NETBSD
 #error Unsupported host
 #endif
 
-#ifdef __FB_64BIT__
-	const FB_DEFAULT_CPUTYPE = FB_CPUTYPE_X86_64
-	const FB_DEFAULT_BACKEND = FB_BACKEND_GCC
-	const FB_HOST_ARCHPREFIX = "x86_64-"
-	const FB_HOST_BITS = 64
+const FB_DEFAULT_CPUTYPE_X86     = FB_CPUTYPE_486
+const FB_DEFAULT_CPUTYPE_X86_64  = FB_CPUTYPE_X86_64
+const FB_DEFAULT_CPUTYPE_ARM     = FB_CPUTYPE_ARMV7A
+const FB_DEFAULT_CPUTYPE_AARCH64 = FB_CPUTYPE_AARCH64
+
+#ifdef __FB_ARM__
+	const FB_DEFAULT_CPUTYPE32 = FB_DEFAULT_CPUTYPE_ARM
+	const FB_DEFAULT_CPUTYPE64 = FB_DEFAULT_CPUTYPE_AARCH64
 #else
-	const FB_DEFAULT_CPUTYPE = FB_CPUTYPE_486
-	const FB_DEFAULT_BACKEND = FB_BACKEND_GAS
-	const FB_HOST_ARCHPREFIX = ""
-	const FB_HOST_BITS = 32
+	const FB_DEFAULT_CPUTYPE32 = FB_DEFAULT_CPUTYPE_X86
+	const FB_DEFAULT_CPUTYPE64 = FB_DEFAULT_CPUTYPE_X86_64
 #endif
 
-const FB_DEFAULT_CPUTYPE32 = FB_CPUTYPE_486
-const FB_DEFAULT_CPUTYPE64 = FB_CPUTYPE_X86_64
+#if defined( __FB_64BIT__ ) or defined( __FB_ARM__ )
+	const FB_DEFAULT_BACKEND = FB_BACKEND_GCC
+#else
+	const FB_DEFAULT_BACKEND = FB_BACKEND_GAS
+#endif
+
+#ifdef __FB_64BIT__
+	const FB_DEFAULT_CPUTYPE = FB_DEFAULT_CPUTYPE64
+#else
+	const FB_DEFAULT_CPUTYPE = FB_DEFAULT_CPUTYPE32
+#endif
 
 '' info section
 const FB_INFOSEC_NAME = "fbctinf"
@@ -383,10 +392,16 @@ declare sub fbPragmaOnce()
 declare sub fbIncludeFile(byval filename as zstring ptr, byval isonce as integer)
 
 declare function fbGetTargetId( ) as zstring ptr
+declare function fbGetHostId( ) as zstring ptr
+declare function fbIdentifyTargetId( byref targetid as string ) as integer
 declare function fbGetGccArch( ) as zstring ptr
 declare function fbGetFbcArch( ) as zstring ptr
-declare function fbCpuTypeIs64bit( ) as integer
-declare function fbCpuTypeIsX86( ) as integer
+declare function fbGetArchDirPrefix( ) as zstring ptr
+declare function fbGetHostArchDirPrefix( ) as zstring ptr
+declare function fbIs64Bit( ) as integer
+declare function fbGetBits( ) as integer
+declare function fbGetHostBits( ) as integer
+declare function fbGetCpuFamily( ) as integer
 declare function fbIdentifyFbcArch( byref fbcarch as string ) as integer
 
 declare function fbGetEntryPoint _

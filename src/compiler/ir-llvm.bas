@@ -241,7 +241,7 @@ private sub _init( )
 
 	irSetOption( IR_OPT_CPUSELFBOPS or IR_OPT_FPUIMMEDIATES or IR_OPT_MISSINGOPS )
 
-	if( fbCpuTypeIs64bit( ) ) then
+	if( fbIs64bit( ) ) then
 		dtypeName(FB_DATATYPE_INTEGER) = dtypeName(FB_DATATYPE_LONGINT)
 		dtypeName(FB_DATATYPE_UINT   ) = dtypeName(FB_DATATYPE_ULONGINT)
 	else
@@ -299,7 +299,7 @@ private function hEmitProcCallConv( byval proc as FBSYMBOL ptr ) as string
 	'' For non-x86, don't emit any calling convention at all, it would just
 	'' be ignored anyways (for x86_64 and ARM it seems that way at least).
 
-	if( fbCpuTypeIsX86( ) = FALSE ) then
+	if( fbGetCpuFamily( ) <> FB_CPUFAMILY_X86 ) then
 		exit function
 	end if
 
@@ -867,7 +867,7 @@ private function _emitBegin( ) as integer
 	hWriteLine( "; Compilation of " + env.inf.name + " started at " + time( ) + " on " + date( ) )
 	hWriteLine( "" )
 
-	if( fbCpuTypeIs64bit( ) ) then
+	if( fbIs64bit( ) ) then
 		hWriteLine( "%FBSTRING = type { i8*, i64, i64 }" )
 	else
 		hWriteLine( "%FBSTRING = type { i8*, i32, i32 }" )
