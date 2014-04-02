@@ -533,18 +533,6 @@ private function hDeclDynArray _
 		exit function
 	end if
 
-	'' Check dimensions, unless it's a bydesc param or a COMMON array,
-	'' then we don't know the dimensions at compile-time.
-	if( (attrib and (FB_SYMBATTRIB_PARAMBYDESC or FB_SYMBATTRIB_COMMON)) = 0 ) then
-		if( symbGetArrayDimensions( sym ) > 0 ) then
-			if( dimensions <> symbGetArrayDimensions( sym ) ) then
-				errReportEx( FB_ERRMSG_WRONGDIMENSIONS, *id )
-				'' no error recovery, ditto
-				exit function
-			end if
-		end if
-	end if
-
     function = sym
 end function
 
