@@ -72,12 +72,20 @@ end namespace
 namespace commonDim
 	common array() as integer
 
+	private function f( ) as integer
+		CU_ASSERT( lbound( array ) = 0 )
+		CU_ASSERT( ubound( array ) = 4 )
+		function = ubound( array )
+	end function
+
 	private sub test cdecl( )
 		'' Dim is allowed after Common -- as in QB.
 		dim array(0 to 4) as integer
 
 		CU_ASSERT( lbound( array ) = 0 )
 		CU_ASSERT( ubound( array ) = 4 )
+
+		CU_ASSERT( f( ) = 4 )
 	end sub
 end namespace
 
