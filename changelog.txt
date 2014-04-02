@@ -141,6 +141,7 @@ Version 0.91.0:
 - When DIM'ing an EXTERN array, the DIM statement was allowed to have different lbound than the EXTERN
 - Compiler crash during error recovery if a dynamic array declaration/REDIM contained '...' ellipsis upper bounds
 - EOF() didn't work properly with files bigger than 4 GB
+- #643: Typeless REDIM was accidentially being allowed, if the array's identifier matched that of a field visible through the implicit THIS reference, by re-using the field's data type, but still creating a new array. This will now trigger a compiler error just like other typeless REDIMs without a pre-existing array.
 
 
 Version 0.90.1:

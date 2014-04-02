@@ -426,7 +426,6 @@ private function hDeclDynArray _
 		byval idalias as zstring ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
-		byval is_typeless as integer, _
 		byval lgt as longint, _
 		byval addsuffix as integer, _
 		byval attrib as integer, _
@@ -446,24 +445,8 @@ private function hDeclDynArray _
     	end if
 	end if
 
-    '' any variable already defined?
-    if( sym <> NULL ) then
-    	'' array in a udt?
-    	if( symbIsField( sym ) ) then
-    		errReportEx( FB_ERRMSG_CANTREDIMARRAYFIELDS, *id )
-    		exit function
-    	end if
-
-   		'' typeless REDIM's?
-   		if( is_typeless ) then
-   			dtype = symbGetType( sym )
-   			subtype = symbGetSubtype( sym )
-   			lgt = symbGetLen( sym )
-   		end if
-    end if
-
-    '' new var?
-   	if( sym = NULL ) then
+	'' new var?
+	if( sym = NULL ) then
 		dim as FB_SYMBOPT options = FB_SYMBOPT_NONE
 
 		if( addsuffix ) then
@@ -479,6 +462,12 @@ private function hDeclDynArray _
 
 	'' check reallocation..
 	else
+		'' array in a udt?
+		if( symbIsField( sym ) ) then
+			errReportEx( FB_ERRMSG_CANTREDIMARRAYFIELDS, *id )
+			exit function
+		end if
+
 		'' not dynamic?
 		if( symbGetIsDynamic( sym ) = FALSE ) then
    			'' could be an external..
@@ -1099,6 +1088,22 @@ private function hFlushInitializer _
 
 end function
 
+private sub hErrorDefTypeNotAllowed _
+	( _
+		byref dtype as integer, _
+		byref subtype as FBSYMBOL ptr, _
+		byref lgt as longint _
+	)
+
+	errReportNotAllowed( FB_LANG_OPT_DEFTYPE, FB_ERRMSG_DEFTYPEONLYVALIDINLANG )
+
+	'' error recovery: fake a type
+	dtype = FB_DATATYPE_INTEGER
+	subtype = NULL
+	lgt = symbCalcLen( dtype, subtype )
+
+end sub
+
 '':::::
 ''VarDecl         =   ID ('(' ArrayDecl? ')')? (AS SymbolType)? ('=' VarInitializer)?
 ''                       (',' SymbolDef)* .
@@ -1165,23 +1170,23 @@ function cVarDecl _
 
 		is_typeless = FALSE
 
-    	if( is_multdecl = FALSE ) then
-    		dtype = suffix
-    		subtype	= NULL
-    		lgt	= 0
-    		addsuffix = TRUE
-    	else
-    		'' the user did 'DIM AS _____', and then
-    		'' specified a suffix on a symbol, e.g.
-    		''
-    		'' DIM AS INTEGER x, y$
-    		if( suffix <> FB_DATATYPE_INVALID ) then
+		if( is_multdecl = FALSE ) then
+			dtype = suffix
+			subtype = NULL
+			lgt = symbCalcLen( dtype, subtype )
+			addsuffix = TRUE
+		else
+			'' the user did 'DIM AS _____', and then
+			'' specified a suffix on a symbol, e.g.
+			''
+			'' DIM AS INTEGER x, y$
+			if( suffix <> FB_DATATYPE_INVALID ) then
 				errReportEx( FB_ERRMSG_SYNTAXERROR, @id )
 				'' error recovery: the symbol gets the
 				'' type specified 'AS'
 				suffix = FB_DATATYPE_INVALID
-    		end if
-    	end if
+			end if
+		end if
 
 		'' ('(' ArrayDecl? ')')?
 		dimensions = 0
@@ -1234,6 +1239,7 @@ function cVarDecl _
 		if( is_multdecl = FALSE ) then
 			'' (AS SymbolType)?
 			if( lexGetToken( ) = FB_TK_AS ) then
+				'' Suffix? Cannot have both suffix and 'AS DataType'
 				if( dtype <> FB_DATATYPE_INVALID ) then
 					errReport( FB_ERRMSG_SYNTAXERROR )
 					dtype = FB_DATATYPE_INVALID
@@ -1249,29 +1255,54 @@ function cVarDecl _
 
 				addsuffix = FALSE
 
-			'' no explicit type..
-			else
-				if( fbLangOptIsSet( FB_LANG_OPT_DEFTYPE ) = FALSE ) then
-					'' it's not an error if REDIM'g an already declared array
-					if( (chain_ = NULL) or (token <> FB_TK_REDIM) ) then
-						errReportNotAllowed( FB_LANG_OPT_DEFTYPE, FB_ERRMSG_DEFTYPEONLYVALIDINLANG )
-						'' error recovery: fake a type
-						dtype = FB_DATATYPE_INTEGER
-					end if
-				end if
+			'' No explicit 'AS DataType', and no suffix?
+			elseif( dtype = FB_DATATYPE_INVALID ) then
+				'' Only allowed if DEF* is allowed, or if it's a
+				'' redim because then it can use the dtype of
+				'' the existing array.
 
-				if( dtype = FB_DATATYPE_INVALID ) then
-					is_typeless = TRUE
+				'' Try DEF*
+				if( fbLangOptIsSet( FB_LANG_OPT_DEFTYPE ) ) then
 					dtype = symbGetDefType( id )
+					subtype = NULL
+					lgt = symbCalcLen( dtype, subtype )
 				end if
 
-    			lgt	= symbCalcLen( dtype, subtype )
-    		end if
-    	end if
+				'' Variable declaration (and not a potential redim)?
+				if( options and FB_IDOPT_ISDECL ) then
+					'' Must have some dtype before lookup
+					if( dtype = FB_DATATYPE_INVALID ) then
+						hErrorDefTypeNotAllowed( dtype, subtype, lgt )
+					end if
+				else
+					'' Typeless REDIM, don't know until after lookup
+					is_typeless = TRUE
+				end if
+			end if
+		end if
 
 		sym = hLookupVarAndCheckParent( parent, chain_, dtype, is_typeless, _
 						(suffix <> FB_DATATYPE_INVALID), _
 						((options and FB_IDOPT_ISDECL) <> 0) )
+
+		'' typeless REDIM?
+		if( is_typeless ) then
+			if( sym ) then
+				'' REDIM'ing existing symbol, uses the same dtype
+				dtype = symbGetType( sym )
+				subtype = symbGetSubtype( sym )
+				lgt = symbGetLen( sym )
+			elseif( fbLangOptIsSet( FB_LANG_OPT_DEFTYPE ) ) then
+				'' DEF* is allowed, so typeless REDIM defaults to the default type
+				'' (can just keep using the deftype set above)
+				assert( dtype = symbGetDefType( id ) )
+				assert( subtype = NULL )
+				assert( lgt = symbCalcLen( dtype, subtype ) )
+			else
+				'' -lang fb: typeless REDIM without pre-existing array not allowed
+				hErrorDefTypeNotAllowed( dtype, subtype, lgt )
+			end if
+		end if
 
 		if( dimensions > 0 ) then
 			'' QB quirk: when the symbol was defined already by a preceeding COMMON
@@ -1336,7 +1367,7 @@ function cVarDecl _
 		end if
 
 		if( attrib and FB_SYMBATTRIB_DYNAMIC ) then
-			sym = hDeclDynArray( sym, id, palias, dtype, subtype, is_typeless, _
+			sym = hDeclDynArray( sym, id, palias, dtype, subtype, _
 					lgt, addsuffix, attrib, dimensions, token )
 		else
 			sym = hDeclStaticVar( sym, id, palias, _

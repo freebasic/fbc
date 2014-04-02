@@ -54,6 +54,30 @@ sub test cdecl
 	CU_ASSERT_EQUAL( ubound(foo), 4 )
 end sub
 
+namespace typeless
+	dim shared globalarray() as string
+
+	private function globalarrayLbound( ) as integer
+		function = lbound( globalarray )
+	end function
+
+	private function globalarrayUbound( ) as integer
+		function = ubound( globalarray )
+	end function
+
+	sub test cdecl( )
+		'' Typeless REDIM, should redim the global array, and not create
+		'' a local var that shadows the global.
+		redim globalarray(1 to 2)
+		#assert typeof( globalarray ) = typeof( string )
+
+		CU_ASSERT( lbound( globalarray ) = 1 )
+		CU_ASSERT( ubound( globalarray ) = 2 )
+		CU_ASSERT( globalarrayLbound( ) = 1 )
+		CU_ASSERT( globalarrayUbound( ) = 2 )
+	end sub
+end namespace
+
 '' Regression test for #3474348
 namespace commonRedimRedim
 	common array() as integer
@@ -212,6 +236,7 @@ private sub ctor( ) constructor
 	fbcu.add_suite("fbc_tests.dim.redim")
 	fbcu.add_test("test", @test)
 	fbcu.add_test("test4", @test4)
+	fbcu.add_test( "typeless", @typeless.test )
 	fbcu.add_test( "Common/Redim/Redim", @commonRedimRedim.test )
 	fbcu.add_test( "Common/Dim", @commonDim.test )
 	fbcu.add_test( "array + desc using non-default mangling", @testMangled )
