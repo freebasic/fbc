@@ -65,6 +65,10 @@ o static member vars
 
 	print f( ).i
 
+o Allow typeless DIMs to implement EXTERNs:
+    extern a as integer
+    dim a
+
 o Dynamic array fields
 
   - REDIM must accept expressions (not only identifiers), so it can be used to

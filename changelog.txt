@@ -142,6 +142,7 @@ Version 0.91.0:
 - Compiler crash during error recovery if a dynamic array declaration/REDIM contained '...' ellipsis upper bounds
 - EOF() didn't work properly with files bigger than 4 GB
 - #643: Typeless REDIM was accidentially being allowed, if the array's identifier matched that of a field visible through the implicit THIS reference, by re-using the field's data type, but still creating a new array. This will now trigger a compiler error just like other typeless REDIMs without a pre-existing array.
+- Duplicate EXTERNs for dynamic arrays are now allowed, just like duplicate EXTERNs for normal or fixed-size array variables, which already were allowed before.
 
 
 Version 0.90.1:

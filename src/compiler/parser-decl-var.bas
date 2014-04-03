@@ -478,10 +478,8 @@ private function hDeclDynArray _
 
 			'' EXTERNal?
 			if( symbIsExtern( sym ) ) then
-				'' another EXTERN? (declared twice)
-				if( (attrib and FB_SYMBATTRIB_EXTERN) <> 0 ) then
-   					sym = NULL
-				else
+				'' not another EXTERN? (declared twice)
+				if( (attrib and FB_SYMBATTRIB_EXTERN) = 0 ) then
 	   				'' define it...
 					hVarExtToPub( sym, attrib )
 				end if
