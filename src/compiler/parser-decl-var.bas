@@ -483,11 +483,18 @@ private function hDeclDynArray _
 	   				'' define it...
 					hVarExtToPub( sym, attrib )
 				end if
-			'' [re]dim ()?
+
+			'' 'dim|redim|... foo()' will always conflict with an existing symbol 'foo',
+			'' because -1 dimensions is never valid in this situation (the only thing
+			'' that wouldn't conflict with the existing symbol would be a true REDIM, i.e.
+			'' one with dimensions > 0, or a duplicate EXTERN which is handled above).
 			elseif( dimensions = -1 ) then
 				sym = NULL
 
-			'' dim foo(variable)? (without a preceeding COMMON)
+			'' Also, any declaration of dynamic array 'foo' (excluding REDIMs) will always
+			'' conflict with an existing symbol 'foo', except if 'foo' is a COMMON (similar
+			'' to allocating EXTERNs), because DIM'ing a COMMON works like REDIM, no matter
+			'' whether STATIC|SHARED or not.
 			elseif( (token <> FB_TK_REDIM) and (symbIsCommon( sym ) = FALSE) ) then
 				sym = NULL
 			end if
