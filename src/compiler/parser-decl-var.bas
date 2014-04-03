@@ -508,19 +508,8 @@ private function hDeclDynArray _
 		errReport( FB_ERRMSG_DYNAMICARRAYSCANTBECONST )
 	end if
 
-	attrib = symbGetAttrib( sym )
-
-	'' external? don't do any checks..
-	if( (attrib and FB_SYMBATTRIB_EXTERN) <> 0 ) then
-		return sym
-	end if
-
-	if( (dtype <> symbGetFullType( sym )) or _
-	    (subtype <> symbGetSubType( sym )) ) then
-		errReportEx( FB_ERRMSG_DUPDEFINITION, *id )
-		'' no error recovery, caller will take care of that
-		exit function
-	end if
+	assert( dtype = symbGetFullType( sym ) )
+	assert( subtype = symbGetSubType( sym ) )
 
     function = sym
 end function
