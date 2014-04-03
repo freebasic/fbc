@@ -330,8 +330,6 @@ private function hDeclExternVar _
 		errReportEx( FB_ERRMSG_TYPEMISMATCH, *id )
 	end if
 
-	dim as integer setattrib = TRUE
-
 	'' dynamic?
 	if( symbIsDynamic( sym ) ) then
 		if( (attrib and FB_SYMBATTRIB_DYNAMIC) = 0 ) then
@@ -346,8 +344,8 @@ private function hDeclExternVar _
 
 		'' no extern static as local
 		if( hCheckScope( ) = FALSE ) then
-			'' error recovery: don't make it shared
-			setattrib = FALSE
+			'' error recovery: don't allocate the EXTERN here
+			exit function
 		end if
 	end if
 
@@ -358,15 +356,11 @@ private function hDeclExternVar _
     	return sym
     end if
 
-    '' set type
-    if( setattrib ) then
-    	hVarExtToPub( sym, attrib )
-	end if
+	hVarExtToPub( sym, attrib )
 
     function = sym
 end function
 
-'':::::
 private function hDeclStaticVar _
 	( _
 		byval sym as FBSYMBOL ptr, _
