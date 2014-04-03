@@ -351,14 +351,12 @@ private function hDeclExternVar _
 
 	hCheckExternArrayDimensions( sym, id, dimensions, dTB() )
 
-    '' dup extern?
-    if( (attrib and FB_SYMBATTRIB_EXTERN) <> 0 ) then
-    	return sym
-    end if
+	'' Only allocate the EXTERN if this isn't another (duplicate) EXTERN
+	if( (attrib and FB_SYMBATTRIB_EXTERN) = 0 ) then
+		hVarExtToPub( sym, attrib )
+	end if
 
-	hVarExtToPub( sym, attrib )
-
-    function = sym
+	function = sym
 end function
 
 private function hDeclStaticVar _
