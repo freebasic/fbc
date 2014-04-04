@@ -2189,7 +2189,7 @@ function typeDump _
 	) as string
 
 	dim as string dump
-	dim as integer ok = any, ptrcount = any
+	dim as integer ok = any, ptrcount = any, dtypeonly = any
 
 	dump = "["
 
@@ -2204,13 +2204,18 @@ function typeDump _
 			dump += "const "
 		end if
 
-		select case( typeGetDtOnly( dtype ) )
+		dtypeonly = typeGetDtOnly( dtype )
+		select case( dtypeonly )
 		case FB_DATATYPE_STRUCT
 			dump += "struct"
 		case FB_DATATYPE_WCHAR
 			dump += "wchar"
 		case else
-			dump += *symb_dtypeTB(typeGetDtOnly( dtype )).name
+			if( (dtypeonly >= 0) and (dtypeonly < FB_DATATYPES) ) then
+				dump += *symb_dtypeTB(dtypeonly).name
+			else
+				dump += "<invalid dtype " & dtypeonly & ">"
+			end if
 		end select
 
 		'' UDT name
