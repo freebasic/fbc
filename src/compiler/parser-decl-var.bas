@@ -99,20 +99,19 @@ function cVariableDecl( byval attrib as FB_SYMBATTRIB ) as integer
 		attrib or= FB_SYMBATTRIB_DYNAMIC
 
 		'' PRESERVE?
-		if( hMatch( FB_TK_PRESERVE ) ) then
-			dopreserve = TRUE
-		end if
+		dopreserve = hMatch( FB_TK_PRESERVE )
 
 	'' COMMON
 	case FB_TK_COMMON
+		attrib or= FB_SYMBATTRIB_COMMON or FB_SYMBATTRIB_STATIC
+
+		'' this will be removed, if it's not a array
+		attrib or= FB_SYMBATTRIB_DYNAMIC
+
 		'' can't use COMMON inside a proc or inside a scope block
 		if( hCheckScope( ) = FALSE ) then
-			'' error recovery: don't share it
-			attrib = FB_SYMBATTRIB_STATIC or FB_SYMBATTRIB_DYNAMIC
-		else
-			attrib or= FB_SYMBATTRIB_COMMON or _
-					   FB_SYMBATTRIB_STATIC or _
-					   FB_SYMBATTRIB_DYNAMIC	'' this will be removed, if it's not a array
+			'' error recovery: don't make it COMMON
+			attrib and= not FB_SYMBATTRIB_COMMON
 		end if
 
 		hCheckPrivPubAttrib( attrib )
@@ -122,20 +121,19 @@ function cVariableDecl( byval attrib as FB_SYMBATTRIB ) as integer
 	'' EXTERN
 	case FB_TK_EXTERN
 		if( attrib = FB_SYMBATTRIB_NONE ) then
-			'' ambiguity with EXTERN "mangling spec"
+			'' Disambiguate from <EXTERN "..." : ... : END EXTERN> blocks
 			if( lexGetLookAheadClass( 1 ) = FB_TKCLASS_STRLITERAL ) then
 				return FALSE
 			end if
 		end if
 
+		attrib or= FB_SYMBATTRIB_EXTERN
+		attrib or= FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_STATIC
+
 		'' can't use EXTERN inside a proc
 		if( hCheckScope( ) = FALSE ) then
-			'' error recovery: don't make it extern
-			attrib = FB_SYMBATTRIB_STATIC
-		else
-			attrib or= FB_SYMBATTRIB_EXTERN or _
-					   FB_SYMBATTRIB_SHARED or _
-					   FB_SYMBATTRIB_STATIC
+			'' error recovery: don't make it extern/shared
+			attrib and= not (FB_SYMBATTRIB_EXTERN or FB_SYMBATTRIB_SHARED)
 		end if
 
 		hCheckPrivPubAttrib( attrib )
