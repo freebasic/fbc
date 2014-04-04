@@ -1329,11 +1329,11 @@ function cVarDecl _
 		if( sym <> NULL ) then
 			'' do nothing if it's EXTERN
 			if( token <> FB_TK_EXTERN ) then
-				dim as FBSYMBOL ptr desc = NULL
-				dim as ASTNODE ptr var_decl = NULL
-
 				'' not declared already?
 				if( is_declared = FALSE ) then
+					dim as FBSYMBOL ptr desc = NULL
+					dim as ASTNODE ptr var_decl = NULL
+
 					'' Don't init if it's a temp FOR var, it will
 					'' have the start condition put into it.
 					var_decl = astNewDECL( sym, _
@@ -1346,14 +1346,9 @@ function cVarDecl _
 						'' FIXME: should probably not add DECL nodes for COMMONs/SHAREDs in the first place (not done for EXTERNs either)
 						var_decl = astNewLINK( var_decl, astNewDECL( desc, (symbGetTypeIniTree( desc ) = NULL) ) )
 					end if
-				end if
 
-				'' handle arrays (must be done after adding the decl node)
-
-				'' array?
-				if( ((attrib and FB_SYMBATTRIB_DYNAMIC) <> 0) or (dimensions > 0) ) then
-					'' not declared yet?
-					if( is_declared = FALSE ) then
+					'' handle arrays (must be done after adding the decl node)
+					if( ((attrib and FB_SYMBATTRIB_DYNAMIC) <> 0) or (dimensions > 0) ) then
 						'' local?
 						if( (symbGetAttrib( sym ) and (FB_SYMBATTRIB_STATIC or _
 												   	   FB_SYMBATTRIB_SHARED or _
@@ -1377,15 +1372,12 @@ function cVarDecl _
 							var_decl = NULL
 						end if
 					end if
-				end if
 
-				'' all set as declared
-				symbSetIsDeclared( sym )
+					'' all set as declared
+					symbSetIsDeclared( sym )
 
-				'' not declared already?
-				if( is_declared = FALSE ) then
 					if( fbLangOptIsSet( FB_LANG_OPT_SCOPE ) ) then
-            			'' flush the init tree (must be done after adding the decl node)
+						'' flush the init tree (must be done after adding the decl node)
 						astAdd( hFlushInitializer( sym, var_decl, initree, has_dtor ) )
 					'' unscoped
 					else
