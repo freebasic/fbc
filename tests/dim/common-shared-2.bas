@@ -1,7 +1,6 @@
 #include "fbcu.bi"
-#include "common-shared-1.bi"
 
-namespace fbc_tests.dim_.common_shared_2
+#include "common-shared.bi"
 
 private sub test cdecl( )
 	'' Note: Assuming this test runs after common-1.bas
@@ -17,5 +16,3 @@ private sub ctor( ) constructor
 	fbcu.add_suite( "tests/dim/common-shared-2" )
 	fbcu.add_test( "test", @test )
 end sub
-
-end namespace

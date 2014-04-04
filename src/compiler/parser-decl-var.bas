@@ -1152,7 +1152,7 @@ function cVarDecl _
 
     do
 		dim as FBSYMBOL ptr parent = cParentId( options )
-		dim as FBSYMCHAIN ptr chain_ = hGetId( parent, @id, suffix, (options and FB_IDOPT_ISDECL) = 0 )
+		dim as FBSYMCHAIN ptr chain_ = hGetId( parent, @id, suffix, ((options and FB_IDOPT_ISDECL) <> 0) )
 
 		is_typeless = FALSE
 

@@ -1,5 +1,6 @@
 #include "fbcu.bi"
-#include "common-shared-1.bi"
+
+#include "common-shared.bi"
 
 '' REDIM'ing a COMMON (dynamic) array
 '' Note: DIM works like REDIM for COMMONs; SHARED is mostly ignored
@@ -9,8 +10,6 @@ dim          arrayi1(1 to 1) as integer
 dim shared   arrayi2(2 to 2) as integer
 redim        arrayi3(3 to 3) as integer
 redim shared arrayi4(4 to 4) as integer
-
-namespace fbc_tests.dim_.common_shared_1
 
 private sub f( )
 	'' Scoped REDIMs are emitted in their scope.
@@ -63,5 +62,3 @@ private sub ctor( ) constructor
 	fbcu.add_test( "test", @test )
 	fbcu.add_test( "shadowing a COMMON", @shadowingACommon.test )
 end sub
-
-end namespace
