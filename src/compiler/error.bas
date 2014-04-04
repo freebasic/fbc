@@ -168,7 +168,6 @@ declare function hMakeParamDesc _
 		@"Var-len strings cannot be initialized", _
 		@"Recursive TYPE or UNION not allowed", _
 		@"Recursive DEFINE not allowed", _
-		@"Array fields cannot be redimensioned", _
 		@"Identifier cannot include periods", _
 		@"Executable not found", _
 		@"Array out-of-bounds", _

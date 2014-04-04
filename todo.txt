@@ -71,24 +71,23 @@ o Allow typeless DIMs to implement EXTERNs:
 
 o Dynamic array fields
 
-  - REDIM must accept expressions (not only identifiers), so it can be used to
-    redim "this.array" or "pudt->array" etc.
-    http://www.freebasic.net/forum/viewtopic.php?f=3&t=22327
-    i.e. cVarDecl() must be cleaned up.
-    - FB_SYMBATTRIB_DYNAMIC should perhaps be removed, can just check dimensions = -1 instead.
+  - Implicit LET overload implementation for dynamic array fields
+    (special case in astNewASSIGN()?)
+      1. ERASE dest, calling dtor or fb_StrDelete() if needed
+      2. REDIM dest to same size as source, initializing/constructing all elements
+         Can just call fb_ArrayRedim(dest) with source's dimTB? fb_ArrayRedim() takes
+         each dimension's bounds via varargs, that function call can't be constructed at runtime.
+         Otherwise, just add new fb_ArrayRedimTo(dest, source).
+      3. Loop over all elements and copy them over 1 by 1, using astNewASSIGN(),
+         that will call let overloads as needed, and handle strings.
 
-  - Implicit LET overload implementation
-      - must add fb_CopyDynamicArray(dest, source, dest dtor or NULL, dest<-source letoverload or NULL)
-      - ERASE dest, calling dtor or fb_StrDelete() if needed
-      - REDIM dest to same size as source, initializing all elements? (how else to do it?)
-      - loop to copy each element over, a) using the supplied LET overload (including strings), or b) bitwise copy
+      With this, we're half-way there to allowing array assignments between all
+      arrays, not just dynamic array fields. So why not?
 
-      - while in the process, let all STRING arrays be handled as "objects", passing fb_StrDelete() as dtor?
-
-  - Should accept any bounds, just like normal DIM/REDIM. The bounds or at least
-    the whole REDIM call must be preserved on the array field and then emitted
-    into each constructor, like a field initializer. (add new TYPEINI node class
-    for REDIM, or just treat as CTORCALL which it basically is?)
+  - Should accept any bounds in the declaration, just like normal DIM/REDIM.
+    The bounds or at least the whole fb_ArrayRedimEx() CALL must be preserved on
+    the array field and then emitted into each constructor, like a field initializer.
+    (add new TYPEINI node class for REDIM, or just treat as CTORCALL which it basically is?)
 	type UDT
 		array() as integer
 		redim array(0 to 1) as integer

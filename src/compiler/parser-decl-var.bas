@@ -65,10 +65,14 @@ function hCheckScope() as integer
 	end if
 end function
 
-'':::::
-''VariableDecl    =   (REDIM PRESERVE?|DIM|COMMON) SHARED? SymbolDef
-''				  |   EXTERN IMPORT? SymbolDef ALIAS STR_LIT
-''                |   STATIC SymbolDef .
+''
+'' VariableDecl =
+''    DIM|REDIM|COMMON|STATIC [SHARED] Symbol
+''  | EXTERN Symbol [ALIAS StringLiteral]
+''  | [STATIC] VAR AutoVarDecl
+''
+'' RedimStmt =
+''    REDIM [PRESERVE] Symbol|Expression
 ''
 function cVariableDecl( byval attrib as FB_SYMBATTRIB ) as integer
 	dim as integer dopreserve = any, tk = any
@@ -959,6 +963,29 @@ private function hFlushInitializer _
 
 end function
 
+private function hDynamicArrayExpression( ) as ASTNODE ptr
+	dim as ASTNODE ptr varexpr = any
+	varexpr = cExpressionWithNIDXARRAY( TRUE )
+
+	if( astIsNIDXARRAY( varexpr ) ) then
+		dim as ASTNODE ptr l = varexpr->l
+		astDelNode( varexpr )
+		varexpr = l
+
+		if( astIsVAR( varexpr ) or astIsFIELD( varexpr ) ) then
+			if( symbIsVar( varexpr->sym ) or symbIsField( varexpr->sym ) ) then
+				if( symbGetIsDynamic( varexpr->sym ) ) then
+					return varexpr
+				end if
+			end if
+		end if
+	end if
+
+	errReport( FB_ERRMSG_EXPECTEDDYNAMICARRAY, TRUE )
+	astDelTree( varexpr )
+	function = NULL
+end function
+
 private sub hErrorDefTypeNotAllowed _
 	( _
 		byref dtype as integer, _
@@ -992,7 +1019,7 @@ function cVarDecl _
     static as FBARRAYDIM dTB(0 to FB_MAXARRAYDIMS-1)
 	dim as FBSYMCHAIN ptr chain_ = any
 	dim as FBSYMBOL ptr sym = any, subtype = any, parent = any
-	dim as ASTNODE ptr initree = any, redimcall = any
+	dim as ASTNODE ptr varexpr = any, initree = any, redimcall = any
 	dim as integer addsuffix = any, is_multdecl = any
 	dim as integer is_typeless = any, is_declared = any, is_redim = any
 	dim as integer dtype = any
@@ -1035,7 +1062,49 @@ function cVarDecl _
 		parent = cParentId( FB_IDOPT_DEFAULT or FB_IDOPT_ALLOWSTRUCT or FB_IDOPT_ISVAR or _
 				iif( is_redim, 0, FB_IDOPT_ISDECL ) )
 
-		chain_ = hGetId( parent, @id, suffix, is_redim )
+		''
+		'' Ambiguity: If this is a REDIM, it can either redim an existing
+		'' array or declare a new one. It can be given just an identifier
+		'' (potentially with a parent namespace prefix), or a whole
+		'' expression, in case of redim'ing a dynamic array field.
+		''
+		'' Identifiers:
+		''    REDIM array(0 to 1)
+		''    REDIM namespace1.namespace2.array(0 to 1)
+		''    REDIM MyClass.staticarray(0 to 1)
+		'' Expressions:
+		''    REDIM this.array(0 to 1)
+		''    REDIM udtvar.array(0 to 1)
+		''    REDIM udtptr->array(0 to 1)
+		''    REDIM (udtptr[10].array)(0 to 1)
+		'' (and more complex expressions are possible too)
+		''
+		'' How to know whether to parse an identifier or an expression?
+		'' Must use look-ahead and make a guess.
+		''
+
+		'' REDIM? No parent namespace prefix?
+		varexpr = NULL
+		if( is_redim and (parent = NULL) ) then
+			'' Looks like an expression?
+			'' '(foo' instead of 'foo' must be an expression.
+			'' 'foo(' indicates 'foo(1 to 2)', but 'foo' followed by
+			'' anything else indicates an expression too, e.g.
+			'' 'foo.bar' or 'foo->bar' or 'foo[bar]'.
+			'' Note: namespace prefix was parsed above already.
+			if( (lexGetToken( ) = CHAR_LPRNT) or (lexGetLookAhead( 1 ) <> CHAR_LPRNT) ) then
+				varexpr = hDynamicArrayExpression( )
+			end if
+		end if
+
+		'' Parse symbol identifier, or retrieve it from the expression parsed above
+		if( varexpr ) then
+			chain_ = NULL
+			id = *symbGetName( varexpr->sym )
+			suffix = FB_DATATYPE_INVALID
+		else
+			chain_ = hGetId( parent, @id, suffix, is_redim )
+		end if
 
 		is_typeless = FALSE
 
@@ -1150,9 +1219,13 @@ function cVarDecl _
 			end if
 		end if
 
-		sym = hLookupVarAndCheckParent( parent, chain_, dtype, is_typeless, _
+		if( varexpr ) then
+			sym = varexpr->sym
+		else
+			sym = hLookupVarAndCheckParent( parent, chain_, dtype, is_typeless, _
 						(suffix <> FB_DATATYPE_INVALID), _
 						is_redim )
+		end if
 
 		'' typeless REDIM?
 		if( is_typeless ) then
@@ -1263,7 +1336,9 @@ function cVarDecl _
 
 		dim as integer has_defctor = FALSE, has_dtor = FALSE
 		if( sym <> NULL ) then
-			is_declared = symbGetIsDeclared( sym )
+			'' Treat dynamic array fields as "already declared",
+			'' because we don't want to emit DECL nodes for them below.
+			is_declared = iif( symbIsField( sym ), TRUE, symbGetIsDeclared( sym ) )
 			has_defctor = symbHasDefCtor( sym )
 			has_dtor = symbHasDtor( sym )
 		else
@@ -1325,9 +1400,11 @@ function cVarDecl _
 			assign_initree = NULL
 		end if
 
-		'' add to AST
+		''
+		'' Add to AST: DECL nodes, initialization code, REDIMs.
+		'' Nothing to do for EXTERNs.
+		''
 		if( sym <> NULL ) then
-			'' do nothing if it's EXTERN
 			if( token <> FB_TK_EXTERN ) then
 				'' not declared already?
 				if( is_declared = FALSE ) then
@@ -1405,7 +1482,10 @@ function cVarDecl _
 
 				'' Dynamic array? If the dimensions are known, redim it.
 				if( ((attrib and FB_SYMBATTRIB_DYNAMIC) <> 0) and (dimensions > 0) ) then
-					redimcall = rtlArrayRedim( sym, symbGetLen( sym ), dimensions, exprTB(), _
+					if( varexpr = NULL ) then
+						varexpr = astNewVAR( sym )
+					end if
+					redimcall = rtlArrayRedim( varexpr, dimensions, exprTB(), _
 								dopreserve, (not symbGetDontInit( sym )) )
 
 					'' If this is a local STATIC (not SHARED/COMMON) array declaration (and not
@@ -1423,7 +1503,6 @@ function cVarDecl _
 			end if
 		end if
 
-		''
 		if( is_fordecl ) then
 			return sym
 		end if
@@ -1434,7 +1513,9 @@ function cVarDecl _
 		end if
 
 		lexSkipToken( )
-    loop
+	loop
+
+	'' result unused, except by FOR loops, but that's RETURN'ed above
 end function
 
 '' look for ... followed by ')', ',' or TO

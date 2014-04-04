@@ -484,8 +484,7 @@ end function
 
 function rtlArrayRedim _
 	( _
-		byval s as FBSYMBOL ptr, _
-		byval elementlen as longint, _
+		byval varexpr as ASTNODE ptr, _
 		byval dimensions as integer, _
 		exprTB() as ASTNODE ptr, _
 		byval dopreserve as integer, _
@@ -495,15 +494,19 @@ function rtlArrayRedim _
 	'' no const filtering needed... dynamic arrays can't be const
 	
     dim as ASTNODE ptr proc = any, expr = any
-    dim as FBSYMBOL ptr f = any, ctor = any, dtor = any, subtype = any
+	dim as FBSYMBOL ptr f = any, sym = any, subtype = any
+	dim as FBSYMBOL ptr ctor = any, dtor = any
     dim as integer dtype = any
+	dim as longint elementlen = any
 
-    dtype = symbGetFullType( s )
+	sym = astGetSymbol( varexpr )
+	dtype = symbGetFullType( sym )
+	elementlen = symbGetLen( sym )
 
 	'' only objects get instantiated
 	select case typeGet( dtype )
 	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-		subtype = symbGetSubtype( s )
+		subtype = symbGetSubtype( sym )
 		ctor = symbGetCompDefCtor( subtype )
 		dtor = symbGetCompDtor( subtype )
 
@@ -533,7 +536,7 @@ function rtlArrayRedim _
     proc = astNewCALL( f )
 
 	'' array() as ANY
-	if( astNewARG( proc, astNewVAR( s ) ) = NULL ) then
+	if( astNewARG( proc, varexpr ) = NULL ) then
 		exit function
 	end if
 

@@ -232,6 +232,119 @@ namespace noCompileTimeChecks
 	end sub
 end namespace
 
+namespace dynamicArrayVarAsExpression
+	'' Dynamic array variable given to REDIM in form of an expression,
+	'' instead of just as plain identifier.
+
+	dim shared global1() as integer
+
+	private sub test cdecl( )
+		CU_ASSERT( lbound( global1 ) = 0 ) : CU_ASSERT( ubound( global1 ) = -1 )
+
+		redim (global1)(1 to 1)
+		CU_ASSERT( lbound( global1 ) = 1 ) : CU_ASSERT( ubound( global1 ) = 1 )
+
+		dim local1() as integer
+		CU_ASSERT( lbound( local1 ) = 0 ) : CU_ASSERT( ubound( local1 ) = -1 )
+
+		redim (local1)(1 to 1)
+		CU_ASSERT( lbound( local1 ) = 1 ) : CU_ASSERT( ubound( local1 ) = 1 )
+	end sub
+end namespace
+
+namespace staticMemberDynamicArrayAccess
+	'' REDIM'ing a dynamic array that is a static member in a UDT.
+
+	type UDT
+		i as integer
+
+		static array() as integer
+
+		declare sub f3( )
+		declare sub f4( )
+		declare static sub f5( )
+	end type
+
+	dim UDT.array() as integer
+
+	sub UDT.f3( )
+		'' static member accessed through implicit THIS
+		redim (array)(3 to 3)
+	end sub
+
+	sub UDT.f4( )
+		'' static member accessed through explicit THIS
+		redim (this.array)(4 to 4)
+	end sub
+
+	static sub UDT.f5( )
+		'' static member accessed through implicit namespace prefix
+		redim (array)(5 to 5)
+	end sub
+
+	private sub test cdecl( )
+		#macro expectbounds( l, u )
+			CU_ASSERT( lbound( UDT.array ) = l )
+			CU_ASSERT( ubound( UDT.array ) = u )
+		#endmacro
+
+		expectbounds( 0, -1 )
+
+		'' static member accessed through namespace prefix
+		redim UDT.array(1 to 1)
+		expectbounds( 1, 1 )
+
+		'' static member accessed through object on stack
+		dim x as UDT
+		expectbounds( 1, 1 )
+		redim (x.array)(2 to 2)
+		expectbounds( 2, 2 )
+
+		x.f3( )
+		expectbounds( 3, 3 )
+
+		x.f4( )
+		expectbounds( 4, 4 )
+
+		UDT.f5( )
+		expectbounds( 5, 5 )
+	end sub
+end namespace
+
+namespace dynamicArrayFields
+	type UDT
+		array1() as integer
+		array2() as integer
+	end type
+
+	dim shared globalx as UDT
+
+	private sub test cdecl( )
+		CU_ASSERT( lbound( globalx.array1 ) = 0 ) : CU_ASSERT( ubound( globalx.array1 ) = -1 )
+		CU_ASSERT( lbound( globalx.array2 ) = 0 ) : CU_ASSERT( ubound( globalx.array2 ) = -1 )
+
+		redim (globalx.array1)(1 to 1)
+		CU_ASSERT( lbound( globalx.array1 ) = 1 ) : CU_ASSERT( ubound( globalx.array1 ) = 1 )
+		CU_ASSERT( lbound( globalx.array2 ) = 0 ) : CU_ASSERT( ubound( globalx.array2 ) = -1 )
+
+		redim (globalx.array2)(2 to 2)
+		CU_ASSERT( lbound( globalx.array1 ) = 1 ) : CU_ASSERT( ubound( globalx.array1 ) = 1 )
+		CU_ASSERT( lbound( globalx.array2 ) = 2 ) : CU_ASSERT( ubound( globalx.array2 ) = 2 )
+
+		dim x as UDT
+		CU_ASSERT( lbound( x.array1 ) = 0 ) : CU_ASSERT( ubound( x.array1 ) = -1 )
+		CU_ASSERT( lbound( x.array2 ) = 0 ) : CU_ASSERT( ubound( x.array2 ) = -1 )
+
+		redim (x.array1)(1 to 1)
+		CU_ASSERT( lbound( x.array1 ) = 1 ) : CU_ASSERT( ubound( x.array1 ) = 1 )
+		CU_ASSERT( lbound( x.array2 ) = 0 ) : CU_ASSERT( ubound( x.array2 ) = -1 )
+
+		redim (x.array2)(2 to 2)
+		CU_ASSERT( lbound( x.array1 ) = 1 ) : CU_ASSERT( ubound( x.array1 ) = 1 )
+		CU_ASSERT( lbound( x.array2 ) = 2 ) : CU_ASSERT( ubound( x.array2 ) = 2 )
+	end sub
+end namespace
+
 private sub ctor( ) constructor
 	fbcu.add_suite("fbc_tests.dim.redim")
 	fbcu.add_test("test", @test)
@@ -243,6 +356,9 @@ private sub ctor( ) constructor
 	fbcu.add_test( "dtorOnlyElementsAreCleared.testRedim", @dtorOnlyElementsAreCleared.testRedim )
 	fbcu.add_test( "dtorOnlyElementsAreCleared.testRedimPreserve", @dtorOnlyElementsAreCleared.testRedimPreserve )
 	fbcu.add_test( "noCompileTimeChecks", @noCompileTimeChecks.test )
+	fbcu.add_test( "dynamicArrayVarAsExpression", @dynamicArrayVarAsExpression.test )
+	fbcu.add_test( "staticMemberDynamicArrayAccess", @staticMemberDynamicArrayAccess.test )
+	fbcu.add_test( "dynamicArrayFields", @dynamicArrayFields.test )
 end sub
 
 end namespace

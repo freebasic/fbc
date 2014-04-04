@@ -1083,8 +1083,7 @@ declare function rtlArrayErase _
 
 declare function rtlArrayRedim _
 	( _
-		byval s as FBSYMBOL ptr, _
-		byval elementlen as longint, _
+		byval varexpr as ASTNODE ptr, _
 		byval dimensions as integer, _
 		exprTB() as ASTNODE ptr, _
 		byval dopreserve as integer, _

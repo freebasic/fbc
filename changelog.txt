@@ -18,6 +18,7 @@ Version 0.91.0:
 - fbc -v now prints out the target system and architecture
 - BYVAL AS STRING is now working properly: it now has BYVAL semantics and no longer behaves like BYREF AS ZSTRING. Modifications made by the callee are not visible to the caller, as for other BYVAL parameters. (BYVAL AS STRING is implemented by copying the string argument into a temporary STRING, whose descriptor is then passed BYREF to the procedure)
 - Dynamic array fields are now supported in UDTs. Similar rules as for dynamic string fields apply: Just the array descriptor is included in the UDT, not the actual array data. The UDT will become a class, and is given an implicit constructor and destructor to initialize the array descriptor, or free the data it contains. This code will also automatically be added to user-defined constructors/destructors.
+- REDIM now also accepts expressions to access dynamic arrays, instead of just plain identifiers, which is needed to redim dynamic array fields, or dynamic arrays that are static member variables. For example: REDIM (this.array)(0 to 1)
 - Improved multiplication/division/modulus to bitwise shift/and optimizations to handle operations with 64bit and unsigned right hand operand better
 - Updated header for libzip 0.11.1
 - Indexing/member dereferencing operators ([], ->) can now be applied to VARPTR/PROCPTR/STRPTR/SADD() expressions (for example: print strptr(s)[1]), instead of requiring the address expression to be wrapped in parentheses first.
