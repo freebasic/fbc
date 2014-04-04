@@ -145,6 +145,7 @@ Version 0.91.0:
 - Duplicate EXTERNs for dynamic arrays are now allowed, just like duplicate EXTERNs for normal or fixed-size array variables, which already were allowed before.
 - EXTERN variables could be allocated via a static array variable declaration, this will now trigger an error.
 - #648: Local (scoped) variable declarations (including REDIM) caused EXTERNs to be allocated, instead of shadowing them
+- Local dynamic arrays can now be shadowed in nested scopes without compiler error
 
 
 Version 0.90.1:
