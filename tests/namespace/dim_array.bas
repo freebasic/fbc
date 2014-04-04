@@ -3,6 +3,7 @@
 namespace fbc_tests.ns.dim_.inner
 
 	extern array() as integer
+	dim array() as integer
 
 	function test_zero() as integer
 		dim as integer i
