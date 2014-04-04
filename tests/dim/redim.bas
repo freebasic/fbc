@@ -260,26 +260,43 @@ namespace staticMemberDynamicArrayAccess
 
 		static array() as integer
 
-		declare sub f3( )
-		declare sub f4( )
-		declare static sub f5( )
+		declare sub f1( l as integer, u as integer )
+		declare sub f2( l as integer, u as integer )
+		declare sub f3( l as integer, u as integer )
+		declare sub f4( l as integer, u as integer )
+		declare static sub f5( l as integer, u as integer )
+		declare static sub f6( l as integer, u as integer )
 	end type
 
 	dim UDT.array() as integer
 
-	sub UDT.f3( )
+	sub UDT.f1( l as integer, u as integer )
 		'' static member accessed through implicit THIS
-		redim (array)(3 to 3)
+		redim (array)(l to u)
 	end sub
 
-	sub UDT.f4( )
+	sub UDT.f2( l as integer, u as integer )
+		'' static member accessed through implicit THIS
+		redim array(l to u)
+	end sub
+
+	sub UDT.f3( l as integer, u as integer )
 		'' static member accessed through explicit THIS
-		redim (this.array)(4 to 4)
+		redim (this.array)(l to u)
 	end sub
 
-	static sub UDT.f5( )
+	sub UDT.f4( l as integer, u as integer )
+		redim this.array(l to u)
+	end sub
+
+	static sub UDT.f5( l as integer, u as integer )
 		'' static member accessed through implicit namespace prefix
-		redim (array)(5 to 5)
+		redim (array)(l to u)
+	end sub
+
+	static sub UDT.f6( l as integer, u as integer )
+		'' static member accessed through implicit namespace prefix
+		redim array(l to u)
 	end sub
 
 	private sub test cdecl( )
@@ -294,54 +311,106 @@ namespace staticMemberDynamicArrayAccess
 		redim UDT.array(1 to 1)
 		expectbounds( 1, 1 )
 
-		'' static member accessed through object on stack
+		'' static member accessed through object/pointer
 		dim x as UDT
+		dim px as UDT ptr = @x
 		expectbounds( 1, 1 )
+
 		redim (x.array)(2 to 2)
 		expectbounds( 2, 2 )
 
-		x.f3( )
-		expectbounds( 3, 3 )
+		redim x.array(1 to 1)
+		expectbounds( 1, 1 )
 
-		x.f4( )
-		expectbounds( 4, 4 )
+		redim (px->array)(2 to 2)
+		expectbounds( 2, 2 )
 
-		UDT.f5( )
-		expectbounds( 5, 5 )
+		redim px->array(1 to 1)
+		expectbounds( 1, 1 )
+
+		x.f1( 2, 2 )
+		expectbounds( 2, 2 )
+
+		x.f2( 1, 1 )
+		expectbounds( 1, 1 )
+
+		x.f3( 2, 2 )
+		expectbounds( 2, 2 )
+
+		x.f4( 1, 1 )
+		expectbounds( 1, 1 )
+
+		UDT.f5( 2, 2 )
+		expectbounds( 2, 2 )
+
+		UDT.f6( 1, 1 )
+		expectbounds( 1, 1 )
 	end sub
 end namespace
 
-namespace dynamicArrayFields
+namespace dynamicArrayFieldsGlobal
 	type UDT
 		array1() as integer
 		array2() as integer
 	end type
 
 	dim shared globalx as UDT
+	dim shared pglobalx as UDT ptr = @globalx
 
 	private sub test cdecl( )
-		CU_ASSERT( lbound( globalx.array1 ) = 0 ) : CU_ASSERT( ubound( globalx.array1 ) = -1 )
-		CU_ASSERT( lbound( globalx.array2 ) = 0 ) : CU_ASSERT( ubound( globalx.array2 ) = -1 )
+		#macro expectbounds( l1, u1, l2, u2 )
+			CU_ASSERT( lbound( globalx.array1 ) = l1 ) : CU_ASSERT( ubound( globalx.array1 ) = u1 )
+			CU_ASSERT( lbound( globalx.array2 ) = l2 ) : CU_ASSERT( ubound( globalx.array2 ) = u2 )
+		#endmacro
+
+		expectbounds( 0, -1, 0, -1 )
 
 		redim (globalx.array1)(1 to 1)
-		CU_ASSERT( lbound( globalx.array1 ) = 1 ) : CU_ASSERT( ubound( globalx.array1 ) = 1 )
-		CU_ASSERT( lbound( globalx.array2 ) = 0 ) : CU_ASSERT( ubound( globalx.array2 ) = -1 )
+		expectbounds( 1, 1, 0, -1 )
 
 		redim (globalx.array2)(2 to 2)
-		CU_ASSERT( lbound( globalx.array1 ) = 1 ) : CU_ASSERT( ubound( globalx.array1 ) = 1 )
-		CU_ASSERT( lbound( globalx.array2 ) = 2 ) : CU_ASSERT( ubound( globalx.array2 ) = 2 )
+		expectbounds( 1, 1, 2, 2 )
 
+		redim globalx.array1(3 to 3)
+		redim globalx.array2(4 to 4)
+		expectbounds( 3, 3, 4, 4 )
+
+		redim pglobalx->array1(1 to 1)
+		redim pglobalx->array2(2 to 2)
+		expectbounds( 1, 1, 2, 2 )
+	end sub
+end namespace
+
+namespace dynamicArrayFieldsLocal
+	type UDT
+		array1() as integer
+		array2() as integer
+	end type
+
+	private sub test cdecl( )
 		dim x as UDT
-		CU_ASSERT( lbound( x.array1 ) = 0 ) : CU_ASSERT( ubound( x.array1 ) = -1 )
-		CU_ASSERT( lbound( x.array2 ) = 0 ) : CU_ASSERT( ubound( x.array2 ) = -1 )
+		dim px as UDT ptr = @x
+
+		#macro expectbounds( l1, u1, l2, u2 )
+			CU_ASSERT( lbound( x.array1 ) = l1 ) : CU_ASSERT( ubound( x.array1 ) = u1 )
+			CU_ASSERT( lbound( x.array2 ) = l2 ) : CU_ASSERT( ubound( x.array2 ) = u2 )
+		#endmacro
+
+		expectbounds( 0, -1, 0, -1 )
 
 		redim (x.array1)(1 to 1)
-		CU_ASSERT( lbound( x.array1 ) = 1 ) : CU_ASSERT( ubound( x.array1 ) = 1 )
-		CU_ASSERT( lbound( x.array2 ) = 0 ) : CU_ASSERT( ubound( x.array2 ) = -1 )
+		expectbounds( 1, 1, 0, -1 )
 
 		redim (x.array2)(2 to 2)
-		CU_ASSERT( lbound( x.array1 ) = 1 ) : CU_ASSERT( ubound( x.array1 ) = 1 )
-		CU_ASSERT( lbound( x.array2 ) = 2 ) : CU_ASSERT( ubound( x.array2 ) = 2 )
+		expectbounds( 1, 1, 2, 2 )
+
+		redim x.array1(3 to 3)
+		redim x.array2(4 to 4)
+		expectbounds( 3, 3, 4, 4 )
+
+		redim px->array1(1 to 1)
+		redim px->array2(2 to 2)
+		expectbounds( 1, 1, 2, 2 )
 	end sub
 end namespace
 
@@ -358,7 +427,8 @@ private sub ctor( ) constructor
 	fbcu.add_test( "noCompileTimeChecks", @noCompileTimeChecks.test )
 	fbcu.add_test( "dynamicArrayVarAsExpression", @dynamicArrayVarAsExpression.test )
 	fbcu.add_test( "staticMemberDynamicArrayAccess", @staticMemberDynamicArrayAccess.test )
-	fbcu.add_test( "dynamicArrayFields", @dynamicArrayFields.test )
+	fbcu.add_test( "dynamicArrayFieldsGlobal", @dynamicArrayFieldsGlobal.test )
+	fbcu.add_test( "dynamicArrayFieldsLocal", @dynamicArrayFieldsLocal.test )
 end sub
 
 end namespace

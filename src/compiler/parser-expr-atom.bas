@@ -62,6 +62,7 @@ function cParentExpression _
 
 	dim as ASTNODE ptr parexpr = any
 	dim as integer eqinparensonly = any, gtinparensonly = any
+	dim as integer idxinparensonly = any
 
   	'' '('
   	if( lexGetToken( ) <> CHAR_LPRNT ) then
@@ -76,16 +77,18 @@ function cParentExpression _
   	dim as integer is_opt = fbGetPrntOptional( )
   	fbSetPrntOptional( FALSE )
 
-
 	eqinparensonly = fbGetEqInParensOnly( )
 	gtinparensonly = fbGetGtInParensOnly( )
+	idxinparensonly = fbGetIdxInParensOnly( )
 	fbSetEqInParensOnly( FALSE )
 	fbSetGtInParensOnly( FALSE )
-	
+	fbSetIdxInParensOnly( FALSE )
+
   	parexpr = cExpression(  )
 
 	fbSetEqInParensOnly( eqinparensonly )
 	fbSetGtInParensOnly( gtinparensonly )
+	fbSetIdxInParensOnly( idxinparensonly )
 
   	if( parexpr = NULL ) then
   		'' calling a SUB? it could be a BYVAL or nothing due the optional ()'s

@@ -491,6 +491,9 @@ private function hLookupVar _
 			sym = symbFindVarByDefType( chain_, dtype )
 		else
 			sym = symbFindByClass( chain_, FB_SYMBCLASS_VAR )
+			if( sym = NULL ) then
+				sym = symbFindByClass( chain_, FB_SYMBCLASS_FIELD )
+			end if
 		end if
 	elseif( has_suffix ) then
 		sym = symbFindVarBySuffix( chain_, dtype )
@@ -963,10 +966,18 @@ private function hFlushInitializer _
 
 end function
 
-private function hDynamicArrayExpression( ) as ASTNODE ptr
-	dim as ASTNODE ptr varexpr = any
-	varexpr = cExpressionWithNIDXARRAY( TRUE )
+private function hIdxInParensOnlyExpr( ) as ASTNODE ptr
+	dim as integer old_idxinparensonly = any
 
+	old_idxinparensonly = fbGetIdxInParensOnly( )
+	fbSetIdxInParensOnly( TRUE )
+
+	function = cExpressionWithNIDXARRAY( TRUE )
+
+	fbSetIdxInParensOnly( old_idxinparensonly )
+end function
+
+private function hCheckDynamicArrayExpr( byval varexpr as ASTNODE ptr ) as ASTNODE ptr
 	if( astIsNIDXARRAY( varexpr ) ) then
 		dim as ASTNODE ptr l = varexpr->l
 		astDelNode( varexpr )
@@ -1001,6 +1012,30 @@ private sub hErrorDefTypeNotAllowed _
 	lgt = symbCalcLen( dtype, subtype )
 
 end sub
+
+private function hMaybeBuildFieldAccess _
+	( _
+		byval fld as FBSYMBOL ptr, _
+		byval is_redim as integer _
+	) as ASTNODE ptr
+
+	dim as FBSYMBOL ptr thisparam = any
+
+	if( is_redim = FALSE ) then
+		exit function
+	end if
+
+	if( symbIsMethod( parser.currproc ) = FALSE ) then
+		exit function
+	end if
+
+	thisparam = symbGetProcHeadParam( parser.currproc )
+	if( thisparam = NULL ) then
+		exit function
+	end if
+
+	function = astBuildVarField( symbGetParamVar( thisparam ), fld )
+end function
 
 '':::::
 ''VarDecl         =   ID ('(' ArrayDecl? ')')? (AS SymbolType)? ('=' VarInitializer)?
@@ -1093,7 +1128,7 @@ function cVarDecl _
 			'' 'foo.bar' or 'foo->bar' or 'foo[bar]'.
 			'' Note: namespace prefix was parsed above already.
 			if( (lexGetToken( ) = CHAR_LPRNT) or (lexGetLookAhead( 1 ) <> CHAR_LPRNT) ) then
-				varexpr = hDynamicArrayExpression( )
+				varexpr = hCheckDynamicArrayExpr( hIdxInParensOnlyExpr( ) )
 			end if
 		end if
 
@@ -1225,6 +1260,22 @@ function cVarDecl _
 			sym = hLookupVarAndCheckParent( parent, chain_, dtype, is_typeless, _
 						(suffix <> FB_DATATYPE_INVALID), _
 						is_redim )
+
+			if( sym ) then
+				'' If it's an existing field, then we must be inside a method,
+				'' and the field was accessed via implicit THIS.
+				if( symbIsField( sym ) ) then
+					'' Build an expression that can be used for REDIM
+					varexpr = hMaybeBuildFieldAccess( sym, is_redim )
+					if( varexpr ) then
+						'' But ensure to only allow this with dynamic array fields
+						varexpr = hCheckDynamicArrayExpr( astNewNIDXARRAY( varexpr ) )
+					else
+						'' Forget the field if it can't be accessed
+						sym = NULL
+					end if
+				end if
+			end if
 		end if
 
 		'' typeless REDIM?

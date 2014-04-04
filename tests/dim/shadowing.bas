@@ -1,13 +1,13 @@
 # include "fbcu.bi"
 
-namespace fbc_tests.dim_.array_shadowing
+namespace fbc_tests.dim_.shadowing
 
 #macro expectbounds( l, u )
 	CU_ASSERT( lbound( x ) = l )
 	CU_ASSERT( ubound( x ) = u )
 #endmacro
 
-private sub testEmptyDynamic cdecl( )
+private sub testEmptyDynamicArray cdecl( )
 	dim x() as integer
 	expectbounds( 0, -1 )
 
@@ -36,7 +36,7 @@ private sub testEmptyDynamic cdecl( )
 	expectbounds( 1, 1 )
 end sub
 
-private sub testFilledDynamic cdecl( )
+private sub testFilledDynamicArray cdecl( )
 	redim x(1 to 1) as integer
 	expectbounds( 1, 1 )
 
@@ -65,7 +65,7 @@ private sub testFilledDynamic cdecl( )
 	expectbounds( 2, 2 )
 end sub
 
-private sub testFixedSize cdecl( )
+private sub testFixedSizeArray cdecl( )
 	dim x(1 to 1) as integer
 	expectbounds( 1, 1 )
 
@@ -93,11 +93,38 @@ private sub testFixedSize cdecl( )
 	expectbounds( 1, 1 )
 end sub
 
+namespace dimImplicitThisField
+	type UDT
+		i as integer
+		array(0 to 1) as integer
+
+		declare function f1( ) as integer ptr
+		declare function f2( ) as integer ptr
+	end type
+
+	function UDT.f1( ) as integer ptr
+		dim i as integer
+		function = @i
+	end function
+
+	function UDT.f2( ) as integer ptr
+		dim array(0 to 1) as integer
+		function = @array(0)
+	end function
+
+	private sub test cdecl( )
+		dim x as UDT
+		CU_ASSERT( @x.i <> x.f1( ) )
+		CU_ASSERT( @x.array(0) <> x.f2( ) )
+	end sub
+end namespace
+
 private sub ctor( ) constructor
-	fbcu.add_suite( "tests/dim/array-shadowing" )
-	fbcu.add_test( "empty dynamic array", @testEmptyDynamic )
-	fbcu.add_test( "filled dynamic array", @testFilledDynamic )
-	fbcu.add_test( "fixed-size array", @testFixedSize )
+	fbcu.add_suite( "tests/dim/shadowing" )
+	fbcu.add_test( "empty dynamic array", @testEmptyDynamicArray )
+	fbcu.add_test( "filled dynamic array", @testFilledDynamicArray )
+	fbcu.add_test( "fixed-size array", @testFixedSizeArray )
+	fbcu.add_test( "dim shadowing implicit THIS field", @dimImplicitThisField.test )
 end sub
 
 end namespace

@@ -163,6 +163,7 @@ enum FB_PARSEROPT
 	FB_PARSEROPT_GTINPARENSONLY	= &h00000200	'' only check for '>' if inside parentheses
 	FB_PARSEROPT_ISPP               = &h00000400  '' PP expression? (e.g. #if condition)
 	FB_PARSEROPT_EXPLICITBASE       = &h00000800  '' Used to tell cProcArgList() & co about explicit BASE accesses from hBaseMemberAccess() functions
+	FB_PARSEROPT_IDXINPARENSONLY    = &h00001000  '' Only parse array index if inside parentheses (used by REDIM, so it can handle 'expr(1 to 2)', where the expression parser should parse 'expr' but not the '(1 to 2)' part)
 end enum
 
 type PARSERCTX
@@ -995,6 +996,15 @@ declare function hIntegerTypeFromBitSize _
 		parser.options or= FB_PARSEROPT_ISPP
 	else
 		parser.options and= not FB_PARSEROPT_ISPP
+	end if
+#endmacro
+
+#define fbGetIdxInParensOnly( ) ((parser.options and FB_PARSEROPT_IDXINPARENSONLY) <> 0)
+#macro fbSetIdxInParensOnly( _bool )
+	if( _bool ) then
+		parser.options or= FB_PARSEROPT_IDXINPARENSONLY
+	else
+		parser.options and= not FB_PARSEROPT_IDXINPARENSONLY
 	end if
 #endmacro
 

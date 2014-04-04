@@ -124,7 +124,6 @@ private function cFieldArrayIndex _
 	function = expr
 end function
 
-'':::::
 private function hUdtDataMember _
 	( _
 		byval fld as FBSYMBOL ptr, _
@@ -136,19 +135,18 @@ private function hUdtDataMember _
 	expr = astNewCONSTi( symbGetOfs( fld ) )
 
 	'' '('?
-	if( lexGetToken( ) = CHAR_LPRNT ) then
-
+	if( (lexGetToken( ) = CHAR_LPRNT) and (not fbGetIdxInParensOnly( )) ) then
 		'' if field isn't an array, it can be function field, exit
 		if( symbGetArrayDimensions( fld ) = 0 ) then
 			return expr
 		end if
 
-    	'' '('')'?
-    	if( lexGetLookAhead( 1 ) = CHAR_RPRNT ) then
-    		return expr
-    	end if
+		'' '()'?
+		if( lexGetLookAhead( 1 ) = CHAR_RPRNT ) then
+			return expr
+		end if
 
-    	lexSkipToken( )
+		lexSkipToken( )
 
 		expr = cFieldArrayIndex( fld, expr )
 		if( expr = NULL ) then
@@ -163,7 +161,6 @@ private function hUdtDataMember _
 		else
 			lexSkipToken( )
 		end if
-
 	else
 		'' array and no index?
 		if( symbGetArrayDimensions( fld ) <> 0 ) then
@@ -185,7 +182,6 @@ private function hUdtDataMember _
 	end if
 
 	function = expr
-
 end function
 
 '':::::
@@ -1000,55 +996,53 @@ function cVariableEx overload _
 
 	dim as integer check_fields = TRUE, is_nidxarray = FALSE
 
-    '' check for '('')', it's not an array, just passing by desc
-    if( lexGetToken( ) = CHAR_LPRNT ) then
-    	if( lexGetLookAhead( 1 ) <> CHAR_RPRNT ) then
-
-    		'' ArrayIdx?
-    		if( is_array ) then
-    			'' '('
-    			lexSkipToken( )
+	'' check for '()', it's not an array, just passing bydesc
+	if( (lexGetToken( ) = CHAR_LPRNT) and (not fbGetIdxInParensOnly( )) ) then
+		if( lexGetLookAhead( 1 ) <> CHAR_RPRNT ) then
+			'' ArrayIdx?
+			if( is_array ) then
+				'' '('
+				lexSkipToken( )
 
 				idxexpr = cArrayIndex( sym )
 
 				'' ')'
-    			if( hMatch( CHAR_RPRNT ) = FALSE ) then
+				if( hMatch( CHAR_RPRNT ) = FALSE ) then
 					errReport( FB_ERRMSG_EXPECTEDRPRNT )
 					'' error recovery: skip until next ')'
 					hSkipUntil( CHAR_RPRNT, TRUE )
-    			end if
-    		else
+				end if
+			else
    				'' check if calling functions through pointers
    				is_funcptr = (typeGetDtAndPtrOnly( dtype ) = typeAddrOf( FB_DATATYPE_FUNCTION ))
 
-    			'' using (...) with scalars?
-    			if( (is_array = FALSE) and (is_funcptr = FALSE) ) then
+				'' using (...) with scalars?
+				if( (is_array = FALSE) and (is_funcptr = FALSE) ) then
 					errReport( FB_ERRMSG_ARRAYNOTALLOCATED, TRUE )
 					'' error recovery: skip the index
 					lexSkipToken( )
 					hSkipUntil( CHAR_RPRNT, TRUE )
-    			end if
-    		end if
-    	else
-    		'' array? could be a func ptr call too..
-    		if( is_array ) then
-    			check_fields = FALSE
-    		end if
-    	end if
-
-    else
+				end if
+			end if
+		else
+			'' array? could be a func ptr call too..
+			if( is_array ) then
+				check_fields = FALSE
+			end if
+		end if
+	else
 		'' array and no index?
 		if( is_array ) then
-   			if( check_array ) then
+			if( check_array ) then
 				errReport( FB_ERRMSG_EXPECTEDINDEX, TRUE )
 				'' error recovery: fake an index
 				idxexpr = hMakeArrayIdx( sym )
-   			else
-   				check_fields = FALSE
-   				is_nidxarray = TRUE
-   			end if
-    	end if
-    end if
+			else
+				check_fields = FALSE
+				is_nidxarray = TRUE
+			end if
+		end if
+	end if
 
 	'' AST will handle descriptor pointers
 	if( is_byref ) then
