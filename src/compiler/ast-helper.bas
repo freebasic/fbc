@@ -151,7 +151,7 @@ end function
 '' Build a field access on the target:
 ''    n = *cptr( dtype ptr, @n + offset )
 '' If offset = 0, then it's basically just a type cast.
-function astBuildAddrOfDeref _
+function astBuildDerefAddrOf _
 	( _
 		byval n as ASTNODE ptr, _
 		byval offset as longint, _
@@ -194,9 +194,9 @@ function astBuildVarField _
 
 	if( fld ) then
 		offset += symbGetOfs( fld )
-		n = astBuildAddrOfDeref( n, offset, symbGetFullType( fld ), symbGetSubtype( fld ), fld )
+		n = astBuildDerefAddrOf( n, offset, symbGetFullType( fld ), symbGetSubtype( fld ), fld )
 	else
-		n = astBuildAddrOfDeref( n, offset, symbGetFullType( sym ), symbGetSubtype( sym ), NULL )
+		n = astBuildDerefAddrOf( n, offset, symbGetFullType( sym ), symbGetSubtype( sym ), NULL )
 	end if
 
 	function = n

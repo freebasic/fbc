@@ -360,7 +360,7 @@ private function hCallCtorList _
 	dim as ASTNODE ptr fldexpr = any
 
 	'' iter = *cast( subtype ptr, cast( byte ptr, @array(0) ) + ofs) )
-	fldexpr = astBuildAddrOfDeref( astCloneTree( target ), n->typeini.ofs, n->dtype, n->subtype, n->sym )
+	fldexpr = astBuildDerefAddrOf( astCloneTree( target ), n->typeini.ofs, n->dtype, n->subtype, n->sym )
 
 	if( n->typeini.elements > 1 ) then
 		dim as FBSYMBOL ptr cnt, label, iter
@@ -434,7 +434,7 @@ function astTypeIniFlush overload _
 					if( symbFieldIsBitfield( n->sym ) ) then
 						'' Beginning of a field containing one or more bitfields?
 						if( n->sym->var_.bitpos = 0 ) then
-							l = astBuildAddrOfDeref( astCloneTree( target ), n->typeini.ofs, n->dtype, n->subtype )
+							l = astBuildDerefAddrOf( astCloneTree( target ), n->typeini.ofs, n->dtype, n->subtype )
 							l = astNewMEM( AST_OP_MEMCLEAR, l, astNewCONSTi( typeGetSize( symbGetFullType( n->sym ) ) ) )
 							t = astNewLINK( t, l )
 						end if
@@ -442,7 +442,7 @@ function astTypeIniFlush overload _
 				end if
 			end if
 
-			l = astBuildAddrOfDeref( astCloneTree( target ), n->typeini.ofs, n->dtype, n->subtype, n->sym )
+			l = astBuildDerefAddrOf( astCloneTree( target ), n->typeini.ofs, n->dtype, n->subtype, n->sym )
 
 			l = astNewASSIGN( l, n->l, AST_OPOPT_ISINI or AST_OPOPT_DONTCHKPTR )
 			assert( l )
@@ -450,14 +450,14 @@ function astTypeIniFlush overload _
 
 		'' Clear the given amount of bytes at the given offset in the target
 		case AST_NODECLASS_TYPEINI_PAD
-			l = astBuildAddrOfDeref( astCloneTree( target ), n->typeini.ofs, n->dtype, n->subtype )
+			l = astBuildDerefAddrOf( astCloneTree( target ), n->typeini.ofs, n->dtype, n->subtype )
 			l = astNewMEM( AST_OP_MEMCLEAR, l, astNewCONSTi( n->typeini.bytes ) )
 			t = astNewLINK( t, l )
 
 		'' Use the given CALL (and its ARGs) as-is, but insert the byref instance argument,
 		'' pointing to the given offset in the target
 		case AST_NODECLASS_TYPEINI_CTORCALL
-			l = astBuildAddrOfDeref( astCloneTree( target ), n->typeini.ofs, n->dtype, n->subtype, n->sym )
+			l = astBuildDerefAddrOf( astCloneTree( target ), n->typeini.ofs, n->dtype, n->subtype, n->sym )
 
 			l = astPatchCtorCall( n->l, l )
 			t = astNewLINK( t, l )

@@ -1091,7 +1091,7 @@ declare function astBuildFakeWstringAssign _
 		byval options as integer = 0 _
 	) as ASTNODE ptr
 
-declare function astBuildAddrOfDeref _
+declare function astBuildDerefAddrOf _
 	( _
 		byval n as ASTNODE ptr, _
 		byval offset as longint, _
