@@ -223,9 +223,11 @@ private sub hBuildVtable( byval udt as FBSYMBOL ptr )
 	'' 1. new (and not inherited) entries for ...
 	''  - virtuals: must be set to point to their bodies for now.
 	''    (not yet overridden)
-	''  - abstracts: are set to point to fb_AbstractStub() (our version
-	''    of GCC's __cxa_pure_virtual()), which will show a run-time
-	''    error message and abort the program.
+	''  - abstracts: are set to NULL, so if they're not overridden, a NULL
+	''    pointer crash will happen when they're called, which is handled by
+	''    -exx error checking (see also astBuildVtableLookup()).
+	''    (GCC sets it to point to __cxa_pure_virtual(), which shows a
+	''    run-time error message and aborts the program)
 	''
 	'' 2. any entries for inherited virtuals/abstracts that were overridden
 	''    by a normal method must be updated to point to the normal method.
