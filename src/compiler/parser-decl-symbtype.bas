@@ -227,14 +227,13 @@ function cSymbolType _
 		byval options as FB_SYMBTYPEOPT _
 	) as integer
 
-	dim as integer isunsigned = any, isfunction = any, is_plain_zwstr = any
+	dim as integer isunsigned = any, isfunction = any
 
 	function = FALSE
 
 	lgt = 0
 	dtype = FB_DATATYPE_INVALID
 	subtype = NULL
-	is_plain_zwstr = FALSE
 
 	dim as integer is_const = FALSE
 	dim as integer ptr_cnt = 0
@@ -365,16 +364,12 @@ function cSymbolType _
 		case FB_TK_ZSTRING
 			lexSkipToken( )
 
-			'' assume it's a pointer, see below for fixed-len
 			dtype = FB_DATATYPE_CHAR
-			is_plain_zwstr = TRUE
 
 		case FB_TK_WSTRING
 			lexSkipToken( )
 
-			'' ditto
 			dtype = FB_DATATYPE_WCHAR
-			is_plain_zwstr = TRUE
 
 		case FB_TK_FUNCTION, FB_TK_SUB
 			isfunction = (lexGetToken( ) = FB_TK_FUNCTION)
@@ -391,7 +386,14 @@ function cSymbolType _
 		end select
 
 		if( dtype <> FB_DATATYPE_INVALID ) then
-			lgt = typeGetSize( dtype )
+			select case( typeGetDtAndPtrOnly( dtype ) )
+			case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
+				'' Use 0 for now; will be set later if no length
+				'' given via * N (as in Z/WSTRING * N)
+				lgt = 0
+			case else
+				lgt = typeGetSize( dtype )
+			end select
 		else
 			dim as FBSYMCHAIN ptr chain_ = NULL
 			dim as FBSYMBOL ptr base_parent = any
@@ -484,7 +486,6 @@ function cSymbolType _
 
 	'' fixed-len z|w|string? (must be handled here because the typedefs)
 	if( lexGetToken( ) = CHAR_TIMES ) then
-		is_plain_zwstr = FALSE
 		lexSkipToken( )
 
 		'' expr
@@ -589,18 +590,18 @@ function cSymbolType _
 				subtype = NULL
 			end if
 
-		elseif( is_plain_zwstr ) then
-			assert( (typeGetDtAndPtrOnly( dtype ) = FB_DATATYPE_CHAR) or _
-			        (typeGetDtAndPtrOnly( dtype ) = FB_DATATYPE_WCHAR) )
-
-			'' Z|WSTRING can only be used without PTR in some places:
-			'' LEN()/SIZEOF(), BYREF parameters/results
-			if( (options and FB_SYMBTYPEOPT_CHECKSTRPTR) <> 0 ) then
-				errReport( FB_ERRMSG_EXPECTEDPOINTER )
-				'' error recovery: make pointer
-				dtype = typeAddrOf( dtype )
+		elseif( lgt <= 0 ) then
+			select case( typeGetDtAndPtrOnly( dtype ) )
+			case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
+				'' Z|WSTRING can only be used without PTR in some places:
+				'' LEN()/SIZEOF(), BYREF parameters/results
+				if( (options and FB_SYMBTYPEOPT_CHECKSTRPTR) <> 0 ) then
+					errReport( FB_ERRMSG_EXPECTEDPOINTER )
+					'' error recovery: make pointer
+					dtype = typeAddrOf( dtype )
+				end if
 				lgt = typeGetSize( dtype )
-			end if
+			end select
 		end if
 	end if
 
