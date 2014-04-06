@@ -151,19 +151,29 @@ end function
 '' Build a field access on the target:
 ''    n = *cptr( dtype ptr, @n + offset )
 '' If offset = 0, then it's basically just a type cast.
-function astBuildDerefAddrOf _
+function astBuildDerefAddrOf overload _
 	( _
 		byval n as ASTNODE ptr, _
-		byval offset as longint, _
+		byval offsetexpr as ASTNODE ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
 		byval maybeafield as FBSYMBOL ptr _
 	) as ASTNODE ptr
 
 	n = astNewADDROF( n )
-	if( offset <> 0 ) then
-		n = astNewBOP( AST_OP_ADD, n, astNewCONSTi( offset ) )
+
+	'' Note: should not do +0 here, because astNewBOP() won't (yet)
+	'' remove it immediately. And a +0 BOP between the DEREF/ADDROF prevents
+	'' those being folded immediately, which affects other parts in the
+	'' compiler that expects VARs and is suddenly seeing DEREF(ADDROF(VAR)),
+	'' e.g. DEREF'ed zstring ptrs behave differently than zstring VARs in
+	'' many places. This matters only because some astBuildDerefAddrOf()
+	'' callers (i.e. astTypeIniFlush()) use it even when assigning to normal
+	'' variables, while it should only be used for field accesses...
+	if( offsetexpr ) then
+		n = astNewBOP( AST_OP_ADD, n, offsetexpr )
 	end if
+
 	n = astNewCONV( typeAddrOf( dtype ), subtype, n, AST_CONVOPT_DONTCHKPTR )
 	n = astNewDEREF( n )
 
@@ -174,6 +184,26 @@ function astBuildDerefAddrOf _
 	end if
 
 	function = n
+end function
+
+function astBuildDerefAddrOf overload _
+	( _
+		byval n as ASTNODE ptr, _
+		byval offset as longint, _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr, _
+		byval maybeafield as FBSYMBOL ptr _
+	) as ASTNODE ptr
+
+	dim as ASTNODE ptr offsetexpr = any
+
+	if( offset = 0 ) then
+		offsetexpr = NULL
+	else
+		offsetexpr = astNewCONSTi( offset )
+	end if
+
+	function = astBuildDerefAddrOf( n, offsetexpr, dtype, subtype, maybeafield )
 end function
 
 function astBuildVarField _
@@ -461,6 +491,7 @@ function astCALLCTORToCALL _
 	dim as ASTNODE ptr procexpr = any
 
 	assert( astIsCALLCTOR( n ) )
+	assert( astIsVAR( n->r ) )
 
 	sym = astGetSymbol( n->r )
 
@@ -840,7 +871,7 @@ private function hConstBound _
 	end if
 
 	'' It must be a fixed-size array
-	if( symbIsDynamic( array ) or symbIsParamBydesc( array ) ) then
+	if( symbGetIsDynamic( array ) ) then
 		exit function
 	end if
 

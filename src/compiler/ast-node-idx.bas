@@ -20,6 +20,8 @@ function astNewIDX _
 
     dim as ASTNODE ptr n = any
 
+	assert( astIsVAR( var_ ) )
+
 	if( dtype = FB_DATATYPE_INVALID ) then
 		dtype = astGetFullType( var_ )
 		subtype = astGetSubType( var_ )
@@ -35,7 +37,6 @@ function astNewIDX _
 	n->idx.ofs = 0
 
 	function = n
-
 end function
 
 function astLoadIDX( byval n as ASTNODE ptr ) as IRVREG ptr

@@ -73,9 +73,66 @@ namespace descriptorInitAndCleanUp
 	sub test cdecl( )
 		scope
 			dim x as UDT
+
+			'' Arrays should be initially empty (unallocated)
+			CU_ASSERT( @x.array1(0) = NULL )
+			CU_ASSERT( @x.array2(0) = NULL )
+			CU_ASSERT( @x.array3(0) = NULL )
+
+			CU_ASSERT( lbound( x.array1 ) = 0 )
+			CU_ASSERT( ubound( x.array1 ) = -1 )
+
+			CU_ASSERT( lbound( x.array2 ) = 0 )
+			CU_ASSERT( ubound( x.array2 ) = -1 )
+
+			CU_ASSERT( lbound( x.array3 ) = 0 )
+			CU_ASSERT( ubound( x.array3 ) = -1 )
+
 			CU_ASSERT( dtorudt_dtors = 0 )
 		end scope
+		'' And no dtors should be called for the empty arrays
 		CU_ASSERT( dtorudt_dtors = 0 )
+
+		scope
+			dim x as UDT
+			redim x.array3(0 to 0)
+			CU_ASSERT( dtorudt_dtors = 0 )
+		end scope
+		CU_ASSERT( dtorudt_dtors = 1 )
+		dtorudt_dtors = 0
+
+		scope
+			dim x as UDT
+			redim x.array3(10 to 20)
+			CU_ASSERT( dtorudt_dtors = 0 )
+		end scope
+		CU_ASSERT( dtorudt_dtors = 11 )
+		dtorudt_dtors = 0
+
+		scope
+			dim x as UDT
+			redim x.array3(0 to 1, 0 to 0)
+			CU_ASSERT( dtorudt_dtors = 0 )
+		end scope
+		CU_ASSERT( dtorudt_dtors = 2 )
+		dtorudt_dtors = 0
+
+		scope
+			dim x as UDT
+			redim x.array3(0 to 1, 0 to 1)
+			CU_ASSERT( dtorudt_dtors = 0 )
+		end scope
+		CU_ASSERT( dtorudt_dtors = 4 )
+		dtorudt_dtors = 0
+
+		'' Can't really test whether integer/string arrays are freed,
+		'' but at least we can test that it doesn't crash when having to
+		'' do it...
+		scope
+			dim x as UDT
+			redim x.array1(1 to 3, 4 to 10)
+			redim x.array2(2 to 20, 3 to 3, 4 to 5)
+		end scope
 	end sub
 end namespace
 

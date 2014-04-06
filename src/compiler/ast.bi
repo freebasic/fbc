@@ -1091,7 +1091,16 @@ declare function astBuildFakeWstringAssign _
 		byval options as integer = 0 _
 	) as ASTNODE ptr
 
-declare function astBuildDerefAddrOf _
+declare function astBuildDerefAddrOf overload _
+	( _
+		byval n as ASTNODE ptr, _
+		byval offsetexpr as ASTNODE ptr, _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr, _
+		byval maybeafield as FBSYMBOL ptr = NULL _
+	) as ASTNODE ptr
+
+declare function astBuildDerefAddrOf overload _
 	( _
 		byval n as ASTNODE ptr, _
 		byval offset as longint, _

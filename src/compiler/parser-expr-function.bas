@@ -195,7 +195,7 @@ function cCtorCall _
 
     '' pass the instance ptr
 	dim as FB_CALL_ARG ptr arg = symbAllocOvlCallArg( @parser.ovlarglist, @arg_list, FALSE )
-	arg->expr = astBuildVarField( tmp )
+	arg->expr = astNewVAR( tmp )
 	arg->mode = INVALID
 
 	procexpr = cProcArgList( NULL, _
@@ -229,6 +229,6 @@ function cCtorCall _
 	elseif( astIsCALL( procexpr ) = FALSE ) then
 		function = procexpr
 	else
-		function = astNewCALLCTOR( procexpr, astBuildVarField( tmp ) )
+		function = astNewCALLCTOR( procexpr, astNewVAR( tmp ) )
 	end if
 end function

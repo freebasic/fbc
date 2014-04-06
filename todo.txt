@@ -81,6 +81,9 @@ o Dynamic array fields
       3. Loop over all elements and copy them over 1 by 1, using astNewASSIGN(),
          that will call let overloads as needed, and handle strings.
 
+      * Add tests to ensure that copying works, especially with BYVAL UDT
+        function results and UDT temp vars used by type(), and arg passing
+
       With this, we're half-way there to allowing array assignments between all
       arrays, not just dynamic array fields. So why not?
 
@@ -94,9 +97,18 @@ o Dynamic array fields
 		array(global1 to global2) as integer
 	end type
 
+  - Add tests to check that
+     - initializers are forbidden at the field declaration, and in type()
+       expressions too
+     - implicit THIS fields will go through cUdtMember() and not cVariableEx()
+       which doesn't handle fields
+
 o -exx should catch...
   - access to ERASEd or uninited (unREDIMed) dyn array
   - out-of-bounds dimension argument given to lbound()/ubound()
+  - out-of-bounds string indexing, perhaps even for DEREF'ed z/wstring ptrs,
+    would require doing len() to get current length everytime which itself can
+    cause crashes etc. if null terminator is missing. (but -exx
 
 [ ] ctor/dtor
     - add 'function foo (...) as SomeObj = any', so #1682972 could be fixed AND when
