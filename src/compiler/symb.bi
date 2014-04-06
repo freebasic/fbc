@@ -776,6 +776,8 @@ type SYMBCTX
 
 	fbarray			as FBSYMBOL ptr			'' FBARRAY (array descriptor)
 	fbarray_data		as integer			'' offsetof( FBARRAY, data )
+	fbarray_ptr		as integer			'' offsetof( FBARRAY, ptr )
+	fbarray_size		as integer			'' offsetof( FBARRAY, size )
 	fbarray_dimtb		as integer			'' offsetof( FBARRAY, dimTB )
 	fbarraydim		as FBSYMBOL ptr			'' FBARRAYDIM (dimTB element structure)
 	fbarraydim_lbound	as integer			'' offsetof( FBARRAYDIM, lbound )

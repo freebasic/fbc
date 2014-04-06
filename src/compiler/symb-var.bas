@@ -62,7 +62,9 @@ private sub hCreateArrayDescriptorType( )
 	fld = symbUdtGetFirstField( symb.fbarray )  '' data
 	symb.fbarray_data = symbGetOfs( fld )
 	fld = symbUdtGetNextField( fld )         '' ptr
+	symb.fbarray_ptr = symbGetOfs( fld )
 	fld = symbUdtGetNextField( fld )         '' size
+	symb.fbarray_size = symbGetOfs( fld )
 	fld = symbUdtGetNextField( fld )         '' element_len
 	fld = symbUdtGetNextField( fld )         '' dimensions
 	fld = symbUdtGetNextField( fld )         '' dimTB

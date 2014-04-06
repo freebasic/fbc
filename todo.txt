@@ -69,24 +69,18 @@ o Allow typeless DIMs to implement EXTERNs:
     extern a as integer
     dim a
 
+o Dynamic arrays should have a fixed dimension count, so that the descriptors
+  could become smaller and didn't have to allocate room for all FB_MAXARRAYDIMS.
+  FB <= 0.90.1 already had compile-time dimension count checks for dynamic
+  arrays, though only with-in a single module.
+        dim array() as integer    = 1 dimension (potential backwards compatibility break)
+        dim array(,) as integer   = 2 dimensions, etc.
+  This is needed especially for fields where the descriptor's sizeof() must be
+  known immediately; otherwise we'd always have to allocate FB_MAXARRAYDIMS.
+  All REDIMs should be checked at compile-time. All code dealing with array
+  descriptors mustn't assume that there's room for FB_MAXARRAYDIMS anymore.
+
 o Dynamic array fields
-
-  - Implicit LET overload implementation for dynamic array fields
-    (special case in astNewASSIGN()?)
-      1. ERASE dest, calling dtor or fb_StrDelete() if needed
-      2. REDIM dest to same size as source, initializing/constructing all elements
-         Can just call fb_ArrayRedim(dest) with source's dimTB? fb_ArrayRedim() takes
-         each dimension's bounds via varargs, that function call can't be constructed at runtime.
-         Otherwise, just add new fb_ArrayRedimTo(dest, source).
-      3. Loop over all elements and copy them over 1 by 1, using astNewASSIGN(),
-         that will call let overloads as needed, and handle strings.
-
-      * Add tests to ensure that copying works, especially with BYVAL UDT
-        function results and UDT temp vars used by type(), and arg passing
-
-      With this, we're half-way there to allowing array assignments between all
-      arrays, not just dynamic array fields. So why not?
-
   - Should accept any bounds in the declaration, just like normal DIM/REDIM.
     The bounds or at least the whole fb_ArrayRedimEx() CALL must be preserved on
     the array field and then emitted into each constructor, like a field initializer.
@@ -96,12 +90,6 @@ o Dynamic array fields
 		redim array(0 to 1) as integer
 		array(global1 to global2) as integer
 	end type
-
-  - Add tests to check that
-     - initializers are forbidden at the field declaration, and in type()
-       expressions too
-     - implicit THIS fields will go through cUdtMember() and not cVariableEx()
-       which doesn't handle fields
 
 o -exx should catch...
   - access to ERASEd or uninited (unREDIMed) dyn array

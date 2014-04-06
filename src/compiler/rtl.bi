@@ -143,6 +143,7 @@
 #define FB_RTL_ARRAYREDIM_OBJ				"fb_ArrayRedimObj"
 #define FB_RTL_ARRAYREDIMPRESV				"fb_ArrayRedimPresvEx"
 #define FB_RTL_ARRAYREDIMPRESV_OBJ			"fb_ArrayRedimPresvObj"
+#define FB_RTL_ARRAYREDIMTO				"fb_ArrayRedimTo"
 #define FB_RTL_ARRAYLBOUND				"fb_ArrayLBound"
 #define FB_RTL_ARRAYUBOUND				"fb_ArrayUBound"
 #define FB_RTL_ARRAYSNGBOUNDCHK				"fb_ArraySngBoundChk"
@@ -541,6 +542,7 @@ enum FB_RTL_IDX
 	FB_RTL_IDX_ARRAYREDIM_OBJ
 	FB_RTL_IDX_ARRAYREDIMPRESV
 	FB_RTL_IDX_ARRAYREDIMPRESV_OBJ
+	FB_RTL_IDX_ARRAYREDIMTO
 	FB_RTL_IDX_ARRAYLBOUND
 	FB_RTL_IDX_ARRAYUBOUND
 	FB_RTL_IDX_ARRAYSNGBOUNDCHK
@@ -1088,6 +1090,14 @@ declare function rtlArrayRedim _
 		exprTB() as ASTNODE ptr, _
 		byval dopreserve as integer, _
 		byval doclear as integer _
+	) as ASTNODE ptr
+
+declare function rtlArrayRedimTo _
+	( _
+		byval dstexpr as ASTNODE ptr, _
+		byval srcexpr as ASTNODE ptr, _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr _
 	) as ASTNODE ptr
 
 declare function rtlArrayBound _

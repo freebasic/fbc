@@ -136,10 +136,519 @@ namespace descriptorInitAndCleanUp
 	end sub
 end namespace
 
+namespace copyPod
+	type UDT
+		array() as integer
+	end type
+
+	private sub test cdecl( )
+		'' Shouldn't crash etc.
+		scope
+			dim as UDT a, b
+			b = a
+		end scope
+
+		'' simple
+		scope
+			dim as UDT a, b
+
+			CU_ASSERT( lbound( a.array ) = 0 )
+			CU_ASSERT( ubound( a.array ) = -1 )
+			CU_ASSERT( lbound( b.array ) = 0 )
+			CU_ASSERT( ubound( b.array ) = -1 )
+
+			redim a.array(0 to 1)
+			CU_ASSERT( lbound( a.array ) = 0 )
+			CU_ASSERT( ubound( a.array ) = 1 )
+			CU_ASSERT( lbound( b.array ) = 0 )
+			CU_ASSERT( ubound( b.array ) = -1 )
+			a.array(0) = 0
+			a.array(1) = 1
+
+			b = a
+
+			CU_ASSERT( lbound( a.array ) = 0 )
+			CU_ASSERT( ubound( a.array ) = 1 )
+			CU_ASSERT( lbound( b.array ) = 0 )
+			CU_ASSERT( ubound( b.array ) = 1 )
+			CU_ASSERT( a.array(0) = 0 )
+			CU_ASSERT( a.array(1) = 1 )
+			CU_ASSERT( b.array(0) = 0 )
+			CU_ASSERT( b.array(1) = 1 )
+		end scope
+
+		'' negative diff
+		scope
+			dim as UDT a, b
+
+			CU_ASSERT( lbound( a.array ) = 0 )
+			CU_ASSERT( ubound( a.array ) = -1 )
+			CU_ASSERT( lbound( b.array ) = 0 )
+			CU_ASSERT( ubound( b.array ) = -1 )
+
+			redim a.array(10 to 11)
+			CU_ASSERT( lbound( a.array ) = 10 )
+			CU_ASSERT( ubound( a.array ) = 11 )
+			CU_ASSERT( lbound( b.array ) = 0 )
+			CU_ASSERT( ubound( b.array ) = -1 )
+			a.array(10) = 10
+			a.array(11) = 11
+
+			b = a
+
+			CU_ASSERT( lbound( a.array ) = 10 )
+			CU_ASSERT( ubound( a.array ) = 11 )
+			CU_ASSERT( lbound( b.array ) = 10 )
+			CU_ASSERT( ubound( b.array ) = 11 )
+			CU_ASSERT( a.array(10) = 10 )
+			CU_ASSERT( a.array(11) = 11 )
+			CU_ASSERT( b.array(10) = 10 )
+			CU_ASSERT( b.array(11) = 11 )
+		end scope
+
+		'' positive diff
+		scope
+			dim as UDT a, b
+
+			CU_ASSERT( lbound( a.array ) = 0 )
+			CU_ASSERT( ubound( a.array ) = -1 )
+			CU_ASSERT( lbound( b.array ) = 0 )
+			CU_ASSERT( ubound( b.array ) = -1 )
+
+			redim a.array(-11 to -10)
+			CU_ASSERT( lbound( a.array ) = -11 )
+			CU_ASSERT( ubound( a.array ) = -10 )
+			CU_ASSERT( lbound( b.array ) = 0 )
+			CU_ASSERT( ubound( b.array ) = -1 )
+			a.array(-11) = -11
+			a.array(-10) = -10
+
+			b = a
+
+			CU_ASSERT( lbound( a.array ) = -11 )
+			CU_ASSERT( ubound( a.array ) = -10 )
+			CU_ASSERT( lbound( b.array ) = -11 )
+			CU_ASSERT( ubound( b.array ) = -10 )
+			CU_ASSERT( a.array(-11) = -11 )
+			CU_ASSERT( a.array(-10) = -10 )
+			CU_ASSERT( b.array(-11) = -11 )
+			CU_ASSERT( b.array(-10) = -10 )
+		end scope
+
+		'' multiple dimensions
+		scope
+			dim as UDT a, b
+
+			CU_ASSERT( ubound( a.array, 0 ) = 0 )
+			CU_ASSERT( ubound( b.array, 0 ) = 0 )
+
+			redim a.array(0 to 1, 0 to 1)
+			CU_ASSERT( ubound( a.array, 0 ) = 2 )
+			CU_ASSERT( lbound( a.array, 1 ) = 0 )
+			CU_ASSERT( ubound( a.array, 1 ) = 1 )
+			CU_ASSERT( lbound( a.array, 2 ) = 0 )
+			CU_ASSERT( ubound( a.array, 2 ) = 1 )
+			CU_ASSERT( ubound( b.array, 0 ) = 0 )
+			a.array(0, 0) = 1
+			a.array(0, 1) = 2
+			a.array(1, 0) = 3
+			a.array(1, 1) = 4
+
+			b = a
+
+			CU_ASSERT( ubound( a.array, 0 ) = 2 )
+			CU_ASSERT( lbound( a.array, 1 ) = 0 )
+			CU_ASSERT( ubound( a.array, 1 ) = 1 )
+			CU_ASSERT( lbound( a.array, 2 ) = 0 )
+			CU_ASSERT( ubound( a.array, 2 ) = 1 )
+			CU_ASSERT( a.array(0, 0) = 1 )
+			CU_ASSERT( a.array(0, 1) = 2 )
+			CU_ASSERT( a.array(1, 0) = 3 )
+			CU_ASSERT( a.array(1, 1) = 4 )
+			CU_ASSERT( ubound( b.array, 0 ) = 2 )
+			CU_ASSERT( lbound( b.array, 1 ) = 0 )
+			CU_ASSERT( ubound( b.array, 1 ) = 1 )
+			CU_ASSERT( lbound( b.array, 2 ) = 0 )
+			CU_ASSERT( ubound( b.array, 2 ) = 1 )
+			CU_ASSERT( b.array(0, 0) = 1 )
+			CU_ASSERT( b.array(0, 1) = 2 )
+			CU_ASSERT( b.array(1, 0) = 3 )
+			CU_ASSERT( b.array(1, 1) = 4 )
+		end scope
+	end sub
+end namespace
+
+namespace copyString
+	type UDT
+		array() as string
+	end type
+
+	private sub test cdecl( )
+		'' Shouldn't crash etc.
+		scope
+			dim as UDT a, b
+			b = a
+		end scope
+
+		'' simple
+		scope
+			dim as UDT a, b
+
+			CU_ASSERT( lbound( a.array ) = 0 )
+			CU_ASSERT( ubound( a.array ) = -1 )
+			CU_ASSERT( lbound( b.array ) = 0 )
+			CU_ASSERT( ubound( b.array ) = -1 )
+
+			redim a.array(0 to 1)
+			CU_ASSERT( lbound( a.array ) = 0 )
+			CU_ASSERT( ubound( a.array ) = 1 )
+			CU_ASSERT( lbound( b.array ) = 0 )
+			CU_ASSERT( ubound( b.array ) = -1 )
+			a.array(0) = "0"
+			a.array(1) = "1"
+
+			b = a
+
+			CU_ASSERT( lbound( a.array ) = 0 )
+			CU_ASSERT( ubound( a.array ) = 1 )
+			CU_ASSERT( lbound( b.array ) = 0 )
+			CU_ASSERT( ubound( b.array ) = 1 )
+			CU_ASSERT( a.array(0) = "0" )
+			CU_ASSERT( a.array(1) = "1" )
+			CU_ASSERT( b.array(0) = "0" )
+			CU_ASSERT( b.array(1) = "1" )
+		end scope
+
+		'' negative diff
+		scope
+			dim as UDT a, b
+
+			CU_ASSERT( lbound( a.array ) = 0 )
+			CU_ASSERT( ubound( a.array ) = -1 )
+			CU_ASSERT( lbound( b.array ) = 0 )
+			CU_ASSERT( ubound( b.array ) = -1 )
+
+			redim a.array(10 to 11)
+			CU_ASSERT( lbound( a.array ) = 10 )
+			CU_ASSERT( ubound( a.array ) = 11 )
+			CU_ASSERT( lbound( b.array ) = 0 )
+			CU_ASSERT( ubound( b.array ) = -1 )
+			a.array(10) = "10"
+			a.array(11) = "11"
+
+			b = a
+
+			CU_ASSERT( lbound( a.array ) = 10 )
+			CU_ASSERT( ubound( a.array ) = 11 )
+			CU_ASSERT( lbound( b.array ) = 10 )
+			CU_ASSERT( ubound( b.array ) = 11 )
+			CU_ASSERT( a.array(10) = "10" )
+			CU_ASSERT( a.array(11) = "11" )
+			CU_ASSERT( b.array(10) = "10" )
+			CU_ASSERT( b.array(11) = "11" )
+		end scope
+
+		'' positive diff
+		scope
+			dim as UDT a, b
+
+			CU_ASSERT( lbound( a.array ) = 0 )
+			CU_ASSERT( ubound( a.array ) = -1 )
+			CU_ASSERT( lbound( b.array ) = 0 )
+			CU_ASSERT( ubound( b.array ) = -1 )
+
+			redim a.array(-11 to -10)
+			CU_ASSERT( lbound( a.array ) = -11 )
+			CU_ASSERT( ubound( a.array ) = -10 )
+			CU_ASSERT( lbound( b.array ) = 0 )
+			CU_ASSERT( ubound( b.array ) = -1 )
+			a.array(-11) = "-11"
+			a.array(-10) = "-10"
+
+			b = a
+
+			CU_ASSERT( lbound( a.array ) = -11 )
+			CU_ASSERT( ubound( a.array ) = -10 )
+			CU_ASSERT( lbound( b.array ) = -11 )
+			CU_ASSERT( ubound( b.array ) = -10 )
+			CU_ASSERT( a.array(-11) = "-11" )
+			CU_ASSERT( a.array(-10) = "-10" )
+			CU_ASSERT( b.array(-11) = "-11" )
+			CU_ASSERT( b.array(-10) = "-10" )
+		end scope
+
+		'' multiple dimensions
+		scope
+			dim as UDT a, b
+
+			CU_ASSERT( ubound( a.array, 0 ) = 0 )
+			CU_ASSERT( ubound( b.array, 0 ) = 0 )
+
+			redim a.array(0 to 1, 0 to 1)
+			CU_ASSERT( ubound( a.array, 0 ) = 2 )
+			CU_ASSERT( lbound( a.array, 1 ) = 0 )
+			CU_ASSERT( ubound( a.array, 1 ) = 1 )
+			CU_ASSERT( lbound( a.array, 2 ) = 0 )
+			CU_ASSERT( ubound( a.array, 2 ) = 1 )
+			CU_ASSERT( ubound( b.array, 0 ) = 0 )
+			a.array(0, 0) = "1"
+			a.array(0, 1) = "2"
+			a.array(1, 0) = "3"
+			a.array(1, 1) = "4"
+
+			b = a
+
+			CU_ASSERT( ubound( a.array, 0 ) = 2 )
+			CU_ASSERT( lbound( a.array, 1 ) = 0 )
+			CU_ASSERT( ubound( a.array, 1 ) = 1 )
+			CU_ASSERT( lbound( a.array, 2 ) = 0 )
+			CU_ASSERT( ubound( a.array, 2 ) = 1 )
+			CU_ASSERT( a.array(0, 0) = "1" )
+			CU_ASSERT( a.array(0, 1) = "2" )
+			CU_ASSERT( a.array(1, 0) = "3" )
+			CU_ASSERT( a.array(1, 1) = "4" )
+			CU_ASSERT( ubound( b.array, 0 ) = 2 )
+			CU_ASSERT( lbound( b.array, 1 ) = 0 )
+			CU_ASSERT( ubound( b.array, 1 ) = 1 )
+			CU_ASSERT( lbound( b.array, 2 ) = 0 )
+			CU_ASSERT( ubound( b.array, 2 ) = 1 )
+			CU_ASSERT( b.array(0, 0) = "1" )
+			CU_ASSERT( b.array(0, 1) = "2" )
+			CU_ASSERT( b.array(1, 0) = "3" )
+			CU_ASSERT( b.array(1, 1) = "4" )
+		end scope
+	end sub
+end namespace
+
+namespace copyClass
+	dim shared as integer ctors, dtors, lets
+
+	type MyClass
+		i as integer
+		declare constructor( )
+		declare destructor( )
+		declare operator let( byref as MyClass )
+	end type
+
+	constructor MyClass( )
+		ctors += 1
+	end constructor
+
+	destructor MyClass( )
+		dtors += 1
+	end destructor
+
+	operator MyClass.let( byref other as MyClass )
+		lets += 1
+		this.i = other.i
+	end operator
+
+	type UDT
+		array() as MyClass
+	end type
+
+	private sub test cdecl( )
+		'' Shouldn't crash etc.
+		scope
+			dim as UDT a, b
+			CU_ASSERT( ctors = 0 )
+			CU_ASSERT( dtors = 0 )
+			CU_ASSERT( lets = 0 )
+			b = a
+		end scope
+		CU_ASSERT( ctors = 0 )
+		CU_ASSERT( dtors = 0 )
+		CU_ASSERT( lets = 0 )
+
+		'' simple
+		ctors = 0
+		dtors = 0
+		lets = 0
+		scope
+			dim as UDT a, b
+			CU_ASSERT( ctors = 0 )
+			CU_ASSERT( dtors = 0 )
+			CU_ASSERT( lets = 0 )
+			CU_ASSERT( lbound( a.array ) = 0 )
+			CU_ASSERT( ubound( a.array ) = -1 )
+			CU_ASSERT( lbound( b.array ) = 0 )
+			CU_ASSERT( ubound( b.array ) = -1 )
+
+			redim a.array(0 to 1)
+			CU_ASSERT( ctors = 2 )
+			CU_ASSERT( dtors = 0 )
+			CU_ASSERT( lets = 0 )
+			CU_ASSERT( lbound( a.array ) = 0 )
+			CU_ASSERT( ubound( a.array ) = 1 )
+			CU_ASSERT( lbound( b.array ) = 0 )
+			CU_ASSERT( ubound( b.array ) = -1 )
+			a.array(0).i = 0
+			a.array(1).i = 1
+
+			b = a
+			CU_ASSERT( ctors = 4 )
+			CU_ASSERT( dtors = 0 )
+			CU_ASSERT( lets = 2 )
+			CU_ASSERT( lbound( a.array ) = 0 )
+			CU_ASSERT( ubound( a.array ) = 1 )
+			CU_ASSERT( lbound( b.array ) = 0 )
+			CU_ASSERT( ubound( b.array ) = 1 )
+			CU_ASSERT( a.array(0).i = 0 )
+			CU_ASSERT( a.array(1).i = 1 )
+			CU_ASSERT( b.array(0).i = 0 )
+			CU_ASSERT( b.array(1).i = 1 )
+		end scope
+		CU_ASSERT( ctors = 4 )
+		CU_ASSERT( dtors = 4 )
+		CU_ASSERT( lets = 2 )
+
+		'' negative diff
+		ctors = 0
+		dtors = 0
+		lets = 0
+		scope
+			dim as UDT a, b
+			CU_ASSERT( ctors = 0 )
+			CU_ASSERT( dtors = 0 )
+			CU_ASSERT( lets = 0 )
+			CU_ASSERT( lbound( a.array ) = 0 )
+			CU_ASSERT( ubound( a.array ) = -1 )
+			CU_ASSERT( lbound( b.array ) = 0 )
+			CU_ASSERT( ubound( b.array ) = -1 )
+
+			redim a.array(10 to 11)
+			CU_ASSERT( ctors = 2 )
+			CU_ASSERT( dtors = 0 )
+			CU_ASSERT( lets = 0 )
+			CU_ASSERT( lbound( a.array ) = 10 )
+			CU_ASSERT( ubound( a.array ) = 11 )
+			CU_ASSERT( lbound( b.array ) = 0 )
+			CU_ASSERT( ubound( b.array ) = -1 )
+			a.array(10).i = 10
+			a.array(11).i = 11
+
+			b = a
+			CU_ASSERT( ctors = 4 )
+			CU_ASSERT( dtors = 0 )
+			CU_ASSERT( lets = 2 )
+			CU_ASSERT( lbound( a.array ) = 10 )
+			CU_ASSERT( ubound( a.array ) = 11 )
+			CU_ASSERT( lbound( b.array ) = 10 )
+			CU_ASSERT( ubound( b.array ) = 11 )
+			CU_ASSERT( a.array(10).i = 10 )
+			CU_ASSERT( a.array(11).i = 11 )
+			CU_ASSERT( b.array(10).i = 10 )
+			CU_ASSERT( b.array(11).i = 11 )
+		end scope
+		CU_ASSERT( ctors = 4 )
+		CU_ASSERT( dtors = 4 )
+		CU_ASSERT( lets = 2 )
+
+		'' positive diff
+		ctors = 0
+		dtors = 0
+		lets = 0
+		scope
+			dim as UDT a, b
+			CU_ASSERT( ctors = 0 )
+			CU_ASSERT( dtors = 0 )
+			CU_ASSERT( lets = 0 )
+			CU_ASSERT( lbound( a.array ) = 0 )
+			CU_ASSERT( ubound( a.array ) = -1 )
+			CU_ASSERT( lbound( b.array ) = 0 )
+			CU_ASSERT( ubound( b.array ) = -1 )
+
+			redim a.array(-11 to -10)
+			CU_ASSERT( ctors = 2 )
+			CU_ASSERT( dtors = 0 )
+			CU_ASSERT( lets = 0 )
+			CU_ASSERT( lbound( a.array ) = -11 )
+			CU_ASSERT( ubound( a.array ) = -10 )
+			CU_ASSERT( lbound( b.array ) = 0 )
+			CU_ASSERT( ubound( b.array ) = -1 )
+			a.array(-11).i = -11
+			a.array(-10).i = -10
+
+			b = a
+			CU_ASSERT( ctors = 4 )
+			CU_ASSERT( dtors = 0 )
+			CU_ASSERT( lets = 2 )
+			CU_ASSERT( lbound( a.array ) = -11 )
+			CU_ASSERT( ubound( a.array ) = -10 )
+			CU_ASSERT( lbound( b.array ) = -11 )
+			CU_ASSERT( ubound( b.array ) = -10 )
+			CU_ASSERT( a.array(-11).i = -11 )
+			CU_ASSERT( a.array(-10).i = -10 )
+			CU_ASSERT( b.array(-11).i = -11 )
+			CU_ASSERT( b.array(-10).i = -10 )
+		end scope
+		CU_ASSERT( ctors = 4 )
+		CU_ASSERT( dtors = 4 )
+		CU_ASSERT( lets = 2 )
+
+		'' multiple dimensions
+		ctors = 0
+		dtors = 0
+		lets = 0
+		scope
+			dim as UDT a, b
+			CU_ASSERT( ctors = 0 )
+			CU_ASSERT( dtors = 0 )
+			CU_ASSERT( lets = 0 )
+			CU_ASSERT( ubound( a.array, 0 ) = 0 )
+			CU_ASSERT( ubound( b.array, 0 ) = 0 )
+
+			redim a.array(0 to 1, 0 to 1)
+			CU_ASSERT( ctors = 4 )
+			CU_ASSERT( dtors = 0 )
+			CU_ASSERT( lets = 0 )
+			CU_ASSERT( ubound( a.array, 0 ) = 2 )
+			CU_ASSERT( lbound( a.array, 1 ) = 0 )
+			CU_ASSERT( ubound( a.array, 1 ) = 1 )
+			CU_ASSERT( lbound( a.array, 2 ) = 0 )
+			CU_ASSERT( ubound( a.array, 2 ) = 1 )
+			CU_ASSERT( ubound( b.array, 0 ) = 0 )
+			a.array(0, 0).i = 1
+			a.array(0, 1).i = 2
+			a.array(1, 0).i = 3
+			a.array(1, 1).i = 4
+
+			b = a
+			CU_ASSERT( ctors = 8 )
+			CU_ASSERT( dtors = 0 )
+			CU_ASSERT( lets = 4 )
+			CU_ASSERT( ubound( a.array, 0 ) = 2 )
+			CU_ASSERT( lbound( a.array, 1 ) = 0 )
+			CU_ASSERT( ubound( a.array, 1 ) = 1 )
+			CU_ASSERT( lbound( a.array, 2 ) = 0 )
+			CU_ASSERT( ubound( a.array, 2 ) = 1 )
+			CU_ASSERT( a.array(0, 0).i = 1 )
+			CU_ASSERT( a.array(0, 1).i = 2 )
+			CU_ASSERT( a.array(1, 0).i = 3 )
+			CU_ASSERT( a.array(1, 1).i = 4 )
+			CU_ASSERT( ubound( b.array, 0 ) = 2 )
+			CU_ASSERT( lbound( b.array, 1 ) = 0 )
+			CU_ASSERT( ubound( b.array, 1 ) = 1 )
+			CU_ASSERT( lbound( b.array, 2 ) = 0 )
+			CU_ASSERT( ubound( b.array, 2 ) = 1 )
+			CU_ASSERT( b.array(0, 0).i = 1 )
+			CU_ASSERT( b.array(0, 1).i = 2 )
+			CU_ASSERT( b.array(1, 0).i = 3 )
+			CU_ASSERT( b.array(1, 1).i = 4 )
+		end scope
+		CU_ASSERT( ctors = 8 )
+		CU_ASSERT( dtors = 8 )
+		CU_ASSERT( lets = 4 )
+	end sub
+end namespace
+
 private sub ctor( ) constructor
 	fbcu.add_suite( "tests/structs/dynamic-array-fields")
 	fbcu.add_test( "descriptor allocation", @descriptorAllocation.test )
 	fbcu.add_test( "descriptor init & clean up", @descriptorInitAndCleanUp.test )
+	fbcu.add_test( "copy pod", @copyPod.test )
+	fbcu.add_test( "copy string", @copyString.test )
+	fbcu.add_test( "copy class", @copyClass.test )
 end sub
 
 end namespace

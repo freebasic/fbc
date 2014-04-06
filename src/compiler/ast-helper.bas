@@ -735,34 +735,45 @@ function astBuildArrayDescIniTree _
 
 	assert( symbGetType( desc ) = FB_DATATYPE_STRUCT )
 	assert( symbIsStruct( symbGetSubtype( desc ) ) )
-
+	assert( symbIsParamBydesc( array ) = FALSE )
 	assert( symbIsVar( desc ) or symbIsField( desc ) )
 
 	tree = astTypeIniBegin( symbGetFullType( desc ), symbGetSubtype( desc ), not symbIsField( desc ), symbGetOfs( desc ) )
 
     dtype = symbGetFullType( array )
     subtype = symbGetSubType( array )
-    dims = symbGetArrayDimensions( array )
 
 	elm = symbGetUDTSymbTbHead( symbGetSubtype( desc ) )
 	assert( symbIsField( elm ) )
 
-    if( array_expr = NULL ) then
-    	if( symbGetIsDynamic( array ) ) then
-    		array_expr = astNewCONSTi( 0, typeAddrOf( dtype ), subtype )
-    	else
-			array_expr = astNewADDROF( astNewVAR( array ) )
-    	end if
-    else
-    	array_expr = astNewADDROF( array_expr )
-    end if
+	if( symbIsDynamic( array ) ) then
+		'' Dynamic arrays: Initializing the descriptor to its initial
+		'' "unallocated" state, ptr = NULL
+		array_expr = astNewCONSTi( 0, typeAddrOf( dtype ), subtype )
+	else
+		'' Fixed-size arrays: Initializing the descriptor to point to
+		'' the existing array.
+		if( array_expr ) then
+			'' For fields, the access expression must be given
+			assert( symbIsField( array ) )
+		else
+			'' For vars, we just build it here
+			assert( symbIsVar( array ) )
+			assert( array_expr = NULL )
+			array_expr = astNewVAR( array )
+		end if
+		array_expr = astNewADDROF( array_expr )
+	end if
 
     astTypeIniScopeBegin( tree, NULL )
 
     '' .data = @array(0) + diff
 	astTypeIniAddAssign( tree, _
 		astNewBOP( AST_OP_ADD, astCloneTree( array_expr ), _
-			astNewCONSTi( symbGetArrayDiff( array ) ) ), _
+			astNewCONSTi( _
+				iif( symbIsDynamic( array ), _
+					0ll, _
+					symbGetArrayDiff( array ) ) ) ), _
 		elm )
 
 	elm = symbGetNext( elm )
@@ -774,7 +785,10 @@ function astBuildArrayDescIniTree _
 
     '' .size = len( array ) * elements( array )
 	astTypeIniAddAssign( tree, _
-		astNewCONSTi( symbGetLen( array ) * symbGetArrayElements( array ) ), _
+		astNewCONSTi( _
+			iif( symbIsDynamic( array ), _
+				0ll, _
+				symbGetLen( array ) * symbGetArrayElements( array ) ) ), _
 		elm )
 
     elm = symbGetNext( elm )
@@ -785,9 +799,12 @@ function astBuildArrayDescIniTree _
     elm = symbGetNext( elm )
 
 	'' .dimensions = dims( array )
-	'' If the dimension count is unknown, store 0 as dimension count,
-	'' since it's an unallocated dynamic array.
-	astTypeIniAddAssign( tree, astNewCONSTi( iif( dims = -1, 0, dims ) ), elm )
+	astTypeIniAddAssign( tree, _
+		astNewCONSTi( _
+			iif( symbIsDynamic( array ), _
+				0, _
+				symbGetArrayDimensions( array ) ) ), _
+		elm )
 
     elm = symbGetNext( elm )
 
@@ -798,9 +815,7 @@ function astBuildArrayDescIniTree _
 
     '' static array?
     if( symbGetIsDynamic( array ) = FALSE ) then
-		assert( dims <> -1 )
-
-		for i as integer = 0 to dims - 1
+		for i as integer = 0 to symbGetArrayDimensions( array ) - 1
 			elm = dimtb
 
 			astTypeIniScopeBegin( tree, NULL )
@@ -820,28 +835,17 @@ function astBuildArrayDescIniTree _
 
 			astTypeIniScopeEnd( tree, NULL )
 		next
-
-	'' dynamic..
 	else
-		'' If the dimension count is unknown, we actually reserved room
-		'' for the max amount
-		if( dims = -1 ) then
-			dims = FB_MAXARRAYDIMS
-		end if
-
-		'' Clear all dimTB entries
-		astTypeIniAddPad( tree, dims * symbGetLen( symb.fbarraydim ) )
+		'' Dynamic array descriptors have room for FB_MAXARRAYDIMS
+		'' dimensions in their dimTB. Clear them all.
+		astTypeIniAddPad( tree, FB_MAXARRAYDIMS * symbGetLen( symb.fbarraydim ) )
 	end if
 
     astTypeIniScopeEnd( tree, NULL )
-
-    ''
     astTypeIniScopeEnd( tree, NULL )
-
     astTypeIniEnd( tree, TRUE )
 
     function = tree
-
 end function
 
 private function hConstBound _

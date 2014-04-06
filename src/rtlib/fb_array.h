@@ -71,6 +71,7 @@ FBCALL void       fb_ArrayStrErase     ( FBARRAY *array );
        int        fb_ArrayRedimPresv   ( FBARRAY *array, size_t element_len, int preserve, size_t dimensions, ... );
        int        fb_ArrayRedimPresvEx ( FBARRAY *array, size_t element_len, int doclear, int isvarlen, size_t dimensions, ... );
        int        fb_ArrayRedimPresvObj( FBARRAY *array, size_t element_len, FB_DEFCTOR ctor, FB_DEFCTOR dtor, size_t dimensions, ... );
+FBCALL int        fb_ArrayRedimTo      ( FBARRAY *dest, const FBARRAY *source, int isvarlen, FB_DEFCTOR ctor, FB_DEFCTOR dtor );
 FBCALL void       fb_ArrayResetDesc    ( FBARRAY *array );
 FBCALL ssize_t    fb_ArrayLBound       ( FBARRAY *array, ssize_t dimension );
 FBCALL ssize_t    fb_ArrayUBound       ( FBARRAY *array, ssize_t dimension );

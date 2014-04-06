@@ -102,6 +102,27 @@
 				( FB_DATATYPE_INVALID, FB_PARAMMODE_VARARG, FALSE ) _
 			} _
 		), _
+		/' function fb_ArrayRedimTo _
+			( _
+				dest() as any, _
+				source() as any, _
+				byval isvarlen as long, _
+				byval ctor as sub cdecl( byval this_ as any ptr), _
+				byval dtor as sub cdecl( byval this_ as any ptr) _
+			) as long '/ _
+		( _
+			@FB_RTL_ARRAYREDIMTO, NULL, _
+			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_NONE, _
+			5, _
+			{ _
+				( FB_DATATYPE_VOID, FB_PARAMMODE_BYDESC, FALSE ), _
+				( FB_DATATYPE_VOID, FB_PARAMMODE_BYDESC, FALSE ), _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ) _
+			} _
+		), _
 		/' sub fb_ArrayDestructObj( array() as any, byval dtor as sub cdecl( ) ) '/ _
 		( _
 			@FB_RTL_ARRAYDESTRUCTOBJ, NULL, _
@@ -482,6 +503,29 @@ function rtlArrayErase _
 	function = proc
 end function
 
+private sub hGetCtorDtorForRedim _
+	( _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr, _
+		byref ctor as FBSYMBOL ptr, _
+		byref dtor as FBSYMBOL ptr _
+	)
+
+	if( typeGetDtAndPtrOnly( dtype ) = FB_DATATYPE_STRUCT ) then
+		ctor = symbGetCompDefCtor( subtype )
+		dtor = symbGetCompDtor( subtype )
+
+		'' Assuming there aren't any other ctors if there is no default one,
+		'' because if it were possible to declare such a dynamic array,
+		'' the rtlib couldn't REDIM it.
+		assert( iif( ctor = NULL, (symbGetCompCtorHead( subtype ) = NULL) or (errGetCount( ) > 0), TRUE ) )
+	else
+		ctor = NULL
+		dtor = NULL
+	end if
+
+end sub
+
 function rtlArrayRedim _
 	( _
 		byval varexpr as ASTNODE ptr, _
@@ -503,21 +547,7 @@ function rtlArrayRedim _
 	dtype = symbGetFullType( sym )
 	elementlen = symbGetLen( sym )
 
-	'' only objects get instantiated
-	select case typeGet( dtype )
-	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-		subtype = symbGetSubtype( sym )
-		ctor = symbGetCompDefCtor( subtype )
-		dtor = symbGetCompDtor( subtype )
-
-		'' Assuming there aren't any other ctors if there is no default one,
-		'' because if it were possible to declare such a dynamic array,
-		'' the rtlib couldn't REDIM it.
-		assert( iif( ctor = NULL, (symbGetCompCtorHead( subtype ) = NULL) or (errGetCount( ) > 0), TRUE ) )
-	case else
-		ctor = NULL
-		dtor = NULL
-	end select
+	hGetCtorDtorForRedim( dtype, symbGetSubtype( sym ), ctor, dtor )
 
     if( (ctor = NULL) and (dtor = NULL) ) then
 		if( dopreserve = FALSE ) then
@@ -601,6 +631,53 @@ function rtlArrayRedim _
 			exit function
 		end if
 	next
+
+	function = rtlErrorCheck( proc )
+end function
+
+function rtlArrayRedimTo _
+	( _
+		byval dstexpr as ASTNODE ptr, _
+		byval srcexpr as ASTNODE ptr, _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr _
+	) as ASTNODE ptr
+
+	dim as ASTNODE ptr proc = any
+	dim as FBSYMBOL ptr ctor = any, dtor = any
+
+	hGetCtorDtorForRedim( dtype, subtype, ctor, dtor )
+
+	proc = astNewCALL( PROCLOOKUP( ARRAYREDIMTO ) )
+
+	'' dest() as any
+	if( astNewARG( proc, dstexpr ) = NULL ) then
+		exit function
+	end if
+
+	'' source() as any
+	if( astNewARG( proc, srcexpr ) = NULL ) then
+		exit function
+	end if
+
+	'' byval isvarlen as long
+	if( astNewARG( proc, astNewCONSTi( _
+	    (typeGetDtAndPtrOnly( dtype ) = FB_DATATYPE_STRING) ) ) = NULL ) then
+		exit function
+	end if
+
+	hCheckDefCtor( ctor, FALSE, FALSE )
+	hCheckDtor( dtor, FALSE, FALSE )
+
+	'' byval ctor as sub cdecl( )
+	if( astNewARG( proc, hBuildProcPtr( ctor ) ) = NULL ) then
+		exit function
+	end if
+
+	'' byval dtor as sub cdecl( )
+	if( astNewARG( proc, hBuildProcPtr( dtor ) ) = NULL ) then
+		exit function
+	end if
 
 	function = rtlErrorCheck( proc )
 end function
