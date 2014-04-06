@@ -251,12 +251,13 @@ end sub
 
 private sub hArrayOrBitfield _
 	( _
+		byval attrib as integer, _
 		byref bits as integer, _
 		byref dims as integer, _
 		dTB() as FBARRAYDIM _
 	)
 
-	''static as ASTNODE ptr exprTB(0 to FB_MAXARRAYDIMS-1, 0 to 1)
+	static as ASTNODE ptr exprTB(0 to FB_MAXARRAYDIMS-1, 0 to 1)
 
 	bits = 0
 	dims = 0
@@ -271,8 +272,24 @@ private sub hArrayOrBitfield _
 			lexSkipToken( )
 			dims = -1
 		else
-			cStaticArrayDecl( dims, dTB() )
-			'cArrayDecl( dims, exprTB() )
+			cArrayDecl( dims, exprTB() )
+
+			'' Convert exprTB to dimTB
+			'' TODO: Allow exprTB for dynamic arrays as in cVarDecl()
+			if( hExprTbIsConst( dims, exprTB() ) ) then
+				assert( (attrib and FB_SYMBATTRIB_DYNAMIC) = 0 )
+				hMakeArrayDimTB( dims, exprTB(), dTB() )
+				for i as integer = 0 to dims-1
+					if( dTB(i).upper = FB_ARRAYDIM_UNKNOWN ) then
+						errReport( FB_ERRMSG_EXPECTEDCONST )
+						dims = 0
+						exit for
+					end if
+				next
+			else
+				errReport( FB_ERRMSG_EXPECTEDCONST )
+				dims = 0
+			end if
 
 			'' ')'
 			if( lexGetToken( ) <> CHAR_RPRNT ) then
@@ -426,7 +443,7 @@ private sub hTypeMultElementDecl _
 		id = hFieldId( parent )
 
 		'' [ArrayDimensions | ':' BitfieldSize]
-		hArrayOrBitfield( bits, dims, dTB() )
+		hArrayOrBitfield( attrib, bits, dims, dTB() )
 
 		'' symbAddField()
 		'' ['=' InitializerExpression]
@@ -457,7 +474,7 @@ private sub hTypeElementDecl _
 	id = hFieldId( parent )
 
 	'' [ArrayDimensions | ':' BitfieldSize]
-	hArrayOrBitfield( bits, dims, dTB() )
+	hArrayOrBitfield( attrib, bits, dims, dTB() )
 
 	'' AS SymbolType
 	if( lexGetToken( ) <> FB_TK_AS ) then

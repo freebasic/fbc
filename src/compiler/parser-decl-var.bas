@@ -215,8 +215,7 @@ function cVariableDecl( byval attrib as FB_SYMBATTRIB ) as integer
 	function = TRUE
 end function
 
-'':::::
-private function hIsConst _
+function hExprTbIsConst _
 	( _
 		byval dimensions as integer, _
 		exprTB() as ASTNODE ptr _
@@ -553,7 +552,7 @@ private function hLookupVarAndCheckParent _
 	function = sym
 end function
 
-private sub hMakeArrayDimTB _
+sub hMakeArrayDimTB _
 	( _
 		byval dimensions as integer, _
 		exprTB() as ASTNODE ptr, _
@@ -577,16 +576,15 @@ private sub hMakeArrayDimTB _
 			'' upper bound, so we set a special upper value, and CONTINUE in
 			'' order to skip the check
 			dTB(i).upper = FB_ARRAYDIM_UNKNOWN
-			continue for
 		else
 			dTB(i).upper = astConstFlushToInt( expr )
-		end if
 
-		'' Besides the upper < lower case, also complain about FB_ARRAYDIM_UNKNOWN being
-		'' specified, otherwise we'd think ellipsis was given...
-		if( (dTB(i).upper < dTB(i).lower) or (dTB(i).upper = FB_ARRAYDIM_UNKNOWN) ) then
-			errReport( FB_ERRMSG_INVALIDSUBSCRIPT )
-    	end if
+			'' Besides the upper < lower case, also complain about FB_ARRAYDIM_UNKNOWN being
+			'' specified, otherwise we'd think ellipsis was given...
+			if( (dTB(i).upper < dTB(i).lower) or (dTB(i).upper = FB_ARRAYDIM_UNKNOWN) ) then
+				errReport( FB_ERRMSG_INVALIDSUBSCRIPT )
+			end if
+		end if
 	next
 
 end sub
@@ -1313,7 +1311,7 @@ function cVarDecl _
 			end if
 
 			'' if subscripts are constants, convert exprTB to dimTB
-			if( hIsConst( dimensions, exprTB() ) ) then
+			if( hExprTbIsConst( dimensions, exprTB() ) ) then
 				'' only if not explicitly dynamic (ie: not REDIM, COMMON)
 				if( (attrib and FB_SYMBATTRIB_DYNAMIC) = 0 ) then
 					hMakeArrayDimTB( dimensions, exprTB(), dTB() )
@@ -1588,51 +1586,6 @@ private function hMatchEllipsis( ) as integer
 		end if
 	end if
 end function
-
-''
-'' ArrayDimension =
-''    Expression [TO Expression]
-''
-'' ArrayDecl =
-''    '(' ArrayDimension (',' ArrayDimension)* ')'
-''
-sub cStaticArrayDecl( byref dimensions as integer, dTB() as FBARRAYDIM )
-	dimensions = 0
-
-	do
-		if( dimensions >= FB_MAXARRAYDIMS ) then
-			errReport( FB_ERRMSG_TOOMANYDIMENSIONS )
-			'' error recovery: skip to next ')'
-			hSkipUntil( CHAR_RPRNT )
-			exit do
-		end if
-
-		'' First value, may be lbound or ubound: Expression (integer constant)
-		dTB(dimensions).lower = cConstIntExpr( cExpression( ), env.opt.base )
-
-		'' TO?
-		if( lexGetToken( ) = FB_TK_TO ) then
-			lexSkipToken( )
-
-			'' Second value, ubound: Expression (integer constant)
-			dTB(dimensions).upper = cConstIntExpr( cExpression( ), dTB(dimensions).lower )
-		else
-			'' First value was ubound, use default for lbound
-			dTB(dimensions).upper = dTB(dimensions).lower
-			dTB(dimensions).lower = env.opt.base
-		end if
-
-		'' Besides the upper < lower case, also complain about FB_ARRAYDIM_UNKNOWN being
-		'' specified, otherwise we'd think ellipsis was given...
-		if( (dTB(dimensions).upper < dTB(dimensions).lower) or (dTB(dimensions).upper = FB_ARRAYDIM_UNKNOWN) ) then
-			errReport( FB_ERRMSG_INVALIDSUBSCRIPT )
-		end if
-
-		dimensions += 1
-
-		'' ','?
-	loop while( hMatch( CHAR_COMMA ) )
-end sub
 
 private function hIntExpr( byval defaultexpr as ASTNODE ptr ) as ASTNODE ptr
 	dim as ASTNODE ptr expr = any, intexpr = any

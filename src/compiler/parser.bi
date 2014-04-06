@@ -273,7 +273,6 @@ declare function cVariableDecl _
 		byval attrib as FB_SYMBATTRIB = FB_SYMBATTRIB_NONE _
 	) as integer
 
-declare sub cStaticArrayDecl( byref dimensions as integer, dTB() as FBARRAYDIM )
 declare sub cArrayDecl( byref dimensions as integer, exprTB() as ASTNODE ptr )
 
 declare function cInitializer _
@@ -812,6 +811,19 @@ declare function hMatchExpr _
 	( _
 		byval dtype as integer _
 	) as ASTNODE ptr
+
+declare function hExprTbIsConst _
+	( _
+		byval dimensions as integer, _
+		exprTB() as ASTNODE ptr _
+	) as integer
+
+declare sub hMakeArrayDimTB _
+	( _
+		byval dimensions as integer, _
+		exprTB() as ASTNODE ptr, _
+		dTB() as FBARRAYDIM _
+	)
 
 declare function cVarDecl _
 	( _
