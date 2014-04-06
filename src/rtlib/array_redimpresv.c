@@ -19,7 +19,7 @@ int fb_hArrayRealloc
     FBARRAYDIM *dim;
 	ssize_t lbTB[FB_MAXDIMENSIONS];
 	ssize_t ubTB[FB_MAXDIMENSIONS];
-    const char *this_;
+	unsigned char *this_;
 
     /* load bounds */
     for( i = 0; i < dimensions; i++ )
@@ -57,7 +57,7 @@ int fb_hArrayRealloc
 		/* Construct or clear new array elements: */
 		/* Clearing is not needed if not requested, or if ctors will be called
 		   (ctors take care of clearing themselves) */
-		this_ = ((const char*)array->ptr) + array->size;
+		this_ = ((unsigned char *)array->ptr) + array->size;
 		if( ctor ) {
 			size_t objects = (size - array->size) / element_len;
 			while( objects > 0 ) {

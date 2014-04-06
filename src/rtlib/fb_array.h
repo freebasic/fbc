@@ -22,7 +22,7 @@ typedef struct _FB_ARRAY_TMPDESC {
 } FB_ARRAY_TMPDESC;
 /*!!!REMOVEME!!!*/
 
-typedef void (*FB_DEFCTOR) ( const void *this_ );
+typedef void (*FB_DEFCTOR)( void *this_ );
 typedef void (*FB_DTORMULT) ( FBARRAY *array, FB_DEFCTOR dtor, size_t base_idx );
 
 

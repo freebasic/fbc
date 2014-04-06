@@ -55,7 +55,7 @@ int fb_hArrayAlloc
 
 	/* call ctor for each element */
 	if( ctor ) {
-		const char *this_ = (const char *)array->ptr;
+		unsigned char *this_ = array->ptr;
 		while( elements > 0 )
 		{
 			/* !!!FIXME!!! check exceptions (only if rewritten in C++) */
