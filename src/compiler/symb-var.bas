@@ -12,6 +12,13 @@
 #include once "ast.bi"
 
 declare sub hCreateArrayDescriptorType( )
+declare function hAddArrayDescriptorType _
+	( _
+		byval symtb as FBSYMBOLTB ptr, _
+		byval dims as integer, _
+		byval id as zstring ptr, _
+		byval attrib as integer _
+	) as FBSYMBOL ptr
 
 sub symbVarInit( )
 	'' assuming it's safe to create UDT symbols here, the array
@@ -52,7 +59,7 @@ private sub hCreateArrayDescriptorType( )
 	'' type FBARRAY
 	''     ...
 	'' end type
-	symb.fbarray = symbAddArrayDescriptorType( NULL, -1, "__FB_ARRAYDESC$", 0 )
+	symb.fbarray = hAddArrayDescriptorType( NULL, -1, "__FB_ARRAYDESC$", 0 )
 
 	''
 	'' Store some field offsets into globals for easy access
@@ -78,7 +85,7 @@ private sub hCreateArrayDescriptorType( )
 	symb.fbarraydim_ubound = symbGetOfs( fld )
 end sub
 
-function symbAddArrayDescriptorType _
+private function hAddArrayDescriptorType _
 	( _
 		byval symtb as FBSYMBOLTB ptr, _
 		byval dims as integer, _
@@ -225,7 +232,7 @@ function symbAddArrayDesc( byval array as FBSYMBOL ptr ) as FBSYMBOL ptr
 	else
 		'' Create descriptor UDT in same symtb, and preserving the
 		'' FB_SYMBATTRIB_LOCAL too if the descriptor has it.
-		desctype = symbAddArrayDescriptorType( symtb, symbGetArrayDimensions( array ), _
+		desctype = hAddArrayDescriptorType( symtb, symbGetArrayDimensions( array ), _
 				symbUniqueId( ), attrib and FB_SYMBATTRIB_LOCAL )
 	end if
 
