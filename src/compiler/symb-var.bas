@@ -59,7 +59,7 @@ private sub hCreateArrayDescriptorType( )
 	'' type FBARRAY
 	''     ...
 	'' end type
-	symb.fbarray = hAddArrayDescriptorType( NULL, -1, "__FB_ARRAYDESC$", 0 )
+	symb.fbarray = hAddArrayDescriptorType( NULL, FB_MAXARRAYDIMS, "__FB_ARRAYDESC$", 0 )
 
 	''
 	'' Store some field offsets into globals for easy access
@@ -113,12 +113,8 @@ private function hAddArrayDescriptorType _
 	'' dimensions		as integer
 	symbAddField( sym, "dimensions", 0, dTB(), FB_DATATYPE_INTEGER, NULL, 0, 0, 0 )
 
-	'' If the dimension count is unknown, reserve room for the max amount
-	if( dims = -1 ) then
-		dims = FB_MAXARRAYDIMS
-	end if
-
 	'' dimTB(0 to dims-1) as FBARRAYDIM
+	assert( (dims >= 1) and (dims <= FB_MAXARRAYDIMS) )
 	dTB(0).lower = 0
 	dTB(0).upper = dims-1
 
@@ -227,7 +223,7 @@ function symbAddArrayDesc( byval array as FBSYMBOL ptr ) as FBSYMBOL ptr
 
 	'' Dynamic array? Just re-use the global descriptor created at
 	'' hCreateArrayDescriptorType(), instead of making a new one.
-	if( symbGetArrayDimensions( array ) = -1 ) then
+	if( symbIsDynamic( array ) ) then
 		desctype = symb.fbarray
 	else
 		'' Create descriptor UDT in same symtb, and preserving the
@@ -256,7 +252,6 @@ end function
 
 private sub symbDropArrayDims( byval s as FBSYMBOL ptr )
 	deallocate( s->var_.array.dimtb )
-	s->var_.array.dimensions = 0
 	s->var_.array.dimtb = NULL
 end sub
 
@@ -265,10 +260,8 @@ private sub symbRecalcArrayDiff( byval sym as FBSYMBOL ptr )
 	dim as integer last = any
 	dim as FBARRAYDIM ptr dimtb = any
 
-	if( sym->var_.array.dimensions <= 0 ) then
-		sym->var_.array.diff = 0
-		exit sub
-	end if
+	assert( symbIsDynamic( sym ) = FALSE )
+	assert( symbGetArrayDimensions( sym ) > 0 )
 
 	dimtb = sym->var_.array.dimtb
 	diff = 0
@@ -284,7 +277,8 @@ private sub symbRecalcArrayDiff( byval sym as FBSYMBOL ptr )
 end sub
 
 private sub symbRecalcArrayDiffAndElements( byval sym as FBSYMBOL ptr )
-	if( sym->var_.array.dimensions > 0 ) then
+	assert( symbIsDynamic( sym ) = FALSE )
+	if( symbGetArrayDimensions( sym ) > 0 ) then
 		symbRecalcArrayDiff( sym )
 		sym->var_.array.elements = symbCalcArrayElements( sym, 0 )
 	else
@@ -293,10 +287,16 @@ private sub symbRecalcArrayDiffAndElements( byval sym as FBSYMBOL ptr )
 	end if
 end sub
 
-function symbArrayHasUnknownDimensions( byval sym as FBSYMBOL ptr ) as integer
+function symbArrayHasUnknownBounds( byval sym as FBSYMBOL ptr ) as integer
 	assert( symbIsVar( sym ) or symbIsField( sym ) )
+
 	function = FALSE
-	for i as integer = 0 to sym->var_.array.dimensions - 1
+
+	if( symbIsDynamic( sym ) ) then
+		exit function
+	end if
+
+	for i as integer = 0 to symbGetArrayDimensions( sym ) - 1
 		if( symbArrayUbound( sym, i ) = FB_ARRAYDIM_UNKNOWN ) then
 			return TRUE
 		end if
@@ -321,7 +321,7 @@ sub symbMaybeAddArrayDesc( byval sym as FBSYMBOL ptr )
 		exit sub
 	end if
 
-	if( symbArrayHasUnknownDimensions( sym ) ) then
+	if( symbArrayHasUnknownBounds( sym ) ) then
 		'' Not yet; there still are unknown array dimensions
 		exit sub
 	end if
@@ -340,31 +340,32 @@ sub symbSetArrayDimTb _
 		dTB() as FBARRAYDIM _
 	)
 
+	assert( symbIsDynamic( sym ) = FALSE )
+	assert( dimensions > 0 )
+
 	'' Delete existing dimensions, if any
 	symbDropArrayDims( sym )
 
-	assert( iif( symbIsDynamic( sym ), dimensions = -1, TRUE ) )
-
 	sym->var_.array.dimensions = dimensions
-	if( dimensions > 0 ) then
-		'' Copy the dTB() into the FBSYMBOL
-		sym->var_.array.dimtb = xallocate( dimensions * sizeof( FBARRAYDIM ) )
-		for i as integer = 0 to dimensions - 1
-			sym->var_.array.dimtb[i] = dTB(i)
-		next
-	end if
+
+	'' Copy the dTB() into the FBSYMBOL
+	sym->var_.array.dimtb = xallocate( dimensions * sizeof( FBARRAYDIM ) )
+	for i as integer = 0 to dimensions - 1
+		sym->var_.array.dimtb[i] = dTB(i)
+	next
 
 	symbRecalcArrayDiffAndElements( sym )
 
 end sub
 
-sub symbSetArrayDimensionElements _
+sub symbSetFixedSizeArrayDimensionElements _
 	( _
 		byval sym as FBSYMBOL ptr, _
 		byval dimension as integer, _
 		byval elements as longint _
 	)
 
+	assert( symbIsDynamic( sym ) = FALSE )
 	assert( (dimension >= 0) and (dimension < symbGetArrayDimensions( sym )) )
 
 	with( symbGetArrayDim( sym, dimension ) )
@@ -372,6 +373,32 @@ sub symbSetArrayDimensionElements _
 	end with
 
 	symbRecalcArrayDiffAndElements( sym )
+
+end sub
+
+'' Used to fill in the dimension count for dynamic arrays declared with (),
+'' i.e. unknown dimension count, when the parser sees the first REDIM or array
+'' access and can tell the dimension count based on it.
+sub symbCheckDynamicArrayDimensions _
+	( _
+		byval sym as FBSYMBOL ptr, _
+		byval dimensions as integer _
+	)
+
+	assert( symbIsDynamic( sym ) )
+
+	'' Secondary declarations with dimensions = -1 don't make a difference.
+	if( dimensions = -1 ) then
+		exit sub
+	end if
+
+	if( symbGetArrayDimensions( sym ) = -1 ) then
+		sym->var_.array.dimensions = dimensions
+
+	'' The array's dimension count is known; complain about mismatching dimension counts.
+	elseif( symbGetArrayDimensions( sym ) <> dimensions ) then
+		errReportEx( FB_ERRMSG_WRONGDIMENSIONS, symbGetName( sym ) )
+	end if
 
 end sub
 
@@ -388,6 +415,27 @@ sub symbVarInitFields( byval sym as FBSYMBOL ptr )
 	sym->var_.data.prev = NULL
 	sym->var_.bitpos = 0
 	sym->var_.bits = 0
+end sub
+
+sub symbVarInitArrayDimensions _
+	( _
+		byval sym as FBSYMBOL ptr, _
+		byval dimensions as integer, _
+		dTB() as FBARRAYDIM _
+	)
+
+	if( dimensions <> 0 ) then
+		if( symbIsDynamic( sym ) ) then
+			sym->var_.array.dimensions = dimensions
+		else
+			symbSetArrayDimTb( sym, dimensions, dTB() )
+		end if
+
+		if( symbIsField( sym ) = FALSE ) then
+			symbMaybeAddArrayDesc( sym )
+		end if
+	end if
+
 end sub
 
 function symbAddVar _
@@ -475,11 +523,7 @@ function symbAddVar _
 	s->lgt = lgt
 	s->ofs = 0
 	symbVarInitFields( s )
-
-	if( dimensions <> 0 ) then
-		symbSetArrayDimTb( s, dimensions, dTB() )
-		symbMaybeAddArrayDesc( s )
-	end if
+	symbVarInitArrayDimensions( s, dimensions, dTB() )
 
 	'' QB quirk: see above
 	if( (options and FB_SYMBOPT_UNSCOPE) <> 0 ) then
@@ -737,10 +781,12 @@ function symbCloneVar( byval sym as FBSYMBOL ptr ) as FBSYMBOL ptr
 	elseif( symbIsTemp( sym ) ) then
 		function = symbAddTempVar( symbGetType( sym ), symbGetSubType( sym ) )
 	else
-		'' Fill the dTB() with the array's dimensions, if any
-		for i as integer = 0 to symbGetArrayDimensions( sym ) - 1
-			dTB(i) = symbGetArrayDim( sym, i )
-		next
+		if( symbIsDynamic( sym ) = FALSE ) then
+			'' Fill the dTB() with the array's dimensions, if any
+			for i as integer = 0 to symbGetArrayDimensions( sym ) - 1
+				dTB(i) = symbGetArrayDim( sym, i )
+			next
+		end if
 
 		function = symbAddVar( symbGetName( sym ), NULL, _
 				symbGetType( sym ), symbGetSubType( sym ), 0, _

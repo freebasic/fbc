@@ -248,7 +248,7 @@ private function hArrayInit _
 	if( elements = -1 ) then
 		'' Update the array symbol with the new info about this dimension's upper bound
 		elements = elm_cnt
-		symbSetArrayDimensionElements( ctx.sym, ctx.dimension, elements )
+		symbSetFixedSizeArrayDimensionElements( ctx.sym, ctx.dimension, elements )
 		symbMaybeAddArrayDesc( ctx.sym )
 
 		'' "array too big" check
@@ -261,7 +261,7 @@ private function hArrayInit _
 					((ctx.sym->attrib and (FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_STATIC)) = 0) ) = FALSE ) then
 			errReport( FB_ERRMSG_ARRAYTOOBIG )
 			'' error recovery: set this dimension to 1 element
-			symbSetArrayDimensionElements( ctx.sym, ctx.dimension, 1 )
+			symbSetFixedSizeArrayDimensionElements( ctx.sym, ctx.dimension, 1 )
 		end if
 	end if
 

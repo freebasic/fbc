@@ -1571,23 +1571,16 @@ function symbIsDataDesc( byval sym as FBSYMBOL ptr ) as integer
 	end if
 end function
 
-'':::::
-function symbIsArray _
-	( _
-		byval sym as FBSYMBOL ptr _
-	) as integer
-
+function symbIsArray( byval sym as FBSYMBOL ptr ) as integer
 	select case sym->class
 	case FB_SYMBCLASS_VAR, FB_SYMBCLASS_FIELD
-		if (symbGetIsDynamic(sym)) then
+		if( symbGetIsDynamic( sym ) ) then
 			return TRUE
 		else
-			return symbGetArrayDimensions( sym ) <> 0
+			return (symbGetArrayDimensions( sym ) <> 0)
 		end if
 	end select
-
 	function = FALSE
-
 end function
 
 '':::::
@@ -2424,11 +2417,24 @@ function symbDump( byval sym as FBSYMBOL ptr ) as string
 
 	'' Array dimensions, if any
 	if( symbIsVar( sym ) or symbIsField( sym ) ) then
-		if( symbGetArrayDimensions( sym ) = -1 ) then
-			s += "()"
+		if( symbIsDynamic( sym ) ) then
+			if( symbGetArrayDimensions( sym ) = -1 ) then
+				s += "()"
+			elseif( symbGetArrayDimensions( sym ) > 0 ) then
+				s += "(*"
+				for i as integer = 2 to symbGetArrayDimensions( sym )
+					s += ", *"
+				next
+				s += ")"
+			else
+				s += "(invalid array dimensions " & symbGetArrayDimensions( sym ) & ")"
+			end if
 		elseif( symbGetArrayDimensions( sym ) > 0 ) then
 			s += "("
 			for i as integer = 0 to symbGetArrayDimensions( sym ) - 1
+				if( i > 0 ) then
+					s += ", "
+				end if
 				s &= symbArrayLbound( sym, i )
 				s += " to "
 				if( symbArrayUbound( sym, i ) = FB_ARRAYDIM_UNKNOWN ) then
@@ -2438,6 +2444,8 @@ function symbDump( byval sym as FBSYMBOL ptr ) as string
 				end if
 			next
 			s += ")"
+		elseif( symbGetArrayDimensions( sym ) <> 0 ) then
+			s += "(invalid array dimensions " & symbGetArrayDimensions( sym ) & ")"
 		end if
 	end if
 

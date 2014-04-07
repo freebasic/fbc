@@ -258,27 +258,31 @@ private sub hCheckExternVar _
 	'' array declaration, e.g. with a REDIM)
 	if( (attrib and FB_SYMBATTRIB_DYNAMIC) <> (sym->attrib and FB_SYMBATTRIB_DYNAMIC) ) then
 		errReportEx( FB_ERRMSG_EXPECTEDDYNAMICARRAY, *id )
+		exit sub
 	end if
 
-	'' Check fixed-size array dimensions precisely. For dynamic array EXTERNs,
-	'' this neither possible nor needed, since EXTERNs can't be dynamic and
-	'' have known dimensions at the same time, and when allocating, any
-	'' dimensions given will be used for the redim, but that doesn't make
-	'' the allocation declaration incompatible to the EXTERN either.
+	'' EXTERN has unknown dimensions? Then there's no need to do further checks.
+	if( symbGetArrayDimensions( sym ) = -1 ) then
+		assert( dimensions <> 0 )
+		exit sub
+	end if
+
+	'' Mismatching array dimensions?
+	if( dimensions <> symbGetArrayDimensions( sym ) ) then
+		errReportEx( FB_ERRMSG_WRONGDIMENSIONS, *id )
+		exit sub
+	end if
+
+	'' Check bounds of fixed-size arrays
 	if( (attrib and FB_SYMBATTRIB_DYNAMIC) = 0 ) then
-		'' Same array dimensions?
-		if( dimensions = symbGetArrayDimensions( sym ) ) then
-			'' Same lbound/ubound for each dimension?
-			for i as integer = 0 to dimensions - 1
-				if( (symbArrayLbound( sym, i ) <> dTB(i).lower) or _
-				    ((symbArrayUbound( sym, i ) <> dTB(i).upper) and _
-				     (dTB(i).upper <> FB_ARRAYDIM_UNKNOWN)) ) then
-					errReportEx( FB_ERRMSG_BOUNDSDIFFERFROMEXTERN, *id )
-				end if
-			next
-		else
-			errReportEx( FB_ERRMSG_WRONGDIMENSIONS, *id )
-		end if
+		'' Same lbound/ubound for each dimension?
+		for i as integer = 0 to dimensions - 1
+			if( (symbArrayLbound( sym, i ) <> dTB(i).lower) or _
+			    ((symbArrayUbound( sym, i ) <> dTB(i).upper) and _
+			     (dTB(i).upper <> FB_ARRAYDIM_UNKNOWN)) ) then
+				errReportEx( FB_ERRMSG_BOUNDSDIFFERFROMEXTERN, *id )
+			end if
+		next
 	end if
 
 end sub
@@ -309,8 +313,8 @@ private function hAddVar _
 		    (parser.scope = FB_MAINSCOPE) ) then
 
 			'' Verify that the new variable declaration is compatible with the previous EXTERN
-			hCheckExternVar( sym, id, dtype, subtype, _
-					addsuffix, attrib, dimensions, dTB() )
+			hCheckExternVar( sym, id, dtype, subtype, addsuffix, _
+					attrib, dimensions, dTB() )
 
 			'' Then allocate the EXTERN:
 
@@ -346,8 +350,8 @@ private function hAddVar _
 		        ((attrib and FB_SYMBATTRIB_EXTERN) <> 0) ) then
 
 			'' Only verify that the EXTERN declaration is compatible with the previous one
-			hCheckExternVar( sym, id, dtype, subtype, _
-					addsuffix, attrib, dimensions, dTB() )
+			hCheckExternVar( sym, id, dtype, subtype, addsuffix, _
+					attrib, dimensions, dTB() )
 			is_declared = TRUE
 
 		'' REDIM'ing an existing array (dynamic array var/field, BYDESC param)?
@@ -375,17 +379,13 @@ private function hAddVar _
 		is_declared = FALSE
 	end if
 
-	if( is_declared = FALSE ) then
+	if( is_declared ) then
+		if( symbIsDynamic( sym ) ) then
+			symbCheckDynamicArrayDimensions( sym, dimensions )
+		end if
+	else
 		if( addsuffix ) then
 			attrib or= FB_SYMBATTRIB_SUFFIXED
-		end if
-
-		'' If it's a dynamic array, forget the dimensions seen by the parser
-		'' (happens e.g. with <REDIM array(0 to 1) AS INTEGER>, where the
-		'' array will be dynamic, while at the same time, dimensions are seen
-		'' that will be used in the 1st REDIM)
-		if( attrib and FB_SYMBATTRIB_DYNAMIC ) then
-			dimensions = -1
 		end if
 
 		sym = symbAddVar( id, idalias, dtype, subtype, lgt, dimensions, dTB(), attrib, _
@@ -681,7 +681,7 @@ private function hVarInit _
 	if( lexGetToken( ) = FB_TK_ANY ) then
 
 		'' don't allow arrays with ellipsis denoting unknown size at this time
-		if( symbArrayHasUnknownDimensions( sym ) ) then
+		if( symbArrayHasUnknownBounds( sym ) ) then
 			errReport( FB_ERRMSG_CANTUSEANYINITELLIPSIS )
 			exit function
 		end if
@@ -1164,7 +1164,9 @@ function cVarDecl _
 
 			'' '()'
 			if( lexGetToken( ) = CHAR_RPRNT ) then
-				'' fake it
+				'' Dynamic array; dimension count unknown until
+				'' first array access or REDIM (see also
+				'' symbSetDynamicArrayDimensions())
 				dimensions = -1
 				attrib or= FB_SYMBATTRIB_DYNAMIC
 
@@ -1433,7 +1435,7 @@ function cVarDecl _
 			else
 				'' default initialization
 				if( sym ) then
-					if( symbArrayHasUnknownDimensions( sym ) ) then
+					if( symbArrayHasUnknownBounds( sym ) ) then
 						errReport( FB_ERRMSG_MUSTHAVEINITWITHELLIPSIS )
 						hSkipStmt( )
 						exit function

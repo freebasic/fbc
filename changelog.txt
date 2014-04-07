@@ -9,7 +9,6 @@ Version 0.91.0:
 - CONST isn't allowed/needed on constructors/destructors anymore, the non-CONST versions now work even with CONST objects. (A CONST constructor couldn't initialize the object, so it's not useful. And after a destructor runs, the object is "dead", so it doesn't matter whether the destructor modified it or not.)
 - DOS rtlib no longer uses setlocale(), as FB-dos doesn't support Unicode anyways, and thus the setlocale() reference here only served to unnecessarily increase .exe size.
 - #if expressions allow quirk function names to be used as literals again, so for example <#IF TYPEOF(x) = STRING> works again, instead of complaining about missing arguments in a call to the String() function.
-- REDIMs changing the amount of dimensions of the dynamic array, or array accesses with different amount of dimensions than a REDIM previously seen by the compiler, will no longer sometimes cause a compile-time error. The compiler cannot track the order of execution of REDIMs, nor see those from external modules, so this check cannot be reliable. It can only be checked at run-time, exactly like bound checks for individual dimensions, because both are allowed to change at run-time, and that may sometimes be useful.
 
 [added]
 - 64bit support (-arch x86_64) based on -gen gcc: INTEGER/POINTER = 64bit, LONG = 32bit DWORD. Compiler #define: __FB_64BIT__
@@ -148,6 +147,7 @@ Version 0.91.0:
 - EXTERN variables could be allocated via a static array variable declaration, this will now trigger an error.
 - #648: Local (scoped) variable declarations (including REDIM) caused EXTERNs to be allocated, instead of shadowing them
 - Local dynamic arrays can now be shadowed in nested scopes without compiler error
+- More precise compile-time checks of dynamic array dimension counts
 
 
 Version 0.90.1:

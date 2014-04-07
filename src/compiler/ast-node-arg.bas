@@ -400,8 +400,7 @@ private function hCheckByDescParam _
 	elseif( astIsFIELD( n->l ) ) then
 		assert( symbIsField( s ) )
 
-		select case( symbGetArrayDimensions( s ) )
-		case -1
+		if( symbIsDynamic( s ) ) then
 			'' Dynamic array fields: If an access to the fake array field is given,
 			'' how to build the access to descriptor? The FIELD node may be optimized
 			'' already, and there probably is no way to tell the UDT access expression
@@ -417,12 +416,12 @@ private function hCheckByDescParam _
 			n->l = astNewADDROF( n->l )
 			return TRUE
 
-		case is > 0
+		elseif( symbGetArrayDimensions( s ) > 0 ) then
 			'' Static array field: Create a temp array descriptor
 			desc = hAllocTmpArrayDesc( s, n->l, desc_tree )
 			n->l = astNewLINK( astNewADDROF( astNewVAR( desc ) ), desc_tree )
 			return TRUE
-		end select
+		end if
 	end if
 
 	errReport( FB_ERRMSG_PARAMTYPEMISMATCHAT )

@@ -5,12 +5,16 @@ namespace fbc_tests.expressions.dynamic_array_fields
 const EPSILON_SNG as single = 1.1929093e-7
 
 namespace arrayAccess
-	type UDT
+	type UDT1
+		array() as integer
+	end type
+
+	type UDT2
 		array() as integer
 	end type
 
 	private sub testSimple cdecl( )
-		dim x as UDT
+		dim x as UDT1
 
 		redim x.array(0 to 9)
 
@@ -29,7 +33,7 @@ namespace arrayAccess
 	end sub
 
 	private sub testDiff cdecl( )
-		dim x as UDT
+		dim x as UDT1
 
 		redim x.array(10 to 19)
 
@@ -48,7 +52,7 @@ namespace arrayAccess
 	end sub
 
 	private sub testMultipleDimensions cdecl( )
-		dim x as UDT
+		dim x as UDT2
 
 		redim x.array(0 to 4, 0 to 1)
 
@@ -68,7 +72,7 @@ namespace arrayAccess
 			next
 		next
 
-		var p = @x.array(0)
+		var p = @x.array(0, 0)
 		for i as integer = 0 to (5 * 2)-1
 			CU_ASSERT( p[i] = i )
 		next

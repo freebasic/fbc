@@ -64,7 +64,13 @@ namespace descriptorInitAndCleanUp
 		dtorudt_dtors += 1
 	end destructor
 
-	type UDT
+	type UDT1
+		array1() as integer
+		array2() as string
+		array3() as DtorUdt
+	end type
+
+	type UDT2
 		array1() as integer
 		array2() as string
 		array3() as DtorUdt
@@ -72,7 +78,7 @@ namespace descriptorInitAndCleanUp
 
 	sub test cdecl( )
 		scope
-			dim x as UDT
+			dim x as UDT1
 
 			'' Arrays should be initially empty (unallocated)
 			CU_ASSERT( @x.array1(0) = NULL )
@@ -94,7 +100,7 @@ namespace descriptorInitAndCleanUp
 		CU_ASSERT( dtorudt_dtors = 0 )
 
 		scope
-			dim x as UDT
+			dim x as UDT1
 			redim x.array3(0 to 0)
 			CU_ASSERT( dtorudt_dtors = 0 )
 		end scope
@@ -102,7 +108,7 @@ namespace descriptorInitAndCleanUp
 		dtorudt_dtors = 0
 
 		scope
-			dim x as UDT
+			dim x as UDT1
 			redim x.array3(10 to 20)
 			CU_ASSERT( dtorudt_dtors = 0 )
 		end scope
@@ -110,7 +116,7 @@ namespace descriptorInitAndCleanUp
 		dtorudt_dtors = 0
 
 		scope
-			dim x as UDT
+			dim x as UDT2
 			redim x.array3(0 to 1, 0 to 0)
 			CU_ASSERT( dtorudt_dtors = 0 )
 		end scope
@@ -118,7 +124,7 @@ namespace descriptorInitAndCleanUp
 		dtorudt_dtors = 0
 
 		scope
-			dim x as UDT
+			dim x as UDT2
 			redim x.array3(0 to 1, 0 to 1)
 			CU_ASSERT( dtorudt_dtors = 0 )
 		end scope
@@ -129,7 +135,7 @@ namespace descriptorInitAndCleanUp
 		'' but at least we can test that it doesn't crash when having to
 		'' do it...
 		scope
-			dim x as UDT
+			dim x as UDT2
 			redim x.array1(1 to 3, 4 to 10)
 			redim x.array2(2 to 20, 3 to 3, 4 to 5)
 		end scope
@@ -137,20 +143,24 @@ namespace descriptorInitAndCleanUp
 end namespace
 
 namespace copyPod
-	type UDT
+	type UDT1
+		array() as integer
+	end type
+
+	type UDT2
 		array() as integer
 	end type
 
 	private sub test cdecl( )
 		'' Shouldn't crash etc.
 		scope
-			dim as UDT a, b
+			dim as UDT1 a, b
 			b = a
 		end scope
 
 		'' simple
 		scope
-			dim as UDT a, b
+			dim as UDT1 a, b
 
 			CU_ASSERT( lbound( a.array ) = 0 )
 			CU_ASSERT( ubound( a.array ) = -1 )
@@ -179,7 +189,7 @@ namespace copyPod
 
 		'' negative diff
 		scope
-			dim as UDT a, b
+			dim as UDT1 a, b
 
 			CU_ASSERT( lbound( a.array ) = 0 )
 			CU_ASSERT( ubound( a.array ) = -1 )
@@ -208,7 +218,7 @@ namespace copyPod
 
 		'' positive diff
 		scope
-			dim as UDT a, b
+			dim as UDT1 a, b
 
 			CU_ASSERT( lbound( a.array ) = 0 )
 			CU_ASSERT( ubound( a.array ) = -1 )
@@ -237,7 +247,7 @@ namespace copyPod
 
 		'' multiple dimensions
 		scope
-			dim as UDT a, b
+			dim as UDT2 a, b
 
 			CU_ASSERT( ubound( a.array, 0 ) = 0 )
 			CU_ASSERT( ubound( b.array, 0 ) = 0 )
@@ -279,20 +289,24 @@ namespace copyPod
 end namespace
 
 namespace copyString
-	type UDT
+	type UDT1
+		array() as string
+	end type
+
+	type UDT2
 		array() as string
 	end type
 
 	private sub test cdecl( )
 		'' Shouldn't crash etc.
 		scope
-			dim as UDT a, b
+			dim as UDT1 a, b
 			b = a
 		end scope
 
 		'' simple
 		scope
-			dim as UDT a, b
+			dim as UDT1 a, b
 
 			CU_ASSERT( lbound( a.array ) = 0 )
 			CU_ASSERT( ubound( a.array ) = -1 )
@@ -321,7 +335,7 @@ namespace copyString
 
 		'' negative diff
 		scope
-			dim as UDT a, b
+			dim as UDT1 a, b
 
 			CU_ASSERT( lbound( a.array ) = 0 )
 			CU_ASSERT( ubound( a.array ) = -1 )
@@ -350,7 +364,7 @@ namespace copyString
 
 		'' positive diff
 		scope
-			dim as UDT a, b
+			dim as UDT1 a, b
 
 			CU_ASSERT( lbound( a.array ) = 0 )
 			CU_ASSERT( ubound( a.array ) = -1 )
@@ -379,7 +393,7 @@ namespace copyString
 
 		'' multiple dimensions
 		scope
-			dim as UDT a, b
+			dim as UDT2 a, b
 
 			CU_ASSERT( ubound( a.array, 0 ) = 0 )
 			CU_ASSERT( ubound( b.array, 0 ) = 0 )
@@ -443,14 +457,18 @@ namespace copyClass
 		this.i = other.i
 	end operator
 
-	type UDT
+	type UDT1
+		array() as MyClass
+	end type
+
+	type UDT2
 		array() as MyClass
 	end type
 
 	private sub test cdecl( )
 		'' Shouldn't crash etc.
 		scope
-			dim as UDT a, b
+			dim as UDT1 a, b
 			CU_ASSERT( ctors = 0 )
 			CU_ASSERT( dtors = 0 )
 			CU_ASSERT( lets = 0 )
@@ -465,7 +483,7 @@ namespace copyClass
 		dtors = 0
 		lets = 0
 		scope
-			dim as UDT a, b
+			dim as UDT1 a, b
 			CU_ASSERT( ctors = 0 )
 			CU_ASSERT( dtors = 0 )
 			CU_ASSERT( lets = 0 )
@@ -507,7 +525,7 @@ namespace copyClass
 		dtors = 0
 		lets = 0
 		scope
-			dim as UDT a, b
+			dim as UDT1 a, b
 			CU_ASSERT( ctors = 0 )
 			CU_ASSERT( dtors = 0 )
 			CU_ASSERT( lets = 0 )
@@ -549,7 +567,7 @@ namespace copyClass
 		dtors = 0
 		lets = 0
 		scope
-			dim as UDT a, b
+			dim as UDT1 a, b
 			CU_ASSERT( ctors = 0 )
 			CU_ASSERT( dtors = 0 )
 			CU_ASSERT( lets = 0 )
@@ -591,7 +609,7 @@ namespace copyClass
 		dtors = 0
 		lets = 0
 		scope
-			dim as UDT a, b
+			dim as UDT2 a, b
 			CU_ASSERT( ctors = 0 )
 			CU_ASSERT( dtors = 0 )
 			CU_ASSERT( lets = 0 )

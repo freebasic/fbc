@@ -1101,28 +1101,26 @@ private sub hCallFieldDtor _
 
 	assert( symbIsDescriptor( fld ) = FALSE )
 
-	select case( symbGetArrayDimensions( fld ) )
-	'' Dynamic array field? Always needs clean up, regardless of dtype
-	case -1
+	'' Dynamic array field?
+	if( symbIsDynamic( fld ) ) then
+		'' Always needs clean up, regardless of dtype
 		astAdd( rtlArrayErase( astBuildVarField( this_, fld ), TRUE, FALSE ) )
-
-	'' Normal field
-	case 0
+	elseif( symbGetArrayDimensions( fld ) = 0 ) then
+		'' Normal field
 		if( symbGetType( fld ) = FB_DATATYPE_STRING ) then
 			astAdd( rtlStrDelete( astBuildVarField( this_, fld ) ) )
 		elseif( symbHasDtor( fld ) ) then
 			'' dtor( this.field )
 			astAdd( astBuildDtorCall( symbGetSubtype( fld ), astBuildVarField( this_, fld ) ) )
 		end if
-
-	'' Fixed-size array field
-	case else
+	else
+		'' Fixed-size array field
 		if( symbGetType( fld ) = FB_DATATYPE_STRING ) then
 			astAdd( rtlArrayErase( astBuildVarField( this_, fld ), FALSE, FALSE ) )
 		elseif( symbHasDtor( fld ) ) then
 			astAdd( hCallCtorList( FALSE, this_, fld ) )
 		end if
-	end select
+	end if
 
 end sub
 

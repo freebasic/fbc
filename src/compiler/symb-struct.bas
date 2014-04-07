@@ -425,9 +425,7 @@ function symbAddField _
 	sym->lgt = lgt
 	sym->ofs = offset
 	symbVarInitFields( sym )
-	if( dimensions <> 0 ) then
-		symbSetArrayDimTb( sym, dimensions, dTB() )
-	end if
+	symbVarInitArrayDimensions( sym, dimensions, dTB() )
 	if( desc ) then
 		sym->var_.array.desc = desc
 		desc->var_.desc.array = sym  '' desc's backlink

@@ -592,8 +592,14 @@ end type
 
 '' variable
 type FBS_ARRAY
-	dimensions		as integer         '' -1 = dynamic array, 0 = none, 1..n = static array (with known dimtb)
-	dimtb			as FBARRAYDIM ptr  '' Dynamically allocated array of dimension bounds
+	'' 0 = none (not an array),
+	'' -1 = () = not yet known (should be filled in ASAP),
+	'' 1..n = known dimensions (fixed-size or dynamic arrays)
+	dimensions		as integer
+
+	'' Dynamically allocated array of dimension bounds (static arrays only)
+	dimtb			as FBARRAYDIM ptr
+
 	diff			as longint
 	elements		as longint
 	desc			as FBSYMBOL_ ptr
@@ -1042,14 +1048,27 @@ declare function symbAddLabel _
 		byval options as FB_SYMBOPT = FB_SYMBOPT_DECLARING _
 	) as FBSYMBOL ptr
 
-declare sub symbSetArrayDimensionElements _
+declare sub symbSetFixedSizeArrayDimensionElements _
 	( _
 		byval sym as FBSYMBOL ptr, _
 		byval dimension as integer, _
 		byval elements as longint _
 	)
 
+declare sub symbCheckDynamicArrayDimensions _
+	( _
+		byval sym as FBSYMBOL ptr, _
+		byval dimensions as integer _
+	)
+
 declare sub symbVarInitFields( byval sym as FBSYMBOL ptr )
+
+declare sub symbVarInitArrayDimensions _
+	( _
+		byval sym as FBSYMBOL ptr, _
+		byval dimensions as integer, _
+		dTB() as FBARRAYDIM _
+	)
 
 declare function symbAddVar _
 	( _
@@ -1278,7 +1297,7 @@ declare sub symbRemoveFromFwdRef _
         byval ref as FBSYMBOL ptr _
     )
 
-declare function symbArrayHasUnknownDimensions( byval sym as FBSYMBOL ptr ) as integer
+declare function symbArrayHasUnknownBounds( byval sym as FBSYMBOL ptr ) as integer
 
 declare sub symbSetArrayDimTb _
 	( _

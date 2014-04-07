@@ -775,11 +775,13 @@ private function hDeclArrayDims( byval sym as FBSYMBOL ptr ) as string
     desc = str( ctx.typecnt ) + "="
     ctx.typecnt += 1
 
-	for i as integer = 0 to symbGetArrayDimensions( sym ) - 1
-		desc += "ar1;"
-		desc += str( symbArrayLbound( sym, i ) ) + ";"
-		desc += str( symbArrayUbound( sym, i ) ) + ";"
-	next
+	if( symbGetIsDynamic( sym ) = FALSE ) then
+		for i as integer = 0 to symbGetArrayDimensions( sym ) - 1
+			desc += "ar1;"
+			desc += str( symbArrayLbound( sym, i ) ) + ";"
+			desc += str( symbArrayUbound( sym, i ) ) + ";"
+		next
+	end if
 
     function = desc
 end function
