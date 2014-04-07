@@ -1520,7 +1520,7 @@ private function symbIsCArray( byval sym as FBSYMBOL ptr ) as integer
 	select case( symbGetClass( sym ) )
 	case FB_SYMBCLASS_VAR, FB_SYMBCLASS_FIELD
 		'' No dynamic arrays, they're just descriptor structs
-		if( symbGetIsDynamic( sym ) ) then
+		if( symbIsDynamic( sym ) ) then
 			return FALSE
 		end if
 
