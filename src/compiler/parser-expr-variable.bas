@@ -184,7 +184,7 @@ private function hFieldAccess _
 				tree = astNewLINK( tree, astRemSideFx( varexpr ), FALSE )
 			end if
 
-			indexexpr = cDynamicArrayIndex( fld, astCloneTree( varexpr ) )
+			indexexpr = cDynamicArrayIndex( fld, astNewDEREF( astCloneTree( varexpr ) ) )
 
 			'' *cptr( dtype ptr, var->descriptor.data + index )
 			varexpr = astNewBOP( AST_OP_ADD, varexpr, astNewCONSTi( symb.fbarray_data ) )

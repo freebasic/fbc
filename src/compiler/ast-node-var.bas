@@ -14,6 +14,8 @@ function astNewVAR _
 
     dim as ASTNODE ptr n = any
 
+	assert( iif( sym, symbIsField( sym ) = FALSE, TRUE ) )
+
 	if( dtype = FB_DATATYPE_INVALID ) then
 		select case( symbGetClass( sym ) )
 		case FB_SYMBCLASS_LABEL
