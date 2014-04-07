@@ -559,10 +559,6 @@ sub hMakeArrayDimTB _
 		dTB() as FBARRAYDIM _
 	)
 
-	if( dimensions = -1 ) then
-		exit sub
-	end if
-
 	for i as integer = 0 to dimensions-1
 		dim as ASTNODE ptr expr = any
 
