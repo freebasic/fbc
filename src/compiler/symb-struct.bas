@@ -88,7 +88,7 @@ function symbStructBegin _
 	if( base_ <> NULL ) then
 		static as FBARRAYDIM dTB(0 to 0)
 
-		s->udt.base = symbAddField( s, "$base", 0, dTB(), FB_DATATYPE_STRUCT, base_, 0, 0 )
+		s->udt.base = symbAddField( s, "$base", 0, dTB(), FB_DATATYPE_STRUCT, base_, 0, 0, 0 )
 
 		symbSetIsUnique( s )
 		symbNestBegin( s, FALSE )
@@ -256,11 +256,12 @@ function symbAddField _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
 		byval lgt as longint, _
-		byval bits as integer _
+		byval bits as integer, _
+		byval attrib as integer _
 	) as FBSYMBOL ptr
 
 	dim as FBSYMBOL ptr sym = any, tail = any, base_parent = any, desc = any
-	dim as integer pad = any, alloc_field = any, elen = any, attrib = any
+	dim as integer pad = any, alloc_field = any, elen = any
 	dim as longint offset = any
 	dim as string arrayid
 
@@ -273,7 +274,9 @@ function symbAddField _
 	end if
 
 	'' Dynamic array field? Recursively add the corresponding descriptor field.
-	if( dimensions = -1 ) then
+	if( attrib and FB_SYMBATTRIB_DYNAMIC ) then
+		assert( dimensions = -1 )
+
 		'' Because this is done here at the top:
 		''  - the descriptor will be added before the fake array,
 		''    allowing the fake array to be "merged" into the descriptor
@@ -287,14 +290,15 @@ function symbAddField _
 		id = strptr( arrayid )
 
 		desc = symbAddField( parent, symbUniqueId( ), 0, emptydTB(), _
-				FB_DATATYPE_STRUCT, symb.fbarray, 0, 0 )
-		desc->attrib or= FB_SYMBATTRIB_DESCRIPTOR
+				FB_DATATYPE_STRUCT, symb.fbarray, 0, 0, FB_SYMBATTRIB_DESCRIPTOR )
 
 		'' Same offset for the fake array field as for the descriptor,
 		'' to make astNewARG()'s job easier
 		offset = desc->ofs
 		alloc_field = FALSE
 	else
+		assert( dimensions >= 0 )
+
 		'' All other fields default to the next available offset,
 		'' except bitfields which are given special treatment below.
 		offset = parent->ofs
@@ -408,11 +412,7 @@ function symbAddField _
 	loop
 
 	'' Preserve LOCAL
-	attrib = parent->attrib and FB_SYMBATTRIB_LOCAL
-
-	if( dimensions = -1 ) then
-		attrib or= FB_SYMBATTRIB_DYNAMIC
-	end if
+	attrib or= (parent->attrib and FB_SYMBATTRIB_LOCAL)
 
 	sym = symbNewSymbol( FB_SYMBOPT_DOHASH, NULL, _
 			@symbGetUDTSymbTb( parent ), @symbGetUDTHashTb( base_parent ), _
@@ -785,8 +785,10 @@ function symbCloneStruct( byval sym as FBSYMBOL ptr ) as FBSYMBOL ptr
 
 	fld = sym->udt.ns.symtb.head
 	while( fld )
+		assert( symbIsDynamic( fld ) = FALSE )
+		assert( symbIsDescriptor( fld ) = FALSE )
 		symbAddField( clone, symbGetName( fld ), 0, dTB(), _
-		              symbGetType( fld ), symbGetSubType( fld ), fld->lgt, 0 )
+		              symbGetType( fld ), symbGetSubType( fld ), fld->lgt, 0, fld->attrib )
 		fld = fld->next
 	wend
 

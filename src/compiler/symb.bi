@@ -1125,7 +1125,8 @@ declare function symbAddField _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
 		byval lgt as longint, _
-		byval bits as integer _
+		byval bits as integer, _
+		byval attrib as integer _
 	) as FBSYMBOL ptr
 
 declare sub symbInsertInnerUDT _

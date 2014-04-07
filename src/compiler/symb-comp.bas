@@ -1250,13 +1250,13 @@ sub symbCompRTTIInit( )
 	symb.rtti.fb_rtti = rttitype
 
 	'' stdlibvtable as any ptr
-	symbAddField( rttitype, "stdlibvtable", 0, dTB(), typeAddrOf( FB_DATATYPE_VOID ), NULL, 0, 0 )
+	symbAddField( rttitype, "stdlibvtable", 0, dTB(), typeAddrOf( FB_DATATYPE_VOID ), NULL, 0, 0, 0 )
 
 	'' dim id as zstring ptr 
-	symbAddField( rttitype, "id", 0, dTB(), typeAddrOf( FB_DATATYPE_CHAR ), NULL, 0, 0 )
+	symbAddField( rttitype, "id", 0, dTB(), typeAddrOf( FB_DATATYPE_CHAR ), NULL, 0, 0, 0 )
 
 	'' dim rttibase as $fb_RTTI ptr
-	symbAddField( rttitype, "rttibase", 0, dTB(), typeAddrOf( FB_DATATYPE_STRUCT ), rttitype, 0, 0 )
+	symbAddField( rttitype, "rttibase", 0, dTB(), typeAddrOf( FB_DATATYPE_STRUCT ), rttitype, 0, 0, 0 )
 
 	'' end type
 	symbStructEnd( rttitype )
@@ -1275,7 +1275,7 @@ sub symbCompRTTIInit( )
 	symbNestBegin( objtype, FALSE )
 
 	'' vptr as any ptr
-	symbAddField( objtype, "$vptr", 0, dTB(), typeAddrOf( FB_DATATYPE_VOID ), NULL, 0, 0 )
+	symbAddField( objtype, "$vptr", 0, dTB(), typeAddrOf( FB_DATATYPE_VOID ), NULL, 0, 0, 0 )
 
 	'' declare constructor( )
 	ctor = symbPreAddProc( NULL )

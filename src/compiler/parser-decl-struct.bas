@@ -251,7 +251,7 @@ end sub
 
 private sub hArrayOrBitfield _
 	( _
-		byval attrib as integer, _
+		byref attrib as integer, _
 		byref bits as integer, _
 		byref dims as integer, _
 		dTB() as FBARRAYDIM _
@@ -271,6 +271,7 @@ private sub hArrayOrBitfield _
 		if( lexGetToken( ) = CHAR_RPRNT ) then
 			lexSkipToken( )
 			dims = -1
+			attrib or= FB_SYMBATTRIB_DYNAMIC
 		else
 			cArrayDecl( dims, exprTB() )
 
@@ -364,13 +365,11 @@ private function hAddAndInitField _
 		end if
 	end if
 
-	sym = symbAddField( parent, id, dims, dTB(), dtype, subtype, lgt, bits )
+	sym = symbAddField( parent, id, dims, dTB(), dtype, subtype, lgt, bits, attrib )
 	if( sym = NULL ) then
 		errReportEx( FB_ERRMSG_DUPDEFINITION, id )
 		exit function
 	end if
-
-	sym->attrib or= attrib
 
 	'' Initializer?
 	hFieldInit( parent, sym )
@@ -431,7 +430,7 @@ private sub hTypeMultElementDecl _
     static as FBARRAYDIM dTB(0 to FB_MAXARRAYDIMS-1)
 	dim as zstring ptr id = any
 	dim as FBSYMBOL ptr subtype = any
-	dim as integer dtype = any, bits = any, dims = any
+	dim as integer dtype = any, bits = any, dims = any, fieldattrib = any
 	dim as longint lgt = any
 
 	'' AS SymbolType
@@ -439,15 +438,17 @@ private sub hTypeMultElementDecl _
 	hFieldType( dtype, subtype, lgt )
 
 	do
+		fieldattrib = attrib
+
 		'' Identifier
 		id = hFieldId( parent )
 
 		'' [ArrayDimensions | ':' BitfieldSize]
-		hArrayOrBitfield( attrib, bits, dims, dTB() )
+		hArrayOrBitfield( fieldattrib, bits, dims, dTB() )
 
 		'' symbAddField()
 		'' ['=' InitializerExpression]
-		hAddAndInitField( parent, id, dims, dTB(), dtype, subtype, lgt, bits, attrib )
+		hAddAndInitField( parent, id, dims, dTB(), dtype, subtype, lgt, bits, fieldattrib )
 
 		'' ','?
 	loop while( hMatch( CHAR_COMMA ) )
