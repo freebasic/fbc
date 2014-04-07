@@ -1284,11 +1284,6 @@ declare sub symbRemoveFromFwdRef _
         byval ref as FBSYMBOL ptr _
     )
 
-declare sub symbRecalcUDTSize _
-	( _
-		byval t as FBSYMBOL ptr _
-	)
-
 declare function symbArrayHasUnknownDimensions( byval sym as FBSYMBOL ptr ) as integer
 
 declare sub symbSetArrayDimTb _
