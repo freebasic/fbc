@@ -583,6 +583,8 @@ sub hMakeArrayDimTB _
 			'' specified, otherwise we'd think ellipsis was given...
 			if( (dTB(i).upper < dTB(i).lower) or (dTB(i).upper = FB_ARRAYDIM_UNKNOWN) ) then
 				errReport( FB_ERRMSG_INVALIDSUBSCRIPT )
+				dTB(i).lower = 0
+				dTB(i).upper = 0
 			end if
 		end if
 	next

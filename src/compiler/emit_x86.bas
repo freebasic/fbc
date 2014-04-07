@@ -861,10 +861,8 @@ private sub hEmitVarBss _
 
 	attrib = symbGetAttrib( s )
 
-	elements = 1
-    if( symbGetArrayDimensions( s ) > 0 ) then
-    	elements = symbGetArrayElements( s )
-	end if
+	elements = symbGetArrayElements( s )
+	assert( elements >= 1 )
 
     hEmitBssHeader( )
 
