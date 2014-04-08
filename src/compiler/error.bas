@@ -214,6 +214,7 @@ declare function hMakeParamDesc _
 		@"Too many errors, exiting", _
 		@"Expected 'ENDMACRO'", _
 		@"EXTERN or COMMON variables cannot be initialized", _
+		@"EXTERN or COMMON dynamic arrays cannot have initial bounds", _
 		@"At least one parameter must be a user-defined type", _
 		@"Parameter or result must be a user-defined type", _
 		@"Both parameters can't be of the same type", _

@@ -1172,13 +1172,15 @@ function cVarDecl _
 
 			'' '(' ArrayDecl ')'
 			else
-				'' COMMON? No subscripts allowed
-				if( attrib and FB_SYMBATTRIB_COMMON ) then
-					errReport( FB_ERRMSG_SYNTAXERROR )
-					'' error recovery: skip until next ')'
-					hSkipUntil( CHAR_RPRNT )
-				else
-					cArrayDecl( dimensions, exprTB() )
+				cArrayDecl( dimensions, exprTB() )
+
+				'' COMMON, or dynamic EXTERN (can happen due to OPTION DYNAMIC)?
+				'' No exact bounds allowed, just like they can't have initializers either.
+				if( ((attrib and FB_SYMBATTRIB_COMMON) <> 0) or _
+				    (((attrib and FB_SYMBATTRIB_EXTERN) <> 0) and _
+				     ((attrib and FB_SYMBATTRIB_DYNAMIC) <> 0)) ) then
+					errReport( FB_ERRMSG_DYNAMICEXTERNCANTHAVEBOUNDS )
+					dimensions = -1
 				end if
 			end if
 
