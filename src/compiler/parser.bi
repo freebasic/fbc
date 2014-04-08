@@ -273,7 +273,12 @@ declare function cVariableDecl _
 		byval attrib as FB_SYMBATTRIB = FB_SYMBATTRIB_NONE _
 	) as integer
 
-declare sub cArrayDecl( byref dimensions as integer, exprTB() as ASTNODE ptr )
+declare sub cArrayDecl _
+	( _
+		byref dimensions as integer, _
+		byref have_bounds as integer, _
+		exprTB() as ASTNODE ptr _
+	)
 
 declare function cInitializer _
 	( _

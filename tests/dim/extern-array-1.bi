@@ -5,6 +5,8 @@ extern externarray4(10 to 10, 20 to 20, 30 to 30) as integer
 extern externarray5(10 to 10, 20 to 20) as integer
 extern externarray6() as integer
 extern externarray7() as integer
+extern externarray8(*) as integer
+extern externarray9(*) as integer
 
 #macro hInsertTest1( )
 	sub test1 cdecl( )
@@ -41,5 +43,12 @@ extern externarray7() as integer
 
 		CU_ASSERT( lbound( externarray7 ) = 7 )
 		CU_ASSERT( ubound( externarray7 ) = 7 )
+
+		redim externarray8(8 to 8)
+		CU_ASSERT( lbound( externarray8 ) = 8 )
+		CU_ASSERT( ubound( externarray8 ) = 8 )
+
+		CU_ASSERT( lbound( externarray9 ) = 9 )
+		CU_ASSERT( ubound( externarray9 ) = 9 )
 	end sub
 #endmacro

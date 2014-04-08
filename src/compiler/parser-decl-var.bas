@@ -232,7 +232,6 @@ function hExprTbIsConst _
 	next
 
 	function = TRUE
-
 end function
 
 private sub hCheckExternVar _
@@ -261,9 +260,12 @@ private sub hCheckExternVar _
 		exit sub
 	end if
 
-	'' EXTERN has unknown dimensions? Then there's no need to do further checks.
-	if( symbGetArrayDimensions( sym ) = -1 ) then
-		assert( dimensions <> 0 )
+	'' One of them has unknown dimensions? Then the other must be an array too,
+	'' but there's no need to do further checks.
+	if( (dimensions = -1) or (symbGetArrayDimensions( sym ) = -1) ) then
+		if( (dimensions <> 0) <> (symbGetArrayDimensions( sym ) <> 0) ) then
+			errReportEx( FB_ERRMSG_WRONGDIMENSIONS, *id )
+		end if
 		exit sub
 	end if
 
@@ -298,6 +300,7 @@ private function hAddVar _
 		byval addsuffix as integer, _
 		byval attrib as integer, _
 		byval dimensions as integer, _
+		byval have_bounds as integer, _
 		dTB() as FBARRAYDIM, _
 		byval token as integer _
 	) as FBSYMBOL ptr
@@ -359,6 +362,7 @@ private function hAddVar _
 		'' but also DIM etc.
 		elseif( ((attrib and FB_SYMBATTRIB_DYNAMIC) <> 0) and _
 			(dimensions > 0) and _
+			have_bounds and _
 			symbGetIsDynamic( sym ) and _
 			((token = FB_TK_REDIM) or symbIsCommon( sym )) ) then
 
@@ -1051,7 +1055,7 @@ function cVarDecl _
 	dim as FBSYMCHAIN ptr chain_ = any
 	dim as FBSYMBOL ptr sym = any, subtype = any, parent = any
 	dim as ASTNODE ptr varexpr = any, initree = any, redimcall = any
-	dim as integer addsuffix = any, is_multdecl = any
+	dim as integer addsuffix = any, is_multdecl = any, have_bounds = any
 	dim as integer is_typeless = any, is_declared = any, is_redim = any
 	dim as integer dtype = any
 	dim as longint lgt = any
@@ -1159,6 +1163,7 @@ function cVarDecl _
 
 		'' ('(' ArrayDecl? ')')?
 		dimensions = 0
+		have_bounds = FALSE
 		if( (lexGetToken( ) = CHAR_LPRNT) and (is_fordecl = FALSE) ) then
 			lexSkipToken( )
 
@@ -1172,15 +1177,20 @@ function cVarDecl _
 
 			'' '(' ArrayDecl ')'
 			else
-				cArrayDecl( dimensions, exprTB() )
-
-				'' COMMON, or dynamic EXTERN (can happen due to OPTION DYNAMIC)?
-				'' No exact bounds allowed, just like they can't have initializers either.
-				if( ((attrib and FB_SYMBATTRIB_COMMON) <> 0) or _
-				    (((attrib and FB_SYMBATTRIB_EXTERN) <> 0) and _
-				     ((attrib and FB_SYMBATTRIB_DYNAMIC) <> 0)) ) then
-					errReport( FB_ERRMSG_DYNAMICEXTERNCANTHAVEBOUNDS )
-					dimensions = -1
+				cArrayDecl( dimensions, have_bounds, exprTB() )
+				if( have_bounds ) then
+					'' COMMON or dynamic EXTERN (can happen due to OPTION DYNAMIC)?
+					'' No exact bounds allowed, just like they can't have initializers either.
+					'' (but they can have fixed dimensions)
+					if( ((attrib and FB_SYMBATTRIB_COMMON) <> 0) or _
+					    (((attrib and FB_SYMBATTRIB_EXTERN) <> 0) and _
+					     ((attrib and FB_SYMBATTRIB_DYNAMIC) <> 0)) ) then
+						errReport( FB_ERRMSG_DYNAMICEXTERNCANTHAVEBOUNDS )
+						dimensions = -1
+						have_bounds = FALSE
+					end if
+				else
+					attrib or= FB_SYMBATTRIB_DYNAMIC
 				end if
 			end if
 
@@ -1193,13 +1203,14 @@ function cVarDecl _
 
 		'' Scalar, no array subscripts
 		else
-			'' With REDIM it must have array subscripts though
-			if( token = FB_TK_REDIM ) then
-				errReportEx( FB_ERRMSG_EXPECTEDARRAY, @id )
-			end if
-
 			'' (could have been added due to OPTION DYNAMIC,
 			'' but if it's not an array, then it can't be DYNAMIC)
+			attrib and= not FB_SYMBATTRIB_DYNAMIC
+		end if
+
+		'' REDIM? Must have array bounds
+		if( (token = FB_TK_REDIM) and (dimensions > 0) and (not have_bounds) ) then
+			errReportEx( FB_ERRMSG_EXPECTEDARRAY, @id )
 			attrib and= not FB_SYMBATTRIB_DYNAMIC
 		end if
 
@@ -1297,7 +1308,7 @@ function cVarDecl _
 			end if
 		end if
 
-		if( dimensions > 0 ) then
+		if( (dimensions > 0) and have_bounds ) then
 			'' QB quirk: when the symbol was defined already by a preceeding COMMON
 			'' statement, then a DIM will work the same way as a REDIM
 			if( token = FB_TK_DIM ) then
@@ -1362,7 +1373,7 @@ function cVarDecl _
 		if( attrib and FB_SYMBATTRIB_DYNAMIC ) then
 			'' DIM'ing dynamic arrays requires a REDIM, check whether code is allowed
 			'' (for REDIM's this check was already done by cVariableDecl())
-			if( (dimensions <> -1) and (token <> FB_TK_REDIM) ) then
+			if( (dimensions > 0) and have_bounds and (token <> FB_TK_REDIM) ) then
 				if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_CODE ) = FALSE ) then
 					hSkipStmt( )
 					exit function
@@ -1382,8 +1393,8 @@ function cVarDecl _
 		'' Declare the new variable or comlain about duplicate
 		'' definition, etc.
 		''
-		sym = hAddVar( sym, id, palias, dtype, subtype, lgt, _
-				addsuffix, attrib, dimensions, dTB(), token )
+		sym = hAddVar( sym, id, palias, dtype, subtype, lgt, addsuffix, _
+				attrib, dimensions, have_bounds, dTB(), token )
 
 		dim as integer has_defctor = FALSE, has_dtor = FALSE
 		if( sym <> NULL ) then
@@ -1532,7 +1543,7 @@ function cVarDecl _
 				end if
 
 				'' Dynamic array? If the dimensions are known, redim it.
-				if( ((attrib and FB_SYMBATTRIB_DYNAMIC) <> 0) and (dimensions > 0) ) then
+				if( ((attrib and FB_SYMBATTRIB_DYNAMIC) <> 0) and (dimensions > 0) and have_bounds ) then
 					if( varexpr = NULL ) then
 						varexpr = astNewVAR( sym )
 					end if
@@ -1627,11 +1638,64 @@ end function
 '' ArrayDimension =
 ''    Expression [TO Expression]
 ''
-'' ArrayDecl =
-''    ArrayDimension (',' ArrayDimension)*
+private sub cArrayDimension( byref dimensions as integer, exprTB() as ASTNODE ptr )
+	'' 1st expression: lbound or ubound
+	'' (depends on whether there's a TO and a 2nd expression following)
+	if( hMatchEllipsis( ) ) then
+		exprTB(dimensions,0) = NULL
+	else
+		'' Expression
+		exprTB(dimensions,0) = hIntExpr( NULL )
+	end if
+
+	'' TO
+	if( lexGetToken( ) = FB_TK_TO ) then
+		lexSkipToken( )
+
+		'' lbound can't be unknown
+		if( exprTB(dimensions,0) = NULL ) then
+			errReport( FB_ERRMSG_CANTUSEELLIPSISASLOWERBOUND )
+			exprTB(dimensions,0) = astNewCONSTi( 0 )
+		end if
+
+		'' ubound
+		if( hMatchEllipsis( ) ) then
+			exprTB(dimensions,1) = NULL
+		else
+			'' Expression
+			exprTB(dimensions,1) = hIntExpr( exprTB(dimensions,0) )
+		end if
+	else
+		'' 1st expression was ubound, not lbound
+		exprTB(dimensions,1) = exprTB(dimensions,0)
+		exprTB(dimensions,0) = astNewCONSTi( env.opt.base )
+	end if
+end sub
+
 ''
-sub cArrayDecl( byref dimensions as integer, exprTB() as ASTNODE ptr )
+'' PlaceHolder =
+''    '*'
+''
+'' ArrayDecl =
+''    '(' ArrayDimension (',' ArrayDimension)* ')'
+''  | '(' PlaceHolder (',' PlaceHolder)* ')'
+''
+''
+'' Examples:
+''    (0 to 0)            => dimensions = 1, have_bounds = TRUE
+''    (0 to 0, 0 to 0)    => dimensions = 2, have_bounds = TRUE
+''    (*)                 => dimensions = 1, have_bounds = FALSE
+''    (*, *)              => dimensions = 2, have_bounds = FALSE
+''
+sub cArrayDecl _
+	( _
+		byref dimensions as integer, _
+		byref have_bounds as integer, _
+		exprTB() as ASTNODE ptr _
+	)
+
 	dimensions = 0
+	have_bounds = TRUE
 
 	do
 		if( dimensions >= FB_MAXARRAYDIMS ) then
@@ -1641,36 +1705,16 @@ sub cArrayDecl( byref dimensions as integer, exprTB() as ASTNODE ptr )
 			exit do
 		end if
 
-		'' 1st expression: lbound or ubound
-		'' (depends on whether there's a TO and a 2nd expression following)
-		if( hMatchEllipsis( ) ) then
-			exprTB(dimensions,0) = NULL
-		else
-			'' Expression
-			exprTB(dimensions,0) = hIntExpr( NULL )
-		end if
-
-		'' TO
-		if( lexGetToken( ) = FB_TK_TO ) then
+		'' '*'? (only if no ArrayDimension seen yet, or had others
+		'' previously)
+		if( (lexGetToken( ) = CHAR_STAR) and _
+		    ((dimensions = 0) or (have_bounds = FALSE)) ) then
+			have_bounds = FALSE
 			lexSkipToken( )
-
-			'' lbound can't be unknown
-			if( exprTB(dimensions,0) = NULL ) then
-				errReport( FB_ERRMSG_CANTUSEELLIPSISASLOWERBOUND )
-				exprTB(dimensions,0) = astNewCONSTi( 0 )
-			end if
-
-			'' ubound
-			if( hMatchEllipsis( ) ) then
-				exprTB(dimensions,1) = NULL
-			else
-				'' Expression
-				exprTB(dimensions,1) = hIntExpr( exprTB(dimensions,0) )
-			end if
+		elseif( have_bounds = FALSE ) then
+			errReport( FB_ERRMSG_EXPECTEDSTAR )
 		else
-			'' 1st expression was ubound, not lbound
-			exprTB(dimensions,1) = exprTB(dimensions,0)
-			exprTB(dimensions,0) = astNewCONSTi( env.opt.base )
+			cArrayDimension( dimensions, exprTB() )
 		end if
 
 		dimensions += 1
@@ -1801,7 +1845,7 @@ private sub cAutoVarDecl( byval attrib as FB_SYMBATTRIB )
 
 		'' add var after parsing the expression, or the the var itself could be used
 		sym = hAddVar( sym, id, NULL, dtype, subtype, _
-			symbCalcLen( dtype, subtype ), FALSE, attrib, 0, dTB(), FB_TK_VAR )
+			symbCalcLen( dtype, subtype ), FALSE, attrib, 0, FALSE, dTB(), FB_TK_VAR )
 
 		if( sym <> NULL ) then
 			'' build a ini-tree

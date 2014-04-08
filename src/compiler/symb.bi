@@ -792,9 +792,7 @@ type SYMBCTX
 	'' dtype/subtype, without checking the length).
 	''
 	'' Of course if the dimension count is unknown we have to use a
-	'' descriptor with room for FB_MAXARRAYDIMS. This probably won't happen
-	'' with array variables in practice, unless it's an unused COMMON or
-	'' something. Thus:
+	'' descriptor with room for FB_MAXARRAYDIMS.
 	''    symb.fbarray(-1) = symb.fbarray(FB_MAXARRAYDIMS)
 	''
 	'' For BYDESC params we could use an FBARRAY structure without any dimTB

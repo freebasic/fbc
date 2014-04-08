@@ -9,6 +9,8 @@ dim externarray4(10 to 10, 20 to 20, 30 to 30) as integer = { { { 123 } } }
 dim externarray5(10 to 10, 20 to ...) as integer = { { 12 } }
 redim externarray6(6 to 6) as integer
 redim shared externarray7(7 to 7) as integer
+dim externarray8(*) as integer
+redim externarray9(9 to 9) as integer
 
 namespace fbc_tests.dim_.extern_array_1
 

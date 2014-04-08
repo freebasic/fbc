@@ -258,6 +258,7 @@ private sub hArrayOrBitfield _
 	)
 
 	static as ASTNODE ptr exprTB(0 to FB_MAXARRAYDIMS-1, 0 to 1)
+	dim as integer have_bounds = any
 
 	bits = 0
 	dims = 0
@@ -273,23 +274,27 @@ private sub hArrayOrBitfield _
 			dims = -1
 			attrib or= FB_SYMBATTRIB_DYNAMIC
 		else
-			cArrayDecl( dims, exprTB() )
+			cArrayDecl( dims, have_bounds, exprTB() )
 
-			'' Convert exprTB to dimTB
-			'' TODO: Allow exprTB for dynamic arrays as in cVarDecl()
-			if( hExprTbIsConst( dims, exprTB() ) ) then
-				assert( (attrib and FB_SYMBATTRIB_DYNAMIC) = 0 )
-				hMakeArrayDimTB( dims, exprTB(), dTB() )
-				for i as integer = 0 to dims-1
-					if( dTB(i).upper = FB_ARRAYDIM_UNKNOWN ) then
-						errReport( FB_ERRMSG_EXPECTEDCONST )
-						dims = 0
-						exit for
-					end if
-				next
+			if( have_bounds ) then
+				'' Convert exprTB to dimTB
+				'' TODO: Allow exprTB for dynamic arrays as in cVarDecl()
+				if( hExprTbIsConst( dims, exprTB() ) ) then
+					assert( (attrib and FB_SYMBATTRIB_DYNAMIC) = 0 )
+					hMakeArrayDimTB( dims, exprTB(), dTB() )
+					for i as integer = 0 to dims-1
+						if( dTB(i).upper = FB_ARRAYDIM_UNKNOWN ) then
+							errReport( FB_ERRMSG_EXPECTEDCONST )
+							dims = 0
+							exit for
+						end if
+					next
+				else
+					errReport( FB_ERRMSG_EXPECTEDCONST )
+					dims = 0
+				end if
 			else
-				errReport( FB_ERRMSG_EXPECTEDCONST )
-				dims = 0
+				attrib or= FB_SYMBATTRIB_DYNAMIC
 			end if
 
 			'' ')'
