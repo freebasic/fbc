@@ -1,7 +1,7 @@
 ' TEST_MODE : COMPILE_ONLY_FAIL
 
 type UDT
-	array() as integer
+	array(any) as integer
 end type
 
 sub f1( )

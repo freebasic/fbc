@@ -268,41 +268,38 @@ private sub hArrayOrBitfield _
 	case CHAR_LPRNT
 		lexSkipToken( )
 
-		'' just '()'?
-		if( lexGetToken( ) = CHAR_RPRNT ) then
-			lexSkipToken( )
-			dims = -1
-			attrib or= FB_SYMBATTRIB_DYNAMIC
+		'' Note: '()' only is not allowed for fields; '(any)' or
+		'' '(any, any)' etc should be used instead. '()' is only needed
+		'' for variables due to backwards compatibility.
+
+		cArrayDecl( dims, have_bounds, exprTB() )
+
+		if( have_bounds ) then
+			'' Convert exprTB to dimTB
+			'' TODO: Allow exprTB for dynamic arrays as in cVarDecl()
+			if( hExprTbIsConst( dims, exprTB() ) ) then
+				assert( (attrib and FB_SYMBATTRIB_DYNAMIC) = 0 )
+				hMakeArrayDimTB( dims, exprTB(), dTB() )
+				for i as integer = 0 to dims-1
+					if( dTB(i).upper = FB_ARRAYDIM_UNKNOWN ) then
+						errReport( FB_ERRMSG_EXPECTEDCONST )
+						dims = 0
+						exit for
+					end if
+				next
+			else
+				errReport( FB_ERRMSG_EXPECTEDCONST )
+				dims = 0
+			end if
 		else
-			cArrayDecl( dims, have_bounds, exprTB() )
+			attrib or= FB_SYMBATTRIB_DYNAMIC
+		end if
 
-			if( have_bounds ) then
-				'' Convert exprTB to dimTB
-				'' TODO: Allow exprTB for dynamic arrays as in cVarDecl()
-				if( hExprTbIsConst( dims, exprTB() ) ) then
-					assert( (attrib and FB_SYMBATTRIB_DYNAMIC) = 0 )
-					hMakeArrayDimTB( dims, exprTB(), dTB() )
-					for i as integer = 0 to dims-1
-						if( dTB(i).upper = FB_ARRAYDIM_UNKNOWN ) then
-							errReport( FB_ERRMSG_EXPECTEDCONST )
-							dims = 0
-							exit for
-						end if
-					next
-				else
-					errReport( FB_ERRMSG_EXPECTEDCONST )
-					dims = 0
-				end if
-			else
-				attrib or= FB_SYMBATTRIB_DYNAMIC
-			end if
-
-			'' ')'
-			if( lexGetToken( ) <> CHAR_RPRNT ) then
-				errReport( FB_ERRMSG_EXPECTEDRPRNT )
-			else
-				lexSkipToken( )
-			end if
+		'' ')'
+		if( lexGetToken( ) <> CHAR_RPRNT ) then
+			errReport( FB_ERRMSG_EXPECTEDRPRNT )
+		else
+			lexSkipToken( )
 		end if
 
 	'' ':' NUMLIT? (bitfield size)

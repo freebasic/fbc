@@ -397,9 +397,9 @@ sub symbCheckDynamicArrayDimensions _
 		'' descriptor has already been emitted via a DECL node. We'd
 		'' have to exchange this for the new initializer code...
 		''
-		'' Descriptor fields: We can't resize the field after the fact
-		'' either. We'd have re-calculate the struct layout, all
-		'' sizeof()s, etc.
+		'' If '()' were allowed on dynamic array fields: We couldn't
+		'' resize the descriptor field after the fact either. That would
+		'' require re-calculate the struct layout, all sizeof()s, etc.
 		''
 		'' COMMON descriptors: They can't be initialized due to being
 		'' emitted into BSS; the descriptor's "dimensions" field will
@@ -412,6 +412,8 @@ sub symbCheckDynamicArrayDimensions _
 		''
 		assert( symbGetType( symbGetArrayDescriptor( sym ) ) = FB_DATATYPE_STRUCT )
 		assert( symbGetArrayDescriptor( sym )->subtype = symb.fbarray(-1) )
+		assert( symbIsField( sym ) = FALSE )
+		assert( symbIsField( symbGetArrayDescriptor( sym ) ) = FALSE )
 		#if 0
 		if( symbIsVar( sym ) and _
 		    (not symbIsCommon( sym )) and _

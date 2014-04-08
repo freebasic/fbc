@@ -289,8 +289,8 @@ end namespace
 
 namespace dynamicArrayFieldsGlobal
 	type UDT
-		array1() as integer
-		array2() as integer
+		array1(any) as integer
+		array2(any) as integer
 	end type
 
 	dim shared globalx as UDT
@@ -322,8 +322,8 @@ end namespace
 
 namespace dynamicArrayFieldsLocal
 	type UDT
-		array1() as integer
-		array2() as integer
+		array1(any) as integer
+		array2(any) as integer
 	end type
 
 	private sub test cdecl( )

@@ -6,11 +6,11 @@ const EPSILON_SNG as single = 1.1929093e-7
 
 namespace arrayAccess
 	type UDT1
-		array() as integer
+		array(any) as integer
 	end type
 
 	type UDT2
-		array() as integer
+		array(any, any) as integer
 	end type
 
 	private sub testSimple cdecl( )
@@ -83,9 +83,9 @@ namespace compileTimeDtype
 	'' Array accesses should produce the proper dtype at compile-time
 
 	type UDT
-		array1() as integer
-		array2() as string
-		array3() as single
+		array1(any) as integer
+		array2(any) as string
+		array3(any) as single
 	end type
 
 	private sub test cdecl( )
@@ -146,11 +146,11 @@ namespace complexDtypes
 	end destructor
 
 	type TestUdt
-		array1() as string
-		array2() as single
-		array3() as CtorUdt
-		array4() as DtorUdt
-		array5() as CtorDtorUdt
+		array1(any) as string
+		array2(any) as single
+		array3(any) as CtorUdt
+		array4(any) as DtorUdt
+		array5(any) as CtorDtorUdt
 	end type
 
 	private sub test cdecl( )
@@ -225,7 +225,7 @@ namespace passingBydesc
 	'' Testing whether dynamic array fields can be passed BYDESC nicely,
 	'' and even be REDIM'ed through the BYDESC param.
 	type UDT
-		array() as integer
+		array(any) as integer
 	end type
 
 	function getLbound( array() as integer ) as integer
@@ -282,7 +282,7 @@ namespace sidefxRemoval
 	'' of the index expressions (matters especially with -exx).
 
 	type UDT
-		array() as integer
+		array(any) as integer
 	end type
 
 	dim shared globalx as UDT

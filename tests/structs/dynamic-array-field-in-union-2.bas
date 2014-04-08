@@ -3,7 +3,7 @@
 type UDT
 	union
 		type
-			array() as integer
+			array(any) as integer
 		end type
 	end union
 end type

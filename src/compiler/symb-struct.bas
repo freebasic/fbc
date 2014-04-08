@@ -275,7 +275,7 @@ function symbAddField _
 
 	'' Dynamic array field? Recursively add the corresponding descriptor field.
 	if( attrib and FB_SYMBATTRIB_DYNAMIC ) then
-		assert( (dimensions = -1) or (dimensions > 0) )
+		assert( dimensions > 0 )
 
 		'' Because this is done here at the top:
 		''  - the descriptor will be added before the fake array,
@@ -290,10 +290,7 @@ function symbAddField _
 		id = strptr( arrayid )
 
 		'' Note: using the exact descriptor type corresponding to the
-		'' amount of dimensions found in the field declaration. If they
-		'' were unknown though, then we have to use the max. size
-		'' descriptor, because as a field it can't be resized later,
-		'' neither growing nor shrinking.
+		'' amount of dimensions found in the field declaration.
 
 		desc = symbAddField( parent, symbUniqueId( ), 0, emptydTB(), _
 				FB_DATATYPE_STRUCT, symb.fbarray(dimensions), 0, 0, FB_SYMBATTRIB_DESCRIPTOR )

@@ -1,5 +1,5 @@
 ' TEST_MODE : COMPILE_ONLY_FAIL
 
 union UDT
-	array() as integer
+	array(any) as integer
 end union

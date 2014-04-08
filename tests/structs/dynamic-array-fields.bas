@@ -2,21 +2,10 @@
 
 namespace fbc_tests.structs.dynamic_array_fields
 
-const FB_MAXARRAYDIMS = 8
-
 type FBARRAYDIM
 	elements	as uinteger
 	lbound		as integer
 	ubound		as integer
-end type
-
-type FBARRAY
-	data		as any ptr
-	ptr		as any ptr
-	size		as uinteger
-	element_len	as uinteger
-	dimensions	as uinteger
-	dimTB(0 to FB_MAXARRAYDIMS-1)	as FBARRAYDIM
 end type
 
 #macro declareFBARRAY( n )
@@ -41,23 +30,23 @@ declareFBARRAY( 8 )
 
 namespace descriptorAllocation
 	'' The dynamic array field should only exist in memory in form of the
-	'' dynamic array descriptor, which must have room for FB_MAXARRAYDIMS
-	'' dimensions.
+	'' dynamic array descriptor, which should have the exact size needed for
+	'' the amount of dimensions specified in the field declaration.
 
 	type UDT1
-		array()		as integer
+		array(any)	as integer
 	end type
 
 	type UDT2
 		a		as integer
-		array()		as integer
+		array(any)	as integer
 		b		as integer
 	end type
 
 	type UDT3
-		array1()	as integer
-		array2()	as string
-		array3()	as UDT2
+		array1(any)	as integer
+		array2(any)	as string
+		array3(any)	as UDT2
 		x		as UDT2
 	end type
 
@@ -94,9 +83,9 @@ namespace descriptorAllocation
 	end type
 
 	sub test cdecl( )
-		CU_ASSERT( sizeof( UDT1 ) = sizeof( FBARRAY ) )
-		CU_ASSERT( sizeof( UDT2 ) = sizeof( integer ) + sizeof( FBARRAY ) + sizeof( integer ) )
-		CU_ASSERT( sizeof( UDT3 ) = (sizeof( FBARRAY ) * 3) + sizeof( UDT2 ) )
+		CU_ASSERT( sizeof( UDT1 ) = sizeof( FBARRAY1 ) )
+		CU_ASSERT( sizeof( UDT2 ) = sizeof( integer ) + sizeof( FBARRAY1 ) + sizeof( integer ) )
+		CU_ASSERT( sizeof( UDT3 ) = (sizeof( FBARRAY1 ) * 3) + sizeof( UDT2 ) )
 
 		CU_ASSERT( sizeof( Descriptor1 ) = sizeof( FBARRAY1 ) )
 		CU_ASSERT( sizeof( Descriptor2 ) = sizeof( FBARRAY2 ) )
@@ -126,15 +115,15 @@ namespace descriptorInitAndCleanUp
 	end destructor
 
 	type UDT1
-		array1() as integer
-		array2() as string
-		array3() as DtorUdt
+		array1(any) as integer
+		array2(any) as string
+		array3(any) as DtorUdt
 	end type
 
 	type UDT2
-		array1() as integer
-		array2() as string
-		array3() as DtorUdt
+		array1(any, any) as integer
+		array2(any, any, any) as string
+		array3(any, any) as DtorUdt
 	end type
 
 	sub test cdecl( )
@@ -205,11 +194,11 @@ end namespace
 
 namespace copyPod
 	type UDT1
-		array() as integer
+		array(any) as integer
 	end type
 
 	type UDT2
-		array() as integer
+		array(any, any) as integer
 	end type
 
 	private sub test cdecl( )
@@ -351,11 +340,11 @@ end namespace
 
 namespace copyString
 	type UDT1
-		array() as string
+		array(any) as string
 	end type
 
 	type UDT2
-		array() as string
+		array(any, any) as string
 	end type
 
 	private sub test cdecl( )
@@ -519,11 +508,11 @@ namespace copyClass
 	end operator
 
 	type UDT1
-		array() as MyClass
+		array(any) as MyClass
 	end type
 
 	type UDT2
-		array() as MyClass
+		array(any, any) as MyClass
 	end type
 
 	private sub test cdecl( )
