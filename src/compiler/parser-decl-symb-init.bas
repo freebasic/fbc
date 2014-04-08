@@ -567,21 +567,14 @@ function cInitializer _
 
 	function = NULL
 
+	'' cannot initialize dynamic vars/fields
+	if( symbGetIsDynamic( sym ) or symbIsCommon( sym ) ) then
+		errReport( FB_ERRMSG_CANTINITDYNAMICARRAYS, TRUE )
+		exit function
+	end if
+
 	if( symbIsVar( sym ) ) then
-		'' cannot initialize dynamic vars
-		if( symbGetIsDynamic( sym ) ) then
-			errReport( FB_ERRMSG_CANTINITDYNAMICARRAYS, TRUE )
-			exit function
-		end if
-
-		'' common?? impossible but..
-		if( symbIsCommon( sym ) ) then
-			errReport( FB_ERRMSG_CANTINITDYNAMICARRAYS, TRUE )
-			exit function
-		end if
-
 		is_local = symbIsLocal( sym )
-
 	'' param, struct/class field or anon-udt
 	else
 		is_local = FALSE
