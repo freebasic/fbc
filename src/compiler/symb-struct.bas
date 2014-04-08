@@ -485,7 +485,7 @@ function symbAddField _
 	end select
 
 	'' Dynamic array? Same restrictions as STRINGs
-	if( dimensions = -1 ) then
+	if( attrib and FB_SYMBATTRIB_DYNAMIC ) then
 		if( symbGetUDTIsUnionOrAnon( parent ) ) then
 			errReport( FB_ERRMSG_DYNAMICARRAYINUNION )
 		else
