@@ -96,18 +96,18 @@ FBARRAY *fb_ArrayAllocTempDesc
     elements = fb_hArrayCalcElements( dimensions, &lbTB[0], &ubTB[0] );
     diff = fb_hArrayCalcDiff( dimensions, &lbTB[0], &ubTB[0] ) * element_len;
 
-    array->ptr = arraydata;
-
-    FB_ARRAY_SETDESC( array, element_len, dimensions, elements * element_len, diff );
+	array->data = ((unsigned char *)arraydata) + diff;
+	array->ptr = arraydata;
+	array->size = elements * element_len;
+	array->element_len = element_len;
+	array->dimensions = dimensions;
 
     return array;
 }
 
 FBCALL void fb_ArrayFreeTempDesc( FBARRAY *pdesc )
 {
-
 	FB_LOCK();
 	fb_hArrayFreeTmpDesc( pdesc );
 	FB_UNLOCK();
-
 }

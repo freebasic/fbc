@@ -15,6 +15,10 @@ FBCALL int fb_ArrayRedimTo
 	unsigned char *this_;
 	unsigned char *limit;
 
+	/* ditto, see fb_hArrayAlloc() */
+	if( (source->dimensions != dest->dimensions) && (dest->dimensions != 0) )
+		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
+
 	/* Retrieve diff value so we don't have to re-calculate it */
 	if( source->ptr > source->data ) {
 		diff = ((size_t)source->ptr) - ((size_t)source->data);
@@ -29,13 +33,16 @@ FBCALL int fb_ArrayRedimTo
 		fb_ArrayDestructObj( dest, dtor );
 	fb_ArrayErase( dest, isvarlen );
 
-	/* Copy over bounds etc. */
-	dest->size        = source->size;
-	dest->element_len = source->element_len;
-	dest->dimensions  = source->dimensions;
-	memcpy(&dest->dimTB[0], &source->dimTB[0], sizeof(FBARRAYDIM) * source->dimensions);
+	DBG_ASSERT( dest->element_len == source->element_len || dest->element_len == 0 );
+	DBG_ASSERT( dest->dimensions == source->dimensions || dest->dimensions == 0 );
 
-	/* Allocte new buffer; clear unless ctors will be called.
+	/* Copy over bounds etc. */
+	dest->size = source->size;
+	dest->element_len = source->element_len;
+	dest->dimensions = source->dimensions;
+	memcpy( &dest->dimTB[0], &source->dimTB[0], sizeof( FBARRAYDIM ) * dest->dimensions );
+
+	/* Allocate new buffer; clear unless ctors will be called.
 	   (ctors take care of clearing themselves) */
 	if( ctor == NULL ) {
 		dest->ptr = calloc( dest->size, 1 );

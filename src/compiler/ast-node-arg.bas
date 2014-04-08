@@ -383,7 +383,7 @@ private function hCheckByDescParam _
 		if( symbIsParamByDesc( s ) ) then
 			'' it's a pointer, but it will be seen as anything else
 			'' (ie: "array() as string"), so, remap the type
-			astSetType( n->l, typeAddrOf( FB_DATATYPE_STRUCT ), symb.fbarray )
+			astSetType( n->l, typeAddrOf( FB_DATATYPE_STRUCT ), symb.fbarray(-1) )
 			return TRUE
 		end if
 

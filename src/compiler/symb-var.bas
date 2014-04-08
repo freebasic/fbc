@@ -11,20 +11,18 @@
 #include once "list.bi"
 #include once "ast.bi"
 
-declare sub hCreateArrayDescriptorType( )
 declare function hAddArrayDescriptorType _
 	( _
-		byval symtb as FBSYMBOLTB ptr, _
 		byval dims as integer, _
-		byval id as zstring ptr, _
-		byval attrib as integer _
+		byval id as zstring ptr _
 	) as FBSYMBOL ptr
+declare sub hAddGlobalArrayDescriptorTypes( )
 
 sub symbVarInit( )
 	'' assuming it's safe to create UDT symbols here, the array
 	'' dimension type must be allocated at module-level or it
 	'' would be removed when going out scope
-	hCreateArrayDescriptorType( )
+	hAddGlobalArrayDescriptorTypes( )
 end sub
 
 sub symbVarEnd( )
@@ -34,7 +32,7 @@ end sub
 '' add
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-private sub hCreateArrayDescriptorType( )
+private sub hAddGlobalArrayDescriptorTypes( )
 	static as FBARRAYDIM dTB(0)
 	dim as FBSYMBOL ptr fld = any
 
@@ -59,14 +57,18 @@ private sub hCreateArrayDescriptorType( )
 	'' type FBARRAY
 	''     ...
 	'' end type
-	symb.fbarray = hAddArrayDescriptorType( NULL, FB_MAXARRAYDIMS, "__FB_ARRAYDESC$", 0 )
+	for i as integer = 1 to FB_MAXARRAYDIMS
+		symb.fbarray(i) = hAddArrayDescriptorType( i, "__FB_ARRAYDESC" & i & "$" )
+	next
+	symb.fbarray(0) = NULL
+	symb.fbarray(-1) = symb.fbarray(FB_MAXARRAYDIMS)
 
 	''
 	'' Store some field offsets into globals for easy access
 	''
 
 	'' FBARRAY
-	fld = symbUdtGetFirstField( symb.fbarray )  '' data
+	fld = symbUdtGetFirstField( symb.fbarray(-1) )  '' data
 	symb.fbarray_data = symbGetOfs( fld )
 	fld = symbUdtGetNextField( fld )         '' ptr
 	symb.fbarray_ptr = symbGetOfs( fld )
@@ -87,16 +89,14 @@ end sub
 
 private function hAddArrayDescriptorType _
 	( _
-		byval symtb as FBSYMBOLTB ptr, _
 		byval dims as integer, _
-		byval id as zstring ptr, _
-		byval attrib as integer _
+		byval id as zstring ptr _
 	) as FBSYMBOL ptr
 
 	static as FBARRAYDIM dTB(0)
 	dim as FBSYMBOL ptr sym = any
 
-	sym = symbStructBegin( symtb, NULL, id, NULL, FALSE, 0, NULL, attrib )
+	sym = symbStructBegin( NULL, NULL, id, NULL, FALSE, 0, NULL, 0 )
 
 	'' data			as any ptr
 	symbAddField( sym, "data", 0, dTB(), typeAddrOf( FB_DATATYPE_VOID ), NULL, 0, 0, 0 )
@@ -221,16 +221,7 @@ function symbAddArrayDesc( byval array as FBSYMBOL ptr ) as FBSYMBOL ptr
 		symtb = array->symtb
 	end if
 
-	'' Dynamic array? Just re-use the global descriptor created at
-	'' hCreateArrayDescriptorType(), instead of making a new one.
-	if( symbIsDynamic( array ) ) then
-		desctype = symb.fbarray
-	else
-		'' Create descriptor UDT in same symtb, and preserving the
-		'' FB_SYMBATTRIB_LOCAL too if the descriptor has it.
-		desctype = hAddArrayDescriptorType( symtb, symbGetArrayDimensions( array ), _
-				symbUniqueId( ), attrib and FB_SYMBATTRIB_LOCAL )
-	end if
+	desctype = symb.fbarray(symbGetArrayDimensions( array ))
 
 	desc = symbNewSymbol( FB_SYMBOPT_PRESERVECASE, NULL, symtb, NULL, _
 	                      FB_SYMBCLASS_VAR, id, id_alias, _
@@ -385,6 +376,8 @@ sub symbCheckDynamicArrayDimensions _
 		byval dimensions as integer _
 	)
 
+	dim as FBSYMBOL ptr desc = any
+
 	assert( symbIsDynamic( sym ) )
 
 	'' Secondary declarations with dimensions = -1 don't make a difference.
@@ -394,6 +387,45 @@ sub symbCheckDynamicArrayDimensions _
 
 	if( symbGetArrayDimensions( sym ) = -1 ) then
 		sym->var_.array.dimensions = dimensions
+
+		''
+		'' Note: Ideally we would resize the array descriptor, now that
+		'' the exact dimensions are known. Unfortunately, it's too late
+		'' for that...
+		''
+		'' Local descriptors (on stack): The initializer for the
+		'' descriptor has already been emitted via a DECL node. We'd
+		'' have to exchange this for the new initializer code...
+		''
+		'' Descriptor fields: We can't resize the field after the fact
+		'' either. We'd have re-calculate the struct layout, all
+		'' sizeof()s, etc.
+		''
+		'' COMMON descriptors: They can't be initialized due to being
+		'' emitted into BSS; the descriptor's "dimensions" field will
+		'' end up being initially 0, causing the rtlib to expect room
+		'' for FB_MAXARRAYDIMS anyways.
+		''
+		'' Thus shrinking the descriptor could only be done for
+		'' non-COMMON globals, though even then it'd be risky, because
+		'' fbc wasn't designed for this kind of "multi-pass" things...
+		''
+		assert( symbGetType( symbGetArrayDescriptor( sym ) ) = FB_DATATYPE_STRUCT )
+		assert( symbGetArrayDescriptor( sym )->subtype = symb.fbarray(-1) )
+		#if 0
+		if( symbIsVar( sym ) and _
+		    (not symbIsCommon( sym )) and _
+		    ((not symbIsLocal( sym )) or symbIsStatic( sym )) ) then
+			assert( symbGetVarIsAllocated( desc ) = FALSE )
+			symbSetType( desc, FB_DATATYPE_STRUCT, symb.fbarray(dimensions) )
+
+			'' Must also switch to a new, compatible initializer
+			'' (there now are less fields to initialize)
+			astDelTree( desc->var_.initree )
+			desc->var_.initree = NULL
+			desc->var_.initree = astBuildArrayDescIniTree( desc, sym, NULL )
+		end if
+		#endif
 
 	'' The array's dimension count is known; complain about mismatching dimension counts.
 	elseif( symbGetArrayDimensions( sym ) <> dimensions ) then

@@ -780,7 +780,33 @@ type SYMBCTX
 					0 to AST_OPCODES-1 _
 				)	as SYMB_OVLOP				'' global operator overloading
 
-	fbarray			as FBSYMBOL ptr			'' FBARRAY (array descriptor)
+	''
+	'' Pre-declared FBARRAY (array descriptor) structures, one for each
+	'' possible dimension count.
+	''
+	'' fbarray(0) = NULL (should be unused)
+	''
+	'' These are needed so we can give each array descriptor the correct
+	'' minimum size in (setting the descriptor symbol length isn't enough,
+	'' because e.g. the C backend will emit the descriptor based on its
+	'' dtype/subtype, without checking the length).
+	''
+	'' Of course if the dimension count is unknown we have to use a
+	'' descriptor with room for FB_MAXARRAYDIMS. This probably won't happen
+	'' with array variables in practice, unless it's an unused COMMON or
+	'' something. Thus:
+	''    symb.fbarray(-1) = symb.fbarray(FB_MAXARRAYDIMS)
+	''
+	'' For BYDESC params we could use an FBARRAY structure without any dimTB
+	'' at all (i.e. a descriptor with zero dimensions), and, by doing so,
+	'' avoid any assumptions about the given argument. However, this is
+	'' unnecessary, since the exact descriptor type used by BYDESC params
+	'' never matters (we're not building any field accesses on it; that's
+	'' all done in the rtlib). And the rtlib should check the exact
+	'' dimension count available at the end of each descriptor anyways.
+	''
+	fbarray(-1 to FB_MAXARRAYDIMS) as FBSYMBOL ptr
+
 	fbarray_data		as integer			'' offsetof( FBARRAY, data )
 	fbarray_ptr		as integer			'' offsetof( FBARRAY, ptr )
 	fbarray_size		as integer			'' offsetof( FBARRAY, size )

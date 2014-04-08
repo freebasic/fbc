@@ -25,19 +25,6 @@ typedef struct _FB_ARRAY_TMPDESC {
 typedef void (*FB_DEFCTOR)( void *this_ );
 typedef void (*FB_DTORMULT) ( FBARRAY *array, FB_DEFCTOR dtor, size_t base_idx );
 
-
-#define FB_ARRAY_SETDESC(_array, _elen, _dims, _size, _diff)          \
-    do {                                                              \
-        _array->element_len = _elen;                                  \
-        _array->dimensions  = _dims;                                  \
-        _array->size        = _size;                                  \
-                                                                      \
-        if( _array->ptr != NULL )                                     \
-            _array->data = ((unsigned char*) _array->ptr) + (_diff);  \
-        else                                                          \
-            _array->data = NULL;                                      \
-    } while (0)
-
 FBCALL void *fb_ArrayBoundChk
 	(
 		ssize_t idx,

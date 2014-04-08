@@ -725,7 +725,7 @@ function astBuildArrayDescIniTree _
 	) as ASTNODE ptr
 
     dim as ASTNODE ptr tree = any
-    dim as integer dtype = any, dims = any
+	dim as integer dtype = any, dimensions = any
     dim as FBSYMBOL ptr elm = any, dimtb = any, subtype = any
 
 	'' COMMON or EXTERN? Cannot be initialized
@@ -733,10 +733,20 @@ function astBuildArrayDescIniTree _
 		return NULL
 	end if
 
+#if __FB_DEBUG__
+	'' The descriptor's dtype must be one of the symb.fbarray()'s
 	assert( symbGetType( desc ) = FB_DATATYPE_STRUCT )
-	assert( symbIsStruct( symbGetSubtype( desc ) ) )
+	scope
+		var found = (symbGetSubtype( desc ) = symb.fbarray(-1))
+		for i as integer = 1 to FB_MAXARRAYDIMS
+			found or= (symbGetSubtype( desc ) = symb.fbarray(i))
+		next
+		assert( found )
+	end scope
+
 	assert( symbIsParamBydesc( array ) = FALSE )
 	assert( symbIsVar( desc ) or symbIsField( desc ) )
+#endif
 
 	tree = astTypeIniBegin( symbGetFullType( desc ), symbGetSubtype( desc ), not symbIsField( desc ), symbGetOfs( desc ) )
 
@@ -799,12 +809,16 @@ function astBuildArrayDescIniTree _
     elm = symbGetNext( elm )
 
 	'' .dimensions = dims( array )
-	astTypeIniAddAssign( tree, _
-		astNewCONSTi( _
-			iif( symbIsDynamic( array ), _
-				0, _
-				symbGetArrayDimensions( array ) ) ), _
-		elm )
+	dimensions = symbGetArrayDimensions( array )
+	'' If the dimensions count is unknown at compile-time, then the
+	'' descriptor must have room for FB_MAXARRAYDIMS and we have to
+	'' initialize the dimensions field to 0, so that the rtlib can detect
+	'' this as a special case (see also fb_hArrayAlloc()).
+	if( symbGetSubtype( desc ) = symb.fbarray(-1) ) then
+		dimensions = 0
+	end if
+	assert( dimensions >= 0 )
+	astTypeIniAddAssign( tree, astNewCONSTi( dimensions ), elm )
 
     elm = symbGetNext( elm )
 
@@ -836,9 +850,15 @@ function astBuildArrayDescIniTree _
 			astTypeIniScopeEnd( tree, NULL )
 		next
 	else
-		'' Dynamic array descriptors have room for FB_MAXARRAYDIMS
-		'' dimensions in their dimTB. Clear them all.
-		astTypeIniAddPad( tree, FB_MAXARRAYDIMS * symbGetLen( symb.fbarraydim ) )
+		'' Just clear the dimTB entries (dynamic array; not yet allocated)
+		dimensions = symbGetArrayDimensions( array )
+		'' If the dimensions count is unknown at compile-time, then the
+		'' descriptor must have room for FB_MAXARRAYDIMS (see above).
+		if( symbGetSubtype( desc ) = symb.fbarray(-1) ) then
+			dimensions = FB_MAXARRAYDIMS
+		end if
+		assert( dimensions > 0 )
+		astTypeIniAddPad( tree, dimensions * symbGetLen( symb.fbarraydim ) )
 	end if
 
     astTypeIniScopeEnd( tree, NULL )

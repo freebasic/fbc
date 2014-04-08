@@ -686,10 +686,17 @@ end function
 private function hDeclDynArray( byval sym as FBSYMBOL ptr ) as string static
     dim as string desc, dimdesc
 	dim as integer baseoffset = any, i = any, dimension = any
-	dim as FBSYMBOL ptr fld = any
+	dim as FBSYMBOL ptr fld = any, desctype = any
+
+	if( symbIsParamByDesc( sym ) ) then
+		desctype = symb.fbarray(-1)
+	else
+		desctype = symbGetSubtype( symbGetArrayDescriptor( sym ) )
+	end if
+	assert( symbIsStruct( desctype ) )
 
 	'' declare the array descriptor
-	desc = str( ctx.typecnt ) + "=s" + str( symbGetLen( symb.fbarray ) )
+	desc = str( ctx.typecnt ) + "=s" + str( symbGetLen( desctype ) )
 	ctx.typecnt += 1
 
 	dimdesc = hDeclArrayDims( sym )
@@ -699,7 +706,7 @@ private function hDeclDynArray( byval sym as FBSYMBOL ptr ) as string static
 	'' FBARRAY fields
 
 	'' data
-	fld = symbUdtGetFirstField( symb.fbarray )
+	fld = symbUdtGetFirstField( desctype )
 	desc += hDeclUdtField( fld, strptr( dimdesc ) )
 
 	'' ptr

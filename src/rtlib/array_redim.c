@@ -18,6 +18,34 @@ int fb_hArrayAlloc
 	ssize_t lbTB[FB_MAXDIMENSIONS];
 	ssize_t ubTB[FB_MAXDIMENSIONS];
 
+	/* Must take care with the descriptor's maximum dimensions, because fbc
+	   may allocate a smaller descriptor (with room only for some
+	   dimensions, but not necessarily all of FB_MAXARRAYDIMS). Thus it's
+	   not safe to increase the dimension count of a descriptor.
+
+	   Of course it's not very useful to change the array's dimension count
+	   in the first place, because FB's array access syntax depends on the
+	   dimension count, and fbc disallows changing it at compile-time in
+	   most cases.
+
+	   The situation where fbc can't know the exact dimensions is with
+	   <dim array()> where there's no dimension count given in the
+	   declaration. If fbc can't figure out the dimension count later during
+	   the compilation, then it has to allocate a descriptor with room for
+	   FB_MAXARRAYDIMS and initialize its FBARRAY.dimension field to 0.
+	   Then, if we see the 0 here, we know that there's room for
+	   FB_MAXARRAYDIMS, and can initialize the descriptor for its first use.
+	   Once this initial dimension count has been set, it can't be changed
+	   anymore, because the descriptor from then on looks like it only has
+	   room for that first-used amount of dimensions. Any unused dimensions
+	   will be wasted memory of course.
+
+	   Thus overall it's best to disallow changing the dimension count at
+	   runtime completely, except for the first-use case where fbc couldn't
+	   figure out the dimensions at compile-time. */
+	if( (dimensions != array->dimensions) && (array->dimensions != 0) )
+		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
+
     /* load bounds */
     dim = &array->dimTB[0];
     for( i = 0; i < dimensions; i++ )
@@ -50,9 +78,6 @@ int fb_hArrayAlloc
     if( array->ptr == NULL )
     	return fb_ErrorSetNum( FB_RTERROR_OUTOFMEM );
 
-    /* set descriptor */
-    FB_ARRAY_SETDESC( array, element_len, dimensions, size, diff );
-
 	/* call ctor for each element */
 	if( ctor ) {
 		unsigned char *this_ = array->ptr;
@@ -65,6 +90,14 @@ int fb_hArrayAlloc
 			--elements;
 		}
 	}
+
+	DBG_ASSERT( array->element_len == element_len || array->element_len == 0 );
+	DBG_ASSERT( array->dimensions == dimensions || array->dimensions == 0 );
+
+	array->data = ((unsigned char *)array->ptr) + diff;
+	array->size = size;
+	array->element_len = element_len;
+	array->dimensions = dimensions;
 
 	return fb_ErrorSetNum( FB_RTERROR_OK );
 }
@@ -79,7 +112,6 @@ static int hRedim
 		va_list ap
 	)
 {
-
 	/* free old */
 	fb_ArrayErase( array, isvarlen );
 

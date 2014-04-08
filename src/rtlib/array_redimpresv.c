@@ -21,6 +21,10 @@ int fb_hArrayRealloc
 	ssize_t ubTB[FB_MAXDIMENSIONS];
 	unsigned char *this_;
 
+	/* ditto, see fb_hArrayAlloc() */
+	if( (dimensions != array->dimensions) && (array->dimensions != 0) )
+		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
+
     /* load bounds */
     for( i = 0; i < dimensions; i++ )
     {
@@ -72,7 +76,13 @@ int fb_hArrayRealloc
 		}
 	}
 
-    /* set descriptor */
+	DBG_ASSERT( array->element_len == element_len || array->element_len == 0 );
+	DBG_ASSERT( array->dimensions == dimensions || array->dimensions == 0 );
+
+	array->data = ((unsigned char *)array->ptr) + diff;
+	array->size = size;
+	array->element_len = element_len;
+	array->dimensions = dimensions;
     dim = &array->dimTB[0];
     for( i = 0; i < dimensions; i++, dim++ )
     {
@@ -80,8 +90,6 @@ int fb_hArrayRealloc
     	dim->lbound = lbTB[i];
     	dim->ubound = ubTB[i];
     }
-
-	FB_ARRAY_SETDESC( array, element_len, dimensions, size, diff );
 
     return fb_ErrorSetNum( FB_RTERROR_OK );
 }

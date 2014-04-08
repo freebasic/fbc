@@ -152,6 +152,7 @@ private function hFieldAccess _
 	) as ASTNODE ptr
 
 	dim as ASTNODE ptr offsetexpr = any, indexexpr = any, tree = any
+	dim as FBSYMBOL ptr desc = any
 
 	offsetexpr = astNewCONSTi( symbGetOfs( fld ) )
 
@@ -175,9 +176,10 @@ private function hFieldAccess _
 		lexSkipToken( )
 
 		if( symbIsDynamic( fld ) ) then
-			'' The field is the descriptor
+			'' Dynamic array field; access the descriptor field (same offset)
+			desc = symbGetArrayDescriptor( fld )
 			varexpr = astNewBOP( AST_OP_ADD, varexpr, offsetexpr )
-			varexpr = astNewCONV( typeAddrOf( FB_DATATYPE_STRUCT ), symb.fbarray, varexpr, AST_CONVOPT_DONTCHKPTR )
+			varexpr = astNewCONV( typeAddrOf( symbGetFullType( desc ) ), symbGetSubtype( desc ), varexpr, AST_CONVOPT_DONTCHKPTR )
 
 			tree = NULL
 			if( astHasSideFx( varexpr ) ) then
@@ -988,7 +990,7 @@ function cVariableEx overload _
 					if( symbIsParamBydesc( sym ) ) then
 						'' Build a VAR access with the BYDESC param's real dtype
 						descexpr = astNewVAR( sym )
-						astSetType( descexpr, typeAddrOf( FB_DATATYPE_STRUCT ), symb.fbarray )
+						astSetType( descexpr, typeAddrOf( FB_DATATYPE_STRUCT ), symb.fbarray(-1) )
 
 						'' And DEREF to get to the descriptor
 						descexpr = astNewDEREF( descexpr )
