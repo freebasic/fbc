@@ -388,8 +388,7 @@ declare function hMakeParamDesc _
 		@"vararg parameters are only allowed in CDECL procedures", _
 		@"the first parameter in a procedure may not be vararg", _
 		@"CONST used on constructor (not needed)", _
-		@"CONST used on destructor (not needed)", _
-		@"Expected '*'" _
+		@"CONST used on destructor (not needed)" _
 	}
 
 

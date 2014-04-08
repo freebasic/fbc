@@ -4,10 +4,10 @@ namespace fbc_tests.dim_.dynamic_dimensionsonly
 
 #include "dynamic-dimensionsonly.bi"
 
-dim array1(*) as integer
-dim array2(*, *) as integer
+dim array1(any) as integer
+dim array2(any, any) as integer
 
-dim shared array3(*, *, *) as integer
+dim shared array3(any, any, any) as integer
 
 private sub test cdecl( )
 	CU_ASSERT( ubound( array1, 0 ) = 0 )
@@ -46,7 +46,7 @@ private sub test cdecl( )
 	CU_ASSERT( lbound( array3, 3 ) = 3 )
 	CU_ASSERT( ubound( array3, 3 ) = 3 )
 
-	dim array4(*) as integer
+	dim array4(any) as integer
 
 	CU_ASSERT( ubound( array4, 0 ) = 0 )
 	CU_ASSERT( lbound( array4 ) = 0 )

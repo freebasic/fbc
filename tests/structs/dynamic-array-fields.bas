@@ -62,35 +62,35 @@ namespace descriptorAllocation
 	end type
 
 	type Descriptor1
-		array(*)	as integer
+		array(any)	as integer
 	end type
 
 	type Descriptor2
-		array(*, *)	as integer
+		array(any, any)	as integer
 	end type
 
 	type Descriptor3
-		array(*, *, *)	as integer
+		array(any, any, any)	as integer
 	end type
 
 	type Descriptor4
-		array(*, *, *, *)	as integer
+		array(any, any, any, any)	as integer
 	end type
 
 	type Descriptor5
-		array(*, *, *, *, *)	as integer
+		array(any, any, any, any, any)	as integer
 	end type
 
 	type Descriptor6
-		array(*, *, *, *, *, *)	as integer
+		array(any, any, any, any, any, any)	as integer
 	end type
 
 	type Descriptor7
-		array(*, *, *, *, *, *, *)	as integer
+		array(any, any, any, any, any, any, any)	as integer
 	end type
 
 	type Descriptor8
-		array(*, *, *, *, *, *, *, *)	as integer
+		array(any, any, any, any, any, any, any, any)	as integer
 	end type
 
 	sub test cdecl( )

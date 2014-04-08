@@ -5,8 +5,8 @@ extern externarray4(10 to 10, 20 to 20, 30 to 30) as integer
 extern externarray5(10 to 10, 20 to 20) as integer
 extern externarray6() as integer
 extern externarray7() as integer
-extern externarray8(*) as integer
-extern externarray9(*) as integer
+extern externarray8(any) as integer
+extern externarray9(any) as integer
 
 #macro hInsertTest1( )
 	sub test1 cdecl( )

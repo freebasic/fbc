@@ -1674,7 +1674,7 @@ end sub
 
 ''
 '' PlaceHolder =
-''    '*'
+''    ANY
 ''
 '' ArrayDecl =
 ''    '(' ArrayDimension (',' ArrayDimension)* ')'
@@ -1684,8 +1684,8 @@ end sub
 '' Examples:
 ''    (0 to 0)            => dimensions = 1, have_bounds = TRUE
 ''    (0 to 0, 0 to 0)    => dimensions = 2, have_bounds = TRUE
-''    (*)                 => dimensions = 1, have_bounds = FALSE
-''    (*, *)              => dimensions = 2, have_bounds = FALSE
+''    (ANY)               => dimensions = 1, have_bounds = FALSE
+''    (ANY, ANY)          => dimensions = 2, have_bounds = FALSE
 ''
 sub cArrayDecl _
 	( _
@@ -1705,14 +1705,14 @@ sub cArrayDecl _
 			exit do
 		end if
 
-		'' '*'? (only if no ArrayDimension seen yet, or had others
+		'' 'ANY'? (only if no ArrayDimension seen yet, or had others
 		'' previously)
-		if( (lexGetToken( ) = CHAR_STAR) and _
+		if( (lexGetToken( ) = FB_TK_ANY) and _
 		    ((dimensions = 0) or (have_bounds = FALSE)) ) then
 			have_bounds = FALSE
 			lexSkipToken( )
 		elseif( have_bounds = FALSE ) then
-			errReport( FB_ERRMSG_EXPECTEDSTAR )
+			errReport( FB_ERRMSG_EXPECTEDANY )
 		else
 			cArrayDimension( dimensions, exprTB() )
 		end if
