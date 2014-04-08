@@ -19,6 +19,26 @@ type FBARRAY
 	dimTB(0 to FB_MAXARRAYDIMS-1)	as FBARRAYDIM
 end type
 
+#macro declareFBARRAY( n )
+	type FBARRAY##n
+		data		as any ptr
+		ptr		as any ptr
+		size		as uinteger
+		element_len	as uinteger
+		dimensions	as uinteger
+		dimTB(0 to (n)-1)	as FBARRAYDIM
+	end type
+#endmacro
+
+declareFBARRAY( 1 )
+declareFBARRAY( 2 )
+declareFBARRAY( 3 )
+declareFBARRAY( 4 )
+declareFBARRAY( 5 )
+declareFBARRAY( 6 )
+declareFBARRAY( 7 )
+declareFBARRAY( 8 )
+
 namespace descriptorAllocation
 	'' The dynamic array field should only exist in memory in form of the
 	'' dynamic array descriptor, which must have room for FB_MAXARRAYDIMS
@@ -41,10 +61,51 @@ namespace descriptorAllocation
 		x		as UDT2
 	end type
 
+	type Descriptor1
+		array(*)	as integer
+	end type
+
+	type Descriptor2
+		array(*, *)	as integer
+	end type
+
+	type Descriptor3
+		array(*, *, *)	as integer
+	end type
+
+	type Descriptor4
+		array(*, *, *, *)	as integer
+	end type
+
+	type Descriptor5
+		array(*, *, *, *, *)	as integer
+	end type
+
+	type Descriptor6
+		array(*, *, *, *, *, *)	as integer
+	end type
+
+	type Descriptor7
+		array(*, *, *, *, *, *, *)	as integer
+	end type
+
+	type Descriptor8
+		array(*, *, *, *, *, *, *, *)	as integer
+	end type
+
 	sub test cdecl( )
 		CU_ASSERT( sizeof( UDT1 ) = sizeof( FBARRAY ) )
 		CU_ASSERT( sizeof( UDT2 ) = sizeof( integer ) + sizeof( FBARRAY ) + sizeof( integer ) )
 		CU_ASSERT( sizeof( UDT3 ) = (sizeof( FBARRAY ) * 3) + sizeof( UDT2 ) )
+
+		CU_ASSERT( sizeof( Descriptor1 ) = sizeof( FBARRAY1 ) )
+		CU_ASSERT( sizeof( Descriptor2 ) = sizeof( FBARRAY2 ) )
+		CU_ASSERT( sizeof( Descriptor3 ) = sizeof( FBARRAY3 ) )
+		CU_ASSERT( sizeof( Descriptor4 ) = sizeof( FBARRAY4 ) )
+		CU_ASSERT( sizeof( Descriptor5 ) = sizeof( FBARRAY5 ) )
+		CU_ASSERT( sizeof( Descriptor6 ) = sizeof( FBARRAY6 ) )
+		CU_ASSERT( sizeof( Descriptor7 ) = sizeof( FBARRAY7 ) )
+		CU_ASSERT( sizeof( Descriptor8 ) = sizeof( FBARRAY8 ) )
 	end sub
 end namespace
 
