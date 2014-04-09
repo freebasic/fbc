@@ -861,6 +861,8 @@ declare function astNewNIDXARRAY _
 		byval expr as ASTNODE ptr _
 	) as ASTNODE ptr
 
+declare function astRemoveNIDXARRAY( byval n as ASTNODE ptr ) as ASTNODE ptr
+
 declare function astNewNode _
 	( _
 		byval class_ as integer, _

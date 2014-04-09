@@ -162,12 +162,7 @@ sub cTypeOf _
 		exit sub
 	end if
 
-	'' ugly hack to deal with arrays w/o indexes
-	if( astIsNIDXARRAY( expr ) ) then
-		dim as ASTNODE ptr temp_node = expr
-		expr = astGetLeft( expr )
-		astDelNode( temp_node )
-	end if
+	expr = astRemoveNIDXARRAY( expr )
 
 	dtype   = astGetFullType( expr )
 	subtype = astGetSubtype( expr )

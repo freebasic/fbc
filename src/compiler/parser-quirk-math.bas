@@ -98,7 +98,7 @@ private function hLenSizeof _
 		byval isasm as integer _
 	) as ASTNODE ptr
 
-	dim as ASTNODE ptr expr = any, expr2 = any, initree = any
+	dim as ASTNODE ptr expr = any, initree = any
 	dim as integer dtype = any
 	dim as longint lgt = any
 	dim as FBSYMBOL ptr subtype = any
@@ -117,9 +117,7 @@ private function hLenSizeof _
 		'' Array without index makes this a SIZEOF()
 		if( astIsNIDXARRAY( expr ) ) then
 			is_len = FALSE
-			expr2 = astGetLeft( expr )
-			astDelNode( expr )
-			expr = expr2
+			expr = astRemoveNIDXARRAY( expr )
 		end if
 
 		'' Disallow string expressions in SIZEOF()

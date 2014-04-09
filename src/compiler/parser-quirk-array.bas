@@ -19,12 +19,7 @@ function cEraseStmt() as integer
 			errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
 			hSkipUntil( CHAR_COMMA )
 		else
-			'' ugly hack to deal with arrays w/o indexes
-			if( astIsNIDXARRAY( expr ) ) then
-				var expr2 = astGetLeft( expr )
-				astDelNode( expr )
-				expr = expr2
-			end if
+			expr = astRemoveNIDXARRAY( expr )
 
 			'' array?
 			var s = astGetSymbol( expr )
@@ -245,12 +240,7 @@ function cArrayFunct(byval tk as FB_TOKEN) as ASTNODE ptr
 			return astNewCONSTi( 0 )
 		end if
 
-		'' ugly hack to deal with arrays w/o indexes
-		if( astIsNIDXARRAY( arrayexpr ) ) then
-			dim as ASTNODE ptr expr = astGetLeft( arrayexpr )
-			astDelNode( arrayexpr )
-			arrayexpr = expr
-		end if
+		arrayexpr = astRemoveNIDXARRAY( arrayexpr )
 
 		'' array?
 		s = astGetSymbol( arrayexpr )

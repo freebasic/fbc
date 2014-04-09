@@ -329,9 +329,7 @@ function cUdtMember _
 			'' ugly	hack to	deal with arrays w/o indexes
 			dim as integer is_nidxarray = FALSE
 			if(	astIsNIDXARRAY(	fldexpr	) )	then
-				dim	as ASTNODE ptr tmpexpr = astGetLeft( fldexpr )
-				astDelNode(	fldexpr	)
-				fldexpr	= tmpexpr
+				fldexpr = astRemoveNIDXARRAY( fldexpr )
 				is_nidxarray = TRUE
 			end	if
 

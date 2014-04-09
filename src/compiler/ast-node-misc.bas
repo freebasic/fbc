@@ -220,6 +220,15 @@ function astLoadNIDXARRAY( byval n as ASTNODE ptr ) as IRVREG ptr
 	function = NULL
 end function
 
+function astRemoveNIDXARRAY( byval n as ASTNODE ptr ) as ASTNODE ptr
+	function = n
+	if( astIsNIDXARRAY( n ) ) then
+		function = n->l
+		n->l = NULL
+		astDelTree( n )
+	end if
+end function
+
 '' Links (l = statement 1; r = statement 2)
 function astNewLINK _
 	( _
