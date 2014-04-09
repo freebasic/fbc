@@ -243,7 +243,7 @@ function astLoadCALL( byval n as ASTNODE ptr ) as IRVREG ptr
 		v1 = astLoad( l )
 		astDelNode( l )
 		if( ast.doemit ) then
-			irEmitCALLPTR( v1, vr, bytestopop, reclevel )
+			irEmitCALLPTR( proc, v1, vr, bytestopop, reclevel )
 		end if
 	else
 		if( ast.doemit ) then
@@ -452,17 +452,7 @@ function astRemoveByrefResultDeref( byval expr as ASTNODE ptr ) as ASTNODE ptr
 	astDelNode( expr )
 end function
 
-private function astCanIgnoreCallResult( byval n as ASTNODE ptr ) as integer
-	dim as integer dtype = any
-
-	assert( astIsCALL( n ) )
-	dtype = astGetDataType( n )
-
-	'' If it's a SUB, there's no result so it's always "ignored"
-	if( dtype = FB_DATATYPE_VOID ) then
-		return TRUE
-	end if
-
+private function hCanIgnoreFunctionResult( byval dtype as integer ) as integer
 	'' Only integers (excluding char/wchar) can be ignored
 	if( typeGetClass( dtype ) = FB_DATACLASS_INTEGER ) then
 		select case( dtype )
@@ -472,30 +462,53 @@ private function astCanIgnoreCallResult( byval n as ASTNODE ptr ) as integer
 			return TRUE
 		end select
 	end if
-
 	function = FALSE
 end function
 
 function astIgnoreCallResult( byval n as ASTNODE ptr ) as ASTNODE ptr
-	assert( astIsCALL( n ) )
+	dim as integer dtype = any
 
-	'' can proc's result be skipped?
-	if( astCanIgnoreCallResult( n ) = FALSE ) then
-		errReport( FB_ERRMSG_VARIABLEREQUIRED )
-		'' error recovery: skip
-		astDelTree( n )
-		exit function
+	assert( astIsCALL( n ) )
+	dtype = astGetDataType( n )
+
+	'' If it's a SUB, there's no result to ignore
+	if( dtype = FB_DATATYPE_VOID ) then
+		return n
 	end if
 
-	'' check error?
+	'' Error checking? Then the result isn't ignored afterall.
 	if( n->sym ) then
 		if( symbGetIsThrowable( n->sym ) ) then
 			return rtlErrorCheck( n )
 		end if
 	end if
 
-	'' tell the emitter to not allocate a result
-	astSetType( n, FB_DATATYPE_VOID, NULL )
+	'' Returning string/wstring? Just do fb_StrDelete(call()), to delete the
+	'' returned string, no temp var needed. (for wstrings, a temp var
+	'' couldn't be used anyways, because there's no dynamic wstring type)
+	select case( dtype )
+	case FB_DATATYPE_STRING, FB_DATATYPE_WCHAR
+		'' This mustn't be done if returning BYREF, but in that case
+		'' we shouldn't come here, since the CALL's dtype should be
+		'' remapped already.
+		assert( symbProcReturnsByref( n->sym ) = FALSE )
 
+		if( dtype = FB_DATATYPE_WCHAR ) then
+			'' Actually returning a wstring ptr. Remap the type so the
+			'' astNewARG()s done from rtlStrDelete() build the correct code.
+			astSetType( n, typeAddrOf( FB_DATATYPE_WCHAR ), NULL )
+		end if
+
+		return rtlStrDelete( n )
+	end select
+
+	'' Tell astLoadCALL() to not allocate a result vreg. Works for
+	'' - integers and small UDTs returned in registers,
+	'' - and also UDTs returned on stack: the pointer that is returned in
+	''   registers is ignored, and the temp var holding the result will
+	''   automatically be destructed at the end of the statement, if needed.
+	'' - also floats, because the ASM backend takes care to pop st(0) from
+	''   the FPU stack as needed by the ABI
+	astSetType( n, FB_DATATYPE_VOID, NULL )
 	function = n
 end function

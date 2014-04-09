@@ -65,14 +65,11 @@ function astLoadBRANCH _
 			select case n->op.op
 			case AST_OP_JUMPPTR
 				irEmitJUMPPTR( vr )
-
-			case AST_OP_CALLPTR
-				irEmitCALLPTR( vr, NULL, 0, -1 )
-
 			case AST_OP_RET
 				irEmitRETURN( 0 )
+			case else
+				assert( FALSE )
 			end select
-
 		else
 			irEmitBRANCH( n->op.op, n->op.ex )
 		end if

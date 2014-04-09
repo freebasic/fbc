@@ -1868,16 +1868,15 @@ end sub
 
 private sub _emitCallPtr _
 	( _
+		byval proc as FBSYMBOL ptr, _
 		byval v1 as IRVREG ptr, _
 		byval vr as IRVREG ptr, _
 		byval bytestopop as integer, _
 		byval level as integer _
 	)
 
-	dim as FBSYMBOL ptr proc = any
-
 	assert( v1->dtype = typeAddrOf( FB_DATATYPE_FUNCTION ) )
-	proc = v1->subtype
+	assert( proc = v1->subtype )
 
 	hLoadVreg( v1 )
 	hDoCall( hVregToStr( v1 ), proc, bytestopop, vr, level )

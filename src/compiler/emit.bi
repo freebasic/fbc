@@ -85,6 +85,7 @@ enum EMIT_NODEOP
 	EMIT_OP_PUSHI, EMIT_OP_PUSHF, EMIT_OP_PUSHL
 	EMIT_OP_POPI, EMIT_OP_POPF, EMIT_OP_POPL
 	EMIT_OP_PUSHUDT
+	EMIT_OP_POPST0
 
 	'' branch
 	EMIT_OP_CALL
@@ -756,16 +757,18 @@ declare function emitPUSH _
 		byval svreg as IRVREG ptr _
 	) as EMIT_NODE ptr
 
+declare function emitPOP _
+	( _
+		byval svreg as IRVREG ptr _
+	) as EMIT_NODE ptr
+
 declare function emitPUSHUDT _
 	( _
 		byval svreg as IRVREG ptr, _
 		byval sdsize as integer _
 	) as EMIT_NODE ptr
 
-declare function emitPOP _
-	( _
-		byval svreg as IRVREG ptr _
-	) as EMIT_NODE ptr
+declare function emitPOPST0( ) as EMIT_NODE ptr
 
 declare function emitMEMMOVE _
 	( _

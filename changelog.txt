@@ -33,6 +33,7 @@ Version 0.91.0:
 - crt/linux/syslog.bi header
 - GFX statements now accept UDTs as target/source images, if the UDT has cast() AS ANY PTR (or other PTR types) operator overloads
 - jpeglib example now works with both fb and fblite dialects
+- Any function result may now be ignored at the call site (simply by not using the function result in any expression or assignment). Previously this was only allowed for functions returning integer types or pointers.
 
 [fixed]
 - dlltool syntax error when building a DLL without any EXPORTs

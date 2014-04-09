@@ -2840,6 +2840,7 @@ end sub
 
 private sub _emitCallPtr _
 	( _
+		byval proc as FBSYMBOL ptr, _
 		byval v1 as IRVREG ptr, _
 		byval vr as IRVREG ptr, _
 		byval bytestopop as integer, _

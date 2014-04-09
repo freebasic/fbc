@@ -258,6 +258,7 @@ type IR_VTBL
 
 	emitCallPtr as sub _
 	( _
+		byval proc as FBSYMBOL ptr, _
 		byval v1 as IRVREG ptr, _
 		byval vr as IRVREG ptr, _
 		byval bytestopop as integer, _
@@ -571,7 +572,7 @@ declare function vregDump( byval v as IRVREG ptr ) as string
 
 #define irEmitCALLFUNCT(proc, bytestopop, vr, level) ir.vtbl.emitCall( proc, bytestopop, vr, level )
 
-#define irEmitCALLPTR(v1, vr, bytestopop, level) ir.vtbl.emitCallPtr( v1, vr, bytestopop, level )
+#define irEmitCALLPTR(proc, v1, vr, bytestopop, level) ir.vtbl.emitCallPtr( proc, v1, vr, bytestopop, level )
 
 #define irEmitSTACKALIGN(bytes) ir.vtbl.emitStackAlign( bytes )
 

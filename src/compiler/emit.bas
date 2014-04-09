@@ -1368,6 +1368,10 @@ function emitPUSHUDT _
 
 end function
 
+function emitPOPST0( ) as EMIT_NODE ptr
+	function = hNewSTK( EMIT_OP_POPST0, NULL )
+end function
+
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' MISC
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::

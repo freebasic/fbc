@@ -633,13 +633,14 @@ end sub
 '':::::
 private sub _emitCallPtr _
 	( _
+		byval proc as FBSYMBOL ptr, _
 		byval v1 as IRVREG ptr, _
 		byval vr as IRVREG ptr, _
 		byval bytestopop as integer, _
 		byval level as integer _
 	)
 
-	_emit( AST_OP_CALLPTR, v1, NULL, vr, NULL, bytestopop )
+	_emit( AST_OP_CALLPTR, v1, NULL, vr, proc, bytestopop )
 
 end sub
 
@@ -1609,7 +1610,44 @@ private sub hPreserveRegs( byval ptrvreg as IRVREG ptr = NULL )
 
 end sub
 
-'':::::
+private sub hLoadPointer( byval v1 as IRVREG ptr )
+	dim as integer vtype = any, dtype = any, dclass = any
+	hGetVREG( v1, dtype, dclass, vtype )
+	hLoadIDX( v1 )
+	if( vtype = IR_VREGTYPE_REG ) then
+		regTB(dclass)->ensure( regTB(dclass), v1, NULL, typeGetSize( dtype ) )
+	end if
+end sub
+
+private sub hLoadResult( byval proc as FBSYMBOL ptr, byval vr as IRVREG ptr )
+	dim as integer vtype = any, dtype = any, dclass = any, reg1 = any, reg2 = any
+	dim as IRVREG ptr va = any
+
+	'' Load result, if any (fb allows function calls w/o saving the result)
+	if( vr ) then
+		hGetVREG( vr, dtype, dclass, vtype )
+		emitGetResultReg( dtype, dclass, reg1, reg2 )
+
+		if( ISLONGINT( dtype ) ) then
+			va = vr->vaux
+			va->reg = regTB(dclass)->allocateReg( regTB(dclass), reg2, va, vr )
+			va->typ = IR_VREGTYPE_REG
+		end if
+
+		vr->reg = regTB(dclass)->allocateReg( regTB(dclass), reg1, vr, NULL )
+		vr->typ = IR_VREGTYPE_REG
+
+		hFreeREG( vr )
+	else
+		'' Integer function results in EAX[:EDX] or float results in xmm0 can just be ignored,
+		'' but float results in st(0) must be popped from the FPU stack.
+		if( (typeGetClass( symbGetProcRealType( proc ) ) = FB_DATACLASS_FPOINT) and _
+		    (proc->proc.returnMethod <> FB_RETURN_SSE) ) then
+			emitPOPST0( )
+		end if
+	end if
+end sub
+
 private sub hFlushCALL _
 	( _
 		byval op as integer, _
@@ -1617,63 +1655,33 @@ private sub hFlushCALL _
 		byval bytestopop as integer, _
 		byval v1 as IRVREG ptr, _
 		byval vr as IRVREG ptr _
-	) static
+	)
 
-	dim as integer vr_dclass, vr_dtype, vr_typ, vr_reg, vr_reg2
-	dim as IRVREG ptr va
-
-	'' function?
-	if( proc <> NULL ) then
+	select case( op )
+	case AST_OP_CALLFUNCT
 		'' save used registers and free the FPU stack
 		hPreserveRegs( )
 
 		emitCALL( proc, bytestopop )
+		hLoadResult( proc, vr )
 
-	'' call or jump to pointer..
-	else
-		'' if it's a CALL, save used registers and free the FPU stack
-		if( op = AST_OP_CALLPTR ) then
-			hPreserveRegs( v1 )
-		end if
+	case AST_OP_CALLPTR
+		hPreserveRegs( v1 )
 
-		'' load pointer
-		hGetVREG( v1, vr_dtype, vr_dclass, vr_typ )
-		hLoadIDX( v1 )
-		if( vr_typ = IR_VREGTYPE_REG ) then
-			regTB(vr_dclass)->ensure( regTB(vr_dclass), v1, NULL, typeGetSize( vr_dtype ) )
-		end if
-
-		'' CALLPTR
-		if( op = AST_OP_CALLPTR ) then
-			emitCALLPTR( v1, bytestopop )
-		'' JUMPPTR
-		else
-			emitJUMPPTR( v1 )
-		end if
-
-		'' free pointer
+		hLoadPointer( v1 )
+		emitCALLPTR( v1, bytestopop )
 		hFreeREG( v1 )
-	end if
+		hLoadResult( proc, vr )
 
-	'' load result
-	if( vr <> NULL ) then
-		hGetVREG( vr, vr_dtype, vr_dclass, vr_typ )
+	case AST_OP_JUMPPTR
+		hLoadPointer( v1 )
+		emitJUMPPTR( v1 )
+		hFreeREG( v1 )
+		assert( vr = NULL )
 
-		emitGetResultReg( vr_dtype, vr_dclass, vr_reg, vr_reg2 )
-
-		'' longints..
-		if( ISLONGINT( vr_dtype ) ) then
-			va = vr->vaux
-			va->reg = regTB(vr_dclass)->allocateReg( regTB(vr_dclass), vr_reg2, va, vr )
-			va->typ = IR_VREGTYPE_REG
-		end if
-
-		vr->reg = regTB(vr_dclass)->allocateReg( regTB(vr_dclass), vr_reg, vr, NULL )
-		vr->typ = IR_VREGTYPE_REG
-
-		'' fb allows function calls w/o saving the result
-		hFreeREG( vr )
-	end if
+	case else
+		assert( FALSE )
+	end select
 
 end sub
 

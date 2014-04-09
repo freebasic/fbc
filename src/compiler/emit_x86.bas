@@ -5601,6 +5601,10 @@ private sub _emitPOPF _
 
 end sub
 
+private sub _emitPOPST0( )
+	outp( "fstp st(0)" )
+end sub
+
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' addressing
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -6291,6 +6295,7 @@ end sub
 		EMIT_CBENTRY(PUSHI), EMIT_CBENTRY(PUSHF), EMIT_CBENTRY(PUSHL), _
 		EMIT_CBENTRY(POPI), EMIT_CBENTRY(POPF), EMIT_CBENTRY(POPL), _
 		EMIT_CBENTRY(PUSHUDT), _
+		EMIT_CBENTRY(POPST0), _
         _
 		EMIT_CBENTRY(CALL), _
 		EMIT_CBENTRY(CALLPTR), _
