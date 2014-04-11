@@ -384,7 +384,7 @@ private function hAddVar _
 	end if
 
 	if( is_declared ) then
-		if( symbIsDynamic( sym ) ) then
+		if( symbGetIsDynamic( sym ) ) then
 			symbCheckDynamicArrayDimensions( sym, dimensions )
 		end if
 	else

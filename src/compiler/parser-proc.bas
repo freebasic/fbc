@@ -188,7 +188,7 @@ private function hCheckPrototype _
 		exit function
 	end if
 
-	'' check each arg
+	'' check each param
 	for i = 1 to params
         dim as integer dtype = symbGetFullType( proto_param )
 
@@ -211,12 +211,21 @@ private function hCheckPrototype _
     		end if
     	end if
 
-    	'' and mode
-    	if( param->param.mode <> symbGetParamMode( proto_param ) ) then
+		'' and mode
+		if( param->param.mode <> proto_param->param.mode ) then
 			hParamError( proc, i )
 			'' no error recovery: ditto
-            exit function
-    	end if
+			exit function
+		end if
+
+		'' Different BYDESC dimensions?
+		'' (even if one is unknown, both should be unknown)
+		if( param->param.mode = FB_PARAMMODE_BYDESC ) then
+			if( param->param.bydescdimensions <> proto_param->param.bydescdimensions ) then
+				hParamError( proc, i )
+				exit function
+			end if
+		end if
 
     	'' check names and change to the new one if needed
     	if( param->param.mode <> FB_PARAMMODE_VARARG ) then

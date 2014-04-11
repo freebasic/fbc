@@ -341,7 +341,37 @@ private sub hCheckByrefParam _
 	hBuildByrefArg( param, n, arg )
 end sub
 
-'':::::
+private function hCheckBydescDimensions _
+	( _
+		byval param as FBSYMBOL ptr, _
+		byval arg as FBSYMBOL ptr _
+	) as integer
+
+	assert( param->class = FB_SYMBCLASS_PARAM )
+	assert( symbIsVar( arg ) or symbIsField( arg ) )
+
+	if( param->param.bydescdimensions <> symbGetArrayDimensions( arg ) ) then
+		'' 1. BYDESC param itself has unknown dimensions? (then it can't affect the arg array anyways)
+		if( param->param.bydescdimensions = -1 ) then
+			'' Note: Can't update the BYDESC param from unknown to known dimensions,
+			'' because that would break rtlib functions like lbound(): they couldn't
+			'' accept any arrays anymore within the same module.
+			'''param->param.bydescdimensions = symbGetArrayDimensions( arg )
+
+		'' 2. Arg array has unknown dimensions, while BYDESC param has known dimensions?
+		elseif( symbGetArrayDimensions( arg ) = -1 ) then
+			'' Then the arg array can be updated to the BYDESC param's known dimensions.
+			symbCheckDynamicArrayDimensions( arg, param->param.bydescdimensions )
+
+		'' 3. Both have known dimensions, but they're different, i.e. incompatible
+		else
+			exit function
+		end if
+	end if
+
+	function = TRUE
+end function
+
 private function hCheckByDescParam _
 	( _
 		byval parent as ASTNODE ptr, _
@@ -354,6 +384,7 @@ private function hCheckByDescParam _
 	dim as FBSYMBOL ptr s = any, desc = any
 
 	arg_dtype = astGetDatatype( n->l )
+	function = FALSE
 
 	'' is arg a pointer?
 	if( n->arg.mode = FB_PARAMMODE_BYVAL ) then
@@ -362,17 +393,15 @@ private function hCheckByDescParam _
 
 	s = astGetSymbol( n->l )
 	if( s = NULL ) then
-		errReport( FB_ERRMSG_PARAMTYPEMISMATCHAT )
-		return FALSE
+		exit function
 	end if
 
 	'' same type? (don't check if it's a rtl proc, or a forward call)
 	sym_dtype = symbGetType( param )
 	if( (parent->call.isrtl = FALSE) and (sym_dtype <> FB_DATATYPE_VOID) ) then
 		if( (typeGetClass( arg_dtype ) <> typeGetClass( sym_dtype )) or _
-			(typeGetSize( arg_dtype ) <> typeGetSize( sym_dtype )) ) then
-			errReport( FB_ERRMSG_PARAMTYPEMISMATCHAT )
-			return FALSE
+		    (typeGetSize( arg_dtype ) <> typeGetSize( sym_dtype )) ) then
+			exit function
 		end if
 	end if
 
@@ -381,9 +410,13 @@ private function hCheckByDescParam _
 
 		'' BYDESC param passed to BYDESC param?
 		if( symbIsParamByDesc( s ) ) then
+			if( hCheckBydescDimensions( param, s ) = FALSE ) then
+				exit function
+			end if
+
 			'' it's a pointer, but it will be seen as anything else
 			'' (ie: "array() as string"), so, remap the type
-			astSetType( n->l, typeAddrOf( FB_DATATYPE_STRUCT ), symb.fbarray(-1) )
+			astSetType( n->l, typeAddrOf( FB_DATATYPE_STRUCT ), symb.fbarray(symbGetArrayDimensions( s )) )
 			return TRUE
 		end if
 
@@ -392,6 +425,10 @@ private function hCheckByDescParam _
 		'' ellipsis)
 		desc = symbGetArrayDescriptor( s )
 		if( desc ) then
+			if( hCheckBydescDimensions( param, s ) = FALSE ) then
+				exit function
+			end if
+
 			astDelTree( n->l )
 			n->l = astNewADDROF( astNewVAR( desc ) )
 			return TRUE
@@ -401,6 +438,10 @@ private function hCheckByDescParam _
 		assert( symbIsField( s ) )
 
 		if( symbIsDynamic( s ) ) then
+			if( hCheckBydescDimensions( param, s ) = FALSE ) then
+				exit function
+			end if
+
 			'' Dynamic array fields: If an access to the fake array field is given,
 			'' how to build the access to descriptor? The FIELD node may be optimized
 			'' already, and there probably is no way to tell the UDT access expression
@@ -417,15 +458,16 @@ private function hCheckByDescParam _
 			return TRUE
 
 		elseif( symbGetArrayDimensions( s ) > 0 ) then
+			if( hCheckBydescDimensions( param, s ) = FALSE ) then
+				exit function
+			end if
+
 			'' Static array field: Create a temp array descriptor
 			desc = hAllocTmpArrayDesc( s, n->l, desc_tree )
 			n->l = astNewLINK( astNewADDROF( astNewVAR( desc ) ), desc_tree )
 			return TRUE
 		end if
 	end if
-
-	errReport( FB_ERRMSG_PARAMTYPEMISMATCHAT )
-	function = FALSE
 end function
 
 '':::::
@@ -741,7 +783,7 @@ private function hCheckParam _
 	) as integer
 
     dim as ASTNODE ptr arg = any
-    dim as integer param_dtype = any, arg_dtype
+	dim as integer param_dtype = any, arg_dtype = any
 
     function = FALSE
 
@@ -757,7 +799,12 @@ private function hCheckParam _
 	select case symbGetParamMode( param )
 	'' by descriptor?
 	case FB_PARAMMODE_BYDESC
-        return hCheckByDescParam( parent, param, n )
+		if( hCheckByDescParam( parent, param, n ) = FALSE ) then
+			errReport( FB_ERRMSG_PARAMTYPEMISMATCHAT )
+			exit function
+		end if
+
+		return TRUE
 
     '' vararg?
     case FB_PARAMMODE_VARARG

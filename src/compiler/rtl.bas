@@ -188,7 +188,7 @@ sub rtlAddIntrinsicProcs( byval procdef as const FB_RTL_PROCDEF ptr )
 										inner_attrib = 0
 									end if
 
-									param = symbAddProcParam( inner_proc, NULL, .dtype, NULL, .mode, inner_attrib )
+									param = symbAddProcParam( inner_proc, NULL, .dtype, NULL, iif( .mode = FB_PARAMMODE_BYDESC, -1, 0 ), .mode, inner_attrib )
 									symbMakeParamOptional( inner_proc, param, inner_param_optval )
 								end with
 							next
@@ -228,7 +228,7 @@ sub rtlAddIntrinsicProcs( byval procdef as const FB_RTL_PROCDEF ptr )
 						dtype = typeAddrOf( FB_DATATYPE_VOID )
 					end if
 
-					param = symbAddProcParam( proc, NULL, dtype, subtype, .mode, attrib )
+					param = symbAddProcParam( proc, NULL, dtype, subtype, iif( .mode = FB_PARAMMODE_BYDESC, -1, 0 ), .mode, attrib )
 
 					if( .check_const ) then
 						symbSetIsRTLConst( param )

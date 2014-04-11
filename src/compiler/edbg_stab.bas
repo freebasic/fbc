@@ -689,7 +689,7 @@ private function hDeclDynArray( byval sym as FBSYMBOL ptr ) as string static
 	dim as FBSYMBOL ptr fld = any, desctype = any
 
 	if( symbIsParamByDesc( sym ) ) then
-		desctype = symb.fbarray(-1)
+		desctype = symb.fbarray(symbGetArrayDimensions( sym ))
 	else
 		desctype = symbGetSubtype( symbGetArrayDescriptor( sym ) )
 	end if

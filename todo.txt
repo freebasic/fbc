@@ -69,17 +69,6 @@ o Allow typeless DIMs to implement EXTERNs:
     extern a as integer
     dim a
 
-o Dynamic arrays should have a fixed dimension count, so that the descriptors
-  could become smaller and didn't have to allocate room for all FB_MAXARRAYDIMS.
-  FB <= 0.90.1 already had compile-time dimension count checks for dynamic
-  arrays, though only with-in a single module.
-        dim array() as integer    = 1 dimension (potential backwards compatibility break)
-        dim array(,) as integer   = 2 dimensions, etc.
-  This is needed especially for fields where the descriptor's sizeof() must be
-  known immediately; otherwise we'd always have to allocate FB_MAXARRAYDIMS.
-  All REDIMs should be checked at compile-time. All code dealing with array
-  descriptors mustn't assume that there's room for FB_MAXARRAYDIMS anymore.
-
 o Dynamic array fields
   - Should accept any bounds in the declaration, just like normal DIM/REDIM.
     The bounds or at least the whole fb_ArrayRedimEx() CALL must be preserved on

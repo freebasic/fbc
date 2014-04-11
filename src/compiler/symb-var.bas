@@ -268,7 +268,7 @@ private sub symbRecalcArrayDiff( byval sym as FBSYMBOL ptr )
 end sub
 
 private sub symbRecalcArrayDiffAndElements( byval sym as FBSYMBOL ptr )
-	assert( symbIsDynamic( sym ) = FALSE )
+	assert( symbGetIsDynamic( sym ) = FALSE )
 	if( symbGetArrayDimensions( sym ) > 0 ) then
 		symbRecalcArrayDiff( sym )
 		sym->var_.array.elements = symbCalcArrayElements( sym, 0 )
@@ -283,7 +283,7 @@ function symbArrayHasUnknownBounds( byval sym as FBSYMBOL ptr ) as integer
 
 	function = FALSE
 
-	if( symbIsDynamic( sym ) ) then
+	if( symbGetIsDynamic( sym ) ) then
 		exit function
 	end if
 
@@ -307,6 +307,7 @@ end function
 ''
 sub symbMaybeAddArrayDesc( byval sym as FBSYMBOL ptr )
 	assert( symbIsField( sym ) = FALSE )
+	assert( symbIsParamBydesc( sym ) = FALSE )
 
 	if( symbGetArrayDimensions( sym ) = 0 ) then
 		exit sub
@@ -331,7 +332,7 @@ sub symbSetArrayDimTb _
 		dTB() as FBARRAYDIM _
 	)
 
-	assert( symbIsDynamic( sym ) = FALSE )
+	assert( symbGetIsDynamic( sym ) = FALSE )
 	assert( dimensions > 0 )
 
 	'' Delete existing dimensions, if any
@@ -356,7 +357,7 @@ sub symbSetFixedSizeArrayDimensionElements _
 		byval elements as longint _
 	)
 
-	assert( symbIsDynamic( sym ) = FALSE )
+	assert( symbGetIsDynamic( sym ) = FALSE )
 	assert( (dimension >= 0) and (dimension < symbGetArrayDimensions( sym )) )
 
 	with( symbGetArrayDim( sym, dimension ) )
@@ -378,7 +379,7 @@ sub symbCheckDynamicArrayDimensions _
 
 	dim as FBSYMBOL ptr desc = any
 
-	assert( symbIsDynamic( sym ) )
+	assert( symbGetIsDynamic( sym ) )
 
 	'' Secondary declarations with dimensions = -1 don't make a difference.
 	if( dimensions = -1 ) then
@@ -410,6 +411,12 @@ sub symbCheckDynamicArrayDimensions _
 		'' non-COMMON globals, though even then it'd be risky, because
 		'' fbc wasn't designed for this kind of "multi-pass" things...
 		''
+
+		'' (not for BYDESC params which don't have a descriptor)
+		if( symbIsParamBydesc( sym ) ) then
+			exit sub
+		end if
+
 		assert( symbGetType( symbGetArrayDescriptor( sym ) ) = FB_DATATYPE_STRUCT )
 		assert( symbGetArrayDescriptor( sym )->subtype = symb.fbarray(-1) )
 		assert( symbIsField( sym ) = FALSE )
@@ -459,13 +466,13 @@ sub symbVarInitArrayDimensions _
 	)
 
 	if( dimensions <> 0 ) then
-		if( symbIsDynamic( sym ) ) then
+		if( symbGetIsDynamic( sym ) ) then
 			sym->var_.array.dimensions = dimensions
 		else
 			symbSetArrayDimTb( sym, dimensions, dTB() )
 		end if
 
-		if( symbIsField( sym ) = FALSE ) then
+		if( (not symbIsField( sym )) and (not symbIsParamBydesc( sym )) ) then
 			symbMaybeAddArrayDesc( sym )
 		end if
 	end if

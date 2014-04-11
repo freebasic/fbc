@@ -465,6 +465,7 @@ type FBS_PARAM
 	mode			as FB_PARAMMODE
 	var				as FBSYMBOL_ ptr			'' link to decl var in func bodies
 	optexpr			as ASTNODE_ ptr				'' default value
+	bydescdimensions	as integer
 end type
 
 '' function
@@ -1198,6 +1199,7 @@ declare function symbAddProcParam _
 		byval id as zstring ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
+		byval dimensions as integer, _
 		byval mode as integer, _
 		byval attrib as FB_SYMBATTRIB _
 	) as FBSYMBOL ptr
@@ -1663,6 +1665,7 @@ declare sub symbMangleType _
 	)
 declare sub symbMangleParam( byref mangled as string, byval param as FBSYMBOL ptr )
 
+declare function hDumpDynamicArrayDimensions( byval dimensions as integer ) as string
 declare function symbProcPtrToStr( byval proc as FBSYMBOL ptr ) as string
 declare function symbMethodToStr( byval proc as FBSYMBOL ptr ) as string
 

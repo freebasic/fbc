@@ -837,9 +837,7 @@ private function cDynamicArrayIndex _
 	'' No longer needed, all places using it should have cloned
 	astDelTree( descexpr )
 
-	if( symbIsDynamic( sym ) ) then
-		symbCheckDynamicArrayDimensions( sym, dimension + 1 )
-	end if
+	symbCheckDynamicArrayDimensions( sym, dimension + 1 )
 
 	function = expr
 end function
@@ -990,7 +988,7 @@ function cVariableEx overload _
 					if( symbIsParamBydesc( sym ) ) then
 						'' Build a VAR access with the BYDESC param's real dtype
 						descexpr = astNewVAR( sym )
-						astSetType( descexpr, typeAddrOf( FB_DATATYPE_STRUCT ), symb.fbarray(-1) )
+						astSetType( descexpr, typeAddrOf( FB_DATATYPE_STRUCT ), symb.fbarray(symbGetArrayDimensions( sym )) )
 
 						'' And DEREF to get to the descriptor
 						descexpr = astNewDEREF( descexpr )
