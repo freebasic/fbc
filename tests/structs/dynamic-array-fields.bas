@@ -710,6 +710,112 @@ namespace copyClass
 	end sub
 end namespace
 
+namespace redimMakesDynamic
+	'' REDIM should make a dynamic array even if the bounds are constant,
+	'' as for variables.
+
+	type UDT
+		redim array(0 to 0) as integer
+	end type
+
+	sub test cdecl( )
+		'' Should only allocate descriptor for 1 dimension
+		CU_ASSERT( sizeof( UDT ) = sizeof( FBARRAY1 ) )
+
+		dim x as UDT
+		CU_ASSERT( ubound( x.array, 0 ) = 1 )
+		CU_ASSERT( lbound( x.array ) = 0 )
+		CU_ASSERT( ubound( x.array ) = 0 )
+
+		redim x.array(1 to 1)
+		CU_ASSERT( lbound( x.array ) = 1 )
+		CU_ASSERT( ubound( x.array ) = 1 )
+	end sub
+end namespace
+
+namespace dimWithNonConstBoundsMakesDynamic
+	'' DIM with non-constant bounds should also make a dynamic array,
+	'' as for variables.
+
+	dim shared as integer i = 123
+
+	type UDT
+		dim array(i to i) as integer
+	end type
+
+	sub test cdecl( )
+		'' Should only allocate descriptor for 1 dimension
+		CU_ASSERT( sizeof( UDT ) = sizeof( FBARRAY1 ) )
+
+		dim x as UDT
+		CU_ASSERT( ubound( x.array, 0 ) = 1 )
+		CU_ASSERT( lbound( x.array ) = 123 )
+		CU_ASSERT( ubound( x.array ) = 123 )
+
+		redim x.array(1 to 1)
+		CU_ASSERT( lbound( x.array ) = 1 )
+		CU_ASSERT( ubound( x.array ) = 1 )
+	end sub
+end namespace
+
+namespace initialBounds
+	dim shared as integer a = 10
+
+	type UDT
+		'' Testing various bounds expressions
+		dim array1(a to a) as integer
+		redim array2(20 to 20, 30 to 30) as integer
+		array3(iif( a > 5, 1, 2 ) to 3) as integer  '' even one using a temp var!
+	end type
+
+	sub test cdecl( )
+		CU_ASSERT( sizeof( UDT ) = sizeof( FBARRAY1 ) + sizeof( FBARRAY2 ) + sizeof( FBARRAY1 ) )
+
+		scope
+			dim x as UDT
+
+			CU_ASSERT( ubound( x.array1, 0 ) = 1 )
+			CU_ASSERT( lbound( x.array1 ) = 10 )
+			CU_ASSERT( ubound( x.array1 ) = 10 )
+			CU_ASSERT( x.array1(10) = 0 )
+
+			CU_ASSERT( ubound( x.array2, 0 ) = 2 )
+			CU_ASSERT( lbound( x.array2, 1 ) = 20 )
+			CU_ASSERT( ubound( x.array2, 1 ) = 20 )
+			CU_ASSERT( lbound( x.array2, 2 ) = 30 )
+			CU_ASSERT( ubound( x.array2, 2 ) = 30 )
+			CU_ASSERT( x.array2(20,30) = 0 )
+
+			CU_ASSERT( ubound( x.array3, 0 ) = 1 )
+			CU_ASSERT( lbound( x.array3 ) = 1 )
+			CU_ASSERT( ubound( x.array3 ) = 3 )
+		end scope
+
+		'' Changing the global variable referenced by the field initializers...
+		a = 4
+
+		scope
+			dim x as UDT
+
+			CU_ASSERT( ubound( x.array1, 0 ) = 1 )
+			CU_ASSERT( lbound( x.array1 ) = 4 )
+			CU_ASSERT( ubound( x.array1 ) = 4 )
+			CU_ASSERT( x.array1(4) = 0 )
+
+			CU_ASSERT( ubound( x.array2, 0 ) = 2 )
+			CU_ASSERT( lbound( x.array2, 1 ) = 20 )
+			CU_ASSERT( ubound( x.array2, 1 ) = 20 )
+			CU_ASSERT( lbound( x.array2, 2 ) = 30 )
+			CU_ASSERT( ubound( x.array2, 2 ) = 30 )
+			CU_ASSERT( x.array2(20,30) = 0 )
+
+			CU_ASSERT( ubound( x.array3, 0 ) = 1 )
+			CU_ASSERT( lbound( x.array3 ) = 2 )
+			CU_ASSERT( ubound( x.array3 ) = 3 )
+		end scope
+	end sub
+end namespace
+
 private sub ctor( ) constructor
 	fbcu.add_suite( "tests/structs/dynamic-array-fields")
 	fbcu.add_test( "descriptor allocation", @descriptorAllocation.test )
@@ -717,6 +823,9 @@ private sub ctor( ) constructor
 	fbcu.add_test( "copy pod", @copyPod.test )
 	fbcu.add_test( "copy string", @copyString.test )
 	fbcu.add_test( "copy class", @copyClass.test )
+	fbcu.add_test( "redimMakesDynamic", @redimMakesDynamic.test )
+	fbcu.add_test( "dimWithNonConstBoundsMakesDynamic", @dimWithNonConstBoundsMakesDynamic.test )
+	fbcu.add_test( "initialBounds", @initialBounds.test )
 end sub
 
 end namespace

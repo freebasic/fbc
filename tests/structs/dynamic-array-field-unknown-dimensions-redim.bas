@@ -1,5 +1,5 @@
 ' TEST_MODE : COMPILE_ONLY_FAIL
 
 type UDT
-	redim array(0 to ...) as integer => { 1, 2 }
+	redim array() as integer
 end type

@@ -70,22 +70,11 @@ o Allow typeless DIMs to implement EXTERNs:
     dim a
 
 o Dynamic array fields
-  - Should accept any bounds in the declaration, just like normal DIM/REDIM.
-    The bounds or at least the whole fb_ArrayRedimEx() CALL must be preserved on
-    the array field and then emitted into each constructor, like a field initializer.
-    (add new TYPEINI node class for REDIM, or just treat as CTORCALL which it basically is?)
-	type UDT
-		array() as integer
-		redim array(0 to 1) as integer
-		array(global1 to global2) as integer
-	end type
+  - should disallow CONST dynamic arrays here too, as in cVarDecl()
 
 o -exx should catch...
   - access to ERASEd or uninited (unREDIMed) dyn array
   - out-of-bounds dimension argument given to lbound()/ubound()
-  - out-of-bounds string indexing, perhaps even for DEREF'ed z/wstring ptrs,
-    would require doing len() to get current length everytime which itself can
-    cause crashes etc. if null terminator is missing. (but -exx
 
 [ ] ctor/dtor
     - add 'function foo (...) as SomeObj = any', so #1682972 could be fixed AND when

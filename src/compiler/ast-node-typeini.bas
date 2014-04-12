@@ -34,6 +34,8 @@ function astTypeIniBegin _
 	dim as integer add_scope = FALSE
 	if( is_local = FALSE ) then
 		if( symbIsScope( parser.currblock ) ) then
+			'' Don't add a new temp scope if already inside one
+			'' (from a parent TYPEINI)
 			add_scope = not astIsTYPEINI( parser.currblock->scp.backnode )
 		else
 		    add_scope = TRUE
@@ -204,7 +206,9 @@ function astTypeIniAddAssign _
 	n->sym = sym
 	n->typeini.ofs = tree->typeini.ofs
 
-	tree->typeini.ofs += symbGetLen( sym )
+	if( sym ) then
+		tree->typeini.ofs += symbGetLen( sym )
+	end if
 
 	function = n
 end function

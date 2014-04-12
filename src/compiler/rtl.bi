@@ -1085,7 +1085,7 @@ declare function rtlArrayErase _
 
 declare function rtlArrayRedim _
 	( _
-		byval varexpr as ASTNODE ptr, _
+		byval arrayexpr as ASTNODE ptr, _
 		byval dimensions as integer, _
 		exprTB() as ASTNODE ptr, _
 		byval dopreserve as integer, _

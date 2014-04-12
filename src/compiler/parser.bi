@@ -817,17 +817,19 @@ declare function hMatchExpr _
 		byval dtype as integer _
 	) as ASTNODE ptr
 
-declare function hExprTbIsConst _
+declare sub hMaybeConvertExprTb2DimTb _
 	( _
-		byval dimensions as integer, _
-		exprTB() as ASTNODE ptr _
-	) as integer
-
-declare sub hMakeArrayDimTB _
-	( _
+		byref attrib as integer, _
 		byval dimensions as integer, _
 		exprTB() as ASTNODE ptr, _
 		dTB() as FBARRAYDIM _
+	)
+
+declare sub hComplainAboutEllipsis _
+	( _
+		byval dimensions as integer, _
+		exprTB() as ASTNODE ptr, _
+		byval errmsg as integer _
 	)
 
 declare function cVarDecl _

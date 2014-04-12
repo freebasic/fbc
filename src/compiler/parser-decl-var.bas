@@ -215,7 +215,7 @@ function cVariableDecl( byval attrib as FB_SYMBATTRIB ) as integer
 	function = TRUE
 end function
 
-function hExprTbIsConst _
+private function hExprTbIsConst _
 	( _
 		byval dimensions as integer, _
 		exprTB() as ASTNODE ptr _
@@ -556,7 +556,7 @@ private function hLookupVarAndCheckParent _
 	function = sym
 end function
 
-sub hMakeArrayDimTB _
+private sub hMakeArrayDimTB _
 	( _
 		byval dimensions as integer, _
 		exprTB() as ASTNODE ptr, _
@@ -586,6 +586,46 @@ sub hMakeArrayDimTB _
 				dTB(i).lower = 0
 				dTB(i).upper = 0
 			end if
+		end if
+	next
+
+end sub
+
+sub hMaybeConvertExprTb2DimTb _
+	( _
+		byref attrib as integer, _
+		byval dimensions as integer, _
+		exprTB() as ASTNODE ptr, _
+		dTB() as FBARRAYDIM _
+	)
+
+	'' if subscripts are constants, convert exprTB to dimTB
+	if( hExprTbIsConst( dimensions, exprTB() ) ) then
+		'' only if not explicitly dynamic (ie: not REDIM, COMMON)
+		if( (attrib and FB_SYMBATTRIB_DYNAMIC) = 0 ) then
+			hMakeArrayDimTB( dimensions, exprTB(), dTB() )
+		end if
+	else
+		'' Non-constant array bounds, must be dynamic
+		attrib or= FB_SYMBATTRIB_DYNAMIC
+	end if
+
+end sub
+
+sub hComplainAboutEllipsis _
+	( _
+		byval dimensions as integer, _
+		exprTB() as ASTNODE ptr, _
+		byval errmsg as integer _
+	)
+
+	'' Disallow ellipsis dimensions (nicer than "ellipsis requires initializer" +
+	'' "cannot initialize dynamic array" errors)
+	for i as integer = 0 to dimensions - 1
+		if( exprTB(i,1) = NULL ) then
+			errReport( errmsg )
+			'' Error recovery: Allow further use of the exprTB() as if there were no ellipsis
+			exprTB(i,1) = astNewCONSTi( 0 )
 		end if
 	next
 
@@ -1057,7 +1097,7 @@ function cVarDecl _
 	dim as ASTNODE ptr varexpr = any, initree = any, redimcall = any
 	dim as integer addsuffix = any, is_multdecl = any, have_bounds = any
 	dim as integer is_typeless = any, is_declared = any, is_redim = any
-	dim as integer dtype = any
+	dim as integer dtype = any, maybe_expr = any
 	dim as longint lgt = any
     dim as integer dimensions = any, suffix = any
     dim as zstring ptr palias = any
@@ -1125,9 +1165,23 @@ function cVarDecl _
 			'' '(foo' instead of 'foo' must be an expression.
 			'' 'foo(' indicates 'foo(1 to 2)', but 'foo' followed by
 			'' anything else indicates an expression too, e.g.
-			'' 'foo.bar' or 'foo->bar' or 'foo[bar]'.
+			'' 'foo.bar' or 'foo->bar' or 'foo[bar]'. Unless it's
+			'' an AS or EOL that's following.
 			'' Note: namespace prefix was parsed above already.
-			if( (lexGetToken( ) = CHAR_LPRNT) or (lexGetLookAhead( 1 ) <> CHAR_LPRNT) ) then
+
+			maybe_expr = FALSE
+			if( lexGetToken( ) = CHAR_LPRNT ) then
+				maybe_expr = TRUE
+			else
+				select case( lexGetLookAhead( 1 ) )
+				case CHAR_LPRNT, CHAR_COMMA, FB_TK_AS, FB_TK_STMTSEP, FB_TK_EOL, FB_TK_EOF
+
+				case else
+					maybe_expr = TRUE
+				end select
+			end if
+
+			if( maybe_expr ) then
 				varexpr = hCheckDynamicArrayExpr( hIdxInParensOnlyExpr( ) )
 			end if
 		end if
@@ -1201,16 +1255,15 @@ function cVarDecl _
 				lexSkipToken( )
 			end if
 
+		'' REDIM? Must have array dimensions
+		elseif( token = FB_TK_REDIM ) then
+			errReportEx( FB_ERRMSG_EXPECTEDARRAY, @id )
+			dimensions = -1
+
 		'' Scalar, no array subscripts
 		else
 			'' (could have been added due to OPTION DYNAMIC,
 			'' but if it's not an array, then it can't be DYNAMIC)
-			attrib and= not FB_SYMBATTRIB_DYNAMIC
-		end if
-
-		'' REDIM? Must have array bounds
-		if( (token = FB_TK_REDIM) and (dimensions > 0) and (not have_bounds) ) then
-			errReportEx( FB_ERRMSG_EXPECTEDARRAY, @id )
 			attrib and= not FB_SYMBATTRIB_DYNAMIC
 		end if
 
@@ -1323,27 +1376,10 @@ function cVarDecl _
 				end if
 			end if
 
-			'' if subscripts are constants, convert exprTB to dimTB
-			if( hExprTbIsConst( dimensions, exprTB() ) ) then
-				'' only if not explicitly dynamic (ie: not REDIM, COMMON)
-				if( (attrib and FB_SYMBATTRIB_DYNAMIC) = 0 ) then
-					hMakeArrayDimTB( dimensions, exprTB(), dTB() )
-				end if
-			else
-				'' Non-constant array bounds, must be dynamic
-				attrib or= FB_SYMBATTRIB_DYNAMIC
-			end if
+			hMaybeConvertExprTb2DimTb( attrib, dimensions, exprTB(), dTB() )
 
 			if( attrib and FB_SYMBATTRIB_DYNAMIC ) then
-				'' Disallow ellipsis dimensions (nicer than "ellipsis requires initializer" +
-				'' "cannot initialize dynamic array" errors)
-				for i as integer = 0 to dimensions - 1
-					if( exprTB(i,1) = NULL ) then
-						errReport( FB_ERRMSG_DYNAMICARRAYWITHELLIPSIS )
-						'' Error recovery: Allow further use of the exprTB() as if there were no ellipsis
-						exprTB(i,1) = astNewCONSTi( 0 )
-					end if
-				next
+				hComplainAboutEllipsis( dimensions, exprTB(), FB_ERRMSG_DYNAMICARRAYWITHELLIPSIS )
 			else
 				'' "array too big/huge array on stack" check
 				if( symbCheckArraySize( dimensions, @dTB(0), lgt, _

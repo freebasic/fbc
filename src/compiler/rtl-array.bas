@@ -528,7 +528,7 @@ end sub
 
 function rtlArrayRedim _
 	( _
-		byval varexpr as ASTNODE ptr, _
+		byval arrayexpr as ASTNODE ptr, _
 		byval dimensions as integer, _
 		exprTB() as ASTNODE ptr, _
 		byval dopreserve as integer, _
@@ -543,7 +543,7 @@ function rtlArrayRedim _
     dim as integer dtype = any
 	dim as longint elementlen = any
 
-	sym = astGetSymbol( varexpr )
+	sym = astGetSymbol( arrayexpr )
 	dtype = symbGetFullType( sym )
 	elementlen = symbGetLen( sym )
 
@@ -566,7 +566,7 @@ function rtlArrayRedim _
     proc = astNewCALL( f )
 
 	'' array() as ANY
-	if( astNewARG( proc, varexpr ) = NULL ) then
+	if( astNewARG( proc, arrayexpr ) = NULL ) then
 		exit function
 	end if
 

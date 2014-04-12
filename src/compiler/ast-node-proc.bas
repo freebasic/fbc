@@ -884,8 +884,13 @@ private function hCallFieldCtor _
 		byval fld as FBSYMBOL ptr _
 	) as ASTNODE ptr
 
-	assert( symbIsDynamic( fld ) = FALSE )
 	assert( symbIsDescriptor( fld ) = FALSE )  '' should have had an initree
+
+	'' Fake dynamic array field that didn't have an initree - nothing to do
+	if( symbIsDynamic( fld ) ) then
+		assert( symbGetTypeIniTree( fld ) = NULL )
+		exit function
+	end if
 
 	'' Do not initialize?
 	if( symbGetDontInit( fld ) ) then
@@ -952,6 +957,50 @@ private function hClearUnionFields _
 	                      astNewCONSTi( bytes ) )
 end function
 
+private function hInitDynamicArrayField _
+	( _
+		byval this_ as FBSYMBOL ptr, _
+		byval fld as FBSYMBOL ptr _
+	) as ASTNODE ptr
+
+	dim as ASTNODE ptr exprTB(0 to FB_MAXARRAYDIMS-1, 0 to 1)
+	dim as ASTNODE ptr boundstypeini = any, n = any
+	dim as integer dimensions = any
+
+	'' Duplicate the expressions and its temp vars into the current scope
+	boundstypeini = astTypeIniClone( symbGetTypeIniTree( fld ) )
+
+	'' Fill the exprTB() with the bounds expressions from the TYPEINI
+	dimensions = 0
+	assert( astIsTYPEINI( boundstypeini ) )
+	n = boundstypeini->l
+	do
+		assert( dimensions < FB_MAXARRAYDIMS )
+
+		'' lbound
+		assert( n->class = AST_NODECLASS_TYPEINI_ASSIGN )
+		exprTB(dimensions,0) = n->l
+		n->l = NULL  '' so we can astDelTree() the TYPEINI without free'ing the bounds expressions
+
+		'' ubound
+		n = n->r
+		assert( n->class = AST_NODECLASS_TYPEINI_ASSIGN )
+		exprTB(dimensions,1) = n->l
+		n->l = NULL  '' ditto
+
+		n = n->r
+		dimensions += 1
+	loop while( n )
+
+	assert( dimensions = symbGetArrayDimensions( fld ) )
+
+	'' Delete the TYPEINI (but not the bounds expressions), no longer needed
+	astDelTree( boundstypeini )
+
+	'' Build the REDIM CALL with the bounds expressions
+	function = rtlArrayRedim( astBuildVarField( this_, fld ), dimensions, exprTB(), FALSE, (not symbGetDontInit( fld )) )
+end function
+
 private function hCallFieldCtors _
 	( _
 		byval parent as FBSYMBOL ptr, _
@@ -959,9 +1008,10 @@ private function hCallFieldCtors _
 	) as ASTNODE ptr
 
 	dim as FBSYMBOL ptr fld = any, this_ = any
-	dim as ASTNODE ptr tree = NULL
+	dim as ASTNODE ptr tree = any, boundstypeini = any
 	dim as integer skip = any
 
+	tree = NULL
 	this_ = symbGetParamVar( symbGetProcHeadParam( proc ) )
 
 	'' For all real fields, excluding...
@@ -972,7 +1022,7 @@ private function hCallFieldCtors _
 	while( fld )
 
 		if( symbIsField( fld ) ) then
-			if( (not symbIsDynamic( fld )) and (fld <> parent->udt.base) ) then
+			if( fld <> parent->udt.base ) then
 				'' part of an union?
 				if( symbGetIsUnionField( fld ) ) then
 					tree = astNewLINK( tree, hClearUnionFields( this_, fld, @fld ) )
@@ -982,7 +1032,8 @@ private function hCallFieldCtors _
 					'' not initialized?
 					if( symbGetTypeIniTree( fld ) = NULL ) then
 						tree = astNewLINK( tree, hCallFieldCtor( this_, fld ) )
-					'' flush the tree..
+					elseif( symbIsDynamic( fld ) ) then
+						tree = astNewLINK( tree, hInitDynamicArrayField( this_, fld ) )
 					else
 						'' Note: flushing the field's TYPEINI against the whole "THIS" instance,
 						'' not against "THIS.thefield", because the TYPEINI contains absolute offsets.
