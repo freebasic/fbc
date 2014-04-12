@@ -192,7 +192,7 @@ private function hMockParam _
 		dtype = FB_DATATYPE_INTEGER
 	end if
 
-	function = symbAddProcParam( proc, NULL, dtype, NULL, pmode, 0 )
+	function = symbAddProcParam( proc, NULL, dtype, NULL, iif( pmode = FB_PARAMMODE_BYDESC, -1, 0 ), pmode, 0 )
 end function
 
 '':::::
@@ -209,10 +209,13 @@ private function hParamDecl _
 	static as integer reclevel = 0
 	dim as zstring ptr id = any
 	dim as ASTNODE ptr optexpr = any
-	dim as integer dtype = any, mode = any
-	dim as integer attrib = any
-	dim as integer readid = any, dotpos = any, doskip = any, dontinit = any, use_default = any
+	dim as integer dtype = any, mode = any, attrib = any, dimensions = any
+	dim as integer readid = any, dotpos = any, doskip = any, dontinit = any
+	dim as integer use_default = any, have_bounds = any
 	dim as FBSYMBOL ptr subtype = any, param = any
+
+	'' unused, so overwriting during recursion doesn't matter
+	static as ASTNODE ptr exprTB(0 to FB_MAXARRAYDIMS-1, 0 to 1)
 
 	function = NULL
 
@@ -246,7 +249,7 @@ private function hParamDecl _
 			end if
 
 			return symbAddProcParam( proc, NULL, FB_DATATYPE_INVALID, NULL, _
-			                         FB_PARAMMODE_VARARG, 0 )
+			                         0, FB_PARAMMODE_VARARG, 0 )
 
 		'' syntax error..
 		else
@@ -333,15 +336,34 @@ private function hParamDecl _
 		dtype  = FB_DATATYPE_INVALID
 	end if
 
+	dimensions = 0
+	have_bounds = FALSE
+
 	'' '()' array parentheses, '('?
 	if( lexGetToken( ) = CHAR_LPRNT ) then
 		lexSkipToken( )
-		'' Must be followed by ')', and BYVAL/BYREF cannot be used
-		'' (array() parameters always implicitly are BYDESC)
-		if( (mode <> INVALID) or (hMatch( CHAR_RPRNT ) = FALSE) ) then
+
+		'' BYVAL/BYREF cannot be used; array() parameters always
+		'' implicitly are BYDESC
+		if( mode <> INVALID ) then
 			hParamError( proc, id )
 		end if
 		mode = FB_PARAMMODE_BYDESC
+
+		'' '()'?
+		if( lexGetToken( ) = CHAR_RPRNT ) then
+			dimensions = -1
+		else
+			cArrayDecl( dimensions, have_bounds, exprTB() )
+			if( have_bounds ) then
+				hParamError( proc, id )
+			end if
+		end if
+
+		'' ')'
+		if( hMatch( CHAR_RPRNT ) = FALSE ) then
+			errReport( FB_ERRMSG_EXPECTEDRPRNT )
+		end if
 	end if
 
 	use_default = FALSE
@@ -461,7 +483,7 @@ private function hParamDecl _
 
 	'' Add new param
 	param = symbAddProcParam( proc, iif( isproto, cptr( zstring ptr, NULL ), id ), _
-	                          dtype, subtype, mode, attrib )
+	                          dtype, subtype, dimensions, mode, attrib )
 	if( param = NULL ) then
 		exit function
 	end if

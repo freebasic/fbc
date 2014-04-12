@@ -248,7 +248,8 @@ private function hArrayInit _
 	if( elements = -1 ) then
 		'' Update the array symbol with the new info about this dimension's upper bound
 		elements = elm_cnt
-		symbSetArrayDimensionElements( ctx.sym, ctx.dimension, elements )
+		symbSetFixedSizeArrayDimensionElements( ctx.sym, ctx.dimension, elements )
+		symbMaybeAddArrayDesc( ctx.sym )
 
 		'' "array too big" check
 		'' Note: If currently parsing an inner dimension, then there can still be
@@ -260,7 +261,7 @@ private function hArrayInit _
 					((ctx.sym->attrib and (FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_STATIC)) = 0) ) = FALSE ) then
 			errReport( FB_ERRMSG_ARRAYTOOBIG )
 			'' error recovery: set this dimension to 1 element
-			symbSetArrayDimensionElements( ctx.sym, ctx.dimension, 1 )
+			symbSetFixedSizeArrayDimensionElements( ctx.sym, ctx.dimension, 1 )
 		end if
 	end if
 
@@ -566,21 +567,14 @@ function cInitializer _
 
 	function = NULL
 
+	'' cannot initialize dynamic vars/fields
+	if( symbGetIsDynamic( sym ) or symbIsCommon( sym ) ) then
+		errReport( FB_ERRMSG_CANTINITDYNAMICARRAYS, TRUE )
+		exit function
+	end if
+
 	if( symbIsVar( sym ) ) then
-		'' cannot initialize dynamic vars
-		if( symbGetIsDynamic( sym ) ) then
-			errReport( FB_ERRMSG_CANTINITDYNAMICARRAYS, TRUE )
-			exit function
-		end if
-
-		'' common?? impossible but..
-		if( symbIsCommon( sym ) ) then
-			errReport( FB_ERRMSG_CANTINITDYNAMICARRAYS, TRUE )
-			exit function
-		end if
-
 		is_local = symbIsLocal( sym )
-
 	'' param, struct/class field or anon-udt
 	else
 		is_local = FALSE

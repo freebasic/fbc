@@ -2,9 +2,9 @@
 ''
 '' chng: sep/2006 written [v1ctor]
 
-
 #include once "fb.bi"
 #include once "fbint.bi"
+#include once "rtl.bi"
 
 type FB_SYMBNEST
 	sym				as FBSYMBOL ptr
@@ -58,7 +58,7 @@ private function hDeclareProc _
 	if( add_rhs ) then
 		assert( symbIsStruct( udt ) )
 		symbAddProcParam( proc, "__FB_RHS__", FB_DATATYPE_STRUCT, udt, _
-		                  FB_PARAMMODE_BYREF, FB_SYMBATTRIB_NONE )
+		                  0, FB_PARAMMODE_BYREF, FB_SYMBATTRIB_NONE )
 	end if
 
 	attrib or= FB_SYMBATTRIB_METHOD
@@ -223,9 +223,11 @@ private sub hBuildVtable( byval udt as FBSYMBOL ptr )
 	'' 1. new (and not inherited) entries for ...
 	''  - virtuals: must be set to point to their bodies for now.
 	''    (not yet overridden)
-	''  - abstracts: are set to point to fb_AbstractStub() (our version
-	''    of GCC's __cxa_pure_virtual()), which will show a run-time
-	''    error message and abort the program.
+	''  - abstracts: are set to NULL, so if they're not overridden, a NULL
+	''    pointer crash will happen when they're called, which is handled by
+	''    -exx error checking (see also astBuildVtableLookup()).
+	''    (GCC sets it to point to __cxa_pure_virtual(), which shows a
+	''    run-time error message and aborts the program)
 	''
 	'' 2. any entries for inherited virtuals/abstracts that were overridden
 	''    by a normal method must be updated to point to the normal method.
@@ -279,6 +281,80 @@ private sub hAddCtorBody _
 	hProcEnd( )
 
 	symbSetCantUndef( udt )
+end sub
+
+private function hArrayDescPtr _
+	( _
+		byval descexpr as ASTNODE ptr, _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr _
+	) as ASTNODE ptr
+
+	descexpr = astNewADDROF( descexpr )
+	descexpr = astNewBOP( AST_OP_ADD, descexpr, astNewCONSTi( symb.fbarray_ptr ) )
+	descexpr = astNewCONV( typeMultAddrOf( dtype, 2 ), subtype, descexpr, AST_CONVOPT_DONTCHKPTR )
+	descexpr = astNewDEREF( descexpr )
+
+	function = descexpr
+end function
+
+'' Copying over a dynamic array, needed for the automatically-generated implicit
+'' LET overloads for UDTs containing dynamic array fields.
+private sub hAssignDynamicArray _
+	( _
+		byval fld as FBSYMBOL ptr, _
+		byval dstexpr as ASTNODE ptr, _
+		byval srcexpr as ASTNODE ptr _
+	)
+
+	dim as integer dtype = any
+	dim as FBSYMBOL ptr dst = any, src = any, limit = any
+	dim as FBSYMBOL ptr looplabel = any, exitlabel = any
+
+	'' 1. REDIM dest to same size as source (will call dtors/ctors as needed)
+	dtype = fld->typ
+	astAdd( rtlArrayRedimTo( dstexpr, srcexpr, dtype, fld->subtype ) )
+
+	'' 2. Loop over all elements (if any) and copy them over 1 by 1, using
+	''    astNewASSIGN(), that will call let overloads as needed, and handle
+	''    strings.
+	dtype = typeAddrOf( dtype )
+	looplabel = symbAddLabel( NULL )
+	exitlabel = symbAddLabel( NULL )
+	dst = symbAddTempVar( dtype, fld->subtype )
+	src = symbAddTempVar( dtype, fld->subtype )
+	limit = symbAddTempVar( dtype, fld->subtype )
+
+	'' dst   = this.dstdesc.ptr
+	'' src   = this.srcdesc.ptr
+	'' limit = src + this.srcdesc.size
+	astAdd( astBuildVarAssign( dst, astBuildDerefAddrOf( dstexpr, symb.fbarray_ptr, dtype, fld->subtype ) ) )
+	astAdd( astBuildVarAssign( src, astBuildDerefAddrOf( srcexpr, symb.fbarray_ptr, dtype, fld->subtype ) ) )
+	astAdd( astBuildVarAssign( limit, _
+		astNewBOP( AST_OP_ADD, _
+			astNewVAR( src ), _
+			astBuildDerefAddrOf( srcexpr, symb.fbarray_size, FB_DATATYPE_UINT, NULL ) ) ) )
+
+	'' looplabel:
+	astAdd( astNewLABEL( looplabel ) )
+
+	'' if src >= limit then goto exitlabel
+	astAdd( astBuildBranch( astNewBOP( AST_OP_GE, astNewVAR( src ), astNewVAR( limit ) ), exitlabel, TRUE ) )
+
+	'' *dst = *src
+	astAdd( astNewASSIGN( astBuildVarDeref( dst ), astBuildVarDeref( src ) ) )
+
+	'' dst += 1  (astBuildVarInc() does pointer arithmetic)
+	'' src += 1
+	astAdd( astBuildVarInc( dst, 1 ) )
+	astAdd( astBuildVarInc( src, 1 ) )
+
+	'' goto looplabel
+	astAdd( astNewBRANCH( AST_OP_JMP, looplabel ) )
+
+	'' exitlabel:
+	astAdd( astNewLABEL( exitlabel ) )
+
 end sub
 
 '':::::
@@ -371,10 +447,12 @@ private sub hAddLetOpBody _
 	this_ = symbGetParamVar( symbGetProcHeadParam( letproc ) )
 	rhs = symbGetParamVar( symbGetProcTailParam( letproc ) )
 
-	'' for each field
+	'' For each field, except dynamic array field descriptors (instead, the
+	'' fake dynamic array field will be handled in order to copy the dynamic
+	'' array)
 	fld = symbGetCompSymbTb( udt ).head
 	while( fld )
-		if( symbIsField( fld ) ) then
+		if( symbIsField( fld ) and (not symbIsDescriptor( fld )) ) then
 			'' part of an union?
 			if( symbGetIsUnionField( fld ) ) then
 				fld = hCopyUnionFields( this_, rhs, fld )
@@ -384,13 +462,16 @@ private sub hAddLetOpBody _
 			dstexpr = astBuildVarField( this_, fld )
 			srcexpr = astBuildVarField( rhs, fld )
 
-			'' not an array?
-			if( symbGetArrayDimensions( fld ) = 0 ) then
-				'' this.field = rhs.field
-				astAdd( astNewASSIGN( dstexpr, srcexpr ) )
-			'' array..
+			'' Dynamic array field?
+			if( symbIsDynamic( fld ) ) then
+				hAssignDynamicArray( fld, dstexpr, srcexpr )
 			else
-				hAssignList( fld, dstexpr, srcexpr )
+				if( symbGetArrayDimensions( fld ) = 0 ) then
+					'' this.field = rhs.field
+					astAdd( astNewASSIGN( dstexpr, srcexpr ) )
+				else
+					hAssignList( fld, dstexpr, srcexpr )
+				end if
 			end if
 		end if
 
@@ -1169,13 +1250,13 @@ sub symbCompRTTIInit( )
 	symb.rtti.fb_rtti = rttitype
 
 	'' stdlibvtable as any ptr
-	symbAddField( rttitype, "stdlibvtable", 0, dTB(), typeAddrOf( FB_DATATYPE_VOID ), NULL, 0, 0 )
+	symbAddField( rttitype, "stdlibvtable", 0, dTB(), typeAddrOf( FB_DATATYPE_VOID ), NULL, 0, 0, 0 )
 
 	'' dim id as zstring ptr 
-	symbAddField( rttitype, "id", 0, dTB(), typeAddrOf( FB_DATATYPE_CHAR ), NULL, 0, 0 )
+	symbAddField( rttitype, "id", 0, dTB(), typeAddrOf( FB_DATATYPE_CHAR ), NULL, 0, 0, 0 )
 
 	'' dim rttibase as $fb_RTTI ptr
-	symbAddField( rttitype, "rttibase", 0, dTB(), typeAddrOf( FB_DATATYPE_STRUCT ), rttitype, 0, 0 )
+	symbAddField( rttitype, "rttibase", 0, dTB(), typeAddrOf( FB_DATATYPE_STRUCT ), rttitype, 0, 0, 0 )
 
 	'' end type
 	symbStructEnd( rttitype )
@@ -1194,7 +1275,7 @@ sub symbCompRTTIInit( )
 	symbNestBegin( objtype, FALSE )
 
 	'' vptr as any ptr
-	symbAddField( objtype, "$vptr", 0, dTB(), typeAddrOf( FB_DATATYPE_VOID ), NULL, 0, 0 )
+	symbAddField( objtype, "$vptr", 0, dTB(), typeAddrOf( FB_DATATYPE_VOID ), NULL, 0, 0, 0 )
 
 	'' declare constructor( )
 	ctor = symbPreAddProc( NULL )

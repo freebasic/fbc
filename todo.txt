@@ -65,6 +65,10 @@ o static member vars
 
 	print f( ).i
 
+o Allow typeless DIMs to implement EXTERNs:
+    extern a as integer
+    dim a
+
 o -exx should catch...
   - access to ERASEd or uninited (unREDIMed) dyn array
   - out-of-bounds dimension argument given to lbound()/ubound()

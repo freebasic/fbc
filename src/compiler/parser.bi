@@ -163,6 +163,7 @@ enum FB_PARSEROPT
 	FB_PARSEROPT_GTINPARENSONLY	= &h00000200	'' only check for '>' if inside parentheses
 	FB_PARSEROPT_ISPP               = &h00000400  '' PP expression? (e.g. #if condition)
 	FB_PARSEROPT_EXPLICITBASE       = &h00000800  '' Used to tell cProcArgList() & co about explicit BASE accesses from hBaseMemberAccess() functions
+	FB_PARSEROPT_IDXINPARENSONLY    = &h00001000  '' Only parse array index if inside parentheses (used by REDIM, so it can handle 'expr(1 to 2)', where the expression parser should parse 'expr' but not the '(1 to 2)' part)
 end enum
 
 type PARSERCTX
@@ -272,15 +273,12 @@ declare function cVariableDecl _
 		byval attrib as FB_SYMBATTRIB = FB_SYMBATTRIB_NONE _
 	) as integer
 
-declare sub cAutoVarDecl(byval attrib as FB_SYMBATTRIB)
-
-declare function cStaticArrayDecl _
+declare sub cArrayDecl _
 	( _
 		byref dimensions as integer, _
-		dTB() as FBARRAYDIM _
-	) as integer
-
-declare sub cArrayDecl( byref dimensions as integer, exprTB() as ASTNODE ptr )
+		byref have_bounds as integer, _
+		exprTB() as ASTNODE ptr _
+	)
 
 declare function cInitializer _
 	( _
@@ -819,6 +817,21 @@ declare function hMatchExpr _
 		byval dtype as integer _
 	) as ASTNODE ptr
 
+declare sub hMaybeConvertExprTb2DimTb _
+	( _
+		byref attrib as integer, _
+		byval dimensions as integer, _
+		exprTB() as ASTNODE ptr, _
+		dTB() as FBARRAYDIM _
+	)
+
+declare sub hComplainAboutEllipsis _
+	( _
+		byval dimensions as integer, _
+		exprTB() as ASTNODE ptr, _
+		byval errmsg as integer _
+	)
+
 declare function cVarDecl _
 	( _
 		byval attrib as integer, _
@@ -832,6 +845,8 @@ declare sub hComplainIfAbstractClass _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr _
 	)
+
+declare sub hComplainAboutConstDynamicArray( byval sym as FBSYMBOL ptr )
 
 declare sub hSymbolType _
 	( _
@@ -1002,6 +1017,15 @@ declare function hIntegerTypeFromBitSize _
 		parser.options or= FB_PARSEROPT_ISPP
 	else
 		parser.options and= not FB_PARSEROPT_ISPP
+	end if
+#endmacro
+
+#define fbGetIdxInParensOnly( ) ((parser.options and FB_PARSEROPT_IDXINPARENSONLY) <> 0)
+#macro fbSetIdxInParensOnly( _bool )
+	if( _bool ) then
+		parser.options or= FB_PARSEROPT_IDXINPARENSONLY
+	else
+		parser.options and= not FB_PARSEROPT_IDXINPARENSONLY
 	end if
 #endmacro
 

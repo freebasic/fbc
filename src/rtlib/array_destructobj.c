@@ -6,7 +6,7 @@ void fb_hArrayDtorObj( FBARRAY *array, FB_DEFCTOR dtor, size_t base_idx )
 {
 	size_t i, elements, element_len;
 	FBARRAYDIM *dim;
-	const char *this_;
+	unsigned char *this_;
 
 	if( array->ptr == NULL )
 		return;
@@ -20,7 +20,7 @@ void fb_hArrayDtorObj( FBARRAY *array, FB_DEFCTOR dtor, size_t base_idx )
 
 	/* call dtors in the inverse order */
 	element_len = array->element_len;
-	this_ = (const char *)array->ptr + ((base_idx + (elements-1)) * element_len);
+	this_ = ((unsigned char *)array->ptr) + ((base_idx + (elements-1)) * element_len);
 
 	while( elements > 0 ) {
 		/* !!!FIXME!!! check exceptions (only if rewritten in C++) */

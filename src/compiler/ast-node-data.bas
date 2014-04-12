@@ -247,6 +247,7 @@ function astDataStmtAdd _
 		if( label = NULL ) then
 			'' reset the array dimensions
 			symbSetArrayDimTb( sym, 1, dTB() )
+			symbMaybeAddArrayDesc( sym )
 		end if
 		return sym
 	end if
@@ -271,11 +272,11 @@ private sub hCreateDataDesc( )
 
 	'' type	as short
 	symbAddField( ast.data.desc, "type", 0, dTB(), _
-	              FB_DATATYPE_SHORT, NULL, 0, 0 )
+	              FB_DATATYPE_SHORT, NULL, 0, 0, 0 )
 
 	'' node	as FB_DATASTMT_NODE (no need to create an UNION, all fields are pointers)
 	symbAddField( ast.data.desc, "node", 0, dTB(), _
-	              typeAddrOf( FB_DATATYPE_VOID ), NULL, 0, 0 )
+	              typeAddrOf( FB_DATATYPE_VOID ), NULL, 0, 0, 0 )
 
 	symbStructEnd( ast.data.desc )
 end sub

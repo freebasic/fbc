@@ -884,6 +884,14 @@ private function hCallFieldCtor _
 		byval fld as FBSYMBOL ptr _
 	) as ASTNODE ptr
 
+	assert( symbIsDescriptor( fld ) = FALSE )  '' should have had an initree
+
+	'' Fake dynamic array field that didn't have an initree - nothing to do
+	if( symbIsDynamic( fld ) ) then
+		assert( symbGetTypeIniTree( fld ) = NULL )
+		exit function
+	end if
+
 	'' Do not initialize?
 	if( symbGetDontInit( fld ) ) then
 		exit function
@@ -891,8 +899,6 @@ private function hCallFieldCtor _
 
 	'' has a default ctor too?
 	if( symbHasDefCtor( fld ) ) then
-		'' !!!FIXME!!! assuming only static arrays will be allowed in fields
-
 		'' not an array?
 		if( symbGetArrayDimensions( fld ) = 0 ) then
 			'' ctor( this.field )
@@ -901,7 +907,6 @@ private function hCallFieldCtor _
 		else
 			function = hCallCtorList( TRUE, this_, fld )
 		end if
-
 		exit function
 	end if
 
@@ -952,6 +957,50 @@ private function hClearUnionFields _
 	                      astNewCONSTi( bytes ) )
 end function
 
+private function hInitDynamicArrayField _
+	( _
+		byval this_ as FBSYMBOL ptr, _
+		byval fld as FBSYMBOL ptr _
+	) as ASTNODE ptr
+
+	dim as ASTNODE ptr exprTB(0 to FB_MAXARRAYDIMS-1, 0 to 1)
+	dim as ASTNODE ptr boundstypeini = any, n = any
+	dim as integer dimensions = any
+
+	'' Duplicate the expressions and its temp vars into the current scope
+	boundstypeini = astTypeIniClone( symbGetTypeIniTree( fld ) )
+
+	'' Fill the exprTB() with the bounds expressions from the TYPEINI
+	dimensions = 0
+	assert( astIsTYPEINI( boundstypeini ) )
+	n = boundstypeini->l
+	do
+		assert( dimensions < FB_MAXARRAYDIMS )
+
+		'' lbound
+		assert( n->class = AST_NODECLASS_TYPEINI_ASSIGN )
+		exprTB(dimensions,0) = n->l
+		n->l = NULL  '' so we can astDelTree() the TYPEINI without free'ing the bounds expressions
+
+		'' ubound
+		n = n->r
+		assert( n->class = AST_NODECLASS_TYPEINI_ASSIGN )
+		exprTB(dimensions,1) = n->l
+		n->l = NULL  '' ditto
+
+		n = n->r
+		dimensions += 1
+	loop while( n )
+
+	assert( dimensions = symbGetArrayDimensions( fld ) )
+
+	'' Delete the TYPEINI (but not the bounds expressions), no longer needed
+	astDelTree( boundstypeini )
+
+	'' Build the REDIM CALL with the bounds expressions
+	function = rtlArrayRedim( astBuildVarField( this_, fld ), dimensions, exprTB(), FALSE, (not symbGetDontInit( fld )) )
+end function
+
 private function hCallFieldCtors _
 	( _
 		byval parent as FBSYMBOL ptr, _
@@ -959,27 +1008,32 @@ private function hCallFieldCtors _
 	) as ASTNODE ptr
 
 	dim as FBSYMBOL ptr fld = any, this_ = any
-	dim as ASTNODE ptr tree = NULL
+	dim as ASTNODE ptr tree = any, boundstypeini = any
+	dim as integer skip = any
 
+	tree = NULL
 	this_ = symbGetParamVar( symbGetProcHeadParam( proc ) )
 
-	'' for each field..
+	'' For all real fields, excluding...
+	''  - other members like procedures,
+	''  - the base field if any; it's initialized separately already
+	''  - fake dynamic array fields
 	fld = symbGetCompSymbTb( parent ).head
-	do while( fld <> NULL )
+	while( fld )
 
 		if( symbIsField( fld ) ) then
-			'' super class 'base' field? skip.. ctor must be called from derived class' ctor
 			if( fld <> parent->udt.base ) then
 				'' part of an union?
 				if( symbGetIsUnionField( fld ) ) then
 					tree = astNewLINK( tree, hClearUnionFields( this_, fld, @fld ) )
-					'' skip next
-					continue do
+					'' hClearUnionFields() already skipped to the next field behind the union
+					continue while
 				else
 					'' not initialized?
 					if( symbGetTypeIniTree( fld ) = NULL ) then
 						tree = astNewLINK( tree, hCallFieldCtor( this_, fld ) )
-					'' flush the tree..
+					elseif( symbIsDynamic( fld ) ) then
+						tree = astNewLINK( tree, hInitDynamicArrayField( this_, fld ) )
 					else
 						'' Note: flushing the field's TYPEINI against the whole "THIS" instance,
 						'' not against "THIS.thefield", because the TYPEINI contains absolute offsets.
@@ -993,7 +1047,7 @@ private function hCallFieldCtors _
 		end if
 
 		fld = fld->next
-	loop
+	wend
 
 	function = tree
 end function
@@ -1096,27 +1150,26 @@ private sub hCallFieldDtor _
 		byval fld as FBSYMBOL ptr _
 	)
 
-	if( symbGetType( fld ) = FB_DATATYPE_STRING ) then
-		var fldexpr = astBuildVarField( this_, fld )
+	assert( symbIsDescriptor( fld ) = FALSE )
 
-		'' assuming fields cannot be dynamic arrays
-
-		'' not an array?
-		if( symbGetArrayDimensions( fld ) = 0 ) then
-			astAdd( rtlStrDelete( fldexpr ) )
-		else
-			astAdd( rtlArrayErase( fldexpr, FALSE, FALSE ) )
+	'' Dynamic array field?
+	if( symbIsDynamic( fld ) ) then
+		'' Always needs clean up, regardless of dtype
+		astAdd( rtlArrayErase( astBuildVarField( this_, fld ), TRUE, FALSE ) )
+	elseif( symbGetArrayDimensions( fld ) = 0 ) then
+		'' Normal field
+		if( symbGetType( fld ) = FB_DATATYPE_STRING ) then
+			astAdd( rtlStrDelete( astBuildVarField( this_, fld ) ) )
+		elseif( symbHasDtor( fld ) ) then
+			'' dtor( this.field )
+			astAdd( astBuildDtorCall( symbGetSubtype( fld ), astBuildVarField( this_, fld ) ) )
 		end if
 	else
-		'' UDT field with dtor?
-		if( symbHasDtor( fld ) ) then
-			'' not an array?
-			if( symbGetArrayDimensions( fld ) = 0 ) then
-				'' dtor( this.field )
-				astAdd( astBuildDtorCall( symbGetSubtype( fld ), astBuildVarField( this_, fld ) ) )
-			else
-				astAdd( hCallCtorList( FALSE, this_, fld ) )
-			end if
+		'' Fixed-size array field
+		if( symbGetType( fld ) = FB_DATATYPE_STRING ) then
+			astAdd( rtlArrayErase( astBuildVarField( this_, fld ), FALSE, FALSE ) )
+		elseif( symbHasDtor( fld ) ) then
+			astAdd( hCallCtorList( FALSE, this_, fld ) )
 		end if
 	end if
 
@@ -1132,20 +1185,23 @@ private sub hCallFieldDtors _
 
 	this_ = symbGetParamVar( symbGetProcHeadParam( proc ) )
 
-    '' for each field (in inverse order)..
-    fld = symbGetCompSymbTb( parent ).tail
-    do while( fld <> NULL )
-		'' !!!FIXME!!! assuming only static arrays will be allowed in fields
+	'' For each field (in inverse order)
+	''  - excluding non-field members (e.g. methods)
+	''  - excluding the base field, that will be destructed separately
+	''  - dynamic array descriptor fields: hCallFieldDtor() frees dynamic
+	''    array fields by calling ERASE on the fake dynamic array field,
+	''    for which astNewARG() will automagically pass the descriptor.
+	fld = symbGetCompSymbTb( parent ).tail
+	while( fld )
 
 		if( symbIsField( fld ) ) then
-			'' super class 'base' field? skip.. dtor must be called from derived class' dtor
-			if( fld <> parent->udt.base ) Then
+			if( (not symbIsDescriptor( fld )) and (fld <> parent->udt.base) ) then
 				hCallFieldDtor( this_, fld )
 			end if
 		end if
 
 		fld = fld->prev
-	loop
+	wend
 
 end sub
 

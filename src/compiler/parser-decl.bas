@@ -140,12 +140,8 @@ function cDeclaration _
 		cEnumDecl( attrib )
 		function = TRUE
 
-	case FB_TK_DIM, FB_TK_REDIM, FB_TK_COMMON, FB_TK_EXTERN
+	case FB_TK_DIM, FB_TK_REDIM, FB_TK_COMMON, FB_TK_EXTERN, FB_TK_VAR
 		function = cVariableDecl( attrib )
-
-	case FB_TK_VAR
-		cAutoVarDecl( attrib )
-		function = TRUE
 
 	case else
 		if( attrib <> FB_SYMBATTRIB_NONE ) then

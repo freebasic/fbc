@@ -465,6 +465,7 @@ type FBS_PARAM
 	mode			as FB_PARAMMODE
 	var				as FBSYMBOL_ ptr			'' link to decl var in func bodies
 	optexpr			as ASTNODE_ ptr				'' default value
+	bydescdimensions	as integer
 end type
 
 '' function
@@ -592,8 +593,14 @@ end type
 
 '' variable
 type FBS_ARRAY
-	dimensions		as integer         '' -1 = dynamic array, 0 = none, 1..n = static array (with known dimtb)
-	dimtb			as FBARRAYDIM ptr  '' Dynamically allocated array of dimension bounds
+	'' 0 = none (not an array),
+	'' -1 = () = not yet known (should be filled in ASAP),
+	'' 1..n = known dimensions (fixed-size or dynamic arrays)
+	dimensions		as integer
+
+	'' Dynamically allocated array of dimension bounds (static arrays only)
+	dimtb			as FBARRAYDIM ptr
+
 	diff			as longint
 	elements		as longint
 	desc			as FBSYMBOL_ ptr
@@ -774,8 +781,34 @@ type SYMBCTX
 					0 to AST_OPCODES-1 _
 				)	as SYMB_OVLOP				'' global operator overloading
 
-	fbarray			as FBSYMBOL ptr			'' FBARRAY (array descriptor)
+	''
+	'' Pre-declared FBARRAY (array descriptor) structures, one for each
+	'' possible dimension count.
+	''
+	'' fbarray(0) = NULL (should be unused)
+	''
+	'' These are needed so we can give each array descriptor the correct
+	'' minimum size in (setting the descriptor symbol length isn't enough,
+	'' because e.g. the C backend will emit the descriptor based on its
+	'' dtype/subtype, without checking the length).
+	''
+	'' Of course if the dimension count is unknown we have to use a
+	'' descriptor with room for FB_MAXARRAYDIMS.
+	''    symb.fbarray(-1) = symb.fbarray(FB_MAXARRAYDIMS)
+	''
+	'' For BYDESC params we could use an FBARRAY structure without any dimTB
+	'' at all (i.e. a descriptor with zero dimensions), and, by doing so,
+	'' avoid any assumptions about the given argument. However, this is
+	'' unnecessary, since the exact descriptor type used by BYDESC params
+	'' never matters (we're not building any field accesses on it; that's
+	'' all done in the rtlib). And the rtlib should check the exact
+	'' dimension count available at the end of each descriptor anyways.
+	''
+	fbarray(-1 to FB_MAXARRAYDIMS) as FBSYMBOL ptr
+
 	fbarray_data		as integer			'' offsetof( FBARRAY, data )
+	fbarray_ptr		as integer			'' offsetof( FBARRAY, ptr )
+	fbarray_size		as integer			'' offsetof( FBARRAY, size )
 	fbarray_dimtb		as integer			'' offsetof( FBARRAY, dimTB )
 	fbarraydim		as FBSYMBOL ptr			'' FBARRAYDIM (dimTB element structure)
 	fbarraydim_lbound	as integer			'' offsetof( FBARRAYDIM, lbound )
@@ -1040,14 +1073,27 @@ declare function symbAddLabel _
 		byval options as FB_SYMBOPT = FB_SYMBOPT_DECLARING _
 	) as FBSYMBOL ptr
 
-declare sub symbSetArrayDimensionElements _
+declare sub symbSetFixedSizeArrayDimensionElements _
 	( _
 		byval sym as FBSYMBOL ptr, _
 		byval dimension as integer, _
 		byval elements as longint _
 	)
 
+declare sub symbCheckDynamicArrayDimensions _
+	( _
+		byval sym as FBSYMBOL ptr, _
+		byval dimensions as integer _
+	)
+
 declare sub symbVarInitFields( byval sym as FBSYMBOL ptr )
+
+declare sub symbVarInitArrayDimensions _
+	( _
+		byval sym as FBSYMBOL ptr, _
+		byval dimensions as integer, _
+		dTB() as FBARRAYDIM _
+	)
 
 declare function symbAddVar _
 	( _
@@ -1116,7 +1162,8 @@ declare function symbAddField _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
 		byval lgt as longint, _
-		byval bits as integer _
+		byval bits as integer, _
+		byval attrib as integer _
 	) as FBSYMBOL ptr
 
 declare sub symbInsertInnerUDT _
@@ -1152,6 +1199,7 @@ declare function symbAddProcParam _
 		byval id as zstring ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
+		byval dimensions as integer, _
 		byval mode as integer, _
 		byval attrib as FB_SYMBATTRIB _
 	) as FBSYMBOL ptr
@@ -1275,12 +1323,7 @@ declare sub symbRemoveFromFwdRef _
         byval ref as FBSYMBOL ptr _
     )
 
-declare sub symbRecalcUDTSize _
-	( _
-		byval t as FBSYMBOL ptr _
-	)
-
-declare function symbArrayHasUnknownDimensions( byval sym as FBSYMBOL ptr ) as integer
+declare function symbArrayHasUnknownBounds( byval sym as FBSYMBOL ptr ) as integer
 
 declare sub symbSetArrayDimTb _
 	( _
@@ -1288,6 +1331,8 @@ declare sub symbSetArrayDimTb _
 		byval dimensions as integer, _
 		dTB() as FBARRAYDIM _
 	)
+
+declare sub symbMaybeAddArrayDesc( byval sym as FBSYMBOL ptr )
 
 declare sub symbDelSymbolTb _
 	( _
@@ -1620,6 +1665,7 @@ declare sub symbMangleType _
 	)
 declare sub symbMangleParam( byref mangled as string, byval param as FBSYMBOL ptr )
 
+declare function hDumpDynamicArrayDimensions( byval dimensions as integer ) as string
 declare function symbProcPtrToStr( byval proc as FBSYMBOL ptr ) as string
 declare function symbMethodToStr( byval proc as FBSYMBOL ptr ) as string
 

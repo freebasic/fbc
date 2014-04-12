@@ -22,21 +22,8 @@ typedef struct _FB_ARRAY_TMPDESC {
 } FB_ARRAY_TMPDESC;
 /*!!!REMOVEME!!!*/
 
-typedef void (*FB_DEFCTOR) ( const void *this_ );
+typedef void (*FB_DEFCTOR)( void *this_ );
 typedef void (*FB_DTORMULT) ( FBARRAY *array, FB_DEFCTOR dtor, size_t base_idx );
-
-
-#define FB_ARRAY_SETDESC(_array, _elen, _dims, _size, _diff)          \
-    do {                                                              \
-        _array->element_len = _elen;                                  \
-        _array->dimensions  = _dims;                                  \
-        _array->size        = _size;                                  \
-                                                                      \
-        if( _array->ptr != NULL )                                     \
-            _array->data = ((unsigned char*) _array->ptr) + (_diff);  \
-        else                                                          \
-            _array->data = NULL;                                      \
-    } while (0)
 
 FBCALL void *fb_ArrayBoundChk
 	(
@@ -71,6 +58,7 @@ FBCALL void       fb_ArrayStrErase     ( FBARRAY *array );
        int        fb_ArrayRedimPresv   ( FBARRAY *array, size_t element_len, int preserve, size_t dimensions, ... );
        int        fb_ArrayRedimPresvEx ( FBARRAY *array, size_t element_len, int doclear, int isvarlen, size_t dimensions, ... );
        int        fb_ArrayRedimPresvObj( FBARRAY *array, size_t element_len, FB_DEFCTOR ctor, FB_DEFCTOR dtor, size_t dimensions, ... );
+FBCALL int        fb_ArrayRedimTo      ( FBARRAY *dest, const FBARRAY *source, int isvarlen, FB_DEFCTOR ctor, FB_DEFCTOR dtor );
 FBCALL void       fb_ArrayResetDesc    ( FBARRAY *array );
 FBCALL ssize_t    fb_ArrayLBound       ( FBARRAY *array, ssize_t dimension );
 FBCALL ssize_t    fb_ArrayUBound       ( FBARRAY *array, ssize_t dimension );

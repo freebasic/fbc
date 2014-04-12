@@ -6,7 +6,7 @@ void fb_hArrayCtorObj( FBARRAY *array, FB_DEFCTOR ctor, size_t base_idx )
 {
 	size_t i, elements, element_len;
 	FBARRAYDIM *dim;
-	const char *this_;
+	unsigned char *this_;
 
 	if( array->ptr == NULL )
 		return;
@@ -20,7 +20,7 @@ void fb_hArrayCtorObj( FBARRAY *array, FB_DEFCTOR ctor, size_t base_idx )
 
 	/* call ctors */
 	element_len = array->element_len;
-	this_ = (const char *)array->ptr;
+	this_ = array->ptr;
 
 	while( elements > 0 ) {
 		/* !!!FIXME!!! check exceptions (only if rewritten in C++) */

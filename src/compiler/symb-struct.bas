@@ -88,7 +88,7 @@ function symbStructBegin _
 	if( base_ <> NULL ) then
 		static as FBARRAYDIM dTB(0 to 0)
 
-		s->udt.base = symbAddField( s, "$base", 0, dTB(), FB_DATATYPE_STRUCT, base_, 0, 0 )
+		s->udt.base = symbAddField( s, "$base", 0, dTB(), FB_DATATYPE_STRUCT, base_, 0, 0, 0 )
 
 		symbSetIsUnique( s )
 		symbNestBegin( s, FALSE )
@@ -241,6 +241,12 @@ end function
 ''    field" to be started and becomes the first bitfield in it. In the former
 ''    case, the struct layout doesn't change; in the latter, it changes.
 ''
+'' c) A fake dynamic array field, which causes a corresponding real descriptor
+''    field to be added recursively. The fake array field does not use up any
+''    memory, only the descriptor will actually be emitted. While adding the
+''    fake array field, the struct layout doesn't change. When adding the
+''    descriptor, it changes, as with any other real field.
+''
 function symbAddField _
 	( _
 		byval parent as FBSYMBOL ptr, _
@@ -250,23 +256,57 @@ function symbAddField _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
 		byval lgt as longint, _
-		byval bits as integer _
+		byval bits as integer, _
+		byval attrib as integer _
 	) as FBSYMBOL ptr
 
-	dim as FBSYMBOL ptr sym = any, tail = any, base_parent = any
-	dim as integer pad = any, updateudt = any, elen = any
+	dim as FBSYMBOL ptr sym = any, tail = any, base_parent = any, desc = any
+	dim as integer pad = any, alloc_field = any, elen = any
 	dim as longint offset = any
+	dim as string arrayid
 
 	function = NULL
+	desc = NULL
 
     '' calc length if it wasn't given
 	if( lgt <= 0 ) then
 		lgt	= symbCalcLen( dtype, subtype )
 	end if
 
-	'' All fields default to the next available offset,
-	'' except bitfields which are given special treatment below.
-	offset = parent->ofs
+	'' Dynamic array field? Recursively add the corresponding descriptor field.
+	if( attrib and FB_SYMBATTRIB_DYNAMIC ) then
+		assert( dimensions > 0 )
+
+		'' Because this is done here at the top:
+		''  - the descriptor will be added before the fake array,
+		''    allowing the fake array to be "merged" into the descriptor
+		''  - we have to worry about the symbUniqueId() call
+		dim as FBARRAYDIM emptydTB(0 to 0)
+
+		'' Using symbUniqueId() below, which may overwrite the array's
+		'' own id if it was generated with symbUniqueId() aswell, unless
+		'' it's saved separately.
+		arrayid = *id
+		id = strptr( arrayid )
+
+		'' Note: using the exact descriptor type corresponding to the
+		'' amount of dimensions found in the field declaration.
+
+		desc = symbAddField( parent, symbUniqueId( ), 0, emptydTB(), _
+				FB_DATATYPE_STRUCT, symb.fbarray(dimensions), 0, 0, FB_SYMBATTRIB_DESCRIPTOR )
+
+		'' Same offset for the fake array field as for the descriptor,
+		'' to make astNewARG()'s job easier
+		offset = desc->ofs
+		alloc_field = FALSE
+	else
+		assert( dimensions >= 0 )
+
+		'' All other fields default to the next available offset,
+		'' except bitfields which are given special treatment below.
+		offset = parent->ofs
+		alloc_field = TRUE
+	end if
 
 	'' Check for bitfield
 	if( bits > 0 ) then
@@ -304,6 +344,7 @@ function symbAddField _
 				'' Put this bitfield into the same container as the previous bitfield,
 				'' i.e. same base offset as the previous bitfield.
 				offset = tail->ofs
+				alloc_field = FALSE
 			end if
 		end if
 	else
@@ -313,8 +354,7 @@ function symbAddField _
 	end if
 
 	'' Add padding for normal fields (neither bitfield nor fake array)
-	assert( offset <= parent->ofs )
-	if( offset = parent->ofs ) then
+	if( alloc_field ) then
 		pad = hCalcPadding( offset, parent->udt.align, dtype, subtype )
 		if( pad > 0 ) then
 
@@ -357,7 +397,7 @@ function symbAddField _
 			offset += pad
 		else
 			'' error recovery: don't add this field
-			updateudt = FALSE
+			alloc_field = FALSE
 		end if
 
 		'' update largest field len
@@ -374,10 +414,13 @@ function symbAddField _
     	base_parent = symbGetUDTAnonParent( base_parent )
 	loop
 
+	'' Preserve LOCAL
+	attrib or= (parent->attrib and FB_SYMBATTRIB_LOCAL)
+
 	sym = symbNewSymbol( FB_SYMBOPT_DOHASH, NULL, _
 			@symbGetUDTSymbTb( parent ), @symbGetUDTHashTb( base_parent ), _
 			FB_SYMBCLASS_FIELD, id, NULL, dtype, subtype, _
-			parent->attrib and FB_SYMBATTRIB_LOCAL )
+			attrib )
 	if( sym = NULL ) then
 		exit function
 	end if
@@ -385,8 +428,12 @@ function symbAddField _
 	sym->lgt = lgt
 	sym->ofs = offset
 	symbVarInitFields( sym )
-	if( dimensions <> 0 ) then
-		symbSetArrayDimTb( sym, dimensions, dTB() )
+	symbVarInitArrayDimensions( sym, dimensions, dTB() )
+	if( desc ) then
+		sym->var_.array.desc = desc
+		desc->var_.desc.array = sym  '' desc's backlink
+
+		symbSetTypeIniTree( desc, astBuildArrayDescIniTree( desc, sym, NULL ) )
 	end if
 	sym->var_.bitpos = parent->udt.bitpos
 	sym->var_.bits = bits
@@ -434,6 +481,17 @@ function symbAddField _
 
 	end select
 
+	'' Dynamic array? Same restrictions as STRINGs
+	if( attrib and FB_SYMBATTRIB_DYNAMIC ) then
+		if( symbGetUDTIsUnionOrAnon( parent ) ) then
+			errReport( FB_ERRMSG_DYNAMICARRAYINUNION )
+		else
+			symbSetUDTHasCtorField( parent )
+			symbSetUDTHasDtorField( parent )
+			symbSetUDTHasPtrField( parent )
+		end if
+	end if
+
 	'' check pointers
 	if( typeIsPtr( dtype ) ) then
 		symbSetUDTHasPtrField( base_parent )
@@ -447,13 +505,15 @@ function symbAddField _
 		assert( parent->ofs = 0 )
 		assert( parent->udt.bitpos = 0 )
 
-		'' Union's size is the max field size
-		if( parent->lgt < lgt ) then
-			parent->lgt = lgt
+		if( alloc_field ) then
+			'' Union's size is the max field size
+			if( parent->lgt < lgt ) then
+				parent->lgt = lgt
+			end if
 		end if
 	else
 		'' Update struct size, if a new (non-fake) field was started
-		if( offset >= parent->ofs ) then
+		if( alloc_field ) then
 			offset += lgt
 			parent->ofs = offset
 			parent->lgt = offset
@@ -726,8 +786,10 @@ function symbCloneStruct( byval sym as FBSYMBOL ptr ) as FBSYMBOL ptr
 
 	fld = sym->udt.ns.symtb.head
 	while( fld )
+		assert( symbIsDynamic( fld ) = FALSE )
+		assert( symbIsDescriptor( fld ) = FALSE )
 		symbAddField( clone, symbGetName( fld ), 0, dTB(), _
-		              symbGetType( fld ), symbGetSubType( fld ), fld->lgt, 0 )
+		              symbGetType( fld ), symbGetSubType( fld ), fld->lgt, 0, fld->attrib )
 		fld = fld->next
 	wend
 

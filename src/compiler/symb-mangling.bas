@@ -483,26 +483,30 @@ sub symbMangleType _
 end sub
 
 sub symbMangleParam( byref mangled as string, byval param as FBSYMBOL ptr )
-	dim as integer dtype = any
-
-	dtype = symbGetFullType( param )
-
 	select case as const( symbGetParamMode( param ) )
-	'' by reference (or descriptor)?
+	case FB_PARAMMODE_BYVAL
+		symbMangleType( mangled, param->typ, param->subtype )
+
 	case FB_PARAMMODE_BYREF
-		dtype = typeSetIsRef( dtype )
+		symbMangleType( mangled, typeSetIsRef( param->typ ), param->subtype )
 
 	case FB_PARAMMODE_BYDESC
-		dtype = typeSetIsRefAndArray( dtype )
+		'' Mangling array params as 'FBARRAY<dtype>&' because that's
+		'' what they really are from C++'s point of view. The array's
+		'' dimension count and dtype must be encoded too, because FB
+		'' allows overloading based on that.
+		''
+		'' It seems easiest to encode the dimension count as part of the
+		'' FBARRAY struct name, because we already have the dimension
+		'' count specific FBARRAY structs in symb.fbarray(), and then
+		'' encode the dtype as template argument behind that.
+		symbMangleType( mangled, typeSetIsRef( FB_DATATYPE_STRUCT ), symb.fbarray(param->param.bydescdimensions) )
+		mangled += "I" '' template
+		symbMangleType( mangled, param->typ, param->subtype )
 
-       '' var arg?
 	case FB_PARAMMODE_VARARG
 		mangled += "z"
-		exit sub
-
 	end select
-
-	symbMangleType( mangled, dtype, symbGetSubtype( param ) )
 end sub
 
 private function hAddUnderscore( ) as integer

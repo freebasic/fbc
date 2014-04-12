@@ -151,19 +151,29 @@ end function
 '' Build a field access on the target:
 ''    n = *cptr( dtype ptr, @n + offset )
 '' If offset = 0, then it's basically just a type cast.
-function astBuildAddrOfDeref _
+function astBuildDerefAddrOf overload _
 	( _
 		byval n as ASTNODE ptr, _
-		byval offset as longint, _
+		byval offsetexpr as ASTNODE ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
 		byval maybeafield as FBSYMBOL ptr _
 	) as ASTNODE ptr
 
 	n = astNewADDROF( n )
-	if( offset <> 0 ) then
-		n = astNewBOP( AST_OP_ADD, n, astNewCONSTi( offset ) )
+
+	'' Note: should not do +0 here, because astNewBOP() won't (yet)
+	'' remove it immediately. And a +0 BOP between the DEREF/ADDROF prevents
+	'' those being folded immediately, which affects other parts in the
+	'' compiler that expects VARs and is suddenly seeing DEREF(ADDROF(VAR)),
+	'' e.g. DEREF'ed zstring ptrs behave differently than zstring VARs in
+	'' many places. This matters only because some astBuildDerefAddrOf()
+	'' callers (i.e. astTypeIniFlush()) use it even when assigning to normal
+	'' variables, while it should only be used for field accesses...
+	if( offsetexpr ) then
+		n = astNewBOP( AST_OP_ADD, n, offsetexpr )
 	end if
+
 	n = astNewCONV( typeAddrOf( dtype ), subtype, n, AST_CONVOPT_DONTCHKPTR )
 	n = astNewDEREF( n )
 
@@ -174,6 +184,26 @@ function astBuildAddrOfDeref _
 	end if
 
 	function = n
+end function
+
+function astBuildDerefAddrOf overload _
+	( _
+		byval n as ASTNODE ptr, _
+		byval offset as longint, _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr, _
+		byval maybeafield as FBSYMBOL ptr _
+	) as ASTNODE ptr
+
+	dim as ASTNODE ptr offsetexpr = any
+
+	if( offset = 0 ) then
+		offsetexpr = NULL
+	else
+		offsetexpr = astNewCONSTi( offset )
+	end if
+
+	function = astBuildDerefAddrOf( n, offsetexpr, dtype, subtype, maybeafield )
 end function
 
 function astBuildVarField _
@@ -194,9 +224,9 @@ function astBuildVarField _
 
 	if( fld ) then
 		offset += symbGetOfs( fld )
-		n = astBuildAddrOfDeref( n, offset, symbGetFullType( fld ), symbGetSubtype( fld ), fld )
+		n = astBuildDerefAddrOf( n, offset, symbGetFullType( fld ), symbGetSubtype( fld ), fld )
 	else
-		n = astBuildAddrOfDeref( n, offset, symbGetFullType( sym ), symbGetSubtype( sym ), NULL )
+		n = astBuildDerefAddrOf( n, offset, symbGetFullType( sym ), symbGetSubtype( sym ), NULL )
 	end if
 
 	function = n
@@ -461,6 +491,7 @@ function astCALLCTORToCALL _
 	dim as ASTNODE ptr procexpr = any
 
 	assert( astIsCALLCTOR( n ) )
+	assert( astIsVAR( n->r ) )
 
 	sym = astGetSymbol( n->r )
 
@@ -694,7 +725,7 @@ function astBuildArrayDescIniTree _
 	) as ASTNODE ptr
 
     dim as ASTNODE ptr tree = any
-    dim as integer dtype = any, dims = any
+	dim as integer dtype = any, dimensions = any
     dim as FBSYMBOL ptr elm = any, dimtb = any, subtype = any
 
 	'' COMMON or EXTERN? Cannot be initialized
@@ -702,32 +733,57 @@ function astBuildArrayDescIniTree _
 		return NULL
 	end if
 
-    ''
-    tree = astTypeIniBegin( symbGetFullType( desc ), symbGetSubtype( desc ), TRUE )
+#if __FB_DEBUG__
+	'' The descriptor's dtype must be one of the symb.fbarray()'s
+	assert( symbGetType( desc ) = FB_DATATYPE_STRUCT )
+	scope
+		var found = (symbGetSubtype( desc ) = symb.fbarray(-1))
+		for i as integer = 1 to FB_MAXARRAYDIMS
+			found or= (symbGetSubtype( desc ) = symb.fbarray(i))
+		next
+		assert( found )
+	end scope
+
+	assert( symbIsParamBydesc( array ) = FALSE )
+	assert( symbIsVar( desc ) or symbIsField( desc ) )
+#endif
+
+	tree = astTypeIniBegin( symbGetFullType( desc ), symbGetSubtype( desc ), not symbIsField( desc ), symbGetOfs( desc ) )
 
     dtype = symbGetFullType( array )
     subtype = symbGetSubType( array )
-    dims = symbGetArrayDimensions( array )
 
-	'' note: assuming the arrays descriptors won't be objects with methods
 	elm = symbGetUDTSymbTbHead( symbGetSubtype( desc ) )
+	assert( symbIsField( elm ) )
 
-    if( array_expr = NULL ) then
-    	if( symbGetIsDynamic( array ) ) then
-    		array_expr = astNewCONSTi( 0, typeAddrOf( dtype ), subtype )
-    	else
-			array_expr = astNewADDROF( astNewVAR( array ) )
-    	end if
-    else
-    	array_expr = astNewADDROF( array_expr )
-    end if
+	if( symbIsDynamic( array ) ) then
+		'' Dynamic arrays: Initializing the descriptor to its initial
+		'' "unallocated" state, ptr = NULL
+		array_expr = astNewCONSTi( 0, typeAddrOf( dtype ), subtype )
+	else
+		'' Fixed-size arrays: Initializing the descriptor to point to
+		'' the existing array.
+		if( array_expr ) then
+			'' For fields, the access expression must be given
+			assert( symbIsField( array ) )
+		else
+			'' For vars, we just build it here
+			assert( symbIsVar( array ) )
+			assert( array_expr = NULL )
+			array_expr = astNewVAR( array )
+		end if
+		array_expr = astNewADDROF( array_expr )
+	end if
 
     astTypeIniScopeBegin( tree, NULL )
 
     '' .data = @array(0) + diff
 	astTypeIniAddAssign( tree, _
 		astNewBOP( AST_OP_ADD, astCloneTree( array_expr ), _
-			astNewCONSTi( symbGetArrayDiff( array ) ) ), _
+			astNewCONSTi( _
+				iif( symbIsDynamic( array ), _
+					0ll, _
+					symbGetArrayDiff( array ) ) ) ), _
 		elm )
 
 	elm = symbGetNext( elm )
@@ -739,7 +795,10 @@ function astBuildArrayDescIniTree _
 
     '' .size = len( array ) * elements( array )
 	astTypeIniAddAssign( tree, _
-		astNewCONSTi( symbGetLen( array ) * symbGetArrayElements( array ) ), _
+		astNewCONSTi( _
+			iif( symbIsDynamic( array ), _
+				0ll, _
+				symbGetLen( array ) * symbGetArrayElements( array ) ) ), _
 		elm )
 
     elm = symbGetNext( elm )
@@ -750,9 +809,16 @@ function astBuildArrayDescIniTree _
     elm = symbGetNext( elm )
 
 	'' .dimensions = dims( array )
-	'' If the dimension count is unknown, store 0 as dimension count,
-	'' since it's an unallocated dynamic array.
-	astTypeIniAddAssign( tree, astNewCONSTi( iif( dims = -1, 0, dims ) ), elm )
+	dimensions = symbGetArrayDimensions( array )
+	'' If the dimensions count is unknown at compile-time, then the
+	'' descriptor must have room for FB_MAXARRAYDIMS and we have to
+	'' initialize the dimensions field to 0, so that the rtlib can detect
+	'' this as a special case (see also fb_hArrayAlloc()).
+	if( symbGetSubtype( desc ) = symb.fbarray(-1) ) then
+		dimensions = 0
+	end if
+	assert( dimensions >= 0 )
+	astTypeIniAddAssign( tree, astNewCONSTi( dimensions ), elm )
 
     elm = symbGetNext( elm )
 
@@ -763,9 +829,7 @@ function astBuildArrayDescIniTree _
 
     '' static array?
     if( symbGetIsDynamic( array ) = FALSE ) then
-		assert( dims <> -1 )
-
-		for i as integer = 0 to dims - 1
+		for i as integer = 0 to symbGetArrayDimensions( array ) - 1
 			elm = dimtb
 
 			astTypeIniScopeBegin( tree, NULL )
@@ -785,28 +849,23 @@ function astBuildArrayDescIniTree _
 
 			astTypeIniScopeEnd( tree, NULL )
 		next
-
-	'' dynamic..
 	else
-		'' If the dimension count is unknown, we actually reserved room
-		'' for the max amount
-		if( dims = -1 ) then
-			dims = FB_MAXARRAYDIMS
+		'' Just clear the dimTB entries (dynamic array; not yet allocated)
+		dimensions = symbGetArrayDimensions( array )
+		'' If the dimensions count is unknown at compile-time, then the
+		'' descriptor must have room for FB_MAXARRAYDIMS (see above).
+		if( symbGetSubtype( desc ) = symb.fbarray(-1) ) then
+			dimensions = FB_MAXARRAYDIMS
 		end if
-
-		'' Clear all dimTB entries
-		astTypeIniAddPad( tree, dims * symbGetLen( symb.fbarraydim ) )
+		assert( dimensions > 0 )
+		astTypeIniAddPad( tree, dimensions * symbGetLen( symb.fbarraydim ) )
 	end if
 
     astTypeIniScopeEnd( tree, NULL )
-
-    ''
     astTypeIniScopeEnd( tree, NULL )
-
     astTypeIniEnd( tree, TRUE )
 
     function = tree
-
 end function
 
 private function hConstBound _
@@ -836,7 +895,7 @@ private function hConstBound _
 	end if
 
 	'' It must be a fixed-size array
-	if( symbIsDynamic( array ) or symbIsParamBydesc( array ) ) then
+	if( symbGetIsDynamic( array ) ) then
 		exit function
 	end if
 

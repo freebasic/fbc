@@ -71,6 +71,7 @@ private function hDefaultInit( byval sym as FBSYMBOL ptr ) as ASTNODE ptr
 			function = astBuildCtorCall( symbGetSubtype( sym ), astNewVAR( sym ) )
 		'' array..
 		else
+			assert( symbIsDynamic( sym ) = FALSE )
 			function = hCtorList( sym )
 		end if
 

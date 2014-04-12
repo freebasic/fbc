@@ -974,7 +974,8 @@ private sub hEmitStruct _
 		if( symbFieldIsBitfield( fld ) ) then
 			skip = (fld->var_.bitpos <> 0)
 		else
-			skip = FALSE
+			'' Don't emit fake dynamic array fields either
+			skip = symbIsDynamic( fld )
 		end if
 
 		if( skip = FALSE ) then
@@ -1519,7 +1520,7 @@ private function symbIsCArray( byval sym as FBSYMBOL ptr ) as integer
 	select case( symbGetClass( sym ) )
 	case FB_SYMBCLASS_VAR, FB_SYMBCLASS_FIELD
 		'' No dynamic arrays, they're just descriptor structs
-		if( symbGetIsDynamic( sym ) ) then
+		if( symbIsDynamic( sym ) ) then
 			return FALSE
 		end if
 

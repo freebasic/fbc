@@ -158,6 +158,7 @@ declare function hMakeParamDesc _
 		@"Expected 'END ENUM'", _
 		@"Var-len arrays cannot be initialized", _
 		@"'...' ellipsis upper bound given for dynamic array (this is not supported)", _
+		@"'...' ellipsis upper bound given for array field (this is not supported)", _
 		@"Invalid bitfield", _
 		@"Too many parameters", _
 		@"Macro text too long", _
@@ -168,7 +169,6 @@ declare function hMakeParamDesc _
 		@"Var-len strings cannot be initialized", _
 		@"Recursive TYPE or UNION not allowed", _
 		@"Recursive DEFINE not allowed", _
-		@"Array fields cannot be redimensioned", _
 		@"Identifier cannot include periods", _
 		@"Executable not found", _
 		@"Array out-of-bounds", _
@@ -215,6 +215,7 @@ declare function hMakeParamDesc _
 		@"Too many errors, exiting", _
 		@"Expected 'ENDMACRO'", _
 		@"EXTERN or COMMON variables cannot be initialized", _
+		@"EXTERN or COMMON dynamic arrays cannot have initial bounds", _
 		@"At least one parameter must be a user-defined type", _
 		@"Parameter or result must be a user-defined type", _
 		@"Both parameters can't be of the same type", _
@@ -240,6 +241,7 @@ declare function hMakeParamDesc _
 		@"A destructor should not have any parameters", _
 		@"Expected class or UDT identifier", _
 		@"Var-len strings cannot be part of UNION's or nested TYPE's", _
+		@"Dynamic arrays cannot be part of UNION's or nested TYPE's", _
 		@"Fields with constructors cannot be part of UNION's or nested TYPE's", _
 		@"Fields with destructors cannot be part of UNION's or nested TYPE's", _
 		@"Illegal outside a CONSTRUCTOR block", _

@@ -1571,23 +1571,14 @@ function symbIsDataDesc( byval sym as FBSYMBOL ptr ) as integer
 	end if
 end function
 
-'':::::
-function symbIsArray _
-	( _
-		byval sym as FBSYMBOL ptr _
-	) as integer
-
+function symbIsArray( byval sym as FBSYMBOL ptr ) as integer
 	select case sym->class
 	case FB_SYMBCLASS_VAR, FB_SYMBCLASS_FIELD
-		if (symbGetIsDynamic(sym)) then
-			return TRUE
-		else
-			return symbGetArrayDimensions( sym ) <> 0
-		end if
+		assert( iif( symbGetIsDynamic( sym ), (symbGetArrayDimensions( sym ) <> 0), TRUE ) )
+		function = (symbGetArrayDimensions( sym ) <> 0)
+	case else
+		function = FALSE
 	end select
-
-	function = FALSE
-
 end function
 
 '':::::
@@ -2189,7 +2180,7 @@ function typeDump _
 	) as string
 
 	dim as string dump
-	dim as integer ok = any, ptrcount = any
+	dim as integer ok = any, ptrcount = any, dtypeonly = any
 
 	dump = "["
 
@@ -2204,13 +2195,18 @@ function typeDump _
 			dump += "const "
 		end if
 
-		select case( typeGetDtOnly( dtype ) )
+		dtypeonly = typeGetDtOnly( dtype )
+		select case( dtypeonly )
 		case FB_DATATYPE_STRUCT
 			dump += "struct"
 		case FB_DATATYPE_WCHAR
 			dump += "wchar"
 		case else
-			dump += *symb_dtypeTB(typeGetDtOnly( dtype )).name
+			if( (dtypeonly >= 0) and (dtypeonly < FB_DATATYPES) ) then
+				dump += *symb_dtypeTB(dtypeonly).name
+			else
+				dump += "<invalid dtype " & dtypeonly & ">"
+			end if
 		end select
 
 		'' UDT name
@@ -2419,11 +2415,14 @@ function symbDump( byval sym as FBSYMBOL ptr ) as string
 
 	'' Array dimensions, if any
 	if( symbIsVar( sym ) or symbIsField( sym ) ) then
-		if( symbGetArrayDimensions( sym ) = -1 ) then
-			s += "()"
+		if( symbIsDynamic( sym ) ) then
+			s += hDumpDynamicArrayDimensions( symbGetArrayDimensions( sym ) )
 		elseif( symbGetArrayDimensions( sym ) > 0 ) then
 			s += "("
 			for i as integer = 0 to symbGetArrayDimensions( sym ) - 1
+				if( i > 0 ) then
+					s += ", "
+				end if
 				s &= symbArrayLbound( sym, i )
 				s += " to "
 				if( symbArrayUbound( sym, i ) = FB_ARRAYDIM_UNKNOWN ) then
@@ -2433,6 +2432,10 @@ function symbDump( byval sym as FBSYMBOL ptr ) as string
 				end if
 			next
 			s += ")"
+		end if
+	elseif( sym->class = FB_SYMBCLASS_PARAM ) then
+		if( sym->param.mode = FB_PARAMMODE_BYDESC ) then
+			s += hDumpDynamicArrayDimensions( sym->param.bydescdimensions )
 		end if
 	end if
 
@@ -2527,6 +2530,11 @@ end sub
 
 sub symbDumpChain( byval chain_ as FBSYMCHAIN ptr )
 	print "symchain [" + hex( chain_ ) + "]:"
+
+	if( chain_ = NULL ) then
+		exit sub
+	end if
+
 	do
 		print "    " + symbDump( chain_->sym )
 		chain_ = chain_->next

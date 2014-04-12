@@ -781,9 +781,13 @@ private sub hEmitStruct( byval s as FBSYMBOL ptr )
 	'' Write out the elements
 	fld = symbUdtGetFirstField( s )
 	while( fld )
-		ln += hEmitSymType( fld )
-		ln += hEmitArrayDecl( fld )
-		ln += attrib
+
+		'' Don't emit fake dynamic array fields
+		if( symbIsDynamic( fld ) = FALSE ) then
+			ln += hEmitSymType( fld )
+			ln += hEmitArrayDecl( fld )
+			ln += attrib
+		end if
 
 		fld = symbUdtGetNextField( fld )
 		if( fld ) then

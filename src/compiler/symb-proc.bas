@@ -160,6 +160,7 @@ function symbAddProcParam _
 		byval id as zstring ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
+		byval dimensions as integer, _
 		byval mode as integer, _
 		byval attrib as FB_SYMBATTRIB _
 	) as FBSYMBOL ptr
@@ -167,6 +168,8 @@ function symbAddProcParam _
     dim as FBSYMBOL ptr param = any
 
     function = NULL
+
+	assert( (dimensions <> 0) = (mode = FB_PARAMMODE_BYDESC) )
 
 	param = symbNewSymbol( FB_SYMBOPT_PRESERVECASE, NULL, _
 	                       @proc->proc.paramtb, NULL, _
@@ -181,6 +184,7 @@ function symbAddProcParam _
 	param->lgt = symbCalcParamLen( dtype, subtype, mode )
 	param->param.mode = mode
 	param->param.optexpr = NULL
+	param->param.bydescdimensions = dimensions
 
 	'' for UDTs, check if not including a byval param to self
 	if( typeGet( dtype ) = FB_DATATYPE_STRUCT ) then
@@ -326,7 +330,34 @@ private function hCanOverload _
 
 end function
 
-'':::::
+private function hCanOverloadBydesc _
+	( _
+		byval a as FBSYMBOL ptr, _
+		byval b as FBSYMBOL ptr _
+	) as integer
+
+	function = FALSE
+
+	'' Any BYDESC?
+	if( (a->param.mode = FB_PARAMMODE_BYDESC) or _
+	    (b->param.mode = FB_PARAMMODE_BYDESC) ) then
+		'' Both BYDESC?
+		if( (a->param.mode = FB_PARAMMODE_BYDESC) and _
+		    (b->param.mode = FB_PARAMMODE_BYDESC) ) then
+			'' No unknown dimensions?
+			if( (a->param.bydescdimensions > 0) and _
+			    (b->param.bydescdimensions > 0) ) then
+				'' Different dimension count?
+				function = (a->param.bydescdimensions <> b->param.bydescdimensions)
+			end if
+		else
+			'' Only one is BYDESC; can allow the overload
+			function = TRUE
+		end if
+	end if
+
+end function
+
 private function hAddOvlProc _
 	( _
 		byval proc as FBSYMBOL ptr, _
@@ -418,15 +449,23 @@ private function hAddOvlProc _
 			ovl_param = symbGetProcTailParam( ovl )
 
 			do
-				'' different modes?
-				if( param->param.mode <> ovl_param->param.mode ) then
-					'' one is by desc? allow byref and byval args
-					'' with the same type or subtype
-					if( param->param.mode = FB_PARAMMODE_BYDESC ) then
-						exit do
-					elseif( ovl_param->param.mode = FB_PARAMMODE_BYDESC ) then
-						exit do
-					end if
+				'' We can allow overloads to have a param with the same dtype,
+				'' where one is BYDESC and the other is BYREF/BYVAL, because the
+				'' overload resolution can disambiguate based on whether an array
+				'' was given or not.
+				''
+				'' If both are BYDESC though, then it depends on the dimension count
+				'' and/or on the dtype. We can allow the overload if the two array
+				'' parameters have different dimension counts, because the overload
+				'' resolution can disambiguate based on that. But we can't allow
+				'' overloading if there's a '()' array involved (unknown dimensions),
+				'' because then the overload resolution wouldn't know which one to use.
+				''
+				'' If both overloads are BYREF/BYVAL though, then only the dtype
+				'' matters.
+
+				if( hCanOverloadBydesc( param, ovl_param ) ) then
+					exit do
 				end if
 
 				dim as integer pdtype = param->typ
@@ -1064,11 +1103,8 @@ function symbAddProcPtrFromFunction _
 	'' params
 	var param = symbGetProcHeadParam( base_proc )
     do while( param <> NULL )
-		var p = symbAddProcParam( proc, NULL, _
-		                          symbGetFullType( param ), _
-		                          symbGetSubtype( param ), _
-		                          symbGetParamMode( param ), _
-		                          symbGetAttrib( param ) )
+		var p = symbAddProcParam( proc, NULL, param->typ, param->subtype, _
+				param->param.bydescdimensions, param->param.mode, param->attrib )
 
 		if( symbGetDontInit( param ) ) then
 			symbSetDontInit( p )
@@ -1151,7 +1187,7 @@ sub symbGetRealParamDtype _
 
 	case FB_PARAMMODE_BYDESC
 		dtype = typeAddrOf( FB_DATATYPE_STRUCT )
-		subtype = symb.fbarray
+		subtype = symb.fbarray(-1)
 	end select
 
 end sub
@@ -1159,7 +1195,7 @@ end sub
 function symbAddVarForParam( byval param as FBSYMBOL ptr ) as FBSYMBOL ptr
     dim as FBARRAYDIM dTB(0) = any
     dim as FBSYMBOL ptr s = any
-    dim as integer attrib = any, dtype = any
+	dim as integer attrib = any, dtype = any, dimensions = any
 
 	function = NULL
 
@@ -1194,7 +1230,7 @@ function symbAddVarForParam( byval param as FBSYMBOL ptr ) as FBSYMBOL ptr
 		attrib or= FB_SYMBATTRIB_SUFFIXED
 	end if
 
-	s = symbAddVar( symbGetName( param ), NULL, dtype, param->subtype, 0, 0, dTB(), attrib )
+	s = symbAddVar( symbGetName( param ), NULL, dtype, param->subtype, 0, param->param.bydescdimensions, dTB(), attrib )
 	if( s = NULL ) then
 		exit function
 	end if
@@ -1283,7 +1319,7 @@ sub symbAddProcInstancePtr _
 		dtype = typeSetIsConst( dtype )
 	end if
 
-	symbAddProcParam( proc, FB_INSTANCEPTR, dtype, parent, _
+	symbAddProcParam( proc, FB_INSTANCEPTR, dtype, parent, 0, _
 	                  FB_PARAMMODE_BYREF, FB_SYMBATTRIB_PARAMINSTANCE )
 end sub
 
@@ -1359,14 +1395,8 @@ function symbFindOverloadProc _
 			ovl_param = symbGetProcTailParam( ovl )
 			param = symbGetProcTailParam( proc )
 			do
-				'' different modes?
-				if( param->param.mode <> ovl_param->param.mode ) then
-					'' one is by desc? can't be the same..
-					if( param->param.mode = FB_PARAMMODE_BYDESC ) then
-						exit do
-					elseif( ovl_param->param.mode = FB_PARAMMODE_BYDESC ) then
-						exit do
-					end if
+				if( hCanOverloadBydesc( param, ovl_param ) ) then
+					exit do
 				end if
 
 				'' not the same type? check next proc..
@@ -1724,7 +1754,7 @@ private function hCheckOvlParam _
 	) as integer
 
 	dim as integer param_dtype = any, arg_dtype = any, param_ptrcnt = any
-	dim as FBSYMBOL ptr param_subtype = any, arg_subtype = any
+	dim as FBSYMBOL ptr param_subtype = any, arg_subtype = any, array = any
 
 	constonly_diff = FALSE
 
@@ -1761,6 +1791,19 @@ private function hCheckOvlParam _
         if( param_subtype <> arg_subtype ) then
         	return 0
         end if
+
+		assert( astIsVAR( arg_expr ) or astIsFIELD( arg_expr ) )
+		array = arg_expr->sym
+		assert( symbIsArray( array ) )
+
+		'' If the BYDESC parameter has unknown dimensions, any array can be passed.
+		'' Otherwise, only arrays with unknown or matching dimensions can be passed.
+		if( param->param.bydescdimensions > 0 ) then
+			if( (param->param.bydescdimensions <> symbGetArrayDimensions( array )) and _
+			    (symbGetArrayDimensions( array ) > 0) ) then
+				return 0
+			end if
+		end if
 
 		return FB_OVLPROC_FULLMATCH
 
@@ -2734,6 +2777,21 @@ private sub hProcModeToStr( byref s as string, byval proc as FBSYMBOL ptr )
 	end if
 end sub
 
+function hDumpDynamicArrayDimensions( byval dimensions as integer ) as string
+	dim s as string
+
+	s += "("
+	for i as integer = 1 to dimensions
+		if( i > 1 ) then
+			s += ", "
+		end if
+		s += "any"
+	next
+	s += ") "
+
+	function = s
+end function
+
 private sub hParamsToStr( byref s as string, byval proc as FBSYMBOL ptr )
 	s += "("
 
@@ -2748,32 +2806,32 @@ private sub hParamsToStr( byref s as string, byval proc as FBSYMBOL ptr )
 		var parammode = symbGetParamMode( param )
 
 		select case( parammode )
-		case FB_PARAMMODE_BYVAL, FB_PARAMMODE_BYREF
-			'' Byval/Byref, if different from default, at least in -lang fb.
-			'' In other -langs it depends on OPTION BYVAL, and it seems best to
-			'' always include Byval/Byref in that case, otherwise it'd depend on
-			'' source code context.
-			if( fbLangIsSet( FB_LANG_FB ) and _
-			    (symbGetDefaultParamMode( param->typ, param->subtype ) <> parammode) ) then
-				if( parammode = FB_PARAMMODE_BYVAL ) then
-					s += "byval "
-				else
-					s += "byref "
+		case FB_PARAMMODE_BYVAL, FB_PARAMMODE_BYREF, FB_PARAMMODE_BYDESC
+			select case( parammode )
+			case FB_PARAMMODE_BYVAL, FB_PARAMMODE_BYREF
+				'' Byval/Byref, if different from default, at least in -lang fb.
+				'' In other -langs it depends on OPTION BYVAL, and it seems best to
+				'' always include Byval/Byref in that case, otherwise it'd depend on
+				'' source code context.
+				if( fbLangIsSet( FB_LANG_FB ) and _
+				    (symbGetDefaultParamMode( param->typ, param->subtype ) <> parammode) ) then
+					if( parammode = FB_PARAMMODE_BYVAL ) then
+						s += "byval "
+					else
+						s += "byref "
+					end if
 				end if
-			end if
-		end select
 
-		if( parammode = FB_PARAMMODE_VARARG ) then
-			s += "..."
-		else
-			'' Array parentheses, instead of "Bydesc"
-			if( parammode = FB_PARAMMODE_BYDESC ) then
-				s += "() "
-			end if
+			case FB_PARAMMODE_BYDESC
+				s += hDumpDynamicArrayDimensions( param->param.bydescdimensions )
+			end select
 
 			'' Parameter's data type
 			s += "as " + symbTypeToStr( param->typ, param->subtype )
-		end if
+
+		case FB_PARAMMODE_VARARG
+			s += "..."
+		end select
 
 		param = symbGetParamNext( param )
 		if( param ) then

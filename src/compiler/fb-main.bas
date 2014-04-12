@@ -32,15 +32,15 @@ private sub hBuildDllMainWin32( )
 
 	'' instance
 	symbAddProcParam( proc, "__FB_DLLINSTANCE__", typeAddrOf( FB_DATATYPE_VOID ), NULL, _
-	                  FB_PARAMMODE_BYVAL, 0 )
+	                  0, FB_PARAMMODE_BYVAL, 0 )
 
 	'' reason
 	param = symbAddProcParam( proc, "__FB_DLLREASON__", FB_DATATYPE_UINT, NULL, _
-	                          FB_PARAMMODE_BYVAL, 0 )
+	                          0, FB_PARAMMODE_BYVAL, 0 )
 
 	'' reserved
 	symbAddProcParam( proc, "__FB_DLLRESERVED__", typeAddrOf( FB_DATATYPE_VOID ), NULL, _
-	                  FB_PARAMMODE_BYVAL, 0 )
+	                  0, FB_PARAMMODE_BYVAL, 0 )
 
 	'' function DllMain stdcall( byval instance as any ptr, byval reason as uinteger, _
 	''                           byval reserved as any ptr ) as integer
@@ -94,11 +94,11 @@ private sub hMainBegin( )
 
 	'' byval argc as long
 	symbAddProcParam( proc, "__FB_ARGC__", FB_DATATYPE_LONG, NULL, _
-	                  FB_PARAMMODE_BYVAL, 0 )
+	                  0, FB_PARAMMODE_BYVAL, 0 )
 
 	'' byval argv as zstring ptr ptr
 	symbAddProcParam( proc, "__FB_ARGV__", typeMultAddrOf( FB_DATATYPE_CHAR, 2 ), NULL, _
-	                  FB_PARAMMODE_BYVAL, 0 )
+	                  0, FB_PARAMMODE_BYVAL, 0 )
 
 	'' if it's a dll, the main() function should be private
 	var attrib = FB_SYMBATTRIB_PUBLIC
