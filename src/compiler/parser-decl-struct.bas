@@ -436,6 +436,10 @@ private function hAddAndInitField _
 		exit function
 	end if
 
+	if( attrib and FB_SYMBATTRIB_DYNAMIC ) then
+		hComplainAboutConstDynamicArray( sym )
+	end if
+
 	'' Initializer?
 	hFieldInit( parent, sym, boundstypeini )
 

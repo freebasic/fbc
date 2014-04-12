@@ -25,6 +25,14 @@ sub hComplainIfAbstractClass _
 
 end sub
 
+sub hComplainAboutConstDynamicArray( byval sym as FBSYMBOL ptr )
+	'' Disallow const dynamic arrays, they could never be assigned,
+	'' since dynamic arrays aren't allowed to have initializers.
+	if( typeIsConst( symbGetFullType( sym ) ) ) then
+		errReport( FB_ERRMSG_DYNAMICARRAYSCANTBECONST )
+	end if
+end sub
+
 sub hSymbolType _
 	( _
 		byref dtype as integer, _
@@ -1416,12 +1424,8 @@ function cVarDecl _
 				end if
 			end if
 
-			'' Disallow const dynamic arrays, they could never be assigned,
-			'' since dynamic arrays aren't allowed to have initializers.
 			if( sym ) then
-				if( typeIsConst( symbGetFullType( sym ) ) ) then
-					errReport( FB_ERRMSG_DYNAMICARRAYSCANTBECONST )
-				end if
+				hComplainAboutConstDynamicArray( sym )
 			end if
 		end if
 

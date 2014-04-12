@@ -846,6 +846,8 @@ declare sub hComplainIfAbstractClass _
 		byval subtype as FBSYMBOL ptr _
 	)
 
+declare sub hComplainAboutConstDynamicArray( byval sym as FBSYMBOL ptr )
+
 declare sub hSymbolType _
 	( _
 		byref dtype as integer, _
