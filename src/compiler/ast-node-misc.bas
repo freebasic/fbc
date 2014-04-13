@@ -1001,4 +1001,50 @@ function astDumpInline( byval n as ASTNODE ptr ) as string
 
 	function = s
 end function
+
+sub astDumpSmall( byval n as ASTNODE ptr )
+	static reclevel as integer
+
+	reclevel += 1
+
+	dim s as string
+
+	'' Indentation
+	s += space( (reclevel - 1) * 4 )
+
+	if( n = NULL ) then
+		s += "<NULL>"
+	else
+		s += hAstNodeClassToStr( n->class )
+		s += typeDump( n->dtype, n->subtype )
+
+		select case as const( n->class )
+		case AST_NODECLASS_BOP, AST_NODECLASS_UOP
+			s += " " + astDumpOp( n->op.op )
+		case AST_NODECLASS_CONST
+			if( typeGetClass( n->dtype ) = FB_DATACLASS_FPOINT ) then
+				s += " " + str( astConstGetFloat( n ) )
+			else
+				s += " " + str( astConstGetInt( n ) )
+			end if
+		end select
+
+		if( n->sym ) then
+			s += " " + *symbGetName( n->sym )
+		end if
+	end if
+
+	print s
+
+	if( n ) then
+		if( n->l ) then
+			astDumpSmall( n->l )
+		end if
+		if( n->r ) then
+			astDumpSmall( n->r )
+		end if
+	end if
+
+	reclevel -= 1
+end sub
 #endif
