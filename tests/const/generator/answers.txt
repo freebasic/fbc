@@ -1,0 +1,180 @@
+any const ptr ptr              = any const ptr ptr              = ok
+any const ptr ptr              = any ptr                        = ok
+any const ptr ptr              = any ptr ptr                    = ok
+any const ptr ptr              = const any const ptr ptr        = fail
+any const ptr ptr              = const any ptr                  = ok
+any const ptr ptr              = const any ptr ptr              = fail
+any const ptr ptr              = const ubyte const ptr ptr      = fail
+any const ptr ptr              = const ubyte ptr                = ok
+any const ptr ptr              = const ubyte ptr ptr            = fail
+any const ptr ptr              = ubyte const ptr ptr            = ok
+any const ptr ptr              = ubyte ptr                      = ok
+any const ptr ptr              = ubyte ptr ptr                  = ok
+any ptr                        = any const ptr ptr              = fail
+any ptr                        = any ptr                        = ok
+any ptr                        = any ptr ptr                    = ok
+any ptr                        = const any const ptr ptr        = fail
+any ptr                        = const any ptr                  = fail
+any ptr                        = const any ptr ptr              = ok
+any ptr                        = const ubyte const ptr ptr      = fail
+any ptr                        = const ubyte ptr                = fail
+any ptr                        = const ubyte ptr ptr            = ok
+any ptr                        = ubyte const ptr ptr            = fail
+any ptr                        = ubyte ptr                      = ok
+any ptr                        = ubyte ptr ptr                  = ok
+any ptr ptr                    = any const ptr ptr              = fail
+any ptr ptr                    = any ptr                        = ok
+any ptr ptr                    = any ptr ptr                    = ok
+any ptr ptr                    = const any const ptr ptr        = fail
+any ptr ptr                    = const any ptr                  = fail
+any ptr ptr                    = const any ptr ptr              = fail
+any ptr ptr                    = const ubyte const ptr ptr      = fail
+any ptr ptr                    = const ubyte ptr                = fail
+any ptr ptr                    = const ubyte ptr ptr            = fail
+any ptr ptr                    = ubyte const ptr ptr            = fail
+any ptr ptr                    = ubyte ptr                      = ok
+any ptr ptr                    = ubyte ptr ptr                  = ok
+byte const ptr ptr             = const ubyte const ptr ptr      = fail
+byte const ptr ptr             = const ubyte ptr                = ok
+byte const ptr ptr             = const ubyte ptr ptr            = fail
+byte const ptr ptr             = ubyte const ptr ptr            = ok
+byte const ptr ptr             = ubyte ptr                      = ok
+byte const ptr ptr             = ubyte ptr ptr                  = ok
+byte ptr                       = const ubyte const ptr ptr      = fail
+byte ptr                       = const ubyte ptr                = fail
+byte ptr                       = const ubyte ptr ptr            = ok
+byte ptr                       = ubyte const ptr ptr            = fail
+byte ptr                       = ubyte ptr                      = ok
+byte ptr                       = ubyte ptr ptr                  = ok
+byte ptr ptr                   = const ubyte const ptr ptr      = fail
+byte ptr ptr                   = const ubyte ptr                = fail
+byte ptr ptr                   = const ubyte ptr ptr            = fail
+byte ptr ptr                   = ubyte const ptr ptr            = fail
+byte ptr ptr                   = ubyte ptr                      = ok
+byte ptr ptr                   = ubyte ptr ptr                  = ok
+const any const ptr ptr        = any const ptr ptr              = ok
+const any const ptr ptr        = any ptr                        = ok
+const any const ptr ptr        = any ptr ptr                    = ok
+const any const ptr ptr        = const any const ptr ptr        = ok
+const any const ptr ptr        = const any ptr                  = ok
+const any const ptr ptr        = const any ptr ptr              = ok
+const any const ptr ptr        = const ubyte const ptr ptr      = ok
+const any const ptr ptr        = const ubyte ptr                = ok
+const any const ptr ptr        = const ubyte ptr ptr            = ok
+const any const ptr ptr        = ubyte const ptr ptr            = ok
+const any const ptr ptr        = ubyte ptr                      = ok
+const any const ptr ptr        = ubyte ptr ptr                  = ok
+const any ptr                  = any const ptr ptr              = ok
+const any ptr                  = any ptr                        = ok
+const any ptr                  = any ptr ptr                    = ok
+const any ptr                  = const any const ptr ptr        = ok
+const any ptr                  = const any ptr                  = ok
+const any ptr                  = const any ptr ptr              = ok
+const any ptr                  = const ubyte const ptr ptr      = ok
+const any ptr                  = const ubyte ptr                = ok
+const any ptr                  = const ubyte ptr ptr            = ok
+const any ptr                  = ubyte const ptr ptr            = ok
+const any ptr                  = ubyte ptr                      = ok
+const any ptr                  = ubyte ptr ptr                  = ok
+const any ptr ptr              = any const ptr ptr              = fail
+const any ptr ptr              = any ptr                        = ok
+const any ptr ptr              = any ptr ptr                    = ok
+const any ptr ptr              = const any const ptr ptr        = fail
+const any ptr ptr              = const any ptr                  = fail
+const any ptr ptr              = const any ptr ptr              = ok
+const any ptr ptr              = const ubyte const ptr ptr      = fail
+const any ptr ptr              = const ubyte ptr                = fail
+const any ptr ptr              = const ubyte ptr ptr            = ok
+const any ptr ptr              = ubyte const ptr ptr            = fail
+const any ptr ptr              = ubyte ptr                      = ok
+const any ptr ptr              = ubyte ptr ptr                  = ok
+const byte const ptr ptr       = const ubyte const ptr ptr      = ok
+const byte const ptr ptr       = const ubyte ptr                = ok
+const byte const ptr ptr       = const ubyte ptr ptr            = ok
+const byte const ptr ptr       = ubyte const ptr ptr            = ok
+const byte const ptr ptr       = ubyte ptr                      = ok
+const byte const ptr ptr       = ubyte ptr ptr                  = ok
+const byte ptr                 = const ubyte const ptr ptr      = ok
+const byte ptr                 = const ubyte ptr                = ok
+const byte ptr                 = const ubyte ptr ptr            = ok
+const byte ptr                 = ubyte const ptr ptr            = ok
+const byte ptr                 = ubyte ptr                      = ok
+const byte ptr                 = ubyte ptr ptr                  = ok
+const byte ptr ptr             = const ubyte const ptr ptr      = fail
+const byte ptr ptr             = const ubyte ptr                = fail
+const byte ptr ptr             = const ubyte ptr ptr            = ok
+const byte ptr ptr             = ubyte const ptr ptr            = fail
+const byte ptr ptr             = ubyte ptr                      = ok
+const byte ptr ptr             = ubyte ptr ptr                  = ok
+const ubyte const ptr ptr      = any const ptr ptr              = ok
+const ubyte const ptr ptr      = any ptr                        = ok
+const ubyte const ptr ptr      = any ptr ptr                    = ok
+const ubyte const ptr ptr      = const any const ptr ptr        = ok
+const ubyte const ptr ptr      = const any ptr                  = ok
+const ubyte const ptr ptr      = const any ptr ptr              = ok
+const ubyte const ptr ptr      = const ubyte const ptr ptr      = ok
+const ubyte const ptr ptr      = const ubyte ptr                = ok
+const ubyte const ptr ptr      = const ubyte ptr ptr            = ok
+const ubyte const ptr ptr      = ubyte const ptr ptr            = ok
+const ubyte const ptr ptr      = ubyte ptr                      = ok
+const ubyte const ptr ptr      = ubyte ptr ptr                  = ok
+const ubyte ptr                = any const ptr ptr              = ok
+const ubyte ptr                = any ptr                        = ok
+const ubyte ptr                = any ptr ptr                    = ok
+const ubyte ptr                = const any const ptr ptr        = ok
+const ubyte ptr                = const any ptr                  = ok
+const ubyte ptr                = const any ptr ptr              = ok
+const ubyte ptr                = const ubyte const ptr ptr      = ok
+const ubyte ptr                = const ubyte ptr                = ok
+const ubyte ptr                = const ubyte ptr ptr            = ok
+const ubyte ptr                = ubyte const ptr ptr            = ok
+const ubyte ptr                = ubyte ptr                      = ok
+const ubyte ptr                = ubyte ptr ptr                  = ok
+const ubyte ptr ptr            = any const ptr ptr              = fail
+const ubyte ptr ptr            = any ptr                        = ok
+const ubyte ptr ptr            = any ptr ptr                    = ok
+const ubyte ptr ptr            = const any const ptr ptr        = fail
+const ubyte ptr ptr            = const any ptr                  = fail
+const ubyte ptr ptr            = const any ptr ptr              = ok
+const ubyte ptr ptr            = const ubyte const ptr ptr      = fail
+const ubyte ptr ptr            = const ubyte ptr                = fail
+const ubyte ptr ptr            = const ubyte ptr ptr            = ok
+const ubyte ptr ptr            = ubyte const ptr ptr            = fail
+const ubyte ptr ptr            = ubyte ptr                      = ok
+const ubyte ptr ptr            = ubyte ptr ptr                  = ok
+ubyte const ptr ptr            = any const ptr ptr              = ok
+ubyte const ptr ptr            = any ptr                        = ok
+ubyte const ptr ptr            = any ptr ptr                    = ok
+ubyte const ptr ptr            = const any const ptr ptr        = fail
+ubyte const ptr ptr            = const any ptr                  = ok
+ubyte const ptr ptr            = const any ptr ptr              = fail
+ubyte const ptr ptr            = const ubyte const ptr ptr      = fail
+ubyte const ptr ptr            = const ubyte ptr                = ok
+ubyte const ptr ptr            = const ubyte ptr ptr            = fail
+ubyte const ptr ptr            = ubyte const ptr ptr            = ok
+ubyte const ptr ptr            = ubyte ptr                      = ok
+ubyte const ptr ptr            = ubyte ptr ptr                  = ok
+ubyte ptr                      = any const ptr ptr              = fail
+ubyte ptr                      = any ptr                        = ok
+ubyte ptr                      = any ptr ptr                    = ok
+ubyte ptr                      = const any const ptr ptr        = fail
+ubyte ptr                      = const any ptr                  = fail
+ubyte ptr                      = const any ptr ptr              = ok
+ubyte ptr                      = const ubyte const ptr ptr      = fail
+ubyte ptr                      = const ubyte ptr                = fail
+ubyte ptr                      = const ubyte ptr ptr            = ok
+ubyte ptr                      = ubyte const ptr ptr            = fail
+ubyte ptr                      = ubyte ptr                      = ok
+ubyte ptr                      = ubyte ptr ptr                  = ok
+ubyte ptr ptr                  = any const ptr ptr              = fail
+ubyte ptr ptr                  = any ptr                        = ok
+ubyte ptr ptr                  = any ptr ptr                    = ok
+ubyte ptr ptr                  = const any const ptr ptr        = fail
+ubyte ptr ptr                  = const any ptr                  = fail
+ubyte ptr ptr                  = const any ptr ptr              = fail
+ubyte ptr ptr                  = const ubyte const ptr ptr      = fail
+ubyte ptr ptr                  = const ubyte ptr                = fail
+ubyte ptr ptr                  = const ubyte ptr ptr            = fail
+ubyte ptr ptr                  = ubyte const ptr ptr            = fail
+ubyte ptr ptr                  = ubyte ptr                      = ok
+ubyte ptr ptr                  = ubyte ptr ptr                  = ok

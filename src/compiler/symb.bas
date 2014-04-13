@@ -2005,10 +2005,47 @@ function symbCheckConstAssign _
 		byval mode as FB_PARAMMODE = 0, _
 		byref matches as integer = 0 _
 	) as integer
-	
+
+	dim as integer i = any, lcount = any, rcount = any, rmatches = any
+	dim as integer lconst = any, rconst = any
+
+	''
+	'' Toplevel const:
+	''
+	''       T := const T    ok (byval copy)
+	'' const T :=       T    ok in initialization, not later
+	''
+	'' T       ptr := T const ptr    ok (byval copy)
+	'' T const ptr := T       ptr    ok in initialization, not later
+	''
+	''
+	'' Nested consts:
+	''
+	'' const T ptr := const T ptr    ok
+	'' const T ptr :=       T ptr    ok
+	''       T ptr := const T ptr    not ok
+	''
+	'' Basically the lhs may add CONSTs, but not remove them.
+	''
+	'' If pointer indirection levels differ, then the check stops at the
+	'' last level that they still have in common, for example:
+	''
+	''     T ptr ptr := const T ptr
+	''     (rhs is a pointer to something const, but lhs is a ptr to
+	''     something non-const, so they're incompatible)
+	''
+	''     T ptr := const T ptr ptr
+	''     (rhs is a pointer to a non-const "const T ptr"; lhs is a pointer
+	''     to something non-const aswell, match)
+	''
+	''     const T ptr := T const ptr ptr
+	''     (rhs is a pointer to a const "T ptr"; lhs is a pointer to a
+	''     const something, match)
+	''
+
 	function = FALSE
 	matches = 0
-	
+
 	'' no consts? short-circuit
 	if( (typeGetConstMask( ldtype ) or typeGetConstMask( rdtype )) = 0 ) then
 		return TRUE
@@ -2018,82 +2055,52 @@ function symbCheckConstAssign _
 	if( mode = FB_PARAMMODE_VARARG ) then
 		return TRUE
 	end if
-	
-	dim as integer l_cnt = typeGetPtrCnt( ldtype ), r_cnt = typeGetPtrCnt( rdtype ), start_at = any
-	
-	'' any ptr const on the right?
-	if( typeGetConstMask( rdtype ) and typeIsPtr( rdtype ) ) then
-		
-		'' types and ptr depth HAVE to match
-		if( typeGetDtAndPtrOnly( ldtype ) <> typeGetDtAndPtrOnly( rdtype ) ) then
-			
-			'' unless it's a ptr to an any ptr
-			if( (typeGetDtAndPtrOnly( ldtype ) = typeAddrOf(FB_DATATYPE_VOID)) = FALSE ) then
-				exit function
-			end if
-		end if
-		
-		if( lsubtype <> rsubtype ) then
-			exit function
-		end if
-		
-		if( l_cnt <> r_cnt ) then
-			exit function
-		end if
-		
-	end if
-	
-	'' add one for the non-ptr slot
-	r_cnt += 1
-	
-	'' byval params need extra matching for
-	'' overload resolution
-	if( mode = FB_PARAMMODE_BYVAL ) then
-		start_at = 1
-		matches = r_cnt
-		
+
+	lcount = typeGetPtrCnt( ldtype )
+	rcount = typeGetPtrCnt( rdtype )
+	i = 0
+	rmatches = rcount
+
+	select case( mode )
+	'' byval params need extra matching for overload resolution
+	case FB_PARAMMODE_BYVAL
+		i = 1
+		matches = rcount + 1
 		'' top-level const gets precedence...
 		if( typeIsConst( ldtype ) ) then
 			matches += 1
 		end if
-		
-	else
-		
-		'' just a variable assignment?
-		if( mode = 0 ) then
-			start_at = 1
-		else
-			
-			'' byref/bydesc param, check every level
-			start_at = 0
-		end if
-		
-	end if
-	
-	r_cnt -= start_at
-	
-	'' walk along all the const flags
-	for i as integer = start_at to l_cnt
-		
-		'' same? update matches
-		if( typeIsConstAt( ldtype, i ) = typeIsConstAt( rdtype, i ) ) then
-			if( (r_cnt) > matches ) then
-				matches = r_cnt
+
+	'' just a variable assignment?
+	case 0
+		i = 1
+
+	'' byref/bydesc param, check every level
+	case else
+		rmatches += 1
+	end select
+
+	'' Walk along all the CONST flags. It's an error if the rhs is CONST
+	'' while the lhs isn't, i.e. the lhs "loses" CONSTness.
+	while( (i <= lcount) and (i <= rcount) )
+		lconst = typeIsConstAt( ldtype, i )
+		rconst = typeIsConstAt( rdtype, i )
+
+		if( lconst = rconst ) then
+			if( matches < rmatches ) then
+				matches = rmatches
 			end if
 		end if
-		
-		'' if r is const and l isn't... (only pointers/refs checked here)
-		if( typeIsConstAt( rdtype, i ) ) then
-			if( typeIsConstAt( ldtype, i ) = FALSE ) then
-				exit function
-			end if
+
+		if( rconst and (not lconst) ) then
+			exit function
 		end if
-		
-		r_cnt -= 1
-	next
-	
+
+		rmatches -= 1
+		i += 1
+	wend
+
 	function = TRUE
-	
 end function
 
 private sub hForEachGlobal _

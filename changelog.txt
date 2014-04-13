@@ -153,6 +153,7 @@ Version 0.91.0:
 - Local dynamic arrays can now be shadowed in nested scopes without compiler error
 - More precise compile-time checks of dynamic array dimension counts
 - -lang fblite/qb: EXTERN arrays are no longer allowed to have subcripts if OPTION DYNAMIC was in effect, because EXTERN dynamic arrays cannot have initial subscripts, just like COMMON arrays.
+- #720: Some pointer assignments weren't working due to bogus CONSTness checking
 
 
 Version 0.90.1:
