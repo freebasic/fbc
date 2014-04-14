@@ -53,35 +53,6 @@ function cEraseStmt() as integer
 	function = TRUE
 end function
 
-private function hMakeRef _
-	( _
-		byval t as ASTNODE ptr, _
-		byref expr as ASTNODE ptr _
-	) as ASTNODE ptr
-
-	'' This is similar to astRemSideFx(), it creates a temp var, assigns the
-	'' expression with side-effects to that, and replaces the expression
-	'' with an access to that temp var. Effectively this causes the
-	'' expression with side-effects to be used only once.
-	''
-	'' However, here we're taking a reference to the expression instead of
-	'' storing its result, otherwise SWAP would overwrite the temp var,
-	'' not the actual data. This also means LINK nodes must be used,
-	'' because we don't support references across statements...
-
-	'' var ref
-	var ref = symbAddTempVar( typeAddrOf( astGetFullType( expr ) ), _
-				astGetSubtype( expr ) )
-
-	'' ref = @expr
-	function = astNewLINK( t, _
-		astNewASSIGN( astNewVAR( ref ), astNewADDROF( expr ) ) )
-
-	'' Use *ref instead of the original expr
-	expr = astNewDEREF( astNewVAR( ref ) )
-
-end function
-
 '' SwapStmt = SWAP VarOrDeref ',' VarOrDeref
 function cSwapStmt() as integer
 	lexSkipToken( )
@@ -181,11 +152,11 @@ function cSwapStmt() as integer
 
 	'' Side effects? Then use references to be able to read/write...
 	if( astHasSideFx( l ) ) then
-		t = hMakeRef( t, l )
+		t = astNewLINK( t, astMakeRef( l ) )
 	end if
 
 	if( astHasSideFx( r ) ) then
-		t = hMakeRef( t, r )
+		t = astNewLINK( t, astMakeRef( r ) )
 	end if
 
 	if( use_pushpop ) then

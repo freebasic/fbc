@@ -74,11 +74,85 @@ sub testResultUdtField cdecl( )
 	CU_ASSERT( a = 2 )
 end sub
 
+namespace bitfields
+	type UDT
+		a : 1 as integer
+		b : 1 as integer
+	end type
+
+	dim shared as integer f1calls, f2calls
+	dim shared globalx as UDT
+
+	function f1( byval i as integer ) as integer
+		f1calls += 1
+		function = i
+	end function
+
+	function f2( ) byref as UDT
+		f2calls += 1
+		function = globalx
+	end function
+
+	private sub test cdecl( )
+		dim array(0 to 0) as UDT
+		array(0).a = 1
+		CU_ASSERT( f1calls = 0 )
+		CU_ASSERT( array(0).a = 1 )
+		CU_ASSERT( array(0).b = 0 )
+
+		swap array(f1( 0 )).a, array(f1( 0 )).b
+		CU_ASSERT( f1calls = 2 )
+		CU_ASSERT( array(0).a = 0 )
+		CU_ASSERT( array(0).b = 1 )
+
+		globalx.a = 1
+		CU_ASSERT( f2calls = 0 )
+		CU_ASSERT( globalx.a = 1 )
+		CU_ASSERT( globalx.b = 0 )
+
+		swap f2( ).a, f2( ).b
+		CU_ASSERT( f2calls = 2 )
+		CU_ASSERT( globalx.a = 0 )
+		CU_ASSERT( globalx.b = 1 )
+	end sub
+end namespace
+
+namespace stringConcat
+	dim shared as integer fcalls
+	dim shared as string a, b
+
+	function f( byval i as integer, byref s as string ) as integer
+		if( i = 0 ) then
+			CU_ASSERT( s = a + b )
+		else
+			CU_ASSERT( s = b + a )
+		end if
+		fcalls += 1
+		function = i
+	end function
+
+	private sub test cdecl( )
+		a = "a"
+		b = "b"
+		dim array(0 to 1) as integer => { 1, 2 }
+
+		CU_ASSERT( fcalls = 0 )
+		CU_ASSERT( array(0) = 1 )
+		CU_ASSERT( array(1) = 2 )
+		swap array(f( 0, a + b )), array(f( 1, b + a ))
+		CU_ASSERT( fcalls = 2 )
+		CU_ASSERT( array(0) = 2 )
+		CU_ASSERT( array(1) = 1 )
+	end sub
+end namespace
+
 private sub ctor( ) constructor
 	fbcu.add_suite( "fb_tests.swap.sidefx" )
 	fbcu.add_test( "SWAP on *function()", @testDerefs )
 	fbcu.add_test( "SWAP on array(function())", @testArrays )
 	fbcu.add_test( "SWAP on function().field", @testResultUdtField )
+	fbcu.add_test( "bitfields", @bitfields.test )
+	fbcu.add_test( "stringConcat", @stringConcat.test )
 end sub
 
 end namespace

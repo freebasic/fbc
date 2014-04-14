@@ -292,45 +292,116 @@ function astCloneTree( byval n as ASTNODE ptr ) as ASTNODE ptr
 	function = c
 end function
 
-'':::::
-function astRemSideFx( byref n as ASTNODE ptr ) as ASTNODE ptr
-	'' note: this should only be done with VAR, IDX, PTR and FIELD nodes
+'' Address-of can only be taken on variables/derefs, or iif/typeini nodes which
+'' are eventually replaced by temp var accesses (i.e. the address-of will
+'' ultimately be done on the iif's/typeini's temp var), but not of
+'' CALLs/bitfields/etc.
+function astCanTakeAddrOf( byval n as ASTNODE ptr ) as integer
+	select case as const( n->class )
+	case AST_NODECLASS_VAR, AST_NODECLASS_IDX, AST_NODECLASS_DEREF, _
+	     AST_NODECLASS_IIF, AST_NODECLASS_TYPEINI, AST_NODECLASS_CALLCTOR
+		function = TRUE
+	case AST_NODECLASS_FIELD
+		function = (not symbFieldIsBitfield( n->sym ))
+	case else
+		function = FALSE
+	end select
+end function
 
-	dim as FBSYMBOL ptr tmp = any, subtype = any
-	dim as integer dtype = any
-	dim as ASTNODE ptr t = any
+''
+'' Build a reference to an expression, such that the expression is used only
+'' once and the reference can be used multiple times. (work-around if an
+'' expression is needed multiple times but has side-effects that mustn't be
+'' duplicated)
+''
+'' This only works with certain expressions, because we can't take the address
+'' of (for example) a CALL or a bitfield.
+''
+'' Luckily, there should only be few such cases that should ever reach here
+'' from code calling astMakeRef() directly (currently it seems like it's
+'' bitfields only, but we can give them special treatment here), because usually
+'' they should have been disallowed earlier, e.g. in cVarOrDeref().
+''
+'' astRemSideFx() also uses astMakeRef() to handle UDTs/strings, which usually
+'' can only appear in form of variables, except string/wstring CALLs, but we can
+'' give those special treatment here too. Most non-variable expressions,
+'' especially BOPs, will be handled by astRemSideFx()'s integer/pointer/float
+'' handling and thus are never passed to astMakeRef().
+''
+function astMakeRef( byref expr as ASTNODE ptr ) as ASTNODE ptr
+	dim as FBSYMBOL ptr temp = any
+	dim as ASTNODE ptr container = any
+
+	if( astIsBITFIELD( expr ) ) then
+		'' It's a bitfield; we can't just take the address-of, so
+		'' work-around by eliminating side-effects higher up in the
+		'' expression tree.
+
+		'' The FIELD's lhs should be the container field access. We can
+		'' build the reference to that, then do the bitfield access(es)
+		'' through that reference.
+		assert( astIsFIELD( expr ) )
+		container = expr->l
+		temp = expr->sym  '' the (bit)field symbol
+		astDelNode( expr )
+
+		function = astMakeRef( container )
+		expr = astNewFIELD( container, temp )
+
+		exit function
+	end if
+
+	if( astIsCALL( expr ) ) then
+		'' Functions returning [w]strings really return a
+		'' pointer; remap the type and then don't do addrof
+		select case( astGetDataType( expr ) )
+		case FB_DATATYPE_STRING, FB_DATATYPE_WCHAR
+			astSetType( expr, typeAddrOf( expr->dtype ), expr->subtype )
+
+			function = astRemSideFx( expr )
+			expr = astNewDEREF( expr )
+
+			exit function
+		end select
+	end if
+
+	assert( astCanTakeAddrOf( expr ) )
+
+	temp = symbAddTempVar( typeAddrOf( expr->dtype ), expr->subtype )
+
+	'' temp = @expr
+	function = astNewASSIGN( astNewVAR( temp ), astNewADDROF( expr ) )
+
+	'' Use *temp instead of the original expr
+	expr = astNewDEREF( astNewVAR( temp ) )
+
+end function
+
+'' Better side-effect removal than astMakeRef(), where possible
+function astRemSideFx( byref n as ASTNODE ptr ) as ASTNODE ptr
+	dim as FBSYMBOL ptr tmp = any
 
 	'' Handle string concatenation here. Since the expression will be taken
 	'' out of its original context (e.g. string ASSIGN or ARG), we are now
 	'' responsible for doing this.
 	n = astUpdStrConcat( n )
 
-	dtype = astGetFullType( n )
-	subtype = astGetSubType( n )
-
-	select case as const typeGet( dtype )
+	select case as const( astGetDataType( n ) )
 	'' complex type? convert to pointer..
 	case FB_DATATYPE_STRUCT, _ ' FB_DATATYPE_CLASS
 		 FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
 
-		tmp = symbAddTempVar( typeAddrOf( dtype ), subtype )
-
-		'' tmp = @b
-		function = astNewASSIGN( astNewVAR( tmp ), astNewADDROF( n ) )
-
-		'' repatch original expression to just *tmp
-		n = astNewDEREF( astNewVAR( tmp ) )
+		function = astMakeRef( n )
 
 	'' simple type..
 	case else
-		tmp = symbAddTempVar( dtype, subtype )
+		tmp = symbAddTempVar( n->dtype, n->subtype )
 
 		'' tmp = n
 		function = astNewASSIGN( astNewVAR( tmp ), n )
 
 		'' repatch original expression to just access the temp var
 		n = astNewVAR( tmp )
-
 	end select
 end function
 

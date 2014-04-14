@@ -154,6 +154,7 @@ Version 0.91.0:
 - More precise compile-time checks of dynamic array dimension counts
 - -lang fblite/qb: EXTERN arrays are no longer allowed to have subcripts if OPTION DYNAMIC was in effect, because EXTERN dynamic arrays cannot have initial subscripts, just like COMMON arrays.
 - #720: Some pointer assignments weren't working due to bogus CONSTness checking
+- #582: Wrong code generated for bitfield self-BOPs or SWAPs sometimes under -exx or if the bitfield expression contained function calls (side-effects)
 
 
 Version 0.90.1:

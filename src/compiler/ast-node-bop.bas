@@ -1429,31 +1429,6 @@ function astNewBOP _
 	function = n
 end function
 
-'':::::
-#macro hDoSelfOpOverload _
-	( _
-		op, l, r _
-	)
-
-	scope
-		dim as FBSYMBOL ptr proc = any
-		dim as FB_ERRMSG err_num = any
-
-		proc = symbFindSelfBopOvlProc( op, l, r, @err_num )
-		if( proc <> NULL ) then
-			'' build a proc call
-			function = astBuildCall( proc, l, r )
-			exit function
-		else
-			if( err_num <> FB_ERRMSG_OK ) then
-				return NULL
-			end if
-		end if
-	end scope
-
-#endmacro
-
-'':::::
 function astNewSelfBOP _
 	( _
 		byval op as integer, _
@@ -1463,52 +1438,44 @@ function astNewSelfBOP _
 		byval options as AST_OPOPT _
 	) as ASTNODE ptr
 
+	dim as ASTNODE ptr t = any
+	dim as FBSYMBOL ptr proc = any
+	dim as FB_ERRMSG err_num = any
+
 	function = NULL
 
 	'' check op overloading
-	hDoSelfOpOverload( op, l, r )
-
-	'' get the not-to-self version
-	op = astGetOpSelfVer( op )
-
-	'' if there's a function call in lvalue, convert to tmp = @lvalue, *tmp = *tmp op rhs:
-	if( astHasSideFx( l ) ) then
-		dim as FBSYMBOL ptr tmp = any
-		dim as ASTNODE ptr ll = any, lr = any
-
-		tmp = symbAddTempVar( typeAddrOf( astGetFullType( l ) ), astGetSubType( l ) )
-
-		'' tmp = @lvalue
-		ll = astNewASSIGN( astNewVAR( tmp ), astNewADDROF( l ) )
-		if( ll = NULL ) then
-			exit function
-		end if
-
-		'' *tmp = *tmp op expr
-		lr = astNewASSIGN( _
-			astNewDEREF( astNewVAR( tmp ) ), _
-			astNewBOP( op, _
-				astNewDEREF( astNewVAR( tmp ) ), _
-				r, ex, options or AST_OPOPT_ALLOCRES ) )
-
-		if( lr = NULL ) then
-			exit function
-		end if
-
-		function = astNewLink( ll, lr )
-
-	'' no side-effects, convert it to lvalue = lvalue op rhs and let it be optimized later
-	else
-		r = astNewBOP( op, astCloneTree( l ), r, ex, options or AST_OPOPT_ALLOCRES )
-
- 		if( r = NULL ) then
- 			exit function
- 		end if
-
- 		'' do the assignment
-		function = astNewASSIGN( l, r )
+	proc = symbFindSelfBopOvlProc( op, l, r, @err_num )
+	if( proc ) then
+		'' build a proc call
+		return astBuildCall( proc, l, r )
+	end if
+	if( err_num <> FB_ERRMSG_OK ) then
+		return NULL
 	end if
 
+	'' Build the self-BOP
+	''      l selfbop= r
+	'' by doing an assignment:
+	''      l = l normalbop r
+	'' (will be optimized by astOptAssignment() again later)
+	t = NULL
+
+	if( astHasSideFx( l ) ) then
+		t = astNewLINK( t, astMakeRef( l ), FALSE )
+	end if
+
+	'' ... = l normalbop r
+	r = astNewBOP( astGetOpSelfVer( op ), astCloneTree( l ), r, ex, options or AST_OPOPT_ALLOCRES )
+	if( r = NULL ) then
+		astDelTree( t )
+		exit function
+	end if
+
+	'' l = ...
+	t = astNewLINK( t, astNewASSIGN( l, r ), FALSE )
+
+	function = t
 end function
 
 function astLoadBOP( byval n as ASTNODE ptr ) as IRVREG ptr

@@ -321,21 +321,14 @@ private sub hCheckByrefParam _
 		end select
 	end if
 
-	select case as const( t->class )
-	'' variable/object? take address and pass (BYREF semantics)
-	'' also iif() and TYPEINIs/CALLCTORs whose temp vars can be passed.
-	case AST_NODECLASS_VAR, AST_NODECLASS_IDX, _
-	     AST_NODECLASS_FIELD, AST_NODECLASS_DEREF, _
-	     AST_NODECLASS_IIF, _
-	     AST_NODECLASS_TYPEINI, AST_NODECLASS_CALLCTOR
-
-	case else
-		'' Other expressions (especially BOPs, CONSTs, etc. that aren't variables/objects):
-		'' store arg to a temp var, take address and pass
+	'' If given a variable/object, we can just take its address and pass
+	'' that (BYREF semantics). For other expressions though (especially
+	'' BOPs, CONSTs, etc.) we have to create a temp var to hold the arg's
+	'' value and then pass the temp var byref.
+	if( astCanTakeAddrOf( t ) = FALSE ) then
 		arg = astNewASSIGN( astNewVAR( symbAddTempVar( arg->dtype, arg->subtype ) ), _
 		                    arg, AST_OPOPT_DONTCHKPTR )
-
-	end select
+	end if
 
 	'' take the address of
 	hBuildByrefArg( param, n, arg )
@@ -829,11 +822,9 @@ private function hCheckParam _
 
 		'' Passing a bitfield arg to a byref param? Can't be allowed,
 		'' @udt.bitfield isn't possible either...
-		if( astGetClass( arg ) = AST_NODECLASS_FIELD ) then
-			if( symbFieldIsBitfield( arg->sym ) ) then
-				errReport( FB_ERRMSG_PARAMTYPEMISMATCHAT )
-				exit function
-			end if
+		if( astIsBITFIELD( arg ) ) then
+			errReport( FB_ERRMSG_PARAMTYPEMISMATCHAT )
+			exit function
 		end if
 
 	end select
