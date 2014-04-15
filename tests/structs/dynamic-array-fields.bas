@@ -208,6 +208,30 @@ namespace copyPod
 			b = a
 		end scope
 
+		'' Self-assignment
+		scope
+			dim x as UDT1
+			x = x
+
+			redim x.array(0 to 1)
+			x.array(0) = 1
+			x.array(1) = 2
+
+			CU_ASSERT( ubound( x.array, 0 ) = 1 )
+			CU_ASSERT( lbound( x.array ) = 0 )
+			CU_ASSERT( ubound( x.array ) = 1 )
+			CU_ASSERT( x.array(0) = 1 )
+			CU_ASSERT( x.array(1) = 2 )
+
+			x = x
+
+			CU_ASSERT( ubound( x.array, 0 ) = 1 )
+			CU_ASSERT( lbound( x.array ) = 0 )
+			CU_ASSERT( ubound( x.array ) = 1 )
+			CU_ASSERT( x.array(0) = 1 )
+			CU_ASSERT( x.array(1) = 2 )
+		end scope
+
 		'' simple
 		scope
 			dim as UDT1 a, b
@@ -352,6 +376,30 @@ namespace copyString
 		scope
 			dim as UDT1 a, b
 			b = a
+		end scope
+
+		'' Self-assignment
+		scope
+			dim x as UDT1
+			x = x
+
+			redim x.array(0 to 1)
+			x.array(0) = "1"
+			x.array(1) = "2"
+
+			CU_ASSERT( ubound( x.array, 0 ) = 1 )
+			CU_ASSERT( lbound( x.array ) = 0 )
+			CU_ASSERT( ubound( x.array ) = 1 )
+			CU_ASSERT( x.array(0) = "1" )
+			CU_ASSERT( x.array(1) = "2" )
+
+			x = x
+
+			CU_ASSERT( ubound( x.array, 0 ) = 1 )
+			CU_ASSERT( lbound( x.array ) = 0 )
+			CU_ASSERT( ubound( x.array ) = 1 )
+			CU_ASSERT( x.array(0) = "1" )
+			CU_ASSERT( x.array(1) = "2" )
 		end scope
 
 		'' simple
@@ -527,6 +575,48 @@ namespace copyClass
 		CU_ASSERT( ctors = 0 )
 		CU_ASSERT( dtors = 0 )
 		CU_ASSERT( lets = 0 )
+
+		'' Self-assignment
+		ctors = 0
+		dtors = 0
+		lets = 0
+		scope
+			dim x as UDT1
+			CU_ASSERT( ctors = 0 )
+			CU_ASSERT( dtors = 0 )
+			CU_ASSERT( lets = 0 )
+
+			x = x
+			CU_ASSERT( ctors = 0 )
+			CU_ASSERT( dtors = 0 )
+			CU_ASSERT( lets = 0 )
+
+			redim x.array(0 to 1)
+			CU_ASSERT( ctors = 2 )
+			CU_ASSERT( dtors = 0 )
+			CU_ASSERT( lets = 0 )
+			x.array(0).i = 1
+			x.array(1).i = 2
+
+			CU_ASSERT( ubound( x.array, 0 ) = 1 )
+			CU_ASSERT( lbound( x.array ) = 0 )
+			CU_ASSERT( ubound( x.array ) = 1 )
+			CU_ASSERT( x.array(0).i = 1 )
+			CU_ASSERT( x.array(1).i = 2 )
+
+			x = x
+			CU_ASSERT( ctors = 2 )
+			CU_ASSERT( dtors = 0 )
+			CU_ASSERT( lets = 2 )
+			CU_ASSERT( ubound( x.array, 0 ) = 1 )
+			CU_ASSERT( lbound( x.array ) = 0 )
+			CU_ASSERT( ubound( x.array ) = 1 )
+			CU_ASSERT( x.array(0).i = 1 )
+			CU_ASSERT( x.array(1).i = 2 )
+		end scope
+		CU_ASSERT( ctors = 2 )
+		CU_ASSERT( dtors = 2 )
+		CU_ASSERT( lets = 2 )
 
 		'' simple
 		ctors = 0
