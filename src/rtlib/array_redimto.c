@@ -15,6 +15,10 @@ FBCALL int fb_ArrayRedimTo
 	unsigned char *this_;
 	unsigned char *limit;
 
+	if( dest == source ) {
+		return fb_ErrorSetNum( FB_RTERROR_OK );
+	}
+
 	/* ditto, see fb_hArrayAlloc() */
 	if( (source->dimensions != dest->dimensions) && (dest->dimensions != 0) )
 		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
