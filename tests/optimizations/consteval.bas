@@ -590,8 +590,8 @@ private sub testUopInt cdecl( )
 	checkUopAllVals( sgn )
 
 #ifdef __FB_64BIT__
-	CU_ASSERT( (not &h80000000l ) = &hFFFFFFFF7FFFFFFF  )
-	CU_ASSERT( (not &hFFFFFFFFl ) = &hFFFFFFFF00000000  )
+	CU_ASSERT( (not &h80000000l ) = &h000000007FFFFFFF  )  '' sign-extended to &hFFFFFFFF80000000 before the NOT
+	CU_ASSERT( (not &hFFFFFFFFl ) =                  0  )  '' sign-extended to -1 before the NOT
 	CU_ASSERT( (not         -1l ) =                  0  )
 	CU_ASSERT( (not          0l ) =                 -1  )
 	CU_ASSERT( (not          1l ) = &hFFFFFFFFFFFFFFFE  )
@@ -776,7 +776,11 @@ private sub testBopS32 cdecl( )
 	l_check2( \,  2, 3 )
 	l_check2( \,  1, 3 )
 
-	CU_ASSERT( (-2147483648u \   -1) = 0 )  '' = 2147483648, overflows to 0
+	#ifdef __FB_64BIT__
+		CU_ASSERT( (-2147483648u \   -1) = 2147483648u )
+	#else
+		CU_ASSERT( (-2147483648u \   -1) = 0 )  '' = 2147483648, overflows to 0 on 32bit
+	#endif
 	CU_ASSERT( (-2147483648u mod -1) = 0 )  '' remainder = 0
 
 	#macro l_shift1( bop, val1 )
