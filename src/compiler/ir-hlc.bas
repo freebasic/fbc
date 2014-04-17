@@ -485,6 +485,8 @@ private function hEmitProcHeader _
 	) as string
 
 	dim as string ln, mangled
+	dim as integer dtype = any
+	dim as FBSYMBOL ptr subtype = any
 
 	if( options = 0 ) then
 		'' ctor/dtor flags on bodies
@@ -560,9 +562,7 @@ private function hEmitProcHeader _
 		if( symbGetParamMode( param ) = FB_PARAMMODE_VARARG ) then
 			ln += "..."
 		else
-			var dtype = symbGetType( param )
-			var subtype = param->subtype
-			symbGetRealParamDtype( param->param.mode, dtype, subtype )
+			symbGetRealParamDtype( param, dtype, subtype )
 			ln += hEmitType( dtype, subtype )
 
 			if( (options and EMITPROC_ISPROTO) = 0 ) then
@@ -2779,6 +2779,8 @@ private sub hDoCall _
 	)
 
 	dim as IRCALLARG ptr arg = any
+	dim as integer dtype = any
+	dim as FBSYMBOL ptr subtype = any
 
 	'' Flush argument list
 	s += "( "
@@ -2795,9 +2797,7 @@ private sub hDoCall _
 			'' (this will be done by astNewARG() already, except for
 			'' BYREF AS ANY params, where the exact type will only
 			'' be known later, or never)
-			var dtype = symbGetType( arg->param )
-			var subtype = arg->param->subtype
-			symbGetRealParamDtype( arg->param->param.mode, dtype, subtype )
+			symbGetRealParamDtype( arg->param, dtype, subtype )
 			expr = exprNewCAST( dtype, subtype, expr )
 		end if
 

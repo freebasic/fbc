@@ -1168,9 +1168,10 @@ function symbPreAddProc( byval symbol as zstring ptr ) as FBSYMBOL ptr
 	function = proc
 end function
 
-sub symbGetRealParamDtype _
+sub symbGetRealParamDtype overload _
 	( _
 		byval parammode as integer, _
+		byval bydescdimensions as integer, _
 		byref dtype as integer, _
 		byref subtype as FBSYMBOL ptr _
 	)
@@ -1187,8 +1188,24 @@ sub symbGetRealParamDtype _
 
 	case FB_PARAMMODE_BYDESC
 		dtype = typeAddrOf( FB_DATATYPE_STRUCT )
-		subtype = symb.fbarray(-1)
+		subtype = symb.fbarray(bydescdimensions)
 	end select
+
+end sub
+
+sub symbGetRealParamDtype overload _
+	( _
+		byval param as FBSYMBOL ptr, _
+		byref dtype as integer, _
+		byref subtype as FBSYMBOL ptr _
+	)
+
+	assert( param->class = FB_SYMBCLASS_PARAM )
+
+	dtype = symbGetType( param )
+	subtype = param->subtype
+
+	symbGetRealParamDtype( param->param.mode, param->param.bydescdimensions, dtype, subtype )
 
 end sub
 

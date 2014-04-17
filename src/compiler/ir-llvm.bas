@@ -316,6 +316,8 @@ private function hEmitProcHeader _
 	) as string
 
 	dim as string ln
+	dim as integer dtype = any
+	dim as FBSYMBOL ptr subtype = any
 
 	assert( symbIsProc( proc ) )
 
@@ -355,9 +357,7 @@ private function hEmitProcHeader _
 		if( symbGetParamMode( param ) = FB_PARAMMODE_VARARG ) then
 			ln += "..."
 		else
-			var dtype = symbGetType( param )
-			var subtype = param->subtype
-			symbGetRealParamDtype( param->param.mode, dtype, subtype )
+			symbGetRealParamDtype( param, dtype, subtype )
 			ln += hEmitType( dtype, subtype )
 
 			if( is_proto = FALSE ) then
@@ -978,7 +978,7 @@ private sub _procAllocArg _
 	)
 
 	dim as string ln
-	dim as integer parammode = any
+	dim as integer parammode = any, bydescdimensions = any
 
 	''
 	'' Load the parameter values into local stack vars, to support taking
@@ -990,10 +990,12 @@ private sub _procAllocArg _
 	'' they must use different names to avoid collision.
 	''
 
+	bydescdimensions = 0
 	if( symbIsParamByref( sym ) ) then
 		parammode = FB_PARAMMODE_BYREF
 	elseif( symbIsParamBydesc( sym ) ) then
 		parammode = FB_PARAMMODE_BYDESC
+		bydescdimensions = symbGetArrayDimensions( sym )
 	else
 		assert( symbIsParamByval( sym ) )
 		parammode = FB_PARAMMODE_BYVAL
@@ -1001,7 +1003,7 @@ private sub _procAllocArg _
 
 	var dtype = symbGetType( sym )
 	var subtype = sym->subtype
-	symbGetRealParamDtype( parammode, dtype, subtype )
+	symbGetRealParamDtype( parammode, bydescdimensions, dtype, subtype )
 
 	'' %myparam = alloca type
 	ln = *symbGetMangledName( sym ) + " = alloca "

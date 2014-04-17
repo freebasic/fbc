@@ -1263,9 +1263,17 @@ declare function symbPreAddProc _
 		byval symbol as zstring ptr _
 	) as FBSYMBOL ptr
 
-declare sub symbGetRealParamDtype _
+declare sub symbGetRealParamDtype overload _
 	( _
 		byval parammode as integer, _
+		byval bydescdimensions as integer, _
+		byref dtype as integer, _
+		byref subtype as FBSYMBOL ptr _
+	)
+
+declare sub symbGetRealParamDtype overload _
+	( _
+		byval param as FBSYMBOL ptr, _
 		byref dtype as integer, _
 		byref subtype as FBSYMBOL ptr _
 	)
