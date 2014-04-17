@@ -23,7 +23,7 @@ end type
 
 	dim shared as FB_RTL_MACRODEF macrodata(0 to 15) = _
 	{ _
-		/' #define RGB(r,g,b) ((cuint(r) shl 16) or (cuint(g) shl 8) or cuint(b) or &hFF000000) '/ _
+		/' #define RGB(r,g,b) culng((cuint(r) shl 16) or (cuint(g) shl 8) or cuint(b) or &hFF000000) '/ _
 		( _
 			@"RGB", FB_RTL_OPT_NONE, _
 	 		3, _
@@ -31,7 +31,7 @@ end type
 	 			@"R", @"G", @"B" _
 	 		}, _
 	 		{ _
-	 			( FB_DEFTOK_TYPE_TEX, @"((cuint(" ), _
+				( FB_DEFTOK_TYPE_TEX, @"culng((cuint(" ), _
 	 			( FB_DEFTOK_TYPE_PARAM, cast( any ptr, 0 ) ), _
 	 			( FB_DEFTOK_TYPE_TEX, @") shl 16) or (cuint(" ), _
 	 			( FB_DEFTOK_TYPE_PARAM, cast( any ptr, 1 ) ), _
@@ -41,7 +41,7 @@ end type
 	 			( -1 ) _
 	 		} _
 	 	), _
-		/' #define RGBA(r,g,b,a) ((cuint(r) shl 16) or (cuint(g) shl 8) or cuint(b) or (cuint(a) shl 24)) '/ _
+		/' #define RGBA(r,g,b,a) culng((cuint(r) shl 16) or (cuint(g) shl 8) or cuint(b) or (cuint(a) shl 24)) '/ _
 		( _
 			@"RGBA", FB_RTL_OPT_NONE, _
 	 		4, _
@@ -49,7 +49,7 @@ end type
 	 			@"R", @"G", @"B", @"A" _
 	 		}, _
 	 		{ _
-	 			( FB_DEFTOK_TYPE_TEX, @"((cuint(" ), _
+				( FB_DEFTOK_TYPE_TEX, @"culng((cuint(" ), _
 	 			( FB_DEFTOK_TYPE_PARAM, cast( any ptr, 0 ) ), _
 	 			( FB_DEFTOK_TYPE_TEX, @") shl 16) or (cuint(" ), _
 	 			( FB_DEFTOK_TYPE_PARAM, cast( any ptr, 1 ) ), _

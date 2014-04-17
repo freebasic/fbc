@@ -1508,6 +1508,7 @@ function rtlGfxPoint _
 	) as ASTNODE ptr
 
 	dim as ASTNODE ptr proc = any
+	dim as integer is_color_query = any
 
 	function = NULL
 
@@ -1524,15 +1525,24 @@ function rtlGfxPoint _
  	end if
 
  	'' byval y as single
- 	if( yexpr = NULL ) then
+	if( yexpr ) then
+		is_color_query = TRUE
+	else
+		is_color_query = FALSE
  		yexpr = astNewCONSTf( -8388607, FB_DATATYPE_SINGLE )
  	end if
  	if( astNewARG( proc, yexpr ) = NULL ) then
  		exit function
  	end if
 
-	function = proc
+	'' fb_GfxPoint() currently returns a signed Long. Wrap the call in a
+	'' culng() to prevent sign-extension on 64bit, but only when querying
+	'' a color, and not when acting as fb_GfxCursor() wrapper.
+	if( is_color_query ) then
+		proc = astNewCONV( FB_DATATYPE_ULONG, NULL, proc )
+	end if
 
+	function = proc
 end function
 
 function rtlGfxLine _

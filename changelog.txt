@@ -11,6 +11,8 @@ Version 0.91.0:
 - #if expressions allow quirk function names to be used as literals again, so for example <#IF TYPEOF(x) = STRING> works again, instead of complaining about missing arguments in a call to the String() function.
 - For dynamic arrays where the dimension count is known at the point of the declaration, fbc will now allocate array descriptors with room for only the amount of required dimensions. Descriptors with room for all of FB_MAXARRAYDIMS will only be used for dynamic arrays declared with '()' (unknown dimension count) now.
 - The C++-compatible name mangling for procedures with BYDESC parameters has been adjusted to match the implementation of BYDESC parameters, and to support the new '(any[, ...])' syntax.
+- When querying colors, Point() now always returns an unsigned 32bit value (ULong) instead of a signed one. This means it can be used on 64bit without having to worry about the color value being sign-extended to 64bit. (64bit port)
+- rgb() and rgba() now always return an unsigned 32bit ULong, no longer UInteger (64bit port)
 
 [added]
 - 64bit support (-arch x86_64) based on -gen gcc: INTEGER/POINTER = 64bit, LONG = 32bit DWORD. Compiler #define: __FB_64BIT__
