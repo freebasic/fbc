@@ -126,6 +126,8 @@ private function hAddArrayDescriptorType _
 end function
 
 function symbAddArrayDesc( byval array as FBSYMBOL ptr ) as FBSYMBOL ptr
+	static as string tempid
+
 	dim as zstring ptr id = any, id_alias = any
 	dim as FBSYMBOL ptr desc = any, desctype = any
 	dim as FB_SYMBATTRIB attrib = any
@@ -139,9 +141,7 @@ function symbAddArrayDesc( byval array as FBSYMBOL ptr ) as FBSYMBOL ptr
 
 	'' field?
 	if( symbIsField( array ) ) then
-		static as string tmp
-		tmp = *symbUniqueId( )
-		id = strptr( tmp )
+		id = symbUniqueId( )
 		'' Only store an alias if in BASIC mangling
 		if( array->mangling <> FB_MANGLING_BASIC ) then
 			id_alias = id
@@ -167,13 +167,28 @@ function symbAddArrayDesc( byval array as FBSYMBOL ptr ) as FBSYMBOL ptr
 			'' Preserve FB_SYMBSTATS_HASALIAS stat too
 			stats = array->stats and FB_SYMBSTATS_HASALIAS
 
+			'' If the array had a type suffix, there may be others
+			'' with the same id. We must prevent their descriptors
+			'' from colliding with each-other (it probably only
+			'' matters for -gen gcc), and since we can't preserve
+			'' FB_SYMBATTRIB_SUFFIXED on the descriptor (it has a
+			'' different dtype than the array anyways), we must do
+			'' that part of the mangling here because
+			'' hMangleVariable() won't do it.
+			if( symbIsSuffixed( array ) ) then
+				tempid = *id
+				tempid += *hMangleBuiltInType( symbGetType( array ) )
+				if( env.clopt.backend = FB_BACKEND_GCC ) then
+					tempid += "$"
+				end if
+				id = strptr( tempid )
+			end if
+
 		'' otherwise, create a temporary name for the descriptor,
 		'' as it will be used privately only, and must co-exist with
 		'' the static array symbol.
 		else
-			static as string tmp
-			tmp = *symbUniqueId( )
-			id = strptr( tmp )
+			id = symbUniqueId( )
 			'' Only store an alias if in BASIC mangling
 			if( array->mangling <> FB_MANGLING_BASIC ) then
 				id_alias = id

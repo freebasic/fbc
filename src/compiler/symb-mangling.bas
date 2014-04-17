@@ -277,7 +277,7 @@ private sub hAbbrevGet( byref mangled as string, byval idx as integer )
 	mangled += "_"
 end sub
 
-private function hMangleBuiltInType( byval dtype as integer ) as zstring ptr
+function hMangleBuiltInType( byval dtype as integer ) as zstring ptr
 	assert( dtype = typeGetDtOnly( dtype ) )
 
 	'' STRING isn't mangled as built-in type, but as UDT, but it still needs
