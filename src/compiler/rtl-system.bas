@@ -234,6 +234,16 @@ declare function 	hThreadCall_cb		( byval sym as FBSYMBOL ptr ) as integer
 				( typeAddrOf( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, NULL ) _
 	 		} _
 	 	), _
+		/' function dir overload( byval out_attrib as longint ptr ) as string '/ _
+		( _
+			@"dir", @"fb_DirNext64", _
+			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
+			1, _
+			{ _
+				( typeAddrOf( FB_DATATYPE_LONGINT ), FB_PARAMMODE_BYVAL, FALSE ) _
+			} _
+		), _
 		/' function dir overload( byref out_attrib as long ) as string '/ _
 		( _
 			@"dir", @"fb_DirNext", _
@@ -268,6 +278,20 @@ declare function 	hThreadCall_cb		( byval sym as FBSYMBOL ptr ) as integer
 				( typeAddrOf( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, NULL ) _
 	 		} _
 	 	), _
+		/' function dir overload( byref mask as string, _
+				byval attrib_mask as long = &h21, _
+				byval out_attrib as longint ptr ) as string '/ _
+		( _
+			@"dir", @"fb_Dir64", _
+			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
+			3, _
+			{ _
+				( FB_DATATYPE_STRING, FB_PARAMMODE_BYREF, FALSE ), _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, &h21 ), _
+				( typeAddrOf( FB_DATATYPE_LONGINT ), FB_PARAMMODE_BYVAL, FALSE ) _
+			} _
+		), _
 		/' function dir overload( byref mask as string, _
 				byval attrib_mask as long = &h21, _
 				byref out_attrib as long ) as string '/ _
