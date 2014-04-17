@@ -353,8 +353,11 @@ private function hCheckBydescDimensions _
 
 		'' 2. Arg array has unknown dimensions, while BYDESC param has known dimensions?
 		elseif( symbGetArrayDimensions( arg ) = -1 ) then
-			'' Then the arg array can be updated to the BYDESC param's known dimensions.
-			symbCheckDynamicArrayDimensions( arg, param->param.bydescdimensions )
+			'' Then the arg array can be updated to the BYDESC param's known dimensions,
+			'' if it's a variable/field and not a parameter.
+			if( symbIsDynamic( arg ) ) then
+				symbCheckDynamicArrayDimensions( arg, param->param.bydescdimensions )
+			end if
 
 		'' 3. Both have known dimensions, but they're different, i.e. incompatible
 		else

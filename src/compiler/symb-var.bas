@@ -368,9 +368,10 @@ sub symbSetFixedSizeArrayDimensionElements _
 
 end sub
 
-'' Used to fill in the dimension count for dynamic arrays declared with (),
-'' i.e. unknown dimension count, when the parser sees the first REDIM or array
-'' access and can tell the dimension count based on it.
+'' Used to fill in the dimension count for dynamic array variables (not
+'' parameters) declared with (), i.e. unknown dimension count, when the parser
+'' sees the first REDIM or array access and can tell the dimension count based
+'' on it.
 sub symbCheckDynamicArrayDimensions _
 	( _
 		byval sym as FBSYMBOL ptr, _
@@ -379,7 +380,7 @@ sub symbCheckDynamicArrayDimensions _
 
 	dim as FBSYMBOL ptr desc = any
 
-	assert( symbGetIsDynamic( sym ) )
+	assert( symbIsDynamic( sym ) )
 
 	'' Secondary declarations with dimensions = -1 don't make a difference.
 	if( dimensions = -1 ) then
@@ -411,12 +412,6 @@ sub symbCheckDynamicArrayDimensions _
 		'' non-COMMON globals, though even then it'd be risky, because
 		'' fbc wasn't designed for this kind of "multi-pass" things...
 		''
-
-		'' (not for BYDESC params which don't have a descriptor)
-		if( symbIsParamBydesc( sym ) ) then
-			exit sub
-		end if
-
 		assert( symbGetType( symbGetArrayDescriptor( sym ) ) = FB_DATATYPE_STRUCT )
 		assert( symbGetArrayDescriptor( sym )->subtype = symb.fbarray(-1) )
 		assert( symbIsField( sym ) = FALSE )
