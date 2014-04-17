@@ -129,8 +129,13 @@ namespace anyptrParam2
 		CU_ASSERT( f( pb ) = "any ptr" )
 		CU_ASSERT( f( ps ) = "any ptr" )
 		CU_ASSERT( f( pi ) = "integer ptr" ) '' Full match - not ambigious
-		CU_ASSERT( f( pl ) = "any ptr" )
-		CU_ASSERT( f( pll ) = "any ptr" )
+		'' Long/LongInt Ptr on 32/64bit respectively matches both Integer/Any Ptr,
+		'' so it's only non-ambigious in the opposite cases
+		#ifdef __FB_64BIT__
+			CU_ASSERT( f( pl ) = "any ptr" )
+		#else
+			CU_ASSERT( f( pll ) = "any ptr" )
+		#endif
 		CU_ASSERT( f( pt ) = "any ptr" )
 		CU_ASSERT( f( pany ) = "any ptr" ) '' Full match - not ambigious
 		CU_ASSERT( f( pfwd ) = "any ptr" )
@@ -162,8 +167,13 @@ namespace anyptrParam3
 		CU_ASSERT( f( pb ) = "byte ptr" )
 		CU_ASSERT( f( ps ) = "short ptr" )
 		CU_ASSERT( f( pi ) = "integer ptr" )
-		CU_ASSERT( f( pl ) = "any ptr" )
-		CU_ASSERT( f( pll ) = "any ptr" )
+		'' Long/LongInt Ptr on 32/64bit respectively matches both Integer/Any Ptr,
+		'' so it's only non-ambigious in the opposite cases
+		#ifdef __FB_64BIT__
+			CU_ASSERT( f( pl ) = "any ptr" )
+		#else
+			CU_ASSERT( f( pll ) = "any ptr" )
+		#endif
 		CU_ASSERT( f( pt ) = "any ptr" )
 		CU_ASSERT( f( pany ) = "any ptr" )
 		CU_ASSERT( f( pfwd ) = "any ptr" )
@@ -245,6 +255,506 @@ namespace anyptrArgRegressionTest2
 	end sub
 end namespace
 
+namespace integerPointers
+	namespace long_ulong
+		proc( long ptr )
+		proc( ulong ptr )
+
+		sub test cdecl( )
+			CU_ASSERT( f( pl ) = "long ptr" )
+			CU_ASSERT( f( pul ) = "ulong ptr" )
+			#ifndef __FB_64BIT__
+				CU_ASSERT( f( pi ) = "long ptr" )
+				CU_ASSERT( f( pui ) = "ulong ptr" )
+			#endif
+		end sub
+	end namespace
+
+	namespace long_longint
+		proc( long ptr )
+		proc( longint ptr )
+
+		sub test cdecl( )
+			CU_ASSERT( f( pl ) = "long ptr" )
+			CU_ASSERT( f( pul ) = "long ptr" )
+			CU_ASSERT( f( pll ) = "longint ptr" )
+			CU_ASSERT( f( pull ) = "longint ptr" )
+			#ifdef __FB_64BIT__
+				CU_ASSERT( f( pi ) = "longint ptr" )
+				CU_ASSERT( f( pui ) = "longint ptr" )
+			#else
+				CU_ASSERT( f( pi ) = "long ptr" )
+				CU_ASSERT( f( pui ) = "long ptr" )
+			#endif
+		end sub
+	end namespace
+
+	namespace long_ulongint
+		proc( long ptr )
+		proc( ulongint ptr )
+
+		sub test cdecl( )
+			CU_ASSERT( f( pl ) = "long ptr" )
+			CU_ASSERT( f( pul ) = "long ptr" )
+			CU_ASSERT( f( pll ) = "ulongint ptr" )
+			CU_ASSERT( f( pull ) = "ulongint ptr" )
+			#ifdef __FB_64BIT__
+				CU_ASSERT( f( pi ) = "ulongint ptr" )
+				CU_ASSERT( f( pui ) = "ulongint ptr" )
+			#else
+				CU_ASSERT( f( pi ) = "long ptr" )
+				CU_ASSERT( f( pui ) = "long ptr" )
+			#endif
+		end sub
+	end namespace
+
+	namespace long_integer
+		proc( long ptr )
+		proc( integer ptr )
+
+		sub test cdecl( )
+			CU_ASSERT( f( pl ) = "long ptr" )
+			CU_ASSERT( f( pul ) = "integer ptr" )  '' ULONG prefers INTEGER over LONG, because the former can hold all values, while the latter can't
+			#ifdef __FB_64BIT__
+				CU_ASSERT( f( pll ) = "integer ptr" )
+				CU_ASSERT( f( pull ) = "integer ptr" )
+			#endif
+			CU_ASSERT( f( pi ) = "integer ptr" )
+			CU_ASSERT( f( pui ) = "integer ptr" )
+		end sub
+	end namespace
+
+	namespace long_uinteger
+		proc( long ptr )
+		proc( uinteger ptr )
+
+		sub test cdecl( )
+			CU_ASSERT( f( pl ) = "long ptr" )
+			CU_ASSERT( f( pul ) = "uinteger ptr" )  '' ULONG prefers UINTEGER over LONG, ditto
+			#ifdef __FB_64BIT__
+				CU_ASSERT( f( pll ) = "uinteger ptr" )
+				CU_ASSERT( f( pull ) = "uinteger ptr" )
+			#endif
+			CU_ASSERT( f( pi ) = "uinteger ptr" )
+			CU_ASSERT( f( pui ) = "uinteger ptr" )
+		end sub
+	end namespace
+
+	namespace ulong_long
+		proc( ulong ptr )
+		proc( long ptr )
+
+		sub test cdecl( )
+			CU_ASSERT( f( pl ) = "long ptr" )
+			CU_ASSERT( f( pul ) = "ulong ptr" )
+			#ifndef __FB_64BIT__
+				CU_ASSERT( f( pi ) = "long ptr" )
+				CU_ASSERT( f( pui ) = "ulong ptr" )
+			#endif
+		end sub
+	end namespace
+
+	namespace ulong_longint
+		proc( ulong ptr )
+		proc( longint ptr )
+
+		sub test cdecl( )
+			CU_ASSERT( f( pl ) = "ulong ptr" )
+			CU_ASSERT( f( pul ) = "ulong ptr" )
+			CU_ASSERT( f( pll ) = "longint ptr" )
+			CU_ASSERT( f( pull ) = "longint ptr" )
+			#ifdef __FB_64BIT__
+				CU_ASSERT( f( pi ) = "longint ptr" )
+				CU_ASSERT( f( pui ) = "longint ptr" )
+			#else
+				CU_ASSERT( f( pi ) = "ulong ptr" )
+				CU_ASSERT( f( pui ) = "ulong ptr" )
+			#endif
+		end sub
+	end namespace
+
+	namespace ulong_ulongint
+		proc( ulong ptr )
+		proc( ulongint ptr )
+
+		sub test cdecl( )
+			CU_ASSERT( f( pl ) = "ulong ptr" )
+			CU_ASSERT( f( pul ) = "ulong ptr" )
+			CU_ASSERT( f( pll ) = "ulongint ptr" )
+			CU_ASSERT( f( pull ) = "ulongint ptr" )
+			#ifdef __FB_64BIT__
+				CU_ASSERT( f( pi ) = "ulongint ptr" )
+				CU_ASSERT( f( pui ) = "ulongint ptr" )
+			#else
+				CU_ASSERT( f( pi ) = "ulong ptr" )
+				CU_ASSERT( f( pui ) = "ulong ptr" )
+			#endif
+		end sub
+	end namespace
+
+	namespace ulong_integer
+		proc( ulong ptr )
+		proc( integer ptr )
+
+		sub test cdecl( )
+			CU_ASSERT( f( pl ) = "integer ptr" )  '' LONG prefers INTEGER over ULONG, ditto
+			CU_ASSERT( f( pul ) = "ulong ptr" )
+			#ifdef __FB_64BIT__
+				CU_ASSERT( f( pll ) = "integer ptr" )
+				CU_ASSERT( f( pull ) = "integer ptr" )
+			#endif
+			CU_ASSERT( f( pi ) = "integer ptr" )
+			CU_ASSERT( f( pui ) = "integer ptr" )
+		end sub
+	end namespace
+
+	namespace ulong_uinteger
+		proc( ulong ptr )
+		proc( uinteger ptr )
+
+		sub test cdecl( )
+			CU_ASSERT( f( pl ) = "uinteger ptr" )  '' LONG prefers UINTEGER over ULONG?!
+			CU_ASSERT( f( pul ) = "ulong ptr" )
+			#ifdef __FB_64BIT__
+				CU_ASSERT( f( pll ) = "uinteger ptr" )
+				CU_ASSERT( f( pull ) = "uinteger ptr" )
+			#endif
+			CU_ASSERT( f( pi ) = "uinteger ptr" )
+			CU_ASSERT( f( pui ) = "uinteger ptr" )
+		end sub
+	end namespace
+
+	namespace longint_long
+		proc( longint ptr )
+		proc( long ptr )
+
+		sub test cdecl( )
+			CU_ASSERT( f( pl ) = "long ptr" )
+			CU_ASSERT( f( pul ) = "long ptr" )
+			CU_ASSERT( f( pll ) = "longint ptr" )
+			CU_ASSERT( f( pull ) = "longint ptr" )
+			#ifdef __FB_64BIT__
+				CU_ASSERT( f( pi ) = "longint ptr" )
+				CU_ASSERT( f( pui ) = "longint ptr" )
+			#else
+				CU_ASSERT( f( pi ) = "long ptr" )
+				CU_ASSERT( f( pui ) = "long ptr" )
+			#endif
+		end sub
+	end namespace
+
+	namespace longint_ulong
+		proc( longint ptr )
+		proc( ulong ptr )
+
+		sub test cdecl( )
+			CU_ASSERT( f( pl ) = "ulong ptr" )
+			CU_ASSERT( f( pul ) = "ulong ptr" )
+			CU_ASSERT( f( pll ) = "longint ptr" )
+			CU_ASSERT( f( pull ) = "longint ptr" )
+			#ifdef __FB_64BIT__
+				CU_ASSERT( f( pi ) = "longint ptr" )
+				CU_ASSERT( f( pui ) = "longint ptr" )
+			#else
+				CU_ASSERT( f( pi ) = "ulong ptr" )
+				CU_ASSERT( f( pui ) = "ulong ptr" )
+			#endif
+		end sub
+	end namespace
+
+	namespace longint_ulongint
+		proc( longint ptr )
+		proc( ulongint ptr )
+
+		sub test cdecl( )
+			CU_ASSERT( f( pll ) = "longint ptr" )
+			CU_ASSERT( f( pull ) = "ulongint ptr" )
+			#ifdef __FB_64BIT__
+				CU_ASSERT( f( pi ) = "longint ptr" )
+				CU_ASSERT( f( pui ) = "ulongint ptr" )
+			#endif
+		end sub
+	end namespace
+
+	namespace longint_integer
+		proc( longint ptr )
+		proc( integer ptr )
+
+		sub test cdecl( )
+			#ifndef __FB_64BIT__
+				CU_ASSERT( f( pl ) = "integer ptr" )
+				CU_ASSERT( f( pul ) = "integer ptr" )
+			#endif
+			CU_ASSERT( f( pll ) = "longint ptr" )
+			CU_ASSERT( f( pull ) = "longint ptr" )
+			CU_ASSERT( f( pi ) = "integer ptr" )
+			CU_ASSERT( f( pui ) = "integer ptr" )
+		end sub
+	end namespace
+
+	namespace longint_uinteger
+		proc( longint ptr )
+		proc( uinteger ptr )
+
+		sub test cdecl( )
+			#ifndef __FB_64BIT__
+				CU_ASSERT( f( pl ) = "uinteger ptr" )
+				CU_ASSERT( f( pul ) = "uinteger ptr" )
+			#endif
+			CU_ASSERT( f( pll ) = "longint ptr" )
+			CU_ASSERT( f( pull ) = "longint ptr" )
+			CU_ASSERT( f( pi ) = "uinteger ptr" )
+			CU_ASSERT( f( pui ) = "uinteger ptr" )
+		end sub
+	end namespace
+
+	namespace ulongint_long
+		proc( ulongint ptr )
+		proc( long ptr )
+
+		sub test cdecl( )
+			CU_ASSERT( f( pl ) = "long ptr" )
+			CU_ASSERT( f( pul ) = "long ptr" )
+			CU_ASSERT( f( pll ) = "ulongint ptr" )
+			CU_ASSERT( f( pull ) = "ulongint ptr" )
+			#ifdef __FB_64BIT__
+				CU_ASSERT( f( pi ) = "ulongint ptr" )
+				CU_ASSERT( f( pui ) = "ulongint ptr" )
+			#else
+				CU_ASSERT( f( pi ) = "long ptr" )
+				CU_ASSERT( f( pui ) = "long ptr" )
+			#endif
+		end sub
+	end namespace
+
+	namespace ulongint_ulong
+		proc( ulongint ptr )
+		proc( ulong ptr )
+
+		sub test cdecl( )
+			CU_ASSERT( f( pl ) = "ulong ptr" )
+			CU_ASSERT( f( pul ) = "ulong ptr" )
+			CU_ASSERT( f( pll ) = "ulongint ptr" )
+			CU_ASSERT( f( pull ) = "ulongint ptr" )
+			#ifdef __FB_64BIT__
+				CU_ASSERT( f( pi ) = "ulongint ptr" )
+				CU_ASSERT( f( pui ) = "ulongint ptr" )
+			#else
+				CU_ASSERT( f( pi ) = "ulong ptr" )
+				CU_ASSERT( f( pui ) = "ulong ptr" )
+			#endif
+		end sub
+	end namespace
+
+	namespace ulongint_longint
+		proc( ulongint ptr )
+		proc( longint ptr )
+
+		sub test cdecl( )
+			CU_ASSERT( f( pll ) = "longint ptr" )
+			CU_ASSERT( f( pull ) = "ulongint ptr" )
+			#ifdef __FB_64BIT__
+				CU_ASSERT( f( pi ) = "longint ptr" )
+				CU_ASSERT( f( pui ) = "ulongint ptr" )
+			#endif
+		end sub
+	end namespace
+
+	namespace ulongint_integer
+		proc( ulongint ptr )
+		proc( integer ptr )
+
+		sub test cdecl( )
+			#ifndef __FB_64BIT__
+				CU_ASSERT( f( pl ) = "integer ptr" )
+				CU_ASSERT( f( pul ) = "integer ptr" )
+			#endif
+			CU_ASSERT( f( pll ) = "ulongint ptr" )
+			CU_ASSERT( f( pull ) = "ulongint ptr" )
+			CU_ASSERT( f( pi ) = "integer ptr" )
+			CU_ASSERT( f( pui ) = "integer ptr" )
+		end sub
+	end namespace
+
+	namespace ulongint_uinteger
+		proc( ulongint ptr )
+		proc( uinteger ptr )
+
+		sub test cdecl( )
+			#ifndef __FB_64BIT__
+				CU_ASSERT( f( pl ) = "uinteger ptr" )
+				CU_ASSERT( f( pul ) = "uinteger ptr" )
+			#endif
+			CU_ASSERT( f( pll ) = "ulongint ptr" )
+			CU_ASSERT( f( pull ) = "ulongint ptr" )
+			CU_ASSERT( f( pi ) = "uinteger ptr" )
+			CU_ASSERT( f( pui ) = "uinteger ptr" )
+		end sub
+	end namespace
+
+	namespace integer_long
+		proc( integer ptr )
+		proc( long ptr )
+
+		sub test cdecl( )
+			CU_ASSERT( f( pl ) = "long ptr" )
+			CU_ASSERT( f( pul ) = "integer ptr" )  '' ULONG prefers INTEGER over LONG, ditto
+			#ifdef __FB_64BIT__
+				CU_ASSERT( f( pll ) = "integer ptr" )
+				CU_ASSERT( f( pull ) = "integer ptr" )
+			#endif
+			CU_ASSERT( f( pi ) = "integer ptr" )
+			CU_ASSERT( f( pui ) = "integer ptr" )
+		end sub
+	end namespace
+
+	namespace integer_ulong
+		proc( integer ptr )
+		proc( ulong ptr )
+
+		sub test cdecl( )
+			CU_ASSERT( f( pl ) = "integer ptr" )  '' LONG prefers INTEGER over ULONG, ditto
+			CU_ASSERT( f( pul ) = "ulong ptr" )
+			#ifdef __FB_64BIT__
+				CU_ASSERT( f( pll ) = "integer ptr" )
+				CU_ASSERT( f( pull ) = "integer ptr" )
+			#endif
+			CU_ASSERT( f( pi ) = "integer ptr" )
+			CU_ASSERT( f( pui ) = "integer ptr" )
+		end sub
+	end namespace
+
+	namespace integer_longint
+		proc( integer ptr )
+		proc( longint ptr )
+
+		sub test cdecl( )
+			#ifndef __FB_64BIT__
+				CU_ASSERT( f( pl ) = "integer ptr" )
+				CU_ASSERT( f( pul ) = "integer ptr" )
+			#endif
+			CU_ASSERT( f( pll ) = "longint ptr" )
+			CU_ASSERT( f( pull ) = "longint ptr" )
+			CU_ASSERT( f( pi ) = "integer ptr" )
+			CU_ASSERT( f( pui ) = "integer ptr" )
+		end sub
+	end namespace
+
+	namespace integer_ulongint
+		proc( integer ptr )
+		proc( ulongint ptr )
+
+		sub test cdecl( )
+			#ifndef __FB_64BIT__
+				CU_ASSERT( f( pl ) = "integer ptr" )
+				CU_ASSERT( f( pul ) = "integer ptr" )
+			#endif
+			CU_ASSERT( f( pll ) = "ulongint ptr" )
+			CU_ASSERT( f( pull ) = "ulongint ptr" )
+			CU_ASSERT( f( pi ) = "integer ptr" )
+			CU_ASSERT( f( pui ) = "integer ptr" )
+		end sub
+	end namespace
+
+	namespace integer_uinteger
+		proc( integer ptr )
+		proc( uinteger ptr )
+
+		sub test cdecl( )
+			#ifdef __FB_64BIT__
+				CU_ASSERT( f( pll ) = "integer ptr" )
+				CU_ASSERT( f( pull ) = "uinteger ptr" )
+			#else
+				CU_ASSERT( f( pl ) = "integer ptr" )
+				CU_ASSERT( f( pul ) = "uinteger ptr" )
+			#endif
+			CU_ASSERT( f( pi ) = "integer ptr" )
+			CU_ASSERT( f( pui ) = "uinteger ptr" )
+		end sub
+	end namespace
+
+	namespace uinteger_long
+		proc( uinteger ptr )
+		proc( long ptr )
+
+		sub test cdecl( )
+			CU_ASSERT( f( pl ) = "long ptr" )
+			CU_ASSERT( f( pul ) = "uinteger ptr" )  '' ULONG prefers UINTEGER over LONG, ditto
+			#ifdef __FB_64BIT__
+				CU_ASSERT( f( pll ) = "uinteger ptr" )
+				CU_ASSERT( f( pull ) = "uinteger ptr" )
+			#endif
+			CU_ASSERT( f( pi ) = "uinteger ptr" )
+			CU_ASSERT( f( pui ) = "uinteger ptr" )
+		end sub
+	end namespace
+
+	namespace uinteger_ulong
+		proc( uinteger ptr )
+		proc( ulong ptr )
+
+		sub test cdecl( )
+			CU_ASSERT( f( pl ) = "uinteger ptr" )  '' LONG prefers UINTEGER over ULONG?!
+			CU_ASSERT( f( pul ) = "ulong ptr" )
+			#ifdef __FB_64BIT__
+				CU_ASSERT( f( pll ) = "uinteger ptr" )
+				CU_ASSERT( f( pull ) = "uinteger ptr" )
+			#endif
+			CU_ASSERT( f( pi ) = "uinteger ptr" )
+			CU_ASSERT( f( pui ) = "uinteger ptr" )
+		end sub
+	end namespace
+
+	namespace uinteger_longint
+		proc( uinteger ptr )
+		proc( longint ptr )
+
+		sub test cdecl( )
+			#ifndef __FB_64BIT__
+				CU_ASSERT( f( pl ) = "uinteger ptr" )
+				CU_ASSERT( f( pul ) = "uinteger ptr" )
+			#endif
+			CU_ASSERT( f( pll ) = "longint ptr" )
+			CU_ASSERT( f( pull ) = "longint ptr" )
+			CU_ASSERT( f( pi ) = "uinteger ptr" )
+			CU_ASSERT( f( pui ) = "uinteger ptr" )
+		end sub
+	end namespace
+
+	namespace uinteger_ulongint
+		proc( uinteger ptr )
+		proc( ulongint ptr )
+
+		sub test cdecl( )
+			#ifndef __FB_64BIT__
+				CU_ASSERT( f( pl ) = "uinteger ptr" )
+				CU_ASSERT( f( pul ) = "uinteger ptr" )
+			#endif
+			CU_ASSERT( f( pll ) = "ulongint ptr" )
+			CU_ASSERT( f( pull ) = "ulongint ptr" )
+			CU_ASSERT( f( pi ) = "uinteger ptr" )
+			CU_ASSERT( f( pui ) = "uinteger ptr" )
+		end sub
+	end namespace
+
+	namespace uinteger_integer
+		proc( uinteger ptr )
+		proc( integer ptr )
+
+		sub test cdecl( )
+			#ifdef __FB_64BIT__
+				CU_ASSERT( f( pll ) = "integer ptr" )
+				CU_ASSERT( f( pull ) = "uinteger ptr" )
+			#else
+				CU_ASSERT( f( pl ) = "integer ptr" )
+				CU_ASSERT( f( pul ) = "uinteger ptr" )
+			#endif
+			CU_ASSERT( f( pi ) = "integer ptr" )
+			CU_ASSERT( f( pui ) = "uinteger ptr" )
+		end sub
+	end namespace
+end namespace
+
 private sub ctor( ) constructor
 	fbcu.add_suite( "tests/overload/pointers" )
 	fbcu.add_test( "pointers", @pointers.test )
@@ -256,6 +766,36 @@ private sub ctor( ) constructor
 	fbcu.add_test( "Any Ptr arg 3", @anyptrArg3.test )
 	fbcu.add_test( "Any Ptr bug 1", @anyptrArgRegressionTest1.test )
 	fbcu.add_test( "Any Ptr bug 2", @anyptrArgRegressionTest2.test )
+	fbcu.add_test( "integerPointers.long_ulong"       , @integerPointers.long_ulong.test )
+	fbcu.add_test( "integerPointers.long_longint"     , @integerPointers.long_longint.test )
+	fbcu.add_test( "integerPointers.long_ulongint"    , @integerPointers.long_ulongint.test )
+	fbcu.add_test( "integerPointers.long_integer"     , @integerPointers.long_integer.test )
+	fbcu.add_test( "integerPointers.long_uinteger"    , @integerPointers.long_uinteger.test )
+	fbcu.add_test( "integerPointers.ulong_long"       , @integerPointers.ulong_long.test )
+	fbcu.add_test( "integerPointers.ulong_longint"    , @integerPointers.ulong_longint.test )
+	fbcu.add_test( "integerPointers.ulong_ulongint"   , @integerPointers.ulong_ulongint.test )
+	fbcu.add_test( "integerPointers.ulong_integer"    , @integerPointers.ulong_integer.test )
+	fbcu.add_test( "integerPointers.ulong_uinteger"   , @integerPointers.ulong_uinteger.test )
+	fbcu.add_test( "integerPointers.longint_long"     , @integerPointers.longint_long.test )
+	fbcu.add_test( "integerPointers.longint_ulong"    , @integerPointers.longint_ulong.test )
+	fbcu.add_test( "integerPointers.longint_ulongint" , @integerPointers.longint_ulongint.test )
+	fbcu.add_test( "integerPointers.longint_integer"  , @integerPointers.longint_integer.test )
+	fbcu.add_test( "integerPointers.longint_uinteger" , @integerPointers.longint_uinteger.test )
+	fbcu.add_test( "integerPointers.ulongint_long"    , @integerPointers.ulongint_long.test )
+	fbcu.add_test( "integerPointers.ulongint_ulong"   , @integerPointers.ulongint_ulong.test )
+	fbcu.add_test( "integerPointers.ulongint_longint" , @integerPointers.ulongint_longint.test )
+	fbcu.add_test( "integerPointers.ulongint_integer" , @integerPointers.ulongint_integer.test )
+	fbcu.add_test( "integerPointers.ulongint_uinteger", @integerPointers.ulongint_uinteger.test )
+	fbcu.add_test( "integerPointers.integer_long"     , @integerPointers.integer_long.test )
+	fbcu.add_test( "integerPointers.integer_ulong"    , @integerPointers.integer_ulong.test )
+	fbcu.add_test( "integerPointers.integer_longint"  , @integerPointers.integer_longint.test )
+	fbcu.add_test( "integerPointers.integer_ulongint" , @integerPointers.integer_ulongint.test )
+	fbcu.add_test( "integerPointers.integer_uinteger" , @integerPointers.integer_uinteger.test )
+	fbcu.add_test( "integerPointers.uinteger_long"    , @integerPointers.uinteger_long.test )
+	fbcu.add_test( "integerPointers.uinteger_ulong"   , @integerPointers.uinteger_ulong.test )
+	fbcu.add_test( "integerPointers.uinteger_longint" , @integerPointers.uinteger_longint.test )
+	fbcu.add_test( "integerPointers.uinteger_ulongint", @integerPointers.uinteger_ulongint.test )
+	fbcu.add_test( "integerPointers.uinteger_integer" , @integerPointers.uinteger_integer.test )
 end sub
 
 end namespace

@@ -1540,7 +1540,7 @@ private function hCalcTypesDiff _
 	  	byval mode as FB_PARAMMODE = 0 _
 	) as integer
 
-	dim as integer arg_dclass = any
+	dim as integer arg_dclass = any, param_dt = any, arg_dt = any
 
 	function = 0
 
@@ -1664,7 +1664,18 @@ private function hCalcTypesDiff _
 				end if
 
 				'' Different pointer types aren't compatible at all though,
-				'' that would be dangerous.
+				'' that would be dangerous, except if the pointer count matches
+				'' and the base dtypes are integers of the size.
+				if( typeGetPtrCnt( param_dtype ) = typeGetPtrCnt( arg_dtype ) ) then
+					param_dt = typeGetDtOnly( param_dtype )
+					arg_dt = typeGetDtOnly( arg_dtype )
+					if( (typeGetClass( param_dt ) = FB_DATACLASS_INTEGER) and _
+					    (typeGetClass( arg_dt   ) = FB_DATACLASS_INTEGER) and _
+					    (typeGetSize( param_dt ) = typeGetSize( arg_dt )) ) then
+						return FB_OVLPROC_HALFMATCH - symb_dtypeMatchTB( arg_dt, param_dt )
+					end if
+				end if
+
 				return 0
 
 			elseif( typeIsPtr( arg_dtype ) ) then
