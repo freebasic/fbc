@@ -248,7 +248,6 @@ private sub hCheckExternVar _
 		byval id as zstring ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
-		byval addsuffix as integer, _
 		byval attrib as integer, _
 		byval dimensions as integer, _
 		dTB() as FBARRAYDIM _
@@ -324,7 +323,7 @@ private function hAddVar _
 		    (parser.scope = FB_MAINSCOPE) ) then
 
 			'' Verify that the new variable declaration is compatible with the previous EXTERN
-			hCheckExternVar( sym, id, dtype, subtype, addsuffix, _
+			hCheckExternVar( sym, id, dtype, subtype, _
 					attrib, dimensions, dTB() )
 
 			'' Then allocate the EXTERN:
@@ -361,7 +360,7 @@ private function hAddVar _
 		        ((attrib and FB_SYMBATTRIB_EXTERN) <> 0) ) then
 
 			'' Only verify that the EXTERN declaration is compatible with the previous one
-			hCheckExternVar( sym, id, dtype, subtype, addsuffix, _
+			hCheckExternVar( sym, id, dtype, subtype, _
 					attrib, dimensions, dTB() )
 			is_declared = TRUE
 
