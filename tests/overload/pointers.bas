@@ -129,13 +129,8 @@ namespace anyptrParam2
 		CU_ASSERT( f( pb ) = "any ptr" )
 		CU_ASSERT( f( ps ) = "any ptr" )
 		CU_ASSERT( f( pi ) = "integer ptr" ) '' Full match - not ambigious
-		'' Long/LongInt Ptr on 32/64bit respectively matches both Integer/Any Ptr,
-		'' so it's only non-ambigious in the opposite cases
-		#ifdef __FB_64BIT__
-			CU_ASSERT( f( pl ) = "any ptr" )
-		#else
-			CU_ASSERT( f( pll ) = "any ptr" )
-		#endif
+		CU_ASSERT( f( pl ) = "any ptr" )
+		CU_ASSERT( f( pll ) = "any ptr" )
 		CU_ASSERT( f( pt ) = "any ptr" )
 		CU_ASSERT( f( pany ) = "any ptr" ) '' Full match - not ambigious
 		CU_ASSERT( f( pfwd ) = "any ptr" )
@@ -167,13 +162,8 @@ namespace anyptrParam3
 		CU_ASSERT( f( pb ) = "byte ptr" )
 		CU_ASSERT( f( ps ) = "short ptr" )
 		CU_ASSERT( f( pi ) = "integer ptr" )
-		'' Long/LongInt Ptr on 32/64bit respectively matches both Integer/Any Ptr,
-		'' so it's only non-ambigious in the opposite cases
-		#ifdef __FB_64BIT__
-			CU_ASSERT( f( pl ) = "any ptr" )
-		#else
-			CU_ASSERT( f( pll ) = "any ptr" )
-		#endif
+		CU_ASSERT( f( pl ) = "any ptr" )
+		CU_ASSERT( f( pll ) = "any ptr" )
 		CU_ASSERT( f( pt ) = "any ptr" )
 		CU_ASSERT( f( pany ) = "any ptr" )
 		CU_ASSERT( f( pfwd ) = "any ptr" )
