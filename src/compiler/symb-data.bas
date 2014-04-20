@@ -429,20 +429,28 @@ function closestType _
 	if( sizediff2 < sizediff1 ) then return dtype2
 
 
-	'' prefer [U]Integer type if both same size
-	dim as integer isint1 = (typeToSigned( dtype1 ) = FB_DATATYPE_INTEGER)
-	dim as integer isint2 = (typeToSigned( dtype2 ) = FB_DATATYPE_INTEGER)
-
-	if( isint1 and not isint2 ) then return dtype1
-	if( isint2 and not isint1 ) then return dtype2
-
-
 	'' prefer same signedness
 	dim as integer samesign1 = (typeIsSigned( dtype1 ) = typeIsSigned( dtype ))
 	dim as integer samesign2 = (typeIsSigned( dtype2 ) = typeIsSigned( dtype ))
 
 	if( samesign1 and not samesign2 ) then return dtype1
 	if( samesign2 and not samesign1 ) then return dtype2
+
+
+	'' prefer same kind ([U]Long should prefer Long > Integer or ULong > UInteger)
+	dim as integer samekind1 = (typeToSigned( dtype1 ) = typeToSigned( dtype ) )
+	dim as integer samekind2 = (typeToSigned( dtype2 ) = typeToSigned( dtype ) )
+
+	if( samekind1 and not samekind2 ) then return dtype1
+	if( samekind2 and not samekind1 ) then return dtype2
+
+
+	'' prefer [U]Integer type on tiebreaks with [U]Long[int] if same size
+	dim as integer isint1 = (typeToSigned( dtype1 ) = FB_DATATYPE_INTEGER)
+	dim as integer isint2 = (typeToSigned( dtype2 ) = FB_DATATYPE_INTEGER)
+
+	if( isint1 and not isint2 ) then return dtype1
+	if( isint2 and not isint1 ) then return dtype2
 
 
 	'' should be no other differences

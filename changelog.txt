@@ -3,7 +3,7 @@ Version 0.91.0:
 [changed]
 - The normal (non-standalone) compiler now uses target-specific sub-directories in lib/freebasic/ again, for example lib/freebasic/linux/, to allow libs for other targets to be installed into the same directory, for example lib/freebasic/x86_64-linux/, instead of having to use a separate directory like lib/x86_64-linux-freebasic/. Same goes for the FB makefile: the *.o files go into target-specific subdirs in src/{compiler,rtlib,gfxlib2}/obj/, to avoid trashing the source dirs with tons of separate <target>-obj/ subdirs.
 - Enums declared inside Extern blocks now behave like ones declared outside: The Enum's constants don't collide with previously declared global constants, instead they can be accessed through "EnumName.MyConstant".
-- More predictable overload resolution for primitive types, preferring: the same dataclass >> a type that's at least as large >> the closest in size >> the [U]INTEGER type >> the same signedness
+- More predictable overload resolution for primitive types, preferring: the same dataclass >> a type that's at least as large >> the closest in size >> the same signedness >> the same kind >> the [U]INTEGER type
 - Bin/Oct/Hex(x, digits) functions now prepend zeroes, even if it's more than the data type size, if needed to fill the result string up to the requested amount of digits
 - Number literal suffixes are now followed more strictly. For example, a number with L suffix will now always be a 32bit LONG (previously it could be 32bit or 64bit, signed or unsigned, depending on the value), and the % integer suffix will always produce the FB dialect mode's default INTEGER type (INTEGER, or SHORT in -lang qb), but never a [U]LONGINT anymore.
 - CONST isn't allowed/needed on constructors/destructors anymore, the non-CONST versions now work even with CONST objects. (A CONST constructor couldn't initialize the object, so it's not useful. And after a destructor runs, the object is "dead", so it doesn't matter whether the destructor modified it or not.)
@@ -124,7 +124,7 @@ Version 0.91.0:
 - fbc crashed after showing the error message when using -vec 1|2 without -fpu sse
 - ASM backend: Sgn(LongInt) returned wrong values
 - C backend: Extern "Windows-MS" is now supported, including DLL exports (stdcall procedures without @N suffix)
-- #709: format() adds erroneous thousands delimiter, was affecting all number strings that were multiple of 3. 
+- #709: format() adds erroneous thousands delimiter, was affecting all number strings that were multiple of 3.
 - #715: GFX statements (Get, Put, Line, Circle, ...) are now more strict about their target/source image parameters. Arrays are still accepted as in QB, but besides that, the argument must be some pointer expression now, that is expected to point to an FB.IMAGE buffer of the proper size. Previously non-pointer expressions were accepted but could cause bad code to be generated or could be silently miscompiled.
 - #665: DRAW statement now accepts the same target image expressions as the rest of GFX statements (not just simple pointer variables or 'a.b' field accesses anymore)
 - #687: DRAW statement now remembers the subpixel position between commands.
