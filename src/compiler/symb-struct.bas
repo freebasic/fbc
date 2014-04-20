@@ -261,9 +261,8 @@ function symbAddField _
 	) as FBSYMBOL ptr
 
 	dim as FBSYMBOL ptr sym = any, tail = any, base_parent = any, desc = any
-	dim as integer pad = any, alloc_field = any, elen = any
+	dim as integer pad = any, alloc_field = any, elen = any, options = any
 	dim as longint offset = any
-	dim as string arrayid
 
 	function = NULL
 	desc = NULL
@@ -283,17 +282,12 @@ function symbAddField _
 		''  - we have to worry about the symbUniqueId() call
 		dim as FBARRAYDIM emptydTB(0 to 0)
 
-		'' Using symbUniqueId() below, which may overwrite the array's
-		'' own id if it was generated with symbUniqueId() aswell, unless
-		'' it's saved separately.
-		arrayid = *id
-		id = strptr( arrayid )
-
 		'' Note: using the exact descriptor type corresponding to the
 		'' amount of dimensions found in the field declaration.
 
-		desc = symbAddField( parent, symbUniqueId( ), 0, emptydTB(), _
-				FB_DATATYPE_STRUCT, symb.fbarray(dimensions), 0, 0, FB_SYMBATTRIB_DESCRIPTOR )
+		desc = symbAddField( parent, id, 0, emptydTB(), _
+				FB_DATATYPE_STRUCT, symb.fbarray(dimensions), _
+				0, 0, FB_SYMBATTRIB_DESCRIPTOR )
 
 		'' Same offset for the fake array field as for the descriptor,
 		'' to make astNewARG()'s job easier
@@ -417,7 +411,16 @@ function symbAddField _
 	'' Preserve LOCAL
 	attrib or= (parent->attrib and FB_SYMBATTRIB_LOCAL)
 
-	sym = symbNewSymbol( FB_SYMBOPT_DOHASH, NULL, _
+	'' Don't add dynamic array descriptor fields to the hashtb. They use the
+	'' same id as the corresponding dynamic array fields, so they would
+	'' collide. And we don't need to look them up anyways. (this is also
+	'' what symbAddArrayDesc() does for dynamic array variables)
+	options = 0
+	if( (attrib and FB_SYMBATTRIB_DESCRIPTOR) = 0 ) then
+		options = FB_SYMBOPT_DOHASH
+	end if
+
+	sym = symbNewSymbol( options, NULL, _
 			@symbGetUDTSymbTb( parent ), @symbGetUDTHashTb( base_parent ), _
 			FB_SYMBCLASS_FIELD, id, NULL, dtype, subtype, _
 			attrib )
