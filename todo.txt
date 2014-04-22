@@ -272,8 +272,25 @@ o rtlib
     However FB should always use '.' for portability.
     We'd need our own float <-> string routines (PRINT USING/FORMAT may have one
     part of that already) to really fix this.
-    
-    
+
+o gfxlib2 thread-safety
+  - rtlib hooks must be protected by a lock that'll be used by SCREEN and the
+    functions using those hooks. They should already be using FB_LOCK() here!
+		lock missing?:
+			fb_IsRedirected()
+  - are there any special callbacks between rtlib/gfxlib, e.g. for multikey()?
+  - fb_GfxLock() a.k.a. screenlock() a.k.a. DRIVER_LOCK() needs to prevent
+    multiple threads from DRIVER_LOCK'ing at the same time. Well it already does
+    that, but it needs to protect the __fb_gfx accesses.
+  - All accesses to __fb_gfx must be protected.
+  - Ultimately: drawing commands like LINE, and also SCREEN, SLEEP, INKEY should
+    be thread-safe
+
+  - Use FB_GFXLOCK() for the gfx functions to protect __fb_gfx accesses.
+    SCREEN must additionally use FB_LOCK() when setting the hooks. It's ok if it
+    releases FB_LOCK() immediately afterwards, because it should still hold
+    FB_GFXLOCK(), and since all the fb_Gfx*() functions should do FB_GFXLOCK()
+    they won't try to do anything until the SCREEN setup has finished.
 
 o classes
   - vtable lookup should handle THIS expression with side-effects
