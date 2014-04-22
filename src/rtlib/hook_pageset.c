@@ -4,20 +4,20 @@
 
 FBCALL int fb_PageSet( int active, int visible )
 {
+	int res;
+
 	fb_DevScrnInit_NoOpen( );
 
 	FB_LOCK();
 
-	int res;
-
-	if( __fb_ctx.hooks.pagesetproc )
+	if( __fb_ctx.hooks.pagesetproc ) {
 		res = __fb_ctx.hooks.pagesetproc( active, visible );
-	else {
+	} else {
 		if( (active >= FB_CONSOLE_MAXPAGES) || (visible >= FB_CONSOLE_MAXPAGES) ) {
-			FB_UNLOCK();
-			return -1;
+			res = -1;
+		} else {
+			res = fb_ConsolePageSet( active, visible );
 		}
-        res = fb_ConsolePageSet( active, visible );
 	}
 
 	FB_UNLOCK();
