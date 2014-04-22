@@ -276,9 +276,9 @@ o rtlib
 o gfxlib2 thread-safety
   - rtlib hooks must be protected by a lock that'll be used by SCREEN and the
     functions using those hooks. They should already be using FB_LOCK() here!
-		lock missing?:
-			fb_IsRedirected()
   - are there any special callbacks between rtlib/gfxlib, e.g. for multikey()?
+	(DOS ones don't matter)
+	__fb_con?
   - fb_GfxLock() a.k.a. screenlock() a.k.a. DRIVER_LOCK() needs to prevent
     multiple threads from DRIVER_LOCK'ing at the same time. Well it already does
     that, but it needs to protect the __fb_gfx accesses.

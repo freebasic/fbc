@@ -186,6 +186,9 @@ static int set_mode
 
     release_gfx_mem();
 
+	// Lock to protect the access to __fb_ctx.hooks
+	FB_LOCK( );
+
 	if( (mode == 0) || (w == 0) ) {
         memset(&__fb_ctx.hooks, 0, sizeof(__fb_ctx.hooks));
 
@@ -226,6 +229,8 @@ static int set_mode
         __fb_ctx.hooks.pagesetproc = fb_GfxPageSet;
         __fb_gfx = (FBGFX *)calloc(1, sizeof(FBGFX));
     }
+
+	FB_UNLOCK( );
 
     if (__fb_gfx) {
     	__fb_gfx->id = screen_id++;
