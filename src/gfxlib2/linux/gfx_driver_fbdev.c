@@ -211,7 +211,7 @@ static void *driver_thread(void *arg)
 							bytes_read = mouse_packet_size;
 						}
 						bytes_left -= bytes_read;
-						memcpy(buffer, &buffer[bytes_read], bytes_left);
+						memmove(buffer, &buffer[bytes_read], bytes_left);
 					}
 				}
 			}
