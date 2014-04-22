@@ -240,6 +240,7 @@ static int keyboard_init(void)
 	};
 #endif
 	struct termios term;
+	memset( &term, 0, sizeof( term ) );
 
 	main_pid = getpid();
 	old_getch = __fb_con.keyboard_getch;
