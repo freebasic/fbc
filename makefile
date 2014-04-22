@@ -1,7 +1,7 @@
 #!/usr/bin/make -f
 #
 # This is the FB makefile that builds the compiler (fbc) and the runtime
-# libraries (rtlib -> libfb[mt] and fbrt0.o, gfxlib2 -> libfbgfx).
+# libraries (rtlib -> libfb[mt] and fbrt0.o, gfxlib2 -> libfbgfx[mt]).
 # There are several dependencies, especially for the rtlib and gfxlib2 code,
 # which are listed in the "building FB" guide at:
 #    http://www.freebasic.net/wiki/wikka.php?wakka=DevBuild
@@ -27,6 +27,10 @@
 #   4) the gfxlib2
 #          like the normal rtlib, just with the sources from src/gfxlib2/,
 #          compiled into libfbgfx.a
+#
+#   5) the thread-safe gfxlib2 (except for DOS)
+#          like the normal gfxlib2, but with -DENABLE_MT, compiled into
+#          libfbgfxmt.a
 #
 # You can also build FB by doing all these steps manually.
 #
@@ -249,13 +253,9 @@ libsubdir := $(TARGET_OS)
 ifneq ($(TARGET_ARCH),x86)
   libsubdir := $(TARGET_ARCH)-$(TARGET_OS)
 endif
-fbcobjdir := src/compiler/obj
 ifdef ENABLE_STANDALONE
   FBC_EXE     := fbc$(EXEEXT)
   FBCNEW_EXE  := fbc-new$(EXEEXT)
-  libfbobjdir    := src/rtlib/obj/$(libsubdir)
-  libfbmtobjdir  := src/rtlib/obj/mt/$(libsubdir)
-  libfbgfxobjdir := src/gfxlib2/obj/$(libsubdir)
   libdir         := lib/$(libsubdir)
   PREFIX_FBC_EXE := $(prefix)/fbc$(EXEEXT)
   prefixincdir   := $(prefix)/inc
@@ -267,15 +267,17 @@ else
   bindir      := bin
   FBC_EXE     := bin/fbc$(ENABLE_SUFFIX)$(EXEEXT)
   FBCNEW_EXE  := bin/fbc$(ENABLE_SUFFIX)-new$(EXEEXT)
-  libfbobjdir    := src/rtlib/obj/$(libsubdir)
-  libfbmtobjdir  := src/rtlib/obj/mt/$(libsubdir)
-  libfbgfxobjdir := src/gfxlib2/obj/$(libsubdir)
   libdir         := lib/$(FBNAME)/$(libsubdir)
   PREFIX_FBC_EXE := $(prefix)/bin/fbc$(ENABLE_SUFFIX)$(EXEEXT)
   prefixbindir   := $(prefix)/bin
   prefixincdir   := $(prefix)/include/$(FBNAME)
   prefixlibdir   := $(prefix)/lib/$(FBNAME)/$(libsubdir)
 endif
+fbcobjdir        := src/compiler/obj
+libfbobjdir      := src/rtlib/obj/$(libsubdir)
+libfbmtobjdir    := src/rtlib/obj/mt/$(libsubdir)
+libfbgfxobjdir   := src/gfxlib2/obj/$(libsubdir)
+libfbgfxmtobjdir := src/gfxlib2/obj/mt/$(libsubdir)
 
 # If cross-compiling, use -target
 ifdef TARGET
@@ -363,6 +365,9 @@ LIBFBGFX_H := $(sort $(foreach i,$(GFXLIB2_DIRS),$(wildcard $(i)/*.h)) $(LIBFB_H
 LIBFBGFX_C := $(sort $(foreach i,$(GFXLIB2_DIRS),$(patsubst $(i)/%.c,$(libfbgfxobjdir)/%.o,$(wildcard $(i)/*.c))))
 LIBFBGFX_S := $(sort $(foreach i,$(GFXLIB2_DIRS),$(patsubst $(i)/%.s,$(libfbgfxobjdir)/%.o,$(wildcard $(i)/*.s))))
 
+LIBFBGFXMT_C := $(patsubst $(libfbgfxobjdir)/%,$(libfbgfxmtobjdir)/%,$(LIBFBGFX_C))
+LIBFBGFXMT_S := $(patsubst $(libfbgfxobjdir)/%,$(libfbgfxmtobjdir)/%,$(LIBFBGFX_S))
+
 #
 # Build rules
 #
@@ -386,7 +391,7 @@ endif
 .PHONY: all
 all: compiler rtlib gfxlib2
 
-$(fbcobjdir) $(libfbobjdir) $(libfbmtobjdir) $(libfbgfxobjdir) \
+$(fbcobjdir) $(libfbobjdir) $(libfbmtobjdir) $(libfbgfxobjdir) $(libfbgfxmtobjdir) \
 $(bindir) $(libdir) $(prefixbindir) $(prefixincdir) $(prefixlibdir):
 	mkdir -p $@
 
@@ -463,6 +468,9 @@ endif
 
 .PHONY: gfxlib2
 gfxlib2: $(libdir) $(libfbgfxobjdir) $(libdir)/libfbgfx.a
+ifndef DISABLE_MT
+gfxlib2: $(libfbgfxmtobjdir) $(libdir)/libfbgfxmt.a
+endif
 
 $(libdir)/libfbgfx.a: $(LIBFBGFX_C) $(LIBFBGFX_S)
 	$(QUIET_AR)rm -f $@; $(AR) rcs $@ $^
@@ -472,6 +480,15 @@ $(LIBFBGFX_C): $(libfbgfxobjdir)/%.o: %.c $(LIBFBGFX_H)
 
 $(LIBFBGFX_S): $(libfbgfxobjdir)/%.o: %.s $(LIBFBGFX_H)
 	$(QUIET_CPPAS)$(CC) -x assembler-with-cpp $(ALLCFLAGS) -c $< -o $@
+
+$(libdir)/libfbgfxmt.a: $(LIBFBGFXMT_C) $(LIBFBGFXMT_S)
+	$(QUIET_AR)rm -f $@; $(AR) rcs $@ $^
+
+$(LIBFBGFXMT_C): $(libfbgfxmtobjdir)/%.o: %.c $(LIBFBGFX_H)
+	$(QUIET_CC)$(CC) -DENABLE_MT $(ALLCFLAGS) -c $< -o $@
+
+$(LIBFBGFXMT_S): $(libfbgfxmtobjdir)/%.o: %.s $(LIBFBGFX_H)
+	$(QUIET_CPPAS)$(CC) -x assembler-with-cpp -DENABLE_MT $(ALLCFLAGS) -c $< -o $@
 
 ################################################################################
 
@@ -495,6 +512,9 @@ install-rtlib: $(prefixlibdir)
 
 install-gfxlib2: $(prefix)/lib $(prefixlibdir)
 	$(INSTALL_FILE) $(libdir)/libfbgfx.a $(prefixlibdir)/
+  ifndef DISABLE_MT
+	$(INSTALL_FILE) $(libdir)/libfbgfxmt.a $(prefixlibdir)/
+  endif
 
 ################################################################################
 
@@ -519,6 +539,9 @@ uninstall-rtlib:
 
 uninstall-gfxlib2:
 	rm -f $(prefixlibdir)/libfbgfx.a
+  ifndef DISABLE_MT
+	rm -f $(prefixlibdir)/libfbgfxmt.a
+  endif
 
 ################################################################################
 
@@ -545,6 +568,10 @@ clean-rtlib:
 clean-gfxlib2:
 	rm -f $(libdir)/libfbgfx.a $(libfbgfxobjdir)/*.o
 	-rmdir $(libfbgfxobjdir)
+  ifndef DISABLE_MT
+	rm -f $(libdir)/libfbgfxmt.a $(libfbgfxmtobjdir)/*.o
+	-rmdir $(libfbgfxmtobjdir)
+  endif
 
 ################################################################################
 
