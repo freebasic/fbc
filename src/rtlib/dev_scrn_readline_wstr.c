@@ -23,6 +23,8 @@ void fb_DevScrnInit_ReadLineWstr( void )
 {
 	fb_DevScrnInit_NoOpen( );
 
+	FB_LOCK( );
     if( FB_HANDLE_SCREEN->hooks->pfnReadLineWstr == NULL )
         FB_HANDLE_SCREEN->hooks->pfnReadLineWstr = fb_DevScrnReadLineWstr;
+	FB_UNLOCK( );
 }

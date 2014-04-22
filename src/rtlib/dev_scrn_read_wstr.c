@@ -64,9 +64,11 @@ void fb_DevScrnInit_ReadWstr( void )
 {
 	fb_DevScrnInit_NoOpen( );
 
+	FB_LOCK( );
     if( FB_HANDLE_SCREEN->hooks->pfnReadWstr == NULL )
     {
     	FB_HANDLE_SCREEN->hooks->pfnReadWstr =
     			(fb_IsRedirected( TRUE )? hReadFromStdin : fb_DevScrnReadWstr);
     }
+	FB_UNLOCK( );
 }

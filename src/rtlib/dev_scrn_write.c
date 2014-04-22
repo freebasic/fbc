@@ -12,6 +12,8 @@ void fb_DevScrnInit_Write( void )
 {
 	fb_DevScrnInit_NoOpen( );
 
+	FB_LOCK( );
     if( FB_HANDLE_SCREEN->hooks->pfnWrite == NULL )
     	FB_HANDLE_SCREEN->hooks->pfnWrite = fb_DevScrnWrite;
+	FB_UNLOCK( );
 }
