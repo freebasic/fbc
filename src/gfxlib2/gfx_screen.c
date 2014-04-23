@@ -414,15 +414,17 @@ FBCALL int fb_GfxScreen
 	                    flags, 0.0,
 	                    info->text_w, info->text_h );
 
-	if( res == FB_RTERROR_OK )
+	if( res == FB_RTERROR_OK ) {
+		FB_LOCK( );
 		FB_HANDLE_SCREEN->line_length = 0;
+		FB_UNLOCK( );
+	}
 
 	return fb_ErrorSetNum( FB_RTERROR_OK );
 }
 
 FBCALL int fb_GfxScreenQB( int mode, int visible, int active )
 {
-
 	int res = fb_GfxScreen( mode, 0, 0, 0, 0 );
 	if( res != FB_RTERROR_OK )
 		return res;
@@ -469,8 +471,11 @@ FBCALL int fb_GfxScreenRes
 	                    flags, 1.0,
 	                    w / __fb_font[FB_FONT_8].w, h / __fb_font[FB_FONT_8].h );
 
-	if( res == FB_RTERROR_OK )
+	if( res == FB_RTERROR_OK ) {
+		FB_LOCK( );
 		FB_HANDLE_SCREEN->line_length = 0;
+		FB_UNLOCK( );
+	}
 
 	return res;
 }
