@@ -104,15 +104,21 @@
 	FBCALL void fb_Unlock( void );
 	FBCALL void fb_StrLock( void );
 	FBCALL void fb_StrUnlock( void );
+	FBCALL void fb_GraphicsLock  ( void );
+	FBCALL void fb_GraphicsUnlock( void );
 	#define FB_LOCK()      fb_Lock()
 	#define FB_UNLOCK()    fb_Unlock()
 	#define FB_STRLOCK()   fb_StrLock()
 	#define FB_STRUNLOCK() fb_StrUnlock()
+	#define FB_GRAPHICS_LOCK()   fb_GraphicsLock()
+	#define FB_GRAPHICS_UNLOCK() fb_GraphicsUnlock()
 #else
 	#define FB_LOCK()
 	#define FB_UNLOCK()
 	#define FB_STRLOCK()
 	#define FB_STRUNLOCK()
+	#define FB_GRAPHICS_LOCK()
+	#define FB_GRAPHICS_UNLOCK()
 #endif
 
 /* CPU-dependent macros and inline functions */
