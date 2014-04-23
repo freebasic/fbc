@@ -347,11 +347,13 @@ int fb_hConsoleGfxMode
 
 	__fb_con.gfx_exit = gfx_exit;
 	if (gfx_exit) {
+		FB_LOCK( );
 		__fb_ctx.hooks.multikeyproc = NULL;
 		__fb_ctx.hooks.inkeyproc = NULL;
 		__fb_ctx.hooks.getkeyproc = NULL;
 		__fb_ctx.hooks.keyhitproc = NULL;
 		__fb_ctx.hooks.sleepproc = NULL;
+		FB_UNLOCK( );
 		gfx_save = save;
 		gfx_restore = restore;
 		gfx_key_handler = key_handler;
