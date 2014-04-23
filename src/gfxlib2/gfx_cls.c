@@ -2,16 +2,17 @@
 
 #include "fb_gfx.h"
 
-
-/*:::::*/
 void fb_GfxClear(int mode)
 {
-	FB_GFXCTX *context = fb_hGetContext();
+	FB_GFXCTX *context;
     int i, dirty, dirty_len;
     int reset_gfx_pos;
     int reset_console_start = 0, reset_console_end = 0;
     int new_x = -1, new_y = -1;
 
+	FB_GRAPHICS_LOCK( );
+
+	context = fb_hGetContext();
 	fb_hPrepareTarget(context, NULL);
 	fb_hSetPixelTransfer(context, context->bg_color);
 
@@ -32,7 +33,6 @@ void fb_GfxClear(int mode)
     }
 
 	switch (mode) {
-
 		case 0:
 			/* Clear entire screen */
             {
@@ -108,4 +108,5 @@ void fb_GfxClear(int mode)
     }
 
     DRIVER_UNLOCK();
+	FB_GRAPHICS_UNLOCK( );
 }

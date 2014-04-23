@@ -40,6 +40,7 @@ Version 0.91.0:
 - GFX statements now accept UDTs as target/source images, if the UDT has cast() AS ANY PTR (or other PTR types) operator overloads
 - jpeglib example now works with both fb and fblite dialects
 - Any function result may now be ignored at the call site (simply by not using the function result in any expression or assignment). Previously this was only allowed for functions returning integer types or pointers.
+- Thread-safe version of the FB graphics library (libfbgfxmt), used automatically if FB's threading functions are used or fbc's -mt command line option is given, just like the thread-safe version of the FB runtime library (libfbmt).
 
 [fixed]
 - dlltool syntax error when building a DLL without any EXPORTs

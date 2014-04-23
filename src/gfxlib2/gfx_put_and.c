@@ -2,17 +2,11 @@
 
 #include "fb_gfx.h"
 
-
 #ifdef HOST_X86
-
 #include "x86/fb_gfx_mmx.h"
-
 extern void fb_hPutAndMMX(unsigned char *src, unsigned char *dest, int w, int h, int src_pitch, int dest_pitch, int alpha, BLENDER *blender, void *param);
-
 #endif
 
-
-/*:::::*/
 static void fb_hPutAndC(unsigned char *src, unsigned char *dest, int w, int h, int src_pitch, int dest_pitch, int alpha, BLENDER *blender, void *param)
 {
 	int x;
@@ -39,8 +33,8 @@ static void fb_hPutAndC(unsigned char *src, unsigned char *dest, int w, int h, i
 	}
 }
 
-
-/*:::::*/
+/* Not thread-safe; putters should only be called from other gfx functions that
+   take care of the synchronization */
 void fb_hPutAnd(unsigned char *src, unsigned char *dest, int w, int h, int src_pitch, int dest_pitch, int alpha, BLENDER *blender, void *param)
 {
 	static PUTTER *all_putters[] = {

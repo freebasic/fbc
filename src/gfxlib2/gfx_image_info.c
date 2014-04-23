@@ -2,7 +2,6 @@
 
 #include "fb_gfx.h"
 
-
 FBCALL int fb_GfxImageInfo( void *img,
 							int *width,	int *height,
 							int *bpp,	int *pitch,	void **imgdata,

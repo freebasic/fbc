@@ -41,5 +41,3 @@ int fb_GfxLineInputWstr
 
 	return fb_ErrorSetNum( FB_RTERROR_OK );
 }
-
-

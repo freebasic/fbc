@@ -2,23 +2,25 @@
 
 #include "fb_gfx.h"
 
-
-/*:::::*/
 FBCALL void fb_GfxView(int x1, int y1, int x2, int y2, unsigned int fill_color, unsigned int border_color, int flags)
 {
-	FB_GFXCTX *context = fb_hGetContext();
+	FB_GFXCTX *context;
 	unsigned int old_bg_color;
 
-	if (!__fb_gfx)
+	FB_GRAPHICS_LOCK( );
+
+	if (!__fb_gfx) {
+		FB_GRAPHICS_UNLOCK( );
 		return;
+	}
+
+	context = fb_hGetContext();
 
 	fb_hPrepareTarget(context, NULL);
 	fb_hSetPixelTransfer(context, border_color);
-
 	fb_hFixCoordsOrder(&x1, &y1, &x2, &y2);
 
     if ((x1 | y1 | x2 | y2) != (int)0xFFFF8000) {
-
         context->flags |= CTX_VIEWPORT_SET;
 
         if (flags & VIEW_SCREEN)
@@ -47,13 +49,12 @@ FBCALL void fb_GfxView(int x1, int y1, int x2, int y2, unsigned int fill_color, 
             fb_GfxClear(1);
             context->bg_color = old_bg_color;
         }
-
     } else {
-
         context->flags &= ~CTX_VIEWPORT_SET;
-
         context->view_x = context->view_y = 0;
         context->view_w = __fb_gfx->w;
         context->view_h = __fb_gfx->h;
     }
+
+	FB_GRAPHICS_UNLOCK( );
 }

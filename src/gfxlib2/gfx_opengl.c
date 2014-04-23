@@ -37,9 +37,19 @@ static int next_pow2(int n)
 
 FBCALL void *fb_GfxGetGLProcAddress(const char *proc)
 {
-	if ((!__fb_gfx) || (!(__fb_gfx->flags & OPENGL_SUPPORT)))
-		return NULL;
-	return fb_hGL_GetProcAddress(proc);
+	void *result;
+
+	FB_GRAPHICS_LOCK( );
+
+	if (__fb_gfx && (__fb_gfx->flags & OPENGL_SUPPORT)) {
+		result = fb_hGL_GetProcAddress(proc);
+	} else {
+		result = NULL;
+	}
+
+	FB_GRAPHICS_UNLOCK( );
+
+	return result;
 }
 
 int fb_hGL_ExtensionSupported(const char *extension)

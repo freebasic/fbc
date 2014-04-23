@@ -2,8 +2,6 @@
 
 #include "fb_gfx.h"
 
-
-/*:::::*/
 static void move_back(void)
 {
 	__fb_gfx->cursor_x--;
@@ -22,19 +20,23 @@ char *fb_GfxReadStr(char *buffer, ssize_t maxlen)
 	char space[2] = { ' ', '\0' };
 	char character[2] = { 0, '\0' };
 	char *cursor = cursor_normal;
-	
-	if (!__fb_gfx)
+
+	FB_GRAPHICS_LOCK( );
+
+	if (!__fb_gfx) {
+		FB_GRAPHICS_UNLOCK( );
 		return NULL;
-	
+	}
+
 	do {
 		fb_GfxPrintBuffer(cursor, 0);
-		
+
 		if (cursor == cursor_backspace) {
 			move_back();
 			cursor = cursor_normal;
 		}
 		move_back();
-		
+
 		key = fb_Getkey();
 		if (key < 0x100) {
 			if (key == 8) {
@@ -59,8 +61,9 @@ char *fb_GfxReadStr(char *buffer, ssize_t maxlen)
 			}
 		}
 	} while (key != 13);
-	
+
 	buffer[len] = '\0';
-	
+
+	FB_GRAPHICS_UNLOCK( );
 	return buffer;
 }

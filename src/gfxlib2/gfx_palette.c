@@ -78,8 +78,12 @@ FBCALL void fb_GfxPalette(int index, int red, int green, int blue)
 	const PALETTE *palette;
 	const unsigned char *mode_association;
 
-	if ((!__fb_gfx) || (__fb_gfx->depth > 8))
+	FB_GRAPHICS_LOCK( );
+
+	if ((!__fb_gfx) || (__fb_gfx->depth > 8)) {
+		FB_GRAPHICS_UNLOCK( );
 		return;
+	}
 
 	DRIVER_LOCK();
 
@@ -131,4 +135,5 @@ FBCALL void fb_GfxPalette(int index, int red, int green, int blue)
 	fb_hMemSet(__fb_gfx->dirty, TRUE, __fb_gfx->h);
 
 	DRIVER_UNLOCK();
+	FB_GRAPHICS_UNLOCK( );
 }

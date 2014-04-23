@@ -2,51 +2,58 @@
 
 #include "fb_gfx.h"
 
-
-/*:::::*/
 FBCALL int fb_GfxFlip(int from_page, int to_page)
 {
-	FB_GFXCTX *context = fb_hGetContext();
+	FB_GFXCTX *context;
 	unsigned char *dest, *src;
 	int i, size, text_size, lock = FALSE;
 	int src_page, dest_page;
 
-	if (!__fb_gfx)
+	FB_GRAPHICS_LOCK( );
+
+	if (!__fb_gfx) {
+		FB_GRAPHICS_UNLOCK( );
 		return fb_ErrorSetNum(FB_RTERROR_ILLEGALFUNCTIONCALL);
+	}
 
 	if (__fb_gfx->driver->flip) {
 		__fb_gfx->driver->flip();
 		if (__fb_gfx->driver->poll_events)
 			__fb_gfx->driver->poll_events();
+		FB_GRAPHICS_UNLOCK( );
 		return fb_ErrorSetNum(FB_RTERROR_ILLEGALFUNCTIONCALL);
 	}
 
+	context = fb_hGetContext( );
 	fb_hPrepareTarget(context, NULL);
 	fb_hSetPixelTransfer(context, MASK_A_32);
 
 	if (from_page < 0) {
 		src = context->line[0];
 		src_page = context->work_page;
-	}
-	else if (from_page >= __fb_gfx->num_pages)
+	} else if (from_page >= __fb_gfx->num_pages) {
+		FB_GRAPHICS_UNLOCK( );
 		return fb_ErrorSetNum(FB_RTERROR_ILLEGALFUNCTIONCALL);
-	else {
+	} else {
 		src = __fb_gfx->page[from_page];
 		src_page = from_page;
 	}
+
 	if (to_page < 0) {
 		dest = __fb_gfx->framebuffer;
 		dest_page = __fb_gfx->visible_page;
-	}
-	else if (to_page >= __fb_gfx->num_pages)
+	} else if (to_page >= __fb_gfx->num_pages) {
+		FB_GRAPHICS_UNLOCK( );
 		return fb_ErrorSetNum(FB_RTERROR_ILLEGALFUNCTIONCALL);
-	else {
+	} else {
 		dest = __fb_gfx->page[to_page];
 		dest_page = to_page;
 	}
 
-	if (src == dest)
+	if (src == dest) {
+		FB_GRAPHICS_UNLOCK( );
 		return fb_ErrorSetNum(FB_RTERROR_OK);
+	}
 	if ((dest == __fb_gfx->framebuffer) && (__fb_gfx->lock_count==0))
 		lock = TRUE;
 
@@ -70,24 +77,29 @@ FBCALL int fb_GfxFlip(int from_page, int to_page)
 		DRIVER_UNLOCK();
 	}
 
+	FB_GRAPHICS_UNLOCK( );
 	return fb_ErrorSetNum(FB_RTERROR_OK);
 }
 
-/*:::::*/
 int fb_GfxPageCopy(int from_page, int to_page)
 {
 	return fb_GfxFlip( from_page, to_page );
 }
 
-/*:::::*/
 int fb_GfxPageSet(int work_page, int visible_page)
 {
-	FB_GFXCTX *context = fb_hGetContext();
+	FB_GFXCTX *context;
+	int res;
 
-	int res = context->work_page | (__fb_gfx->visible_page << 8);
+	FB_GRAPHICS_LOCK( );
 
-	if (!__fb_gfx)
+	if (!__fb_gfx) {
+		FB_GRAPHICS_UNLOCK( );
 		return -1;
+	}
+
+	context = fb_hGetContext();
+	res = context->work_page | (__fb_gfx->visible_page << 8);
 
 	fb_hPrepareTarget(context, NULL);
 	fb_hSetPixelTransfer(context, MASK_A_32);
@@ -109,7 +121,6 @@ int fb_GfxPageSet(int work_page, int visible_page)
 		DRIVER_UNLOCK();
 	}
 
+	FB_GRAPHICS_UNLOCK( );
 	return res;
 }
-
-

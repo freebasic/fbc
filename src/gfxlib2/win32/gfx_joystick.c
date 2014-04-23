@@ -21,6 +21,8 @@ FBCALL int fb_GfxGetJoystick(int id, ssize_t *buttons, float *a1, float *a2, flo
 	JOYINFOEX info;
 	JOYDATA *j;
 
+	FB_GRAPHICS_LOCK( );
+
 	*buttons = -1;
 	*a1 = *a2 = *a3 = *a4 = *a5 = *a6 = *a7 = *a8 = -1000.0;
 
@@ -29,23 +31,33 @@ FBCALL int fb_GfxGetJoystick(int id, ssize_t *buttons, float *a1, float *a2, flo
 		inited = TRUE;
 	}
 
-	if ((id < 0) || (id > 15))
+	if ((id < 0) || (id > 15)) {
+		FB_GRAPHICS_UNLOCK( );
 		return fb_ErrorSetNum(FB_RTERROR_ILLEGALFUNCTIONCALL);
+	}
+
 	j = &joy[id];
 
 	if (!j->detected) {
 		j->detected = TRUE;
-		if (joyGetDevCaps(id + JOYSTICKID1, &j->caps, sizeof(j->caps)) != JOYERR_NOERROR)
+		if (joyGetDevCaps(id + JOYSTICKID1, &j->caps, sizeof(j->caps)) != JOYERR_NOERROR) {
+			FB_GRAPHICS_UNLOCK( );
 			return fb_ErrorSetNum(FB_RTERROR_ILLEGALFUNCTIONCALL);
+		}
 		j->available = TRUE;
 	}
-	if (!j->available)
+
+	if (!j->available) {
+		FB_GRAPHICS_UNLOCK( );
 		return fb_ErrorSetNum(FB_RTERROR_ILLEGALFUNCTIONCALL);
+	}
 
 	info.dwSize = sizeof(info);
 	info.dwFlags = JOY_RETURNALL;
-	if (joyGetPosEx(id + JOYSTICKID1, &info) != JOYERR_NOERROR)
+	if (joyGetPosEx(id + JOYSTICKID1, &info) != JOYERR_NOERROR) {
+		FB_GRAPHICS_UNLOCK( );
 		return fb_ErrorSetNum(FB_RTERROR_ILLEGALFUNCTIONCALL);
+	}
 	*a1 = CALCPOS(info.dwXpos, j->caps.wXmin, j->caps.wXmax);
 	*a2 = CALCPOS(info.dwYpos, j->caps.wYmin, j->caps.wYmax);
 	if (j->caps.wCaps & JOYCAPS_HASZ)
@@ -75,5 +87,6 @@ FBCALL int fb_GfxGetJoystick(int id, ssize_t *buttons, float *a1, float *a2, flo
 
 	*buttons = info.dwButtons;
 
+	FB_GRAPHICS_UNLOCK( );
 	return fb_ErrorSetNum( FB_RTERROR_OK );
 }

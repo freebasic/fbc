@@ -3,13 +3,13 @@
 #include "fb_gfx.h"
 
 /* save state for x,y,buttons for A,B sticks */
-
 static int stick_posn[4] = { 0, 0, 0, 0 };
 static int stick_btns[2] = { 0, 0 };
 
-/*:::::*/
 FBCALL int fb_GfxStickQB( int n )
 {
+	int result;
+
 	/*
 		if n == 0 then 
 			read and save x,y positions for stick A and B.
@@ -17,6 +17,8 @@ FBCALL int fb_GfxStickQB( int n )
 		if n == 1,2,3
 			return the last read position for A.y, B.x, B.y
 	*/
+
+	FB_GRAPHICS_LOCK( );
 
 	if( n >= 0 && n <= 3 )
 	{
@@ -42,16 +44,21 @@ FBCALL int fb_GfxStickQB( int n )
 				}
 			}
 		}
-		return stick_posn[n];
+
+		result = stick_posn[n];
+	} else {
+		result = 0;
+		fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 	}
 
-	fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
-	return 0;
+	FB_GRAPHICS_UNLOCK( );
+	return result;
 }
 
-/*:::::*/
 FBCALL int fb_GfxStrigQB( int n )
 {
+	int result;
+
 	/* 
 		n	result ( -1 == TRUE, 0 == FALSE )
 		0	A button 1 pressed since last STICK(0)
@@ -63,7 +70,9 @@ FBCALL int fb_GfxStrigQB( int n )
 		6	B button 2 pressed since last STICK(0)
 		7	B button 2 is pressed
 	*/
-	
+
+	FB_GRAPHICS_LOCK( );
+
 	if( (n >= 0) && (n <= 7) )
 	{
 		int i = (n>>1)&1;
@@ -76,15 +85,19 @@ FBCALL int fb_GfxStrigQB( int n )
 			if( FB_RTERROR_OK == fb_GfxGetJoystick( i, &buttons, &a, &a, &a, &a, &a, &a, &a, &a ))
 			{
 				stick_btns[i] |= buttons;
-				return ( buttons & bmask) ? -1 : 0;
+				result = ( buttons & bmask) ? -1 : 0;
+			} else {
+				result = 0;
+				fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 			}
+		} else {
+			result = ( stick_btns[i] & bmask) ? -1 : 0;
 		}
-		else
-		{
-			return ( stick_btns[i] & bmask) ? -1 : 0;
-		}
+	} else {
+		result = 0;
+		fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 	}
 
-	fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
-	return 0;
+	FB_GRAPHICS_UNLOCK( );
+	return result;
 }

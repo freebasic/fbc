@@ -4,7 +4,6 @@
 
 static void driver_dummy(void);
 
-
 const GFXDRIVER __fb_gfxDriverNull =
 {
 	"Null",			/* char *name; */
@@ -23,9 +22,6 @@ const GFXDRIVER __fb_gfxDriverNull =
 	NULL			/* void (*poll_events)(void); */
 };
 
-
-/*:::::*/
 static void driver_dummy(void)
 {
 }
-

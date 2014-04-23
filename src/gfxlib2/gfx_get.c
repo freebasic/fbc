@@ -2,17 +2,20 @@
 
 #include "fb_gfx.h"
 
-
-/*:::::*/
 static int gfx_get(void *target, float fx1, float fy1, float fx2, float fy2, unsigned char *dest, int coord_type, FBARRAY *array, int usenewheader )
 {
-	FB_GFXCTX *context = fb_hGetContext();
+	FB_GFXCTX *context;
 	PUT_HEADER *header;
 	int x1, y1, x2, y2, w, h, pitch;
 
-	if (!__fb_gfx)
-		return fb_ErrorSetNum(FB_RTERROR_ILLEGALFUNCTIONCALL);
+	FB_GRAPHICS_LOCK( );
 
+	if (!__fb_gfx) {
+		FB_GRAPHICS_UNLOCK( );
+		return fb_ErrorSetNum(FB_RTERROR_ILLEGALFUNCTIONCALL);
+	}
+
+	context = fb_hGetContext( );
 	fb_hPrepareTarget(context, target);
 	fb_hSetPixelTransfer(context, MASK_A_32);
 
@@ -24,8 +27,10 @@ static int gfx_get(void *target, float fx1, float fy1, float fx2, float fy2, uns
 	fb_hFixCoordsOrder(&x1, &y1, &x2, &y2);
 
 	if ((x1 < context->view_x) || (y1 < context->view_y) ||
-	    (x2 >= context->view_x + context->view_w) || (y2 >= context->view_y + context->view_h))
+	    (x2 >= context->view_x + context->view_w) || (y2 >= context->view_y + context->view_h)) {
+		FB_GRAPHICS_UNLOCK( );
 		return fb_ErrorSetNum(FB_RTERROR_ILLEGALFUNCTIONCALL);
+	}
 
 	w = x2 - x1 + 1;
 	h = y2 - y1 + 1;
@@ -38,8 +43,7 @@ static int gfx_get(void *target, float fx1, float fy1, float fx2, float fy2, uns
 		header->old.height = h;
 		pitch = w * context->target_bpp;
 		dest += 4;
-	}
-	else {
+	} else {
 		/* use new-style header */
 		header->type = PUT_HEADER_NEW;
 		header->width = w;
@@ -50,8 +54,10 @@ static int gfx_get(void *target, float fx1, float fy1, float fx2, float fy2, uns
 	}
 
 	if( array != NULL ) {
-		if ((array->size > 0) && (((intptr_t)(dest + (pitch * h))) > ((intptr_t)(array->data + array->size))))
+		if ((array->size > 0) && (((intptr_t)(dest + (pitch * h))) > ((intptr_t)(array->data + array->size)))) {
+			FB_GRAPHICS_UNLOCK( );
 			return fb_ErrorSetNum(FB_RTERROR_ILLEGALFUNCTIONCALL);
+		}
 	}
 
 	DRIVER_LOCK();
@@ -63,16 +69,15 @@ static int gfx_get(void *target, float fx1, float fy1, float fx2, float fy2, uns
 
 	DRIVER_UNLOCK();
 
+	FB_GRAPHICS_UNLOCK( );
 	return fb_ErrorSetNum( FB_RTERROR_OK );
 }
 
-/*:::::*/
 FBCALL int fb_GfxGet(void *target, float fx1, float fy1, float fx2, float fy2, unsigned char *dest, int coord_type, FBARRAY *array)
 {
 	return gfx_get( target, fx1, fy1, fx2, fy2, dest, coord_type, array, TRUE );
 }
 
-/*:::::*/
 FBCALL int fb_GfxGetQB(void *target, float fx1, float fy1, float fx2, float fy2, unsigned char *dest, int coord_type, FBARRAY *array)
 {
 	return gfx_get( target, fx1, fy1, fx2, fy2, dest, coord_type, array, FALSE );

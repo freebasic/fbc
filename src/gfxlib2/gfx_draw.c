@@ -36,18 +36,22 @@ static intptr_t parse_number(char **str)
 
 FBCALL void fb_GfxDraw(void *target, FBSTRING *command)
 {
-	FB_GFXCTX *context = fb_hGetContext();
+	FB_GFXCTX *context;
 	float x, y, dx, dy, ax, ay, x2, y2, scale = 1.0, angle = 0.0;
 	char *c;
 	intptr_t value1, value2;
 	int draw = TRUE, move = TRUE, length = 0, flags, rel, ix, iy;
 
+	FB_GRAPHICS_LOCK( );
+
 	if ((!__fb_gfx) || (!command) || (!command->data)) {
 		if (command)
 			fb_hStrDelTemp(command);
+		FB_GRAPHICS_UNLOCK( );
 		return;
 	}
 
+	context = fb_hGetContext( );
 	fb_hPrepareTarget(context, target);
 	fb_hSetPixelTransfer(context, MASK_A_32);
 
@@ -239,4 +243,6 @@ error:
 
 	/* del if temp */
 	fb_hStrDelTemp( command );
+
+	FB_GRAPHICS_UNLOCK( );
 }

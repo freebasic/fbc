@@ -10,6 +10,8 @@ FBCALL void fb_GfxControl_s( int what, FBSTRING *param )
 	if (!param)
 		return;
 
+	FB_GRAPHICS_LOCK( );
+
 	switch ( what ) {
 	case GET_WINDOW_TITLE:
 		if (!__fb_window_title )
@@ -49,11 +51,13 @@ FBCALL void fb_GfxControl_s( int what, FBSTRING *param )
 			__fb_gfx_driver_name = strdup(param->data);
 		break;
 	}
+
+	FB_GRAPHICS_UNLOCK( );
 }
 
 FBCALL void fb_GfxControl_i( int what, ssize_t *param1, ssize_t *param2, ssize_t *param3, ssize_t *param4 )
 {
-	FB_GFXCTX *context = fb_hGetContext();
+	FB_GFXCTX *context;
 	int res = 0;
 	ssize_t res1 = 0, res2 = 0, res3 = 0, res4 = 0;
 	ssize_t temp1, temp2, temp3, temp4;
@@ -62,6 +66,10 @@ FBCALL void fb_GfxControl_i( int what, ssize_t *param1, ssize_t *param2, ssize_t
 	if (!param2) param2 = &temp2;
 	if (!param3) param3 = &temp3;
 	if (!param4) param4 = &temp4;
+
+	FB_GRAPHICS_LOCK( );
+
+	context = fb_hGetContext();
 
 	switch ( what ) {
 	case GET_WINDOW_POS:
@@ -233,6 +241,8 @@ FBCALL void fb_GfxControl_i( int what, ssize_t *param1, ssize_t *param2, ssize_t
 		break;
 
 	}
+
+	FB_GRAPHICS_UNLOCK( );
 
 	if (what < SET_FIRST_SETTER) {
 		*param1 = res1;

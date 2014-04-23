@@ -28,9 +28,6 @@ typedef struct FBGFX_CHAR
 	unsigned char *data;
 } FBGFX_CHAR;
 
-
-
-/*:::::*/
 FBCALL int fb_GfxDrawString
 	(
 		void *target,
@@ -46,12 +43,16 @@ FBCALL int fb_GfxDrawString
 		void *param
 	)
 {
-	FB_GFXCTX *context = fb_hGetContext();
+	FB_GFXCTX *context;
 	FBGFX_CHAR char_data[256], *ch;
 	PUT_HEADER *header;
 	int font_height, x, y, px, py, i, w, h, pitch, bpp, first, last;
 	int offset, bytes_count, res = fb_ErrorSetNum( FB_RTERROR_OK );
 	unsigned char *data, *width;
+
+	FB_GRAPHICS_LOCK( );
+
+	context = fb_hGetContext();
 
 	if ((!__fb_gfx) || (!string) || (!string->data)) {
 		if (!string)
@@ -159,8 +160,7 @@ FBCALL int fb_GfxDrawString
 			}
 			x += ch->width;
 		}
-	}
-	else {
+	} else {
 		/* use default font */
 
 		font_height = __fb_gfx->font->h;
@@ -218,9 +218,10 @@ exit_error:
 exit_error_unlocked:
 	fb_hStrDelTemp(string);
 
+	FB_GRAPHICS_UNLOCK( );
+
 	if (res != FB_RTERROR_OK)
 		return fb_ErrorSetNum(res);
 	else
 		return res;
 }
-

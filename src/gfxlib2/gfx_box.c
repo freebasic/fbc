@@ -6,13 +6,15 @@
  * Assumes coordinates to be physical ones.
  * Also assumes color is already masked. */
 
-/*:::::*/
+/* Caller is expected to hold FB_GRAPHICSLOCK() */
 void fb_hGfxBox(int x1, int y1, int x2, int y2, unsigned int color, int full, unsigned int style)
 {
-	FB_GFXCTX *context = fb_hGetContext();
+	FB_GFXCTX *context;
 	unsigned char *dest, rot;
 	int clipped_x1, clipped_y1, clipped_x2, clipped_y2, w, h, bit;
-	
+
+	context = fb_hGetContext();
+
 	if ((x2 < context->view_x) || (y2 < context->view_y) ||
 	    (x1 >= context->view_x + context->view_w) || (y1 >= context->view_y + context->view_h))
 		return;
@@ -101,8 +103,8 @@ void fb_hGfxBox(int x1, int y1, int x2, int y2, unsigned int color, int full, un
 			}
 		}
 	}
-	
+
 	SET_DIRTY(context, clipped_y1, clipped_y2 - clipped_y1 + 1);
-	
+
 	DRIVER_UNLOCK();
 }

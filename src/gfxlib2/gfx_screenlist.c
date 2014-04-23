@@ -2,22 +2,18 @@
 
 #include "fb_gfx.h"
 
-
 static int *list = NULL, list_size, current;
 
-
-/*:::::*/
 static void add_mode(int mode)
 {
 	int i;
-	
+
 	if (!list) {
 		list = malloc(sizeof(int) * 2);
 		list[0] = mode;
 		list[1] = 0;
 		list_size = 1;
-	}
-	else {
+	} else {
 		for (i = 0; i < list_size; i++) {
 			if (list[i] == mode)
 				return;
@@ -28,13 +24,11 @@ static void add_mode(int mode)
 	}
 }
 
-
-/*:::::*/
 static int mode_sorter(const void *e1, const void *e2)
 {
 	int m1 = *(int *)e1;
 	int m2 = *(int *)e2;
-	
+
 	if ((m1 >> 16) > (m2 >> 16))
 		return 1;
 	else if (((m1 >> 16) == (m2 >> 16)) && ((m1 & 0xFFFF) > (m2 & 0xFFFF)))
@@ -45,12 +39,13 @@ static int mode_sorter(const void *e1, const void *e2)
 		return -1;
 }
 
-/*:::::*/
 FBCALL int fb_GfxScreenList(int depth)
 {
 	const GFXDRIVER *driver;
-	int i, j, *temp, size;
-	
+	int i, j, *temp, size, result;
+
+	FB_GRAPHICS_LOCK( );
+
 	if (depth > 0) {
 		if (list)
 			free(list);
@@ -70,9 +65,14 @@ FBCALL int fb_GfxScreenList(int depth)
 			qsort(list, list_size, sizeof(int), mode_sorter);
 		current = 0;
 	}
-	
+
 	current++;
-	if ((!list) || (current > list_size))
-		return 0;
-	return list[current - 1];
+	if ((!list) || (current > list_size)) {
+		result = 0;
+	} else {
+		result = list[current - 1];
+	}
+
+	FB_GRAPHICS_UNLOCK( );
+	return result;
 }

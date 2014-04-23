@@ -33,6 +33,9 @@ FBCALL int fb_hEncode
 	unsigned char bit = 0;
 	ssize_t size;
 
+	/* Protecting the access to fb_lzw_entry */
+	FB_LOCK( );
+
 	size = 0;
 	fb_hMemSet(fb_lzw_entry, -1, sizeof(fb_lzw_entry));
 	string_code = *in_buffer++;
@@ -58,5 +61,7 @@ FBCALL int fb_hEncode
 	if (bit)
 		size++;
 	*out_size = size;
+
+	FB_UNLOCK( );
 	return 0;
 }

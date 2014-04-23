@@ -42,8 +42,6 @@ char fb_hSoftCursor_data_end;
 
 void fb_hSoftCursor_code_start(void) { }
 
-
-/*:::::*/
 static void copy_cursor_area(int x, int y, int from_area)
 {
 	unsigned char *s, *d;
@@ -57,8 +55,7 @@ static void copy_cursor_area(int x, int y, int from_area)
 		d = __fb_gfx->framebuffer + (y * __fb_gfx->pitch) + (x * __fb_gfx->bpp);
 		s_pitch = w;
 		d_pitch = __fb_gfx->pitch;
-	}
-	else {
+	} else {
 		s = __fb_gfx->framebuffer + (y * __fb_gfx->pitch) + (x * __fb_gfx->bpp);
 		d = cursor_area;
 		s_pitch = __fb_gfx->pitch;
@@ -72,8 +69,6 @@ static void copy_cursor_area(int x, int y, int from_area)
 	}
 }
 
-
-/*:::::*/
 int fb_hColorDistance(int index, int r, int g, int b)
 {
 	return (((__fb_gfx->device_palette[index] & 0xFF) - r) * ((__fb_gfx->device_palette[index] & 0xFF) - r)) +
@@ -81,8 +76,6 @@ int fb_hColorDistance(int index, int r, int g, int b)
 	       ((((__fb_gfx->device_palette[index] >> 16) & 0xFF) - b) * (((__fb_gfx->device_palette[index] >> 16) & 0xFF) - b));
 }
 
-
-/*:::::*/
 void fb_hSoftCursorInit(void)
 {
 	cursor_area = malloc(CURSOR_W * CURSOR_H * __fb_gfx->bpp);
@@ -101,8 +94,6 @@ void fb_hSoftCursorInit(void)
 	}
 }
 
-
-/*:::::*/
 void fb_hSoftCursorExit(void)
 {
 #ifdef HOST_DOS
@@ -111,8 +102,6 @@ void fb_hSoftCursorExit(void)
 	free(cursor_area);
 }
 
-
-/*:::::*/
 void fb_hSoftCursorPut(int x, int y)
 {
 	unsigned char *d, *dest;
@@ -148,16 +137,12 @@ void fb_hSoftCursorPut(int x, int y)
 	}
 }
 
-
-/*:::::*/
 void fb_hSoftCursorUnput(int x, int y)
 {
 	copy_cursor_area(x, y, TRUE);
 	fb_hMemSet(__fb_gfx->dirty + y, TRUE, MIN(CURSOR_H, __fb_gfx->h - y));
 }
 
-
-/*:::::*/
 void fb_hSoftCursorPaletteChanged(void)
 {
 	int i, dist, min_wdist = 1000000, min_bdist = 1000000;

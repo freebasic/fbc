@@ -32,6 +32,9 @@ FBCALL int fb_hDecode
 	unsigned short new_code, old_code, next_code = 256;
 	unsigned char *limit, decode_stack[MAX_CODE], *string, byte, bit = 0;
 
+	/* Protecting the access to fb_lzw_entry */
+	FB_LOCK( );
+
 	INPUT_CODE(old_code);
 	byte = old_code;
 	*out_buffer++ = old_code;
@@ -39,20 +42,26 @@ FBCALL int fb_hDecode
 	*out_size = 1;
 	while (in_size > 0) {
 		INPUT_CODE(new_code);
-		if (new_code == MAX_CODE)
+		if (new_code == MAX_CODE) {
+			FB_UNLOCK( );
 			return 0;
+		}
 		if (new_code >= next_code) {
 			*decode_stack = byte;
 			string = decode_string(decode_stack + 1, old_code);
-		}
-		else
+		} else {
 			string = decode_string(decode_stack, new_code);
-		if (!string)
+		}
+		if (!string) {
+			FB_UNLOCK( );
 			return -1;
+		}
 		byte = *string;
 		while (string >= decode_stack) {
-			if (out_buffer >= limit)
+			if (out_buffer >= limit) {
+				FB_UNLOCK( );
 				return -1;
+			}
 			*out_buffer++ = *string--;
 			(*out_size)++;
 		}
@@ -63,5 +72,7 @@ FBCALL int fb_hDecode
 		}
 		old_code = new_code;
 	}
+
+	FB_UNLOCK( );
 	return -1;
 }

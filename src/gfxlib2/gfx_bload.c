@@ -447,14 +447,20 @@ exit_error:
 static int gfx_bload(FBSTRING *filename, void *dest, void *pal, int usenewheader)
 {
 	FILE *f;
-	FB_GFXCTX *context = fb_hGetContext();
+	FB_GFXCTX *context;
 	unsigned char id;
 	unsigned int color, *palette = pal, size = 0;
 	char buffer[MAX_PATH];
 	int i, result = fb_ErrorSetNum( FB_RTERROR_OK );
 
-	if ((!dest) && (!__fb_gfx))
+	FB_GRAPHICS_LOCK( );
+
+	context = fb_hGetContext();
+
+	if ((!dest) && (!__fb_gfx)) {
+		FB_GRAPHICS_UNLOCK( );
 		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
+	}
 
 	snprintf(buffer, MAX_PATH-1, "%s", filename->data);
 	buffer[MAX_PATH-1] = '\0';
@@ -464,6 +470,7 @@ static int gfx_bload(FBSTRING *filename, void *dest, void *pal, int usenewheader
 
 	if (!f) {
 		fb_hStrDelTemp(filename);
+		FB_GRAPHICS_UNLOCK( );
 		return fb_ErrorSetNum( FB_RTERROR_FILENOTFOUND );
 	}
 
@@ -490,6 +497,7 @@ static int gfx_bload(FBSTRING *filename, void *dest, void *pal, int usenewheader
 			result = load_bmp(context, f, dest, pal, usenewheader);
 			fclose(f);
 			fb_hStrDelTemp(filename);
+			FB_GRAPHICS_UNLOCK( );
 			return result;
 
 		default:
@@ -526,7 +534,7 @@ static int gfx_bload(FBSTRING *filename, void *dest, void *pal, int usenewheader
 	fclose(f);
 
 	fb_hStrDelTemp(filename);
-
+	FB_GRAPHICS_UNLOCK( );
 	return fb_ErrorSetNum( result );
 }
 

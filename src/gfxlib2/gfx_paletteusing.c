@@ -4,8 +4,12 @@ FBCALL void fb_GfxPaletteUsing(int *data)
 {
 	int i;
 
-	if ((!__fb_gfx) || (__fb_gfx->depth > 8))
+	FB_GRAPHICS_LOCK( );
+
+	if ((!__fb_gfx) || (__fb_gfx->depth > 8)) {
+		FB_GRAPHICS_UNLOCK( );
 		return;
+	}
 
 	DRIVER_LOCK();
 
@@ -17,4 +21,6 @@ FBCALL void fb_GfxPaletteUsing(int *data)
 	fb_hMemSet(__fb_gfx->dirty, TRUE, __fb_gfx->h);
 
 	DRIVER_UNLOCK();
+
+	FB_GRAPHICS_UNLOCK( );
 }

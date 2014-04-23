@@ -26,7 +26,6 @@ GFXDRIVER fb_gfxDriverX11 =
 	NULL			/* void (*poll_events)(void); */
 };
 
-
 static XImage *image, *shape_image;
 static Pixmap shape_pixmap;
 static GC shape_gc;
@@ -35,8 +34,6 @@ static BLITTER *blitter;
 static int is_shm;
 static void (*update_mask)(unsigned char *src, unsigned char *mask, int w, int h);
 
-
-/*:::::*/
 static void update_mask_8(unsigned char *pixel, unsigned char *mask, int w, int h)
 {
 	int x, b;
@@ -57,8 +54,6 @@ static void update_mask_8(unsigned char *pixel, unsigned char *mask, int w, int 
 	}
 }
 
-
-/*:::::*/
 static void update_mask_16(unsigned char *pixel, unsigned char *mask, int w, int h)
 {
 	int x, b;
@@ -79,8 +74,6 @@ static void update_mask_16(unsigned char *pixel, unsigned char *mask, int w, int
 	}
 }
 
-
-/*:::::*/
 static void update_mask_32(unsigned char *pixel, unsigned char *mask, int w, int h)
 {
 	int x, b;
@@ -101,8 +94,6 @@ static void update_mask_32(unsigned char *pixel, unsigned char *mask, int w, int
 	}
 }
 
-
-/*:::::*/
 static int x11_init(void)
 {
 	XGCValues values;
@@ -190,7 +181,6 @@ static int x11_init(void)
 	return 0;
 }
 
-/*:::::*/
 void fb_hX11WaitUnmapped(Window w)
 {
 	XEvent e;
@@ -199,7 +189,6 @@ void fb_hX11WaitUnmapped(Window w)
 	} while ((e.type != UnmapNotify) || (e.xmap.event != w));
 }
 
-/*:::::*/
 static void x11_exit(void)
 {
 	if (fb_x11.flags & DRIVER_FULLSCREEN)
@@ -229,8 +218,6 @@ static void x11_exit(void)
 	}
 }
 
-
-/*:::::*/
 static void x11_update(void)
 {
 	int i, y, h;
@@ -255,8 +242,6 @@ static void x11_update(void)
 	fb_hMemSet(__fb_gfx->dirty, FALSE, fb_x11.h);
 }
 
-
-/*:::::*/
 static int driver_init(char *title, int w, int h, int depth_arg, int refresh_rate, int flags)
 {
     int depth = MAX(8, depth_arg);

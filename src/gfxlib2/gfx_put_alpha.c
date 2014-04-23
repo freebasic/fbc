@@ -2,20 +2,14 @@
 
 #include "fb_gfx.h"
 
-
 extern void fb_hPutPSetC(unsigned char *src, unsigned char *dest, int w, int h, int src_pitch, int dest_pitch, int alpha, BLENDER *blender, void *param);
 
 #ifdef HOST_X86
-
 #include "x86/fb_gfx_mmx.h"
-
 extern void fb_hPutPSetMMX(unsigned char *src, unsigned char *dest, int w, int h, int src_pitch, int dest_pitch, int alpha, BLENDER *blender, void *param);
 extern void fb_hPutAlpha4MMX(unsigned char *src, unsigned char *dest, int w, int h, int src_pitch, int dest_pitch, int alpha, BLENDER *blender, void *param);
-
 #endif
 
-
-/*:::::*/
 static void fb_hPutAlpha4C(unsigned char *src, unsigned char *dest, int w, int h, int src_pitch, int dest_pitch, int alpha, BLENDER *blender, void *param)
 {
 	unsigned int *s = (unsigned int *)src;
@@ -42,8 +36,8 @@ static void fb_hPutAlpha4C(unsigned char *src, unsigned char *dest, int w, int h
 	}
 }
 
-
-/*:::::*/
+/* Not thread-safe; putters should only be called from other gfx functions that
+   take care of the synchronization */
 void fb_hPutAlpha(unsigned char *src, unsigned char *dest, int w, int h, int src_pitch, int dest_pitch, int alpha, BLENDER *blender, void *param)
 {
 	static PUTTER *all_putters[] = {

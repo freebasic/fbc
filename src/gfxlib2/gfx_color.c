@@ -2,12 +2,15 @@
 
 #include "fb_gfx.h"
 
-
-/*:::::*/
 int fb_GfxColor(int fg, int bg, int flags)
 {
-	FB_GFXCTX *context = fb_hGetContext();
+	FB_GFXCTX *context;
 	int cur;
+
+	FB_GRAPHICS_LOCK( );
+
+	context = fb_hGetContext( );
+
 	if (__fb_gfx->depth <= 8) {
 		cur = context->fg_color | (context->bg_color << 16);
 	} else if (__fb_gfx->depth == 16) {
@@ -18,9 +21,8 @@ int fb_GfxColor(int fg, int bg, int flags)
 	} else {
 		cur = context->fg_color;
 	}
-	
+
 	switch (__fb_gfx->mode_num) {
-	
 		case 1:
 			if (!(flags & FB_COLOR_BG_DEFAULT))
 				fb_GfxPalette(-(4 - (bg & 0x3)), 0, 0, 0);
@@ -53,5 +55,6 @@ int fb_GfxColor(int fg, int bg, int flags)
 			break;
 	}
 
+	FB_GRAPHICS_UNLOCK( );
 	return cur;
 }
