@@ -2362,14 +2362,15 @@ function symbDump( byval sym as FBSYMBOL ptr ) as string
 
 	checkStat( VARALLOCATED )
 	checkStat( ACCESSED )
-	if( symbIsProc( sym ) ) then
-		checkStat( CTORINITED )
-	end if
+	checkStat( CTORINITED )
 	checkStat( DECLARED )
+	checkStat( IMPLICIT )
 	checkStat( RTL )
 	checkStat( THROWABLE )
 	checkStat( PARSED )
+	checkStat( RTTITABLE )
 	checkStat( HASALIAS )
+	checkStat( VTABLE )
 	if( symbIsProc( sym ) ) then
 		checkStat( EXCLPARENT )
 	else
@@ -2382,6 +2383,9 @@ function symbDump( byval sym as FBSYMBOL ptr ) as string
 	checkStat( GLOBALCTOR )
 	checkStat( GLOBALDTOR )
 	checkStat( CANTDUP )
+	if( symbIsProc( sym ) ) then
+		checkStat( CANBECLONED )
+	end if
 	checkStat( HASRTTI )
 	checkStat( CANTUNDEF )
 	if( symbIsField( sym ) ) then
