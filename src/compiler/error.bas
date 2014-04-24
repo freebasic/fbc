@@ -311,6 +311,8 @@ declare function hMakeParamDesc _
 		@"Override is a CONST member, but the overridden method is not", _
 		@"Override has different parameters than overridden method", _
 		@"This operator cannot be STATIC", _
+		@"This operator is implicitly STATIC and cannot be VIRTUAL or ABSTRACT", _
+		@"This operator is implicitly STATIC and cannot be CONST", _
 		@"Parameter must be an integer", _
 		@"Parameter must be a pointer", _
 		@"Expected initializer", _

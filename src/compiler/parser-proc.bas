@@ -1169,7 +1169,20 @@ function cProcHeader _
 		select case as const( op )
 		case AST_OP_NEW_SELF, AST_OP_NEW_VEC_SELF, _
 		     AST_OP_DEL_SELF, AST_OP_DEL_VEC_SELF
-			'' These ops are made STATIC implicitly
+
+			'' These ops are made STATIC implicitly, and they can't
+			'' be CONST/VIRTUAL/ABSTRACT
+
+			if( attrib and (FB_SYMBATTRIB_VIRTUAL or FB_SYMBATTRIB_ABSTRACT) ) then
+				errReport( FB_ERRMSG_OPERATORCANTBEVIRTUAL, TRUE )
+				attrib and= not (FB_SYMBATTRIB_VIRTUAL or FB_SYMBATTRIB_ABSTRACT)
+			end if
+
+			if( attrib and FB_SYMBATTRIB_CONST ) then
+				errReport( FB_ERRMSG_OPERATORCANTBECONST, TRUE )
+				attrib and= not FB_SYMBATTRIB_CONST
+			end if
+
 			attrib or= FB_SYMBATTRIB_STATIC
 			attrib and= not FB_SYMBATTRIB_METHOD
 

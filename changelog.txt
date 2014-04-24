@@ -162,6 +162,7 @@ Version 0.91.0:
 - Calling getkey() in one thread won't cause other threads' rtlib function calls to block until getkey() returns anymore
 - #726: CONSTRUCTOR|DESTRUCTOR (module-level initialization/cleanup) was allowed to be specified on sub prototypes (although, it was ignored), method bodies (silently miscompiled due to the missing THIS argument), and PRIVATE/PROTECTED static member procedures. Now these cases are disallowed.
 - #576: Array elements could be passed to array parameters in place of the array itself: <myfunction( myarray(index) )>. However, the array index was simply ignored. The array must be passed without index now: <myfunction( myarray() )>
+- #722: Member operators NEW/DELETE/NEW[]/DELETE[] could be declared CONST/VIRTUAL/ABSTRACT despite being implicitly STATIC. This is now disallowed.
 
 
 Version 0.90.1:
