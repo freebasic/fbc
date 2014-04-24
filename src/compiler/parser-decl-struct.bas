@@ -1099,25 +1099,22 @@ private sub hPatchByvalParamsToSelf( byval parent as FBSYMBOL ptr )
 
 end sub
 
-'':::::
-private sub hPatchByvalResultToSelf _
-	( _
-		byval parent as FBSYMBOL ptr _
-	) static
-
-	dim as FBSYMBOL ptr sym
+private sub hPatchByvalResultToSelf( byval parent as FBSYMBOL ptr )
+	dim as FBSYMBOL ptr sym = any
 
 	'' for each method..
 	sym = symbGetUDTSymbtb( parent ).head
 	do while( sym <> NULL )
+
 		if( symbIsProc( sym ) ) then
 			'' byval result to self? reset..
-			if( symbGetSubtype( sym ) = parent ) then
+			if( (symbGetType( sym ) = FB_DATATYPE_STRUCT) and _
+			    (symbGetSubtype( sym ) = parent) and _
+			    (not symbProcReturnsByref( sym )) ) then
 				symbProcRecalcRealType( sym )
 			end if
 		end if
 
 		sym = sym->next
 	loop
-
 end sub

@@ -92,9 +92,6 @@ o -exx should catch...
 [ ] operator overloading:
     - OPERATOR foo.() ( lb1, lb2, ..... ) AS TYPE -- array indexing, not functor
 
-o BYREF function results
-  - hPatchByvalResultToSelf() should probably check symbProcReturnsByref() now
-
 [ ] quirks:
     [ ] OPEN ... FOR is not checking for mode
     	- does QB allow that? CONS won't work without INPUT or OUTPUT
