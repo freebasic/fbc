@@ -209,29 +209,25 @@ sub hClearName _
 
 end sub
 
-'':::::
-function hStripExt _
-	( _
-		byval filename as zstring ptr _
-	) as string static
+'' Searches backwards for the last '.' while still behind '/' or '\'.
+private function hFindExtBegin( byref path as string ) as integer
+	for i as integer = len( path )-1 to 0 step -1
+		select case( path[i] )
+		case asc( "." )
+			return i
+#if defined( __FB_WIN32__ ) or defined( __FB_DOS__ )
+		case asc( "\" ), asc( "/" )
+#else
+		case asc( "/" )
+#endif
+			exit for
+		end select
+	next
+	function = len( path )
+end function
 
-    dim as integer p, lp
-
-	lp = 0
-	do
-		p = instr( lp+1, *filename, "." )
-	    if( p = 0 ) then
-	    	exit do
-	    end if
-	    lp = p
-	loop
-
-	if( lp > 0 ) then
-		function = left( *filename, lp-1 )
-	else
-		function = *filename
-	end if
-
+function hStripExt( byref path as string ) as string
+	function = left( path, hFindExtBegin( path ) )
 end function
 
 '':::::

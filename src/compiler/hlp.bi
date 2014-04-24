@@ -49,10 +49,7 @@ declare function hStripUnderscore _
 		byval symbol as zstring ptr _
 	) as string
 
-declare function hStripExt _
-	( _
-		byval filename as zstring ptr _
-	) as string
+declare function hStripExt( byref path as string ) as string
 
 declare function hStripPath _
 	( _
