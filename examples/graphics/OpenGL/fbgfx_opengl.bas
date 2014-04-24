@@ -51,8 +51,10 @@
 			glVertex3f 1.0, -1.0, 0.0
 			glVertex3f -1.0, -1.0, 0.0
 		glEnd
+
+		glFlush
+
 		rtri += 0.2
 		rquad += 0.15
 		flip
 	loop while inkey = ""
-	
