@@ -2385,6 +2385,8 @@ function symbDump( byval sym as FBSYMBOL ptr ) as string
 	checkStat( CANTDUP )
 	if( symbIsProc( sym ) ) then
 		checkStat( CANBECLONED )
+	else
+		checkStat( ARGV )
 	end if
 	checkStat( HASRTTI )
 	checkStat( CANTUNDEF )

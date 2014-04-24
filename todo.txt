@@ -35,9 +35,6 @@ o LLVM backend
   - Inline ASM
   - va_*() macros can't be implemented, so must be disallowed just like with -gen gcc
 
-o C backend
-  - Need to emit main() with proper dtypes; clang is very strict about that
-
 o ABI
   - MinGW GCC 4.7 C++ defaults to __thiscall for methods like MSVC,
     instead of __cdecl as on Linux, even though GCC doesn't use MSVC's name

@@ -88,7 +88,7 @@ private sub hBuildDllMainCtor( )
 end sub
 
 private sub hMainBegin( )
-	dim as FBSYMBOL ptr proc = any
+	dim as FBSYMBOL ptr proc = any, argv = any
 
 	proc = symbPreAddProc( NULL )
 
@@ -97,8 +97,9 @@ private sub hMainBegin( )
 	                  0, FB_PARAMMODE_BYVAL, 0 )
 
 	'' byval argv as zstring ptr ptr
-	symbAddProcParam( proc, "__FB_ARGV__", typeMultAddrOf( FB_DATATYPE_CHAR, 2 ), NULL, _
-	                  0, FB_PARAMMODE_BYVAL, 0 )
+	argv = symbAddProcParam( proc, "__FB_ARGV__", typeMultAddrOf( FB_DATATYPE_CHAR, 2 ), NULL, _
+	                         0, FB_PARAMMODE_BYVAL, 0 )
+	argv->stats or= FB_SYMBSTATS_ARGV
 
 	'' if it's a dll, the main() function should be private
 	var attrib = FB_SYMBATTRIB_PUBLIC

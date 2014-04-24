@@ -129,6 +129,8 @@ enum FB_SYMBSTATS
 	'' (Cheap dynamic wstring used by the 'SELECT CASE wstring' temporary,
 	'' there is no real FB_DATATYPE_WSTRING yet)
 	FB_SYMBSTATS_WSTRING = FB_SYMBSTATS_UNIONFIELD '' vars only
+
+	FB_SYMBSTATS_ARGV = FB_SYMBSTATS_CANBECLONED  '' params/paramvars only: is it main()'s argv? (helping the C backend to emit a clang-compatible main() signature)
 end enum
 
 '' symbol attributes mask

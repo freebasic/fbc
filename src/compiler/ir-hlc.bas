@@ -562,8 +562,14 @@ private function hEmitProcHeader _
 		if( symbGetParamMode( param ) = FB_PARAMMODE_VARARG ) then
 			ln += "..."
 		else
-			symbGetRealParamDtype( param, dtype, subtype )
-			ln += hEmitType( dtype, subtype )
+			'' Emit clang-compatible datatype for main()'s argv,
+			'' clang is very strict about this...
+			if( param->stats and FB_SYMBSTATS_ARGV ) then
+				ln += "char**"
+			else
+				symbGetRealParamDtype( param, dtype, subtype )
+				ln += hEmitType( dtype, subtype )
+			end if
 
 			if( (options and EMITPROC_ISPROTO) = 0 ) then
 				ln += " " + *symbGetMangledName( symbGetParamVar( param ) )
@@ -1588,19 +1594,35 @@ private function exprNewSYM( byval sym as FBSYMBOL ptr ) as EXPRNODE ptr
 		'' &&label is a void* in GCC
 		'' This is handled as a single SYM instead of ADDROF( SYM ),
 		'' because a label is not a proper expression on its own.
-		dtype = typeAddrOf( FB_DATATYPE_VOID )
-		subtype = NULL
+		n = exprNew( EXPRCLASS_SYM, typeAddrOf( FB_DATATYPE_VOID ), NULL )
+		n->sym = sym
+
 	elseif( symbIsProc( sym ) ) then
 		'' &proc
 		'' Similar to labels above, this is only used to take the
 		'' address of functions, not to call them, so the '&' is
 		'' part of the SYM.
-		dtype = typeAddrOf( FB_DATATYPE_FUNCTION )
-		subtype = sym
+		n = exprNew( EXPRCLASS_SYM, typeAddrOf( FB_DATATYPE_FUNCTION ), sym )
+		n->sym = sym
+
+	'' Array? Add CAST to make it a pointer to the first element,
+	'' instead of a pointer to the array.
 	elseif( symbIsCArray( sym ) ) then
-		dtype = FB_DATATYPE_INVALID
-		subtype = NULL
+		n = exprNew( EXPRCLASS_SYM, FB_DATATYPE_INVALID, NULL )
+		n->sym = sym
+
+		n = exprNewCAST( typeAddrOf( symbGetType( sym ) ), symbGetSubtype( sym ), n )
+
+	'' main()'s argv? Add CAST to convert from char** to the one used by FB
+	elseif( (symbIsVar( sym ) or (sym->class = FB_SYMBCLASS_PARAM)) and _
+	        ((sym->stats and FB_SYMBSTATS_ARGV) <> 0) ) then
+
+		n = exprNew( EXPRCLASS_SYM, FB_DATATYPE_INVALID, NULL )
+		n->sym = sym
+
+		n = exprNewCAST( typeMultAddrOf( FB_DATATYPE_CHAR, 2 ), NULL, n )
 	else
+
 		dtype = symbGetType( sym )
 		subtype = symbGetSubtype( sym )
 
@@ -1608,15 +1630,9 @@ private function exprNewSYM( byval sym as FBSYMBOL ptr ) as EXPRNODE ptr
 		if( symbIsParamByRef( sym ) or symbIsImport( sym ) ) then
 			dtype = typeAddrOf( dtype )
 		end if
-	end if
 
-	n = exprNew( EXPRCLASS_SYM, dtype, subtype )
-	n->sym = sym
-
-	'' Array? Add CAST to make it a pointer to the first element,
-	'' instead of a pointer to the array.
-	if( dtype = FB_DATATYPE_INVALID ) then
-		n = exprNewCAST( typeAddrOf( symbGetType( sym ) ), symbGetSubtype( sym ), n )
+		n = exprNew( EXPRCLASS_SYM, dtype, subtype )
+		n->sym = sym
 	end if
 
 	function = n

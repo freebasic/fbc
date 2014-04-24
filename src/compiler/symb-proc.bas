@@ -1259,6 +1259,10 @@ function symbAddVarForParam( byval param as FBSYMBOL ptr ) as FBSYMBOL ptr
     	symbSetDontInit( s )
     end if
 
+	if( param->stats and FB_SYMBSTATS_ARGV ) then
+		s->stats or= FB_SYMBSTATS_ARGV
+	end if
+
 	function = s
 end function
 
