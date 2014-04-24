@@ -1632,9 +1632,15 @@ function cProcHeader _
 
 	'' Register global ctors/dtors
 	if( stats and FB_SYMBSTATS_GLOBALCTOR ) then
+		if( proc->attrib and (FB_SYMBATTRIB_VIS_PRIVATE or FB_SYMBATTRIB_VIS_PROTECTED) ) then
+			errReport( FB_ERRMSG_NOACCESSTOCTOR, TRUE )
+		end if
 		symbAddGlobalCtor( proc )
 		symbSetProcPriority( proc, priority )
 	elseif( stats and FB_SYMBSTATS_GLOBALDTOR ) then
+		if( proc->attrib and (FB_SYMBATTRIB_VIS_PRIVATE or FB_SYMBATTRIB_VIS_PROTECTED) ) then
+			errReport( FB_ERRMSG_NOACCESSTODTOR, TRUE )
+		end if
 		symbAddGlobalDtor( proc )
 		symbSetProcPriority( proc, priority )
 	end if
