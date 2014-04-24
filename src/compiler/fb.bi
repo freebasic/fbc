@@ -92,6 +92,7 @@ enum FB_COMPOPT
 	FB_COMPOPT_EXPORT               '' boolean: export all symbols declared as EXPORT?
 	FB_COMPOPT_MSBITFIELDS          '' boolean: use M$'s bitfields packing?
 	FB_COMPOPT_MULTITHREADED        '' boolean: -mt
+	FB_COMPOPT_GFX                  '' boolean: -gfx (whether gfxlib should be linked)
 	FB_COMPOPT_STACKSIZE            '' integer
 
 	FB_COMPOPTIONS
@@ -257,6 +258,7 @@ type FBCMMLINEOPT
 	export          as integer              '' export all symbols declared as EXPORT (default = true)
 	msbitfields     as integer              '' use M$'s bitfields packing
 	multithreaded   as integer              '' link against thread-safe runtime library (default = false)
+	gfx             as integer              '' Link against gfx library (default = false)
 	stacksize       as integer
 end type
 

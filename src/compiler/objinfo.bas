@@ -49,6 +49,7 @@
 ''   -l     followed by a library name
 ''   -p     followed by a library search path
 ''   -mt    this can be included or left out (boolean)
+''   -gfx   ditto
 ''   -lang  followed by the -lang mode (fb/fblite/qb/...) used for this object
 ''
 '' Technically it's ok for all entries to appear multiple times,
@@ -667,6 +668,7 @@ dim shared as ENTRYINFO entries(0 to (OBJINFO__COUNT - 1)) = _
 	( @"-l"   , TRUE  ), _
 	( @"-p"   , TRUE  ), _
 	( @"-mt"  , FALSE ), _
+	( @"-gfx" , FALSE ), _
 	( @"-lang", TRUE  )  _
 }
 

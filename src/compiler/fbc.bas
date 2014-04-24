@@ -979,6 +979,9 @@ private sub hReadObjinfo( )
 				fbSetOption( FB_COMPOPT_MULTITHREADED, TRUE )
 			end if
 
+		case OBJINFO_GFX
+			fbSetOption( FB_COMPOPT_GFX, TRUE )
+
 		case OBJINFO_LANG
 			lang = fbGetLangId( dat )
 
@@ -2861,6 +2864,39 @@ private sub hAddDefaultLibs( )
 		fbcAddDefLib( "fbmt" )
 	else
 		fbcAddDefLib( "fb" )
+	end if
+
+	'' and the gfxlib, if gfx functions were used
+	if( fbGetOption( FB_COMPOPT_GFX ) ) then
+		if( fbGetOption( FB_COMPOPT_MULTITHREADED ) ) then
+			fbcAddDefLib( "fbgfxmt" )
+		else
+			fbcAddDefLib( "fbgfx" )
+		end if
+
+		select case as const( fbGetOption( FB_COMPOPT_TARGET ) )
+		case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN
+			fbcAddDefLib( "user32" )
+			fbcAddDefLib( "gdi32" )
+			fbcAddDefLib( "winmm" )
+
+		case FB_COMPTARGET_LINUX, FB_COMPTARGET_FREEBSD, _
+		     FB_COMPTARGET_OPENBSD, FB_COMPTARGET_NETBSD
+
+			#if defined(__FB_LINUX__) or _
+			    defined(__FB_FREEBSD__) or _
+			    defined(__FB_OPENBSD__) or _
+			    defined(__FB_NETBSD__)
+				fbcAddDefLibPath( "/usr/X11R6/lib" )
+			#endif
+
+			fbcAddDefLib( "X11" )
+			fbcAddDefLib( "Xext" )
+			fbcAddDefLib( "Xpm" )
+			fbcAddDefLib( "Xrandr" )
+			fbcAddDefLib( "Xrender" )
+
+		end select
 	end if
 
 	select case as const fbGetOption( FB_COMPOPT_TARGET )
