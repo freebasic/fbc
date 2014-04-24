@@ -1448,6 +1448,11 @@ function cProcHeader _
 		'' A module ctor/dtor must be a sub with no params,
 		'' it cannot be a method or function (static member
 		'' procs are ok though).
+		'' Note: if this body is a member procedure and didn't have an
+		'' explicit STATIC, then we don't know whether it's a method or
+		'' a static member yet, as it depends on the corresponding
+		'' prototype which we only check below. I.e. this check must be
+		'' repeated later.
 		if( ((attrib and FB_SYMBATTRIB_METHOD) <> 0) or _
 		    (tk = FB_TK_FUNCTION) ) then
 			errReport( FB_ERRMSG_SYNTAXERROR, TRUE )
@@ -1614,6 +1619,12 @@ function cProcHeader _
 			proc = head_proc
 
 			hCheckAttribs( proc, attrib )
+
+			if( stats and (FB_SYMBSTATS_GLOBALCTOR or FB_SYMBSTATS_GLOBALDTOR) ) then
+				if( symbIsMethod( proc ) ) then
+					errReport( FB_ERRMSG_SYNTAXERROR, TRUE )
+				end if
+			end if
 
 			symbSetIsDeclared( proc )
 		end if
