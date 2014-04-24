@@ -460,73 +460,6 @@ sub cProcRetType _
 
 end sub
 
-private sub hParseAttributes _
-	( _
-		byref attrib as FB_SYMBATTRIB, _
-		byval stats as FB_SYMBSTATS, _
-		byref priority as integer _
-	)
-
-	priority = 0
-
-	'' Priority?
-	if( lexGetClass( ) = FB_TKCLASS_NUMLITERAL ) then
-		'' not ctor or dtor?
-		if( (stats and (FB_SYMBSTATS_GLOBALCTOR or FB_SYMBSTATS_GLOBALDTOR)) = 0 ) then
-			errReport( FB_ERRMSG_SYNTAXERROR )
-			'' error recovery: skip token
-			lexSkipToken( )
-		'' not an integer
-		elseif( lexGetType( ) <> FB_DATATYPE_INTEGER ) then
-			errReport( FB_ERRMSG_INVALIDPRIORITY )
-			'' error recovery: skip token
-			lexSkipToken( )
-		else
-			priority = valint( *lexGetText() )
-			if priority < 101 or priority > 65535 then
-				errReport( FB_ERRMSG_INVALIDPRIORITY )
-				'' error recovery: skip token
-				lexSkipToken( )
-			else
-				priority and= &hffff
-   				lexSkipToken( )
-			end if
-		end if
-	end if
-
-    '' STATIC?
-    if( lexGetToken( ) = FB_TK_STATIC ) then
-    	lexSkipToken( )
-    	attrib or= FB_SYMBATTRIB_STATICLOCALS
-    end if
-
-    '' EXPORT?
-    if( lexGetToken( ) = FB_TK_EXPORT ) then
-		'' ctor or dtor?
-		if( (stats and (FB_SYMBSTATS_GLOBALCTOR or FB_SYMBSTATS_GLOBALDTOR)) <> 0 ) then
-			errReport( FB_ERRMSG_SYNTAXERROR )
-			'' error recovery: skip token
-			lexSkipToken( )
-			return
-		end if
-
-    	'' private?
-    	if( (attrib and FB_SYMBATTRIB_PRIVATE) > 0 ) then
-			errReport( FB_ERRMSG_SYNTAXERROR )
-    			'' error recovery: make it public
-    			attrib and= not FB_SYMBATTRIB_PRIVATE
-    	end if
-
-    	lexSkipToken( )
-
-    	fbSetOption( FB_COMPOPT_EXPORT, TRUE )
-    	'''''if( fbGetOption( FB_COMPOPT_EXPORT ) = FALSE ) then
-    	'''''	errReportWarn( FB_WARNINGMSG_CANNOTEXPORT )
-    	'''''end if
-    	attrib or= FB_SYMBATTRIB_EXPORT or FB_SYMBATTRIB_PUBLIC
-    end if
-end sub
-
 function cProcReturnMethod( byval dtype as FB_DATATYPE ) as FB_PROC_RETURN_METHOD
 	'' (OPTION(LIT_STRING))?
 
@@ -1095,6 +1028,7 @@ function cProcHeader _
 	dtype = FB_DATATYPE_INVALID
 	subtype = NULL
 	stats = 0
+	priority = 0
 
 	select case( tk )
 	case FB_TK_CONSTRUCTOR, FB_TK_DESTRUCTOR
@@ -1469,28 +1403,6 @@ function cProcHeader _
 			end if
 		end if
 
-		'' (CONSTRUCTOR | DESTRUCTOR)?
-		select case( lexGetToken( ) )
-		case FB_TK_CONSTRUCTOR, FB_TK_DESTRUCTOR
-			'' A module ctor/dtor must be a sub with no params,
-			'' it cannot be a method or function.
-			'' (static member procs are ok though)
-			if( ((attrib and FB_SYMBATTRIB_METHOD) <> 0) or _
-			    (tk = FB_TK_FUNCTION) ) then
-				errReport( FB_ERRMSG_SYNTAXERROR, TRUE )
-			elseif( symbGetProcParams( proc ) <> 0 ) then
-				errReport( FB_ERRMSG_ARGCNTMISMATCH, TRUE )
-			else
-				if( lexGetToken( ) = FB_TK_CONSTRUCTOR ) then
-					stats or= FB_SYMBSTATS_GLOBALCTOR
-				else
-					stats or= FB_SYMBSTATS_GLOBALDTOR
-				end if
-			end if
-
-			lexSkipToken( )
-		end select
-
 	end select
 
 	'' Prototype?
@@ -1526,8 +1438,79 @@ function cProcHeader _
 		return proc
 	end if
 
+	''
 	'' Body
-	hParseAttributes( attrib, stats, priority )
+	''
+
+	'' (CONSTRUCTOR | DESTRUCTOR)?
+	select case( lexGetToken( ) )
+	case FB_TK_CONSTRUCTOR, FB_TK_DESTRUCTOR
+		'' A module ctor/dtor must be a sub with no params,
+		'' it cannot be a method or function (static member
+		'' procs are ok though).
+		if( ((attrib and FB_SYMBATTRIB_METHOD) <> 0) or _
+		    (tk = FB_TK_FUNCTION) ) then
+			errReport( FB_ERRMSG_SYNTAXERROR, TRUE )
+		elseif( symbGetProcParams( proc ) <> 0 ) then
+			errReport( FB_ERRMSG_ARGCNTMISMATCH, TRUE )
+		else
+			if( lexGetToken( ) = FB_TK_CONSTRUCTOR ) then
+				stats or= FB_SYMBSTATS_GLOBALCTOR
+			else
+				stats or= FB_SYMBSTATS_GLOBALDTOR
+			end if
+		end if
+
+		lexSkipToken( )
+
+		'' Priority?
+		if( lexGetClass( ) = FB_TKCLASS_NUMLITERAL ) then
+			'' not an integer?
+			if( lexGetType( ) <> FB_DATATYPE_INTEGER ) then
+				errReport( FB_ERRMSG_INVALIDPRIORITY )
+				'' error recovery: skip token
+				lexSkipToken( )
+			else
+				priority = valint( *lexGetText() )
+				if priority < 101 or priority > 65535 then
+					errReport( FB_ERRMSG_INVALIDPRIORITY )
+					'' error recovery: skip token
+					lexSkipToken( )
+				else
+					priority and= &hffff
+					lexSkipToken( )
+				end if
+			end if
+		end if
+
+	end select
+
+	'' STATIC?
+	if( hMatch( FB_TK_STATIC ) ) then
+		attrib or= FB_SYMBATTRIB_STATICLOCALS
+	end if
+
+	'' EXPORT?
+	if( lexGetToken( ) = FB_TK_EXPORT ) then
+		'' ctor or dtor?
+		if( (stats and (FB_SYMBSTATS_GLOBALCTOR or FB_SYMBSTATS_GLOBALDTOR)) <> 0 ) then
+			errReport( FB_ERRMSG_SYNTAXERROR )
+		end if
+
+		'' private?
+		if( attrib and FB_SYMBATTRIB_PRIVATE ) then
+			errReport( FB_ERRMSG_SYNTAXERROR )
+			attrib and= not FB_SYMBATTRIB_PRIVATE
+		end if
+
+		lexSkipToken( )
+
+		fbSetOption( FB_COMPOPT_EXPORT, TRUE )
+		'''''if( fbGetOption( FB_COMPOPT_EXPORT ) = FALSE ) then
+		'''''	errReportWarn( FB_WARNINGMSG_CANNOTEXPORT )
+		'''''end if
+		attrib or= FB_SYMBATTRIB_EXPORT or FB_SYMBATTRIB_PUBLIC
+	end if
 
 	select case( tk )
 	case FB_TK_CONSTRUCTOR
