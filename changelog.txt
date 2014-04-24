@@ -159,6 +159,7 @@ Version 0.91.0:
 - #720: Some pointer assignments weren't working due to bogus CONSTness checking
 - #582: Wrong code generated for bitfield self-BOPs or SWAPs sometimes under -exx or if the bitfield expression contained function calls (side-effects)
 - When specifying an .o file name without extension but '.' in its path (for example: -o ../foo), fbc created temporary files by stripping everything from the .o path until that '.' and then appending the new extension, which often resulted in bad/unexpected file names (for example: ..foo.asm).
+- Calling getkey() in one thread won't cause other threads' rtlib function calls to block until getkey() returns anymore
 
 
 Version 0.90.1:

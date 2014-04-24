@@ -224,6 +224,7 @@ int fb_hGetCh(int remove)
 	return k;
 }
 
+/* Caller is expected to hold FB_LOCK() */
 FBSTRING *fb_ConsoleInkey( void )
 {
 	FBSTRING *res;
@@ -241,23 +242,38 @@ FBSTRING *fb_ConsoleInkey( void )
 	return res;
 }
 
+/* Doing synchronization manually here because getkey() is blocking */
 int fb_ConsoleGetkey( void )
 {
 	int key;
 
-	if (!__fb_con.inited)
-		return fgetc(stdin);
+	do {
+		FB_LOCK( );
 
-	while ((key = fb_hGetCh(TRUE)) < 0)
+		if (!__fb_con.inited) {
+			FB_UNLOCK( );
+			return fgetc(stdin);
+		}
+
+		key = fb_hGetCh( TRUE );
+
+		FB_UNLOCK( );
+
+		if( key >= 0 ) {
+			break;
+		}
+
 		fb_Sleep( -1 );
+	} while( 1 );
 
 	return key;
 }
 
+/* Caller is expected to hold FB_LOCK() */
 int fb_ConsoleKeyHit( void )
 {
 	if (!__fb_con.inited)
 		return feof(stdin) ? FALSE : TRUE;
-	
+
 	return (fb_hGetCh(FALSE) < 0) ? 0 : 1;
 }

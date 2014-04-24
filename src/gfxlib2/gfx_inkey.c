@@ -60,6 +60,7 @@ static int get_key(void)
 	return key;
 }
 
+/* Doing synchronization manually here because getkey() is blocking */
 int fb_GfxGetkey(void)
 {
 	int key = 0;
@@ -88,6 +89,7 @@ int fb_GfxGetkey(void)
 	return key;
 }
 
+/* Caller is expected to hold FB_LOCK() */
 int fb_GfxKeyHit(void)
 {
 	int res;
@@ -103,6 +105,7 @@ int fb_GfxKeyHit(void)
 	return res;
 }
 
+/* Caller is expected to hold FB_LOCK() */
 FBSTRING *fb_GfxInkey(void)
 {
 	FBSTRING *res;
