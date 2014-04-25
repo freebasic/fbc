@@ -231,7 +231,7 @@ dim shared as const zstring ptr dtypeName(0 to FB_DATATYPES-1) = _
 	NULL        , _ '' struct
 	NULL        , _ '' namespace
 	NULL        , _ '' function
-	NULL        , _ '' fwd-ref
+	@"i8"       , _ '' fwd-ref
 	NULL          _ '' pointer
 }
 
