@@ -896,7 +896,7 @@ private sub _emitEnd( byval tottime as double )
 
 	'' Then the variables
 	hWriteLine( "" )
-	symbForEachGlobal( FB_SYMBCLASS_PROC, @hMaybeEmitGlobalVar )
+	symbForEachGlobal( FB_SYMBCLASS_VAR, @hMaybeEmitGlobalVar )
 
 	'' DATA array initializers can reference globals by taking their address,
 	'' so they must be emitted after the other global declarations.
