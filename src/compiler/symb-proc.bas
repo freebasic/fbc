@@ -2702,6 +2702,30 @@ function symbGetProcResult( byval proc as FBSYMBOL ptr ) as FBSYMBOL ptr
 	end if
 end function
 
+function symbProcHasFwdRefInSignature( byval proc as FBSYMBOL ptr ) as integer
+	dim as FBSYMBOL ptr param = any
+
+	assert( symbIsProc( proc ) )
+
+	'' Check result type
+	if( typeHasFwdRefInSignature( proc->typ, proc->subtype ) ) then
+		return TRUE
+	end if
+
+	'' Check each parameter
+	param = symbGetProcHeadParam( proc )
+	while( param )
+
+		if( typeHasFwdRefInSignature( param->typ, param->subtype ) ) then
+			return TRUE
+		end if
+
+		param = symbGetParamNext( param )
+	wend
+
+	function = FALSE
+end function
+
 '':::::
 private function hMangleFunctionPtr _
 	( _

@@ -991,6 +991,7 @@ declare sub symbProcSetVtableIndex( byval proc as FBSYMBOL ptr, byval i as integ
 declare function symbProcGetVtableIndex( byval proc as FBSYMBOL ptr ) as integer
 declare function symbProcGetOverridden( byval proc as FBSYMBOL ptr ) as FBSYMBOL ptr
 declare function symbGetProcResult( byval proc as FBSYMBOL ptr ) as FBSYMBOL ptr
+declare function symbProcHasFwdRefInSignature( byval proc as FBSYMBOL ptr ) as integer
 
 declare function symbAreProcModesEqual _
 	( _
@@ -1593,6 +1594,12 @@ declare function typeHasDtor _
 	) as integer
 
 declare function typeIsTrivial _
+	( _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr _
+	) as integer
+
+declare function typeHasFwdRefInSignature _
 	( _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr _

@@ -164,6 +164,7 @@ Version 0.91.0:
 - #576: Array elements could be passed to array parameters in place of the array itself: <myfunction( myarray(index) )>. However, the array index was simply ignored. The array must be passed without index now: <myfunction( myarray() )>
 - #722: Member operators NEW/DELETE/NEW[]/DELETE[] could be declared CONST/VIRTUAL/ABSTRACT despite being implicitly STATIC. This is now disallowed.
 - C backend: main() will now be emitted with clang-compatible signature
+- C/LLVM backends: Procedures using forward references in their signatures could be emitted with ANY PTRs in place of the forward references, while prototypes/calls could end up using the signature with resolved forward references, causing the generated C/LLVM code to have type conflicts.
 
 
 Version 0.90.1:

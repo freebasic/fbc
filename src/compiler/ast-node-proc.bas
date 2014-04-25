@@ -667,8 +667,19 @@ function astProcEnd( byval callrtexit as integer ) as integer
 		'' not into a recursion?
 		if( rec_cnt = 1 ) then
 			if( n->block.proc.ismain = FALSE ) then
-				'' not private or inline? flush it..
-				if( symbIsPrivate( sym ) = FALSE ) then
+				''
+				'' Emit public (non-private) procedures immediately.
+				''
+				'' Emitting of private ones is delayed until hProcFlushAll(),
+				'' so that they're only emitted if actually used.
+				''
+				'' When using the C/LLVM backends, emitting of procedures containing forward
+				'' references in their signature must be delayed aswell, otherwise the C/LLVM
+				'' backends would try emitting them with incomplete type.
+				''
+				if( (not symbIsPrivate( sym )) and _
+				    ((not symbProcHasFwdRefInSignature( sym )) or _
+				     (env.clopt.backend = FB_BACKEND_GAS)) ) then
 					do_flush = TRUE
 
 				'' remove from hash tb only

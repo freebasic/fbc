@@ -330,6 +330,27 @@ function typeIsTrivial _
 
 end function
 
+function typeHasFwdRefInSignature _
+	( _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr _
+	) as integer
+
+	select case( typeGetDtOnly( dtype ) )
+	'' Any FWDREF (pointer or not)?
+	case FB_DATATYPE_FWDREF
+		function = TRUE
+
+	'' Also check function pointer signatures (recursion)
+	case FB_DATATYPE_FUNCTION
+		function = symbProcHasFwdRefInSignature( subtype )
+
+	case else
+		function = FALSE
+	end select
+
+end function
+
 ''
 '' Replace/merge a type with another type; used to replace forward references
 '' (FB_DATATYPE_FWDREF) by the real dtype once its known (when the forward
