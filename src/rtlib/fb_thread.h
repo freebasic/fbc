@@ -11,6 +11,7 @@ typedef struct _FBCOND FBCOND;
 
 FBCALL FBTHREAD         *fb_ThreadCreate( FB_THREADPROC proc, void *param, ssize_t stack_size );
 FBCALL void              fb_ThreadWait  ( FBTHREAD *thread );
+FBCALL void              fb_ThreadDetach( FBTHREAD *thread );
 
        FBTHREAD         *fb_ThreadCall  ( void *proc, int abi, ssize_t stack_size, int num_args, ... );
 
