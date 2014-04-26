@@ -279,7 +279,7 @@ declare function hMakeParamDesc _
 		@"Missing overloaded operator: ", _
 		@"The NEW[] operator does not allow explicit calls to constructors", _
 		@"The NEW[] operator only supports the { ANY } initialization", _
-		@"The NEW operator cannot be used with strings", _
+		@"The NEW operator cannot be used with fixed-length strings", _
 		@"Illegal member access", _
 		@"Expected ':'", _
 		@"The default constructor has no public access", _

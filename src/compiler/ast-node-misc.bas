@@ -1030,7 +1030,11 @@ sub astDumpSmall( byval n as ASTNODE ptr )
 		end select
 
 		if( n->sym ) then
-			s += " " + *symbGetName( n->sym )
+			#if 1
+				s += " " + *symbGetName( n->sym )
+			#else
+				s += " " + symbDump( n->sym )
+			#endif
 		end if
 	end if
 

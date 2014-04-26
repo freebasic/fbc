@@ -170,7 +170,7 @@ function astBuildNewOp _
 		'' 2) and the cookie is only needed for the built-in delete[] which can only be
 		''    used with new[], but not placement new[]
 		if( newexpr = NULL ) then
-			save_elmts = typeHasDtor( dtype, subtype )
+			save_elmts = typeNeedsDtorCall( dtype, subtype )
 		end if
 	end if
 
@@ -259,19 +259,13 @@ function astBuildNewOp _
 	function = astNewLINK( tree, initexpr )
 end function
 
-private function hCallDtorList _
-	( _
-		byval ptrexpr as ASTNODE ptr, _
-		byval dtype as integer, _
-		byval subtype as FBSYMBOL ptr _
-	) as ASTNODE ptr
-
+private function hCallDtorList( byval ptrexpr as ASTNODE ptr ) as ASTNODE ptr
     dim as FBSYMBOL ptr cnt = any, label = any, iter = any, elmts = any
     dim as ASTNODE ptr tree = any, expr = any
 
 	cnt = symbAddTempVar( FB_DATATYPE_INTEGER )
 	label = symbAddLabel( NULL )
-	iter = symbAddTempVar( typeAddrOf( dtype ), subtype )
+	iter = symbAddTempVar( ptrexpr->dtype, ptrexpr->subtype )
 	elmts = symbAddTempVar( FB_DATATYPE_INTEGER )
 
 	'' DELETE[]'s counter is at: cast(integer ptr, vector)[-1]
@@ -297,7 +291,7 @@ private function hCallDtorList _
 	tree = astNewLINK( tree, astBuildVarInc( iter, -1 ) )
 
 	'' dtor( *iter )
-	tree = astNewLINK( tree, astBuildDtorCall( subtype, astBuildVarDeref( iter ) ) )
+	tree = astNewLINK( tree, astBuildVarDtorCall( astBuildVarDeref( iter ) ) )
 
 	'' next
 	tree = astBuildForEnd( tree, cnt, label, astNewVAR( elmts ) )
@@ -308,15 +302,18 @@ end function
 function astBuildDeleteOp _
 	( _
 		byval op as AST_OP, _
-		byval ptrexpr as ASTNODE ptr, _
-		byval dtype as integer, _
-		byval subtype as FBSYMBOL ptr _
+		byval ptrexpr as ASTNODE ptr _
 	) as ASTNODE ptr
 
 	dim as ASTNODE ptr tree = any
-	dim as FBSYMBOL ptr label = any
+	dim as FBSYMBOL ptr label = any, subtype = any
+	dim as integer dtype = any
 
 	tree = NULL
+	dtype = astGetFullType( ptrexpr )
+	subtype = astGetSubType( ptrexpr )
+	assert( typeIsPtr( dtype ) )
+	dtype = typeDeref( dtype )
 
 	'' side-effect?
 	if( astHasSideFx( ptrexpr ) ) then
@@ -332,13 +329,13 @@ function astBuildDeleteOp _
 			label, AST_OPOPT_NONE ) )
 
 	'' call dtors?
-	if( typeHasDtor( dtype, subtype ) ) then
+	if( typeNeedsDtorCall( dtype, subtype ) ) then
 		if( op = AST_OP_DEL_VEC ) then
-			tree = astNewLINK( tree, hCallDtorList( astCloneTree( ptrexpr ), dtype, subtype ) )
+			tree = astNewLINK( tree, hCallDtorList( astCloneTree( ptrexpr ) ) )
 			'' ptr -= len( integer )
 			ptrexpr = astNewBOP( AST_OP_SUB, ptrexpr, astNewCONSTi( typeGetSize( FB_DATATYPE_INTEGER ) ) )
 		else
-			tree = astNewLINK( tree, astBuildDtorCall( subtype, astNewDEREF( astCloneTree( ptrexpr ) ) ) )
+			tree = astNewLINK( tree, astBuildVarDtorCall( astNewDEREF( astCloneTree( ptrexpr ) ) ) )
 		end if
 	end if
 

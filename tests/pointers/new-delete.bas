@@ -2,6 +2,118 @@
 
 namespace fbc_tests.pointers.new_delete
 
+namespace defaultInit
+	dim shared as integer ctorudt_ctors
+	type CtorUdt
+		i as integer
+		declare constructor( )
+	end type
+	constructor CtorUdt( )
+		ctorudt_ctors += 1
+	end constructor
+
+	dim shared as integer dtorudt_dtors
+	type DtorUdt
+		i as integer
+		declare destructor( )
+	end type
+	destructor DtorUdt( )
+		dtorudt_dtors += 1
+	end destructor
+
+	dim shared as integer ctordtorudt_ctors, ctordtorudt_dtors
+	type CtorDtorUdt
+		i as integer
+		declare constructor( )
+		declare destructor( )
+	end type
+	constructor CtorDtorUdt( )
+		ctordtorudt_ctors += 1
+	end constructor
+	destructor CtorDtorUdt( )
+		ctordtorudt_dtors += 1
+	end destructor
+
+	sub test cdecl( )
+		#macro check( T )
+			scope
+				var p = new T
+				#assert( typeof( p ) = typeof( T ptr ) )
+				CU_ASSERT( *p = 0 )
+				delete p
+			end scope
+		#endmacro
+
+		check(  byte )
+		check( ubyte )
+		check(  short )
+		check( ushort )
+		check(  long )
+		check( ulong )
+		check(  longint )
+		check( ulongint )
+		check(  integer )
+		check( uinteger )
+		check( single )
+		check( double )
+
+		scope
+			var p = new string
+			#assert( typeof( p ) = typeof( string ptr ) )
+			CU_ASSERT( len( *p ) = 0 )
+			CU_ASSERT( *p = "" )
+			delete p
+		end scope
+
+		scope
+			var p = new string
+			#assert( typeof( p ) = typeof( string ptr ) )
+			CU_ASSERT( len( *p ) = 0 )
+			CU_ASSERT( *p = "" )
+			*p = "abcdef"
+			CU_ASSERT( len( *p ) = 6 )
+			CU_ASSERT( *p = "abcdef" )
+			delete p
+		end scope
+
+		scope
+			CU_ASSERT( ctorudt_ctors = 0 )
+			var p = new CtorUdt
+			#assert( typeof( p ) = typeof( CtorUdt ptr ) )
+			CU_ASSERT( ctorudt_ctors = 1 )
+			CU_ASSERT( p->i = 0 )
+			delete p
+		end scope
+		CU_ASSERT( ctorudt_ctors = 1 )
+
+		scope
+			CU_ASSERT( dtorudt_dtors = 0 )
+			var p = new DtorUdt
+			#assert( typeof( p ) = typeof( DtorUdt ptr ) )
+			CU_ASSERT( dtorudt_dtors = 0 )
+			CU_ASSERT( p->i = 0 )
+			delete p
+			CU_ASSERT( dtorudt_dtors = 1 )
+		end scope
+		CU_ASSERT( dtorudt_dtors = 1 )
+
+		scope
+			CU_ASSERT( ctordtorudt_ctors = 0 )
+			CU_ASSERT( ctordtorudt_dtors = 0 )
+			var p = new CtorDtorUdt
+			#assert( typeof( p ) = typeof( CtorDtorUdt ptr ) )
+			CU_ASSERT( ctordtorudt_ctors = 1 )
+			CU_ASSERT( ctordtorudt_dtors = 0 )
+			CU_ASSERT( p->i = 0 )
+			delete p
+			CU_ASSERT( ctordtorudt_ctors = 1 )
+			CU_ASSERT( ctordtorudt_dtors = 1 )
+		end scope
+		CU_ASSERT( ctordtorudt_ctors = 1 )
+		CU_ASSERT( ctordtorudt_dtors = 1 )
+	end sub
+end namespace
+
 private sub newIntFloatInit cdecl( )
 	#macro check( T, N )
 		scope
@@ -56,6 +168,39 @@ private sub newIntFloatInit cdecl( )
 	check( double, 0.5 )
 	check( double, 1.0 )
 	check( double, -1.0 )
+end sub
+
+private sub newStringInit cdecl( )
+	scope
+		var p = new string( "" )
+		CU_ASSERT( len( *p ) = 0 )
+		CU_ASSERT( *p = "" )
+		delete p
+	end scope
+
+	scope
+		var p = new string( "abc" )
+		CU_ASSERT( len( *p ) = 3 )
+		CU_ASSERT( *p = "abc" )
+		delete p
+	end scope
+
+	scope
+		var p = new string( string( 50, "." ) )
+		CU_ASSERT( len( *p ) = 50 )
+		CU_ASSERT( *p = string( 50, "." ) )
+		delete p
+	end scope
+
+	scope
+		var p = new string( "a" )
+		CU_ASSERT( len( *p ) = 1 )
+		CU_ASSERT( *p = "a" )
+		*p = "abcdef"
+		CU_ASSERT( len( *p ) = 6 )
+		CU_ASSERT( *p = "abcdef" )
+		delete p
+	end scope
 end sub
 
 private sub newUDTInit cdecl( )
@@ -282,6 +427,128 @@ namespace vectorNew
 	end destructor
 
 	private sub test cdecl( )
+		#macro check( T )
+			scope
+				var p = new T[10]
+				#assert( typeof( p ) = typeof( T ptr ) )
+				CU_ASSERT( p[0] = 0 )
+				CU_ASSERT( p[1] = 0 )
+				CU_ASSERT( p[2] = 0 )
+				CU_ASSERT( p[3] = 0 )
+				CU_ASSERT( p[4] = 0 )
+				CU_ASSERT( p[5] = 0 )
+				CU_ASSERT( p[6] = 0 )
+				CU_ASSERT( p[7] = 0 )
+				CU_ASSERT( p[8] = 0 )
+				CU_ASSERT( p[9] = 0 )
+				delete[] p
+			end scope
+		#endmacro
+
+		check(  byte )
+		check( ubyte )
+		check(  short )
+		check( ushort )
+		check(  long )
+		check( ulong )
+		check(  longint )
+		check( ulongint )
+		check(  integer )
+		check( uinteger )
+		check( single )
+		check( double )
+
+		scope
+			var p = new string[10]
+			#assert( typeof( p ) = typeof( string ptr ) )
+
+			CU_ASSERT( len( p[0] ) = 0 )
+			CU_ASSERT( len( p[1] ) = 0 )
+			CU_ASSERT( len( p[2] ) = 0 )
+			CU_ASSERT( len( p[3] ) = 0 )
+			CU_ASSERT( len( p[4] ) = 0 )
+			CU_ASSERT( len( p[5] ) = 0 )
+			CU_ASSERT( len( p[6] ) = 0 )
+			CU_ASSERT( len( p[7] ) = 0 )
+			CU_ASSERT( len( p[8] ) = 0 )
+			CU_ASSERT( len( p[9] ) = 0 )
+
+			CU_ASSERT( p[0] = "" )
+			CU_ASSERT( p[1] = "" )
+			CU_ASSERT( p[2] = "" )
+			CU_ASSERT( p[3] = "" )
+			CU_ASSERT( p[4] = "" )
+			CU_ASSERT( p[5] = "" )
+			CU_ASSERT( p[6] = "" )
+			CU_ASSERT( p[7] = "" )
+			CU_ASSERT( p[8] = "" )
+			CU_ASSERT( p[9] = "" )
+
+			delete[] p
+		end scope
+
+		scope
+			var p = new string[10]
+			#assert( typeof( p ) = typeof( string ptr ) )
+
+			CU_ASSERT( len( p[0] ) = 0 )
+			CU_ASSERT( len( p[1] ) = 0 )
+			CU_ASSERT( len( p[2] ) = 0 )
+			CU_ASSERT( len( p[3] ) = 0 )
+			CU_ASSERT( len( p[4] ) = 0 )
+			CU_ASSERT( len( p[5] ) = 0 )
+			CU_ASSERT( len( p[6] ) = 0 )
+			CU_ASSERT( len( p[7] ) = 0 )
+			CU_ASSERT( len( p[8] ) = 0 )
+			CU_ASSERT( len( p[9] ) = 0 )
+
+			CU_ASSERT( p[0] = "" )
+			CU_ASSERT( p[1] = "" )
+			CU_ASSERT( p[2] = "" )
+			CU_ASSERT( p[3] = "" )
+			CU_ASSERT( p[4] = "" )
+			CU_ASSERT( p[5] = "" )
+			CU_ASSERT( p[6] = "" )
+			CU_ASSERT( p[7] = "" )
+			CU_ASSERT( p[8] = "" )
+			CU_ASSERT( p[9] = "" )
+
+			p[0] = "1"
+			p[1] = "2"
+			p[2] = "3"
+			p[3] = "4"
+			p[4] = "5"
+			p[5] = "6"
+			p[6] = "7"
+			p[7] = "8"
+			p[8] = "9"
+			p[9] = "10"
+
+			CU_ASSERT( len( p[0] ) = 1 )
+			CU_ASSERT( len( p[1] ) = 1 )
+			CU_ASSERT( len( p[2] ) = 1 )
+			CU_ASSERT( len( p[3] ) = 1 )
+			CU_ASSERT( len( p[4] ) = 1 )
+			CU_ASSERT( len( p[5] ) = 1 )
+			CU_ASSERT( len( p[6] ) = 1 )
+			CU_ASSERT( len( p[7] ) = 1 )
+			CU_ASSERT( len( p[8] ) = 1 )
+			CU_ASSERT( len( p[9] ) = 2 )
+
+			CU_ASSERT( p[0] = "1" )
+			CU_ASSERT( p[1] = "2" )
+			CU_ASSERT( p[2] = "3" )
+			CU_ASSERT( p[3] = "4" )
+			CU_ASSERT( p[4] = "5" )
+			CU_ASSERT( p[5] = "6" )
+			CU_ASSERT( p[6] = "7" )
+			CU_ASSERT( p[7] = "8" )
+			CU_ASSERT( p[8] = "9" )
+			CU_ASSERT( p[9] = "10" )
+
+			delete[] p
+		end scope
+
 		scope
 			var p = new T1[2]
 			CU_ASSERT( p[0].i = 0 )
@@ -839,7 +1106,9 @@ end namespace
 
 private sub ctor( ) constructor
 	fbcu.add_suite( "tests/pointers/new-delete" )
+	fbcu.add_test( "default initialization", @defaultInit.test )
 	fbcu.add_test( "New with int/float initializer", @newIntFloatInit )
+	fbcu.add_test( "New with string initializer", @newStringInit )
 	fbcu.add_test( "New with UDT initializer", @newUDTInit )
 	fbcu.add_test( "Some obscure NEW initializers", @newQuirkInit.test )
 	fbcu.add_test( "New[]", @vectorNew.test )

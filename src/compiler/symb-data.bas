@@ -308,6 +308,15 @@ function typeHasDtor _
 
 end function
 
+function typeNeedsDtorCall _
+	( _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr _
+	) as integer
+	function = typeHasDtor( dtype, subtype ) or _
+		(typeGetDtAndPtrOnly( dtype ) = FB_DATATYPE_STRING)
+end function
+
 '' Check for "trivial" types, i.e. those that will really be passed Byval when
 '' used with Byval params.
 '' Non-trivial types (class-like types with dtor or copy-ctor, etc.) are always

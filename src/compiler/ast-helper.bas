@@ -106,8 +106,20 @@ function astBuildVarAddrof( byval sym as FBSYMBOL ptr ) as ASTNODE ptr
 	function = astNewADDROF( astNewVAR( sym ) )
 end function
 
-'':::::
-function astBuildVarDtorCall _
+function astBuildVarDtorCall overload _
+	( _
+		byval varexpr as ASTNODE ptr _
+	) as ASTNODE ptr
+
+	if( astGetDataType( varexpr ) = FB_DATATYPE_STRING ) then
+		function = rtlStrDelete( varexpr )
+	elseif( typeHasDtor( varexpr->dtype, varexpr->subtype ) ) then
+		function = astBuildDtorCall( varexpr->subtype, varexpr )
+	end if
+
+end function
+
+function astBuildVarDtorCall overload _
 	( _
 		byval s as FBSYMBOL ptr, _
 		byval check_access as integer _

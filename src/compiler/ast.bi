@@ -820,9 +820,7 @@ declare function astBuildNewOp _
 declare function astBuildDeleteOp _
 	( _
 		byval op as AST_OP, _
-		byval ptrexpr as ASTNODE ptr, _
-		byval dtype as integer, _
-		byval subtype as FBSYMBOL ptr _
+		byval ptrexpr as ASTNODE ptr _
 	) as ASTNODE ptr
 
 declare function astNewBOUNDCHK _
@@ -1166,7 +1164,12 @@ declare function astBuildForEnd _
 		byval endvalue as ASTNODE ptr _
 	) as ASTNODE ptr
 
-declare function astBuildVarDtorCall _
+declare function astBuildVarDtorCall overload _
+	( _
+		byval varexpr as ASTNODE ptr _
+	) as ASTNODE ptr
+
+declare function astBuildVarDtorCall overload _
 	( _
 		byval s as FBSYMBOL ptr, _
 		byval check_access as integer = FALSE _

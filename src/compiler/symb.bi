@@ -1593,6 +1593,12 @@ declare function typeHasDtor _
 		byval subtype as FBSYMBOL ptr _
 	) as integer
 
+declare function typeNeedsDtorCall _
+	( _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr _
+	) as integer
+
 declare function typeIsTrivial _
 	( _
 		byval dtype as integer, _
