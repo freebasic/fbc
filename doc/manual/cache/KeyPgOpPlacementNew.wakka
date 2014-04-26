@@ -32,7 +32,7 @@ Operator to construct an object at a specified memory address.
 	It is incorrect to call ##[[KeyPgOpDelete Delete]]## on the address (otherwise, the memory is deallocated). The proper way is to only call the destructor (with syntax as for a member method, using member access operator).
 	See examples below for proper //placement new// usage.
 
-	Specifying an initial value of ##[[KeyPgAny Any]]##, as in ##**New**(//address//)//datatype//(**Any**)## or ##**New**(//address//)//datatype//[//count//]{**Any**}## will not initialize the data.  This is only valid on data types that do not have constructors.
+	Specifying an initial value of ##[[KeyPgAny Any]]##, as in ##**New**(//address//)//datatype//(**Any**)## or ##**New**(//address//)//datatype//[//count//]{**Any**}## will not initialize the data.  This is only valid on data types that do not have constructors (otherwise for data types with constructors, syntax of simple pointer conversion, like //Cptr(datatype Ptr, address)//, can be substituted to the invalid use of New...Any).
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/operator/placement_new.bas"}}%%(freebasic)

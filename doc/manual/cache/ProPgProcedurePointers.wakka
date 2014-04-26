@@ -59,36 +59,36 @@ print "3 + 4 = " & DoOperation(3, 4, @Add)
 %%
 
 {{fbdoc item="section" value="Pointers to procedure pointers"}}
-	Because the syntax of a procedure pointer does not allow declaration of a pointer to procedure pointer, a type alias is used. Notice how it is necessary to surround a dereferenced pointer to procedure pointer by parenthesis when calling the procedure. This is because the function-call operator '()' has higher precedence than ##[[KeyPgOpValueOf Operator *]]## (Value of):
+	Because the syntax of a procedure pointer does not allow declaration of a pointer to procedure pointer when the procedure is a function (because ptr applies on return type and not on procedure), a type alias is used. Notice how it is necessary to surround a dereferenced pointer to procedure pointer by parenthesis when calling the procedure. This is because the function-call operator '()' has higher precedence than ##[[KeyPgOpValueOf Operator *]]## (Value of):
 
 {{fbdoc item="filename" value="examples/manual/proguide/procptrs/procptrs.bas"}}%%(freebasic)
-sub Halve (byref i as integer)
-	i /= 2
-end sub
+Function Halve (ByVal i As Integer) As Integer
+	Return i / 2
+End Function
 
-sub Triple (byref i as integer)
-	i *= 3
-end sub
+Function Triple (ByVal i As Integer) As Integer
+	Return i * 3
+End Function
 
-type operation as sub (byref as integer)
+Type operation As Function (ByVal As Integer) As Integer
 
 ' an array of procedure pointers, NULL indicates the
 ' end of the array
-dim operations(20) as operation = _
+Dim operations(20) As operation = _
 { @Halve, @Triple, 0 }
 
-dim i as integer = 280
+Dim i As Integer = 280
 
 ' apply all of the operations to a variable by iterating through the array
 ' with a pointer to procedure pointer
-dim op as operation ptr = @operations(0)
-while (0 <> *op)
+Dim op As operation Ptr = @operations(0)
+While (*op <> 0)
 	' call the procedure that is pointed to, note the extra parenthesis
-	(*op)(i)
+	i = (*op)(i)
 	op += 1
-wend
+Wend
 
-print "Value of 'i' after all operations performed: " & i
+Print "Value of 'i' after all operations performed: " & i
 %%
 
 {{fbdoc item="section" value="Pointers to member procedures"}}

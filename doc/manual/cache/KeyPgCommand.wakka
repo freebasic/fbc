@@ -18,7 +18,7 @@ Returns command line parameters used to call the program
 	##**Command**## returns command-line arguments passed to the program upon execution.
 
 	If ##//index//## is less than zero (##< 0##), a space-separated list of all command-line arguments is returned, otherwise, a single argument is returned. A value of zero (##0##) returns the name of the executable; and values of one (##1##) and greater return each command-line argument.
-	
+
 	If ##//index//## is greater than the number of arguments passed to the program, the null string (##"####"##) is returned.
 
 	When the command line is parsed for arguments, everything between double quotes in the parameter list will be considered as a single parameter, and is returned with the double quotes.
@@ -29,14 +29,19 @@ Returns command line parameters used to call the program
 
 	__Disabling filename globbing under Win32__
 		For mingw32 and cygwin builds, link the ""FreeBASIC"" program with CRT_noglob.o or define the following somewhere in the source:
-		{{fbdoc item="filename" value="examples/manual/check/KeyPgCommand_1.bas"}}%%(freebasic)
+		{{fbdoc item="filename" value="examples/manual/check/KeyPgCommand_mingw32.bas"}}%%(freebasic)
 Extern _CRT_glob Alias "_CRT_glob" As Integer
 Dim Shared _CRT_glob As Integer = 0
+%%
+		For 32-bit builds using ""MinGW-w64"", ##//_dowildcard//## should be used instead of ##//_CRT_glob//##:
+		{{fbdoc item="filename" value="examples/manual/check/KeyPgCommand_mingw64.bas"}}%%(freebasic)
+extern _dowildcard alias "_dowildcard" as long
+dim shared _dowildcard as long = 0
 %%
 
 	__Disabling filename globbing under Dos__
 		Define the following function somewhere in the source:
-		{{fbdoc item="filename" value="examples/manual/check/KeyPgCommand_2.bas"}}%%(freebasic)
+		{{fbdoc item="filename" value="examples/manual/check/KeyPgCommand_Dos.bas"}}%%(freebasic)
 Public Function __crt0_glob_function Alias "__crt0_glob_function" ( ByVal arg As UByte Ptr ) As UByte Ptr Ptr
   Return 0
 End Function

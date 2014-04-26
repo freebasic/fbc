@@ -17,17 +17,19 @@ Reallocates storage for an existing reserved block of memory
 	The address of the reallocated memory. A null (##0##) pointer is returned if reallocation was unsuccessful, and the original memory pointed to by ##//pointer//## remains unchanged.
 
 {{fbdoc item="desc"}}
-	Attempts to reallocate, or resize, memory previously allocated with ##[[KeyPgAllocate Allocate]]## or ##[[KeyPgCallocate Callocate]]##. The contents of the buffer are preserved, although if ##//count//## is less than the original size of the memory block, the buffer will be truncated. In case of increase of memory, the added memory range is not initialized.
+	Attempts to reallocate, or resize, memory previously allocated with ##[[KeyPgAllocate Allocate]]## or ##[[KeyPgCallocate Callocate]]##. The contents of the buffer are preserved, although if ##//count//## is less than the original size of the memory block, the buffer will be truncated.  If the size is increased, the added memory range is not initialized to anything.
 
-	When use with ##[[KeyPgString String]]## or ##[[KeyPgType UDT]]## containing string, and if ##//count//## is larger than the original size of the memory block, the new extra memory range must be explicitly cleared (set to 0) before the first string use (with for example keyword ##[[KeyPgClear Clear]]##), otherwise a not cleared string descriptor (containing random data) may induce corrupted string or more (trying to write to a random place in memory or trying to deallocate a random pointer).
+	When using ##**Reallocate**##, the ##//result//## pointer must be saved to prevent a potential memory leak, because the original ##//pointer//## may no longer be valid after reallocation.  The value of the new pointer should be checked - if it is ##0##, the reallocation has failed - the original ##//pointer//## remains valid, and the amount of memory allocated to it has not changed.
 
-	If ##//pointer//## is null (##0##), then ##""ReAllocate""## behaves identically to ##[[KeyPgAllocate Allocate]]##.
+	Reallocated memory must be freed with ##[[KeyPgDeallocate Deallocate]]## when no longer needed.
 
-	If ##//pointer//## is valid and ##//count//## is null (0), then ##""ReAllocate""## behaves similar to ##[[KeyPgDeallocate Deallocate]]## and a null (0) pointer is returned.
+	If ##//pointer//## is null (##0##), then ##""ReAllocate""## behaves identically to ##[[KeyPgAllocate Allocate]]##. If ##//pointer//## is valid and ##//count//## is null (0), then ##""ReAllocate""## behaves similar to ##[[KeyPgDeallocate Deallocate]]## and a null (0) pointer is returned.
 
-	Reallocated memory must be deallocated, or freed, with ##[[KeyPgDeallocate Deallocate]]## when no longer needed.
+	If the memory has previously been deallocated by a call to ##[[KeyPgDeallocate Deallocate]]## or ##""ReAllocate""##, the behavior is undefined.
 
-	This function is not part of the FreeBASIC runtime library, it is an alias for the C runtime library's ##//realloc//##, so it's not guaranteed to be thread safe in all platforms.
+	When manually allocating memory for ##[[KeyPgString String]]## descriptors (or ##[[KeyPgType UDT]]##s that contain one), if ##//count//## is larger than the original size of the memory block, the new extra memory range must be explicitly cleared to zeroes before the first string use (for example, using ##[[KeyPgClear Clear]]##).  Otherwise accessing the string will cause undefined results (trying to write or read at a random place in memory, or trying to deallocate a random pointer).
+
+	This function is not part of the ""FreeBASIC"" runtime library, it is an alias for the C runtime library's ##//realloc//##, so it's not guaranteed to be thread safe in all platforms.
 	
 	**NOTE**: Reallocating a pointer inside an object function, when that pointer contains the parent object of the function, is undefined, and will likely result in horrible crashes.
 
@@ -47,7 +49,7 @@ b = ReAllocate( a, 10 * SizeOf(Integer) )   ' Reallocate memory for 5 additional
 
 If b <> 0 Then
 
-	a = b
+	a = b   ' Discard the old pointer and use the new one
 
 	For i = 5 to 9
 	  a[i] = (i + 1) * 2   ' Assign more integers to the buffer

@@ -18,7 +18,6 @@ This area of the Wiki is for documenting everything about the compiler and the r
 	{{fbdoc item="keyword" value="DevFbcModules|Quick overview of all modules"}}
 	{{fbdoc item="keyword" value="DevObjinfo|The objinfo feature"}}
 	{{fbdoc item="keyword" value="DevFbcMem|Memory management"}}
-	{{fbdoc item="keyword" value="FbGrammar|FreeBASIC Grammar"}}
 	{{fbdoc item="keyword" value="DevFbcLexer|Lexer & preprocessor"}}
 		
 	{{fbdoc item="subsect" value="Parser & compiler (fb, parser, symb, rtl)"}}

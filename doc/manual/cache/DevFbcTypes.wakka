@@ -13,7 +13,6 @@
 				- ##wchar## (wstring pointers and their deref expressions)
 				- ##integer##, ##uinteger##
 				- ##enum## (integer)
-				- ##bitfield## (uinteger)
 				- ##long##, ##ulong##
 				- ##longint##, ##ulongint##
 				- ##single##, ##double##

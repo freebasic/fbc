@@ -2,9 +2,9 @@
 Specifies field alignment.
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgType Type]] //typename// **Field** = { 1 | 2 | 4 }
+	[[KeyPgType Type]]|[[KeyPgUnion Union]] //typename// **Field** = { 1 | 2 | 4 }
 		...
-	End [[KeyPgType Type]]
+	End [[KeyPgType Type]]|[[KeyPgUnion Union]]
 ##
 {{fbdoc item="desc"}}
 	##**Field**## can be used to pack ##[[KeyPgType Types]]## or ##[[KeyPgUnion Unions]]## more tightly than the default layout. The most commonly used value is ##**Field = 1**##, which causes the ##Type## or ##Union## to be packed as tightly as possible, without any padding bytes being added between the fields or at the end of the ##Type##. ##**Field**## can only be used to decrease field alignment, but it cannot be used to increase it. In order to add padding bytes, a ##Union## with appropriate members could be used instead.

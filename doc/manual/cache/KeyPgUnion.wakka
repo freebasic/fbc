@@ -17,11 +17,14 @@ Declares a union user defined type.
 		Any of the supported member functions
 
 {{fbdoc item="desc"}}
-	Unions are similar to a ##[[KeyPgType Type]]## structure, except that the elements of a union occupy the same space in memory (but unlike Type, Union can not contain variable-length strings, and more generally fields with constructors or destructors). The size of the Union is the size of the largest data item. A data item can be an unnamed ##[[KeyPgType Type]]##. Since they occupy the same space, only a single element can be used.
+	Unions are similar to a ##[[KeyPgType Type]]## structure, except that the elements of a union occupy the same space in memory.
+	Like Type, Union can use the optional ##[[KeyPgField Field]] = //number//## specifier and supports also inheritance through the use of the [[KeyPgExtends Extends]] keyword.
+	Unlike Type, Union can not contain variable-length strings, and more generally fields (or can not have bases) with constructors or destructors.
+	The size of the Union is the size of the largest data item. A data item can be an unnamed ##[[KeyPgType Type]]##. Since they occupy the same space, only a single element can be used.
 
 	Unions support member functions including ##[[KeyPgConstructor Constructor]]##, ##[[KeyPgDestructor Destructor]]##, ##[[KeyPgMemberFunction Function]]##, ##[[KeyPgOperator Operator]]##, ##[[KeyPgProperty Property]]## and ##[[KeyPgMemberSub Sub]]##. All members of a union are public and access control is not supported. 
 
-	Unnamed type nested inside a named union cannot have function members.
+	Nested unnamed type or union cannot have function members or static data members.
 
 	A ##**Union**## can be passed as a user defined type to overloaded operator functions.
 

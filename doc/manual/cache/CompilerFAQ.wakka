@@ -65,7 +65,7 @@
 		- It supports modern OSes. It has ports to Windows, Linux, and 32-bit DOS.
 		- It supports modern APIs such as SDL, ""DirectX"", ""Win32"", and ""OpenGL"".
 		- It is distributed under the GPL, meaning it's free and legal to use, unlike most copies of ""QuickBASIC"" / other BASICs.
-		- The library is distributed under the LGPL with additional exception, meaning you may do whatever you want with your compiled programs, including selling them (note: possible problem with graphics library).
+		- The library is distributed under the LGPL with additional exception, meaning you may do whatever you want with your compiled programs, including selling them.
 		- ""FreeBASIC"" is many times faster than ""QuickBASIC"" / other BASICs.
 		- ""FreeBASIC"" supports many features, such as pointers and inline Assembly, which are not available in ""QuickBASIC"" / other BASICs.
 		- ""QuickBASIC"" only supports DOS. Windows support for DOS emulation (and thus ""QuickBASIC"") is becoming thinner with every new version. Vista does not support graphics or fullscreen text for DOS applications.
@@ -241,7 +241,7 @@ Depends. If your OS at least egalizes the functionality of DOS with DPMI32 (cons
 
 {{anchor name="item37"}}==Does ""FreeBASIC"" support returning references from Functions, like in ""C++""?==
 
-In version 0.24.0b and earlier, this is not possible.  However, functionality for this now exists in the source code for prerelease versions.  Procedures can now return references using ##[[KeyPgByrefFunction byref]] as //datatype//## for the return type.
+In version 0.24.0b and earlier, this is not possible.  However, functionality for this now exists from version 0.90.0. Procedures can now return references using ##[[KeyPgByrefFunction byref]] as //datatype//## for the return type.
 
 {{anchor name="item0|Back to top"}}
 

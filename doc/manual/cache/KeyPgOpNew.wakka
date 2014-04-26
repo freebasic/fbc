@@ -34,9 +34,9 @@ Operator to dynamically allocate memory and construct data of a specified type.
 
 	Objects created with ##**New**## must be freed with ##[[KeyPgOpDelete Delete]]##. Memory allocated with ##**New[]**## must be freed with ##**Delete[]**##, the array-version of ##[[KeyPgOpDelete Delete]]##. You cannot mix and match the different versions of the operators.
 
-	Specifying an initial value of ##[[KeyPgAny Any]]##, as in ##new //datatype//(any)## will allocate memory for the type, but not initialize the data.  This is only valid on data types that do not have constructors.
+	Specifying an initial value of ##[[KeyPgAny Any]]##, as in ##**New** //datatype//(**Any**)## will allocate memory for the type, but not initialize the data.  This is only valid on data types that do not have constructors (otherwise for data types with constructors, syntax of simple memory allocation with pointer conversion, like //Cptr(datatype Ptr, Allocate(Sizeof(datatype)))//, can be substituted to the invalid use of New...Any).
 
-	Specifying an initial value of ##[[KeyPgAny Any]]##, as in ##new //datatype//[//count//]{any}## will allocate memory for the array, but not initialize the data.  This is only valid on data types that do not have constructors.
+	Specifying an initial value of ##[[KeyPgAny Any]]##, as in ##**New** //datatype//[//count//]{**Any**}## will allocate memory for the array, but not initialize the data.  This is only valid on data types that do not have constructors (otherwise for data types with constructors, syntax of simple memory allocation with pointer conversion, like //Cptr(datatype Ptr, Allocate(count * Sizeof(datatype)))//, can be substituted to the invalid use of New...Any).
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/operator/new.bas"}}%%(freebasic)

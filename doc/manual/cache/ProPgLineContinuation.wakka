@@ -49,4 +49,6 @@ dim as integer a _
 = 5
 %%
 
+**Warning:** When an erroneous code line is spread over a multiple lines block by using the _ line continuation character, the error message refers only to the last line of the block.
+
 {{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

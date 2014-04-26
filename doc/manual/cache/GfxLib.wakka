@@ -25,12 +25,14 @@ The library supports various drivers depending on the platform:
 		- **##VGA##** [[http://sourceforge.net/p/fbc/code/ci/master/tree/src/gfxlib2/dos/gfx_driver_vga.c (gfxlib2/dos/gfx_driver_vga.c)]]
 		- Bug note: [[KeyPgPalette Palette]] doesn't work well [[http://freebasic.net/forum/viewtopic.php?t=12691 (forum discussion: t=12691 2008)]] [[http://freebasic.net/forum/viewtopic.php?t=19980 (forum discussion: t=19980 2012)]]
 
-##[[KeyPgScreencontrol Screencontrol]]## can be used (SET_DRIVER_NAME 103) to override the default driver preferences. 
+##[[KeyPgScreencontrol Screencontrol]]## can be used (SET_DRIVER_NAME 103) to override the default driver preferences.
 
 {{fbdoc item="target"}}
-	- In DOS, ""GfxLib"" will create and "manage" a mouse arrow if a mouse driver is detected. There is no "official" way to disable this. Also the arrow doesn't react to mouse movements while the screen is locked.
+	- In DOS, ""GfxLib"" will create and "manage" a mouse arrow if a mouse driver is detected. There is no "official" way to disable this. Also note that the arrow doesn't react to mouse movements while the screen is locked.
 	- In DOS, Windowing and ""OpenGL"" related commands and switches are not available (they exist but do nothing, or return some values with no meaning)
-	- In DOS, the resolution must match one supported by the graphics card. ""GfxLib"" will try to find an appropriate mode from VGA modes, ""ModeX"" or VESA, preferring VESA LFB interface if available, or banked VESA otherwise. Unsupported resolutions may currently crash the program, though in future ""GfxLib"" may try to find a close match instead. For optimal compatibility, you should support "safe" resolutions like 640x480 and 800x600, and maybe 1024x768. There are various additional modes like 768x576 around, but they are vendor specific and lacking on many other cards. Also modes 1024x768 and above are not available on older cards and laptops. 
+	- In DOS, the refresh rate setting is not available (some VESA cards do support it, but ""FreeBASIC"" for now doesn't)
+	- In DOS, the resolution must match one supported by the graphics card. ""GfxLib"" will try to find an appropriate mode from VGA modes, ""ModeX"" or VESA, preferring VESA LFB interface if available, or banked VESA otherwise. Unsupported resolutions may currently crash the program, though in future ""GfxLib"" may try to find a close match instead. For optimal compatibility, you should support "safe" resolutions like 640x480 and 800x600, and maybe 1024x768. There are various additional modes like 768x576 around, but they are vendor specific and lacking on many other cards. Also modes 1024x768 and above are not available on older cards and laptops.
+	- It has been observed that SCREEN and SCREENRES may fail to clear the screen in DOS, actually this is probably a BIOS bug that ""GfxLib"" currently doesn't workaround.
 
 {{fbdoc item="diff"}}
 	- Graphics support was internally redesigned. QB used VGA graphics modes, and wrote directly into the VGA RAM. Multiple pages were available as long as the card supported them. FB uses backbuffers, one per defined page, and copies them to the video RAM (VGA (DOS), VESA (DOS), ""DirectX"" (""Win32""), ...) in the background. Graphics commands do work as they used to in QB, but a few notable differences are present:

@@ -1,25 +1,47 @@
 {{fbdoc item="title" value="ANY"}}----
-##**Any**## is not a real type, but it is used as a placeholder in various ways.
+##**Any**## is used as a placeholder for a type or value in various ways.
 
 {{fbdoc item="syntax"}}##
-	//identifier// [[KeyPgAs as]] **Any** [[KeyPgPointer Pointer]]|[[KeyPgPtr ptr]]
+	[[KeyPgDim Dim]] //identifier// [[KeyPgAs As]] **Any** [[KeyPgPointer Pointer]]|[[KeyPgPtr Ptr]]
 ##//or//##
-	[[KeyPgDim Dim]] //identifier// [[KeyPgAs as]] [[DataType datatype]] = **Any**
+	[[KeyPgDeclare Declare]] [[KeyPgSub Sub]]|[[KeyPgFunction Function]] //identifier// ( [[KeyPgByref Byref]] //identifier// [[KeyPgAs As]] **Any** [ , ... ] )
 ##//or//##
-	[[KeyPgDeclare declare]] { [[KeyPgSub sub]] | [[KeyPgFunction function]] } //identifier// ( [ ..., ] [[KeyPgByref byref]] //identifier// [[KeyPgAs as]] **Any** [ , ... ] )
+	[[KeyPgDim Dim]] //identifier//(**Any** [, **Any**...]) [[KeyPgAs As]] [[DataType DataType]]
+##//or//##
+	[[KeyPgDim Dim]] //identifier// [[KeyPgAs As]] [[DataType DataType]] = **Any**
+##//or//##
+	[[KeyPgOpNew New]] [[DataType DataType]] **( Any )**
+##//or//##
+	[[KeyPgOpPlacementNew New(address)]] [[DataType DataType]] [//count//] **{ Any }**
+##//or//##
+	[[KeyPgInstr Instr]]|[[KeyPgInstrrev InstrRev]] ( //string//, **Any** //substring// )
 ##
 {{fbdoc item="desc"}}
-	##**Any**## can be used in three different contexts: pointers; variable initialization; and to indicate an unknown data type in a function declaration.
-	
-	##**1)**## A special pointer type called the ##**Any** [[KeyPgPtr Pointer]]## allows pointing to any variable type. If you cast it to an ##[[KeyPgInteger Integer]] [[KeyPgPtr Pointer]]##, it will operate on the subject as though it were an ##[[KeyPgInteger Integer]]##, etc.
 
-	You may not create variables of the type ##**Any**##. It is illegal to dereference an ##**Any Pointer**##, but an ##**Any Pointer Pointer**## may be dereferenced, because doing so will result in an ##**Any Pointer**##. Trying to dereference that resulting ##**Any Pointer**## would be illegal.
-
-	This should not be confused with ##**Variant**##, a Visual Basic data type which can contain any type of variable. ""FreeBASIC"" does not natively support the ##**Variant**## type.
+	- Pointers:
+		A special pointer type called the ##**Any** [[KeyPgPtr Ptr]]## (or "##**Any** [[KeyPgPointer Pointer]]##") allows pointing to any variable type.  If you cast it to a ##//[[DataType]]// [[KeyPgPtr Ptr]]##, it can be indexed or dereferenced to access the memory as an instance of ##//[[DataType]]//##. Pointer arithmetic is allowed on an ##**Any** Ptr##, and treats it like a ##[[KeyPgByte Byte]] Ptr##: The pointer is changed by increments of ##1##.
+		
+		A pure ##**Any** [[KeyPgPtr Ptr]]## has no type checking by the compiler.  It can be implicitly converted to and from other pointer types through assignment or parameter passing.
+		
+		##**Any**## on its own is not a valid data type for a variable. Also, it is illegal to dereference an ##**Any** Ptr## (although an ##**Any** Ptr Ptr## may be dereferenced to produce a ##**Any** Ptr##).
+		
+		This should not be confused with ##**Variant**##, a Visual Basic data type which can contain any type of variable. ""FreeBASIC"" does not provide native support for a ##**Variant**## type.
 	
-	##**2) **## ##**Any**## can be used as a fake initializer to disable the default initialization to ##0## of the variables. This may save time in critical sections of the programs. It is up to the program to fill the variables with significant data. You may recognize this as the default behavior of C.
+	- Byref parameters:
+		**##Any##** can be used in procedure prototypes (in a ##[[KeyPgDeclare Declare]]## statement) with ##[[KeyPgByref ByRef]]## parameters to disable the compiler checking for the correct type of the variable passed. This use of ##**Any**## is deprecated and it only exists for compatibility with QB.
 	
-	##**3) **## **##Any##** can be used  in function prototypes (in a ##[[KeyPgDeclare Declare]]## statement) with ##[[KeyPgByref ByRef]]## arguments to disable the compiler checking for the correct type of the variable passed. This use of ##**Any**## is deprecated and it is only there for compatibility with QB, where it was the only way of passing arrays as arguments.
+	- Array dimensions:
+		In array declarations, **##Any##** can be specified in place of the array bounds in order to create a dynamic array with a certain amount of dimensions that is determined based on the number of **##Any##**s specified.
+	
+	- Initialization:
+		##**Any**## can be used as a fake initializer to disable the default initialization of variables to ##0##, leaving the variable uninitialized. This may save time in critical sections of a program. It is the program's responsibility to fill the variables with meaningful data before reading it.
+		
+		Comparison to ""C/C++"": This matches the behavior of a variable declaration without initialization value in ""C/C++"".
+		
+		Similar to **##Any##** initializers for variables, **##Any##** can also be used with the ##[[KeyPgOpNew New]]## or ##[[KeyPgOpPlacementNew Placement New]]## operators in order to leave the newly created object uninitialized (only allowed with data types that do not have constructors).
+	
+	- ""Instr/InstrRev"":
+		**##Any##** can be used with ##[[KeyPgInstr Instr]]## or ##[[KeyPgInstrrev InstrRev]]## as a qualifier for the ##//substring//## parameter, to indicate that any individual character in it may be matched.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/misc/any.bas"}}%%(freebasic)
@@ -46,8 +68,8 @@ Sleep
 Sub echo (ByVal x As Any Ptr)
 	Dim As Integer i
 	For i = 0 To 39
-	    'echo interprets the data in the pointer as bytes
-	    Print Cast(UByte Ptr, x)[i] & " ";
+		'echo interprets the data in the pointer as bytes
+		Print Cast(UByte Ptr, x)[i] & " ";
 	Next
 	Print
 End Sub
@@ -66,6 +88,18 @@ Sub echo (ByRef a As Integer)
   Print Hex(a)         
 End Sub
 
+%%
+
+{{fbdoc item="filename" value="examples/manual/misc/any-dynamic-array.bas"}}%%(freebasic)
+Dim a(Any) As Integer ' 1-dimensional dynamic array
+Dim b(Any, Any) As Integer ' 2-dimensional dynamic array
+Dim c(Any, Any, Any) As Integer ' 3-dimensional dynamic array
+' etc.
+
+' Further Redims or array accesses must have a matching amount of dimensions
+Redim a(0 to 1) As Integer
+Redim b(1 to 10, 2 to 5) As Integer
+Redim c(0 to 9, 0 to 5, 0 to 1) As Integer
 %%
 
 {{fbdoc item="lang"}}

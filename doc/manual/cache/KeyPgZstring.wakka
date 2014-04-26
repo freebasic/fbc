@@ -30,7 +30,6 @@ str2 = allocate( 13 )
 *str2 = "hello, world"
 print *str2
 print len(*str2)     'returns 12, the size of the string it contains 
-print sizeof(*str2)  'returns 0, because a dereferenced pointer is passed and not a variable
 %%
 
 {{fbdoc item="lang"}}

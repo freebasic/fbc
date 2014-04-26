@@ -17,7 +17,7 @@ Acquires a mutex
 	See ##[[KeyPgMutexCreate Mutexcreate]]## for more general information on mutexes.
 
 {{fbdoc item="ex"}}
-	See the ##[[KeyPgThreadCreate Threadcreate]]## examples.
+	See the examples in ##[[KeyPgMutexCreate Mutexcreate]]## and also ##[[KeyPgThreadCreate Threadcreate]]##.
 
 {{fbdoc item="lang"}}
 	- Threading is not allowed in the //[[CompilerOptlang -lang qb]]// dialect.

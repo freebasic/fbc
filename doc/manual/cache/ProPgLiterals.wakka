@@ -121,7 +121,7 @@ print $"C:\temp"
 	- ##[[KeyPgTypeof Typeof]]##
 	- ##[[KeyPgPpdefine #define]]##
 	- ##[[KeyPgConst Const]]## 
-	- [[CatPgStdDataTypes Standard Data Types]]
-	- [[TblVarTypes]] Table with variable types overview, limits and suffixes
+	- ##[[CatPgStdDataTypes Standard Data Types]]##
+	- ##[[TblVarTypes Table with variable types overview, limits and suffixes]]##
 
 {{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

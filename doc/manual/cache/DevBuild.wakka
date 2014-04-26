@@ -96,7 +96,7 @@ warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 	
 		-##""C:\DJGPP\lib\{crt0,gcrt0}.o""##
 		-##""C:\DJGPP\lib\lib{emu,m}.a""##
-		-##""C:\DJGPP\lib\gcc\djgpp\version\lib{gcc,supcxx}.a""##, and rename ##libsupcxx.a## to ##libsupcx.a## (8.3 file name)
+		-##""C:\DJGPP\lib\gcc\djgpp\[version]\lib{gcc,supcxx}.a""##, and rename ##libsupcxx.a## to ##libsupcx.a## (8.3 file name)
 		-##""C:\FBDOS\lib\dos\libc.a""## //- this should be the modified ##libc.a## from the latest ""FreeBASIC"" release. To use the libc.a from DJGPP, the _main.o it contains needs to be replaced with the one compiled from ##""contrib/djgpp/libc/crt0/_main.c""## from the fbc source code, to fix a bug in the original version from DJGPP.//
 		-and any additional libraries you want to use
 	
@@ -201,7 +201,7 @@ $ make
 
 {{anchor name="TdmgccBuild"}}{{fbdoc item="section" value="Compiling on Win32 using TDM-GCC and MSYS"}}
 
-	1) We will need a working FB-win32 installation to bootstrap the new FB compiler. Download the latest ""FreeBASIC-win32"" release from [[http://sourceforge.net/projects/fbc/files/Binaries%20-%20Win32/ FreeBASIC's download site]] and extract/install it somewhere like ##""C:\FB-win32""##.
+	1) We will need a working FB-win32 installation to bootstrap the new FB compiler. Download the latest ""FreeBASIC-win32"" release from [[http://sourceforge.net/projects/fbc/files/Binaries%20-%20Windows/ FreeBASIC's download site]] and extract/install it somewhere like ##""C:\FB-win32""##.
 	
 	
 	1) The ""Win32"" version of ""FreeBASIC"" is typically compiled on ""Win32"" using TDM-GCC (SJLJ -- setjump/longjump exception handling mode). Grab the TDM-GCC installer from [[http://tdm-gcc.tdragon.net/download]] and install the recommended TDM-GCC C and ""C++"" packages into ##""C:\TDM-GCC""##.
@@ -253,8 +253,8 @@ $ make
 	1) Copy to ##""C:\fbc\lib\win32""##:
 		- ##""C:\TDM-GCC\lib\{crt2,dllcrt2,gcrt2}.o""##
 		- ##""C:\TDM-GCC\lib\lib{gmon,mingw32,mingwex,moldname}.a""##
-		- ##""C:\TDM-GCC\lib\gcc\mingw32\version\{crtbegin,crtend}.o""##
-		- ##""C:\TDM-GCC\lib\gcc\mingw32\version\lib{gcc,supc++}.a""##
+		- ##""C:\TDM-GCC\lib\gcc\mingw32\[version]\{crtbegin,crtend}.o""##
+		- ##""C:\TDM-GCC\lib\gcc\mingw32\[version]\lib{gcc,supc++}.a""##
 		- ##""C:\TDM-GCC\lib\lib{advapi32,gdi32,kernel32,msvcrt,user32,winmm,winspool}.a""## //(rename to ##lib*.dll.a##)//
 		- ##""C:\TDM-GCC\lib\libffi.a""##
 		- and any additional libraries you want to use
@@ -270,7 +270,7 @@ $ make
 
 {{anchor name="MingwBuild"}}{{fbdoc item="section" value="Compiling on Win32 using MinGW/MSYS, for installation into the MinGW tree"}}
 
-	1) We will need a working FB-win32 installation to bootstrap the new FB compiler. Download the latest ""FreeBASIC-win32"" release from [[http://sourceforge.net/projects/fbc/files/Binaries%20-%20Win32/ FreeBASIC's download site]] and extract/install it somewhere like ##""C:\FB-win32""##.
+	1) We will need a working FB-win32 installation to bootstrap the new FB compiler. Download the latest ""FreeBASIC-win32"" release from [[http://sourceforge.net/projects/fbc/files/Binaries%20-%20Windows/ FreeBASIC's download site]] and extract/install it somewhere like ##""C:\FB-win32""##.
 	
 	
 	1) To install [[http://www.mingw.org MinGW/MSYS]], download the latest version of the [[http://sourceforge.net/projects/mingw/files/Installer/mingw-get/ mingw-get program]] and extract it into ##""C:\MinGW""##. After that open a command prompt (cmd.exe) and run:
@@ -476,7 +476,7 @@ src/rtlib/win32/hinit.c:21:17: error: '_PC_64' undeclared (first use in this fun
 		
 		Both the ""MinGW runtime"" and ""MinGW GCC"" have a ##float.h## header, and in some setups the GCC one is found before the ""MinGW"" one, causing the above errors. This issue shows up with some ""MinGW"" setups, for example gcc-core-4.6.1 + mingwrt-3.20, while for example gcc-core-4.5.2 + mingwrt-3.18 (a previous installation made with mingw-get) works fine. This problem also shows up with mingw32 cross compiler on Debian (gcc 4.4.4, mingwrt 3.13).
 		
-		Easiest temporary fix: Append ###include_next <float.h>## to ##""C:\MinGW\lib\gcc\mingw32\version\include\float.h""##
+		Easiest temporary fix: Append ###include_next <float.h>## to ##""C:\MinGW\lib\gcc\mingw32\//version//\include\float.h""##
 		
 		See also:
 			- The comments at the top of ##""C:\MinGW\include\float.h""##
@@ -496,6 +496,13 @@ src/rtlib/win32/hinit.c:21:17: error: '_PC_64' undeclared (first use in this fun
 		
 		%%ln -s /usr/lib32/libXpm.so.4 /usr/lib32/libXpm.so
 %%
+
+	{{fbdoc item="subsect" value="DJGPP: Too many open files"}}
+	
+		If a DJGPP program fails with a //too many open files// error, this may help to increase the number of available file handles:
+		
+			- If on ""Win32"": Use ##msconfig## to add ##""PerVMFiles=255""## to the ##""[386Enh]""## section of ##SYSTEM.INI##
+			- If on ""Win32"": Edit setting in ##""C:\WINDOWS\system32\CONFIG.NT""##: ##files=255##
 
 {{fbdoc item="back" value="DevToc|FreeBASIC Developer Information"}}
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

@@ -23,7 +23,7 @@ Declares or defines a member procedure returning a value.
 		can be one of: ##[[KeyPgCdecl Cdecl]]##, ##[[KeyPgStdcall Stdcall]]## or ##[[KeyPgPascal Pascal]]##
 
 {{fbdoc item="desc"}}
-	##**Function**## members are accessed with ##[[KeyPgOpMemberAccess Operator . (Member access)]]## or ##[[KeyPgOpPtrMemberAccess Operator -> (Pointer to member access)]]## to call a member procedure that returns a value.  The procedure may optionally accept parameters either ##[[KeyPgByval byval]]## or ##[[KeyPgByref byref]]##.  ##//typename//## be overloaded  without explicit use of the ##[[KeyPgOverload Overload]]## keyword.
+	##**Function**## members are accessed with ##[[KeyPgOpMemberAccess Operator . (Member access)]]## or ##[[KeyPgOpPtrMemberAccess Operator -> (Pointer to member access)]]## to call a member procedure that returns a value (a reference can also be returned by specifying ##[[KeyPgByrefFunction byref as]] //return_type//##).  The procedure may optionally accept parameters either ##[[KeyPgByval byval]]## or ##[[KeyPgByref byref]]##.  ##//typename//## be overloaded  without explicit use of the ##[[KeyPgOverload Overload]]## keyword.
 
 	##//typename//## is the name of the type for which the ##**Function**## method is declared and defined.  Name resolution for ##//typename//## follows the same rules as procedures when used in a ##[[KeyPgNamespace Namespace]]##.
 

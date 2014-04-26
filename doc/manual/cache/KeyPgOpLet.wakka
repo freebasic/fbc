@@ -23,6 +23,7 @@ Indicates the assignment operator when overloading [[KeyPgOpAssignment Operator 
 	##**Let**## is used to overload the ##[[KeyPgOpAssignment Operator = (Assignment)]]## operator and to distinguish it from the comparison operator ##[[KeyPgOpEqual Operator = (Equal)]]##.
 
 	##//lhs// **=** //rhs//## will assign the ##//rhs//## to ##//lhs//## by invoking the ##**Let**## operator procedure defined int ##//typename//##.
+	This includes the case of an object returned from a function by value, by using ##**Function** = //rhs//## (or ##//function_identifier// = //rhs//##) assignment.
 
 	An operator ##**Let**## (assign) must be defined if the shallow implicit copy is not sufficient. This happens in cases when the object manages dynamically allocated memory or other resources which need to be specially copied (for example if a member pointer points to dynamically allocated memory, the implicit assignment operator will simply copy the pointer value instead of allocate memory and then perform the copy of data).
 		Note: It is safe to do a check for self-assignment at the top of the ##**Let**## body (by comparing the address of implicit 'this' instance with the address of 'rhs' parameter) to avoid object destruction if previously allocated memory is first deallocated (see example below).

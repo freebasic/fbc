@@ -2,6 +2,8 @@
 Returns the sign part of a number
 
 {{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Sgn** [[KeyPgOverload overload]] ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Sgn** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgLongint longint]] ) [[KeyPgAs as]] [[KeyPgLongint longint]]
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Sgn** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgDouble double]] ) [[KeyPgAs as]] [[KeyPgDouble double]]
 ##
 {{fbdoc item="usage"}}##
@@ -9,22 +11,22 @@ Returns the sign part of a number
 ##
 {{fbdoc item="param"}}
 	##//number//##
-		the number
+		the number to find the sign of
 
 {{fbdoc item="ret"}}
 	Returns the sign part of ##//number//##.
-	- If //number// is greater than zero, then SGN returns 1.
-	- If //number// is equal to zero, then SGN returns 0.
-	- If //number// is less than zero, then SGN returns -1.
+	- If //number// is greater than zero, then ##**Sgn**## returns ##1##.
+	- If //number// is equal to zero, then ##**Sgn**## returns ##0##.
+	- If //number// is less than zero, then ##**Sgn**## returns ##-1##.
 
 {{fbdoc item="desc"}}
-	The required ##//number//## argument can be any valid numeric expression. If ##//number//## is an uninitialized variable, zero is returned.
+	The required ##//number//## argument can be any valid numeric expression.
 
 	The ##**Sgn**## unary ##[[KeyPgOperator operator]]## can be overloaded with user defined types.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/math/sgn.bas"}}%%(freebasic)
-DIM N AS INTEGER
+DIM N AS INTEGER = 0
 
 PRINT SGN ( -1.87 )
 PRINT SGN ( 0 )
