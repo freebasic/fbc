@@ -31,6 +31,7 @@ typedef struct {
 struct _FBTHREAD {
 #if defined HOST_DOS
 	int id;
+	void *opaque;
 #elif defined HOST_UNIX
 	pthread_t id;
 #elif defined HOST_WIN32
@@ -40,5 +41,4 @@ struct _FBTHREAD {
 #else
 #error Unexpected target
 #endif
-	void         *opaque;
 };
