@@ -970,24 +970,15 @@ private function hCheckParam _
 		if( (typeGetSize( param_dtype ) <> typeGetSize( arg_dtype )) or _
 		    (typeGetClass( param_dtype ) <> typeGetClass( arg_dtype ))    ) then
 			if( symbGetParamMode( param ) = FB_PARAMMODE_BYREF ) then
-				'' skip any casting if they won't do any conversion
-				dim as ASTNODE ptr t = astSkipNoConvCAST( arg )
-
-				'' param diff than arg can't be passed by ref if it's a var/array/ptr
-				'' (cannot pass a bytevar (1 byte) to BYREF INTEGER (4 bytes) param,
-				''  that could cause a segfault)
-				select case as const t->class
-				case AST_NODECLASS_VAR, AST_NODECLASS_IDX, _
-				     AST_NODECLASS_FIELD, AST_NODECLASS_DEREF, _
-				     AST_NODECLASS_IIF
+				'' Different size/dclass; can't allow passing BYREF
+				'' if it's a var because the pointer types are
+				'' incompatible. But if it's not a var then it's ok
+				'' because hCheckByrefParam() will copy the arg into
+				'' a temp var of the proper type.
+				if( astCanTakeAddrOf( astSkipNoConvCAST( arg ) ) ) then
 					errReport( FB_ERRMSG_PARAMTYPEMISMATCHAT )
 					exit function
-				end select
-
-				'' If it's an rvalue expression though then it's ok,
-				'' because it will be stored into a temp var of the
-				'' same type as the BYREF param. Then that temp var
-				'' is given to the BYREF param, and then it's safe.
+				end if
 			end if
 		end if
 
