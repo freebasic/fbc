@@ -6,7 +6,6 @@
 
 static void NTAPI threadproc(void *param1, void *param2)
 {
-#if 0
 	FBTHREADINFO *info = param1;
 
 	/* call the user thread procedure */
@@ -15,7 +14,6 @@ static void NTAPI threadproc(void *param1, void *param2)
 
 	/* free mem */
 	fb_TlsFreeCtxTb( );
-#endif
 }
 
 FBCALL FBTHREAD *fb_ThreadCreate( FB_THREADPROC proc, void *param, ssize_t stack_size )
@@ -44,7 +42,7 @@ FBCALL FBTHREAD *fb_ThreadCreate( FB_THREADPROC proc, void *param, ssize_t stack
 	                                 /* stack_size??? */ 65536,       /* KernelStackSize */
 	                                 0,           /* TlsDataSize */
 	                                 NULL,        /* ThreadId */
-	                                 &info,       /* StartContext1 */
+	                                 info,        /* StartContext1 */
 	                                 NULL,        /* StartContext2 */
 	                                 FALSE,       /* CreateSuspended */
 	                                 FALSE,       /* DebugStack */
