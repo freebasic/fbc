@@ -18,7 +18,16 @@ typedef struct {
 } FBTHREADINFO;
 
 /* Thread handle returned by threadcreate(), so the caller is able to track the
-   thread (freed by threadwait/threaddetach) */
+   thread (freed by threadwait/threaddetach).
+
+   At least on Win32 we probably don't really need this - it would be enough to
+   just use the HANDLE directly instead of wrapping it in an dynamically
+   allocated FBTHREAD structure. (we're already assuming that NULL is an invalid
+   handle in the win32 fb_ThreadCreate(), so that'd be nothing new)
+
+   With pthreads though, it's not clear whether we could store a pthread_t into
+   a void*, because pthread_t doesn't have to be an integer or pointer, and
+   furthermore, zero may be a valid value for it. */
 struct _FBTHREAD {
 #if defined HOST_DOS
 	int id;
