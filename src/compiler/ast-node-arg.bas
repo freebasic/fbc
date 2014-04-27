@@ -281,7 +281,7 @@ private sub hStrArgToStrPtrParam _
 end sub
 
 sub hBuildByrefArg( byval param as FBSYMBOL ptr, byval n as ASTNODE ptr )
-	n->l = astNewADDROF( n->l )
+	n->l = astNewADDROF( astRemoveNoConvCAST( n->l ) )
 	n->l = astNewCONV( typeAddrOf( symbGetFullType( param ) ), symbGetSubtype( param ), n->l )
 	assert( n->l )
 	n->arg.mode = FB_PARAMMODE_BYVAL
@@ -580,12 +580,16 @@ private sub hUDTPassByval _
 	)
 
 	dim as FBSYMBOL ptr tmp = any
-	dim as ASTNODE ptr callexpr = any
+	dim as ASTNODE ptr t = any, callexpr = any
 	dim as integer is_ctorcall = any
+
+	t = astSkipNoConvCAST( n->l )
 
 	'' no dtor, copy-ctor or virtual members?
 	if( symbCompIsTrivial( symbGetSubtype( param ) ) ) then
-		if( astIsCALL( n->l ) ) then
+		if( astIsCALL( t ) ) then
+			n->l = astRemoveNoConvCAST( n->l )
+			assert( astIsCALL( n->l ) )
 			if( symbProcReturnsOnStack( n->l->sym ) ) then
 				'' Returning on stack, access the temp result var
 				n->l = astBuildCallResultVar( n->l )
@@ -608,10 +612,12 @@ private sub hUDTPassByval _
 	tmp = symbAddTempVar( symbGetFullType( param ), symbGetSubtype( param ) )
 	astDtorListAdd( tmp )
 
-	if( astIsTYPEINI( n->l ) ) then
+	if( astIsTYPEINI( t ) ) then
 		'' TYPEINI (e.g. from parameter initializer), assign to the temp
 		'' directly (it will probably always be a ctor call too, since
 		'' the parameter initializer wouldn't have allowed anything else)
+		n->l = astRemoveNoConvCAST( n->l )
+		assert( astIsTYPEINI( n->l ) )
 		n->l = astNewLINK( astTypeIniFlush( tmp, n->l, AST_INIOPT_NONE ), astNewVAR( tmp ), FALSE )
 	else
 		'' Otherwise, call a constructor
@@ -718,6 +724,8 @@ private function hCheckUDTParam _
 	select case symbGetParamMode( param )
 	'' byref param?
 	case FB_PARAMMODE_BYREF
+		n->l = astRemoveNoConvCAST( n->l )
+
 		if( astIsCALL( n->l ) ) then
 			if( symbProcReturnsOnStack( n->l->sym ) = FALSE ) then
 				assert( symbProcReturnsByref( n->l->sym ) = FALSE )

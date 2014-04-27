@@ -378,7 +378,7 @@ function astNewASSIGN _
 		byval options as AST_OPOPT _
 	) as ASTNODE ptr
 
-    dim as ASTNODE ptr n = any
+	dim as ASTNODE ptr n = any
     dim as FB_DATATYPE ldtype = any, rdtype = any, ldfull = any, rdfull = any
     dim as FB_DATACLASS ldclass = any, rdclass = any
     dim as FBSYMBOL ptr lsubtype = any, proc = any
@@ -505,17 +505,16 @@ function astNewASSIGN _
 			exit function
 		end if
 
+		l = astRemoveNoConvCAST( l )
+		r = astRemoveNoConvCAST( r )
+
 		'' type ini tree?
 		if( astIsTYPEINI( r ) ) then
-			'' skip any casting if they won't do any conversion
-			dim as ASTNODE ptr t = astSkipNoConvCAST( l )
-
 			'' Initialize the lhs with the TYPEINI directly,
 			'' instead of using a temp var and then copying that,
 			'' unless there are ctors/dtors (let/cast overloads were
 			'' already handled above).
-			if( (typeHasCtor( t->dtype, t->subtype ) or typeHasDtor( t->dtype, t->subtype )) = FALSE ) then
-				l = astRemoveNoConvCAST( l )
+			if( (typeHasCtor( l->dtype, l->subtype ) or typeHasDtor( l->dtype, l->subtype )) = FALSE ) then
 				return astTypeIniFlush( l, r, AST_INIOPT_NONE )
 			end if
 		end if
