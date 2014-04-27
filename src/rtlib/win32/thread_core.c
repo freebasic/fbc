@@ -41,7 +41,6 @@ FBCALL FBTHREAD *fb_ThreadCreate( FB_THREADPROC proc, void *param, ssize_t stack
 
 	info->proc = proc;
 	info->param = param;
-	thread->info = *info;
 
 #ifdef HOST_MINGW
 	/* Note: _beginthreadex()'s last parameter cannot be NULL,

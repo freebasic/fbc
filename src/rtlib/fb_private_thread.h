@@ -31,6 +31,5 @@ struct _FBTHREAD {
 #else
 #error Unexpected target
 #endif
-	FBTHREADINFO  info;
 	void         *opaque;
 };

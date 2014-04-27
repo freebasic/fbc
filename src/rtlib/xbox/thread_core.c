@@ -35,7 +35,6 @@ FBCALL FBTHREAD *fb_ThreadCreate( FB_THREADPROC proc, void *param, ssize_t stack
 
 	info->proc = proc;
 	info->param = param;
-	thread->info = *info;
 
 	status = PsCreateSystemThreadEx( &thread->id, /* ThreadHandle */
 	                                 0,           /* ThreadExtraSize */
