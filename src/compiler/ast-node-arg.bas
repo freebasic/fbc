@@ -259,17 +259,14 @@ private sub hStrArgToStrPtrParam _
 		end if
 
 		n->l = astBuildStrPtr( n->l )
-		n->dtype = n->l->dtype
 
 	case FB_DATATYPE_FIXSTR
 		assert( astIsCALL( n->l ) = FALSE )
 
 		n->l = astNewCONV( typeAddrOf( FB_DATATYPE_CHAR ), NULL, astNewADDROF( n->l ) )
-		n->dtype = n->l->dtype
 
 	case FB_DATATYPE_CHAR
 		n->l = astNewADDROF( n->l )
-		n->dtype = n->l->dtype
 
 	case FB_DATATYPE_WCHAR
 		'' If it's a WSTRING function result, copy to temp WSTRING so
@@ -280,7 +277,6 @@ private sub hStrArgToStrPtrParam _
 			n->l = astNewADDROF( n->l )
 		end if
 
-		n->dtype = n->l->dtype
 	end select
 end sub
 
