@@ -6,10 +6,11 @@
 /* thread proxy to user's thread proc */
 static void *threadproc( void *param )
 {
-	FBTHREAD *thread = param;
+	FBTHREADINFO *info = param;
 
 	/* call the user thread */
-	thread->proc( thread->param );
+	info->proc( info->param );
+	free( info );
 
 	/* free mem */
 	fb_TlsFreeCtxTb( );
@@ -21,17 +22,27 @@ static void *threadproc( void *param )
 FBCALL FBTHREAD *fb_ThreadCreate( FB_THREADPROC proc, void *param, ssize_t stack_size )
 {
 	FBTHREAD *thread;
+	FBTHREADINFO *info;
 	pthread_attr_t tattr;
 
-	thread = (FBTHREAD *)malloc( sizeof(FBTHREAD) );
-	if( !thread )
+	thread = (FBTHREAD *)malloc( sizeof( FBTHREAD ) );
+	if( thread == NULL ) {
 		return NULL;
+	}
 
-	thread->proc	= proc;
-	thread->param 	= param;
+	info = (FBTHREADINFO *)malloc( sizeof( FBTHREADINFO ) );
+	if( info == NULL ) {
+		free( thread );
+		return NULL;
+	}
+
+	info->proc = proc;
+	info->param = param;
+	thread->info = *info;
 
 	if( pthread_attr_init( &tattr ) ) {
 		free( thread );
+		free( info );
 		return NULL;
 	}
 
@@ -42,8 +53,9 @@ FBCALL FBTHREAD *fb_ThreadCreate( FB_THREADPROC proc, void *param, ssize_t stack
 
 	pthread_attr_setstacksize( &tattr, stack_size );
 
-	if( pthread_create( &thread->id, &tattr, threadproc, (void *)thread ) ) {
-		free( (void *)thread );
+	if( pthread_create( &thread->id, &tattr, threadproc, info ) ) {
+		free( thread );
+		free( info );
 		thread = NULL;
 	}
 

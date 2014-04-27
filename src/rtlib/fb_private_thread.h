@@ -10,6 +10,15 @@
 	};
 #endif
 
+/* Info structure passed to our internal threadproc()s, so it can call the
+   user's threadproc (freed at the end of our threadproc()s) */
+typedef struct {
+	FB_THREADPROC proc;
+	void         *param;
+} FBTHREADINFO;
+
+/* Thread handle returned by threadcreate(), so the caller is able to track the
+   thread (freed by threadwait/threaddetach) */
 struct _FBTHREAD {
 #if defined HOST_DOS
 	int id;
@@ -22,7 +31,6 @@ struct _FBTHREAD {
 #else
 #error Unexpected target
 #endif
-	FB_THREADPROC proc;
-	void         *param;
+	FBTHREADINFO  info;
 	void         *opaque;
 };
