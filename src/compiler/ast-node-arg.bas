@@ -915,12 +915,10 @@ private function hCheckParam _
 		hStrArgToStrPtrParam( parent, n, TRUE )
 
 		if( typeIsPtr( param_dtype ) = FALSE ) then
-			n = astNewDEREF( n )
-			arg = n
-		else
-			arg = n->l
+			n->l = astNewDEREF( n->l )
 		end if
 
+		arg = n->l
 		arg_dtype = astGetDatatype( arg )
 
 	'' UDT? implicit casting failed, can't convert..
