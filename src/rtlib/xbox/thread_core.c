@@ -53,7 +53,7 @@ FBCALL FBTHREAD *fb_ThreadCreate( FB_THREADPROC proc, void *param, ssize_t stack
 		return NULL;
 	}
 
-	return NULL;
+	return thread;
 }
 
 FBCALL void fb_ThreadWait( FBTHREAD *thread )
