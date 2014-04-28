@@ -726,7 +726,7 @@ void fb_hX11SetMouse(int x, int y, int show, int clip)
 
 		mouse_on = TRUE;
 		mouse_x = x;
-		mouse_y = x;
+		mouse_y = y;
 
 		XWarpPointer(fb_x11.display, None, fb_x11.window, 0, 0, 0, 0, mouse_x, mouse_y);
 	}
