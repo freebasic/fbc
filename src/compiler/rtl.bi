@@ -809,7 +809,7 @@ enum FB_RTL_OPT
 	FB_RTL_OPT_MT		  = &h00000004					'' needs the multithreaded rtlib
 
 	FB_RTL_OPT_DBGONLY	  = &h00000010                  '' -g only
-	FB_RTL_OPT_OPERATOR	  = &h00000020
+				''= &h00000020
 	FB_RTL_OPT_STRSUFFIX  = &h00000040                  '' has a $ suffix (-lang qb only)
 	FB_RTL_OPT_NOQB		  = &h00000080                  '' anything but -lang qb
 	FB_RTL_OPT_QBONLY	  = &h00000100                  '' -lang qb only

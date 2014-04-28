@@ -248,45 +248,31 @@ sub rtlAddIntrinsicProcs( byval procdef as const FB_RTL_PROCDEF ptr )
 				attrib or= FB_SYMBATTRIB_SUFFIXED
 			end if
 
-			'' Note: for operators, this is the AST_OP_* value, not a valid zstring ptr
 			dim as const zstring ptr pname = procdef->name
 			dim as const zstring ptr palias = procdef->alias
 
-			'' ordinary proc?
-			if( (procdef->options and FB_RTL_OPT_OPERATOR) = 0 ) then
-				'' add the '__' prefix if the proc wasn't present in QB and we are in '-lang qb' mode
-				if( (procdef->options and FB_RTL_OPT_NOQB) <> 0 ) then
-					if( fbLangIsSet( FB_LANG_QB ) ) then
-						if( palias = NULL ) then
-							static as string tmp_alias
-							tmp_alias = *pname
-							palias = strptr( tmp_alias )
-						end if
-
-						static as string tmp_name
-						tmp_name = "__" + *pname
-						pname = strptr( tmp_name )
+			'' add the '__' prefix if the proc wasn't present in QB and we are in '-lang qb' mode
+			if( (procdef->options and FB_RTL_OPT_NOQB) <> 0 ) then
+				if( fbLangIsSet( FB_LANG_QB ) ) then
+					if( palias = NULL ) then
+						static as string tmp_alias
+						tmp_alias = *pname
+						palias = strptr( tmp_alias )
 					end if
+
+					static as string tmp_name
+					tmp_name = "__" + *pname
+					pname = strptr( tmp_name )
 				end if
-
-				if( palias = NULL ) then
-					palias = pname
-				end if
-
-				proc = symbAddProc( proc, pname, palias, _
-				                    procdef->dtype, NULL, attrib, callconv, _
-				                    FB_SYMBOPT_DECLARING or FB_SYMBOPT_RTL )
-
-			'' operator..
-			else
-				proc = symbAddOperator( proc, cast(AST_OP, pname), NULL, _
-				                        procdef->dtype, NULL, attrib or FB_SYMBATTRIB_OPERATOR, callconv, _
-				                        FB_SYMBOPT_DECLARING or FB_SYMBOPT_RTL )
-
-    			if( proc <> NULL ) then
-    				symbGetMangling( proc ) = FB_MANGLING_CPP
-    			end if
 			end if
+
+			if( palias = NULL ) then
+				palias = pname
+			end if
+
+			proc = symbAddProc( proc, pname, palias, _
+			                    procdef->dtype, NULL, attrib, callconv, _
+			                    FB_SYMBOPT_DECLARING or FB_SYMBOPT_RTL )
 
 			if( proc <> NULL ) then
 				symbSetProcCallback( proc, procdef->callback )
@@ -297,11 +283,7 @@ sub rtlAddIntrinsicProcs( byval procdef as const FB_RTL_PROCDEF ptr )
 					proc->stats or= FB_SYMBSTATS_CANBECLONED
 				end if
 			else
-				if( (procdef->options and FB_RTL_OPT_OPERATOR) = 0 ) then
-					errReportEx( FB_ERRMSG_DUPDEFINITION, *procdef->name )
-				else
-					errReport( FB_ERRMSG_DUPDEFINITION )
-				end if
+				errReportEx( FB_ERRMSG_DUPDEFINITION, *procdef->name )
 			end if
 		end if
 
