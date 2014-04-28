@@ -262,7 +262,7 @@ private function fbcFindLibFile( byval file as zstring ptr ) as string
 	'' Normal however wants to use the "system's" files (and only has few
 	'' files in its own lib/).
 	''
-	'' Typically libgcc.a, libsupc++.a, crtbegin.o, crtend.o will be inside
+	'' Typically libgcc.a, crtbegin.o, crtend.o will be inside
 	'' gcc's sub-directory in lib/gcc/target/version, i.e. Normal can only
 	'' find them via 'gcc -print-file-name=foo' (except for hard-coding
 	'' against a specific gcc target/version, but that's not a good option).
@@ -2826,18 +2826,10 @@ private sub hSetDefaultLibPaths( )
 	fbcAddDefLibPath( "." )
 
 #ifndef ENABLE_STANDALONE
-	'' Add gcc's private lib directory, to find libgcc and libsupc++
+	'' Add gcc's private lib directory, to find libgcc
 	'' This is for installing into Unix-like systems, and not for
-	'' standalone, which has libgcc/libsupc++ in the main lib/.
+	'' standalone, which has libgcc in the main lib/.
 	fbcAddLibPathFor( "libgcc.a" )
-
-	if( fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_DOS ) then
-		'' Note: The standalone DOS FB uses the renamed 8.3 filename version: supcx
-		'' But this is for installing into DJGPP, where apparently supcxx is working fine.
-		fbcAddLibPathFor( "libsupcxx.a" )
-	else
-		fbcAddLibPathFor( "libsupc++.a" )
-	end if
 
 	select case( fbGetOption( FB_COMPOPT_TARGET ) )
 	case FB_COMPTARGET_DOS
@@ -2904,7 +2896,6 @@ private sub hAddDefaultLibs( )
 		fbcAddDefLib( "gcc" )
 		fbcAddDefLib( "cygwin" )
 		fbcAddDefLib( "kernel32" )
-		fbcAddDefLib( "supc++" )
 
 		'' profiling?
 		if( fbGetOption( FB_COMPOPT_PROFILE ) ) then
@@ -2919,14 +2910,6 @@ private sub hAddDefaultLibs( )
 		fbcAddDefLib( "gcc" )
 		fbcAddDefLib( "c" )
 		fbcAddDefLib( "m" )
-		#ifdef ENABLE_STANDALONE
-			'' Renamed lib for the standalone build, working around
-			'' the long file name.
-			fbcAddDefLib( "supcx" )
-		#else
-			'' When installing into DJGPP, use its lib
-			fbcAddDefLib( "supcxx" )
-		#endif
 
 	case FB_COMPTARGET_FREEBSD
 		fbcAddDefLib( "gcc" )
@@ -2934,7 +2917,6 @@ private sub hAddDefaultLibs( )
 		fbcAddDefLib( "c" )
 		fbcAddDefLib( "m" )
 		fbcAddDefLib( "ncurses" )
-		fbcAddDefLib( "supc++" )
 
 	case FB_COMPTARGET_LINUX
 		''
@@ -2945,10 +2927,6 @@ private sub hAddDefaultLibs( )
 		'' -lpthread/-lc containing overlapping symbols (but the pthread
 		'' ones should be used). This is confirmed by minimal testing,
 		'' searching the web and 'gcc -pthread' behavior.
-		''
-		'' Also, it seems like libsupc++/libstdc++ need to be linked
-		'' before libc, at least with more recent glibc/gcc, see also:
-		''    http://www.freebasic.net/forum/viewtopic.php?f=5&t=20733
 		''
 		'' libncurses and libtinfo: FB's rtlib depends on the libtinfo
 		'' part of ncurses, which sometimes is included in libncurses
@@ -2964,7 +2942,6 @@ private sub hAddDefaultLibs( )
 
 		fbcAddDefLib( "m" )
 		fbcAddDefLib( "dl" )
-		fbcAddDefLib( "supc++" )
 		fbcAddDefLib( "pthread" )
 		fbcAddDefLib( "gcc" )
 		'' Link libgcc_eh if it exists (it depends on the gcc build)
@@ -2983,7 +2960,6 @@ private sub hAddDefaultLibs( )
 		fbcAddDefLib( "c" )
 		fbcAddDefLib( "m" )
 		fbcAddDefLib( "ncurses" )
-		fbcAddDefLib( "supc++" )
 
 	case FB_COMPTARGET_WIN32
 		fbcAddDefLib( "gcc" )
@@ -2992,7 +2968,6 @@ private sub hAddDefaultLibs( )
 		fbcAddDefLib( "mingw32" )
 		fbcAddDefLib( "mingwex" )
 		fbcAddDefLib( "moldname" )
-		fbcAddDefLib( "supc++" )
 		'' Link libgcc_eh if it exists
 		if( (len( fbcFindLibFile( "libgcc_eh.a"     ) ) > 0) or _
 		    (len( fbcFindLibFile( "libgcc_eh.dll.a" ) ) > 0) ) then
@@ -3014,7 +2989,6 @@ private sub hAddDefaultLibs( )
 		fbcAddDefLib( "usb" )
 		fbcAddDefLib( "xboxkrnl" )
 		fbcAddDefLib( "m" )
-		fbcAddDefLib( "supc++" )
 
 		'' profiling?
 		if( fbGetOption( FB_COMPOPT_PROFILE ) ) then

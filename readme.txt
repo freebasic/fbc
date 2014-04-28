@@ -51,7 +51,6 @@
           Debian/Ubuntu:
             x86:               amd64 old:           amd64 new:
               gcc                gcc-multilib         gcc-multilib
-              g++                g++-multilib         g++-multilib
               libncurses5-dev    lib32ncurses5-dev    lib32ncurses5-dev
               libx11-dev         ia32-libs            libx11-dev:i386
               libxext-dev        lib32ffi-dev         libxext-dev:i386
@@ -62,7 +61,6 @@
           OpenSUSE:
             x86:               x86_64:
               gcc                gcc-32bit
-              gcc-c++            gcc-c++-32bit
               ncurses-devel      ncurses-devel-32bit
               xorg-x11-devel     xorg-x11-devel-32bit
               libffi46-devel     xorg-x11-libX11-devel-32bit

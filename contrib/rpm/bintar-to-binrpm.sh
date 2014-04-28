@@ -24,7 +24,6 @@ list_requires()
 		i386)
 			echo "binutils"
 			echo "gcc"
-			echo "gcc-c++"
 			echo "ncurses-devel"
 			echo "xorg-x11-devel"
 			echo "libffi46-devel"
@@ -32,7 +31,6 @@ list_requires()
 		x86_64)
 			echo "binutils"
 			echo "gcc-32bit"
-			echo "gcc-c++-32bit"
 			echo "ncurses-devel-32bit"
 			echo "xorg-x11-devel-32bit"
 			echo "xorg-x11-libX11-devel-32bit"
@@ -48,7 +46,6 @@ list_requires()
 		i386)
 			echo "binutils"
 			echo "gcc"
-			echo "libstdc++-static"
 			echo "ncurses-devel"
 			echo "libffi-devel"
 			echo "libX11-devel"
@@ -60,7 +57,6 @@ list_requires()
 		x86_64)
 			echo "binutils"
 			echo "gcc"
-			echo "libstdc++-static.i686"
 			echo "ncurses-devel.i686"
 			echo "libffi-devel.i686"
 			echo "libX11-devel.i686"

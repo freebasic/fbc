@@ -74,7 +74,7 @@ bin/fbc-new: rtlib $(OBJ) | bin
 		"$(shell gcc -m32 -print-file-name=crtbegin.o)" \
 		lib/freebasic/fbrt0.o \
 		$(OBJ) \
-		"-(" -lfb -lgcc -lpthread -lc -lm -ldl -lncurses -lsupc++ -lgcc_eh "-)" \
+		"-(" -lfb -lgcc -lpthread -lc -lm -ldl -lncurses -lgcc_eh "-)" \
 		"$(shell gcc -m32 -print-file-name=crtend.o)" \
 		"$(shell gcc -m32 -print-file-name=crtn.o)"
 

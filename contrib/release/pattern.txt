@@ -196,7 +196,6 @@
 + lib/dos/libfbgfx.a
 + lib/dos/libgcc.a
 + lib/dos/libm.a
-+ lib/dos/libsupcx.a
 + readme.txt
 
 [djgpp]
@@ -734,7 +733,6 @@
 + lib/win32/libmingwex.a
 + lib/win32/libmoldname.a
 + lib/win32/libmsvcrt.dll.a
-+ lib/win32/libsupc++.a
 + lib/win32/libuser32.dll.a
 + lib/win32/libwinmm.dll.a
 + lib/win32/libwinspool.dll.a
