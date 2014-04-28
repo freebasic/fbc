@@ -126,78 +126,16 @@
 				( FB_DATATYPE_UINT, FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 	 	), _
-		/' operator new cdecl( byval bytes as uinteger ) as any ptr '/ _
-		( _
-			cast( zstring ptr, AST_OP_NEW ), NULL, _
-			typeAddrOf( FB_DATATYPE_VOID ), FB_FUNCMODE_CDECL, _
-	 		NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_OPERATOR, _
-			1, _
-			{ _
-				( FB_DATATYPE_UINT, FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
-		), _
-		/' operator new[] cdecl( byval bytes as uinteger ) as any ptr '/ _
-		( _
-			cast( zstring ptr, AST_OP_NEW_VEC ), NULL, _
-			typeAddrOf( FB_DATATYPE_VOID ), FB_FUNCMODE_CDECL, _
-	 		NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_OPERATOR, _
-			1, _
-			{ _
-				( FB_DATATYPE_UINT, FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
-		), _
-		/' operator delete cdecl( byval ptr as any ptr ) '/ _
-		( _
-			cast( zstring ptr, AST_OP_DEL ), NULL, _
-			FB_DATATYPE_VOID, FB_FUNCMODE_CDECL, _
-	 		NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_OPERATOR, _
-			1, _
-			{ _
-				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
-		), _
-		/' operator delete[] cdecl( byval ptr as any ptr ) '/ _
-		( _
-			cast( zstring ptr, AST_OP_DEL_VEC ), NULL, _
-			FB_DATATYPE_VOID, FB_FUNCMODE_CDECL, _
-	 		NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_OPERATOR, _
-			1, _
-			{ _
-				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
-		), _
 	 	/' EOL '/ _
 	 	( _
 	 		NULL _
 	 	) _
 	 }
 
-private sub hUpdateNewOpSizeParamType( byval op as AST_OP )
-	dim as FBSYMBOL ptr sym = any
-	sym = symbGetCompOpOvlHead( NULL, op )
-	if( sym ) then
-		sym = symbGetProcHeadParam( sym )
-		if( sym ) then
-			symbGetFullType( sym ) = iif( fbIs64bit( ), _
-							env.target.size_t64, _
-							env.target.size_t32 )
-		end if
-	end if
-end sub
-
 '':::::
 sub rtlMemModInit( )
 
 	rtlAddIntrinsicProcs( @funcdata(0) )
-
-	'' remap the new/new[] size param, size_t can be unsigned (int | long),
-	'' making the mangling incompatible..
-
-	'' new
-	hUpdateNewOpSizeParamType( AST_OP_NEW )
-
-	'' new[]
-	hUpdateNewOpSizeParamType( AST_OP_NEW_VEC )
 
 end sub
 
@@ -207,7 +145,6 @@ sub rtlMemModEnd( )
 	'' procs will be deleted when symbEnd is called
 
 end sub
-
 
 '':::::
 function rtlNullPtrCheck _
@@ -345,10 +282,9 @@ function rtlMemNewOp _
 		sym = NULL
 	end if
 
-	'' if not defined, call the global one
+	'' If no new overload was declared, just call allocate()
 	if( sym = NULL ) then
-		assert( (op = AST_OP_NEW) or (op = AST_OP_NEW_VEC) )
-		sym = symbGetCompOpOvlHead( NULL, op )
+		sym = rtlProcLookup( @"allocate", FB_RTL_IDX_ALLOCATE )
 	end if
 
 	proc = astNewCALL( sym )
@@ -385,10 +321,9 @@ function rtlMemDeleteOp _
 		sym = NULL
 	end if
 
-	'' if not defined, call the global one
+	'' If no delete overload was declared, just call deallocate()
 	if( sym = NULL ) then
-		assert( (op = AST_OP_DEL) or (op = AST_OP_DEL_VEC) )
-		sym = symbGetCompOpOvlHead( NULL, op )
+		sym = rtlProcLookup( @"deallocate", FB_RTL_IDX_DEALLOCATE )
 	end if
 
 	proc = astNewCALL( sym )

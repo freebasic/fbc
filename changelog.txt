@@ -13,6 +13,7 @@ Version 0.91.0:
 - The C++-compatible name mangling for procedures with BYDESC parameters has been adjusted to match the implementation of BYDESC parameters, and to support the new '(any[, ...])' syntax.
 - When querying colors, Point() now always returns an unsigned 32bit value (ULong) instead of a signed one. This means it can be used on 64bit without having to worry about the color value being sign-extended to 64bit. (64bit port)
 - rgb() and rgba() now always return an unsigned 32bit ULong, no longer UInteger (64bit port)
+- #699: The default global New/New[]/Delete/Delete[] operators now simply use allocate()/deallocate() internally, instead of the functions from GCC's libsupc++. This avoids platform-dependant behaviour of the GCC functions (exception throwing, aborting) in case of allocation failure (instead, NULL will be returned as with allocate()).
 
 [added]
 - 64bit support (-arch x86_64) based on -gen gcc: INTEGER/POINTER = 64bit, LONG = 32bit DWORD. Compiler #define: __FB_64BIT__

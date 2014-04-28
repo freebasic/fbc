@@ -3,11 +3,6 @@ o 64bit
     OS name. Should they show arch too, or should it be separate? Or add
     something like -print host (all), -print hostos, -print hostarch
   - Add -print host/target-bits?
-  - May have to specify C++ mangled name for new/new[]/delete/delete[] operators
-    manually instead of using env.target.size_t, because our C++ mangling won't
-    be fully compatible. On Linux, new probably uses size_t, which is unsigned long,
-    but none of FB types will be mangled as long on 64bit. It could work on Win64
-    at least, if new uses a long long param there...
   - FB includes must be adjusted for 64bit compatibility (if the corresponding
     library even is available on 64bit)
   - Windows port I/O driver? Can it be ported to 64bit? is it needed?
