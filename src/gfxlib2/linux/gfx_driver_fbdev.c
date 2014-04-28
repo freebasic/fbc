@@ -617,7 +617,6 @@ static void driver_set_mouse(int x, int y, int cursor, int clip)
 		x = MID(0, x, __fb_gfx->w - 1);
 		y = MID(0, y, __fb_gfx->h - 1);
 
-		mouse_on = TRUE;
 		mouse_x = x;
 		mouse_y = y;
 	}
