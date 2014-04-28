@@ -553,8 +553,6 @@ end enum
 
 type FBTARGET
 	id              as zstring ptr
-	size_t32        as FB_DATATYPE  '' 32bit size_t type
-	size_t64        as FB_DATATYPE  '' 64bit size_t type
 	wchar           as FB_DATATYPE  '' Real wstring data type
 	fbcall          as FB_FUNCMODE  '' Default calling convention, must match the rtlib's FBCALL
 	stdcall         as FB_FUNCMODE  '' Calling convention to use for stdcall (stdcall or stdcallms)
