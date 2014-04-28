@@ -606,11 +606,11 @@ static int driver_get_mouse(int *x, int *y, int *z, int *buttons, int *clip)
 
 static void driver_set_mouse(int x, int y, int cursor, int clip)
 {
-	if (x != 0x80000000 || y != 0x80000000) {
-		if (x == 0x80000000) {
+	if (x != (int)0x80000000 || y != (int)0x80000000) {
+		if (x == (int)0x80000000) {
 			x = mouse_x;
 		}
-		else if (y == 0x80000000) {
+		else if (y == (int)0x80000000) {
 			y = mouse_y;
 		}
 

@@ -283,11 +283,11 @@ void fb_dos_set_mouse(int x, int y, int cursor, int clip)
 
 	fb_dos.mouse_cursor = cursor;
 
-	if (x != 0x80000000 || y != 0x80000000) {
-		if (x == 0x80000000) {
+	if (x != (int)0x80000000 || y != (int)0x80000000) {
+		if (x == (int)0x80000000) {
 			x = fb_dos_mouse_x;
 		}
-		else if (y == 0x80000000) {
+		else if (y == (int)0x80000000) {
 			y = fb_dos_mouse_y;
 		}
 
@@ -302,7 +302,7 @@ void fb_dos_set_mouse(int x, int y, int cursor, int clip)
 		fb_dos.regs.x.dx = y;
 		__dpmi_int(0x33, &fb_dos.regs);
 	}
-	
+
 	if (clip == 0)
 		fb_dos.mouse_clip = FALSE;
 	else if (clip > 0)
