@@ -281,6 +281,8 @@ void fb_dos_set_mouse(int x, int y, int cursor, int clip)
 
 	if (!fb_dos.mouse_ok) return;
 
+	fb_dos.mouse_cursor = cursor;
+
 	if (x != 0x80000000 || y != 0x80000000) {
 		if (x == 0x80000000) {
 			x = fb_dos_mouse_x;
@@ -294,8 +296,6 @@ void fb_dos_set_mouse(int x, int y, int cursor, int clip)
 
 		fb_dos_mouse_x = x;
 		fb_dos_mouse_y = y;
-
-		fb_dos.mouse_cursor = cursor;
 
 		fb_dos.regs.x.ax = 0x4;
 		fb_dos.regs.x.cx = x;
