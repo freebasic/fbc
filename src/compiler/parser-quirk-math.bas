@@ -119,18 +119,6 @@ private function hLenSizeof _
 			is_len = FALSE
 			expr = astRemoveNIDXARRAY( expr )
 		end if
-
-		'' Disallow string expressions in SIZEOF()
-		if( is_len = FALSE ) then
-			if( astGetDataClass( expr ) = FB_DATACLASS_STRING ) then
-				if( (astGetSymbol( expr ) = NULL) or astIsCALL( expr ) ) then
-					errReport( FB_ERRMSG_EXPECTEDIDENTIFIER, TRUE )
-					'' error recovery: fake an expr
-					astDelTree( expr )
-					expr = astNewCONSTi( 0 )
-				end if
-			end if
-		end if
 	end if
 
 	'' ')'

@@ -170,14 +170,20 @@ sub sizeofExpression cdecl()
 	CU_ASSERT(sizeof(bb.a) = sizeof(integer))
 	'/
 
+	dim as string sa = "a", sbb = "bb"
 	dim fstr as string * 31 = "a"
 	dim z as zstring * 32 = "abc"
 	dim w as wstring * 32 = "abcde"
+	dim psa as string ptr = @sa
 	dim pz as zstring ptr = @z
 	dim pw as wstring ptr = @w
 
+	CU_ASSERT( sizeof( sa + sbb ) = sizeof( string ) )
+	CU_ASSERT(    len( sa + sbb ) = 3 )
 	CU_ASSERT( sizeof( fstr ) = 32 )
 	CU_ASSERT(    len( fstr ) = 31 )
+	CU_ASSERT( sizeof( *psa ) = sizeof( string ) )
+	CU_ASSERT(    len( *psa ) = 1 )
 	CU_ASSERT( sizeof( *pz )  = sizeof( zstring ) )
 	CU_ASSERT(    len( *pz )  = 3 )  '' "abc"
 	CU_ASSERT( sizeof( *pw )  = sizeof( wstring ) )
