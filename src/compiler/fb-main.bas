@@ -99,7 +99,6 @@ private sub hMainBegin( )
 	'' byval argv as zstring ptr ptr
 	argv = symbAddProcParam( proc, "__FB_ARGV__", typeMultAddrOf( FB_DATATYPE_CHAR, 2 ), NULL, _
 	                         0, FB_PARAMMODE_BYVAL, 0 )
-	argv->stats or= FB_SYMBSTATS_ARGV
 
 	'' if it's a dll, the main() function should be private
 	var attrib = FB_SYMBATTRIB_PUBLIC
@@ -110,6 +109,11 @@ private sub hMainBegin( )
 		if( env.clopt.backend = FB_BACKEND_GCC ) then
 			id = *symbUniqueId( )
 		end if
+	else
+		'' If the implicit main() will actually be called main() and be
+		'' public too, then the C backend needs to take care to emit
+		'' argv with the proper dtype...
+		argv->stats or= FB_SYMBSTATS_ARGV
 	end if
 
 	'' function main cdecl( byval argc as long, byval argv as zstring ptr ptr ) as long
