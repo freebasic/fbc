@@ -905,7 +905,7 @@ private function hCheckParam _
 		exit function
 	end select
 
-	'' enum args are only allowed to be passed enum or int params
+	'' enum args are only allowed to be passed to enum or int params
 	if( (param_dtype = FB_DATATYPE_ENUM) or (arg_dtype = FB_DATATYPE_ENUM) ) then
 		if( typeGetClass( param_dtype ) <> typeGetClass( arg_dtype ) ) then
 			errReportWarn( FB_WARNINGMSG_IMPLICITCONVERSION )
@@ -918,7 +918,7 @@ private function hCheckParam _
 			if( typeIsPtr( arg_dtype ) = FALSE ) then
 				errReportWarn( FB_WARNINGMSG_PASSINGSCALARASPTR )
 			else
-				'' if both are UDT, a base param can't be passed to a derived arg
+				'' if both are UDT, a base arg can't be passed to a derived param
 				if( typeGetDtOnly( param_dtype ) = FB_DATATYPE_STRUCT and typeGetDtOnly( arg_dtype ) = FB_DATATYPE_STRUCT ) then
 					if( symbGetUDTBaseLevel( symbGetSubtype( param ), astGetSubType( n->l ) ) > 0 ) then
 						errReport( FB_ERRMSG_INVALIDDATATYPES )
