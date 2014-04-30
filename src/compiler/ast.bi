@@ -1076,13 +1076,15 @@ declare function astBuildVarInc _
 declare function astBuildVarAssign overload _
 	( _
 		byval lhs as FBSYMBOL ptr, _
-		byval rhs as integer _
+		byval rhs as integer, _
+		byval options as integer = 0 _
 	) as ASTNODE ptr
 
 declare function astBuildVarAssign _
 	( _
 		byval lhs as FBSYMBOL ptr, _
-		byval rhs as ASTNODE ptr _
+		byval rhs as ASTNODE ptr, _
+		byval options as integer = 0 _
 	) as ASTNODE ptr
 
 declare function astBuildFakeWstringAccess( byval sym as FBSYMBOL ptr ) as ASTNODE ptr

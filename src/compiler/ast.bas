@@ -370,7 +370,7 @@ function astMakeRef( byref expr as ASTNODE ptr ) as ASTNODE ptr
 	temp = symbAddTempVar( typeAddrOf( expr->dtype ), expr->subtype )
 
 	'' temp = @expr
-	function = astNewASSIGN( astNewVAR( temp ), astNewADDROF( expr ) )
+	function = astNewASSIGN( astNewVAR( temp ), astNewADDROF( expr ), AST_OPOPT_ISINI )
 
 	'' Use *temp instead of the original expr
 	expr = astNewDEREF( astNewVAR( temp ) )
@@ -398,7 +398,7 @@ function astRemSideFx( byref n as ASTNODE ptr ) as ASTNODE ptr
 		tmp = symbAddTempVar( n->dtype, n->subtype )
 
 		'' tmp = n
-		function = astNewASSIGN( astNewVAR( tmp ), n )
+		function = astNewASSIGN( astNewVAR( tmp ), n, AST_OPOPT_ISINI )
 
 		'' repatch original expression to just access the temp var
 		n = astNewVAR( tmp )

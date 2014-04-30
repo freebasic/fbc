@@ -962,7 +962,7 @@ function astBuildBranch _
 	if( call_dtors ) then
 		'' 1. assign the condition to a temp var
 		temp = symbAddTempVar( dtype, expr->subtype )
-		n = astBuildVarAssign( temp, expr )
+		n = astBuildVarAssign( temp, expr, AST_OPOPT_ISINI )
 
 		'' 2. call dtors
 		n = astNewLINK( n, astDtorListFlush( ) )

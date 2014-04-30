@@ -469,7 +469,7 @@ function cAssignmentOrPtrCall _
 	if( exprcnt > 0 ) then
 		tmp = symbAddTempVar( typeAddrOf( astGetFulltype( expr ) ), astGetSubtype( expr ) )
 		'' tmp = @expr
-		tree = astBuildVarAssign( tmp, astNewADDROF( expr ) )
+		tree = astBuildVarAssign( tmp, astNewADDROF( expr ), AST_OPOPT_ISINI )
 	end if
 
 	fld = symbUdtGetFirstField( astGetSubtype( expr ) )

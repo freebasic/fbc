@@ -392,7 +392,7 @@ function astBuildCallResultUdt( byval expr as ASTNODE ptr ) as ASTNODE ptr
 		'' No need to bother doing astDtorListAdd()
 		assert( symbHasDtor( tmp ) = FALSE )
 
-		expr = astNewASSIGN( astBuildVarField( tmp ), expr, AST_OPOPT_DONTCHKOPOVL )
+		expr = astNewASSIGN( astBuildVarField( tmp ), expr, AST_OPOPT_DONTCHKOPOVL or AST_OPOPT_ISINI )
 
 		function = astNewLINK( expr, _
 			astBuildVarField( tmp ), _

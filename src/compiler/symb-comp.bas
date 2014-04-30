@@ -328,12 +328,14 @@ private sub hAssignDynamicArray _
 	'' dst   = this.dstdesc.ptr
 	'' src   = this.srcdesc.ptr
 	'' limit = src + this.srcdesc.size
-	astAdd( astBuildVarAssign( dst, astBuildDerefAddrOf( dstexpr, symb.fbarray_ptr, dtype, fld->subtype ) ) )
-	astAdd( astBuildVarAssign( src, astBuildDerefAddrOf( srcexpr, symb.fbarray_ptr, dtype, fld->subtype ) ) )
-	astAdd( astBuildVarAssign( limit, _
+	astAdd( astBuildVarAssign( dst, astBuildDerefAddrOf( dstexpr, symb.fbarray_ptr, dtype, fld->subtype ), AST_OPOPT_ISINI ) )
+	astAdd( astBuildVarAssign( src, astBuildDerefAddrOf( srcexpr, symb.fbarray_ptr, dtype, fld->subtype ), AST_OPOPT_ISINI ) )
+	astAdd( astBuildVarAssign( _
+		limit, _
 		astNewBOP( AST_OP_ADD, _
 			astNewVAR( src ), _
-			astBuildDerefAddrOf( srcexpr, symb.fbarray_size, FB_DATATYPE_UINT, NULL ) ) ) )
+			astBuildDerefAddrOf( srcexpr, symb.fbarray_size, FB_DATATYPE_UINT, NULL ) ), _
+		AST_OPOPT_ISINI ) )
 
 	'' looplabel:
 	astAdd( astNewLABEL( looplabel ) )
@@ -374,10 +376,10 @@ private sub hAssignList _
     dst = symbAddTempVar( typeAddrOf( symbGetType( fld ) ), subtype )
     src = symbAddTempVar( typeAddrOf( symbGetType( fld ) ), subtype )
 
-    '' dst = @this.dst(0)
-    astAdd( astBuildVarAssign( dst, astNewADDROF( dstexpr ) ) )
-    '' src = @this.src(0)
-    astAdd( astBuildVarAssign( src, astNewADDROF( srcexpr ) ) )
+	'' dst = @this.dst(0)
+	astAdd( astBuildVarAssign( dst, astNewADDROF( dstexpr ), AST_OPOPT_ISINI ) )
+	'' src = @this.src(0)
+	astAdd( astBuildVarAssign( src, astNewADDROF( srcexpr ), AST_OPOPT_ISINI ) )
 
 	'' for cnt = 0 to symbGetArrayElements( dst )-1
 	astAdd( astBuildForBegin( NULL, cnt, label, 0 ) )

@@ -24,7 +24,7 @@ private function hCtorList _
 	this_ = symbAddTempVar( typeAddrOf( symbGetType( sym ) ), subtype )
 
 	'' fld = @sym(0)
-	tree = astNewLINK( tree, astBuildVarAssign( this_, astNewADDROF( astNewVAR( sym ) ) ) )
+	tree = astNewLINK( tree, astBuildVarAssign( this_, astNewADDROF( astNewVAR( sym ) ), AST_OPOPT_ISINI ) )
 
 	'' for cnt = 0 to symbGetArrayElements( sym )-1
 	tree = astBuildForBegin( tree, cnt, label, 0 )

@@ -172,6 +172,7 @@ Version 0.91.0:
 - #719: Compiler crash when passing an upcasted class/UDT function result to a Byref parameter
 - #698: sizeof() now allows string expressions (note: it returns sizeof(string), not the string length - len() should be used for that)
 - #685: SETMOUSE had differing behaviour between platforms when x and y were not both present and within the window
+- When passing classes without copy-constructor to a Byval parameter, their Let operator overload was called without initializing/constructing the parameter object first.
 
 
 Version 0.90.1:

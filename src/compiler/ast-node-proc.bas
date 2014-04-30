@@ -866,8 +866,7 @@ private function hCallCtorList _
 			fldexpr = astBuildVarField( this_, NULL, (elements - 1) * symbGetLen( subtype ) )
 		end if
 	end if
-
-	tree = astBuildVarAssign( iter, astNewADDROF( fldexpr ) )
+	tree = astBuildVarAssign( iter, astNewADDROF( fldexpr ), AST_OPOPT_ISINI )
 
 	'' for cnt = 0 to symbGetArrayElements( fld )-1
 	tree = astBuildForBegin( tree, cnt, label, 0 )
@@ -924,7 +923,8 @@ private function hCallFieldCtor _
 	'' bitfield?
 	if( symbFieldIsBitfield( fld ) ) then
 		function = astNewASSIGN( astBuildVarField( this_, fld ), _
-		                         astNewCONSTi( 0, FB_DATATYPE_UINT ) )
+		                         astNewCONSTi( 0, FB_DATATYPE_UINT ), _
+		                         AST_OPOPT_ISINI )
 	else
 		function = astNewMEM( AST_OP_MEMCLEAR, _
 		                      astBuildVarField( this_, fld ), _
@@ -1128,7 +1128,8 @@ private function hInitVptr _
 	function = astNewASSIGN( _ 
 		astBuildVarField( this_, symbUdtGetFirstField( symb.rtti.fb_object ) ), _
 		astNewCONV( typeAddrOf( FB_DATATYPE_VOID ), NULL, _
-			astNewADDROF( astNewVAR( parent->udt.ext->vtable, env.pointersize * 2 ) ) ) )
+			astNewADDROF( astNewVAR( parent->udt.ext->vtable, env.pointersize * 2 ) ) ), _
+		AST_OPOPT_ISINI )
 end function
 
 private sub hCallCtors( byval n as ASTNODE ptr, byval sym as FBSYMBOL ptr )

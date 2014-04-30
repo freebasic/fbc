@@ -88,7 +88,7 @@ function astLoadBOUNDCHK _
 
 	'' assign to a temp, can't reuse the same vreg or registers could
 	'' be spilled as IR can't handle inter-blocks
-	t = astNewASSIGN( astNewVAR( n->sym ), l )
+	t = astNewASSIGN( astNewVAR( n->sym ), l, AST_OPOPT_ISINI )
 	astLoad( t )
 	astDelNode( t )
 
@@ -178,7 +178,7 @@ function astLoadPTRCHK _
 
 	'' assign to a temp, can't reuse the same vreg or registers could
 	'' be spilled as IR can't handle inter-blocks
-	t = astNewASSIGN( astNewVAR( n->sym ), l )
+	t = astNewASSIGN( astNewVAR( n->sym ), l, AST_OPOPT_ISINI )
 	astLoad( t )
 	astDelNode( t )
 

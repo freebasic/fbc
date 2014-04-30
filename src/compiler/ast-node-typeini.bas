@@ -373,7 +373,7 @@ private function hCallCtorList _
 		label = symbAddLabel( NULL )
 		iter = symbAddTempVar( typeAddrOf( n->dtype ), n->subtype )
 
-		t = astNewLINK( t, astBuildVarAssign( iter, astNewADDROF( fldexpr ) ) )
+		t = astNewLINK( t, astBuildVarAssign( iter, astNewADDROF( fldexpr ), AST_OPOPT_ISINI ) )
 
 		'' for cnt = 0 to elements-1
 		t = astBuildForBegin( t, cnt, label, 0 )

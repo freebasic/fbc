@@ -315,7 +315,8 @@ private sub hCheckByrefParam _
 	if( astCanTakeAddrOf( t ) = FALSE ) then
 		n->l = astNewASSIGN( _
 			astNewVAR( symbAddTempVar( n->l->dtype, n->l->subtype ) ), _
-			n->l, AST_OPOPT_DONTCHKPTR )
+			n->l, _
+			AST_OPOPT_DONTCHKPTR or AST_OPOPT_ISINI )
 	end if
 
 	'' take the address of
@@ -627,7 +628,10 @@ private sub hUDTPassByval _
 			n->l = astNewCALLCTOR( astPatchCtorCall( n->l, astNewVAR( tmp ) ), astNewVAR( tmp ) )
 		else
 			'' Shallow copy, and return a VAR access on the temp var
-			n->l = astNewLINK( astNewASSIGN( astNewVAR( tmp ), n->l ), astNewVAR( tmp ), FALSE )
+			n->l = astNewLINK( _
+				astNewASSIGN( astNewVAR( tmp ), n->l, AST_OPOPT_ISINI ), _
+				astNewVAR( tmp ), _
+				FALSE )
 		end if
 	end if
 
@@ -737,8 +741,10 @@ private function hCheckUDTParam _
 				'' No need to bother doing astDtorListAdd()
 				assert( symbHasDtor( tmp ) = FALSE )
 
-				n->l = astNewLINK( astNewADDROF( astBuildVarField( tmp ) ), _
-						astNewASSIGN( astBuildVarField( tmp ), n->l, AST_OPOPT_DONTCHKOPOVL ) )
+				n->l = astNewLINK( _
+					astNewASSIGN( astBuildVarField( tmp ), n->l, AST_OPOPT_DONTCHKOPOVL or AST_OPOPT_ISINI ), _
+					astNewADDROF( astBuildVarField( tmp ) ), _
+					FALSE )
 				n->arg.mode = FB_PARAMMODE_BYVAL
 				return TRUE
 			end if

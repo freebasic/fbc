@@ -68,7 +68,7 @@ private function hCallCtorList _
 	iter = symbAddTempVar( typeAddrOf( dtype ), subtype )
 
 	'' iter = @vector[0]
-	tree = astBuildVarAssign( iter, astNewVAR( tmp ) )
+	tree = astBuildVarAssign( iter, astNewVAR( tmp ), AST_OPOPT_ISINI )
 
 	'' for cnt = 0 to elements-1
 	'' Note: Using a non-flushing LABEL here because the LABEL node will
@@ -272,17 +272,23 @@ private function hCallDtorList( byval ptrexpr as ASTNODE ptr ) as ASTNODE ptr
 
 	'' elmts = *cast( integer ptr, cast( any ptr, vector ) + -sizeof( integer ) )
 	'' (using AST_CONVOPT_DONTCHKPTR to support derived UDT pointers)
-	tree = astBuildVarAssign( elmts, astNewDEREF( _
-		astNewCONV( typeAddrOf( FB_DATATYPE_INTEGER ), NULL, _
-			astNewBOP( AST_OP_ADD, _
-				astCloneTree( ptrexpr ), _
-				astNewCONSTi( -typeGetSize( FB_DATATYPE_INTEGER ) ) ), _
-			AST_CONVOPT_DONTCHKPTR ) ) )
+	tree = astBuildVarAssign( _
+		elmts, _
+		astNewDEREF( _
+			astNewCONV( typeAddrOf( FB_DATATYPE_INTEGER ), NULL, _
+				astNewBOP( AST_OP_ADD, _
+					astCloneTree( ptrexpr ), _
+					astNewCONSTi( -typeGetSize( FB_DATATYPE_INTEGER ) ) ), _
+				AST_CONVOPT_DONTCHKPTR ) ), _
+		AST_OPOPT_ISINI )
 
 	'' iter = @vector[elmts]
-	tree = astNewLINK( tree, astBuildVarAssign( iter, _
-		astNewBOP( AST_OP_ADD, ptrexpr, astNewVAR( elmts ), NULL, _
-				AST_OPOPT_DEFAULT or AST_OPOPT_DOPTRARITH ) ) )
+	tree = astNewLINK( tree, _
+		astBuildVarAssign( _
+			iter, _
+			astNewBOP( AST_OP_ADD, ptrexpr, astNewVAR( elmts ), NULL, _
+					AST_OPOPT_DEFAULT or AST_OPOPT_DOPTRARITH ), _
+			AST_OPOPT_ISINI ) )
 
 	'' for cnt = 0 to elmts-1
 	tree = astBuildForBegin( tree, cnt, label, 0 )

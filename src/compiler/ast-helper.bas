@@ -17,20 +17,22 @@
 function astBuildVarAssign _
 	( _
 		byval lhs as FBSYMBOL ptr, _
-		byval rhs as integer _
+		byval rhs as integer, _
+		byval options as integer _
 	) as ASTNODE ptr
 
-	function = astNewASSIGN( astNewVAR( lhs ), astNewCONSTi( rhs ) )
+	function = astNewASSIGN( astNewVAR( lhs ), astNewCONSTi( rhs ), options )
 
 end function
 
 function astBuildVarAssign _
 	( _
 		byval lhs as FBSYMBOL ptr, _
-		byval rhs as ASTNODE ptr _
+		byval rhs as ASTNODE ptr, _
+		byval options as integer _
 	) as ASTNODE ptr
 
-	function = astNewASSIGN( astNewVAR( lhs ), rhs )
+	function = astNewASSIGN( astNewVAR( lhs ), rhs, options )
 
 end function
 
@@ -60,7 +62,7 @@ function astBuildFakeWstringAssign _
 
 	'' wcharptr = WstrAlloc( WstrLen( expr ) )
 	t = astNewLINK( t, _
-		astBuildVarAssign( sym, rtlWstrAlloc( rtlWstrLen( astCloneTree( expr ) ) ) ), _
+		astBuildVarAssign( sym, rtlWstrAlloc( rtlWstrLen( astCloneTree( expr ) ) ), options ), _
 		FALSE )
 
 	'' *wcharptr = expr
