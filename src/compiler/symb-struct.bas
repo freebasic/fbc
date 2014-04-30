@@ -444,47 +444,9 @@ function symbAddField _
 	'' multiple len by all array elements (if any)
 	lgt *= symbGetArrayElements( sym )
 
-	select case as const typeGet( dtype )
-	'' var-len string fields? must add a ctor, copyctor and dtor
-	case FB_DATATYPE_STRING
-		'' not allowed inside unions or anonymous nested structs/unions
-		if( symbGetUDTIsUnionOrAnon( parent ) ) then
-			errReport( FB_ERRMSG_VARLENSTRINGINUNION )
-		else
-			symbSetUDTHasCtorField( parent )
-			symbSetUDTHasDtorField( parent )
-			symbSetUDTHasPtrField( parent )
-		end if
-
-	'' struct with a ctor or dtor? must add a ctor or dtor too
-	case FB_DATATYPE_STRUCT
-		'' Let the FB_UDTOPT_HASPTRFIELD flag propagate up to the
-		'' parent if this field has it.
-		if( symbGetUDTHasPtrField( subtype ) ) then
-			symbSetUDTHasPtrField( base_parent )
-		end if
-
-		if( symbGetCompCtorHead( subtype ) ) then
-			'' not allowed inside unions or anonymous nested structs/unions
-			if( symbGetUDTIsUnionOrAnon( parent ) ) then
-				errReport( FB_ERRMSG_CTORINUNION )
-			else
-				symbSetUDTHasCtorField( parent )
-			end if
-		end if
-
-		if( symbGetCompDtor( subtype ) ) then
-			'' not allowed inside unions or anonymous nested structs/unions
-			if( symbGetUDTIsUnionOrAnon( parent ) ) then
-				errReport( FB_ERRMSG_DTORINUNION )
-			else
-				symbSetUDTHasDtorField( parent )
-			end if
-		end if
-
-	end select
-
-	'' Dynamic array? Same restrictions as STRINGs
+	'' Dynamic array? Same restrictions as STRINGs. No need to check the
+	'' array's dtype because only the descriptor will be included in the
+	'' UDT, not the array data.
 	if( attrib and FB_SYMBATTRIB_DYNAMIC ) then
 		if( symbGetUDTIsUnionOrAnon( parent ) ) then
 			errReport( FB_ERRMSG_DYNAMICARRAYINUNION )
@@ -493,6 +455,46 @@ function symbAddField _
 			symbSetUDTHasDtorField( parent )
 			symbSetUDTHasPtrField( parent )
 		end if
+	else
+		select case( typeGetDtAndPtrOnly( dtype ) )
+		'' var-len string fields? must add a ctor, copyctor and dtor
+		case FB_DATATYPE_STRING
+			'' not allowed inside unions or anonymous nested structs/unions
+			if( symbGetUDTIsUnionOrAnon( parent ) ) then
+				errReport( FB_ERRMSG_VARLENSTRINGINUNION )
+			else
+				symbSetUDTHasCtorField( parent )
+				symbSetUDTHasDtorField( parent )
+				symbSetUDTHasPtrField( parent )
+			end if
+
+		'' struct with a ctor or dtor? must add a ctor or dtor too
+		case FB_DATATYPE_STRUCT
+			'' Let the FB_UDTOPT_HASPTRFIELD flag propagate up to the
+			'' parent if this field has it.
+			if( symbGetUDTHasPtrField( subtype ) ) then
+				symbSetUDTHasPtrField( base_parent )
+			end if
+
+			if( symbGetCompCtorHead( subtype ) ) then
+				'' not allowed inside unions or anonymous nested structs/unions
+				if( symbGetUDTIsUnionOrAnon( parent ) ) then
+					errReport( FB_ERRMSG_CTORINUNION )
+				else
+					symbSetUDTHasCtorField( parent )
+				end if
+			end if
+
+			if( symbGetCompDtor( subtype ) ) then
+				'' not allowed inside unions or anonymous nested structs/unions
+				if( symbGetUDTIsUnionOrAnon( parent ) ) then
+					errReport( FB_ERRMSG_DTORINUNION )
+				else
+					symbSetUDTHasDtorField( parent )
+				end if
+			end if
+
+		end select
 	end if
 
 	'' check pointers
