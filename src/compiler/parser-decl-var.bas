@@ -1571,12 +1571,8 @@ function cVarDecl _
 								astAdd( astBuildVarDtorCall( sym, TRUE ) )
 							end if
 
-							assign_vardecl = astNewDECL( sym, FALSE )
-							assign_vardecl = hFlushDecl( assign_vardecl )
-
 							'' use the initializer as an assignment
-							astAdd( astNewLINK( assign_vardecl, _
-								astTypeIniFlush( sym, assign_initree, AST_INIOPT_ISINI ) ) )
+							astAdd( astTypeIniFlush( sym, assign_initree, AST_INIOPT_ISINI ) )
 						end if
 					end if
 				end if
