@@ -1020,10 +1020,6 @@ private sub hDeclVariable _
 	'' literal?
 	if( symbGetIsLiteral( s ) ) then
 		select case symbGetType( s )
-		'' udt? don't emit
-		case FB_DATATYPE_STRUCT
-			return
-
 		'' string? check if ever referenced
 		case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
 			if( symbGetIsAccessed( s ) = FALSE ) then
