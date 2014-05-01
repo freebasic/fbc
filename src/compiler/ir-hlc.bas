@@ -181,6 +181,8 @@ type IRHLCCTX
 	exprnodes			as TLIST   '' EXPRNODE
 	exprtext			as string  '' buffer used by exprFlush() to build the final text
 	exprcache			as TLIST   '' EXPRCACHENODE
+
+	globalvarpass			as integer  '' Global var emitting is done in 2 passes; this allows the callbacks to identify the current pass.
 end type
 
 declare function hEmitType _
@@ -710,20 +712,18 @@ private function hEmitArrayDecl( byval sym as FBSYMBOL ptr ) as string
 	function = s
 end function
 
-private sub hEmitVar( byval sym as FBSYMBOL ptr, byval varini as zstring ptr )
+private sub hEmitVarDecl _
+	( _
+		byval use_extern as integer, _
+		byval sym as FBSYMBOL ptr, _
+		byval varini as zstring ptr _
+	)
+
 	dim as string ln
 
-	'' Never used?
-	if( symbGetIsAccessed( sym ) = FALSE ) then
-		'' Extern?
-		if( symbIsExtern( sym ) ) then
-			return
-		end if
-	end if
-
-	'' Shared (not Local) or Static, but not Common/Public/Extern?
-	if( ((symbGetAttrib( sym ) and (FB_SYMBATTRIB_COMMON or FB_SYMBATTRIB_PUBLIC or FB_SYMBATTRIB_EXTERN)) = 0) and _
-	    ((not symbIsLocal( sym )) or symbIsStatic( sym )) ) then
+	if( use_extern ) then
+		ln += "extern "
+	elseif( symbIsStatic( sym ) and ((symbGetAttrib( sym ) and (FB_SYMBATTRIB_COMMON or FB_SYMBATTRIB_PUBLIC or FB_SYMBATTRIB_EXTERN)) = 0) ) then
 		ln += "static "
 	end if
 
@@ -735,59 +735,85 @@ private sub hEmitVar( byval sym as FBSYMBOL ptr, byval varini as zstring ptr )
 		ln += " __attribute__((dllimport))"
 	end if
 
-	'' allocation modifier
-	if( symbGetAttrib( sym ) and (FB_SYMBATTRIB_COMMON or FB_SYMBATTRIB_PUBLIC or FB_SYMBATTRIB_EXTERN) ) then
-		hWriteLine( "extern " + ln + ";" )
-		if( symbIsCommon( sym ) ) then
-			ln += " __attribute__((common))"
-		elseif( symbIsExtern( sym ) ) then
-			'' Just an Extern that's used but not allocated in this module
-			return
-		end if
+	if( symbIsCommon( sym ) and (not use_extern) ) then
+		ln += " __attribute__((common))"
 	end if
 
 	if( varini ) then
 		ln += " = " + *varini
 	end if
 
-	hWriteLine( ln + ";" )
+	ln += ";"
+	hWriteLine( ln )
 end sub
 
-private sub hEmitVariable( byval s as FBSYMBOL ptr )
-	'' literal? don't emit..
-	if( symbGetIsLiteral( s ) ) then
-		return
+private sub hMaybeEmitLocalVar( byval sym as FBSYMBOL ptr )
+	assert( symbIsLocal( sym ) )
+
+	'' Fake dynamic array symbol? Descriptor will be emitted instead
+	'' TODO: Skip unused STATICs
+	if( symbGetIsDynamic( sym ) ) then
+		exit sub
 	end if
 
-	'' initialized? only if not local or local and static
-	if( (symbGetTypeIniTree( s ) <> NULL) and (symbIsLocal( s ) = FALSE or symbIsStatic( s ))  ) then
-		'' never referenced?
-		if( symbIsLocal( s ) = FALSE ) then
-			if( symbGetIsAccessed( s ) = FALSE ) then
-				'' not public?
-				if( symbIsPublic( s ) = FALSE ) then
-					return
-				end if
-			end if
+	if( (symbGetTypeIniTree( sym ) <> NULL) and symbIsStatic( sym ) ) then
+		irhlFlushStaticInitializer( sym )
+	else
+		hEmitVarDecl( FALSE, sym, NULL )
+	end if
+end sub
+
+private sub hAllocGlobalVar( byval sym as FBSYMBOL ptr )
+	if( symbGetTypeIniTree( sym ) ) then
+		'' Unused private global? Don't bother emitting it
+		if( (not symbIsPublic( sym )) and (not symbGetIsAccessed( sym )) ) then
+			exit sub
 		end if
-
-		irhlFlushStaticInitializer( s )
-		return
+		irhlFlushStaticInitializer( sym )
+	else
+		hEmitVarDecl( FALSE, sym, NULL )
 	end if
-
-	'' dynamic? only the array descriptor is emitted
-	if( symbGetIsDynamic( s ) ) then
-		return
-	end if
-
-	hEmitVar( s, NULL )
 end sub
 
 private sub hMaybeEmitGlobalVar( byval sym as FBSYMBOL ptr )
-	'' Skip DATA descriptor arrays here, they're handled by irForEachDataStmt()
-	if( symbIsDataDesc( sym ) = FALSE ) then
-		hEmitVariable( sym )
+	assert( symbIsLocal( sym ) = FALSE )
+
+	'' String literals? Emitted inline instead of as global vars
+	'' Unused EXTERN? Don't bother emitting it
+	'' TODO: Skip all unused private globals, not just initialized ones below
+	'' Fake dynamic array symbol? Descriptor will be emitted instead
+	if( symbGetIsLiteral( sym ) or _
+	    (symbIsExtern( sym ) and (not symbGetIsAccessed( sym ))) or _
+	    symbGetIsDynamic( sym ) ) then
+		exit sub
 	end if
+
+	select case( ctx.globalvarpass )
+	case 1
+		if( symbGetAttrib( sym ) and (FB_SYMBATTRIB_COMMON or FB_SYMBATTRIB_PUBLIC or FB_SYMBATTRIB_EXTERN) ) then
+			'' Emit externs as prototypes only for now;
+			'' their initializers may reference other not-yet-emitted globals
+			hEmitVarDecl( TRUE, sym, NULL )
+		else
+			'' Emitted other globals normally
+			hAllocGlobalVar( sym )
+		end if
+
+	case 2
+		'' Emit allocated externs
+		if( symbGetAttrib( sym ) and (FB_SYMBATTRIB_COMMON or FB_SYMBATTRIB_PUBLIC) ) then
+			hAllocGlobalVar( sym )
+		end if
+
+	end select
+end sub
+
+private sub hMaybeEmitGlobalVarExceptDataStmt( byval sym as FBSYMBOL ptr )
+	'' DATA descriptor? Handled by irForEachDataStmt()
+	if( symbIsDataDesc( sym ) ) then
+		exit sub
+	end if
+	hMaybeEmitGlobalVar( sym )
 end sub
 
 private sub hMaybeEmitProcProto( byval s as FBSYMBOL ptr )
@@ -1149,6 +1175,7 @@ private function _emitBegin( ) as integer
 	ctx.sectiongosublevel = 0
 	ctx.linenum = 0
 	ctx.usedbuiltins = 0
+	ctx.globalvarpass = 0
 	hUpdateCurrentFileName( env.inf.name )
 
 	'' header
@@ -1206,16 +1233,42 @@ private sub _emitEnd( byval tottime as double )
 	'' This must be done during _emitEnd() instead of _emitBegin() because
 	'' _emitBegin() is called even before any input code is parsed.
 
-	'' Emit proc decls first (because of function pointer initializers
-	'' taking the address of procedures)
+	'' Emit procedure prototypes first (because of function pointer
+	'' initializers taking the address of procedures)
 	symbForEachGlobal( FB_SYMBCLASS_PROC, @hMaybeEmitProcProto )
 
-	'' Then the variables
-	symbForEachGlobal( FB_SYMBCLASS_VAR, @hMaybeEmitGlobalVar )
+	''
+	'' Emit global vars based on the order they were added to the global
+	'' symbol table. It's the order they were found in the FB source code,
+	'' and any initializers were only allowed to reference already declared
+	'' variables, so we should never run into a case where a variable
+	'' initializer references a global that wasn't declared yet.
+	''
+	'' Tricky case: Externs can be split into 2 declarations in the FB code:
+	''        extern p as integer ptr
+	''        dim shared x as integer
+	''        dim shared p as integer ptr = @x
+	'' essentially becomes
+	''        public dim shared p as integer ptr = @x
+	''        dim shared x as integer
+	'' I.e. initializers of PUBLIC may have forward references.
+	''
+	'' To work around this, we must emit globals in 2 passes, essentially
+	'' undoing the merging of extern prototype and allocation.
+	''
+	'' Special case: DATA descriptors, which must be emitted manually using
+	'' their own list, to ensure they're emitted in the right order, because
+	'' their internal initializers can reference each-other in different
+	'' order than the declaration order.
+	''
 
-	'' DATA array initializers can reference globals by taking their address,
-	'' so they must be emitted after the other global declarations.
-	irForEachDataStmt( @hEmitVariable )
+	ctx.globalvarpass = 1
+	symbForEachGlobal( FB_SYMBCLASS_VAR, @hMaybeEmitGlobalVarExceptDataStmt )
+	irForEachDataStmt( @hMaybeEmitGlobalVar )
+
+	ctx.globalvarpass = 2
+	symbForEachGlobal( FB_SYMBCLASS_VAR, @hMaybeEmitGlobalVarExceptDataStmt )
+	irForEachDataStmt( @hMaybeEmitGlobalVar )
 
 	sectionReturn( section )
 
@@ -1324,7 +1377,7 @@ private sub _procAllocStaticVars( byval sym as FBSYMBOL ptr )
 		case FB_SYMBCLASS_VAR
 			'' static with dtor?
 			if( symbIsStatic( sym ) and symbHasDtor( sym ) ) then
-				hEmitVariable( sym )
+				hMaybeEmitLocalVar( sym )
 
 				''
 				'' Check whether it's a dynamic array with a corresponding
@@ -1334,7 +1387,7 @@ private sub _procAllocStaticVars( byval sym as FBSYMBOL ptr )
 				''
 				'' It's the descriptor that matters for dynamic
 				'' arrays - the dynamic array symbol itself is
-				'' not even emitted by hEmitVariable().
+				'' not even emitted by hMaybeEmitLocalVar().
 				''
 				'' Note that for static locals the descriptor and the
 				'' descriptor UDT will be local too, but since we're
@@ -1345,7 +1398,7 @@ private sub _procAllocStaticVars( byval sym as FBSYMBOL ptr )
 				''
 				desc = symbGetArrayDescriptor( sym )
 				if( desc ) then
-					hEmitVariable( desc )
+					hMaybeEmitLocalVar( desc )
 				end if
 			end if
 		end select
@@ -2958,6 +3011,8 @@ end sub
 private sub _emitDECL( byval sym as FBSYMBOL ptr )
 	dim as FBSYMBOL ptr array = any
 
+	assert( symbIsLocal( sym ) )
+
 	'' Emit locals/statics locally, except statics with dtor - those are
 	'' handled in _procAllocStaticVars(), including their dynamic array
 	'' descriptors (if any).
@@ -2976,7 +3031,7 @@ private sub _emitDECL( byval sym as FBSYMBOL ptr )
 		end if
 	end if
 
-	hEmitVariable( sym )
+	hMaybeEmitLocalVar( sym )
 end sub
 
 '':::::
@@ -3106,7 +3161,7 @@ private sub _emitVarIniBegin( byval sym as FBSYMBOL ptr )
 end sub
 
 private sub _emitVarIniEnd( byval sym as FBSYMBOL ptr )
-	hEmitVar( sym, ctx.varini )
+	hEmitVarDecl( FALSE, sym, ctx.varini )
 	ctx.varini = ""
 end sub
 
