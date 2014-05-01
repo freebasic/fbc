@@ -754,11 +754,7 @@ private sub hEmitVar( byval sym as FBSYMBOL ptr, byval varini as zstring ptr )
 end sub
 
 private sub hEmitVariable( byval s as FBSYMBOL ptr )
-	'' already allocated?
-	if( symbGetVarIsAllocated( s ) ) then
-		return
-	end if
-
+	assert( symbGetVarIsAllocated( s ) = FALSE )
 	symbSetVarIsAllocated( s )
 
 	'' literal? don't emit..

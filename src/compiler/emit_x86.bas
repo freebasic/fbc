@@ -1010,11 +1010,7 @@ private sub hDeclVariable _
 		byval s as FBSYMBOL ptr _
 	) static
 
-    '' already allocated?
-	if( symbGetVarIsAllocated( s ) ) then
-		return
-	end if
-
+	assert( symbGetVarIsAllocated( s ) = FALSE )
 	symbSetVarIsAllocated( s )
 
 	'' literal?

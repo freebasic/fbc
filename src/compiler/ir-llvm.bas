@@ -596,11 +596,7 @@ private sub hEmitVariable( byval sym as FBSYMBOL ptr )
 	dim as string ln
 	dim as integer is_global = any, length = any
 
-	'' already allocated?
-	if( symbGetVarIsAllocated( sym ) ) then
-		exit sub
-	end if
-
+	assert( symbGetVarIsAllocated( sym ) = FALSE )
 	symbSetVarIsAllocated( sym )
 
 	'' literal?
