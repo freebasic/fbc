@@ -169,8 +169,6 @@ enum FB_SYMBATTRIB
 	FB_SYMBATTRIB_VIRTUAL       = &h20000000  '' methods only: all virtuals (normal and pure)
 	FB_SYMBATTRIB_ABSTRACT      = &h40000000  '' methods only: pure virtuals (only)
 
-	FB_SYMBATTRIB_LITCONST		= FB_SYMBATTRIB_CONST or FB_SYMBATTRIB_LITERAL
-
 	'' reuse - take care
 	FB_SYMBATTRIB_PARAMINSTANCE	= FB_SYMBATTRIB_METHOD
 	FB_SYMBATTRIB_STATICLOCALS	= FB_SYMBATTRIB_OPTIONAL  '' procedures only

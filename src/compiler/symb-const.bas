@@ -70,7 +70,7 @@ function symbAllocFloatConst _
 	'' proc, the global symbol tb should be used, so just one constant
 	'' will be ever allocated over the module
 	s = symbAddVar( @id, @id_alias, dtype, NULL, 0, 0, dTB(), _
-	                FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_LITCONST, _
+	                FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_CONST or FB_SYMBATTRIB_LITERAL, _
 	                FB_SYMBOPT_MOVETOGLOB or FB_SYMBOPT_PRESERVECASE or FB_SYMBOPT_NODUPCHECK )
 
 	s->var_.littext = ZstrAllocate( len( svalue ) )
@@ -109,7 +109,7 @@ function symbAllocIntConst _
 	'' proc, the global symbol tb should be used, so just one constant
 	'' will be ever allocated over the module
 	s = symbAddVar( @id, @id_alias, dtype, NULL, 0, 0, dTB(), _
-	                FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_LITCONST, _
+	                FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_CONST or FB_SYMBATTRIB_LITERAL, _
 	                FB_SYMBOPT_MOVETOGLOB or FB_SYMBOPT_PRESERVECASE )
 
 	s->var_.littext = ZstrAllocate( len( svalue ) )
@@ -149,7 +149,7 @@ function symbAllocLongIntConst _
 	'' proc, the global symbol tb should be used, so just one constant
 	'' will be ever allocated over the module
 	s = symbAddVar( @id, @id_alias, dtype, NULL, 0, 0, dTB(), _
-	                FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_LITCONST, _
+	                FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_CONST or FB_SYMBATTRIB_LITERAL, _
 	                FB_SYMBOPT_MOVETOGLOB or FB_SYMBOPT_PRESERVECASE )
 
 	s->var_.littext = ZstrAllocate( len( svalue ) )
@@ -197,7 +197,7 @@ function symbAllocStrConst _
 
 	'' it must be declare as SHARED, see symbAllocFloatConst()
 	s = symbAddVar( @id, @id_alias, FB_DATATYPE_CHAR, NULL, lgt + 1, 0, dTB(), _
-	                FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_LITCONST, _
+	                FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_CONST or FB_SYMBATTRIB_LITERAL, _
 	                FB_SYMBOPT_MOVETOGLOB or FB_SYMBOPT_PRESERVECASE or FB_SYMBOPT_NODUPCHECK )
 
 	s->var_.littext = ZstrAllocate( strlen )
@@ -247,7 +247,7 @@ function symbAllocWStrConst _
 	'' lgt = (lgt + null-char) * sizeof( wstring ) (see parser-decl-symbinit.bas)
 	'' it must be declare as SHARED, see symbAllocFloatConst()
 	s = symbAddVar( @id, @id_alias, FB_DATATYPE_WCHAR, NULL, (lgt+1) * len( wstring ), 0, dTB(), _
-	                FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_LITCONST, _
+	                FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_CONST or FB_SYMBATTRIB_LITERAL, _
 	                FB_SYMBOPT_MOVETOGLOB or FB_SYMBOPT_PRESERVECASE or FB_SYMBOPT_NODUPCHECK )
 
 	s->var_.littextw = WstrAllocate( strlen )
