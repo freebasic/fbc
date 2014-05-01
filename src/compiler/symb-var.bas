@@ -248,7 +248,7 @@ function symbAddArrayDesc( byval array as FBSYMBOL ptr ) as FBSYMBOL ptr
 	desc->lgt = symbGetLen( desctype )
 	desc->ofs = 0
 
-	desc->stats = stats or (array->stats and (FB_SYMBSTATS_VARALLOCATED or FB_SYMBSTATS_ACCESSED))
+	desc->stats = stats or (array->stats and FB_SYMBSTATS_ACCESSED)
 
 	symbVarInitFields( desc )
 	desc->var_.desc.array = array '' back link
@@ -435,7 +435,6 @@ sub symbCheckDynamicArrayDimensions _
 		if( symbIsVar( sym ) and _
 		    (not symbIsCommon( sym )) and _
 		    ((not symbIsLocal( sym )) or symbIsStatic( sym )) ) then
-			assert( symbGetVarIsAllocated( desc ) = FALSE )
 			symbSetType( desc, FB_DATATYPE_STRUCT, symb.fbarray(dimensions) )
 
 			'' Must also switch to a new, compatible initializer

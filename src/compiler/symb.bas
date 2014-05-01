@@ -2360,7 +2360,6 @@ function symbDump( byval sym as FBSYMBOL ptr ) as string
 		end if
 	#endmacro
 
-	checkStat( VARALLOCATED )
 	checkStat( ACCESSED )
 	checkStat( CTORINITED )
 	checkStat( DECLARED )

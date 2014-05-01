@@ -92,7 +92,7 @@ end enum
 
 '' symbol state mask
 enum FB_SYMBSTATS
-	FB_SYMBSTATS_VARALLOCATED = &h00000001
+                            ''= &h00000001
     FB_SYMBSTATS_ACCESSED     = &h00000002
     FB_SYMBSTATS_CTORINITED   = &h00000004  '' ctor method procs only
     FB_SYMBSTATS_DECLARED     = &h00000008
@@ -1883,9 +1883,6 @@ declare function symbGetUDTBaseLevel _
 
 #define symbGetIsAccessed(s) ((s->stats and FB_SYMBSTATS_ACCESSED) <> 0)
 #define symbSetIsAccessed(s) s->stats or= FB_SYMBSTATS_ACCESSED
-
-#define symbGetVarIsAllocated(s) ((s->stats and FB_SYMBSTATS_VARALLOCATED) <> 0)
-#define symbSetVarIsAllocated(s) s->stats or= FB_SYMBSTATS_VARALLOCATED
 
 #define symbGetIsDeclared(s) ((s->stats and FB_SYMBSTATS_DECLARED) <> 0)
 #define symbSetIsDeclared(s) s->stats or= FB_SYMBSTATS_DECLARED

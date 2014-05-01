@@ -663,7 +663,6 @@ sub astScopeAllocLocals( byval symtbhead as FBSYMBOL ptr )
 				else
 					irProcAllocLocal( parser.currproc, s )
 				end if
-				symbSetVarIsAllocated( s )
 			end if
 			s = s->next
 		wend

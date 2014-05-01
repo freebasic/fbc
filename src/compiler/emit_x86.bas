@@ -1010,9 +1010,6 @@ private sub hDeclVariable _
 		byval s as FBSYMBOL ptr _
 	) static
 
-	assert( symbGetVarIsAllocated( s ) = FALSE )
-	symbSetVarIsAllocated( s )
-
 	'' literal?
 	if( symbGetIsLiteral( s ) ) then
 		select case symbGetType( s )
