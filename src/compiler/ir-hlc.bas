@@ -787,11 +787,6 @@ private sub hEmitVariable( byval s as FBSYMBOL ptr )
 		return
 	end if
 
-	'' a string or array descriptor?
-	if( symbGetLen( s ) <= 0 ) then
-		return
-	end if
-
 	hEmitVar( s, NULL )
 end sub
 

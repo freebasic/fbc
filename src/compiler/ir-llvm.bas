@@ -656,11 +656,6 @@ private sub hEmitVariable( byval sym as FBSYMBOL ptr )
 		exit sub
 	end if
 
-	'' a string or array descriptor?
-	if( symbGetLen( sym ) <= 0 ) then
-		exit sub
-	end if
-
 	is_global = symbGetAttrib( sym ) and _
 			(FB_SYMBATTRIB_COMMON or FB_SYMBATTRIB_PUBLIC or _
 			FB_SYMBATTRIB_EXTERN or FB_SYMBATTRIB_STATIC or _

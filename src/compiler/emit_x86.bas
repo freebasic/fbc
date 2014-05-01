@@ -1018,29 +1018,22 @@ private sub hDeclVariable _
 	symbSetVarIsAllocated( s )
 
 	'' literal?
-    if( symbGetIsLiteral( s ) ) then
+	if( symbGetIsLiteral( s ) ) then
+		select case symbGetType( s )
+		'' udt? don't emit
+		case FB_DATATYPE_STRUCT
+			return
 
-    	select case symbGetType( s )
-    	'' udt? don't emit
-    	case FB_DATATYPE_STRUCT
-    		return
-
-    	'' string? check if ever referenced
-    	case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
-    	  	if( symbGetIsAccessed( s ) = FALSE ) then
-    	  		return
-    	  	end if
-
-		'' anything else, only if len > 0
-		case else
-			if( symbGetLen( s ) <= 0 ) then
+		'' string? check if ever referenced
+		case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
+			if( symbGetIsAccessed( s ) = FALSE ) then
 				return
 			end if
-    	end select
 
-    	hEmitVarConst( s )
+		end select
 
-    	return
+		hEmitVarConst( s )
+		return
 	end if
 
 	'' Don't emit the fake jump-table vars, see also astBuildJMPTB()
@@ -1066,11 +1059,6 @@ private sub hDeclVariable _
     '' extern or dynamic (for the latter, only the array descriptor is emitted)?
 	if( (s->attrib and (FB_SYMBATTRIB_EXTERN or _
 			   			FB_SYMBATTRIB_DYNAMIC)) <> 0 ) then
-		return
-	end if
-
-    '' a string or array descriptor?
-	if( symbGetLen( s ) <= 0 ) then
 		return
 	end if
 
