@@ -173,6 +173,7 @@ Version 0.91.0:
 - #698: sizeof() now allows string expressions (note: it returns sizeof(string), not the string length - len() should be used for that)
 - #685: SETMOUSE had differing behaviour between platforms when x and y were not both present and within the window
 - When passing classes without copy-constructor to a Byval parameter, their Let operator overload was called without initializing/constructing the parameter object first.
+- Overload resolution didn't allow up-casting arguments when passing to a CONST parameter (e.g. BYREF AS CONST). This also prevented copy constructors with BYREF AS CONST parameter from being called, when the source object had to be up-casted.
 
 
 Version 0.90.1:

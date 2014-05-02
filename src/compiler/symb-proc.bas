@@ -1786,6 +1786,7 @@ private function hCheckOvlParam _
 	) as integer
 
 	dim as integer param_dtype = any, arg_dtype = any, param_ptrcnt = any
+	dim as integer baselevel = any, type_is_compatible = any
 	dim as FBSYMBOL ptr param_subtype = any, arg_subtype = any, array = any
 
 	constonly_diff = FALSE
@@ -1864,30 +1865,29 @@ private function hCheckOvlParam _
 
 	'' same types?
 	if( typeGetDtAndPtrOnly( param_dtype ) = typeGetDtAndPtrOnly( arg_dtype ) ) then
-		if( typeGetConstMask( param_dtype ) = typeGetConstMask( arg_dtype ) ) then
-			'' same subtype? full match..
-			if( param_subtype = arg_subtype ) then
-				return FB_OVLPROC_FULLMATCH
-			else
-				'' is param type a base type of the argument type?
-				if( param_subtype <> NULL ) then
-					select case symbGetType( param_subtype )
-					case FB_DATATYPE_STRUCT '' , FB_DATATYPE_CLASS
-						var level = symbGetUDTBaseLevel( arg_subtype, param_subtype )
-						if( level > 0 ) then
-							return FB_OVLPROC_FULLMATCH - level 
-						End If
-					End Select
-				end if
-			end if
-		elseif( typeGetConstMask( param_dtype ) ) then
-			'' same subtype? ..
-			if( param_subtype = arg_subtype ) then
-				'' param is const but arg isn't?
-				if( symbCheckConstAssign( param_dtype, arg_dtype, param_subtype, arg_subtype ) ) then
-					constonly_diff = TRUE
-					return FB_OVLPROC_HALFMATCH
-				end if
+		'' The argument is compatible to the parameter if it's the same type,
+		'' or if it's being up-casted. When up-casting, the level must be
+		'' calculated into the match score, such that we prefer passing
+		'' arguments to the parameter with the closest base type.
+		type_is_compatible = FALSE
+		baselevel = 0
+		if( param_subtype = arg_subtype ) then
+			type_is_compatible = TRUE
+		elseif( typeGetDtAndPtrOnly( param_dtype ) = FB_DATATYPE_STRUCT ) then
+			baselevel = symbGetUDTBaseLevel( arg_subtype, param_subtype )
+			type_is_compatible = (baselevel > 0)
+		end if
+
+		if( type_is_compatible ) then
+			'' In either case, we still have to check CONSTness. (no point choosing a
+			'' BYREF AS CONST FOO overload parameter for a non-const FOO argument,
+			'' because it couldn't be passed anyways)
+			if( typeGetConstMask( param_dtype ) = typeGetConstMask( arg_dtype ) ) then
+				return FB_OVLPROC_FULLMATCH - baselevel
+			'' param is const but arg isn't?
+			elseif( symbCheckConstAssign( param_dtype, arg_dtype, param_subtype, arg_subtype ) ) then
+				constonly_diff = TRUE
+				return FB_OVLPROC_HALFMATCH - baselevel
 			end if
 		end if
 
