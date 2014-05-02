@@ -1002,14 +1002,16 @@ declare function astTypeIniFlush overload _
 	( _
 		byval target as ASTNODE ptr, _
 		byval initree as ASTNODE ptr, _
-		byval update_typeinicount as integer = FALSE _
+		byval update_typeinicount as integer, _
+		byval assignoptions as integer _
 	) as ASTNODE ptr
 
 declare function astTypeIniFlush overload _
 	( _
 		byval target as FBSYMBOL ptr, _
 		byval initree as ASTNODE ptr, _
-		byval update_typeinicount as integer = FALSE _
+		byval update_typeinicount as integer, _
+		byval assignoptions as integer _
 	) as ASTNODE ptr
 
 declare function astTypeIniIsConst _

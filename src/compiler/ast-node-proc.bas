@@ -1050,7 +1050,8 @@ private function hCallFieldCtors _
 						'' not against "THIS.thefield", because the TYPEINI contains absolute offsets.
 						tree = astNewLINK( tree, _
 							astTypeIniFlush( astBuildVarField( this_ ), _
-								astTypeIniClone( symbGetTypeIniTree( fld ) ) ) )
+								astTypeIniClone( symbGetTypeIniTree( fld ) ), _
+								FALSE, AST_OPOPT_ISINI ) )
 					end if
 				end if
 			end if
@@ -1084,7 +1085,7 @@ private function hCallBaseCtor _
 	initree = proc->proc.ext->base_initree
 	if( initree ) then
 		proc->proc.ext->base_initree = NULL
-		return astTypeIniFlush( astBuildVarField( this_ ), initree )
+		return astTypeIniFlush( astBuildVarField( this_ ), initree, FALSE, AST_OPOPT_ISINI )
 	end if
 
 	subtype = symbGetSubtype( base_ )
@@ -1281,7 +1282,7 @@ private sub hCallStaticCtor _
 		byval initree as ASTNODE ptr _
 	)
 
-	astAdd( astTypeIniFlush( sym, astTypeIniClone( initree ) ) )
+	astAdd( astTypeIniFlush( sym, astTypeIniClone( initree ), FALSE, AST_OPOPT_ISINI ) )
 	astTypeIniDelete( initree )
 
 end sub

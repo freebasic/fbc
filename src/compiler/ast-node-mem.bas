@@ -230,7 +230,7 @@ function astBuildNewOp _
 	select case as const( init )
 	case INIT_TYPEINI
 		assert( astIsTYPEINI( initexpr ) )
-		initexpr = astTypeIniFlush( astNewDEREF( astNewVAR( tmp ) ), initexpr )
+		initexpr = astTypeIniFlush( astNewDEREF( astNewVAR( tmp ) ), initexpr, FALSE, AST_OPOPT_ISINI )
 
 	case INIT_CTORCALL
 		initexpr = astPatchCtorCall( astCALLCTORToCALL( initexpr ), _

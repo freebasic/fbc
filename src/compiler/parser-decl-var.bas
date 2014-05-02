@@ -890,7 +890,7 @@ private function hCallStaticCtor _
 
 	if( initree ) then
 		'' static var's initializer
-		initcode = astTypeIniFlush( sym, initree )
+		initcode = astTypeIniFlush( sym, initree, FALSE, AST_OPOPT_ISINI )
 	end if
 
 	if( has_dtor ) then
@@ -983,7 +983,7 @@ private function hFlushInitializer _
 
 		var_decl = hFlushDecl( var_decl )
 
-		return astNewLINK( var_decl, astTypeIniFlush( sym, initree ) )
+		return astNewLINK( var_decl, astTypeIniFlush( sym, initree, FALSE, AST_OPOPT_ISINI ) )
 	end if
 
 	'' not an object?
@@ -1538,7 +1538,7 @@ function cVarDecl _
 
 							'' bydesc array params have no descriptor
 							if( desc <> NULL ) then
-								var_decl = astNewLINK( var_decl, astTypeIniFlush( desc, symbGetTypeIniTree( desc ) ) )
+								var_decl = astNewLINK( var_decl, astTypeIniFlush( desc, symbGetTypeIniTree( desc ), FALSE, AST_OPOPT_ISINI ) )
 								symbSetTypeIniTree( desc, NULL )
 							end if
 
@@ -1572,7 +1572,7 @@ function cVarDecl _
 							end if
 
 							'' use the initializer as an assignment
-							astAdd( astTypeIniFlush( sym, assign_initree ) )
+							astAdd( astTypeIniFlush( sym, assign_initree, FALSE, AST_OPOPT_ISINI ) )
 						end if
 					end if
 				end if

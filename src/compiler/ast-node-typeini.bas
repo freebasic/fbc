@@ -400,7 +400,8 @@ function astTypeIniFlush overload _
 	( _
 		byval target as ASTNODE ptr, _
 		byval initree as ASTNODE ptr, _
-		byval update_typeinicount as integer _
+		byval update_typeinicount as integer, _
+		byval assignoptions as integer _
 	) as ASTNODE ptr
 
 	dim as ASTNODE ptr n = any, nxt = any, t = any, l = any
@@ -448,7 +449,7 @@ function astTypeIniFlush overload _
 
 			l = astBuildDerefAddrOf( astCloneTree( target ), n->typeini.ofs, n->dtype, n->subtype, n->sym )
 
-			l = astNewASSIGN( l, n->l, AST_OPOPT_ISINI or AST_OPOPT_DONTCHKPTR )
+			l = astNewASSIGN( l, n->l, assignoptions or AST_OPOPT_DONTCHKPTR )
 			assert( l )
 			t = astNewLINK( t, l )
 
@@ -487,10 +488,11 @@ function astTypeIniFlush overload _
 	( _
 		byval target as FBSYMBOL ptr, _
 		byval initree as ASTNODE ptr, _
-		byval update_typeinicount as integer _
+		byval update_typeinicount as integer, _
+		byval assignoptions as integer _
 	) as ASTNODE ptr
 	assert( symbIsVar( target ) )
-	function = astTypeIniFlush( astNewVAR( target ), initree, update_typeinicount )
+	function = astTypeIniFlush( astNewVAR( target ), initree, update_typeinicount, assignoptions )
 end function
 
 private function hFlushExprStatic _
@@ -821,7 +823,7 @@ private function hWalk _
 		end if
 
 		'' Turn this TYPEINI into real code
-		n = astTypeIniFlush( sym, n, TRUE )
+		n = astTypeIniFlush( sym, n, TRUE, AST_OPOPT_ISINI )
 
 		'' Also update any nested TYPEINIs, for example this can be a
 		'' TYPEINI CTORCALL, which carries a CALL with ARGs that can

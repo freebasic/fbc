@@ -397,7 +397,7 @@ private function hCallCtor( byval sym as FBSYMBOL ptr ) as integer
 		exit function
 	end if
 
-	expr = astTypeIniFlush( sym, expr )
+	expr = astTypeIniFlush( sym, expr, FALSE, AST_OPOPT_ISINI )
 	if( expr = NULL ) then
 		exit function
 	end if

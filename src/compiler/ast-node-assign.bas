@@ -515,7 +515,7 @@ function astNewASSIGN _
 			'' unless there are ctors/dtors (let/cast overloads were
 			'' already handled above).
 			if( (typeHasCtor( l->dtype, l->subtype ) or typeHasDtor( l->dtype, l->subtype )) = FALSE ) then
-				return astTypeIniFlush( l, r, TRUE )
+				return astTypeIniFlush( l, r, TRUE, AST_OPOPT_ISINI )
 			end if
 		end if
 
