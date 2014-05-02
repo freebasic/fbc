@@ -397,13 +397,6 @@ type AST_OPINFO
 	selfop			as AST_OP						'' self version
 end type
 
-'' astTypeIniFlush flags
-enum AST_INIOPT
-	AST_INIOPT_NONE			= &h00000000
-	AST_INIOPT_ISINI		= &h00000001
-end enum
-
-
 declare sub astInit( )
 declare sub astEnd( )
 declare sub astProcListInit( )
@@ -1009,14 +1002,14 @@ declare function astTypeIniFlush overload _
 	( _
 		byval target as ASTNODE ptr, _
 		byval initree as ASTNODE ptr, _
-		byval options as AST_INIOPT _
+		byval update_typeinicount as integer = FALSE _
 	) as ASTNODE ptr
 
 declare function astTypeIniFlush overload _
 	( _
 		byval target as FBSYMBOL ptr, _
 		byval initree as ASTNODE ptr, _
-		byval options as AST_INIOPT _
+		byval update_typeinicount as integer = FALSE _
 	) as ASTNODE ptr
 
 declare function astTypeIniIsConst _
