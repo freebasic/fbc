@@ -209,7 +209,7 @@ function astBuildNewOp _
 	end if
 
 	'' tempptr = new( len )
-	tree = astNewLINK( tree, astBuildVarAssign( tmp, newexpr ) )
+	tree = astNewLINK( tree, astBuildVarAssign( tmp, newexpr, AST_OPOPT_ISINI ) )
 
 	'' save elements count?
 	if( save_elmts ) then
@@ -217,7 +217,8 @@ function astBuildNewOp _
 		tree = astNewLINK( tree, _
 			astNewASSIGN( _
 				astNewDEREF( astNewVAR( tmp, , typeAddrOf( FB_DATATYPE_INTEGER ) ) ), _
-				hElements( elementsexpr, elementstreecount ) ) )
+				hElements( elementsexpr, elementstreecount ), _
+				AST_OPOPT_ISINI ) )
 
 		'' tempptr += len( integer )
 		tree = astNewLINK( tree, _
