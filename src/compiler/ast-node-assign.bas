@@ -415,7 +415,7 @@ function astNewASSIGN _
 					'' initialization.  The initializer should be
 					'' a fully constructed object.
 					if( (options and AST_OPOPT_ISINI) = 0 ) then
-						check_letop = (symbGetCompCloneProc( l->subtype ) <> NULL)
+						check_letop = symbCompHasCopyLetOps( l->subtype )
 					else
 						check_letop = FALSE
 					end if

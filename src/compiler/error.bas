@@ -264,9 +264,10 @@ declare function hMakeParamDesc _
 		@"Invalid array subscript", _
 		@"TYPE or CLASS has no default constructor", _
 		@"Function result TYPE has no default constructor", _
-		@"Base UDT without default constructor; missing BASE() initializer", _
-		@"Base UDT without default constructor; missing default constructor implementation in derived UDT", _
-		@"Base UDT without default constructor; missing copy constructor implementation in derived UDT", _
+		@"Missing BASE() initializer (base UDT without default constructor requires manual initialization)", _
+		@"Missing default constructor implementation (base UDT without default constructor requires manual initialization)", _
+		@"Missing UDT.constructor(byref as UDT) implementation (base UDT without default constructor requires manual initialization)", _
+		@"Missing UDT.constructor(byref as const UDT) implementation (base UDT without default constructor requires manual initialization)", _
 		@"Invalid priority attribute", _
 		@"PROPERTY GET should have no parameter, or just one if indexed", _
 		@"PROPERTY SET should have one parameter, or just two if indexed", _

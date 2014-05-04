@@ -15,6 +15,7 @@ Version 0.91.0:
 - rgb() and rgba() now always return an unsigned 32bit ULong, no longer UInteger (64bit port)
 - #699: The default global New/New[]/Delete/Delete[] operators now simply use allocate()/deallocate() internally, instead of the functions from GCC's libsupc++. This avoids platform-dependant behaviour of the GCC functions (exception throwing, aborting) in case of allocation failure (instead, NULL will be returned as with allocate()).
 - FB no longer uses libsupc++ (from GCC's libstdc++) by default
+- The implicitly generated copy constructors and LET overloads will now have "BYREF AS CONST MyUdt" parameters (previously they didn't use CONST), to allow copying from CONST objects to work at least for the built-in data types or with nested UDTs. For backwards compatibility, if there is a user-defined "UDT.let(byref as UDT)" LET overload, FB will still add the non-const "UDT.constructor(byref as UDT)" copy-constructor. It's still the programmer's responsibility to write proper "byref as const UDT" versions of the copy-constructor or LET overload if the UDT needs deep-copying and CONST instances of the UDT are being used.
 
 [added]
 - 64bit support (-arch x86_64) based on -gen gcc: INTEGER/POINTER = 64bit, LONG = 32bit DWORD. Compiler #define: __FB_64BIT__
@@ -174,6 +175,7 @@ Version 0.91.0:
 - #685: SETMOUSE had differing behaviour between platforms when x and y were not both present and within the window
 - When passing classes without copy-constructor to a Byval parameter, their Let operator overload was called without initializing/constructing the parameter object first.
 - Overload resolution didn't allow up-casting arguments when passing to a CONST parameter (e.g. BYREF AS CONST). This also prevented copy constructors with BYREF AS CONST parameter from being called, when the source object had to be up-casted.
+- Copy-constructing or assigning an object from a CONST object didn't work with the implicitly generated copy-constructor or LET overload because they only had BYREF AS MyClass parameters which can't accept CONST objects (instead of calling the copy-constructor or LET overload, a shallow copy was done, which for example caused trouble if the UDT contained dynamic strings requiring a deep copy)
 
 
 Version 0.90.1:

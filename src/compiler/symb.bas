@@ -2282,6 +2282,31 @@ function typeDump _
 	function = dump
 end function
 
+private sub hDumpName( byref s as string, byval sym as FBSYMBOL ptr )
+	if( sym = @symbGetGlobalNamespc( ) ) then
+		s += "<global namespace>"
+	else
+		s += hGetNamespacePrefix( sym )
+	end if
+
+	if( sym->id.name ) then
+		s += *sym->id.name
+	else
+		s += "<unnamed>"
+	end if
+
+	if( sym->id.alias ) then
+		s += " alias """ + *sym->id.alias + """"
+	end if
+
+#if 0
+	'' Note: symbGetMangledName() will mangle the proc and set the
+	'' "mangled" flag. If this is done too early though, before the proc is
+	'' setup properly, then the mangled name will be empty or wrong.
+	s += " mangled """ + *symbGetMangledName( sym ) + """"
+#endif
+end sub
+
 function symbDump( byval sym as FBSYMBOL ptr ) as string
 	dim as string s
 
@@ -2407,26 +2432,47 @@ function symbDump( byval sym as FBSYMBOL ptr ) as string
 		return s
 	end if
 
-#if 1
-	if( sym = @symbGetGlobalNamespc( ) ) then
-		s += "<global namespace>"
-	else
-		s += hGetNamespacePrefix( sym )
-	end if
-#endif
+	select case( sym->class )
+	case FB_SYMBCLASS_PROC
+		s += *symbGetFullProcName( sym )
 
-	if( symbIsProc( sym ) and symbIsOperator( sym ) ) then
-		s += *astGetOpId( symbGetProcOpOvl( sym ) )
-	else
-		if( sym->id.name ) then
-			s += *sym->id.name
-		else
-			s += "<unnamed>"
+		select case( symbGetProcMode( sym ) )
+		case FB_FUNCMODE_STDCALL    : s += " stdcall"
+		case FB_FUNCMODE_STDCALL_MS : s += " stdcallms"
+		case FB_FUNCMODE_PASCAL     : s += " pascal"
+		case FB_FUNCMODE_CDECL      : s += " cdecl"
+		end select
+
+		'' Dump parameters recursively (if any)
+		s += "("
+		var param = symbGetProcHeadParam( sym )
+		while( param )
+			s += symbDump( param )
+			param = param->next
+			if( param ) then
+				s += ", "
+			end if
+		wend
+		s += ")"
+
+	case FB_SYMBCLASS_PARAM
+		select case( symbGetParamMode( sym ) )
+		case FB_PARAMMODE_BYVAL  : s += "byval "
+		case FB_PARAMMODE_BYREF  : s += "byref "
+		case FB_PARAMMODE_BYDESC : s += "bydesc "
+		case FB_PARAMMODE_VARARG : s += "vararg "
+		end select
+
+		hDumpName( s, sym )
+
+		if( sym->param.mode = FB_PARAMMODE_BYDESC ) then
+			s += hDumpDynamicArrayDimensions( sym->param.bydescdimensions )
 		end if
-	end if
 
-	'' Array dimensions, if any
-	if( symbIsVar( sym ) or symbIsField( sym ) ) then
+	case FB_SYMBCLASS_VAR, FB_SYMBCLASS_FIELD
+		hDumpName( s, sym )
+
+		'' Array dimensions, if any
 		if( symbIsDynamic( sym ) ) then
 			s += hDumpDynamicArrayDimensions( symbGetArrayDimensions( sym ) )
 		elseif( symbGetArrayDimensions( sym ) > 0 ) then
@@ -2445,24 +2491,10 @@ function symbDump( byval sym as FBSYMBOL ptr ) as string
 			next
 			s += ")"
 		end if
-	elseif( sym->class = FB_SYMBCLASS_PARAM ) then
-		if( sym->param.mode = FB_PARAMMODE_BYDESC ) then
-			s += hDumpDynamicArrayDimensions( sym->param.bydescdimensions )
-		end if
-	end if
 
-#if 1
-	if( sym->id.alias ) then
-		s += " alias """ + *sym->id.alias + """"
-	end if
-#endif
-
-#if 0
-	'' Note: symbGetMangledName() will mangle the proc and set the
-	'' "mangled" flag. If this is done too early though, before the proc is
-	'' setup properly, then the mangled name will be empty or wrong.
-	s += " mangled """ + *symbGetMangledName( sym ) + """"
-#endif
+	case else
+		hDumpName( s, sym )
+	end select
 
 	s += " "
 

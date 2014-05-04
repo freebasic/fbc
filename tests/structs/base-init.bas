@@ -140,14 +140,14 @@ namespace rttiPreserved
 
 	type Child extends Parent
 		declare constructor( )
-		declare constructor( byref as Child )
+		declare constructor( byref as const Child )
 	end type
 
 	constructor Child( )
 		base( 123 )
 	end constructor
 
-	constructor Child( byref rhs as Child )
+	constructor Child( byref rhs as const Child )
 		base( 456 )
 	end constructor
 

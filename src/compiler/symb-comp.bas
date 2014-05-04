@@ -6,6 +6,8 @@
 #include once "fbint.bi"
 #include once "rtl.bi"
 
+declare function symbGetCompCopyCtor( byval sym as FBSYMBOL ptr ) as FBSYMBOL ptr
+
 type FB_SYMBNEST
 	sym				as FBSYMBOL ptr
 	symtb			as FBSYMBOLTB ptr			'' prev symbol tb
@@ -40,7 +42,7 @@ private function hDeclareProc _
 	( _
 		byval udt as FBSYMBOL ptr, _
 		byval op as AST_OP, _
-		byval add_rhs as integer, _
+		byval rhsdtype as integer, _
 		byval attrib as FB_SYMBATTRIB _
 	) as FBSYMBOL ptr
 
@@ -55,9 +57,11 @@ private function hDeclareProc _
 	symbAddProcInstancePtr( udt, proc )
 
 	'' add right-side hand param?
-	if( add_rhs ) then
+	if( rhsdtype <> FB_DATATYPE_INVALID ) then
+		'' byref __FB_RHS__ as const UDT
+		'' (must be CONST to allow const objects to be passed)
 		assert( symbIsStruct( udt ) )
-		symbAddProcParam( proc, "__FB_RHS__", FB_DATATYPE_STRUCT, udt, _
+		symbAddProcParam( proc, "__FB_RHS__", rhsdtype, udt, _
 		                  0, FB_PARAMMODE_BYREF, FB_SYMBATTRIB_NONE )
 	end if
 
@@ -488,7 +492,8 @@ end sub
 
 '' Declare & add any implicit/default members and global vars if needed
 sub symbUdtAddDefaultMembers( byval udt as FBSYMBOL ptr )
-	dim as FBSYMBOL ptr defctor = any, copyctor = any, letop = any, dtor = any
+	dim as FBSYMBOL ptr defctor = any, dtor = any, copyctor = any, _
+		copyctorconst = any, copyletopconst = any
 	dim as integer base_without_defaultctor = any
 
 	''
@@ -504,6 +509,16 @@ sub symbUdtAddDefaultMembers( byval udt as FBSYMBOL ptr )
 	'' we want to add a default constructor if there isn't any constructor
 	'' yet, to ensure the field initializers are getting used.
 	''
+	'' For the copy constructors and Let overloads, we usually only need to
+	'' add BYREF AS CONST UDT versions. That allows copying from const or
+	'' non-const objects.
+	''
+	'' For backwards compatibility we may need to add a BYREF AS UDT copy
+	'' constructor though: In case the user created only a non-const LET
+	'' overload, and we need to create a copy constructor that's going to
+	'' call that LET overload. Since it's non-const, the copy constructor's
+	'' parameter must be non-const aswell.
+	''
 
 	'' Derived?
 	if( udt->udt.base ) then
@@ -518,7 +533,8 @@ sub symbUdtAddDefaultMembers( byval udt as FBSYMBOL ptr )
 
 	defctor = NULL
 	copyctor = NULL
-	letop = NULL
+	copyctorconst = NULL
+	copyletopconst = NULL
 	dtor = NULL
 
 	'' Ctor/inited fields and no ctor yet?
@@ -532,37 +548,55 @@ sub symbUdtAddDefaultMembers( byval udt as FBSYMBOL ptr )
 			errReport( FB_ERRMSG_NEEDEXPLICITDEFCTOR )
 		else
 			'' Add default ctor
-			defctor = hDeclareProc( udt, INVALID, FALSE, FB_SYMBATTRIB_OVERLOADED or FB_SYMBATTRIB_CONSTRUCTOR )
+			defctor = hDeclareProc( udt, INVALID, FB_DATATYPE_INVALID, FB_SYMBATTRIB_OVERLOADED or FB_SYMBATTRIB_CONSTRUCTOR )
 		end if
 	end if
 
 	if( symbGetUDTHasCtorField( udt ) ) then
-		'' Let operator (must be defined before the copy ctor)
-		if( symbGetCompCloneProc( udt ) = NULL ) then
-			letop = hDeclareProc( udt, AST_OP_ASSIGN, TRUE, FB_SYMBATTRIB_OVERLOADED or FB_SYMBATTRIB_OPERATOR )
+		symbUdtAllocExt( udt )
 
-			'' Don't allow the implicit LET to override a FINAL LET from the base
-			symbProcCheckOverridden( letop, TRUE )
+		'' LET overloads must be declared before the copy ctors because
+		'' they're called by the current copy ctor implementation.
+
+		if( udt->udt.ext->copyletopconst = NULL ) then
+			'' declare operator let( byref rhs as const UDT )
+			copyletopconst = hDeclareProc( udt, AST_OP_ASSIGN, typeSetIsConst( FB_DATATYPE_STRUCT ), FB_SYMBATTRIB_OVERLOADED or FB_SYMBATTRIB_OPERATOR )
+			symbProcCheckOverridden( copyletopconst, TRUE )
 		end if
 
-		'' Copy ctor
-		if( symbGetCompCopyCtor( udt ) = NULL ) then
+		if( udt->udt.ext->copyctorconst = NULL ) then
+			'' declare constructor( byref rhs as const UDT )
+			if( base_without_defaultctor ) then
+				'' Cannot implicitly generate a copy ctor,
+				'' same as with default ctor above.
+				errReport( FB_ERRMSG_NEEDEXPLICITCOPYCTORCONST )
+			else
+				copyctorconst = hDeclareProc( udt, INVALID, typeSetIsConst( FB_DATATYPE_STRUCT ), FB_SYMBATTRIB_OVERLOADED or FB_SYMBATTRIB_CONSTRUCTOR )
+			end if
+		end if
+
+		'' Add a non-const copy ctor for backwards compatibility,
+		'' if the user provided a non-const LET overload (see above).
+		if( (udt->udt.ext->copyletop <> NULL) and (udt->udt.ext->copyctor = NULL) ) then
+			'' declare constructor( byref rhs as UDT )
 			if( base_without_defaultctor ) then
 				'' Cannot implicitly generate a copy ctor,
 				'' same as with default ctor above.
 				errReport( FB_ERRMSG_NEEDEXPLICITCOPYCTOR )
 			else
-				copyctor = hDeclareProc( udt, INVALID, TRUE, FB_SYMBATTRIB_OVERLOADED or FB_SYMBATTRIB_CONSTRUCTOR )
+				copyctor = hDeclareProc( udt, INVALID, FB_DATATYPE_STRUCT, FB_SYMBATTRIB_OVERLOADED or FB_SYMBATTRIB_CONSTRUCTOR )
 			end if
 		end if
 	end if
 
 	'' has fields with dtors?
 	if( symbGetUDTHasDtorField( udt ) ) then
+		symbUdtAllocExt( udt )
+
 		'' no default dtor explicitly defined?
-		if( symbGetCompDtor( udt ) = NULL ) then
+		if( udt->udt.ext->dtor = NULL ) then
 			'' Dtor
-			dtor = hDeclareProc( udt, INVALID, FALSE, FB_SYMBATTRIB_DESTRUCTOR )
+			dtor = hDeclareProc( udt, INVALID, FB_DATATYPE_INVALID, FB_SYMBATTRIB_DESTRUCTOR )
 
 			'' Don't allow the implicit dtor to override a FINAL dtor from the base
 			symbProcCheckOverridden( dtor, TRUE )
@@ -604,12 +638,16 @@ sub symbUdtAddDefaultMembers( byval udt as FBSYMBOL ptr )
 		hAddCtorBody( udt, defctor, FALSE )
 	end if
 
-	if( copyctor ) then
-		hAddCtorBody( udt, copyctor, TRUE )
+	if( copyletopconst ) then
+		hAddLetOpBody( udt, copyletopconst )
 	end if
 
-	if( letop ) then
-		hAddLetOpBody( udt, letop )
+	if( copyctorconst ) then
+		hAddCtorBody( udt, copyctorconst, TRUE )
+	end if
+
+	if( copyctor ) then
+		hAddCtorBody( udt, copyctor, TRUE )
 	end if
 
 	if( dtor ) then
@@ -621,49 +659,34 @@ end sub
 '' getters/setters
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-'':::::
-private function hIsLhsEqRhs _
+private function hHasByrefSelfParam _
 	( _
-		byval parent as FBSYMBOL ptr, _
-		byval proc as FBSYMBOL ptr _
-	) as integer static
+		byval proc as FBSYMBOL ptr, _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr _
+	) as integer
 
-	dim as FBSYMBOL ptr param, subtype
+	dim as FBSYMBOL ptr param = any
 
 	function = FALSE
-
 	param = symbGetProcTailParam( proc )
-	if( symbGetParamMode( param ) = FB_PARAMMODE_BYREF ) then
-		subtype = symbGetSubtype( param )
 
-		if( subtype = NULL ) then
-			return FALSE
-		end if
+	if( symbGetParamMode( param ) <> FB_PARAMMODE_BYREF ) then
+		exit function
+	end if
 
-		'' forward?
-		if( symbGetClass( subtype ) = FB_SYMBCLASS_FWDREF ) then
-			'' not a pointer?
-			if( symbGetType( param ) = FB_DATATYPE_FWDREF ) then
-				'' same name?
-				if( subtype->hash.index = parent->hash.index ) then
-					return TRUE
-				end if
+	'' HACK: Allow forward references with the same name
+	'' (but CONSTs must still match)
+	if( param->typ = typeJoin( dtype, FB_DATATYPE_FWDREF ) ) then
+		assert( param->subtype->class = FB_SYMBCLASS_FWDREF )
+		if( param->subtype->hash.index = subtype->hash.index ) then
+			if( *param->subtype->hash.item->name = *subtype->hash.item->name ) then
+				return TRUE
 			end if
-
-			return FALSE
-		end if
-
-		if( subtype = parent ) then
-			select case symbGetClass( parent )
-			case FB_SYMBCLASS_STRUCT
-				function = ( symbGetType( param ) = FB_DATATYPE_STRUCT )
-
-			case FB_SYMBCLASS_CLASS
-				'...
-			end select
 		end if
 	end if
 
+	function = (param->typ = dtype) and (param->subtype = subtype)
 end function
 
 '' Check whether UDT doesn't have either of dtor/copy ctor/virtual methods
@@ -672,6 +695,7 @@ end function
 '' this function to check whether there is a copyctor and whether a temp copy
 '' to be passed byref must be used or not)
 function symbCompIsTrivial( byval sym as FBSYMBOL ptr ) as integer
+	assert( symbIsStruct( sym ) )
 	function = ((symbGetCompCopyCtor( sym ) = NULL) and _
 	            (symbGetCompDtor( sym ) = NULL) and _
 	            (not symbGetHasRTTI( sym )))
@@ -697,12 +721,19 @@ sub symbCheckCompCtor( byval sym as FBSYMBOL ptr, byval proc as FBSYMBOL ptr )
 			'' only the THIS param  - it's a default ctor
 			'' (this takes precedence over other ctors with all optional params)
 			sym->udt.ext->defctor = proc
+
 		'' copy?
 		case 2
 			'' 2 params - it could be a copy ctor
 			if( sym->udt.ext->copyctor = NULL ) then
-				if( hIsLhsEqRhs( sym, proc ) ) then
+				if( hHasByrefSelfParam( proc, FB_DATATYPE_STRUCT, sym ) ) then
 					sym->udt.ext->copyctor = proc
+				end if
+			end if
+
+			if( sym->udt.ext->copyctorconst = NULL ) then
+				if( hHasByrefSelfParam( proc, typeSetIsConst( FB_DATATYPE_STRUCT ), sym ) ) then
+					sym->udt.ext->copyctorconst = proc
 				end if
 			end if
 		end select
@@ -747,13 +778,10 @@ function symbGetCompDefCtor( byval sym as FBSYMBOL ptr ) as FBSYMBOL ptr
 	end if
 end function
 
-function symbGetCompCopyCtor( byval sym as FBSYMBOL ptr ) as FBSYMBOL ptr
-	if( sym ) then
-		if( symbIsStruct( sym ) ) then
-			if( sym->udt.ext ) then
-				function = sym->udt.ext->copyctor
-			end if
-		end if
+private function symbGetCompCopyCtor( byval sym as FBSYMBOL ptr ) as FBSYMBOL ptr
+	assert( symbIsStruct( sym ) )
+	if( sym->udt.ext ) then
+		function = sym->udt.ext->copyctor
 	end if
 end function
 
@@ -767,23 +795,25 @@ function symbGetCompDtor( byval sym as FBSYMBOL ptr ) as FBSYMBOL ptr
 	end if
 end function
 
-sub symbCheckCompClone( byval sym as FBSYMBOL ptr, byval proc as FBSYMBOL ptr )
+sub symbCheckCompLetOp( byval sym as FBSYMBOL ptr, byval proc as FBSYMBOL ptr )
 	if( symbIsStruct( sym ) ) then
-		'' clone?
-		if( hIsLhsEqRhs( sym, proc ) ) then
+		if( hHasByrefSelfParam( proc, FB_DATATYPE_STRUCT, sym ) ) then
 			symbUdtAllocExt( sym )
-			sym->udt.ext->clone = proc
+			sym->udt.ext->copyletop = proc
+		end if
+
+		if( hHasByrefSelfParam( proc, typeSetIsConst( FB_DATATYPE_STRUCT ), sym ) ) then
+			symbUdtAllocExt( sym )
+			sym->udt.ext->copyletopconst = proc
 		end if
 	end if
 end sub
 
-function symbGetCompCloneProc( byval sym as FBSYMBOL ptr ) as FBSYMBOL ptr
-	if( sym ) then
-		if( symbIsStruct( sym ) ) then
-			if( sym->udt.ext ) then
-				function = sym->udt.ext->clone
-			end if
-		end if
+function symbCompHasCopyLetOps( byval udt as FBSYMBOL ptr ) as integer
+	assert( symbIsStruct( udt ) )
+	if( udt->udt.ext ) then
+		function = (udt->udt.ext->copyletop <> NULL) or _
+		           (udt->udt.ext->copyletopconst <> NULL)
 	end if
 end function
 
@@ -837,7 +867,7 @@ sub symbSetCompOpOvlHead _
 
 		'' assign?
 		if( op = AST_OP_ASSIGN ) then
-			symbCheckCompClone( sym, proc )
+			symbCheckCompLetOp( sym, proc )
 		end if
 	'' not self..
 	else

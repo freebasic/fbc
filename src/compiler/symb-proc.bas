@@ -745,7 +745,7 @@ private function hSetupProc _
 
 			'' assign? could be a clone..
 			if( op = AST_OP_ASSIGN ) then
-				symbCheckCompClone( parent, proc )
+				symbCheckCompLetOp( parent, proc )
 			end if
         end if
 

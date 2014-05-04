@@ -96,7 +96,7 @@ namespace overridingWorks
 
 	type B extends A
 		declare constructor( )
-		declare constructor( byref as B )
+		declare constructor( byref as const B )
 		declare constructor( byval j as integer )
 		declare sub add( byval j as integer )
 		declare function toString( ) as string

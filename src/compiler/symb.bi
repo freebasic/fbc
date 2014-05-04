@@ -411,8 +411,10 @@ type FB_STRUCTEXT
 	ctorhead		as FBSYMBOL_ ptr			'' ctor head (first overload proc) or NULL
 	defctor			as FBSYMBOL_ ptr			'' default ctor or NULL
 	copyctor		as FBSYMBOL_ ptr			'' copy ctor or NULL
+	copyctorconst		as FBSYMBOL_ ptr			'' copy ctor with CONST param or NULL
 	dtor			as FBSYMBOL_ ptr			'' destructor or NULL
-	clone			as FBSYMBOL_ ptr			'' LET overload proc or NULL
+	copyletop		as FBSYMBOL_ ptr			'' copy LET overload proc or NULL
+	copyletopconst		as FBSYMBOL_ ptr			'' copy LET overload proc with CONST param or NULL
 	opovlTb(0 to AST_OP_SELFOPS-1) as FBSYMBOL_ ptr
 	vtableelements		as integer				'' vtable elements counter
 	vtable			as FBSYMBOL_ ptr			'' virtual-functions table struct
@@ -1718,10 +1720,9 @@ declare sub symbCheckCompCtor( byval sym as FBSYMBOL ptr, byval proc as FBSYMBOL
 declare sub symbSetCompDtor( byval sym as FBSYMBOL ptr, byval proc as FBSYMBOL ptr )
 declare function symbGetCompCtorHead( byval sym as FBSYMBOL ptr ) as FBSYMBOL ptr
 declare function symbGetCompDefCtor( byval sym as FBSYMBOL ptr ) as FBSYMBOL ptr
-declare function symbGetCompCopyCtor( byval sym as FBSYMBOL ptr ) as FBSYMBOL ptr
 declare function symbGetCompDtor( byval sym as FBSYMBOL ptr ) as FBSYMBOL ptr
-declare sub symbCheckCompClone( byval sym as FBSYMBOL ptr, byval proc as FBSYMBOL ptr )
-declare function symbGetCompCloneProc( byval sym as FBSYMBOL ptr ) as FBSYMBOL ptr
+declare sub symbCheckCompLetOp( byval sym as FBSYMBOL ptr, byval proc as FBSYMBOL ptr )
+declare function symbCompHasCopyLetOps( byval udt as FBSYMBOL ptr ) as integer
 
 declare function symbGetCompOpOvlHead _
 	( _
