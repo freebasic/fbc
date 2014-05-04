@@ -370,7 +370,86 @@ function astCheckASSIGNToType _
 	astDelTree( l )
 end function
 
-'':::::
+private function hShallowCopy _
+	( _
+		byval l as ASTNODE ptr, _
+		byval r as ASTNODE ptr, _
+		byval options as integer _
+	) as ASTNODE ptr
+
+	dim as ASTNODE ptr t = any
+	dim as longint offset = any, bytestocopy = any
+	dim as integer has_vptr = any
+
+	assert( astGetDataType( l ) = FB_DATATYPE_STRUCT )
+	assert( astGetDataType( r ) = FB_DATATYPE_STRUCT )
+
+	'' hCheckUDTOps() should have ensured this, but anyways:
+	'' rhs must be >= lhs, i.e. either they must be the same UDT, or the
+	'' rhs must be derived from the lhs.
+	assert( (l->subtype = r->subtype) or (symbGetUDTBaseLevel( r->subtype, l->subtype ) > 0) )
+
+	'' How much to copy must depend on the possibly-casted lhs, since that's
+	'' what we're writing into, and we don't want a buffer overflow.
+	bytestocopy = symbGetLen( l->subtype )
+	has_vptr = symbGetHasRTTI( l->subtype )
+
+	'' Need to remove casts before doing ADDROF or passing to astNewMEM().
+	l = astRemoveNoConvCAST( l )
+	r = astRemoveNoConvCAST( r )
+
+	if( has_vptr ) then
+		'' Don't overwrite the vptr when copying class UDTs without a
+		'' Let overload, because the lhs object doesn't change its type
+		'' or size, so its vptr must stay the same.
+		''
+		'' This also means that if this is a copy construction, we must
+		'' initialize the lhs' vptr here. (normally it'd be done by a
+		'' constructor call, but as long as we allow copy construction
+		'' by shallow copy, we have to handle it here too). Luckily this
+		'' never happens in practice because OBJECT has a copy
+		'' constructor that is supposed to be used instead, and that
+		'' should cause all derived types to have one too.
+		assert( (options and AST_OPOPT_ISINI) = 0 )
+
+		assert( bytestocopy >= env.pointersize )
+		bytestocopy -= env.pointersize
+
+		'' If it was just OBJECT, then there's nothing left to copy.
+		if( bytestocopy = 0 ) then
+			'' Nothing to do, so l/r can be deleted - unless they
+			'' have side-effects; then we use astRemSideFx() and
+			'' delete the side-effect-free reference it produced.
+			t = NULL
+			if( astHasSideFx( l ) ) then
+				t = astNewLINK( t, astRemSideFx( l ) )
+			end if
+			if( astHasSideFx( r ) ) then
+				t = astNewLINK( t, astRemSideFx( r ) )
+			end if
+			astDelTree( l )
+			astDelTree( r )
+
+			'' Can't just return NULL from astNewASSIGN() because
+			'' that would be misinterpreted as an error.
+			if( t = NULL ) then
+				t = astNewNOP( )
+			end if
+
+			return t
+		end if
+
+		'' Skip the vptr on both sides.
+		'' Casting to byte (could be another generic type aswell) for
+		'' consistency, because after adding the offset, l/r no longer
+		'' point to the original UDT.
+		l = astBuildDerefAddrOf( l, env.pointersize, FB_DATATYPE_BYTE, NULL )
+		r = astBuildDerefAddrOf( r, env.pointersize, FB_DATATYPE_BYTE, NULL )
+	end if
+
+	function = astNewMEM( AST_OP_MEMMOVE, l, r, bytestocopy )
+end function
+
 function astNewASSIGN _
 	( _
 		byval l as ASTNODE ptr, _
@@ -378,7 +457,7 @@ function astNewASSIGN _
 		byval options as AST_OPOPT _
 	) as ASTNODE ptr
 
-	dim as ASTNODE ptr n = any
+	dim as ASTNODE ptr n = any, tr = any
     dim as FB_DATATYPE ldtype = any, rdtype = any, ldfull = any, rdfull = any
     dim as FB_DATACLASS ldclass = any, rdclass = any
     dim as FBSYMBOL ptr lsubtype = any, proc = any
@@ -505,8 +584,7 @@ function astNewASSIGN _
 			exit function
 		end if
 
-		l = astRemoveNoConvCAST( l )
-		r = astRemoveNoConvCAST( r )
+		'' No Let overload found above; so do a shallow copy
 
 		'' type ini tree?
 		if( astIsTYPEINI( r ) ) then
@@ -515,40 +593,41 @@ function astNewASSIGN _
 			'' unless there are ctors/dtors (let/cast overloads were
 			'' already handled above).
 			if( (typeHasCtor( l->dtype, l->subtype ) or typeHasDtor( l->dtype, l->subtype )) = FALSE ) then
-				return astTypeIniFlush( l, r, TRUE, options and AST_OPOPT_ISINI )
+				return astTypeIniFlush( astRemoveNoConvCAST( l ), r, TRUE, options and AST_OPOPT_ISINI )
 			end if
 		end if
 
-		'' Do a shallow copy
+		tr = astSkipNoConvCAST( r )
 
-		if( astIsCALL( r ) ) then
-			do_move = symbProcReturnsOnStack( r->sym )
-			if( do_move ) then
-				'' Returning on stack, copy from the temp result var
-				r = astBuildCallResultVar( r )
-			else
-				assert( symbProcReturnsByref( r->sym ) = FALSE )
-
-				'' Returning in registers, patch the types and do a normal ASSIGN
-				ldfull = symbGetProcRealType( r->sym )
-				ldtype = typeGet( ldfull )
-				lsubtype = symbGetProcRealSubtype( r->sym )
-				ldclass = typeGetClass( ldtype )
-				astSetType( l, ldfull, lsubtype )
-
-				rdfull = ldfull
-				rdtype = ldtype
-				rdclass = ldclass
-				astSetType( r, rdfull, lsubtype )
-			end if
-		else
+		if( astIsCALL( tr ) = FALSE ) then
 			'' Not a CALL, it must be an UDT in memory, copy from that
-			do_move = TRUE
+			return hShallowCopy( l, r, options )
 		end if
 
-		if( do_move ) then
-			return astNewMEM( AST_OP_MEMMOVE, l, r, symbGetLen( l->subtype ) )
+		if( symbProcReturnsOnStack( tr->sym ) ) then
+			'' Returning on stack, copy from the temp result var
+			return hShallowCopy( l, astBuildCallResultVar( astRemoveNoConvCAST( r ) ), options )
 		end if
+
+		'' Returning in registers, patch the types to integer and then
+		'' do a normal integer ASSIGN. (can't do a shallow copy from
+		'' memory because the UDT is in registers... would have to copy
+		'' to a temp var first)
+		l = astRemoveNoConvCAST( l )
+		r = astRemoveNoConvCAST( r )
+		assert( astIsCALL( r ) )
+		assert( symbProcReturnsByref( r->sym ) = FALSE )
+
+		ldfull = symbGetProcRealType( r->sym )
+		ldtype = typeGet( ldfull )
+		lsubtype = symbGetProcRealSubtype( r->sym )
+		ldclass = typeGetClass( ldtype )
+		astSetType( l, ldfull, lsubtype )
+
+		rdfull = ldfull
+		rdtype = ldtype
+		rdclass = ldclass
+		astSetType( r, rdfull, lsubtype )
 
     '' wstrings?
     elseif( (ldtype = FB_DATATYPE_WCHAR) or _

@@ -13,5 +13,6 @@ typedef struct _FB_OBJECT {
 	FB_BASEVT			*pVT;
 } FB_OBJECT;
 
-/* Object class constructor */
+/* Object class constructor & copy constructor */
 void _ZN10$fb_ObjectC1Ev( FB_OBJECT* );
+void _ZN10$fb_ObjectC1ERKS_( FB_OBJECT *this_, const FB_OBJECT *rhs );

@@ -447,18 +447,37 @@ private sub hAddLetOpBody _
 
 	dim as FBSYMBOL ptr fld = any, this_ = any, rhs = any
 	dim as ASTNODE ptr dstexpr = any, srcexpr = any
+	dim as integer do_copy = any
 
 	hProcBegin( udt, letproc )
 
 	this_ = symbGetParamVar( symbGetProcHeadParam( letproc ) )
 	rhs = symbGetParamVar( symbGetProcTailParam( letproc ) )
 
-	'' For each field, except dynamic array field descriptors (instead, the
-	'' fake dynamic array field will be handled in order to copy the dynamic
-	'' array)
+	''
+	'' Copy each field
+	''
+	'' - except dynamic array field descriptors. Instead, the fake dynamic
+	''   array field will be handled in order to copy the dynamic array.
+	''
+	'' - except the OBJECT base class containing the vptr, because we don't
+	''   want to overwrite this.vptr with rhs.vptr. The this object doesn't
+	''   change its type or size, so its vptr must stay the same.
+	''
+	''   This only applies if this UDT actually is directly derived from
+	''   OBJECT. For UDTs that are only indirectly derived from OBJECT, we
+	''   do want to copy the base. Doing so will call the base's Let
+	''   overload, which then takes care of not overwriting the vptr.
+	''
 	fld = symbGetCompSymbTb( udt ).head
 	while( fld )
-		if( symbIsField( fld ) and (not symbIsDescriptor( fld )) ) then
+		do_copy = symbIsField( fld ) and (not symbIsDescriptor( fld ))
+		if( udt->udt.base ) then
+			do_copy and= (fld <> udt->udt.base) or _
+				(udt->udt.base->subtype <> symb.rtti.fb_object)
+		end if
+
+		if( do_copy ) then
 			'' part of an union?
 			if( symbGetIsUnionField( fld ) ) then
 				fld = hCopyUnionFields( this_, rhs, fld )
@@ -1312,6 +1331,15 @@ sub symbCompRTTIInit( )
 	'' declare constructor( )
 	ctor = symbPreAddProc( NULL )
 	symbAddProcInstancePtr( objtype, ctor )
+	symbAddCtor( ctor, NULL, FB_SYMBATTRIB_METHOD or FB_SYMBATTRIB_CONSTRUCTOR _
+	                         or FB_SYMBATTRIB_OVERLOADED, FB_FUNCMODE_CDECL )
+
+	'' declare constructor( byref __FB_RHS__ as const object )
+	'' (must have a BYREF AS CONST parameter so it can copy from CONST objects too)
+	ctor = symbPreAddProc( NULL )
+	symbAddProcInstancePtr( objtype, ctor )
+	symbAddProcParam( ctor, "__FB_RHS__", typeSetIsConst( FB_DATATYPE_STRUCT ), objtype, _
+			0, FB_PARAMMODE_BYREF, FB_SYMBATTRIB_NONE )
 	symbAddCtor( ctor, NULL, FB_SYMBATTRIB_METHOD or FB_SYMBATTRIB_CONSTRUCTOR _
 	                         or FB_SYMBATTRIB_OVERLOADED, FB_FUNCMODE_CDECL )
 
