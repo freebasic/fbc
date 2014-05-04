@@ -754,8 +754,13 @@ private sub _emitVarIniF( byval sym as FBSYMBOL ptr, byval value as double )
 	emitVARINIf( symbGetType( sym ), value )
 end sub
 
-private sub _emitVarIniOfs( byval sym as FBSYMBOL ptr, byval ofs as longint )
-	emitVARINIOFS( symbGetMangledName( sym ), ofs )
+private sub _emitVarIniOfs _
+	( _
+		byval sym as FBSYMBOL ptr, _
+		byval rhs as FBSYMBOL ptr, _
+		byval ofs as longint _
+	)
+	emitVARINIOFS( symbGetMangledName( rhs ), ofs )
 end sub
 
 private sub _emitVarIniStr _

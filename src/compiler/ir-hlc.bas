@@ -3187,13 +3187,18 @@ private sub _emitVarIniF( byval sym as FBSYMBOL ptr, byval value as double )
 	hVarIniSeparator( )
 end sub
 
-private sub _emitVarIniOfs( byval sym as FBSYMBOL ptr, byval ofs as longint )
+private sub _emitVarIniOfs _
+	( _
+		byval sym as FBSYMBOL ptr, _
+		byval rhs as FBSYMBOL ptr, _
+		byval ofs as longint _
+	)
+
 	dim as EXPRNODE ptr l = any
 
-	l = exprNewOFFSET( sym, ofs )
+	l = exprNewOFFSET( rhs, ofs )
 
-	'' Cast to void* to prevent gcc ptr warnings (FB should handle that)
-	l = exprNewCAST( typeAddrOf( FB_DATATYPE_VOID ), NULL, l )
+	l = exprNewCAST( symbGetType( sym ), sym->subtype, l )
 
 	ctx.varini += exprFlush( l )
 	hVarIniSeparator( )

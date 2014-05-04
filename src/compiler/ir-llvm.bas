@@ -2063,8 +2063,13 @@ private sub _emitVarIniF( byval sym as FBSYMBOL ptr, byval value as double )
 	hVarIniSeparator( )
 end sub
 
-private sub _emitVarIniOfs( byval sym as FBSYMBOL ptr, byval ofs as longint )
-	ctx.varini += "TODO offset " + *symbGetMangledName( sym ) + " + " + str( ofs )
+private sub _emitVarIniOfs _
+	( _
+		byval sym as FBSYMBOL ptr, _
+		byval rhs as FBSYMBOL ptr, _
+		byval ofs as longint _
+	)
+	ctx.varini += "TODO offset " + *symbGetMangledName( rhs ) + " + " + str( ofs )
 	hVarIniSeparator( )
 end sub
 

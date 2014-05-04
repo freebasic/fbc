@@ -522,7 +522,7 @@ private function hFlushExprStatic _
 	if( litsym = NULL ) then
     	'' offset?
 		if( astIsOFFSET( expr ) ) then
-			irEmitVARINIOFS( astGetSymbol( expr ), expr->ofs.ofs )
+			irEmitVARINIOFS( sym, astGetSymbol( expr ), expr->ofs.ofs )
 		'' anything else
 		else
 			'' different types?
