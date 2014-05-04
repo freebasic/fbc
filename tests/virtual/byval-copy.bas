@@ -525,12 +525,39 @@ namespace explicitLetRetainsVptr
 	end sub
 end namespace
 
+namespace noOpObjectCopySideFx
+	'' Assigning OBJECTs is a no-op since OBJECT only contains the vptr and
+	'' that's excluded from the copy. This means the compiler can delete the
+	'' lhs/rhs expressions - unless they contain side-effects.
+
+	dim shared as integer f0calls
+
+	function f0( ) as integer
+		f0calls += 1
+		function = 0
+	end function
+
+	sub test cdecl( )
+		dim array(0 to 0) as object
+		dim x as object
+
+		CU_ASSERT( f0calls = 0 )
+		array(f0( )) = x
+		CU_ASSERT( f0calls = 1 )
+		x = array(f0( ))
+		CU_ASSERT( f0calls = 2 )
+		array(f0( )) = array(f0( ))
+		CU_ASSERT( f0calls = 4 )
+	end sub
+end namespace
+
 private sub ctor( ) constructor
 	fbcu.add_suite( "tests/virtual/byval-copy" )
 	fbcu.add_test( "noFieldsRetainsVptr", @noFieldsRetainsVptr.test )
 	fbcu.add_test( "implicitLetWithFieldsRetainsVptr", @implicitLetWithFieldsRetainsVptr.test )
 	fbcu.add_test( "implicitLetCopiesFields", @implicitLetCopiesFields.test )
 	fbcu.add_test( "explicitLetRetainsVptr", @explicitLetRetainsVptr.test )
+	fbcu.add_test( "noOpObjectCopySideFx", @noOpObjectCopySideFx.test )
 end sub
 
 end namespace
