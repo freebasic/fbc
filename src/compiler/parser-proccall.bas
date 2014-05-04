@@ -32,7 +32,7 @@ end function
 function cAssignFunctResult( byval is_return as integer ) as integer
 	dim as FBSYMBOL ptr res = any, subtype = any
 	dim as ASTNODE ptr rhs = any, expr = any
-	dim as integer has_ctor = any, has_defctor = any
+	dim as integer has_ctor = any, has_defctor = any, assignoptions = any
 
 	function = FALSE
 
@@ -120,22 +120,30 @@ function cAssignFunctResult( byval is_return as integer ) as integer
 	'' set accessed flag here, as proc will be ended before AST is flushed
 	symbSetIsAccessed( res )
 
-	'' RETURN and has ctor? try to initialize..
-	if( is_return and has_ctor ) then
-		dim as integer is_ctorcall = any
-		rhs = astBuildImplicitCtorCallEx( res, rhs, cBydescArrayArgParens( rhs ), is_ctorcall )
-		if( rhs = NULL ) then
-			exit function
+	'' For RETURN, the result object is only being constructed now, so try
+	'' to call a constructor, or fallback to copy-construction by shallow
+	'' copy.
+	assignoptions = 0
+	if( is_return ) then
+		if( has_ctor ) then
+			dim as integer is_ctorcall = any
+			rhs = astBuildImplicitCtorCallEx( res, rhs, cBydescArrayArgParens( rhs ), is_ctorcall )
+			if( rhs = NULL ) then
+				exit function
+			end if
+
+			if( is_ctorcall ) then
+				astAdd( astPatchCtorCall( rhs, astBuildProcResultVar( parser.currproc, res ) ) )
+				return TRUE
+			end if
 		end if
 
-		if( is_ctorcall ) then
-			astAdd( astPatchCtorCall( rhs, astBuildProcResultVar( parser.currproc, res ) ) )
-			return TRUE
-		end if
+		'' Do copy-construction by shallow copy (i.e. don't call any LET overload)
+		assignoptions = AST_OPOPT_ISINI
 	end if
 
 	'' do the assignment
-	expr = astNewASSIGN( astBuildProcResultVar( parser.currproc, res ), rhs )
+	expr = astNewASSIGN( astBuildProcResultVar( parser.currproc, res ), rhs, assignoptions )
 	if( expr = NULL ) then
 		astDelTree( rhs )
 		errReport( FB_ERRMSG_ILLEGALASSIGNMENT )

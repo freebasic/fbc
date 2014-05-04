@@ -169,10 +169,40 @@ namespace passingByvalDoesntCallLet2
 	end sub
 end namespace
 
+namespace returnByvalDoesntCallLet
+	dim shared as integer lets
+
+	type UDT
+		i as integer
+		declare operator let( byref as const UDT )
+	end type
+
+	operator UDT.let( byref rhs as const UDT )
+		lets += 1
+	end operator
+
+	function f( ) as UDT
+		dim x as UDT
+		x.i = 123
+		CU_ASSERT( lets = 0 )
+
+		'' This RETURN is a copy-construction, not an assignment,
+		'' so the LET overload shouldn't be called.
+		return x
+	end function
+
+	sub test cdecl( )
+		CU_ASSERT( lets = 0 )
+		CU_ASSERT( f( ).i = 123 )
+		CU_ASSERT( lets = 0 )
+	end sub
+end namespace
+
 private sub ctor( ) constructor
 	fbcu.add_suite( "tests/structs/byval-copy" )
 	fbcu.add_test( "passingByvalDoesntCallLet1", @passingByvalDoesntCallLet1.test )
 	fbcu.add_test( "passingByvalDoesntCallLet2", @passingByvalDoesntCallLet2.test )
+	fbcu.add_test( "returnByvalDoesntCallLet", @returnByvalDoesntCallLet.test )
 end sub
 
 end namespace
