@@ -1780,6 +1780,11 @@ sub cProcStmtBegin( byval attrib as integer )
 	'' ProcHeader
 	proc = cProcHeader( attrib, is_nested, FB_PROCOPT_NONE, tkn )
 	if( proc = NULL ) then
+		'' Close namespace again if cProcHeader() opened it, for better
+		'' error recovery.
+		if( is_nested ) then
+			symbNestEnd( TRUE )
+		end if
 		hSkipCompound( tkn )
 		exit sub
 	end if
@@ -1844,7 +1849,7 @@ sub cProcStmtEnd( )
     '' always finish
 	astProcEnd( FALSE )
 
-	'' was the namespace changed?
+	'' Close namespace again if cProcHeader() opened it
 	if( stk->proc.is_nested ) then
 		symbNestEnd( TRUE )
 	end if
