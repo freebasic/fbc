@@ -9,8 +9,7 @@
 #include once "rtl.bi"
 #include once "ast.bi"
 
-'':::::
-function cGOTBStmt _
+private function cGOTBStmt _
 	( _
 		byval expr as ASTNODE ptr, _
 		byval isgoto as integer _
@@ -41,14 +40,19 @@ function cGOTBStmt _
 	'' convert to uinteger if needed
 	if( astGetDataType( expr ) <> FB_DATATYPE_UINT ) then
 		expr = astNewCONV( FB_DATATYPE_UINT, NULL, expr )
+		if( expr = NULL ) then
+			errReport( FB_ERRMSG_TYPEMISMATCH, TRUE )
+			hSkipStmt( )
+			exit function
+		end if
 	end if
+
+	'' GOTO|GOSUB
+	lexSkipToken( )
 
 	'' store expression into a temp var
 	sym = symbAddTempVar( FB_DATATYPE_UINT )
 	expr = astNewASSIGN( astNewVAR( sym ), expr )
-	if( expr = NULL ) then
-		exit function
-	end if
 	astAdd( expr )
 
 	'' read labels
@@ -152,7 +156,6 @@ function cOnStmt _
 	'' GOTO|GOSUB
 	select case lexGetToken( )
 	case FB_TK_GOTO
-		lexSkipToken( )
 		isgoto = TRUE
 
 	case FB_TK_GOSUB
@@ -170,15 +173,14 @@ function cOnStmt _
 		end if
 
 		'' gosub allowed by OPTION GOSUB?
-		if( env.opt.gosub ) then
-			lexSkipToken( )
-			isgoto = FALSE
-		else
+		if( env.opt.gosub = FALSE ) then
 			'' GOSUB is allowed, but hasn't been enabled with OPTION GOSUB
 			errReport( FB_ERRMSG_SYNTAXERROR )
 			hSkipStmt( )
 			return TRUE
 		end if
+
+		isgoto = FALSE
 
 	case else
 		errReport( FB_ERRMSG_SYNTAXERROR )
@@ -189,6 +191,9 @@ function cOnStmt _
 
 	'' on error?
 	if( expr = NULL ) then
+		'' GOTO|GOSUB
+		lexSkipToken( )
+
 		isrestore = FALSE
 		'' ON ERROR GOTO 0?
 		if( lexGetClass( ) = FB_TKCLASS_NUMLITERAL ) then
@@ -211,13 +216,11 @@ function cOnStmt _
 
 			expr = astNewADDROF( astNewVAR( label ) )
 			rtlErrorSetHandler( expr, (islocal = TRUE) )
-
 		else
 			rtlErrorSetHandler( astNewCONSTi( NULL, FB_DATATYPE_UINT ), (islocal = TRUE) )
 		end if
 
 		function = TRUE
-
 	else
 		function = cGOTBStmt( expr, isgoto )
 	end if
