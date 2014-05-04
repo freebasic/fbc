@@ -52,8 +52,7 @@ private function cGOTBStmt _
 
 	'' store expression into a temp var
 	sym = symbAddTempVar( FB_DATATYPE_UINT )
-	expr = astNewASSIGN( astNewVAR( sym ), expr )
-	astAdd( expr )
+	astAdd( astNewASSIGN( astNewVAR( sym ), expr, AST_OPOPT_ISINI ) )
 
 	'' read labels
 	l = 0
