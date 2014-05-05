@@ -1030,6 +1030,12 @@ private sub hDeclVariable _
 		return
 	end if
 
+	'' Don't emit EXTERNs (only PUBLICs will be allocated here) or fake
+	'' dynamic array symbols (their descriptor will be emitted instead)
+	if( symbIsExtern( s ) or symbIsDynamic( s ) ) then
+		return
+	end if
+
 	'' initialized?
 	if( symbGetTypeIniTree( s ) ) then
     	'' never referenced?
@@ -1042,12 +1048,6 @@ private sub hDeclVariable _
 
 		hEmitDataHeader( )
 		irhlFlushStaticInitializer( s )
-		return
-	end if
-
-    '' extern or dynamic (for the latter, only the array descriptor is emitted)?
-	if( (s->attrib and (FB_SYMBATTRIB_EXTERN or _
-			   			FB_SYMBATTRIB_DYNAMIC)) <> 0 ) then
 		return
 	end if
 
