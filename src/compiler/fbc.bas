@@ -1083,37 +1083,37 @@ private sub hSetIofile _
 		byval is_rc as integer _
 	)
 
-	dim as integer o_option_not_used_yet = (len( fbc.objfile ) = 0)
+	module->srcfile = srcfile
 
 	'' No objfile name set yet (from the -o <file> option)?
-	if( o_option_not_used_yet ) then
+	if( len( fbc.objfile ) = 0 ) then
+		module->is_custom_objfile = FALSE
+
 		'' Choose default *.o name based on input file name
 		if( is_rc ) then
 #ifdef ENABLE_GORC
 			'' GoRC only accepts *.obj
 			'' foo.rc -> foo.obj, so there is no collision with foo.bas' foo.o
-			fbc.objfile += hStripExt( srcfile ) + ".obj"
+			fbc.objfile = hStripExt( srcfile ) + ".obj"
 #else
 			'' windres doesn't care, so we use the default *.o
 			'' foo.rc -> foo.rc.o to avoid collision with foo.bas' foo.o
-			fbc.objfile += srcfile + ".o"
+			fbc.objfile = srcfile + ".o"
 #endif
 		else
 			'' foo.bas -> foo.o
-			fbc.objfile += hStripExt( srcfile ) + ".o"
+			fbc.objfile = hStripExt( srcfile ) + ".o"
 		end if
-	end if
 
-	module->srcfile = srcfile
-	module->objfile = fbcAddObj( fbc.objfile )
-	module->is_custom_objfile = not o_option_not_used_yet
-
-	fbc.objfile = ""
-
-	if( o_option_not_used_yet ) then
-		'' Allow overwriting by a following -o <file> later
+		'' Since there was no preceding -o for this module, allow
+		'' -o <file> to follow later
 		fbc.lastmodule = module
+	else
+		module->is_custom_objfile = TRUE
 	end if
+
+	module->objfile = fbcAddObj( fbc.objfile )
+	fbc.objfile = ""
 
 end sub
 
