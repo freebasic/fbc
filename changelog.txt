@@ -179,6 +179,7 @@ Version 0.91.0:
 - C backend: A gcc warning was triggered when initializing a global variable with an @addressof expression, taking the address of another global.
 - #614: When copying (copy-constructing or assigning) objects of classes extending OBJECT, the lhs' vptr could be overwritten incorrectly, causing the object to have a wrong run-time type.
 - 0.90 regression: -g could produce bad stabs info when #includes were used (after closing an #include block, the wrong directive was used to return to the main file), preventing gdb from determining variable types sometimes
+- -g will now produce correct stabs info for dynamic array descriptors
 
 
 Version 0.90.1:

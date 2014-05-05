@@ -842,13 +842,11 @@ private function hGetDataType _
     select case as const dtype
     '' UDT?
     case FB_DATATYPE_STRUCT
-    	if( symbIsDescriptor( sym ) = FALSE ) then
-    		if( subtype->udt.dbg.typenum = INVALID ) then
-    			hDeclUDT( subtype )
-    		end if
+		if( subtype->udt.dbg.typenum = INVALID ) then
+			hDeclUDT( subtype )
+		end if
 
-    		desc += str( subtype->udt.dbg.typenum )
-    	end if
+		desc += str( subtype->udt.dbg.typenum )
 
     '' ENUM?
     case FB_DATATYPE_ENUM
@@ -991,15 +989,6 @@ sub edbgEmitGlobalVar _
 
     '' data type
     desc += hGetDataType( sym )
-
-	'' hack to fix the stabs data for global redim-arrays
-	'' see: http://www.freebasic.net/forum/viewtopic.php?p=117584#117584
-	#if 1 ''SARG BEGIN
-	'' workaround in case redim shared : use of back link !!!
-	if( right(desc, 2) = ":S" ) then
-		desc = *symbGetDBGName( sym->var_.desc.array ) + ":S" + hGetDataType( sym->var_.desc.array )
-	end if
-	#endif ''SARG END
 
 	hEmitSTABS( t, desc, 0, 0, *symbGetMangledName( sym ) )
 
