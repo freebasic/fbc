@@ -2405,7 +2405,24 @@ private sub hCompileModules( )
 	end if
 
 	module = listGetHead( @fbc.modules )
-	while( module )
+
+	if( module = NULL ) then
+		'' No input .bas files to compile - make sure to add the libs
+		'' from the command line to the final lists anyways.
+		strsetCopy( @fbc.finallibs, @fbc.libs )
+		strsetCopy( @fbc.finallibpaths, @fbc.libpaths )
+		exit sub
+	end if
+
+	'' We have input .bas files to compile - hCompileBas() will take care of
+	'' copying the command line libs into the final lists:
+	'' 1. into the compiler
+	''    (fbc.libs -> fbSetLibs() -> compiler)
+	'' 2. compiler collects additional #inclibs etc...
+	'' 3. and copy back into final lists
+	''    (compiler -> fbGetLibs() -> fbc.finallibs)
+
+	do
 		if( checkmain ) then
 			ismain = (mainfile = hStripPath( hStripExt( module->srcfile ) ))
 			'' Note: checking continues for all modules, because
@@ -2420,14 +2437,7 @@ private sub hCompileModules( )
 		hCompileBas( module, ismain, FALSE )
 
 		module = listGetNext( module )
-	wend
-
-	'' Make sure to add libs from command line to final lists if no input
-	'' .bas were given
-	if( module = NULL ) then
-		strsetCopy( @fbc.finallibs, @fbc.libs )
-		strsetCopy( @fbc.finallibpaths, @fbc.libpaths )
-	end if
+	loop while( module )
 end sub
 
 private function hParseXpm _
