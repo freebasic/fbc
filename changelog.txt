@@ -46,6 +46,7 @@ Version 0.91.0:
 - Thread-safe version of the FB graphics library (libfbgfxmt), used automatically if FB's threading functions are used or fbc's -mt command line option is given, just like the thread-safe version of the FB runtime library (libfbmt).
 - NEW/DELETE and NEW[]/DELETE[] can now be used with the dynamic STRING data type
 - ThreadDetach() function in fbthread.bi: alternative to ThreadWait() that cleans up the thread handle but does not wait for the thread to finish.
+- IsRedirected() function in fbio.bi, that can be used to check whether stdin or stdout is redirected to a file or not
 
 [fixed]
 - dlltool syntax error when building a DLL without any EXPORTs
