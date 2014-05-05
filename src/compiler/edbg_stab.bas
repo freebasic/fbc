@@ -1116,7 +1116,7 @@ sub edbgInclude( byval incfile as zstring ptr )
 		if( incfile = NULL ) then
 			emitSECTION( IR_SECTION_CODE, 0 )
 			lname = *symbUniqueLabel( )
-			hEmitSTABS( STAB_TYPE_SO, ctx.filename, 0, 0, lname )
+			hEmitSTABS( STAB_TYPE_SOL, ctx.filename, 0, 0, lname )
 			hLABEL( lname )
 		end if
 	end if

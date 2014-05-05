@@ -178,6 +178,7 @@ Version 0.91.0:
 - Copy-constructing or assigning an object from a CONST object didn't work with the implicitly generated copy-constructor or LET overload because they only had BYREF AS MyClass parameters which can't accept CONST objects (instead of calling the copy-constructor or LET overload, a shallow copy was done, which for example caused trouble if the UDT contained dynamic strings requiring a deep copy)
 - C backend: A gcc warning was triggered when initializing a global variable with an @addressof expression, taking the address of another global.
 - #614: When copying (copy-constructing or assigning) objects of classes extending OBJECT, the lhs' vptr could be overwritten incorrectly, causing the object to have a wrong run-time type.
+- 0.90 regression: -g could produce bad stabs info when #includes were used (after closing an #include block, the wrong directive was used to return to the main file), preventing gdb from determining variable types sometimes
 
 
 Version 0.90.1:
