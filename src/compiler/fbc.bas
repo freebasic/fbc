@@ -251,8 +251,18 @@ private function fbcAddObj( byref file as string ) as string ptr
 	function = s
 end function
 
-'' Find a file in our lib/ or in the system somewhere
-private function fbcFindLibFile( byval file as zstring ptr ) as string
+''
+'' Build the path to a certain file in our lib/ directory (or, in case of
+'' non-standalone, somewhere in a system directory such as /usr/lib).
+''
+'' standalone: Will always return the path to lib/<target>/<file>, no matter
+''             whether it exists or not - because that's where it should be.
+''             This way the "file not found" errors will be prettier.
+''
+'' normal: Will check lib/ and query gcc if not found. Querying gcc may fail,
+''         because of that an empty string may be returned.
+''
+private function fbcBuildPathToLibFile( byval file as zstring ptr ) as string
 	dim as string found
 
 	''
@@ -271,7 +281,9 @@ private function fbcFindLibFile( byval file as zstring ptr ) as string
 	found = fbc.libpath + FB_HOST_PATHDIV + *file
 
 #ifndef ENABLE_STANDALONE
+	'' Does it exist in our lib/?
 	if( hFileExists( found ) ) then
+		'' Overrides anything else
 		return found
 	end if
 
@@ -305,18 +317,32 @@ private function fbcFindLibFile( byval file as zstring ptr ) as string
 	function = found
 end function
 
+'' Retrieve the path to a library file, or an empty string if it can't be found.
+private function fbcFindLibFile( byval file as zstring ptr ) as string
+	dim as string found
+	found = fbcBuildPathToLibFile( file )
+	if( len( found ) > 0 ) then
+		if( hFileExists( found ) = FALSE ) then
+			found = ""
+		end if
+	end if
+	function = found
+end function
+
 private sub fbcAddDefLibPath(byref path as string)
 	strsetAdd(@fbc.finallibpaths, path, TRUE)
 end sub
 
+#ifndef ENABLE_STANDALONE
 private sub fbcAddLibPathFor( byval libname as zstring ptr )
 	dim as string path
-	path = hStripFilename( fbcFindLibFile( libname ) )
+	path = hStripFilename( fbcBuildPathToLibFile( libname ) )
 	path = pathStripDiv( path )
 	if( len( path ) > 0 ) then
 		fbcAddDefLibPath( path )
 	end if
 end sub
+#endif
 
 sub fbcFindBin _
 	( _
@@ -528,8 +554,10 @@ private function makeImpLib _
 	function = TRUE
 end function
 
+'' Find a library file and wrap it into ""'s for passing it on the ld command
+'' line. Or if it couldn't be found, show an error.
 private function hFindLib( byval file as zstring ptr ) as string
-	dim as string found = fbcFindLibFile( file )
+	dim as string found = fbcBuildPathToLibFile( file )
 	if( len( found ) > 0 ) then
 		function = " """ + found + """"
 	else
