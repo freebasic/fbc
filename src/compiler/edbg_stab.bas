@@ -932,52 +932,62 @@ private sub hDeclENUM _
 
 end sub
 
-'':::::
+'' Add debug info for public/shared globals, but not local statics
 sub edbgEmitGlobalVar _
 	( _
 		byval sym as FBSYMBOL ptr, _
 		byval section as integer _
-	) static
+	)
 
-	dim as integer t, attrib
+	dim as integer t = any, attrib = any
 	dim as string desc
-	dim as zstring ptr sname
 
 	if( env.clopt.debug = FALSE ) then
 		exit sub
 	end if
 
-	'' temporary?
-	if( symbIsTemp( sym ) ) then
-		exit sub
-	end if
-
-	'' really global? (because the static local vars)
+	'' Ignore static locals here (they are handled like other locals during
+	'' edbgEmitProcFooter() -> hDeclLocalVars())
 	if( symbIsLocal( sym ) ) then
 		exit sub
 	end if
+
+	'' This function should only be called for "allocatable" globals
+	assert( symbIsShared( sym ) or symbIsCommon( sym ) )
+	'' PUBLIC (allocated EXTERNs) on a variable implies SHARED
+	assert( iif( symbIsPublic( sym ), symbIsShared( sym ), TRUE ) )
+
+	'' (unallocated EXTERNs aren't emitted in the current module)
+	assert( symbIsExtern( sym ) = FALSE )
+
+	'' (no fake dynamic array symbols - the descriptor is emitted instead)
+	assert( symbIsDynamic( sym ) = FALSE )
+
+	'' (no debug info should be emitted for temporaries - but
+	'' FB_SYMBATTRIB_TEMP isn't used with globals anyways, only locals)
+	assert( symbIsTemp( sym ) = FALSE )
 
 	'' depends on section
 	select case section
 	case IR_SECTION_CONST
 		t = STAB_TYPE_FUN
-	case IR_SECTION_DATA
-		t = STAB_TYPE_STSYM
 	case IR_SECTION_BSS
 		t = STAB_TYPE_LCSYM
+	case else
+		assert( section = IR_SECTION_DATA )
+		t = STAB_TYPE_STSYM
 	end select
 
     '' allocation type (static, global, etc)
     desc = *symbGetDBGName( sym )
 
-    attrib = symbGetAttrib( sym )
-    if( (attrib and (FB_SYMBATTRIB_PUBLIC or FB_SYMBATTRIB_COMMON)) > 0 ) then
-    	desc += ":G"
-    elseif( (attrib and FB_SYMBATTRIB_STATIC) > 0 ) then
-        desc += ":S"
-    else
-    	desc += ":"
-    end if
+	if( symbIsPublic( sym ) or symbIsCommon( sym ) ) then
+		desc += ":G"
+	elseif( symbIsStatic( sym ) ) then
+		desc += ":S"
+	else
+		desc += ":"
+	end if
 
     '' data type
     desc += hGetDataType( sym )
@@ -991,15 +1001,7 @@ sub edbgEmitGlobalVar _
 	end if
 	#endif ''SARG END
 
-    ''
-    if( symbIsDynamic( sym ) ) then
-    	sname = symbGetMangledName( symbGetArrayDescriptor( sym ) )
-    else
-    	sname = symbGetMangledName( sym )
-    end if
-
-    ''
-    hEmitSTABS( t, desc, 0, 0, *sname )
+	hEmitSTABS( t, desc, 0, 0, *symbGetMangledName( sym ) )
 
 end sub
 

@@ -859,6 +859,9 @@ private sub hEmitVarBss _
     dim as string alloc, ostr
     dim as integer attrib, elements
 
+	assert( symbIsExtern( s ) = FALSE )
+	assert( symbIsDynamic( s ) = FALSE )
+
 	attrib = symbGetAttrib( s )
 
 	elements = symbGetArrayElements( s )
@@ -891,12 +894,8 @@ private sub hEmitVarBss _
     ostr += "," + str( symbGetLen( s ) * elements )
     emitWriteStr( ostr, TRUE )
 
-    '' add dbg info, if public or shared
-    if( (attrib and (FB_SYMBATTRIB_SHARED or _
-    				 FB_SYMBATTRIB_COMMON or _
-    				 FB_SYMBATTRIB_PUBLIC)) > 0 ) then
-    	edbgEmitGlobalVar( s, IR_SECTION_BSS )
-	end if
+	'' Add debug info for public/shared globals, but not local statics
+	edbgEmitGlobalVar( s, IR_SECTION_BSS )
 
 end sub
 
@@ -6113,10 +6112,8 @@ end sub
 sub emitVARINIBEGIN( byval sym as FBSYMBOL ptr )
 	_setSection( IR_SECTION_DATA, 0 )
 
-	'' add dbg info, if public or shared
-    'if( (symbGetAttrib( sym ) and (FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_PUBLIC)) > 0 ) then
-   		edbgEmitGlobalVar( sym, IR_SECTION_DATA )
-   	'end if
+	'' Add debug info for public/shared globals, but not local statics
+	edbgEmitGlobalVar( sym, IR_SECTION_DATA )
 
    	if( symbGetType( sym ) = FB_DATATYPE_DOUBLE ) then
     	hALIGN( 8 )
