@@ -2198,6 +2198,10 @@ function typeDump _
 		ptrcount = typeGetPtrCnt( dtype )
 		assert( ptrcount >= 0 )
 
+		if( typeIsRef( dtype ) ) then
+			dump += "byref "
+		end if
+
 		if( typeIsConstAt( dtype, ptrcount ) ) then
 			dump += "const "
 		end if
