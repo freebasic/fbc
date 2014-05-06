@@ -47,8 +47,7 @@ const FB_DATATYPES = (FB_DATATYPE_XMMWORD - FB_DATATYPE_VOID) + 1
 const FB_DT_TYPEMASK 		= &b00000000000000000000000000011111 '' max 32 built-in dts
 const FB_DT_PTRMASK  		= &b00000000000000000000000111100000
 const FB_DT_CONSTMASK		= &b00000000000000111111111000000000 '' PTRLEVELS + 1 bit-masks
-const FB_DATATYPE_ARRAY		= &b00000000000010000000000000000000 '' used when mangling
-const FB_DATATYPE_REFERENCE	= &b00000000000100000000000000000000 '' ditto
+const FB_DATATYPE_REFERENCE	= &b00000000000010000000000000000000 '' used for mangling BYREF parameters
 const FB_DATATYPE_INVALID	= &b10000000000000000000000000000000
 
 const FB_DT_PTRLEVELS		= 8					'' max levels of pointer indirection
@@ -2398,12 +2397,6 @@ declare sub symbProcRecalcRealType( byval proc as FBSYMBOL ptr )
 #define	typeIsRef( dt ) ((dt and FB_DATATYPE_REFERENCE) <> 0)
 #define	typeSetIsRef( dt ) (dt or FB_DATATYPE_REFERENCE)
 #define	typeUnsetIsRef( dt ) (dt and not FB_DATATYPE_REFERENCE)
-
-#define	typeIsArray( dt ) ((dt and FB_DATATYPE_ARRAY) <> 0)
-#define	typeSetIsArray( dt ) (dt or FB_DATATYPE_ARRAY)
-#define	typeUnsetIsArray( dt ) (dt and not FB_DATATYPE_ARRAY)
-
-#define	typeSetIsRefAndArray( dt ) (dt or (FB_DATATYPE_REFERENCE or FB_DATATYPE_ARRAY))
 
 declare sub symbForEachGlobal _
 	( _

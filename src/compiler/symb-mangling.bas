@@ -455,11 +455,6 @@ sub symbMangleType _
 			end if
 			symbMangleType( mangled, typeUnsetIsRef( dtype ), subtype )
 
-		'' array?
-		elseif( typeIsArray( dtype ) ) then
-			mangled += "A"
-			symbMangleType( mangled, typeUnsetIsArray( dtype ), subtype )
-
 		'' pointer? (must be checked/emitted before CONST)
 		elseif( typeIsPtr( dtype ) ) then
 			'' const?
