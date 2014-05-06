@@ -2230,6 +2230,17 @@ function typeDump _
 					dump += *symbGetName( subtype )
 				end if
 			end if
+
+		case FB_DATATYPE_NAMESPC
+			if( subtype ) then
+				if( symbIsNamespace( subtype ) ) then
+					if( subtype = @symbGetGlobalNamespc( ) ) then
+						dump += " <global namespace>"
+					else
+						dump += " " + *symbGetName( subtype )
+					end if
+				end if
+			end if
 		end select
 
 		for i as integer = (ptrcount-1) to 0 step -1
