@@ -257,6 +257,12 @@ end function
 private sub hAbbrevGet( byref mangled as string, byval idx as integer )
 	mangled += "S"
 
+	'' abbreviation index   mangling
+	''   0                    S_
+	''   1                    S0_
+	''   2                    S1_
+	'' etc.
+
 	if( idx > 0 ) then
 		if( idx <= 10 ) then
 			mangled += chr( asc( "0" ) + (idx - 1) )
