@@ -775,7 +775,6 @@ private sub hGetProcParamsTypeCode _
 	)
 
 	dim as FBSYMBOL ptr param = any
-	dim as integer dtype = any
 
 	param = symbGetProcHeadParam( sym )
 	if( param <> NULL ) then
