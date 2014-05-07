@@ -152,23 +152,23 @@ private function hThreadCallPushType _
     function = true
 end function
 
-private function hGetExprRef( byval expr as ASTNODE ptr ) as ASTNODE ptr
-	dim as FBSYMBOL ptr tmpvar = any, subtype = any
-	dim as integer dtype = any
+'' TODO: Re-use astRemSideFx/astMakeRef instead of this?
+private function hGetExprRef( byref expr as ASTNODE ptr ) as ASTNODE ptr
+	dim as FBSYMBOL ptr tmpvar = any
 
 	if( astIsVAR( expr ) ) then
 		'' already a variable? just get the address
 		'' @expr
-		function = astNewADDROF( expr )
+		expr = astNewADDROF( expr )
 	else
 		'' copy expression to a variable, and get the address
 		tmpvar = symbAddTempVar( astGetDataType( expr ), astGetSubType( expr ) )
 
 		'' tmpvar = expr
-		astAdd( astNewASSIGN( astNewVAR( tmpvar ), expr, AST_OPOPT_DONTCHKPTR ) )
+		function = astNewASSIGN( astNewVAR( tmpvar ), expr, AST_OPOPT_DONTCHKPTR )
 
 		'' @tmpvar
-		function = astNewADDROF( astNewVAR( tmpvar ) )
+		expr = astNewADDROF( astNewVAR( tmpvar ) )
 	end if
 end function
 
@@ -178,7 +178,7 @@ function rtlThreadCall(byval callexpr as ASTNODE ptr) as ASTNODE ptr
     function = NULL
 
     dim as FBSYMBOL ptr proc, param
-    dim as ASTNODE ptr procmodeexpr
+    dim as ASTNODE ptr procmodeexpr, t
     dim as ASTNODE ptr stacksizeexpr, argsexpr, ptrexpr
     
     proc = callexpr->sym
@@ -205,7 +205,7 @@ function rtlThreadCall(byval callexpr as ASTNODE ptr) as ASTNODE ptr
     
 	'' Delete the CALL and its now empty ARGs
 	astDelTREE( callexpr )
-    
+
     '' create new call
     dim as ASTNODE ptr expr = astNewCall( PROCLOOKUP( THREADCALL ) )
 
@@ -274,7 +274,8 @@ function rtlThreadCall(byval callexpr as ASTNODE ptr) as ASTNODE ptr
         end if
 
         '' get pointer to argument
-        ptrexpr = hGetExprRef( argexpr( i ) )
+        ptrexpr = argexpr( i )
+        t = astNewLINK( t, hGetExprRef( ptrexpr ), FALSE )
 
         ''byref
         dim isstring as integer
@@ -282,7 +283,7 @@ function rtlThreadCall(byval callexpr as ASTNODE ptr) as ASTNODE ptr
         if( mode = FB_PARAMMODE_BYREF and _
             argmode( i ) <> FB_PARAMMODE_BYVAL and _
             isstring = FALSE ) then
-            ptrexpr = hGetExprRef( ptrexpr )
+            t = astNewLINK( t, hGetExprRef( ptrexpr ), FALSE )
         end if
         
         if( ptrexpr = NULL ) then
@@ -297,5 +298,5 @@ function rtlThreadCall(byval callexpr as ASTNODE ptr) as ASTNODE ptr
         param = symbGetProcPrevParam( proc, param )
     next
 
-	function = expr
+	function = astNewLINK( t, expr, FALSE )
 end function
