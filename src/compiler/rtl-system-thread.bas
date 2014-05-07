@@ -193,13 +193,18 @@ function rtlThreadCall(byval callexpr as ASTNODE ptr) as ASTNODE ptr
         if arg = 0 then
             exit function
         end if
-        argexpr( args-i+1 ) = astCloneTREE( arg->l )
+
+        '' Take the argument expression out of the ARG node
+        argexpr( args-i+1 ) = arg->l
+        arg->l = NULL
+
         argmode( args-i+1 ) = arg->arg.mode
+
         arg = arg->r
     next i
     
-    '' delete call
-    astDelTREE( callexpr )
+	'' Delete the CALL and its now empty ARGs
+	astDelTREE( callexpr )
     
     '' create new call
     dim as ASTNODE ptr expr = astNewCall( PROCLOOKUP( THREADCALL ) )
