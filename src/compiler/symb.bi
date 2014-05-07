@@ -1679,7 +1679,11 @@ declare function symbGetDBGName( byval sym as FBSYMBOL ptr ) as zstring ptr
 declare sub symbSetName( byval s as FBSYMBOL ptr, byval name_ as zstring ptr )
 declare sub symbMangleInitAbbrev( )
 declare sub symbMangleEndAbbrev( )
-declare function hMangleBuiltInType( byval dtype as integer ) as zstring ptr
+declare function hMangleBuiltInType _
+	( _
+		byval dtype as integer, _
+		byref add_abbrev as integer = FALSE _
+	) as zstring ptr
 declare sub symbMangleType _
 	( _
 		byref mangled as string, _

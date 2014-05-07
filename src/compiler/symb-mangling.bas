@@ -283,13 +283,33 @@ private sub hAbbrevGet( byref mangled as string, byval idx as integer )
 	mangled += "_"
 end sub
 
-function hMangleBuiltInType( byval dtype as integer ) as zstring ptr
+function hMangleBuiltInType _
+	( _
+		byval dtype as integer, _
+		byref add_abbrev as integer _
+	) as zstring ptr
+
 	assert( dtype = typeGetDtOnly( dtype ) )
 
-	'' STRING isn't mangled as built-in type, but as UDT, but it still needs
-	'' to be handled from here because this function is also used to mangle
-	'' type suffixes under the C backend, and that includes STRINGs...
+	''
+	'' According to the Itanium C++ ABI, C++ built-in type aren't considered
+	'' for abbreviation, while other types are.
+	''
+	'' For FB this means that some of FB built-ins can be mangled as C++
+	'' built-ins without having to do hAbbrevAdd(), while others (e.g.
+	'' FBSTRING) must be mangled as UDT or custom/vendor-specific types for
+	'' which we must do hAbbrevAdd().
+	''
+	'' This way our abbreviations stay compatible to GCC and demanglers.
+	''
+	'' This only matters when hMangleBuiltInType() is called from
+	'' symbMangleType(), but it does not matter when hMangleBuiltInType() is
+	'' just used encode type suffixes into variable names for the C backend.
+	''
+	add_abbrev = FALSE
+
 	if( dtype = FB_DATATYPE_STRING ) then
+		add_abbrev = TRUE
 		return @"8FBSTRING"
 	end if
 
@@ -382,10 +402,12 @@ sub symbMangleType _
 	)
 
 	dim as FBSYMBOL ptr ns = any
+	dim as integer add_abbrev = any
 
 	'' Lookup abbreviation for this type/namespace (if the current procedure
 	'' name already contains the type somewhere, it can be referred to
-	'' through an index instead of by repeating the full name)
+	'' through an index instead of by repeating the full name, as specified
+	'' in the Itanium C++ ABI)
 	dim as integer idx = hAbbrevFind( dtype, subtype )
 	if( idx <> -1 ) then
 		hAbbrevGet( mangled, idx )
@@ -394,11 +416,56 @@ sub symbMangleType _
 
 	'' forward type?
 	if( typeGet( dtype ) = FB_DATATYPE_FWDREF ) then
+		'' Remap to STRUCT for mangling purposes
 		dtype = typeJoin( dtype and (not FB_DATATYPE_INVALID), FB_DATATYPE_STRUCT )
 	end if
 
-	select case as const( dtype )
-	case FB_DATATYPE_STRUCT, FB_DATATYPE_ENUM ', FB_DATATYPE_CLASS
+	'' reference?
+	if( typeIsRef( dtype ) ) then
+		'' const?
+		if( typeIsConst( dtype ) ) then
+			mangled += "RK"
+		else
+			mangled + = "R"
+		end if
+
+		symbMangleType( mangled, typeUnsetIsRef( dtype ), subtype )
+
+		hAbbrevAdd( dtype, subtype )
+		exit sub
+	end if
+
+	'' pointer? (must be checked/emitted before CONST)
+	if( typeIsPtr( dtype ) ) then
+		'' const?
+		if( typeIsConstAt( dtype, 1 ) ) then
+			mangled += "PK"
+		else
+			mangled += "P"
+		end if
+
+		symbMangleType( mangled, typeDeref( dtype ), subtype )
+
+		hAbbrevAdd( dtype, subtype )
+		exit sub
+	end if
+
+	'' const?
+	if( typeGetConstMask( dtype ) ) then
+		'' note: nothing is added (as in C++) because it's not a 'const ptr'
+		symbMangleType( mangled, typeUnsetIsConst( dtype ), subtype )
+
+		hAbbrevAdd( dtype, subtype )
+		exit sub
+	end if
+
+	''
+	'' Plain type without reference/pointer/const bits
+	''
+	assert( dtype = typeGetDtOnly( dtype ) )
+
+	select case( dtype )
+	case FB_DATATYPE_STRUCT, FB_DATATYPE_ENUM
 		ns = symbGetNamespace( subtype )
 		if( ns = @symbGetGlobalNamespc( ) ) then
 			hMangleUdtId( mangled, subtype )
@@ -408,6 +475,8 @@ sub symbMangleType _
 			hMangleUdtId( mangled, subtype )
 			mangled += "E"
 		end if
+
+		hAbbrevAdd( dtype, subtype )
 
 	case FB_DATATYPE_NAMESPC
 		if( subtype = @symbGetGlobalNamespc( ) ) then
@@ -419,6 +488,8 @@ sub symbMangleType _
 			symbMangleType( mangled, FB_DATATYPE_NAMESPC, ns )
 		end if
 		hMangleUdtId( mangled, subtype )
+
+		hAbbrevAdd( dtype, subtype )
 
 	case FB_DATATYPE_FUNCTION
 		'' F(byref)(const)(return_type)(params - recursive, reuses hash)E
@@ -444,51 +515,15 @@ sub symbMangleType _
 
 		mangled += "E"
 
-	case FB_DATATYPE_STRING
-		'' Must do hAbbrevAdd() for FBSTRING too, because it's not a
-		'' built-in C++ type, just so that our abbrevications are
-		'' compatible to those of GCC and what's expected by demanglers.
-		mangled += *hMangleBuiltInType( dtype )
+		hAbbrevAdd( dtype, subtype )
 
 	case else
-		'' Anything else is a built-in type; no hAbbrevAdd() is done for those.
-		'' (The built-in types are explicitly excluded from being
-		'' abbreviated in the Itanium C++ ABI)
-		if( dtype = typeGetDtOnly( dtype ) ) then
-			mangled += *hMangleBuiltInType( dtype )
-			exit sub
+		mangled += *hMangleBuiltInType( dtype, add_abbrev )
+		if( add_abbrev ) then
+			hAbbrevAdd( dtype, subtype )
 		end if
-
-		'' reference?
-		if( typeIsRef( dtype ) ) then
-			'' const?
-			if( typeIsConst( dtype ) ) then
-				mangled += "RK"
-			else
-				mangled + = "R"
-			end if
-			symbMangleType( mangled, typeUnsetIsRef( dtype ), subtype )
-
-		'' pointer? (must be checked/emitted before CONST)
-		elseif( typeIsPtr( dtype ) ) then
-			'' const?
-			if( typeIsConstAt( dtype, 1 ) ) then
-				mangled += "PK"
-			else
-				mangled += "P"
-			end if
-
-			symbMangleType( mangled, typeDeref( dtype ), subtype )
-
-		'' const..
-		else
-			'' note: nothing is added (as in C++) because it's not a 'const ptr'
-			symbMangleType( mangled, typeUnsetIsConst( dtype ), subtype )
-		end if
-
 	end select
 
-	hAbbrevAdd( dtype, subtype )
 end sub
 
 sub symbMangleParam( byref mangled as string, byval param as FBSYMBOL ptr )
