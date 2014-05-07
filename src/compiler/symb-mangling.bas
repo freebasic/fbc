@@ -444,8 +444,16 @@ sub symbMangleType _
 
 		mangled += "E"
 
+	case FB_DATATYPE_STRING
+		'' Must do hAbbrevAdd() for FBSTRING too, because it's not a
+		'' built-in C++ type, just so that our abbrevications are
+		'' compatible to those of GCC and what's expected by demanglers.
+		mangled += *hMangleBuiltInType( dtype )
+
 	case else
-		'' builtin?
+		'' Anything else is a built-in type; no hAbbrevAdd() is done for those.
+		'' (The built-in types are explicitly excluded from being
+		'' abbreviated in the Itanium C++ ABI)
 		if( dtype = typeGetDtOnly( dtype ) ) then
 			mangled += *hMangleBuiltInType( dtype )
 			exit sub
