@@ -2,7 +2,7 @@
 
 #lang "qb"
 
-#define ASSERT(e) if (e) = FALSE then fb_Assert(__FILE__, __LINE__, __FUNCTION__, #e)
+#define ASSERT(e) if (e) = 0 then fb_Assert(__FILE__, __LINE__, __FUNCTION__, #e)
 
 '' During the 1st pass, the array should be 1 to 2, then during the 2nd pass it's
 '' REDIM'ed to 3 to 4, and that should be preserved to the 3rd pass because the

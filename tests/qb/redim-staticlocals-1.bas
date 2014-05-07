@@ -2,7 +2,7 @@
 
 #lang "qb"
 
-#define ASSERT(e) if (e) = FALSE then fb_Assert(__FILE__, __LINE__, __FUNCTION__, #e)
+#define ASSERT(e) if (e) = 0 then fb_Assert(__FILE__, __LINE__, __FUNCTION__, #e)
 
 sub test( pass as integer ) static
 	if( pass = 1 ) then

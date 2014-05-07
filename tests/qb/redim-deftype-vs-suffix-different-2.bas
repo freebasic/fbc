@@ -1,7 +1,7 @@
 ' TEST_MODE : COMPILE_ONLY_OK
 #lang "qb"
 
-#define assert(e) if (e) = FALSE then fb_Assert(__FILE__, __LINE__, __FUNCTION__, #e)
+#define assert(e) if (e) = 0 then fb_Assert(__FILE__, __LINE__, __FUNCTION__, #e)
 
 '' 2 separate arrays: 1 STRING, 1 SINGLE
 redim a$(1 to 1)

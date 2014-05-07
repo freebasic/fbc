@@ -1,6 +1,6 @@
 ' TEST_MODE : COMPILE_AND_RUN_OK
 
-#define ASSERT(e) if (e) = FALSE then fb_Assert(__FILE__, __LINE__, __FUNCTION__, #e)
+#define ASSERT(e) if (e) = 0 then fb_Assert(__FILE__, __LINE__, __FUNCTION__, #e)
 
 dim i as integer, l as long, i32 as integer<32>
 dim si as string, sl as string, si32 as string
