@@ -568,9 +568,11 @@ private sub hMangleNamespace _
 
 	if( dohashing ) then
 		'' Just add the abbreviation for this if not yet done
-		if( hAbbrevFind( symbGetFullType( ns ), ns ) = -1 ) then
-			hAbbrevAdd( symbGetFullType( ns ), ns )
-		end if
+		'' (just doing hAbbrevFind()/hAbbrevAdd() is not enough,
+		'' because the parent namespaces may need to be abbreviated too,
+		'' which symbMangleType() will do recursively)
+		dim as string unused
+		symbMangleType( unused, symbGetFullType( ns ), ns )
 	end if
 
 	'' create a stack
