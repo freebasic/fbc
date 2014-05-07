@@ -345,8 +345,8 @@ function hMangleBuiltInType _
 			end select
 		else
 			select case( dtype )
-			case FB_DATATYPE_INTEGER : return @"u7INTEGER"  '' seems like a good choice
-			case FB_DATATYPE_UINT    : return @"u8UINTEGER"
+			case FB_DATATYPE_INTEGER : add_abbrev = TRUE : return @"u7INTEGER"  '' seems like a good choice
+			case FB_DATATYPE_UINT    : add_abbrev = TRUE : return @"u8UINTEGER"
 			end select
 		end if
 
