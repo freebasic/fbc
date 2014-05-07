@@ -34,38 +34,26 @@ private function hAllocTmpArrayDesc _
 	function = desc
 end function
 
-'':::::
-private function hTmpStrListAdd _
+private function hAddToCopyBackList _
 	( _
 		byval parent as ASTNODE ptr, _
-		byval n as ASTNODE ptr, _
-		byval dtype as integer, _
-		byval copyback as integer _
+		byval temp as FBSYMBOL ptr, _
+		byval n as ASTNODE ptr _
 	) as AST_TMPSTRLIST_ITEM ptr
 
 	dim as AST_TMPSTRLIST_ITEM ptr t = any
-	dim as FBSYMBOL ptr s = any
 
-	'' alloc a node
 	t = listNewNode( @ast.call.tmpstrlist )
 
 	t->prev = parent->call.strtail
 	parent->call.strtail = t
 
-	s = symbAddTempVar( dtype )
-
-	t->sym = s
-	if( copyback ) then
-		t->srctree = astOptimizeTree( astCloneTree( n ) )
-	else
-		t->srctree = NULL
-	end if
+	t->sym = temp
+	t->srctree = astOptimizeTree( astCloneTree( n ) )
 
 	function = t
-
 end function
 
-'':::::
 private function hAllocTmpString _
 	( _
 		byval parent as ASTNODE ptr, _
@@ -73,40 +61,43 @@ private function hAllocTmpString _
 		byval copyback as integer _
 	) as ASTNODE ptr
 
-	dim as AST_TMPSTRLIST_ITEM ptr t = any
+	dim as FBSYMBOL ptr temp = any
 
-	'' create temp string to pass as parameter
-	t = hTmpStrListAdd( parent, n, FB_DATATYPE_STRING, copyback )
+	temp = symbAddTempVar( FB_DATATYPE_STRING )
+	astDtorListAdd( temp )
+
+	if( copyback ) then
+		hAddToCopyBackList( parent, temp, n )
+	end if
 
 	'' temp string = src string
 	function = astNewLINK( _
 		astNewLINK( _
-			astBuildTempVarClear( t->sym ), _
-			rtlStrAssign( astNewVAR( t->sym ), n ), _
+			astBuildTempVarClear( temp ), _
+			rtlStrAssign( astNewVAR( temp ), n ), _
 			FALSE ), _
-		astNewVAR( t->sym ), _
+		astNewVAR( temp ), _
 		FALSE )
-
 end function
 
-'':::::
 private function hAllocTmpWstrPtr _
 	( _
 		byval parent as ASTNODE ptr, _
 		byval n as ASTNODE ptr _
 	) as ASTNODE ptr
 
-	dim as AST_TMPSTRLIST_ITEM ptr t = any
+	dim as FBSYMBOL ptr temp = any
 
-	'' create temp wstring ptr to pass as parameter
-	t = hTmpStrListAdd( parent, NULL, typeAddrOf( FB_DATATYPE_WCHAR ), FALSE )
+	temp = symbAddTempVar( typeAddrOf( FB_DATATYPE_WCHAR ) )
+	symbSetIsWstring( temp )
+	astDtorListAdd( temp )
 
 	'' evil hack: a function returning a "wstring" is actually returning a pointer,
 	'' but NewAssign() shouldn't copy the string, just the pointer
 	astSetType( n, typeAddrOf( FB_DATATYPE_WCHAR ), NULL )
 
 	'' temp string = src string
-	function = astNewASSIGN( astNewVAR( t->sym ), n )
+	function = astNewASSIGN( astNewVAR( temp ), n )
 end function
 
 private function hCheckArgForStringParam _

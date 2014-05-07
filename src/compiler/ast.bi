@@ -105,7 +105,7 @@ type AST_NODE_CALL
 	args			as integer
 	currarg			as FBSYMBOL ptr
 	argtail			as ASTNODE_ ptr
-	strtail 		as AST_TMPSTRLIST_ITEM ptr
+	strtail 		as AST_TMPSTRLIST_ITEM ptr  '' fixed-length string argument copy-back list
 	tmpres          as FBSYMBOL ptr					'' temp result structure, if needed
 end type
 

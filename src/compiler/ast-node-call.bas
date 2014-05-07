@@ -94,24 +94,15 @@ function astNewCALLCTOR _
 	function = n
 end function
 
-private sub hCheckTmpStrings( byval f as ASTNODE ptr )
+'' Copy-back any fixed-length strings that were passed to BYREF parameters
+private sub hCopyStringsBack( byval f as ASTNODE ptr )
     dim as ASTNODE ptr t = any
     dim as AST_TMPSTRLIST_ITEM ptr n = any, p = any
 
-	'' copy-back any fix-len string passed as parameter and
-	'' delete all temp strings used as parameters
 	n = f->call.strtail
 	do while( n <> NULL )
 
-		'' copy back if needed
-		if( n->srctree <> NULL ) then
-			t = rtlStrAssign( n->srctree, astNewVAR( n->sym ) )
-			astLoad( t )
-			astDelNode( t )
-		end if
-
-		'' delete the temp string (or wstring)
-		t = rtlStrDelete( astNewVAR( n->sym ) )
+		t = rtlStrAssign( n->srctree, astNewVAR( n->sym ) )
 		astLoad( t )
 		astDelNode( t )
 
@@ -251,8 +242,7 @@ function astLoadCALL( byval n as ASTNODE ptr ) as IRVREG ptr
 		end if
 	end if
 
-	'' del temp strings and copy back if needed
-	hCheckTmpStrings( n )
+	hCopyStringsBack( n )
 
 	reclevel -= 1
 
@@ -280,7 +270,7 @@ sub astCloneCALL _
 		byval c as ASTNODE ptr _
 	)
 
-    '' temp string list
+	'' copy-back list
     scope
     	dim as AST_TMPSTRLIST_ITEM ptr sn = any, sc = any
 
@@ -318,7 +308,7 @@ sub astDelCALL _
 		byval n as ASTNODE ptr _
 	)
 
-    '' temp strings list
+	'' copy-back list
     scope
 	    dim as AST_TMPSTRLIST_ITEM ptr s = any, p = any
 		s = n->call.strtail
@@ -347,7 +337,7 @@ sub astReplaceSymbolOnCALL _
 		n->call.tmpres = new_sym
 	end if
 
-	'' temp strings list
+	'' copy-back list
 	scope
 		dim as AST_TMPSTRLIST_ITEM ptr s = any
 		s = n->call.strtail
