@@ -181,6 +181,7 @@ Version 0.91.0:
 - 0.90.0 regression: -g could produce bad stabs info when #includes were used (after closing an #include block, the wrong directive was used to return to the main file), preventing gdb from determining variable types sometimes
 - -g will now produce correct stabs info for dynamic array descriptors
 - 0.90.0 regression: Sometimes incorrect C++ mangling of procedures in nested namespaces
+- 0.24.0 regression: SWAP called temporary variable destructors too early, even before calling constructors
 
 
 Version 0.90.1:

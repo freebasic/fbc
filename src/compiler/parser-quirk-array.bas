@@ -53,8 +53,7 @@ function cEraseStmt() as integer
 	function = TRUE
 end function
 
-'' SwapStmt = SWAP VarOrDeref ',' VarOrDeref
-function cSwapStmt() as integer
+private function hScopedSwap( ) as integer
 	lexSkipToken( )
 
 	var l = cVarOrDeref( FB_VAREXPROPT_ISASSIGN )
@@ -85,7 +84,7 @@ function cSwapStmt() as integer
 	dim as integer ldtype = astGetDataType( l )
 	dim as integer rdtype = astGetDataType( r )
 
-	select case ldtype
+	select case( ldtype )
 	case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR
 		select case rdtype
 		case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR
@@ -94,16 +93,15 @@ function cSwapStmt() as integer
 			errReport( FB_ERRMSG_TYPEMISMATCH )
 		end select
 		exit function
-	end select
 
-	if( ldtype = FB_DATATYPE_WCHAR ) then
+	case FB_DATATYPE_WCHAR
 		if( rdtype = FB_DATATYPE_WCHAR ) then
 			function = rtlWstrSwap( l, r )
 		else
 			errReport( FB_ERRMSG_TYPEMISMATCH )
 		end if
 		exit function
-	end if
+	end select
 
 	'' Check whether a "raw" assignment (no operator overloads) would work.
 	'' Must check both l = r and r = l due to inheritance with UDTs which
@@ -147,7 +145,6 @@ function cSwapStmt() as integer
 	use_pushpop and= (astIsBITFIELD( r ) = FALSE)
 
 	'' A scope to enclose the temp vars
-	dim as ASTNODE ptr scopenode = astScopeBegin( )
 	dim as ASTNODE ptr t = NULL
 
 	'' Side effects? Then use references to be able to read/write...
@@ -181,8 +178,22 @@ function cSwapStmt() as integer
 	end if
 
 	astAdd( t )
-	astScopeEnd( scopenode )
 	function = TRUE
+end function
+
+'' SwapStmt = SWAP VarOrDeref ',' VarOrDeref
+function cSwapStmt( ) as integer
+	dim as ASTNODE ptr scopenode = any
+
+	'' A scope to enclose the SWAP temp vars
+	'' (must be created before parsing the lhs/rhs expressions, because they
+	'' may use temp vars themselves, and they'd be destructed during the
+	'' astAdd()'s done by astScopeBegin())
+	scopenode = astScopeBegin( )
+
+	function = hScopedSwap( )
+
+	astScopeEnd( scopenode )
 end function
 
 '':::::
