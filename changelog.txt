@@ -184,6 +184,7 @@ Version 0.91.0:
 - 0.90.0 regression: Sometimes incorrect C++ mangling of procedures in nested namespaces
 - 0.24.0 regression: SWAP called temporary variable destructors too early, even before calling constructors
 - Temporary strings used during procedure calls could be freed too early (directly after the call, instead of being kept alive until the end of the statement), potentially leaving references to them (used with-in the same statement) dangling.
+- #545: Overload resolution will now properly handle arguments with CONST qualifiers in their data type
 
 
 Version 0.90.1:
