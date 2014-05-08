@@ -143,12 +143,12 @@ namespace fbc_tests.threads.threadcall_tests
         threadwait testWindowsMs_thread
 #endif
         threadwait BigInt_Thread
-        'threadwait FloatStr_Thread
+        threadwait FloatStr_Thread
         threadwait TypeArray_Thread
         threadwait NoArgsA_Thread
         threadwait NoArgsB_Thread
         threadwait OvlInt_Thread
-        'threadwait OvlStr_Thread
+        threadwait OvlStr_Thread
         threadwait Namespace_Thread
         threadwait ONamespace_Thread
 
