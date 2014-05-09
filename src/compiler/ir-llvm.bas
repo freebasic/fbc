@@ -966,7 +966,8 @@ private sub _procAllocArg _
 	)
 
 	dim as string ln
-	dim as integer parammode = any, bydescdimensions = any
+	dim as integer parammode = any
+	dim as FBSYMBOL ptr bydescrealsubtype = any
 
 	''
 	'' Load the parameter values into local stack vars, to support taking
@@ -978,12 +979,12 @@ private sub _procAllocArg _
 	'' they must use different names to avoid collision.
 	''
 
-	bydescdimensions = 0
+	bydescrealsubtype = NULL
 	if( symbIsParamByref( sym ) ) then
 		parammode = FB_PARAMMODE_BYREF
 	elseif( symbIsParamBydesc( sym ) ) then
 		parammode = FB_PARAMMODE_BYDESC
-		bydescdimensions = symbGetArrayDimensions( sym )
+		bydescrealsubtype = sym->var_.array.desctype
 	else
 		assert( symbIsParamByval( sym ) )
 		parammode = FB_PARAMMODE_BYVAL
@@ -991,7 +992,7 @@ private sub _procAllocArg _
 
 	var dtype = symbGetType( sym )
 	var subtype = sym->subtype
-	symbGetRealParamDtype( parammode, bydescdimensions, dtype, subtype )
+	symbGetRealParamDtype( parammode, bydescrealsubtype, dtype, subtype )
 
 	'' %myparam = alloca type
 	ln = *symbGetMangledName( sym ) + " = alloca "

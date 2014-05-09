@@ -1297,7 +1297,7 @@ sub symbCompRTTIInit( )
 	static as FBARRAYDIM dTB(0)
 
 	'' type $fb_RTTI
-	rttitype = symbStructBegin( NULL, NULL, "$fb_RTTI", "$fb_RTTI", FALSE, 0, NULL, 0 )
+	rttitype = symbStructBegin( NULL, NULL, NULL, "$fb_RTTI", "$fb_RTTI", FALSE, 0, NULL, 0, 0 )
 	symb.rtti.fb_rtti = rttitype
 
 	'' stdlibvtable as any ptr
@@ -1319,7 +1319,7 @@ sub symbCompRTTIInit( )
 	else
 		ptypename = @"OBJECT"
 	end if
-	objtype = symbStructBegin( NULL, NULL, ptypename, "$fb_Object", FALSE, 0, NULL, 0 )
+	objtype = symbStructBegin( NULL, NULL, NULL, ptypename, "$fb_Object", FALSE, 0, NULL, 0, 0 )
 	symb.rtti.fb_object = objtype
 	symbSetHasRTTI( objtype )
 	symbSetIsUnique( objtype )

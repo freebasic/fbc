@@ -18,13 +18,15 @@
 function symbStructBegin _
 	( _
 		byval symtb as FBSYMBOLTB ptr, _
+		byval hashtb as FBHASHTB ptr, _
 		byval parent as FBSYMBOL ptr, _
 		byval id as const zstring ptr, _
 		byval id_alias as const zstring ptr, _
 		byval isunion as integer, _
 		byval align as integer, _
 		byval base_ as FBSYMBOL ptr, _
-		byval attrib as integer _
+		byval attrib as integer, _
+		byval options as integer _
 	) as FBSYMBOL ptr
 
 	dim as FBSYMBOL ptr s = any
@@ -39,7 +41,7 @@ function symbStructBegin _
     	end if
     end if
 
-	s = symbNewSymbol( FB_SYMBOPT_DOHASH, NULL, symtb, NULL, _
+	s = symbNewSymbol( options or FB_SYMBOPT_DOHASH, NULL, symtb, hashtb, _
 	                   FB_SYMBCLASS_STRUCT, id, id_alias, _
 	                   FB_DATATYPE_STRUCT, NULL, attrib )
 	if( s = NULL ) then
@@ -260,7 +262,8 @@ function symbAddField _
 		byval attrib as integer _
 	) as FBSYMBOL ptr
 
-	dim as FBSYMBOL ptr sym = any, tail = any, base_parent = any, desc = any
+	dim as FBSYMBOL ptr sym = any, tail = any, base_parent = any, _
+		desc = any, desctype = any
 	dim as integer pad = any, alloc_field = any, elen = any, options = any
 	dim as longint offset = any
 
@@ -284,9 +287,10 @@ function symbAddField _
 
 		'' Note: using the exact descriptor type corresponding to the
 		'' amount of dimensions found in the field declaration.
+		desctype = symbAddArrayDescriptorType( dimensions, dtype, subtype )
 
 		desc = symbAddField( parent, id, 0, emptydTB(), _
-				FB_DATATYPE_STRUCT, symb.fbarray(dimensions), _
+				FB_DATATYPE_STRUCT, desctype, _
 				0, 0, FB_SYMBATTRIB_DESCRIPTOR )
 
 		'' Same offset for the fake array field as for the descriptor,
@@ -434,6 +438,7 @@ function symbAddField _
 	symbVarInitArrayDimensions( sym, dimensions, dTB() )
 	if( desc ) then
 		sym->var_.array.desc = desc
+		sym->var_.array.desctype = desc->subtype
 		desc->var_.desc.array = sym  '' desc's backlink
 
 		symbSetTypeIniTree( desc, astBuildArrayDescIniTree( desc, sym, NULL ) )
@@ -777,31 +782,6 @@ sub symbStructEnd _
 	end if
 
 end sub
-
-function symbCloneStruct( byval sym as FBSYMBOL ptr ) as FBSYMBOL ptr
-	static as FBARRAYDIM dTB(0)
-	dim as FBSYMBOL ptr clone = any, fld = any
-
-	'' assuming only simple structs will be cloned (ie: the ones
-	'' created by symbAddArrayDesc())
-
-	clone = symbStructBegin( NULL, NULL, symbUniqueId( ), NULL, _
-	                         symbGetUDTIsUnion( sym ), _
-	                         sym->udt.align, NULL, 0 )
-
-	fld = sym->udt.ns.symtb.head
-	while( fld )
-		assert( symbIsDynamic( fld ) = FALSE )
-		assert( symbIsDescriptor( fld ) = FALSE )
-		symbAddField( clone, symbGetName( fld ), 0, dTB(), _
-		              symbGetType( fld ), symbGetSubType( fld ), fld->lgt, 0, fld->attrib )
-		fld = fld->next
-	wend
-
-	symbStructEnd( clone )
-
-	function = clone
-end function
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' del

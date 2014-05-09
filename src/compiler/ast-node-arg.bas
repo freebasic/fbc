@@ -392,7 +392,8 @@ private function hCheckByDescParam _
 
 			'' it's a pointer, but it will be seen as anything else
 			'' (ie: "array() as string"), so, remap the type
-			astSetType( n->l, typeAddrOf( FB_DATATYPE_STRUCT ), symb.fbarray(symbGetArrayDimensions( s )) )
+			assert( symbIsStruct( s->var_.array.desctype ) and symbIsDescriptor( s->var_.array.desctype ) )
+			astSetType( n->l, typeAddrOf( FB_DATATYPE_STRUCT ), s->var_.array.desctype )
 			return TRUE
 		end if
 

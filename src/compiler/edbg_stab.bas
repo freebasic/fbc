@@ -689,11 +689,11 @@ private function hDeclDynArray( byval sym as FBSYMBOL ptr ) as string static
 	dim as FBSYMBOL ptr fld = any, desctype = any
 
 	if( symbIsParamByDesc( sym ) ) then
-		desctype = symb.fbarray(symbGetArrayDimensions( sym ))
+		desctype = sym->var_.array.desctype
 	else
 		desctype = symbGetSubtype( symbGetArrayDescriptor( sym ) )
 	end if
-	assert( symbIsStruct( desctype ) )
+	assert( symbIsStruct( desctype ) and symbIsDescriptor( desctype ) )
 
 	'' declare the array descriptor
 	desc = str( ctx.typecnt ) + "=s" + str( symbGetLen( desctype ) )

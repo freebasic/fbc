@@ -11,33 +11,15 @@
 #include once "list.bi"
 #include once "ast.bi"
 
-declare function hAddArrayDescriptorType _
-	( _
-		byval dims as integer, _
-		byval id as zstring ptr _
-	) as FBSYMBOL ptr
-declare sub hAddGlobalArrayDescriptorTypes( )
-
 sub symbVarInit( )
 	'' assuming it's safe to create UDT symbols here, the array
 	'' dimension type must be allocated at module-level or it
 	'' would be removed when going out scope
-	hAddGlobalArrayDescriptorTypes( )
-end sub
 
-sub symbVarEnd( )
-end sub
-
-''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-'' add
-''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-
-private sub hAddGlobalArrayDescriptorTypes( )
 	static as FBARRAYDIM dTB(0)
-	dim as FBSYMBOL ptr fld = any
 
 	'' type FBARRAYDIM
-	symb.fbarraydim = symbStructBegin( NULL, NULL, "__FB_ARRAYDIMTB$", NULL, FALSE, 0, NULL, 0 )
+	symb.fbarraydim = symbStructBegin( NULL, NULL, NULL, "__FB_ARRAYDIMTB$", NULL, FALSE, 0, NULL, 0, 0 )
 
 	'' elements		as integer
 	symbAddField( symb.fbarraydim, "elements", 0, dTB(), _
@@ -54,72 +36,153 @@ private sub hAddGlobalArrayDescriptorTypes( )
 	'' end type
 	symbStructEnd( symb.fbarraydim )
 
-	'' type FBARRAY
-	''     ...
-	'' end type
-	for i as integer = 1 to FB_MAXARRAYDIMS
-		symb.fbarray(i) = hAddArrayDescriptorType( i, "__FB_ARRAYDESC" & i & "$" )
-	next
-	symb.fbarray(0) = NULL
-	symb.fbarray(-1) = symb.fbarray(FB_MAXARRAYDIMS)
-
 	''
 	'' Store some field offsets into globals for easy access
 	''
 
-	'' FBARRAY
-	fld = symbUdtGetFirstField( symb.fbarray(-1) )  '' data
-	symb.fbarray_data = symbGetOfs( fld )
-	fld = symbUdtGetNextField( fld )         '' ptr
-	symb.fbarray_ptr = symbGetOfs( fld )
-	fld = symbUdtGetNextField( fld )         '' size
-	symb.fbarray_size = symbGetOfs( fld )
-	fld = symbUdtGetNextField( fld )         '' element_len
-	fld = symbUdtGetNextField( fld )         '' dimensions
-	fld = symbUdtGetNextField( fld )         '' dimTB
-	symb.fbarray_dimtb = symbGetOfs( fld )
+	'' (should have been set by now)
+	assert( (env.pointersize = 4) or (env.pointersize = 8) )
 
-	'' FBVARDIM
-	fld = symbUdtGetFirstField( symb.fbarraydim )  '' elements
-	fld = symbUdtGetNextField( fld )                  '' lbound
-	symb.fbarraydim_lbound = symbGetOfs( fld )
-	fld = symbUdtGetNextField( fld )                  '' ubound
-	symb.fbarraydim_ubound = symbGetOfs( fld )
+	'' FBARRAY
+	symb.fbarray_data  = 0
+	symb.fbarray_ptr   = env.pointersize     '' behind: data
+	symb.fbarray_size  = env.pointersize * 2 '' behind: data, ptr
+	symb.fbarray_dimtb = env.pointersize * 5 '' behind: data, ptr, size, element_len, dimensions
+
+	'' FBARRAYDIM
+	symb.fbarraydim_lbound = env.pointersize      '' behind: elements
+	symb.fbarraydim_ubound = env.pointersize * 2  '' behind: elements, lbound
 end sub
 
-private function hAddArrayDescriptorType _
+sub symbVarEnd( )
+end sub
+
+''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+'' add
+''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+'' Retrieve the arraydtype for which an array descriptor type was created:
+'' It is encoded in the descriptor's data pointer field type.
+sub symbGetDescTypeArrayDtype _
 	( _
-		byval dims as integer, _
-		byval id as zstring ptr _
+		byval desctype as FBSYMBOL ptr, _
+		byref arraydtype as integer, _
+		byref arraysubtype as FBSYMBOL ptr _
+	)
+
+	dim as FBSYMBOL ptr fld = any
+
+	assert( symbIsStruct( desctype) and symbIsDescriptor( desctype ) )
+
+	fld = symbUdtGetFirstField( desctype )
+	assert( typeIsPtr( symbGetType( fld ) ) )
+
+	arraydtype = typeDeref( symbGetType( fld ) )
+	arraysubtype = fld->subtype
+
+end sub
+
+'' Retrieve the dimension count for which an array descriptor type was created
+function symbGetDescTypeDimensions( byval desctype as FBSYMBOL ptr ) as integer
+	dim as integer dimtbsize = any, dimensions = any
+
+	assert( symbIsStruct( desctype) and symbIsDescriptor( desctype ) )
+
+	'' dimensions = sizeof(dimTB) \ sizeof(FBARRAYDIM)
+	dimtbsize = symbGetLen( desctype ) - (env.pointersize * 5)
+	dimensions = dimtbsize \ (env.pointersize * 3)
+
+	assert( (dimensions > 0) and (dimensions <= FB_MAXARRAYDIMS) )
+	function = dimensions
+end function
+
+function symbAddArrayDescriptorType _
+	( _
+		byval dimensions as integer, _
+		byval arraydtype as integer, _
+		byval arraysubtype as FBSYMBOL ptr _
 	) as FBSYMBOL ptr
 
 	static as FBARRAYDIM dTB(0)
-	dim as FBSYMBOL ptr sym = any
 
-	sym = symbStructBegin( NULL, NULL, id, NULL, FALSE, 0, NULL, 0 )
+	dim as string id, aliasid
+	dim as FBSYMBOL ptr sym = any, parent = any
+	dim as FBSYMBOLTB ptr symtb = any
+	dim as FBHASHTB ptr hashtb = any
+	dim as integer attrib = any
 
-	'' data			as any ptr
-	symbAddField( sym, "data", 0, dTB(), typeAddrOf( FB_DATATYPE_VOID ), NULL, 0, 0, 0 )
+	'' Note: the arraydtype may even be FB_DATATYPE_VOID, e.g. in case of
+	'' "array() as any" parameters.
+	''
+	'' How to handle fixed-length string arrays? The descriptor type's data
+	'' pointer can only be a zstring/wstring ptr, because FB doesn't support
+	'' something like "zstring * N ptr". Thus as far as the descriptor type
+	'' is concerned, the information about string length is lost (although
+	'' it's still stored in the descriptor's element_len field at runtime).
+	''
+	'' This also means that the string length won't/doesn't need to be
+	'' encoded in the descriptor type's mangled name, neither here nor in
+	'' symbMangleType().
+	if( typeGetDtAndPtrOnly( arraydtype ) = FB_DATATYPE_FIXSTR ) then
+		arraydtype = typeJoin( arraydtype, FB_DATATYPE_CHAR )
+	end if
+	assert( typeGetDtOnly( arraydtype ) <> FB_DATATYPE_FIXSTR )
 
-	'' ptr			as any ptr
-	symbAddField( sym, "ptr", 0, dTB(), typeAddrOf( FB_DATATYPE_VOID ), NULL, 0, 0, 0 )
+	'' If dimensions are unknown, the descriptor type must have room for
+	'' FB_MAXARRAYDIMS
+	if( dimensions = -1 ) then
+		dimensions = FB_MAXARRAYDIMS
+	end if
 
-	'' size			as integer
-	symbAddField( sym, "size", 0, dTB(), FB_DATATYPE_INTEGER, NULL, 0, 0, 0 )
+	assert( (dimensions >= 1) and (dimensions <= FB_MAXARRAYDIMS) )
 
-	'' element_len		as integer
-	symbAddField( sym, "element_len", 0, dTB(), FB_DATATYPE_INTEGER, NULL, 0, 0, 0 )
+	'' Some unique internal id that allows this descriptor type to be looked
+	'' up later when we need one with the same dimensions & array dtype
+	'' again.
+	''
+	'' Using a simplified ALIAS, because the internal mangling should never
+	'' be exposed, it's not proper GCC C++ mangling anyways. The mangling
+	'' done by symbGetMangledName()/hMangleUdtId() is based on this ALIAS.
+	aliasid = "__FBARRAY" & dimensions
+	id = aliasid
+	id += "<"
+	symbMangleInitAbbrev( )
+	symbMangleType( id, arraydtype, arraysubtype )
+	symbMangleEndAbbrev( )
+	id += ">"
 
-	'' dimensions		as integer
-	symbAddField( sym, "dimensions", 0, dTB(), FB_DATATYPE_INTEGER, NULL, 0, 0, 0 )
+	'' Similar to symbAddProcPtr(), the descriptor type must be added to the
+	'' current scope, or to the toplevel namespace if at the toplevel.
+	'' It's not safe to always make it global because it may reference local
+	'' symbols through the arraydtype (e.g. an array with a local UDT as its
+	'' dtype), that may end up being deleted before the global.
+	attrib = 0
+	sym = symbLookupInternallyMangledSubtype( id, attrib, NULL, symtb, hashtb )
+	if( sym ) then
+		return sym
+	end if
 
-	'' dimTB(0 to dims-1) as FBARRAYDIM
-	assert( (dims >= 1) and (dims <= FB_MAXARRAYDIMS) )
+	''
+	'' Create new descriptor type (it's a simple struct, no methods or
+	'' anything, so it should be ok to do this in any context, even
+	'' recursively when array descriptor fields are added)
+	''
+	'' Mark it with FB_SYMBATTRIB_DESCRIPTOR so it can be identified as
+	'' descriptor type, e.g. in hMangleUdtId().
+	''
+	attrib or= FB_SYMBATTRIB_DESCRIPTOR
+	sym = symbStructBegin( symtb, hashtb, NULL, id, aliasid, FALSE, 0, NULL, attrib, FB_SYMBOPT_PRESERVECASE )
+	assert( sym )
 	dTB(0).lower = 0
-	dTB(0).upper = dims-1
-
+	dTB(0).upper = 0
+	symbAddField( sym, "data", 0, dTB(), typeAddrOf( arraydtype ), arraysubtype, 0, 0, 0 )
+	symbAddField( sym, "ptr", 0, dTB(), typeAddrOf( FB_DATATYPE_VOID ), NULL, 0, 0, 0 )
+	symbAddField( sym, "size", 0, dTB(), FB_DATATYPE_INTEGER, NULL, 0, 0, 0 )
+	symbAddField( sym, "element_len", 0, dTB(), FB_DATATYPE_INTEGER, NULL, 0, 0, 0 )
+	symbAddField( sym, "dimensions", 0, dTB(), FB_DATATYPE_INTEGER, NULL, 0, 0, 0 )
+	dTB(0).lower = 0
+	dTB(0).upper = dimensions-1
 	symbAddField( sym, "dimTB", 1, dTB(), FB_DATATYPE_STRUCT, symb.fbarraydim, 0, 0, 0 )
-
 	symbStructEnd( sym )
 
 	function = sym
@@ -236,7 +299,7 @@ function symbAddArrayDesc( byval array as FBSYMBOL ptr ) as FBSYMBOL ptr
 		symtb = array->symtb
 	end if
 
-	desctype = symb.fbarray(symbGetArrayDimensions( array ))
+	desctype = symbAddArrayDescriptorType( symbGetArrayDimensions( array ), array->typ, array->subtype )
 
 	desc = symbNewSymbol( FB_SYMBOPT_PRESERVECASE, NULL, symtb, NULL, _
 	                      FB_SYMBCLASS_VAR, id, id_alias, _
@@ -335,6 +398,7 @@ sub symbMaybeAddArrayDesc( byval sym as FBSYMBOL ptr )
 
 	if( sym->var_.array.desc = NULL ) then
 		sym->var_.array.desc = symbAddArrayDesc( sym )
+		sym->var_.array.desctype = sym->var_.array.desc->subtype
 		sym->var_.array.desc->var_.initree = _
 			astBuildArrayDescIniTree( sym->var_.array.desc, sym, NULL )
 	end if
@@ -406,9 +470,9 @@ sub symbCheckDynamicArrayDimensions _
 		sym->var_.array.dimensions = dimensions
 
 		''
-		'' Note: Ideally we would resize the array descriptor, now that
-		'' the exact dimensions are known. Unfortunately, it's too late
-		'' for that...
+		'' Note: Ideally we would resize the array descriptor (including
+		'' a new initree), now that the exact dimensions are known.
+		'' Unfortunately, it's too late for that...
 		''
 		'' Local descriptors (on stack): The initializer for the
 		'' descriptor has already been emitted via a DECL node. We'd
@@ -427,23 +491,6 @@ sub symbCheckDynamicArrayDimensions _
 		'' non-COMMON globals, though even then it'd be risky, because
 		'' fbc wasn't designed for this kind of "multi-pass" things...
 		''
-		assert( symbGetType( symbGetArrayDescriptor( sym ) ) = FB_DATATYPE_STRUCT )
-		assert( symbGetArrayDescriptor( sym )->subtype = symb.fbarray(-1) )
-		assert( symbIsField( sym ) = FALSE )
-		assert( symbIsField( symbGetArrayDescriptor( sym ) ) = FALSE )
-		#if 0
-		if( symbIsVar( sym ) and _
-		    (not symbIsCommon( sym )) and _
-		    ((not symbIsLocal( sym )) or symbIsStatic( sym )) ) then
-			symbSetType( desc, FB_DATATYPE_STRUCT, symb.fbarray(dimensions) )
-
-			'' Must also switch to a new, compatible initializer
-			'' (there now are less fields to initialize)
-			astDelTree( desc->var_.initree )
-			desc->var_.initree = NULL
-			desc->var_.initree = astBuildArrayDescIniTree( desc, sym, NULL )
-		end if
-		#endif
 
 	'' The array's dimension count is known; complain about mismatching dimension counts.
 	elseif( symbGetArrayDimensions( sym ) <> dimensions ) then
@@ -459,6 +506,7 @@ sub symbVarInitFields( byval sym as FBSYMBOL ptr )
 	sym->var_.array.diff = 0
 	sym->var_.array.elements = 1
 	sym->var_.array.desc = NULL
+	sym->var_.array.desctype = NULL
 	sym->var_.desc.array = NULL
 	sym->var_.stmtnum = parser.stmt.cnt
 	sym->var_.align = 0

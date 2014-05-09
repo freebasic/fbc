@@ -65,6 +65,7 @@ declare function closestType _
 sub symbDataInit( )
 	if( fbIs64bit( ) ) then
 		'' 64bit
+		env.pointersize = 8
 		symb_dtypeTB(FB_DATATYPE_INTEGER ).size = 8
 		symb_dtypeTB(FB_DATATYPE_UINT    ).size = 8
 		symb_dtypeTB(FB_DATATYPE_ENUM    ).size = 8
@@ -80,6 +81,7 @@ sub symbDataInit( )
 		symb_dtypeTB(FB_DATATYPE_UINT    ).intrank = 86
 	else
 		'' 32bit
+		env.pointersize = 4
 		symb_dtypeTB(FB_DATATYPE_INTEGER ).size = 4
 		symb_dtypeTB(FB_DATATYPE_UINT    ).size = 4
 		symb_dtypeTB(FB_DATATYPE_ENUM    ).size = 4

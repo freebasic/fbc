@@ -185,6 +185,11 @@ function symbAddProcParam _
 	param->param.mode = mode
 	param->param.optexpr = NULL
 	param->param.bydescdimensions = dimensions
+	if( mode = FB_PARAMMODE_BYDESC ) then
+		param->param.bydescrealsubtype = symbAddArrayDescriptorType( dimensions, dtype, subtype )
+	else
+		param->param.bydescrealsubtype = NULL
+	end if
 
 	'' for UDTs, check if not including a byval param to self
 	if( typeGet( dtype ) = FB_DATATYPE_STRUCT ) then
@@ -1007,6 +1012,49 @@ function symbAddCtor _
 	function = symbAddProc( proc, NULL, id_alias, FB_DATATYPE_VOID, NULL, attrib, mode, options )
 end function
 
+function symbLookupInternallyMangledSubtype _
+	( _
+		byval id as zstring ptr, _
+		byref attrib as integer, _
+		byref parent as FBSYMBOL ptr, _
+		byref symtb as FBSYMBOLTB ptr, _
+		byref hashtb as FBHASHTB ptr _
+	) as FBSYMBOL ptr
+
+	dim as FBSYMCHAIN ptr chain_ = any
+
+	if( parser.scope = FB_MAINSCOPE ) then
+		'' When outside scopes, it's a global, because whichever symbol
+		'' uses this procptr proto/descriptor type can be globally
+		'' visible (global vars, procs, etc.)
+		parent = @symbGetGlobalNamespc( )
+		symtb = @symbGetCompSymbTb( parent )
+		hashtb = @symbGetCompHashTb( parent )
+
+		attrib or= FB_SYMBATTRIB_SHARED
+		assert( (attrib and FB_SYMBATTRIB_LOCAL) = 0 )
+	else
+		'' If inside a scope, make the procptr proto/descriptor type
+		'' local too, because it could use local symbols, while it
+		'' itself can only be used by local symbols, not by globals
+		'' (globals cannot be declared inside scopes).
+		parent = symbGetCurrentNamespc( )
+		symtb = symb.symtb                    '' symtb of current scope
+		hashtb = @symbGetCompHashTb( parent ) '' hashtb of current namespace
+		assert( hashtb = symb.hashtb )
+
+		attrib or= FB_SYMBATTRIB_LOCAL
+		assert( (attrib and FB_SYMBATTRIB_SHARED) = 0 )
+	end if
+
+	'' already exists? (it's ok to use LookupAt, literal str's are always
+	'' prefixed with {fbsc}, there will be no clashes with func ptr mangled names)
+	chain_ = symbLookupAt( parent, id, TRUE, FALSE )
+	if( chain_ <> NULL ) then
+		function = chain_->sym
+	end if
+end function
+
 function symbAddProcPtr _
 	( _
 		byval proc as FBSYMBOL ptr, _
@@ -1017,7 +1065,6 @@ function symbAddProcPtr _
 	) as FBSYMBOL ptr
 
 	dim as zstring ptr id = any
-	dim as FBSYMCHAIN ptr chain_ = any
 	dim as FBSYMBOL ptr sym = any, parent = any
 	dim as FBSYMBOLTB ptr symtb = any
 	dim as FBHASHTB ptr hashtb = any
@@ -1045,37 +1092,9 @@ function symbAddProcPtr _
 
 	id = hMangleFunctionPtr( proc, dtype, subtype, attrib, mode )
 
-	if( parser.scope = FB_MAINSCOPE ) then
-		'' When outside scopes, it's a global, because whichever symbol
-		'' uses this procptr proto can be globally visible (global vars,
-		'' procs, etc.)
-		parent = @symbGetGlobalNamespc( )
-		symtb = @symbGetCompSymbTb( parent )
-		hashtb = @symbGetCompHashTb( parent )
-
-		attrib or= FB_SYMBATTRIB_SHARED
-		assert( (proc->attrib and FB_SYMBATTRIB_LOCAL) = 0 )
-		assert( (attrib and FB_SYMBATTRIB_LOCAL) = 0 )
-	else
-		'' If inside a scope, make the procptr proto local too, because
-		'' it could use local symbols, while it itself can only be used
-		'' by local symbols, not by globals (globals cannot be declared
-		'' inside scopes).
-		parent = symbGetCurrentNamespc( )
-		symtb = symb.symtb                    '' symtb of current scope
-		hashtb = @symbGetCompHashTb( parent ) '' hashtb of current namespace
-		assert( hashtb = symb.hashtb )
-
-		attrib or= FB_SYMBATTRIB_LOCAL
-		assert( (proc->attrib and FB_SYMBATTRIB_SHARED) = 0 )
-		assert( (attrib and FB_SYMBATTRIB_SHARED) = 0 )
-	end if
-
-	'' already exists? (it's ok to use LookupAt, literal str's are always
-	'' prefixed with {fbsc}, there will be no clashes with func ptr mangled names)
-	chain_ = symbLookupAt( parent, id, TRUE, FALSE )
-	if( chain_ <> NULL ) then
-		return chain_->sym
+	sym = symbLookupInternallyMangledSubtype( id, attrib, parent, symtb, hashtb )
+	if( sym ) then
+		return sym
 	end if
 
 	'' create a new prototype
@@ -1171,7 +1190,7 @@ end function
 sub symbGetRealParamDtype overload _
 	( _
 		byval parammode as integer, _
-		byval bydescdimensions as integer, _
+		byval bydescrealsubtype as FBSYMBOL ptr, _
 		byref dtype as integer, _
 		byref subtype as FBSYMBOL ptr _
 	)
@@ -1188,7 +1207,8 @@ sub symbGetRealParamDtype overload _
 
 	case FB_PARAMMODE_BYDESC
 		dtype = typeAddrOf( FB_DATATYPE_STRUCT )
-		subtype = symb.fbarray(bydescdimensions)
+		assert( symbIsDescriptor( bydescrealsubtype ) )
+		subtype = bydescrealsubtype
 	end select
 
 end sub
@@ -1205,7 +1225,7 @@ sub symbGetRealParamDtype overload _
 	dtype = symbGetType( param )
 	subtype = param->subtype
 
-	symbGetRealParamDtype( param->param.mode, param->param.bydescdimensions, dtype, subtype )
+	symbGetRealParamDtype( param->param.mode, param->param.bydescrealsubtype, dtype, subtype )
 
 end sub
 
@@ -1251,6 +1271,10 @@ function symbAddVarForParam( byval param as FBSYMBOL ptr ) as FBSYMBOL ptr
 	if( s = NULL ) then
 		exit function
 	end if
+
+	assert( s->var_.array.desc = NULL )
+	assert( s->var_.array.desctype = NULL )
+	s->var_.array.desctype = param->param.bydescrealsubtype
 
     '' declare it or arrays passed by descriptor will be initialized when REDIM'd
     symbSetIsDeclared( s )

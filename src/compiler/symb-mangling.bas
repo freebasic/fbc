@@ -116,6 +116,14 @@ function symbGetDBGName( byval sym as FBSYMBOL ptr ) as zstring ptr
 		end select
 	end if
 
+	'' Respect ALIAS for array descriptor types, to avoid exposing their
+	'' internal mangling
+	if( symbIsStruct( sym ) and symbIsDescriptor( sym ) ) then
+		if( sym->id.alias ) then
+			return sym->id.alias
+		end if
+	end if
+
 	'' no mangling, return as-is
 	function = sym->id.name
 end function
@@ -145,13 +153,38 @@ private sub symbSetMangledId( byval sym as FBSYMBOL ptr, byref mangled as string
 end sub
 
 private sub hMangleUdtId( byref mangled as string, byval sym as FBSYMBOL ptr )
-	'' <length><id>E
+	dim as integer arraydtype = any
+	dim as FBSYMBOL ptr arraysubtype = any
+
+	'' Itanium C++ ABI: All identifiers are encoded as:
+	'' <length><id>
 	if( sym->id.alias ) then
 		mangled += str( len( *sym->id.alias ) )
 		mangled += *sym->id.alias
 	else
 		mangled += str( len( *sym->id.name ) )
 		mangled += *sym->id.name
+	end if
+
+	''
+	'' Array descriptor mangling: '__FBARRAY[1-8]<dtype>'
+	'' (based on the ALIAS specified in symbAddArrayDescriptorType())
+	''
+	'' The dimension count is already encoded in the ALIAS (also see
+	'' symbAddArrayDescriptorType()); and we'll encode the
+	'' arraydtype as template argument here - this allows C++
+	'' demanglers to decode the arraydtype nicely.
+	''
+	'' The dimension count and arraydtype must be encoded in the
+	'' name mangling, because FB allows overloading based on that.
+	''
+	if( symbIsStruct( sym ) and symbIsDescriptor( sym ) ) then
+		mangled += "I" '' begin of template argument list
+
+		symbGetDescTypeArrayDtype( sym, arraydtype, arraysubtype )
+		symbMangleType( mangled, arraydtype, arraysubtype )
+
+		mangled += "E" '' end of template argument list
 	end if
 end sub
 
@@ -535,18 +568,10 @@ sub symbMangleParam( byref mangled as string, byval param as FBSYMBOL ptr )
 		symbMangleType( mangled, typeSetIsRef( param->typ ), param->subtype )
 
 	case FB_PARAMMODE_BYDESC
-		'' Mangling array params as 'FBARRAY<dtype>&' because that's
-		'' what they really are from C++'s point of view. The array's
-		'' dimension count and dtype must be encoded too, because FB
-		'' allows overloading based on that.
-		''
-		'' It seems easiest to encode the dimension count as part of the
-		'' FBARRAY struct name, because we already have the dimension
-		'' count specific FBARRAY structs in symb.fbarray(), and then
-		'' encode the dtype as template argument behind that.
-		symbMangleType( mangled, typeSetIsRef( FB_DATATYPE_STRUCT ), symb.fbarray(param->param.bydescdimensions) )
-		mangled += "I" '' template
-		symbMangleType( mangled, param->typ, param->subtype )
+		'' Mangling array params as 'FBARRAY[1-8]<dtype>&' because
+		'' that's what they really are from C++'s point of view.
+		assert( symbIsDescriptor( param->param.bydescrealsubtype ) )
+		symbMangleType( mangled, typeSetIsRef( FB_DATATYPE_STRUCT ), param->param.bydescrealsubtype )
 
 	case FB_PARAMMODE_VARARG
 		mangled += "z"

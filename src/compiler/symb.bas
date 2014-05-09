@@ -1463,6 +1463,9 @@ sub symbDelSymbol _
 end sub
 
 function symbCloneSymbol( byval s as FBSYMBOL ptr ) as FBSYMBOL ptr
+	dim as integer arraydtype = any
+	dim as FBSYMBOL ptr arraysubtype = any
+
 	'' assuming only non-complex symbols will be passed,
 	'' for use by astTypeIniClone() mainly
 
@@ -1482,8 +1485,13 @@ function symbCloneSymbol( byval s as FBSYMBOL ptr ) as FBSYMBOL ptr
     case FB_SYMBCLASS_LABEL
     	function = symbCloneLabel( s )
 
-    case FB_SYMBCLASS_STRUCT
-    	function = symbCloneStruct( s )
+	case FB_SYMBCLASS_STRUCT
+		'' Assuming only array descriptor types will ever be cloned
+		'' (most other structs would be too complex, especially classes)
+		assert( symbIsDescriptor( s ) )
+
+		symbGetDescTypeArrayDtype( s, arraydtype, arraysubtype )
+		function = symbAddArrayDescriptorType( symbGetDescTypeDimensions( s ), arraydtype, arraysubtype )
 
     case else
 		assert( FALSE )
@@ -2212,6 +2220,8 @@ function typeDump _
 			dump += "struct"
 		case FB_DATATYPE_WCHAR
 			dump += "wchar"
+		case FB_DATATYPE_FIXSTR
+			dump += "fixstr"
 		case else
 			if( (dtypeonly >= 0) and (dtypeonly < FB_DATATYPES) ) then
 				dump += *symb_dtypeTB(dtypeonly).name

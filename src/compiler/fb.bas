@@ -339,6 +339,9 @@ sub fbInit( byval ismain as integer, byval restarts as integer )
 
 	env.fbctinf_started = FALSE
 
+	'' set by symbDataInit()
+	env.pointersize = 0
+
 	parserSetCtx( )
 	symbInit( ismain )
 	errInit( )
@@ -347,7 +350,6 @@ sub fbInit( byval ismain as integer, byval restarts as integer )
 
 	'' After symbInit(), we can use typeGetSize()
 	env.wchar_doconv = (sizeof( wstring ) = typeGetSize( env.target.wchar ))
-	env.pointersize = typeGetSize( typeAddrOf( FB_DATATYPE_VOID ) )
 
 	hashInit( @env.incfilehash, FB_INITINCFILES )
 	hashInit( @env.inconcehash, FB_INITINCFILES )

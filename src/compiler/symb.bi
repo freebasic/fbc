@@ -467,6 +467,7 @@ type FBS_PARAM
 	var				as FBSYMBOL_ ptr			'' link to decl var in func bodies
 	optexpr			as ASTNODE_ ptr				'' default value
 	bydescdimensions	as integer
+	bydescrealsubtype	as FBSYMBOL_ ptr  '' bydesc array descriptor type
 end type
 
 '' function
@@ -605,6 +606,11 @@ type FBS_ARRAY
 	diff			as longint
 	elements		as longint
 	desc			as FBSYMBOL_ ptr
+
+	'' Array descriptor type (useful especially for BYDESC param vars, which
+	'' don't have a descriptor var associated, but still need to know the
+	'' exact descriptor type sometimes)
+	desctype		as FBSYMBOL_ ptr
 end type
 
 type FBVAR_DESC
@@ -781,31 +787,6 @@ type SYMBCTX
 	globOpOvlTb ( _
 					0 to AST_OPCODES-1 _
 				)	as SYMB_OVLOP				'' global operator overloading
-
-	''
-	'' Pre-declared FBARRAY (array descriptor) structures, one for each
-	'' possible dimension count.
-	''
-	'' fbarray(0) = NULL (should be unused)
-	''
-	'' These are needed so we can give each array descriptor the correct
-	'' minimum size in (setting the descriptor symbol length isn't enough,
-	'' because e.g. the C backend will emit the descriptor based on its
-	'' dtype/subtype, without checking the length).
-	''
-	'' Of course if the dimension count is unknown we have to use a
-	'' descriptor with room for FB_MAXARRAYDIMS.
-	''    symb.fbarray(-1) = symb.fbarray(FB_MAXARRAYDIMS)
-	''
-	'' For BYDESC params we could use an FBARRAY structure without any dimTB
-	'' at all (i.e. a descriptor with zero dimensions), and, by doing so,
-	'' avoid any assumptions about the given argument. However, this is
-	'' unnecessary, since the exact descriptor type used by BYDESC params
-	'' never matters (we're not building any field accesses on it; that's
-	'' all done in the rtlib). And the rtlib should check the exact
-	'' dimension count available at the end of each descriptor anyways.
-	''
-	fbarray(-1 to FB_MAXARRAYDIMS) as FBSYMBOL ptr
 
 	fbarray_data		as integer			'' offsetof( FBARRAY, data )
 	fbarray_ptr		as integer			'' offsetof( FBARRAY, ptr )
@@ -1075,6 +1056,21 @@ declare function symbAddLabel _
 		byval options as FB_SYMBOPT = FB_SYMBOPT_DECLARING _
 	) as FBSYMBOL ptr
 
+declare sub symbGetDescTypeArrayDtype _
+	( _
+		byval desctype as FBSYMBOL ptr, _
+		byref arraydtype as integer, _
+		byref arraysubtype as FBSYMBOL ptr _
+	)
+declare function symbGetDescTypeDimensions( byval desctype as FBSYMBOL ptr ) as integer
+
+declare function symbAddArrayDescriptorType _
+	( _
+		byval dimensions as integer, _
+		byval arraydtype as integer, _
+		byval arraysubtype as FBSYMBOL ptr _
+	) as FBSYMBOL ptr
+
 declare sub symbSetFixedSizeArrayDimensionElements _
 	( _
 		byval sym as FBSYMBOL ptr, _
@@ -1140,13 +1136,15 @@ declare function symbGetConstValueAsStr( byval s as FBSYMBOL ptr ) as string
 declare function symbStructBegin _
 	( _
 		byval symtb as FBSYMBOLTB ptr, _
+		byval hashtb as FBHASHTB ptr, _
 		byval parent as FBSYMBOL ptr, _
 		byval id as const zstring ptr, _
 		byval id_alias as const zstring ptr, _
 		byval isunion as integer, _
 		byval align as integer, _
 		byval base_ as FBSYMBOL ptr, _
-		byval attrib as integer _
+		byval attrib as integer, _
+		byval options as integer _
 	) as FBSYMBOL ptr
 
 declare function typeCalcNaturalAlign _
@@ -1246,6 +1244,15 @@ declare function symbAddCtor _
 		byval options as FB_SYMBOPT = FB_SYMBOPT_NONE _
 	) as FBSYMBOL ptr
 
+declare function symbLookupInternallyMangledSubtype _
+	( _
+		byval id as zstring ptr, _
+		byref attrib as integer, _
+		byref parent as FBSYMBOL ptr, _
+		byref symtb as FBSYMBOLTB ptr, _
+		byref hashtb as FBHASHTB ptr _
+	) as FBSYMBOL ptr
+
 declare function symbAddProcPtr _
 	( _
 		byval proc as FBSYMBOL ptr, _
@@ -1268,7 +1275,7 @@ declare function symbPreAddProc _
 declare sub symbGetRealParamDtype overload _
 	( _
 		byval parammode as integer, _
-		byval bydescdimensions as integer, _
+		byval bydescrealsubtype as FBSYMBOL ptr, _
 		byref dtype as integer, _
 		byref subtype as FBSYMBOL ptr _
 	)
@@ -1751,7 +1758,6 @@ declare function symbCloneSymbol _
 
 declare function symbCloneConst( byval sym as FBSYMBOL ptr ) as FBSYMBOL ptr
 declare function symbCloneVar( byval sym as FBSYMBOL ptr ) as FBSYMBOL ptr
-declare function symbCloneStruct( byval sym as FBSYMBOL ptr ) as FBSYMBOL ptr
 
 declare function symbCloneLabel _
 	( _
@@ -2421,6 +2427,9 @@ declare function typeDump _
 declare function symbDump( byval s as FBSYMBOL ptr ) as string
 declare sub symbDumpNamespace( byval ns as FBSYMBOL ptr )
 declare sub symbDumpChain( byval chain_ as FBSYMCHAIN ptr )
+
+'' FBARRAY: 5 pointer/integer fields + the dimTB with 3 integer fields per dimension
+#define symbDescriptorHasRoomFor( sym, dimensions ) (symbGetLen( sym ) = env.pointersize * (((dimensions) * 3) + 5))
 #endif
 
 ''

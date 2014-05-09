@@ -990,7 +990,8 @@ function cVariableEx overload _
 					if( symbIsParamBydesc( sym ) ) then
 						'' Build a VAR access with the BYDESC param's real dtype
 						descexpr = astNewVAR( sym )
-						astSetType( descexpr, typeAddrOf( FB_DATATYPE_STRUCT ), symb.fbarray(symbGetArrayDimensions( sym )) )
+						assert( symbIsStruct( sym->var_.array.desctype ) and symbIsDescriptor( sym->var_.array.desctype ) )
+						astSetType( descexpr, typeAddrOf( FB_DATATYPE_STRUCT ), sym->var_.array.desctype )
 
 						'' And DEREF to get to the descriptor
 						descexpr = astNewDEREF( descexpr )

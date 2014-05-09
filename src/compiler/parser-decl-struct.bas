@@ -631,11 +631,11 @@ private function hTypeAdd _
 
 	dim as FBSYMBOL ptr s = any
 
-	s = symbStructBegin( NULL, parent, id, id_alias, isunion, align, baseSubtype, 0 )
+	s = symbStructBegin( NULL, NULL, parent, id, id_alias, isunion, align, baseSubtype, 0, 0 )
 	if( s = NULL ) then
 		errReportEx( FB_ERRMSG_DUPDEFINITION, id )
 		'' error recovery: create a fake symbol
-		s = symbStructBegin( NULL, parent, symbUniqueLabel( ), NULL, isunion, align, NULL, 0 )
+		s = symbStructBegin( NULL, NULL, parent, symbUniqueLabel( ), NULL, isunion, align, NULL, 0, 0 )
 	end if
 
 	'' Comment? SttSeparator
