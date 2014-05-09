@@ -706,33 +706,36 @@ private function hGetDataType _
 		subtype = sym->var_.array.desctype
 		dimtbelements = symbGetArrayDimensions( sym )
 	else
-		'' Fixed-size array?
-		if( symbGetArrayDimensions( sym ) > 0 ) then
-			desc += str( ctx.typecnt ) + "="
-			ctx.typecnt += 1
-
-			'' Normally we want to emit all fixed-size arrays with
-			'' their proper dimensions & bounds - the only exception
-			'' is the one-dimensional dimTB in array descriptor
-			'' types (also see the above HACK).
-			if( requesteddimtbelements > 0 ) then
-				assert( symbGetArrayDimensions( sym ) = 1 )
-				desc += "ar1;"
-				desc += "0;"
-				desc += str( requesteddimtbelements - 1 ) + ";"
-			else
-				for i as integer = 0 to symbGetArrayDimensions( sym ) - 1
-					desc += "ar1;"
-					desc += str( symbArrayLbound( sym, i ) ) + ";"
-					desc += str( symbArrayUbound( sym, i ) ) + ";"
-				next
-			end if
-		end if
-
 		dtype = symbGetType( sym )
 		subtype = symbGetSubtype( sym )
-		if( symbIsDescriptor( sym ) ) then
-			dimtbelements = symbGetArrayDimensions( sym->var_.desc.array )
+
+		if( symbIsVar( sym ) or symbIsField( sym ) ) then
+			'' Fixed-size array?
+			if( symbGetArrayDimensions( sym ) > 0 ) then
+				desc += str( ctx.typecnt ) + "="
+				ctx.typecnt += 1
+
+				'' Normally we want to emit all fixed-size arrays with
+				'' their proper dimensions & bounds - the only exception
+				'' is the one-dimensional dimTB in array descriptor
+				'' types (also see the above HACK).
+				if( requesteddimtbelements > 0 ) then
+					assert( symbGetArrayDimensions( sym ) = 1 )
+					desc += "ar1;"
+					desc += "0;"
+					desc += str( requesteddimtbelements - 1 ) + ";"
+				else
+					for i as integer = 0 to symbGetArrayDimensions( sym ) - 1
+						desc += "ar1;"
+						desc += str( symbArrayLbound( sym, i ) ) + ";"
+						desc += str( symbArrayUbound( sym, i ) ) + ";"
+					next
+				end if
+			end if
+
+			if( symbIsDescriptor( sym ) ) then
+				dimtbelements = symbGetArrayDimensions( sym->var_.desc.array )
+			end if
 		end if
 	end if
 
