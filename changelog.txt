@@ -186,6 +186,7 @@ Version 0.91.0:
 - 0.24.0 regression: SWAP called temporary variable destructors too early, even before calling constructors
 - Temporary strings used during procedure calls could be freed too early (directly after the call, instead of being kept alive until the end of the statement), potentially leaving references to them (used with-in the same statement) dangling.
 - #545: Overload resolution will now properly handle arguments with CONST qualifiers in their data type
+- ASM backend -g debug info for dynamic array descriptors: The data type of the DATA & PTR pointer fields was wrong (they were emitted with an extra level of pointer indirection that shouldn't have been there). The DATA pointer field will also now have the array's original data type, while the PTR field is an ANY PTR (since it's the dynamic array's memory block, not necessarily the array data). The dimTB field will now be emitted as the array that it is (instead of as a sequence of manually generated fields).
 
 
 Version 0.90.1:

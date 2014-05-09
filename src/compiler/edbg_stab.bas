@@ -26,9 +26,11 @@ type EDBGCTX
 	incfile			as zstring ptr
 end type
 
-declare sub 	 hDeclUDT				( _
-											byval sym as FBSYMBOL ptr _
-										)
+declare sub hDeclUDT _
+	( _
+		byval sym as FBSYMBOL ptr, _
+		byval dimtbelements as integer _
+	)
 
 declare sub 	 hDeclENUM				( _
 											byval sym as FBSYMBOL ptr _
@@ -38,16 +40,11 @@ declare function hDeclPointer			( _
 											byref dtype as integer _
 										) as string
 
-declare function hDeclArrayDims			( _
-											byval sym as FBSYMBOL ptr _
-										) as string
-
 declare function hGetDataType _
 	( _
 		byval sym as FBSYMBOL ptr, _
-		byval do_array_typing as integer = FALSE _
+		byval arraydimensions as integer = 0 _
 	) as string
-
 
 '' globals
 	dim shared ctx as EDBGCTX
@@ -565,14 +562,17 @@ private sub hDeclLocalVars _
     	'' variable?
     	case FB_SYMBCLASS_VAR
 
-			'' not an argument, temporary, descriptor or func result?
-    		if( (symbGetAttrib( s ) and _
-    			 (FB_SYMBATTRIB_PARAMBYDESC or _
-			   	  FB_SYMBATTRIB_PARAMBYVAL or _
-			   	  FB_SYMBATTRIB_PARAMBYREF or _
-    		   	  FB_SYMBATTRIB_TEMP or _
-    		   	  FB_SYMBATTRIB_DESCRIPTOR or _
-    		   	  FB_SYMBATTRIB_FUNCRESULT)) = 0 ) then
+			'' Don't emit debug info for parameter variables (the
+			'' parameters will be emitted instead), temporaries,
+			'' function result variables, or fake dynamic array
+			'' variables (the descriptors will be emitted instead).
+			if( (symbGetAttrib( s ) and _
+				(FB_SYMBATTRIB_PARAMBYDESC or _
+				FB_SYMBATTRIB_PARAMBYVAL or _
+				FB_SYMBATTRIB_PARAMBYREF or _
+				FB_SYMBATTRIB_TEMP or _
+				FB_SYMBATTRIB_FUNCRESULT or _
+				FB_SYMBATTRIB_DYNAMIC)) = 0 ) then
 				'' And nothing marked IMPLICIT either (e.g. symbAddImplicitVar(),
 				'' some implicitly generated vars are not TEMPs)
 				if( symbGetIsImplicit( s ) = FALSE ) then
@@ -647,116 +647,6 @@ sub edbgEmitProcFooter _
 
 end sub
 
-private function hDeclUdtField _
-	( _
-		byval fld as FBSYMBOL ptr, _
-		byval stypeopt as zstring ptr = NULL, _
-		byval idprefix as zstring ptr = NULL, _
-		byval baseoffset as integer = 0 _
-	) as string
-
-	dim as string desc
-	dim as integer dtype = any
-
-	if( idprefix ) then
-		desc += *idprefix
-	end if
-
-	desc += *symbGetName( fld )
-	desc += ":"
-
-	dtype = symbGetType( fld )
-	if( typeIsPtr( dtype ) ) then
-		desc += hDeclPointer( dtype )
-	end if
-
-	if( stypeopt = NULL ) then
-		desc += str( remapTB(dtype) )
-	else
-		desc += *stypeopt
-	end if
-
-	desc += "," + str( (baseoffset + symbGetOfs( fld )) * 8 )
-	desc += "," + str( symbGetLen( fld ) * 8 )
-	desc += ";"
-
-	function = desc
-end function
-
-private function hDeclDynArray( byval sym as FBSYMBOL ptr ) as string static
-    dim as string desc, dimdesc
-	dim as integer baseoffset = any, i = any, dimension = any
-	dim as FBSYMBOL ptr fld = any, desctype = any
-
-	if( symbIsParamByDesc( sym ) ) then
-		desctype = sym->var_.array.desctype
-	else
-		desctype = symbGetSubtype( symbGetArrayDescriptor( sym ) )
-	end if
-	assert( symbIsStruct( desctype ) and symbIsDescriptor( desctype ) )
-
-	'' declare the array descriptor
-	desc = str( ctx.typecnt ) + "=s" + str( symbGetLen( desctype ) )
-	ctx.typecnt += 1
-
-	dimdesc = hDeclArrayDims( sym )
-
-    dimdesc += hGetDataType( sym, TRUE )
-
-	'' FBARRAY fields
-
-	'' data
-	fld = symbUdtGetFirstField( desctype )
-	desc += hDeclUdtField( fld, strptr( dimdesc ) )
-
-	'' ptr
-	fld = symbUdtGetNextField( fld )
-	desc += hDeclUdtField( fld, strptr( dimdesc ) )
-
-	'' size
-	fld = symbUdtGetNextField( fld )
-	desc += hDeclUdtField( fld )
-
-	'' element_len
-	fld = symbUdtGetNextField( fld )
-	desc += hDeclUdtField( fld )
-
-	'' dimensions
-	fld = symbUdtGetNextField( fld )
-	desc += hDeclUdtField( fld )
-
-	'' dimTB
-	fld = symbUdtGetNextField( fld )
-	baseoffset = symbGetOfs( fld )
-	i = 1
-	dimension = 0
-	do
-		dimdesc = "dim" + str( i ) + "_"
-
-		'' FBARRAYDIM fields
-
-		'' elements
-		fld = symbUdtGetFirstField( symb.fbarraydim )
-		desc += hDeclUdtField( fld, , dimdesc, baseoffset )
-
-		'' lbound
-		fld = symbUdtGetNextField( fld )
-		desc += hDeclUdtField( fld, , dimdesc, baseoffset )
-
-		'' ubound
-		fld = symbUdtGetNextField( fld )
-		desc += hDeclUdtField( fld, , dimdesc, baseoffset )
-
-		baseoffset += symbGetLen( symb.fbarraydim )
-
-		dimension += 1
-	loop while( dimension < symbGetArrayDimensions( sym ) )
-
-	desc += ";"
-
-	function = desc
-end function
-
 '':::::
 private function hDeclPointer _
 	( _
@@ -776,60 +666,80 @@ private function hDeclPointer _
 
 end function
 
-private function hDeclArrayDims( byval sym as FBSYMBOL ptr ) as string
-	static as string desc
-
-    desc = str( ctx.typecnt ) + "="
-    ctx.typecnt += 1
-
-	if( symbGetIsDynamic( sym ) = FALSE ) then
-		for i as integer = 0 to symbGetArrayDimensions( sym ) - 1
-			desc += "ar1;"
-			desc += str( symbArrayLbound( sym, i ) ) + ";"
-			desc += str( symbArrayUbound( sym, i ) ) + ";"
-		next
-	end if
-
-    function = desc
-end function
-
-'':::::
 private function hGetDataType _
 	( _
 		byval sym as FBSYMBOL ptr, _
-		byval do_array_typing as integer _
+		byval requesteddimtbelements as integer _
 	) as string
 
-	dim as integer dtype
-	dim as FBSYMBOL ptr subtype
+	dim as integer dtype = any, dimtbelements = any
+	dim as FBSYMBOL ptr subtype = any
 	dim as string desc
 
     if( sym = NULL ) then
     	return str( remapTB(FB_DATATYPE_VOID) )
     end if
 
-    '' array?
-    if( do_array_typing = FALSE ) then
-	    if( symbIsArray( sym ) ) then
-	    	'' dynamic?
-	    	if( symbIsDynamic( sym ) or symbIsParamByDesc( sym ) ) then
-	    		desc = hDeclDynArray( sym )
-	    	else
-	    		desc = hDeclArrayDims( sym )
-			end if
-	    else
-	    	desc = ""
-	    end if
+	''
+	'' HACK: When emitting array descriptor types, we don't always emit the
+	'' whole FBARRAYDIM dimTB, but only the actually used dimensions.
+	''
+	'' This makes a difference (only) for arrays declared with unknown
+	'' dimension count (array()), where the descriptor will have room for
+	'' FB_MAXARRAYDIMS dimensions but not necessarily all of that are
+	'' actually used.
+	''
+	'' However, we still emit the descriptor's full length in bytes - it's
+	'' just that the memory at the end won't be visible as fields when
+	'' inspecting with the debugger, just like padding bytes. Basically the
+	'' whole unused part of the dimTB will be treated as padding, which is
+	'' what it basically is, anyways.
+	''
+	dimtbelements = 0
+
+	'' Shouldn't be a dynamic array - only the descriptor is emitted
+	assert( symbIsDynamic( sym ) = FALSE )
+
+	if( symbIsParamBydesc( sym ) ) then
+		'' Bydesc parameter, need to emit as the real descriptor type
+		dtype = FB_DATATYPE_STRUCT
+		subtype = sym->var_.array.desctype
+		dimtbelements = symbGetArrayDimensions( sym )
 	else
-   		desc = ""
+		'' Fixed-size array?
+		if( symbGetArrayDimensions( sym ) > 0 ) then
+			desc += str( ctx.typecnt ) + "="
+			ctx.typecnt += 1
+
+			'' Normally we want to emit all fixed-size arrays with
+			'' their proper dimensions & bounds - the only exception
+			'' is the one-dimensional dimTB in array descriptor
+			'' types (also see the above HACK).
+			if( requesteddimtbelements > 0 ) then
+				assert( symbGetArrayDimensions( sym ) = 1 )
+				desc += "ar1;"
+				desc += "0;"
+				desc += str( requesteddimtbelements - 1 ) + ";"
+			else
+				for i as integer = 0 to symbGetArrayDimensions( sym ) - 1
+					desc += "ar1;"
+					desc += str( symbArrayLbound( sym, i ) ) + ";"
+					desc += str( symbArrayUbound( sym, i ) ) + ";"
+				next
+			end if
+		end if
+
+		dtype = symbGetType( sym )
+		subtype = symbGetSubtype( sym )
+		if( symbIsDescriptor( sym ) ) then
+			dimtbelements = symbGetArrayDimensions( sym->var_.desc.array )
+		end if
 	end if
 
-    dtype = symbGetType( sym )
-    subtype = symbGetSubtype( sym )
-    
-    if( do_array_typing ) then
-    	dtype = typeAddrOf( dtype )
-    end if
+	'' If array dimensions still unknown, assume 1
+	if( dimtbelements < 0 ) then
+		dimtbelements = 1
+	end if
 
     '' pointer?
     if( typeIsPtr( dtype ) ) then
@@ -843,7 +753,7 @@ private function hGetDataType _
     '' UDT?
     case FB_DATATYPE_STRUCT
 		if( subtype->udt.dbg.typenum = INVALID ) then
-			hDeclUDT( subtype )
+			hDeclUDT( subtype, dimtbelements )
 		end if
 
 		desc += str( subtype->udt.dbg.typenum )
@@ -876,9 +786,16 @@ private function hGetDataType _
 
 end function
 
-private sub hDeclUDT( byval sym as FBSYMBOL ptr )
+private sub hDeclUDT _
+	( _
+		byval sym as FBSYMBOL ptr, _
+		byval dimtbelements as integer _
+	)
+
 	dim as FBSYMBOL ptr fld = any
 	dim as string desc
+
+	assert( symbIsStruct( sym ) )
 
 	sym->udt.dbg.typenum = ctx.typecnt
 	ctx.typecnt += 1
@@ -889,16 +806,28 @@ private sub hDeclUDT( byval sym as FBSYMBOL ptr )
 
 	fld = symbUdtGetFirstField( sym )
 	while( fld )
-		desc += *symbGetName( fld ) + ":" + hGetDataType( fld )
-		desc += "," + str( symbGetFieldBitOffset( fld ) )
-		desc += "," + str( symbGetFieldBitLength( fld ) )
-		desc += ";"
+
+		'' Skip fake dynamic array fields, only the descriptor is emitted
+		if( symbIsDynamic( fld ) = FALSE ) then
+			'' Pass dimtbelements on to hGetDataType() so that the
+			'' dimTB of array descriptors will be emitted smaller than
+			'' it actually is. (the dimTB is the only array field in
+			'' a descriptor type, and dimtbelements will only be set
+			'' if declaring a descriptor type, so we can just pass it
+			'' always, to keep it simple)
+			desc += *symbGetName( fld ) + ":" + hGetDataType( fld, dimtbelements )
+			desc += "," + str( symbGetFieldBitOffset( fld ) )
+			desc += "," + str( symbGetFieldBitLength( fld ) )
+			desc += ";"
+		end if
+
 		fld = symbUdtGetNextField( fld )
 	wend
 
 	desc += ";"
 
 	hEmitSTABS( STAB_TYPE_LSYM, desc, 0, 0, "0" )
+
 end sub
 
 '':::::
@@ -976,9 +905,9 @@ sub edbgEmitGlobalVar _
 		t = STAB_TYPE_STSYM
 	end select
 
-    '' allocation type (static, global, etc)
     desc = *symbGetDBGName( sym )
 
+    '' allocation type (static, global, etc)
 	if( symbIsPublic( sym ) or symbIsCommon( sym ) ) then
 		desc += ":G"
 	elseif( symbIsStatic( sym ) ) then
@@ -994,14 +923,13 @@ sub edbgEmitGlobalVar _
 
 end sub
 
-'':::::
 sub edbgEmitLocalVar _
 	( _
 		byval sym as FBSYMBOL ptr, _
 		byval isstatic as integer _
-	) static
+	)
 
-	dim as integer t
+	dim as integer t = any
 	dim as string desc, value
 
 	if( env.clopt.debug = FALSE ) then
@@ -1010,13 +938,15 @@ sub edbgEmitLocalVar _
 
     desc = *symbGetName( sym )
 
-    ''
-    if( isstatic ) then
-    	'' never referenced?
-    	if( symbGetIsAccessed( sym ) = FALSE ) then
-    		'' locals can't be public, don't check
-    		exit sub
-    	end if
+	'' (no fake dynamic array symbols - the descriptor is emitted instead)
+	assert( symbIsDynamic( sym ) = FALSE )
+
+	if( isstatic ) then
+		'' never referenced?
+		if( symbGetIsAccessed( sym ) = FALSE ) then
+			'' locals can't be public, don't check
+			exit sub
+		end if
 
 		if( symbGetTypeIniTree( sym ) ) then
 			t = STAB_TYPE_STSYM
@@ -1025,38 +955,21 @@ sub edbgEmitLocalVar _
 		end if
 		desc += ":V"
 
-    	'' dynamic array? use the descriptor
-    	if( symbIsDynamic( sym ) ) then
-    		value = *symbGetMangledName( symbGetArrayDescriptor( sym ) )
-    	else
-			value = *symbGetMangledName( sym )
-		end if
-
-    else
-    	t = STAB_TYPE_LSYM
-    	desc += ":"
-    	'' dynamic array? use the descriptor
-    	if( symbIsDynamic( sym ) ) then
-    		value = str( symbGetOfs( symbGetArrayDescriptor( sym ) ) )
-    	else
-    		value = str( symbGetOfs( sym ) )
-    	end if
-    end if
+		value = *symbGetMangledName( sym )
+	else
+		t = STAB_TYPE_LSYM
+		desc += ":"
+		value = str( symbGetOfs( sym ) )
+	end if
 
     '' data type
     desc += hGetDataType( sym )
 
-    ''
     hEmitSTABS( t, desc, 0, 0, value )
-
 end sub
 
-'':::::
-sub edbgEmitProcArg _
-	( _
-		byval sym as FBSYMBOL ptr _
-	) static
-
+'' should rename to param?
+sub edbgEmitProcArg( byval sym as FBSYMBOL ptr )
 	dim as string desc
 
 	if( env.clopt.debug = FALSE ) then
@@ -1065,22 +978,21 @@ sub edbgEmitProcArg _
 
     desc = *symbGetName( sym ) + ":"
 
-    if( symbIsParamByVal( sym ) ) then
-	    desc += "p"
+	if( symbIsParamByVal( sym ) ) then
+		desc += "p"
 
 	elseif( symbIsParamByRef( sym ) ) then
 		desc += "v"
 
 	elseif( symbIsParamByDesc( sym ) ) then
+		'' (will be emitted as descriptor)
     	desc += "v"
 	end if
 
     '' data type
     desc += hGetDataType( sym )
 
-    ''
     hEmitSTABS( STAB_TYPE_PSYM, desc, 0, 0, str( symbGetOfs( sym ) ) )
-
 end sub
 
 sub edbgInclude( byval incfile as zstring ptr )
