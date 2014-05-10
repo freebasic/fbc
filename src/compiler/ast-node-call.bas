@@ -31,7 +31,33 @@ function astNewCALL _
     dim as integer dtype = any
     dim as FBSYMBOL ptr subtype = any
 
-	assert( sym <> NULL )
+	assert( symbIsProc( sym ) )
+
+	''
+	'' If calling a procedure pointer, ensure to use the procedure pointer's
+	'' subtype procedure symbol, not the procedure symbol for which the
+	'' procedure pointer was created; it may be more "precise".
+	''
+	'' This can happen with bydesc parameter's real subtypes, the descriptor
+	'' types. The procedure may use different descriptor types than the
+	'' procedure pointer, if they're from different scopes (also see
+	'' symbAddArrayDescriptorType()). Then it's better to use the actual
+	'' type we're calling - i.e. the procedure pointer. This matters for the
+	'' C/LLVM backends due to their type checking, but not for the ASM
+	'' backend.
+	''
+	'' The same can happen with procedure pointer types themselves which are
+	'' also scoped (also see symbAddProcPtr()), in case the called procedure
+	'' [pointer] has any procedure pointer parameters. However it's not as
+	'' big of a problem because the C/LLVM backends will treat different
+	'' procedure pointer typedefs as equal as long as the signature matches.
+	'' That's not the case for the array descriptor structures.
+	''
+	if( ptrexpr ) then
+		assert( astGetDataType( ptrexpr ) = typeAddrOf( FB_DATATYPE_FUNCTION ) )
+		assert( (ptrexpr->subtype = sym) or symbIsEqual( ptrexpr->subtype, sym ) )
+		sym = ptrexpr->subtype
+	end if
 
 	''
 	dtype = symbGetFullType( sym )

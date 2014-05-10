@@ -1377,6 +1377,31 @@ namespace explicitBase
 	end sub
 end namespace
 
+namespace bydescParamGccWarningRegressionTest
+	type UDT extends object
+		i as integer
+
+		declare function test( ) as integer
+		declare virtual function f( array() as integer ) as integer
+	end type
+
+	function UDT.f( array() as integer ) as integer
+		function = array(0)
+	end function
+
+	function UDT.test( ) as integer
+		dim as integer temp()
+		redim temp(0 to 1)
+		temp(0) = 111
+		function = f( temp() )
+	end function
+
+	sub test cdecl( )
+		dim x as UDT
+		CU_ASSERT( x.test( ) = 111 )
+	end sub
+end namespace
+
 private sub ctor( ) constructor
 	fbcu.add_suite( "tests/virtual/virtual" )
 	fbcu.add_test( "basic overriding", @overridingWorks.test )
@@ -1403,6 +1428,7 @@ private sub ctor( ) constructor
 	fbcu.add_test( "overriding an EXTERN Windows method", @externWindows.test )
 	fbcu.add_test( "overriding an EXTERN Windows-MS method", @externWindowsMs.test )
 	fbcu.add_test( "explicit BASE access", @explicitBase.test )
+	fbcu.add_test( "bydescParamGccWarningRegressionTest", @bydescParamGccWarningRegressionTest.test )
 end sub
 
 end namespace
