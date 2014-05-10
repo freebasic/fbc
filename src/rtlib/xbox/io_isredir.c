@@ -2,5 +2,5 @@
 
 int fb_ConsoleIsRedirected( int is_input )
 {
-	return TRUE;
+	return FB_TRUE;
 }
