@@ -20,47 +20,35 @@ end sub
 dim pStdcall as sub stdcall( byval as integer )
 dim pCdecl as sub cdecl( byval as integer )
 dim pDefault as sub( byval as integer )
+dim p1 as sub stdcall( )
+dim p2 as sub cdecl  ( )
+dim p3 as sub pascal ( )
 
 #print "no warnings:"
-#print "stdcall:"
 pStdcall = @fWindows
 pStdcall = @fWindowsMs
 pStdcall = @fStdcall
-
-#print "cdecl:"
 pCdecl = @fCdecl
-
-#print "default:"
 pDefault = @fDefault
 
-#print
-#print "but this should cause warnings (no matter what system):"
-#print "1."
+'' The following should cause warnings even on x86_64 where calling
+'' conventions have no effect, so that the user is notified of
+'' mismatches that would become bugs on x86.
+#print "4 warnings:"
 pCdecl = @fWindows
-#print "2."
 pCdecl = @fWindowsMs
-#print "3."
 pCdecl = @fStdcall
-#print "4."
 pStdcall = @fCdecl
 
-#print "return byref:"
-function f1( ) byref as integer
-	static as integer x
-	function = x
-end function
+#print "2 warnings:"
+p1 = p2
+p1 = p3
 
-function f2( ) as integer
-	function = 123
-end function
+#print "2 warnings:"
+p2 = p1
+p2 = p3
 
-dim p1 as function( ) byref as integer
-dim p2 as function( ) as integer
+#print "2 warnings:"
+p3 = p1
+p3 = p2
 
-#print "no warnings:"
-p1 = @f1
-p2 = @f2
-
-#print "two warnings:"
-p1 = @f2
-p2 = @f1

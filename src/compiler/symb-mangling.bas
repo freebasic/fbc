@@ -485,7 +485,14 @@ sub symbMangleType _
 
 	'' const?
 	if( typeGetConstMask( dtype ) ) then
-		'' note: nothing is added (as in C++) because it's not a 'const ptr'
+		'' The type has some CONST bits. For C++ mangling we remove the
+		'' toplevel one and recursively mangle the rest of the type.
+		''
+		'' It could be a BYVAL x as CONST foo type. In this case the
+		'' CONST is not encoded in the C++ mangling, because it makes no
+		'' difference. It's not allowed to have overloads that differ
+		'' only in BYVAL CONSTness. The CONST only matters if it's a
+		'' pointer or BYREF type.
 		symbMangleType( mangled, typeUnsetIsConst( dtype ), subtype )
 
 		hAbbrevAdd( dtype, subtype )
@@ -534,6 +541,8 @@ sub symbMangleType _
 		end if
 
 		'' const?
+		'' (for function results, even BYVAL CONST is encoded into the
+		'' C++ mangling, unlike for parameters)
 		if( typeIsConst( symbGetFullType( subtype ) ) ) then
 			mangled += "K"
 		end if

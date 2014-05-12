@@ -1,19 +1,15 @@
 no warnings:
-stdcall:
-cdecl:
-default:
-
-but this should cause warnings (no matter what system):
-1.
+4 warnings:
 	Suspicious pointer assignment
-2.
 	Suspicious pointer assignment
-3.
 	Suspicious pointer assignment
-4.
 	Suspicious pointer assignment
-return byref:
-no warnings:
-two warnings:
+2 warnings:
+	Suspicious pointer assignment
+	Suspicious pointer assignment
+2 warnings:
+	Suspicious pointer assignment
+	Suspicious pointer assignment
+2 warnings:
 	Suspicious pointer assignment
 	Suspicious pointer assignment

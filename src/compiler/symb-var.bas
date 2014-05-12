@@ -88,11 +88,19 @@ function symbGetDescTypeDimensions( byval desctype as FBSYMBOL ptr ) as integer
 
 	assert( symbIsStruct( desctype) and symbIsDescriptor( desctype ) )
 
+	'' If the dimensions were unknown, return -1 again, not FB_MAXARRAYDIMS,
+	'' so that if this is used in a call to symbAddArrayDescriptorType(), it
+	'' would produce/re-use the same descriptor type as this one.
+	if( *desctype->id.alias = "FBARRAY" ) then
+		return -1
+	end if
+
 	'' dimensions = sizeof(dimTB) \ sizeof(FBARRAYDIM)
 	dimtbsize = symbGetLen( desctype ) - (env.pointersize * 5)
 	dimensions = dimtbsize \ (env.pointersize * 3)
 
 	assert( (dimensions > 0) and (dimensions <= FB_MAXARRAYDIMS) )
+	assert( *desctype->id.alias = "FBARRAY" & dimensions )
 	function = dimensions
 end function
 
@@ -128,23 +136,32 @@ function symbAddArrayDescriptorType _
 	end if
 	assert( typeGetDtOnly( arraydtype ) <> FB_DATATYPE_FIXSTR )
 
-	'' If dimensions are unknown, the descriptor type must have room for
-	'' FB_MAXARRAYDIMS
-	if( dimensions = -1 ) then
-		dimensions = FB_MAXARRAYDIMS
+	''
+	'' The ALIAS for the C++ mangling (hMangleUdtId() will add the array
+	'' dtype as template parameter later, because it may have to use
+	'' abbreviations according to the Itanium C++ ABI mangling rules).
+	'' Arrays becoming FBARRAY matches how strings become FBSTRING.
+	''   array()         = "FBARRAY"
+	''   array(any)      = "FBARRAY1"
+	''   array(any, any) = "FBARRAY2"
+	''   array(any * 8)  = "FBARRAY8"
+	''
+	'' array() and array(any * FB_MAXARRAYDIMS) must be mangled different so
+	'' that we get different C++ mangling for these two procedures:
+	''     sub f( byval p as sub( array() as integer ) )
+	''     sub f( byval p as sub( array(any, any, any, any, any, any, any, any) as integer ) )
+	'' otherwise they'd collide in the generated .asm.
+	''
+	aliasid = "FBARRAY"
+	if( dimensions > 0 ) then
+		aliasid &= dimensions
 	end if
-
-	assert( (dimensions >= 1) and (dimensions <= FB_MAXARRAYDIMS) )
 
 	'' Some unique internal id that allows this descriptor type to be looked
 	'' up later when we need one with the same dimensions & array dtype
-	'' again.
-	''
-	'' Using a simplified ALIAS, because the internal mangling should never
-	'' be exposed, it's not proper GCC C++ mangling anyways. The mangling
-	'' done by symbGetMangledName()/hMangleUdtId() is based on this ALIAS.
-	aliasid = "__FBARRAY" & dimensions
-	id = aliasid
+	'' again. '$' prefix ensures that there are no collisions with user's
+	'' ids.
+	id = "$" + aliasid
 	id += "<"
 	symbMangleInitAbbrev( )
 	symbMangleType( id, arraydtype, arraysubtype )
@@ -180,6 +197,12 @@ function symbAddArrayDescriptorType _
 	symbAddField( sym, "size", 0, dTB(), FB_DATATYPE_INTEGER, NULL, 0, 0, 0 )
 	symbAddField( sym, "element_len", 0, dTB(), FB_DATATYPE_INTEGER, NULL, 0, 0, 0 )
 	symbAddField( sym, "dimensions", 0, dTB(), FB_DATATYPE_INTEGER, NULL, 0, 0, 0 )
+	'' If dimensions are unknown, the descriptor type must have room for
+	'' FB_MAXARRAYDIMS
+	if( dimensions = -1 ) then
+		dimensions = FB_MAXARRAYDIMS
+	end if
+	assert( (dimensions >= 1) and (dimensions <= FB_MAXARRAYDIMS) )
 	dTB(0).lower = 0
 	dTB(0).upper = dimensions-1
 	symbAddField( sym, "dimTB", 1, dTB(), FB_DATATYPE_STRUCT, symb.fbarraydim, 0, 0, 0 )

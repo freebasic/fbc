@@ -16,6 +16,7 @@ Version 0.91.0:
 - #699: The default global New/New[]/Delete/Delete[] operators now simply use allocate()/deallocate() internally, instead of the functions from GCC's libsupc++. This avoids platform-dependant behaviour of the GCC functions (exception throwing, aborting) in case of allocation failure (instead, NULL will be returned as with allocate()).
 - FB no longer uses libsupc++ (from GCC's libstdc++) by default
 - The implicitly generated copy constructors and LET overloads will now have "BYREF AS CONST MyUdt" parameters (previously they didn't use CONST), to allow copying from CONST objects to work at least for the built-in data types or with nested UDTs. For backwards compatibility, if there is a user-defined "UDT.let(byref as UDT)" LET overload, FB will still add the non-const "UDT.constructor(byref as UDT)" copy-constructor. It's still the programmer's responsibility to write proper "byref as const UDT" versions of the copy-constructor or LET overload if the UDT needs deep-copying and CONST instances of the UDT are being used.
+- Function pointer types that differ only in function result CONSTness will now be seen as different, as in C++. Function pointer types that differ only in BYVAL parameter CONSTness will now be seen as being the same, as in C++.
 
 [added]
 - 64bit support (-arch x86_64) based on -gen gcc: INTEGER/POINTER = 64bit, LONG = 32bit DWORD. Compiler #define: __FB_64BIT__

@@ -11,15 +11,6 @@
 #include once "list.bi"
 #include once "ast.bi"
 
-declare function hMangleFunctionPtr	_
-	( _
-		byval proc as FBSYMBOL ptr, _
-		byval dtype as integer, _
-		byval subtype as FBSYMBOL ptr, _
-		byval attrib as integer, _
-		byval mode as integer _
-	) as zstring ptr
-
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' init
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -1064,10 +1055,10 @@ function symbAddProcPtr _
 		byval mode as integer _
 	) as FBSYMBOL ptr
 
-	dim as zstring ptr id = any
 	dim as FBSYMBOL ptr sym = any, parent = any
 	dim as FBSYMBOLTB ptr symtb = any
 	dim as FBHASHTB ptr hashtb = any
+	dim as string id
 
 	''
 	'' The procptr prototypes are mangled, allowing them to be re-used.
@@ -1090,7 +1081,38 @@ function symbAddProcPtr _
 	'' also requires them to be scoped locally.
 	''
 
-	id = hMangleFunctionPtr( proc, dtype, subtype, attrib, mode )
+	'' Add information to the prototype so we can pass the PROC subtype to
+	'' C++ mangling functions directly (instead of having to encode
+	'' parameters & function result manually).
+	proc->attrib or= attrib
+	assert( proc->typ = FB_DATATYPE_INVALID )
+	proc->typ = dtype
+	proc->subtype = subtype
+
+	id = "{fbfp}"
+
+	'' Must encode the parameter/function result mode & dtype uniquely
+	'' - Cannot just encoded hex( param->typ ) because a BYVAL parameter
+	''   that is CONST is the same type as a non-CONST BYVAL parameter; to
+	''   achieve this they must be encoded the same.
+	'' - Cannot just encode hex( param->subtype ) because if it's
+	''   a forward reference symbol it may be removed, the encoded
+	''   address may then be that of another symbol.
+	'' - UDT namespace must be encoded, because UDT name itself is
+	''   not enough (same UDT may exist in separate namespaces)
+	'' - Bydesc dimensions must be encoded
+	'' - BYVAL/BYREF function result and its CONSTness (even if BYVAL, as
+	''   with C++ mangling)
+	symbMangleInitAbbrev( )
+	symbMangleType( id, FB_DATATYPE_FUNCTION, proc )
+	symbMangleEndAbbrev( )
+
+	'' Calling convention, must be encoded manually as it's not encoded in
+	'' the C++ mangling. We want function pointers with different calling
+	'' conventions to be seen as different types though, even though that's
+	'' not encoded in the C++ mangling, as with g++/clang++.
+	id += "$"
+	id += hex( mode )
 
 	sym = symbLookupInternallyMangledSubtype( id, attrib, parent, symtb, hashtb )
 	if( sym ) then
@@ -2748,73 +2770,6 @@ function symbProcHasFwdRefInSignature( byval proc as FBSYMBOL ptr ) as integer
 	wend
 
 	function = FALSE
-end function
-
-'':::::
-private function hMangleFunctionPtr _
-	( _
-		byval proc as FBSYMBOL ptr, _
-		byval dtype as integer, _
-		byval subtype as FBSYMBOL ptr, _
-		byval attrib as integer, _
-		byval mode as integer _
-	) as zstring ptr
-
-    static as string id
-    dim as integer i = any
-    dim as FBSYMBOL ptr param = any
-
-    '' cheapo and fast internal mangling..
-    id = "{fbfp}("
-
-    symbMangleInitAbbrev( )
-
-    '' for each param..
-    param = symbGetProcHeadParam( proc )
-    for i = 0 to symbGetProcParams( proc )-1
-    	if( i > 0 ) then
-    		id += ","
-    	end if
-
-    	'' not an UDT?
-    	if( param->subtype = NULL ) then
-    		id += hex( param->typ ) + "M" + hex( cint(param->param.mode) )
-    	else
-    		'' notes:
-    		'' - can't use hex( param->subtype ), because slots can be
-    		''   reused if fwd types were resolved and removed
-    		'' - can't use only the param->id.name because UDT's with the same
-    		''   name declared inside different namespaces
-			symbMangleParam( id, param )
-    	end if
-
-    	param = symbGetParamNext( param )
-    next
-
-    '' return type
-    id += ")"
-	if( subtype = NULL ) then
-		id += hex( dtype )
-	else
-		'' see the notes above
-		symbMangleType( id, dtype, subtype )
-	end if
-
-    symbMangleEndAbbrev( )
-
-	'' return BYREF? - must be mangled explicitly, to distinguish it from
-	'' other function pointers with same types & parameters, that are not
-	'' returning BYREF though.
-	if( attrib and FB_SYMBATTRIB_RETURNSBYREF ) then
-		id += "$"  '' prevent the R from looking like part of the previous type id (if any)
-		id += "R"  '' R for reference, as in C++ mangling
-	end if
-
-    '' calling convention
-    id += "$"
-    id += hex( mode )
-
-	function = strptr( id )
 end function
 
 private sub hSubOrFuncToStr( byref s as string, byval proc as FBSYMBOL ptr )
