@@ -1,5 +1,7 @@
 # include "fbcu.bi"
 
+#include once "fbrtti.bi"
+
 namespace fbc_tests.virt.rtti
 
 namespace simple
@@ -108,11 +110,60 @@ namespace rttiHandlesNamespaces1
 	end sub
 end namespace
 
+namespace dtorsResetVptr
+	dim shared as any ptr avptr, bvptr
+	dim shared as integer adtors, bdtors
+
+	type A extends object
+		declare destructor( )
+		declare virtual function f( ) as integer
+	end type
+
+	destructor A( )
+		adtors += 1
+		CU_ASSERT( getvptr( @this ) = avptr )
+		CU_ASSERT( f( ) = &hA )
+	end destructor
+
+	function A.f( ) as integer
+		function = &hA
+	end function
+
+	type B extends A
+		declare destructor( )
+		declare function f( ) as integer override
+	end type
+
+	destructor B( )
+		bdtors += 1
+		CU_ASSERT( getvptr( @this ) = bvptr )
+		CU_ASSERT( f( ) = &hB )
+	end destructor
+
+	function B.f( ) as integer
+		function = &hB
+	end function
+
+	sub test cdecl( )
+		CU_ASSERT( adtors = 0 )
+		CU_ASSERT( bdtors = 0 )
+		scope
+			dim xa as A
+			dim xb as B
+			avptr = getvptr( @xa )
+			bvptr = getvptr( @xb )
+		end scope
+		CU_ASSERT( adtors = 2 )
+		CU_ASSERT( bdtors = 1 )
+	end sub
+end namespace
+
 private sub ctor( ) constructor
 	fbcu.add_suite( "tests/virtual/rtti" )
 	fbcu.add_test( "Is operator", @simple.test )
 	fbcu.add_test( "empty vtable", @emptyVtable.test )
 	fbcu.add_test( "RTTI handles namespaces", @rttiHandlesNamespaces1.test )
+	fbcu.add_test( "dtorsResetVptr", @dtorsResetVptr.test )
 end sub
 
 end namespace

@@ -26,6 +26,11 @@ end type
 declare function hModLevelIsEmpty( byval p as ASTNODE ptr ) as integer
 declare sub hLoadProcResult( byval proc as FBSYMBOL ptr )
 declare function hDeclProcParams( byval proc as FBSYMBOL ptr ) as integer
+declare function hInitVptr _
+	( _
+		byval parent as FBSYMBOL ptr, _
+		byval proc as FBSYMBOL ptr _
+	) as ASTNODE ptr
 declare sub hCallCtors( byval n as ASTNODE ptr, byval sym as FBSYMBOL ptr )
 declare sub hCallDtors( byval proc as FBSYMBOL ptr )
 declare sub hGenStaticInstancesDtors( byval proc as FBSYMBOL ptr )
@@ -395,6 +400,7 @@ end function
 
 sub astProcBegin( byval sym as FBSYMBOL ptr, byval ismain as integer )
 	dim as ASTNODE ptr n = any
+	dim as integer enable_implicit_code = any
 
 	n = hNewProcNode( )
 
@@ -429,9 +435,11 @@ sub astProcBegin( byval sym as FBSYMBOL ptr, byval ismain as integer )
 
 	irProcBegin( sym )
 
+	enable_implicit_code = not symbIsNaked( sym )
+
 	' Don't allocate anything for a naked function, because they will be allowed
 	' at ebp-N, which won't exist, no result is needed either
-	if( symbIsNaked( sym ) = FALSE ) then
+	if( enable_implicit_code ) then
 		'' alloc parameters
 		hDeclProcParams( sym )
 
@@ -463,6 +471,28 @@ sub astProcBegin( byval sym as FBSYMBOL ptr, byval ismain as integer )
 		env.main.initnode = rtlInitApp( _
 			astNewVAR( symbGetParamVar( argc ) ), _
 			astNewVAR( symbGetParamVar( argv ) ) )
+
+	'' Destructor?
+	elseif( symbIsDestructor( sym ) and enable_implicit_code ) then
+		''
+		'' If the UDT has a vptr, reset it at the top of destructors,
+		'' such that the vptr always matches the type of object that
+		'' we're destructing, as in C++.
+		''
+		'' For example:
+		''    type A extends object
+		''    type B extends A
+		''
+		'' When destroying a B object, the body of B.destructor() runs
+		'' before the body of A.destructor() (B.destructor() actually
+		'' calls A.destructor() at its end before returning). This means
+		'' the B part of the object is destroyed before the A part.
+		''
+		'' Thus, it's not safe to allow virtual calls from inside
+		'' A.destructor() to any of B's methods, and this is prevented
+		'' by resetting the vptr at the top of each destructor.
+		''
+		astAdd( hInitVptr( symbGetNamespace( sym ), sym ) )
 	end if
 
 	'' Label at beginning of lexical block, used by debug stabs output
