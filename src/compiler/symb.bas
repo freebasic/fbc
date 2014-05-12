@@ -1692,6 +1692,13 @@ function symbIsEqual _
             	exit function
     		end if
 
+			'' Check Bydesc dimensions
+			if( paraml->param.mode = FB_PARAMMODE_BYDESC ) then
+				if( paraml->param.bydescdimensions <> paramr->param.bydescdimensions ) then
+					exit function
+				end if
+			end if
+
     		'' different types?
     		if( paraml->typ <> paramr->typ ) then
          		exit function
