@@ -1658,35 +1658,16 @@ function symbIsEqual _
 			exit function
 		end if
 
-    	'' not the same number of args?
-    	if( symbGetProcParams( sym1 ) <> symbGetProcParams( sym2 ) ) then
-
-    		'' no args?
-    		if( symbGetProcParams( sym1 ) = 0 ) then
+		'' not the same number of params?
+		if( symbGetProcParams( sym1 ) <> symbGetProcParams( sym2 ) ) then
     			exit function
-    		end if
-
-    		'' not vararg?
-    		if( symbGetProcTailParam( sym1 )->param.mode <> FB_PARAMMODE_VARARG ) then
-    			exit function
-    		end if
-
-    		'' not enough args?
-    		if( (symbGetProcParams( sym2 ) - symbGetProcParams( sym1 )) < -1 ) then
-    			exit function
-    		end if
-    	end if
+		end if
 
     	'' check each param
     	paraml = symbGetProcHeadParam( sym1 )
     	paramr = symbGetProcHeadParam( sym2 )
 
     	do while( paraml <> NULL )
-            '' vararg?
-            if( paraml->param.mode = FB_PARAMMODE_VARARG ) then
-            	exit do
-            end if
-
     		'' mode?
     		if( paraml->param.mode <> paramr->param.mode ) then
             	exit function
@@ -1709,7 +1690,7 @@ function symbIsEqual _
             	exit function
 			end if
 
-    		'' next arg..
+    		'' next param
     		paraml = paraml->next
     		paramr = paramr->next
     	loop
