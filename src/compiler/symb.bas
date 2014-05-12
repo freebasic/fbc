@@ -1630,6 +1630,17 @@ function symbIsEqual _
     	exit function
     end if
 
+	if( symbIsFwdRef( sym1 ) ) then
+		'' Unsolved forward references - it's a different symbol, so
+		'' that means it's a different forward reference.
+		'' FIXME: They may still resolve to the same type later, in
+		'' which case we should treat them as equal - but that would
+		'' require repeating this check during forward reference
+		'' backpatching, and delaying all warnings due to potentially
+		'' different forward references until then.
+		return FALSE
+	end if
+
 	'' different types?
     if( sym1->typ <> sym2->typ ) then
     	exit function
@@ -1639,7 +1650,7 @@ function symbIsEqual _
     '' UDT?
     case FB_SYMBCLASS_STRUCT '', FB_SYMBCLASS_CLASS  
     	return symbGetUDTBaseLevel( sym1, sym2 ) > 0
-    	
+
     '' enum?
     case FB_SYMBCLASS_ENUM
     	'' no check, they are pointing to different symbols

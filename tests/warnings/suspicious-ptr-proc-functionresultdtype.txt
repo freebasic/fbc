@@ -1461,6 +1461,7 @@ p18 =p16, 1 warning:
 p18 =p17, 1 warning:
 	Suspicious pointer assignment
 p18 =p19, 1 warning:
+	Suspicious pointer assignment
 p18 =p20, 1 warning:
 	Suspicious pointer assignment
 p18 =p21, 1 warning:
@@ -1544,6 +1545,7 @@ p19 =p16, 1 warning:
 p19 =p17, 1 warning:
 	Suspicious pointer assignment
 p19 =p18, 1 warning:
+	Suspicious pointer assignment
 p19 =p20, 1 warning:
 	Suspicious pointer assignment
 p19 =p21, 1 warning:
@@ -3351,6 +3353,7 @@ p40 =p38, 1 warning:
 p40 =p39, 1 warning:
 	Suspicious pointer assignment
 p40 =p41, 1 warning:
+	Suspicious pointer assignment
 p40 =p42, 1 warning:
 	Suspicious pointer assignment
 p40 =p43, 1 warning:
@@ -3434,6 +3437,7 @@ p41 =p38, 1 warning:
 p41 =p39, 1 warning:
 	Suspicious pointer assignment
 p41 =p40, 1 warning:
+	Suspicious pointer assignment
 p41 =p42, 1 warning:
 	Suspicious pointer assignment
 p41 =p43, 1 warning:
