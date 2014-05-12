@@ -2613,6 +2613,32 @@ end function
 '' misc
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
+function symbParamIsSame _
+	( _
+		byval a as FBSYMBOL ptr, _
+		byval b as FBSYMBOL ptr _
+	) as integer
+
+	assert( a->class = FB_SYMBCLASS_PARAM )
+	assert( b->class = FB_SYMBCLASS_PARAM )
+	function = FALSE
+
+	if( (symbGetParamMode( a ) <> symbGetParamMode( b )) or _
+	    (symbGetFullType ( a ) <> symbGetFullType ( b )) or _
+	    (symbGetSubtype  ( a ) <> symbGetSubtype  ( b )) ) then
+		exit function
+	end if
+
+	'' Check Bydesc dimensions
+	if( a->param.mode = FB_PARAMMODE_BYDESC ) then
+		if( a->param.bydescdimensions <> b->param.bydescdimensions ) then
+			exit function
+		end if
+	end if
+
+	function = TRUE
+end function
+
 private function hAreMethodsCompatible _
 	( _
 		byval v as FBSYMBOL ptr, _  '' The virtual that's overridden
@@ -2672,19 +2698,9 @@ private function hAreMethodsCompatible _
 	oparam = oparam->next
 
 	while( vparam )
-		if( (symbGetParamMode( vparam ) <> symbGetParamMode( oparam )) or _
-		    (symbGetFullType ( vparam ) <> symbGetFullType ( oparam )) or _
-		    (symbGetSubtype  ( vparam ) <> symbGetSubtype  ( oparam )) ) then
+		if( symbParamIsSame( vparam, oparam ) = FALSE ) then
 			return FB_ERRMSG_OVERRIDEPARAMSDIFFER
 		end if
-
-		'' Check Bydesc dimensions
-		if( vparam->param.mode = FB_PARAMMODE_BYDESC ) then
-			if( vparam->param.bydescdimensions <> oparam->param.bydescdimensions ) then
-				return FB_ERRMSG_OVERRIDEPARAMSDIFFER
-			end if
-		end if
-
 		vparam = vparam->next
 		oparam = oparam->next
 	wend

@@ -1674,37 +1674,19 @@ function symbIsEqual _
     			exit function
 		end if
 
-    	'' check each param
-    	paraml = symbGetProcHeadParam( sym1 )
-    	paramr = symbGetProcHeadParam( sym2 )
+		'' check each param
+		paraml = symbGetProcHeadParam( sym1 )
+		paramr = symbGetProcHeadParam( sym2 )
 
-    	do while( paraml <> NULL )
-    		'' mode?
-    		if( paraml->param.mode <> paramr->param.mode ) then
-            	exit function
-    		end if
-
-			'' Check Bydesc dimensions
-			if( paraml->param.mode = FB_PARAMMODE_BYDESC ) then
-				if( paraml->param.bydescdimensions <> paramr->param.bydescdimensions ) then
-					exit function
-				end if
+		while( paraml )
+			if( symbParamIsSame( paraml, paramr ) = FALSE ) then
+				exit function
 			end if
 
-    		'' different types?
-    		if( paraml->typ <> paramr->typ ) then
-         		exit function
-        	end if
-
-        	'' sub-types?
-        	if( paraml->subtype <> paramr->subtype ) then
-            	exit function
-			end if
-
-    		'' next param
-    		paraml = paraml->next
-    		paramr = paramr->next
-    	loop
+			'' next param
+			paraml = paraml->next
+			paramr = paramr->next
+		wend
     end select
 
 	'' and sub type

@@ -962,6 +962,11 @@ declare function symbFindCtorProc _
 		byval proc as FBSYMBOL ptr _
 	) as FBSYMBOL ptr
 
+declare function symbParamIsSame _
+	( _
+		byval a as FBSYMBOL ptr, _
+		byval b as FBSYMBOL ptr _
+	) as integer
 declare sub symbProcCheckOverridden _
 	( _
 		byval proc as FBSYMBOL ptr, _
