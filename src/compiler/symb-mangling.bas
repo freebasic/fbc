@@ -530,17 +530,12 @@ sub symbMangleType _
 
 		'' return BYREF?
 		if( symbProcReturnsByref( subtype ) ) then
-			'' const?
-			if( typeIsConst( symbGetFullType( subtype ) ) ) then
-				mangled += "RK"
-			else
-				mangled += "R"
-			end if
-		else
-			'' const?
-			if( typeIsConst( symbGetFullType( subtype ) ) ) then
-				mangled += "K"
-			end if
+			mangled += "R"
+		end if
+
+		'' const?
+		if( typeIsConst( symbGetFullType( subtype ) ) ) then
+			mangled += "K"
 		end if
 
 		symbMangleType( mangled, symbGetFullType( subtype ), symbGetSubtype( subtype ) )
