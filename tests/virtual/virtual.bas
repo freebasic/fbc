@@ -1402,6 +1402,156 @@ namespace bydescParamGccWarningRegressionTest
 	end sub
 end namespace
 
+namespace bydescParams1
+	type A extends object
+		declare virtual function f0( array() as integer ) as integer
+		declare virtual function f1( array(any) as integer ) as integer
+		declare virtual function f2( array(any, any) as integer ) as integer
+		declare virtual function f8( array(any, any, any, any, any, any, any, any) as integer ) as integer
+	end type
+
+	function A.f0( array() as integer ) as integer
+		function = &hA0
+	end function
+
+	function A.f1( array(any) as integer ) as integer
+		function = &hA1
+	end function
+
+	function A.f2( array(any, any) as integer ) as integer
+		function = &hA2
+	end function
+
+	function A.f8( array(any, any, any, any, any, any, any, any) as integer ) as integer
+		function = &hA8
+	end function
+
+	type B extends A
+		declare function f0( array() as integer ) as integer override
+		declare function f1( array(any) as integer ) as integer override
+		declare function f2( array(any, any) as integer ) as integer override
+		declare function f8( array(any, any, any, any, any, any, any, any) as integer ) as integer override
+	end type
+
+	function B.f0( array() as integer ) as integer
+		function = &hB0
+	end function
+
+	function B.f1( array(any) as integer ) as integer
+		function = &hB1
+	end function
+
+	function B.f2( array(any, any) as integer ) as integer
+		function = &hB2
+	end function
+
+	function B.f8( array(any, any, any, any, any, any, any, any) as integer ) as integer
+		function = &hB8
+	end function
+
+	sub test cdecl( )
+		dim array0() as integer
+		dim array1(any) as integer
+		dim array2(any, any) as integer
+		dim array8(any, any, any, any, any, any, any, any) as integer
+
+		scope
+			var pa = new A
+			CU_ASSERT( pa->f0( array0() ) = &hA0 )
+			CU_ASSERT( pa->f1( array1() ) = &hA1 )
+			CU_ASSERT( pa->f2( array2() ) = &hA2 )
+			CU_ASSERT( pa->f8( array8() ) = &hA8 )
+			delete pa
+		end scope
+
+		scope
+			dim as A ptr pa = new B
+			CU_ASSERT( pa->f0( array0() ) = &hB0 )
+			CU_ASSERT( pa->f1( array1() ) = &hB1 )
+			CU_ASSERT( pa->f2( array2() ) = &hB2 )
+			CU_ASSERT( pa->f8( array8() ) = &hB8 )
+			delete pa
+		end scope
+
+		scope
+			var pb = new B
+			CU_ASSERT( pb->f0( array0() ) = &hB0 )
+			CU_ASSERT( pb->f1( array1() ) = &hB1 )
+			CU_ASSERT( pb->f2( array2() ) = &hB2 )
+			CU_ASSERT( pb->f8( array8() ) = &hB8 )
+			delete pb
+		end scope
+	end sub
+end namespace
+
+namespace bydescParams2
+	type A extends object
+		declare virtual function f( array(any) as integer ) as integer
+		declare virtual function f( array(any, any) as integer ) as integer
+		declare virtual function f( array(any, any, any, any, any, any, any, any) as integer ) as integer
+	end type
+
+	function A.f( array(any) as integer ) as integer
+		function = &hA1
+	end function
+
+	function A.f( array(any, any) as integer ) as integer
+		function = &hA2
+	end function
+
+	function A.f( array(any, any, any, any, any, any, any, any) as integer ) as integer
+		function = &hA8
+	end function
+
+	type B extends A
+		declare function f( array(any) as integer ) as integer override
+		declare function f( array(any, any) as integer ) as integer override
+		declare function f( array(any, any, any, any, any, any, any, any) as integer ) as integer override
+	end type
+
+	function B.f( array(any) as integer ) as integer
+		function = &hB1
+	end function
+
+	function B.f( array(any, any) as integer ) as integer
+		function = &hB2
+	end function
+
+	function B.f( array(any, any, any, any, any, any, any, any) as integer ) as integer
+		function = &hB8
+	end function
+
+	sub test cdecl( )
+		dim array1(any) as integer
+		dim array2(any, any) as integer
+		dim array8(any, any, any, any, any, any, any, any) as integer
+
+		scope
+			var pa = new A
+			CU_ASSERT( pa->f( array1() ) = &hA1 )
+			CU_ASSERT( pa->f( array2() ) = &hA2 )
+			CU_ASSERT( pa->f( array8() ) = &hA8 )
+			delete pa
+		end scope
+
+		scope
+			dim as A ptr pa = new B
+			CU_ASSERT( pa->f( array1() ) = &hB1 )
+			CU_ASSERT( pa->f( array2() ) = &hB2 )
+			CU_ASSERT( pa->f( array8() ) = &hB8 )
+			delete pa
+		end scope
+
+		scope
+			var pb = new B
+			CU_ASSERT( pb->f( array1() ) = &hB1 )
+			CU_ASSERT( pb->f( array2() ) = &hB2 )
+			CU_ASSERT( pb->f( array8() ) = &hB8 )
+			delete pb
+		end scope
+	end sub
+end namespace
+
 private sub ctor( ) constructor
 	fbcu.add_suite( "tests/virtual/virtual" )
 	fbcu.add_test( "basic overriding", @overridingWorks.test )
@@ -1429,6 +1579,8 @@ private sub ctor( ) constructor
 	fbcu.add_test( "overriding an EXTERN Windows-MS method", @externWindowsMs.test )
 	fbcu.add_test( "explicit BASE access", @explicitBase.test )
 	fbcu.add_test( "bydescParamGccWarningRegressionTest", @bydescParamGccWarningRegressionTest.test )
+	fbcu.add_test( "bydescParams1", @bydescParams1.test )
+	fbcu.add_test( "bydescParams2", @bydescParams2.test )
 end sub
 
 end namespace

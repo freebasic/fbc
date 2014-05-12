@@ -2677,6 +2677,14 @@ private function hAreMethodsCompatible _
 		    (symbGetSubtype  ( vparam ) <> symbGetSubtype  ( oparam )) ) then
 			return FB_ERRMSG_OVERRIDEPARAMSDIFFER
 		end if
+
+		'' Check Bydesc dimensions
+		if( vparam->param.mode = FB_PARAMMODE_BYDESC ) then
+			if( vparam->param.bydescdimensions <> oparam->param.bydescdimensions ) then
+				return FB_ERRMSG_OVERRIDEPARAMSDIFFER
+			end if
+		end if
+
 		vparam = vparam->next
 		oparam = oparam->next
 	wend
