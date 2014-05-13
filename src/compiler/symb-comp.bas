@@ -513,7 +513,7 @@ end sub
 sub symbUdtAddDefaultMembers( byval udt as FBSYMBOL ptr )
 	dim as FBSYMBOL ptr defctor = any, dtor = any, copyctor = any, _
 		copyctorconst = any, copyletopconst = any
-	dim as integer base_without_defaultctor = any
+	dim as integer missing_base_defctor = any
 
 	''
 	'' If this UDT has fields with ctors, we have to make sure to add
@@ -544,10 +544,16 @@ sub symbUdtAddDefaultMembers( byval udt as FBSYMBOL ptr )
 		assert( symbIsField( udt->udt.base ) )
 		assert( symbGetType( udt->udt.base ) = FB_DATATYPE_STRUCT )
 		assert( symbIsStruct( udt->udt.base->subtype ) )
-		'' No default ctor?
-		base_without_defaultctor = (symbGetCompDefCtor( udt->udt.base->subtype ) = NULL)
+		'' No default ctor, but others? Then the base needs to be
+		'' initialized with a manual constructor call. In user-defined
+		'' constructors this is done by using the BASE() initializer
+		'' syntax, but in our implicitly generated constructors we can't
+		'' do that because we don't know what arguments to supply.
+		missing_base_defctor = _
+			(symbGetCompDefCtor( udt->udt.base->subtype ) = NULL) and _
+			(symbGetCompCtorHead( udt->udt.base->subtype ) <> NULL)
 	else
-		base_without_defaultctor = FALSE
+		missing_base_defctor = FALSE
 	end if
 
 	defctor = NULL
@@ -559,7 +565,7 @@ sub symbUdtAddDefaultMembers( byval udt as FBSYMBOL ptr )
 	'' Ctor/inited fields and no ctor yet?
 	if( (symbGetUDTHasCtorField( udt ) or symbGetUDTHasInitedField( udt )) and _
 	    (symbGetCompCtorHead( udt ) = NULL) ) then
-		if( base_without_defaultctor ) then
+		if( missing_base_defctor ) then
 			'' Cannot implicitly generate a default ctor,
 			'' show a nicer error message than astProcEnd() would.
 			'' It would report the missing BASE() initializer,
@@ -585,7 +591,7 @@ sub symbUdtAddDefaultMembers( byval udt as FBSYMBOL ptr )
 
 		if( udt->udt.ext->copyctorconst = NULL ) then
 			'' declare constructor( byref rhs as const UDT )
-			if( base_without_defaultctor ) then
+			if( missing_base_defctor ) then
 				'' Cannot implicitly generate a copy ctor,
 				'' same as with default ctor above.
 				errReport( FB_ERRMSG_NEEDEXPLICITCOPYCTORCONST )
@@ -598,7 +604,7 @@ sub symbUdtAddDefaultMembers( byval udt as FBSYMBOL ptr )
 		'' if the user provided a non-const LET overload (see above).
 		if( (udt->udt.ext->copyletop <> NULL) and (udt->udt.ext->copyctor = NULL) ) then
 			'' declare constructor( byref rhs as UDT )
-			if( base_without_defaultctor ) then
+			if( missing_base_defctor ) then
 				'' Cannot implicitly generate a copy ctor,
 				'' same as with default ctor above.
 				errReport( FB_ERRMSG_NEEDEXPLICITCOPYCTOR )
