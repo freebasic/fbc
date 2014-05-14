@@ -46,6 +46,14 @@ FBCALL int fb_ArrayRedimTo
 	dest->dimensions = source->dimensions;
 	memcpy( &dest->dimTB[0], &source->dimTB[0], sizeof( FBARRAYDIM ) * dest->dimensions );
 
+	/* Empty/unallocated source array? */
+	if( dest->size == 0 ) {
+		/* Destination will be empty/unallocated too */
+		dest->ptr = NULL;
+		dest->data = NULL;
+		return fb_ErrorSetNum( FB_RTERROR_OK );
+	}
+
 	/* Allocate new buffer; clear unless ctors will be called.
 	   (ctors take care of clearing themselves) */
 	if( ctor == NULL ) {

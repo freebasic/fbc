@@ -208,6 +208,25 @@ namespace copyPod
 			b = a
 		end scope
 
+		'' Copying empty/unallocated arrays
+		scope
+			dim as UDT1 a, b
+			CU_ASSERT( ubound( a.array, 0 ) = 0 )
+			CU_ASSERT( lbound( a.array ) = 0 )
+			CU_ASSERT( ubound( a.array ) = -1 )
+			CU_ASSERT( ubound( b.array, 0 ) = 0 )
+			CU_ASSERT( lbound( b.array ) = 0 )
+			CU_ASSERT( ubound( b.array ) = -1 )
+
+			b = a
+			CU_ASSERT( ubound( a.array, 0 ) = 0 )
+			CU_ASSERT( lbound( a.array ) = 0 )
+			CU_ASSERT( ubound( a.array ) = -1 )
+			CU_ASSERT( ubound( b.array, 0 ) = 0 )
+			CU_ASSERT( lbound( b.array ) = 0 )
+			CU_ASSERT( ubound( b.array ) = -1 )
+		end scope
+
 		'' Self-assignment
 		scope
 			dim x as UDT1
