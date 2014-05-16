@@ -2,7 +2,7 @@
 
 namespace fbc_tests.overload_.arg_upcasting
 
-namespace main
+namespace byrefParams
 	type T1 extends object
 	end type
 
@@ -79,6 +79,86 @@ namespace main
 		CU_ASSERT( f( cx1 ) = &hC1 )
 		CU_ASSERT( f( cx2 ) = &hC2 )
 		CU_ASSERT( f( cx3 ) = &hC2 )
+	end sub
+end namespace
+
+namespace pointerParams
+	type T1 extends object
+	end type
+
+	type T2 extends T1
+	end type
+
+	type T3 extends T2
+	end type
+
+	function a overload( byval p as object ptr ) as integer : function = 0 : end function
+	function a overload( byval p as T1     ptr ) as integer : function = 1 : end function
+	function a overload( byval p as T2     ptr ) as integer : function = 2 : end function
+	function a overload( byval p as T3     ptr ) as integer : function = 3 : end function
+
+	function b overload( byval p as object ptr ) as integer : function = 0 : end function
+	function b overload( byval p as T1     ptr ) as integer : function = 1 : end function
+	function b overload( byval p as T2     ptr ) as integer : function = 2 : end function
+
+	function c overload( byval p as object ptr ) as integer : function = 0 : end function
+	function c overload( byval p as T1     ptr ) as integer : function = 1 : end function
+
+	function d overload( byval p as const T1 ptr ) as integer : function = &hC1 : end function
+	function d overload( byval p as       T1 ptr ) as integer : function = &h01 : end function
+	function d overload( byval p as const T2 ptr ) as integer : function = &hC2 : end function
+	function d overload( byval p as       T2 ptr ) as integer : function = &h02 : end function
+	function d overload( byval p as const T3 ptr ) as integer : function = &hC3 : end function
+	function d overload( byval p as       T3 ptr ) as integer : function = &h03 : end function
+
+	function e overload( byval p as const T1 ptr ) as integer : function = &hC1 : end function
+	function e overload( byval p as const T2 ptr ) as integer : function = &hC2 : end function
+	function e overload( byval p as const T3 ptr ) as integer : function = &hC3 : end function
+
+	function f overload( byval p as const T1 ptr ) as integer : function = &hC1 : end function
+	function f overload( byval p as const T2 ptr ) as integer : function = &hC2 : end function
+
+	sub test cdecl( )
+		dim x1 as T1
+		dim x2 as T2
+		dim x3 as T3
+
+		dim cx1 as const T1 = T1( )
+		dim cx2 as const T2 = T2( )
+		dim cx3 as const T3 = T3( )
+
+		CU_ASSERT( a( @x1 ) = 1 )
+		CU_ASSERT( a( @x2 ) = 2 )
+		CU_ASSERT( a( @x3 ) = 3 )
+
+		CU_ASSERT( b( @x1 ) = 1 )
+		CU_ASSERT( b( @x2 ) = 2 )
+		CU_ASSERT( b( @x3 ) = 2 )
+
+		CU_ASSERT( c( @x1 ) = 1 )
+		CU_ASSERT( c( @x2 ) = 1 )
+		CU_ASSERT( c( @x3 ) = 1 )
+
+		CU_ASSERT( d( @x1 ) = &h01 )
+		CU_ASSERT( d( @x2 ) = &h02 )
+		CU_ASSERT( d( @x3 ) = &h03 )
+		CU_ASSERT( d( @cx1 ) = &hC1 )
+		CU_ASSERT( d( @cx2 ) = &hC2 )
+		CU_ASSERT( d( @cx3 ) = &hC3 )
+
+		CU_ASSERT( e( @x1 ) = &hC1 )
+		CU_ASSERT( e( @x2 ) = &hC2 )
+		CU_ASSERT( e( @x3 ) = &hC3 )
+		CU_ASSERT( e( @cx1 ) = &hC1 )
+		CU_ASSERT( e( @cx2 ) = &hC2 )
+		CU_ASSERT( e( @cx3 ) = &hC3 )
+
+		CU_ASSERT( f( @x1 ) = &hC1 )
+		CU_ASSERT( f( @x2 ) = &hC2 )
+		CU_ASSERT( f( @x3 ) = &hC2 )
+		CU_ASSERT( f( @cx1 ) = &hC1 )
+		CU_ASSERT( f( @cx2 ) = &hC2 )
+		CU_ASSERT( f( @cx3 ) = &hC2 )
 	end sub
 end namespace
 
@@ -160,7 +240,8 @@ end namespace
 
 private sub ctor( ) constructor
 	fbcu.add_suite( "tests/overload/arg-upcasting" )
-	fbcu.add_test( "main", @main.test )
+	fbcu.add_test( "byrefParams", @byrefParams.test )
+	fbcu.add_test( "pointerParams", @pointerParams.test )
 	fbcu.add_test( "copyctor", @copyctor.test )
 	fbcu.add_test( "constcopyctor", @constcopyctor.test )
 end sub

@@ -1911,15 +1911,20 @@ private function hCheckOvlParam _
 
 	'' same types?
 	if( typeGetDtAndPtrOnly( param_dtype ) = typeGetDtAndPtrOnly( arg_dtype ) ) then
-		'' The argument is compatible to the parameter if it's the same type,
-		'' or if it's being up-casted. When up-casting, the level must be
-		'' calculated into the match score, such that we prefer passing
-		'' arguments to the parameter with the closest base type.
+		''
+		'' The argument is compatible to the parameter if it's the same
+		'' type, or if it's being up-casted. Up-casting can apply to UDT
+		'' aswell as UDT pointer parameters.
+		''
+		'' When up-casting, the level must be calculated into the match
+		'' score, such that we prefer passing arguments to the parameter
+		'' with the closest base type.
+		''
 		type_is_compatible = FALSE
 		baselevel = 0
 		if( param_subtype = arg_subtype ) then
 			type_is_compatible = TRUE
-		elseif( typeGetDtAndPtrOnly( param_dtype ) = FB_DATATYPE_STRUCT ) then
+		elseif( typeGetDtOnly( param_dtype ) = FB_DATATYPE_STRUCT ) then
 			baselevel = symbGetUDTBaseLevel( arg_subtype, param_subtype )
 			type_is_compatible = (baselevel > 0)
 		end if
