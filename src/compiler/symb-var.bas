@@ -193,7 +193,7 @@ function symbAddArrayDescriptorType _
 	dTB(0).lower = 0
 	dTB(0).upper = 0
 	symbAddField( sym, "data", 0, dTB(), typeAddrOf( arraydtype ), arraysubtype, 0, 0, 0 )
-	symbAddField( sym, "ptr", 0, dTB(), typeAddrOf( FB_DATATYPE_VOID ), NULL, 0, 0, 0 )
+	symbAddField( sym, "ptr", 0, dTB(), typeAddrOf( arraydtype ), arraysubtype, 0, 0, 0 )
 	symbAddField( sym, "size", 0, dTB(), FB_DATATYPE_INTEGER, NULL, 0, 0, 0 )
 	symbAddField( sym, "element_len", 0, dTB(), FB_DATATYPE_INTEGER, NULL, 0, 0, 0 )
 	symbAddField( sym, "dimensions", 0, dTB(), FB_DATATYPE_INTEGER, NULL, 0, 0, 0 )
