@@ -90,7 +90,9 @@ function symbStructBegin _
 	if( base_ <> NULL ) then
 		static as FBARRAYDIM dTB(0 to 0)
 
-		s->udt.base = symbAddField( s, "$base", 0, dTB(), FB_DATATYPE_STRUCT, base_, 0, 0, 0 )
+		'' (using base$ instead of $base to prevent gdb/stabs confusion,
+		'' where leading $ has special meaning)
+		s->udt.base = symbAddField( s, "base$", 0, dTB(), FB_DATATYPE_STRUCT, base_, 0, 0, 0 )
 
 		symbSetIsUnique( s )
 		symbNestBegin( s, FALSE )

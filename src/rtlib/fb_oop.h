@@ -14,5 +14,5 @@ typedef struct _FB_OBJECT {
 } FB_OBJECT;
 
 /* Object class constructor & copy constructor */
-void _ZN10$fb_ObjectC1Ev( FB_OBJECT* );
-void _ZN10$fb_ObjectC1ERKS_( FB_OBJECT *this_, const FB_OBJECT *rhs );
+void _ZN10fb_Object$C1Ev( FB_OBJECT* );
+void _ZN10fb_Object$C1ERKS_( FB_OBJECT *this_, const FB_OBJECT *rhs );

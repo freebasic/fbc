@@ -104,7 +104,7 @@ private sub hBuildRtti( byval udt as FBSYMBOL ptr )
 	dim as ASTNODE ptr initree = any, rttibase = any
 	dim as FBSYMBOL ptr rtti = any, fld = any
 
-	'' static shared UDT.rtti as $fb_RTTI
+	'' static shared UDT.rtti as fb_RTTI$
 	'' (real identifier given later during mangling)
 	symbNestBegin( udt, TRUE )
 	rtti = symbAddVar( NULL, NULL, FB_DATATYPE_STRUCT, symb.rtti.fb_rtti, 0, 0, dTB(), _
@@ -1302,8 +1302,10 @@ sub symbCompRTTIInit( )
 
 	static as FBARRAYDIM dTB(0)
 
-	'' type $fb_RTTI
-	rttitype = symbStructBegin( NULL, NULL, NULL, "$fb_RTTI", "$fb_RTTI", FALSE, 0, NULL, 0, 0 )
+	'' type fb_RTTI$
+	'' (using fb_RTTI$ instead of $fb_RTTI to prevent gdb/stabs confusion,
+	'' where leading $ has special meaning)
+	rttitype = symbStructBegin( NULL, NULL, NULL, "fb_RTTI$", "fb_RTTI$", FALSE, 0, NULL, 0, 0 )
 	symb.rtti.fb_rtti = rttitype
 
 	'' stdlibvtable as any ptr
@@ -1312,7 +1314,7 @@ sub symbCompRTTIInit( )
 	'' dim id as zstring ptr 
 	symbAddField( rttitype, "id", 0, dTB(), typeAddrOf( FB_DATATYPE_CHAR ), NULL, 0, 0, 0 )
 
-	'' dim rttibase as $fb_RTTI ptr
+	'' dim rttibase as fb_RTTI$ ptr
 	symbAddField( rttitype, "rttibase", 0, dTB(), typeAddrOf( FB_DATATYPE_STRUCT ), rttitype, 0, 0, 0 )
 
 	'' end type
@@ -1325,14 +1327,16 @@ sub symbCompRTTIInit( )
 	else
 		ptypename = @"OBJECT"
 	end if
-	objtype = symbStructBegin( NULL, NULL, NULL, ptypename, "$fb_Object", FALSE, 0, NULL, 0, 0 )
+	'' (using fb_Object$ instead of $fb_Object - ditto)
+	objtype = symbStructBegin( NULL, NULL, NULL, ptypename, "fb_Object$", FALSE, 0, NULL, 0, 0 )
 	symb.rtti.fb_object = objtype
 	symbSetHasRTTI( objtype )
 	symbSetIsUnique( objtype )
 	symbNestBegin( objtype, FALSE )
 
 	'' vptr as any ptr
-	symbAddField( objtype, "$vptr", 0, dTB(), typeAddrOf( FB_DATATYPE_VOID ), NULL, 0, 0, 0 )
+	'' (using vptr$ instead of $vptr - ditto)
+	symbAddField( objtype, "vptr$", 0, dTB(), typeAddrOf( FB_DATATYPE_VOID ), NULL, 0, 0, 0 )
 
 	'' declare constructor( )
 	ctor = symbPreAddProc( NULL )
@@ -1352,7 +1356,7 @@ sub symbCompRTTIInit( )
 	'' end type
 	symbStructEnd( objtype, TRUE )
 
-	'' declare extern shared as $fb_RTTI __fb_ZTS6Object (the Object class RTTI instance created in C)
+	'' declare extern shared as fb_RTTI$ __fb_ZTS6Object (the Object class RTTI instance created in C)
 	objrtti = symbAddVar( NULL, "__fb_ZTS6Object", FB_DATATYPE_STRUCT, symb.rtti.fb_rtti, 0, 0, dTB(), _
 	                      FB_SYMBATTRIB_EXTERN or FB_SYMBATTRIB_SHARED, FB_SYMBOPT_PRESERVECASE )
 
