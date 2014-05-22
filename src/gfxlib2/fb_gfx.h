@@ -516,6 +516,7 @@ extern FBCALL void *fb_GfxImageCreate(int width, int height, unsigned int color,
 extern FBCALL void *fb_GfxImageCreateQB(int width, int height, unsigned int color, int depth, int flags);
 extern FBCALL void fb_GfxImageDestroy(void *image);
 extern FBCALL int fb_GfxImageInfo(void *img, int *width, int *height, int *bpp, int *pitch, void **imgdata, int *size);
+extern FBCALL int fb_GfxImageInfo64(void *img, long long *width, long long *height, long long *bpp, long long *pitch, void **imgdata, long long *size);
 extern FBCALL void fb_GfxPalette(int index, int r, int g, int b);
 extern FBCALL void fb_GfxPaletteUsing(int *data);
 extern FBCALL void fb_GfxPaletteUsing64(long long *data);
