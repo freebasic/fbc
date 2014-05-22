@@ -2,7 +2,7 @@
 
 #include "fb.h"
 
-FBCALL FB_WCHAR *fb_WstrBin_p( void *p )
+FBCALL FB_WCHAR *fb_WstrBin_p( const void *p )
 {
 #ifdef HOST_64BIT
 	return fb_WstrBin_l( (unsigned long long int)p );
@@ -11,7 +11,7 @@ FBCALL FB_WCHAR *fb_WstrBin_p( void *p )
 #endif
 }
 
-FBCALL FB_WCHAR *fb_WstrBinEx_p( void *p, int digits )
+FBCALL FB_WCHAR *fb_WstrBinEx_p( const void *p, int digits )
 {
 #ifdef HOST_64BIT
 	return fb_WstrBinEx_l( (unsigned long long int)p, digits );

@@ -192,6 +192,7 @@ Version 0.91.0:
 - Pointer assignments between pointers to different unsolved forward references will now trigger "suspicious" warnings because these forward references may be resolved to different types later. This matches the C++ mangling behaviour which also treats different unsolved forward references as different types.
 - Destructors of UDTs with ABSTRACT/VIRTUAL methods will now reset the object's RTTI such that it matches the type whose destructor is running. This prevents virtual calls from a base class destructor into a derived class which has already been destructed, as in C++.
 - The compiler refused to generate an implicit default-constructor and copy-constructor for UDTs derived from a simple plain-old-data base UDT (that itself didn't have any constructors)
+- Bin/Oct/Hex() didn't accept pointers to CONST types
 
 
 Version 0.90.1:

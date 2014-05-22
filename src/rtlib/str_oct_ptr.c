@@ -2,7 +2,7 @@
 
 #include "fb.h"
 
-FBCALL FBSTRING *fb_OCT_p( void *p )
+FBCALL FBSTRING *fb_OCT_p( const void *p )
 {
 #ifdef HOST_64BIT
 	return fb_OCT_l( (unsigned long long int)p );
@@ -11,7 +11,7 @@ FBCALL FBSTRING *fb_OCT_p( void *p )
 #endif
 }
 
-FBCALL FBSTRING *fb_OCTEx_p( void *p, int digits )
+FBCALL FBSTRING *fb_OCTEx_p( const void *p, int digits )
 {
 #ifdef HOST_64BIT
 	return fb_OCTEx_l( (unsigned long long int)p, digits );

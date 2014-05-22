@@ -2,7 +2,7 @@
 
 #include "fb.h"
 
-FBCALL FBSTRING *fb_HEX_p( void *p )
+FBCALL FBSTRING *fb_HEX_p( const void *p )
 {
 #ifdef HOST_64BIT
 	return fb_HEX_l( (unsigned long long int)p );
@@ -11,7 +11,7 @@ FBCALL FBSTRING *fb_HEX_p( void *p )
 #endif
 }
 
-FBCALL FBSTRING *fb_HEXEx_p( void *p, int digits )
+FBCALL FBSTRING *fb_HEXEx_p( const void *p, int digits )
 {
 #ifdef HOST_64BIT
 	return fb_HEXEx_l( (unsigned long long int)p, digits );
