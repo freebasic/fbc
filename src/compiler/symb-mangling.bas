@@ -33,7 +33,8 @@ declare sub hMangleVariable( byval sym as FBSYMBOL ptr )
 declare sub hGetProcParamsTypeCode _
 	( _
 		byref mangled as string, _
-		byval sym as FBSYMBOL ptr _
+		byval sym as FBSYMBOL ptr, _
+		byval is_real_proc as integer _
 	)
 declare sub hMangleNamespace _
 	( _
@@ -551,7 +552,7 @@ sub symbMangleType _
 		end if
 
 		symbMangleType( mangled, symbGetFullType( subtype ), symbGetSubtype( subtype ) )
-		hGetProcParamsTypeCode( mangled, subtype )
+		hGetProcParamsTypeCode( mangled, subtype, FALSE )
 
 		mangled += "E"
 
@@ -854,15 +855,25 @@ end sub
 private sub hGetProcParamsTypeCode _
 	( _
 		byref mangled as string, _
-		byval sym as FBSYMBOL ptr _
+		byval sym as FBSYMBOL ptr, _
+		byval is_real_proc as integer _
 	)
 
 	dim as FBSYMBOL ptr param = any
 
 	param = symbGetProcHeadParam( sym )
 	if( param <> NULL ) then
-		'' instance pointer? skip..
-		if( symbIsParamInstance( param ) ) then
+		''
+		'' When doing C++ mangling for method, the THIS pointer isn't
+		'' included in the mangled name.
+		''
+		'' However, when producing the unique internal id for a
+		'' procedure pointer, we need to encode even the THIS pointer.
+		'' Also see symbAddProcPtr(). This can happen with the symbols
+		'' created by symbAddProcPtrFromFunction() when calling a
+		'' virtual method through the procedure pointer in the vtable.
+		''
+		if( is_real_proc and symbIsParamInstance( param ) ) then
 			param = symbGetParamNext( param )
 		end if
 	end if
@@ -1214,7 +1225,7 @@ private sub hMangleProc( byval sym as FBSYMBOL ptr )
 		if( hIsNested( sym ) ) then
 			mangled += "E"
 		end if
-		hGetProcParamsTypeCode( mangled, sym )
+		hGetProcParamsTypeCode( mangled, sym, TRUE )
 	end if
 
 	'' @N win32 stdcall suffix
