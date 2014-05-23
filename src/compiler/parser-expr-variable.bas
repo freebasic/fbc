@@ -667,8 +667,7 @@ function cMemberDeref _
 				case else
 					if( typeIsPtr( dtype ) = FALSE ) then
 						errReport( FB_ERRMSG_EXPECTEDPOINTER, TRUE )
-						dtype = typeAddrOf( FB_DATATYPE_INTEGER )
-						subtype = NULL
+						exit do
 					end if
 				end select
 
