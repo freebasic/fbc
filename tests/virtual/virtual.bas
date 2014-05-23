@@ -1552,6 +1552,59 @@ namespace bydescParams2
 	end sub
 end namespace
 
+namespace callingConventions
+	'' All these methods have multiple parameters, ensuring that the
+	'' parameter cycling loops aren't bypassed. The calling convention
+	'' should not affect parameter checking, especially not Pascal for which
+	'' the parameters are reversed in many places of the compiler.
+
+	type A extends object
+		declare virtual function fcdecl   cdecl  ( as integer, as string ) as integer
+		declare virtual function fstdcall stdcall( as integer, as string ) as integer
+		declare virtual function fpascal  pascal ( as integer, as string ) as integer
+	end type
+
+	function A.fcdecl   cdecl  ( i as integer, s as string ) as integer : function = &hA1 : end function
+	function A.fstdcall stdcall( i as integer, s as string ) as integer : function = &hA2 : end function
+	function A.fpascal  pascal ( i as integer, s as string ) as integer : function = &hA3 : end function
+
+	type B extends A
+		declare function fcdecl   cdecl  ( as integer, as string ) as integer override
+		declare function fstdcall stdcall( as integer, as string ) as integer override
+		declare function fpascal  pascal ( as integer, as string ) as integer override
+	end type
+
+	function B.fcdecl   cdecl  ( i as integer, s as string ) as integer : function = &hB1 : end function
+	function B.fstdcall stdcall( i as integer, s as string ) as integer : function = &hB2 : end function
+	function B.fpascal  pascal ( i as integer, s as string ) as integer : function = &hB3 : end function
+
+	sub test cdecl( )
+		scope
+			var pa = new A
+			CU_ASSERT( pa->fcdecl  ( 0, "" ) = &hA1 )
+			CU_ASSERT( pa->fstdcall( 0, "" ) = &hA2 )
+			CU_ASSERT( pa->fpascal ( 0, "" ) = &hA3 )
+			delete pa
+		end scope
+
+		scope
+			dim as A ptr pa = new B
+			CU_ASSERT( pa->fcdecl  ( 0, "" ) = &hB1 )
+			CU_ASSERT( pa->fstdcall( 0, "" ) = &hB2 )
+			CU_ASSERT( pa->fpascal ( 0, "" ) = &hB3 )
+			delete pa
+		end scope
+
+		scope
+			var pb = new B
+			CU_ASSERT( pb->fcdecl  ( 0, "" ) = &hB1 )
+			CU_ASSERT( pb->fstdcall( 0, "" ) = &hB2 )
+			CU_ASSERT( pb->fpascal ( 0, "" ) = &hB3 )
+			delete pb
+		end scope
+	end sub
+end namespace
+
 private sub ctor( ) constructor
 	fbcu.add_suite( "tests/virtual/virtual" )
 	fbcu.add_test( "basic overriding", @overridingWorks.test )
@@ -1581,6 +1634,7 @@ private sub ctor( ) constructor
 	fbcu.add_test( "bydescParamGccWarningRegressionTest", @bydescParamGccWarningRegressionTest.test )
 	fbcu.add_test( "bydescParams1", @bydescParams1.test )
 	fbcu.add_test( "bydescParams2", @bydescParams2.test )
+	fbcu.add_test( "callingConventions", @callingConventions.test )
 end sub
 
 end namespace

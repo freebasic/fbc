@@ -2689,8 +2689,8 @@ private function hAreMethodsCompatible _
 	end if
 
 	'' Check each parameter's mode and type
-	vparam = symbGetProcLastParam( v )
-	oparam = symbGetProcLastParam( o )
+	vparam = symbGetProcHeadParam( v )
+	oparam = symbGetProcHeadParam( o )
 
 	'' But skip THIS ptr; virtual/override will have a different types here,
 	'' their parent classes respectively. Since this virtual was found to
