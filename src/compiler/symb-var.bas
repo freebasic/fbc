@@ -163,9 +163,8 @@ function symbAddArrayDescriptorType _
 	'' ids.
 	id = "$" + aliasid
 	id += "<"
-	symbMangleInitAbbrev( )
 	symbMangleType( id, arraydtype, arraysubtype )
-	symbMangleEndAbbrev( )
+	symbMangleResetAbbrev( )
 	id += ">"
 
 	'' Similar to symbAddProcPtr(), the descriptor type must be added to the

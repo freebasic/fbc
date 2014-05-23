@@ -1103,9 +1103,8 @@ function symbAddProcPtr _
 	'' - Bydesc dimensions must be encoded
 	'' - BYVAL/BYREF function result and its CONSTness (even if BYVAL, as
 	''   with C++ mangling)
-	symbMangleInitAbbrev( )
 	symbMangleType( id, FB_DATATYPE_FUNCTION, proc )
-	symbMangleEndAbbrev( )
+	symbMangleResetAbbrev( )
 
 	'' Calling convention, must be encoded manually as it's not encoded in
 	'' the C++ mangling. We want function pointers with different calling

@@ -193,6 +193,8 @@ function symbGetMangledName( byval sym as FBSYMBOL ptr ) as zstring ptr
 		return sym->id.mangled
 	end if
 
+	assert( ctx.cnt = 0 )
+
 	select case as const( symbGetClass( sym ) )
 	case FB_SYMBCLASS_PROC
 		hMangleProc( sym )
@@ -211,6 +213,8 @@ function symbGetMangledName( byval sym as FBSYMBOL ptr ) as zstring ptr
 		return sym->id.alias
 	end select
 
+	symbMangleResetAbbrev( )
+
 	'' Periods in symbol names?  not allowed in C, must be replaced.
 	if( env.clopt.backend = FB_BACKEND_GCC ) then
 		if( fbLangOptIsSet( FB_LANG_OPT_PERIODS ) ) then
@@ -221,12 +225,11 @@ function symbGetMangledName( byval sym as FBSYMBOL ptr ) as zstring ptr
 	function = sym->id.mangled
 end function
 
-sub symbMangleInitAbbrev( )
-	ctx.cnt = 0
-end sub
-
-sub symbMangleEndAbbrev( )
-	'' reset abbreviation list
+'' Reset the abbreviation list.
+'' Every symbMangleType() will add abbreviations, and the list must be reset
+'' every time (after a symbol was mangled), to prevent the abbreviations from
+'' leaking into the mangling process of the next symbol.
+sub symbMangleResetAbbrev( )
 	flistReset( @ctx.flist )
 	ctx.cnt = 0
 end sub
@@ -1125,8 +1128,6 @@ private sub hMangleProc( byval sym as FBSYMBOL ptr )
 
 	docpp = hDoCppMangling( sym )
 
-	symbMangleInitAbbrev( )
-
 	'' LLVM: @ prefix for global symbols
 	if( env.clopt.backend = FB_BACKEND_LLVM ) then
 		mangled += "@"
@@ -1228,8 +1229,6 @@ private sub hMangleProc( byval sym as FBSYMBOL ptr )
 			mangled += """"
 		end if
 	end if
-
-	symbMangleEndAbbrev( )
 
 	symbSetMangledId( sym, mangled )
 end sub

@@ -1689,8 +1689,7 @@ declare function symbMakeProfileLabelName( ) as zstring ptr
 declare function symbGetMangledName( byval sym as FBSYMBOL ptr ) as zstring ptr
 declare function symbGetDBGName( byval sym as FBSYMBOL ptr ) as zstring ptr
 declare sub symbSetName( byval s as FBSYMBOL ptr, byval name_ as zstring ptr )
-declare sub symbMangleInitAbbrev( )
-declare sub symbMangleEndAbbrev( )
+declare sub symbMangleResetAbbrev( )
 declare function hMangleBuiltInType _
 	( _
 		byval dtype as integer, _
