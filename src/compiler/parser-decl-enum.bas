@@ -180,19 +180,29 @@ sub cEnumDecl( byval attrib as integer )
 		isexplicit = TRUE
 	end if
 
-	'' Enums are namespaces containing their constants, and a Using will
-	'' automatically be done below to import the constants into the parent
-	'' namespace unless the Enum was declared Explicit.
+	''
+	'' Normally, Enums are namespaces containing their constants, and a
+	'' Using will automatically be done below to import the constants into
+	'' the parent namespace unless the Enum was declared Explicit.
 	''
 	'' This way, an Enum's constants can be accessed via "constid" or
 	'' "enumid.constid", and an Explicit Enum's constants can only be
 	'' accessed via the latter.
+	''
+	'' Non-Explicit Enums inside Extern blocks have special behaviour
+	'' though, they're not treated as separate namespaces. Instead, the
+	'' constants are added to the parent namespace directly. Access to them
+	'' via "enumid.constid" is disallowed (FB_ERRMSG_NONSCOPEDENUM).
+	''
 
-	e = symbAddEnum( @id, palias, attrib )
+	dim as integer use_hashtb = (parser.mangling = FB_MANGLING_BASIC)
+	use_hashtb or= isexplicit
+
+	e = symbAddEnum( @id, palias, attrib, use_hashtb )
 	if( e = NULL ) then
 		errReportEx( FB_ERRMSG_DUPDEFINITION, id )
 		'' error recovery: create a fake symbol
-		e = symbAddEnum( symbUniqueLabel( ), NULL, FB_SYMBATTRIB_NONE )
+		e = symbAddEnum( symbUniqueLabel( ), NULL, FB_SYMBATTRIB_NONE, use_hashtb )
 	end if
 
 	'' Comment? SttSeparator
@@ -207,14 +217,18 @@ sub cEnumDecl( byval attrib as integer )
 		hSkipUntil( INVALID, TRUE )
 	end if
 
-	'' Start a new scope
-	symbNestBegin( e, FALSE )
+	'' if in BASIC mangling mode, start a new scope
+	if( use_hashtb ) then
+		symbNestBegin( e, FALSE )
+	end if
 
 	'' EnumBody
 	cEnumBody( e, attrib )
 
 	'' close scope
-	symbNestEnd( FALSE )
+	if( use_hashtb ) then
+		symbNestEnd( FALSE )
+	end if
 
 	'' END ENUM
 	if( lexGetToken( ) <> FB_TK_END ) then
@@ -231,9 +245,11 @@ sub cEnumDecl( byval attrib as integer )
 		else
 			lexSkipToken( )
 
-			'' Do an implicit 'USING enum', unless it's an EXPLICIT enum
 			if( isexplicit = FALSE ) then
-				symbNamespaceImport( e )
+				'' if in BASIC mangling mode, do an implicit 'USING enum'
+				if( use_hashtb ) then
+					symbNamespaceImport( e )
+				end if
 			end if
 		end if
 	end if

@@ -336,6 +336,7 @@ declare function hMakeParamDesc _
 		@"Illegal outside a FUNCTION block", _
 		@"Ambiguous symbol access, explicit scope resolution required", _
 		@"An ENUM, TYPE or UNION cannot be empty", _
+		@"ENUM's declared inside EXTERN .. END EXTERN blocks don't open new scopes", _
 		@"STATIC used on non-member procedure", _
 		@"CONST used on non-member procedure", _
 		@"ABSTRACT used on non-member procedure", _

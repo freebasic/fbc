@@ -252,6 +252,15 @@ function cIdentifier _
     		exit do
     	end if
 
+		if( symbIsEnum( sym ) ) then
+			if( symbEnumHasHashTb( sym ) = FALSE ) then
+				if( (options and FB_IDOPT_SHOWERROR) <> 0 ) then
+					errReport( FB_ERRMSG_NONSCOPEDENUM )
+				end if
+				exit do
+			end if
+		end if
+
     	'' skip id
     	lexSkipToken( LEXCHECK_NOPERIOD )
 
@@ -421,6 +430,13 @@ function cParentId _
 			errReport( FB_ERRMSG_EXPECTEDPERIOD )
 			exit do
     	end if
+
+		if( symbIsEnum( sym ) ) then
+			if( symbEnumHasHashTb( sym ) = FALSE ) then
+				errReport( FB_ERRMSG_NONSCOPEDENUM )
+				exit do
+			end if
+		end if
 
     	'' skip id
     	lexSkipToken( LEXCHECK_NOPERIOD )

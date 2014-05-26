@@ -56,7 +56,7 @@ end enum
 extern "c++"
 	enum Enum3
 		Enum3Const1 = 1
-		GlobalConst3
+		''GlobalConst3
 	end enum
 
 	enum Enum4 explicit
@@ -81,8 +81,8 @@ private sub test5 cdecl( )
 
 	CU_ASSERT( Enum3Const1 = 1 )
 	CU_ASSERT( GlobalConst3 = 333 )
-	CU_ASSERT( Enum3.Enum3Const1 = 1 )
-	CU_ASSERT( Enum3.GlobalConst3 = 2 )
+	''CU_ASSERT( Enum3.Enum3Const1 = 1 )
+	''CU_ASSERT( Enum3.GlobalConst3 = 2 )
 
 	CU_ASSERT( GlobalConst4 = 444 )
 	CU_ASSERT( Enum4.Enum4Const1 = 1 )
