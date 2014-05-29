@@ -1921,6 +1921,7 @@ declare function SetVolumeMountPoint alias "SetVolumeMountPointA" (byval as LPCS
 #endif ''UNICODE
 
 #define RtlMoveMemory(Destination, Source, Length) memmove((Destination), (Source), (Length))
+#define RtlCopyMemory(Destination, Source, Length) memcpy((Destination), (Source), (Length))
 #define RtlFillMemory(Destination, Length, Fill) memset((Destination), (Fill), (Length))
 #define RtlZeroMemory(Destination, Length) memset((Destination), 0, (Length))
 
