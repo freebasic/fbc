@@ -14,6 +14,8 @@ extern "c"
 #define LIBZIP_VERSION_MICRO 0
 
 #include "crt/stdint.bi"
+#include "crt/time.bi"  '' time_t
+#include "crt/stdio.bi"  '' FILE
 
 type zip_int8_t as byte
 #define ZIP_INT8_MIN INT8_MIN
