@@ -1,8 +1,6 @@
 #ifndef __crt_stdint_bi__
 #define __crt_stdint_bi__
 
-#include "crt/wchar.bi"
-
 #ifndef int8_t
 type int8_t as byte
 type int16_t as short
