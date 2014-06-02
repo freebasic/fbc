@@ -1025,7 +1025,7 @@ private function hIdxInParensOnlyExpr( ) as ASTNODE ptr
 end function
 
 private function hCheckDynamicArrayExpr( byval varexpr as ASTNODE ptr ) as ASTNODE ptr
-	if( astIsNIDXARRAY( varexpr ) ) then
+	if( varexpr andalso astIsNIDXARRAY( varexpr ) ) then
 		varexpr = astRemoveNIDXARRAY( varexpr )
 
 		if( astIsVAR( varexpr ) or astIsFIELD( varexpr ) ) then
