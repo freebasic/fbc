@@ -1026,9 +1026,7 @@ end function
 
 private function hCheckDynamicArrayExpr( byval varexpr as ASTNODE ptr ) as ASTNODE ptr
 	if( astIsNIDXARRAY( varexpr ) ) then
-		dim as ASTNODE ptr l = varexpr->l
-		astDelNode( varexpr )
-		varexpr = l
+		varexpr = astRemoveNIDXARRAY( varexpr )
 
 		if( astIsVAR( varexpr ) or astIsFIELD( varexpr ) ) then
 			if( symbIsVar( varexpr->sym ) or symbIsField( varexpr->sym ) ) then
