@@ -1464,7 +1464,7 @@ declare sub astDumpList _
 
 #if __FB_DEBUG__
 declare function astDumpInline( byval n as ASTNODE ptr ) as string
-declare sub astDumpSmall( byval n as ASTNODE ptr )
+declare sub astDumpSmall( byval n as ASTNODE ptr, byref prefix as string = "" )
 #endif
 
 #endif '' __AST_BI__

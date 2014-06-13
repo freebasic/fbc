@@ -1002,7 +1002,7 @@ function astDumpInline( byval n as ASTNODE ptr ) as string
 	function = s
 end function
 
-sub astDumpSmall( byval n as ASTNODE ptr )
+sub astDumpSmall( byval n as ASTNODE ptr, byref prefix as string )
 	static reclevel as integer
 
 	reclevel += 1
@@ -1010,11 +1010,12 @@ sub astDumpSmall( byval n as ASTNODE ptr )
 	dim s as string
 
 	'' Indentation
-	s += space( (reclevel - 1) * 4 )
+	s += space( (reclevel - 1) * 4 ) + prefix
 
 	if( n = NULL ) then
 		s += "<NULL>"
 	else
+		's += "[" + hex( n ) + "] "
 		s += hAstNodeClassToStr( n->class )
 		s += typeDump( n->dtype, n->subtype )
 
@@ -1042,10 +1043,10 @@ sub astDumpSmall( byval n as ASTNODE ptr )
 
 	if( n ) then
 		if( n->l ) then
-			astDumpSmall( n->l )
+			astDumpSmall( n->l, "l: " )
 		end if
 		if( n->r ) then
-			astDumpSmall( n->r )
+			astDumpSmall( n->r, "r: " )
 		end if
 	end if
 

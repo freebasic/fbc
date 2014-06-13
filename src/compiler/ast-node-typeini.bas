@@ -157,8 +157,12 @@ sub astTypeIniRemoveLastNode( byval tree as ASTNODE ptr )
 
 		'' Last node reached?
 		if( n->r = NULL ) then
+			assert( tree->r = n )
+			assert( n <> prev )
+
 			'' Unlink from the TYPEINI tree
 			if( prev ) then
+				assert( prev->r = n )
 				prev->r = NULL
 			else
 				tree->l = NULL
@@ -169,8 +173,8 @@ sub astTypeIniRemoveLastNode( byval tree as ASTNODE ptr )
 			exit while
 		end if
 
-		n = n->r
 		prev = n
+		n = n->r
 	wend
 end sub
 
