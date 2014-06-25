@@ -49,6 +49,7 @@ Version 0.91.0:
 - ThreadDetach() function in fbthread.bi: alternative to ThreadWait() that cleans up the thread handle but does not wait for the thread to finish.
 - IsRedirected() function in fbio.bi, that can be used to check whether stdin or stdout is redirected to a file or not
 - Dynamic array descriptors will now always be generated with the FBARRAY.data and FBARRAY.ptr pointer fields specialized for the array's original data type, improving the -g debug info
+- Len() can now be overloaded as an operator for user-defined types
 
 [fixed]
 - dlltool syntax error when building a DLL without any EXPORTs

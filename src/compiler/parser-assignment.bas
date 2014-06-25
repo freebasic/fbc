@@ -70,7 +70,7 @@ function cOperator( byval is_overload as integer ) as integer
 	     FB_TK_ABS, FB_TK_SGN, FB_TK_FIX, FB_TK_FRAC, _
 	     FB_TK_INT, FB_TK_EXP, FB_TK_LOG, FB_TK_SIN, _
 	     FB_TK_ASIN, FB_TK_COS, FB_TK_ACOS, FB_TK_TAN, _
-	     FB_TK_ATN, _
+	     FB_TK_ATN, FB_TK_LEN, _
 	     FB_TK_ADDROFCHAR, FB_TK_FIELDDEREF, CHAR_LBRACKET, _
 	     FB_TK_NEW, FB_TK_DELETE, _
 	     FB_TK_FOR, FB_TK_STEP, FB_TK_NEXT
@@ -104,6 +104,7 @@ function cOperator( byval is_overload as integer ) as integer
 		case FB_TK_ACOS : op = AST_OP_ACOS
 		case FB_TK_TAN  : op = AST_OP_TAN
 		case FB_TK_ATN  : op = AST_OP_ATAN
+		case FB_TK_LEN  : op = AST_OP_LEN
 		case FB_TK_ADDROFCHAR : op = AST_OP_ADDROF
 		case FB_TK_FIELDDEREF : op = AST_OP_FLDDEREF
 		case CHAR_LBRACKET  '' '['

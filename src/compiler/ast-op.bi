@@ -83,6 +83,7 @@ enum AST_OP
 	AST_OP_FLOOR
 	AST_OP_FIX
 	AST_OP_FRAC
+	AST_OP_LEN
 	AST_OP_CONVFD2FS						'' used internally by ASM backend
 
 	AST_OP_SWZ_REPEAT						'' swizzle; repeat value

@@ -52,6 +52,7 @@ private function hLen _
 	) as ASTNODE ptr
 
 	dim as FBSYMBOL ptr litsym = any
+	dim as ASTNODE ptr lenexpr = any
 
 	select case( astGetDataType( expr ) )
 	case FB_DATATYPE_STRING
@@ -81,6 +82,14 @@ private function hLen _
 		'' it does not return the length of the stored string data.
 		lgt = astSizeOf( expr ) - 1
 		assert( lgt >= 0 )
+
+	case FB_DATATYPE_STRUCT
+		lenexpr = astNewUOP( AST_OP_LEN, expr )
+		if( lenexpr <> NULL ) then
+			return lenexpr
+		end if
+
+		lgt = astSizeOf( expr )
 
 	case else
 		'' For anything else, len() means sizeof()

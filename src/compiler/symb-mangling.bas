@@ -1048,6 +1048,9 @@ private function hGetOperatorName( byval proc as FBSYMBOL ptr ) as const zstring
 	case AST_OP_FRAC
 		function = @"v14frac"
 
+	case AST_OP_LEN
+		function = @"v13len"
+
 	case AST_OP_SGN
 		function = @"v13sgn"
 
