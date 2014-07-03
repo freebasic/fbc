@@ -2580,13 +2580,15 @@ function rtlStrDelete( byval expr as ASTNODE ptr ) as ASTNODE ptr
 	function = NULL
 
 	dtype = astGetDataType( expr )
-	select case( dtype )
+
 	'' Handling WCHAR PTR because that's what we use for fake dynamic
 	'' wstrings, and it's also the real type of functions returning dynamic
-	'' wstrings.
-	case FB_DATATYPE_WCHAR, typeAddrOf( FB_DATATYPE_WCHAR )
+	'' wstrings. All wstring types should have been remapped to WCHAR PTR.
+	assert( dtype <> FB_DATATYPE_WCHAR )
+	if( dtype = typeAddrOf( FB_DATATYPE_WCHAR ) ) then
 		proc = PROCLOOKUP( WSTRDELETE )
-	case else
+	else
+		assert( dtype = FB_DATATYPE_STRING )
 		if( astIsCALL( expr ) ) then
 			'' Temporary string function result
 			proc = PROCLOOKUP( HSTRDELTEMP )
@@ -2594,8 +2596,7 @@ function rtlStrDelete( byval expr as ASTNODE ptr ) as ASTNODE ptr
 			'' Normal string variable
 			proc = PROCLOOKUP( STRDELETE )
 		end if
-		dtype = FB_DATATYPE_STRING
-	end select
+	end if
 
 	call_ = astNewCALL( proc )
 
