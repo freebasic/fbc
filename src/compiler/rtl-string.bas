@@ -106,7 +106,17 @@
 			{ _
 				( FB_DATATYPE_STRING, FB_PARAMMODE_BYREF, FALSE ) _
 			} _
- 		), _
+		), _
+		/' function fb_hStrDelTemp( byref str as string ) as long '/ _
+		( _
+			@FB_RTL_HSTRDELTEMP, NULL, _
+			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_NONE, _
+			1, _
+			{ _
+				( FB_DATATYPE_STRING, FB_PARAMMODE_BYREF, FALSE ) _
+			} _
+		), _
 		/' sub fb_WstrDelete( byval str as wstring ptr ) '/ _
 		( _
 			@FB_RTL_WSTRDELETE, NULL, _
@@ -116,7 +126,7 @@
 			{ _
 				( typeAddrOf( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYVAL, FALSE ) _
 			} _
- 		), _
+		), _
 		/' function fb_StrConcat( byref dst as string, _
 				byref str1 as any, byval str1_size as integer, _
 				byref str2 as any, byval str2_size as integer ) as string '/ _
@@ -2562,37 +2572,39 @@ function rtlWstrAssign _
 
 end function
 
-'':::::
-function rtlStrDelete _
-	( _
-		byval strg as ASTNODE ptr _
-	) as ASTNODE ptr
-
-    dim as ASTNODE ptr proc = any
-    dim as integer dtype = any
+function rtlStrDelete( byval expr as ASTNODE ptr ) as ASTNODE ptr
+	dim as FBSYMBOL ptr proc = any
+	dim as ASTNODE ptr call_ = any
+	dim as integer dtype = any
 
 	function = NULL
 
-	''
-    dtype = astGetDataType( strg )
-    select case as const dtype
-    '' it could be a wstring ptr too due the temporary
-    '' wstrings that must be handled by AST
-    case FB_DATATYPE_WCHAR, _
-    	 typeAddrOf( FB_DATATYPE_WCHAR )
-    	proc = astNewCALL( PROCLOOKUP( WSTRDELETE ) )
-    case else
-    	proc = astNewCALL( PROCLOOKUP( STRDELETE ) )
-    	dtype = FB_DATATYPE_STRING
-    end select
+	dtype = astGetDataType( expr )
+	select case( dtype )
+	'' Handling WCHAR PTR because that's what we use for fake dynamic
+	'' wstrings, and it's also the real type of functions returning dynamic
+	'' wstrings.
+	case FB_DATATYPE_WCHAR, typeAddrOf( FB_DATATYPE_WCHAR )
+		proc = PROCLOOKUP( WSTRDELETE )
+	case else
+		if( astIsCALL( expr ) ) then
+			'' Temporary string function result
+			proc = PROCLOOKUP( HSTRDELTEMP )
+		else
+			'' Normal string variable
+			proc = PROCLOOKUP( STRDELETE )
+		end if
+		dtype = FB_DATATYPE_STRING
+	end select
 
-    '' str as ANY
-    if( astNewARG( proc, strg, dtype ) = NULL ) then
-    	exit function
-    end if
+	call_ = astNewCALL( proc )
 
-    function = proc
+	'' byref str as string|wstring
+	if( astNewARG( call_, expr, dtype ) = NULL ) then
+		exit function
+	end if
 
+	function = call_
 end function
 
 '':::::

@@ -259,9 +259,41 @@ private sub test cdecl( )
 	cdtors = 0
 end sub
 
+namespace temporaryDescriptors
+	'' Testing exhaustion of the rtlib's FB_STR_TMPDESCRIPTORS limit,
+	'' so this should be > that
+	const N = 500
+
+	function f( byval i as integer ) as string
+		function = str( i )
+	end function
+
+	sub test cdecl( )
+		'' Pre-calculate the number strings to ensure we have some proper strings to
+		'' compare against below
+		static numbers(0 to N-1) as zstring * 32
+		for i as integer = 0 to N-1
+			numbers(i) = "<" + str( i ) + ">"
+		next
+
+		for i as integer = 0 to N-1
+			'' Ignoring the function result here - the temporary string descriptor
+			'' used for the string result shouldn't be leaked.
+			f( i )
+
+			'' Calling f again: this time checking that a result could be allocated
+			'' properly. If there was a descriptor leak, we would eventually exhaust
+			'' the max. amount, and then fail to allocate the result strings and
+			'' return only empty strings instead.
+			CU_ASSERT( "<" + f( i ) + ">" = numbers(i) )
+		next
+	end sub
+end namespace
+
 private sub ctor( ) constructor
 	fbcu.add_suite( "tests/functions/ignore-result" )
 	fbcu.add_test( "test", @test )
+	fbcu.add_test( "temporaryDescriptors", @temporaryDescriptors.test )
 end sub
 
 end namespace

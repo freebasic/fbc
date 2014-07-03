@@ -499,9 +499,10 @@ function astIgnoreCallResult( byval n as ASTNODE ptr ) as ASTNODE ptr
 		end if
 	end if
 
-	'' Returning string/wstring? Just do fb_StrDelete(call()), to delete the
-	'' returned string, no temp var needed. (for wstrings, a temp var
-	'' couldn't be used anyways, because there's no dynamic wstring type)
+	'' Returning string/wstring? Just do fb_hStrDelTemp/fb_WstrDelete to
+	'' to delete the returned temp string, no temp var needed.
+	'' (for wstrings, a temp var couldn't be used anyways, because there's
+	'' no dynamic wstring type)
 	select case( dtype )
 	case FB_DATATYPE_STRING, FB_DATATYPE_WCHAR
 		'' This mustn't be done if returning BYREF, but in that case

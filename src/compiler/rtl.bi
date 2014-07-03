@@ -6,6 +6,7 @@
 
 #define FB_RTL_STRINIT					"fb_StrInit"
 #define FB_RTL_STRDELETE				"fb_StrDelete"
+#define FB_RTL_HSTRDELTEMP				"fb_hStrDelTemp"
 #define FB_RTL_STRASSIGN				"fb_StrAssign"
 #define FB_RTL_STRCONCAT 				"fb_StrConcat"
 #define FB_RTL_STRCOMPARE				"fb_StrCompare"
@@ -405,6 +406,7 @@
 enum FB_RTL_IDX
 	FB_RTL_IDX_STRINIT
 	FB_RTL_IDX_STRDELETE
+	FB_RTL_IDX_HSTRDELTEMP
 	FB_RTL_IDX_STRASSIGN
 	FB_RTL_IDX_STRCONCAT
 	FB_RTL_IDX_STRCOMPARE
@@ -945,10 +947,7 @@ declare function rtlWstrConcatAssign _
 		byval src as ASTNODE ptr _
 	) as ASTNODE ptr
 
-declare function rtlStrDelete _
-	( _
-		byval strg as ASTNODE ptr _
-	) as ASTNODE ptr
+declare function rtlStrDelete( byval expr as ASTNODE ptr ) as ASTNODE ptr
 
 declare function rtlStrAllocTmpResult _
 	( _
