@@ -4,6 +4,11 @@
 #include "fb_gfx_linux.h"
 #include "../../rtlib/unix/fb_private_console.h"
 
+/* Disable this on ARM, due to the x86 inline asm below */
+#if !defined HOST_X86 && !defined HOST_X86_64
+	#define DISABLE_FBDEV
+#endif
+
 #ifndef DISABLE_FBDEV
 
 #include <fcntl.h>
