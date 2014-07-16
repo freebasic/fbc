@@ -310,6 +310,8 @@ function symbAddField _
 
 	'' Check for bitfield
 	if( bits > 0 ) then
+		symbSetUdtHasBitfield( parent )
+
 		'' last field was a bitfield too? try to merge..
 		if( parent->udt.bitpos > 0 ) then
 			'' Find the last field (skipping over methods etc.)

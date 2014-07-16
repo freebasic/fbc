@@ -835,6 +835,15 @@ private sub hMaybeEmitProcProto( byval s as FBSYMBOL ptr )
 	sectionReturn( section )
 end sub
 
+private sub hEmitFieldTypes( byval udt as FBSYMBOL ptr )
+	dim as FBSYMBOL ptr fld = any
+	fld = symbUdtGetFirstField( udt )
+	while( fld )
+		hEmitUDT( symbGetSubtype( fld ), typeIsPtr( symbGetType( fld ) ) )
+		fld = symbUdtGetNextField( fld )
+	wend
+end sub
+
 private function hFindParentAnonAlreadyOnStack _
 	( _
 		byval fld as FBSYMBOL ptr _
@@ -894,69 +903,13 @@ private sub hPopAnonParents( byval anonnode as FBSYMBOL ptr ptr )
 	wend
 end sub
 
-private sub hEmitStruct _
-	( _
-		byval s as FBSYMBOL ptr, _
-		byval is_ptr as integer _
-	)
-
-	dim as string ln
+private sub hEmitStructWithFields( byval s as FBSYMBOL ptr )
 	dim as integer skip = any, dtype = any, align = any
 	dim as FBSYMBOL ptr subtype = any, fld = any
 	dim as FBSYMBOL ptr ptr anonnode = any
+	dim as string ln
 
-	'' Already in the process of emitting this UDT?
-	if( symbGetIsBeingEmitted( s ) ) then
-		'' This means there is a circular dependency with another UDT.
-		'' One of the references can be a pointer only though,
-		'' because UDTs cannot contain each-other, so this can always
-		'' be solved by using a forward reference.
-		if( is_ptr ) then
-			'' Emit a forward reference for this struct (if not yet done).
-			'' HACK: reusing the accessed flag (that's used by variables only)
-			if( symbGetIsAccessed( s ) = FALSE ) then
-				symbSetIsAccessed( s )
-				hWriteLine( hGetUdtName( s ) + ";" )
-			end if
-			exit sub
-		end if
-	end if
-
-	symbSetIsBeingEmitted( s )
-
-	'' Emit types of fields
-	fld = symbUdtGetFirstField( s )
-	while( fld )
-		hEmitUDT( symbGetSubtype( fld ), typeIsPtr( symbGetType( fld ) ) )
-		fld = symbUdtGetNextField( fld )
-	wend
-
-	'' Has this UDT been emitted in the mean time?
-	'' (due to one of the fields causing a circular dependency)
-	if( symbGetIsEmitted( s ) ) then
-		exit sub
-	end if
-
-	'' Emit it now
-	symbSetIsEmitted( s )
-
-	'' Header: struct|union [attributes...] id {
-	ln = hGetUdtTag( s )
-
-	'' Work-around mingw32 gcc bug 52991; packing is broken for ms_struct
-	'' stucts, which is the default under -mms-bitfields, which is on by
-	'' default in mingw32 gcc 4.7.
-	if( (env.clopt.target = FB_COMPTARGET_WIN32) and _
-	    (symbGetUDTAlign( s ) > 0) ) then
-		ln += "__attribute__((gcc_struct)) "
-	end if
-
-	ln += hGetUdtId( s )
-	ln += " {"
-	hWriteLine( ln, TRUE )
-	sectionIndent( )
-
-	'' Write out the elements
+	'' Write out the fields
 	fld = symbUdtGetFirstField( s )
 	while( fld )
 
@@ -983,20 +936,8 @@ private sub hEmitStruct _
 			hPushAnonParents( iif( anonnode, *anonnode, s ), fld->parent )
 		end if
 
-		'' For bitfields, emit only the container field, not the
-		'' individual bitfields (bitfields are merged into a "container"
-		'' given by the type of the first bitfield; if further bitfields
-		'' don't fit a new container is started, etc.)
-		''
-		'' Alternatively we could emit bitfields explicitly via ": N",
-		'' but that would depend on gcc's ABI and we'd have to emit
-		'' things like __attribute__((ms_struct)) too for msbitfields...
-		if( symbFieldIsBitfield( fld ) ) then
-			skip = (fld->var_.bitpos <> 0)
-		else
-			'' Don't emit fake dynamic array fields either
-			skip = symbIsDynamic( fld )
-		end if
+		'' Don't emit fake dynamic array fields
+		skip = symbIsDynamic( fld )
 
 		if( skip = FALSE ) then
 			dtype = symbGetType( fld )
@@ -1035,8 +976,81 @@ private sub hEmitStruct _
 	'' Close any remaining nested anonymous structs/unions
 	hPopAnonParents( NULL )
 
-	'' Close UDT body
 	assert( listGetHead( @ctx.anonstack ) = NULL )
+end sub
+
+private sub hEmitStruct( byval s as FBSYMBOL ptr, byval is_ptr as integer )
+	dim as integer emit_fields = any
+	dim as string ln
+
+	'' Already in the process of emitting this UDT?
+	if( symbGetIsBeingEmitted( s ) ) then
+		'' This means there is a circular dependency with another UDT.
+		'' One of the references can be a pointer only though,
+		'' because UDTs cannot contain each-other, so this can always
+		'' be solved by using a forward reference.
+		if( is_ptr ) then
+			'' Emit a forward reference for this struct (if not yet done).
+			'' HACK: reusing the accessed flag (that's used by variables only)
+			if( symbGetIsAccessed( s ) = FALSE ) then
+				symbSetIsAccessed( s )
+				hWriteLine( hGetUdtName( s ) + ";" )
+			end if
+			exit sub
+		end if
+	end if
+
+	symbSetIsBeingEmitted( s )
+
+	'' Should we emit the fields individually (for better debug info), or
+	'' just use a byte array as structure body (to avoid having to worry
+	'' about any layout issues)?
+	''
+	'' (Technically we don't need to emit fields explicitly, since we don't
+	'' access them by name, but only by offset as calculated by FB.)
+	''
+	'' Currently we prefer emitting fields explicitly. Bitfields are the
+	'' only case where it's currently not possible, because FB's bitfields
+	'' are currently not ABI-compatible to GCC's.
+	'' TODO: Emit C bitfields once FB is compatible, for better debug info.
+	emit_fields = not symbGetUdtHasBitfield( s )
+
+	if( emit_fields ) then
+		hEmitFieldTypes( s )
+	end if
+
+	'' Has this UDT been emitted in the mean time?
+	'' (due to one of the fields causing a circular dependency)
+	if( symbGetIsEmitted( s ) ) then
+		exit sub
+	end if
+
+	'' Emit it now
+	symbSetIsEmitted( s )
+
+	'' Header: struct|union [attributes...] id {
+	ln = hGetUdtTag( s )
+
+	'' Work-around mingw32 gcc bug 52991; packing is broken for ms_struct
+	'' stucts, which is the default under -mms-bitfields, which is on by
+	'' default in mingw32 gcc 4.7.
+	if( (env.clopt.target = FB_COMPTARGET_WIN32) and _
+	    (symbGetUDTAlign( s ) > 0) ) then
+		ln += "__attribute__((gcc_struct)) "
+	end if
+
+	ln += hGetUdtId( s )
+	ln += " {"
+	hWriteLine( ln, TRUE )
+	sectionIndent( )
+
+	if( emit_fields ) then
+		hEmitStructWithFields( s )
+	else
+		hWriteLine( "uint8 __fb_struct_body[" & symbGetLen( s ) & "];", TRUE )
+	end if
+
+	'' Close UDT body
 	sectionUnindent( )
 	hWriteLine( "};", TRUE )
 
@@ -1047,7 +1061,6 @@ private sub hEmitStruct _
 	'' that could easily cause stack trashing etc., because local vars
 	'' allocated by gcc would be smaller than expected, etc.
 	hWriteStaticAssert( "sizeof( " + hGetUdtTag( s ) + hGetUdtId( s ) + " ) == " + str( culngint( symbGetLen( s ) ) ) )
-
 end sub
 
 private sub hWriteX86F2I _
