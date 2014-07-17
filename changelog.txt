@@ -196,6 +196,7 @@ Version 0.91.0:
 - Bin/Oct/Hex() didn't accept pointers to CONST types
 - Override signature compatibility checking was broken for methods using the Pascal calling convention
 - C backend: Structures containing bitfields were sometimes not emitted correctly (wrong sizeof()), so for now they will be emitted as simple byte arrays. This is bad for -g debug info of course, but that can be fixed in the future when FB's bitfields have been made compatible to GCC's, and the C backend can emit them as-is, without having to worry about layout differences.
+- #733: The -> operator couldn't be applied to parenthesized UDT expressions even if overloaded for that UDT
 
 
 Version 0.90.1:

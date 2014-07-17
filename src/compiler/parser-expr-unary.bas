@@ -159,8 +159,8 @@ function cStrIdxOrMemberDeref _
  			dtype = astGetFullType( expr )
  			subtype = astGetSubType( expr )
 
-		'' '['?
-		case CHAR_LBRACKET
+		'' ('->' | '[')? (possible on non-pointer UDT types due to operator overloading)
+		case FB_TK_FIELDDEREF, CHAR_LBRACKET
 			expr = cMemberDeref( dtype, subtype, expr, TRUE )
 		end select
 

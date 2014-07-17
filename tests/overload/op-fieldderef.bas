@@ -18,6 +18,7 @@ namespace simple
 		dim x as UDT
 		x.i = 400
 		CU_ASSERT( x->i = 500 )
+		CU_ASSERT( (x)->i = 600 )
 	end sub
 end namespace
 
@@ -59,11 +60,30 @@ namespace withMultiDeref
 	end sub
 end namespace
 
+namespace parenthesized
+	type T
+		elem as integer
+	end type
+
+	operator ->(x as T) as T
+		operator = x
+	end operator
+
+	sub test cdecl()
+		dim as T x
+		x.elem = 123
+		CU_ASSERT( x->elem = 123 )
+		CU_ASSERT( (@x)[0]->elem = 123 )
+		CU_ASSERT( (x)->elem = 123 )
+	end sub
+end namespace
+
 private sub ctor( ) constructor
 	fbcu.add_suite( "tests/overload/op-fieldderef" )
 	fbcu.add_test( "simple", @simple.test )
 	fbcu.add_test( "withSingleDeref", @withSingleDeref.test )
 	fbcu.add_test( "withMultiDeref", @withMultiDeref.test )
+	fbcu.add_test( "parenthesized", @parenthesized.test )
 end sub
 
 end namespace

@@ -19,6 +19,11 @@ namespace simple
 		CU_ASSERT( x[2] = 333 )
 		CU_ASSERT( x[3] = 444 )
 
+		CU_ASSERT( (x)[0] = 111 )
+		CU_ASSERT( (x)[1] = 222 )
+		CU_ASSERT( (x)[2] = 333 )
+		CU_ASSERT( (x)[3] = 444 )
+
 		dim px as UDT ptr = @x
 		CU_ASSERT( (*px)[0] = 111 )
 		CU_ASSERT( (*px)[1] = 222 )
