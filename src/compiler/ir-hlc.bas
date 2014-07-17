@@ -283,21 +283,21 @@ private sub sectionBegin( )
 end sub
 
 '' Write line to current section (indentation & newline are automatically added)
-private sub sectionWriteLine( byval s as zstring ptr )
+private sub sectionWriteLine( byref s as string )
 	with( ctx.sections(ctx.section) )
 		if( .old ) then
 			if( .indent > 0 ) then
 				.text = string( .indent, TABCHAR )
-				.text += *s
+				.text += s
 			else
-				.text = *s
+				.text = s
 			end if
 			.old = FALSE
 		else
 			if( .indent > 0 ) then
 				.text += string( .indent, TABCHAR )
 			end if
-			.text += *s
+			.text += s
 		end if
 		.text += NEWLINE
 	end with
@@ -356,12 +356,7 @@ end sub
 
 '' Main emitting function
 '' Writes out line of code to current section, and adds #line's
-private sub hWriteLine _
-	( _
-		byval s as zstring ptr, _
-		byval noline as integer = FALSE _
-	)
-
+private sub hWriteLine( byref s as string, byval noline as integer = FALSE )
 	static as string ln
 
 	if( env.clopt.debug and (noline = FALSE) ) then
@@ -371,7 +366,6 @@ private sub hWriteLine _
 	end if
 
 	sectionWriteLine( s )
-
 end sub
 
 private sub hUpdateCurrentFileName( byval filename as zstring ptr )
@@ -3062,13 +3056,15 @@ private sub _emitDBG _
 end sub
 
 private sub _emitComment( byval text as zstring ptr )
+	dim as integer length = any
 	static as string s
 
 	s = *text
 	s = trim( s )
 
-	if( len( s ) > 0 ) then
-		if( right( s, 1 ) = "\" ) then
+	length = len( s )
+	if( length > 0 ) then
+		if( s[length-1] = asc( "\" ) ) then
 			s += "not_an_escape"
 		end if
 		hWriteLine( "// " + s, TRUE )
