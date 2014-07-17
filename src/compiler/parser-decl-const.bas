@@ -180,9 +180,9 @@ private sub cConstAssign _
 
 		'' Type explicitly specified?
 		if( dtype <> FB_DATATYPE_INVALID ) then
-			'' string?
-			if( typeGet( dtype ) = FB_DATATYPE_STRING ) then
-				errReportEx( FB_ERRMSG_INVALIDDATATYPES, id )
+			'' Check for type mismatch & warn about suspicious pointer assignments etc.
+			if( astCheckASSIGNToType( dtype, subtype, expr ) = FALSE ) then
+				errReportEx( FB_ERRMSG_TYPEMISMATCH, id )
 				'' error recovery: create a fake node
 				astDelTree( expr )
 				exprdtype = dtype
@@ -193,7 +193,6 @@ private sub cConstAssign _
 			'' Convert expression to given type if needed
 			if( (dtype <> exprdtype) or _
 				(subtype <> astGetSubtype( expr )) ) then
-
 				expr = astNewCONV( dtype, subtype, expr )
 				if( expr = NULL ) then
 					errReportEx( FB_ERRMSG_INVALIDDATATYPES, id )
