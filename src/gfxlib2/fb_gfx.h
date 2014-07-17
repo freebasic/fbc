@@ -525,7 +525,7 @@ extern FBCALL void fb_GfxPaletteGet64(int index, long long *r, long long *g, lon
 extern FBCALL void fb_GfxPaletteGetUsing(int *data);
 extern FBCALL void fb_GfxPaletteGetUsing64(long long *data);
 extern FBCALL void fb_GfxPset(void *target, float x, float y, unsigned int color, int coord_type, int ispreset);
-extern FBCALL int fb_GfxPoint(void *target, float x, float y);
+extern FBCALL ssize_t fb_GfxPoint(void *target, float x, float y);
 extern FBCALL float fb_GfxPMap(float coord, int func);
 extern FBCALL float fb_GfxCursor(int func);
 extern FBCALL void fb_GfxView(int x1, int y1, int x2, int y2, unsigned int fill_color, unsigned int border_color, int screen);

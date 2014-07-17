@@ -48,10 +48,10 @@ declare function hPorts_cb _
 				byval target as any ptr = 0, _
 				byval x as single, _
 				byval y as single _
-			) as long '/ _
+			) as integer '/ _
 		( _
 			@FB_RTL_GFXPOINT, NULL, _
-			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
+			FB_DATATYPE_INTEGER, FB_FUNCMODE_FBCALL, _
 	 		@hGfxlib_cb, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
@@ -1496,7 +1496,6 @@ function rtlGfxPoint _
 	) as ASTNODE ptr
 
 	dim as ASTNODE ptr proc = any
-	dim as integer is_color_query = any
 
 	function = NULL
 
@@ -1513,22 +1512,12 @@ function rtlGfxPoint _
  	end if
 
  	'' byval y as single
-	if( yexpr ) then
-		is_color_query = TRUE
-	else
-		is_color_query = FALSE
+	if( yexpr = NULL ) then
  		yexpr = astNewCONSTf( -8388607, FB_DATATYPE_SINGLE )
  	end if
  	if( astNewARG( proc, yexpr ) = NULL ) then
  		exit function
  	end if
-
-	'' fb_GfxPoint() currently returns a signed Long. Wrap the call in a
-	'' culng() to prevent sign-extension on 64bit, but only when querying
-	'' a color, and not when acting as fb_GfxCursor() wrapper.
-	if( is_color_query ) then
-		proc = astNewCONV( FB_DATATYPE_ULONG, NULL, proc )
-	end if
 
 	function = proc
 end function

@@ -2,7 +2,7 @@
 
 #include "fb_gfx.h"
 
-FBCALL int fb_GfxPoint(void *target, float fx, float fy)
+FBCALL ssize_t fb_GfxPoint(void *target, float fx, float fy)
 {
 	FB_GFXCTX *context;
 	int x, y;
@@ -43,5 +43,11 @@ FBCALL int fb_GfxPoint(void *target, float fx, float fy)
 			 ((color & 0xF800) << 8) | ((color << 3) & 0x70000));
 
 	FB_GRAPHICS_UNLOCK( );
-	return (int)color;
+
+	/* Returning a RGBA value or palette index in a signed 32bit/64bit
+	   Integer, without sign-extension on 64bit.
+	   (palette indices can't be negative anyways, and sign-extending an
+	   RGBA value would cause it to compare unequal to a normal,
+	   non-sign-extended one) */
+	return color;
 }
