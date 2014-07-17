@@ -49,6 +49,7 @@ Version 0.91.0:
 - Dynamic array descriptors will now always be generated with the FBARRAY.data and FBARRAY.ptr pointer fields specialized for the array's original data type, improving the -g debug info
 - Len() can now be overloaded as an operator for user-defined types
 - Suspicious pointer assignment warnings will now be shown for constant declarations too
+- CONST can now be used to declare UDT/string/procedure pointer constants, for example: CONST p AS MyUdt PTR = 0
 
 [fixed]
 - dlltool syntax error when building a DLL without any EXPORTs

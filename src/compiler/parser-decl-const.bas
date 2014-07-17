@@ -18,20 +18,12 @@ private sub hGetType( byref dtype as integer, byref subtype as FBSYMBOL ptr )
 			subtype = NULL
 		end if
 
-		'' check for invalid types
-		if( subtype <> NULL ) then
-			'' only allow if it's an enum
-			if( dtype <> FB_DATATYPE_ENUM ) then
-				errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE )
-				'' error recovery: discard type
-				dtype = FB_DATATYPE_INVALID
-				subtype = NULL
-			end if
-		end if
-
-		select case as const typeGet( dtype )
+		'' Check for invalid (ANY, forward references) and unsupported
+		'' types (UDTs except enums, fixed-length strings)
+		select case( typeGetDtAndPtrOnly( dtype ) )
 		case FB_DATATYPE_VOID, FB_DATATYPE_FIXSTR, _
-			 FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
+		     FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR, _
+		     FB_DATATYPE_STRUCT, FB_DATATYPE_FWDREF
 			errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE )
 			'' error recovery: discard type
 			dtype = FB_DATATYPE_INVALID
