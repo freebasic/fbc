@@ -136,7 +136,13 @@ private sub cConstAssign _
 	if( expr = NULL ) then
 		errReportEx( FB_ERRMSG_EXPECTEDCONST, id )
 		doskip = TRUE
-		'' error recovery: create a fake node
+		'' Error recovery:
+		'' 1. If the dtype was supposed to be determined based on the
+		''    expression which we just failed to parse, use a default.
+		if( dtype = FB_DATATYPE_INVALID ) then
+			dtype = FB_DATATYPE_INTEGER
+		end if
+		'' 2. Create a fake expression
 		expr = astNewCONSTz( dtype, subtype )
 	end if
 
