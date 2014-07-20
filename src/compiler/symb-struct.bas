@@ -81,9 +81,8 @@ function symbStructBegin _
 	s->udt.natalign = 1
 	s->udt.bitpos = 0
 	s->udt.unpadlgt	= 0
-
+	s->udt.retdtype = FB_DATATYPE_INVALID
 	s->udt.dbg.typenum = INVALID
-
 	s->udt.ext = NULL
 
 	'' extending another UDT?
@@ -774,11 +773,13 @@ sub symbStructEnd _
 		sym->lgt += pad
 	end if
 
-	'' set the real data type used to return this struct from procs
-	sym->udt.retdtype = hGetReturnType( sym )
-
 	'' Declare & add any implicit members
 	symbUdtAddDefaultMembers( sym )
+
+	'' Determine how to return this structure from procedures
+	'' (must be done after adding default members because it depends on
+	'' symbCompIsTrivial() which depends on knowing all ctors/dtors)
+	sym->udt.retdtype = hGetReturnType( sym )
 
 	'' check for forward references
 	if( symb.fwdrefcnt > 0 ) then

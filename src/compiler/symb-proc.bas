@@ -281,6 +281,11 @@ sub symbProcRecalcRealType( byval proc as FBSYMBOL ptr )
 		else
 			dtype = symbGetUDTRetType( subtype )
 
+			'' symbStructEnd() should have set it by now, but there
+			'' could be problems if symbUdtAddDefaultMembers() calls
+			'' this before that.
+			assert( dtype <> FB_DATATYPE_INVALID )
+
 			'' If it became an integer or float, forget the subtype,
 			'' that should only be preserved for UDTs and UDT ptrs.
 			if( typeGetDtOnly( dtype ) <> FB_DATATYPE_STRUCT ) then
