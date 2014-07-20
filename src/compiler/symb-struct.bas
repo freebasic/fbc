@@ -629,21 +629,24 @@ private function hGetReturnType( byval sym as FBSYMBOL ptr ) as integer
 
 	'' UDT has a dtor, copy-ctor or virtual methods?
 	if( symbCompIsTrivial( sym ) = FALSE ) then
-		'' It's always returned through a hidden param on stack
+		'' It's always returned through a hidden param on stack,
+		'' even for the C backend, because gcc doesn't get to see
+		'' ctors/dtors/virtuals and thus would think it's trivial and,
+		'' if small enough, ok to be returned in registers, which would
+		'' be wrong.
 		return typeAddrOf( FB_DATATYPE_STRUCT )
+	end if
+
+	'' C backend: Trivial structs can just be returned as-is, no need to
+	'' "lower the AST" to using registers or a hidden pointer parameter and
+	'' pointer result. Instead, gcc will do that.
+	if( env.clopt.backend = FB_BACKEND_GCC ) then
+		return FB_DATATYPE_STRUCT
 	end if
 
 	'' On Linux & co structures are never returned in registers
 	if( (env.target.options and FB_TARGETOPT_RETURNINREGS) = 0 ) then
 		return typeAddrOf( FB_DATATYPE_STRUCT )
-	end if
-
-	'' C backend? Leave the type as-is instead of lowering to the real
-	'' "return-in-regs" type, this means we can generate nicer C code,
-	'' since UDT vars also use the original type, they can be used with
-	'' RETURN in C without needing a cast.
-	if( env.clopt.backend = FB_BACKEND_GCC ) then
-		return FB_DATATYPE_STRUCT
 	end if
 
 	res = FB_DATATYPE_VOID

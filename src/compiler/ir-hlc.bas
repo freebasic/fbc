@@ -41,23 +41,39 @@
 ''      possible because there's no way to know how many varargs there are.
 ''
 '' - Calling conventions/name mangling:
-''   1. Cdecl and Stdcall (stdcall with @N) are easily emitted for GCC on
+''
+''    * We sometimes make use of gcc's asm("nameToUseInAsm") feature which is
+''      similar to ALIAS.
+''
+''    * Cdecl and Stdcall (stdcall with @N) are easily emitted for GCC on
 ''      individual functions.
-''   2. StdcallMs (stdcall without @N) is not directly supported by gcc, only at
+''
+''    * Special case for stdcall + functions returning UDTs, where we already
+''      had to "lower the AST on the FB-side" to use a hidden pointer parameter
+''      and pointer result, instead of plain UDT result (see hGetReturnType()):
+''
+''      gcc doesn't know that the "hidden" result parameter is special and thus
+''      calculates it into the @N suffix. We need to use an asm() alias to avoid
+''      that. (see symbCalcProcParamsLen())
+''
+''    * StdcallMs (stdcall without @N) is not directly supported by gcc, only at
 ''      the linker level through ld --kill-at etc. We need it for individual
-''      functions though, not the entire executable/DLL. As a work-around we
-''      use gcc's asm("nameToUseInAsm") feature which is similar to ALIAS.
-''      Because gcc inserts these asm() names as-is into DLL export tables,
+''      functions though, not the entire executable/DLL. We can achieve that by
+''      using asm() aliases.
+''
+''      Because gcc inserts these asm() names into DLL export tables as-is,
 ''      without stripping the underscore prefix, we must emit the exports
 ''      manually using inline ASM instead of __attribute__((dllexport)) to get
 ''      them to work correctly.
-''   3. Pascal is like StdcallMs except that arguments are pushed left-to-right
+''
+''    * Pascal is like StdcallMs except that arguments are pushed left-to-right
 ''      (same order as written in code, not reversed like Cdecl/Stdcall). The
 ''      symbGetProc*Param() macros take care of changing the order when cycling
 ''      through parameters of Pascal functions, and by together with such
 ''      functions being emitted as Stdcall this results in a double-reverse
 ''      resulting in the proper ABI.
-''   4. For non-x86, there's no need to emit cdecl/stdcall/... at all because
+''
+''    * For non-x86, there's no need to emit cdecl/stdcall/... at all because
 ''      they don't exist (on x86_64 or ARM etc.) and gcc ignores the attributes.
 ''
 
@@ -457,21 +473,35 @@ private function hGetMangledNameForASM _
 	function = mangled
 end function
 
-private function hNeedStdcallMsHack( byval proc as FBSYMBOL ptr ) as integer
-	'' Only x86, because elsewhere gcc won't use @N suffixes anyways
-	if( fbGetCpuFamily( ) = FB_CPUFAMILY_X86 ) then
-		'' Only stdcallms/pascal which must be emitted as stdcall with
-		'' the hack to avoid the @N suffix
-		select case( symbGetProcMode( proc ) )
-		case FB_FUNCMODE_STDCALL_MS, FB_FUNCMODE_PASCAL
-			'' Only on systems where gcc would use the @N suffix
-			select case( env.clopt.target )
-			case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN, _
-			     FB_COMPTARGET_XBOX
-				function = TRUE
-			end select
-		end select
+private function hNeedAlias( byval proc as FBSYMBOL ptr ) as integer
+	function = FALSE
+
+	'' Only on systems where gcc would use the @N suffix
+	if( fbGetCpuFamily( ) <> FB_CPUFAMILY_X86 ) then
+		exit function
 	end if
+
+	select case( env.clopt.target )
+	case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN, _
+	     FB_COMPTARGET_XBOX
+
+	case else
+		exit function
+	end select
+
+	select case( symbGetProcMode( proc ) )
+	'' stdcallms/pascal must be emitted as stdcall and need the alias to
+	'' avoid the @N suffix.
+	case FB_FUNCMODE_STDCALL_MS, FB_FUNCMODE_PASCAL
+		function = TRUE
+
+	'' For stdcall with @N suffix, if the function has a hidden UDT result
+	'' pointer parameter, we need the alias to get the correct @N suffix.
+	'' (gcc would calculate the parameter into the @N suffix, since it
+	'' doesn't know that the parameter is the special result parameter)
+	case FB_FUNCMODE_STDCALL
+		function = symbProcReturnsOnStack( proc )
+	end select
 end function
 
 private function hEmitProcHeader _
@@ -582,10 +612,9 @@ private function hEmitProcHeader _
 
 	if( ((options and EMITPROC_ISPROCPTR) = 0) and _
 	    ((options and EMITPROC_ISPROTO) <> 0)        ) then
-		'' Add an extra <asm("mangledname")> to prevent gcc
-		'' from adding the stdcall @N suffix. asm() can only
-		'' be used on prototypes.
-		if( hNeedStdcallMsHack( proc ) ) then
+		'' Add asm("mangledname") alias if needed.
+		'' asm() can only be be used on prototypes.
+		if( hNeedAlias( proc ) ) then
 			ln += " asm(""" + hGetMangledNameForASM( proc, TRUE ) + """)"
 		end if
 
@@ -3374,11 +3403,10 @@ private sub _emitProcBegin _
 
 	sectionBegin( )
 
-	'' If the asm("mangledname") work-around is needed to tell gcc to not
-	'' add the @N suffix for stdcall  procedures, emit an extra prototype
+	'' If an asm("mangledname") alias is needed, emit an extra prototype
 	'' right above the procedure body, because asm() is only allowed on
 	'' prototypes.
-	if( hNeedStdcallMsHack( proc ) ) then
+	if( hNeedAlias( proc ) ) then
 		hWriteLine( hEmitProcHeader( proc, EMITPROC_ISPROTO ) + ";" )
 	end if
 
