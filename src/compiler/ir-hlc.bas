@@ -446,9 +446,9 @@ private function hGetMangledNameForASM _
 		mangled  = "_" + mangled
 	end if
 
-	if( symbIsProc( sym ) ) then
+	'' Add the @N suffix for x86 STDCALL
+	if( (fbGetCpuFamily( ) = FB_CPUFAMILY_X86) and symbIsProc( sym ) ) then
 		if( symbGetProcMode( sym ) = FB_FUNCMODE_STDCALL ) then
-			'' Add the @N suffix for STDCALL
 			mangled += "@"
 			mangled += str( symbCalcProcParamsLen( sym ) )
 		end if

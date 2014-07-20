@@ -1137,17 +1137,27 @@ end function
 
 private sub hMangleProc( byval sym as FBSYMBOL ptr )
 	dim as string mangled
-	dim as integer length = any, docpp = any
+	dim as integer length = any, docpp = any, add_stdcall_suffix = any
 	dim as zstring ptr id = any
 
 	docpp = hDoCppMangling( sym )
+
+	'' Should the @N win32 stdcall suffix be added for this procedure?
+	'' * only for stdcall, not stdcallms/cdecl/pascal
+	''   (that also makes it win32-only)
+	'' * only on x86, since these calling conventions matter there only
+	'' * only for ASM/LLVM backends, but not for the C backend, because gcc
+	''   will do it already
+	add_stdcall_suffix = (sym->proc.mode = FB_FUNCMODE_STDCALL) and _
+				(fbGetCpuFamily( ) = FB_CPUFAMILY_X86) and _
+				(env.clopt.backend <> FB_BACKEND_GCC)
 
 	'' LLVM: @ prefix for global symbols
 	if( env.clopt.backend = FB_BACKEND_LLVM ) then
 		mangled += "@"
 
 		'' Going to add @N stdcall suffix below?
-		if( sym->proc.mode = FB_FUNCMODE_STDCALL ) then
+		if( add_stdcall_suffix ) then
 			'' In LLVM, @ is a special char, identifiers using it must be quoted
 			mangled += """"
 		end if
@@ -1232,11 +1242,8 @@ private sub hMangleProc( byval sym as FBSYMBOL ptr )
 	end if
 
 	'' @N win32 stdcall suffix
-	if( sym->proc.mode = FB_FUNCMODE_STDCALL ) then
-		'' But not for the C backend, because gcc will do it already.
-		if( env.clopt.backend <> FB_BACKEND_GCC ) then
-			mangled += "@" + str( symbCalcProcParamsLen( sym ) )
-		end if
+	if( add_stdcall_suffix ) then
+		mangled += "@" + str( symbCalcProcParamsLen( sym ) )
 
 		if( env.clopt.backend = FB_BACKEND_LLVM ) then
 			'' In LLVM, @ is a special char, identifiers using it must be quoted

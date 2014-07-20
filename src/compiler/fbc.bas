@@ -615,8 +615,14 @@ private function hLinkFiles( ) as integer
 			'' create a dll
 			ldcline += " --dll --enable-stdcall-fixup"
 
-			'' set the entry-point
-			ldcline += " -e _DllMainCRTStartup@12"
+			'' Specify the DLL entry-point, like gcc:
+			'' with underscore and @N stdcall suffix on x86,
+			'' but without that for x86_64.
+			if( fbGetCpuFamily( ) = FB_CPUFAMILY_X86 ) then
+				ldcline += " -e _DllMainCRTStartup@12"
+			else
+				ldcline += " -e DllMainCRTStartup"
+			end if
 		end if
 
 	case FB_COMPTARGET_LINUX, FB_COMPTARGET_DARWIN, _
