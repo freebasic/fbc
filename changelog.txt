@@ -199,6 +199,7 @@ Version 0.91.0:
 - #733: The -> operator couldn't be applied to parenthesized UDT expressions even if overloaded for that UDT
 - On Win32, wrong code could be generated when returning complex structures from functions: Under -gen gas, they could be incorrectly returned in registers (if small enough), if they became complex only thanks to the addition of implicit members. Besides being ABI-incompatible to GCC/MSVC, this could also lead to missing destructor calls.
 - C backend: stdcall functions returning non-trivial UDTs had the wrong @N stdcall suffix (the hidden result pointer parameter was calculated into it, but shouldn't be)
+- 0.90.0 regression: Some cases of binary operations involving unsigned operands and constants could cause the compiler to show "implicit conversion" warnings due to internal transformations, for example: dim as uinteger a, b : print a - (b - 1)
 
 
 Version 0.90.1:

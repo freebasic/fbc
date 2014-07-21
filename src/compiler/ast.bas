@@ -203,7 +203,7 @@ sub astInit( )
 	ast.typeinicount = 0
 	ast.bitfieldcount = 0
     ast.currblock = NULL
-	ast.warn_convoverflow = TRUE
+	ast.hidewarningslevel = 0
 
     astCallInit( )
     astProcListInit( )

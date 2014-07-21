@@ -315,7 +315,9 @@ private function hConstBop _
 			        (((typeGetSize( l->dtype ) = 8) and (l->val.i = -9223372036854775808ull)) or _
 			         ((typeGetSize( l->dtype ) = 4) and (l->val.i = -2147483648u))) ) then
 				l->val.i = 0
-				errReportWarn( FB_WARNINGMSG_CONVOVERFLOW )
+				if( astShouldShowWarnings( ) ) then
+					errReportWarn( FB_WARNINGMSG_CONVOVERFLOW )
+				end if
 
 			elseif( op = AST_OP_INTDIV ) then
 				l->val.i = l->val.i \   r->val.i
@@ -1271,7 +1273,9 @@ function astNewBOP _
 
 		case AST_OP_SUB
 			'' c - ? = -? + c (this will removed later if no const folding can be done)
+			astBeginHideWarnings( )
 			r = astNewUOP( AST_OP_NEG, r )
+			astEndHideWarnings( )
 			if( r = NULL ) then
 				return NULL
 			end if
@@ -1304,7 +1308,9 @@ function astNewBOP _
 			end if
 
 			'' ? - c = ? + -c
+			astBeginHideWarnings( )
 			r = astNewUOP( AST_OP_NEG, r )
+			astEndHideWarnings( )
 			op = AST_OP_ADD
 
 		'' report error for 'x \ 0', 'x mod 0'

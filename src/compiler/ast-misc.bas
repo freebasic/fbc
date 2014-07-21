@@ -617,7 +617,7 @@ sub astCheckConst _
 
 	end select
 
-	if( (result = FALSE) and ast.warn_convoverflow ) then
+	if( (result = FALSE) and astShouldShowWarnings( ) ) then
 		errReportWarn( FB_WARNINGMSG_CONVOVERFLOW )
 	end if
 end sub

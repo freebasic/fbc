@@ -251,10 +251,12 @@ function astNewUOP _
 				'' NEG( cushort( 32769 ) ) is -32769,
 				'' but the lowest short is -32768.
 
-				'' Highest bit set? (meaning the negation cannot be represented,
-				'' since the highest bit will be overwritten with the sign bit)
-				if( astConstGetUint( o ) > (1ull shl (typeGetBits( dtype ) - 1)) ) then
-					errReportWarn( FB_WARNINGMSG_IMPLICITCONVERSION )
+				if( astShouldShowWarnings( ) ) then
+					'' Highest bit set? (meaning the negation cannot be represented,
+					'' since the highest bit will be overwritten with the sign bit)
+					if( astConstGetUint( o ) > (1ull shl (typeGetBits( dtype ) - 1)) ) then
+						errReportWarn( FB_WARNINGMSG_IMPLICITCONVERSION )
+					end if
 				end if
 
 				dtype = typeToSigned( dtype )

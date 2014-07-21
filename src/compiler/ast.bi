@@ -373,12 +373,17 @@ type ASTCTX
 
 	asmtoklist		as TLIST  '' inline ASM token nodes
 
-	'' Whether astCheckConst() (called from astNewCONV() called from astNewBOP() etc.)
-	'' should show warnings or not, allowing them to be disabled during optimizations,
-	'' because there overflows (wrap-arounds) can happen due to constant accumulation etc.,
-	'' and the user may not be able to see what the reason for the warning is.
-	'' The warning should only be shown for the user's code, not internals.
-	warn_convoverflow	as integer
+	'' Whether warnings related to CONST nodes (e.g. "const overflow"
+	'' warnings from astCheckConst()) should be hidden. Sometimes we do
+	'' internal astNew*() operations that cause such warnings, but since
+	'' they're part of internal optimizations, they shouldn't be shown to
+	'' the user.
+	'' This works like a nesting level counter so that the
+	'' astBeginHideWarnings()/astEndHideWarnings() functions work like a
+	'' push/pop stack.
+	''   0 => show warnings
+	'' > 0 => hide warnings
+	hidewarningslevel	as integer
 end Type
 
 #include once "ir.bi"
@@ -1347,6 +1352,11 @@ declare function astLoadNIDXARRAY( byval n as ASTNODE ptr ) as IRVREG ptr
 ''
 '' macros
 ''
+
+#define astBeginHideWarnings( ) ast.hidewarningslevel += 1
+#define astEndHideWarnings( )   ast.hidewarningslevel -= 1
+#define astShouldShowWarnings( ) (ast.hidewarningslevel = 0)
+
 #macro astInitNode( n, class_, dtype_, subtype_ )
 	(n)->class = class_
 	(n)->dtype = dtype_
