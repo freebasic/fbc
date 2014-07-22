@@ -264,7 +264,6 @@ else
   ifdef TARGET
     libsubdir := $(TARGET)
   endif
-  bindir      := bin
   FBC_EXE     := bin/fbc$(ENABLE_SUFFIX)$(EXEEXT)
   FBCNEW_EXE  := bin/fbc$(ENABLE_SUFFIX)-new$(EXEEXT)
   libdir         := lib/$(FBNAME)/$(libsubdir)
@@ -390,13 +389,13 @@ endif
 all: compiler rtlib gfxlib2
 
 $(fbcobjdir) $(libfbobjdir) $(libfbmtobjdir) $(libfbgfxobjdir) $(libfbgfxmtobjdir) \
-$(bindir) $(libdir) $(prefixbindir) $(prefixincdir) $(prefixlibdir):
+bin $(libdir) $(prefixbindir) $(prefixincdir) $(prefixlibdir):
 	mkdir -p $@
 
 ################################################################################
 
 .PHONY: compiler
-compiler: $(bindir) $(fbcobjdir) $(FBC_EXE)
+compiler: bin $(fbcobjdir) $(FBC_EXE)
 
 $(FBC_EXE): $(FBC_BAS)
 	$(QUIET_LINK)$(FBC) $(ALLFBLFLAGS) -x $(FBCNEW_EXE) $^
@@ -543,7 +542,7 @@ clean:        clean-compiler clean-rtlib clean-gfxlib2
 clean-compiler:
 	rm -rf $(FBC_EXE) $(fbcobjdir)
   ifndef ENABLE_STANDALONE
-	-rmdir $(bindir)
+	-rmdir bin
   endif
 
 clean-rtlib:
