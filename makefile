@@ -529,7 +529,7 @@ uninstall-includes:
 uninstall-rtlib:
 	rm -f $(prefixlibdir)/$(FB_LDSCRIPT) $(prefixlibdir)/fbrt0.o $(prefixlibdir)/libfb.a $(prefixlibdir)/libfbmt.a
   ifeq ($(TARGET_OS),dos)
-	rm -f $(libdir)/libc.a
+	rm -f $(prefixlibdir)/libc.a
   endif
 
 uninstall-gfxlib2:
