@@ -339,8 +339,6 @@ ALLCFLAGS += $(CFLAGS)
 # compiler headers and modules
 FBC_BI  :=        $(wildcard $(srcdir)/compiler/*.bi)
 FBC_BAS := $(sort $(wildcard $(srcdir)/compiler/*.bas))
-FBC_ASM := $(patsubst %.bas,%.asm,$(FBC_BAS))
-FBC_C   := $(patsubst %.bas,%.c,$(FBC_BAS))
 FBC_BAS := $(patsubst $(srcdir)/compiler/%.bas,$(fbcobjdir)/%.o,$(FBC_BAS))
 
 # rtlib/gfxlib2 headers and modules
