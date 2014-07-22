@@ -527,19 +527,13 @@ uninstall-includes:
 	rm -rf $(prefixincdir)
 
 uninstall-rtlib:
-	rm -f $(prefixlibdir)/$(FB_LDSCRIPT) $(prefixlibdir)/fbrt0.o $(prefixlibdir)/libfb.a
-  ifndef DISABLE_MT
-	rm -f $(prefixlibdir)/libfbmt.a
-  endif
+	rm -f $(prefixlibdir)/$(FB_LDSCRIPT) $(prefixlibdir)/fbrt0.o $(prefixlibdir)/libfb.a $(prefixlibdir)/libfbmt.a
   ifeq ($(TARGET_OS),dos)
 	rm -f $(libdir)/libc.a
   endif
 
 uninstall-gfxlib2:
-	rm -f $(prefixlibdir)/libfbgfx.a
-  ifndef DISABLE_MT
-	rm -f $(prefixlibdir)/libfbgfxmt.a
-  endif
+	rm -f $(prefixlibdir)/libfbgfx.a $(prefixlibdir)/libfbgfxmt.a
 
 ################################################################################
 
@@ -547,29 +541,16 @@ uninstall-gfxlib2:
 clean:        clean-compiler clean-rtlib clean-gfxlib2
 
 clean-compiler:
-	rm -f $(FBC_EXE) $(fbcobjdir)/*.o
+	rm -rf $(FBC_EXE) $(fbcobjdir)
   ifndef ENABLE_STANDALONE
 	-rmdir $(bindir)
   endif
 
 clean-rtlib:
-	rm -f $(libdir)/$(FB_LDSCRIPT) $(libdir)/fbrt0.o $(libdir)/libfb.a $(libfbobjdir)/*.o
-	-rmdir $(libfbobjdir)
-  ifndef DISABLE_MT
-	rm -f $(libdir)/libfbmt.a $(libfbmtobjdir)/*.o
-	-rmdir $(libfbmtobjdir)
-  endif
-  ifeq ($(TARGET_OS),dos)
-	rm -f $(libdir)/libc.a $(libcmaino)
-  endif
+	rm -rf $(libdir)/$(FB_LDSCRIPT) $(libdir)/fbrt0.o $(libdir)/libfb.a $(libdir)/libfbmt.a $(libfbobjdir) $(libfbmtobjdir)
 
 clean-gfxlib2:
-	rm -f $(libdir)/libfbgfx.a $(libfbgfxobjdir)/*.o
-	-rmdir $(libfbgfxobjdir)
-  ifndef DISABLE_MT
-	rm -f $(libdir)/libfbgfxmt.a $(libfbgfxmtobjdir)/*.o
-	-rmdir $(libfbgfxmtobjdir)
-  endif
+	rm -rf $(libdir)/libfbgfx.a $(libdir)/libfbgfxmt.a $(libfbgfxobjdir) $(libfbgfxmtobjdir)
 
 ################################################################################
 
