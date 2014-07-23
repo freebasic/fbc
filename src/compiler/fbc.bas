@@ -790,7 +790,11 @@ private function hLinkFiles( ) as integer
 			ldcline += hFindLib( "crti.o" )
 		end if
 
-		ldcline += hFindLib( "crtbegin.o" )
+		if( fbGetOption( FB_COMPOPT_PIC ) ) then
+			ldcline += hFindLib( "crtbeginS.o" )
+		else
+			ldcline += hFindLib( "crtbegin.o" )
+		end if
 
 	case FB_COMPTARGET_XBOX
 		'' link with crt0.o (C runtime init)
@@ -854,7 +858,11 @@ private function hLinkFiles( ) as integer
 	case FB_COMPTARGET_LINUX, FB_COMPTARGET_DARWIN, _
 	     FB_COMPTARGET_FREEBSD, FB_COMPTARGET_OPENBSD, _
 	     FB_COMPTARGET_NETBSD
-		ldcline += hFindLib( "crtend.o" )
+		if( fbGetOption( FB_COMPOPT_PIC ) ) then
+			ldcline += hFindLib( "crtendS.o" )
+		else
+			ldcline += hFindLib( "crtend.o" )
+		end if
 		if (fbGetOption( FB_COMPOPT_TARGET ) <> FB_COMPTARGET_OPENBSD) then
 			ldcline += hFindLib( "crtn.o" )
 		end if
