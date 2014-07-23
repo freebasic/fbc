@@ -1264,6 +1264,7 @@ enum
 	OPT_O
 	OPT_OPTIMIZE
 	OPT_P
+	OPT_PIC
 	OPT_PP
 	OPT_PREFIX
 	OPT_PRINT
@@ -1324,6 +1325,7 @@ dim shared as integer option_takes_argument(0 to (OPT__COUNT - 1)) = _
 	TRUE , _ '' OPT_O
 	TRUE , _ '' OPT_OPTIMIZE
 	TRUE , _ '' OPT_P
+	FALSE, _ '' OPT_PIC
 	FALSE, _ '' OPT_PP
 	TRUE , _ '' OPT_PREFIX
 	TRUE , _ '' OPT_PRINT
@@ -1543,6 +1545,9 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 	case OPT_P
 		strsetAdd(@fbc.libpaths, pathStripDiv(arg), FALSE)
 
+	case OPT_PIC
+		fbSetOption( FB_COMPOPT_PIC, TRUE )
+
 	case OPT_PP
 		'' -pp doesn't change the output type, but like -r we want to
 		'' stop fbc very early.
@@ -1757,6 +1762,7 @@ private function parseOption(byval opt as zstring ptr) as integer
 
 	case asc("p")
 		ONECHAR(OPT_P)
+		CHECK("pic", OPT_PIC)
 		CHECK("pp", OPT_PP)
 		CHECK("prefix", OPT_PREFIX)
 		CHECK("print", OPT_PRINT)
@@ -1987,6 +1993,17 @@ private sub parseArgsFromFile(byref filename as string)
 	close #f
 end sub
 
+private function hTargetNeedsPIC( ) as integer
+	function = FALSE
+	if( fbGetCpuFamily( ) <> FB_CPUFAMILY_X86 ) then
+		select case as const( fbGetOption( FB_COMPOPT_TARGET ) )
+		case FB_COMPTARGET_LINUX, FB_COMPTARGET_FREEBSD, _
+		     FB_COMPTARGET_OPENBSD, FB_COMPTARGET_NETBSD
+			function = TRUE
+		end select
+	end if
+end function
+
 private sub hParseArgs( byval argc as integer, byval argv as zstring ptr ptr )
 	fbc.optid = -1
 
@@ -2099,6 +2116,22 @@ private sub hParseArgs( byval argc as integer, byval argv as zstring ptr ptr )
 			errReportEx( FB_ERRMSG_GENGASWITHOUTINTEL, "", -1 )
 		end if
 		fbSetOption( FB_COMPOPT_ASMSYNTAX, fbc.asmsyntax )
+	end if
+
+	'' Enable -pic automatically when building a shared library on non-x86 Unixes
+	if( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB ) then
+		if( hTargetNeedsPIC( ) ) then
+			fbSetOption( FB_COMPOPT_PIC, TRUE )
+		end if
+	end if
+
+	'' Complain if -pic was given in cases where it's not needed/supported
+	if( fbGetOption( FB_COMPOPT_PIC ) ) then
+		if( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_EXECUTABLE ) then
+			errReportEx( FB_ERRMSG_PICNOTSUPPORTEDFOREXE, "", -1 )
+		elseif( hTargetNeedsPIC( ) = FALSE ) then
+			errReportEx( FB_ERRMSG_PICNOTSUPPORTEDFORTARGET, "", -1 )
+		end if
 	end if
 
 	'' TODO: Check whether subsystem/stacksize/xboxtitle were set and
@@ -3088,6 +3121,7 @@ private sub hPrintOptions( )
 	print "  -o <file>        Set .o (or -pp .bas) file name for prev/next input file"
 	print "  -O <value>       Optimization level (default: 0)"
 	print "  -p <path>        Add a library search path"
+	print "  -pic             Generate position-indepedent code (non-x86 Unix shared libs)"
 	print "  -pp              Write out preprocessed input file (.pp.bas) only"
 	print "  -prefix <path>   Set the compiler prefix path"
 	print "  -print host|target  Display host/target system name"

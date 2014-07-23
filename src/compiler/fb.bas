@@ -432,6 +432,7 @@ sub fbGlobalInit()
 	env.clopt.export        = FALSE
 	env.clopt.multithreaded = FALSE
 	env.clopt.gfx           = FALSE
+	env.clopt.pic           = FALSE
 	env.clopt.msbitfields   = FALSE
 	env.clopt.stacksize     = FB_DEFSTACKSIZE
 
@@ -514,6 +515,8 @@ sub fbSetOption( byval opt as integer, byval value as integer )
 		env.clopt.multithreaded = value
 	case FB_COMPOPT_GFX
 		env.clopt.gfx = value
+	case FB_COMPOPT_PIC
+		env.clopt.pic = value
 	case FB_COMPOPT_STACKSIZE
 		env.clopt.stacksize = value
 		if (env.clopt.stacksize < FB_MINSTACKSIZE) then
@@ -581,6 +584,8 @@ function fbGetOption( byval opt as integer ) as integer
 		function = env.clopt.multithreaded
 	case FB_COMPOPT_GFX
 		function = env.clopt.gfx
+	case FB_COMPOPT_PIC
+		function = env.clopt.pic
 	case FB_COMPOPT_STACKSIZE
 		function = env.clopt.stacksize
 
