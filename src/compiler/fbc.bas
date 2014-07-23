@@ -799,7 +799,13 @@ private function hLinkFiles( ) as integer
 	end select
 
 	if( fbc.nodeflibs = FALSE ) then
-		ldcline += " """ + fbc.libpath + (FB_HOST_PATHDIV + "fbrt0.o""")
+		ldcline += " """ + fbc.libpath + FB_HOST_PATHDIV
+		if( fbGetOption( FB_COMPOPT_PIC ) ) then
+			ldcline += "fbrt0pic.o"
+		else
+			ldcline += "fbrt0.o"
+		end if
+		ldcline += """"
 	end if
 
 	scope
@@ -2927,21 +2933,25 @@ private sub fbcAddDefLib(byval libname as zstring ptr)
 	strsetAdd(@fbc.finallibs, *libname, TRUE)
 end sub
 
+private function hGetFbLibNameSuffix( ) as string
+	if( fbGetOption( FB_COMPOPT_MULTITHREADED ) ) then
+		if( fbGetOption( FB_COMPOPT_PIC ) ) then
+			function = "mtpic"
+		else
+			function = "mt"
+		end if
+	elseif( fbGetOption( FB_COMPOPT_PIC ) ) then
+		function = "pic"
+	end if
+end function
+
 private sub hAddDefaultLibs( )
 	'' select the right FB rtlib
-	if( fbGetOption( FB_COMPOPT_MULTITHREADED ) ) then
-		fbcAddDefLib( "fbmt" )
-	else
-		fbcAddDefLib( "fb" )
-	end if
+	fbcAddDefLib( "fb" + hGetFbLibNameSuffix( ) )
 
 	'' and the gfxlib, if gfx functions were used
 	if( fbGetOption( FB_COMPOPT_GFX ) ) then
-		if( fbGetOption( FB_COMPOPT_MULTITHREADED ) ) then
-			fbcAddDefLib( "fbgfxmt" )
-		else
-			fbcAddDefLib( "fbgfx" )
-		end if
+		fbcAddDefLib( "fbgfx" + hGetFbLibNameSuffix( ) )
 
 		select case as const( fbGetOption( FB_COMPOPT_TARGET ) )
 		case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN
