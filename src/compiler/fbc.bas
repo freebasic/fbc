@@ -2636,6 +2636,10 @@ private function hCompileStage2Module( byval module as FBCIOFILE ptr ) as intege
 			ln += "-march=" + *fbGetGccArch( ) + " "
 		end if
 
+		if( fbGetOption( FB_COMPOPT_PIC ) ) then
+			ln += "-fPIC "
+		end if
+
 		ln += "-S -nostdlib -nostdinc -Wall -Wno-unused-label " + _
 		      "-Wno-unused-function -Wno-unused-variable " + _
 		      "-Wno-unused-but-set-variable "
@@ -2692,6 +2696,10 @@ private function hCompileStage2Module( byval module as FBCIOFILE ptr ) as intege
 		case FB_CPUFAMILY_AARCH64
 			ln += "-march=aarch64 "
 		end select
+
+		if( fbGetOption( FB_COMPOPT_PIC ) ) then
+			ln += "-relocation-model=pic "
+		end if
 
 		ln += "-O" + str( fbGetOption( FB_COMPOPT_OPTIMIZELEVEL ) ) + " "
 
