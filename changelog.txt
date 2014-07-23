@@ -20,6 +20,8 @@ Version 0.91.0:
 - 64bit support (-arch x86_64) based on -gen gcc: INTEGER/POINTER = 64bit, LONG = 32bit DWORD. Compiler #define: __FB_64BIT__
 - -arch 32|64 options to support easy switching between 32bit and 64bit, by selecting a default arch that supports 32/64 bits respectively.
 - ARM support (-arch armv6|armv7-a|aarch64) based on -gen gcc. Compiler #define: __FB_ARM__
+- To support non-x86 Unix shared libraries, there will now be PIC (position-independent code) versions of the FB libs for such systems: fbrt0pic.o, libfbpic.a, etc. The compiler will automatically use them when making a non-x86 Unix shared library.
+- -pic option for generating position-independent code for non-x86 Unix shared libraries (automatically enabled by -dll, but must be given manually when compiling code via -c or -lib, if it will later be linked into a shared library)
 - fbc -v now prints out the target system and architecture
 - BYVAL AS STRING is now working properly: it now has BYVAL semantics and no longer behaves like BYREF AS ZSTRING. Modifications made by the callee are not visible to the caller, as for other BYVAL parameters. (BYVAL AS STRING is implemented by copying the string argument into a temporary STRING, whose descriptor is then passed BYREF to the procedure)
 - New syntax for declaring dynamic arrays with certain amount of dimensions (but no initial bounds): DIM array(ANY) AS INTEGER (1 dimension), DIM array(ANY, ANY) AS INTEGER (2 dimensions), etc. This allows for better compile-time checking of dynamic array parameters, and also allows the compiler to allocate smaller array descriptors which is especially useful for dynamic array fields.
