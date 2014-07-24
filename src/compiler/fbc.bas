@@ -2794,6 +2794,11 @@ private function hAssembleRc( byval rc as FBCIOFILE ptr ) as integer
 	           (FB_HOST_PATHDIV + "win" + FB_HOST_PATHDIV + "rc")
 
 	dim as string ln = "/ni /nw /o "
+
+	if( fbGetCpuFamily( ) = FB_CPUFAMILY_X86_64 ) then
+		ln += "/machine X64 "
+	end if
+
 	ln &= "/fo """ & *rc->objfile & """"
 	ln &= " """ & rc->srcfile & """"
 
