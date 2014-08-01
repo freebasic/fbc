@@ -3038,6 +3038,107 @@ namespace swapUdts
 	end sub
 end namespace
 
+namespace localArrayInit1
+	type UDT
+		i as integer
+		declare constructor(byref rhs as string)
+	end type
+
+	constructor UDT(byref rhs as string)
+		this.i = valint(rhs)
+	end constructor
+
+	sub test cdecl( )
+		dim c(0 to 0) as UDT = { "123" }
+		CU_ASSERT( c(0).i = 123 )
+	end sub
+end namespace
+
+namespace localArrayInit2
+	dim shared as integer ctors, dtors
+
+	type A
+		i as integer
+		declare constructor()
+		declare destructor()
+	end type
+
+	constructor A()
+		CU_ASSERT( ctors = 0 )
+		CU_ASSERT( dtors = 0 )
+		ctors += 1
+		this.i = 123
+	end constructor
+
+	destructor A()
+		CU_ASSERT( ctors = 1 )
+		CU_ASSERT( dtors = 0 )
+		dtors += 1
+	end destructor
+
+	type UDT
+		i as integer
+		declare constructor(byref rhs as A)
+	end type
+
+	constructor UDT(byref rhs as A)
+		this.i = rhs.i
+	end constructor
+
+	sub test cdecl( )
+		CU_ASSERT( ctors = 0 )
+		CU_ASSERT( dtors = 0 )
+		scope
+			dim c(0 to 0) as UDT = { A() }
+			CU_ASSERT( ctors = 1 )
+			CU_ASSERT( dtors = 1 )
+			CU_ASSERT( c(0).i = 123 )
+			CU_ASSERT( ctors = 1 )
+			CU_ASSERT( dtors = 1 )
+		end scope
+		CU_ASSERT( ctors = 1 )
+		CU_ASSERT( dtors = 1 )
+	end sub
+end namespace
+
+namespace localArrayInit3
+	dim shared as integer ctors, dtors
+
+	type A
+		i as integer
+		declare constructor()
+		declare destructor()
+	end type
+
+	constructor A()
+		CU_ASSERT( ctors = 0 )
+		CU_ASSERT( dtors = 0 )
+		ctors += 1
+		this.i = 123
+	end constructor
+
+	destructor A()
+		CU_ASSERT( ctors = 1 )
+		CU_ASSERT( dtors = 0 )
+		dtors += 1
+	end destructor
+
+	sub test cdecl( )
+		CU_ASSERT( ctors = 0 )
+		CU_ASSERT( dtors = 0 )
+		scope
+			dim c(0 to 0) as integer = { (A()).i }
+			CU_ASSERT( ctors = 1 )
+			CU_ASSERT( dtors = 1 )
+			CU_ASSERT( c(0) = 123 )
+			CU_ASSERT( ctors = 1 )
+			CU_ASSERT( dtors = 1 )
+		end scope
+		CU_ASSERT( ctors = 1 )
+		CU_ASSERT( dtors = 1 )
+	end sub
+end namespace
+
 private sub ctor( ) constructor
 	fbcu.add_suite( "tests/structs/temp-var-dtors" )
 
@@ -3112,6 +3213,10 @@ private sub ctor( ) constructor
 	add( copyctorWith2ndParam.test )
 
 	add( swapUdts.test )
+
+	add( localArrayInit1.test )
+	add( localArrayInit2.test )
+	add( localArrayInit3.test )
 end sub
 
 end namespace

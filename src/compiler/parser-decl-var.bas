@@ -1536,16 +1536,14 @@ function cVarDecl _
 
 							'' bydesc array params have no descriptor
 							if( desc <> NULL ) then
+								'' Initialize the array descriptor
+								'' * This should be added to the variable declaration because it belongs to that,
+								''   even if unscoped, more so than to the array's own initializer.
+								'' * This must be LINK'ed to avoid astAdd() which would destroy temp vars from the
+								''   array initializer too early.
 								var_decl = astNewLINK( var_decl, astTypeIniFlush( desc, symbGetTypeIniTree( desc ), FALSE, AST_OPOPT_ISINI ) )
 								symbSetTypeIniTree( desc, NULL )
 							end if
-
-							if( fbLangOptIsSet( FB_LANG_OPT_SCOPE ) ) then
-								astAdd( var_decl )
-							else
-								astAddUnscoped( var_decl )
-							end if
-							var_decl = NULL
 						end if
 					end if
 
