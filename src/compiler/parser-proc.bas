@@ -246,7 +246,6 @@ private function hCheckPrototype _
 		if( symbGetIsOptional( proto_param ) and symbGetIsOptional( param ) ) then
 			if( astIsEqualParamInit( proto_param->param.optexpr, param->param.optexpr ) = FALSE ) then
 				errReportParamWarn( proc, i, NULL, FB_WARNINGMSG_MISMATCHINGPARAMINIT )
-				exit function
 			end if
 		end if
 
