@@ -117,8 +117,7 @@ private sub hParamError _
 
 end sub
 
-'':::::
-private function hCheckPrototype _
+private sub hCheckPrototype _
 	( _
 		byval proto as FBSYMBOL ptr, _
 		byval proc as FBSYMBOL ptr, _
@@ -126,19 +125,33 @@ private function hCheckPrototype _
 		byval proc_dtype as integer, _
 		byval proc_subtype as FBSYMBOL ptr, _
 		byval mode as integer _
-	) as integer
+	)
 
     dim as FBSYMBOL ptr param = any, proto_param = any
     dim as integer params = any, proto_params = any, i = any
-
-	function = FALSE
 
 	'' Check ALIAS id
 	if( (palias <> NULL) and ((proto->stats and FB_SYMBSTATS_HASALIAS) <> 0) ) then
 		if( *palias <> *proto->id.alias ) then
 			errReportEx( FB_ERRMSG_DIFFERENTALIASTHANPROTO, """" + *palias + """" )
-			exit function
 		end if
+	end if
+
+	'' check return type
+	if( (symbGetFullType( proto ) <> proc_dtype) or _
+	    (symbGetSubtype( proto ) <> proc_subtype) ) then
+		errReport( FB_ERRMSG_TYPEMISMATCH, TRUE )
+	end if
+
+	'' check return method
+	if( (proc->proc.returnMethod <> FB_RETURN_DEFAULT) and _
+	    (proto->proc.returnMethod <> proc->proc.returnMethod) ) then
+		errReportWarn( FB_WARNINGMSG_RETURNMETHODMISMATCH )
+	end if
+
+	'' check calling convention
+	if( symbGetProcMode( proto ) <> mode ) then
+		errReport( FB_ERRMSG_ILLEGALPARAMSPEC, TRUE )
 	end if
 
 	'' check arg count
@@ -158,38 +171,13 @@ private function hCheckPrototype _
 
 	if( proto_params <> params ) then
 		errReport( FB_ERRMSG_ARGCNTMISMATCH, TRUE )
-		'' no error recovery: caller will take care
-		exit function
 	end if
 
-	'' check return type
-	if( symbGetFullType( proto ) <> proc_dtype ) then
-		errReport( FB_ERRMSG_TYPEMISMATCH, TRUE )
-		'' no error recovery: ditto
-		exit function
-	end if
-
-	'' and sub type
-	if( symbGetSubtype( proto ) <> proc_subtype ) then
-		errReport( FB_ERRMSG_TYPEMISMATCH, TRUE )
-		'' no error recovery: ditto
-		exit function
-	end if
-
-	'' check return method
-	if( proc->proc.returnMethod <> FB_RETURN_DEFAULT) and _
-		( proto->proc.returnMethod <> proc->proc.returnMethod ) then
-			errReportWarn( FB_WARNINGMSG_RETURNMETHODMISMATCH )
-	end if
-
-	'' check calling convention
-	if( symbGetProcMode( proto ) <> mode ) then
-		errReport( FB_ERRMSG_ILLEGALPARAMSPEC, TRUE )
-		exit function
-	end if
-
-	'' check each param
-	for i = 1 to params
+	'' Check each parameter. In case they had different amounts of
+	'' parameters, we already showed an error, but still can check at least
+	'' the common parameters, for better error recovery.
+	i = 1
+	while( (i <= proto_params) and (i <= params) )
         dim as integer dtype = symbGetFullType( proto_param )
 
     	'' convert any AS ANY arg to the final one
@@ -201,21 +189,14 @@ private function hCheckPrototype _
     	else
     		if( param->typ <> dtype ) then
                 hParamError( proc, i )
-                '' no error recovery: caller will take care
-                exit function
-
             elseif( param->subtype <> symbGetSubtype( proto_param ) ) then
                 hParamError( proc, i )
-                '' no error recovery: ditto
-                exit function
     		end if
     	end if
 
 		'' and mode
 		if( param->param.mode <> proto_param->param.mode ) then
 			hParamError( proc, i )
-			'' no error recovery: ditto
-			exit function
 		end if
 
 		'' Different BYDESC dimensions?
@@ -223,7 +204,6 @@ private function hCheckPrototype _
 		if( param->param.mode = FB_PARAMMODE_BYDESC ) then
 			if( param->param.bydescdimensions <> proto_param->param.bydescdimensions ) then
 				hParamError( proc, i )
-				exit function
 			end if
 		end if
 
@@ -249,15 +229,12 @@ private function hCheckPrototype _
 			end if
 		end if
 
-    	'' next arg
     	proto_param = proto_param->next
     	param = param->next
-    next
+		i += 1
+	wend
 
-    ''
-    function = TRUE
-
-end function
+end sub
 
 private sub hCheckAttribs _
 	( _
@@ -1623,9 +1600,7 @@ function cProcHeader _
 
 			'' There already is a prototype for this proc, check for
 			'' declaration conflicts and fix up the parameters
-			if( hCheckPrototype( head_proc, proc, palias, dtype, subtype, mode ) = FALSE ) then
-				return CREATEFAKE( )
-			end if
+			hCheckPrototype( head_proc, proc, palias, dtype, subtype, mode )
 
 			'' use the prototype
 			proc = head_proc
