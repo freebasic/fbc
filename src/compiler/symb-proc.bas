@@ -1736,7 +1736,7 @@ private function hCalcTypesDiff _
 
 				'' Different pointer types aren't compatible at all though,
 				'' that would be dangerous, except if the pointer count matches
-				'' and the base dtypes are integers of the size.
+				'' and the base dtypes are integers of the same size.
 				if( typeGetPtrCnt( param_dtype ) = typeGetPtrCnt( arg_dtype ) ) then
 					param_dt = typeGetDtOnly( param_dtype )
 					arg_dt = typeGetDtOnly( arg_dtype )
