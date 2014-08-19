@@ -2453,6 +2453,7 @@ function symbDump( byval sym as FBSYMBOL ptr ) as string
 		case FB_FUNCMODE_CDECL      : s += " cdecl"
 		end select
 
+#if 0
 		'' Dump parameters recursively (if any)
 		s += "("
 		var param = symbGetProcHeadParam( sym )
@@ -2464,6 +2465,7 @@ function symbDump( byval sym as FBSYMBOL ptr ) as string
 			end if
 		wend
 		s += ")"
+#endif
 
 	case FB_SYMBCLASS_PARAM
 		select case( symbGetParamMode( sym ) )
