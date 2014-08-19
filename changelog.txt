@@ -203,6 +203,7 @@ Version 0.91.0:
 - C backend: stdcall functions returning non-trivial UDTs had the wrong @N stdcall suffix (the hidden result pointer parameter was calculated into it, but shouldn't be)
 - 0.90.0 regression: Some cases of binary operations involving unsigned operands and constants could cause the compiler to show "implicit conversion" warnings due to internal transformations, for example: dim as uinteger a, b : print a - (b - 1)
 - Bad code generated for temporary variable destruction in local array initializers: temporary strings or UDTs with destructors could be destroyed before first used
+- #728: Buggy overload resolution for Byval As Const parameters
 
 
 Version 0.90.1:

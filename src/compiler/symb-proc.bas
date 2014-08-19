@@ -1837,6 +1837,7 @@ private function hCheckOvlParam _
 
 	dim as integer param_dtype = any, arg_dtype = any, param_ptrcnt = any
 	dim as integer baselevel = any, type_is_compatible = any
+	dim as integer const_matches = any
 	dim as FBSYMBOL ptr param_subtype = any, arg_subtype = any, array = any
 
 	constonly_diff = FALSE
@@ -1943,26 +1944,21 @@ private function hCheckOvlParam _
 				return FB_OVLPROC_FULLMATCH - baselevel
 			end if
 
+			'' Exact same CONSTs? Then there's no point in calling symbCheckConstAssign().
 			if( typeGetConstMask( param_dtype ) = typeGetConstMask( arg_dtype ) ) then
 				return FB_OVLPROC_FULLMATCH - baselevel
-			'' param is const but arg isn't?
-			elseif( symbCheckConstAssign( param_dtype, arg_dtype, param_subtype, arg_subtype ) ) then
+			end if
+
+			'' Check whether CONSTness allows passing the arg to the param.
+			if( symbCheckConstAssign( param_dtype, arg_dtype, param_subtype, arg_subtype, symbGetParamMode( param ), const_matches ) ) then
+				'' They're compatible despite having different CONSTs -- e.g. "non-const Foo" passed to "Byref As Const Foo".
+				'' TODO: Fix and use const_matches
 				constonly_diff = TRUE
 				return FB_OVLPROC_HALFMATCH - baselevel
 			end if
-		end if
 
-		'' if it's rtl, only if explicitly set
-	    if( (symbGetIsRTL( parent ) = FALSE) or (symbGetIsRTLConst( param )) ) then
-			dim as integer const_matches = any
-			if( symbCheckConstAssign( param_dtype, arg_dtype, param_subtype, arg_subtype, symbGetParamMode( param ), const_matches ) = FALSE ) then
-				return 0
-			else
-				if( const_matches ) then
-					dim as integer ptrcnt = typeGetPtrCnt( arg_dtype )
-					return (FB_OVLPROC_HALFMATCH / (ptrcnt+2)) * const_matches
-				end if
-			end if
+			'' Same/compatible type, but mismatch due to CONSTness
+			return 0
 		end if
 
 		'' pointer? check if valid (could be a NULL)
