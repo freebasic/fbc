@@ -1934,9 +1934,15 @@ private function hCheckOvlParam _
 		end if
 
 		if( type_is_compatible ) then
-			'' In either case, we still have to check CONSTness. (no point choosing a
+			'' In either case, we still have to check CONSTness (no point choosing a
 			'' BYREF AS CONST FOO overload parameter for a non-const FOO argument,
 			'' because it couldn't be passed anyways)
+
+			'' ... except if it's a RTL procedure without RTL_CONST (then no CONST checking should be done)
+			if( symbGetIsRTL( parent ) and (not symbGetIsRTLConst( param )) ) then
+				return FB_OVLPROC_FULLMATCH - baselevel
+			end if
+
 			if( typeGetConstMask( param_dtype ) = typeGetConstMask( arg_dtype ) ) then
 				return FB_OVLPROC_FULLMATCH - baselevel
 			'' param is const but arg isn't?
