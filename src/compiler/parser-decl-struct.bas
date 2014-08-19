@@ -898,7 +898,7 @@ private sub hCheckForCDtorOrMethods( byval sym as FBSYMBOL ptr )
 		'' implemented since we don't allow nested procedures.
 		'' (Note: assuming symbStructEnd() was already called,
 		'' thus any implicit members were already added by
-		'' symbUdtAddDefaultMembers())
+		'' symbUdtDeclareDefaultMembers())
 		member = symbGetCompSymbTb( sym ).head
 		while( member )
 			if( symbIsProc( member ) ) then

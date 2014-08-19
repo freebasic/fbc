@@ -759,6 +759,7 @@ sub symbStructEnd _
 		byval isnested as integer _
 	)
 
+	dim as SYMBDEFAULTMEMBERS defaultmembers = any
 	dim as integer pad = any
 
 	'' end nesting?
@@ -776,13 +777,28 @@ sub symbStructEnd _
 		sym->lgt += pad
 	end if
 
-	'' Declare & add any implicit members
-	symbUdtAddDefaultMembers( sym )
+	'' Declare implicit members (but don't implement them yet)
+	symbUdtDeclareDefaultMembers( defaultmembers, sym )
 
 	'' Determine how to return this structure from procedures
-	'' (must be done after adding default members because it depends on
+	'' (must be done after declaring default members because it depends on
 	'' symbCompIsTrivial() which depends on knowing all ctors/dtors)
 	sym->udt.retdtype = hGetReturnType( sym )
+
+	''
+	'' Now that the UDT return type is known we can build code using it,
+	'' such as the implicit methods' bodies, or the function pointers for
+	'' the vtable slots.
+	''
+	'' Methods declared by the user using the UDT itself will be fixed up
+	'' by hPatchByvalParamsToSelf/hPatchByvalResultToSelf, but that only
+	'' works for declarations, not implementations.
+	''
+	'' Furthermore, function pointers (such as the vtable ones) can be added
+	'' to a different namespace, i.e. not the UDT, so the hPatch* functions
+	'' wouldn't handle them anyways.
+	''
+	symbUdtImplementDefaultMembers( defaultmembers, sym )
 
 	'' check for forward references
 	if( symb.fwdrefcnt > 0 ) then

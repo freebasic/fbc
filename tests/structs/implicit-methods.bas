@@ -508,6 +508,48 @@ namespace copyLetConstFwdref2
 	end sub
 end namespace
 
+namespace virtualWithByvalSelfResult
+	'' An UDT with a virtual method that returns the UDT itself byval.
+	''
+	'' fbc must be careful to declare implicit members, calculate the UDT
+	'' return type, and implement implicit members in the right order,
+	'' otherwise some code (such as the function pointers for vtable slots)
+	'' may try to use the UDT return type while it's not known yet.
+
+	type UDT extends object
+		i as integer = 123
+		declare virtual function f() as UDT
+	end type
+
+	function UDT.f() as UDT
+		function = type()
+	end function
+
+	sub test cdecl( )
+		dim as UDT a, b
+		CU_ASSERT( a.i = 123 )
+		CU_ASSERT( b.i = 123 )
+
+		a.i = 0
+		b.i = 0
+		CU_ASSERT( a.i = 0 )
+		CU_ASSERT( b.i = 0 )
+
+		b = a.f()
+		CU_ASSERT( a.i = 0 )
+		CU_ASSERT( b.i = 123 )
+
+		a.i = 0
+		b.i = 0
+		CU_ASSERT( a.i = 0 )
+		CU_ASSERT( b.i = 0 )
+
+		a = a.f()
+		CU_ASSERT( a.i = 123 )
+		CU_ASSERT( b.i = 0 )
+	end sub
+end namespace
+
 private sub ctor( ) constructor
 	fbcu.add_suite( "tests/structs/implicit-methods" )
 
@@ -530,6 +572,8 @@ private sub ctor( ) constructor
 	fbcu.add_test( "copyLetFwdref2"     , @copyLetFwdref2.test )
 	fbcu.add_test( "copyLetConstFwdref1", @copyLetConstFwdref1.test )
 	fbcu.add_test( "copyLetConstFwdref2", @copyLetConstFwdref2.test )
+
+	fbcu.add_test( "virtualWithByvalSelfResult", @virtualWithByvalSelfResult.test )
 end sub
 
 end namespace

@@ -282,8 +282,8 @@ sub symbProcRecalcRealType( byval proc as FBSYMBOL ptr )
 			dtype = symbGetUDTRetType( subtype )
 
 			'' symbStructEnd() should have set it by now, but there
-			'' could be problems if symbUdtAddDefaultMembers() calls
-			'' this before that.
+			'' could be problems if symbUdtDeclareDefaultMembers()
+			'' calls this before that.
 			assert( dtype <> FB_DATATYPE_INVALID )
 
 			'' If it became an integer or float, forget the subtype,
@@ -2742,7 +2742,7 @@ sub symbProcCheckOverridden _
 		if( errmsg <> FB_ERRMSG_OK ) then
 			if( is_implicit and _
 			    (errmsg = FB_ERRMSG_OVERRIDECALLCONVDIFFERS) ) then
-				'' symbUdtAddDefaultMembers() uses this to check
+				'' symbUdtDeclareDefaultMembers() uses this to check
 				'' implicit dtors and LET overloads. Since they
 				'' are not visible in the original code,
 				'' the error message must have more info.

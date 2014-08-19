@@ -815,6 +815,14 @@ type SYMB_DATATYPE
 	name			as const zstring ptr
 end type
 
+'' Data passed from symbUdtDeclareDefaultMembers() to symbUdtImplementDefaultMembers()
+type SYMBDEFAULTMEMBERS
+	defctor		as FBSYMBOL ptr
+	dtor		as FBSYMBOL ptr
+	copyctor	as FBSYMBOL ptr
+	copyctorconst	as FBSYMBOL ptr
+	copyletopconst	as FBSYMBOL ptr
+end type
 
 #include once "ast.bi"
 
@@ -1729,7 +1737,19 @@ declare sub symbSetDefType _
 	)
 
 declare sub symbUdtAllocExt( byval udt as FBSYMBOL ptr )
-declare sub symbUdtAddDefaultMembers( byval sym as FBSYMBOL ptr )
+
+declare sub symbUdtDeclareDefaultMembers _
+	( _
+		byref default as SYMBDEFAULTMEMBERS, _
+		byval udt as FBSYMBOL ptr _
+	)
+
+declare sub symbUdtImplementDefaultMembers _
+	( _
+		byref default as SYMBDEFAULTMEMBERS, _
+		byval udt as FBSYMBOL ptr _
+	)
+
 declare function symbCompIsTrivial( byval sym as FBSYMBOL ptr ) as integer
 declare sub symbSetCompCtorHead( byval sym as FBSYMBOL ptr, byval proc as FBSYMBOL ptr )
 declare sub symbCheckCompCtor( byval sym as FBSYMBOL ptr, byval proc as FBSYMBOL ptr )

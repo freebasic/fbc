@@ -509,10 +509,13 @@ private sub hAddLetOpBody _
 
 end sub
 
-'' Declare & add any implicit/default members and global vars if needed
-sub symbUdtAddDefaultMembers( byval udt as FBSYMBOL ptr )
-	dim as FBSYMBOL ptr defctor = any, dtor = any, copyctor = any, _
-		copyctorconst = any, copyletopconst = any
+'' Declare any implicit/default UDT members without implementing them.
+sub symbUdtDeclareDefaultMembers _
+	( _
+		byref default as SYMBDEFAULTMEMBERS, _
+		byval udt as FBSYMBOL ptr _
+	)
+
 	dim as integer missing_base_defctor = any
 
 	''
@@ -556,11 +559,11 @@ sub symbUdtAddDefaultMembers( byval udt as FBSYMBOL ptr )
 		missing_base_defctor = FALSE
 	end if
 
-	defctor = NULL
-	copyctor = NULL
-	copyctorconst = NULL
-	copyletopconst = NULL
-	dtor = NULL
+	default.defctor = NULL
+	default.copyctor = NULL
+	default.copyctorconst = NULL
+	default.copyletopconst = NULL
+	default.dtor = NULL
 
 	'' Ctor/inited fields and no ctor yet?
 	if( (symbGetUDTHasCtorField( udt ) or symbGetUDTHasInitedField( udt )) and _
@@ -573,7 +576,7 @@ sub symbUdtAddDefaultMembers( byval udt as FBSYMBOL ptr )
 			errReport( FB_ERRMSG_NEEDEXPLICITDEFCTOR )
 		else
 			'' Add default ctor
-			defctor = hDeclareProc( udt, INVALID, FB_DATATYPE_INVALID, FB_SYMBATTRIB_OVERLOADED or FB_SYMBATTRIB_CONSTRUCTOR )
+			default.defctor = hDeclareProc( udt, INVALID, FB_DATATYPE_INVALID, FB_SYMBATTRIB_OVERLOADED or FB_SYMBATTRIB_CONSTRUCTOR )
 		end if
 	end if
 
@@ -585,8 +588,8 @@ sub symbUdtAddDefaultMembers( byval udt as FBSYMBOL ptr )
 
 		if( udt->udt.ext->copyletopconst = NULL ) then
 			'' declare operator let( byref rhs as const UDT )
-			copyletopconst = hDeclareProc( udt, AST_OP_ASSIGN, typeSetIsConst( FB_DATATYPE_STRUCT ), FB_SYMBATTRIB_OVERLOADED or FB_SYMBATTRIB_OPERATOR )
-			symbProcCheckOverridden( copyletopconst, TRUE )
+			default.copyletopconst = hDeclareProc( udt, AST_OP_ASSIGN, typeSetIsConst( FB_DATATYPE_STRUCT ), FB_SYMBATTRIB_OVERLOADED or FB_SYMBATTRIB_OPERATOR )
+			symbProcCheckOverridden( default.copyletopconst, TRUE )
 		end if
 
 		if( udt->udt.ext->copyctorconst = NULL ) then
@@ -596,7 +599,7 @@ sub symbUdtAddDefaultMembers( byval udt as FBSYMBOL ptr )
 				'' same as with default ctor above.
 				errReport( FB_ERRMSG_NEEDEXPLICITCOPYCTORCONST )
 			else
-				copyctorconst = hDeclareProc( udt, INVALID, typeSetIsConst( FB_DATATYPE_STRUCT ), FB_SYMBATTRIB_OVERLOADED or FB_SYMBATTRIB_CONSTRUCTOR )
+				default.copyctorconst = hDeclareProc( udt, INVALID, typeSetIsConst( FB_DATATYPE_STRUCT ), FB_SYMBATTRIB_OVERLOADED or FB_SYMBATTRIB_CONSTRUCTOR )
 			end if
 		end if
 
@@ -609,7 +612,7 @@ sub symbUdtAddDefaultMembers( byval udt as FBSYMBOL ptr )
 				'' same as with default ctor above.
 				errReport( FB_ERRMSG_NEEDEXPLICITCOPYCTOR )
 			else
-				copyctor = hDeclareProc( udt, INVALID, FB_DATATYPE_STRUCT, FB_SYMBATTRIB_OVERLOADED or FB_SYMBATTRIB_CONSTRUCTOR )
+				default.copyctor = hDeclareProc( udt, INVALID, FB_DATATYPE_STRUCT, FB_SYMBATTRIB_OVERLOADED or FB_SYMBATTRIB_CONSTRUCTOR )
 			end if
 		end if
 	end if
@@ -621,12 +624,22 @@ sub symbUdtAddDefaultMembers( byval udt as FBSYMBOL ptr )
 		'' no default dtor explicitly defined?
 		if( udt->udt.ext->dtor = NULL ) then
 			'' Dtor
-			dtor = hDeclareProc( udt, INVALID, FB_DATATYPE_INVALID, FB_SYMBATTRIB_DESTRUCTOR )
+			default.dtor = hDeclareProc( udt, INVALID, FB_DATATYPE_INVALID, FB_SYMBATTRIB_DESTRUCTOR )
 
 			'' Don't allow the implicit dtor to override a FINAL dtor from the base
-			symbProcCheckOverridden( dtor, TRUE )
+			symbProcCheckOverridden( default.dtor, TRUE )
 		end if
 	end if
+
+end sub
+
+'' Implement the implicit members declared by symbUdtDeclareDefaultMembers(),
+'' add other implicit code (vtable/rtti global vars).
+sub symbUdtImplementDefaultMembers _
+	( _
+		byref default as SYMBDEFAULTMEMBERS, _
+		byval udt as FBSYMBOL ptr _
+	)
 
 	''
 	'' Add vtable and rtti global variables
@@ -659,25 +672,27 @@ sub symbUdtAddDefaultMembers( byval udt as FBSYMBOL ptr )
 	''
 	'' Add bodies if any implicit ctor/dtor/let procs were declared above
 	''
-	if( defctor ) then
-		hAddCtorBody( udt, defctor, FALSE )
+
+	if( default.defctor ) then
+		hAddCtorBody( udt, default.defctor, FALSE )
 	end if
 
-	if( copyletopconst ) then
-		hAddLetOpBody( udt, copyletopconst )
+	if( default.copyletopconst ) then
+		hAddLetOpBody( udt, default.copyletopconst )
 	end if
 
-	if( copyctorconst ) then
-		hAddCtorBody( udt, copyctorconst, TRUE )
+	if( default.copyctorconst ) then
+		hAddCtorBody( udt, default.copyctorconst, TRUE )
 	end if
 
-	if( copyctor ) then
-		hAddCtorBody( udt, copyctor, TRUE )
+	if( default.copyctor ) then
+		hAddCtorBody( udt, default.copyctor, TRUE )
 	end if
 
-	if( dtor ) then
-		hAddCtorBody( udt, dtor, FALSE )
+	if( default.dtor ) then
+		hAddCtorBody( udt, default.dtor, FALSE )
 	end if
+
 end sub
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
