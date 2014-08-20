@@ -2,10 +2,16 @@
 
 #include "fb_gfx.h"
 
-FBCALL int fb_GfxImageInfo( void *img,
-							int *width,	int *height,
-							int *bpp,	int *pitch,	void **imgdata,
-							int *size)
+FBCALL int fb_GfxImageInfo
+	(
+		void *img,
+		ssize_t *width,
+		ssize_t *height,
+		ssize_t *bpp,
+		ssize_t *pitch,
+		void **imgdata,
+		ssize_t *size
+	)
 {
 	PUT_HEADER *header;
 	int bpp_, width_, height_, pitch_, headerSize_;

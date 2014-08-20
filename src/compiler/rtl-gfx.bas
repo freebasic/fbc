@@ -781,7 +781,7 @@ declare function hPorts_cb _
 		), _
 		/' function getjoystick _
 			( _
-				byval id as long = 0, _
+				byval id as long, _
 				byref buttons as integer = 0, _
 				byref a1 as single = 0, _
 				byref a2 as single = 0, _
@@ -917,54 +917,29 @@ declare function hPorts_cb _
 				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
-		/' function imageinfo overload _
+		/' function imageinfo _
 			( _
-				byval img as any ptr, _
-				byref width as long = 0, _
-				byref height as long = 0, _
-				byref bpp as long = 0, _
-				byref pitch as long = 0, _
+				byval img     as any ptr, _
+				byref width   as integer = 0, _
+				byref height  as integer = 0, _
+				byref bpp     as integer = 0, _
+				byref pitch   as integer = 0, _
 				byref imgdata as any ptr = 0, _
-				byref size as long = 0 _
+				byref size    as integer = 0 _
 			) as long '/ _
 		( _
 			@"imageinfo", @"fb_GfxImageInfo", _
 			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
-			@hGfxlib_cb, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
+			@hGfxlib_cb, FB_RTL_OPT_NOQB, _
 			7, _
 			{ _
 				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYREF, TRUE, 0 ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYREF, TRUE, 0 ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYREF, TRUE, 0 ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYREF, TRUE, 0 ), _
+				( FB_DATATYPE_INTEGER, FB_PARAMMODE_BYREF, TRUE, 0 ), _
+				( FB_DATATYPE_INTEGER, FB_PARAMMODE_BYREF, TRUE, 0 ), _
+				( FB_DATATYPE_INTEGER, FB_PARAMMODE_BYREF, TRUE, 0 ), _
+				( FB_DATATYPE_INTEGER, FB_PARAMMODE_BYREF, TRUE, 0 ), _
 				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYREF, TRUE, 0 ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYREF, TRUE, 0 ) _
-			} _
-		), _
-		/' function imageinfo overload _
-			( _
-				byval img as any ptr, _
-				byref width as longint = 0, _
-				byref height as longint = 0, _
-				byref bpp as longint = 0, _
-				byref pitch as longint = 0, _
-				byref imgdata as any ptr = 0, _
-				byref size as longint = 0 _
-			) as long '/ _
-		( _
-			@"imageinfo", @"fb_GfxImageInfo64", _
-			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
-			@hGfxlib_cb, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
-			7, _
-			{ _
-				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONGINT, FB_PARAMMODE_BYREF, TRUE, 0 ), _
-				( FB_DATATYPE_LONGINT, FB_PARAMMODE_BYREF, TRUE, 0 ), _
-				( FB_DATATYPE_LONGINT, FB_PARAMMODE_BYREF, TRUE, 0 ), _
-				( FB_DATATYPE_LONGINT, FB_PARAMMODE_BYREF, TRUE, 0 ), _
-				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYREF, TRUE, 0 ), _
-				( FB_DATATYPE_LONGINT, FB_PARAMMODE_BYREF, TRUE, 0 ) _
+				( FB_DATATYPE_INTEGER, FB_PARAMMODE_BYREF, TRUE, 0 ) _
 			} _
 		), _
 		/' sub imageconvertrow _
