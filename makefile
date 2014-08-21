@@ -225,6 +225,12 @@ ifneq ($(filter 386 486 586 686 i386 i486 i586 i686,$(TARGET_ARCH)),)
   TARGET_ARCH := x86
 endif
 
+# Normalize TARGET_ARCH to x86_64 (e.g., FreeBSD's uname -m returns "amd64"
+# instead of "x86_64" like Linux)
+ifneq ($(filter amd64 x86-64,$(TARGET_ARCH)),)
+  TARGET_ARCH := x86_64
+endif
+
 # Switch TARGET_ARCH depending on MULTILIB
 ifeq ($(MULTILIB),32)
   ifeq ($(TARGET_ARCH),x86_64)
