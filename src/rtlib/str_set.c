@@ -6,7 +6,7 @@ FBCALL void fb_StrLset ( FBSTRING *dst, FBSTRING *src )
 {
 	ssize_t slen, dlen, len;
 
-	if( (dst != NULL) && (dst->data != NULL) && (src != NULL) && (src->data != NULL) )
+	if( (dst != NULL) && (dst->data != NULL) && (src != NULL) )
 	{
 		slen = FB_STRSIZE( src );
 		dlen = FB_STRSIZE( dst );
@@ -39,7 +39,7 @@ FBCALL void fb_StrRset ( FBSTRING *dst, FBSTRING *src )
 {
 	ssize_t slen, dlen, len, padlen;
 
-	if( (dst != NULL) && (dst->data != NULL) && (src != NULL) && (src->data != NULL) )
+	if( (dst != NULL) && (dst->data != NULL) && (src != NULL) )
 	{
 		slen = FB_STRSIZE( src );
 		dlen = FB_STRSIZE( dst );
