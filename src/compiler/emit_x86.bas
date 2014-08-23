@@ -6129,7 +6129,7 @@ sub emitVARINIBEGIN( byval sym as FBSYMBOL ptr )
 	hLABEL( *symbGetMangledName( sym ) )
 end sub
 
-sub emitVARINIi( byval dtype as integer, byval value as integer )
+sub emitVARINIi( byval dtype as integer, byval value as longint )
 	outEx( *_getTypeString( dtype ) + " " + str( value ) + NEWLINE )
 end sub
 
