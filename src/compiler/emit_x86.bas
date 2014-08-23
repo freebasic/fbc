@@ -6130,16 +6130,20 @@ sub emitVARINIBEGIN( byval sym as FBSYMBOL ptr )
 end sub
 
 sub emitVARINIi( byval dtype as integer, byval value as longint )
-	outEx( *_getTypeString( dtype ) + " " + str( value ) + NEWLINE )
+	dim s as string
+	s = *_getTypeString( dtype ) + " "
+	if( ISLONGINT( dtype ) ) then
+		s += "0x" + hex( value )
+	else
+		s += str( value )
+	end if
+	s += NEWLINE
+	outEx( s )
 end sub
 
 sub emitVARINIf( byval dtype as integer, byval value as double )
 	'' can't use STR() because GAS doesn't support the 1.#INF notation
 	outEx( *_getTypeString( dtype ) + " " + hFloatToHex( value, dtype ) + NEWLINE )
-end sub
-
-sub emitVARINI64( byval dtype as integer, byval value as longint )
-	outEx( *_getTypeString( dtype ) + " 0x" + hex( value ) + NEWLINE )
 end sub
 
 sub emitVARINIOFS( byval sname as zstring ptr, byval ofs as integer )

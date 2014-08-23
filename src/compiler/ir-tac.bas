@@ -742,12 +742,7 @@ private sub _emitVarIniEnd( byval sym as FBSYMBOL ptr )
 end sub
 
 private sub _emitVarIniI( byval sym as FBSYMBOL ptr, byval value as longint )
-	var dtype = symbGetType( sym )
-	if( ISLONGINT( dtype ) ) then
-		emitVARINI64( dtype, value )
-	else
-		emitVARINIi( dtype, value )
-	end if
+	emitVARINIi( symbGetType( sym ), value )
 end sub
 
 private sub _emitVarIniF( byval sym as FBSYMBOL ptr, byval value as double )

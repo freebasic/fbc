@@ -821,7 +821,6 @@ declare function emitDBGScopeEnd _
 declare sub emitVARINIBEGIN( byval sym as FBSYMBOL ptr )
 declare sub emitVARINIi( byval dtype as integer, byval value as longint )
 declare sub emitVARINIf( byval dtype as integer, byval value as double )
-declare sub emitVARINI64( byval dtype as integer, byval value as longint )
 declare sub emitVARINIOFS( byval sname as zstring ptr, byval ofs as integer )
 declare sub emitVARINISTR( byval s as const zstring ptr )
 declare sub emitVARINIWSTR( byval s as zstring ptr )
