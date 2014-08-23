@@ -1310,12 +1310,6 @@ declare function astGosubAddReturn _
 
 declare sub astGosubAddExit(byval proc as FBSYMBOL ptr)
 
-declare function hTruncateInt _
-	( _
-		byval dtype as integer, _
-		byval value as integer ptr _
-	) as integer
-
 declare function astLoadNOP( byval n as ASTNODE ptr ) as IRVREG ptr
 declare function astLoadASSIGN( byval n as ASTNODE ptr ) as IRVREG ptr
 declare function astLoadCONV( byval n as ASTNODE ptr ) as IRVREG ptr
