@@ -926,11 +926,12 @@ private function _allocVrImm _
 
 	if( ISLONGINT( dtype ) ) then
 		'' Only the low 32bits go in the main vreg
-		vr->value.i = cuint( value )
+		vr->value.i = value and &hFFFFFFFFll
 
 		'' The aux vreg takes the high 32bits
+		'' (doing cunsg() to get an unsigned shr, no sign extension)
 		vr->vaux = hNewVR( FB_DATATYPE_INTEGER, NULL, IR_VREGTYPE_IMM )
-		vr->vaux->value.i = cint( value shr 32 )
+		vr->vaux->value.i = cunsg( value ) shr 32
 	else
 		vr->value.i = value
 	end if
