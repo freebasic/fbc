@@ -81,46 +81,6 @@ end function
 
 function symbAllocIntConst _
 	( _
-		byval value as integer, _
-		byval dtype as integer _
-	) as FBSYMBOL ptr static
-
-    static as zstring * FB_MAXINTNAMELEN+1 id, id_alias
-	dim as FBSYMBOL ptr s
-	dim as FBARRAYDIM dTB(0)
-	dim as string svalue
-
-	function = NULL
-
-	svalue = "0x" + Hex(value)
-
-	id = "{fbnc}"
-	id += svalue
-
-	'' preserve case, 'D', 'd', 'E', 'e' will become 'e' in lexer
-	s = symbLookupByNameAndSuffix( @symbGetGlobalNamespc( ), @id, dtype, TRUE, FALSE )
-	if( s <> NULL ) then
-		return s
-	end if
-
-	id_alias = *symbUniqueId( )
-
-	'' it must be declare as SHARED, because even if currently inside an
-	'' proc, the global symbol tb should be used, so just one constant
-	'' will be ever allocated over the module
-	s = symbAddVar( @id, @id_alias, dtype, NULL, 0, 0, dTB(), _
-	                FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_CONST or FB_SYMBATTRIB_LITERAL, _
-	                FB_SYMBOPT_MOVETOGLOB or FB_SYMBOPT_PRESERVECASE )
-
-	s->var_.littext = ZstrAllocate( len( svalue ) )
-	*s->var_.littext = svalue
-
-	function = s
-end function
-
-'':::::
-function symbAllocLongIntConst _
-	( _
 		byval value as longint, _
 		byval dtype as integer _
 	) as FBSYMBOL ptr static
@@ -132,7 +92,14 @@ function symbAllocLongIntConst _
 
 	function = NULL
 
-	svalue = "0x" + Hex(value)
+	svalue = "0x"
+	if( typeGetSize( dtype ) = 8 ) then
+		svalue += hex( value )
+	else
+		'' Using an intermediate uinteger to allow compiling with FB
+		'' versions before the overload resolution overhaul
+		svalue += hex( cuint( culng( value ) ) )
+	end if
 
 	id = "{fbnc}"
 	id += svalue

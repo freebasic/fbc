@@ -1481,19 +1481,11 @@ declare function symbAllocFloatConst _
 		byval dtype as integer _
 	) as FBSYMBOL ptr
 
-
 declare function symbAllocIntConst _
-	( _
-		byval value as integer, _
-		byval dtype as integer _
-	) as FBSYMBOL ptr
-
-declare function symbAllocLongIntConst _
 	( _
 		byval value as longint, _
 		byval dtype as integer _
 	) as FBSYMBOL ptr
-
 
 declare function symbAllocStrConst _
 	( _

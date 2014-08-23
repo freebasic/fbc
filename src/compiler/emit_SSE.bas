@@ -743,7 +743,7 @@ private sub _emitLOADI2F_SSE _
 		end if
 
 		if( ddsize > 4 ) then
-			sym = symbAllocLongIntConst( &h40F0000000000000, FB_DATATYPE_ULONGINT )
+			sym = symbAllocIntConst( &h40F0000000000000, FB_DATATYPE_ULONGINT )
 			tempVreg = irAllocVRVAR( FB_DATATYPE_ULONGINT, NULL, sym, symbGetOfs( sym ) )
 			suffix = "sd "
 		else
@@ -1693,7 +1693,7 @@ private sub _emitNEGF_SSE _
 	end if
 
 	if( ddsize > 4 ) then
-		sym = symbAllocLongIntConst(&h8000000000000000, FB_DATATYPE_ULONGINT)
+		sym = symbAllocIntConst(&h8000000000000000, FB_DATATYPE_ULONGINT)
 		tempVreg = irAllocVRVAR( FB_DATATYPE_ULONGINT, NULL, sym, symbGetOfs( sym ) )
 	else
 		sym = symbAllocIntConst(&h80000000, FB_DATATYPE_UINT)
@@ -1772,7 +1772,7 @@ private sub _emitABSF_SSE _
 	end if
 
 	if( ddsize > 4 ) then
-		sym = symbAllocLongIntConst(&h7FFFFFFFFFFFFFFF, FB_DATATYPE_ULONGINT)
+		sym = symbAllocIntConst(&h7FFFFFFFFFFFFFFF, FB_DATATYPE_ULONGINT)
 		tempVreg = irAllocVRVAR( FB_DATATYPE_ULONGINT, NULL, sym, symbGetOfs( sym ) )
 	else
 		sym = symbAllocIntConst(&h7FFFFFFF, FB_DATATYPE_UINT)
@@ -1822,13 +1822,13 @@ private sub _emitSGNF_SSE _
 		outp "xorpd xmm7, xmm7"
 		outp "cmpneqsd xmm7" + COMMA + dst
 
-		sym = symbAllocLongIntConst(&h7FFFFFFFFFFFFFFF, FB_DATATYPE_ULONGINT)
+		sym = symbAllocIntConst(&h7FFFFFFFFFFFFFFF, FB_DATATYPE_ULONGINT)
 		sym->var_.align = 16
 		tempVreg = irAllocVRVAR( FB_DATATYPE_ULONGINT, NULL, sym, symbGetOfs( sym ) )
 		hPrepOperand( tempVreg, src, FB_DATATYPE_XMMWORD )
 		outp "orpd " + dst + COMMA + src
 
-		sym = symbAllocLongIntConst(&hBFF0000000000000, FB_DATATYPE_ULONGINT)
+		sym = symbAllocIntConst(&hBFF0000000000000, FB_DATATYPE_ULONGINT)
 		sym->var_.align = 16
 		tempVreg = irAllocVRVAR( FB_DATATYPE_ULONGINT, NULL, sym, symbGetOfs( sym ) )
 		hPrepOperand( tempVreg, src, FB_DATATYPE_XMMWORD )
@@ -2552,7 +2552,7 @@ private sub _emitFLOOR_SSE _
 
 	ddsize = typeGetSize( dvreg->dtype )
 	if( ddsize > 4 ) then
-		sym = symbAllocLongIntConst(&hBFF0000000000000, FB_DATATYPE_ULONGINT)
+		sym = symbAllocIntConst(&hBFF0000000000000, FB_DATATYPE_ULONGINT)
 		vreg = irAllocVRVAR( FB_DATATYPE_ULONGINT, NULL, sym, symbGetOfs( sym ) )
 		suffix = "d "
 	else
@@ -2615,10 +2615,10 @@ private sub _emitFIX_SSE _
 
 	ddsize = typeGetSize( dvreg->dtype )
 	if( ddsize > 4 ) then
-		neg1_sym = symbAllocLongIntConst(&hBFF0000000000000, FB_DATATYPE_ULONGINT)
+		neg1_sym = symbAllocIntConst(&hBFF0000000000000, FB_DATATYPE_ULONGINT)
 		neg1_vreg = irAllocVRVAR( FB_DATATYPE_ULONGINT, NULL, neg1_sym, symbGetOfs( neg1_sym ) )
 
-		absval_sym = symbAllocLongIntConst(&h8000000000000000, FB_DATATYPE_ULONGINT)
+		absval_sym = symbAllocIntConst(&h8000000000000000, FB_DATATYPE_ULONGINT)
 		absval_vreg = irAllocVRVAR( FB_DATATYPE_ULONGINT, NULL, absval_sym, symbGetOfs( absval_sym ) )
 
 		suffix = "d "
@@ -2697,10 +2697,10 @@ private sub _emitFRAC_SSE _
 
 	ddsize = typeGetSize( dvreg->dtype )
 	if( ddsize > 4 ) then
-		neg1_sym = symbAllocLongIntConst(&hBFF0000000000000, FB_DATATYPE_ULONGINT)
+		neg1_sym = symbAllocIntConst(&hBFF0000000000000, FB_DATATYPE_ULONGINT)
 		neg1_vreg = irAllocVRVAR( FB_DATATYPE_ULONGINT, NULL, neg1_sym, symbGetOfs( neg1_sym ) )
 
-		absval_sym = symbAllocLongIntConst(&h8000000000000000, FB_DATATYPE_ULONGINT)
+		absval_sym = symbAllocIntConst(&h8000000000000000, FB_DATATYPE_ULONGINT)
 		absval_vreg = irAllocVRVAR( FB_DATATYPE_ULONGINT, NULL, absval_sym, symbGetOfs( absval_sym ) )
 
 		suffix = "d "
