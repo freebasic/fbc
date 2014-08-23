@@ -2079,8 +2079,14 @@ private sub hParseArgs( byval argc as integer, byval argv as zstring ptr ptr )
 	'' 6. Adjust default backend to selected arch, e.g. when compiling for
 	''    x86-64 or ARM, we shouldn't default to -gen gas anymore (as long
 	''    as it doesn't support it).
-	if( (fbGetOption( FB_COMPOPT_BACKEND ) = FB_BACKEND_GAS) and _
-	    (fbGetCpuFamily( ) <> FB_CPUFAMILY_X86) ) then
+	''
+	'' This should be done no matter whether compiling for the native system
+	'' or cross-compiling. Even on a 64bit x86_64 host where
+	'' FB_DEFAULT_BACKEND is -gen gcc, we still want to use -gen gas when
+	'' cross-compiling to 32bit x86.
+	if( fbGetCpuFamily( ) = FB_CPUFAMILY_X86 ) then
+		fbSetOption( FB_COMPOPT_BACKEND, FB_BACKEND_GAS )
+	else
 		fbSetOption( FB_COMPOPT_BACKEND, FB_BACKEND_GCC )
 	end if
 
