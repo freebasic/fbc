@@ -6576,6 +6576,17 @@ private sub _procAllocLocal _
 
 	dim as integer ofs = any, lgt = any
 
+	'' Do not allocate stack space for fake dynamic array symbols; only the
+	'' corresponding descriptors will be emitted.
+	''
+	'' It should not be necessary to assign the array symbol the same offset
+	'' as its descriptor either, as any accesses should be based on the
+	'' descriptor instead.
+	if( symbIsDynamic( sym ) ) then
+		assert( sym->ofs = 0 )
+		exit sub
+	end if
+
 	lgt = symbGetLen( sym ) * symbGetArrayElements( sym )
 
     proc->proc.ext->stk.localofs += ((lgt + 3) and not 3)
