@@ -1,7 +1,8 @@
 Version 0.91.0:
 
 [changed]
-- The normal (non-standalone) compiler now uses target-specific sub-directories in lib/freebasic/ again, for example lib/freebasic/linux/, to allow libs for other targets to be installed into the same directory, for example lib/freebasic/x86_64-linux/, instead of having to use a separate directory like lib/x86_64-linux-freebasic/. Same goes for the FB makefile: the *.o files go into target-specific subdirs in src/{compiler,rtlib,gfxlib2}/obj/, to avoid trashing the source dirs with tons of separate <target>-obj/ subdirs.
+- Platform naming conventions have changed for Linux/BSD due to 64bit/ARM support. dos/win32/xbox stay the same, win64 is added, and we use the <os>-<cpufamily> format for other systems (Linux/*BSD/Cygwin): linux-x86, linux-x86_64, linux-arm, etc. This affects the compiler's -target option, installation directory layout, release packages, compiler -v output, etc. but not any FB code.
+- The normal (non-standalone) compiler now uses target-specific sub-directories in lib/freebasic/ again, for example lib/freebasic/linux-x86/, to allow libs for other targets to be installed into the same directory, for example lib/freebasic/linux-x86_64/, instead of having to use a separate directory like lib/freebasic-linux-x86_64/. Same goes for the FB makefile: the *.o files go into target-specific subdirs in src/{compiler,rtlib,gfxlib2}/obj/, to avoid trashing the source dirs with tons of separate obj-<target>/ subdirs.
 - More predictable overload resolution for primitive types, preferring: the same dataclass >> a type that's at least as large >> the closest in size >> the same signedness >> the same kind >> the [U]INTEGER type
 - Bin/Oct/Hex(x, digits) functions now prepend zeroes, even if it's more than the data type size, if needed to fill the result string up to the requested amount of digits
 - Number literal suffixes are now followed more strictly. For example, a number with L suffix will now always be a 32bit LONG (previously it could be 32bit or 64bit, signed or unsigned, depending on the value), and the % integer suffix will always produce the FB dialect mode's default INTEGER type (INTEGER, or SHORT in -lang qb), but never a [U]LONGINT anymore.
@@ -17,9 +18,9 @@ Version 0.91.0:
 - Some internal data structures and fields ($fb_RTTI, $fb_Object, $base, $vptr) have been renamed from $foo to foo$ to prevent gdb/STABS debugging data confusion, because a leading $ has special meaning there.
 
 [added]
-- 64bit support (-arch x86_64) based on -gen gcc: INTEGER/POINTER = 64bit, LONG = 32bit DWORD. Compiler #define: __FB_64BIT__
+- 64bit support (currently x86_64 and aarch64, based on -gen gcc): INTEGER/POINTER = 64bit, LONG = 32bit DWORD. Compiler #define: __FB_64BIT__
 - -arch 32|64 options to support easy switching between 32bit and 64bit, by selecting a default arch that supports 32/64 bits respectively.
-- ARM support (-arch armv6|armv7-a|aarch64) based on -gen gcc. Compiler #define: __FB_ARM__
+- ARM support (currently armv6|armv7-a|aarch64) based on -gen gcc. Compiler #define: __FB_ARM__
 - To support non-x86 Unix shared libraries, there will now be PIC (position-independent code) versions of the FB libs for such systems: fbrt0pic.o, libfbpic.a, etc. The compiler will automatically use them when making a non-x86 Unix shared library.
 - -pic option for generating position-independent code for non-x86 Unix shared libraries (automatically enabled by -dll, but must be given manually when compiling code via -c or -lib, if it will later be linked into a shared library)
 - fbc -v now prints out the target system and architecture

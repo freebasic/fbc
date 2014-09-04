@@ -125,9 +125,15 @@ srcdir := $(rootdir)src
 
 -include config.mk
 
+#
+# We need to know target OS/architecture names to select the proper
+# rtlib/gfxlib2 source directories.
+#
+# If TARGET is given, we try to parse it to determine TARGET_OS/TARGET_ARCH.
+# Otherwise we rely on "uname" and "uname -m".
+#
 ifdef TARGET
-  # TARGET given, so parse it
-
+  # Parse TARGET
   triplet := $(subst -, ,$(TARGET))
   TARGET_PREFIX := $(TARGET)-
 
@@ -225,6 +231,11 @@ ifneq ($(filter 386 486 586 686 i386 i486 i586 i686,$(TARGET_ARCH)),)
   TARGET_ARCH := x86
 endif
 
+# Normalize TARGET_ARCH to arm
+ifneq ($(filter arm%,$(TARGET_ARCH)),)
+  TARGET_ARCH := arm
+endif
+
 # Normalize TARGET_ARCH to x86_64 (e.g., FreeBSD's uname -m returns "amd64"
 # instead of "x86_64" like Linux)
 ifneq ($(filter amd64 x86-64,$(TARGET_ARCH)),)
@@ -269,10 +280,35 @@ else
   INSTALL_FILE := install -m 644
 endif
 
-libsubdir := $(TARGET_OS)
-ifneq ($(TARGET_ARCH),x86)
-  libsubdir := $(TARGET_ARCH)-$(TARGET_OS)
+#
+# Determine FB target name:
+# dos, win32, win64, xbox, linux-x86, linux-x86_64, ...
+#
+
+# Some use a simple free-form name
+ifeq ($(TARGET_OS),dos)
+  FBTARGET := dos
 endif
+ifeq ($(TARGET_OS),xbox)
+  FBTARGET := xbox
+endif
+ifeq ($(TARGET_OS),win32)
+  ifeq ($(TARGET_ARCH),x86_64)
+    FBTARGET := win64
+  else
+    FBTARGET := win32
+  endif
+endif
+
+# The rest uses the <os>-<cpufamily> format
+ifndef FBTARGET
+  FBTARGET := $(TARGET_OS)-$(TARGET_ARCH)
+endif
+
+#
+# Determine directory layout for .o files and final binaries.
+#
+libsubdir := $(FBTARGET)
 ifdef ENABLE_STANDALONE
   FBC_EXE     := fbc$(EXEEXT)
   FBCNEW_EXE  := fbc-new$(EXEEXT)

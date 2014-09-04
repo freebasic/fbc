@@ -185,33 +185,45 @@ dim shared as FBTARGET targetinfo(0 to FB_COMPTARGETS-1) = _
 	) _
 }
 
+type FBCPUFAMILYINFO
+	id		 as zstring ptr
+	defaultcputype	as integer
+end type
+
+dim shared as FBCPUFAMILYINFO cpufamilyinfo(0 to FB_CPUFAMILY__COUNT-1) = _
+{ _
+	(@"x86"    , FB_DEFAULT_CPUTYPE_X86    ), _
+	(@"x86_64" , FB_DEFAULT_CPUTYPE_X86_64 ), _
+	(@"arm"    , FB_DEFAULT_CPUTYPE_ARM    ), _
+	(@"aarch64", FB_DEFAULT_CPUTYPE_AARCH64)  _
+}
+
 type FBCPUTYPEINFO
 	gccarch		as zstring ptr  '' gcc -march argument (used for -gen gcc), or NULL if same as fbcarch
 	fbcarch		as zstring ptr  '' fbc -arch argument
-	dirprefix	as zstring ptr  '' prefix string to use for bin/ and lib/ sub-directories, if any
 	family		as integer
 	bits		as integer
 end type
 
 dim shared as FBCPUTYPEINFO cputypeinfo(0 to FB_CPUTYPE__COUNT-1) = _
 { _
-	( @"i386"    , @"386"          , @""        , FB_CPUFAMILY_X86    , 32 ), _ '' FB_CPUTYPE_386
-	( @"i486"    , @"486"          , @""        , FB_CPUFAMILY_X86    , 32 ), _ '' FB_CPUTYPE_486
-	( @"i586"    , @"586"          , @""        , FB_CPUFAMILY_X86    , 32 ), _ '' FB_CPUTYPE_586
-	( @"i686"    , @"686"          , @""        , FB_CPUFAMILY_X86    , 32 ), _ '' FB_CPUTYPE_686
-	( NULL       , @"athlon"       , @""        , FB_CPUFAMILY_X86    , 32 ), _ '' FB_CPUTYPE_ATHLON
-	( NULL       , @"athlon-xp"    , @""        , FB_CPUFAMILY_X86    , 32 ), _ '' FB_CPUTYPE_ATHLONXP
-	( NULL       , @"athlon-fx"    , @""        , FB_CPUFAMILY_X86    , 32 ), _ '' FB_CPUTYPE_ATHLONFX
-	( NULL       , @"k8-sse3"      , @""        , FB_CPUFAMILY_X86    , 32 ), _ '' FB_CPUTYPE_ATHLONSSE3
-	( NULL       , @"pentium-mmx"  , @""        , FB_CPUFAMILY_X86    , 32 ), _ '' FB_CPUTYPE_PENTIUMMMX
-	( NULL       , @"pentium2"     , @""        , FB_CPUFAMILY_X86    , 32 ), _ '' FB_CPUTYPE_PENTIUM2
-	( NULL       , @"pentium3"     , @""        , FB_CPUFAMILY_X86    , 32 ), _ '' FB_CPUTYPE_PENTIUM3
-	( NULL       , @"pentium4"     , @""        , FB_CPUFAMILY_X86    , 32 ), _ '' FB_CPUTYPE_PENTIUM4
-	( @"prescott", @"pentium4-sse3", @""        , FB_CPUFAMILY_X86    , 32 ), _ '' FB_CPUTYPE_PENTIUMSSE3
-	( NULL       , @"x86-64"       , @"x86_64-" , FB_CPUFAMILY_X86_64 , 64 ), _ '' FB_CPUTYPE_X86_64
-	( NULL       , @"armv6"        , @"armv6-"  , FB_CPUFAMILY_ARM    , 32 ), _ '' FB_CPUTYPE_ARMV6
-	( NULL       , @"armv7-a"      , @"armv7a-" , FB_CPUFAMILY_ARM    , 32 ), _ '' FB_CPUTYPE_ARMV7A
-	( NULL       , @"aarch64"      , @"aarch64-", FB_CPUFAMILY_AARCH64, 64 )  _ '' FB_CPUTYPE_AARCH64
+	( @"i386"    , @"386"          , FB_CPUFAMILY_X86    , 32 ), _ '' FB_CPUTYPE_386
+	( @"i486"    , @"486"          , FB_CPUFAMILY_X86    , 32 ), _ '' FB_CPUTYPE_486
+	( @"i586"    , @"586"          , FB_CPUFAMILY_X86    , 32 ), _ '' FB_CPUTYPE_586
+	( @"i686"    , @"686"          , FB_CPUFAMILY_X86    , 32 ), _ '' FB_CPUTYPE_686
+	( NULL       , @"athlon"       , FB_CPUFAMILY_X86    , 32 ), _ '' FB_CPUTYPE_ATHLON
+	( NULL       , @"athlon-xp"    , FB_CPUFAMILY_X86    , 32 ), _ '' FB_CPUTYPE_ATHLONXP
+	( NULL       , @"athlon-fx"    , FB_CPUFAMILY_X86    , 32 ), _ '' FB_CPUTYPE_ATHLONFX
+	( NULL       , @"k8-sse3"      , FB_CPUFAMILY_X86    , 32 ), _ '' FB_CPUTYPE_ATHLONSSE3
+	( NULL       , @"pentium-mmx"  , FB_CPUFAMILY_X86    , 32 ), _ '' FB_CPUTYPE_PENTIUMMMX
+	( NULL       , @"pentium2"     , FB_CPUFAMILY_X86    , 32 ), _ '' FB_CPUTYPE_PENTIUM2
+	( NULL       , @"pentium3"     , FB_CPUFAMILY_X86    , 32 ), _ '' FB_CPUTYPE_PENTIUM3
+	( NULL       , @"pentium4"     , FB_CPUFAMILY_X86    , 32 ), _ '' FB_CPUTYPE_PENTIUM4
+	( @"prescott", @"pentium4-sse3", FB_CPUFAMILY_X86    , 32 ), _ '' FB_CPUTYPE_PENTIUMSSE3
+	( NULL       , @"x86-64"       , FB_CPUFAMILY_X86_64 , 64 ), _ '' FB_CPUTYPE_X86_64
+	( NULL       , @"armv6"        , FB_CPUFAMILY_ARM    , 32 ), _ '' FB_CPUTYPE_ARMV6
+	( NULL       , @"armv7-a"      , FB_CPUFAMILY_ARM    , 32 ), _ '' FB_CPUTYPE_ARMV7A
+	( NULL       , @"aarch64"      , FB_CPUFAMILY_AARCH64, 64 )  _ '' FB_CPUTYPE_AARCH64
 }
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -655,20 +667,91 @@ function fbIsCrossComp _
 
 end function
 
-function fbGetTargetId( ) as zstring ptr
-	function = env.target.id
+'' Build the FB target name for the given OS/arch combination.
+private function hGetTargetId _
+	( _
+		byval os as integer, _      '' FB_COMPTARGET_*
+		byval cputype as integer _  '' FB_CPUTYPE_*
+	) as string
+
+	'' Target names for bin/ and lib/ subdirectories, display to the user
+	'' (fbc compiled for ...), FB release package names, etc.
+	''
+	'' Before 64bit/ARM support was added, FB simply used
+	''    dos
+	''    win32
+	''    linux
+	''    freebsd
+	''    ...
+	''
+	'' but nowadays we want to support 64bit and ARM and potentially more,
+	'' and the target names should be unique, so that the lib/ directories
+	'' can co-exist for cross-compiling. These names are also useful for
+	'' FB release packages, and they can be shown to the user if fbc wants
+	'' to tell about host/target systems (e.g. in -v output), etc.
+	''    dos
+	''    win32
+	''    win64
+	''    xbox
+	''    linux-x86
+	''    linux-x86_64
+	''    linux-arm
+	''    linux-aarch64
+	''    freebsd-x86
+	''    freebsd-x86_64
+	''    ...
+
+	var cpufamily = cputypeinfo(cputype).family
+	var osid = *targetinfo(os).id
+
+	'' win32/dos/xbox
+	select case( os )
+	case FB_COMPTARGET_WIN32, FB_COMPTARGET_DOS, FB_COMPTARGET_XBOX
+		if( cpufamily = FB_CPUFAMILY_X86 ) then
+			return osid
+		end if
+	end select
+
+	'' win64
+	if( (os = FB_COMPTARGET_WIN32) and (cpufamily = FB_CPUFAMILY_X86_64) ) then
+		return "win64"
+	end if
+
+	'' linux-x86, linux-x86_64, etc.
+	function = osid + "-" + *cpufamilyinfo(cpufamily).id
 end function
 
-function fbGetHostId( ) as zstring ptr
-	function = targetinfo(FB_DEFAULT_TARGET).id
+function fbGetTargetId( ) as string
+	function = hGetTargetId( env.clopt.target, env.clopt.cputype )
 end function
 
-function fbIdentifyTargetId( byref targetid as string ) as integer
+function fbGetHostId( ) as string
+	function = hGetTargetId( FB_DEFAULT_TARGET, FB_DEFAULT_CPUTYPE )
+end function
+
+function fbIdentifyOs( byref osid as string ) as integer
 	for i as integer = 0 to FB_COMPTARGETS-1
-		if( *targetinfo(i).id = targetid ) then
+		if( osid = *targetinfo(i).id ) then
 			return i
 		end if
 	next
+	function = -1
+end function
+
+function fbIdentifyCpuFamily( byref cpufamilyid as string ) as integer
+	for i as integer = 0 to FB_CPUFAMILY__COUNT-1
+		if( cpufamilyid = *cpufamilyinfo(i).id ) then
+			return i
+		end if
+	next
+	function = -1
+end function
+
+function fbCpuTypeFromCpuFamilyId( byref cpufamilyid as string ) as integer
+	var cpufamily = fbIdentifyCpuFamily( cpufamilyid )
+	if( cpufamily >= 0 ) then
+		return cpufamilyinfo(cpufamily).defaultcputype
+	end if
 	function = -1
 end function
 
@@ -683,14 +766,6 @@ end function
 
 function fbGetFbcArch( ) as zstring ptr
 	function = cputypeinfo(env.clopt.cputype).fbcarch
-end function
-
-function fbGetArchDirPrefix( ) as zstring ptr
-	function = cputypeinfo(env.clopt.cputype).dirprefix
-end function
-
-function fbGetHostArchDirPrefix( ) as zstring ptr
-	function = cputypeinfo(FB_DEFAULT_CPUTYPE).dirprefix
 end function
 
 function fbIs64Bit( ) as integer

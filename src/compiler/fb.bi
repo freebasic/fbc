@@ -143,6 +143,7 @@ enum
 	FB_CPUFAMILY_X86_64
 	FB_CPUFAMILY_ARM
 	FB_CPUFAMILY_AARCH64
+	FB_CPUFAMILY__COUNT
 end enum
 
 '' fpu types
@@ -395,9 +396,11 @@ declare sub fbGetLibs(byval libs as TSTRSET ptr, byval libpaths as TSTRSET ptr)
 declare sub fbPragmaOnce()
 declare sub fbIncludeFile(byval filename as zstring ptr, byval isonce as integer)
 
-declare function fbGetTargetId( ) as zstring ptr
-declare function fbGetHostId( ) as zstring ptr
-declare function fbIdentifyTargetId( byref targetid as string ) as integer
+declare function fbGetTargetId( ) as string
+declare function fbGetHostId( ) as string
+declare function fbIdentifyOs( byref osid as string ) as integer
+declare function fbIdentifyCpuFamily( byref osid as string ) as integer
+declare function fbCpuTypeFromCpuFamilyId( byref cpufamilyid as string ) as integer
 declare function fbGetGccArch( ) as zstring ptr
 declare function fbGetFbcArch( ) as zstring ptr
 declare function fbGetArchDirPrefix( ) as zstring ptr
