@@ -403,8 +403,6 @@ declare function fbIdentifyCpuFamily( byref osid as string ) as integer
 declare function fbCpuTypeFromCpuFamilyId( byref cpufamilyid as string ) as integer
 declare function fbGetGccArch( ) as zstring ptr
 declare function fbGetFbcArch( ) as zstring ptr
-declare function fbGetArchDirPrefix( ) as zstring ptr
-declare function fbGetHostArchDirPrefix( ) as zstring ptr
 declare function fbIs64Bit( ) as integer
 declare function fbGetBits( ) as integer
 declare function fbGetHostBits( ) as integer
