@@ -208,6 +208,7 @@ Version 0.91.0:
 - LSET / RSET were aborting when the rhs was an empty var-len string
 - #739: ASM backend: The compiler allocated unused stack space for dynamic arrays (besides the array descriptor), based on the array element data type size. This was not only a waste of memory, but could also lead to stack overflow crashes if the array element data type was very big.
 - #736: Format() overflow when significand (after scaling to 19 digits) is 2^63 or greater
+- Format() overflow on very small numbers, trying to scale them by excessively large powers of 10
 
 
 Version 0.90.1:
