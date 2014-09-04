@@ -304,7 +304,17 @@ int fb_hProcessMask
 				}
 
 				if( ExpValue != 0 )
-					value *= pow( 10.0, -ExpValue );
+				{
+					if( -ExpValue <= 308 )
+					{
+						value *= pow( 10.0, -ExpValue );
+					}
+					else
+					{
+						value *= pow( 5.0, -ExpValue );
+						value *= pow( 2.0, -ExpValue );
+					}
+				}
 
 				LenExp = sprintf( ExpPart, "%d", (int)ExpValue );
 
