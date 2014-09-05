@@ -30,7 +30,7 @@ typedef struct _FormatMaskInfo {
     ssize_t length_opt;
 } FormatMaskInfo;
 
-#define FB_MAXFIXLEN 19 /* floor( log10( pow( 2.0, 63 ) ) ) + 1 */
+#define FB_MAXFIXLEN 19 /* floor( log10( pow( 2.0, 64 ) ) ) */
 
 /** Splits a number into its fixed and fractional part.
  *
@@ -56,7 +56,8 @@ void fb_hGetNumberParts
     char chSign;
     double dblFix;
     double dblFrac = modf( number, &dblFix );
-    long long llFix = (long long) dblFix;
+    int neg = (number < 0.0);
+    unsigned long long ullFix = (unsigned long long) (neg ? -dblFix : dblFix);
     ssize_t len_fix, len_frac;
 
     /* make fractional part positive */
@@ -90,24 +91,23 @@ void fb_hGetNumberParts
     pachFracPart[len_frac] = 0;
 
     /* Store fix part of the number into buffer */
-    if( llFix==0 && number < 0.0 ) {
+    if( ullFix==0 && neg ) {
         pachFixPart[0] = 0;
         len_fix = 0;
         chSign = '-';
-    } else if( llFix==0 && number > 0.0 ) {
+    } else if( ullFix==0 && number > 0.0 ) {
         pachFixPart[0] = 0;
         len_fix = 0;
         chSign = '+';
     } else {
-        if( llFix < 0 ) {
+        if( neg ) {
             chSign = '-';
-            llFix = -llFix;
-        } else if( llFix > 0 ) {
+        } else if( ullFix > 0 ) {
             chSign = '+';
         } else {
-            chSign = 0;
+            chSign = '\0';
         }
-        len_fix = sprintf( pachFixPart, "%" FB_LL_FMTMOD "d", llFix );
+        len_fix = sprintf( pachFixPart, "%" FB_LL_FMTMOD "u", ullFix );
     }
 
     if( pcchLenFix!=NULL )
@@ -304,7 +304,17 @@ int fb_hProcessMask
 				}
 
 				if( ExpValue != 0 )
-					value *= pow( 10.0, -ExpValue );
+				{
+					if( -ExpValue <= 308 )
+					{
+						value *= pow( 10.0, -ExpValue );
+					}
+					else
+					{
+						value *= pow( 5.0, -ExpValue );
+						value *= pow( 2.0, -ExpValue );
+					}
+				}
 
 				LenExp = sprintf( ExpPart, "%d", (int)ExpValue );
 
