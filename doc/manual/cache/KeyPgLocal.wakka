@@ -8,6 +8,7 @@ Error handling statement to set the current error handler
 	The ##**Local**## clause in an ##[[KeyPgOnerror On Error]]## construction allows to define an error handler in the same ##[[KeyPgSub Sub]]## or ##[[KeyPgFunction Function]]## the ##**On Local Error**## is in.
 	
 	 **Remark:** Presently, the ##**Local**## clause (authorized only inside Sub/Function) is ignored by the compiler, and the error handler can be either in the scope of the same procedure the On [Local] Error is in, or in the main part of the module (if defined before the procedure).
+	Exception if -gen gcc is used: when the On [Local] Error is inside a Sub/Function, the error handler also must always be inside that same procedure.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/error/local.bas"}}%%(freebasic)

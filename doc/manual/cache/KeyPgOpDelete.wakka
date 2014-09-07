@@ -12,7 +12,7 @@ Operator to delete data allocated with the ##[[KeyPgOpNew New]]## operator
 ##
 {{fbdoc item="param"}}
 	##//buf//## 
-		A pointer to memory that has been allocated by ##[[KeyPgOpNew New]]## or ##[[KeyPgOpNew New]][]##.
+		A pointer to memory that has been allocated by ##[[KeyPgOpNew New]]## or ##[[KeyPgOpNew New]][]## (a typed pointer must be provided in accordance to the data type to delete).
 
 {{fbdoc item="desc"}}
 	##**Delete**## is used to destroy and free the memory of an object created with ##[[KeyPgOpNew New]]##. When deleting a TYPE, its destructor will be called. ##**Delete**## should only be used with addresses returned from ##[[KeyPgOpNew New]]##.

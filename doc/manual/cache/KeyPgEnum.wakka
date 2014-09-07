@@ -22,7 +22,9 @@ Declares an enumerated type.
 
 	Symbols may be each on their own line, or separated on a single line by commas.
 
-	An ##**Enum**## is a useful way of grouping together a set of related ##[[KeyPgConst const]]##ants.  A symbol can be accessed like constant, e.g: ##a =  //symbolname//##.  But if the name clashes with another symbol, it must be resolved using ##//typename//.//symbolname//##.  This resolution method is always required if you make the enum ##Explicit##.
+	An ##**Enum**## is a useful way of grouping together a set of related ##[[KeyPgConst const]]##ants.  A symbol can be accessed like a constant, e.g: ##a = //symbolname//##.  But if the name clashes with another symbol, it must be resolved using ##//typename//.//symbolname//##.  This resolution method is always required if you make the enum ##Explicit##.
+	
+	A non-##Explicit## ##**Enum**## declared inside an ##[[KeyPgExternBlock Extern ... End Extern]]## block will add its constants to the parent namespace directly, as in C, instead of acting as a namespace on its own. It disallows the ##//typename//.//symbolname//## style of access, and the constants may conflict with other symbols from the parent namespace.
 	
 	An ##**Enum**## can be passed as a user defined type to ##[[KeyPgOverload overload]]##ed operator functions.
 

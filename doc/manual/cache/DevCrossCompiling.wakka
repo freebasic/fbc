@@ -1,0 +1,59 @@
+{{fbdoc item="title" value="FB and cross-compiling"}}----
+
+{{fbdoc item="section" value="Each fbc supports all targets"}}
+
+Since fbc version 0.24, the ""FreeBASIC"" compiler always supports all compilation targets. There no longer is any configuration necessary to enable support for additional targets at fbc compile-time, like it used to exist in older fbc versions. This means you only need to install one fbc per host system, and it can be used to compile native programs aswell as non-native programs.
+
+	- default: compile for native system
+	- [[CompilerOpttarget -target]] and [[CompilerOptarch -arch]] compiler options allow cross-compiling
+
+{{fbdoc item="section" value="Requirements for cross-compiling"}}
+
+The official FB release packages include an fbc capable of cross-compiling, but fbc alone is not enough.
+
+1. Besides fbc, ""FreeBASIC"" consists of the FB runtime library (rtlib/libfb) and the FB graphics library (gfxlib2/libfbgfx). Additionally, ""FreeBASIC"" uses libraries from the ""MinGW"", DJGPP or Linux GCC toolchains. All these libraries are precompiled for a certain target. You need a copy of the proper libraries for every compilation target you want to use.
+
+2. ""FreeBASIC"" uses the assembler and linker (and sometimes even more tools) from the GNU binutils project to create binaries, and these only support one target at a time. You need the proper binutils for every compilation target you want to use.
+
+To keep the official FB release packages small, they only include the libraries and tools needed for native development, but not for cross-compiling. 
+
+{{fbdoc item="section" value="Example: Cross-compiling from Ubuntu GNU/Linux to Win32"}}
+
+Ubuntu offers official ""MinGW"" cross-compiling packages, which we can also use for ""FreeBASIC"". The following describes the steps needed to set this up.
+
+**1. gcc/binutils cross-compiler toolchain**
+
+Install the ##gcc-mingw-w64## package and its dependencies. The exact package name could be different for different versions of Ubuntu. This should give you the gcc cross-compiler toolchain for targetting ""Win32"" (and ""Win64"" -- you can install the exact packages manually if you prefer to avoid installing the whole ##gcc-mingw-w64## and all of its dependencies.).
+
+That includes the binutils and ""MinGW"" libraries, both of which fbc definitely needs for cross-compiling. It also includes the cross-compiling gcc, which fbc uses to look up the installation locations of the ""MinGW"" libraries. Besides that, gcc is obviously also needed if you want to use ##-gen gcc## (such as when targetting 64bit which is currently only supported via -gen gcc).
+
+The installed tools are called ##i686-w64-mingw32-as## (""MinGW"" cross assembler), ##i686-w64-mingw32-ld## (""MinGW"" cross linker), ##i686-w64-mingw32-gcc## (""MinGW"" cross gcc), etc. You can use them with fbc by specifying the common target prefix to the fbc [[CompilerOpttarget -target]] option:
+
+%%fbc foo.bas -target i686-w64-mingw32%%
+
+This tells fbc to cross-compile using the system's ##i686-w64-mingw32## gcc/binutils toolchain and libraries.
+
+**2. ""Win32"" FB libraries**
+
+Install ""Win32"" FB libraries such that fbc can find them. For the ##-target i686-w64-mingw32## example from above, the directory where the ""Win32"" FB libraries need to be is ##/usr/local/lib/freebasic/i686-w64-mingw32/##, assuming fbc is installed at ##/usr/local/bin/fbc##. You have two options to get them.
+
+a) Copy the libraries from the official ""Win32"" FB release package (or some other existing ""Win32"" build of FB). Create the ##/usr/local/lib/freebasic/i686-w64-mingw32/## directory and copy the libraries into it. This should be safe as long as the ""Win32"" FB libraries are from the same FB version as the FB-linux setup you have installed. However, if the ""Win32"" libraries were created with a ""MinGW"" toolchain that is incompatible with the one from Ubuntu, then there can be errors.
+
+b) Compile the ""Win32"" FB libraries manually using Ubuntu's toolchain. Assuming you have the FB source code in ##fbc/##, you can do:
+	%%cd fbc
+make rtlib gfxlib2 TARGET=i686-w64-mingw32
+sudo make install-rtlib install-gfxlib2 TARGET=i686-w64-mingw32
+%%
+	This should cross-compile the ""Win32"" FB libraries using the ##i686-w64-mingw32## toolchain and install them into the proper directory in ##/usr/local##. Again, here it is important to ensure that the used source code matches the version of the installed FB-linux setup.
+	
+	To be completely safe and avoid FB version incompatibilities, you can build an entire FB setup from sources, including the ""Win32"" cross-compiling libraries:
+	
+	%%cd fbc
+make
+make rtlib gfxlib2 TARGET=i686-w64-mingw32
+sudo make install
+sudo make install-rtlib install-gfxlib2 TARGET=i686-w64-mingw32
+%%
+
+{{fbdoc item="back" value="DevToc|FreeBASIC Developer Information"}}
+{{fbdoc item="back" value="DocToc|Table of Contents"}}

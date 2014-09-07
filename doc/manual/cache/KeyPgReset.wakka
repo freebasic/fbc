@@ -60,6 +60,8 @@ while eof(1) = 0
 wend
 close #1
 %%
+		Note: Under Windows, to specify to the program that data entry is completed (transfer EOF), you can press CTRL+Z then press ENTER.
+
 {{fbdoc item="diff"}}
 	- None for ##**Reset**()##.
 	- The ##**Reset**(//streamno//)## usage is new to ""FreeBASIC"".
@@ -68,5 +70,6 @@ close #1
 	- ##[[KeyPgClose Close]]##
 	- ##[[KeyPgOpen Open]]##
 	- ##[[KeyPgOpenCons Open Cons]]##
+	- ##[[KeyPgIsredirected IsRedirected]]##
 
 {{fbdoc item="back" value="CatPgFile|File I/O Functions"}}

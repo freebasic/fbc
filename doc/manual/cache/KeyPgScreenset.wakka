@@ -16,7 +16,7 @@ Sets current work and visible pages
 {{fbdoc item="desc"}}
 	##**Screenset**## allows to set the current working page and the current visible page. Page numbers range from ##0## to ##//num_pages// - 1##, where ##//num_pages//## is the number of pages specified when setting the graphics mode with ##[[KeyPgScreenres Screenres]]## or ##[[KeyPgScreengraphics Screen]]##.  You can use this function to achieve page-flipping or double-buffering.
 
-	If you provide ##//visible_page//## but not ##//work_page//##, only the visible page is changed. If you omit ##//work_page//## but not ##//visible_page//##, only the work page is changed. If you omit both arguments, both work page and visible page are reset to page 0.
+	If you provide ##//visible_page//## but omit ##//work_page//##, only the visible page is changed. If you provide ##//work_page//## but omit ##//visible_page//##, only the work page is changed. If you omit both arguments, both work page and visible page are reset to page 0.
 
 	##**Screenset**## provides one method of writing to the screen without instantly displaying changes to the user.  See also ##[[KeyPgScreenlock Screenlock]]## / ##[[KeyPgScreenunlock Screenunlock]]## for an alternative method of doing this.
 

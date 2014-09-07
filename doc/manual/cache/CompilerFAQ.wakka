@@ -104,13 +104,13 @@
 {{anchor name="item0|Back to top"}}
 
 {{anchor name="item8"}}==Does ""FreeBASIC"" support Object Oriented Programming?==
-	Some OOP functionality is available to the FB users since version 0.17. Complete OOP functionality is expected for the future (0.23). At the moment (version 0.22) there are methods inside UDT and operator overloading but inheritance and polymorphism are not yet implemented. For more information see: [[TutBeginnersGuideToTypesAsObjects A Beginners Guide to Types as Objects]] and [[http://www.freebasic.net/forum/viewtopic.php?t=17571 Forum t=17571 "New fbc branch ('inheritance') on sourceforge (fbc SVN)"]].
+	""FreeBASIC"" (as of version 0.90) supports classes (user-defined types) with member functions (methods), static methods, static member variables, constructors, destructors, properties, operator overloading, single inheritance, virtual and abstract methods (polymorphism) and run-time type information. Future plans regarding OOP functionality include adding support for multiple inheritance and/or interfaces. For more information see: [[TutBeginnersGuideToTypesAsObjects A Beginners Guide to Types as Objects]].
 
 {{anchor name="item0|Back to top"}}
 
 {{anchor name="item9"}}==What are the future plans with FB / ""ToDo"" list ?==
 
-	You can find out what's planned for the future releases by directly looking at the TODO file for the compiler, currently in SVN [[http://fbc.svn.sourceforge.net/svnroot/fbc/trunk/FreeBASIC/src/compiler/TODO.txt?view=markup here]].
+	You can find out what's planned for the future releases by directly looking at [[http://sourceforge.net/p/fbc/code/ci/master/tree/todo.txt fbc's todo.txt]].
 
 {{anchor name="item0|Back to top"}}
 
@@ -160,8 +160,8 @@
 {{anchor name="item0|Back to top"}}
 
 {{anchor name="item22"}}==Can I have an offline version of the documentation?==
-	The official documentation for FB is this Wiki, usually it is current with the latest improvements found in the SVN.
-	From time to time this Wiki is converted to several offline readable formats. [[http://sourceforge.net/project/showfiles.php?group_id=122342&package_id=159165 CHM]] for Windows users, other formats here: [[http://sourceforge.net/projects/fbc/files/Documentation/ sf.net/.../Documentation]], ""CoderJeff""'s page (has FBHELP, doesn't have up-to-date manuals): [[http://www.execulink.com/~coder/freebasic/docs.html execulink.com/.../docs.html]].
+	This online Wiki is the official documentation for FB. Usually it is up-to-date with the latest improvements found in the development version of FB.
+	Offline versions of this wiki (in CHM, HTML and other formats) are available from the [[http://sourceforge.net/projects/fbc/files/Documentation/ Documentation directory at fbc's downloads site on SourceForge]].
 
 {{anchor name="item0|Back to top"}}
 

@@ -1,0 +1,21 @@
+{{fbdoc item="title" value="Structure packing/field alignment"}}----
+
+The default layout of ##Type## and ##Union## structures in ""FreeBASIC"" is compatible to that of GCC, following the ""SysV"" (Linux/BSD) and Microsoft (Windows) ABIs. This allows for binary compatibility with GCC and other compilers.
+
+By default, fields are aligned to their natural boundaries, which are: 
+	- A multiple of 1 for 1-byte data types
+	- A multiple of 2 for 2-byte data types
+	- A multiple of 4 for 4-byte data types
+	- A multiple of 4 for 8-byte data types (32bit x86 DOS(DJGPP)/Linux/BSD)
+	- A multiple of 8 for 8-byte data types (""Win32/Win64"", 32bit ARM Linux, 64bit ""x86_64/AArch64"" Linux/BSD)
+	- The largest natural boundary of the fields of ##Type##/##Union## data types
+	- Dynamic string descriptors are handled as ##Type## structures with the data pointer field being the one with the largest natural alignment.
+	- Fixed-length strings are aligned according to the alignment required for the character size.
+	- Static arrays are aligned according to the alignment required for the element data type.
+
+The compiler aligns fields by inserting padding bytes in front of them in order to move them to an offset that corresponds to their natural boundary, or to a multiple of the value given with ##[[KeyPgField Field = N]]##, if it is smaller than the field's natural alignment. On the x86 architecture, such proper alignment is not required but can result in better performance when accessing the fields. Other architectures might actually require proper alignment.
+
+In addition to field alignment, the whole structure's size is rounded up to a multiple of the largest natural alignment of its fields, by adding padding bytes at the end of the structure. This ensures that in an array of such structures, each individual one is properly aligned as required by the fields.
+
+{{fbdoc item="back" value="DevToc|FreeBASIC Developer Information"}}
+{{fbdoc item="back" value="DocToc|Table of Contents"}}

@@ -1,0 +1,120 @@
+{{fbdoc item="title" value="FB build configuration options"}}----
+
+The FB makefile aswell as the compiler/rtlib/gfxlib2 source code offers some configuration options. If you build FB by using the FB makefile, then it makes sense to use the FB makefile's configuration options. If you build FB by compiling the sources manually (without using the FB makefile), then of course you can only use the source code configuration options, and you are responsible for putting the FB setup together properly yourself.
+
+The compiler and rtlib/gfxlib2 source code both handle some #defines which allow for some configuration. For example, #defining ENABLE_STANDALONE when building the compiler (by specifying ##-d ENABLE_STANDALONE## on the fbc command line) will adjust the compiler for a [[DevNormalVsStandalone standalone setup]]. As another example, #defining DISABLE_FFI when building the rtlib (by specifying ##-DDISABLE_FFI## on the gcc command line) will cause the rtlib to be built without using the libffi headers (##ffi.h##). This disables [[KeyPgThreadCall ThreadCall]] support in the rtlib, but can be useful if you do not have libffi.
+
+When using the FB makefile, you can set some variables on the make command line or inside ##config.mk## that affect how the makefile will invoke the fbc/gcc compilers and what directory layout it will use for the FB setup. This includes cases where the makefile will automatically pass the configuration options on to the compiler/rtlib/gfxlib2 source code. For example, specifying ENABLE_STANDALONE=1 to the FB makefile causes it to use ##-d ENABLE_STANDALONE## when building the new compiler (to make it standalone) and to put the newly built compiler and libraries into the standalone directory layout.
+
+{{fbdoc item="section" value="FB makefile commands"}}
+
+	- none or ##all##
+		The default - builds everything that needs to be built
+	
+	- ##compiler##, ##rtlib##, ##gfxlib2##
+		Used to build a specific component only. For example, this can be used to build an ##rtlib## for a specific target, in order to be able to cross-compile FB programs (such as the ##compiler##) for that target.
+	
+	- ##clean[-component]##
+		Used to remove built files. ##make clean## removes all built files, while for example ##make clean-compiler## removes only the files built for the compiler, allowing the compiler to be recompiled more quickly, without the need to rebuild the whole rtlib/gfxlib2 code.
+	
+	- ##install[-component]##, ##uninstall[-component]##
+		Used to copy the built files into the directory specified by the ##prefix## variable, or remove them from there. This is most useful to install the normal build into ##/usr/local## on Linux/BSD systems. For the standalone build, ##make install## will also work and copy over or remove the files. However, the standalone build uses an incompatible directory layout and should not be installed into ##/usr/local## or similar directories because of this.
+		
+		Note that it is fine to run the newly built FB setup right from the directory where it was compiled; ##make install## is not necessary to make it work (unless the ##prefix## path was hard-coded into the compiler via ##ENABLE_PREFIX##).
+		
+		Additionally there are ##install-includes## and ##uninstall-includes## commands, which copy/remove just the FB includes (header files). Note that there is no ##make includes## or similar command, as the includes do not need to be built.
+
+{{fbdoc item="section" value="FB makefile configuration"}}
+
+The following variables are intended to be set on the make command line or inside a file called ##config.mk## next to the FB makefile which is read in by the FB makefile. ##config.mk## is useful for setting variables in a permanent way such that you do not have to specify them manually everytime when invoking make.
+
+Make command line example:
+
+%%$ make CFLAGS='-O2 -g'%%
+
+config.mk example:
+
+%%CFLAGS = -O2 -g%%
+
+	- ##FBFLAGS##, ##FBCFLAGS##, ##FBLFLAGS##
+		Extra fbc flags to be used when compiling and/or linking the compiler. The default is ##-maxerr 1## (check the FB makefile for more details). Typically this is used to add options such as ##-g -exx## to build a debug version the compiler.
+	
+	- ##CFLAGS##
+		Extra gcc flags to be used when compiling rtlib and gfxlib2. The default is ##-O2## (check the FB makefile for more details). Typically this is overridden for debugging purposes by doing ##CFLAGS=-g##.
+	
+	- ##prefix##
+		The FB installation path. The default is ##/usr/local##. Note: MSYS maps ##/usr/local## to ##C:\msys\1.0\local##.
+		
+		This is only used...
+			- by the makefile's ##install## and ##uninstall## commands, 
+			- in the compiler (hard-coded) if ENABLE_PREFIX was used
+		
+		Note that in combination with bash on ""Win32"" (e.g. from DJGPP or MSYS) it's necessary to use forward slashes instead of backslashes in directory paths, for example: ##""prefix=C:/MinGW""##
+	
+	- ##TARGET##
+		This variable can be set to a gcc toolchain triplet such as ##i686-pc-linux-gnu## or ##x86_64-w64-mingw32## in order to cross-compile using that GCC cross-compiler toolchain. The makefile will use ##''fbc -target $(TARGET)''## instead of ##''fbc''##, and ##''$(TARGET)-gcc''## instead of ##''gcc''##.
+		
+		For example, on a Debian GNU/Linux system with the ##i686-w64-mingw32## GCC cross-compiler installed, you can build the win32 rtlib like this:
+		
+		%%# Build the win32 rtlib/gfxlib2
+make rtlib gfxlib2 TARGET=i686-w64-mingw32
+
+# Install it into /usr/local/lib/i686-w64-mingw32-freebasic
+make install-rtlib install-gfxlib2 TARGET=i686-w64-mingw32
+%%
+		It will supplement the existing fbc installation in ##/usr/local##, like a plugin, and from now on you can cross-compile FB programs for win32 by doing:
+		
+		%%fbc -target i686-w64-mingw32 ...
+%%
+	- ##FBC##, ##CC##, ##AR##
+		These variables specify the fbc, gcc and ar programs used during the build. You can specify them to override the defaults, for example:
+		
+			- ##""make FBC=~/FreeBASIC-0.90.1-linux/fbc"" CC="gcc -m32"##
+		
+		##FBC## affects the ##compiler## source code only, while ##CC## and ##AR## are used for ##rtlib## and ##gfxlib2##.
+	
+	- ##V=1##
+		##V## for verbose. By default, the makefile does not display the full command lines used during compilation, but just prints out the latest tool and file name combination to give a better visual indication of the build progress. It also makes warnings and errors stand out more in the console window. If the variable ##V## is set, the echoing tricks are disabled and full command lines will be shown, as GNU make normally does.
+	
+	- ##ENABLE_STANDALONE=1##
+		Build a standalone FB setup instead of the normal Unix-style setup, see also: [[DevNormalVsStandalone the standalone vs. normal comparison]]. This causes the makefile to use the standalone directory layout and to use ##-d ENABLE_STANDALONE## when building the compiler.
+	
+	- ##ENABLE_PREFIX=1##
+		This causes the makefile to use ##-d ENABLE_PREFIX=$(prefix)## when building the compiler.
+	
+	- ##ENABLE_SUFFIX=foo##
+		This causes the makefile to use ##-d ENABLE_SUFFIX=$(ENABLE_SUFFIX)## when building the compiler, and to append the given suffix string to the ##fbc## executable's and ##lib/## directories' names.
+		
+		For example, using ##ENABLE_PREFIX=-0.24## will give you ##bin/fbc-0.24.exe## and a ##lib/freebasic-0.24/## directory, instead of the default ##bin/fbc.exe## and ##lib/freebasic/##. This allows installing multiple versions of compiler and runtime in parallel.
+		
+		Note: The ##include/freebasic/## directory name is not affected, and the FB headers are always shared by all installed FB versions (FB's headers and their directory layouts are designed to be able to do that).
+		
+		This is only supported for the normal (non-standalone) build. It is not needed for the standalone build, because everyone of those can be in a separate installation directory anyways, while normal (non-standalone) builds may have to share a common installation directory such as ##/usr/local## or ##""C:\MinGW""##.
+
+{{fbdoc item="section" value="Compiler source code configuration (FBFLAGS)"}}
+
+	- ##-d ENABLE_STANDALONE##
+		This makes the compiler behave as a standalone tool that cannot rely on the system to have certain programs or libraries. See [[DevNormalVsStandalone the normal vs. standalone comparison]] for more information.
+	
+	- ##-d ENABLE_SUFFIX=foo##
+		This makes the compiler append the given suffix to the ##lib/freebasic/## directory name when searching for its own ##lib/freebasic/## directory. For example, ##-d ENABLE_SUFFIX=-0.24## causes it to look for ##lib/freebasic-0.24/## instead of ##lib/freebasic/##. Corresponding the ENABLE_SUFFIX=foo makefile option, this adjust the compiler to work in the new directory layout.
+	
+	- ##-d ENABLE_PREFIX=/some/path##
+		This causes the given prefix path to be hard-coded into the compiler, disabling the use of ##[[KeyPgExepath exepath()]]##. Thus it will no longer be relocatable. This is useful if its known that the compiler does not need to be relocatable, or if ##exepath()## does not work properly (for example, in FB 0.90.1, this is the case for ""FreeBSD"").
+
+{{fbdoc item="section" value="rtlib and gfxlib2 source code configuration (CFLAGS)"}}
+
+	- ##-DDISABLE_X11##
+		With this, the Unix rtlib/gfxlib2 will not use X11 headers, disabling gfxlib2's X11 graphics driver and some of the rtlib's Linux console functionality (affects multikey() and console mouse handling).
+	
+	- ##-DDISABLE_GPM##
+		With this, the Linux rtlib will not use General Purpose Mouse headers (gpm.h), disabling the Linux [[KeyPgGetmouse GetMouse]] functionality.
+	
+	- ##-DDISABLE_FFI##
+		With this, the rtlib will not use libffi headers (ffi.h), disabling the [[KeyPgThreadcall ThreadCall]] functionality.
+	
+	- ##-DDISABLE_OPENGL##
+		With this, the gfxlib2 will not use ""OpenGL"" headers, disabling the ""OpenGL"" graphics drivers.
+
+{{fbdoc item="back" value="DevToc|FreeBASIC Developer Information"}}
+{{fbdoc item="back" value="DocToc|Table of Contents"}}

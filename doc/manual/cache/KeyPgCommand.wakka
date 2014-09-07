@@ -25,24 +25,24 @@ Returns command line parameters used to call the program
 
 	By default, filename globbing for arguments (expansion of wildcards to filenames) is used on all ports of ""FreeBASIC"" for compatibility.  Arguments on the command line containing wildcards are typically not expanded if when no file is matched or if properly quoted.  Other special characters for redirection are typically not returned unless properly quoted.  Consult the documentation on the shell being used for more information on the proper quoting of command line arguments.
 
-~&//**WARNING**: By nature of constructor precedence in ""FreeBASIC"" and main() initialization, calling ##**Command**## within a global constructor is not safe. At the moment your app will not crash, but you will only receive the null string (##"####"##). This *may* be able to be fixed in the future, but it would be wise not to rely on that.//
+~&//**WARNING**: By nature of constructor precedence in ""FreeBASIC"" and main() initialization, calling ##**Command**## within a global constructor (module constructor or UDT constructor called for static/shared object) is not safe (may even induce a runtime error).//
 
 	__Disabling filename globbing under Win32__
-		For mingw32 and cygwin builds, link the ""FreeBASIC"" program with CRT_noglob.o or define the following somewhere in the source:
-		{{fbdoc item="filename" value="examples/manual/check/KeyPgCommand_mingw32.bas"}}%%(freebasic)
-Extern _CRT_glob Alias "_CRT_glob" As Integer
-Dim Shared _CRT_glob As Integer = 0
-%%
-		For 32-bit builds using ""MinGW-w64"", ##//_dowildcard//## should be used instead of ##//_CRT_glob//##:
-		{{fbdoc item="filename" value="examples/manual/check/KeyPgCommand_mingw64.bas"}}%%(freebasic)
-extern _dowildcard alias "_dowildcard" as long
-dim shared _dowildcard as long = 0
-%%
+		Define the following global variable(s) somewhere in the source:
+		{{fbdoc item="filename" value="examples/manual/check/KeyPgCommand_mingw.bas"}}%%(freebasic)
+'' For MinGW.org and Cygwin runtimes:
+Extern _CRT_glob Alias "_CRT_glob" As Long
+Dim Shared _CRT_glob As Long = 0
 
+'' For MinGW-w64 runtime:
+Extern _dowildcard Alias "_dowildcard" As Long
+Dim Shared _dowildcard As Long = 0
+%%
+	
 	__Disabling filename globbing under Dos__
 		Define the following function somewhere in the source:
 		{{fbdoc item="filename" value="examples/manual/check/KeyPgCommand_Dos.bas"}}%%(freebasic)
-Public Function __crt0_glob_function Alias "__crt0_glob_function" ( ByVal arg As UByte Ptr ) As UByte Ptr Ptr
+Function __crt0_glob_function Alias "__crt0_glob_function" ( ByVal arg As UByte Ptr ) As UByte Ptr Ptr
   Return 0
 End Function
 %%

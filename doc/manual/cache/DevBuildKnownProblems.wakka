@@ -1,0 +1,55 @@
+{{fbdoc item="title" value="Known problems when compiling FB"}}----
+
+{{fbdoc item="section" value="Win32 rtlib compilation error: wchar.h: unknown type name 'dev_t'"}}
+
+	http://sourceforge.net/p/mingw/bugs/2039/
+	
+	The ##wchar.h## header file from ""MinGW.org"" contains a ##struct _stat64## declaration that does not compile when _NO_OLDNAMES is defined, because it uses dev_t, ino_t, mode_t which are only available with an _ underscore prefix (_dev_t etc.) under _NO_OLDNAMES. For the FB rtlib we #define _NO_OLDNAMES when compiling.
+	
+	To work around this issue, adjust wchar.h and add _ underscore prefixes to those typedef names in the ##struct _stat64## declaration.
+
+{{fbdoc item="section" value="Win32 rtlib compilation error: _controlfp, _PC_64 undeclared"}}
+
+%%CC src/rtlib/obj/hinit.o
+src/rtlib/win32/hinit.c: In function 'fb_hInit':
+src/rtlib/win32/hinit.c:21:5: warning: implicit declaration of function '_controlfp' [-Wimplicit-function-declaration]
+src/rtlib/win32/hinit.c:21:17: error: '_PC_64' undeclared (first use in this function)
+%%
+
+Both the ""MinGW.org runtime"" and GCC have a ##float.h## header, and in some setups the GCC one is found before the ""MinGW"" one, causing the above errors.
+
+Easiest temporary fix: Append ###include_next <float.h>## to gcc's ##float.h## (##""C:\MinGW\lib\gcc\[target]\[version]\include\float.h""##)
+
+See also:
+	- The comments at the top of ##""C:\MinGW\include\float.h""##
+	- http://sourceforge.net/p/mingw/bugs/1580/
+	- http://sourceforge.net/p/mingw/bugs/1809/
+	- http://gcc.gnu.org/ml/gcc-patches/2010-01/msg01034.html
+
+{{fbdoc item="section" value="MinGW binutils ld versions 2.18 to 2.21"}}
+
+	fbc triggers a bug ([[https://sourceware.org/bugzilla/show_bug.cgi?id=12614 binutils ld bug 12614]]) in the mentioned linker versions causing it to produce broken binaries in some cases. It's fixed in binutils 2.21.1 and up.
+
+{{fbdoc item="section" value="MinGW.org runtime's globbing code changes case of command line arguments"}}
+
+	http://sourceforge.net/p/mingw/bugs/2062/
+	
+	""MinGW.org""'s runtime (mingwrt-4.0.3) changed the case of command line arguments given to the program. If the argument matched an existing file/directory name and only differed in case, it was adjusted to match the exact spelling. This can cause problems with programs whose command line parsing is not case-insensitive. For example, ##gui## became ##Gui## if there was a directory called ##Gui##. This affected fbc.exe's ##-s gui## option, making it impossible to use, as fbc.exe refused to accept ##-s Gui##.
+
+{{fbdoc item="section" value="-lXpm not found on Debian x86_64"}}
+
+	The ia32-libs-dev package (for example on Debian 6) for some reason does not contain a ##/usr/lib32/libXpm.so## symlink, even though it does contain those for the other X11 development libraries. This apparently can be fixed by creating the symlink manually:
+	
+	%%ln -s /usr/lib32/libXpm.so.4 /usr/lib32/libXpm.so
+%%
+
+{{fbdoc item="section" value="DJGPP: Too many open files"}}
+
+	If a DJGPP program fails with a //too many open files// error on Windows, try the following to increase the number of available file handles:
+	
+		- Use ##msconfig## to add ##""PerVMFiles=255""## to the ##""[386Enh]""## section of ##SYSTEM.INI##
+		- Edit the ##files=## setting in ##""C:\WINDOWS\system32\CONFIG.NT""##: ##files=255##
+		- Also see http://www.delorie.com/djgpp/v2faq/faq9_7.html
+
+{{fbdoc item="back" value="DevToc|FreeBASIC Developer Information"}}
+{{fbdoc item="back" value="DocToc|Table of Contents"}}

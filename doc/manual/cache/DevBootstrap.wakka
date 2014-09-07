@@ -1,0 +1,83 @@
+{{fbdoc item="title" value="Bootstrapping fbc on a new system"}}----
+
+fbc is written in FB itself, so you need a working fbc to build a new fbc. How to do this on a system where no working fbc exists yet? There are two options: pre-compiling (by cross-compiling) the fbc sources on a system where you have a working fbc and then taking the results to the target system, or full cross-compiling using a gcc cross-compiler toolchain.
+
+{{fbdoc item="section" value="Bootstrapping by precompiling the compiler sources"}}
+
+	1) On the target system, compile FB's rtlib/gfxlib2 using the native C compiler as usual:
+	%%make rtlib gfxlib2%%
+	
+	1) On Linux or ""Win32"" (or another system where you have a working fbc), use the existing fbc to cross-compile ##src/compiler/*.bas## into ##*.asm## (-gen gas, x86 only) or ##*.c## (-gen gcc, works for every target) files compatible to the target system:
+	%%fbc -e -m fbc src/compiler/*.bas -r -target <mytargetos> -arch <mytargetarch>
+		
+Some random examples:
+x86 Win32 -> x86 OpenBSD: -target openbsd [-arch 486]
+x86 Win32 -> x86_64 FreeBSD: -target freebsd -arch x86_64
+x86 Linux -> ARM Linux: -target arm-linux-gnueabihf, or just -arch armv6
+%%
+	
+	1) Take the produced ##.asm## or ##.c## files to the target system, and use the target system's native tools build the final fbc executable:
+	 
+	
+		- If you produced ##.asm## files, take them to the target system, and assemble them into ##*.o## object files using the target system's native assembler, and then link everything into a new fbc executable:
+		%%for i in src/compiler/*.asm; do
+as $i -o `echo $i | sed -e 's/asm$/o/g'`
+done
+
+gcc -o fbc lib/freebasic/<mytargetarch>/fbrt0.o src/compiler/*.o -Llib/freebasic/<mytargetarch> -lfb -lncurses -lm -pthread%%
+		
+		- If you produced ##.c## files, take them to the target system, and compile them into a new fbc executable:
+		%%gcc -o fbc lib/freebasic/<mytargetarch>/fbrt0.o src/compiler/*.c -Llib/freebasic/<mytargetarch> -lfb -lncurses -lm -pthread%%
+
+{{fbdoc item="subsect" value="Additional notes & tips"}}
+	- The new fbc and the new rtlib/gfxlib2 must be built from the same version of FB source code, otherwise there can be incompatibility issues. The compiler version should always match the version of rtlib/gfxlib2 in its ##lib/## directory.
+	- When linking fbc for a Unix-like system, you need to link it against libncurses or libtinfo, and also libpthread, because fbc uses the FB runtime which depends on those libraries and gcc does not link them by default. When linking fbc for ""Win32/Win64"" that's not needed.
+	- An alternative to linking with gcc is to invoke ld manually, like fbc itself would normally do it. You can look at fbc -v output to see what it does. However this is more complicated.
+
+{{fbdoc item="section" value="Bootstrapping by cross-compiling everything"}}
+
+If you're on Linux or ""Win32"" or another system where you already have a working fbc, and you have a gcc cross-compiler toolchain for the target system, and the libraries needed to link an fbc for the target system (libc, libpthread, etc. and libncurses/libtinfo), then you can directly cross-compile an FB setup like so:
+
+	1) Build a native FB setup with additional libraries for cross-compiling to the target system:
+	%%# Get a directory with the fbc sources, e.g. "fbc"
+cd fbc
+make
+make rtlib gfxlib2 TARGET=<gcc-target-id>
+
+# Optionally, you can install everything into /usr/local:
+make install
+make install-rtlib install-gfxlib2 TARGET=<gcc-target-id>
+%%
+	
+	1) Use the native FB setup built above to cross-compile the new FB setup for the target system:
+	%%cd ..
+mkdir crosscompiled-fbc && cd crosscompiled-fbc
+make -f ../fbc/makefile FBC='../fbc/bin/fbc -i ../fbc/inc' TARGET=<gcc-target-id>
+# (Specifying FBC=... is only needed if you did not install it globally)
+%%
+
+{{fbdoc item="section" value="Cross-compiling the 64bit version on a 32bit system with gcc -m64"}}
+
+If you have a gcc multilib toolchain with ""-m64"" support on a 32bit system, you can use it to cross-compile the 64bit version of FB. For example, on 32bit Ubuntu (GNU/Linux), you can install the ##gcc-multilib## package to install the ##gcc -m64## support. The ""Win32"" gcc toolchains from the ""MinGW-w64"" project also have support for cross-compiling to 64bit via ##gcc -m64##.
+
+%%
+# Get FB sources into fbc/ (must be 0.91+ because earlier versions didn't support multilib/64bit at all),
+# and build a native (32bit) FB first
+cd fbc
+make
+
+# Then add the 64bit rtlib/gfxlib2 to that. Specifying MULTILIB=64 tells the FB makefile to use gcc -m64.
+make rtlib gfxlib2 MULTILIB=64
+
+# Now we have a new 32bit FB with 64bit libraries for cross-compiling.
+# This can now be used to build a full 64bit FB:
+cd ..
+mkdir fbc64
+cd fbc64
+make -f ../fbc/makefile MULTILIB=64 FBC='../fbc/bin/fbc -i ../fbc/inc'
+%%
+
+This does not only work for ##gcc -m64## on 32bit, but also ##gcc -m32## on 64bit. For cross-compiling the 32bit FB on a 64bit system, just exchange 32 and 64 in the example above. For example, you have to specify ##MULTILIB=32## instead of ##MULTILIB=64##.
+
+{{fbdoc item="back" value="DevToc|FreeBASIC Developer Information"}}
+{{fbdoc item="back" value="DocToc|Table of Contents"}}

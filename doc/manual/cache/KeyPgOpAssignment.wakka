@@ -23,6 +23,7 @@ Assigns a value to a variable
 
 {{fbdoc item="desc"}}
 	This operator assigns the value of its right-hand side operand (##//rhs//##) to its left-hand side operand (##//lhs//##). The right-hand side operand must be implicitly convertible to the left-hand side type (##//T1//##). For example, you cannot assign a numeric value to a string type; to do that, first convert the numeric value to a string using ##[[KeyPgStr Str]]## or ##[[KeyPgWstr Wstr]]##.
+	Assignment between arrays is not supported presently.
 
 	Avoid confusion with ##[[KeyPgOpEqual Operator = (Equal)]]##, which also uses the '##=##' symbol (for that, from fbc version 0.90, '=>' can be used for assignments, in place of '=', same as for initializers).
 

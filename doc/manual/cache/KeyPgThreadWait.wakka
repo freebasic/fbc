@@ -1,22 +1,22 @@
 {{fbdoc item="title" value="THREADWAIT"}}----
-Waits until the designated thread has been completed before returning
+Waits for a thread to finish execution and releases the thread handle
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Threadwait** ( [[KeyPgByval byval]] //id// [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]] )
+	[[KeyPgDeclare Declare]] [[KeyPgSub Sub]] **""ThreadWait""** ( [[KeyPgByval Byval]] //id// [[KeyPgAs As]] [[KeyPgAny Any]] [[KeyPgPtr Ptr]] )
 ##
 {{fbdoc item="usage"}}##
-	**Threadwait**( //id// )
+	**""ThreadWait""**( //id// )
 ##
 {{fbdoc item="param"}}
 	##//id//##
-		##[[KeyPgAny any]] [[KeyPgPtr ptr]]## handle of a thread created by ##[[KeyPgThreadCreate Threadcreate]]##
+		##[[KeyPgAny Any]] [[KeyPgPtr Ptr]]## handle of a thread created by ##[[KeyPgThreadCreate ThreadCreate]]## or ##[[KeyPgThreadCall ThreadCall]]##
 
 {{fbdoc item="desc"}}
-	##Threadwait## doesn't return until the thread designated by ##//id//## ends. ##Threadwait## does not force the thread to end; if a thread requires a signal to force its end, a mechanism such as shared variables must be used.
-
-	Threads are launched by the ##[[KeyPgThreadCreate Threadcreate]]## function.
-
-	To avoid simultaneous access to shared resources from different threads, ""FreeBASIC"" implements mutexes, mutual exclusion locks that can be "owned" by a single thread when doing critical work. See ##[[KeyPgMutexCreate Mutexcreate]]##, ##[[KeyPgMutexLock Mutexlock]]##, ##[[KeyPgMutexUnlock Mutexunlock]]##, ##[[KeyPgMutexDestroy Mutexdestroy]]##
+	**""ThreadWait""** waits for a thread created by ##[[KeyPgThreadCreate ThreadCreate]]## or ##[[KeyPgThreadCall ThreadCall]]## to finish execution, and then releases the resources associated with the thread handle. **""ThreadWait""** does not return until the thread designated by ##//id//## ends. 
+	
+	In order to release a thread handle without waiting for the thread to finish, use ##[[KeyPgThreadDetach ThreadDetach]]##.
+	
+	**""ThreadWait""** does not force the thread to end; if a thread requires a signal to force its end, a mechanism such as shared variables and mutexes must be used.
 
 {{fbdoc item="ex"}}
 	See the ##[[KeyPgThreadCreate Threadcreate]]## examples.
@@ -25,17 +25,13 @@ Waits until the designated thread has been completed before returning
 	- Threading is not allowed in the //[[CompilerOptlang -lang qb]]// dialect.
 
 {{fbdoc item="target"}}
-	- **Threadwait** is not available with the DOS version of ""FreeBASIC"", because multithreading is not supported by DOS kernel nor the used extender.
-	- In Linux the threads are always started in the order they are created, this can't be assumed in ""Win32"". It's an OS, not a ""FreeBASIC"" issue. 
+	- **""ThreadWait""** is not available with the DOS version of ""FreeBASIC"", because multithreading is not supported by DOS kernel nor the used extender.
 
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgThreadCreate Threadcreate]]##
-	- ##[[KeyPgMutexCreate Mutexcreate]]##
-	- ##[[KeyPgMutexLock Mutexlock]]##
-	- ##[[KeyPgMutexUnlock Mutexunlock]]##
-	- ##[[KeyPgMutexDestroy Mutexdestroy]]##
+	- ##[[KeyPgThreadCreate ThreadCreate]]##
+	- ##[[KeyPgThreadDetach ThreadDetach]]##
 
 {{fbdoc item="back" value="CatPgThreading|Threading Support Functions"}}

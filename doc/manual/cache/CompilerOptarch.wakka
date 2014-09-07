@@ -1,33 +1,59 @@
 {{fbdoc item="title" value="Compiler Option: -arch"}}----
-Set target architecture
+Set target architecture for improved/restricted code generation or cross-compiling
 
 {{fbdoc item="syntax"}}##
 	**-arch** < //architecture// >
 ##
 {{fbdoc item="param"}}
 	##//architecture//##
-		The target architecture.
+		The target architecture. Recognized values:
+		
+			- Related to 32bit x86:
+				- ##386##
+				- ##486## (default for x86)
+				- ##586##
+				- ##686##
+				- ##athlon##
+				- ##athlon-xp##
+				- ##athlon-fx##
+				- ##k8-sse3##
+				- ##pentium-mmx##
+				- ##pentium2##
+				- ##pentium3##
+				- ##pentium4##
+				- ##pentium4-sse3##
+			- Related to 64bit x86_64:
+				- ##x86_64##, ##x86-64##, ##amd64##
+			- Related to 32bit ARM:
+				- ##armv6##
+				- ##armv7-a## (default for ARM)
+			- Related to 64bit ARM (""AArch64""):
+				- ##aarch64##
+			- Others:
+				- ##native##: For compiling to the architecture which the compiler is running on.
+				- ##32##, ##64##: For quick cross-compiling to the 32bit or 64bit version of the default architecture.
 
 {{fbdoc item="desc"}}
-	The ##-arch## compiler option sets the target CPU architecture.  The default is //486// if the //-arch// option is not specified.  Recognized values:
-		//386//
-		//486//
-		//586//
-		//686//
-		//athlon//
-		//athlon-xp//
-		//athlon-fx//
-		//k8-sse3//
-		//pentium-mmx//
-		//pentium2//
-		//pentium3//
-		//pentium4//
-		//pentium4-sse3//
-		//native//
+	The ##-arch## compiler option sets the target CPU architecture. This can be used for multiple purposes:
+	
+		- Improving code generation; for example: You can use ##-arch 686## to override the default ##-arch 486##, and the compiler will generate faster code in some cases, by using certain instructions which were not available on i486 (or other CPUs older than i686).
+		- Restricting code generation; for example: You can use ##-arch 386## to limit the compiler to using only i386-compatible instructions.
+		- Cross-compiling; for example: You can use ##-arch x86_64## on 32bit x86 systems to cross-compile to 64bit x86_64.
+	
+	The exact impact which the ##-arch## setting has on code generation depends on the [[CompilerOptgen code generation backend]] that is being used. The x86 ASM backend (##-gen gas##) handles the ##-arch## setting and adjusts code generation accordingly in some cases. When using the GCC backend (##-gen gcc##), the specified architecture will be passed on to gcc via ##gcc -march=<...>##, causing gcc to generate code for the specified architecture.
+	
+	However, ##-arch## only affects newly generated code, but not pre-compiled code such as the ""FreeBASIC"" runtime libraries, or any other library from the ##lib/## directory. For example, using ##-arch 386## is not necessarily enough to get a pure i386 executable -- it also depends on how all the libraries that will be linked in were compiled.
+	
+	The ##-arch 32## and ##-arch 64## shortcuts are similar to gcc's ##-m32/-m64## options. On 32bit architectures, ##-arch 64## is an abbreviation for cross-compiling to the default 64bit version of the architecture (e.g. from 32bit x86 to 64bit x86_64, or 32bit ARM to 64bit ""AArch64""), and ##-arch 32## does nothing. On 64bit systems, it is the other way round: ##-arch 32## cross-compiles to the default 32bit architecture, while ##-arch 64## does nothing.
+	
+	The ##-arch native## shortcut is similar to gcc's ##-march=native## option. On x86, it causes fbc to try and detect the host CPU automatically based on the ##cpuid## instruction and its availability or results. On other architectures, this will currently simply use the architecture which the compiler itself was built for. Under -gen gcc this will use ##gcc -march=native##.
+	
+	Specifying an ##-arch## setting incompatible to the native architecture will trigger [[DevCrossCompiling cross-compilation]], just like the ##[[CompilerOpttarget -target]]## option, except that only the target architecture, but not the target operating system, is changed.
 
-	Note: This option only affects newly generated code, not already-compiled code such as the ""FreeBASIC"" runtime libraries.
 
 {{fbdoc item="see"}}
 	- [[CompilerCmdLine Using the Command Line]]
+	- [[CompilerOpttarget -target]]
+	- [[DevCrossCompiling FB and cross-compiling]]
 
 {{fbdoc item="back" value="CatPgCompOpt|Compiler Options"}}

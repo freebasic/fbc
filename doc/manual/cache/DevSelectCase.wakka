@@ -120,7 +120,25 @@ end select					endlabel:
 
 {{fbdoc item="section" value="SELECT CASE without temp var"}}
 
-	When given a variable (instead of a more complex expression), SELECT CASE won't use a temp var, but instead defer the symbol from the given expression and access that in the CASE comparison expressions. ???
+	When the expression given to the ''##select##'' statement is just a simple variable access, then no temporary variable needs to be created. In this case, the given variable itself will be used in the comparisons at each ''##case##'' statement. For example:
+	
+	%%
+dim i as integer		dim i as integer
+
+				scope
+select case i
+
+case 1					if( i <> 1 ) then goto cmplabel1
+					scope
+	print "1"				print "1"
+					end scope
+					goto endlabel
+
+end select				cmplabel1:
+					endlabel:
+				end scope
+%%
+
 
 {{fbdoc item="back" value="DevToc|FreeBASIC Developer Information"}}
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

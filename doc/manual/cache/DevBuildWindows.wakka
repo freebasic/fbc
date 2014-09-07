@@ -1,0 +1,154 @@
+{{fbdoc item="title" value="Compiling FB on Windows"}}----
+
+{{fbdoc item="section" value="Preparations"}}
+
+{{fbdoc item="subsect" value="Getting the FB source code"}}
+
+To compile a new version of FB, you first need to [[DevGettingTheSourceCode get the FB source code]]. The following assumes that you have a directory called ##fbc##, containing the latest FB source code.
+
+{{fbdoc item="subsect" value="Installing a MinGW-w64 toolchain"}}
+
+In this guide we will use a 32bit or 64bit [[mingw-w64.sourceforge.net MinGW-w64]] toolchain to build the 32bit or 64bit version of FB, respectively. Visit [[http://sourceforge.net/projects/mingw-w64/files/]] and enter the [[http://sourceforge.net/projects/mingw-w64/files/Toolchains%20targetting%20Win64/ Toolchains targetting Win64]] or [[http://sourceforge.net/projects/mingw-w64/files/Toolchains%20targetting%20Win32/ Toolchains targetting Win32]] directory, depending on whether you want to compile a 32bit or 64bit version of FB. Enter the ##Personal Builds/mingw-builds/## subdirectory, choose the latest gcc version, then enter the ##threads-win32/sjlj/## subdirectory and download the toolchain package from there.
+
+Extract the toolchain into a new ##""C:\MinGW-w64""## directory, such that you end up with ##""C:\MinGW-w64\bin\gcc.exe""##. 
+
+If you know what you are doing, you can also use a different ""MinGW-w64"" toolchain, or even one from different projects such as ""MinGW.org"" or ""TDM-GCC"". We have some more information on the ""MinGW"" toolchain choices on the [[DevGccToolchainChoice]] page.
+
+{{fbdoc item="subsect" value="Installing MSYS"}}
+
+MSYS (originally a Cygwin fork) brings a Unix-like shell environment to Windows, including GNU make, the bash shell and Unix command line tools such as ##cp## and ##rm##. For FB we need it to run the FB makefile and the FB test suite.
+
+The needed MSYS packages can be downloaded and extracted by using the latest version of the [[http://sourceforge.net/projects/mingw/files/Installer/ mingw-get setup from the MinGW.org project]].
+
+Run the installer and choose ##""C:\MinGW""## as installation directory. This way it will be separate from ##""C:\MinGW-w64""##, avoiding potential conflicts. The ""MinGW"" Installation Manager (##""C:\MinGW\bin\mingw-get.exe""##) should be opened automatically afterwards. Use it to install the ##mingw-developer-toolkit## package from the Basic Setup section by clicking the box left to the package name and selecting "Mark for Installation", then selecting Installation -> Apply Changes from the application's menu.
+
+This should install the commonly needed MSYS components. We do not want to install the ##mingw32-base## or ##mingw32-gcc-*## packages here, because we are using an external ""MinGW-w64"" toolchain instead of the ""MinGW.org"" one. If you do not wish to use the ""MinGW.org"" installer, you can also download the ""MinGW""/MSYS packages manually from the [[http://sourceforge.net/projects/mingw/files/ MinGW project's download site]].
+
+Ultimately, MSYS should be installed at ##""C:\MinGW\msys\1.0\""##. Now there are three important directories: ##""C:\MinGW-w64\bin\""##, ##""C:\MinGW\bin\""## and ##""C:\MinGW\msys\1.0\bin\""##. All of them must be added to the ##PATH## environment variable (in the given order), so that the programs they include will be found when invoked from a command prompt or from the FB makefile.
+
+In order to avoid modifying the system-wide ##PATH##, you can use a ##open-msys.bat## script like the following to open an MSYS bash with the needed ##PATH## settings, everytime you need it:
+
+%%set PATH=C:\MinGW\msys\1.0\bin;%PATH%
+set PATH=C:\MinGW\bin;%PATH%
+set PATH=C:\MinGW-w64\bin;%PATH%
+C:\MinGW\msys\1.0\msys.bat
+%%
+
+{{fbdoc item="subsect" value="Getting libffi"}}
+
+The FB rtlib source code depends on [[http://sourceware.org/libffi/ libffi]] headers (##ffi.h## and ##ffitarget.h##) to be available in the gcc toolchains include directory (##""C:\MinGW-w64\i686-w64-mingw32\include""## for 32bit ""MinGW-w64"" and ##""C:\MinGW-w64\x86_64-w64-mingw32\include""## for 64bit ""MinGW-w64""). Furthermore, the ##libffi.a## library will be needed later when compiling FB programs that use [[KeyPgThreadCall ThreadCall]].
+
+Prebuilt versions of libffi are available from the [[http://sourceforge.net/projects/fbc/files/Binaries%20-%20Windows/Libraries/ fbc downloads area]].
+
+If you do not want to use a prebuilt version, but prefer to compile libffi manually instead, it is fairly simple. libffi uses the autotools (autoconf, automake, libtool) build system, so the corresponding packages have to be installed for ""MinGW""/MSYS. Open the MSYS bash (with the proper PATH settings).
+
+	- 32bit:
+	
+	
+		%%$ ./configure
+$ make%%
+	
+	- 64bit: This requires working around MSYS' ##uname## which still returns 32bit even on 64bit:
+	
+	
+		%%$ ./configure --build=x86_64-w64-mingw32 --host=x86_64-w64-mingw32
+$ make%%
+
+This should produce the libffi headers in an ##include/## subdirectory and the compiled library in a ##.libs/## subdirectory. You can then copy them into the corresponding directories of the ""MinGW-w64"" toolchain such that gcc will find them.
+
+{{fbdoc item="section" value="Standalone build (self-contained FB)"}}
+
+{{fbdoc item="subsect" value="Getting an existing FB setup for bootstrapping"}}
+
+We will need a working FB-win32 installation to bootstrap the new FB compiler. If you do not have FB-win32 installed yet, download the latest ##""FreeBASIC-X.XX.X-win32""## release from the [[http://sourceforge.net/projects/fbc/files/Binaries%20-%20Windows/ FB's download site]]. It should be extracted somewhere like ##""C:\FreeBASIC-X.XX.X-win32""##.
+
+{{fbdoc item="subsect" value="Building the new FB setup"}}
+
+If you want to create a [[DevNormalVsStandalone traditional standalone]] FB-win32 setup like the one from the ##""FreeBASIC-X.XX.X-win32""## release package, you need to tell FB's makefile by setting the ENABLE_STANDALONE variable. Furthermore, in order to compile for 64bit it is necessary to set the ##TARGET_ARCH## variable manually, because MSYS' ##uname -m## command does not support 64bit and thus the FB makefile would mis-detect the system as 32bit. Assuming the FB sources are located at ##""C:\fbc""##, create a ##""C:\fbc\config.mk""## file containing the following:
+
+	- 32bit:
+	
+	
+		%%ENABLE_STANDALONE = 1
+%%
+	- 64bit:
+	
+	
+		%%ENABLE_STANDALONE = 1
+
+# Manually set TARGET_ARCH to override uname check for 64bit
+TARGET_ARCH = x86_64
+%%
+
+Then, open the MSYS bash using the .bat script mentioned above (with the proper PATH settings), go to the directory with the FB source code, run "make" with the ##FBC=...## variable set to point to the existing fbc.exe to use for bootstrapping, and let it compile:
+
+%%$ cd /c/fbc
+$ make FBC=C:/FreeBASIC-X.XX.X-win32/fbc.exe
+%%
+
+This should have produced the ##fbc.exe## compiler and the libraries in ##lib\win32\## or ##lib\win64\## respectively. To complete this new FB setup, you need to add the binutils (as.exe, ar.exe, ld.exe, dlltool.exe) into ##bin\win32\## and copy in some ""MinGW"" libraries into ##lib\win32\##.
+
+	1) Copy to ##""C:\fbc\bin\win32""## (32bit) or ##""C:\fbc\bin\win64""## (64bit):
+		- ##""C:\MinGW-w64\bin\{ar,as,ld,dlltool}.exe""##
+		- ##""GoRC.exe""## from [[http://www.godevtool.com/]]
+	
+	1) Copy to ##""C:\fbc\lib\win32""## (32bit) or ##""C:\fbc\lib\win64""## (64bit):
+		- ##""C:\MinGW-w64\[target]\lib\{crt2,dllcrt2,gcrt2}.o""##
+		- ##""C:\MinGW-w64\[target]\lib\lib{gmon,mingw32,mingwex,moldname}.a""##
+		- ##""C:\MinGW-w64\[target]\lib\lib{advapi32,gdi32,kernel32,msvcrt,user32,winmm,winspool}.a""## //(rename to ##lib*.dll.a## if wanted)//
+		- ##""C:\MinGW-w64\lib\gcc\[target]\[version]\{crtbegin,crtend}.o""##
+		- ##""C:\MinGW-w64\lib\gcc\[target]\[version]\libgcc.a""##
+		- libffi.a (from the prebuilt libffi package or your own build)
+		
+		
+		(##[target]## refers to ##i686-w64-mingw32## for 32bit ""MinGW-w64"" or ##x86_64-w64-mingw32## for 64bit ""MinGW-w64"", and ##[version]## is the gcc version number)
+
+You can copy more libraries if you need them, for example the ##""C:\MinGW-w64\lib\gcc\[target]\[version]\libsupc++.a""## ""C++"" support library, or other ""Win32 API"" DLL import libraries from the ##""C:\MinGW-w64\[target]\lib\""## directory.
+
+Now, the new FB setup should be ready for use. You can use it right from the source tree or copy it somewhere else. The following are the relevant files and directories:
+
+	- ##""fbc.exe""##
+	- ##""bin/win32/""## (32bit) or ##""bin/win64/""## (64bit)
+	- ##""inc/""##
+	- ##""lib/win32/""## (32bit) or ##""lib/win64/""## (64bit)
+
+{{fbdoc item="section" value="Normal build (like Linux)"}}
+
+{{fbdoc item="subsect" value="Getting an existing FB setup for bootstrapping"}}
+
+We will need a working fbc installation to bootstrap the new FB compiler. If you do not have fbc installed yet, download the latest ""fbc-X.XX.X-mingw-w64-i686"" (32bit) or ""fbc-X.XX.X-mingw-w64-x86_64"" (64bit) package from [[http://sourceforge.net/projects/fbc/files/Binaries%20-%20Windows/ FB's download site]], and extract it into the ""MinGW-w64"" directory (##""C:\MinGW-w64""##) like a ""MinGW"" package. This will add a working fbc to your ""MinGW-w64"" installation.
+
+{{fbdoc item="subsect" value="Building the new FB setup"}}
+
+In order to create a normal (non-standalone) build, just compile FB without specifying ##ENABLE_STANDALONE##. However, in order to compile for 64bit it is necessary to set the ##TARGET_ARCH## variable manually, because MSYS' ##uname -m## command does not support 64bit and thus the FB makefile would mis-detect the system as 32bit.
+
+	- 32bit: no ##config.mk## needed.
+	- 64bit: Create a ##config.mk## containing the following:
+	
+	
+		%%# Manually set TARGET_ARCH to override uname check for 64bit
+TARGET_ARCH = x86_64
+%%
+
+Then, open the MSYS bash using the .bat script mentioned above (with the proper PATH settings), go to the directory with the FB source code, run "make" and let it compile:
+
+%%$ cd /c/fbc
+$ make
+%%
+
+This should have produced the ##bin/fbc.exe## compiler and the libraries in ##lib\freebasic\win32\## or ##lib\freebasic\win64\## respectively.
+
+Optionally, you can copy this setup into the ##""C:\MinGW-w64""## tree by running "make install":
+
+%%$ make install prefix=C:/MinGW-w64
+%%
+
+It can be useful to store the prefix variable in ##config.mk##, so you can run ##make install## in the future without having to worry about it:
+
+%%# config.mk:
+prefix = C:/MinGW-w64%%
+
+Installing fbc into the ""MinGW"" tree this way means that it acts as if it was a part of ""MinGW"". However, it is also possible to use fbc from the source tree, without installing it elsewhere. It will invoke ##gcc -print-file-name=...## in order to locate the ""MinGW"" binutils and libraries.
+
+{{fbdoc item="back" value="DevToc|FreeBASIC Developer Information"}}
+{{fbdoc item="back" value="DocToc|Table of Contents"}}

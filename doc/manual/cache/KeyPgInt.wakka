@@ -3,6 +3,10 @@ Returns the floor of a number
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Int** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgDouble double]] ) [[KeyPgAs as]] [[KeyPgDouble double]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Int** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Int** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgUinteger uinteger]] ) [[KeyPgAs as]] [[KeyPgUinteger uinteger]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Int** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgLongint longint]] ) [[KeyPgAs as]] [[KeyPgLongint longint]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Int** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgUlongint ulongint]] ) [[KeyPgAs as]] [[KeyPgUlongint ulongint]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Int**( //number// )
@@ -15,7 +19,7 @@ Returns the floor of a number
 	Returns the floor of ##//number//##, i.e. the largest integer that is less than or equal to it.
 
 {{fbdoc item="desc"}}
-	 ##**Int**## returns the floor of ##/number//##.  For example, ##**Int**(4.9)## will return ##4.0##, and ##**Int**(-1.3)## will return ##-2.0##.
+	 ##**Int**## returns the floor of ##//number//##.  For example, ##**Int**(4.9)## will return ##4.0##, and ##**Int**(-1.3)## will return ##-2.0##.  For integer types, the number is returned unchanged.
 
 	The ##**Int**## unary ##[[KeyPgOperator operator]]## can be overloaded with user defined types.
 

@@ -95,6 +95,38 @@ for i as integer = 1 to 4
 next i
 %%
 
+{{fbdoc item="filename" value="examples/manual/udt/static2.bas"}}%%(freebasic)
+'' Assign an unique ID to every instance of a Type (ID incremented in order of creation)
+
+Type UDT
+  Public:
+	Declare Property getID () As integer
+	Declare Constructor ()
+  Private:
+	Dim As Integer ID
+	Static As Integer countID
+End Type
+Dim As Integer UDT.countID = 0
+
+Property UDT.getID () As Integer
+  Property = This.ID
+End Property
+
+Constructor UDT ()
+  This.ID = UDT.countID
+  UDT.countID += 1
+End Constructor
+
+
+Dim As UDT uFirst
+Dim as UDT uSecond
+Dim As UDT uThird
+
+Print uFirst.getID
+Print uSecond.getID
+Print uThird.getID
+%%
+
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC""
 

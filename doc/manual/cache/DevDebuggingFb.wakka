@@ -1,0 +1,20 @@
+{{fbdoc item="title" value="Debugging FB"}}----
+
+For debugging and development it's a good idea to build the compiler with -g and -exx to enable assertions and NULL pointer/array boundary checks. For the rtlib/gfxlib2 code, -DDEBUG enables the assertions. Just update config.mk and (re)build. Example config.mk settings:
+
+%%FBFLAGS := -g -exx
+CFLAGS := -g -O0 -DDEBUG
+%%
+
+Running fbc inside gdb typically looks like this:
+
+%%gdb --args fbc foo.bas%%
+
+Running fbc inside valgrind typically looks like this:
+
+%%valgrind fbc foo.bas%%
+
+Also note that fbc can be tested right from inside the build tree, without having to be "installed" somewhere else, which also is a great debugging and development help.
+
+{{fbdoc item="back" value="DevToc|FreeBASIC Developer Information"}}
+{{fbdoc item="back" value="DocToc|Table of Contents"}}

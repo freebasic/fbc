@@ -1,0 +1,60 @@
+{{fbdoc item="title" value="ISREDIRECTED"}}----
+Checking whether stdin or stdout is redirected to a file or not
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **""IsRedirected""** ( [[KeyPgByval byval]] //is_input// [[KeyPgAs as]] [[KeyPgLong long]] = 0 ) [[KeyPgAs as]] [[KeyPgLong long]]
+##
+{{fbdoc item="usage"}}##
+	#include "fbio.bi"
+	//result// = **""IsRedirected""**( //is_input// )
+##
+{{fbdoc item="param"}}
+	##//is_input//##
+		A ##[[KeyPgLong long]]## indicating the type of information to return.
+
+{{fbdoc item="ret"}}
+	Returns non-zero (##-1##) if stdin or stdout is redirected, otherwise returns zero (##0##).
+
+{{fbdoc item="desc"}}
+	**""IsRedirected""** checks whether stdin or stdout is redirected to a file or not.
+
+	If ##//is_input//## is equal to non-zero (##-1##), **""IsRedirected""** checks stdin.
+	If ##//is_input//## is equal to zero (##0##), **""IsRedirected""** checks stdout.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/system/isredirected.bas"}}%%(freebasic)
+'' A Windows based example, just for the use principle
+'' Self-sufficient example, using his own .exe file as dummy input file for stdin redirection
+
+#include "fbio.bi"
+
+'' Quotation marks wrapping for compatibility with spaces in path name
+Dim As String pathExe = """" & Exepath & """"
+Dim As String fileExe = Mid(Command(0), Instrrev(Command(0), "\") + 1)
+Dim as String redirection = " < """ & Command(0)
+If Lcase(Right(Command(0), 4)) = ".exe" Then
+  redirection &= """"
+Else
+  redirection &= ".exe"""
+End If
+
+If Command() = "" Then  '' First process without stdin redirection
+  '' Check stdin redirection
+  Print "First process without stdin redirection: IsRedirected(-1) = "; Isredirected(-1)
+  '' Creation of asynchronous second process with stdin redirected from file.exe
+  Shell("start /d " & pathExe & " /b " & fileExe & redirection & " secondprocess")
+  '' Waiting for termination of asynchronous second process
+  Sleep
+ElseIf Command() = "secondprocess" Then  '' Second process with stdin redirection
+  '' Check stdin redirection
+  Print "Second process with stdin redirection  : IsRedirected(-1) = "; Isredirected(-1)
+End If
+%%
+
+{{fbdoc item="diff"}}
+	- New to ""FreeBASIC"".
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgreset Reset(streamno)]]##
+
+{{fbdoc item="back" value="CatPgOpsys|Operating System Functions"}}

@@ -2,7 +2,9 @@
 Defines variables, objects and arrays having static storage
 
 {{fbdoc item="syntax"}}##
-	**Static** //symbol// [ (//array-dimensions//) ] [[KeyPgAs As]] [[DataType DataType]] [, ...]
+	**Static** //symbol1// [ (//array-dimensions//) ] [[KeyPgAs As]] [[DataType DataType]] [, //symbol2// [ (//array-dimensions//) ] [[KeyPgAs As]] [[DataType DataType]], ...]
+		//or//
+	**Static** [[KeyPgAs As]] [[DataType DataType]] //symbol1// [ (//array-dimensions//) ] [, //symbol2// [ (//array-dimensions//) ], ...]
 	
 		//or//
 		
@@ -55,41 +57,9 @@ Number of times called: 1
 Number of times called: 2
 %%
 
-{{fbdoc item="filename" value="examples/manual/variable/static2.bas"}}%%(freebasic)
-'Assign an unique ID to every instance of a Type (ID incremented in order of creation)
-
-Type UDT
-  Public:
-	Declare Property getID () As integer
-	Declare Constructor ()
-  Private:
-	Dim As Integer ID
-	Static As Integer countID
-End Type
-Dim As Integer UDT.countID = 0
-
-Property UDT.getID () As Integer
-  Property = This.ID
-End Property
-
-Constructor UDT ()
-  This.ID = UDT.countID
-  UDT.countID += 1
-End Constructor
-
-
-Dim As UDT uFirst
-Dim as UDT uSecond
-Dim As UDT uThird
-
-Print uFirst.getID
-Print uSecond.getID
-Print uThird.getID%%
-
 {{fbdoc item="diff"}}
 	- ""QuickBASIC"" allows variables and arrays to be declared using the ##**Static**## keyword within procedures and ##DEF FN## routines only.
 	- ##**Static**## forces local visibility of variables and arrays in ""QuickBASIC"" ##DEF FN## routines. ""FreeBASIC"" supports neither ##DEF FN## routines nor this usage of ##**Static**##.
-	- Using ##**Static**## to specify static member variables (and also ##[[KeyPgStaticMember Static]]## member procedures) is new to ""FreeBASIC"".
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgStaticMember Static (Member)]]##

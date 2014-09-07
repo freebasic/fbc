@@ -348,6 +348,7 @@ List of ""FreeBASIC"" keywords sorted by the function they perform.
 	- {{fbdoc item="keyword" value="KeyPgMutexUnlock|MUTEXUNLOCK"}}
 	- {{fbdoc item="keyword" value="KeyPgThreadCall|THREADCALL"}}
 	- {{fbdoc item="keyword" value="KeyPgThreadCreate|THREADCREATE"}}
+	- {{fbdoc item="keyword" value="KeyPgThreadDetach|THREADDETACH"}}
 	- {{fbdoc item="keyword" value="KeyPgThreadWait|THREADWAIT"}}
 
 {{fbdoc item="section" value="OS / shell"}}
@@ -365,6 +366,7 @@ List of ""FreeBASIC"" keywords sorted by the function they perform.
 	- {{fbdoc item="keyword" value="KeyPgFiledatetime|FILEDATETIME"}}
 	- {{fbdoc item="keyword" value="KeyPgFileexists|FILEEXISTS"}}
 	- {{fbdoc item="keyword" value="KeyPgFilelen|FILELEN"}}
+	- {{fbdoc item="keyword" value="KeyPgIsredirected|ISREDIRECTED"}}
 	- {{fbdoc item="keyword" value="KeyPgKill|KILL"}}
 	- {{fbdoc item="keyword" value="KeyPgMkdir|MKDIR"}}
 	- {{fbdoc item="keyword" value="KeyPgName|NAME"}}
