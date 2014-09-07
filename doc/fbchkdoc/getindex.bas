@@ -184,13 +184,13 @@ end sub
 
 #ifdef __FB_LINUX__
 extern "c"
-    declare function strcasecmp(byval as const zstring ptr, byval as const zstring ptr) as integer
+    declare function strcasecmp(byval as const zstring ptr, byval as const zstring ptr) as long
 end extern
 #define _stricmp strcasecmp
 #endif
 
 ''
-function cmpPageName cdecl ( byval x as any ptr, byval y as any ptr ) as integer
+function cmpPageName cdecl ( byval x as any ptr, byval y as any ptr ) as long
 	function = _stricmp( *cast(zstring ptr ptr,x), *cast(zstring ptr ptr,y) )
 end function
 
