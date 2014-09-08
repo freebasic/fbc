@@ -662,8 +662,8 @@ gitdist:
 
 	# .zip with low word size/fast bytes setting (for DOS), and .7z, with CRLF line endings
 	git -c core.autocrlf=true archive --format tar --prefix "$(FBSOURCETITLE)/" HEAD | tar xf -
-	7z a -tzip -mfb=8 "$(FBSOURCETITLE).zip" "$(FBSOURCETITLE)" > /dev/null
-	7z a              "$(FBSOURCETITLE).7z"  "$(FBSOURCETITLE)" > /dev/null
+	zip -q -r "$(FBSOURCETITLE).zip" "$(FBSOURCETITLE)"
+	7z a      "$(FBSOURCETITLE).7z"  "$(FBSOURCETITLE)" > /dev/null
 	rm -rf "$(FBSOURCETITLE)"
 
 #
@@ -848,7 +848,7 @@ bindist:
 
 	# Create the archive(s)
   ifeq ($(TARGET_OS),dos)
-	7z a -tzip -mfb=8 $(FBPACKAGE).zip $(FBPACKAGE) > /dev/null
+	zip -q -r $(FBPACKAGE).zip $(FBPACKAGE)
   else
   ifeq ($(TARGET_OS),win32)
 	zip -q -r $(FBPACKAGE).zip $(FBPACKAGE)
