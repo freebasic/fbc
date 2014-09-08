@@ -52,6 +52,7 @@
 #   uninstall[-component]      remove from $(prefix)
 #   install-includes           (additional commands for just the FB includes,
 #   uninstall-includes          which don't need to be built)
+#   gitdist    Create source code packages using "git archive"
 #
 # makefile configuration:
 #   FB[C|L]FLAGS     to set -g -exx etc. for the compiler build and/or link
@@ -111,6 +112,8 @@ FBFLAGS := -maxerr 1
 AR = $(TARGET_PREFIX)ar
 CC = $(TARGET_PREFIX)gcc
 prefix := /usr/local
+
+FBVERSION := 0.91.0
 
 # Determine the makefile's directory, this may be a relative path when
 # building in a separate build directory via e.g. "make -f ../fbc/makefile".
@@ -642,3 +645,22 @@ clean-gfxlib2:
 .PHONY: help
 help:
 	@echo "Take a look at the top of this makefile!"
+
+################################################################################
+
+FBSOURCETITLE = FreeBASIC-$(FBVERSION)-source
+
+.PHONY: gitdist
+gitdist:
+	# (using git archive --prefix ... to avoid tarbombs)
+	# .tar.gz and .tar.xz, with LF line endings
+	git -c core.autocrlf=false archive --format tar --prefix "$(FBSOURCETITLE)/" HEAD | tar xf -
+	tar -czf "$(FBSOURCETITLE).tar.gz" "$(FBSOURCETITLE)"
+	tar -cJf "$(FBSOURCETITLE).tar.xz" "$(FBSOURCETITLE)"
+	rm -rf "$(FBSOURCETITLE)"
+
+	# .zip with low word size/fast bytes setting (for DOS), and .7z, with CRLF line endings
+	git -c core.autocrlf=true archive --format tar --prefix "$(FBSOURCETITLE)/" HEAD | tar xf -
+	7z a -tzip -mfb=8 "$(FBSOURCETITLE).zip" "$(FBSOURCETITLE)" > /dev/null
+	7z a              "$(FBSOURCETITLE).7z"  "$(FBSOURCETITLE)" > /dev/null
+	rm -rf "$(FBSOURCETITLE)"
