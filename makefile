@@ -53,6 +53,7 @@
 #   install-includes           (additional commands for just the FB includes,
 #   uninstall-includes          which don't need to be built)
 #   gitdist    Create source code packages using "git archive"
+#   bindist    Create binary FB release packages from current built directory content
 #
 # makefile configuration:
 #   FB[C|L]FLAGS     to set -g -exx etc. for the compiler build and/or link
@@ -664,3 +665,199 @@ gitdist:
 	7z a -tzip -mfb=8 "$(FBSOURCETITLE).zip" "$(FBSOURCETITLE)" > /dev/null
 	7z a              "$(FBSOURCETITLE).7z"  "$(FBSOURCETITLE)" > /dev/null
 	rm -rf "$(FBSOURCETITLE)"
+
+#
+# Traditionally, the FB release package names depend on whether its a normal or
+# standalone build and on the platform. The "FreeBASIC-x.xx.x-target" name
+# format is traditionally used for the "default" builds for the respective
+# platform.
+#
+# Linux/BSD standalone = FreeBASIC-x.xx.x-target-standalone
+# Linux/BSD normal     = FreeBASIC-x.xx.x-target
+# Windows/DOS standalone = FreeBASIC-x.xx.x-target
+# Windows/DOS normal     = fbc-x.xx.x-target (MinGW/DJGPP-style packages)
+#
+ifndef FBPACKAGE
+  ifneq ($(filter darwin freebsd linux netbsd openbsd solaris,$(TARGET_OS)),)
+    ifdef ENABLE_STANDALONE
+      FBPACKAGE := FreeBASIC-$(FBVERSION)-$(FBTARGET)-standalone
+    else
+      FBPACKAGE := FreeBASIC-$(FBVERSION)-$(FBTARGET)
+    endif
+  else
+    ifdef ENABLE_STANDALONE
+      FBPACKAGE := FreeBASIC-$(FBVERSION)-$(FBTARGET)
+    else
+      FBPACKAGE := fbc-$(FBVERSION)-$(FBTARGET)
+    endif
+  endif
+endif
+
+ifndef FBMANIFEST
+  ifneq ($(filter darwin freebsd linux netbsd openbsd solaris,$(TARGET_OS)),)
+    ifdef ENABLE_STANDALONE
+      FBMANIFEST := FreeBASIC-$(FBTARGET)-standalone
+    else
+      FBMANIFEST := FreeBASIC-$(FBTARGET)
+    endif
+  else
+    ifdef ENABLE_STANDALONE
+      FBMANIFEST := FreeBASIC-$(FBTARGET)
+    else
+      FBMANIFEST := fbc-$(FBTARGET)
+    endif
+  endif
+endif
+
+.PHONY: bindist
+bindist:
+	# Extra directory in which we'll put together the binary release package
+	# (needed anyways to avoid tarbombs)
+	mkdir $(FBPACKAGE)
+
+	# Binaries from the build dir: fbc[.exe] or bin/fbc[.exe], bin/ and lib/
+	# (we're expecting bin/ and lib/ to be filled with the proper external
+	# binaries already in case of standalone setups)
+	cp -R bin lib $(FBPACKAGE)
+  ifdef ENABLE_STANDALONE
+	cp $(FBC_EXE) $(FBPACKAGE)
+  endif
+
+	# Remove lib/win32/*.def stuff. We have it in the source tree (not in
+	# build dir if separate though) but don't want to include it into the
+	# binary release packages.
+	cd $(FBPACKAGE) && rm -rf lib/win32/*.def lib/win32/makefile lib/fbextra.x
+	rmdir $(FBPACKAGE)/lib/win32 || true
+
+	# Includes: inc/ or include/freebasic/
+	cp -R $(rootdir)inc $(FBPACKAGE)
+  ifeq ($(TARGET_OS),dos)
+	rm -r $(FBPACKAGE)/inc/AL/*
+	rm -r $(FBPACKAGE)/inc/atk/*
+	rm -r $(FBPACKAGE)/inc/bass.bi
+	rm -r $(FBPACKAGE)/inc/bassmod.bi
+	rm -r $(FBPACKAGE)/inc/cairo/*
+	rm -r $(FBPACKAGE)/inc/cd/*
+	rm -r $(FBPACKAGE)/inc/chipmunk/*
+	rm -r $(FBPACKAGE)/inc/crt/arpa/*
+	rm -r $(FBPACKAGE)/inc/crt/bits/*
+	rm -r $(FBPACKAGE)/inc/crt/linux/*
+	rm -r $(FBPACKAGE)/inc/crt/netdb.bi
+	rm -r $(FBPACKAGE)/inc/crt/netinet/in.bi
+	rm -r $(FBPACKAGE)/inc/crt/netinet/linux/in.bi
+	rm -r $(FBPACKAGE)/inc/crt/sys/linux/*
+	rm -r $(FBPACKAGE)/inc/crt/sys/socket.bi
+	rm -r $(FBPACKAGE)/inc/crt/sys/win32/*
+	rm -r $(FBPACKAGE)/inc/crt/win32/*
+	rm -r $(FBPACKAGE)/inc/curses/ncurses.bi
+	rm -r $(FBPACKAGE)/inc/disphelper/*
+	rm -r $(FBPACKAGE)/inc/fastcgi/*
+	rm -r $(FBPACKAGE)/inc/flite/*
+	rm -r $(FBPACKAGE)/inc/fmod.bi
+	rm -r $(FBPACKAGE)/inc/FreeImage.bi
+	rm -r $(FBPACKAGE)/inc/freetype2/*
+	rm -r $(FBPACKAGE)/inc/gdk*
+	rm -r $(FBPACKAGE)/inc/gio/*
+	rm -r $(FBPACKAGE)/inc/GL/*
+	rm -r $(FBPACKAGE)/inc/glade/*
+	rm -r $(FBPACKAGE)/inc/glib*
+	rm -r $(FBPACKAGE)/inc/gmodule.bi
+	rm -r $(FBPACKAGE)/inc/goocanvas.bi
+	rm -r $(FBPACKAGE)/inc/gtk*
+	rm -r $(FBPACKAGE)/inc/im/*
+	rm -r $(FBPACKAGE)/inc/IUP*
+	rm -r $(FBPACKAGE)/inc/japi*
+	rm -r $(FBPACKAGE)/inc/jni.bi
+	rm -r $(FBPACKAGE)/inc/json*
+	rm -r $(FBPACKAGE)/inc/libart_lgpl/*
+	rm -r $(FBPACKAGE)/inc/MediaInfo*
+	rm -r $(FBPACKAGE)/inc/modplug.bi
+	rm -r $(FBPACKAGE)/inc/mpg123.bi
+	rm -r $(FBPACKAGE)/inc/mysql/*
+	rm -r $(FBPACKAGE)/inc/Newton.bi
+	rm -r $(FBPACKAGE)/inc/ode/*
+	rm -r $(FBPACKAGE)/inc/ogg/*
+	rm -r $(FBPACKAGE)/inc/pango/*
+	rm -r $(FBPACKAGE)/inc/pdflib.bi
+	rm -r $(FBPACKAGE)/inc/portaudio.bi
+	rm -r $(FBPACKAGE)/inc/postgresql/*
+	rm -r $(FBPACKAGE)/inc/SDL/*
+	rm -r $(FBPACKAGE)/inc/sndfile.bi
+	rm -r $(FBPACKAGE)/inc/spidermonkey/*
+	rm -r $(FBPACKAGE)/inc/uuid.bi
+	rm -r $(FBPACKAGE)/inc/vlc/*
+	rm -r $(FBPACKAGE)/inc/vorbis/*
+	rm -r $(FBPACKAGE)/inc/win/*
+	rm -r $(FBPACKAGE)/inc/windows.bi
+	rm -r $(FBPACKAGE)/inc/wx-c/*
+	rm -r $(FBPACKAGE)/inc/X11/*
+	rm -r $(FBPACKAGE)/inc/xmp.bi
+	rm -r $(FBPACKAGE)/inc/zmq/*
+  endif
+  ifndef ENABLE_STANDALONE
+	mkdir -p $(FBPACKAGE)/include
+	mv $(FBPACKAGE)/inc $(FBPACKAGE)/include/freebasic
+  endif
+
+	# Docs
+	cp $(rootdir)changelog.txt $(rootdir)readme.txt $(FBPACKAGE)
+	mkdir $(FBPACKAGE)/doc
+	cp $(rootdir)doc/fbc.1 $(rootdir)doc/gpl.txt $(rootdir)doc/lgpl.txt $(FBPACKAGE)/doc
+
+	# Examples
+	cp -R $(rootdir)examples $(FBPACKAGE)
+  ifeq ($(TARGET_OS),dos)
+	rm -r $(FBPACKAGE)/examples/database/mysql_test.bas
+	rm -r $(FBPACKAGE)/examples/database/postgresql_test.bas
+	rm -r $(FBPACKAGE)/examples/dll/*
+	rm -r $(FBPACKAGE)/examples/files/FreeImage/*
+	rm -r $(FBPACKAGE)/examples/files/pdflib/*
+	rm -r $(FBPACKAGE)/examples/graphics/cairo/*
+	rm -r $(FBPACKAGE)/examples/graphics/FreeType/*
+	rm -r $(FBPACKAGE)/examples/graphics/OpenGL/*
+	rm -r $(FBPACKAGE)/examples/graphics/SDL/*
+	rm -r $(FBPACKAGE)/examples/GUI/GTK+/*
+	rm -r $(FBPACKAGE)/examples/GUI/IUP/*
+	rm -r $(FBPACKAGE)/examples/GUI/win32/*
+	rm -r $(FBPACKAGE)/examples/GUI/wx-c/*
+	rm -r $(FBPACKAGE)/examples/manual/threads/*
+	rm -r $(FBPACKAGE)/examples/math/cryptlib/*
+	rm -r $(FBPACKAGE)/examples/math/Newton/*
+	rm -r $(FBPACKAGE)/examples/math/ODE/*
+	rm -r $(FBPACKAGE)/examples/misc/glib/*
+	rm -r $(FBPACKAGE)/examples/network/http-get.bas
+	rm -r $(FBPACKAGE)/examples/network/win32/*
+	rm -r $(FBPACKAGE)/examples/other-languages/Java*
+	rm -r $(FBPACKAGE)/examples/other-languages/VB/*
+	rm -r $(FBPACKAGE)/examples/sound/*
+	rm -r $(FBPACKAGE)/examples/threads/*
+	rm -r $(FBPACKAGE)/examples/unicode/*
+	rm -r $(FBPACKAGE)/examples/win32/*
+  endif
+	# install.sh for normal Linux/BSD setups
+  ifndef ENABLE_STANDALONE
+    ifneq ($(filter darwin freebsd linux netbsd openbsd solaris,$(TARGET_OS)),)
+	cp $(rootdir)install.sh $(FBPACKAGE)
+    endif
+  endif
+
+	# Regenerate the manifest in the source tree, based on the package directory content
+	find $(FBPACKAGE) -type f | LC_ALL=C sort \
+		| sed -e 's,^$(FBPACKAGE)/,,g' \
+		> $(rootdir)contrib/manifest/$(FBMANIFEST).txt
+
+	# Create the archive(s)
+  ifeq ($(TARGET_OS),dos)
+	7z a -tzip -mfb=8 $(FBPACKAGE).zip $(FBPACKAGE) > /dev/null
+  else
+  ifeq ($(TARGET_OS),win32)
+	zip -q -r $(FBPACKAGE).zip $(FBPACKAGE)
+	7z a         $(FBPACKAGE).7z  $(FBPACKAGE) > /dev/null
+  else
+	tar -czf $(FBPACKAGE).tar.gz $(FBPACKAGE)
+	tar -cJf $(FBPACKAGE).tar.xz $(FBPACKAGE)
+  endif
+  endif
+
+	# Clean up
+	rm -rf $(FBPACKAGE)

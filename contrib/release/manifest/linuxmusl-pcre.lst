@@ -1,5 +1,0 @@
-doc/licenses/PCRE.txt
-lib/linux/libpcre.a
-lib/linux/libpcre16.a
-lib/linux/libpcre32.a
-lib/linux/libpcreposix.a

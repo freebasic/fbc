@@ -1,8 +1,0 @@
-doc/licenses/e2fsprogs.txt
-lib/linux/libblkid.a
-lib/linux/libcom_err.a
-lib/linux/libe2p.a
-lib/linux/libext2fs.a
-lib/linux/libquota.a
-lib/linux/libss.a
-lib/linux/libuuid.a
