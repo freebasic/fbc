@@ -70,6 +70,7 @@
 #   FBPACKAGE     bindist: The package/archive file name without path or extension
 #   FBMANIFEST    bindist: The manifest file name without path or extension
 #   FBVERSION     bindist/gitdist: FB version number
+#   DISABLE_DOCS  bindist: Don't package readme/changelog/manpage/examples
 #
 # compiler source code configuration (FBCFLAGS):
 #   -d ENABLE_STANDALONE     build for a self-contained installation
@@ -806,6 +807,7 @@ bindist:
     endif
   endif
 
+  ifndef DISABLE_DOCS
 	# Docs
 	cp $(rootdir)changelog.txt $(rootdir)readme.txt $(FBPACKAGE)
 	mkdir $(FBPACKAGE)/doc
@@ -813,7 +815,7 @@ bindist:
 
 	# Examples
 	cp -R $(rootdir)examples $(FBPACKAGE)
-  ifeq ($(TARGET_OS),dos)
+    ifeq ($(TARGET_OS),dos)
 	rm -r $(FBPACKAGE)/examples/database/mysql_test.bas
 	rm -r $(FBPACKAGE)/examples/database/postgresql_test.bas
 	rm -r $(FBPACKAGE)/examples/dll/*
@@ -840,7 +842,9 @@ bindist:
 	rm -r $(FBPACKAGE)/examples/threads/*
 	rm -r $(FBPACKAGE)/examples/unicode/*
 	rm -r $(FBPACKAGE)/examples/win32/*
+    endif
   endif
+
 	# install.sh for normal Linux/BSD setups
   ifndef ENABLE_STANDALONE
     ifneq ($(filter darwin freebsd linux netbsd openbsd solaris,$(TARGET_OS)),)
