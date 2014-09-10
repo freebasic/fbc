@@ -20,7 +20,7 @@ b = Reallocate( a, 10 * SizeOf(Integer) )   ' Reallocate memory for 5 additional
 
 If b <> 0 Then
 
-	a = b
+	a = b   ' Discard the old pointer and use the new one
 
 	For i = 5 To 9
 	  a[i] = (i + 1) * 2   ' Assign more integers to the buffer

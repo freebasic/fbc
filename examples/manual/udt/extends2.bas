@@ -13,6 +13,7 @@ Type root Extends Object ' 'Extends' to activate RTTI by inheritance of predefin
   Declare Function ObjectHierarchy () As String
   Declare Abstract Function ObjectRealType () As String ' 'Abstract' declares function without local body
 	                                                    '    which must be overriden
+  Dim Name As String
   Declare Virtual Destructor () ' 'Virtual' declares destructor with body ('Abstract' forbidden)
 Protected:
   Declare Constructor () ' to avoid user construction from root
@@ -38,7 +39,6 @@ Type animal Extends root ' 'Extends' to inherit of root
 	                                                            '    body which can be overriden
 	                                                            ' 'Override' to check if the function is
 	                                                            '    well an override
-  Dim Name As String
   Declare virtual Destructor () Override ' 'Virtual' declares destructor with local body
 	                                     ' 'Override' to check if the destructor is well an override
 End Type
@@ -111,7 +111,7 @@ End Destructor
 
 
 Sub PrintInfo (ByVal p As root Ptr) ' must be put after definition of animal type, dog type and cat type
-  Print "  " & Cast(animal Ptr, p)->Name, "  " & p->ObjectRealType, "           ";
+  Print "  " & p->Name, "  " & p->ObjectRealType, "           ";
   If *p Is dog Then ' 'Is' allows to check compatibility with type symbol
 	Print  Cast(dog Ptr, p)->ObjectHierarchy
   ElseIf *p Is cat Then ' 'Is' allows to check compatibility with type symbol

@@ -6,7 +6,7 @@
 '' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgSgn
 '' --------
 
-Dim N As Integer
+Dim N As Integer = 0
 
 Print Sgn ( -1.87 )
 Print Sgn ( 0 )

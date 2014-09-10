@@ -1,12 +1,12 @@
-'' examples/manual/variable/static2.bas
+'' examples/manual/udt/static2.bas
 ''
 '' NOTICE: This file is part of the FreeBASIC Compiler package and can't
 ''         be included in other distributions without authorization.
 ''
-'' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgStatic
+'' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgStaticMember
 '' --------
 
-'Assign an unique ID to every instance of a Type (ID incremented in order of creation)
+'' Assign an unique ID to every instance of a Type (ID incremented in order of creation)
 
 Type UDT
   Public:

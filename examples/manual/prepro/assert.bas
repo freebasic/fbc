@@ -7,4 +7,4 @@
 '' --------
 
 Const MIN = 5, MAX = 10
-#assert MAX > MIN '' cause an error if MAX <= MIN
+#assert MAX > MIN '' cause a compile-time error if MAX <= MIN

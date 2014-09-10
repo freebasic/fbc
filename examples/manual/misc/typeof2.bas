@@ -8,6 +8,10 @@
 
 Dim As String foo
 #print TypeOf(foo)
-#if TypeOf(foo) = Integer
+#if TypeOf(foo) = TypeOf(Integer)
   #print "Never happened!"
+#endif
+
+#if TypeOf(foo) = TypeOf(String)
+  #print "It's a String!"
 #endif
