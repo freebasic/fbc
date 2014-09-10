@@ -1723,11 +1723,6 @@ declare function rtlSetJmp _
 		byval buf as ASTNODE ptr _
 	) as ASTNODE ptr
 
-declare function rtlMultinput_cb _
-	( _
-		byval sym as FBSYMBOL ptr _
-	) as integer
-
 declare function rtlPrinter_cb _
 	( _
 		byval sym as FBSYMBOL ptr _

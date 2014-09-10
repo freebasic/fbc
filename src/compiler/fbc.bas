@@ -3076,7 +3076,6 @@ private sub hAddDefaultLibs( )
 
 		select case as const( fbGetOption( FB_COMPOPT_TARGET ) )
 		case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN
-			fbcAddDefLib( "user32" )
 			fbcAddDefLib( "gdi32" )
 			fbcAddDefLib( "winmm" )
 
@@ -3104,6 +3103,7 @@ private sub hAddDefaultLibs( )
 		fbcAddDefLib( "gcc" )
 		fbcAddDefLib( "cygwin" )
 		fbcAddDefLib( "kernel32" )
+		fbcAddDefLib( "user32" )
 
 		'' profiling?
 		if( fbGetOption( FB_COMPOPT_PROFILE ) ) then
@@ -3173,9 +3173,11 @@ private sub hAddDefaultLibs( )
 		fbcAddDefLib( "gcc" )
 		fbcAddDefLib( "msvcrt" )
 		fbcAddDefLib( "kernel32" )
+		fbcAddDefLib( "user32" )
 		fbcAddDefLib( "mingw32" )
 		fbcAddDefLib( "mingwex" )
 		fbcAddDefLib( "moldname" )
+
 		'' Link libgcc_eh if it exists
 		if( (len( fbcFindLibFile( "libgcc_eh.a"     ) ) > 0) or _
 		    (len( fbcFindLibFile( "libgcc_eh.dll.a" ) ) > 0) ) then

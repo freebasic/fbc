@@ -169,7 +169,7 @@
 		( _
 			@FB_RTL_FILEOPEN_SCRN, NULL, _
 			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
-	 		@rtlMultinput_cb, FB_RTL_OPT_NONE, _
+			NULL, FB_RTL_OPT_NONE, _
 			7, _
 	 		{ _
 				( FB_DATATYPE_STRING, FB_PARAMMODE_BYREF, FALSE ), _
@@ -657,7 +657,7 @@
 		( _
 			@FB_RTL_FILESTRINPUT, NULL, _
 			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
-			@rtlMultinput_cb, FB_RTL_OPT_NONE, _
+			NULL, FB_RTL_OPT_NONE, _
 			2, _
 			{ _
 				( FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE ), _
@@ -712,7 +712,7 @@
 		( _
 			@FB_RTL_CONSOLELINEINPUT, NULL, _
 			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
-	 		@rtlMultinput_cb, FB_RTL_OPT_NONE, _
+			NULL, FB_RTL_OPT_NONE, _
 			6, _
 	 		{ _
 				( FB_DATATYPE_STRING, FB_PARAMMODE_BYREF, FALSE ), _
@@ -734,7 +734,7 @@
 		( _
 			@FB_RTL_CONSOLELINEINPUTWSTR, NULL, _
 			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
-	 		@rtlMultinput_cb, FB_RTL_OPT_NONE, _
+			NULL, FB_RTL_OPT_NONE, _
 			5, _
 	 		{ _
 				( typeAddrOf( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYVAL, FALSE ), _
@@ -763,7 +763,7 @@
 		( _
 			@FB_RTL_CONSOLEINPUT, NULL, _
 			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
-	 		@rtlMultinput_cb, FB_RTL_OPT_NONE, _
+			NULL, FB_RTL_OPT_NONE, _
 			3, _
 	 		{ _
 				( FB_DATATYPE_STRING, FB_PARAMMODE_BYREF, FALSE ), _
@@ -795,7 +795,7 @@
 		( _
 			@FB_RTL_INPUTSHORT, NULL, _
 			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
-	 		@rtlMultinput_cb, FB_RTL_OPT_NONE, _
+			NULL, FB_RTL_OPT_NONE, _
 			1, _
 	 		{ _
 				( FB_DATATYPE_SHORT, FB_PARAMMODE_BYREF, FALSE ) _
@@ -805,7 +805,7 @@
 		( _
 			@FB_RTL_INPUTUSHORT, NULL, _
 			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
-	 		@rtlMultinput_cb, FB_RTL_OPT_NONE, _
+			NULL, FB_RTL_OPT_NONE, _
 			1, _
 	 		{ _
 				( FB_DATATYPE_USHORT, FB_PARAMMODE_BYREF, FALSE ) _
@@ -994,7 +994,7 @@
 		( _
 			@FB_RTL_FILEWSTRINPUT, NULL, _
 			FB_DATATYPE_WCHAR, FB_FUNCMODE_FBCALL, _
-			@rtlMultinput_cb, FB_RTL_OPT_NONE, _
+			NULL, FB_RTL_OPT_NONE, _
 			2, _
 			{ _
 				( FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE ), _
@@ -1151,7 +1151,6 @@ function rtlFileOpen _
 		doencoding = FALSE
 		select case env.clopt.target
 		case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN
-			fbAddLib("user32")
 			fbAddLib("gdi32")
 			fbAddLib("winspool")
 		end select

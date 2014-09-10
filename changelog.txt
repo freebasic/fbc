@@ -16,6 +16,7 @@ Version 0.91.0:
 - The implicitly generated copy constructors and LET overloads will now have "BYREF AS CONST MyUdt" parameters (previously they didn't use CONST), to allow copying from CONST objects to work at least for the built-in data types or with nested UDTs. For backwards compatibility, if there is a user-defined "UDT.let(byref as UDT)" LET overload, FB will still add the non-const "UDT.constructor(byref as UDT)" copy-constructor. It's still the programmer's responsibility to write proper "byref as const UDT" versions of the copy-constructor or LET overload if the UDT needs deep-copying and CONST instances of the UDT are being used.
 - Function pointer types that differ only in function result CONSTness will now be seen as different, as in C++. Function pointer types that differ only in BYVAL parameter CONSTness will now be seen as being the same, as in C++.
 - Some internal data structures and fields ($fb_RTTI, $fb_Object, $base, $vptr) have been renamed from $foo to foo$ to prevent gdb/STABS debugging data confusion, because a leading $ has special meaning there.
+- user32 is now linked in by default when compiling for Windows (and Cygwin) as it's sometimes needed by MinGW-w64's libmingwex
 
 [added]
 - 64bit support (currently x86_64 and aarch64, based on -gen gcc): INTEGER/POINTER = 64bit, LONG = 32bit DWORD. Compiler #define: __FB_64BIT__

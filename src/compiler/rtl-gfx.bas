@@ -712,7 +712,7 @@ declare function hPorts_cb _
 		( _
 			@"multikey", @"fb_Multikey", _
 			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
-	 		@rtlMultinput_cb, FB_RTL_OPT_NOQB, _
+			NULL, FB_RTL_OPT_NOQB, _
 			1, _
 			{ _
 				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
@@ -729,7 +729,7 @@ declare function hPorts_cb _
 		( _
 			@"getmouse", @"fb_GetMouse", _
 			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
-			@rtlMultinput_cb, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
+			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
 			5, _
 			{ _
 				( FB_DATATYPE_LONG, FB_PARAMMODE_BYREF, FALSE, 0, TRUE ), _
@@ -750,7 +750,7 @@ declare function hPorts_cb _
 		( _
 			@"getmouse", @"fb_GetMouse64", _
 			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
-			@rtlMultinput_cb, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
+			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
 			5, _
 			{ _
 				( FB_DATATYPE_LONGINT, FB_PARAMMODE_BYREF, FALSE, 0, TRUE ), _
@@ -770,7 +770,7 @@ declare function hPorts_cb _
 		( _
 			@"setmouse", @"fb_SetMouse", _
 			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
-	 		@rtlMultinput_cb, FB_RTL_OPT_NOQB, _
+			NULL, FB_RTL_OPT_NOQB, _
 			4, _
 			{ _
 				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, &h80000000 ), _
@@ -1345,27 +1345,6 @@ private function hPorts_cb _
 		select case env.clopt.target
 		case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN
 			fbAddLib("advapi32")
-		end select
-	end if
-
-	function = TRUE
-
-end function
-
-'':::::
-function rtlMultinput_cb _
-	( _
-		byval sym as FBSYMBOL ptr _
-	) as integer
-
-    static as integer libsAdded = FALSE
-
-	if( libsadded = FALSE ) then
-		libsAdded = TRUE
-
-		select case env.clopt.target
-		case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN
-			fbAddLib("user32")
 		end select
 	end if
 

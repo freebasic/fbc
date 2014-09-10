@@ -158,21 +158,21 @@
 		( _
 			@"inkey", @"fb_Inkey", _
 			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
-	 		@rtlMultinput_cb, FB_RTL_OPT_STRSUFFIX or FB_RTL_OPT_NOQB, _
+			NULL, FB_RTL_OPT_STRSUFFIX or FB_RTL_OPT_NOQB, _
 	 		0 _
 		), _
 		/' function inkey( ) as string '/ _
 		( _
 			@"inkey", @"fb_InkeyQB", _
 			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
-	 		@rtlMultinput_cb, FB_RTL_OPT_STRSUFFIX or FB_RTL_OPT_QBONLY, _
+			NULL, FB_RTL_OPT_STRSUFFIX or FB_RTL_OPT_QBONLY, _
 	 		0 _
 		), _
 		/' function getkey( ) as long '/ _
 		( _
 			@"getkey", @"fb_Getkey", _
 			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
-	 		@rtlMultinput_cb, FB_RTL_OPT_NOQB, _
+			NULL, FB_RTL_OPT_NOQB, _
 	 		0 _
 	 	), _
 		/' function pcopy( byval src as long = -1, byval dst as long = -1 ) as long '/ _

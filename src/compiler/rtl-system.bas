@@ -197,7 +197,7 @@ declare function 	hThreadCall_cb		( byval sym as FBSYMBOL ptr ) as integer
 		( _
 			@"sleep", @"fb_Sleep", _
 	 		FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
-	 		@rtlMultinput_cb, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
+			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
 	 		1, _
 	 		{ _
 				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, -1 ) _
@@ -207,7 +207,7 @@ declare function 	hThreadCall_cb		( byval sym as FBSYMBOL ptr ) as integer
 		( _
 			@"sleep", @"fb_SleepQB", _
 	 		FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
-	 		@rtlMultinput_cb, FB_RTL_OPT_OVER or FB_RTL_OPT_QBONLY, _
+			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_QBONLY, _
 	 		1, _
 	 		{ _
 				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, -1 ) _
@@ -217,7 +217,7 @@ declare function 	hThreadCall_cb		( byval sym as FBSYMBOL ptr ) as integer
 		( _
 			@"sleep", @"fb_SleepEx", _
 	 		FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
-	 		@rtlMultinput_cb, FB_RTL_OPT_OVER or FB_RTL_OPT_ERROR, _
+			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_ERROR, _
 	 		2, _
 	 		{ _
 				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
