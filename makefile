@@ -848,7 +848,7 @@ bindist:
 	# Regenerate the manifest in the source tree, based on the package directory content
 	find $(FBPACKAGE) -type f | LC_ALL=C sort \
 		| sed -e 's,^$(FBPACKAGE)/,,g' \
-		> $(rootdir)contrib/manifest/$(FBMANIFEST).txt
+		> $(rootdir)contrib/manifest/$(FBMANIFEST).lst
 
 	# Create the archive(s)
   ifeq ($(TARGET_OS),dos)
