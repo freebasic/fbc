@@ -729,7 +729,7 @@ bindist:
 	cd $(FBPACKAGE) && rm -rf lib/win32/*.def lib/win32/makefile lib/fbextra.x
 	rmdir $(FBPACKAGE)/lib/win32 || true
 
-	# Includes: inc/ or include/freebasic/
+	# Includes: inc/, include/freebasic/ or include/freebas/
 	cp -R $(rootdir)inc $(FBPACKAGE)
   ifeq ($(TARGET_OS),dos)
 	rm -r $(FBPACKAGE)/inc/AL/*
@@ -796,7 +796,11 @@ bindist:
   endif
   ifndef ENABLE_STANDALONE
 	mkdir -p $(FBPACKAGE)/include
+    ifeq ($(TARGET_OS),dos)
+	mv $(FBPACKAGE)/inc $(FBPACKAGE)/include/freebas
+    else
 	mv $(FBPACKAGE)/inc $(FBPACKAGE)/include/freebasic
+    endif
   endif
 
 	# Docs
