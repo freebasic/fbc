@@ -4,7 +4,7 @@
 # Project related configuration options
 #---------------------------------------------------------------------------
 PROJECT_NAME           = FreeBASIC
-PROJECT_NUMBER         = 0.91.0
+PROJECT_NUMBER         = 1.00.0
 OUTPUT_DIRECTORY       = .
 CREATE_SUBDIRS         = YES
 OUTPUT_LANGUAGE        = English

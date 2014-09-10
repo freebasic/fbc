@@ -1,4 +1,4 @@
-Version 0.91.0:
+Version 1.00.0 (former 0.91.0):
 
 [changed]
 - Platform naming conventions have changed for Linux/BSD due to 64bit/ARM support. dos/win32/xbox stay the same, win64 is added, and we use the <os>-<cpufamily> format for other systems (Linux/*BSD/Cygwin): linux-x86, linux-x86_64, linux-arm, etc. This affects the compiler's -target option, installation directory layout, release packages, compiler -v output, etc. but not any FB code.

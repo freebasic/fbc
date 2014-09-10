@@ -114,7 +114,7 @@ AR = $(TARGET_PREFIX)ar
 CC = $(TARGET_PREFIX)gcc
 prefix := /usr/local
 
-FBVERSION := 0.91.0
+FBVERSION := 1.00.0
 
 # Determine the makefile's directory, this may be a relative path when
 # building in a separate build directory via e.g. "make -f ../fbc/makefile".
