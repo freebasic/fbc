@@ -17,10 +17,12 @@ Declares a user-defined type.
 		
 		//fieldname// [[KeyPgAs As]] //[[DataType DataType]]// [= //initializer//]
 		//fieldname//(//array dimensions//) [[KeyPgAs As]] //[[DataType DataType]]// [= //initializer//]
+		//fieldname//([[KeyPgAny Any]] [, [[KeyPgAny Any]]...]) [[KeyPgAs As]] [[DataType DataType]]
 		//fieldname// : //bits// [[KeyPgAs As]] //[[DataType DataType]]// [= //initializer//]
 		
 		[[KeyPgAs As]] [[DataType DataType]] //fieldname// [= //initializer//], ...
 		[[KeyPgAs As]] [[DataType DataType]] //fieldname//(//array dimensions//) [= //initializer//], ...
+		[[KeyPgAs As]] [[DataType DataType]] //fieldname//([[KeyPgAny Any]] [, [[KeyPgAny Any]]...])
 		[[KeyPgAs As]] [[DataType DataType]] //fieldname// : //bits// [= //initializer//], ...
 		
 		[[KeyPgUnion Union]]
@@ -51,7 +53,7 @@ Declares a user-defined type.
 	Types lay out their fields consecutively in memory, following the native alignment and padding rules (described on the ##[[KeyPgField Field]]## page). Special care must be taken when using Types for file I/O or interacting with other programs or programming languages, in case the alignment and padding rules are different. The optional ##[[KeyPgField Field]] = //number//## specifier can be used to change the behavior on the ""FreeBASIC"" side.
 	
 	//Variable-length data//
-	In ""FreeBASIC", Type data structures must ultimately be fixed-size, such that the compiler knows how much memory to allocate for objects of that Type. Nevertheless, Types may contain variable-length (dynamic) string or array data members. However, the string's/array's data will not be embedded in the Type directly. Instead, the Type will only contain a ##[[KeyPgString String]]##/array descriptor structure, which ""FreeBASIC"" uses behind the scenes to manage the variable-length string/array data.
+	In ""FreeBASIC"", Type data structures must ultimately be fixed-size, such that the compiler knows how much memory to allocate for objects of that Type. Nevertheless, Types may contain variable-length (dynamic) string or array data members. However, the string's/array's data will not be embedded in the Type directly. Instead, the Type will only contain a ##[[KeyPgString String]]##/array descriptor structure, which ""FreeBASIC"" uses behind the scenes to manage the variable-length string/array data. For sizing the structure of the array descriptor in the Type, a variable-length (dynamic) array data member must be always declared by using ##[[KeyPgAny Any(s)]]## in place of the array bounds, in order to fix the amount of dimensions based on the number of Anys specified.
 	
 	Because of that, saving such a Type into a file will write out the descriptor, not the actual string/array data. In order to embed strings/arrays into Types directly, fixed-length strings/arrays must be used.
 	

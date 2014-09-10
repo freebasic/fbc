@@ -12,6 +12,8 @@ Provides explicit access to base type members in non-static methods of a ##[[Key
 	
 	##**Base**## is especially useful when a base type's member is shadowed by a local variable or member of a derived type using the same identifier. ##**Base**## then allows unambiguous access to the base type.
 
+	For virtual methods, base.method() always calls the base method and never the overriding method.
+
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/udt/base.bas"}}%%(freebasic)
 Type Parent

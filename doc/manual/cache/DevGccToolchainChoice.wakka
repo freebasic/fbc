@@ -66,7 +66,7 @@ FB needs the DJGPP 2.04 beta runtime (does DJGPP 2.03 not work?). Either way, th
 
 GNU/Linux distros usually provide native gcc + glibc toolchains out-of-the-box, and FB is intended to work with them out-of-the-box.
 
-Executables produced on one GNU/Linux distro are not necessarily portable to other GNU/Linux distros, due to differences in system libraries and/or versions, such as glibc version differences, or ncurses/libtinfo differences.
+Executables (such as fbc itself) produced on one GNU/Linux distro are not necessarily portable to other GNU/Linux distros, due to differences in system libraries and/or versions, such as glibc version differences, or ncurses/libtinfo differences. The most common problem with fbc is mismatching glibc versions, i.e. the fbc binary is run on a system with older glibc than the one it was built on, and some form of "glibc too old" error is encountered. The ncurses library is not always exactly the same either, as shown by the "`ospeed' has different size, consider re-linking" warnings when running fbc. Also, some distros have separated libncurses and libtinfo, some just have libncurses, which can cause errors due to the libtinfo shared library not being found.
 
 In theory, it is possible to use static linking to avoid the problems with shared libraries:
 

@@ -1,126 +1,91 @@
 {{fbdoc item="title" value="Notes on making FB releases"}}----
 
+	- Making an FB release means:
+		- Ensuring that the development version is in reasonable/usable state.
+		- Updating the documentation (Wiki and man page) for language/compiler changes and new features, if not yet done.
+		- Choosing and preparing gcc toolchains/build environments for ""DOS, Linux x86, Linux x86_64, Win32, Win64"".
+		- Compiling the development version of FB for all of them.
+		- Building the ""Win32"" installer (##contrib/nsis-installer/##).
+		- Testing the builds to ensure they are basically working.
+		- Synchronizing the online Wiki with the Wiki files in the fbc Git repository.
+		- Regenerating the ""PrintToc"" and ""CompilerErrMsg"" pages.
+		- Regenerating the examples/manual/ directory (code examples from the Wiki).
+		- Compiling the offline documentation (CHM, HTML, text).
+		- Creating the release packages (source code, binary builds, documentation).
+		- Uploading them and source code of dependencies (binutils, gcc, ""MinGW"", DJGPP, ...) to fbc's download site on ""SourceForge"".
+		- Announcing the new release on freebasic.net, in freebasic.net/forum News, and in ""SourceForge"" fbc project News.
+	
+	- When making a new release, please check that the source code for the new release can be compiled using at least the compiler from the previous release. Ideally it is compilable with even older versions. This way we can ensure that fbc can always be bootstrapped using the last release.
+
 	- FB releases in form of prebuilt binaries should be made at least for DOS, Linux, and ""Win32"".
-	- the DOS and ""Win32"" packages traditionally are standalone builds coming with prebuilt binutils and libraries
-	- the Linux package traditionally is intended to be installed into /usr or /usr/local and uses the system's binutils/libraries
-	- All the to-be-released fbc binaries should be built with the same date, preferably on the same day the release is published (it's confusing to have multiple fbcs each with the same version number but different dates; are they the same version or not?)
-	- Linux packages must be .tar.gz, Windows packages must be .zip, DOS packages must be .zip with low word size/fast byte setting. Other formats should be offered additionally, but there are people with e.g. older GNU/Linux systems that don't know .tar.lzma or .tar.xz, or with Windows systems that don't have 7-zip installed.
+	- The DOS and ""Win32"" packages traditionally are standalone builds coming with prebuilt binutils and ""MinGW""/DJGPP libraries.
+	- The Linux package traditionally is a normal build intended to be installed into ##/usr## or ##/usr/local## and uses the system's binutils/libraries.
+
+	- All the binary packages must be built from the same source revision.
+	- The source must be packaged and uploaded in parallel to the binary packages.
+	- All the to-be-released fbc binaries should be built with the same date, preferably on the same day the release is published. It's confusing to have multiple fbcs each with the same version number but different dates; are they the same version or not?
+	- All the binary packages should include a build.txt file describing the gcc/binutils toolchain used for the build and the tools/libraries included in the FB package.
+
+	- Run the test suite for every release build/package to ensure everything basically works.
+	- Test all compilation modes (exe, dll, profiling, ...) to ensure everything basically works.
+	- Run every .exe (binutils etc.) included in the packages to ensure that no DLLs are missing
+	- Check that globbing works ok for Windows builds (all included .exe's and new generated ones too),
+	  because it depends on the configuration of the ""MinGW-w64"" runtime.
+
+	- Linux packages must be ##.tar.gz##, Windows/DOS packages must be ##.zip##. Other formats such as ##.tar.xz## or ##.7z## should be offered additionally, but note that there are people with e.g. older GNU/Linux systems that don't know ##.tar.lzma## or ##.tar.xz##, or with Windows systems that don't have 7-zip installed.
 
 {{fbdoc item="section" value="Packaging and Manifests"}}
 
-	After FB, binutils and external libraries etc. have been compiled and/or copied into the FB tree, the contrib/release/pattern.bas program can be used to create the binary packages and corresponding manifests from the files in the FB tree.
+	The FB makefile offers the ##gitdist## command for packaging the source code via ##git archive##, and the ##bindist## command for packaging previously built binaries. Example workflow:
 	
-		##$ fbc contrib/release/pattern.bas -g -exx##
-		##$ contrib/release/pattern {dos|linux|win32}##
+		%%# Go to fbc Git clone
+cd fbc
+
+# Compile FB
+make
+
+# Package the source code
+make gitdist
+
+# Package the binaries, regenerate the manifest
+make bindist
+
+# Check the manifest
+git diff
+%%
 	
-	The manifests at contrib/release/manifest/*.lst will be regenerated. This can be used to check for extra/missing files in combination with Git's diff'ing capabilities. The include/exclude patterns in contrib/release/pattern.txt may need adjustment.
-
-{{fbdoc item="section" value="Win32"}}
-
-	For the win32 build, ""MinGW.org"", TDM-GCC or ""MinGW-w64"" toolchains could be used. 
+	##gitdist## creates source tarballs in multiple formats. It assumes that all changes to the fbc source code used for building the release have been committed to Git.
 	
-	""MinGW.org"" seems to be the most "standard", but apparently uses DW2 exception handling which results in huge .eh_frame sections in code generated by gcc, including libgcc.a etc. This is considered unacceptable bloat by some FB users.
+	##bindist## creates the needed binary archive(s), potentially in multiple formats, with the proper package name and directory layout depending on the target platform and whether it's a normal or standalone build, and it (re)generates the corresponding manifest (list of all files included in the archive) in the ##contrib/manifest/## directory in the fbc source tree.
 	
-	TDM-GCC was used for some FB releases in the past because it provided GCC 4 while ""MinGW.org"" didn't yet. However ""MinGW.org"" has GCC 4 too nowadays.
+	By checking the manifest differences via Git (git diff, git gui, etc.) you can check whether any files are missing in comparison to the previous release, or whether files were added that should not be included. Should there be any such issues, they may need to be fixed manually (possible the makefile's ##bindist## implementation needs updating, or you simply need to copy in missing files), after which ##make bindist## can be run again to recreate the package and update the manifest again.
 	
-	""MinGW-w64"" is rather new but also used by many projects instead of ""MinGW.org"". Since they upstream all GCC patches it can be considered very "standard" aswell. When thinking about porting FB to 64bit Windows it'd make some sense to use ""MinGW-w64"" toolchains for both the 32bit and 64bit versions.
+	##bindist## configuration options:
 	
-	SJLJ vs DW2 exception handling doesn't really matter for FB at the moment since it doesn't support exceptions, but it could still matter when using static ""C++"" libraries linked into FB programs, such as ASpell, and it affects the binaries generated by gcc including gcc's own objects/libraries (such as libgcc.a or crtbegin.o/crtend.o).
+		- ##TARGET_OS##/##TARGET_ARCH## makefile variables: You can set ##TARGET_OS## and/or ##TARGET_ARCH## on the make command line to override the makefile's default uname check. This is useful if you want to package for a different system than what the uname command returns. For example, packaging the FB-dos release from a ""MinGW/MSYS"" shell (with MSYS tools instead of DJGPP tools):
+			
+			%%make bindist TARGET_OS=dos
+%%
+		- ##FBPACKAGE## makefile variable: Package/archive file name without path or extension. Defaults:
+		
+			- Linux/BSD normal, Windows/DOS standalone: ##""FreeBASIC-x.xx.x-target""##
+			- Linux/BSD standalone: ##""FreeBASIC-x.xx.x-target-standalone""##
+			- Windows/DOS normal (""MinGW/DJGPP-style"" packages): ##""fbc-x.xx.x-target""##
+		
+		- ##FBMANIFEST## makefile variable: Manifest file name without path or extension. The defaults are the same as for ##FBPACKAGE##, except without the ##-x.xx.x## version number part.
+		
+		
+		- ##FBVERSION## makefile variable: Is already set in the makefile, but you can override it if you want to (e.g. when making testing releases instead of "official" releases). For example: ##FBVERSION=0.90.1## or ##FBVERSION=0.90.1rc1##
+
+{{fbdoc item="section" value="Toolchain/build environment"}}
+
+	When making an FB release, the GCC toolchain used to build FB has a huge impact, because FB itself will basically become a modified/extended version of that toolchain. The FB-dos and FB-win32 releases include libraries from the used DJGPP/""MinGW"" toolchains, and they will be used for any FB programs made with those FB builds. Even the FB-linux release will depend on the gcc/glibc version it was built with, because of the precompiled rtlib/gfxlib2 libraries, and because of fbc which will have been linked against shared libraries that may not exist on other systems.
 	
-	Even though the core C ABI is surely compatible between the different GCC ""Win32"" toolchains, there may be differences in ""libsupc++.a"" (which FB uses), or other files, due to the exception handling configuration, and besides that different GCC release versions themselves have ABI differences, e.g. 4.6 vs 4.7 changed structures to assume ""__attribute__((ms_struct))"" by default, instead of ""__attribute__((gcc_struct))"". These things could cause problems between different FB releases and different ""MinGW"" toolchains.
-
-{{fbdoc item="subsect" value="FreeBASIC-x.xx.x-win32"}}
-
-	- get the whole ""MinGW/MSYS"" setup from ""MinGW.org""
-	- and potentially ""MinGW-w64"" or TDM-GCC in a separate directory
-	- MSYS provides the Unixish shell environment
-	- ""MinGW"" provides autotools
-	- set the PATH accordingly, most importantly for gcc/binutils
-	- build FB with ENABLE_STANDALONE
-	- rebuild fbc with itself at least once, to ensure it itself uses its own rtlib, instead of the one from the host fbc
-	- use the contrib/libs/win32/build.sh script to build libffi.a and other external libraries
-	- copy the gcc/binutils/gdb compiled by the contrib/libs/win32/build.sh script into bin/win32/
-	- alternatively, copy binutils/gdb from the ""MinGW.org/MinGW-w64/TDM-GCC"" setup into bin/win32/:
-		- as.exe, ar.exe, ld.exe, dlltool.exe, gprof.exe, gdb.exe
-		- plus any needed DLLs (such as libintl, libiconv, libexpat...)
-		- also gcc.exe and its ../libexec/gcc/ directory for -gen gcc
-	- copy the latest ""GoRC.exe"" into bin/win32/
-	- use the lib/win32/makefile to copy the ""MinGW"" and ""Win32"" API libs from the ""MinGW.org/MinGW-w64/TDM-GCC"" into lib/win32/
-	- copy the GCC libs from ""MinGW.org/MinGW-w64/TDM-GCC"" setup into lib/win32/:
-		- libgcc.a, libgcc_eh.a (if it exists), ""libsupc++.a"", crtbegin.o, crtend.o
-		- crt2.o, dllcrt2.o, gcrt2.o
-		- libmingw32.a, libmingwex.a, libmoldname.a, libgmon.a
-	- run ##contrib/release/pattern.exe## to create the manifests and packages
-	- check the manifests and make adjustments if necessary
-
-{{fbdoc item="subsect" value="fbc-x.xx.x-mingw32"}}
-
-	This is intended to be a build of FB for the ""MinGW.org"" toolchain, able to just be extracted into a ""MinGW"" tree like a ""MinGW"" package.
+	Additionally, different GCC toolchains and runtime libraries (e.g. ""MinGW.org"" vs. ""MinGW-w64"", or DJGPP 2.03 vs. 2.04 vs. CVS) can be more or less different in terms of ABI compatibility or runtime behaviour. As such any FB program can behave differently depending on the GCC toolchain, including fbc itself.
 	
-	- get the ""MinGW.org""/MSYS setup, plus ""DirectX"" headers for gfxlib2
-	- build libffi.a
-		##../libffi-3.0.11/configure --disable-shared --prefix=C:/MinGW##
-		##make install##
-	- build FB
-	- run ##contrib/release/pattern.exe mingw32## to create the manifest and package
-	- check the manifest and make adjustments if necessary
-
-{{fbdoc item="section" value="Linux"}}
-
-Building binaries that work on most of the available GNU/Linux distributions is hard because even though they are often similar in general, they differ in detail just as often. The most common problem is mismatching glibc versions, i.e. the fbc binary is run on a system with older glibc than the one it was built on, and an "glibc too old" error is encountered. The ncurses library is not always exactly the same either, as shown by the "`ospeed' has different size, consider re-linking" warnings when running fbc. That's why the Linux releases have usually been built in some GNU/Linux system old enough to let the fbc binary work on Debian 4 and 5, the current supported Ubuntu versions (especially LTSs), Fedora and ""OpenSUSE"".
-
-{{fbdoc item="subsect" value="FreeBASIC-x.xx.x-linuxmusl"}}
-
-	As of FB 0.24 it's possible to create static ELF binaries using [[http://www.etalabs.net/musl/ musl libc]] instead of glibc, which should prevent the problems mentioned above. Other alternative libc's might work too, though I (dkl) tested only musl libc and dietlibc, and musl worked almost without problems, while compiling the rtlib with dietlibc required more adjustments. Besides getting the rtlib to build, the other big issue is getting the proper target libraries.
-	
-	libc & co (including crt{1,i,n}.o) are easy to build from the musl sources, but properly compiling GCC to get libgcc, ""libsupc++"" and crtbegin.o/crtend.o requires some experience. Luckily there is a script to create a musl libc GCC cross-compiling toolchains available at [[https://github.com/GregorR/musl-cross]].
-	
-	The contrib/libs/linuxmusl/build.sh script uses that to build a whole statically linked FB setup using musl libc, including statically linked binutils and gcc, and tons of external libraries. This resulted in the FB-linuxmusl package.
-
-	- an FB source tarball must be made available in contrib/libs/src/
-	- then, run the contrib/libs/linuxmusl/build.sh script, it will work in the current directory
-	- it should finally produce an fbc-static directory containing an FB tree with statically linked fbc, and all the other built binaries and libraries
-	- run ##contrib/release/pattern linuxmusl## to create the manifests and packages
-	- check the manifests and make adjustments if necessary
-
-{{fbdoc item="subsect" value="FreeBASIC-x.xx.x-linux"}}
-
-	- pick a distro
-	- build FB
-	- run ##contrib/release/pattern## to create the manifests and packages
-	- check the manifests and make adjustments if necessary
-
-{{fbdoc item="section" value="DOS"}}
-
-	With DJGPP the choice is between the latest CVS version or the somewhat outdated DJGPP 2.04 beta release. Compiling DJGPP from CVS is not that much trouble though:
-		- get the DJGPP 2.04 setup as a base
-		- get & build DJGPPCVS with that ("make" in the src directory)
-		- copy all packages (gcc/binutils/etc.) except the old djdev (libc, libm, headers, etc.) over into the DJGPP CVS tree
-		- delete the DJGPP 2.04 setup
-		- and use the CVS version in its place
-
-{{fbdoc item="subsect" value="FreeBASIC-x.xx.x-dos"}}
-
-	- Get the DJGPP setup, see also the DOS section on [[DevBuild]]
-	- build FB with ENABLE_STANDALONE
-	- copy binutils/gdb from DJGPP into bin/dos/:
-		as.exe, ar.exe, ld.exe, gprof.exe, gdb.exe
-	- copy libs from DJGPP into lib/dos/:
-		- crt0.o, gcrt0.o
-		- libemu.a, libm.a
-		- libgcc.a, libsupcx.a (renamed from libsupcxx.a)
-	- the contrib/libs/dos/build.sh script can also be used to cross-compile a lot of external libraries using a DJGPP cross-compiler toolchain
-	- run ##contrib/release/pattern.exe dos## to create the manifests and packages
-	- check the manifests and make adjustments if necessary
-
-{{fbdoc item="subsect" value="fbcxxxxb.zip"}}
-
-	This is intended to be a build of FB for DJGPP, able to just be extracted into a DJGPP tree like a DJGPP package.
-	
-	- DJGPP setup as for the ""FreeBASIC-x.xx.x-dos"" release
-	- build FB
-	- run ##contrib/release/pattern.exe djgpp## to create the manifest and package
-	- check the manifest and make adjustments if necessary
+	More information:
+		[[DevBuildKnownProblems Known problems when compiling FB]]
+		[[DevGccToolchainChoice GCC toolchain choice]]
 
 {{fbdoc item="section" value="FB manual/documentation"}}
 
@@ -141,7 +106,7 @@ Building binaries that work on most of the available GNU/Linux distributions is 
 		##make refresh##
 	- Regenerate the PrintToc page:
 		##cd doc/fbchkdoc##
-		##./mkprnttoc -web##
+		##./mkprntoc -web##
 	- Regenerate the CompilerErrMsg page:
 		##cd doc/fbchkdoc##
 		##./mkerrlst##
