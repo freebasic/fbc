@@ -67,6 +67,9 @@
 #   ENABLE_PREFIX=1        use "-d ENABLE_PREFIX=$(prefix)"
 #   ENABLE_SUFFIX=-0.24    append a string like "-0.24" to fbc/FB dir names,
 #                          and use "-d ENABLE_SUFFIX=$(ENABLE_SUFFIX)" (non-standalone only)
+#   FBPACKAGE     bindist: The package/archive file name without path or extension
+#   FBMANIFEST    bindist: The manifest file name without path or extension
+#   FBVERSION     bindist/gitdist: FB version number
 #
 # compiler source code configuration (FBCFLAGS):
 #   -d ENABLE_STANDALONE     build for a self-contained installation
