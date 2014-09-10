@@ -966,6 +966,7 @@
 		[[CompilerOpto -o < name >]]
 		[[CompilerOptoptimization -O < level >]]
 		[[CompilerOptp -p < name >]]
+		[[CompilerOptpic -pic]]
 		[[CompilerOptpp -pp]]
 		[[CompilerOptprefix -prefix < path >]]
 		[[CompilerOptprint -print < option >]]
