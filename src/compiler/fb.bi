@@ -1,9 +1,12 @@
 #ifndef __FB_BI__
 #define __FB_BI__
 
-const FB_VER_MAJOR = 1
-const FB_VER_MINOR = 0
-const FB_VER_PATCH = 0
+const FB_VER_MAJOR  = "1"
+const FB_VER_MINOR  = "00"
+const FB_VER_PATCH  = "0"
+const FB_VERSION    = FB_VER_MAJOR + "." + FB_VER_MINOR + "." + FB_VER_PATCH
+const FB_BUILD_DATE = __DATE__
+const FB_SIGN       = "FreeBASIC " + FB_VERSION
 
 #define QUOTE !"\""
 #if defined( __FB_WIN32__ ) or defined( __FB_CYGWIN__ ) or defined( __FB_DOS__ )
@@ -43,14 +46,6 @@ const FB_DEFAULT_MAXERRORS  = 10
 const FB_ERR_INFINITE       = &h7fffffff
 
 const INVALID               = -1
-
-''
-const FB_VERSION            = FB_VER_MAJOR & "." & FB_VER_MINOR & "." & FB_VER_PATCH
-const FB_BUILD_DATE         = __DATE__
-const FB_SIGN               = "FreeBASIC " &  FB_VERSION
-const FB_VER_STR_MAJOR    	= str( FB_VER_MAJOR )
-const FB_VER_STR_MINOR    	= str( FB_VER_MINOR )
-const FB_VER_STR_PATCH    	= str( FB_VER_PATCH )
 
 '' compiler options corresponding to the FBCMMLINEOPT struct
 '' (for use with the public fbSet/GetOption() interface)
