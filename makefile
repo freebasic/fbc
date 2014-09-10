@@ -866,7 +866,7 @@ bindist:
   ifeq ($(TARGET_OS),dos)
 	zip -q -r $(FBPACKAGE).zip $(FBPACKAGE)
   else
-  ifeq ($(TARGET_OS),win32)
+  ifneq ($(filter win32 win64,$(TARGET_OS)),)
 	zip -q -r $(FBPACKAGE).zip $(FBPACKAGE)
 	7z a         $(FBPACKAGE).7z  $(FBPACKAGE) > /dev/null
   else
