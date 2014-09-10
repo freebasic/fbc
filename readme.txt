@@ -6,84 +6,90 @@
     Forum:              http://www.freebasic.net/forum/
     Online manual:      http://www.freebasic.net/wiki/DocToc
     fbc project page:   http://www.sourceforge.net/projects/fbc/
+    GitHub mirror:      https://github.com/freebasic/fbc
     IRC channel:        ##freebasic at chat.freenode.net
+    Features:           http://www.freebasic.net/wiki/CompilerFeatures
+    Requirements:       http://www.freebasic.net/wiki/CompilerRequirements
 
     FreeBASIC consists of fbc (the command line compiler), the runtime libraries
-    (included into FB programs by fbc), compiler tools (assembler, linker) used
-    by fbc, and headers and bindings for third-party libraries.
+    (libfb and libfbgfx), and FreeBASIC header files for third-party libraries.
+    In order to produce executables, fbc uses the GNU binutils (assembler,
+    linker). When compiling for architectures other than 32bit x86, fbc depends
+    on gcc to generate assembly.
 
     Documentation of language features, compiler options and many other details
     is available in the FB manual. For help & support, visit the FB forum!
 
-    Features:           http://www.freebasic.net/wiki/CompilerFeatures
-    Requirements:       http://www.freebasic.net/wiki/CompilerRequirements
-
   o Installation & Usage
 
-    FreeBASIC gives you the FreeBASIC compiler program, called fbc or fbc.exe,
-    plus the compiler tools and run-time libraries used by fbc. It is a
-    command line program that takes FreeBASIC source code files (*.bas) and
-    compiles them into executables. fbc is typically invoked by Integrated
-    Development Environments (IDEs) or text editors, from a terminal or command
-    prompt, or through build-systems such as makefiles.
+    FreeBASIC gives you the FreeBASIC compiler program (fbc or fbc.exe),
+    plus the tools and libraries used by it. fbc is a command line program
+    that takes FreeBASIC source code files (*.bas) and compiles them into
+    executables.
 
-    - Win32
-      - Download the latest FreeBASIC-x.xx.x-win32.exe installer
-      - Run it and click through it
-      - Use fbc.exe from the install directory to compile FB code, for example:
-        - Click Start -> FreeBASIC -> Open console
-        - In the opened prompt, type in the following command and press ENTER:
-            > fbc.exe examples\hello.bas
-          This should have created examples\hello.exe, which can be executed
-          right away:
-            > examples\hello.exe
-      - Optionally: install an IDE for FB, for example:
-            FBIDE (http://fbide.freebasic.net/)
-            FBEdit (http://radasm.cherrytree.at/fbedit/)
+    fbc is typically invoked by Integrated Development Environments (IDEs) or
+    text editors, from a terminal or command prompt, or through build-systems
+    such as makefiles. fbc itself is not a graphical code editor or IDE!
 
-    - Linux
-      - Download the latest FreeBASIC-x.xx.x-linux.tar.gz
-      - Extract it
-      - Open a terminal
-      - cd into the extracted FreeBASIC-x.xx.x-linux directory
-      - run "sudo ./install.sh -i"
-      - Install the following packages (names vary depending on distribution):
-          Debian/Ubuntu:
-            x86:               amd64 old:           amd64 new:
-              gcc                gcc-multilib         gcc-multilib
-              libncurses5-dev    lib32ncurses5-dev    lib32ncurses5-dev
-              libx11-dev         ia32-libs            libx11-dev:i386
-              libxext-dev        lib32ffi-dev         libxext-dev:i386
-              libxrender-dev                          libxrender-dev:i386
-              libxrandr-dev                           libxrandr-dev:i386
-              libxpm-dev                              libxpm-dev:i386
-              libffi-dev
-          OpenSUSE:
-            x86:               x86_64:
-              gcc                gcc-32bit
-              ncurses-devel      ncurses-devel-32bit
-              xorg-x11-devel     xorg-x11-devel-32bit
-              libffi46-devel     xorg-x11-libX11-devel-32bit
-                                 xorg-x11-libXext-devel-32bit
-                                 xorg-x11-libXrender-devel-32bit
-                                 xorg-x11-libXpm-devel-32bit
-                                 libffi46-devel-32bit
-      - Use the installed fbc program to compile FB code, for example:
-          $ fbc examples/hello.bas
-        This should have created the examples/hello program, which can be
-        executed right away:
-          $ examples/hello
-      - Optionally: install an IDE for FB, for example: Geany (www.geany.org)
+    Win32 (similar for Win64):
+      Download and run the latest FreeBASIC-x.xx.x-win32.exe installer, or
+      download and extract the latest FreeBASIC-x.xx.x-win32.zip.
 
-    - DOS
-      - Download the latest FreeBASIC-x.xx.x-dos.zip
-      - Extract it
-      - Use fbc.exe from the extracted directory to compile FB code,
-        for example:
-          > fbc.exe examples\hello.bas
-        This should have created examples\hello.exe, which can be executed
-        right away:
-          > examples\hello.exe
+      Now you can use fbc.exe from the installation directory to compile FB
+      programs (*.bas files) into executables (*.exe files). Open a command
+      prompt (cmd.exe) and run fbc.exe from there, for example:
+        1. Click Start -> FreeBASIC -> Open console
+        2. In the opened command prompt, type in the following command and
+           press ENTER:
+             > fbc.exe examples\hello.bas
+        3. This should have created examples\hello.exe in the FreeBASIC
+           installation directory. You can run it by entering:
+             > examples\hello.exe
+
+      Optionally, you can install a text editor or IDE which will invoke fbc.exe
+      for you, for example:
+        FBIDE: http://fbide.freebasic.net/
+        FBEdit: http://radasm.cherrytree.at/fbedit/
+
+    Linux (if FreeBASIC is not available through your package manager):
+      Download and extract the latest FreeBASIC-x.xx.x-linux.tar.gz. Open a
+      terminal and cd into the extracted FreeBASIC-x.xx.x-linux directory, and
+      run "sudo ./install.sh -i" to copy the FB setup into /usr/local.
+      To compile FB programs, please install the following packages (names may
+      vary depending on your Linux distribution):
+        Debian/Ubuntu:
+          gcc libncurses5-dev libgpm-dev libffi-dev libgl1-mesa-dev
+          libx11-dev libxext-dev libxrender-dev libxrandr-dev libxpm-dev
+        Fedora:
+          gcc ncurses-devel gpm-devel libffi-devel mesa-libGL-devel
+          libX11-devel libXext-devel libXrender-devel libXrandr-devel
+          libXpm-devel
+      If you want to use the 32bit version of FB on a 64bit system, it is
+      necessary to have the gcc 32bit multilib support and 32bit versions
+      of the libraries installed.
+        Debian/Ubuntu:
+          gcc-multilib lib32ncurses5-dev libx11-dev:i386 libxext-dev:i386
+          libxrender-dev:i386 libxrandr-dev:i386 libxpm-dev:i386
+
+      Now you can use fbc to compile FB programs (*.bas files) into executables.
+      For example:
+        $ cd FreeBASIC-x.xx.x-linux/examples
+        $ fbc hello.bas
+      This should have created the hello program. You can run it by entering:
+        $ ./hello
+
+      Optionally, you can install a text editor or IDE which will invoke fbc for
+      your, for example:
+        Geany: www.geany.org (sudo apt-get install geany)
+
+    DOS:
+      Download and extract the latest FreeBASIC-x.xx.x-dos.zip.
+
+      Now you can use fbc.exe from the installation directory to compile FB
+      programs (*.bas files) into executables (*.exe files). For example:
+        > fbc.exe examples\hello.bas
+      This should have created examples\hello.exe. You can run it by entering:
+        > examples\hello.exe
 
   o Licensing
 
@@ -104,7 +110,6 @@
         you may extend this exception to your version of the library, but
         you are not obligated to do so. If you do not wish to do so, delete
         this exception statement from your version.
-
 
     The FreeBASIC documentation is licensed under the GNU FDL.
 
@@ -129,6 +134,7 @@
     - GoRC          http://www.godevtool.com/
     - LibFFI        http://sourceware.org/libffi/
     - MinGW         http://www.mingw.org/
+    - MinGW-w64     http://mingw-w64.sourceforge.net/
     - OpenXDK       http://openxdk.maturion.de/
     - TDM-GCC       http://tdm-gcc.tdragon.net/
 
@@ -144,7 +150,8 @@
     - Bryan Stoeberl (b_stoeberl[at]yahoo.com)
         SSE/SSE2 floating point math, AST vectorization.
     - Daniel C. Klauer (daniel.c.klauer[at]web.de)
-        FB releases since 0.21, preprocessor-only mode, C emitter,
+        FB releases since 0.21, C & LLVM backends, 64bit port,
+        dynamic arrays in UDTs, virtual methods, preprocessor-only mode,
         miscellaneous fixes and improvements.
     - Daniel R. Verkamp (i_am_drv[at]yahoo.com)
         DOS, XBox, Darwin, *BSD ports, DLL and static library automation,
@@ -184,7 +191,7 @@
     - Dinosaur
         CGUI headers
     - D.J.Peters
-        ODE headers & examples, Win32 API header fixes
+        ARM port, ODE headers & examples, Win32 API header fixes
     - Dumbledore
         wx-c headers & examples
     - dr0p (dr0p[at]perfectbg.com)
@@ -234,7 +241,8 @@
     - TeeEmCee
         gfxlib2 fixes
     - TJF (Thomas.Freiherr[at]gmx.net)
-        GTK+, glib, Cairo, Pango headers & examples, SQLiteExtensions headers
+        ARM port, GTK+, glib, Cairo, Pango headers & examples,
+        SQLiteExtensions headers
     - zydon
         Win32 API examples
 
