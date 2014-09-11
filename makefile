@@ -736,67 +736,67 @@ bindist:
 	# Includes: inc/, include/freebasic/ or include/freebas/
 	cp -R $(rootdir)inc $(FBPACKAGE)
   ifeq ($(TARGET_OS),dos)
-	rm -r $(FBPACKAGE)/inc/AL/*
-	rm -r $(FBPACKAGE)/inc/atk/*
+	rm -r $(FBPACKAGE)/inc/AL
+	rm -r $(FBPACKAGE)/inc/atk
 	rm -r $(FBPACKAGE)/inc/bass.bi
 	rm -r $(FBPACKAGE)/inc/bassmod.bi
-	rm -r $(FBPACKAGE)/inc/cairo/*
-	rm -r $(FBPACKAGE)/inc/cd/*
-	rm -r $(FBPACKAGE)/inc/chipmunk/*
-	rm -r $(FBPACKAGE)/inc/crt/arpa/*
-	rm -r $(FBPACKAGE)/inc/crt/bits/*
-	rm -r $(FBPACKAGE)/inc/crt/linux/*
+	rm -r $(FBPACKAGE)/inc/cairo
+	rm -r $(FBPACKAGE)/inc/cd
+	rm -r $(FBPACKAGE)/inc/chipmunk
+	rm -r $(FBPACKAGE)/inc/crt/arpa
+	rm -r $(FBPACKAGE)/inc/crt/bits
+	rm -r $(FBPACKAGE)/inc/crt/linux
 	rm -r $(FBPACKAGE)/inc/crt/netdb.bi
 	rm -r $(FBPACKAGE)/inc/crt/netinet/in.bi
 	rm -r $(FBPACKAGE)/inc/crt/netinet/linux/in.bi
-	rm -r $(FBPACKAGE)/inc/crt/sys/linux/*
+	rm -r $(FBPACKAGE)/inc/crt/sys/linux
 	rm -r $(FBPACKAGE)/inc/crt/sys/socket.bi
-	rm -r $(FBPACKAGE)/inc/crt/sys/win32/*
-	rm -r $(FBPACKAGE)/inc/crt/win32/*
+	rm -r $(FBPACKAGE)/inc/crt/sys/win32
+	rm -r $(FBPACKAGE)/inc/crt/win32
 	rm -r $(FBPACKAGE)/inc/curses/ncurses.bi
-	rm -r $(FBPACKAGE)/inc/disphelper/*
-	rm -r $(FBPACKAGE)/inc/fastcgi/*
-	rm -r $(FBPACKAGE)/inc/flite/*
+	rm -r $(FBPACKAGE)/inc/disphelper
+	rm -r $(FBPACKAGE)/inc/fastcgi
+	rm -r $(FBPACKAGE)/inc/flite
 	rm -r $(FBPACKAGE)/inc/fmod.bi
 	rm -r $(FBPACKAGE)/inc/FreeImage.bi
-	rm -r $(FBPACKAGE)/inc/freetype2/*
+	rm -r $(FBPACKAGE)/inc/freetype2
 	rm -r $(FBPACKAGE)/inc/gdk*
-	rm -r $(FBPACKAGE)/inc/gio/*
-	rm -r $(FBPACKAGE)/inc/GL/*
-	rm -r $(FBPACKAGE)/inc/glade/*
+	rm -r $(FBPACKAGE)/inc/gio
+	rm -r $(FBPACKAGE)/inc/GL
+	rm -r $(FBPACKAGE)/inc/glade
 	rm -r $(FBPACKAGE)/inc/glib*
 	rm -r $(FBPACKAGE)/inc/gmodule.bi
 	rm -r $(FBPACKAGE)/inc/goocanvas.bi
 	rm -r $(FBPACKAGE)/inc/gtk*
-	rm -r $(FBPACKAGE)/inc/im/*
+	rm -r $(FBPACKAGE)/inc/im
 	rm -r $(FBPACKAGE)/inc/IUP*
 	rm -r $(FBPACKAGE)/inc/japi*
 	rm -r $(FBPACKAGE)/inc/jni.bi
 	rm -r $(FBPACKAGE)/inc/json*
-	rm -r $(FBPACKAGE)/inc/libart_lgpl/*
+	rm -r $(FBPACKAGE)/inc/libart_lgpl
 	rm -r $(FBPACKAGE)/inc/MediaInfo*
 	rm -r $(FBPACKAGE)/inc/modplug.bi
 	rm -r $(FBPACKAGE)/inc/mpg123.bi
-	rm -r $(FBPACKAGE)/inc/mysql/*
+	rm -r $(FBPACKAGE)/inc/mysql
 	rm -r $(FBPACKAGE)/inc/Newton.bi
-	rm -r $(FBPACKAGE)/inc/ode/*
-	rm -r $(FBPACKAGE)/inc/ogg/*
-	rm -r $(FBPACKAGE)/inc/pango/*
+	rm -r $(FBPACKAGE)/inc/ode
+	rm -r $(FBPACKAGE)/inc/ogg
+	rm -r $(FBPACKAGE)/inc/pango
 	rm -r $(FBPACKAGE)/inc/pdflib.bi
 	rm -r $(FBPACKAGE)/inc/portaudio.bi
-	rm -r $(FBPACKAGE)/inc/postgresql/*
-	rm -r $(FBPACKAGE)/inc/SDL/*
+	rm -r $(FBPACKAGE)/inc/postgresql
+	rm -r $(FBPACKAGE)/inc/SDL
 	rm -r $(FBPACKAGE)/inc/sndfile.bi
-	rm -r $(FBPACKAGE)/inc/spidermonkey/*
+	rm -r $(FBPACKAGE)/inc/spidermonkey
 	rm -r $(FBPACKAGE)/inc/uuid.bi
-	rm -r $(FBPACKAGE)/inc/vlc/*
-	rm -r $(FBPACKAGE)/inc/vorbis/*
-	rm -r $(FBPACKAGE)/inc/win/*
+	rm -r $(FBPACKAGE)/inc/vlc
+	rm -r $(FBPACKAGE)/inc/vorbis
+	rm -r $(FBPACKAGE)/inc/win
 	rm -r $(FBPACKAGE)/inc/windows.bi
-	rm -r $(FBPACKAGE)/inc/wx-c/*
-	rm -r $(FBPACKAGE)/inc/X11/*
+	rm -r $(FBPACKAGE)/inc/wx-c
+	rm -r $(FBPACKAGE)/inc/X11
 	rm -r $(FBPACKAGE)/inc/xmp.bi
-	rm -r $(FBPACKAGE)/inc/zmq/*
+	rm -r $(FBPACKAGE)/inc/zmq
   endif
   ifeq ($(TARGET_ARCH),x86_64)
 	# Exclude headers which don't support 64bit yet
@@ -931,30 +931,30 @@ bindist:
     ifeq ($(TARGET_OS),dos)
 	rm -r $(FBPACKAGE)/examples/database/mysql_test.bas
 	rm -r $(FBPACKAGE)/examples/database/postgresql_test.bas
-	rm -r $(FBPACKAGE)/examples/dll/*
-	rm -r $(FBPACKAGE)/examples/files/FreeImage/*
-	rm -r $(FBPACKAGE)/examples/files/pdflib/*
-	rm -r $(FBPACKAGE)/examples/graphics/cairo/*
-	rm -r $(FBPACKAGE)/examples/graphics/FreeType/*
-	rm -r $(FBPACKAGE)/examples/graphics/OpenGL/*
-	rm -r $(FBPACKAGE)/examples/graphics/SDL/*
-	rm -r $(FBPACKAGE)/examples/GUI/GTK+/*
-	rm -r $(FBPACKAGE)/examples/GUI/IUP/*
-	rm -r $(FBPACKAGE)/examples/GUI/win32/*
-	rm -r $(FBPACKAGE)/examples/GUI/wx-c/*
-	rm -r $(FBPACKAGE)/examples/manual/threads/*
-	rm -r $(FBPACKAGE)/examples/math/cryptlib/*
-	rm -r $(FBPACKAGE)/examples/math/Newton/*
-	rm -r $(FBPACKAGE)/examples/math/ODE/*
-	rm -r $(FBPACKAGE)/examples/misc/glib/*
+	rm -r $(FBPACKAGE)/examples/dll
+	rm -r $(FBPACKAGE)/examples/files/FreeImage
+	rm -r $(FBPACKAGE)/examples/files/pdflib
+	rm -r $(FBPACKAGE)/examples/graphics/cairo
+	rm -r $(FBPACKAGE)/examples/graphics/FreeType
+	rm -r $(FBPACKAGE)/examples/graphics/OpenGL
+	rm -r $(FBPACKAGE)/examples/graphics/SDL
+	rm -r $(FBPACKAGE)/examples/GUI/GTK+
+	rm -r $(FBPACKAGE)/examples/GUI/IUP
+	rm -r $(FBPACKAGE)/examples/GUI/win32
+	rm -r $(FBPACKAGE)/examples/GUI/wx-c
+	rm -r $(FBPACKAGE)/examples/manual/threads
+	rm -r $(FBPACKAGE)/examples/math/cryptlib
+	rm -r $(FBPACKAGE)/examples/math/Newton
+	rm -r $(FBPACKAGE)/examples/math/ODE
+	rm -r $(FBPACKAGE)/examples/misc/glib
 	rm -r $(FBPACKAGE)/examples/network/http-get.bas
-	rm -r $(FBPACKAGE)/examples/network/win32/*
+	rm -r $(FBPACKAGE)/examples/network/win32
 	rm -r $(FBPACKAGE)/examples/other-languages/Java*
-	rm -r $(FBPACKAGE)/examples/other-languages/VB/*
-	rm -r $(FBPACKAGE)/examples/sound/*
-	rm -r $(FBPACKAGE)/examples/threads/*
-	rm -r $(FBPACKAGE)/examples/unicode/*
-	rm -r $(FBPACKAGE)/examples/win32/*
+	rm -r $(FBPACKAGE)/examples/other-languages/VB
+	rm -r $(FBPACKAGE)/examples/sound
+	rm -r $(FBPACKAGE)/examples/threads
+	rm -r $(FBPACKAGE)/examples/unicode
+	rm -r $(FBPACKAGE)/examples/win32
     endif
   endif
 
