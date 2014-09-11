@@ -76,6 +76,9 @@ git diff
 		
 		
 		- ##FBVERSION## makefile variable: Is already set in the makefile, but you can override it if you want to (e.g. when making testing releases instead of "official" releases). For example: ##FBVERSION=0.90.1## or ##FBVERSION=0.90.1rc1##
+		
+		
+		- ##DISABLE_DOCS=1## makefile variable: If this variable is set, ##bindist## will exclude documentation (readme, changelog, man page) and examples from the package. This is useful when creating small binary-only fbc packages such as those for installation into ""DJGPP/MinGW"" trees.
 
 {{fbdoc item="section" value="Toolchain/build environment"}}
 
