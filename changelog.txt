@@ -211,6 +211,7 @@ Version 1.00.0 (former 0.91.0):
 - #736: Format() overflow when significand (after scaling to 19 digits) is 2^63 or greater
 - Format() overflow on very small numbers, trying to scale them by excessively large powers of 10
 - 0.24.0 regression: cgi-util.bi was missing
+- Format() was adding an extra digit before the decimal point in scientific notation when rounding up to the next power of 10
 
 
 Version 0.90.1:

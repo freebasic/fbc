@@ -362,6 +362,20 @@ int fb_hProcessMask
 
 			value = hRound( value, pInfo );
 
+			/* value rounded up to next power of 10? */
+			if( pInfo->has_exponent && (fb_IntLog10_64( (unsigned long long)fabs( value ) ) == pInfo->num_digits_fix) )
+			{
+				value /= 10.0;
+				ExpValue += 1;
+				LenExp = sprintf( ExpPart, "%d", (int)ExpValue );
+				if( ExpValue < 0 )
+					IndexExp = ExpAdjust = 1;
+				else
+					IndexExp = ExpAdjust = 0;
+
+				NumSkipExp = pInfo->exp_digits - ( LenExp - ExpAdjust );
+			}
+
 			fb_hGetNumberParts( value,
             					FixPart, &LenFix,
                                 FracPart, &LenFrac,
