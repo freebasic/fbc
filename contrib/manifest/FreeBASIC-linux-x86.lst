@@ -158,7 +158,7 @@ examples/files/array.bas
 examples/files/binary.bas
 examples/files/input.bas
 examples/files/jpeglib/color.jpg
-examples/files/jpeglib/jpeg.bas
+examples/files/jpeglib/example.bas
 examples/files/libpng/alpha.png
 examples/files/libpng/color.png
 examples/files/libpng/png.bas
@@ -298,6 +298,7 @@ examples/graphics/getput.bas
 examples/graphics/grx/grx.bas
 examples/graphics/imageinfo.bas
 examples/graphics/input.bas
+examples/graphics/mt.bas
 examples/graphics/qbsprite.bas
 examples/graphics/tinyptc/mandbrot.bas
 examples/graphics/tinyptc/ptc_test.bas
@@ -348,8 +349,8 @@ examples/manual/casting/culngint.bas
 examples/manual/casting/cunsg.bas
 examples/manual/casting/cushort.bas
 examples/manual/check/KeyPgClass_1.bas
-examples/manual/check/KeyPgCommand_1.bas
-examples/manual/check/KeyPgCommand_2.bas
+examples/manual/check/KeyPgCommand_Dos.bas
+examples/manual/check/KeyPgCommand_mingw.bas
 examples/manual/check/KeyPgDim_1.bas
 examples/manual/check/KeyPgDim_2.bas
 examples/manual/check/KeyPgDim_3.bas
@@ -730,6 +731,7 @@ examples/manual/meta/header.bi
 examples/manual/meta/include.bas
 examples/manual/meta/lang.bas
 examples/manual/meta/static.bas
+examples/manual/misc/any-dynamic-array.bas
 examples/manual/misc/any-param.bas
 examples/manual/misc/any.bas
 examples/manual/misc/as.bas
@@ -850,6 +852,7 @@ examples/manual/procs/alias2.bas
 examples/manual/procs/byref-result.bas
 examples/manual/procs/byref-result2.bas
 examples/manual/procs/byref-result3.bas
+examples/manual/procs/byref-result4.bas
 examples/manual/procs/byref.bas
 examples/manual/procs/byval.bas
 examples/manual/procs/call-fwd.bas
@@ -880,12 +883,12 @@ examples/manual/proguide/arrays/array1.bas
 examples/manual/proguide/arrays/array2.bas
 examples/manual/proguide/arrays/array3.bas
 examples/manual/proguide/arrays/array4.bas
-examples/manual/proguide/arrays/fixedlen_1.bas
-examples/manual/proguide/arrays/fixedlen_2.bas
+examples/manual/proguide/arrays/fixedlen_bounds.bas
+examples/manual/proguide/arrays/fixedlen_constants.bas
+examples/manual/proguide/arrays/fixedlen_storage.bas
 examples/manual/proguide/arrays/indexing.bas
-examples/manual/proguide/arrays/varlen_1.bas
-examples/manual/proguide/arrays/varlen_2.bas
-examples/manual/proguide/arrays/varlen_3.bas
+examples/manual/proguide/arrays/varlen_decl.bas
+examples/manual/proguide/arrays/varlen_redim.bas
 examples/manual/proguide/comments/comment1.bas
 examples/manual/proguide/comments/comment2.bas
 examples/manual/proguide/comments/comment3.bas
@@ -910,6 +913,8 @@ examples/manual/proguide/libs/libs2.bas
 examples/manual/proguide/libs/libs3.bas
 examples/manual/proguide/libs/libs4.bas
 examples/manual/proguide/libs/libs5.bas
+examples/manual/proguide/linecontinuation1.bas
+examples/manual/proguide/linecontinuation2.bas
 examples/manual/proguide/literals/bin.bas
 examples/manual/proguide/literals/dblsuff.bas
 examples/manual/proguide/literals/dec.bas
@@ -1084,6 +1089,7 @@ examples/manual/system/filedatetime.bas
 examples/manual/system/fileexists.bas
 examples/manual/system/filelen.bas
 examples/manual/system/fre.bas
+examples/manual/system/isredirected.bas
 examples/manual/system/kill.bas
 examples/manual/system/mkdir.bas
 examples/manual/system/name.bas
@@ -1097,10 +1103,12 @@ examples/manual/system/shell.bas
 examples/manual/system/sleep.bas
 examples/manual/system/system.bas
 examples/manual/threads/condcreate.bas
+examples/manual/threads/mutexcreate.bas
 examples/manual/threads/threadcall.bas
 examples/manual/threads/threads1.bas
 examples/manual/threads/threads2.bas
 examples/manual/threads/threads3.bas
+examples/manual/threads/threadsdetach.bas
 examples/manual/udt/abstract1.bas
 examples/manual/udt/access.bas
 examples/manual/udt/base.bas
@@ -1118,6 +1126,7 @@ examples/manual/udt/field.bas
 examples/manual/udt/function.bas
 examples/manual/udt/operator1.bas
 examples/manual/udt/operator2.bas
+examples/manual/udt/operator3.bas
 examples/manual/udt/override.bas
 examples/manual/udt/private.bas
 examples/manual/udt/property.bas
@@ -1126,6 +1135,7 @@ examples/manual/udt/protected.bas
 examples/manual/udt/ptr-access.bas
 examples/manual/udt/public.bas
 examples/manual/udt/static.bas
+examples/manual/udt/static2.bas
 examples/manual/udt/step-char-iterator.bas
 examples/manual/udt/step-fraction-iterator.bas
 examples/manual/udt/step.bas
@@ -1148,7 +1158,6 @@ examples/manual/variable/dim.bas
 examples/manual/variable/scope.bas
 examples/manual/variable/shared.bas
 examples/manual/variable/static.bas
-examples/manual/variable/static2.bas
 examples/manual/variable/var.bas
 examples/math/GSL/matrix.bas
 examples/math/Newton/test.bas
@@ -1225,6 +1234,7 @@ examples/sound/data/example2.ogg
 examples/sound/data/prodigy.wav
 examples/structs.bas
 examples/threads/consumer-producer.bas
+examples/threads/threaddetach.bas
 examples/threads/threads.bas
 examples/threads/threads2.bas
 examples/threads/timer-lib/test.bas
@@ -1358,12 +1368,13 @@ include/freebasic/AL/alut.bi
 include/freebasic/AL/efx.bi
 include/freebasic/CUnit/Automated.bi
 include/freebasic/CUnit/Basic.bi
+include/freebasic/CUnit/CUCurses.bi
 include/freebasic/CUnit/CUError.bi
 include/freebasic/CUnit/CUnit.bi
 include/freebasic/CUnit/Console.bi
-include/freebasic/CUnit/MyMem.bi
 include/freebasic/CUnit/TestDB.bi
 include/freebasic/CUnit/TestRun.bi
+include/freebasic/CUnit/Util.bi
 include/freebasic/FreeImage.bi
 include/freebasic/GL/freeglut.bi
 include/freebasic/GL/freeglut_ext.bi
@@ -1707,6 +1718,7 @@ include/freebasic/cd/cdsvg.bi
 include/freebasic/cd/cdwmf.bi
 include/freebasic/cd/wd.bi
 include/freebasic/cd/wd_old.bi
+include/freebasic/cgi-util.bi
 include/freebasic/cgui.bi
 include/freebasic/chipmunk/chipmunk.bi
 include/freebasic/chipmunk/chipmunk_unsafe.bi
@@ -1735,6 +1747,7 @@ include/freebasic/crt.bi
 include/freebasic/crt/arpa/inet.bi
 include/freebasic/crt/bits/locale.bi
 include/freebasic/crt/bits/pthreadtypes.bi
+include/freebasic/crt/bits/sigset.bi
 include/freebasic/crt/ctype.bi
 include/freebasic/crt/dir.bi
 include/freebasic/crt/dos/dir.bi
@@ -1752,10 +1765,13 @@ include/freebasic/crt/linux/fcntl.bi
 include/freebasic/crt/linux/netdb.bi
 include/freebasic/crt/linux/stdio.bi
 include/freebasic/crt/linux/stdlib.bi
+include/freebasic/crt/linux/syslog.bi
 include/freebasic/crt/linux/time.bi
 include/freebasic/crt/linux/unistd.bi
 include/freebasic/crt/linux/wchar.bi
 include/freebasic/crt/locale.bi
+include/freebasic/crt/long.bi
+include/freebasic/crt/longdouble.bi
 include/freebasic/crt/malloc.bi
 include/freebasic/crt/math.bi
 include/freebasic/crt/netdb.bi
@@ -1825,6 +1841,8 @@ include/freebasic/fastcgi/fastcgi.bi
 include/freebasic/fastcgi/fcgi_stdio.bi
 include/freebasic/fastcgi/fcgiapp.bi
 include/freebasic/fbgfx.bi
+include/freebasic/fbio.bi
+include/freebasic/fbthread.bi
 include/freebasic/ffi.bi
 include/freebasic/file.bi
 include/freebasic/flite/cst_alloc.bi
@@ -2801,9 +2819,10 @@ include/freebasic/zip.bi
 include/freebasic/zlib.bi
 include/freebasic/zmq/zmq.bi
 install.sh
-lib/freebasic/fbextra.x
-lib/freebasic/fbrt0.o
-lib/freebasic/libfb.a
-lib/freebasic/libfbgfx.a
-lib/freebasic/libfbmt.a
+lib/freebasic/linux-x86/fbextra.x
+lib/freebasic/linux-x86/fbrt0.o
+lib/freebasic/linux-x86/libfb.a
+lib/freebasic/linux-x86/libfbgfx.a
+lib/freebasic/linux-x86/libfbgfxmt.a
+lib/freebasic/linux-x86/libfbmt.a
 readme.txt

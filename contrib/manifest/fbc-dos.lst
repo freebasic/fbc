@@ -1,12 +1,13 @@
 bin/fbc.exe
 include/freebas/CUnit/Automated.bi
 include/freebas/CUnit/Basic.bi
+include/freebas/CUnit/CUCurses.bi
 include/freebas/CUnit/CUError.bi
 include/freebas/CUnit/CUnit.bi
 include/freebas/CUnit/Console.bi
-include/freebas/CUnit/MyMem.bi
 include/freebas/CUnit/TestDB.bi
 include/freebas/CUnit/TestRun.bi
+include/freebas/CUnit/Util.bi
 include/freebas/IL/il.bi
 include/freebas/IL/ilu.bi
 include/freebas/Lua/lauxlib.bi
@@ -86,6 +87,7 @@ include/freebas/big_int/str_types.bi
 include/freebas/bzlib.bi
 include/freebas/caca.bi
 include/freebas/caca0.bi
+include/freebas/cgi-util.bi
 include/freebas/cgui.bi
 include/freebas/crt.bi
 include/freebas/crt/ctype.bi
@@ -101,6 +103,8 @@ include/freebas/crt/fcntl.bi
 include/freebas/crt/io.bi
 include/freebas/crt/limits.bi
 include/freebas/crt/locale.bi
+include/freebas/crt/long.bi
+include/freebas/crt/longdouble.bi
 include/freebas/crt/malloc.bi
 include/freebas/crt/math.bi
 include/freebas/crt/process.bi
@@ -145,6 +149,8 @@ include/freebas/dos/sys/segments.bi
 include/freebas/dos/sys/version.bi
 include/freebas/expat.bi
 include/freebas/fbgfx.bi
+include/freebas/fbio.bi
+include/freebas/fbthread.bi
 include/freebas/ffi.bi
 include/freebas/file.bi
 include/freebas/gd.bi
@@ -503,8 +509,8 @@ include/freebas/utf_conv.bi
 include/freebas/vbcompat.bi
 include/freebas/zip.bi
 include/freebas/zlib.bi
-lib/freebas/fbrt0.o
-lib/freebas/i386go32.x
-lib/freebas/libc.a
-lib/freebas/libfb.a
-lib/freebas/libfbgfx.a
+lib/freebas/dos/fbrt0.o
+lib/freebas/dos/i386go32.x
+lib/freebas/dos/libc.a
+lib/freebas/dos/libfb.a
+lib/freebas/dos/libfbgfx.a
