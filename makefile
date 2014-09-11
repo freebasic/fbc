@@ -971,13 +971,19 @@ bindist:
 		> $(rootdir)contrib/manifest/$(FBMANIFEST).lst
 
 	# Create the archive(s)
+	# (overwriting existing ones, instead of adding to them)
   ifeq ($(TARGET_OS),dos)
+	rm -f $(FBPACKAGE).zip
 	zip -q -r $(FBPACKAGE).zip $(FBPACKAGE)
   else
   ifneq ($(filter win32 win64,$(TARGET_OS)),)
+	rm -f $(FBPACKAGE).zip
+	rm -f $(FBPACKAGE).7z
 	zip -q -r $(FBPACKAGE).zip $(FBPACKAGE)
-	7z a         $(FBPACKAGE).7z  $(FBPACKAGE) > /dev/null
+	7z a $(FBPACKAGE).7z  $(FBPACKAGE) > /dev/null
   else
+	rm -f $(FBPACKAGE).tar.gz
+	rm -f $(FBPACKAGE).tar.xz
 	tar -czf $(FBPACKAGE).tar.gz $(FBPACKAGE)
 	tar -cJf $(FBPACKAGE).tar.xz $(FBPACKAGE)
   endif
