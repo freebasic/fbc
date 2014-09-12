@@ -159,7 +159,7 @@ while (eof(i) = FALSE)
         emitInstallerFiles(manifest, o, FALSE)
 
     case else
-        ln = strReplace(ln, ";;;FB_VERSION;;;", STRINGIFY(FB_VERSION))
+        ln = strReplace(ln, ";;;FBVERSION;;;", STRINGIFY(FBVERSION))
         print #o, ln
 
     end select

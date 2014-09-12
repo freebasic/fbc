@@ -5,8 +5,8 @@
 ; Paths are relative to the root FreeBASIC directory.
 
 SetCompressor /SOLID lzma
-OutFile "..\FreeBASIC-;;;FB_VERSION;;;-win32.exe"
-Name "FreeBASIC ;;;FB_VERSION;;;"
+OutFile "..\FreeBASIC-;;;FBVERSION;;;-win32.exe"
+Name "FreeBASIC ;;;FBVERSION;;;"
 
 !include "MUI2.nsh"
 
@@ -101,7 +101,7 @@ Section Install
     WriteRegStr SHCTX "${REGKEY_UNINST}" "DisplayName"     "$(^Name)"
     WriteRegStr SHCTX "${REGKEY_UNINST}" "UninstallString" "$INSTDIR\uninstall.exe"
     WriteRegStr SHCTX "${REGKEY_UNINST}" "DisplayIcon"     "$INSTDIR\fblogo.ico"
-    WriteRegStr SHCTX "${REGKEY_UNINST}" "DisplayVersion"  ";;;FB_VERSION;;;"
+    WriteRegStr SHCTX "${REGKEY_UNINST}" "DisplayVersion"  ";;;FBVERSION;;;"
     WriteRegStr SHCTX "${REGKEY_UNINST}" "URLInfoAbout"    "${URL_WIKI}"
     WriteRegStr SHCTX "${REGKEY_UNINST}" "Publisher"       "${URL_WIKI}"
 SectionEnd
