@@ -1,4 +1,5 @@
-FBVERSION := 1.00.0
+include ../../version.mk
+
 ZIP_TITLE := FreeBASIC-$(FBVERSION)-win32
 ZIP_FILE := $(ZIP_TITLE).zip
 INSTALLER_EXE := $(ZIP_TITLE).exe
