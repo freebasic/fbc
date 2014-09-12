@@ -5,7 +5,7 @@ INSTALLER_EXE := $(ZIP_TITLE).exe
 MAKENSIS := makensis
 FBC := fbc
 
-MANIFEST := ../release/manifest/win32.lst
+MANIFEST := ../manifest/FreeBASIC-win32.lst
 
 .SUFFIXES:
 
