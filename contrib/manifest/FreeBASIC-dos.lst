@@ -4,6 +4,7 @@ bin/dos/gdb.exe
 bin/dos/gprof.exe
 bin/dos/ld.exe
 changelog.txt
+doc/fbc.1
 doc/gpl.txt
 doc/lgpl.txt
 examples/DOS/isrtimer.bas
@@ -49,7 +50,7 @@ examples/files/array.bas
 examples/files/binary.bas
 examples/files/input.bas
 examples/files/jpeglib/color.jpg
-examples/files/jpeglib/jpeg.bas
+examples/files/jpeglib/example.bas
 examples/files/libpng/alpha.png
 examples/files/libpng/color.png
 examples/files/libpng/png.bas
@@ -69,6 +70,7 @@ examples/graphics/getput.bas
 examples/graphics/grx/grx.bas
 examples/graphics/imageinfo.bas
 examples/graphics/input.bas
+examples/graphics/mt.bas
 examples/graphics/qbsprite.bas
 examples/graphics/tinyptc/mandbrot.bas
 examples/graphics/tinyptc/ptc_test.bas
@@ -119,8 +121,8 @@ examples/manual/casting/culngint.bas
 examples/manual/casting/cunsg.bas
 examples/manual/casting/cushort.bas
 examples/manual/check/KeyPgClass_1.bas
-examples/manual/check/KeyPgCommand_1.bas
-examples/manual/check/KeyPgCommand_2.bas
+examples/manual/check/KeyPgCommand_Dos.bas
+examples/manual/check/KeyPgCommand_mingw.bas
 examples/manual/check/KeyPgDim_1.bas
 examples/manual/check/KeyPgDim_2.bas
 examples/manual/check/KeyPgDim_3.bas
@@ -501,6 +503,7 @@ examples/manual/meta/header.bi
 examples/manual/meta/include.bas
 examples/manual/meta/lang.bas
 examples/manual/meta/static.bas
+examples/manual/misc/any-dynamic-array.bas
 examples/manual/misc/any-param.bas
 examples/manual/misc/any.bas
 examples/manual/misc/as.bas
@@ -621,6 +624,7 @@ examples/manual/procs/alias2.bas
 examples/manual/procs/byref-result.bas
 examples/manual/procs/byref-result2.bas
 examples/manual/procs/byref-result3.bas
+examples/manual/procs/byref-result4.bas
 examples/manual/procs/byref.bas
 examples/manual/procs/byval.bas
 examples/manual/procs/call-fwd.bas
@@ -651,12 +655,12 @@ examples/manual/proguide/arrays/array1.bas
 examples/manual/proguide/arrays/array2.bas
 examples/manual/proguide/arrays/array3.bas
 examples/manual/proguide/arrays/array4.bas
-examples/manual/proguide/arrays/fixedlen_1.bas
-examples/manual/proguide/arrays/fixedlen_2.bas
+examples/manual/proguide/arrays/fixedlen_bounds.bas
+examples/manual/proguide/arrays/fixedlen_constants.bas
+examples/manual/proguide/arrays/fixedlen_storage.bas
 examples/manual/proguide/arrays/indexing.bas
-examples/manual/proguide/arrays/varlen_1.bas
-examples/manual/proguide/arrays/varlen_2.bas
-examples/manual/proguide/arrays/varlen_3.bas
+examples/manual/proguide/arrays/varlen_decl.bas
+examples/manual/proguide/arrays/varlen_redim.bas
 examples/manual/proguide/comments/comment1.bas
 examples/manual/proguide/comments/comment2.bas
 examples/manual/proguide/comments/comment3.bas
@@ -681,6 +685,8 @@ examples/manual/proguide/libs/libs2.bas
 examples/manual/proguide/libs/libs3.bas
 examples/manual/proguide/libs/libs4.bas
 examples/manual/proguide/libs/libs5.bas
+examples/manual/proguide/linecontinuation1.bas
+examples/manual/proguide/linecontinuation2.bas
 examples/manual/proguide/literals/bin.bas
 examples/manual/proguide/literals/dblsuff.bas
 examples/manual/proguide/literals/dec.bas
@@ -855,6 +861,7 @@ examples/manual/system/filedatetime.bas
 examples/manual/system/fileexists.bas
 examples/manual/system/filelen.bas
 examples/manual/system/fre.bas
+examples/manual/system/isredirected.bas
 examples/manual/system/kill.bas
 examples/manual/system/mkdir.bas
 examples/manual/system/name.bas
@@ -884,6 +891,7 @@ examples/manual/udt/field.bas
 examples/manual/udt/function.bas
 examples/manual/udt/operator1.bas
 examples/manual/udt/operator2.bas
+examples/manual/udt/operator3.bas
 examples/manual/udt/override.bas
 examples/manual/udt/private.bas
 examples/manual/udt/property.bas
@@ -892,6 +900,7 @@ examples/manual/udt/protected.bas
 examples/manual/udt/ptr-access.bas
 examples/manual/udt/public.bas
 examples/manual/udt/static.bas
+examples/manual/udt/static2.bas
 examples/manual/udt/step-char-iterator.bas
 examples/manual/udt/step-fraction-iterator.bas
 examples/manual/udt/step.bas
@@ -914,7 +923,6 @@ examples/manual/variable/dim.bas
 examples/manual/variable/scope.bas
 examples/manual/variable/shared.bas
 examples/manual/variable/static.bas
-examples/manual/variable/static2.bas
 examples/manual/variable/var.bas
 examples/math/GSL/matrix.bas
 examples/math/big_int/perftest.bas
@@ -968,12 +976,13 @@ examples/xml/test.xml
 fbc.exe
 inc/CUnit/Automated.bi
 inc/CUnit/Basic.bi
+inc/CUnit/CUCurses.bi
 inc/CUnit/CUError.bi
 inc/CUnit/CUnit.bi
 inc/CUnit/Console.bi
-inc/CUnit/MyMem.bi
 inc/CUnit/TestDB.bi
 inc/CUnit/TestRun.bi
+inc/CUnit/Util.bi
 inc/IL/il.bi
 inc/IL/ilu.bi
 inc/Lua/lauxlib.bi
@@ -1053,6 +1062,7 @@ inc/big_int/str_types.bi
 inc/bzlib.bi
 inc/caca.bi
 inc/caca0.bi
+inc/cgi-util.bi
 inc/cgui.bi
 inc/crt.bi
 inc/crt/ctype.bi
@@ -1068,6 +1078,8 @@ inc/crt/fcntl.bi
 inc/crt/io.bi
 inc/crt/limits.bi
 inc/crt/locale.bi
+inc/crt/long.bi
+inc/crt/longdouble.bi
 inc/crt/malloc.bi
 inc/crt/math.bi
 inc/crt/process.bi
@@ -1112,6 +1124,8 @@ inc/dos/sys/segments.bi
 inc/dos/sys/version.bi
 inc/expat.bi
 inc/fbgfx.bi
+inc/fbio.bi
+inc/fbthread.bi
 inc/ffi.bi
 inc/file.bi
 inc/gd.bi
@@ -1480,9 +1494,7 @@ lib/dos/libemu.a
 lib/dos/libfb.a
 lib/dos/libfbgfx.a
 lib/dos/libgcc.a
-lib/dos/libintl.a
 lib/dos/libm.a
 lib/dos/libstdcx.a
 lib/dos/libsupcx.a
-lib/dos/libtz.a
 readme.txt
