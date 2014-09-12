@@ -10,6 +10,7 @@
 #define __crt_win32_process_bi__
 
 #include "crt/sys/types.bi"
+#include once "crt/stdint.bi"
 
 #define	_WAIT_CHILD 0
 #define	_WAIT_GRANDCHILD 1
