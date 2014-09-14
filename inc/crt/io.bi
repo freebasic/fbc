@@ -11,6 +11,7 @@
 
 #include once "crt/long.bi"
 #include once "crt/stdio.bi"
+#include once "crt/stdint.bi"
 #include once "crt/sys/types.bi"
 
 #ifdef __FB_WIN32__
