@@ -129,7 +129,7 @@ endif
 
 srcdir := $(rootdir)src
 
-include version.mk
+include $(rootdir)version.mk
 -include config.mk
 
 #
