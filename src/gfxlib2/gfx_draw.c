@@ -113,9 +113,18 @@ FBCALL void fb_GfxDraw(void *target, FBSTRING *command)
 				if ((value1 = parse_number(&c)) == FB_NAN)
 					goto error;
 
+				/* Store our current x/y for the recursive fb_GfxDraw() call */
+				context->last_x = x;
+				context->last_y = y;
+
 				DRIVER_UNLOCK();
 				fb_GfxDraw(target, (FBSTRING *)value1);
 				DRIVER_LOCK();
+
+				/* And update to x/y produced by the recursive fb_GfxDraw() call */
+				x = context->last_x;
+				y = context->last_y;
+
 				break;
 
 			case 'P':

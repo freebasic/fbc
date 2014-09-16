@@ -5,6 +5,7 @@ Version 1.01.0
 [added]
 
 [fixed]
+- 1.00.0 regression: DRAW x/y pen position was reset during X<address> subcommands, instead of being preserved and passed to/from the subcommands
 
 
 Version 1.00.0 (former 0.91.0):
