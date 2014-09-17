@@ -292,7 +292,7 @@ int fb_hInitConsole( )
 void fb_hExitConsole( void )
 {
 	int bottom;
-	sighandler_t old_sigttou_handler;
+	SIGHANDLER old_sigttou_handler;
 
 	if (__fb_con.inited) {
 
