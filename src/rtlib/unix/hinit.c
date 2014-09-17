@@ -292,9 +292,31 @@ int fb_hInitConsole( )
 void fb_hExitConsole( void )
 {
 	int bottom;
+	sighandler_t old_sigttou_handler;
 
 	if (__fb_con.inited) {
-		
+
+		/* Ignore SIGTTOU, which is sent in case we write to the
+		   terminal while being in the background (e.g. CTRL+Z + bg).
+		   This happens at least with the tcsetattr() on STDOUT_FILENO
+		   for restoring the original terminal state below, because we
+		   switched to non-canonical mode in fb_hInitConsole (~ICANON).
+
+		   The default handler for SIGTTOU suspends the process,
+		   but we don't want to hang now when exiting the FB program.
+
+		   We probably shouldn't ignore SIGTTOU (or SIGTTIN for that
+		   matter) globally/always though, as normally the behaviour
+		   makes sense: If a background program tries to write to the
+		   terminal (or read user input), it should be suspended until
+		   brought to foreground by the user. Otherwise it would
+		   interfere with whatever the user is currently doing.
+
+		   However, implicit terminal adjustments done by the rtlib is a
+		   case where we probably don't want that to happen. Thus the
+		   signal should be ignored only here. */
+		old_sigttou_handler = signal(SIGTTOU, SIG_IGN);
+
 		if (__fb_con.gfx_exit)
 			__fb_con.gfx_exit();
 		
@@ -331,6 +353,9 @@ void fb_hExitConsole( void )
 			fclose(__fb_con.f_in);
 			__fb_con.f_in = NULL;
 		}
+
+		/* Restore SIGTTOU handler (so it's no longer ignored) */
+		signal(SIGTTOU, old_sigttou_handler);
 	}
 }
 
