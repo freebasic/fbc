@@ -1989,11 +1989,9 @@ private function hEmitFloat _
 		end if
 
 	case else
-		if( dtype = FB_DATATYPE_DOUBLE ) then
-			s = str( value )
-		else
-			s = str( csng( value ) )
-		end if
+
+		'' Singles and Doubles both given Double precision to prevent being mis-converted
+		s = str( value )
 
 		'' Append .0 if there is no dot or exponent yet,
 		'' to prevent gcc from treating it as int
