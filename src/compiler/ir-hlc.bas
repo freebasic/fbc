@@ -1690,16 +1690,14 @@ private function exprNewSYM( byval sym as FBSYMBOL ptr ) as EXPRNODE ptr
 
 		n = exprNewCAST( typeAddrOf( symbGetType( sym ) ), symbGetSubtype( sym ), n )
 
-	'' main()'s argv? Add CAST to convert from char** to the one used by FB
+	'' main()'s argv? It's emitted as int8** (char**), not as uint8** (zstring ptr ptr),
+	'' so specify the type manually instead of deriving it from the FB symbol.
+	'' exprNewVREG() will add the cast to uint8** where needed.
 	elseif( (symbIsVar( sym ) or (sym->class = FB_SYMBCLASS_PARAM)) and _
 	        ((sym->stats and FB_SYMBSTATS_ARGV) <> 0) ) then
-
-		n = exprNew( EXPRCLASS_SYM, FB_DATATYPE_INVALID, NULL )
+		n = exprNew( EXPRCLASS_SYM, typeMultAddrOf( FB_DATATYPE_BYTE, 2 ), NULL )
 		n->sym = sym
-
-		n = exprNewCAST( typeMultAddrOf( FB_DATATYPE_CHAR, 2 ), NULL, n )
 	else
-
 		dtype = symbGetType( sym )
 		subtype = symbGetSubtype( sym )
 
