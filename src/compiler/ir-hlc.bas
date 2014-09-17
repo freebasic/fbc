@@ -2422,7 +2422,6 @@ private function exprNewVREG _
 
 	dim as EXPRNODE ptr l = any
 	dim as integer dtype = any, have_offset = any
-	dim as FBSYMBOL ptr subtype = any
 
 	select case as const( vreg->typ )
 	case IR_VREGTYPE_VAR, IR_VREGTYPE_IDX, IR_VREGTYPE_PTR
@@ -2549,8 +2548,6 @@ private function exprNewVREG _
 		l = exprNewOFFSET( vreg->sym, vreg->ofs )
 
 	case IR_VREGTYPE_IMM
-		static as string s
-
 		'' An immediate -- a constant value
 		'' The integer literal can be emitted as 32bit or 64bit,
 		'' signed or unsigned, and afterwards it should be cast to the
