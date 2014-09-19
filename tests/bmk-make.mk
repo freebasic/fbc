@@ -1,7 +1,7 @@
 # bmk-make.mk
 # This file is part of the FreeBASIC test suite
 #
-# make file for building mutile-module tests
+# make file for building mutiple-module tests
 # and testing run-time assertions
 #
 # expected usage
@@ -59,6 +59,10 @@ endif
 
 ifneq ($(FPU),)
 FBC_CFLAGS += -fpu $(FPU)
+endif
+
+ifneq ($(GEN),)
+FBC_CFLAGS += -gen $(GEN)
 endif
 
 MAINX :=

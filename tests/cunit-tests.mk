@@ -78,6 +78,9 @@ endif
 ifneq ($(FPU),)
 	FBC_CFLAGS += -fpu $(FPU)
 endif
+ifneq ($(GEN),)
+	FBC_CFLAGS += -gen $(GEN)
+endif
 
 FBC_LFLAGS := $(FBCU_LIBS) -p $(FBCU_DIR) -x $(MAINEXE)
 ifdef DEBUG
