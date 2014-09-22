@@ -1,4 +1,4 @@
-/* console SCREEN() function (cursor position query) */
+/* console SCREEN() function (character/color query) */
 
 #include "../fb.h"
 #include "fb_private_console.h"
