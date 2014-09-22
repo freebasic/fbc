@@ -99,6 +99,53 @@ function hFloatToHex _
 	end if
 end function
 
+function hFloatToHex_C99 _
+	( _
+		byval value as double _
+	) as string
+
+	'' float hex format defined in C99 spec: e.g. 0x1.fp+3
+
+	dim as ulongint n = *cptr( ulongint ptr, @value )
+
+	dim as integer sign = n shr 63
+	dim as integer exp2 = (n shr 52) and (1u shl 11 - 1)
+	dim as ulongint mantissa = n and (1ull shl 52 - 1)
+
+	dim as string ret
+
+	if( sign <> 0 ) then
+		'' negative
+		ret = "-0x"
+	else
+		'' positive
+		ret = "0x"
+	end if
+
+	exp2 -= 1023
+	if( exp2 > -1023 ) then
+		'' normalized
+		ret += "1." + hex( mantissa, 13 )
+		if right( ret, 1 ) = "0" then ret = rtrim( ret, "0" )
+	else
+		if mantissa = 0 then
+			'' zero
+			ret += "0"
+			exp2 = 0
+		else
+			'' denormed
+			exp2 += 1
+			ret += "0." + hex( mantissa, 13  )
+			if right( ret, 1 ) = "0" then ret = rtrim( ret, "0" )
+		end if
+	end if
+
+	ret += "p" & (*iif( exp2 >= 0, @"+", @"-" )) + str( abs( exp2 ) )
+
+	return ret
+
+end function
+
 '':::::
 function hFBrelop2IRrelop _
 	( _

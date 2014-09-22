@@ -1990,15 +1990,8 @@ private function hEmitFloat _
 
 	case else
 
-		'' Singles and Doubles both given Double precision to prevent being mis-converted
-		s = str( value )
-
-		'' Append .0 if there is no dot or exponent yet,
-		'' to prevent gcc from treating it as int
-		'' (e.g. 1 -> 1.0, but 0.1 or 1e-100 can stay as-is)
-		if( instr( s, any "e." ) = 0 ) then
-			s += ".0"
-		end if
+		'' Convert to exact representation using C99-compatible hex format
+		s = hFloatToHex_C99( value )
 
 		'' float type suffix
 		if( dtype = FB_DATATYPE_SINGLE ) then
