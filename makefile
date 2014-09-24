@@ -459,6 +459,7 @@ ifndef DISABLE_MT
   endif
 endif
 ifeq ($(TARGET_OS),dos)
+  RTL_OBJDIRS += contrib/djgpp/libc/crt0
   RTL_LIBS += $(libdir)/libc.a
 endif
 
@@ -494,6 +495,7 @@ $(libfbgfxobjdir) \
 $(libfbgfxpicobjdir) \
 $(libfbgfxmtobjdir) \
 $(libfbgfxmtpicobjdir) \
+contrib/djgpp/libc/crt0 \
 bin $(libdir) $(prefixbindir) $(prefixincdir) $(prefixlibdir):
 	mkdir -p $@
 
@@ -559,7 +561,7 @@ $(LIBFBMTPIC_C): $(libfbmtpicobjdir)/%.o: %.c $(LIBFB_H)
 ifeq ($(TARGET_OS),dos)
 djgpplibc := $(shell $(CC) -print-file-name=libc.a)
 libcmaino := contrib/djgpp/libc/crt0/_main.o
-$(libcmaino): %.o: %.c
+$(libcmaino): $(rootdir)contrib/djgpp/libc/crt0/_main.c
 	$(QUIET_CC)$(CC) $(ALLCFLAGS) -c $< -o $@
 $(libdir)/libc.a: $(djgpplibc) $(libcmaino)
 	cp $(djgpplibc) $@
