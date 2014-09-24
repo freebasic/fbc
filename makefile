@@ -120,6 +120,9 @@ prefix := /usr/local
 
 # Determine the makefile's directory, this may be a relative path when
 # building in a separate build directory via e.g. "make -f ../fbc/makefile".
+# MAKEFILE_LIST did not exist in GNU make 3.79.1 (it was only added in 3.80),
+# so DJGPP users have to set MAKEFILE_LIST or rootdir manually in order to build
+# in a separate directory.
 rootdir := $(dir $(MAKEFILE_LIST))
 
 # Prune ./ prefix for beauty
