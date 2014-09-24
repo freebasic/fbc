@@ -425,7 +425,7 @@ end function
 
 #if defined( __FB_WIN32__ ) or defined( __FB_DOS__ )
 private function hPutLdArgsIntoFile( byref ldcline as string ) as integer
-	dim as string argsfile
+	dim as string argsfile, ln
 	dim as integer f = any
 
 	argsfile = hStripFilename( fbc.outname ) + "ldopt.tmp"
@@ -435,22 +435,24 @@ private function hPutLdArgsIntoFile( byref ldcline as string ) as integer
 		exit function
 	end if
 
-	'' ld treats \ in @files (response files) as escape sequence, so \ must
+	''
+	'' MinGW ld (including the MinGW-to-DJGPP cross-compiling ld) treats \
+	'' backslashes in @files (response files) as escape sequence, so \ must
 	'' be escaped as \\. ld seems to behave pretty much like Unixish shells
 	'' would: all \'s indicate an escape sequence. (For reference,
 	'' binutils/libiberty source code: expandargv(), buildargv())
 	''
-	'' With DJGPP however, @files are handled automagically and ld doesn't
-	'' get to see it, that's why there are differences in escaping rules
-	'' when doing @file with a DJGPP ld when compared to a MinGW ld. Not all
-	'' \ chars indicate escape sequences, only some special cases such as \\
-	'' or \" do. (at least that's what I gathered from the DJGPP FAQ and
-	'' some testing)
+	'' With DJGPP ld however, \ chars do not seem to indicate escape
+	'' sequences, despite the DJGPP FAQ (http://www.delorie.com/djgpp/v2faq/faq16_3.html)
+	'' which says that \ is special in some cases such as \" or \\.
+	'' Thus we mustn't (and don't need to) use \\ when using DJGPP ld.
 	''
-	'' Here we only need the \\ though, at least for now, which works with
-	'' both types of @file processing, so there's no need to worry about
-	'' the escaping differences.
-	print #f, hReplace( ldcline, $"\", $"\\" )
+	ln = ldcline
+	#ifdef __FB_WIN32__
+		ln = hReplace( ln, $"\", $"\\" )
+	#endif
+
+	print #f, ln
 
 	close #f
 
