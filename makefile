@@ -347,6 +347,7 @@ libfbgfxobjdir      := src/gfxlib2/obj/$(libsubdir)
 libfbgfxpicobjdir   := src/gfxlib2/obj/$(libsubdir)/pic
 libfbgfxmtobjdir    := src/gfxlib2/obj/$(libsubdir)/mt
 libfbgfxmtpicobjdir := src/gfxlib2/obj/$(libsubdir)/mt/pic
+djgpplibcobjdir     := contrib/djgpp/libc/crt0/obj/$(libsubdir)
 
 # If cross-compiling, use -target
 ifdef TARGET
@@ -459,7 +460,7 @@ ifndef DISABLE_MT
   endif
 endif
 ifeq ($(TARGET_OS),dos)
-  RTL_OBJDIRS += contrib/djgpp/libc/crt0
+  RTL_OBJDIRS += $(djgpplibcobjdir)
   RTL_LIBS += $(libdir)/libc.a
 endif
 
@@ -495,7 +496,7 @@ $(libfbgfxobjdir) \
 $(libfbgfxpicobjdir) \
 $(libfbgfxmtobjdir) \
 $(libfbgfxmtpicobjdir) \
-contrib/djgpp/libc/crt0 \
+$(djgpplibcobjdir) \
 bin $(libdir) $(prefixbindir) $(prefixincdir) $(prefixlibdir):
 	mkdir -p $@
 
@@ -560,7 +561,7 @@ $(LIBFBMTPIC_C): $(libfbmtpicobjdir)/%.o: %.c $(LIBFB_H)
 
 ifeq ($(TARGET_OS),dos)
 djgpplibc := $(shell $(CC) -print-file-name=libc.a)
-libcmaino := contrib/djgpp/libc/crt0/_main.o
+libcmaino := $(djgpplibcobjdir)/_main.o
 $(libcmaino): $(rootdir)contrib/djgpp/libc/crt0/_main.c
 	$(QUIET_CC)$(CC) $(ALLCFLAGS) -c $< -o $@
 $(libdir)/libc.a: $(djgpplibc) $(libcmaino)
