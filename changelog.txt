@@ -1,6 +1,7 @@
 Version 1.01.0
 
 [changed]
+- On Linux/*BSD, the FB runtime will now delay using VT100 terminal escape sequences to query terminal window size and cursor position until the first use of a console I/O command (previously it was immediately done at startup, always, even if the FB program didn't use any of FB's console I/O commands)
 
 [added]
 

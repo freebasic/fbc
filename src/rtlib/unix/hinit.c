@@ -193,8 +193,18 @@ static void sigwinch_handler(int sig)
 
 int fb_hTermOut( int code, int param1, int param2 )
 {
+	/* Hard-coded terminal escape sequences corresponding to our SEQ_*
+	   #defines with values >= 100. Apparently these codes are not available
+	   through termcap/terminfo (tgetstr()), so we need to hard-code them.
+
+	   These cannot safely be used for some (old) terminals which don't
+	   support them, as the terminal won't recognize them, thus won't send
+	   a response, leaving us hanging and waiting for a response. We don't
+	   have a good way of preventing this issue though especially since we
+	   can't rely on termcap/terminfo for this. */
 	const char *extra_seq[] = { "\e(U", "\e(B", "\e[6n", "\e[18t",
 		"\e[?1000h\e[?1003h", "\e[?1003l\e[?1000l", "\e[H\e[J\e[0m" };
+
 	char *str;
 
 	if (!__fb_con.inited)
@@ -448,8 +458,22 @@ static void hInit( void )
 	__fb_con.fg_color = 7;
 	__fb_con.bg_color = 0;
 
+	/* Trigger console window size & cursor position checks the first time
+	   fb_hRecheckConsoleSize() is invoked (lazy initialization).
+
+	   It's good to do this lazily because we don't need this information
+	   until the first use of one of FB's console I/O commands anyways.
+	   For FB programs which don't use those we never have to bother
+	   retrieving this information from the terminal.
+
+	   This is also good because we may try to use some special terminal
+	   escape sequences which the terminal may not support, in which case
+	   we end up hanging, waiting for an answer forever (fb_hTermOut() and
+	   fb_hTermQuery()). In that case, at least, we'll only hang when the
+	   FB program uses console I/O commands, but not always on start up of
+	   every FB program. */
 	__fb_console_resized = TRUE;
-	fb_hRecheckConsoleSize( );
+
 	signal(SIGWINCH, sigwinch_handler);
 }
 
