@@ -369,7 +369,6 @@ private function hAddVar _
 		'' Note: If the existing array is a COMMON, then not only REDIM is allowed,
 		'' but also DIM etc.
 		elseif( ((attrib and FB_SYMBATTRIB_DYNAMIC) <> 0) and _
-			(dimensions > 0) and _
 			have_bounds and _
 			symbGetIsDynamic( sym ) and _
 			((token = FB_TK_REDIM) or symbIsCommon( sym )) ) then
