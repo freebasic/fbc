@@ -242,21 +242,22 @@ private function hExprTbIsConst _
 	function = TRUE
 end function
 
-private sub hCheckExternVar _
+private function hCheckExternVar _
 	( _
 		byval sym as FBSYMBOL ptr, _
 		byval id as zstring ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
-		byval attrib as integer, _
+		byref attrib as integer, _
 		byval dimensions as integer, _
 		dTB() as FBARRAYDIM _
-	)
+	) as integer
 
 	'' Check data type
 	if( (dtype <> symbGetFullType( sym )) or _
 	    (subtype <> symbGetSubType( sym )) ) then
 		errReportEx( FB_ERRMSG_TYPEMISMATCH, *id )
+		exit function
 	end if
 
 	'' One is dynamic, but the other isn't? (can't just rely on dimensions
@@ -264,7 +265,7 @@ private sub hCheckExternVar _
 	'' array declaration, e.g. with a REDIM)
 	if( (attrib and FB_SYMBATTRIB_DYNAMIC) <> (sym->attrib and FB_SYMBATTRIB_DYNAMIC) ) then
 		errReportEx( FB_ERRMSG_EXPECTEDDYNAMICARRAY, *id )
-		exit sub
+		exit function
 	end if
 
 	'' One of them has unknown dimensions? Then the other must be an array too,
@@ -272,14 +273,15 @@ private sub hCheckExternVar _
 	if( (dimensions = -1) or (symbGetArrayDimensions( sym ) = -1) ) then
 		if( (dimensions <> 0) <> (symbGetArrayDimensions( sym ) <> 0) ) then
 			errReportEx( FB_ERRMSG_WRONGDIMENSIONS, *id )
+			exit function
 		end if
-		exit sub
+		return TRUE
 	end if
 
 	'' Mismatching array dimensions?
 	if( dimensions <> symbGetArrayDimensions( sym ) ) then
 		errReportEx( FB_ERRMSG_WRONGDIMENSIONS, *id )
-		exit sub
+		exit function
 	end if
 
 	'' Check bounds of fixed-size arrays
@@ -294,6 +296,40 @@ private sub hCheckExternVar _
 		next
 	end if
 
+	function = TRUE
+end function
+
+private sub hCheckExternVarAndRecover _
+	( _
+		byval sym as FBSYMBOL ptr, _
+		byval id as zstring ptr, _
+		byref dtype as integer, _
+		byref subtype as FBSYMBOL ptr, _
+		byref lgt as longint, _
+		byref attrib as integer, _
+		byref dimensions as integer, _
+		byref have_bounds as integer, _
+		dTB() as FBARRAYDIM _
+	)
+
+	if( hCheckExternVar( sym, id, dtype, subtype, attrib, dimensions, dTB() ) = FALSE ) then
+		'' Error recovery: make definition match the EXTERN declaration
+		dtype = symbGetFullType( sym )
+		subtype = symbGetSubType( sym )
+		lgt = symbGetLen( sym )
+		attrib = (attrib and (not FB_SYMBATTRIB_DYNAMIC)) or (sym->attrib and FB_SYMBATTRIB_DYNAMIC)
+		dimensions = symbGetArrayDimensions( sym )
+		if( attrib and FB_SYMBATTRIB_DYNAMIC ) then
+			have_bounds = FALSE
+		elseif( dimensions > 0 ) then
+			have_bounds = TRUE
+			for i as integer = 0 to dimensions - 1
+				dTB(i).lower = symbArrayLbound( sym, i )
+				dTB(i).upper = symbArrayUbound( sym, i )
+			next
+		end if
+	end if
+
 end sub
 
 private function hAddVar _
@@ -302,13 +338,13 @@ private function hAddVar _
 		byval parent as FBSYMBOL ptr, _
 		byval id as zstring ptr, _
 		byval idalias as zstring ptr, _
-		byval dtype as integer, _
-		byval subtype as FBSYMBOL ptr, _
-		byval lgt as longint, _
+		byref dtype as integer, _
+		byref subtype as FBSYMBOL ptr, _
+		byref lgt as longint, _
 		byval addsuffix as integer, _
-		byval attrib as integer, _
-		byval dimensions as integer, _
-		byval have_bounds as integer, _
+		byref attrib as integer, _
+		byref dimensions as integer, _
+		byref have_bounds as integer, _
 		dTB() as FBARRAYDIM, _
 		byval token as integer _
 	) as FBSYMBOL ptr
@@ -324,8 +360,7 @@ private function hAddVar _
 		    (parser.scope = FB_MAINSCOPE) ) then
 
 			'' Verify that the new variable declaration is compatible with the previous EXTERN
-			hCheckExternVar( sym, id, dtype, subtype, _
-					attrib, dimensions, dTB() )
+			hCheckExternVarAndRecover( sym, id, dtype, subtype, lgt, attrib, dimensions, have_bounds, dTB() )
 
 			'' Then allocate the EXTERN:
 
@@ -361,8 +396,7 @@ private function hAddVar _
 		        ((attrib and FB_SYMBATTRIB_EXTERN) <> 0) ) then
 
 			'' Only verify that the EXTERN declaration is compatible with the previous one
-			hCheckExternVar( sym, id, dtype, subtype, _
-					attrib, dimensions, dTB() )
+			hCheckExternVarAndRecover( sym, id, dtype, subtype, lgt, attrib, dimensions, have_bounds, dTB() )
 			is_declared = TRUE
 
 		'' REDIM'ing an existing array (dynamic array var/field, BYDESC param)?
