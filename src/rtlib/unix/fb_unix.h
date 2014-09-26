@@ -25,3 +25,7 @@ FBCALL void fb_BgLock( void );
 FBCALL void fb_BgUnlock( void );
 #define BG_LOCK()   fb_BgLock()
 #define BG_UNLOCK() fb_BgUnlock()
+
+/* Global variable for disabling hard-coded VT100 escape sequences in
+   fb_hTermOut(). */
+extern int __fb_enable_vt100_escapes;

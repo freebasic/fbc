@@ -79,6 +79,14 @@ static void signal_handler(int sig)
 }
 
 #ifdef HOST_LINUX
+/* Query window size or cursor position from the terminal by sending the
+   respective escape sequence to stdout and reading the answer (report) from
+   stdin.
+   That's assuming that the terminal actually supports the escape sequence and
+   sends a response. If it does not, we'll hang forever (or at least until the
+   read from stdin returns EOF).
+   Used with SEQ_QUERY_WINDOW and SEQ_QUERY_CURSOR only (but could easily be
+   extended to support more). */
 int fb_hTermQuery( int code, int *val1, int *val2 )
 {
 	if( fb_hTermOut( code, 0, 0 ) == FALSE )
@@ -136,11 +144,18 @@ void fb_hRecheckConsoleSize( void )
 	if( __fb_console_resized == FALSE )
 		return;
 
-	__fb_console_resized = FALSE;
+	/* __fb_console_resized may be set to TRUE again here if a SIGWINCH
+	   arrives while we're doing this check.
 
-	/* __fb_console_resized may be set to TRUE again here if the signal
-	   handler is called right now, but it doesn't matter since we're about
-	   to update anyways */
+	   If it happens here before we're setting __fb_console_resized to FALSE
+	   then it doesn't matter, because we're about to check the console size
+	   anyways.
+
+	   If it happens later (during/after the check below) then we'll miss
+	   it this time; but at least the next fb_hRecheckConsoleSize() will
+	   handle it. */
+
+	__fb_console_resized = FALSE;
 
 	win.ws_row = 0xFFFF;
 	ioctl( STDOUT_FILENO, TIOCGWINSZ, &win );
@@ -180,9 +195,6 @@ void fb_hRecheckConsoleSize( void )
 		__fb_con.cur_y = __fb_con.cur_x = 1;
 	}
 
-	/* If __fb_console_resized is set to TRUE only now (after the above
-	   check) then we will miss it for now, but it's ok because the next
-	   fb_hRecheckConsoleSize() will handle it. */
 }
 
 static void sigwinch_handler(int sig)
@@ -193,7 +205,7 @@ static void sigwinch_handler(int sig)
 
 int fb_hTermOut( int code, int param1, int param2 )
 {
-	/* Hard-coded terminal escape sequences corresponding to our SEQ_*
+	/* Hard-coded VT100 terminal escape sequences corresponding to our SEQ_*
 	   #defines with values >= 100. Apparently these codes are not available
 	   through termcap/terminfo (tgetstr()), so we need to hard-code them.
 
@@ -201,7 +213,10 @@ int fb_hTermOut( int code, int param1, int param2 )
 	   support them, as the terminal won't recognize them, thus won't send
 	   a response, leaving us hanging and waiting for a response. We don't
 	   have a good way of preventing this issue though especially since we
-	   can't rely on termcap/terminfo for this. */
+	   can't rely on termcap/terminfo for this.
+
+	   Thus, we provide the __fb_enable_vt100_escapes global variable, which
+	   FB programs can set to TRUE or FALSE as needed at runtime. */
 	const char *extra_seq[] = { "\e(U", "\e(B", "\e[6n", "\e[18t",
 		"\e[?1000h\e[?1003h", "\e[?1003l\e[?1000l", "\e[H\e[J\e[0m" };
 
@@ -211,6 +226,11 @@ int fb_hTermOut( int code, int param1, int param2 )
 		return FALSE;
 
 	if (code > SEQ_MAX) {
+
+		/* Is use of the VT100 escape sequences disallowed? */
+		if (!__fb_enable_vt100_escapes)
+			return FALSE;
+
 		switch (code) {
 		case SEQ_SET_COLOR_EX:
 			if( fprintf( stdout, "\e[%dm", param1 ) < 4 )
@@ -230,6 +250,7 @@ int fb_hTermOut( int code, int param1, int param2 )
 		tputs(str, 1, putchar);
 	}
 
+	/* Ensure the terminal gets to see the escape sequence */
 	fflush( stdout );
 
 	return TRUE;
