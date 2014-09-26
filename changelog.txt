@@ -12,6 +12,7 @@ Version 1.01.0
 - Linux/*BSD: FB programs run in the background (CTRL+Z + bg) could hang on exit due to the FB runtime triggering a SIGTTOU
 - -gen gcc: Single-precision constants were being emitted with precision less than 24 bits
 - 1.00.0 regression: When compiling on DOS, \ backslashes were passed to the linker as \\ causing it to fail opening the passed files
+- An fixed-size array variable declared behind a dynamic array variable in the same statement (for example <DIM AS INTEGER a(), b(0 to 1)>) was accidentally made dynamic too
 
 
 Version 1.00.0 (former 0.91.0):

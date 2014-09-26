@@ -1088,7 +1088,7 @@ end function
 ''
 function cVarDecl _
 	( _
-		byval attrib as integer, _
+		byval baseattrib as integer, _
 		byval dopreserve as integer, _
 		byval token as integer, _
 		byval is_fordecl as integer _
@@ -1115,7 +1115,7 @@ function cVarDecl _
 	if( symbIsGlobalNamespc( ) = FALSE ) then
 		if( fbIsModLevel( ) ) then
 			'' variables will be always shared..
-			attrib or= FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_STATIC
+			baseattrib or= FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_STATIC
 		end if
 	end if
 
@@ -1136,9 +1136,11 @@ function cVarDecl _
 
 	'' Some code below needs to differentiate between "new variable
 	'' declaration" and "REDIM"; however this isn't always accurate.
-	is_redim = (token = FB_TK_REDIM) and ((attrib and FB_SYMBATTRIB_SHARED) = 0)
+	is_redim = (token = FB_TK_REDIM) and ((baseattrib and FB_SYMBATTRIB_SHARED) = 0)
 
 	do
+		dim as integer attrib = baseattrib
+
 		parent = cParentId( FB_IDOPT_DEFAULT or FB_IDOPT_ALLOWSTRUCT or FB_IDOPT_ISVAR or _
 				iif( is_redim, 0, FB_IDOPT_ISDECL ) )
 
