@@ -50,6 +50,7 @@ typedef struct FBCONSOLE
 #if defined HOST_LINUX && (defined HOST_X86 || defined HOST_X86_64)
 	int has_perm;
 #endif
+	int scroll_region_changed;
 	char *seq[SEQ_MAX];
 	int (*keyboard_getch)(void);
 	int (*keyboard_init)(void);

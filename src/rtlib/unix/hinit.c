@@ -358,14 +358,22 @@ void fb_hExitConsole( void )
 			__fb_con.mouse_exit();
 		BG_UNLOCK();
 
-		bottom = fb_ConsoleGetMaxRow();
-		if ((fb_ConsoleGetTopRow() != 0) || (fb_ConsoleGetBotRow() != bottom - 1)) {
-			/* Restore scrolling region to whole screen and clear */
-			fb_hTermOut(SEQ_SCROLL_REGION, bottom - 1, 0);
-			fb_hTermOut(SEQ_CLS, 0, 0);
-			fb_hTermOut(SEQ_HOME, 0, 0);
+		/* Only restore scrolling region if we changed it. This way we can avoid
+		   calling fb_ConsoleGetMaxRow(), which may have to query the terminal size.
+		   It's best to avoid that as much as possible (not all terminals support
+		   the escape sequence, it's slow, it's unsafe if fb_hExitConsole() is called
+		   during a signal handler). */
+		if (__fb_con.scroll_region_changed) {
+			bottom = fb_ConsoleGetMaxRow();
+			if ((fb_ConsoleGetTopRow() != 0) || (fb_ConsoleGetBotRow() != bottom - 1)) {
+				/* Restore scrolling region to whole screen and clear */
+				fb_hTermOut(SEQ_SCROLL_REGION, bottom - 1, 0);
+				fb_hTermOut(SEQ_CLS, 0, 0);
+				fb_hTermOut(SEQ_HOME, 0, 0);
+			}
+			__fb_con.scroll_region_changed = FALSE;
 		}
-		
+
 		/* Cleanup terminal */
 #ifdef HOST_LINUX
 		if (__fb_con.inited == INIT_CONSOLE)
