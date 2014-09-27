@@ -397,9 +397,7 @@ static void hInit( void )
 	struct termios tty;
     int i;
 
-#ifdef ENABLE_MT
     pthread_mutexattr_t attr;
-#endif
 
 #if defined(__GNUC__) && defined(__i386__)
 	unsigned int control_word;
@@ -412,7 +410,6 @@ static void hInit( void )
 	__asm__ __volatile__( "fldcw %0" : : "m" (control_word) );
 #endif
 
-#ifdef ENABLE_MT
 	/* make mutex recursive to behave the same on Win32 and Linux (if possible) */
 	pthread_mutexattr_init(&attr);
 
@@ -427,13 +424,14 @@ static void hInit( void )
 	pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE);
 #endif
 
+#ifdef ENABLE_MT
 	/* Init multithreading support */
 	pthread_mutex_init(&__fb_global_mutex, &attr);
 	pthread_mutex_init(&__fb_string_mutex, &attr);
 	pthread_mutex_init(&__fb_graphics_mutex, &attr);
 #endif
 
-	pthread_mutex_init( &__fb_bg_mutex, NULL );
+	pthread_mutex_init(&__fb_bg_mutex, &attr);
 
 	memset(&__fb_con, 0, sizeof(__fb_con));
 
