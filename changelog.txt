@@ -16,6 +16,7 @@ Version 1.01.0
 - 1.00.0 regression: "REDIM Foo.array()" created a new local array called "array" (ignoring the "Foo." namespace prefix) if Foo.array was an existing variable and not a declared-but-not-yet-defined EXTERN (or static member variable). This will trigger an error again now. In FB 0.90.1 the error was "duplicate definition". Now it will be "declaration outside the original namespace or class", to match the behaviour for non-array variables.
 - Type-less (and dimension-less) REDIM was allowed to define EXTERN dynamic arrays, even though DIM is not allowed to be type-less for defining EXTERN variables
 - 1.00.0 regression: Compiler crash after showing an error when defining a non-array EXTERN using an array declaration
+- 1.00.0 regression: lhsint &= rhsint self-assignments, where the lhsint expression included a function call, didn't result in a "type mismatch" error anymore, even though the string result of the & concatenation operation couldn't be assigned back to the lhsint.
 
 
 Version 1.00.0 (former 0.91.0):
