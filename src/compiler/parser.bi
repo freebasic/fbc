@@ -428,7 +428,7 @@ declare function cAssignmentOrPtrCallEx _
 		byval expr as ASTNODE ptr _
 	) as integer
 
-declare function hIsAssignToken( ) as integer
+declare function hIsAssignToken( byval token as integer ) as integer
 declare function cAssignToken( ) as integer
 
 declare function cOperator( byval is_overload as integer ) as integer

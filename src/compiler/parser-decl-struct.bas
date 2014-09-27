@@ -158,7 +158,7 @@ private sub hFieldInit _
 	dim as FBSYMBOL ptr defctor = any, subtype = any
 
 	'' '=' | '=>' ?
-	if( hIsAssignToken( ) = FALSE ) then
+	if( hIsAssignToken( lexGetToken( ) ) = FALSE ) then
 		'' No initializer
 
 		'' Check ctors/dtors

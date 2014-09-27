@@ -1514,7 +1514,7 @@ function cVarDecl _
 			assign_initree = NULL
 
 			'' '=' | '=>' ?
-			if( hIsAssignToken( ) ) then
+			if( hIsAssignToken( lexGetToken( ) ) ) then
 				initree = hVarInit( sym, is_declared )
 
 				if( ( initree <> NULL ) and ( fbLangOptIsSet( FB_LANG_OPT_SCOPE ) = FALSE ) ) then

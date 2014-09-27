@@ -22,17 +22,12 @@ sub parserLetEnd
 
 end sub
 
-function hIsAssignToken( ) as integer
-	select case( lexGetToken( ) )
-	case FB_TK_ASSIGN, FB_TK_DBLEQ
-		function = TRUE
-	case else
-		function = FALSE
-	end select
+function hIsAssignToken( byval token as integer ) as integer
+	function = (token = FB_TK_ASSIGN) or (token = FB_TK_DBLEQ)
 end function
 
 function cAssignToken( ) as integer
-	if( hIsAssignToken( ) ) then
+	if( hIsAssignToken( lexGetToken( ) ) ) then
 		lexSkipToken( )
 		function = TRUE
 	else
@@ -164,12 +159,12 @@ sub cAssignment( byval l as ASTNODE ptr )
 
 	'' '='?
 	dim as integer op = INVALID
-	if( hIsAssignToken( ) = FALSE ) then
+	if( hIsAssignToken( lexGetToken( ) ) = FALSE ) then
 		'' BOP?
 		op = cOperator( FALSE )
 
 		'' '='?
-		if( hIsAssignToken( ) = FALSE ) then
+		if( hIsAssignToken( lexGetToken( ) ) = FALSE ) then
 			errReport( FB_ERRMSG_EXPECTEDEQ )
 			'' error recovery: skip stmt
 			hSkipStmt( )

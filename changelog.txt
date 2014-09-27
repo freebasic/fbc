@@ -17,6 +17,7 @@ Version 1.01.0
 - Type-less (and dimension-less) REDIM was allowed to define EXTERN dynamic arrays, even though DIM is not allowed to be type-less for defining EXTERN variables
 - 1.00.0 regression: Compiler crash after showing an error when defining a non-array EXTERN using an array declaration
 - 1.00.0 regression: lhsint &= rhsint self-assignments, where the lhsint expression included a function call, didn't result in a "type mismatch" error anymore, even though the string result of the & concatenation operation couldn't be assigned back to the lhsint.
+- Self-assignments will now be parsed correctly when the lhs is a call to a function with byref result and one argument, for example: f(0) += 1
 
 
 Version 1.00.0 (former 0.91.0):

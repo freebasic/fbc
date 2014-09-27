@@ -273,7 +273,7 @@ function cProcCall _
 		end if
 
 		'' '='?
-		if( hIsAssignToken( ) ) then
+		if( hIsAssignToken( lexGetToken( ) ) ) then
 			if( is_indexed ) then
 				if( symbGetUDTHasIdxSetProp( symbGetParent( sym ) ) = FALSE ) then
 					errReport( FB_ERRMSG_PROPERTYHASNOIDXSETMETHOD, TRUE )
@@ -405,7 +405,7 @@ private function hProcSymbol _
 	lexSkipToken( )
 
 	'' '='?
-	do_call = not hIsAssignToken( )
+	do_call = not hIsAssignToken( lexGetToken( ) )
 
 	if( do_call = FALSE ) then
 		'' special case: property
