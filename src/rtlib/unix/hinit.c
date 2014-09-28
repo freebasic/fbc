@@ -131,11 +131,37 @@ int fb_hTermQuery( int code, int *val1, int *val2 )
 }
 #endif
 
-/* If the SIGWINCH handler was called, re-query terminal width/height
-   - Assuming BG_LOCK() is acquired, because this can be called from
-     linux/io_mouse.c:mouse_handler() from the background thread
-   - Assuming __fb_con.inited */
-void fb_hRecheckConsoleSize( void )
+/**
+ * Update our cursor position with information from the terminal, if possible,
+ * to make it more accurate. (It's possible that the cursor moved outside of
+ * our control; e.g. if the FB program did a printf() instead of using FB's
+ * PRINT)
+ */
+void fb_hRecheckCursorPos( void )
+{
+#ifdef HOST_LINUX
+	int x = 0;
+	int y = 0;
+	if( fb_hTermQuery( SEQ_QUERY_CURSOR, &y, &x ) ) {
+		__fb_con.cur_x = x;
+		__fb_con.cur_y = y;
+	}
+#endif
+}
+
+/**
+ * Check whether the SIGWINCH handler has been called, and if so, re-query
+ * the terminal width/height.
+ *  - Assuming BG_LOCK() is acquired, because this can be called from
+ *    linux/io_mouse.c:mouse_handler() from the background thread
+ *  - Assuming __fb_con.inited
+ *
+ *  The "requery_cursorpos" parameter allows callers to disable the cursor
+ *  position update we'd normally do too in this case. This is useful if the
+ *  caller wants to do it manually, regardless of whether SIGWINCH happened,
+ *  while at the same time avoiding duplicate queries.
+ */
+void fb_hRecheckConsoleSize( int requery_cursorpos )
 {
 	unsigned char *char_buffer, *attr_buffer;
 	struct winsize win;
@@ -188,13 +214,11 @@ void fb_hRecheckConsoleSize( void )
 	__fb_con.attr_buffer = attr_buffer;
 	__fb_con.h = win.ws_row;
 	__fb_con.w = win.ws_col;
-#ifdef HOST_LINUX
-	if( fb_hTermQuery( SEQ_QUERY_CURSOR, &__fb_con.cur_y, &__fb_con.cur_x ) == FALSE )
-#endif
-	{
-		__fb_con.cur_y = __fb_con.cur_x = 1;
-	}
 
+	/* Also update the cursor position if wanted */
+	if (requery_cursorpos) {
+		fb_hRecheckCursorPos( );
+	}
 }
 
 static void sigwinch_handler(int sig)
@@ -500,6 +524,10 @@ static void hInit( void )
 	   FB program uses console I/O commands, but not always on start up of
 	   every FB program. */
 	__fb_console_resized = TRUE;
+
+	/* In case it's not possible to retrieve the real cursor position from
+	   the terminal, we assume to start out at 1,1. */
+	__fb_con.cur_y = __fb_con.cur_x = 1;
 
 	signal(SIGWINCH, sigwinch_handler);
 }

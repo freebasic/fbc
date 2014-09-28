@@ -11,7 +11,7 @@ FBCALL unsigned int fb_ConsoleReadXY( int x, int y, int colorflag )
 		return 0;
 
 	BG_LOCK( );
-	fb_hRecheckConsoleSize( );
+	fb_hRecheckConsoleSize( TRUE );
 	BG_UNLOCK( );
 
 	if ((x < 1) || (x > __fb_con.w) || (y < 1) || (y > __fb_con.h))

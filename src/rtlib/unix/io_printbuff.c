@@ -20,7 +20,7 @@ void fb_ConsolePrintBufferEx( const void *buffer, size_t len, int mask )
 	}
 
 	BG_LOCK( );
-	fb_hRecheckConsoleSize( );
+	fb_hRecheckConsoleSize( TRUE );
 	BG_UNLOCK( );
 
 	/* ToDo: handle scrolling for internal characters/attributes buffer? */

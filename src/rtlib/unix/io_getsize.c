@@ -10,7 +10,7 @@ FBCALL void fb_ConsoleGetSize( int *cols, int *rows )
 	}
 
 	BG_LOCK( );
-	fb_hRecheckConsoleSize( );
+	fb_hRecheckConsoleSize( TRUE );
 	BG_UNLOCK( );
 
 	if( cols ) *cols = __fb_con.w;

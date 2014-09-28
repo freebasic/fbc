@@ -22,7 +22,7 @@ void fb_ConsolePrintBufferWstrEx( const FB_WCHAR *buffer, size_t chars, int mask
 	temp = alloca( chars * 4 + 1 );
 
 	BG_LOCK( );
-	fb_hRecheckConsoleSize( );
+	fb_hRecheckConsoleSize( TRUE );
 	BG_UNLOCK( );
 
 	/* ToDo: handle scrolling for internal characters/attributes buffer? */

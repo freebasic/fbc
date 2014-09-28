@@ -9,7 +9,7 @@ int fb_ConsoleWidth( int cols, int rows )
 		return (80 | (25 << 16));
 
 	BG_LOCK( );
-	fb_hRecheckConsoleSize( );
+	fb_hRecheckConsoleSize( TRUE );
 	BG_UNLOCK( );
 
 	int cur = __fb_con.w | (__fb_con.h << 16);

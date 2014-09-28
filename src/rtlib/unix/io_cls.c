@@ -11,7 +11,7 @@ void fb_ConsoleClear( int mode )
 		return;
 
 	BG_LOCK( );
-	fb_hRecheckConsoleSize( );
+	fb_hRecheckConsoleSize( TRUE );
 	BG_UNLOCK( );
 
 	fb_ConsoleGetView(&start, &end);
