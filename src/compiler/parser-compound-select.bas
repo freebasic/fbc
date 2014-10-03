@@ -68,10 +68,17 @@ sub cSelectStmtBegin( )
 		errReport( FB_ERRMSG_SYNTAXERROR )
 	end if
 
+	''
 	'' Open outer scope
+	''
 	'' This is used to enclose the temporary created below, to make sure
 	'' it's destroyed at the END SELECT, not later. And scoping the temp
 	'' also frees up its stack space later.
+	''
+	'' The scope must be created before parsing the expression given to
+	'' SELECT, otherwise any temporaries it uses would be destroyed too
+	'' early by astScopeBegin() because that flushes the AST dtor list.
+	''
 	dim as ASTNODE ptr outerscopenode = astScopeBegin( )
 	if( outerscopenode = NULL ) then
 		errReport( FB_ERRMSG_RECLEVELTOODEEP )
@@ -142,8 +149,9 @@ sub cSelectStmtBegin( )
 				astAddUnscoped( astNewDECL( sym, TRUE ) )
 				astAdd( astNewASSIGN( astNewVAR( sym ), expr ) )
 			else
-				astAdd( astNewDECL( sym, FALSE ) )
-				astAdd( astNewASSIGN( astNewVAR( sym ), expr, AST_OPOPT_ISINI ) )
+				astAdd( astNewLINK( _
+					astNewDECL( sym, FALSE ), _
+					astNewASSIGN( astNewVAR( sym ), expr, AST_OPOPT_ISINI ) ) )
 			end if
 		else
 			'' The wstring expression must be copied into a
@@ -165,8 +173,9 @@ sub cSelectStmtBegin( )
 				astAdd( astBuildFakeWstringAssign( sym, expr ) )
 			else
 				'' Just the assignment, used as initializer
-				astAdd( astNewDECL( sym, FALSE ) )
-				astAdd( astBuildFakeWstringAssign( sym, expr, AST_OPOPT_ISINI ) )
+				astAdd( astNewLINK( _
+					astNewDECL( sym, FALSE ), _
+					astBuildFakeWstringAssign( sym, expr, AST_OPOPT_ISINI ) ) )
 			end if
 		end if
 	end if

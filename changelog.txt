@@ -20,6 +20,7 @@ Version 1.01.0
 - 1.00.0 regression: lhsint &= rhsint self-assignments, where the lhsint expression included a function call, didn't result in a "type mismatch" error anymore, even though the string result of the & concatenation operation couldn't be assigned back to the lhsint.
 - Self-assignments will now be parsed correctly when the lhs is a call to a function with byref result and one argument, for example: f(0) += 1
 - Partial fix for #740 (unsafe FB runtime signal handling code): Fixed a potential dead lock and unnecessary terminal size query in the Unix rtlib.
+- 0.90.0 + 1.00.0 regressions: SELECT CASE [AS CONST], FOR, and WITH were broken if the given expression(s) contained temporary variables, for example a function call with dynamic string parameters where the passed arguments were string literals. The temporary strings or UDT objects were destructed too early, before even being initialized, causing undefined behaviour. Temporary dynamic strings were affected by the problem since FB 1.00.0. Temporary UDT objects were affected by the problem since FB 0.90.0.
 
 
 Version 1.00.0 (former 0.91.0):

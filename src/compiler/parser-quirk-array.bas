@@ -186,9 +186,9 @@ function cSwapStmt( ) as integer
 	dim as ASTNODE ptr scopenode = any
 
 	'' A scope to enclose the SWAP temp vars
-	'' (must be created before parsing the lhs/rhs expressions, because they
-	'' may use temp vars themselves, and they'd be destructed during the
-	'' astAdd()'s done by astScopeBegin())
+	'' The scope must be created before parsing the lhs/rhs expressions
+	'' given to SWAP, otherwise any temporaries they use would be destroyed
+	'' too early by astScopeBegin() because that flushes the AST dtor list.
 	scopenode = astScopeBegin( )
 
 	function = hScopedSwap( )

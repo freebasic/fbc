@@ -54,8 +54,9 @@ sub cWithStmtBegin( )
 			astAddUnscoped( astNewDECL( sym, TRUE ) )
 			astAdd( astNewASSIGN( astNewVAR( sym ), expr ) )
 		else
-			astAdd( astNewDECL( sym, FALSE ) )
-			astAdd( astNewASSIGN( astNewVAR( sym ), expr, AST_OPOPT_ISINI ) )
+			astAdd( astNewLINK( _
+				astNewDECL( sym, FALSE ), _
+				astNewASSIGN( astNewVAR( sym ), expr, AST_OPOPT_ISINI ) ) )
 		end if
 
 		is_ptr = TRUE
