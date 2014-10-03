@@ -158,11 +158,76 @@ namespace implicitAddrOfPeek
 	end sub
 end namespace
 
+namespace functionResult
+	'' WITH must take special case when given a function call which returns
+	'' an UDT, because it may be returned in registers on Win32.
+
+	type ByteUdt
+		i as byte
+	end type
+
+	type ShortUdt
+		i as integer
+	end type
+
+	type IntegerUdt
+		i as integer
+	end type
+
+	type BigUdt
+		i(0 to 9) as integer
+	end type
+
+	function fByteUdt( byval i as integer ) as ByteUdt
+		return type( i )
+	end function
+
+	function fShortUdt( byval i as integer ) as ShortUdt
+		return type( i )
+	end function
+
+	function fIntegerUdt( byval i as integer ) as IntegerUdt
+		return type( i )
+	end function
+
+	function fBigUdt( byval i as integer ) as BigUdt
+		return type( { 0, 1, 2, 3, i, 5, 6, 7, 8, 9 } )
+	end function
+
+	sub test cdecl( )
+		with( fByteUdt( 111 ) )
+			CU_ASSERT( .i = 111 )
+		end with
+
+		with( fShortUdt( 222 ) )
+			CU_ASSERT( .i = 222 )
+		end with
+
+		with( fIntegerUdt( 333 ) )
+			CU_ASSERT( .i = 333 )
+		end with
+
+		with( fBigUdt( 444 ) )
+			CU_ASSERT( .i(0) = 0 )
+			CU_ASSERT( .i(1) = 1 )
+			CU_ASSERT( .i(2) = 2 )
+			CU_ASSERT( .i(3) = 3 )
+			CU_ASSERT( .i(4) = 444 )
+			CU_ASSERT( .i(5) = 5 )
+			CU_ASSERT( .i(6) = 6 )
+			CU_ASSERT( .i(7) = 7 )
+			CU_ASSERT( .i(8) = 8 )
+			CU_ASSERT( .i(9) = 9 )
+		end with
+	end sub
+end namespace
+
 private sub ctor( ) constructor
 	fbcu.add_suite( "tests/compound/with" )
 	fbcu.add_test( "basics", @basics.test )
 	fbcu.add_test( "recursion", @tempvarVsRecursion.test )
 	fbcu.add_test( "PEEK", @implicitAddrOfPeek.test )
+	fbcu.add_test( "function result", @functionResult.test )
 end sub
 
 end namespace

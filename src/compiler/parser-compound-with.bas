@@ -29,6 +29,10 @@ sub cWithStmtBegin( )
 		'' not an UDT?
 		if( typeGetDtAndPtrOnly( astGetFullType( expr ) ) <> FB_DATATYPE_STRUCT ) then
 			errReport( FB_ERRMSG_INVALIDDATATYPES )
+		else
+			if( astIsCALL( expr ) ) then
+				expr = astBuildCallResultUdt( expr )
+			end if
 		end if
 	end if
 
@@ -41,6 +45,7 @@ sub cWithStmtBegin( )
 		'' Otherwise, take a reference (a pointer that will be deref'ed
 		'' for accesses from inside the WITH block)
 		''    dim temp as typeof( expr ) ptr = @expr
+		assert( astCanTakeAddrOf( expr ) )
 		expr = astNewADDROF( expr )
 
 		options = 0
