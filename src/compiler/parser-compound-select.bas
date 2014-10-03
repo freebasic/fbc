@@ -114,6 +114,8 @@ sub cSelectStmtBegin( )
 		sym = astGetSymbol( expr )
 		assert( sym )
 		assert( symbIsTemp( sym ) = FALSE )
+		astDelTree( expr )
+		expr = NULL
 	else
 		'' Store expression into a temp var
 		select case typeGet( dtype )

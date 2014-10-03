@@ -41,6 +41,8 @@ sub cWithStmtBegin( )
 		'' corresponding variable from inside the WITH.
 		sym = astGetSymbol( expr )
 		is_ptr = FALSE
+		astDelTree( expr )
+		expr = NULL
 	else
 		'' Otherwise, take a reference (a pointer that will be deref'ed
 		'' for accesses from inside the WITH block)
