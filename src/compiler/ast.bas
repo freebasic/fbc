@@ -304,6 +304,12 @@ function astCanTakeAddrOf( byval n as ASTNODE ptr ) as integer
 		function = TRUE
 	case AST_NODECLASS_FIELD
 		function = (not symbFieldIsBitfield( n->sym ))
+	case AST_NODECLASS_LINK
+		if( n->link.ret_left ) then
+			function = astCanTakeAddrOf( n->l )
+		else
+			function = astCanTakeAddrOf( n->r )
+		end if
 	case else
 		function = FALSE
 	end select
