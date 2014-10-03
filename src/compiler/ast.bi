@@ -1060,6 +1060,8 @@ declare function astGetInverseLogOp _
 		byval op as integer _
 	) as integer
 
+declare function astGetEffectiveNode( byval n as ASTNODE ptr ) as ASTNODE ptr
+declare function astGetEffectiveClass( byval n as ASTNODE ptr ) as integer
 declare function astCanTakeAddrOf( byval n as ASTNODE ptr ) as integer
 declare function astMakeRef( byref expr as ASTNODE ptr ) as ASTNODE ptr
 declare function astRemSideFx( byref n as ASTNODE ptr ) as ASTNODE ptr

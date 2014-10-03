@@ -293,6 +293,27 @@ function astCloneTree( byval n as ASTNODE ptr ) as ASTNODE ptr
 	function = c
 end function
 
+'' Determine the expression effectively returned by the given tree. Usually it's
+'' just the toplevel node, except if there are LINKs involved which return
+'' either their lhs or rhs.
+function astGetEffectiveNode( byval n as ASTNODE ptr ) as ASTNODE ptr
+	if( n->class = AST_NODECLASS_LINK ) then
+		if( n->link.ret_left ) then
+			function = astGetEffectiveNode( n->l )
+		else
+			function = astGetEffectiveNode( n->r )
+		end if
+	else
+		function = n
+	end if
+end function
+
+'' Determine the AST_NODECLASS_* of the given expression, while transparently
+'' handling LINKs.
+function astGetEffectiveClass( byval n as ASTNODE ptr ) as integer
+	function = astGetEffectiveNode( n )->class
+end function
+
 '' Address-of can only be taken on variables/derefs, or iif/typeini nodes which
 '' are eventually replaced by temp var accesses (i.e. the address-of will
 '' ultimately be done on the iif's/typeini's temp var), but not of
