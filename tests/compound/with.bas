@@ -159,7 +159,7 @@ namespace implicitAddrOfPeek
 end namespace
 
 namespace functionResult
-	'' WITH must take special case when given a function call which returns
+	'' WITH must take special care when given a function call which returns
 	'' an UDT, because it may be returned in registers on Win32.
 
 	type ByteUdt
