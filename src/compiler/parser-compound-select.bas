@@ -107,15 +107,15 @@ sub cSelectStmtBegin( )
 	dtype = astGetFullType( expr )
 	subtype = astGetSubType( expr )
 
-	if( astIsVAR( expr ) ) then
+	var effectiveexpr = astGetEffectiveNode( expr )
+	if( astIsVAR( effectiveexpr ) ) then
 		'' No need to copy to a temp var when the expression is just
 		'' a var already (note: might be type-casted, so better use
 		'' the AST node's type, not the symbol's)
-		sym = astGetSymbol( expr )
+		sym = astGetSymbol( effectiveexpr )
 		assert( sym )
 		assert( symbIsTemp( sym ) = FALSE )
-		astDelTree( expr )
-		expr = NULL
+		astAdd( astRebuildWithoutEffectivePart( expr ) )
 	else
 		'' Store expression into a temp var
 		select case typeGet( dtype )

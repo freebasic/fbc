@@ -36,13 +36,13 @@ sub cWithStmtBegin( )
 		end if
 	end if
 
-	if( astIsVAR( expr ) ) then
+	var effectiveexpr = astGetEffectiveNode( expr )
+	if( astIsVAR( effectiveexpr ) ) then
 		'' If it's a simple VAR access, we can just access the
 		'' corresponding variable from inside the WITH.
-		sym = astGetSymbol( expr )
+		sym = astGetSymbol( effectiveexpr )
 		is_ptr = FALSE
-		astDelTree( expr )
-		expr = NULL
+		astAdd( astRebuildWithoutEffectivePart( expr ) )
 	else
 		'' Otherwise, take a reference (a pointer that will be deref'ed
 		'' for accesses from inside the WITH block)
