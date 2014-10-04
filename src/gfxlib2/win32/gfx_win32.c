@@ -488,7 +488,12 @@ LRESULT CALLBACK fb_hWin32WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM
 void fb_hHandleMessages(void)
 {
 	MSG message;
-	while (PeekMessage(&message, fb_win32.wnd, 0, 0, PM_REMOVE)) {
+	/* Passing NULL as HWND to ensure we process all messages. E.g. we may
+	   receive thread messages which we should process too (at least by
+	   applying the default message handling to them). This way we won't
+	   cause unnecessary delays in default processing of messages such as
+	   WindowsKey+R (open cmd.exe). */
+	while (PeekMessage(&message, NULL, 0, 0, PM_REMOVE)) {
 		TranslateMessage(&message);
 		DispatchMessage(&message);
 	}
