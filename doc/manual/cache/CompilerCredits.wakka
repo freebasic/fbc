@@ -1,131 +1,105 @@
 {{fbdoc item="title" value="Credits (in alphabetic order)"}}----
 
-==__Members__==
+==__Project Members__==
 
-	**Andre Victor** (av1ctor[at]yahoo.com.br) - Project Admin:
-		- Project creator. 
-		- Main compiler developer.
-
-	**Angelo Mottola** (a.mottola[at]libero.it) - Project Member:
-		- Ported ""FreeBASIC"" to Linux.
-		- Developer of ""GFXLib2"".
-		- Added built-in threads, dynlib support and I/O ports access support.
-		- Made the rtlib thread-safe, besides many other runtime lib and compiler improvements.
-
-	**Daniel R. Verkamp** (i_am_drv[at]yahoo.com) - Project Member:
-		- Ported ""FreeBASIC"" to DOS and ""Xbox""; ports maintainer.
-		- Translated the Allegro headers (later replaced by the SWIG FB wrapper version).
-		- Wrote the DLL and static library automation, plus resource scripts support on Windows.
-		- Developed the VB-compatible file routines in the extended runtime library.
-
-	**Jeff Marshall** (coder[at]execulink.com) - Project Member:
-		- Improved and fixed the printer support in all platforms. 
-		- Added compiler tests and improved the document translator.
-		- Helped in adding the fblite dialect.
-		- Miscellaneous fixes and improvements.
-
-	**Mark Junker** (mjscod[at]gmx.de) - Ex-Project Member:
-		- Added support for file systems like SCR, LPTx, COM, etc.
-		- Added printer support.
-		- Developer of the FB runtime-lib extended (libfbx).
-		- Added the automated runtime-lib and compiler tests (later replaced by CUnit unit testing).
-		- Wrote the Windows installer scripts.
-		- Many runtime library fixes and improvements.
-
-	**Matthew Fearnley** (counting.pine[at]virgin.net) - Project Member:
-		- Helped in adding the fblite dialect.
-		- Miscellaneous fixes and improvements.
-
-	**Ruben Rodriguez** (rubentbstk[at]gmail.com) - Project Member:
-		- Many compiler improvements and bug fixes. 
-		- Corrected the errors in English in the readme.txt and migrating.txt files, plus the messages in compiler/error.bas.
-		- Added the ""__PATH__"" intrinsic define, and made OFFSETOF() work inside inline asm blocks.
-
-	**Simon Nash** - Project Member:
-		- Implemented the ""AndAlso""/""OrElse"" short-circuit operators. 
-		- Many compiler improvements and bug fixes.
+	- **Andre Victor T. Vicentini** (av1ctor[at]yahoo.com.br):
+		Founder, main compiler developer, author of many parts of the runtime, FB headers (FBSWIG)
+	- **Angelo Mottola** (a.mottola[at]libero.it):
+		Author of the FB graphics library, built-in threads, thread-safe, runtime, ports I/O, dynamic library loading, Linux port.
+	- **Bryan Stoeberl** (b_stoeberl[at]yahoo.com):
+		SSE/SSE2 floating point math, AST vectorization.
+	- **Daniel C. Klauer** (daniel.c.klauer[at]web.de):
+		FB releases since 0.21, C & LLVM backends, 64bit port, dynamic arrays in UDTs, virtual methods, preprocessor-only mode, miscellaneous fixes and improvements.
+	- **Daniel R. Verkamp** (i_am_drv[at]yahoo.com):
+		DOS, XBox, Darwin, *BSD ports, DLL and static library automation, VB-compatible runtime functions, compiler optimizations, miscellaneous fixes and improvements.
+	- **Ebben Feagan** (sir_mud[at]users.sourceforge.net):
+		FB headers, C emitter
+	- **Jeff Marshall** (coder[at]execulink.com):
+		FB releases since 0.17, FB documentation (wiki maintenance, fbdocs, offline-docs generator), Gosub/Return, profiling support, dialect, specifics, DOS serial driver, miscellaneous fixes and improvements.
+	- **Mark Junker** (mjscod[at]gmx.de):
+		Author of huge parts of the runtime (printing support, date/time, functions, SCR/LPTx/COM/console/keyboard I/O), Cygwin port, first FB installer scripts.
+	- **Matthew Fearnley** (matthew.w.fearnley[at]gmail.com):
+		Print Using & Co, ImageInfo, and others, dialect specifics, optimization improvements in the compiler, many fixes and improvements.
+	- **Ruben Rodriguez** (rubentbstk[at]gmail.com):
+		Var keyword, const specifier, placement new, operator overloading and, other OOP-related work, C BFD wrapper, many fixes and improvements.
+	- **Simon Nash**:
+		AndAlso/OrElse operators, ellipsis for array initializers, miscellaneous fixes and improvements.
 
 ==__Contributors__==
 
-	**Abdullah Ali** (voodooattack[at]hotmail.com):
-		- Fixed and finished the Windows NT DDK headers at the inc/win/ddk dir, translated by the SWIG FB wrapper. 
-		- Wrote the Windows NT DDK test at the examples/Windows/ddk/driver dir.
-		- Added DLL hot-linking support to the Windows port (disabled at the moment).
+	- **1000101**:
+		gfxlib2 patches, e.g. image buffer alignment
+	- **Abdullah Ali** (voodooattack[at]hotmail.com):
+		Windows NT DDK headers & examples
+	- **AGS**:
+		gdbm, zlib, Mini-XML, PCRE headers
+	- **Claudio Tinivella** (tinycla[at]yahoo.it):
+		Gtk tutorials
+	- **Chris Davies** (c.g.davies[at]gmail.com):
+		OpenAL headers & examples
+	- **Dinosaur**:
+		CGUI headers
+	- **D.J.Peters**:
+		ARM port, ODE headers & examples, Win32 API header fixes
+	- **Dumbledore**:
+		wx-c headers & examples
+	- **dr0p** (dr0p[at]perfectbg.com):
+		PostgreSQL headers & examples
+	- **Edmond Leung** (leung.edmond[at]gmail.com):
+		SDL headers & examples
+	- **Eric Lope** (vic_viperph[at]yahoo.com):
+		OpenGL & GLU headers & examples, examples/gfx/rel-*.bas demos
+	- **Florent Heyworth** (florent.heyworth[at]swissonline.ch):
+		Win32 API sql/obdc headers
+	- **fsw** (fsw.fb[at]comcast.net):
+		Win32 API headers, Gtk/Glade/wx-c examples
+	- **Garvan O'Keeffe** (sisophon2001[at]yahoo.com):
+		FB ports of many NeHe OpenGL lessons, PDFlib examples
+	- **Hans L. Nemeschkal** (Hans.Leo.Nemeschkal[at]univie.ac.at):
+		DISLIN headers
+	- **Jofers** (spam[at]betterwebber.com):
+		ThreadCall keyword, libffi/libjit headers, FreeType examples
+	- **Jose Manuel Postigo** (postigo[at]uma.es):
+		Linux serial devices support
+	- **Laanan Fisher** (laananfisher[at]gmail.com):
+		FB test suite using CUnit
+	- **Matthew Riley** (pestery):
+		OpenGL, GLFW, glext, FreeGLUT, cryptlib headers
+	- **Matthias Faust** (matthias_faust[at]web.de):
+		SDL_ttf headers & examples
+	- **Marzec**:
+		SDL headers, SDL_bassgl, SDL_opengl and SDL_key examples, First file routines for FB's rtlib
+	- **MJK**:
+		big_int header fixes
+	- **MOD**:
+		wx-c, BASS headers; -lang qb support for built-in macros, "real" Rnd() algorithm
+	- **Nek** (dave[at]nodtveidt.net):
+		Win32 API headers
+	- **Plasma**:
+		FMOD and BASS headers & examples
+	- **Randy Keeling** (randy[at]keeling.com):
+		GSL matrix example
+	- **Saga Musix** (Jojo):
+		BASS examples with sounds
+	- **Sisophon2001**:
+		gfxlib2 fixes, Nehe OpenGL lesson ports
+	- **Sterling Christensen** (sterling[at]engineer.com):
+		Ex-project-member, author of FB's initial QB-like graphics library
+	- **TeeEmCee**:
+		gfxlib2 fixes
+	- **TJF** (Thomas.Freiherr[at]gmx.net):
+		ARM port, GTK+, glib, Cairo, Pango headers & examples, SQLiteExtensions headers
+	- **zydon**:
+		Win32 API examples
 
-	**Bryan Stoeberl** (b_stoeberl[at]yahoo.com):
-		- Translated the ""OpenGL"" Extensions header (later replaced by the SWIG FB wrapper version).
-		- Wrote the glext example at the examples/GL dir.
-		- Added SSE/SSE2 code generation for floating point math.
+==__Greetings__==
 
-	**Claudio Tinivella** (tinycla[at]yahoo.it):
-		- Translated from C all the Gtk tutorials at the examples/Gtk/Tutorials dir.
-
-	**Chris Davies** (c.g.davies[at]gmail.com):
-		- Translated the OpenAL headers (later replaced by the SWIG FB wrapper version).
-		- Wrote the OpenAL demonstration in the examples/sound directory.
-
-	**Dumbledore** (dumbledore3[at]gmail.com):
-		- Ported the wx-c headers (later replaced by the SWIG FB wrapper version).
-		- Wrote the wx demonstration in the examples/wx-c dir.
-
-	**Edmond Leung** (leung.edmond[at]gmail.com):
-		- Translated the SDL headers, including SDL_mixer and SDL_image (later replaced by the SWIG FB wrapper version).
-		- Wrote/ported many of the examples in the examples/SDL dir.
-
-	**Eric Lope** (vic_viperph[at]yahoo.com):
-		- Translated the OpenGL and GLU headers (later replaced by the SWIG FB wrapper version).
-		- Wrote the rel-* graphics demonstrations in the examples/gfx directory.
-		- Wrote the examples/GL/fbgfx_texture.bas OpenGL example.
-
-	**Florent Heyworth** (florent.heyworth[at]swissonline.ch):
-		- Translated the Win API sql/obdc headers (later replaced by the SWIG FB wrapper version).
-
-	**fsw** (fsw.fb[at]comcast.net):
-		- Translated most of the Windows API headers (later replaced by the SWIG FB wrapper version).
-		- Wrote the glade_gui demo at the examples/Gtk directory, besides the wx-c GUI examples (not included).
-
-	**Garvan O'Keeffe** (sisophon2001[at]yahoo.com):
-		- Translated most of the ""NeHe""'s OpenGL lessons at the examples/GL/""NeHe"" dir.
-		- Wrote the PDFlib demonstration, at examples/pdflib.
-
-	**Hans L. Nemeschkal** (Hans.Leo.Nemeschkal[at]univie.ac.at):
-		- Translated the DISLIN header (later replaced by the SWIG FB wrapper version).
-
-	**Jose Manuel Postigo** (postigo[at]uma.es):
-		- Added support for serial devices in Linux.
-
-	**Laanan Fisher** (laananfisher[at]gmail.com):
-		- Re-implemented the compiler test suite (at the /tests directory), using unit testing (""CUnit"").
-
-	**Jofers** (spam[at]betterwebber.com):
-		- Wrote the examples in the examples/freetype directory.
-
-	**Matthias Faust** (matthias_faust[at]web.de):
-		- Translated the SDL_ttf header (later replaced by the SWIG FB wrapper version).
-		- Wrote the SDL_ttf demonstration.
-
-	**Marzec** (marzce[at]sbox.tugraz.at):
-		- Wrote the SDL_bassgl, SDL_opengl, and SDL_key tests in the SDL directory.
-		- Translated the first SDL headers (replaced by new ones since version 0.11b).
-		- Wrote the first file routines for the runtime library.
-
-	**Nek** (dave[at]nodtveidt.net):
-		- Translated the Windows API headers, integrating parts of fsw's work (later replaced by the SWIG FB wrapper version).
-
-	**plasma** (plasma[at]phatcode.net):
-		- Translated the FMOD and BASS headers.
-		- Wrote the fmod.bas test in the examples/sound directory.
-
-	**Randy Keeling** (randy[at]keeling.com):
-		- Wrote the GSL matrix test at the examples/GSL directory.
-
-	**Sterling Christensen** (sterling[at]engineer.com):
-		- Ex-project member, developer of the QB-like graphics library (later replaced by ""GFXLib2"" in 0.11b).
-
-	**Steven Hidy** (subxero[at]phatcode.net):
-		- Rewrote the readme file, correcting v1ctor's mistakes (also re-edited by ""KrisKhaos"" for version 0.12).
-
-	**zydon** (zydon[at]mesra.net):
-		- Wrote many of the examples in the examples/Windows/gui directory.
+	- **Plasma**:
+		Owner of the freebasic.net domain and main site hoster, many thanks to, him.
+	- **VonGodric**:
+		Author of the first FreeBASIC IDE: FBIDE.
+	- **Everybody that helped writing the documentation** (and in special Nexinarus who started it):
+		http://www.freebasic.net/wiki/wikka.php?wakka=ContributorList
+	- All users that reported bugs, requested features and as such helped improving the compiler, language and run-time libraries.
 
 {{fbdoc item="back" value="FBWiki|Main Page"}}

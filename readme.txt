@@ -247,11 +247,13 @@
         Win32 API examples
 
     Greetings:
-    - Plasma: Owner of the freebasic.net domain and main site hoster,
-      many thanks to him.
-    - VonGodric: Author of the first FreeBASIC IDE: FBIDE.
+    - Plasma
+        Owner of the freebasic.net domain and main site hoster, many thanks to
+        him.
+    - VonGodric
+        Author of the first FreeBASIC IDE: FBIDE.
     - Everybody that helped writing the documentation (and in special Nexinarus 
-      who started it), more details at:
+      who started it)
         http://www.freebasic.net/wiki/wikka.php?wakka=ContributorList
     - All users that reported bugs, requested features and as such helped 
       improving the compiler, language and run-time libraries.
