@@ -235,7 +235,7 @@ end scope
 
 scope
 	dim wakka as FileWriter = FileWriter(exepath()  + "/../doc/manual/cache/CompilerCredits.wakka")
-	wakka.writeLine("{{fbdoc item=""title"" value=""Credits (in alphabetic order)""}}----")
+	wakka.writeLine("{{fbdoc item=""title"" value=""Credits (in alphabetical order)""}}----")
 	wakka.writeLine("")
 	wakkaWriteSection(wakka, "Project Members", people(), 0, lastmember)
 	wakkaWriteSection(wakka, "Contributors", people(), lastmember + 1, lastcontributor)
