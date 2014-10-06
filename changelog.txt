@@ -5,7 +5,9 @@ Version 1.01.0
 
 [added]
 - On Linux/*BSD, the FB runtime will now respect the __fb_enable_vt100_escapes global variable (also see examples/console/disable-vt100-escapes.bas). FB programs can set it to 0 (FALSE) in order to manually disable the use of hard-coded VT100-specific escape sequences by FB's console I/O commands. This can help getting FB programs to run on older terminals which don't accept these escape sequences. However, it may also cause FB's console I/O commands and functions to behave differently. For example, if the use of the escape sequence for querying cursor position is disabled, then the FB runtime will assume that the cursor starts out at position 1,1 even if that is not actually true.
-- Updated fmod.bi for the old FMOD 3.75
+- Updated bindings:
+	fmod.bi for the old FMOD 3.75
+	libzip 0.11.2
 
 [fixed]
 - 1.00.0 regression: DRAW x/y pen position was reset during X<address> subcommands, instead of being preserved and passed to/from the subcommands
