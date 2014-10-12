@@ -66,8 +66,16 @@ sub cWithStmtBegin( )
 		errReport( FB_ERRMSG_RECLEVELTOODEEP )
 	end if
 
-	'' Variable
-	expr = cVarOrDeref( FB_VAREXPROPT_ISEXPR )
+	'' UDT variable/expression. We can accept ...
+	''  * plain variable accesses, array elements, DEREF expressions
+	''  * even function calls, which (due to returning a UDT) have the
+	''    result in a variable anyways, or can be copied to one via
+	''    astBuildCallResultUdt())
+	''  * and anything else that represents a temp var, e.g. type<UDT>(...)
+	''    expressions a.k.a. TYPEINI/CALLCTOR
+	'' Since we're only accepting UDTs anyways, we don't even need that many
+	'' checks. An UDT expression will always be a var/deref in the end.
+	expr = cExpression( )
 	if( expr = NULL ) then
 		errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
 		'' error recovery: fake a var
@@ -76,6 +84,7 @@ sub cWithStmtBegin( )
 		'' not an UDT?
 		if( typeGetDtAndPtrOnly( astGetFullType( expr ) ) <> FB_DATATYPE_STRUCT ) then
 			errReport( FB_ERRMSG_INVALIDDATATYPES )
+			expr = astNewVAR( symbAddTempVar( FB_DATATYPE_INTEGER ) )
 		else
 			if( astIsCALL( expr ) ) then
 				expr = astBuildCallResultUdt( expr )

@@ -9,6 +9,15 @@ namespace basics
 		i as integer
 	end type
 
+	type CtorUdt
+		i as integer
+		declare constructor( byval as integer )
+	end type
+
+	constructor CtorUdt( byval i as integer )
+		this.i = i + 1
+	end constructor
+
 	sub test cdecl( )
 		dim as UDT x1, x2
 		x1.i = 456
@@ -53,6 +62,18 @@ namespace basics
 			with( *p1 )
 				CU_ASSERT( .i = 456 )
 			end with
+		end with
+
+		with( type<UDT>( 123 ) )
+			CU_ASSERT( .i = 123 )
+		end with
+
+		with( type<CtorUdt>( 123 ) )
+			CU_ASSERT( .i = 124 )
+		end with
+
+		with( CtorUdt( 123 ) )
+			CU_ASSERT( .i = 124 )
 		end with
 	end sub
 end namespace
@@ -229,6 +250,7 @@ namespace temporaries
 
 	const TRUE = -1
 	const FALSE = 0
+	dim shared zero as integer = 0  '' Helper var to ensure '*(@foo + 0)' won't be optimized to 'foo'
 
 	dim shared as integer ctors, dtors
 
@@ -288,7 +310,21 @@ namespace temporaries
 		ctors = 0
 		dtors = 0
 		scope
-			with *(@type<UDT>( 123 ) + 0)
+			with type<UDT>( 123 )
+				CU_ASSERT( ctors = 1 )
+				CU_ASSERT( dtors = 0 )
+				CU_ASSERT( .i = 123 )
+			end with
+			CU_ASSERT( ctors = 1 )
+			CU_ASSERT( dtors = 1 )
+		end scope
+		CU_ASSERT( ctors = 1 )
+		CU_ASSERT( dtors = 1 )
+
+		ctors = 0
+		dtors = 0
+		scope
+			with *(@type<UDT>( 123 ) + zero)
 				CU_ASSERT( ctors = 1 )
 				CU_ASSERT( dtors = 0 )
 				CU_ASSERT( .i = 123 )
@@ -333,7 +369,7 @@ namespace temporaries
 	sub exitSubTest2( )
 		CU_ASSERT( ctors = 0 )
 		CU_ASSERT( dtors = 0 )
-		with *(@type<UDT>( 123 ) + 0)
+		with type<UDT>( 123 )
 			CU_ASSERT( ctors = 1 )
 			CU_ASSERT( dtors = 0 )
 			CU_ASSERT( .i = 123 )
@@ -344,6 +380,19 @@ namespace temporaries
 	end sub
 
 	sub exitSubTest3( )
+		CU_ASSERT( ctors = 0 )
+		CU_ASSERT( dtors = 0 )
+		with *(@type<UDT>( 123 ) + zero)
+			CU_ASSERT( ctors = 1 )
+			CU_ASSERT( dtors = 0 )
+			CU_ASSERT( .i = 123 )
+			exit sub
+			CU_FAIL( )
+		end with
+		CU_FAIL( )
+	end sub
+
+	sub exitSubTest4( )
 		CU_ASSERT( ctors = 0 )
 		CU_ASSERT( dtors = 0 )
 		with f( 123 )
@@ -382,7 +431,22 @@ namespace temporaries
 		ctors = 0
 		dtors = 0
 		do
-			with *(@type<UDT>( 123 ) + 0)
+			with type<UDT>( 123 )
+				CU_ASSERT( ctors = 1 )
+				CU_ASSERT( dtors = 0 )
+				CU_ASSERT( .i = 123 )
+				exit do
+				CU_FAIL( )
+			end with
+			CU_FAIL( )
+		loop
+		CU_ASSERT( ctors = 1 )
+		CU_ASSERT( dtors = 1 )
+
+		ctors = 0
+		dtors = 0
+		do
+			with *(@type<UDT>( 123 ) + zero)
 				CU_ASSERT( ctors = 1 )
 				CU_ASSERT( dtors = 0 )
 				CU_ASSERT( .i = 123 )
@@ -428,6 +492,12 @@ namespace temporaries
 		ctors = 0
 		dtors = 0
 		exitSubTest3( )
+		CU_ASSERT( ctors = 1 )
+		CU_ASSERT( dtors = 1 )
+
+		ctors = 0
+		dtors = 0
+		exitSubTest4( )
 		CU_ASSERT( ctors = 2 )
 		CU_ASSERT( dtors = 2 )
 	end sub
@@ -459,8 +529,7 @@ namespace temporaries
 		dtors = 0
 		udt2ctors = 0
 		udt2dtors = 0
-		'with UDT2( UDT( 123 ) )   '' should be this, but this doesn't work yet
-		with *(@(UDT2( UDT( 123 ) )) + 0)
+		with UDT2( UDT( 123 ) )
 			CU_ASSERT( ctors = 1 )
 			CU_ASSERT( dtors = 0 )
 			CU_ASSERT( udt2ctors = 1 )
