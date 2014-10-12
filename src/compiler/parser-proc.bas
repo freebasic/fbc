@@ -1057,6 +1057,9 @@ function cProcHeader _
 			'' declarations should be put in the namespace block,
 			'' only bodies can be written outside.
 			errReport( FB_ERRMSG_DECLOUTSIDECLASS )
+			'' Error recovery: Forget the namespace prefix
+			parent = NULL
+			assert( (attrib and FB_SYMBATTRIB_METHOD) = 0 )  '' method flag shouldn't be set yet anyways
 		else
 			'' Proc body with explicitly specified parent:
 			'' outside of the original namespace
