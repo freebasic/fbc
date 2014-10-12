@@ -394,7 +394,7 @@ function cSymbolType _
 			dim as FBSYMBOL ptr base_parent = any
 			dim as integer check_id = TRUE
 
-			if( parser.stmt.with.sym <> NULL ) then
+			if( parser.stmt.with ) then
 				if( lexGetToken( ) = CHAR_DOT ) then
 					'' not a '..'?
 					check_id = (lexGetLookAhead( 1, LEXCHECK_NOPERIOD ) = CHAR_DOT)

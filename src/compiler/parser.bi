@@ -92,6 +92,7 @@ type FB_CMPSTMT_WITH
 	'' (if a simple VAR access was given to the WITH)
 	sym		as FBSYMBOL ptr
 	is_ptr		as integer
+	last		as FB_CMPSTMTSTK_ ptr  '' Previous WITH node on the stack; so parser.stmt.with can be restored in cCompStmtPop()
 end type
 
 type FB_CMPSTMT_NAMESPACE
@@ -145,7 +146,7 @@ type FBPARSER_STMT
 	while			as FB_CMPSTMTSTK ptr
 	select			as FB_CMPSTMTSTK ptr
 	proc			as FB_CMPSTMTSTK ptr
-	with			as FB_CMPSTMT_WITH
+	with			as FB_CMPSTMTSTK ptr
 	let				as FBPARSER_STMT_LET
 end type
 

@@ -20,7 +20,7 @@ sub parserCompoundStmtSetCtx( )
 	parser.stmt.while = NULL
 	parser.stmt.select = NULL
 	parser.stmt.proc = NULL
-	parser.stmt.with.sym = NULL
+	parser.stmt.with = NULL
 end sub
 
 sub parserCompoundStmtInit( )
@@ -590,6 +590,10 @@ function cCompStmtPush _
 	case FB_TK_FUNCTION
 		stk->proc.last = parser.stmt.proc
 		parser.stmt.proc = stk
+
+	case FB_TK_WITH
+		stk->with.last = parser.stmt.with
+		parser.stmt.with = stk
 	end select
 
 	parser.stmt.id = id
@@ -684,6 +688,9 @@ sub cCompStmtPop( byval stk as FB_CMPSTMTSTK ptr )
 
 	case FB_TK_FUNCTION
 		parser.stmt.proc = stk->proc.last
+
+	case FB_TK_WITH
+		parser.stmt.with = stk->with.last
 	end select
 
 	stackPop( @parser.stmt.stk )

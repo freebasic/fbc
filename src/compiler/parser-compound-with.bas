@@ -69,13 +69,10 @@ sub cWithStmtBegin( )
 		is_ptr = TRUE
 	end if
 
-	'' Save current WITH context to the statement stack
+	'' Create new WITH context on the statement stack
 	stk = cCompStmtPush( FB_TK_WITH )
-	stk->with = parser.stmt.with
-
-	'' And set the new WITH context
-	parser.stmt.with.sym    = sym
-	parser.stmt.with.is_ptr = is_ptr
+	stk->with.sym = sym
+	stk->with.is_ptr = is_ptr
 end sub
 
 '' WithStmtEnd  =  END WITH .
@@ -93,6 +90,5 @@ sub cWithStmtEnd( )
 	lexSkipToken( )
 
 	'' Restore the previous WITH context
-	parser.stmt.with = stk->with
 	cCompStmtPop( stk )
 end sub

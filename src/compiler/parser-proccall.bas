@@ -870,7 +870,7 @@ function cProcCallOrAssign _
 		'' '.'?
 		if( lexGetToken( ) = CHAR_DOT ) then
   			'' inside a WITH block?
-  			if( parser.stmt.with.sym <> NULL ) then
+			if( parser.stmt.with ) then
 				'' not '..'?
 				if( lexGetLookAhead( 1, LEXCHECK_NOPERIOD ) <> CHAR_DOT ) then
 					expr = cWithVariable( fbGetCheckArray( ) )

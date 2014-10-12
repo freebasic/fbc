@@ -1264,14 +1264,14 @@ function cWithVariable( byval check_array as integer ) as ASTNODE ptr
 	'' '.'
 	lexSkipToken( LEXCHECK_NOPERIOD )
 
-	sym = parser.stmt.with.sym
+	sym = parser.stmt.with->with.sym
 	dtype = symbGetFullType( sym )
-	if( parser.stmt.with.is_ptr ) then
+	if( parser.stmt.with->with.is_ptr ) then
 		dtype = typeDeref( dtype )
 	end if
 
 	function = hImpField( sym, dtype, symbGetSubtype( sym ), check_array, _
-				parser.stmt.with.is_ptr, 0 )
+				parser.stmt.with->with.is_ptr, 0 )
 end function
 
 '':::::
@@ -1289,7 +1289,7 @@ function cVariable _
 	    return cVariableEx( chain_, check_array )
 
 	case else
-		if( parser.stmt.with.sym = NULL ) then
+		if( parser.stmt.with = NULL ) then
 			return NULL
 		end if
 
