@@ -2,6 +2,7 @@ Version 1.01.0
 
 [changed]
 - On Linux/*BSD, the FB runtime will now delay using VT100 terminal escape sequences to query terminal window size and cursor position until the first use of a console I/O command (previously it was immediately done at startup, always, even if the FB program didn't use any of FB's console I/O commands)
+- WITH ... END WITH blocks now have an implicit scope, like SELECT, DO ... LOOP, etc. Variables declared inside will no longer be visible outside.
 
 [added]
 - On Linux/*BSD, the FB runtime will now respect the __fb_enable_vt100_escapes global variable (also see examples/console/disable-vt100-escapes.bas). FB programs can set it to 0 (FALSE) in order to manually disable the use of hard-coded VT100-specific escape sequences by FB's console I/O commands. This can help getting FB programs to run on older terminals which don't accept these escape sequences. However, it may also cause FB's console I/O commands and functions to behave differently. For example, if the use of the escape sequence for querying cursor position is disabled, then the FB runtime will assume that the cursor starts out at position 1,1 even if that is not actually true.
@@ -23,6 +24,7 @@ Version 1.01.0
 - Self-assignments will now be parsed correctly when the lhs is a call to a function with byref result and one argument, for example: f(0) += 1
 - Partial fix for #740 (unsafe FB runtime signal handling code): Fixed a potential dead lock and unnecessary terminal size query in the Unix rtlib.
 - 0.90.0 + 1.00.0 regressions: SELECT CASE [AS CONST], FOR, and WITH were broken if the given expression(s) contained temporary variables, for example a function call with dynamic string parameters where the passed arguments were string literals. The temporary strings or UDT objects were destructed too early, before even being initialized, causing undefined behaviour. Temporary dynamic strings were affected by the problem since FB 1.00.0. Temporary UDT objects were affected by the problem since FB 0.90.0.
+- #522 (part 1): WITH destroyed temp vars before entering the block. Now they will be kept alive until END WITH (or any EXIT/RETURN/GOTO out of the WITH block).
 - #522 (part 2): WITH produced bad code on Win32 when used on function call returning a small UDT (i.e. where the UDT is returned in registers)
 - Win32 gfxlib2 did not process thread messages, causing problems with response to system hotkeys and potentially more
 

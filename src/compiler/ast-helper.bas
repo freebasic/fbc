@@ -256,7 +256,10 @@ function astBuildTempVarClear( byval sym as FBSYMBOL ptr ) as ASTNODE ptr
 	end if
 
 	assert( symbIsShared( sym ) = FALSE )
-	assert( symbIsTemp( sym ) )
+
+	'' Usually this will be called on TEMP vars only, except if their
+	'' lifetime was extended and the TEMP flag was removed (e.g. done by
+	'' WITH compound).
 
 	'' Clear variable's memory
 	function = astNewMEM( AST_OP_MEMCLEAR, astNewVAR( sym ), _
