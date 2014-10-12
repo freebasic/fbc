@@ -45,15 +45,22 @@
 #     -> libfbgfxmtpic.a, threadsafe and -fPIC (non-x86 Linux etc.)
 #
 # commands:
+#
 #   <none>|all                 build everything
 #   compiler|rtlib|gfxlib2     build specific component only
 #   clean[-component]          remove built files
 #   install[-component]        install into $(prefix)
 #   uninstall[-component]      remove from $(prefix)
+#
 #   install-includes           (additional commands for just the FB includes,
 #   uninstall-includes          which don't need to be built)
+#
 #   gitdist    Create source code packages using "git archive"
 #   bindist    Create binary FB release packages from current built directory content
+#
+#   cunit-tests  (Convenience wrappers around tests/Makefile, running the tests
+#   log-tests     using the newly built fbc)
+#   clean-tests
 #
 # makefile configuration:
 #   FB[C|L]FLAGS     to set -g -exx etc. for the compiler build and/or link
@@ -655,6 +662,20 @@ clean-gfxlib2:
 .PHONY: help
 help:
 	@echo "Take a look at the top of this makefile!"
+
+################################################################################
+
+.PHONY: cunit-tests log-tests clean-tests
+
+cunit-tests:
+	cd tests && make cunit-tests FBC="`pwd`/../bin/fbc -i `pwd`/../inc"
+
+log-tests:
+	cd tests && make   log-tests FBC="`pwd`/../bin/fbc -i `pwd`/../inc"
+
+clean-tests:
+	cd tests && make clean
+
 
 ################################################################################
 
