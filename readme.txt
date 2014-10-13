@@ -58,10 +58,10 @@
       To compile FB programs, please install the following packages (names may
       vary depending on your Linux distribution):
         Debian/Ubuntu:
-          gcc libncurses5-dev libgpm-dev libffi-dev libgl1-mesa-dev
+          gcc libncurses5-dev libffi-dev libgl1-mesa-dev
           libx11-dev libxext-dev libxrender-dev libxrandr-dev libxpm-dev
         Fedora:
-          gcc ncurses-devel gpm-devel libffi-devel mesa-libGL-devel
+          gcc ncurses-devel libffi-devel mesa-libGL-devel
           libX11-devel libXext-devel libXrender-devel libXrandr-devel
           libXpm-devel
       If you want to use the 32bit version of FB on a 64bit system, it is
