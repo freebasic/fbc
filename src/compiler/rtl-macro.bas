@@ -543,96 +543,77 @@ end type
 		) _
 	}
 
-private sub addIntrinsicMacros(byval macdef as FB_RTL_MACRODEF ptr)
-	dim as FB_DEFPARAM ptr param_head = any, lastparam = any
-	dim as FB_DEFTOK ptr tok = any, tok_head = any
-	dim as FB_RTL_MACROTOKEN ptr ptk = any
+private sub hAddMacro( byval macdef as FB_RTL_MACRODEF ptr )
+	dim as integer addbody = TRUE
+	var flags = FB_DEFINE_FLAGS_NONE
 
-	'' for each macro..
-	do
-		var flags = FB_DEFINE_FLAGS_NONE
-		if( macdef->name = NULL ) then
-			exit do
+	'' for each parameter..
+	dim as FB_DEFPARAM ptr paramhead, lastparam
+	for i as integer = 0 to macdef->params-1
+		lastparam = symbAddDefineParam( lastparam, macdef->paramTb(i) )
+		if( paramhead = NULL ) then
+			paramhead = lastparam
 		end if
+	next
 
-		param_head = NULL
-		lastparam = NULL
-
-		'' for each parameter..
-		for i as integer = 0 to macdef->params-1
-			lastparam = symbAddDefineParam( lastparam, macdef->paramTb(i) )
-			if( param_head = NULL ) then
-				param_head = lastparam
-			end if
-		next
-
-		'' for each token..
-		tok_head = NULL
-
-    	dim as integer addbody = TRUE
-
-    	'' only if debugging?
-    	if( (macdef->options and FB_RTL_OPT_DBGONLY) <> 0 ) then
-    		if( env.clopt.debug = FALSE ) then
-    			addbody = FALSE
-    		end if
-    	end if
-
-		'' not supported by the C backend?
-		if( (macdef->options and FB_RTL_OPT_NOGCC) <> 0 ) then
-			if( env.clopt.backend = FB_BACKEND_GCC ) then
-				addbody = FALSE
-				flags or= FB_DEFINE_FLAGS_NOGCC
-			end if
+	'' only if debugging?
+	if( (macdef->options and FB_RTL_OPT_DBGONLY) <> 0 ) then
+		if( env.clopt.debug = FALSE ) then
+			addbody = FALSE
 		end if
+	end if
 
-    	if( addbody ) then
-			tok = NULL
+	'' not supported by the C backend?
+	if( (macdef->options and FB_RTL_OPT_NOGCC) <> 0 ) then
+		if( env.clopt.backend = FB_BACKEND_GCC ) then
+			addbody = FALSE
+			flags or= FB_DEFINE_FLAGS_NOGCC
+		end if
+	end if
 
-    		ptk = @macdef->tokenTb(0)
-    		do
-    			if( ptk->type = -1 ) then
-    				exit do
-    			end if
+	dim as FB_DEFTOK ptr tokhead
 
-				tok = symbAddDefineTok( tok, ptk->type )
-				if( tok_head = NULL ) then
-					tok_head = tok
-				end if
+	if( addbody ) then
+		dim as FB_DEFTOK ptr tok
 
-    			select case ptk->type
-    			case FB_DEFTOK_TYPE_PARAM, FB_DEFTOK_TYPE_PARAMSTR
-    				symbGetDefTokParamNum( tok ) = cint( ptk->data )
+		var ptk = @macdef->tokenTb(0)
+		while( ptk->type <> -1 )
+			tok = symbAddDefineTok( tok, ptk->type )
+			if( tokhead = NULL ) then
+				tokhead = tok
+			end if
 
-    			case FB_DEFTOK_TYPE_TEX
-	    			ZstrAssign( @symbGetDefTokText( tok ), cast( zstring ptr, ptk->data ) )
-    			end select
+			select case ptk->type
+			case FB_DEFTOK_TYPE_PARAM, FB_DEFTOK_TYPE_PARAMSTR
+				symbGetDefTokParamNum( tok ) = cint( ptk->data )
 
-        		'' next
-        		ptk += 1
-    		loop
-    	end if
+			case FB_DEFTOK_TYPE_TEX
+				ZstrAssign( @symbGetDefTokText( tok ), cast( zstring ptr, ptk->data ) )
+			end select
 
-		symbAddDefineMacro( macdef->name, tok_head, macdef->params, param_head, flags )
+			'' next
+			ptk += 1
+		wend
+	end if
 
-		'' next
-		macdef += 1
-	loop
-
+	symbAddDefineMacro( macdef->name, tokhead, macdef->params, paramhead, flags )
 end sub
 
-'':::::
+private sub hAddMacros( byval macdef as FB_RTL_MACRODEF ptr )
+	while( macdef->name )
+		hAddMacro( macdef )
+		macdef += 1
+	wend
+end sub
+
 sub rtlMacroModInit( )
 	if( fbLangIsSet( FB_LANG_QB ) ) then
-		addIntrinsicMacros( @macrodataQB(0) )
+		hAddMacros( @macrodataQB(0) )
 	else
-		addIntrinsicMacros( @macrodata(0) )
+		hAddMacros( @macrodata(0) )
 	end if
 end sub
 
-'':::::
 sub rtlMacroModEnd( )
-
 	'' macros will be deleted when symbEnd is called
-
 end sub
