@@ -592,7 +592,7 @@ private function hAddUnderscore( ) as integer
 		function = FALSE
 	else
 		'' For ASM, add underscores if the target requires it
-		function = ((env.target.options and FB_TARGETOPT_UNDERSCORE) <> 0)
+		function = env.underscoreprefix
 	end if
 end function
 

@@ -457,8 +457,7 @@ private function hGetMangledNameForASM _
 
 	mangled = *symbGetMangledName( sym )
 
-	if( underscore_prefix and _
-	    ((env.target.options and FB_TARGETOPT_UNDERSCORE) <> 0) ) then
+	if( underscore_prefix and env.underscoreprefix ) then
 		mangled  = "_" + mangled
 	end if
 

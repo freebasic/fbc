@@ -534,7 +534,7 @@ end type
 
 enum FB_TARGETOPT
 	FB_TARGETOPT_UNIX       = &h00000001  '' Unix-like system? (for __FB_UNIX__ #define)
-	FB_TARGETOPT_UNDERSCORE = &h00000002  '' Underscore prefix for symbols?
+	                      ''= &h00000002
 	FB_TARGETOPT_EXPORT     = &h00000004  '' Support for exporting symbols from DLLs?
 
 	'' Whether callee always pops the hidden struct result ptr
@@ -593,7 +593,7 @@ type FBENV
 	clopt			as FBCMMLINEOPT				'' cmm-line options
 	target			as FBTARGET					'' target specific
 	wchar_doconv		as integer				'' ok to convert literals at compile-time?
-
+	underscoreprefix	as integer  '' Whether ASM symbols need a leading underscore on the current target
 	pointersize		as integer
 
 	'' Parse-specific things
