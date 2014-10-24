@@ -28,6 +28,7 @@ Version 1.01.0
 - #522 (part 1): WITH destroyed temp vars before entering the block. Now they will be kept alive until END WITH (or any EXIT/RETURN/GOTO out of the WITH block).
 - #522 (part 2): WITH produced bad code on Win32 when used on function call returning a small UDT (i.e. where the UDT is returned in registers)
 - Win32 gfxlib2 did not process thread messages, causing problems with response to system hotkeys and potentially more
+- Hiword() on 64bit didn't filter out the upper dword when given a 64bit value
 
 
 Version 1.00.0 (former 0.91.0):

@@ -21,7 +21,7 @@ type FB_RTL_MACRODEF
 	tokenTb(0 to 11) as FB_RTL_MACROTOKEN
 end type
 
-	dim shared as FB_RTL_MACRODEF macrodata(0 to 15) = _
+	dim shared as FB_RTL_MACRODEF macrodata(0 to ...) = _
 	{ _
 		/' #define RGB(r,g,b) ((cuint(r) shl 16) or (cuint(g) shl 8) or cuint(b) or &hFF000000) '/ _
 		( _
@@ -181,7 +181,7 @@ end type
 	 	), _
 		/' #define HIWORD(x) (cuint(x) shr 16) '/ _
 		( _
-			@"HIWORD", FB_RTL_OPT_NONE, _
+			@"HIWORD", FB_RTL_OPT_32BIT, _
 	 		1, _
 	 		{ _
 	 			@"X" _
@@ -193,6 +193,20 @@ end type
 	 			( -1 ) _
 	 		} _
 	 	), _
+		/' #define HIWORD(x) ((cuint(x) and &hFFFF0000u) shr 16) '/ _
+		( _
+			@"HIWORD", FB_RTL_OPT_64BIT, _
+			1, _
+			{ _
+				@"X" _
+			}, _
+			{ _
+				( FB_DEFTOK_TYPE_TEX, @"((cuint(" ), _
+				( FB_DEFTOK_TYPE_PARAM, cast( any ptr, 0 ) ), _
+				( FB_DEFTOK_TYPE_TEX, @") and &hFFFF0000u) shr 16)" ), _
+				( -1 ) _
+			} _
+		), _
 		/' #define LOBYTE(x) (cuint(x) and &h000000FF) '/ _
 		( _
 			@"LOBYTE", FB_RTL_OPT_NONE, _
@@ -283,7 +297,7 @@ end type
 
 	'' These are the -lang qb versions of the built-in macros, using the
 	'' '__' prefixes where necessary.
-	dim shared as FB_RTL_MACRODEF macrodataQB(0 to 15) = _
+	dim shared as FB_RTL_MACRODEF macrodataQB(0 to ...) = _
 	{ _
 		/' #define RGB(r,g,b) ((cuint(r) shl 16) or (cuint(g) shl 8) or cuint(b) or &hFF000000) '/ _
 		( _
@@ -601,7 +615,18 @@ end sub
 
 private sub hAddMacros( byval macdef as FB_RTL_MACRODEF ptr )
 	while( macdef->name )
-		hAddMacro( macdef )
+		var add_macro = TRUE
+
+		if( macdef->options and FB_RTL_OPT_32BIT ) then
+			add_macro and= not fbIs64bit( )
+		elseif( macdef->options and FB_RTL_OPT_64BIT ) then
+			add_macro and= fbIs64bit( )
+		end if
+
+		if( add_macro ) then
+			hAddMacro( macdef )
+		end if
+
 		macdef += 1
 	wend
 end sub

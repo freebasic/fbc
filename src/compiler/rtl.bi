@@ -821,6 +821,8 @@ enum FB_RTL_OPT
 	                          ''&h00001000
 	FB_RTL_OPT_NOGCC	  = &h00002000                  '' anything but -gen gcc
 	FB_RTL_OPT_X86ONLY        = &h00004000  '' on x86 only
+	FB_RTL_OPT_32BIT          = &h00008000  '' 32bit only
+	FB_RTL_OPT_64BIT          = &h00010000  '' 64bit only
 end enum
 
 '' mirrored in rtlib/thread_call.c
