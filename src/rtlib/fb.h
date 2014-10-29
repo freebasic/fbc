@@ -86,6 +86,7 @@
 #define MIN(a,b)		((a) < (b) ? (a) : (b))
 #define MAX(a,b)		((a) > (b) ? (a) : (b))
 #define MID(a,b,c)		MIN(MAX((a), (b)), (c))
+#define CINT(x)			((x) > 0.0 ? (int)(x) + 0.5 : (int)(x - 0.5))
 
 #define SWAP(a,b)		((a) ^= (b), (b) ^= (a), (a) ^= (b))
 
