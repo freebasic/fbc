@@ -23,6 +23,8 @@ declare sub 		lexReadUTF32BE			( )
 
 declare sub 		hMultiLineComment		( )
 
+declare sub hSkipChar( )
+
 const UINVALID as uinteger = cuint( INVALID )
 
 dim shared as LEX_CTX lex
@@ -275,29 +277,7 @@ function lexEatChar _
 
 	'' update if a look ahead char wasn't read already
 	if( lex.ctx->lahdchar = UINVALID ) then
-
-		'' #define'd text?
-		if( lex.ctx->deflen > 0 ) then
-			lex.ctx->deflen -= 1
-
-			if( env.inf.format = FBFILE_FORMAT_ASCII ) then
-				lex.ctx->defptr += 1
-			else
-				lex.ctx->defptrw += 1
-			end if
-
-		'' input stream (not EOF?)
-		elseif( lex.ctx->currchar <> 0 ) then
-			lex.ctx->bufflen -= 1
-
-			if( env.inf.format = FBFILE_FORMAT_ASCII ) then
-				lex.ctx->buffptr += 1
-			else
-				lex.ctx->buffptrw += 1
-			end if
-
-		end if
-
+		hSkipChar( )
     	lex.ctx->currchar = UINVALID
 
     '' current= lookahead; lookhead = INVALID
