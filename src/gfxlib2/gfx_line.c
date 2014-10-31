@@ -80,11 +80,104 @@ static int clip_line(FB_GFXCTX *context, int *x1, int *y1, int *x2, int *y2)
 	return 0;
 }
 
+/* Assumes coordinates to be physical ones.
+ * Also assumes color is already masked. */
+
+/* Caller is expected to hold FB_GRAPHICSLOCK() */
+void fb_GfxDrawLine(FB_GFXCTX *context, int x1, int y1, int x2, int y2, unsigned int color, unsigned int style)
+{
+	int x, y, len, d, dx, dy, ax, ay, bit = 0x8000;
+
+	if (clip_line(context, &x1, &y1, &x2, &y2)) {
+		return;
+	}
+
+	DRIVER_LOCK();
+	if (x1 == x2) {
+		if (y1 > y2) {
+			SWAP(y1, y2);
+			style = reverse_mask(style);
+			bit = 1 << ((y2 - y1) & 0xF);
+		}
+		for (y = y1; y <= y2; y++) {
+			if (style & bit)
+				context->put_pixel(context, x1, y, color);
+			RORW1(bit);
+		}
+	}
+	else if (y1 == y2) {
+		if (x1 > x2) {
+			SWAP(x1, x2);
+			style = reverse_mask(style);
+			bit = 1 << ((x2 - x1) & 0xF);
+		}
+		if (style == 0xFFFF)
+			context->pixel_set(context->line[y1] + (x1 * __fb_gfx->bpp), color, x2 - x1 + 1);
+		else {
+			for (x = x1; x <= x2; x++) {
+				if (style & bit)
+					context->put_pixel(context, x, y1, color);
+				RORW1(bit);
+			}
+		}
+	} else {
+		dx = x2 - x1;
+		dy = y2 - y1;
+		ax = ay = 1;
+		if (dx < 0) {
+			dx = -dx;
+			ax = -1;
+		}
+		if (dy < 0) {
+			dy = -dy;
+			ay = -1;
+		}
+		x = x1;
+		y = y1;
+		if (dx >= dy) {
+			len = dx + 1;
+			dy <<= 1;
+			d = dy - dx;
+			dx <<= 1;
+			for (; len; len--) {
+				if (style & bit)
+					context->put_pixel(context, x, y, color);
+				RORW1(bit);
+				if (d >= 0) {
+					y += ay;
+					d -= dx;
+				}
+				d += dy;
+				x += ax;
+			}
+		} else {
+			len = dy + 1;
+			dx <<= 1;
+			d = dx - dy;
+			dy <<= 1;
+			for (; len; len--) {
+				if (style & bit)
+					context->put_pixel(context, x, y, color);
+				RORW1(bit);
+				if (d >= 0) {
+					x += ax;
+					d -= dy;
+				}
+				d += dx;
+				y += ay;
+			}
+		}
+	}
+	if (y1 > y2)
+		SWAP(y1, y2);
+	SET_DIRTY(context, y1, y2 - y1 + 1);
+	DRIVER_UNLOCK();
+}
+
 FBCALL void fb_GfxLine(void *target, float fx1, float fy1, float fx2, float fy2, unsigned int color, int type, unsigned int style, int flags)
 {
 	FB_GFXCTX *context;
 	int x1, y1, x2, y2;
-	int x, y, len, d, dx, dy, ax, ay, bit = 0x8000;
 
 	FB_GRAPHICS_LOCK( );
 
@@ -111,91 +204,7 @@ FBCALL void fb_GfxLine(void *target, float fx1, float fy1, float fx2, float fy2,
 	fb_hTranslateCoord(context, fx2, fy2, &x2, &y2);
 
 	if (type == LINE_TYPE_LINE) {
-		if (clip_line(context, &x1, &y1, &x2, &y2)) {
-			FB_GRAPHICS_UNLOCK( );
-			return;
-		}
-
-		DRIVER_LOCK();
-		if (x1 == x2) {
-			if (y1 > y2) {
-				SWAP(y1, y2);
-				style = reverse_mask(style);
-				bit = 1 << ((y2 - y1) & 0xF);
-			}
-			for (y = y1; y <= y2; y++) {
-				if (style & bit)
-					context->put_pixel(context, x1, y, color);
-				RORW1(bit);
-			}
-		}
-		else if (y1 == y2) {
-			if (x1 > x2) {
-				SWAP(x1, x2);
-				style = reverse_mask(style);
-				bit = 1 << ((x2 - x1) & 0xF);
-			}
-			if (style == 0xFFFF)
-				context->pixel_set(context->line[y1] + (x1 * __fb_gfx->bpp), color, x2 - x1 + 1);
-			else {
-				for (x = x1; x <= x2; x++) {
-					if (style & bit)
-						context->put_pixel(context, x, y1, color);
-					RORW1(bit);
-				}
-			}
-		} else {
-			dx = x2 - x1;
-			dy = y2 - y1;
-			ax = ay = 1;
-			if (dx < 0) {
-				dx = -dx;
-				ax = -1;
-			}
-			if (dy < 0) {
-				dy = -dy;
-				ay = -1;
-			}
-			x = x1;
-			y = y1;
-			if (dx >= dy) {
-				len = dx + 1;
-				dy <<= 1;
-				d = dy - dx;
-				dx <<= 1;
-				for (; len; len--) {
-					if (style & bit)
-						context->put_pixel(context, x, y, color);
-					RORW1(bit);
-					if (d >= 0) {
-						y += ay;
-						d -= dx;
-					}
-					d += dy;
-					x += ax;
-				}
-			} else {
-				len = dy + 1;
-				dx <<= 1;
-				d = dx - dy;
-				dy <<= 1;
-				for (; len; len--) {
-					if (style & bit)
-						context->put_pixel(context, x, y, color);
-					RORW1(bit);
-					if (d >= 0) {
-						x += ax;
-						d -= dy;
-					}
-					d += dx;
-					y += ay;
-				}
-			}
-		}
-		if (y1 > y2)
-			SWAP(y1, y2);
-		SET_DIRTY(context, y1, y2 - y1 + 1);
-		DRIVER_UNLOCK();
+		fb_GfxDrawLine( context, x1, y1, x2, y2, color, style );
 	} else {
 		fb_hFixCoordsOrder(&x1, &y1, &x2, &y2);
 		fb_hGfxBox(x1, y1, x2, y2, color, (type == LINE_TYPE_BF), style);

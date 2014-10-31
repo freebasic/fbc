@@ -31,6 +31,9 @@ Version 1.01.0
 - Hiword() on 64bit didn't filter out the upper dword when given a 64bit value
 - The compiler incorrectly added leading underscores to ASM symbols on Win64 and 64bit Cygwin. Leading underscores are only used by Win32, not by Win64 though.
 - #744: False-positive "recursive define" error messages in some situations with multiple/consecutive/nested (but non-recursive) macro expansions in the same line
+- #478: DRAW "Mx,y" was offsetting subpixel precision by 0.5, leading to rounding errors e.g. in "Pp,b"
+- DRAW now draws U/E/R/F/D/G/L/H using line-drawing routines rather than pixel-by-pixel, resulting in steadier lines and much better speed
+- DRAW was not unsetting the B/N qualifiers after 0-length directional commands, e.g. "R0", resulting in them being applied to the following command, e.g. DRAW "B U0D0L0R0 R10" would not draw "R10"
 
 
 Version 1.00.0 (former 0.91.0):
