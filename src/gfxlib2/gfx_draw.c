@@ -7,7 +7,51 @@
 #define FB_NAN		((intptr_t)0x80000000)
 #define SQRT_2		1.4142135623730950488016
 
-static float base_scale = 1.0, base_angle = 0.0;
+static float base_scale = 1.0;
+static int base_angle = 0;
+
+/* Returns sine of angle in degrees - quickly return exact values for 0/90/180/270 */
+static float dsin(int angle)
+{
+	switch( angle )
+	{
+	case 0:  	return 0.0;
+	case 90: 	return 1.0;
+	case 180:	return 0.0;
+	case 270:	return -1.0;
+	default: 	return sin((float)angle * PI / 180.0);
+	}
+}
+
+/* Returns cosine of angle in degrees - quickly return exact values for 0/90/180/270 */
+static float dcos(int angle)
+{
+	switch( angle )
+	{
+	case 0:  	return 1.0;
+	case 90: 	return 0.0;
+	case 180:	return -1.0;
+	case 270:	return 0.0;
+	default: 	return cos((float)angle * PI / 180.0);
+	}
+}
+
+/* Returns a value wrapped to the range 0..359 - avoids '%' in the range 0..719 for speed */
+static int mod360(int angle)
+{
+	if( angle < 0 )
+	{
+		return ((angle + 1) % 360) + 359;
+	}
+	else if( angle >= 360 )
+	{
+		return (angle < 720)? (angle - 360) : (angle % 360);
+	}
+	else
+	{
+		return angle;
+	}
+}
 
 static intptr_t parse_number(char **str)
 {
@@ -37,10 +81,11 @@ static intptr_t parse_number(char **str)
 FBCALL void fb_GfxDraw(void *target, FBSTRING *command)
 {
 	FB_GFXCTX *context;
-	float x, y, dx, dy, ax, ay, x2, y2, scale = 1.0, angle = 0.0;
+	float x, y, dx, dy, ax, ay, x2, y2;
+	int angle = 0, diagonal = FALSE;
 	char *c;
 	intptr_t value1, value2;
-	int draw = TRUE, move = TRUE, length = 0, flags, rel, ix, iy;
+	int draw = TRUE, move = TRUE, length = 0, flags, rel;
 
 	FB_GRAPHICS_LOCK( );
 
@@ -93,7 +138,7 @@ FBCALL void fb_GfxDraw(void *target, FBSTRING *command)
 				c++;
 				if ((value1 = parse_number(&c)) == FB_NAN)
 					goto error;
-				base_angle = (float)(value1 & 0x3) * PI * 0.5;
+				base_angle = (value1 & 0x3) * 90;
 				break;
 
 			case 'T':
@@ -103,7 +148,7 @@ FBCALL void fb_GfxDraw(void *target, FBSTRING *command)
 				c++;
 				if ((value1 = parse_number(&c)) == FB_NAN)
 					goto error;
-				base_angle = (float)value1 * PI / 180.0;
+				base_angle = mod360( value1 );
 				break;
 
 			case 'X':
@@ -144,13 +189,9 @@ FBCALL void fb_GfxDraw(void *target, FBSTRING *command)
 
 			case 'M':
 				c++;
-				rel = FALSE;
 				while ((*c == ' ') || (*c == '\t'))
 					c++;
-				if ((*c == '+') || (*c == '-'))
-				{
-					rel = TRUE;
-				}
+				rel = ((*c == '+') || (*c == '-'));
 				if ((value1 = parse_number(&c)) == FB_NAN)
 					goto error;
 				if (*c++ != ',')
@@ -160,16 +201,12 @@ FBCALL void fb_GfxDraw(void *target, FBSTRING *command)
 				x2 = (float)value1;
 				y2 = (float)value2;
 				if (rel) {
-					ax = cos(base_angle);
-					ay = -sin(base_angle);
+					ax = dcos(base_angle);
+					ay = -dsin(base_angle);
 					dx = x2;
 					dy = y2;
 					x2 = (((dx * ax) - (dy * ay)) * base_scale) + x;
 					y2 = (((dy * ax) + (dx * ay)) * base_scale) + y;
-				}
-				else {
-					x2 += 0.5;
-					y2 += 0.5;
 				}
 				if (draw) {
 					DRIVER_UNLOCK();
@@ -183,62 +220,44 @@ FBCALL void fb_GfxDraw(void *target, FBSTRING *command)
 				move = draw = TRUE;
 				break;
 
-			case 'F': angle += PI * 0.25;
-			case 'D': angle += PI * 0.25;
-			case 'G': angle += PI * 0.25;
-			case 'L': angle += PI * 0.25;
-			case 'H': angle += PI * 0.25;
-			case 'U': angle += PI * 0.25;
-			case 'E': angle += PI * 0.25;
-			case 'R':
-				if ((toupper(*c) >= 'E') && (toupper(*c) <= 'H'))
-					scale = SQRT_2;
+			case 'F': case 'D': angle += 90;
+			case 'G': case 'L': angle += 90;
+			case 'H': case 'U': angle += 90;
+			case 'E': case 'R':
+				diagonal = ((toupper(*c) >= 'E') && (toupper(*c) <= 'H'));
 				c++;
 				if ((value1 = parse_number(&c)) != FB_NAN)
 					length = value1;
 				else
 					length = 1;
+
+				angle = mod360( angle + base_angle );
+				dx = (float)length * base_scale * dcos( angle );
+				dy = (float)length * base_scale * -dsin( angle );
+
+				if (diagonal) {
+					x2 = x + (dx + dy);
+					y2 = y + (dy - dx);
+				}
+				else {
+					x2 = x + dx;
+					y2 = y + dy;
+				}
+				if (draw) {
+					fb_GfxDrawLine( context, CINT(x), CINT(y), CINT(x2), CINT(y2), context->fg_color, 0xffff );
+				}
+				if (move) {
+					x = x2;
+					y = y2;
+				}
+
+				angle = 0;
+				move = draw = TRUE;
 				break;
 
 			default:
 				c++;
 				break;
-		}
-
-		if (length) {
-			length = (int)(((float)length * (base_scale * scale)) + 0.5);
-			if (length < 0) {
-				angle += PI;
-				length = -length;
-			}
-			angle += base_angle;
-			dx = x;
-			dy = y;
-
-			for (; length >= 0; length--) {
-				if (draw) {
-					ix = dx;
-					iy = dy;
-					if ((ix >= context->view_x) && (ix < context->view_x + context->view_w) &&
-					    (iy >= context->view_y) && (iy < context->view_y + context->view_h)) {
-					    	context->put_pixel(context, ix, iy, context->fg_color);
-						if (__fb_gfx->framebuffer == context->line[0])
-							__fb_gfx->dirty[iy] = TRUE;
-					}
-				}
-				if (length) {
-					dx += cos(angle);
-					dy -= sin(angle);
-				}
-			}
-			if (move) {
-				x = dx;
-				y = dy;
-			}
-			angle = 0.0;
-			scale = 1.0;
-			length = 0;
-			move = draw = TRUE;
 		}
 	}
 

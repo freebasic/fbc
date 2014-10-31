@@ -490,6 +490,7 @@ extern void fb_hSetPixelTransfer(FB_GFXCTX *ctx, unsigned int color);
 extern void fb_hTranslateCoord(FB_GFXCTX *ctx, float fx, float fy, int *x, int *y);
 extern void fb_hFixRelative(FB_GFXCTX *ctx, int coord_type, float *x1, float *y1, float *x2, float *y2);
 extern void fb_hFixCoordsOrder(int *x1, int *y1, int *x2, int *y2);
+extern void fb_GfxDrawLine(FB_GFXCTX *context, int x1, int y1, int x2, int y2, unsigned int color, unsigned int style);
 extern void fb_hGfxBox(int x1, int y1, int x2, int y2, unsigned int color, int full, unsigned int style);
 extern void fb_hScreenInfo(ssize_t *width, ssize_t *height, ssize_t *depth, ssize_t *refresh);
 extern void *fb_hMemCpyMMX(void *dest, const void *src, size_t size);

@@ -93,14 +93,8 @@ static void get_arc_point(float angle, float a, float b, int *x, int *y)
 
 	c = cos(angle) * a;
 	s = sin(angle) * b;
-	if (c >= 0)
-		*x = (int)(c + 0.5);
-	else
-		*x = (int)(c - 0.5);
-	if (s >= 0)
-		*y = (int)(s + 0.5);
-	else
-		*y = (int)(s - 0.5);
+	*x = CINT(c);
+	*y = CINT(s);
 }
 
 FBCALL void fb_GfxEllipse(void *target, float fx, float fy, float radius, unsigned int color, float aspect, float start, float end, int fill, int flags)
