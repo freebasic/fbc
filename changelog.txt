@@ -31,6 +31,7 @@ Version 1.01.0
 - Hiword() on 64bit didn't filter out the upper dword when given a 64bit value
 - The compiler incorrectly added leading underscores to ASM symbols on Win64 and 64bit Cygwin. Leading underscores are only used by Win32, not by Win64 though.
 - #744: False-positive "recursive define" error messages in some situations with multiple/consecutive/nested (but non-recursive) macro expansions in the same line
+- Bad code was generated when initializing integer variables with a wstring-indexing expressions
 
 
 Version 1.00.0 (former 0.91.0):

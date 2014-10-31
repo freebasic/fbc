@@ -18,7 +18,7 @@ dim shared as  string * 31 globalfs
 dim shared as zstring * 32 globalz
 dim shared as wstring * 32 globalw
 
-sub test cdecl( )
+sub testBasics cdecl( )
 	static as UDT2 staticx2
 	static as  string * 32 staticfs
 	static as zstring * 32 staticz
@@ -155,9 +155,35 @@ sub test cdecl( )
 	#assert typeof( @s[i] ) = typeof( ubyte ptr )
 end sub
 
+sub testInitializer cdecl( )
+	const MAGICCOOKIE = &hAA11AA11
+
+	'' When initializing an integer var from a string-indexing expression,
+	'' it should really do string indexing, and not treat the integer var
+	'' as a string descriptor (it's not even big enough for that, so there'd
+	'' be a buffer overflow).
+
+	scope
+		dim cookie as integer = MAGICCOOKIE
+		dim z as zstring ptr = @"abc"
+		dim i as integer = z[0]
+		CU_ASSERT( cookie = MAGICCOOKIE )
+		CU_ASSERT( i = asc( "a" ) )
+	end scope
+
+	scope
+		dim cookie as integer = MAGICCOOKIE
+		dim w as wstring ptr = @wstr( "abc" )
+		dim i as integer = w[0]
+		CU_ASSERT( cookie = MAGICCOOKIE )
+		CU_ASSERT( i = asc( "a" ) )
+	end scope
+end sub
+
 private sub ctor( ) constructor
 	fbcu.add_suite( "tests/string/indexing" )
-	fbcu.add_test( "test", @test )
+	fbcu.add_test( "basics", @testBasics )
+	fbcu.add_test( "initializer", @testInitializer )
 end sub
 
 end namespace
