@@ -1,12 +1,14 @@
 #pragma once
 
 #include once "CUnit.bi"
-#include once "CUError.bi"
-#include once "TestDB.bi"
+#include once "crt/stdio.bi"
 
 extern "C"
 
-enum CU_FailureTypes
+#define CUNIT_TESTRUN_H_SEEN
+
+type CU_FailureTypes as long
+enum
 	CUF_SuiteInactive = 1
 	CUF_SuiteInitFailed
 	CUF_SuiteCleanupFailed
@@ -17,7 +19,7 @@ end enum
 type CU_FailureType as CU_FailureTypes
 
 type CU_FailureRecord
-	type as long
+	as CU_FailureType type
 	uiLineNumber as ulong
 	strFileName as zstring ptr
 	strCondition as zstring ptr
@@ -30,6 +32,7 @@ end type
 type CU_pFailureRecord as CU_FailureRecord ptr
 
 type CU_RunSummary
+	PackageName as zstring * 50
 	nSuitesRun as ulong
 	nSuitesFailed as ulong
 	nSuitesInactive as ulong
@@ -65,9 +68,9 @@ declare function CU_get_suite_complete_handler() as CU_SuiteCompleteMessageHandl
 declare function CU_get_all_test_complete_handler() as CU_AllTestsCompleteMessageHandler
 declare function CU_get_suite_init_failure_handler() as CU_SuiteInitFailureMessageHandler
 declare function CU_get_suite_cleanup_failure_handler() as CU_SuiteCleanupFailureMessageHandler
-declare function CU_run_all_tests() as long
-declare function CU_run_suite(byval pSuite as CU_pSuite) as long
-declare function CU_run_test(byval pSuite as CU_pSuite, byval pTest as CU_pTest) as long
+declare function CU_run_all_tests() as CU_ErrorCode
+declare function CU_run_suite(byval pSuite as CU_pSuite) as CU_ErrorCode
+declare function CU_run_test(byval pSuite as CU_pSuite, byval pTest as CU_pTest) as CU_ErrorCode
 declare sub CU_set_fail_on_inactive(byval new_inactive as long)
 declare function CU_get_fail_on_inactive() as long
 declare function CU_get_number_of_suites_run() as ulong
@@ -84,7 +87,7 @@ declare function CU_get_elapsed_time() as double
 declare function CU_get_failure_list() as CU_pFailureRecord
 declare function CU_get_run_summary() as CU_pRunSummary
 declare function CU_get_run_results_string() as zstring ptr
-declare sub CU_print_run_results(byval file as any ptr)
+declare sub CU_print_run_results(byval file as FILE ptr)
 declare function CU_get_current_suite() as CU_pSuite
 declare function CU_get_current_test() as CU_pTest
 declare function CU_is_test_running() as long

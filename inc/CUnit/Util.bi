@@ -4,6 +4,7 @@
 
 extern "C"
 
+#define CUNIT_UTIL_H_SEEN
 #define CUNIT_MAX_ENTITY_LEN 5
 
 declare function CU_translate_special_characters(byval szSrc as const zstring ptr, byval szDest as zstring ptr, byval maxlen as uinteger) as uinteger
