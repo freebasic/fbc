@@ -1,6 +1,6 @@
 # include "fbcu.bi"
 
-namespace fbc_tests.file.pipe_
+namespace fbc_tests.file_.pipe_
 
 const filename = "./file/pipe.bas"
 

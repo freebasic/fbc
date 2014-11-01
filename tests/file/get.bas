@@ -1,6 +1,6 @@
 #include "fbcu.bi"
 
-namespace fbc_tests.file.get_
+namespace fbc_tests.file_.get_
 
 private sub test cdecl( )
 	const TESTFILE = "data/123.txt"

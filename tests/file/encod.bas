@@ -4,8 +4,8 @@
 #define TEST_2 wstr( "World!" )
 #define TEST_3 1234
 #define TEST_4 5.678
-	
-namespace fbc_tests.file.encod
+
+namespace fbc_tests.file_.encod
 
 private sub WriteToFile (byref encod as string)
 

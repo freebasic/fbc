@@ -1,7 +1,7 @@
 # include "fbcu.bi"
 
-namespace fbc_tests.file.input_large_dbl
-	
+namespace fbc_tests.file_.input_large_dbl
+
 	dim shared as double correct(0 to 6) = {57847922012.0, 57847922012, 11940917156.0, 11940917156, 1194091715, 119409171, 11940917}
 	
 	sub read_it cdecl( )
