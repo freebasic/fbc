@@ -10,6 +10,7 @@ Version 1.01.0
 - Updated bindings (including 64bit support):
 	CUnit 2.1-3
 	fmod.bi for the old FMOD 3.75
+	libffi 3.1
 	libpng 1.2.51, 1.4.13, 1.5.19, 1.6.14 (#define __LIBPNG_VERSION to 12/14/15/16 to select version, default = 16)
 	libzip 0.11.2
 	zlib 1.2.8
