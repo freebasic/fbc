@@ -2,30 +2,6 @@
 
 #include "fb_gfx.h"
 
-#define CLIP_LEFT_EDGE		0x1
-#define CLIP_RIGHT_EDGE		0x2
-#define CLIP_BOTTOM_EDGE	0x4
-#define CLIP_TOP_EDGE		0x8
-#define CLIP_INSIDE(a)		(!a)
-#define CLIP_REJECT(a,b)	((a) & (b))
-#define CLIP_ACCEPT(a,b)	(!((a) | (b)))
-
-static int encode(FB_GFXCTX *context, int x, int y)
-{
-	int code = 0;
-
-	if (x < context->view_x)
-		code |= CLIP_LEFT_EDGE;
-	else if (x >= context->view_x + context->view_w)
-		code |= CLIP_RIGHT_EDGE;
-	if (y < context->view_y)
-		code |= CLIP_TOP_EDGE;
-	else if (y >= context->view_y + context->view_h)
-		code |= CLIP_BOTTOM_EDGE;
-
-	return code;
-}
-
 static int reverse_mask(int mask)
 {
 	mask = ((mask >> 1) & 0x5555) | ((mask & 0x5555) << 1);
@@ -35,82 +11,79 @@ static int reverse_mask(int mask)
 	return mask;
 }
 
-static int clip_line(FB_GFXCTX *context, int *x1, int *y1, int *x2, int *y2)
-{
-	int code1, code2;
-	float m;
-
-	while (1) {
-		code1 = encode(context, *x1, *y1);
-		code2 = encode(context, *x2, *y2);
-
-		if (CLIP_ACCEPT(code1, code2))
-			break;
-		if (CLIP_REJECT(code1, code2))
-			return -1;
-		if (CLIP_INSIDE(code1)) {
-			SWAP(*x1, *x2);
-			SWAP(*y1, *y2);
-			SWAP(code1, code2);
-		}
-		if (*x1 != *x2)
-			m = (*y2 - *y1) / (float)(*x2 - *x1);
-		else
-			m = 1.0;
-		if (code1 & CLIP_LEFT_EDGE) {
-			*y1 += (context->view_x - *x1) * m;
-			*x1 = context->view_x;
-		}
-		else if (code1 & CLIP_RIGHT_EDGE) {
-			*y1 += (context->view_x + context->view_w - 1 - *x1) * m;
-			*x1 = context->view_x + context->view_w - 1;
-		}
-		else if (code1 & CLIP_TOP_EDGE) {
-			if (*x1 != *x2)
-				*x1 += (context->view_y - *y1) / m;
-			*y1 = context->view_y;
-		}
-		else if (code1 & CLIP_BOTTOM_EDGE) {
-			if (*x1 != *x2)
-				*x1 += (context->view_y + context->view_h - 1 - *y1) / m;
-			*y1 = context->view_y + context->view_h - 1;
-		}
-	}
-
-	return 0;
-}
-
 /* Assumes coordinates to be physical ones.
  * Also assumes color is already masked. */
 
 /* Caller is expected to hold FB_GRAPHICSLOCK() */
 void fb_GfxDrawLine(FB_GFXCTX *context, int x1, int y1, int x2, int y2, unsigned int color, unsigned int style)
 {
-	int x, y, len, d, dx, dy, ax, ay, bit = 0x8000;
+	int x, y, d, dx, dy, ax, ay, skip, rot, bit;
+	int xmin = context->view_x, xmax = context->view_x + context->view_w - 1;
+	int ymin = context->view_y, ymax = context->view_y + context->view_h - 1;
 
-	if (clip_line(context, &x1, &y1, &x2, &y2)) {
+	/* line entirely out of bounds? */
+	if ((x1 < xmin) && (x2 < xmin))
 		return;
-	}
+	else if ((x1 > xmax) && (x2 > xmax))
+		return;
+	else if ((y1 < ymin) && (y2 < ymin))
+		return;
+	else if ((y1 > ymax) && (y2 > ymax))
+		return;
+
+	/* store dy/dx before line is clipped */
+	dx = x2 - x1;
+	dy = y2 - y1;
+
+	/* clip x2, y2 */
+	x2 = MID(xmin, x2, xmax);
+	y2 = MID(ymin, y2, ymax);
+
+	rot = 0;
 
 	DRIVER_LOCK();
-	if (x1 == x2) {
-		if (y1 > y2) {
-			SWAP(y1, y2);
-			style = reverse_mask(style);
-			bit = 1 << ((y2 - y1) & 0xF);
+	/* vertical line */
+	if (dx == 0) {
+		/* clip y1 */
+		if (y1 < ymin) {
+			rot += ymin - y1;
+			y1 = ymin;
+		} else if (y1 > ymax) {
+			rot += y1 - ymax;
+			y1 = ymax;
 		}
+		/* go from top down */
+		if (y1 > y2) {
+			style = reverse_mask(style);
+			rot = (~rot) + y2 - y1;
+			SWAP(y1, y2);
+		}
+		bit = 0x8000 >> (rot & 0xF);
+
 		for (y = y1; y <= y2; y++) {
 			if (style & bit)
 				context->put_pixel(context, x1, y, color);
 			RORW1(bit);
 		}
 	}
-	else if (y1 == y2) {
-		if (x1 > x2) {
-			SWAP(x1, x2);
-			style = reverse_mask(style);
-			bit = 1 << ((x2 - x1) & 0xF);
+	/* horizontal line */
+	else if (dy == 0) {
+		/* clip x1 */
+		if (x1 < xmin) {
+			rot += (xmin - x1);
+			x1 = xmin;
+		} else if (x1 > xmax) {
+			rot += (x1 - xmax);
+			x1 = xmax;
 		}
+		/* go from left to right */
+		if (x1 > x2) {
+			style = reverse_mask(style);
+			rot = (~rot) + x2 - x1;
+			SWAP(x1, x2);
+		}
+		bit = 0x8000 >> (rot & 0xF );
+
 		if (style == 0xFFFF)
 			context->pixel_set(context->line[y1] + (x1 * __fb_gfx->bpp), color, x2 - x1 + 1);
 		else {
@@ -120,9 +93,8 @@ void fb_GfxDrawLine(FB_GFXCTX *context, int x1, int y1, int x2, int y2, unsigned
 				RORW1(bit);
 			}
 		}
+	/* diagonal line */
 	} else {
-		dx = x2 - x1;
-		dy = y2 - y1;
 		ax = ay = 1;
 		if (dx < 0) {
 			dx = -dx;
@@ -132,14 +104,48 @@ void fb_GfxDrawLine(FB_GFXCTX *context, int x1, int y1, int x2, int y2, unsigned
 			dy = -dy;
 			ay = -1;
 		}
-		x = x1;
-		y = y1;
+
+		d = (dx >= dy)? dy * 2 - dx : dy - dx * 2;
+		dx *= 2;
+		dy *= 2;
+
+		/* clip x, y start values */
+		x = MID(xmin, x1, xmax);
+		d += ax * (x - x1) * dy;
+
+		y = MID(ymin, y1, ymax);
+		d -= ay * (y - y1) * dx;
+
+		/* shift style if necessary */
+		if (dx >= dy)
+			rot += ax * (x - x1);
+		else
+			rot += ay * (y - y1);
+
+		/* line terminates when x2 or y2 reached */
+		x2 = x2 + ax;
+		y2 = y2 + ay;
+
+		/* shallow gradient */
 		if (dx >= dy) {
-			len = dx + 1;
-			dy <<= 1;
-			d = dy - dx;
-			dx <<= 1;
-			for (; len; len--) {
+			/* put y, x back on the line if clipped*/
+			if (d >= dy) {
+				skip = (d - dy) / dx + 1;
+				y += ay * skip;
+				d -= skip * dx;
+				if ((y < ymin) || (y > ymax))
+					y = y2;
+			} else if (d < (dy - dx)) {
+				skip = ((dy - dx) - d) / dy + 1;
+				x += ax * skip;
+				d += skip * dy;
+				rot += skip;
+				if ((x < xmin) || (x > xmax))
+					x = x2;
+			}
+			bit = 0x8000 >> (rot & 0xF);
+
+			while ((x != x2) && (y != y2)) {
 				if (style & bit)
 					context->put_pixel(context, x, y, color);
 				RORW1(bit);
@@ -149,22 +155,38 @@ void fb_GfxDrawLine(FB_GFXCTX *context, int x1, int y1, int x2, int y2, unsigned
 				}
 				d += dy;
 				x += ax;
+				/* invariant: (-dx + dy) <= d < dy */
 			}
+		/* steep gradient */
 		} else {
-			len = dy + 1;
-			dx <<= 1;
-			d = dx - dy;
-			dy <<= 1;
-			for (; len; len--) {
+			/* put x, y back on the line if clipped */
+			if (d < -dx) {
+				skip = (-dx - d) / dy + 1;
+				x += ax * skip;
+				d += skip * dy;
+				if ((x < xmin) || (x > xmax))
+					x = x2;
+			} else if (d > dy - dx) {
+				skip = (d - (dy - dx)) / dx + 1;
+				y += ay * skip;
+				d -= skip * dx;
+				rot += skip;
+				if ((y < ymin) || (y > ymax))
+					y = y2;
+			}
+			bit = 0x8000 >> (rot & 0xF);
+
+			while ((y != y2) && (x != x2)) {
 				if (style & bit)
 					context->put_pixel(context, x, y, color);
 				RORW1(bit);
-				if (d >= 0) {
+				if (d <= 0) {
 					x += ax;
-					d -= dy;
+					d += dy;
 				}
-				d += dx;
+				d -= dx;
 				y += ay;
+				/* invariant: (-dx) <= d < (-dx + dy) */
 			}
 		}
 	}

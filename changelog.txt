@@ -39,6 +39,7 @@ Version 1.01.0
 - DRAW now draws U/E/R/F/D/G/L/H using line-drawing routines rather than pixel-by-pixel, resulting in steadier lines and much better speed
 - DRAW was not unsetting the B/N qualifiers after 0-length directional commands, e.g. "R0", resulting in them being applied to the following command, e.g. DRAW "B U0D0L0R0 R10" would not draw "R10"
 - Bad code was generated when initializing integer variables with a wstring-indexing expressions
+- #723: LINE clipping now doesn't affect which (unclipped) pixels are plotted, eliminating rounding differences and correctly preserving the position of the style bits
 
 
 Version 1.00.0 (former 0.91.0):
