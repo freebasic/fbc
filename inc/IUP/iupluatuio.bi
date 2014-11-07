@@ -1,12 +1,13 @@
-''
-''
-'' iupluatuio -- header translated with help of SWIG FB wrapper
-''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
-''
-''
-#ifndef __iupluatuio_bi__
-#define __iupluatuio_bi__
+#pragma once
 
+#ifdef LUA_TNONE
+	extern "C"
+#endif
+
+#define __IUPLUATUIO_H
+
+#ifdef LUA_TNONE
+	declare function iuptuiolua_open(byval L as lua_State ptr) as long
+
+	end extern
 #endif

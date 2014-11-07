@@ -1,12 +1,13 @@
-''
-''
-'' iupluaole -- header translated with help of SWIG FB wrapper
-''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
-''
-''
-#ifndef __iupluaole_bi__
-#define __iupluaole_bi__
+#pragma once
 
+extern "C"
+
+#define __IUPLUAOLE_H
+
+#ifdef LUA_NOOBJECT
+	declare function iupolelua_open() as long
+#else
+	declare function iupolelua_open(byval L as lua_State ptr) as long
 #endif
+
+end extern

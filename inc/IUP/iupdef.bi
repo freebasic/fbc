@@ -1,14 +1,35 @@
-''
-''
-'' iupdef -- header translated with help of SWIG FB wrapper
-''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
-''
-''
-#ifndef __iupdef_bi__
-#define __iupdef_bi__
+#pragma once
 
+'' The following symbols have been renamed:
+''     #define IUP_K_a => IUP_K_a_
+''     #define IUP_K_b => IUP_K_b_
+''     #define IUP_K_c => IUP_K_c_
+''     #define IUP_K_d => IUP_K_d_
+''     #define IUP_K_e => IUP_K_e_
+''     #define IUP_K_f => IUP_K_f_
+''     #define IUP_K_g => IUP_K_g_
+''     #define IUP_K_h => IUP_K_h_
+''     #define IUP_K_i => IUP_K_i_
+''     #define IUP_K_j => IUP_K_j_
+''     #define IUP_K_k => IUP_K_k_
+''     #define IUP_K_l => IUP_K_l_
+''     #define IUP_K_m => IUP_K_m_
+''     #define IUP_K_n => IUP_K_n_
+''     #define IUP_K_o => IUP_K_o_
+''     #define IUP_K_p => IUP_K_p_
+''     #define IUP_K_q => IUP_K_q_
+''     #define IUP_K_r => IUP_K_r_
+''     #define IUP_K_s => IUP_K_s_
+''     #define IUP_K_t => IUP_K_t_
+''     #define IUP_K_u => IUP_K_u_
+''     #define IUP_K_v => IUP_K_v_
+''     #define IUP_K_w => IUP_K_w_
+''     #define IUP_K_x => IUP_K_x_
+''     #define IUP_K_y => IUP_K_y_
+''     #define IUP_K_z => IUP_K_z_
+''     #define IUP_K_CR => IUP_K_CR_
+
+#define __IUPDEF_H
 #define IUP_RUN "RUN"
 #define IUP_ENGLISH "ENGLISH"
 #define IUP_PORTUGUESE "PORTUGUESE"
@@ -22,7 +43,6 @@
 #define IUP_K_ANY "K_ANY"
 #define IUP_KEYPRESS_CB "KEYPRESS_CB"
 #define IUP_HELP_CB "HELP_CB"
-#define IUP_SCROLL_CB "SCROLL_CB"
 #define IUP_RESIZE_CB "RESIZE_CB"
 #define IUP_MOTION_CB "MOTION_CB"
 #define IUP_BUTTON_CB "BUTTON_CB"
@@ -137,8 +157,6 @@
 #define IUP_OPEN "OPEN"
 #define IUP_SAVE "SAVE"
 #define IUP_DIR "DIR"
-#define IUP_HORIZONTAL "HORIZONTAL"
-#define IUP_VERTICAL "VERTICAL"
 #define IUP_YES "YES"
 #define IUP_NO "NO"
 #define IUP_ON "ON"
@@ -467,7 +485,6 @@
 #define IUP_K_m0 "K_m0"
 #define IUP_NUM_PARTS "NUM_PARTS"
 #define IUP_NUM_CELLS "NUM_CELLS"
-#define IUP_CELL "CELL"
 #define IUP_PREVIEW_SIZE "PREVIEW_SIZE"
 #define IUP_SHOW_PREVIEW "SHOW_PREVIEW"
 #define IUP_SHOW_SECONDARY "SHOW_SECONDARY"
@@ -490,7 +507,6 @@
 #define IUP_TRANSPARENT "TRANSPARENT"
 #define IUP_NON_SCROLLABLE_LINES "NON_SCROLLABLE_LINES"
 #define IUP_NON_SCROLLABLE_COLS "NON_SCROLLABLE_COLS"
-#define IUP_ORIGIN "ORIGIN"
 #define IUP_NO_COLOR "NO_COLOR"
 #define IUP_FIRST_LINE "FIRST_LINE"
 #define IUP_FIRST_COL "FIRST_COL"
@@ -515,8 +531,6 @@
 #define ICTL_MOUSEMOVE_CB "MOUSEMOVE_CB"
 #define ICTL_BUTTON_PRESS_CB "BUTTON_PRESS_CB"
 #define ICTL_BUTTON_RELEASE_CB "BUTTON_RELEASE_CB"
-#define ICTL_HORIZONTAL "HORIZONTAL"
-#define ICTL_VERTICAL "VERTICAL"
 #define ICTL_SHOWTICKS "SHOWTICKS"
 #define ICTL_TOP "TOP"
 #define ICTL_BOTTOM "BOTTOM"
@@ -558,7 +572,6 @@
 #define IUP_NUMCOL "NUMCOL"
 #define IUP_NUMLIN_VISIBLE "NUMLIN_VISIBLE"
 #define IUP_NUMCOL_VISIBLE "NUMCOL_VISIBLE"
-#define IUP_MARKED "MARKED"
 #define IUP_WIDTHDEF "WIDTHDEF"
 #define IUP_HEIGHTDEF "HEIGHTDEF"
 #define IUP_AREA "AREA"
@@ -570,7 +583,6 @@
 #define IUP_EDIT_MODE "EDIT_MODE"
 #define IUP_FOCUS_CELL "FOCUS_CELL"
 #define IUP_ORIGIN "ORIGIN"
-#define IUP_REDRAW "REDRAW"
 #define IUP_PREVIOUSVALUE "PREVIOUSVALUE"
 #define IUP_MOUSEMOVE_CB "MOUSEMOVE_CB"
 #define IUP_ADDLEAF "ADDLEAF"
@@ -583,7 +595,6 @@
 #define IUP_KIND "KIND"
 #define IUP_PARENT "PARENT"
 #define IUP_DEPTH "DEPTH"
-#define IUP_MARKED "MARKED"
 #define IUP_ADDEXPANDED "ADDEXPANDED"
 #define IUP_CTRL "CTRL"
 #define IUP_SHIFT "SHIFT"
@@ -619,5 +630,3 @@
 #define IUP_IMGEXPANDED "IMGEXPANDED"
 #define IUP_IMGBLANK "IMGBLANK"
 #define IUP_IMGPAPER "IMGPAPER"
-
-#endif

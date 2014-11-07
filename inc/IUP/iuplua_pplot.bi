@@ -1,12 +1,13 @@
-''
-''
-'' iuplua_pplot -- header translated with help of SWIG FB wrapper
-''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
-''
-''
-#ifndef __iuplua_pplot_bi__
-#define __iuplua_pplot_bi__
+#pragma once
 
+extern "C"
+
+#define __IUPLUA_PPLOT_H
+
+#ifdef LUA_NOOBJECT
+	declare function iup_pplotlua_open() as long
+#else
+	declare function iup_pplotlua_open(byval L as lua_State ptr) as long
 #endif
+
+end extern

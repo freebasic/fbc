@@ -1,12 +1,13 @@
-''
-''
-'' iupluaweb -- header translated with help of SWIG FB wrapper
-''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
-''
-''
-#ifndef __iupluaweb_bi__
-#define __iupluaweb_bi__
+#pragma once
 
+extern "C"
+
+#define __IUPLUAWEB_H
+
+#ifdef LUA_NOOBJECT
+	declare function iupweblua_open() as long
+#else
+	declare function iupweblua_open(byval L as lua_State ptr) as long
 #endif
+
+end extern

@@ -1,14 +1,8 @@
-''
-''
-'' iupgl -- header translated with help of SWIG FB wrapper
-''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
-''
-''
-#ifndef __iupgl_bi__
-#define __iupgl_bi__
+#pragma once
 
+extern "C"
+
+#define __IUPGL_H
 #define IUP_BUFFER "BUFFER"
 #define IUP_STEREO "STEREO"
 #define IUP_BUFFER_SIZE "BUFFER_SIZE"
@@ -29,13 +23,13 @@
 #define IUP_YES "YES"
 #define IUP_NO "NO"
 
-declare sub IupGLCanvasOpen cdecl alias "IupGLCanvasOpen" ()
-declare function IupGLCanvas cdecl alias "IupGLCanvas" (byval action as zstring ptr) as Ihandle ptr
-declare sub IupGLMakeCurrent cdecl alias "IupGLMakeCurrent" (byval ih as Ihandle ptr)
-declare function IupGLIsCurrent cdecl alias "IupGLIsCurrent" (byval ih as Ihandle ptr) as integer
-declare sub IupGLSwapBuffers cdecl alias "IupGLSwapBuffers" (byval ih as Ihandle ptr)
-declare sub IupGLPalette cdecl alias "IupGLPalette" (byval ih as Ihandle ptr, byval index as integer, byval r as single, byval g as single, byval b as single)
-declare sub IupGLUseFont cdecl alias "IupGLUseFont" (byval ih as Ihandle ptr, byval first as integer, byval count as integer, byval list_base as integer)
-declare sub IupGLWait cdecl alias "IupGLWait" (byval gl as integer)
+declare sub IupGLCanvasOpen()
+declare function IupGLCanvas(byval action as const zstring ptr) as Ihandle ptr
+declare sub IupGLMakeCurrent(byval ih as Ihandle ptr)
+declare function IupGLIsCurrent(byval ih as Ihandle ptr) as long
+declare sub IupGLSwapBuffers(byval ih as Ihandle ptr)
+declare sub IupGLPalette(byval ih as Ihandle ptr, byval index as long, byval r as single, byval g as single, byval b as single)
+declare sub IupGLUseFont(byval ih as Ihandle ptr, byval first as long, byval count as long, byval list_base as long)
+declare sub IupGLWait(byval gl as long)
 
-#endif
+end extern
