@@ -1,60 +1,59 @@
-''
-''
-'' cgui -- A C Graphical User Interface [add on to Allegro] 
-''		   (header translated with help of SWIG FB wrapper)
-''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
-''
-''
-#ifndef __cgui_bi__
-#define __cgui_bi__
- 
-#include once "crt.bi"
-
-#ifndef FONT
-type FONT as any
-type BITMAP as any
-type DATAFILE as any
-#endif
-
-#ifndef NULL
-#define NULL 0
-#endif
-
-#ifdef CGUI_STATICLINK
-#define EXTERNVAR extern 
-#else
-#define EXTERNVAR extern import
-#endif
-
+#pragma once
 #inclib "cgui"
 
-#define CGUI_VERSION_MAJOR      2
-#define CGUI_VERSION_MINOR      0
-#define CGUI_VERSION_PATCH      1
-#define CGUI_VERSION_STRING     "2.0.1"
-#define CGUI_DATE 20080716 
-#define CGUI_DATE_STRING "Jul 16, 2008"
+#include once "crt/long.bi"
+#include once "crt/stdio.bi"
+#include once "crt/errno.bi"
+#include once "crt/stdlib.bi"
+
+'' The following symbols have been renamed:
+''     procedure Remove => Remove_
+
+extern "C"
+
+#ifndef FONT
+type BITMAP as BITMAP_
+type FONT as FONT_
+type DATAFILE as DATAFILE_
+#endif
+
+#if defined(CGUI_STATICLINK) or ((not defined(CGUI_STATICLINK)) and (defined(__FB_DOS__) or defined(__FB_LINUX__)))
+	#define EXTERNVAR extern
+#else
+	#define EXTERNVAR extern import
+#endif
+
+#define CGUI_H
+#define CGUI_HAS_INLINE
+#define CGUI_INLINE_PROVIDE_CODE
+#define CGUI_VERSION_MAJOR 2
+#define CGUI_VERSION_MINOR 0
+#define CGUI_VERSION_PATCH 3
+#define CGUI_VERSION_STRING "2.0.3"
+#define CGUI_DATE 20091111
+#define CGUI_DATE_STRING "Nov 11, 2009"
 #define CGUI_INIT_CODE 0
 #define CGUI_INIT_LOAD 0
 #define CGUI_INIT_WINDOWED 1
 #define CGUI_INIT_FULLSCREEN 2
 #define CGUI_INIT_KEEP_CURRENT 0
 
-declare function InitCguiEx cdecl alias "InitCguiEx" (byval w as integer, byval h as integer, byval colour_depth as integer, byval errno_ptr as integer ptr, byval atexit_ptr as function cdecl(byval as sub cdecl()) as integer) as integer
-declare sub DeInitCgui cdecl alias "DeInitCgui" ()
+declare function InitCguiEx(byval w as long, byval h as long, byval colour_depth as long, byval errno_ptr as long ptr, byval atexit_ptr as function(byval f as sub()) as long) as long
 
-#define InitCguiLoadMode()  InitCguiEx(0, CGUI_INIT_LOAD, CGUI_INIT_CODE, @errno, @atexit)
-#define InitCguiFullscreenMode()  InitCguiEx(0, CGUI_INIT_FULLSCREEN, CGUI_INIT_CODE, @errno, @atexit)
-#define InitCguiWindowedMode()  InitCguiEx(0, CGUI_INIT_WINDOWED, CGUI_INIT_CODE, @errno, @atexit)
-#define InitCguiKeepCurrent()  InitCguiEx(0, CGUI_INIT_KEEP_CURRENT, CGUI_INIT_CODE, @errno, @atexit)
-#define InitCgui(w,h,bpp)  InitCguiEx(w, h, bpp, @errno, @atexit)
+#define InitCguiLoadMode() InitCguiEx(0, CGUI_INIT_LOAD, CGUI_INIT_CODE, @errno, cptr(function cdecl(byval as sub cdecl()) as long, atexit))
+#define InitCguiFullscreenMode() InitCguiEx(0, CGUI_INIT_FULLSCREEN, CGUI_INIT_CODE, @errno, cptr(function cdecl(byval as sub cdecl()) as long, atexit))
+#define InitCguiWindowedMode() InitCguiEx(0, CGUI_INIT_WINDOWED, CGUI_INIT_CODE, @errno, cptr(function cdecl(byval as sub cdecl()) as long, atexit))
+#define InitCguiKeepCurrent() InitCguiEx(0, CGUI_INIT_KEEP_CURRENT, CGUI_INIT_CODE, @errno, cptr(function cdecl(byval as sub cdecl()) as long, atexit))
+#define InitCgui(w, h, bpp) InitCguiEx(w, h, bpp, @errno, cptr(function cdecl(byval as sub cdecl()) as long, atexit))
 
-EXTERNVAR cgui_ver alias "cgui_ver" as integer
-EXTERNVAR cgui_rev alias "cgui_rev" as integer
-EXTERNVAR cgui_minor_rev alias "cgui_minor_rev" as integer
-EXTERNVAR cgui_release_date alias "cgui_release_date" as integer
+declare sub DeInitCgui()
+declare sub CguiUseUTF8()
+declare function CguiParseLabels(byval state as long) as long
+
+EXTERNVAR cgui_ver as long
+EXTERNVAR cgui_rev as long
+EXTERNVAR cgui_minor_rev as long
+EXTERNVAR cgui_release_date as long
 
 #define CGUI_DIR_TOPLEFT 1
 #define CGUI_DIR_RIGHT 2
@@ -75,11 +74,10 @@ EXTERNVAR cgui_release_date alias "cgui_release_date" as integer
 #define CGUI_FILLSPACE &h10000000
 #define CGUI_EQUALWIDTH &h20000000
 #define CGUI_EQUALHEIGHT &h40000000
+#define CGUI_ADAPTIVE 0,CGUI_AUTOINDICATOR
+#define CGUI_FILLSCREEN 1,CGUI_AUTOINDICATOR
 
-#define CGUI_ADAPTIVE        0,CGUI_AUTOINDICATOR
-#define CGUI_FILLSCREEN      1,CGUI_AUTOINDICATOR
-
-declare function MkDialogue cdecl alias "MkDialogue" (byval width as integer, byval height as integer, byval label as zstring ptr, byval attr as integer) as integer
+declare function MkDialogue(byval width_ as long, byval height as long, byval label as const zstring ptr, byval attr as long) as long
 
 #define CGUI_W_SIBLING (1 shl 0)
 #define CGUI_W_NOMOVE (1 shl 2)
@@ -88,59 +86,63 @@ declare function MkDialogue cdecl alias "MkDialogue" (byval width as integer, by
 #define CGUI_W_BOTTOM (1 shl 5)
 #define CGUI_W_LEFT (1 shl 6)
 #define CGUI_W_RIGHT (1 shl 7)
-#define CGUI_W_CENTRE_H ((1 shl 6) or (1 shl 7))
-#define CGUI_W_CENTRE_V ((1 shl 4) or (1 shl 5))
-#define CGUI_W_CENTRE (((1 shl 6) or (1 shl 7)) or ((1 shl 4) or (1 shl 5)))
+#define CGUI_W_CENTRE_H (CGUI_W_LEFT or CGUI_W_RIGHT)
+#define CGUI_W_CENTRE_V (CGUI_W_TOP or CGUI_W_BOTTOM)
+#define CGUI_W_CENTRE (CGUI_W_CENTRE_H or CGUI_W_CENTRE_V)
 
-declare sub DisplayWin cdecl alias "DisplayWin" ()
-declare sub CloseWin cdecl alias "CloseWin" (byval dummy as any ptr)
-declare sub SetWindowPosition cdecl alias "SetWindowPosition" (byval x as integer, byval y as integer)
-declare sub GetWinInfo cdecl alias "GetWinInfo" (byval id as integer, byval x as integer ptr, byval y as integer ptr, byval width as integer ptr, byval height as integer ptr)
-declare sub DesktopImage cdecl alias "DesktopImage" (byval bmp as BITMAP ptr)
-declare function CurrentWindow cdecl alias "CurrentWindow" () as integer
-declare sub SetOperatingWindow cdecl alias "SetOperatingWindow" (byval winid as integer)
-declare function Req cdecl alias "Req" (byval winheader as zstring ptr, byval format_text as zstring ptr) as integer
-declare function Request cdecl alias "Request" (byval title as zstring ptr, byval options as integer, byval width as integer, byval format as zstring ptr, ...) as integer
-declare sub RedrawScreen cdecl alias "RedrawScreen" ()
-declare sub ScrMode cdecl alias "ScrMode" (byval CallBack as sub cdecl())
-declare function MkProgressWindow cdecl alias "MkProgressWindow" (byval wlabel as zstring ptr, byval blabel as zstring ptr, byval w as integer) as integer
+declare sub DisplayWin()
+declare sub CloseWin(byval dummy as any ptr)
+declare sub SetWindowPosition(byval x as long, byval y as long)
+declare sub GetWinInfo(byval id as long, byval x as long ptr, byval y as long ptr, byval width_ as long ptr, byval height as long ptr)
+declare sub DesktopImage(byval bmp as BITMAP ptr)
+declare function CurrentWindow() as long
+declare sub SetOperatingWindow(byval winid as long)
+declare function Req(byval winheader as const zstring ptr, byval format_text as const zstring ptr) as long
+declare function Request(byval title as const zstring ptr, byval options as long, byval width_ as long, byval format as const zstring ptr, ...) as long
+declare sub RedrawScreen()
+declare sub ScrMode(byval CallBack as sub())
+declare function MkProgressWindow(byval wlabel as const zstring ptr, byval blabel as const zstring ptr, byval w as long) as long
 
 #define CGUI_ID_DESKTOP cgui_desktop_id
-EXTERNVAR cgui_desktop_id alias "cgui_desktop_id" as integer
 
-declare function MkMenu cdecl alias "MkMenu" (byval text as zstring ptr, byval CallBack as sub cdecl(byval as any ptr), byval data as any ptr) as integer
-declare function MakeMenuBar cdecl alias "MakeMenuBar" () as integer
-declare function MkMenuBarItem cdecl alias "MkMenuBarItem" (byval text as zstring ptr, byval CallBack as sub cdecl(byval as any ptr), byval data as any ptr) as integer
-declare sub EndMenuBar cdecl alias "EndMenuBar" ()
-declare function MkScratchMenu cdecl alias "MkScratchMenu" (byval id as integer, byval CallBack as sub cdecl(byval as any ptr), byval data as any ptr) as integer
-declare function MkSingleMenu cdecl alias "MkSingleMenu" (byval x as integer, byval y as integer, byval text as zstring ptr, byval CallBack as sub cdecl(byval as any ptr), byval data as any ptr) as integer
-declare function MkMenuItem cdecl alias "MkMenuItem" (byval sub as integer, byval text as zstring ptr, byval shortcut as zstring ptr, byval CallBack as sub cdecl(byval as any ptr), byval data as any ptr) as integer
-declare function MkMenuRadio cdecl alias "MkMenuRadio" (byval selvar as integer ptr, byval n as integer, ...) as integer
-declare function MkMenuCheck cdecl alias "MkMenuCheck" (byval checkvar as integer ptr, byval text as zstring ptr) as integer
-declare function HookMenuClose cdecl alias "HookMenuClose" (byval CloseHook as sub cdecl(byval as any ptr), byval data as any ptr) as integer
-declare function MkGroove cdecl alias "MkGroove" () as integer
-declare function AddButton cdecl alias "AddButton" (byval x as integer, byval y as integer, byval label as zstring ptr, byval CallBack as sub cdecl(byval as any ptr), byval data as any ptr) as integer
-declare function AddCheck cdecl alias "AddCheck" (byval x as integer, byval y as integer, byval label as zstring ptr, byval sel as integer ptr) as integer
+EXTERNVAR cgui_desktop_id as long
+
+declare function MkMenu(byval text as const zstring ptr, byval CallBack as sub(byval as any ptr), byval data_ as any ptr) as long
+declare function MakeMenuBar() as long
+declare function MkMenuBarItem(byval text as const zstring ptr, byval CallBack as sub(byval as any ptr), byval data_ as any ptr) as long
+declare sub EndMenuBar()
+declare function MkScratchMenu(byval id as long, byval CallBack as sub(byval as any ptr), byval data_ as any ptr) as long
+declare function MkSingleMenu(byval x as long, byval y as long, byval text as const zstring ptr, byval CallBack as sub(byval as any ptr), byval data_ as any ptr) as long
+declare function MkMenuItem(byval sub_ as long, byval text as const zstring ptr, byval shortcut as const zstring ptr, byval CallBack as sub(byval as any ptr), byval data_ as any ptr) as long
+declare function MkMenuRadio(byval selvar as long ptr, byval n as long, ...) as long
+declare function MkMenuCheck(byval checkvar as long ptr, byval text as const zstring ptr) as long
+declare function HookMenuClose(byval CloseHook as sub(byval as any ptr), byval data_ as any ptr) as long
+declare function MkGroove() as long
+declare function AddButton(byval x as long, byval y as long, byval label as const zstring ptr, byval CallBack as sub(byval data_ as any ptr), byval data_ as any ptr) as long
+declare function AddCheck(byval x as long, byval y as long, byval label as const zstring ptr, byval sel as long ptr) as long
 
 #define CGUI_R_HORIZONTAL 0
 #define CGUI_R_VERTICAL 1
 
-declare function AddFlip cdecl alias "AddFlip" (byval x as integer, byval y as integer, byval label as zstring ptr, byval strs as byte ptr ptr, byval sel as integer ptr) as integer
-declare function AddDropDown cdecl alias "AddDropDown" (byval x as integer, byval y as integer, byval width as integer, byval label as zstring ptr, byval sel as integer ptr, byval data as any ptr, byval n as integer, byval CallBack as sub cdecl(byval as any ptr, byval as integer, byval as zstring ptr)) as integer
-declare function AddDropDownS cdecl alias "AddDropDownS" (byval x as integer, byval y as integer, byval width as integer, byval label as zstring ptr, byval sel as integer ptr, byval strs as byte ptr ptr, byval n as integer) as integer
-declare function MkRadioContainer cdecl alias "MkRadioContainer" (byval x as integer, byval y as integer, byval var as integer ptr, byval direction as integer) as integer
-declare function AddRadioButton cdecl alias "AddRadioButton" (byval name as zstring ptr) as integer
-declare sub EndRadioContainer cdecl alias "EndRadioContainer" ()
-declare function AddIcon cdecl alias "AddIcon" (byval id as integer, byval x as integer, byval y as integer, byval iconname as zstring ptr, byval CallBack as sub cdecl(byval as any ptr), byval data as any ptr) as integer
-declare function MkCanvas cdecl alias "MkCanvas" (byval x as integer, byval y as integer, byval width as integer, byval height as integer, byval CallBack as sub cdecl(byval as BITMAP ptr, byval as integer, byval as integer, byval as any ptr), byval data as any ptr) as integer
-declare function GetRulerTabList cdecl alias "GetRulerTabList" (byval id as integer, byval n as integer ptr) as integer ptr
-declare function FlipRulerTab cdecl alias "FlipRulerTab" (byval id as integer, byval x as integer) as integer
-declare function AddTabRuler cdecl alias "AddTabRuler" (byval x as integer, byval y as integer, byval width as integer, byval height as integer, byval dx as integer, byval options as integer, byval CallBack as sub cdecl(byval as any ptr, byval as integer, byval as integer ptr, byval as integer), byval data as any ptr) as integer
+declare function AddFlip(byval x as long, byval y as long, byval label as const zstring ptr, byval strs as const zstring const ptr ptr, byval sel as long ptr) as long
+declare function AddDropDown(byval x as long, byval y as long, byval width_ as long, byval label as const zstring ptr, byval sel as long ptr, byval data_ as const any ptr, byval n as long, byval CallBack as sub(byval data_ as const any ptr, byval i as long, byval s as zstring ptr)) as long
+declare function AddDropDownS(byval x as long, byval y as long, byval width_ as long, byval label as const zstring ptr, byval sel as long ptr, byval strs as const zstring const ptr ptr, byval n as long) as long
+
+EXTERNVAR cgui_drop_down_list_row_spacing as long
+
+declare function MkRadioContainer(byval x as long, byval y as long, byval var_ as long ptr, byval direction as long) as long
+declare function AddRadioButton(byval name_ as const zstring ptr) as long
+declare sub EndRadioContainer()
+declare function AddIcon(byval id as long, byval x as long, byval y as long, byval iconname as const zstring ptr, byval CallBack as sub(byval as any ptr), byval data_ as any ptr) as long
+declare function MkCanvas(byval x as long, byval y as long, byval width_ as long, byval height as long, byval CallBack as sub(byval bmp as BITMAP ptr, byval x as long, byval y as long, byval data_ as any ptr), byval data_ as any ptr) as long
+declare function GetRulerTabList(byval id as long, byval n as long ptr) as long ptr
+declare function FlipRulerTab(byval id as long, byval x as long) as long
+declare function AddTabRuler(byval x as long, byval y as long, byval width_ as long, byval height as long, byval dx as long, byval options as long, byval CallBack as sub(byval data_ as any ptr, byval x as long, byval tabs as long ptr, byval n as long), byval data_ as any ptr) as long
 
 #define CGUI_TR_SHOWPOS 1
 
-declare function UpdateProgressValue cdecl alias "UpdateProgressValue" (byval id as integer, byval percent as integer) as integer
-declare function AddProgressBar cdecl alias "AddProgressBar" (byval x as integer, byval y as integer, byval w as integer, byval h as integer) as integer
+declare function UpdateProgressValue(byval id as long, byval percent as long) as long
+declare function AddProgressBar(byval x as long, byval y as long, byval w as long, byval h as long) as long
 
 #define CGUI_SL_SCALE 1
 #define CGUI_SL_LABEL 2
@@ -148,11 +150,15 @@ declare function AddProgressBar cdecl alias "AddProgressBar" (byval x as integer
 #define CGUI_SL_STYLE2 8
 #define CGUI_SL_STYLE3 &h20
 
-declare function AddSlider cdecl alias "AddSlider" (byval x as integer, byval y as integer, byval length as integer, byval ctrl as integer ptr, byval start as integer, byval end as integer, byval option as integer, byval id as integer) as integer
-declare function HookSpinButtons cdecl alias "HookSpinButtons" (byval id as integer, byval var as integer ptr, byval delta1 as integer, byval delta2 as integer, byval minv as integer, byval maxv as integer) as integer
-declare function AddTag cdecl alias "AddTag" (byval x as integer, byval y as integer, byval tag as zstring ptr) as integer
-declare function AddStatusField cdecl alias "AddStatusField" (byval x as integer, byval y as integer, byval width as integer, byval FormatFunc as sub cdecl(byval as any ptr, byval as zstring ptr), byval data as any ptr) as integer
-declare function AddTextBox cdecl alias "AddTextBox" (byval x as integer, byval y as integer, byval text as zstring ptr, byval width as integer, byval nrows as integer, byval option as integer) as integer
+declare function AddSlider(byval x as long, byval y as long, byval length as long, byval ctrl as long ptr, byval start as long, byval end_ as long, byval option_ as long, byval id as long) as long
+declare function AddSliderFloat(byval x as long, byval y as long, byval length as long, byval ctrl as single ptr, byval start as single, byval end_ as single, byval ndecimals as long, byval option_ as long, byval id as long) as long
+declare function HookSpinButtons(byval id as long, byval var_ as long ptr, byval delta1 as long, byval delta2 as long, byval minv as long, byval maxv as long) as long
+declare function AddTag(byval x as long, byval y as long, byval tag as const zstring ptr) as long
+declare function AddStatusField(byval x as long, byval y as long, byval width_ as long, byval FormatFunc as sub(byval data_ as any ptr, byval string_ as zstring ptr), byval data_ as any ptr) as long
+declare function AddTextBox(byval x as long, byval y as long, byval text as const zstring ptr, byval width_ as long, byval nrows as long, byval option_ as long) as long
+declare sub TextboxHighlighting(byval id as long, byval bgcolor as long, byval textcolor as long, byval line_nr as long)
+declare sub TextboxScrollDownOneLine(byval id as long)
+declare function TextboxGetHighlightedText(byval id as long) as const zstring ptr
 
 #define CGUI_TB_FRAMERAISE &h80000000
 #define CGUI_TB_FRAMESINK &h40000000
@@ -163,14 +169,15 @@ declare function AddTextBox cdecl alias "AddTextBox" (byval x as integer, byval 
 #define CGUI_TB_TEXTFILE &h02000000
 #define CGUI_TB_FOCUS_END &h01000000
 
-declare function UpdateTextBoxText cdecl alias "UpdateTextBoxText" (byval id as integer, byval s as zstring ptr) as integer
-declare function AddEditBox cdecl alias "AddEditBox" (byval x as integer, byval y as integer, byval width as integer, byval label as zstring ptr, byval format as integer, byval maxchar as integer, byval data as any ptr) as integer
+declare function UpdateTextBoxText(byval id as long, byval s as const zstring ptr) as long
+declare function AddEditBox(byval x as long, byval y as long, byval width_ as long, byval label as const zstring ptr, byval format as long, byval string_buffer_size as long, byval data_ as any ptr) as long
 
 #define CGUI_TERMINATE_EDIT 999
 
-declare sub GetEditData cdecl alias "GetEditData" (byval scan as integer ptr, byval ascii as integer ptr, byval offset as integer ptr)
-declare sub SetEditData cdecl alias "SetEditData" (byval scan as integer, byval ascii as integer, byval offset as integer)
-declare function TabOnCR cdecl alias "TabOnCR" (byval id as integer) as integer
+declare sub CguiEditBoxSetSelectionMode(byval mode as long)
+declare sub GetEditData(byval scan as long ptr, byval ascii as long ptr, byval offset as long ptr)
+declare sub SetEditData(byval scan as long, byval ascii as long, byval offset as long)
+declare function TabOnCR(byval id as long) as long
 
 #define CGUI_FBYTE 1
 #define CGUI_FSHORT 2
@@ -193,32 +200,32 @@ declare function TabOnCR cdecl alias "TabOnCR" (byval id as integer) as integer
 #define CGUI_FUNDEF &h6000
 #define CGUI_B_UNDEF_VAL &hFF
 #define CGUI_S_UNDEF_VAL &h8000
-#define CGUI_I_UNDEF_VAL &h80000000L
-#define CGUI_L_UNDEF_VAL &h80000000L
+#define CGUI_I_UNDEF_VAL cast(clong, &h80000000)
+#define CGUI_L_UNDEF_VAL cast(clong, &h80000000)
 #define CGUI_P_UNDEF_VAL &h8000
 #define CGUI_BP_UNDEF_VAL &h80
 
-declare sub Refresh cdecl alias "Refresh" (byval id as integer)
-declare sub DeActivate cdecl alias "DeActivate" (byval id as integer)
-declare sub Activate cdecl alias "Activate" (byval id as integer)
-declare function CguiLoadImage cdecl alias "CguiLoadImage" (byval filename as zstring ptr, byval imagename as zstring ptr, byval transp as integer, byval id as integer) as integer
-declare function InsertPoint cdecl alias "InsertPoint" (byval id as integer) as integer
+declare sub Refresh(byval id as long)
+declare sub DeActivate(byval id as long)
+declare sub Activate(byval id as long)
+declare function CguiLoadImage(byval filename as const zstring ptr, byval imagename as const zstring ptr, byval transp as long, byval id as long) as long
+declare function InsertPoint(byval id as long) as long
 
 #define CGUI_IMAGE_BMP 0
 #define CGUI_IMAGE_TRANS_BMP 1
 #define CGUI_IMAGE_RLE_SPRITE 2
 #define CGUI_IMAGE_CMP_SPRITE 3
 
-declare function RegisterImage cdecl alias "RegisterImage" (byval data as any ptr, byval imagename as zstring ptr, byval type as integer, byval id as integer) as integer
-declare function GetRegisteredImage cdecl alias "GetRegisteredImage" (byval name as zstring ptr, byval type as integer ptr, byval id as integer) as any ptr
+declare function RegisterImage(byval data_ as any ptr, byval imagename as const zstring ptr, byval type_ as long, byval id as long) as long
+declare function GetRegisteredImage(byval name_ as const zstring ptr, byval type_ as long ptr, byval id as long) as const any ptr
 
 #define CGUI_LEFT_MOUSE 1
 #define CGUI_RIGHT_MOUSE 2
 
-declare sub SetObjectSlidable cdecl alias "SetObjectSlidable" (byval id as integer, byval Slider as function cdecl(byval as integer, byval as integer, byval as any ptr, byval as integer, byval as integer) as integer, byval buttons as integer, byval data as any ptr)
-declare sub SetObjectDouble cdecl alias "SetObjectDouble" (byval id as integer, byval DoubleCall as sub cdecl(byval as any ptr), byval data as any ptr, byval button as integer)
-declare sub SetObjectGrippable cdecl alias "SetObjectGrippable" (byval id as integer, byval Grip as sub cdecl(byval as any ptr, byval as integer, byval as integer), byval flags as integer, byval buttons as integer, byval data as any ptr)
-declare sub SetObjectDroppable cdecl alias "SetObjectDroppable" (byval id as integer, byval Drop as function cdecl(byval as any ptr, byval as integer, byval as any ptr, byval as integer, byval as integer) as integer, byval flags as integer, byval data as any ptr)
+declare sub SetObjectSlidable(byval id as long, byval Slider as function(byval x as long, byval y as long, byval src as any ptr, byval id as long, byval reason as long) as long, byval buttons as long, byval data_ as any ptr)
+declare sub SetObjectDouble(byval id as long, byval DoubleCall as sub(byval as any ptr), byval data_ as any ptr, byval button as long)
+declare sub SetObjectGrippable(byval id as long, byval Grip as function(byval src as any ptr, byval id as long, byval reason as long) as any ptr, byval flags as long, byval buttons as long, byval data_ as any ptr)
+declare sub SetObjectDroppable(byval id as long, byval Drop as function(byval dest as any ptr, byval id as long, byval src as any ptr, byval reason as long, byval flags as long) as long, byval flags as long, byval data_ as any ptr)
 
 #define CGUI_DD_GRIPPED 0
 #define CGUI_DD_UNGRIPPED 1
@@ -232,8 +239,10 @@ declare sub SetObjectDroppable cdecl alias "SetObjectDroppable" (byval id as int
 #define CGUI_SL_PROGRESS 9
 #define CGUI_SL_STOPPED 10
 
-declare function ToolTipText cdecl alias "ToolTipText" (byval id as integer, byval text as zstring ptr) as integer
-declare function SetView cdecl alias "SetView" (byval id as integer, byval flags as integer) as integer
+declare function ToolTipText(byval id as long, byval text as const zstring ptr) as long
+declare sub CguiSetToolTipDelay(byval delay as long)
+declare sub CguiSetToolTipAnimation(byval step_ as long, byval delay as long)
+declare function SetView(byval id as long, byval flags as long) as long
 
 #define CGUI_SV_HIDE_LABEL 1
 #define CGUI_SV_HIDE_ICON 2
@@ -243,154 +252,164 @@ declare function SetView cdecl alias "SetView" (byval id as integer, byval flags
 #define CGUI_SV_PREFERE_BRIEF 32
 #define CGUI_SV_PREFERE_LONG 0
 
-declare function RegisterDragFlag cdecl alias "RegisterDragFlag" (byval flag as integer) as integer
-declare function UnRegisterDragFlag cdecl alias "UnRegisterDragFlag" (byval flag as integer) as integer
-declare function SetMouseButtons cdecl alias "SetMouseButtons" (byval id as integer, byval buttons as integer) as integer
-declare sub Remove_ cdecl alias "Remove" (byval id as integer)
-declare sub Destroy cdecl alias "Destroy" (byval id as integer)
-declare function GetPressedButton cdecl alias "GetPressedButton" (byval id as integer) as integer
-declare sub PointerOn cdecl alias "PointerOn" (byval id as integer)
-declare sub ModifyHeader cdecl alias "ModifyHeader" (byval id as integer, byval newtag as zstring ptr)
-declare function AddHandler cdecl alias "AddHandler" (byval id as integer, byval Handler as sub cdecl(byval as any ptr), byval data as any ptr) as integer
-declare sub Click cdecl alias "Click" (byval id as integer)
-declare function GetObjectPosition cdecl alias "GetObjectPosition" (byval id as integer, byval x as integer ptr, byval y as integer ptr, byval wx as integer ptr, byval wy as integer ptr) as integer
-declare sub SetBlitLimit cdecl alias "SetBlitLimit" (byval x1 as integer, byval y1 as integer, byval x2 as integer, byval y2 as integer)
+declare function RegisterDragFlag(byval flag as long) as long
+declare function UnRegisterDragFlag(byval flag as long) as long
+declare function SetMouseButtons(byval id as long, byval buttons as long) as long
+declare sub Remove_ alias "Remove"(byval id as long)
+declare sub Destroy(byval id as long)
+declare function GetPressedButton(byval id as long) as long
+declare sub PointerOn(byval id as long)
+declare sub ModifyHeader(byval id as long, byval newtag as zstring ptr)
+declare function AddHandler(byval id as long, byval Handler as sub(byval data_ as any ptr), byval data_ as any ptr) as long
+declare sub Click(byval id as long)
+declare function GetObjectPosition(byval id as long, byval x as long ptr, byval y as long ptr, byval wx as long ptr, byval wy as long ptr) as long
+declare sub SetBlitLimit(byval x1 as long, byval y1 as long, byval x2 as long, byval y2 as long)
 
-EXTERNVAR cgui_use_vsync alias "cgui_use_vsync" as integer
+EXTERNVAR cgui_use_vsync as long
 
 #define CGUI_CT_BORDER 1
 #define CGUI_CT_OBJECT_TABLE 2
 
-declare function StartContainer cdecl alias "StartContainer" (byval x as integer, byval y as integer, byval width as integer, byval height as integer, byval label as zstring ptr, byval options as integer) as integer
-declare sub EndContainer cdecl alias "EndContainer" ()
-declare sub SelectContainer cdecl alias "SelectContainer" (byval id as integer)
-declare sub SetMeasure cdecl alias "SetMeasure" (byval leftx as integer, byval xdist as integer, byval rightx as integer, byval topy as integer, byval ydist as integer, byval boty as integer)
-declare sub SetDistance cdecl alias "SetDistance" (byval xdist as integer, byval ydist as integer)
-declare sub ReBuildContainer cdecl alias "ReBuildContainer" (byval id as integer)
-declare sub EmptyContainer cdecl alias "EmptyContainer" (byval id as integer)
+declare function StartContainer(byval x as long, byval y as long, byval width_ as long, byval height as long, byval label as const zstring ptr, byval options as long) as long
+declare sub EndContainer()
+declare sub SelectContainer(byval id as long)
+declare function SetSpacing(byval id as long, byval leftx as long, byval xdist as long, byval rightx as long, byval topy as long, byval ydist as long, byval boty as long) as long
+declare sub SetMeasure(byval leftx as long, byval xdist as long, byval rightx as long, byval topy as long, byval ydist as long, byval boty as long)
+declare sub SetDistance(byval xdist as long, byval ydist as long)
+declare sub ReBuildContainer(byval id as long)
+declare sub EmptyContainer(byval id as long)
 
 #define CGUI_OFF 0
 #define CGUI_ON 1
-#define CGUI_ROW_STRIKE &h80000000
-#define CGUI_ROW_UNDERLINE &h40000000
-#define CGUI_ROW_CHECK &h20000000
-#define CGUI_ROW_UNCHECK &h10000000
-#define CGUI_COL_RIGHT_ALIGN &h08000000
+#define CGUI_ROW_STRIKE (1 shl 31)
+#define CGUI_ROW_UNDERLINE (1 shl 30)
+#define CGUI_ROW_CHECK (1 shl 29)
+#define CGUI_ROW_UNCHECK (1 shl 28)
+#define CGUI_COL_RIGHT_ALIGN (1 shl 27)
+#define CGUI_ROW_COLUMN_UNDERLINE (1 shl 26)
 
-declare function AddList cdecl alias "AddList" (byval x as integer, byval y as integer, byval listdata as any ptr, byval n as integer ptr, byval width as integer, byval events as integer, byval TextFormatter as function cdecl(byval as any ptr, byval as zstring ptr) as integer, byval Action as sub cdecl(byval as integer, byval as any ptr), byval norows as integer) as integer
-declare function SetLinkedList cdecl alias "SetLinkedList" (byval id as integer, byval NextCreater as sub cdecl(byval as any ptr, byval as any ptr)) as integer
-declare function SetIndexedList cdecl alias "SetIndexedList" (byval id as integer, byval IndexCreater as sub cdecl(byval as any ptr, byval as integer)) as integer
-declare function RefreshListRow cdecl alias "RefreshListRow" (byval id as integer, byval i as integer) as integer
-declare function GetMarkedRows cdecl alias "GetMarkedRows" (byval listid as integer, byval n as integer ptr) as any ptr ptr
-declare function BrowseToF cdecl alias "BrowseToF" (byval id as integer, byval i as integer) as integer
-declare function BrowseToL cdecl alias "BrowseToL" (byval id as integer, byval i as integer) as integer
-declare function BrowseTo cdecl alias "BrowseTo" (byval id as integer, byval i as integer, byval uncond as integer) as integer
-declare function SetListColumns cdecl alias "SetListColumns" (byval id as integer, byval RowTextCreater as function cdecl(byval as any ptr, byval as zstring ptr, byval as integer) as integer, byval widths as integer ptr, byval n as integer, byval options as integer, byval labels as byte ptr ptr, byval CallBack as sub cdecl(byval as any ptr, byval as integer, byval as integer), byval data as any ptr) as integer
-declare function SetListGrippable cdecl alias "SetListGrippable" (byval listid as integer, byval Grip as function cdecl(byval as any ptr, byval as integer, byval as any ptr, byval as integer) as integer, byval flags as integer, byval buttons as integer) as integer
-declare function SetListDroppable cdecl alias "SetListDroppable" (byval listid as integer, byval Drop as function cdecl(byval as any ptr, byval as integer, byval as any ptr, byval as any ptr, byval as integer, byval as integer) as integer, byval flags as integer) as integer
-declare function SetListDoubleClick cdecl alias "SetListDoubleClick" (byval listid as integer, byval AppDouble as sub cdecl(byval as integer, byval as any ptr, byval as integer), byval button as integer) as integer
-declare function HookList cdecl alias "HookList" (byval listid as integer, byval listdata as any ptr, byval n as integer ptr, byval width as integer, byval events as integer, byval TextFormatter as function cdecl(byval as any ptr, byval as zstring ptr) as integer, byval Action as sub cdecl(byval as integer, byval as any ptr)) as integer
-declare function SetDeleteHandler cdecl alias "SetDeleteHandler" (byval listid as integer, byval CallBack as sub cdecl(byval as integer, byval as any ptr)) as integer
-declare function SetInsertHandler cdecl alias "SetInsertHandler" (byval listid as integer, byval CallBack as sub cdecl(byval as any ptr, byval as integer)) as integer
-declare function GetListIndex cdecl alias "GetListIndex" (byval id as integer) as integer
-declare function HookExit cdecl alias "HookExit" (byval id as integer, byval ExitFun as sub cdecl(byval as any ptr), byval data as any ptr) as integer
-declare function NotifyFocusMove cdecl alias "NotifyFocusMove" (byval listid as integer, byval CallBack as sub cdecl(byval as integer, byval as any ptr)) as integer
+declare function AddList(byval x as long, byval y as long, byval listdata as any ptr, byval n as long ptr, byval width_ as long, byval events as long, byval TextFormatter as function(byval as any ptr, byval as zstring ptr) as long, byval Action as sub(byval id as long, byval as any ptr), byval norows as long) as long
+declare function SetLinkedList(byval id as long, byval NextCreater as function(byval list as any ptr, byval prev as any ptr) as any ptr) as long
+declare function SetIndexedList(byval id as long, byval IndexCreater as function(byval list as any ptr, byval i as long) as any ptr) as long
+declare function RefreshListRow(byval id as long, byval i as long) as long
+declare function GetMarkedRows(byval listid as long, byval n as long ptr) as any ptr ptr
+declare function BrowseToF(byval id as long, byval i as long) as long
+declare function BrowseToL(byval id as long, byval i as long) as long
+declare function BrowseTo(byval id as long, byval i as long, byval uncond as long) as long
+declare function SetListColumns(byval id as long, byval RowTextCreater as function(byval rowdata as any ptr, byval s as zstring ptr, byval colnr as long) as long, byval widths as long ptr, byval n as long, byval options as long, byval labels as zstring ptr ptr, byval CallBack as sub(byval data_ as any ptr, byval id as long, byval i as long), byval data_ as any ptr) as long
+declare function SetListGrippable(byval listid as long, byval Grip as function(byval srcobj as any ptr, byval reason as long, byval srclist as any ptr, byval i as long) as long, byval flags as long, byval buttons as long) as long
+declare function SetListDroppable(byval listid as long, byval Drop as function(byval destobj as any ptr, byval reason as long, byval srcobj as any ptr, byval destlist as any ptr, byval i as long, byval flags as long) as long, byval flags as long) as long
+declare function SetListDoubleClick(byval listid as long, byval AppDouble as sub(byval id as long, byval data_ as any ptr, byval i as long), byval button as long) as long
+declare function HookList(byval listid as long, byval listdata as any ptr, byval n as long ptr, byval width_ as long, byval events as long, byval TextFormatter as function(byval as any ptr, byval as zstring ptr) as long, byval Action as sub(byval as long, byval as any ptr)) as long
+declare function SetDeleteHandler(byval listid as long, byval CallBack as sub(byval rowid as long, byval object_ as any ptr)) as long
+declare function SetInsertHandler(byval listid as long, byval CallBack as sub(byval list as any ptr, byval index as long)) as long
+declare function GetListIndex(byval id as long) as long
+declare function HookExit(byval id as long, byval ExitFun as sub(byval data_ as any ptr), byval data_ as any ptr) as long
+declare function NotifyFocusMove(byval listid as long, byval CallBack as sub(byval id as long, byval rowobject as any ptr)) as long
 
 #define CGUI_TR_HIDE_ROOT &h00000001
 
-declare function ListTreeView cdecl alias "ListTreeView" (byval listid as integer, byval width as integer, byval IsLeaf as function cdecl(byval as any ptr) as integer, byval options as integer) as integer
+declare function ListTreeView(byval listid as long, byval width_ as long, byval IsLeaf as function(byval rowobject as any ptr) as long, byval options as long) as long
+declare function ListTreeSetNodesExpandedState(byval listid as long, byval IsExpanded as function(byval data_ as any ptr) as long) as long
+declare function ListTreeSetNodeExpandedState(byval listid as long, byval new_expanded_state as long, byval data_ as any ptr) as long
+declare function InstallBelowListEndCallBack(byval listid as long, byval CallBack as sub(byval id as long, byval data_ as any ptr), byval data_ as any ptr) as long
+declare function CguiListBoxSetToolTip(byval listid as long, byval mode as long, byval options as long) as long
+declare sub CguiListBoxRowSetBar(byval color_ as long, byval percentage as double)
+declare function CguiListBoxRowGetClickedColumn(byval rowid as long) as long
+declare sub CguiListBoxSetColumnSelection(byval listid as long, byval state as long)
 
-EXTERNVAR cgui_list_no_multiple_row_selection alias "cgui_list_no_multiple_row_selection" as integer
-EXTERNVAR CGUI_list_font alias "CGUI_list_font" as FONT ptr
-EXTERNVAR CGUI_list_row_font alias "CGUI_list_row_font" as FONT ptr
-EXTERNVAR CGUI_list_row_f_color alias "CGUI_list_row_f_color" as integer
-EXTERNVAR CGUI_list_row_b_color alias "CGUI_list_row_b_color" as integer
-EXTERNVAR CGUI_list_vspace alias "CGUI_list_vspace" as integer
-EXTERNVAR CGUI_list_fixfont alias "CGUI_list_fixfont" as integer
-EXTERNVAR cgui_list_fix_digits alias "cgui_list_fix_digits" as integer
+EXTERNVAR cgui_list_no_multiple_row_selection as long
+EXTERNVAR cgui_list_show_focused_row as long
+EXTERNVAR CGUI_list_font as FONT ptr
+EXTERNVAR CGUI_list_row_font as FONT ptr
+EXTERNVAR CGUI_list_row_f_color as long
+EXTERNVAR CGUI_list_row_b_color as long
+EXTERNVAR CGUI_list_vspace as long
+EXTERNVAR CGUI_list_fixfont as long
+EXTERNVAR cgui_list_fix_digits as long
 
-#define CGUI_LIST_COLUMNS_ADJUSTABLE 1
-#define CGUI_LIST_COLUMNS_DELIMITER 2
+#define CGUI_LIST_COLUMNS_ADJUSTABLE (1 shl 0)
+#define CGUI_LIST_COLUMNS_ADJUSTABLE_KEEP_BOX_WIDTH (1 shl 1)
+#define CGUI_LIST_COLUMNS_DELIMITER (1 shl 2)
 
-declare function MkVerticalBrowser cdecl alias "MkVerticalBrowser" (byval x as integer, byval y as integer, byval CallBack as sub cdecl(byval as any ptr), byval data as any ptr, byval viewpos as integer ptr) as integer
-declare function MkHorizontalBrowser cdecl alias "MkHorizontalBrowser" (byval x as integer, byval y as integer, byval CallBack as sub cdecl(byval as any ptr), byval data as any ptr, byval viewpos as integer ptr) as integer
-declare function NotifyBrowser cdecl alias "NotifyBrowser" (byval id as integer, byval step as integer, byval scrolled_area_length as integer) as integer
-declare function SetBrowserSize cdecl alias "SetBrowserSize" (byval id as integer, byval view_port_length as integer, byval browser_length as integer) as integer
-declare function RegisterFileType cdecl alias "RegisterFileType" (byval ext as zstring ptr, byval Handler as sub cdecl(byval as any ptr, byval as zstring ptr), byval data as any ptr, byval aname as zstring ptr, byval icon as zstring ptr, byval label as zstring ptr, byval Viewer as sub cdecl(byval as any ptr, byval as any ptr)) as integer
-declare function FileSelect cdecl alias "FileSelect" (byval masks as zstring ptr, byval rpath as zstring ptr, byval flags as integer, byval winheader as zstring ptr, byval buttonlabel as zstring ptr) as zstring ptr
-declare sub FileManager cdecl alias "FileManager" (byval winheader as zstring ptr, byval flags as integer)
-declare function UnPackSelection cdecl alias "UnPackSelection" (byval flist as byte ptr ptr) as zstring ptr
+declare function MkVerticalBrowser(byval x as long, byval y as long, byval CallBack as sub(byval data_ as any ptr), byval data_ as any ptr, byval viewpos as long ptr) as long
+declare function MkHorizontalBrowser(byval x as long, byval y as long, byval CallBack as sub(byval data_ as any ptr), byval data_ as any ptr, byval viewpos as long ptr) as long
+declare function NotifyBrowser(byval id as long, byval step_ as long, byval scrolled_area_length as long) as long
+declare function SetBrowserSize(byval id as long, byval view_port_length as long, byval browser_length as long) as long
+declare function RegisterFileType(byval ext as const zstring ptr, byval Handler as sub(byval data_ as any ptr, byval path as zstring ptr), byval data_ as any ptr, byval aname as const zstring ptr, byval icon as const zstring ptr, byval label as const zstring ptr, byval Viewer as sub(byval privatedata as any ptr, byval viewdata as any ptr)) as long
+declare function FileSelect(byval masks as const zstring ptr, byval rpath as const zstring ptr, byval flags as long, byval winheader as const zstring ptr, byval buttonlabel as const zstring ptr) as const zstring ptr
+declare sub FileManager(byval winheader as const zstring ptr, byval flags as long)
+declare function UnPackSelection(byval flist as zstring ptr ptr) as zstring ptr
 
-#define CGUI_FS_BROWSE_DAT 1
-#define CGUI_FS_DISABLE_EDIT_DAT 2
-#define CGUI_FS_WARN_EXISTING_FILE 4
-#define CGUI_FS_FORBID_EXISTING_FILE 8
-#define CGUI_FS_REQUIRE_EXISTING_FILE &h10
-#define CGUI_FS_SELECT_DIR &h20
-#define CGUI_FS_DISABLE_CREATE_DIR &h40
-#define CGUI_FS_DISABLE_DELETING &h80
-#define CGUI_FS_DISABLE_COPYING &h100
-#define CGUI_FS_SHOW_MENU &h200
-#define CGUI_FS_NO_SETTINGS_IN_CONFIG &h400
-#define CGUI_FS_MULTIPLE_SELECTION &h800
-#define CGUI_FS_NO_DRAG_DROP &h1000
-#define CGUI_FS_DIRECT_SELECT_BY_DOUBLE_CLICK &h2000
-#define CGUI_FS_SAVE_AS &h4000
-#define CGUI_FS_SHOW_DIR_TREE &h8000
-#define CGUI_FS_SHOW_DIRS_IN_FILE_VIEW &h10000
-#define CGUI_FS_HIDE_LOCATION &h20000
-#define CGUI_FS_HIDE_UP_BUTTON &h40000
-#define CGUI_FS_HIDE_UP_DIRECTORY &h80000
-#define CGUI_FS_FILE_FILTER_IS_READ_ONLY &h100000
+#define CGUI_FS_BROWSE_DAT (1 shl 0)
+#define CGUI_FS_DISABLE_EDIT_DAT (1 shl 1)
+#define CGUI_FS_WARN_EXISTING_FILE (1 shl 2)
+#define CGUI_FS_FORBID_EXISTING_FILE (1 shl 3)
+#define CGUI_FS_REQUIRE_EXISTING_FILE (1 shl 4)
+#define CGUI_FS_SELECT_DIR (1 shl 5)
+#define CGUI_FS_DISABLE_CREATE_DIR (1 shl 6)
+#define CGUI_FS_DISABLE_DELETING (1 shl 7)
+#define CGUI_FS_DISABLE_COPYING (1 shl 8)
+#define CGUI_FS_SHOW_MENU (1 shl 9)
+#define CGUI_FS_NO_SETTINGS_IN_CONFIG (1 shl 10)
+#define CGUI_FS_MULTIPLE_SELECTION (1 shl 11)
+#define CGUI_FS_NO_DRAG_DROP (1 shl 12)
+#define CGUI_FS_DIRECT_SELECT_BY_DOUBLE_CLICK (1 shl 13)
+#define CGUI_FS_SAVE_AS (1 shl 14)
+#define CGUI_FS_SHOW_DIR_TREE (1 shl 15)
+#define CGUI_FS_SHOW_DIRS_IN_FILE_VIEW (1 shl 16)
+#define CGUI_FS_HIDE_LOCATION (1 shl 17)
+#define CGUI_FS_HIDE_UP_BUTTON (1 shl 18)
+#define CGUI_FS_HIDE_UP_DIRECTORY (1 shl 19)
+#define CGUI_FS_FILE_FILTER_IS_READ_ONLY (1 shl 20)
+#define CGUI_FM_HIDE_FILE_VEW (1 shl 21)
+#define CGUI_FM_DO_NOT_SHOW_MENU (1 shl 22)
+#define CGUI_FM_NO_FLOATING (1 shl 23)
+#define CGUI_FM_BROWSE_DAT CGUI_FS_BROWSE_DAT
+#define CGUI_FM_DISABLE_EDIT_DAT CGUI_FS_DISABLE_EDIT_DAT
+#define CGUI_FM_DISABLE_CREATE_DIR CGUI_FS_DISABLE_CREATE_DIR
+#define CGUI_FM_DISABLE_DELETING CGUI_FS_DISABLE_DELETING
+#define CGUI_FM_DISABLE_COPYING CGUI_FS_DISABLE_COPYING
+#define CGUI_FM_NO_SETTINGS_IN_CONFIG CGUI_FS_NO_SETTINGS_IN_CONFIG
+#define CGUI_FM_SHOW_DIR_TREE CGUI_FM_SHOW_DIR_TREE
+#define CGUI_FM_SHOW_DIRS_IN_FILE_VIEW CGUI_FS_SHOW_DIRS_IN_FILE_VIEW
+#define CGUI_FM_HIDE_LOCATION CGUI_FS_HIDE_LOCATION
+#define CGUI_FM_HIDE_UP_BUTTON CGUI_FS_HIDE_UP_BUTTON
+#define CGUI_FM_HIDE_UP_DIRECTORY CGUI_FS_HIDE_UP_DIRECTORY
 
-#define CGUI_FM_HIDE_FILE_VEW &h200000
-#define CGUI_FM_DO_NOT_SHOW_MENU &h400000
-#define CGUI_FM_NO_FLOATING &h800000
-#define CGUI_FM_BROWSE_DAT 1
-#define CGUI_FM_DISABLE_EDIT_DAT 2
-#define CGUI_FM_DISABLE_CREATE_DIR &h40
-#define CGUI_FM_DISABLE_DELETING &h80
-#define CGUI_FM_DISABLE_COPYING &h100
-#define CGUI_FM_NO_SETTINGS_IN_CONFIG &h200
-#define CGUI_FM_SHOW_DIRS_IN_FILE_VIEW &h400
-#define CGUI_FM_HIDE_LOCATION &h800
-#define CGUI_FM_HIDE_UP_BUTTON &h1000
-#define CGUI_FM_HIDE_UP_DIRECTORY &h2000
+declare sub CguiUseIcons(byval filename as const zstring ptr)
+declare function CreateTabWindow(byval x as long, byval y as long, byval width_ as long, byval height as long, byval status as long ptr) as long
+declare function AddTab(byval id as long, byval callback as sub(byval data_ as any ptr, byval id as long), byval data_ as any ptr, byval label as const zstring ptr) as long
+declare sub HookLeaveTab(byval callback as sub(byval data_ as any ptr), byval data_ as any ptr)
+declare function SetFocusOn(byval id as long) as long
+declare function JoinTabChain(byval id as long) as long
+declare function GetCurrentFocus(byval id as long) as long
+declare sub SetCguiFont(byval f as FONT ptr)
+declare function GetCguiFont() as FONT ptr
+declare function GetCguiFixFont() as FONT ptr
+declare sub CguiSetBaseLine(byval base_line as long)
+declare function Invite(byval mask as long, byval data_ as any ptr, byval text as zstring ptr) as long
+declare function Attend(byval mask as long) as any ptr
+declare sub ProcessEvents()
+declare sub StopProcessEvents()
+declare function GenEvent(byval Handler as sub(byval as any ptr), byval msg as any ptr, byval delay as ulong, byval objid as long) as ulong
+declare sub CguiEventIterateFunction(byval Function_ as function(byval as any ptr) as long, byval as any ptr)
+declare function KillEvent(byval id as ulong) as long
+declare sub FlushGenEvents()
+declare sub CguiYieldTimeslice(byval state as long)
 
-declare sub CguiUseIcons cdecl alias "CguiUseIcons" (byval filename as zstring ptr)
-declare function CreateTabWindow cdecl alias "CreateTabWindow" (byval x as integer, byval y as integer, byval width as integer, byval height as integer, byval status as integer ptr) as integer
-declare function AddTab cdecl alias "AddTab" (byval id as integer, byval callback as sub cdecl(byval as any ptr, byval as integer), byval data as any ptr, byval label as zstring ptr) as integer
-declare sub HookLeaveTab cdecl alias "HookLeaveTab" (byval callback as sub cdecl(byval as any ptr), byval data as any ptr)
-declare function SetFocusOn cdecl alias "SetFocusOn" (byval id as integer) as integer
-declare function JoinTabChain cdecl alias "JoinTabChain" (byval id as integer) as integer
-declare function GetCurrentFocus cdecl alias "GetCurrentFocus" (byval id as integer) as integer
-declare sub SetCguiFont cdecl alias "SetCguiFont" (byval f as FONT ptr)
-declare function GetCguiFont cdecl alias "GetCguiFont" () as FONT ptr
-declare function Invite cdecl alias "Invite" (byval mask as integer, byval data as any ptr, byval text as zstring ptr) as integer
-declare function Attend cdecl alias "Attend" (byval mask as integer) as any ptr
-declare sub ProcessEvents cdecl alias "ProcessEvents" ()
-declare sub StopProcessEvents cdecl alias "StopProcessEvents" ()
-declare function GenEvent cdecl alias "GenEvent" (byval Handler as sub cdecl(byval as any ptr), byval msg as any ptr, byval delay as uinteger, byval objid as integer) as uinteger
-declare function KillEvent cdecl alias "KillEvent" (byval id as uinteger) as integer
-declare sub FlushGenEvents cdecl alias "FlushGenEvents" ()
+EXTERNVAR event_message_buffer_size as long
 
-EXTERNVAR event_message_buffer_size alias "event_message_buffer_size" as integer
+declare sub InstallKBHandler(byval Handler as function(byval data_ as any ptr, byval scan as long, byval key as long) as long, byval data_ as any ptr)
+declare function UnInstallKBHandler(byval Handler as function(byval as any ptr, byval as long, byval as long) as long) as any ptr
+declare function SetHotKey(byval id as long, byval CallBack as sub(byval as any ptr), byval data_ as any ptr, byval scan as long, byval ascii as long) as long
+declare function IsHotKey(byval scan as long, byval ascii as long) as long
+declare sub SimulateHotKeys(byval control as long, byval key as long)
+declare sub UseHotKeys(byval s as zstring ptr)
+declare sub AutoHotKeys(byval mode as long)
 
-declare sub InstallKBHandler cdecl alias "InstallKBHandler" (byval Handler as function cdecl(byval as any ptr, byval as integer, byval as integer) as integer, byval data as any ptr)
-declare function UnInstallKBHandler cdecl alias "UnInstallKBHandler" (byval Handler as function cdecl(byval as any ptr, byval as integer, byval as integer) as integer) as any ptr
-declare function SetHotKey cdecl alias "SetHotKey" (byval id as integer, byval CallBack as sub cdecl(byval as any ptr), byval data as any ptr, byval scan as integer, byval ascii as integer) as integer
-declare function IsHotKey cdecl alias "IsHotKey" (byval scan as integer, byval ascii as integer) as integer
-declare sub SimulateHotKeys cdecl alias "SimulateHotKeys" (byval control as integer, byval key as integer)
-declare sub UseHotKeys cdecl alias "UseHotKeys" (byval s as zstring ptr)
-declare sub AutoHotKeys cdecl alias "AutoHotKeys" (byval mode as integer)
-
-declare Function CguiSetColor cdecl alias "CguiSetColor" (ByVal n As integer,byval r As integer,byval g As integer,byval  b As integer) As Integer
-
-declare sub NameCase cdecl alias "NameCase" (byval text as zstring ptr)
-'declare sub Sound cdecl alias "Sound" (byval freq as integer, byval duration as integer) 'this clashes with other Sound routine
-declare function AddClock cdecl alias "AddClock" (byval x as integer, byval y as integer, byval options as integer) as integer
-
-enum t_cgui_colors
+type t_cgui_colors as long
+enum
 	CGUI_COLOR_DESKTOP
 	CGUI_COLOR_UNSELECTED_TAB
 	CGUI_COLOR_SELECTED_TAB
@@ -446,25 +465,30 @@ enum t_cgui_colors
 	NR_OF_CGUI_COLORS
 end enum
 
+EXTERNVAR cgui_colors(0 to NR_OF_CGUI_COLORS-1) as long
 
+declare function CguiSetColor(byval color_name as long, byval r as long, byval g as long, byval b as long) as long
+declare sub NameCase(byval text as zstring ptr)
+declare sub Sound(byval freq as long, byval duration as long)
+declare function AddClock(byval x as long, byval y as long, byval options as long) as long
 
 #define CGUI_CLOCK_SHOW_SECONDS 1
 #define CGUI_CLOCK_SHOW_MINUTES 2
 #define CGUI_CLOCK_NO_DIALOGUE 4
 
-declare function ScanToAscii cdecl alias "ScanToAscii" (byval scancode as integer) as integer
-declare function ToUpper_ cdecl alias "ToUpper" (byval chr as integer) as integer
-declare function SaveDatafileObject cdecl alias "SaveDatafileObject" (byval path as zstring ptr, byval data as any ptr, byval type as integer) as integer
-declare function msprintf cdecl alias "msprintf" (byval format as zstring ptr, ...) as zstring ptr
-declare sub InstallCursor cdecl alias "InstallCursor" (byval cursor_no as integer, byval sprite as BITMAP ptr, byval x as integer, byval y as integer)
-declare sub ShowPointer cdecl alias "ShowPointer" ()
-declare sub HidePointer cdecl alias "HidePointer" ()
-declare sub PointerLocation cdecl alias "PointerLocation" (byval id as integer, byval x as integer ptr, byval y as integer ptr)
-declare function ObjectApearance cdecl alias "ObjectApearance" (byval id as integer) as BITMAP ptr
-declare sub OverlayPointer cdecl alias "OverlayPointer" (byval sprite as BITMAP ptr, byval x as integer, byval y as integer)
-declare sub RemoveOverlayPointer cdecl alias "RemoveOverlayPointer" ()
-declare sub MkTextPointer cdecl alias "MkTextPointer" (byval f as FONT ptr, byval text as zstring ptr)
-declare sub SelectCursor cdecl alias "SelectCursor" (byval cursor_no as integer)
+declare function ToUpper(byval chr_ as long) as long
+declare function SaveDatafileObject(byval path as const zstring ptr, byval data_ as any ptr, byval type_ as long) as long
+declare function CreateNewDataFile(byval path as const zstring ptr, byval fn as const zstring ptr, byval pack as long, byval pwd as const zstring ptr) as long
+declare function msprintf(byval format as const zstring ptr, ...) as zstring ptr
+declare sub InstallCursor(byval cursor_no as long, byval sprite as BITMAP ptr, byval x as long, byval y as long)
+declare sub ShowPointer()
+declare sub HidePointer()
+declare sub PointerLocation(byval id as long, byval x as long ptr, byval y as long ptr)
+declare function ObjectApearance(byval id as long) as BITMAP ptr
+declare sub OverlayPointer(byval sprite as BITMAP ptr, byval x as long, byval y as long)
+declare sub RemoveOverlayPointer()
+declare sub MkTextPointer(byval f as FONT ptr, byval text as const zstring ptr)
+declare sub SelectCursor(byval cursor_no as long)
 
 #define CGUI_CURS_ILLEGAL 0
 #define CGUI_CURS_DRAGGABLE 1
@@ -474,28 +498,30 @@ declare sub SelectCursor cdecl alias "SelectCursor" (byval cursor_no as integer)
 #define CGUI_CURS_BUSY 5
 #define CGUI_CURS_DEFAULT 6
 
-declare sub SetMousePos cdecl alias "SetMousePos" (byval x as integer, byval y as integer)
+declare sub CguiSetMouseInput(byval MouseInput as sub(byval x as long ptr, byval y as long ptr, byval z as long ptr, byval buttons as long ptr), byval ForcePos as sub(byval x as long, byval y as long), byval SetRange as sub(byval x as long, byval y as long, byval w as long, byval h as long))
+declare sub SetMousePos(byval x as long, byval y as long)
 
-EXTERNVAR cgui_mouse_draw_in_interrupt alias "cgui_mouse_draw_in_interrupt" as integer
+EXTERNVAR cgui_mouse_draw_in_interrupt as long
 
-declare function LoadTexts cdecl alias "LoadTexts" (byval fn as zstring ptr, byval section as zstring ptr, byval nr as integer ptr) as byte ptr ptr
-declare sub DestroyTexts cdecl alias "DestroyTexts" ()
-declare sub RegisterConversionHandler cdecl alias "RegisterConversionHandler" (byval Handler as sub cdecl(byval as any ptr, byval as zstring ptr), byval data as any ptr, byval name as zstring ptr)
-declare sub PrintFloatingConversion cdecl alias "PrintFloatingConversion" (byval dest as zstring ptr, byval src as zstring ptr)
-declare function LoadCompiledTexts cdecl alias "LoadCompiledTexts" (byval dat as DATAFILE ptr, byval section as zstring ptr, byval nr as integer ptr) as byte ptr ptr
-declare sub RegisterRefresh cdecl alias "RegisterRefresh" (byval id as integer, byval AppUpd as sub cdecl(byval as integer, byval as any ptr, byval as any ptr, byval as integer), byval data as any ptr)
-declare sub ConditionalRefresh cdecl alias "ConditionalRefresh" (byval calldata as any ptr, byval reason as integer)
-declare function GetSizeOffset cdecl alias "GetSizeOffset" (byval id as integer, byval x as integer ptr, byval y as integer ptr) as integer
-declare function SetSizeOffset cdecl alias "SetSizeOffset" (byval id as integer, byval x as integer, byval y as integer) as integer
-declare function MakeStretchable cdecl alias "MakeStretchable" (byval id as integer, byval Notify as sub cdecl(byval as any ptr), byval data as any ptr, byval options as integer) as integer
-
-EXTERNVAR continous_update_resize alias "continous_update_resize" as integer
+declare function LoadTexts(byval fn as const zstring ptr, byval section as const zstring ptr, byval nr as long ptr) as const zstring const ptr ptr
+declare sub DestroyTexts()
+declare sub RegisterConversionHandler(byval Handler as sub(byval as any ptr, byval as zstring ptr), byval data_ as any ptr, byval name_ as const zstring ptr)
+declare sub PrintFloatingConversion(byval dest as zstring ptr, byval src as const zstring ptr)
+declare function LoadCompiledTexts(byval dat as const DATAFILE ptr, byval section as const zstring ptr, byval nr as long ptr) as const zstring const ptr ptr
+declare sub RegisterRefresh(byval id as long, byval AppUpd as sub(byval id as long, byval data_ as any ptr, byval calldata as any ptr, byval reason as long), byval data_ as any ptr)
+declare sub ConditionalRefresh(byval calldata as any ptr, byval reason as long)
+declare function GetSizeOffset(byval id as long, byval x as long ptr, byval y as long ptr) as long
+declare function SetSizeOffset(byval id as long, byval x as long, byval y as long) as long
+declare function MakeStretchable(byval id as long, byval Notify as sub(byval as any ptr), byval data_ as any ptr, byval options as long) as long
 
 #define CGUI_NO_VERTICAL 1
 #define CGUI_NO_HORIZONTAL 2
-#define CGUI_FRAMERAISE &h80000000
-#define CGUI_FRAMESINK &h40000000
-#define CGUI_W_NOMODAL (1 shl 3)
+
+EXTERNVAR continous_update_resize as long
+
+#define CGUI_FRAMERAISE CGUI_TB_FRAMERAISE
+#define CGUI_FRAMESINK CGUI_TB_FRAMESINK
+#define CGUI_W_NOMODAL CGUI_W_FLOATING
 #define CGUI_W_CHILD 0
 
-#endif
+end extern
