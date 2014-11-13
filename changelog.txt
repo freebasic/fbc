@@ -23,6 +23,7 @@ Version 1.01.0
 	ncurses 5.9
 	PDCurses 3.4
 	zlib 1.2.8
+	crt/sys/types.bi now provides off_t on Windows, like MinGW.org and MinGW-w64
 
 [fixed]
 - 1.00.0 regression: DRAW x/y pen position was reset during X<address> subcommands, instead of being preserved and passed to/from the subcommands
