@@ -11,6 +11,7 @@ Version 1.01.0
 	Allegro 4.4.2 (allegro.bi)
 	algif 1.3 (allegro/algif.bi)
 	alpng 1.3 (allegro/alpng.bi)
+	Allegro 5.0.10 (allegro5/allegro.bi, plus the addons such as allegro5/allegro_font.bi)
 	CGUI 2.0.3
 	CUnit 2.1-3
 	fmod.bi for the old FMOD 3.75
