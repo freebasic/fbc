@@ -227,8 +227,8 @@ static int load_bmp(FB_GFXCTX *ctx, FILE *f, void *dest, void *pal, int usenewhe
 					return FB_RTERROR_FILEIO;
 				}
 
-				if (biSize >= 108) {
-					/* Windows V4 (BITMAPV4HEADER) or later */
+				if (biSize >= 56) {
+					/* Windows V3 (BITMAPV3HEADER) or later */
 					if ((fseek(f, 4*4, SEEK_CUR)) ||
 					    (!fread_32_le(&rgba[0], f)) ||
 					    (!fread_32_le(&rgba[1], f)) ||
@@ -329,7 +329,7 @@ static int load_bmp(FB_GFXCTX *ctx, FILE *f, void *dest, void *pal, int usenewhe
 
 	expand = (biBitCount < 8) ? biBitCount : 0;
 	if (biCompression == BI_BITFIELDS) {
-		if (biSize < 108) {
+		if (biSize < 56) {
 			if (!fread(rgba, 12, 1, f))
 				return FB_RTERROR_FILEIO;
 		}
