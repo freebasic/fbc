@@ -134,16 +134,17 @@ void fb_GfxDrawLine(FB_GFXCTX *context, int x1, int y1, int x2, int y2, unsigned
 				y += ay * skip;
 				d -= skip * dx;
 				if ((y < ymin) || (y > ymax))
-					y = y2;
+					goto done;
 			} else if (d < (dy - dx)) {
 				skip = ((dy - dx) - d) / dy + 1;
 				x += ax * skip;
 				d += skip * dy;
 				rot += skip;
 				if ((x < xmin) || (x > xmax))
-					x = x2;
+					goto done;
 			}
 			bit = 0x8000 >> (rot & 0xF);
+			y1 = y; /* first dirty row */
 
 			while ((x != x2) && (y != y2)) {
 				if (style & bit)
@@ -165,16 +166,17 @@ void fb_GfxDrawLine(FB_GFXCTX *context, int x1, int y1, int x2, int y2, unsigned
 				x += ax * skip;
 				d += skip * dy;
 				if ((x < xmin) || (x > xmax))
-					x = x2;
+					goto done;
 			} else if (d > dy - dx) {
 				skip = (d - (dy - dx)) / dx + 1;
 				y += ay * skip;
 				d -= skip * dx;
 				rot += skip;
 				if ((y < ymin) || (y > ymax))
-					y = y2;
+					goto done;
 			}
 			bit = 0x8000 >> (rot & 0xF);
+			y1 = y; /* first dirty row */
 
 			while ((y != y2) && (x != x2)) {
 				if (style & bit)
@@ -189,10 +191,12 @@ void fb_GfxDrawLine(FB_GFXCTX *context, int x1, int y1, int x2, int y2, unsigned
 				/* invariant: (-dx) <= d < (-dx + dy) */
 			}
 		}
+		y2 -= ay; /* last dirty row */
 	}
 	if (y1 > y2)
 		SWAP(y1, y2);
 	SET_DIRTY(context, y1, y2 - y1 + 1);
+	done:
 	DRIVER_UNLOCK();
 }
 
