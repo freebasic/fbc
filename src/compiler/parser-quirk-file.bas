@@ -117,6 +117,11 @@ function cPrintStmt  _
 			issemicolon = TRUE
 		end if
 
+		if( (isspc or istab) and (issemicolon = FALSE) ) then
+			'' only semicolons are supported after SPC()/TAB() (QB editor autocorrected them)
+			errReport( FB_ERRMSG_EXPECTEDSEMICOLON )
+		end if
+
 		'' handle PRINT w/o expressions
 		if( (iscomma = FALSE) and _
 			(issemicolon = FALSE) and _
@@ -124,22 +129,14 @@ function cPrintStmt  _
 			exit do
 		end if
 
-		if( isspc ) then
+		if( isspc or istab ) then
 			filexprcopy = astCloneTree( filexpr )
 			if( rtlPrintSPC( filexprcopy, _
 							 expr, _
+							 istab, _
 							 islprint ) = FALSE ) then
 				exit function
 			end if
-
-		elseif( istab ) then
-			filexprcopy = astCloneTree( filexpr )
-			if( rtlPrintTab( filexprcopy, _
-							 expr, _
-							 islprint ) = FALSE ) then
-				exit function
-			end if
-
 		else
 			if( usingexpr = NULL /'or expr = NULL'/ ) then
 			/' (commented check allows multiple consecutive commas/semicolons in USING statements.

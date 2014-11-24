@@ -1269,17 +1269,11 @@ declare function rtlPrint _
 		byval islprint as integer = FALSE _
 	) as integer
 
-declare function rtlPrintSPC _
+declare function rtlPrintSPCTab _
 	( _
 		byval fileexpr as ASTNODE ptr, _
 		byval expr as ASTNODE ptr, _
-		byval islprint as integer = FALSE _
-	) as integer
-
-declare function rtlPrintTab _
-	( _
-		byval fileexpr as ASTNODE ptr, _
-		byval expr as ASTNODE ptr, _
+		byval istab as integer, _
 		byval islprint as integer = FALSE _
 	) as integer
 
