@@ -131,7 +131,7 @@ function cPrintStmt  _
 
 		if( isspc or istab ) then
 			filexprcopy = astCloneTree( filexpr )
-			if( rtlPrintSPC( filexprcopy, _
+			if( rtlPrintSPCTab( filexprcopy, _
 							 expr, _
 							 istab, _
 							 islprint ) = FALSE ) then
