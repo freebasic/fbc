@@ -201,6 +201,18 @@ static int load_bmp(FB_GFXCTX *ctx, FILE *f, void *dest, void *pal, int usenewhe
 	    (!fread_32_le(&biSize, f)))
 		return FB_RTERROR_FILEIO;
 
+	switch (biSize)
+	{
+		case 12:  /* OS/2 V1 (BITMAPCOREHEADER) */
+		case 40:  /* BITMAPINFOHEADER */
+		case 56:  /* BITMAPV3HEADER (undocumented) */
+		case 108: /* BITMAPV4HEADER */
+		case 124: /* BITMAPV5HEADER */
+			break;
+		default:
+			return FB_RTERROR_FILEIO;
+	}
+
 	if (biSize == 12) {
 		/* OS/2 V1 (BITMAPCOREHEADER) */
 		if ((!fread_16_le(&bcWidth, f)) ||

@@ -54,7 +54,8 @@ Version 1.01.0
 - DRAW was not unsetting the B/N qualifiers after 0-length directional commands, e.g. "R0", resulting in them being applied to the following command, e.g. DRAW "B U0D0L0R0 R10" would not draw "R10"
 - Bad code was generated when initializing integer variables with a wstring-indexing expressions
 - #723: LINE clipping now doesn't affect which (unclipped) pixels are plotted, eliminating rounding differences and correctly preserving the position of the style bits
-- BLOAD was silently misreading bitfields for BMPs with BITMAPV3HEADER format (56-byte) headers
+- BLOAD now gives an error if it encounters a BMP file with an unknown header size
+- BLOAD was misreading bitfields in BMP files with undocumented BITMAPV3HEADER format (56-byte headers)
 
 
 Version 1.00.0 (former 0.91.0):
