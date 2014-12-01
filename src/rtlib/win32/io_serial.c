@@ -139,7 +139,7 @@ int fb_SerialOpen( FB_FILE *handle,
     if( res==FB_RTERROR_OK ) {
         COMMPROP prop;
         if( !GetCommProperties( hDevice, &prop ) ) {
-            res = fb_ErrorSetNum( FB_RTERROR_NOPRIVILEDGES );
+            res = fb_ErrorSetNum( FB_RTERROR_NOPRIVILEGES );
         } else {
             if( prop.dwCurrentTxQueue ) {
                 dwDefaultTxBufferSize = prop.dwCurrentTxQueue;
@@ -173,7 +173,7 @@ int fb_SerialOpen( FB_FILE *handle,
     if( res==FB_RTERROR_OK ) {
         COMMTIMEOUTS timeouts;
         if( !GetCommTimeouts( hDevice, &timeouts ) ) {
-            res = fb_ErrorSetNum( FB_RTERROR_NOPRIVILEDGES );
+            res = fb_ErrorSetNum( FB_RTERROR_NOPRIVILEGES );
         } else {
             if( options->DurationCTS!=0 ) {
                 timeouts.ReadIntervalTimeout = options->DurationCTS;
@@ -190,7 +190,7 @@ int fb_SerialOpen( FB_FILE *handle,
     if( res==FB_RTERROR_OK ) {
         DCB dcb;
         if( !GetCommState( hDevice, &dcb ) ) {
-            res = fb_ErrorSetNum( FB_RTERROR_NOPRIVILEDGES );
+            res = fb_ErrorSetNum( FB_RTERROR_NOPRIVILEGES );
         } else {
             dcb.BaudRate = options->uiSpeed;
             dcb.fBinary = !options->AddLF; /* FIXME: Windows only supports binary mode */

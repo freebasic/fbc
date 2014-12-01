@@ -11,7 +11,7 @@ static const char *messages[] = {
 	"illegal resume",                       /* FB_RTERROR_ILLEGALRESUME */
 	"out of bounds array access",           /* FB_RTERROR_OUTOFBOUNDS */
 	"null pointer access",                  /* FB_RTERROR_NULLPTR */
-	"no priviledges",                       /* FB_RTERROR_NOPRIVILEDGES */
+	"no privileges",                        /* FB_RTERROR_NOPRIVILEGES */
 	"\"interrupted\" signal",               /* FB_RTERROR_SIGINT */
 	"\"illegal instruction\" signal",       /* FB_RTERROR_SIGILL */
 	"\"floating point error\" signal",      /* FB_RTERROR_SIGFPE */

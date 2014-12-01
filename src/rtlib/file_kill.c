@@ -32,7 +32,7 @@ FBCALL int fb_FileKill( FBSTRING *str )
 			res = FB_RTERROR_FILEIO;
 			break;
 		case EPERM:
-			res = FB_RTERROR_NOPRIVILEDGES;
+			res = FB_RTERROR_NOPRIVILEGES;
 			break;
 		default:
 			res = FB_RTERROR_ILLEGALFUNCTIONCALL;
