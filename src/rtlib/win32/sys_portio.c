@@ -138,7 +138,7 @@ int fb_hIn( unsigned short port )
 	if( !inited )
 		inited = init_ports( );
 	if( !inited )
-		return -fb_ErrorSetNum( FB_RTERROR_NOPRIVILEDGES );
+		return -fb_ErrorSetNum( FB_RTERROR_NOPRIVILEGES );
 
 	__asm__ volatile ("inb %1, %0" : "=a" (value) : "d" (port));
 
@@ -150,7 +150,7 @@ int fb_hOut( unsigned short port, unsigned char value )
 	if( !inited )
 		inited = init_ports( );
 	if( !inited )
-		return fb_ErrorSetNum( FB_RTERROR_NOPRIVILEDGES );
+		return fb_ErrorSetNum( FB_RTERROR_NOPRIVILEGES );
 
 	__asm__ volatile ("outb %0, %1" : : "a" (value), "d" (port));
 
