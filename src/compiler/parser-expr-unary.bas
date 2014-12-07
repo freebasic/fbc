@@ -132,6 +132,8 @@ function cStrIdxOrMemberDeref _
 	dim as FBSYMBOL ptr subtype = any
 	dim as integer dtype = any
 
+	if( expr = NULL ) then exit function
+
 	dtype = astGetFullType( expr )
 	subtype = astGetSubType( expr )
 

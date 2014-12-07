@@ -57,6 +57,7 @@ Version 1.01.0
 - BLOAD now gives an error if it encounters a BMP file with an unknown header size
 - BLOAD was misreading bitfields in BMP files with undocumented BITMAPV3HEADER format (56-byte headers)
 - PRINT now disallows commas/newlines after SPC/TAB, instead of silently ignoring them
+- 0.90.0 regression: Compiler crash during error recovery for expressions like 'type<UDT>().field' where initializer values are missing
 
 
 Version 1.00.0 (former 0.91.0):
