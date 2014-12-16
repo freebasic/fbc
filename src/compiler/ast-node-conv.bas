@@ -115,26 +115,19 @@ function astCheckConvNonPtrToPtr _
 	assert( typeIsPtr( to_dtype ) )
 	assert( typeIsPtr( expr_dtype ) = FALSE )
 
-	select case as const( typeGetDtAndPtrOnly( expr_dtype ) )
-	case FB_DATATYPE_INTEGER, FB_DATATYPE_UINT, FB_DATATYPE_ENUM, _
-	     FB_DATATYPE_LONG, FB_DATATYPE_ULONG, _
-	     FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-		'' Allow integer-to-pointer casts if same size
-		if( typeGetSize( expr_dtype ) = env.pointersize ) then
-			return FB_ERRMSG_OK
-		end if
-
-	'' only allow other int dtypes if it's 0 (due QB's INTEGER = short)
-	case FB_DATATYPE_BYTE, FB_DATATYPE_UBYTE, _
-	     FB_DATATYPE_SHORT, FB_DATATYPE_USHORT
+	if( typeGetClass( expr_dtype ) = FB_DATACLASS_INTEGER ) then
+		'' Allow converting literal 0 with any integer type to any pointer type
 		if( astIsCONST( expr ) ) then
 			if( astConstEqZero( expr ) ) then
-				'' Allow 0-to-pointer casts
 				return FB_ERRMSG_OK
 			end if
 		end if
 
-	end select
+		'' Allow integer-to-pointer casts only if same size
+		if( typeGetSize( expr_dtype ) = env.pointersize ) then
+			return FB_ERRMSG_OK
+		end if
+	end if
 
 	function = hGetTypeMismatchErrMsg( options )
 end function
@@ -160,15 +153,19 @@ private function hCheckPtr _
 
 	'' from pointer? only allow integers of same size and pointers
 	elseif( typeIsPtr( expr_dtype ) ) then
-		select case as const( typeGetDtAndPtrOnly( to_dtype ) )
-		case FB_DATATYPE_INTEGER, FB_DATATYPE_UINT, FB_DATATYPE_ENUM, _
-		     FB_DATATYPE_LONG, FB_DATATYPE_ULONG, _
-		     FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
+		if( typeGetClass( to_dtype ) = FB_DATACLASS_INTEGER ) then
+			'' Allow converting literal 0 with any pointer type to any integer type
+			if( astIsCONST( expr ) ) then
+				if( astConstEqZero( expr ) ) then
+					exit function
+				end if
+			end if
+
 			'' Allow pointer-to-integer casts if same size
 			if( typeGetSize( to_dtype ) = env.pointersize ) then
 				exit function
 			end if
-		end select
+		end if
 
 		return hGetTypeMismatchErrMsg( options )
 	else
