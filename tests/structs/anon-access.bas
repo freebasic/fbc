@@ -2,15 +2,24 @@
 
 namespace fbc_tests.structs.anon_access
 
-type UDT
+type PodUdt
+	i as integer
+end type
+
+type CtorUdt
 	as integer a, b
 	declare constructor( )
 end type
 
-constructor UDT( )
+constructor CtorUdt( )
 	a = 123
 	b = 456
 end constructor
+
+sub test cdecl( )
+	CU_ASSERT( (type<PodUdt>( 123 )).i = 123 )
+	CU_ASSERT( type<PodUdt>( 123 ).i = 123 )
+end sub
 
 private sub test3538470 cdecl( )
 	'' Regression test for bug #3538470
@@ -18,30 +27,31 @@ private sub test3538470 cdecl( )
 	dim x as integer
 
 	CU_ASSERT( x = 0 )
-	x = (UDT( )).a
+	x = (CtorUdt( )).a
 	CU_ASSERT( x = 123 )
-	CU_ASSERT( (UDT( )).a = 123 )
-	CU_ASSERT( 123 = (UDT( )).a )
+	CU_ASSERT( (CtorUdt( )).a = 123 )
+	CU_ASSERT( 123 = (CtorUdt( )).a )
 
-	x = (UDT( )).b
+	x = (CtorUdt( )).b
 	CU_ASSERT( x = 456 )
-	CU_ASSERT( (UDT( )).b = 456 )
-	CU_ASSERT( 456 = (UDT( )).b )
+	CU_ASSERT( (CtorUdt( )).b = 456 )
+	CU_ASSERT( 456 = (CtorUdt( )).b )
 
-	x = (type<UDT>( )).a
+	x = (type<CtorUdt>( )).a
 	CU_ASSERT( x = 123 )
-	CU_ASSERT( (type<UDT>( )).a = 123 )
-	CU_ASSERT( 123 = (type<UDT>( )).a )
+	CU_ASSERT( (type<CtorUdt>( )).a = 123 )
+	CU_ASSERT( 123 = (type<CtorUdt>( )).a )
 
-	x = (type<UDT>( )).b
+	x = (type<CtorUdt>( )).b
 	CU_ASSERT( x = 456 )
-	CU_ASSERT( (type<UDT>( )).b = 456 )
-	CU_ASSERT( 456 = (type<UDT>( )).b )
+	CU_ASSERT( (type<CtorUdt>( )).b = 456 )
+	CU_ASSERT( 456 = (type<CtorUdt>( )).b )
 end sub
 
 private sub ctor( ) constructor
 	fbcu.add_suite( "tests/structs/anon-access" )
 	fbcu.add_test( "#3538470", @test3538470 )
+	fbcu.add_test( "test", @test )
 end sub
 
 end namespace
