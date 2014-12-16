@@ -816,6 +816,7 @@ namespace const0
 	private sub test cdecl( )
 		a( cptr( any ptr, 0 ) )
 		a( 0 )
+		a( 0u )
 		a( cint( 0 ) )
 		a( cuint( 0 ) )
 		#ifdef __FB_64BIT__
@@ -829,6 +830,10 @@ namespace const0
 			a( clng( 0 ) )
 			a( culng( 0 ) )
 		#endif
+		a( cbyte( 0 ) )
+		a( cubyte( 0 ) )
+		a( cshort( 0 ) )
+		a( cushort( 0 ) )
 
 		#macro makeTest1( suffix, result )
 			CU_ASSERT( f1_##suffix( cptr( any ptr, 0 ) ) = "any ptr" )

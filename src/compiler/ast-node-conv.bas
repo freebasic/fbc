@@ -104,6 +104,41 @@ private function hGetTypeMismatchErrMsg( byval options as AST_CONVOPT ) as integ
 	end if
 end function
 
+function astCheckConvNonPtrToPtr _
+	( _
+		byval to_dtype as integer, _
+		byval expr_dtype as integer, _
+		byval expr as ASTNODE ptr, _
+		byval options as AST_CONVOPT _
+	) as integer
+
+	assert( typeIsPtr( to_dtype ) )
+	assert( typeIsPtr( expr_dtype ) = FALSE )
+
+	select case as const typeGet( expr_dtype )
+	case FB_DATATYPE_INTEGER, FB_DATATYPE_UINT, FB_DATATYPE_ENUM, _
+	     FB_DATATYPE_LONG, FB_DATATYPE_ULONG, _
+	     FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
+		'' Allow integer-to-pointer casts if same size
+		if( typeGetSize( expr_dtype ) = env.pointersize ) then
+			return FB_ERRMSG_OK
+		end if
+
+	'' only allow other int dtypes if it's 0 (due QB's INTEGER = short)
+	case FB_DATATYPE_BYTE, FB_DATATYPE_UBYTE, _
+	     FB_DATATYPE_SHORT, FB_DATATYPE_USHORT
+		if( astIsCONST( expr ) ) then
+			if( astConstEqZero( expr ) ) then
+				'' Allow 0-to-pointer casts
+				return FB_ERRMSG_OK
+			end if
+		end if
+
+	end select
+
+	function = hGetTypeMismatchErrMsg( options )
+end function
+
 private function hCheckPtr _
 	( _
 		byval to_dtype as integer, _
@@ -117,35 +152,11 @@ private function hCheckPtr _
 
 	'' to pointer? only allow integers of same size, and pointers
 	if( typeIsPtr( to_dtype ) ) then
-		select case as const typeGet( expr_dtype )
-		case FB_DATATYPE_INTEGER, FB_DATATYPE_UINT, FB_DATATYPE_ENUM, _
-		     FB_DATATYPE_LONG, FB_DATATYPE_ULONG, _
-		     FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-			'' Allow integer-to-pointer casts if same size
-			if( typeGetSize( expr_dtype ) = env.pointersize ) then
-				exit function
-			end if
-			return hGetTypeMismatchErrMsg( options )
+		if( typeIsPtr( expr_dtype ) = FALSE ) then
+			return astCheckConvNonPtrToPtr( to_dtype, expr_dtype, expr, options )
+		end if
 
-		'' only allow other int dtypes if it's 0 (due QB's INTEGER = short)
-		case FB_DATATYPE_BYTE, FB_DATATYPE_UBYTE, _
-		     FB_DATATYPE_SHORT, FB_DATATYPE_USHORT
-			if( astIsCONST( expr ) ) then
-				if( astConstEqZero( expr ) ) then
-					'' Allow 0-to-pointer casts
-					exit function
-				end if
-			end if
-
-			return hGetTypeMismatchErrMsg( options )
-
-		case FB_DATATYPE_POINTER
-			'' Both are pointers, fall through to checks below
-
-		case else
-			'' Nothing else allowed (strings, structs)
-			return hGetTypeMismatchErrMsg( options )
-		end select
+		'' Both are pointers, fall through to checks below
 
 	'' from pointer? only allow integers of same size and pointers
 	elseif( typeIsPtr( expr_dtype ) ) then

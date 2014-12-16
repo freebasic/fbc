@@ -900,6 +900,14 @@ declare function astCheckASSIGNToType _
 		byval r as ASTNODE ptr _
 	) as integer
 
+declare function astCheckConvNonPtrToPtr _
+	( _
+		byval to_dtype as integer, _
+		byval expr_dtype as integer, _
+		byval expr as ASTNODE ptr, _
+		byval options as AST_CONVOPT _
+	) as integer
+
 declare function astCheckCONV _
 	( _
 		byval to_dtype as integer, _
