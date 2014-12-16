@@ -802,13 +802,13 @@ function cProcCallOrAssign _
 			'' no need to check for '=', that was done already by Declaration()
 
 			if( fbIsModLevel( ) ) then
-				errReport( FB_ERRMSG_ILLEGALOUTSIDEANPROPERTY )
+				errReport( FB_ERRMSG_ILLEGALOUTSIDEAPROPERTY )
 				'' error recovery: skip stmt, return
 				hSkipStmt( )
 				return TRUE
 			else
 				if( symbIsProperty( parser.currproc ) = FALSE ) then
-					errReport( FB_ERRMSG_ILLEGALOUTSIDEANPROPERTY )
+					errReport( FB_ERRMSG_ILLEGALOUTSIDEAPROPERTY )
 				end if
 			end if
 

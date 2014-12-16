@@ -301,7 +301,7 @@ sub cExitStatement( )
 			dim errmsg as integer
 			select case as const( tk )
 			case FB_TK_SUB         : errmsg = FB_ERRMSG_ILLEGALOUTSIDEASUB
-			case FB_TK_PROPERTY    : errmsg = FB_ERRMSG_ILLEGALOUTSIDEANPROPERTY
+			case FB_TK_PROPERTY    : errmsg = FB_ERRMSG_ILLEGALOUTSIDEAPROPERTY
 			case FB_TK_OPERATOR    : errmsg = FB_ERRMSG_ILLEGALOUTSIDEANOPERATOR
 			case FB_TK_CONSTRUCTOR : errmsg = FB_ERRMSG_ILLEGALOUTSIDEACTOR
 			case FB_TK_DESTRUCTOR  : errmsg = FB_ERRMSG_ILLEGALOUTSIDEADTOR
@@ -341,7 +341,7 @@ sub cExitStatement( )
 			if( symbIsProperty( parser.currproc ) ) then
 				errnum = hCheckForCtorResult( )
 			else
-				errnum = FB_ERRMSG_ILLEGALOUTSIDEANPROPERTY
+				errnum = FB_ERRMSG_ILLEGALOUTSIDEAPROPERTY
 			end if
 
 		case FB_TK_OPERATOR
