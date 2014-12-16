@@ -115,7 +115,7 @@ function astCheckConvNonPtrToPtr _
 	assert( typeIsPtr( to_dtype ) )
 	assert( typeIsPtr( expr_dtype ) = FALSE )
 
-	select case as const typeGet( expr_dtype )
+	select case as const( typeGetDtAndPtrOnly( expr_dtype ) )
 	case FB_DATATYPE_INTEGER, FB_DATATYPE_UINT, FB_DATATYPE_ENUM, _
 	     FB_DATATYPE_LONG, FB_DATATYPE_ULONG, _
 	     FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
@@ -160,7 +160,7 @@ private function hCheckPtr _
 
 	'' from pointer? only allow integers of same size and pointers
 	elseif( typeIsPtr( expr_dtype ) ) then
-		select case as const typeGet( to_dtype )
+		select case as const( typeGetDtAndPtrOnly( to_dtype ) )
 		case FB_DATATYPE_INTEGER, FB_DATATYPE_UINT, FB_DATATYPE_ENUM, _
 		     FB_DATATYPE_LONG, FB_DATATYPE_ULONG, _
 		     FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
@@ -168,15 +168,9 @@ private function hCheckPtr _
 			if( typeGetSize( to_dtype ) = env.pointersize ) then
 				exit function
 			end if
-			return hGetTypeMismatchErrMsg( options )
-
-		case FB_DATATYPE_POINTER
-			'' Both are pointers, fall through to checks below
-
-		case else
-			'' Nothing else allowed (strings, structs)
-			return hGetTypeMismatchErrMsg( options )
 		end select
+
+		return hGetTypeMismatchErrMsg( options )
 	else
 		'' No pointers at all, nothing to do
 		exit function
