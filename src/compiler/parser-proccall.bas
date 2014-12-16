@@ -449,7 +449,7 @@ private function hProcSymbol _
 
 	'' check if name is valid (or if overloaded)
 	if( symbIsProcOverloadOf( parser.currproc, sym ) = FALSE ) then
-		errReport( FB_ERRMSG_ILLEGALOUTSIDEAPROC )
+		errReport( FB_ERRMSG_RESULTASSIGNOUTSIDEFUNCTION )
 		'' error recovery: skip stmt, return
 		hSkipStmt( )
 		return TRUE

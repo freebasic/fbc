@@ -396,7 +396,8 @@ declare function hMakeParamDesc _
 		@"the first parameter in a procedure may not be vararg", _
 		@"CONST used on constructor (not needed)", _
 		@"CONST used on destructor (not needed)", _
-		@"Byref function result not set" _
+		@"Byref function result not set", _
+		@"Function result assignment outside of the function" _
 	}
 
 
