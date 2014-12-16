@@ -64,6 +64,7 @@ Version 1.01.0
 - When passing a constant zero of some integer to an overloaded procedure, overloads with integer parameters will now be preferred over overloads with pointers (literal 0 can still be passed to pointer parameters in this case though, by casting it to the pointer type)
 - Literal zeroes with [U]Byte or [U]Short type (or the 16bit Integer in -lang qb) can now be passed to pointer parameters of overloaded procedures (now it's possible to call Bsave() with 0 source buffer in -lang qb again -- it also was affected by this bug since FB 0.90)
 - #760: RETURN and FUNCTION= couldn't be used together in byref functions returning an UDT with constructor. This check is now only applied to functions returning byval.
+- #755: If no result is set in byref functions, the compiler will now show an error instead of a warning (because a byref function defaults to returning a null reference, most likely causing a crash at runtime)
 
 
 Version 1.00.0 (former 0.91.0):
