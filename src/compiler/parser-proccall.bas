@@ -46,11 +46,12 @@ function cAssignFunctResult( byval is_return as integer ) as integer
 
 	has_ctor = symbHasCtor( parser.currproc )
 	has_defctor = symbHasDefCtor( parser.currproc )
+	var returns_byref = symbProcReturnsByref( parser.currproc )
 
 	'' RETURN?
 	if( is_return ) then
 		if( symbGetProcStatAssignUsed( parser.currproc ) ) then
-			if( has_defctor ) then
+			if( has_defctor and (not returns_byref) ) then
 				errReport( FB_ERRMSG_RETURNMIXEDWITHASSIGN )
 			end if
 		end if
@@ -58,7 +59,7 @@ function cAssignFunctResult( byval is_return as integer ) as integer
 		symbSetProcStatReturnUsed( parser.currproc )
 	else
 		if( symbGetProcStatReturnUsed( parser.currproc ) ) then
-			if( has_defctor ) then
+			if( has_defctor and (not returns_byref) ) then
 				errReport( FB_ERRMSG_ASSIGNMIXEDWITHRETURN )
 			end if
 		end if
@@ -80,7 +81,7 @@ function cAssignFunctResult( byval is_return as integer ) as integer
 	'' is allowed, no implicit ADDROF is done, just like with BYREF params.
 
 	'' Returning BYREF and no explicit BYVAL given?
-	if( symbProcReturnsByref( parser.currproc ) and (not hMatch( FB_TK_BYVAL )) ) then
+	if( returns_byref and (not hMatch( FB_TK_BYVAL )) ) then
 		'' BYREF return, must be able to do addrof on the expression
 		'' (this disallows expressions like constants, BOPs, @ UOP, ...)
 		rhs = cVarOrDeref( FB_VAREXPROPT_ISEXPR )

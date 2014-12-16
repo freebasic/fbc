@@ -806,6 +806,75 @@ namespace cxxMangling
 	end sub
 end namespace
 
+namespace returnVsFunction
+	'' For functions returning BYREF, both RETURN and FUNCTION= should be
+	'' allowed to assign results, no matter what result type it is, since
+	'' it's just a pointer, and the function doesn't actually have to call
+	'' any constructor.
+
+	type CtorUdt
+		i as integer
+		declare constructor( )
+	end type
+
+	constructor CtorUdt( )
+	end constructor
+
+	dim shared as integer ireturn, ifunction
+	dim shared as CtorUdt ctorudtreturn, ctorudtfunction
+
+	function getInteger1( ) byref as integer
+		return ireturn
+		function = ifunction
+	end function
+
+	function getInteger2( ) byref as integer
+		function = ifunction
+		return ireturn
+	end function
+
+	function getInteger3( ) byref as integer
+		exit function
+		return ireturn
+	end function
+
+	function getInteger4( ) byref as integer
+		return ireturn
+		exit function
+	end function
+
+	function getCtorUdt1( ) byref as CtorUdt
+		return ctorudtreturn
+		function = ctorudtfunction
+	end function
+
+	function getCtorUdt2( ) byref as CtorUdt
+		function = ctorudtfunction
+		return ctorudtreturn
+	end function
+
+	function getCtorUdt3( ) byref as CtorUdt
+		exit function
+		return ctorudtreturn
+	end function
+
+	function getCtorUdt4( ) byref as CtorUdt
+		return ctorudtreturn
+		exit function
+	end function
+
+	sub test cdecl( )
+		CU_ASSERT( @(getInteger1( )) = @ireturn )
+		CU_ASSERT( @(getInteger2( )) = @ireturn )
+		CU_ASSERT( @(getInteger3( )) = 0 )
+		CU_ASSERT( @(getInteger4( )) = @ireturn )
+		CU_ASSERT( @(getCtorUdt1( )) = @ctorudtreturn )
+		CU_ASSERT( @(getCtorUdt2( )) = @ctorudtreturn )
+		CU_ASSERT( @(getCtorUdt3( )) = 0 )
+		CU_ASSERT( @(getCtorUdt4( )) = @ctorudtreturn )
+	end sub
+end namespace
+
 private sub ctor( ) constructor
 	fbcu.add_suite( "tests/functions/return-byref" )
 	fbcu.add_test( "returning globals", @returnGlobal.test )
@@ -830,6 +899,7 @@ private sub ctor( ) constructor
 	fbcu.add_test( "explicit BYVAL", @explicitByval.test )
 	fbcu.add_test( "returning a forward ref", @protoReturningFwdref.test )
 	fbcu.add_test( "C++ mangling", @cxxMangling.test )
+	fbcu.add_test( "ReturnVsFunction", @returnVsFunction.test )
 end sub
 
 end namespace

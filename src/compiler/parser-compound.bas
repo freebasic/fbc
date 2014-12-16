@@ -156,20 +156,20 @@ sub cEndStatement( )
 end sub
 
 private function hCheckForCtorResult( ) as integer
-	function = FB_ERRMSG_OK
-	if( symbHasCtor( parser.currproc ) ) then
-		if( symbGetProcStatReturnUsed( parser.currproc ) ) then
+	if( symbGetProcStatReturnUsed( parser.currproc ) ) then
+		if( symbHasCtor( parser.currproc ) and _
+		    (not symbProcReturnsByref( parser.currproc )) ) then
 			'' EXIT FUNCTION cannot be allowed in combination
-			'' with RETURN and a ctor result, because it would
-			'' not call the result constructor.
-			function = FB_ERRMSG_MISSINGRETURNFORCTORRESULT
-		else
-			'' EXIT FUNCTION used, and no RETURN yet:
-			'' make it behave like FUNCTION=, to ensure the result ctor
-			'' is called at the top.
-			symbSetProcStatAssignUsed( parser.currproc )
+			'' with RETURN and a ctor result for byval functions,
+			'' because it would not call the result constructor.
+			return FB_ERRMSG_MISSINGRETURNFORCTORRESULT
 		end if
 	end if
+
+	'' EXIT FUNCTION used; mark the function as if FUNCTION= was used,
+	'' to ensure the result will be constructed at the top if needed.
+	symbSetProcStatAssignUsed( parser.currproc )
+	function = FB_ERRMSG_OK
 end function
 
 '':::::
