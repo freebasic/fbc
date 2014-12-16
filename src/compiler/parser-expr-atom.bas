@@ -304,7 +304,7 @@ private function hFindId _
 				if( symbGetCompCtorHead( sym ) ) then
 					'' skip ID, ctorCall() is also used by type<>(...)
 					lexSkipToken( )
-					return cCtorCall( sym )
+					return cStrIdxOrMemberDeref( cCtorCall( sym ) )
 				end if
 
 			case FB_SYMBCLASS_TYPEDEF
@@ -312,7 +312,7 @@ private function hFindId _
 				if( symbHasCtor( sym ) ) then
 					'' skip ID, ctorCall() is also used by type<>(...)
 					lexSkipToken( )
-					return cCtorCall( symbGetSubtype( sym ) )
+					return cStrIdxOrMemberDeref( cCtorCall( symbGetSubtype( sym ) ) )
 				end if
 
 			end select

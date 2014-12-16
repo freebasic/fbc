@@ -16,9 +16,33 @@ constructor CtorUdt( )
 	b = 456
 end constructor
 
+type PodUdtAlias as PodUdt
+type CtorUdtAlias as CtorUdt
+
 sub test cdecl( )
 	CU_ASSERT( (type<PodUdt>( 123 )).i = 123 )
 	CU_ASSERT( type<PodUdt>( 123 ).i = 123 )
+
+	CU_ASSERT( (type<PodUdtAlias>( 123 )).i = 123 )
+	CU_ASSERT( type<PodUdtAlias>( 123 ).i = 123 )
+
+	CU_ASSERT( (CtorUdt( )).a = 123 )
+	CU_ASSERT( (CtorUdt( )).b = 456 )
+	CU_ASSERT( CtorUdt( ).a = 123 )
+	CU_ASSERT( CtorUdt( ).b = 456 )
+	CU_ASSERT( (type<CtorUdt>( )).a = 123 )
+	CU_ASSERT( (type<CtorUdt>( )).b = 456 )
+	CU_ASSERT( type<CtorUdt>( ).a = 123 )
+	CU_ASSERT( type<CtorUdt>( ).b = 456 )
+
+	CU_ASSERT( (CtorUdtAlias( )).a = 123 )
+	CU_ASSERT( (CtorUdtAlias( )).b = 456 )
+	CU_ASSERT( CtorUdtAlias( ).a = 123 )
+	CU_ASSERT( CtorUdtAlias( ).b = 456 )
+	CU_ASSERT( (type<CtorUdtAlias>( )).a = 123 )
+	CU_ASSERT( (type<CtorUdtAlias>( )).b = 456 )
+	CU_ASSERT( type<CtorUdtAlias>( ).a = 123 )
+	CU_ASSERT( type<CtorUdtAlias>( ).b = 456 )
 end sub
 
 private sub test3538470 cdecl( )
