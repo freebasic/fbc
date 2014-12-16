@@ -1718,7 +1718,13 @@ private function hCalcTypesDiff _
 						return 0
 					end if
 
-					return FB_OVLPROC_HALFMATCH
+					'' Allow passing a literal 0 integer to a pointer parameter,
+					'' but give it a very low score, such that we will prefer passing
+					'' the literal 0 integer to actual integer parameters (which are
+					'' scored based on FB_OVLPROC_HALFMATCH - symb_dtypeMatchTB...,
+					'' which is why we have to choose something that's hopefully lower
+					'' but still > 0 here).
+					return 1
 				end if
 
 				'' Both are pointers (but they're different,

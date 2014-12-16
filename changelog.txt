@@ -58,6 +58,7 @@ Version 1.01.0
 - BLOAD was misreading bitfields in BMP files with undocumented BITMAPV3HEADER format (56-byte headers)
 - PRINT now disallows commas/newlines after SPC/TAB, instead of silently ignoring them
 - 0.90.0 regression: Compiler crash during error recovery for expressions like 'type<UDT>().field' where initializer values are missing
+- When passing a constant zero of some integer to an overloaded procedure, overloads with integer parameters will now be preferred over overloads with pointers (literal 0 can still be passed to pointer parameters in this case though, by casting it to the pointer type)
 
 
 Version 1.00.0 (former 0.91.0):
