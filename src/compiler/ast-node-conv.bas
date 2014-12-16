@@ -164,7 +164,7 @@ private function hCheckPtr _
 		case FB_DATATYPE_INTEGER, FB_DATATYPE_UINT, FB_DATATYPE_ENUM, _
 		     FB_DATATYPE_LONG, FB_DATATYPE_ULONG, _
 		     FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-			'' Allow integer-to-pointer casts if same size
+			'' Allow pointer-to-integer casts if same size
 			if( typeGetSize( to_dtype ) = env.pointersize ) then
 				exit function
 			end if
