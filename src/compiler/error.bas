@@ -345,6 +345,7 @@ declare function hMakeParamDesc _
 		@"VIRTUAL used on non-member procedure", _
 		@"Invalid initializer", _
 		@"Objects with default [con|de]structors or methods are only allowed in the module level", _
+		@"Static member variable in nested UDT (only allowed in toplevel UDTs)", _
 		@"Symbol not a CLASS, ENUM, TYPE or UNION type", _
 		@"Too many elements", _
 		@"Only data members supported", _

@@ -890,7 +890,7 @@ decl_inner:		'' it's an anonymous inner UDT
 	end if
 end sub
 
-private sub hCheckForCDtorOrMethods( byval sym as FBSYMBOL ptr )
+private sub hDisallowNestedClasses( byval sym as FBSYMBOL ptr )
 	dim as FBSYMBOL ptr member = any
 	'' Not at module level?
 	if( parser.scope > FB_MAINSCOPE ) then
@@ -899,10 +899,14 @@ private sub hCheckForCDtorOrMethods( byval sym as FBSYMBOL ptr )
 		'' (Note: assuming symbStructEnd() was already called,
 		'' thus any implicit members were already added by
 		'' symbUdtDeclareDefaultMembers())
+		'' Similar for static member variables (really Externs); normal
+		'' Externs aren't allowed in scopes either.
 		member = symbGetCompSymbTb( sym ).head
 		while( member )
 			if( symbIsProc( member ) ) then
 				errReportEx( FB_ERRMSG_NOOOPINFUNCTIONS, symbGetName( member ) )
+			elseif( symbIsVar( member ) and symbIsExtern( member ) ) then
+				errReportEx( FB_ERRMSG_NOSTATICMEMBERVARINNESTEDUDT, symbGetName( member ) )
 			end if
 			member = member->next
 		wend
@@ -1031,7 +1035,7 @@ sub cTypeDecl( byval attrib as integer )
 	parser.currblock = currblocksym
 	parser.scope = scope_depth
 
-	hCheckForCDtorOrMethods( sym )
+	hDisallowNestedClasses( sym )
 
 	'' end the compound
 	stk = cCompStmtGetTOS( FB_TK_TYPE )

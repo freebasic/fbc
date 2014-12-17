@@ -66,6 +66,7 @@ Version 1.01.0
 - #760: RETURN and FUNCTION= couldn't be used together in byref functions returning an UDT with constructor. This check is now only applied to functions returning byval.
 - #755: If no result is set in byref functions, the compiler will now show an error instead of a warning (because a byref function defaults to returning a null reference, most likely causing a crash at runtime)
 - Better error message for function result assignments outside of the function (#754), and for illegal use of Exit Sub|Function|...
+- #748: Static member variables in UDTs inside procedures or scope blocks were allowed without error message (but didn't and cannot fully work in this situation, like methods). The compiler will now show an error in this case.
 
 
 Version 1.00.0 (former 0.91.0):
