@@ -831,8 +831,6 @@ bindist:
   ifeq ($(TARGET_ARCH),x86_64)
 	# Exclude headers which don't support 64bit yet
 	rm -r $(FBPACKAGE)/inc/AL
-	rm -r $(FBPACKAGE)/inc/allegro
-	rm -r $(FBPACKAGE)/inc/allegro.bi
 	rm -r $(FBPACKAGE)/inc/aspell.bi
 	rm -r $(FBPACKAGE)/inc/atk
 	rm -r $(FBPACKAGE)/inc/bass.bi
@@ -846,20 +844,14 @@ bindist:
 	rm -r $(FBPACKAGE)/inc/cairo
 	rm -r $(FBPACKAGE)/inc/cd
 	rm -r $(FBPACKAGE)/inc/cgi-util.bi
-	rm -r $(FBPACKAGE)/inc/cgui.bi
 	rm -r $(FBPACKAGE)/inc/chipmunk
 	rm -r $(FBPACKAGE)/inc/cryptlib.bi
-	rm -r $(FBPACKAGE)/inc/curl.bi
-	rm -r $(FBPACKAGE)/inc/curses
-	rm -r $(FBPACKAGE)/inc/curses.bi
 	rm -r $(FBPACKAGE)/inc/dislin.bi
 	rm -r $(FBPACKAGE)/inc/disphelper
 	rm -r $(FBPACKAGE)/inc/dos
 	rm -r $(FBPACKAGE)/inc/expat.bi
 	rm -r $(FBPACKAGE)/inc/fastcgi
-	rm -r $(FBPACKAGE)/inc/ffi.bi
 	rm -r $(FBPACKAGE)/inc/flite
-	rm -r $(FBPACKAGE)/inc/fmod.bi
 	rm -r $(FBPACKAGE)/inc/FreeImage.bi
 	rm -r $(FBPACKAGE)/inc/freetype2
 	rm -r $(FBPACKAGE)/inc/gd.bi
@@ -884,10 +876,7 @@ bindist:
 	rm -r $(FBPACKAGE)/inc/gtkgl
 	rm -r $(FBPACKAGE)/inc/IL
 	rm -r $(FBPACKAGE)/inc/im
-	rm -r $(FBPACKAGE)/inc/IUP
 	rm -r $(FBPACKAGE)/inc/japi.bi
-	rm -r $(FBPACKAGE)/inc/jit
-	rm -r $(FBPACKAGE)/inc/jit.bi
 	rm -r $(FBPACKAGE)/inc/jni.bi
 	rm -r $(FBPACKAGE)/inc/jpeglib.bi
 	rm -r $(FBPACKAGE)/inc/jpgalleg.bi
@@ -896,7 +885,6 @@ bindist:
 	rm -r $(FBPACKAGE)/inc/libintl.bi
 	rm -r $(FBPACKAGE)/inc/libxml
 	rm -r $(FBPACKAGE)/inc/libxslt
-	rm -r $(FBPACKAGE)/inc/Lua
 	rm -r $(FBPACKAGE)/inc/lzma.bi
 	rm -r $(FBPACKAGE)/inc/lzo
 	rm -r $(FBPACKAGE)/inc/MediaInfo.bi
@@ -912,7 +900,6 @@ bindist:
 	rm -r $(FBPACKAGE)/inc/pcre.bi
 	rm -r $(FBPACKAGE)/inc/pcreposix.bi
 	rm -r $(FBPACKAGE)/inc/pdflib.bi
-	rm -r $(FBPACKAGE)/inc/png.bi
 	rm -r $(FBPACKAGE)/inc/portaudio.bi
 	rm -r $(FBPACKAGE)/inc/postgresql
 	rm -r $(FBPACKAGE)/inc/quicklz.bi
@@ -932,8 +919,6 @@ bindist:
 	rm -r $(FBPACKAGE)/inc/wx-c
 	rm -r $(FBPACKAGE)/inc/X11
 	rm -r $(FBPACKAGE)/inc/xmp.bi
-	rm -r $(FBPACKAGE)/inc/zip.bi
-	rm -r $(FBPACKAGE)/inc/zlib.bi
 	rm -r $(FBPACKAGE)/inc/zmq
   endif
   ifndef ENABLE_STANDALONE
