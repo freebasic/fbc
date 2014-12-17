@@ -33,7 +33,7 @@ const FB_MAXNAMESPCRECLEVEL = 64
 const FB_MAXARRAYDIMS       = 8
 const FB_MAXDEFINEARGS      = 32
 
-const FB_MAXNAMELEN         = 64
+const FB_MAXNAMELEN         = 128
 const FB_MAXLITLEN          = 1024              '' literal strings max length
 const FB_MAXNUMLEN          = 64
 const FB_MAXOPERANDLEN      = FB_MAXNAMELEN + 2 + 16 + 2 + 1
