@@ -20,8 +20,8 @@
 ''     #define EMPTY_STRING => EMPTY_STRING_
 ''     #define SYSTEM_NONE => SYSTEM_NONE_
 ''     #define MOUSEDRV_NONE => MOUSEDRV_NONE_
-''     #define DRAW_SPRITE_H_FLIP => DRAW_SPRITE_H_FLIP_
 ''     #define DRAW_SPRITE_V_FLIP => DRAW_SPRITE_V_FLIP_
+''     #define DRAW_SPRITE_H_FLIP => DRAW_SPRITE_H_FLIP_
 ''     #define DRAW_SPRITE_VH_FLIP => DRAW_SPRITE_VH_FLIP_
 ''     #define MIDI_DIGMID => MIDI_DIGMID_
 ''     #define EOF => EOF_
@@ -81,13 +81,13 @@ type GFX_VTABLE as GFX_VTABLE_
 type GFX_MODE as GFX_MODE_
 type RLE_SPRITE as RLE_SPRITE_
 type FONT_GLYPH as FONT_GLYPH_
-type FONT as FONT_
 type FONT_VTABLE as FONT_VTABLE_
+type FONT as FONT_
 type DIALOG as DIALOG_
 type PACKFILE as PACKFILE_
+type PACKFILE_VTABLE as PACKFILE_VTABLE_
 type LZSS_PACK_DATA as LZSS_PACK_DATA_
 type LZSS_UNPACK_DATA as LZSS_UNPACK_DATA_
-type PACKFILE_VTABLE as PACKFILE_VTABLE_
 
 #define ALLEGRO_H
 #define ALLEGRO_BASE_H
@@ -257,12 +257,15 @@ type PACKFILE_VTABLE as PACKFILE_VTABLE_
 	#define _farnspeekl(addr) (*cptr(ulong ptr, (addr)))
 #endif
 
-#define READ3BYTES(p) (((*cptr(ubyte ptr, (p))) or ((*cptr(ubyte ptr, (p) + 1)) shl 8)) or ((*cptr(ubyte ptr, (p) + 2)) shl 16))
+#define READ3BYTES(p) _
+	( cptr(ubyte ptr, (p))[0]        or _
+	 (cptr(ubyte ptr, (p))[1] shl 8) or _
+	 (cptr(ubyte ptr, (p))[2] shl 16) )
 #macro WRITE3BYTES(p, c)
 	scope
-		*cptr(ubyte ptr, (p)) = (c)
-		*cptr(ubyte ptr, (p) + 1) = (c) shr 8
-		*cptr(ubyte ptr, (p) + 2) = (c) shr 16
+		cptr(ubyte ptr, (p))[0] = (c)
+		cptr(ubyte ptr, (p))[1] = (c) shr 8
+		cptr(ubyte ptr, (p))[2] = (c) shr 16
 	end scope
 #endmacro
 
@@ -336,13 +339,13 @@ declare function uwidth_max(byval type_ as long) as long
 #define EMPTY_STRING_ !"\0\0\0"
 
 extern _AL_DLL empty_string as zstring * 4
-extern ugetc as function(byval s as const zstring ptr) as long
-extern ugetx as function(byval s as zstring ptr ptr) as long
-extern ugetxc as function(byval s as const zstring ptr ptr) as long
-extern usetc as function(byval s as zstring ptr, byval c as long) as long
-extern uwidth as function(byval s as const zstring ptr) as long
-extern ucwidth as function(byval c as long) as long
-extern uisok as function(byval c as long) as long
+extern _AL_DLL ugetc as function(byval s as const zstring ptr) as long
+extern _AL_DLL ugetx as function(byval s as zstring ptr ptr) as long
+extern _AL_DLL ugetxc as function(byval s as const zstring ptr ptr) as long
+extern _AL_DLL usetc as function(byval s as zstring ptr, byval c as long) as long
+extern _AL_DLL uwidth as function(byval s as const zstring ptr) as long
+extern _AL_DLL ucwidth as function(byval c as long) as long
+extern _AL_DLL uisok as function(byval c as long) as long
 
 declare function uoffset(byval s as const zstring ptr, byval idx as long) as long
 declare function ugetat(byval s as const zstring ptr, byval idx as long) as long
@@ -662,7 +665,7 @@ extern _AL_DLL freeze_mouse_flag as long
 #define MOUSE_FLAG_MOVE_Z 128
 #define MOUSE_FLAG_MOVE_W 256
 
-extern mouse_callback as sub(byval flags as long)
+extern _AL_DLL mouse_callback as sub(byval flags as long)
 
 declare sub show_mouse(byval bmp as BITMAP ptr)
 declare sub scare_mouse()
@@ -683,8 +686,8 @@ declare function mouse_on_screen() as long
 
 #define ALLEGRO_TIMER_H
 #define TIMERS_PER_SECOND cast(clong, 1193181)
-#define SECS_TO_TIMER(x) cast(clong, (x) * TIMERS_PER_SECOND)
-#define MSEC_TO_TIMER(x) cast(clong, (x) * (TIMERS_PER_SECOND / 1000))
+#define SECS_TO_TIMER(x) (cast(clong, (x)) * TIMERS_PER_SECOND)
+#define MSEC_TO_TIMER(x) (cast(clong, (x)) * (TIMERS_PER_SECOND / 1000))
 #define BPS_TO_TIMER(x) (TIMERS_PER_SECOND / cast(clong, (x)))
 #define BPM_TO_TIMER(x) ((60 * TIMERS_PER_SECOND) / cast(clong, (x)))
 
@@ -750,9 +753,9 @@ declare sub remove_keyboard()
 declare function poll_keyboard() as long
 declare function keyboard_needs_poll() as long
 
-extern keyboard_callback as function(byval key as long) as long
-extern keyboard_ucallback as function(byval key as long, byval scancode as long ptr) as long
-extern keyboard_lowlevel_callback as sub(byval scancode as long)
+extern _AL_DLL keyboard_callback as function(byval key as long) as long
+extern _AL_DLL keyboard_ucallback as function(byval key as long, byval scancode as long ptr) as long
+extern _AL_DLL keyboard_lowlevel_callback as sub(byval scancode as long)
 
 declare sub install_keyboard_hooks(byval keypressed as function() as long, byval readkey as function() as long)
 
@@ -2058,10 +2061,8 @@ extern _AL_DLL gui_button_proc as DIALOG_PROC
 extern _AL_DLL gui_edit_proc as DIALOG_PROC
 extern _AL_DLL gui_list_proc as DIALOG_PROC
 extern _AL_DLL gui_text_list_proc as DIALOG_PROC
-
-extern gui_menu_draw_menu as sub(byval x as long, byval y as long, byval w as long, byval h as long)
-extern gui_menu_draw_menu_item as sub(byval m as MENU ptr, byval x as long, byval y as long, byval w as long, byval h as long, byval bar as long, byval sel as long)
-
+extern _AL_DLL gui_menu_draw_menu as sub(byval x as long, byval y as long, byval w as long, byval h as long)
+extern _AL_DLL gui_menu_draw_menu_item as sub(byval m as MENU ptr, byval x as long, byval y as long, byval w as long, byval h as long, byval bar as long, byval sel as long)
 extern _AL_DLL active_dialog as DIALOG ptr
 extern _AL_DLL active_menu as MENU ptr
 extern _AL_DLL gui_mouse_focus as long
@@ -2069,11 +2070,10 @@ extern _AL_DLL gui_fg_color as long
 extern _AL_DLL gui_mg_color as long
 extern _AL_DLL gui_bg_color as long
 extern _AL_DLL gui_font_baseline as long
-
-extern gui_mouse_x as function() as long
-extern gui_mouse_y as function() as long
-extern gui_mouse_z as function() as long
-extern gui_mouse_b as function() as long
+extern _AL_DLL gui_mouse_x as function() as long
+extern _AL_DLL gui_mouse_y as function() as long
+extern _AL_DLL gui_mouse_z as function() as long
+extern _AL_DLL gui_mouse_b as function() as long
 
 declare sub gui_set_screen(byval bmp as BITMAP ptr)
 declare function gui_get_screen() as BITMAP ptr
@@ -2241,7 +2241,7 @@ declare function start_sound_input(byval rate as long, byval bits as long, byval
 declare sub stop_sound_input()
 declare function read_sound_input(byval buffer as any ptr) as long
 
-extern digi_recorder as sub()
+extern _AL_DLL digi_recorder as sub()
 
 declare sub lock_sample(byval spl as SAMPLE ptr)
 declare sub register_sample_file_type(byval ext as const zstring ptr, byval load as function(byval filename as const zstring ptr) as SAMPLE ptr, byval save as function(byval filename as const zstring ptr, byval spl as SAMPLE ptr) as long)
@@ -2267,14 +2267,14 @@ declare sub free_audio_stream_buffer(byval stream as AUDIOSTREAM ptr)
 #define MIDI_VOICES 64
 #define MIDI_TRACKS 32
 
-type __dummyid_5_extracted_allegro_4_4_2_include_allegro_midi
+type __MIDI_track
 	data as ubyte ptr
 	len as long
 end type
 
 type MIDI
 	divisions as long
-	track(0 to 31) as __dummyid_5_extracted_allegro_4_4_2_include_allegro_midi
+	track(0 to 31) as __MIDI_track
 end type
 
 #define MIDI_AUTODETECT (-1)
@@ -2338,10 +2338,10 @@ declare function get_midi_length(byval midi as MIDI ptr) as long
 declare sub midi_out(byval data_ as ubyte ptr, byval length as long)
 declare function load_midi_patches() as long
 
-extern midi_msg_callback as sub(byval msg as long, byval byte1 as long, byval byte2 as long)
-extern midi_meta_callback as sub(byval type_ as long, byval data_ as const ubyte ptr, byval length as long)
-extern midi_sysex_callback as sub(byval data_ as const ubyte ptr, byval length as long)
-extern midi_recorder as sub(byval data_ as ubyte)
+extern _AL_DLL midi_msg_callback as sub(byval msg as long, byval byte1 as long, byval byte2 as long)
+extern _AL_DLL midi_meta_callback as sub(byval type_ as long, byval data_ as const ubyte ptr, byval length as long)
+extern _AL_DLL midi_sysex_callback as sub(byval data_ as const ubyte ptr, byval length as long)
+extern _AL_DLL midi_recorder as sub(byval data_ as ubyte)
 
 declare sub lock_midi(byval midi as MIDI ptr)
 declare sub reserve_voices(byval digi_voices_ as long, byval midi_voices_ as long)
@@ -2769,7 +2769,7 @@ declare sub set_window_close_hook(byval proc as sub())
 declare sub set_clip(byval bitmap as BITMAP ptr, byval x1 as long, byval y_1 as long, byval x2 as long, byval y2 as long)
 declare sub yield_timeslice()
 
-extern retrace_proc as sub()
+extern _AL_DLL retrace_proc as sub()
 
 declare sub set_file_encoding(byval encoding_ as long)
 declare function get_file_encoding() as long

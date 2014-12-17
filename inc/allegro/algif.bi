@@ -1,4 +1,5 @@
 #pragma once
+#inclib "algif"
 
 #include once "allegro.bi"
 

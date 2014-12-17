@@ -64,12 +64,15 @@ type ALLEGRO_COND as ALLEGRO_COND_
 
 #define __al_included_allegro5_astdint_h
 #define __al_included_allegro5_astdbool_h
-#define READ3BYTES(p) (((*cptr(ubyte ptr, (p))) or ((*cptr(ubyte ptr, (p) + 1)) shl 8)) or ((*cptr(ubyte ptr, (p) + 2)) shl 16))
+#define READ3BYTES(p) _
+	( cptr(ubyte ptr, (p))[0]        or _
+	 (cptr(ubyte ptr, (p))[1] shl 8) or _
+	 (cptr(ubyte ptr, (p))[2] shl 16) )
 #macro WRITE3BYTES(p, c)
 	scope
-		*cptr(ubyte ptr, (p)) = (c)
-		*cptr(ubyte ptr, (p) + 1) = (c) shr 8
-		*cptr(ubyte ptr, (p) + 2) = (c) shr 16
+		cptr(ubyte ptr, (p))[0] = (c)
+		cptr(ubyte ptr, (p))[1] = (c) shr 8
+		cptr(ubyte ptr, (p))[2] = (c) shr 16
 	end scope
 #endmacro
 #define bmp_write16(addr, c) *cptr(ushort ptr, (addr)) = (c)
@@ -478,7 +481,7 @@ declare sub _al_trace_suffix(byval msg as const zstring ptr, ...)
 #define ALLEGRO_WARN ALLEGRO_TRACE_LEVEL(2)
 #define ALLEGRO_ERROR ALLEGRO_TRACE_LEVEL(3)
 
-extern _al_user_assert_handler as sub(byval expr as const zstring ptr, byval file as const zstring ptr, byval line_ as long, byval func as const zstring ptr)
+extern _AL_DLL _al_user_assert_handler as sub(byval expr as const zstring ptr, byval file as const zstring ptr, byval line_ as long, byval func as const zstring ptr)
 
 declare sub al_register_assert_handler(byval handler as sub(byval expr as const zstring ptr, byval file as const zstring ptr, byval line_ as long, byval func as const zstring ptr))
 
@@ -863,12 +866,12 @@ declare function al_get_display_mode(byval index as long, byval mode as ALLEGRO_
 #define _AL_MAX_JOYSTICK_STICKS 8
 #define _AL_MAX_JOYSTICK_BUTTONS 32
 
-type __dummyid_0_extracted_allegro_5_0_10_include_allegro5_joystick
+type __ALLEGRO_JOYSTICK_STATE_stick
 	axis(0 to 2) as single
 end type
 
 type ALLEGRO_JOYSTICK_STATE
-	stick(0 to 7) as __dummyid_0_extracted_allegro_5_0_10_include_allegro5_joystick
+	stick(0 to 7) as __ALLEGRO_JOYSTICK_STATE_stick
 	button(0 to 31) as long
 end type
 
@@ -1280,6 +1283,10 @@ declare function al_check_inverse(byval trans as const ALLEGRO_TRANSFORM ptr, by
 	declare function _WinMain(byval _main as any ptr, byval hInst as any ptr, byval hPrev as any ptr, byval Cmd as zstring ptr, byval nShow as long) as long
 
 	#define AL_JOY_TYPE_DIRECTX AL_ID(asc("D"), asc("X"), asc(" "), asc(" "))
+
+	extern _AL_DLL _al_joydrv_directx as ALLEGRO_JOYSTICK_DRIVER
+
+	#define _AL_JOYSTICK_DRIVER_DIRECTX ( AL_JOY_TYPE_DIRECTX, @_al_joydrv_directx, true ),
 #endif
 
 end extern

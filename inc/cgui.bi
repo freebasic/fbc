@@ -12,8 +12,8 @@
 extern "C"
 
 #ifndef FONT
-type BITMAP as BITMAP_
 type FONT as FONT_
+type BITMAP as BITMAP_
 type DATAFILE as DATAFILE_
 #endif
 

@@ -96,13 +96,6 @@ type CURL as any
 #endif
 
 #define curl_socket_typedef
-#define HTTPPOST_FILENAME (1 shl 0)
-#define HTTPPOST_READFILE (1 shl 1)
-#define HTTPPOST_PTRNAME (1 shl 2)
-#define HTTPPOST_PTRCONTENTS (1 shl 3)
-#define HTTPPOST_BUFFER (1 shl 4)
-#define HTTPPOST_PTRBUFFER (1 shl 5)
-#define HTTPPOST_CALLBACK (1 shl 6)
 
 type curl_httppost
 	next as curl_httppost ptr
@@ -119,6 +112,14 @@ type curl_httppost
 	showfilename as zstring ptr
 	userp as any ptr
 end type
+
+#define HTTPPOST_FILENAME (1 shl 0)
+#define HTTPPOST_READFILE (1 shl 1)
+#define HTTPPOST_PTRNAME (1 shl 2)
+#define HTTPPOST_PTRCONTENTS (1 shl 3)
+#define HTTPPOST_BUFFER (1 shl 4)
+#define HTTPPOST_PTRBUFFER (1 shl 5)
+#define HTTPPOST_CALLBACK (1 shl 6)
 
 type curl_progress_callback as function(byval clientp as any ptr, byval dltotal as double, byval dlnow as double, byval ultotal as double, byval ulnow as double) as long
 type curl_xferinfo_callback as function(byval clientp as any ptr, byval dltotal as curl_off_t, byval dlnow as curl_off_t, byval ultotal as curl_off_t, byval ulnow as curl_off_t) as long
@@ -151,7 +152,7 @@ end enum
 #define CURLFINFOFLAG_KNOWN_SIZE (1 shl 6)
 #define CURLFINFOFLAG_KNOWN_HLINKCOUNT (1 shl 7)
 
-type __dummyid_29_extracted_curl_7_39_0_include_curl_curl
+type __curl_fileinfo_strings
 	time as zstring ptr
 	perm as zstring ptr
 	user as zstring ptr
@@ -168,7 +169,7 @@ type curl_fileinfo
 	gid as long
 	size as curl_off_t
 	hardlinks as clong
-	strings as __dummyid_29_extracted_curl_7_39_0_include_curl_curl
+	strings as __curl_fileinfo_strings
 	flags as ulong
 	b_data as zstring ptr
 	b_size as uinteger
@@ -551,8 +552,6 @@ end enum
 #define CURLOPTTYPE_OBJECTPOINT 10000
 #define CURLOPTTYPE_FUNCTIONPOINT 20000
 #define CURLOPTTYPE_OFF_T 30000
-#define CURLOPT_XFERINFODATA CURLOPT_PROGRESSDATA
-#define CURLOPT_SERVER_RESPONSE_TIMEOUT CURLOPT_FTP_RESPONSE_TIMEOUT
 
 type CURLoption as long
 enum
@@ -771,6 +770,8 @@ enum
 	CURLOPT_LASTENTRY
 end enum
 
+#define CURLOPT_XFERINFODATA CURLOPT_PROGRESSDATA
+#define CURLOPT_SERVER_RESPONSE_TIMEOUT CURLOPT_FTP_RESPONSE_TIMEOUT
 #define CURLOPT_POST301 CURLOPT_POSTREDIR
 #define CURLOPT_SSLKEYPASSWD CURLOPT_KEYPASSWD
 #define CURLOPT_FTPAPPEND CURLOPT_APPEND
@@ -1167,7 +1168,7 @@ enum
 	CURLMSG_LAST
 end enum
 
-union __dummyid_56_extracted_curl_7_39_0_include_curl_multi
+union __CURLMsg__data
 	whatever as any ptr
 	result as CURLcode
 end union
@@ -1175,7 +1176,7 @@ end union
 type CURLMsg_
 	msg as CURLMSG
 	easy_handle as CURL ptr
-	data as __dummyid_56_extracted_curl_7_39_0_include_curl_multi
+	data as __CURLMsg__data
 end type
 
 #define CURL_WAIT_POLLIN &h0001

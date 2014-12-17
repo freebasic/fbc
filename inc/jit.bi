@@ -77,7 +77,7 @@ type jit_memory_context_t as any ptr
 type jit_function_info_t as any ptr
 type jit_memory_manager_t as const jit_memory_manager ptr
 
-type jit_memory_manager_
+type jit_memory_manager
 	create as function(byval context as jit_context_t) as jit_memory_context_t
 	destroy as sub(byval memctx as jit_memory_context_t)
 	find_function_info as function(byval memctx as jit_memory_context_t, byval pc as any ptr) as jit_function_info_t
@@ -1537,7 +1537,7 @@ extern jit_opcodes(0 to 438) as const jit_opcode_info_t
 
 	type _jit_arch_frame_t as _jit_arch_frame
 
-	type _jit_arch_frame_
+	type _jit_arch_frame
 		next_frame as _jit_arch_frame_t ptr
 		return_address as any ptr
 	end type
@@ -1628,7 +1628,7 @@ declare function jit_snprintf(byval str_ as zstring ptr, byval len_ as ulong, by
 
 #define _JIT_VALUE_H
 
-union __dummyid_jit_value
+union __jit_constant_un
 	ptr_value as any ptr
 	int_value as jit_int
 	uint_value as jit_uint
@@ -1643,7 +1643,7 @@ end union
 
 type jit_constant_t
 	as jit_type_t type
-	un as __dummyid_jit_value
+	un as __jit_constant_un
 end type
 
 declare function jit_value_create(byval func as jit_function_t, byval type_ as jit_type_t) as jit_value_t

@@ -1,8 +1,4 @@
 '' libzip 0.11.2
-'' The following symbols have been renamed:
-''     constant ZIP_SOURCE_FREE => ZIP_SOURCE_FREE_
-''     #define ZIP_STAT_INDEX => ZIP_STAT_INDEX_
-
 #pragma once
 
 #inclib "zip"
@@ -10,20 +6,24 @@
 '' At least when using a static libzip, zlib needs to be linked in too.
 #inclib "z"
 
+#include once "crt/stdint.bi"
+#include once "crt/stdio.bi"
+#include once "crt/time.bi"
+
+'' The following symbols have been renamed:
+''     enum constant ZIP_SOURCE_FREE => ZIP_SOURCE_FREE_
+''     #define ZIP_STAT_INDEX => ZIP_STAT_INDEX_
+
 extern "C"
 
+type zip as zip_
 type zip_file as zip_file_
 type zip_source as zip_source_
-type zip as zip_
 
 #define LIBZIP_VERSION "0.11.2"
 #define LIBZIP_VERSION_MAJOR 0
 #define LIBZIP_VERSION_MINOR 11
 #define LIBZIP_VERSION_MICRO 0
-
-#include "crt/stdint.bi"
-#include "crt/time.bi"
-#include "crt/stdio.bi"
 
 type zip_int8_t as byte
 
@@ -60,7 +60,6 @@ type zip_int64_t as longint
 type zip_uint64_t as ulongint
 
 #define ZIP_UINT64_MAX UINT64_MAX
-
 #define ZIP_CREATE 1
 #define ZIP_EXCL 2
 #define ZIP_CHECKCONS 4

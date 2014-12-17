@@ -251,7 +251,7 @@ end type
 #define WA_LOW A_NORMAL
 #define WA_TOP A_NORMAL
 #define WA_VERTICAL A_NORMAL
-#define ACS_PICK(w, n) cast(chtype, w or A_ALTCHARSET)
+#define ACS_PICK(w, n) (cast(chtype, w) or A_ALTCHARSET)
 #define ACS_ULCORNER ACS_PICK(asc("l"), asc("+"))
 #define ACS_LLCORNER ACS_PICK(asc("m"), asc("+"))
 #define ACS_URCORNER ACS_PICK(asc("k"), asc("+"))
@@ -1016,7 +1016,7 @@ declare function PDC_save_key_modifiers(byval as bool) as long
 
 #define getch() wgetch(stdscr)
 #define ungetch(ch) PDC_ungetch(ch)
-#define COLOR_PAIR(n) (cast(chtype, (n) shl PDC_COLOR_SHIFT) and A_COLOR)
+#define COLOR_PAIR(n) ((cast(chtype, (n)) shl PDC_COLOR_SHIFT) and A_COLOR)
 #define PAIR_NUMBER(n) (((n) and A_COLOR) shr PDC_COLOR_SHIFT)
 #define getbegyx(w, y, x) y = getbegy(w) : x = getbegx(w))
 #define getmaxyx(w, y, x) y = getmaxy(w) : x = getmaxx(w))

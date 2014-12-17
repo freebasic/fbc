@@ -861,13 +861,13 @@ declare function png_get_io_chunk_type(byval png_ptr as png_const_structrp) as p
 #define PNG_COL_IN_INTERLACE_PASS(x, pass) ((PNG_PASS_MASK(pass, 1) shr ((x) and 7)) and 1)
 #macro png_composite(composite, fg, alpha, bg)
 	scope
-		dim temp as png_uint_16 = cast(png_uint_16, cast(png_uint_16, (fg) * cast(png_uint_16, (alpha) + cast(png_uint_16, (bg) * cast(png_uint_16, (255 - cast(png_uint_16, (alpha))) + 128)))))
+		dim temp as png_uint_16 = cast(png_uint_16, ((cast(png_uint_16, (fg)) * cast(png_uint_16, (alpha))) + (cast(png_uint_16, (bg)) * cast(png_uint_16, 255 - cast(png_uint_16, (alpha))))) + 128)
 		(composite) = cast(png_byte, ((temp + (temp shr 8)) shr 8))
 	end scope
 #endmacro
 #macro png_composite_16(composite, fg, alpha, bg)
 	scope
-		dim temp as png_uint_32 = cast(png_uint_32, cast(png_uint_32, (fg) * cast(png_uint_32, (alpha) + cast(png_uint_32, ((bg) * (65535 - cast(png_uint_32, (alpha)))) + 32768))))
+		dim temp as png_uint_32 = cast(png_uint_32, ((cast(png_uint_32, (fg)) * cast(png_uint_32, (alpha))) + (cast(png_uint_32, (bg)) * (65535 - cast(png_uint_32, (alpha))))) + 32768)
 		(composite) = cast(png_uint_16, ((temp + (temp shr 16)) shr 16))
 	end scope
 #endmacro
@@ -880,8 +880,8 @@ declare sub png_save_uint_32(byval buf as png_bytep, byval i as png_uint_32)
 declare sub png_save_int_32(byval buf as png_bytep, byval i as png_int_32)
 declare sub png_save_uint_16(byval buf as png_bytep, byval i as ulong)
 
-#define PNG_get_uint_32_(buf) (((cast(png_uint_32, (*(buf)) shl 24) + cast(png_uint_32, (*((buf) + 1)) shl 16)) + cast(png_uint_32, (*((buf) + 2)) shl 8)) + cast(png_uint_32, *((buf) + 3)))
-#define PNG_get_uint_16_(buf) cast(png_uint_16, culng((*(buf)) shl 8) + culng(*((buf) + 1)))
+#define PNG_get_uint_32_(buf) ((((cast(png_uint_32, *(buf)) shl 24) + (cast(png_uint_32, *((buf) + 1)) shl 16)) + (cast(png_uint_32, *((buf) + 2)) shl 8)) + cast(png_uint_32, *((buf) + 3)))
+#define PNG_get_uint_16_(buf) cast(png_uint_16, (culng(*(buf)) shl 8) + culng(*((buf) + 1)))
 #define PNG_get_int_32_(buf) cast(png_int_32, iif((*(buf)) and &h80, -cast(png_int_32, (png_get_uint_32__(buf) xor cast(clong, &hffffffff)) + 1), cast(png_int_32, png_get_uint_32__(buf))))
 #define png_get_uint_32__(buf) PNG_get_uint_32_(buf)
 #define png_get_uint_16__(buf) PNG_get_uint_16_(buf)
@@ -889,10 +889,6 @@ declare sub png_save_uint_16(byval buf as png_bytep, byval i as ulong)
 #define PNG_IMAGE_VERSION 1
 
 type png_controlp as png_control ptr
-
-#define PNG_IMAGE_WARNING 1
-#define PNG_IMAGE_ERROR 2
-#define PNG_IMAGE_FAILED(png_cntrl) (((png_cntrl).warning_or_error and &h03) > 1)
 
 type png_image
 	opaque as png_controlp
@@ -908,6 +904,9 @@ end type
 
 type png_imagep as png_image ptr
 
+#define PNG_IMAGE_WARNING 1
+#define PNG_IMAGE_ERROR 2
+#define PNG_IMAGE_FAILED(png_cntrl) (((png_cntrl).warning_or_error and &h03) > 1)
 #define PNG_FORMAT_FLAG_ALPHA &h01
 #define PNG_FORMAT_FLAG_COLOR &h02
 #define PNG_FORMAT_FLAG_LINEAR &h04

@@ -5,16 +5,15 @@
 #include once "crt/stdarg.bi"
 
 '' The following symbols have been renamed:
-''     inside struct z_stream_s:
-''         field opaque => opaque_
 ''     typedef Byte => Byte_
 ''     typedef uLong => uLong_
+''     inside struct z_stream_s:
+''         field opaque => opaque_
 ''     #define zlib_version => zlib_version_
 
 extern "C"
 
 type internal_state as internal_state_
-type gzFile_s as gzFile_s_
 
 #define ZLIB_H
 #define ZCONF_H
@@ -190,7 +189,7 @@ declare function inflateBackInit_(byval strm as z_streamp, byval windowBits as l
 #define inflateInit2(strm, windowBits) inflateInit2_((strm), (windowBits), ZLIB_VERSION, clng(sizeof(z_stream)))
 #define inflateBackInit(strm, windowBits, window) inflateBackInit_((strm), (windowBits), (window), ZLIB_VERSION, clng(sizeof(z_stream)))
 
-type gzFile_s_
+type gzFile_s
 	have as ulong
 	next as ubyte ptr
 	pos as clong

@@ -1225,8 +1225,8 @@ declare function LLVMGetExecutionEngineTargetMachine(byval EE as LLVMExecutionEn
 declare sub LLVMAddGlobalMapping(byval EE as LLVMExecutionEngineRef, byval Global as LLVMValueRef, byval Addr as any ptr)
 declare function LLVMGetPointerToGlobal(byval EE as LLVMExecutionEngineRef, byval Global as LLVMValueRef) as any ptr
 
-type LLVMMemoryManagerAllocateCodeSectionCallback as function(byval Opaque as any ptr, byval Size as uintptr_t, byval Alignment as ulong, byval SectionID as ulong, byval SectionName as const zstring ptr) as ubyte ptr
-type LLVMMemoryManagerAllocateDataSectionCallback as function(byval Opaque as any ptr, byval Size as uintptr_t, byval Alignment as ulong, byval SectionID as ulong, byval SectionName as const zstring ptr, byval IsReadOnly as LLVMBool) as ubyte ptr
+type LLVMMemoryManagerAllocateCodeSectionCallback as function(byval Opaque as any ptr, byval Size as uinteger, byval Alignment as ulong, byval SectionID as ulong, byval SectionName as const zstring ptr) as ubyte ptr
+type LLVMMemoryManagerAllocateDataSectionCallback as function(byval Opaque as any ptr, byval Size as uinteger, byval Alignment as ulong, byval SectionID as ulong, byval SectionName as const zstring ptr, byval IsReadOnly as LLVMBool) as ubyte ptr
 type LLVMMemoryManagerFinalizeMemoryCallback as function(byval Opaque as any ptr, byval ErrMsg as zstring ptr ptr) as LLVMBool
 type LLVMMemoryManagerDestroyCallback as sub(byval Opaque as any ptr)
 

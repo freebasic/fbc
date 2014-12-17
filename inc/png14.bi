@@ -944,18 +944,18 @@ declare function png_get_io_chunk_name(byval png_ptr as png_structp) as png_byte
 #define PNG_IO_MASK_LOC &h00f0
 #macro png_composite(composite, fg, alpha, bg)
 	scope
-		dim temp as png_uint_16 = cast(png_uint_16, cast(png_uint_16, (fg) * cast(png_uint_16, (alpha) + cast(png_uint_16, (bg) * cast(png_uint_16, (255 - cast(png_uint_16, (alpha))) + cast(png_uint_16, 128))))))
+		dim temp as png_uint_16 = cast(png_uint_16, ((cast(png_uint_16, (fg)) * cast(png_uint_16, (alpha))) + (cast(png_uint_16, (bg)) * cast(png_uint_16, 255 - cast(png_uint_16, (alpha))))) + 128)
 		(composite) = cast(png_byte, ((temp + (temp shr 8)) shr 8))
 	end scope
 #endmacro
 #macro png_composite_16(composite, fg, alpha, bg)
 	scope
-		dim temp as png_uint_32 = cast(png_uint_32, cast(png_uint_32, (fg) * cast(png_uint_32, (alpha) + cast(png_uint_32, (bg) * cast(png_uint_32, (cast(clong, 65535) - cast(png_uint_32, (alpha))) + cast(png_uint_32, cast(clong, 32768)))))))
+		dim temp as png_uint_32 = cast(png_uint_32, ((cast(png_uint_32, (fg)) * cast(png_uint_32, (alpha))) + (cast(png_uint_32, (bg)) * (65535 - cast(png_uint_32, (alpha))))) + 32768)
 		(composite) = cast(png_uint_16, ((temp + (temp shr 16)) shr 16))
 	end scope
 #endmacro
-#define png_get_uint_32(buf) (((cast(png_uint_32, (*(buf)) shl 24) + cast(png_uint_32, (*((buf) + 1)) shl 16)) + cast(png_uint_32, (*((buf) + 2)) shl 8)) + cast(png_uint_32, *((buf) + 3)))
-#define png_get_uint_16(buf) cast(png_uint_16, culng((*(buf)) shl 8) + culng(*((buf) + 1)))
+#define png_get_uint_32(buf) ((((cast(png_uint_32, *(buf)) shl 24) + (cast(png_uint_32, *((buf) + 1)) shl 16)) + (cast(png_uint_32, *((buf) + 2)) shl 8)) + cast(png_uint_32, *((buf) + 3)))
+#define png_get_uint_16(buf) cast(png_uint_16, (culng(*(buf)) shl 8) + culng(*((buf) + 1)))
 #define png_get_int_32(buf) cast(png_int_32, iif((*(buf)) and &h80, -cast(png_int_32, (png_get_uint_32(buf) xor cast(clong, &hffffffff)) + 1), cast(png_int_32, png_get_uint_32(buf))))
 
 declare function png_get_uint_31(byval png_ptr as png_structp, byval buf as png_bytep) as png_uint_32
