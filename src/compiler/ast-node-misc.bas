@@ -1021,6 +1021,11 @@ sub astDumpSmall( byval n as ASTNODE ptr, byref prefix as string )
 		s += typeDump( n->dtype, n->subtype )
 
 		select case as const( n->class )
+		case AST_NODECLASS_VAR     : if( n->var_.ofs ) then s += " ofs=" & n->var_.ofs
+		case AST_NODECLASS_DEREF   : if( n->ptr.ofs  ) then s += " ofs=" & n->ptr.ofs
+		case AST_NODECLASS_OFFSET  : if( n->ofs.ofs  ) then s += " ofs=" & n->ofs.ofs
+		case AST_NODECLASS_IDX     : if( n->idx.ofs  ) then s += " ofs=" & n->idx.ofs
+			if( n->idx.mult <> 1 ) then s += " mult=" & n->idx.mult
 		case AST_NODECLASS_BOP, AST_NODECLASS_UOP
 			s += " " + astDumpOp( n->op.op )
 		case AST_NODECLASS_CONST
