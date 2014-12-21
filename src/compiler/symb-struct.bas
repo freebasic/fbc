@@ -226,6 +226,11 @@ function symbCheckBitField _
 
 		return TRUE
 
+	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
+		'' Allow 64bit bitfields on 64bit
+		'' TODO: 64bit bitfields on 32bit -- currently not supported
+		'' because bitfield accesses are based on the default word size
+		function = fbIs64bit( )
 	case else
 		return FALSE
 	end select

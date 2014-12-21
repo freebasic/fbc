@@ -11,6 +11,7 @@ Version 1.01.0
 - Constant 0 integers can now be assigned to pointers no matter what integer type it is. Previously it didn't work with [U]LongInts on 32bit and [U]Longs on 64bit.
 - Constant 0 pointers can now be assigned to any integer type. Previously this was only allowed with integer types matching the pointer size (32bit or 64bit).
 - #757: It's now possible to do UDT().field instead of (UDT()).field (field accesses on anonymous UDTs with constructors)
+- On 64bit, bitfields can now use the [U]LongInt type
 - Bindings (new/updated, including 64bit support):
 	Allegro 4.4.2 (allegro.bi)
 	algif 1.3 (allegro/algif.bi)

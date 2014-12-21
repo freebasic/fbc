@@ -2,6 +2,7 @@ o 64bit
   - FB includes must be adjusted for 64bit compatibility (if the corresponding
     library even is available on 64bit)
   - Windows port I/O driver? Can it be ported to 64bit? is it needed?
+  - 64bit bitfields aren't working properly - see tests/structs/bitfield-types.bas
 
 o LLVM backend
   - Check whether F2I conversions work correctly for unsigned integers (compare
