@@ -22,13 +22,14 @@ win32libs += d3d8
 win32libs += d3d9
 win32libs += d3dim
 win32libs += d3drm
-# MinGW-w64 only
-win32libs += d3dx10
-# MinGW-w64 only
-win32libs += d3dx11
+ifndef MINGWORG
+  win32libs += d3dx10
+  win32libs += d3dx11
+endif
 win32libs += d3dx8d
-# MinGW-w64 only
-win32libs += d3dx9
+ifndef MINGWORG
+  win32libs += d3dx9
+endif
 win32libs += d3dx9d
 win32libs += d3dxof
 win32libs += ddraw
@@ -45,23 +46,25 @@ win32libs += dpnlobby
 win32libs += dpvoice
 win32libs += dsetup
 win32libs += dsound
-# MinGW-w64 only
-win32libs += dwmapi
+ifndef MINGWORG
+  win32libs += dwmapi
+endif
 win32libs += dxapi
 win32libs += dxerr8
 win32libs += dxerr9
-# MinGW-w64 only
-win32libs += esent
+ifndef MINGWORG
+  win32libs += esent
+endif
 win32libs += dxguid
 win32libs += faultrep
 win32libs += gdi32
 win32libs += gdiplus
 win32libs += glaux
 win32libs += glu32
-# MinGW-w64 only
-win32libs += glut
-# MinGW-w64 only
-win32libs += glut32
+ifndef MINGWORG
+  win32libs += glut
+  win32libs += glut32
+endif
 win32libs += hal
 win32libs += hid
 win32libs += hidparse
@@ -83,8 +86,9 @@ win32libs += mpr
 win32libs += mprapi
 win32libs += mqrt
 win32libs += msacm32
-# MinGW-w64 only
-win32libs += msi
+ifndef MINGWORG
+  win32libs += msi
+endif
 win32libs += mscms
 win32libs += msdmo
 win32libs += msimg32
@@ -93,14 +97,16 @@ win32libs += msvcp60
 win32libs += msvfw32
 win32libs += mswsock
 win32libs += nddeapi
-# MinGW-w64 only
-win32libs += normaliz
+ifndef MINGWORG
+  win32libs += normaliz
+endif
 win32libs += ndis
 win32libs += netapi32
 win32libs += newdev
 win32libs += ntdll
-# MinGW-w64 only
-win32libs += ntdsapi
+ifndef MINGWORG
+  win32libs += ntdsapi
+endif
 win32libs += ntoskrnl
 win32libs += odbc32
 win32libs += odbccp32
@@ -112,8 +118,9 @@ win32libs += oledlg
 win32libs += olepro32
 win32libs += olesvr32
 win32libs += opengl32
-# MinGW-w64 only
-win32libs += pdh
+ifndef MINGWORG
+  win32libs += pdh
+endif
 win32libs += penwin32
 win32libs += pkpd32
 win32libs += powrprof
@@ -136,14 +143,16 @@ win32libs += shell32
 win32libs += shfolder
 win32libs += shlwapi
 win32libs += snmpapi
-# MinGW-w64 only
-win32libs += spoolss
+ifndef MINGWORG
+  win32libs += spoolss
+endif
 win32libs += strmiids
 win32libs += svrapi
 win32libs += tapi32
 win32libs += tdi
-# MinGW.org only
-#win32libs += thunk32
+ifdef MINGWORG
+  win32libs += thunk32
+endif
 win32libs += url
 win32libs += usbcamd2
 win32libs += usbcamd
