@@ -178,6 +178,7 @@ List of ""FreeBASIC"" keywords sorted by the function they perform.
 	- {{fbdoc item="keyword" value="KeyPgCustomgfx|CUSTOM (Graphics PUT)"}}
 	- {{fbdoc item="keyword" value="KeyPgDraw|DRAW"}}
 	- {{fbdoc item="keyword" value="KeyPgDrawString|DRAW STRING"}}
+	- {{fbdoc item="keyword" value="KeyPgEvent|EVENT (message data from ScreenEvent)"}}
 	- {{fbdoc item="keyword" value="KeyPgFlip|FLIP"}}
 	- {{fbdoc item="keyword" value="KeyPgGetgraphics|GET (Graphics)"}}
 	- {{fbdoc item="keyword" value="KeyPgImageConvertRow|IMAGECONVERTROW"}}

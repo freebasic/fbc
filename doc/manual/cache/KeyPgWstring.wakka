@@ -6,9 +6,11 @@ Standard data type: wide character string
 	[[KeyPgDim dim]] //variable// [[KeyPgAs as]] **Wstring** [[KeyPgPtr ptr]]
 ##
 {{fbdoc item="desc"}}
-	A ##**Wstring**## is a fixed-size array of wide-chars that never overflows if the size is known at compile-time. It has no descriptor, and does never resize unless it's a pointer and ##[[KeyPgAllocate Allocate]]##/##[[KeyPgReallocate Reallocate]]##/##[[KeyPgDeallocate Deallocate]]## are used directly.
+	A ##**Wstring**## is a fixed-size array of wide-chars that never overflows if the size is known at compile-time. It has no descriptor, and does never resize unless it's a pointer and ##[[KeyPgAllocate Allocate]]##/##[[KeyPgReallocate Reallocate]]##/##[[KeyPgDeallocate Deallocate]]## are used directly. When the variable has a fixed ##//size//##, ""FreeBASIC"" avoids any overflow that could occur on assignment, by truncating the contents to a length of ##//size// - 1##.
 
-	The end of the string is marked by the character 0, so that character must never be part of a ##**Wstring**## or the content will be truncated.
+	The end of the string is marked by the character 0 automatically added by the ""FreeBASIC"" string handling functions, so that character must never be part of a ##**Wstring**## or the content will be truncated. The character 0 will be appended when the string is created, and the length will be calculated by scanning the string for the first null character.
+	
+	In a ##**Wstring**##, ##[[KeyPgLen Len]]## returns the size of the contained string and ##[[KeyPgSizeof Sizeof]]## returns the space allocated to the ##**Wstring**##.  ##[[KeyPgSizeof Sizeof]]## only works if the size is known by the compiler, i.e. a fixed-size ##**Wstring**## variable is passed directly, not as a dereferenced pointer or a ##[[KeyPgByref Byref]]## function argument.
 
 	This type is provided for support non-Latin based alphabets. Any intrinsic string function like ##[[KeyPgLeft Left]]## will work with ##**Wstring**##s too, as will any string operator.
 
@@ -20,15 +22,15 @@ Standard data type: wide character string
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/datatype/wstring.bas"}}%%(freebasic)
-dim as wstring * 14 str1 => "hello, world"
+dim as wstring * 13 str1 => "hello, world"
 print str1
 print len(str1)    'returns 12, the length of the string it contains 
-print sizeof(str1) 'returns 14 * sizeof(wstring), the number of bytes used by the variable
+print sizeof(str1) 'returns 13 * sizeof(wstring), the number of bytes used by the variable
 %%
 
 {{fbdoc item="filename" value="examples/manual/datatype/wstring2.bas"}}%%(freebasic)
 dim as wstring ptr str2
-str2 = allocate( 14 * len(wstring) )
+str2 = allocate( 13 * len(wstring) )
 *str2 = "hello, world"
 print *str2
 print len(*str2)      'returns 12, the length of the string it points to

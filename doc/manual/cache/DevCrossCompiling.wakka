@@ -13,7 +13,7 @@ The official FB release packages include an fbc capable of cross-compiling, but 
 
 1. Besides fbc, ""FreeBASIC"" consists of the FB runtime library (rtlib/libfb) and the FB graphics library (gfxlib2/libfbgfx). Additionally, ""FreeBASIC"" uses libraries from the ""MinGW"", DJGPP or Linux GCC toolchains. All these libraries are precompiled for a certain target. You need a copy of the proper libraries for every compilation target you want to use.
 
-2. ""FreeBASIC"" uses the assembler and linker (and sometimes even more tools) from the GNU binutils project to create binaries, and these only support one target at a time. You need the proper binutils for every compilation target you want to use.
+2. ""FreeBASIC"" uses the assembler and linker (and sometimes even more tools) from the GNU binutils project to create binaries, and these may only support one target at a time. Depending on how they were built, they can also support multiple targets. Either way, you need the proper binutils for every compilation target you want to use.
 
 To keep the official FB release packages small, they only include the libraries and tools needed for native development, but not for cross-compiling. 
 

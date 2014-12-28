@@ -4,7 +4,7 @@ Lightweight, embeddable scripting engine using the Lua language.
 Website: http://www.lua.org/
 Platforms supported: ""Win32"", Linux, DOS
 Headers to include: Lua/lua.bi
-Header version: 5.2.2
+Header version: 5.2.3
 Examples: in examples/other-languages/Lua/
 
 {{fbdoc item="back" value="ExtLibTOC|External Library Table of Contents"}}

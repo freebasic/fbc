@@ -46,5 +46,6 @@ Foo.Barbeque = 2
 	- ##[[KeyPgPpdefine #define]]##
 	- ##[[KeyPgInclib #inclib]]##
 	- [[CompilerOpti Compiler Option: -i]]
+	- [[CompilerOptinclude Compiler Option: -include]]
 
 {{fbdoc item="back" value="CatPgPreProcess|Preprocessor"}}

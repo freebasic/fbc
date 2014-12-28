@@ -2,9 +2,9 @@
 Defines variables, objects and arrays having static storage
 
 {{fbdoc item="syntax"}}##
-	**Static** //symbol1// [ (//array-dimensions//) ] [[KeyPgAs As]] [[DataType DataType]] [, //symbol2// [ (//array-dimensions//) ] [[KeyPgAs As]] [[DataType DataType]], ...]
+	**Static** //symbol1// [ (//array-dimensions//) ] [[KeyPgAs As]] [[DataType DataType]] [ = //expression//] [, //symbol2// [ (//array-dimensions//) ] [[KeyPgAs As]] [[DataType DataType]] [ = //expression//], ...]
 		//or//
-	**Static** [[KeyPgAs As]] [[DataType DataType]] //symbol1// [ (//array-dimensions//) ] [, //symbol2// [ (//array-dimensions//) ], ...]
+	**Static** [[KeyPgAs As]] [[DataType DataType]] //symbol1// [ (//array-dimensions//) ] [ = //expression//] [, //symbol2// [ (//array-dimensions//) ] [ = //expression//], ...]
 	
 		//or//
 		
@@ -20,6 +20,8 @@ Defines variables, objects and arrays having static storage
 		//or//
 		##[[KeyPgAny Any]] [, [[KeyPgAny Any]]...]##
 		//or empty.//
+	##//expression//##
+	    An constant expression, or an array of constant expressions
 
 {{fbdoc item="desc"}}
 	Specifies [[ProPgStorageClasses static storage]] for variables, objects and arrays; they are allocated at program startup and deallocated upon exit. Objects are constructed once when they are defined, and destructed upon program exit.
@@ -39,10 +41,10 @@ Defines variables, objects and arrays having static storage
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/variable/static.bas"}}%%(freebasic)
 sub f
-	'' static variables are initialized to 0 by default
-	static i as integer
-	i += 1
-	Print "Number of times called: " & i
+	'' times called is initially 0
+	static timesCalled as integer = 0
+	timesCalled += 1
+	Print "Number of times called: " & timesCalled
 end sub
 
 '' the static variable in f() retains its value between
@@ -56,6 +58,9 @@ f()
 Number of times called: 1
 Number of times called: 2
 %%
+
+{{fbdoc item="lang"}}
+	- Variables cannot be initialised in the //[[CompilerOptlang -lang qb]]// dialect.
 
 {{fbdoc item="diff"}}
 	- ""QuickBASIC"" allows variables and arrays to be declared using the ##**Static**## keyword within procedures and ##DEF FN## routines only.

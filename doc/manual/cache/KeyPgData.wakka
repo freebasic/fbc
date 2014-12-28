@@ -10,7 +10,7 @@ Statement to store data at compile time.
 	All the ##**Data**## statements in the program behave as a single chained list; after the last element of one ##**Data**## statement is read, the first element of the following ##**Data**## statement will be read.
 	The program should not attempt to ##[[KeyPgRead Read]]## after the last ##**Data**## element.  The results are (in all dialects) undefined,  and the program may crash (Page Fault).
 	
-	##**Data**## statements are only visible from within the module in which they are defined.
+	##**Data**## statements are only visible from within the module in which they are defined; they must be only entered in module-level code.
 	
 	##**Data**## constants can only be of simple types (numeric or string).  A numeric value can be read as a numeric literal into a string. A string read into a numeric variable will be evaluated by the ##[[KeyPgVal Val]]## function.  ##[[KeyPgConst Const]]##s can be used as items of data except in the //[[CompilerOptlang -lang qb]]// dialect, where their names are considered as normal text.
 	

@@ -19,7 +19,7 @@ Writes text to the screen
 
 	NOTE: ##**Print**## resets the ##[[KeyPgErr Err]]## value after each expression is printed.
 	    
-	NOTE: In graphics mode, ##[[KeyPgDrawString Draw String]]## provides a flexible alternative to ##**Print**##: it prints a string to the screen with pixel positioning, transparent background, and can use an user-supplied font.
+	NOTE: In graphics mode, ##[[KeyPgDrawString Draw String]]## provides a flexible alternative to ##**Print**##: it prints a string to the screen with pixel positioning, transparent background, and can use a user-supplied font.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/console/print.bas"}}%%(freebasic)

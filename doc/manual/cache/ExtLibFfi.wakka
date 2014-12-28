@@ -4,7 +4,7 @@
 Website: http://sourceware.org/libffi/
 Platforms supported: Windows, Linux, DOS
 Headers to include: ffi.bi
-Header version: 3.0.10
+Header version: 3.1
 
 {{fbdoc item="ex"}}
 	Hello world:

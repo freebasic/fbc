@@ -1,0 +1,158 @@
+{{fbdoc item="title" value="Creating FB bindings for C libraries"}}----
+
+This page aims to document the problems and solutions commonly encountered when creating FB bindings for C libraries.
+
+In general, FB and ""C/C++"" are very similar. FB follows the same ABI as GCC where applicable, in order to be binary-compatible as much as possible. The language syntax is also similar to ""C/C++"". As a result, a lot of type and procedure declarations can be translated directly 1:1 between C and FB. However, there also are constructs which cannot be translated directly, for example: typedefs declaring function types. FB has function pointer types, but not plain function types.
+
+	- The good news: We have tools ([[http://www.freebasic.net/forum/viewtopic.php?f=8&t=18712 fbfrog]] and [[http://www.freebasic.net/forum/viewtopic.php?f=8&t=15364 h_2_bi]]) which can do most of the translation automatically.
+	- The bad news: There always are some problems which cannot be solved automatically and thus need to be fixed manually.
+
+{{fbdoc item="section" value="Data types"}}
+
+	{{table columns="3" cellpadding="1" cells=" C/C++ type ; Size in bytes (GCC on Linux/Windows) ; Corresponding FreeBASIC type ; char ; 1 ; Byte ; short [int] ; 2 ; Short ; int ; 4 ; Long ; enum (underlying type int) ; 4 ; Long ; long long [int] ; 8 ; LongInt ; float ; 4 ; Single ; double ; 8 ; Double ; long double ; 12 on 32bit, 16 on 64bit ; CLongDouble from crt/longdouble.bi ; _Bool/bool ; 1 ; Byte ; * (pointer) ; 4 on 32bit, 8 on 64bit ; Ptr/Pointer ; ssize_t, intptr_t ; 4 on 32bit, 8 on 64bit ; Integer ; size_t, uintptr_t ; 4 on 32bit, 8 on 64bit ; UInteger ; long [int] ; 4 on 32bit systems and Win64 (!), 8 on 64bit Linux/BSD ; CLong from crt/long.bi "}}
+
+	- Caveat: ##int##/##long## is not ##Integer##/##Long##. In FB, ##Integer## corresponds to ##Pointer## - it's 32bit on 32bit and 64bit on 64bit (on all operating systems). ##Long## stays 32bit everywhere. In C, ##int## stays 32bit everywhere, and ##long## only corresponds to pointers on Linux/BSD systems, but not on ""Win64"", where ##long## is still 32bit. On ""Win64"", ##long long## is the only 64bit integer type in C. Thus, neither C's ##int## nor C's ##long## are compatible to FB's ##Integer##.
+	- Caveat: ##long int## is not ##""LongInt""##. FB's ##""LongInt""## corresponds to C's ##long long##, not C's ##long##.
+	- ##int## can be translated to ##Long##, as both are 32bit consistently.
+	- ##ssize_t## or ##intptr_t## can be translated to ##Integer## because they typically have the same size as pointers.
+	- ##long## cannot be translated directly, but we have ##crt/long.bi## which provides the target-specific ##clong## and ##culong## type aliases.
+	
+	- ##long double## cannot be translated directly, but we have ##crt/longdouble.bi## which provides the target-specific ##clongdouble## type.
+	
+	- ##enum## is a special case. Typically their underlying type is ##int## (32bit), but in FB ##Enum## uses ##Integer## (32bit/64bit) and it does not allow changing that. Thus ##enums## (used as data type in declarations) cannot be translated as ##Enums##.
+	
+		For example:
+		
+			%%(c)enum MyEnum {
+	A,
+	B
+}
+%%
+		has to be translated as:
+		
+			%%(freebasic)Type MyEnum As Long
+Enum
+	A
+	B
+End Enum
+%%
+	
+	- ##BOOL## from ##windows.h## is just a typedef for ##int##, and should not be confused with the C ##_Bool## or ""C++"" ##bool## types.
+
+{{fbdoc item="section" value="Symbol name conflicts"}}
+
+	- ""C/C++"" is case-sensitive, with ~50 keywords
+	- ""FreeBASIC"" is case-insensitive, with ~400 keywords
+	- C code sometimes uses FB keywords as symbol identifiers, for example ##INT##, ##string##, ##open##. Such symbols must be renamed.
+	- C code often contains identifiers which differ only in case, for example ##GET_VERSION## and ##get_version##. This is not allowed in FB; one of the symbols must be renamed.
+	- In C, a macro can have the same identifier as a function. This is not allowed in FB; one of the symbols must be renamed.
+	
+	
+	{{fbdoc item="subsect" value="Examples"}}
+	
+		C code using FB keywords as identifiers:
+		%%(c)
+typedef int INT;
+void open(void);
+%%
+		%%(freebasic)
+type INT_ as long
+declare sub open_ cdecl alias "open"()
+%%
+		
+		C code relying on case-sensitivity:
+		%%(c)
+void foo(void);
+void Foo(void);
+void FOO(void);%%
+		%%(freebasic)
+'' Wrong translation:
+extern "C"
+	declare sub foo()
+	declare sub Foo()  '' error: duplicate definition
+	declare sub FOO()  '' error: duplicate definition
+end extern
+%%
+		%%(freebasic)
+'' Correct translation:
+extern "C"
+	declare sub foo()
+	declare sub Foo_ alias "Foo"()
+	declare sub FOO__ alias "FOO"()
+end extern
+%%
+		
+		Another classic example where this kind of conflict happens:
+		%%(c)
+#define GET_VERSION_NUMBER 123
+int get_version_number(void);
+%%
+		%%(freebasic)
+extern "C"
+	#define GET_VERSION_NUMBER_ 123  '' renamed to avoid conflict
+	declare function get_version_number() as long
+end extern
+%%
+		
+		Conflict between procedure and macro:
+		%%(c)
+void f(int);
+#define f(i) f(i + 1)
+%%
+		%%(freebasic)
+extern "C"
+	declare sub f(byval as long)
+	#define f_(i) f(i + 1)  '' renamed to avoid conflict
+end extern
+%%
+	
+	{{fbdoc item="subsect" value="Solutions"}}
+	
+		- Symbols should be renamed by appending ##_## underscores. This way we solve the conflicts and still stay close to the original API.
+		- Renaming a symbol should not cause further renames (for example, if ##foo## must be renamed, but ##foo_## already exists, then ##foo## should be renamed to ##""foo__""## instead)
+		- A list of renamed symbols should be available in the binding or in the binding's documentation such that users can identify such differences to the original API.
+		- Fields inside structures do not need to be renamed just because they match an FB keyword. By using the "##""As DataType Name""##" syntax they can be use FB keywords as identifiers. This only works as long as it is a simple structure (plain old data), not a class.
+			%%(freebasic)
+type UdtWithKeywordFields
+	As ZString Ptr String  '' Field "String" of type ZString Ptr
+	As Long Type  '' Field "Type" of type "Long"
+	As Long As  '' Field "As" of type "Long"
+end type%%
+
+{{fbdoc item="section" value="Function types"}}
+
+	In C it's possible to have typedefs with function types. Dereferencing a function pointer type results in a function type. FB only has function pointer types, but not function types.
+	
+	%%(c)
+// A function typedef (function result = void, no parameters)
+typedef void F(void);
+
+// Using it to declare a function called f1
+F f1;
+
+// Usually f1 would be declared like this (use of function typedefs is pretty rare):
+void f1(void);
+
+// A more common use for function typedefs is to declare pointers to them (function pointers):
+extern F *pf1;
+%%
+	
+	Since FB does not have function types, such typedefs have to be solved out, or turned into a function pointer:
+	
+	%%(freebasic)
+extern "C"
+
+type F as sub()  '' Function pointer type
+
+'' Declaring procedures is only possible with Declare in FB
+declare sub f1()
+
+'' But at least FB has function pointer types.
+'' Since F already is the function pointer in the FB translation, there is no extra PTR here
+extern pf1 as F
+
+end extern
+%%
+
+{{fbdoc item="back" value="DevToc|FreeBASIC Developer Information"}}
+{{fbdoc item="back" value="DocToc|Table of Contents"}}

@@ -48,6 +48,7 @@ print
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
+	- [[ProPgPtrArithmetic Pointer Arithmetic]]
 	- ##[[KeyPgOpValueOf Operator * (Value of)]]##
 	- ##{{fbdoc item="keyword" value="KeyPgOpStringIndex|Operator [] (String index)"}}##
 	- ##[[KeyPgOpArrayIndex Operator () (Array index)]]##

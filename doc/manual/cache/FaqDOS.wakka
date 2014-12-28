@@ -10,7 +10,7 @@ The current maintainer of this port is [[DrV DrV]].
 
 **WANTED TESTERS**
 
-The DOS version/target of ""FreeBASIC"" needs more testers. If you are interested in using ""FreeBASIC"" on DOS, please don't wait for 1.0 release, give it a try now. Tests from running in DOS on both old and new PC's are welcome (graphics, file I/O, serial port, ...). If something doesn't work, please place a detailed bug report into the forum or bug Tracker. If all works well, you can write about your success as well. Make sure to test a recent version of FB (reports from FB older than 0.20 will be probably considered as obsolete and useless), and check this document **before** complaining about anything.
+The DOS version/target of ""FreeBASIC"" needs more testers. If you are interested in using ""FreeBASIC"" on DOS, please don't wait for future releases, give it a try now. Tests from running in DOS on both old and new PC's are welcome (graphics, file I/O, serial port, ...). If something doesn't work, please place a detailed bug report into the forum or bug Tracker. If all works well, you can write about your success as well. Make sure to test a recent version of FB (reports from FB older than 0.90 will be probably considered as obsolete and useless), and check this document **before** complaining about anything.
 
 **Limitations**
 
@@ -221,9 +221,10 @@ type RegTypeX as __dpmi_regs
 	The [[CatPgThreading Threading Support Functions]] are not supported for DOS target, and most likely won't be soon/ever. The reason is simple: neither the DOS kernel, nor the DPMI host/standard, nor "GO32" DOS Extender support threading, unlike the ""Win32"" or Linux kernel. However nothing is impossible in DOS: you can set up your threading on the top of DPMI. There are multiple possibilities, two of which are:
 		- Set up an ISR, see "ISR_TIMER.BAS" example. This is not a "full" replacement, but sufficient in some cases.
 		- There is a **pthreads** library for DJGPP allowing to "emulate" Linux-like threading to some degree. It works acceptably for [P]7-ZIP DJGPP port (written in ""C++""), no tests with FB yet.
+		- See forum [[http://www.freebasic.net/forum/viewtopic.php?t=21274 t=21274]]
 
 {{anchor name="item24"}}==24. Executables made with FB DOS are bloated!==
-	This is true but there is no easy/fast way to fix. FB is a 32-bit HLL compiler, and most of the size is imported from DJGPP. !writeme! (see forum: [[http://freebasic.net/forum/viewtopic.php?t=11757 freebasic.net/forum/viewtopic.php?t=11757]])
+	This is true but there is no easy/fast way to fix. FB is a 32-bit HLL compiler, and most of the size is imported from DJGPP. !writeme! (see forum: [[http://freebasic.net/forum/viewtopic.php?t=11757 t=11757]])
 
 {{anchor name="item25"}}==25. Compilation is very slow with FB!==
 	Problem: "FBC takes 10 seconds to compile a "Hello world" program ! ""TurboBASIC"" / QBASIC / VBDOS / ""PowerBASIC"" do take < 1 second for the same job ..."

@@ -77,7 +77,7 @@ cd fbc64
 make -f ../fbc/makefile MULTILIB=64 FBC='../fbc/bin/fbc -i ../fbc/inc'
 %%
 
-This does not only work for ##gcc -m64## on 32bit, but also ##gcc -m32## on 64bit. For cross-compiling the 32bit FB on a 64bit system, just exchange 32 and 64 in the example above. For example, you have to specify ##MULTILIB=32## instead of ##MULTILIB=64##.
+This does not only work with ##gcc -m64## on 32bit, but also with ##gcc -m32## on 64bit. For cross-compiling the 32bit FB on a 64bit system, just exchange 32 and 64 in the example above. For example, you have to specify ##MULTILIB=32## instead of ##MULTILIB=64##.
 
 {{fbdoc item="back" value="DevToc|FreeBASIC Developer Information"}}
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

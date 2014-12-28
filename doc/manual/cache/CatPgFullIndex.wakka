@@ -231,6 +231,7 @@ Alphabetical listing of keywords, macros and procedures.
 	- {{fbdoc item="keyword" value="KeyPgErmn|ERMN"}}
 	- {{fbdoc item="keyword" value="KeyPgErr|ERR"}}
 	- {{fbdoc item="keyword" value="KeyPgError|ERROR"}}
+	- {{fbdoc item="keyword" value="KeyPgEvent|EVENT (message data from ScreenEvent)"}}
 	- {{fbdoc item="keyword" value="KeyPgExec|EXEC"}}
 	- {{fbdoc item="keyword" value="KeyPgExepath|EXEPATH"}}
 	- {{fbdoc item="keyword" value="KeyPgExit|EXIT"}}

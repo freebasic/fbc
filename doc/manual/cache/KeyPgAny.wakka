@@ -8,6 +8,8 @@
 ##//or//##
 	[[KeyPgDim Dim]] //identifier//(**Any** [, **Any**...]) [[KeyPgAs As]] [[DataType DataType]]
 ##//or//##
+	[ [[KeyPgDeclare Declare]] ] { [[KeyPgSub Sub]] | [[KeyPgFunction Function]] } //proc_name// ( //param//(**Any** [, **Any**...]) [[KeyPgAs As]] [[DataType DataType]]  )
+##//or//##
 	[[KeyPgDim Dim]] //identifier// [[KeyPgAs As]] [[DataType DataType]] = **Any**
 ##//or//##
 	[[KeyPgOpNew New]] [[DataType DataType]] **( Any )**
@@ -31,7 +33,9 @@
 		**##Any##** can be used in procedure prototypes (in a ##[[KeyPgDeclare Declare]]## statement) with ##[[KeyPgByref ByRef]]## parameters to disable the compiler checking for the correct type of the variable passed. This use of ##**Any**## is deprecated and it only exists for compatibility with QB.
 	
 	- Array dimensions:
-		In array declarations, **##Any##** can be specified in place of the array bounds in order to create a dynamic array with a certain amount of dimensions that is determined based on the number of **##Any##**s specified.
+		In array declarations, **##Any##** can be specified in place of the array bounds in order to create a dynamic array with a certain amount of dimensions that is determined based on the number of **##Any##**s specified (use the syntax with **##Any##** is mandatory when declaring a dynamic array member inside a ##[[KeyPgType Type]]##).
+		
+		In parameter declarations, **##Any##** can be also specified instead of empty parenthesis in order to fix the amount of dimensions.
 	
 	- Initialization:
 		##**Any**## can be used as a fake initializer to disable the default initialization of variables to ##0##, leaving the variable uninitialized. This may save time in critical sections of a program. It is the program's responsibility to fill the variables with meaningful data before reading it.

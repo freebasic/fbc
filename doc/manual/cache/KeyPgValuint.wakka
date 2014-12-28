@@ -2,8 +2,8 @@
 Converts a string to an integer number
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Valuint** [[KeyPgOverload overload]] ( [[KeyPgByref byref]] //strnum// [[KeyPgAs as]] [[KeyPgConstQualifier const]] [[KeyPgString string]] ) [[KeyPgAs as]] [[KeyPgUinteger uinteger]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Valuint** ( [[KeyPgByval byval]] //strnum// [[KeyPgAs as]] [[KeyPgConstQualifier const]] [[KeyPgWstring wstring]] [[KeyPgPtr ptr]] ) [[KeyPgAs as]] [[KeyPgUinteger uinteger]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Valuint** [[KeyPgOverload overload]] ( [[KeyPgByref byref]] //strnum// [[KeyPgAs as]] [[KeyPgConstQualifier const]] [[KeyPgString string]] ) [[KeyPgAs as]] [[KeyPgUlong ulong]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Valuint** ( [[KeyPgByval byval]] //strnum// [[KeyPgAs as]] [[KeyPgConstQualifier const]] [[KeyPgWstring wstring]] [[KeyPgPtr ptr]] ) [[KeyPgAs as]] [[KeyPgUlong ulong]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Valuint** ( //strnum// )
@@ -13,7 +13,7 @@ Converts a string to an integer number
 		the string to convert
 
 {{fbdoc item="ret"}}
-	Returns a ##[[KeyPgUinteger Uinteger]]## of the converted string
+	Returns a ##[[KeyPgUlong Ulong]]## value of the converted string
 
 	If the first character of the string is invalid, ##**Valuint**## will return ##0##.
 
@@ -47,7 +47,7 @@ print a, b
 	- ##[[KeyPgVal Val]]##
 	- ##[[KeyPgValint Valint]]##
 	- ##[[KeyPgValulng Valulng]]##
-	- ##[[KeyPgCuint Cuint]]##
+	- ##[[KeyPgCulng Culng]]##
 	- ##[[KeyPgStr Str]]##
 	- ##[[KeyPgChr Chr]]##
 	- ##[[KeyPgAsc Asc]]##

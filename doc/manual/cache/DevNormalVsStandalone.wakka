@@ -36,7 +36,7 @@ When built from source, ""FreeBASIC"" can be configured for and installed in one
 	- fbc is located in ##bin/##, like other programs
 	- looks for includes in ##include/freebasic/##, instead of ##inc/##, to cleanly separate FB headers from system headers
 	- looks for its own libraries in ##lib/freebasic/## instead of ##lib/##, to cleanly separate FB libraries from system libraries
-	- looks for binutils/gcc 1) in ##bin/#### and 2) by relying on ##PATH##
+	- looks for binutils/gcc 1) in ##bin/## and 2) by relying on ##PATH##
 	- looks for crt/gcc libraries 1) in ##lib/freebasic/## and 2) by running "##gcc -print-file-name=...##"
 	- ##[[CompilerOpttarget -target]]## option accepts system triplets such as "##i686-pc-linux-gnu##" or "##x86_64-w64-mingw32##"
 	- the target name given to the ##[[CompilerOpttarget -target]]## option is prepended to the gcc/binutils program names when cross-compiling

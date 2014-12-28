@@ -3,7 +3,7 @@
 
 === Introduction ===
 
-A dynamic array in a type definition is a very useful feature, but FreeBasic doesn't support it. Or rather, it doesn't support it directly. However, you can create dynamic arrays by using pointers and the associated memory functions.
+A dynamic array in a type definition is a very useful feature, but FreeBasic doesn't support it before version 1.00.0. Or rather, it doesn't support it directly before that version. However, you can create dynamic arrays by using pointers and the associated memory functions.
 
 An array is simply a contiguous block of memory that holds a certain data type. Arrays in FreeBasic use an array descriptor to describe the data contained within the array, and you can use this same technique to build a dynamic array within a type. The two elements you need within your type-def are a pointer to a particular data type, and a size indicator. 
 
@@ -52,7 +52,7 @@ myType.darray = Reallocate(myType.darray, 10)
 myType.size = 10
 
 'Load in data into new allocation
-For i = tmp - 1 To myType.Size - 1
+For i = tmp To myType.Size - 1
 	myType.darray[i] = i
 Next
 
@@ -78,7 +78,6 @@ Type DType
 	darray As Integer Ptr
 End Type
 %%
-
 Since this is just an example there are only two elements within the type, a size indicator and the array pointer. Notice that the array pointer is defined as an Integer ptr. When you define a pointer to a particular type, you are creating a "typed" pointer. The compiler can use this type information to check to make sure the values being placed into the array are valid, and will also use this information for pointer arithmetic.
 
 The next step is to define the working variables.
@@ -94,12 +93,14 @@ myType.size = 5
 These two lines of code initialize the array pointer to hold 5 integers. Callocate is used to allocate the memory segment, since Callocate will initialize the segment to zeros.
 
 The size field stores the current length of the array. Now, of course, you could calculate the size of the array by simply dividing the number of bytes in the allocation by the size of an integer, but using a size indicator within the type is much cleaner and saves you a calculation in your program.
+
 %%(freebasic)
 For i = 0 To myType.Size - 1 
 	myType.darray[i] = i
 Next
 %%
 This section of code loads the array with some values. You can see why saving the size of the array simplifies the coding process. Since the array is a typed pointer, you can access the array using the pointer indexing method, which is almost like accessing a predefined array.
+
 %%(freebasic)
 For i = 0 To myType.Size - 1
 	Print "darray[";i;" ]:";myType.darray[i]
@@ -118,18 +119,21 @@ The first line of code saves the current size of the array so that the new memor
 The second line uses the Reallocate function to resize the memory segment, that is, resize the array. In this case, the array is being made larger; you could of course make the array smaller. If you were to make the array smaller, any data not in the new segment would be lost, as you would expect.
 
 The last line of code above saves the new array size in the size indicator.
+
 %%(freebasic)
-For i = tmp - 1 To myType.Size - 1
+For i = tmp To myType.Size - 1
 	myType.darray[i] = i
 Next
 %%
-Here, you can see why the old array size was saved. In the For statement, the initialization procedure starts from the old index and iterates through the newly added indexes, storing data within the memory segment. This is like using the Redim Preserve statement on a normal array.
+Here, you can see why the old array size was saved. In the For statement, the initialization procedure iterates through the newly added indexes, storing data within the memory segment. This is like using the Redim Preserve statement on a normal array.
+
 %%(freebasic)
 For i = 0 To myType.Size - 1
 	Print "darray[";i;" ]:";myType.darray[i]
 Next
 %%
-This code section simply prints out the new values. 
+This code section simply prints out the new values.
+
 %%(freebasic)
 Deallocate myType.darray
 %%
@@ -157,3 +161,55 @@ darray[ 9 ]: 9
 Press any key...
 %%
 The first print out shows the original array. The second print out shows the newly resized array.
+
+
+----
+
+=== From fbc version 1.00.0, dynamic arrays fields as non-static members are supported inside UDT ===
+
+Previous example transposed for fbc version 1.00.0 or greater, by using a dynamic array field as non-static member inside the UDT (feature now supported):
+%%(freebasic)
+'Define type (for fbc version >= 1.00.0):
+'darray will contain array data
+Type DType
+	darray(Any) As Integer
+End Type
+
+'Create an instance of type
+Dim myType As DType
+Dim As Integer i, tmp
+
+'Create enough space for elements
+Redim myType.darray(4)
+
+'Load data into array
+For i = 0 To Ubound(myType.darray)
+	myType.darray(i) = i
+Next
+
+'Print data
+For i = 0 To Ubound(myType.darray)
+	Print "darray(";i;" ):"; myType.darray(i)
+Next
+Print "Press any key..."
+Sleep
+Print
+
+'Save the current array upper bound
+tmp = Ubound(myType.darray)
+'Now resize the array
+Redim Preserve myType.darray(10)
+
+'Load in data into new allocation
+For i = tmp + 1 To Ubound(myType.darray)
+	myType.darray(i) = i
+Next
+
+'Print out contents
+For i = 0 To Ubound(myType.darray)
+	Print "darray(";i;" ):";myType.darray(i)
+Next
+Print "Press any key..."
+
+Sleep
+%%
