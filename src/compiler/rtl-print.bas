@@ -808,9 +808,9 @@ function rtlPrintSPCTab _
 
 	''
 	if( istab ) then
-		proc = astNewCALL( PROCLOOKUP( PRINTSPC ) )
-	else
 		proc = astNewCALL( PROCLOOKUP( PRINTTAB ) )
+	else
+		proc = astNewCALL( PROCLOOKUP( PRINTSPC ) )
 	end if
 
     '' byval filenum as integer
