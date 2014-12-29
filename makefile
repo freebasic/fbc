@@ -76,6 +76,7 @@
 #   ENABLE_SUFFIX=-0.24    append a string like "-0.24" to fbc/FB dir names,
 #                          and use "-d ENABLE_SUFFIX=$(ENABLE_SUFFIX)" (non-standalone only)
 #   FBPACKAGE     bindist: The package/archive file name without path or extension
+#   FBPACKSUFFIX  bindist: Allows adding a custom suffix to the normal package name (and the toplevel dir in the archive)
 #   FBMANIFEST    bindist: The manifest file name without path or extension
 #   FBVERSION     bindist/gitdist: FB version number
 #   DISABLE_DOCS  bindist: Don't package readme/changelog/manpage/examples
@@ -726,6 +727,8 @@ ifndef FBPACKAGE
     endif
   endif
 endif
+
+FBPACKAGE := $(FBPACKAGE)$(FBPACKSUFFIX)
 
 ifndef FBMANIFEST
   FBMANIFEST := $(subst -$(FBVERSION),,$(FBPACKAGE))
