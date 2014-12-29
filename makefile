@@ -728,19 +728,7 @@ ifndef FBPACKAGE
 endif
 
 ifndef FBMANIFEST
-  ifneq ($(filter darwin freebsd linux netbsd openbsd solaris,$(TARGET_OS)),)
-    ifdef ENABLE_STANDALONE
-      FBMANIFEST := FreeBASIC-$(FBTARGET)-standalone
-    else
-      FBMANIFEST := FreeBASIC-$(FBTARGET)
-    endif
-  else
-    ifdef ENABLE_STANDALONE
-      FBMANIFEST := FreeBASIC-$(FBTARGET)
-    else
-      FBMANIFEST := fbc-$(FBTARGET)
-    endif
-  endif
+  FBMANIFEST := $(subst -$(FBVERSION),,$(FBPACKAGE))
 endif
 
 .PHONY: bindist
