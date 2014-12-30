@@ -535,13 +535,14 @@ private function hOptDerefAddr( byval n as ASTNODE ptr ) as ASTNODE ptr
 	assert( astIsDEREF(n) )
 	ofs += n->ptr.ofs
 
-	'' *(@[expr] +   0)    ->    [expr]
-	'' *(@[expr] + ofs)    ->    [expr+ofs]
+	'' DEREF(ADDROF(VAR(x, ofs=A)       ), ofs=B)    =>    VAR(x, ofs=A+B)
+	'' DEREF(OFFSET(VAR(x, ofs=A), ofs=C), ofs=B)    =>    VAR(x, ofs=A+B+C)
+	'' (also, astIncOffset() handles more than just VARs)
 
 	'' If the deref uses an <> 0 offset then try to include that into
 	'' any child var/idx/deref nodes. If that's not possible, then this
 	'' optimization can't be done.
-	'' Note: we must do this even if ofs = 0, to ensure it's ok to
+	'' Note: we must do this check even if ofs = 0, to ensure it's ok to
 	'' do the astSetType() below.
 	if( astIncOffset( l->l, ofs ) = FALSE ) then
 		return n
