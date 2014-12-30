@@ -1,0 +1,20 @@
+--- include/wchar.h.orig	2013-09-22 19:42:01 +0000
++++ include/wchar.h	2014-12-29 11:50:16 +0000
+@@ -641,13 +641,13 @@
+ #endif /* __STRICT_ANSI__ */
+ 
+ struct _stat64 {
+-	dev_t	   st_dev;	/* Equivalent to drive number 0=A 1=B ... */
+-	ino_t	   st_ino;	/* Always zero ? */
+-	mode_t	   st_mode;	/* See above constants */
++	_dev_t	   st_dev;	/* Equivalent to drive number 0=A 1=B ... */
++	_ino_t	   st_ino;	/* Always zero ? */
++	_mode_t	   st_mode;	/* See above constants */
+ 	short	   st_nlink;	/* Number of links. */
+ 	short	   st_uid;	/* User: Maybe significant on NT ? */
+ 	short	   st_gid;	/* Group: Ditto */
+-	dev_t	   st_rdev;	/* Seems useless (not even filled in) */
++	_dev_t	   st_rdev;	/* Seems useless (not even filled in) */
+ 	_off64_t   st_size;	/* File size in bytes */
+ 	__time64_t st_atime;	/* Accessed date (always 00:00 hrs local
+ 				 * on FAT) */
