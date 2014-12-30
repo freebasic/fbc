@@ -130,7 +130,7 @@ function build() {
 	echo
 	echo "bootstrapping normal fbc"
 	echo
-	make FBC=../FreeBASIC-1.00.0-win32/fbc.exe
+	make FBC=../$bootfb_title/fbc.exe
 	make install
 	echo
 	echo "rebuilding normal fbc"
@@ -176,7 +176,7 @@ function build() {
 
 	# TODO: GoRC.exe should really be taken from its homepage
 	# <http://www.godevtool.com/>, but it was offline today
-	cp FreeBASIC-1.00.0-win32/bin/win32/GoRC.exe		fbcsa/bin/win32
+	cp $bootfb_title/bin/win32/GoRC.exe		fbcsa/bin/win32
 
 	cp `gcc -print-file-name=crtbegin.o`	fbcsa/lib/win32
 	cp `gcc -print-file-name=crtend.o`	fbcsa/lib/win32
