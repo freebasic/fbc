@@ -1,3 +1,12 @@
+Version 1.02.0
+
+[changed]
+
+[added]
+
+[fixed]
+
+
 Version 1.01.0
 
 [changed]
