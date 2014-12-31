@@ -305,7 +305,7 @@ private function hLoadDefine _
 		'' should we call a function to get definition text?
 		if( symbGetDefineCallback( s ) <> NULL ) then
 			'' call function
-			if( (symbGetDefineFlags( s ) and FB_DEFINE_FLAGS_NUM) = 0 ) then
+			if( symbGetDefineFlags( s ) and FB_DEFINE_FLAGS_STR ) then
 				text = "$" + QUOTE + symbGetDefineCallback( s )( ) + QUOTE
 			else
 				text = symbGetDefineCallback( s )( )
@@ -615,7 +615,7 @@ private function hLoadDefineW _
 		'' should we call a function to get definition text?
 		if( symbGetDefineCallback( s ) <> NULL ) then
 			'' call function
-			if( (symbGetDefineFlags( s ) and FB_DEFINE_FLAGS_NUM) = 0 ) then
+			if( symbGetDefineFlags( s ) and FB_DEFINE_FLAGS_STR ) then
 				DWstrAssignA( text, "$" + QUOTE + symbGetDefineCallback( s )( ) + QUOTE )
 			else
 				DWstrAssignA( text, symbGetDefineCallback( s )( ) )
