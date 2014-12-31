@@ -24,33 +24,146 @@ type SYMBDEF
 	proc			as DEFCALLBACK
 end type
 
-declare function	hDefFile_cb			( ) as string
-declare function	hDefFpmode_cb		( ) as string
-declare function	hDefFpu_cb			( ) as string
-declare function	hDefFunction_cb		( ) as string
-declare function	hDefLine_cb			( ) as string
-declare function	hDefDate_cb			( ) as string
-declare function	hDefDateISO_cb		( ) as string
-declare function	hDefTime_cb			( ) as string
-declare function    hDefMultithread_cb	( ) as string
-declare function    hDefOptByval_cb		( ) as string
-declare function    hDefOptDynamic_cb	( ) as string
-declare function    hDefOptEscape_cb	( ) as string
-declare function    hDefOptExplicit_cb	( ) as string
-declare function    hDefOptPrivate_cb	( ) as string
-declare function    hDefOptGosub_cb		( ) as string
-declare function 	hDefOutExe_cb 		( ) as string
-declare function 	hDefOutLib_cb 		( ) as string
-declare function 	hDefOutDll_cb 		( ) as string
-declare function 	hDefOutObj_cb 		( ) as string
-declare function 	hDefDebug_cb 		( ) as string
-declare function 	hDefErr_cb 			( ) as string
-declare function 	hDefExErr_cb 		( ) as string
-declare function 	hDefExxErr_cb 		( ) as string
-declare function	hDefLang_cb			( ) as string
-declare function    hDefBackend_cb      ( ) as string
-declare function    hDefPath_cb         ( ) as string
-declare function    hDefGcc_cb         	( ) as string
+private function hDefFile_cb( ) as string static
+	function = env.inf.name
+end function
+
+private function hDefPath_cb( ) as string static
+	function = fbGetInputFileParentDir( )
+end function
+
+private function hDefFunction_cb( ) as string
+	if( symbGetIsMainProc( parser.currproc ) ) then
+		function = FB_MAINPROCNAME
+	elseif( symbGetIsModLevelProc( parser.currproc ) ) then
+		function = FB_MODLEVELNAME
+	else
+		function = *symbGetFullProcName( parser.currproc )
+	end if
+end function
+
+private function hDefLine_cb( ) as string static
+	function = str( lexLineNum( ) )
+end function
+
+private function hDefDate_cb( ) as string static
+	function = date
+end function
+
+private function hDefDateISO_cb( ) as string static
+	function = format( now( ), "yyyy-mm-dd" )
+end function
+
+private function hDefTime_cb( ) as string static
+	function = time
+end function
+
+private function hDefMultithread_cb( ) as string static
+	function = str( env.clopt.multithreaded )
+end function
+
+private function hDefOptByval_cb ( ) as string
+	function = str( env.opt.parammode = FB_PARAMMODE_BYVAL )
+end function
+
+private function hDefOptDynamic_cb ( ) as string
+	function = str( env.opt.dynamic = TRUE )
+end function
+
+private function hDefOptEscape_cb ( ) as string
+	function = str( env.opt.escapestr = TRUE )
+end function
+
+private function hDefOptExplicit_cb ( ) as string
+	function = str( env.opt.explicit = TRUE )
+end function
+
+private function hDefOptPrivate_cb ( ) as string
+	function = str( env.opt.procpublic = FALSE )
+end function
+
+private function hDefOptGosub_cb ( ) as string
+	function = str( env.opt.gosub = TRUE )
+end function
+
+private function hDefOutExe_cb ( ) as string
+	function = str( env.clopt.outtype = FB_OUTTYPE_EXECUTABLE )
+end function
+
+private function hDefOutLib_cb ( ) as string
+	function = str( env.clopt.outtype = FB_OUTTYPE_STATICLIB )
+end function
+
+private function hDefOutDll_cb ( ) as string
+	function = str( env.clopt.outtype = FB_OUTTYPE_DYNAMICLIB )
+end function
+
+private function hDefOutObj_cb ( ) as string
+	function = str( env.clopt.outtype = FB_OUTTYPE_OBJECT )
+end function
+
+private function hDefDebug_cb ( ) as string
+	function = str( env.clopt.debug )
+end function
+
+private function hDefErr_cb ( ) as string
+    dim as integer res = &h0000
+
+	if( env.clopt.errorcheck ) then
+		res = &h0001
+	end if
+
+	if( env.clopt.resumeerr ) then
+		res or= &h0002
+	end if
+
+	if( env.clopt.extraerrchk ) then
+		res or= &h0004
+	end if
+
+	function = str( res )
+end function
+
+private function hDefLang_cb ( ) as string
+	function = fbGetLangName( env.clopt.lang )
+end function
+
+private function hDefBackend_cb ( ) as string
+	select case env.clopt.backend
+	case FB_BACKEND_GAS
+		function = "gas"
+	case FB_BACKEND_GCC
+		function = "gcc"
+	case FB_BACKEND_LLVM
+		function = "llvm"
+	end select
+end function
+
+private function hDefFpu_cb ( ) as string
+	select case fbGetOption( FB_COMPOPT_FPUTYPE )
+	case FB_FPUTYPE_FPU
+		return "x87"
+	case FB_FPUTYPE_SSE
+		return "sse"
+	case else
+		assert( 0 )
+	end select
+end function
+
+private function hDefFpmode_cb ( ) as string
+	select case fbGetOption( FB_COMPOPT_FPMODE )
+	case FB_FPMODE_PRECISE
+		return "precise"
+	case FB_FPMODE_FAST
+		return "fast"
+	case else
+		assert( 0 )
+	end select
+end function
+
+private function hDefGcc_cb( ) as string static
+	function = str( (env.clopt.backend = FB_BACKEND_GCC) )
+end function
 
 '' Intrinsic #defines which are always defined
 dim shared defTb(0 to ...) as SYMBDEF => _
@@ -91,217 +204,6 @@ dim shared defTb(0 to ...) as SYMBDEF => _
 	(@"__FB_GCC__"            , NULL          , 0                  , @hDefGcc_cb        )  _
 }
 
-'':::::
-private function hDefFile_cb( ) as string static
-
-	function = env.inf.name
-
-end function
-
- '':::::
-private function hDefPath_cb( ) as string static
-
-	function = fbGetInputFileParentDir( )
-
-end function
-
-'':::::
-private function hDefFunction_cb( ) as string
-
-	if( symbGetIsMainProc( parser.currproc ) ) then
-		function = FB_MAINPROCNAME
-	elseif( symbGetIsModLevelProc( parser.currproc ) ) then
-		function = FB_MODLEVELNAME
-	else
-		function = *symbGetFullProcName( parser.currproc )
-	end if
-
-end function
-
-'':::::
-private function hDefLine_cb( ) as string static
-
-	function = str( lexLineNum( ) )
-
-end function
-
-'':::::
-private function hDefDate_cb( ) as string static
-
-	function = date
-
-end function
-
-'':::::
-private function hDefDateISO_cb( ) as string static
-
-	function = format( now( ), "yyyy-mm-dd" )
-
-end function
-
-'':::::
-private function hDefTime_cb( ) as string static
-
-	function = time
-
-end function
-
-'':::::
-private function hDefMultithread_cb( ) as string static
-
-	function = str( env.clopt.multithreaded )
-
-end function
-
-'':::::
-private function hDefOptByval_cb ( ) as string
-
-	function = str( env.opt.parammode = FB_PARAMMODE_BYVAL )
-
-end function
-
-'':::::
-private function hDefOptDynamic_cb ( ) as string
-
-	function = str( env.opt.dynamic = TRUE )
-
-end function
-
-'':::::
-private function hDefOptEscape_cb ( ) as string
-
-	function = str( env.opt.escapestr = TRUE )
-
-end function
-
-'':::::
-private function hDefOptExplicit_cb ( ) as string
-
-	function = str( env.opt.explicit = TRUE )
-
-end function
-
-'':::::
-private function hDefOptPrivate_cb ( ) as string
-
-	function = str( env.opt.procpublic = FALSE )
-
-end function
-
-'':::::
-private function hDefOptGosub_cb ( ) as string
-
-	function = str( env.opt.gosub = TRUE )
-
-end function
-
-'':::::
-private function hDefOutExe_cb ( ) as string
-
-	function = str( env.clopt.outtype = FB_OUTTYPE_EXECUTABLE )
-
-end function
-
-'':::::
-private function hDefOutLib_cb ( ) as string
-
-	function = str( env.clopt.outtype = FB_OUTTYPE_STATICLIB )
-
-end function
-
-'':::::
-private function hDefOutDll_cb ( ) as string
-
-	function = str( env.clopt.outtype = FB_OUTTYPE_DYNAMICLIB )
-
-end function
-
-'':::::
-private function hDefOutObj_cb ( ) as string
-
-	function = str( env.clopt.outtype = FB_OUTTYPE_OBJECT )
-
-end function
-
-'':::::
-private function hDefDebug_cb ( ) as string
-
-	function = str( env.clopt.debug )
-
-end function
-
-''::::
-private function hDefErr_cb ( ) as string
-    dim as integer res = &h0000
-
-	if( env.clopt.errorcheck ) then
-		res = &h0001
-	end if
-
-	if( env.clopt.resumeerr ) then
-		res or= &h0002
-	end if
-
-	if( env.clopt.extraerrchk ) then
-		res or= &h0004
-	end if
-
-	function = str( res )
-
-end function
-
-'':::::
-private function hDefLang_cb ( ) as string
-
-	function = fbGetLangName( env.clopt.lang )
-
-end function
-
-'':::::
-private function hDefBackend_cb ( ) as string
-	select case env.clopt.backend
-	case FB_BACKEND_GAS
-		function = "gas"
-	case FB_BACKEND_GCC
-		function = "gcc"
-	case FB_BACKEND_LLVM
-		function = "llvm"
-	end select
-end function
-
-'':::::
-private function hDefFpu_cb ( ) as string
-
-	select case fbGetOption( FB_COMPOPT_FPUTYPE )
-	case FB_FPUTYPE_FPU
-		return "x87"
-	case FB_FPUTYPE_SSE
-		return "sse"
-	case else
-		assert( 0 )
-	end select
-
-end function
-
-'':::::
-private function hDefFpmode_cb ( ) as string
-
-	select case fbGetOption( FB_COMPOPT_FPMODE )
-	case FB_FPMODE_PRECISE
-		return "precise"
-	case FB_FPMODE_FAST
-		return "fast"
-	case else
-		assert( 0 )
-	end select
-
-end function
-
-private function hDefGcc_cb( ) as string static
-	function = str( (env.clopt.backend = FB_BACKEND_GCC) )
-end function
-
-'':::::
 sub symbDefineInit _
 	( _
 		byval ismain as integer _
@@ -316,6 +218,7 @@ sub symbDefineInit _
 	'' add the pre-defines
 	for i as integer = 0 to ubound( defTb )
 		value = *defTb(i).value
+
 		if( defTb(i).value <> NULL ) then
 			if( defTb(i).flags and FB_DEFINE_FLAGS_STR ) then
 				value = QUOTE + value + QUOTE
