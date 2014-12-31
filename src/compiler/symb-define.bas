@@ -52,10 +52,8 @@ declare function    hDefBackend_cb      ( ) as string
 declare function    hDefPath_cb         ( ) as string
 declare function    hDefGcc_cb         	( ) as string
 
-const SYMB_MAXDEFINES = 34
-
 '' Intrinsic #defines which are always defined
-dim shared defTb( 0 to SYMB_MAXDEFINES-1 ) as SYMBDEF => _
+dim shared defTb(0 to ...) as SYMBDEF => _
 { _
 	_ '' name                     constant value  flags                callback (if value isn't constant)
 	(@"__FB_VERSION__"        , @FB_VERSION   , 0                  , NULL               ), _
@@ -90,8 +88,7 @@ dim shared defTb( 0 to SYMB_MAXDEFINES-1 ) as SYMBDEF => _
 	(@"__FB_BACKEND__"        , NULL          , 0                  , @hDefBackend_cb    ), _
 	(@"__FB_FPU__"            , NULL          , 0                  , @hDefFpu_cb        ), _
 	(@"__FB_FPMODE__"         , NULL          , 0                  , @hDefFpmode_cb     ), _
-	(@"__FB_GCC__"            , NULL          , FB_DEFINE_FLAGS_NUM, @hDefGcc_cb        ), _
-	(NULL) _
+	(@"__FB_GCC__"            , NULL          , FB_DEFINE_FLAGS_NUM, @hDefGcc_cb        )  _
 }
 
 '':::::
@@ -317,11 +314,7 @@ sub symbDefineInit _
 	listInit( @symb.def.toklist, FB_INITDEFTOKNODES, len( FB_DEFTOK ), LIST_FLAGS_NOCLEAR )
 
 	'' add the pre-defines
-	for i as integer = 0 to SYMB_MAXDEFINES-1
-		if( defTb(i).name = NULL ) then
-			exit for
-		end if
-
+	for i as integer = 0 to ubound( defTb )
 		value = *defTb(i).value
 		if( defTb(i).value <> NULL ) then
 			if( (defTb(i).flags and FB_DEFINE_FLAGS_NUM) = 0 ) then
