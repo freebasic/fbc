@@ -52,11 +52,12 @@ declare function    hDefBackend_cb      ( ) as string
 declare function    hDefPath_cb         ( ) as string
 declare function    hDefGcc_cb         	( ) as string
 
-'' predefined #defines: name, value, flags, proc (for description flags, see FBS_DEFINE)
 const SYMB_MAXDEFINES = 34
 
+'' Intrinsic #defines which are always defined
 dim shared defTb( 0 to SYMB_MAXDEFINES-1 ) as SYMBDEF => _
 { _
+	_ '' name                     constant value  flags                callback (if value isn't constant)
 	(@"__FB_VERSION__"        , @FB_VERSION   , 0                  , NULL               ), _
 	(@"__FB_BUILD_DATE__"     , @FB_BUILD_DATE, 0                  , NULL               ), _
 	(@"__FB_VER_MAJOR__"      , @FB_VER_MAJOR , FB_DEFINE_FLAGS_NUM, NULL               ), _
