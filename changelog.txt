@@ -4,6 +4,7 @@ Version 1.02.0
 
 [added]
 - __FB_ASM__ intrinsic #define on x86, defined to "intel" or "att" (corresponding to the -asm command line option -- useful for -gen gcc/llvm only)
+- fbc -showincludes option (shows #include tree) for debugging of #includes
 
 [fixed]
 - Potential bad code generation for dynamic array field copying

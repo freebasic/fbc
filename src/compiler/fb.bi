@@ -90,6 +90,8 @@ enum FB_COMPOPT
 	FB_COMPOPT_PIC                  '' boolean: -pic (whether to use position-independent code)
 	FB_COMPOPT_STACKSIZE            '' integer
 
+	FB_COMPOPT_SHOWINCLUDES         '' boolean: -showincludes
+
 	FB_COMPOPTIONS
 end enum
 
@@ -257,6 +259,7 @@ type FBCMMLINEOPT
 	gfx             as integer              '' Link against gfx library (default = false)
 	pic             as integer              '' Whether to use position-independent code (default = false)
 	stacksize       as integer
+	showincludes    as integer
 end type
 
 '' features allowed in the selected language

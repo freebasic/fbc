@@ -88,6 +88,7 @@ declare function hCheckFileFormat _
 	) as integer
 
 declare function hCurDir( ) as string
+declare function pathStripCurdir( byref path as string ) as string
 
 declare function hHexUInt _
 	( _

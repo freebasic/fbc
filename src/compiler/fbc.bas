@@ -1370,6 +1370,7 @@ enum
 	OPT_RR
 	OPT_RRKEEPASM
 	OPT_S
+	OPT_SHOWINCLUDES
 	OPT_STATIC
 	OPT_T
 	OPT_TARGET
@@ -1431,6 +1432,7 @@ dim shared as integer option_takes_argument(0 to (OPT__COUNT - 1)) = _
 	FALSE, _ '' OPT_RR
 	FALSE, _ '' OPT_RRKEEPASM
 	TRUE , _ '' OPT_S
+	FALSE, _ '' OPT_SHOWINCLUDES
 	FALSE, _ '' OPT_STATIC
 	TRUE , _ '' OPT_T
 	TRUE , _ '' OPT_TARGET
@@ -1688,6 +1690,9 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 	case OPT_S
 		fbc.subsystem = arg
 
+	case OPT_SHOWINCLUDES
+		fbSetOption( FB_COMPOPT_SHOWINCLUDES, TRUE )
+
 	case OPT_STATIC
 		fbc.staticlink = TRUE
 
@@ -1896,6 +1901,7 @@ private function parseOption(byval opt as zstring ptr) as integer
 
 	case asc("s")
 		ONECHAR(OPT_S)
+		CHECK("showincludes", OPT_SHOWINCLUDES)
 		CHECK("static", OPT_STATIC)
 
 	case asc("t")
