@@ -7,6 +7,7 @@ Version 1.02.0
 
 [fixed]
 - Potential bad code generation for dynamic array field copying
+- C backend: Naked functions could end up in the .data section instead of .text
 
 
 Version 1.01.0

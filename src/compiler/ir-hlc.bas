@@ -3381,6 +3381,7 @@ private sub _emitProcBegin _
 	'' __attribute__((naked)) on x86
 	if( symbIsNaked( proc ) ) then
 		mangled = hGetMangledNameForASM( proc, TRUE )
+		hWriteLine( "__asm__( "".text"" );" )
 		hWriteLine( "__asm__( "".globl " + mangled + """ );" )
 		hWriteLine( "__asm__( """ + mangled + ":"" );" )
 		exit sub

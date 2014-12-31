@@ -5,6 +5,11 @@
 
 namespace fbc_tests.functions.naked
 
+'' -gen gcc regression test: naked functions could end up in .data instead of
+'' .text if we had an initialized global var in the same module and gcc emitted
+'' it at the top.
+dim shared foo as integer = 123
+
 function add_cdecl naked cdecl( byval a as integer, byval b as integer ) as integer
 	#if __FB_ASM__ = "att"
 		#assert __FB_BACKEND__ = "gcc"
@@ -24,6 +29,7 @@ end function
 
 sub test cdecl ( )
 	CU_ASSERT_EQUAL( add_cdecl( 3, 7 ), 10 )
+	CU_ASSERT( foo = 123 ) '' Ensure "foo" is referenced and will be emitted by fbc
 end sub
 
 private sub ctor () constructor
