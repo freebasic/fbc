@@ -165,6 +165,13 @@ private function hDefGcc_cb( ) as string static
 	function = str( (env.clopt.backend = FB_BACKEND_GCC) )
 end function
 
+private function hDefAsm_cb( ) as string
+	select case( env.clopt.asmsyntax )
+	case FB_ASMSYNTAX_INTEL : function = "intel"
+	case FB_ASMSYNTAX_ATT   : function = "att"
+	end select
+end function
+
 '' Intrinsic #defines which are always defined
 dim shared defTb(0 to ...) as SYMBDEF => _
 { _
@@ -246,6 +253,8 @@ sub symbDefineInit _
 	select case( fbGetCpuFamily( ) )
 	case FB_CPUFAMILY_ARM, FB_CPUFAMILY_AARCH64
 		symbAddDefine( @"__FB_ARM__", NULL, 0 )
+	case FB_CPUFAMILY_X86
+		symbAddDefine( @"__FB_ASM__", NULL, 0, FALSE, @hDefAsm_cb, FB_DEFINE_FLAGS_STR )
 	end select
 
 	'' add "main" define
