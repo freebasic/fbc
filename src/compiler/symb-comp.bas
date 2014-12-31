@@ -315,9 +315,17 @@ private sub hAssignDynamicArray _
 	dim as FBSYMBOL ptr dst = any, src = any, limit = any
 	dim as FBSYMBOL ptr looplabel = any, exitlabel = any
 
+	'' Normally we'd have to check whether astRemSideFx() is needed for the
+	'' dst/src expressions because we clone them, but currently this can't
+	'' ever happen because we only copy inside the auto-generated LET
+	'' overload, and dst/src are just simple field accesses on the two
+	'' objects (THIS/__FB_RHS__ pointers).
+	assert( astHasSideFx( dstexpr ) = FALSE )
+	assert( astHasSideFx( srcexpr ) = FALSE )
+
 	'' 1. REDIM dest to same size as source (will call dtors/ctors as needed)
 	dtype = fld->typ
-	astAdd( rtlArrayRedimTo( dstexpr, srcexpr, dtype, fld->subtype ) )
+	astAdd( rtlArrayRedimTo( astCloneTree( dstexpr ), astCloneTree( srcexpr ), dtype, fld->subtype ) )
 
 	'' 2. Loop over all elements (if any) and copy them over 1 by 1, using
 	''    astNewASSIGN(), that will call let overloads as needed, and handle

@@ -5,6 +5,7 @@ Version 1.02.0
 [added]
 
 [fixed]
+- Potential bad code generation for dynamic array field copying
 
 
 Version 1.01.0
