@@ -871,6 +871,8 @@ declare function astLoad _
 		byval n as ASTNODE ptr _
 	) as IRVREG ptr
 
+declare function astIncOffset( byval n as ASTNODE ptr, byval ofs as longint ) as integer
+
 declare function astOptimizeTree _
 	( _
 		byval n as ASTNODE ptr _

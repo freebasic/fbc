@@ -5,11 +5,13 @@ Version 1.02.0
 [added]
 - __FB_ASM__ intrinsic #define on x86, defined to "intel" or "att" (corresponding to the -asm command line option -- useful for -gen gcc/llvm only)
 - fbc -showincludes option (shows #include tree) for debugging of #includes
+- Address-of followed by pointer-arithmetic on variables (expressions such as @x+N) will now be turned into offsetted variable accesses, resulting in better generated code
 
 [fixed]
 - Potential bad code generation for dynamic array field copying
 - C backend: Naked functions could end up in the .data section instead of .text
 - Returning a dereferenced constant (such as <cptr(UDT ptr, 0)->field>) caused a compiler crash
+- 1.00.0 regression: Bad code generation for dynamic array descriptor initialization (and potentially other cases)
 
 
 Version 1.01.0

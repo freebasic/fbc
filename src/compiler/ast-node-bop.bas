@@ -1286,8 +1286,8 @@ function astNewBOP _
 	elseif( astIsCONST( r ) ) then
 		select case op
 		case AST_OP_ADD
-			'' offset?
-			if( l->class = AST_NODECLASS_OFFSET ) then
+			select case( l->class )
+			case AST_NODECLASS_OFFSET
 				'' no need to check for other values, floats aren't
 				'' allowed and if longints were used, this wouldn't be
 				'' an ofs node
@@ -1295,17 +1295,31 @@ function astNewBOP _
 				astDelNode( r )
 
 				return l
-			end if
+
+			'' BOP(ADDROF(VAR(x)), CONST(N))  =>  ADDROF(VAR(x, ofs=N))
+			case AST_NODECLASS_ADDROF
+				if( astIncOffset( l->l, r->val.i ) ) then
+					astDelNode( r )
+					return l
+				end if
+			end select
 
 		case AST_OP_SUB
-			'' offset?
-			if( l->class = AST_NODECLASS_OFFSET ) then
+			select case( l->class )
+			case AST_NODECLASS_OFFSET
 				'' see above
 				l->ofs.ofs -= r->val.i
 				astDelNode( r )
 
 				return l
-			end if
+
+			'' BOP(ADDROF(VAR(x)), CONST(N))  =>  ADDROF(VAR(x, ofs=N))
+			case AST_NODECLASS_ADDROF
+				if( astIncOffset( l->l, -r->val.i ) ) then
+					astDelNode( r )
+					return l
+				end if
+			end select
 
 			'' ? - c = ? + -c
 			astBeginHideWarnings( )
