@@ -1277,7 +1277,8 @@ function astIsAccessToLocal( byval expr as ASTNODE ptr ) as integer
 		function = TRUE
 
 	case AST_NODECLASS_FIELD
-		if( astIsDEREF( expr->l ) ) then
+		'' DEREF's lhs can be NULL in case it deref'ed a const
+		if( astIsDEREF( expr->l ) and (expr->l->l <> NULL) ) then
 			if( astIsBOP( expr->l->l, AST_OP_ADD ) ) then
 				if( astGetClass( expr->l->l->l ) = AST_NODECLASS_ADDROF ) then
 					'' will be a VAR/FIELD again

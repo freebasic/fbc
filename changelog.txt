@@ -9,6 +9,7 @@ Version 1.02.0
 [fixed]
 - Potential bad code generation for dynamic array field copying
 - C backend: Naked functions could end up in the .data section instead of .text
+- Returning a dereferenced constant (such as <cptr(UDT ptr, 0)->field>) caused a compiler crash
 
 
 Version 1.01.0
