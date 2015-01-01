@@ -1041,6 +1041,10 @@ sub astDumpSmall( byval n as ASTNODE ptr, byref prefix as string )
 			if( n->idx.mult <> 1 ) then s += " mult=" & n->idx.mult
 		case AST_NODECLASS_BOP, AST_NODECLASS_UOP
 			s += " " + astDumpOp( n->op.op )
+		case AST_NODECLASS_CONV
+			if( n->cast.doconv = FALSE ) then
+				s += " noconv"
+			end if
 		case AST_NODECLASS_CONST
 			if( typeGetClass( n->dtype ) = FB_DATACLASS_FPOINT ) then
 				s += " " + str( astConstGetFloat( n ) )
