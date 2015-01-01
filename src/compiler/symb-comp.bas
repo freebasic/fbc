@@ -340,8 +340,8 @@ private sub hAssignDynamicArray _
 	'' dst   = this.dstdesc.ptr
 	'' src   = this.srcdesc.ptr
 	'' limit = src + this.srcdesc.size
-	astAdd( astBuildVarAssign( dst, astBuildDerefAddrOf( dstexpr, symb.fbarray_ptr, dtype, fld->subtype ), AST_OPOPT_ISINI ) )
-	astAdd( astBuildVarAssign( src, astBuildDerefAddrOf( srcexpr, symb.fbarray_ptr, dtype, fld->subtype ), AST_OPOPT_ISINI ) )
+	astAdd( astBuildVarAssign( dst, astBuildDerefAddrOf( dstexpr                , symb.fbarray_ptr, dtype, fld->subtype ), AST_OPOPT_ISINI ) )
+	astAdd( astBuildVarAssign( src, astBuildDerefAddrOf( astCloneTree( srcexpr ), symb.fbarray_ptr, dtype, fld->subtype ), AST_OPOPT_ISINI ) )
 	astAdd( astBuildVarAssign( _
 		limit, _
 		astNewBOP( AST_OP_ADD, _
