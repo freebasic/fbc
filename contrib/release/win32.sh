@@ -2,42 +2,45 @@
 set -e
 
 target="$1"
-case "$1" in
-win32|win32-mingworg)
-	;;
-"")
-	target="win32"
-	;;
-*)
-	echo "usage: ./win32.sh [win32 | win32-mingworg]"
-	exit 1
-	;;
+if [ -z "$target" ]; then
+	target=`fbc -print host`
+fi
+
+case "$target" in
+win32|win64)    fbtarget=$target;;
+win32-mingworg) fbtarget=win32;;
+*)              echo "usage: ./win32.sh [win32 | win32-mingworg]" && exit 1;;
 esac
 
-echo "removing existing $target/ dir"
-rm -rf "$target"
-mkdir "$target"
+mkdir -p input
 mkdir -p output
-
-echo "working inside $target/ dir"
-cd "$target"
+rm -rf build
+mkdir build
+cd build
 
 function download_mingw() {
 	../download.sh "../input/MinGW.org/$1" "http://downloads.sourceforge.net/mingw/${1}?download"
 }
 
+function get_mingww64_toolchain() {
+	bits="$1"
+	arch="$2"
+
+	gccversion=4.9.2
+	dir=Toolchains%20targetting%20Win64/Personal%20Builds/mingw-builds/$gccversion/threads-win32/sjlj/
+	file=$arch-$gccversion-release-win32-sjlj-rt_v3-rev1.7z
+
+	mkdir -p ../input/MinGW-w64
+	../download.sh "../input/MinGW-w64/$file" \
+		"http://sourceforge.net/projects/mingw-w64/files/$dir$file/download"
+
+	7z x "../input/MinGW-w64/$file" > /dev/null
+}
+
 case "$target" in
 win32)
-	# Download & extract MinGW-w64 toolchain
-	mingww64_package=i686-4.9.2-release-win32-sjlj-rt_v3-rev1.7z
-	mkdir -p ../input/MinGW-w64
-	../download.sh "../input/MinGW-w64/$mingww64_package" "http://sourceforge.net/projects/mingw-w64/files/Toolchains%20targetting%20Win32/Personal%20Builds/mingw-builds/4.9.2/threads-win32/sjlj/${mingww64_package}/download"
-	echo "extracting $mingww64_package"
-	7z x "../input/MinGW-w64/$mingww64_package" > /dev/null
-
-	# Move things out of the mingw32/ dir that is used in the 32bit MinGW-w64 toolchain package
-	mv mingw32/* .
-	rmdir mingw32
+	get_mingww64_toolchain 32 i686
+	mv mingw32/* . && rmdir mingw32
 
 	mkdir -p ../input/MinGW.org
 	mkdir mingworg-gdb
@@ -77,10 +80,14 @@ win32-mingworg)
 	# Work around http://sourceforge.net/p/mingw/bugs/2039/
 	patch -p0 < ../mingworg-fix-wcharh.patch
 	;;
+win64)
+	get_mingww64_toolchain 64 x86_64
+	mv mingw64/* . && rmdir mingw64
+	;;
 esac
 
 # Download & extract FB for bootstrapping
-bootfb_title=FreeBASIC-1.00.0-win32
+bootfb_title=FreeBASIC-1.00.0-$fbtarget
 ../download.sh ../input/$bootfb_title.zip "https://downloads.sourceforge.net/fbc/${bootfb_title}.zip?download"
 unzip -q ../input/$bootfb_title.zip
 
@@ -88,6 +95,12 @@ unzip -q ../input/$bootfb_title.zip
 ../download.sh ../input/fbc-master.zip "https://github.com/freebasic/fbc/archive/master.zip"
 unzip -q ../input/fbc-master.zip && mv fbc-master fbc   && echo "prefix := `pwd -W`"     > fbc/config.mk
 unzip -q ../input/fbc-master.zip && mv fbc-master fbcsa && echo "ENABLE_STANDALONE := 1" > fbcsa/config.mk
+
+# On 64bit, we have to override the FB makefile's uname check, because MSYS uname reports 32bit still
+if [ "$target" = win64 ]; then
+	echo "TARGET_ARCH := x86_64" >> fbc/config.mk
+	echo "TARGET_ARCH := x86_64" >> fbcsa/config.mk
+fi
 
 # libffi sources
 libffi_title=libffi-3.2.1
@@ -116,13 +129,16 @@ function build() {
 	libffi_build="${libffi_title}-build"
 	mkdir "$libffi_build"
 	cd "$libffi_build"
-	CFLAGS=-O2 ../$libffi_title/configure --disable-shared --enable-static
+	if [ "$target" = win64 ]; then
+		CFLAGS=-O2 ../$libffi_title/configure --disable-shared --enable-static --build=x86_64-w64-mingw32 --host=x86_64-w64-mingw32
+	else
+		CFLAGS=-O2 ../$libffi_title/configure --disable-shared --enable-static
+	fi
 	make
 	case "$target" in
-	win32)
-		cp include/ffi.h include/ffitarget.h ../i686-w64-mingw32/include;;
-	win32-mingworg)
-		cp include/ffi.h include/ffitarget.h ../include;;
+	win32)		cp include/ffi.h include/ffitarget.h ../i686-w64-mingw32/include;;
+	win32-mingworg)	cp include/ffi.h include/ffitarget.h ../include;;
+	win64)		cp include/ffi.h include/ffitarget.h ../x86_64-w64-mingw32/include;;
 	esac
 	cd ..
 
@@ -150,11 +166,11 @@ function build() {
 	echo "copying binutils/libs/etc."
 	echo
 
-	mkdir -p fbcsa/bin/win32
-	cp bin/ar.exe			fbcsa/bin/win32
-	cp bin/as.exe			fbcsa/bin/win32
-	cp bin/dlltool.exe		fbcsa/bin/win32
-	cp bin/ld.exe			fbcsa/bin/win32
+	mkdir -p fbcsa/bin/$fbtarget
+	cp bin/ar.exe			fbcsa/bin/$fbtarget
+	cp bin/as.exe			fbcsa/bin/$fbtarget
+	cp bin/dlltool.exe		fbcsa/bin/$fbtarget
+	cp bin/ld.exe			fbcsa/bin/$fbtarget
 
 	case "$target" in
 	win32)
@@ -176,35 +192,35 @@ function build() {
 
 	# TODO: GoRC.exe should really be taken from its homepage
 	# <http://www.godevtool.com/>, but it was offline today
-	cp $bootfb_title/bin/win32/GoRC.exe		fbcsa/bin/win32
+	cp $bootfb_title/bin/$fbtarget/GoRC.exe		fbcsa/bin/$fbtarget
 
-	cp `gcc -print-file-name=crtbegin.o`	fbcsa/lib/win32
-	cp `gcc -print-file-name=crtend.o`	fbcsa/lib/win32
-	cp `gcc -print-file-name=crt2.o`	fbcsa/lib/win32
-	cp `gcc -print-file-name=dllcrt2.o`	fbcsa/lib/win32
-	cp `gcc -print-file-name=gcrt2.o`	fbcsa/lib/win32
-	cp `gcc -print-file-name=libgcc.a`	fbcsa/lib/win32
-	cp `gcc -print-file-name=libgcc_eh.a`	fbcsa/lib/win32
-	cp `gcc -print-file-name=libmingw32.a`	fbcsa/lib/win32
-	cp `gcc -print-file-name=libmingwex.a`	fbcsa/lib/win32
-	cp `gcc -print-file-name=libmoldname.a`	fbcsa/lib/win32
-	cp `gcc -print-file-name=libsupc++.a`	fbcsa/lib/win32
-	cp `gcc -print-file-name=libstdc++.a`	fbcsa/lib/win32
-	cp `gcc -print-file-name=libgmon.a`	fbcsa/lib/win32
+	cp `gcc -print-file-name=crtbegin.o`	fbcsa/lib/$fbtarget
+	cp `gcc -print-file-name=crtend.o`	fbcsa/lib/$fbtarget
+	cp `gcc -print-file-name=crt2.o`	fbcsa/lib/$fbtarget
+	cp `gcc -print-file-name=dllcrt2.o`	fbcsa/lib/$fbtarget
+	cp `gcc -print-file-name=gcrt2.o`	fbcsa/lib/$fbtarget
+	cp `gcc -print-file-name=libgcc.a`	fbcsa/lib/$fbtarget
+	cp `gcc -print-file-name=libgcc_eh.a`	fbcsa/lib/$fbtarget
+	cp `gcc -print-file-name=libmingw32.a`	fbcsa/lib/$fbtarget
+	cp `gcc -print-file-name=libmingwex.a`	fbcsa/lib/$fbtarget
+	cp `gcc -print-file-name=libmoldname.a`	fbcsa/lib/$fbtarget
+	cp `gcc -print-file-name=libsupc++.a`	fbcsa/lib/$fbtarget
+	cp `gcc -print-file-name=libstdc++.a`	fbcsa/lib/$fbtarget
+	cp `gcc -print-file-name=libgmon.a`	fbcsa/lib/$fbtarget
 
-	cp "$libffi_build"/.libs/libffi.a	fbcsa/lib/win32
+	cp "$libffi_build"/.libs/libffi.a	fbcsa/lib/$fbtarget
 
 	# Reduce .exe sizes by dropping debug info
 	# (this was at least needed for MinGW.org's gdb, and probably nothing else,
 	# but it shouldn't hurt either)
-	strip -g fbcsa/bin/win32/*
+	strip -g fbcsa/bin/$fbtarget/*
 
 	case "$target" in
-	win32)
+	win32|win64)
 		cd fbc && make bindist DISABLE_DOCS=1 && cd ..
 		cd fbcsa && make bindist && cd ..
-		cp fbc/contrib/manifest/fbc-win32.lst		../output
-		cp fbcsa/contrib/manifest/FreeBASIC-win32.lst	../output
+		cp fbc/contrib/manifest/fbc-$fbtarget.lst		../output
+		cp fbcsa/contrib/manifest/FreeBASIC-$fbtarget.lst	../output
 		;;
 	win32-mingworg)
 		cd fbc && make bindist DISABLE_DOCS=1 FBPACKSUFFIX=-mingworg && cd ..
