@@ -613,28 +613,6 @@ private function hOptConstIDX( byval n as ASTNODE ptr ) as ASTNODE ptr
 	function = n
 end function
 
-private function hMergeNestedFIELDs( byval n as ASTNODE ptr ) as ASTNODE ptr
-	dim as ASTNODE ptr l = any
-
-	if( n = NULL ) then
-		return NULL
-	end if
-
-	n->l = hMergeNestedFIELDs( n->l )
-	n->r = hMergeNestedFIELDs( n->r )
-
-	'' FIELD(a, FIELD(b, ...)) => FIELD(a, ...)
-	if( astIsFIELD( n ) ) then
-		l = n->l
-		if( astIsFIELD( l ) ) then
-			n->l = l->l
-			astDelNode( l )
-		end if
-	end if
-
-	function = n
-end function
-
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' arithmetic association optimizations
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -1783,9 +1761,6 @@ function astOptimizeTree( byval n as ASTNODE ptr ) as ASTNODE ptr
 	'' The order of calls below matters!
 
 	astBeginHideWarnings( )
-
-	'' Optimize nested field accesses
-	n = hMergeNestedFIELDs( n )
 
 	n = hOptAssocADD( n )
 
