@@ -1358,8 +1358,14 @@ function cVarOrDeref _
 	end if
 
 	if( expr <> NULL ) then
-		'' skip any casting if they won't do any conversion
-		dim as ASTNODE ptr t = astSkipNoConvCAST( expr )
+		dim as ASTNODE ptr t = any
+		if( options and FB_VAREXPROPT_ALLOWALLCASTS ) then
+			'' Allow all casts - used for function calls where result is ignored
+			t = astSkipCASTs( expr )
+		else
+			'' Allow noconv casts on the lhs of assignments.
+			t = astSkipNoConvCAST( expr )
+		end if
 
 		dim as integer complain = TRUE
 
