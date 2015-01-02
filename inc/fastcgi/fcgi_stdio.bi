@@ -32,9 +32,9 @@ declare sub FCGI_SetExitStatus(byval status as long)
 	extern _fcgi_sF(0 to 2) as FCGI_FILE
 #endif
 
-#define FCGI_stdin_ (@_fcgi_sF[0])
-#define FCGI_stdout_ (@_fcgi_sF[1])
-#define FCGI_stderr_ (@_fcgi_sF[2])
+#define FCGI_stdin_ (@_fcgi_sF(0))
+#define FCGI_stdout_ (@_fcgi_sF(1))
+#define FCGI_stderr_ (@_fcgi_sF(2))
 
 declare sub FCGI_perror(byval str_ as const zstring ptr)
 declare function FCGI_fopen(byval path as const zstring ptr, byval mode as const zstring ptr) as FCGI_FILE ptr
