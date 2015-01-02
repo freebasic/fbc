@@ -689,12 +689,18 @@ function cMemberDeref _
 					varexpr = astBuildPTRCHK( varexpr )
 				end if
 
-				'' ptr[index] = ptr + (index * sizeof( typeof( *ptr ) ))
+				'' ptr[index]  =>  ptr + (index * sizeof(*ptr))
+				'' (DEREF added later below, so we can pass the pointer to cUdtMember() first if needed)
 				varexpr = astNewBOP( AST_OP_ADD, varexpr, _
 					astNewBOP( AST_OP_MUL, idxexpr, astNewCONSTi( lgt ) ) )
 
 				'' '.'?
 				if( lexGetToken( ) = CHAR_DOT ) then
+					'' A . member access can only follow a [] ptr index operation if the type now is a UDT
+					if( typeGetDtAndPtrOnly( dtype ) <> FB_DATATYPE_STRUCT ) then
+						errReport( FB_ERRMSG_INVALIDDATATYPES )
+						exit do
+					end if
 					lexSkipToken( LEXCHECK_NOPERIOD )
 
 					varexpr = cUdtMember( dtype, subtype, varexpr, check_array )
@@ -712,6 +718,7 @@ function cMemberDeref _
 				else
 					varexpr = astNewDEREF( varexpr, dtype, subtype )
 				end if
+
 			end select
 
 		'' Only processing -> and [] here...

@@ -15,6 +15,7 @@ Version 1.02.0
 - C backend: Naked functions could end up in the .data section instead of .text
 - Returning a dereferenced constant (such as <cptr(UDT ptr, 0)->field>) caused a compiler crash
 - 1.00.0 regression: Bad code generation for dynamic array descriptor initialization (and potentially other cases)
+- 1.00.0 regression: . member access was allowed on [] pointer indexing expressions even if the type was not an UDT, but a UDT ptr
 
 
 Version 1.01.0
