@@ -6,6 +6,8 @@ Version 1.02.0
 - __FB_ASM__ intrinsic #define on x86, defined to "intel" or "att" (corresponding to the -asm command line option -- useful for -gen gcc/llvm only)
 - fbc -showincludes option (shows #include tree) for debugging of #includes
 - Address-of followed by pointer-arithmetic on variables (expressions such as @x+N) will now be turned into offsetted variable accesses, resulting in better generated code
+- Bindings (new/updated, including 64bit support):
+	FastCGI 2.4.1-SNAP-0311112127
 
 [fixed]
 - Potential bad code generation for dynamic array field copying

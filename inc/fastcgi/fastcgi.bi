@@ -1,19 +1,11 @@
-''
-''
-'' fastcgi -- header translated with help of SWIG FB wrapper
-''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
-''
-''
-#ifndef __fastcgi_bi__
-#define __fastcgi_bi__
+#pragma once
 
+#define _FASTCGI_H
 #define FCGI_LISTENSOCK_FILENO 0
 
 type FCGI_Header
 	version as ubyte
-	type as ubyte
+	as ubyte type
 	requestIdB1 as ubyte
 	requestIdB0 as ubyte
 	contentLengthB1 as ubyte
@@ -36,14 +28,14 @@ end type
 #define FCGI_GET_VALUES 9
 #define FCGI_GET_VALUES_RESULT 10
 #define FCGI_UNKNOWN_TYPE 11
-#define FCGI_MAXTYPE (11)
+#define FCGI_MAXTYPE FCGI_UNKNOWN_TYPE
 #define FCGI_NULL_REQUEST_ID 0
 
 type FCGI_BeginRequestBody
 	roleB1 as ubyte
 	roleB0 as ubyte
 	flags as ubyte
-	reserved(0 to 5-1) as ubyte
+	reserved(0 to 4) as ubyte
 end type
 
 type FCGI_BeginRequestRecord
@@ -62,7 +54,7 @@ type FCGI_EndRequestBody
 	appStatusB1 as ubyte
 	appStatusB0 as ubyte
 	protocolStatus as ubyte
-	reserved(0 to 3-1) as ubyte
+	reserved(0 to 2) as ubyte
 end type
 
 type FCGI_EndRequestRecord
@@ -79,13 +71,11 @@ end type
 #define FCGI_MPXS_CONNS "FCGI_MPXS_CONNS"
 
 type FCGI_UnknownTypeBody
-	type as ubyte
-	reserved(0 to 7-1) as ubyte
+	as ubyte type
+	reserved(0 to 6) as ubyte
 end type
 
 type FCGI_UnknownTypeRecord
 	header as FCGI_Header
 	body as FCGI_UnknownTypeBody
 end type
-
-#endif
