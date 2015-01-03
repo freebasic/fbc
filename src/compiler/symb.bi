@@ -871,9 +871,10 @@ declare function symbFindVarByDefType _
 		byval dtype as integer _
 	) as FBSYMBOL ptr
 
-declare function symbFindVarByType _
+declare function symbFindByClassAndType _
 	( _
-		byval chain as FBSYMCHAIN ptr, _
+		byval chain_ as FBSYMCHAIN ptr, _
+		byval symclass as integer, _
 		byval dtype as integer _
 	) as FBSYMBOL ptr
 

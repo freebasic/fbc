@@ -1269,39 +1269,35 @@ check_var:
 
 end function
 
-'':::::
-function symbFindVarByType _
+function symbFindByClassAndType _
 	( _
 		byval chain_ as FBSYMCHAIN ptr, _
+		byval symclass as integer, _
 		byval dtype as integer _
 	) as FBSYMBOL ptr
 
-    dim as FBSYMBOL ptr sym = any
+	function = NULL
 
-    do while( chain_ <> NULL )
-    	sym = chain_->sym
-    	do
-    		if( symbIsVar( sym ) ) then
-    			if( symbGetFullType( sym ) = dtype ) then
-    				goto check_var
-    			end if
-    		end if
+	while( chain_ )
+
+		var sym = chain_->sym
+		do
+
+			if( (sym->class = symclass) and (symbGetFullType( sym ) = dtype) ) then
+				if( symclass = FB_SYMBCLASS_VAR ) then
+					'' check if symbol isn't a non-shared module level one
+					if( symbVarCheckAccess( sym ) = FALSE ) then
+						exit function
+					end if
+				end if
+				return sym
+			end if
 
 			sym = sym->hash.next
-		loop while( sym <> NULL )
+		loop while( sym )
 
-    	chain_ = chain_->next
-    loop
-
-	return NULL
-
-check_var:
-	'' check if symbol isn't a non-shared module level one
-	if( symbVarCheckAccess( sym ) ) then
-		function = sym
-	else
-		function = NULL
-	end if
+		chain_ = chain_->next
+	wend
 
 end function
 

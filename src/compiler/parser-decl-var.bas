@@ -558,7 +558,7 @@ private function hLookupVar _
 	elseif( has_suffix ) then
 		sym = symbFindVarBySuffix( chain_, dtype )
 	else
-		sym = symbFindVarByType( chain_, dtype )
+		sym = symbFindByClassAndType( chain_, FB_SYMBCLASS_VAR, dtype )
 	end if
 
 	function = sym
