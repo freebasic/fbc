@@ -17,6 +17,7 @@ Version 1.02.0
 - Returning a dereferenced constant (such as <cptr(UDT ptr, 0)->field>) caused a compiler crash
 - 1.00.0 regression: Bad code generation for dynamic array descriptor initialization (and potentially other cases)
 - 1.00.0 regression: . member access was allowed on [] pointer indexing expressions even if the type was not an UDT, but a UDT ptr
+- Some unsafe pointer assignments between ANY PTRs and non-ANY PTRs with different PTR indirection levels didn't trigger a "suspicious pointer assignment" warning (e.g. ANY PTR PTR = BYTE PTR)
 
 
 Version 1.01.0

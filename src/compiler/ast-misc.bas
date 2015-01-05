@@ -664,12 +664,15 @@ function astPtrCheck _
     	pdtype_np = typeGetDtOnly( pdtype )
     	edtype_np = typeGetDtOnly( edtype )
 
-    	'' 1st) is one of them an ANY PTR?
-    	if( pdtype_np = FB_DATATYPE_VOID ) then
-    		return TRUE
-    	elseif( edtype_np = FB_DATATYPE_VOID ) then
-    		return TRUE
-    	end if
+		'' 1st) are ANY PTRs involved? Then we don't need to do exact type checks
+		if( pdtype_np = FB_DATATYPE_VOID ) then
+			if( edtype_np = FB_DATATYPE_VOID ) then
+				return TRUE
+			end if
+			return (typeGetPtrCnt( pdtype ) <= typeGetPtrCnt( edtype ))
+		elseif( edtype_np = FB_DATATYPE_VOID ) then
+			return (typeGetPtrCnt( pdtype ) >= typeGetPtrCnt( edtype ))
+		end if
 
     	'' 2nd) same level of indirection?
     	if( typeGetPtrCnt( pdtype ) <> typeGetPtrCnt( edtype ) ) then
