@@ -1,6 +1,7 @@
 Version 1.02.0
 
 [changed]
+- Redims with explicit type will now redim existing dynamic array fields, if one of the same name exists, instead of creating a new local array. This makes Redims with explicit type match the behaviour of typeless Redims and Redims for global arrays.
 
 [added]
 - __FB_ASM__ intrinsic #define on x86, defined to "intel" or "att" (corresponding to the -asm command line option -- useful for -gen gcc/llvm only)
