@@ -29,7 +29,7 @@ dim shared symb_dtypeTB( 0 to FB_DATATYPES-1 ) as SYMB_DATATYPE => _
 	( FB_DATACLASS_STRING ,  1, FALSE,  0, FB_DATATYPE_FIXSTR  , -1                 , @"string"   ), _
 	( FB_DATACLASS_UDT    ,  0, FALSE,  0, FB_DATATYPE_STRUCT  , -1                 , @"type"     ), _
 	( FB_DATACLASS_UDT    ,  0, FALSE,  0, FB_DATATYPE_NAMESPC , -1                 , @"namepace" ), _
-	( FB_DATACLASS_INTEGER,  0, FALSE,  0, FB_DATATYPE_UINT    , -1                 , @"function" ), _  '' FB_DATATYPE_FUNCTION has zero size, so function pointer arithmetic is disallowed (-> symbCalcDerefLen())
+	( FB_DATACLASS_PROC   ,  0, FALSE,  0, FB_DATATYPE_UINT    , -1                 , @"function" ), _  '' FB_DATATYPE_FUNCTION has zero size, so function pointer arithmetic is disallowed (-> symbCalcDerefLen())
 	( FB_DATACLASS_UNKNOWN,  0, FALSE,  0, FB_DATATYPE_VOID    , -1                 , @"fwdref"   ), _
 	( FB_DATACLASS_INTEGER, -1, FALSE,  0, FB_DATATYPE_UINT    , -1                 , @"pointer"  ), _
 	( FB_DATACLASS_INTEGER, 16, FALSE,  0, FB_DATATYPE_XMMWORD , -1                 , @"xmmword"  )  _
