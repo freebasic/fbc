@@ -8,7 +8,7 @@
 
 FBC := fbc
 
-BAS := $(wildcard *.bas)
+BAS := $(sort $(wildcard *.bas))
 TXT := $(patsubst %.bas,%.txt,$(BAS))
 
 ifndef V
