@@ -1016,7 +1016,9 @@ mingwlibs += libstdc++.a
 mingwlibs += libgmon.a
 
 winapilibsignore += -e libdelayimp
+winapilibsignore += -e libgcc
 winapilibsignore += -e libgmon
+winapilibsignore += -e libiconv
 winapilibsignore += -e liblargeint
 winapilibsignore += -e 'libm\.a$$'
 winapilibsignore += -e libmangle
@@ -1025,6 +1027,7 @@ winapilibsignore += -e libmoldname
 winapilibsignore += -e libpseh
 winapilibsignore += -e libpthread
 winapilibsignore += -e libwinpthread
+winapilibsignore += -e 'libz\.a$$'
 
 .PHONY: mingw-libs
 mingw-libs:
