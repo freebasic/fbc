@@ -4,12 +4,15 @@ of fbc, and finally create the complete packages ready to be released.
   - Downloaded archives are cached in the input/ dir
   - Output packages & manifests are put in the output/ dir
   - The scripts also download source packages
+As an exception, linux.sh relies on the host toolchain and only builds FB.
 
 What to do here:
-  - Run ./dos.sh on Win32 to build FB-dos packages
-  - Run ./win32.sh [mingww64|mingworg] on Win32 to build FB-win32 packages (MinGW-w64 or MinGW.org)
+  - Run <./dos.sh> on Win32 to build FB-dos packages
+  - Run <./windows.sh [win32|win32-mingworg]> on Win32 to build FB-win32 packages (MinGW-w64 or MinGW.org)
+  - Run <./windows.sh [win64]> on Win64 to build FB-win64 packages
+  - Run <./linux.sh [linux-x86|linux-x86_64]>  on Linux x86 or x86_64 respectively to build FB-linux packages
   - Adjust download.sh if needed to switch wget/curl etc.
-  - Adjust dos.sh/win32.sh to upgrade input packages etc.
+  - Adjust the scripts to upgrade input packages etc.
 
 Requirements:
   - MSYS environment on Windows with: bash, wget/curl, zip, unzip, patch, make, findutils
@@ -24,8 +27,6 @@ Some of the ideas behind these scripts:
   - Only work locally, e.g. don't touch existing DJGPP/MinGW setups on the host
 
 TODO:
-  - win32.sh: build NSIS installer + fbdoc CHM
-  - win32.sh: package the libffi builds
-  - win32.sh: build libcunit too
-  - Add win64.sh, or share code with win32.sh?
-  - Add linux.sh, but rely on host gcc toolchain
+  - windows.sh: build NSIS installer + fbdoc CHM
+  - windows.sh: package the libffi builds
+  - windows.sh: build libcunit too

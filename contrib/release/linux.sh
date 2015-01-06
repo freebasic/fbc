@@ -3,15 +3,9 @@ set -e
 
 fbtarget="$1"
 case "$1" in
-linux-x86|linux-x86_64)
-	;;
-"")
-	fbtarget=`fbc -print host`
-	;;
-*)
-	echo "usage: ./linux.sh [linux-x86 | linux-x86_64]"
-	exit 1
-	;;
+linux-x86|linux-x86_64) ;;
+"") fbtarget=`fbc -print host`;;
+*)  echo "usage: ./linux.sh [linux-x86 | linux-x86_64]" && exit 1;;
 esac
 
 mkdir -p input
