@@ -362,8 +362,8 @@ function linuxbuild() {
 	cd ..
 
 	cd fbc && make bindist && cd ..
-	cp fbc/contrib/manifest/FreeBASIC-$fbtarget.lst		../output
-	cp fbc/*.tar.*		../output
+	cp fbc/*.tar.* ../output
+	cp fbc/contrib/manifest/FreeBASIC-$fbtarget.lst ../output
 
 	cd ..
 }
@@ -465,19 +465,17 @@ function windowsbuild() {
 	win32|win64)
 		cd fbc && make bindist DISABLE_DOCS=1 && cd ..
 		cd fbcsa && make bindist && cd ..
-		cp fbc/contrib/manifest/fbc-$fbtarget.lst		../output
-		cp fbcsa/contrib/manifest/FreeBASIC-$fbtarget.lst	../output
 		;;
 	win32-mingworg)
 		cd fbc && make bindist DISABLE_DOCS=1 FBPACKSUFFIX=-mingworg && cd ..
 		cd fbcsa && make bindist FBPACKSUFFIX=-mingworg && cd ..
-		cp fbc/contrib/manifest/fbc-win32-mingworg.lst		../output
-		cp fbcsa/contrib/manifest/FreeBASIC-win32-mingworg.lst	../output
 		;;
 	esac
 
-	cp fbc/*.zip fbc/*.7z		../output
+	cp   fbc/*.zip   fbc/*.7z	../output
 	cp fbcsa/*.zip fbcsa/*.7z	../output
+	cp   fbc/contrib/manifest/fbc-$target.lst		../output
+	cp fbcsa/contrib/manifest/FreeBASIC-$target.lst	../output
 
 	export PATH="$origPATH"
 	cd ..
