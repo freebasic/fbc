@@ -149,15 +149,14 @@ dos)
 	download_djgpp current/v2gnu/ gdb771s
 	download_djgpp beta/v2/ djlsr204
 
-	unzip -q ../input/FreeBASIC-1.00.0-dos.zip
-	unzip -q ../input/djdev204.zip
-	unzip -q ../input/shl2011b.zip
-	unzip -q ../input/fil41b.zip
-	unzip -q ../input/mak40b.zip
-	unzip -q ../input/gdb771b.zip
-	unzip -q ../input/bnu225b.zip
-	unzip -q ../input/gcc492b.zip
-	unzip -q ../input/gpp492b.zip
+	unzip -q ../input/DJGPP/djdev204.zip
+	unzip -q ../input/DJGPP/shl2011b.zip
+	unzip -q ../input/DJGPP/fil41b.zip
+	unzip -q ../input/DJGPP/mak40b.zip
+	unzip -q ../input/DJGPP/gdb771b.zip
+	unzip -q ../input/DJGPP/bnu225b.zip
+	unzip -q ../input/DJGPP/gcc492b.zip
+	unzip -q ../input/DJGPP/gpp492b.zip
 	;;
 win32)
 	get_mingww64_toolchain 32 i686
