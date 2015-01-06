@@ -337,9 +337,9 @@ EOF
 	make bindist TARGET_OS=dos
 	cd ..
 
-	mv fbc/*.zip fbcsa/*.zip                  ../output
-	mv fbc/contrib/manifest/fbc-dos.lst       ../output
-	mv fbc/contrib/manifest/FreeBASIC-dos.lst ../output
+	mv fbc/*.zip fbcsa/*.zip                    ../output
+	mv   fbc/contrib/manifest/fbc-dos.lst       ../output
+	mv fbcsa/contrib/manifest/FreeBASIC-dos.lst ../output
 }
 
 function linuxbuild() {
