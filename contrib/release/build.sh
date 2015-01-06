@@ -431,9 +431,11 @@ function windowsbuild() {
 	cp bin/dlltool.exe		fbcsa/bin/$fbtarget
 	cp bin/ld.exe			fbcsa/bin/$fbtarget
 
+	cd fbcsa && make mingw-libs && cd ..
+	cd fbcsa/lib/win32 && make && cd ../../..
+
 	case "$target" in
 	win32)
-		cd fbcsa/lib/win32 && make && cd ../../..
 		# Take MinGW.org's gdb, because the gdb from the MinGW-w64 toolchain has much more
 		# dependencies (e.g. Python for scripting purposes) which we probably don't want/need.
 		# (this should probably be reconsidered someday)
@@ -442,7 +444,6 @@ function windowsbuild() {
 		cp mingworg-gdb/bin/zlib1.dll			fbcsa/bin/win32
 		;;
 	win32-mingworg)
-		cd fbcsa/lib/win32 && make MINGWORG=1 && cd ../../..
 		cp bin/gdb.exe			fbcsa/bin/win32
 		cp bin/libgcc_s_dw2-1.dll	fbcsa/bin/win32
 		cp bin/zlib1.dll		fbcsa/bin/win32
@@ -452,20 +453,6 @@ function windowsbuild() {
 	# TODO: GoRC.exe should really be taken from its homepage
 	# <http://www.godevtool.com/>, but it was offline today
 	cp $bootfb_title/bin/$fbtarget/GoRC.exe		fbcsa/bin/$fbtarget
-
-	cp `gcc -print-file-name=crtbegin.o`	fbcsa/lib/$fbtarget
-	cp `gcc -print-file-name=crtend.o`	fbcsa/lib/$fbtarget
-	cp `gcc -print-file-name=crt2.o`	fbcsa/lib/$fbtarget
-	cp `gcc -print-file-name=dllcrt2.o`	fbcsa/lib/$fbtarget
-	cp `gcc -print-file-name=gcrt2.o`	fbcsa/lib/$fbtarget
-	cp `gcc -print-file-name=libgcc.a`	fbcsa/lib/$fbtarget
-	cp `gcc -print-file-name=libgcc_eh.a`	fbcsa/lib/$fbtarget
-	cp `gcc -print-file-name=libmingw32.a`	fbcsa/lib/$fbtarget
-	cp `gcc -print-file-name=libmingwex.a`	fbcsa/lib/$fbtarget
-	cp `gcc -print-file-name=libmoldname.a`	fbcsa/lib/$fbtarget
-	cp `gcc -print-file-name=libsupc++.a`	fbcsa/lib/$fbtarget
-	cp `gcc -print-file-name=libstdc++.a`	fbcsa/lib/$fbtarget
-	cp `gcc -print-file-name=libgmon.a`	fbcsa/lib/$fbtarget
 
 	cp "$libffi_build"/.libs/libffi.a	fbcsa/lib/$fbtarget
 
