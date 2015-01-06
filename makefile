@@ -57,6 +57,7 @@
 #
 #   gitdist    Create source code packages using "git archive"
 #   bindist    Create binary FB release packages from current built directory content
+#   mingw-libs Standalone: Copy libraries from MinGW toolchain into lib/win32/ etc.
 #
 #   cunit-tests  (Convenience wrappers around tests/Makefile, running the tests
 #   log-tests     using the newly built fbc)
@@ -997,3 +998,60 @@ bindist:
 
 	# Clean up
 	rm -rf $(FBPACKAGE)
+
+ifdef ENABLE_STANDALONE
+ifeq ($(TARGET_OS),win32)
+
+mingwlibs += crtbegin.o
+mingwlibs += crtend.o
+mingwlibs += crt2.o
+mingwlibs += dllcrt2.o
+mingwlibs += gcrt2.o
+mingwlibs += libgcc.a
+mingwlibs += libmingw32.a
+mingwlibs += libmingwex.a
+mingwlibs += libmoldname.a
+mingwlibs += libsupc++.a
+mingwlibs += libstdc++.a
+mingwlibs += libgmon.a
+
+winapilibsignore += -e libdelayimp
+winapilibsignore += -e libgcc
+winapilibsignore += -e libgmon
+winapilibsignore += -e libiconv
+winapilibsignore += -e liblargeint
+winapilibsignore += -e 'libm\.a$$'
+winapilibsignore += -e libmangle
+winapilibsignore += -e libmingw
+winapilibsignore += -e libmoldname
+winapilibsignore += -e libpseh
+winapilibsignore += -e libpthread
+winapilibsignore += -e libwinpthread
+winapilibsignore += -e 'libz\.a$$'
+
+.PHONY: mingw-libs
+mingw-libs:
+	# MinGW/CRT libs
+	for i in $(mingwlibs); do \
+		cp `$(CC) -print-file-name=$$i` $(libdir); \
+	done
+
+	# libgcc_eh.a too, if it exists (TDM-GCC doesn't have it)
+	libgcc_eh=`$(CC) -print-file-name=libgcc_eh.a`; \
+		if [ -f "$$libgcc_eh" ]; then \
+			cp "$$libgcc_eh" $(libdir); \
+		fi
+
+	# Windows API libs
+	#  * copy all lib*.a files from the directory of libkernel32.a
+	#  * renaming lib*.a to lib*.dll.a - this isn't 100% correct, because
+	#    all libs really are import libs, but it follows FB tradition.
+	#  * Filtering out some libs which are included in MinGW toolchains
+	#    sometimes, but we don't want (e.g. libpthread).
+	dir=$$(dirname $$($(CC) -print-file-name=libkernel32.a)); \
+		ls $$dir/lib*.a | grep -v $(winapilibsignore) | while read i; do \
+			cp $$i $(libdir)/`basename $$i | sed -e 's/\.a$$/.dll.a/g'`; \
+		done
+
+endif
+endif
