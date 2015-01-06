@@ -54,7 +54,7 @@ function BrowseForFolder(byval hWnd as HWND, _
     with bi
 	    .pidlRoot   = pidlStart 
 	    .hwndOwner  = hWnd 
-	    .lpszTitle  = @Prompt
+	    .lpszTitle  = strptr(Prompt)
 	    .ulFlags    = Flags 
 	   	.lpfn       = @BrowseCallbackProc 
 	   	.lParam		= cuint( strptr( sFolder ) )
