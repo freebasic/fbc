@@ -428,6 +428,7 @@ function windowsbuild() {
 	cp bin/ar.exe			fbcsa/bin/$fbtarget
 	cp bin/as.exe			fbcsa/bin/$fbtarget
 	cp bin/dlltool.exe		fbcsa/bin/$fbtarget
+	cp bin/gprof.exe		fbcsa/bin/$fbtarget
 	cp bin/ld.exe			fbcsa/bin/$fbtarget
 
 	cd fbcsa && make mingw-libs && cd ..
