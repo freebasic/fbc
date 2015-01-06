@@ -13,13 +13,17 @@
 #
 set -e
 
+case "$1" in
+"") fbccommit="master";;
+*)  fbccommit="$1";;
+esac
+
 mkdir -p input/DJGPP
+mkdir -p output
+./update-fbc-src.sh
 
 # FB for bootstrapping
 ./download.sh input/FreeBASIC-1.00.0-dos.zip "https://downloads.sourceforge.net/fbc/FreeBASIC-1.00.0-dos.zip?download"
-
-# FB to build
-./download.sh input/fbc-master.zip "https://github.com/freebasic/fbc/archive/master.zip"
 
 DJGPP_MIRROR="ftp://ftp.fu-berlin.de/pc/languages/djgpp/"
 
@@ -52,10 +56,6 @@ rm -rf DJGPP
 mkdir DJGPP
 cd DJGPP
 unzip -q ../input/FreeBASIC-1.00.0-dos.zip
-unzip -q ../input/fbc-master.zip
-mv fbc-master fbc
-unzip -q ../input/fbc-master.zip
-mv fbc-master fbcsa
 unzip -q ../input/djdev204.zip
 unzip -q ../input/shl2011b.zip
 unzip -q ../input/fil41b.zip
@@ -65,10 +65,16 @@ unzip -q ../input/bnu225b.zip
 unzip -q ../input/gcc492b.zip
 unzip -q ../input/gpp492b.zip
 
-dospath=`pwd -W`
-
-echo "prefix := $dospath" > fbc/config.mk
+# fbc sources
+echo "preparing fbc sources for build"
+cp -R ../input/fbc fbc
+cp -R ../input/fbc fbcsa
+cd fbc   && git reset --hard "$fbccommit" && cd ..
+cd fbcsa && git reset --hard "$fbccommit" && cd ..
+echo "prefix := `pwd -W`"     > fbc/config.mk
 echo "ENABLE_STANDALONE := 1" > fbcsa/config.mk
+
+dospath=`pwd -W`
 
 cat <<EOF > open-djgpp.bat
 set DJGPP=$dospath/djgpp.env
@@ -147,7 +153,6 @@ cd fbcsa
 make bindist TARGET_OS=dos
 cd ..
 
-mkdir -p ../output
 mv fbc/*.zip fbcsa/*.zip                  ../output
 mv fbc/contrib/manifest/fbc-dos.lst       ../output
 mv fbc/contrib/manifest/FreeBASIC-dos.lst ../output

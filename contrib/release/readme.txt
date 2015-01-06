@@ -4,13 +4,20 @@ of fbc, and finally create the complete packages ready to be released.
   - Downloaded archives are cached in the input/ dir
   - Output packages & manifests are put in the output/ dir
   - The scripts also download source packages
-As an exception, linux.sh relies on the host toolchain and only builds FB.
+  - fbc sources are retrieved from Git; you can specify the exact commit to build,
+    the default is "master"
+As an exception, linux.sh relies on the host toolchain instead of downloading
+any gcc toolchain.
 
 What to do here:
-  - Run <./dos.sh> on Win32 to build FB-dos packages
-  - Run <./windows.sh [win32|win32-mingworg]> on Win32 to build FB-win32 packages (MinGW-w64 or MinGW.org)
-  - Run <./windows.sh [win64]> on Win64 to build FB-win64 packages
-  - Run <./linux.sh [linux-x86|linux-x86_64]>  on Linux x86 or x86_64 respectively to build FB-linux packages
+  - Build FB-dos packages on Win32:
+        ./dos.sh [<fbc-commit>]
+  - Build FB-win32 packages (MinGW-w64 or MinGW.org) on Win32:
+        ./windows.sh [win32|win32-mingworg] [<fbc-commit>]
+  - Build FB-win64 packages on Win64:
+        ./windows.sh [win64] [<fbc-commit>]
+  - Build FB-linux-x86[_64] packages on Linux x86[_64] respectively:
+        ./linux.sh [linux-x86|linux-x86_64] [<fbc-commit>]
   - Adjust download.sh if needed to switch wget/curl etc.
   - Adjust the scripts to upgrade input packages etc.
 

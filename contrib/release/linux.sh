@@ -8,14 +8,16 @@ linux-x86|linux-x86_64) ;;
 *)  echo "usage: ./linux.sh [linux-x86 | linux-x86_64]" && exit 1;;
 esac
 
+case "$2" in
+"") fbccommit="master";;
+*)  fbccommit="$2";;
+esac
+
 mkdir -p input
 mkdir -p output
-
-echo "removing existing build/ dir"
-rm -rf "build"
+./update-fbc-src.sh
+rm -rf build
 mkdir build
-
-echo "working inside build/ dir"
 cd build
 
 # Download & extract FB for bootstrapping
@@ -25,8 +27,9 @@ bootfb_package=$bootfb_title.tar.xz
 tar xf ../input/$bootfb_package
 
 # fbc sources
-../download.sh ../input/fbc-master.zip "https://github.com/freebasic/fbc/archive/master.zip"
-unzip -q ../input/fbc-master.zip && mv fbc-master fbc
+echo "preparing fbc sources for build"
+cp -R ../input/fbc .
+cd fbc && git reset --hard "$fbccommit" && cd ..
 
 mkdir tempinstall
 

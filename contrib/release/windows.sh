@@ -12,8 +12,14 @@ win32-mingworg) fbtarget=win32;;
 *)              echo "usage: ./win32.sh [win32 | win32-mingworg]" && exit 1;;
 esac
 
+case "$2" in
+"") fbccommit="master";;
+*)  fbccommit="$2";;
+esac
+
 mkdir -p input
 mkdir -p output
+./update-fbc-src.sh
 rm -rf build
 mkdir build
 cd build
@@ -92,9 +98,13 @@ bootfb_title=FreeBASIC-1.00.0-$fbtarget
 unzip -q ../input/$bootfb_title.zip
 
 # fbc sources
-../download.sh ../input/fbc-master.zip "https://github.com/freebasic/fbc/archive/master.zip"
-unzip -q ../input/fbc-master.zip && mv fbc-master fbc   && echo "prefix := `pwd -W`"     > fbc/config.mk
-unzip -q ../input/fbc-master.zip && mv fbc-master fbcsa && echo "ENABLE_STANDALONE := 1" > fbcsa/config.mk
+echo "preparing fbc sources for build"
+cp -R ../input/fbc fbc
+cp -R ../input/fbc fbcsa
+cd fbc   && git reset --hard "$fbccommit" && cd ..
+cd fbcsa && git reset --hard "$fbccommit" && cd ..
+echo "prefix := `pwd -W`"     > fbc/config.mk
+echo "ENABLE_STANDALONE := 1" > fbcsa/config.mk
 
 # On 64bit, we have to override the FB makefile's uname check, because MSYS uname reports 32bit still
 if [ "$target" = win64 ]; then
