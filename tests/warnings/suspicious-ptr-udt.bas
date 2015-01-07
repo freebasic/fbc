@@ -1,44 +1,55 @@
-type Pod1
+type UDT1
 	i as integer
 end type
 
-type Pod2
+type UDT2
 	i as integer
 end type
 
-type TheBase
+type RTTI1 extends object
+end type
+
+type RTTI2 extends RTTI1
+end type
+
+type INHERIT1
 	i as integer
 end type
 
-type Derived extends TheBase
-	i1 as integer
+type INHERIT2 extends INHERIT1
 end type
 
-dim as Pod1 ptr ppod1a, ppod1b
-dim as Pod2 ptr ppod2
-dim as TheBase ptr pbase
-dim as integer ptr pint
+scope
+	dim as UDT1 ptr pudt1, pudt1_
+	dim as UDT2 ptr pudt2
+	dim as INHERIT1 ptr pinherit1, pinherit1_
+	dim as INHERIT2 ptr pinherit2, pinherit2_
+	dim as RTTI1 ptr prtti1, prtti1_
+	dim as RTTI2 ptr prtti2, prtti2_
+	dim as integer ptr pi
 
-#print "no warning:"
-ppod1a = ppod1b
+	#print "no warnings:"
+	pudt1 = pudt1_
+	pinherit1 = pinherit1_
+	pinherit2 = pinherit2_
+	pinherit1 = pinherit2
+	prtti1 = prtti1_
+	prtti2 = prtti2_
+	prtti1 = prtti2
 
-#print "1 warning:"
-ppod1a = pbase
+	'' (invalid assignments involving derived UDT pointers trigger errors,
+	'' so they can't be tested here)
 
-#print "1 warning:"
-ppod1a = ppod2
+	#macro warn( statement )
+		#print "1 warning:"
+		statement
+	#endmacro
 
-#print "1 warning:"
-ppod1a = pint
-
-#print "1 warning:"
-pint = ppod2
-
-#print "1 warning:"
-pint = pbase
-
-#print "1 warning:"
-pbase = ppod2
-
-#print "1 warning:"
-pbase = pint
+	warn( pudt1 = pudt2 )
+	warn( pudt1 = pinherit1 )
+	warn( pudt1 = pi )
+	warn( pinherit1 = pudt1 )
+	warn( pinherit1 = pi )
+	warn( pi = pudt1 )
+	warn( pi = pinherit1 )
+end scope
