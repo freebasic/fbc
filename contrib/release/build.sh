@@ -432,7 +432,10 @@ function windowsbuild() {
 	cp bin/ld.exe			fbcsa/bin/$fbtarget
 
 	cd fbcsa && make mingw-libs && cd ..
-	cd fbcsa/lib/win32 && make && cd ../../..
+
+	if [ $fbtarget = "win32" ]; then
+		cd fbcsa/lib/win32 && make && cd ../../..
+	fi
 
 	case "$target" in
 	win32)
