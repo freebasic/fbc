@@ -15,49 +15,45 @@ end namespace
 type FWDREF1 as FWDREF1_
 type FWDREF2 as FWDREF2_
 
-dim b     as function( ) as byte
-dim ub    as function( ) as ubyte
-dim sh    as function( ) as short
-dim ush   as function( ) as ushort
-dim l     as function( ) as long
-dim ul    as function( ) as ulong
-dim ll    as function( ) as longint
-dim ull   as function( ) as ulongint
-dim i     as function( ) as integer
-dim ui    as function( ) as uinteger
-dim f     as function( ) as single
-dim d     as function( ) as double
-dim s     as function( ) as string
-dim z     as function( ) byref as zstring
-dim w     as function( ) byref as wstring
-dim udt1  as function( ) as UDT1
-dim udt2  as function( ) as UDT2
-dim fwd1  as function( ) byref as FWDREF1
-dim fwd2  as function( ) byref as FWDREF2
-dim psub  as function( ) as sub( )
-dim pfi   as function( ) as function( ) as integer
-dim pany  as function( ) as any      ptr
-dim pb    as function( ) as byte     ptr
-dim pub   as function( ) as ubyte    ptr
-dim psh   as function( ) as short    ptr
-dim push  as function( ) as ushort   ptr
-dim pl    as function( ) as long     ptr
-dim pul   as function( ) as ulong    ptr
-dim pll   as function( ) as longint  ptr
-dim pull  as function( ) as ulongint ptr
-dim pi    as function( ) as integer  ptr
-dim pui   as function( ) as uinteger ptr
-dim pf    as function( ) as single   ptr
-dim pd    as function( ) as double   ptr
-dim ps    as function( ) as string   ptr
-dim pz    as function( ) as zstring  ptr
-dim pw    as function( ) as wstring  ptr
-dim pudt1 as function( ) as UDT1     ptr
-dim pudt2 as function( ) as UDT2     ptr
-dim pfwd1 as function( ) as FWDREF1  ptr
-dim pdwf2 as function( ) as FWDREF2  ptr
-dim ppsub as function( ) as typeof( sub( )                 ) ptr
-dim ppfi  as function( ) as typeof( function( ) as integer ) ptr
+dim b     as sub( byval as byte      )
+dim ub    as sub( byval as ubyte     )
+dim sh    as sub( byval as short     )
+dim ush   as sub( byval as ushort    )
+dim l     as sub( byval as long      )
+dim ul    as sub( byval as ulong     )
+dim ll    as sub( byval as longint   )
+dim ull   as sub( byval as ulongint  )
+dim i     as sub( byval as integer   )
+dim ui    as sub( byval as uinteger  )
+dim f     as sub( byval as single    )
+dim d     as sub( byval as double    )
+dim s     as sub( byval as string    )
+dim udt1  as sub( byval as UDT1      )
+dim udt2  as sub( byval as UDT2      )
+dim psub  as sub( byval as sub( )    )
+dim pfi   as sub( byval as function( ) as integer )
+dim pany  as sub( byval as any      ptr )
+dim pb    as sub( byval as byte     ptr )
+dim pub   as sub( byval as ubyte    ptr )
+dim psh   as sub( byval as short    ptr )
+dim push  as sub( byval as ushort   ptr )
+dim pl    as sub( byval as long     ptr )
+dim pul   as sub( byval as ulong    ptr )
+dim pll   as sub( byval as longint  ptr )
+dim pull  as sub( byval as ulongint ptr )
+dim pi    as sub( byval as integer  ptr )
+dim pui   as sub( byval as uinteger ptr )
+dim pf    as sub( byval as single   ptr )
+dim pd    as sub( byval as double   ptr )
+dim ps    as sub( byval as string   ptr )
+dim pz    as sub( byval as zstring  ptr )
+dim pw    as sub( byval as wstring  ptr )
+dim pudt1 as sub( byval as UDT1     ptr )
+dim pudt2 as sub( byval as UDT2     ptr )
+dim pfwd1 as sub( byval as FWDREF1  ptr )
+dim pdwf2 as sub( byval as FWDREF2  ptr )
+dim ppsub as sub( byval as typeof( sub( ) ) ptr )
+dim ppfi  as sub( byval as typeof( function( ) as integer ) ptr )
 
 #define stringify( s ) #s
 
@@ -82,12 +78,8 @@ dim ppfi  as function( ) as typeof( function( ) as integer ) ptr
 	checkLhsAndRhs( lhs, f     )
 	checkLhsAndRhs( lhs, d     )
 	checkLhsAndRhs( lhs, s     )
-	checkLhsAndRhs( lhs, z     )
-	checkLhsAndRhs( lhs, w     )
 	checkLhsAndRhs( lhs, udt1  )
 	checkLhsAndRhs( lhs, udt2  )
-	checkLhsAndRhs( lhs, fwd1  )
-	checkLhsAndRhs( lhs, fwd2  )
 	checkLhsAndRhs( lhs, psub  )
 	checkLhsAndRhs( lhs, pfi   )
 	checkLhsAndRhs( lhs, pany  )
@@ -127,12 +119,8 @@ checkLhs( ui    )
 checkLhs( f     )
 checkLhs( d     )
 checkLhs( s     )
-checkLhs( z     )
-checkLhs( w     )
 checkLhs( udt1  )
 checkLhs( udt2  )
-checkLhs( fwd1  )
-checkLhs( fwd2  )
 checkLhs( psub  )
 checkLhs( pfi   )
 checkLhs( pany  )
