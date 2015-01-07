@@ -428,21 +428,13 @@ INTEGER
 & suffix
 
 dec:
-	Literal number too big, truncated
 LONG
-	Literal number too big, truncated
 LONG
-	Literal number too big, truncated
 LONG
-	Literal number too big, truncated
 LONG
-	Literal number too big, truncated
 LONG
-	Literal number too big, truncated
 LONG
-	Literal number too big, truncated
 LONG
-	Literal number too big, truncated
 LONG
 	Literal number too big, truncated
 	Overflow in constant conversion
@@ -454,21 +446,13 @@ LONG
 LONG
 
 bin:
-	Literal number too big, truncated
 LONG
-	Literal number too big, truncated
 LONG
-	Literal number too big, truncated
 LONG
-	Literal number too big, truncated
 LONG
-	Literal number too big, truncated
 LONG
-	Literal number too big, truncated
 LONG
-	Literal number too big, truncated
 LONG
-	Literal number too big, truncated
 LONG
 	Literal number too big, truncated
 	Overflow in constant conversion
@@ -480,21 +464,13 @@ LONG
 LONG
 
 oct:
-	Literal number too big, truncated
 LONG
-	Literal number too big, truncated
 LONG
-	Literal number too big, truncated
 LONG
-	Literal number too big, truncated
 LONG
-	Literal number too big, truncated
 LONG
-	Literal number too big, truncated
 LONG
-	Literal number too big, truncated
 LONG
-	Literal number too big, truncated
 LONG
 	Literal number too big, truncated
 	Overflow in constant conversion
@@ -506,21 +482,13 @@ LONG
 LONG
 
 hex:
-	Literal number too big, truncated
 LONG
-	Literal number too big, truncated
 LONG
-	Literal number too big, truncated
 LONG
-	Literal number too big, truncated
 LONG
-	Literal number too big, truncated
 LONG
-	Literal number too big, truncated
 LONG
-	Literal number too big, truncated
 LONG
-	Literal number too big, truncated
 LONG
 	Literal number too big, truncated
 	Overflow in constant conversion
