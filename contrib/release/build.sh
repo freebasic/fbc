@@ -448,6 +448,10 @@ function windowsbuild() {
 		cp bin/libgcc_s_dw2-1.dll	fbcsa/bin/win32
 		cp bin/zlib1.dll		fbcsa/bin/win32
 		;;
+	win64)
+		cp bin/gcc.exe fbcsa/bin/win64
+		cp --parents libexec/gcc/x86_64-w64-mingw32/4.9.2/cc1.exe fbcsa/bin
+		;;
 	esac
 
 	# TODO: GoRC.exe should really be taken from its homepage
