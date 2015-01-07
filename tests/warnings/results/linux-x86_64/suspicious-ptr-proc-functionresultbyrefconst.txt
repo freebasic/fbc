@@ -1,0 +1,20 @@
+3 warnings:
+	Suspicious pointer assignment
+	Suspicious pointer assignment
+	Suspicious pointer assignment
+3 warnings:
+	Suspicious pointer assignment
+	Suspicious pointer assignment
+	Suspicious pointer assignment
+3 warnings:
+	Suspicious pointer assignment
+	Suspicious pointer assignment
+	Suspicious pointer assignment
+3 warnings:
+	Suspicious pointer assignment
+	Suspicious pointer assignment
+	Suspicious pointer assignment
+no warnings:
+2 warnings:
+	Suspicious pointer assignment
+	Suspicious pointer assignment

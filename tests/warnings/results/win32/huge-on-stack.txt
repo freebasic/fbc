@@ -1,0 +1,8 @@
+	Variable too large for stack, consider making it SHARED
+	Variable too large for stack, consider making it SHARED
+	Variable too large for stack, consider making it SHARED
+-------
+	Variable too large for stack, consider making it SHARED
+-------
+	Array too large for stack, consider making it var-len or SHARED
+	Array too large for stack, consider making it var-len or SHARED

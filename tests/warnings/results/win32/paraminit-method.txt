@@ -1,0 +1,2 @@
+1 warning:
+	Mismatching parameter initializer, at parameter 1 (i0) of s()

@@ -1,0 +1,2 @@
+1 warning (for the FOR end condition temp var):
+	Branch crossing local variable definition, to label: INNER2, variable: LT_0005
