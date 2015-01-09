@@ -6,12 +6,6 @@ type UDT2
 	i as integer
 end type
 
-namespace ns1
-	type UDT1
-		i as integer
-	end type
-end namespace
-
 type FWDREF1 as FWDREF1_
 type FWDREF2 as FWDREF2_
 
