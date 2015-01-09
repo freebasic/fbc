@@ -912,7 +912,7 @@ private sub fbParsePreIncludes()
 	wend
 end sub
 
-private sub hAppendFbctinf( byval value as zstring ptr )
+private sub hAppendFbctinf( byval value as const zstring ptr )
 	if( env.fbctinf_started = FALSE ) then
 		env.fbctinf_started = TRUE
 		irEmitFBCTINFBEGIN( )
