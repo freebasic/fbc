@@ -968,7 +968,7 @@ bindist:
 	# install.sh for normal Linux/BSD setups
   ifndef ENABLE_STANDALONE
     ifneq ($(filter darwin freebsd linux netbsd openbsd solaris,$(TARGET_OS)),)
-	cp $(rootdir)install.sh $(FBPACKAGE)
+	cp $(rootdir)contrib/unix-installer/install.sh $(FBPACKAGE)
     endif
   endif
 
