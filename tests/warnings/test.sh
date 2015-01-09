@@ -22,7 +22,7 @@ FBC=${FBC:-fbc}
 
 function run_tests() {
 	fbtarget="$1"
-	txtdir=results/$fbtarget
+	txtdir=r/$fbtarget
 
 	mkdir -p $txtdir
 	rm -f $txtdir/*
