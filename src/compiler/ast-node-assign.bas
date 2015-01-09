@@ -211,7 +211,7 @@ private function hCheckConstAndPointerOps _
 			exit function
 		end if
 
-		if( astPtrCheck( ldtype, l->subtype, r ) = FALSE ) then
+		if( astPtrCheck( ldtype, l->subtype, FB_PARAMMODE_BYVAL, r ) = FALSE ) then
 			'' if both are UDT, a derived lhs can't be assigned from a base rhs
 			if( typeGetDtOnly( ldtype ) = FB_DATATYPE_STRUCT and typeGetDtOnly( rdtype ) = FB_DATATYPE_STRUCT ) then
 				if( symbGetUDTBaseLevel( astGetSubType( l ), astGetSubType( r ) ) > 0 ) then

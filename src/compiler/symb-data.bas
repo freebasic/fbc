@@ -490,3 +490,69 @@ function closestType _
 	return dtype1
 
 end function
+
+function typeCalcMatch _
+	( _
+		byval ldtype as integer, _
+		byval lsubtype as FBSYMBOL ptr, _
+		byval lparammode as integer, _
+		byval rdtype as integer, _
+		byval rsubtype as FBSYMBOL ptr _
+	) as integer
+
+	if( (ldtype = rdtype) and (lsubtype = rsubtype) ) then
+		return FB_OVLPROC_FULLMATCH
+	end if
+
+	if( typeGetPtrCnt( ldtype ) <> typeGetPtrCnt( rdtype ) ) then
+		return 0
+	end if
+
+	if( symbCheckConstAssign( ldtype, rdtype, lsubtype, rsubtype, lparammode ) = FALSE ) then
+		return 0
+	end if
+
+	if( (typeGetDtAndPtrOnly( ldtype ) = typeGetDtAndPtrOnly( rdtype )) and (lsubtype = rsubtype) ) then
+		return FB_OVLPROC_HALFMATCH
+	end if
+
+	'' We know that they're different (in terms of dtype or subtype or both),
+	'' but they have the same ptrcount and CONSTs don't disallow the assignment.
+
+	var ldt = typeGetDtOnly( ldtype )
+	var rdt = typeGetDtOnly( rdtype )
+	if( ldt <> rdt ) then
+		'' Different base dtype, so probably not compatible.
+
+		'' The only exception here are integer types with the same size.
+		'' This applies to plain integers, and also to integer pointers.
+		'' For example: Integer [Ptr] will be treated as compatible to Long/LongInt [Ptr],
+		'' on 32bit/64bit respectively, and vice-versa.
+		if( (typeGetClass( ldt ) = FB_DATACLASS_INTEGER) and _
+		    (typeGetClass( rdt ) = FB_DATACLASS_INTEGER) and _
+		    (typeGetSize( ldt ) = typeGetSize( rdt )) ) then
+			return FB_OVLPROC_HALFMATCH - symb_dtypeMatchTB( ldt, rdt )
+		end if
+
+		return 0
+	end if
+
+	select case( ldt )
+	case FB_DATATYPE_STRUCT
+		'' Allow up-casting for any pointers, and BYREF parameters/function results,
+		'' but not for BYVAL parameters/function results. At least for BYVAL function results,
+		'' it's not safe, as the caller allocates the temp var where the callee will write
+		'' the result, thus they must use the exact same type or there will be a buffer overflow.
+		'if( typeIsPtr( ldtype ) or (lparammode = FB_PARAMMODE_BYREF) ) then
+			'' Check whether r is derived from l.
+			if( symbGetUDTBaseLevel( rsubtype, lsubtype ) > 0 ) then
+				return FB_OVLPROC_HALFMATCH
+			end if
+		'end if
+	case FB_DATATYPE_FUNCTION
+		'' Allow different procptrs as long as the signatures are compatible enough
+		return symbCalcProcMatch( lsubtype, rsubtype, 0 )
+	end select
+
+	function = 0
+end function

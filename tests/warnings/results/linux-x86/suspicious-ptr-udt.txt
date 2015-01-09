@@ -13,3 +13,29 @@ no warnings:
 	Suspicious pointer assignment
 1 warning:
 	Suspicious pointer assignment
+testing INHERIT1 and INHERIT2
+no warning:
+1 warning:
+	Suspicious pointer assignment
+1 warning:
+	Suspicious pointer assignment
+no warning:
+no warning:
+1 warning:
+	Suspicious pointer assignment
+1 warning:
+	Suspicious pointer assignment
+no warning:
+testing RTTI1 and RTTI2
+no warning:
+1 warning:
+	Suspicious pointer assignment
+1 warning:
+	Suspicious pointer assignment
+no warning:
+no warning:
+1 warning:
+	Suspicious pointer assignment
+1 warning:
+	Suspicious pointer assignment
+no warning:

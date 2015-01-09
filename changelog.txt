@@ -2,12 +2,14 @@ Version 1.02.0
 
 [changed]
 - Redims with explicit type will now redim existing dynamic array fields, if one of the same name exists, instead of creating a new local array. This makes Redims with explicit type match the behaviour of typeless Redims and Redims for global arrays.
+- Relaxed type checking for procedure pointers and virtual method overrides: Procedures with different signatures can now be treated equal if the signatures are compatible. For example: assignments between a function pointer returning an Integer and one returning a Long won't cause a "suspicious pointer assignment" warning on 32bit anymore.
 
 [added]
 - __FB_ASM__ intrinsic #define on x86, defined to "intel" or "att" (corresponding to the -asm command line option -- useful for -gen gcc/llvm only)
 - fbc -showincludes option (shows #include tree) for debugging of #includes
 - Address-of followed by pointer-arithmetic on variables (expressions such as @x+N) will now be turned into offsetted variable accesses, resulting in better generated code
 - The results of type-casted function calls can now be ignored, even if it's a non-trivial cast
+- Covariant parameters and function results (feature request #289)
 - Bindings (new/updated, including 64bit support):
 	FastCGI 2.4.1-SNAP-0311112127
 

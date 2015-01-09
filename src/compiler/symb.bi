@@ -56,6 +56,9 @@ const FB_DT_PTRLEVELS		= 8					'' max levels of pointer indirection
 const FB_DT_PTRPOS			= 5
 const FB_DT_CONSTPOS		= FB_DT_PTRPOS + 4
 
+const FB_OVLPROC_HALFMATCH = FB_DATATYPES
+const FB_OVLPROC_FULLMATCH = FB_OVLPROC_HALFMATCH * 2
+
 enum
 	FB_SIZETYPE_INT8 = 0
 	FB_SIZETYPE_UINT8
@@ -972,10 +975,11 @@ declare function symbFindCtorProc _
 		byval proc as FBSYMBOL ptr _
 	) as FBSYMBOL ptr
 
-declare function symbParamIsSame _
+declare function symbCalcProcMatch _
 	( _
-		byval a as FBSYMBOL ptr, _
-		byval b as FBSYMBOL ptr _
+		byval l as FBSYMBOL ptr, _
+		byval r as FBSYMBOL ptr, _
+		byref errmsg as integer _
 	) as integer
 declare sub symbProcCheckOverridden _
 	( _
@@ -1631,6 +1635,15 @@ declare function typeMerge _
 	( _
 		byval dtype1 as integer, _
 		byval dtype2 as integer _
+	) as integer
+
+declare function typeCalcMatch _
+	( _
+		byval ldtype as integer, _
+		byval lsubtype as FBSYMBOL ptr, _
+		byval lparammode as integer, _
+		byval rdtype as integer, _
+		byval rsubtype as FBSYMBOL ptr _
 	) as integer
 
 declare sub symbHashListAdd _
