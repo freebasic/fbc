@@ -1547,10 +1547,6 @@ function symbFindCtorProc _
 
 end function
 
-
-const FB_OVLPROC_HALFMATCH = FB_DATATYPES
-const FB_OVLPROC_FULLMATCH = FB_OVLPROC_HALFMATCH * 2
-
 '':::::
 #macro hCheckCtorOvl _
 	( _
@@ -1717,10 +1713,6 @@ private function hCalcTypesDiff _
 					return 1
 				end if
 
-				'' Both are pointers (but they're different,
-				'' full match is already handled)
-				assert( arg_dtype <> param_dtype )
-
 				'' Any Ptr parameters can accept all pointer arguments, as in C++.
 				'' Additionally we also allow Any Ptr arguments to match all
 				'' pointer parameters, because we also allow such assignments,
@@ -1730,20 +1722,7 @@ private function hCalcTypesDiff _
 					return FB_OVLPROC_HALFMATCH
 				end if
 
-				'' Different pointer types aren't compatible at all though,
-				'' that would be dangerous, except if the pointer count matches
-				'' and the base dtypes are integers of the same size.
-				if( typeGetPtrCnt( param_dtype ) = typeGetPtrCnt( arg_dtype ) ) then
-					param_dt = typeGetDtOnly( param_dtype )
-					arg_dt = typeGetDtOnly( arg_dtype )
-					if( (typeGetClass( param_dt ) = FB_DATACLASS_INTEGER) and _
-					    (typeGetClass( arg_dt   ) = FB_DATACLASS_INTEGER) and _
-					    (typeGetSize( param_dt ) = typeGetSize( arg_dt )) ) then
-						return FB_OVLPROC_HALFMATCH - symb_dtypeMatchTB( arg_dt, param_dt )
-					end if
-				end if
-
-				return 0
+				return typeCalcMatch( param_dtype, param_subtype, mode, arg_dtype, arg_subtype )
 
 			elseif( typeIsPtr( arg_dtype ) ) then
 				'' Param isn't a pointer, but arg is:
@@ -1832,7 +1811,6 @@ private function hCheckOvlParam _
 	) as integer
 
 	dim as integer param_dtype = any, arg_dtype = any, param_ptrcnt = any
-	dim as integer baselevel = any, type_is_compatible = any
 	dim as integer const_matches = any
 	dim as FBSYMBOL ptr param_subtype = any, arg_subtype = any, array = any
 
@@ -1921,51 +1899,50 @@ private function hCheckOvlParam _
 		'' score, such that we prefer passing arguments to the parameter
 		'' with the closest base type.
 		''
-		type_is_compatible = FALSE
-		baselevel = 0
+		var baselevel = 0
+		var match = 0
 		if( param_subtype = arg_subtype ) then
-			type_is_compatible = TRUE
-		elseif( typeGetDtOnly( param_dtype ) = FB_DATATYPE_STRUCT ) then
-			baselevel = symbGetUDTBaseLevel( arg_subtype, param_subtype )
-			type_is_compatible = (baselevel > 0)
+			match = FB_OVLPROC_FULLMATCH
+		else
+			select case( typeGetDtOnly( param_dtype ) )
+			case FB_DATATYPE_STRUCT
+				var baselevel = symbGetUDTBaseLevel( arg_subtype, param_subtype )
+				if( baselevel > 0 ) then
+					match = FB_OVLPROC_FULLMATCH - baselevel
+				end if
+			case FB_DATATYPE_FUNCTION
+				match = symbCalcProcMatch( param_subtype, arg_subtype, 0 )
+			end select
 		end if
 
-		if( type_is_compatible ) then
+		if( match > 0 ) then
 			'' In either case, we still have to check CONSTness (no point choosing a
 			'' BYREF AS CONST FOO overload parameter for a non-const FOO argument,
 			'' because it couldn't be passed anyways)
 
 			'' ... except if it's a RTL procedure without RTL_CONST (then no CONST checking should be done)
 			if( symbGetIsRTL( parent ) and (not symbGetIsRTLConst( param )) ) then
-				return FB_OVLPROC_FULLMATCH - baselevel
+				return match
 			end if
 
 			'' Exact same CONSTs? Then there's no point in calling symbCheckConstAssign().
 			if( typeGetConstMask( param_dtype ) = typeGetConstMask( arg_dtype ) ) then
-				return FB_OVLPROC_FULLMATCH - baselevel
+				return match
 			end if
 
 			'' Check whether CONSTness allows passing the arg to the param.
 			if( symbCheckConstAssign( param_dtype, arg_dtype, param_subtype, arg_subtype, symbGetParamMode( param ), const_matches ) ) then
 				'' They're compatible despite having different CONSTs -- e.g. "non-const Foo" passed to "Byref As Const Foo".
+				'' Treat it as lower score match than an exact match.
 				'' TODO: Fix and use const_matches
 				constonly_diff = TRUE
-				return FB_OVLPROC_HALFMATCH - baselevel
+				if( match > FB_OVLPROC_HALFMATCH ) then
+					match -= FB_OVLPROC_HALFMATCH
+				end if
+				return match
 			end if
 
 			'' Same/compatible type, but mismatch due to CONSTness
-			return 0
-		end if
-
-		'' pointer? check if valid (could be a NULL)
-		if( typeIsPtr( param_dtype ) ) then
-			if( astPtrCheck( param_dtype, _
-				 			 param_subtype, _
-				 			 arg_expr, _
-				 			 TRUE ) ) then
-
-				return FB_OVLPROC_FULLMATCH
-			end if
 			return 0
 		end if
 	end if
@@ -2620,42 +2597,81 @@ end function
 '' misc
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-function symbParamIsSame _
+private function symbCalcParamMatch _
 	( _
-		byval a as FBSYMBOL ptr, _
-		byval b as FBSYMBOL ptr _
+		byval l as FBSYMBOL ptr, _
+		byval r as FBSYMBOL ptr _
 	) as integer
 
-	assert( a->class = FB_SYMBCLASS_PARAM )
-	assert( b->class = FB_SYMBCLASS_PARAM )
-	function = FALSE
+	assert( l->class = FB_SYMBCLASS_PARAM )
+	assert( r->class = FB_SYMBCLASS_PARAM )
 
-	if( (symbGetParamMode( a ) <> symbGetParamMode( b )) or _
-	    (symbGetFullType ( a ) <> symbGetFullType ( b )) or _
-	    (symbGetSubtype  ( a ) <> symbGetSubtype  ( b )) ) then
-		exit function
+	var match = typeCalcMatch( l->typ, l->subtype, l->param.mode, r->typ, r->subtype )
+	if( match = 0 ) then
+		return 0
+	end if
+
+	if( l->param.mode <> r->param.mode ) then
+		return 0
 	end if
 
 	'' Check Bydesc dimensions
-	if( a->param.mode = FB_PARAMMODE_BYDESC ) then
-		if( a->param.bydescdimensions <> b->param.bydescdimensions ) then
-			exit function
+	if( l->param.mode = FB_PARAMMODE_BYDESC ) then
+		if( l->param.bydescdimensions <> r->param.bydescdimensions ) then
+			return 0
 		end if
 	end if
 
-	function = TRUE
+	function = match
 end function
 
-private function hAreMethodsCompatible _
+''
+'' Checking procedure signature compatibility for procedure pointer
+'' "assignments" such as:
+''
+''    lhs = rhs
+''        (lhs = proc to check against)
+''        (rhs = proc to check)
+''
+'' Such assignments are safe if the lhs can safely be used to call the rhs.
+'' This could mean that lhs and rhs have the exact same signature, or that there
+'' are slight differences, but they're still ABI-compatible.
+''
+'' Often it's commutative, but sometimes (e.g. due to CONSTs) we allow
+'' "lhs = rhs" but not "rhs = lhs".
+''
+'' Examples:
+''
+'' Same signature, safe:
+''    dim rhs as sub(as integer)
+''    dim lhs as sub(as integer) = rhs
+''
+'' Integer type size. Different signature, but safe on 32bit (but not on 64bit):
+''    dim rhs as sub(as long)
+''    dim lhs as sub(as integer) = rhs
+''
+'' Result/parameter type covariance. Different signature, but still safe:
+''    type Base extends object : end type
+''    type Derived extends Parent : end type
+''    dim rhs as function() as Derived
+''    dim lhs as function() as Base = rhs
+''    (lhs expects to return a Base, so we can assign anything that returns
+''    a Base, including things that return a Derived, because a Derived also is
+''    a Base. The opposite would not be safe though.)
+''
+'' CONSTness. Different signature, but still safe:
+''    dim rhs as sub(byref as const integer)
+''    dim lhs as sub(byref as integer) = rhs
+''
+function symbCalcProcMatch _
 	( _
-		byval v as FBSYMBOL ptr, _  '' The virtual that's overridden
-		byval o as FBSYMBOL ptr _   '' The override
+		byval l as FBSYMBOL ptr, _
+		byval r as FBSYMBOL ptr, _
+		byref errmsg as integer _
 	) as integer
 
-	dim as FBSYMBOL ptr vparam = any, oparam = any
-
-	assert( symbIsProc( v ) and symbIsMethod( v ) )
-	assert( symbIsProc( o ) and symbIsMethod( o ) )
+	assert( symbIsProc( l ) )
+	assert( symbIsProc( r ) )
 
 	'' Different result type?
 	'' - It must be the exact same (even CONSTs), as for procedure pointers
@@ -2663,56 +2679,84 @@ private function hAreMethodsCompatible _
 	''   because that search is just based on finding compatible overloads
 	''   which doesn't take result type into account.
 	'' - SUBs have VOID result type and will be handled here too
-	if( (symbGetFullType( v ) <> symbGetFullType( o )) or _
-	    (symbGetSubtype( v ) <> symbGetSubtype( o )) ) then
-		return FB_ERRMSG_OVERRIDERETTYPEDIFFERS
+	var match = typeCalcMatch( l->typ, l->subtype, _
+			iif( symbProcReturnsByref( l ), FB_PARAMMODE_BYREF, FB_PARAMMODE_BYVAL ), _
+			r->typ, r->subtype )
+	if( match = 0 ) then
+		errmsg = FB_ERRMSG_OVERRIDERETTYPEDIFFERS
+		return 0
 	end if
 
 	'' Does one have a BYREF result, but not the other?
-	if( symbProcReturnsByref( v ) <> symbProcReturnsByref( o ) ) then
-		return FB_ERRMSG_OVERRIDERETTYPEDIFFERS
+	if( symbProcReturnsByref( l ) <> symbProcReturnsByref( r ) ) then
+		errmsg = FB_ERRMSG_OVERRIDERETTYPEDIFFERS
+		return 0
 	end if
 
 	'' Different calling convention?
-	if( symbAreProcModesEqual( v, o ) = FALSE ) then
-		return FB_ERRMSG_OVERRIDECALLCONVDIFFERS
+	if( symbAreProcModesEqual( l, r ) = FALSE ) then
+		errmsg = FB_ERRMSG_OVERRIDECALLCONVDIFFERS
+		return 0
 	end if
 
 	'' If one is a CONST member method, the other must be too
-	if( symbIsConstant( v ) <> symbIsConstant( o ) ) then
-		if( symbIsConstant( v ) ) then
-			return FB_ERRMSG_OVERRIDEISNTCONSTMEMBER
+	'' (matters only for virtuals/overrides, not procptrs in general)
+	if( symbIsConstant( l ) <> symbIsConstant( r ) ) then
+		if( symbIsConstant( l ) ) then
+			errmsg = FB_ERRMSG_OVERRIDEISNTCONSTMEMBER
+		else
+			errmsg = FB_ERRMSG_OVERRIDEISCONSTMEMBER
 		end if
-		return FB_ERRMSG_OVERRIDEISCONSTMEMBER
+		return 0
 	end if
 
 	'' Different parameter count?
-	if( symbGetProcParams( v ) <> symbGetProcParams( o ) ) then
-		return FB_ERRMSG_OVERRIDEPARAMSDIFFER
+	if( symbGetProcParams( l ) <> symbGetProcParams( r ) ) then
+		errmsg = FB_ERRMSG_OVERRIDEPARAMSDIFFER
+		return 0
 	end if
 
 	'' Check each parameter's mode and type
-	vparam = symbGetProcHeadParam( v )
-	oparam = symbGetProcHeadParam( o )
+	var lparam = symbGetProcHeadParam( l )
+	var rparam = symbGetProcHeadParam( r )
 
-	'' But skip THIS ptr; virtual/override will have a different types here,
-	'' their parent classes respectively. Since this virtual was found to
-	'' be overridden by this override, we know that the override's THIS
-	'' type is derived from the virtual's THIS type.
-	assert( symbIsParamInstance( vparam ) )
-	assert( symbIsParamInstance( oparam ) )
-	vparam = vparam->next
-	oparam = oparam->next
-
-	while( vparam )
-		if( symbParamIsSame( vparam, oparam ) = FALSE ) then
-			return FB_ERRMSG_OVERRIDEPARAMSDIFFER
+	'' When overriding a virtual, we have to ignore the This parameters though.
+	'' The virtual's This will have the base as type, the override will have the
+	'' derived UDT as type. This would cause us to think the override is incompatible,
+	'' because normally passing an object of the base type doesn't guarantee that it's
+	'' also an object of the derived UDT. However, in case of virtuals we know that
+	'' the override will only be called with a proper object, and we can ignore the
+	'' possible type mismatch.
+	if( symbIsVirtual( l ) and symbIsMethod( l ) and symbIsMethod( r ) ) then
+		if( (lparam <> NULL) and (rparam <> NULL) ) then
+			if( symbIsParamInstance( lparam ) and symbIsParamInstance( rparam ) ) then
+				lparam = lparam->next
+				rparam = rparam->next
+			end if
 		end if
-		vparam = vparam->next
-		oparam = oparam->next
+	end if
+
+	while( lparam )
+
+		'' lparam/rparam swapped here, because in case of params we have
+		'' to check whether the lparam could be passed to the rparam,
+		'' when calling r through l.
+		var parammatch = symbCalcParamMatch( rparam, lparam )
+		if( parammatch = 0 ) then
+			errmsg = FB_ERRMSG_OVERRIDEPARAMSDIFFER
+			return 0
+		end if
+
+		'' Decrease overall match if a single param scored lower
+		if( match > parammatch ) then
+			match = parammatch
+		end if
+
+		lparam = lparam->next
+		rparam = rparam->next
 	wend
 
-	function = FB_ERRMSG_OK
+	function = match
 end function
 
 sub symbProcCheckOverridden _
@@ -2722,7 +2766,6 @@ sub symbProcCheckOverridden _
 	)
 
 	dim as FBSYMBOL ptr overridden = any
-	dim as integer errmsg = any
 
 	overridden = symbProcGetOverridden( proc )
 
@@ -2734,8 +2777,8 @@ sub symbProcCheckOverridden _
 		'' aren't really compatible (e.g. return on stack vs. return
 		'' in registers).
 
-		errmsg = hAreMethodsCompatible( overridden, proc )
-		if( errmsg <> FB_ERRMSG_OK ) then
+		dim errmsg as integer
+		if( symbCalcProcMatch( overridden, proc, errmsg ) = 0 ) then
 			if( is_implicit and _
 			    (errmsg = FB_ERRMSG_OVERRIDECALLCONVDIFFERS) ) then
 				'' symbUdtDeclareDefaultMembers() uses this to check
@@ -2751,7 +2794,6 @@ sub symbProcCheckOverridden _
 
 			errReport( errmsg )
 		end if
-
 	end if
 
 end sub

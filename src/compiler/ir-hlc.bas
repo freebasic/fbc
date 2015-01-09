@@ -3336,7 +3336,7 @@ private sub _emitFbctinfBegin( )
 	ctx.fbctinf += "__fbctinf[] = """
 end sub
 
-private sub _emitFbctinfString( byval s as zstring ptr )
+private sub _emitFbctinfString( byval s as const zstring ptr )
 	ctx.fbctinf += *s + $"\0"
 end sub
 

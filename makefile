@@ -677,7 +677,7 @@ log-tests:
 	cd tests && make   log-tests FBC="`pwd`/../bin/fbc -i `pwd`/../inc"
 
 warning-tests:
-	cd tests/warnings && make FBC="`pwd`/../../bin/fbc"
+	cd tests/warnings && FBC="`pwd`/../../bin/fbc" ./test.sh
 
 clean-tests:
 	cd tests && make clean

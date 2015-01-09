@@ -1,0 +1,2 @@
+1 warning (for the iterator var):
+	Branch crossing local variable definition, to label: INNER1, variable: I

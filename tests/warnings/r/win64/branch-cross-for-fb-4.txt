@@ -1,0 +1,3 @@
+2 warnings (for the FOR step value temp vars):
+	Branch crossing local variable definition, to label: INNER1, variable: TMP$2
+	Branch crossing local variable definition, to label: INNER1, variable: TMP$3

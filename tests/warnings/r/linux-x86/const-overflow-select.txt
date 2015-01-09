@@ -1,0 +1,3 @@
+SELECT CONST with 64bit value, no warning (should use 64bit temp var):
+CASE with 64bit value, causes a warning because it's a SELECT CONST with 32bit value:
+	Overflow in constant conversion

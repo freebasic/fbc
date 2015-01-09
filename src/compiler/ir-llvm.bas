@@ -2135,7 +2135,7 @@ private sub _emitFbctinfBegin( )
 	hWriteLine( "" )
 end sub
 
-private sub _emitFbctinfString( byval s as zstring ptr )
+private sub _emitFbctinfString( byval s as const zstring ptr )
 	ctx.fbctinf += *s + $"\00"
 	ctx.fbctinf_len += len( *s ) + 1
 end sub

@@ -1,0 +1,18 @@
+BYREF parameter CONSTness
+no warnings:
+8 warnings:
+	Suspicious pointer assignment
+	Suspicious pointer assignment
+	Suspicious pointer assignment
+	Suspicious pointer assignment
+	Suspicious pointer assignment
+	Suspicious pointer assignment
+	Suspicious pointer assignment
+	Suspicious pointer assignment
+BYVAL parameter CONSTness
+no warnings:
+4 warnings:
+	Suspicious pointer assignment
+	Suspicious pointer assignment
+	Suspicious pointer assignment
+	Suspicious pointer assignment

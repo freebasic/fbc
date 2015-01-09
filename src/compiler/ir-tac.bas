@@ -844,7 +844,7 @@ private sub _emitFbctinfBegin( )
 	emitFBCTINFBEGIN( )
 end sub
 
-private sub _emitFbctinfString( byval s as zstring ptr )
+private sub _emitFbctinfString( byval s as const zstring ptr )
 	emitFBCTINFSTRING( s )
 end sub
 

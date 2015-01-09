@@ -342,7 +342,7 @@ type IR_VTBL
 	emitVarIniScopeEnd as sub( )
 
 	emitFbctinfBegin as sub( )
-	emitFbctinfString as sub( byval s as zstring ptr )
+	emitFbctinfString as sub( byval s as const zstring ptr )
 	emitFbctinfEnd as sub( )
 
 	allocVreg as function _

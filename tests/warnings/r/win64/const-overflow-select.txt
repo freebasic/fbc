@@ -1,0 +1,1 @@
+SELECT CONST with 64bit value, no warning (should use 64bit temp var):

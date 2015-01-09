@@ -6185,7 +6185,7 @@ sub emitFBCTINFBEGIN( )
 	_setSection( IR_SECTION_INFO, 0 )
 end sub
 
-sub emitFBCTINFSTRING( byval s as zstring ptr )
+sub emitFBCTINFSTRING( byval s as const zstring ptr )
 	static as string ln
 	ln = *emit.vtbl.getTypeString( FB_DATATYPE_CHAR )
 	ln += " """ + *s + $"\0"""
