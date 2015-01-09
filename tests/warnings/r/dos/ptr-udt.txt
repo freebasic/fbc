@@ -20,12 +20,12 @@ no warning:
 1 warning:
 	Suspicious pointer assignment
 no warning:
-no warning:
-1 warning:
+2 warnings:
 	Suspicious pointer assignment
-1 warning:
 	Suspicious pointer assignment
-no warning:
+2 warnings:
+	Suspicious pointer assignment
+	Suspicious pointer assignment
 testing RTTI1 and RTTI2
 no warning:
 1 warning:
@@ -33,9 +33,9 @@ no warning:
 1 warning:
 	Suspicious pointer assignment
 no warning:
-no warning:
-1 warning:
+2 warnings:
 	Suspicious pointer assignment
-1 warning:
 	Suspicious pointer assignment
-no warning:
+2 warnings:
+	Suspicious pointer assignment
+	Suspicious pointer assignment

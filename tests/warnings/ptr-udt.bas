@@ -82,15 +82,12 @@ end scope
 		dim pa as function( ) as A
 		dim pb as function( ) as B
 
-		#print "no warning:"
+		#print "2 warnings:"
 		pa = pb  '' caller expects an A, callee returns a B
 		'' This isn't safe with BYVAL returns because the caller is responsible
 		'' for allocating the temp var on stack, where the result will be
 		'' written by the callee. This must have the exact same size or there
 		'' will be a buffer overflow...
-		'' TODO: show warning
-
-		#print "1 warning:"
 		pb = pa  '' caller expects a B, callee returns an A - unsafe
 	end scope
 
@@ -103,12 +100,9 @@ end scope
 		'' the caller cleans up, but since BYVAL function results like this can't be
 		'' allowed, this should probably not be allowed either.
 
-		#print "1 warning:"
+		#print "2 warnings:"
 		pa = pb
-
-		#print "no warning:"
 		pb = pa
-		'' TODO: show warning
 	end scope
 #endmacro
 

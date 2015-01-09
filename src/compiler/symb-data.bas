@@ -543,12 +543,12 @@ function typeCalcMatch _
 		'' but not for BYVAL parameters/function results. At least for BYVAL function results,
 		'' it's not safe, as the caller allocates the temp var where the callee will write
 		'' the result, thus they must use the exact same type or there will be a buffer overflow.
-		'if( typeIsPtr( ldtype ) or (lparammode = FB_PARAMMODE_BYREF) ) then
+		if( typeIsPtr( ldtype ) or (lparammode = FB_PARAMMODE_BYREF) ) then
 			'' Check whether r is derived from l.
 			if( symbGetUDTBaseLevel( rsubtype, lsubtype ) > 0 ) then
 				return FB_OVLPROC_HALFMATCH
 			end if
-		'end if
+		end if
 	case FB_DATATYPE_FUNCTION
 		'' Allow different procptrs as long as the signatures are compatible enough
 		return symbCalcProcMatch( lsubtype, rsubtype, 0 )
