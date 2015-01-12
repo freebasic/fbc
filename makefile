@@ -906,8 +906,8 @@ bindist:
 	rm -r $(FBPACKAGE)/inc/uuid.bi
 	rm -r $(FBPACKAGE)/inc/vlc
 	rm -r $(FBPACKAGE)/inc/vorbis
-	rm -r $(FBPACKAGE)/inc/win
-	rm -r $(FBPACKAGE)/inc/windows.bi
+	rm -r $(FBPACKAGE)/inc/win/ddk
+	rm -r $(FBPACKAGE)/inc/win/rc
 	rm -r $(FBPACKAGE)/inc/wx-c
 	rm -r $(FBPACKAGE)/inc/X11
 	rm -r $(FBPACKAGE)/inc/xmp.bi
