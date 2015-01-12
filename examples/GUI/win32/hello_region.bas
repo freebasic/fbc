@@ -116,7 +116,7 @@ sub remove_caption(byval hwnd as HWND )
   	dim as integer style = GetWindowLong( hwnd, GWL_STYLE ) and (not WS_CAPTION)
   	SetWindowLong( hwnd, GWL_STYLE, style ) 
   	GetClientRect( hwnd, @rect )
-  	AdjustWindowRect( @rect, style, cast( BOOL, GetMenu( hwnd ) ) ) 
+	AdjustWindowRect( @rect, style, (GetMenu( hwnd ) <> NULL) )
   	SetWindowPos( hwnd, 0, 0, 0, rect.Right, rect.Bottom, _
 				  SWP_NOMOVE or SWP_NOZORDER or SWP_FRAMECHANGED or SWP_NOSENDCHANGING )
 end sub
