@@ -1,14 +1,17 @@
-''
-''
-'' scrnsave -- header translated with help of SWIG FB wrapper
-''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
-''
-''
-#ifndef __win_scrnsave_bi__
-#define __win_scrnsave_bi__
+#pragma once
 
+extern "Windows"
+
+#define _INC_SCRNSAVE
+
+#ifdef UNICODE
+	declare function ScreenSaverProcW(byval hWnd as HWND, byval message as UINT, byval wParam as WPARAM, byval lParam as LPARAM) as LRESULT
+#else
+	declare function ScreenSaverProc(byval hWnd as HWND, byval message as UINT, byval wParam as WPARAM, byval lParam as LPARAM) as LRESULT
+#endif
+
+#define IDS_DESCRIPTION 1
+#define ID_APP 100
 #define DLG_SCRNSAVECONFIGURE 2003
 #define idsIsPassword 1000
 #define idsIniFile 1001
@@ -21,30 +24,45 @@
 #define idsNoHelpMemory 1008
 #define idsHelpFile 1009
 #define idsDefKeyword 1010
-#define IDS_DESCRIPTION 1
-#define ID_APP 100
-#define WS_GT (&h20000 or &h10000)
-#define SCRM_VERIFYPW 32768
+
+#ifdef UNICODE
+	#define ScreenSaverProc ScreenSaverProcW
+#endif
+
+declare function DefScreenSaverProc(byval hWnd as HWND, byval msg as UINT, byval wParam as WPARAM, byval lParam as LPARAM) as LRESULT
+declare function ScreenSaverConfigureDialog(byval hDlg as HWND, byval message as UINT, byval wParam as WPARAM, byval lParam as LPARAM) as WINBOOL
+declare function RegisterDialogClasses(byval hInst as HANDLE) as WINBOOL
+
+#define WS_GT (WS_GROUP or WS_TABSTOP)
 #define MAXFILELEN 13
 #define TITLEBARNAMELEN 40
 #define APPNAMEBUFFERLEN 40
 #define BUFFLEN 255
 
-declare function ScreenSaverConfigureDialog alias "ScreenSaverConfigureDialog" (byval as HWND, byval as UINT, byval as WPARAM, byval as LPARAM) as BOOL
-declare function RegisterDialogClasses alias "RegisterDialogClasses" (byval as HANDLE) as BOOL
-declare function ScreenSaverProc alias "ScreenSaverProc" (byval as HWND, byval as UINT, byval as WPARAM, byval as LPARAM) as LONG
-declare function DefScreenSaverProc alias "DefScreenSaverProc" (byval as HWND, byval as UINT, byval as WPARAM, byval as LPARAM) as LONG
-declare sub ScreenSaverChangePassword alias "ScreenSaverChangePassword" (byval as HWND)
+extern hMainInstance as HINSTANCE
+extern hMainWindow as HWND
+extern fChildPreview as WINBOOL
 
-extern hMainInstance alias "hMainInstance" as HINSTANCE
-extern hMainWindow alias "hMainWindow" as HWND
-extern fChildPreview alias "fChildPreview" as BOOL
-extern szName alias "szName" as zstring ptr
-extern szAppName alias "szAppName" as zstring ptr 
-extern szIniFile alias "szIniFile" as zstring ptr 
-extern szScreenSaver alias "szScreenSaver" as zstring ptr
-extern szHelpFile alias "szHelpFile" as zstring ptr
-extern szNoHelpMemory alias "szNoHelpMemory" as zstring ptr
-extern MyHelpMessage alias "MyHelpMessage" as UINT
-
+#ifdef UNICODE
+	extern szName as wstring * 40
+	extern szAppName as wstring * 40
+	extern szIniFile as wstring * 13
+	extern szScreenSaver as wstring * 22
+	extern szHelpFile as wstring * 13
+	extern szNoHelpMemory as wstring * 255
+#else
+	extern szName as zstring * 40
+	extern szAppName as zstring * 40
+	extern szIniFile as zstring * 13
+	extern szScreenSaver as zstring * 22
+	extern szHelpFile as zstring * 13
+	extern szNoHelpMemory as zstring * 255
 #endif
+
+extern MyHelpMessage as UINT
+
+#define SCRM_VERIFYPW WM_APP
+
+declare sub ScreenSaverChangePassword(byval hParent as HWND)
+
+end extern

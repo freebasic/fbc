@@ -1,15 +1,14 @@
-''
-''
-'' secext -- header translated with help of SWIG FB wrapper
-''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
-''
-''
-#ifndef __win_secext_bi__
-#define __win_secext_bi__
+#pragma once
 
-enum EXTENDED_NAME_FORMAT
+#include once "_mingw_unicode.bi"
+#include once "sspi.bi"
+
+extern "Windows"
+
+#define __SECEXT_H__
+
+type EXTENDED_NAME_FORMAT as long
+enum
 	NameUnknown = 0
 	NameFullyQualifiedDN = 1
 	NameSamCompatible = 2
@@ -22,14 +21,23 @@ enum EXTENDED_NAME_FORMAT
 	NameDnsDomain = 12
 end enum
 
-#ifdef UNICODE
-declare function GetComputerObjectName alias "GetComputerObjectNameW" (byval as EXTENDED_NAME_FORMAT, byval as LPWSTR, byval as PULONG) as BOOLEAN
-declare function GetUserNameEx alias "GetUserNameExW" (byval as EXTENDED_NAME_FORMAT, byval as LPWSTR, byval as PULONG) as BOOLEAN
-declare function TranslateName alias "TranslateNameW" (byval as LPCWSTR, byval as EXTENDED_NAME_FORMAT, byval as EXTENDED_NAME_FORMAT, byval as LPWSTR, byval as PULONG) as BOOLEAN
-#else ''UNICODE
-declare function GetComputerObjectName alias "GetComputerObjectNameA" (byval as EXTENDED_NAME_FORMAT, byval as LPSTR, byval as PULONG) as BOOLEAN
-declare function GetUserNameEx alias "GetUserNameExA" (byval as EXTENDED_NAME_FORMAT, byval as LPSTR, byval as PULONG) as BOOLEAN
-declare function TranslateName alias "TranslateNameA" (byval as LPCSTR, byval as EXTENDED_NAME_FORMAT, byval as EXTENDED_NAME_FORMAT, byval as LPSTR, byval as PULONG) as BOOLEAN
-#endif ''UNICODE
+type PEXTENDED_NAME_FORMAT as EXTENDED_NAME_FORMAT ptr
 
+#ifdef UNICODE
+	#define GetUserNameEx GetUserNameExW
+	#define GetComputerObjectName GetComputerObjectNameW
+	#define TranslateName TranslateNameW
+#else
+	#define GetUserNameEx GetUserNameExA
+	#define GetComputerObjectName GetComputerObjectNameA
+	#define TranslateName TranslateNameA
 #endif
+
+declare function GetUserNameExA(byval NameFormat as EXTENDED_NAME_FORMAT, byval lpNameBuffer as LPSTR, byval nSize as PULONG) as BOOLEAN
+declare function GetUserNameExW(byval NameFormat as EXTENDED_NAME_FORMAT, byval lpNameBuffer as LPWSTR, byval nSize as PULONG) as BOOLEAN
+declare function GetComputerObjectNameA(byval NameFormat as EXTENDED_NAME_FORMAT, byval lpNameBuffer as LPSTR, byval nSize as PULONG) as BOOLEAN
+declare function GetComputerObjectNameW(byval NameFormat as EXTENDED_NAME_FORMAT, byval lpNameBuffer as LPWSTR, byval nSize as PULONG) as BOOLEAN
+declare function TranslateNameA(byval lpAccountName as LPCSTR, byval AccountNameFormat as EXTENDED_NAME_FORMAT, byval DesiredNameFormat as EXTENDED_NAME_FORMAT, byval lpTranslatedName as LPSTR, byval nSize as PULONG) as BOOLEAN
+declare function TranslateNameW(byval lpAccountName as LPCWSTR, byval AccountNameFormat as EXTENDED_NAME_FORMAT, byval DesiredNameFormat as EXTENDED_NAME_FORMAT, byval lpTranslatedName as LPWSTR, byval nSize as PULONG) as BOOLEAN
+
+end extern

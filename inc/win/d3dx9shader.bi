@@ -1,55 +1,37 @@
-''
-''
-'' d3dx9shader -- header translated with help of SWIG FB wrapper
-''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
-''
-''
-#ifndef __win_d3dx9shader_bi__
-#define __win_d3dx9shader_bi__
+#pragma once
 
-#include once "win/d3dx9.bi"
+#include once "_mingw_unicode.bi"
+#include once "d3dx9.bi"
 
-#define D3DXTX_VERSION(_Major,_Minor) ((asc("T") shl 24) or (asc("X") shl 16) or ((_Major) shl 8) or (_Minor))
+extern "Windows"
 
-#define D3DXSHADER_DEBUG (1 shl 0)
-#define D3DXSHADER_SKIPVALIDATION (1 shl 1)
-#define D3DXSHADER_SKIPOPTIMIZATION (1 shl 2)
-#define D3DXSHADER_PACKMATRIX_ROWMAJOR (1 shl 3)
-#define D3DXSHADER_PACKMATRIX_COLUMNMAJOR (1 shl 4)
-#define D3DXSHADER_PARTIALPRECISION (1 shl 5)
-#define D3DXSHADER_FORCE_VS_SOFTWARE_NOOPT (1 shl 6)
-#define D3DXSHADER_FORCE_PS_SOFTWARE_NOOPT (1 shl 7)
-#define D3DXSHADER_NO_PRESHADER (1 shl 8)
-#define D3DXSHADER_AVOID_FLOW_CONTROL (1 shl 9)
-#define D3DXSHADER_PREFER_FLOW_CONTROL (1 shl 10)
+type ID3DXConstantTableVtbl as ID3DXConstantTableVtbl_
+type ID3DXIncludeVtbl as ID3DXIncludeVtbl_
 
-type D3DXHANDLE as LPCSTR
-type LPD3DXHANDLE as D3DXHANDLE ptr
+#define __D3DX9SHADER_H__
+#define D3DXSHADER_DEBUG &h1
+#define D3DXSHADER_SKIPVALIDATION &h2
+#define D3DXSHADER_SKIPOPTIMIZATION &h4
+#define D3DXSHADER_PACKMATRIX_ROWMAJOR &h8
+#define D3DXSHADER_PACKMATRIX_COLUMNMAJOR &h10
+#define D3DXSHADER_PARTIALPRECISION &h20
+#define D3DXSHADER_FORCE_VS_SOFTWARE_NOOPT &h40
+#define D3DXSHADER_FORCE_PS_SOFTWARE_NOOPT &h80
+#define D3DXSHADER_NO_PRESHADER &h100
+#define D3DXSHADER_AVOID_FLOW_CONTROL &h200
+#define D3DXSHADER_PREFER_FLOW_CONTROL &h400
+#define D3DXSHADER_ENABLE_BACKWARDS_COMPATIBILITY &h1000
+#define D3DXSHADER_IEEE_STRICTNESS &h2000
+#define D3DXSHADER_OPTIMIZATION_LEVEL0 &h4000
+#define D3DXSHADER_OPTIMIZATION_LEVEL1 &h0
+#define D3DXSHADER_OPTIMIZATION_LEVEL2 &hC000
+#define D3DXSHADER_OPTIMIZATION_LEVEL3 &h8000
+#define D3DXSHADER_USE_LEGACY_D3DX9_31_DLL &h10000
 
-type D3DXMACRO
-	Name as LPCSTR
-	Definition as LPCSTR
-end type
+type D3DXHANDLE as const zstring ptr
 
-type LPD3DXMACRO as D3DXMACRO ptr
-
-type D3DXSEMANTIC
-	Usage as UINT
-	UsageIndex as UINT
-end type
-
-type LPD3DXSEMANTIC as D3DXSEMANTIC ptr
-
-type D3DXFRAGMENT_DESC
-	Name as LPCSTR
-	Target as DWORD
-end type
-
-type LPD3DXFRAGMENT_DESC as D3DXFRAGMENT_DESC ptr
-
-enum D3DXREGISTER_SET
+type _D3DXREGISTER_SET as long
+enum
 	D3DXRS_BOOL
 	D3DXRS_INT4
 	D3DXRS_FLOAT4
@@ -57,9 +39,11 @@ enum D3DXREGISTER_SET
 	D3DXRS_FORCE_DWORD = &h7fffffff
 end enum
 
-type LPD3DXREGISTER_SET as D3DXREGISTER_SET
+type D3DXREGISTER_SET as _D3DXREGISTER_SET
+type LPD3DXREGISTER_SET as _D3DXREGISTER_SET ptr
 
-enum D3DXPARAMETER_CLASS
+type D3DXPARAMETER_CLASS as long
+enum
 	D3DXPC_SCALAR
 	D3DXPC_VECTOR
 	D3DXPC_MATRIX_ROWS
@@ -69,9 +53,10 @@ enum D3DXPARAMETER_CLASS
 	D3DXPC_FORCE_DWORD = &h7fffffff
 end enum
 
-type LPD3DXPARAMETER_CLASS as D3DXPARAMETER_CLASS
+type LPD3DXPARAMETER_CLASS as D3DXPARAMETER_CLASS ptr
 
-enum D3DXPARAMETER_TYPE
+type D3DXPARAMETER_TYPE as long
+enum
 	D3DXPT_VOID
 	D3DXPT_BOOL
 	D3DXPT_INT
@@ -91,195 +76,212 @@ enum D3DXPARAMETER_TYPE
 	D3DXPT_VERTEXSHADER
 	D3DXPT_PIXELFRAGMENT
 	D3DXPT_VERTEXFRAGMENT
+	D3DXPT_UNSUPPORTED
 	D3DXPT_FORCE_DWORD = &h7fffffff
 end enum
 
-type LPD3DXPARAMETER_TYPE as D3DXPARAMETER_TYPE
+type LPD3DXPARAMETER_TYPE as D3DXPARAMETER_TYPE ptr
 
-type D3DXCONSTANTTABLE_DESC
-	Creator as LPCSTR
+type _D3DXCONSTANTTABLE_DESC
+	Creator as const zstring ptr
 	Version as DWORD
 	Constants as UINT
 end type
 
-type LPD3DXCONSTANTTABLE_DESC as D3DXCONSTANTTABLE_DESC ptr
+type D3DXCONSTANTTABLE_DESC as _D3DXCONSTANTTABLE_DESC
+type LPD3DXCONSTANTTABLE_DESC as _D3DXCONSTANTTABLE_DESC ptr
 
-type D3DXCONSTANT_DESC
-	Name as LPCSTR
+type _D3DXCONSTANT_DESC
+	Name as const zstring ptr
 	RegisterSet as D3DXREGISTER_SET
 	RegisterIndex as UINT
 	RegisterCount as UINT
 	Class as D3DXPARAMETER_CLASS
-	Type as D3DXPARAMETER_TYPE
+	as D3DXPARAMETER_TYPE Type
 	Rows as UINT
 	Columns as UINT
 	Elements as UINT
 	StructMembers as UINT
 	Bytes as UINT
-	DefaultValue as LPCVOID
+	DefaultValue as const any ptr
 end type
 
-type LPD3DXCONSTANT_DESC as D3DXCONSTANT_DESC ptr
-type LPD3DXCONSTANTTABLE as ID3DXConstantTable ptr
+type D3DXCONSTANT_DESC as _D3DXCONSTANT_DESC
+type LPD3DXCONSTANT_DESC as _D3DXCONSTANT_DESC ptr
 
-extern IID_ID3DXConstantTable alias "IID_ID3DXConstantTable" as GUID
-
-type ID3DXConstantTableVtbl_ as ID3DXConstantTableVtbl
+extern IID_ID3DXConstantTable as const GUID
 
 type ID3DXConstantTable
-	lpVtbl as ID3DXConstantTableVtbl_ ptr
+	lpVtbl as ID3DXConstantTableVtbl ptr
 end type
 
-type ID3DXConstantTableVtbl
-	QueryInterface as function(byval as ID3DXConstantTable ptr, byval as IID ptr, byval as LPVOID ptr) as HRESULT
-	AddRef as function(byval as ID3DXConstantTable ptr) as ULONG
-	Release as function(byval as ID3DXConstantTable ptr) as ULONG
-	GetBufferPointer as function(byval as ID3DXConstantTable ptr) as LPVOID
-	GetBufferSize as function(byval as ID3DXConstantTable ptr) as DWORD
-	GetDesc as function(byval as ID3DXConstantTable ptr, byval as D3DXCONSTANTTABLE_DESC ptr) as HRESULT
-	GetConstantDesc as function(byval as ID3DXConstantTable ptr, byval as D3DXHANDLE, byval as D3DXCONSTANT_DESC ptr, byval as UINT ptr) as HRESULT
-	GetSamplerIndex as function(byval as ID3DXConstantTable ptr, byval as D3DXHANDLE) as UINT
-	GetConstant as function(byval as ID3DXConstantTable ptr, byval as D3DXHANDLE, byval as UINT) as D3DXHANDLE
-	GetConstantByName as function(byval as ID3DXConstantTable ptr, byval as D3DXHANDLE, byval as LPCSTR) as D3DXHANDLE
-	GetConstantElement as function(byval as ID3DXConstantTable ptr, byval as D3DXHANDLE, byval as UINT) as D3DXHANDLE
-	SetDefaults as function(byval as ID3DXConstantTable ptr, byval as LPDIRECT3DDEVICE9) as HRESULT
-	SetValue as function(byval as ID3DXConstantTable ptr, byval as LPDIRECT3DDEVICE9, byval as D3DXHANDLE, byval as LPCVOID, byval as UINT) as HRESULT
-	SetBool as function(byval as ID3DXConstantTable ptr, byval as LPDIRECT3DDEVICE9, byval as D3DXHANDLE, byval as BOOL) as HRESULT
-	SetBoolArray as function(byval as ID3DXConstantTable ptr, byval as LPDIRECT3DDEVICE9, byval as D3DXHANDLE, byval as BOOL ptr, byval as UINT) as HRESULT
-	SetInt as function(byval as ID3DXConstantTable ptr, byval as LPDIRECT3DDEVICE9, byval as D3DXHANDLE, byval as INT_) as HRESULT
-	SetIntArray as function(byval as ID3DXConstantTable ptr, byval as LPDIRECT3DDEVICE9, byval as D3DXHANDLE, byval as INT_ ptr, byval as UINT) as HRESULT
-	SetFloat as function(byval as ID3DXConstantTable ptr, byval as LPDIRECT3DDEVICE9, byval as D3DXHANDLE, byval as FLOAT) as HRESULT
-	SetFloatArray as function(byval as ID3DXConstantTable ptr, byval as LPDIRECT3DDEVICE9, byval as D3DXHANDLE, byval as FLOAT ptr, byval as UINT) as HRESULT
-	SetVector as function(byval as ID3DXConstantTable ptr, byval as LPDIRECT3DDEVICE9, byval as D3DXHANDLE, byval as D3DXVECTOR4 ptr) as HRESULT
-	SetVectorArray as function(byval as ID3DXConstantTable ptr, byval as LPDIRECT3DDEVICE9, byval as D3DXHANDLE, byval as D3DXVECTOR4 ptr, byval as UINT) as HRESULT
-	SetMatrix as function(byval as ID3DXConstantTable ptr, byval as LPDIRECT3DDEVICE9, byval as D3DXHANDLE, byval as D3DXMATRIX ptr) as HRESULT
-	SetMatrixArray as function(byval as ID3DXConstantTable ptr, byval as LPDIRECT3DDEVICE9, byval as D3DXHANDLE, byval as D3DXMATRIX ptr, byval as UINT) as HRESULT
-	SetMatrixPointerArray as function(byval as ID3DXConstantTable ptr, byval as LPDIRECT3DDEVICE9, byval as D3DXHANDLE, byval as D3DXMATRIX ptr ptr, byval as UINT) as HRESULT
-	SetMatrixTranspose as function(byval as ID3DXConstantTable ptr, byval as LPDIRECT3DDEVICE9, byval as D3DXHANDLE, byval as D3DXMATRIX ptr) as HRESULT
-	SetMatrixTransposeArray as function(byval as ID3DXConstantTable ptr, byval as LPDIRECT3DDEVICE9, byval as D3DXHANDLE, byval as D3DXMATRIX ptr, byval as UINT) as HRESULT
-	SetMatrixTransposePointerArray as function(byval as ID3DXConstantTable ptr, byval as LPDIRECT3DDEVICE9, byval as D3DXHANDLE, byval as D3DXMATRIX ptr ptr, byval as UINT) as HRESULT
+type ID3DXConstantTableVtbl_
+	QueryInterface as function(byval This as ID3DXConstantTable ptr, byval iid as const IID const ptr, byval out_ as any ptr ptr) as HRESULT
+	AddRef as function(byval This as ID3DXConstantTable ptr) as ULONG
+	Release as function(byval This as ID3DXConstantTable ptr) as ULONG
+	GetBufferPointer as function(byval This as ID3DXConstantTable ptr) as any ptr
+	GetBufferSize as function(byval This as ID3DXConstantTable ptr) as DWORD
+	GetDesc as function(byval This as ID3DXConstantTable ptr, byval pDesc as D3DXCONSTANTTABLE_DESC ptr) as HRESULT
+	GetConstantDesc as function(byval This as ID3DXConstantTable ptr, byval hConstant as D3DXHANDLE, byval pConstantDesc as D3DXCONSTANT_DESC ptr, byval pCount as UINT ptr) as HRESULT
+	GetSamplerIndex as function(byval This as ID3DXConstantTable ptr, byval hConstant as D3DXHANDLE) as UINT
+	GetConstant as function(byval This as ID3DXConstantTable ptr, byval hConstant as D3DXHANDLE, byval Index as UINT) as D3DXHANDLE
+	GetConstantByName as function(byval This as ID3DXConstantTable ptr, byval constant as D3DXHANDLE, byval name_ as const zstring ptr) as D3DXHANDLE
+	GetConstantElement as function(byval This as ID3DXConstantTable ptr, byval hConstant as D3DXHANDLE, byval Index as UINT) as D3DXHANDLE
+	SetDefaults as function(byval This as ID3DXConstantTable ptr, byval device as IDirect3DDevice9 ptr) as HRESULT
+	SetValue as function(byval This as ID3DXConstantTable ptr, byval device as IDirect3DDevice9 ptr, byval constant as D3DXHANDLE, byval data_ as const any ptr, byval data_size as UINT) as HRESULT
+	SetBool as function(byval This as ID3DXConstantTable ptr, byval device as IDirect3DDevice9 ptr, byval constant as D3DXHANDLE, byval value as WINBOOL) as HRESULT
+	SetBoolArray as function(byval This as ID3DXConstantTable ptr, byval device as IDirect3DDevice9 ptr, byval constant as D3DXHANDLE, byval values as const WINBOOL ptr, byval value_count as UINT) as HRESULT
+	SetInt as function(byval This as ID3DXConstantTable ptr, byval device as IDirect3DDevice9 ptr, byval constant as D3DXHANDLE, byval value as INT_) as HRESULT
+	SetIntArray as function(byval This as ID3DXConstantTable ptr, byval device as IDirect3DDevice9 ptr, byval constant as D3DXHANDLE, byval values as const INT_ ptr, byval value_count as UINT) as HRESULT
+	SetFloat as function(byval This as ID3DXConstantTable ptr, byval device as IDirect3DDevice9 ptr, byval constant as D3DXHANDLE, byval value as single) as HRESULT
+	SetFloatArray as function(byval This as ID3DXConstantTable ptr, byval device as IDirect3DDevice9 ptr, byval constant as D3DXHANDLE, byval values as const single ptr, byval value_count as UINT) as HRESULT
+	SetVector as function(byval This as ID3DXConstantTable ptr, byval device as IDirect3DDevice9 ptr, byval constant as D3DXHANDLE, byval value as const D3DXVECTOR4 ptr) as HRESULT
+	SetVectorArray as function(byval This as ID3DXConstantTable ptr, byval device as IDirect3DDevice9 ptr, byval constant as D3DXHANDLE, byval values as const D3DXVECTOR4 ptr, byval value_count as UINT) as HRESULT
+	SetMatrix as function(byval This as ID3DXConstantTable ptr, byval device as IDirect3DDevice9 ptr, byval constant as D3DXHANDLE, byval value as const D3DXMATRIX ptr) as HRESULT
+	SetMatrixArray as function(byval This as ID3DXConstantTable ptr, byval device as IDirect3DDevice9 ptr, byval constant as D3DXHANDLE, byval values as const D3DXMATRIX ptr, byval value_count as UINT) as HRESULT
+	SetMatrixPointerArray as function(byval This as ID3DXConstantTable ptr, byval device as IDirect3DDevice9 ptr, byval constant as D3DXHANDLE, byval values as const D3DXMATRIX ptr ptr, byval value_count as UINT) as HRESULT
+	SetMatrixTranspose as function(byval This as ID3DXConstantTable ptr, byval device as IDirect3DDevice9 ptr, byval constant as D3DXHANDLE, byval value as const D3DXMATRIX ptr) as HRESULT
+	SetMatrixTransposeArray as function(byval This as ID3DXConstantTable ptr, byval device as IDirect3DDevice9 ptr, byval constant as D3DXHANDLE, byval values as const D3DXMATRIX ptr, byval value_count as UINT) as HRESULT
+	SetMatrixTransposePointerArray as function(byval This as ID3DXConstantTable ptr, byval device as IDirect3DDevice9 ptr, byval constant as D3DXHANDLE, byval values as const D3DXMATRIX ptr ptr, byval value_count as UINT) as HRESULT
 end type
 
-type LPD3DXTEXTURESHADER as ID3DXTextureShader ptr
+#define ID3DXConstantTable_QueryInterface(p, a, b) (p)->lpVtbl->QueryInterface(p, a, b)
+#define ID3DXConstantTable_AddRef(p) (p)->lpVtbl->AddRef(p)
+#define ID3DXConstantTable_Release(p) (p)->lpVtbl->Release(p)
+#define ID3DXConstantTable_GetBufferPointer(p) (p)->lpVtbl->GetBufferPointer(p)
+#define ID3DXConstantTable_GetBufferSize(p) (p)->lpVtbl->GetBufferSize(p)
+#define ID3DXConstantTable_GetDesc(p, a) (p)->lpVtbl->GetDesc(p, a)
+#define ID3DXConstantTable_GetConstantDesc(p, a, b, c) (p)->lpVtbl->GetConstantDesc(p, a, b, c)
+#define ID3DXConstantTable_GetSamplerIndex(p, a) (p)->lpVtbl->GetSamplerIndex(p, a)
+#define ID3DXConstantTable_GetConstant(p, a, b) (p)->lpVtbl->GetConstant(p, a, b)
+#define ID3DXConstantTable_GetConstantByName(p, a, b) (p)->lpVtbl->GetConstantByName(p, a, b)
+#define ID3DXConstantTable_GetConstantElement(p, a, b) (p)->lpVtbl->GetConstantElement(p, a, b)
+#define ID3DXConstantTable_SetDefaults(p, a) (p)->lpVtbl->SetDefaults(p, a)
+#define ID3DXConstantTable_SetValue(p, a, b, c, d) (p)->lpVtbl->SetValue(p, a, b, c, d)
+#define ID3DXConstantTable_SetBool(p, a, b, c) (p)->lpVtbl->SetBool(p, a, b, c)
+#define ID3DXConstantTable_SetBoolArray(p, a, b, c, d) (p)->lpVtbl->SetBoolArray(p, a, b, c, d)
+#define ID3DXConstantTable_SetInt(p, a, b, c) (p)->lpVtbl->SetInt(p, a, b, c)
+#define ID3DXConstantTable_SetIntArray(p, a, b, c, d) (p)->lpVtbl->SetIntArray(p, a, b, c, d)
+#define ID3DXConstantTable_SetFloat(p, a, b, c) (p)->lpVtbl->SetFloat(p, a, b, c)
+#define ID3DXConstantTable_SetFloatArray(p, a, b, c, d) (p)->lpVtbl->SetFloatArray(p, a, b, c, d)
+#define ID3DXConstantTable_SetVector(p, a, b, c) (p)->lpVtbl->SetVector(p, a, b, c)
+#define ID3DXConstantTable_SetVectorArray(p, a, b, c, d) (p)->lpVtbl->SetVectorArray(p, a, b, c, d)
+#define ID3DXConstantTable_SetMatrix(p, a, b, c) (p)->lpVtbl->SetMatrix(p, a, b, c)
+#define ID3DXConstantTable_SetMatrixArray(p, a, b, c, d) (p)->lpVtbl->SetMatrixArray(p, a, b, c, d)
+#define ID3DXConstantTable_SetMatrixPointerArray(p, a, b, c, d) (p)->lpVtbl->SetMatrixPointerArray(p, a, b, c, d)
+#define ID3DXConstantTable_SetMatrixTranspose(p, a, b, c) (p)->lpVtbl->SetMatrixTranspose(p, a, b, c)
+#define ID3DXConstantTable_SetMatrixTransposeArray(p, a, b, c, d) (p)->lpVtbl->SetMatrixTransposeArray(p, a, b, c, d)
+#define ID3DXConstantTable_SetMatrixTransposePointerArray(p, a, b, c, d) (p)->lpVtbl->SetMatrixTransposePointerArray(p, a, b, c, d)
 
-extern IID_ID3DXTextureShader alias "IID_ID3DXTextureShader" as GUID
+type LPD3DXCONSTANTTABLE as ID3DXConstantTable ptr
 
-type ID3DXTextureShaderVtbl_ as ID3DXTextureShaderVtbl
-
-type ID3DXTextureShader
-	lpVtbl as ID3DXTextureShaderVtbl_ ptr
+type _D3DXMACRO
+	Name as const zstring ptr
+	Definition as const zstring ptr
 end type
 
-type ID3DXTextureShaderVtbl
-	QueryInterface as function(byval as ID3DXTextureShader ptr, byval as IID ptr, byval as LPVOID ptr) as HRESULT
-	AddRef as function(byval as ID3DXTextureShader ptr) as ULONG
-	Release as function(byval as ID3DXTextureShader ptr) as ULONG
-	GetFunction as function(byval as ID3DXTextureShader ptr, byval as LPD3DXBUFFER ptr) as HRESULT
-	GetConstantBuffer as function(byval as ID3DXTextureShader ptr, byval as LPD3DXBUFFER ptr) as HRESULT
-	GetDesc as function(byval as ID3DXTextureShader ptr, byval as D3DXCONSTANTTABLE_DESC ptr) as HRESULT
-	GetConstantDesc as function(byval as ID3DXTextureShader ptr, byval as D3DXHANDLE, byval as D3DXCONSTANT_DESC ptr, byval as UINT ptr) as HRESULT
-	GetConstant as function(byval as ID3DXTextureShader ptr, byval as D3DXHANDLE, byval as UINT) as D3DXHANDLE
-	GetConstantByName as function(byval as ID3DXTextureShader ptr, byval as D3DXHANDLE, byval as LPCSTR) as D3DXHANDLE
-	GetConstantElement as function(byval as ID3DXTextureShader ptr, byval as D3DXHANDLE, byval as UINT) as D3DXHANDLE
-	SetDefaults as function(byval as ID3DXTextureShader ptr) as HRESULT
-	SetValue as function(byval as ID3DXTextureShader ptr, byval as D3DXHANDLE, byval as LPCVOID, byval as UINT) as HRESULT
-	SetBool as function(byval as ID3DXTextureShader ptr, byval as D3DXHANDLE, byval as BOOL) as HRESULT
-	SetBoolArray as function(byval as ID3DXTextureShader ptr, byval as D3DXHANDLE, byval as BOOL ptr, byval as UINT) as HRESULT
-	SetInt as function(byval as ID3DXTextureShader ptr, byval as D3DXHANDLE, byval as INT_) as HRESULT
-	SetIntArray as function(byval as ID3DXTextureShader ptr, byval as D3DXHANDLE, byval as INT_ ptr, byval as UINT) as HRESULT
-	SetFloat as function(byval as ID3DXTextureShader ptr, byval as D3DXHANDLE, byval as FLOAT) as HRESULT
-	SetFloatArray as function(byval as ID3DXTextureShader ptr, byval as D3DXHANDLE, byval as FLOAT ptr, byval as UINT) as HRESULT
-	SetVector as function(byval as ID3DXTextureShader ptr, byval as D3DXHANDLE, byval as D3DXVECTOR4 ptr) as HRESULT
-	SetVectorArray as function(byval as ID3DXTextureShader ptr, byval as D3DXHANDLE, byval as D3DXVECTOR4 ptr, byval as UINT) as HRESULT
-	SetMatrix as function(byval as ID3DXTextureShader ptr, byval as D3DXHANDLE, byval as D3DXMATRIX ptr) as HRESULT
-	SetMatrixArray as function(byval as ID3DXTextureShader ptr, byval as D3DXHANDLE, byval as D3DXMATRIX ptr, byval as UINT) as HRESULT
-	SetMatrixPointerArray as function(byval as ID3DXTextureShader ptr, byval as D3DXHANDLE, byval as D3DXMATRIX ptr ptr, byval as UINT) as HRESULT
-	SetMatrixTranspose as function(byval as ID3DXTextureShader ptr, byval as D3DXHANDLE, byval as D3DXMATRIX ptr) as HRESULT
-	SetMatrixTransposeArray as function(byval as ID3DXTextureShader ptr, byval as D3DXHANDLE, byval as D3DXMATRIX ptr, byval as UINT) as HRESULT
-	SetMatrixTransposePointerArray as function(byval as ID3DXTextureShader ptr, byval as D3DXHANDLE, byval as D3DXMATRIX ptr ptr, byval as UINT) as HRESULT
+type D3DXMACRO as _D3DXMACRO
+type LPD3DXMACRO as _D3DXMACRO ptr
+
+type _D3DXSEMANTIC
+	Usage as UINT
+	UsageIndex as UINT
 end type
 
-type LPD3DXFRAGMENTLINKER as ID3DXFragmentLinker ptr
+type D3DXSEMANTIC as _D3DXSEMANTIC
+type LPD3DXSEMANTIC as _D3DXSEMANTIC ptr
 
-extern IID_ID3DXFragmentLinker alias "IID_ID3DXFragmentLinker" as GUID
-
-type ID3DXFragmentLinkerVtbl_ as ID3DXFragmentLinkerVtbl
-
-type ID3DXFragmentLinker
-	lpVtbl as ID3DXFragmentLinkerVtbl_ ptr
-end type
-
-type ID3DXFragmentLinkerVtbl
-	QueryInterface as function(byval as ID3DXFragmentLinker ptr, byval as IID ptr, byval as LPVOID ptr) as HRESULT
-	AddRef as function(byval as ID3DXFragmentLinker ptr) as ULONG
-	Release as function(byval as ID3DXFragmentLinker ptr) as ULONG
-	GetDevice as function(byval as ID3DXFragmentLinker ptr, byval as LPDIRECT3DDEVICE9 ptr) as HRESULT
-	GetNumberOfFragments as function(byval as ID3DXFragmentLinker ptr) as UINT
-	GetFragmentHandleByIndex as function(byval as ID3DXFragmentLinker ptr, byval as UINT) as D3DXHANDLE
-	GetFragmentHandleByName as function(byval as ID3DXFragmentLinker ptr, byval as LPCSTR) as D3DXHANDLE
-	GetFragmentDesc as function(byval as ID3DXFragmentLinker ptr, byval as D3DXHANDLE, byval as LPD3DXFRAGMENT_DESC) as HRESULT
-	AddFragments as function(byval as ID3DXFragmentLinker ptr, byval as DWORD ptr) as HRESULT
-	GetAllFragments as function(byval as ID3DXFragmentLinker ptr, byval as LPD3DXBUFFER ptr) as HRESULT
-	GetFragment as function(byval as ID3DXFragmentLinker ptr, byval as D3DXHANDLE, byval as LPD3DXBUFFER ptr) as HRESULT
-	LinkShader as function(byval as ID3DXFragmentLinker ptr, byval as LPCSTR, byval as DWORD, byval as D3DXHANDLE ptr, byval as UINT, byval as LPD3DXBUFFER ptr, byval as LPD3DXBUFFER ptr) as HRESULT
-	LinkVertexShader as function(byval as ID3DXFragmentLinker ptr, byval as LPCSTR, byval as DWORD, byval as D3DXHANDLE ptr, byval as UINT, byval as LPDIRECT3DVERTEXSHADER9 ptr, byval as LPD3DXBUFFER ptr) as HRESULT
-	LinkPixelShader as function(byval as ID3DXFragmentLinker ptr, byval as LPCSTR, byval as DWORD, byval as D3DXHANDLE ptr, byval as UINT, byval as LPDIRECT3DPIXELSHADER9 ptr, byval as LPD3DXBUFFER ptr) as HRESULT
-	ClearCache as function(byval as ID3DXFragmentLinker ptr) as HRESULT
-end type
-
-enum D3DXINCLUDE_TYPE
+type _D3DXINCLUDE_TYPE as long
+enum
 	D3DXINC_LOCAL
 	D3DXINC_SYSTEM
 	D3DXINC_FORCE_DWORD = &h7fffffff
 end enum
 
-type LPD3DXINCLUDE_TYPE as D3DXINCLUDE_TYPE
-type LPD3DXINCLUDE as ID3DXInclude ptr
-
-type ID3DXIncludeVtbl_ as ID3DXIncludeVtbl
+type D3DXINCLUDE_TYPE as _D3DXINCLUDE_TYPE
+type LPD3DXINCLUDE_TYPE as _D3DXINCLUDE_TYPE ptr
 
 type ID3DXInclude
-	lpVtbl as ID3DXIncludeVtbl_ ptr
+	lpVtbl as ID3DXIncludeVtbl ptr
 end type
 
-type ID3DXIncludeVtbl
-	Open as function(byval as ID3DXInclude ptr, byval as D3DXINCLUDE_TYPE, byval as LPCSTR, byval as LPCVOID, byval as LPCVOID ptr, byval as UINT ptr) as HRESULT
-	Close as function(byval as ID3DXInclude ptr, byval as LPCVOID) as HRESULT
+type ID3DXIncludeVtbl_
+	Open as function(byval This as ID3DXInclude ptr, byval include_type as D3DXINCLUDE_TYPE, byval filename as const zstring ptr, byval parent_data as const any ptr, byval data_ as const any ptr ptr, byval bytes as UINT ptr) as HRESULT
+	Close as function(byval This as ID3DXInclude ptr, byval data_ as const any ptr) as HRESULT
 end type
 
-declare function D3DXAssembleShader alias "D3DXAssembleShader" (byval pSrcData as LPCSTR, byval SrcDataLen as UINT, byval pDefines as D3DXMACRO ptr, byval pInclude as LPD3DXINCLUDE, byval Flags as DWORD, byval ppShader as LPD3DXBUFFER ptr, byval ppErrorMsgs as LPD3DXBUFFER ptr) as HRESULT
-declare function D3DXCompileShader alias "D3DXCompileShader" (byval pSrcData as LPCSTR, byval SrcDataLen as UINT, byval pDefines as D3DXMACRO ptr, byval pInclude as LPD3DXINCLUDE, byval pFunctionName as LPCSTR, byval pProfile as LPCSTR, byval Flags as DWORD, byval ppShader as LPD3DXBUFFER ptr, byval ppErrorMsgs as LPD3DXBUFFER ptr, byval ppConstantTable as LPD3DXCONSTANTTABLE ptr) as HRESULT
-declare function D3DXDisassembleShader alias "D3DXDisassembleShader" (byval pShader as DWORD ptr, byval EnableColorCode as BOOL, byval pComments as LPCSTR, byval ppDisassembly as LPD3DXBUFFER ptr) as HRESULT
-declare function D3DXGetPixelShaderProfile alias "D3DXGetPixelShaderProfile" (byval pDevice as LPDIRECT3DDEVICE9) as LPCSTR
-declare function D3DXGetVertexShaderProfile alias "D3DXGetVertexShaderProfile" (byval pDevice as LPDIRECT3DDEVICE9) as LPCSTR
-declare function D3DXFindShaderComment alias "D3DXFindShaderComment" (byval pFunction as DWORD ptr, byval FourCC as DWORD, byval ppData as LPCVOID ptr, byval pSizeInBytes as UINT ptr) as HRESULT
-declare function D3DXGetShaderSize alias "D3DXGetShaderSize" (byval pFunction as DWORD ptr) as UINT
-declare function D3DXGetShaderVersion alias "D3DXGetShaderVersion" (byval pFunction as DWORD ptr) as DWORD
-declare function D3DXGetShaderInputSemantics alias "D3DXGetShaderInputSemantics" (byval pFunction as DWORD ptr, byval pSemantics as D3DXSEMANTIC ptr, byval pCount as UINT ptr) as HRESULT
-declare function D3DXGetShaderOutputSemantics alias "D3DXGetShaderOutputSemantics" (byval pFunction as DWORD ptr, byval pSemantics as D3DXSEMANTIC ptr, byval pCount as UINT ptr) as HRESULT
-declare function D3DXGetShaderSamplers alias "D3DXGetShaderSamplers" (byval pFunction as DWORD ptr, byval pSamplers as LPCSTR ptr, byval pCount as UINT ptr) as HRESULT
-declare function D3DXGetShaderConstantTable alias "D3DXGetShaderConstantTable" (byval pFunction as DWORD ptr, byval ppConstantTable as LPD3DXCONSTANTTABLE ptr) as HRESULT
-declare function D3DXCreateTextureShader alias "D3DXCreateTextureShader" (byval pFunction as DWORD ptr, byval ppTextureShader as LPD3DXTEXTURESHADER ptr) as HRESULT
-declare function D3DXGatherFragments alias "D3DXGatherFragments" (byval pSrcData as LPCSTR, byval SrcDataLen as UINT, byval pDefines as D3DXMACRO ptr, byval pInclude as LPD3DXINCLUDE, byval Flags as DWORD, byval ppShader as LPD3DXBUFFER ptr, byval ppErrorMsgs as LPD3DXBUFFER ptr) as HRESULT
-declare function D3DXCreateFragmentLinker alias "D3DXCreateFragmentLinker" (byval pDevice as LPDIRECT3DDEVICE9, byval ShaderCacheSize as UINT, byval ppFragmentLinker as LPD3DXFRAGMENTLINKER ptr) as HRESULT
+#define ID3DXInclude_Open(p, a, b, c, d, e) (p)->lpVtbl->Open(p, a, b, c, d, e)
+#define ID3DXInclude_Close(p, a) (p)->lpVtbl->Close(p, a)
+
+type LPD3DXINCLUDE as ID3DXInclude ptr
+
+declare function D3DXGetPixelShaderProfile(byval device as IDirect3DDevice9 ptr) as const zstring ptr
+declare function D3DXGetShaderSize(byval byte_code as const DWORD ptr) as UINT
+declare function D3DXGetShaderVersion(byval byte_code as const DWORD ptr) as DWORD
+declare function D3DXGetVertexShaderProfile(byval device as IDirect3DDevice9 ptr) as const zstring ptr
+declare function D3DXFindShaderComment(byval byte_code as const DWORD ptr, byval fourcc as DWORD, byval data_ as const any ptr ptr, byval size as UINT ptr) as HRESULT
+declare function D3DXGetShaderSamplers(byval byte_code as const DWORD ptr, byval samplers as const zstring ptr ptr, byval count as UINT ptr) as HRESULT
+declare function D3DXAssembleShaderFromFileA(byval filename as const zstring ptr, byval defines as const D3DXMACRO ptr, byval include_ as ID3DXInclude ptr, byval flags as DWORD, byval shader as ID3DXBuffer ptr ptr, byval error_messages as ID3DXBuffer ptr ptr) as HRESULT
+declare function D3DXAssembleShaderFromFileW(byval filename as const wstring ptr, byval defines as const D3DXMACRO ptr, byval include_ as ID3DXInclude ptr, byval flags as DWORD, byval shader as ID3DXBuffer ptr ptr, byval error_messages as ID3DXBuffer ptr ptr) as HRESULT
 
 #ifdef UNICODE
-declare function D3DXAssembleShaderFromFile alias "D3DXAssembleShaderFromFileW" (byval pSrcFile as LPCWSTR, byval pDefines as D3DXMACRO ptr, byval pInclude as LPD3DXINCLUDE, byval Flags as DWORD, byval ppShader as LPD3DXBUFFER ptr, byval ppErrorMsgs as LPD3DXBUFFER ptr) as HRESULT
-declare function D3DXAssembleShaderFromResource alias "D3DXAssembleShaderFromResourceW" (byval hSrcModule as HMODULE, byval pSrcResource as LPCWSTR, byval pDefines as D3DXMACRO ptr, byval pInclude as LPD3DXINCLUDE, byval Flags as DWORD, byval ppShader as LPD3DXBUFFER ptr, byval ppErrorMsgs as LPD3DXBUFFER ptr) as HRESULT
-declare function D3DXCompileShaderFromFile alias "D3DXCompileShaderFromFileW" (byval pSrcFile as LPCWSTR, byval pDefines as D3DXMACRO ptr, byval pInclude as LPD3DXINCLUDE, byval pFunctionName as LPCSTR, byval pProfile as LPCSTR, byval Flags as DWORD, byval ppShader as LPD3DXBUFFER ptr, byval ppErrorMsgs as LPD3DXBUFFER ptr, byval ppConstantTable as LPD3DXCONSTANTTABLE ptr) as HRESULT
-declare function D3DXCompileShaderFromResource alias "D3DXCompileShaderFromResourceW" (byval hSrcModule as HMODULE, byval pSrcResource as LPCWSTR, byval pDefines as D3DXMACRO ptr, byval pInclude as LPD3DXINCLUDE, byval pFunctionName as LPCSTR, byval pProfile as LPCSTR, byval Flags as DWORD, byval ppShader as LPD3DXBUFFER ptr, byval ppErrorMsgs as LPD3DXBUFFER ptr, byval ppConstantTable as LPD3DXCONSTANTTABLE ptr) as HRESULT
-declare function D3DXGatherFragmentsFromFile alias "D3DXGatherFragmentsFromFileW" (byval pSrcFile as LPCWSTR, byval pDefines as D3DXMACRO ptr, byval pInclude as LPD3DXINCLUDE, byval Flags as DWORD, byval ppShader as LPD3DXBUFFER ptr, byval ppErrorMsgs as LPD3DXBUFFER ptr) as HRESULT
-declare function D3DXGatherFragmentsFromResource alias "D3DXGatherFragmentsFromResourceW" (byval hSrcModule as HMODULE, byval pSrcResource as LPCWSTR, byval pDefines as D3DXMACRO ptr, byval pInclude as LPD3DXINCLUDE, byval Flags as DWORD, byval ppShader as LPD3DXBUFFER ptr, byval ppErrorMsgs as LPD3DXBUFFER ptr) as HRESULT
+	#define D3DXAssembleShaderFromFile D3DXAssembleShaderFromFileW
 #else
-declare function D3DXAssembleShaderFromFile alias "D3DXAssembleShaderFromFileA" (byval pSrcFile as LPCSTR, byval pDefines as D3DXMACRO ptr, byval pInclude as LPD3DXINCLUDE, byval Flags as DWORD, byval ppShader as LPD3DXBUFFER ptr, byval ppErrorMsgs as LPD3DXBUFFER ptr) as HRESULT
-declare function D3DXAssembleShaderFromResource alias "D3DXAssembleShaderFromResourceA" (byval hSrcModule as HMODULE, byval pSrcResource as LPCSTR, byval pDefines as D3DXMACRO ptr, byval pInclude as LPD3DXINCLUDE, byval Flags as DWORD, byval ppShader as LPD3DXBUFFER ptr, byval ppErrorMsgs as LPD3DXBUFFER ptr) as HRESULT
-declare function D3DXCompileShaderFromFile alias "D3DXCompileShaderFromFileA" (byval pSrcFile as LPCSTR, byval pDefines as D3DXMACRO ptr, byval pInclude as LPD3DXINCLUDE, byval pFunctionName as LPCSTR, byval pProfile as LPCSTR, byval Flags as DWORD, byval ppShader as LPD3DXBUFFER ptr, byval ppErrorMsgs as LPD3DXBUFFER ptr, byval ppConstantTable as LPD3DXCONSTANTTABLE ptr) as HRESULT
-declare function D3DXCompileShaderFromResource alias "D3DXCompileShaderFromResourceA" (byval hSrcModule as HMODULE, byval pSrcResource as LPCSTR, byval pDefines as D3DXMACRO ptr, byval pInclude as LPD3DXINCLUDE, byval pFunctionName as LPCSTR, byval pProfile as LPCSTR, byval Flags as DWORD, byval ppShader as LPD3DXBUFFER ptr, byval ppErrorMsgs as LPD3DXBUFFER ptr, byval ppConstantTable as LPD3DXCONSTANTTABLE ptr) as HRESULT
-declare function D3DXGatherFragmentsFromFile alias "D3DXGatherFragmentsFromFileA" (byval pSrcFile as LPCSTR, byval pDefines as D3DXMACRO ptr, byval pInclude as LPD3DXINCLUDE, byval Flags as DWORD, byval ppShader as LPD3DXBUFFER ptr, byval ppErrorMsgs as LPD3DXBUFFER ptr) as HRESULT
-declare function D3DXGatherFragmentsFromResource alias "D3DXGatherFragmentsFromResourceA" (byval hSrcModule as HMODULE, byval pSrcResource as LPCSTR, byval pDefines as D3DXMACRO ptr, byval pInclude as LPD3DXINCLUDE, byval Flags as DWORD, byval ppShader as LPD3DXBUFFER ptr, byval ppErrorMsgs as LPD3DXBUFFER ptr) as HRESULT
+	#define D3DXAssembleShaderFromFile D3DXAssembleShaderFromFileA
 #endif
 
-type D3DXSHADER_CONSTANTTABLE
+declare function D3DXAssembleShaderFromResourceA(byval module as HMODULE, byval resource as const zstring ptr, byval defines as const D3DXMACRO ptr, byval include_ as ID3DXInclude ptr, byval flags as DWORD, byval shader as ID3DXBuffer ptr ptr, byval error_messages as ID3DXBuffer ptr ptr) as HRESULT
+declare function D3DXAssembleShaderFromResourceW(byval module as HMODULE, byval resource as const wstring ptr, byval defines as const D3DXMACRO ptr, byval include_ as ID3DXInclude ptr, byval flags as DWORD, byval shader as ID3DXBuffer ptr ptr, byval error_messages as ID3DXBuffer ptr ptr) as HRESULT
+
+#ifdef UNICODE
+	#define D3DXAssembleShaderFromResource D3DXAssembleShaderFromResourceW
+#else
+	#define D3DXAssembleShaderFromResource D3DXAssembleShaderFromResourceA
+#endif
+
+declare function D3DXAssembleShader(byval data_ as const zstring ptr, byval data_len as UINT, byval defines as const D3DXMACRO ptr, byval include_ as ID3DXInclude ptr, byval flags as DWORD, byval shader as ID3DXBuffer ptr ptr, byval error_messages as ID3DXBuffer ptr ptr) as HRESULT
+declare function D3DXCompileShader(byval src_data as const zstring ptr, byval data_len as UINT, byval defines as const D3DXMACRO ptr, byval include_ as ID3DXInclude ptr, byval function_name as const zstring ptr, byval profile as const zstring ptr, byval flags as DWORD, byval shader as ID3DXBuffer ptr ptr, byval error_messages as ID3DXBuffer ptr ptr, byval constant_table as ID3DXConstantTable ptr ptr) as HRESULT
+declare function D3DXCompileShaderFromFileA(byval filename as const zstring ptr, byval defines as const D3DXMACRO ptr, byval include_ as ID3DXInclude ptr, byval entrypoint as const zstring ptr, byval profile as const zstring ptr, byval flags as DWORD, byval shader as ID3DXBuffer ptr ptr, byval error_messages as ID3DXBuffer ptr ptr, byval constant_table as ID3DXConstantTable ptr ptr) as HRESULT
+declare function D3DXCompileShaderFromFileW(byval filename as const wstring ptr, byval defines as const D3DXMACRO ptr, byval include_ as ID3DXInclude ptr, byval entrypoint as const zstring ptr, byval profile as const zstring ptr, byval flags as DWORD, byval shader as ID3DXBuffer ptr ptr, byval error_messages as ID3DXBuffer ptr ptr, byval constant_table as ID3DXConstantTable ptr ptr) as HRESULT
+
+#ifdef UNICODE
+	#define D3DXCompileShaderFromFile D3DXCompileShaderFromFileW
+#else
+	#define D3DXCompileShaderFromFile D3DXCompileShaderFromFileA
+#endif
+
+declare function D3DXCompileShaderFromResourceA(byval module as HMODULE, byval resource as const zstring ptr, byval defines as const D3DXMACRO ptr, byval include_ as ID3DXInclude ptr, byval entrypoint as const zstring ptr, byval profile as const zstring ptr, byval flags as DWORD, byval shader as ID3DXBuffer ptr ptr, byval error_messages as ID3DXBuffer ptr ptr, byval constant_table as ID3DXConstantTable ptr ptr) as HRESULT
+declare function D3DXCompileShaderFromResourceW(byval module as HMODULE, byval resource as const wstring ptr, byval defines as const D3DXMACRO ptr, byval include_ as ID3DXInclude ptr, byval entrypoint as const zstring ptr, byval profile as const zstring ptr, byval flags as DWORD, byval shader as ID3DXBuffer ptr ptr, byval error_messages as ID3DXBuffer ptr ptr, byval constant_table as ID3DXConstantTable ptr ptr) as HRESULT
+
+#ifdef UNICODE
+	#define D3DXCompileShaderFromResource D3DXCompileShaderFromResourceW
+#else
+	#define D3DXCompileShaderFromResource D3DXCompileShaderFromResourceA
+#endif
+
+declare function D3DXPreprocessShader(byval data_ as const zstring ptr, byval data_len as UINT, byval defines as const D3DXMACRO ptr, byval include_ as ID3DXInclude ptr, byval shader as ID3DXBuffer ptr ptr, byval error_messages as ID3DXBuffer ptr ptr) as HRESULT
+declare function D3DXPreprocessShaderFromFileA(byval filename as const zstring ptr, byval defines as const D3DXMACRO ptr, byval include_ as ID3DXInclude ptr, byval shader as ID3DXBuffer ptr ptr, byval error_messages as ID3DXBuffer ptr ptr) as HRESULT
+declare function D3DXPreprocessShaderFromFileW(byval filename as const wstring ptr, byval defines as const D3DXMACRO ptr, byval include_ as ID3DXInclude ptr, byval shader as ID3DXBuffer ptr ptr, byval error_messages as ID3DXBuffer ptr ptr) as HRESULT
+
+#ifdef UNICODE
+	#define D3DXPreprocessShaderFromFile D3DXPreprocessShaderFromFileW
+#else
+	#define D3DXPreprocessShaderFromFile D3DXPreprocessShaderFromFileA
+#endif
+
+declare function D3DXPreprocessShaderFromResourceA(byval module as HMODULE, byval resource as const zstring ptr, byval defines as const D3DXMACRO ptr, byval include_ as ID3DXInclude ptr, byval shader as ID3DXBuffer ptr ptr, byval error_messages as ID3DXBuffer ptr ptr) as HRESULT
+declare function D3DXPreprocessShaderFromResourceW(byval module as HMODULE, byval resource as const wstring ptr, byval defines as const D3DXMACRO ptr, byval include_ as ID3DXInclude ptr, byval shader as ID3DXBuffer ptr ptr, byval error_messages as ID3DXBuffer ptr ptr) as HRESULT
+
+#ifdef UNICODE
+	#define D3DXPreprocessShaderFromResource D3DXPreprocessShaderFromResourceW
+#else
+	#define D3DXPreprocessShaderFromResource D3DXPreprocessShaderFromResourceA
+#endif
+
+declare function D3DXGetShaderConstantTableEx(byval byte_code as const DWORD ptr, byval flags as DWORD, byval constant_table as ID3DXConstantTable ptr ptr) as HRESULT
+declare function D3DXGetShaderConstantTable(byval byte_code as const DWORD ptr, byval constant_table as ID3DXConstantTable ptr ptr) as HRESULT
+
+type _D3DXSHADER_CONSTANTTABLE
 	Size as DWORD
 	Creator as DWORD
 	Version as DWORD
@@ -289,9 +291,10 @@ type D3DXSHADER_CONSTANTTABLE
 	Target as DWORD
 end type
 
-type LPD3DXSHADER_CONSTANTTABLE as D3DXSHADER_CONSTANTTABLE ptr
+type D3DXSHADER_CONSTANTTABLE as _D3DXSHADER_CONSTANTTABLE
+type LPD3DXSHADER_CONSTANTTABLE as _D3DXSHADER_CONSTANTTABLE ptr
 
-type D3DXSHADER_CONSTANTINFO
+type _D3DXSHADER_CONSTANTINFO
 	Name as DWORD
 	RegisterSet as WORD
 	RegisterIndex as WORD
@@ -301,11 +304,12 @@ type D3DXSHADER_CONSTANTINFO
 	DefaultValue as DWORD
 end type
 
-type LPD3DXSHADER_CONSTANTINFO as D3DXSHADER_CONSTANTINFO ptr
+type D3DXSHADER_CONSTANTINFO as _D3DXSHADER_CONSTANTINFO
+type LPD3DXSHADER_CONSTANTINFO as _D3DXSHADER_CONSTANTINFO ptr
 
-type D3DXSHADER_TYPEINFO
+type _D3DXSHADER_TYPEINFO
 	Class as WORD
-	Type as WORD
+	as WORD Type
 	Rows as WORD
 	Columns as WORD
 	Elements as WORD
@@ -313,13 +317,15 @@ type D3DXSHADER_TYPEINFO
 	StructMemberInfo as DWORD
 end type
 
-type LPD3DXSHADER_TYPEINFO as D3DXSHADER_TYPEINFO ptr
+type D3DXSHADER_TYPEINFO as _D3DXSHADER_TYPEINFO
+type LPD3DXSHADER_TYPEINFO as _D3DXSHADER_TYPEINFO ptr
 
-type D3DXSHADER_STRUCTMEMBERINFO
+type _D3DXSHADER_STRUCTMEMBERINFO
 	Name as DWORD
 	TypeInfo as DWORD
 end type
 
-type LPD3DXSHADER_STRUCTMEMBERINFO as D3DXSHADER_STRUCTMEMBERINFO ptr
+type D3DXSHADER_STRUCTMEMBERINFO as _D3DXSHADER_STRUCTMEMBERINFO
+type LPD3DXSHADER_STRUCTMEMBERINFO as _D3DXSHADER_STRUCTMEMBERINFO ptr
 
-#endif
+end extern

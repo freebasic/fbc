@@ -1,49 +1,75 @@
-''
-''
-'' dmdls -- header translated with help of SWIG FB wrapper
-''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
-''
-''
-#ifndef __win_dmdls_bi__
-#define __win_dmdls_bi__
+#pragma once
 
-#include once "win/dls1.bi"
+#include once "dls1.bi"
 
-type PCENT as integer
-type GCENT as integer
-type TCENT as integer
-type PERCENT as integer
+#define __WINE_DMUSIC_DLS_H
+
+type GCENT as LONG
+type PCENT as LONG
+type PERCENT as LONG
+type TCENT as LONG
 type REFERENCE_TIME as LONGLONG
-type LPREFERENCE_TIME as REFERENCE_TIME ptr
+type LPREFERENCE_TIME as LONGLONG ptr
 
-#ifndef MAKEFOURCC
-#define MAKEFOURCC(c0,c1,c2,c3) (cuint(c0) or (cuint(c1) shl 8) or (cuint(c2) shl 16) or (cuint(c3) shl 24))
-type FOURCC as DWORD
-#endif
+#define DMUS_DEFAULT_SIZE_OFFSETTABLE &h1
+#define DMUS_DOWNLOADINFO_INSTRUMENT &h1
+#define DMUS_DOWNLOADINFO_WAVE &h2
+#define DMUS_DOWNLOADINFO_INSTRUMENT2 &h3
+#define DMUS_DOWNLOADINFO_WAVEARTICULATION &h4
+#define DMUS_DOWNLOADINFO_STREAMINGWAVE &h5
+#define DMUS_DOWNLOADINFO_ONESHOTWAVE &h6
+#define DMUS_INSTRUMENT_GM_INSTRUMENT &h1
+#define DMUS_MIN_DATA_SIZE &h4
 
-type DMUS_DOWNLOADINFO
+type DMUS_DOWNLOADINFO as _DMUS_DOWNLOADINFO
+type LPDMUS_DOWNLOADINFO as _DMUS_DOWNLOADINFO ptr
+type DMUS_OFFSETTABLE as _DMUS_OFFSETTABLE
+type LPDMUS_OFFSETTABLE as _DMUS_OFFSETTABLE ptr
+type DMUS_INSTRUMENT as _DMUS_INSTRUMENT
+type LPDMUS_INSTRUMENT as _DMUS_INSTRUMENT ptr
+type DMUS_REGION as _DMUS_REGION
+type LPDMUS_REGION as _DMUS_REGION ptr
+type DMUS_LFOPARAMS as _DMUS_LFOPARAMS
+type LPDMUS_LFOPARAMS as _DMUS_LFOPARAMS ptr
+type DMUS_VEGPARAMS as _DMUS_VEGPARAMS
+type LPDMUS_VEGPARAMS as _DMUS_VEGPARAMS ptr
+type DMUS_PEGPARAMS as _DMUS_PEGPARAMS
+type LPDMUS_PEGPARAMS as _DMUS_PEGPARAMS ptr
+type DMUS_MSCPARAMS as _DMUS_MSCPARAMS
+type LPDMUS_MSCPARAMS as _DMUS_MSCPARAMS ptr
+type DMUS_ARTICPARAMS as _DMUS_ARTICPARAMS
+type LPDMUS_ARTICPARAMS as _DMUS_ARTICPARAMS ptr
+type DMUS_ARTICULATION as _DMUS_ARTICULATION
+type LPDMUS_ARTICULATION as _DMUS_ARTICULATION ptr
+type DMUS_ARTICULATION2 as _DMUS_ARTICULATION2
+type LPDMUS_ARTICULATION2 as _DMUS_ARTICULATION2 ptr
+type DMUS_EXTENSIONCHUNK as _DMUS_EXTENSIONCHUNK
+type LPDMUS_EXTENSIONCHUNK as _DMUS_EXTENSIONCHUNK ptr
+type DMUS_COPYRIGHT as _DMUS_COPYRIGHT
+type LPDMUS_COPYRIGHT as _DMUS_COPYRIGHT ptr
+type DMUS_WAVEDATA as _DMUS_WAVEDATA
+type LPDMUS_WAVEDATA as _DMUS_WAVEDATA ptr
+type DMUS_WAVE as _DMUS_WAVE
+type LPDMUS_WAVE as _DMUS_WAVE ptr
+type DMUS_NOTERANGE as _DMUS_NOTERANGE
+type LPDMUS_NOTERANGE as _DMUS_NOTERANGE ptr
+type DMUS_WAVEARTDL as _DMUS_WAVEARTDL
+type LPDMUS_WAVEARTDL as _DMUS_WAVEARTDL ptr
+type DMUS_WAVEDL as _DMUS_WAVEDL
+type LPDMUS_WAVEDL as _DMUS_WAVEDL ptr
+
+type _DMUS_DOWNLOADINFO
 	dwDLType as DWORD
 	dwDLId as DWORD
 	dwNumOffsetTableEntries as DWORD
 	cbSize as DWORD
 end type
 
-#define DMUS_DOWNLOADINFO_INSTRUMENT 1
-#define DMUS_DOWNLOADINFO_WAVE 2
-#define DMUS_DOWNLOADINFO_INSTRUMENT2 3
-#define DMUS_DOWNLOADINFO_WAVEARTICULATION 4
-#define DMUS_DOWNLOADINFO_STREAMINGWAVE 5
-#define DMUS_DOWNLOADINFO_ONESHOTWAVE 6
-#define DMUS_DEFAULT_SIZE_OFFSETTABLE 1
-#define DMUS_INSTRUMENT_GM_INSTRUMENT (1 shl 0)
-
-type DMUS_OFFSETTABLE
-	ulOffsetTable(0 to 1-1) as ULONG
+type _DMUS_OFFSETTABLE
+	ulOffsetTable(0 to 0) as ULONG
 end type
 
-type DMUS_INSTRUMENT
+type _DMUS_INSTRUMENT
 	ulPatch as ULONG
 	ulFirstRegionIdx as ULONG
 	ulGlobalArtIdx as ULONG
@@ -52,7 +78,7 @@ type DMUS_INSTRUMENT
 	ulFlags as ULONG
 end type
 
-type DMUS_REGION
+type _DMUS_REGION
 	RangeKey as RGNRANGE
 	RangeVelocity as RGNRANGE
 	fusOptions as USHORT
@@ -62,10 +88,10 @@ type DMUS_REGION
 	ulFirstExtCkIdx as ULONG
 	WaveLink as WAVELINK
 	WSMP as WSMPL
-	WLOOP(0 to 1-1) as WLOOP
+	WLOOP(0 to 0) as _rloop
 end type
 
-type DMUS_LFOPARAMS
+type _DMUS_LFOPARAMS
 	pcFrequency as PCENT
 	tcDelay as TCENT
 	gcVolumeScale as GCENT
@@ -74,7 +100,7 @@ type DMUS_LFOPARAMS
 	pcMWToPitch as PCENT
 end type
 
-type DMUS_VEGPARAMS
+type _DMUS_VEGPARAMS
 	tcAttack as TCENT
 	tcDecay as TCENT
 	ptSustain as PERCENT
@@ -83,7 +109,7 @@ type DMUS_VEGPARAMS
 	tcKey2Decay as TCENT
 end type
 
-type DMUS_PEGPARAMS
+type _DMUS_PEGPARAMS
 	tcAttack as TCENT
 	tcDecay as TCENT
 	ptSustain as PERCENT
@@ -93,62 +119,58 @@ type DMUS_PEGPARAMS
 	pcRange as PCENT
 end type
 
-type DMUS_MSCPARAMS
+type _DMUS_MSCPARAMS
 	ptDefaultPan as PERCENT
 end type
 
-type DMUS_ARTICPARAMS
+type _DMUS_ARTICPARAMS
 	LFO as DMUS_LFOPARAMS
 	VolEG as DMUS_VEGPARAMS
 	PitchEG as DMUS_PEGPARAMS
 	Misc as DMUS_MSCPARAMS
 end type
 
-type DMUS_ARTICULATION
+type _DMUS_ARTICULATION
 	ulArt1Idx as ULONG
 	ulFirstExtCkIdx as ULONG
 end type
 
-type DMUS_ARTICULATION2
+type _DMUS_ARTICULATION2
 	ulArtIdx as ULONG
 	ulFirstExtCkIdx as ULONG
 	ulNextArtIdx as ULONG
 end type
 
-#define DMUS_MIN_DATA_SIZE 4
-
-type DMUS_EXTENSIONCHUNK
+type _DMUS_EXTENSIONCHUNK
 	cbSize as ULONG
 	ulNextExtCkIdx as ULONG
 	ExtCkID as FOURCC
-	byExtCk(0 to 4-1) as UBYTE
+	byExtCk(0 to 3) as UBYTE
 end type
 
-type DMUS_COPYRIGHT
+type _DMUS_COPYRIGHT
 	cbSize as ULONG
-	byCopyright(0 to 4-1) as UBYTE
+	byCopyright(0 to 3) as UBYTE
 end type
 
-type DMUS_WAVEDATA
+type _DMUS_WAVEDATA
 	cbSize as ULONG
-	byData(0 to 4-1) as UBYTE
+	byData(0 to 3) as UBYTE
 end type
 
-type DMUS_WAVE
+type _DMUS_WAVE
 	ulFirstExtCkIdx as ULONG
 	ulCopyrightIdx as ULONG
 	ulWaveDataIdx as ULONG
 	WaveformatEx as WAVEFORMATEX
 end type
 
-type LPDMUS_NOTERANGE as DMUS_NOTERANGE ptr
-
-type DMUS_NOTERANGE
+type _DMUS_NOTERANGE
 	dwLowNote as DWORD
 	dwHighNote as DWORD
 end type
 
-type DMUS_WAVEARTDL
+type _DMUS_WAVEARTDL
 	ulDownloadIdIdx as ULONG
 	ulBus as ULONG
 	ulBuffers as ULONG
@@ -156,12 +178,6 @@ type DMUS_WAVEARTDL
 	usOptions as USHORT
 end type
 
-type LPDMUS_WAVEARTDL as DMUS_WAVEARTDL ptr
-
-type DMUS_WAVEDL
+type _DMUS_WAVEDL
 	cbWaveData as ULONG
 end type
-
-type LPDMUS_WAVEDL as DMUS_WAVEDL ptr
-
-#endif

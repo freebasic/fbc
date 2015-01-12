@@ -1,174 +1,281 @@
-''
-''
-'' d3drm -- header translated with help of SWIG FB wrapper
-''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
-''
-''
-#ifndef __win_d3drm_bi__
-#define __win_d3drm_bi__
+#pragma once
+
+#include once "ddraw.bi"
+#include once "d3drmobj.bi"
 
 #inclib "d3drm"
 
-#include once "win/ddraw.bi"
+extern "Windows"
+
+type IDirect3DRM as IDirect3DRM_
+type IDirect3DRMVtbl as IDirect3DRMVtbl_
+type IDirect3DRM2Vtbl as IDirect3DRM2Vtbl_
+type IDirect3DRM3Vtbl as IDirect3DRM3Vtbl_
+
+#define __D3DRM_H__
 
 type LPDIRECT3DRM as IDirect3DRM ptr
 type LPLPDIRECT3DRM as IDirect3DRM ptr ptr
+
+extern CLSID_CDirect3DRM as const GUID
+extern IID_IDirect3DRM as const GUID
+extern IID_IDirect3DRM2 as const GUID
+extern IID_IDirect3DRM3 as const GUID
+
 type LPDIRECT3DRM2 as IDirect3DRM2 ptr
 type LPLPDIRECT3DRM2 as IDirect3DRM2 ptr ptr
 type LPDIRECT3DRM3 as IDirect3DRM3 ptr
 type LPLPDIRECT3DRM3 as IDirect3DRM3 ptr ptr
 
-#include once "win/d3drmobj.bi"
+declare function Direct3DRMCreate(byval d3drm as IDirect3DRM ptr ptr) as HRESULT
 
-extern IID_IDirect3DRM alias "IID_IDirect3DRM" as GUID
-extern IID_IDirect3DRM2 alias "IID_IDirect3DRM2" as GUID
-extern IID_IDirect3DRM3 alias "IID_IDirect3DRM3" as GUID
-
-extern CLSID_CDirect3DRM alias "CLSID_CDirect3DRM" as GUID
-
-declare function Direct3DRMCreate alias "Direct3DRMCreate" (byval lplpDirect3DRM as LPDIRECT3DRM ptr) as HRESULT
-
-type IDirect3DRMVtbl_ as IDirect3DRMVtbl
-
-type IDirect3DRM
-	lpVtbl as IDirect3DRMVtbl_ ptr
+type IDirect3DRM_
+	lpVtbl as IDirect3DRMVtbl ptr
 end type
 
-type IDirect3DRMVtbl
-	QueryInterface as function(byval as IDirect3DRM ptr, byval as IID ptr, byval as LPVOID ptr) as HRESULT
-	AddRef as function(byval as IDirect3DRM ptr) as ULONG
-	Release as function(byval as IDirect3DRM ptr) as ULONG
-	CreateObject as function(byval as IDirect3DRM ptr, byval as CLSID ptr, byval as LPUNKNOWN, byval as IID ptr, byval as LPVOID ptr) as HRESULT
-	CreateFrame as function(byval as IDirect3DRM ptr, byval as LPDIRECT3DRMFRAME, byval as LPDIRECT3DRMFRAME ptr) as HRESULT
-	CreateMesh as function(byval as IDirect3DRM ptr, byval as LPDIRECT3DRMMESH ptr) as HRESULT
-	CreateMeshBuilder as function(byval as IDirect3DRM ptr, byval as LPDIRECT3DRMMESHBUILDER ptr) as HRESULT
-	CreateFace as function(byval as IDirect3DRM ptr, byval as LPDIRECT3DRMFACE ptr) as HRESULT
-	CreateAnimation as function(byval as IDirect3DRM ptr, byval as LPDIRECT3DRMANIMATION ptr) as HRESULT
-	CreateAnimationSet as function(byval as IDirect3DRM ptr, byval as LPDIRECT3DRMANIMATIONSET ptr) as HRESULT
-	CreateTexture as function(byval as IDirect3DRM ptr, byval as LPD3DRMIMAGE, byval as LPDIRECT3DRMTEXTURE ptr) as HRESULT
-	CreateLight as function(byval as IDirect3DRM ptr, byval as D3DRMLIGHTTYPE, byval as D3DCOLOR, byval as LPDIRECT3DRMLIGHT ptr) as HRESULT
-	CreateLightRGB as function(byval as IDirect3DRM ptr, byval as D3DRMLIGHTTYPE, byval as D3DVALUE, byval as D3DVALUE, byval as D3DVALUE, byval as LPDIRECT3DRMLIGHT ptr) as HRESULT
-	CreateMaterial as function(byval as IDirect3DRM ptr, byval as D3DVALUE, byval as LPDIRECT3DRMMATERIAL ptr) as HRESULT
-	CreateDevice as function(byval as IDirect3DRM ptr, byval as DWORD, byval as DWORD, byval as LPDIRECT3DRMDEVICE ptr) as HRESULT
-	CreateDeviceFromSurface as function(byval as IDirect3DRM ptr, byval as LPGUID, byval as LPDIRECTDRAW, byval as LPDIRECTDRAWSURFACE, byval as LPDIRECT3DRMDEVICE ptr) as HRESULT
-	CreateDeviceFromD3D as function(byval as IDirect3DRM ptr, byval as LPDIRECT3D, byval as LPDIRECT3DDEVICE, byval as LPDIRECT3DRMDEVICE ptr) as HRESULT
-	CreateDeviceFromClipper as function(byval as IDirect3DRM ptr, byval as LPDIRECTDRAWCLIPPER, byval as LPGUID, byval as integer, byval as integer, byval as LPDIRECT3DRMDEVICE ptr) as HRESULT
-	CreateTextureFromSurface as function(byval as IDirect3DRM ptr, byval as LPDIRECTDRAWSURFACE, byval as LPDIRECT3DRMTEXTURE ptr) as HRESULT
-	CreateShadow as function(byval as IDirect3DRM ptr, byval as LPDIRECT3DRMVISUAL, byval as LPDIRECT3DRMLIGHT, byval as D3DVALUE, byval as D3DVALUE, byval as D3DVALUE, byval as D3DVALUE, byval as D3DVALUE, byval as D3DVALUE, byval as LPDIRECT3DRMVISUAL ptr) as HRESULT
-	CreateViewport as function(byval as IDirect3DRM ptr, byval as LPDIRECT3DRMDEVICE, byval as LPDIRECT3DRMFRAME, byval as DWORD, byval as DWORD, byval as DWORD, byval as DWORD, byval as LPDIRECT3DRMVIEWPORT ptr) as HRESULT
-	CreateWrap as function(byval as IDirect3DRM ptr, byval as D3DRMWRAPTYPE, byval as LPDIRECT3DRMFRAME, byval as D3DVALUE, byval as D3DVALUE, byval as D3DVALUE, byval as D3DVALUE, byval as D3DVALUE, byval as D3DVALUE, byval as D3DVALUE, byval as D3DVALUE, byval as D3DVALUE, byval as D3DVALUE, byval as D3DVALUE, byval as D3DVALUE, byval as D3DVALUE, byval as LPDIRECT3DRMWRAP ptr) as HRESULT
-	CreateUserVisual as function(byval as IDirect3DRM ptr, byval as D3DRMUSERVISUALCALLBACK, byval as LPVOID, byval as LPDIRECT3DRMUSERVISUAL ptr) as HRESULT
-	LoadTexture as function(byval as IDirect3DRM ptr, byval as zstring ptr, byval as LPDIRECT3DRMTEXTURE ptr) as HRESULT
-	LoadTextureFromResource as function(byval as IDirect3DRM ptr, byval as HRSRC, byval as LPDIRECT3DRMTEXTURE ptr) as HRESULT
-	SetSearchPath as function(byval as IDirect3DRM ptr, byval as LPCSTR) as HRESULT
-	AddSearchPath as function(byval as IDirect3DRM ptr, byval as LPCSTR) as HRESULT
-	GetSearchPath as function(byval as IDirect3DRM ptr, byval as DWORD ptr, byval as LPSTR) as HRESULT
-	SetDefaultTextureColors as function(byval as IDirect3DRM ptr, byval as DWORD) as HRESULT
-	SetDefaultTextureShades as function(byval as IDirect3DRM ptr, byval as DWORD) as HRESULT
-	GetDevices as function(byval as IDirect3DRM ptr, byval as LPDIRECT3DRMDEVICEARRAY ptr) as HRESULT
-	GetNamedObject as function(byval as IDirect3DRM ptr, byval as zstring ptr, byval as LPDIRECT3DRMOBJECT ptr) as HRESULT
-	EnumerateObjects as function(byval as IDirect3DRM ptr, byval as D3DRMOBJECTCALLBACK, byval as LPVOID) as HRESULT
-	Load as function(byval as IDirect3DRM ptr, byval as LPVOID, byval as LPVOID, byval as LPIID ptr, byval as DWORD, byval as D3DRMLOADOPTIONS, byval as D3DRMLOADCALLBACK, byval as LPVOID, byval as D3DRMLOADTEXTURECALLBACK, byval as LPVOID, byval as LPDIRECT3DRMFRAME) as HRESULT
-	Tick as function(byval as IDirect3DRM ptr, byval as D3DVALUE) as HRESULT
+type IDirect3DRMVtbl_
+	QueryInterface as function(byval This as IDirect3DRM ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
+	AddRef as function(byval This as IDirect3DRM ptr) as ULONG
+	Release as function(byval This as IDirect3DRM ptr) as ULONG
+	CreateObject as function(byval This as IDirect3DRM ptr, byval clsid as const IID const ptr, byval outer as IUnknown ptr, byval iid as const IID const ptr, byval out_ as any ptr ptr) as HRESULT
+	CreateFrame as function(byval This as IDirect3DRM ptr, byval parent as IDirect3DRMFrame ptr, byval frame as IDirect3DRMFrame ptr ptr) as HRESULT
+	CreateMesh as function(byval This as IDirect3DRM ptr, byval mesh as IDirect3DRMMesh ptr ptr) as HRESULT
+	CreateMeshBuilder as function(byval This as IDirect3DRM ptr, byval mesh_builder as IDirect3DRMMeshBuilder ptr ptr) as HRESULT
+	CreateFace as function(byval This as IDirect3DRM ptr, byval face as IDirect3DRMFace ptr ptr) as HRESULT
+	CreateAnimation as function(byval This as IDirect3DRM ptr, byval animation as IDirect3DRMAnimation ptr ptr) as HRESULT
+	CreateAnimationSet as function(byval This as IDirect3DRM ptr, byval set as IDirect3DRMAnimationSet ptr ptr) as HRESULT
+	CreateTexture as function(byval This as IDirect3DRM ptr, byval image as D3DRMIMAGE ptr, byval texture as IDirect3DRMTexture ptr ptr) as HRESULT
+	CreateLight as function(byval This as IDirect3DRM ptr, byval type_ as D3DRMLIGHTTYPE, byval color_ as D3DCOLOR, byval light as IDirect3DRMLight ptr ptr) as HRESULT
+	CreateLightRGB as function(byval This as IDirect3DRM ptr, byval type_ as D3DRMLIGHTTYPE, byval r as D3DVALUE, byval g as D3DVALUE, byval b as D3DVALUE, byval light as IDirect3DRMLight ptr ptr) as HRESULT
+	CreateMaterial as function(byval This as IDirect3DRM ptr, byval power as D3DVALUE, byval material as IDirect3DRMMaterial ptr ptr) as HRESULT
+	CreateDevice as function(byval This as IDirect3DRM ptr, byval width_ as DWORD, byval height as DWORD, byval device as IDirect3DRMDevice ptr ptr) as HRESULT
+	CreateDeviceFromSurface as function(byval This as IDirect3DRM ptr, byval guid as GUID ptr, byval ddraw as IDirectDraw ptr, byval surface as IDirectDrawSurface ptr, byval device as IDirect3DRMDevice ptr ptr) as HRESULT
+	CreateDeviceFromD3D as function(byval This as IDirect3DRM ptr, byval d3d as IDirect3D ptr, byval d3d_device as IDirect3DDevice ptr, byval device as IDirect3DRMDevice ptr ptr) as HRESULT
+	CreateDeviceFromClipper as function(byval This as IDirect3DRM ptr, byval clipper as IDirectDrawClipper ptr, byval guid as GUID ptr, byval width_ as long, byval height as long, byval device as IDirect3DRMDevice ptr ptr) as HRESULT
+	CreateTextureFromSurface as function(byval This as IDirect3DRM ptr, byval surface as IDirectDrawSurface ptr, byval texture as IDirect3DRMTexture ptr ptr) as HRESULT
+	CreateShadow as function(byval This as IDirect3DRM ptr, byval visual as IDirect3DRMVisual ptr, byval light as IDirect3DRMLight ptr, byval px as D3DVALUE, byval py as D3DVALUE, byval pz as D3DVALUE, byval nx as D3DVALUE, byval ny as D3DVALUE, byval nz as D3DVALUE, byval shadow as IDirect3DRMVisual ptr ptr) as HRESULT
+	CreateViewport as function(byval This as IDirect3DRM ptr, byval device as IDirect3DRMDevice ptr, byval camera as IDirect3DRMFrame ptr, byval x as DWORD, byval y as DWORD, byval width_ as DWORD, byval height as DWORD, byval viewport as IDirect3DRMViewport ptr ptr) as HRESULT
+	CreateWrap as function(byval This as IDirect3DRM ptr, byval type_ as D3DRMWRAPTYPE, byval reference as IDirect3DRMFrame ptr, byval ox as D3DVALUE, byval oy as D3DVALUE, byval oz as D3DVALUE, byval dx as D3DVALUE, byval dy as D3DVALUE, byval dz as D3DVALUE, byval ux as D3DVALUE, byval uy as D3DVALUE, byval uz as D3DVALUE, byval ou as D3DVALUE, byval ov as D3DVALUE, byval su as D3DVALUE, byval sv as D3DVALUE, byval wrap as IDirect3DRMWrap ptr ptr) as HRESULT
+	CreateUserVisual as function(byval This as IDirect3DRM ptr, byval cb as D3DRMUSERVISUALCALLBACK, byval ctx as any ptr, byval visual as IDirect3DRMUserVisual ptr ptr) as HRESULT
+	LoadTexture as function(byval This as IDirect3DRM ptr, byval filename as const zstring ptr, byval texture as IDirect3DRMTexture ptr ptr) as HRESULT
+	LoadTextureFromResource as function(byval This as IDirect3DRM ptr, byval resource as HRSRC, byval texture as IDirect3DRMTexture ptr ptr) as HRESULT
+	SetSearchPath as function(byval This as IDirect3DRM ptr, byval path as const zstring ptr) as HRESULT
+	AddSearchPath as function(byval This as IDirect3DRM ptr, byval path as const zstring ptr) as HRESULT
+	GetSearchPath as function(byval This as IDirect3DRM ptr, byval size as DWORD ptr, byval path as zstring ptr) as HRESULT
+	SetDefaultTextureColors as function(byval This as IDirect3DRM ptr, byval as DWORD) as HRESULT
+	SetDefaultTextureShades as function(byval This as IDirect3DRM ptr, byval as DWORD) as HRESULT
+	GetDevices as function(byval This as IDirect3DRM ptr, byval array as IDirect3DRMDeviceArray ptr ptr) as HRESULT
+	GetNamedObject as function(byval This as IDirect3DRM ptr, byval name_ as const zstring ptr, byval object_ as IDirect3DRMObject ptr ptr) as HRESULT
+	EnumerateObjects as function(byval This as IDirect3DRM ptr, byval cb as D3DRMOBJECTCALLBACK, byval ctx as any ptr) as HRESULT
+	Load as function(byval This as IDirect3DRM ptr, byval source as any ptr, byval object_id as any ptr, byval iids as IID ptr ptr, byval iid_count as DWORD, byval flags as D3DRMLOADOPTIONS, byval load_cb as D3DRMLOADCALLBACK, byval load_ctx as any ptr, byval load_tex_cb as D3DRMLOADTEXTURECALLBACK, byval load_tex_ctx as any ptr, byval parent_frame as IDirect3DRMFrame ptr) as HRESULT
+	Tick as function(byval This as IDirect3DRM ptr, byval as D3DVALUE) as HRESULT
 end type
 
-type IDirect3DRM2Vtbl_ as IDirect3DRM2Vtbl
+#define IDirect3DRM_QueryInterface(p, a, b) (p)->lpVtbl->QueryInterface(p, a, b)
+#define IDirect3DRM_AddRef(p) (p)->lpVtbl->AddRef(p)
+#define IDirect3DRM_Release(p) (p)->lpVtbl->Release(p)
+#define IDirect3DRM_CreateObject(p, a, b, c, d) (p)->lpVtbl->CreateObject(p, a, b, d)
+#define IDirect3DRM_CreateFrame(p, a, b) (p)->lpVtbl->CreateFrame(p, a, b)
+#define IDirect3DRM_CreateMesh(p, a) (p)->lpVtbl->CreateMesh(p, a)
+#define IDirect3DRM_CreateMeshBuilder(p, a) (p)->lpVtbl->CreateMeshBuilder(p, a)
+#define IDirect3DRM_CreateFace(p, a) (p)->lpVtbl->CreateFace(p, a)
+#define IDirect3DRM_CreateAnimation(p, a) (p)->lpVtbl->CreateAnimation(p, a)
+#define IDirect3DRM_CreateAnimationSet(p, a) (p)->lpVtbl->CreateAnimationSet(p, a)
+#define IDirect3DRM_CreateTexture(p, a, b) (p)->lpVtbl->CreateTexture(p, a, b)
+#define IDirect3DRM_CreateLight(p, a, b, c) (p)->lpVtbl->CreateLight(p, a, b, c)
+#define IDirect3DRM_CreateLightRGB(p, a, b, c, d, e) (p)->lpVtbl->CreateLightRGB(p, a, b, c, d, e)
+#define IDirect3DRM_CreateMaterial(p, a, b) (p)->lpVtbl->CreateMaterial(p, a, b)
+#define IDirect3DRM_CreateDevice(p, a, b, c) (p)->lpVtbl->CreateDevice(p, a, b, c)
+#define IDirect3DRM_CreateDeviceFromSurface(p, a, b, c, d) (p)->lpVtbl->CreateDeviceFromSurface(p, a, b, c, d)
+#define IDirect3DRM_CreateDeviceFromD3D(p, a, b, c) (p)->lpVtbl->CreateDeviceFromD3D(p, a, b, c)
+#define IDirect3DRM_CreateDeviceFromClipper(p, a, b, c, d, e) (p)->lpVtbl->CreateDeviceFromClipper(p, a, b, c, d, e)
+#define IDirect3DRM_CreateTextureFromSurface(p, a, b) (p)->lpVtbl->CreateTextureFromSurface(p, a, b)
+#define IDirect3DRM_CreateShadow(p, a, b, c, d, e, f, g, h, i) (p)->lpVtbl->CreateShadow(p, a, b, c, d, e, f, g, h, i)
+#define IDirect3DRM_CreateViewport(p, a, b, c, d, e, f, g) (p)->lpVtbl->CreateViewport(p, a, b, c, d, e, f, g)
+#define IDirect3DRM_CreateWrap(p, a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, q) (p)->lpVtbl->CreateWrap(p, a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, q)
+#define IDirect3DRM_CreateUserVisual(p, a, b, c) (p)->lpVtbl->CreateUserVisual(p, a, b, c)
+#define IDirect3DRM_LoadTexture(p, a, b) (p)->lpVtbl->LoadTexture(p, a, b)
+#define IDirect3DRM_LoadTextureFromResource(p, a, b) (p)->lpVtbl->LoadTextureFromResource(p, a, b)
+#define IDirect3DRM_SetSearchPath(p, a) (p)->lpVtbl->SetSearchPath(p, a)
+#define IDirect3DRM_AddSearchPath(p, a) (p)->lpVtbl->AddSearchPath(p, a)
+#define IDirect3DRM_GetSearchPath(p, a, b) (p)->lpVtbl->GetSearchPath(p, a, b)
+#define IDirect3DRM_SetDefaultTextureColors(p, a) (p)->lpVtbl->SetDefaultTextureColors(p, a)
+#define IDirect3DRM_SetDefaultTextureShades(p, a) (p)->lpVtbl->SetDefaultTextureShades(p, a)
+#define IDirect3DRM_GetDevices(p, a) (p)->lpVtbl->GetDevices(p, a)
+#define IDirect3DRM_GetNamedObject(p, a, b) (p)->lpVtbl->GetNamedObject(p, a, b)
+#define IDirect3DRM_EnumerateObjects(p, a, b) (p)->lpVtbl->EnumerateObjects(p, a, b)
+#define IDirect3DRM_Load(p, a, b, c, d, e, f, g, h, i, j) (p)->lpVtbl->Load(p, a, b, c, d, e, f, g, h, i, j)
+#define IDirect3DRM_Tick(p, a) (p)->lpVtbl->Tick(p, a)
 
 type IDirect3DRM2
-	lpVtbl as IDirect3DRM2Vtbl_ ptr
+	lpVtbl as IDirect3DRM2Vtbl ptr
 end type
 
-type IDirect3DRM2Vtbl
-	QueryInterface as function(byval as IDirect3DRM2 ptr, byval as IID ptr, byval as LPVOID ptr) as HRESULT
-	AddRef as function(byval as IDirect3DRM2 ptr) as ULONG
-	Release as function(byval as IDirect3DRM2 ptr) as ULONG
-	CreateObject as function(byval as IDirect3DRM2 ptr, byval as CLSID ptr, byval as LPUNKNOWN, byval as IID ptr, byval as LPVOID ptr) as HRESULT
-	CreateFrame as function(byval as IDirect3DRM2 ptr, byval as LPDIRECT3DRMFRAME, byval as LPDIRECT3DRMFRAME2 ptr) as HRESULT
-	CreateMesh as function(byval as IDirect3DRM2 ptr, byval as LPDIRECT3DRMMESH ptr) as HRESULT
-	CreateMeshBuilder as function(byval as IDirect3DRM2 ptr, byval as LPDIRECT3DRMMESHBUILDER2 ptr) as HRESULT
-	CreateFace as function(byval as IDirect3DRM2 ptr, byval as LPDIRECT3DRMFACE ptr) as HRESULT
-	CreateAnimation as function(byval as IDirect3DRM2 ptr, byval as LPDIRECT3DRMANIMATION ptr) as HRESULT
-	CreateAnimationSet as function(byval as IDirect3DRM2 ptr, byval as LPDIRECT3DRMANIMATIONSET ptr) as HRESULT
-	CreateTexture as function(byval as IDirect3DRM2 ptr, byval as LPD3DRMIMAGE, byval as LPDIRECT3DRMTEXTURE2 ptr) as HRESULT
-	CreateLight as function(byval as IDirect3DRM2 ptr, byval as D3DRMLIGHTTYPE, byval as D3DCOLOR, byval as LPDIRECT3DRMLIGHT ptr) as HRESULT
-	CreateLightRGB as function(byval as IDirect3DRM2 ptr, byval as D3DRMLIGHTTYPE, byval as D3DVALUE, byval as D3DVALUE, byval as D3DVALUE, byval as LPDIRECT3DRMLIGHT ptr) as HRESULT
-	CreateMaterial as function(byval as IDirect3DRM2 ptr, byval as D3DVALUE, byval as LPDIRECT3DRMMATERIAL ptr) as HRESULT
-	CreateDevice as function(byval as IDirect3DRM2 ptr, byval as DWORD, byval as DWORD, byval as LPDIRECT3DRMDEVICE2 ptr) as HRESULT
-	CreateDeviceFromSurface as function(byval as IDirect3DRM2 ptr, byval as LPGUID, byval as LPDIRECTDRAW, byval as LPDIRECTDRAWSURFACE, byval as LPDIRECT3DRMDEVICE2 ptr) as HRESULT
-	CreateDeviceFromD3D as function(byval as IDirect3DRM2 ptr, byval as LPDIRECT3D2, byval as LPDIRECT3DDEVICE2, byval as LPDIRECT3DRMDEVICE2 ptr) as HRESULT
-	CreateDeviceFromClipper as function(byval as IDirect3DRM2 ptr, byval as LPDIRECTDRAWCLIPPER, byval as LPGUID, byval as integer, byval as integer, byval as LPDIRECT3DRMDEVICE2 ptr) as HRESULT
-	CreateTextureFromSurface as function(byval as IDirect3DRM2 ptr, byval as LPDIRECTDRAWSURFACE, byval as LPDIRECT3DRMTEXTURE2 ptr) as HRESULT
-	CreateShadow as function(byval as IDirect3DRM2 ptr, byval as LPDIRECT3DRMVISUAL, byval as LPDIRECT3DRMLIGHT, byval as D3DVALUE, byval as D3DVALUE, byval as D3DVALUE, byval as D3DVALUE, byval as D3DVALUE, byval as D3DVALUE, byval as LPDIRECT3DRMVISUAL ptr) as HRESULT
-	CreateViewport as function(byval as IDirect3DRM2 ptr, byval as LPDIRECT3DRMDEVICE, byval as LPDIRECT3DRMFRAME, byval as DWORD, byval as DWORD, byval as DWORD, byval as DWORD, byval as LPDIRECT3DRMVIEWPORT ptr) as HRESULT
-	CreateWrap as function(byval as IDirect3DRM2 ptr, byval as D3DRMWRAPTYPE, byval as LPDIRECT3DRMFRAME, byval as D3DVALUE, byval as D3DVALUE, byval as D3DVALUE, byval as D3DVALUE, byval as D3DVALUE, byval as D3DVALUE, byval as D3DVALUE, byval as D3DVALUE, byval as D3DVALUE, byval as D3DVALUE, byval as D3DVALUE, byval as D3DVALUE, byval as D3DVALUE, byval as LPDIRECT3DRMWRAP ptr) as HRESULT
-	CreateUserVisual as function(byval as IDirect3DRM2 ptr, byval as D3DRMUSERVISUALCALLBACK, byval as LPVOID, byval as LPDIRECT3DRMUSERVISUAL ptr) as HRESULT
-	LoadTexture as function(byval as IDirect3DRM2 ptr, byval as zstring ptr, byval as LPDIRECT3DRMTEXTURE2 ptr) as HRESULT
-	LoadTextureFromResource as function(byval as IDirect3DRM2 ptr, byval as HMODULE, byval as LPCTSTR, byval as LPCTSTR, byval as LPDIRECT3DRMTEXTURE2 ptr) as HRESULT
-	SetSearchPath as function(byval as IDirect3DRM2 ptr, byval as LPCSTR) as HRESULT
-	AddSearchPath as function(byval as IDirect3DRM2 ptr, byval as LPCSTR) as HRESULT
-	GetSearchPath as function(byval as IDirect3DRM2 ptr, byval as DWORD ptr, byval as LPSTR) as HRESULT
-	SetDefaultTextureColors as function(byval as IDirect3DRM2 ptr, byval as DWORD) as HRESULT
-	SetDefaultTextureShades as function(byval as IDirect3DRM2 ptr, byval as DWORD) as HRESULT
-	GetDevices as function(byval as IDirect3DRM2 ptr, byval as LPDIRECT3DRMDEVICEARRAY ptr) as HRESULT
-	GetNamedObject as function(byval as IDirect3DRM2 ptr, byval as zstring ptr, byval as LPDIRECT3DRMOBJECT ptr) as HRESULT
-	EnumerateObjects as function(byval as IDirect3DRM2 ptr, byval as D3DRMOBJECTCALLBACK, byval as LPVOID) as HRESULT
-	Load as function(byval as IDirect3DRM2 ptr, byval as LPVOID, byval as LPVOID, byval as LPIID ptr, byval as DWORD, byval as D3DRMLOADOPTIONS, byval as D3DRMLOADCALLBACK, byval as LPVOID, byval as D3DRMLOADTEXTURECALLBACK, byval as LPVOID, byval as LPDIRECT3DRMFRAME) as HRESULT
-	Tick as function(byval as IDirect3DRM2 ptr, byval as D3DVALUE) as HRESULT
-	CreateProgressiveMesh as function(byval as IDirect3DRM2 ptr, byval as LPDIRECT3DRMPROGRESSIVEMESH ptr) as HRESULT
+type IDirect3DRM2Vtbl_
+	QueryInterface as function(byval This as IDirect3DRM2 ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
+	AddRef as function(byval This as IDirect3DRM2 ptr) as ULONG
+	Release as function(byval This as IDirect3DRM2 ptr) as ULONG
+	CreateObject as function(byval This as IDirect3DRM2 ptr, byval clsid as const IID const ptr, byval outer as IUnknown ptr, byval iid as const IID const ptr, byval out_ as any ptr ptr) as HRESULT
+	CreateFrame as function(byval This as IDirect3DRM2 ptr, byval parent as IDirect3DRMFrame ptr, byval frame as IDirect3DRMFrame2 ptr ptr) as HRESULT
+	CreateMesh as function(byval This as IDirect3DRM2 ptr, byval mesh as IDirect3DRMMesh ptr ptr) as HRESULT
+	CreateMeshBuilder as function(byval This as IDirect3DRM2 ptr, byval mesh_builder as IDirect3DRMMeshBuilder2 ptr ptr) as HRESULT
+	CreateFace as function(byval This as IDirect3DRM2 ptr, byval face as IDirect3DRMFace ptr ptr) as HRESULT
+	CreateAnimation as function(byval This as IDirect3DRM2 ptr, byval animation as IDirect3DRMAnimation ptr ptr) as HRESULT
+	CreateAnimationSet as function(byval This as IDirect3DRM2 ptr, byval set as IDirect3DRMAnimationSet ptr ptr) as HRESULT
+	CreateTexture as function(byval This as IDirect3DRM2 ptr, byval image as D3DRMIMAGE ptr, byval texture as IDirect3DRMTexture2 ptr ptr) as HRESULT
+	CreateLight as function(byval This as IDirect3DRM2 ptr, byval type_ as D3DRMLIGHTTYPE, byval color_ as D3DCOLOR, byval light as IDirect3DRMLight ptr ptr) as HRESULT
+	CreateLightRGB as function(byval This as IDirect3DRM2 ptr, byval type_ as D3DRMLIGHTTYPE, byval r as D3DVALUE, byval g as D3DVALUE, byval b as D3DVALUE, byval light as IDirect3DRMLight ptr ptr) as HRESULT
+	CreateMaterial as function(byval This as IDirect3DRM2 ptr, byval power as D3DVALUE, byval material as IDirect3DRMMaterial ptr ptr) as HRESULT
+	CreateDevice as function(byval This as IDirect3DRM2 ptr, byval width_ as DWORD, byval height as DWORD, byval device as IDirect3DRMDevice2 ptr ptr) as HRESULT
+	CreateDeviceFromSurface as function(byval This as IDirect3DRM2 ptr, byval guid as GUID ptr, byval ddraw as IDirectDraw ptr, byval surface as IDirectDrawSurface ptr, byval device as IDirect3DRMDevice2 ptr ptr) as HRESULT
+	CreateDeviceFromD3D as function(byval This as IDirect3DRM2 ptr, byval d3d as IDirect3D2 ptr, byval d3d_device as IDirect3DDevice2 ptr, byval device as IDirect3DRMDevice2 ptr ptr) as HRESULT
+	CreateDeviceFromClipper as function(byval This as IDirect3DRM2 ptr, byval clipper as IDirectDrawClipper ptr, byval guid as GUID ptr, byval width_ as long, byval height as long, byval device as IDirect3DRMDevice2 ptr ptr) as HRESULT
+	CreateTextureFromSurface as function(byval This as IDirect3DRM2 ptr, byval surface as IDirectDrawSurface ptr, byval texture as IDirect3DRMTexture2 ptr ptr) as HRESULT
+	CreateShadow as function(byval This as IDirect3DRM2 ptr, byval visual as IDirect3DRMVisual ptr, byval light as IDirect3DRMLight ptr, byval px as D3DVALUE, byval py as D3DVALUE, byval pz as D3DVALUE, byval nx as D3DVALUE, byval ny as D3DVALUE, byval nz as D3DVALUE, byval shadow as IDirect3DRMVisual ptr ptr) as HRESULT
+	CreateViewport as function(byval This as IDirect3DRM2 ptr, byval device as IDirect3DRMDevice ptr, byval camera as IDirect3DRMFrame ptr, byval x as DWORD, byval y as DWORD, byval width_ as DWORD, byval height as DWORD, byval viewport as IDirect3DRMViewport ptr ptr) as HRESULT
+	CreateWrap as function(byval This as IDirect3DRM2 ptr, byval type_ as D3DRMWRAPTYPE, byval reference as IDirect3DRMFrame ptr, byval ox as D3DVALUE, byval oy as D3DVALUE, byval oz as D3DVALUE, byval dx as D3DVALUE, byval dy as D3DVALUE, byval dz as D3DVALUE, byval ux as D3DVALUE, byval uy as D3DVALUE, byval uz as D3DVALUE, byval ou as D3DVALUE, byval ov as D3DVALUE, byval su as D3DVALUE, byval sv as D3DVALUE, byval wrap as IDirect3DRMWrap ptr ptr) as HRESULT
+	CreateUserVisual as function(byval This as IDirect3DRM2 ptr, byval cb as D3DRMUSERVISUALCALLBACK, byval ctx as any ptr, byval visual as IDirect3DRMUserVisual ptr ptr) as HRESULT
+	LoadTexture as function(byval This as IDirect3DRM2 ptr, byval filename as const zstring ptr, byval texture as IDirect3DRMTexture2 ptr ptr) as HRESULT
+	LoadTextureFromResource as function(byval This as IDirect3DRM2 ptr, byval module as HMODULE, byval resource_name as const zstring ptr, byval resource_type as const zstring ptr, byval texture as IDirect3DRMTexture2 ptr ptr) as HRESULT
+	SetSearchPath as function(byval This as IDirect3DRM2 ptr, byval path as const zstring ptr) as HRESULT
+	AddSearchPath as function(byval This as IDirect3DRM2 ptr, byval path as const zstring ptr) as HRESULT
+	GetSearchPath as function(byval This as IDirect3DRM2 ptr, byval size as DWORD ptr, byval path as zstring ptr) as HRESULT
+	SetDefaultTextureColors as function(byval This as IDirect3DRM2 ptr, byval as DWORD) as HRESULT
+	SetDefaultTextureShades as function(byval This as IDirect3DRM2 ptr, byval as DWORD) as HRESULT
+	GetDevices as function(byval This as IDirect3DRM2 ptr, byval array as IDirect3DRMDeviceArray ptr ptr) as HRESULT
+	GetNamedObject as function(byval This as IDirect3DRM2 ptr, byval name_ as const zstring ptr, byval object_ as IDirect3DRMObject ptr ptr) as HRESULT
+	EnumerateObjects as function(byval This as IDirect3DRM2 ptr, byval cb as D3DRMOBJECTCALLBACK, byval ctx as any ptr) as HRESULT
+	Load as function(byval This as IDirect3DRM2 ptr, byval source as any ptr, byval object_id as any ptr, byval iids as IID ptr ptr, byval iid_count as DWORD, byval flags as D3DRMLOADOPTIONS, byval load_cb as D3DRMLOADCALLBACK, byval load_ctx as any ptr, byval load_tex_cb as D3DRMLOADTEXTURECALLBACK, byval load_tex_ctx as any ptr, byval parent_frame as IDirect3DRMFrame ptr) as HRESULT
+	Tick as function(byval This as IDirect3DRM2 ptr, byval as D3DVALUE) as HRESULT
+	CreateProgressiveMesh as function(byval This as IDirect3DRM2 ptr, byval mesh as IDirect3DRMProgressiveMesh ptr ptr) as HRESULT
 end type
 
-type IDirect3DRM3Vtbl_ as IDirect3DRM3Vtbl
+#define IDirect3DRM2_QueryInterface(p, a, b) (p)->lpVtbl->QueryInterface(p, a, b)
+#define IDirect3DRM2_AddRef(p) (p)->lpVtbl->AddRef(p)
+#define IDirect3DRM2_Release(p) (p)->lpVtbl->Release(p)
+#define IDirect3DRM2_CreateObject(p, a, b, c, d) (p)->lpVtbl->CreateObject(p, a, b, d)
+#define IDirect3DRM2_CreateFrame(p, a, b) (p)->lpVtbl->CreateFrame(p, a, b)
+#define IDirect3DRM2_CreateMesh(p, a) (p)->lpVtbl->CreateMesh(p, a)
+#define IDirect3DRM2_CreateMeshBuilder(p, a) (p)->lpVtbl->CreateMeshBuilder(p, a)
+#define IDirect3DRM2_CreateFace(p, a) (p)->lpVtbl->CreateFace(p, a)
+#define IDirect3DRM2_CreateAnimation(p, a) (p)->lpVtbl->CreateAnimation(p, a)
+#define IDirect3DRM2_CreateAnimationSet(p, a) (p)->lpVtbl->CreateAnimationSet(p, a)
+#define IDirect3DRM2_CreateTexture(p, a, b) (p)->lpVtbl->CreateTexture(p, a, b)
+#define IDirect3DRM2_CreateLight(p, a, b, c) (p)->lpVtbl->CreateLight(p, a, b, c)
+#define IDirect3DRM2_CreateLightRGB(p, a, b, c, d, e) (p)->lpVtbl->CreateLightRGB(p, a, b, c, d, e)
+#define IDirect3DRM2_CreateMaterial(p, a, b) (p)->lpVtbl->CreateMaterial(p, a, b)
+#define IDirect3DRM2_CreateDevice(p, a, b, c) (p)->lpVtbl->CreateDevice(p, a, b, c)
+#define IDirect3DRM2_CreateDeviceFromSurface(p, a, b, c, d) (p)->lpVtbl->CreateDeviceFromSurface(p, a, b, c, d)
+#define IDirect3DRM2_CreateDeviceFromD3D(p, a, b, c) (p)->lpVtbl->CreateDeviceFromD3D(p, a, b, c)
+#define IDirect3DRM2_CreateDeviceFromClipper(p, a, b, c, d, e) (p)->lpVtbl->CreateDeviceFromClipper(p, a, b, c, d, e)
+#define IDirect3DRM2_CreateTextureFromSurface(p, a, b) (p)->lpVtbl->CreateTextureFromSurface(p, a, b)
+#define IDirect3DRM2_CreateShadow(p, a, b, c, d, e, f, g, h, i) (p)->lpVtbl->CreateShadow(p, a, b, c, d, e, f, g, h, i)
+#define IDirect3DRM2_CreateViewport(p, a, b, c, d, e, f, g) (p)->lpVtbl->CreateViewport(p, a, b, c, d, e, f, g)
+#define IDirect3DRM2_CreateWrap(p, a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, q) (p)->lpVtbl->CreateWrap(p, a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, q)
+#define IDirect3DRM2_CreateUserVisual(p, a, b, c) (p)->lpVtbl->CreateUserVisual(p, a, b, c)
+#define IDirect3DRM2_LoadTexture(p, a, b) (p)->lpVtbl->LoadTexture(p, a, b)
+#define IDirect3DRM2_LoadTextureFromResource(p, a, b, c, d) (p)->lpVtbl->LoadTextureFromResource(p, a, b, c, d)
+#define IDirect3DRM2_SetSearchPath(p, a) (p)->lpVtbl->SetSearchPath(p, a)
+#define IDirect3DRM2_AddSearchPath(p, a) (p)->lpVtbl->AddSearchPath(p, a)
+#define IDirect3DRM2_GetSearchPath(p, a, b) (p)->lpVtbl->GetSearchPath(p, a, b)
+#define IDirect3DRM2_SetDefaultTextureColors(p, a) (p)->lpVtbl->SetDefaultTextureColors(p, a)
+#define IDirect3DRM2_SetDefaultTextureShades(p, a) (p)->lpVtbl->SetDefaultTextureShades(p, a)
+#define IDirect3DRM2_GetDevices(p, a) (p)->lpVtbl->GetDevices(p, a)
+#define IDirect3DRM2_GetNamedObject(p, a, b) (p)->lpVtbl->GetNamedObject(p, a, b)
+#define IDirect3DRM2_EnumerateObjects(p, a, b) (p)->lpVtbl->EnumerateObjects(p, a, b)
+#define IDirect3DRM2_Load(p, a, b, c, d, e, f, g, h, i, j) (p)->lpVtbl->Load(p, a, b, c, d, e, f, g, h, i, j)
+#define IDirect3DRM2_Tick(p, a) (p)->lpVtbl->Tick(p, a)
+#define IDirect3DRM2_CreateProgressiveMesh(p, a) (p)->lpVtbl->CreateProgressiveMesh(p, a)
 
 type IDirect3DRM3
-	lpVtbl as IDirect3DRM3Vtbl_ ptr
+	lpVtbl as IDirect3DRM3Vtbl ptr
 end type
 
-type IDirect3DRM3Vtbl
-	QueryInterface as function(byval as IDirect3DRM3 ptr, byval as IID ptr, byval as LPVOID ptr) as HRESULT
-	AddRef as function(byval as IDirect3DRM3 ptr) as ULONG
-	Release as function(byval as IDirect3DRM3 ptr) as ULONG
-	CreateObject as function(byval as IDirect3DRM3 ptr, byval as CLSID ptr, byval as LPUNKNOWN, byval as IID ptr, byval as LPVOID ptr) as HRESULT
-	CreateFrame as function(byval as IDirect3DRM3 ptr, byval as LPDIRECT3DRMFRAME3, byval as LPDIRECT3DRMFRAME3 ptr) as HRESULT
-	CreateMesh as function(byval as IDirect3DRM3 ptr, byval as LPDIRECT3DRMMESH ptr) as HRESULT
-	CreateMeshBuilder as function(byval as IDirect3DRM3 ptr, byval as LPDIRECT3DRMMESHBUILDER3 ptr) as HRESULT
-	CreateFace as function(byval as IDirect3DRM3 ptr, byval as LPDIRECT3DRMFACE2 ptr) as HRESULT
-	CreateAnimation as function(byval as IDirect3DRM3 ptr, byval as LPDIRECT3DRMANIMATION2 ptr) as HRESULT
-	CreateAnimationSet as function(byval as IDirect3DRM3 ptr, byval as LPDIRECT3DRMANIMATIONSET2 ptr) as HRESULT
-	CreateTexture as function(byval as IDirect3DRM3 ptr, byval as LPD3DRMIMAGE, byval as LPDIRECT3DRMTEXTURE3 ptr) as HRESULT
-	CreateLight as function(byval as IDirect3DRM3 ptr, byval as D3DRMLIGHTTYPE, byval as D3DCOLOR, byval as LPDIRECT3DRMLIGHT ptr) as HRESULT
-	CreateLightRGB as function(byval as IDirect3DRM3 ptr, byval as D3DRMLIGHTTYPE, byval as D3DVALUE, byval as D3DVALUE, byval as D3DVALUE, byval as LPDIRECT3DRMLIGHT ptr) as HRESULT
-	CreateMaterial as function(byval as IDirect3DRM3 ptr, byval as D3DVALUE, byval as LPDIRECT3DRMMATERIAL2 ptr) as HRESULT
-	CreateDevice as function(byval as IDirect3DRM3 ptr, byval as DWORD, byval as DWORD, byval as LPDIRECT3DRMDEVICE3 ptr) as HRESULT
-	CreateDeviceFromSurface as function(byval as IDirect3DRM3 ptr, byval as LPGUID, byval as LPDIRECTDRAW, byval as LPDIRECTDRAWSURFACE, byval as DWORD, byval as LPDIRECT3DRMDEVICE3 ptr) as HRESULT
-	CreateDeviceFromD3D as function(byval as IDirect3DRM3 ptr, byval as LPDIRECT3D2, byval as LPDIRECT3DDEVICE2, byval as LPDIRECT3DRMDEVICE3 ptr) as HRESULT
-	CreateDeviceFromClipper as function(byval as IDirect3DRM3 ptr, byval as LPDIRECTDRAWCLIPPER, byval as LPGUID, byval as integer, byval as integer, byval as LPDIRECT3DRMDEVICE3 ptr) as HRESULT
-	CreateTextureFromSurface as function(byval as IDirect3DRM3 ptr, byval as LPDIRECTDRAWSURFACE, byval as LPDIRECT3DRMTEXTURE3 ptr) as HRESULT
-	CreateShadow as function(byval as IDirect3DRM3 ptr, byval as LPUNKNOWN, byval as LPDIRECT3DRMLIGHT, byval as D3DVALUE, byval as D3DVALUE, byval as D3DVALUE, byval as D3DVALUE, byval as D3DVALUE, byval as D3DVALUE, byval as LPDIRECT3DRMSHADOW2 ptr) as HRESULT
-	CreateViewport as function(byval as IDirect3DRM3 ptr, byval as LPDIRECT3DRMDEVICE3, byval as LPDIRECT3DRMFRAME3, byval as DWORD, byval as DWORD, byval as DWORD, byval as DWORD, byval as LPDIRECT3DRMVIEWPORT2 ptr) as HRESULT
-	CreateWrap as function(byval as IDirect3DRM3 ptr, byval as D3DRMWRAPTYPE, byval as LPDIRECT3DRMFRAME3, byval as D3DVALUE, byval as D3DVALUE, byval as D3DVALUE, byval as D3DVALUE, byval as D3DVALUE, byval as D3DVALUE, byval as D3DVALUE, byval as D3DVALUE, byval as D3DVALUE, byval as D3DVALUE, byval as D3DVALUE, byval as D3DVALUE, byval as D3DVALUE, byval as LPDIRECT3DRMWRAP ptr) as HRESULT
-	CreateUserVisual as function(byval as IDirect3DRM3 ptr, byval as D3DRMUSERVISUALCALLBACK, byval as LPVOID, byval as LPDIRECT3DRMUSERVISUAL ptr) as HRESULT
-	LoadTexture as function(byval as IDirect3DRM3 ptr, byval as zstring ptr, byval as LPDIRECT3DRMTEXTURE3 ptr) as HRESULT
-	LoadTextureFromResource as function(byval as IDirect3DRM3 ptr, byval as HMODULE, byval as LPCTSTR, byval as LPCTSTR, byval as LPDIRECT3DRMTEXTURE3 ptr) as HRESULT
-	SetSearchPath as function(byval as IDirect3DRM3 ptr, byval as LPCSTR) as HRESULT
-	AddSearchPath as function(byval as IDirect3DRM3 ptr, byval as LPCSTR) as HRESULT
-	GetSearchPath as function(byval as IDirect3DRM3 ptr, byval as DWORD ptr, byval as LPSTR) as HRESULT
-	SetDefaultTextureColors as function(byval as IDirect3DRM3 ptr, byval as DWORD) as HRESULT
-	SetDefaultTextureShades as function(byval as IDirect3DRM3 ptr, byval as DWORD) as HRESULT
-	GetDevices as function(byval as IDirect3DRM3 ptr, byval as LPDIRECT3DRMDEVICEARRAY ptr) as HRESULT
-	GetNamedObject as function(byval as IDirect3DRM3 ptr, byval as zstring ptr, byval as LPDIRECT3DRMOBJECT ptr) as HRESULT
-	EnumerateObjects as function(byval as IDirect3DRM3 ptr, byval as D3DRMOBJECTCALLBACK, byval as LPVOID) as HRESULT
-	Load as function(byval as IDirect3DRM3 ptr, byval as LPVOID, byval as LPVOID, byval as LPIID ptr, byval as DWORD, byval as D3DRMLOADOPTIONS, byval as D3DRMLOADCALLBACK, byval as LPVOID, byval as D3DRMLOADTEXTURE3CALLBACK, byval as LPVOID, byval as LPDIRECT3DRMFRAME3) as HRESULT
-	Tick as function(byval as IDirect3DRM3 ptr, byval as D3DVALUE) as HRESULT
-	CreateProgressiveMesh as function(byval as IDirect3DRM3 ptr, byval as LPDIRECT3DRMPROGRESSIVEMESH ptr) as HRESULT
-	RegisterClient as function(byval as IDirect3DRM3 ptr, byval as GUID ptr, byval as LPDWORD) as HRESULT
-	UnregisterClient as function(byval as IDirect3DRM3 ptr, byval as GUID ptr) as HRESULT
-	CreateClippedVisual as function(byval as IDirect3DRM3 ptr, byval as LPDIRECT3DRMVISUAL, byval as LPDIRECT3DRMCLIPPEDVISUAL ptr) as HRESULT
-	SetOptions as function(byval as IDirect3DRM3 ptr, byval as DWORD) as HRESULT
-	GetOptions as function(byval as IDirect3DRM3 ptr, byval as LPDWORD) as HRESULT
+type IDirect3DRM3Vtbl_
+	QueryInterface as function(byval This as IDirect3DRM3 ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
+	AddRef as function(byval This as IDirect3DRM3 ptr) as ULONG
+	Release as function(byval This as IDirect3DRM3 ptr) as ULONG
+	CreateObject as function(byval This as IDirect3DRM3 ptr, byval clsid as const IID const ptr, byval outer as IUnknown ptr, byval iid as const IID const ptr, byval out_ as any ptr ptr) as HRESULT
+	CreateFrame as function(byval This as IDirect3DRM3 ptr, byval parent as IDirect3DRMFrame3 ptr, byval frame as IDirect3DRMFrame3 ptr ptr) as HRESULT
+	CreateMesh as function(byval This as IDirect3DRM3 ptr, byval mesh as IDirect3DRMMesh ptr ptr) as HRESULT
+	CreateMeshBuilder as function(byval This as IDirect3DRM3 ptr, byval mesh_builder as IDirect3DRMMeshBuilder3 ptr ptr) as HRESULT
+	CreateFace as function(byval This as IDirect3DRM3 ptr, byval face as IDirect3DRMFace2 ptr ptr) as HRESULT
+	CreateAnimation as function(byval This as IDirect3DRM3 ptr, byval animation as IDirect3DRMAnimation2 ptr ptr) as HRESULT
+	CreateAnimationSet as function(byval This as IDirect3DRM3 ptr, byval set as IDirect3DRMAnimationSet2 ptr ptr) as HRESULT
+	CreateTexture as function(byval This as IDirect3DRM3 ptr, byval image as D3DRMIMAGE ptr, byval texture as IDirect3DRMTexture3 ptr ptr) as HRESULT
+	CreateLight as function(byval This as IDirect3DRM3 ptr, byval type_ as D3DRMLIGHTTYPE, byval color_ as D3DCOLOR, byval light as IDirect3DRMLight ptr ptr) as HRESULT
+	CreateLightRGB as function(byval This as IDirect3DRM3 ptr, byval type_ as D3DRMLIGHTTYPE, byval r as D3DVALUE, byval g as D3DVALUE, byval b as D3DVALUE, byval light as IDirect3DRMLight ptr ptr) as HRESULT
+	CreateMaterial as function(byval This as IDirect3DRM3 ptr, byval as D3DVALUE, byval material as IDirect3DRMMaterial2 ptr ptr) as HRESULT
+	CreateDevice as function(byval This as IDirect3DRM3 ptr, byval width_ as DWORD, byval height as DWORD, byval device as IDirect3DRMDevice3 ptr ptr) as HRESULT
+	CreateDeviceFromSurface as function(byval This as IDirect3DRM3 ptr, byval guid as GUID ptr, byval ddraw as IDirectDraw ptr, byval surface as IDirectDrawSurface ptr, byval device as IDirect3DRMDevice3 ptr ptr) as HRESULT
+	CreateDeviceFromD3D as function(byval This as IDirect3DRM3 ptr, byval d3d as IDirect3D2 ptr, byval d3d_device as IDirect3DDevice2 ptr, byval device as IDirect3DRMDevice3 ptr ptr) as HRESULT
+	CreateDeviceFromClipper as function(byval This as IDirect3DRM3 ptr, byval clipper as IDirectDrawClipper ptr, byval guid as GUID ptr, byval width_ as long, byval height as long, byval device as IDirect3DRMDevice3 ptr ptr) as HRESULT
+	CreateTextureFromSurface as function(byval This as IDirect3DRM3 ptr, byval surface as IDirectDrawSurface ptr, byval texture as IDirect3DRMTexture3 ptr ptr) as HRESULT
+	CreateShadow as function(byval This as IDirect3DRM3 ptr, byval object_ as IUnknown ptr, byval light as IDirect3DRMLight ptr, byval px as D3DVALUE, byval py as D3DVALUE, byval pz as D3DVALUE, byval nx as D3DVALUE, byval ny as D3DVALUE, byval nz as D3DVALUE, byval shadow as IDirect3DRMShadow2 ptr ptr) as HRESULT
+	CreateViewport as function(byval This as IDirect3DRM3 ptr, byval device as IDirect3DRMDevice3 ptr, byval camera as IDirect3DRMFrame3 ptr, byval x as DWORD, byval y as DWORD, byval width_ as DWORD, byval height as DWORD, byval viewport as IDirect3DRMViewport2 ptr ptr) as HRESULT
+	CreateWrap as function(byval This as IDirect3DRM3 ptr, byval type_ as D3DRMWRAPTYPE, byval reference as IDirect3DRMFrame3 ptr, byval ox as D3DVALUE, byval oy as D3DVALUE, byval oz as D3DVALUE, byval dx as D3DVALUE, byval dy as D3DVALUE, byval dz as D3DVALUE, byval ux as D3DVALUE, byval uy as D3DVALUE, byval uz as D3DVALUE, byval ou as D3DVALUE, byval ov as D3DVALUE, byval su as D3DVALUE, byval sv as D3DVALUE, byval wrap as IDirect3DRMWrap ptr ptr) as HRESULT
+	CreateUserVisual as function(byval This as IDirect3DRM3 ptr, byval cb as D3DRMUSERVISUALCALLBACK, byval ctx as any ptr, byval visual as IDirect3DRMUserVisual ptr ptr) as HRESULT
+	LoadTexture as function(byval This as IDirect3DRM3 ptr, byval filename as const zstring ptr, byval texture as IDirect3DRMTexture3 ptr ptr) as HRESULT
+	LoadTextureFromResource as function(byval This as IDirect3DRM3 ptr, byval module as HMODULE, byval resource_name as const zstring ptr, byval resource_type as const zstring ptr, byval texture as IDirect3DRMTexture3 ptr ptr) as HRESULT
+	SetSearchPath as function(byval This as IDirect3DRM3 ptr, byval path as const zstring ptr) as HRESULT
+	AddSearchPath as function(byval This as IDirect3DRM3 ptr, byval path as const zstring ptr) as HRESULT
+	GetSearchPath as function(byval This as IDirect3DRM3 ptr, byval size as DWORD ptr, byval path as zstring ptr) as HRESULT
+	SetDefaultTextureColors as function(byval This as IDirect3DRM3 ptr, byval as DWORD) as HRESULT
+	SetDefaultTextureShades as function(byval This as IDirect3DRM3 ptr, byval as DWORD) as HRESULT
+	GetDevices as function(byval This as IDirect3DRM3 ptr, byval array as IDirect3DRMDeviceArray ptr ptr) as HRESULT
+	GetNamedObject as function(byval This as IDirect3DRM3 ptr, byval name_ as const zstring ptr, byval object_ as IDirect3DRMObject ptr ptr) as HRESULT
+	EnumerateObjects as function(byval This as IDirect3DRM3 ptr, byval cb as D3DRMOBJECTCALLBACK, byval ctx as any ptr) as HRESULT
+	Load as function(byval This as IDirect3DRM3 ptr, byval source as any ptr, byval object_id as any ptr, byval iids as IID ptr ptr, byval iid_count as DWORD, byval flags as D3DRMLOADOPTIONS, byval load_cb as D3DRMLOADCALLBACK, byval load_ctx as any ptr, byval load_tex_cb as D3DRMLOADTEXTURECALLBACK, byval load_tex_ctx as any ptr, byval parent_frame as IDirect3DRMFrame3 ptr) as HRESULT
+	Tick as function(byval This as IDirect3DRM3 ptr, byval as D3DVALUE) as HRESULT
+	CreateProgressiveMesh as function(byval This as IDirect3DRM3 ptr, byval mesh as IDirect3DRMProgressiveMesh ptr ptr) as HRESULT
+	RegisterClient as function(byval This as IDirect3DRM3 ptr, byval guid as const GUID const ptr, byval id as DWORD ptr) as HRESULT
+	UnregisterClient as function(byval This as IDirect3DRM3 ptr, byval rguid as const GUID const ptr) as HRESULT
+	CreateClippedVisual as function(byval This as IDirect3DRM3 ptr, byval visual as IDirect3DRMVisual ptr, byval clipped_visual as IDirect3DRMClippedVisual ptr ptr) as HRESULT
+	SetOptions as function(byval This as IDirect3DRM3 ptr, byval as DWORD) as HRESULT
+	GetOptions as function(byval This as IDirect3DRM3 ptr, byval flags as DWORD ptr) as HRESULT
 end type
 
+#define IDirect3DRM3_QueryInterface(p, a, b) (p)->lpVtbl->QueryInterface(p, a, b)
+#define IDirect3DRM3_AddRef(p) (p)->lpVtbl->AddRef(p)
+#define IDirect3DRM3_Release(p) (p)->lpVtbl->Release(p)
+#define IDirect3DRM3_CreateObject(p, a, b, c, d) (p)->lpVtbl->CreateObject(p, a, b, d)
+#define IDirect3DRM3_CreateFrame(p, a, b) (p)->lpVtbl->CreateFrame(p, a, b)
+#define IDirect3DRM3_CreateMesh(p, a) (p)->lpVtbl->CreateMesh(p, a)
+#define IDirect3DRM3_CreateMeshBuilder(p, a) (p)->lpVtbl->CreateMeshBuilder(p, a)
+#define IDirect3DRM3_CreateFace(p, a) (p)->lpVtbl->CreateFace(p, a)
+#define IDirect3DRM3_CreateAnimation(p, a) (p)->lpVtbl->CreateAnimation(p, a)
+#define IDirect3DRM3_CreateAnimationSet(p, a) (p)->lpVtbl->CreateAnimationSet(p, a)
+#define IDirect3DRM3_CreateTexture(p, a, b) (p)->lpVtbl->CreateTexture(p, a, b)
+#define IDirect3DRM3_CreateLight(p, a, b, c) (p)->lpVtbl->CreateLight(p, a, b, c)
+#define IDirect3DRM3_CreateLightRGB(p, a, b, c, d, e) (p)->lpVtbl->CreateLightRGB(p, a, b, c, d, e)
+#define IDirect3DRM3_CreateMaterial(p, a, b) (p)->lpVtbl->CreateMaterial(p, a, b)
+#define IDirect3DRM3_CreateDevice(p, a, b, c) (p)->lpVtbl->CreateDevice(p, a, b, c)
+#define IDirect3DRM3_CreateDeviceFromSurface(p, a, b, c, d) (p)->lpVtbl->CreateDeviceFromSurface(p, a, b, c, d)
+#define IDirect3DRM3_CreateDeviceFromD3D(p, a, b, c) (p)->lpVtbl->CreateDeviceFromD3D(p, a, b, c)
+#define IDirect3DRM3_CreateDeviceFromClipper(p, a, b, c, d, e) (p)->lpVtbl->CreateDeviceFromClipper(p, a, b, c, d, e)
+#define IDirect3DRM3_CreateTextureFromSurface(p, a, b) (p)->lpVtbl->CreateTextureFromSurface(p, a, b)
+#define IDirect3DRM3_CreateShadow(p, a, b, c, d, e, f, g, h, i) (p)->lpVtbl->CreateShadow(p, a, b, c, d, e, f, g, h, i)
+#define IDirect3DRM3_CreateViewport(p, a, b, c, d, e, f, g) (p)->lpVtbl->CreateViewport(p, a, b, c, d, e, f, g)
+#define IDirect3DRM3_CreateWrap(p, a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, q) (p)->lpVtbl->CreateWrap(p, a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, q)
+#define IDirect3DRM3_CreateUserVisual(p, a, b, c) (p)->lpVtbl->CreateUserVisual(p, a, b, c)
+#define IDirect3DRM3_LoadTexture(p, a, b) (p)->lpVtbl->LoadTexture(p, a, b)
+#define IDirect3DRM3_LoadTextureFromResource(p, a, b, c, d) (p)->lpVtbl->LoadTextureFromResource(p, a, b, c, d)
+#define IDirect3DRM3_SetSearchPath(p, a) (p)->lpVtbl->SetSearchPath(p, a)
+#define IDirect3DRM3_AddSearchPath(p, a) (p)->lpVtbl->AddSearchPath(p, a)
+#define IDirect3DRM3_GetSearchPath(p, a, b) (p)->lpVtbl->GetSearchPath(p, a, b)
+#define IDirect3DRM3_SetDefaultTextureColors(p, a) (p)->lpVtbl->SetDefaultTextureColors(p, a)
+#define IDirect3DRM3_SetDefaultTextureShades(p, a) (p)->lpVtbl->SetDefaultTextureShades(p, a)
+#define IDirect3DRM3_GetDevices(p, a) (p)->lpVtbl->GetDevices(p, a)
+#define IDirect3DRM3_GetNamedObject(p, a, b) (p)->lpVtbl->GetNamedObject(p, a, b)
+#define IDirect3DRM3_EnumerateObjects(p, a, b) (p)->lpVtbl->EnumerateObjects(p, a, b)
+#define IDirect3DRM3_Load(p, a, b, c, d, e, f, g, h, i, j) (p)->lpVtbl->Load(p, a, b, c, d, e, f, g, h, i, j)
+#define IDirect3DRM3_Tick(p, a) (p)->lpVtbl->Tick(p, a)
+#define IDirect3DRM3_CreateProgressiveMesh(p, a) (p)->lpVtbl->CreateProgressiveMesh(p, a)
+#define IDirect3DRM3_RegisterClient(p, a, b) (p)->lpVtbl->RegisterClient(p, a, b)
+#define IDirect3DRM3_UnregisterClient(p, a) (p)->lpVtbl->UnregisterClient(p, a)
+#define IDirect3DRM3_CreateClippedVisual(p, ab) (p)->lpVtbl->CreateClippedVisual(p, a, b)
+#define IDirect3DRM3_SetOptions(p, a) (p)->lpVtbl->SetOptions(p, a)
+#define IDirect3DRM3_GetOptions(p, a) (p)->lpVtbl->GetOptions(p, a)
 #define D3DRM_OK DD_OK
 #define D3DRMERR_BADOBJECT MAKE_DDHRESULT(781)
 #define D3DRMERR_BADTYPE MAKE_DDHRESULT(782)
@@ -203,4 +310,4 @@ end type
 #define D3DRMERR_TEXTUREFORMATNOTFOUND MAKE_DDHRESULT(811)
 #define D3DRMERR_NOTAGGREGATED MAKE_DDHRESULT(812)
 
-#endif
+end extern

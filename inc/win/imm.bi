@@ -1,305 +1,150 @@
-''
-''
-'' imm -- header translated with help of SWIG FB wrapper
-''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
-''
-''
-#ifndef __win_imm_bi__
-#define __win_imm_bi__
+#pragma once
+
+#include once "_mingw_unicode.bi"
 
 #inclib "imm32"
 
-#define WM_CONVERTREQUESTEX &h108
-#define WM_IME_STARTCOMPOSITION &h10D
-#define WM_IME_ENDCOMPOSITION &h10E
-#define WM_IME_COMPOSITION &h10F
-#define WM_IME_KEYLAST &h10F
-#define WM_IME_SETCONTEXT &h281
-#define WM_IME_NOTIFY &h282
-#define WM_IME_CONTROL &h283
-#define WM_IME_COMPOSITIONFULL &h284
-#define WM_IME_SELECT &h285
-#define WM_IME_CHAR &h286
-#define WM_IME_KEYDOWN &h290
-#define WM_IME_KEYUP &h291
-#define IMC_GETCANDIDATEPOS 7
-#define IMC_SETCANDIDATEPOS 8
-#define IMC_GETCOMPOSITIONFONT 9
-#define IMC_SETCOMPOSITIONFONT 10
-#define IMC_GETCOMPOSITIONWINDOW 11
-#define IMC_SETCOMPOSITIONWINDOW 12
-#define IMC_GETSTATUSWINDOWPOS 15
-#define IMC_SETSTATUSWINDOWPOS 16
-#define IMC_CLOSESTATUSWINDOW &h21
-#define IMC_OPENSTATUSWINDOW &h22
-#define IMN_CLOSESTATUSWINDOW 1
-#define IMN_OPENSTATUSWINDOW 2
-#define IMN_CHANGECANDIDATE 3
-#define IMN_CLOSECANDIDATE 4
-#define IMN_OPENCANDIDATE 5
-#define IMN_SETCONVERSIONMODE 6
-#define IMN_SETSENTENCEMODE 7
-#define IMN_SETOPENSTATUS 8
-#define IMN_SETCANDIDATEPOS 9
-#define IMN_SETCOMPOSITIONFONT 10
-#define IMN_SETCOMPOSITIONWINDOW 11
-#define IMN_SETSTATUSWINDOWPOS 12
-#define IMN_GUIDELINE 13
-#define IMN_PRIVATE 14
-#define NI_OPENCANDIDATE 16
-#define NI_CLOSECANDIDATE 17
-#define NI_SELECTCANDIDATESTR 18
-#define NI_CHANGECANDIDATELIST 19
-#define NI_FINALIZECONVERSIONRESULT 20
-#define NI_COMPOSITIONSTR 21
-#define NI_SETCANDIDATE_PAGESTART 22
-#define NI_SETCANDIDATE_PAGESIZE 23
-#define NI_IMEMENUSELECTED 24
-#define ISC_SHOWUICANDIDATEWINDOW 1
-#define ISC_SHOWUICOMPOSITIONWINDOW &h80000000
-#define ISC_SHOWUIGUIDELINE &h40000000
-#define ISC_SHOWUIALLCANDIDATEWINDOW 15
-#define ISC_SHOWUIALL &hC000000F
-#define CPS_COMPLETE 1
-#define CPS_CONVERT 2
-#define CPS_REVERT 3
-#define CPS_CANCEL 4
-#define IME_CHOTKEY_IME_NONIME_TOGGLE 16
-#define IME_CHOTKEY_SHAPE_TOGGLE 17
-#define IME_CHOTKEY_SYMBOL_TOGGLE 18
-#define IME_JHOTKEY_CLOSE_OPEN &h30
-#define IME_KHOTKEY_SHAPE_TOGGLE &h50
-#define IME_KHOTKEY_HANJACONVERT &h51
-#define IME_KHOTKEY_ENGLISH &h52
-#define IME_THOTKEY_IME_NONIME_TOGGLE &h70
-#define IME_THOTKEY_SHAPE_TOGGLE &h71
-#define IME_THOTKEY_SYMBOL_TOGGLE &h72
-#define IME_HOTKEY_DSWITCH_FIRST 256
-#define IME_HOTKEY_DSWITCH_LAST &h11F
-#define IME_ITHOTKEY_RESEND_RESULTSTR 512
-#define IME_ITHOTKEY_PREVIOUS_COMPOSITION 513
-#define IME_ITHOTKEY_UISTYLE_TOGGLE 514
-#define GCS_COMPREADSTR 1
-#define GCS_COMPREADATTR 2
-#define GCS_COMPREADCLAUSE 4
-#define GCS_COMPSTR 8
-#define GCS_COMPATTR 16
-#define GCS_COMPCLAUSE 32
-#define GCS_CURSORPOS 128
-#define GCS_DELTASTART 256
-#define GCS_RESULTREADSTR 512
-#define GCS_RESULTREADCLAUSE 1024
-#define GCS_RESULTSTR 2048
-#define GCS_RESULTCLAUSE 4096
-#define CS_INSERTCHAR &h2000
-#define CS_NOMOVECARET &h4000
-#define IMEVER_0310 &h3000A
-#define IMEVER_0400 &h40000
-#define IME_PROP_AT_CARET &h10000
-#define IME_PROP_SPECIAL_UI &h20000
-#define IME_PROP_CANDLIST_START_FROM_1 &h40000
-#define IME_PROP_UNICODE &h80000
-#define UI_CAP_2700 1
-#define UI_CAP_ROT90 2
-#define UI_CAP_ROTANY 4
-#define SCS_CAP_COMPSTR 1
-#define SCS_CAP_MAKEREAD 2
-#define SELECT_CAP_CONVERSION 1
-#define SELECT_CAP_SENTENCE 2
-#define GGL_LEVEL 1
-#define GGL_INDEX 2
-#define GGL_STRING 3
-#define GGL_PRIVATE 4
-#define GL_LEVEL_NOGUIDELINE 0
-#define GL_LEVEL_FATAL 1
-#define GL_LEVEL_ERROR 2
-#define GL_LEVEL_WARNING 3
-#define GL_LEVEL_INFORMATION 4
-#define GL_ID_UNKNOWN 0
-#define GL_ID_NOMODULE 1
-#define GL_ID_NODICTIONARY 16
-#define GL_ID_CANNOTSAVE 17
-#define GL_ID_NOCONVERT 32
-#define GL_ID_TYPINGERROR 33
-#define GL_ID_TOOMANYSTROKE 34
-#define GL_ID_READINGCONFLICT 35
-#define GL_ID_INPUTREADING 36
-#define GL_ID_INPUTRADICAL 37
-#define GL_ID_INPUTCODE 38
-#define GL_ID_INPUTSYMBOL 39
-#define GL_ID_CHOOSECANDIDATE 40
-#define GL_ID_REVERSECONVERSION 41
-#define GL_ID_PRIVATE_FIRST &h8000
-#define GL_ID_PRIVATE_LAST &hFFFF
-#define IGP_GETIMEVERSION cuint(-4)
-#define IGP_PROPERTY 4
-#define IGP_CONVERSION 8
-#define IGP_SENTENCE 12
-#define IGP_UI 16
-#define IGP_SETCOMPSTR &h14
-#define IGP_SELECT &h18
-#define SCS_SETSTR (1 or 8)
-#define SCS_CHANGEATTR (2 or 16)
-#define SCS_CHANGECLAUSE (4 or 32)
-#define ATTR_INPUT 0
-#define ATTR_TARGET_CONVERTED 1
-#define ATTR_CONVERTED 2
-#define ATTR_TARGET_NOTCONVERTED 3
-#define ATTR_INPUT_ERROR 4
-#define ATTR_FIXEDCONVERTED 5
-#define CFS_DEFAULT 0
-#define CFS_RECT 1
-#define CFS_POINT 2
-#define CFS_SCREEN 4
-#define CFS_FORCE_POSITION 32
-#define CFS_CANDIDATEPOS 64
-#define CFS_EXCLUDE 128
-#define GCL_CONVERSION 1
-#define GCL_REVERSECONVERSION 2
-#define GCL_REVERSE_LENGTH 3
-#define IME_CMODE_ALPHANUMERIC 0
-#define IME_CMODE_NATIVE 1
-#define IME_CMODE_CHINESE 1
-#define IME_CMODE_HANGEUL 1
-#define IME_CMODE_HANGUL 1
-#define IME_CMODE_JAPANESE 1
-#define IME_CMODE_KATAKANA 2
-#define IME_CMODE_LANGUAGE 3
-#define IME_CMODE_FULLSHAPE 8
-#define IME_CMODE_ROMAN 16
-#define IME_CMODE_CHARCODE 32
-#define IME_CMODE_HANJACONVERT 64
-#define IME_CMODE_SOFTKBD 128
-#define IME_CMODE_NOCONVERSION 256
-#define IME_CMODE_EUDC 512
-#define IME_CMODE_SYMBOL 1024
-#define IME_CMODE_FIXED 2048
-#define IME_SMODE_NONE 0
-#define IME_SMODE_PLAURALCLAUSE 1
-#define IME_SMODE_SINGLECONVERT 2
-#define IME_SMODE_AUTOMATIC 4
-#define IME_SMODE_PHRASEPREDICT 8
-#define IME_CAND_UNKNOWN 0
-#define IME_CAND_READ 1
-#define IME_CAND_CODE 2
-#define IME_CAND_MEANING 3
-#define IME_CAND_RADICAL 4
-#define IME_CAND_STROKE 5
-#define IMM_ERROR_NODATA (-1)
-#define IMM_ERROR_GENERAL (-2)
-#define IME_CONFIG_GENERAL 1
-#define IME_CONFIG_REGISTERWORD 2
-#define IME_CONFIG_SELECTDICTIONARY 3
-#define IME_ESC_QUERY_SUPPORT 3
-#define IME_ESC_RESERVED_FIRST 4
-#define IME_ESC_RESERVED_LAST &h7FF
-#define IME_ESC_PRIVATE_FIRST &h800
-#define IME_ESC_PRIVATE_LAST &hFFF
-#define IME_ESC_SEQUENCE_TO_INTERNAL &h1001
-#define IME_ESC_GET_EUDC_DICTIONARY &h1003
-#define IME_ESC_SET_EUDC_DICTIONARY &h1004
-#define IME_ESC_MAX_KEY &h1005
-#define IME_ESC_IME_NAME &h1006
-#define IME_ESC_SYNC_HOTKEY &h1007
-#define IME_ESC_HANJA_MODE &h1008
-#define IME_ESC_AUTOMATA &h1009
-#define IME_REGWORD_STYLE_EUDC 1
-#define IME_REGWORD_STYLE_USER_FIRST &h80000000
-#define IME_REGWORD_STYLE_USER_LAST &hFFFFFFFF
-#define SOFTKEYBOARD_TYPE_T1 1
-#define SOFTKEYBOARD_TYPE_C1 2
-#define IMEMENUITEM_STRING_SIZE 80
-#define MOD_ALT 1
-#define MOD_CONTROL 2
-#define MOD_SHIFT 4
-#define MOD_WIN 8
-#define MOD_IGNORE_ALL_MODIFIER 1024
-#define MOD_ON_KEYUP 2048
-#define MOD_RIGHT 16384
-#define MOD_LEFT 32768
-#define IACE_CHILDREN 1
-#define IACE_DEFAULT 16
-#define IACE_IGNORENOCONTEXT 32
-#define IGIMIF_RIGHTMENU 1
-#define IGIMII_CMODE 1
-#define IGIMII_SMODE 2
-#define IGIMII_CONFIGURE 4
-#define IGIMII_TOOLS 8
-#define IGIMII_HELP 16
-#define IGIMII_OTHER 32
-#define IGIMII_INPUTTOOLS 64
-#define IMFT_RADIOCHECK 1
-#define IMFT_SEPARATOR 2
-#define IMFT_SUBMENU 4
-#define IMFS_GRAYED 3
-#define IMFS_DISABLED 3
-#define IMFS_CHECKED 8
-#define IMFS_HILITE 128
-#define IMFS_ENABLED 0
-#define IMFS_UNCHECKED 0
-#define IMFS_UNHILITE 0
-#define IMFS_DEFAULT 4096
-#ifndef VK_PROCESSKEY
-#define VK_PROCESSKEY &h0E5
-#endif
-#define STYLE_DESCRIPTION_SIZE 32
+extern "Windows"
 
-type HIMC as DWORD
-type HIMCC as DWORD
+#define _IMM_
+#define _IMM_SDK_DEFINED_
+
+type HIMC__
+	unused as long
+end type
+
+type HIMC as HIMC__ ptr
+
+type HIMCC__
+	unused as long
+end type
+
+type HIMCC as HIMCC__ ptr
 type LPHKL as HKL ptr
 
-type COMPOSITIONFORM
+type tagCOMPOSITIONFORM
 	dwStyle as DWORD
 	ptCurrentPos as POINT
 	rcArea as RECT
 end type
 
-type PCOMPOSITIONFORM as COMPOSITIONFORM ptr
-type LPCOMPOSITIONFORM as COMPOSITIONFORM ptr
+type COMPOSITIONFORM as tagCOMPOSITIONFORM
+type PCOMPOSITIONFORM as tagCOMPOSITIONFORM ptr
+type NPCOMPOSITIONFORM as tagCOMPOSITIONFORM ptr
+type LPCOMPOSITIONFORM as tagCOMPOSITIONFORM ptr
 
-type CANDIDATEFORM
+type tagCANDIDATEFORM
 	dwIndex as DWORD
 	dwStyle as DWORD
 	ptCurrentPos as POINT
 	rcArea as RECT
 end type
 
-type PCANDIDATEFORM as CANDIDATEFORM ptr
-type LPCANDIDATEFORM as CANDIDATEFORM ptr
+type CANDIDATEFORM as tagCANDIDATEFORM
+type PCANDIDATEFORM as tagCANDIDATEFORM ptr
+type NPCANDIDATEFORM as tagCANDIDATEFORM ptr
+type LPCANDIDATEFORM as tagCANDIDATEFORM ptr
 
-type CANDIDATELIST
+type tagCANDIDATELIST
 	dwSize as DWORD
 	dwStyle as DWORD
 	dwCount as DWORD
 	dwSelection as DWORD
 	dwPageStart as DWORD
 	dwPageSize as DWORD
-	dwOffset(0 to 1-1) as DWORD
+	dwOffset(0 to 0) as DWORD
 end type
 
-type PCANDIDATELIST as CANDIDATELIST ptr
-type LPCANDIDATELIST as CANDIDATELIST ptr
+type CANDIDATELIST as tagCANDIDATELIST
+type PCANDIDATELIST as tagCANDIDATELIST ptr
+type NPCANDIDATELIST as tagCANDIDATELIST ptr
+type LPCANDIDATELIST as tagCANDIDATELIST ptr
 
-#ifndef UNICODE
-type REGISTERWORDA
+type tagREGISTERWORDA
 	lpReading as LPSTR
 	lpWord as LPSTR
 end type
 
-type PREGISTERWORDA as REGISTERWORDA ptr
-type LPREGISTERWORDA as REGISTERWORDA ptr
+type REGISTERWORDA as tagREGISTERWORDA
+type PREGISTERWORDA as tagREGISTERWORDA ptr
+type NPREGISTERWORDA as tagREGISTERWORDA ptr
+type LPREGISTERWORDA as tagREGISTERWORDA ptr
 
-type STYLEBUFA
+type tagREGISTERWORDW
+	lpReading as LPWSTR
+	lpWord as LPWSTR
+end type
+
+type REGISTERWORDW as tagREGISTERWORDW
+type PREGISTERWORDW as tagREGISTERWORDW ptr
+type NPREGISTERWORDW as tagREGISTERWORDW ptr
+type LPREGISTERWORDW as tagREGISTERWORDW ptr
+
+#ifdef UNICODE
+	type REGISTERWORD as REGISTERWORDW
+	type PREGISTERWORD as PREGISTERWORDW
+	type NPREGISTERWORD as NPREGISTERWORDW
+	type LPREGISTERWORD as LPREGISTERWORDW
+#else
+	type REGISTERWORD as REGISTERWORDA
+	type PREGISTERWORD as PREGISTERWORDA
+	type NPREGISTERWORD as NPREGISTERWORDA
+	type LPREGISTERWORD as LPREGISTERWORDA
+#endif
+
+type tagRECONVERTSTRING
+	dwSize as DWORD
+	dwVersion as DWORD
+	dwStrLen as DWORD
+	dwStrOffset as DWORD
+	dwCompStrLen as DWORD
+	dwCompStrOffset as DWORD
+	dwTargetStrLen as DWORD
+	dwTargetStrOffset as DWORD
+end type
+
+type RECONVERTSTRING as tagRECONVERTSTRING
+type PRECONVERTSTRING as tagRECONVERTSTRING ptr
+type NPRECONVERTSTRING as tagRECONVERTSTRING ptr
+type LPRECONVERTSTRING as tagRECONVERTSTRING ptr
+
+#define STYLE_DESCRIPTION_SIZE 32
+
+type tagSTYLEBUFA
 	dwStyle as DWORD
 	szDescription as zstring * 32
 end type
 
-type PSTYLEBUFA as STYLEBUFA ptr
-type LPSTYLEBUFA as STYLEBUFA ptr
+type STYLEBUFA as tagSTYLEBUFA
+type PSTYLEBUFA as tagSTYLEBUFA ptr
+type NPSTYLEBUFA as tagSTYLEBUFA ptr
+type LPSTYLEBUFA as tagSTYLEBUFA ptr
 
-type IMEMENUITEMINFOA
+type tagSTYLEBUFW
+	dwStyle as DWORD
+	szDescription as wstring * 32
+end type
+
+type STYLEBUFW as tagSTYLEBUFW
+type PSTYLEBUFW as tagSTYLEBUFW ptr
+type NPSTYLEBUFW as tagSTYLEBUFW ptr
+type LPSTYLEBUFW as tagSTYLEBUFW ptr
+
+#ifdef UNICODE
+	type STYLEBUF as STYLEBUFW
+	type PSTYLEBUF as PSTYLEBUFW
+	type NPSTYLEBUF as NPSTYLEBUFW
+	type LPSTYLEBUF as LPSTYLEBUFW
+#else
+	type STYLEBUF as STYLEBUFA
+	type PSTYLEBUF as PSTYLEBUFA
+	type NPSTYLEBUF as NPSTYLEBUFA
+	type LPSTYLEBUF as LPSTYLEBUFA
+#endif
+
+#define IMEMENUITEM_STRING_SIZE 80
+
+type tagIMEMENUITEMINFOA
 	cbSize as UINT
 	fType as UINT
 	fState as UINT
@@ -311,27 +156,12 @@ type IMEMENUITEMINFOA
 	hbmpItem as HBITMAP
 end type
 
-type PIMEMENUITEMINFOA as IMEMENUITEMINFOA ptr
-type LPIMEMENUITEMINFOA as IMEMENUITEMINFOA ptr
+type IMEMENUITEMINFOA as tagIMEMENUITEMINFOA
+type PIMEMENUITEMINFOA as tagIMEMENUITEMINFOA ptr
+type NPIMEMENUITEMINFOA as tagIMEMENUITEMINFOA ptr
+type LPIMEMENUITEMINFOA as tagIMEMENUITEMINFOA ptr
 
-#else ''UNICODE
-type REGISTERWORDW
-	lpReading as LPWSTR
-	lpWord as LPWSTR
-end type
-
-type PREGISTERWORDW as REGISTERWORDW ptr
-type LPREGISTERWORDW as REGISTERWORDW ptr
-
-type STYLEBUFW
-	dwStyle as DWORD
-	szDescription as wstring * 32
-end type
-
-type PSTYLEBUFW as STYLEBUFW ptr
-type LPSTYLEBUFW as STYLEBUFW ptr
-
-type IMEMENUITEMINFOW
+type tagIMEMENUITEMINFOW
 	cbSize as UINT
 	fType as UINT
 	fState as UINT
@@ -343,103 +173,390 @@ type IMEMENUITEMINFOW
 	hbmpItem as HBITMAP
 end type
 
-type PIMEMENUITEMINFOW as IMEMENUITEMINFOW ptr
-type LPIMEMENUITEMINFOW as IMEMENUITEMINFOW ptr
-#endif ''UNICODE
+type IMEMENUITEMINFOW as tagIMEMENUITEMINFOW
+type PIMEMENUITEMINFOW as tagIMEMENUITEMINFOW ptr
+type NPIMEMENUITEMINFOW as tagIMEMENUITEMINFOW ptr
+type LPIMEMENUITEMINFOW as tagIMEMENUITEMINFOW ptr
 
 #ifdef UNICODE
-type REGISTERWORDENUMPROCW as function (byval as LPCWSTR, byval as DWORD, byval as LPCWSTR, byval as LPVOID) as integer
-#define REGISTERWORDENUMPROC REGISTERWORDENUMPROCW
-type REGISTERWORD as REGISTERWORDW
-type PREGISTERWORD as REGISTERWORDW ptr
-type LPREGISTERWORD as REGISTERWORDW ptr
-type STYLEBUF as STYLEBUFW
-type PSTYLEBUF as STYLEBUFW ptr
-type LPSTYLEBUF as STYLEBUFW ptr
-type IMEMENUITEMINFO as IMEMENUITEMINFOW
-type PIMEMENUITEMINFO as IMEMENUITEMINFOW ptr
-type LPIMEMENUITEMINFO as IMEMENUITEMINFOW ptr
-
-#else ''UNICODE
-type REGISTERWORDENUMPROCA as function (byval as LPCSTR, byval as DWORD, byval as LPCSTR, byval as LPVOID) as integer
-#define REGISTERWORDENUMPROC REGISTERWORDENUMPROCA
-type REGISTERWORD as REGISTERWORDA
-type PREGISTERWORD as REGISTERWORDA ptr
-type LPREGISTERWORD as REGISTERWORDA ptr
-type STYLEBUF as STYLEBUFA
-type PSTYLEBUF as STYLEBUFA ptr
-type LPSTYLEBUF as STYLEBUFA ptr
-type IMEMENUITEMINFO as IMEMENUITEMINFOA
-type PIMEMENUITEMINFO as IMEMENUITEMINFOA ptr
-type LPIMEMENUITEMINFO as IMEMENUITEMINFOA ptr
-#endif ''UNICODE
-
-declare function ImmGetDefaultIMEWnd alias "ImmGetDefaultIMEWnd" (byval as HWND) as HWND
-declare function ImmGetProperty alias "ImmGetProperty" (byval as HKL, byval as DWORD) as DWORD
-declare function ImmIsIME alias "ImmIsIME" (byval as HKL) as BOOL
-declare function ImmSimulateHotKey alias "ImmSimulateHotKey" (byval as HWND, byval as DWORD) as BOOL
-declare function ImmCreateContext alias "ImmCreateContext" () as HIMC
-declare function ImmDestroyContext alias "ImmDestroyContext" (byval as HIMC) as BOOL
-declare function ImmGetContext alias "ImmGetContext" (byval as HWND) as HIMC
-declare function ImmReleaseContext alias "ImmReleaseContext" (byval as HWND, byval as HIMC) as BOOL
-declare function ImmAssociateContext alias "ImmAssociateContext" (byval as HWND, byval as HIMC) as HIMC
-declare function ImmGetConversionStatus alias "ImmGetConversionStatus" (byval as HIMC, byval as LPDWORD, byval as PDWORD) as BOOL
-declare function ImmSetConversionStatus alias "ImmSetConversionStatus" (byval as HIMC, byval as DWORD, byval as DWORD) as BOOL
-declare function ImmGetOpenStatus alias "ImmGetOpenStatus" (byval as HIMC) as BOOL
-declare function ImmSetOpenStatus alias "ImmSetOpenStatus" (byval as HIMC, byval as BOOL) as BOOL
-declare function ImmNotifyIME alias "ImmNotifyIME" (byval as HIMC, byval as DWORD, byval as DWORD, byval as DWORD) as BOOL
-declare function ImmGetStatusWindowPos alias "ImmGetStatusWindowPos" (byval as HIMC, byval as LPPOINT) as BOOL
-declare function ImmSetStatusWindowPos alias "ImmSetStatusWindowPos" (byval as HIMC, byval as LPPOINT) as BOOL
-declare function ImmGetCompositionWindow alias "ImmGetCompositionWindow" (byval as HIMC, byval as PCOMPOSITIONFORM) as BOOL
-declare function ImmSetCompositionWindow alias "ImmSetCompositionWindow" (byval as HIMC, byval as PCOMPOSITIONFORM) as BOOL
-declare function ImmGetCandidateWindow alias "ImmGetCandidateWindow" (byval as HIMC, byval as DWORD, byval as PCANDIDATEFORM) as BOOL
-declare function ImmSetCandidateWindow alias "ImmSetCandidateWindow" (byval as HIMC, byval as PCANDIDATEFORM) as BOOL
-declare function ImmGetVirtualKey alias "ImmGetVirtualKey" (byval as HWND) as UINT
-declare function EnableEUDC alias "EnableEUDC" (byval as BOOL) as BOOL
-declare function ImmDisableIME alias "ImmDisableIME" (byval as DWORD) as BOOL
-
-#ifdef UNICODE
-declare function ImmInstallIME alias "ImmInstallIMEW" (byval as LPCWSTR, byval as LPCWSTR) as HKL
-declare function ImmGetDescription alias "ImmGetDescriptionW" (byval as HKL, byval as LPWSTR, byval as UINT) as UINT
-declare function ImmGetIMEFileName alias "ImmGetIMEFileNameW" (byval as HKL, byval as LPWSTR, byval as UINT) as UINT
-declare function ImmGetCompositionString alias "ImmGetCompositionStringW" (byval as HIMC, byval as DWORD, byval as PVOID, byval as DWORD) as LONG
-declare function ImmSetCompositionString alias "ImmSetCompositionStringW" (byval as HIMC, byval as DWORD, byval as PCVOID, byval as DWORD, byval as PCVOID, byval as DWORD) as BOOL
-declare function ImmGetCandidateListCount alias "ImmGetCandidateListCountW" (byval as HIMC, byval as PDWORD) as DWORD
-declare function ImmGetCandidateList alias "ImmGetCandidateListW" (byval as HIMC, byval as DWORD, byval as PCANDIDATELIST, byval as DWORD) as DWORD
-declare function ImmGetGuideLine alias "ImmGetGuideLineW" (byval as HIMC, byval as DWORD, byval as LPWSTR, byval as DWORD) as DWORD
-declare function ImmGetCompositionFont alias "ImmGetCompositionFontW" (byval as HIMC, byval as LPLOGFONTW) as BOOL
-declare function ImmSetCompositionFont alias "ImmSetCompositionFontW" (byval as HIMC, byval as LPLOGFONTW) as BOOL
-declare function ImmConfigureIME alias "ImmConfigureIMEW" (byval as HKL, byval as HWND, byval as DWORD, byval as PVOID) as BOOL
-declare function ImmEscape alias "ImmEscapeW" (byval as HKL, byval as HIMC, byval as UINT, byval as PVOID) as LRESULT
-declare function ImmGetConversionList alias "ImmGetConversionListW" (byval as HKL, byval as HIMC, byval as LPCWSTR, byval as PCANDIDATELIST, byval as DWORD, byval as UINT) as DWORD
-declare function ImmIsUIMessage alias "ImmIsUIMessageW" (byval as HWND, byval as UINT, byval as WPARAM, byval as LPARAM) as BOOL
-declare function ImmRegisterWord alias "ImmRegisterWordW" (byval as HKL, byval as LPCWSTR, byval as DWORD, byval as LPCWSTR) as BOOL
-declare function ImmUnregisterWord alias "ImmUnregisterWordW" (byval as HKL, byval as LPCWSTR, byval as DWORD, byval as LPCWSTR) as BOOL
-declare function ImmGetRegisterWordStyle alias "ImmGetRegisterWordStyleW" (byval as HKL, byval as UINT, byval as PSTYLEBUFW) as UINT
-declare function ImmEnumRegisterWord alias "ImmEnumRegisterWordW" (byval as HKL, byval as REGISTERWORDENUMPROCW, byval as LPCWSTR, byval as DWORD, byval as LPCWSTR, byval as PVOID) as UINT
-declare function ImmGetImeMenuItems alias "ImmGetImeMenuItemsW" (byval as HIMC, byval as DWORD, byval as DWORD, byval as LPIMEMENUITEMINFOW, byval as LPIMEMENUITEMINFOW, byval as DWORD) as DWORD
-
-#else ''UNICODE
-declare function ImmInstallIME alias "ImmInstallIMEA" (byval as LPCSTR, byval as LPCSTR) as HKL
-declare function ImmGetDescription alias "ImmGetDescriptionA" (byval as HKL, byval as LPSTR, byval as UINT) as UINT
-declare function ImmGetIMEFileName alias "ImmGetIMEFileNameA" (byval as HKL, byval as LPSTR, byval as UINT) as UINT
-declare function ImmGetCompositionString alias "ImmGetCompositionStringA" (byval as HIMC, byval as DWORD, byval as PVOID, byval as DWORD) as LONG
-declare function ImmSetCompositionString alias "ImmSetCompositionStringA" (byval as HIMC, byval as DWORD, byval as PCVOID, byval as DWORD, byval as PCVOID, byval as DWORD) as BOOL
-declare function ImmGetCandidateListCount alias "ImmGetCandidateListCountA" (byval as HIMC, byval as PDWORD) as DWORD
-declare function ImmGetCandidateList alias "ImmGetCandidateListA" (byval as HIMC, byval as DWORD, byval as PCANDIDATELIST, byval as DWORD) as DWORD
-declare function ImmGetGuideLine alias "ImmGetGuideLineA" (byval as HIMC, byval as DWORD, byval as LPSTR, byval as DWORD) as DWORD
-declare function ImmGetCompositionFont alias "ImmGetCompositionFontA" (byval as HIMC, byval as LPLOGFONTA) as BOOL
-declare function ImmSetCompositionFont alias "ImmSetCompositionFontA" (byval as HIMC, byval as LPLOGFONTA) as BOOL
-declare function ImmConfigureIME alias "ImmConfigureIMEA" (byval as HKL, byval as HWND, byval as DWORD, byval as PVOID) as BOOL
-declare function ImmEscape alias "ImmEscapeA" (byval as HKL, byval as HIMC, byval as UINT, byval as PVOID) as LRESULT
-declare function ImmGetConversionList alias "ImmGetConversionListA" (byval as HKL, byval as HIMC, byval as LPCSTR, byval as PCANDIDATELIST, byval as DWORD, byval as UINT) as DWORD
-declare function ImmIsUIMessage alias "ImmIsUIMessageA" (byval as HWND, byval as UINT, byval as WPARAM, byval as LPARAM) as BOOL
-declare function ImmRegisterWord alias "ImmRegisterWordA" (byval as HKL, byval as LPCSTR, byval as DWORD, byval as LPCSTR) as BOOL
-declare function ImmUnregisterWord alias "ImmUnregisterWordA" (byval as HKL, byval as LPCSTR, byval as DWORD, byval as LPCSTR) as BOOL
-declare function ImmGetRegisterWordStyle alias "ImmGetRegisterWordStyleA" (byval as HKL, byval as UINT, byval as PSTYLEBUFA) as UINT
-declare function ImmEnumRegisterWord alias "ImmEnumRegisterWordA" (byval as HKL, byval as REGISTERWORDENUMPROCA, byval as LPCSTR, byval as DWORD, byval as LPCSTR, byval as PVOID) as UINT
-declare function ImmGetImeMenuItems alias "ImmGetImeMenuItemsA" (byval as HIMC, byval as DWORD, byval as DWORD, byval as LPIMEMENUITEMINFOA, byval as LPIMEMENUITEMINFOA, byval as DWORD) as DWORD
-
-#endif ''UNICODE
-
+	type IMEMENUITEMINFO as IMEMENUITEMINFOW
+	type PIMEMENUITEMINFO as PIMEMENUITEMINFOW
+	type NPIMEMENUITEMINFO as NPIMEMENUITEMINFOW
+	type LPIMEMENUITEMINFO as LPIMEMENUITEMINFOW
+#else
+	type IMEMENUITEMINFO as IMEMENUITEMINFOA
+	type PIMEMENUITEMINFO as PIMEMENUITEMINFOA
+	type NPIMEMENUITEMINFO as NPIMEMENUITEMINFOA
+	type LPIMEMENUITEMINFO as LPIMEMENUITEMINFOA
 #endif
+
+type tagIMECHARPOSITION
+	dwSize as DWORD
+	dwCharPos as DWORD
+	pt as POINT
+	cLineHeight as UINT
+	rcDocument as RECT
+end type
+
+type IMECHARPOSITION as tagIMECHARPOSITION
+type PIMECHARPOSITION as tagIMECHARPOSITION ptr
+type NPIMECHARPOSITION as tagIMECHARPOSITION ptr
+type LPIMECHARPOSITION as tagIMECHARPOSITION ptr
+type IMCENUMPROC as function(byval as HIMC, byval as LPARAM) as WINBOOL
+
+#ifdef UNICODE
+	#define ImmInstallIME ImmInstallIMEW
+	#define ImmGetDescription ImmGetDescriptionW
+	#define ImmGetIMEFileName ImmGetIMEFileNameW
+	#define ImmGetCompositionString ImmGetCompositionStringW
+	#define ImmSetCompositionString ImmSetCompositionStringW
+	#define ImmGetCandidateListCount ImmGetCandidateListCountW
+	#define ImmGetCandidateList ImmGetCandidateListW
+	#define ImmGetGuideLine ImmGetGuideLineW
+#else
+	#define ImmInstallIME ImmInstallIMEA
+	#define ImmGetDescription ImmGetDescriptionA
+	#define ImmGetIMEFileName ImmGetIMEFileNameA
+	#define ImmGetCompositionString ImmGetCompositionStringA
+	#define ImmSetCompositionString ImmSetCompositionStringA
+	#define ImmGetCandidateListCount ImmGetCandidateListCountA
+	#define ImmGetCandidateList ImmGetCandidateListA
+	#define ImmGetGuideLine ImmGetGuideLineA
+#endif
+
+declare function ImmInstallIMEA(byval lpszIMEFileName as LPCSTR, byval lpszLayoutText as LPCSTR) as HKL
+declare function ImmInstallIMEW(byval lpszIMEFileName as LPCWSTR, byval lpszLayoutText as LPCWSTR) as HKL
+declare function ImmGetDefaultIMEWnd(byval as HWND) as HWND
+declare function ImmGetDescriptionA(byval as HKL, byval as LPSTR, byval uBufLen as UINT) as UINT
+declare function ImmGetDescriptionW(byval as HKL, byval as LPWSTR, byval uBufLen as UINT) as UINT
+declare function ImmGetIMEFileNameA(byval as HKL, byval as LPSTR, byval uBufLen as UINT) as UINT
+declare function ImmGetIMEFileNameW(byval as HKL, byval as LPWSTR, byval uBufLen as UINT) as UINT
+declare function ImmGetProperty(byval as HKL, byval as DWORD) as DWORD
+declare function ImmIsIME(byval as HKL) as WINBOOL
+declare function ImmSimulateHotKey(byval as HWND, byval as DWORD) as WINBOOL
+declare function ImmCreateContext() as HIMC
+declare function ImmDestroyContext(byval as HIMC) as WINBOOL
+declare function ImmGetContext(byval as HWND) as HIMC
+declare function ImmReleaseContext(byval as HWND, byval as HIMC) as WINBOOL
+declare function ImmAssociateContext(byval as HWND, byval as HIMC) as HIMC
+declare function ImmAssociateContextEx(byval as HWND, byval as HIMC, byval as DWORD) as WINBOOL
+declare function ImmGetCompositionStringA(byval as HIMC, byval as DWORD, byval as LPVOID, byval as DWORD) as LONG
+declare function ImmGetCompositionStringW(byval as HIMC, byval as DWORD, byval as LPVOID, byval as DWORD) as LONG
+declare function ImmSetCompositionStringA(byval as HIMC, byval dwIndex as DWORD, byval lpComp as LPVOID, byval as DWORD, byval lpRead as LPVOID, byval as DWORD) as WINBOOL
+declare function ImmSetCompositionStringW(byval as HIMC, byval dwIndex as DWORD, byval lpComp as LPVOID, byval as DWORD, byval lpRead as LPVOID, byval as DWORD) as WINBOOL
+declare function ImmGetCandidateListCountA(byval as HIMC, byval lpdwListCount as LPDWORD) as DWORD
+declare function ImmGetCandidateListCountW(byval as HIMC, byval lpdwListCount as LPDWORD) as DWORD
+declare function ImmGetCandidateListA(byval as HIMC, byval deIndex as DWORD, byval as LPCANDIDATELIST, byval dwBufLen as DWORD) as DWORD
+declare function ImmGetCandidateListW(byval as HIMC, byval deIndex as DWORD, byval as LPCANDIDATELIST, byval dwBufLen as DWORD) as DWORD
+declare function ImmGetGuideLineA(byval as HIMC, byval dwIndex as DWORD, byval as LPSTR, byval dwBufLen as DWORD) as DWORD
+declare function ImmGetGuideLineW(byval as HIMC, byval dwIndex as DWORD, byval as LPWSTR, byval dwBufLen as DWORD) as DWORD
+declare function ImmGetConversionStatus(byval as HIMC, byval as LPDWORD, byval as LPDWORD) as WINBOOL
+declare function ImmSetConversionStatus(byval as HIMC, byval as DWORD, byval as DWORD) as WINBOOL
+declare function ImmGetOpenStatus(byval as HIMC) as WINBOOL
+declare function ImmSetOpenStatus(byval as HIMC, byval as WINBOOL) as WINBOOL
+
+#ifdef UNICODE
+	#define ImmGetCompositionFont ImmGetCompositionFontW
+	#define ImmSetCompositionFont ImmSetCompositionFontW
+#else
+	#define ImmGetCompositionFont ImmGetCompositionFontA
+	#define ImmSetCompositionFont ImmSetCompositionFontA
+#endif
+
+declare function ImmGetCompositionFontA(byval as HIMC, byval as LPLOGFONTA) as WINBOOL
+declare function ImmGetCompositionFontW(byval as HIMC, byval as LPLOGFONTW) as WINBOOL
+declare function ImmSetCompositionFontA(byval as HIMC, byval as LPLOGFONTA) as WINBOOL
+declare function ImmSetCompositionFontW(byval as HIMC, byval as LPLOGFONTW) as WINBOOL
+
+type REGISTERWORDENUMPROCA as function(byval as LPCSTR, byval as DWORD, byval as LPCSTR, byval as LPVOID) as long
+type REGISTERWORDENUMPROCW as function(byval as LPCWSTR, byval as DWORD, byval as LPCWSTR, byval as LPVOID) as long
+
+#ifdef UNICODE
+	#define REGISTERWORDENUMPROC REGISTERWORDENUMPROCW
+	#define ImmConfigureIME ImmConfigureIMEW
+	#define ImmEscape ImmEscapeW
+	#define ImmGetConversionList ImmGetConversionListW
+	#define ImmIsUIMessage ImmIsUIMessageW
+	#define ImmRegisterWord ImmRegisterWordW
+	#define ImmUnregisterWord ImmUnregisterWordW
+	#define ImmGetRegisterWordStyle ImmGetRegisterWordStyleW
+	#define ImmEnumRegisterWord ImmEnumRegisterWordW
+	#define ImmGetImeMenuItems ImmGetImeMenuItemsW
+#else
+	#define REGISTERWORDENUMPROC REGISTERWORDENUMPROCA
+	#define ImmConfigureIME ImmConfigureIMEA
+	#define ImmEscape ImmEscapeA
+	#define ImmGetConversionList ImmGetConversionListA
+	#define ImmIsUIMessage ImmIsUIMessageA
+	#define ImmRegisterWord ImmRegisterWordA
+	#define ImmUnregisterWord ImmUnregisterWordA
+	#define ImmGetRegisterWordStyle ImmGetRegisterWordStyleA
+	#define ImmEnumRegisterWord ImmEnumRegisterWordA
+	#define ImmGetImeMenuItems ImmGetImeMenuItemsA
+#endif
+
+declare function ImmConfigureIMEA(byval as HKL, byval as HWND, byval as DWORD, byval as LPVOID) as WINBOOL
+declare function ImmConfigureIMEW(byval as HKL, byval as HWND, byval as DWORD, byval as LPVOID) as WINBOOL
+declare function ImmEscapeA(byval as HKL, byval as HIMC, byval as UINT, byval as LPVOID) as LRESULT
+declare function ImmEscapeW(byval as HKL, byval as HIMC, byval as UINT, byval as LPVOID) as LRESULT
+declare function ImmGetConversionListA(byval as HKL, byval as HIMC, byval as LPCSTR, byval as LPCANDIDATELIST, byval dwBufLen as DWORD, byval uFlag as UINT) as DWORD
+declare function ImmGetConversionListW(byval as HKL, byval as HIMC, byval as LPCWSTR, byval as LPCANDIDATELIST, byval dwBufLen as DWORD, byval uFlag as UINT) as DWORD
+declare function ImmNotifyIME(byval as HIMC, byval dwAction as DWORD, byval dwIndex as DWORD, byval dwValue as DWORD) as WINBOOL
+declare function ImmGetStatusWindowPos(byval as HIMC, byval as LPPOINT) as WINBOOL
+declare function ImmSetStatusWindowPos(byval as HIMC, byval as LPPOINT) as WINBOOL
+declare function ImmGetCompositionWindow(byval as HIMC, byval as LPCOMPOSITIONFORM) as WINBOOL
+declare function ImmSetCompositionWindow(byval as HIMC, byval as LPCOMPOSITIONFORM) as WINBOOL
+declare function ImmGetCandidateWindow(byval as HIMC, byval as DWORD, byval as LPCANDIDATEFORM) as WINBOOL
+declare function ImmSetCandidateWindow(byval as HIMC, byval as LPCANDIDATEFORM) as WINBOOL
+declare function ImmIsUIMessageA(byval as HWND, byval as UINT, byval as WPARAM, byval as LPARAM) as WINBOOL
+declare function ImmIsUIMessageW(byval as HWND, byval as UINT, byval as WPARAM, byval as LPARAM) as WINBOOL
+declare function ImmGetVirtualKey(byval as HWND) as UINT
+declare function ImmRegisterWordA(byval as HKL, byval lpszReading as LPCSTR, byval as DWORD, byval lpszRegister as LPCSTR) as WINBOOL
+declare function ImmRegisterWordW(byval as HKL, byval lpszReading as LPCWSTR, byval as DWORD, byval lpszRegister as LPCWSTR) as WINBOOL
+declare function ImmUnregisterWordA(byval as HKL, byval lpszReading as LPCSTR, byval as DWORD, byval lpszUnregister as LPCSTR) as WINBOOL
+declare function ImmUnregisterWordW(byval as HKL, byval lpszReading as LPCWSTR, byval as DWORD, byval lpszUnregister as LPCWSTR) as WINBOOL
+declare function ImmGetRegisterWordStyleA(byval as HKL, byval nItem as UINT, byval as LPSTYLEBUFA) as UINT
+declare function ImmGetRegisterWordStyleW(byval as HKL, byval nItem as UINT, byval as LPSTYLEBUFW) as UINT
+declare function ImmEnumRegisterWordA(byval as HKL, byval as REGISTERWORDENUMPROCA, byval lpszReading as LPCSTR, byval as DWORD, byval lpszRegister as LPCSTR, byval as LPVOID) as UINT
+declare function ImmEnumRegisterWordW(byval as HKL, byval as REGISTERWORDENUMPROCW, byval lpszReading as LPCWSTR, byval as DWORD, byval lpszRegister as LPCWSTR, byval as LPVOID) as UINT
+declare function ImmDisableIME(byval as DWORD) as WINBOOL
+declare function ImmEnumInputContext(byval idThread as DWORD, byval lpfn as IMCENUMPROC, byval lParam as LPARAM) as WINBOOL
+declare function ImmGetImeMenuItemsA(byval as HIMC, byval as DWORD, byval as DWORD, byval as LPIMEMENUITEMINFOA, byval as LPIMEMENUITEMINFOA, byval as DWORD) as DWORD
+declare function ImmGetImeMenuItemsW(byval as HIMC, byval as DWORD, byval as DWORD, byval as LPIMEMENUITEMINFOW, byval as LPIMEMENUITEMINFOW, byval as DWORD) as DWORD
+declare function ImmDisableTextFrameService(byval idThread as DWORD) as WINBOOL
+
+#define IMC_GETCANDIDATEPOS &h0007
+#define IMC_SETCANDIDATEPOS &h0008
+#define IMC_GETCOMPOSITIONFONT &h0009
+#define IMC_SETCOMPOSITIONFONT &h000A
+#define IMC_GETCOMPOSITIONWINDOW &h000B
+#define IMC_SETCOMPOSITIONWINDOW &h000C
+#define IMC_GETSTATUSWINDOWPOS &h000F
+#define IMC_SETSTATUSWINDOWPOS &h0010
+#define IMC_CLOSESTATUSWINDOW &h0021
+#define IMC_OPENSTATUSWINDOW &h0022
+#define NI_OPENCANDIDATE &h0010
+#define NI_CLOSECANDIDATE &h0011
+#define NI_SELECTCANDIDATESTR &h0012
+#define NI_CHANGECANDIDATELIST &h0013
+#define NI_FINALIZECONVERSIONRESULT &h0014
+#define NI_COMPOSITIONSTR &h0015
+#define NI_SETCANDIDATE_PAGESTART &h0016
+#define NI_SETCANDIDATE_PAGESIZE &h0017
+#define NI_IMEMENUSELECTED &h0018
+#define ISC_SHOWUICANDIDATEWINDOW &h00000001
+#define ISC_SHOWUICOMPOSITIONWINDOW &h80000000
+#define ISC_SHOWUIGUIDELINE &h40000000
+#define ISC_SHOWUIALLCANDIDATEWINDOW &h0000000F
+#define ISC_SHOWUIALL &hC000000F
+#define CPS_COMPLETE &h0001
+#define CPS_CONVERT &h0002
+#define CPS_REVERT &h0003
+#define CPS_CANCEL &h0004
+#define MOD_ALT &h0001
+#define MOD_CONTROL &h0002
+#define MOD_SHIFT &h0004
+#define MOD_LEFT &h8000
+#define MOD_RIGHT &h4000
+#define MOD_ON_KEYUP &h0800
+#define MOD_IGNORE_ALL_MODIFIER &h0400
+#define IME_CHOTKEY_IME_NONIME_TOGGLE &h10
+#define IME_CHOTKEY_SHAPE_TOGGLE &h11
+#define IME_CHOTKEY_SYMBOL_TOGGLE &h12
+#define IME_JHOTKEY_CLOSE_OPEN &h30
+#define IME_KHOTKEY_SHAPE_TOGGLE &h50
+#define IME_KHOTKEY_HANJACONVERT &h51
+#define IME_KHOTKEY_ENGLISH &h52
+#define IME_THOTKEY_IME_NONIME_TOGGLE &h70
+#define IME_THOTKEY_SHAPE_TOGGLE &h71
+#define IME_THOTKEY_SYMBOL_TOGGLE &h72
+#define IME_HOTKEY_DSWITCH_FIRST &h100
+#define IME_HOTKEY_DSWITCH_LAST &h11F
+#define IME_HOTKEY_PRIVATE_FIRST &h200
+#define IME_ITHOTKEY_RESEND_RESULTSTR &h200
+#define IME_ITHOTKEY_PREVIOUS_COMPOSITION &h201
+#define IME_ITHOTKEY_UISTYLE_TOGGLE &h202
+#define IME_ITHOTKEY_RECONVERTSTRING &h203
+#define IME_HOTKEY_PRIVATE_LAST &h21F
+#define GCS_COMPREADSTR &h0001
+#define GCS_COMPREADATTR &h0002
+#define GCS_COMPREADCLAUSE &h0004
+#define GCS_COMPSTR &h0008
+#define GCS_COMPATTR &h0010
+#define GCS_COMPCLAUSE &h0020
+#define GCS_CURSORPOS &h0080
+#define GCS_DELTASTART &h0100
+#define GCS_RESULTREADSTR &h0200
+#define GCS_RESULTREADCLAUSE &h0400
+#define GCS_RESULTSTR &h0800
+#define GCS_RESULTCLAUSE &h1000
+#define CS_INSERTCHAR &h2000
+#define CS_NOMOVECARET &h4000
+#define IMEVER_0310 &h0003000A
+#define IMEVER_0400 &h00040000
+#define IME_PROP_AT_CARET &h00010000
+#define IME_PROP_SPECIAL_UI &h00020000
+#define IME_PROP_CANDLIST_START_FROM_1 &h00040000
+#define IME_PROP_UNICODE &h00080000
+#define IME_PROP_COMPLETE_ON_UNSELECT &h00100000
+#define UI_CAP_2700 &h00000001
+#define UI_CAP_ROT90 &h00000002
+#define UI_CAP_ROTANY &h00000004
+#define SCS_CAP_COMPSTR &h00000001
+#define SCS_CAP_MAKEREAD &h00000002
+#define SCS_CAP_SETRECONVERTSTRING &h00000004
+#define SELECT_CAP_CONVERSION &h00000001
+#define SELECT_CAP_SENTENCE &h00000002
+#define GGL_LEVEL &h00000001
+#define GGL_INDEX &h00000002
+#define GGL_STRING &h00000003
+#define GGL_PRIVATE &h00000004
+#define GL_LEVEL_NOGUIDELINE &h00000000
+#define GL_LEVEL_FATAL &h00000001
+#define GL_LEVEL_ERROR &h00000002
+#define GL_LEVEL_WARNING &h00000003
+#define GL_LEVEL_INFORMATION &h00000004
+#define GL_ID_UNKNOWN &h00000000
+#define GL_ID_NOMODULE &h00000001
+#define GL_ID_NODICTIONARY &h00000010
+#define GL_ID_CANNOTSAVE &h00000011
+#define GL_ID_NOCONVERT &h00000020
+#define GL_ID_TYPINGERROR &h00000021
+#define GL_ID_TOOMANYSTROKE &h00000022
+#define GL_ID_READINGCONFLICT &h00000023
+#define GL_ID_INPUTREADING &h00000024
+#define GL_ID_INPUTRADICAL &h00000025
+#define GL_ID_INPUTCODE &h00000026
+#define GL_ID_INPUTSYMBOL &h00000027
+#define GL_ID_CHOOSECANDIDATE &h00000028
+#define GL_ID_REVERSECONVERSION &h00000029
+#define GL_ID_PRIVATE_FIRST &h00008000
+#define GL_ID_PRIVATE_LAST &h0000FFFF
+#define IGP_GETIMEVERSION cast(DWORD, -4)
+#define IGP_PROPERTY &h00000004
+#define IGP_CONVERSION &h00000008
+#define IGP_SENTENCE &h0000000c
+#define IGP_UI &h00000010
+#define IGP_SETCOMPSTR &h00000014
+#define IGP_SELECT &h00000018
+#define SCS_SETSTR (GCS_COMPREADSTR or GCS_COMPSTR)
+#define SCS_CHANGEATTR (GCS_COMPREADATTR or GCS_COMPATTR)
+#define SCS_CHANGECLAUSE (GCS_COMPREADCLAUSE or GCS_COMPCLAUSE)
+#define SCS_SETRECONVERTSTRING &h00010000
+#define SCS_QUERYRECONVERTSTRING &h00020000
+#define ATTR_INPUT &h00
+#define ATTR_TARGET_CONVERTED &h01
+#define ATTR_CONVERTED &h02
+#define ATTR_TARGET_NOTCONVERTED &h03
+#define ATTR_INPUT_ERROR &h04
+#define ATTR_FIXEDCONVERTED &h05
+#define CFS_DEFAULT &h0000
+#define CFS_RECT &h0001
+#define CFS_POINT &h0002
+#define CFS_FORCE_POSITION &h0020
+#define CFS_CANDIDATEPOS &h0040
+#define CFS_EXCLUDE &h0080
+#define GCL_CONVERSION &h0001
+#define GCL_REVERSECONVERSION &h0002
+#define GCL_REVERSE_LENGTH &h0003
+#define IME_CMODE_ALPHANUMERIC &h0000
+#define IME_CMODE_NATIVE &h0001
+#define IME_CMODE_CHINESE IME_CMODE_NATIVE
+#define IME_CMODE_HANGEUL IME_CMODE_NATIVE
+#define IME_CMODE_HANGUL IME_CMODE_NATIVE
+#define IME_CMODE_JAPANESE IME_CMODE_NATIVE
+#define IME_CMODE_KATAKANA &h0002
+#define IME_CMODE_LANGUAGE &h0003
+#define IME_CMODE_FULLSHAPE &h0008
+#define IME_CMODE_ROMAN &h0010
+#define IME_CMODE_CHARCODE &h0020
+#define IME_CMODE_HANJACONVERT &h0040
+#define IME_CMODE_SOFTKBD &h0080
+#define IME_CMODE_NOCONVERSION &h0100
+#define IME_CMODE_EUDC &h0200
+#define IME_CMODE_SYMBOL &h0400
+#define IME_CMODE_FIXED &h0800
+#define IME_CMODE_RESERVED &hF0000000
+#define IME_SMODE_NONE &h0000
+#define IME_SMODE_PLAURALCLAUSE &h0001
+#define IME_SMODE_SINGLECONVERT &h0002
+#define IME_SMODE_AUTOMATIC &h0004
+#define IME_SMODE_PHRASEPREDICT &h0008
+#define IME_SMODE_CONVERSATION &h0010
+#define IME_SMODE_RESERVED &h0000F000
+#define IME_CAND_UNKNOWN &h0000
+#define IME_CAND_READ &h0001
+#define IME_CAND_CODE &h0002
+#define IME_CAND_MEANING &h0003
+#define IME_CAND_RADICAL &h0004
+#define IME_CAND_STROKE &h0005
+#define IMN_CLOSESTATUSWINDOW &h0001
+#define IMN_OPENSTATUSWINDOW &h0002
+#define IMN_CHANGECANDIDATE &h0003
+#define IMN_CLOSECANDIDATE &h0004
+#define IMN_OPENCANDIDATE &h0005
+#define IMN_SETCONVERSIONMODE &h0006
+#define IMN_SETSENTENCEMODE &h0007
+#define IMN_SETOPENSTATUS &h0008
+#define IMN_SETCANDIDATEPOS &h0009
+#define IMN_SETCOMPOSITIONFONT &h000A
+#define IMN_SETCOMPOSITIONWINDOW &h000B
+#define IMN_SETSTATUSWINDOWPOS &h000C
+#define IMN_GUIDELINE &h000D
+#define IMN_PRIVATE &h000E
+#define IMR_COMPOSITIONWINDOW &h0001
+#define IMR_CANDIDATEWINDOW &h0002
+#define IMR_COMPOSITIONFONT &h0003
+#define IMR_RECONVERTSTRING &h0004
+#define IMR_CONFIRMRECONVERTSTRING &h0005
+#define IMR_QUERYCHARPOSITION &h0006
+#define IMR_DOCUMENTFEED &h0007
+#define IMM_ERROR_NODATA (-1)
+#define IMM_ERROR_GENERAL (-2)
+#define IME_CONFIG_GENERAL 1
+#define IME_CONFIG_REGISTERWORD 2
+#define IME_CONFIG_SELECTDICTIONARY 3
+#define IME_ESC_QUERY_SUPPORT &h0003
+#define IME_ESC_RESERVED_FIRST &h0004
+#define IME_ESC_RESERVED_LAST &h07FF
+#define IME_ESC_PRIVATE_FIRST &h0800
+#define IME_ESC_PRIVATE_LAST &h0FFF
+#define IME_ESC_SEQUENCE_TO_INTERNAL &h1001
+#define IME_ESC_GET_EUDC_DICTIONARY &h1003
+#define IME_ESC_SET_EUDC_DICTIONARY &h1004
+#define IME_ESC_MAX_KEY &h1005
+#define IME_ESC_IME_NAME &h1006
+#define IME_ESC_SYNC_HOTKEY &h1007
+#define IME_ESC_HANJA_MODE &h1008
+#define IME_ESC_AUTOMATA &h1009
+#define IME_ESC_PRIVATE_HOTKEY &h100a
+#define IME_ESC_GETHELPFILENAME &h100b
+#define IME_REGWORD_STYLE_EUDC &h00000001
+#define IME_REGWORD_STYLE_USER_FIRST &h80000000
+#define IME_REGWORD_STYLE_USER_LAST &hFFFFFFFF
+#define IACE_CHILDREN &h0001
+#define IACE_DEFAULT &h0010
+#define IACE_IGNORENOCONTEXT &h0020
+#define IGIMIF_RIGHTMENU &h0001
+#define IGIMII_CMODE &h0001
+#define IGIMII_SMODE &h0002
+#define IGIMII_CONFIGURE &h0004
+#define IGIMII_TOOLS &h0008
+#define IGIMII_HELP &h0010
+#define IGIMII_OTHER &h0020
+#define IGIMII_INPUTTOOLS &h0040
+#define IMFT_RADIOCHECK &h00001
+#define IMFT_SEPARATOR &h00002
+#define IMFT_SUBMENU &h00004
+#define IMFS_GRAYED MFS_GRAYED
+#define IMFS_DISABLED MFS_DISABLED
+#define IMFS_CHECKED MFS_CHECKED
+#define IMFS_HILITE MFS_HILITE
+#define IMFS_ENABLED MFS_ENABLED
+#define IMFS_UNCHECKED MFS_UNCHECKED
+#define IMFS_UNHILITE MFS_UNHILITE
+#define IMFS_DEFAULT MFS_DEFAULT
+#define SOFTKEYBOARD_TYPE_T1 &h0001
+#define SOFTKEYBOARD_TYPE_C1 &h0002
+
+end extern

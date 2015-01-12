@@ -1,129 +1,97 @@
-''
-''
-'' winnls -- header translated with help of SWIG FB wrapper
-''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
-''
-''
-#ifndef __win_winnls_bi__
-#define __win_winnls_bi__
+#pragma once
+
+#include once "crt/wchar.bi"
+#include once "winapifamily.bi"
+#include once "apiset.bi"
+
+extern "Windows"
+
+#define _WINNLS_
+#define _DATETIMEAPI_H_
+
+declare function GetTimeFormatEx(byval lpLocaleName as LPCWSTR, byval dwFlags as DWORD, byval lpTime as const SYSTEMTIME ptr, byval lpFormat as LPCWSTR, byval lpTimeStr as LPWSTR, byval cchTime as long) as long
+declare function GetDateFormatEx(byval lpLocaleName as LPCWSTR, byval dwFlags as DWORD, byval lpDate as const SYSTEMTIME ptr, byval lpFormat as LPCWSTR, byval lpDateStr as LPWSTR, byval cchDate as long, byval lpCalendar as LPCWSTR) as long
+declare function GetDateFormatA(byval Locale as LCID, byval dwFlags as DWORD, byval lpDate as const SYSTEMTIME ptr, byval lpFormat as LPCSTR, byval lpDateStr as LPSTR, byval cchDate as long) as long
+declare function GetDateFormatW(byval Locale as LCID, byval dwFlags as DWORD, byval lpDate as const SYSTEMTIME ptr, byval lpFormat as LPCWSTR, byval lpDateStr as LPWSTR, byval cchDate as long) as long
+declare function GetTimeFormatA(byval Locale as LCID, byval dwFlags as DWORD, byval lpTime as const SYSTEMTIME ptr, byval lpFormat as LPCSTR, byval lpTimeStr as LPSTR, byval cchTime as long) as long
+declare function GetTimeFormatW(byval Locale as LCID, byval dwFlags as DWORD, byval lpTime as const SYSTEMTIME ptr, byval lpFormat as LPCWSTR, byval lpTimeStr as LPWSTR, byval cchTime as long) as long
+
+#ifdef UNICODE
+	#define GetDateFormat GetDateFormatW
+	#define GetTimeFormat GetTimeFormatW
+#else
+	#define GetDateFormat GetDateFormatA
+	#define GetTimeFormat GetTimeFormatA
+#endif
 
 #define MAX_LEADBYTES 12
 #define MAX_DEFAULTCHAR 2
-#define LOCALE_NOUSEROVERRIDE &h80000000
-#define LOCALE_USE_CP_ACP &h40000000
-#define LOCALE_RETURN_NUMBER &h20000000
-#define LOCALE_ILANGUAGE 1
-#define LOCALE_SLANGUAGE 2
-#define LOCALE_SENGLANGUAGE &h1001
-#define LOCALE_SABBREVLANGNAME 3
-#define LOCALE_SNATIVELANGNAME 4
-#define LOCALE_ICOUNTRY 5
-#define LOCALE_SCOUNTRY 6
-#define LOCALE_SENGCOUNTRY &h1002
-#define LOCALE_SABBREVCTRYNAME 7
-#define LOCALE_SNATIVECTRYNAME 8
-#define LOCALE_IDEFAULTLANGUAGE 9
-#define LOCALE_IDEFAULTCOUNTRY 10
-#define LOCALE_IDEFAULTCODEPAGE 11
-#define LOCALE_IDEFAULTANSICODEPAGE &h1004
-#define LOCALE_SLIST 12
-#define LOCALE_IMEASURE 13
-#define LOCALE_SDECIMAL 14
-#define LOCALE_STHOUSAND 15
-#define LOCALE_SGROUPING 16
-#define LOCALE_IDIGITS 17
-#define LOCALE_ILZERO 18
-#define LOCALE_INEGNUMBER &h1010
-#define LOCALE_SNATIVEDIGITS 19
-#define LOCALE_SCURRENCY 20
-#define LOCALE_SINTLSYMBOL 21
-#define LOCALE_SMONDECIMALSEP 22
-#define LOCALE_SMONTHOUSANDSEP 23
-#define LOCALE_SMONGROUPING 24
-#define LOCALE_ICURRDIGITS 25
-#define LOCALE_IINTLCURRDIGITS 26
-#define LOCALE_ICURRENCY 27
-#define LOCALE_INEGCURR 28
-#define LOCALE_SDATE 29
-#define LOCALE_STIME 30
-#define LOCALE_SSHORTDATE 31
-#define LOCALE_SLONGDATE 32
-#define LOCALE_STIMEFORMAT &h1003
-#define LOCALE_IDATE 33
-#define LOCALE_ILDATE 34
-#define LOCALE_ITIME 35
-#define LOCALE_ITIMEMARKPOSN &h1005
-#define LOCALE_ICENTURY 36
-#define LOCALE_ITLZERO 37
-#define LOCALE_IDAYLZERO 38
-#define LOCALE_IMONLZERO 39
-#define LOCALE_S1159 40
-#define LOCALE_S2359 41
-#define LOCALE_ICALENDARTYPE &h1009
-#define LOCALE_IOPTIONALCALENDAR &h100B
-#define LOCALE_IFIRSTDAYOFWEEK &h100C
-#define LOCALE_IFIRSTWEEKOFYEAR &h100D
-#define LOCALE_SDAYNAME1 42
-#define LOCALE_SDAYNAME2 43
-#define LOCALE_SDAYNAME3 44
-#define LOCALE_SDAYNAME4 45
-#define LOCALE_SDAYNAME5 46
-#define LOCALE_SDAYNAME6 47
-#define LOCALE_SDAYNAME7 48
-#define LOCALE_SABBREVDAYNAME1 49
-#define LOCALE_SABBREVDAYNAME2 50
-#define LOCALE_SABBREVDAYNAME3 51
-#define LOCALE_SABBREVDAYNAME4 52
-#define LOCALE_SABBREVDAYNAME5 53
-#define LOCALE_SABBREVDAYNAME6 54
-#define LOCALE_SABBREVDAYNAME7 55
-#define LOCALE_SMONTHNAME1 56
-#define LOCALE_SMONTHNAME2 57
-#define LOCALE_SMONTHNAME3 58
-#define LOCALE_SMONTHNAME4 59
-#define LOCALE_SMONTHNAME5 60
-#define LOCALE_SMONTHNAME6 61
-#define LOCALE_SMONTHNAME7 62
-#define LOCALE_SMONTHNAME8 63
-#define LOCALE_SMONTHNAME9 64
-#define LOCALE_SMONTHNAME10 65
-#define LOCALE_SMONTHNAME11 66
-#define LOCALE_SMONTHNAME12 67
-#define LOCALE_SMONTHNAME13 &h100E
-#define LOCALE_SABBREVMONTHNAME1 68
-#define LOCALE_SABBREVMONTHNAME2 69
-#define LOCALE_SABBREVMONTHNAME3 70
-#define LOCALE_SABBREVMONTHNAME4 71
-#define LOCALE_SABBREVMONTHNAME5 72
-#define LOCALE_SABBREVMONTHNAME6 73
-#define LOCALE_SABBREVMONTHNAME7 74
-#define LOCALE_SABBREVMONTHNAME8 75
-#define LOCALE_SABBREVMONTHNAME9 76
-#define LOCALE_SABBREVMONTHNAME10 77
-#define LOCALE_SABBREVMONTHNAME11 78
-#define LOCALE_SABBREVMONTHNAME12 79
-#define LOCALE_SABBREVMONTHNAME13 &h100F
-#define LOCALE_SPOSITIVESIGN 80
-#define LOCALE_SNEGATIVESIGN 81
-#define LOCALE_IPOSSIGNPOSN 82
-#define LOCALE_INEGSIGNPOSN 83
-#define LOCALE_IPOSSYMPRECEDES 84
-#define LOCALE_IPOSSEPBYSPACE 85
-#define LOCALE_INEGSYMPRECEDES 86
-#define LOCALE_INEGSEPBYSPACE 87
-#define LOCALE_FONTSIGNATURE 88
-#define LOCALE_SISO639LANGNAME 89
-#define LOCALE_SISO3166CTRYNAME 90
-#define LOCALE_SYSTEM_DEFAULT &h800
-#define LOCALE_USER_DEFAULT &h400
-#define NORM_IGNORECASE 1
-#define NORM_IGNOREKANATYPE 65536
-#define NORM_IGNORENONSPACE 2
-#define NORM_IGNORESYMBOLS 4
-#define NORM_IGNOREWIDTH 131072
-#define SORT_STRINGSORT 4096
+#define HIGH_SURROGATE_START &hd800
+#define HIGH_SURROGATE_END &hdbff
+#define LOW_SURROGATE_START &hdc00
+#define LOW_SURROGATE_END &hdfff
+#define MB_PRECOMPOSED &h00000001
+#define MB_COMPOSITE &h00000002
+#define MB_USEGLYPHCHARS &h00000004
+#define MB_ERR_INVALID_CHARS &h00000008
+#define WC_DISCARDNS &h00000010
+#define WC_SEPCHARS &h00000020
+#define WC_DEFAULTCHAR &h00000040
+#define WC_COMPOSITECHECK &h00000200
+#define WC_NO_BEST_FIT_CHARS &h00000400
+#define CT_CTYPE1 &h00000001
+#define CT_CTYPE2 &h00000002
+#define CT_CTYPE3 &h00000004
+#define C1_UPPER &h0001
+#define C1_LOWER &h0002
+#define C1_DIGIT &h0004
+#define C1_SPACE &h0008
+#define C1_PUNCT &h0010
+#define C1_CNTRL &h0020
+#define C1_BLANK &h0040
+#define C1_XDIGIT &h0080
+#define C1_ALPHA &h0100
+#define C1_DEFINED &h0200
+#define C2_LEFTTORIGHT &h0001
+#define C2_RIGHTTOLEFT &h0002
+#define C2_EUROPENUMBER &h0003
+#define C2_EUROPESEPARATOR &h0004
+#define C2_EUROPETERMINATOR &h0005
+#define C2_ARABICNUMBER &h0006
+#define C2_COMMONSEPARATOR &h0007
+#define C2_BLOCKSEPARATOR &h0008
+#define C2_SEGMENTSEPARATOR &h0009
+#define C2_WHITESPACE &h000a
+#define C2_OTHERNEUTRAL &h000b
+#define C2_NOTAPPLICABLE &h0000
+#define C3_NONSPACING &h0001
+#define C3_DIACRITIC &h0002
+#define C3_VOWELMARK &h0004
+#define C3_SYMBOL &h0008
+#define C3_KATAKANA &h0010
+#define C3_HIRAGANA &h0020
+#define C3_HALFWIDTH &h0040
+#define C3_FULLWIDTH &h0080
+#define C3_IDEOGRAPH &h0100
+#define C3_KASHIDA &h0200
+#define C3_LEXICAL &h0400
+#define C3_HIGHSURROGATE &h0800
+#define C3_LOWSURROGATE &h1000
+#define C3_ALPHA &h8000
+#define C3_NOTAPPLICABLE &h0000
+#define NORM_IGNORECASE &h00000001
+#define NORM_IGNORENONSPACE &h00000002
+#define NORM_IGNORESYMBOLS &h00000004
+#define LINGUISTIC_IGNORECASE &h00000010
+#define LINGUISTIC_IGNOREDIACRITIC &h00000020
+#define NORM_IGNOREKANATYPE &h00010000
+#define NORM_IGNOREWIDTH &h00020000
+#define NORM_LINGUISTIC_CASING &h08000000
+#define MAP_FOLDCZONE &h00000010
+#define MAP_PRECOMPOSED &h00000020
+#define MAP_COMPOSITE &h00000040
+#define MAP_FOLDDIGITS &h00000080
+#define MAP_EXPAND_LIGATURES &h00002000
 #define LCMAP_LOWERCASE &h00000100
 #define LCMAP_UPPERCASE &h00000200
 #define LCMAP_SORTKEY &h00000400
@@ -135,19 +103,21 @@
 #define LCMAP_LINGUISTIC_CASING &h01000000
 #define LCMAP_SIMPLIFIED_CHINESE &h02000000
 #define LCMAP_TRADITIONAL_CHINESE &h04000000
-#define ENUM_ALL_CALENDARS (-1)
-#define DATE_SHORTDATE 1
-#define DATE_LONGDATE 2
-#define DATE_USE_ALT_CALENDAR 4
-#define CP_INSTALLED 1
-#define CP_SUPPORTED 2
-#define LCID_INSTALLED 1
-#define LCID_SUPPORTED 2
-#define LCID_ALTERNATE_SORTS 4
-#define MAP_FOLDCZONE 16
-#define MAP_FOLDDIGITS 128
-#define MAP_PRECOMPOSED 32
-#define MAP_COMPOSITE 64
+#define FIND_STARTSWITH &h00100000
+#define FIND_ENDSWITH &h00200000
+#define FIND_FROMSTART &h00400000
+#define FIND_FROMEND &h00800000
+#define LGRPID_INSTALLED &h00000001
+#define LGRPID_SUPPORTED &h00000002
+#define LCID_INSTALLED &h00000001
+#define LCID_SUPPORTED &h00000002
+#define LCID_ALTERNATE_SORTS &h00000004
+#define CP_INSTALLED &h00000001
+#define CP_SUPPORTED &h00000002
+#define SORT_STRINGSORT &h00001000
+#define CSTR_LESS_THAN 1
+#define CSTR_EQUAL 2
+#define CSTR_GREATER_THAN 3
 #define CP_ACP 0
 #define CP_OEMCP 1
 #define CP_MACCP 2
@@ -155,55 +125,6 @@
 #define CP_SYMBOL 42
 #define CP_UTF7 65000
 #define CP_UTF8 65001
-#define CT_CTYPE1 1
-#define CT_CTYPE2 2
-#define CT_CTYPE3 4
-#define C1_UPPER 1
-#define C1_LOWER 2
-#define C1_DIGIT 4
-#define C1_SPACE 8
-#define C1_PUNCT 16
-#define C1_CNTRL 32
-#define C1_BLANK 64
-#define C1_XDIGIT 128
-#define C1_ALPHA 256
-#define C2_LEFTTORIGHT 1
-#define C2_RIGHTTOLEFT 2
-#define C2_EUROPENUMBER 3
-#define C2_EUROPESEPARATOR 4
-#define C2_EUROPETERMINATOR 5
-#define C2_ARABICNUMBER 6
-#define C2_COMMONSEPARATOR 7
-#define C2_BLOCKSEPARATOR 8
-#define C2_SEGMENTSEPARATOR 9
-#define C2_WHITESPACE 10
-#define C2_OTHERNEUTRAL 11
-#define C2_NOTAPPLICABLE 0
-#define C3_NONSPACING 1
-#define C3_DIACRITIC 2
-#define C3_VOWELMARK 4
-#define C3_SYMBOL 8
-#define C3_KATAKANA 16
-#define C3_HIRAGANA 32
-#define C3_HALFWIDTH 64
-#define C3_FULLWIDTH 128
-#define C3_IDEOGRAPH 256
-#define C3_KASHIDA 512
-#define C3_LEXICAL 1024
-#define C3_ALPHA 32768
-#define C3_NOTAPPLICABLE 0
-#define TIME_NOMINUTESORSECONDS 1
-#define TIME_NOSECONDS 2
-#define TIME_NOTIMEMARKER 4
-#define TIME_FORCE24HOURFORMAT 8
-#define MB_PRECOMPOSED 1
-#define MB_COMPOSITE 2
-#define MB_ERR_INVALID_CHARS 8
-#define MB_USEGLYPHCHARS 4
-#define WC_COMPOSITECHECK 512
-#define WC_DISCARDNS 16
-#define WC_SEPCHARS 32
-#define WC_DEFAULTCHAR 64
 #define CTRY_DEFAULT 0
 #define CTRY_ALBANIA 355
 #define CTRY_ALGERIA 213
@@ -316,52 +237,188 @@
 #define CTRY_VIET_NAM 84
 #define CTRY_YEMEN 967
 #define CTRY_ZIMBABWE 263
-#define CAL_ICALINTVALUE 1
-#define CAL_SCALNAME 2
-#define CAL_IYEAROFFSETRANGE 3
-#define CAL_SERASTRING 4
-#define CAL_SSHORTDATE 5
-#define CAL_SLONGDATE 6
-#define CAL_SDAYNAME1 7
-#define CAL_SDAYNAME2 8
-#define CAL_SDAYNAME3 9
-#define CAL_SDAYNAME4 10
-#define CAL_SDAYNAME5 11
-#define CAL_SDAYNAME6 12
-#define CAL_SDAYNAME7 13
-#define CAL_SABBREVDAYNAME1 14
-#define CAL_SABBREVDAYNAME2 15
-#define CAL_SABBREVDAYNAME3 16
-#define CAL_SABBREVDAYNAME4 17
-#define CAL_SABBREVDAYNAME5 18
-#define CAL_SABBREVDAYNAME6 19
-#define CAL_SABBREVDAYNAME7 20
-#define CAL_SMONTHNAME1 21
-#define CAL_SMONTHNAME2 22
-#define CAL_SMONTHNAME3 23
-#define CAL_SMONTHNAME4 24
-#define CAL_SMONTHNAME5 25
-#define CAL_SMONTHNAME6 26
-#define CAL_SMONTHNAME7 27
-#define CAL_SMONTHNAME8 28
-#define CAL_SMONTHNAME9 29
-#define CAL_SMONTHNAME10 30
-#define CAL_SMONTHNAME11 31
-#define CAL_SMONTHNAME12 32
-#define CAL_SMONTHNAME13 33
-#define CAL_SABBREVMONTHNAME1 34
-#define CAL_SABBREVMONTHNAME2 35
-#define CAL_SABBREVMONTHNAME3 36
-#define CAL_SABBREVMONTHNAME4 37
-#define CAL_SABBREVMONTHNAME5 38
-#define CAL_SABBREVMONTHNAME6 39
-#define CAL_SABBREVMONTHNAME7 40
-#define CAL_SABBREVMONTHNAME8 41
-#define CAL_SABBREVMONTHNAME9 42
-#define CAL_SABBREVMONTHNAME10 43
-#define CAL_SABBREVMONTHNAME11 44
-#define CAL_SABBREVMONTHNAME12 45
-#define CAL_SABBREVMONTHNAME13 46
+#define LOCALE_SLOCALIZEDDISPLAYNAME &h00000002
+#define LOCALE_RETURN_NUMBER &h20000000
+#define LOCALE_USE_CP_ACP &h40000000
+#define LOCALE_NOUSEROVERRIDE &h80000000
+#define LOCALE_SENGLISHLANGUAGENAME &h00001001
+#define LOCALE_SNATIVELANGUAGENAME &h00000004
+#define LOCALE_SLOCALIZEDCOUNTRYNAME &h00000006
+#define LOCALE_SENGLISHCOUNTRYNAME &h00001002
+#define LOCALE_SNATIVECOUNTRYNAME &h00000008
+#define LOCALE_SLANGUAGE &h00000002
+#define LOCALE_SENGLANGUAGE &h00001001
+#define LOCALE_SNATIVELANGNAME &h00000004
+#define LOCALE_SCOUNTRY &h00000006
+#define LOCALE_SENGCOUNTRY &h00001002
+#define LOCALE_SNATIVECTRYNAME &h00000008
+#define LOCALE_ILANGUAGE &h00000001
+#define LOCALE_SABBREVLANGNAME &h00000003
+#define LOCALE_ICOUNTRY &h00000005
+#define LOCALE_SABBREVCTRYNAME &h00000007
+#define LOCALE_IGEOID &h0000005b
+#define LOCALE_IDEFAULTLANGUAGE &h00000009
+#define LOCALE_IDEFAULTCOUNTRY &h0000000a
+#define LOCALE_IDEFAULTCODEPAGE &h0000000b
+#define LOCALE_IDEFAULTANSICODEPAGE &h00001004
+#define LOCALE_IDEFAULTMACCODEPAGE &h00001011
+#define LOCALE_SLIST &h0000000c
+#define LOCALE_IMEASURE &h0000000d
+#define LOCALE_SDECIMAL &h0000000e
+#define LOCALE_STHOUSAND &h0000000f
+#define LOCALE_SGROUPING &h00000010
+#define LOCALE_IDIGITS &h00000011
+#define LOCALE_ILZERO &h00000012
+#define LOCALE_INEGNUMBER &h00001010
+#define LOCALE_SNATIVEDIGITS &h00000013
+#define LOCALE_SCURRENCY &h00000014
+#define LOCALE_SINTLSYMBOL &h00000015
+#define LOCALE_SMONDECIMALSEP &h00000016
+#define LOCALE_SMONTHOUSANDSEP &h00000017
+#define LOCALE_SMONGROUPING &h00000018
+#define LOCALE_ICURRDIGITS &h00000019
+#define LOCALE_IINTLCURRDIGITS &h0000001a
+#define LOCALE_ICURRENCY &h0000001b
+#define LOCALE_INEGCURR &h0000001c
+#define LOCALE_SDATE &h0000001d
+#define LOCALE_STIME &h0000001e
+#define LOCALE_SSHORTDATE &h0000001f
+#define LOCALE_SLONGDATE &h00000020
+#define LOCALE_STIMEFORMAT &h00001003
+#define LOCALE_IDATE &h00000021
+#define LOCALE_ILDATE &h00000022
+#define LOCALE_ITIME &h00000023
+#define LOCALE_ITIMEMARKPOSN &h00001005
+#define LOCALE_ICENTURY &h00000024
+#define LOCALE_ITLZERO &h00000025
+#define LOCALE_IDAYLZERO &h00000026
+#define LOCALE_IMONLZERO &h00000027
+#define LOCALE_S1159 &h00000028
+#define LOCALE_S2359 &h00000029
+#define LOCALE_ICALENDARTYPE &h00001009
+#define LOCALE_IOPTIONALCALENDAR &h0000100b
+#define LOCALE_IFIRSTDAYOFWEEK &h0000100c
+#define LOCALE_IFIRSTWEEKOFYEAR &h0000100d
+#define LOCALE_SDAYNAME1 &h0000002a
+#define LOCALE_SDAYNAME2 &h0000002b
+#define LOCALE_SDAYNAME3 &h0000002c
+#define LOCALE_SDAYNAME4 &h0000002d
+#define LOCALE_SDAYNAME5 &h0000002e
+#define LOCALE_SDAYNAME6 &h0000002f
+#define LOCALE_SDAYNAME7 &h00000030
+#define LOCALE_SABBREVDAYNAME1 &h00000031
+#define LOCALE_SABBREVDAYNAME2 &h00000032
+#define LOCALE_SABBREVDAYNAME3 &h00000033
+#define LOCALE_SABBREVDAYNAME4 &h00000034
+#define LOCALE_SABBREVDAYNAME5 &h00000035
+#define LOCALE_SABBREVDAYNAME6 &h00000036
+#define LOCALE_SABBREVDAYNAME7 &h00000037
+#define LOCALE_SMONTHNAME1 &h00000038
+#define LOCALE_SMONTHNAME2 &h00000039
+#define LOCALE_SMONTHNAME3 &h0000003a
+#define LOCALE_SMONTHNAME4 &h0000003b
+#define LOCALE_SMONTHNAME5 &h0000003c
+#define LOCALE_SMONTHNAME6 &h0000003d
+#define LOCALE_SMONTHNAME7 &h0000003e
+#define LOCALE_SMONTHNAME8 &h0000003f
+#define LOCALE_SMONTHNAME9 &h00000040
+#define LOCALE_SMONTHNAME10 &h00000041
+#define LOCALE_SMONTHNAME11 &h00000042
+#define LOCALE_SMONTHNAME12 &h00000043
+#define LOCALE_SMONTHNAME13 &h0000100e
+#define LOCALE_SABBREVMONTHNAME1 &h00000044
+#define LOCALE_SABBREVMONTHNAME2 &h00000045
+#define LOCALE_SABBREVMONTHNAME3 &h00000046
+#define LOCALE_SABBREVMONTHNAME4 &h00000047
+#define LOCALE_SABBREVMONTHNAME5 &h00000048
+#define LOCALE_SABBREVMONTHNAME6 &h00000049
+#define LOCALE_SABBREVMONTHNAME7 &h0000004a
+#define LOCALE_SABBREVMONTHNAME8 &h0000004b
+#define LOCALE_SABBREVMONTHNAME9 &h0000004c
+#define LOCALE_SABBREVMONTHNAME10 &h0000004d
+#define LOCALE_SABBREVMONTHNAME11 &h0000004e
+#define LOCALE_SABBREVMONTHNAME12 &h0000004f
+#define LOCALE_SABBREVMONTHNAME13 &h0000100f
+#define LOCALE_SPOSITIVESIGN &h00000050
+#define LOCALE_SNEGATIVESIGN &h00000051
+#define LOCALE_IPOSSIGNPOSN &h00000052
+#define LOCALE_INEGSIGNPOSN &h00000053
+#define LOCALE_IPOSSYMPRECEDES &h00000054
+#define LOCALE_IPOSSEPBYSPACE &h00000055
+#define LOCALE_INEGSYMPRECEDES &h00000056
+#define LOCALE_INEGSEPBYSPACE &h00000057
+#define LOCALE_FONTSIGNATURE &h00000058
+#define LOCALE_SISO639LANGNAME &h00000059
+#define LOCALE_SISO3166CTRYNAME &h0000005a
+#define LOCALE_IDEFAULTEBCDICCODEPAGE &h00001012
+#define LOCALE_IPAPERSIZE &h0000100a
+#define LOCALE_SENGCURRNAME &h00001007
+#define LOCALE_SNATIVECURRNAME &h00001008
+#define LOCALE_SYEARMONTH &h00001006
+#define LOCALE_SSORTNAME &h00001013
+#define LOCALE_IDIGITSUBSTITUTION &h00001014
+#define TIME_NOMINUTESORSECONDS &h00000001
+#define TIME_NOSECONDS &h00000002
+#define TIME_NOTIMEMARKER &h00000004
+#define TIME_FORCE24HOURFORMAT &h00000008
+#define DATE_SHORTDATE &h00000001
+#define DATE_LONGDATE &h00000002
+#define DATE_USE_ALT_CALENDAR &h00000004
+#define DATE_YEARMONTH &h00000008
+#define DATE_LTRREADING &h00000010
+#define DATE_RTLREADING &h00000020
+#define CAL_NOUSEROVERRIDE LOCALE_NOUSEROVERRIDE
+#define CAL_USE_CP_ACP LOCALE_USE_CP_ACP
+#define CAL_RETURN_NUMBER LOCALE_RETURN_NUMBER
+#define CAL_ICALINTVALUE &h00000001
+#define CAL_SCALNAME &h00000002
+#define CAL_IYEAROFFSETRANGE &h00000003
+#define CAL_SERASTRING &h00000004
+#define CAL_SSHORTDATE &h00000005
+#define CAL_SLONGDATE &h00000006
+#define CAL_SDAYNAME1 &h00000007
+#define CAL_SDAYNAME2 &h00000008
+#define CAL_SDAYNAME3 &h00000009
+#define CAL_SDAYNAME4 &h0000000a
+#define CAL_SDAYNAME5 &h0000000b
+#define CAL_SDAYNAME6 &h0000000c
+#define CAL_SDAYNAME7 &h0000000d
+#define CAL_SABBREVDAYNAME1 &h0000000e
+#define CAL_SABBREVDAYNAME2 &h0000000f
+#define CAL_SABBREVDAYNAME3 &h00000010
+#define CAL_SABBREVDAYNAME4 &h00000011
+#define CAL_SABBREVDAYNAME5 &h00000012
+#define CAL_SABBREVDAYNAME6 &h00000013
+#define CAL_SABBREVDAYNAME7 &h00000014
+#define CAL_SMONTHNAME1 &h00000015
+#define CAL_SMONTHNAME2 &h00000016
+#define CAL_SMONTHNAME3 &h00000017
+#define CAL_SMONTHNAME4 &h00000018
+#define CAL_SMONTHNAME5 &h00000019
+#define CAL_SMONTHNAME6 &h0000001a
+#define CAL_SMONTHNAME7 &h0000001b
+#define CAL_SMONTHNAME8 &h0000001c
+#define CAL_SMONTHNAME9 &h0000001d
+#define CAL_SMONTHNAME10 &h0000001e
+#define CAL_SMONTHNAME11 &h0000001f
+#define CAL_SMONTHNAME12 &h00000020
+#define CAL_SMONTHNAME13 &h00000021
+#define CAL_SABBREVMONTHNAME1 &h00000022
+#define CAL_SABBREVMONTHNAME2 &h00000023
+#define CAL_SABBREVMONTHNAME3 &h00000024
+#define CAL_SABBREVMONTHNAME4 &h00000025
+#define CAL_SABBREVMONTHNAME5 &h00000026
+#define CAL_SABBREVMONTHNAME6 &h00000027
+#define CAL_SABBREVMONTHNAME7 &h00000028
+#define CAL_SABBREVMONTHNAME8 &h00000029
+#define CAL_SABBREVMONTHNAME9 &h0000002a
+#define CAL_SABBREVMONTHNAME10 &h0000002b
+#define CAL_SABBREVMONTHNAME11 &h0000002c
+#define CAL_SABBREVMONTHNAME12 &h0000002d
+#define CAL_SABBREVMONTHNAME13 &h0000002e
+#define CAL_SYEARMONTH &h0000002f
+#define CAL_ITWODIGITYEARMAX &h00000030
+#define ENUM_ALL_CALENDARS &hffffffff
 #define CAL_GREGORIAN 1
 #define CAL_GREGORIAN_US 2
 #define CAL_JAPAN 3
@@ -374,116 +431,105 @@
 #define CAL_GREGORIAN_ARABIC 10
 #define CAL_GREGORIAN_XLIT_ENGLISH 11
 #define CAL_GREGORIAN_XLIT_FRENCH 12
-#define CSTR_LESS_THAN 1
-#define CSTR_EQUAL 2
-#define CSTR_GREATER_THAN 3
-#define LGRPID_INSTALLED 1
-#define LGRPID_SUPPORTED 2
-#define LGRPID_WESTERN_EUROPE 1
-#define LGRPID_CENTRAL_EUROPE 2
-#define LGRPID_BALTIC 3
-#define LGRPID_GREEK 4
-#define LGRPID_CYRILLIC 5
-#define LGRPID_TURKISH 6
-#define LGRPID_JAPANESE 7
-#define LGRPID_KOREAN 8
-#define LGRPID_TRADITIONAL_CHINESE 9
-#define LGRPID_SIMPLIFIED_CHINESE 10
-#define LGRPID_THAI 11
-#define LGRPID_HEBREW 12
-#define LGRPID_ARABIC 13
-#define LGRPID_VIETNAMESE 14
-#define LGRPID_INDIC 15
-#define LGRPID_GEORGIAN 16
-#define LGRPID_ARMENIAN 17
+#define CAL_UMALQURA 23
+#define LGRPID_WESTERN_EUROPE &h0001
+#define LGRPID_CENTRAL_EUROPE &h0002
+#define LGRPID_BALTIC &h0003
+#define LGRPID_GREEK &h0004
+#define LGRPID_CYRILLIC &h0005
+#define LGRPID_TURKIC &h0006
+#define LGRPID_TURKISH &h0006
+#define LGRPID_JAPANESE &h0007
+#define LGRPID_KOREAN &h0008
+#define LGRPID_TRADITIONAL_CHINESE &h0009
+#define LGRPID_SIMPLIFIED_CHINESE &h000a
+#define LGRPID_THAI &h000b
+#define LGRPID_HEBREW &h000c
+#define LGRPID_ARABIC &h000d
+#define LGRPID_VIETNAMESE &h000e
+#define LGRPID_INDIC &h000f
+#define LGRPID_GEORGIAN &h0010
+#define LGRPID_ARMENIAN &h0011
 
+type LGRPID as DWORD
 type LCTYPE as DWORD
 type CALTYPE as DWORD
 type CALID as DWORD
-type LGRPID as DWORD
-type GEOID as DWORD
-type GEOTYPE as DWORD
-type GEOCLASS as DWORD
-type CALINFO_ENUMPROCA as function (byval as LPSTR) as BOOL
-type CALINFO_ENUMPROCW as function (byval as LPWSTR) as BOOL
-type CALINFO_ENUMPROCEXA as function (byval as LPSTR, byval as CALID) as BOOL
-type CALINFO_ENUMPROCEXW as function (byval as LPWSTR, byval as CALID) as BOOL
-type LANGUAGEGROUP_ENUMPROCA as function (byval as LGRPID, byval as LPSTR, byval as LPSTR, byval as DWORD, byval as LONG_PTR) as BOOL
-type LANGUAGEGROUP_ENUMPROCW as function (byval as LGRPID, byval as LPWSTR, byval as LPWSTR, byval as DWORD, byval as LONG_PTR) as BOOL
-type LANGGROUPLOCALE_ENUMPROCA as function (byval as LGRPID, byval as LCID, byval as LPSTR, byval as LONG_PTR) as BOOL
-type LANGGROUPLOCALE_ENUMPROCW as function (byval as LGRPID, byval as LCID, byval as LPWSTR, byval as LONG_PTR) as BOOL
-type UILANGUAGE_ENUMPROCW as function (byval as LPWSTR, byval as LONG_PTR) as BOOL
-type UILANGUAGE_ENUMPROCA as function (byval as LPSTR, byval as LONG_PTR) as BOOL
-type LOCALE_ENUMPROCA as function (byval as LPSTR) as BOOL
-type LOCALE_ENUMPROCW as function (byval as LPWSTR) as BOOL
-type CODEPAGE_ENUMPROCA as function (byval as LPSTR) as BOOL
-type CODEPAGE_ENUMPROCW as function (byval as LPWSTR) as BOOL
-type DATEFMT_ENUMPROCA as function (byval as LPSTR) as BOOL
-type DATEFMT_ENUMPROCW as function (byval as LPWSTR) as BOOL
-type DATEFMT_ENUMPROCEXA as function (byval as LPSTR, byval as CALID) as BOOL
-type DATEFMT_ENUMPROCEXW as function (byval as LPWSTR, byval as CALID) as BOOL
-type TIMEFMT_ENUMPROCA as function (byval as LPSTR) as BOOL
-type TIMEFMT_ENUMPROCW as function (byval as LPWSTR) as BOOL
-type GEO_ENUMPROC as function(byval as GEOID) as BOOL
 
-enum NLS_FUNCTION
-	COMPARE_STRING = &h0001
-end enum
-
-enum SYSGEOCLASS
-	GEOCLASS_NATION = 16
-	GEOCLASS_REGION = 14
-end enum
-
-enum SYSGEOTYPE
-	GEO_NATION = &h0001
-	GEO_LATITUDE = &h0002
-	GEO_LONGITUDE = &h0003
-	GEO_ISO2 = &h0004
-	GEO_ISO3 = &h0005
-	GEO_RFC1766 = &h0006
-	GEO_LCID = &h0007
-	GEO_FRIENDLYNAME = &h0008
-	GEO_OFFICIALNAME = &h0009
-	GEO_TIMEZONES = &h000a
-	GEO_OFFICIALLANGUAGES = &h000a
-end enum
-
-type CPINFO
+type _cpinfo
 	MaxCharSize as UINT
-	DefaultChar(0 to 2-1) as UBYTE
-	LeadByte(0 to 12-1) as UBYTE
+	DefaultChar(0 to 1) as UBYTE
+	LeadByte(0 to 11) as UBYTE
 end type
 
-type LPCPINFO as CPINFO ptr
+type CPINFO as _cpinfo
+type LPCPINFO as _cpinfo ptr
 
-#ifndef UNICODE
-type CPINFOEXA
+type _cpinfoexA
 	MaxCharSize as UINT
-	DefaultChar(0 to 2-1) as UBYTE
-	LeadByte(0 to 12-1) as UBYTE
-	UnicodeDefaultChar as WCHAR
+	DefaultChar(0 to 1) as UBYTE
+	LeadByte(0 to 11) as UBYTE
+	UnicodeDefaultChar as wchar_t
 	CodePage as UINT
 	CodePageName as zstring * 260
 end type
 
-type LPCPINFOEXA as CPINFOEXA ptr
+type CPINFOEXA as _cpinfoexA
+type LPCPINFOEXA as _cpinfoexA ptr
 
-#else ''UNICODE
-type CPINFOEXW
+type _cpinfoexW
 	MaxCharSize as UINT
-	DefaultChar(0 to 2-1) as UBYTE
-	LeadByte(0 to 12-1) as UBYTE
-	UnicodeDefaultChar as WCHAR
+	DefaultChar(0 to 1) as UBYTE
+	LeadByte(0 to 11) as UBYTE
+	UnicodeDefaultChar as wchar_t
 	CodePage as UINT
 	CodePageName as wstring * 260
 end type
 
-type LPCPINFOEXW as CPINFOEXW ptr
-#endif ''UNICODE
+type CPINFOEXW as _cpinfoexW
+type LPCPINFOEXW as _cpinfoexW ptr
 
-#ifndef UNICODE
-type CURRENCYFMTA
+#ifdef UNICODE
+	type CPINFOEX as CPINFOEXW
+	type LPCPINFOEX as LPCPINFOEXW
+#else
+	type CPINFOEX as CPINFOEXA
+	type LPCPINFOEX as LPCPINFOEXA
+#endif
+
+type _numberfmtA
+	NumDigits as UINT
+	LeadingZero as UINT
+	Grouping as UINT
+	lpDecimalSep as LPSTR
+	lpThousandSep as LPSTR
+	NegativeOrder as UINT
+end type
+
+type NUMBERFMTA as _numberfmtA
+type LPNUMBERFMTA as _numberfmtA ptr
+
+type _numberfmtW
+	NumDigits as UINT
+	LeadingZero as UINT
+	Grouping as UINT
+	lpDecimalSep as LPWSTR
+	lpThousandSep as LPWSTR
+	NegativeOrder as UINT
+end type
+
+type NUMBERFMTW as _numberfmtW
+type LPNUMBERFMTW as _numberfmtW ptr
+
+#ifdef UNICODE
+	type NUMBERFMT as NUMBERFMTW
+	type LPNUMBERFMT as LPNUMBERFMTW
+#else
+	type NUMBERFMT as NUMBERFMTA
+	type LPNUMBERFMT as LPNUMBERFMTA
+#endif
+
+type _currencyfmtA
 	NumDigits as UINT
 	LeadingZero as UINT
 	Grouping as UINT
@@ -494,10 +540,10 @@ type CURRENCYFMTA
 	lpCurrencySymbol as LPSTR
 end type
 
-type LPCURRENCYFMTA as CURRENCYFMTA ptr
+type CURRENCYFMTA as _currencyfmtA
+type LPCURRENCYFMTA as _currencyfmtA ptr
 
-#else ''UNICODE
-type CURRENCYFMTW
+type _currencyfmtW
 	NumDigits as UINT
 	LeadingZero as UINT
 	Grouping as UINT
@@ -508,136 +554,293 @@ type CURRENCYFMTW
 	lpCurrencySymbol as LPWSTR
 end type
 
-type LPCURRENCYFMTW as CURRENCYFMTW ptr
-#endif ''UNICODE
+type CURRENCYFMTW as _currencyfmtW
+type LPCURRENCYFMTW as _currencyfmtW ptr
 
-#ifndef UNICODE
-type NUMBERFMTA
-	NumDigits as UINT
-	LeadingZero as UINT
-	Grouping as UINT
-	lpDecimalSep as LPSTR
-	lpThousandSep as LPSTR
-	NegativeOrder as UINT
-end type
+#ifdef UNICODE
+	type CURRENCYFMT as CURRENCYFMTW
+	type LPCURRENCYFMT as LPCURRENCYFMTW
+#else
+	type CURRENCYFMT as CURRENCYFMTA
+	type LPCURRENCYFMT as LPCURRENCYFMTA
+#endif
 
-type LPNUMBERFMTA as NUMBERFMTA ptr
+type SYSNLS_FUNCTION as long
+enum
+	COMPARE_STRING = &h1
+end enum
 
-#else ''UNICODE
-type NUMBERFMTW
-	NumDigits as UINT
-	LeadingZero as UINT
-	Grouping as UINT
-	lpDecimalSep as LPWSTR
-	lpThousandSep as LPWSTR
-	NegativeOrder as UINT
-end type
+type NLS_FUNCTION as DWORD
 
-type LPNUMBERFMTW as NUMBERFMTW ptr
-#endif ''UNICODE
-
-type NLSVERSIONINFO
+type _nlsversioninfo
 	dwNLSVersionInfoSize as DWORD
 	dwNLSVersion as DWORD
 	dwDefinedVersion as DWORD
 end type
 
-type LPNLSVERSIONINFO as NLSVERSIONINFO ptr
+type NLSVERSIONINFO as _nlsversioninfo
+type LPNLSVERSIONINFO as _nlsversioninfo ptr
 
-declare function ConvertDefaultLocale alias "ConvertDefaultLocale" (byval as LCID) as LCID
-declare function EnumSystemGeoID alias "EnumSystemGeoID" (byval as GEOCLASS, byval as GEOID, byval as GEO_ENUMPROC) as BOOL
-declare function GetACP alias "GetACP" () as UINT
-declare function GetCPInfo alias "GetCPInfo" (byval as UINT, byval as LPCPINFO) as BOOL
-declare function GetOEMCP alias "GetOEMCP" () as UINT
-declare function GetSystemDefaultLangID alias "GetSystemDefaultLangID" () as LANGID
-declare function GetSystemDefaultLCID alias "GetSystemDefaultLCID" () as LCID
-declare function GetThreadLocale alias "GetThreadLocale" () as LCID
-declare function GetUserDefaultLangID alias "GetUserDefaultLangID" () as LANGID
-declare function GetUserDefaultLCID alias "GetUserDefaultLCID" () as LCID
-declare function GetUserGeoID alias "GetUserGeoID" (byval as GEOCLASS) as GEOID
-declare function IsDBCSLeadByte alias "IsDBCSLeadByte" (byval as UBYTE) as BOOL
-declare function IsDBCSLeadByteEx alias "IsDBCSLeadByteEx" (byval as UINT, byval as UBYTE) as BOOL
-declare function IsNLSDefinedString alias "IsNLSDefinedString" (byval as NLS_FUNCTION, byval as DWORD, byval as LPNLSVERSIONINFO, byval as LPCWSTR, byval as integer) as BOOL
-declare function IsValidCodePage alias "IsValidCodePage" (byval as UINT) as BOOL
-declare function IsValidLocale alias "IsValidLocale" (byval as LCID, byval as DWORD) as BOOL
-declare function MultiByteToWideChar alias "MultiByteToWideChar" (byval as UINT, byval as DWORD, byval as LPCSTR, byval as integer, byval as LPWSTR, byval as integer) as integer
-declare function SetThreadLocale alias "SetThreadLocale" (byval as LCID) as BOOL
-declare function SetUserGeoID alias "SetUserGeoID" (byval as GEOID) as BOOL
-declare function WideCharToMultiByte alias "WideCharToMultiByte" (byval as UINT, byval as DWORD, byval as LPCWSTR, byval as integer, byval as LPSTR, byval as integer, byval as LPCSTR, byval as LPBOOL) as integer
+type _nlsversioninfoex
+	dwNLSVersionInfoSize as DWORD
+	dwNLSVersion as DWORD
+	dwDefinedVersion as DWORD
+	dwEffectiveId as DWORD
+	guidCustomVersion as GUID
+end type
+
+type NLSVERSIONINFOEX as _nlsversioninfoex
+type LPNLSVERSIONINFOEX as _nlsversioninfoex ptr
+type GEOID as LONG
+type GEOTYPE as DWORD
+type GEOCLASS as DWORD
+
+#define GEOID_NOT_AVAILABLE (-1)
+
+type SYSGEOTYPE as long
+enum
+	GEO_NATION = &h0001
+	GEO_LATITUDE = &h0002
+	GEO_LONGITUDE = &h0003
+	GEO_ISO2 = &h0004
+	GEO_ISO3 = &h0005
+	GEO_RFC1766 = &h0006
+	GEO_LCID = &h0007
+	GEO_FRIENDLYNAME = &h0008
+	GEO_OFFICIALNAME = &h0009
+	GEO_TIMEZONES = &h000a
+	GEO_OFFICIALLANGUAGES = &h000b
+	GEO_ISO_UN_NUMBER = &h000c
+	GEO_PARENT = &h000d
+end enum
+
+type SYSGEOCLASS as long
+enum
+	GEOCLASS_NATION = 16
+	GEOCLASS_REGION = 14
+	GEOCLASS_ALL = 0
+end enum
+
+type LANGUAGEGROUP_ENUMPROCA as function(byval as LGRPID, byval as LPSTR, byval as LPSTR, byval as DWORD, byval as LONG_PTR) as WINBOOL
+type LANGGROUPLOCALE_ENUMPROCA as function(byval as LGRPID, byval as LCID, byval as LPSTR, byval as LONG_PTR) as WINBOOL
+type UILANGUAGE_ENUMPROCA as function(byval as LPSTR, byval as LONG_PTR) as WINBOOL
+type CODEPAGE_ENUMPROCA as function(byval as LPSTR) as WINBOOL
+type DATEFMT_ENUMPROCA as function(byval as LPSTR) as WINBOOL
+type DATEFMT_ENUMPROCEXA as function(byval as LPSTR, byval as CALID) as WINBOOL
+type TIMEFMT_ENUMPROCA as function(byval as LPSTR) as WINBOOL
+type CALINFO_ENUMPROCA as function(byval as LPSTR) as WINBOOL
+type CALINFO_ENUMPROCEXA as function(byval as LPSTR, byval as CALID) as WINBOOL
+type LOCALE_ENUMPROCA as function(byval as LPSTR) as WINBOOL
+type LOCALE_ENUMPROCW as function(byval as LPWSTR) as WINBOOL
+type LANGUAGEGROUP_ENUMPROCW as function(byval as LGRPID, byval as LPWSTR, byval as LPWSTR, byval as DWORD, byval as LONG_PTR) as WINBOOL
+type LANGGROUPLOCALE_ENUMPROCW as function(byval as LGRPID, byval as LCID, byval as LPWSTR, byval as LONG_PTR) as WINBOOL
+type UILANGUAGE_ENUMPROCW as function(byval as LPWSTR, byval as LONG_PTR) as WINBOOL
+type CODEPAGE_ENUMPROCW as function(byval as LPWSTR) as WINBOOL
+type DATEFMT_ENUMPROCW as function(byval as LPWSTR) as WINBOOL
+type DATEFMT_ENUMPROCEXW as function(byval as LPWSTR, byval as CALID) as WINBOOL
+type TIMEFMT_ENUMPROCW as function(byval as LPWSTR) as WINBOOL
+type CALINFO_ENUMPROCW as function(byval as LPWSTR) as WINBOOL
+type CALINFO_ENUMPROCEXW as function(byval as LPWSTR, byval as CALID) as WINBOOL
+type GEO_ENUMPROC as function(byval as GEOID) as WINBOOL
 
 #ifdef UNICODE
-type CPINFOEX as CPINFOEXW
-type LPCPINFOEX as LPCPINFOEXW
-type CURRENCYFMT as CURRENCYFMTW
-type LPCURRENCYFMT as LPCURRENCYFMTW
-type NUMBERFMT as NUMBERFMTW
-type LPNUMBERFMT as LPNUMBERFMTW
-
-#define CALINFO_ENUMPROC CALINFO_ENUMPROCW
-#define CALINFO_ENUMPROCEX CALINFO_ENUMPROCEXW
-#define LOCALE_ENUMPROC LOCALE_ENUMPROCW
-#define CODEPAGE_ENUMPROC CODEPAGE_ENUMPROCW
-#define DATEFMT_ENUMPROC DATEFMT_ENUMPROCW
-#define DATEFMT_ENUMPROCEX DATEFMT_ENUMPROCEXW
-#define TIMEFMT_ENUMPROC TIMEFMT_ENUMPROCW
-#define LANGUAGEGROUP_ENUMPROC LANGUAGEGROUP_ENUMPROCW
-#define LANGGROUPLOCALE_ENUMPROC LANGGROUPLOCALE_ENUMPROCW
-#define UILANGUAGE_ENUMPROC UILANGUAGE_ENUMPROCW
-
-declare function CompareString alias "CompareStringW" (byval as LCID, byval as DWORD, byval as LPCWSTR, byval as integer, byval as LPCWSTR, byval as integer) as integer
-declare function EnumCalendarInfo alias "EnumCalendarInfoW" (byval as CALINFO_ENUMPROCW, byval as LCID, byval as CALID, byval as CALTYPE) as BOOL
-declare function EnumDateFormats alias "EnumDateFormatsW" (byval as DATEFMT_ENUMPROCW, byval as LCID, byval as DWORD) as BOOL
-declare function EnumSystemCodePages alias "EnumSystemCodePagesW" (byval as CODEPAGE_ENUMPROCW, byval as DWORD) as BOOL
-declare function EnumSystemLocales alias "EnumSystemLocalesW" (byval as LOCALE_ENUMPROCW, byval as DWORD) as BOOL
-declare function EnumTimeFormats alias "EnumTimeFormatsW" (byval as TIMEFMT_ENUMPROCW, byval as LCID, byval as DWORD) as BOOL
-declare function FoldString alias "FoldStringW" (byval as DWORD, byval as LPCWSTR, byval as integer, byval as LPWSTR, byval as integer) as integer
-declare function GetCPInfoEx alias "GetCPInfoExW" (byval as UINT, byval as DWORD, byval as LPCPINFOEXW) as BOOL
-declare function GetCurrencyFormat alias "GetCurrencyFormatW" (byval as LCID, byval as DWORD, byval as LPCWSTR, byval as CURRENCYFMTW ptr, byval as LPWSTR, byval as integer) as integer
-declare function GetDateFormat alias "GetDateFormatW" (byval as LCID, byval as DWORD, byval as SYSTEMTIME ptr, byval as LPCWSTR, byval as LPWSTR, byval as integer) as integer
-declare function GetLocaleInfo alias "GetLocaleInfoW" (byval as LCID, byval as LCTYPE, byval as LPWSTR, byval as integer) as integer
-declare function GetNumberFormat alias "GetNumberFormatW" (byval as LCID, byval as DWORD, byval as LPCWSTR, byval as NUMBERFMTW ptr, byval as LPWSTR, byval as integer) as integer
-declare function GetStringType alias "GetStringTypeW" (byval as DWORD, byval as LPCWSTR, byval as integer, byval as LPWORD) as BOOL
-declare function GetStringTypeEx alias "GetStringTypeExW" (byval as LCID, byval as DWORD, byval as LPCWSTR, byval as integer, byval as LPWORD) as BOOL
-declare function GetTimeFormat alias "GetTimeFormatW" (byval as LCID, byval as DWORD, byval as SYSTEMTIME ptr, byval as LPCWSTR, byval as LPWSTR, byval as integer) as integer
-declare function LCMapString alias "LCMapStringW" (byval as LCID, byval as DWORD, byval as LPCWSTR, byval as integer, byval as LPWSTR, byval as integer) as integer
-declare function SetLocaleInfo alias "SetLocaleInfoW" (byval as LCID, byval as LCTYPE, byval as LPCWSTR) as BOOL
-
-#else ''UNICODE
-type CPINFOEX as CPINFOEXA
-type LPCPINFOEX as LPCPINFOEXA
-type CURRENCYFMT as CURRENCYFMTA
-type LPCURRENCYFMT as LPCURRENCYFMTA
-type NUMBERFMT as NUMBERFMTA
-type LPNUMBERFMT as LPNUMBERFMTA
-
-#define CALINFO_ENUMPROC CALINFO_ENUMPROCA
-#define CALINFO_ENUMPROCEX CALINFO_ENUMPROCEXA
-#define LOCALE_ENUMPROC LOCALE_ENUMPROCA
-#define CODEPAGE_ENUMPROC CODEPAGE_ENUMPROCA
-#define DATEFMT_ENUMPROC DATEFMT_ENUMPROCA
-#define DATEFMT_ENUMPROCEX DATEFMT_ENUMPROCEXA
-#define TIMEFMT_ENUMPROC TIMEFMT_ENUMPROCA
-#define LANGUAGEGROUP_ENUMPROC LANGUAGEGROUP_ENUMPROCA
-#define LANGGROUPLOCALE_ENUMPROC LANGGROUPLOCALE_ENUMPROCA
-#define UILANGUAGE_ENUMPROC UILANGUAGE_ENUMPROCA
-
-declare function CompareString alias "CompareStringA" (byval as LCID, byval as DWORD, byval as LPCSTR, byval as integer, byval as LPCSTR, byval as integer) as integer
-declare function EnumCalendarInfo alias "EnumCalendarInfoA" (byval as CALINFO_ENUMPROCA, byval as LCID, byval as CALID, byval as CALTYPE) as BOOL
-declare function EnumDateFormats alias "EnumDateFormatsA" (byval as DATEFMT_ENUMPROCA, byval as LCID, byval as DWORD) as BOOL
-declare function EnumSystemCodePages alias "EnumSystemCodePagesA" (byval as CODEPAGE_ENUMPROCA, byval as DWORD) as BOOL
-declare function EnumSystemLocales alias "EnumSystemLocalesA" (byval as LOCALE_ENUMPROCA, byval as DWORD) as BOOL
-declare function EnumTimeFormats alias "EnumTimeFormatsA" (byval as TIMEFMT_ENUMPROCA, byval as LCID, byval as DWORD) as BOOL
-declare function FoldString alias "FoldStringA" (byval as DWORD, byval as LPCSTR, byval as integer, byval as LPSTR, byval as integer) as integer
-declare function GetCPInfoEx alias "GetCPInfoExA" (byval as UINT, byval as DWORD, byval as LPCPINFOEXA) as BOOL
-declare function GetCurrencyFormat alias "GetCurrencyFormatA" (byval as LCID, byval as DWORD, byval as LPCSTR, byval as CURRENCYFMTA ptr, byval as LPSTR, byval as integer) as integer
-declare function GetDateFormat alias "GetDateFormatA" (byval as LCID, byval as DWORD, byval as SYSTEMTIME ptr, byval as LPCSTR, byval as LPSTR, byval as integer) as integer
-declare function GetLocaleInfo alias "GetLocaleInfoA" (byval as LCID, byval as LCTYPE, byval as LPSTR, byval as integer) as integer
-declare function GetNumberFormat alias "GetNumberFormatA" (byval as LCID, byval as DWORD, byval as LPCSTR, byval as NUMBERFMTA ptr, byval as LPSTR, byval as integer) as integer
-declare function GetStringType alias "GetStringTypeA" (byval as LCID, byval as DWORD, byval as LPCSTR, byval as integer, byval as LPWORD) as BOOL
-declare function GetStringTypeEx alias "GetStringTypeExA" (byval as LCID, byval as DWORD, byval as LPCSTR, byval as integer, byval as LPWORD) as BOOL
-declare function GetTimeFormat alias "GetTimeFormatA" (byval as LCID, byval as DWORD, byval as SYSTEMTIME ptr, byval as LPCSTR, byval as LPSTR, byval as integer) as integer
-declare function LCMapString alias "LCMapStringA" (byval as LCID, byval as DWORD, byval as LPCSTR, byval as integer, byval as LPSTR, byval as integer) as integer
-declare function SetLocaleInfo alias "SetLocaleInfoA" (byval as LCID, byval as LCTYPE, byval as LPCSTR) as BOOL
-#endif ''UNICODE
-
+	#define LANGUAGEGROUP_ENUMPROC LANGUAGEGROUP_ENUMPROCW
+	#define LANGGROUPLOCALE_ENUMPROC LANGGROUPLOCALE_ENUMPROCW
+	#define UILANGUAGE_ENUMPROC UILANGUAGE_ENUMPROCW
+	#define CODEPAGE_ENUMPROC CODEPAGE_ENUMPROCW
+	#define DATEFMT_ENUMPROC DATEFMT_ENUMPROCW
+	#define DATEFMT_ENUMPROCEX DATEFMT_ENUMPROCEXW
+	#define TIMEFMT_ENUMPROC TIMEFMT_ENUMPROCW
+	#define CALINFO_ENUMPROC CALINFO_ENUMPROCW
+	#define CALINFO_ENUMPROCEX CALINFO_ENUMPROCEXW
+	#define LOCALE_ENUMPROC LOCALE_ENUMPROCW
+#else
+	#define LANGUAGEGROUP_ENUMPROC LANGUAGEGROUP_ENUMPROCA
+	#define LANGGROUPLOCALE_ENUMPROC LANGGROUPLOCALE_ENUMPROCA
+	#define UILANGUAGE_ENUMPROC UILANGUAGE_ENUMPROCA
+	#define CODEPAGE_ENUMPROC CODEPAGE_ENUMPROCA
+	#define DATEFMT_ENUMPROC DATEFMT_ENUMPROCA
+	#define DATEFMT_ENUMPROCEX DATEFMT_ENUMPROCEXA
+	#define TIMEFMT_ENUMPROC TIMEFMT_ENUMPROCA
+	#define CALINFO_ENUMPROC CALINFO_ENUMPROCA
+	#define CALINFO_ENUMPROCEX CALINFO_ENUMPROCEXA
+	#define LOCALE_ENUMPROC LOCALE_ENUMPROCA
 #endif
+
+type _FILEMUIINFO
+	dwSize as DWORD
+	dwVersion as DWORD
+	dwFileType as DWORD
+	pChecksum(0 to 15) as UBYTE
+	pServiceChecksum(0 to 15) as UBYTE
+	dwLanguageNameOffset as DWORD
+	dwTypeIDMainSize as DWORD
+	dwTypeIDMainOffset as DWORD
+	dwTypeNameMainOffset as DWORD
+	dwTypeIDMUISize as DWORD
+	dwTypeIDMUIOffset as DWORD
+	dwTypeNameMUIOffset as DWORD
+	abBuffer(0 to 7) as UBYTE
+end type
+
+type FILEMUIINFO as _FILEMUIINFO
+type PFILEMUIINFO as _FILEMUIINFO ptr
+
+#define _APISETSTRING_
+
+declare function CompareStringW(byval Locale as LCID, byval dwCmpFlags as DWORD, byval lpString1 as PCNZWCH, byval cchCount1 as long, byval lpString2 as PCNZWCH, byval cchCount2 as long) as long
+declare function FoldStringW(byval dwMapFlags as DWORD, byval lpSrcStr as LPCWCH, byval cchSrc as long, byval lpDestStr as LPWSTR, byval cchDest as long) as long
+
+#ifdef UNICODE
+	#define CompareString CompareStringW
+	#define FoldString FoldStringW
+#endif
+
+declare function GetStringTypeExW(byval Locale as LCID, byval dwInfoType as DWORD, byval lpSrcStr as LPCWCH, byval cchSrc as long, byval lpCharType as LPWORD) as WINBOOL
+
+#ifdef UNICODE
+	#define GetStringTypeEx GetStringTypeExW
+#endif
+
+declare function GetStringTypeW(byval dwInfoType as DWORD, byval lpSrcStr as LPCWCH, byval cchSrc as long, byval lpCharType as LPWORD) as WINBOOL
+declare function MultiByteToWideChar(byval CodePage as UINT, byval dwFlags as DWORD, byval lpMultiByteStr as LPCCH, byval cbMultiByte as long, byval lpWideCharStr as LPWSTR, byval cchWideChar as long) as long
+declare function WideCharToMultiByte(byval CodePage as UINT, byval dwFlags as DWORD, byval lpWideCharStr as LPCWCH, byval cchWideChar as long, byval lpMultiByteStr as LPSTR, byval cbMultiByte as long, byval lpDefaultChar as LPCCH, byval lpUsedDefaultChar as LPBOOL) as long
+
+#define IS_HIGH_SURROGATE(wch) (((wch) >= HIGH_SURROGATE_START) andalso ((wch) <= HIGH_SURROGATE_END))
+#define IS_LOW_SURROGATE(wch) (((wch) >= LOW_SURROGATE_START) andalso ((wch) <= LOW_SURROGATE_END))
+#define IS_SURROGATE_PAIR(hs, ls) (IS_HIGH_SURROGATE(hs) andalso IS_LOW_SURROGATE(ls))
+#define FILEMUIINFO_GET_CULTURE(pInfo) cast(LPWSTR, iif(pInfo->dwLanguageNameOffset > 0, cast(ULONG_PTR, pInfo) + pInfo->dwLanguageNameOffset, NULL))
+#define FILEMUIINFO_GET_MAIN_TYPEIDS(pInfo) cptr(DWORD ptr, iif(pInfo->dwTypeIDMainOffset > 0, cast(ULONG_PTR, pInfo) + pInfo->dwTypeIDMainOffset, NULL))
+#define FILEMUIINFO_GET_MAIN_TYPEID(pInfo, iType) iif((iType < pInfo->dwTypeIDMainSize) andalso (pInfo->dwTypeIDMainOffset > 0), *(cptr(DWORD ptr, cast(ULONG_PTR, pInfo) + pInfo->dwTypeIDMainOffset) + iType), 0)
+#define FILEMUIINFO_GET_MAIN_TYPENAMES(pInfo) cast(LPWSTR, iif(pInfo->dwTypeNameMainOffset > 0, cast(ULONG_PTR, pInfo) + pInfo->dwTypeNameMainOffset, NULL))
+#define FILEMUIINFO_GET_MUI_TYPEIDS(pInfo) cptr(DWORD ptr, iif(pInfo->dwTypeIDMUIOffset > 0, cast(ULONG_PTR, pInfo) + pInfo->dwTypeIDMUIOffset, NULL))
+#define FILEMUIINFO_GET_MUI_TYPEID(pInfo, iType) iif((iType < pInfo->dwTypeIDMUISize) andalso (pInfo->dwTypeIDMUIOffset > 0), *(cptr(DWORD ptr, cast(ULONG_PTR, pInfo) + pInfo->dwTypeIDMUIOffset) + iType), 0)
+#define FILEMUIINFO_GET_MUI_TYPENAMES(pInfo) cast(LPWSTR, iif(pInfo->dwTypeNameMUIOffset > 0, cast(ULONG_PTR, pInfo) + pInfo->dwTypeNameMUIOffset, NULL))
+
+declare function IsValidCodePage(byval CodePage as UINT) as WINBOOL
+declare function GetACP() as UINT
+declare function GetOEMCP() as UINT
+declare function CompareStringA(byval Locale as LCID, byval dwCmpFlags as DWORD, byval lpString1 as PCNZCH, byval cchCount1 as long, byval lpString2 as PCNZCH, byval cchCount2 as long) as long
+declare function LCMapStringW(byval Locale as LCID, byval dwMapFlags as DWORD, byval lpSrcStr as LPCWSTR, byval cchSrc as long, byval lpDestStr as LPWSTR, byval cchDest as long) as long
+declare function LCMapStringA(byval Locale as LCID, byval dwMapFlags as DWORD, byval lpSrcStr as LPCSTR, byval cchSrc as long, byval lpDestStr as LPSTR, byval cchDest as long) as long
+declare function GetLocaleInfoW(byval Locale as LCID, byval LCType as LCTYPE, byval lpLCData as LPWSTR, byval cchData as long) as long
+declare function GetLocaleInfoA(byval Locale as LCID, byval LCType as LCTYPE, byval lpLCData as LPSTR, byval cchData as long) as long
+declare function IsDBCSLeadByte(byval TestChar as UBYTE) as WINBOOL
+declare function IsDBCSLeadByteEx(byval CodePage as UINT, byval TestChar as UBYTE) as WINBOOL
+declare function GetNumberFormatA(byval Locale as LCID, byval dwFlags as DWORD, byval lpValue as LPCSTR, byval lpFormat as const NUMBERFMTA ptr, byval lpNumberStr as LPSTR, byval cchNumber as long) as long
+declare function GetNumberFormatW(byval Locale as LCID, byval dwFlags as DWORD, byval lpValue as LPCWSTR, byval lpFormat as const NUMBERFMTW ptr, byval lpNumberStr as LPWSTR, byval cchNumber as long) as long
+declare function GetCurrencyFormatA(byval Locale as LCID, byval dwFlags as DWORD, byval lpValue as LPCSTR, byval lpFormat as const CURRENCYFMTA ptr, byval lpCurrencyStr as LPSTR, byval cchCurrency as long) as long
+declare function GetCurrencyFormatW(byval Locale as LCID, byval dwFlags as DWORD, byval lpValue as LPCWSTR, byval lpFormat as const CURRENCYFMTW ptr, byval lpCurrencyStr as LPWSTR, byval cchCurrency as long) as long
+declare function EnumCalendarInfoA(byval lpCalInfoEnumProc as CALINFO_ENUMPROCA, byval Locale as LCID, byval Calendar as CALID, byval CalType as CALTYPE) as WINBOOL
+declare function EnumCalendarInfoW(byval lpCalInfoEnumProc as CALINFO_ENUMPROCW, byval Locale as LCID, byval Calendar as CALID, byval CalType as CALTYPE) as WINBOOL
+declare function EnumCalendarInfoExA(byval lpCalInfoEnumProcEx as CALINFO_ENUMPROCEXA, byval Locale as LCID, byval Calendar as CALID, byval CalType as CALTYPE) as WINBOOL
+declare function EnumCalendarInfoExW(byval lpCalInfoEnumProcEx as CALINFO_ENUMPROCEXW, byval Locale as LCID, byval Calendar as CALID, byval CalType as CALTYPE) as WINBOOL
+declare function EnumTimeFormatsA(byval lpTimeFmtEnumProc as TIMEFMT_ENUMPROCA, byval Locale as LCID, byval dwFlags as DWORD) as WINBOOL
+declare function EnumTimeFormatsW(byval lpTimeFmtEnumProc as TIMEFMT_ENUMPROCW, byval Locale as LCID, byval dwFlags as DWORD) as WINBOOL
+declare function EnumDateFormatsA(byval lpDateFmtEnumProc as DATEFMT_ENUMPROCA, byval Locale as LCID, byval dwFlags as DWORD) as WINBOOL
+declare function EnumDateFormatsW(byval lpDateFmtEnumProc as DATEFMT_ENUMPROCW, byval Locale as LCID, byval dwFlags as DWORD) as WINBOOL
+declare function EnumDateFormatsExA(byval lpDateFmtEnumProcEx as DATEFMT_ENUMPROCEXA, byval Locale as LCID, byval dwFlags as DWORD) as WINBOOL
+declare function EnumDateFormatsExW(byval lpDateFmtEnumProcEx as DATEFMT_ENUMPROCEXW, byval Locale as LCID, byval dwFlags as DWORD) as WINBOOL
+declare function IsValidLanguageGroup(byval LanguageGroup as LGRPID, byval dwFlags as DWORD) as WINBOOL
+declare function GetNLSVersion(byval Function_ as NLS_FUNCTION, byval Locale as LCID, byval lpVersionInformation as LPNLSVERSIONINFO) as WINBOOL
+declare function IsNLSDefinedString(byval Function_ as NLS_FUNCTION, byval dwFlags as DWORD, byval lpVersionInformation as LPNLSVERSIONINFO, byval lpString as LPCWSTR, byval cchStr as INT_) as WINBOOL
+declare function IsValidLocale(byval Locale as LCID, byval dwFlags as DWORD) as WINBOOL
+declare function SetLocaleInfoA(byval Locale as LCID, byval LCType as LCTYPE, byval lpLCData as LPCSTR) as WINBOOL
+declare function SetLocaleInfoW(byval Locale as LCID, byval LCType as LCTYPE, byval lpLCData as LPCWSTR) as WINBOOL
+declare function GetCalendarInfoA(byval Locale as LCID, byval Calendar as CALID, byval CalType as CALTYPE, byval lpCalData as LPSTR, byval cchData as long, byval lpValue as LPDWORD) as long
+declare function GetCalendarInfoW(byval Locale as LCID, byval Calendar as CALID, byval CalType as CALTYPE, byval lpCalData as LPWSTR, byval cchData as long, byval lpValue as LPDWORD) as long
+declare function SetCalendarInfoA(byval Locale as LCID, byval Calendar as CALID, byval CalType as CALTYPE, byval lpCalData as LPCSTR) as WINBOOL
+declare function SetCalendarInfoW(byval Locale as LCID, byval Calendar as CALID, byval CalType as CALTYPE, byval lpCalData as LPCWSTR) as WINBOOL
+
+#ifdef UNICODE
+	#define SetLocaleInfo SetLocaleInfoW
+	#define GetCalendarInfo GetCalendarInfoW
+	#define SetCalendarInfo SetCalendarInfoW
+	#define LCMapString LCMapStringW
+	#define GetLocaleInfo GetLocaleInfoW
+	#define GetNumberFormat GetNumberFormatW
+	#define GetCurrencyFormat GetCurrencyFormatW
+	#define EnumCalendarInfo EnumCalendarInfoW
+	#define EnumCalendarInfoEx EnumCalendarInfoExW
+	#define EnumTimeFormats EnumTimeFormatsW
+	#define EnumDateFormats EnumDateFormatsW
+	#define EnumDateFormatsEx EnumDateFormatsExW
+#else
+	#define SetLocaleInfo SetLocaleInfoA
+	#define GetCalendarInfo GetCalendarInfoA
+	#define SetCalendarInfo SetCalendarInfoA
+	#define CompareString CompareStringA
+	#define LCMapString LCMapStringA
+	#define GetLocaleInfo GetLocaleInfoA
+	#define GetNumberFormat GetNumberFormatA
+	#define GetCurrencyFormat GetCurrencyFormatA
+	#define EnumCalendarInfo EnumCalendarInfoA
+	#define EnumCalendarInfoEx EnumCalendarInfoExA
+	#define EnumTimeFormats EnumTimeFormatsA
+	#define EnumDateFormats EnumDateFormatsA
+	#define EnumDateFormatsEx EnumDateFormatsExA
+#endif
+
+declare function GetGeoInfoA(byval Location as GEOID, byval GeoType as GEOTYPE, byval lpGeoData as LPSTR, byval cchData as long, byval LangId as LANGID) as long
+declare function GetGeoInfoW(byval Location as GEOID, byval GeoType as GEOTYPE, byval lpGeoData as LPWSTR, byval cchData as long, byval LangId as LANGID) as long
+declare function EnumSystemGeoID(byval GeoClass as GEOCLASS, byval ParentGeoId as GEOID, byval lpGeoEnumProc as GEO_ENUMPROC) as WINBOOL
+declare function GetUserGeoID(byval GeoClass as GEOCLASS) as GEOID
+declare function GetCPInfo(byval CodePage as UINT, byval lpCPInfo as LPCPINFO) as WINBOOL
+declare function GetCPInfoExA(byval CodePage as UINT, byval dwFlags as DWORD, byval lpCPInfoEx as LPCPINFOEXA) as WINBOOL
+declare function GetCPInfoExW(byval CodePage as UINT, byval dwFlags as DWORD, byval lpCPInfoEx as LPCPINFOEXW) as WINBOOL
+
+#ifdef UNICODE
+	#define GetGeoInfo GetGeoInfoW
+	#define GetCPInfoEx GetCPInfoExW
+#else
+	#define GetGeoInfo GetGeoInfoA
+	#define GetCPInfoEx GetCPInfoExA
+#endif
+
+declare function SetUserGeoID(byval GeoId as GEOID) as WINBOOL
+declare function ConvertDefaultLocale(byval Locale as LCID) as LCID
+declare function GetThreadLocale() as LCID
+declare function SetThreadLocale(byval Locale as LCID) as WINBOOL
+declare function GetSystemDefaultUILanguage() as LANGID
+declare function GetUserDefaultUILanguage() as LANGID
+declare function GetSystemDefaultLangID() as LANGID
+declare function GetUserDefaultLangID() as LANGID
+declare function GetSystemDefaultLCID() as LCID
+declare function GetUserDefaultLCID() as LCID
+declare function SetThreadUILanguage(byval LangId as LANGID) as LANGID
+declare function GetStringTypeExA(byval Locale as LCID, byval dwInfoType as DWORD, byval lpSrcStr as LPCSTR, byval cchSrc as long, byval lpCharType as LPWORD) as WINBOOL
+declare function GetStringTypeA(byval Locale as LCID, byval dwInfoType as DWORD, byval lpSrcStr as LPCSTR, byval cchSrc as long, byval lpCharType as LPWORD) as WINBOOL
+declare function FoldStringA(byval dwMapFlags as DWORD, byval lpSrcStr as LPCSTR, byval cchSrc as long, byval lpDestStr as LPSTR, byval cchDest as long) as long
+declare function EnumSystemLocalesA(byval lpLocaleEnumProc as LOCALE_ENUMPROCA, byval dwFlags as DWORD) as WINBOOL
+declare function EnumSystemLocalesW(byval lpLocaleEnumProc as LOCALE_ENUMPROCW, byval dwFlags as DWORD) as WINBOOL
+declare function EnumSystemLanguageGroupsA(byval lpLanguageGroupEnumProc as LANGUAGEGROUP_ENUMPROCA, byval dwFlags as DWORD, byval lParam as LONG_PTR) as WINBOOL
+declare function EnumSystemLanguageGroupsW(byval lpLanguageGroupEnumProc as LANGUAGEGROUP_ENUMPROCW, byval dwFlags as DWORD, byval lParam as LONG_PTR) as WINBOOL
+declare function EnumLanguageGroupLocalesA(byval lpLangGroupLocaleEnumProc as LANGGROUPLOCALE_ENUMPROCA, byval LanguageGroup as LGRPID, byval dwFlags as DWORD, byval lParam as LONG_PTR) as WINBOOL
+declare function EnumLanguageGroupLocalesW(byval lpLangGroupLocaleEnumProc as LANGGROUPLOCALE_ENUMPROCW, byval LanguageGroup as LGRPID, byval dwFlags as DWORD, byval lParam as LONG_PTR) as WINBOOL
+declare function EnumUILanguagesA(byval lpUILanguageEnumProc as UILANGUAGE_ENUMPROCA, byval dwFlags as DWORD, byval lParam as LONG_PTR) as WINBOOL
+declare function EnumUILanguagesW(byval lpUILanguageEnumProc as UILANGUAGE_ENUMPROCW, byval dwFlags as DWORD, byval lParam as LONG_PTR) as WINBOOL
+
+#ifdef UNICODE
+	#define EnumSystemLocales EnumSystemLocalesW
+	#define EnumSystemLanguageGroups EnumSystemLanguageGroupsW
+	#define EnumLanguageGroupLocales EnumLanguageGroupLocalesW
+	#define EnumUILanguages EnumUILanguagesW
+#else
+	#define FoldString FoldStringA
+	#define GetStringTypeEx GetStringTypeExA
+	#define EnumSystemLocales EnumSystemLocalesA
+	#define EnumSystemLanguageGroups EnumSystemLanguageGroupsA
+	#define EnumLanguageGroupLocales EnumLanguageGroupLocalesA
+	#define EnumUILanguages EnumUILanguagesA
+#endif
+
+declare function EnumSystemCodePagesA(byval lpCodePageEnumProc as CODEPAGE_ENUMPROCA, byval dwFlags as DWORD) as WINBOOL
+declare function EnumSystemCodePagesW(byval lpCodePageEnumProc as CODEPAGE_ENUMPROCW, byval dwFlags as DWORD) as WINBOOL
+
+#ifdef UNICODE
+	#define EnumSystemCodePages EnumSystemCodePagesW
+#else
+	#define EnumSystemCodePages EnumSystemCodePagesA
+#endif
+
+end extern

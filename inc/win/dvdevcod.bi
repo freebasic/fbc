@@ -1,17 +1,36 @@
-''
-''
-'' dvdevcod -- header translated with help of SWIG FB wrapper
-''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
-''
-''
-#ifndef __win_dvdevcod_bi__
-#define __win_dvdevcod_bi__
+#pragma once
 
-#define EC_DVDBASE &h0100
+#define _DVDEVCOD_H
+#define EC_DVD_ANGLE_CHANGE &h0106
+#define EC_DVD_ANGLES_AVAILABLE &h0113
+#define EC_DVD_AUDIO_STREAM_CHANGE &h0104
+#define EC_DVD_BUTTON_AUTO_ACTIVATED &h0115
+#define EC_DVD_BUTTON_CHANGE &h0107
+#define EC_DVD_CHAPTER_AUTOSTOP &h010E
+#define EC_DVD_CHAPTER_START &h0103
+#define EC_DVD_CMD_START &h0116
+#define EC_DVD_CMD_END &h0117
+#define EC_DVD_CURRENT_HMSF_TIME &h011A
+#define EC_DVD_CURRENT_TIME &h010B
+#define EC_DVD_DISC_EJECTED &h0118
+#define EC_DVD_DISC_INSERTED &h0119
+#define EC_DVD_DOMAIN_CHANGE &h0101
+#define EC_DVD_ERROR &h010C
+#define EC_DVD_KARAOKE_MODE &h011B
+#define EC_DVD_NO_FP_PGC &h010F
+#define EC_DVD_PARENTAL_LEVEL_CHANGE &h0111
+#define EC_DVD_PLAYBACK_RATE_CHANGE &h0110
+#define EC_DVD_PLAYBACK_STOPPED &h0112
+#define EC_DVD_PLAYPERIOD_AUTOSTOP &h0114
+#define EC_DVD_STILL_OFF &h010A
+#define EC_DVD_STILL_ON &h0109
+#define EC_DVD_SUBPICTURE_STREAM_CHANGE &h0105
+#define EC_DVD_TITLE_CHANGE &h0102
+#define EC_DVD_VALID_UOPS_CHANGE &h0108
+#define EC_DVD_WARNING &h010D
 
-enum DVD_ERROR
+type _tagDVD_ERROR as long
+enum
 	DVD_ERROR_Unexpected = 1
 	DVD_ERROR_CopyProtectFail = 2
 	DVD_ERROR_InvalidDVD1_0Disc = 3
@@ -22,16 +41,10 @@ enum DVD_ERROR
 	DVD_ERROR_IncompatibleDiscAndDecoderRegions = 8
 end enum
 
-enum DVD_WARNING
-	DVD_WARNING_InvalidDVD1_0Disc = 1
-	DVD_WARNING_FormatNotSupported = 2
-	DVD_WARNING_IllegalNavCommand = 3
-	DVD_WARNING_Open = 4
-	DVD_WARNING_Seek = 5
-	DVD_WARNING_Read = 6
-end enum
+type DVD_ERROR as _tagDVD_ERROR
 
-enum DVD_PB_STOPPED
+type _tagDVD_PB_STOPPED as long
+enum
 	DVD_PB_STOPPED_Other = 0
 	DVD_PB_STOPPED_NoBranch = 1
 	DVD_PB_STOPPED_NoFirstPlayDomain = 2
@@ -48,32 +61,16 @@ enum DVD_PB_STOPPED
 	DVD_PB_STOPPED_CopyProtectFailure = 13
 end enum
 
-#define EC_DVD_DOMAIN_CHANGE (&h0100+&h01)
-#define EC_DVD_TITLE_CHANGE (&h0100+&h02)
-#define EC_DVD_CHAPTER_START (&h0100+&h03)
-#define EC_DVD_AUDIO_STREAM_CHANGE (&h0100+&h04)
-#define EC_DVD_SUBPICTURE_STREAM_CHANGE (&h0100+&h05)
-#define EC_DVD_ANGLE_CHANGE (&h0100+&h06)
-#define EC_DVD_BUTTON_CHANGE (&h0100+&h07)
-#define EC_DVD_VALID_UOPS_CHANGE (&h0100+&h08)
-#define EC_DVD_STILL_ON (&h0100+&h09)
-#define EC_DVD_STILL_OFF (&h0100+&h0a)
-#define EC_DVD_CURRENT_TIME (&h0100+&h&b)
-#define EC_DVD_ERROR (&h0100+&h0c)
-#define EC_DVD_WARNING (&h0100+&h0d)
-#define EC_DVD_CHAPTER_AUTOSTOP (&h0100+&h0e)
-#define EC_DVD_NO_FP_PGC (&h0100+&h0f)
-#define EC_DVD_PLAYBACK_RATE_CHANGE (&h0100+&h10)
-#define EC_DVD_PARENTAL_LEVEL_CHANGE (&h0100+&h11)
-#define EC_DVD_PLAYBACK_STOPPED (&h0100+&h12)
-#define EC_DVD_ANGLES_AVAILABLE (&h0100+&h13)
-#define EC_DVD_PLAYPERIOD_AUTOSTOP (&h0100+&h14)
-#define EC_DVD_BUTTON_AUTO_ACTIVATED (&h0100+&h15)
-#define EC_DVD_CMD_START (&h0100+&h16)
-#define EC_DVD_CMD_END (&h0100+&h17)
-#define EC_DVD_DISC_EJECTED (&h0100+&h18)
-#define EC_DVD_DISC_INSERTED (&h0100+&h19)
-#define EC_DVD_CURRENT_HMSF_TIME (&h0100+&h1a)
-#define EC_DVD_KARAOKE_MODE (&h0100+&h1b)
+type DVD_PB_STOPPED as _tagDVD_PB_STOPPED
 
-#endif
+type _tagDVD_WARNING as long
+enum
+	DVD_WARNING_InvalidDVD1_0Disc = 1
+	DVD_WARNING_FormatNotSupported = 2
+	DVD_WARNING_IllegalNavCommand = 3
+	DVD_WARNING_Open = 4
+	DVD_WARNING_Seek = 5
+	DVD_WARNING_Read = 6
+end enum
+
+type DVD_WARNING as _tagDVD_WARNING

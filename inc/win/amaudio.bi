@@ -1,35 +1,30 @@
-''
-''
-'' amaudio -- header translated with help of SWIG FB wrapper
-''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
-''
-''
-#ifndef __win_amaudio_bi__
-#define __win_amaudio_bi__
+#pragma once
 
-#include once "win/mmsystem.bi"
-#include once "win/dsound.bi"
+#include once "mmsystem.bi"
+#include once "dsound.bi"
 
-type IAMDirectSoundVtbl_ as IAMDirectSoundVtbl
+extern "Windows"
+
+type IAMDirectSoundVtbl as IAMDirectSoundVtbl_
+
+#define __AMAUDIO__
 
 type IAMDirectSound
-	lpVtbl as IAMDirectSoundVtbl_ ptr
+	lpVtbl as IAMDirectSoundVtbl ptr
 end type
 
-type IAMDirectSoundVtbl
-	QueryInterface as function(byval as IAMDirectSound ptr, byval as IID ptr, byval as LPVOID ptr) as HRESULT
-	AddRef as function(byval as IAMDirectSound ptr) as ULONG
-	Release as function(byval as IAMDirectSound ptr) as ULONG
-	GetDirectSoundInterface as function(byval as IAMDirectSound ptr, byval as LPDIRECTSOUND ptr) as HRESULT
-	GetPrimaryBufferInterface as function(byval as IAMDirectSound ptr, byval as LPDIRECTSOUNDBUFFER ptr) as HRESULT
-	GetSecondaryBufferInterface as function(byval as IAMDirectSound ptr, byval as LPDIRECTSOUNDBUFFER ptr) as HRESULT
-	ReleaseDirectSoundInterface as function(byval as IAMDirectSound ptr, byval as LPDIRECTSOUND) as HRESULT
-	ReleasePrimaryBufferInterface as function(byval as IAMDirectSound ptr, byval as LPDIRECTSOUNDBUFFER) as HRESULT
-	ReleaseSecondaryBufferInterface as function(byval as IAMDirectSound ptr, byval as LPDIRECTSOUNDBUFFER) as HRESULT
-	SetFocusWindow as function(byval as IAMDirectSound ptr, byval as HWND, byval as BOOL) as HRESULT
-	GetFocusWindow as function(byval as IAMDirectSound ptr, byval as HWND ptr, byval as BOOL ptr) as HRESULT
+type IAMDirectSoundVtbl_
+	QueryInterface as function(byval This as IAMDirectSound ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
+	AddRef as function(byval This as IAMDirectSound ptr) as ULONG
+	Release as function(byval This as IAMDirectSound ptr) as ULONG
+	GetDirectSoundInterface as function(byval This as IAMDirectSound ptr, byval ds as IDirectSound ptr ptr) as HRESULT
+	GetPrimaryBufferInterface as function(byval This as IAMDirectSound ptr, byval buf as IDirectSoundBuffer ptr ptr) as HRESULT
+	GetSecondaryBufferInterface as function(byval This as IAMDirectSound ptr, byval buf as IDirectSoundBuffer ptr ptr) as HRESULT
+	ReleaseDirectSoundInterface as function(byval This as IAMDirectSound ptr, byval ds as IDirectSound ptr) as HRESULT
+	ReleasePrimaryBufferInterface as function(byval This as IAMDirectSound ptr, byval buf as IDirectSoundBuffer ptr) as HRESULT
+	ReleaseSecondaryBufferInterface as function(byval This as IAMDirectSound ptr, byval buf as IDirectSoundBuffer ptr) as HRESULT
+	SetFocusWindow as function(byval This as IAMDirectSound ptr, byval hwnd as HWND, byval bgaudible as WINBOOL) as HRESULT
+	GetFocusWindow as function(byval This as IAMDirectSound ptr, byval hwnd as HWND ptr, byval bgaudible as WINBOOL ptr) as HRESULT
 end type
 
-#endif
+end extern

@@ -1,14 +1,6 @@
-''
-''
-'' cderr -- header translated with help of SWIG FB wrapper
-''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
-''
-''
-#ifndef __win_cderr_bi__
-#define __win_cderr_bi__
+#pragma once
 
+#define _INC_CDERR
 #define CDERR_DIALOGFAILURE &hFFFF
 #define CDERR_GENERALCODES &h0000
 #define CDERR_STRUCTSIZE &h0001
@@ -46,5 +38,3 @@
 #define FRERR_FINDREPLACECODES &h4000
 #define FRERR_BUFFERLENGTHZERO &h4001
 #define CCERR_CHOOSECOLORCODES &h5000
-
-#endif

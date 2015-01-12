@@ -1,32 +1,202 @@
-''
-''
-'' uxtheme -- header translated with help of SWIG FB wrapper
-''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
-''
-''
-#ifndef __win_uxtheme_bi__
-#define __win_uxtheme_bi__
+#pragma once
+
+#include once "commctrl.bi"
 
 #inclib "uxtheme"
 
-#include once "win/commctrl.bi"
+extern "Windows"
 
-#define DTBG_CLIPRECT &h00000001
-#define DTBG_DRAWSOLID &h00000002
-#define DTBG_OMITBORDER &h00000004
-#define DTBG_OMITCONTENT &h00000008
-#define DTBG_COMPUTINGREGION &h00000010
-#define DTBG_MIRRORDC &h00000020
-#define DTT_GRAYED &h00000001
-#define ETDT_DISABLE &h00000001
-#define ETDT_ENABLE &h00000002
-#define ETDT_USETABTEXTURE &h00000004
-#define ETDT_ENABLETAB (&h00000002 or &h00000004)
-#define STAP_ALLOW_NONCLIENT &h00000001
-#define STAP_ALLOW_CONTROLS &h00000002
-#define STAP_ALLOW_WEBCONTENT &h00000004
+#define _UXTHEME_H_
+
+type HTHEME as HANDLE
+
+#if _WIN32_WINNT = &h0602
+	declare function BeginPanningFeedback(byval hwnd as HWND) as WINBOOL
+	declare function UpdatePanningFeedback(byval hwnd as HWND, byval lTotalOverpanOffsetX as LONG, byval lTotalOverpanOffsetY as LONG, byval fInInertia as WINBOOL) as WINBOOL
+	declare function EndPanningFeedback(byval hwnd as HWND, byval fAnimateBack as WINBOOL) as WINBOOL
+
+	#define GBF_DIRECT &h00000001
+	#define GBF_COPY &h00000002
+	#define GBF_VALIDBITS (GBF_DIRECT or GBF_COPY)
+
+	declare function GetThemeBitmap(byval hTheme as HTHEME, byval iPartId as long, byval iStateId as long, byval iPropId as long, byval dwFlags as ULONG, byval phBitmap as HBITMAP ptr) as HRESULT
+	declare function GetThemeStream(byval hTheme as HTHEME, byval iPartId as long, byval iStateId as long, byval iPropId as long, byval ppvStream as any ptr ptr, byval pcbStream as DWORD ptr, byval hInst as HINSTANCE) as HRESULT
+	declare function GetThemeTransitionDuration(byval hTheme as HTHEME, byval iPartId as long, byval iStateIdFrom as long, byval iStateIdTo as long, byval iPropId as long, byval pdwDuration as DWORD ptr) as HRESULT
+
+	type HPAINTBUFFER__
+		unused as long
+	end type
+
+	type HPAINTBUFFER as HPAINTBUFFER__ ptr
+
+	type _BP_BUFFERFORMAT as long
+	enum
+		BPBF_COMPATIBLEBITMAP
+		BPBF_DIB
+		BPBF_TOPDOWNDIB
+		BPBF_TOPDOWNMONODIB
+	end enum
+
+	type BP_BUFFERFORMAT as _BP_BUFFERFORMAT
+
+	#define BPPF_ERASE &h00000001
+	#define BPPF_NOCLIP &h00000002
+	#define BPPF_NONCLIENT &h00000004
+
+	type _BP_PAINTPARAMS
+		cbSize as DWORD
+		dwFlags as DWORD
+		prcExclude as const RECT ptr
+		pBlendFunction as const BLENDFUNCTION ptr
+	end type
+
+	type BP_PAINTPARAMS as _BP_PAINTPARAMS
+	type PBP_PAINTPARAMS as _BP_PAINTPARAMS ptr
+
+	declare function BeginBufferedPaint(byval hdcTarget as HDC, byval prcTarget as const RECT ptr, byval dwFormat as BP_BUFFERFORMAT, byval pPaintParams as BP_PAINTPARAMS ptr, byval phdc as HDC ptr) as HPAINTBUFFER
+	declare function EndBufferedPaint(byval hBufferedPaint as HPAINTBUFFER, byval fUpdateTarget as WINBOOL) as HRESULT
+	declare function GetBufferedPaintTargetRect(byval hBufferedPaint as HPAINTBUFFER, byval prc as RECT ptr) as HRESULT
+	declare function GetBufferedPaintTargetDC(byval hBufferedPaint as HPAINTBUFFER) as HDC
+	declare function GetBufferedPaintDC(byval hBufferedPaint as HPAINTBUFFER) as HDC
+	declare function GetBufferedPaintBits(byval hBufferedPaint as HPAINTBUFFER, byval ppbBuffer as RGBQUAD ptr ptr, byval pcxRow as long ptr) as HRESULT
+	declare function BufferedPaintClear(byval hBufferedPaint as HPAINTBUFFER, byval prc as const RECT ptr) as HRESULT
+	declare function BufferedPaintSetAlpha(byval hBufferedPaint as HPAINTBUFFER, byval prc as const RECT ptr, byval alpha as UBYTE) as HRESULT
+	declare function BufferedPaintInit() as HRESULT
+	declare function BufferedPaintUnInit() as HRESULT
+
+	type HANIMATIONBUFFER__
+		unused as long
+	end type
+
+	type HANIMATIONBUFFER as HANIMATIONBUFFER__ ptr
+
+	type _BP_ANIMATIONSTYLE as long
+	enum
+		BPAS_NONE
+		BPAS_LINEAR
+		BPAS_CUBIC
+		BPAS_SINE
+	end enum
+
+	type BP_ANIMATIONSTYLE as _BP_ANIMATIONSTYLE
+
+	type _BP_ANIMATIONPARAMS
+		cbSize as DWORD
+		dwFlags as DWORD
+		style as BP_ANIMATIONSTYLE
+		dwDuration as DWORD
+	end type
+
+	type BP_ANIMATIONPARAMS as _BP_ANIMATIONPARAMS
+	type PBP_ANIMATIONPARAMS as _BP_ANIMATIONPARAMS ptr
+
+	declare function BeginBufferedAnimation(byval hwnd as HWND, byval hdcTarget as HDC, byval rcTarget as const RECT ptr, byval dwFormat as BP_BUFFERFORMAT, byval pPaintParams as BP_PAINTPARAMS ptr, byval pAnimationParams as BP_ANIMATIONPARAMS ptr, byval phdcFrom as HDC ptr, byval phdcTo as HDC ptr) as HANIMATIONBUFFER
+	declare function EndBufferedAnimation(byval hbpAnimation as HANIMATIONBUFFER, byval fUpdateTarget as WINBOOL) as HRESULT
+	declare function BufferedPaintRenderAnimation(byval hwnd as HWND, byval hdcTarget as HDC) as WINBOOL
+	declare function BufferedPaintStopAllAnimations(byval hwnd as HWND) as HRESULT
+	declare function IsCompositionActive() as WINBOOL
+
+	type WINDOWTHEMEATTRIBUTETYPE as long
+	enum
+		WTA_NONCLIENT = 1
+	end enum
+
+	type WTA_OPTIONS
+		dwFlags as DWORD
+		dwMask as DWORD
+	end type
+
+	type PWTA_OPTIONS as WTA_OPTIONS ptr
+
+	#define WTNCA_NODRAWCAPTION &h00000001
+	#define WTNCA_NODRAWICON &h00000002
+	#define WTNCA_NOSYSMENU &h00000004
+	#define WTNCA_NOMIRRORHELP &h00000008
+	#define WTNCA_VALIDBITS (((WTNCA_NODRAWCAPTION or WTNCA_NODRAWICON) or WTNCA_NOSYSMENU) or WTNCA_NOMIRRORHELP)
+
+	declare function SetWindowThemeAttribute(byval hwnd as HWND, byval eAttribute as WINDOWTHEMEATTRIBUTETYPE, byval pvAttribute as PVOID, byval cbAttribute as DWORD) as HRESULT
+
+	private function SetWindowThemeNonClientAttributes cdecl(byval hwnd as HWND, byval dwMask as DWORD, byval dwAttributes as DWORD) as HRESULT
+		dim wta as WTA_OPTIONS = (dwAttributes, dwMask)
+		return SetWindowThemeAttribute(hwnd, WTA_NONCLIENT, @wta, sizeof(WTA_OPTIONS))
+	end function
+#endif
+
+declare function OpenThemeData(byval hwnd as HWND, byval pszClassList as LPCWSTR) as HTHEME
+
+#if _WIN32_WINNT = &h0602
+	#define OTD_FORCE_RECT_SIZING &h00000001
+	#define OTD_NONCLIENT &h00000002
+	#define OTD_VALIDBITS (OTD_FORCE_RECT_SIZING or OTD_NONCLIENT)
+
+	declare function OpenThemeDataEx(byval hwnd as HWND, byval pszClassList as LPCWSTR, byval dwFlags as DWORD) as HTHEME
+#endif
+
+declare function CloseThemeData(byval hTheme as HTHEME) as HRESULT
+declare function DrawThemeBackground(byval hTheme as HTHEME, byval hdc as HDC, byval iPartId as long, byval iStateId as long, byval pRect as const RECT ptr, byval pClipRect as const RECT ptr) as HRESULT
+
+#define DTT_GRAYED &h1
+
+declare function DrawThemeText(byval hTheme as HTHEME, byval hdc as HDC, byval iPartId as long, byval iStateId as long, byval pszText as LPCWSTR, byval iCharCount as long, byval dwTextFlags as DWORD, byval dwTextFlags2 as DWORD, byval pRect as const RECT ptr) as HRESULT
+
+#if _WIN32_WINNT = &h0602
+	#define DTT_TEXTCOLOR (__MSABI_LONG(1) shl 0)
+	#define DTT_BORDERCOLOR (__MSABI_LONG(1) shl 1)
+	#define DTT_SHADOWCOLOR (__MSABI_LONG(1) shl 2)
+	#define DTT_SHADOWTYPE (__MSABI_LONG(1) shl 3)
+	#define DTT_SHADOWOFFSET (__MSABI_LONG(1) shl 4)
+	#define DTT_BORDERSIZE (__MSABI_LONG(1) shl 5)
+	#define DTT_FONTPROP (__MSABI_LONG(1) shl 6)
+	#define DTT_COLORPROP (__MSABI_LONG(1) shl 7)
+	#define DTT_STATEID (__MSABI_LONG(1) shl 8)
+	#define DTT_CALCRECT (__MSABI_LONG(1) shl 9)
+	#define DTT_APPLYOVERLAY (__MSABI_LONG(1) shl 10)
+	#define DTT_GLOWSIZE (__MSABI_LONG(1) shl 11)
+	#define DTT_CALLBACK (__MSABI_LONG(1) shl 12)
+	#define DTT_COMPOSITED (__MSABI_LONG(1) shl 13)
+	#define DTT_VALIDBITS ((((((((((((DTT_TEXTCOLOR or DTT_BORDERCOLOR) or DTT_SHADOWCOLOR) or DTT_SHADOWTYPE) or DTT_SHADOWOFFSET) or DTT_BORDERSIZE) or DTT_FONTPROP) or DTT_COLORPROP) or DTT_STATEID) or DTT_CALCRECT) or DTT_APPLYOVERLAY) or DTT_GLOWSIZE) or DTT_COMPOSITED)
+
+	type DTT_CALLBACK_PROC as function(byval hdc as HDC, byval pszText as LPWSTR, byval cchText as long, byval prc as LPRECT, byval dwFlags as UINT, byval lParam as LPARAM) as long
+
+	type _DTTOPTS
+		dwSize as DWORD
+		dwFlags as DWORD
+		crText as COLORREF
+		crBorder as COLORREF
+		crShadow as COLORREF
+		iTextShadowType as long
+		ptShadowOffset as POINT
+		iBorderSize as long
+		iFontPropId as long
+		iColorPropId as long
+		iStateId as long
+		fApplyOverlay as WINBOOL
+		iGlowSize as long
+		pfnDrawTextCallback as DTT_CALLBACK_PROC
+		lParam as LPARAM
+	end type
+
+	type DTTOPTS as _DTTOPTS
+	type PDTTOPTS as _DTTOPTS ptr
+
+	declare function DrawThemeTextEx(byval hTheme as HTHEME, byval hdc as HDC, byval iPartId as long, byval iStateId as long, byval pszText as LPCWSTR, byval iCharCount as long, byval dwFlags as DWORD, byval pRect as LPRECT, byval pOptions as const DTTOPTS ptr) as HRESULT
+#endif
+
+declare function GetThemeBackgroundContentRect(byval hTheme as HTHEME, byval hdc as HDC, byval iPartId as long, byval iStateId as long, byval pBoundingRect as const RECT ptr, byval pContentRect as RECT ptr) as HRESULT
+declare function GetThemeBackgroundExtent(byval hTheme as HTHEME, byval hdc as HDC, byval iPartId as long, byval iStateId as long, byval pContentRect as const RECT ptr, byval pExtentRect as RECT ptr) as HRESULT
+
+type THEMESIZE as long
+enum
+	TS_MIN
+	TS_TRUE
+	TS_DRAW
+end enum
+
+declare function GetThemePartSize(byval hTheme as HTHEME, byval hdc as HDC, byval iPartId as long, byval iStateId as long, byval prc as RECT ptr, byval eSize as THEMESIZE, byval psz as SIZE ptr) as HRESULT
+declare function GetThemeTextExtent(byval hTheme as HTHEME, byval hdc as HDC, byval iPartId as long, byval iStateId as long, byval pszText as LPCWSTR, byval iCharCount as long, byval dwTextFlags as DWORD, byval pBoundingRect as const RECT ptr, byval pExtentRect as RECT ptr) as HRESULT
+declare function GetThemeTextMetrics(byval hTheme as HTHEME, byval hdc as HDC, byval iPartId as long, byval iStateId as long, byval ptm as TEXTMETRIC ptr) as HRESULT
+declare function GetThemeBackgroundRegion(byval hTheme as HTHEME, byval hdc as HDC, byval iPartId as long, byval iStateId as long, byval pRect as const RECT ptr, byval pRegion as HRGN ptr) as HRESULT
+
 #define HTTB_BACKGROUNDSEG &h0000
 #define HTTB_FIXEDBORDER &h0002
 #define HTTB_CAPTION &h0004
@@ -34,102 +204,139 @@
 #define HTTB_RESIZINGBORDER_TOP &h0020
 #define HTTB_RESIZINGBORDER_RIGHT &h0040
 #define HTTB_RESIZINGBORDER_BOTTOM &h0080
-#define HTTB_RESIZINGBORDER (&h0010 or &h0020 or &h0040 or &h0080)
+#define HTTB_RESIZINGBORDER (((HTTB_RESIZINGBORDER_LEFT or HTTB_RESIZINGBORDER_TOP) or HTTB_RESIZINGBORDER_RIGHT) or HTTB_RESIZINGBORDER_BOTTOM)
 #define HTTB_SIZINGTEMPLATE &h0100
 #define HTTB_SYSTEMSIZINGMARGINS &h0200
 
-enum PROPERTYORIGIN
-	PO_STATE = 0
-	PO_PART = 1
-	PO_CLASS = 2
-	PO_GLOBAL = 3
-	PO_NOTFOUND = 4
+declare function HitTestThemeBackground(byval hTheme as HTHEME, byval hdc as HDC, byval iPartId as long, byval iStateId as long, byval dwOptions as DWORD, byval pRect as const RECT ptr, byval hrgn as HRGN, byval ptTest as POINT, byval pwHitTestCode as WORD ptr) as HRESULT
+declare function DrawThemeEdge(byval hTheme as HTHEME, byval hdc as HDC, byval iPartId as long, byval iStateId as long, byval pDestRect as const RECT ptr, byval uEdge as UINT, byval uFlags as UINT, byval pContentRect as RECT ptr) as HRESULT
+declare function DrawThemeIcon(byval hTheme as HTHEME, byval hdc as HDC, byval iPartId as long, byval iStateId as long, byval pRect as const RECT ptr, byval himl as HIMAGELIST, byval iImageIndex as long) as HRESULT
+declare function IsThemePartDefined(byval hTheme as HTHEME, byval iPartId as long, byval iStateId as long) as WINBOOL
+declare function IsThemeBackgroundPartiallyTransparent(byval hTheme as HTHEME, byval iPartId as long, byval iStateId as long) as WINBOOL
+declare function GetThemeColor(byval hTheme as HTHEME, byval iPartId as long, byval iStateId as long, byval iPropId as long, byval pColor as COLORREF ptr) as HRESULT
+declare function GetThemeMetric(byval hTheme as HTHEME, byval hdc as HDC, byval iPartId as long, byval iStateId as long, byval iPropId as long, byval piVal as long ptr) as HRESULT
+declare function GetThemeString(byval hTheme as HTHEME, byval iPartId as long, byval iStateId as long, byval iPropId as long, byval pszBuff as LPWSTR, byval cchMaxBuffChars as long) as HRESULT
+declare function GetThemeBool(byval hTheme as HTHEME, byval iPartId as long, byval iStateId as long, byval iPropId as long, byval pfVal as WINBOOL ptr) as HRESULT
+declare function GetThemeInt(byval hTheme as HTHEME, byval iPartId as long, byval iStateId as long, byval iPropId as long, byval piVal as long ptr) as HRESULT
+declare function GetThemeEnumValue(byval hTheme as HTHEME, byval iPartId as long, byval iStateId as long, byval iPropId as long, byval piVal as long ptr) as HRESULT
+declare function GetThemePosition(byval hTheme as HTHEME, byval iPartId as long, byval iStateId as long, byval iPropId as long, byval pPoint as POINT ptr) as HRESULT
+declare function GetThemeFont(byval hTheme as HTHEME, byval hdc as HDC, byval iPartId as long, byval iStateId as long, byval iPropId as long, byval pFont as LOGFONT ptr) as HRESULT
+declare function GetThemeRect(byval hTheme as HTHEME, byval iPartId as long, byval iStateId as long, byval iPropId as long, byval pRect as RECT ptr) as HRESULT
+
+type _MARGINS
+	cxLeftWidth as long
+	cxRightWidth as long
+	cyTopHeight as long
+	cyBottomHeight as long
+end type
+
+type MARGINS as _MARGINS
+type PMARGINS as _MARGINS ptr
+
+declare function GetThemeMargins(byval hTheme as HTHEME, byval hdc as HDC, byval iPartId as long, byval iStateId as long, byval iPropId as long, byval prc as RECT ptr, byval pMargins as MARGINS ptr) as HRESULT
+
+#if (_WIN32_WINNT = &h0400) or (_WIN32_WINNT = &h0502)
+	#define MAX_INTLIST_COUNT 10
+#else
+	#define MAX_INTLIST_COUNT 402
+#endif
+
+type _INTLIST
+	iValueCount as long
+
+	#if (_WIN32_WINNT = &h0400) or (_WIN32_WINNT = &h0502)
+		iValues(0 to 9) as long
+	#else
+		iValues(0 to 401) as long
+	#endif
+end type
+
+type INTLIST as _INTLIST
+type PINTLIST as _INTLIST ptr
+
+declare function GetThemeIntList(byval hTheme as HTHEME, byval iPartId as long, byval iStateId as long, byval iPropId as long, byval pIntList as INTLIST ptr) as HRESULT
+
+type PROPERTYORIGIN as long
+enum
+	PO_STATE
+	PO_PART
+	PO_CLASS
+	PO_GLOBAL
+	PO_NOTFOUND
 end enum
 
+declare function GetThemePropertyOrigin(byval hTheme as HTHEME, byval iPartId as long, byval iStateId as long, byval iPropId as long, byval pOrigin as PROPERTYORIGIN ptr) as HRESULT
+declare function SetWindowTheme(byval hwnd as HWND, byval pszSubAppName as LPCWSTR, byval pszSubIdList as LPCWSTR) as HRESULT
+declare function GetThemeFilename(byval hTheme as HTHEME, byval iPartId as long, byval iStateId as long, byval iPropId as long, byval pszThemeFileName as LPWSTR, byval cchMaxBuffChars as long) as HRESULT
+declare function GetThemeSysColor(byval hTheme as HTHEME, byval iColorId as long) as COLORREF
+declare function GetThemeSysColorBrush(byval hTheme as HTHEME, byval iColorId as long) as HBRUSH
+declare function GetThemeSysBool(byval hTheme as HTHEME, byval iBoolId as long) as WINBOOL
+declare function GetThemeSysSize(byval hTheme as HTHEME, byval iSizeId as long) as long
+declare function GetThemeSysFont(byval hTheme as HTHEME, byval iFontId as long, byval plf as LOGFONT ptr) as HRESULT
+declare function GetThemeSysString(byval hTheme as HTHEME, byval iStringId as long, byval pszStringBuff as LPWSTR, byval cchMaxStringChars as long) as HRESULT
+declare function GetThemeSysInt(byval hTheme as HTHEME, byval iIntId as long, byval piValue as long ptr) as HRESULT
+declare function IsThemeActive() as WINBOOL
+declare function IsAppThemed() as WINBOOL
+declare function GetWindowTheme(byval hwnd as HWND) as HTHEME
 
-enum THEMESIZE
-	TS_MIN
-	TS_TRUE
-	TS_DRAW
-end enum
+#define ETDT_DISABLE &h00000001
+#define ETDT_ENABLE &h00000002
+#define ETDT_USETABTEXTURE &h00000004
+#define ETDT_ENABLETAB (ETDT_ENABLE or ETDT_USETABTEXTURE)
 
-type THEME_SIZE as THEMESIZE
+#if _WIN32_WINNT = &h0602
+	#define ETDT_USEAEROWIZARDTABTEXTURE &h00000008
+	#define ETDT_ENABLEAEROWIZARDTAB (ETDT_ENABLE or ETDT_USEAEROWIZARDTABTEXTURE)
+	#define ETDT_VALIDBITS (((ETDT_DISABLE or ETDT_ENABLE) or ETDT_USETABTEXTURE) or ETDT_USEAEROWIZARDTABTEXTURE)
+#endif
 
-type DTBGOPTS
+declare function EnableThemeDialogTexture(byval hwnd as HWND, byval dwFlags as DWORD) as HRESULT
+declare function IsThemeDialogTextureEnabled(byval hwnd as HWND) as WINBOOL
+
+#define STAP_ALLOW_NONCLIENT (1 shl 0)
+#define STAP_ALLOW_CONTROLS (1 shl 1)
+#define STAP_ALLOW_WEBCONTENT (1 shl 2)
+
+declare function GetThemeAppProperties() as DWORD
+declare sub SetThemeAppProperties(byval dwFlags as DWORD)
+declare function GetCurrentThemeName(byval pszThemeFileName as LPWSTR, byval cchMaxNameChars as long, byval pszColorBuff as LPWSTR, byval cchMaxColorChars as long, byval pszSizeBuff as LPWSTR, byval cchMaxSizeChars as long) as HRESULT
+
+#define SZ_THDOCPROP_DISPLAYNAME wstr("DisplayName")
+#define SZ_THDOCPROP_CANONICALNAME wstr("ThemeName")
+#define SZ_THDOCPROP_TOOLTIP wstr("ToolTip")
+#define SZ_THDOCPROP_AUTHOR wstr("author")
+
+declare function GetThemeDocumentationProperty(byval pszThemeName as LPCWSTR, byval pszPropertyName as LPCWSTR, byval pszValueBuff as LPWSTR, byval cchMaxValChars as long) as HRESULT
+declare function DrawThemeParentBackground(byval hwnd as HWND, byval hdc as HDC, byval prc as RECT ptr) as HRESULT
+
+#if _WIN32_WINNT = &h0602
+	#define DTPB_WINDOWDC &h00000001
+	#define DTPB_USECTLCOLORSTATIC &h00000002
+	#define DTPB_USEERASEBKGND &h00000004
+
+	declare function DrawThemeParentBackgroundEx(byval hwnd as HWND, byval hdc as HDC, byval dwFlags as DWORD, byval prc as const RECT ptr) as HRESULT
+#endif
+
+declare function EnableTheming(byval fEnable as WINBOOL) as HRESULT
+
+#define DTBG_CLIPRECT &h00000001
+#define DTBG_DRAWSOLID &h00000002
+#define DTBG_OMITBORDER &h00000004
+#define DTBG_OMITCONTENT &h00000008
+#define DTBG_COMPUTINGREGION &h00000010
+#define DTBG_MIRRORDC &h00000020
+#define DTBG_NOMIRROR &h00000040
+#define DTBG_VALIDBITS ((((((DTBG_CLIPRECT or DTBG_DRAWSOLID) or DTBG_OMITBORDER) or DTBG_OMITCONTENT) or DTBG_COMPUTINGREGION) or DTBG_MIRRORDC) or DTBG_NOMIRROR)
+
+type _DTBGOPTS
 	dwSize as DWORD
 	dwFlags as DWORD
 	rcClip as RECT
 end type
 
-type PDTBGOPTS as DTBGOPTS ptr
+type DTBGOPTS as _DTBGOPTS
+type PDTBGOPTS as _DTBGOPTS ptr
 
-#define MAX_INTLIST_COUNT 10
+declare function DrawThemeBackgroundEx(byval hTheme as HTHEME, byval hdc as HDC, byval iPartId as long, byval iStateId as long, byval pRect as const RECT ptr, byval pOptions as const DTBGOPTS ptr) as HRESULT
 
-type INTLIST
-	iValueCount as integer
-	iValues(0 to 10-1) as integer
-end type
-
-type PINTLIST as INTLIST ptr
-
-type MARGINS
-	cxLeftWidth as integer
-	cxRightWidth as integer
-	cyTopHeight as integer
-	cyBottomHeight as integer
-end type
-
-type PMARGINS as MARGINS ptr
-
-type HTHEME as HANDLE
-
-declare function CloseThemeData alias "CloseThemeData" (byval as HTHEME) as HRESULT
-declare function DrawThemeBackground alias "DrawThemeBackground" (byval as HTHEME, byval as HDC, byval as integer, byval as integer, byval as RECT ptr, byval as RECT ptr) as HRESULT
-declare function DrawThemeBackgroundEx alias "DrawThemeBackgroundEx" (byval as HTHEME, byval as HDC, byval as integer, byval as integer, byval as RECT ptr, byval as DTBGOPTS ptr) as HRESULT
-declare function DrawThemeEdge alias "DrawThemeEdge" (byval as HTHEME, byval as HDC, byval as integer, byval as integer, byval as RECT ptr, byval as UINT, byval as UINT, byval as RECT ptr) as HRESULT
-declare function DrawThemeIcon alias "DrawThemeIcon" (byval as HTHEME, byval as HDC, byval as integer, byval as integer, byval as RECT ptr, byval as HIMAGELIST, byval as integer) as HRESULT
-declare function DrawThemeParentBackground alias "DrawThemeParentBackground" (byval as HWND, byval as HDC, byval as RECT ptr) as HRESULT
-declare function DrawThemeText alias "DrawThemeText" (byval as HTHEME, byval as HDC, byval as integer, byval as integer, byval as LPCWSTR, byval as integer, byval as DWORD, byval as DWORD, byval as RECT ptr) as HRESULT
-declare function EnableThemeDialogTexture alias "EnableThemeDialogTexture" (byval as HWND, byval as DWORD) as HRESULT
-declare function EnableTheming alias "EnableTheming" (byval as BOOL) as HRESULT
-declare function GetCurrentThemeName alias "GetCurrentThemeName" (byval as LPWSTR, byval as integer, byval as LPWSTR, byval as integer, byval as LPWSTR, byval as integer) as HRESULT
-declare function GetThemeAppProperties alias "GetThemeAppProperties" () as DWORD
-declare function GetThemeBackgroundContentRect alias "GetThemeBackgroundContentRect" (byval as HTHEME, byval as HDC, byval as integer, byval as integer, byval as RECT ptr, byval as RECT ptr) as HRESULT
-declare function GetThemeBackgroundExtent alias "GetThemeBackgroundExtent" (byval as HTHEME, byval as HDC, byval as integer, byval as integer, byval as RECT ptr, byval as RECT ptr) as HRESULT
-declare function GetThemeBackgroundRegion alias "GetThemeBackgroundRegion" (byval as HTHEME, byval as HDC, byval as integer, byval as integer, byval as RECT ptr, byval as HRGN ptr) as HRESULT
-declare function GetThemeBool alias "GetThemeBool" (byval as HTHEME, byval as integer, byval as integer, byval as integer, byval as BOOL ptr) as HRESULT
-declare function GetThemeColor alias "GetThemeColor" (byval as HTHEME, byval as integer, byval as integer, byval as integer, byval as COLORREF ptr) as HRESULT
-declare function GetThemeDocumentationProperty alias "GetThemeDocumentationProperty" (byval as LPCWSTR, byval as LPCWSTR, byval as LPWSTR, byval as integer) as HRESULT
-declare function GetThemeEnumValue alias "GetThemeEnumValue" (byval as HTHEME, byval as integer, byval as integer, byval as integer, byval as integer ptr) as HRESULT
-declare function GetThemeFilename alias "GetThemeFilename" (byval as HTHEME, byval as integer, byval as integer, byval as integer, byval as LPWSTR, byval as integer) as HRESULT
-declare function GetThemeFont alias "GetThemeFont" (byval as HTHEME, byval as HDC, byval as integer, byval as integer, byval as integer, byval as LOGFONT ptr) as HRESULT
-declare function GetThemeInt alias "GetThemeInt" (byval as HTHEME, byval as integer, byval as integer, byval as integer, byval as integer ptr) as HRESULT
-declare function GetThemeIntList alias "GetThemeIntList" (byval as HTHEME, byval as integer, byval as integer, byval as integer, byval as INTLIST ptr) as HRESULT
-declare function GetThemeMargins alias "GetThemeMargins" (byval as HTHEME, byval as HDC, byval as integer, byval as integer, byval as integer, byval as RECT ptr, byval as MARGINS ptr) as HRESULT
-declare function GetThemeMetric alias "GetThemeMetric" (byval as HTHEME, byval as HDC, byval as integer, byval as integer, byval as integer, byval as integer ptr) as HRESULT
-declare function GetThemePartSize alias "GetThemePartSize" (byval as HTHEME, byval as HDC, byval as integer, byval as integer, byval as RECT ptr, byval as THEME_SIZE, byval as SIZE ptr) as HRESULT
-declare function GetThemePosition alias "GetThemePosition" (byval as HTHEME, byval as integer, byval as integer, byval as integer, byval as POINT ptr) as HRESULT
-declare function GetThemePropertyOrigin alias "GetThemePropertyOrigin" (byval as HTHEME, byval as integer, byval as integer, byval as integer, byval as PROPERTYORIGIN ptr) as HRESULT
-declare function GetThemeRect alias "GetThemeRect" (byval as HTHEME, byval as integer, byval as integer, byval as integer, byval as RECT ptr) as HRESULT
-declare function GetThemeString alias "GetThemeString" (byval as HTHEME, byval as integer, byval as integer, byval as integer, byval as LPWSTR, byval as integer) as HRESULT
-declare function GetThemeSysBool alias "GetThemeSysBool" (byval as HTHEME, byval as integer) as BOOL
-declare function GetThemeSysColor alias "GetThemeSysColor" (byval as HTHEME, byval as integer) as COLORREF
-declare function GetThemeSysColorBrush alias "GetThemeSysColorBrush" (byval as HTHEME, byval as integer) as HBRUSH
-declare function GetThemeSysFont alias "GetThemeSysFont" (byval as HTHEME, byval as integer, byval as LOGFONT ptr) as HRESULT
-declare function GetThemeSysInt alias "GetThemeSysInt" (byval as HTHEME, byval as integer, byval as integer ptr) as HRESULT
-declare function GetThemeSysSize alias "GetThemeSysSize" (byval as HTHEME, byval as integer) as integer
-declare function GetThemeSysString alias "GetThemeSysString" (byval as HTHEME, byval as integer, byval as LPWSTR, byval as integer) as HRESULT
-declare function GetThemeTextExtent alias "GetThemeTextExtent" (byval as HTHEME, byval as HDC, byval as integer, byval as integer, byval as LPCWSTR, byval as integer, byval as DWORD, byval as RECT ptr, byval as RECT ptr) as HRESULT
-declare function GetThemeTextMetrics alias "GetThemeTextMetrics" (byval as HTHEME, byval as HDC, byval as integer, byval as integer, byval as TEXTMETRIC ptr) as HRESULT
-declare function GetWindowTheme alias "GetWindowTheme" (byval as HWND) as HTHEME
-declare function HitTestThemeBackground alias "HitTestThemeBackground" (byval as HTHEME, byval as HDC, byval as integer, byval as integer, byval as DWORD, byval as RECT ptr, byval as HRGN, byval as POINT, byval as WORD ptr) as HRESULT
-declare function IsAppThemed alias "IsAppThemed" () as BOOL
-declare function IsThemeActive alias "IsThemeActive" () as BOOL
-declare function IsThemeBackgroundPartiallyTransparent alias "IsThemeBackgroundPartiallyTransparent" (byval as HTHEME, byval as integer, byval as integer) as BOOL
-declare function IsThemeDialogTextureEnabled alias "IsThemeDialogTextureEnabled" (byval as HWND) as BOOL
-declare function IsThemePartDefined alias "IsThemePartDefined" (byval as HTHEME, byval as integer, byval as integer) as BOOL
-declare function OpenThemeData alias "OpenThemeData" (byval as HWND, byval as LPCWSTR) as HTHEME
-declare sub SetThemeAppProperties alias "SetThemeAppProperties" (byval as DWORD)
-declare function SetWindowTheme alias "SetWindowTheme" (byval as HWND, byval as LPCWSTR, byval as LPCWSTR) as HRESULT
-
-#endif
+end extern
