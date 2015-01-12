@@ -1,3 +1,4 @@
+#include once "windows.bi"
 #include once "win/wininet.bi"
 
 type ftp_ctx
