@@ -21,6 +21,7 @@ Version 1.02.0
 - 1.00.0 regression: . member access was allowed on [] pointer indexing expressions even if the type was not an UDT, but a UDT ptr
 - Some unsafe pointer assignments between ANY PTRs and non-ANY PTRs with different PTR indirection levels didn't trigger a "suspicious pointer assignment" warning (e.g. ANY PTR PTR = BYTE PTR)
 - On 64bit, all number literals with '&' suffix (LONG type) triggered a "too big" warning, even if their value was not really too big.
+- #765: insufficient precision on FLT_MAX / DBL_MAX constants in crt/limits.bi
 
 
 Version 1.01.0
