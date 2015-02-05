@@ -434,7 +434,13 @@ static int *driver_fetch_modes(int depth, int *size)
 		index++;
 		if (devmode.dmBitsPerPel == (unsigned int)depth) {
 			(*size)++;
+			int *oldModes = modes;
 			modes = (int *)realloc(modes, *size * sizeof(int));
+			if (modes == NULL) {
+				free(oldModes);
+				*size = 0;
+				return NULL;
+			}
 			modes[(*size) - 1] = (devmode.dmPelsWidth << 16) | devmode.dmPelsHeight;
 		}
 	}
