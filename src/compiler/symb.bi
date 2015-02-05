@@ -891,15 +891,6 @@ declare function symbLookupByNameAndClass _
 		byval search_imports as integer = TRUE _
 	) as FBSYMBOL ptr
 
-declare function symbLookupByNameAndSuffix _
-	( _
-		byval ns as FBSYMBOL ptr, _
-		byval symbol as zstring ptr, _
-		byval suffix as integer, _
-		byval preservecase as integer = FALSE, _
-		byval search_imports as integer = TRUE _
-	) as FBSYMBOL ptr
-
 declare function symbFindOverloadProc _
 	( _
 		byval parent as FBSYMBOL ptr, _

@@ -40,38 +40,50 @@ function symbAddConst _
 	function = sym
 end function
 
-function symbAllocFloatConst _
+''
+'' Add or lookup a global var for the given value. The value string must
+'' uniquely represent the value and the type size, such that we can use it as
+'' the internal name for the global var. By re-using an existing global var (if
+'' any) we ensure to only add one global var for each value and type size.
+''
+'' Variables with different dtype size must be treated different from
+'' each-other, otherwise there could be buffer overflows in generated code if we
+'' expect a 8 byte var and get a 4 byte one. symbAllocFloatConst and
+'' symbAllocIntConst ensure this by using either 8 or 16 hex digits (4 or 8 byte
+'' var).
+''
+'' We identify vars only based on the value and the type size, but not based on
+'' the dtype. This way a 4 byte integer and a Single are the same, as long as
+'' they have the same value (in terms of the in-memory representation), and we
+'' avoid unnecessary duplicates.
+''
+private function hAllocIntOrFloatConst _
 	( _
-		byval value as double, _
+		byref svalue as string, _
 		byval dtype as integer _
 	) as FBSYMBOL ptr
 
-    static as zstring * FB_MAXINTNAMELEN+1 id, id_alias
-	static as FBARRAYDIM dTB(0)
-	dim as FBSYMBOL ptr s = any
+	static as zstring * FB_MAXINTNAMELEN+1 id
+	dim as FBARRAYDIM dTB(0)
 
 	function = NULL
-
-	'' can't use STR() because GAS doesn't support the 1.#INF notation
-	dim as string svalue = hFloatToHex( value, dtype )
 
 	id = "{fbnc}"
 	id += svalue
 
 	'' preserve case, 'D', 'd', 'E', 'e' will become 'e' in lexer
-	s = symbLookupByNameAndSuffix( @symbGetGlobalNamespc( ), @id, dtype, TRUE, FALSE )
+	var s = symbLookupByNameAndClass( @symbGetGlobalNamespc( ), @id, FB_SYMBCLASS_VAR, TRUE, FALSE )
 	if( s <> NULL ) then
 		return s
 	end if
 
-	id_alias = *symbUniqueId( )
-
 	'' it must be declare as SHARED, because even if currently inside an
 	'' proc, the global symbol tb should be used, so just one constant
 	'' will be ever allocated over the module
-	s = symbAddVar( @id, @id_alias, dtype, NULL, 0, 0, dTB(), _
+	s = symbAddVar( @id, symbUniqueId( ), dtype, NULL, 0, 0, dTB(), _
 	                FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_CONST or FB_SYMBATTRIB_LITERAL, _
 	                FB_SYMBOPT_MOVETOGLOB or FB_SYMBOPT_PRESERVECASE or FB_SYMBOPT_NODUPCHECK )
+	assert( s )
 
 	s->var_.littext = ZstrAllocate( len( svalue ) )
 	*s->var_.littext = svalue
@@ -79,50 +91,20 @@ function symbAllocFloatConst _
 	function = s
 end function
 
-function symbAllocIntConst _
-	( _
-		byval value as longint, _
-		byval dtype as integer _
-	) as FBSYMBOL ptr static
+function symbAllocFloatConst( byval value as double, byval dtype as integer ) as FBSYMBOL ptr
+	function = hAllocIntOrFloatConst( hFloatToHex( value, dtype ), dtype )
+end function
 
-    static as zstring * FB_MAXINTNAMELEN+1 id, id_alias
-	dim as FBSYMBOL ptr s
-	dim as FBARRAYDIM dTB(0)
-	dim as string svalue
-
-	function = NULL
-
-	svalue = "0x"
+function symbAllocIntConst( byval value as longint, byval dtype as integer ) as FBSYMBOL ptr
+	dim as string svalue = "0x"
 	if( typeGetSize( dtype ) = 8 ) then
-		svalue += hex( value )
+		svalue += hex( value, 16 )
 	else
 		'' Using an intermediate uinteger to allow compiling with FB
 		'' versions before the overload resolution overhaul
-		svalue += hex( cuint( culng( value ) ) )
+		svalue += hex( cuint( culng( value ) ), 8 )
 	end if
-
-	id = "{fbnc}"
-	id += svalue
-
-	'' preserve case, 'D', 'd', 'E', 'e' will become 'e' in lexer
-	s = symbLookupByNameAndSuffix( @symbGetGlobalNamespc( ), @id, dtype, TRUE, FALSE )
-	if( s <> NULL ) then
-		return s
-	end if
-
-	id_alias = *symbUniqueId( )
-
-	'' it must be declare as SHARED, because even if currently inside an
-	'' proc, the global symbol tb should be used, so just one constant
-	'' will be ever allocated over the module
-	s = symbAddVar( @id, @id_alias, dtype, NULL, 0, 0, dTB(), _
-	                FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_CONST or FB_SYMBATTRIB_LITERAL, _
-	                FB_SYMBOPT_MOVETOGLOB or FB_SYMBOPT_PRESERVECASE )
-
-	s->var_.littext = ZstrAllocate( len( svalue ) )
-	*s->var_.littext = svalue
-
-	function = s
+	function = hAllocIntOrFloatConst( svalue, dtype )
 end function
 
 '':::::

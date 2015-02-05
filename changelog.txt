@@ -24,6 +24,7 @@ Version 1.02.0
 - #765: insufficient precision on FLT_MAX / DBL_MAX constants in crt/limits.bi
 - gfxlib could crash on exit, if Screen[Res] was used in a global/module constructor
 - #768: View [Screen] did not clip the given viewport coordinates to the screen properly, if x1/y1 were negative
+- 0.90.0 regression: Potential compiler crash with -fpu sse -fpmode fast if the program used sin/cos and contained certain global float constants (such as pi/2)
 
 
 Version 1.01.0

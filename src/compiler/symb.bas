@@ -1072,35 +1072,6 @@ function symbLookupByNameAndClass _
 end function
 
 '':::::
-function symbLookupByNameAndSuffix _
-	( _
-		byval ns as FBSYMBOL ptr, _
-		byval id as zstring ptr, _
-		byval suffix as integer, _
-		byval preserve_case as integer, _
-		byval search_imports as integer _
-	) as FBSYMBOL ptr
-
-	dim as FBSYMCHAIN ptr chain_ = any
-
-	chain_ = symbLookupAt( ns, id, preserve_case, search_imports )
-
-    '' any found?
-    if( chain_ <> NULL ) then
-		'' check if types match
-    	if( suffix = FB_DATATYPE_INVALID ) then
-    		function = symbFindVarByDefType( chain_, symbGetDefType( id ) )
-    	else
-    		function = symbFindVarBySuffix( chain_, suffix )
-    	end if
-
-	else
-		function = NULL
-	end if
-
-end function
-
-'':::::
 function symbFindByClass _
 	( _
 		byval chain_ as FBSYMCHAIN ptr, _
