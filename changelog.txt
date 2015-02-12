@@ -25,6 +25,7 @@ Version 1.02.0
 - gfxlib could crash on exit, if Screen[Res] was used in a global/module constructor
 - #768: View [Screen] did not clip the given viewport coordinates to the screen properly, if x1/y1 were negative
 - 0.90.0 regression: Potential compiler crash with -fpu sse -fpmode fast if the program used sin/cos and contained certain global float constants (such as pi/2)
+- 1.00.0 regression: Potential dead-lock in thread-safe runtime library when using file or console I/O functions from multiple threads
 
 
 Version 1.01.0
