@@ -1283,10 +1283,6 @@ declare function al_check_inverse(byval trans as const ALLEGRO_TRANSFORM ptr, by
 	declare function _WinMain(byval _main as any ptr, byval hInst as any ptr, byval hPrev as any ptr, byval Cmd as zstring ptr, byval nShow as long) as long
 
 	#define AL_JOY_TYPE_DIRECTX AL_ID(asc("D"), asc("X"), asc(" "), asc(" "))
-
-	extern _AL_DLL _al_joydrv_directx as ALLEGRO_JOYSTICK_DRIVER
-
-	#define _AL_JOYSTICK_DRIVER_DIRECTX ( AL_JOY_TYPE_DIRECTX, @_al_joydrv_directx, true ),
 #endif
 
 end extern
