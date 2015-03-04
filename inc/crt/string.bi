@@ -10,14 +10,10 @@
 #define __crt_string_bi__
 
 #include once "crt/stddef.bi"
+#include once "crt/mem.bi"
 
 extern "c"
 
-declare function memchr (byval as any ptr, byval as long, byval as size_t) as any ptr
-declare function memcmp (byval as any ptr, byval as any ptr, byval as size_t) as long
-declare function memcpy (byval as any ptr, byval as any ptr, byval as size_t) as any ptr
-declare function memmove (byval as any ptr, byval as any ptr, byval as size_t) as any ptr
-declare function memset (byval as any ptr, byval as long, byval as size_t) as any ptr
 declare function strcat (byval as zstring ptr, byval as zstring ptr) as zstring ptr
 declare function strchr (byval as zstring ptr, byval as long) as zstring ptr
 declare function strcmp (byval as zstring ptr, byval as zstring ptr) as long

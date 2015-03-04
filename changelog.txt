@@ -10,6 +10,7 @@ Version 1.02.0
 - Address-of followed by pointer-arithmetic on variables (expressions such as @x+N) will now be turned into offsetted variable accesses, resulting in better generated code
 - The results of type-casted function calls can now be ignored, even if it's a non-trivial cast
 - Covariant parameters and function results (feature request #289)
+- #761: crt/mem.bi for mem*() functions, separated from crt/string.bi, to allow them to be used together with windows.bi without running into conflicts between crt/string.bi and win/shlwapi.bi
 - Bindings (new/updated, including 64bit support):
 	FastCGI 2.4.1-SNAP-0311112127
 
