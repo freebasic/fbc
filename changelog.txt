@@ -28,6 +28,7 @@ Version 1.02.0
 - 0.90.0 regression: Potential compiler crash with -fpu sse -fpmode fast if the program used sin/cos and contained certain global float constants (such as pi/2)
 - 1.00.0 regression: Potential dead-lock in thread-safe runtime library when using file or console I/O functions from multiple threads
 - binding: allegro5: Fixed compilation on win32/win64
+- Compiler directory layout: The non-standalone (Linux-style) DOS build now uses include/freebas/ and lib/freebas/ if running on DOS, instead of when compiling for DOS. This allows cross-compiling from Linux (or others) to DOS to work again: If on Linux, fbc -target dos will now use the normal include/freebasic/ and lib/freebasic/ directories of the Linux compiler, instead of requiring the 8.3-compatible directories.
 
 
 Version 1.01.0

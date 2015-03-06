@@ -2332,14 +2332,14 @@ private sub fbcInit2( )
 	fbc.libpath = fbc.prefix + "lib" + FB_HOST_PATHDIV + targetid
 #else
 	dim as string fbname
-	if( fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_DOS ) then
+	#ifdef __FB_DOS__
 		'' Our subdirectory in include/ and lib/ is usually called
 		'' freebasic/, but on DOS that's too long... of course almost
 		'' no targetid or suffix can be used either.
 		fbname = "freebas"
-	else
+	#else
 		fbname = "freebasic"
-	end if
+	#endif
 	#ifdef ENABLE_SUFFIX
 		fbname += ENABLE_SUFFIX
 	#endif
