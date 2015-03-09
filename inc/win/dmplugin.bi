@@ -9,17 +9,10 @@
 
 extern "Windows"
 
-type IDirectMusicToolVtbl as IDirectMusicToolVtbl_
-type IDirectMusicTool8Vtbl as IDirectMusicTool8Vtbl_
-type IDirectMusicTrackVtbl as IDirectMusicTrackVtbl_
-type IDirectMusicTrack8Vtbl as IDirectMusicTrack8Vtbl_
-
 #define __WINE_DMUSIC_PLUGIN_H
-
-extern CLSID_DirectMusicBandTrack as const GUID
-
 #define DMUS_REGSTR_PATH_TOOLS !"Software\\Microsoft\\DirectMusic\\Tools"
 
+extern CLSID_DirectMusicBandTrack as const GUID
 extern CLSID_DirectMusicChordTrack as const GUID
 extern CLSID_DirectMusicChordMapTrack as const GUID
 extern CLSID_DirectMusicCommandTrack as const GUID
@@ -56,8 +49,8 @@ type LPDIRECTMUSICSEGMENTSTATE8 as IDirectMusicSegmentState8 ptr
 type LPDIRECTMUSICGRAPH as IDirectMusicGraph ptr
 type IDirectMusicGraph8 as IDirectMusicGraph
 type LPDIRECTMUSICGRAPH8 as IDirectMusicGraph ptr
-type DMUS_PMSG as _DMUS_PMSG
-type MUSIC_TIME as LONG
+type DMUS_PMSG_ as _DMUS_PMSG
+type MUSIC_TIME_ as LONG
 
 #define DMUS_TRACK_PARAMF_CLOCK &h1
 
@@ -78,7 +71,9 @@ enum
 	DMUS_TRACKF_CLOCK = &h400
 end enum
 
-type IDirectMusicTool
+type IDirectMusicToolVtbl as IDirectMusicToolVtbl_
+
+type IDirectMusicTool_
 	lpVtbl as IDirectMusicToolVtbl ptr
 end type
 
@@ -103,6 +98,8 @@ end type
 #define IDirectMusicTool_GetMediaTypes(p, a, b) (p)->lpVtbl->GetMediaTypes(p, a, b)
 #define IDirectMusicTool_ProcessPMsg(p, a, b) (p)->lpVtbl->ProcessPMsg(p, a, b)
 #define IDirectMusicTool_Flush(p, a, b, c) (p)->lpVtbl->Flush(p, a, b, c)
+
+type IDirectMusicTool8Vtbl as IDirectMusicTool8Vtbl_
 
 type IDirectMusicTool8
 	lpVtbl as IDirectMusicTool8Vtbl ptr
@@ -132,7 +129,9 @@ end type
 #define IDirectMusicTool8_Flush(p, a, b) (p)->lpVtbl->Flush(p, a, b)
 #define IDirectMusicTool8_Clone(p, a) (p)->lpVtbl->Clone(p, a)
 
-type IDirectMusicTrack
+type IDirectMusicTrackVtbl as IDirectMusicTrackVtbl_
+
+type IDirectMusicTrack_
 	lpVtbl as IDirectMusicTrackVtbl ptr
 end type
 
@@ -165,6 +164,8 @@ end type
 #define IDirectMusicTrack_AddNotificationType(p, a) (p)->lpVtbl->AddNotificationType(p, a)
 #define IDirectMusicTrack_RemoveNotificationType(p, a) (p)->lpVtbl->RemoveNotificationType(p, a)
 #define IDirectMusicTrack_Clone(p, a, b, c) (p)->lpVtbl->Clone(p, a, b, c)
+
+type IDirectMusicTrack8Vtbl as IDirectMusicTrack8Vtbl_
 
 type IDirectMusicTrack8
 	lpVtbl as IDirectMusicTrack8Vtbl ptr

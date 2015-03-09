@@ -3,14 +3,6 @@
 #include once "crt/stddef.bi"
 #include once "d3dtypes.bi"
 
-'' The following symbols have been renamed:
-''     inside struct _D3DRMBOX:
-''         field min => min_
-''         field max => max_
-''     inside struct _D3DRMIMAGE:
-''         field aspectx => aspectx_
-''         field aspecty => aspecty_
-
 extern "Windows"
 
 #define __D3DRMDEFS_H__
@@ -42,8 +34,8 @@ type D3DRMRAY as _D3DRMRAY
 type LPD3DRMRAY as _D3DRMRAY ptr
 
 type _D3DRMBOX
-	min_ as D3DVECTOR
-	max_ as D3DVECTOR
+	min as D3DVECTOR
+	max as D3DVECTOR
 end type
 
 type D3DRMBOX as _D3DRMBOX
@@ -169,8 +161,8 @@ type LPD3DRMPALETTEENTRY as _D3DRMPALETTEENTRY ptr
 type _D3DRMIMAGE
 	width as long
 	height as long
-	aspectx_ as long
-	aspecty_ as long
+	aspectx as long
+	aspecty as long
 	depth as long
 	rgb as long
 	bytes_per_line as long

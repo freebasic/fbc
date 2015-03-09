@@ -9,7 +9,7 @@
 extern "Windows"
 
 #define _INC_NETIOAPI
-#define NETIO_STATUS NTSTATUS
+#define NETIO_STATUS DWORD
 
 #ifdef UNICODE
 	#define ConvertInterfaceLuidToName ConvertInterfaceLuidToNameW
@@ -77,7 +77,7 @@ end type
 type MIB_IPFORWARD_ROW2 as _MIB_IPFORWARD_ROW2
 type PMIB_IPFORWARD_ROW2 as _MIB_IPFORWARD_ROW2 ptr
 
-union ___MIB_IPNET_ROW2_ReachabilityTime
+union _MIB_IPNET_ROW2_ReachabilityTime
 	LastReachable as ULONG
 	LastUnreachable as ULONG
 end union
@@ -99,7 +99,7 @@ type _MIB_IPNET_ROW2
 		Flags as UCHAR
 	end union
 
-	ReachabilityTime as ___MIB_IPNET_ROW2_ReachabilityTime
+	ReachabilityTime as _MIB_IPNET_ROW2_ReachabilityTime
 end type
 
 type MIB_IPNET_ROW2 as _MIB_IPNET_ROW2
@@ -196,7 +196,7 @@ end type
 type MIB_UNICASTIPADDRESS_TABLE as _MIB_UNICASTIPADDRESS_TABLE
 type PMIB_UNICASTIPADDRESS_TABLE as _MIB_UNICASTIPADDRESS_TABLE ptr
 
-type ___MIB_IF_ROW2_InterfaceAndOperStatusFlags
+type _MIB_IF_ROW2_InterfaceAndOperStatusFlags
 	HardwareInterface : 1 as BOOLEAN
 	FilterInterface : 1 as BOOLEAN
 	ConnectorPresent : 1 as BOOLEAN
@@ -223,7 +223,7 @@ type _MIB_IF_ROW2
 	PhysicalMediumType as NDIS_PHYSICAL_MEDIUM
 	AccessType as NET_IF_ACCESS_TYPE
 	DirectionType as NET_IF_DIRECTION_TYPE
-	InterfaceAndOperStatusFlags as ___MIB_IF_ROW2_InterfaceAndOperStatusFlags
+	InterfaceAndOperStatusFlags as _MIB_IF_ROW2_InterfaceAndOperStatusFlags
 	OperStatus as IF_OPER_STATUS
 	AdminStatus as NET_IF_ADMIN_STATUS
 	MediaConnectState as NET_IF_MEDIA_CONNECT_STATE
@@ -343,43 +343,43 @@ end type
 type MIB_MULTICASTIPADDRESS_TABLE as _MIB_MULTICASTIPADDRESS_TABLE
 type PMIB_MULTICASTIPADDRESS_TABLE as _MIB_MULTICASTIPADDRESS_TABLE ptr
 
-declare function CancelMibChangeNotify2(byval NotificationHandle as HANDLE) as NTSTATUS
-declare function ConvertInterfaceAliasToLuid(byval InterfaceAlias as const wstring ptr, byval InterfaceLuid as PNET_LUID) as NTSTATUS
-declare function ConvertInterfaceLuidToNameA(byval InterfaceLuid as const NET_LUID ptr, byval InterfaceName as PSTR, byval Length as SIZE_T_) as NTSTATUS
-declare function ConvertInterfaceLuidToNameW(byval InterfaceLuid as const NET_LUID ptr, byval InterfaceName as PWSTR, byval Length as SIZE_T_) as NTSTATUS
-declare function ConvertInterfaceNameToLuidA(byval InterfaceName as const zstring ptr, byval InterfaceLuid as PNET_LUID) as NTSTATUS
-declare function ConvertInterfaceNameToLuidW(byval InterfaceName as const wstring ptr, byval InterfaceLuid as PNET_LUID) as NTSTATUS
+declare function CancelMibChangeNotify2(byval NotificationHandle as HANDLE) as DWORD
+declare function ConvertInterfaceAliasToLuid(byval InterfaceAlias as const wstring ptr, byval InterfaceLuid as PNET_LUID) as DWORD
+declare function ConvertInterfaceLuidToNameA(byval InterfaceLuid as const NET_LUID ptr, byval InterfaceName as PSTR, byval Length as SIZE_T_) as DWORD
+declare function ConvertInterfaceLuidToNameW(byval InterfaceLuid as const NET_LUID ptr, byval InterfaceName as PWSTR, byval Length as SIZE_T_) as DWORD
+declare function ConvertInterfaceNameToLuidA(byval InterfaceName as const zstring ptr, byval InterfaceLuid as PNET_LUID) as DWORD
+declare function ConvertInterfaceNameToLuidW(byval InterfaceName as const wstring ptr, byval InterfaceLuid as PNET_LUID) as DWORD
 declare function if_indextoname(byval InterfaceIndex as NET_IFINDEX, byval InterfaceName as PCHAR) as PCHAR
 declare function if_nametoindex(byval InterfaceName as PCSTR) as NET_IFINDEX
-declare function ConvertInterfaceGuidToLuid(byval InterfaceGuid as const GUID ptr, byval InterfaceLuid as PNET_LUID) as NTSTATUS
-declare function ConvertInterfaceIndexToLuid(byval InterfaceIndex as NET_IFINDEX, byval InterfaceLuid as PNET_LUID) as NTSTATUS
-declare function ConvertInterfaceLuidToAlias(byval InterfaceLuid as const NET_LUID ptr, byval InterfaceAlias as PWSTR, byval Length as SIZE_T_) as NTSTATUS
-declare function ConvertInterfaceLuidToGuid(byval InterfaceLuid as const NET_LUID ptr, byval InterfaceGuid as GUID ptr) as NTSTATUS
-declare function ConvertInterfaceLuidToIndex(byval InterfaceLuid as const NET_LUID ptr, byval InterfaceIndex as PNET_IFINDEX) as NTSTATUS
-declare function ConvertIpv4MaskToLength(byval Mask as ULONG, byval MaskLength as PUINT8) as NTSTATUS
-declare function ConvertLengthToIpv4Mask(byval MaskLength as ULONG, byval Mask as PULONG) as NTSTATUS
-declare function CreateAnycastIpAddressEntry(byval Row as const MIB_ANYCASTIPADDRESS_ROW ptr) as NTSTATUS
-declare function CreateIpForwardEntry2(byval Row as const MIB_IPFORWARD_ROW2 ptr) as NTSTATUS
-declare function GetIpNetTable2(byval Family as ADDRESS_FAMILY, byval Table as PMIB_IPNET_TABLE2 ptr) as NTSTATUS
-declare function GetIpNetEntry2(byval Row as PMIB_IPNET_ROW2) as NTSTATUS
-declare function CreateIpNetEntry2(byval Row as const MIB_IPNET_ROW2 ptr) as NTSTATUS
-declare function CreateSortedAddressPairs(byval SourceAddressList as const PSOCKADDR_IN6, byval SourceAddressCount as ULONG, byval DestinationAddressList as const PSOCKADDR_IN6, byval DestinationAddressCount as ULONG, byval AddressSortOptions as ULONG, byval SortedAddressPairList as PSOCKADDR_IN6_PAIR ptr, byval SortedAddressPairCount as ULONG ptr) as NTSTATUS
-declare function CreateUnicastIpAddressEntry(byval Row as const MIB_UNICASTIPADDRESS_ROW ptr) as NTSTATUS
-declare function DeleteIpForwardEntry2(byval Row as const MIB_IPFORWARD_ROW2 ptr) as NTSTATUS
-declare function GetIpForwardTable2(byval Family as ADDRESS_FAMILY, byval Table as PMIB_IPFORWARD_TABLE2 ptr) as NTSTATUS
+declare function ConvertInterfaceGuidToLuid(byval InterfaceGuid as const GUID ptr, byval InterfaceLuid as PNET_LUID) as DWORD
+declare function ConvertInterfaceIndexToLuid(byval InterfaceIndex as NET_IFINDEX, byval InterfaceLuid as PNET_LUID) as DWORD
+declare function ConvertInterfaceLuidToAlias(byval InterfaceLuid as const NET_LUID ptr, byval InterfaceAlias as PWSTR, byval Length as SIZE_T_) as DWORD
+declare function ConvertInterfaceLuidToGuid(byval InterfaceLuid as const NET_LUID ptr, byval InterfaceGuid as GUID ptr) as DWORD
+declare function ConvertInterfaceLuidToIndex(byval InterfaceLuid as const NET_LUID ptr, byval InterfaceIndex as PNET_IFINDEX) as DWORD
+declare function ConvertIpv4MaskToLength(byval Mask as ULONG, byval MaskLength as PUINT8) as DWORD
+declare function ConvertLengthToIpv4Mask(byval MaskLength as ULONG, byval Mask as PULONG) as DWORD
+declare function CreateAnycastIpAddressEntry(byval Row as const MIB_ANYCASTIPADDRESS_ROW ptr) as DWORD
+declare function CreateIpForwardEntry2(byval Row as const MIB_IPFORWARD_ROW2 ptr) as DWORD
+declare function GetIpNetTable2(byval Family as ADDRESS_FAMILY, byval Table as PMIB_IPNET_TABLE2 ptr) as DWORD
+declare function GetIpNetEntry2(byval Row as PMIB_IPNET_ROW2) as DWORD
+declare function CreateIpNetEntry2(byval Row as const MIB_IPNET_ROW2 ptr) as DWORD
+declare function CreateSortedAddressPairs(byval SourceAddressList as const PSOCKADDR_IN6, byval SourceAddressCount as ULONG, byval DestinationAddressList as const PSOCKADDR_IN6, byval DestinationAddressCount as ULONG, byval AddressSortOptions as ULONG, byval SortedAddressPairList as PSOCKADDR_IN6_PAIR ptr, byval SortedAddressPairCount as ULONG ptr) as DWORD
+declare function CreateUnicastIpAddressEntry(byval Row as const MIB_UNICASTIPADDRESS_ROW ptr) as DWORD
+declare function DeleteIpForwardEntry2(byval Row as const MIB_IPFORWARD_ROW2 ptr) as DWORD
+declare function GetIpForwardTable2(byval Family as ADDRESS_FAMILY, byval Table as PMIB_IPFORWARD_TABLE2 ptr) as DWORD
 declare sub FreeMibTable(byval Memory as PVOID)
-declare function DeleteIpNetEntry2(byval Row as const MIB_IPNET_ROW2 ptr) as NTSTATUS
-declare function DeleteUnicastIpAddressEntry(byval Row as const MIB_UNICASTIPADDRESS_ROW ptr) as NTSTATUS
-declare function GetUnicastIpAddressEntry(byval Row as PMIB_UNICASTIPADDRESS_ROW) as NTSTATUS
-declare function DeleteAnycastIpAddressEntry(byval Row as const MIB_ANYCASTIPADDRESS_ROW ptr) as NTSTATUS
-declare function FlushIpNetTable2(byval Family as ADDRESS_FAMILY, byval InterfaceIndex as NET_IFINDEX) as NTSTATUS
-declare function FlushIpPathTable(byval Family as ADDRESS_FAMILY) as NTSTATUS
-declare function GetAnycastIpAddressEntry(byval Row as PMIB_ANYCASTIPADDRESS_ROW) as NTSTATUS
-declare function GetAnycastIpAddressTable(byval Family as ADDRESS_FAMILY, byval Table as PMIB_ANYCASTIPADDRESS_TABLE ptr) as NTSTATUS
-declare function GetBestRoute2(byval InterfaceLuid as NET_LUID ptr, byval InterfaceIndex as NET_IFINDEX, byval SourceAddress as const SOCKADDR_INET ptr, byval DestinationAddress as const SOCKADDR_INET ptr, byval AddressSortOptions as ULONG, byval BestRoute as PMIB_IPFORWARD_ROW2, byval BestSourceAddress as SOCKADDR_INET ptr) as NTSTATUS
-declare function GetIfEntry2(byval Row as PMIB_IF_ROW2) as NTSTATUS
-declare function GetIfTable2(byval Table as PMIB_IF_TABLE2 ptr) as NTSTATUS
-declare function GetIfStackTable(byval Table as PMIB_IFSTACK_TABLE ptr) as NTSTATUS
+declare function DeleteIpNetEntry2(byval Row as const MIB_IPNET_ROW2 ptr) as DWORD
+declare function DeleteUnicastIpAddressEntry(byval Row as const MIB_UNICASTIPADDRESS_ROW ptr) as DWORD
+declare function GetUnicastIpAddressEntry(byval Row as PMIB_UNICASTIPADDRESS_ROW) as DWORD
+declare function DeleteAnycastIpAddressEntry(byval Row as const MIB_ANYCASTIPADDRESS_ROW ptr) as DWORD
+declare function FlushIpNetTable2(byval Family as ADDRESS_FAMILY, byval InterfaceIndex as NET_IFINDEX) as DWORD
+declare function FlushIpPathTable(byval Family as ADDRESS_FAMILY) as DWORD
+declare function GetAnycastIpAddressEntry(byval Row as PMIB_ANYCASTIPADDRESS_ROW) as DWORD
+declare function GetAnycastIpAddressTable(byval Family as ADDRESS_FAMILY, byval Table as PMIB_ANYCASTIPADDRESS_TABLE ptr) as DWORD
+declare function GetBestRoute2(byval InterfaceLuid as NET_LUID ptr, byval InterfaceIndex as NET_IFINDEX, byval SourceAddress as const SOCKADDR_INET ptr, byval DestinationAddress as const SOCKADDR_INET ptr, byval AddressSortOptions as ULONG, byval BestRoute as PMIB_IPFORWARD_ROW2, byval BestSourceAddress as SOCKADDR_INET ptr) as DWORD
+declare function GetIfEntry2(byval Row as PMIB_IF_ROW2) as DWORD
+declare function GetIfTable2(byval Table as PMIB_IF_TABLE2 ptr) as DWORD
+declare function GetIfStackTable(byval Table as PMIB_IFSTACK_TABLE ptr) as DWORD
 
 type _MIB_IF_TABLE_LEVEL as long
 enum
@@ -390,41 +390,41 @@ end enum
 type MIB_IF_TABLE_LEVEL as _MIB_IF_TABLE_LEVEL
 type PMIB_IF_TABLE_LEVEL as _MIB_IF_TABLE_LEVEL ptr
 
-declare function GetIfTable2Ex(byval Level as MIB_IF_TABLE_LEVEL, byval Table as PMIB_IF_TABLE2 ptr) as NTSTATUS
-declare function GetInvertedIfStackTable(byval Table as PMIB_INVERTEDIFSTACK_TABLE ptr) as NTSTATUS
-declare function GetIpForwardEntry2(byval Row as PMIB_IPFORWARD_ROW2) as NTSTATUS
-declare function GetIpInterfaceEntry(byval Row as PMIB_IPINTERFACE_ROW) as NTSTATUS
-declare function GetIpInterfaceTable(byval Family as ADDRESS_FAMILY, byval Table as PMIB_IPINTERFACE_TABLE ptr) as NTSTATUS
-declare function GetIpPathEntry(byval Row as PMIB_IPPATH_ROW) as NTSTATUS
-declare function GetIpPathTable(byval Family as ADDRESS_FAMILY, byval Table as PMIB_IPPATH_TABLE ptr) as NTSTATUS
-declare function GetMulticastIpAddressEntry(byval Row as PMIB_MULTICASTIPADDRESS_ROW) as NTSTATUS
-declare function GetMulticastIpAddressTable(byval Family as ADDRESS_FAMILY, byval Table as PMIB_MULTICASTIPADDRESS_TABLE ptr) as NTSTATUS
-declare function GetTeredoPort(byval Port as USHORT ptr) as NTSTATUS
+declare function GetIfTable2Ex(byval Level as MIB_IF_TABLE_LEVEL, byval Table as PMIB_IF_TABLE2 ptr) as DWORD
+declare function GetInvertedIfStackTable(byval Table as PMIB_INVERTEDIFSTACK_TABLE ptr) as DWORD
+declare function GetIpForwardEntry2(byval Row as PMIB_IPFORWARD_ROW2) as DWORD
+declare function GetIpInterfaceEntry(byval Row as PMIB_IPINTERFACE_ROW) as DWORD
+declare function GetIpInterfaceTable(byval Family as ADDRESS_FAMILY, byval Table as PMIB_IPINTERFACE_TABLE ptr) as DWORD
+declare function GetIpPathEntry(byval Row as PMIB_IPPATH_ROW) as DWORD
+declare function GetIpPathTable(byval Family as ADDRESS_FAMILY, byval Table as PMIB_IPPATH_TABLE ptr) as DWORD
+declare function GetMulticastIpAddressEntry(byval Row as PMIB_MULTICASTIPADDRESS_ROW) as DWORD
+declare function GetMulticastIpAddressTable(byval Family as ADDRESS_FAMILY, byval Table as PMIB_MULTICASTIPADDRESS_TABLE ptr) as DWORD
+declare function GetTeredoPort(byval Port as USHORT ptr) as DWORD
 
-type PTEREDO_PORT_CHANGE_CALLBACK as sub(byval callerContext as any ptr, byval Port as USHORT, byval type_ as MIB_NOTIFICATION_TYPE)
+type PTEREDO_PORT_CHANGE_CALLBACK as sub(byval callerContext as any ptr, byval Port as USHORT, byval type as MIB_NOTIFICATION_TYPE)
 
-declare function NotifyTeredoPortChange(byval Callback as PTEREDO_PORT_CHANGE_CALLBACK, byval CallerContext as PVOID, byval InitialNotification as BOOLEAN, byval NotificationHandle as HANDLE ptr) as NTSTATUS
+declare function NotifyTeredoPortChange(byval Callback as PTEREDO_PORT_CHANGE_CALLBACK, byval CallerContext as PVOID, byval InitialNotification as BOOLEAN, byval NotificationHandle as HANDLE ptr) as DWORD
 
 type PSTABLE_UNICAST_IPADDRESS_TABLE_CALLBACK as sub(byval callerContext as any ptr, byval AddressTable as MIB_UNICASTIPADDRESS_TABLE ptr)
 
-declare function NotifyStableUnicastIpAddressTable(byval Family as ADDRESS_FAMILY, byval Table as PMIB_UNICASTIPADDRESS_TABLE ptr, byval CallerCallback as PSTABLE_UNICAST_IPADDRESS_TABLE_CALLBACK, byval CallerContext as PVOID, byval NotificationHandle as HANDLE ptr) as NTSTATUS
+declare function NotifyStableUnicastIpAddressTable(byval Family as ADDRESS_FAMILY, byval Table as PMIB_UNICASTIPADDRESS_TABLE ptr, byval CallerCallback as PSTABLE_UNICAST_IPADDRESS_TABLE_CALLBACK, byval CallerContext as PVOID, byval NotificationHandle as HANDLE ptr) as DWORD
 
-type PUNICAST_IPADDRESS_CHANGE_CALLBACK as sub(byval callerContext as any ptr, byval row as PMIB_UNICASTIPADDRESS_ROW, byval type_ as MIB_NOTIFICATION_TYPE)
+type PUNICAST_IPADDRESS_CHANGE_CALLBACK as sub(byval callerContext as any ptr, byval row as PMIB_UNICASTIPADDRESS_ROW, byval type as MIB_NOTIFICATION_TYPE)
 
-declare function NotifyUnicastIpAddressChange(byval Family as ADDRESS_FAMILY, byval Callback as PUNICAST_IPADDRESS_CHANGE_CALLBACK, byval CallerContext as PVOID, byval InitialNotification as BOOLEAN, byval NotificationHandle as HANDLE ptr) as NTSTATUS
-declare function GetUnicastIpAddressTable(byval Family as ADDRESS_FAMILY, byval Table as PMIB_UNICASTIPADDRESS_TABLE ptr) as NTSTATUS
+declare function NotifyUnicastIpAddressChange(byval Family as ADDRESS_FAMILY, byval Callback as PUNICAST_IPADDRESS_CHANGE_CALLBACK, byval CallerContext as PVOID, byval InitialNotification as BOOLEAN, byval NotificationHandle as HANDLE ptr) as DWORD
+declare function GetUnicastIpAddressTable(byval Family as ADDRESS_FAMILY, byval Table as PMIB_UNICASTIPADDRESS_TABLE ptr) as DWORD
 
 type PIPINTERFACE_CHANGE_CALLBACK as sub(byval CallerContext as PVOID, byval Row as PMIB_IPINTERFACE_ROW, byval NotificationType as MIB_NOTIFICATION_TYPE)
 
-declare function NotifyIpInterfaceChange(byval Family as ADDRESS_FAMILY, byval Callback as PIPINTERFACE_CHANGE_CALLBACK, byval CallerContext as PVOID, byval InitialNotification as BOOLEAN, byval NotificationHandle as HANDLE ptr) as NTSTATUS
+declare function NotifyIpInterfaceChange(byval Family as ADDRESS_FAMILY, byval Callback as PIPINTERFACE_CHANGE_CALLBACK, byval CallerContext as PVOID, byval InitialNotification as BOOLEAN, byval NotificationHandle as HANDLE ptr) as DWORD
 
 type PIPFORWARD_CHANGE_CALLBACK as LPVOID
 
-declare function NotifyRouteChange2(byval Family as ADDRESS_FAMILY, byval Callback as PIPFORWARD_CHANGE_CALLBACK, byval CallerContext as PVOID, byval InitialNotification as BOOLEAN, byval NotificationHandle as HANDLE ptr) as NTSTATUS
-declare function ResolveIpNetEntry2(byval Row as PMIB_IPNET_ROW2, byval SourceAddress as const SOCKADDR_INET ptr) as NTSTATUS
-declare function SetIpForwardEntry2(byval Route as const MIB_IPFORWARD_ROW2 ptr) as NTSTATUS
-declare function SetIpInterfaceEntry(byval Row as PMIB_IPINTERFACE_ROW) as NTSTATUS
-declare function SetIpNetEntry2(byval Row as PMIB_IPNET_ROW2) as NTSTATUS
-declare function SetUnicastIpAddressEntry(byval Row as const MIB_UNICASTIPADDRESS_ROW ptr) as NTSTATUS
+declare function NotifyRouteChange2(byval Family as ADDRESS_FAMILY, byval Callback as PIPFORWARD_CHANGE_CALLBACK, byval CallerContext as PVOID, byval InitialNotification as BOOLEAN, byval NotificationHandle as HANDLE ptr) as DWORD
+declare function ResolveIpNetEntry2(byval Row as PMIB_IPNET_ROW2, byval SourceAddress as const SOCKADDR_INET ptr) as DWORD
+declare function SetIpForwardEntry2(byval Route as const MIB_IPFORWARD_ROW2 ptr) as DWORD
+declare function SetIpInterfaceEntry(byval Row as PMIB_IPINTERFACE_ROW) as DWORD
+declare function SetIpNetEntry2(byval Row as PMIB_IPNET_ROW2) as DWORD
+declare function SetUnicastIpAddressEntry(byval Row as const MIB_UNICASTIPADDRESS_ROW ptr) as DWORD
 
 end extern

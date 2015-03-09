@@ -2,24 +2,16 @@
 
 #include once "_mingw_unicode.bi"
 
-'' The following symbols have been renamed:
-''     inside struct mmtime_tag:
-''         inside union __mmtime_tag_u:
-''             inside struct __mmtime_tag_smpte:
-''                 field min => min_
-
 #inclib "winmm"
 
 extern "Windows"
 
 #define _INC_MMSYSTEM
-
-type MMVERSION as UINT
-
 #define MAXPNAMELEN 32
 #define MAXERRORLENGTH 256
 #define MAX_JOYSTICKOEMVXDNAME 260
 
+type MMVERSION as UINT
 type MMRESULT as UINT
 
 #define _MMRESULT_
@@ -27,9 +19,9 @@ type MMRESULT as UINT
 
 type LPUINT as UINT ptr
 
-type __mmtime_tag_smpte field = 1
+type mmtime_tag_u_smpte field = 1
 	hour as UBYTE
-	min_ as UBYTE
+	min as UBYTE
 	sec as UBYTE
 	frame as UBYTE
 	fps as UBYTE
@@ -37,22 +29,22 @@ type __mmtime_tag_smpte field = 1
 	pad(0 to 1) as UBYTE
 end type
 
-type __mmtime_tag_midi field = 1
+type mmtime_tag_u_midi field = 1
 	songptrpos as DWORD
 end type
 
-union __mmtime_tag_u field = 1
+union mmtime_tag_u field = 1
 	ms as DWORD
 	sample as DWORD
 	cb as DWORD
 	ticks as DWORD
-	smpte as __mmtime_tag_smpte
-	midi as __mmtime_tag_midi
+	smpte as mmtime_tag_u_smpte
+	midi as mmtime_tag_u_midi
 end union
 
 type mmtime_tag field = 1
 	wType as UINT
-	u as __mmtime_tag_u
+	u as mmtime_tag_u
 end type
 
 type MMTIME as mmtime_tag
@@ -1281,7 +1273,7 @@ declare function mixerOpen(byval phmx as LPHMIXER, byval uMxId as UINT, byval dw
 declare function mixerClose(byval hmx as HMIXER) as MMRESULT
 declare function mixerMessage(byval hmx as HMIXER, byval uMsg as UINT, byval dwParam1 as DWORD_PTR, byval dwParam2 as DWORD_PTR) as DWORD
 
-type __tagMIXERLINEA_Target field = 1
+type tagMIXERLINEA_Target field = 1
 	dwType as DWORD
 	dwDeviceID as DWORD
 	wMid as WORD
@@ -1303,14 +1295,14 @@ type tagMIXERLINEA field = 1
 	cControls as DWORD
 	szShortName as zstring * 16
 	szName as zstring * 64
-	Target as __tagMIXERLINEA_Target
+	Target as tagMIXERLINEA_Target
 end type
 
 type MIXERLINEA as tagMIXERLINEA
 type PMIXERLINEA as tagMIXERLINEA ptr
 type LPMIXERLINEA as tagMIXERLINEA ptr
 
-type __tagMIXERLINEW_Target field = 1
+type tagMIXERLINEW_Target field = 1
 	dwType as DWORD
 	dwDeviceID as DWORD
 	wMid as WORD
@@ -1332,7 +1324,7 @@ type tagMIXERLINEW field = 1
 	cControls as DWORD
 	szShortName as wstring * 16
 	szName as wstring * 64
-	Target as __tagMIXERLINEW_Target
+	Target as tagMIXERLINEW_Target
 end type
 
 type MIXERLINEW as tagMIXERLINEW
@@ -1401,7 +1393,7 @@ declare function mixerGetLineInfoW(byval hmxobj as HMIXEROBJ, byval pmxl as LPMI
 
 declare function mixerGetID(byval hmxobj as HMIXEROBJ, byval puMxId as UINT ptr, byval fdwId as DWORD) as MMRESULT
 
-union __tagMIXERCONTROLA_Bounds field = 1
+union tagMIXERCONTROLA_Bounds field = 1
 	type field = 1
 		lMinimum as LONG
 		lMaximum as LONG
@@ -1415,7 +1407,7 @@ union __tagMIXERCONTROLA_Bounds field = 1
 	dwReserved(0 to 5) as DWORD
 end union
 
-union __tagMIXERCONTROLA_Metrics field = 1
+union tagMIXERCONTROLA_Metrics field = 1
 	cSteps as DWORD
 	cbCustomData as DWORD
 	dwReserved(0 to 5) as DWORD
@@ -1429,15 +1421,15 @@ type tagMIXERCONTROLA field = 1
 	cMultipleItems as DWORD
 	szShortName as zstring * 16
 	szName as zstring * 64
-	Bounds as __tagMIXERCONTROLA_Bounds
-	Metrics as __tagMIXERCONTROLA_Metrics
+	Bounds as tagMIXERCONTROLA_Bounds
+	Metrics as tagMIXERCONTROLA_Metrics
 end type
 
 type MIXERCONTROLA as tagMIXERCONTROLA
 type PMIXERCONTROLA as tagMIXERCONTROLA ptr
 type LPMIXERCONTROLA as tagMIXERCONTROLA ptr
 
-union __tagMIXERCONTROLW_Bounds field = 1
+union tagMIXERCONTROLW_Bounds field = 1
 	type field = 1
 		lMinimum as LONG
 		lMaximum as LONG
@@ -1451,7 +1443,7 @@ union __tagMIXERCONTROLW_Bounds field = 1
 	dwReserved(0 to 5) as DWORD
 end union
 
-union __tagMIXERCONTROLW_Metrics field = 1
+union tagMIXERCONTROLW_Metrics field = 1
 	cSteps as DWORD
 	cbCustomData as DWORD
 	dwReserved(0 to 5) as DWORD
@@ -1465,8 +1457,8 @@ type tagMIXERCONTROLW field = 1
 	cMultipleItems as DWORD
 	szShortName as wstring * 16
 	szName as wstring * 64
-	Bounds as __tagMIXERCONTROLW_Bounds
-	Metrics as __tagMIXERCONTROLW_Metrics
+	Bounds as tagMIXERCONTROLW_Bounds
+	Metrics as tagMIXERCONTROLW_Metrics
 end type
 
 type MIXERCONTROLW as tagMIXERCONTROLW
@@ -2121,9 +2113,6 @@ type LPCMMCKINFO as const MMCKINFO ptr
 #define FOURCC_LIST mmioFOURCC(asc("L"), asc("I"), asc("S"), asc("T"))
 #define FOURCC_DOS mmioFOURCC(asc("D"), asc("O"), asc("S"), asc(" "))
 #define FOURCC_MEM mmioFOURCC(asc("M"), asc("E"), asc("M"), asc(" "))
-#define SEEK_SET 0
-#define SEEK_CUR 1
-#define SEEK_END 2
 #define MMIO_DEFAULTBUFFER 8192
 #define mmioFOURCC(ch0, ch1, ch2, ch3) MAKEFOURCC(ch0, ch1, ch2, ch3)
 

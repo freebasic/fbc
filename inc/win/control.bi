@@ -8,23 +8,6 @@
 
 extern "Windows"
 
-type IMediaControl as IMediaControl_
-type IAMCollection as IAMCollection_
-type IMediaEvent as IMediaEvent_
-type IMediaEventEx as IMediaEventEx_
-type IMediaPosition as IMediaPosition_
-type IBasicAudio as IBasicAudio_
-type IVideoWindow as IVideoWindow_
-type IBasicVideo as IBasicVideo_
-type IBasicVideo2 as IBasicVideo2_
-type IDeferredCommand as IDeferredCommand_
-type IQueueCommand as IQueueCommand_
-type IFilterInfo as IFilterInfo_
-type IRegFilterInfo as IRegFilterInfo_
-type IMediaTypeInfo as IMediaTypeInfo_
-type IPinInfo as IPinInfo_
-type IAMStats as IAMStats_
-
 #define __control_h__
 #define __IMediaControl_FWD_DEFINED__
 #define __IAMCollection_FWD_DEFINED__
@@ -57,6 +40,8 @@ type REFTIME as DOUBLE
 #define __IMediaControl_INTERFACE_DEFINED__
 
 extern IID_IMediaControl as const GUID
+
+type IMediaControl as IMediaControl_
 
 type IMediaControlVtbl
 	QueryInterface as function(byval This as IMediaControl ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
@@ -104,6 +89,8 @@ declare sub IMediaControl_StopWhenReady_Stub(byval This as IRpcStubBuffer ptr, b
 
 extern IID_IAMCollection as const GUID
 
+type IAMCollection as IAMCollection_
+
 type IAMCollectionVtbl
 	QueryInterface as function(byval This as IAMCollection ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
 	AddRef as function(byval This as IAMCollection ptr) as ULONG
@@ -131,6 +118,8 @@ declare sub IAMCollection_get__NewEnum_Stub(byval This as IRpcStubBuffer ptr, by
 #define __IMediaEvent_INTERFACE_DEFINED__
 
 extern IID_IMediaEvent as const GUID
+
+type IMediaEvent as IMediaEvent_
 
 type IMediaEventVtbl
 	QueryInterface as function(byval This as IMediaEvent ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
@@ -169,6 +158,8 @@ declare sub IMediaEvent_FreeEventParams_Stub(byval This as IRpcStubBuffer ptr, b
 
 extern IID_IMediaEventEx as const GUID
 
+type IMediaEventEx as IMediaEventEx_
+
 type IMediaEventExVtbl
 	QueryInterface as function(byval This as IMediaEventEx ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
 	AddRef as function(byval This as IMediaEventEx ptr) as ULONG
@@ -202,6 +193,8 @@ declare sub IMediaEventEx_GetNotifyFlags_Stub(byval This as IRpcStubBuffer ptr, 
 #define __IMediaPosition_INTERFACE_DEFINED__
 
 extern IID_IMediaPosition as const GUID
+
+type IMediaPosition as IMediaPosition_
 
 type IMediaPositionVtbl
 	QueryInterface as function(byval This as IMediaPosition ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
@@ -255,6 +248,8 @@ declare sub IMediaPosition_CanSeekBackward_Stub(byval This as IRpcStubBuffer ptr
 
 extern IID_IBasicAudio as const GUID
 
+type IBasicAudio as IBasicAudio_
+
 type IBasicAudioVtbl
 	QueryInterface as function(byval This as IBasicAudio ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
 	AddRef as function(byval This as IBasicAudio ptr) as ULONG
@@ -286,6 +281,8 @@ declare sub IBasicAudio_get_Balance_Stub(byval This as IRpcStubBuffer ptr, byval
 
 extern IID_IVideoWindow as const GUID
 
+type IVideoWindow as IVideoWindow_
+
 type IVideoWindowVtbl
 	QueryInterface as function(byval This as IVideoWindow ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
 	AddRef as function(byval This as IVideoWindow ptr) as ULONG
@@ -308,9 +305,9 @@ type IVideoWindowVtbl
 	get_BackgroundPalette as function(byval This as IVideoWindow ptr, byval pBackgroundPalette as long ptr) as HRESULT
 	put_Visible as function(byval This as IVideoWindow ptr, byval Visible as long) as HRESULT
 	get_Visible as function(byval This as IVideoWindow ptr, byval pVisible as long ptr) as HRESULT
-	put_Left as function(byval This as IVideoWindow ptr, byval Left_ as long) as HRESULT
+	put_Left as function(byval This as IVideoWindow ptr, byval Left as long) as HRESULT
 	get_Left as function(byval This as IVideoWindow ptr, byval pLeft as long ptr) as HRESULT
-	put_Width as function(byval This as IVideoWindow ptr, byval Width_ as long) as HRESULT
+	put_Width as function(byval This as IVideoWindow ptr, byval Width as long) as HRESULT
 	get_Width as function(byval This as IVideoWindow ptr, byval pWidth as long ptr) as HRESULT
 	put_Top as function(byval This as IVideoWindow ptr, byval Top as long) as HRESULT
 	get_Top as function(byval This as IVideoWindow ptr, byval pTop as long ptr) as HRESULT
@@ -320,13 +317,13 @@ type IVideoWindowVtbl
 	get_Owner as function(byval This as IVideoWindow ptr, byval Owner as OAHWND ptr) as HRESULT
 	put_MessageDrain as function(byval This as IVideoWindow ptr, byval Drain as OAHWND) as HRESULT
 	get_MessageDrain as function(byval This as IVideoWindow ptr, byval Drain as OAHWND ptr) as HRESULT
-	get_BorderColor as function(byval This as IVideoWindow ptr, byval Color_ as long ptr) as HRESULT
-	put_BorderColor as function(byval This as IVideoWindow ptr, byval Color_ as long) as HRESULT
+	get_BorderColor as function(byval This as IVideoWindow ptr, byval Color as long ptr) as HRESULT
+	put_BorderColor as function(byval This as IVideoWindow ptr, byval Color as long) as HRESULT
 	get_FullScreenMode as function(byval This as IVideoWindow ptr, byval FullScreenMode as long ptr) as HRESULT
 	put_FullScreenMode as function(byval This as IVideoWindow ptr, byval FullScreenMode as long) as HRESULT
 	SetWindowForeground as function(byval This as IVideoWindow ptr, byval Focus as long) as HRESULT
 	NotifyOwnerMessage as function(byval This as IVideoWindow ptr, byval hwnd as OAHWND, byval uMsg as long, byval wParam as LONG_PTR, byval lParam as LONG_PTR) as HRESULT
-	SetWindowPosition as function(byval This as IVideoWindow ptr, byval Left_ as long, byval Top as long, byval Width_ as long, byval Height as long) as HRESULT
+	SetWindowPosition as function(byval This as IVideoWindow ptr, byval Left as long, byval Top as long, byval Width as long, byval Height as long) as HRESULT
 	GetWindowPosition as function(byval This as IVideoWindow ptr, byval pLeft as long ptr, byval pTop as long ptr, byval pWidth as long ptr, byval pHeight as long ptr) as HRESULT
 	GetMinIdealImageSize as function(byval This as IVideoWindow ptr, byval pWidth as long ptr, byval pHeight as long ptr) as HRESULT
 	GetMaxIdealImageSize as function(byval This as IVideoWindow ptr, byval pWidth as long ptr, byval pHeight as long ptr) as HRESULT
@@ -367,11 +364,11 @@ declare function IVideoWindow_put_Visible_Proxy(byval This as IVideoWindow ptr, 
 declare sub IVideoWindow_put_Visible_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IVideoWindow_get_Visible_Proxy(byval This as IVideoWindow ptr, byval pVisible as long ptr) as HRESULT
 declare sub IVideoWindow_get_Visible_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IVideoWindow_put_Left_Proxy(byval This as IVideoWindow ptr, byval Left_ as long) as HRESULT
+declare function IVideoWindow_put_Left_Proxy(byval This as IVideoWindow ptr, byval Left as long) as HRESULT
 declare sub IVideoWindow_put_Left_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IVideoWindow_get_Left_Proxy(byval This as IVideoWindow ptr, byval pLeft as long ptr) as HRESULT
 declare sub IVideoWindow_get_Left_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IVideoWindow_put_Width_Proxy(byval This as IVideoWindow ptr, byval Width_ as long) as HRESULT
+declare function IVideoWindow_put_Width_Proxy(byval This as IVideoWindow ptr, byval Width as long) as HRESULT
 declare sub IVideoWindow_put_Width_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IVideoWindow_get_Width_Proxy(byval This as IVideoWindow ptr, byval pWidth as long ptr) as HRESULT
 declare sub IVideoWindow_get_Width_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -391,9 +388,9 @@ declare function IVideoWindow_put_MessageDrain_Proxy(byval This as IVideoWindow 
 declare sub IVideoWindow_put_MessageDrain_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IVideoWindow_get_MessageDrain_Proxy(byval This as IVideoWindow ptr, byval Drain as OAHWND ptr) as HRESULT
 declare sub IVideoWindow_get_MessageDrain_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IVideoWindow_get_BorderColor_Proxy(byval This as IVideoWindow ptr, byval Color_ as long ptr) as HRESULT
+declare function IVideoWindow_get_BorderColor_Proxy(byval This as IVideoWindow ptr, byval Color as long ptr) as HRESULT
 declare sub IVideoWindow_get_BorderColor_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IVideoWindow_put_BorderColor_Proxy(byval This as IVideoWindow ptr, byval Color_ as long) as HRESULT
+declare function IVideoWindow_put_BorderColor_Proxy(byval This as IVideoWindow ptr, byval Color as long) as HRESULT
 declare sub IVideoWindow_put_BorderColor_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IVideoWindow_get_FullScreenMode_Proxy(byval This as IVideoWindow ptr, byval FullScreenMode as long ptr) as HRESULT
 declare sub IVideoWindow_get_FullScreenMode_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -403,7 +400,7 @@ declare function IVideoWindow_SetWindowForeground_Proxy(byval This as IVideoWind
 declare sub IVideoWindow_SetWindowForeground_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IVideoWindow_NotifyOwnerMessage_Proxy(byval This as IVideoWindow ptr, byval hwnd as OAHWND, byval uMsg as long, byval wParam as LONG_PTR, byval lParam as LONG_PTR) as HRESULT
 declare sub IVideoWindow_NotifyOwnerMessage_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IVideoWindow_SetWindowPosition_Proxy(byval This as IVideoWindow ptr, byval Left_ as long, byval Top as long, byval Width_ as long, byval Height as long) as HRESULT
+declare function IVideoWindow_SetWindowPosition_Proxy(byval This as IVideoWindow ptr, byval Left as long, byval Top as long, byval Width as long, byval Height as long) as HRESULT
 declare sub IVideoWindow_SetWindowPosition_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IVideoWindow_GetWindowPosition_Proxy(byval This as IVideoWindow ptr, byval pLeft as long ptr, byval pTop as long ptr, byval pWidth as long ptr, byval pHeight as long ptr) as HRESULT
 declare sub IVideoWindow_GetWindowPosition_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -421,6 +418,8 @@ declare sub IVideoWindow_IsCursorHidden_Stub(byval This as IRpcStubBuffer ptr, b
 #define __IBasicVideo_INTERFACE_DEFINED__
 
 extern IID_IBasicVideo as const GUID
+
+type IBasicVideo as IBasicVideo_
 
 type IBasicVideoVtbl
 	QueryInterface as function(byval This as IBasicVideo ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
@@ -451,10 +450,10 @@ type IBasicVideoVtbl
 	get_DestinationTop as function(byval This as IBasicVideo ptr, byval pDestinationTop as long ptr) as HRESULT
 	put_DestinationHeight as function(byval This as IBasicVideo ptr, byval DestinationHeight as long) as HRESULT
 	get_DestinationHeight as function(byval This as IBasicVideo ptr, byval pDestinationHeight as long ptr) as HRESULT
-	SetSourcePosition as function(byval This as IBasicVideo ptr, byval Left_ as long, byval Top as long, byval Width_ as long, byval Height as long) as HRESULT
+	SetSourcePosition as function(byval This as IBasicVideo ptr, byval Left as long, byval Top as long, byval Width as long, byval Height as long) as HRESULT
 	GetSourcePosition as function(byval This as IBasicVideo ptr, byval pLeft as long ptr, byval pTop as long ptr, byval pWidth as long ptr, byval pHeight as long ptr) as HRESULT
 	SetDefaultSourcePosition as function(byval This as IBasicVideo ptr) as HRESULT
-	SetDestinationPosition as function(byval This as IBasicVideo ptr, byval Left_ as long, byval Top as long, byval Width_ as long, byval Height as long) as HRESULT
+	SetDestinationPosition as function(byval This as IBasicVideo ptr, byval Left as long, byval Top as long, byval Width as long, byval Height as long) as HRESULT
 	GetDestinationPosition as function(byval This as IBasicVideo ptr, byval pLeft as long ptr, byval pTop as long ptr, byval pWidth as long ptr, byval pHeight as long ptr) as HRESULT
 	SetDefaultDestinationPosition as function(byval This as IBasicVideo ptr) as HRESULT
 	GetVideoSize as function(byval This as IBasicVideo ptr, byval pWidth as long ptr, byval pHeight as long ptr) as HRESULT
@@ -510,13 +509,13 @@ declare function IBasicVideo_put_DestinationHeight_Proxy(byval This as IBasicVid
 declare sub IBasicVideo_put_DestinationHeight_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IBasicVideo_get_DestinationHeight_Proxy(byval This as IBasicVideo ptr, byval pDestinationHeight as long ptr) as HRESULT
 declare sub IBasicVideo_get_DestinationHeight_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IBasicVideo_SetSourcePosition_Proxy(byval This as IBasicVideo ptr, byval Left_ as long, byval Top as long, byval Width_ as long, byval Height as long) as HRESULT
+declare function IBasicVideo_SetSourcePosition_Proxy(byval This as IBasicVideo ptr, byval Left as long, byval Top as long, byval Width as long, byval Height as long) as HRESULT
 declare sub IBasicVideo_SetSourcePosition_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IBasicVideo_GetSourcePosition_Proxy(byval This as IBasicVideo ptr, byval pLeft as long ptr, byval pTop as long ptr, byval pWidth as long ptr, byval pHeight as long ptr) as HRESULT
 declare sub IBasicVideo_GetSourcePosition_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IBasicVideo_SetDefaultSourcePosition_Proxy(byval This as IBasicVideo ptr) as HRESULT
 declare sub IBasicVideo_SetDefaultSourcePosition_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IBasicVideo_SetDestinationPosition_Proxy(byval This as IBasicVideo ptr, byval Left_ as long, byval Top as long, byval Width_ as long, byval Height as long) as HRESULT
+declare function IBasicVideo_SetDestinationPosition_Proxy(byval This as IBasicVideo ptr, byval Left as long, byval Top as long, byval Width as long, byval Height as long) as HRESULT
 declare sub IBasicVideo_SetDestinationPosition_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IBasicVideo_GetDestinationPosition_Proxy(byval This as IBasicVideo ptr, byval pLeft as long ptr, byval pTop as long ptr, byval pWidth as long ptr, byval pHeight as long ptr) as HRESULT
 declare sub IBasicVideo_GetDestinationPosition_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -536,6 +535,8 @@ declare sub IBasicVideo_IsUsingDefaultDestination_Stub(byval This as IRpcStubBuf
 #define __IBasicVideo2_INTERFACE_DEFINED__
 
 extern IID_IBasicVideo2 as const GUID
+
+type IBasicVideo2 as IBasicVideo2_
 
 type IBasicVideo2Vtbl
 	QueryInterface as function(byval This as IBasicVideo2 ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
@@ -566,10 +567,10 @@ type IBasicVideo2Vtbl
 	get_DestinationTop as function(byval This as IBasicVideo2 ptr, byval pDestinationTop as long ptr) as HRESULT
 	put_DestinationHeight as function(byval This as IBasicVideo2 ptr, byval DestinationHeight as long) as HRESULT
 	get_DestinationHeight as function(byval This as IBasicVideo2 ptr, byval pDestinationHeight as long ptr) as HRESULT
-	SetSourcePosition as function(byval This as IBasicVideo2 ptr, byval Left_ as long, byval Top as long, byval Width_ as long, byval Height as long) as HRESULT
+	SetSourcePosition as function(byval This as IBasicVideo2 ptr, byval Left as long, byval Top as long, byval Width as long, byval Height as long) as HRESULT
 	GetSourcePosition as function(byval This as IBasicVideo2 ptr, byval pLeft as long ptr, byval pTop as long ptr, byval pWidth as long ptr, byval pHeight as long ptr) as HRESULT
 	SetDefaultSourcePosition as function(byval This as IBasicVideo2 ptr) as HRESULT
-	SetDestinationPosition as function(byval This as IBasicVideo2 ptr, byval Left_ as long, byval Top as long, byval Width_ as long, byval Height as long) as HRESULT
+	SetDestinationPosition as function(byval This as IBasicVideo2 ptr, byval Left as long, byval Top as long, byval Width as long, byval Height as long) as HRESULT
 	GetDestinationPosition as function(byval This as IBasicVideo2 ptr, byval pLeft as long ptr, byval pTop as long ptr, byval pWidth as long ptr, byval pHeight as long ptr) as HRESULT
 	SetDefaultDestinationPosition as function(byval This as IBasicVideo2 ptr) as HRESULT
 	GetVideoSize as function(byval This as IBasicVideo2 ptr, byval pWidth as long ptr, byval pHeight as long ptr) as HRESULT
@@ -590,6 +591,8 @@ declare sub IBasicVideo2_GetPreferredAspectRatio_Stub(byval This as IRpcStubBuff
 #define __IDeferredCommand_INTERFACE_DEFINED__
 
 extern IID_IDeferredCommand as const GUID
+
+type IDeferredCommand as IDeferredCommand_
 
 type IDeferredCommandVtbl
 	QueryInterface as function(byval This as IDeferredCommand ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
@@ -618,21 +621,23 @@ declare sub IDeferredCommand_GetHResult_Stub(byval This as IRpcStubBuffer ptr, b
 
 extern IID_IQueueCommand as const GUID
 
+type IQueueCommand as IQueueCommand_
+
 type IQueueCommandVtbl
 	QueryInterface as function(byval This as IQueueCommand ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
 	AddRef as function(byval This as IQueueCommand ptr) as ULONG
 	Release as function(byval This as IQueueCommand ptr) as ULONG
-	InvokeAtStreamTime as function(byval This as IQueueCommand ptr, byval pCmd as IDeferredCommand ptr ptr, byval time_ as REFTIME, byval iid as GUID ptr, byval dispidMethod as long, byval wFlags as short, byval cArgs as long, byval pDispParams as VARIANT ptr, byval pvarResult as VARIANT ptr, byval puArgErr as short ptr) as HRESULT
-	InvokeAtPresentationTime as function(byval This as IQueueCommand ptr, byval pCmd as IDeferredCommand ptr ptr, byval time_ as REFTIME, byval iid as GUID ptr, byval dispidMethod as long, byval wFlags as short, byval cArgs as long, byval pDispParams as VARIANT ptr, byval pvarResult as VARIANT ptr, byval puArgErr as short ptr) as HRESULT
+	InvokeAtStreamTime as function(byval This as IQueueCommand ptr, byval pCmd as IDeferredCommand ptr ptr, byval time as REFTIME, byval iid as GUID ptr, byval dispidMethod as long, byval wFlags as short, byval cArgs as long, byval pDispParams as VARIANT ptr, byval pvarResult as VARIANT ptr, byval puArgErr as short ptr) as HRESULT
+	InvokeAtPresentationTime as function(byval This as IQueueCommand ptr, byval pCmd as IDeferredCommand ptr ptr, byval time as REFTIME, byval iid as GUID ptr, byval dispidMethod as long, byval wFlags as short, byval cArgs as long, byval pDispParams as VARIANT ptr, byval pvarResult as VARIANT ptr, byval puArgErr as short ptr) as HRESULT
 end type
 
 type IQueueCommand_
 	lpVtbl as IQueueCommandVtbl ptr
 end type
 
-declare function IQueueCommand_InvokeAtStreamTime_Proxy(byval This as IQueueCommand ptr, byval pCmd as IDeferredCommand ptr ptr, byval time_ as REFTIME, byval iid as GUID ptr, byval dispidMethod as long, byval wFlags as short, byval cArgs as long, byval pDispParams as VARIANT ptr, byval pvarResult as VARIANT ptr, byval puArgErr as short ptr) as HRESULT
+declare function IQueueCommand_InvokeAtStreamTime_Proxy(byval This as IQueueCommand ptr, byval pCmd as IDeferredCommand ptr ptr, byval time as REFTIME, byval iid as GUID ptr, byval dispidMethod as long, byval wFlags as short, byval cArgs as long, byval pDispParams as VARIANT ptr, byval pvarResult as VARIANT ptr, byval puArgErr as short ptr) as HRESULT
 declare sub IQueueCommand_InvokeAtStreamTime_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IQueueCommand_InvokeAtPresentationTime_Proxy(byval This as IQueueCommand ptr, byval pCmd as IDeferredCommand ptr ptr, byval time_ as REFTIME, byval iid as GUID ptr, byval dispidMethod as long, byval wFlags as short, byval cArgs as long, byval pDispParams as VARIANT ptr, byval pvarResult as VARIANT ptr, byval puArgErr as short ptr) as HRESULT
+declare function IQueueCommand_InvokeAtPresentationTime_Proxy(byval This as IQueueCommand ptr, byval pCmd as IDeferredCommand ptr ptr, byval time as REFTIME, byval iid as GUID ptr, byval dispidMethod as long, byval wFlags as short, byval cArgs as long, byval pDispParams as VARIANT ptr, byval pvarResult as VARIANT ptr, byval puArgErr as short ptr) as HRESULT
 declare sub IQueueCommand_InvokeAtPresentationTime_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 
 extern CLSID_FilgraphManager as const GUID
@@ -640,6 +645,8 @@ extern CLSID_FilgraphManager as const GUID
 #define __IFilterInfo_INTERFACE_DEFINED__
 
 extern IID_IFilterInfo as const GUID
+
+type IFilterInfo as IFilterInfo_
 
 type IFilterInfoVtbl
 	QueryInterface as function(byval This as IFilterInfo ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
@@ -684,6 +691,8 @@ declare sub IFilterInfo_put_Filename_Stub(byval This as IRpcStubBuffer ptr, byva
 
 extern IID_IRegFilterInfo as const GUID
 
+type IRegFilterInfo as IRegFilterInfo_
+
 type IRegFilterInfoVtbl
 	QueryInterface as function(byval This as IRegFilterInfo ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
 	AddRef as function(byval This as IRegFilterInfo ptr) as ULONG
@@ -709,6 +718,8 @@ declare sub IRegFilterInfo_Filter_Stub(byval This as IRpcStubBuffer ptr, byval _
 
 extern IID_IMediaTypeInfo as const GUID
 
+type IMediaTypeInfo as IMediaTypeInfo_
+
 type IMediaTypeInfoVtbl
 	QueryInterface as function(byval This as IMediaTypeInfo ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
 	AddRef as function(byval This as IMediaTypeInfo ptr) as ULONG
@@ -733,6 +744,8 @@ declare sub IMediaTypeInfo_get_Subtype_Stub(byval This as IRpcStubBuffer ptr, by
 #define __IPinInfo_INTERFACE_DEFINED__
 
 extern IID_IPinInfo as const GUID
+
+type IPinInfo as IPinInfo_
 
 type IPinInfoVtbl
 	QueryInterface as function(byval This as IPinInfo ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
@@ -792,6 +805,8 @@ declare sub IPinInfo_Render_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcCh
 
 extern IID_IAMStats as const GUID
 
+type IAMStats as IAMStats_
+
 type IAMStatsVtbl
 	QueryInterface as function(byval This as IAMStats ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
 	AddRef as function(byval This as IAMStats ptr) as ULONG
@@ -826,3 +841,5 @@ declare function IAMStats_AddValue_Proxy(byval This as IAMStats ptr, byval lInde
 declare sub IAMStats_AddValue_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 
 end extern
+
+#include once "ole-common.bi"

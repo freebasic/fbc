@@ -1202,8 +1202,8 @@ type LPPRINTER_ENUM_VALUESW as _PRINTER_ENUM_VALUESW ptr
 	#define EnumPrinters EnumPrintersA
 #endif
 
-declare function EnumPrintersA(byval Flags as DWORD, byval Name_ as LPSTR, byval Level as DWORD, byval pPrinterEnum as LPBYTE, byval cbBuf as DWORD, byval pcbNeeded as LPDWORD, byval pcReturned as LPDWORD) as WINBOOL
-declare function EnumPrintersW(byval Flags as DWORD, byval Name_ as LPWSTR, byval Level as DWORD, byval pPrinterEnum as LPBYTE, byval cbBuf as DWORD, byval pcbNeeded as LPDWORD, byval pcReturned as LPDWORD) as WINBOOL
+declare function EnumPrintersA(byval Flags as DWORD, byval Name as LPSTR, byval Level as DWORD, byval pPrinterEnum as LPBYTE, byval cbBuf as DWORD, byval pcbNeeded as LPDWORD, byval pcReturned as LPDWORD) as WINBOOL
+declare function EnumPrintersW(byval Flags as DWORD, byval Name as LPWSTR, byval Level as DWORD, byval pPrinterEnum as LPBYTE, byval cbBuf as DWORD, byval pcbNeeded as LPDWORD, byval pcReturned as LPDWORD) as WINBOOL
 
 #define PRINTER_ENUM_DEFAULT &h00000001
 #define PRINTER_ENUM_LOCAL &h00000002
@@ -1304,8 +1304,8 @@ declare function OpenPrinterA(byval pPrinterName as LPSTR, byval phPrinter as LP
 declare function OpenPrinterW(byval pPrinterName as LPWSTR, byval phPrinter as LPHANDLE, byval pDefault as LPPRINTER_DEFAULTSW) as WINBOOL
 declare function ResetPrinterA(byval hPrinter as HANDLE, byval pDefault as LPPRINTER_DEFAULTSA) as WINBOOL
 declare function ResetPrinterW(byval hPrinter as HANDLE, byval pDefault as LPPRINTER_DEFAULTSW) as WINBOOL
-declare function SetJobA(byval hPrinter as HANDLE, byval JobId as DWORD, byval Level as DWORD, byval pJob as LPBYTE, byval Command_ as DWORD) as WINBOOL
-declare function SetJobW(byval hPrinter as HANDLE, byval JobId as DWORD, byval Level as DWORD, byval pJob as LPBYTE, byval Command_ as DWORD) as WINBOOL
+declare function SetJobA(byval hPrinter as HANDLE, byval JobId as DWORD, byval Level as DWORD, byval pJob as LPBYTE, byval Command as DWORD) as WINBOOL
+declare function SetJobW(byval hPrinter as HANDLE, byval JobId as DWORD, byval Level as DWORD, byval pJob as LPBYTE, byval Command as DWORD) as WINBOOL
 declare function GetJobA(byval hPrinter as HANDLE, byval JobId as DWORD, byval Level as DWORD, byval pJob as LPBYTE, byval cbBuf as DWORD, byval pcbNeeded as LPDWORD) as WINBOOL
 declare function GetJobW(byval hPrinter as HANDLE, byval JobId as DWORD, byval Level as DWORD, byval pJob as LPBYTE, byval cbBuf as DWORD, byval pcbNeeded as LPDWORD) as WINBOOL
 declare function EnumJobsA(byval hPrinter as HANDLE, byval FirstJob as DWORD, byval NoJobs as DWORD, byval Level as DWORD, byval pJob as LPBYTE, byval cbBuf as DWORD, byval pcbNeeded as LPDWORD, byval pcReturned as LPDWORD) as WINBOOL
@@ -1313,8 +1313,8 @@ declare function EnumJobsW(byval hPrinter as HANDLE, byval FirstJob as DWORD, by
 declare function AddPrinterA(byval pName as LPSTR, byval Level as DWORD, byval pPrinter as LPBYTE) as HANDLE
 declare function AddPrinterW(byval pName as LPWSTR, byval Level as DWORD, byval pPrinter as LPBYTE) as HANDLE
 declare function DeletePrinter(byval hPrinter as HANDLE) as WINBOOL
-declare function SetPrinterA(byval hPrinter as HANDLE, byval Level as DWORD, byval pPrinter as LPBYTE, byval Command_ as DWORD) as WINBOOL
-declare function SetPrinterW(byval hPrinter as HANDLE, byval Level as DWORD, byval pPrinter as LPBYTE, byval Command_ as DWORD) as WINBOOL
+declare function SetPrinterA(byval hPrinter as HANDLE, byval Level as DWORD, byval pPrinter as LPBYTE, byval Command as DWORD) as WINBOOL
+declare function SetPrinterW(byval hPrinter as HANDLE, byval Level as DWORD, byval pPrinter as LPBYTE, byval Command as DWORD) as WINBOOL
 declare function GetPrinterA(byval hPrinter as HANDLE, byval Level as DWORD, byval pPrinter as LPBYTE, byval cbBuf as DWORD, byval pcbNeeded as LPDWORD) as WINBOOL
 declare function GetPrinterW(byval hPrinter as HANDLE, byval Level as DWORD, byval pPrinter as LPBYTE, byval cbBuf as DWORD, byval pcbNeeded as LPDWORD) as WINBOOL
 declare function AddPrinterDriverA(byval pName as LPSTR, byval Level as DWORD, byval pDriverInfo as LPBYTE) as WINBOOL
@@ -1369,10 +1369,10 @@ declare function EnumPrinterDataExA(byval hPrinter as HANDLE, byval pKeyName as 
 declare function EnumPrinterDataExW(byval hPrinter as HANDLE, byval pKeyName as LPCWSTR, byval pEnumValues as LPBYTE, byval cbEnumValues as DWORD, byval pcbEnumValues as LPDWORD, byval pnEnumValues as LPDWORD) as DWORD
 declare function EnumPrinterKeyA(byval hPrinter as HANDLE, byval pKeyName as LPCSTR, byval pSubkey as LPSTR, byval cbSubkey as DWORD, byval pcbSubkey as LPDWORD) as DWORD
 declare function EnumPrinterKeyW(byval hPrinter as HANDLE, byval pKeyName as LPCWSTR, byval pSubkey as LPWSTR, byval cbSubkey as DWORD, byval pcbSubkey as LPDWORD) as DWORD
-declare function SetPrinterDataA(byval hPrinter as HANDLE, byval pValueName as LPSTR, byval Type_ as DWORD, byval pData as LPBYTE, byval cbData as DWORD) as DWORD
-declare function SetPrinterDataW(byval hPrinter as HANDLE, byval pValueName as LPWSTR, byval Type_ as DWORD, byval pData as LPBYTE, byval cbData as DWORD) as DWORD
-declare function SetPrinterDataExA(byval hPrinter as HANDLE, byval pKeyName as LPCSTR, byval pValueName as LPCSTR, byval Type_ as DWORD, byval pData as LPBYTE, byval cbData as DWORD) as DWORD
-declare function SetPrinterDataExW(byval hPrinter as HANDLE, byval pKeyName as LPCWSTR, byval pValueName as LPCWSTR, byval Type_ as DWORD, byval pData as LPBYTE, byval cbData as DWORD) as DWORD
+declare function SetPrinterDataA(byval hPrinter as HANDLE, byval pValueName as LPSTR, byval Type as DWORD, byval pData as LPBYTE, byval cbData as DWORD) as DWORD
+declare function SetPrinterDataW(byval hPrinter as HANDLE, byval pValueName as LPWSTR, byval Type as DWORD, byval pData as LPBYTE, byval cbData as DWORD) as DWORD
+declare function SetPrinterDataExA(byval hPrinter as HANDLE, byval pKeyName as LPCSTR, byval pValueName as LPCSTR, byval Type as DWORD, byval pData as LPBYTE, byval cbData as DWORD) as DWORD
+declare function SetPrinterDataExW(byval hPrinter as HANDLE, byval pKeyName as LPCWSTR, byval pValueName as LPCWSTR, byval Type as DWORD, byval pData as LPBYTE, byval cbData as DWORD) as DWORD
 declare function DeletePrinterDataA(byval hPrinter as HANDLE, byval pValueName as LPSTR) as DWORD
 declare function DeletePrinterDataW(byval hPrinter as HANDLE, byval pValueName as LPWSTR) as DWORD
 declare function DeletePrinterDataExA(byval hPrinter as HANDLE, byval pKeyName as LPCSTR, byval pValueName as LPCSTR) as DWORD
@@ -1462,14 +1462,14 @@ type LPPRINTER_NOTIFY_OPTIONS as _PRINTER_NOTIFY_OPTIONS ptr
 
 #define PRINTER_NOTIFY_INFO_DISCARDED &h01
 
-type ___PRINTER_NOTIFY_INFO_DATA_Data
+type _PRINTER_NOTIFY_INFO_DATA_NotifyData_Data
 	cbBuf as DWORD
 	pBuf as LPVOID
 end type
 
-union ___PRINTER_NOTIFY_INFO_DATA_NotifyData
+union _PRINTER_NOTIFY_INFO_DATA_NotifyData
 	adwData(0 to 1) as DWORD
-	Data as ___PRINTER_NOTIFY_INFO_DATA_Data
+	Data as _PRINTER_NOTIFY_INFO_DATA_NotifyData_Data
 end union
 
 type _PRINTER_NOTIFY_INFO_DATA
@@ -1477,7 +1477,7 @@ type _PRINTER_NOTIFY_INFO_DATA
 	Field as WORD
 	Reserved as DWORD
 	Id as DWORD
-	NotifyData as ___PRINTER_NOTIFY_INFO_DATA_NotifyData
+	NotifyData as _PRINTER_NOTIFY_INFO_DATA_NotifyData
 end type
 
 type PRINTER_NOTIFY_INFO_DATA as _PRINTER_NOTIFY_INFO_DATA
@@ -1503,7 +1503,7 @@ end type
 type BINARY_CONTAINER as _BINARY_CONTAINER
 type PBINARY_CONTAINER as _BINARY_CONTAINER ptr
 
-union ___BIDI_DATA_u
+union _BIDI_DATA_u
 	bData as WINBOOL
 	iData as LONG
 	sData as LPWSTR
@@ -1513,7 +1513,7 @@ end union
 
 type _BIDI_DATA
 	dwBidiType as DWORD
-	u as ___BIDI_DATA_u
+	u as _BIDI_DATA_u
 end type
 
 type BIDI_DATA as _BIDI_DATA
@@ -1665,8 +1665,8 @@ declare function FindClosePrinterChangeNotification(byval hChange as HANDLE) as 
 	#define DeletePrinterConnection DeletePrinterConnectionA
 #endif
 
-declare function PrinterMessageBoxA(byval hPrinter as HANDLE, byval Error__ as DWORD, byval hWnd as HWND, byval pText as LPSTR, byval pCaption as LPSTR, byval dwType as DWORD) as DWORD
-declare function PrinterMessageBoxW(byval hPrinter as HANDLE, byval Error__ as DWORD, byval hWnd as HWND, byval pText as LPWSTR, byval pCaption as LPWSTR, byval dwType as DWORD) as DWORD
+declare function PrinterMessageBoxA(byval hPrinter as HANDLE, byval Error as DWORD, byval hWnd as HWND, byval pText as LPSTR, byval pCaption as LPSTR, byval dwType as DWORD) as DWORD
+declare function PrinterMessageBoxW(byval hPrinter as HANDLE, byval Error as DWORD, byval hWnd as HWND, byval pText as LPWSTR, byval pCaption as LPWSTR, byval dwType as DWORD) as DWORD
 
 #define PRINTER_ERROR_INFORMATION &h80000000
 #define PRINTER_ERROR_WARNING &h40000000

@@ -14,6 +14,8 @@ type LPCOLESTR as const wstring ptr
 
 #define OLESTR(str) wstr(str)
 
+type UCHAR as ubyte
+
 type _COAUTHIDENTITY
 	User as USHORT ptr
 	UserLength as ULONG

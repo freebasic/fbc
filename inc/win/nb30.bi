@@ -2,6 +2,10 @@
 
 extern "Windows"
 
+#define NCB_INCLUDED
+#define NCBNAMSZ 16
+#define MAX_LANA 254
+
 type _NCB
 	ncb_command as UCHAR
 	ncb_retcode as UCHAR
@@ -28,10 +32,6 @@ end type
 
 type NCB as _NCB
 type PNCB as _NCB ptr
-
-#define NCB_INCLUDED
-#define NCBNAMSZ 16
-#define MAX_LANA 254
 
 type _ADAPTER_STATUS
 	adapter_address(0 to 5) as UCHAR
@@ -81,7 +81,7 @@ type PNAME_BUFFER as _NAME_BUFFER ptr
 #define REGISTERING &h00
 #define REGISTERED &h04
 #define DEREGISTERED &h05
-#define DUPLICATE &h06
+#define DUPLICATE_ &h06
 #define DUPLICATE_DEREG &h07
 
 type _SESSION_HEADER

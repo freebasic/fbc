@@ -193,12 +193,12 @@ type LPOVERLAPPED_COMPLETION_ROUTINE as sub(byval dwErrorCode as DWORD, byval dw
 #define LOCKFILE_FAIL_IMMEDIATELY &h1
 #define LOCKFILE_EXCLUSIVE_LOCK &h2
 
-type ___PROCESS_HEAP_ENTRY_Block
+type _PROCESS_HEAP_ENTRY_Block
 	hMem as HANDLE
 	dwReserved(0 to 2) as DWORD
 end type
 
-type ___PROCESS_HEAP_ENTRY_Region
+type _PROCESS_HEAP_ENTRY_Region
 	dwCommittedSize as DWORD
 	dwUnCommittedSize as DWORD
 	lpFirstBlock as LPVOID
@@ -213,8 +213,8 @@ type _PROCESS_HEAP_ENTRY
 	wFlags as WORD
 
 	union
-		Block as ___PROCESS_HEAP_ENTRY_Block
-		Region as ___PROCESS_HEAP_ENTRY_Region
+		Block as _PROCESS_HEAP_ENTRY_Block
+		Region as _PROCESS_HEAP_ENTRY_Region
 	end union
 end type
 
@@ -228,22 +228,22 @@ type PPROCESS_HEAP_ENTRY as _PROCESS_HEAP_ENTRY ptr
 #define PROCESS_HEAP_ENTRY_MOVEABLE &h10
 #define PROCESS_HEAP_ENTRY_DDESHARE &h20
 
-type ___REASON_CONTEXT_Detailed
+type _REASON_CONTEXT_Reason_Detailed
 	LocalizedReasonModule as HMODULE
 	LocalizedReasonId as ULONG
 	ReasonStringCount as ULONG
 	ReasonStrings as LPWSTR ptr
 end type
 
-union ___REASON_CONTEXT_Reason
-	Detailed as ___REASON_CONTEXT_Detailed
+union _REASON_CONTEXT_Reason
+	Detailed as _REASON_CONTEXT_Reason_Detailed
 	SimpleReasonString as LPWSTR
 end union
 
 type _REASON_CONTEXT
 	Version as ULONG
 	Flags as DWORD
-	Reason as ___REASON_CONTEXT_Reason
+	Reason as _REASON_CONTEXT_Reason
 end type
 
 type REASON_CONTEXT as _REASON_CONTEXT
@@ -345,7 +345,7 @@ end type
 type RIP_INFO as _RIP_INFO
 type LPRIP_INFO as _RIP_INFO ptr
 
-union ___DEBUG_EVENT_u
+union _DEBUG_EVENT_u
 	Exception as EXCEPTION_DEBUG_INFO
 	CreateThread as CREATE_THREAD_DEBUG_INFO
 	CreateProcessInfo as CREATE_PROCESS_DEBUG_INFO
@@ -361,7 +361,7 @@ type _DEBUG_EVENT
 	dwDebugEventCode as DWORD
 	dwProcessId as DWORD
 	dwThreadId as DWORD
-	u as ___DEBUG_EVENT_u
+	u as _DEBUG_EVENT_u
 end type
 
 type DEBUG_EVENT as _DEBUG_EVENT
@@ -741,6 +741,16 @@ declare function GetOverlappedResultEx(byval hFile as HANDLE, byval lpOverlapped
 #define _INTERLOCKAPI_H_
 
 #ifndef __FB_64BIT__
+	declare function InterlockedIncrement(byval lpAddend as LONG ptr) as LONG
+	declare function InterlockedDecrement(byval lpAddend as LONG ptr) as LONG
+	declare function InterlockedExchange(byval Target as LONG ptr, byval Value as LONG) as LONG
+	declare function InterlockedExchangeAdd(byval Addend as LONG ptr, byval Value as LONG) as LONG
+	declare function InterlockedCompareExchange(byval Destination as LONG ptr, byval Exchange as LONG, byval Comperand as LONG) as LONG
+	declare function InterlockedCompareExchange64(byval Destination as LONGLONG ptr, byval Exchange as LONGLONG, byval Comperand as LONGLONG) as LONGLONG
+
+	#define InterlockedExchangePointer(Target, Value) cast(PVOID, InterlockedExchange(cast(PLONG, (Target)), cast(LONG, cast(LONG_PTR, (Value)))))
+	#define InterlockedExchangePointerNoFence InterlockedExchangePointer
+
 	private function InterlockedIncrement(byval lpAddend as LONG ptr) as LONG
 		return _InterlockedIncrement(lpAddend)
 	end function
@@ -764,9 +774,6 @@ declare function GetOverlappedResultEx(byval hFile as HANDLE, byval lpOverlapped
 	private function InterlockedCompareExchange64(byval Destination as LONGLONG ptr, byval Exchange as LONGLONG, byval Comperand as LONGLONG) as LONGLONG
 		return _InterlockedCompareExchange64(Destination, Exchange, Comperand)
 	end function
-
-	#define InterlockedExchangePointer(Target, Value) cast(PVOID, InterlockedExchange(cast(PLONG, (Target)), cast(LONG, cast(LONG_PTR, (Value)))))
-	#define InterlockedExchangePointerNoFence InterlockedExchangePointer
 #endif
 
 declare sub InitializeSListHead(byval ListHead as PSLIST_HEADER)
@@ -878,9 +885,6 @@ declare function GetModuleHandleExW(byval dwFlags as DWORD, byval lpModuleName a
 	#define LoadLibraryEx LoadLibraryExA
 #endif
 
-declare function EnumResourceLanguagesA(byval hModule as HMODULE, byval lpType as LPCSTR, byval lpName as LPCSTR, byval lpEnumFunc as ENUMRESLANGPROCA, byval lParam as LONG_PTR) as WINBOOL
-declare function EnumResourceLanguagesW(byval hModule as HMODULE, byval lpType as LPCWSTR, byval lpName as LPCWSTR, byval lpEnumFunc as ENUMRESLANGPROCW, byval lParam as LONG_PTR) as WINBOOL
-
 #if _WIN32_WINNT = &h0602
 	declare function EnumResourceLanguagesExA(byval hModule as HMODULE, byval lpType as LPCSTR, byval lpName as LPCSTR, byval lpEnumFunc as ENUMRESLANGPROCA, byval lParam as LONG_PTR, byval dwFlags as DWORD, byval LangId as LANGID) as WINBOOL
 	declare function EnumResourceLanguagesExW(byval hModule as HMODULE, byval lpType as LPCWSTR, byval lpName as LPCWSTR, byval lpEnumFunc as ENUMRESLANGPROCW, byval lParam as LONG_PTR, byval dwFlags as DWORD, byval LangId as LANGID) as WINBOOL
@@ -934,7 +938,7 @@ type MEMORY_RESOURCE_NOTIFICATION_TYPE as _MEMORY_RESOURCE_NOTIFICATION_TYPE
 declare function VirtualQuery(byval lpAddress as LPCVOID, byval lpBuffer as PMEMORY_BASIC_INFORMATION, byval dwLength as SIZE_T_) as SIZE_T_
 declare function FlushViewOfFile(byval lpBaseAddress as LPCVOID, byval dwNumberOfBytesToFlush as SIZE_T_) as WINBOOL
 declare function UnmapViewOfFile(byval lpBaseAddress as LPCVOID) as WINBOOL
-declare function CreateFileMappingFromApp(byval hFile as HANDLE, byval SecurityAttributes as PSECURITY_ATTRIBUTES, byval PageProtection as ULONG, byval MaximumSize as ULONG64, byval Name_ as PCWSTR) as HANDLE
+declare function CreateFileMappingFromApp(byval hFile as HANDLE, byval SecurityAttributes as PSECURITY_ATTRIBUTES, byval PageProtection as ULONG, byval MaximumSize as ULONG64, byval Name as PCWSTR) as HANDLE
 declare function MapViewOfFileFromApp(byval hFileMappingObject as HANDLE, byval DesiredAccess as ULONG, byval FileOffset as ULONG64, byval NumberOfBytesToMap as SIZE_T_) as PVOID
 
 #define FILE_MAP_EXECUTE SECTION_MAP_EXECUTE_EXPLICIT
@@ -1020,7 +1024,7 @@ declare function OpenPrivateNamespaceW(byval lpBoundaryDescriptor as LPVOID, byv
 #endif
 
 declare function ClosePrivateNamespace(byval Handle as HANDLE, byval Flags as ULONG) as BOOLEAN
-declare function CreateBoundaryDescriptorW(byval Name_ as LPCWSTR, byval Flags as ULONG) as HANDLE
+declare function CreateBoundaryDescriptorW(byval Name as LPCWSTR, byval Flags as ULONG) as HANDLE
 
 #ifdef UNICODE
 	#define CreateBoundaryDescriptor CreateBoundaryDescriptorW
@@ -1231,7 +1235,7 @@ declare function CreateProcessAsUserW(byval hToken as HANDLE, byval lpApplicatio
 #endif
 
 #if _WIN32_WINNT = &h0602
-	#define PROCESS_AFFINITY_ENABLE_AUTO_UPDATE __MSABI_LONG(&h1)
+	#define PROCESS_AFFINITY_ENABLE_AUTO_UPDATE __MSABI_LONG(&h1u)
 	#define PROC_THREAD_ATTRIBUTE_REPLACE_VALUE &h00000001
 
 	declare function GetProcessIdOfThread(byval Thread as HANDLE) as DWORD
@@ -1577,7 +1581,7 @@ declare function OpenWaitableTimerW(byval dwDesiredAccess as DWORD, byval bInher
 declare function EnterSynchronizationBarrier(byval lpBarrier as LPSYNCHRONIZATION_BARRIER, byval dwFlags as DWORD) as WINBOOL
 declare function InitializeSynchronizationBarrier(byval lpBarrier as LPSYNCHRONIZATION_BARRIER, byval lTotalThreads as LONG, byval lSpinCount as LONG) as WINBOOL
 declare function DeleteSynchronizationBarrier(byval lpBarrier as LPSYNCHRONIZATION_BARRIER) as WINBOOL
-declare sub Sleep_ alias "Sleep"(byval dwMilliseconds as DWORD)
+declare sub Sleep(byval dwMilliseconds as DWORD)
 declare function SignalObjectAndWait(byval hObjectToSignal as HANDLE, byval hObjectToWaitOn as HANDLE, byval dwMilliseconds as DWORD, byval bAlertable as WINBOOL) as DWORD
 
 #if _WIN32_WINNT = &h0602
@@ -1767,20 +1771,20 @@ type PTP_WIN32_IO_CALLBACK as sub(byval Instance as PTP_CALLBACK_INSTANCE, byval
 
 #define _THREADPOOLLEGACYAPISET_H_
 
-declare function QueueUserWorkItem(byval Function_ as LPTHREAD_START_ROUTINE, byval Context as PVOID, byval Flags as ULONG) as WINBOOL
+declare function QueueUserWorkItem(byval Function as LPTHREAD_START_ROUTINE, byval Context as PVOID, byval Flags as ULONG) as WINBOOL
 declare function UnregisterWaitEx(byval WaitHandle as HANDLE, byval CompletionEvent as HANDLE) as WINBOOL
 declare function CreateTimerQueue() as HANDLE
 declare function CreateTimerQueueTimer(byval phNewTimer as PHANDLE, byval TimerQueue as HANDLE, byval Callback as WAITORTIMERCALLBACK, byval Parameter as PVOID, byval DueTime as DWORD, byval Period as DWORD, byval Flags as ULONG) as WINBOOL
-declare function ChangeTimerQueueTimer(byval TimerQueue as HANDLE, byval Timer_ as HANDLE, byval DueTime as ULONG, byval Period as ULONG) as WINBOOL
-declare function DeleteTimerQueueTimer(byval TimerQueue as HANDLE, byval Timer_ as HANDLE, byval CompletionEvent as HANDLE) as WINBOOL
+declare function ChangeTimerQueueTimer(byval TimerQueue as HANDLE, byval Timer as HANDLE, byval DueTime as ULONG, byval Period as ULONG) as WINBOOL
+declare function DeleteTimerQueueTimer(byval TimerQueue as HANDLE, byval Timer as HANDLE, byval CompletionEvent as HANDLE) as WINBOOL
 declare function DeleteTimerQueueEx(byval TimerQueue as HANDLE, byval CompletionEvent as HANDLE) as WINBOOL
 
 #define _APISETUTIL_
 
-declare function EncodePointer(byval Ptr_ as PVOID) as PVOID
-declare function DecodePointer(byval Ptr_ as PVOID) as PVOID
-declare function EncodeSystemPointer(byval Ptr_ as PVOID) as PVOID
-declare function DecodeSystemPointer(byval Ptr_ as PVOID) as PVOID
+declare function EncodePointer(byval Ptr as PVOID) as PVOID
+declare function DecodePointer(byval Ptr as PVOID) as PVOID
+declare function EncodeSystemPointer(byval Ptr as PVOID) as PVOID
+declare function DecodeSystemPointer(byval Ptr as PVOID) as PVOID
 declare function Beep_ alias "Beep"(byval dwFreq as DWORD, byval dwDuration as DWORD) as WINBOOL
 
 #define _WOW64APISET_H_
@@ -2431,6 +2435,9 @@ type POFSTRUCT as _OFSTRUCT ptr
 	#define InterlockedOr16 _InterlockedOr16
 	#define InterlockedXor16 _InterlockedXor16
 
+	declare function _InterlockedAnd(byval Destination as LONG ptr, byval Value as LONG) as LONG
+	declare function _InterlockedOr(byval Destination as LONG ptr, byval Value as LONG) as LONG
+	declare function _InterlockedXor(byval Destination as LONG ptr, byval Value as LONG) as LONG
 	declare function _InterlockedAnd8(byval Destination as zstring ptr, byval Value as byte) as byte
 	declare function _InterlockedOr8(byval Destination as zstring ptr, byval Value as byte) as byte
 	declare function _InterlockedXor8(byval Destination as zstring ptr, byval Value as byte) as byte
@@ -2791,8 +2798,6 @@ declare function BackupWrite(byval hFile as HANDLE, byval lpBuffer as LPBYTE, by
 	#define lstrcmp lstrcmpW
 	#define lstrcmpi lstrcmpiW
 	#define lstrcpyn lstrcpynW
-	#define lstrcpy lstrcpyW
-	#define lstrcat lstrcatW
 	#define lstrlen lstrlenW
 #else
 	#define CreateMailslot CreateMailslotA
@@ -2803,8 +2808,6 @@ declare function BackupWrite(byval hFile as HANDLE, byval lpBuffer as LPBYTE, by
 	#define lstrcmp lstrcmpA
 	#define lstrcmpi lstrcmpiA
 	#define lstrcpyn lstrcpynA
-	#define lstrcpy lstrcpyA
-	#define lstrcat lstrcatA
 	#define lstrlen lstrlenA
 #endif
 
@@ -3030,6 +3033,8 @@ declare function EnumResourceTypesA(byval hModule as HMODULE, byval lpEnumFunc a
 declare function EnumResourceTypesW(byval hModule as HMODULE, byval lpEnumFunc as ENUMRESTYPEPROCW, byval lParam as LONG_PTR) as WINBOOL
 declare function EnumResourceNamesA(byval hModule as HMODULE, byval lpType as LPCSTR, byval lpEnumFunc as ENUMRESNAMEPROCA, byval lParam as LONG_PTR) as WINBOOL
 declare function EnumResourceNamesW(byval hModule as HMODULE, byval lpType as LPCWSTR, byval lpEnumFunc as ENUMRESNAMEPROCW, byval lParam as LONG_PTR) as WINBOOL
+declare function EnumResourceLanguagesA(byval hModule as HMODULE, byval lpType as LPCSTR, byval lpName as LPCSTR, byval lpEnumFunc as ENUMRESLANGPROCA, byval lParam as LONG_PTR) as WINBOOL
+declare function EnumResourceLanguagesW(byval hModule as HMODULE, byval lpType as LPCWSTR, byval lpName as LPCWSTR, byval lpEnumFunc as ENUMRESLANGPROCW, byval lParam as LONG_PTR) as WINBOOL
 declare function BeginUpdateResourceA(byval pFileName as LPCSTR, byval bDeleteExistingResources as WINBOOL) as HANDLE
 declare function BeginUpdateResourceW(byval pFileName as LPCWSTR, byval bDeleteExistingResources as WINBOOL) as HANDLE
 declare function UpdateResourceA(byval hUpdate as HANDLE, byval lpType as LPCSTR, byval lpName as LPCSTR, byval wLanguage as WORD, byval lpData as LPVOID, byval cb as DWORD) as WINBOOL
@@ -3392,7 +3397,7 @@ declare function CopyFileExW(byval lpExistingFileName as LPCWSTR, byval lpNewFil
 
 	#define COPYFILE2_MESSAGE_COPY_OFFLOAD __MSABI_LONG(&h00000001)
 
-	type __COPYFILE2_MESSAGE_ChunkStarted
+	type COPYFILE2_MESSAGE_Info_ChunkStarted
 		dwStreamNumber as DWORD
 		dwReserved as DWORD
 		hSourceFile as HANDLE
@@ -3403,7 +3408,7 @@ declare function CopyFileExW(byval lpExistingFileName as LPCWSTR, byval lpNewFil
 		uliTotalFileSize as ULARGE_INTEGER
 	end type
 
-	type __COPYFILE2_MESSAGE_ChunkFinished
+	type COPYFILE2_MESSAGE_Info_ChunkFinished
 		dwStreamNumber as DWORD
 		dwFlags as DWORD
 		hSourceFile as HANDLE
@@ -3416,7 +3421,7 @@ declare function CopyFileExW(byval lpExistingFileName as LPCWSTR, byval lpNewFil
 		uliTotalBytesTransferred as ULARGE_INTEGER
 	end type
 
-	type __COPYFILE2_MESSAGE_StreamStarted
+	type COPYFILE2_MESSAGE_Info_StreamStarted
 		dwStreamNumber as DWORD
 		dwReserved as DWORD
 		hSourceFile as HANDLE
@@ -3425,7 +3430,7 @@ declare function CopyFileExW(byval lpExistingFileName as LPCWSTR, byval lpNewFil
 		uliTotalFileSize as ULARGE_INTEGER
 	end type
 
-	type __COPYFILE2_MESSAGE_StreamFinished
+	type COPYFILE2_MESSAGE_Info_StreamFinished
 		dwStreamNumber as DWORD
 		dwReserved as DWORD
 		hSourceFile as HANDLE
@@ -3436,11 +3441,11 @@ declare function CopyFileExW(byval lpExistingFileName as LPCWSTR, byval lpNewFil
 		uliTotalBytesTransferred as ULARGE_INTEGER
 	end type
 
-	type __COPYFILE2_MESSAGE_PollContinue
+	type COPYFILE2_MESSAGE_Info_PollContinue
 		dwReserved as DWORD
 	end type
 
-	type __COPYFILE2_MESSAGE_Error
+	type COPYFILE2_MESSAGE_Info_Error
 		CopyPhase as COPYFILE2_COPY_PHASE
 		dwStreamNumber as DWORD
 		hrFailure as HRESULT
@@ -3452,19 +3457,19 @@ declare function CopyFileExW(byval lpExistingFileName as LPCWSTR, byval lpNewFil
 		uliTotalBytesTransferred as ULARGE_INTEGER
 	end type
 
-	union __COPYFILE2_MESSAGE_Info
-		ChunkStarted as __COPYFILE2_MESSAGE_ChunkStarted
-		ChunkFinished as __COPYFILE2_MESSAGE_ChunkFinished
-		StreamStarted as __COPYFILE2_MESSAGE_StreamStarted
-		StreamFinished as __COPYFILE2_MESSAGE_StreamFinished
-		PollContinue as __COPYFILE2_MESSAGE_PollContinue
-		Error as __COPYFILE2_MESSAGE_Error
+	union COPYFILE2_MESSAGE_Info
+		ChunkStarted as COPYFILE2_MESSAGE_Info_ChunkStarted
+		ChunkFinished as COPYFILE2_MESSAGE_Info_ChunkFinished
+		StreamStarted as COPYFILE2_MESSAGE_Info_StreamStarted
+		StreamFinished as COPYFILE2_MESSAGE_Info_StreamFinished
+		PollContinue as COPYFILE2_MESSAGE_Info_PollContinue
+		Error as COPYFILE2_MESSAGE_Info_Error
 	end union
 
 	type COPYFILE2_MESSAGE
 		as COPYFILE2_MESSAGE_TYPE Type
 		dwPadding as DWORD
-		Info as __COPYFILE2_MESSAGE_Info
+		Info as COPYFILE2_MESSAGE_Info
 	end type
 
 	type PCOPYFILE2_PROGRESS_ROUTINE as function(byval pMessage as const COPYFILE2_MESSAGE ptr, byval pvCallbackContext as PVOID) as COPYFILE2_MESSAGE_ACTION
@@ -3721,8 +3726,8 @@ declare function IsBadStringPtrW(byval lpsz as LPCWSTR, byval ucchMax as UINT_PT
 	declare function AddConditionalAce(byval pAcl as PACL, byval dwAceRevision as DWORD, byval AceFlags as DWORD, byval AceType as UCHAR, byval AccessMask as DWORD, byval pSid as PSID, byval ConditionStr as PWCHAR, byval ReturnLength as DWORD ptr) as WINBOOL
 #endif
 
-declare function LookupAccountSidA(byval lpSystemName as LPCSTR, byval Sid as PSID, byval Name_ as LPSTR, byval cchName as LPDWORD, byval ReferencedDomainName as LPSTR, byval cchReferencedDomainName as LPDWORD, byval peUse as PSID_NAME_USE) as WINBOOL
-declare function LookupAccountSidW(byval lpSystemName as LPCWSTR, byval Sid as PSID, byval Name_ as LPWSTR, byval cchName as LPDWORD, byval ReferencedDomainName as LPWSTR, byval cchReferencedDomainName as LPDWORD, byval peUse as PSID_NAME_USE) as WINBOOL
+declare function LookupAccountSidA(byval lpSystemName as LPCSTR, byval Sid as PSID, byval Name as LPSTR, byval cchName as LPDWORD, byval ReferencedDomainName as LPSTR, byval cchReferencedDomainName as LPDWORD, byval peUse as PSID_NAME_USE) as WINBOOL
+declare function LookupAccountSidW(byval lpSystemName as LPCWSTR, byval Sid as PSID, byval Name as LPWSTR, byval cchName as LPDWORD, byval ReferencedDomainName as LPWSTR, byval cchReferencedDomainName as LPDWORD, byval peUse as PSID_NAME_USE) as WINBOOL
 declare function LookupAccountNameA(byval lpSystemName as LPCSTR, byval lpAccountName as LPCSTR, byval Sid as PSID, byval cbSid as LPDWORD, byval ReferencedDomainName as LPSTR, byval cchReferencedDomainName as LPDWORD, byval peUse as PSID_NAME_USE) as WINBOOL
 declare function LookupAccountNameW(byval lpSystemName as LPCWSTR, byval lpAccountName as LPCWSTR, byval Sid as PSID, byval cbSid as LPDWORD, byval ReferencedDomainName as LPWSTR, byval cchReferencedDomainName as LPDWORD, byval peUse as PSID_NAME_USE) as WINBOOL
 
@@ -3768,8 +3773,8 @@ declare function LookupAccountNameW(byval lpSystemName as LPCWSTR, byval lpAccou
 #elseif _WIN32_WINNT = &h0602
 	declare function LookupAccountNameLocalA(byval lpAccountName as LPCSTR, byval Sid as PSID, byval cbSid as LPDWORD, byval ReferencedDomainName as LPSTR, byval cchReferencedDomainName as LPDWORD, byval peUse as PSID_NAME_USE) as WINBOOL
 	declare function LookupAccountNameLocalW(byval lpAccountName as LPCWSTR, byval Sid as PSID, byval cbSid as LPDWORD, byval ReferencedDomainName as LPWSTR, byval cchReferencedDomainName as LPDWORD, byval peUse as PSID_NAME_USE) as WINBOOL
-	declare function LookupAccountSidLocalA(byval Sid as PSID, byval Name_ as LPSTR, byval cchName as LPDWORD, byval ReferencedDomainName as LPSTR, byval cchReferencedDomainName as LPDWORD, byval peUse as PSID_NAME_USE) as WINBOOL
-	declare function LookupAccountSidLocalW(byval Sid as PSID, byval Name_ as LPWSTR, byval cchName as LPDWORD, byval ReferencedDomainName as LPWSTR, byval cchReferencedDomainName as LPDWORD, byval peUse as PSID_NAME_USE) as WINBOOL
+	declare function LookupAccountSidLocalA(byval Sid as PSID, byval Name as LPSTR, byval cchName as LPDWORD, byval ReferencedDomainName as LPSTR, byval cchReferencedDomainName as LPDWORD, byval peUse as PSID_NAME_USE) as WINBOOL
+	declare function LookupAccountSidLocalW(byval Sid as PSID, byval Name as LPWSTR, byval cchName as LPDWORD, byval ReferencedDomainName as LPWSTR, byval cchReferencedDomainName as LPDWORD, byval peUse as PSID_NAME_USE) as WINBOOL
 #endif
 
 #if defined(UNICODE) and (_WIN32_WINNT = &h0602)
@@ -3884,13 +3889,13 @@ declare function CreateProcessWithTokenW(byval hToken as HANDLE, byval dwLogonFl
 declare function IsTokenUntrusted(byval TokenHandle as HANDLE) as WINBOOL
 declare function RegisterWaitForSingleObject(byval phNewWaitObject as PHANDLE, byval hObject as HANDLE, byval Callback as WAITORTIMERCALLBACK, byval Context as PVOID, byval dwMilliseconds as ULONG, byval dwFlags as ULONG) as WINBOOL
 declare function UnregisterWait(byval WaitHandle as HANDLE) as WINBOOL
-declare function BindIoCompletionCallback(byval FileHandle as HANDLE, byval Function_ as LPOVERLAPPED_COMPLETION_ROUTINE, byval Flags as ULONG) as WINBOOL
+declare function BindIoCompletionCallback(byval FileHandle as HANDLE, byval Function as LPOVERLAPPED_COMPLETION_ROUTINE, byval Flags as ULONG) as WINBOOL
 declare function SetTimerQueueTimer(byval TimerQueue as HANDLE, byval Callback as WAITORTIMERCALLBACK, byval Parameter as PVOID, byval DueTime as DWORD, byval Period as DWORD, byval PreferIo as WINBOOL) as HANDLE
-declare function CancelTimerQueueTimer(byval TimerQueue as HANDLE, byval Timer_ as HANDLE) as WINBOOL
+declare function CancelTimerQueueTimer(byval TimerQueue as HANDLE, byval Timer as HANDLE) as WINBOOL
 declare function DeleteTimerQueue(byval TimerQueue as HANDLE) as WINBOOL
 declare function CreatePrivateNamespaceA(byval lpPrivateNamespaceAttributes as LPSECURITY_ATTRIBUTES, byval lpBoundaryDescriptor as LPVOID, byval lpAliasPrefix as LPCSTR) as HANDLE
 declare function OpenPrivateNamespaceA(byval lpBoundaryDescriptor as LPVOID, byval lpAliasPrefix as LPCSTR) as HANDLE
-declare function CreateBoundaryDescriptorA(byval Name_ as LPCSTR, byval Flags as ULONG) as HANDLE
+declare function CreateBoundaryDescriptorA(byval Name as LPCSTR, byval Flags as ULONG) as HANDLE
 declare function AddIntegrityLabelToBoundaryDescriptor(byval BoundaryDescriptor as HANDLE ptr, byval IntegrityLabel as PSID) as WINBOOL
 
 #ifdef UNICODE
@@ -4504,26 +4509,26 @@ type APPLICATION_RECOVERY_CALLBACK as function(byval pvParameter as PVOID) as DW
 	#define RPI_SMB2_FLAG_SERVERCAP_PERSISTENT_HANDLES &h00000010
 	#define RPI_SMB2_FLAG_SERVERCAP_DIRECTORY_LEASING &h00000020
 
-	type ___FILE_REMOTE_PROTOCOL_INFO_GenericReserved
+	type _FILE_REMOTE_PROTOCOL_INFO_GenericReserved
 		Reserved(0 to 7) as ULONG
 	end type
 
-	type ___FILE_REMOTE_PROTOCOL_INFO_Server
+	type _FILE_REMOTE_PROTOCOL_INFO_ProtocolSpecific_Smb2_Server
 		Capabilities as ULONG
 	end type
 
-	type ___FILE_REMOTE_PROTOCOL_INFO_Share
+	type _FILE_REMOTE_PROTOCOL_INFO_ProtocolSpecific_Smb2_Share
 		Capabilities as ULONG
 		CachingFlags as ULONG
 	end type
 
-	type ___FILE_REMOTE_PROTOCOL_INFO_Smb2
-		Server as ___FILE_REMOTE_PROTOCOL_INFO_Server
-		Share as ___FILE_REMOTE_PROTOCOL_INFO_Share
+	type _FILE_REMOTE_PROTOCOL_INFO_ProtocolSpecific_Smb2
+		Server as _FILE_REMOTE_PROTOCOL_INFO_ProtocolSpecific_Smb2_Server
+		Share as _FILE_REMOTE_PROTOCOL_INFO_ProtocolSpecific_Smb2_Share
 	end type
 
-	union ___FILE_REMOTE_PROTOCOL_INFO_ProtocolSpecific
-		Smb2 as ___FILE_REMOTE_PROTOCOL_INFO_Smb2
+	union _FILE_REMOTE_PROTOCOL_INFO_ProtocolSpecific
+		Smb2 as _FILE_REMOTE_PROTOCOL_INFO_ProtocolSpecific_Smb2
 		Reserved(0 to 15) as ULONG
 	end union
 
@@ -4536,8 +4541,8 @@ type APPLICATION_RECOVERY_CALLBACK as function(byval pvParameter as PVOID) as DW
 		ProtocolRevision as USHORT
 		Reserved as USHORT
 		Flags as ULONG
-		GenericReserved as ___FILE_REMOTE_PROTOCOL_INFO_GenericReserved
-		ProtocolSpecific as ___FILE_REMOTE_PROTOCOL_INFO_ProtocolSpecific
+		GenericReserved as _FILE_REMOTE_PROTOCOL_INFO_GenericReserved
+		ProtocolSpecific as _FILE_REMOTE_PROTOCOL_INFO_ProtocolSpecific
 	end type
 
 	type FILE_REMOTE_PROTOCOL_INFO as _FILE_REMOTE_PROTOCOL_INFO

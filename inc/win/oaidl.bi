@@ -11,28 +11,6 @@
 
 extern "Windows"
 
-type ICreateTypeInfo as ICreateTypeInfo_
-type ICreateTypeInfo2 as ICreateTypeInfo2_
-type ICreateTypeLib as ICreateTypeLib_
-type ICreateTypeLib2 as ICreateTypeLib2_
-type IDispatch as IDispatch_
-type IEnumVARIANT as IEnumVARIANT_
-type ITypeComp as ITypeComp_
-type ITypeInfo as ITypeInfo_
-type ITypeInfo2 as ITypeInfo2_
-type ITypeLib as ITypeLib_
-type ITypeLib2 as ITypeLib2_
-type ITypeChangeEvents as ITypeChangeEvents_
-type IErrorInfo as IErrorInfo_
-type ICreateErrorInfo as ICreateErrorInfo_
-type ISupportErrorInfo as ISupportErrorInfo_
-type ITypeFactory as ITypeFactory_
-type ITypeMarshal as ITypeMarshal_
-type IRecordInfo as IRecordInfo_
-type IErrorLog as IErrorLog_
-type IPropertyBag as IPropertyBag_
-type tagARRAYDESC as tagARRAYDESC_
-
 #define __oaidl_h__
 #define __ICreateTypeInfo_FWD_DEFINED__
 #define __ICreateTypeInfo2_FWD_DEFINED__
@@ -85,6 +63,8 @@ end type
 
 type SAFEARR_UNKNOWN as _wireSAFEARR_UNKNOWN
 
+type IDispatch as IDispatch_
+
 type _wireSAFEARR_DISPATCH
 	Size as ULONG
 	apDispatch as IDispatch ptr ptr
@@ -131,7 +111,7 @@ end enum
 
 type SF_TYPE as tagSF_TYPE
 
-union ___wireSAFEARRAY_UNION_u
+union _wireSAFEARRAY_UNION_u
 	BstrStr as SAFEARR_BSTR
 	UnknownStr as SAFEARR_UNKNOWN
 	DispatchStr as SAFEARR_DISPATCH
@@ -146,7 +126,7 @@ end union
 
 type _wireSAFEARRAY_UNION
 	sfType as ULONG
-	u as ___wireSAFEARRAY_UNION_u
+	u as _wireSAFEARRAY_UNION_u
 end type
 
 type SAFEARRAYUNION as _wireSAFEARRAY_UNION
@@ -196,6 +176,8 @@ type LPSAFEARRAY as SAFEARRAY ptr
 #define __VARIANT_NAME_4
 
 type VARIANT as tagVARIANT
+
+type IRecordInfo as IRecordInfo_
 
 type tagVARIANT
 	union
@@ -348,6 +330,8 @@ enum
 end enum
 
 type TYPEKIND as tagTYPEKIND
+
+type tagARRAYDESC as tagARRAYDESC_
 
 type tagTYPEDESC
 	union
@@ -641,9 +625,13 @@ type LPCUSTDATA as tagCUSTDATA ptr
 
 #define __ICreateTypeInfo_INTERFACE_DEFINED__
 
+type ICreateTypeInfo as ICreateTypeInfo_
+
 type LPCREATETYPEINFO as ICreateTypeInfo ptr
 
 extern IID_ICreateTypeInfo as const GUID
+
+type ITypeInfo as ITypeInfo_
 
 type ICreateTypeInfoVtbl
 	QueryInterface as function(byval This as ICreateTypeInfo ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
@@ -726,6 +714,8 @@ declare function ICreateTypeInfo_LayOut_Proxy(byval This as ICreateTypeInfo ptr)
 declare sub ICreateTypeInfo_LayOut_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 
 #define __ICreateTypeInfo2_INTERFACE_DEFINED__
+
+type ICreateTypeInfo2 as ICreateTypeInfo2_
 
 type LPCREATETYPEINFO2 as ICreateTypeInfo2 ptr
 
@@ -812,6 +802,8 @@ declare sub ICreateTypeInfo2_SetName_Stub(byval This as IRpcStubBuffer ptr, byva
 
 #define __ICreateTypeLib_INTERFACE_DEFINED__
 
+type ICreateTypeLib as ICreateTypeLib_
+
 type LPCREATETYPELIB as ICreateTypeLib ptr
 
 extern IID_ICreateTypeLib as const GUID
@@ -858,6 +850,8 @@ declare function ICreateTypeLib_SaveAllChanges_Proxy(byval This as ICreateTypeLi
 declare sub ICreateTypeLib_SaveAllChanges_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 
 #define __ICreateTypeLib2_INTERFACE_DEFINED__
+
+type ICreateTypeLib2 as ICreateTypeLib2_
 
 type LPCREATETYPELIB2 as ICreateTypeLib2 ptr
 
@@ -938,6 +932,8 @@ declare function IDispatch_Invoke_Stub(byval This as IDispatch ptr, byval dispId
 
 #define __IEnumVARIANT_INTERFACE_DEFINED__
 
+type IEnumVARIANT as IEnumVARIANT_
+
 type LPENUMVARIANT as IEnumVARIANT ptr
 
 extern IID_IEnumVARIANT as const GUID
@@ -968,6 +964,8 @@ declare function IEnumVARIANT_Next_Proxy(byval This as IEnumVARIANT ptr, byval c
 declare function IEnumVARIANT_Next_Stub(byval This as IEnumVARIANT ptr, byval celt as ULONG, byval rgVar as VARIANT ptr, byval pCeltFetched as ULONG ptr) as HRESULT
 
 #define __ITypeComp_INTERFACE_DEFINED__
+
+type ITypeComp as ITypeComp_
 
 type LPTYPECOMP as ITypeComp ptr
 
@@ -1020,6 +1018,8 @@ declare function ITypeComp_BindType_Stub(byval This as ITypeComp ptr, byval szNa
 type LPTYPEINFO as ITypeInfo ptr
 
 extern IID_ITypeInfo as const GUID
+
+type ITypeLib as ITypeLib_
 
 type ITypeInfoVtbl
 	QueryInterface as function(byval This as ITypeInfo ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
@@ -1118,6 +1118,8 @@ declare sub ITypeInfo_ReleaseVarDesc_Proxy(byval This as ITypeInfo ptr, byval pV
 declare function ITypeInfo_ReleaseVarDesc_Stub(byval This as ITypeInfo ptr) as HRESULT
 
 #define __ITypeInfo2_INTERFACE_DEFINED__
+
+type ITypeInfo2 as ITypeInfo2_
 
 type LPTYPEINFO2 as ITypeInfo2 ptr
 
@@ -1292,6 +1294,8 @@ declare function ITypeLib_ReleaseTLibAttr_Stub(byval This as ITypeLib ptr) as HR
 
 #define __ITypeLib2_INTERFACE_DEFINED__
 
+type ITypeLib2 as ITypeLib2_
+
 type LPTYPELIB2 as ITypeLib2 ptr
 
 extern IID_ITypeLib2 as const GUID
@@ -1335,6 +1339,8 @@ declare function ITypeLib2_GetDocumentation2_Stub(byval This as ITypeLib2 ptr, b
 
 #define __ITypeChangeEvents_INTERFACE_DEFINED__
 
+type ITypeChangeEvents as ITypeChangeEvents_
+
 type LPTYPECHANGEEVENTS as ITypeChangeEvents ptr
 
 type tagCHANGEKIND as long
@@ -1372,6 +1378,8 @@ declare sub ITypeChangeEvents_AfterTypeChange_Stub(byval This as IRpcStubBuffer 
 
 #define __IErrorInfo_INTERFACE_DEFINED__
 
+type IErrorInfo as IErrorInfo_
+
 type LPERRORINFO as IErrorInfo ptr
 
 extern IID_IErrorInfo as const GUID
@@ -1403,6 +1411,8 @@ declare function IErrorInfo_GetHelpContext_Proxy(byval This as IErrorInfo ptr, b
 declare sub IErrorInfo_GetHelpContext_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 
 #define __ICreateErrorInfo_INTERFACE_DEFINED__
+
+type ICreateErrorInfo as ICreateErrorInfo_
 
 type LPCREATEERRORINFO as ICreateErrorInfo ptr
 
@@ -1436,6 +1446,8 @@ declare sub ICreateErrorInfo_SetHelpContext_Stub(byval This as IRpcStubBuffer pt
 
 #define __ISupportErrorInfo_INTERFACE_DEFINED__
 
+type ISupportErrorInfo as ISupportErrorInfo_
+
 type LPSUPPORTERRORINFO as ISupportErrorInfo ptr
 
 extern IID_ISupportErrorInfo as const GUID
@@ -1458,6 +1470,8 @@ declare sub ISupportErrorInfo_InterfaceSupportsErrorInfo_Stub(byval This as IRpc
 
 extern IID_ITypeFactory as const GUID
 
+type ITypeFactory as ITypeFactory_
+
 type ITypeFactoryVtbl
 	QueryInterface as function(byval This as ITypeFactory ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
 	AddRef as function(byval This as ITypeFactory ptr) as ULONG
@@ -1475,6 +1489,8 @@ declare sub ITypeFactory_CreateFromTypeInfo_Stub(byval This as IRpcStubBuffer pt
 #define __ITypeMarshal_INTERFACE_DEFINED__
 
 extern IID_ITypeMarshal as const GUID
+
+type ITypeMarshal as ITypeMarshal_
 
 type ITypeMarshalVtbl
 	QueryInterface as function(byval This as ITypeMarshal ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
@@ -1566,6 +1582,8 @@ declare sub IRecordInfo_RecordDestroy_Stub(byval This as IRpcStubBuffer ptr, byv
 
 #define __IErrorLog_INTERFACE_DEFINED__
 
+type IErrorLog as IErrorLog_
+
 type LPERRORLOG as IErrorLog ptr
 
 extern IID_IErrorLog as const GUID
@@ -1585,6 +1603,8 @@ declare function IErrorLog_AddError_Proxy(byval This as IErrorLog ptr, byval psz
 declare sub IErrorLog_AddError_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 
 #define __IPropertyBag_INTERFACE_DEFINED__
+
+type IPropertyBag as IPropertyBag_
 
 type LPPROPERTYBAG as IPropertyBag ptr
 
@@ -1608,17 +1628,19 @@ declare function IPropertyBag_Write_Proxy(byval This as IPropertyBag ptr, byval 
 declare sub IPropertyBag_Write_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IPropertyBag_Read_Proxy(byval This as IPropertyBag ptr, byval pszPropName as LPCOLESTR, byval pVar as VARIANT ptr, byval pErrorLog as IErrorLog ptr) as HRESULT
 declare function IPropertyBag_Read_Stub(byval This as IPropertyBag ptr, byval pszPropName as LPCOLESTR, byval pVar as VARIANT ptr, byval pErrorLog as IErrorLog ptr, byval varType as DWORD, byval pUnkObj as IUnknown ptr) as HRESULT
-declare function VARIANT_UserSize(byval as ULONG ptr, byval as ULONG, byval as VARIANT ptr) as ULONG
-declare function VARIANT_UserMarshal(byval as ULONG ptr, byval as ubyte ptr, byval as VARIANT ptr) as ubyte ptr
-declare function VARIANT_UserUnmarshal(byval as ULONG ptr, byval as ubyte ptr, byval as VARIANT ptr) as ubyte ptr
-declare sub VARIANT_UserFree(byval as ULONG ptr, byval as VARIANT ptr)
-declare function BSTR_UserSize(byval as ULONG ptr, byval as ULONG, byval as BSTR ptr) as ULONG
-declare function BSTR_UserMarshal(byval as ULONG ptr, byval as ubyte ptr, byval as BSTR ptr) as ubyte ptr
-declare function BSTR_UserUnmarshal(byval as ULONG ptr, byval as ubyte ptr, byval as BSTR ptr) as ubyte ptr
-declare sub BSTR_UserFree(byval as ULONG ptr, byval as BSTR ptr)
 declare function CLEANLOCALSTORAGE_UserSize(byval as ULONG ptr, byval as ULONG, byval as CLEANLOCALSTORAGE ptr) as ULONG
 declare function CLEANLOCALSTORAGE_UserMarshal(byval as ULONG ptr, byval as ubyte ptr, byval as CLEANLOCALSTORAGE ptr) as ubyte ptr
 declare function CLEANLOCALSTORAGE_UserUnmarshal(byval as ULONG ptr, byval as ubyte ptr, byval as CLEANLOCALSTORAGE ptr) as ubyte ptr
 declare sub CLEANLOCALSTORAGE_UserFree(byval as ULONG ptr, byval as CLEANLOCALSTORAGE ptr)
+declare function LPSAFEARRAY_UserMarshal(byval as ULONG ptr, byval as ubyte ptr, byval as LPSAFEARRAY ptr) as ubyte ptr
+declare function LPSAFEARRAY_UserSize(byval as ULONG ptr, byval as ULONG, byval as LPSAFEARRAY ptr) as ULONG
+declare function LPSAFEARRAY_UserUnmarshal(byval as ULONG ptr, byval as ubyte ptr, byval as LPSAFEARRAY ptr) as ubyte ptr
+declare sub LPSAFEARRAY_UserFree(byval as ULONG ptr, byval as LPSAFEARRAY ptr)
+declare function VARIANT_UserSize(byval as ULONG ptr, byval as ULONG, byval as VARIANT ptr) as ULONG
+declare function VARIANT_UserMarshal(byval as ULONG ptr, byval as ubyte ptr, byval as VARIANT ptr) as ubyte ptr
+declare function VARIANT_UserUnmarshal(byval as ULONG ptr, byval as ubyte ptr, byval as VARIANT ptr) as ubyte ptr
+declare sub VARIANT_UserFree(byval as ULONG ptr, byval as VARIANT ptr)
 
 end extern
+
+#include once "ole-common.bi"

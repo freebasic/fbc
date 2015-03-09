@@ -46,9 +46,9 @@ type PLSA_ADD_CREDENTIAL as function(byval LogonId as PLUID, byval Authenticatio
 type PLSA_GET_CREDENTIALS as function(byval LogonId as PLUID, byval AuthenticationPackage as ULONG, byval QueryContext as PULONG, byval RetrieveAllCredentials as BOOLEAN, byval PrimaryKeyValue as PLSA_STRING, byval PrimaryKeyLength as PULONG, byval Credentials as PLSA_STRING) as NTSTATUS
 type PLSA_DELETE_CREDENTIAL as function(byval LogonId as PLUID, byval AuthenticationPackage as ULONG, byval PrimaryKeyValue as PLSA_STRING) as NTSTATUS
 type PLSA_ALLOCATE_LSA_HEAP as function(byval Length as ULONG) as PVOID
-type PLSA_FREE_LSA_HEAP as sub(byval Base_ as PVOID)
+type PLSA_FREE_LSA_HEAP as sub(byval Base as PVOID)
 type PLSA_ALLOCATE_PRIVATE_HEAP as function(byval Length as SIZE_T_) as PVOID
-type PLSA_FREE_PRIVATE_HEAP as sub(byval Base_ as PVOID)
+type PLSA_FREE_PRIVATE_HEAP as sub(byval Base as PVOID)
 type PLSA_ALLOCATE_CLIENT_BUFFER as function(byval ClientRequest as PLSA_CLIENT_REQUEST, byval LengthRequired as ULONG, byval ClientBaseAddress as PVOID ptr) as NTSTATUS
 type PLSA_FREE_CLIENT_BUFFER as function(byval ClientRequest as PLSA_CLIENT_REQUEST, byval ClientBaseAddress as PVOID) as NTSTATUS
 type PLSA_COPY_TO_CLIENT_BUFFER as function(byval ClientRequest as PLSA_CLIENT_REQUEST, byval Length as ULONG, byval ClientBaseAddress as PVOID, byval BufferToCopy as PVOID) as NTSTATUS
@@ -278,7 +278,7 @@ end type
 type SECPKG_EXTRA_OIDS as _SECPKG_EXTRA_OIDS
 type PSECPKG_EXTRA_OIDS as _SECPKG_EXTRA_OIDS ptr
 
-union ___SECPKG_EXTENDED_INFORMATION_Info
+union _SECPKG_EXTENDED_INFORMATION_Info
 	GssInfo as SECPKG_GSS_INFO
 	ContextThunks as SECPKG_CONTEXT_THUNKS
 	MutualAuthLevel as SECPKG_MUTUAL_AUTH_LEVEL
@@ -288,7 +288,7 @@ end union
 
 type _SECPKG_EXTENDED_INFORMATION
 	Class as SECPKG_EXTENDED_INFORMATION_CLASS
-	Info as ___SECPKG_EXTENDED_INFORMATION_Info
+	Info as _SECPKG_EXTENDED_INFORMATION_Info
 end type
 
 type SECPKG_EXTENDED_INFORMATION as _SECPKG_EXTENDED_INFORMATION
@@ -403,15 +403,15 @@ type PLSA_CREATE_SHARED_MEMORY as function(byval MaxSize as ULONG, byval Initial
 type PLSA_ALLOCATE_SHARED_MEMORY as function(byval SharedMem as PVOID, byval Size as ULONG) as PVOID
 type PLSA_FREE_SHARED_MEMORY as sub(byval SharedMem as PVOID, byval Memory as PVOID)
 type PLSA_DELETE_SHARED_MEMORY as function(byval SharedMem as PVOID) as BOOLEAN
-type PLSA_OPEN_SAM_USER as function(byval Name_ as PSECURITY_STRING, byval NameType as SECPKG_NAME_TYPE, byval Prefix as PSECURITY_STRING, byval AllowGuest as BOOLEAN, byval Reserved as ULONG, byval UserHandle as PVOID ptr) as NTSTATUS
+type PLSA_OPEN_SAM_USER as function(byval Name as PSECURITY_STRING, byval NameType as SECPKG_NAME_TYPE, byval Prefix as PSECURITY_STRING, byval AllowGuest as BOOLEAN, byval Reserved as ULONG, byval UserHandle as PVOID ptr) as NTSTATUS
 type PLSA_GET_USER_CREDENTIALS as function(byval UserHandle as PVOID, byval PrimaryCreds as PVOID ptr, byval PrimaryCredsSize as PULONG, byval SupplementalCreds as PVOID ptr, byval SupplementalCredsSize as PULONG) as NTSTATUS
 type PLSA_GET_USER_AUTH_DATA as function(byval UserHandle as PVOID, byval UserAuthData as PUCHAR ptr, byval UserAuthDataSize as PULONG) as NTSTATUS
 type PLSA_CLOSE_SAM_USER as function(byval UserHandle as PVOID) as NTSTATUS
 type PLSA_CONVERT_AUTH_DATA_TO_TOKEN as function(byval UserAuthData as PVOID, byval UserAuthDataSize as ULONG, byval ImpersonationLevel as SECURITY_IMPERSONATION_LEVEL, byval TokenSource as PTOKEN_SOURCE, byval LogonType as SECURITY_LOGON_TYPE, byval AuthorityName as PUNICODE_STRING, byval Token as PHANDLE, byval LogonId as PLUID, byval AccountName as PUNICODE_STRING, byval SubStatus as PNTSTATUS) as NTSTATUS
-type PLSA_CLIENT_CALLBACK as function(byval Callback as PCHAR, byval Argument1 as ULONG_PTR, byval Argument2 as ULONG_PTR, byval Input_ as PSecBuffer, byval Output_ as PSecBuffer) as NTSTATUS
+type PLSA_CLIENT_CALLBACK as function(byval Callback as PCHAR, byval Argument1 as ULONG_PTR, byval Argument2 as ULONG_PTR, byval Input as PSecBuffer, byval Output as PSecBuffer) as NTSTATUS
 type PLSA_REGISTER_CALLBACK as function(byval CallbackId as ULONG, byval Callback as PLSA_CALLBACK_FUNCTION) as NTSTATUS
 type PLSA_UPDATE_PRIMARY_CREDENTIALS as function(byval PrimaryCredentials as PSECPKG_PRIMARY_CRED, byval Credentials as PSECPKG_SUPPLEMENTAL_CRED_ARRAY) as NTSTATUS
-type PLSA_GET_AUTH_DATA_FOR_USER as function(byval Name_ as PSECURITY_STRING, byval NameType as SECPKG_NAME_TYPE, byval Prefix as PSECURITY_STRING, byval UserAuthData as PUCHAR ptr, byval UserAuthDataSize as PULONG, byval UserFlatName as PUNICODE_STRING) as NTSTATUS
+type PLSA_GET_AUTH_DATA_FOR_USER as function(byval Name as PSECURITY_STRING, byval NameType as SECPKG_NAME_TYPE, byval Prefix as PSECURITY_STRING, byval UserAuthData as PUCHAR ptr, byval UserAuthDataSize as PULONG, byval UserFlatName as PUNICODE_STRING) as NTSTATUS
 type PLSA_CRACK_SINGLE_NAME as function(byval FormatOffered as ULONG, byval PerformAtGC as BOOLEAN, byval NameInput as PUNICODE_STRING, byval Prefix as PUNICODE_STRING, byval RequestedFormat as ULONG, byval CrackedName as PUNICODE_STRING, byval DnsDomainName as PUNICODE_STRING, byval SubStatus as PULONG) as NTSTATUS
 type PLSA_AUDIT_ACCOUNT_LOGON as function(byval AuditId as ULONG, byval Success as BOOLEAN, byval Source as PUNICODE_STRING, byval ClientName as PUNICODE_STRING, byval MappedName as PUNICODE_STRING, byval Status as NTSTATUS) as NTSTATUS
 type PLSA_CALL_PACKAGE_PASSTHROUGH as function(byval AuthenticationPackage as PUNICODE_STRING, byval ClientBufferBase as PVOID, byval ProtocolSubmitBuffer as PVOID, byval SubmitBufferLength as ULONG, byval ProtocolReturnBuffer as PVOID ptr, byval ReturnBufferLength as PULONG, byval ProtocolStatus as PNTSTATUS) as NTSTATUS
@@ -551,10 +551,10 @@ type _SECPKG_FUNCTION_TABLE
 	DeleteContext as function(byval ContextHandle as LSA_SEC_HANDLE) as NTSTATUS
 	ApplyControlToken as function(byval ContextHandle as LSA_SEC_HANDLE, byval ControlToken as PSecBufferDesc) as NTSTATUS
 	GetUserInfo as function(byval LogonId as PLUID, byval Flags as ULONG, byval UserData as PSecurityUserData ptr) as NTSTATUS
-	GetExtendedInformation as function(byval Class_ as SECPKG_EXTENDED_INFORMATION_CLASS, byval ppInformation as PSECPKG_EXTENDED_INFORMATION ptr) as NTSTATUS
+	GetExtendedInformation as function(byval Class as SECPKG_EXTENDED_INFORMATION_CLASS, byval ppInformation as PSECPKG_EXTENDED_INFORMATION ptr) as NTSTATUS
 	QueryContextAttributes as function(byval ContextHandle as LSA_SEC_HANDLE, byval ContextAttribute as ULONG, byval Buffer as PVOID) as NTSTATUS
 	AddCredentials as function(byval CredentialHandle as LSA_SEC_HANDLE, byval PrincipalName as PUNICODE_STRING, byval Package as PUNICODE_STRING, byval CredentialUseFlags as ULONG, byval AuthorizationData as PVOID, byval GetKeyFunciton as PVOID, byval GetKeyArgument as PVOID, byval ExpirationTime as PTimeStamp) as NTSTATUS
-	SetExtendedInformation as function(byval Class_ as SECPKG_EXTENDED_INFORMATION_CLASS, byval Info as PSECPKG_EXTENDED_INFORMATION) as NTSTATUS
+	SetExtendedInformation as function(byval Class as SECPKG_EXTENDED_INFORMATION_CLASS, byval Info as PSECPKG_EXTENDED_INFORMATION) as NTSTATUS
 	SetContextAttributes as function(byval ContextHandle as LSA_SEC_HANDLE, byval ContextAttribute as ULONG, byval Buffer as PVOID, byval BufferSize as ULONG) as NTSTATUS
 	SetCredentialsAttributes as function(byval CredentialHandle as LSA_SEC_HANDLE, byval CredentialAttribute as ULONG, byval Buffer as PVOID, byval BufferSize as ULONG) as NTSTATUS
 end type
@@ -618,17 +618,17 @@ type PKSEC_LIST_ENTRY as _KSEC_LIST_ENTRY ptr
 	cast(PKSEC_LIST_ENTRY, Entry)->Reserved = NULL
 #endmacro
 
-declare function KSecCreateContextList(byval Type_ as KSEC_CONTEXT_TYPE) as PVOID
+declare function KSecCreateContextList(byval Type as KSEC_CONTEXT_TYPE) as PVOID
 declare sub KSecInsertListEntry(byval List as PVOID, byval Entry as PKSEC_LIST_ENTRY)
 declare function KSecReferenceListEntry(byval Entry as PKSEC_LIST_ENTRY, byval Signature as ULONG, byval RemoveNoRef as BOOLEAN) as NTSTATUS
-declare sub KSecDereferenceListEntry(byval Entry as PKSEC_LIST_ENTRY, byval Delete__ as BOOLEAN ptr)
+declare sub KSecDereferenceListEntry(byval Entry as PKSEC_LIST_ENTRY, byval Delete_ as BOOLEAN ptr)
 declare function KSecSerializeWinntAuthData(byval pvAuthData as PVOID, byval Size as PULONG, byval SerializedData as PVOID ptr) as NTSTATUS
 declare function KSecSerializeSchannelAuthData(byval pvAuthData as PVOID, byval Size as PULONG, byval SerializedData as PVOID ptr) as NTSTATUS
 
-type PKSEC_CREATE_CONTEXT_LIST as function(byval Type_ as KSEC_CONTEXT_TYPE) as PVOID
+type PKSEC_CREATE_CONTEXT_LIST as function(byval Type as KSEC_CONTEXT_TYPE) as PVOID
 type PKSEC_INSERT_LIST_ENTRY as sub(byval List as PVOID, byval Entry as PKSEC_LIST_ENTRY)
 type PKSEC_REFERENCE_LIST_ENTRY as function(byval Entry as PKSEC_LIST_ENTRY, byval Signature as ULONG, byval RemoveNoRef as BOOLEAN) as NTSTATUS
-type PKSEC_DEREFERENCE_LIST_ENTRY as sub(byval Entry as PKSEC_LIST_ENTRY, byval Delete__ as BOOLEAN ptr)
+type PKSEC_DEREFERENCE_LIST_ENTRY as sub(byval Entry as PKSEC_LIST_ENTRY, byval Delete_ as BOOLEAN ptr)
 type PKSEC_SERIALIZE_WINNT_AUTH_DATA as function(byval pvAuthData as PVOID, byval Size as PULONG, byval SerializedData as PVOID ptr) as NTSTATUS
 type PKSEC_SERIALIZE_SCHANNEL_AUTH_DATA as function(byval pvAuthData as PVOID, byval Size as PULONG, byval SerializedData as PVOID ptr) as NTSTATUS
 

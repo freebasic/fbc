@@ -16,17 +16,6 @@
 
 extern "Windows"
 
-type IOleDocument as IOleDocument_
-type IOleDocumentSite as IOleDocumentSite_
-type IOleDocumentView as IOleDocumentView_
-type IEnumOleDocumentViews as IEnumOleDocumentViews_
-type IContinueCallback as IContinueCallback_
-type IPrint as IPrint_
-type IOleCommandTarget as IOleCommandTarget_
-type IZoomEvents as IZoomEvents_
-type IProtectFocus as IProtectFocus_
-type IProtectedModeMenuServices as IProtectedModeMenuServices_
-
 #define __docobj_h__
 #define __IOleDocument_FWD_DEFINED__
 #define __IOleDocumentSite_FWD_DEFINED__
@@ -41,6 +30,8 @@ type IProtectedModeMenuServices as IProtectedModeMenuServices_
 #define _LPOLEDOCUMENT_DEFINED
 #define __IOleDocument_INTERFACE_DEFINED__
 
+type IOleDocument as IOleDocument_
+
 type LPOLEDOCUMENT as IOleDocument ptr
 
 type __WIDL_docobj_generated_name_00000013 as long
@@ -54,6 +45,9 @@ end enum
 type DOCMISC as __WIDL_docobj_generated_name_00000013
 
 extern IID_IOleDocument as const GUID
+
+type IEnumOleDocumentViews as IEnumOleDocumentViews_
+type IOleDocumentView as IOleDocumentView_
 
 type IOleDocumentVtbl
 	QueryInterface as function(byval This as IOleDocument ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
@@ -77,6 +71,8 @@ declare sub IOleDocument_EnumViews_Stub(byval This as IRpcStubBuffer ptr, byval 
 
 #define _LPOLEDOCUMENTSITE_DEFINED
 #define __IOleDocumentSite_INTERFACE_DEFINED__
+
+type IOleDocumentSite as IOleDocumentSite_
 
 type LPOLEDOCUMENTSITE as IOleDocumentSite ptr
 
@@ -188,6 +184,8 @@ declare function IEnumOleDocumentViews_Next_Stub(byval This as IEnumOleDocumentV
 #define _LPCONTINUECALLBACK_DEFINED
 #define __IContinueCallback_INTERFACE_DEFINED__
 
+type IContinueCallback as IContinueCallback_
+
 type LPCONTINUECALLBACK as IContinueCallback ptr
 
 extern IID_IContinueCallback as const GUID
@@ -211,6 +209,8 @@ declare sub IContinueCallback_FContinuePrinting_Stub(byval This as IRpcStubBuffe
 
 #define _LPPRINT_DEFINED
 #define __IPrint_INTERFACE_DEFINED__
+
+type IPrint as IPrint_
 
 type LPPRINT as IPrint ptr
 
@@ -272,6 +272,8 @@ declare function IPrint_Print_Stub(byval This as IPrint ptr, byval grfFlags as D
 
 #define _LPOLECOMMANDTARGET_DEFINED
 #define __IOleCommandTarget_INTERFACE_DEFINED__
+
+type IOleCommandTarget as IOleCommandTarget_
 
 type LPOLECOMMANDTARGET as IOleCommandTarget ptr
 
@@ -622,6 +624,8 @@ extern SID_SContainerDispatch as const GUID
 
 extern IID_IZoomEvents as const GUID
 
+type IZoomEvents as IZoomEvents_
+
 type IZoomEventsVtbl
 	QueryInterface as function(byval This as IZoomEvents ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
 	AddRef as function(byval This as IZoomEvents ptr) as ULONG
@@ -639,6 +643,8 @@ declare sub IZoomEvents_OnZoomPercentChanged_Stub(byval This as IRpcStubBuffer p
 #define __IProtectFocus_INTERFACE_DEFINED__
 
 extern IID_IProtectFocus as const GUID
+
+type IProtectFocus as IProtectFocus_
 
 type IProtectFocusVtbl
 	QueryInterface as function(byval This as IProtectFocus ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
@@ -659,6 +665,8 @@ declare sub IProtectFocus_AllowFocusChange_Stub(byval This as IRpcStubBuffer ptr
 #define __IProtectedModeMenuServices_INTERFACE_DEFINED__
 
 extern IID_IProtectedModeMenuServices as const GUID
+
+type IProtectedModeMenuServices as IProtectedModeMenuServices_
 
 type IProtectedModeMenuServicesVtbl
 	QueryInterface as function(byval This as IProtectedModeMenuServices ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
@@ -681,3 +689,5 @@ declare function IProtectedModeMenuServices_LoadMenuID_Proxy(byval This as IProt
 declare sub IProtectedModeMenuServices_LoadMenuID_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 
 end extern
+
+#include once "ole-common.bi"

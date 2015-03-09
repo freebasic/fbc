@@ -6,9 +6,6 @@
 
 extern "Windows"
 
-type IRichEditOleVtbl as IRichEditOleVtbl_
-type IRichEditOleCallbackVtbl as IRichEditOleCallbackVtbl_
-
 #define _RICHOLE_
 
 type _reobject
@@ -56,6 +53,8 @@ type REOBJECT as _reobject
 #define RECO_CUT __MSABI_LONG(&h00000003)
 #define RECO_DRAG __MSABI_LONG(&h00000004)
 
+type IRichEditOleVtbl as IRichEditOleVtbl_
+
 type IRichEditOle
 	lpVtbl as IRichEditOleVtbl ptr
 end type
@@ -83,6 +82,8 @@ type IRichEditOleVtbl_
 end type
 
 type LPRICHEDITOLE as IRichEditOle ptr
+
+type IRichEditOleCallbackVtbl as IRichEditOleCallbackVtbl_
 
 type IRichEditOleCallback
 	lpVtbl as IRichEditOleCallbackVtbl ptr

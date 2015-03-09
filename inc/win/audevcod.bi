@@ -1,7 +1,5 @@
 #pragma once
 
-#include once "winapifamily.bi"
-
 #define __AUDEVCOD__
 
 type _tagSND_DEVICE_ERROR as long
@@ -24,6 +22,6 @@ end enum
 
 type SNDDEV_ERR as _tagSND_DEVICE_ERROR
 
-#define EC_SND_DEVICE_ERROR_BASE &h200
-#define EC_SNDDEV_IN_ERROR EC_SND_DEVICE_ERROR_BASE
-#define EC_SNDDEV_OUT_ERROR (EC_SND_DEVICE_ERROR_BASE + 1)
+#define EC_SND_DEVICE_ERROR_BASE &h0200
+#define EC_SNDDEV_IN_ERROR (EC_SND_DEVICE_ERROR_BASE + &h00)
+#define EC_SNDDEV_OUT_ERROR (EC_SND_DEVICE_ERROR_BASE + &h01)

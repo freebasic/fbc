@@ -11,30 +11,6 @@
 
 extern "Windows"
 
-type IOleAdviseHolder as IOleAdviseHolder_
-type IOleCache as IOleCache_
-type IOleCache2 as IOleCache2_
-type IOleCacheControl as IOleCacheControl_
-type IParseDisplayName as IParseDisplayName_
-type IOleContainer as IOleContainer_
-type IOleClientSite as IOleClientSite_
-type IOleObject as IOleObject_
-type IOleWindow as IOleWindow_
-type IOleLink as IOleLink_
-type IOleItemContainer as IOleItemContainer_
-type IOleInPlaceUIWindow as IOleInPlaceUIWindow_
-type IOleInPlaceActiveObject as IOleInPlaceActiveObject_
-type IOleInPlaceFrame as IOleInPlaceFrame_
-type IOleInPlaceObject as IOleInPlaceObject_
-type IOleInPlaceSite as IOleInPlaceSite_
-type IContinue as IContinue_
-type IViewObject as IViewObject_
-type IViewObject2 as IViewObject2_
-type IDropSource as IDropSource_
-type IDropTarget as IDropTarget_
-type IDropSourceNotify as IDropSourceNotify_
-type IEnumOLEVERB as IEnumOLEVERB_
-
 #define __oleidl_h__
 #define __IOleAdviseHolder_FWD_DEFINED__
 #define __IOleCache_FWD_DEFINED__
@@ -60,6 +36,8 @@ type IEnumOLEVERB as IEnumOLEVERB_
 #define __IDropSourceNotify_FWD_DEFINED__
 #define __IEnumOLEVERB_FWD_DEFINED__
 #define __IOleAdviseHolder_INTERFACE_DEFINED__
+
+type IOleAdviseHolder as IOleAdviseHolder_
 
 type LPOLEADVISEHOLDER as IOleAdviseHolder ptr
 
@@ -96,6 +74,8 @@ declare sub IOleAdviseHolder_SendOnClose_Stub(byval This as IRpcStubBuffer ptr, 
 
 #define __IOleCache_INTERFACE_DEFINED__
 
+type IOleCache as IOleCache_
+
 type LPOLECACHE as IOleCache ptr
 
 extern IID_IOleCache as const GUID
@@ -127,6 +107,8 @@ declare function IOleCache_SetData_Proxy(byval This as IOleCache ptr, byval pfor
 declare sub IOleCache_SetData_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 
 #define __IOleCache2_INTERFACE_DEFINED__
+
+type IOleCache2 as IOleCache2_
 
 type LPOLECACHE2 as IOleCache2 ptr
 
@@ -176,6 +158,8 @@ declare function IOleCache2_UpdateCache_Stub(byval This as IOleCache2 ptr, byval
 
 #define __IOleCacheControl_INTERFACE_DEFINED__
 
+type IOleCacheControl as IOleCacheControl_
+
 type LPOLECACHECONTROL as IOleCacheControl ptr
 
 extern IID_IOleCacheControl as const GUID
@@ -199,6 +183,8 @@ declare sub IOleCacheControl_OnStop_Stub(byval This as IRpcStubBuffer ptr, byval
 
 #define __IParseDisplayName_INTERFACE_DEFINED__
 
+type IParseDisplayName as IParseDisplayName_
+
 type LPPARSEDISPLAYNAME as IParseDisplayName ptr
 
 extern IID_IParseDisplayName as const GUID
@@ -218,6 +204,8 @@ declare function IParseDisplayName_ParseDisplayName_Proxy(byval This as IParseDi
 declare sub IParseDisplayName_ParseDisplayName_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 
 #define __IOleContainer_INTERFACE_DEFINED__
+
+type IOleContainer as IOleContainer_
 
 type LPOLECONTAINER as IOleContainer ptr
 
@@ -242,6 +230,8 @@ declare function IOleContainer_LockContainer_Proxy(byval This as IOleContainer p
 declare sub IOleContainer_LockContainer_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 
 #define __IOleClientSite_INTERFACE_DEFINED__
+
+type IOleClientSite as IOleClientSite_
 
 type LPOLECLIENTSITE as IOleClientSite ptr
 
@@ -277,6 +267,8 @@ declare function IOleClientSite_RequestNewObjectLayout_Proxy(byval This as IOleC
 declare sub IOleClientSite_RequestNewObjectLayout_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 
 #define __IOleObject_INTERFACE_DEFINED__
+
+type IOleObject as IOleObject_
 
 type LPOLEOBJECT as IOleObject ptr
 
@@ -346,6 +338,8 @@ end enum
 type OLECLOSE as tagOLECLOSE
 
 extern IID_IOleObject as const GUID
+
+type IEnumOLEVERB as IEnumOLEVERB_
 
 type IOleObjectVtbl
 	QueryInterface as function(byval This as IOleObject ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
@@ -457,6 +451,8 @@ type LPLINKSRCDESCRIPTOR as tagOBJECTDESCRIPTOR ptr
 
 #define __IOleWindow_INTERFACE_DEFINED__
 
+type IOleWindow as IOleWindow_
+
 type LPOLEWINDOW as IOleWindow ptr
 
 extern IID_IOleWindow as const GUID
@@ -479,6 +475,8 @@ declare function IOleWindow_ContextSensitiveHelp_Proxy(byval This as IOleWindow 
 declare sub IOleWindow_ContextSensitiveHelp_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 
 #define __IOleLink_INTERFACE_DEFINED__
+
+type IOleLink as IOleLink_
 
 type LPOLELINK as IOleLink ptr
 
@@ -547,6 +545,8 @@ declare sub IOleLink_Update_Stub(byval This as IRpcStubBuffer ptr, byval pRpcCha
 
 #define __IOleItemContainer_INTERFACE_DEFINED__
 
+type IOleItemContainer as IOleItemContainer_
+
 type LPOLEITEMCONTAINER as IOleItemContainer ptr
 
 type tagBINDSPEED as long
@@ -596,12 +596,16 @@ declare sub IOleItemContainer_IsRunning_Stub(byval This as IRpcStubBuffer ptr, b
 
 #define __IOleInPlaceUIWindow_INTERFACE_DEFINED__
 
+type IOleInPlaceUIWindow as IOleInPlaceUIWindow_
+
 type LPOLEINPLACEUIWINDOW as IOleInPlaceUIWindow ptr
 type BORDERWIDTHS as RECT
 type LPBORDERWIDTHS as LPRECT
 type LPCBORDERWIDTHS as LPCRECT
 
 extern IID_IOleInPlaceUIWindow as const GUID
+
+type IOleInPlaceActiveObject as IOleInPlaceActiveObject_
 
 type IOleInPlaceUIWindowVtbl
 	QueryInterface as function(byval This as IOleInPlaceUIWindow ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
@@ -668,6 +672,8 @@ declare function IOleInPlaceActiveObject_ResizeBorder_Stub(byval This as IOleInP
 
 #define __IOleInPlaceFrame_INTERFACE_DEFINED__
 
+type IOleInPlaceFrame as IOleInPlaceFrame_
+
 type LPOLEINPLACEFRAME as IOleInPlaceFrame ptr
 
 type tagOIFI
@@ -728,6 +734,8 @@ declare sub IOleInPlaceFrame_TranslateAccelerator_Stub(byval This as IRpcStubBuf
 
 #define __IOleInPlaceObject_INTERFACE_DEFINED__
 
+type IOleInPlaceObject as IOleInPlaceObject_
+
 type LPOLEINPLACEOBJECT as IOleInPlaceObject ptr
 
 extern IID_IOleInPlaceObject as const GUID
@@ -758,6 +766,8 @@ declare function IOleInPlaceObject_ReactivateAndUndo_Proxy(byval This as IOleInP
 declare sub IOleInPlaceObject_ReactivateAndUndo_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 
 #define __IOleInPlaceSite_INTERFACE_DEFINED__
+
+type IOleInPlaceSite as IOleInPlaceSite_
 
 type LPOLEINPLACESITE as IOleInPlaceSite ptr
 
@@ -810,6 +820,8 @@ declare sub IOleInPlaceSite_OnPosRectChange_Stub(byval This as IRpcStubBuffer pt
 
 extern IID_IContinue as const GUID
 
+type IContinue as IContinue_
+
 type IContinueVtbl
 	QueryInterface as function(byval This as IContinue ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
 	AddRef as function(byval This as IContinue ptr) as ULONG
@@ -825,6 +837,8 @@ declare function IContinue_FContinue_Proxy(byval This as IContinue ptr) as HRESU
 declare sub IContinue_FContinue_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 
 #define __IViewObject_INTERFACE_DEFINED__
+
+type IViewObject as IViewObject_
 
 type LPVIEWOBJECT as IViewObject ptr
 
@@ -869,6 +883,8 @@ declare function IViewObject_GetAdvise_Stub(byval This as IViewObject ptr, byval
 
 #define __IViewObject2_INTERFACE_DEFINED__
 
+type IViewObject2 as IViewObject2_
+
 type LPVIEWOBJECT2 as IViewObject2 ptr
 
 extern IID_IViewObject2 as const GUID
@@ -895,6 +911,8 @@ declare sub IViewObject2_GetExtent_Stub(byval This as IRpcStubBuffer ptr, byval 
 
 #define __IDropSource_INTERFACE_DEFINED__
 
+type IDropSource as IDropSource_
+
 type LPDROPSOURCE as IDropSource ptr
 
 extern IID_IDropSource as const GUID
@@ -917,6 +935,8 @@ declare function IDropSource_GiveFeedback_Proxy(byval This as IDropSource ptr, b
 declare sub IDropSource_GiveFeedback_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 
 #define __IDropTarget_INTERFACE_DEFINED__
+
+type IDropTarget as IDropTarget_
 
 type LPDROPTARGET as IDropTarget ptr
 
@@ -960,6 +980,8 @@ declare sub IDropTarget_Drop_Stub(byval This as IRpcStubBuffer ptr, byval pRpcCh
 #define __IDropSourceNotify_INTERFACE_DEFINED__
 
 extern IID_IDropSourceNotify as const GUID
+
+type IDropSourceNotify as IDropSourceNotify_
 
 type IDropSourceNotifyVtbl
 	QueryInterface as function(byval This as IDropSourceNotify ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
@@ -1026,21 +1048,7 @@ declare function IEnumOLEVERB_Clone_Proxy(byval This as IEnumOLEVERB ptr, byval 
 declare sub IEnumOLEVERB_Clone_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IEnumOLEVERB_Next_Proxy(byval This as IEnumOLEVERB ptr, byval celt as ULONG, byval rgelt as LPOLEVERB, byval pceltFetched as ULONG ptr) as HRESULT
 declare function IEnumOLEVERB_Next_Stub(byval This as IEnumOLEVERB ptr, byval celt as ULONG, byval rgelt as LPOLEVERB, byval pceltFetched as ULONG ptr) as HRESULT
-declare function HWND_UserSize(byval as ULONG ptr, byval as ULONG, byval as HWND ptr) as ULONG
-declare function HWND_UserMarshal(byval as ULONG ptr, byval as ubyte ptr, byval as HWND ptr) as ubyte ptr
-declare function HWND_UserUnmarshal(byval as ULONG ptr, byval as ubyte ptr, byval as HWND ptr) as ubyte ptr
-declare sub HWND_UserFree(byval as ULONG ptr, byval as HWND ptr)
-declare function HMENU_UserSize(byval as ULONG ptr, byval as ULONG, byval as HMENU ptr) as ULONG
-declare function HMENU_UserMarshal(byval as ULONG ptr, byval as ubyte ptr, byval as HMENU ptr) as ubyte ptr
-declare function HMENU_UserUnmarshal(byval as ULONG ptr, byval as ubyte ptr, byval as HMENU ptr) as ubyte ptr
-declare sub HMENU_UserFree(byval as ULONG ptr, byval as HMENU ptr)
-declare function HGLOBAL_UserSize(byval as ULONG ptr, byval as ULONG, byval as HGLOBAL ptr) as ULONG
-declare function HGLOBAL_UserMarshal(byval as ULONG ptr, byval as ubyte ptr, byval as HGLOBAL ptr) as ubyte ptr
-declare function HGLOBAL_UserUnmarshal(byval as ULONG ptr, byval as ubyte ptr, byval as HGLOBAL ptr) as ubyte ptr
-declare sub HGLOBAL_UserFree(byval as ULONG ptr, byval as HGLOBAL ptr)
-declare function HACCEL_UserSize(byval as ULONG ptr, byval as ULONG, byval as HACCEL ptr) as ULONG
-declare function HACCEL_UserMarshal(byval as ULONG ptr, byval as ubyte ptr, byval as HACCEL ptr) as ubyte ptr
-declare function HACCEL_UserUnmarshal(byval as ULONG ptr, byval as ubyte ptr, byval as HACCEL ptr) as ubyte ptr
-declare sub HACCEL_UserFree(byval as ULONG ptr, byval as HACCEL ptr)
 
 end extern
+
+#include once "ole-common.bi"

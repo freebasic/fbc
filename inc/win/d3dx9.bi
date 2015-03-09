@@ -26,13 +26,13 @@
 
 type _D3DXERR as long
 enum
-	D3DXERR_CANNOTMODIFYINDEXBUFFER = cast(HRESULT, ((culng(1) shl 31) or (culng(&h876) shl 16)) or culng(2900))
-	D3DXERR_INVALIDMESH = cast(HRESULT, ((culng(1) shl 31) or (culng(&h876) shl 16)) or culng(2901))
-	D3DXERR_CANNOTATTRSORT = cast(HRESULT, ((culng(1) shl 31) or (culng(&h876) shl 16)) or culng(2902))
-	D3DXERR_SKINNINGNOTSUPPORTED = cast(HRESULT, ((culng(1) shl 31) or (culng(&h876) shl 16)) or culng(2903))
-	D3DXERR_TOOMANYINFLUENCES = cast(HRESULT, ((culng(1) shl 31) or (culng(&h876) shl 16)) or culng(2904))
-	D3DXERR_INVALIDDATA = cast(HRESULT, ((culng(1) shl 31) or (culng(&h876) shl 16)) or culng(2905))
-	D3DXERR_LOADEDMESHASNODATA = cast(HRESULT, ((culng(1) shl 31) or (culng(&h876) shl 16)) or culng(2906))
-	D3DXERR_DUPLICATENAMEDFRAGMENT = cast(HRESULT, ((culng(1) shl 31) or (culng(&h876) shl 16)) or culng(2907))
-	D3DXERR_CANNOTREMOVELASTITEM = cast(HRESULT, ((culng(1) shl 31) or (culng(&h876) shl 16)) or culng(2908))
+	D3DXERR_CANNOTMODIFYINDEXBUFFER = cast(HRESULT, culng(culng(culng(culng(1) shl 31) or culng(culng(&h876) shl 16)) or culng(2900)))
+	D3DXERR_INVALIDMESH = cast(HRESULT, culng(culng(culng(culng(1) shl 31) or culng(culng(&h876) shl 16)) or culng(2901)))
+	D3DXERR_CANNOTATTRSORT = cast(HRESULT, culng(culng(culng(culng(1) shl 31) or culng(culng(&h876) shl 16)) or culng(2902)))
+	D3DXERR_SKINNINGNOTSUPPORTED = cast(HRESULT, culng(culng(culng(culng(1) shl 31) or culng(culng(&h876) shl 16)) or culng(2903)))
+	D3DXERR_TOOMANYINFLUENCES = cast(HRESULT, culng(culng(culng(culng(1) shl 31) or culng(culng(&h876) shl 16)) or culng(2904)))
+	D3DXERR_INVALIDDATA = cast(HRESULT, culng(culng(culng(culng(1) shl 31) or culng(culng(&h876) shl 16)) or culng(2905)))
+	D3DXERR_LOADEDMESHASNODATA = cast(HRESULT, culng(culng(culng(culng(1) shl 31) or culng(culng(&h876) shl 16)) or culng(2906)))
+	D3DXERR_DUPLICATENAMEDFRAGMENT = cast(HRESULT, culng(culng(culng(culng(1) shl 31) or culng(culng(&h876) shl 16)) or culng(2907)))
+	D3DXERR_CANNOTREMOVELASTITEM = cast(HRESULT, culng(culng(culng(culng(1) shl 31) or culng(culng(&h876) shl 16)) or culng(2908)))
 end enum

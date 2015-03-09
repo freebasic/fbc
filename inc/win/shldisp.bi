@@ -6,46 +6,7 @@
 #include once "ole2.bi"
 #include once "ocidl.bi"
 
-'' The following symbols have been renamed:
-''     struct Shell => Shell_
-''     inside struct Folder2Vtbl:
-''         field Synchronize => Synchronize_
-''     inside struct Folder3Vtbl:
-''         field Synchronize => Synchronize_
-
 extern "Windows"
-
-type IFolderViewOC as IFolderViewOC_
-type DShellFolderViewEvents as DShellFolderViewEvents_
-type DFConstraint as DFConstraint_
-type ISearchCommandExt as ISearchCommandExt_
-type FolderItem as FolderItem_
-type FolderItems as FolderItems_
-type FolderItemVerb as FolderItemVerb_
-type FolderItemVerbs as FolderItemVerbs_
-type Folder as Folder_
-type Folder2 as Folder2_
-type Folder3 as Folder3_
-type FolderItem2 as FolderItem2_
-type FolderItems2 as FolderItems2_
-type FolderItems3 as FolderItems3_
-type IShellLinkDual as IShellLinkDual_
-type IShellLinkDual2 as IShellLinkDual2_
-type IShellFolderViewDual as IShellFolderViewDual_
-type IShellFolderViewDual2 as IShellFolderViewDual2_
-type IShellDispatch as IShellDispatch_
-type IShellDispatch2 as IShellDispatch2_
-type IShellDispatch3 as IShellDispatch3_
-type IShellDispatch4 as IShellDispatch4_
-type DSearchCommandEvents as DSearchCommandEvents_
-type IFileSearchBand as IFileSearchBand_
-type IWebWizardHost as IWebWizardHost_
-type INewWDEvents as INewWDEvents_
-type IPassportClientServices as IPassportClientServices_
-type IAutoComplete as IAutoComplete_
-type IAutoComplete2 as IAutoComplete2_
-type IEnumACString as IEnumACString_
-type IAsyncOperation as IAsyncOperation_
 
 #define __shldisp_h__
 #define __IFolderViewOC_FWD_DEFINED__
@@ -174,6 +135,8 @@ extern LIBID_Shell32 as const IID
 
 extern IID_IFolderViewOC as const IID
 
+type IFolderViewOC as IFolderViewOC_
+
 type IFolderViewOCVtbl
 	QueryInterface as function(byval This as IFolderViewOC ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
 	AddRef as function(byval This as IFolderViewOC ptr) as ULONG
@@ -196,6 +159,8 @@ declare sub IFolderViewOC_SetFolderView_Stub(byval This as IRpcStubBuffer ptr, b
 
 extern DIID_DShellFolderViewEvents as const IID
 
+type DShellFolderViewEvents as DShellFolderViewEvents_
+
 type DShellFolderViewEventsVtbl
 	QueryInterface as function(byval This as DShellFolderViewEvents ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
 	AddRef as function(byval This as DShellFolderViewEvents ptr) as ULONG
@@ -215,6 +180,8 @@ extern CLSID_ShellFolderViewOC as const CLSID
 #define __DFConstraint_INTERFACE_DEFINED__
 
 extern IID_DFConstraint as const IID
+
+type DFConstraint as DFConstraint_
 
 type DFConstraintVtbl
 	QueryInterface as function(byval This as DFConstraint ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
@@ -249,6 +216,8 @@ type SEARCH_FOR_TYPE as __MIDL_ISearchCommandExt_0001
 
 extern IID_ISearchCommandExt as const IID
 
+type ISearchCommandExt as ISearchCommandExt_
+
 type ISearchCommandExtVtbl
 	QueryInterface as function(byval This as ISearchCommandExt ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
 	AddRef as function(byval This as ISearchCommandExt ptr) as ULONG
@@ -266,7 +235,7 @@ type ISearchCommandExtVtbl
 	GetScopeInfo as function(byval This as ISearchCommandExt ptr, byval bsScope as BSTR, byval pdwScopeInfo as long ptr) as HRESULT
 	RestoreSavedSearch as function(byval This as ISearchCommandExt ptr, byval pvarFile as VARIANT ptr) as HRESULT
 	Execute as function(byval This as ISearchCommandExt ptr, byval RecordsAffected as VARIANT ptr, byval Parameters as VARIANT ptr, byval Options as long) as HRESULT
-	AddConstraint as function(byval This as ISearchCommandExt ptr, byval Name_ as BSTR, byval Value as VARIANT) as HRESULT
+	AddConstraint as function(byval This as ISearchCommandExt ptr, byval Name as BSTR, byval Value as VARIANT) as HRESULT
 	GetNextConstraint as function(byval This as ISearchCommandExt ptr, byval fReset as VARIANT_BOOL, byval ppdfc as DFConstraint ptr ptr) as HRESULT
 end type
 
@@ -292,16 +261,20 @@ declare function ISearchCommandExt_RestoreSavedSearch_Proxy(byval This as ISearc
 declare sub ISearchCommandExt_RestoreSavedSearch_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function ISearchCommandExt_Execute_Proxy(byval This as ISearchCommandExt ptr, byval RecordsAffected as VARIANT ptr, byval Parameters as VARIANT ptr, byval Options as long) as HRESULT
 declare sub ISearchCommandExt_Execute_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function ISearchCommandExt_AddConstraint_Proxy(byval This as ISearchCommandExt ptr, byval Name_ as BSTR, byval Value as VARIANT) as HRESULT
+declare function ISearchCommandExt_AddConstraint_Proxy(byval This as ISearchCommandExt ptr, byval Name as BSTR, byval Value as VARIANT) as HRESULT
 declare sub ISearchCommandExt_AddConstraint_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function ISearchCommandExt_GetNextConstraint_Proxy(byval This as ISearchCommandExt ptr, byval fReset as VARIANT_BOOL, byval ppdfc as DFConstraint ptr ptr) as HRESULT
 declare sub ISearchCommandExt_GetNextConstraint_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 
 #define __FolderItem_INTERFACE_DEFINED__
 
+type FolderItem as FolderItem_
+
 type LPFOLDERITEM as FolderItem ptr
 
 extern IID_FolderItem as const IID
+
+type FolderItemVerbs as FolderItemVerbs_
 
 type FolderItemVtbl
 	QueryInterface as function(byval This as FolderItem ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
@@ -373,6 +346,8 @@ declare sub FolderItem_InvokeVerb_Stub(byval This as IRpcStubBuffer ptr, byval _
 
 extern IID_FolderItems as const IID
 
+type FolderItems as FolderItems_
+
 type FolderItemsVtbl
 	QueryInterface as function(byval This as FolderItems ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
 	AddRef as function(byval This as FolderItems ptr) as ULONG
@@ -406,6 +381,8 @@ declare sub FolderItems__NewEnum_Stub(byval This as IRpcStubBuffer ptr, byval _p
 #define __FolderItemVerb_INTERFACE_DEFINED__
 
 extern IID_FolderItemVerb as const IID
+
+type FolderItemVerb as FolderItemVerb_
 
 type FolderItemVerbVtbl
 	QueryInterface as function(byval This as FolderItemVerb ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
@@ -472,6 +449,8 @@ declare sub FolderItemVerbs__NewEnum_Stub(byval This as IRpcStubBuffer ptr, byva
 
 extern IID_Folder as const IID
 
+type Folder as Folder_
+
 type FolderVtbl
 	QueryInterface as function(byval This as Folder ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
 	AddRef as function(byval This as Folder ptr) as ULONG
@@ -521,6 +500,8 @@ declare sub Folder_GetDetailsOf_Stub(byval This as IRpcStubBuffer ptr, byval _pR
 
 extern IID_Folder2 as const IID
 
+type Folder2 as Folder2_
+
 type Folder2Vtbl
 	QueryInterface as function(byval This as Folder2 ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
 	AddRef as function(byval This as Folder2 ptr) as ULONG
@@ -541,7 +522,7 @@ type Folder2Vtbl
 	GetDetailsOf as function(byval This as Folder2 ptr, byval vItem as VARIANT, byval iColumn as long, byval pbs as BSTR ptr) as HRESULT
 	get_Self as function(byval This as Folder2 ptr, byval ppfi as FolderItem ptr ptr) as HRESULT
 	get_OfflineStatus as function(byval This as Folder2 ptr, byval pul as LONG ptr) as HRESULT
-	Synchronize_ as function(byval This as Folder2 ptr) as HRESULT
+	Synchronize as function(byval This as Folder2 ptr) as HRESULT
 	get_HaveToShowWebViewBarricade as function(byval This as Folder2 ptr, byval pbHaveToShowWebViewBarricade as VARIANT_BOOL ptr) as HRESULT
 	DismissedWebViewBarricade as function(byval This as Folder2 ptr) as HRESULT
 end type
@@ -565,6 +546,8 @@ declare sub Folder2_DismissedWebViewBarricade_Stub(byval This as IRpcStubBuffer 
 
 extern IID_Folder3 as const IID
 
+type Folder3 as Folder3_
+
 type Folder3Vtbl
 	QueryInterface as function(byval This as Folder3 ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
 	AddRef as function(byval This as Folder3 ptr) as ULONG
@@ -585,7 +568,7 @@ type Folder3Vtbl
 	GetDetailsOf as function(byval This as Folder3 ptr, byval vItem as VARIANT, byval iColumn as long, byval pbs as BSTR ptr) as HRESULT
 	get_Self as function(byval This as Folder3 ptr, byval ppfi as FolderItem ptr ptr) as HRESULT
 	get_OfflineStatus as function(byval This as Folder3 ptr, byval pul as LONG ptr) as HRESULT
-	Synchronize_ as function(byval This as Folder3 ptr) as HRESULT
+	Synchronize as function(byval This as Folder3 ptr) as HRESULT
 	get_HaveToShowWebViewBarricade as function(byval This as Folder3 ptr, byval pbHaveToShowWebViewBarricade as VARIANT_BOOL ptr) as HRESULT
 	DismissedWebViewBarricade as function(byval This as Folder3 ptr) as HRESULT
 	get_ShowWebViewBarricade as function(byval This as Folder3 ptr, byval pbShowWebViewBarricade as VARIANT_BOOL ptr) as HRESULT
@@ -604,6 +587,8 @@ declare sub Folder3_put_ShowWebViewBarricade_Stub(byval This as IRpcStubBuffer p
 #define __FolderItem2_INTERFACE_DEFINED__
 
 extern IID_FolderItem2 as const IID
+
+type FolderItem2 as FolderItem2_
 
 type FolderItem2Vtbl
 	QueryInterface as function(byval This as FolderItem2 ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
@@ -649,6 +634,8 @@ extern CLSID_ShellFolderItem as const CLSID
 
 extern IID_FolderItems2 as const IID
 
+type FolderItems2 as FolderItems2_
+
 type FolderItems2Vtbl
 	QueryInterface as function(byval This as FolderItems2 ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
 	AddRef as function(byval This as FolderItems2 ptr) as ULONG
@@ -675,6 +662,8 @@ declare sub FolderItems2_InvokeVerbEx_Stub(byval This as IRpcStubBuffer ptr, byv
 #define __FolderItems3_INTERFACE_DEFINED__
 
 extern IID_FolderItems3 as const IID
+
+type FolderItems3 as FolderItems3_
 
 type FolderItems3Vtbl
 	QueryInterface as function(byval This as FolderItems3 ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
@@ -706,6 +695,8 @@ declare sub FolderItems3_get_Verbs_Stub(byval This as IRpcStubBuffer ptr, byval 
 #define __IShellLinkDual_INTERFACE_DEFINED__
 
 extern IID_IShellLinkDual as const IID
+
+type IShellLinkDual as IShellLinkDual_
 
 type IShellLinkDualVtbl
 	QueryInterface as function(byval This as IShellLinkDual ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
@@ -774,6 +765,8 @@ declare sub IShellLinkDual_Save_Stub(byval This as IRpcStubBuffer ptr, byval _pR
 
 extern IID_IShellLinkDual2 as const IID
 
+type IShellLinkDual2 as IShellLinkDual2_
+
 type IShellLinkDual2Vtbl
 	QueryInterface as function(byval This as IShellLinkDual2 ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
 	AddRef as function(byval This as IShellLinkDual2 ptr) as ULONG
@@ -813,6 +806,8 @@ extern CLSID_ShellLinkObject as const CLSID
 #define __IShellFolderViewDual_INTERFACE_DEFINED__
 
 extern IID_IShellFolderViewDual as const IID
+
+type IShellFolderViewDual as IShellFolderViewDual_
 
 type IShellFolderViewDualVtbl
 	QueryInterface as function(byval This as IShellFolderViewDual ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
@@ -860,6 +855,8 @@ declare sub IShellFolderViewDual_get_ViewOptions_Stub(byval This as IRpcStubBuff
 
 extern IID_IShellFolderViewDual2 as const IID
 
+type IShellFolderViewDual2 as IShellFolderViewDual2_
+
 type IShellFolderViewDual2Vtbl
 	QueryInterface as function(byval This as IShellFolderViewDual2 ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
 	AddRef as function(byval This as IShellFolderViewDual2 ptr) as ULONG
@@ -898,6 +895,8 @@ extern CLSID_ShellFolderView as const CLSID
 #define __IShellDispatch_INTERFACE_DEFINED__
 
 extern IID_IShellDispatch as const IID
+
+type IShellDispatch as IShellDispatch_
 
 type IShellDispatchVtbl
 	QueryInterface as function(byval This as IShellDispatch ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
@@ -987,6 +986,8 @@ declare sub IShellDispatch_ControlPanelItem_Stub(byval This as IRpcStubBuffer pt
 
 extern IID_IShellDispatch2 as const IID
 
+type IShellDispatch2 as IShellDispatch2_
+
 type IShellDispatch2Vtbl
 	QueryInterface as function(byval This as IShellDispatch2 ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
 	AddRef as function(byval This as IShellDispatch2 ptr) as ULONG
@@ -1026,8 +1027,8 @@ type IShellDispatch2Vtbl
 		ShellExecuteA as function(byval This as IShellDispatch2 ptr, byval File as BSTR, byval vArgs as VARIANT, byval vDir as VARIANT, byval vOperation as VARIANT, byval vShow as VARIANT) as HRESULT
 	#endif
 
-	FindPrinter as function(byval This as IShellDispatch2 ptr, byval name_ as BSTR, byval location as BSTR, byval model as BSTR) as HRESULT
-	GetSystemInformation as function(byval This as IShellDispatch2 ptr, byval name_ as BSTR, byval pv as VARIANT ptr) as HRESULT
+	FindPrinter as function(byval This as IShellDispatch2 ptr, byval name as BSTR, byval location as BSTR, byval model as BSTR) as HRESULT
+	GetSystemInformation as function(byval This as IShellDispatch2 ptr, byval name as BSTR, byval pv as VARIANT ptr) as HRESULT
 	ServiceStart as function(byval This as IShellDispatch2 ptr, byval ServiceName as BSTR, byval Persistent as VARIANT, byval pSuccess as VARIANT ptr) as HRESULT
 	ServiceStop as function(byval This as IShellDispatch2 ptr, byval ServiceName as BSTR, byval Persistent as VARIANT, byval pSuccess as VARIANT ptr) as HRESULT
 	IsServiceRunning as function(byval This as IShellDispatch2 ptr, byval ServiceName as BSTR, byval pRunning as VARIANT ptr) as HRESULT
@@ -1043,9 +1044,9 @@ declare function IShellDispatch2_IsRestricted_Proxy(byval This as IShellDispatch
 declare sub IShellDispatch2_IsRestricted_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IShellDispatch2_ShellExecute_Proxy(byval This as IShellDispatch2 ptr, byval File as BSTR, byval vArgs as VARIANT, byval vDir as VARIANT, byval vOperation as VARIANT, byval vShow as VARIANT) as HRESULT
 declare sub IShellDispatch2_ShellExecute_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IShellDispatch2_FindPrinter_Proxy(byval This as IShellDispatch2 ptr, byval name_ as BSTR, byval location as BSTR, byval model as BSTR) as HRESULT
+declare function IShellDispatch2_FindPrinter_Proxy(byval This as IShellDispatch2 ptr, byval name as BSTR, byval location as BSTR, byval model as BSTR) as HRESULT
 declare sub IShellDispatch2_FindPrinter_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IShellDispatch2_GetSystemInformation_Proxy(byval This as IShellDispatch2 ptr, byval name_ as BSTR, byval pv as VARIANT ptr) as HRESULT
+declare function IShellDispatch2_GetSystemInformation_Proxy(byval This as IShellDispatch2 ptr, byval name as BSTR, byval pv as VARIANT ptr) as HRESULT
 declare sub IShellDispatch2_GetSystemInformation_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IShellDispatch2_ServiceStart_Proxy(byval This as IShellDispatch2 ptr, byval ServiceName as BSTR, byval Persistent as VARIANT, byval pSuccess as VARIANT ptr) as HRESULT
 declare sub IShellDispatch2_ServiceStart_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -1061,6 +1062,8 @@ declare sub IShellDispatch2_ShowBrowserBar_Stub(byval This as IRpcStubBuffer ptr
 #define __IShellDispatch3_INTERFACE_DEFINED__
 
 extern IID_IShellDispatch3 as const IID
+
+type IShellDispatch3 as IShellDispatch3_
 
 type IShellDispatch3Vtbl
 	QueryInterface as function(byval This as IShellDispatch3 ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
@@ -1101,8 +1104,8 @@ type IShellDispatch3Vtbl
 		ShellExecuteA as function(byval This as IShellDispatch3 ptr, byval File as BSTR, byval vArgs as VARIANT, byval vDir as VARIANT, byval vOperation as VARIANT, byval vShow as VARIANT) as HRESULT
 	#endif
 
-	FindPrinter as function(byval This as IShellDispatch3 ptr, byval name_ as BSTR, byval location as BSTR, byval model as BSTR) as HRESULT
-	GetSystemInformation as function(byval This as IShellDispatch3 ptr, byval name_ as BSTR, byval pv as VARIANT ptr) as HRESULT
+	FindPrinter as function(byval This as IShellDispatch3 ptr, byval name as BSTR, byval location as BSTR, byval model as BSTR) as HRESULT
+	GetSystemInformation as function(byval This as IShellDispatch3 ptr, byval name as BSTR, byval pv as VARIANT ptr) as HRESULT
 	ServiceStart as function(byval This as IShellDispatch3 ptr, byval ServiceName as BSTR, byval Persistent as VARIANT, byval pSuccess as VARIANT ptr) as HRESULT
 	ServiceStop as function(byval This as IShellDispatch3 ptr, byval ServiceName as BSTR, byval Persistent as VARIANT, byval pSuccess as VARIANT ptr) as HRESULT
 	IsServiceRunning as function(byval This as IShellDispatch3 ptr, byval ServiceName as BSTR, byval pRunning as VARIANT ptr) as HRESULT
@@ -1121,6 +1124,8 @@ declare sub IShellDispatch3_AddToRecent_Stub(byval This as IRpcStubBuffer ptr, b
 #define __IShellDispatch4_INTERFACE_DEFINED__
 
 extern IID_IShellDispatch4 as const IID
+
+type IShellDispatch4 as IShellDispatch4_
 
 type IShellDispatch4Vtbl
 	QueryInterface as function(byval This as IShellDispatch4 ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
@@ -1161,8 +1166,8 @@ type IShellDispatch4Vtbl
 		ShellExecuteA as function(byval This as IShellDispatch4 ptr, byval File as BSTR, byval vArgs as VARIANT, byval vDir as VARIANT, byval vOperation as VARIANT, byval vShow as VARIANT) as HRESULT
 	#endif
 
-	FindPrinter as function(byval This as IShellDispatch4 ptr, byval name_ as BSTR, byval location as BSTR, byval model as BSTR) as HRESULT
-	GetSystemInformation as function(byval This as IShellDispatch4 ptr, byval name_ as BSTR, byval pv as VARIANT ptr) as HRESULT
+	FindPrinter as function(byval This as IShellDispatch4 ptr, byval name as BSTR, byval location as BSTR, byval model as BSTR) as HRESULT
+	GetSystemInformation as function(byval This as IShellDispatch4 ptr, byval name as BSTR, byval pv as VARIANT ptr) as HRESULT
 	ServiceStart as function(byval This as IShellDispatch4 ptr, byval ServiceName as BSTR, byval Persistent as VARIANT, byval pSuccess as VARIANT ptr) as HRESULT
 	ServiceStop as function(byval This as IShellDispatch4 ptr, byval ServiceName as BSTR, byval Persistent as VARIANT, byval pSuccess as VARIANT ptr) as HRESULT
 	IsServiceRunning as function(byval This as IShellDispatch4 ptr, byval ServiceName as BSTR, byval pRunning as VARIANT ptr) as HRESULT
@@ -1196,6 +1201,8 @@ extern CLSID_WebViewFolderContents as const CLSID
 
 extern DIID_DSearchCommandEvents as const IID
 
+type DSearchCommandEvents as DSearchCommandEvents_
+
 type DSearchCommandEventsVtbl
 	QueryInterface as function(byval This as DSearchCommandEvents ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
 	AddRef as function(byval This as DSearchCommandEvents ptr) as ULONG
@@ -1215,6 +1222,8 @@ extern CLSID_SearchCommand as const CLSID
 #define __IFileSearchBand_INTERFACE_DEFINED__
 
 extern IID_IFileSearchBand as const IID
+
+type IFileSearchBand as IFileSearchBand_
 
 type IFileSearchBandVtbl
 	QueryInterface as function(byval This as IFileSearchBand ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
@@ -1251,6 +1260,8 @@ extern CLSID_FileSearchBand as const CLSID
 #define __IWebWizardHost_INTERFACE_DEFINED__
 
 extern IID_IWebWizardHost as const IID
+
+type IWebWizardHost as IWebWizardHost_
 
 type IWebWizardHostVtbl
 	QueryInterface as function(byval This as IWebWizardHost ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
@@ -1298,6 +1309,8 @@ declare sub IWebWizardHost_SetHeaderText_Stub(byval This as IRpcStubBuffer ptr, 
 
 extern IID_INewWDEvents as const IID
 
+type INewWDEvents as INewWDEvents_
+
 type INewWDEventsVtbl
 	QueryInterface as function(byval This as INewWDEvents ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
 	AddRef as function(byval This as INewWDEvents ptr) as ULONG
@@ -1329,6 +1342,8 @@ declare sub INewWDEvents_PassportAuthenticate_Stub(byval This as IRpcStubBuffer 
 
 extern IID_IPassportClientServices as const IID
 
+type IPassportClientServices as IPassportClientServices_
+
 type IPassportClientServicesVtbl
 	QueryInterface as function(byval This as IPassportClientServices ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
 	AddRef as function(byval This as IPassportClientServices ptr) as ULONG
@@ -1353,6 +1368,8 @@ extern __MIDL_itf_shldisp_0287_v0_0_s_ifspec as RPC_IF_HANDLE
 
 #define __IAutoComplete_INTERFACE_DEFINED__
 
+type IAutoComplete as IAutoComplete_
+
 type LPAUTOCOMPLETE as IAutoComplete ptr
 
 extern IID_IAutoComplete as const IID
@@ -1375,6 +1392,8 @@ declare function IAutoComplete_Enable_Proxy(byval This as IAutoComplete ptr, byv
 declare sub IAutoComplete_Enable_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 
 #define __IAutoComplete2_INTERFACE_DEFINED__
+
+type IAutoComplete2 as IAutoComplete2_
 
 type LPAUTOCOMPLETE2 as IAutoComplete2 ptr
 
@@ -1418,6 +1437,8 @@ extern __MIDL_itf_shldisp_0289_v0_0_s_ifspec as RPC_IF_HANDLE
 
 #define __IEnumACString_INTERFACE_DEFINED__
 
+type IEnumACString as IEnumACString_
+
 type PENUMACSTRING as IEnumACString ptr
 type LPENUMACSTRING as IEnumACString ptr
 
@@ -1460,6 +1481,8 @@ extern __MIDL_itf_shldisp_0290_v0_0_c_ifspec as RPC_IF_HANDLE
 extern __MIDL_itf_shldisp_0290_v0_0_s_ifspec as RPC_IF_HANDLE
 
 #define __IAsyncOperation_INTERFACE_DEFINED__
+
+type IAsyncOperation as IAsyncOperation_
 
 type LPASYNCOPERATION as IAsyncOperation ptr
 

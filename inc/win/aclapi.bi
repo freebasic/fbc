@@ -106,8 +106,8 @@ declare sub BuildTrusteeWithSidA(byval pTrustee as PTRUSTEE_A, byval pSid as PSI
 declare sub BuildTrusteeWithSidW(byval pTrustee as PTRUSTEE_W, byval pSid as PSID)
 declare sub BuildTrusteeWithObjectsAndSidA(byval pTrustee as PTRUSTEE_A, byval pObjSid as POBJECTS_AND_SID, byval pObjectGuid as GUID ptr, byval pInheritedObjectGuid as GUID ptr, byval pSid as PSID)
 declare sub BuildTrusteeWithObjectsAndSidW(byval pTrustee as PTRUSTEE_W, byval pObjSid as POBJECTS_AND_SID, byval pObjectGuid as GUID ptr, byval pInheritedObjectGuid as GUID ptr, byval pSid as PSID)
-declare sub BuildTrusteeWithObjectsAndNameA(byval pTrustee as PTRUSTEE_A, byval pObjName as POBJECTS_AND_NAME_A, byval ObjectType as SE_OBJECT_TYPE, byval ObjectTypeName as LPSTR, byval InheritedObjectTypeName as LPSTR, byval Name_ as LPSTR)
-declare sub BuildTrusteeWithObjectsAndNameW(byval pTrustee as PTRUSTEE_W, byval pObjName as POBJECTS_AND_NAME_W, byval ObjectType as SE_OBJECT_TYPE, byval ObjectTypeName as LPWSTR, byval InheritedObjectTypeName as LPWSTR, byval Name_ as LPWSTR)
+declare sub BuildTrusteeWithObjectsAndNameA(byval pTrustee as PTRUSTEE_A, byval pObjName as POBJECTS_AND_NAME_A, byval ObjectType as SE_OBJECT_TYPE, byval ObjectTypeName as LPSTR, byval InheritedObjectTypeName as LPSTR, byval Name as LPSTR)
+declare sub BuildTrusteeWithObjectsAndNameW(byval pTrustee as PTRUSTEE_W, byval pObjName as POBJECTS_AND_NAME_W, byval ObjectType as SE_OBJECT_TYPE, byval ObjectTypeName as LPWSTR, byval InheritedObjectTypeName as LPWSTR, byval Name as LPWSTR)
 declare function GetTrusteeNameA(byval pTrustee as PTRUSTEE_A) as LPSTR
 declare function GetTrusteeNameW(byval pTrustee as PTRUSTEE_W) as LPWSTR
 declare function GetTrusteeTypeA(byval pTrustee as PTRUSTEE_A) as TRUSTEE_TYPE

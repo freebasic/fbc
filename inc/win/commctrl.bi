@@ -8,9 +8,6 @@
 #include once "unknwnbase.bi"
 #include once "objidlbase.bi"
 
-'' The following symbols have been renamed:
-''     typedef IMAGEINFO => IMAGEINFO_
-
 #inclib "comctl32"
 
 extern "Windows"
@@ -157,40 +154,40 @@ end type
 type NMCHAR as tagNMCHAR
 type LPNMCHAR as tagNMCHAR ptr
 
-#define NM_FIRST (0 - 0)
-#define NM_LAST (0 - 99)
-#define LVN_FIRST (0 - 100)
-#define LVN_LAST (0 - 199)
-#define HDN_FIRST (0 - 300)
-#define HDN_LAST (0 - 399)
-#define TVN_FIRST (0 - 400)
-#define TVN_LAST (0 - 499)
-#define TTN_FIRST (0 - 520)
-#define TTN_LAST (0 - 549)
-#define TCN_FIRST (0 - 550)
-#define TCN_LAST (0 - 580)
-#define TBN_FIRST (0 - 700)
-#define TBN_LAST (0 - 720)
-#define UDN_FIRST (0 - 721)
-#define UDN_LAST (0 - 740)
-#define MCN_FIRST (0 - 750)
-#define MCN_LAST (0 - 759)
-#define DTN_FIRST (0 - 760)
-#define DTN_LAST (0 - 799)
-#define CBEN_FIRST (0 - 800)
-#define CBEN_LAST (0 - 830)
-#define RBN_FIRST (0 - 831)
-#define RBN_LAST (0 - 859)
-#define IPN_FIRST (0 - 860)
-#define IPN_LAST (0 - 879)
-#define SBN_FIRST (0 - 880)
-#define SBN_LAST (0 - 899)
-#define PGN_FIRST (0 - 900)
-#define PGN_LAST (0 - 950)
-#define WMN_FIRST (0 - 1000)
-#define WMN_LAST (0 - 1200)
-#define BCN_FIRST (0 - 1250)
-#define BCN_LAST (0 - 1350)
+#define NM_FIRST culng(0u - 0u)
+#define NM_LAST culng(0u - 99u)
+#define LVN_FIRST culng(0u - 100u)
+#define LVN_LAST culng(0u - 199u)
+#define HDN_FIRST culng(0u - 300u)
+#define HDN_LAST culng(0u - 399u)
+#define TVN_FIRST culng(0u - 400u)
+#define TVN_LAST culng(0u - 499u)
+#define TTN_FIRST culng(0u - 520u)
+#define TTN_LAST culng(0u - 549u)
+#define TCN_FIRST culng(0u - 550u)
+#define TCN_LAST culng(0u - 580u)
+#define TBN_FIRST culng(0u - 700u)
+#define TBN_LAST culng(0u - 720u)
+#define UDN_FIRST culng(0u - 721)
+#define UDN_LAST culng(0u - 740)
+#define MCN_FIRST culng(0u - 750u)
+#define MCN_LAST culng(0u - 759u)
+#define DTN_FIRST culng(0u - 760u)
+#define DTN_LAST culng(0u - 799u)
+#define CBEN_FIRST culng(0u - 800u)
+#define CBEN_LAST culng(0u - 830u)
+#define RBN_FIRST culng(0u - 831u)
+#define RBN_LAST culng(0u - 859u)
+#define IPN_FIRST culng(0u - 860u)
+#define IPN_LAST culng(0u - 879u)
+#define SBN_FIRST culng(0u - 880u)
+#define SBN_LAST culng(0u - 899u)
+#define PGN_FIRST culng(0u - 900u)
+#define PGN_LAST culng(0u - 950u)
+#define WMN_FIRST culng(0u - 1000u)
+#define WMN_LAST culng(0u - 1200u)
+#define BCN_FIRST culng(0u - 1250u)
+#define BCN_LAST culng(0u - 1350u)
 #define MSGF_COMMCTRL_BEGINDRAG &h4200
 #define MSGF_COMMCTRL_SIZEHEADER &h4201
 #define MSGF_COMMCTRL_DRAGSELECT &h4202
@@ -370,12 +367,12 @@ type _IMAGEINFO
 	rcImage as RECT
 end type
 
-type IMAGEINFO_ as _IMAGEINFO
+type IMAGEINFO as _IMAGEINFO
 type LPIMAGEINFO as _IMAGEINFO ptr
 
 declare function ImageList_GetIconSize(byval himl as HIMAGELIST, byval cx as long ptr, byval cy as long ptr) as WINBOOL
 declare function ImageList_SetIconSize(byval himl as HIMAGELIST, byval cx as long, byval cy as long) as WINBOOL
-declare function ImageList_GetImageInfo(byval himl as HIMAGELIST, byval i as long, byval pImageInfo as IMAGEINFO_ ptr) as WINBOOL
+declare function ImageList_GetImageInfo(byval himl as HIMAGELIST, byval i as long, byval pImageInfo as IMAGEINFO ptr) as WINBOOL
 declare function ImageList_Merge(byval himl1 as HIMAGELIST, byval i1 as long, byval himl2 as HIMAGELIST, byval i2 as long, byval dx as long, byval dy as long) as HIMAGELIST
 declare function ImageList_Duplicate(byval himl as HIMAGELIST) as HIMAGELIST
 
@@ -615,28 +612,28 @@ type LPHDHITTESTINFO as _HD_HITTESTINFO ptr
 #define HDM_CLEARFILTER (HDM_FIRST + 24)
 #define Header_ClearFilter(hwnd, i) clng(SNDMSG((hwnd), HDM_CLEARFILTER, cast(WPARAM, (i)), 0))
 #define Header_ClearAllFilters(hwnd) clng(SNDMSG((hwnd), HDM_CLEARFILTER, cast(WPARAM, -1), 0))
-#define HDN_ITEMCHANGINGA (HDN_FIRST - 0)
-#define HDN_ITEMCHANGINGW (HDN_FIRST - 20)
-#define HDN_ITEMCHANGEDA (HDN_FIRST - 1)
-#define HDN_ITEMCHANGEDW (HDN_FIRST - 21)
-#define HDN_ITEMCLICKA (HDN_FIRST - 2)
-#define HDN_ITEMCLICKW (HDN_FIRST - 22)
-#define HDN_ITEMDBLCLICKA (HDN_FIRST - 3)
-#define HDN_ITEMDBLCLICKW (HDN_FIRST - 23)
-#define HDN_DIVIDERDBLCLICKA (HDN_FIRST - 5)
-#define HDN_DIVIDERDBLCLICKW (HDN_FIRST - 25)
-#define HDN_BEGINTRACKA (HDN_FIRST - 6)
-#define HDN_BEGINTRACKW (HDN_FIRST - 26)
-#define HDN_ENDTRACKA (HDN_FIRST - 7)
-#define HDN_ENDTRACKW (HDN_FIRST - 27)
-#define HDN_TRACKA (HDN_FIRST - 8)
-#define HDN_TRACKW (HDN_FIRST - 28)
-#define HDN_GETDISPINFOA (HDN_FIRST - 9)
-#define HDN_GETDISPINFOW (HDN_FIRST - 29)
-#define HDN_BEGINDRAG (HDN_FIRST - 10)
-#define HDN_ENDDRAG (HDN_FIRST - 11)
-#define HDN_FILTERCHANGE (HDN_FIRST - 12)
-#define HDN_FILTERBTNCLICK (HDN_FIRST - 13)
+#define HDN_ITEMCHANGINGA culng(HDN_FIRST - 0)
+#define HDN_ITEMCHANGINGW culng(HDN_FIRST - 20)
+#define HDN_ITEMCHANGEDA culng(HDN_FIRST - 1)
+#define HDN_ITEMCHANGEDW culng(HDN_FIRST - 21)
+#define HDN_ITEMCLICKA culng(HDN_FIRST - 2)
+#define HDN_ITEMCLICKW culng(HDN_FIRST - 22)
+#define HDN_ITEMDBLCLICKA culng(HDN_FIRST - 3)
+#define HDN_ITEMDBLCLICKW culng(HDN_FIRST - 23)
+#define HDN_DIVIDERDBLCLICKA culng(HDN_FIRST - 5)
+#define HDN_DIVIDERDBLCLICKW culng(HDN_FIRST - 25)
+#define HDN_BEGINTRACKA culng(HDN_FIRST - 6)
+#define HDN_BEGINTRACKW culng(HDN_FIRST - 26)
+#define HDN_ENDTRACKA culng(HDN_FIRST - 7)
+#define HDN_ENDTRACKW culng(HDN_FIRST - 27)
+#define HDN_TRACKA culng(HDN_FIRST - 8)
+#define HDN_TRACKW culng(HDN_FIRST - 28)
+#define HDN_GETDISPINFOA culng(HDN_FIRST - 9)
+#define HDN_GETDISPINFOW culng(HDN_FIRST - 29)
+#define HDN_BEGINDRAG culng(HDN_FIRST - 10)
+#define HDN_ENDDRAG culng(HDN_FIRST - 11)
+#define HDN_FILTERCHANGE culng(HDN_FIRST - 12)
+#define HDN_FILTERBTNCLICK culng(HDN_FIRST - 13)
 
 #ifdef UNICODE
 	#define HDN_ITEMCHANGING HDN_ITEMCHANGINGW
@@ -1152,18 +1149,18 @@ type LPTBMETRICS as TBMETRICS ptr
 #endif
 
 #define TB_SETWINDOWTHEME CCM_SETWINDOWTHEME
-#define TBN_GETBUTTONINFOA (TBN_FIRST - 0)
-#define TBN_BEGINDRAG (TBN_FIRST - 1)
-#define TBN_ENDDRAG (TBN_FIRST - 2)
-#define TBN_BEGINADJUST (TBN_FIRST - 3)
-#define TBN_ENDADJUST (TBN_FIRST - 4)
-#define TBN_RESET (TBN_FIRST - 5)
-#define TBN_QUERYINSERT (TBN_FIRST - 6)
-#define TBN_QUERYDELETE (TBN_FIRST - 7)
-#define TBN_TOOLBARCHANGE (TBN_FIRST - 8)
-#define TBN_CUSTHELP (TBN_FIRST - 9)
-#define TBN_DROPDOWN (TBN_FIRST - 10)
-#define TBN_GETOBJECT (TBN_FIRST - 12)
+#define TBN_GETBUTTONINFOA culng(TBN_FIRST - 0)
+#define TBN_BEGINDRAG culng(TBN_FIRST - 1)
+#define TBN_ENDDRAG culng(TBN_FIRST - 2)
+#define TBN_BEGINADJUST culng(TBN_FIRST - 3)
+#define TBN_ENDADJUST culng(TBN_FIRST - 4)
+#define TBN_RESET culng(TBN_FIRST - 5)
+#define TBN_QUERYINSERT culng(TBN_FIRST - 6)
+#define TBN_QUERYDELETE culng(TBN_FIRST - 7)
+#define TBN_TOOLBARCHANGE culng(TBN_FIRST - 8)
+#define TBN_CUSTHELP culng(TBN_FIRST - 9)
+#define TBN_DROPDOWN culng(TBN_FIRST - 10)
+#define TBN_GETOBJECT culng(TBN_FIRST - 12)
 
 type tagNMTBHOTITEM
 	hdr as NMHDR
@@ -1185,22 +1182,22 @@ type LPNMTBHOTITEM as tagNMTBHOTITEM ptr
 #define HICF_RESELECT &h40
 #define HICF_LMOUSE &h80
 #define HICF_TOGGLEDROPDOWN &h100
-#define TBN_HOTITEMCHANGE (TBN_FIRST - 13)
-#define TBN_DRAGOUT (TBN_FIRST - 14)
-#define TBN_DELETINGBUTTON (TBN_FIRST - 15)
-#define TBN_GETDISPINFOA (TBN_FIRST - 16)
-#define TBN_GETDISPINFOW (TBN_FIRST - 17)
-#define TBN_GETINFOTIPA (TBN_FIRST - 18)
-#define TBN_GETINFOTIPW (TBN_FIRST - 19)
-#define TBN_GETBUTTONINFOW (TBN_FIRST - 20)
-#define TBN_RESTORE (TBN_FIRST - 21)
-#define TBN_SAVE (TBN_FIRST - 22)
-#define TBN_INITCUSTOMIZE (TBN_FIRST - 23)
-#define TBN_WRAPHOTITEM (TBN_FIRST - 24)
-#define TBN_DUPACCELERATOR (TBN_FIRST - 25)
-#define TBN_WRAPACCELERATOR (TBN_FIRST - 26)
-#define TBN_DRAGOVER (TBN_FIRST - 27)
-#define TBN_MAPACCELERATOR (TBN_FIRST - 28)
+#define TBN_HOTITEMCHANGE culng(TBN_FIRST - 13)
+#define TBN_DRAGOUT culng(TBN_FIRST - 14)
+#define TBN_DELETINGBUTTON culng(TBN_FIRST - 15)
+#define TBN_GETDISPINFOA culng(TBN_FIRST - 16)
+#define TBN_GETDISPINFOW culng(TBN_FIRST - 17)
+#define TBN_GETINFOTIPA culng(TBN_FIRST - 18)
+#define TBN_GETINFOTIPW culng(TBN_FIRST - 19)
+#define TBN_GETBUTTONINFOW culng(TBN_FIRST - 20)
+#define TBN_RESTORE culng(TBN_FIRST - 21)
+#define TBN_SAVE culng(TBN_FIRST - 22)
+#define TBN_INITCUSTOMIZE culng(TBN_FIRST - 23)
+#define TBN_WRAPHOTITEM culng(TBN_FIRST - 24)
+#define TBN_DUPACCELERATOR culng(TBN_FIRST - 25)
+#define TBN_WRAPACCELERATOR culng(TBN_FIRST - 26)
+#define TBN_DRAGOVER culng(TBN_FIRST - 27)
+#define TBN_MAPACCELERATOR culng(TBN_FIRST - 28)
 #define TBNRF_HIDEHELP &h1
 #define TBNRF_ENDCUSTOMIZE &h2
 
@@ -1533,18 +1530,18 @@ type LPCREBARBANDINFOW as const REBARBANDINFOW ptr
 #define RB_GETBANDMARGINS (WM_USER + 40)
 #define RB_SETWINDOWTHEME CCM_SETWINDOWTHEME
 #define RB_PUSHCHEVRON (WM_USER + 43)
-#define RBN_HEIGHTCHANGE (RBN_FIRST - 0)
-#define RBN_GETOBJECT (RBN_FIRST - 1)
-#define RBN_LAYOUTCHANGED (RBN_FIRST - 2)
-#define RBN_AUTOSIZE (RBN_FIRST - 3)
-#define RBN_BEGINDRAG (RBN_FIRST - 4)
-#define RBN_ENDDRAG (RBN_FIRST - 5)
-#define RBN_DELETINGBAND (RBN_FIRST - 6)
-#define RBN_DELETEDBAND (RBN_FIRST - 7)
-#define RBN_CHILDSIZE (RBN_FIRST - 8)
-#define RBN_CHEVRONPUSHED (RBN_FIRST - 10)
-#define RBN_MINMAX (RBN_FIRST - 21)
-#define RBN_AUTOBREAK (RBN_FIRST - 22)
+#define RBN_HEIGHTCHANGE culng(RBN_FIRST - 0)
+#define RBN_GETOBJECT culng(RBN_FIRST - 1)
+#define RBN_LAYOUTCHANGED culng(RBN_FIRST - 2)
+#define RBN_AUTOSIZE culng(RBN_FIRST - 3)
+#define RBN_BEGINDRAG culng(RBN_FIRST - 4)
+#define RBN_ENDDRAG culng(RBN_FIRST - 5)
+#define RBN_DELETINGBAND culng(RBN_FIRST - 6)
+#define RBN_DELETEDBAND culng(RBN_FIRST - 7)
+#define RBN_CHILDSIZE culng(RBN_FIRST - 8)
+#define RBN_CHEVRONPUSHED culng(RBN_FIRST - 10)
+#define RBN_MINMAX culng(RBN_FIRST - 21)
+#define RBN_AUTOBREAK culng(RBN_FIRST - 22)
 
 type tagNMREBARCHILDSIZE
 	hdr as NMHDR
@@ -1827,11 +1824,11 @@ type LPTTHITTESTINFOW as _TT_HITTESTINFOW ptr
 	#define LPTTHITTESTINFO LPTTHITTESTINFOA
 #endif
 
-#define TTN_GETDISPINFOA (TTN_FIRST - 0)
-#define TTN_GETDISPINFOW (TTN_FIRST - 10)
-#define TTN_SHOW (TTN_FIRST - 1)
-#define TTN_POP (TTN_FIRST - 2)
-#define TTN_LINKCLICK (TTN_FIRST - 3)
+#define TTN_GETDISPINFOA culng(TTN_FIRST - 0)
+#define TTN_GETDISPINFOW culng(TTN_FIRST - 10)
+#define TTN_SHOW culng(TTN_FIRST - 1)
+#define TTN_POP culng(TTN_FIRST - 2)
+#define TTN_LINKCLICK culng(TTN_FIRST - 3)
 
 #ifdef UNICODE
 	#define TTN_GETDISPINFO TTN_GETDISPINFOW
@@ -1953,7 +1950,7 @@ declare function CreateStatusWindowW(byval style as LONG, byval lpszText as LPCW
 #define SBT_RTLREADING &h400
 #define SBT_NOTABPARSING &h800
 #define SB_SETBKCOLOR CCM_SETBKCOLOR
-#define SBN_SIMPLEMODECHANGE (SBN_FIRST - 0)
+#define SBN_SIMPLEMODECHANGE culng(SBN_FIRST - 0)
 #define SB_SIMPLEID &hff
 
 declare sub MenuHelp(byval uMsg as UINT, byval wParam as WPARAM, byval lParam as LPARAM, byval hMainMenu as HMENU, byval hInst as HINSTANCE, byval hwndStatus as HWND, byval lpwIDs as UINT ptr)
@@ -2119,7 +2116,7 @@ end type
 type NMUPDOWN as _NM_UPDOWN
 type LPNMUPDOWN as _NM_UPDOWN ptr
 
-#define UDN_DELTAPOS (UDN_FIRST - 1)
+#define UDN_DELTAPOS culng(UDN_FIRST - 1)
 #define PROGRESS_CLASSA "msctls_progress32"
 #define PROGRESS_CLASSW wstr("msctls_progress32")
 
@@ -3190,23 +3187,23 @@ type LPNMLVODSTATECHANGE as tagNMLVODSTATECHANGE ptr
 #define PNM_ODSTATECHANGE LPNMLVODSTATECHANGE
 #define LPNM_ODSTATECHANGE LPNMLVODSTATECHANGE
 #define NM_ODSTATECHANGE NMLVODSTATECHANGE
-#define LVN_ITEMCHANGING (LVN_FIRST - 0)
-#define LVN_ITEMCHANGED (LVN_FIRST - 1)
-#define LVN_INSERTITEM (LVN_FIRST - 2)
-#define LVN_DELETEITEM (LVN_FIRST - 3)
-#define LVN_DELETEALLITEMS (LVN_FIRST - 4)
-#define LVN_BEGINLABELEDITA (LVN_FIRST - 5)
-#define LVN_BEGINLABELEDITW (LVN_FIRST - 75)
-#define LVN_ENDLABELEDITA (LVN_FIRST - 6)
-#define LVN_ENDLABELEDITW (LVN_FIRST - 76)
-#define LVN_COLUMNCLICK (LVN_FIRST - 8)
-#define LVN_BEGINDRAG (LVN_FIRST - 9)
-#define LVN_BEGINRDRAG (LVN_FIRST - 11)
-#define LVN_ODCACHEHINT (LVN_FIRST - 13)
-#define LVN_ODFINDITEMA (LVN_FIRST - 52)
-#define LVN_ODFINDITEMW (LVN_FIRST - 79)
-#define LVN_ITEMACTIVATE (LVN_FIRST - 14)
-#define LVN_ODSTATECHANGED (LVN_FIRST - 15)
+#define LVN_ITEMCHANGING culng(LVN_FIRST - 0)
+#define LVN_ITEMCHANGED culng(LVN_FIRST - 1)
+#define LVN_INSERTITEM culng(LVN_FIRST - 2)
+#define LVN_DELETEITEM culng(LVN_FIRST - 3)
+#define LVN_DELETEALLITEMS culng(LVN_FIRST - 4)
+#define LVN_BEGINLABELEDITA culng(LVN_FIRST - 5)
+#define LVN_BEGINLABELEDITW culng(LVN_FIRST - 75)
+#define LVN_ENDLABELEDITA culng(LVN_FIRST - 6)
+#define LVN_ENDLABELEDITW culng(LVN_FIRST - 76)
+#define LVN_COLUMNCLICK culng(LVN_FIRST - 8)
+#define LVN_BEGINDRAG culng(LVN_FIRST - 9)
+#define LVN_BEGINRDRAG culng(LVN_FIRST - 11)
+#define LVN_ODCACHEHINT culng(LVN_FIRST - 13)
+#define LVN_ODFINDITEMA culng(LVN_FIRST - 52)
+#define LVN_ODFINDITEMW culng(LVN_FIRST - 79)
+#define LVN_ITEMACTIVATE culng(LVN_FIRST - 14)
+#define LVN_ODSTATECHANGED culng(LVN_FIRST - 15)
 
 #ifdef UNICODE
 	#define LVN_ODFINDITEM LVN_ODFINDITEMW
@@ -3214,11 +3211,11 @@ type LPNMLVODSTATECHANGE as tagNMLVODSTATECHANGE ptr
 	#define LVN_ODFINDITEM LVN_ODFINDITEMA
 #endif
 
-#define LVN_HOTTRACK (LVN_FIRST - 21)
-#define LVN_GETDISPINFOA (LVN_FIRST - 50)
-#define LVN_GETDISPINFOW (LVN_FIRST - 77)
-#define LVN_SETDISPINFOA (LVN_FIRST - 51)
-#define LVN_SETDISPINFOW (LVN_FIRST - 78)
+#define LVN_HOTTRACK culng(LVN_FIRST - 21)
+#define LVN_GETDISPINFOA culng(LVN_FIRST - 50)
+#define LVN_GETDISPINFOW culng(LVN_FIRST - 77)
+#define LVN_SETDISPINFOA culng(LVN_FIRST - 51)
+#define LVN_SETDISPINFOW culng(LVN_FIRST - 78)
 
 #ifdef UNICODE
 	#define LVN_BEGINLABELEDIT LVN_BEGINLABELEDITW
@@ -3259,7 +3256,7 @@ type LPNMLVDISPINFOW as tagLVDISPINFOW ptr
 	#define NMLVDISPINFO NMLVDISPINFOA
 #endif
 
-#define LVN_KEYDOWN (LVN_FIRST - 55)
+#define LVN_KEYDOWN culng(LVN_FIRST - 55)
 #define LV_KEYDOWN NMLVKEYDOWN
 
 type tagLVKEYDOWN field = 1
@@ -3270,6 +3267,8 @@ end type
 
 type NMLVKEYDOWN as tagLVKEYDOWN
 type LPNMLVKEYDOWN as tagLVKEYDOWN ptr
+
+#define LVN_MARQUEEBEGIN culng(LVN_FIRST - 56)
 
 type tagNMLVGETINFOTIPA
 	hdr as NMHDR
@@ -3283,8 +3282,6 @@ end type
 
 type NMLVGETINFOTIPA as tagNMLVGETINFOTIPA
 type LPNMLVGETINFOTIPA as tagNMLVGETINFOTIPA ptr
-
-#define LVN_MARQUEEBEGIN (LVN_FIRST - 56)
 
 type tagNMLVGETINFOTIPW
 	hdr as NMHDR
@@ -3300,8 +3297,8 @@ type NMLVGETINFOTIPW as tagNMLVGETINFOTIPW
 type LPNMLVGETINFOTIPW as tagNMLVGETINFOTIPW ptr
 
 #define LVGIT_UNFOLDED &h1
-#define LVN_GETINFOTIPA (LVN_FIRST - 57)
-#define LVN_GETINFOTIPW (LVN_FIRST - 58)
+#define LVN_GETINFOTIPA culng(LVN_FIRST - 57)
+#define LVN_GETINFOTIPW culng(LVN_FIRST - 58)
 
 #ifdef UNICODE
 	#define LVN_GETINFOTIP LVN_GETINFOTIPW
@@ -3322,8 +3319,8 @@ end type
 type NMLVSCROLL as tagNMLVSCROLL
 type LPNMLVSCROLL as tagNMLVSCROLL ptr
 
-#define LVN_BEGINSCROLL (LVN_FIRST - 80)
-#define LVN_ENDSCROLL (LVN_FIRST - 81)
+#define LVN_BEGINSCROLL culng(LVN_FIRST - 80)
+#define LVN_ENDSCROLL culng(LVN_FIRST - 81)
 #define WC_TREEVIEWA "SysTreeView32"
 #define WC_TREEVIEWW wstr("SysTreeView32")
 
@@ -3758,17 +3755,17 @@ type LPNMTREEVIEWW as tagNMTREEVIEWW ptr
 	#define LPNMTREEVIEW LPNMTREEVIEWA
 #endif
 
-#define TVN_SELCHANGINGA (TVN_FIRST - 1)
-#define TVN_SELCHANGINGW (TVN_FIRST - 50)
-#define TVN_SELCHANGEDA (TVN_FIRST - 2)
-#define TVN_SELCHANGEDW (TVN_FIRST - 51)
+#define TVN_SELCHANGINGA culng(TVN_FIRST - 1)
+#define TVN_SELCHANGINGW culng(TVN_FIRST - 50)
+#define TVN_SELCHANGEDA culng(TVN_FIRST - 2)
+#define TVN_SELCHANGEDW culng(TVN_FIRST - 51)
 #define TVC_UNKNOWN &h0
 #define TVC_BYMOUSE &h1
 #define TVC_BYKEYBOARD &h2
-#define TVN_GETDISPINFOA (TVN_FIRST - 3)
-#define TVN_GETDISPINFOW (TVN_FIRST - 52)
-#define TVN_SETDISPINFOA (TVN_FIRST - 4)
-#define TVN_SETDISPINFOW (TVN_FIRST - 53)
+#define TVN_GETDISPINFOA culng(TVN_FIRST - 3)
+#define TVN_GETDISPINFOW culng(TVN_FIRST - 52)
+#define TVN_SETDISPINFOA culng(TVN_FIRST - 4)
+#define TVN_SETDISPINFOW culng(TVN_FIRST - 53)
 #define TVIF_DI_SETITEM &h1000
 #define TV_DISPINFOA NMTVDISPINFOA
 #define TV_DISPINFOW NMTVDISPINFOW
@@ -3833,24 +3830,24 @@ type LPNMTVDISPINFOW as tagTVDISPINFOW ptr
 	#define LPNMTVDISPINFO LPNMTVDISPINFOA
 #endif
 
-#define TVN_ITEMEXPANDINGA (TVN_FIRST - 5)
-#define TVN_ITEMEXPANDINGW (TVN_FIRST - 54)
-#define TVN_ITEMEXPANDEDA (TVN_FIRST - 6)
-#define TVN_ITEMEXPANDEDW (TVN_FIRST - 55)
-#define TVN_BEGINDRAGA (TVN_FIRST - 7)
-#define TVN_BEGINDRAGW (TVN_FIRST - 56)
-#define TVN_BEGINRDRAGA (TVN_FIRST - 8)
-#define TVN_BEGINRDRAGW (TVN_FIRST - 57)
-#define TVN_DELETEITEMA (TVN_FIRST - 9)
-#define TVN_DELETEITEMW (TVN_FIRST - 58)
-#define TVN_BEGINLABELEDITA (TVN_FIRST - 10)
-#define TVN_BEGINLABELEDITW (TVN_FIRST - 59)
-#define TVN_ENDLABELEDITA (TVN_FIRST - 11)
-#define TVN_ENDLABELEDITW (TVN_FIRST - 60)
-#define TVN_KEYDOWN (TVN_FIRST - 12)
-#define TVN_GETINFOTIPA (TVN_FIRST - 13)
-#define TVN_GETINFOTIPW (TVN_FIRST - 14)
-#define TVN_SINGLEEXPAND (TVN_FIRST - 15)
+#define TVN_ITEMEXPANDINGA culng(TVN_FIRST - 5)
+#define TVN_ITEMEXPANDINGW culng(TVN_FIRST - 54)
+#define TVN_ITEMEXPANDEDA culng(TVN_FIRST - 6)
+#define TVN_ITEMEXPANDEDW culng(TVN_FIRST - 55)
+#define TVN_BEGINDRAGA culng(TVN_FIRST - 7)
+#define TVN_BEGINDRAGW culng(TVN_FIRST - 56)
+#define TVN_BEGINRDRAGA culng(TVN_FIRST - 8)
+#define TVN_BEGINRDRAGW culng(TVN_FIRST - 57)
+#define TVN_DELETEITEMA culng(TVN_FIRST - 9)
+#define TVN_DELETEITEMW culng(TVN_FIRST - 58)
+#define TVN_BEGINLABELEDITA culng(TVN_FIRST - 10)
+#define TVN_BEGINLABELEDITW culng(TVN_FIRST - 59)
+#define TVN_ENDLABELEDITA culng(TVN_FIRST - 11)
+#define TVN_ENDLABELEDITW culng(TVN_FIRST - 60)
+#define TVN_KEYDOWN culng(TVN_FIRST - 12)
+#define TVN_GETINFOTIPA culng(TVN_FIRST - 13)
+#define TVN_GETINFOTIPW culng(TVN_FIRST - 14)
+#define TVN_SINGLEEXPAND culng(TVN_FIRST - 15)
 #define TVNRET_DEFAULT 0
 #define TVNRET_SKIPOLD 1
 #define TVNRET_SKIPNEW 2
@@ -3864,16 +3861,6 @@ end type
 
 type NMTVKEYDOWN as tagTVKEYDOWN
 type LPNMTVKEYDOWN as tagTVKEYDOWN ptr
-
-type tagNMTVCUSTOMDRAW
-	nmcd as NMCUSTOMDRAW
-	clrText as COLORREF
-	clrTextBk as COLORREF
-	iLevel as long
-end type
-
-type NMTVCUSTOMDRAW as tagNMTVCUSTOMDRAW
-type LPNMTVCUSTOMDRAW as tagNMTVCUSTOMDRAW ptr
 
 #ifdef UNICODE
 	#define TVN_SELCHANGING TVN_SELCHANGINGW
@@ -3902,6 +3889,16 @@ type LPNMTVCUSTOMDRAW as tagNMTVCUSTOMDRAW ptr
 #endif
 
 #define NMTVCUSTOMDRAW_V3_SIZE CCSIZEOF_STRUCT(NMTVCUSTOMDRAW, clrTextBk)
+
+type tagNMTVCUSTOMDRAW
+	nmcd as NMCUSTOMDRAW
+	clrText as COLORREF
+	clrTextBk as COLORREF
+	iLevel as long
+end type
+
+type NMTVCUSTOMDRAW as tagNMTVCUSTOMDRAW
+type LPNMTVCUSTOMDRAW as tagNMTVCUSTOMDRAW ptr
 
 type tagNMTVGETINFOTIPA
 	hdr as NMHDR
@@ -4055,15 +4052,15 @@ type PNMCOMBOBOXEXW as NMCOMBOBOXEXW ptr
 	#define CBEN_GETDISPINFO CBEN_GETDISPINFOA
 #endif
 
-#define CBEN_GETDISPINFOA (CBEN_FIRST - 0)
-#define CBEN_INSERTITEM (CBEN_FIRST - 1)
-#define CBEN_DELETEITEM (CBEN_FIRST - 2)
-#define CBEN_BEGINEDIT (CBEN_FIRST - 4)
-#define CBEN_ENDEDITA (CBEN_FIRST - 5)
-#define CBEN_ENDEDITW (CBEN_FIRST - 6)
-#define CBEN_GETDISPINFOW (CBEN_FIRST - 7)
-#define CBEN_DRAGBEGINA (CBEN_FIRST - 8)
-#define CBEN_DRAGBEGINW (CBEN_FIRST - 9)
+#define CBEN_GETDISPINFOA culng(CBEN_FIRST - 0)
+#define CBEN_INSERTITEM culng(CBEN_FIRST - 1)
+#define CBEN_DELETEITEM culng(CBEN_FIRST - 2)
+#define CBEN_BEGINEDIT culng(CBEN_FIRST - 4)
+#define CBEN_ENDEDITA culng(CBEN_FIRST - 5)
+#define CBEN_ENDEDITW culng(CBEN_FIRST - 6)
+#define CBEN_GETDISPINFOW culng(CBEN_FIRST - 7)
+#define CBEN_DRAGBEGINA culng(CBEN_FIRST - 8)
+#define CBEN_DRAGBEGINW culng(CBEN_FIRST - 9)
 
 #ifdef UNICODE
 	#define CBEN_DRAGBEGIN CBEN_DRAGBEGINW
@@ -4348,7 +4345,7 @@ type LPTCHITTESTINFO as tagTCHITTESTINFO ptr
 #define TabCtrl_SetUnicodeFormat(hwnd, fUnicode) cast(WINBOOL, SNDMSG((hwnd), TCM_SETUNICODEFORMAT, cast(WPARAM, (fUnicode)), 0))
 #define TCM_GETUNICODEFORMAT CCM_GETUNICODEFORMAT
 #define TabCtrl_GetUnicodeFormat(hwnd) cast(WINBOOL, SNDMSG((hwnd), TCM_GETUNICODEFORMAT, 0, 0))
-#define TCN_KEYDOWN (TCN_FIRST - 0)
+#define TCN_KEYDOWN culng(TCN_FIRST - 0)
 #define TC_KEYDOWN NMTCKEYDOWN
 
 type tagTCKEYDOWN field = 1
@@ -4358,13 +4355,11 @@ type tagTCKEYDOWN field = 1
 end type
 
 type NMTCKEYDOWN as tagTCKEYDOWN
-type MONTHDAYSTATE as DWORD
-type LPMONTHDAYSTATE as DWORD ptr
 
-#define TCN_SELCHANGE (TCN_FIRST - 1)
-#define TCN_SELCHANGING (TCN_FIRST - 2)
-#define TCN_GETOBJECT (TCN_FIRST - 3)
-#define TCN_FOCUSCHANGE (TCN_FIRST - 4)
+#define TCN_SELCHANGE culng(TCN_FIRST - 1)
+#define TCN_SELCHANGING culng(TCN_FIRST - 2)
+#define TCN_GETOBJECT culng(TCN_FIRST - 3)
+#define TCN_FOCUSCHANGE culng(TCN_FIRST - 4)
 #define ANIMATE_CLASSW wstr("SysAnimate32")
 #define ANIMATE_CLASSA "SysAnimate32"
 
@@ -4406,6 +4401,9 @@ type LPMONTHDAYSTATE as DWORD ptr
 #else
 	#define MONTHCAL_CLASS MONTHCAL_CLASSA
 #endif
+
+type MONTHDAYSTATE as DWORD
+type LPMONTHDAYSTATE as DWORD ptr
 
 #define MCM_FIRST &h1000
 #define MCM_GETCURSEL (MCM_FIRST + 1)
@@ -4497,7 +4495,7 @@ end type
 type NMSELCHANGE as tagNMSELCHANGE
 type LPNMSELCHANGE as tagNMSELCHANGE ptr
 
-#define MCN_SELCHANGE (MCN_FIRST + 1)
+#define MCN_SELCHANGE culng(MCN_FIRST + 1)
 
 type tagNMDAYSTATE
 	nmhdr as NMHDR
@@ -4509,12 +4507,12 @@ end type
 type NMDAYSTATE as tagNMDAYSTATE
 type LPNMDAYSTATE as tagNMDAYSTATE ptr
 
-#define MCN_GETDAYSTATE (MCN_FIRST + 3)
+#define MCN_GETDAYSTATE culng(MCN_FIRST + 3)
 
 type NMSELECT as NMSELCHANGE
 type LPNMSELECT as NMSELCHANGE ptr
 
-#define MCN_SELECT (MCN_FIRST + 4)
+#define MCN_SELECT culng(MCN_FIRST + 4)
 #define MCS_DAYSTATE &h1
 #define MCS_MULTISELECT &h2
 #define MCS_WEEKNUMBERS &h4
@@ -4568,7 +4566,7 @@ type LPNMSELECT as NMSELCHANGE ptr
 #define DTS_TIMEFORMAT &h9
 #define DTS_APPCANPARSE &h10
 #define DTS_RIGHTALIGN &h20
-#define DTN_DATETIMECHANGE (DTN_FIRST + 1)
+#define DTN_DATETIMECHANGE culng(DTN_FIRST + 1)
 
 type tagNMDATETIMECHANGE
 	nmhdr as NMHDR
@@ -4579,8 +4577,8 @@ end type
 type NMDATETIMECHANGE as tagNMDATETIMECHANGE
 type LPNMDATETIMECHANGE as tagNMDATETIMECHANGE ptr
 
-#define DTN_USERSTRINGA (DTN_FIRST + 2)
-#define DTN_USERSTRINGW (DTN_FIRST + 15)
+#define DTN_USERSTRINGA culng(DTN_FIRST + 2)
+#define DTN_USERSTRINGW culng(DTN_FIRST + 15)
 
 type tagNMDATETIMESTRINGA
 	nmhdr as NMHDR
@@ -4612,8 +4610,8 @@ type LPNMDATETIMESTRINGW as tagNMDATETIMESTRINGW ptr
 	#define LPNMDATETIMESTRING LPNMDATETIMESTRINGA
 #endif
 
-#define DTN_WMKEYDOWNA (DTN_FIRST + 3)
-#define DTN_WMKEYDOWNW (DTN_FIRST + 16)
+#define DTN_WMKEYDOWNA culng(DTN_FIRST + 3)
+#define DTN_WMKEYDOWNW culng(DTN_FIRST + 16)
 
 type tagNMDATETIMEWMKEYDOWNA
 	nmhdr as NMHDR
@@ -4645,8 +4643,8 @@ type LPNMDATETIMEWMKEYDOWNW as tagNMDATETIMEWMKEYDOWNW ptr
 	#define LPNMDATETIMEWMKEYDOWN LPNMDATETIMEWMKEYDOWNA
 #endif
 
-#define DTN_FORMATA (DTN_FIRST + 4)
-#define DTN_FORMATW (DTN_FIRST + 17)
+#define DTN_FORMATA culng(DTN_FIRST + 4)
+#define DTN_FORMATW culng(DTN_FIRST + 17)
 
 type tagNMDATETIMEFORMATA
 	nmhdr as NMHDR
@@ -4680,8 +4678,8 @@ type LPNMDATETIMEFORMATW as tagNMDATETIMEFORMATW ptr
 	#define LPNMDATETIMEFORMAT LPNMDATETIMEFORMATA
 #endif
 
-#define DTN_FORMATQUERYA (DTN_FIRST + 5)
-#define DTN_FORMATQUERYW (DTN_FIRST + 18)
+#define DTN_FORMATQUERYA culng(DTN_FIRST + 5)
+#define DTN_FORMATQUERYW culng(DTN_FIRST + 18)
 
 type tagNMDATETIMEFORMATQUERYA
 	nmhdr as NMHDR
@@ -4711,8 +4709,8 @@ type LPNMDATETIMEFORMATQUERYW as tagNMDATETIMEFORMATQUERYW ptr
 	#define LPNMDATETIMEFORMATQUERY LPNMDATETIMEFORMATQUERYA
 #endif
 
-#define DTN_DROPDOWN (DTN_FIRST + 6)
-#define DTN_CLOSEUP (DTN_FIRST + 7)
+#define DTN_DROPDOWN culng(DTN_FIRST + 6)
+#define DTN_CLOSEUP culng(DTN_FIRST + 7)
 #define GDTR_MIN &h1
 #define GDTR_MAX &h2
 #define GDT_ERROR (-1)
@@ -4733,7 +4731,7 @@ type LPNMDATETIMEFORMATQUERYW as tagNMDATETIMEFORMATQUERYW ptr
 	#define WC_IPADDRESS WC_IPADDRESSA
 #endif
 
-#define IPN_FIELDCHANGED (IPN_FIRST - 0)
+#define IPN_FIELDCHANGED culng(IPN_FIRST - 0)
 
 type tagNMIPADDRESS
 	hdr as NMHDR
@@ -4796,7 +4794,7 @@ type LPNMIPADDRESS as tagNMIPADDRESS ptr
 #define Pager_GetButtonState(hwnd, iButton) cast(DWORD, SNDMSG((hwnd), PGM_GETBUTTONSTATE, 0, cast(LPARAM, (iButton))))
 #define PGM_GETDROPTARGET CCM_GETDROPTARGET
 #define Pager_GetDropTarget(hwnd, ppdt) SNDMSG((hwnd), PGM_GETDROPTARGET, 0, cast(LPARAM, (ppdt)))
-#define PGN_SCROLL (PGN_FIRST - 1)
+#define PGN_SCROLL culng(PGN_FIRST - 1)
 #define PGF_SCROLLUP 1
 #define PGF_SCROLLDOWN 2
 #define PGF_SCROLLLEFT 4
@@ -4817,6 +4815,10 @@ end type
 
 type LPNMPGSCROLL as NMPGSCROLL ptr
 
+#define PGN_CALCSIZE culng(PGN_FIRST - 2)
+#define PGF_CALCWIDTH 1
+#define PGF_CALCHEIGHT 2
+
 type NMPGCALCSIZE
 	hdr as NMHDR
 	dwFlag as DWORD
@@ -4826,10 +4828,7 @@ end type
 
 type LPNMPGCALCSIZE as NMPGCALCSIZE ptr
 
-#define PGN_CALCSIZE (PGN_FIRST - 2)
-#define PGF_CALCWIDTH 1
-#define PGF_CALCHEIGHT 2
-#define PGN_HOTITEMCHANGE (PGN_FIRST - 3)
+#define PGN_HOTITEMCHANGE culng(PGN_FIRST - 3)
 
 type tagNMPGHOTITEM
 	hdr as NMHDR
@@ -4912,7 +4911,7 @@ end type
 type NMBCHOTITEM as tagNMBCHOTITEM
 type LPNMBCHOTITEM as tagNMBCHOTITEM ptr
 
-#define BCN_HOTITEMCHANGE (BCN_FIRST + &h1)
+#define BCN_HOTITEMCHANGE culng(BCN_FIRST + &h1)
 #define BST_HOT &h200
 #define BS_SPLITBUTTON &hc
 #define BS_DEFSPLITBUTTON &hd
@@ -4927,7 +4926,7 @@ type LPNMBCHOTITEM as tagNMBCHOTITEM ptr
 #define BCSS_STRETCH &h2
 #define BCSS_ALIGNLEFT &h4
 #define BCSS_IMAGE &h8
-#define BCN_DROPDOWN (BCN_FIRST + &h2)
+#define BCN_DROPDOWN culng(BCN_FIRST + &h2)
 #define BCCL_NOGLYPH cast(HIMAGELIST, cuint(-1))
 
 type tagBUTTON_SPLITINFO
@@ -5158,9 +5157,9 @@ declare function FlatSB_GetScrollProp(byval as HWND, byval propIndex as long, by
 	#define FlatSB_GetScrollPropPtr FlatSB_GetScrollProp
 #endif
 
-declare function FlatSB_SetScrollPos(byval as HWND, byval code as long, byval pos_ as long, byval fRedraw as WINBOOL) as long
+declare function FlatSB_SetScrollPos(byval as HWND, byval code as long, byval pos as long, byval fRedraw as WINBOOL) as long
 declare function FlatSB_SetScrollInfo(byval as HWND, byval code as long, byval as LPSCROLLINFO, byval fRedraw as WINBOOL) as long
-declare function FlatSB_SetScrollRange(byval as HWND, byval code as long, byval min_ as long, byval max_ as long, byval fRedraw as WINBOOL) as long
+declare function FlatSB_SetScrollRange(byval as HWND, byval code as long, byval min as long, byval max as long, byval fRedraw as WINBOOL) as long
 declare function FlatSB_SetScrollProp(byval as HWND, byval index as UINT, byval newValue as INT_PTR, byval as WINBOOL) as WINBOOL
 
 #define FlatSB_SetScrollPropPtr FlatSB_SetScrollProp

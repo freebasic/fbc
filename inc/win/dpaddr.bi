@@ -3,14 +3,7 @@
 #include once "ole2.bi"
 #include once "dplay8.bi"
 
-'' The following symbols have been renamed:
-''     inside struct IDirectPlay8AddressVtbl:
-''         field Duplicate => Duplicate_
-
 extern "Windows"
-
-type IDirectPlay8AddressVtbl as IDirectPlay8AddressVtbl_
-type IDirectPlay8AddressIPVtbl as IDirectPlay8AddressIPVtbl_
 
 #define __WINE_DPLAY8_DPADDR_H
 
@@ -116,7 +109,9 @@ extern IID_IDirectPlay8AddressIP as const GUID
 type PDIRECTPLAY8ADDRESSIP as IDirectPlay8AddressIP ptr
 type LPDIRECTPLAY8ADDRESSIP as IDirectPlay8AddressIP ptr
 
-type IDirectPlay8Address
+type IDirectPlay8AddressVtbl as IDirectPlay8AddressVtbl_
+
+type IDirectPlay8Address_
 	lpVtbl as IDirectPlay8AddressVtbl ptr
 end type
 
@@ -126,7 +121,7 @@ type IDirectPlay8AddressVtbl_
 	Release as function(byval This as IDirectPlay8Address ptr) as ULONG
 	BuildFromURLW as function(byval This as IDirectPlay8Address ptr, byval pwszSourceURL as wstring ptr) as HRESULT
 	BuildFromURLA as function(byval This as IDirectPlay8Address ptr, byval pszSourceURL as zstring ptr) as HRESULT
-	Duplicate_ as function(byval This as IDirectPlay8Address ptr, byval ppdpaNewAddress as PDIRECTPLAY8ADDRESS ptr) as HRESULT
+	Duplicate as function(byval This as IDirectPlay8Address ptr, byval ppdpaNewAddress as PDIRECTPLAY8ADDRESS ptr) as HRESULT
 	SetEqual as function(byval This as IDirectPlay8Address ptr, byval pdpaAddress as PDIRECTPLAY8ADDRESS) as HRESULT
 	IsEqual as function(byval This as IDirectPlay8Address ptr, byval pdpaAddress as PDIRECTPLAY8ADDRESS) as HRESULT
 	Clear as function(byval This as IDirectPlay8Address ptr) as HRESULT
@@ -168,6 +163,8 @@ end type
 #define IDirectPlay8Address_GetDevice(p, a) (p)->lpVtbl->GetDevice(p, a)
 #define IDirectPlay8Address_BuildFromDirectPlay4Address(p, a, b) (p)->lpVtbl->BuildFromDirectPlay4Address(p, a, b)
 
+type IDirectPlay8AddressIPVtbl as IDirectPlay8AddressIPVtbl_
+
 type IDirectPlay8AddressIP
 	lpVtbl as IDirectPlay8AddressIPVtbl ptr
 end type
@@ -176,10 +173,10 @@ type IDirectPlay8AddressIPVtbl_
 	QueryInterface as function(byval This as IDirectPlay8AddressIP ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
 	AddRef as function(byval This as IDirectPlay8AddressIP ptr) as ULONG
 	Release as function(byval This as IDirectPlay8AddressIP ptr) as ULONG
-	BuildFromSockAddr as function(byval This as IDirectPlay8AddressIP ptr, byval pSockAddr as const sockaddr const ptr) as HRESULT
+	BuildFromSockAddr as function(byval This as IDirectPlay8AddressIP ptr, byval pSockAddr as const SOCKADDR const ptr) as HRESULT
 	BuildAddress as function(byval This as IDirectPlay8AddressIP ptr, byval wszAddress as const wstring const ptr, byval usPort as const USHORT) as HRESULT
 	BuildLocalAddress as function(byval This as IDirectPlay8AddressIP ptr, byval pguidAdapter as const GUID const ptr, byval usPort as const USHORT) as HRESULT
-	GetSockAddress as function(byval This as IDirectPlay8AddressIP ptr, byval pSockAddr as sockaddr ptr, byval as PDWORD) as HRESULT
+	GetSockAddress as function(byval This as IDirectPlay8AddressIP ptr, byval pSockAddr as SOCKADDR ptr, byval as PDWORD) as HRESULT
 	GetLocalAddress as function(byval This as IDirectPlay8AddressIP ptr, byval pguidAdapter as GUID ptr, byval pusPort as USHORT ptr) as HRESULT
 	GetAddress as function(byval This as IDirectPlay8AddressIP ptr, byval wszAddress as wstring ptr, byval pdwAddressLength as PDWORD, byval psPort as USHORT ptr) as HRESULT
 end type

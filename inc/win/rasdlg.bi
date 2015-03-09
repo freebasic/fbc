@@ -3,12 +3,6 @@
 #include once "_mingw_unicode.bi"
 #include once "ras.bi"
 
-'' The following symbols have been renamed:
-''     #define RASENTRYDLGA => RASENTRYDLGA_
-''     #define RASENTRYDLGW => RASENTRYDLGW_
-''     #define RasEntryDlg => RasEntryDlg_
-''     #define RasDialDlg => RasDialDlg_
-
 #inclib "rasdlg"
 
 extern "Windows"
@@ -113,7 +107,8 @@ end type
 #define RASEDFLAG_NewBroadbandEntry &h00000080
 #define RASEDFLAG_InternetEntry &h00000100
 #define RASEDFLAG_NAT &h00000200
-#define RASENTRYDLGW_ tagRASENTRYDLGW
+
+type RASENTRYDLGW as tagRASENTRYDLGW
 
 type tagRASENTRYDLGW field = 4
 	dwSize as DWORD
@@ -127,7 +122,7 @@ type tagRASENTRYDLGW field = 4
 	reserved2 as ULONG_PTR
 end type
 
-#define RASENTRYDLGA_ tagRASENTRYDLGA
+type RASENTRYDLGA as tagRASENTRYDLGA
 
 type tagRASENTRYDLGA field = 4
 	dwSize as DWORD
@@ -142,9 +137,9 @@ type tagRASENTRYDLGA field = 4
 end type
 
 #ifdef UNICODE
-	#define RASENTRYDLG RASENTRYDLGW_
+	type RASENTRYDLG as RASENTRYDLGW
 #else
-	#define RASENTRYDLG RASENTRYDLGA_
+	type RASENTRYDLG as RASENTRYDLGA
 #endif
 
 #define LPRASENTRYDLGW RASENTRYDLGW ptr
@@ -186,12 +181,12 @@ declare function RasDialDlgW(byval lpszPhonebook as LPWSTR, byval lpszEntry as L
 
 #ifdef UNICODE
 	#define RasPhonebookDlg RasPhonebookDlgW
-	#define RasEntryDlg_ RasEntryDlgW
-	#define RasDialDlg_ RasDialDlgW
+	declare function RasEntryDlg alias "RasEntryDlgW"(byval lpszPhonebook as LPWSTR, byval lpszEntry as LPWSTR, byval lpInfo as tagRASENTRYDLGW ptr) as WINBOOL
+	declare function RasDialDlg alias "RasDialDlgW"(byval lpszPhonebook as LPWSTR, byval lpszEntry as LPWSTR, byval lpszPhoneNumber as LPWSTR, byval lpInfo as tagRASDIALDLG ptr) as WINBOOL
 #else
 	#define RasPhonebookDlg RasPhonebookDlgA
-	#define RasEntryDlg_ RasEntryDlgA
-	#define RasDialDlg_ RasDialDlgA
+	declare function RasEntryDlg alias "RasEntryDlgA"(byval lpszPhonebook as LPSTR, byval lpszEntry as LPSTR, byval lpInfo as tagRASENTRYDLGA ptr) as WINBOOL
+	declare function RasDialDlg alias "RasDialDlgA"(byval lpszPhonebook as LPSTR, byval lpszEntry as LPSTR, byval lpszPhoneNumber as LPSTR, byval lpInfo as tagRASDIALDLG ptr) as WINBOOL
 #endif
 
 end extern

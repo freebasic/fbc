@@ -454,8 +454,8 @@ declare function SCardDlgExtendedError() as LONG
 
 #if _WIN32_WINNT = &h0602
 	declare function SCardGetTransmitCount(byval hCard as SCARDHANDLE, byval pcTransmitCount as LPDWORD) as LONG
-	declare function SCardReadCacheA(byval hContext as SCARDCONTEXT, byval CardIdentifier as UUID ptr, byval FreshnessCounter as DWORD, byval LookupName as LPSTR, byval Data_ as PBYTE, byval DataLen as DWORD ptr) as LONG
-	declare function SCardReadCacheW(byval hContext as SCARDCONTEXT, byval CardIdentifier as UUID ptr, byval FreshnessCounter as DWORD, byval LookupName as LPWSTR, byval Data_ as PBYTE, byval DataLen as DWORD ptr) as LONG
+	declare function SCardReadCacheA(byval hContext as SCARDCONTEXT, byval CardIdentifier as UUID ptr, byval FreshnessCounter as DWORD, byval LookupName as LPSTR, byval Data as PBYTE, byval DataLen as DWORD ptr) as LONG
+	declare function SCardReadCacheW(byval hContext as SCARDCONTEXT, byval CardIdentifier as UUID ptr, byval FreshnessCounter as DWORD, byval LookupName as LPWSTR, byval Data as PBYTE, byval DataLen as DWORD ptr) as LONG
 #endif
 
 #if defined(UNICODE) and (_WIN32_WINNT = &h0602)
@@ -465,8 +465,8 @@ declare function SCardDlgExtendedError() as LONG
 #endif
 
 #if _WIN32_WINNT = &h0602
-	declare function SCardWriteCacheA(byval hContext as SCARDCONTEXT, byval CardIdentifier as UUID ptr, byval FreshnessCounter as DWORD, byval LookupName as LPSTR, byval Data_ as PBYTE, byval DataLen as DWORD) as LONG
-	declare function SCardWriteCacheW(byval hContext as SCARDCONTEXT, byval CardIdentifier as UUID ptr, byval FreshnessCounter as DWORD, byval LookupName as LPWSTR, byval Data_ as PBYTE, byval DataLen as DWORD) as LONG
+	declare function SCardWriteCacheA(byval hContext as SCARDCONTEXT, byval CardIdentifier as UUID ptr, byval FreshnessCounter as DWORD, byval LookupName as LPSTR, byval Data as PBYTE, byval DataLen as DWORD) as LONG
+	declare function SCardWriteCacheW(byval hContext as SCARDCONTEXT, byval CardIdentifier as UUID ptr, byval FreshnessCounter as DWORD, byval LookupName as LPWSTR, byval Data as PBYTE, byval DataLen as DWORD) as LONG
 #endif
 
 #if defined(UNICODE) and (_WIN32_WINNT = &h0602)

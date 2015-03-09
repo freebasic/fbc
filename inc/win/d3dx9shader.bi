@@ -5,9 +5,6 @@
 
 extern "Windows"
 
-type ID3DXConstantTableVtbl as ID3DXConstantTableVtbl_
-type ID3DXIncludeVtbl as ID3DXIncludeVtbl_
-
 #define __D3DX9SHADER_H__
 #define D3DXSHADER_DEBUG &h1
 #define D3DXSHADER_SKIPVALIDATION &h2
@@ -111,12 +108,14 @@ type LPD3DXCONSTANT_DESC as _D3DXCONSTANT_DESC ptr
 
 extern IID_ID3DXConstantTable as const GUID
 
+type ID3DXConstantTableVtbl as ID3DXConstantTableVtbl_
+
 type ID3DXConstantTable
 	lpVtbl as ID3DXConstantTableVtbl ptr
 end type
 
 type ID3DXConstantTableVtbl_
-	QueryInterface as function(byval This as ID3DXConstantTable ptr, byval iid as const IID const ptr, byval out_ as any ptr ptr) as HRESULT
+	QueryInterface as function(byval This as ID3DXConstantTable ptr, byval iid as const IID const ptr, byval out as any ptr ptr) as HRESULT
 	AddRef as function(byval This as ID3DXConstantTable ptr) as ULONG
 	Release as function(byval This as ID3DXConstantTable ptr) as ULONG
 	GetBufferPointer as function(byval This as ID3DXConstantTable ptr) as any ptr
@@ -125,10 +124,10 @@ type ID3DXConstantTableVtbl_
 	GetConstantDesc as function(byval This as ID3DXConstantTable ptr, byval hConstant as D3DXHANDLE, byval pConstantDesc as D3DXCONSTANT_DESC ptr, byval pCount as UINT ptr) as HRESULT
 	GetSamplerIndex as function(byval This as ID3DXConstantTable ptr, byval hConstant as D3DXHANDLE) as UINT
 	GetConstant as function(byval This as ID3DXConstantTable ptr, byval hConstant as D3DXHANDLE, byval Index as UINT) as D3DXHANDLE
-	GetConstantByName as function(byval This as ID3DXConstantTable ptr, byval constant as D3DXHANDLE, byval name_ as const zstring ptr) as D3DXHANDLE
+	GetConstantByName as function(byval This as ID3DXConstantTable ptr, byval constant as D3DXHANDLE, byval name as const zstring ptr) as D3DXHANDLE
 	GetConstantElement as function(byval This as ID3DXConstantTable ptr, byval hConstant as D3DXHANDLE, byval Index as UINT) as D3DXHANDLE
 	SetDefaults as function(byval This as ID3DXConstantTable ptr, byval device as IDirect3DDevice9 ptr) as HRESULT
-	SetValue as function(byval This as ID3DXConstantTable ptr, byval device as IDirect3DDevice9 ptr, byval constant as D3DXHANDLE, byval data_ as const any ptr, byval data_size as UINT) as HRESULT
+	SetValue as function(byval This as ID3DXConstantTable ptr, byval device as IDirect3DDevice9 ptr, byval constant as D3DXHANDLE, byval data as const any ptr, byval data_size as UINT) as HRESULT
 	SetBool as function(byval This as ID3DXConstantTable ptr, byval device as IDirect3DDevice9 ptr, byval constant as D3DXHANDLE, byval value as WINBOOL) as HRESULT
 	SetBoolArray as function(byval This as ID3DXConstantTable ptr, byval device as IDirect3DDevice9 ptr, byval constant as D3DXHANDLE, byval values as const WINBOOL ptr, byval value_count as UINT) as HRESULT
 	SetInt as function(byval This as ID3DXConstantTable ptr, byval device as IDirect3DDevice9 ptr, byval constant as D3DXHANDLE, byval value as INT_) as HRESULT
@@ -201,13 +200,15 @@ end enum
 type D3DXINCLUDE_TYPE as _D3DXINCLUDE_TYPE
 type LPD3DXINCLUDE_TYPE as _D3DXINCLUDE_TYPE ptr
 
+type ID3DXIncludeVtbl as ID3DXIncludeVtbl_
+
 type ID3DXInclude
 	lpVtbl as ID3DXIncludeVtbl ptr
 end type
 
 type ID3DXIncludeVtbl_
-	Open as function(byval This as ID3DXInclude ptr, byval include_type as D3DXINCLUDE_TYPE, byval filename as const zstring ptr, byval parent_data as const any ptr, byval data_ as const any ptr ptr, byval bytes as UINT ptr) as HRESULT
-	Close as function(byval This as ID3DXInclude ptr, byval data_ as const any ptr) as HRESULT
+	Open as function(byval This as ID3DXInclude ptr, byval include_type as D3DXINCLUDE_TYPE, byval filename as const zstring ptr, byval parent_data as const any ptr, byval data as const any ptr ptr, byval bytes as UINT ptr) as HRESULT
+	Close as function(byval This as ID3DXInclude ptr, byval data as const any ptr) as HRESULT
 end type
 
 #define ID3DXInclude_Open(p, a, b, c, d, e) (p)->lpVtbl->Open(p, a, b, c, d, e)
@@ -219,10 +220,10 @@ declare function D3DXGetPixelShaderProfile(byval device as IDirect3DDevice9 ptr)
 declare function D3DXGetShaderSize(byval byte_code as const DWORD ptr) as UINT
 declare function D3DXGetShaderVersion(byval byte_code as const DWORD ptr) as DWORD
 declare function D3DXGetVertexShaderProfile(byval device as IDirect3DDevice9 ptr) as const zstring ptr
-declare function D3DXFindShaderComment(byval byte_code as const DWORD ptr, byval fourcc as DWORD, byval data_ as const any ptr ptr, byval size as UINT ptr) as HRESULT
+declare function D3DXFindShaderComment(byval byte_code as const DWORD ptr, byval fourcc as DWORD, byval data as const any ptr ptr, byval size as UINT ptr) as HRESULT
 declare function D3DXGetShaderSamplers(byval byte_code as const DWORD ptr, byval samplers as const zstring ptr ptr, byval count as UINT ptr) as HRESULT
-declare function D3DXAssembleShaderFromFileA(byval filename as const zstring ptr, byval defines as const D3DXMACRO ptr, byval include_ as ID3DXInclude ptr, byval flags as DWORD, byval shader as ID3DXBuffer ptr ptr, byval error_messages as ID3DXBuffer ptr ptr) as HRESULT
-declare function D3DXAssembleShaderFromFileW(byval filename as const wstring ptr, byval defines as const D3DXMACRO ptr, byval include_ as ID3DXInclude ptr, byval flags as DWORD, byval shader as ID3DXBuffer ptr ptr, byval error_messages as ID3DXBuffer ptr ptr) as HRESULT
+declare function D3DXAssembleShaderFromFileA(byval filename as const zstring ptr, byval defines as const D3DXMACRO ptr, byval include as ID3DXInclude ptr, byval flags as DWORD, byval shader as ID3DXBuffer ptr ptr, byval error_messages as ID3DXBuffer ptr ptr) as HRESULT
+declare function D3DXAssembleShaderFromFileW(byval filename as const wstring ptr, byval defines as const D3DXMACRO ptr, byval include as ID3DXInclude ptr, byval flags as DWORD, byval shader as ID3DXBuffer ptr ptr, byval error_messages as ID3DXBuffer ptr ptr) as HRESULT
 
 #ifdef UNICODE
 	#define D3DXAssembleShaderFromFile D3DXAssembleShaderFromFileW
@@ -230,8 +231,8 @@ declare function D3DXAssembleShaderFromFileW(byval filename as const wstring ptr
 	#define D3DXAssembleShaderFromFile D3DXAssembleShaderFromFileA
 #endif
 
-declare function D3DXAssembleShaderFromResourceA(byval module as HMODULE, byval resource as const zstring ptr, byval defines as const D3DXMACRO ptr, byval include_ as ID3DXInclude ptr, byval flags as DWORD, byval shader as ID3DXBuffer ptr ptr, byval error_messages as ID3DXBuffer ptr ptr) as HRESULT
-declare function D3DXAssembleShaderFromResourceW(byval module as HMODULE, byval resource as const wstring ptr, byval defines as const D3DXMACRO ptr, byval include_ as ID3DXInclude ptr, byval flags as DWORD, byval shader as ID3DXBuffer ptr ptr, byval error_messages as ID3DXBuffer ptr ptr) as HRESULT
+declare function D3DXAssembleShaderFromResourceA(byval module as HMODULE, byval resource as const zstring ptr, byval defines as const D3DXMACRO ptr, byval include as ID3DXInclude ptr, byval flags as DWORD, byval shader as ID3DXBuffer ptr ptr, byval error_messages as ID3DXBuffer ptr ptr) as HRESULT
+declare function D3DXAssembleShaderFromResourceW(byval module as HMODULE, byval resource as const wstring ptr, byval defines as const D3DXMACRO ptr, byval include as ID3DXInclude ptr, byval flags as DWORD, byval shader as ID3DXBuffer ptr ptr, byval error_messages as ID3DXBuffer ptr ptr) as HRESULT
 
 #ifdef UNICODE
 	#define D3DXAssembleShaderFromResource D3DXAssembleShaderFromResourceW
@@ -239,10 +240,10 @@ declare function D3DXAssembleShaderFromResourceW(byval module as HMODULE, byval 
 	#define D3DXAssembleShaderFromResource D3DXAssembleShaderFromResourceA
 #endif
 
-declare function D3DXAssembleShader(byval data_ as const zstring ptr, byval data_len as UINT, byval defines as const D3DXMACRO ptr, byval include_ as ID3DXInclude ptr, byval flags as DWORD, byval shader as ID3DXBuffer ptr ptr, byval error_messages as ID3DXBuffer ptr ptr) as HRESULT
-declare function D3DXCompileShader(byval src_data as const zstring ptr, byval data_len as UINT, byval defines as const D3DXMACRO ptr, byval include_ as ID3DXInclude ptr, byval function_name as const zstring ptr, byval profile as const zstring ptr, byval flags as DWORD, byval shader as ID3DXBuffer ptr ptr, byval error_messages as ID3DXBuffer ptr ptr, byval constant_table as ID3DXConstantTable ptr ptr) as HRESULT
-declare function D3DXCompileShaderFromFileA(byval filename as const zstring ptr, byval defines as const D3DXMACRO ptr, byval include_ as ID3DXInclude ptr, byval entrypoint as const zstring ptr, byval profile as const zstring ptr, byval flags as DWORD, byval shader as ID3DXBuffer ptr ptr, byval error_messages as ID3DXBuffer ptr ptr, byval constant_table as ID3DXConstantTable ptr ptr) as HRESULT
-declare function D3DXCompileShaderFromFileW(byval filename as const wstring ptr, byval defines as const D3DXMACRO ptr, byval include_ as ID3DXInclude ptr, byval entrypoint as const zstring ptr, byval profile as const zstring ptr, byval flags as DWORD, byval shader as ID3DXBuffer ptr ptr, byval error_messages as ID3DXBuffer ptr ptr, byval constant_table as ID3DXConstantTable ptr ptr) as HRESULT
+declare function D3DXAssembleShader(byval data as const zstring ptr, byval data_len as UINT, byval defines as const D3DXMACRO ptr, byval include as ID3DXInclude ptr, byval flags as DWORD, byval shader as ID3DXBuffer ptr ptr, byval error_messages as ID3DXBuffer ptr ptr) as HRESULT
+declare function D3DXCompileShader(byval src_data as const zstring ptr, byval data_len as UINT, byval defines as const D3DXMACRO ptr, byval include as ID3DXInclude ptr, byval function_name as const zstring ptr, byval profile as const zstring ptr, byval flags as DWORD, byval shader as ID3DXBuffer ptr ptr, byval error_messages as ID3DXBuffer ptr ptr, byval constant_table as ID3DXConstantTable ptr ptr) as HRESULT
+declare function D3DXCompileShaderFromFileA(byval filename as const zstring ptr, byval defines as const D3DXMACRO ptr, byval include as ID3DXInclude ptr, byval entrypoint as const zstring ptr, byval profile as const zstring ptr, byval flags as DWORD, byval shader as ID3DXBuffer ptr ptr, byval error_messages as ID3DXBuffer ptr ptr, byval constant_table as ID3DXConstantTable ptr ptr) as HRESULT
+declare function D3DXCompileShaderFromFileW(byval filename as const wstring ptr, byval defines as const D3DXMACRO ptr, byval include as ID3DXInclude ptr, byval entrypoint as const zstring ptr, byval profile as const zstring ptr, byval flags as DWORD, byval shader as ID3DXBuffer ptr ptr, byval error_messages as ID3DXBuffer ptr ptr, byval constant_table as ID3DXConstantTable ptr ptr) as HRESULT
 
 #ifdef UNICODE
 	#define D3DXCompileShaderFromFile D3DXCompileShaderFromFileW
@@ -250,8 +251,8 @@ declare function D3DXCompileShaderFromFileW(byval filename as const wstring ptr,
 	#define D3DXCompileShaderFromFile D3DXCompileShaderFromFileA
 #endif
 
-declare function D3DXCompileShaderFromResourceA(byval module as HMODULE, byval resource as const zstring ptr, byval defines as const D3DXMACRO ptr, byval include_ as ID3DXInclude ptr, byval entrypoint as const zstring ptr, byval profile as const zstring ptr, byval flags as DWORD, byval shader as ID3DXBuffer ptr ptr, byval error_messages as ID3DXBuffer ptr ptr, byval constant_table as ID3DXConstantTable ptr ptr) as HRESULT
-declare function D3DXCompileShaderFromResourceW(byval module as HMODULE, byval resource as const wstring ptr, byval defines as const D3DXMACRO ptr, byval include_ as ID3DXInclude ptr, byval entrypoint as const zstring ptr, byval profile as const zstring ptr, byval flags as DWORD, byval shader as ID3DXBuffer ptr ptr, byval error_messages as ID3DXBuffer ptr ptr, byval constant_table as ID3DXConstantTable ptr ptr) as HRESULT
+declare function D3DXCompileShaderFromResourceA(byval module as HMODULE, byval resource as const zstring ptr, byval defines as const D3DXMACRO ptr, byval include as ID3DXInclude ptr, byval entrypoint as const zstring ptr, byval profile as const zstring ptr, byval flags as DWORD, byval shader as ID3DXBuffer ptr ptr, byval error_messages as ID3DXBuffer ptr ptr, byval constant_table as ID3DXConstantTable ptr ptr) as HRESULT
+declare function D3DXCompileShaderFromResourceW(byval module as HMODULE, byval resource as const wstring ptr, byval defines as const D3DXMACRO ptr, byval include as ID3DXInclude ptr, byval entrypoint as const zstring ptr, byval profile as const zstring ptr, byval flags as DWORD, byval shader as ID3DXBuffer ptr ptr, byval error_messages as ID3DXBuffer ptr ptr, byval constant_table as ID3DXConstantTable ptr ptr) as HRESULT
 
 #ifdef UNICODE
 	#define D3DXCompileShaderFromResource D3DXCompileShaderFromResourceW
@@ -259,9 +260,9 @@ declare function D3DXCompileShaderFromResourceW(byval module as HMODULE, byval r
 	#define D3DXCompileShaderFromResource D3DXCompileShaderFromResourceA
 #endif
 
-declare function D3DXPreprocessShader(byval data_ as const zstring ptr, byval data_len as UINT, byval defines as const D3DXMACRO ptr, byval include_ as ID3DXInclude ptr, byval shader as ID3DXBuffer ptr ptr, byval error_messages as ID3DXBuffer ptr ptr) as HRESULT
-declare function D3DXPreprocessShaderFromFileA(byval filename as const zstring ptr, byval defines as const D3DXMACRO ptr, byval include_ as ID3DXInclude ptr, byval shader as ID3DXBuffer ptr ptr, byval error_messages as ID3DXBuffer ptr ptr) as HRESULT
-declare function D3DXPreprocessShaderFromFileW(byval filename as const wstring ptr, byval defines as const D3DXMACRO ptr, byval include_ as ID3DXInclude ptr, byval shader as ID3DXBuffer ptr ptr, byval error_messages as ID3DXBuffer ptr ptr) as HRESULT
+declare function D3DXPreprocessShader(byval data as const zstring ptr, byval data_len as UINT, byval defines as const D3DXMACRO ptr, byval include as ID3DXInclude ptr, byval shader as ID3DXBuffer ptr ptr, byval error_messages as ID3DXBuffer ptr ptr) as HRESULT
+declare function D3DXPreprocessShaderFromFileA(byval filename as const zstring ptr, byval defines as const D3DXMACRO ptr, byval include as ID3DXInclude ptr, byval shader as ID3DXBuffer ptr ptr, byval error_messages as ID3DXBuffer ptr ptr) as HRESULT
+declare function D3DXPreprocessShaderFromFileW(byval filename as const wstring ptr, byval defines as const D3DXMACRO ptr, byval include as ID3DXInclude ptr, byval shader as ID3DXBuffer ptr ptr, byval error_messages as ID3DXBuffer ptr ptr) as HRESULT
 
 #ifdef UNICODE
 	#define D3DXPreprocessShaderFromFile D3DXPreprocessShaderFromFileW
@@ -269,8 +270,8 @@ declare function D3DXPreprocessShaderFromFileW(byval filename as const wstring p
 	#define D3DXPreprocessShaderFromFile D3DXPreprocessShaderFromFileA
 #endif
 
-declare function D3DXPreprocessShaderFromResourceA(byval module as HMODULE, byval resource as const zstring ptr, byval defines as const D3DXMACRO ptr, byval include_ as ID3DXInclude ptr, byval shader as ID3DXBuffer ptr ptr, byval error_messages as ID3DXBuffer ptr ptr) as HRESULT
-declare function D3DXPreprocessShaderFromResourceW(byval module as HMODULE, byval resource as const wstring ptr, byval defines as const D3DXMACRO ptr, byval include_ as ID3DXInclude ptr, byval shader as ID3DXBuffer ptr ptr, byval error_messages as ID3DXBuffer ptr ptr) as HRESULT
+declare function D3DXPreprocessShaderFromResourceA(byval module as HMODULE, byval resource as const zstring ptr, byval defines as const D3DXMACRO ptr, byval include as ID3DXInclude ptr, byval shader as ID3DXBuffer ptr ptr, byval error_messages as ID3DXBuffer ptr ptr) as HRESULT
+declare function D3DXPreprocessShaderFromResourceW(byval module as HMODULE, byval resource as const wstring ptr, byval defines as const D3DXMACRO ptr, byval include as ID3DXInclude ptr, byval shader as ID3DXBuffer ptr ptr, byval error_messages as ID3DXBuffer ptr ptr) as HRESULT
 
 #ifdef UNICODE
 	#define D3DXPreprocessShaderFromResource D3DXPreprocessShaderFromResourceW

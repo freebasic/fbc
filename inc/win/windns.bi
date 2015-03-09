@@ -2,14 +2,6 @@
 
 #include once "_mingw_unicode.bi"
 
-'' The following symbols have been renamed:
-''     inside struct _DnsRecordW:
-''         inside union ___DnsRecordW_Data:
-''             field Null => Null_
-''     inside struct _DnsRecordA:
-''         inside union ___DnsRecordA_Data:
-''             field Null => Null_
-
 extern "Windows"
 
 #define _WINDNS_INCLUDED_
@@ -145,28 +137,6 @@ end type
 
 type DNS_WIRE_RECORD as _DNS_WIRE_RECORD
 type PDNS_WIRE_RECORD as _DNS_WIRE_RECORD ptr
-
-type DNS_CONFIG_TYPE as long
-enum
-	DnsConfigPrimaryDomainName_W
-	DnsConfigPrimaryDomainName_A
-	DnsConfigPrimaryDomainName_UTF8
-	DnsConfigAdapterDomainName_W
-	DnsConfigAdapterDomainName_A
-	DnsConfigAdapterDomainName_UTF8
-	DnsConfigDnsServerList
-	DnsConfigSearchList
-	DnsConfigAdapterInfo
-	DnsConfigPrimaryHostNameRegistrationEnabled
-	DnsConfigAdapterHostNameRegistrationEnabled
-	DnsConfigAddressRegistrationMaxCount
-	DnsConfigHostName_W
-	DnsConfigHostName_A
-	DnsConfigHostName_UTF8
-	DnsConfigFullHostName_W
-	DnsConfigFullHostName_A
-	DnsConfigFullHostName_UTF8
-end enum
 
 #define DNS_OPCODE_QUERY 0
 #define DNS_OPCODE_IQUERY 1
@@ -375,6 +345,29 @@ end enum
 #define IS_WORD_ALIGNED(p) ((cast(UINT_PTR, (p)) and cast(UINT_PTR, 1)) = 0)
 #define IS_DWORD_ALIGNED(p) ((cast(UINT_PTR, (p)) and cast(UINT_PTR, 3)) = 0)
 #define IS_QWORD_ALIGNED(p) ((cast(UINT_PTR, (p)) and cast(UINT_PTR, 7)) = 0)
+
+type DNS_CONFIG_TYPE as long
+enum
+	DnsConfigPrimaryDomainName_W
+	DnsConfigPrimaryDomainName_A
+	DnsConfigPrimaryDomainName_UTF8
+	DnsConfigAdapterDomainName_W
+	DnsConfigAdapterDomainName_A
+	DnsConfigAdapterDomainName_UTF8
+	DnsConfigDnsServerList
+	DnsConfigSearchList
+	DnsConfigAdapterInfo
+	DnsConfigPrimaryHostNameRegistrationEnabled
+	DnsConfigAdapterHostNameRegistrationEnabled
+	DnsConfigAddressRegistrationMaxCount
+	DnsConfigHostName_W
+	DnsConfigHostName_A
+	DnsConfigHostName_UTF8
+	DnsConfigFullHostName_W
+	DnsConfigFullHostName_A
+	DnsConfigFullHostName_UTF8
+end enum
+
 #define DNS_CONFIG_FLAG_ALLOC &h00000001
 
 declare function DnsQueryConfig(byval Config as DNS_CONFIG_TYPE, byval Flag as DWORD, byval pwsAdapterName as PWSTR, byval pReserved as PVOID, byval pBuffer as PVOID, byval pBufferLength as PDWORD) as DNS_STATUS
@@ -731,7 +724,7 @@ type PDNS_WINSR_DATAA as DNS_WINSR_DATAA ptr
 
 type _DnsRecordFlags
 	Section : 2 as DWORD
-	Delete__ : 1 as DWORD
+	Delete_ : 1 as DWORD
 	CharSet : 2 as DWORD
 	Unused : 3 as DWORD
 	Reserved : 24 as DWORD
@@ -763,12 +756,12 @@ type DNS_SECTION as _DnsSection
 #define DNSREC_DELETE &h00000004
 #define DNSREC_NOEXIST &h00000004
 
-union ___DnsRecordW_Flags
+union _DnsRecordW_Flags
 	DW as DWORD
 	S as DNS_RECORD_FLAGS
 end union
 
-union ___DnsRecordW_Data
+union _DnsRecordW_Data
 	A as DNS_A_DATA
 	SOA as DNS_SOA_DATAW
 	PTR as DNS_PTR_DATAW
@@ -808,21 +801,21 @@ type _DnsRecordW
 	pName as PWSTR
 	wType as WORD
 	wDataLength as WORD
-	Flags as ___DnsRecordW_Flags
+	Flags as _DnsRecordW_Flags
 	dwTtl as DWORD
 	dwReserved as DWORD
-	Data as ___DnsRecordW_Data
+	Data as _DnsRecordW_Data
 end type
 
 type DNS_RECORDW as _DnsRecordW
 type PDNS_RECORDW as _DnsRecordW ptr
 
-union ___DnsRecordA_Flags
+union _DnsRecordA_Flags
 	DW as DWORD
 	S as DNS_RECORD_FLAGS
 end union
 
-union ___DnsRecordA_Data
+union _DnsRecordA_Data
 	A as DNS_A_DATA
 	SOA as DNS_SOA_DATAA
 	PTR as DNS_PTR_DATAA
@@ -862,10 +855,10 @@ type _DnsRecordA
 	pName as PSTR
 	wType as WORD
 	wDataLength as WORD
-	Flags as ___DnsRecordA_Flags
+	Flags as _DnsRecordA_Flags
 	dwTtl as DWORD
 	dwReserved as DWORD
-	Data as ___DnsRecordA_Data
+	Data as _DnsRecordA_Data
 end type
 
 type DNS_RECORDA as _DnsRecordA

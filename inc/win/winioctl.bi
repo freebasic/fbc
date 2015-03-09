@@ -15,6 +15,18 @@ extern GUID_DEVINTERFACE_STORAGEPORT as const GUID
 extern GUID_DEVINTERFACE_COMPORT as const GUID
 extern GUID_DEVINTERFACE_SERENUM_BUS_ENUMERATOR as const GUID
 
+#define DiskClassGuid GUID_DEVINTERFACE_DISK
+#define CdRomClassGuid GUID_DEVINTERFACE_CDROM
+#define PartitionClassGuid GUID_DEVINTERFACE_PARTITION
+#define TapeClassGuid GUID_DEVINTERFACE_TAPE
+#define WriteOnceDiskClassGuid GUID_DEVINTERFACE_WRITEONCEDISK
+#define VolumeClassGuid GUID_DEVINTERFACE_VOLUME
+#define MediumChangerClassGuid GUID_DEVINTERFACE_MEDIUMCHANGER
+#define FloppyClassGuid GUID_DEVINTERFACE_FLOPPY
+#define CdChangerClassGuid GUID_DEVINTERFACE_CDCHANGER
+#define StoragePortClassGuid GUID_DEVINTERFACE_STORAGEPORT
+#define GUID_CLASS_COMPORT GUID_DEVINTERFACE_COMPORT
+#define GUID_SERENUM_BUS_ENUMERATOR GUID_DEVINTERFACE_SERENUM_BUS_ENUMERATOR
 #define _WINIOCTL_
 #define _DEVIOCTL_
 #define DEVICE_TYPE DWORD
@@ -338,7 +350,7 @@ end enum
 type STORAGE_BUS_TYPE as _STORAGE_BUS_TYPE
 type PSTORAGE_BUS_TYPE as _STORAGE_BUS_TYPE ptr
 
-type ___DEVICE_MEDIA_INFO_DiskInfo
+type _DEVICE_MEDIA_INFO_DeviceSpecific_DiskInfo
 	Cylinders as LARGE_INTEGER
 	MediaType as STORAGE_MEDIA_TYPE
 	TracksPerCylinder as DWORD
@@ -348,7 +360,7 @@ type ___DEVICE_MEDIA_INFO_DiskInfo
 	MediaCharacteristics as DWORD
 end type
 
-type ___DEVICE_MEDIA_INFO_RemovableDiskInfo
+type _DEVICE_MEDIA_INFO_DeviceSpecific_RemovableDiskInfo
 	Cylinders as LARGE_INTEGER
 	MediaType as STORAGE_MEDIA_TYPE
 	TracksPerCylinder as DWORD
@@ -358,31 +370,31 @@ type ___DEVICE_MEDIA_INFO_RemovableDiskInfo
 	MediaCharacteristics as DWORD
 end type
 
-type ___DEVICE_MEDIA_INFO_ScsiInformation
+type _DEVICE_MEDIA_INFO_DeviceSpecific_TapeInfo_BusSpecificData_ScsiInformation
 	MediumType as UBYTE
 	DensityCode as UBYTE
 end type
 
-union ___DEVICE_MEDIA_INFO_BusSpecificData
-	ScsiInformation as ___DEVICE_MEDIA_INFO_ScsiInformation
+union _DEVICE_MEDIA_INFO_DeviceSpecific_TapeInfo_BusSpecificData
+	ScsiInformation as _DEVICE_MEDIA_INFO_DeviceSpecific_TapeInfo_BusSpecificData_ScsiInformation
 end union
 
-type ___DEVICE_MEDIA_INFO_TapeInfo
+type _DEVICE_MEDIA_INFO_DeviceSpecific_TapeInfo
 	MediaType as STORAGE_MEDIA_TYPE
 	MediaCharacteristics as DWORD
 	CurrentBlockSize as DWORD
 	BusType as STORAGE_BUS_TYPE
-	BusSpecificData as ___DEVICE_MEDIA_INFO_BusSpecificData
+	BusSpecificData as _DEVICE_MEDIA_INFO_DeviceSpecific_TapeInfo_BusSpecificData
 end type
 
-union ___DEVICE_MEDIA_INFO_DeviceSpecific
-	DiskInfo as ___DEVICE_MEDIA_INFO_DiskInfo
-	RemovableDiskInfo as ___DEVICE_MEDIA_INFO_RemovableDiskInfo
-	TapeInfo as ___DEVICE_MEDIA_INFO_TapeInfo
+union _DEVICE_MEDIA_INFO_DeviceSpecific
+	DiskInfo as _DEVICE_MEDIA_INFO_DeviceSpecific_DiskInfo
+	RemovableDiskInfo as _DEVICE_MEDIA_INFO_DeviceSpecific_RemovableDiskInfo
+	TapeInfo as _DEVICE_MEDIA_INFO_DeviceSpecific_TapeInfo
 end union
 
 type _DEVICE_MEDIA_INFO
-	DeviceSpecific as ___DEVICE_MEDIA_INFO_DeviceSpecific
+	DeviceSpecific as _DEVICE_MEDIA_INFO_DeviceSpecific
 end type
 
 type DEVICE_MEDIA_INFO as _DEVICE_MEDIA_INFO
@@ -787,12 +799,12 @@ end type
 type DISK_DETECTION_INFO as _DISK_DETECTION_INFO
 type PDISK_DETECTION_INFO as _DISK_DETECTION_INFO ptr
 
-type ___DISK_PARTITION_INFO_Mbr
+type _DISK_PARTITION_INFO_Mbr
 	Signature as DWORD
 	CheckSum as DWORD
 end type
 
-type ___DISK_PARTITION_INFO_Gpt
+type _DISK_PARTITION_INFO_Gpt
 	DiskId as GUID
 end type
 
@@ -801,8 +813,8 @@ type _DISK_PARTITION_INFO
 	PartitionStyle as PARTITION_STYLE
 
 	union
-		Mbr as ___DISK_PARTITION_INFO_Mbr
-		Gpt as ___DISK_PARTITION_INFO_Gpt
+		Mbr as _DISK_PARTITION_INFO_Mbr
+		Gpt as _DISK_PARTITION_INFO_Gpt
 	end union
 end type
 
@@ -836,13 +848,13 @@ enum
 	KeepReadData
 end enum
 
-type ___DISK_CACHE_INFORMATION_ScalarPrefetch
+type _DISK_CACHE_INFORMATION_ScalarPrefetch
 	Minimum as WORD
 	Maximum as WORD
 	MaximumBlocks as WORD
 end type
 
-type ___DISK_CACHE_INFORMATION_BlockPrefetch
+type _DISK_CACHE_INFORMATION_BlockPrefetch
 	Minimum as WORD
 	Maximum as WORD
 end type
@@ -857,8 +869,8 @@ type _DISK_CACHE_INFORMATION
 	PrefetchScalar as BOOLEAN
 
 	union
-		ScalarPrefetch as ___DISK_CACHE_INFORMATION_ScalarPrefetch
-		BlockPrefetch as ___DISK_CACHE_INFORMATION_BlockPrefetch
+		ScalarPrefetch as _DISK_CACHE_INFORMATION_ScalarPrefetch
+		BlockPrefetch as _DISK_CACHE_INFORMATION_BlockPrefetch
 	end union
 end type
 
@@ -1003,6 +1015,10 @@ type GETVERSIONINPARAMS as _GETVERSIONINPARAMS
 type PGETVERSIONINPARAMS as _GETVERSIONINPARAMS ptr
 type LPGETVERSIONINPARAMS as _GETVERSIONINPARAMS ptr
 
+#define CAP_ATA_ID_CMD 1
+#define CAP_ATAPI_ID_CMD 2
+#define CAP_SMART_CMD 4
+
 type _IDEREGS field = 1
 	bFeaturesReg as UBYTE
 	bSectorCountReg as UBYTE
@@ -1018,9 +1034,11 @@ type IDEREGS as _IDEREGS
 type PIDEREGS as _IDEREGS ptr
 type LPIDEREGS as _IDEREGS ptr
 
-#define CAP_ATA_ID_CMD 1
-#define CAP_ATAPI_ID_CMD 2
-#define CAP_SMART_CMD 4
+#define ATAPI_ID_CMD &hA1
+#define ID_CMD &hEC
+#define SMART_CMD &hB0
+#define SMART_CYL_LOW &h4F
+#define SMART_CYL_HI &hC2
 
 type _SENDCMDINPARAMS field = 1
 	cBufferSize as DWORD
@@ -1035,12 +1053,6 @@ type SENDCMDINPARAMS as _SENDCMDINPARAMS
 type PSENDCMDINPARAMS as _SENDCMDINPARAMS ptr
 type LPSENDCMDINPARAMS as _SENDCMDINPARAMS ptr
 
-#define ATAPI_ID_CMD &hA1
-#define ID_CMD &hEC
-#define SMART_CMD &hB0
-#define SMART_CYL_LOW &h4F
-#define SMART_CYL_HI &hC2
-
 type _DRIVERSTATUS field = 1
 	bDriverError as UBYTE
 	bIDEError as UBYTE
@@ -1051,16 +1063,6 @@ end type
 type DRIVERSTATUS as _DRIVERSTATUS
 type PDRIVERSTATUS as _DRIVERSTATUS ptr
 type LPDRIVERSTATUS as _DRIVERSTATUS ptr
-
-type _SENDCMDOUTPARAMS field = 1
-	cBufferSize as DWORD
-	DriverStatus as DRIVERSTATUS
-	bBuffer(0 to 0) as UBYTE
-end type
-
-type SENDCMDOUTPARAMS as _SENDCMDOUTPARAMS
-type PSENDCMDOUTPARAMS as _SENDCMDOUTPARAMS ptr
-type LPSENDCMDOUTPARAMS as _SENDCMDOUTPARAMS ptr
 
 #define SMART_NO_ERROR 0
 #define SMART_IDE_ERROR 1
@@ -1080,20 +1082,15 @@ type LPSENDCMDOUTPARAMS as _SENDCMDOUTPARAMS ptr
 #define SMART_SHORT_SELFTEST_CAPTIVE 129
 #define SMART_EXTENDED_SELFTEST_CAPTIVE 130
 
-type _ELEMENT_TYPE as long
-enum
-	AllElements
-	ChangerTransport
-	ChangerSlot
-	ChangerIEPort
-	ChangerDrive
-	ChangerDoor
-	ChangerKeypad
-	ChangerMaxElement
-end enum
+type _SENDCMDOUTPARAMS field = 1
+	cBufferSize as DWORD
+	DriverStatus as DRIVERSTATUS
+	bBuffer(0 to 0) as UBYTE
+end type
 
-type ELEMENT_TYPE as _ELEMENT_TYPE
-type PELEMENT_TYPE as _ELEMENT_TYPE ptr
+type SENDCMDOUTPARAMS as _SENDCMDOUTPARAMS
+type PSENDCMDOUTPARAMS as _SENDCMDOUTPARAMS ptr
+type LPSENDCMDOUTPARAMS as _SENDCMDOUTPARAMS ptr
 
 #define READ_ATTRIBUTE_BUFFER_SIZE 512
 #define IDENTIFY_BUFFER_SIZE 512
@@ -1128,6 +1125,21 @@ type PELEMENT_TYPE as _ELEMENT_TYPE ptr
 #define PRODUCT_ID_LENGTH 16
 #define REVISION_LENGTH 4
 #define SERIAL_NUMBER_LENGTH 32
+
+type _ELEMENT_TYPE as long
+enum
+	AllElements
+	ChangerTransport
+	ChangerSlot
+	ChangerIEPort
+	ChangerDrive
+	ChangerDoor
+	ChangerKeypad
+	ChangerMaxElement
+end enum
+
+type ELEMENT_TYPE as _ELEMENT_TYPE
+type PELEMENT_TYPE as _ELEMENT_TYPE ptr
 
 type _CHANGER_ELEMENT
 	ElementType as ELEMENT_TYPE
@@ -1552,7 +1564,7 @@ end type
 
 type PSTARTING_VCN_INPUT_BUFFER as STARTING_VCN_INPUT_BUFFER ptr
 
-type __RETRIEVAL_POINTERS_BUFFER_Extents
+type RETRIEVAL_POINTERS_BUFFER_Extents
 	NextVcn as LARGE_INTEGER
 	Lcn as LARGE_INTEGER
 end type
@@ -1560,7 +1572,7 @@ end type
 type RETRIEVAL_POINTERS_BUFFER
 	ExtentCount as DWORD
 	StartingVcn as LARGE_INTEGER
-	Extents(0 to 0) as __RETRIEVAL_POINTERS_BUFFER_Extents
+	Extents(0 to 0) as RETRIEVAL_POINTERS_BUFFER_Extents
 end type
 
 type PRETRIEVAL_POINTERS_BUFFER as RETRIEVAL_POINTERS_BUFFER ptr
@@ -1809,34 +1821,34 @@ end type
 type EXFAT_STATISTICS as _EXFAT_STATISTICS
 type PEXFAT_STATISTICS as _EXFAT_STATISTICS ptr
 
-type ___NTFS_STATISTICS_MftWritesUserLevel
+type _NTFS_STATISTICS_MftWritesUserLevel
 	Write as WORD
 	Create as WORD
 	SetInfo as WORD
 	Flush as WORD
 end type
 
-type ___NTFS_STATISTICS_Mft2WritesUserLevel
+type _NTFS_STATISTICS_Mft2WritesUserLevel
 	Write as WORD
 	Create as WORD
 	SetInfo as WORD
 	Flush as WORD
 end type
 
-type ___NTFS_STATISTICS_BitmapWritesUserLevel
+type _NTFS_STATISTICS_BitmapWritesUserLevel
 	Write as WORD
 	Create as WORD
 	SetInfo as WORD
 end type
 
-type ___NTFS_STATISTICS_MftBitmapWritesUserLevel
+type _NTFS_STATISTICS_MftBitmapWritesUserLevel
 	Write as WORD
 	Create as WORD
 	SetInfo as WORD
 	Flush as WORD
 end type
 
-type ___NTFS_STATISTICS_Allocate
+type _NTFS_STATISTICS_Allocate
 	Calls as DWORD
 	Clusters as DWORD
 	Hints as DWORD
@@ -1856,13 +1868,13 @@ type _NTFS_STATISTICS
 	MftReadBytes as DWORD
 	MftWrites as DWORD
 	MftWriteBytes as DWORD
-	MftWritesUserLevel as ___NTFS_STATISTICS_MftWritesUserLevel
+	MftWritesUserLevel as _NTFS_STATISTICS_MftWritesUserLevel
 	MftWritesFlushForLogFileFull as WORD
 	MftWritesLazyWriter as WORD
 	MftWritesUserRequest as WORD
 	Mft2Writes as DWORD
 	Mft2WriteBytes as DWORD
-	Mft2WritesUserLevel as ___NTFS_STATISTICS_Mft2WritesUserLevel
+	Mft2WritesUserLevel as _NTFS_STATISTICS_Mft2WritesUserLevel
 	Mft2WritesFlushForLogFileFull as WORD
 	Mft2WritesLazyWriter as WORD
 	Mft2WritesUserRequest as WORD
@@ -1877,7 +1889,7 @@ type _NTFS_STATISTICS
 	BitmapWritesFlushForLogFileFull as WORD
 	BitmapWritesLazyWriter as WORD
 	BitmapWritesUserRequest as WORD
-	BitmapWritesUserLevel as ___NTFS_STATISTICS_BitmapWritesUserLevel
+	BitmapWritesUserLevel as _NTFS_STATISTICS_BitmapWritesUserLevel
 	MftBitmapReads as DWORD
 	MftBitmapReadBytes as DWORD
 	MftBitmapWrites as DWORD
@@ -1885,7 +1897,7 @@ type _NTFS_STATISTICS
 	MftBitmapWritesFlushForLogFileFull as WORD
 	MftBitmapWritesLazyWriter as WORD
 	MftBitmapWritesUserRequest as WORD
-	MftBitmapWritesUserLevel as ___NTFS_STATISTICS_MftBitmapWritesUserLevel
+	MftBitmapWritesUserLevel as _NTFS_STATISTICS_MftBitmapWritesUserLevel
 	UserIndexReads as DWORD
 	UserIndexReadBytes as DWORD
 	UserIndexWrites as DWORD
@@ -1894,7 +1906,7 @@ type _NTFS_STATISTICS
 	LogFileReadBytes as DWORD
 	LogFileWrites as DWORD
 	LogFileWriteBytes as DWORD
-	Allocate as ___NTFS_STATISTICS_Allocate
+	Allocate as _NTFS_STATISTICS_Allocate
 end type
 
 type NTFS_STATISTICS as _NTFS_STATISTICS
@@ -2335,13 +2347,13 @@ type PVOLUME_GET_GPT_ATTRIBUTES_INFORMATION as _VOLUME_GET_GPT_ATTRIBUTES_INFORM
 	type TXFS_START_RM_INFORMATION as _TXFS_START_RM_INFORMATION
 	type PTXFS_START_RM_INFORMATION as _TXFS_START_RM_INFORMATION ptr
 
-	type ___TXFS_GET_METADATA_INFO_OUT_TxfFileId
+	type _TXFS_GET_METADATA_INFO_OUT_TxfFileId
 		LowPart as LONGLONG
 		HighPart as LONGLONG
 	end type
 
 	type _TXFS_GET_METADATA_INFO_OUT
-		TxfFileId as ___TXFS_GET_METADATA_INFO_OUT_TxfFileId
+		TxfFileId as _TXFS_GET_METADATA_INFO_OUT_TxfFileId
 		LockingTransaction as GUID
 		LastLsn as ULONGLONG
 		TransactionState as ULONG
@@ -2584,13 +2596,13 @@ type PVOLUME_GET_GPT_ATTRIBUTES_INFORMATION as _VOLUME_GET_GPT_ATTRIBUTES_INFORM
 	type REQUEST_OPLOCK_OUTPUT_BUFFER as _REQUEST_OPLOCK_OUTPUT_BUFFER
 	type PREQUEST_OPLOCK_OUTPUT_BUFFER as _REQUEST_OPLOCK_OUTPUT_BUFFER ptr
 
-	type ___BOOT_AREA_INFO_BootSectors
+	type _BOOT_AREA_INFO_BootSectors
 		Offset as LARGE_INTEGER
 	end type
 
 	type _BOOT_AREA_INFO
 		BootSectorCount as ULONG
-		BootSectors(0 to 1) as ___BOOT_AREA_INFO_BootSectors
+		BootSectors(0 to 1) as _BOOT_AREA_INFO_BootSectors
 	end type
 
 	type BOOT_AREA_INFO as _BOOT_AREA_INFO
@@ -2707,18 +2719,5 @@ end type
 
 type VOLUME_DISK_EXTENTS as _VOLUME_DISK_EXTENTS
 type PVOLUME_DISK_EXTENTS as _VOLUME_DISK_EXTENTS ptr
-
-#define DiskClassGuid GUID_DEVINTERFACE_DISK
-#define CdRomClassGuid GUID_DEVINTERFACE_CDROM
-#define PartitionClassGuid GUID_DEVINTERFACE_PARTITION
-#define TapeClassGuid GUID_DEVINTERFACE_TAPE
-#define WriteOnceDiskClassGuid GUID_DEVINTERFACE_WRITEONCEDISK
-#define VolumeClassGuid GUID_DEVINTERFACE_VOLUME
-#define MediumChangerClassGuid GUID_DEVINTERFACE_MEDIUMCHANGER
-#define FloppyClassGuid GUID_DEVINTERFACE_FLOPPY
-#define CdChangerClassGuid GUID_DEVINTERFACE_CDCHANGER
-#define StoragePortClassGuid GUID_DEVINTERFACE_STORAGEPORT
-#define GUID_CLASS_COMPORT GUID_DEVINTERFACE_COMPORT
-#define GUID_SERENUM_BUS_ENUMERATOR GUID_DEVINTERFACE_SERENUM_BUS_ENUMERATOR
 
 end extern

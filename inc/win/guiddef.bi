@@ -1,7 +1,6 @@
 #pragma once
 
 #include once "_mingw.bi"
-#include once "crt/string.bi"
 
 #define GUID_DEFINED
 

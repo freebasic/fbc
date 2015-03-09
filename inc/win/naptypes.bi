@@ -1,9 +1,5 @@
 #pragma once
 
-#if _WIN32_WINNT = &h0602
-	#include once "crt/wchar.bi"
-#endif
-
 #define _INC_NAPTYPES
 
 #if _WIN32_WINNT = &h0602

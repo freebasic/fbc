@@ -7,10 +7,6 @@
 #include once "ncrypt.bi"
 #include once "winapifamily.bi"
 
-'' The following symbols have been renamed:
-''     inside struct _PUBLICKEYSTRUC:
-''         field bType => bType_
-
 extern "Windows"
 
 #define __WINCRYPT_H__
@@ -481,7 +477,7 @@ end type
 type PROV_ENUMALGS_EX as _PROV_ENUMALGS_EX
 
 type _PUBLICKEYSTRUC
-	bType_ as UBYTE
+	bType as UBYTE
 	bVersion as UBYTE
 	reserved as WORD
 	aiKeyAlg as ALG_ID
@@ -2292,7 +2288,7 @@ type HCRYPTMSG as any ptr
 #define CMSG_SIGNED_AND_ENVELOPED 4
 #define CMSG_HASHED 5
 #define CMSG_ENCRYPTED 6
-#define CMSG_ALL_FLAGS (not __MSABI_LONG(0))
+#define CMSG_ALL_FLAGS (not __MSABI_LONG(0u))
 #define CMSG_DATA_FLAG (1 shl CMSG_DATA)
 #define CMSG_SIGNED_FLAG (1 shl CMSG_SIGNED)
 #define CMSG_ENVELOPED_FLAG (1 shl CMSG_ENVELOPED)
@@ -3459,7 +3455,7 @@ declare function CertAddCertificateContextToStore(byval hCertStore as HCERTSTORE
 #define CERT_STORE_CERTIFICATE_CONTEXT 1
 #define CERT_STORE_CRL_CONTEXT 2
 #define CERT_STORE_CTL_CONTEXT 3
-#define CERT_STORE_ALL_CONTEXT_FLAG (not __MSABI_LONG(0))
+#define CERT_STORE_ALL_CONTEXT_FLAG (not __MSABI_LONG(0u))
 #define CERT_STORE_CERTIFICATE_CONTEXT_FLAG (1 shl CERT_STORE_CERTIFICATE_CONTEXT)
 #define CERT_STORE_CRL_CONTEXT_FLAG (1 shl CERT_STORE_CRL_CONTEXT)
 #define CERT_STORE_CTL_CONTEXT_FLAG (1 shl CERT_STORE_CTL_CONTEXT)

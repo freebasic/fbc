@@ -7,10 +7,6 @@
 
 extern "Windows"
 
-#if _WIN32_WINNT = &h0602
-	type NET_ADDRESS_INFO_ as NET_ADDRESS_INFO__
-#endif
-
 #define _INC_SHELLAPI
 
 #ifdef __FB_64BIT__
@@ -1240,21 +1236,15 @@ declare function IsLFNDriveW(byval pszPath as LPCWSTR) as WINBOOL
 	type PFNSHOWSHAREFOLDERUIW as function(byval hwndParent as HWND, byval pszPath as PCWSTR) as HRESULT
 #endif
 
-#if (not defined(__FB_64BIT__)) and (_WIN32_WINNT = &h0602)
-	declare function InitNetworkAddressControl() as WINBOOL
-#endif
-
 #if _WIN32_WINNT = &h0602
 	#define WC_NETADDRESS wstr("msctls_netaddress")
-#endif
 
-#if defined(__FB_64BIT__) and (_WIN32_WINNT = &h0602)
 	declare function InitNetworkAddressControl() as WINBOOL
-#endif
 
-#if _WIN32_WINNT = &h0602
 	#define NCM_GETADDRESS (WM_USER + 1)
 	#define NetAddr_GetAddress(hwnd, pv) cast(HRESULT, SNDMSG(hwnd, NCM_GETADDRESS, 0, cast(LPARAM, pv)))
+
+	type NET_ADDRESS_INFO_ as NET_ADDRESS_INFO__
 
 	type tagNC_ADDRESS
 		pAddrInfo as NET_ADDRESS_INFO_ ptr

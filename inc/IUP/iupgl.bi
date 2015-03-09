@@ -20,8 +20,6 @@ extern "C"
 #define IUP_SINGLE "SINGLE"
 #define IUP_INDEX "INDEX"
 #define IUP_RGBA "RGBA"
-#define IUP_YES "YES"
-#define IUP_NO "NO"
 
 declare sub IupGLCanvasOpen()
 declare function IupGLCanvas(byval action as const zstring ptr) as Ihandle ptr

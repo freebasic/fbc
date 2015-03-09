@@ -8,9 +8,9 @@
 type IPAddr as ULONG
 type IPMask as ULONG
 type IP_STATUS as ULONG
-type IPv6Addr as in6_addr
+type IPv6Addr as IN6_ADDR
 
-type ip_option_information
+type IP_OPTION_INFORMATION
 	Ttl as UCHAR
 	Tos as UCHAR
 	Flags as UCHAR
@@ -18,10 +18,10 @@ type ip_option_information
 	OptionsData as PUCHAR
 end type
 
-type PIP_OPTION_INFORMATION as ip_option_information ptr
+type PIP_OPTION_INFORMATION as IP_OPTION_INFORMATION ptr
 
 #ifdef __FB_64BIT__
-	type ip_option_information32
+	type IP_OPTION_INFORMATION32
 		Ttl as UCHAR
 		Tos as UCHAR
 		Flags as UCHAR
@@ -29,48 +29,48 @@ type PIP_OPTION_INFORMATION as ip_option_information ptr
 		OptionsData as UCHAR ptr
 	end type
 
-	type PIP_OPTION_INFORMATION32 as ip_option_information32 ptr
+	type PIP_OPTION_INFORMATION32 as IP_OPTION_INFORMATION32 ptr
 #endif
 
-type icmp_echo_reply
+type ICMP_ECHO_REPLY
 	Address as IPAddr
 	Status as ULONG
 	RoundTripTime as ULONG
 	DataSize as USHORT
 	Reserved as USHORT
 	Data as PVOID
-	Options as ip_option_information
+	Options as IP_OPTION_INFORMATION
 end type
 
-type PICMP_ECHO_REPLY as icmp_echo_reply ptr
+type PICMP_ECHO_REPLY as ICMP_ECHO_REPLY ptr
 
 #ifdef __FB_64BIT__
-	type icmp_echo_reply32
+	type ICMP_ECHO_REPLY32
 		Address as IPAddr
 		Status as ULONG
 		RoundTripTime as ULONG
 		DataSize as USHORT
 		Reserved as USHORT
 		Data as any ptr
-		Options as ip_option_information32
+		Options as IP_OPTION_INFORMATION32
 	end type
 
-	type PICMP_ECHO_REPLY32 as icmp_echo_reply32 ptr
+	type PICMP_ECHO_REPLY32 as ICMP_ECHO_REPLY32 ptr
 #endif
 
-type arp_send_reply
+type ARP_SEND_REPLY
 	DestAddress as IPAddr
 	SrcAddress as IPAddr
 end type
 
-type PARP_SEND_REPLY as arp_send_reply ptr
+type PARP_SEND_REPLY as ARP_SEND_REPLY ptr
 
-type tcp_reserve_port_range
+type TCP_RESERVE_PORT_RANGE
 	UpperRange as USHORT
 	LowerRange as USHORT
 end type
 
-type PTCP_RESERVE_PORT_RANGE as tcp_reserve_port_range ptr
+type PTCP_RESERVE_PORT_RANGE as TCP_RESERVE_PORT_RANGE ptr
 
 #define MAX_ADAPTER_NAME 128
 

@@ -8,8 +8,6 @@
 
 extern "Windows"
 
-type IObjectSafety as IObjectSafety_
-
 #define __objsafe_h__
 #define __IObjectSafety_FWD_DEFINED__
 #define _LPSAFEOBJECT_DEFINED
@@ -25,6 +23,10 @@ extern __MIDL_itf_objsafe_0000_v0_0_c_ifspec as RPC_IF_HANDLE
 extern __MIDL_itf_objsafe_0000_v0_0_s_ifspec as RPC_IF_HANDLE
 
 #define __IObjectSafety_INTERFACE_DEFINED__
+
+extern IID_IObjectSafety as const IID
+
+type IObjectSafety as IObjectSafety_
 
 type IObjectSafetyVtbl
 	QueryInterface as function(byval This as IObjectSafety ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT

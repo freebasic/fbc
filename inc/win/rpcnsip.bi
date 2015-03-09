@@ -2,6 +2,8 @@
 
 extern "Windows"
 
+#define __RPCNSIP_H__
+
 type RPC_IMPORT_CONTEXT_P
 	LookupContext as RPC_NS_HANDLE
 	ProposedHandle as RPC_BINDING_HANDLE
@@ -9,8 +11,6 @@ type RPC_IMPORT_CONTEXT_P
 end type
 
 type PRPC_IMPORT_CONTEXT_P as RPC_IMPORT_CONTEXT_P ptr
-
-#define __RPCNSIP_H__
 
 declare function I_RpcNsGetBuffer(byval Message as PRPC_MESSAGE) as RPC_STATUS
 declare function I_RpcNsSendReceive(byval Message as PRPC_MESSAGE, byval Handle as RPC_BINDING_HANDLE ptr) as RPC_STATUS

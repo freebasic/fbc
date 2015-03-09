@@ -9,15 +9,14 @@
 
 extern "Windows"
 
-type IObjectArray as IObjectArray_
-type IObjectCollection as IObjectCollection_
-
 #define __objectarray_h__
 #define __IObjectArray_FWD_DEFINED__
 #define __IObjectCollection_FWD_DEFINED__
 #define __IObjectArray_INTERFACE_DEFINED__
 
 extern IID_IObjectArray as const GUID
+
+type IObjectArray as IObjectArray_
 
 type IObjectArrayVtbl
 	QueryInterface as function(byval This as IObjectArray ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
@@ -39,6 +38,8 @@ declare sub IObjectArray_GetAt_Stub(byval This as IRpcStubBuffer ptr, byval pRpc
 #define __IObjectCollection_INTERFACE_DEFINED__
 
 extern IID_IObjectCollection as const GUID
+
+type IObjectCollection as IObjectCollection_
 
 type IObjectCollectionVtbl
 	QueryInterface as function(byval This as IObjectCollection ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT

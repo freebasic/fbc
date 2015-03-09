@@ -4,9 +4,6 @@
 
 extern "Windows"
 
-type IDirectPlay8LobbiedApplicationVtbl as IDirectPlay8LobbiedApplicationVtbl_
-type IDirectPlay8LobbyClientVtbl as IDirectPlay8LobbyClientVtbl_
-
 #define __WINE_DPLOBBY8_H
 #define DPL_MSGID_LOBBY &h8000
 #define DPL_MSGID_RECEIVE (&h0001 or DPL_MSGID_LOBBY)
@@ -143,7 +140,9 @@ extern IID_IDirectPlay8LobbyClient as const GUID
 
 type PDIRECTPLAY8LOBBYCLIENT as IDirectPlay8LobbyClient ptr
 
-type IDirectPlay8LobbiedApplication
+type IDirectPlay8LobbiedApplicationVtbl as IDirectPlay8LobbiedApplicationVtbl_
+
+type IDirectPlay8LobbiedApplication_
 	lpVtbl as IDirectPlay8LobbiedApplicationVtbl ptr
 end type
 
@@ -174,6 +173,8 @@ end type
 #define IDirectPlay8LobbiedApplication_Close(p, a) (p)->lpVtbl->Close(p, a)
 #define IDirectPlay8LobbiedApplication_GetConnectionSettings(p, a, b, c, d) (p)->lpVtbl->GetConnectionSettings(p, a, b, c, d)
 #define IDirectPlay8LobbiedApplication_SetConnectionSettings(p, a, b, c) (p)->lpVtbl->SetConnectionSettings(p, a, b, c)
+
+type IDirectPlay8LobbyClientVtbl as IDirectPlay8LobbyClientVtbl_
 
 type IDirectPlay8LobbyClient
 	lpVtbl as IDirectPlay8LobbyClientVtbl ptr

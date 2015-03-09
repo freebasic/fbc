@@ -8,40 +8,11 @@
 
 extern "Windows"
 
-type IDirectSoundVtbl as IDirectSoundVtbl_
-type IDirectSound8Vtbl as IDirectSound8Vtbl_
-type IDirectSoundBufferVtbl as IDirectSoundBufferVtbl_
-type IDirectSoundBuffer8Vtbl as IDirectSoundBuffer8Vtbl_
-type IDirectSoundCaptureVtbl as IDirectSoundCaptureVtbl_
-type IDirectSoundCaptureBufferVtbl as IDirectSoundCaptureBufferVtbl_
-type IDirectSoundCaptureBuffer8Vtbl as IDirectSoundCaptureBuffer8Vtbl_
-type IDirectSoundNotifyVtbl as IDirectSoundNotifyVtbl_
-type IDirectSound3DListenerVtbl as IDirectSound3DListenerVtbl_
-type IDirectSound3DBufferVtbl as IDirectSound3DBufferVtbl_
-type IKsPropertySetVtbl as IKsPropertySetVtbl_
-type IDirectSoundFullDuplexVtbl as IDirectSoundFullDuplexVtbl_
-
 #define __DSOUND_INCLUDED__
 #define DIRECTSOUND_VERSION &h0900
-#define COM_NO_WINDOWS_H
 
 type D3DVALUE as single
 type LPD3DVALUE as single ptr
-type D3DCOLOR as DWORD
-type LPD3DCOLOR as DWORD ptr
-
-#define D3DCOLOR_DEFINED
-
-type _D3DVECTOR
-	x as single
-	y as single
-	z as single
-end type
-
-type D3DVECTOR as _D3DVECTOR
-
-#define D3DVECTOR_DEFINED
-
 type LPD3DVECTOR as D3DVECTOR ptr
 
 #define LPD3DVECTOR_DEFINED
@@ -235,7 +206,7 @@ type LPCDSCAPS as const DSCAPS ptr
 #define DSBFREQUENCY_MIN 100
 #define DSBFREQUENCY_MAX 200000
 #define DSBFREQUENCY_ORIGINAL 0
-#define DSBNOTIFICATIONS_MAX 100000
+#define DSBNOTIFICATIONS_MAX 100000u
 
 type _DSBCAPS
 	dwSize as DWORD
@@ -448,6 +419,8 @@ declare function DirectSoundFullDuplexCreate(byval pcGuidCaptureDevice as LPCGUI
 
 declare function GetDeviceID(byval lpGuidSrc as LPCGUID, byval lpGuidDest as LPGUID) as HRESULT
 
+type IDirectSoundVtbl as IDirectSoundVtbl_
+
 type IDirectSound
 	lpVtbl as IDirectSoundVtbl ptr
 end type
@@ -477,6 +450,8 @@ end type
 #define IDirectSound_GetSpeakerConfig(p, a) (p)->lpVtbl->GetSpeakerConfig(p, a)
 #define IDirectSound_SetSpeakerConfig(p, a) (p)->lpVtbl->SetSpeakerConfig(p, a)
 #define IDirectSound_Initialize(p, a) (p)->lpVtbl->Initialize(p, a)
+
+type IDirectSound8Vtbl as IDirectSound8Vtbl_
 
 type IDirectSound8
 	lpVtbl as IDirectSound8Vtbl ptr
@@ -509,6 +484,8 @@ end type
 #define IDirectSound8_SetSpeakerConfig(p, a) (p)->lpVtbl->SetSpeakerConfig(p, a)
 #define IDirectSound8_Initialize(p, a) (p)->lpVtbl->Initialize(p, a)
 #define IDirectSound8_VerifyCertification(p, a) (p)->lpVtbl->VerifyCertification(p, a)
+
+type IDirectSoundBufferVtbl as IDirectSoundBufferVtbl_
 
 type IDirectSoundBuffer
 	lpVtbl as IDirectSoundBufferVtbl ptr
@@ -559,6 +536,8 @@ end type
 #define IDirectSoundBuffer_Stop(p) (p)->lpVtbl->Stop(p)
 #define IDirectSoundBuffer_Unlock(p, a, b, c, d) (p)->lpVtbl->Unlock(p, a, b, c, d)
 #define IDirectSoundBuffer_Restore(p) (p)->lpVtbl->Restore(p)
+
+type IDirectSoundBuffer8Vtbl as IDirectSoundBuffer8Vtbl_
 
 type IDirectSoundBuffer8
 	lpVtbl as IDirectSoundBuffer8Vtbl ptr
@@ -616,6 +595,8 @@ end type
 #define IDirectSoundBuffer8_AcquireResources(p, a, b, c) (p)->lpVtbl->AcquireResources(p, a, b, c)
 #define IDirectSoundBuffer8_GetObjectInPath(p, a, b, c, d) (p)->lpVtbl->GetObjectInPath(p, a, b, c, d)
 
+type IDirectSoundCaptureVtbl as IDirectSoundCaptureVtbl_
+
 type IDirectSoundCapture
 	lpVtbl as IDirectSoundCaptureVtbl ptr
 end type
@@ -635,6 +616,8 @@ end type
 #define IDirectSoundCapture_CreateCaptureBuffer(p, a, b, c) (p)->lpVtbl->CreateCaptureBuffer(p, a, b, c)
 #define IDirectSoundCapture_GetCaps(p, a) (p)->lpVtbl->GetCaps(p, a)
 #define IDirectSoundCapture_Initialize(p, a) (p)->lpVtbl->Initialize(p, a)
+
+type IDirectSoundCaptureBufferVtbl as IDirectSoundCaptureBufferVtbl_
 
 type IDirectSoundCaptureBuffer
 	lpVtbl as IDirectSoundCaptureBufferVtbl ptr
@@ -667,6 +650,8 @@ end type
 #define IDirectSoundCaptureBuffer_Start(p, a) (p)->lpVtbl->Start(p, a)
 #define IDirectSoundCaptureBuffer_Stop(p) (p)->lpVtbl->Stop(p)
 #define IDirectSoundCaptureBuffer_Unlock(p, a, b, c, d) (p)->lpVtbl->Unlock(p, a, b, c, d)
+
+type IDirectSoundCaptureBuffer8Vtbl as IDirectSoundCaptureBuffer8Vtbl_
 
 type IDirectSoundCaptureBuffer8
 	lpVtbl as IDirectSoundCaptureBuffer8Vtbl ptr
@@ -705,6 +690,8 @@ end type
 #define IDirectSoundCaptureBuffer8_GetFXStatus(p, a, b) (p)->lpVtbl->GetFXStatus(p, a, b)
 #define WINE_NOBUFFER &h80000000
 #define DSBPN_OFFSETSTOP (-1)
+
+type IDirectSoundNotifyVtbl as IDirectSoundNotifyVtbl_
 
 type IDirectSoundNotify
 	lpVtbl as IDirectSoundNotifyVtbl ptr
@@ -756,6 +743,8 @@ end type
 type DS3DLISTENER as _DS3DLISTENER
 type LPDS3DLISTENER as _DS3DLISTENER ptr
 type LPCDS3DLISTENER as const DS3DLISTENER ptr
+
+type IDirectSound3DListenerVtbl as IDirectSound3DListenerVtbl_
 
 type IDirectSound3DListener
 	lpVtbl as IDirectSound3DListenerVtbl ptr
@@ -818,6 +807,8 @@ type DS3DBUFFER as _DS3DBUFFER
 type LPDS3DBUFFER as _DS3DBUFFER ptr
 type LPCDS3DBUFFER as const DS3DBUFFER ptr
 
+type IDirectSound3DBufferVtbl as IDirectSound3DBufferVtbl_
+
 type IDirectSound3DBuffer
 	lpVtbl as IDirectSound3DBufferVtbl ptr
 end type
@@ -867,34 +858,8 @@ end type
 #define IDirectSound3DBuffer_SetMode(p, a, b) (p)->lpVtbl->SetMode(p, a, b)
 #define IDirectSound3DBuffer_SetPosition(p, a, b, c, d) (p)->lpVtbl->SetPosition(p, a, b, c, d)
 #define IDirectSound3DBuffer_SetVelocity(p, a, b, c, d) (p)->lpVtbl->SetVelocity(p, a, b, c, d)
-#define _IKsPropertySet_
 
-type LPKSPROPERTYSET as IKsPropertySet ptr
-
-extern IID_IKsPropertySet as const GUID
-
-#define KSPROPERTY_SUPPORT_GET 1
-#define KSPROPERTY_SUPPORT_SET 2
-
-type IKsPropertySet
-	lpVtbl as IKsPropertySetVtbl ptr
-end type
-
-type IKsPropertySetVtbl_
-	QueryInterface as function(byval This as IKsPropertySet ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
-	AddRef as function(byval This as IKsPropertySet ptr) as ULONG
-	Release as function(byval This as IKsPropertySet ptr) as ULONG
-	Get as function(byval This as IKsPropertySet ptr, byval rgid as const GUID const ptr, byval x1 as ULONG, byval p1 as LPVOID, byval x2 as ULONG, byval p2 as LPVOID, byval x3 as ULONG, byval px4 as ULONG ptr) as HRESULT
-	Set as function(byval This as IKsPropertySet ptr, byval rgid as const GUID const ptr, byval x1 as ULONG, byval p1 as LPVOID, byval x2 as ULONG, byval p2 as LPVOID, byval x3 as ULONG) as HRESULT
-	QuerySupport as function(byval This as IKsPropertySet ptr, byval rgid as const GUID const ptr, byval x1 as ULONG, byval px2 as ULONG ptr) as HRESULT
-end type
-
-#define IKsPropertySet_QueryInterface(p, a, b) (p)->lpVtbl->QueryInterface(p, a, b)
-#define IKsPropertySet_AddRef(p) (p)->lpVtbl->AddRef(p)
-#define IKsPropertySet_Release(p) (p)->lpVtbl->Release(p)
-#define IKsPropertySet_Get(p, a, b, c, d, e, f, g) (p)->lpVtbl->Get(p, a, b, c, d, e, f, g)
-#define IKsPropertySet_Set(p, a, b, c, d, e, f) (p)->lpVtbl->Set(p, a, b, c, d, e, f)
-#define IKsPropertySet_QuerySupport(p, a, b, c) (p)->lpVtbl->QuerySupport(p, a, b, c)
+type IDirectSoundFullDuplexVtbl as IDirectSoundFullDuplexVtbl_
 
 type IDirectSoundFullDuplex
 	lpVtbl as IDirectSoundFullDuplexVtbl ptr

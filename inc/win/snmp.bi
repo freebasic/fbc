@@ -34,7 +34,7 @@ type AsnNetworkAddress as AsnOctetString
 type AsnDisplayString as AsnOctetString
 type AsnOpaque as AsnOctetString
 
-union __asnValue field = 4
+union AsnAny_asnValue field = 4
 	number as AsnInteger32
 	unsigned32 as AsnUnsigned32
 	counter64 as AsnCounter64
@@ -51,7 +51,7 @@ end union
 
 type AsnAny field = 4
 	asnType as UBYTE
-	asnValue as __asnValue
+	asnValue as AsnAny_asnValue
 end type
 
 type AsnObjectName as AsnObjectIdentifier
@@ -67,22 +67,6 @@ type SnmpVarBindList field = 4
 	len as UINT
 end type
 
-declare function SnmpExtensionInit(byval dwUptimeReference as DWORD, byval phSubagentTrapEvent as HANDLE ptr, byval pFirstSupportedRegion as AsnObjectIdentifier ptr) as WINBOOL
-
-#define ASN_UNIVERSAL &h00
-#define ASN_APPLICATION &h40
-#define ASN_CONTEXT &h80
-#define ASN_PRIVATE &hC0
-#define ASN_PRIMITIVE &h00
-#define ASN_CONSTRUCTOR &h20
-#define SNMP_PDU_GET ((ASN_CONTEXT or ASN_CONSTRUCTOR) or &h0)
-#define SNMP_PDU_GETNEXT ((ASN_CONTEXT or ASN_CONSTRUCTOR) or &h1)
-#define SNMP_PDU_RESPONSE ((ASN_CONTEXT or ASN_CONSTRUCTOR) or &h2)
-#define SNMP_PDU_SET ((ASN_CONTEXT or ASN_CONSTRUCTOR) or &h3)
-#define SNMP_PDU_V1TRAP ((ASN_CONTEXT or ASN_CONSTRUCTOR) or &h4)
-#define SNMP_PDU_GETBULK ((ASN_CONTEXT or ASN_CONSTRUCTOR) or &h5)
-#define SNMP_PDU_INFORM ((ASN_CONTEXT or ASN_CONSTRUCTOR) or &h6)
-#define SNMP_PDU_TRAP ((ASN_CONTEXT or ASN_CONSTRUCTOR) or &h7)
 #define ASN_INTEGER ((ASN_UNIVERSAL or ASN_PRIMITIVE) or &h02)
 #define ASN_BITS ((ASN_UNIVERSAL or ASN_PRIMITIVE) or &h03)
 #define ASN_OCTETSTRING ((ASN_UNIVERSAL or ASN_PRIMITIVE) or &h04)
@@ -144,6 +128,7 @@ declare function SnmpExtensionInit(byval dwUptimeReference as DWORD, byval phSub
 #define SNMPAPI_NOERROR TRUE
 #define SNMPAPI_ERROR FALSE
 
+declare function SnmpExtensionInit(byval dwUptimeReference as DWORD, byval phSubagentTrapEvent as HANDLE ptr, byval pFirstSupportedRegion as AsnObjectIdentifier ptr) as WINBOOL
 declare function SnmpExtensionInitEx(byval pNextSupportedRegion as AsnObjectIdentifier ptr) as WINBOOL
 declare function SnmpExtensionMonitor(byval pAgentMgmtData as LPVOID) as WINBOOL
 declare function SnmpExtensionQuery(byval bPduType as UBYTE, byval pVarBindList as SnmpVarBindList ptr, byval pErrorStatus as AsnInteger32 ptr, byval pErrorIndex as AsnInteger32 ptr) as WINBOOL

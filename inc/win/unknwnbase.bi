@@ -2,15 +2,13 @@
 
 extern "Windows"
 
-type IUnknown as IUnknown_
-type AsyncIUnknown as AsyncIUnknown_
-type IClassFactory as IClassFactory_
-
 #define __unknwnbase_h__
 #define __IUnknown_FWD_DEFINED__
 #define __AsyncIUnknown_FWD_DEFINED__
 #define __IClassFactory_FWD_DEFINED__
 #define __IUnknown_INTERFACE_DEFINED__
+
+type IUnknown as IUnknown_
 
 type LPUNKNOWN as IUnknown ptr
 
@@ -36,6 +34,8 @@ declare sub IUnknown_Release_Stub(byval This as IRpcStubBuffer ptr, byval pRpcCh
 #define __AsyncIUnknown_INTERFACE_DEFINED__
 
 extern IID_AsyncIUnknown as const GUID
+
+type AsyncIUnknown as AsyncIUnknown_
 
 type AsyncIUnknownVtbl
 	QueryInterface as function(byval This as AsyncIUnknown ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
@@ -67,6 +67,8 @@ declare function AsyncIUnknown_Finish_Release_Proxy(byval This as AsyncIUnknown 
 declare sub AsyncIUnknown_Finish_Release_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 
 #define __IClassFactory_INTERFACE_DEFINED__
+
+type IClassFactory as IClassFactory_
 
 type LPCLASSFACTORY as IClassFactory ptr
 

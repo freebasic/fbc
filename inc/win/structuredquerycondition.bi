@@ -12,10 +12,6 @@
 
 extern "Windows"
 
-type IRichChunk as IRichChunk_
-type ICondition as ICondition_
-type ICondition2 as ICondition2_
-
 #define __structuredquerycondition_h__
 #define __IRichChunk_FWD_DEFINED__
 #define __ICondition_FWD_DEFINED__
@@ -56,6 +52,8 @@ type CONDITION_OPERATION as tagCONDITION_OPERATION
 
 extern IID_IRichChunk as const GUID
 
+type IRichChunk as IRichChunk_
+
 type IRichChunkVtbl
 	QueryInterface as function(byval This as IRichChunk ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
 	AddRef as function(byval This as IRichChunk ptr) as ULONG
@@ -75,6 +73,8 @@ declare function IRichChunk_GetData_Stub(byval This as IRichChunk ptr, byval pFi
 #define __ICondition_INTERFACE_DEFINED__
 
 extern IID_ICondition as const GUID
+
+type ICondition as ICondition_
 
 type IConditionVtbl
 	QueryInterface as function(byval This as ICondition ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
@@ -121,6 +121,8 @@ declare function ICondition_GetInputTerms_Stub(byval This as ICondition ptr, byv
 
 extern IID_ICondition2 as const GUID
 
+type ICondition2 as ICondition2_
+
 type ICondition2Vtbl
 	QueryInterface as function(byval This as ICondition2 ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
 	AddRef as function(byval This as ICondition2 ptr) as ULONG
@@ -153,3 +155,5 @@ declare function ICondition2_GetLeafConditionInfo_Proxy(byval This as ICondition
 declare function ICondition2_GetLeafConditionInfo_Stub(byval This as ICondition2 ptr, byval ppropkey as PROPERTYKEY ptr, byval pcop as CONDITION_OPERATION ptr, byval ppropvar as PROPVARIANT ptr) as HRESULT
 
 end extern
+
+#include once "ole-common.bi"

@@ -3,13 +3,6 @@
 extern "Windows"
 
 #define _INC_SCRNSAVE
-
-#ifdef UNICODE
-	declare function ScreenSaverProcW(byval hWnd as HWND, byval message as UINT, byval wParam as WPARAM, byval lParam as LPARAM) as LRESULT
-#else
-	declare function ScreenSaverProc(byval hWnd as HWND, byval message as UINT, byval wParam as WPARAM, byval lParam as LPARAM) as LRESULT
-#endif
-
 #define IDS_DESCRIPTION 1
 #define ID_APP 100
 #define DLG_SCRNSAVECONFIGURE 2003
@@ -26,7 +19,11 @@ extern "Windows"
 #define idsDefKeyword 1010
 
 #ifdef UNICODE
+	declare function ScreenSaverProcW(byval hWnd as HWND, byval message as UINT, byval wParam as WPARAM, byval lParam as LPARAM) as LRESULT
+
 	#define ScreenSaverProc ScreenSaverProcW
+#else
+	declare function ScreenSaverProc(byval hWnd as HWND, byval message as UINT, byval wParam as WPARAM, byval lParam as LPARAM) as LRESULT
 #endif
 
 declare function DefScreenSaverProc(byval hWnd as HWND, byval msg as UINT, byval wParam as WPARAM, byval lParam as LPARAM) as LRESULT

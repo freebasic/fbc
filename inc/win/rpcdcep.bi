@@ -46,10 +46,10 @@ enum
 end enum
 
 #define RPC_CONTEXT_HANDLE_DEFAULT_GUARD cptr(any ptr, -4083)
-#define RPC_CONTEXT_HANDLE_DEFAULT_FLAGS __MSABI_LONG(&h00000000)
-#define RPC_CONTEXT_HANDLE_FLAGS __MSABI_LONG(&h30000000)
-#define RPC_CONTEXT_HANDLE_SERIALIZE __MSABI_LONG(&h10000000)
-#define RPC_CONTEXT_HANDLE_DONT_SERIALIZE __MSABI_LONG(&h20000000)
+#define RPC_CONTEXT_HANDLE_DEFAULT_FLAGS __MSABI_LONG(&h00000000u)
+#define RPC_CONTEXT_HANDLE_FLAGS __MSABI_LONG(&h30000000u)
+#define RPC_CONTEXT_HANDLE_SERIALIZE __MSABI_LONG(&h10000000u)
+#define RPC_CONTEXT_HANDLE_DONT_SERIALIZE __MSABI_LONG(&h20000000u)
 #define RPC_NCA_FLAGS_DEFAULT &h00000000
 #define RPC_NCA_FLAGS_IDEMPOTENT &h00000001
 #define RPC_NCA_FLAGS_BROADCAST &h00000002
@@ -59,14 +59,14 @@ end enum
 #define RPC_BUFFER_EXTRA &h00004000
 #define RPC_BUFFER_ASYNC &h00008000
 #define RPC_BUFFER_NONOTIFY &h00010000
-#define RPCFLG_MESSAGE __MSABI_LONG(&h01000000)
-#define RPCFLG_AUTO_COMPLETE __MSABI_LONG(&h08000000)
-#define RPCFLG_LOCAL_CALL __MSABI_LONG(&h10000000)
-#define RPCFLG_INPUT_SYNCHRONOUS __MSABI_LONG(&h20000000)
-#define RPCFLG_ASYNCHRONOUS __MSABI_LONG(&h40000000)
-#define RPCFLG_NON_NDR __MSABI_LONG(&h80000000)
-#define RPCFLG_HAS_MULTI_SYNTAXES __MSABI_LONG(&h02000000)
-#define RPCFLG_HAS_CALLBACK __MSABI_LONG(&h04000000)
+#define RPCFLG_MESSAGE __MSABI_LONG(&h01000000u)
+#define RPCFLG_AUTO_COMPLETE __MSABI_LONG(&h08000000u)
+#define RPCFLG_LOCAL_CALL __MSABI_LONG(&h10000000u)
+#define RPCFLG_INPUT_SYNCHRONOUS __MSABI_LONG(&h20000000u)
+#define RPCFLG_ASYNCHRONOUS __MSABI_LONG(&h40000000u)
+#define RPCFLG_NON_NDR __MSABI_LONG(&h80000000u)
+#define RPCFLG_HAS_MULTI_SYNTAXES __MSABI_LONG(&h02000000u)
+#define RPCFLG_HAS_CALLBACK __MSABI_LONG(&h04000000u)
 #define RPC_FLAGS_VALID_BIT &h00008000
 
 type RPC_DISPATCH_FUNCTION as sub(byval Message as PRPC_MESSAGE)
@@ -148,7 +148,7 @@ declare sub I_RpcRequestMutex(byval Mutex as I_RPC_MUTEX ptr)
 declare sub I_RpcClearMutex(byval Mutex as I_RPC_MUTEX)
 declare sub I_RpcDeleteMutex(byval Mutex as I_RPC_MUTEX)
 declare function I_RpcAllocate(byval Size as ulong) as any ptr
-declare sub I_RpcFree(byval Object_ as any ptr)
+declare sub I_RpcFree(byval Object as any ptr)
 declare sub I_RpcPauseExecution(byval Milliseconds as ulong)
 declare function I_RpcGetExtendedError() as RPC_STATUS
 
@@ -183,7 +183,7 @@ declare function I_RpcServerCheckClientRestriction(byval Context as RPC_BINDING_
 #define TRANSPORT_TYPE_LPC &h04
 #define TRANSPORT_TYPE_WMSG &h08
 
-declare function I_RpcBindingInqTransportType(byval Binding as RPC_BINDING_HANDLE, byval Type_ as ulong ptr) as RPC_STATUS
+declare function I_RpcBindingInqTransportType(byval Binding as RPC_BINDING_HANDLE, byval Type as ulong ptr) as RPC_STATUS
 
 type _RPC_TRANSFER_SYNTAX
 	Uuid as UUID
@@ -216,7 +216,7 @@ declare function I_RpcConnectionSetSockBuffSize(byval RecvBuffSize as ulong, byv
 type RPCLT_PDU_FILTER_FUNC as sub cdecl(byval Buffer as any ptr, byval BufferLength as ulong, byval fDatagram as long)
 type RPC_SETFILTER_FUNC as sub cdecl(byval pfnFilter as RPCLT_PDU_FILTER_FUNC)
 
-declare function I_RpcServerInqTransportType(byval Type_ as ulong ptr) as RPC_STATUS
+declare function I_RpcServerInqTransportType(byval Type as ulong ptr) as RPC_STATUS
 declare function I_RpcMapWin32Status(byval Status as RPC_STATUS) as long
 
 type _RPC_C_OPT_METADATA_DESCRIPTOR

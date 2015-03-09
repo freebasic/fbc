@@ -1,12 +1,8 @@
 #pragma once
 
-'' The following symbols have been renamed:
-''     inside struct _PERF_DATA_BLOCK:
-''         field LittleEndian => LittleEndian_
-
-extern "Windows"
-
 #define _WINPERF_
+#define PERF_DATA_VERSION 1
+#define PERF_DATA_REVISION 1
 
 type _PERF_DATA_BLOCK
 	Signature as wstring * 4
@@ -27,9 +23,6 @@ end type
 
 type PERF_DATA_BLOCK as _PERF_DATA_BLOCK
 type PPERF_DATA_BLOCK as _PERF_DATA_BLOCK ptr
-
-#define PERF_DATA_VERSION 1
-#define PERF_DATA_REVISION 1
 
 type _PERF_OBJECT_TYPE
 	TotalByteLength as DWORD
@@ -199,5 +192,3 @@ type PPERF_COUNTER_BLOCK as _PERF_COUNTER_BLOCK ptr
 #define WINPERF_LOG_USER 1
 #define WINPERF_LOG_DEBUG 2
 #define WINPERF_LOG_VERBOSE 3
-
-end extern

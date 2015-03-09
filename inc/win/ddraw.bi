@@ -8,23 +8,7 @@
 
 extern "Windows"
 
-type IDirectDrawPaletteVtbl as IDirectDrawPaletteVtbl_
-type IDirectDrawClipperVtbl as IDirectDrawClipperVtbl_
-type IDirectDrawVtbl as IDirectDrawVtbl_
-type IDirectDraw2Vtbl as IDirectDraw2Vtbl_
-type IDirectDraw3Vtbl as IDirectDraw3Vtbl_
-type IDirectDraw4Vtbl as IDirectDraw4Vtbl_
-type IDirectDraw7Vtbl as IDirectDraw7Vtbl_
-type IDirectDrawSurfaceVtbl as IDirectDrawSurfaceVtbl_
-type IDirectDrawSurface2Vtbl as IDirectDrawSurface2Vtbl_
-type IDirectDrawSurface3Vtbl as IDirectDrawSurface3Vtbl_
-type IDirectDrawSurface4Vtbl as IDirectDrawSurface4Vtbl_
-type IDirectDrawSurface7Vtbl as IDirectDrawSurface7Vtbl_
-type IDirectDrawColorControlVtbl as IDirectDrawColorControlVtbl_
-type IDirectDrawGammaControlVtbl as IDirectDrawGammaControlVtbl_
-
 #define __DDRAW_INCLUDED__
-#define COM_NO_WINDOWS_H
 #define DIRECTDRAW_VERSION &h0700
 
 extern CLSID_DirectDraw as const GUID
@@ -56,6 +40,7 @@ type LPDIRECTDRAWSURFACE as IDirectDrawSurface ptr
 type LPDIRECTDRAWSURFACE2 as IDirectDrawSurface2 ptr
 type LPDIRECTDRAWSURFACE3 as IDirectDrawSurface3 ptr
 type LPDIRECTDRAWSURFACE4 as IDirectDrawSurface4 ptr
+type IDirectDrawSurface7 as IDirectDrawSurface7_
 type LPDIRECTDRAWSURFACE7 as IDirectDrawSurface7 ptr
 type LPDIRECTDRAWCOLORCONTROL as IDirectDrawColorControl ptr
 type LPDIRECTDRAWGAMMACONTROL as IDirectDrawGammaControl ptr
@@ -64,8 +49,6 @@ type LPDIRECTDRAWGAMMACONTROL as IDirectDrawGammaControl ptr
 #define DDENUMRET_OK 1
 #define DD_OK S_OK
 #define DD_FALSE S_FALSE
-#define _FACDD &h876
-#define MAKE_DDHRESULT(code) MAKE_HRESULT(1, _FACDD, code)
 #define DDERR_ALREADYINITIALIZED MAKE_DDHRESULT(5)
 #define DDERR_CANNOTATTACHSURFACE MAKE_DDHRESULT(10)
 #define DDERR_CANNOTDETACHSURFACE MAKE_DDHRESULT(20)
@@ -1178,6 +1161,8 @@ end type
 type DDDEVICEIDENTIFIER2 as tagDDDEVICEIDENTIFIER2
 type LPDDDEVICEIDENTIFIER2 as tagDDDEVICEIDENTIFIER2 ptr
 
+type IDirectDrawPaletteVtbl as IDirectDrawPaletteVtbl_
+
 type IDirectDrawPalette
 	lpVtbl as IDirectDrawPaletteVtbl ptr
 end type
@@ -1199,6 +1184,8 @@ end type
 #define IDirectDrawPalette_GetEntries(p, a, b, c, d) (p)->lpVtbl->GetEntries(p, a, b, c, d)
 #define IDirectDrawPalette_Initialize(p, a, b, c) (p)->lpVtbl->Initialize(p, a, b, c)
 #define IDirectDrawPalette_SetEntries(p, a, b, c, d) (p)->lpVtbl->SetEntries(p, a, b, c, d)
+
+type IDirectDrawClipperVtbl as IDirectDrawClipperVtbl_
 
 type IDirectDrawClipper
 	lpVtbl as IDirectDrawClipperVtbl ptr
@@ -1225,6 +1212,8 @@ end type
 #define IDirectDrawClipper_IsClipListChanged(p, a) (p)->lpVtbl->IsClipListChanged(p, a)
 #define IDirectDrawClipper_SetClipList(p, a, b) (p)->lpVtbl->SetClipList(p, a, b)
 #define IDirectDrawClipper_SetHWnd(p, a, b) (p)->lpVtbl->SetHWnd(p, a, b)
+
+type IDirectDrawVtbl as IDirectDrawVtbl_
 
 type IDirectDraw
 	lpVtbl as IDirectDrawVtbl ptr
@@ -1292,6 +1281,8 @@ end type
 #define DDLOCK_HASVOLUMETEXTUREBOXRECT &h00008000
 #define DDLOCK_NODIRTYUPDATE &h00010000
 
+type IDirectDraw2Vtbl as IDirectDraw2Vtbl_
+
 type IDirectDraw2
 	lpVtbl as IDirectDraw2Vtbl ptr
 end type
@@ -1347,6 +1338,8 @@ end type
 #define IDirectDraw2_SetDisplayMode(p, a, b, c, d, e) (p)->lpVtbl->SetDisplayMode(p, a, b, c, d, e)
 #define IDirectDraw2_WaitForVerticalBlank(p, a, b) (p)->lpVtbl->WaitForVerticalBlank(p, a, b)
 #define IDirectDraw2_GetAvailableVidMem(p, a, b, c) (p)->lpVtbl->GetAvailableVidMem(p, a, b, c)
+
+type IDirectDraw3Vtbl as IDirectDraw3Vtbl_
 
 type IDirectDraw3
 	lpVtbl as IDirectDraw3Vtbl ptr
@@ -1405,6 +1398,8 @@ end type
 #define IDirectDraw3_WaitForVerticalBlank(p, a, b) (p)->lpVtbl->WaitForVerticalBlank(p, a, b)
 #define IDirectDraw3_GetAvailableVidMem(p, a, b, c) (p)->lpVtbl->GetAvailableVidMem(p, a, b, c)
 #define IDirectDraw3_GetSurfaceFromDC(p, a, b) (p)->lpVtbl->GetSurfaceFromDC(p, a, b)
+
+type IDirectDraw4Vtbl as IDirectDraw4Vtbl_
 
 type IDirectDraw4
 	lpVtbl as IDirectDraw4Vtbl ptr
@@ -1469,6 +1464,8 @@ end type
 #define IDirectDraw4_RestoreAllSurfaces(p) (p)->lpVtbl->RestoreAllSurfaces(p)
 #define IDirectDraw4_TestCooperativeLevel(p) (p)->lpVtbl->TestCooperativeLevel(p)
 #define IDirectDraw4_GetDeviceIdentifier(p, a, b) (p)->lpVtbl->GetDeviceIdentifier(p, a, b)
+
+type IDirectDraw7Vtbl as IDirectDraw7Vtbl_
 
 type IDirectDraw7
 	lpVtbl as IDirectDraw7Vtbl ptr
@@ -1537,6 +1534,8 @@ end type
 #define IDirectDraw7_GetDeviceIdentifier(p, a, b) (p)->lpVtbl->GetDeviceIdentifier(p, a, b)
 #define IDirectDraw7_StartModeTest(p, a, b, c) (p)->lpVtbl->StartModeTest(p, a, b, c)
 #define IDirectDraw7_EvaluateMode(p, a, b) (p)->lpVtbl->EvaluateMode(p, a, b)
+
+type IDirectDrawSurfaceVtbl as IDirectDrawSurfaceVtbl_
 
 type IDirectDrawSurface
 	lpVtbl as IDirectDrawSurfaceVtbl ptr
@@ -1617,6 +1616,8 @@ end type
 #define IDirectDrawSurface_UpdateOverlay(p, a, b, c, d, e) (p)->lpVtbl->UpdateOverlay(p, a, b, c, d, e)
 #define IDirectDrawSurface_UpdateOverlayDisplay(p, a) (p)->lpVtbl->UpdateOverlayDisplay(p, a)
 #define IDirectDrawSurface_UpdateOverlayZOrder(p, a, b) (p)->lpVtbl->UpdateOverlayZOrder(p, a, b)
+
+type IDirectDrawSurface2Vtbl as IDirectDrawSurface2Vtbl_
 
 type IDirectDrawSurface2
 	lpVtbl as IDirectDrawSurface2Vtbl ptr
@@ -1703,6 +1704,8 @@ end type
 #define IDirectDrawSurface2_GetDDInterface(p, a) (p)->lpVtbl->GetDDInterface(p, a)
 #define IDirectDrawSurface2_PageLock(p, a) (p)->lpVtbl->PageLock(p, a)
 #define IDirectDrawSurface2_PageUnlock(p, a) (p)->lpVtbl->PageUnlock(p, a)
+
+type IDirectDrawSurface3Vtbl as IDirectDrawSurface3Vtbl_
 
 type IDirectDrawSurface3
 	lpVtbl as IDirectDrawSurface3Vtbl ptr
@@ -1791,6 +1794,8 @@ end type
 #define IDirectDrawSurface3_PageLock(p, a) (p)->lpVtbl->PageLock(p, a)
 #define IDirectDrawSurface3_PageUnlock(p, a) (p)->lpVtbl->PageUnlock(p, a)
 #define IDirectDrawSurface3_SetSurfaceDesc(p, a, b) (p)->lpVtbl->SetSurfaceDesc(p, a, b)
+
+type IDirectDrawSurface4Vtbl as IDirectDrawSurface4Vtbl_
 
 type IDirectDrawSurface4
 	lpVtbl as IDirectDrawSurface4Vtbl ptr
@@ -1890,7 +1895,9 @@ end type
 #define IDirectDrawSurface4_GetUniquenessValue(p, a) (p)->lpVtbl->GetUniquenessValue(p, a)
 #define IDirectDrawSurface4_ChangeUniquenessValue(p) (p)->lpVtbl->ChangeUniquenessValue(p)
 
-type IDirectDrawSurface7
+type IDirectDrawSurface7Vtbl as IDirectDrawSurface7Vtbl_
+
+type IDirectDrawSurface7_
 	lpVtbl as IDirectDrawSurface7Vtbl ptr
 end type
 
@@ -1996,6 +2003,8 @@ end type
 #define IDirectDrawSurface7_SetLOD(p, a) (p)->lpVtbl->SetLOD(p, a)
 #define IDirectDrawSurface7_GetLOD(p, a) (p)->lpVtbl->GetLOD(p, a)
 
+type IDirectDrawColorControlVtbl as IDirectDrawColorControlVtbl_
+
 type IDirectDrawColorControl
 	lpVtbl as IDirectDrawColorControlVtbl ptr
 end type
@@ -2013,6 +2022,8 @@ end type
 #define IDirectDrawColorControl_Release(p) (p)->lpVtbl->Release(p)
 #define IDirectDrawColorControl_GetColorControls(p, a) (p)->lpVtbl->GetColorControls(p, a)
 #define IDirectDrawColorControl_SetColorControls(p, a) (p)->lpVtbl->SetColorControls(p, a)
+
+type IDirectDrawGammaControlVtbl as IDirectDrawGammaControlVtbl_
 
 type IDirectDrawGammaControl
 	lpVtbl as IDirectDrawGammaControlVtbl ptr

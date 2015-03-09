@@ -17,13 +17,8 @@
 ''     #define PNG_get_uint_32 => PNG_get_uint_32_
 ''     #define PNG_get_uint_16 => PNG_get_uint_16_
 ''     #define PNG_get_int_32 => PNG_get_int_32_
-''     #define png_get_uint_32 => png_get_uint_32__
-''     #define png_get_uint_16 => png_get_uint_16__
-''     #define png_get_int_32 => png_get_int_32__
 
 extern "C"
-
-type png_control as png_control_
 
 #define PNG_H
 #define PNG_LIBPNG_VER_STRING "1.6.14"
@@ -530,14 +525,14 @@ declare function png_set_longjmp_fn(byval png_ptr as png_structrp, byval longjmp
 
 #define png_jmpbuf(png_ptr) png_set_longjmp_fn((png_ptr), @longjmp, sizeof(jmp_buf))
 
-declare sub png_longjmp(byval png_ptr as png_const_structrp, byval val_ as long)
+declare sub png_longjmp(byval png_ptr as png_const_structrp, byval val as long)
 declare function png_reset_zstream(byval png_ptr as png_structrp) as long
 declare function png_create_read_struct_2(byval user_png_ver as png_const_charp, byval error_ptr as png_voidp, byval error_fn as png_error_ptr, byval warn_fn as png_error_ptr, byval mem_ptr as png_voidp, byval malloc_fn as png_malloc_ptr, byval free_fn as png_free_ptr) as png_structp
 declare function png_create_write_struct_2(byval user_png_ver as png_const_charp, byval error_ptr as png_voidp, byval error_fn as png_error_ptr, byval warn_fn as png_error_ptr, byval mem_ptr as png_voidp, byval malloc_fn as png_malloc_ptr, byval free_fn as png_free_ptr) as png_structp
 declare sub png_write_sig(byval png_ptr as png_structrp)
-declare sub png_write_chunk(byval png_ptr as png_structrp, byval chunk_name as png_const_bytep, byval data_ as png_const_bytep, byval length as png_size_t)
+declare sub png_write_chunk(byval png_ptr as png_structrp, byval chunk_name as png_const_bytep, byval data as png_const_bytep, byval length as png_size_t)
 declare sub png_write_chunk_start(byval png_ptr as png_structrp, byval chunk_name as png_const_bytep, byval length as png_uint_32)
-declare sub png_write_chunk_data(byval png_ptr as png_structrp, byval data_ as png_const_bytep, byval length as png_size_t)
+declare sub png_write_chunk_data(byval png_ptr as png_structrp, byval data as png_const_bytep, byval length as png_size_t)
 declare sub png_write_chunk_end(byval png_ptr as png_structrp)
 declare function png_create_info_struct(byval png_ptr as png_const_structrp) as png_infop
 declare sub png_info_init_3(byval info_ptr as png_infopp, byval png_info_struct_size as png_size_t)
@@ -545,7 +540,7 @@ declare sub png_write_info_before_PLTE(byval png_ptr as png_structrp, byval info
 declare sub png_write_info(byval png_ptr as png_structrp, byval info_ptr as png_const_inforp)
 declare sub png_read_info(byval png_ptr as png_structrp, byval info_ptr as png_inforp)
 declare function png_convert_to_rfc1123(byval png_ptr as png_structrp, byval ptime as png_const_timep) as png_const_charp
-declare function png_convert_to_rfc1123_buffer(byval out_ as zstring ptr, byval ptime as png_const_timep) as long
+declare function png_convert_to_rfc1123_buffer(byval out as zstring ptr, byval ptime as png_const_timep) as long
 declare sub png_convert_from_struct_tm(byval ptime as png_timep, byval ttime as const tm ptr)
 declare sub png_convert_from_time_t(byval ptime as png_timep, byval ttime as time_t)
 declare sub png_set_expand(byval png_ptr as png_structrp)
@@ -564,7 +559,7 @@ declare sub png_set_gray_to_rgb(byval png_ptr as png_structrp)
 declare sub png_set_rgb_to_gray(byval png_ptr as png_structrp, byval error_action as long, byval red as double, byval green as double)
 declare sub png_set_rgb_to_gray_fixed(byval png_ptr as png_structrp, byval error_action as long, byval red as png_fixed_point, byval green as png_fixed_point)
 declare function png_get_rgb_to_gray_status(byval png_ptr as png_const_structrp) as png_byte
-declare sub png_build_grayscale_palette(byval bit_depth as long, byval palette_ as png_colorp)
+declare sub png_build_grayscale_palette(byval bit_depth as long, byval palette as png_colorp)
 
 #define PNG_ALPHA_PNG 0
 #define PNG_ALPHA_STANDARD 1
@@ -609,7 +604,7 @@ declare sub png_set_scale_16(byval png_ptr as png_structrp)
 #define PNG_READ_16_TO_8 SUPPORTED
 
 declare sub png_set_strip_16(byval png_ptr as png_structrp)
-declare sub png_set_quantize(byval png_ptr as png_structrp, byval palette_ as png_colorp, byval num_palette as long, byval maximum_colors as long, byval histogram as png_const_uint_16p, byval full_quantize as long)
+declare sub png_set_quantize(byval png_ptr as png_structrp, byval palette as png_colorp, byval num_palette as long, byval maximum_colors as long, byval histogram as png_const_uint_16p, byval full_quantize as long)
 
 #define PNG_GAMMA_THRESHOLD (PNG_GAMMA_THRESHOLD_FIXED * .00001)
 
@@ -700,7 +695,7 @@ declare sub png_progressive_combine_row(byval png_ptr as png_const_structrp, byv
 declare function png_malloc(byval png_ptr as png_const_structrp, byval size as png_alloc_size_t) as png_voidp
 declare function png_calloc(byval png_ptr as png_const_structrp, byval size as png_alloc_size_t) as png_voidp
 declare function png_malloc_warn(byval png_ptr as png_const_structrp, byval size as png_alloc_size_t) as png_voidp
-declare sub png_free(byval png_ptr as png_const_structrp, byval ptr_ as png_voidp)
+declare sub png_free(byval png_ptr as png_const_structrp, byval ptr as png_voidp)
 declare sub png_free_data(byval png_ptr as png_const_structrp, byval info_ptr as png_inforp, byval free_me as png_uint_32, byval num as long)
 declare sub png_data_freer(byval png_ptr as png_const_structrp, byval info_ptr as png_inforp, byval freer as long, byval mask as png_uint_32)
 
@@ -721,7 +716,7 @@ declare sub png_data_freer(byval png_ptr as png_const_structrp, byval info_ptr a
 #define PNG_FREE_MUL &h4220
 
 declare function png_malloc_default(byval png_ptr as png_const_structrp, byval size as png_alloc_size_t) as png_voidp
-declare sub png_free_default(byval png_ptr as png_const_structrp, byval ptr_ as png_voidp)
+declare sub png_free_default(byval png_ptr as png_const_structrp, byval ptr as png_voidp)
 declare sub png_error(byval png_ptr as png_const_structrp, byval error_message as png_const_charp)
 declare sub png_chunk_error(byval png_ptr as png_const_structrp, byval error_message as png_const_charp)
 declare sub png_warning(byval png_ptr as png_const_structrp, byval warning_message as png_const_charp)
@@ -767,23 +762,23 @@ declare sub png_set_gAMA(byval png_ptr as png_const_structrp, byval info_ptr as 
 declare sub png_set_gAMA_fixed(byval png_ptr as png_const_structrp, byval info_ptr as png_inforp, byval int_file_gamma as png_fixed_point)
 declare function png_get_hIST(byval png_ptr as png_const_structrp, byval info_ptr as png_inforp, byval hist as png_uint_16p ptr) as png_uint_32
 declare sub png_set_hIST(byval png_ptr as png_const_structrp, byval info_ptr as png_inforp, byval hist as png_const_uint_16p)
-declare function png_get_IHDR(byval png_ptr as png_const_structrp, byval info_ptr as png_const_inforp, byval width_ as png_uint_32 ptr, byval height as png_uint_32 ptr, byval bit_depth as long ptr, byval color_type as long ptr, byval interlace_method as long ptr, byval compression_method as long ptr, byval filter_method as long ptr) as png_uint_32
-declare sub png_set_IHDR(byval png_ptr as png_const_structrp, byval info_ptr as png_inforp, byval width_ as png_uint_32, byval height as png_uint_32, byval bit_depth as long, byval color_type as long, byval interlace_method as long, byval compression_method as long, byval filter_method as long)
+declare function png_get_IHDR(byval png_ptr as png_const_structrp, byval info_ptr as png_const_inforp, byval width as png_uint_32 ptr, byval height as png_uint_32 ptr, byval bit_depth as long ptr, byval color_type as long ptr, byval interlace_method as long ptr, byval compression_method as long ptr, byval filter_method as long ptr) as png_uint_32
+declare sub png_set_IHDR(byval png_ptr as png_const_structrp, byval info_ptr as png_inforp, byval width as png_uint_32, byval height as png_uint_32, byval bit_depth as long, byval color_type as long, byval interlace_method as long, byval compression_method as long, byval filter_method as long)
 declare function png_get_oFFs(byval png_ptr as png_const_structrp, byval info_ptr as png_const_inforp, byval offset_x as png_int_32 ptr, byval offset_y as png_int_32 ptr, byval unit_type as long ptr) as png_uint_32
 declare sub png_set_oFFs(byval png_ptr as png_const_structrp, byval info_ptr as png_inforp, byval offset_x as png_int_32, byval offset_y as png_int_32, byval unit_type as long)
-declare function png_get_pCAL(byval png_ptr as png_const_structrp, byval info_ptr as png_inforp, byval purpose as png_charp ptr, byval X0 as png_int_32 ptr, byval X1 as png_int_32 ptr, byval type_ as long ptr, byval nparams as long ptr, byval units as png_charp ptr, byval params as png_charpp ptr) as png_uint_32
-declare sub png_set_pCAL(byval png_ptr as png_const_structrp, byval info_ptr as png_inforp, byval purpose as png_const_charp, byval X0 as png_int_32, byval X1 as png_int_32, byval type_ as long, byval nparams as long, byval units as png_const_charp, byval params as png_charpp)
+declare function png_get_pCAL(byval png_ptr as png_const_structrp, byval info_ptr as png_inforp, byval purpose as png_charp ptr, byval X0 as png_int_32 ptr, byval X1 as png_int_32 ptr, byval type as long ptr, byval nparams as long ptr, byval units as png_charp ptr, byval params as png_charpp ptr) as png_uint_32
+declare sub png_set_pCAL(byval png_ptr as png_const_structrp, byval info_ptr as png_inforp, byval purpose as png_const_charp, byval X0 as png_int_32, byval X1 as png_int_32, byval type as long, byval nparams as long, byval units as png_const_charp, byval params as png_charpp)
 declare function png_get_pHYs(byval png_ptr as png_const_structrp, byval info_ptr as png_const_inforp, byval res_x as png_uint_32 ptr, byval res_y as png_uint_32 ptr, byval unit_type as long ptr) as png_uint_32
 declare sub png_set_pHYs(byval png_ptr as png_const_structrp, byval info_ptr as png_inforp, byval res_x as png_uint_32, byval res_y as png_uint_32, byval unit_type as long)
-declare function png_get_PLTE(byval png_ptr as png_const_structrp, byval info_ptr as png_inforp, byval palette_ as png_colorp ptr, byval num_palette as long ptr) as png_uint_32
-declare sub png_set_PLTE(byval png_ptr as png_structrp, byval info_ptr as png_inforp, byval palette_ as png_const_colorp, byval num_palette as long)
+declare function png_get_PLTE(byval png_ptr as png_const_structrp, byval info_ptr as png_inforp, byval palette as png_colorp ptr, byval num_palette as long ptr) as png_uint_32
+declare sub png_set_PLTE(byval png_ptr as png_structrp, byval info_ptr as png_inforp, byval palette as png_const_colorp, byval num_palette as long)
 declare function png_get_sBIT(byval png_ptr as png_const_structrp, byval info_ptr as png_inforp, byval sig_bit as png_color_8p ptr) as png_uint_32
 declare sub png_set_sBIT(byval png_ptr as png_const_structrp, byval info_ptr as png_inforp, byval sig_bit as png_const_color_8p)
 declare function png_get_sRGB(byval png_ptr as png_const_structrp, byval info_ptr as png_const_inforp, byval file_srgb_intent as long ptr) as png_uint_32
 declare sub png_set_sRGB(byval png_ptr as png_const_structrp, byval info_ptr as png_inforp, byval srgb_intent as long)
 declare sub png_set_sRGB_gAMA_and_cHRM(byval png_ptr as png_const_structrp, byval info_ptr as png_inforp, byval srgb_intent as long)
-declare function png_get_iCCP(byval png_ptr as png_const_structrp, byval info_ptr as png_inforp, byval name_ as png_charpp, byval compression_type as long ptr, byval profile as png_bytepp, byval proflen as png_uint_32 ptr) as png_uint_32
-declare sub png_set_iCCP(byval png_ptr as png_const_structrp, byval info_ptr as png_inforp, byval name_ as png_const_charp, byval compression_type as long, byval profile as png_const_bytep, byval proflen as png_uint_32)
+declare function png_get_iCCP(byval png_ptr as png_const_structrp, byval info_ptr as png_inforp, byval name as png_charpp, byval compression_type as long ptr, byval profile as png_bytepp, byval proflen as png_uint_32 ptr) as png_uint_32
+declare sub png_set_iCCP(byval png_ptr as png_const_structrp, byval info_ptr as png_inforp, byval name as png_const_charp, byval compression_type as long, byval profile as png_const_bytep, byval proflen as png_uint_32)
 declare function png_get_sPLT(byval png_ptr as png_const_structrp, byval info_ptr as png_inforp, byval entries as png_sPLT_tpp) as long
 declare sub png_set_sPLT(byval png_ptr as png_const_structrp, byval info_ptr as png_inforp, byval entries as png_const_sPLT_tp, byval nentries as long)
 declare function png_get_text(byval png_ptr as png_const_structrp, byval info_ptr as png_inforp, byval text_ptr as png_textp ptr, byval num_text as long ptr) as long
@@ -792,11 +787,11 @@ declare function png_get_tIME(byval png_ptr as png_const_structrp, byval info_pt
 declare sub png_set_tIME(byval png_ptr as png_const_structrp, byval info_ptr as png_inforp, byval mod_time as png_const_timep)
 declare function png_get_tRNS(byval png_ptr as png_const_structrp, byval info_ptr as png_inforp, byval trans_alpha as png_bytep ptr, byval num_trans as long ptr, byval trans_color as png_color_16p ptr) as png_uint_32
 declare sub png_set_tRNS(byval png_ptr as png_structrp, byval info_ptr as png_inforp, byval trans_alpha as png_const_bytep, byval num_trans as long, byval trans_color as png_const_color_16p)
-declare function png_get_sCAL(byval png_ptr as png_const_structrp, byval info_ptr as png_const_inforp, byval unit as long ptr, byval width_ as double ptr, byval height as double ptr) as png_uint_32
-declare function png_get_sCAL_fixed(byval png_ptr as png_const_structrp, byval info_ptr as png_const_inforp, byval unit as long ptr, byval width_ as png_fixed_point ptr, byval height as png_fixed_point ptr) as png_uint_32
+declare function png_get_sCAL(byval png_ptr as png_const_structrp, byval info_ptr as png_const_inforp, byval unit as long ptr, byval width as double ptr, byval height as double ptr) as png_uint_32
+declare function png_get_sCAL_fixed(byval png_ptr as png_const_structrp, byval info_ptr as png_const_inforp, byval unit as long ptr, byval width as png_fixed_point ptr, byval height as png_fixed_point ptr) as png_uint_32
 declare function png_get_sCAL_s(byval png_ptr as png_const_structrp, byval info_ptr as png_const_inforp, byval unit as long ptr, byval swidth as png_charpp, byval sheight as png_charpp) as png_uint_32
-declare sub png_set_sCAL(byval png_ptr as png_const_structrp, byval info_ptr as png_inforp, byval unit as long, byval width_ as double, byval height as double)
-declare sub png_set_sCAL_fixed(byval png_ptr as png_const_structrp, byval info_ptr as png_inforp, byval unit as long, byval width_ as png_fixed_point, byval height as png_fixed_point)
+declare sub png_set_sCAL(byval png_ptr as png_const_structrp, byval info_ptr as png_inforp, byval unit as long, byval width as double, byval height as double)
+declare sub png_set_sCAL_fixed(byval png_ptr as png_const_structrp, byval info_ptr as png_inforp, byval unit as long, byval width as png_fixed_point, byval height as png_fixed_point)
 declare sub png_set_sCAL_s(byval png_ptr as png_const_structrp, byval info_ptr as png_inforp, byval unit as long, byval swidth as png_const_charp, byval sheight as png_const_charp)
 declare sub png_set_keep_unknown_chunks(byval png_ptr as png_structrp, byval keep as long, byval chunk_list as png_const_bytep, byval num_chunks as long)
 declare function png_handle_as_unknown(byval png_ptr as png_const_structrp, byval chunk_name as png_const_bytep) as long
@@ -881,11 +876,8 @@ declare sub png_save_int_32(byval buf as png_bytep, byval i as png_int_32)
 declare sub png_save_uint_16(byval buf as png_bytep, byval i as ulong)
 
 #define PNG_get_uint_32_(buf) ((((cast(png_uint_32, *(buf)) shl 24) + (cast(png_uint_32, *((buf) + 1)) shl 16)) + (cast(png_uint_32, *((buf) + 2)) shl 8)) + cast(png_uint_32, *((buf) + 3)))
-#define PNG_get_uint_16_(buf) cast(png_uint_16, (culng(*(buf)) shl 8) + culng(*((buf) + 1)))
-#define PNG_get_int_32_(buf) cast(png_int_32, iif((*(buf)) and &h80, -cast(png_int_32, (png_get_uint_32__(buf) xor cast(clong, &hffffffff)) + 1), cast(png_int_32, png_get_uint_32__(buf))))
-#define png_get_uint_32__(buf) PNG_get_uint_32_(buf)
-#define png_get_uint_16__(buf) PNG_get_uint_16_(buf)
-#define png_get_int_32__(buf) PNG_get_int_32_(buf)
+#define PNG_get_uint_16_(buf) cast(png_uint_16, culng(culng(culng(*(buf)) shl 8) + culng(*((buf) + 1))))
+#define PNG_get_int_32_(buf) cast(png_int_32, iif((*(buf)) and &h80, -cast(png_int_32, (PNG_get_uint_32_(buf) xor cast(clong, &hffffffff)) + 1), cast(png_int_32, PNG_get_uint_32_(buf))))
 #define PNG_IMAGE_VERSION 1
 
 type png_controlp as png_control ptr
@@ -907,32 +899,32 @@ type png_imagep as png_image ptr
 #define PNG_IMAGE_WARNING 1
 #define PNG_IMAGE_ERROR 2
 #define PNG_IMAGE_FAILED(png_cntrl) (((png_cntrl).warning_or_error and &h03) > 1)
-#define PNG_FORMAT_FLAG_ALPHA &h01
-#define PNG_FORMAT_FLAG_COLOR &h02
-#define PNG_FORMAT_FLAG_LINEAR &h04
-#define PNG_FORMAT_FLAG_COLORMAP &h08
-#define PNG_FORMAT_FLAG_BGR &h10
-#define PNG_FORMAT_FLAG_AFIRST &h20
+#define PNG_FORMAT_FLAG_ALPHA &h01u
+#define PNG_FORMAT_FLAG_COLOR &h02u
+#define PNG_FORMAT_FLAG_LINEAR &h04u
+#define PNG_FORMAT_FLAG_COLORMAP &h08u
+#define PNG_FORMAT_FLAG_BGR &h10u
+#define PNG_FORMAT_FLAG_AFIRST &h20u
 #define PNG_FORMAT_GRAY 0
 #define PNG_FORMAT_GA PNG_FORMAT_FLAG_ALPHA
 #define PNG_FORMAT_AG (PNG_FORMAT_GA or PNG_FORMAT_FLAG_AFIRST)
 #define PNG_FORMAT_RGB PNG_FORMAT_FLAG_COLOR
-#define PNG_FORMAT_BGR (PNG_FORMAT_FLAG_COLOR or PNG_FORMAT_FLAG_BGR)
+#define PNG_FORMAT_BGR culng(PNG_FORMAT_FLAG_COLOR or PNG_FORMAT_FLAG_BGR)
 #define PNG_FORMAT_RGBA (PNG_FORMAT_RGB or PNG_FORMAT_FLAG_ALPHA)
 #define PNG_FORMAT_ARGB (PNG_FORMAT_RGBA or PNG_FORMAT_FLAG_AFIRST)
-#define PNG_FORMAT_BGRA (PNG_FORMAT_BGR or PNG_FORMAT_FLAG_ALPHA)
-#define PNG_FORMAT_ABGR (PNG_FORMAT_BGRA or PNG_FORMAT_FLAG_AFIRST)
+#define PNG_FORMAT_BGRA culng(PNG_FORMAT_BGR or PNG_FORMAT_FLAG_ALPHA)
+#define PNG_FORMAT_ABGR culng(PNG_FORMAT_BGRA or PNG_FORMAT_FLAG_AFIRST)
 #define PNG_FORMAT_LINEAR_Y PNG_FORMAT_FLAG_LINEAR
-#define PNG_FORMAT_LINEAR_Y_ALPHA (PNG_FORMAT_FLAG_LINEAR or PNG_FORMAT_FLAG_ALPHA)
-#define PNG_FORMAT_LINEAR_RGB (PNG_FORMAT_FLAG_LINEAR or PNG_FORMAT_FLAG_COLOR)
-#define PNG_FORMAT_LINEAR_RGB_ALPHA ((PNG_FORMAT_FLAG_LINEAR or PNG_FORMAT_FLAG_COLOR) or PNG_FORMAT_FLAG_ALPHA)
+#define PNG_FORMAT_LINEAR_Y_ALPHA culng(PNG_FORMAT_FLAG_LINEAR or PNG_FORMAT_FLAG_ALPHA)
+#define PNG_FORMAT_LINEAR_RGB culng(PNG_FORMAT_FLAG_LINEAR or PNG_FORMAT_FLAG_COLOR)
+#define PNG_FORMAT_LINEAR_RGB_ALPHA culng(culng(PNG_FORMAT_FLAG_LINEAR or PNG_FORMAT_FLAG_COLOR) or PNG_FORMAT_FLAG_ALPHA)
 #define PNG_FORMAT_RGB_COLORMAP (PNG_FORMAT_RGB or PNG_FORMAT_FLAG_COLORMAP)
-#define PNG_FORMAT_BGR_COLORMAP (PNG_FORMAT_BGR or PNG_FORMAT_FLAG_COLORMAP)
+#define PNG_FORMAT_BGR_COLORMAP culng(PNG_FORMAT_BGR or PNG_FORMAT_FLAG_COLORMAP)
 #define PNG_FORMAT_RGBA_COLORMAP (PNG_FORMAT_RGBA or PNG_FORMAT_FLAG_COLORMAP)
 #define PNG_FORMAT_ARGB_COLORMAP (PNG_FORMAT_ARGB or PNG_FORMAT_FLAG_COLORMAP)
-#define PNG_FORMAT_BGRA_COLORMAP (PNG_FORMAT_BGRA or PNG_FORMAT_FLAG_COLORMAP)
-#define PNG_FORMAT_ABGR_COLORMAP (PNG_FORMAT_ABGR or PNG_FORMAT_FLAG_COLORMAP)
-#define PNG_IMAGE_SAMPLE_CHANNELS(fmt) (((fmt) and (PNG_FORMAT_FLAG_COLOR or PNG_FORMAT_FLAG_ALPHA)) + 1)
+#define PNG_FORMAT_BGRA_COLORMAP culng(PNG_FORMAT_BGRA or PNG_FORMAT_FLAG_COLORMAP)
+#define PNG_FORMAT_ABGR_COLORMAP culng(PNG_FORMAT_ABGR or PNG_FORMAT_FLAG_COLORMAP)
+#define PNG_IMAGE_SAMPLE_CHANNELS(fmt) (((fmt) and culng(PNG_FORMAT_FLAG_COLOR or PNG_FORMAT_FLAG_ALPHA)) + 1)
 #define PNG_IMAGE_SAMPLE_COMPONENT_SIZE(fmt) ((((fmt) and PNG_FORMAT_FLAG_LINEAR) shr 2) + 1)
 #define PNG_IMAGE_SAMPLE_SIZE(fmt) (PNG_IMAGE_SAMPLE_CHANNELS(fmt) * PNG_IMAGE_SAMPLE_COMPONENT_SIZE(fmt))
 #define PNG_IMAGE_MAXIMUM_COLORMAP_COMPONENTS(fmt) (PNG_IMAGE_SAMPLE_CHANNELS(fmt) * 256)
@@ -966,6 +958,6 @@ declare function png_get_palette_max(byval png_ptr as png_const_structp, byval i
 #define PNG_OPTION_OFF 2
 #define PNG_OPTION_ON 3
 
-declare function png_set_option(byval png_ptr as png_structrp, byval option_ as long, byval onoff as long) as long
+declare function png_set_option(byval png_ptr as png_structrp, byval option as long, byval onoff as long) as long
 
 end extern

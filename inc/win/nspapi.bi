@@ -312,30 +312,6 @@ type LPNS_SERVICE_INFOW as _NS_SERVICE_INFOW ptr
 	type LPNS_SERVICE_INFO as LPNS_SERVICE_INFOA
 #endif
 
-#ifndef __CSADDR_DEFINED__
-#define __CSADDR_DEFINED__
-
-type _SOCKET_ADDRESS
-	lpSockaddr as LPSOCKADDR
-	iSockaddrLength as INT_
-end type
-
-type SOCKET_ADDRESS as _SOCKET_ADDRESS
-type PSOCKET_ADDRESS as _SOCKET_ADDRESS ptr
-type LPSOCKET_ADDRESS as _SOCKET_ADDRESS ptr
-
-type _CSADDR_INFO
-	LocalAddr as SOCKET_ADDRESS
-	RemoteAddr as SOCKET_ADDRESS
-	iSocketType as INT_
-	iProtocol as INT_
-end type
-
-type CSADDR_INFO as _CSADDR_INFO
-type PCSADDR_INFO as _CSADDR_INFO ptr
-type LPCSADDR_INFO as _CSADDR_INFO ptr
-#endif
-
 type _PROTOCOL_INFOA
 	dwServiceFlags as DWORD
 	iAddressFamily as INT_

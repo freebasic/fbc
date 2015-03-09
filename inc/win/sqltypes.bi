@@ -4,7 +4,6 @@
 ''     typedef PTR => PTR_
 
 #define __SQLTYPES
-#define ODBCVER &h0351
 
 type SQLCHAR as ubyte
 type SQLSCHAR as byte
@@ -132,7 +131,7 @@ end type
 
 type SQL_DAY_SECOND_STRUCT as tagSQL_DAY_SECOND
 
-union __tagSQL_INTERVAL_STRUCT_intval
+union tagSQL_INTERVAL_STRUCT_intval
 	year_month as SQL_YEAR_MONTH_STRUCT
 	day_second as SQL_DAY_SECOND_STRUCT
 end union
@@ -140,7 +139,7 @@ end union
 type tagSQL_INTERVAL_STRUCT
 	interval_type as SQLINTERVAL
 	interval_sign as SQLSMALLINT
-	intval as __tagSQL_INTERVAL_STRUCT_intval
+	intval as tagSQL_INTERVAL_STRUCT_intval
 end type
 
 type SQL_INTERVAL_STRUCT as tagSQL_INTERVAL_STRUCT

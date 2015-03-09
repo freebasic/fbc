@@ -4,16 +4,6 @@
 
 extern "Windows"
 
-type ID3DXAllocateHierarchyVtbl as ID3DXAllocateHierarchyVtbl_
-type ID3DXLoadUserDataVtbl as ID3DXLoadUserDataVtbl_
-type ID3DXSaveUserDataVtbl as ID3DXSaveUserDataVtbl_
-type ID3DXAnimationSetVtbl as ID3DXAnimationSetVtbl_
-type ID3DXKeyframedAnimationSetVtbl as ID3DXKeyframedAnimationSetVtbl_
-type ID3DXCompressedAnimationSetVtbl as ID3DXCompressedAnimationSetVtbl_
-type ID3DXAnimationCallbackHandlerVtbl as ID3DXAnimationCallbackHandlerVtbl_
-type ID3DXAnimationControllerVtbl as ID3DXAnimationControllerVtbl_
-type IDirect3DDevice9 as IDirect3DDevice9_
-
 #define __WINE_D3DX9ANIM_H
 
 extern IID_ID3DXAnimationSet as const GUID
@@ -189,16 +179,20 @@ type LPD3DXCOMPRESSEDANIMATIONSET as ID3DXCompressedAnimationSet ptr
 type LPD3DXANIMATIONCALLBACKHANDLER as ID3DXAnimationCallbackHandler ptr
 type LPD3DXANIMATIONCONTROLLER as ID3DXAnimationController ptr
 
+type ID3DXAllocateHierarchyVtbl as ID3DXAllocateHierarchyVtbl_
+
 type ID3DXAllocateHierarchy
 	lpVtbl as ID3DXAllocateHierarchyVtbl ptr
 end type
 
 type ID3DXAllocateHierarchyVtbl_
-	CreateFrame as function(byval This as ID3DXAllocateHierarchy ptr, byval name_ as const zstring ptr, byval new_frame as D3DXFRAME ptr ptr) as HRESULT
-	CreateMeshContainer as function(byval This as ID3DXAllocateHierarchy ptr, byval name_ as const zstring ptr, byval mesh_data as const D3DXMESHDATA ptr, byval materials as const D3DXMATERIAL ptr, byval effect_instances as const D3DXEFFECTINSTANCE ptr, byval num_materials as DWORD, byval adjacency as const DWORD ptr, byval skin_info as ID3DXSkinInfo ptr, byval new_mesh_container as D3DXMESHCONTAINER ptr ptr) as HRESULT
+	CreateFrame as function(byval This as ID3DXAllocateHierarchy ptr, byval name as const zstring ptr, byval new_frame as D3DXFRAME ptr ptr) as HRESULT
+	CreateMeshContainer as function(byval This as ID3DXAllocateHierarchy ptr, byval name as const zstring ptr, byval mesh_data as const D3DXMESHDATA ptr, byval materials as const D3DXMATERIAL ptr, byval effect_instances as const D3DXEFFECTINSTANCE ptr, byval num_materials as DWORD, byval adjacency as const DWORD ptr, byval skin_info as ID3DXSkinInfo ptr, byval new_mesh_container as D3DXMESHCONTAINER ptr ptr) as HRESULT
 	DestroyFrame as function(byval This as ID3DXAllocateHierarchy ptr, byval frame as LPD3DXFRAME) as HRESULT
 	DestroyMeshContainer as function(byval This as ID3DXAllocateHierarchy ptr, byval mesh_container as LPD3DXMESHCONTAINER) as HRESULT
 end type
+
+type ID3DXLoadUserDataVtbl as ID3DXLoadUserDataVtbl_
 
 type ID3DXLoadUserData
 	lpVtbl as ID3DXLoadUserDataVtbl ptr
@@ -209,6 +203,8 @@ type ID3DXLoadUserDataVtbl_
 	LoadFrameChildData as function(byval frame as D3DXFRAME ptr, byval child_data as ID3DXFileData ptr) as HRESULT
 	LoadMeshChildData as function(byval mesh_container as D3DXMESHCONTAINER ptr, byval child_data as ID3DXFileData ptr) as HRESULT
 end type
+
+type ID3DXSaveUserDataVtbl as ID3DXSaveUserDataVtbl_
 
 type ID3DXSaveUserData
 	lpVtbl as ID3DXSaveUserDataVtbl ptr
@@ -223,38 +219,42 @@ type ID3DXSaveUserDataVtbl_
 	SaveTemplates as function(byval save_obj as ID3DXFileSaveObject ptr) as HRESULT
 end type
 
+type ID3DXAnimationSetVtbl as ID3DXAnimationSetVtbl_
+
 type ID3DXAnimationSet
 	lpVtbl as ID3DXAnimationSetVtbl ptr
 end type
 
 type ID3DXAnimationSetVtbl_
-	QueryInterface as function(byval This as ID3DXAnimationSet ptr, byval riid as const IID const ptr, byval out_ as any ptr ptr) as HRESULT
+	QueryInterface as function(byval This as ID3DXAnimationSet ptr, byval riid as const IID const ptr, byval out as any ptr ptr) as HRESULT
 	AddRef as function(byval This as ID3DXAnimationSet ptr) as ULONG
 	Release as function(byval This as ID3DXAnimationSet ptr) as ULONG
 	GetName as function(byval This as ID3DXAnimationSet ptr) as const zstring ptr
 	GetPeriod as function(byval This as ID3DXAnimationSet ptr) as DOUBLE
 	GetPeriodicPosition as function(byval This as ID3DXAnimationSet ptr, byval position as DOUBLE) as DOUBLE
 	GetNumAnimations as function(byval This as ID3DXAnimationSet ptr) as UINT
-	GetAnimationNameByIndex as function(byval This as ID3DXAnimationSet ptr, byval index as UINT, byval name_ as const zstring ptr ptr) as HRESULT
-	GetAnimationIndexByName as function(byval This as ID3DXAnimationSet ptr, byval name_ as const zstring ptr, byval index as UINT ptr) as HRESULT
+	GetAnimationNameByIndex as function(byval This as ID3DXAnimationSet ptr, byval index as UINT, byval name as const zstring ptr ptr) as HRESULT
+	GetAnimationIndexByName as function(byval This as ID3DXAnimationSet ptr, byval name as const zstring ptr, byval index as UINT ptr) as HRESULT
 	GetSRT as function(byval This as ID3DXAnimationSet ptr, byval periodic_position as DOUBLE, byval animation as UINT, byval scale as D3DXVECTOR3 ptr, byval rotation as D3DXQUATERNION ptr, byval translation as D3DXVECTOR3 ptr) as HRESULT
 	GetCallback as function(byval This as ID3DXAnimationSet ptr, byval position as double, byval flags as DWORD, byval callback_position as double ptr, byval callback_data as any ptr ptr) as HRESULT
 end type
+
+type ID3DXKeyframedAnimationSetVtbl as ID3DXKeyframedAnimationSetVtbl_
 
 type ID3DXKeyframedAnimationSet
 	lpVtbl as ID3DXKeyframedAnimationSetVtbl ptr
 end type
 
 type ID3DXKeyframedAnimationSetVtbl_
-	QueryInterface as function(byval This as ID3DXKeyframedAnimationSet ptr, byval riid as const IID const ptr, byval out_ as any ptr ptr) as HRESULT
+	QueryInterface as function(byval This as ID3DXKeyframedAnimationSet ptr, byval riid as const IID const ptr, byval out as any ptr ptr) as HRESULT
 	AddRef as function(byval This as ID3DXKeyframedAnimationSet ptr) as ULONG
 	Release as function(byval This as ID3DXKeyframedAnimationSet ptr) as ULONG
 	GetName as function(byval This as ID3DXKeyframedAnimationSet ptr) as const zstring ptr
 	GetPeriod as function(byval This as ID3DXKeyframedAnimationSet ptr) as DOUBLE
 	GetPeriodicPosition as function(byval This as ID3DXKeyframedAnimationSet ptr, byval position as DOUBLE) as DOUBLE
 	GetNumAnimations as function(byval This as ID3DXKeyframedAnimationSet ptr) as UINT
-	GetAnimationNameByIndex as function(byval This as ID3DXKeyframedAnimationSet ptr, byval index as UINT, byval name_ as const zstring ptr ptr) as HRESULT
-	GetAnimationIndexByName as function(byval This as ID3DXKeyframedAnimationSet ptr, byval name_ as const zstring ptr, byval index as UINT ptr) as HRESULT
+	GetAnimationNameByIndex as function(byval This as ID3DXKeyframedAnimationSet ptr, byval index as UINT, byval name as const zstring ptr ptr) as HRESULT
+	GetAnimationIndexByName as function(byval This as ID3DXKeyframedAnimationSet ptr, byval name as const zstring ptr, byval index as UINT ptr) as HRESULT
 	GetSRT as function(byval This as ID3DXKeyframedAnimationSet ptr, byval periodic_position as DOUBLE, byval animation as UINT, byval scale as D3DXVECTOR3 ptr, byval rotation as D3DXQUATERNION ptr, byval translation as D3DXVECTOR3 ptr) as HRESULT
 	GetCallback as function(byval This as ID3DXKeyframedAnimationSet ptr, byval position as double, byval flags as DWORD, byval callback_position as double ptr, byval callback_data as any ptr ptr) as HRESULT
 	GetPlaybackType as function(byval This as ID3DXKeyframedAnimationSet ptr) as D3DXPLAYBACK_TYPE
@@ -278,25 +278,27 @@ type ID3DXKeyframedAnimationSetVtbl_
 	UnregisterScaleKey as function(byval This as ID3DXKeyframedAnimationSet ptr, byval animation as UINT, byval key as UINT) as HRESULT
 	UnregisterRotationKey as function(byval This as ID3DXKeyframedAnimationSet ptr, byval animation as UINT, byval key as UINT) as HRESULT
 	UnregisterTranslationKey as function(byval This as ID3DXKeyframedAnimationSet ptr, byval animation as UINT, byval key as UINT) as HRESULT
-	RegisterAnimationSRTKeys as function(byval This as ID3DXKeyframedAnimationSet ptr, byval name_ as const zstring ptr, byval num_scale_keys as UINT, byval num_rotation_keys as UINT, byval num_translation_keys as UINT, byval scale_keys as const D3DXKEY_VECTOR3 ptr, byval rotation_keys as const D3DXKEY_QUATERNION ptr, byval translation_keys as const D3DXKEY_VECTOR3 ptr, byval animation_index as DWORD ptr) as HRESULT
+	RegisterAnimationSRTKeys as function(byval This as ID3DXKeyframedAnimationSet ptr, byval name as const zstring ptr, byval num_scale_keys as UINT, byval num_rotation_keys as UINT, byval num_translation_keys as UINT, byval scale_keys as const D3DXKEY_VECTOR3 ptr, byval rotation_keys as const D3DXKEY_QUATERNION ptr, byval translation_keys as const D3DXKEY_VECTOR3 ptr, byval animation_index as DWORD ptr) as HRESULT
 	Compress as function(byval This as ID3DXKeyframedAnimationSet ptr, byval flags as DWORD, byval lossiness as single, byval hierarchy as D3DXFRAME ptr, byval compressed_data as ID3DXBuffer ptr ptr) as HRESULT
 	UnregisterAnimation as function(byval This as ID3DXKeyframedAnimationSet ptr, byval index as UINT) as HRESULT
 end type
+
+type ID3DXCompressedAnimationSetVtbl as ID3DXCompressedAnimationSetVtbl_
 
 type ID3DXCompressedAnimationSet
 	lpVtbl as ID3DXCompressedAnimationSetVtbl ptr
 end type
 
 type ID3DXCompressedAnimationSetVtbl_
-	QueryInterface as function(byval This as ID3DXCompressedAnimationSet ptr, byval riid as const IID const ptr, byval out_ as any ptr ptr) as HRESULT
+	QueryInterface as function(byval This as ID3DXCompressedAnimationSet ptr, byval riid as const IID const ptr, byval out as any ptr ptr) as HRESULT
 	AddRef as function(byval This as ID3DXCompressedAnimationSet ptr) as ULONG
 	Release as function(byval This as ID3DXCompressedAnimationSet ptr) as ULONG
 	GetName as function(byval This as ID3DXCompressedAnimationSet ptr) as const zstring ptr
 	GetPeriod as function(byval This as ID3DXCompressedAnimationSet ptr) as DOUBLE
 	GetPeriodicPosition as function(byval This as ID3DXCompressedAnimationSet ptr, byval position as DOUBLE) as DOUBLE
 	GetNumAnimations as function(byval This as ID3DXCompressedAnimationSet ptr) as UINT
-	GetAnimationNameByIndex as function(byval This as ID3DXCompressedAnimationSet ptr, byval index as UINT, byval name_ as const zstring ptr ptr) as HRESULT
-	GetAnimationIndexByName as function(byval This as ID3DXCompressedAnimationSet ptr, byval name_ as const zstring ptr, byval index as UINT ptr) as HRESULT
+	GetAnimationNameByIndex as function(byval This as ID3DXCompressedAnimationSet ptr, byval index as UINT, byval name as const zstring ptr ptr) as HRESULT
+	GetAnimationIndexByName as function(byval This as ID3DXCompressedAnimationSet ptr, byval name as const zstring ptr, byval index as UINT ptr) as HRESULT
 	GetSRT as function(byval This as ID3DXCompressedAnimationSet ptr, byval periodic_position as DOUBLE, byval animation as UINT, byval scale as D3DXVECTOR3 ptr, byval rotation as D3DXQUATERNION ptr, byval translation as D3DXVECTOR3 ptr) as HRESULT
 	GetCallback as function(byval This as ID3DXCompressedAnimationSet ptr, byval position as double, byval flags as DWORD, byval callback_position as double ptr, byval callback_data as any ptr ptr) as HRESULT
 	GetPlaybackType as function(byval This as ID3DXCompressedAnimationSet ptr) as D3DXPLAYBACK_TYPE
@@ -306,6 +308,8 @@ type ID3DXCompressedAnimationSetVtbl_
 	GetCallbackKeys as function(byval This as ID3DXCompressedAnimationSet ptr, byval callback_keys as LPD3DXKEY_CALLBACK) as HRESULT
 end type
 
+type ID3DXAnimationCallbackHandlerVtbl as ID3DXAnimationCallbackHandlerVtbl_
+
 type ID3DXAnimationCallbackHandler
 	lpVtbl as ID3DXAnimationCallbackHandlerVtbl ptr
 end type
@@ -314,24 +318,26 @@ type ID3DXAnimationCallbackHandlerVtbl_
 	HandleCallback as function(byval This as ID3DXAnimationCallbackHandler ptr, byval track as UINT, byval callback_data as any ptr) as HRESULT
 end type
 
+type ID3DXAnimationControllerVtbl as ID3DXAnimationControllerVtbl_
+
 type ID3DXAnimationController
 	lpVtbl as ID3DXAnimationControllerVtbl ptr
 end type
 
 type ID3DXAnimationControllerVtbl_
-	QueryInterface as function(byval This as ID3DXAnimationController ptr, byval riid as const IID const ptr, byval out_ as any ptr ptr) as HRESULT
+	QueryInterface as function(byval This as ID3DXAnimationController ptr, byval riid as const IID const ptr, byval out as any ptr ptr) as HRESULT
 	AddRef as function(byval This as ID3DXAnimationController ptr) as ULONG
 	Release as function(byval This as ID3DXAnimationController ptr) as ULONG
 	GetMaxNumAnimationOutputs as function(byval This as ID3DXAnimationController ptr) as UINT
 	GetMaxNumAnimationSets as function(byval This as ID3DXAnimationController ptr) as UINT
 	GetMaxNumTracks as function(byval This as ID3DXAnimationController ptr) as UINT
 	GetMaxNumEvents as function(byval This as ID3DXAnimationController ptr) as UINT
-	RegisterAnimationOutput as function(byval This as ID3DXAnimationController ptr, byval name_ as const zstring ptr, byval matrix as D3DXMATRIX ptr, byval scale as D3DXVECTOR3 ptr, byval rotation as D3DXQUATERNION ptr, byval translation as D3DXVECTOR3 ptr) as HRESULT
+	RegisterAnimationOutput as function(byval This as ID3DXAnimationController ptr, byval name as const zstring ptr, byval matrix as D3DXMATRIX ptr, byval scale as D3DXVECTOR3 ptr, byval rotation as D3DXQUATERNION ptr, byval translation as D3DXVECTOR3 ptr) as HRESULT
 	RegisterAnimationSet as function(byval This as ID3DXAnimationController ptr, byval anim_set as ID3DXAnimationSet ptr) as HRESULT
 	UnregisterAnimationSet as function(byval This as ID3DXAnimationController ptr, byval anim_set as ID3DXAnimationSet ptr) as HRESULT
 	GetNumAnimationSets as function(byval This as ID3DXAnimationController ptr) as UINT
 	GetAnimationSet as function(byval This as ID3DXAnimationController ptr, byval index as UINT, byval anim_set as ID3DXAnimationSet ptr ptr) as HRESULT
-	GetAnimationSetByName as function(byval This as ID3DXAnimationController ptr, byval name_ as const zstring ptr, byval anim_set as ID3DXAnimationSet ptr ptr) as HRESULT
+	GetAnimationSetByName as function(byval This as ID3DXAnimationController ptr, byval name as const zstring ptr, byval anim_set as ID3DXAnimationSet ptr ptr) as HRESULT
 	AdvanceTime as function(byval This as ID3DXAnimationController ptr, byval time_delta as double, byval callback_handler as ID3DXAnimationCallbackHandler ptr ptr) as HRESULT
 	ResetTime as function(byval This as ID3DXAnimationController ptr) as HRESULT
 	GetTime as function(byval This as ID3DXAnimationController ptr) as DOUBLE
@@ -372,7 +378,7 @@ declare function D3DXLoadMeshHierarchyFromXW(byval filename as const wstring ptr
 	#define D3DXLoadMeshHierarchyFromX D3DXLoadMeshHierarchyFromXA
 #endif
 
-declare function D3DXLoadMeshHierarchyFromXInMemory(byval data_ as const any ptr, byval data_size as DWORD, byval flags as DWORD, byval device as IDirect3DDevice9 ptr, byval alloc as ID3DXAllocateHierarchy ptr, byval user_data_loader as ID3DXLoadUserData ptr, byval frame_hierarchy as D3DXFRAME ptr ptr, byval animation_controller as ID3DXAnimationController ptr ptr) as HRESULT
+declare function D3DXLoadMeshHierarchyFromXInMemory(byval data as const any ptr, byval data_size as DWORD, byval flags as DWORD, byval device as IDirect3DDevice9 ptr, byval alloc as ID3DXAllocateHierarchy ptr, byval user_data_loader as ID3DXLoadUserData ptr, byval frame_hierarchy as D3DXFRAME ptr ptr, byval animation_controller as ID3DXAnimationController ptr ptr) as HRESULT
 declare function D3DXSaveMeshHierarchyToFileA(byval filename as const zstring ptr, byval format as DWORD, byval frame_root as const D3DXFRAME ptr, byval animation_controller as ID3DXAnimationController ptr, byval user_data_saver as ID3DXSaveUserData ptr) as HRESULT
 declare function D3DXSaveMeshHierarchyToFileW(byval filename as const wstring ptr, byval format as DWORD, byval frame_root as const D3DXFRAME ptr, byval animation_controller as ID3DXAnimationController ptr, byval user_data_saver as ID3DXSaveUserData ptr) as HRESULT
 
@@ -384,12 +390,12 @@ declare function D3DXSaveMeshHierarchyToFileW(byval filename as const wstring pt
 
 declare function D3DXFrameDestroy(byval frame_root as D3DXFRAME ptr, byval alloc as ID3DXAllocateHierarchy ptr) as HRESULT
 declare function D3DXFrameAppendChild(byval as LPD3DXFRAME, byval as const D3DXFRAME ptr) as HRESULT
-declare function D3DXFrameFind(byval root as const D3DXFRAME ptr, byval name_ as const zstring ptr) as D3DXFRAME ptr
+declare function D3DXFrameFind(byval root as const D3DXFRAME ptr, byval name as const zstring ptr) as D3DXFRAME ptr
 declare function D3DXFrameRegisterNamedMatrices(byval frame_root as D3DXFRAME ptr, byval animation_controller as ID3DXAnimationController ptr) as HRESULT
 declare function D3DXFrameNumNamedMatrices(byval frame_root as const D3DXFRAME ptr) as UINT
 declare function D3DXFrameCalculateBoundingSphere(byval as const D3DXFRAME ptr, byval as LPD3DXVECTOR3, byval as FLOAT ptr) as HRESULT
-declare function D3DXCreateKeyframedAnimationSet(byval name_ as const zstring ptr, byval ticks_per_second as double, byval playback_type as D3DXPLAYBACK_TYPE, byval animation_count as UINT, byval callback_key_count as UINT, byval callback_keys as const D3DXKEY_CALLBACK ptr, byval animation_set as ID3DXKeyframedAnimationSet ptr ptr) as HRESULT
-declare function D3DXCreateCompressedAnimationSet(byval name_ as const zstring ptr, byval ticks_per_second as double, byval playback_type as D3DXPLAYBACK_TYPE, byval compressed_data as ID3DXBuffer ptr, byval callback_key_count as UINT, byval callback_keys as const D3DXKEY_CALLBACK ptr, byval animation_set as ID3DXCompressedAnimationSet ptr ptr) as HRESULT
+declare function D3DXCreateKeyframedAnimationSet(byval name as const zstring ptr, byval ticks_per_second as double, byval playback_type as D3DXPLAYBACK_TYPE, byval animation_count as UINT, byval callback_key_count as UINT, byval callback_keys as const D3DXKEY_CALLBACK ptr, byval animation_set as ID3DXKeyframedAnimationSet ptr ptr) as HRESULT
+declare function D3DXCreateCompressedAnimationSet(byval name as const zstring ptr, byval ticks_per_second as double, byval playback_type as D3DXPLAYBACK_TYPE, byval compressed_data as ID3DXBuffer ptr, byval callback_key_count as UINT, byval callback_keys as const D3DXKEY_CALLBACK ptr, byval animation_set as ID3DXCompressedAnimationSet ptr ptr) as HRESULT
 declare function D3DXCreateAnimationController(byval max_animation_output_count as UINT, byval max_animation_set_count as UINT, byval max_track_count as UINT, byval max_event_count as UINT, byval animation_controller as ID3DXAnimationController ptr ptr) as HRESULT
 
 end extern

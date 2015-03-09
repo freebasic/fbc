@@ -13,6 +13,7 @@ type FLAGS as ulong
 
 type LHANDLE as ULONG_PTR
 type LPLHANDLE as ULONG_PTR ptr
+type LPBYTE as ubyte ptr
 
 #define lhSessionNull cast(LHANDLE, 0)
 

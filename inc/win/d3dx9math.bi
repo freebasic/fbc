@@ -6,17 +6,7 @@
 
 extern "Windows"
 
-type ID3DXMatrixStackVtbl as ID3DXMatrixStackVtbl_
-
 #define __D3DX9MATH_H__
-
-type D3DXVECTOR2
-	x as FLOAT
-	y as FLOAT
-end type
-
-type LPD3DXVECTOR2 as D3DXVECTOR2 ptr
-
 #define D3DX_PI cast(FLOAT, 3.141592654)
 #define D3DX_1BYPI cast(FLOAT, 0.318309886)
 #define D3DXSH_MINORDER 2
@@ -24,6 +14,12 @@ type LPD3DXVECTOR2 as D3DXVECTOR2 ptr
 #define D3DXToRadian(degree) ((degree) * (D3DX_PI / 180.0f))
 #define D3DXToDegree(radian) ((radian) * (180.0f / D3DX_PI))
 
+type D3DXVECTOR2
+	x as FLOAT
+	y as FLOAT
+end type
+
+type LPD3DXVECTOR2 as D3DXVECTOR2 ptr
 type D3DXVECTOR3 as _D3DVECTOR
 type LPD3DXVECTOR3 as _D3DVECTOR ptr
 
@@ -158,30 +154,32 @@ declare function D3DXVec4Transform(byval pout as D3DXVECTOR4 ptr, byval pv as co
 declare function D3DXVec4TransformArray(byval pout as D3DXVECTOR4 ptr, byval outstride as UINT, byval pv as const D3DXVECTOR4 ptr, byval vstride as UINT, byval pm as const D3DXMATRIX ptr, byval n as UINT) as D3DXVECTOR4 ptr
 declare function D3DXFloat32To16Array(byval pout as D3DXFLOAT16 ptr, byval pin as const FLOAT ptr, byval n as UINT) as D3DXFLOAT16 ptr
 declare function D3DXFloat16To32Array(byval pout as FLOAT ptr, byval pin as const D3DXFLOAT16 ptr, byval n as UINT) as FLOAT ptr
-declare function D3DXSHAdd(byval out_ as FLOAT ptr, byval order as UINT, byval a as const FLOAT ptr, byval b as const FLOAT ptr) as FLOAT ptr
+declare function D3DXSHAdd(byval out as FLOAT ptr, byval order as UINT, byval a as const FLOAT ptr, byval b as const FLOAT ptr) as FLOAT ptr
 declare function D3DXSHDot(byval order as UINT, byval a as const FLOAT ptr, byval b as const FLOAT ptr) as FLOAT
-declare function D3DXSHEvalConeLight(byval order as UINT, byval dir_ as const D3DXVECTOR3 ptr, byval radius as FLOAT, byval Rintensity as FLOAT, byval Gintensity as FLOAT, byval Bintensity as FLOAT, byval rout as FLOAT ptr, byval gout as FLOAT ptr, byval bout as FLOAT ptr) as HRESULT
-declare function D3DXSHEvalDirection(byval out_ as FLOAT ptr, byval order as UINT, byval dir_ as const D3DXVECTOR3 ptr) as FLOAT ptr
-declare function D3DXSHEvalDirectionalLight(byval order as UINT, byval dir_ as const D3DXVECTOR3 ptr, byval Rintensity as FLOAT, byval Gintensity as FLOAT, byval Bintensity as FLOAT, byval rout as FLOAT ptr, byval gout as FLOAT ptr, byval bout as FLOAT ptr) as HRESULT
-declare function D3DXSHEvalHemisphereLight(byval order as UINT, byval dir_ as const D3DXVECTOR3 ptr, byval top as D3DXCOLOR, byval bottom as D3DXCOLOR, byval rout as FLOAT ptr, byval gout as FLOAT ptr, byval bout as FLOAT ptr) as HRESULT
-declare function D3DXSHEvalSphericalLight(byval order as UINT, byval dir_ as const D3DXVECTOR3 ptr, byval radius as FLOAT, byval Rintensity as FLOAT, byval Gintensity as FLOAT, byval Bintensity as FLOAT, byval rout as FLOAT ptr, byval gout as FLOAT ptr, byval bout as FLOAT ptr) as HRESULT
-declare function D3DXSHMultiply2(byval out_ as FLOAT ptr, byval a as const FLOAT ptr, byval b as const FLOAT ptr) as FLOAT ptr
-declare function D3DXSHMultiply3(byval out_ as FLOAT ptr, byval a as const FLOAT ptr, byval b as const FLOAT ptr) as FLOAT ptr
-declare function D3DXSHMultiply4(byval out_ as FLOAT ptr, byval a as const FLOAT ptr, byval b as const FLOAT ptr) as FLOAT ptr
-declare function D3DXSHRotate(byval out_ as FLOAT ptr, byval order as UINT, byval matrix as const D3DXMATRIX ptr, byval in as const FLOAT ptr) as FLOAT ptr
-declare function D3DXSHRotateZ(byval out_ as FLOAT ptr, byval order as UINT, byval angle as FLOAT, byval in as const FLOAT ptr) as FLOAT ptr
-declare function D3DXSHScale(byval out_ as FLOAT ptr, byval order as UINT, byval a as const FLOAT ptr, byval scale as const FLOAT) as FLOAT ptr
+declare function D3DXSHEvalConeLight(byval order as UINT, byval dir as const D3DXVECTOR3 ptr, byval radius as FLOAT, byval Rintensity as FLOAT, byval Gintensity as FLOAT, byval Bintensity as FLOAT, byval rout as FLOAT ptr, byval gout as FLOAT ptr, byval bout as FLOAT ptr) as HRESULT
+declare function D3DXSHEvalDirection(byval out as FLOAT ptr, byval order as UINT, byval dir as const D3DXVECTOR3 ptr) as FLOAT ptr
+declare function D3DXSHEvalDirectionalLight(byval order as UINT, byval dir as const D3DXVECTOR3 ptr, byval Rintensity as FLOAT, byval Gintensity as FLOAT, byval Bintensity as FLOAT, byval rout as FLOAT ptr, byval gout as FLOAT ptr, byval bout as FLOAT ptr) as HRESULT
+declare function D3DXSHEvalHemisphereLight(byval order as UINT, byval dir as const D3DXVECTOR3 ptr, byval top as D3DXCOLOR, byval bottom as D3DXCOLOR, byval rout as FLOAT ptr, byval gout as FLOAT ptr, byval bout as FLOAT ptr) as HRESULT
+declare function D3DXSHEvalSphericalLight(byval order as UINT, byval dir as const D3DXVECTOR3 ptr, byval radius as FLOAT, byval Rintensity as FLOAT, byval Gintensity as FLOAT, byval Bintensity as FLOAT, byval rout as FLOAT ptr, byval gout as FLOAT ptr, byval bout as FLOAT ptr) as HRESULT
+declare function D3DXSHMultiply2(byval out as FLOAT ptr, byval a as const FLOAT ptr, byval b as const FLOAT ptr) as FLOAT ptr
+declare function D3DXSHMultiply3(byval out as FLOAT ptr, byval a as const FLOAT ptr, byval b as const FLOAT ptr) as FLOAT ptr
+declare function D3DXSHMultiply4(byval out as FLOAT ptr, byval a as const FLOAT ptr, byval b as const FLOAT ptr) as FLOAT ptr
+declare function D3DXSHRotate(byval out as FLOAT ptr, byval order as UINT, byval matrix as const D3DXMATRIX ptr, byval in as const FLOAT ptr) as FLOAT ptr
+declare function D3DXSHRotateZ(byval out as FLOAT ptr, byval order as UINT, byval angle as FLOAT, byval in as const FLOAT ptr) as FLOAT ptr
+declare function D3DXSHScale(byval out as FLOAT ptr, byval order as UINT, byval a as const FLOAT ptr, byval scale as const FLOAT) as FLOAT ptr
 
 type LPD3DXMATRIXSTACK as ID3DXMatrixStack ptr
 
 extern IID_ID3DXMatrixStack as const GUID
+
+type ID3DXMatrixStackVtbl as ID3DXMatrixStackVtbl_
 
 type ID3DXMatrixStack
 	lpVtbl as ID3DXMatrixStackVtbl ptr
 end type
 
 type ID3DXMatrixStackVtbl_
-	QueryInterface as function(byval This as ID3DXMatrixStack ptr, byval riid as const IID const ptr, byval out_ as any ptr ptr) as HRESULT
+	QueryInterface as function(byval This as ID3DXMatrixStack ptr, byval riid as const IID const ptr, byval out as any ptr ptr) as HRESULT
 	AddRef as function(byval This as ID3DXMatrixStack ptr) as ULONG
 	Release as function(byval This as ID3DXMatrixStack ptr) as ULONG
 	Pop as function(byval This as ID3DXMatrixStack ptr) as HRESULT

@@ -5,12 +5,6 @@
 
 extern "Windows"
 
-type ID3DXEffectPoolVtbl as ID3DXEffectPoolVtbl_
-type ID3DXBaseEffectVtbl as ID3DXBaseEffectVtbl_
-type ID3DXEffectStateManagerVtbl as ID3DXEffectStateManagerVtbl_
-type ID3DXEffectVtbl as ID3DXEffectVtbl_
-type ID3DXEffectCompilerVtbl as ID3DXEffectCompilerVtbl_
-
 #define __D3DX9EFFECT_H__
 #define D3DXFX_DONOTSAVESTATE (1 shl 0)
 #define D3DXFX_DONOTSAVESHADERSTATE (1 shl 1)
@@ -73,12 +67,14 @@ type LPD3DXEFFECTPOOL as ID3DXEffectPool ptr
 
 extern IID_ID3DXEffectPool as const GUID
 
+type ID3DXEffectPoolVtbl as ID3DXEffectPoolVtbl_
+
 type ID3DXEffectPool
 	lpVtbl as ID3DXEffectPoolVtbl ptr
 end type
 
 type ID3DXEffectPoolVtbl_
-	QueryInterface as function(byval This as ID3DXEffectPool ptr, byval riid as const IID const ptr, byval out_ as any ptr ptr) as HRESULT
+	QueryInterface as function(byval This as ID3DXEffectPool ptr, byval riid as const IID const ptr, byval out as any ptr ptr) as HRESULT
 	AddRef as function(byval This as ID3DXEffectPool ptr) as ULONG
 	Release as function(byval This as ID3DXEffectPool ptr) as ULONG
 end type
@@ -87,12 +83,14 @@ type LPD3DXBASEEFFECT as ID3DXBaseEffect ptr
 
 extern IID_ID3DXBaseEffect as const GUID
 
+type ID3DXBaseEffectVtbl as ID3DXBaseEffectVtbl_
+
 type ID3DXBaseEffect
 	lpVtbl as ID3DXBaseEffectVtbl ptr
 end type
 
 type ID3DXBaseEffectVtbl_
-	QueryInterface as function(byval This as ID3DXBaseEffect ptr, byval riid as const IID const ptr, byval out_ as any ptr ptr) as HRESULT
+	QueryInterface as function(byval This as ID3DXBaseEffect ptr, byval riid as const IID const ptr, byval out as any ptr ptr) as HRESULT
 	AddRef as function(byval This as ID3DXBaseEffect ptr) as ULONG
 	Release as function(byval This as ID3DXBaseEffect ptr) as ULONG
 	GetDesc as function(byval This as ID3DXBaseEffect ptr, byval desc as D3DXEFFECT_DESC ptr) as HRESULT
@@ -101,19 +99,19 @@ type ID3DXBaseEffectVtbl_
 	GetPassDesc as function(byval This as ID3DXBaseEffect ptr, byval pass as D3DXHANDLE, byval desc as D3DXPASS_DESC ptr) as HRESULT
 	GetFunctionDesc as function(byval This as ID3DXBaseEffect ptr, byval shader as D3DXHANDLE, byval desc as D3DXFUNCTION_DESC ptr) as HRESULT
 	GetParameter as function(byval This as ID3DXBaseEffect ptr, byval parameter as D3DXHANDLE, byval index as UINT) as D3DXHANDLE
-	GetParameterByName as function(byval This as ID3DXBaseEffect ptr, byval parameter as D3DXHANDLE, byval name_ as const zstring ptr) as D3DXHANDLE
+	GetParameterByName as function(byval This as ID3DXBaseEffect ptr, byval parameter as D3DXHANDLE, byval name as const zstring ptr) as D3DXHANDLE
 	GetParameterBySemantic as function(byval This as ID3DXBaseEffect ptr, byval parameter as D3DXHANDLE, byval semantic as const zstring ptr) as D3DXHANDLE
 	GetParameterElement as function(byval This as ID3DXBaseEffect ptr, byval parameter as D3DXHANDLE, byval index as UINT) as D3DXHANDLE
 	GetTechnique as function(byval This as ID3DXBaseEffect ptr, byval index as UINT) as D3DXHANDLE
-	GetTechniqueByName as function(byval This as ID3DXBaseEffect ptr, byval name_ as const zstring ptr) as D3DXHANDLE
+	GetTechniqueByName as function(byval This as ID3DXBaseEffect ptr, byval name as const zstring ptr) as D3DXHANDLE
 	GetPass as function(byval This as ID3DXBaseEffect ptr, byval technique as D3DXHANDLE, byval index as UINT) as D3DXHANDLE
-	GetPassByName as function(byval This as ID3DXBaseEffect ptr, byval technique as D3DXHANDLE, byval name_ as const zstring ptr) as D3DXHANDLE
+	GetPassByName as function(byval This as ID3DXBaseEffect ptr, byval technique as D3DXHANDLE, byval name as const zstring ptr) as D3DXHANDLE
 	GetFunction as function(byval This as ID3DXBaseEffect ptr, byval index as UINT) as D3DXHANDLE
-	GetFunctionByName as function(byval This as ID3DXBaseEffect ptr, byval name_ as const zstring ptr) as D3DXHANDLE
-	GetAnnotation as function(byval This as ID3DXBaseEffect ptr, byval object_ as D3DXHANDLE, byval index as UINT) as D3DXHANDLE
-	GetAnnotationByName as function(byval This as ID3DXBaseEffect ptr, byval object_ as D3DXHANDLE, byval name_ as const zstring ptr) as D3DXHANDLE
-	SetValue as function(byval This as ID3DXBaseEffect ptr, byval parameter as D3DXHANDLE, byval data_ as const any ptr, byval bytes as UINT) as HRESULT
-	GetValue as function(byval This as ID3DXBaseEffect ptr, byval parameter as D3DXHANDLE, byval data_ as any ptr, byval bytes as UINT) as HRESULT
+	GetFunctionByName as function(byval This as ID3DXBaseEffect ptr, byval name as const zstring ptr) as D3DXHANDLE
+	GetAnnotation as function(byval This as ID3DXBaseEffect ptr, byval object as D3DXHANDLE, byval index as UINT) as D3DXHANDLE
+	GetAnnotationByName as function(byval This as ID3DXBaseEffect ptr, byval object as D3DXHANDLE, byval name as const zstring ptr) as D3DXHANDLE
+	SetValue as function(byval This as ID3DXBaseEffect ptr, byval parameter as D3DXHANDLE, byval data as const any ptr, byval bytes as UINT) as HRESULT
+	GetValue as function(byval This as ID3DXBaseEffect ptr, byval parameter as D3DXHANDLE, byval data as any ptr, byval bytes as UINT) as HRESULT
 	SetBool as function(byval This as ID3DXBaseEffect ptr, byval parameter as D3DXHANDLE, byval b as WINBOOL) as HRESULT
 	GetBool as function(byval This as ID3DXBaseEffect ptr, byval parameter as D3DXHANDLE, byval b as WINBOOL ptr) as HRESULT
 	SetBoolArray as function(byval This as ID3DXBaseEffect ptr, byval parameter as D3DXHANDLE, byval b as const WINBOOL ptr, byval count as UINT) as HRESULT
@@ -142,25 +140,27 @@ type ID3DXBaseEffectVtbl_
 	GetMatrixTransposeArray as function(byval This as ID3DXBaseEffect ptr, byval parameter as D3DXHANDLE, byval matrix as D3DXMATRIX ptr, byval count as UINT) as HRESULT
 	SetMatrixTransposePointerArray as function(byval This as ID3DXBaseEffect ptr, byval parameter as D3DXHANDLE, byval matrix as const D3DXMATRIX ptr ptr, byval count as UINT) as HRESULT
 	GetMatrixTransposePointerArray as function(byval This as ID3DXBaseEffect ptr, byval parameter as D3DXHANDLE, byval matrix as D3DXMATRIX ptr ptr, byval count as UINT) as HRESULT
-	SetString as function(byval This as ID3DXBaseEffect ptr, byval parameter as D3DXHANDLE, byval string_ as const zstring ptr) as HRESULT
-	GetString as function(byval This as ID3DXBaseEffect ptr, byval parameter as D3DXHANDLE, byval string_ as const zstring ptr ptr) as HRESULT
+	SetString as function(byval This as ID3DXBaseEffect ptr, byval parameter as D3DXHANDLE, byval string as const zstring ptr) as HRESULT
+	GetString as function(byval This as ID3DXBaseEffect ptr, byval parameter as D3DXHANDLE, byval string as const zstring ptr ptr) as HRESULT
 	SetTexture as function(byval This as ID3DXBaseEffect ptr, byval parameter as D3DXHANDLE, byval texture as IDirect3DBaseTexture9 ptr) as HRESULT
 	GetTexture as function(byval This as ID3DXBaseEffect ptr, byval parameter as D3DXHANDLE, byval texture as IDirect3DBaseTexture9 ptr ptr) as HRESULT
 	GetPixelShader as function(byval This as ID3DXBaseEffect ptr, byval parameter as D3DXHANDLE, byval shader as IDirect3DPixelShader9 ptr ptr) as HRESULT
 	GetVertexShader as function(byval This as ID3DXBaseEffect ptr, byval parameter as D3DXHANDLE, byval shader as IDirect3DVertexShader9 ptr ptr) as HRESULT
-	SetArrayRange as function(byval This as ID3DXBaseEffect ptr, byval parameter as D3DXHANDLE, byval start as UINT, byval end_ as UINT) as HRESULT
+	SetArrayRange as function(byval This as ID3DXBaseEffect ptr, byval parameter as D3DXHANDLE, byval start as UINT, byval end as UINT) as HRESULT
 end type
 
 type LPD3DXEFFECTSTATEMANAGER as ID3DXEffectStateManager ptr
 
 extern IID_ID3DXEffectStateManager as const GUID
 
+type ID3DXEffectStateManagerVtbl as ID3DXEffectStateManagerVtbl_
+
 type ID3DXEffectStateManager
 	lpVtbl as ID3DXEffectStateManagerVtbl ptr
 end type
 
 type ID3DXEffectStateManagerVtbl_
-	QueryInterface as function(byval This as ID3DXEffectStateManager ptr, byval riid as const IID const ptr, byval out_ as any ptr ptr) as HRESULT
+	QueryInterface as function(byval This as ID3DXEffectStateManager ptr, byval riid as const IID const ptr, byval out as any ptr ptr) as HRESULT
 	AddRef as function(byval This as ID3DXEffectStateManager ptr) as ULONG
 	Release as function(byval This as ID3DXEffectStateManager ptr) as ULONG
 	SetTransform as function(byval This as ID3DXEffectStateManager ptr, byval state as D3DTRANSFORMSTATETYPE, byval matrix as const D3DMATRIX ptr) as HRESULT
@@ -169,8 +169,8 @@ type ID3DXEffectStateManagerVtbl_
 	LightEnable as function(byval This as ID3DXEffectStateManager ptr, byval index as DWORD, byval enable as WINBOOL) as HRESULT
 	SetRenderState as function(byval This as ID3DXEffectStateManager ptr, byval state as D3DRENDERSTATETYPE, byval value as DWORD) as HRESULT
 	SetTexture as function(byval This as ID3DXEffectStateManager ptr, byval stage as DWORD, byval texture as IDirect3DBaseTexture9 ptr) as HRESULT
-	SetTextureStageState as function(byval This as ID3DXEffectStateManager ptr, byval stage as DWORD, byval type_ as D3DTEXTURESTAGESTATETYPE, byval value as DWORD) as HRESULT
-	SetSamplerState as function(byval This as ID3DXEffectStateManager ptr, byval sampler as DWORD, byval type_ as D3DSAMPLERSTATETYPE, byval value as DWORD) as HRESULT
+	SetTextureStageState as function(byval This as ID3DXEffectStateManager ptr, byval stage as DWORD, byval type as D3DTEXTURESTAGESTATETYPE, byval value as DWORD) as HRESULT
+	SetSamplerState as function(byval This as ID3DXEffectStateManager ptr, byval sampler as DWORD, byval type as D3DSAMPLERSTATETYPE, byval value as DWORD) as HRESULT
 	SetNPatchMode as function(byval This as ID3DXEffectStateManager ptr, byval num_segments as FLOAT) as HRESULT
 	SetFVF as function(byval This as ID3DXEffectStateManager ptr, byval format as DWORD) as HRESULT
 	SetVertexShader as function(byval This as ID3DXEffectStateManager ptr, byval shader as IDirect3DVertexShader9 ptr) as HRESULT
@@ -187,12 +187,14 @@ type LPD3DXEFFECT as ID3DXEffect ptr
 
 extern IID_ID3DXEffect as const GUID
 
+type ID3DXEffectVtbl as ID3DXEffectVtbl_
+
 type ID3DXEffect
 	lpVtbl as ID3DXEffectVtbl ptr
 end type
 
 type ID3DXEffectVtbl_
-	QueryInterface as function(byval This as ID3DXEffect ptr, byval riid as const IID const ptr, byval out_ as any ptr ptr) as HRESULT
+	QueryInterface as function(byval This as ID3DXEffect ptr, byval riid as const IID const ptr, byval out as any ptr ptr) as HRESULT
 	AddRef as function(byval This as ID3DXEffect ptr) as ULONG
 	Release as function(byval This as ID3DXEffect ptr) as ULONG
 	GetDesc as function(byval This as ID3DXEffect ptr, byval desc as D3DXEFFECT_DESC ptr) as HRESULT
@@ -201,19 +203,19 @@ type ID3DXEffectVtbl_
 	GetPassDesc as function(byval This as ID3DXEffect ptr, byval pass as D3DXHANDLE, byval desc as D3DXPASS_DESC ptr) as HRESULT
 	GetFunctionDesc as function(byval This as ID3DXEffect ptr, byval shader as D3DXHANDLE, byval desc as D3DXFUNCTION_DESC ptr) as HRESULT
 	GetParameter as function(byval This as ID3DXEffect ptr, byval parameter as D3DXHANDLE, byval index as UINT) as D3DXHANDLE
-	GetParameterByName as function(byval This as ID3DXEffect ptr, byval parameter as D3DXHANDLE, byval name_ as const zstring ptr) as D3DXHANDLE
+	GetParameterByName as function(byval This as ID3DXEffect ptr, byval parameter as D3DXHANDLE, byval name as const zstring ptr) as D3DXHANDLE
 	GetParameterBySemantic as function(byval This as ID3DXEffect ptr, byval parameter as D3DXHANDLE, byval semantic as const zstring ptr) as D3DXHANDLE
 	GetParameterElement as function(byval This as ID3DXEffect ptr, byval parameter as D3DXHANDLE, byval index as UINT) as D3DXHANDLE
 	GetTechnique as function(byval This as ID3DXEffect ptr, byval index as UINT) as D3DXHANDLE
-	GetTechniqueByName as function(byval This as ID3DXEffect ptr, byval name_ as const zstring ptr) as D3DXHANDLE
+	GetTechniqueByName as function(byval This as ID3DXEffect ptr, byval name as const zstring ptr) as D3DXHANDLE
 	GetPass as function(byval This as ID3DXEffect ptr, byval technique as D3DXHANDLE, byval index as UINT) as D3DXHANDLE
-	GetPassByName as function(byval This as ID3DXEffect ptr, byval technique as D3DXHANDLE, byval name_ as const zstring ptr) as D3DXHANDLE
+	GetPassByName as function(byval This as ID3DXEffect ptr, byval technique as D3DXHANDLE, byval name as const zstring ptr) as D3DXHANDLE
 	GetFunction as function(byval This as ID3DXEffect ptr, byval index as UINT) as D3DXHANDLE
-	GetFunctionByName as function(byval This as ID3DXEffect ptr, byval name_ as const zstring ptr) as D3DXHANDLE
-	GetAnnotation as function(byval This as ID3DXEffect ptr, byval object_ as D3DXHANDLE, byval index as UINT) as D3DXHANDLE
-	GetAnnotationByName as function(byval This as ID3DXEffect ptr, byval object_ as D3DXHANDLE, byval name_ as const zstring ptr) as D3DXHANDLE
-	SetValue as function(byval This as ID3DXEffect ptr, byval parameter as D3DXHANDLE, byval data_ as const any ptr, byval bytes as UINT) as HRESULT
-	GetValue as function(byval This as ID3DXEffect ptr, byval parameter as D3DXHANDLE, byval data_ as any ptr, byval bytes as UINT) as HRESULT
+	GetFunctionByName as function(byval This as ID3DXEffect ptr, byval name as const zstring ptr) as D3DXHANDLE
+	GetAnnotation as function(byval This as ID3DXEffect ptr, byval object as D3DXHANDLE, byval index as UINT) as D3DXHANDLE
+	GetAnnotationByName as function(byval This as ID3DXEffect ptr, byval object as D3DXHANDLE, byval name as const zstring ptr) as D3DXHANDLE
+	SetValue as function(byval This as ID3DXEffect ptr, byval parameter as D3DXHANDLE, byval data as const any ptr, byval bytes as UINT) as HRESULT
+	GetValue as function(byval This as ID3DXEffect ptr, byval parameter as D3DXHANDLE, byval data as any ptr, byval bytes as UINT) as HRESULT
 	SetBool as function(byval This as ID3DXEffect ptr, byval parameter as D3DXHANDLE, byval b as WINBOOL) as HRESULT
 	GetBool as function(byval This as ID3DXEffect ptr, byval parameter as D3DXHANDLE, byval b as WINBOOL ptr) as HRESULT
 	SetBoolArray as function(byval This as ID3DXEffect ptr, byval parameter as D3DXHANDLE, byval b as const WINBOOL ptr, byval count as UINT) as HRESULT
@@ -242,13 +244,13 @@ type ID3DXEffectVtbl_
 	GetMatrixTransposeArray as function(byval This as ID3DXEffect ptr, byval parameter as D3DXHANDLE, byval matrix as D3DXMATRIX ptr, byval count as UINT) as HRESULT
 	SetMatrixTransposePointerArray as function(byval This as ID3DXEffect ptr, byval parameter as D3DXHANDLE, byval matrix as const D3DXMATRIX ptr ptr, byval count as UINT) as HRESULT
 	GetMatrixTransposePointerArray as function(byval This as ID3DXEffect ptr, byval parameter as D3DXHANDLE, byval matrix as D3DXMATRIX ptr ptr, byval count as UINT) as HRESULT
-	SetString as function(byval This as ID3DXEffect ptr, byval parameter as D3DXHANDLE, byval string_ as const zstring ptr) as HRESULT
-	GetString as function(byval This as ID3DXEffect ptr, byval parameter as D3DXHANDLE, byval string_ as const zstring ptr ptr) as HRESULT
+	SetString as function(byval This as ID3DXEffect ptr, byval parameter as D3DXHANDLE, byval string as const zstring ptr) as HRESULT
+	GetString as function(byval This as ID3DXEffect ptr, byval parameter as D3DXHANDLE, byval string as const zstring ptr ptr) as HRESULT
 	SetTexture as function(byval This as ID3DXEffect ptr, byval parameter as D3DXHANDLE, byval texture as IDirect3DBaseTexture9 ptr) as HRESULT
 	GetTexture as function(byval This as ID3DXEffect ptr, byval parameter as D3DXHANDLE, byval texture as IDirect3DBaseTexture9 ptr ptr) as HRESULT
 	GetPixelShader as function(byval This as ID3DXEffect ptr, byval parameter as D3DXHANDLE, byval shader as IDirect3DPixelShader9 ptr ptr) as HRESULT
 	GetVertexShader as function(byval This as ID3DXEffect ptr, byval parameter as D3DXHANDLE, byval shader as IDirect3DVertexShader9 ptr ptr) as HRESULT
-	SetArrayRange as function(byval This as ID3DXEffect ptr, byval parameter as D3DXHANDLE, byval start as UINT, byval end_ as UINT) as HRESULT
+	SetArrayRange as function(byval This as ID3DXEffect ptr, byval parameter as D3DXHANDLE, byval start as UINT, byval end as UINT) as HRESULT
 	GetPool as function(byval This as ID3DXEffect ptr, byval pool as ID3DXEffectPool ptr ptr) as HRESULT
 	SetTechnique as function(byval This as ID3DXEffect ptr, byval technique as D3DXHANDLE) as HRESULT
 	GetCurrentTechnique as function(byval This as ID3DXEffect ptr) as D3DXHANDLE
@@ -270,19 +272,21 @@ type ID3DXEffectVtbl_
 	ApplyParameterBlock as function(byval This as ID3DXEffect ptr, byval parameter_block as D3DXHANDLE) as HRESULT
 	DeleteParameterBlock as function(byval This as ID3DXEffect ptr, byval parameter_block as D3DXHANDLE) as HRESULT
 	CloneEffect as function(byval This as ID3DXEffect ptr, byval device as IDirect3DDevice9 ptr, byval effect as ID3DXEffect ptr ptr) as HRESULT
-	SetRawValue as function(byval This as ID3DXEffect ptr, byval parameter as D3DXHANDLE, byval data_ as const any ptr, byval byte_offset as UINT, byval bytes as UINT) as HRESULT
+	SetRawValue as function(byval This as ID3DXEffect ptr, byval parameter as D3DXHANDLE, byval data as const any ptr, byval byte_offset as UINT, byval bytes as UINT) as HRESULT
 end type
 
 type LPD3DXEFFECTCOMPILER as ID3DXEffectCompiler ptr
 
 extern IID_ID3DXEffectCompiler as const GUID
 
+type ID3DXEffectCompilerVtbl as ID3DXEffectCompilerVtbl_
+
 type ID3DXEffectCompiler
 	lpVtbl as ID3DXEffectCompilerVtbl ptr
 end type
 
 type ID3DXEffectCompilerVtbl_
-	QueryInterface as function(byval This as ID3DXEffectCompiler ptr, byval riid as const IID const ptr, byval out_ as any ptr ptr) as HRESULT
+	QueryInterface as function(byval This as ID3DXEffectCompiler ptr, byval riid as const IID const ptr, byval out as any ptr ptr) as HRESULT
 	AddRef as function(byval This as ID3DXEffectCompiler ptr) as ULONG
 	Release as function(byval This as ID3DXEffectCompiler ptr) as ULONG
 	GetDesc as function(byval This as ID3DXEffectCompiler ptr, byval desc as D3DXEFFECT_DESC ptr) as HRESULT
@@ -291,19 +295,19 @@ type ID3DXEffectCompilerVtbl_
 	GetPassDesc as function(byval This as ID3DXEffectCompiler ptr, byval pass as D3DXHANDLE, byval desc as D3DXPASS_DESC ptr) as HRESULT
 	GetFunctionDesc as function(byval This as ID3DXEffectCompiler ptr, byval shader as D3DXHANDLE, byval desc as D3DXFUNCTION_DESC ptr) as HRESULT
 	GetParameter as function(byval This as ID3DXEffectCompiler ptr, byval parameter as D3DXHANDLE, byval index as UINT) as D3DXHANDLE
-	GetParameterByName as function(byval This as ID3DXEffectCompiler ptr, byval parameter as D3DXHANDLE, byval name_ as const zstring ptr) as D3DXHANDLE
+	GetParameterByName as function(byval This as ID3DXEffectCompiler ptr, byval parameter as D3DXHANDLE, byval name as const zstring ptr) as D3DXHANDLE
 	GetParameterBySemantic as function(byval This as ID3DXEffectCompiler ptr, byval parameter as D3DXHANDLE, byval semantic as const zstring ptr) as D3DXHANDLE
 	GetParameterElement as function(byval This as ID3DXEffectCompiler ptr, byval parameter as D3DXHANDLE, byval index as UINT) as D3DXHANDLE
 	GetTechnique as function(byval This as ID3DXEffectCompiler ptr, byval index as UINT) as D3DXHANDLE
-	GetTechniqueByName as function(byval This as ID3DXEffectCompiler ptr, byval name_ as const zstring ptr) as D3DXHANDLE
+	GetTechniqueByName as function(byval This as ID3DXEffectCompiler ptr, byval name as const zstring ptr) as D3DXHANDLE
 	GetPass as function(byval This as ID3DXEffectCompiler ptr, byval technique as D3DXHANDLE, byval index as UINT) as D3DXHANDLE
-	GetPassByName as function(byval This as ID3DXEffectCompiler ptr, byval technique as D3DXHANDLE, byval name_ as const zstring ptr) as D3DXHANDLE
+	GetPassByName as function(byval This as ID3DXEffectCompiler ptr, byval technique as D3DXHANDLE, byval name as const zstring ptr) as D3DXHANDLE
 	GetFunction as function(byval This as ID3DXEffectCompiler ptr, byval index as UINT) as D3DXHANDLE
-	GetFunctionByName as function(byval This as ID3DXEffectCompiler ptr, byval name_ as const zstring ptr) as D3DXHANDLE
-	GetAnnotation as function(byval This as ID3DXEffectCompiler ptr, byval object_ as D3DXHANDLE, byval index as UINT) as D3DXHANDLE
-	GetAnnotationByName as function(byval This as ID3DXEffectCompiler ptr, byval object_ as D3DXHANDLE, byval name_ as const zstring ptr) as D3DXHANDLE
-	SetValue as function(byval This as ID3DXEffectCompiler ptr, byval parameter as D3DXHANDLE, byval data_ as const any ptr, byval bytes as UINT) as HRESULT
-	GetValue as function(byval This as ID3DXEffectCompiler ptr, byval parameter as D3DXHANDLE, byval data_ as any ptr, byval bytes as UINT) as HRESULT
+	GetFunctionByName as function(byval This as ID3DXEffectCompiler ptr, byval name as const zstring ptr) as D3DXHANDLE
+	GetAnnotation as function(byval This as ID3DXEffectCompiler ptr, byval object as D3DXHANDLE, byval index as UINT) as D3DXHANDLE
+	GetAnnotationByName as function(byval This as ID3DXEffectCompiler ptr, byval object as D3DXHANDLE, byval name as const zstring ptr) as D3DXHANDLE
+	SetValue as function(byval This as ID3DXEffectCompiler ptr, byval parameter as D3DXHANDLE, byval data as const any ptr, byval bytes as UINT) as HRESULT
+	GetValue as function(byval This as ID3DXEffectCompiler ptr, byval parameter as D3DXHANDLE, byval data as any ptr, byval bytes as UINT) as HRESULT
 	SetBool as function(byval This as ID3DXEffectCompiler ptr, byval parameter as D3DXHANDLE, byval b as WINBOOL) as HRESULT
 	GetBool as function(byval This as ID3DXEffectCompiler ptr, byval parameter as D3DXHANDLE, byval b as WINBOOL ptr) as HRESULT
 	SetBoolArray as function(byval This as ID3DXEffectCompiler ptr, byval parameter as D3DXHANDLE, byval b as const WINBOOL ptr, byval count as UINT) as HRESULT
@@ -332,25 +336,25 @@ type ID3DXEffectCompilerVtbl_
 	GetMatrixTransposeArray as function(byval This as ID3DXEffectCompiler ptr, byval parameter as D3DXHANDLE, byval matrix as D3DXMATRIX ptr, byval count as UINT) as HRESULT
 	SetMatrixTransposePointerArray as function(byval This as ID3DXEffectCompiler ptr, byval parameter as D3DXHANDLE, byval matrix as const D3DXMATRIX ptr ptr, byval count as UINT) as HRESULT
 	GetMatrixTransposePointerArray as function(byval This as ID3DXEffectCompiler ptr, byval parameter as D3DXHANDLE, byval matrix as D3DXMATRIX ptr ptr, byval count as UINT) as HRESULT
-	SetString as function(byval This as ID3DXEffectCompiler ptr, byval parameter as D3DXHANDLE, byval string_ as const zstring ptr) as HRESULT
-	GetString as function(byval This as ID3DXEffectCompiler ptr, byval parameter as D3DXHANDLE, byval string_ as const zstring ptr ptr) as HRESULT
+	SetString as function(byval This as ID3DXEffectCompiler ptr, byval parameter as D3DXHANDLE, byval string as const zstring ptr) as HRESULT
+	GetString as function(byval This as ID3DXEffectCompiler ptr, byval parameter as D3DXHANDLE, byval string as const zstring ptr ptr) as HRESULT
 	SetTexture as function(byval This as ID3DXEffectCompiler ptr, byval parameter as D3DXHANDLE, byval texture as IDirect3DBaseTexture9 ptr) as HRESULT
 	GetTexture as function(byval This as ID3DXEffectCompiler ptr, byval parameter as D3DXHANDLE, byval texture as IDirect3DBaseTexture9 ptr ptr) as HRESULT
 	GetPixelShader as function(byval This as ID3DXEffectCompiler ptr, byval parameter as D3DXHANDLE, byval shader as IDirect3DPixelShader9 ptr ptr) as HRESULT
 	GetVertexShader as function(byval This as ID3DXEffectCompiler ptr, byval parameter as D3DXHANDLE, byval shader as IDirect3DVertexShader9 ptr ptr) as HRESULT
-	SetArrayRange as function(byval This as ID3DXEffectCompiler ptr, byval parameter as D3DXHANDLE, byval start as UINT, byval end_ as UINT) as HRESULT
+	SetArrayRange as function(byval This as ID3DXEffectCompiler ptr, byval parameter as D3DXHANDLE, byval start as UINT, byval end as UINT) as HRESULT
 	SetLiteral as function(byval This as ID3DXEffectCompiler ptr, byval parameter as D3DXHANDLE, byval literal as WINBOOL) as HRESULT
 	GetLiteral as function(byval This as ID3DXEffectCompiler ptr, byval parameter as D3DXHANDLE, byval literal as WINBOOL ptr) as HRESULT
 	CompileEffect as function(byval This as ID3DXEffectCompiler ptr, byval flags as DWORD, byval effect as ID3DXBuffer ptr ptr, byval error_msgs as ID3DXBuffer ptr ptr) as HRESULT
-	CompileShader as function(byval This as ID3DXEffectCompiler ptr, byval function_ as D3DXHANDLE, byval target as const zstring ptr, byval flags as DWORD, byval shader as ID3DXBuffer ptr ptr, byval error_msgs as ID3DXBuffer ptr ptr, byval constant_table as ID3DXConstantTable ptr ptr) as HRESULT
+	CompileShader as function(byval This as ID3DXEffectCompiler ptr, byval function as D3DXHANDLE, byval target as const zstring ptr, byval flags as DWORD, byval shader as ID3DXBuffer ptr ptr, byval error_msgs as ID3DXBuffer ptr ptr, byval constant_table as ID3DXConstantTable ptr ptr) as HRESULT
 end type
 
 declare function D3DXCreateEffectPool(byval pool as ID3DXEffectPool ptr ptr) as HRESULT
-declare function D3DXCreateEffect(byval device as IDirect3DDevice9 ptr, byval srcdata as const any ptr, byval srcdatalen as UINT, byval defines as const D3DXMACRO ptr, byval include_ as ID3DXInclude ptr, byval flags as DWORD, byval pool as ID3DXEffectPool ptr, byval effect as ID3DXEffect ptr ptr, byval compilation_errors as ID3DXBuffer ptr ptr) as HRESULT
-declare function D3DXCreateEffectEx(byval device as IDirect3DDevice9 ptr, byval srcdata as const any ptr, byval srcdatalen as UINT, byval defines as const D3DXMACRO ptr, byval include_ as ID3DXInclude ptr, byval skip_constants as const zstring ptr, byval flags as DWORD, byval pool as ID3DXEffectPool ptr, byval effect as ID3DXEffect ptr ptr, byval compilation_errors as ID3DXBuffer ptr ptr) as HRESULT
-declare function D3DXCreateEffectCompiler(byval srcdata as const zstring ptr, byval srcdatalen as UINT, byval defines as const D3DXMACRO ptr, byval include_ as ID3DXInclude ptr, byval flags as DWORD, byval compiler as ID3DXEffectCompiler ptr ptr, byval parse_errors as ID3DXBuffer ptr ptr) as HRESULT
-declare function D3DXCreateEffectFromFileExA(byval device as IDirect3DDevice9 ptr, byval srcfile as const zstring ptr, byval defines as const D3DXMACRO ptr, byval include_ as ID3DXInclude ptr, byval skip_constants as const zstring ptr, byval flags as DWORD, byval pool as ID3DXEffectPool ptr, byval effect as ID3DXEffect ptr ptr, byval compilation_errors as ID3DXBuffer ptr ptr) as HRESULT
-declare function D3DXCreateEffectFromFileExW(byval device as IDirect3DDevice9 ptr, byval srcfile as const wstring ptr, byval defines as const D3DXMACRO ptr, byval include_ as ID3DXInclude ptr, byval skip_constants as const zstring ptr, byval flags as DWORD, byval pool as ID3DXEffectPool ptr, byval effect as ID3DXEffect ptr ptr, byval compilation_errors as ID3DXBuffer ptr ptr) as HRESULT
+declare function D3DXCreateEffect(byval device as IDirect3DDevice9 ptr, byval srcdata as const any ptr, byval srcdatalen as UINT, byval defines as const D3DXMACRO ptr, byval include as ID3DXInclude ptr, byval flags as DWORD, byval pool as ID3DXEffectPool ptr, byval effect as ID3DXEffect ptr ptr, byval compilation_errors as ID3DXBuffer ptr ptr) as HRESULT
+declare function D3DXCreateEffectEx(byval device as IDirect3DDevice9 ptr, byval srcdata as const any ptr, byval srcdatalen as UINT, byval defines as const D3DXMACRO ptr, byval include as ID3DXInclude ptr, byval skip_constants as const zstring ptr, byval flags as DWORD, byval pool as ID3DXEffectPool ptr, byval effect as ID3DXEffect ptr ptr, byval compilation_errors as ID3DXBuffer ptr ptr) as HRESULT
+declare function D3DXCreateEffectCompiler(byval srcdata as const zstring ptr, byval srcdatalen as UINT, byval defines as const D3DXMACRO ptr, byval include as ID3DXInclude ptr, byval flags as DWORD, byval compiler as ID3DXEffectCompiler ptr ptr, byval parse_errors as ID3DXBuffer ptr ptr) as HRESULT
+declare function D3DXCreateEffectFromFileExA(byval device as IDirect3DDevice9 ptr, byval srcfile as const zstring ptr, byval defines as const D3DXMACRO ptr, byval include as ID3DXInclude ptr, byval skip_constants as const zstring ptr, byval flags as DWORD, byval pool as ID3DXEffectPool ptr, byval effect as ID3DXEffect ptr ptr, byval compilation_errors as ID3DXBuffer ptr ptr) as HRESULT
+declare function D3DXCreateEffectFromFileExW(byval device as IDirect3DDevice9 ptr, byval srcfile as const wstring ptr, byval defines as const D3DXMACRO ptr, byval include as ID3DXInclude ptr, byval skip_constants as const zstring ptr, byval flags as DWORD, byval pool as ID3DXEffectPool ptr, byval effect as ID3DXEffect ptr ptr, byval compilation_errors as ID3DXBuffer ptr ptr) as HRESULT
 
 #ifdef UNICODE
 	#define D3DXCreateEffectFromFileEx D3DXCreateEffectFromFileExW
@@ -358,8 +362,8 @@ declare function D3DXCreateEffectFromFileExW(byval device as IDirect3DDevice9 pt
 	#define D3DXCreateEffectFromFileEx D3DXCreateEffectFromFileExA
 #endif
 
-declare function D3DXCreateEffectFromFileA(byval device as IDirect3DDevice9 ptr, byval srcfile as const zstring ptr, byval defines as const D3DXMACRO ptr, byval include_ as ID3DXInclude ptr, byval flags as DWORD, byval pool as ID3DXEffectPool ptr, byval effect as ID3DXEffect ptr ptr, byval compilation_errors as ID3DXBuffer ptr ptr) as HRESULT
-declare function D3DXCreateEffectFromFileW(byval device as IDirect3DDevice9 ptr, byval srcfile as const wstring ptr, byval defines as const D3DXMACRO ptr, byval include_ as ID3DXInclude ptr, byval flags as DWORD, byval pool as ID3DXEffectPool ptr, byval effect as ID3DXEffect ptr ptr, byval compilation_errors as ID3DXBuffer ptr ptr) as HRESULT
+declare function D3DXCreateEffectFromFileA(byval device as IDirect3DDevice9 ptr, byval srcfile as const zstring ptr, byval defines as const D3DXMACRO ptr, byval include as ID3DXInclude ptr, byval flags as DWORD, byval pool as ID3DXEffectPool ptr, byval effect as ID3DXEffect ptr ptr, byval compilation_errors as ID3DXBuffer ptr ptr) as HRESULT
+declare function D3DXCreateEffectFromFileW(byval device as IDirect3DDevice9 ptr, byval srcfile as const wstring ptr, byval defines as const D3DXMACRO ptr, byval include as ID3DXInclude ptr, byval flags as DWORD, byval pool as ID3DXEffectPool ptr, byval effect as ID3DXEffect ptr ptr, byval compilation_errors as ID3DXBuffer ptr ptr) as HRESULT
 
 #ifdef UNICODE
 	#define D3DXCreateEffectFromFile D3DXCreateEffectFromFileW
@@ -367,8 +371,8 @@ declare function D3DXCreateEffectFromFileW(byval device as IDirect3DDevice9 ptr,
 	#define D3DXCreateEffectFromFile D3DXCreateEffectFromFileA
 #endif
 
-declare function D3DXCreateEffectFromResourceExA(byval device as IDirect3DDevice9 ptr, byval srcmodule as HMODULE, byval srcresource as const zstring ptr, byval defines as const D3DXMACRO ptr, byval include_ as ID3DXInclude ptr, byval skip_constants as const zstring ptr, byval flags as DWORD, byval pool as ID3DXEffectPool ptr, byval effect as ID3DXEffect ptr ptr, byval compilation_errors as ID3DXBuffer ptr ptr) as HRESULT
-declare function D3DXCreateEffectFromResourceExW(byval device as IDirect3DDevice9 ptr, byval srcmodule as HMODULE, byval srcresource as const wstring ptr, byval defines as const D3DXMACRO ptr, byval include_ as ID3DXInclude ptr, byval skip_constants as const zstring ptr, byval flags as DWORD, byval pool as ID3DXEffectPool ptr, byval effect as ID3DXEffect ptr ptr, byval compilation_errors as ID3DXBuffer ptr ptr) as HRESULT
+declare function D3DXCreateEffectFromResourceExA(byval device as IDirect3DDevice9 ptr, byval srcmodule as HMODULE, byval srcresource as const zstring ptr, byval defines as const D3DXMACRO ptr, byval include as ID3DXInclude ptr, byval skip_constants as const zstring ptr, byval flags as DWORD, byval pool as ID3DXEffectPool ptr, byval effect as ID3DXEffect ptr ptr, byval compilation_errors as ID3DXBuffer ptr ptr) as HRESULT
+declare function D3DXCreateEffectFromResourceExW(byval device as IDirect3DDevice9 ptr, byval srcmodule as HMODULE, byval srcresource as const wstring ptr, byval defines as const D3DXMACRO ptr, byval include as ID3DXInclude ptr, byval skip_constants as const zstring ptr, byval flags as DWORD, byval pool as ID3DXEffectPool ptr, byval effect as ID3DXEffect ptr ptr, byval compilation_errors as ID3DXBuffer ptr ptr) as HRESULT
 
 #ifdef UNICODE
 	#define D3DXCreateEffectFromResourceEx D3DXCreateEffectFromResourceExW
@@ -376,8 +380,8 @@ declare function D3DXCreateEffectFromResourceExW(byval device as IDirect3DDevice
 	#define D3DXCreateEffectFromResourceEx D3DXCreateEffectFromResourceExA
 #endif
 
-declare function D3DXCreateEffectFromResourceA(byval device as IDirect3DDevice9 ptr, byval srcmodule as HMODULE, byval srcresource as const zstring ptr, byval defines as const D3DXMACRO ptr, byval include_ as ID3DXInclude ptr, byval flags as DWORD, byval pool as ID3DXEffectPool ptr, byval effect as ID3DXEffect ptr ptr, byval compilation_errors as ID3DXBuffer ptr ptr) as HRESULT
-declare function D3DXCreateEffectFromResourceW(byval device as IDirect3DDevice9 ptr, byval srcmodule as HMODULE, byval srcresource as const wstring ptr, byval defines as const D3DXMACRO ptr, byval include_ as ID3DXInclude ptr, byval flags as DWORD, byval pool as ID3DXEffectPool ptr, byval effect as ID3DXEffect ptr ptr, byval compilation_errors as ID3DXBuffer ptr ptr) as HRESULT
+declare function D3DXCreateEffectFromResourceA(byval device as IDirect3DDevice9 ptr, byval srcmodule as HMODULE, byval srcresource as const zstring ptr, byval defines as const D3DXMACRO ptr, byval include as ID3DXInclude ptr, byval flags as DWORD, byval pool as ID3DXEffectPool ptr, byval effect as ID3DXEffect ptr ptr, byval compilation_errors as ID3DXBuffer ptr ptr) as HRESULT
+declare function D3DXCreateEffectFromResourceW(byval device as IDirect3DDevice9 ptr, byval srcmodule as HMODULE, byval srcresource as const wstring ptr, byval defines as const D3DXMACRO ptr, byval include as ID3DXInclude ptr, byval flags as DWORD, byval pool as ID3DXEffectPool ptr, byval effect as ID3DXEffect ptr ptr, byval compilation_errors as ID3DXBuffer ptr ptr) as HRESULT
 
 #ifdef UNICODE
 	#define D3DXCreateEffectFromResource D3DXCreateEffectFromResourceW
@@ -385,8 +389,8 @@ declare function D3DXCreateEffectFromResourceW(byval device as IDirect3DDevice9 
 	#define D3DXCreateEffectFromResource D3DXCreateEffectFromResourceA
 #endif
 
-declare function D3DXCreateEffectCompilerFromFileA(byval srcfile as const zstring ptr, byval defines as const D3DXMACRO ptr, byval include_ as ID3DXInclude ptr, byval flags as DWORD, byval effectcompiler as ID3DXEffectCompiler ptr ptr, byval parseerrors as ID3DXBuffer ptr ptr) as HRESULT
-declare function D3DXCreateEffectCompilerFromFileW(byval srcfile as const wstring ptr, byval defines as const D3DXMACRO ptr, byval include_ as ID3DXInclude ptr, byval flags as DWORD, byval effectcompiler as ID3DXEffectCompiler ptr ptr, byval parseerrors as ID3DXBuffer ptr ptr) as HRESULT
+declare function D3DXCreateEffectCompilerFromFileA(byval srcfile as const zstring ptr, byval defines as const D3DXMACRO ptr, byval include as ID3DXInclude ptr, byval flags as DWORD, byval effectcompiler as ID3DXEffectCompiler ptr ptr, byval parseerrors as ID3DXBuffer ptr ptr) as HRESULT
+declare function D3DXCreateEffectCompilerFromFileW(byval srcfile as const wstring ptr, byval defines as const D3DXMACRO ptr, byval include as ID3DXInclude ptr, byval flags as DWORD, byval effectcompiler as ID3DXEffectCompiler ptr ptr, byval parseerrors as ID3DXBuffer ptr ptr) as HRESULT
 
 #ifdef UNICODE
 	#define D3DXCreateEffectCompilerFromFile D3DXCreateEffectCompilerFromFileW
@@ -394,8 +398,8 @@ declare function D3DXCreateEffectCompilerFromFileW(byval srcfile as const wstrin
 	#define D3DXCreateEffectCompilerFromFile D3DXCreateEffectCompilerFromFileA
 #endif
 
-declare function D3DXCreateEffectCompilerFromResourceA(byval srcmodule as HMODULE, byval srcresource as const zstring ptr, byval defines as const D3DXMACRO ptr, byval include_ as ID3DXInclude ptr, byval flags as DWORD, byval effectcompiler as ID3DXEffectCompiler ptr ptr, byval parseerrors as ID3DXBuffer ptr ptr) as HRESULT
-declare function D3DXCreateEffectCompilerFromResourceW(byval srcmodule as HMODULE, byval srcresource as const wstring ptr, byval defines as const D3DXMACRO ptr, byval include_ as ID3DXInclude ptr, byval flags as DWORD, byval effectcompiler as ID3DXEffectCompiler ptr ptr, byval parseerrors as ID3DXBuffer ptr ptr) as HRESULT
+declare function D3DXCreateEffectCompilerFromResourceA(byval srcmodule as HMODULE, byval srcresource as const zstring ptr, byval defines as const D3DXMACRO ptr, byval include as ID3DXInclude ptr, byval flags as DWORD, byval effectcompiler as ID3DXEffectCompiler ptr ptr, byval parseerrors as ID3DXBuffer ptr ptr) as HRESULT
+declare function D3DXCreateEffectCompilerFromResourceW(byval srcmodule as HMODULE, byval srcresource as const wstring ptr, byval defines as const D3DXMACRO ptr, byval include as ID3DXInclude ptr, byval flags as DWORD, byval effectcompiler as ID3DXEffectCompiler ptr ptr, byval parseerrors as ID3DXBuffer ptr ptr) as HRESULT
 
 #ifdef UNICODE
 	#define D3DXCreateEffectCompilerFromResource D3DXCreateEffectCompilerFromResourceW

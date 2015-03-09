@@ -13,19 +13,6 @@
 
 extern "Windows"
 
-type IReferenceClock as IReferenceClock_
-type IDirectMusicVtbl as IDirectMusicVtbl_
-type IDirectMusic8Vtbl as IDirectMusic8Vtbl_
-type IDirectMusicBufferVtbl as IDirectMusicBufferVtbl_
-type IDirectMusicInstrumentVtbl as IDirectMusicInstrumentVtbl_
-type IDirectMusicDownloadedInstrumentVtbl as IDirectMusicDownloadedInstrumentVtbl_
-type IDirectMusicCollectionVtbl as IDirectMusicCollectionVtbl_
-type IDirectMusicDownloadVtbl as IDirectMusicDownloadVtbl_
-type IDirectMusicPortDownloadVtbl as IDirectMusicPortDownloadVtbl_
-type IDirectMusicPortVtbl as IDirectMusicPortVtbl_
-type IDirectMusicThruVtbl as IDirectMusicThruVtbl_
-type IReferenceClockVtbl as IReferenceClockVtbl_
-
 #define __WINE_DMUSIC_CORE_H
 
 extern CLSID_DirectMusic as const GUID
@@ -330,6 +317,8 @@ type _DMUS_CLOCKINFO8
 	dwFlags as DWORD
 end type
 
+type IDirectMusicVtbl as IDirectMusicVtbl_
+
 type IDirectMusic
 	lpVtbl as IDirectMusicVtbl ptr
 end type
@@ -361,6 +350,8 @@ end type
 #define IDirectMusic_Activate(p, a) (p)->lpVtbl->Activate(p, a)
 #define IDirectMusic_GetDefaultPort(p, a) (p)->lpVtbl->GetDefaultPort(p, a)
 #define IDirectMusic_SetDirectSound(p, a, b) (p)->lpVtbl->SetDirectSound(p, a, b)
+
+type IDirectMusic8Vtbl as IDirectMusic8Vtbl_
 
 type IDirectMusic8
 	lpVtbl as IDirectMusic8Vtbl ptr
@@ -395,6 +386,8 @@ end type
 #define IDirectMusic8_GetDefaultPort(p, a) (p)->lpVtbl->GetDefaultPort(p, a)
 #define IDirectMusic8_SetDirectSound(p, a, b) (p)->lpVtbl->SetDirectSound(p, a, b)
 #define IDirectMusic8_SetExternalMasterClock(p, a) (p)->lpVtbl->SetExternalMasterClock(p, a)
+
+type IDirectMusicBufferVtbl as IDirectMusicBufferVtbl_
 
 type IDirectMusicBuffer
 	lpVtbl as IDirectMusicBufferVtbl ptr
@@ -436,6 +429,8 @@ end type
 #define IDirectMusicBuffer_SetStartTime(p, a) (p)->lpVtbl->SetStartTime(p, a)
 #define IDirectMusicBuffer_SetUsedBytes(p, a) (p)->lpVtbl->SetUsedBytes(p, a)
 
+type IDirectMusicInstrumentVtbl as IDirectMusicInstrumentVtbl_
+
 type IDirectMusicInstrument
 	lpVtbl as IDirectMusicInstrumentVtbl ptr
 end type
@@ -454,6 +449,8 @@ end type
 #define IDirectMusicInstrument_GetPatch(p, a) (p)->lpVtbl->GetPatch(p, a)
 #define IDirectMusicInstrument_SetPatch(p, a) (p)->lpVtbl->SetPatch(p, a)
 
+type IDirectMusicDownloadedInstrumentVtbl as IDirectMusicDownloadedInstrumentVtbl_
+
 type IDirectMusicDownloadedInstrument
 	lpVtbl as IDirectMusicDownloadedInstrumentVtbl ptr
 end type
@@ -467,6 +464,8 @@ end type
 #define IDirectMusicDownloadedInstrument_QueryInterface(p, a, b) (p)->lpVtbl->QueryInterface(p, a, b)
 #define IDirectMusicDownloadedInstrument_AddRef(p) (p)->lpVtbl->AddRef(p)
 #define IDirectMusicDownloadedInstrument_Release(p) (p)->lpVtbl->Release(p)
+
+type IDirectMusicCollectionVtbl as IDirectMusicCollectionVtbl_
 
 type IDirectMusicCollection
 	lpVtbl as IDirectMusicCollectionVtbl ptr
@@ -486,6 +485,8 @@ end type
 #define IDirectMusicCollection_GetInstrument(p, a, b) (p)->lpVtbl->GetInstrument(p, a, b)
 #define IDirectMusicCollection_EnumInstrument(p, a, b, c, d) (p)->lpVtbl->EnumInstrument(p, a, b, c, d)
 
+type IDirectMusicDownloadVtbl as IDirectMusicDownloadVtbl_
+
 type IDirectMusicDownload
 	lpVtbl as IDirectMusicDownloadVtbl ptr
 end type
@@ -501,6 +502,8 @@ end type
 #define IDirectMusicDownload_AddRef(p) (p)->lpVtbl->AddRef(p)
 #define IDirectMusicDownload_Release(p) (p)->lpVtbl->Release(p)
 #define IDirectMusicDownload_GetBuffer(p, a, b) (p)->lpVtbl->GetBuffer(p, a, b)
+
+type IDirectMusicPortDownloadVtbl as IDirectMusicPortDownloadVtbl_
 
 type IDirectMusicPortDownload
 	lpVtbl as IDirectMusicPortDownloadVtbl ptr
@@ -527,6 +530,8 @@ end type
 #define IDirectMusicPortDownload_GetAppend(p, a) (p)->lpVtbl->GetAppend(p, a)
 #define IDirectMusicPortDownload_Download(p, a) (p)->lpVtbl->Download(p, a)
 #define IDirectMusicPortDownload_Unload(p, a) (p)->lpVtbl->GetBuffer(p, a)
+
+type IDirectMusicPortVtbl as IDirectMusicPortVtbl_
 
 type IDirectMusicPort
 	lpVtbl as IDirectMusicPortVtbl ptr
@@ -576,6 +581,8 @@ end type
 #define IDirectMusicPort_SetDirectSound(p, a, b) (p)->lpVtbl->SetDirectSound(p, a, b)
 #define IDirectMusicPort_GetFormat(p, a, b, c) (p)->lpVtbl->GetFormat(p, a, b, c)
 
+type IDirectMusicThruVtbl as IDirectMusicThruVtbl_
+
 type IDirectMusicThru
 	lpVtbl as IDirectMusicThruVtbl ptr
 end type
@@ -591,30 +598,5 @@ end type
 #define IDirectMusicThru_AddRef(p) (p)->lpVtbl->AddRef(p)
 #define IDirectMusicThru_Release(p) (p)->lpVtbl->Release(p)
 #define IDirectMusicThru_ThruChannel(p, a, b, c, d, e) (p)->lpVtbl->ThruChannel(p, a, b, c, d, e)
-#define __IReferenceClock_INTERFACE_DEFINED__
-
-extern IID_IReferenceClock as const GUID
-
-type IReferenceClock_
-	lpVtbl as IReferenceClockVtbl ptr
-end type
-
-type IReferenceClockVtbl_
-	QueryInterface as function(byval This as IReferenceClock ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
-	AddRef as function(byval This as IReferenceClock ptr) as ULONG
-	Release as function(byval This as IReferenceClock ptr) as ULONG
-	GetTime as function(byval This as IReferenceClock ptr, byval pTime as REFERENCE_TIME ptr) as HRESULT
-	AdviseTime as function(byval This as IReferenceClock ptr, byval baseTime as REFERENCE_TIME, byval streamTime as REFERENCE_TIME, byval hEvent as HANDLE, byval pdwAdviseCookie as DWORD ptr) as HRESULT
-	AdvisePeriodic as function(byval This as IReferenceClock ptr, byval startTime as REFERENCE_TIME, byval periodTime as REFERENCE_TIME, byval hSemaphore as HANDLE, byval pdwAdviseCookie as DWORD ptr) as HRESULT
-	Unadvise as function(byval This as IReferenceClock ptr, byval dwAdviseCookie as DWORD) as HRESULT
-end type
-
-#define IReferenceClock_QueryInterface(p, a, b) (p)->lpVtbl->QueryInterface(p, a, b)
-#define IReferenceClock_AddRef(p) (p)->lpVtbl->AddRef(p)
-#define IReferenceClock_Release(p) (p)->lpVtbl->Release(p)
-#define IReferenceClock_GetTime(p, a) (p)->lpVtbl->GetTime(p, a)
-#define IReferenceClock_AdviseTime(p, a, b, c, d) (p)->lpVtbl->AdviseTime(p, a, b, c, d)
-#define IReferenceClock_AdvisePeriodic(p, a, b, c, d) (p)->lpVtbl->AdvisePeriodic(p, a, b, c, d)
-#define IReferenceClock_Unadvise(p, a) (p)->lpVtbl->Unadvise(p, a)
 
 end extern

@@ -1,12 +1,10 @@
 #pragma once
 
-#include once "crt/wchar.bi"
 #include once "guiddef.bi"
 
 #inclib "advapi32"
 
 '' The following symbols have been renamed:
-''     enum constant Unlock => Unlock_
 ''     typedef STRING => STRING_
 
 extern "Windows"
@@ -594,7 +592,7 @@ end type
 type LSA_FOREST_TRUST_BINARY_DATA as _LSA_FOREST_TRUST_BINARY_DATA
 type PLSA_FOREST_TRUST_BINARY_DATA as _LSA_FOREST_TRUST_BINARY_DATA ptr
 
-union ___LSA_FOREST_TRUST_RECORD_ForestTrustData
+union _LSA_FOREST_TRUST_RECORD_ForestTrustData
 	TopLevelName as LSA_UNICODE_STRING
 	DomainInfo as LSA_FOREST_TRUST_DOMAIN_INFO
 	Data as LSA_FOREST_TRUST_BINARY_DATA
@@ -604,7 +602,7 @@ type _LSA_FOREST_TRUST_RECORD
 	Flags as ULONG
 	ForestTrustType as LSA_FOREST_TRUST_RECORD_TYPE
 	Time as LARGE_INTEGER
-	ForestTrustData as ___LSA_FOREST_TRUST_RECORD_ForestTrustData
+	ForestTrustData as _LSA_FOREST_TRUST_RECORD_ForestTrustData
 end type
 
 type LSA_FOREST_TRUST_RECORD as _LSA_FOREST_TRUST_RECORD
@@ -1199,9 +1197,6 @@ declare function SystemFunction041 cdecl(byval Memory as PVOID, byval MemorySize
 #define KRB_NT_MS_PRINCIPAL (-128)
 #define KRB_NT_MS_PRINCIPAL_AND_ID (-129)
 #define KERB_IS_MS_PRINCIPAL(_x_) (((_x_) <= KRB_NT_MS_PRINCIPAL) orelse ((_x_) >= KRB_NT_ENTERPRISE_PRINCIPAL))
-#define MICROSOFT_KERBEROS_NAME_A "Kerberos"
-#define MICROSOFT_KERBEROS_NAME_W wstr("Kerberos")
-#define MICROSOFT_KERBEROS_NAME MICROSOFT_KERBEROS_NAME_W
 #define KERB_WRAP_NO_ENCRYPT &h80000001
 
 type _KERB_LOGON_SUBMIT_TYPE as long

@@ -2,17 +2,17 @@
 
 #include once "_bsd_types.bi"
 
-union __in6_addr_u
+union in6_addr_u
 	Byte(0 to 15) as u_char
 	Word(0 to 7) as u_short
 end union
 
-type in6_addr
-	u as __in6_addr_u
+type IN6_ADDR
+	u as in6_addr_u
 end type
 
-type PIN6_ADDR as in6_addr ptr
-type LPIN6_ADDR as in6_addr ptr
+type PIN6_ADDR as IN6_ADDR ptr
+type LPIN6_ADDR as IN6_ADDR ptr
 
 #define in_addr6 in6_addr
 #define _S6_un u

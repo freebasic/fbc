@@ -1,7 +1,6 @@
 #pragma once
 
 #define _INC_TCPMIB
-#define ANY_SIZE 1
 
 #if _WIN32_WINNT = &h0602
 	type _TCP_CONNECTION_OFFLOAD_STATE as long

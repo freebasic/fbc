@@ -2,47 +2,6 @@
 
 #include once "sqlext.bi"
 
-#ifdef UNICODE
-	'' The following symbols have been renamed:
-	''     #define SQLColAttribute => SQLColAttribute_
-	''     #define SQLColAttributes => SQLColAttributes_
-	''     #define SQLConnect => SQLConnect_
-	''     #define SQLDescribeCol => SQLDescribeCol_
-	''     #define SQLError => SQLError_
-	''     #define SQLExecDirect => SQLExecDirect_
-	''     #define SQLGetConnectAttr => SQLGetConnectAttr_
-	''     #define SQLGetCursorName => SQLGetCursorName_
-	''     #define SQLGetDescField => SQLGetDescField_
-	''     #define SQLGetDescRec => SQLGetDescRec_
-	''     #define SQLGetDiagField => SQLGetDiagField_
-	''     #define SQLGetDiagRec => SQLGetDiagRec_
-	''     #define SQLPrepare => SQLPrepare_
-	''     #define SQLSetConnectAttr => SQLSetConnectAttr_
-	''     #define SQLSetCursorName => SQLSetCursorName_
-	''     #define SQLSetDescField => SQLSetDescField_
-	''     #define SQLSetStmtAttr => SQLSetStmtAttr_
-	''     #define SQLGetStmtAttr => SQLGetStmtAttr_
-	''     #define SQLColumns => SQLColumns_
-	''     #define SQLGetConnectOption => SQLGetConnectOption_
-	''     #define SQLGetInfo => SQLGetInfo_
-	''     #define SQLGetTypeInfo => SQLGetTypeInfo_
-	''     #define SQLSetConnectOption => SQLSetConnectOption_
-	''     #define SQLSpecialColumns => SQLSpecialColumns_
-	''     #define SQLStatistics => SQLStatistics_
-	''     #define SQLTables => SQLTables_
-	''     #define SQLDataSources => SQLDataSources_
-	''     #define SQLDriverConnect => SQLDriverConnect_
-	''     #define SQLBrowseConnect => SQLBrowseConnect_
-	''     #define SQLColumnPrivileges => SQLColumnPrivileges_
-	''     #define SQLForeignKeys => SQLForeignKeys_
-	''     #define SQLNativeSql => SQLNativeSql_
-	''     #define SQLPrimaryKeys => SQLPrimaryKeys_
-	''     #define SQLProcedureColumns => SQLProcedureColumns_
-	''     #define SQLProcedures => SQLProcedures_
-	''     #define SQLTablePrivileges => SQLTablePrivileges_
-	''     #define SQLDrivers => SQLDrivers_
-#endif
-
 extern "Windows"
 
 #define __SQLUCODE
@@ -174,43 +133,43 @@ declare function SQLTablePrivilegesA(byval hstmt as SQLHSTMT, byval szCatalogNam
 declare function SQLDriversA(byval henv as SQLHENV, byval fDirection as SQLUSMALLINT, byval szDriverDesc as SQLCHAR ptr, byval cbDriverDescMax as SQLSMALLINT, byval pcbDriverDesc as SQLSMALLINT ptr, byval szDriverAttributes as SQLCHAR ptr, byval cbDrvrAttrMax as SQLSMALLINT, byval pcbDrvrAttr as SQLSMALLINT ptr) as SQLRETURN
 
 #ifdef UNICODE
-	#define SQLColAttribute_ SQLColAttributeW
-	#define SQLColAttributes_ SQLColAttributesW
-	#define SQLConnect_ SQLConnectW
-	#define SQLDescribeCol_ SQLDescribeColW
-	#define SQLError_ SQLErrorW
-	#define SQLExecDirect_ SQLExecDirectW
-	#define SQLGetConnectAttr_ SQLGetConnectAttrW
-	#define SQLGetCursorName_ SQLGetCursorNameW
-	#define SQLGetDescField_ SQLGetDescFieldW
-	#define SQLGetDescRec_ SQLGetDescRecW
-	#define SQLGetDiagField_ SQLGetDiagFieldW
-	#define SQLGetDiagRec_ SQLGetDiagRecW
-	#define SQLPrepare_ SQLPrepareW
-	#define SQLSetConnectAttr_ SQLSetConnectAttrW
-	#define SQLSetCursorName_ SQLSetCursorNameW
-	#define SQLSetDescField_ SQLSetDescFieldW
-	#define SQLSetStmtAttr_ SQLSetStmtAttrW
-	#define SQLGetStmtAttr_ SQLGetStmtAttrW
-	#define SQLColumns_ SQLColumnsW
-	#define SQLGetConnectOption_ SQLGetConnectOptionW
-	#define SQLGetInfo_ SQLGetInfoW
-	#define SQLGetTypeInfo_ SQLGetTypeInfoW
-	#define SQLSetConnectOption_ SQLSetConnectOptionW
-	#define SQLSpecialColumns_ SQLSpecialColumnsW
-	#define SQLStatistics_ SQLStatisticsW
-	#define SQLTables_ SQLTablesW
-	#define SQLDataSources_ SQLDataSourcesW
-	#define SQLDriverConnect_ SQLDriverConnectW
-	#define SQLBrowseConnect_ SQLBrowseConnectW
-	#define SQLColumnPrivileges_ SQLColumnPrivilegesW
-	#define SQLForeignKeys_ SQLForeignKeysW
-	#define SQLNativeSql_ SQLNativeSqlW
-	#define SQLPrimaryKeys_ SQLPrimaryKeysW
-	#define SQLProcedureColumns_ SQLProcedureColumnsW
-	#define SQLProcedures_ SQLProceduresW
-	#define SQLTablePrivileges_ SQLTablePrivilegesW
-	#define SQLDrivers_ SQLDriversW
+	#define SQLColAttribute SQLColAttributeW
+	#define SQLColAttributes SQLColAttributesW
+	#define SQLConnect SQLConnectW
+	#define SQLDescribeCol SQLDescribeColW
+	#define SQLError SQLErrorW
+	#define SQLExecDirect SQLExecDirectW
+	#define SQLGetConnectAttr SQLGetConnectAttrW
+	#define SQLGetCursorName SQLGetCursorNameW
+	#define SQLGetDescField SQLGetDescFieldW
+	#define SQLGetDescRec SQLGetDescRecW
+	#define SQLGetDiagField SQLGetDiagFieldW
+	#define SQLGetDiagRec SQLGetDiagRecW
+	#define SQLPrepare SQLPrepareW
+	#define SQLSetConnectAttr SQLSetConnectAttrW
+	#define SQLSetCursorName SQLSetCursorNameW
+	#define SQLSetDescField SQLSetDescFieldW
+	#define SQLSetStmtAttr SQLSetStmtAttrW
+	#define SQLGetStmtAttr SQLGetStmtAttrW
+	#define SQLColumns SQLColumnsW
+	#define SQLGetConnectOption SQLGetConnectOptionW
+	#define SQLGetInfo SQLGetInfoW
+	#define SQLGetTypeInfo SQLGetTypeInfoW
+	#define SQLSetConnectOption SQLSetConnectOptionW
+	#define SQLSpecialColumns SQLSpecialColumnsW
+	#define SQLStatistics SQLStatisticsW
+	#define SQLTables SQLTablesW
+	#define SQLDataSources SQLDataSourcesW
+	#define SQLDriverConnect SQLDriverConnectW
+	#define SQLBrowseConnect SQLBrowseConnectW
+	#define SQLColumnPrivileges SQLColumnPrivilegesW
+	#define SQLForeignKeys SQLForeignKeysW
+	#define SQLNativeSql SQLNativeSqlW
+	#define SQLPrimaryKeys SQLPrimaryKeysW
+	#define SQLProcedureColumns SQLProcedureColumnsW
+	#define SQLProcedures SQLProceduresW
+	#define SQLTablePrivileges SQLTablePrivilegesW
+	#define SQLDrivers SQLDriversW
 #endif
 
 end extern

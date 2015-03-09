@@ -10,10 +10,6 @@
 #include once "rpc.bi"
 #include once "wtypesbase.bi"
 
-'' The following symbols have been renamed:
-''     #define FD_SET => FD_SET_
-''     procedure select => select_
-
 #inclib "ws2_32"
 
 extern "Windows"
@@ -31,12 +27,12 @@ type SOCKET as UINT_PTR
 #define ___WSA_FD_TYPES_H
 #define FD_SETSIZE 64
 
-type fd_set
+type FD_SET
 	fd_count as u_int
 	fd_array(0 to 63) as SOCKET
 end type
 
-declare function __WSAFDIsSet(byval as SOCKET, byval as fd_set ptr) as long
+declare function __WSAFDIsSet(byval as SOCKET, byval as FD_SET ptr) as long
 
 #macro FD_CLR(fd, set)
 	scope
@@ -78,13 +74,13 @@ declare function __WSAFDIsSet(byval as SOCKET, byval as fd_set ptr) as long
 	end scope
 #endmacro
 
-type PFD_SET as fd_set ptr
-type LPFD_SET as fd_set ptr
+type PFD_SET as FD_SET ptr
+type LPFD_SET as FD_SET ptr
 
 #define _MINGW_IP_TYPES_H
 #define h_addr h_addr_list[0]
 
-type hostent
+type HOSTENT
 	h_name as zstring ptr
 	h_aliases as zstring ptr ptr
 	h_addrtype as short
@@ -99,7 +95,7 @@ type netent
 	n_net as u_long
 end type
 
-type servent
+type SERVENT
 	s_name as zstring ptr
 	s_aliases as zstring ptr ptr
 
@@ -114,7 +110,7 @@ type servent
 	#endif
 end type
 
-type protoent
+type PROTOENT
 	p_name as zstring ptr
 	p_aliases as zstring ptr ptr
 	p_proto as short
@@ -125,43 +121,43 @@ type sockproto
 	sp_protocol as u_short
 end type
 
-type linger
+type LINGER
 	l_onoff as u_short
 	l_linger as u_short
 end type
 
-type sockaddr
+type SOCKADDR
 	sa_family as u_short
 	sa_data as zstring * 14
 end type
 
-type sockaddr_in
+type SOCKADDR_IN
 	sin_family as short
 	sin_port as u_short
-	sin_addr as in_addr
+	sin_addr as IN_ADDR
 	sin_zero as zstring * 8
 end type
 
-type PHOSTENT as hostent ptr
-type LPHOSTENT as hostent ptr
-type PSERVENT as servent ptr
-type LPSERVENT as servent ptr
-type PPROTOENT as protoent ptr
-type LPPROTOENT as protoent ptr
-type PSOCKADDR as sockaddr ptr
-type LPSOCKADDR as sockaddr ptr
-type PSOCKADDR_IN as sockaddr_in ptr
-type LPSOCKADDR_IN as sockaddr_in ptr
-type PLINGER as linger ptr
-type LPLINGER as linger ptr
-type PTIMEVAL as timeval ptr
-type LPTIMEVAL as timeval ptr
+type PHOSTENT as HOSTENT ptr
+type LPHOSTENT as HOSTENT ptr
+type PSERVENT as SERVENT ptr
+type LPSERVENT as SERVENT ptr
+type PPROTOENT as PROTOENT ptr
+type LPPROTOENT as PROTOENT ptr
+type PSOCKADDR as SOCKADDR ptr
+type LPSOCKADDR as SOCKADDR ptr
+type PSOCKADDR_IN as SOCKADDR_IN ptr
+type LPSOCKADDR_IN as SOCKADDR_IN ptr
+type PLINGER as LINGER ptr
+type LPLINGER as LINGER ptr
+type PTIMEVAL as TIMEVAL ptr
+type LPTIMEVAL as TIMEVAL ptr
 
 #define __MINGW_WSADATA_H
 #define WSADESCRIPTION_LEN 256
 #define WSASYS_STATUS_LEN 128
 
-type WSAData
+type WSADATA
 	wVersion as WORD
 	wHighVersion as WORD
 
@@ -180,7 +176,7 @@ type WSAData
 	#endif
 end type
 
-type LPWSADATA as WSAData ptr
+type LPWSADATA as WSADATA ptr
 
 #define IOCPARM_MASK &h7f
 #define IOC_VOID &h20000000
@@ -352,7 +348,7 @@ type LPWSADATA as WSAData ptr
 #define _SS_PAD1SIZE (_SS_ALIGNSIZE - sizeof(short))
 #define _SS_PAD2SIZE (_SS_MAXSIZE - ((sizeof(short) + _SS_PAD1SIZE) + _SS_ALIGNSIZE))
 
-type sockaddr_storage
+type SOCKADDR_STORAGE
 	ss_family as short
 	__ss_pad1 as zstring * 8 - sizeof(short)
 	__ss_align as longint
@@ -642,37 +638,37 @@ type WSACOMPLETIONTYPE as _WSACOMPLETIONTYPE
 type PWSACOMPLETIONTYPE as _WSACOMPLETIONTYPE ptr
 type LPWSACOMPLETIONTYPE as _WSACOMPLETIONTYPE ptr
 
-type ___WSACOMPLETION_WindowMessage
+type _WSACOMPLETION_Parameters_WindowMessage
 	hWnd as HWND
 	uMsg as UINT
 	context as WPARAM
 end type
 
-type ___WSACOMPLETION_Event
+type _WSACOMPLETION_Parameters_Event
 	lpOverlapped as LPWSAOVERLAPPED
 end type
 
-type ___WSACOMPLETION_Apc
+type _WSACOMPLETION_Parameters_Apc
 	lpOverlapped as LPWSAOVERLAPPED
 	lpfnCompletionProc as LPWSAOVERLAPPED_COMPLETION_ROUTINE
 end type
 
-type ___WSACOMPLETION_Port
+type _WSACOMPLETION_Parameters_Port
 	lpOverlapped as LPWSAOVERLAPPED
 	hPort as HANDLE
 	Key as ULONG_PTR
 end type
 
-union ___WSACOMPLETION_Parameters
-	WindowMessage as ___WSACOMPLETION_WindowMessage
-	Event as ___WSACOMPLETION_Event
-	Apc as ___WSACOMPLETION_Apc
-	Port as ___WSACOMPLETION_Port
+union _WSACOMPLETION_Parameters
+	WindowMessage as _WSACOMPLETION_Parameters_WindowMessage
+	Event as _WSACOMPLETION_Parameters_Event
+	Apc as _WSACOMPLETION_Parameters_Apc
+	Port as _WSACOMPLETION_Parameters_Port
 end union
 
 type _WSACOMPLETION
 	as WSACOMPLETIONTYPE Type
-	Parameters as ___WSACOMPLETION_Parameters
+	Parameters as _WSACOMPLETION_Parameters
 end type
 
 type WSACOMPLETION as _WSACOMPLETION
@@ -682,67 +678,27 @@ type LPWSACOMPLETION as _WSACOMPLETION ptr
 #define TH_NETDEV &h00000001
 #define TH_TAPI &h00000002
 
-type PSOCKADDR_STORAGE as sockaddr_storage ptr
-type LPSOCKADDR_STORAGE as sockaddr_storage ptr
+type PSOCKADDR_STORAGE as SOCKADDR_STORAGE ptr
+type LPSOCKADDR_STORAGE as SOCKADDR_STORAGE ptr
 type ADDRESS_FAMILY as u_short
 
 #define SERVICE_MULTIPLE &h00000001
 #define NS_ALL 0
-#define NS_SAP 1
-#define NS_NDS 2
-#define NS_PEER_BROWSE 3
 #define NS_SLP 5
 #define NS_DHCP 6
-#define NS_TCPIP_LOCAL 10
-#define NS_TCPIP_HOSTS 11
-#define NS_DNS 12
-#define NS_NETBT 13
-#define NS_WINS 14
-#define NS_NLA 15
-
-#if _WIN32_WINNT = &h0602
-	#define NS_BTH 16
-#endif
-
-#define NS_NBP 20
-#define NS_MS 30
-#define NS_STDA 31
-#define NS_NTDS 32
-
-#if _WIN32_WINNT = &h0602
-	#define NS_EMAIL 37
-	#define NS_PNRPNAME 38
-	#define NS_PNRPCLOUD 39
-#endif
-
-#define NS_X500 40
-#define NS_NIS 41
 #define NS_NISPLUS 42
 #define NS_WRQ 50
 #define NS_NETDES 60
 #define RES_UNUSED_1 &h00000001
 #define RES_FLUSH_CACHE &h00000002
-#define RES_SERVICE &h00000004
 #define SERVICE_TYPE_VALUE_IPXPORTA "IpxSocket"
 #define SERVICE_TYPE_VALUE_IPXPORTW wstr("IpxSocket")
-#define SERVICE_TYPE_VALUE_SAPIDA "SapId"
-#define SERVICE_TYPE_VALUE_SAPIDW wstr("SapId")
-#define SERVICE_TYPE_VALUE_TCPPORTA "TcpPort"
-#define SERVICE_TYPE_VALUE_TCPPORTW wstr("TcpPort")
-#define SERVICE_TYPE_VALUE_UDPPORTA "UdpPort"
-#define SERVICE_TYPE_VALUE_UDPPORTW wstr("UdpPort")
 #define SERVICE_TYPE_VALUE_OBJECTIDA "ObjectId"
 #define SERVICE_TYPE_VALUE_OBJECTIDW wstr("ObjectId")
 
 #ifdef UNICODE
-	#define SERVICE_TYPE_VALUE_SAPID SERVICE_TYPE_VALUE_SAPIDW
-	#define SERVICE_TYPE_VALUE_TCPPORT SERVICE_TYPE_VALUE_TCPPORTW
-	#define SERVICE_TYPE_VALUE_UDPPORT SERVICE_TYPE_VALUE_UDPPORTW
 	#define SERVICE_TYPE_VALUE_OBJECTID SERVICE_TYPE_VALUE_OBJECTIDW
 #else
-	#define SERVICE_TYPE_VALUE_SAPID SERVICE_TYPE_VALUE_SAPIDA
-	#define SERVICE_TYPE_VALUE_TCPPORT SERVICE_TYPE_VALUE_TCPPORTA
-	#define SERVICE_TYPE_VALUE_UDPPORT SERVICE_TYPE_VALUE_UDPPORTA
 	#define SERVICE_TYPE_VALUE_OBJECTID SERVICE_TYPE_VALUE_OBJECTIDA
 #endif
 
@@ -1041,36 +997,36 @@ type LPWSAMSG as _WSAMSG ptr
 	#define WSASetService WSASetServiceA
 #endif
 
-declare function accept(byval s as SOCKET, byval addr as sockaddr ptr, byval addrlen as long ptr) as SOCKET
-declare function bind(byval s as SOCKET, byval name_ as const sockaddr ptr, byval namelen as long) as long
+declare function accept(byval s as SOCKET, byval addr as SOCKADDR ptr, byval addrlen as long ptr) as SOCKET
+declare function bind(byval s as SOCKET, byval name as const SOCKADDR ptr, byval namelen as long) as long
 declare function closesocket(byval s as SOCKET) as long
-declare function connect(byval s as SOCKET, byval name_ as const sockaddr ptr, byval namelen as long) as long
+declare function connect(byval s as SOCKET, byval name as const SOCKADDR ptr, byval namelen as long) as long
 declare function ioctlsocket(byval s as SOCKET, byval cmd as long, byval argp as u_long ptr) as long
-declare function getpeername(byval s as SOCKET, byval name_ as sockaddr ptr, byval namelen as long ptr) as long
-declare function getsockname(byval s as SOCKET, byval name_ as sockaddr ptr, byval namelen as long ptr) as long
+declare function getpeername(byval s as SOCKET, byval name as SOCKADDR ptr, byval namelen as long ptr) as long
+declare function getsockname(byval s as SOCKET, byval name as SOCKADDR ptr, byval namelen as long ptr) as long
 declare function getsockopt(byval s as SOCKET, byval level as long, byval optname as long, byval optval as zstring ptr, byval optlen as long ptr) as long
 declare function htonl(byval hostlong as u_long) as u_long
 declare function htons(byval hostshort as u_short) as u_short
 declare function inet_addr(byval cp as const zstring ptr) as ulong
-declare function inet_ntoa(byval in as in_addr) as zstring ptr
+declare function inet_ntoa(byval in as IN_ADDR) as zstring ptr
 declare function listen(byval s as SOCKET, byval backlog as long) as long
 declare function ntohl(byval netlong as u_long) as u_long
 declare function ntohs(byval netshort as u_short) as u_short
-declare function recv(byval s as SOCKET, byval buf as zstring ptr, byval len_ as long, byval flags as long) as long
-declare function recvfrom(byval s as SOCKET, byval buf as zstring ptr, byval len_ as long, byval flags as long, byval from as sockaddr ptr, byval fromlen as long ptr) as long
-declare function select_ alias "select"(byval nfds as long, byval readfds as fd_set ptr, byval writefds as fd_set ptr, byval exceptfds as fd_set ptr, byval timeout as const PTIMEVAL) as long
-declare function send(byval s as SOCKET, byval buf as const zstring ptr, byval len_ as long, byval flags as long) as long
-declare function sendto(byval s as SOCKET, byval buf as const zstring ptr, byval len_ as long, byval flags as long, byval to_ as const sockaddr ptr, byval tolen as long) as long
+declare function recv(byval s as SOCKET, byval buf as zstring ptr, byval len as long, byval flags as long) as long
+declare function recvfrom(byval s as SOCKET, byval buf as zstring ptr, byval len as long, byval flags as long, byval from as SOCKADDR ptr, byval fromlen as long ptr) as long
+declare function select_ alias "select"(byval nfds as long, byval readfds as FD_SET ptr, byval writefds as FD_SET ptr, byval exceptfds as FD_SET ptr, byval timeout as const PTIMEVAL) as long
+declare function send(byval s as SOCKET, byval buf as const zstring ptr, byval len as long, byval flags as long) as long
+declare function sendto(byval s as SOCKET, byval buf as const zstring ptr, byval len as long, byval flags as long, byval to as const SOCKADDR ptr, byval tolen as long) as long
 declare function setsockopt(byval s as SOCKET, byval level as long, byval optname as long, byval optval as const zstring ptr, byval optlen as long) as long
 declare function shutdown(byval s as SOCKET, byval how as long) as long
-declare function socket(byval af as long, byval type_ as long, byval protocol as long) as SOCKET
-declare function gethostbyaddr(byval addr as const zstring ptr, byval len_ as long, byval type_ as long) as hostent ptr
-declare function gethostbyname(byval name_ as const zstring ptr) as hostent ptr
-declare function gethostname(byval name_ as zstring ptr, byval namelen as long) as long
-declare function getservbyport(byval port as long, byval proto as const zstring ptr) as servent ptr
-declare function getservbyname(byval name_ as const zstring ptr, byval proto as const zstring ptr) as servent ptr
-declare function getprotobynumber(byval number as long) as protoent ptr
-declare function getprotobyname(byval name_ as const zstring ptr) as protoent ptr
+declare function socket(byval af as long, byval type as long, byval protocol as long) as SOCKET
+declare function gethostbyaddr(byval addr as const zstring ptr, byval len as long, byval type as long) as HOSTENT ptr
+declare function gethostbyname(byval name as const zstring ptr) as HOSTENT ptr
+declare function gethostname(byval name as zstring ptr, byval namelen as long) as long
+declare function getservbyport(byval port as long, byval proto as const zstring ptr) as SERVENT ptr
+declare function getservbyname(byval name as const zstring ptr, byval proto as const zstring ptr) as SERVENT ptr
+declare function getprotobynumber(byval number as long) as PROTOENT ptr
+declare function getprotobyname(byval name as const zstring ptr) as PROTOENT ptr
 declare function WSAStartup(byval wVersionRequested as WORD, byval lpWSAData as LPWSADATA) as long
 declare function WSACleanup() as long
 declare sub WSASetLastError(byval iError as long)
@@ -1079,17 +1035,17 @@ declare function WSAIsBlocking() as WINBOOL
 declare function WSAUnhookBlockingHook() as long
 declare function WSASetBlockingHook(byval lpBlockFunc as FARPROC) as FARPROC
 declare function WSACancelBlockingCall() as long
-declare function WSAAsyncGetServByName(byval hWnd as HWND, byval wMsg as u_int, byval name_ as const zstring ptr, byval proto as const zstring ptr, byval buf as zstring ptr, byval buflen as long) as HANDLE
+declare function WSAAsyncGetServByName(byval hWnd as HWND, byval wMsg as u_int, byval name as const zstring ptr, byval proto as const zstring ptr, byval buf as zstring ptr, byval buflen as long) as HANDLE
 declare function WSAAsyncGetServByPort(byval hWnd as HWND, byval wMsg as u_int, byval port as long, byval proto as const zstring ptr, byval buf as zstring ptr, byval buflen as long) as HANDLE
-declare function WSAAsyncGetProtoByName(byval hWnd as HWND, byval wMsg as u_int, byval name_ as const zstring ptr, byval buf as zstring ptr, byval buflen as long) as HANDLE
+declare function WSAAsyncGetProtoByName(byval hWnd as HWND, byval wMsg as u_int, byval name as const zstring ptr, byval buf as zstring ptr, byval buflen as long) as HANDLE
 declare function WSAAsyncGetProtoByNumber(byval hWnd as HWND, byval wMsg as u_int, byval number as long, byval buf as zstring ptr, byval buflen as long) as HANDLE
-declare function WSAAsyncGetHostByName(byval hWnd as HWND, byval wMsg as u_int, byval name_ as const zstring ptr, byval buf as zstring ptr, byval buflen as long) as HANDLE
-declare function WSAAsyncGetHostByAddr(byval hWnd as HWND, byval wMsg as u_int, byval addr as const zstring ptr, byval len_ as long, byval type_ as long, byval buf as zstring ptr, byval buflen as long) as HANDLE
+declare function WSAAsyncGetHostByName(byval hWnd as HWND, byval wMsg as u_int, byval name as const zstring ptr, byval buf as zstring ptr, byval buflen as long) as HANDLE
+declare function WSAAsyncGetHostByAddr(byval hWnd as HWND, byval wMsg as u_int, byval addr as const zstring ptr, byval len as long, byval type as long, byval buf as zstring ptr, byval buflen as long) as HANDLE
 declare function WSACancelAsyncRequest(byval hAsyncTaskHandle as HANDLE) as long
 declare function WSAAsyncSelect(byval s as SOCKET, byval hWnd as HWND, byval wMsg as u_int, byval lEvent as long) as long
-declare function WSAAccept(byval s as SOCKET, byval addr as sockaddr ptr, byval addrlen as LPINT, byval lpfnCondition as LPCONDITIONPROC, byval dwCallbackData as DWORD_PTR) as SOCKET
+declare function WSAAccept(byval s as SOCKET, byval addr as SOCKADDR ptr, byval addrlen as LPINT, byval lpfnCondition as LPCONDITIONPROC, byval dwCallbackData as DWORD_PTR) as SOCKET
 declare function WSACloseEvent(byval hEvent as HANDLE) as WINBOOL
-declare function WSAConnect(byval s as SOCKET, byval name_ as const sockaddr ptr, byval namelen as long, byval lpCallerData as LPWSABUF, byval lpCalleeData as LPWSABUF, byval lpSQOS as LPQOS, byval lpGQOS as LPQOS) as long
+declare function WSAConnect(byval s as SOCKET, byval name as const SOCKADDR ptr, byval namelen as long, byval lpCallerData as LPWSABUF, byval lpCalleeData as LPWSABUF, byval lpSQOS as LPQOS, byval lpGQOS as LPQOS) as long
 declare function WSACreateEvent() as HANDLE
 declare function WSADuplicateSocketA(byval s as SOCKET, byval dwProcessId as DWORD, byval lpProtocolInfo as LPWSAPROTOCOL_INFOA) as long
 declare function WSADuplicateSocketW(byval s as SOCKET, byval dwProcessId as DWORD, byval lpProtocolInfo as LPWSAPROTOCOL_INFOW) as long
@@ -1102,19 +1058,19 @@ declare function WSAGetQOSByName(byval s as SOCKET, byval lpQOSName as LPWSABUF,
 declare function WSAHtonl(byval s as SOCKET, byval hostlong as u_long, byval lpnetlong as u_long ptr) as long
 declare function WSAHtons(byval s as SOCKET, byval hostshort as u_short, byval lpnetshort as u_short ptr) as long
 declare function WSAIoctl(byval s as SOCKET, byval dwIoControlCode as DWORD, byval lpvInBuffer as LPVOID, byval cbInBuffer as DWORD, byval lpvOutBuffer as LPVOID, byval cbOutBuffer as DWORD, byval lpcbBytesReturned as LPDWORD, byval lpOverlapped as LPWSAOVERLAPPED, byval lpCompletionRoutine as LPWSAOVERLAPPED_COMPLETION_ROUTINE) as long
-declare function WSAJoinLeaf(byval s as SOCKET, byval name_ as const sockaddr ptr, byval namelen as long, byval lpCallerData as LPWSABUF, byval lpCalleeData as LPWSABUF, byval lpSQOS as LPQOS, byval lpGQOS as LPQOS, byval dwFlags as DWORD) as SOCKET
+declare function WSAJoinLeaf(byval s as SOCKET, byval name as const SOCKADDR ptr, byval namelen as long, byval lpCallerData as LPWSABUF, byval lpCalleeData as LPWSABUF, byval lpSQOS as LPQOS, byval lpGQOS as LPQOS, byval dwFlags as DWORD) as SOCKET
 declare function WSANtohl(byval s as SOCKET, byval netlong as u_long, byval lphostlong as u_long ptr) as long
 declare function WSANtohs(byval s as SOCKET, byval netshort as u_short, byval lphostshort as u_short ptr) as long
 declare function WSARecv(byval s as SOCKET, byval lpBuffers as LPWSABUF, byval dwBufferCount as DWORD, byval lpNumberOfBytesRecvd as LPDWORD, byval lpFlags as LPDWORD, byval lpOverlapped as LPWSAOVERLAPPED, byval lpCompletionRoutine as LPWSAOVERLAPPED_COMPLETION_ROUTINE) as long
 declare function WSARecvDisconnect(byval s as SOCKET, byval lpInboundDisconnectData as LPWSABUF) as long
-declare function WSARecvFrom(byval s as SOCKET, byval lpBuffers as LPWSABUF, byval dwBufferCount as DWORD, byval lpNumberOfBytesRecvd as LPDWORD, byval lpFlags as LPDWORD, byval lpFrom as sockaddr ptr, byval lpFromlen as LPINT, byval lpOverlapped as LPWSAOVERLAPPED, byval lpCompletionRoutine as LPWSAOVERLAPPED_COMPLETION_ROUTINE) as long
+declare function WSARecvFrom(byval s as SOCKET, byval lpBuffers as LPWSABUF, byval dwBufferCount as DWORD, byval lpNumberOfBytesRecvd as LPDWORD, byval lpFlags as LPDWORD, byval lpFrom as SOCKADDR ptr, byval lpFromlen as LPINT, byval lpOverlapped as LPWSAOVERLAPPED, byval lpCompletionRoutine as LPWSAOVERLAPPED_COMPLETION_ROUTINE) as long
 declare function WSAResetEvent(byval hEvent as HANDLE) as WINBOOL
 declare function WSASend(byval s as SOCKET, byval lpBuffers as LPWSABUF, byval dwBufferCount as DWORD, byval lpNumberOfBytesSent as LPDWORD, byval dwFlags as DWORD, byval lpOverlapped as LPWSAOVERLAPPED, byval lpCompletionRoutine as LPWSAOVERLAPPED_COMPLETION_ROUTINE) as long
 declare function WSASendDisconnect(byval s as SOCKET, byval lpOutboundDisconnectData as LPWSABUF) as long
-declare function WSASendTo(byval s as SOCKET, byval lpBuffers as LPWSABUF, byval dwBufferCount as DWORD, byval lpNumberOfBytesSent as LPDWORD, byval dwFlags as DWORD, byval lpTo as const sockaddr ptr, byval iTolen as long, byval lpOverlapped as LPWSAOVERLAPPED, byval lpCompletionRoutine as LPWSAOVERLAPPED_COMPLETION_ROUTINE) as long
+declare function WSASendTo(byval s as SOCKET, byval lpBuffers as LPWSABUF, byval dwBufferCount as DWORD, byval lpNumberOfBytesSent as LPDWORD, byval dwFlags as DWORD, byval lpTo as const SOCKADDR ptr, byval iTolen as long, byval lpOverlapped as LPWSAOVERLAPPED, byval lpCompletionRoutine as LPWSAOVERLAPPED_COMPLETION_ROUTINE) as long
 declare function WSASetEvent(byval hEvent as HANDLE) as WINBOOL
-declare function WSASocketA(byval af as long, byval type_ as long, byval protocol as long, byval lpProtocolInfo as LPWSAPROTOCOL_INFOA, byval g as GROUP, byval dwFlags as DWORD) as SOCKET
-declare function WSASocketW(byval af as long, byval type_ as long, byval protocol as long, byval lpProtocolInfo as LPWSAPROTOCOL_INFOW, byval g as GROUP, byval dwFlags as DWORD) as SOCKET
+declare function WSASocketA(byval af as long, byval type as long, byval protocol as long, byval lpProtocolInfo as LPWSAPROTOCOL_INFOA, byval g as GROUP, byval dwFlags as DWORD) as SOCKET
+declare function WSASocketW(byval af as long, byval type as long, byval protocol as long, byval lpProtocolInfo as LPWSAPROTOCOL_INFOW, byval g as GROUP, byval dwFlags as DWORD) as SOCKET
 declare function WSAWaitForMultipleEvents(byval cEvents as DWORD, byval lphEvents as const HANDLE ptr, byval fWaitAll as WINBOOL, byval dwTimeout as DWORD, byval fAlertable as WINBOOL) as DWORD
 declare function WSAAddressToStringA(byval lpsaAddress as LPSOCKADDR, byval dwAddressLength as DWORD, byval lpProtocolInfo as LPWSAPROTOCOL_INFOA, byval lpszAddressString as LPSTR, byval lpdwAddressStringLength as LPDWORD) as INT_
 declare function WSAAddressToStringW(byval lpsaAddress as LPSOCKADDR, byval dwAddressLength as DWORD, byval lpProtocolInfo as LPWSAPROTOCOL_INFOW, byval lpszAddressString as LPWSTR, byval lpdwAddressStringLength as LPDWORD) as INT_

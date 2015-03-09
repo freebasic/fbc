@@ -1,6 +1,5 @@
 #pragma once
 
-#include once "crt/wchar.bi"
 #include once "crtdefs.bi"
 #include once "crt/setjmp.bi"
 #include once "crt/stddef.bi"
@@ -8,12 +7,6 @@
 #include once "crt/errno.bi"
 
 '' The following symbols have been renamed:
-''     #ifdef __FB_64BIT__
-''         inside anonymous scopeblock:
-''             variable var => var_
-''         inside anonymous scopeblock:
-''             variable var => var_
-''     #endif
 ''     procedure inp => inp_
 ''     #define _rotl64 => _rotl64_
 ''     #define _rotr64 => _rotr64_
@@ -99,19 +92,19 @@ extern "C"
 
 	#define __INTRINSIC_DEFINED___readgsqword
 
-	declare sub __writegsbyte(byval Offset as ulong, byval Data_ as ubyte)
+	declare sub __writegsbyte(byval Offset as ulong, byval Data as ubyte)
 
 	#define __INTRINSIC_DEFINED___writegsbyte
 
-	declare sub __writegsword(byval Offset as ulong, byval Data_ as ushort)
+	declare sub __writegsword(byval Offset as ulong, byval Data as ushort)
 
 	#define __INTRINSIC_DEFINED___writegsword
 
-	declare sub __writegsdword(byval Offset as ulong, byval Data_ as ulong)
+	declare sub __writegsdword(byval Offset as ulong, byval Data as ulong)
 
 	#define __INTRINSIC_DEFINED___writegsdword
 
-	declare sub __writegsqword(byval Offset as ulong, byval Data_ as ulongint)
+	declare sub __writegsqword(byval Offset as ulong, byval Data as ulongint)
 
 	#define __INTRINSIC_DEFINED___writegsqword
 
@@ -183,17 +176,8 @@ declare function InterlockedBitTestAndReset(byval a as long ptr, byval b as long
 declare function InterlockedBitTestAndComplement(byval a as long ptr, byval b as long) as ubyte
 
 #define __INTRINSIC_DEFINED_InterlockedBitTestAndComplement
-
-declare function _InterlockedAnd(byval as long ptr, byval as long) as long
-
 #define __INTRINSIC_DEFINED__InterlockedAnd
-
-declare function _InterlockedOr(byval as long ptr, byval as long) as long
-
 #define __INTRINSIC_DEFINED__InterlockedOr
-
-declare function _InterlockedXor(byval as long ptr, byval as long) as long
-
 #define __INTRINSIC_DEFINED__InterlockedXor
 
 declare function _InterlockedIncrement16(byval Addend as short ptr) as short
@@ -289,15 +273,15 @@ declare sub __movsd(byval Dest as ulong ptr, byval Source as const ulong ptr, by
 
 	#define __INTRINSIC_DEFINED___readfsdword
 
-	declare sub __writefsbyte(byval Offset as ulong, byval Data_ as ubyte)
+	declare sub __writefsbyte(byval Offset as ulong, byval Data as ubyte)
 
 	#define __INTRINSIC_DEFINED___writefsbyte
 
-	declare sub __writefsword(byval Offset as ulong, byval Data_ as ushort)
+	declare sub __writefsword(byval Offset as ulong, byval Data as ushort)
 
 	#define __INTRINSIC_DEFINED___writefsword
 
-	declare sub __writefsdword(byval Offset as ulong, byval Data_ as ulong)
+	declare sub __writefsdword(byval Offset as ulong, byval Data as ulong)
 
 	#define __INTRINSIC_DEFINED___writefsdword
 #endif

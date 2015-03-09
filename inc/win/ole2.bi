@@ -11,9 +11,6 @@
 extern "Windows"
 
 #define _OLE2_H_
-
-declare function OleBuildVersion() as DWORD
-
 #define E_DRAW VIEW_E_DRAW
 #define DATA_E_FORMATETC DV_E_FORMATETC
 #define OLEIVERB_PRIMARY __MSABI_LONG(0)
@@ -29,6 +26,7 @@ declare function OleBuildVersion() as DWORD
 #define EMBDHLP_DELAYCREATE __MSABI_LONG(&h00010000)
 #define OLECREATE_LEAVERUNNING &h1
 
+declare function OleBuildVersion() as DWORD
 declare function ReadClassStg(byval pStg as LPSTORAGE, byval pclsid as CLSID ptr) as HRESULT
 declare function WriteClassStg(byval pStg as LPSTORAGE, byval rclsid as const IID const ptr) as HRESULT
 declare function ReadClassStm(byval pStm as LPSTREAM, byval pclsid as CLSID ptr) as HRESULT

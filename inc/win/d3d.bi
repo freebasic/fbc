@@ -9,40 +9,6 @@
 
 extern "Windows"
 
-type IDirect3DLight as IDirect3DLight_
-type IDirect3DDevice as IDirect3DDevice_
-type IDirect3DDevice2 as IDirect3DDevice2_
-type IDirect3DDevice3 as IDirect3DDevice3_
-type IDirect3DDevice7 as IDirect3DDevice7_
-type IDirect3DViewport as IDirect3DViewport_
-type IDirect3DViewport2 as IDirect3DViewport2_
-type IDirect3DViewport3 as IDirect3DViewport3_
-type IDirect3DMaterial as IDirect3DMaterial_
-type IDirect3DMaterial2 as IDirect3DMaterial2_
-type IDirect3DMaterial3 as IDirect3DMaterial3_
-type IDirect3DVertexBuffer as IDirect3DVertexBuffer_
-type IDirect3DVertexBuffer7 as IDirect3DVertexBuffer7_
-type IDirect3DVtbl as IDirect3DVtbl_
-type IDirect3D2Vtbl as IDirect3D2Vtbl_
-type IDirect3D3Vtbl as IDirect3D3Vtbl_
-type IDirect3D7Vtbl as IDirect3D7Vtbl_
-type IDirect3DLightVtbl as IDirect3DLightVtbl_
-type IDirect3DMaterialVtbl as IDirect3DMaterialVtbl_
-type IDirect3DMaterial2Vtbl as IDirect3DMaterial2Vtbl_
-type IDirect3DMaterial3Vtbl as IDirect3DMaterial3Vtbl_
-type IDirect3DTextureVtbl as IDirect3DTextureVtbl_
-type IDirect3DTexture2Vtbl as IDirect3DTexture2Vtbl_
-type IDirect3DViewportVtbl as IDirect3DViewportVtbl_
-type IDirect3DViewport2Vtbl as IDirect3DViewport2Vtbl_
-type IDirect3DViewport3Vtbl as IDirect3DViewport3Vtbl_
-type IDirect3DExecuteBufferVtbl as IDirect3DExecuteBufferVtbl_
-type IDirect3DDeviceVtbl as IDirect3DDeviceVtbl_
-type IDirect3DDevice2Vtbl as IDirect3DDevice2Vtbl_
-type IDirect3DDevice3Vtbl as IDirect3DDevice3Vtbl_
-type IDirect3DDevice7Vtbl as IDirect3DDevice7Vtbl_
-type IDirect3DVertexBufferVtbl as IDirect3DVertexBufferVtbl_
-type IDirect3DVertexBuffer7Vtbl as IDirect3DVertexBuffer7Vtbl_
-
 #define __WINE_D3D_H
 
 extern IID_IDirect3D as const GUID
@@ -77,21 +43,60 @@ type LPDIRECT3D as IDirect3D ptr
 type LPDIRECT3D2 as IDirect3D2 ptr
 type LPDIRECT3D3 as IDirect3D3 ptr
 type LPDIRECT3D7 as IDirect3D7 ptr
+
+type IDirect3DLight as IDirect3DLight_
+
 type LPDIRECT3DLIGHT as IDirect3DLight ptr
+
+type IDirect3DDevice as IDirect3DDevice_
+
 type LPDIRECT3DDEVICE as IDirect3DDevice ptr
+
+type IDirect3DDevice2 as IDirect3DDevice2_
+
 type LPDIRECT3DDEVICE2 as IDirect3DDevice2 ptr
+
+type IDirect3DDevice3 as IDirect3DDevice3_
+
 type LPDIRECT3DDEVICE3 as IDirect3DDevice3 ptr
+
+type IDirect3DDevice7 as IDirect3DDevice7_
+
 type LPDIRECT3DDEVICE7 as IDirect3DDevice7 ptr
+
+type IDirect3DViewport as IDirect3DViewport_
+
 type LPDIRECT3DVIEWPORT as IDirect3DViewport ptr
+
+type IDirect3DViewport2 as IDirect3DViewport2_
+
 type LPDIRECT3DVIEWPORT2 as IDirect3DViewport2 ptr
+
+type IDirect3DViewport3 as IDirect3DViewport3_
+
 type LPDIRECT3DVIEWPORT3 as IDirect3DViewport3 ptr
+
+type IDirect3DMaterial as IDirect3DMaterial_
+
 type LPDIRECT3DMATERIAL as IDirect3DMaterial ptr
+
+type IDirect3DMaterial2 as IDirect3DMaterial2_
+
 type LPDIRECT3DMATERIAL2 as IDirect3DMaterial2 ptr
+
+type IDirect3DMaterial3 as IDirect3DMaterial3_
+
 type LPDIRECT3DMATERIAL3 as IDirect3DMaterial3 ptr
 type LPDIRECT3DTEXTURE as IDirect3DTexture ptr
 type LPDIRECT3DTEXTURE2 as IDirect3DTexture2 ptr
 type LPDIRECT3DEXECUTEBUFFER as IDirect3DExecuteBuffer ptr
+
+type IDirect3DVertexBuffer as IDirect3DVertexBuffer_
+
 type LPDIRECT3DVERTEXBUFFER as IDirect3DVertexBuffer ptr
+
+type IDirect3DVertexBuffer7 as IDirect3DVertexBuffer7_
+
 type LPDIRECT3DVERTEXBUFFER7 as IDirect3DVertexBuffer7 ptr
 
 #define D3D_OK DD_OK
@@ -186,6 +191,8 @@ type LPDIRECT3DVERTEXBUFFER7 as IDirect3DVertexBuffer7 ptr
 type D3DVIEWPORTHANDLE as DWORD
 type LPD3DVIEWPORTHANDLE as DWORD ptr
 
+type IDirect3DVtbl as IDirect3DVtbl_
+
 type IDirect3D
 	lpVtbl as IDirect3DVtbl ptr
 end type
@@ -212,6 +219,8 @@ end type
 #define IDirect3D_CreateViewport(p, a, b) (p)->lpVtbl->CreateViewport(p, a, b)
 #define IDirect3D_FindDevice(p, a, b) (p)->lpVtbl->FindDevice(p, a, b)
 
+type IDirect3D2Vtbl as IDirect3D2Vtbl_
+
 type IDirect3D2
 	lpVtbl as IDirect3D2Vtbl ptr
 end type
@@ -237,6 +246,8 @@ end type
 #define IDirect3D2_CreateViewport(p, a, b) (p)->lpVtbl->CreateViewport(p, a, b)
 #define IDirect3D2_FindDevice(p, a, b) (p)->lpVtbl->FindDevice(p, a, b)
 #define IDirect3D2_CreateDevice(p, a, b, c) (p)->lpVtbl->CreateDevice(p, a, b, c)
+
+type IDirect3D3Vtbl as IDirect3D3Vtbl_
 
 type IDirect3D3
 	lpVtbl as IDirect3D3Vtbl ptr
@@ -270,6 +281,8 @@ end type
 #define IDirect3D3_EnumZBufferFormats(p, a, b, c) (p)->lpVtbl->EnumZBufferFormats(p, a, b, c)
 #define IDirect3D3_EvictManagedTextures(p) (p)->lpVtbl->EvictManagedTextures(p)
 
+type IDirect3D7Vtbl as IDirect3D7Vtbl_
+
 type IDirect3D7
 	lpVtbl as IDirect3D7Vtbl ptr
 end type
@@ -294,6 +307,8 @@ end type
 #define IDirect3D7_EnumZBufferFormats(p, a, b, c) (p)->lpVtbl->EnumZBufferFormats(p, a, b, c)
 #define IDirect3D7_EvictManagedTextures(p) (p)->lpVtbl->EvictManagedTextures(p)
 
+type IDirect3DLightVtbl as IDirect3DLightVtbl_
+
 type IDirect3DLight_
 	lpVtbl as IDirect3DLightVtbl ptr
 end type
@@ -303,8 +318,8 @@ type IDirect3DLightVtbl_
 	AddRef as function(byval This as IDirect3DLight ptr) as ULONG
 	Release as function(byval This as IDirect3DLight ptr) as ULONG
 	Initialize as function(byval This as IDirect3DLight ptr, byval d3d as IDirect3D ptr) as HRESULT
-	SetLight as function(byval This as IDirect3DLight ptr, byval data_ as D3DLIGHT ptr) as HRESULT
-	GetLight as function(byval This as IDirect3DLight ptr, byval data_ as D3DLIGHT ptr) as HRESULT
+	SetLight as function(byval This as IDirect3DLight ptr, byval data as D3DLIGHT ptr) as HRESULT
+	GetLight as function(byval This as IDirect3DLight ptr, byval data as D3DLIGHT ptr) as HRESULT
 end type
 
 #define IDirect3DLight_QueryInterface(p, a, b) (p)->lpVtbl->QueryInterface(p, a, b)
@@ -313,6 +328,8 @@ end type
 #define IDirect3DLight_Initialize(p, a) (p)->lpVtbl->Initialize(p, a)
 #define IDirect3DLight_SetLight(p, a) (p)->lpVtbl->SetLight(p, a)
 #define IDirect3DLight_GetLight(p, a) (p)->lpVtbl->GetLight(p, a)
+
+type IDirect3DMaterialVtbl as IDirect3DMaterialVtbl_
 
 type IDirect3DMaterial_
 	lpVtbl as IDirect3DMaterialVtbl ptr
@@ -323,8 +340,8 @@ type IDirect3DMaterialVtbl_
 	AddRef as function(byval This as IDirect3DMaterial ptr) as ULONG
 	Release as function(byval This as IDirect3DMaterial ptr) as ULONG
 	Initialize as function(byval This as IDirect3DMaterial ptr, byval d3d as IDirect3D ptr) as HRESULT
-	SetMaterial as function(byval This as IDirect3DMaterial ptr, byval data_ as D3DMATERIAL ptr) as HRESULT
-	GetMaterial as function(byval This as IDirect3DMaterial ptr, byval data_ as D3DMATERIAL ptr) as HRESULT
+	SetMaterial as function(byval This as IDirect3DMaterial ptr, byval data as D3DMATERIAL ptr) as HRESULT
+	GetMaterial as function(byval This as IDirect3DMaterial ptr, byval data as D3DMATERIAL ptr) as HRESULT
 	GetHandle as function(byval This as IDirect3DMaterial ptr, byval device as IDirect3DDevice ptr, byval handle as D3DMATERIALHANDLE ptr) as HRESULT
 	Reserve as function(byval This as IDirect3DMaterial ptr) as HRESULT
 	Unreserve as function(byval This as IDirect3DMaterial ptr) as HRESULT
@@ -340,6 +357,8 @@ end type
 #define IDirect3DMaterial_Reserve(p) (p)->lpVtbl->Reserve(p)
 #define IDirect3DMaterial_Unreserve(p) (p)->lpVtbl->Unreserve(p)
 
+type IDirect3DMaterial2Vtbl as IDirect3DMaterial2Vtbl_
+
 type IDirect3DMaterial2_
 	lpVtbl as IDirect3DMaterial2Vtbl ptr
 end type
@@ -348,8 +367,8 @@ type IDirect3DMaterial2Vtbl_
 	QueryInterface as function(byval This as IDirect3DMaterial2 ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
 	AddRef as function(byval This as IDirect3DMaterial2 ptr) as ULONG
 	Release as function(byval This as IDirect3DMaterial2 ptr) as ULONG
-	SetMaterial as function(byval This as IDirect3DMaterial2 ptr, byval data_ as D3DMATERIAL ptr) as HRESULT
-	GetMaterial as function(byval This as IDirect3DMaterial2 ptr, byval data_ as D3DMATERIAL ptr) as HRESULT
+	SetMaterial as function(byval This as IDirect3DMaterial2 ptr, byval data as D3DMATERIAL ptr) as HRESULT
+	GetMaterial as function(byval This as IDirect3DMaterial2 ptr, byval data as D3DMATERIAL ptr) as HRESULT
 	GetHandle as function(byval This as IDirect3DMaterial2 ptr, byval device as IDirect3DDevice2 ptr, byval handle as D3DMATERIALHANDLE ptr) as HRESULT
 end type
 
@@ -360,6 +379,8 @@ end type
 #define IDirect3DMaterial2_GetMaterial(p, a) (p)->lpVtbl->GetMaterial(p, a)
 #define IDirect3DMaterial2_GetHandle(p, a, b) (p)->lpVtbl->GetHandle(p, a, b)
 
+type IDirect3DMaterial3Vtbl as IDirect3DMaterial3Vtbl_
+
 type IDirect3DMaterial3_
 	lpVtbl as IDirect3DMaterial3Vtbl ptr
 end type
@@ -368,8 +389,8 @@ type IDirect3DMaterial3Vtbl_
 	QueryInterface as function(byval This as IDirect3DMaterial3 ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
 	AddRef as function(byval This as IDirect3DMaterial3 ptr) as ULONG
 	Release as function(byval This as IDirect3DMaterial3 ptr) as ULONG
-	SetMaterial as function(byval This as IDirect3DMaterial3 ptr, byval data_ as D3DMATERIAL ptr) as HRESULT
-	GetMaterial as function(byval This as IDirect3DMaterial3 ptr, byval data_ as D3DMATERIAL ptr) as HRESULT
+	SetMaterial as function(byval This as IDirect3DMaterial3 ptr, byval data as D3DMATERIAL ptr) as HRESULT
+	GetMaterial as function(byval This as IDirect3DMaterial3 ptr, byval data as D3DMATERIAL ptr) as HRESULT
 	GetHandle as function(byval This as IDirect3DMaterial3 ptr, byval device as IDirect3DDevice3 ptr, byval handle as D3DMATERIALHANDLE ptr) as HRESULT
 end type
 
@@ -379,6 +400,8 @@ end type
 #define IDirect3DMaterial3_SetMaterial(p, a) (p)->lpVtbl->SetMaterial(p, a)
 #define IDirect3DMaterial3_GetMaterial(p, a) (p)->lpVtbl->GetMaterial(p, a)
 #define IDirect3DMaterial3_GetHandle(p, a, b) (p)->lpVtbl->GetHandle(p, a, b)
+
+type IDirect3DTextureVtbl as IDirect3DTextureVtbl_
 
 type IDirect3DTexture
 	lpVtbl as IDirect3DTextureVtbl ptr
@@ -404,6 +427,8 @@ end type
 #define IDirect3DTexture_Load(p, a) (p)->lpVtbl->Load(p, a)
 #define IDirect3DTexture_Unload(p) (p)->lpVtbl->Unload(p)
 
+type IDirect3DTexture2Vtbl as IDirect3DTexture2Vtbl_
+
 type IDirect3DTexture2
 	lpVtbl as IDirect3DTexture2Vtbl ptr
 end type
@@ -424,6 +449,8 @@ end type
 #define IDirect3DTexture2_PaletteChanged(p, a, b) (p)->lpVtbl->PaletteChanged(p, a, b)
 #define IDirect3DTexture2_Load(p, a) (p)->lpVtbl->Load(p, a)
 
+type IDirect3DViewportVtbl as IDirect3DViewportVtbl_
+
 type IDirect3DViewport_
 	lpVtbl as IDirect3DViewportVtbl ptr
 end type
@@ -433,10 +460,10 @@ type IDirect3DViewportVtbl_
 	AddRef as function(byval This as IDirect3DViewport ptr) as ULONG
 	Release as function(byval This as IDirect3DViewport ptr) as ULONG
 	Initialize as function(byval This as IDirect3DViewport ptr, byval d3d as IDirect3D ptr) as HRESULT
-	GetViewport as function(byval This as IDirect3DViewport ptr, byval data_ as D3DVIEWPORT ptr) as HRESULT
-	SetViewport as function(byval This as IDirect3DViewport ptr, byval data_ as D3DVIEWPORT ptr) as HRESULT
-	TransformVertices as function(byval This as IDirect3DViewport ptr, byval vertex_count as DWORD, byval data_ as D3DTRANSFORMDATA ptr, byval flags as DWORD, byval offscreen as DWORD ptr) as HRESULT
-	LightElements as function(byval This as IDirect3DViewport ptr, byval element_count as DWORD, byval data_ as D3DLIGHTDATA ptr) as HRESULT
+	GetViewport as function(byval This as IDirect3DViewport ptr, byval data as D3DVIEWPORT ptr) as HRESULT
+	SetViewport as function(byval This as IDirect3DViewport ptr, byval data as D3DVIEWPORT ptr) as HRESULT
+	TransformVertices as function(byval This as IDirect3DViewport ptr, byval vertex_count as DWORD, byval data as D3DTRANSFORMDATA ptr, byval flags as DWORD, byval offscreen as DWORD ptr) as HRESULT
+	LightElements as function(byval This as IDirect3DViewport ptr, byval element_count as DWORD, byval data as D3DLIGHTDATA ptr) as HRESULT
 	SetBackground as function(byval This as IDirect3DViewport ptr, byval hMat as D3DMATERIALHANDLE) as HRESULT
 	GetBackground as function(byval This as IDirect3DViewport ptr, byval material as D3DMATERIALHANDLE ptr, byval valid as WINBOOL ptr) as HRESULT
 	SetBackgroundDepth as function(byval This as IDirect3DViewport ptr, byval surface as IDirectDrawSurface ptr) as HRESULT
@@ -464,6 +491,8 @@ end type
 #define IDirect3DViewport_DeleteLight(p, a) (p)->lpVtbl->DeleteLight(p, a)
 #define IDirect3DViewport_NextLight(p, a, b, c) (p)->lpVtbl->NextLight(p, a, b, c)
 
+type IDirect3DViewport2Vtbl as IDirect3DViewport2Vtbl_
+
 type IDirect3DViewport2_
 	lpVtbl as IDirect3DViewport2Vtbl ptr
 end type
@@ -473,10 +502,10 @@ type IDirect3DViewport2Vtbl_
 	AddRef as function(byval This as IDirect3DViewport2 ptr) as ULONG
 	Release as function(byval This as IDirect3DViewport2 ptr) as ULONG
 	Initialize as function(byval This as IDirect3DViewport2 ptr, byval d3d as IDirect3D ptr) as HRESULT
-	GetViewport as function(byval This as IDirect3DViewport2 ptr, byval data_ as D3DVIEWPORT ptr) as HRESULT
-	SetViewport as function(byval This as IDirect3DViewport2 ptr, byval data_ as D3DVIEWPORT ptr) as HRESULT
-	TransformVertices as function(byval This as IDirect3DViewport2 ptr, byval vertex_count as DWORD, byval data_ as D3DTRANSFORMDATA ptr, byval flags as DWORD, byval offscreen as DWORD ptr) as HRESULT
-	LightElements as function(byval This as IDirect3DViewport2 ptr, byval element_count as DWORD, byval data_ as D3DLIGHTDATA ptr) as HRESULT
+	GetViewport as function(byval This as IDirect3DViewport2 ptr, byval data as D3DVIEWPORT ptr) as HRESULT
+	SetViewport as function(byval This as IDirect3DViewport2 ptr, byval data as D3DVIEWPORT ptr) as HRESULT
+	TransformVertices as function(byval This as IDirect3DViewport2 ptr, byval vertex_count as DWORD, byval data as D3DTRANSFORMDATA ptr, byval flags as DWORD, byval offscreen as DWORD ptr) as HRESULT
+	LightElements as function(byval This as IDirect3DViewport2 ptr, byval element_count as DWORD, byval data as D3DLIGHTDATA ptr) as HRESULT
 	SetBackground as function(byval This as IDirect3DViewport2 ptr, byval hMat as D3DMATERIALHANDLE) as HRESULT
 	GetBackground as function(byval This as IDirect3DViewport2 ptr, byval material as D3DMATERIALHANDLE ptr, byval valid as WINBOOL ptr) as HRESULT
 	SetBackgroundDepth as function(byval This as IDirect3DViewport2 ptr, byval surface as IDirectDrawSurface ptr) as HRESULT
@@ -485,8 +514,8 @@ type IDirect3DViewport2Vtbl_
 	AddLight as function(byval This as IDirect3DViewport2 ptr, byval light as IDirect3DLight ptr) as HRESULT
 	DeleteLight as function(byval This as IDirect3DViewport2 ptr, byval light as IDirect3DLight ptr) as HRESULT
 	NextLight as function(byval This as IDirect3DViewport2 ptr, byval ref as IDirect3DLight ptr, byval light as IDirect3DLight ptr ptr, byval flags as DWORD) as HRESULT
-	GetViewport2 as function(byval This as IDirect3DViewport2 ptr, byval data_ as D3DVIEWPORT2 ptr) as HRESULT
-	SetViewport2 as function(byval This as IDirect3DViewport2 ptr, byval data_ as D3DVIEWPORT2 ptr) as HRESULT
+	GetViewport2 as function(byval This as IDirect3DViewport2 ptr, byval data as D3DVIEWPORT2 ptr) as HRESULT
+	SetViewport2 as function(byval This as IDirect3DViewport2 ptr, byval data as D3DVIEWPORT2 ptr) as HRESULT
 end type
 
 #define IDirect3DViewport2_QueryInterface(p, a, b) (p)->lpVtbl->QueryInterface(p, a, b)
@@ -508,6 +537,8 @@ end type
 #define IDirect3DViewport2_GetViewport2(p, a) (p)->lpVtbl->GetViewport2(p, a)
 #define IDirect3DViewport2_SetViewport2(p, a) (p)->lpVtbl->SetViewport2(p, a)
 
+type IDirect3DViewport3Vtbl as IDirect3DViewport3Vtbl_
+
 type IDirect3DViewport3_
 	lpVtbl as IDirect3DViewport3Vtbl ptr
 end type
@@ -517,10 +548,10 @@ type IDirect3DViewport3Vtbl_
 	AddRef as function(byval This as IDirect3DViewport3 ptr) as ULONG
 	Release as function(byval This as IDirect3DViewport3 ptr) as ULONG
 	Initialize as function(byval This as IDirect3DViewport3 ptr, byval d3d as IDirect3D ptr) as HRESULT
-	GetViewport as function(byval This as IDirect3DViewport3 ptr, byval data_ as D3DVIEWPORT ptr) as HRESULT
-	SetViewport as function(byval This as IDirect3DViewport3 ptr, byval data_ as D3DVIEWPORT ptr) as HRESULT
-	TransformVertices as function(byval This as IDirect3DViewport3 ptr, byval vertex_count as DWORD, byval data_ as D3DTRANSFORMDATA ptr, byval flags as DWORD, byval offscreen as DWORD ptr) as HRESULT
-	LightElements as function(byval This as IDirect3DViewport3 ptr, byval element_count as DWORD, byval data_ as D3DLIGHTDATA ptr) as HRESULT
+	GetViewport as function(byval This as IDirect3DViewport3 ptr, byval data as D3DVIEWPORT ptr) as HRESULT
+	SetViewport as function(byval This as IDirect3DViewport3 ptr, byval data as D3DVIEWPORT ptr) as HRESULT
+	TransformVertices as function(byval This as IDirect3DViewport3 ptr, byval vertex_count as DWORD, byval data as D3DTRANSFORMDATA ptr, byval flags as DWORD, byval offscreen as DWORD ptr) as HRESULT
+	LightElements as function(byval This as IDirect3DViewport3 ptr, byval element_count as DWORD, byval data as D3DLIGHTDATA ptr) as HRESULT
 	SetBackground as function(byval This as IDirect3DViewport3 ptr, byval hMat as D3DMATERIALHANDLE) as HRESULT
 	GetBackground as function(byval This as IDirect3DViewport3 ptr, byval material as D3DMATERIALHANDLE ptr, byval valid as WINBOOL ptr) as HRESULT
 	SetBackgroundDepth as function(byval This as IDirect3DViewport3 ptr, byval surface as IDirectDrawSurface ptr) as HRESULT
@@ -529,11 +560,11 @@ type IDirect3DViewport3Vtbl_
 	AddLight as function(byval This as IDirect3DViewport3 ptr, byval light as IDirect3DLight ptr) as HRESULT
 	DeleteLight as function(byval This as IDirect3DViewport3 ptr, byval light as IDirect3DLight ptr) as HRESULT
 	NextLight as function(byval This as IDirect3DViewport3 ptr, byval ref as IDirect3DLight ptr, byval light as IDirect3DLight ptr ptr, byval flags as DWORD) as HRESULT
-	GetViewport2 as function(byval This as IDirect3DViewport3 ptr, byval data_ as D3DVIEWPORT2 ptr) as HRESULT
-	SetViewport2 as function(byval This as IDirect3DViewport3 ptr, byval data_ as D3DVIEWPORT2 ptr) as HRESULT
+	GetViewport2 as function(byval This as IDirect3DViewport3 ptr, byval data as D3DVIEWPORT2 ptr) as HRESULT
+	SetViewport2 as function(byval This as IDirect3DViewport3 ptr, byval data as D3DVIEWPORT2 ptr) as HRESULT
 	SetBackgroundDepth2 as function(byval This as IDirect3DViewport3 ptr, byval surface as IDirectDrawSurface4 ptr) as HRESULT
 	GetBackgroundDepth2 as function(byval This as IDirect3DViewport3 ptr, byval surface as IDirectDrawSurface4 ptr ptr, byval valid as WINBOOL ptr) as HRESULT
-	Clear2 as function(byval This as IDirect3DViewport3 ptr, byval count as DWORD, byval rects as D3DRECT ptr, byval flags as DWORD, byval color_ as DWORD, byval z as D3DVALUE, byval stencil as DWORD) as HRESULT
+	Clear2 as function(byval This as IDirect3DViewport3 ptr, byval count as DWORD, byval rects as D3DRECT ptr, byval flags as DWORD, byval color as DWORD, byval z as D3DVALUE, byval stencil as DWORD) as HRESULT
 end type
 
 #define IDirect3DViewport3_QueryInterface(p, a, b) (p)->lpVtbl->QueryInterface(p, a, b)
@@ -558,6 +589,8 @@ end type
 #define IDirect3DViewport3_GetBackgroundDepth2(p, a, b) (p)->lpVtbl->GetBackgroundDepth2(p, a, b)
 #define IDirect3DViewport3_Clear2(p, a, b, c, d, e, f) (p)->lpVtbl->Clear2(p, a, b, c, d, e, f)
 
+type IDirect3DExecuteBufferVtbl as IDirect3DExecuteBufferVtbl_
+
 type IDirect3DExecuteBuffer
 	lpVtbl as IDirect3DExecuteBufferVtbl ptr
 end type
@@ -569,8 +602,8 @@ type IDirect3DExecuteBufferVtbl_
 	Initialize as function(byval This as IDirect3DExecuteBuffer ptr, byval device as IDirect3DDevice ptr, byval desc as D3DEXECUTEBUFFERDESC ptr) as HRESULT
 	Lock as function(byval This as IDirect3DExecuteBuffer ptr, byval desc as D3DEXECUTEBUFFERDESC ptr) as HRESULT
 	Unlock as function(byval This as IDirect3DExecuteBuffer ptr) as HRESULT
-	SetExecuteData as function(byval This as IDirect3DExecuteBuffer ptr, byval data_ as D3DEXECUTEDATA ptr) as HRESULT
-	GetExecuteData as function(byval This as IDirect3DExecuteBuffer ptr, byval data_ as D3DEXECUTEDATA ptr) as HRESULT
+	SetExecuteData as function(byval This as IDirect3DExecuteBuffer ptr, byval data as D3DEXECUTEDATA ptr) as HRESULT
+	GetExecuteData as function(byval This as IDirect3DExecuteBuffer ptr, byval data as D3DEXECUTEDATA ptr) as HRESULT
 	Validate as function(byval This as IDirect3DExecuteBuffer ptr, byval offset as DWORD ptr, byval cb as LPD3DVALIDATECALLBACK, byval ctx as any ptr, byval reserved as DWORD) as HRESULT
 	Optimize as function(byval This as IDirect3DExecuteBuffer ptr, byval dwDummy as DWORD) as HRESULT
 end type
@@ -585,6 +618,8 @@ end type
 #define IDirect3DExecuteBuffer_GetExecuteData(p, a) (p)->lpVtbl->GetExecuteData(p, a)
 #define IDirect3DExecuteBuffer_Validate(p, a, b, c, d) (p)->lpVtbl->Validate(p, a, b, c, d)
 #define IDirect3DExecuteBuffer_Optimize(p, a) (p)->lpVtbl->Optimize(p, a)
+
+type IDirect3DDeviceVtbl as IDirect3DDeviceVtbl_
 
 type IDirect3DDevice_
 	lpVtbl as IDirect3DDeviceVtbl ptr
@@ -637,6 +672,8 @@ end type
 #define IDirect3DDevice_BeginScene(p) (p)->lpVtbl->BeginScene(p)
 #define IDirect3DDevice_EndScene(p) (p)->lpVtbl->EndScene(p)
 #define IDirect3DDevice_GetDirect3D(p, a) (p)->lpVtbl->GetDirect3D(p, a)
+
+type IDirect3DDevice2Vtbl as IDirect3DDevice2Vtbl_
 
 type IDirect3DDevice2_
 	lpVtbl as IDirect3DDevice2Vtbl ptr
@@ -711,6 +748,8 @@ end type
 #define IDirect3DDevice2_DrawIndexedPrimitive(p, a, b, c, d, e, f, g) (p)->lpVtbl->DrawIndexedPrimitive(p, a, b, c, d, e, f, g)
 #define IDirect3DDevice2_SetClipStatus(p, a) (p)->lpVtbl->SetClipStatus(p, a)
 #define IDirect3DDevice2_GetClipStatus(p, a) (p)->lpVtbl->GetClipStatus(p, a)
+
+type IDirect3DDevice3Vtbl as IDirect3DDevice3Vtbl_
 
 type IDirect3DDevice3_
 	lpVtbl as IDirect3DDevice3Vtbl ptr
@@ -804,6 +843,8 @@ end type
 #define IDirect3DDevice3_SetTextureStageState(p, a, b, c) (p)->lpVtbl->SetTextureStageState(p, a, b, c)
 #define IDirect3DDevice3_ValidateDevice(p, a) (p)->lpVtbl->ValidateDevice(p, a)
 
+type IDirect3DDevice7Vtbl as IDirect3DDevice7Vtbl_
+
 type IDirect3DDevice7_
 	lpVtbl as IDirect3DDevice7Vtbl ptr
 end type
@@ -819,16 +860,16 @@ type IDirect3DDevice7Vtbl_
 	GetDirect3D as function(byval This as IDirect3DDevice7 ptr, byval d3d as IDirect3D7 ptr ptr) as HRESULT
 	SetRenderTarget as function(byval This as IDirect3DDevice7 ptr, byval surface as IDirectDrawSurface7 ptr, byval flags as DWORD) as HRESULT
 	GetRenderTarget as function(byval This as IDirect3DDevice7 ptr, byval surface as IDirectDrawSurface7 ptr ptr) as HRESULT
-	Clear as function(byval This as IDirect3DDevice7 ptr, byval count as DWORD, byval rects as D3DRECT ptr, byval flags as DWORD, byval color_ as D3DCOLOR, byval z as D3DVALUE, byval stencil as DWORD) as HRESULT
+	Clear as function(byval This as IDirect3DDevice7 ptr, byval count as DWORD, byval rects as D3DRECT ptr, byval flags as DWORD, byval color as D3DCOLOR, byval z as D3DVALUE, byval stencil as DWORD) as HRESULT
 	SetTransform as function(byval This as IDirect3DDevice7 ptr, byval state as D3DTRANSFORMSTATETYPE, byval matrix as D3DMATRIX ptr) as HRESULT
 	GetTransform as function(byval This as IDirect3DDevice7 ptr, byval state as D3DTRANSFORMSTATETYPE, byval matrix as D3DMATRIX ptr) as HRESULT
-	SetViewport as function(byval This as IDirect3DDevice7 ptr, byval data_ as D3DVIEWPORT7 ptr) as HRESULT
+	SetViewport as function(byval This as IDirect3DDevice7 ptr, byval data as D3DVIEWPORT7 ptr) as HRESULT
 	MultiplyTransform as function(byval This as IDirect3DDevice7 ptr, byval state as D3DTRANSFORMSTATETYPE, byval matrix as D3DMATRIX ptr) as HRESULT
-	GetViewport as function(byval This as IDirect3DDevice7 ptr, byval data_ as D3DVIEWPORT7 ptr) as HRESULT
-	SetMaterial as function(byval This as IDirect3DDevice7 ptr, byval data_ as D3DMATERIAL7 ptr) as HRESULT
-	GetMaterial as function(byval This as IDirect3DDevice7 ptr, byval data_ as D3DMATERIAL7 ptr) as HRESULT
-	SetLight as function(byval This as IDirect3DDevice7 ptr, byval idx as DWORD, byval data_ as D3DLIGHT7 ptr) as HRESULT
-	GetLight as function(byval This as IDirect3DDevice7 ptr, byval idx as DWORD, byval data_ as D3DLIGHT7 ptr) as HRESULT
+	GetViewport as function(byval This as IDirect3DDevice7 ptr, byval data as D3DVIEWPORT7 ptr) as HRESULT
+	SetMaterial as function(byval This as IDirect3DDevice7 ptr, byval data as D3DMATERIAL7 ptr) as HRESULT
+	GetMaterial as function(byval This as IDirect3DDevice7 ptr, byval data as D3DMATERIAL7 ptr) as HRESULT
+	SetLight as function(byval This as IDirect3DDevice7 ptr, byval idx as DWORD, byval data as D3DLIGHT7 ptr) as HRESULT
+	GetLight as function(byval This as IDirect3DDevice7 ptr, byval idx as DWORD, byval data as D3DLIGHT7 ptr) as HRESULT
 	SetRenderState as function(byval This as IDirect3DDevice7 ptr, byval dwRenderStateType as D3DRENDERSTATETYPE, byval dwRenderState as DWORD) as HRESULT
 	GetRenderState as function(byval This as IDirect3DDevice7 ptr, byval dwRenderStateType as D3DRENDERSTATETYPE, byval lpdwRenderState as LPDWORD) as HRESULT
 	BeginStateBlock as function(byval This as IDirect3DDevice7 ptr) as HRESULT
@@ -910,6 +951,8 @@ end type
 #define IDirect3DDevice7_GetClipPlane(p, a, b) (p)->lpVtbl->GetClipPlane(p, a, b)
 #define IDirect3DDevice7_GetInfo(p, a, b, c) (p)->lpVtbl->GetInfo(p, a, b, c)
 
+type IDirect3DVertexBufferVtbl as IDirect3DVertexBufferVtbl_
+
 type IDirect3DVertexBuffer_
 	lpVtbl as IDirect3DVertexBufferVtbl ptr
 end type
@@ -918,7 +961,7 @@ type IDirect3DVertexBufferVtbl_
 	QueryInterface as function(byval This as IDirect3DVertexBuffer ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
 	AddRef as function(byval This as IDirect3DVertexBuffer ptr) as ULONG
 	Release as function(byval This as IDirect3DVertexBuffer ptr) as ULONG
-	Lock as function(byval This as IDirect3DVertexBuffer ptr, byval flags as DWORD, byval data_ as any ptr ptr, byval data_size as DWORD ptr) as HRESULT
+	Lock as function(byval This as IDirect3DVertexBuffer ptr, byval flags as DWORD, byval data as any ptr ptr, byval data_size as DWORD ptr) as HRESULT
 	Unlock as function(byval This as IDirect3DVertexBuffer ptr) as HRESULT
 	ProcessVertices as function(byval This as IDirect3DVertexBuffer ptr, byval vertex_op as DWORD, byval dst_idx as DWORD, byval count as DWORD, byval src_buffer as IDirect3DVertexBuffer ptr, byval src_idx as DWORD, byval device as IDirect3DDevice3 ptr, byval flags as DWORD) as HRESULT
 	GetVertexBufferDesc as function(byval This as IDirect3DVertexBuffer ptr, byval desc as D3DVERTEXBUFFERDESC ptr) as HRESULT
@@ -934,6 +977,8 @@ end type
 #define IDirect3DVertexBuffer_GetVertexBufferDesc(p, a) (p)->lpVtbl->GetVertexBufferDesc(p, a)
 #define IDirect3DVertexBuffer_Optimize(p, a, b) (p)->lpVtbl->Optimize(p, a, b)
 
+type IDirect3DVertexBuffer7Vtbl as IDirect3DVertexBuffer7Vtbl_
+
 type IDirect3DVertexBuffer7_
 	lpVtbl as IDirect3DVertexBuffer7Vtbl ptr
 end type
@@ -942,12 +987,12 @@ type IDirect3DVertexBuffer7Vtbl_
 	QueryInterface as function(byval This as IDirect3DVertexBuffer7 ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
 	AddRef as function(byval This as IDirect3DVertexBuffer7 ptr) as ULONG
 	Release as function(byval This as IDirect3DVertexBuffer7 ptr) as ULONG
-	Lock as function(byval This as IDirect3DVertexBuffer7 ptr, byval flags as DWORD, byval data_ as any ptr ptr, byval data_size as DWORD ptr) as HRESULT
+	Lock as function(byval This as IDirect3DVertexBuffer7 ptr, byval flags as DWORD, byval data as any ptr ptr, byval data_size as DWORD ptr) as HRESULT
 	Unlock as function(byval This as IDirect3DVertexBuffer7 ptr) as HRESULT
 	ProcessVertices as function(byval This as IDirect3DVertexBuffer7 ptr, byval vertex_op as DWORD, byval dst_idx as DWORD, byval count as DWORD, byval src_buffer as IDirect3DVertexBuffer7 ptr, byval src_idx as DWORD, byval device as IDirect3DDevice7 ptr, byval flags as DWORD) as HRESULT
 	GetVertexBufferDesc as function(byval This as IDirect3DVertexBuffer7 ptr, byval desc as D3DVERTEXBUFFERDESC ptr) as HRESULT
 	Optimize as function(byval This as IDirect3DVertexBuffer7 ptr, byval device as IDirect3DDevice7 ptr, byval flags as DWORD) as HRESULT
-	ProcessVerticesStrided as function(byval This as IDirect3DVertexBuffer7 ptr, byval vertex_op as DWORD, byval dst_idx as DWORD, byval count as DWORD, byval data_ as D3DDRAWPRIMITIVESTRIDEDDATA ptr, byval fvf as DWORD, byval device as IDirect3DDevice7 ptr, byval flags as DWORD) as HRESULT
+	ProcessVerticesStrided as function(byval This as IDirect3DVertexBuffer7 ptr, byval vertex_op as DWORD, byval dst_idx as DWORD, byval count as DWORD, byval data as D3DDRAWPRIMITIVESTRIDEDDATA ptr, byval fvf as DWORD, byval device as IDirect3DDevice7 ptr, byval flags as DWORD) as HRESULT
 end type
 
 #define IDirect3DVertexBuffer7_QueryInterface(p, a, b) (p)->lpVtbl->QueryInterface(p, a, b)

@@ -36,7 +36,7 @@ extern "Windows"
 	#define SIO_BASE_HANDLE _WSAIOR(IOC_WS2, 34)
 #endif
 
-declare function WSARecvEx(byval s as SOCKET, byval buf as zstring ptr, byval len_ as long, byval flags as long ptr) as long
+declare function WSARecvEx(byval s as SOCKET, byval buf as zstring ptr, byval len as long, byval flags as long ptr) as long
 
 #define TF_DISCONNECT &h01
 #define TF_REUSE_SOCKET &h02
@@ -59,7 +59,7 @@ type LPTRANSMIT_FILE_BUFFERS as _TRANSMIT_FILE_BUFFERS ptr
 
 declare function TransmitFile(byval hSocket as SOCKET, byval hFile as HANDLE, byval nNumberOfBytesToWrite as DWORD, byval nNumberOfBytesPerSend as DWORD, byval lpOverlapped as LPOVERLAPPED, byval lpTransmitBuffers as LPTRANSMIT_FILE_BUFFERS, byval dwReserved as DWORD) as WINBOOL
 declare function AcceptEx(byval sListenSocket as SOCKET, byval sAcceptSocket as SOCKET, byval lpOutputBuffer as PVOID, byval dwReceiveDataLength as DWORD, byval dwLocalAddressLength as DWORD, byval dwRemoteAddressLength as DWORD, byval lpdwBytesReceived as LPDWORD, byval lpOverlapped as LPOVERLAPPED) as WINBOOL
-declare sub GetAcceptExSockaddrs(byval lpOutputBuffer as PVOID, byval dwReceiveDataLength as DWORD, byval dwLocalAddressLength as DWORD, byval dwRemoteAddressLength as DWORD, byval LocalSockaddr as sockaddr ptr ptr, byval LocalSockaddrLength as LPINT, byval RemoteSockaddr as sockaddr ptr ptr, byval RemoteSockaddrLength as LPINT)
+declare sub GetAcceptExSockaddrs(byval lpOutputBuffer as PVOID, byval dwReceiveDataLength as DWORD, byval dwLocalAddressLength as DWORD, byval dwRemoteAddressLength as DWORD, byval LocalSockaddr as SOCKADDR ptr ptr, byval LocalSockaddrLength as LPINT, byval RemoteSockaddr as SOCKADDR ptr ptr, byval RemoteSockaddrLength as LPINT)
 
 type LPFN_TRANSMITFILE as function(byval hSocket as SOCKET, byval hFile as HANDLE, byval nNumberOfBytesToWrite as DWORD, byval nNumberOfBytesPerSend as DWORD, byval lpOverlapped as LPOVERLAPPED, byval lpTransmitBuffers as LPTRANSMIT_FILE_BUFFERS, byval dwReserved as DWORD) as WINBOOL
 
@@ -69,7 +69,7 @@ type LPFN_ACCEPTEX as function(byval sListenSocket as SOCKET, byval sAcceptSocke
 
 #define WSAID_ACCEPTEX (&hb5367df1, &hcbac, &h11cf, (&h95, &hca, &h00, &h80, &h5f, &h48, &ha1, &h92))
 
-type LPFN_GETACCEPTEXSOCKADDRS as sub(byval lpOutputBuffer as PVOID, byval dwReceiveDataLength as DWORD, byval dwLocalAddressLength as DWORD, byval dwRemoteAddressLength as DWORD, byval LocalSockaddr as sockaddr ptr ptr, byval LocalSockaddrLength as LPINT, byval RemoteSockaddr as sockaddr ptr ptr, byval RemoteSockaddrLength as LPINT)
+type LPFN_GETACCEPTEXSOCKADDRS as sub(byval lpOutputBuffer as PVOID, byval dwReceiveDataLength as DWORD, byval dwLocalAddressLength as DWORD, byval dwRemoteAddressLength as DWORD, byval LocalSockaddr as SOCKADDR ptr ptr, byval LocalSockaddrLength as LPINT, byval RemoteSockaddr as SOCKADDR ptr ptr, byval RemoteSockaddrLength as LPINT)
 
 #define WSAID_GETACCEPTEXSOCKADDRS (&hb5367df2, &hcbac, &h11cf, (&h95, &hca, &h00, &h80, &h5f, &h48, &ha1, &h92))
 
@@ -104,7 +104,7 @@ type LPFN_TRANSMITPACKETS as function(byval hSocket as SOCKET, byval lpPacketArr
 
 #define WSAID_TRANSMITPACKETS (&hd9689da0, &h1f90, &h11d3, (&h99, &h71, &h00, &hc0, &h4f, &h68, &hc8, &h76))
 
-type LPFN_CONNECTEX as function(byval s as SOCKET, byval name_ as const sockaddr ptr, byval namelen as long, byval lpSendBuffer as PVOID, byval dwSendDataLength as DWORD, byval lpdwBytesSent as LPDWORD, byval lpOverlapped as LPOVERLAPPED) as WINBOOL
+type LPFN_CONNECTEX as function(byval s as SOCKET, byval name as const SOCKADDR ptr, byval namelen as long, byval lpSendBuffer as PVOID, byval dwSendDataLength as DWORD, byval lpdwBytesSent as LPDWORD, byval lpOverlapped as LPOVERLAPPED) as WINBOOL
 
 #define WSAID_CONNECTEX (&h25a207b9, &hddf3, &h4660, (&h8e, &he9, &h76, &he5, &h8c, &h74, &h06, &h3e))
 
@@ -150,28 +150,28 @@ end enum
 type NLA_INTERNET as _NLA_INTERNET
 type PNLA_INTERNET as _NLA_INTERNET ptr
 
-type ___NLA_BLOB_header
+type _NLA_BLOB_header
 	as NLA_BLOB_DATA_TYPE type
 	dwSize as DWORD
 	nextOffset as DWORD
 end type
 
-type ___NLA_BLOB_interfaceData
+type _NLA_BLOB_data_interfaceData
 	dwType as DWORD
 	dwSpeed as DWORD
 	adapterName as zstring * 1
 end type
 
-type ___NLA_BLOB_locationData
+type _NLA_BLOB_data_locationData
 	information as zstring * 1
 end type
 
-type ___NLA_BLOB_connectivity
+type _NLA_BLOB_data_connectivity
 	as NLA_CONNECTIVITY_TYPE type
 	internet as NLA_INTERNET
 end type
 
-type ___NLA_BLOB_remote
+type _NLA_BLOB_data_ICS_remote
 	speed as DWORD
 	as DWORD type
 	state as DWORD
@@ -179,21 +179,21 @@ type ___NLA_BLOB_remote
 	sharedAdapterName as wstring * 256
 end type
 
-type ___NLA_BLOB_ICS
-	remote as ___NLA_BLOB_remote
+type _NLA_BLOB_data_ICS
+	remote as _NLA_BLOB_data_ICS_remote
 end type
 
-union ___NLA_BLOB_data
+union _NLA_BLOB_data
 	rawData as zstring * 1
-	interfaceData as ___NLA_BLOB_interfaceData
-	locationData as ___NLA_BLOB_locationData
-	connectivity as ___NLA_BLOB_connectivity
-	ICS as ___NLA_BLOB_ICS
+	interfaceData as _NLA_BLOB_data_interfaceData
+	locationData as _NLA_BLOB_data_locationData
+	connectivity as _NLA_BLOB_data_connectivity
+	ICS as _NLA_BLOB_data_ICS
 end union
 
 type _NLA_BLOB
-	header as ___NLA_BLOB_header
-	data as ___NLA_BLOB_data
+	header as _NLA_BLOB_header
+	data as _NLA_BLOB_data
 end type
 
 type NLA_BLOB as _NLA_BLOB

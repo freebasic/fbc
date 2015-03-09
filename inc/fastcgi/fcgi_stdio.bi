@@ -36,7 +36,7 @@ declare sub FCGI_SetExitStatus(byval status as long)
 #define FCGI_stdout_ (@_fcgi_sF(1))
 #define FCGI_stderr_ (@_fcgi_sF(2))
 
-declare sub FCGI_perror(byval str_ as const zstring ptr)
+declare sub FCGI_perror(byval str as const zstring ptr)
 declare function FCGI_fopen(byval path as const zstring ptr, byval mode as const zstring ptr) as FCGI_FILE ptr
 declare function FCGI_fclose(byval fp as FCGI_FILE ptr) as long
 declare function FCGI_fflush(byval fp as FCGI_FILE ptr) as long
@@ -49,25 +49,25 @@ declare sub FCGI_rewind(byval fp as FCGI_FILE ptr)
 declare function FCGI_fgetc(byval fp as FCGI_FILE ptr) as long
 declare function FCGI_getchar() as long
 declare function FCGI_ungetc(byval c as long, byval fp as FCGI_FILE ptr) as long
-declare function FCGI_fgets(byval str_ as zstring ptr, byval size as long, byval fp as FCGI_FILE ptr) as zstring ptr
-declare function FCGI_gets(byval str_ as zstring ptr) as zstring ptr
+declare function FCGI_fgets(byval str as zstring ptr, byval size as long, byval fp as FCGI_FILE ptr) as zstring ptr
+declare function FCGI_gets(byval str as zstring ptr) as zstring ptr
 declare function FCGI_fputc(byval c as long, byval fp as FCGI_FILE ptr) as long
 declare function FCGI_putchar(byval c as long) as long
-declare function FCGI_fputs(byval str_ as const zstring ptr, byval fp as FCGI_FILE ptr) as long
-declare function FCGI_puts(byval str_ as const zstring ptr) as long
+declare function FCGI_fputs(byval str as const zstring ptr, byval fp as FCGI_FILE ptr) as long
+declare function FCGI_puts(byval str as const zstring ptr) as long
 declare function FCGI_fprintf(byval fp as FCGI_FILE ptr, byval format as const zstring ptr, ...) as long
 declare function FCGI_printf(byval format as const zstring ptr, ...) as long
 declare function FCGI_vfprintf(byval fp as FCGI_FILE ptr, byval format as const zstring ptr, byval ap as va_list) as long
 declare function FCGI_vprintf(byval format as const zstring ptr, byval ap as va_list) as long
-declare function FCGI_fread(byval ptr_ as any ptr, byval size as uinteger, byval nmemb as uinteger, byval fp as FCGI_FILE ptr) as uinteger
-declare function FCGI_fwrite(byval ptr_ as any ptr, byval size as uinteger, byval nmemb as uinteger, byval fp as FCGI_FILE ptr) as uinteger
+declare function FCGI_fread(byval ptr as any ptr, byval size as uinteger, byval nmemb as uinteger, byval fp as FCGI_FILE ptr) as uinteger
+declare function FCGI_fwrite(byval ptr as any ptr, byval size as uinteger, byval nmemb as uinteger, byval fp as FCGI_FILE ptr) as uinteger
 declare function FCGI_feof(byval fp as FCGI_FILE ptr) as long
 declare function FCGI_ferror(byval fp as FCGI_FILE ptr) as long
 declare sub FCGI_clearerr(byval fp as FCGI_FILE ptr)
 declare function FCGI_tmpfile() as FCGI_FILE ptr
 declare function FCGI_fileno(byval fp as FCGI_FILE ptr) as long
 declare function FCGI_fdopen(byval fd as long, byval mode as const zstring ptr) as FCGI_FILE ptr
-declare function FCGI_popen(byval cmd as const zstring ptr, byval type_ as const zstring ptr) as FCGI_FILE ptr
+declare function FCGI_popen(byval cmd as const zstring ptr, byval type as const zstring ptr) as FCGI_FILE ptr
 declare function FCGI_pclose(byval as FCGI_FILE ptr) as long
 
 #ifndef NO_FCGI_DEFINES

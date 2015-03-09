@@ -7,16 +7,6 @@
 
 extern "Windows"
 
-type IEnumRegisterWordA as IEnumRegisterWordA_
-type IEnumRegisterWordW as IEnumRegisterWordW_
-type IEnumInputContext as IEnumInputContext_
-type IActiveIMMRegistrar as IActiveIMMRegistrar_
-type IActiveIMMMessagePumpOwner as IActiveIMMMessagePumpOwner_
-type IActiveIMMApp as IActiveIMMApp_
-type IActiveIMMIME as IActiveIMMIME_
-type IActiveIME as IActiveIME_
-type IActiveIME2 as IActiveIME2_
-
 #define __dimm_h__
 #define __IEnumRegisterWordA_FWD_DEFINED__
 #define __IEnumRegisterWordW_FWD_DEFINED__
@@ -34,7 +24,7 @@ extern __MIDL_itf_dimm_0000_v0_0_s_ifspec as RPC_IF_HANDLE
 
 #define __ActiveIMM_LIBRARY_DEFINED__
 
-union ____MIDL___MIDL_itf_dimm_0000_0012_lfFont
+union __MIDL___MIDL_itf_dimm_0000_0012_lfFont
 	A as LOGFONTA
 	W as LOGFONTW
 end union
@@ -46,7 +36,7 @@ type __MIDL___MIDL_itf_dimm_0000_0012
 	ptSoftKbdPos as POINT
 	fdwConversion as DWORD
 	fdwSentence as DWORD
-	lfFont as ____MIDL___MIDL_itf_dimm_0000_0012_lfFont
+	lfFont as __MIDL___MIDL_itf_dimm_0000_0012_lfFont
 	cfCompForm as COMPOSITIONFORM
 	cfCandForm(0 to 3) as CANDIDATEFORM
 	hCompStr as HIMCC
@@ -79,6 +69,8 @@ extern LIBID_ActiveIMM as const IID
 
 extern IID_IEnumRegisterWordA as const IID
 
+type IEnumRegisterWordA as IEnumRegisterWordA_
+
 type IEnumRegisterWordAVtbl
 	QueryInterface as function(byval This as IEnumRegisterWordA ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
 	AddRef as function(byval This as IEnumRegisterWordA ptr) as ULONG
@@ -105,6 +97,8 @@ declare sub IEnumRegisterWordA_Skip_Stub(byval This as IRpcStubBuffer ptr, byval
 #define __IEnumRegisterWordW_INTERFACE_DEFINED__
 
 extern IID_IEnumRegisterWordW as const IID
+
+type IEnumRegisterWordW as IEnumRegisterWordW_
 
 type IEnumRegisterWordWVtbl
 	QueryInterface as function(byval This as IEnumRegisterWordW ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
@@ -133,6 +127,8 @@ declare sub IEnumRegisterWordW_Skip_Stub(byval This as IRpcStubBuffer ptr, byval
 
 extern IID_IEnumInputContext as const IID
 
+type IEnumInputContext as IEnumInputContext_
+
 type IEnumInputContextVtbl
 	QueryInterface as function(byval This as IEnumInputContext ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
 	AddRef as function(byval This as IEnumInputContext ptr) as ULONG
@@ -160,6 +156,8 @@ declare sub IEnumInputContext_Skip_Stub(byval This as IRpcStubBuffer ptr, byval 
 
 extern IID_IActiveIMMRegistrar as const IID
 
+type IActiveIMMRegistrar as IActiveIMMRegistrar_
+
 type IActiveIMMRegistrarVtbl
 	QueryInterface as function(byval This as IActiveIMMRegistrar ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
 	AddRef as function(byval This as IActiveIMMRegistrar ptr) as ULONG
@@ -180,6 +178,8 @@ declare sub IActiveIMMRegistrar_UnregisterIME_Stub(byval This as IRpcStubBuffer 
 #define __IActiveIMMMessagePumpOwner_INTERFACE_DEFINED__
 
 extern IID_IActiveIMMMessagePumpOwner as const IID
+
+type IActiveIMMMessagePumpOwner as IActiveIMMMessagePumpOwner_
 
 type IActiveIMMMessagePumpOwnerVtbl
 	QueryInterface as function(byval This as IActiveIMMMessagePumpOwner ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
@@ -210,6 +210,8 @@ declare sub IActiveIMMMessagePumpOwner_Resume_Stub(byval This as IRpcStubBuffer 
 #define __IActiveIMMApp_INTERFACE_DEFINED__
 
 extern IID_IActiveIMMApp as const IID
+
+type IActiveIMMApp as IActiveIMMApp_
 
 type IActiveIMMAppVtbl
 	QueryInterface as function(byval This as IActiveIMMApp ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
@@ -429,6 +431,8 @@ declare sub IActiveIMMApp_EnumInputContext_Stub(byval This as IRpcStubBuffer ptr
 #define __IActiveIMMIME_INTERFACE_DEFINED__
 
 extern IID_IActiveIMMIME as const IID
+
+type IActiveIMMIME as IActiveIMMIME_
 
 type IActiveIMMIMEVtbl
 	QueryInterface as function(byval This as IActiveIMMIME ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
@@ -709,6 +713,8 @@ declare sub IActiveIMMIME_IsSleeping_Stub(byval This as IRpcStubBuffer ptr, byva
 
 extern IID_IActiveIME as const IID
 
+type IActiveIME as IActiveIME_
+
 type IActiveIMEVtbl
 	QueryInterface as function(byval This as IActiveIME ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
 	AddRef as function(byval This as IActiveIME ptr) as ULONG
@@ -774,6 +780,8 @@ declare sub IActiveIME_GetLangId_Stub(byval This as IRpcStubBuffer ptr, byval _p
 #define __IActiveIME2_INTERFACE_DEFINED__
 
 extern IID_IActiveIME2 as const IID
+
+type IActiveIME2 as IActiveIME2_
 
 type IActiveIME2Vtbl
 	QueryInterface as function(byval This as IActiveIME2 ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT

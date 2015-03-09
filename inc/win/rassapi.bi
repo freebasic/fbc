@@ -1,7 +1,5 @@
 #pragma once
 
-#include once "lmcons.bi"
-
 #inclib "mprapi"
 
 extern "Windows"
@@ -37,14 +35,14 @@ enum
 	ParamString = 1
 end enum
 
-type __RAS_PARAMS_VALUE_String
+type RAS_PARAMS_VALUE_String
 	Length as DWORD
 	Data as PCHAR
 end type
 
 union RAS_PARAMS_VALUE
 	Number as DWORD
-	String as __RAS_PARAMS_VALUE_String
+	String as RAS_PARAMS_VALUE_String
 end union
 
 type RAS_PARAMETERS
@@ -205,7 +203,7 @@ declare function RasAdminPortEnum(byval lpszServer as const wstring ptr, byval p
 declare function RasAdminPortGetInfo(byval lpszServer as const wstring ptr, byval lpszPort as const wstring ptr, byval pRasPort1 as RAS_PORT_1 ptr, byval pRasStats as RAS_PORT_STATISTICS ptr, byval ppRasParams as RAS_PARAMETERS ptr ptr) as DWORD
 declare function RasAdminPortClearStatistics(byval lpszServer as const wstring ptr, byval lpszPort as const wstring ptr) as DWORD
 declare function RasAdminPortDisconnect(byval lpszServer as const wstring ptr, byval lpszPort as const wstring ptr) as DWORD
-declare function RasAdminFreeBuffer(byval Pointer_ as PVOID) as DWORD
+declare function RasAdminFreeBuffer(byval Pointer as PVOID) as DWORD
 declare function RasAdminAcceptNewConnection(byval pRasPort1 as RAS_PORT_1 ptr, byval pRasStats as RAS_PORT_STATISTICS ptr, byval pRasParams as RAS_PARAMETERS ptr) as WINBOOL
 declare sub RasAdminConnectionHangupNotification(byval pRasPort1 as RAS_PORT_1 ptr, byval pRasStats as RAS_PORT_STATISTICS ptr, byval pRasParams as RAS_PARAMETERS ptr)
 declare function RasAdminGetIpAddressForUser(byval lpszUserName as wstring ptr, byval lpszPortName as wstring ptr, byval pipAddress as IPADDR ptr, byval bNotifyRelease as WINBOOL ptr) as DWORD

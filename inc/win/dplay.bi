@@ -7,11 +7,6 @@
 
 extern "Windows"
 
-type IDirectPlayVtbl as IDirectPlayVtbl_
-type IDirectPlay2Vtbl as IDirectPlay2Vtbl_
-type IDirectPlay3Vtbl as IDirectPlay3Vtbl_
-type IDirectPlay4Vtbl as IDirectPlay4Vtbl_
-
 #define __WINE_DPLAY_H
 
 type LPVOIDV as any ptr
@@ -338,6 +333,8 @@ type LPDPENUMSESSIONSCALLBACK2 as function(byval lpThisSD as LPCDPSESSIONDESC2, 
 
 #define DPESC_TIMEDOUT &h00000001
 
+type IDirectPlayVtbl as IDirectPlayVtbl_
+
 type IDirectPlay
 	lpVtbl as IDirectPlayVtbl ptr
 end type
@@ -395,6 +392,8 @@ end type
 #define IDirectPlay_SaveSession(p, a) (p)->lpVtbl->SaveSession(p, a)
 #define IDirectPlay_Send(p, a, b, c, d, e) (p)->lpVtbl->Send(p, a, b, c, d, e)
 #define IDirectPlay_SetPlayerName(p, a, b, c) (p)->lpVtbl->SetPlayerName(p, a, b, c)
+
+type IDirectPlay2Vtbl as IDirectPlay2Vtbl_
 
 type IDirectPlay2
 	lpVtbl as IDirectPlay2Vtbl ptr
@@ -467,6 +466,8 @@ end type
 #define IDirectPlay2_SetPlayerData(p, a, b, c, d) (p)->lpVtbl->SetPlayerData(p, a, b, c, d)
 #define IDirectPlay2_SetPlayerName(p, a, b, c) (p)->lpVtbl->SetPlayerName(p, a, b, c)
 #define IDirectPlay2_SetSessionDesc(p, a, b) (p)->lpVtbl->SetSessionDesc(p, a, b)
+
+type IDirectPlay3Vtbl as IDirectPlay3Vtbl_
 
 type IDirectPlay3
 	lpVtbl as IDirectPlay3Vtbl ptr
@@ -569,6 +570,8 @@ end type
 #define IDirectPlay3_GetGroupParent(p, a, b) (p)->lpVtbl->GetGroupParent(p, a, b)
 #define IDirectPlay3_GetPlayerAccount(p, a, b, c, d) (p)->lpVtbl->GetPlayerAccount(p, a, b, c, d)
 #define IDirectPlay3_GetPlayerFlags(p, a, b) (p)->lpVtbl->GetPlayerFlags(p, a, b)
+
+type IDirectPlay4Vtbl as IDirectPlay4Vtbl_
 
 type IDirectPlay4
 	lpVtbl as IDirectPlay4Vtbl ptr

@@ -1,32 +1,12 @@
 #pragma once
 
-#include once "crt/wchar.bi"
 #include once "_mingw_unicode.bi"
 #include once "objbase.bi"
 #include once "shtypes.bi"
 
-'' The following symbols have been renamed:
-''     #define StrChr => StrChr_
-''     #define StrRChr => StrRChr_
-''     #define StrStr => StrStr_
-''     #define StrDup => StrDup_
-''     #define StrCSpn => StrCSpn_
-''     #define StrSpn => StrSpn_
-''     #define StrPBrk => StrPBrk_
-''     #define StrNCat => StrNCat_
-''     #define StrNCmp => StrNCmp_
-''     #define StrNCpy => StrNCpy_
-''     #define StrCat => StrCat_
-''     #define StrCmp => StrCmp_
-''     #define StrCmpI => StrCmpI_
-''     #define StrCpy => StrCpy_
-''     #define UrlIs => UrlIs_
-
 #inclib "shlwapi"
 
 extern "Windows"
-
-type IQueryAssociationsVtbl as IQueryAssociationsVtbl_
 
 #define _INC_SHLWAPI
 
@@ -153,21 +133,21 @@ declare function SHLoadIndirectString(byval pszSource as LPCWSTR, byval pszOutBu
 #endif
 
 #ifdef UNICODE
-	#define StrChr_ StrChrW
-	#define StrRChr_ StrRChrW
+	#define StrChr StrChrW
+	#define StrRChr StrRChrW
 	#define StrChrI StrChrIW
 	#define StrRChrI StrRChrIW
 	#define StrCmpN StrCmpNW
 	#define StrCmpNI StrCmpNIW
-	#define StrStr_ StrStrW
+	#define StrStr StrStrW
 	#define StrStrI StrStrIW
-	#define StrDup_ StrDupW
+	#define StrDup StrDupW
 	#define StrRStrI StrRStrIW
-	#define StrCSpn_ StrCSpnW
+	#define StrCSpn StrCSpnW
 	#define StrCSpnI StrCSpnIW
-	#define StrSpn_ StrSpnW
+	#define StrSpn StrSpnW
 	#define StrToInt StrToIntW
-	#define StrPBrk_ StrPBrkW
+	#define StrPBrk StrPBrkW
 	#define StrToIntEx StrToIntExW
 #endif
 
@@ -181,7 +161,6 @@ declare function SHLoadIndirectString(byval pszSource as LPCWSTR, byval pszOutBu
 	#define StrIntlEqNI StrIntlEqNIW
 	#define StrFormatByteSize StrFormatByteSizeW
 	#define StrFormatKBSize StrFormatKBSizeW
-	#define StrNCat_ StrNCatW
 	#define StrTrim StrTrimW
 	#define ChrCmpI ChrCmpIW
 	#define wvnsprintf wvnsprintfW
@@ -193,21 +172,21 @@ declare function SHLoadIndirectString(byval pszSource as LPCWSTR, byval pszOutBu
 #endif
 
 #ifndef UNICODE
-	#define StrChr_ StrChrA
-	#define StrRChr_ StrRChrA
+	#define StrChr StrChrA
+	#define StrRChr StrRChrA
 	#define StrChrI StrChrIA
 	#define StrRChrI StrRChrIA
 	#define StrCmpN StrCmpNA
 	#define StrCmpNI StrCmpNIA
-	#define StrStr_ StrStrA
+	#define StrStr StrStrA
 	#define StrStrI StrStrIA
-	#define StrDup_ StrDupA
+	#define StrDup StrDupA
 	#define StrRStrI StrRStrIA
-	#define StrCSpn_ StrCSpnA
+	#define StrCSpn StrCSpnA
 	#define StrCSpnI StrCSpnIA
-	#define StrSpn_ StrSpnA
+	#define StrSpn StrSpnA
 	#define StrToInt StrToIntA
-	#define StrPBrk_ StrPBrkA
+	#define StrPBrk StrPBrkA
 	#define StrToIntEx StrToIntExA
 #endif
 
@@ -221,7 +200,6 @@ declare function SHLoadIndirectString(byval pszSource as LPCWSTR, byval pszOutBu
 	#define StrIntlEqNI StrIntlEqNIA
 	#define StrFormatByteSize StrFormatByteSizeA
 	#define StrFormatKBSize StrFormatKBSizeA
-	#define StrNCat_ StrNCatA
 	#define StrTrim StrTrimA
 	#define ChrCmpI ChrCmpIA
 	#define wvnsprintf wvnsprintfA
@@ -263,30 +241,23 @@ declare function IntlStrEqWorkerW(byval fCaseSens as WINBOOL, byval lpString1 as
 #define PathIsHTMLFileW(pszPath) PathIsContentTypeW(pszPath, SZ_CONTENTTYPE_HTMLW)
 #define STIF_DEFAULT __MSABI_LONG(&h00000000)
 #define STIF_SUPPORT_HEX __MSABI_LONG(&h00000001)
-#define StrCatA lstrcatA
 #define StrCmpA lstrcmpA
 #define StrCmpIA lstrcmpiA
-#define StrCpyA lstrcpyA
 #define StrCpyNA lstrcpynA
 #define StrToLong StrToInt
-#define StrNCmp_ StrCmpN
+#define StrNCmp StrCmpN
 #define StrNCmpI StrCmpNI
-#define StrNCpy_ StrCpyN
-#define StrCatN StrNCat_
+#define StrNCpy StrCpyN
 
 #ifdef UNICODE
 	#define StrCatBuff StrCatBuffW
-	#define StrCat_ StrCatW
-	#define StrCmp_ StrCmpW
-	#define StrCmpI_ StrCmpIW
-	#define StrCpy_ StrCpyW
+	#define StrCmp StrCmpW
+	#define StrCmpI StrCmpIW
 	#define StrCpyN StrCpyNW
 #else
 	#define StrCatBuff StrCatBuffA
-	#define StrCat_ lstrcatA
-	#define StrCmp_ lstrcmpA
-	#define StrCmpI_ lstrcmpiA
-	#define StrCpy_ lstrcpyA
+	#define StrCmp lstrcmpA
+	#define StrCmpI lstrcmpiA
 	#define StrCpyN lstrcpynA
 #endif
 
@@ -802,7 +773,7 @@ declare function HashData(byval pbData as LPBYTE, byval cbData as DWORD, byval p
 	#define UrlHash UrlHashW
 	#define UrlGetPart UrlGetPartW
 	#define UrlApplyScheme UrlApplySchemeW
-	#define UrlIs_ UrlIsW
+	declare function UrlIs alias "UrlIsW"(byval pszUrl as LPCWSTR, byval UrlIs as URLIS) as WINBOOL
 #else
 	#define UrlCompare UrlCompareA
 	#define UrlCombine UrlCombineA
@@ -817,7 +788,7 @@ declare function HashData(byval pbData as LPBYTE, byval cbData as DWORD, byval p
 	#define UrlHash UrlHashA
 	#define UrlGetPart UrlGetPartA
 	#define UrlApplyScheme UrlApplySchemeA
-	#define UrlIs_ UrlIsA
+	declare function UrlIs alias "UrlIsA"(byval pszUrl as LPCSTR, byval UrlIs as URLIS) as WINBOOL
 #endif
 
 #define UrlEscapeSpaces(pszUrl, pszEscaped, pcchEscaped) UrlCanonicalize(pszUrl, pszEscaped, pcchEscaped, URL_ESCAPE_SPACES_ONLY or URL_DONT_ESCAPE_EXTRA_INFO)
@@ -1088,6 +1059,8 @@ enum
 	ASSOCENUM_NONE
 end enum
 
+type IQueryAssociationsVtbl as IQueryAssociationsVtbl_
+
 type IQueryAssociations
 	lpVtbl as IQueryAssociationsVtbl ptr
 end type
@@ -1097,9 +1070,9 @@ type IQueryAssociationsVtbl_
 	AddRef as function(byval This as IQueryAssociations ptr) as ULONG
 	Release as function(byval This as IQueryAssociations ptr) as ULONG
 	Init as function(byval This as IQueryAssociations ptr, byval flags as ASSOCF, byval pszAssoc as LPCWSTR, byval hkProgid as HKEY, byval hwnd as HWND) as HRESULT
-	GetString as function(byval This as IQueryAssociations ptr, byval flags as ASSOCF, byval str_ as ASSOCSTR, byval pszExtra as LPCWSTR, byval pszOut as LPWSTR, byval pcchOut as DWORD ptr) as HRESULT
+	GetString as function(byval This as IQueryAssociations ptr, byval flags as ASSOCF, byval str as ASSOCSTR, byval pszExtra as LPCWSTR, byval pszOut as LPWSTR, byval pcchOut as DWORD ptr) as HRESULT
 	GetKey as function(byval This as IQueryAssociations ptr, byval flags as ASSOCF, byval key as ASSOCKEY, byval pszExtra as LPCWSTR, byval phkeyOut as HKEY ptr) as HRESULT
-	GetData as function(byval This as IQueryAssociations ptr, byval flags as ASSOCF, byval data_ as ASSOCDATA, byval pszExtra as LPCWSTR, byval pvOut as LPVOID, byval pcbOut as DWORD ptr) as HRESULT
+	GetData as function(byval This as IQueryAssociations ptr, byval flags as ASSOCF, byval data as ASSOCDATA, byval pszExtra as LPCWSTR, byval pvOut as LPVOID, byval pcbOut as DWORD ptr) as HRESULT
 	GetEnum as function(byval This as IQueryAssociations ptr, byval flags as ASSOCF, byval assocenum as ASSOCENUM, byval pszExtra as LPCWSTR, byval riid as const IID const ptr, byval ppvOut as LPVOID ptr) as HRESULT
 end type
 
@@ -1114,10 +1087,10 @@ end type
 #endif
 
 declare function AssocCreate(byval clsid as CLSID, byval riid as const IID const ptr, byval ppv as LPVOID ptr) as HRESULT
-declare function AssocQueryStringA(byval flags as ASSOCF, byval str_ as ASSOCSTR, byval pszAssoc as LPCSTR, byval pszExtra as LPCSTR, byval pszOut as LPSTR, byval pcchOut as DWORD ptr) as HRESULT
-declare function AssocQueryStringW(byval flags as ASSOCF, byval str_ as ASSOCSTR, byval pszAssoc as LPCWSTR, byval pszExtra as LPCWSTR, byval pszOut as LPWSTR, byval pcchOut as DWORD ptr) as HRESULT
-declare function AssocQueryStringByKeyA(byval flags as ASSOCF, byval str_ as ASSOCSTR, byval hkAssoc as HKEY, byval pszExtra as LPCSTR, byval pszOut as LPSTR, byval pcchOut as DWORD ptr) as HRESULT
-declare function AssocQueryStringByKeyW(byval flags as ASSOCF, byval str_ as ASSOCSTR, byval hkAssoc as HKEY, byval pszExtra as LPCWSTR, byval pszOut as LPWSTR, byval pcchOut as DWORD ptr) as HRESULT
+declare function AssocQueryStringA(byval flags as ASSOCF, byval str as ASSOCSTR, byval pszAssoc as LPCSTR, byval pszExtra as LPCSTR, byval pszOut as LPSTR, byval pcchOut as DWORD ptr) as HRESULT
+declare function AssocQueryStringW(byval flags as ASSOCF, byval str as ASSOCSTR, byval pszAssoc as LPCWSTR, byval pszExtra as LPCWSTR, byval pszOut as LPWSTR, byval pcchOut as DWORD ptr) as HRESULT
+declare function AssocQueryStringByKeyA(byval flags as ASSOCF, byval str as ASSOCSTR, byval hkAssoc as HKEY, byval pszExtra as LPCSTR, byval pszOut as LPSTR, byval pcchOut as DWORD ptr) as HRESULT
+declare function AssocQueryStringByKeyW(byval flags as ASSOCF, byval str as ASSOCSTR, byval hkAssoc as HKEY, byval pszExtra as LPCWSTR, byval pszOut as LPWSTR, byval pcchOut as DWORD ptr) as HRESULT
 declare function AssocQueryKeyA(byval flags as ASSOCF, byval key as ASSOCKEY, byval pszAssoc as LPCSTR, byval pszExtra as LPCSTR, byval phkeyOut as HKEY ptr) as HRESULT
 declare function AssocQueryKeyW(byval flags as ASSOCF, byval key as ASSOCKEY, byval pszAssoc as LPCWSTR, byval pszExtra as LPCWSTR, byval phkeyOut as HKEY ptr) as HRESULT
 

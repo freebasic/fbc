@@ -52,9 +52,9 @@ declare function GetUniDirectionalAdapterInfo(byval pIPIfInfo as PIP_UNIDIRECTIO
 
 #define NhpAllocateAndGetInterfaceInfoFromStack_DEFINED
 
-declare function NhpAllocateAndGetInterfaceInfoFromStack(byval ppTable as ip_interface_name_info ptr ptr, byval pdwCount as PDWORD, byval bOrder as WINBOOL, byval hHeap as HANDLE, byval dwFlags as DWORD) as DWORD
+declare function NhpAllocateAndGetInterfaceInfoFromStack(byval ppTable as IP_INTERFACE_NAME_INFO ptr ptr, byval pdwCount as PDWORD, byval bOrder as WINBOOL, byval hHeap as HANDLE, byval dwFlags as DWORD) as DWORD
 declare function GetBestInterface(byval dwDestAddr as IPAddr, byval pdwBestIfIndex as PDWORD) as DWORD
-declare function GetBestInterfaceEx(byval pDestAddr as sockaddr ptr, byval pdwBestIfIndex as PDWORD) as DWORD
+declare function GetBestInterfaceEx(byval pDestAddr as SOCKADDR ptr, byval pdwBestIfIndex as PDWORD) as DWORD
 declare function GetBestRoute(byval dwDestAddr as DWORD, byval dwSourceAddr as DWORD, byval pBestRoute as PMIB_IPFORWARDROW) as DWORD
 declare function GetExtendedTcpTable(byval pTcpTable as PVOID, byval pdwSize as PDWORD, byval bOrder as BOOL, byval ulAf as ULONG, byval TableClass as TCP_TABLE_CLASS, byval Reserved as ULONG) as DWORD
 declare function NotifyAddrChange(byval Handle as PHANDLE, byval overlapped as LPOVERLAPPED) as DWORD
@@ -66,6 +66,7 @@ declare function DeleteIPAddress(byval NTEContext as ULONG) as DWORD
 declare function GetNetworkParams(byval pFixedInfo as PFIXED_INFO, byval pOutBufLen as PULONG) as DWORD
 declare function GetAdaptersInfo(byval pAdapterInfo as PIP_ADAPTER_INFO, byval pOutBufLen as PULONG) as DWORD
 declare function GetAdapterOrderMap() as PIP_ADAPTER_ORDER_MAP
+declare function GetAdaptersAddresses(byval Family as ULONG, byval Flags as DWORD, byval Reserved as PVOID, byval pAdapterAddresses as PIP_ADAPTER_ADDRESSES, byval pOutBufLen as PULONG) as DWORD
 declare function GetPerAdapterInfo(byval IfIndex as ULONG, byval pPerAdapterInfo as PIP_PER_ADAPTER_INFO, byval pOutBufLen as PULONG) as DWORD
 declare function IpReleaseAddress(byval AdapterInfo as PIP_ADAPTER_INDEX_MAP) as DWORD
 declare function IpRenewAddress(byval AdapterInfo as PIP_ADAPTER_INDEX_MAP) as DWORD
@@ -78,10 +79,10 @@ declare function DisableMediaSense(byval pHandle as HANDLE ptr, byval pOverLappe
 declare function RestoreMediaSense(byval pOverlapped as OVERLAPPED ptr, byval lpdwEnableCount as LPDWORD) as DWORD
 declare function GetIpErrorString(byval ErrorCode as IP_STATUS, byval Buffer as PWCHAR, byval Size as PDWORD) as DWORD
 declare function GetExtendedUdpTable(byval pUdpTable as PVOID, byval pdwSize as PDWORD, byval bOrder as WINBOOL, byval ulAf as ULONG, byval TableClass as UDP_TABLE_CLASS, byval Reserved as ULONG) as DWORD
-declare function GetOwnerModuleFromTcp6Entry(byval pTcpEntry as PMIB_TCP6ROW_OWNER_MODULE, byval Class_ as TCPIP_OWNER_MODULE_INFO_CLASS, byval Buffer as PVOID, byval pdwSize as PDWORD) as DWORD
-declare function GetOwnerModuleFromTcpEntry(byval pTcpEntry as PMIB_TCPROW_OWNER_MODULE, byval Class_ as TCPIP_OWNER_MODULE_INFO_CLASS, byval Buffer as PVOID, byval pdwSize as PDWORD) as DWORD
-declare function GetOwnerModuleFromUdp6Entry(byval pUdpEntry as PMIB_UDP6ROW_OWNER_MODULE, byval Class_ as TCPIP_OWNER_MODULE_INFO_CLASS, byval Buffer as PVOID, byval pdwSize as PDWORD) as DWORD
-declare function GetOwnerModuleFromUdpEntry(byval pUdpEntry as PMIB_UDPROW_OWNER_MODULE, byval Class_ as TCPIP_OWNER_MODULE_INFO_CLASS, byval Buffer as PVOID, byval pdwSize as PDWORD) as DWORD
+declare function GetOwnerModuleFromTcp6Entry(byval pTcpEntry as PMIB_TCP6ROW_OWNER_MODULE, byval Class as TCPIP_OWNER_MODULE_INFO_CLASS, byval Buffer as PVOID, byval pdwSize as PDWORD) as DWORD
+declare function GetOwnerModuleFromTcpEntry(byval pTcpEntry as PMIB_TCPROW_OWNER_MODULE, byval Class as TCPIP_OWNER_MODULE_INFO_CLASS, byval Buffer as PVOID, byval pdwSize as PDWORD) as DWORD
+declare function GetOwnerModuleFromUdp6Entry(byval pUdpEntry as PMIB_UDP6ROW_OWNER_MODULE, byval Class as TCPIP_OWNER_MODULE_INFO_CLASS, byval Buffer as PVOID, byval pdwSize as PDWORD) as DWORD
+declare function GetOwnerModuleFromUdpEntry(byval pUdpEntry as PMIB_UDPROW_OWNER_MODULE, byval Class as TCPIP_OWNER_MODULE_INFO_CLASS, byval Buffer as PVOID, byval pdwSize as PDWORD) as DWORD
 
 #if _WIN32_WINNT = &h0502
 	declare function CancelSecurityHealthChangeNotify(byval notifyOverlapped as LPOVERLAPPED) as WINBOOL
@@ -96,7 +97,7 @@ declare function GetOwnerModuleFromUdpEntry(byval pUdpEntry as PMIB_UDPROW_OWNER
 
 	type NET_ADDRESS_FORMAT as _NET_ADDRESS_FORMAT
 
-	type ___NET_ADDRESS_INFO_NamedAddress
+	type _NET_ADDRESS_INFO_NamedAddress
 		Address as wstring * 256
 		Port as wstring * 6
 	end type
@@ -105,10 +106,10 @@ declare function GetOwnerModuleFromUdpEntry(byval pUdpEntry as PMIB_UDPROW_OWNER
 		Format as NET_ADDRESS_FORMAT
 
 		union
-			NamedAddress as ___NET_ADDRESS_INFO_NamedAddress
-			Ipv4Address as sockaddr_in
-			Ipv6Address as sockaddr_in6
-			IpAddress as sockaddr
+			NamedAddress as _NET_ADDRESS_INFO_NamedAddress
+			Ipv4Address as SOCKADDR_IN
+			Ipv6Address as SOCKADDR_IN6
+			IpAddress as SOCKADDR
 		end union
 	end type
 
@@ -124,7 +125,7 @@ declare function GetOwnerModuleFromUdpEntry(byval pUdpEntry as PMIB_UDPROW_OWNER
 	declare function GetTcpTable2(byval TcpTable as PMIB_TCPTABLE2, byval SizePointer as PULONG, byval Order as WINBOOL) as ULONG
 	declare function GetUdp6Table(byval Udp6Table as PMIB_UDP6TABLE, byval SizePointer as PULONG, byval Order as WINBOOL) as ULONG
 	declare function NotifySecurityHealthChange(byval pHandle as PHANDLE, byval pOverLapped as LPOVERLAPPED, byval SecurityHealthFlags as PULONG) as DWORD
-	declare function ResolveNeighbor(byval NetworkAddress as sockaddr ptr, byval PhysicalAddress as PVOID, byval PhysicalAddressLength as PULONG) as ULONG
+	declare function ResolveNeighbor(byval NetworkAddress as SOCKADDR ptr, byval PhysicalAddress as PVOID, byval PhysicalAddressLength as PULONG) as ULONG
 	declare function SetIpStatisticsEx(byval pIpStats as PMIB_IPSTATS, byval Family as ULONG) as DWORD
 #endif
 

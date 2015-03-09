@@ -4,16 +4,10 @@
 
 #inclib "ole32"
 
-'' The following symbols have been renamed:
-''     #define LRESULT => LRESULT_
-''     #define HGLOBAL => HGLOBAL_
-
 extern "Windows"
 
 #define _INC_OLE
 #define OLE_LPCSTR LPCSTR
-#define LRESULT_ LONG_PTR
-#define HGLOBAL_ HANDLE
 #define OT_LINK __MSABI_LONG(1)
 #define OT_EMBEDDED __MSABI_LONG(2)
 #define OT_STATIC __MSABI_LONG(3)
@@ -171,7 +165,7 @@ type _OLEOBJECTVTBL
 	SetBounds as function(byval as LPOLEOBJECT, byval as const RECT ptr) as OLESTATUS
 	EnumFormats as function(byval as LPOLEOBJECT, byval as OLECLIPFORMAT) as OLECLIPFORMAT
 	SetColorScheme as function(byval as LPOLEOBJECT, byval as const LOGPALETTE ptr) as OLESTATUS
-	Delete as function(byval as LPOLEOBJECT) as OLESTATUS
+	Delete_ as function(byval as LPOLEOBJECT) as OLESTATUS
 	SetHostNames as function(byval as LPOLEOBJECT, byval as LPCSTR, byval as LPCSTR) as OLESTATUS
 	SaveToStream as function(byval as LPOLEOBJECT, byval as LPOLESTREAM) as OLESTATUS
 	Clone as function(byval as LPOLEOBJECT, byval as LPOLECLIENT, byval as LHCLIENTDOC, byval as LPCSTR, byval as LPOLEOBJECT ptr) as OLESTATUS

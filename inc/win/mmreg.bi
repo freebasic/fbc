@@ -1,18 +1,10 @@
 #pragma once
 
-'' The following symbols have been renamed:
-''     #define KSDATAFORMAT_SUBTYPE_PCM => KSDATAFORMAT_SUBTYPE_PCM_
-''     #define KSDATAFORMAT_SUBTYPE_IEEE_FLOAT => KSDATAFORMAT_SUBTYPE_IEEE_FLOAT_
-''     struct tag_s_RIFFWAVE_INST => tag_s_RIFFWAVE_INST_
-
 #include once "mmsystem.bi"
 
 extern "C"
 
 #define _INC_MMREG 158
-
-extern KSDATAFORMAT_SUBTYPE_PCM as const GUID
-
 #define MM_MICROSOFT 1
 #define MM_CREATIVE 2
 #define MM_MEDIAVISION 3
@@ -1742,14 +1734,13 @@ extern KSDATAFORMAT_SUBTYPE_PCM as const GUID
 #define WAVE_FORMAT_DTS2 &h2001
 #define WAVE_FORMAT_EXTENSIBLE &hFFFE
 #define WAVE_FORMAT_DEVELOPMENT &hFFFF
-#define KSDATAFORMAT_SUBTYPE_PCM_ DEFINE_GUIDNAMED(KSDATAFORMAT_SUBTYPE_PCM)
 
+extern KSDATAFORMAT_SUBTYPE_PCM as const GUID
 extern KSDATAFORMAT_SUBTYPE_IEEE_FLOAT as const GUID
 
-#define KSDATAFORMAT_SUBTYPE_IEEE_FLOAT_ DEFINE_GUIDNAMED(KSDATAFORMAT_SUBTYPE_IEEE_FLOAT)
 #define _WAVEFORMATEXTENSIBLE_
 
-union __Samples field = 1
+union WAVEFORMATEXTENSIBLE_Samples field = 1
 	wValidBitsPerSample as WORD
 	wSamplesPerBlock as WORD
 	wReserved as WORD
@@ -1757,7 +1748,7 @@ end union
 
 type WAVEFORMATEXTENSIBLE field = 1
 	Format as WAVEFORMATEX
-	Samples as __Samples
+	Samples as WAVEFORMATEXTENSIBLE_Samples
 	dwChannelMask as DWORD
 	SubFormat as GUID
 end type
@@ -2259,7 +2250,7 @@ type tag_s_RIFFWAVE_inst field = 1
 	bHighVelocity as UBYTE
 end type
 
-type s_RIFFWAVE_inst as tag_s_RIFFWAVE_INST_
+type s_RIFFWAVE_inst as tag_s_RIFFWAVE_INST
 
 #define RIFFCPPO mmioFOURCC(asc("C"), asc("P"), asc("P"), asc("O"))
 #define RIFFCPPO_objr mmioFOURCC(asc("o"), asc("b"), asc("j"), asc("r"))

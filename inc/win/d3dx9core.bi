@@ -5,14 +5,6 @@
 
 extern "Windows"
 
-type ID3DXSprite as ID3DXSprite_
-type ID3DXBufferVtbl as ID3DXBufferVtbl_
-type ID3DXFontVtbl as ID3DXFontVtbl_
-type ID3DXLineVtbl as ID3DXLineVtbl_
-type ID3DXRenderToEnvMapVtbl as ID3DXRenderToEnvMapVtbl_
-type ID3DXRenderToSurfaceVtbl as ID3DXRenderToSurfaceVtbl_
-type ID3DXSpriteVtbl as ID3DXSpriteVtbl_
-
 #define __WINE_D3DX9CORE_H
 #define D3DX_VERSION &h0902
 #define D3DX_SDK_VERSION 36
@@ -38,14 +30,19 @@ type LPD3DXFONT as ID3DXFont ptr
 type LPD3DXLINE as ID3DXLine ptr
 type LPD3DXRenderToEnvMap as ID3DXRenderToEnvMap ptr
 type LPD3DXRENDERTOSURFACE as ID3DXRenderToSurface ptr
+
+type ID3DXSprite as ID3DXSprite_
+
 type LPD3DXSPRITE as ID3DXSprite ptr
+
+type ID3DXBufferVtbl as ID3DXBufferVtbl_
 
 type ID3DXBuffer
 	lpVtbl as ID3DXBufferVtbl ptr
 end type
 
 type ID3DXBufferVtbl_
-	QueryInterface as function(byval This as ID3DXBuffer ptr, byval riid as const IID const ptr, byval out_ as any ptr ptr) as HRESULT
+	QueryInterface as function(byval This as ID3DXBuffer ptr, byval riid as const IID const ptr, byval out as any ptr ptr) as HRESULT
 	AddRef as function(byval This as ID3DXBuffer ptr) as ULONG
 	Release as function(byval This as ID3DXBuffer ptr) as ULONG
 	GetBufferPointer as function(byval This as ID3DXBuffer ptr) as any ptr
@@ -98,12 +95,14 @@ type LPD3DXFONT_DESCW as _D3DXFONT_DESCW ptr
 	type LPD3DXFONT_DESC as LPD3DXFONT_DESCA
 #endif
 
+type ID3DXFontVtbl as ID3DXFontVtbl_
+
 type ID3DXFont
 	lpVtbl as ID3DXFontVtbl ptr
 end type
 
 type ID3DXFontVtbl_
-	QueryInterface as function(byval This as ID3DXFont ptr, byval riid as const IID const ptr, byval out_ as any ptr ptr) as HRESULT
+	QueryInterface as function(byval This as ID3DXFont ptr, byval riid as const IID const ptr, byval out as any ptr ptr) as HRESULT
 	AddRef as function(byval This as ID3DXFont ptr) as ULONG
 	Release as function(byval This as ID3DXFont ptr) as ULONG
 	GetDevice as function(byval This as ID3DXFont ptr, byval device as IDirect3DDevice9 ptr ptr) as HRESULT
@@ -115,10 +114,10 @@ type ID3DXFontVtbl_
 	GetGlyphData as function(byval This as ID3DXFont ptr, byval glyph as UINT, byval texture as IDirect3DTexture9 ptr ptr, byval blackbox as RECT ptr, byval cellinc as POINT ptr) as HRESULT
 	PreloadCharacters as function(byval This as ID3DXFont ptr, byval first as UINT, byval last as UINT) as HRESULT
 	PreloadGlyphs as function(byval This as ID3DXFont ptr, byval first as UINT, byval last as UINT) as HRESULT
-	PreloadTextA as function(byval This as ID3DXFont ptr, byval string_ as const zstring ptr, byval count as INT_) as HRESULT
-	PreloadTextW as function(byval This as ID3DXFont ptr, byval string_ as const wstring ptr, byval count as INT_) as HRESULT
-	DrawTextA as function(byval This as ID3DXFont ptr, byval sprite as ID3DXSprite ptr, byval string_ as const zstring ptr, byval count as INT_, byval rect as RECT ptr, byval format as DWORD, byval color_ as D3DCOLOR) as INT_
-	DrawTextW as function(byval This as ID3DXFont ptr, byval sprite as ID3DXSprite ptr, byval string_ as const wstring ptr, byval count as INT_, byval rect as RECT ptr, byval format as DWORD, byval color_ as D3DCOLOR) as INT_
+	PreloadTextA as function(byval This as ID3DXFont ptr, byval string as const zstring ptr, byval count as INT_) as HRESULT
+	PreloadTextW as function(byval This as ID3DXFont ptr, byval string as const wstring ptr, byval count as INT_) as HRESULT
+	DrawTextA as function(byval This as ID3DXFont ptr, byval sprite as ID3DXSprite ptr, byval string as const zstring ptr, byval count as INT_, byval rect as RECT ptr, byval format as DWORD, byval color as D3DCOLOR) as INT_
+	DrawTextW as function(byval This as ID3DXFont ptr, byval sprite as ID3DXSprite ptr, byval string as const wstring ptr, byval count as INT_, byval rect as RECT ptr, byval format as DWORD, byval color as D3DCOLOR) as INT_
 	OnLostDevice as function(byval This as ID3DXFont ptr) as HRESULT
 	OnResetDevice as function(byval This as ID3DXFont ptr) as HRESULT
 end type
@@ -154,23 +153,25 @@ end type
 	#define ID3DXFont_PreloadText ID3DXFont_PreloadTextA
 #endif
 
+type ID3DXLineVtbl as ID3DXLineVtbl_
+
 type ID3DXLine
 	lpVtbl as ID3DXLineVtbl ptr
 end type
 
 type ID3DXLineVtbl_
-	QueryInterface as function(byval This as ID3DXLine ptr, byval riid as const IID const ptr, byval out_ as any ptr ptr) as HRESULT
+	QueryInterface as function(byval This as ID3DXLine ptr, byval riid as const IID const ptr, byval out as any ptr ptr) as HRESULT
 	AddRef as function(byval This as ID3DXLine ptr) as ULONG
 	Release as function(byval This as ID3DXLine ptr) as ULONG
 	GetDevice as function(byval This as ID3DXLine ptr, byval device as IDirect3DDevice9 ptr ptr) as HRESULT
 	Begin as function(byval This as ID3DXLine ptr) as HRESULT
-	Draw as function(byval This as ID3DXLine ptr, byval vertexlist as const D3DXVECTOR2 ptr, byval vertexlistcount as DWORD, byval color_ as D3DCOLOR) as HRESULT
-	DrawTransform as function(byval This as ID3DXLine ptr, byval vertexlist as const D3DXVECTOR3 ptr, byval vertexlistcount as DWORD, byval transform as const D3DXMATRIX ptr, byval color_ as D3DCOLOR) as HRESULT
+	Draw as function(byval This as ID3DXLine ptr, byval vertexlist as const D3DXVECTOR2 ptr, byval vertexlistcount as DWORD, byval color as D3DCOLOR) as HRESULT
+	DrawTransform as function(byval This as ID3DXLine ptr, byval vertexlist as const D3DXVECTOR3 ptr, byval vertexlistcount as DWORD, byval transform as const D3DXMATRIX ptr, byval color as D3DCOLOR) as HRESULT
 	SetPattern as function(byval This as ID3DXLine ptr, byval pattern as DWORD) as HRESULT
 	GetPattern as function(byval This as ID3DXLine ptr) as DWORD
 	SetPatternScale as function(byval This as ID3DXLine ptr, byval scale as FLOAT) as HRESULT
 	GetPatternScale as function(byval This as ID3DXLine ptr) as FLOAT
-	SetWidth as function(byval This as ID3DXLine ptr, byval width_ as FLOAT) as HRESULT
+	SetWidth as function(byval This as ID3DXLine ptr, byval width as FLOAT) as HRESULT
 	GetWidth as function(byval This as ID3DXLine ptr) as FLOAT
 	SetAntialias as function(byval This as ID3DXLine ptr, byval antialias as WINBOOL) as HRESULT
 	GetAntialias as function(byval This as ID3DXLine ptr) as WINBOOL
@@ -212,12 +213,14 @@ end type
 
 type D3DXRTE_DESC as _D3DXRTE_DESC
 
+type ID3DXRenderToEnvMapVtbl as ID3DXRenderToEnvMapVtbl_
+
 type ID3DXRenderToEnvMap
 	lpVtbl as ID3DXRenderToEnvMapVtbl ptr
 end type
 
 type ID3DXRenderToEnvMapVtbl_
-	QueryInterface as function(byval This as ID3DXRenderToEnvMap ptr, byval riid as const IID const ptr, byval out_ as any ptr ptr) as HRESULT
+	QueryInterface as function(byval This as ID3DXRenderToEnvMap ptr, byval riid as const IID const ptr, byval out as any ptr ptr) as HRESULT
 	AddRef as function(byval This as ID3DXRenderToEnvMap ptr) as ULONG
 	Release as function(byval This as ID3DXRenderToEnvMap ptr) as ULONG
 	GetDevice as function(byval This as ID3DXRenderToEnvMap ptr, byval device as IDirect3DDevice9 ptr ptr) as HRESULT
@@ -255,12 +258,14 @@ end type
 
 type D3DXRTS_DESC as _D3DXRTS_DESC
 
+type ID3DXRenderToSurfaceVtbl as ID3DXRenderToSurfaceVtbl_
+
 type ID3DXRenderToSurface
 	lpVtbl as ID3DXRenderToSurfaceVtbl ptr
 end type
 
 type ID3DXRenderToSurfaceVtbl_
-	QueryInterface as function(byval This as ID3DXRenderToSurface ptr, byval riid as const IID const ptr, byval out_ as any ptr ptr) as HRESULT
+	QueryInterface as function(byval This as ID3DXRenderToSurface ptr, byval riid as const IID const ptr, byval out as any ptr ptr) as HRESULT
 	AddRef as function(byval This as ID3DXRenderToSurface ptr) as ULONG
 	Release as function(byval This as ID3DXRenderToSurface ptr) as ULONG
 	GetDevice as function(byval This as ID3DXRenderToSurface ptr, byval device as IDirect3DDevice9 ptr ptr) as HRESULT
@@ -281,21 +286,23 @@ end type
 #define ID3DXRenderToSurface_OnLostDevice(p) (p)->lpVtbl->OnLostDevice(p)
 #define ID3DXRenderToSurface_OnResetDevice(p) (p)->lpVtbl->OnResetDevice(p)
 
+type ID3DXSpriteVtbl as ID3DXSpriteVtbl_
+
 type ID3DXSprite_
 	lpVtbl as ID3DXSpriteVtbl ptr
 end type
 
 type ID3DXSpriteVtbl_
-	QueryInterface as function(byval This as ID3DXSprite ptr, byval riid as const IID const ptr, byval object_ as any ptr ptr) as HRESULT
+	QueryInterface as function(byval This as ID3DXSprite ptr, byval riid as const IID const ptr, byval object as any ptr ptr) as HRESULT
 	AddRef as function(byval This as ID3DXSprite ptr) as ULONG
 	Release as function(byval This as ID3DXSprite ptr) as ULONG
 	GetDevice as function(byval This as ID3DXSprite ptr, byval device as IDirect3DDevice9 ptr ptr) as HRESULT
 	GetTransform as function(byval This as ID3DXSprite ptr, byval transform as D3DXMATRIX ptr) as HRESULT
 	SetTransform as function(byval This as ID3DXSprite ptr, byval transform as const D3DXMATRIX ptr) as HRESULT
-	SetWorldViewRH as function(byval This as ID3DXSprite ptr, byval world as const D3DXMATRIX ptr, byval view_ as const D3DXMATRIX ptr) as HRESULT
-	SetWorldViewLH as function(byval This as ID3DXSprite ptr, byval world as const D3DXMATRIX ptr, byval view_ as const D3DXMATRIX ptr) as HRESULT
+	SetWorldViewRH as function(byval This as ID3DXSprite ptr, byval world as const D3DXMATRIX ptr, byval view as const D3DXMATRIX ptr) as HRESULT
+	SetWorldViewLH as function(byval This as ID3DXSprite ptr, byval world as const D3DXMATRIX ptr, byval view as const D3DXMATRIX ptr) as HRESULT
 	Begin as function(byval This as ID3DXSprite ptr, byval flags as DWORD) as HRESULT
-	Draw as function(byval This as ID3DXSprite ptr, byval texture as IDirect3DTexture9 ptr, byval rect as const RECT ptr, byval center as const D3DXVECTOR3 ptr, byval position as const D3DXVECTOR3 ptr, byval color_ as D3DCOLOR) as HRESULT
+	Draw as function(byval This as ID3DXSprite ptr, byval texture as IDirect3DTexture9 ptr, byval rect as const RECT ptr, byval center as const D3DXVECTOR3 ptr, byval position as const D3DXVECTOR3 ptr, byval color as D3DCOLOR) as HRESULT
 	Flush as function(byval This as ID3DXSprite ptr) as HRESULT
 	as function(byval This as ID3DXSprite ptr) as HRESULT End
 	OnLostDevice as function(byval This as ID3DXSprite ptr) as HRESULT
@@ -318,8 +325,8 @@ end type
 #define ID3DXSprite_OnResetDevice(p) (p)->lpVtbl->OnResetDevice(p)
 
 declare function D3DXCheckVersion(byval d3dsdkvers as UINT, byval d3dxsdkvers as UINT) as WINBOOL
-declare function D3DXCreateFontA(byval device as IDirect3DDevice9 ptr, byval height as INT_, byval width_ as UINT, byval weight as UINT, byval miplevels as UINT, byval italic as WINBOOL, byval charset as DWORD, byval precision as DWORD, byval quality as DWORD, byval pitchandfamily as DWORD, byval facename as const zstring ptr, byval font as ID3DXFont ptr ptr) as HRESULT
-declare function D3DXCreateFontW(byval device as IDirect3DDevice9 ptr, byval height as INT_, byval width_ as UINT, byval weight as UINT, byval miplevels as UINT, byval italic as WINBOOL, byval charset as DWORD, byval precision as DWORD, byval quality as DWORD, byval pitchandfamily as DWORD, byval facename as const wstring ptr, byval font as ID3DXFont ptr ptr) as HRESULT
+declare function D3DXCreateFontA(byval device as IDirect3DDevice9 ptr, byval height as INT_, byval width as UINT, byval weight as UINT, byval miplevels as UINT, byval italic as WINBOOL, byval charset as DWORD, byval precision as DWORD, byval quality as DWORD, byval pitchandfamily as DWORD, byval facename as const zstring ptr, byval font as ID3DXFont ptr ptr) as HRESULT
+declare function D3DXCreateFontW(byval device as IDirect3DDevice9 ptr, byval height as INT_, byval width as UINT, byval weight as UINT, byval miplevels as UINT, byval italic as WINBOOL, byval charset as DWORD, byval precision as DWORD, byval quality as DWORD, byval pitchandfamily as DWORD, byval facename as const wstring ptr, byval font as ID3DXFont ptr ptr) as HRESULT
 
 #ifdef UNICODE
 	#define D3DXCreateFont D3DXCreateFontW
@@ -336,9 +343,9 @@ declare function D3DXCreateFontIndirectW(byval device as IDirect3DDevice9 ptr, b
 	#define D3DXCreateFontIndirect D3DXCreateFontIndirectA
 #endif
 
-declare function D3DXCreateLine(byval device as IDirect3DDevice9 ptr, byval line_ as ID3DXLine ptr ptr) as HRESULT
+declare function D3DXCreateLine(byval device as IDirect3DDevice9 ptr, byval line as ID3DXLine ptr ptr) as HRESULT
 declare function D3DXCreateRenderToEnvMap(byval device as IDirect3DDevice9 ptr, byval size as UINT, byval miplevels as UINT, byval format as D3DFORMAT, byval stencil as WINBOOL, byval stencil_format as D3DFORMAT, byval rtem as ID3DXRenderToEnvMap ptr ptr) as HRESULT
-declare function D3DXCreateRenderToSurface(byval device as IDirect3DDevice9 ptr, byval width_ as UINT, byval height as UINT, byval format as D3DFORMAT, byval stencil as WINBOOL, byval stencil_format as D3DFORMAT, byval rts as ID3DXRenderToSurface ptr ptr) as HRESULT
+declare function D3DXCreateRenderToSurface(byval device as IDirect3DDevice9 ptr, byval width as UINT, byval height as UINT, byval format as D3DFORMAT, byval stencil as WINBOOL, byval stencil_format as D3DFORMAT, byval rts as ID3DXRenderToSurface ptr ptr) as HRESULT
 declare function D3DXCreateSprite(byval device as IDirect3DDevice9 ptr, byval sprite as ID3DXSprite ptr ptr) as HRESULT
 declare function D3DXDebugMute(byval mute as WINBOOL) as WINBOOL
 declare function D3DXGetDriverLevel(byval device as IDirect3DDevice9 ptr) as UINT

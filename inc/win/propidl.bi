@@ -1,11 +1,5 @@
 #pragma once
 
-'' The following symbols have been renamed:
-''     inside struct IPropertySetStorageVtbl:
-''         field Delete => Delete__
-''     inside struct tagSERIALIZEDPROPERTYVALUE:
-''         field rgb => rgb_
-
 #include once "rpc.bi"
 #include once "rpcndr.bi"
 #include once "windows.bi"
@@ -16,11 +10,6 @@
 #include once "winapifamily.bi"
 
 extern "Windows"
-
-type IPropertyStorage as IPropertyStorage_
-type IPropertySetStorage as IPropertySetStorage_
-type IEnumSTATPROPSTG as IEnumSTATPROPSTG_
-type IEnumSTATPROPSETSTG as IEnumSTATPROPSETSTG_
 
 #define __propidl_h__
 #define __IPropertyStorage_FWD_DEFINED__
@@ -42,6 +31,8 @@ type LPVERSIONEDSTREAM as tagVersionedStream ptr
 #define PROPSETFLAG_UNBUFFERED 4
 #define PROPSETFLAG_CASE_SENSITIVE 8
 #define PROPSET_BEHAVIOR_CASE_SENSITIVE 1
+
+type PROPVARIANT as tagPROPVARIANT
 
 type tagCAC
 	cElems as ULONG
@@ -407,6 +398,9 @@ type STATPROPSETSTG as tagSTATPROPSETSTG
 
 extern IID_IPropertyStorage as const GUID
 
+type IEnumSTATPROPSTG as IEnumSTATPROPSTG_
+type IPropertyStorage as IPropertyStorage_
+
 type IPropertyStorageVtbl
 	QueryInterface as function(byval This as IPropertyStorage ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
 	AddRef as function(byval This as IPropertyStorage ptr) as ULONG
@@ -456,9 +450,13 @@ declare sub IPropertyStorage_Stat_Stub(byval This as IRpcStubBuffer ptr, byval p
 
 #define __IPropertySetStorage_INTERFACE_DEFINED__
 
+type IPropertySetStorage as IPropertySetStorage_
+
 type LPPROPERTYSETSTORAGE as IPropertySetStorage ptr
 
 extern IID_IPropertySetStorage as const GUID
+
+type IEnumSTATPROPSETSTG as IEnumSTATPROPSETSTG_
 
 type IPropertySetStorageVtbl
 	QueryInterface as function(byval This as IPropertySetStorage ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
@@ -466,7 +464,7 @@ type IPropertySetStorageVtbl
 	Release as function(byval This as IPropertySetStorage ptr) as ULONG
 	Create as function(byval This as IPropertySetStorage ptr, byval rfmtid as const IID const ptr, byval pclsid as const CLSID ptr, byval grfFlags as DWORD, byval grfMode as DWORD, byval ppprstg as IPropertyStorage ptr ptr) as HRESULT
 	Open as function(byval This as IPropertySetStorage ptr, byval rfmtid as const IID const ptr, byval grfMode as DWORD, byval ppprstg as IPropertyStorage ptr ptr) as HRESULT
-	Delete__ as function(byval This as IPropertySetStorage ptr, byval rfmtid as const IID const ptr) as HRESULT
+	Delete_ as function(byval This as IPropertySetStorage ptr, byval rfmtid as const IID const ptr) as HRESULT
 	as function(byval This as IPropertySetStorage ptr, byval ppenum as IEnumSTATPROPSETSTG ptr ptr) as HRESULT Enum
 end type
 
@@ -547,6 +545,10 @@ declare function IEnumSTATPROPSETSTG_Next_Stub(byval This as IEnumSTATPROPSETSTG
 
 type LPPROPERTYSTORAGE as IPropertyStorage ptr
 
+declare function PropVariantCopy(byval pvarDest as PROPVARIANT ptr, byval pvarSrc as const PROPVARIANT ptr) as HRESULT
+declare function PropVariantClear(byval pvar as PROPVARIANT ptr) as HRESULT
+declare function FreePropVariantArray(byval cVariants as ULONG, byval rgvars as PROPVARIANT ptr) as HRESULT
+
 #define _PROPVARIANTINIT_DEFINED_
 #define PropVariantInit(pvar) memset((pvar), 0, sizeof(PROPVARIANT))
 
@@ -569,9 +571,7 @@ end type
 type SERIALIZEDPROPERTYVALUE as tagSERIALIZEDPROPERTYVALUE
 
 declare function StgConvertVariantToProperty(byval pvar as const PROPVARIANT ptr, byval CodePage as USHORT, byval pprop as SERIALIZEDPROPERTYVALUE ptr, byval pcb as ULONG ptr, byval pid as PROPID, byval fReserved as BOOLEAN, byval pcIndirect as ULONG ptr) as SERIALIZEDPROPERTYVALUE ptr
-declare function LPSAFEARRAY_UserSize(byval as ULONG ptr, byval as ULONG, byval as LPSAFEARRAY ptr) as ULONG
-declare function LPSAFEARRAY_UserMarshal(byval as ULONG ptr, byval as ubyte ptr, byval as LPSAFEARRAY ptr) as ubyte ptr
-declare function LPSAFEARRAY_UserUnmarshal(byval as ULONG ptr, byval as ubyte ptr, byval as LPSAFEARRAY ptr) as ubyte ptr
-declare sub LPSAFEARRAY_UserFree(byval as ULONG ptr, byval as LPSAFEARRAY ptr)
 
 end extern
+
+#include once "ole-common.bi"

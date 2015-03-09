@@ -77,7 +77,7 @@ EXTERNVAR cgui_release_date as long
 #define CGUI_ADAPTIVE 0,CGUI_AUTOINDICATOR
 #define CGUI_FILLSCREEN 1,CGUI_AUTOINDICATOR
 
-declare function MkDialogue(byval width_ as long, byval height as long, byval label as const zstring ptr, byval attr as long) as long
+declare function MkDialogue(byval width as long, byval height as long, byval label as const zstring ptr, byval attr as long) as long
 
 #define CGUI_W_SIBLING (1 shl 0)
 #define CGUI_W_NOMOVE (1 shl 2)
@@ -93,12 +93,12 @@ declare function MkDialogue(byval width_ as long, byval height as long, byval la
 declare sub DisplayWin()
 declare sub CloseWin(byval dummy as any ptr)
 declare sub SetWindowPosition(byval x as long, byval y as long)
-declare sub GetWinInfo(byval id as long, byval x as long ptr, byval y as long ptr, byval width_ as long ptr, byval height as long ptr)
+declare sub GetWinInfo(byval id as long, byval x as long ptr, byval y as long ptr, byval width as long ptr, byval height as long ptr)
 declare sub DesktopImage(byval bmp as BITMAP ptr)
 declare function CurrentWindow() as long
 declare sub SetOperatingWindow(byval winid as long)
 declare function Req(byval winheader as const zstring ptr, byval format_text as const zstring ptr) as long
-declare function Request(byval title as const zstring ptr, byval options as long, byval width_ as long, byval format as const zstring ptr, ...) as long
+declare function Request(byval title as const zstring ptr, byval options as long, byval width as long, byval format as const zstring ptr, ...) as long
 declare sub RedrawScreen()
 declare sub ScrMode(byval CallBack as sub())
 declare function MkProgressWindow(byval wlabel as const zstring ptr, byval blabel as const zstring ptr, byval w as long) as long
@@ -107,37 +107,37 @@ declare function MkProgressWindow(byval wlabel as const zstring ptr, byval blabe
 
 EXTERNVAR cgui_desktop_id as long
 
-declare function MkMenu(byval text as const zstring ptr, byval CallBack as sub(byval as any ptr), byval data_ as any ptr) as long
+declare function MkMenu(byval text as const zstring ptr, byval CallBack as sub(byval as any ptr), byval data as any ptr) as long
 declare function MakeMenuBar() as long
-declare function MkMenuBarItem(byval text as const zstring ptr, byval CallBack as sub(byval as any ptr), byval data_ as any ptr) as long
+declare function MkMenuBarItem(byval text as const zstring ptr, byval CallBack as sub(byval as any ptr), byval data as any ptr) as long
 declare sub EndMenuBar()
-declare function MkScratchMenu(byval id as long, byval CallBack as sub(byval as any ptr), byval data_ as any ptr) as long
-declare function MkSingleMenu(byval x as long, byval y as long, byval text as const zstring ptr, byval CallBack as sub(byval as any ptr), byval data_ as any ptr) as long
-declare function MkMenuItem(byval sub_ as long, byval text as const zstring ptr, byval shortcut as const zstring ptr, byval CallBack as sub(byval as any ptr), byval data_ as any ptr) as long
+declare function MkScratchMenu(byval id as long, byval CallBack as sub(byval as any ptr), byval data as any ptr) as long
+declare function MkSingleMenu(byval x as long, byval y as long, byval text as const zstring ptr, byval CallBack as sub(byval as any ptr), byval data as any ptr) as long
+declare function MkMenuItem(byval sub as long, byval text as const zstring ptr, byval shortcut as const zstring ptr, byval CallBack as sub(byval as any ptr), byval data as any ptr) as long
 declare function MkMenuRadio(byval selvar as long ptr, byval n as long, ...) as long
 declare function MkMenuCheck(byval checkvar as long ptr, byval text as const zstring ptr) as long
-declare function HookMenuClose(byval CloseHook as sub(byval as any ptr), byval data_ as any ptr) as long
+declare function HookMenuClose(byval CloseHook as sub(byval as any ptr), byval data as any ptr) as long
 declare function MkGroove() as long
-declare function AddButton(byval x as long, byval y as long, byval label as const zstring ptr, byval CallBack as sub(byval data_ as any ptr), byval data_ as any ptr) as long
+declare function AddButton(byval x as long, byval y as long, byval label as const zstring ptr, byval CallBack as sub(byval data as any ptr), byval data as any ptr) as long
 declare function AddCheck(byval x as long, byval y as long, byval label as const zstring ptr, byval sel as long ptr) as long
 
 #define CGUI_R_HORIZONTAL 0
 #define CGUI_R_VERTICAL 1
 
 declare function AddFlip(byval x as long, byval y as long, byval label as const zstring ptr, byval strs as const zstring const ptr ptr, byval sel as long ptr) as long
-declare function AddDropDown(byval x as long, byval y as long, byval width_ as long, byval label as const zstring ptr, byval sel as long ptr, byval data_ as const any ptr, byval n as long, byval CallBack as sub(byval data_ as const any ptr, byval i as long, byval s as zstring ptr)) as long
-declare function AddDropDownS(byval x as long, byval y as long, byval width_ as long, byval label as const zstring ptr, byval sel as long ptr, byval strs as const zstring const ptr ptr, byval n as long) as long
+declare function AddDropDown(byval x as long, byval y as long, byval width as long, byval label as const zstring ptr, byval sel as long ptr, byval data as const any ptr, byval n as long, byval CallBack as sub(byval data as const any ptr, byval i as long, byval s as zstring ptr)) as long
+declare function AddDropDownS(byval x as long, byval y as long, byval width as long, byval label as const zstring ptr, byval sel as long ptr, byval strs as const zstring const ptr ptr, byval n as long) as long
 
 EXTERNVAR cgui_drop_down_list_row_spacing as long
 
-declare function MkRadioContainer(byval x as long, byval y as long, byval var_ as long ptr, byval direction as long) as long
-declare function AddRadioButton(byval name_ as const zstring ptr) as long
+declare function MkRadioContainer(byval x as long, byval y as long, byval var as long ptr, byval direction as long) as long
+declare function AddRadioButton(byval name as const zstring ptr) as long
 declare sub EndRadioContainer()
-declare function AddIcon(byval id as long, byval x as long, byval y as long, byval iconname as const zstring ptr, byval CallBack as sub(byval as any ptr), byval data_ as any ptr) as long
-declare function MkCanvas(byval x as long, byval y as long, byval width_ as long, byval height as long, byval CallBack as sub(byval bmp as BITMAP ptr, byval x as long, byval y as long, byval data_ as any ptr), byval data_ as any ptr) as long
+declare function AddIcon(byval id as long, byval x as long, byval y as long, byval iconname as const zstring ptr, byval CallBack as sub(byval as any ptr), byval data as any ptr) as long
+declare function MkCanvas(byval x as long, byval y as long, byval width as long, byval height as long, byval CallBack as sub(byval bmp as BITMAP ptr, byval x as long, byval y as long, byval data as any ptr), byval data as any ptr) as long
 declare function GetRulerTabList(byval id as long, byval n as long ptr) as long ptr
 declare function FlipRulerTab(byval id as long, byval x as long) as long
-declare function AddTabRuler(byval x as long, byval y as long, byval width_ as long, byval height as long, byval dx as long, byval options as long, byval CallBack as sub(byval data_ as any ptr, byval x as long, byval tabs as long ptr, byval n as long), byval data_ as any ptr) as long
+declare function AddTabRuler(byval x as long, byval y as long, byval width as long, byval height as long, byval dx as long, byval options as long, byval CallBack as sub(byval data as any ptr, byval x as long, byval tabs as long ptr, byval n as long), byval data as any ptr) as long
 
 #define CGUI_TR_SHOWPOS 1
 
@@ -150,12 +150,12 @@ declare function AddProgressBar(byval x as long, byval y as long, byval w as lon
 #define CGUI_SL_STYLE2 8
 #define CGUI_SL_STYLE3 &h20
 
-declare function AddSlider(byval x as long, byval y as long, byval length as long, byval ctrl as long ptr, byval start as long, byval end_ as long, byval option_ as long, byval id as long) as long
-declare function AddSliderFloat(byval x as long, byval y as long, byval length as long, byval ctrl as single ptr, byval start as single, byval end_ as single, byval ndecimals as long, byval option_ as long, byval id as long) as long
-declare function HookSpinButtons(byval id as long, byval var_ as long ptr, byval delta1 as long, byval delta2 as long, byval minv as long, byval maxv as long) as long
+declare function AddSlider(byval x as long, byval y as long, byval length as long, byval ctrl as long ptr, byval start as long, byval end as long, byval option as long, byval id as long) as long
+declare function AddSliderFloat(byval x as long, byval y as long, byval length as long, byval ctrl as single ptr, byval start as single, byval end as single, byval ndecimals as long, byval option as long, byval id as long) as long
+declare function HookSpinButtons(byval id as long, byval var as long ptr, byval delta1 as long, byval delta2 as long, byval minv as long, byval maxv as long) as long
 declare function AddTag(byval x as long, byval y as long, byval tag as const zstring ptr) as long
-declare function AddStatusField(byval x as long, byval y as long, byval width_ as long, byval FormatFunc as sub(byval data_ as any ptr, byval string_ as zstring ptr), byval data_ as any ptr) as long
-declare function AddTextBox(byval x as long, byval y as long, byval text as const zstring ptr, byval width_ as long, byval nrows as long, byval option_ as long) as long
+declare function AddStatusField(byval x as long, byval y as long, byval width as long, byval FormatFunc as sub(byval data as any ptr, byval string as zstring ptr), byval data as any ptr) as long
+declare function AddTextBox(byval x as long, byval y as long, byval text as const zstring ptr, byval width as long, byval nrows as long, byval option as long) as long
 declare sub TextboxHighlighting(byval id as long, byval bgcolor as long, byval textcolor as long, byval line_nr as long)
 declare sub TextboxScrollDownOneLine(byval id as long)
 declare function TextboxGetHighlightedText(byval id as long) as const zstring ptr
@@ -170,7 +170,7 @@ declare function TextboxGetHighlightedText(byval id as long) as const zstring pt
 #define CGUI_TB_FOCUS_END &h01000000
 
 declare function UpdateTextBoxText(byval id as long, byval s as const zstring ptr) as long
-declare function AddEditBox(byval x as long, byval y as long, byval width_ as long, byval label as const zstring ptr, byval format as long, byval string_buffer_size as long, byval data_ as any ptr) as long
+declare function AddEditBox(byval x as long, byval y as long, byval width as long, byval label as const zstring ptr, byval format as long, byval string_buffer_size as long, byval data as any ptr) as long
 
 #define CGUI_TERMINATE_EDIT 999
 
@@ -216,16 +216,16 @@ declare function InsertPoint(byval id as long) as long
 #define CGUI_IMAGE_RLE_SPRITE 2
 #define CGUI_IMAGE_CMP_SPRITE 3
 
-declare function RegisterImage(byval data_ as any ptr, byval imagename as const zstring ptr, byval type_ as long, byval id as long) as long
-declare function GetRegisteredImage(byval name_ as const zstring ptr, byval type_ as long ptr, byval id as long) as const any ptr
+declare function RegisterImage(byval data as any ptr, byval imagename as const zstring ptr, byval type as long, byval id as long) as long
+declare function GetRegisteredImage(byval name as const zstring ptr, byval type as long ptr, byval id as long) as const any ptr
 
 #define CGUI_LEFT_MOUSE 1
 #define CGUI_RIGHT_MOUSE 2
 
-declare sub SetObjectSlidable(byval id as long, byval Slider as function(byval x as long, byval y as long, byval src as any ptr, byval id as long, byval reason as long) as long, byval buttons as long, byval data_ as any ptr)
-declare sub SetObjectDouble(byval id as long, byval DoubleCall as sub(byval as any ptr), byval data_ as any ptr, byval button as long)
-declare sub SetObjectGrippable(byval id as long, byval Grip as function(byval src as any ptr, byval id as long, byval reason as long) as any ptr, byval flags as long, byval buttons as long, byval data_ as any ptr)
-declare sub SetObjectDroppable(byval id as long, byval Drop as function(byval dest as any ptr, byval id as long, byval src as any ptr, byval reason as long, byval flags as long) as long, byval flags as long, byval data_ as any ptr)
+declare sub SetObjectSlidable(byval id as long, byval Slider as function(byval x as long, byval y as long, byval src as any ptr, byval id as long, byval reason as long) as long, byval buttons as long, byval data as any ptr)
+declare sub SetObjectDouble(byval id as long, byval DoubleCall as sub(byval as any ptr), byval data as any ptr, byval button as long)
+declare sub SetObjectGrippable(byval id as long, byval Grip as function(byval src as any ptr, byval id as long, byval reason as long) as any ptr, byval flags as long, byval buttons as long, byval data as any ptr)
+declare sub SetObjectDroppable(byval id as long, byval Drop as function(byval dest as any ptr, byval id as long, byval src as any ptr, byval reason as long, byval flags as long) as long, byval flags as long, byval data as any ptr)
 
 #define CGUI_DD_GRIPPED 0
 #define CGUI_DD_UNGRIPPED 1
@@ -241,7 +241,7 @@ declare sub SetObjectDroppable(byval id as long, byval Drop as function(byval de
 
 declare function ToolTipText(byval id as long, byval text as const zstring ptr) as long
 declare sub CguiSetToolTipDelay(byval delay as long)
-declare sub CguiSetToolTipAnimation(byval step_ as long, byval delay as long)
+declare sub CguiSetToolTipAnimation(byval step as long, byval delay as long)
 declare function SetView(byval id as long, byval flags as long) as long
 
 #define CGUI_SV_HIDE_LABEL 1
@@ -260,7 +260,7 @@ declare sub Destroy(byval id as long)
 declare function GetPressedButton(byval id as long) as long
 declare sub PointerOn(byval id as long)
 declare sub ModifyHeader(byval id as long, byval newtag as zstring ptr)
-declare function AddHandler(byval id as long, byval Handler as sub(byval data_ as any ptr), byval data_ as any ptr) as long
+declare function AddHandler(byval id as long, byval Handler as sub(byval data as any ptr), byval data as any ptr) as long
 declare sub Click(byval id as long)
 declare function GetObjectPosition(byval id as long, byval x as long ptr, byval y as long ptr, byval wx as long ptr, byval wy as long ptr) as long
 declare sub SetBlitLimit(byval x1 as long, byval y1 as long, byval x2 as long, byval y2 as long)
@@ -270,7 +270,7 @@ EXTERNVAR cgui_use_vsync as long
 #define CGUI_CT_BORDER 1
 #define CGUI_CT_OBJECT_TABLE 2
 
-declare function StartContainer(byval x as long, byval y as long, byval width_ as long, byval height as long, byval label as const zstring ptr, byval options as long) as long
+declare function StartContainer(byval x as long, byval y as long, byval width as long, byval height as long, byval label as const zstring ptr, byval options as long) as long
 declare sub EndContainer()
 declare sub SelectContainer(byval id as long)
 declare function SetSpacing(byval id as long, byval leftx as long, byval xdist as long, byval rightx as long, byval topy as long, byval ydist as long, byval boty as long) as long
@@ -288,7 +288,7 @@ declare sub EmptyContainer(byval id as long)
 #define CGUI_COL_RIGHT_ALIGN (1 shl 27)
 #define CGUI_ROW_COLUMN_UNDERLINE (1 shl 26)
 
-declare function AddList(byval x as long, byval y as long, byval listdata as any ptr, byval n as long ptr, byval width_ as long, byval events as long, byval TextFormatter as function(byval as any ptr, byval as zstring ptr) as long, byval Action as sub(byval id as long, byval as any ptr), byval norows as long) as long
+declare function AddList(byval x as long, byval y as long, byval listdata as any ptr, byval n as long ptr, byval width as long, byval events as long, byval TextFormatter as function(byval as any ptr, byval as zstring ptr) as long, byval Action as sub(byval id as long, byval as any ptr), byval norows as long) as long
 declare function SetLinkedList(byval id as long, byval NextCreater as function(byval list as any ptr, byval prev as any ptr) as any ptr) as long
 declare function SetIndexedList(byval id as long, byval IndexCreater as function(byval list as any ptr, byval i as long) as any ptr) as long
 declare function RefreshListRow(byval id as long, byval i as long) as long
@@ -296,25 +296,25 @@ declare function GetMarkedRows(byval listid as long, byval n as long ptr) as any
 declare function BrowseToF(byval id as long, byval i as long) as long
 declare function BrowseToL(byval id as long, byval i as long) as long
 declare function BrowseTo(byval id as long, byval i as long, byval uncond as long) as long
-declare function SetListColumns(byval id as long, byval RowTextCreater as function(byval rowdata as any ptr, byval s as zstring ptr, byval colnr as long) as long, byval widths as long ptr, byval n as long, byval options as long, byval labels as zstring ptr ptr, byval CallBack as sub(byval data_ as any ptr, byval id as long, byval i as long), byval data_ as any ptr) as long
+declare function SetListColumns(byval id as long, byval RowTextCreater as function(byval rowdata as any ptr, byval s as zstring ptr, byval colnr as long) as long, byval widths as long ptr, byval n as long, byval options as long, byval labels as zstring ptr ptr, byval CallBack as sub(byval data as any ptr, byval id as long, byval i as long), byval data as any ptr) as long
 declare function SetListGrippable(byval listid as long, byval Grip as function(byval srcobj as any ptr, byval reason as long, byval srclist as any ptr, byval i as long) as long, byval flags as long, byval buttons as long) as long
 declare function SetListDroppable(byval listid as long, byval Drop as function(byval destobj as any ptr, byval reason as long, byval srcobj as any ptr, byval destlist as any ptr, byval i as long, byval flags as long) as long, byval flags as long) as long
-declare function SetListDoubleClick(byval listid as long, byval AppDouble as sub(byval id as long, byval data_ as any ptr, byval i as long), byval button as long) as long
-declare function HookList(byval listid as long, byval listdata as any ptr, byval n as long ptr, byval width_ as long, byval events as long, byval TextFormatter as function(byval as any ptr, byval as zstring ptr) as long, byval Action as sub(byval as long, byval as any ptr)) as long
-declare function SetDeleteHandler(byval listid as long, byval CallBack as sub(byval rowid as long, byval object_ as any ptr)) as long
+declare function SetListDoubleClick(byval listid as long, byval AppDouble as sub(byval id as long, byval data as any ptr, byval i as long), byval button as long) as long
+declare function HookList(byval listid as long, byval listdata as any ptr, byval n as long ptr, byval width as long, byval events as long, byval TextFormatter as function(byval as any ptr, byval as zstring ptr) as long, byval Action as sub(byval as long, byval as any ptr)) as long
+declare function SetDeleteHandler(byval listid as long, byval CallBack as sub(byval rowid as long, byval object as any ptr)) as long
 declare function SetInsertHandler(byval listid as long, byval CallBack as sub(byval list as any ptr, byval index as long)) as long
 declare function GetListIndex(byval id as long) as long
-declare function HookExit(byval id as long, byval ExitFun as sub(byval data_ as any ptr), byval data_ as any ptr) as long
+declare function HookExit(byval id as long, byval ExitFun as sub(byval data as any ptr), byval data as any ptr) as long
 declare function NotifyFocusMove(byval listid as long, byval CallBack as sub(byval id as long, byval rowobject as any ptr)) as long
 
 #define CGUI_TR_HIDE_ROOT &h00000001
 
-declare function ListTreeView(byval listid as long, byval width_ as long, byval IsLeaf as function(byval rowobject as any ptr) as long, byval options as long) as long
-declare function ListTreeSetNodesExpandedState(byval listid as long, byval IsExpanded as function(byval data_ as any ptr) as long) as long
-declare function ListTreeSetNodeExpandedState(byval listid as long, byval new_expanded_state as long, byval data_ as any ptr) as long
-declare function InstallBelowListEndCallBack(byval listid as long, byval CallBack as sub(byval id as long, byval data_ as any ptr), byval data_ as any ptr) as long
+declare function ListTreeView(byval listid as long, byval width as long, byval IsLeaf as function(byval rowobject as any ptr) as long, byval options as long) as long
+declare function ListTreeSetNodesExpandedState(byval listid as long, byval IsExpanded as function(byval data as any ptr) as long) as long
+declare function ListTreeSetNodeExpandedState(byval listid as long, byval new_expanded_state as long, byval data as any ptr) as long
+declare function InstallBelowListEndCallBack(byval listid as long, byval CallBack as sub(byval id as long, byval data as any ptr), byval data as any ptr) as long
 declare function CguiListBoxSetToolTip(byval listid as long, byval mode as long, byval options as long) as long
-declare sub CguiListBoxRowSetBar(byval color_ as long, byval percentage as double)
+declare sub CguiListBoxRowSetBar(byval color as long, byval percentage as double)
 declare function CguiListBoxRowGetClickedColumn(byval rowid as long) as long
 declare sub CguiListBoxSetColumnSelection(byval listid as long, byval state as long)
 
@@ -332,11 +332,11 @@ EXTERNVAR cgui_list_fix_digits as long
 #define CGUI_LIST_COLUMNS_ADJUSTABLE_KEEP_BOX_WIDTH (1 shl 1)
 #define CGUI_LIST_COLUMNS_DELIMITER (1 shl 2)
 
-declare function MkVerticalBrowser(byval x as long, byval y as long, byval CallBack as sub(byval data_ as any ptr), byval data_ as any ptr, byval viewpos as long ptr) as long
-declare function MkHorizontalBrowser(byval x as long, byval y as long, byval CallBack as sub(byval data_ as any ptr), byval data_ as any ptr, byval viewpos as long ptr) as long
-declare function NotifyBrowser(byval id as long, byval step_ as long, byval scrolled_area_length as long) as long
+declare function MkVerticalBrowser(byval x as long, byval y as long, byval CallBack as sub(byval data as any ptr), byval data as any ptr, byval viewpos as long ptr) as long
+declare function MkHorizontalBrowser(byval x as long, byval y as long, byval CallBack as sub(byval data as any ptr), byval data as any ptr, byval viewpos as long ptr) as long
+declare function NotifyBrowser(byval id as long, byval step as long, byval scrolled_area_length as long) as long
 declare function SetBrowserSize(byval id as long, byval view_port_length as long, byval browser_length as long) as long
-declare function RegisterFileType(byval ext as const zstring ptr, byval Handler as sub(byval data_ as any ptr, byval path as zstring ptr), byval data_ as any ptr, byval aname as const zstring ptr, byval icon as const zstring ptr, byval label as const zstring ptr, byval Viewer as sub(byval privatedata as any ptr, byval viewdata as any ptr)) as long
+declare function RegisterFileType(byval ext as const zstring ptr, byval Handler as sub(byval data as any ptr, byval path as zstring ptr), byval data as any ptr, byval aname as const zstring ptr, byval icon as const zstring ptr, byval label as const zstring ptr, byval Viewer as sub(byval privatedata as any ptr, byval viewdata as any ptr)) as long
 declare function FileSelect(byval masks as const zstring ptr, byval rpath as const zstring ptr, byval flags as long, byval winheader as const zstring ptr, byval buttonlabel as const zstring ptr) as const zstring ptr
 declare sub FileManager(byval winheader as const zstring ptr, byval flags as long)
 declare function UnPackSelection(byval flist as zstring ptr ptr) as zstring ptr
@@ -378,9 +378,9 @@ declare function UnPackSelection(byval flist as zstring ptr ptr) as zstring ptr
 #define CGUI_FM_HIDE_UP_DIRECTORY CGUI_FS_HIDE_UP_DIRECTORY
 
 declare sub CguiUseIcons(byval filename as const zstring ptr)
-declare function CreateTabWindow(byval x as long, byval y as long, byval width_ as long, byval height as long, byval status as long ptr) as long
-declare function AddTab(byval id as long, byval callback as sub(byval data_ as any ptr, byval id as long), byval data_ as any ptr, byval label as const zstring ptr) as long
-declare sub HookLeaveTab(byval callback as sub(byval data_ as any ptr), byval data_ as any ptr)
+declare function CreateTabWindow(byval x as long, byval y as long, byval width as long, byval height as long, byval status as long ptr) as long
+declare function AddTab(byval id as long, byval callback as sub(byval data as any ptr, byval id as long), byval data as any ptr, byval label as const zstring ptr) as long
+declare sub HookLeaveTab(byval callback as sub(byval data as any ptr), byval data as any ptr)
 declare function SetFocusOn(byval id as long) as long
 declare function JoinTabChain(byval id as long) as long
 declare function GetCurrentFocus(byval id as long) as long
@@ -388,21 +388,21 @@ declare sub SetCguiFont(byval f as FONT ptr)
 declare function GetCguiFont() as FONT ptr
 declare function GetCguiFixFont() as FONT ptr
 declare sub CguiSetBaseLine(byval base_line as long)
-declare function Invite(byval mask as long, byval data_ as any ptr, byval text as zstring ptr) as long
+declare function Invite(byval mask as long, byval data as any ptr, byval text as zstring ptr) as long
 declare function Attend(byval mask as long) as any ptr
 declare sub ProcessEvents()
 declare sub StopProcessEvents()
 declare function GenEvent(byval Handler as sub(byval as any ptr), byval msg as any ptr, byval delay as ulong, byval objid as long) as ulong
-declare sub CguiEventIterateFunction(byval Function_ as function(byval as any ptr) as long, byval as any ptr)
+declare sub CguiEventIterateFunction(byval Function as function(byval as any ptr) as long, byval as any ptr)
 declare function KillEvent(byval id as ulong) as long
 declare sub FlushGenEvents()
 declare sub CguiYieldTimeslice(byval state as long)
 
 EXTERNVAR event_message_buffer_size as long
 
-declare sub InstallKBHandler(byval Handler as function(byval data_ as any ptr, byval scan as long, byval key as long) as long, byval data_ as any ptr)
+declare sub InstallKBHandler(byval Handler as function(byval data as any ptr, byval scan as long, byval key as long) as long, byval data as any ptr)
 declare function UnInstallKBHandler(byval Handler as function(byval as any ptr, byval as long, byval as long) as long) as any ptr
-declare function SetHotKey(byval id as long, byval CallBack as sub(byval as any ptr), byval data_ as any ptr, byval scan as long, byval ascii as long) as long
+declare function SetHotKey(byval id as long, byval CallBack as sub(byval as any ptr), byval data as any ptr, byval scan as long, byval ascii as long) as long
 declare function IsHotKey(byval scan as long, byval ascii as long) as long
 declare sub SimulateHotKeys(byval control as long, byval key as long)
 declare sub UseHotKeys(byval s as zstring ptr)
@@ -476,8 +476,8 @@ declare function AddClock(byval x as long, byval y as long, byval options as lon
 #define CGUI_CLOCK_SHOW_MINUTES 2
 #define CGUI_CLOCK_NO_DIALOGUE 4
 
-declare function ToUpper(byval chr_ as long) as long
-declare function SaveDatafileObject(byval path as const zstring ptr, byval data_ as any ptr, byval type_ as long) as long
+declare function ToUpper(byval chr as long) as long
+declare function SaveDatafileObject(byval path as const zstring ptr, byval data as any ptr, byval type as long) as long
 declare function CreateNewDataFile(byval path as const zstring ptr, byval fn as const zstring ptr, byval pack as long, byval pwd as const zstring ptr) as long
 declare function msprintf(byval format as const zstring ptr, ...) as zstring ptr
 declare sub InstallCursor(byval cursor_no as long, byval sprite as BITMAP ptr, byval x as long, byval y as long)
@@ -505,14 +505,14 @@ EXTERNVAR cgui_mouse_draw_in_interrupt as long
 
 declare function LoadTexts(byval fn as const zstring ptr, byval section as const zstring ptr, byval nr as long ptr) as const zstring const ptr ptr
 declare sub DestroyTexts()
-declare sub RegisterConversionHandler(byval Handler as sub(byval as any ptr, byval as zstring ptr), byval data_ as any ptr, byval name_ as const zstring ptr)
+declare sub RegisterConversionHandler(byval Handler as sub(byval as any ptr, byval as zstring ptr), byval data as any ptr, byval name as const zstring ptr)
 declare sub PrintFloatingConversion(byval dest as zstring ptr, byval src as const zstring ptr)
 declare function LoadCompiledTexts(byval dat as const DATAFILE ptr, byval section as const zstring ptr, byval nr as long ptr) as const zstring const ptr ptr
-declare sub RegisterRefresh(byval id as long, byval AppUpd as sub(byval id as long, byval data_ as any ptr, byval calldata as any ptr, byval reason as long), byval data_ as any ptr)
+declare sub RegisterRefresh(byval id as long, byval AppUpd as sub(byval id as long, byval data as any ptr, byval calldata as any ptr, byval reason as long), byval data as any ptr)
 declare sub ConditionalRefresh(byval calldata as any ptr, byval reason as long)
 declare function GetSizeOffset(byval id as long, byval x as long ptr, byval y as long ptr) as long
 declare function SetSizeOffset(byval id as long, byval x as long, byval y as long) as long
-declare function MakeStretchable(byval id as long, byval Notify as sub(byval as any ptr), byval data_ as any ptr, byval options as long) as long
+declare function MakeStretchable(byval id as long, byval Notify as sub(byval as any ptr), byval data as any ptr, byval options as long) as long
 
 #define CGUI_NO_VERTICAL 1
 #define CGUI_NO_HORIZONTAL 2

@@ -59,9 +59,9 @@ type jit_stack_trace_t as jit_stack_trace ptr
 type jit_label_t as jit_nuint
 
 #define jit_label_undefined cast(jit_label_t, not cast(jit_uint, 0))
-#define JIT_NO_OFFSET (not culng(0))
+#define JIT_NO_OFFSET culng(not culng(0))
 
-type jit_meta_free_func as sub(byval data_ as any ptr)
+type jit_meta_free_func as sub(byval data as any ptr)
 type jit_on_demand_func as function(byval func as jit_function_t) as long
 type jit_on_demand_driver_func as function(byval func as jit_function_t) as any ptr
 
@@ -93,9 +93,9 @@ type jit_memory_manager
 	get_break as function(byval memctx as jit_memory_context_t) as any ptr
 	set_break as sub(byval memctx as jit_memory_context_t, byval brk as any ptr)
 	alloc_trampoline as function(byval memctx as jit_memory_context_t) as any ptr
-	free_trampoline as sub(byval memctx as jit_memory_context_t, byval ptr_ as any ptr)
+	free_trampoline as sub(byval memctx as jit_memory_context_t, byval ptr as any ptr)
 	alloc_closure as function(byval memctx as jit_memory_context_t) as any ptr
-	free_closure as sub(byval memctx as jit_memory_context_t, byval ptr_ as any ptr)
+	free_closure as sub(byval memctx as jit_memory_context_t, byval ptr as any ptr)
 	alloc_data as function(byval memctx as jit_memory_context_t, byval size as jit_size_t, byval align as jit_size_t) as any ptr
 end type
 
@@ -106,11 +106,11 @@ declare sub jit_context_build_start(byval context as jit_context_t)
 declare sub jit_context_build_end(byval context as jit_context_t)
 declare sub jit_context_set_on_demand_driver(byval context as jit_context_t, byval driver as jit_on_demand_driver_func)
 declare sub jit_context_set_memory_manager(byval context as jit_context_t, byval manager as jit_memory_manager_t)
-declare function jit_context_set_meta(byval context as jit_context_t, byval type_ as long, byval data_ as any ptr, byval free_data as jit_meta_free_func) as long
-declare function jit_context_set_meta_numeric(byval context as jit_context_t, byval type_ as long, byval data_ as jit_nuint) as long
-declare function jit_context_get_meta(byval context as jit_context_t, byval type_ as long) as any ptr
-declare function jit_context_get_meta_numeric(byval context as jit_context_t, byval type_ as long) as jit_nuint
-declare sub jit_context_free_meta(byval context as jit_context_t, byval type_ as long)
+declare function jit_context_set_meta(byval context as jit_context_t, byval type as long, byval data as any ptr, byval free_data as jit_meta_free_func) as long
+declare function jit_context_set_meta_numeric(byval context as jit_context_t, byval type as long, byval data as jit_nuint) as long
+declare function jit_context_get_meta(byval context as jit_context_t, byval type as long) as any ptr
+declare function jit_context_get_meta_numeric(byval context as jit_context_t, byval type as long) as jit_nuint
+declare sub jit_context_free_meta(byval context as jit_context_t, byval type as long)
 
 #define JIT_OPTION_CACHE_LIMIT 10000
 #define JIT_OPTION_CACHE_PAGE_SIZE 10001
@@ -206,49 +206,49 @@ enum
 	jit_abi_fastcall
 end enum
 
-declare function jit_type_copy(byval type_ as jit_type_t) as jit_type_t
-declare sub jit_type_free(byval type_ as jit_type_t)
+declare function jit_type_copy(byval type as jit_type_t) as jit_type_t
+declare sub jit_type_free(byval type as jit_type_t)
 declare function jit_type_create_struct(byval fields as jit_type_t ptr, byval num_fields as ulong, byval incref as long) as jit_type_t
 declare function jit_type_create_union(byval fields as jit_type_t ptr, byval num_fields as ulong, byval incref as long) as jit_type_t
 declare function jit_type_create_signature(byval abi as jit_abi_t, byval return_type as jit_type_t, byval params as jit_type_t ptr, byval num_params as ulong, byval incref as long) as jit_type_t
-declare function jit_type_create_pointer(byval type_ as jit_type_t, byval incref as long) as jit_type_t
-declare function jit_type_create_tagged(byval type_ as jit_type_t, byval kind as long, byval data_ as any ptr, byval free_func as jit_meta_free_func, byval incref as long) as jit_type_t
-declare function jit_type_set_names(byval type_ as jit_type_t, byval names as zstring ptr ptr, byval num_names as ulong) as long
-declare sub jit_type_set_size_and_alignment(byval type_ as jit_type_t, byval size as jit_nint, byval alignment as jit_nint)
-declare sub jit_type_set_offset(byval type_ as jit_type_t, byval field_index as ulong, byval offset as jit_nuint)
-declare function jit_type_get_kind(byval type_ as jit_type_t) as long
-declare function jit_type_get_size(byval type_ as jit_type_t) as jit_nuint
-declare function jit_type_get_alignment(byval type_ as jit_type_t) as jit_nuint
-declare function jit_type_num_fields(byval type_ as jit_type_t) as ulong
-declare function jit_type_get_field(byval type_ as jit_type_t, byval field_index as ulong) as jit_type_t
-declare function jit_type_get_offset(byval type_ as jit_type_t, byval field_index as ulong) as jit_nuint
-declare function jit_type_get_name(byval type_ as jit_type_t, byval index as ulong) as const zstring ptr
+declare function jit_type_create_pointer(byval type as jit_type_t, byval incref as long) as jit_type_t
+declare function jit_type_create_tagged(byval type as jit_type_t, byval kind as long, byval data as any ptr, byval free_func as jit_meta_free_func, byval incref as long) as jit_type_t
+declare function jit_type_set_names(byval type as jit_type_t, byval names as zstring ptr ptr, byval num_names as ulong) as long
+declare sub jit_type_set_size_and_alignment(byval type as jit_type_t, byval size as jit_nint, byval alignment as jit_nint)
+declare sub jit_type_set_offset(byval type as jit_type_t, byval field_index as ulong, byval offset as jit_nuint)
+declare function jit_type_get_kind(byval type as jit_type_t) as long
+declare function jit_type_get_size(byval type as jit_type_t) as jit_nuint
+declare function jit_type_get_alignment(byval type as jit_type_t) as jit_nuint
+declare function jit_type_num_fields(byval type as jit_type_t) as ulong
+declare function jit_type_get_field(byval type as jit_type_t, byval field_index as ulong) as jit_type_t
+declare function jit_type_get_offset(byval type as jit_type_t, byval field_index as ulong) as jit_nuint
+declare function jit_type_get_name(byval type as jit_type_t, byval index as ulong) as const zstring ptr
 
-#define JIT_INVALID_NAME (not culng(0))
+#define JIT_INVALID_NAME culng(not culng(0))
 
-declare function jit_type_find_name(byval type_ as jit_type_t, byval name_ as const zstring ptr) as ulong
-declare function jit_type_num_params(byval type_ as jit_type_t) as ulong
-declare function jit_type_get_return(byval type_ as jit_type_t) as jit_type_t
-declare function jit_type_get_param(byval type_ as jit_type_t, byval param_index as ulong) as jit_type_t
-declare function jit_type_get_abi(byval type_ as jit_type_t) as jit_abi_t
-declare function jit_type_get_ref(byval type_ as jit_type_t) as jit_type_t
-declare function jit_type_get_tagged_type(byval type_ as jit_type_t) as jit_type_t
-declare sub jit_type_set_tagged_type(byval type_ as jit_type_t, byval underlying as jit_type_t, byval incref as long)
-declare function jit_type_get_tagged_kind(byval type_ as jit_type_t) as long
-declare function jit_type_get_tagged_data(byval type_ as jit_type_t) as any ptr
-declare sub jit_type_set_tagged_data(byval type_ as jit_type_t, byval data_ as any ptr, byval free_func as jit_meta_free_func)
-declare function jit_type_is_primitive(byval type_ as jit_type_t) as long
-declare function jit_type_is_struct(byval type_ as jit_type_t) as long
-declare function jit_type_is_union(byval type_ as jit_type_t) as long
-declare function jit_type_is_signature(byval type_ as jit_type_t) as long
-declare function jit_type_is_pointer(byval type_ as jit_type_t) as long
-declare function jit_type_is_tagged(byval type_ as jit_type_t) as long
+declare function jit_type_find_name(byval type as jit_type_t, byval name as const zstring ptr) as ulong
+declare function jit_type_num_params(byval type as jit_type_t) as ulong
+declare function jit_type_get_return(byval type as jit_type_t) as jit_type_t
+declare function jit_type_get_param(byval type as jit_type_t, byval param_index as ulong) as jit_type_t
+declare function jit_type_get_abi(byval type as jit_type_t) as jit_abi_t
+declare function jit_type_get_ref(byval type as jit_type_t) as jit_type_t
+declare function jit_type_get_tagged_type(byval type as jit_type_t) as jit_type_t
+declare sub jit_type_set_tagged_type(byval type as jit_type_t, byval underlying as jit_type_t, byval incref as long)
+declare function jit_type_get_tagged_kind(byval type as jit_type_t) as long
+declare function jit_type_get_tagged_data(byval type as jit_type_t) as any ptr
+declare sub jit_type_set_tagged_data(byval type as jit_type_t, byval data as any ptr, byval free_func as jit_meta_free_func)
+declare function jit_type_is_primitive(byval type as jit_type_t) as long
+declare function jit_type_is_struct(byval type as jit_type_t) as long
+declare function jit_type_is_union(byval type as jit_type_t) as long
+declare function jit_type_is_signature(byval type as jit_type_t) as long
+declare function jit_type_is_pointer(byval type as jit_type_t) as long
+declare function jit_type_is_tagged(byval type as jit_type_t) as long
 declare function jit_type_best_alignment() as jit_nuint
-declare function jit_type_normalize(byval type_ as jit_type_t) as jit_type_t
-declare function jit_type_remove_tags(byval type_ as jit_type_t) as jit_type_t
-declare function jit_type_promote_int(byval type_ as jit_type_t) as jit_type_t
-declare function jit_type_return_via_pointer(byval type_ as jit_type_t) as long
-declare function jit_type_has_tag(byval type_ as jit_type_t, byval kind as long) as long
+declare function jit_type_normalize(byval type as jit_type_t) as jit_type_t
+declare function jit_type_remove_tags(byval type as jit_type_t) as jit_type_t
+declare function jit_type_promote_int(byval type as jit_type_t) as jit_type_t
+declare function jit_type_return_via_pointer(byval type as jit_type_t) as long
+declare function jit_type_has_tag(byval type as jit_type_t, byval kind as long) as long
 
 type jit_closure_func as sub(byval signature as jit_type_t, byval result as any ptr, byval args as any ptr ptr, byval user_data as any ptr)
 type jit_closure_va_list_t as jit_closure_va_list ptr
@@ -265,7 +265,7 @@ declare function jit_closure_va_get_float32(byval va as jit_closure_va_list_t) a
 declare function jit_closure_va_get_float64(byval va as jit_closure_va_list_t) as jit_float64
 declare function jit_closure_va_get_nfloat(byval va as jit_closure_va_list_t) as jit_nfloat
 declare function jit_closure_va_get_ptr(byval va as jit_closure_va_list_t) as any ptr
-declare sub jit_closure_va_get_struct(byval va as jit_closure_va_list_t, byval buf as any ptr, byval type_ as jit_type_t)
+declare sub jit_closure_va_get_struct(byval va as jit_closure_va_list_t, byval buf as any ptr, byval type as jit_type_t)
 
 #define _JIT_BLOCK_H
 
@@ -276,9 +276,9 @@ declare function jit_block_get_next_label(byval block as jit_block_t, byval labe
 declare function jit_block_next(byval func as jit_function_t, byval previous as jit_block_t) as jit_block_t
 declare function jit_block_previous(byval func as jit_function_t, byval previous as jit_block_t) as jit_block_t
 declare function jit_block_from_label(byval func as jit_function_t, byval label as jit_label_t) as jit_block_t
-declare function jit_block_set_meta(byval block as jit_block_t, byval type_ as long, byval data_ as any ptr, byval free_data as jit_meta_free_func) as long
-declare function jit_block_get_meta(byval block as jit_block_t, byval type_ as long) as any ptr
-declare sub jit_block_free_meta(byval block as jit_block_t, byval type_ as long)
+declare function jit_block_set_meta(byval block as jit_block_t, byval type as long, byval data as any ptr, byval free_data as jit_meta_free_func) as long
+declare function jit_block_get_meta(byval block as jit_block_t, byval type as long) as any ptr
+declare sub jit_block_free_meta(byval block as jit_block_t, byval type as long)
 declare function jit_block_is_reachable(byval block as jit_block_t) as long
 declare function jit_block_ends_in_dead(byval block as jit_block_t) as long
 declare function jit_block_current_is_dead(byval func as jit_function_t) as long
@@ -372,21 +372,21 @@ type jit_writeelf_t as jit_writeelf ptr
 declare function jit_readelf_open(byval readelf as jit_readelf_t ptr, byval filename as const zstring ptr, byval flags as long) as long
 declare sub jit_readelf_close(byval readelf as jit_readelf_t)
 declare function jit_readelf_get_name(byval readelf as jit_readelf_t) as const zstring ptr
-declare function jit_readelf_get_symbol(byval readelf as jit_readelf_t, byval name_ as const zstring ptr) as any ptr
-declare function jit_readelf_get_section(byval readelf as jit_readelf_t, byval name_ as const zstring ptr, byval size as jit_nuint ptr) as any ptr
-declare function jit_readelf_get_section_by_type(byval readelf as jit_readelf_t, byval type_ as jit_int, byval size as jit_nuint ptr) as any ptr
+declare function jit_readelf_get_symbol(byval readelf as jit_readelf_t, byval name as const zstring ptr) as any ptr
+declare function jit_readelf_get_section(byval readelf as jit_readelf_t, byval name as const zstring ptr, byval size as jit_nuint ptr) as any ptr
+declare function jit_readelf_get_section_by_type(byval readelf as jit_readelf_t, byval type as jit_int, byval size as jit_nuint ptr) as any ptr
 declare function jit_readelf_map_vaddr(byval readelf as jit_readelf_t, byval vaddr as jit_nuint) as any ptr
 declare function jit_readelf_num_needed(byval readelf as jit_readelf_t) as ulong
 declare function jit_readelf_get_needed(byval readelf as jit_readelf_t, byval index as ulong) as const zstring ptr
 declare sub jit_readelf_add_to_context(byval readelf as jit_readelf_t, byval context as jit_context_t)
 declare function jit_readelf_resolve_all(byval context as jit_context_t, byval print_failures as long) as long
-declare function jit_readelf_register_symbol(byval context as jit_context_t, byval name_ as const zstring ptr, byval value as any ptr, byval after as long) as long
+declare function jit_readelf_register_symbol(byval context as jit_context_t, byval name as const zstring ptr, byval value as any ptr, byval after as long) as long
 declare function jit_writeelf_create(byval library_name as const zstring ptr) as jit_writeelf_t
 declare sub jit_writeelf_destroy(byval writeelf as jit_writeelf_t)
 declare function jit_writeelf_write(byval writeelf as jit_writeelf_t, byval filename as const zstring ptr) as long
-declare function jit_writeelf_add_function(byval writeelf as jit_writeelf_t, byval func as jit_function_t, byval name_ as const zstring ptr) as long
+declare function jit_writeelf_add_function(byval writeelf as jit_writeelf_t, byval func as jit_function_t, byval name as const zstring ptr) as long
 declare function jit_writeelf_add_needed(byval writeelf as jit_writeelf_t, byval library_name as const zstring ptr) as long
-declare function jit_writeelf_write_section(byval writeelf as jit_writeelf_t, byval name_ as const zstring ptr, byval type_ as jit_int, byval buf as const any ptr, byval len_ as ulong, byval discardable as long) as long
+declare function jit_writeelf_write_section(byval writeelf as jit_writeelf_t, byval name as const zstring ptr, byval type as jit_int, byval buf as const any ptr, byval len as ulong, byval discardable as long) as long
 
 #define _JIT_EXCEPT_H
 #define JIT_RESULT_OK 1
@@ -406,9 +406,9 @@ type jit_exception_func as function(byval exception_type as long) as any ptr
 
 declare function jit_exception_get_last() as any ptr
 declare function jit_exception_get_last_and_clear() as any ptr
-declare sub jit_exception_set_last(byval object_ as any ptr)
+declare sub jit_exception_set_last(byval object as any ptr)
 declare sub jit_exception_clear_last()
-declare sub jit_exception_throw(byval object_ as any ptr)
+declare sub jit_exception_throw(byval object as any ptr)
 declare sub jit_exception_builtin(byval exception_type as long)
 declare function jit_exception_set_handler(byval handler as jit_exception_func) as jit_exception_func
 declare function jit_exception_get_handler() as jit_exception_func
@@ -428,9 +428,9 @@ declare function jit_function_create_nested(byval context as jit_context_t, byva
 declare sub jit_function_abandon(byval func as jit_function_t)
 declare function jit_function_get_context(byval func as jit_function_t) as jit_context_t
 declare function jit_function_get_signature(byval func as jit_function_t) as jit_type_t
-declare function jit_function_set_meta(byval func as jit_function_t, byval type_ as long, byval data_ as any ptr, byval free_data as jit_meta_free_func, byval build_only as long) as long
-declare function jit_function_get_meta(byval func as jit_function_t, byval type_ as long) as any ptr
-declare sub jit_function_free_meta(byval func as jit_function_t, byval type_ as long)
+declare function jit_function_set_meta(byval func as jit_function_t, byval type as long, byval data as any ptr, byval free_data as jit_meta_free_func, byval build_only as long) as long
+declare function jit_function_get_meta(byval func as jit_function_t, byval type as long) as any ptr
+declare sub jit_function_free_meta(byval func as jit_function_t, byval type as long)
 declare function jit_function_next(byval context as jit_context_t, byval prev as jit_function_t) as jit_function_t
 declare function jit_function_previous(byval context as jit_context_t, byval prev as jit_function_t) as jit_function_t
 declare function jit_function_get_entry(byval func as jit_function_t) as jit_block_t
@@ -504,7 +504,7 @@ declare function jit_insn_load(byval func as jit_function_t, byval value as jit_
 declare function jit_insn_dup(byval func as jit_function_t, byval value as jit_value_t) as jit_value_t
 declare function jit_insn_load_small(byval func as jit_function_t, byval value as jit_value_t) as jit_value_t
 declare function jit_insn_store(byval func as jit_function_t, byval dest as jit_value_t, byval value as jit_value_t) as long
-declare function jit_insn_load_relative(byval func as jit_function_t, byval value as jit_value_t, byval offset as jit_nint, byval type_ as jit_type_t) as jit_value_t
+declare function jit_insn_load_relative(byval func as jit_function_t, byval value as jit_value_t, byval offset as jit_nint, byval type as jit_type_t) as jit_value_t
 declare function jit_insn_store_relative(byval func as jit_function_t, byval dest as jit_value_t, byval offset as jit_nint, byval value as jit_value_t) as long
 declare function jit_insn_add_relative(byval func as jit_function_t, byval value as jit_value_t, byval offset as jit_nint) as jit_value_t
 declare function jit_insn_load_elem(byval func as jit_function_t, byval base_addr as jit_value_t, byval index as jit_value_t, byval elem_type as jit_type_t) as jit_value_t
@@ -572,12 +572,12 @@ declare function jit_insn_branch_if_not(byval func as jit_function_t, byval valu
 declare function jit_insn_jump_table(byval func as jit_function_t, byval value as jit_value_t, byval labels as jit_label_t ptr, byval num_labels as ulong) as long
 declare function jit_insn_address_of(byval func as jit_function_t, byval value1 as jit_value_t) as jit_value_t
 declare function jit_insn_address_of_label(byval func as jit_function_t, byval label as jit_label_t ptr) as jit_value_t
-declare function jit_insn_convert(byval func as jit_function_t, byval value as jit_value_t, byval type_ as jit_type_t, byval overflow_check as long) as jit_value_t
-declare function jit_insn_call(byval func as jit_function_t, byval name_ as const zstring ptr, byval jit_func as jit_function_t, byval signature as jit_type_t, byval args as jit_value_t ptr, byval num_args as ulong, byval flags as long) as jit_value_t
+declare function jit_insn_convert(byval func as jit_function_t, byval value as jit_value_t, byval type as jit_type_t, byval overflow_check as long) as jit_value_t
+declare function jit_insn_call(byval func as jit_function_t, byval name as const zstring ptr, byval jit_func as jit_function_t, byval signature as jit_type_t, byval args as jit_value_t ptr, byval num_args as ulong, byval flags as long) as jit_value_t
 declare function jit_insn_call_indirect(byval func as jit_function_t, byval value as jit_value_t, byval signature as jit_type_t, byval args as jit_value_t ptr, byval num_args as ulong, byval flags as long) as jit_value_t
 declare function jit_insn_call_indirect_vtable(byval func as jit_function_t, byval value as jit_value_t, byval signature as jit_type_t, byval args as jit_value_t ptr, byval num_args as ulong, byval flags as long) as jit_value_t
-declare function jit_insn_call_native(byval func as jit_function_t, byval name_ as const zstring ptr, byval native_func as any ptr, byval signature as jit_type_t, byval args as jit_value_t ptr, byval num_args as ulong, byval flags as long) as jit_value_t
-declare function jit_insn_call_intrinsic(byval func as jit_function_t, byval name_ as const zstring ptr, byval intrinsic_func as any ptr, byval descriptor as const jit_intrinsic_descr_t ptr, byval arg1 as jit_value_t, byval arg2 as jit_value_t) as jit_value_t
+declare function jit_insn_call_native(byval func as jit_function_t, byval name as const zstring ptr, byval native_func as any ptr, byval signature as jit_type_t, byval args as jit_value_t ptr, byval num_args as ulong, byval flags as long) as jit_value_t
+declare function jit_insn_call_intrinsic(byval func as jit_function_t, byval name as const zstring ptr, byval intrinsic_func as any ptr, byval descriptor as const jit_intrinsic_descr_t ptr, byval arg1 as jit_value_t, byval arg2 as jit_value_t) as jit_value_t
 declare function jit_insn_incoming_reg(byval func as jit_function_t, byval value as jit_value_t, byval reg as long) as long
 declare function jit_insn_incoming_frame_posn(byval func as jit_function_t, byval value as jit_value_t, byval frame_offset as jit_nint) as long
 declare function jit_insn_outgoing_reg(byval func as jit_function_t, byval value as jit_value_t, byval reg as long) as long
@@ -587,15 +587,15 @@ declare function jit_insn_setup_for_nested(byval func as jit_function_t, byval n
 declare function jit_insn_flush_struct(byval func as jit_function_t, byval value as jit_value_t) as long
 declare function jit_insn_import(byval func as jit_function_t, byval value as jit_value_t) as jit_value_t
 declare function jit_insn_push(byval func as jit_function_t, byval value as jit_value_t) as long
-declare function jit_insn_push_ptr(byval func as jit_function_t, byval value as jit_value_t, byval type_ as jit_type_t) as long
+declare function jit_insn_push_ptr(byval func as jit_function_t, byval value as jit_value_t, byval type as jit_type_t) as long
 declare function jit_insn_set_param(byval func as jit_function_t, byval value as jit_value_t, byval offset as jit_nint) as long
-declare function jit_insn_set_param_ptr(byval func as jit_function_t, byval value as jit_value_t, byval type_ as jit_type_t, byval offset as jit_nint) as long
+declare function jit_insn_set_param_ptr(byval func as jit_function_t, byval value as jit_value_t, byval type as jit_type_t, byval offset as jit_nint) as long
 declare function jit_insn_push_return_area_ptr(byval func as jit_function_t) as long
 declare function jit_insn_pop_stack(byval func as jit_function_t, byval num_items as jit_nint) as long
 declare function jit_insn_defer_pop_stack(byval func as jit_function_t, byval num_items as jit_nint) as long
 declare function jit_insn_flush_defer_pop(byval func as jit_function_t, byval num_items as jit_nint) as long
 declare function jit_insn_return(byval func as jit_function_t, byval value as jit_value_t) as long
-declare function jit_insn_return_ptr(byval func as jit_function_t, byval value as jit_value_t, byval type_ as jit_type_t) as long
+declare function jit_insn_return_ptr(byval func as jit_function_t, byval value as jit_value_t, byval type as jit_type_t) as long
 declare function jit_insn_default_return(byval func as jit_function_t) as long
 declare function jit_insn_throw(byval func as jit_function_t, byval value as jit_value_t) as long
 declare function jit_insn_get_call_stack(byval func as jit_function_t) as jit_value_t
@@ -607,9 +607,9 @@ declare function jit_insn_rethrow_unhandled(byval func as jit_function_t) as lon
 declare function jit_insn_start_finally(byval func as jit_function_t, byval finally_label as jit_label_t ptr) as long
 declare function jit_insn_return_from_finally(byval func as jit_function_t) as long
 declare function jit_insn_call_finally(byval func as jit_function_t, byval finally_label as jit_label_t ptr) as long
-declare function jit_insn_start_filter(byval func as jit_function_t, byval label as jit_label_t ptr, byval type_ as jit_type_t) as jit_value_t
+declare function jit_insn_start_filter(byval func as jit_function_t, byval label as jit_label_t ptr, byval type as jit_type_t) as jit_value_t
 declare function jit_insn_return_from_filter(byval func as jit_function_t, byval value as jit_value_t) as long
-declare function jit_insn_call_filter(byval func as jit_function_t, byval label as jit_label_t ptr, byval value as jit_value_t, byval type_ as jit_type_t) as jit_value_t
+declare function jit_insn_call_filter(byval func as jit_function_t, byval label as jit_label_t ptr, byval value as jit_value_t, byval type as jit_type_t) as jit_value_t
 declare function jit_insn_memcpy(byval func as jit_function_t, byval dest as jit_value_t, byval src as jit_value_t, byval size as jit_value_t) as long
 declare function jit_insn_memmove(byval func as jit_function_t, byval dest as jit_value_t, byval src as jit_value_t, byval size as jit_value_t) as long
 declare function jit_insn_memset(byval func as jit_function_t, byval dest as jit_value_t, byval value as jit_value_t, byval size as jit_value_t) as long
@@ -939,9 +939,9 @@ declare function jit_nfloat_to_float64(byval value as jit_nfloat) as jit_float64
 
 type jit_meta_t as _jit_meta ptr
 
-declare function jit_meta_set(byval list as jit_meta_t ptr, byval type_ as long, byval data_ as any ptr, byval free_data as jit_meta_free_func, byval pool_owner as jit_function_t) as long
-declare function jit_meta_get(byval list as jit_meta_t, byval type_ as long) as any ptr
-declare sub jit_meta_free(byval list as jit_meta_t ptr, byval type_ as long)
+declare function jit_meta_set(byval list as jit_meta_t ptr, byval type as long, byval data as any ptr, byval free_data as jit_meta_free_func, byval pool_owner as jit_function_t) as long
+declare function jit_meta_get(byval list as jit_meta_t, byval type as long) as any ptr
+declare sub jit_meta_free(byval list as jit_meta_t ptr, byval type as long)
 declare sub jit_meta_destroy(byval list as jit_meta_t ptr)
 
 #define _JIT_OBJMODEL_H
@@ -977,7 +977,7 @@ type jitom_method_t as jitom_method ptr
 #define JITOM_TYPETAG_VALUE 11001
 
 declare sub jitom_destroy_model(byval model as jit_objmodel_t)
-declare function jitom_get_class_by_name(byval model as jit_objmodel_t, byval name_ as const zstring ptr) as jitom_class_t
+declare function jitom_get_class_by_name(byval model as jit_objmodel_t, byval name as const zstring ptr) as jitom_class_t
 declare function jitom_class_get_name(byval model as jit_objmodel_t, byval klass as jitom_class_t) as zstring ptr
 declare function jitom_class_get_modifiers(byval model as jit_objmodel_t, byval klass as jitom_class_t) as long
 declare function jitom_class_get_type(byval model as jit_objmodel_t, byval klass as jitom_class_t) as jit_type_t
@@ -991,23 +991,23 @@ declare function jitom_class_new(byval model as jit_objmodel_t, byval klass as j
 declare function jitom_class_new_value(byval model as jit_objmodel_t, byval klass as jitom_class_t, byval ctor as jitom_method_t, byval func as jit_function_t, byval args as jit_value_t ptr, byval num_args as ulong, byval flags as long) as jit_value_t
 declare function jitom_class_delete(byval model as jit_objmodel_t, byval klass as jitom_class_t, byval obj_value as jit_value_t) as long
 declare function jitom_class_add_ref(byval model as jit_objmodel_t, byval klass as jitom_class_t, byval obj_value as jit_value_t) as long
-declare function jitom_field_get_name(byval model as jit_objmodel_t, byval klass as jitom_class_t, byval field_ as jitom_field_t) as zstring ptr
-declare function jitom_field_get_type(byval model as jit_objmodel_t, byval klass as jitom_class_t, byval field_ as jitom_field_t) as jit_type_t
-declare function jitom_field_get_modifiers(byval model as jit_objmodel_t, byval klass as jitom_class_t, byval field_ as jitom_field_t) as long
-declare function jitom_field_load(byval model as jit_objmodel_t, byval klass as jitom_class_t, byval field_ as jitom_field_t, byval func as jit_function_t, byval obj_value as jit_value_t) as jit_value_t
-declare function jitom_field_load_address(byval model as jit_objmodel_t, byval klass as jitom_class_t, byval field_ as jitom_field_t, byval func as jit_function_t, byval obj_value as jit_value_t) as jit_value_t
-declare function jitom_field_store(byval model as jit_objmodel_t, byval klass as jitom_class_t, byval field_ as jitom_field_t, byval func as jit_function_t, byval obj_value as jit_value_t, byval value as jit_value_t) as long
+declare function jitom_field_get_name(byval model as jit_objmodel_t, byval klass as jitom_class_t, byval field as jitom_field_t) as zstring ptr
+declare function jitom_field_get_type(byval model as jit_objmodel_t, byval klass as jitom_class_t, byval field as jitom_field_t) as jit_type_t
+declare function jitom_field_get_modifiers(byval model as jit_objmodel_t, byval klass as jitom_class_t, byval field as jitom_field_t) as long
+declare function jitom_field_load(byval model as jit_objmodel_t, byval klass as jitom_class_t, byval field as jitom_field_t, byval func as jit_function_t, byval obj_value as jit_value_t) as jit_value_t
+declare function jitom_field_load_address(byval model as jit_objmodel_t, byval klass as jitom_class_t, byval field as jitom_field_t, byval func as jit_function_t, byval obj_value as jit_value_t) as jit_value_t
+declare function jitom_field_store(byval model as jit_objmodel_t, byval klass as jitom_class_t, byval field as jitom_field_t, byval func as jit_function_t, byval obj_value as jit_value_t, byval value as jit_value_t) as long
 declare function jitom_method_get_name(byval model as jit_objmodel_t, byval klass as jitom_class_t, byval method as jitom_method_t) as zstring ptr
 declare function jitom_method_get_type(byval model as jit_objmodel_t, byval klass as jitom_class_t, byval method as jitom_method_t) as jit_type_t
 declare function jitom_method_get_modifiers(byval model as jit_objmodel_t, byval klass as jitom_class_t, byval method as jitom_method_t) as long
 declare function jitom_method_invoke(byval model as jit_objmodel_t, byval klass as jitom_class_t, byval method as jitom_method_t, byval func as jit_function_t, byval args as jit_value_t ptr, byval num_args as ulong, byval flags as long) as jit_value_t
 declare function jitom_method_invoke_virtual(byval model as jit_objmodel_t, byval klass as jitom_class_t, byval method as jitom_method_t, byval func as jit_function_t, byval args as jit_value_t ptr, byval num_args as ulong, byval flags as long) as jit_value_t
-declare function jitom_type_tag_as_class(byval type_ as jit_type_t, byval model as jit_objmodel_t, byval klass as jitom_class_t, byval incref as long) as jit_type_t
-declare function jitom_type_tag_as_value(byval type_ as jit_type_t, byval model as jit_objmodel_t, byval klass as jitom_class_t, byval incref as long) as jit_type_t
-declare function jitom_type_is_class(byval type_ as jit_type_t) as long
-declare function jitom_type_is_value(byval type_ as jit_type_t) as long
-declare function jitom_type_get_model(byval type_ as jit_type_t) as jit_objmodel_t
-declare function jitom_type_get_class(byval type_ as jit_type_t) as jitom_class_t
+declare function jitom_type_tag_as_class(byval type as jit_type_t, byval model as jit_objmodel_t, byval klass as jitom_class_t, byval incref as long) as jit_type_t
+declare function jitom_type_tag_as_value(byval type as jit_type_t, byval model as jit_objmodel_t, byval klass as jitom_class_t, byval incref as long) as jit_type_t
+declare function jitom_type_is_class(byval type as jit_type_t) as long
+declare function jitom_type_is_value(byval type as jit_type_t) as long
+declare function jitom_type_get_model(byval type as jit_type_t) as jit_objmodel_t
+declare function jitom_type_get_class(byval type as jit_type_t) as jitom_class_t
 
 #define _JIT_OPCODE_H
 #define JIT_OP_NOP &h0000
@@ -1600,35 +1600,35 @@ declare function jit_unwind_get_offset(byval unwind as jit_unwind_context_t ptr)
 
 declare function jit_malloc(byval size as ulong) as any ptr
 declare function jit_calloc(byval num as ulong, byval size as ulong) as any ptr
-declare function jit_realloc(byval ptr_ as any ptr, byval size as ulong) as any ptr
-declare sub jit_free(byval ptr_ as any ptr)
+declare function jit_realloc(byval ptr as any ptr, byval size as ulong) as any ptr
+declare sub jit_free(byval ptr as any ptr)
 
 #define jit_new(type) cptr(type ptr, jit_malloc(sizeof((type))))
 #define jit_cnew(type) cptr(type ptr, jit_calloc(1, sizeof((type))))
 
-declare function jit_memset(byval dest as any ptr, byval ch as long, byval len_ as ulong) as any ptr
-declare function jit_memcpy(byval dest as any ptr, byval src as const any ptr, byval len_ as ulong) as any ptr
-declare function jit_memmove(byval dest as any ptr, byval src as const any ptr, byval len_ as ulong) as any ptr
-declare function jit_memcmp(byval s1 as const any ptr, byval s2 as const any ptr, byval len_ as ulong) as long
-declare function jit_memchr(byval str_ as const any ptr, byval ch as long, byval len_ as ulong) as any ptr
-declare function jit_strlen(byval str_ as const zstring ptr) as ulong
+declare function jit_memset(byval dest as any ptr, byval ch as long, byval len as ulong) as any ptr
+declare function jit_memcpy(byval dest as any ptr, byval src as const any ptr, byval len as ulong) as any ptr
+declare function jit_memmove(byval dest as any ptr, byval src as const any ptr, byval len as ulong) as any ptr
+declare function jit_memcmp(byval s1 as const any ptr, byval s2 as const any ptr, byval len as ulong) as long
+declare function jit_memchr(byval str as const any ptr, byval ch as long, byval len as ulong) as any ptr
+declare function jit_strlen(byval str as const zstring ptr) as ulong
 declare function jit_strcpy(byval dest as zstring ptr, byval src as const zstring ptr) as zstring ptr
 declare function jit_strcat(byval dest as zstring ptr, byval src as const zstring ptr) as zstring ptr
-declare function jit_strncpy(byval dest as zstring ptr, byval src as const zstring ptr, byval len_ as ulong) as zstring ptr
-declare function jit_strdup(byval str_ as const zstring ptr) as zstring ptr
-declare function jit_strndup(byval str_ as const zstring ptr, byval len_ as ulong) as zstring ptr
+declare function jit_strncpy(byval dest as zstring ptr, byval src as const zstring ptr, byval len as ulong) as zstring ptr
+declare function jit_strdup(byval str as const zstring ptr) as zstring ptr
+declare function jit_strndup(byval str as const zstring ptr, byval len as ulong) as zstring ptr
 declare function jit_strcmp(byval str1 as const zstring ptr, byval str2 as const zstring ptr) as long
-declare function jit_strncmp(byval str1 as const zstring ptr, byval str2 as const zstring ptr, byval len_ as ulong) as long
+declare function jit_strncmp(byval str1 as const zstring ptr, byval str2 as const zstring ptr, byval len as ulong) as long
 declare function jit_stricmp(byval str1 as const zstring ptr, byval str2 as const zstring ptr) as long
-declare function jit_strnicmp(byval str1 as const zstring ptr, byval str2 as const zstring ptr, byval len_ as ulong) as long
-declare function jit_strchr(byval str_ as const zstring ptr, byval ch as long) as zstring ptr
-declare function jit_strrchr(byval str_ as const zstring ptr, byval ch as long) as zstring ptr
-declare function jit_sprintf(byval str_ as zstring ptr, byval format as const zstring ptr, ...) as long
-declare function jit_snprintf(byval str_ as zstring ptr, byval len_ as ulong, byval format as const zstring ptr, ...) as long
+declare function jit_strnicmp(byval str1 as const zstring ptr, byval str2 as const zstring ptr, byval len as ulong) as long
+declare function jit_strchr(byval str as const zstring ptr, byval ch as long) as zstring ptr
+declare function jit_strrchr(byval str as const zstring ptr, byval ch as long) as zstring ptr
+declare function jit_sprintf(byval str as zstring ptr, byval format as const zstring ptr, ...) as long
+declare function jit_snprintf(byval str as zstring ptr, byval len as ulong, byval format as const zstring ptr, ...) as long
 
 #define _JIT_VALUE_H
 
-union __jit_constant_un
+union jit_constant_t_un
 	ptr_value as any ptr
 	int_value as jit_int
 	uint_value as jit_uint
@@ -1643,15 +1643,15 @@ end union
 
 type jit_constant_t
 	as jit_type_t type
-	un as __jit_constant_un
+	un as jit_constant_t_un
 end type
 
-declare function jit_value_create(byval func as jit_function_t, byval type_ as jit_type_t) as jit_value_t
-declare function jit_value_create_nint_constant(byval func as jit_function_t, byval type_ as jit_type_t, byval const_value as jit_nint) as jit_value_t
-declare function jit_value_create_long_constant(byval func as jit_function_t, byval type_ as jit_type_t, byval const_value as jit_long) as jit_value_t
-declare function jit_value_create_float32_constant(byval func as jit_function_t, byval type_ as jit_type_t, byval const_value as jit_float32) as jit_value_t
-declare function jit_value_create_float64_constant(byval func as jit_function_t, byval type_ as jit_type_t, byval const_value as jit_float64) as jit_value_t
-declare function jit_value_create_nfloat_constant(byval func as jit_function_t, byval type_ as jit_type_t, byval const_value as jit_nfloat) as jit_value_t
+declare function jit_value_create(byval func as jit_function_t, byval type as jit_type_t) as jit_value_t
+declare function jit_value_create_nint_constant(byval func as jit_function_t, byval type as jit_type_t, byval const_value as jit_nint) as jit_value_t
+declare function jit_value_create_long_constant(byval func as jit_function_t, byval type as jit_type_t, byval const_value as jit_long) as jit_value_t
+declare function jit_value_create_float32_constant(byval func as jit_function_t, byval type as jit_type_t, byval const_value as jit_float32) as jit_value_t
+declare function jit_value_create_float64_constant(byval func as jit_function_t, byval type as jit_type_t, byval const_value as jit_float64) as jit_value_t
+declare function jit_value_create_nfloat_constant(byval func as jit_function_t, byval type as jit_type_t, byval const_value as jit_nfloat) as jit_value_t
 declare function jit_value_create_constant(byval func as jit_function_t, byval const_value as const jit_constant_t ptr) as jit_value_t
 declare function jit_value_get_param(byval func as jit_function_t, byval param as ulong) as jit_value_t
 declare function jit_value_get_struct_pointer(byval func as jit_function_t) as jit_value_t
@@ -1675,7 +1675,7 @@ declare function jit_value_get_float32_constant(byval value as jit_value_t) as j
 declare function jit_value_get_float64_constant(byval value as jit_value_t) as jit_float64
 declare function jit_value_get_nfloat_constant(byval value as jit_value_t) as jit_nfloat
 declare function jit_value_is_true(byval value as jit_value_t) as long
-declare function jit_constant_convert(byval result as jit_constant_t ptr, byval value as const jit_constant_t ptr, byval type_ as jit_type_t, byval overflow_check as long) as long
+declare function jit_constant_convert(byval result as jit_constant_t ptr, byval value as const jit_constant_t ptr, byval type as jit_type_t, byval overflow_check as long) as long
 
 #define _JIT_VMEM_H
 

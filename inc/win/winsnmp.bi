@@ -90,7 +90,7 @@ type smiLPCNTR64 as smiCNTR64 ptr
 #define SNMP_SYNTAX_NOSUCHINSTANCE ((ASN_CONTEXT or ASN_PRIMITIVE) or &h01)
 #define SNMP_SYNTAX_ENDOFMIBVIEW ((ASN_CONTEXT or ASN_PRIMITIVE) or &h02)
 
-union __value
+union smiVALUE_value
 	sNumber as smiINT
 	uNumber as smiUINT32
 	hNumber as smiCNTR64
@@ -101,7 +101,7 @@ end union
 
 type smiVALUE
 	syntax as smiUINT32
-	value as __value
+	value as smiVALUE_value
 end type
 
 type smiLPVALUE as smiVALUE ptr
@@ -228,11 +228,11 @@ declare function SnmpCleanupEx() as SNMPAPI_STATUS
 
 type PFNSNMPCLEANUPEX as function() as SNMPAPI_STATUS
 
-declare function SnmpStrToEntity(byval session as HSNMP_SESSION, byval string_ as LPCSTR) as HSNMP_ENTITY
-declare function SnmpEntityToStr(byval entity as HSNMP_ENTITY, byval size as smiUINT32, byval string_ as LPSTR) as SNMPAPI_STATUS
+declare function SnmpStrToEntity(byval session as HSNMP_SESSION, byval string as LPCSTR) as HSNMP_ENTITY
+declare function SnmpEntityToStr(byval entity as HSNMP_ENTITY, byval size as smiUINT32, byval string as LPSTR) as SNMPAPI_STATUS
 declare function SnmpFreeEntity(byval entity as HSNMP_ENTITY) as SNMPAPI_STATUS
-declare function SnmpStrToContext(byval session as HSNMP_SESSION, byval string_ as smiLPCOCTETS) as HSNMP_CONTEXT
-declare function SnmpContextToStr(byval context as HSNMP_CONTEXT, byval string_ as smiLPOCTETS) as SNMPAPI_STATUS
+declare function SnmpStrToContext(byval session as HSNMP_SESSION, byval string as smiLPCOCTETS) as HSNMP_CONTEXT
+declare function SnmpContextToStr(byval context as HSNMP_CONTEXT, byval string as smiLPOCTETS) as SNMPAPI_STATUS
 declare function SnmpFreeContext(byval context as HSNMP_CONTEXT) as SNMPAPI_STATUS
 declare function SnmpSetPort(byval hEntity as HSNMP_ENTITY, byval nPort as UINT) as SNMPAPI_STATUS
 declare function SnmpCreatePdu(byval session as HSNMP_SESSION, byval PDU_type as smiINT, byval request_id as smiINT32, byval error_status as smiINT, byval error_index as smiINT, byval varbindlist as HSNMP_VBL) as HSNMP_PDU
@@ -240,16 +240,16 @@ declare function SnmpGetPduData(byval PDU as HSNMP_PDU, byval PDU_type as smiLPI
 declare function SnmpSetPduData(byval PDU as HSNMP_PDU, byval PDU_type as const smiINT ptr, byval request_id as const smiINT32 ptr, byval non_repeaters as const smiINT ptr, byval max_repetitions as const smiINT ptr, byval varbindlist as const HSNMP_VBL ptr) as SNMPAPI_STATUS
 declare function SnmpDuplicatePdu(byval session as HSNMP_SESSION, byval PDU as HSNMP_PDU) as HSNMP_PDU
 declare function SnmpFreePdu(byval PDU as HSNMP_PDU) as SNMPAPI_STATUS
-declare function SnmpCreateVbl(byval session as HSNMP_SESSION, byval name_ as smiLPCOID, byval value as smiLPCVALUE) as HSNMP_VBL
+declare function SnmpCreateVbl(byval session as HSNMP_SESSION, byval name as smiLPCOID, byval value as smiLPCVALUE) as HSNMP_VBL
 declare function SnmpDuplicateVbl(byval session as HSNMP_SESSION, byval vbl as HSNMP_VBL) as HSNMP_VBL
 declare function SnmpFreeVbl(byval vbl as HSNMP_VBL) as SNMPAPI_STATUS
 declare function SnmpCountVbl(byval vbl as HSNMP_VBL) as SNMPAPI_STATUS
-declare function SnmpGetVb(byval vbl as HSNMP_VBL, byval index as smiUINT32, byval name_ as smiLPOID, byval value as smiLPVALUE) as SNMPAPI_STATUS
-declare function SnmpSetVb(byval vbl as HSNMP_VBL, byval index as smiUINT32, byval name_ as smiLPCOID, byval value as smiLPCVALUE) as SNMPAPI_STATUS
+declare function SnmpGetVb(byval vbl as HSNMP_VBL, byval index as smiUINT32, byval name as smiLPOID, byval value as smiLPVALUE) as SNMPAPI_STATUS
+declare function SnmpSetVb(byval vbl as HSNMP_VBL, byval index as smiUINT32, byval name as smiLPCOID, byval value as smiLPCVALUE) as SNMPAPI_STATUS
 declare function SnmpDeleteVb(byval vbl as HSNMP_VBL, byval index as smiUINT32) as SNMPAPI_STATUS
 declare function SnmpGetLastError(byval session as HSNMP_SESSION) as SNMPAPI_STATUS
-declare function SnmpStrToOid(byval string_ as LPCSTR, byval dstOID as smiLPOID) as SNMPAPI_STATUS
-declare function SnmpOidToStr(byval srcOID as smiLPCOID, byval size as smiUINT32, byval string_ as LPSTR) as SNMPAPI_STATUS
+declare function SnmpStrToOid(byval string as LPCSTR, byval dstOID as smiLPOID) as SNMPAPI_STATUS
+declare function SnmpOidToStr(byval srcOID as smiLPCOID, byval size as smiUINT32, byval string as LPSTR) as SNMPAPI_STATUS
 declare function SnmpOidCopy(byval srcOID as smiLPCOID, byval dstOID as smiLPOID) as SNMPAPI_STATUS
 declare function SnmpOidCompare(byval xOID as smiLPCOID, byval yOID as smiLPCOID, byval maxlen as smiUINT32, byval result as smiLPINT) as SNMPAPI_STATUS
 declare function SnmpEncodeMsg(byval session as HSNMP_SESSION, byval srcEntity as HSNMP_ENTITY, byval dstEntity as HSNMP_ENTITY, byval context as HSNMP_CONTEXT, byval pdu as HSNMP_PDU, byval msgBufDesc as smiLPOCTETS) as SNMPAPI_STATUS

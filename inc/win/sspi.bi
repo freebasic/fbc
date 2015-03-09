@@ -1047,8 +1047,8 @@ end enum
 
 type SASL_AUTHZID_STATE as _SASL_AUTHZID_STATE
 
-declare function SaslSetContextOption(byval ContextHandle as PCtxtHandle, byval Option_ as ULONG, byval Value as PVOID, byval Size as ULONG) as SECURITY_STATUS
-declare function SaslGetContextOption(byval ContextHandle as PCtxtHandle, byval Option_ as ULONG, byval Value as PVOID, byval Size as ULONG, byval Needed as PULONG) as SECURITY_STATUS
+declare function SaslSetContextOption(byval ContextHandle as PCtxtHandle, byval Option as ULONG, byval Value as PVOID, byval Size as ULONG) as SECURITY_STATUS
+declare function SaslGetContextOption(byval ContextHandle as PCtxtHandle, byval Option as ULONG, byval Value as PVOID, byval Size as ULONG, byval Needed as PULONG) as SECURITY_STATUS
 
 #define SEC_WINNT_AUTH_IDENTITY_VERSION &h200
 

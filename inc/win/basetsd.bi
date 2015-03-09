@@ -3,10 +3,6 @@
 #include once "_mingw.bi"
 
 '' The following symbols have been renamed:
-''     #define HandleToUlong => HandleToUlong_
-''     #define UlongToHandle => UlongToHandle_
-''     #define UlongToPtr => UlongToPtr_
-''     #define UintToPtr => UintToPtr_
 ''     typedef SIZE_T => SIZE_T_
 ''     typedef SSIZE_T => SSIZE_T_
 
@@ -154,7 +150,7 @@ type PDWORD32 as ulong ptr
 	type PULONG_PTR as ulong ptr
 
 	#define __int3264 long
-	#define ADDRESS_TAG_BIT __MSABI_LONG(&h80000000)
+	#define ADDRESS_TAG_BIT __MSABI_LONG(&h80000000u)
 
 	type UHALF_PTR as ushort
 	type PUHALF_PTR as ushort ptr
@@ -200,10 +196,6 @@ type PDWORD32 as ulong ptr
 #endif
 
 #define HandleToHandle32(h) PtrToPtr32(h)
-#define HandleToUlong_(h) HandleToULong(h)
-#define UlongToHandle_(ul) ULongToHandle(ul)
-#define UlongToPtr_(ul) ULongToPtr(ul)
-#define UintToPtr_(ui) UIntToPtr(ui)
 #define MAXUINT_PTR (not cast(UINT_PTR, 0))
 #define MAXINT_PTR cast(INT_PTR, MAXUINT_PTR shr 1)
 #define MININT_PTR (not MAXINT_PTR)

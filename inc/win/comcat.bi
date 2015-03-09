@@ -11,11 +11,6 @@
 
 extern "Windows"
 
-type IEnumGUID as IEnumGUID_
-type IEnumCATEGORYINFO as IEnumCATEGORYINFO_
-type ICatRegister as ICatRegister_
-type ICatInformation as ICatInformation_
-
 #define __comcat_h__
 #define __IEnumGUID_FWD_DEFINED__
 #define __IEnumCATEGORYINFO_FWD_DEFINED__
@@ -56,6 +51,8 @@ extern CATID_DesignTimeUIActivatableControl as const CATID
 #define _LPENUMGUID_DEFINED
 #define __IEnumGUID_INTERFACE_DEFINED__
 
+type IEnumGUID as IEnumGUID_
+
 type LPENUMGUID as IEnumGUID ptr
 
 extern IID_IEnumGUID as const GUID
@@ -87,6 +84,8 @@ declare function IEnumGUID_Next_Stub(byval This as IEnumGUID ptr, byval celt as 
 
 #define _LPENUMCATEGORYINFO_DEFINED
 #define __IEnumCATEGORYINFO_INTERFACE_DEFINED__
+
+type IEnumCATEGORYINFO as IEnumCATEGORYINFO_
 
 type LPENUMCATEGORYINFO as IEnumCATEGORYINFO ptr
 
@@ -127,6 +126,8 @@ declare sub IEnumCATEGORYINFO_Clone_Stub(byval This as IRpcStubBuffer ptr, byval
 #define _LPCATREGISTER_DEFINED
 #define __ICatRegister_INTERFACE_DEFINED__
 
+type ICatRegister as ICatRegister_
+
 type LPCATREGISTER as ICatRegister ptr
 
 extern IID_ICatRegister as const GUID
@@ -162,6 +163,8 @@ declare sub ICatRegister_UnRegisterClassReqCategories_Stub(byval This as IRpcStu
 
 #define _LPCATINFORMATION_DEFINED
 #define __ICatInformation_INTERFACE_DEFINED__
+
+type ICatInformation as ICatInformation_
 
 type LPCATINFORMATION as ICatInformation ptr
 

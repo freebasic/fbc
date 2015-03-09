@@ -1,29 +1,9 @@
 #pragma once
 
-#include once "crt/wchar.bi"
 #include once "mprapi.bi"
 #include once "ipmib.bi"
 #include once "ipifcons.bi"
 #include once "udpmib.bi"
-
-'' The following symbols have been renamed:
-''     #define MIB_IPPROTO_OTHER => MIB_IPPROTO_OTHER_
-''     #define MIB_IPPROTO_LOCAL => MIB_IPPROTO_LOCAL_
-''     #define MIB_IPPROTO_NETMGMT => MIB_IPPROTO_NETMGMT_
-''     #define MIB_IPPROTO_ICMP => MIB_IPPROTO_ICMP_
-''     #define MIB_IPPROTO_EGP => MIB_IPPROTO_EGP_
-''     #define MIB_IPPROTO_GGP => MIB_IPPROTO_GGP_
-''     #define MIB_IPPROTO_HELLO => MIB_IPPROTO_HELLO_
-''     #define MIB_IPPROTO_RIP => MIB_IPPROTO_RIP_
-''     #define MIB_IPPROTO_IS_IS => MIB_IPPROTO_IS_IS_
-''     #define MIB_IPPROTO_ES_IS => MIB_IPPROTO_ES_IS_
-''     #define MIB_IPPROTO_CISCO => MIB_IPPROTO_CISCO_
-''     #define MIB_IPPROTO_BBN => MIB_IPPROTO_BBN_
-''     #define MIB_IPPROTO_OSPF => MIB_IPPROTO_OSPF_
-''     #define MIB_IPPROTO_BGP => MIB_IPPROTO_BGP_
-''     #define MIB_IPPROTO_NT_AUTOSTATIC => MIB_IPPROTO_NT_AUTOSTATIC_
-''     #define MIB_IPPROTO_NT_STATIC => MIB_IPPROTO_NT_STATIC_
-''     #define MIB_IPPROTO_NT_STATIC_NON_DOD => MIB_IPPROTO_NT_STATIC_NON_DOD_
 
 #define __ROUTING_IPRTRMIB_H__
 #define IPRTRMGR_PID 10000
@@ -625,23 +605,6 @@ type PMIB_IPFORWARDROW as _MIB_IPFORWARDROW ptr
 #define MIB_IPROUTE_TYPE_DIRECT 3
 #define MIB_IPROUTE_TYPE_INDIRECT 4
 #define MIB_IPROUTE_METRIC_UNUSED cast(DWORD, -1)
-#define MIB_IPPROTO_OTHER_ 1
-#define MIB_IPPROTO_LOCAL_ 2
-#define MIB_IPPROTO_NETMGMT_ 3
-#define MIB_IPPROTO_ICMP_ 4
-#define MIB_IPPROTO_EGP_ 5
-#define MIB_IPPROTO_GGP_ 6
-#define MIB_IPPROTO_HELLO_ 7
-#define MIB_IPPROTO_RIP_ 8
-#define MIB_IPPROTO_IS_IS_ 9
-#define MIB_IPPROTO_ES_IS_ 10
-#define MIB_IPPROTO_CISCO_ 11
-#define MIB_IPPROTO_BBN_ 12
-#define MIB_IPPROTO_OSPF_ 13
-#define MIB_IPPROTO_BGP_ 14
-#define MIB_IPPROTO_NT_AUTOSTATIC_ 10002
-#define MIB_IPPROTO_NT_STATIC_ 10006
-#define MIB_IPPROTO_NT_STATIC_NON_DOD_ 10007
 
 type _MIB_IPFORWARDTABLE
 	dwNumEntries as DWORD
@@ -875,13 +838,12 @@ type PMIB_MCAST_LIMIT_ROW as MIB_MCAST_LIMIT_ROW ptr
 #define SN_UNICODE
 
 type SN_CHAR as wstring
-type SCOPE_NAME_BUFFER as wstring * 255 + 1
 type SCOPE_NAME as wstring ptr
 
 type _MIB_IPMCAST_SCOPE
 	dwGroupAddress as DWORD
 	dwGroupMask as DWORD
-	snNameBuffer as wchar_t
+	snNameBuffer as wstring * 255 + 1
 	dwStatus as DWORD
 end type
 

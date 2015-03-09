@@ -1,7 +1,7 @@
 #pragma once
 
-#include once "crt/wchar.bi"
 #include once "crt/long.bi"
+#include once "crt/mem.bi"
 #include once "_mingw_unicode.bi"
 #include once "_mingw.bi"
 #include once "crt/ctype.bi"
@@ -10,22 +10,11 @@
 #include once "intrin.bi"
 #include once "basetsd.bi"
 #include once "guiddef.bi"
-#include once "crt/string.bi"
 
 '' The following symbols have been renamed:
-''     #define DELETE => DELETE_
-''     inside struct _EXCEPTION_REGISTRATION_RECORD:
-''         field handler => handler_
-''     inside struct _IMAGE_DEBUG_MISC:
-''         field Unicode => Unicode_
+''     #define DELETE => DELETE__
 
 extern "Windows"
-
-type _TEB as _TEB_
-type _RTL_CRITICAL_SECTION as _RTL_CRITICAL_SECTION_
-type _ACTIVATION_CONTEXT as _ACTIVATION_CONTEXT_
-type _EXCEPTION_RECORD as _EXCEPTION_RECORD_
-type _CONTEXT as _CONTEXT_
 
 #define _WINNT_
 #define ANYSIZE_ARRAY 1
@@ -49,6 +38,7 @@ type PVOID64 as any ptr
 #define VOID any
 
 type CHAR as zstring
+type INT_ as long
 
 #define __WCHAR_DEFINED
 
@@ -199,12 +189,6 @@ type FLONG as DWORD
 #define _HRESULT_DEFINED
 
 type HRESULT as LONG
-
-#define IFACEMETHODIMP STDMETHODIMP
-#define IFACEMETHODIMP_(type) STDMETHODIMP_(type)
-#define IFACEMETHODIMPV STDMETHODIMPV
-#define IFACEMETHODIMPV_(type) STDMETHODIMPV_(type)
-
 type CCHAR as zstring
 
 #define _LCID_DEFINED
@@ -253,7 +237,7 @@ type USN as LONGLONG
 
 #define _LARGE_INTEGER_DEFINED
 
-type ___LARGE_INTEGER_u
+type _LARGE_INTEGER_u
 	LowPart as DWORD
 	HighPart as LONG
 end type
@@ -264,14 +248,14 @@ union _LARGE_INTEGER
 		HighPart as LONG
 	end type
 
-	u as ___LARGE_INTEGER_u
+	u as _LARGE_INTEGER_u
 	QuadPart as LONGLONG
 end union
 
 type LARGE_INTEGER as _LARGE_INTEGER
 type PLARGE_INTEGER as LARGE_INTEGER ptr
 
-type ___ULARGE_INTEGER_u
+type _ULARGE_INTEGER_u
 	LowPart as DWORD
 	HighPart as DWORD
 end type
@@ -282,7 +266,7 @@ union _ULARGE_INTEGER
 		HighPart as DWORD
 	end type
 
-	u as ___ULARGE_INTEGER_u
+	u as _ULARGE_INTEGER_u
 	QuadPart as ULONGLONG
 end union
 
@@ -410,6 +394,8 @@ type OBJECTID as _OBJECTID
 #define CONTAINING_RECORD(address, type, field) cptr(type ptr, cast(PCHAR, (address)) - cast(ULONG_PTR, @cptr(type ptr, 0)->field))
 #define __PEXCEPTION_ROUTINE_DEFINED
 
+type _EXCEPTION_RECORD as _EXCEPTION_RECORD_
+type _CONTEXT as _CONTEXT_
 type PEXCEPTION_ROUTINE as function(byval ExceptionRecord as _EXCEPTION_RECORD ptr, byval EstablisherFrame as PVOID, byval ContextRecord as _CONTEXT ptr, byval DispatcherContext as PVOID) as long
 
 #define VER_WORKSTATION_NT &h40000000
@@ -1084,7 +1070,7 @@ end type
 type XSTATE_CONTEXT as _XSTATE_CONTEXT
 type PXSTATE_CONTEXT as _XSTATE_CONTEXT ptr
 
-type ___SCOPE_TABLE_AMD64_ScopeRecord
+type _SCOPE_TABLE_AMD64_ScopeRecord
 	BeginAddress as DWORD
 	EndAddress as DWORD
 	HandlerAddress as DWORD
@@ -1093,7 +1079,7 @@ end type
 
 type _SCOPE_TABLE_AMD64
 	Count as DWORD
-	ScopeRecord(0 to 0) as ___SCOPE_TABLE_AMD64_ScopeRecord
+	ScopeRecord(0 to 0) as _SCOPE_TABLE_AMD64_ScopeRecord
 end type
 
 type SCOPE_TABLE_AMD64 as _SCOPE_TABLE_AMD64
@@ -1123,6 +1109,8 @@ type PSCOPE_TABLE_AMD64 as _SCOPE_TABLE_AMD64 ptr
 
 #define InterlockedCompareExchange16 _InterlockedCompareExchange16
 
+type _TEB as _TEB_
+
 #ifdef __FB_64BIT__
 	#define InterlockedAnd _InterlockedAnd
 	#define InterlockedOr _InterlockedOr
@@ -1136,9 +1124,13 @@ type PSCOPE_TABLE_AMD64 as _SCOPE_TABLE_AMD64 ptr
 	#define InterlockedIncrementSizeT(a) InterlockedIncrement64(cptr(LONG64 ptr, a))
 	#define InterlockedDecrementSizeT(a) InterlockedDecrement64(cptr(LONG64 ptr, a))
 
+	declare function _InterlockedAdd(byval Addend as LONG ptr, byval Value as LONG) as LONG
+
 	private function _InterlockedAdd(byval Addend as LONG ptr, byval Value as LONG) as LONG
 		return _InterlockedExchangeAdd(Addend, Value) + Value
 	end function
+
+	declare function _InterlockedAdd64(byval Addend as LONG64 ptr, byval Value as LONG64) as LONG64
 
 	private function _InterlockedAdd64(byval Addend as LONG64 ptr, byval Value as LONG64) as LONG64
 		return _InterlockedExchangeAdd64(Addend, Value) + Value
@@ -1402,14 +1394,14 @@ type CONTEXT as _CONTEXT
 
 #define _LDT_ENTRY_DEFINED
 
-type ___LDT_ENTRY_Bytes
+type _LDT_ENTRY_HighWord_Bytes
 	BaseMid as UBYTE
 	Flags1 as UBYTE
 	Flags2 as UBYTE
 	BaseHi as UBYTE
 end type
 
-type ___LDT_ENTRY_Bits
+type _LDT_ENTRY_HighWord_Bits
 	BaseMid : 8 as DWORD
 	as DWORD Type : 5
 	Dpl : 2 as DWORD
@@ -1422,15 +1414,15 @@ type ___LDT_ENTRY_Bits
 	BaseHi : 8 as DWORD
 end type
 
-union ___LDT_ENTRY_HighWord
-	Bytes as ___LDT_ENTRY_Bytes
-	Bits as ___LDT_ENTRY_Bits
+union _LDT_ENTRY_HighWord
+	Bytes as _LDT_ENTRY_HighWord_Bytes
+	Bits as _LDT_ENTRY_HighWord_Bits
 end union
 
 type _LDT_ENTRY
 	LimitLow as WORD
 	BaseLow as WORD
-	HighWord as ___LDT_ENTRY_HighWord
+	HighWord as _LDT_ENTRY_HighWord
 end type
 
 type LDT_ENTRY as _LDT_ENTRY
@@ -1552,11 +1544,11 @@ type PCLAIMS_BLOB as PVOID
 type ACCESS_MASK as DWORD
 type PACCESS_MASK as ACCESS_MASK ptr
 
-#define DELETE_ __MSABI_LONG(&h00010000)
+#define DELETE__ __MSABI_LONG(&h00010000)
 #define READ_CONTROL __MSABI_LONG(&h00020000)
 #define WRITE_DAC __MSABI_LONG(&h00040000)
 #define WRITE_OWNER __MSABI_LONG(&h00080000)
-#define SYNCHRONIZE __MSABI_LONG(&h00100000)
+const SYNCHRONIZE = __MSABI_LONG(&h00100000)
 #define STANDARD_RIGHTS_REQUIRED __MSABI_LONG(&h000F0000)
 #define STANDARD_RIGHTS_READ READ_CONTROL
 #define STANDARD_RIGHTS_WRITE READ_CONTROL
@@ -1589,6 +1581,8 @@ type LUID_AND_ATTRIBUTES as _LUID_AND_ATTRIBUTES
 type PLUID_AND_ATTRIBUTES as _LUID_AND_ATTRIBUTES ptr
 type PLUID_AND_ATTRIBUTES_ARRAY as LUID_AND_ATTRIBUTES ptr
 
+#define SID_IDENTIFIER_AUTHORITY_DEFINED
+
 type _SID_IDENTIFIER_AUTHORITY
 	Value(0 to 5) as UBYTE
 end type
@@ -1596,7 +1590,6 @@ end type
 type SID_IDENTIFIER_AUTHORITY as _SID_IDENTIFIER_AUTHORITY
 type PSID_IDENTIFIER_AUTHORITY as _SID_IDENTIFIER_AUTHORITY ptr
 
-#define SID_IDENTIFIER_AUTHORITY_DEFINED
 #define SID_DEFINED
 
 type _SID
@@ -2765,7 +2758,7 @@ type PCLAIM_SECURITY_ATTRIBUTE_OCTET_STRING_VALUE as _CLAIM_SECURITY_ATTRIBUTE_O
 #define CLAIM_SECURITY_ATTRIBUTE_VALID_FLAGS (((((CLAIM_SECURITY_ATTRIBUTE_NON_INHERITABLE or CLAIM_SECURITY_ATTRIBUTE_VALUE_CASE_SENSITIVE) or CLAIM_SECURITY_ATTRIBUTE_USE_FOR_DENY_ONLY) or CLAIM_SECURITY_ATTRIBUTE_DISABLED_BY_DEFAULT) or CLAIM_SECURITY_ATTRIBUTE_DISABLED) or CLAIM_SECURITY_ATTRIBUTE_MANDATORY)
 #define CLAIM_SECURITY_ATTRIBUTE_CUSTOM_FLAGS &hffff0000
 
-union ___CLAIM_SECURITY_ATTRIBUTE_V1_Values
+union _CLAIM_SECURITY_ATTRIBUTE_V1_Values
 	pInt64 as PLONG64
 	pUint64 as PDWORD64
 	ppString as PWSTR ptr
@@ -2779,13 +2772,13 @@ type _CLAIM_SECURITY_ATTRIBUTE_V1
 	Reserved as WORD
 	Flags as DWORD
 	ValueCount as DWORD
-	Values as ___CLAIM_SECURITY_ATTRIBUTE_V1_Values
+	Values as _CLAIM_SECURITY_ATTRIBUTE_V1_Values
 end type
 
 type CLAIM_SECURITY_ATTRIBUTE_V1 as _CLAIM_SECURITY_ATTRIBUTE_V1
 type PCLAIM_SECURITY_ATTRIBUTE_V1 as _CLAIM_SECURITY_ATTRIBUTE_V1 ptr
 
-union ___CLAIM_SECURITY_ATTRIBUTE_RELATIVE_V1_Values
+union _CLAIM_SECURITY_ATTRIBUTE_RELATIVE_V1_Values
 	pInt64(0 to 0) as DWORD
 	pUint64(0 to 0) as DWORD
 	ppString(0 to 0) as DWORD
@@ -2799,7 +2792,7 @@ type _CLAIM_SECURITY_ATTRIBUTE_RELATIVE_V1
 	Reserved as WORD
 	Flags as DWORD
 	ValueCount as DWORD
-	Values as ___CLAIM_SECURITY_ATTRIBUTE_RELATIVE_V1_Values
+	Values as _CLAIM_SECURITY_ATTRIBUTE_RELATIVE_V1_Values
 end type
 
 type CLAIM_SECURITY_ATTRIBUTE_RELATIVE_V1 as _CLAIM_SECURITY_ATTRIBUTE_RELATIVE_V1
@@ -2808,7 +2801,7 @@ type PCLAIM_SECURITY_ATTRIBUTE_RELATIVE_V1 as _CLAIM_SECURITY_ATTRIBUTE_RELATIVE
 #define CLAIM_SECURITY_ATTRIBUTES_INFORMATION_VERSION_V1 1
 #define CLAIM_SECURITY_ATTRIBUTES_INFORMATION_VERSION CLAIM_SECURITY_ATTRIBUTES_INFORMATION_VERSION_V1
 
-union ___CLAIM_SECURITY_ATTRIBUTES_INFORMATION_Attribute
+union _CLAIM_SECURITY_ATTRIBUTES_INFORMATION_Attribute
 	pAttributeV1 as PCLAIM_SECURITY_ATTRIBUTE_V1
 end union
 
@@ -2816,7 +2809,7 @@ type _CLAIM_SECURITY_ATTRIBUTES_INFORMATION
 	Version as WORD
 	Reserved as WORD
 	AttributeCount as DWORD
-	Attribute as ___CLAIM_SECURITY_ATTRIBUTES_INFORMATION_Attribute
+	Attribute as _CLAIM_SECURITY_ATTRIBUTES_INFORMATION_Attribute
 end type
 
 type CLAIM_SECURITY_ATTRIBUTES_INFORMATION as _CLAIM_SECURITY_ATTRIBUTES_INFORMATION
@@ -2963,7 +2956,6 @@ type _EXCEPTION_REGISTRATION_RECORD
 
 	union
 		Handler as PEXCEPTION_ROUTINE
-		handler_ as PEXCEPTION_ROUTINE
 	end union
 end type
 
@@ -3522,11 +3514,11 @@ end type
 type CACHE_DESCRIPTOR as _CACHE_DESCRIPTOR
 type PCACHE_DESCRIPTOR as _CACHE_DESCRIPTOR ptr
 
-type ___SYSTEM_LOGICAL_PROCESSOR_INFORMATION_ProcessorCore
+type _SYSTEM_LOGICAL_PROCESSOR_INFORMATION_ProcessorCore
 	Flags as UBYTE
 end type
 
-type ___SYSTEM_LOGICAL_PROCESSOR_INFORMATION_NumaNode
+type _SYSTEM_LOGICAL_PROCESSOR_INFORMATION_NumaNode
 	NodeNumber as DWORD
 end type
 
@@ -3535,8 +3527,8 @@ type _SYSTEM_LOGICAL_PROCESSOR_INFORMATION
 	Relationship as LOGICAL_PROCESSOR_RELATIONSHIP
 
 	union
-		ProcessorCore as ___SYSTEM_LOGICAL_PROCESSOR_INFORMATION_ProcessorCore
-		NumaNode as ___SYSTEM_LOGICAL_PROCESSOR_INFORMATION_NumaNode
+		ProcessorCore as _SYSTEM_LOGICAL_PROCESSOR_INFORMATION_ProcessorCore
+		NumaNode as _SYSTEM_LOGICAL_PROCESSOR_INFORMATION_NumaNode
 		Cache as CACHE_DESCRIPTOR
 		Reserved(0 to 1) as ULONGLONG
 	end union
@@ -3933,7 +3925,7 @@ end union
 type FILE_SEGMENT_ELEMENT as _FILE_SEGMENT_ELEMENT
 type PFILE_SEGMENT_ELEMENT as _FILE_SEGMENT_ELEMENT ptr
 
-type ___REPARSE_GUID_DATA_BUFFER_GenericReparseBuffer
+type _REPARSE_GUID_DATA_BUFFER_GenericReparseBuffer
 	DataBuffer(0 to 0) as UBYTE
 end type
 
@@ -3942,7 +3934,7 @@ type _REPARSE_GUID_DATA_BUFFER
 	ReparseDataLength as WORD
 	Reserved as WORD
 	ReparseGuid as GUID
-	GenericReparseBuffer as ___REPARSE_GUID_DATA_BUFFER_GenericReparseBuffer
+	GenericReparseBuffer as _REPARSE_GUID_DATA_BUFFER_GenericReparseBuffer
 end type
 
 type REPARSE_GUID_DATA_BUFFER as _REPARSE_GUID_DATA_BUFFER
@@ -4262,15 +4254,17 @@ end enum
 type POWER_REQUEST_TYPE as _POWER_REQUEST_TYPE
 type PPOWER_REQUEST_TYPE as _POWER_REQUEST_TYPE ptr
 
-#define PDCAP_D0_SUPPORTED &h00000001
-#define PDCAP_D1_SUPPORTED &h00000002
-#define PDCAP_D2_SUPPORTED &h00000004
-#define PDCAP_D3_SUPPORTED &h00000008
-#define PDCAP_WAKE_FROM_D0_SUPPORTED &h00000010
-#define PDCAP_WAKE_FROM_D1_SUPPORTED &h00000020
-#define PDCAP_WAKE_FROM_D2_SUPPORTED &h00000040
-#define PDCAP_WAKE_FROM_D3_SUPPORTED &h00000080
-#define PDCAP_WARM_EJECT_SUPPORTED &h00000100
+#if (_WIN32_WINNT = &h0400) or (_WIN32_WINNT = &h0502)
+	#define PDCAP_D0_SUPPORTED &h00000001
+	#define PDCAP_D1_SUPPORTED &h00000002
+	#define PDCAP_D2_SUPPORTED &h00000004
+	#define PDCAP_D3_SUPPORTED &h00000008
+	#define PDCAP_WAKE_FROM_D0_SUPPORTED &h00000010
+	#define PDCAP_WAKE_FROM_D1_SUPPORTED &h00000020
+	#define PDCAP_WAKE_FROM_D2_SUPPORTED &h00000040
+	#define PDCAP_WAKE_FROM_D3_SUPPORTED &h00000080
+	#define PDCAP_WARM_EJECT_SUPPORTED &h00000100
+#endif
 
 type CM_Power_Data_s
 	PD_Size as DWORD
@@ -4891,7 +4885,7 @@ type PSYSTEM_POWER_POLICY as _SYSTEM_POWER_POLICY ptr
 #define PO_THROTTLE_ADAPTIVE 3
 #define PO_THROTTLE_MAXIMUM 4
 
-union __PROCESSOR_IDLESTATE_POLICY_Flags
+union PROCESSOR_IDLESTATE_POLICY_Flags
 	AsWORD as WORD
 
 	type
@@ -4903,7 +4897,7 @@ end union
 
 type PROCESSOR_IDLESTATE_POLICY
 	Revision as WORD
-	Flags as __PROCESSOR_IDLESTATE_POLICY_Flags
+	Flags as PROCESSOR_IDLESTATE_POLICY_Flags
 	PolicyCount as DWORD
 	Policy(0 to 2) as PROCESSOR_IDLESTATE_INFO
 end type
@@ -4938,7 +4932,7 @@ end type
 type PROCESSOR_POWER_POLICY as _PROCESSOR_POWER_POLICY
 type PPROCESSOR_POWER_POLICY as _PROCESSOR_POWER_POLICY ptr
 
-union __PROCESSOR_PERFSTATE_POLICY_Flags
+union PROCESSOR_PERFSTATE_POLICY_Flags
 	AsBYTE as UBYTE
 
 	type
@@ -4957,7 +4951,7 @@ type PROCESSOR_PERFSTATE_POLICY
 
 	union
 		Spare as UBYTE
-		Flags as __PROCESSOR_PERFSTATE_POLICY_Flags
+		Flags as PROCESSOR_PERFSTATE_POLICY_Flags
 	end union
 
 	TimeCheck as DWORD
@@ -5031,6 +5025,12 @@ end type
 
 type PSYSTEM_BATTERY_STATE as SYSTEM_BATTERY_STATE ptr
 
+#define IMAGE_DOS_SIGNATURE &h5A4D
+#define IMAGE_OS2_SIGNATURE &h454E
+#define IMAGE_OS2_SIGNATURE_LE &h454C
+#define IMAGE_VXD_SIGNATURE &h454C
+#define IMAGE_NT_SIGNATURE &h00004550
+
 type _IMAGE_DOS_HEADER field = 2
 	e_magic as WORD
 	e_cblp as WORD
@@ -5055,12 +5055,6 @@ end type
 
 type IMAGE_DOS_HEADER as _IMAGE_DOS_HEADER
 type PIMAGE_DOS_HEADER as _IMAGE_DOS_HEADER ptr
-
-#define IMAGE_DOS_SIGNATURE &h5A4D
-#define IMAGE_OS2_SIGNATURE &h454E
-#define IMAGE_OS2_SIGNATURE_LE &h454C
-#define IMAGE_VXD_SIGNATURE &h454C
-#define IMAGE_NT_SIGNATURE &h00004550
 
 type _IMAGE_OS2_HEADER field = 2
 	ne_magic as WORD
@@ -5455,14 +5449,14 @@ end type
 
 #define IMAGE_SIZEOF_SHORT_NAME 8
 
-union ___IMAGE_SECTION_HEADER_Misc field = 4
+union _IMAGE_SECTION_HEADER_Misc field = 4
 	PhysicalAddress as DWORD
 	VirtualSize as DWORD
 end union
 
 type _IMAGE_SECTION_HEADER field = 4
 	Name(0 to 7) as UBYTE
-	Misc as ___IMAGE_SECTION_HEADER_Misc
+	Misc as _IMAGE_SECTION_HEADER_Misc
 	VirtualAddress as DWORD
 	SizeOfRawData as DWORD
 	PointerToRawData as DWORD
@@ -5517,19 +5511,19 @@ type PIMAGE_SECTION_HEADER as _IMAGE_SECTION_HEADER ptr
 #define IMAGE_SCN_MEM_WRITE &h80000000
 #define IMAGE_SCN_SCALE_INDEX &h00000001
 
-type ___IMAGE_SYMBOL_Name field = 2
+type _IMAGE_SYMBOL_N_Name field = 2
 	Short as DWORD
 	Long as DWORD
 end type
 
-union ___IMAGE_SYMBOL_N field = 2
+union _IMAGE_SYMBOL_N field = 2
 	ShortName(0 to 7) as UBYTE
-	Name as ___IMAGE_SYMBOL_Name
+	Name as _IMAGE_SYMBOL_N_Name
 	LongName(0 to 1) as DWORD
 end union
 
 type _IMAGE_SYMBOL field = 2
-	N as ___IMAGE_SYMBOL_N
+	N as _IMAGE_SYMBOL_N
 	Value as DWORD
 	SectionNumber as SHORT
 	as WORD Type
@@ -5542,19 +5536,19 @@ type PIMAGE_SYMBOL as IMAGE_SYMBOL ptr
 
 #define IMAGE_SIZEOF_SYMBOL 18
 
-type ___IMAGE_SYMBOL_EX_Name field = 2
+type _IMAGE_SYMBOL_EX_N_Name field = 2
 	Short as DWORD
 	Long as DWORD
 end type
 
-union ___IMAGE_SYMBOL_EX_N field = 2
+union _IMAGE_SYMBOL_EX_N field = 2
 	ShortName(0 to 7) as UBYTE
-	Name as ___IMAGE_SYMBOL_EX_Name
+	Name as _IMAGE_SYMBOL_EX_N_Name
 	LongName(0 to 1) as DWORD
 end union
 
 type _IMAGE_SYMBOL_EX field = 2
-	N as ___IMAGE_SYMBOL_EX_N
+	N as _IMAGE_SYMBOL_EX_N
 	Value as DWORD
 	SectionNumber as LONG
 	as WORD Type
@@ -5642,42 +5636,42 @@ end type
 
 type PIMAGE_AUX_SYMBOL_TOKEN_DEF as IMAGE_AUX_SYMBOL_TOKEN_DEF ptr
 
-type ___IMAGE_AUX_SYMBOL_LnSz field = 2
+type _IMAGE_AUX_SYMBOL_Sym_Misc_LnSz field = 2
 	Linenumber as WORD
 	Size as WORD
 end type
 
-union ___IMAGE_AUX_SYMBOL_Misc field = 2
-	LnSz as ___IMAGE_AUX_SYMBOL_LnSz
+union _IMAGE_AUX_SYMBOL_Sym_Misc field = 2
+	LnSz as _IMAGE_AUX_SYMBOL_Sym_Misc_LnSz
 	TotalSize as DWORD
 end union
 
-type ___IMAGE_AUX_SYMBOL_Function field = 2
+type _IMAGE_AUX_SYMBOL_Sym_FcnAry_Function field = 2
 	PointerToLinenumber as DWORD
 	PointerToNextFunction as DWORD
 end type
 
-type ___IMAGE_AUX_SYMBOL_Array field = 2
+type _IMAGE_AUX_SYMBOL_Sym_FcnAry_Array field = 2
 	Dimension(0 to 3) as WORD
 end type
 
-union ___IMAGE_AUX_SYMBOL_FcnAry field = 2
-	Function as ___IMAGE_AUX_SYMBOL_Function
-	Array as ___IMAGE_AUX_SYMBOL_Array
+union _IMAGE_AUX_SYMBOL_Sym_FcnAry field = 2
+	Function as _IMAGE_AUX_SYMBOL_Sym_FcnAry_Function
+	Array as _IMAGE_AUX_SYMBOL_Sym_FcnAry_Array
 end union
 
-type ___IMAGE_AUX_SYMBOL_Sym field = 2
+type _IMAGE_AUX_SYMBOL_Sym field = 2
 	TagIndex as DWORD
-	Misc as ___IMAGE_AUX_SYMBOL_Misc
-	FcnAry as ___IMAGE_AUX_SYMBOL_FcnAry
+	Misc as _IMAGE_AUX_SYMBOL_Sym_Misc
+	FcnAry as _IMAGE_AUX_SYMBOL_Sym_FcnAry
 	TvIndex as WORD
 end type
 
-type ___IMAGE_AUX_SYMBOL_File field = 2
+type _IMAGE_AUX_SYMBOL_File field = 2
 	Name(0 to 17) as UBYTE
 end type
 
-type ___IMAGE_AUX_SYMBOL_Section field = 2
+type _IMAGE_AUX_SYMBOL_Section field = 2
 	Length as DWORD
 	NumberOfRelocations as WORD
 	NumberOfLinenumbers as WORD
@@ -5686,33 +5680,33 @@ type ___IMAGE_AUX_SYMBOL_Section field = 2
 	Selection as UBYTE
 end type
 
-type ___IMAGE_AUX_SYMBOL_CRC field = 2
+type _IMAGE_AUX_SYMBOL_CRC field = 2
 	crc as DWORD
 	rgbReserved(0 to 13) as UBYTE
 end type
 
 union _IMAGE_AUX_SYMBOL field = 2
-	Sym as ___IMAGE_AUX_SYMBOL_Sym
-	File as ___IMAGE_AUX_SYMBOL_File
-	Section as ___IMAGE_AUX_SYMBOL_Section
+	Sym as _IMAGE_AUX_SYMBOL_Sym
+	File as _IMAGE_AUX_SYMBOL_File
+	Section as _IMAGE_AUX_SYMBOL_Section
 	TokenDef as IMAGE_AUX_SYMBOL_TOKEN_DEF
-	CRC as ___IMAGE_AUX_SYMBOL_CRC
+	CRC as _IMAGE_AUX_SYMBOL_CRC
 end union
 
 type IMAGE_AUX_SYMBOL as _IMAGE_AUX_SYMBOL
 type PIMAGE_AUX_SYMBOL as _IMAGE_AUX_SYMBOL ptr
 
-type ___IMAGE_AUX_SYMBOL_EX_Sym field = 2
+type _IMAGE_AUX_SYMBOL_EX_Sym field = 2
 	WeakDefaultSymIndex as DWORD
 	WeakSearchType as DWORD
 	rgbReserved(0 to 11) as UBYTE
 end type
 
-type ___IMAGE_AUX_SYMBOL_EX_File field = 2
+type _IMAGE_AUX_SYMBOL_EX_File field = 2
 	Name(0 to sizeof(IMAGE_SYMBOL_EX) - 1) as UBYTE
 end type
 
-type ___IMAGE_AUX_SYMBOL_EX_Section field = 2
+type _IMAGE_AUX_SYMBOL_EX_Section field = 2
 	Length as DWORD
 	NumberOfRelocations as WORD
 	NumberOfLinenumbers as WORD
@@ -5724,22 +5718,22 @@ type ___IMAGE_AUX_SYMBOL_EX_Section field = 2
 	rgbReserved(0 to 1) as UBYTE
 end type
 
-type ___IMAGE_AUX_SYMBOL_EX_CRC field = 2
+type _IMAGE_AUX_SYMBOL_EX_CRC field = 2
 	crc as DWORD
 	rgbReserved(0 to 15) as UBYTE
 end type
 
 union _IMAGE_AUX_SYMBOL_EX field = 2
-	Sym as ___IMAGE_AUX_SYMBOL_EX_Sym
-	File as ___IMAGE_AUX_SYMBOL_EX_File
-	Section as ___IMAGE_AUX_SYMBOL_EX_Section
+	Sym as _IMAGE_AUX_SYMBOL_EX_Sym
+	File as _IMAGE_AUX_SYMBOL_EX_File
+	Section as _IMAGE_AUX_SYMBOL_EX_Section
 
 	type field = 2
 		TokenDef as IMAGE_AUX_SYMBOL_TOKEN_DEF
 		rgbReserved(0 to 1) as UBYTE
 	end type
 
-	CRC as ___IMAGE_AUX_SYMBOL_EX_CRC
+	CRC as _IMAGE_AUX_SYMBOL_EX_CRC
 end union
 
 type IMAGE_AUX_SYMBOL_EX as _IMAGE_AUX_SYMBOL_EX
@@ -6079,13 +6073,13 @@ type PIMAGE_RELOCATION as IMAGE_RELOCATION ptr
 #define X3_EMPTY_INST_WORD_POS_X 14
 #define X3_EMPTY_INST_VAL_POS_X 0
 
-union ___IMAGE_LINENUMBER_Type field = 2
+union _IMAGE_LINENUMBER_Type field = 2
 	SymbolTableIndex as DWORD
 	VirtualAddress as DWORD
 end union
 
 type _IMAGE_LINENUMBER field = 2
-	as ___IMAGE_LINENUMBER_Type Type
+	as _IMAGE_LINENUMBER_Type Type
 	Linenumber as WORD
 end type
 
@@ -6161,7 +6155,7 @@ end type
 type IMAGE_IMPORT_BY_NAME as _IMAGE_IMPORT_BY_NAME
 type PIMAGE_IMPORT_BY_NAME as _IMAGE_IMPORT_BY_NAME ptr
 
-union ___IMAGE_THUNK_DATA64_u1
+union _IMAGE_THUNK_DATA64_u1
 	ForwarderString as ULONGLONG
 	Function as ULONGLONG
 	Ordinal as ULONGLONG
@@ -6169,13 +6163,13 @@ union ___IMAGE_THUNK_DATA64_u1
 end union
 
 type _IMAGE_THUNK_DATA64
-	u1 as ___IMAGE_THUNK_DATA64_u1
+	u1 as _IMAGE_THUNK_DATA64_u1
 end type
 
 type IMAGE_THUNK_DATA64 as _IMAGE_THUNK_DATA64
 type PIMAGE_THUNK_DATA64 as IMAGE_THUNK_DATA64 ptr
 
-union ___IMAGE_THUNK_DATA32_u1 field = 4
+union _IMAGE_THUNK_DATA32_u1 field = 4
 	ForwarderString as DWORD
 	Function as DWORD
 	Ordinal as DWORD
@@ -6183,7 +6177,7 @@ union ___IMAGE_THUNK_DATA32_u1 field = 4
 end union
 
 type _IMAGE_THUNK_DATA32 field = 4
-	u1 as ___IMAGE_THUNK_DATA32_u1
+	u1 as _IMAGE_THUNK_DATA32_u1
 end type
 
 type IMAGE_THUNK_DATA32 as _IMAGE_THUNK_DATA32
@@ -6279,7 +6273,7 @@ end type
 type IMAGE_BOUND_FORWARDER_REF as _IMAGE_BOUND_FORWARDER_REF
 type PIMAGE_BOUND_FORWARDER_REF as _IMAGE_BOUND_FORWARDER_REF ptr
 
-union ___IMAGE_DELAYLOAD_DESCRIPTOR_Attributes field = 4
+union _IMAGE_DELAYLOAD_DESCRIPTOR_Attributes field = 4
 	AllAttributes as DWORD
 
 	type field = 4
@@ -6289,7 +6283,7 @@ union ___IMAGE_DELAYLOAD_DESCRIPTOR_Attributes field = 4
 end union
 
 type _IMAGE_DELAYLOAD_DESCRIPTOR field = 4
-	Attributes as ___IMAGE_DELAYLOAD_DESCRIPTOR_Attributes
+	Attributes as _IMAGE_DELAYLOAD_DESCRIPTOR_Attributes
 	DllNameRVA as DWORD
 	ModuleHandleRVA as DWORD
 	ImportAddressTableRVA as DWORD
@@ -6654,6 +6648,8 @@ end type
 type IMAGE_ARCHITECTURE_ENTRY as _ImageArchitectureEntry
 type PIMAGE_ARCHITECTURE_ENTRY as _ImageArchitectureEntry ptr
 
+#define IMPORT_OBJECT_HDR_SIG2 &hffff
+
 type IMPORT_OBJECT_HEADER
 	Sig1 as WORD
 	Sig2 as WORD
@@ -6671,8 +6667,6 @@ type IMPORT_OBJECT_HEADER
 	NameType : 3 as WORD
 	Reserved : 11 as WORD
 end type
-
-#define IMPORT_OBJECT_HDR_SIG2 &hffff
 
 type IMPORT_OBJECT_TYPE as long
 enum
@@ -6775,7 +6769,7 @@ declare function RtlPcToFileHeader(byval PcValue as PVOID, byval BaseOfImage as 
 	type SLIST_ENTRY as _SLIST_ENTRY
 	type PSLIST_ENTRY as _SLIST_ENTRY ptr
 
-	type ___SLIST_HEADER_Header8
+	type _SLIST_HEADER_Header8
 		Depth : 16 as ULONGLONG
 		Sequence : 9 as ULONGLONG
 		NextEntry : 39 as ULONGLONG
@@ -6785,7 +6779,7 @@ declare function RtlPcToFileHeader(byval PcValue as PVOID, byval BaseOfImage as 
 		Region : 3 as ULONGLONG
 	end type
 
-	type ___SLIST_HEADER_HeaderX64
+	type _SLIST_HEADER_HeaderX64
 		Depth : 16 as ULONGLONG
 		Sequence : 48 as ULONGLONG
 		HeaderType : 1 as ULONGLONG
@@ -6814,8 +6808,8 @@ union _SLIST_HEADER
 	end type
 
 	#ifdef __FB_64BIT__
-		Header8 as ___SLIST_HEADER_Header8
-		HeaderX64 as ___SLIST_HEADER_HeaderX64
+		Header8 as _SLIST_HEADER_Header8
+		HeaderX64 as _SLIST_HEADER_HeaderX64
 	#endif
 end union
 
@@ -6841,9 +6835,9 @@ type PRTL_RUN_ONCE as _RTL_RUN_ONCE ptr
 type PRTL_RUN_ONCE_INIT_FN as function(byval as PRTL_RUN_ONCE, byval as PVOID, byval as PVOID ptr) as DWORD
 
 #define RTL_RUN_ONCE_INIT (0)
-#define RTL_RUN_ONCE_CHECK_ONLY __MSABI_LONG(1)
-#define RTL_RUN_ONCE_ASYNC __MSABI_LONG(2)
-#define RTL_RUN_ONCE_INIT_FAILED __MSABI_LONG(4)
+#define RTL_RUN_ONCE_CHECK_ONLY __MSABI_LONG(1u)
+#define RTL_RUN_ONCE_ASYNC __MSABI_LONG(2u)
+#define RTL_RUN_ONCE_INIT_FAILED __MSABI_LONG(4u)
 #define RTL_RUN_ONCE_CTX_RESERVED_BITS 2
 
 type _RTL_BARRIER
@@ -6913,7 +6907,7 @@ type PRTL_BARRIER as _RTL_BARRIER ptr
 #define RtlFillMemory(Destination, Length, Fill) memset((Destination), (Fill), (Length))
 #define RtlZeroMemory(Destination, Length) memset((Destination), 0, (Length))
 
-declare function RtlSecureZeroMemory(byval ptr_ as PVOID, byval cnt as SIZE_T_) as PVOID
+declare function RtlSecureZeroMemory(byval ptr as PVOID, byval cnt as SIZE_T_) as PVOID
 
 type _MESSAGE_RESOURCE_ENTRY
 	Length as WORD
@@ -7107,12 +7101,14 @@ type PRTL_UMS_SCHEDULER_ENTRY_POINT as sub(byval Reason as RTL_UMS_SCHEDULER_REA
 	#define VRL_CUSTOM_CLASS_BEGIN (1 shl 8)
 	#define VRL_CLASS_CONSISTENCY VRL_PREDEFINED_CLASS_BEGIN
 	#define VRL_ENABLE_KERNEL_BREAKS (1 shl 31)
-	#define CTMF_INCLUDE_APPCONTAINER __MSABI_LONG(&h1)
+	#define CTMF_INCLUDE_APPCONTAINER __MSABI_LONG(&h1u)
 	#define CTMF_VALID_FLAGS CTMF_INCLUDE_APPCONTAINER
 
 	declare function RtlCrc32(byval Buffer as const any ptr, byval Size as uinteger, byval InitialCrc as DWORD) as DWORD
 	declare function RtlCrc64(byval Buffer as const any ptr, byval Size as uinteger, byval InitialCrc as ULONGLONG) as ULONGLONG
 #endif
+
+type _RTL_CRITICAL_SECTION as _RTL_CRITICAL_SECTION_
 
 type _RTL_CRITICAL_SECTION_DEBUG
 	as WORD Type
@@ -7962,17 +7958,18 @@ type PTP_POOL_STACK_INFORMATION as _TP_POOL_STACK_INFORMATION ptr
 type TP_CLEANUP_GROUP as _TP_CLEANUP_GROUP
 type PTP_CLEANUP_GROUP as _TP_CLEANUP_GROUP ptr
 type PTP_CLEANUP_GROUP_CANCEL_CALLBACK as sub(byval ObjectContext as PVOID, byval CleanupContext as PVOID)
+type _ACTIVATION_CONTEXT as _ACTIVATION_CONTEXT_
 
 #if (_WIN32_WINNT = &h0400) or (_WIN32_WINNT = &h0502)
-	type ___TP_CALLBACK_ENVIRON_V1_s
+	type _TP_CALLBACK_ENVIRON_V1_u_s
 		LongFunction : 1 as DWORD
 		Persistent : 1 as DWORD
 		as DWORD Private : 30
 	end type
 
-	union ___TP_CALLBACK_ENVIRON_V1_u
+	union _TP_CALLBACK_ENVIRON_V1_u
 		Flags as DWORD
-		s as ___TP_CALLBACK_ENVIRON_V1_s
+		s as _TP_CALLBACK_ENVIRON_V1_u_s
 	end union
 
 	type _TP_CALLBACK_ENVIRON_V1
@@ -7983,22 +7980,22 @@ type PTP_CLEANUP_GROUP_CANCEL_CALLBACK as sub(byval ObjectContext as PVOID, byva
 		RaceDll as PVOID
 		ActivationContext as _ACTIVATION_CONTEXT ptr
 		FinalizationCallback as PTP_SIMPLE_CALLBACK
-		u as ___TP_CALLBACK_ENVIRON_V1_u
+		u as _TP_CALLBACK_ENVIRON_V1_u
 	end type
 
 	type TP_CALLBACK_ENVIRON_V1 as _TP_CALLBACK_ENVIRON_V1
 	type TP_CALLBACK_ENVIRON as TP_CALLBACK_ENVIRON_V1
 	type PTP_CALLBACK_ENVIRON as TP_CALLBACK_ENVIRON_V1 ptr
 #else
-	type ___TP_CALLBACK_ENVIRON_V3_s
+	type _TP_CALLBACK_ENVIRON_V3_u_s
 		LongFunction : 1 as DWORD
 		Persistent : 1 as DWORD
 		as DWORD Private : 30
 	end type
 
-	union ___TP_CALLBACK_ENVIRON_V3_u
+	union _TP_CALLBACK_ENVIRON_V3_u
 		Flags as DWORD
-		s as ___TP_CALLBACK_ENVIRON_V3_s
+		s as _TP_CALLBACK_ENVIRON_V3_u_s
 	end union
 
 	type _TP_CALLBACK_ENVIRON_V3
@@ -8009,7 +8006,7 @@ type PTP_CLEANUP_GROUP_CANCEL_CALLBACK as sub(byval ObjectContext as PVOID, byva
 		RaceDll as PVOID
 		ActivationContext as _ACTIVATION_CONTEXT ptr
 		FinalizationCallback as PTP_SIMPLE_CALLBACK
-		u as ___TP_CALLBACK_ENVIRON_V3_u
+		u as _TP_CALLBACK_ENVIRON_V3_u
 		CallbackPriority as TP_CALLBACK_PRIORITY
 		Size as DWORD
 	end type
@@ -8024,11 +8021,11 @@ type PTP_WORK as _TP_WORK ptr
 type PTP_WORK_CALLBACK as sub(byval Instance as PTP_CALLBACK_INSTANCE, byval Context as PVOID, byval Work as PTP_WORK)
 type TP_TIMER as _TP_TIMER
 type PTP_TIMER as _TP_TIMER ptr
-type PTP_TIMER_CALLBACK as sub(byval Instance as PTP_CALLBACK_INSTANCE, byval Context as PVOID, byval Timer_ as PTP_TIMER)
+type PTP_TIMER_CALLBACK as sub(byval Instance as PTP_CALLBACK_INSTANCE, byval Context as PVOID, byval Timer as PTP_TIMER)
 type TP_WAIT_RESULT as DWORD
 type TP_WAIT as _TP_WAIT
 type PTP_WAIT as _TP_WAIT ptr
-type PTP_WAIT_CALLBACK as sub(byval Instance as PTP_CALLBACK_INSTANCE, byval Context as PVOID, byval Wait_ as PTP_WAIT, byval WaitResult as TP_WAIT_RESULT)
+type PTP_WAIT_CALLBACK as sub(byval Instance as PTP_CALLBACK_INSTANCE, byval Context as PVOID, byval Wait as PTP_WAIT, byval WaitResult as TP_WAIT_RESULT)
 type TP_IO as _TP_IO
 type PTP_IO as _TP_IO ptr
 
@@ -8431,14 +8428,14 @@ end type
 type WOW64_CONTEXT as _WOW64_CONTEXT
 type PWOW64_CONTEXT as _WOW64_CONTEXT ptr
 
-type ___WOW64_LDT_ENTRY_Bytes
+type _WOW64_LDT_ENTRY_HighWord_Bytes
 	BaseMid as UBYTE
 	Flags1 as UBYTE
 	Flags2 as UBYTE
 	BaseHi as UBYTE
 end type
 
-type ___WOW64_LDT_ENTRY_Bits
+type _WOW64_LDT_ENTRY_HighWord_Bits
 	BaseMid : 8 as DWORD
 	as DWORD Type : 5
 	Dpl : 2 as DWORD
@@ -8451,15 +8448,15 @@ type ___WOW64_LDT_ENTRY_Bits
 	BaseHi : 8 as DWORD
 end type
 
-union ___WOW64_LDT_ENTRY_HighWord
-	Bytes as ___WOW64_LDT_ENTRY_Bytes
-	Bits as ___WOW64_LDT_ENTRY_Bits
+union _WOW64_LDT_ENTRY_HighWord
+	Bytes as _WOW64_LDT_ENTRY_HighWord_Bytes
+	Bits as _WOW64_LDT_ENTRY_HighWord_Bits
 end union
 
 type _WOW64_LDT_ENTRY
 	LimitLow as WORD
 	BaseLow as WORD
-	HighWord as ___WOW64_LDT_ENTRY_HighWord
+	HighWord as _WOW64_LDT_ENTRY_HighWord
 end type
 
 type WOW64_LDT_ENTRY as _WOW64_LDT_ENTRY

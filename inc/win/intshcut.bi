@@ -7,61 +7,60 @@
 
 extern "Windows"
 
-type IUniformResourceLocatorAVtbl as IUniformResourceLocatorAVtbl_
-type IUniformResourceLocatorWVtbl as IUniformResourceLocatorWVtbl_
-
 #define __INTSHCUT_H__
 #define E_FLAGS MAKE_SCODE(SEVERITY_ERROR, FACILITY_ITF, &h1000)
 #define IS_E_EXEC_FAILED MAKE_SCODE(SEVERITY_ERROR, FACILITY_ITF, &h2002)
 #define URL_E_INVALID_SYNTAX MAKE_SCODE(SEVERITY_ERROR, FACILITY_ITF, &h1001)
 #define URL_E_UNREGISTERED_PROTOCOL MAKE_SCODE(SEVERITY_ERROR, FACILITY_ITF, &h1002)
 
-type iurl_seturl_flags as long
+type IURL_SETURL_FLAGS as long
 enum
 	IURL_SETURL_FL_GUESS_PROTOCOL = &h0001
 	IURL_SETURL_FL_USE_DEFAULT_PROTOCOL = &h0002
 end enum
 
-type iurl_invokecommand_flags as long
+type IURL_INVOKECOMMAND_FLAGS as long
 enum
 	IURL_INVOKECOMMAND_FL_ALLOW_UI = &h0001
 	IURL_INVOKECOMMAND_FL_USE_DEFAULT_VERB = &h0002
 	IURL_INVOKECOMMAND_FL_DDEWAIT = &h0004
 end enum
 
-type urlinvokecommandinfoA
+type URLINVOKECOMMANDINFOA
 	dwcbSize as DWORD
 	dwFlags as DWORD
 	hwndParent as HWND
 	pcszVerb as LPCSTR
 end type
 
-type PURLINVOKECOMMANDINFOA as urlinvokecommandinfoA ptr
-type CURLINVOKECOMMANDINFOA as const urlinvokecommandinfoA
-type PCURLINVOKECOMMANDINFOA as const urlinvokecommandinfoA ptr
+type PURLINVOKECOMMANDINFOA as URLINVOKECOMMANDINFOA ptr
+type CURLINVOKECOMMANDINFOA as const URLINVOKECOMMANDINFOA
+type PCURLINVOKECOMMANDINFOA as const URLINVOKECOMMANDINFOA ptr
 
-type urlinvokecommandinfoW
+type URLINVOKECOMMANDINFOW
 	dwcbSize as DWORD
 	dwFlags as DWORD
 	hwndParent as HWND
 	pcszVerb as LPCWSTR
 end type
 
-type PURLINVOKECOMMANDINFOW as urlinvokecommandinfoW ptr
-type CURLINVOKECOMMANDINFOW as const urlinvokecommandinfoW
-type PCURLINVOKECOMMANDINFOW as const urlinvokecommandinfoW ptr
+type PURLINVOKECOMMANDINFOW as URLINVOKECOMMANDINFOW ptr
+type CURLINVOKECOMMANDINFOW as const URLINVOKECOMMANDINFOW
+type PCURLINVOKECOMMANDINFOW as const URLINVOKECOMMANDINFOW ptr
 
 #ifdef UNICODE
-	#define URLINVOKECOMMANDINFO urlinvokecommandinfoW
+	#define URLINVOKECOMMANDINFO URLINVOKECOMMANDINFOW
 	#define PURLINVOKECOMMANDINFO PURLINVOKECOMMANDINFOW
 	#define CURLINVOKECOMMANDINFO CURLINVOKECOMMANDINFOW
 	#define PCURLINVOKECOMMANDINFO PCURLINVOKECOMMANDINFOW
 #else
-	#define URLINVOKECOMMANDINFO urlinvokecommandinfoA
+	#define URLINVOKECOMMANDINFO URLINVOKECOMMANDINFOA
 	#define PURLINVOKECOMMANDINFO PURLINVOKECOMMANDINFOA
 	#define CURLINVOKECOMMANDINFO CURLINVOKECOMMANDINFOA
 	#define PCURLINVOKECOMMANDINFO PCURLINVOKECOMMANDINFOA
 #endif
+
+type IUniformResourceLocatorAVtbl as IUniformResourceLocatorAVtbl_
 
 type IUniformResourceLocatorA
 	lpVtbl as IUniformResourceLocatorAVtbl ptr
@@ -75,6 +74,8 @@ type IUniformResourceLocatorAVtbl_
 	GetURL as function(byval This as IUniformResourceLocatorA ptr, byval ppszURL as LPSTR ptr) as HRESULT
 	InvokeCommand as function(byval This as IUniformResourceLocatorA ptr, byval purlici as PURLINVOKECOMMANDINFOA) as HRESULT
 end type
+
+type IUniformResourceLocatorWVtbl as IUniformResourceLocatorWVtbl_
 
 type IUniformResourceLocatorW
 	lpVtbl as IUniformResourceLocatorWVtbl ptr
@@ -105,7 +106,7 @@ end type
 	type PCIUniformResourceLocator as const IUniformResourceLocatorA ptr
 #endif
 
-type translateurl_in_flags as long
+type TRANSLATEURL_IN_FLAGS as long
 enum
 	TRANSLATEURL_FL_GUESS_PROTOCOL = &h0001
 	TRANSLATEURL_FL_USE_DEFAULT_PROTOCOL = &h0002
@@ -120,7 +121,7 @@ declare function TranslateURLW(byval pcszURL as PCWSTR, byval dwInFlags as DWORD
 	#define TranslateURL TranslateURLA
 #endif
 
-type urlassociationdialog_in_flags as long
+type URLASSOCIATIONDIALOG_IN_FLAGS as long
 enum
 	URLASSOCDLG_FL_USE_DEFAULT_NAME = &h0001
 	URLASSOCDLG_FL_REGISTER_ASSOC = &h0002
@@ -135,7 +136,7 @@ declare function URLAssociationDialogW(byval hwndParent as HWND, byval dwInFlags
 	#define URLAssociationDialog URLAssociationDialogA
 #endif
 
-type mimeassociationdialog_in_flags as long
+type MIMEASSOCIATIONDIALOG_IN_FLAGS as long
 enum
 	MIMEASSOCDLG_FL_REGISTER_ASSOC = &h0001
 end enum

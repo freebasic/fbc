@@ -9,11 +9,11 @@
 
 extern "Windows"
 
-type IServiceProvider as IServiceProvider_
-
 #define __servprov_h__
 #define __IServiceProvider_FWD_DEFINED__
 #define __IServiceProvider_INTERFACE_DEFINED__
+
+type IServiceProvider as IServiceProvider_
 
 type LPSERVICEPROVIDER as IServiceProvider ptr
 

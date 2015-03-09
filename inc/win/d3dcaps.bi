@@ -319,8 +319,8 @@ type LPD3DDEVICEDESC7 as _D3DDeviceDesc7 ptr
 #define D3DVTXPCAPS_POSITIONALLIGHTS &h00000010
 #define D3DVTXPCAPS_LOCALVIEWER &h00000020
 
-type LPD3DENUMDEVICESCALLBACK as function(byval guid as GUID ptr, byval description as zstring ptr, byval name_ as zstring ptr, byval hal_desc as D3DDEVICEDESC ptr, byval hel_desc as D3DDEVICEDESC ptr, byval ctx as any ptr) as HRESULT
-type LPD3DENUMDEVICESCALLBACK7 as function(byval description as zstring ptr, byval name_ as zstring ptr, byval desc as D3DDEVICEDESC7 ptr, byval ctx as any ptr) as HRESULT
+type LPD3DENUMDEVICESCALLBACK as function(byval guid as GUID ptr, byval description as zstring ptr, byval name as zstring ptr, byval hal_desc as D3DDEVICEDESC ptr, byval hel_desc as D3DDEVICEDESC ptr, byval ctx as any ptr) as HRESULT
+type LPD3DENUMDEVICESCALLBACK7 as function(byval description as zstring ptr, byval name as zstring ptr, byval desc as D3DDEVICEDESC7 ptr, byval ctx as any ptr) as HRESULT
 
 #define D3DFDS_COLORMODEL &h00000001
 #define D3DFDS_GUID &h00000002

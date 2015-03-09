@@ -13,8 +13,6 @@
 
 extern "C"
 
-type internal_state as internal_state_
-
 #define ZLIB_H
 #define ZCONF_H
 
@@ -22,7 +20,7 @@ type Byte_ as ubyte
 type uInt as ulong
 type uLong_ as culong
 type Bytef as Byte_
-type charf as byte
+type charf as zstring
 type intf as long
 type uIntf as uInt
 type uLongf as uLong_
@@ -45,6 +43,8 @@ type z_crc_t as culong
 
 type alloc_func as function(byval opaque_ as voidpf, byval items as uInt, byval size as uInt) as voidpf
 type free_func as sub(byval opaque_ as voidpf, byval address as voidpf)
+
+type internal_state as internal_state_
 
 type z_stream_s
 	next_in as Bytef ptr
@@ -145,7 +145,7 @@ declare function inflateGetHeader(byval strm as z_streamp, byval head as gz_head
 type in_func as function(byval as any ptr, byval as ubyte ptr ptr) as ulong
 type out_func as function(byval as any ptr, byval as ubyte ptr, byval as ulong) as long
 
-declare function inflateBack(byval strm as z_streamp, byval in as in_func, byval in_desc as any ptr, byval out_ as out_func, byval out_desc as any ptr) as long
+declare function inflateBack(byval strm as z_streamp, byval in as in_func, byval in_desc as any ptr, byval out as out_func, byval out_desc as any ptr) as long
 declare function inflateBackEnd(byval strm as z_streamp) as long
 declare function zlibCompileFlags() as uLong_
 declare function compress(byval dest as Bytef ptr, byval destLen as uLongf ptr, byval source as const Bytef ptr, byval sourceLen as uLong_) as long
@@ -158,11 +158,11 @@ type gzFile as gzFile_s ptr
 declare function gzdopen(byval fd as long, byval mode as const zstring ptr) as gzFile
 declare function gzbuffer(byval file as gzFile, byval size as ulong) as long
 declare function gzsetparams(byval file as gzFile, byval level as long, byval strategy as long) as long
-declare function gzread(byval file as gzFile, byval buf as voidp, byval len_ as ulong) as long
-declare function gzwrite(byval file as gzFile, byval buf as voidpc, byval len_ as ulong) as long
+declare function gzread(byval file as gzFile, byval buf as voidp, byval len as ulong) as long
+declare function gzwrite(byval file as gzFile, byval buf as voidpc, byval len as ulong) as long
 declare function gzprintf(byval file as gzFile, byval format as const zstring ptr, ...) as long
 declare function gzputs(byval file as gzFile, byval s as const zstring ptr) as long
-declare function gzgets(byval file as gzFile, byval buf as zstring ptr, byval len_ as long) as zstring ptr
+declare function gzgets(byval file as gzFile, byval buf as zstring ptr, byval len as long) as zstring ptr
 declare function gzputc(byval file as gzFile, byval c as long) as long
 declare function gzgetc(byval file as gzFile) as long
 declare function gzungetc(byval c as long, byval file as gzFile) as long
@@ -175,13 +175,13 @@ declare function gzclose_r(byval file as gzFile) as long
 declare function gzclose_w(byval file as gzFile) as long
 declare function gzerror(byval file as gzFile, byval errnum as long ptr) as const zstring ptr
 declare sub gzclearerr(byval file as gzFile)
-declare function adler32(byval adler as uLong_, byval buf as const Bytef ptr, byval len_ as uInt) as uLong_
-declare function crc32(byval crc as uLong_, byval buf as const Bytef ptr, byval len_ as uInt) as uLong_
+declare function adler32(byval adler as uLong_, byval buf as const Bytef ptr, byval len as uInt) as uLong_
+declare function crc32(byval crc as uLong_, byval buf as const Bytef ptr, byval len as uInt) as uLong_
 declare function deflateInit_(byval strm as z_streamp, byval level as long, byval version as const zstring ptr, byval stream_size as long) as long
 declare function inflateInit_(byval strm as z_streamp, byval version as const zstring ptr, byval stream_size as long) as long
 declare function deflateInit2_(byval strm as z_streamp, byval level as long, byval method as long, byval windowBits as long, byval memLevel as long, byval strategy as long, byval version as const zstring ptr, byval stream_size as long) as long
 declare function inflateInit2_(byval strm as z_streamp, byval windowBits as long, byval version as const zstring ptr, byval stream_size as long) as long
-declare function inflateBackInit_(byval strm as z_streamp, byval windowBits as long, byval window_ as ubyte ptr, byval version as const zstring ptr, byval stream_size as long) as long
+declare function inflateBackInit_(byval strm as z_streamp, byval windowBits as long, byval window as ubyte ptr, byval version as const zstring ptr, byval stream_size as long) as long
 
 #define deflateInit(strm, level) deflateInit_((strm), (level), ZLIB_VERSION, clng(sizeof(z_stream)))
 #define inflateInit(strm) inflateInit_((strm), ZLIB_VERSION, clng(sizeof(z_stream)))

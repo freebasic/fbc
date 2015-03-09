@@ -1,14 +1,14 @@
 #pragma once
 
 #include once "_mingw.bi"
-
-type __lc_time_data as __lc_time_data_
-type lconv as lconv_
-type rsize_t as uinteger
+#include once "crt/locale.bi"
 
 #define _INC_CRTDEFS
 #define _CRTNOALIAS
 #define _CRTRESTRICT
+
+type rsize_t as uinteger
+
 #define _RSIZE_T_DEFINED
 #define __DEFINE_CPP_OVERLOAD_SECURE_FUNC_0_0(__ret, __func, __dsttype, __dst)
 #define __DEFINE_CPP_OVERLOAD_SECURE_FUNC_0_1(__ret, __func, __dsttype, __dst, __type1, __arg1)
@@ -47,12 +47,14 @@ type LPLC_ID as tagLC_ID ptr
 
 #define _THREADLOCALEINFO
 
-type __threadlocaleinfostruct_lc_category
+type threadlocaleinfostruct_lc_category
 	locale as zstring ptr
 	wlocale as wstring ptr
 	refcount as long ptr
 	wrefcount as long ptr
 end type
+
+type __lc_time_data as __lc_time_data_
 
 type threadlocaleinfostruct
 	refcount as long
@@ -60,7 +62,7 @@ type threadlocaleinfostruct
 	lc_collate_cp as ulong
 	lc_handle(0 to 5) as ulong
 	lc_id(0 to 5) as LC_ID
-	lc_category(0 to 5) as __threadlocaleinfostruct_lc_category
+	lc_category(0 to 5) as threadlocaleinfostruct_lc_category
 	lc_clike as long
 	mb_cur_max as long
 	lconv_intl_refcount as long ptr

@@ -5,10 +5,6 @@
 
 extern "Windows"
 
-type IDirectPlayLobbyVtbl as IDirectPlayLobbyVtbl_
-type IDirectPlayLobby2Vtbl as IDirectPlayLobby2Vtbl_
-type IDirectPlayLobby3Vtbl as IDirectPlayLobby3Vtbl_
-
 #define __WINE_DPLOBBY_H
 
 extern CLSID_DirectPlayLobby as const GUID
@@ -256,6 +252,8 @@ type LPDPENUMADDRESSCALLBACK as function(byval guidDataType as const GUID const 
 type LPDPLENUMADDRESSTYPESCALLBACK as function(byval guidDataType as const GUID const ptr, byval lpContext as LPVOID, byval dwFlags as DWORD) as WINBOOL
 type LPDPLENUMLOCALAPPLICATIONSCALLBACK as function(byval lpAppInfo as LPCDPLAPPINFO, byval lpContext as LPVOID, byval dwFlags as DWORD) as WINBOOL
 
+type IDirectPlayLobbyVtbl as IDirectPlayLobbyVtbl_
+
 type IDirectPlayLobby
 	lpVtbl as IDirectPlayLobbyVtbl ptr
 end type
@@ -276,6 +274,8 @@ type IDirectPlayLobbyVtbl_
 	SetConnectionSettings as function(byval This as IDirectPlayLobby ptr, byval as DWORD, byval as DWORD, byval as LPDPLCONNECTION) as HRESULT
 	SetLobbyMessageEvent as function(byval This as IDirectPlayLobby ptr, byval as DWORD, byval as DWORD, byval as HANDLE) as HRESULT
 end type
+
+type IDirectPlayLobby2Vtbl as IDirectPlayLobby2Vtbl_
 
 type IDirectPlayLobby2
 	lpVtbl as IDirectPlayLobby2Vtbl ptr
@@ -298,6 +298,8 @@ type IDirectPlayLobby2Vtbl_
 	SetLobbyMessageEvent as function(byval This as IDirectPlayLobby2 ptr, byval as DWORD, byval as DWORD, byval as HANDLE) as HRESULT
 	CreateCompoundAddress as function(byval This as IDirectPlayLobby2 ptr, byval as LPCDPCOMPOUNDADDRESSELEMENT, byval as DWORD, byval as LPVOID, byval as LPDWORD) as HRESULT
 end type
+
+type IDirectPlayLobby3Vtbl as IDirectPlayLobby3Vtbl_
 
 type IDirectPlayLobby3
 	lpVtbl as IDirectPlayLobby3Vtbl ptr

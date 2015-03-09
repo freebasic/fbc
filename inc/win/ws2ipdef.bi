@@ -6,8 +6,8 @@
 
 #define _INC_WS2IPDEF
 
-type ipv6_mreq
-	ipv6mr_multiaddr as in6_addr
+type IPV6_MREQ
+	ipv6mr_multiaddr as IN6_ADDR
 	ipv6mr_interface as ulong
 end type
 
@@ -15,20 +15,20 @@ type sockaddr_in6_old
 	sin6_family as short
 	sin6_port as u_short
 	sin6_flowinfo as u_long
-	sin6_addr as in6_addr
+	sin6_addr as IN6_ADDR
 end type
 
 union sockaddr_gen
-	Address as sockaddr
-	AddressIn as sockaddr_in
+	Address as SOCKADDR
+	AddressIn as SOCKADDR_IN
 	AddressIn6 as sockaddr_in6_old
 end union
 
-type sockaddr_in6
+type SOCKADDR_IN6
 	sin6_family as short
 	sin6_port as u_short
 	sin6_flowinfo as u_long
-	sin6_addr as in6_addr
+	sin6_addr as IN6_ADDR
 
 	union
 		sin6_scope_id as u_long
@@ -36,8 +36,8 @@ type sockaddr_in6
 	end union
 end type
 
-type PSOCKADDR_IN6 as sockaddr_in6 ptr
-type LPSOCKADDR_IN6 as sockaddr_in6 ptr
+type PSOCKADDR_IN6 as SOCKADDR_IN6 ptr
+type LPSOCKADDR_IN6 as SOCKADDR_IN6 ptr
 
 type _INTERFACE_INFO
 	iiFlags as u_long
@@ -66,38 +66,38 @@ type SOCKADDR_IN6_PAIR as _sockaddr_in6_pair
 type PSOCKADDR_IN6_PAIR as _sockaddr_in6_pair ptr
 
 union _SOCKADDR_INET
-	Ipv4 as sockaddr_in
-	Ipv6 as sockaddr_in6
+	Ipv4 as SOCKADDR_IN
+	Ipv6 as SOCKADDR_IN6
 	si_family as ADDRESS_FAMILY
 end union
 
 type SOCKADDR_INET as _SOCKADDR_INET
 type PSOCKADDR_INET as _SOCKADDR_INET ptr
 
-type group_filter
+type GROUP_FILTER
 	gf_interface as ULONG
-	gf_group as sockaddr_storage
+	gf_group as SOCKADDR_STORAGE
 	gf_fmode as MULTICAST_MODE_TYPE
 	gf_numsrc as ULONG
-	gf_slist(0 to 0) as sockaddr_storage
+	gf_slist(0 to 0) as SOCKADDR_STORAGE
 end type
 
-type PGROUP_FILTER as group_filter ptr
+type PGROUP_FILTER as GROUP_FILTER ptr
 
-type group_req
+type GROUP_REQ
 	gr_interface as ULONG
-	gr_group as sockaddr_storage
+	gr_group as SOCKADDR_STORAGE
 end type
 
-type PGROUP_REQ as group_req ptr
+type PGROUP_REQ as GROUP_REQ ptr
 
-type group_source_req
+type GROUP_SOURCE_REQ
 	gsr_interface as ULONG
-	gsr_group as sockaddr_storage
-	gsr_source as sockaddr_storage
+	gsr_group as SOCKADDR_STORAGE
+	gsr_source as SOCKADDR_STORAGE
 end type
 
-type PGROUP_SOURCE_REQ as group_source_req ptr
+type PGROUP_SOURCE_REQ as GROUP_SOURCE_REQ ptr
 
 #define IPV6_HOPOPTS 1
 #define IPV6_HDRINCL 2

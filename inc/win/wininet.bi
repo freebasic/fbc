@@ -158,7 +158,7 @@ type LPINTERNET_DIAGNOSTIC_SOCKET_INFO as INTERNET_DIAGNOSTIC_SOCKET_INFO ptr
 type LPINTERNET_PROXY_INFO as INTERNET_PROXY_INFO ptr
 
 #ifdef __FB_64BIT__
-	union __INTERNET_PER_CONN_OPTIONA_Value
+	union INTERNET_PER_CONN_OPTIONA_Value
 		dwValue as DWORD
 		pszValue as LPSTR
 		ftValue as FILETIME
@@ -166,10 +166,10 @@ type LPINTERNET_PROXY_INFO as INTERNET_PROXY_INFO ptr
 
 	type INTERNET_PER_CONN_OPTIONA
 		dwOption as DWORD
-		Value as __INTERNET_PER_CONN_OPTIONA_Value
+		Value as INTERNET_PER_CONN_OPTIONA_Value
 	end type
 #else
-	union __INTERNET_PER_CONN_OPTIONA_Value field = 4
+	union INTERNET_PER_CONN_OPTIONA_Value field = 4
 		dwValue as DWORD
 		pszValue as LPSTR
 		ftValue as FILETIME
@@ -177,14 +177,14 @@ type LPINTERNET_PROXY_INFO as INTERNET_PROXY_INFO ptr
 
 	type INTERNET_PER_CONN_OPTIONA field = 4
 		dwOption as DWORD
-		Value as __INTERNET_PER_CONN_OPTIONA_Value
+		Value as INTERNET_PER_CONN_OPTIONA_Value
 	end type
 #endif
 
 type LPINTERNET_PER_CONN_OPTIONA as INTERNET_PER_CONN_OPTIONA ptr
 
 #ifdef __FB_64BIT__
-	union __INTERNET_PER_CONN_OPTIONW_Value
+	union INTERNET_PER_CONN_OPTIONW_Value
 		dwValue as DWORD
 		pszValue as LPWSTR
 		ftValue as FILETIME
@@ -192,10 +192,10 @@ type LPINTERNET_PER_CONN_OPTIONA as INTERNET_PER_CONN_OPTIONA ptr
 
 	type INTERNET_PER_CONN_OPTIONW
 		dwOption as DWORD
-		Value as __INTERNET_PER_CONN_OPTIONW_Value
+		Value as INTERNET_PER_CONN_OPTIONW_Value
 	end type
 #else
-	union __INTERNET_PER_CONN_OPTIONW_Value field = 4
+	union INTERNET_PER_CONN_OPTIONW_Value field = 4
 		dwValue as DWORD
 		pszValue as LPWSTR
 		ftValue as FILETIME
@@ -203,7 +203,7 @@ type LPINTERNET_PER_CONN_OPTIONA as INTERNET_PER_CONN_OPTIONA ptr
 
 	type INTERNET_PER_CONN_OPTIONW field = 4
 		dwOption as DWORD
-		Value as __INTERNET_PER_CONN_OPTIONW_Value
+		Value as INTERNET_PER_CONN_OPTIONW_Value
 	end type
 #endif
 
@@ -1273,7 +1273,7 @@ type LPGOPHER_ASK_ATTRIBUTE_TYPE as GOPHER_ASK_ATTRIBUTE_TYPE ptr
 type LPGOPHER_UNKNOWN_ATTRIBUTE_TYPE as GOPHER_UNKNOWN_ATTRIBUTE_TYPE ptr
 
 #ifdef __FB_64BIT__
-	union __AttributeType
+	union GOPHER_ATTRIBUTE_TYPE_AttributeType
 		Admin as GOPHER_ADMIN_ATTRIBUTE_TYPE
 		ModDate as GOPHER_MOD_DATE_ATTRIBUTE_TYPE
 		Ttl as GOPHER_TTL_ATTRIBUTE_TYPE
@@ -1296,10 +1296,10 @@ type LPGOPHER_UNKNOWN_ATTRIBUTE_TYPE as GOPHER_UNKNOWN_ATTRIBUTE_TYPE ptr
 	type GOPHER_ATTRIBUTE_TYPE
 		CategoryId as DWORD
 		AttributeId as DWORD
-		AttributeType as __AttributeType
+		AttributeType as GOPHER_ATTRIBUTE_TYPE_AttributeType
 	end type
 #else
-	union __AttributeType field = 4
+	union GOPHER_ATTRIBUTE_TYPE_AttributeType field = 4
 		Admin as GOPHER_ADMIN_ATTRIBUTE_TYPE
 		ModDate as GOPHER_MOD_DATE_ATTRIBUTE_TYPE
 		Ttl as GOPHER_TTL_ATTRIBUTE_TYPE
@@ -1322,7 +1322,7 @@ type LPGOPHER_UNKNOWN_ATTRIBUTE_TYPE as GOPHER_UNKNOWN_ATTRIBUTE_TYPE ptr
 	type GOPHER_ATTRIBUTE_TYPE field = 4
 		CategoryId as DWORD
 		AttributeId as DWORD
-		AttributeType as __AttributeType
+		AttributeType as GOPHER_ATTRIBUTE_TYPE_AttributeType
 	end type
 #endif
 

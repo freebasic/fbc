@@ -5,10 +5,6 @@
 #include once "_bsd_types.bi"
 #include once "inaddr.bi"
 
-'' The following symbols have been renamed:
-''     #define FD_SET => FD_SET_
-''     procedure select => select_
-
 #inclib "wsock32"
 
 extern "Windows"
@@ -23,12 +19,12 @@ type SOCKET as UINT_PTR
 #define ___WSA_FD_TYPES_H
 #define FD_SETSIZE 64
 
-type fd_set
+type FD_SET
 	fd_count as u_int
 	fd_array(0 to 63) as SOCKET
 end type
 
-declare function __WSAFDIsSet(byval as SOCKET, byval as fd_set ptr) as long
+declare function __WSAFDIsSet(byval as SOCKET, byval as FD_SET ptr) as long
 
 #macro FD_CLR(fd, set)
 	scope
@@ -62,13 +58,13 @@ declare function __WSAFDIsSet(byval as SOCKET, byval as fd_set ptr) as long
 	end scope
 #endmacro
 
-type PFD_SET as fd_set ptr
-type LPFD_SET as fd_set ptr
+type PFD_SET as FD_SET ptr
+type LPFD_SET as FD_SET ptr
 
 #define _MINGW_IP_TYPES_H
 #define h_addr h_addr_list[0]
 
-type hostent
+type HOSTENT
 	h_name as zstring ptr
 	h_aliases as zstring ptr ptr
 	h_addrtype as short
@@ -83,7 +79,7 @@ type netent
 	n_net as u_long
 end type
 
-type servent
+type SERVENT
 	s_name as zstring ptr
 	s_aliases as zstring ptr ptr
 
@@ -98,7 +94,7 @@ type servent
 	#endif
 end type
 
-type protoent
+type PROTOENT
 	p_name as zstring ptr
 	p_aliases as zstring ptr ptr
 	p_proto as short
@@ -109,50 +105,50 @@ type sockproto
 	sp_protocol as u_short
 end type
 
-type linger
+type LINGER
 	l_onoff as u_short
 	l_linger as u_short
 end type
 
-type sockaddr
+type SOCKADDR
 	sa_family as u_short
 	sa_data as zstring * 14
 end type
 
-type sockaddr_in
+type SOCKADDR_IN
 	sin_family as short
 	sin_port as u_short
-	sin_addr as in_addr
+	sin_addr as IN_ADDR
 	sin_zero as zstring * 8
 end type
 
-type PHOSTENT as hostent ptr
-type LPHOSTENT as hostent ptr
-type PSERVENT as servent ptr
-type LPSERVENT as servent ptr
-type PPROTOENT as protoent ptr
-type LPPROTOENT as protoent ptr
-type PSOCKADDR as sockaddr ptr
-type LPSOCKADDR as sockaddr ptr
-type PSOCKADDR_IN as sockaddr_in ptr
-type LPSOCKADDR_IN as sockaddr_in ptr
-type PLINGER as linger ptr
-type LPLINGER as linger ptr
-type PTIMEVAL as timeval ptr
-type LPTIMEVAL as timeval ptr
+type PHOSTENT as HOSTENT ptr
+type LPHOSTENT as HOSTENT ptr
+type PSERVENT as SERVENT ptr
+type LPSERVENT as SERVENT ptr
+type PPROTOENT as PROTOENT ptr
+type LPPROTOENT as PROTOENT ptr
+type PSOCKADDR as SOCKADDR ptr
+type LPSOCKADDR as SOCKADDR ptr
+type PSOCKADDR_IN as SOCKADDR_IN ptr
+type LPSOCKADDR_IN as SOCKADDR_IN ptr
+type PLINGER as LINGER ptr
+type LPLINGER as LINGER ptr
+type PTIMEVAL as TIMEVAL ptr
+type LPTIMEVAL as TIMEVAL ptr
 
 #define _MINGW_IP_MREQ1_H
 
 type ip_mreq
-	imr_multiaddr as in_addr
-	imr_interface as in_addr
+	imr_multiaddr as IN_ADDR
+	imr_interface as IN_ADDR
 end type
 
 #define __MINGW_WSADATA_H
 #define WSADESCRIPTION_LEN 256
 #define WSASYS_STATUS_LEN 128
 
-type WSAData
+type WSADATA
 	wVersion as WORD
 	wHighVersion as WORD
 
@@ -171,7 +167,7 @@ type WSAData
 	#endif
 end type
 
-type LPWSADATA as WSAData ptr
+type LPWSADATA as WSADATA ptr
 
 #define __MINGW_TRANSMIT_FILE_H
 
@@ -383,36 +379,36 @@ type LPTRANSMIT_FILE_BUFFERS as _TRANSMIT_FILE_BUFFERS ptr
 #define WSANO_ADDRESS WSANO_DATA
 #define NO_ADDRESS WSANO_ADDRESS
 
-declare function accept(byval s as SOCKET, byval addr as sockaddr ptr, byval addrlen as long ptr) as SOCKET
-declare function bind(byval s as SOCKET, byval name_ as const sockaddr ptr, byval namelen as long) as long
+declare function accept(byval s as SOCKET, byval addr as SOCKADDR ptr, byval addrlen as long ptr) as SOCKET
+declare function bind(byval s as SOCKET, byval name as const SOCKADDR ptr, byval namelen as long) as long
 declare function closesocket(byval s as SOCKET) as long
-declare function connect(byval s as SOCKET, byval name_ as const sockaddr ptr, byval namelen as long) as long
+declare function connect(byval s as SOCKET, byval name as const SOCKADDR ptr, byval namelen as long) as long
 declare function ioctlsocket(byval s as SOCKET, byval cmd as long, byval argp as u_long ptr) as long
-declare function getpeername(byval s as SOCKET, byval name_ as sockaddr ptr, byval namelen as long ptr) as long
-declare function getsockname(byval s as SOCKET, byval name_ as sockaddr ptr, byval namelen as long ptr) as long
+declare function getpeername(byval s as SOCKET, byval name as SOCKADDR ptr, byval namelen as long ptr) as long
+declare function getsockname(byval s as SOCKET, byval name as SOCKADDR ptr, byval namelen as long ptr) as long
 declare function getsockopt(byval s as SOCKET, byval level as long, byval optname as long, byval optval as zstring ptr, byval optlen as long ptr) as long
 declare function htonl(byval hostlong as u_long) as u_long
 declare function htons(byval hostshort as u_short) as u_short
 declare function inet_addr(byval cp as const zstring ptr) as ulong
-declare function inet_ntoa(byval in as in_addr) as zstring ptr
+declare function inet_ntoa(byval in as IN_ADDR) as zstring ptr
 declare function listen(byval s as SOCKET, byval backlog as long) as long
 declare function ntohl(byval netlong as u_long) as u_long
 declare function ntohs(byval netshort as u_short) as u_short
-declare function recv(byval s as SOCKET, byval buf as zstring ptr, byval len_ as long, byval flags as long) as long
-declare function recvfrom(byval s as SOCKET, byval buf as zstring ptr, byval len_ as long, byval flags as long, byval from as sockaddr ptr, byval fromlen as long ptr) as long
-declare function select_ alias "select"(byval nfds as long, byval readfds as fd_set ptr, byval writefds as fd_set ptr, byval exceptfds as fd_set ptr, byval timeout as const PTIMEVAL) as long
-declare function send(byval s as SOCKET, byval buf as const zstring ptr, byval len_ as long, byval flags as long) as long
-declare function sendto(byval s as SOCKET, byval buf as const zstring ptr, byval len_ as long, byval flags as long, byval to_ as const sockaddr ptr, byval tolen as long) as long
+declare function recv(byval s as SOCKET, byval buf as zstring ptr, byval len as long, byval flags as long) as long
+declare function recvfrom(byval s as SOCKET, byval buf as zstring ptr, byval len as long, byval flags as long, byval from as SOCKADDR ptr, byval fromlen as long ptr) as long
+declare function select_ alias "select"(byval nfds as long, byval readfds as FD_SET ptr, byval writefds as FD_SET ptr, byval exceptfds as FD_SET ptr, byval timeout as const PTIMEVAL) as long
+declare function send(byval s as SOCKET, byval buf as const zstring ptr, byval len as long, byval flags as long) as long
+declare function sendto(byval s as SOCKET, byval buf as const zstring ptr, byval len as long, byval flags as long, byval to as const SOCKADDR ptr, byval tolen as long) as long
 declare function setsockopt(byval s as SOCKET, byval level as long, byval optname as long, byval optval as const zstring ptr, byval optlen as long) as long
 declare function shutdown(byval s as SOCKET, byval how as long) as long
-declare function socket(byval af as long, byval type_ as long, byval protocol as long) as SOCKET
-declare function gethostbyaddr(byval addr as const zstring ptr, byval len_ as long, byval type_ as long) as hostent ptr
-declare function gethostbyname(byval name_ as const zstring ptr) as hostent ptr
-declare function gethostname(byval name_ as zstring ptr, byval namelen as long) as long
-declare function getservbyport(byval port as long, byval proto as const zstring ptr) as servent ptr
-declare function getservbyname(byval name_ as const zstring ptr, byval proto as const zstring ptr) as servent ptr
-declare function getprotobynumber(byval number as long) as protoent ptr
-declare function getprotobyname(byval name_ as const zstring ptr) as protoent ptr
+declare function socket(byval af as long, byval type as long, byval protocol as long) as SOCKET
+declare function gethostbyaddr(byval addr as const zstring ptr, byval len as long, byval type as long) as HOSTENT ptr
+declare function gethostbyname(byval name as const zstring ptr) as HOSTENT ptr
+declare function gethostname(byval name as zstring ptr, byval namelen as long) as long
+declare function getservbyport(byval port as long, byval proto as const zstring ptr) as SERVENT ptr
+declare function getservbyname(byval name as const zstring ptr, byval proto as const zstring ptr) as SERVENT ptr
+declare function getprotobynumber(byval number as long) as PROTOENT ptr
+declare function getprotobyname(byval name as const zstring ptr) as PROTOENT ptr
 declare function WSAStartup(byval wVersionRequested as WORD, byval lpWSAData as LPWSADATA) as long
 declare function WSACleanup() as long
 declare sub WSASetLastError(byval iError as long)
@@ -421,18 +417,18 @@ declare function WSAIsBlocking() as WINBOOL
 declare function WSAUnhookBlockingHook() as long
 declare function WSASetBlockingHook(byval lpBlockFunc as FARPROC) as FARPROC
 declare function WSACancelBlockingCall() as long
-declare function WSAAsyncGetServByName(byval hWnd as HWND, byval wMsg as u_int, byval name_ as const zstring ptr, byval proto as const zstring ptr, byval buf as zstring ptr, byval buflen as long) as HANDLE
+declare function WSAAsyncGetServByName(byval hWnd as HWND, byval wMsg as u_int, byval name as const zstring ptr, byval proto as const zstring ptr, byval buf as zstring ptr, byval buflen as long) as HANDLE
 declare function WSAAsyncGetServByPort(byval hWnd as HWND, byval wMsg as u_int, byval port as long, byval proto as const zstring ptr, byval buf as zstring ptr, byval buflen as long) as HANDLE
-declare function WSAAsyncGetProtoByName(byval hWnd as HWND, byval wMsg as u_int, byval name_ as const zstring ptr, byval buf as zstring ptr, byval buflen as long) as HANDLE
+declare function WSAAsyncGetProtoByName(byval hWnd as HWND, byval wMsg as u_int, byval name as const zstring ptr, byval buf as zstring ptr, byval buflen as long) as HANDLE
 declare function WSAAsyncGetProtoByNumber(byval hWnd as HWND, byval wMsg as u_int, byval number as long, byval buf as zstring ptr, byval buflen as long) as HANDLE
-declare function WSAAsyncGetHostByName(byval hWnd as HWND, byval wMsg as u_int, byval name_ as const zstring ptr, byval buf as zstring ptr, byval buflen as long) as HANDLE
-declare function WSAAsyncGetHostByAddr(byval hWnd as HWND, byval wMsg as u_int, byval addr as const zstring ptr, byval len_ as long, byval type_ as long, byval buf as zstring ptr, byval buflen as long) as HANDLE
+declare function WSAAsyncGetHostByName(byval hWnd as HWND, byval wMsg as u_int, byval name as const zstring ptr, byval buf as zstring ptr, byval buflen as long) as HANDLE
+declare function WSAAsyncGetHostByAddr(byval hWnd as HWND, byval wMsg as u_int, byval addr as const zstring ptr, byval len as long, byval type as long, byval buf as zstring ptr, byval buflen as long) as HANDLE
 declare function WSACancelAsyncRequest(byval hAsyncTaskHandle as HANDLE) as long
 declare function WSAAsyncSelect(byval s as SOCKET, byval hWnd as HWND, byval wMsg as u_int, byval lEvent as long) as long
 
 #define __WINSOCK_WS1_SHARED
 
-declare function WSARecvEx(byval s as SOCKET, byval buf as zstring ptr, byval len_ as long, byval flags as long ptr) as long
+declare function WSARecvEx(byval s as SOCKET, byval buf as zstring ptr, byval len as long, byval flags as long ptr) as long
 
 #define TF_DISCONNECT &h01
 #define TF_REUSE_SOCKET &h02
@@ -440,7 +436,7 @@ declare function WSARecvEx(byval s as SOCKET, byval buf as zstring ptr, byval le
 
 declare function TransmitFile(byval hSocket as SOCKET, byval hFile as HANDLE, byval nNumberOfBytesToWrite as DWORD, byval nNumberOfBytesPerSend as DWORD, byval lpOverlapped as LPOVERLAPPED, byval lpTransmitBuffers as LPTRANSMIT_FILE_BUFFERS, byval dwReserved as DWORD) as WINBOOL
 declare function AcceptEx(byval sListenSocket as SOCKET, byval sAcceptSocket as SOCKET, byval lpOutputBuffer as PVOID, byval dwReceiveDataLength as DWORD, byval dwLocalAddressLength as DWORD, byval dwRemoteAddressLength as DWORD, byval lpdwBytesReceived as LPDWORD, byval lpOverlapped as LPOVERLAPPED) as WINBOOL
-declare sub GetAcceptExSockaddrs(byval lpOutputBuffer as PVOID, byval dwReceiveDataLength as DWORD, byval dwLocalAddressLength as DWORD, byval dwRemoteAddressLength as DWORD, byval LocalSockaddr as sockaddr ptr ptr, byval LocalSockaddrLength as LPINT, byval RemoteSockaddr as sockaddr ptr ptr, byval RemoteSockaddrLength as LPINT)
+declare sub GetAcceptExSockaddrs(byval lpOutputBuffer as PVOID, byval dwReceiveDataLength as DWORD, byval dwLocalAddressLength as DWORD, byval dwRemoteAddressLength as DWORD, byval LocalSockaddr as SOCKADDR ptr ptr, byval LocalSockaddrLength as LPINT, byval RemoteSockaddr as SOCKADDR ptr ptr, byval RemoteSockaddrLength as LPINT)
 
 #define __MSWSOCK_WS1_SHARED
 #define WSAMAKEASYNCREPLY(buflen, error) MAKELONG(buflen, error)

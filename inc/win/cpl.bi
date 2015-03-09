@@ -5,9 +5,6 @@
 extern "Windows"
 
 #define _INC_CPL
-
-type APPLET_PROC as function(byval hwndCpl as HWND, byval msg as UINT, byval lParam1 as LPARAM, byval lParam2 as LPARAM) as LONG
-
 #define WM_CPL_LAUNCH (WM_USER + 1000)
 #define WM_CPL_LAUNCHED (WM_USER + 1001)
 #define CPL_DYNAMIC_RES 0
@@ -21,6 +18,8 @@ type APPLET_PROC as function(byval hwndCpl as HWND, byval msg as UINT, byval lPa
 #define CPL_NEWINQUIRE 8
 #define CPL_STARTWPARMSA 9
 #define CPL_STARTWPARMSW 10
+
+type APPLET_PROC as function(byval hwndCpl as HWND, byval msg as UINT, byval lParam1 as LPARAM, byval lParam2 as LPARAM) as LONG
 
 type tagCPLINFO field = 1
 	idIcon as long

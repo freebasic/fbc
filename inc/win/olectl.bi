@@ -2,17 +2,6 @@
 
 #include once "ocidl.bi"
 
-'' The following symbols have been renamed:
-''     #define OLEMISC_INVISIBLEATRUNTIME => OLEMISC_INVISIBLEATRUNTIME_
-''     #define OLEMISC_ALWAYSRUN => OLEMISC_ALWAYSRUN_
-''     #define OLEMISC_ACTSLIKEBUTTON => OLEMISC_ACTSLIKEBUTTON_
-''     #define OLEMISC_ACTSLIKELABEL => OLEMISC_ACTSLIKELABEL_
-''     #define OLEMISC_NOUIACTIVATE => OLEMISC_NOUIACTIVATE_
-''     #define OLEMISC_ALIGNABLE => OLEMISC_ALIGNABLE_
-''     #define OLEMISC_SIMPLEFRAME => OLEMISC_SIMPLEFRAME_
-''     #define OLEMISC_SETCLIENTSITEFIRST => OLEMISC_SETCLIENTSITEFIRST_
-''     #define OLEMISC_IMEMODE => OLEMISC_IMEMODE_
-
 #inclib "oleaut32"
 
 extern "Windows"
@@ -87,22 +76,22 @@ type LPFONTDESC as tagFONTDESC ptr
 #define PICTYPE_ICON 3
 #define PICTYPE_ENHMETAFILE 4
 
-type __tagPICTDESC_bmp
+type tagPICTDESC_bmp
 	hbitmap as HBITMAP
 	hpal as HPALETTE
 end type
 
-type __tagPICTDESC_wmf
+type tagPICTDESC_wmf
 	hmeta as HMETAFILE
 	xExt as long
 	yExt as long
 end type
 
-type __tagPICTDESC_icon
+type tagPICTDESC_icon
 	hicon as HICON
 end type
 
-type __tagPICTDESC_emf
+type tagPICTDESC_emf
 	hemf as HENHMETAFILE
 end type
 
@@ -111,10 +100,10 @@ type tagPICTDESC
 	picType as UINT
 
 	union
-		bmp as __tagPICTDESC_bmp
-		wmf as __tagPICTDESC_wmf
-		icon as __tagPICTDESC_icon
-		emf as __tagPICTDESC_emf
+		bmp as tagPICTDESC_bmp
+		wmf as tagPICTDESC_wmf
+		icon as tagPICTDESC_icon
+		emf as tagPICTDESC_emf
 	end union
 end type
 
@@ -202,15 +191,6 @@ type OLE_ENABLEDEFAULTBOOL as VARIANT_BOOL
 #define PERPROP_S_FIRST MAKE_SCODE(SEVERITY_SUCCESS, FACILITY_ITF, &h0200)
 #define PERPROP_S_LAST MAKE_SCODE(SEVERITY_SUCCESS, FACILITY_ITF, &h020F)
 #define PERPROP_E_NOPAGEAVAILABLE (PERPROP_E_FIRST + 0)
-#define OLEMISC_INVISIBLEATRUNTIME_ __MSABI_LONG(&h00000400)
-#define OLEMISC_ALWAYSRUN_ __MSABI_LONG(&h00000800)
-#define OLEMISC_ACTSLIKEBUTTON_ __MSABI_LONG(&h00001000)
-#define OLEMISC_ACTSLIKELABEL_ __MSABI_LONG(&h00002000)
-#define OLEMISC_NOUIACTIVATE_ __MSABI_LONG(&h00004000)
-#define OLEMISC_ALIGNABLE_ __MSABI_LONG(&h00008000)
-#define OLEMISC_SIMPLEFRAME_ __MSABI_LONG(&h00010000)
-#define OLEMISC_SETCLIENTSITEFIRST_ __MSABI_LONG(&h00020000)
-#define OLEMISC_IMEMODE_ __MSABI_LONG(&h00040000)
 #define OLEIVERB_PROPERTIES __MSABI_LONG(-7)
 #define VT_STREAMED_PROPSET 73
 #define VT_STORED_PROPSET 74

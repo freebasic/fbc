@@ -13,18 +13,6 @@
 extern "Windows"
 
 #define _COMBASEAPI_H_
-
-type tagREGCLS as long
-enum
-	REGCLS_SINGLEUSE = 0
-	REGCLS_MULTIPLEUSE = 1
-	REGCLS_MULTI_SEPARATE = 2
-	REGCLS_SUSPENDED = 4
-	REGCLS_SURROGATE = 8
-end enum
-
-type REGCLS as tagREGCLS
-
 #macro LISet32(li, v)
 	scope
 		(li).HighPart = iif(cast(LONG, (v)) < 0, -1, 0)
@@ -40,6 +28,17 @@ type REGCLS as tagREGCLS
 #define CLSCTX_INPROC (CLSCTX_INPROC_SERVER or CLSCTX_INPROC_HANDLER)
 #define CLSCTX_ALL (((CLSCTX_INPROC_SERVER or CLSCTX_INPROC_HANDLER) or CLSCTX_LOCAL_SERVER) or CLSCTX_REMOTE_SERVER)
 #define CLSCTX_SERVER ((CLSCTX_INPROC_SERVER or CLSCTX_LOCAL_SERVER) or CLSCTX_REMOTE_SERVER)
+
+type tagREGCLS as long
+enum
+	REGCLS_SINGLEUSE = 0
+	REGCLS_MULTIPLEUSE = 1
+	REGCLS_MULTI_SEPARATE = 2
+	REGCLS_SUSPENDED = 4
+	REGCLS_SURROGATE = 8
+end enum
+
+type REGCLS as tagREGCLS
 
 type tagCOINITBASE as long
 enum
@@ -165,11 +164,6 @@ declare function CLSIDFromProgID(byval lpszProgID as LPCOLESTR, byval lpclsid as
 declare function StringFromGUID2(byval rguid as const GUID const ptr, byval lpsz as LPOLESTR, byval cchMax as long) as long
 declare function CoCreateGuid(byval pguid as GUID ptr) as HRESULT
 
-type PROPVARIANT as tagPROPVARIANT
-
-declare function PropVariantCopy(byval pvarDest as PROPVARIANT ptr, byval pvarSrc as const PROPVARIANT ptr) as HRESULT
-declare function PropVariantClear(byval pvar as PROPVARIANT ptr) as HRESULT
-declare function FreePropVariantArray(byval cVariants as ULONG, byval rgvars as PROPVARIANT ptr) as HRESULT
 declare function CoWaitForMultipleHandles(byval dwFlags as DWORD, byval dwTimeout as DWORD, byval cHandles as ULONG, byval pHandles as LPHANDLE, byval lpdwindex as LPDWORD) as HRESULT
 
 type tagCOWAIT_FLAGS as long

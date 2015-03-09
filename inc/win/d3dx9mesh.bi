@@ -5,19 +5,6 @@
 
 extern "Windows"
 
-type ID3DXMesh as ID3DXMesh_
-type ID3DXTextureGutterHelper as ID3DXTextureGutterHelper_
-type ID3DXBaseMeshVtbl as ID3DXBaseMeshVtbl_
-type ID3DXMeshVtbl as ID3DXMeshVtbl_
-type ID3DXPMeshVtbl as ID3DXPMeshVtbl_
-type ID3DXSPMeshVtbl as ID3DXSPMeshVtbl_
-type ID3DXPatchMeshVtbl as ID3DXPatchMeshVtbl_
-type ID3DXSkinInfoVtbl as ID3DXSkinInfoVtbl_
-type ID3DXPRTBufferVtbl as ID3DXPRTBufferVtbl_
-type ID3DXPRTCompBufferVtbl as ID3DXPRTCompBufferVtbl_
-type ID3DXTextureGutterHelperVtbl as ID3DXTextureGutterHelperVtbl_
-type ID3DXPRTEngineVtbl as ID3DXPRTEngineVtbl_
-
 #define __WINE_D3DX9MESH_H
 
 extern IID_ID3DXBaseMesh as const GUID
@@ -181,6 +168,9 @@ end enum
 
 type D3DXSHGPUSIMOPT as _D3DXSHGPUSIMOPT
 type LPD3DXBASEMESH as ID3DXBaseMesh ptr
+
+type ID3DXMesh as ID3DXMesh_
+
 type LPD3DXMESH as ID3DXMesh ptr
 type LPD3DXPMESH as ID3DXPMesh ptr
 type LPD3DXSPMESH as ID3DXSPMesh ptr
@@ -189,6 +179,9 @@ type LPD3DXPATCHMESH as ID3DXPatchMesh ptr
 type LPD3DXPRTBUFFER as ID3DXPRTBuffer ptr
 type LPD3DXPRTCOMPBUFFER as ID3DXPRTCompBuffer ptr
 type LPD3DXPRTENGINE as ID3DXPRTEngine ptr
+
+type ID3DXTextureGutterHelper as ID3DXTextureGutterHelper_
+
 type LPD3DXTEXTUREGUTTERHELPER as ID3DXTextureGutterHelper ptr
 
 type _D3DXATTRIBUTERANGE
@@ -332,12 +325,14 @@ type LPD3DXUVATLASCB as function(byval complete as single, byval ctx as any ptr)
 type LPD3DXIMTSIGNALCALLBACK as function(byval as const D3DXVECTOR2 ptr, byval as UINT, byval as UINT, byval as any ptr, byval as FLOAT ptr) as HRESULT
 type LPD3DXSHPRTSIMCB as function(byval complete as single, byval ctx as any ptr) as HRESULT
 
+type ID3DXBaseMeshVtbl as ID3DXBaseMeshVtbl_
+
 type ID3DXBaseMesh
 	lpVtbl as ID3DXBaseMeshVtbl ptr
 end type
 
 type ID3DXBaseMeshVtbl_
-	QueryInterface as function(byval This as ID3DXBaseMesh ptr, byval riid as const IID const ptr, byval out_ as any ptr ptr) as HRESULT
+	QueryInterface as function(byval This as ID3DXBaseMesh ptr, byval riid as const IID const ptr, byval out as any ptr ptr) as HRESULT
 	AddRef as function(byval This as ID3DXBaseMesh ptr) as ULONG
 	Release as function(byval This as ID3DXBaseMesh ptr) as ULONG
 	DrawSubset as function(byval This as ID3DXBaseMesh ptr, byval attrib_id as DWORD) as HRESULT
@@ -352,9 +347,9 @@ type ID3DXBaseMeshVtbl_
 	CloneMesh as function(byval This as ID3DXBaseMesh ptr, byval options as DWORD, byval declaration as const D3DVERTEXELEMENT9 ptr, byval device as IDirect3DDevice9 ptr, byval clone_mesh as ID3DXMesh ptr ptr) as HRESULT
 	GetVertexBuffer as function(byval This as ID3DXBaseMesh ptr, byval vertex_buffer as IDirect3DVertexBuffer9 ptr ptr) as HRESULT
 	GetIndexBuffer as function(byval This as ID3DXBaseMesh ptr, byval index_buffer as IDirect3DIndexBuffer9 ptr ptr) as HRESULT
-	LockVertexBuffer as function(byval This as ID3DXBaseMesh ptr, byval flags as DWORD, byval data_ as any ptr ptr) as HRESULT
+	LockVertexBuffer as function(byval This as ID3DXBaseMesh ptr, byval flags as DWORD, byval data as any ptr ptr) as HRESULT
 	UnlockVertexBuffer as function(byval This as ID3DXBaseMesh ptr) as HRESULT
-	LockIndexBuffer as function(byval This as ID3DXBaseMesh ptr, byval flags as DWORD, byval data_ as any ptr ptr) as HRESULT
+	LockIndexBuffer as function(byval This as ID3DXBaseMesh ptr, byval flags as DWORD, byval data as any ptr ptr) as HRESULT
 	UnlockIndexBuffer as function(byval This as ID3DXBaseMesh ptr) as HRESULT
 	GetAttributeTable as function(byval This as ID3DXBaseMesh ptr, byval attrib_table as D3DXATTRIBUTERANGE ptr, byval attrib_table_size as DWORD ptr) as HRESULT
 	ConvertPointRepsToAdjacency as function(byval This as ID3DXBaseMesh ptr, byval point_reps as const DWORD ptr, byval adjacency as DWORD ptr) as HRESULT
@@ -363,12 +358,14 @@ type ID3DXBaseMeshVtbl_
 	UpdateSemantics as function(byval This as ID3DXBaseMesh ptr, byval declaration as D3DVERTEXELEMENT9 ptr) as HRESULT
 end type
 
+type ID3DXMeshVtbl as ID3DXMeshVtbl_
+
 type ID3DXMesh_
 	lpVtbl as ID3DXMeshVtbl ptr
 end type
 
 type ID3DXMeshVtbl_
-	QueryInterface as function(byval This as ID3DXMesh ptr, byval riid as const IID const ptr, byval out_ as any ptr ptr) as HRESULT
+	QueryInterface as function(byval This as ID3DXMesh ptr, byval riid as const IID const ptr, byval out as any ptr ptr) as HRESULT
 	AddRef as function(byval This as ID3DXMesh ptr) as ULONG
 	Release as function(byval This as ID3DXMesh ptr) as ULONG
 	DrawSubset as function(byval This as ID3DXMesh ptr, byval attrib_id as DWORD) as HRESULT
@@ -383,28 +380,30 @@ type ID3DXMeshVtbl_
 	CloneMesh as function(byval This as ID3DXMesh ptr, byval options as DWORD, byval declaration as const D3DVERTEXELEMENT9 ptr, byval device as IDirect3DDevice9 ptr, byval clone_mesh as ID3DXMesh ptr ptr) as HRESULT
 	GetVertexBuffer as function(byval This as ID3DXMesh ptr, byval vertex_buffer as IDirect3DVertexBuffer9 ptr ptr) as HRESULT
 	GetIndexBuffer as function(byval This as ID3DXMesh ptr, byval index_buffer as IDirect3DIndexBuffer9 ptr ptr) as HRESULT
-	LockVertexBuffer as function(byval This as ID3DXMesh ptr, byval flags as DWORD, byval data_ as any ptr ptr) as HRESULT
+	LockVertexBuffer as function(byval This as ID3DXMesh ptr, byval flags as DWORD, byval data as any ptr ptr) as HRESULT
 	UnlockVertexBuffer as function(byval This as ID3DXMesh ptr) as HRESULT
-	LockIndexBuffer as function(byval This as ID3DXMesh ptr, byval flags as DWORD, byval data_ as any ptr ptr) as HRESULT
+	LockIndexBuffer as function(byval This as ID3DXMesh ptr, byval flags as DWORD, byval data as any ptr ptr) as HRESULT
 	UnlockIndexBuffer as function(byval This as ID3DXMesh ptr) as HRESULT
 	GetAttributeTable as function(byval This as ID3DXMesh ptr, byval attrib_table as D3DXATTRIBUTERANGE ptr, byval attrib_table_size as DWORD ptr) as HRESULT
 	ConvertPointRepsToAdjacency as function(byval This as ID3DXMesh ptr, byval point_reps as const DWORD ptr, byval adjacency as DWORD ptr) as HRESULT
 	ConvertAdjacencyToPointReps as function(byval This as ID3DXMesh ptr, byval adjacency as const DWORD ptr, byval point_reps as DWORD ptr) as HRESULT
 	GenerateAdjacency as function(byval This as ID3DXMesh ptr, byval epsilon as FLOAT, byval adjacency as DWORD ptr) as HRESULT
 	UpdateSemantics as function(byval This as ID3DXMesh ptr, byval declaration as D3DVERTEXELEMENT9 ptr) as HRESULT
-	LockAttributeBuffer as function(byval This as ID3DXMesh ptr, byval flags as DWORD, byval data_ as DWORD ptr ptr) as HRESULT
+	LockAttributeBuffer as function(byval This as ID3DXMesh ptr, byval flags as DWORD, byval data as DWORD ptr ptr) as HRESULT
 	UnlockAttributeBuffer as function(byval This as ID3DXMesh ptr) as HRESULT
 	Optimize as function(byval This as ID3DXMesh ptr, byval flags as DWORD, byval adjacency_in as const DWORD ptr, byval adjacency_out as DWORD ptr, byval face_remap as DWORD ptr, byval vertex_remap as ID3DXBuffer ptr ptr, byval opt_mesh as ID3DXMesh ptr ptr) as HRESULT
 	OptimizeInplace as function(byval This as ID3DXMesh ptr, byval flags as DWORD, byval adjacency_in as const DWORD ptr, byval adjacency_out as DWORD ptr, byval face_remap as DWORD ptr, byval vertex_remap as ID3DXBuffer ptr ptr) as HRESULT
 	SetAttributeTable as function(byval This as ID3DXMesh ptr, byval attrib_table as const D3DXATTRIBUTERANGE ptr, byval attrib_table_size as DWORD) as HRESULT
 end type
 
+type ID3DXPMeshVtbl as ID3DXPMeshVtbl_
+
 type ID3DXPMesh
 	lpVtbl as ID3DXPMeshVtbl ptr
 end type
 
 type ID3DXPMeshVtbl_
-	QueryInterface as function(byval This as ID3DXPMesh ptr, byval riid as const IID const ptr, byval out_ as any ptr ptr) as HRESULT
+	QueryInterface as function(byval This as ID3DXPMesh ptr, byval riid as const IID const ptr, byval out as any ptr ptr) as HRESULT
 	AddRef as function(byval This as ID3DXPMesh ptr) as ULONG
 	Release as function(byval This as ID3DXPMesh ptr) as ULONG
 	DrawSubset as function(byval This as ID3DXPMesh ptr, byval attrib_id as DWORD) as HRESULT
@@ -419,9 +418,9 @@ type ID3DXPMeshVtbl_
 	CloneMesh as function(byval This as ID3DXPMesh ptr, byval options as DWORD, byval declaration as const D3DVERTEXELEMENT9 ptr, byval device as IDirect3DDevice9 ptr, byval clone_mesh as ID3DXMesh ptr ptr) as HRESULT
 	GetVertexBuffer as function(byval This as ID3DXPMesh ptr, byval vertex_buffer as IDirect3DVertexBuffer9 ptr ptr) as HRESULT
 	GetIndexBuffer as function(byval This as ID3DXPMesh ptr, byval index_buffer as IDirect3DIndexBuffer9 ptr ptr) as HRESULT
-	LockVertexBuffer as function(byval This as ID3DXPMesh ptr, byval flags as DWORD, byval data_ as any ptr ptr) as HRESULT
+	LockVertexBuffer as function(byval This as ID3DXPMesh ptr, byval flags as DWORD, byval data as any ptr ptr) as HRESULT
 	UnlockVertexBuffer as function(byval This as ID3DXPMesh ptr) as HRESULT
-	LockIndexBuffer as function(byval This as ID3DXPMesh ptr, byval flags as DWORD, byval data_ as any ptr ptr) as HRESULT
+	LockIndexBuffer as function(byval This as ID3DXPMesh ptr, byval flags as DWORD, byval data as any ptr ptr) as HRESULT
 	UnlockIndexBuffer as function(byval This as ID3DXPMesh ptr) as HRESULT
 	GetAttributeTable as function(byval This as ID3DXPMesh ptr, byval attrib_table as D3DXATTRIBUTERANGE ptr, byval attrib_table_size as DWORD ptr) as HRESULT
 	ConvertPointRepsToAdjacency as function(byval This as ID3DXPMesh ptr, byval point_reps as const DWORD ptr, byval adjacency as DWORD ptr) as HRESULT
@@ -445,12 +444,14 @@ type ID3DXPMeshVtbl_
 	GenerateVertexHistory as function(byval This as ID3DXPMesh ptr, byval vertex_history as DWORD ptr) as HRESULT
 end type
 
+type ID3DXSPMeshVtbl as ID3DXSPMeshVtbl_
+
 type ID3DXSPMesh
 	lpVtbl as ID3DXSPMeshVtbl ptr
 end type
 
 type ID3DXSPMeshVtbl_
-	QueryInterface as function(byval This as ID3DXSPMesh ptr, byval riid as const IID const ptr, byval out_ as any ptr ptr) as HRESULT
+	QueryInterface as function(byval This as ID3DXSPMesh ptr, byval riid as const IID const ptr, byval out as any ptr ptr) as HRESULT
 	AddRef as function(byval This as ID3DXSPMesh ptr) as ULONG
 	Release as function(byval This as ID3DXSPMesh ptr) as ULONG
 	GetNumFaces as function(byval This as ID3DXSPMesh ptr) as DWORD
@@ -471,12 +472,14 @@ type ID3DXSPMeshVtbl_
 	GetVertexWeights as function(byval This as ID3DXSPMesh ptr, byval vertex_weights as FLOAT ptr) as HRESULT
 end type
 
+type ID3DXPatchMeshVtbl as ID3DXPatchMeshVtbl_
+
 type ID3DXPatchMesh
 	lpVtbl as ID3DXPatchMeshVtbl ptr
 end type
 
 type ID3DXPatchMeshVtbl_
-	QueryInterface as function(byval This as ID3DXPatchMesh ptr, byval riid as const IID const ptr, byval out_ as any ptr ptr) as HRESULT
+	QueryInterface as function(byval This as ID3DXPatchMesh ptr, byval riid as const IID const ptr, byval out as any ptr ptr) as HRESULT
 	AddRef as function(byval This as ID3DXPatchMesh ptr) as ULONG
 	Release as function(byval This as ID3DXPatchMesh ptr) as ULONG
 	GetNumPatches as function(byval This as ID3DXPatchMesh ptr) as DWORD
@@ -488,11 +491,11 @@ type ID3DXPatchMeshVtbl_
 	GetPatchInfo as function(byval This as ID3DXPatchMesh ptr, byval patch_info as LPD3DXPATCHINFO) as HRESULT
 	GetVertexBuffer as function(byval This as ID3DXPatchMesh ptr, byval vertex_buffer as IDirect3DVertexBuffer9 ptr ptr) as HRESULT
 	GetIndexBuffer as function(byval This as ID3DXPatchMesh ptr, byval index_buffer as IDirect3DIndexBuffer9 ptr ptr) as HRESULT
-	LockVertexBuffer as function(byval This as ID3DXPatchMesh ptr, byval flags as DWORD, byval data_ as any ptr ptr) as HRESULT
+	LockVertexBuffer as function(byval This as ID3DXPatchMesh ptr, byval flags as DWORD, byval data as any ptr ptr) as HRESULT
 	UnlockVertexBuffer as function(byval This as ID3DXPatchMesh ptr) as HRESULT
-	LockIndexBuffer as function(byval This as ID3DXPatchMesh ptr, byval flags as DWORD, byval data_ as any ptr ptr) as HRESULT
+	LockIndexBuffer as function(byval This as ID3DXPatchMesh ptr, byval flags as DWORD, byval data as any ptr ptr) as HRESULT
 	UnlockIndexBuffer as function(byval This as ID3DXPatchMesh ptr) as HRESULT
-	LockAttributeBuffer as function(byval This as ID3DXPatchMesh ptr, byval flags as DWORD, byval data_ as DWORD ptr ptr) as HRESULT
+	LockAttributeBuffer as function(byval This as ID3DXPatchMesh ptr, byval flags as DWORD, byval data as DWORD ptr ptr) as HRESULT
 	UnlockAttributeBuffer as function(byval This as ID3DXPatchMesh ptr) as HRESULT
 	GetTessSize as function(byval This as ID3DXPatchMesh ptr, byval tess_level as FLOAT, byval adaptive as DWORD, byval num_triangles as DWORD ptr, byval num_vertices as DWORD ptr) as HRESULT
 	GenerateAdjacency as function(byval This as ID3DXPatchMesh ptr, byval tolerance as FLOAT) as HRESULT
@@ -504,12 +507,14 @@ type ID3DXPatchMeshVtbl_
 	TessellateAdaptive as function(byval This as ID3DXPatchMesh ptr, byval trans as const D3DXVECTOR4 ptr, byval max_tess_level as DWORD, byval min_tess_level as DWORD, byval mesh as ID3DXMesh ptr) as HRESULT
 end type
 
+type ID3DXSkinInfoVtbl as ID3DXSkinInfoVtbl_
+
 type ID3DXSkinInfo
 	lpVtbl as ID3DXSkinInfoVtbl ptr
 end type
 
 type ID3DXSkinInfoVtbl_
-	QueryInterface as function(byval This as ID3DXSkinInfo ptr, byval riid as const IID const ptr, byval out_ as any ptr ptr) as HRESULT
+	QueryInterface as function(byval This as ID3DXSkinInfo ptr, byval riid as const IID const ptr, byval out as any ptr ptr) as HRESULT
 	AddRef as function(byval This as ID3DXSkinInfo ptr) as ULONG
 	Release as function(byval This as ID3DXSkinInfo ptr) as ULONG
 	SetBoneInfluence as function(byval This as ID3DXSkinInfo ptr, byval bone as DWORD, byval num_influences as DWORD, byval vertices as const DWORD ptr, byval weights as const FLOAT ptr) as HRESULT
@@ -523,7 +528,7 @@ type ID3DXSkinInfoVtbl_
 	GetMaxFaceInfluences as function(byval This as ID3DXSkinInfo ptr, byval index_buffer as IDirect3DIndexBuffer9 ptr, byval num_faces as DWORD, byval max_face_influences as DWORD ptr) as HRESULT
 	SetMinBoneInfluence as function(byval This as ID3DXSkinInfo ptr, byval min_influence as FLOAT) as HRESULT
 	GetMinBoneInfluence as function(byval This as ID3DXSkinInfo ptr) as FLOAT
-	SetBoneName as function(byval This as ID3DXSkinInfo ptr, byval bone_idx as DWORD, byval name_ as const zstring ptr) as HRESULT
+	SetBoneName as function(byval This as ID3DXSkinInfo ptr, byval bone_idx as DWORD, byval name as const zstring ptr) as HRESULT
 	GetBoneName as function(byval This as ID3DXSkinInfo ptr, byval bone_idx as DWORD) as const zstring ptr
 	SetBoneOffsetMatrix as function(byval This as ID3DXSkinInfo ptr, byval bone as DWORD, byval bone_transform as const D3DXMATRIX ptr) as HRESULT
 	GetBoneOffsetMatrix as function(byval This as ID3DXSkinInfo ptr, byval bone as DWORD) as D3DXMATRIX ptr
@@ -538,12 +543,14 @@ type ID3DXSkinInfoVtbl_
 	ConvertToIndexedBlendedMesh as function(byval This as ID3DXSkinInfo ptr, byval mesh_in as ID3DXMesh ptr, byval options as DWORD, byval adjacency_in as const DWORD ptr, byval adjacency_out as DWORD ptr, byval face_remap as DWORD ptr, byval vertex_remap as ID3DXBuffer ptr ptr, byval max_face_infl as DWORD ptr, byval num_bone_combinations as DWORD ptr, byval bone_combination_table as ID3DXBuffer ptr ptr, byval mesh_out as ID3DXMesh ptr ptr) as HRESULT
 end type
 
+type ID3DXPRTBufferVtbl as ID3DXPRTBufferVtbl_
+
 type ID3DXPRTBuffer
 	lpVtbl as ID3DXPRTBufferVtbl ptr
 end type
 
 type ID3DXPRTBufferVtbl_
-	QueryInterface as function(byval This as ID3DXPRTBuffer ptr, byval riid as const IID const ptr, byval out_ as any ptr ptr) as HRESULT
+	QueryInterface as function(byval This as ID3DXPRTBuffer ptr, byval riid as const IID const ptr, byval out as any ptr ptr) as HRESULT
 	AddRef as function(byval This as ID3DXPRTBuffer ptr) as ULONG
 	Release as function(byval This as ID3DXPRTBuffer ptr) as ULONG
 	GetNumSamples as function(byval This as ID3DXPRTBuffer ptr) as UINT
@@ -553,7 +560,7 @@ type ID3DXPRTBufferVtbl_
 	GetWidth as function(byval This as ID3DXPRTBuffer ptr) as WINBOOL
 	GetHeight as function(byval This as ID3DXPRTBuffer ptr) as WINBOOL
 	Resize as function(byval This as ID3DXPRTBuffer ptr, byval new_size as UINT) as HRESULT
-	LockBuffer as function(byval This as ID3DXPRTBuffer ptr, byval start as UINT, byval num_samples as UINT, byval data_ as FLOAT ptr ptr) as HRESULT
+	LockBuffer as function(byval This as ID3DXPRTBuffer ptr, byval start as UINT, byval num_samples as UINT, byval data as FLOAT ptr ptr) as HRESULT
 	UnlockBuffer as function(byval This as ID3DXPRTBuffer ptr) as HRESULT
 	ScaleBuffer as function(byval This as ID3DXPRTBuffer ptr, byval scale as FLOAT) as HRESULT
 	AddBuffer as function(byval This as ID3DXPRTBuffer ptr, byval buffer as ID3DXPRTBuffer ptr) as HRESULT
@@ -564,12 +571,14 @@ type ID3DXPRTBufferVtbl_
 	ExtractToMesh as function(byval This as ID3DXPRTBuffer ptr, byval num_coefficients as UINT, byval usage as D3DDECLUSAGE, byval usage_index_start as UINT, byval scene as ID3DXMesh ptr) as HRESULT
 end type
 
+type ID3DXPRTCompBufferVtbl as ID3DXPRTCompBufferVtbl_
+
 type ID3DXPRTCompBuffer
 	lpVtbl as ID3DXPRTCompBufferVtbl ptr
 end type
 
 type ID3DXPRTCompBufferVtbl_
-	QueryInterface as function(byval This as ID3DXPRTCompBuffer ptr, byval riid as const IID const ptr, byval out_ as any ptr ptr) as HRESULT
+	QueryInterface as function(byval This as ID3DXPRTCompBuffer ptr, byval riid as const IID const ptr, byval out as any ptr ptr) as HRESULT
 	AddRef as function(byval This as ID3DXPRTCompBuffer ptr) as ULONG
 	Release as function(byval This as ID3DXPRTCompBuffer ptr) as ULONG
 	GetNumSamples as function(byval This as ID3DXPRTCompBuffer ptr) as UINT
@@ -588,17 +597,19 @@ type ID3DXPRTCompBufferVtbl_
 	ExtractToMesh as function(byval This as ID3DXPRTCompBuffer ptr, byval num_pca as UINT, byval usage as D3DDECLUSAGE, byval usage_index_start as UINT, byval scene as ID3DXMesh ptr) as HRESULT
 end type
 
+type ID3DXTextureGutterHelperVtbl as ID3DXTextureGutterHelperVtbl_
+
 type ID3DXTextureGutterHelper_
 	lpVtbl as ID3DXTextureGutterHelperVtbl ptr
 end type
 
 type ID3DXTextureGutterHelperVtbl_
-	QueryInterface as function(byval This as ID3DXTextureGutterHelper ptr, byval riid as const IID const ptr, byval out_ as any ptr ptr) as HRESULT
+	QueryInterface as function(byval This as ID3DXTextureGutterHelper ptr, byval riid as const IID const ptr, byval out as any ptr ptr) as HRESULT
 	AddRef as function(byval This as ID3DXTextureGutterHelper ptr) as ULONG
 	Release as function(byval This as ID3DXTextureGutterHelper ptr) as ULONG
 	GetWidth as function(byval This as ID3DXTextureGutterHelper ptr) as UINT
 	GetHeight as function(byval This as ID3DXTextureGutterHelper ptr) as UINT
-	ApplyGuttersFloat as function(byval This as ID3DXTextureGutterHelper ptr, byval data_in as FLOAT ptr, byval num_coeffs as UINT, byval width_ as UINT, byval height as UINT) as HRESULT
+	ApplyGuttersFloat as function(byval This as ID3DXTextureGutterHelper ptr, byval data_in as FLOAT ptr, byval num_coeffs as UINT, byval width as UINT, byval height as UINT) as HRESULT
 	ApplyGuttersTex as function(byval This as ID3DXTextureGutterHelper ptr, byval texture as IDirect3DTexture9 ptr) as HRESULT
 	ApplyGuttersPRT as function(byval This as ID3DXTextureGutterHelper ptr, byval buffer as ID3DXPRTBuffer ptr) as HRESULT
 	ResampleTex as function(byval This as ID3DXTextureGutterHelper ptr, byval texture_in as IDirect3DTexture9 ptr, byval mesh_in as ID3DXMesh ptr, byval usage as D3DDECLUSAGE, byval usage_index as UINT, byval texture_out as IDirect3DTexture9 ptr) as HRESULT
@@ -612,12 +623,14 @@ type ID3DXTextureGutterHelperVtbl_
 	SetGutterMap as function(byval This as ID3DXTextureGutterHelper ptr, byval gutter_data as UBYTE ptr) as HRESULT
 end type
 
+type ID3DXPRTEngineVtbl as ID3DXPRTEngineVtbl_
+
 type ID3DXPRTEngine
 	lpVtbl as ID3DXPRTEngineVtbl ptr
 end type
 
 type ID3DXPRTEngineVtbl_
-	QueryInterface as function(byval This as ID3DXPRTEngine ptr, byval riid as const IID const ptr, byval out_ as any ptr ptr) as HRESULT
+	QueryInterface as function(byval This as ID3DXPRTEngine ptr, byval riid as const IID const ptr, byval out as any ptr ptr) as HRESULT
 	AddRef as function(byval This as ID3DXPRTEngine ptr) as ULONG
 	Release as function(byval This as ID3DXPRTEngine ptr) as ULONG
 	SetMeshMaterials as function(byval This as ID3DXPRTEngine ptr, byval materials as const D3DXSHMATERIAL ptr ptr, byval num_meshes as UINT, byval num_channels as UINT, byval set_albedo as WINBOOL, byval length_scale as FLOAT) as HRESULT
@@ -630,7 +643,7 @@ type ID3DXPRTEngineVtbl_
 	GetAdaptedMesh as function(byval This as ID3DXPRTEngine ptr, byval device as IDirect3DDevice9 ptr, byval face_remap as UINT ptr, byval vert_remap as UINT ptr, byval vert_weights as single ptr, byval mesh as ID3DXMesh ptr ptr) as HRESULT
 	GetNumVerts as function(byval This as ID3DXPRTEngine ptr) as UINT
 	GetNumFaces as function(byval This as ID3DXPRTEngine ptr) as UINT
-	SetMinMaxIntersection as function(byval This as ID3DXPRTEngine ptr, byval min_ as FLOAT, byval max_ as FLOAT) as HRESULT
+	SetMinMaxIntersection as function(byval This as ID3DXPRTEngine ptr, byval min as FLOAT, byval max as FLOAT) as HRESULT
 	RobustMeshRefine as function(byval This as ID3DXPRTEngine ptr, byval min_edge_length as FLOAT, byval max_subdiv as UINT) as HRESULT
 	SetSamplingInfo as function(byval This as ID3DXPRTEngine ptr, byval num_rays as UINT, byval use_sphere as WINBOOL, byval use_cosine as WINBOOL, byval adaptive as WINBOOL, byval adpative_thresh as FLOAT) as HRESULT
 	ComputeDirectLightingSH as function(byval This as ID3DXPRTEngine ptr, byval sh_order as UINT, byval data_out as ID3DXPRTBuffer ptr) as HRESULT
@@ -664,9 +677,9 @@ declare function D3DXCreateSkinInfoFVF(byval vertex_count as DWORD, byval fvf as
 declare function D3DXCreateSkinInfoFromBlendedMesh(byval mesh as ID3DXBaseMesh ptr, byval bone_count as DWORD, byval bone_combination_table as const D3DXBONECOMBINATION ptr, byval skin_info as ID3DXSkinInfo ptr ptr) as HRESULT
 declare function D3DXCreatePatchMesh(byval patch_info as const D3DXPATCHINFO ptr, byval patch_count as DWORD, byval vertex_count as DWORD, byval flags as DWORD, byval declaration as const D3DVERTEXELEMENT9 ptr, byval device as IDirect3DDevice9 ptr, byval mesh as ID3DXPatchMesh ptr ptr) as HRESULT
 declare function D3DXCreatePRTBuffer(byval sample_count as UINT, byval coeff_count as UINT, byval channel_count as UINT, byval buffer as ID3DXPRTBuffer ptr ptr) as HRESULT
-declare function D3DXCreatePRTBufferTex(byval width_ as UINT, byval height as UINT, byval coeff_count as UINT, byval channel_count as UINT, byval buffer as ID3DXPRTBuffer ptr ptr) as HRESULT
-declare function D3DXCreatePRTCompBuffer(byval quality as D3DXSHCOMPRESSQUALITYTYPE, byval cluster_count as UINT, byval pca_count as UINT, byval cb as LPD3DXSHPRTSIMCB, byval ctx as any ptr, byval input_ as ID3DXPRTBuffer ptr, byval buffer as ID3DXPRTCompBuffer ptr ptr) as HRESULT
-declare function D3DXCreateTextureGutterHelper(byval width_ as UINT, byval height as UINT, byval mesh as ID3DXMesh ptr, byval gutter_size as single, byval gh as ID3DXTextureGutterHelper ptr ptr) as HRESULT
+declare function D3DXCreatePRTBufferTex(byval width as UINT, byval height as UINT, byval coeff_count as UINT, byval channel_count as UINT, byval buffer as ID3DXPRTBuffer ptr ptr) as HRESULT
+declare function D3DXCreatePRTCompBuffer(byval quality as D3DXSHCOMPRESSQUALITYTYPE, byval cluster_count as UINT, byval pca_count as UINT, byval cb as LPD3DXSHPRTSIMCB, byval ctx as any ptr, byval input as ID3DXPRTBuffer ptr, byval buffer as ID3DXPRTCompBuffer ptr ptr) as HRESULT
+declare function D3DXCreateTextureGutterHelper(byval width as UINT, byval height as UINT, byval mesh as ID3DXMesh ptr, byval gutter_size as single, byval gh as ID3DXTextureGutterHelper ptr ptr) as HRESULT
 declare function D3DXCreatePRTEngine(byval mesh as ID3DXMesh ptr, byval adjacency as DWORD ptr, byval extract_uv as WINBOOL, byval blocker_mesh as ID3DXMesh ptr, byval engine as ID3DXPRTEngine ptr ptr) as HRESULT
 declare function D3DXLoadMeshFromXA(byval filename as const zstring ptr, byval flags as DWORD, byval device as IDirect3DDevice9 ptr, byval adjacency as ID3DXBuffer ptr ptr, byval materials as ID3DXBuffer ptr ptr, byval effect_instances as ID3DXBuffer ptr ptr, byval material_count as DWORD ptr, byval mesh as ID3DXMesh ptr ptr) as HRESULT
 declare function D3DXLoadMeshFromXW(byval filename as const wstring ptr, byval flags as DWORD, byval device as IDirect3DDevice9 ptr, byval adjacency as ID3DXBuffer ptr ptr, byval materials as ID3DXBuffer ptr ptr, byval effect_instances as ID3DXBuffer ptr ptr, byval material_count as DWORD ptr, byval mesh as ID3DXMesh ptr ptr) as HRESULT
@@ -677,7 +690,7 @@ declare function D3DXLoadMeshFromXW(byval filename as const wstring ptr, byval f
 	#define D3DXLoadMeshFromX D3DXLoadMeshFromXA
 #endif
 
-declare function D3DXLoadMeshFromXInMemory(byval data_ as const any ptr, byval data_size as DWORD, byval flags as DWORD, byval device as IDirect3DDevice9 ptr, byval adjacency as ID3DXBuffer ptr ptr, byval materials as ID3DXBuffer ptr ptr, byval effect_instances as ID3DXBuffer ptr ptr, byval material_count as DWORD ptr, byval mesh as ID3DXMesh ptr ptr) as HRESULT
+declare function D3DXLoadMeshFromXInMemory(byval data as const any ptr, byval data_size as DWORD, byval flags as DWORD, byval device as IDirect3DDevice9 ptr, byval adjacency as ID3DXBuffer ptr ptr, byval materials as ID3DXBuffer ptr ptr, byval effect_instances as ID3DXBuffer ptr ptr, byval material_count as DWORD ptr, byval mesh as ID3DXMesh ptr ptr) as HRESULT
 declare function D3DXLoadMeshFromXResource(byval module as HMODULE, byval resource as const zstring ptr, byval resource_type as const zstring ptr, byval flags as DWORD, byval device as IDirect3DDevice9 ptr, byval adjacency as ID3DXBuffer ptr ptr, byval materials as ID3DXBuffer ptr ptr, byval effect_instances as ID3DXBuffer ptr ptr, byval material_count as DWORD ptr, byval mesh as ID3DXMesh ptr ptr) as HRESULT
 declare function D3DXLoadMeshFromXof(byval file_data as ID3DXFileData ptr, byval flags as DWORD, byval device as IDirect3DDevice9 ptr, byval adjacency as ID3DXBuffer ptr ptr, byval materials as ID3DXBuffer ptr ptr, byval effect_instances as ID3DXBuffer ptr ptr, byval material_count as DWORD ptr, byval mesh as ID3DXMesh ptr ptr) as HRESULT
 declare function D3DXLoadPatchMeshFromXof(byval file_data as ID3DXFileData ptr, byval flags as DWORD, byval device as IDirect3DDevice9 ptr, byval adjacency as ID3DXBuffer ptr ptr, byval materials as ID3DXBuffer ptr ptr, byval effect_instances as ID3DXBuffer ptr ptr, byval material_count as DWORD ptr, byval mesh as ID3DXPatchMesh ptr ptr) as HRESULT
@@ -736,10 +749,10 @@ declare function D3DXCleanMesh(byval clean_type as D3DXCLEANTYPE, byval mesh_in 
 declare function D3DXConcatenateMeshes(byval meshes as ID3DXMesh ptr ptr, byval mesh_count as UINT, byval flags as DWORD, byval geometry_matrices as const D3DXMATRIX ptr, byval texture_matrices as const D3DXMATRIX ptr, byval declaration as const D3DVERTEXELEMENT9 ptr, byval device as IDirect3DDevice9 ptr, byval mesh as ID3DXMesh ptr ptr) as HRESULT
 declare function D3DXComputeBoundingBox(byval as const D3DXVECTOR3 ptr, byval as DWORD, byval as DWORD, byval as D3DXVECTOR3 ptr, byval as D3DXVECTOR3 ptr) as HRESULT
 declare function D3DXComputeBoundingSphere(byval as const D3DXVECTOR3 ptr, byval as DWORD, byval as DWORD, byval as D3DXVECTOR3 ptr, byval as FLOAT ptr) as HRESULT
-declare function D3DXComputeIMTFromPerTexelSignal(byval mesh as ID3DXMesh ptr, byval texture_idx as DWORD, byval texel_signal as single ptr, byval width_ as UINT, byval height as UINT, byval signal_dimension as UINT, byval component_count as UINT, byval flags as DWORD, byval cb as LPD3DXUVATLASCB, byval ctx as any ptr, byval buffer as ID3DXBuffer ptr ptr) as HRESULT
+declare function D3DXComputeIMTFromPerTexelSignal(byval mesh as ID3DXMesh ptr, byval texture_idx as DWORD, byval texel_signal as single ptr, byval width as UINT, byval height as UINT, byval signal_dimension as UINT, byval component_count as UINT, byval flags as DWORD, byval cb as LPD3DXUVATLASCB, byval ctx as any ptr, byval buffer as ID3DXBuffer ptr ptr) as HRESULT
 declare function D3DXComputeIMTFromPerVertexSignal(byval mesh as ID3DXMesh ptr, byval vertex_signal as const single ptr, byval signal_dimension as UINT, byval signal_stride as UINT, byval flags as DWORD, byval cb as LPD3DXUVATLASCB, byval ctx as any ptr, byval buffer as ID3DXBuffer ptr ptr) as HRESULT
 declare function D3DXComputeIMTFromSignal(byval mesh as ID3DXMesh ptr, byval texture_idx as DWORD, byval signal_dimension as UINT, byval max_uv_distance as single, byval flags as DWORD, byval signal_cb as LPD3DXIMTSIGNALCALLBACK, byval signal_ctx as any ptr, byval status_cb as LPD3DXUVATLASCB, byval status_ctx as any ptr, byval buffer as ID3DXBuffer ptr ptr) as HRESULT
-declare function D3DXComputeIMTFromTexture(byval mesh as ID3DXMesh ptr, byval texture as IDirect3DTexture9 ptr, byval texture_idx as DWORD, byval options as DWORD, byval cb as LPD3DXUVATLASCB, byval ctx as any ptr, byval out_ as ID3DXBuffer ptr ptr) as HRESULT
+declare function D3DXComputeIMTFromTexture(byval mesh as ID3DXMesh ptr, byval texture as IDirect3DTexture9 ptr, byval texture_idx as DWORD, byval options as DWORD, byval cb as LPD3DXUVATLASCB, byval ctx as any ptr, byval out as ID3DXBuffer ptr ptr) as HRESULT
 declare function D3DXComputeNormals(byval mesh as ID3DXBaseMesh ptr, byval adjacency as const DWORD ptr) as HRESULT
 declare function D3DXComputeTangentFrameEx(byval mesh_in as ID3DXMesh ptr, byval texture_in_semantic as DWORD, byval texture_in_idx as DWORD, byval u_partial_out_semantic as DWORD, byval u_partial_out_idx as DWORD, byval v_partial_out_semantic as DWORD, byval v_partial_out_idx as DWORD, byval normal_out_semantic as DWORD, byval normal_out_idx as DWORD, byval flags as DWORD, byval adjacency as const DWORD ptr, byval partial_edge_threshold as single, byval singular_point_threshold as single, byval normal_edge_threshold as single, byval mesh_out as ID3DXMesh ptr ptr, byval buffer as ID3DXBuffer ptr ptr) as HRESULT
 declare function D3DXComputeTangent(byval mesh as ID3DXMesh ptr, byval stage as DWORD, byval tangent_idx as DWORD, byval binorm_idx as DWORD, byval wrap as DWORD, byval adjacency as const DWORD ptr) as HRESULT
@@ -763,8 +776,8 @@ declare function D3DXTesselateNPatches(byval mesh_in as ID3DXMesh ptr, byval adj
 declare function D3DXTesselateRectPatch(byval buffer as IDirect3DVertexBuffer9 ptr, byval segment_count as const single ptr, byval declaration as const D3DVERTEXELEMENT9 ptr, byval patch_info as const D3DRECTPATCH_INFO ptr, byval mesh as ID3DXMesh ptr) as HRESULT
 declare function D3DXTesselateTriPatch(byval buffer as IDirect3DVertexBuffer9 ptr, byval segment_count as const single ptr, byval declaration as const D3DVERTEXELEMENT9 ptr, byval patch_info as const D3DTRIPATCH_INFO ptr, byval mesh as ID3DXMesh ptr) as HRESULT
 declare function D3DXTriPatchSize(byval as const FLOAT ptr, byval as DWORD ptr, byval as DWORD ptr) as HRESULT
-declare function D3DXUVAtlasCreate(byval mesh_in as ID3DXMesh ptr, byval max_chart_count as UINT, byval max_stretch_in as single, byval width_ as UINT, byval height as UINT, byval gutter as single, byval texture_idx as DWORD, byval adjacency as const DWORD ptr, byval false_edges as const DWORD ptr, byval imt_array as const single ptr, byval cb as LPD3DXUVATLASCB, byval cb_freq as single, byval ctx as any ptr, byval flags as DWORD, byval mesh_out as ID3DXMesh ptr ptr, byval face_partitioning_out as ID3DXBuffer ptr ptr, byval vertex_remap_out as ID3DXBuffer ptr ptr, byval max_stretch_out as single ptr, byval chart_count as UINT ptr) as HRESULT
-declare function D3DXUVAtlasPack(byval mesh as ID3DXMesh ptr, byval width_ as UINT, byval height as UINT, byval gutter as single, byval texture_idx as DWORD, byval partition_result_adjacency as const DWORD ptr, byval cb as LPD3DXUVATLASCB, byval cb_freq as single, byval ctx as any ptr, byval flags as DWORD, byval face_partitioning as ID3DXBuffer ptr) as HRESULT
+declare function D3DXUVAtlasCreate(byval mesh_in as ID3DXMesh ptr, byval max_chart_count as UINT, byval max_stretch_in as single, byval width as UINT, byval height as UINT, byval gutter as single, byval texture_idx as DWORD, byval adjacency as const DWORD ptr, byval false_edges as const DWORD ptr, byval imt_array as const single ptr, byval cb as LPD3DXUVATLASCB, byval cb_freq as single, byval ctx as any ptr, byval flags as DWORD, byval mesh_out as ID3DXMesh ptr ptr, byval face_partitioning_out as ID3DXBuffer ptr ptr, byval vertex_remap_out as ID3DXBuffer ptr ptr, byval max_stretch_out as single ptr, byval chart_count as UINT ptr) as HRESULT
+declare function D3DXUVAtlasPack(byval mesh as ID3DXMesh ptr, byval width as UINT, byval height as UINT, byval gutter as single, byval texture_idx as DWORD, byval partition_result_adjacency as const DWORD ptr, byval cb as LPD3DXUVATLASCB, byval cb_freq as single, byval ctx as any ptr, byval flags as DWORD, byval face_partitioning as ID3DXBuffer ptr) as HRESULT
 declare function D3DXUVAtlasPartition(byval mesh_in as ID3DXMesh ptr, byval max_chart_count as UINT, byval max_stretch_in as single, byval texture_idx as DWORD, byval adjacency as const DWORD ptr, byval false_edges as const DWORD ptr, byval imt_array as const single ptr, byval cb as LPD3DXUVATLASCB, byval cb_freq as single, byval ctx as any ptr, byval flags as DWORD, byval mesh_out as ID3DXMesh ptr ptr, byval face_partitioning_out as ID3DXBuffer ptr ptr, byval vertex_remap_out as ID3DXBuffer ptr ptr, byval adjacency_out as ID3DXBuffer ptr ptr, byval max_stretch_out as single ptr, byval chart_count as UINT ptr) as HRESULT
 declare function D3DXValidMesh(byval mesh as ID3DXMesh ptr, byval adjacency as const DWORD ptr, byval errors as ID3DXBuffer ptr ptr) as HRESULT
 declare function D3DXValidPatchMesh(byval mesh as ID3DXPatchMesh ptr, byval degenerate_vertex_count as DWORD ptr, byval degenerate_patch_count as DWORD ptr, byval errors as ID3DXBuffer ptr ptr) as HRESULT

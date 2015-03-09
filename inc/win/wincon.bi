@@ -1,6 +1,5 @@
 #pragma once
 
-#include once "crt/wchar.bi"
 #include once "_mingw_unicode.bi"
 #include once "winapifamily.bi"
 
@@ -29,7 +28,7 @@ end type
 type SMALL_RECT as _SMALL_RECT
 type PSMALL_RECT as _SMALL_RECT ptr
 
-union ___KEY_EVENT_RECORD_uChar
+union _KEY_EVENT_RECORD_uChar
 	UnicodeChar as wchar_t
 	AsciiChar as byte
 end union
@@ -39,7 +38,7 @@ type _KEY_EVENT_RECORD
 	wRepeatCount as WORD
 	wVirtualKeyCode as WORD
 	wVirtualScanCode as WORD
-	uChar as ___KEY_EVENT_RECORD_uChar
+	uChar as _KEY_EVENT_RECORD_uChar
 	dwControlKeyState as DWORD
 end type
 
@@ -107,7 +106,7 @@ end type
 type FOCUS_EVENT_RECORD as _FOCUS_EVENT_RECORD
 type PFOCUS_EVENT_RECORD as _FOCUS_EVENT_RECORD ptr
 
-union ___INPUT_RECORD_Event
+union _INPUT_RECORD_Event
 	KeyEvent as KEY_EVENT_RECORD
 	MouseEvent as MOUSE_EVENT_RECORD
 	WindowBufferSizeEvent as WINDOW_BUFFER_SIZE_RECORD
@@ -117,7 +116,7 @@ end union
 
 type _INPUT_RECORD
 	EventType as WORD
-	Event as ___INPUT_RECORD_Event
+	Event as _INPUT_RECORD_Event
 end type
 
 type INPUT_RECORD as _INPUT_RECORD
@@ -129,13 +128,13 @@ type PINPUT_RECORD as _INPUT_RECORD ptr
 #define MENU_EVENT &h8
 #define FOCUS_EVENT &h10
 
-union ___CHAR_INFO_Char
+union _CHAR_INFO_Char
 	UnicodeChar as wchar_t
 	AsciiChar as byte
 end union
 
 type _CHAR_INFO
-	Char as ___CHAR_INFO_Char
+	Char as _CHAR_INFO_Char
 	Attributes as WORD
 end type
 

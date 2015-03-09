@@ -1,6 +1,8 @@
 #pragma once
 
 #include once "CUnit.bi"
+#include once "CUError.bi"
+#include once "TestDB.bi"
 #include once "crt/stdio.bi"
 
 extern "C"

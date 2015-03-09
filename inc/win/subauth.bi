@@ -1,33 +1,8 @@
 #pragma once
 
-'' The following symbols have been renamed:
-''     typedef STRING => STRING_
-
 extern "Windows"
 
 #define _NTSUBAUTH_
-
-#ifndef __UNICODE_STRING_DEFINED
-#define __UNICODE_STRING_DEFINED
-type _UNICODE_STRING
-	Length as USHORT
-	MaximumLength as USHORT
-	Buffer as PWSTR
-end type
-type UNICODE_STRING as _UNICODE_STRING
-type PUNICODE_STRING as _UNICODE_STRING ptr
-#endif
-
-#ifndef __STRING_DEFINED
-#define __STRING_DEFINED
-type _STRING
-	Length as USHORT
-	MaximumLength as USHORT
-	Buffer as PCHAR
-end type
-type STRING_ as _STRING
-type PSTRING as _STRING ptr
-#endif
 
 type _OLD_LARGE_INTEGER
 	LowPart as ULONG
@@ -128,17 +103,16 @@ end type
 type USER_ALL_INFORMATION as _USER_ALL_INFORMATION
 type PUSER_ALL_INFORMATION as _USER_ALL_INFORMATION ptr
 
-type _CLEAR_BLOCK
-	data as zstring * 8
-end type
-
-type CLEAR_BLOCK as _CLEAR_BLOCK
-
 #define _NTSAM_USER_ALL_INFO_
 #define USER_ALL_PARAMETERS &h00200000
 #define _NTSAM_SAM_USER_PARMS_
 #define CLEAR_BLOCK_LENGTH 8
 
+type _CLEAR_BLOCK
+	data as zstring * 8
+end type
+
+type CLEAR_BLOCK as _CLEAR_BLOCK
 type PCLEAR_BLOCK as CLEAR_BLOCK ptr
 
 #define CYPHER_BLOCK_LENGTH 8

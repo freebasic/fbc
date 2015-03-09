@@ -1,7 +1,5 @@
 #pragma once
 
-#include once "crt/wchar.bi"
-
 #define _KTMTYPES_
 
 type CRM_PROTOCOL_ID as GUID

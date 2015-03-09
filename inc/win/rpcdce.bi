@@ -174,8 +174,8 @@ end type
 
 declare function RpcBindingCopy(byval SourceBinding as RPC_BINDING_HANDLE, byval DestinationBinding as RPC_BINDING_HANDLE ptr) as RPC_STATUS
 declare function RpcBindingFree(byval Binding as RPC_BINDING_HANDLE ptr) as RPC_STATUS
-declare function RpcBindingSetOption(byval hBinding as RPC_BINDING_HANDLE, byval option_ as ulong, byval optionValue as ULONG_PTR) as RPC_STATUS
-declare function RpcBindingInqOption(byval hBinding as RPC_BINDING_HANDLE, byval option_ as ulong, byval pOptionValue as ULONG_PTR ptr) as RPC_STATUS
+declare function RpcBindingSetOption(byval hBinding as RPC_BINDING_HANDLE, byval option as ulong, byval optionValue as ULONG_PTR) as RPC_STATUS
+declare function RpcBindingInqOption(byval hBinding as RPC_BINDING_HANDLE, byval option as ulong, byval pOptionValue as ULONG_PTR ptr) as RPC_STATUS
 declare function RpcBindingFromStringBindingA(byval StringBinding as RPC_CSTR, byval Binding as RPC_BINDING_HANDLE ptr) as RPC_STATUS
 declare function RpcBindingFromStringBindingW(byval StringBinding as RPC_WSTR, byval Binding as RPC_BINDING_HANDLE ptr) as RPC_STATUS
 declare function RpcSsGetContextBinding(byval ContextHandle as any ptr, byval Binding as RPC_BINDING_HANDLE ptr) as RPC_STATUS
@@ -190,8 +190,8 @@ declare function RpcStringBindingComposeA(byval ObjUuid as RPC_CSTR, byval Prots
 declare function RpcStringBindingComposeW(byval ObjUuid as RPC_WSTR, byval Protseq as RPC_WSTR, byval NetworkAddr as RPC_WSTR, byval Endpoint as RPC_WSTR, byval Options as RPC_WSTR, byval StringBinding as RPC_WSTR ptr) as RPC_STATUS
 declare function RpcStringBindingParseA(byval StringBinding as RPC_CSTR, byval ObjUuid as RPC_CSTR ptr, byval Protseq as RPC_CSTR ptr, byval NetworkAddr as RPC_CSTR ptr, byval Endpoint as RPC_CSTR ptr, byval NetworkOptions as RPC_CSTR ptr) as RPC_STATUS
 declare function RpcStringBindingParseW(byval StringBinding as RPC_WSTR, byval ObjUuid as RPC_WSTR ptr, byval Protseq as RPC_WSTR ptr, byval NetworkAddr as RPC_WSTR ptr, byval Endpoint as RPC_WSTR ptr, byval NetworkOptions as RPC_WSTR ptr) as RPC_STATUS
-declare function RpcStringFreeA(byval String_ as RPC_CSTR ptr) as RPC_STATUS
-declare function RpcStringFreeW(byval String_ as RPC_WSTR ptr) as RPC_STATUS
+declare function RpcStringFreeA(byval String as RPC_CSTR ptr) as RPC_STATUS
+declare function RpcStringFreeW(byval String as RPC_WSTR ptr) as RPC_STATUS
 declare function RpcIfInqId(byval RpcIfHandle as RPC_IF_HANDLE, byval RpcIfId as RPC_IF_ID ptr) as RPC_STATUS
 declare function RpcNetworkIsProtseqValidA(byval Protseq as RPC_CSTR) as RPC_STATUS
 declare function RpcNetworkIsProtseqValidW(byval Protseq as RPC_WSTR) as RPC_STATUS
@@ -383,7 +383,7 @@ end type
 type RPC_HTTP_TRANSPORT_CREDENTIALS_A as _RPC_HTTP_TRANSPORT_CREDENTIALS_A
 type PRPC_HTTP_TRANSPORT_CREDENTIALS_A as _RPC_HTTP_TRANSPORT_CREDENTIALS_A ptr
 
-union ___RPC_SECURITY_QOS_V2_W_u
+union _RPC_SECURITY_QOS_V2_W_u
 	HttpCredentials as RPC_HTTP_TRANSPORT_CREDENTIALS_W ptr
 end union
 
@@ -393,13 +393,13 @@ type _RPC_SECURITY_QOS_V2_W
 	IdentityTracking as ulong
 	ImpersonationType as ulong
 	AdditionalSecurityInfoType as ulong
-	u as ___RPC_SECURITY_QOS_V2_W_u
+	u as _RPC_SECURITY_QOS_V2_W_u
 end type
 
 type RPC_SECURITY_QOS_V2_W as _RPC_SECURITY_QOS_V2_W
 type PRPC_SECURITY_QOS_V2_W as _RPC_SECURITY_QOS_V2_W ptr
 
-union ___RPC_SECURITY_QOS_V2_A_u
+union _RPC_SECURITY_QOS_V2_A_u
 	HttpCredentials as RPC_HTTP_TRANSPORT_CREDENTIALS_A ptr
 end union
 
@@ -409,7 +409,7 @@ type _RPC_SECURITY_QOS_V2_A
 	IdentityTracking as ulong
 	ImpersonationType as ulong
 	AdditionalSecurityInfoType as ulong
-	u as ___RPC_SECURITY_QOS_V2_A_u
+	u as _RPC_SECURITY_QOS_V2_A_u
 end type
 
 type RPC_SECURITY_QOS_V2_A as _RPC_SECURITY_QOS_V2_A
@@ -417,7 +417,7 @@ type PRPC_SECURITY_QOS_V2_A as _RPC_SECURITY_QOS_V2_A ptr
 
 #define RPC_C_SECURITY_QOS_VERSION_3 __MSABI_LONG(3)
 
-union ___RPC_SECURITY_QOS_V3_W_u
+union _RPC_SECURITY_QOS_V3_W_u
 	HttpCredentials as RPC_HTTP_TRANSPORT_CREDENTIALS_W ptr
 end union
 
@@ -427,14 +427,14 @@ type _RPC_SECURITY_QOS_V3_W
 	IdentityTracking as ulong
 	ImpersonationType as ulong
 	AdditionalSecurityInfoType as ulong
-	u as ___RPC_SECURITY_QOS_V3_W_u
+	u as _RPC_SECURITY_QOS_V3_W_u
 	Sid as any ptr
 end type
 
 type RPC_SECURITY_QOS_V3_W as _RPC_SECURITY_QOS_V3_W
 type PRPC_SECURITY_QOS_V3_W as _RPC_SECURITY_QOS_V3_W ptr
 
-union ___RPC_SECURITY_QOS_V3_A_u
+union _RPC_SECURITY_QOS_V3_A_u
 	HttpCredentials as RPC_HTTP_TRANSPORT_CREDENTIALS_A ptr
 end union
 
@@ -444,7 +444,7 @@ type _RPC_SECURITY_QOS_V3_A
 	IdentityTracking as ulong
 	ImpersonationType as ulong
 	AdditionalSecurityInfoType as ulong
-	u as ___RPC_SECURITY_QOS_V3_A_u
+	u as _RPC_SECURITY_QOS_V3_A_u
 	Sid as any ptr
 end type
 
@@ -484,7 +484,7 @@ end enum
 
 type RPC_HTTP_REDIRECTOR_STAGE as _RPC_HTTP_REDIRECTOR_STAGE
 type RPC_NEW_HTTP_PROXY_CHANNEL as function(byval RedirectorStage as RPC_HTTP_REDIRECTOR_STAGE, byval ServerName as ushort ptr, byval ServerPort as ushort ptr, byval RemoteUser as ushort ptr, byval AuthType as ushort ptr, byval ResourceUuid as any ptr, byval Metadata as any ptr, byval SessionId as any ptr, byval Interface as any ptr, byval Reserved as any ptr, byval Flags as ulong, byval NewServerName as ushort ptr ptr, byval NewServerPort as ushort ptr ptr) as RPC_STATUS
-type RPC_HTTP_PROXY_FREE_STRING as sub(byval String_ as ushort ptr)
+type RPC_HTTP_PROXY_FREE_STRING as sub(byval String as ushort ptr)
 
 #define RPC_C_AUTHZ_NONE 0
 #define RPC_C_AUTHZ_NAME 1
@@ -652,7 +652,7 @@ declare function RpcMgmtSetAuthorizationFn(byval AuthorizationFn as RPC_MGMT_AUT
 
 	type RPC_BINDING_HANDLE_SECURITY as RPC_BINDING_HANDLE_SECURITY_V1
 
-	union ___RPC_BINDING_HANDLE_TEMPLATE_u1
+	union _RPC_BINDING_HANDLE_TEMPLATE_u1
 		Reserved as ushort ptr
 	end union
 
@@ -662,7 +662,7 @@ declare function RpcMgmtSetAuthorizationFn(byval AuthorizationFn as RPC_MGMT_AUT
 		ProtocolSequence as ulong
 		NetworkAddress as ushort ptr
 		StringEndpoint as ushort ptr
-		u1 as ___RPC_BINDING_HANDLE_TEMPLATE_u1
+		u1 as _RPC_BINDING_HANDLE_TEMPLATE_u1
 		ObjectUuid as UUID
 	end type
 

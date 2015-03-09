@@ -11,7 +11,6 @@ extern "Windows"
 
 #define _WINDEF_
 #define _MINWINDEF_
-#define STRICT 1
 #define BASETYPES
 
 type PULONG as ULONG ptr

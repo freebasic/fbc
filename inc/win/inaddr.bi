@@ -2,30 +2,30 @@
 
 #include once "_bsd_types.bi"
 
-type __in_addr_S_un_b
+type in_addr_S_un_S_un_b
 	s_b1 as u_char
 	s_b2 as u_char
 	s_b3 as u_char
 	s_b4 as u_char
 end type
 
-type __in_addr_S_un_w
+type in_addr_S_un_S_un_w
 	s_w1 as u_short
 	s_w2 as u_short
 end type
 
-union __in_addr_S_un
-	S_un_b as __in_addr_S_un_b
-	S_un_w as __in_addr_S_un_w
+union in_addr_S_un
+	S_un_b as in_addr_S_un_S_un_b
+	S_un_w as in_addr_S_un_S_un_w
 	S_addr as u_long
 end union
 
-type in_addr
-	S_un as __in_addr_S_un
+type IN_ADDR
+	S_un as in_addr_S_un
 end type
 
-type PIN_ADDR as in_addr ptr
-type LPIN_ADDR as in_addr ptr
+type PIN_ADDR as IN_ADDR ptr
+type LPIN_ADDR as IN_ADDR ptr
 
 #define s_addr S_un.S_addr
 #define s_host S_un.S_un_b.s_b2

@@ -4,77 +4,15 @@
 #include once "winapifamily.bi"
 #include once "_mingw_unicode.bi"
 #include once "ole2.bi"
-#include once "commctrl.bi"
 #include once "shlguid.bi"
 #include once "shtypes.bi"
 #include once "shobjidl.bi"
 #include once "shellapi.bi"
-
-#if _WIN32_WINNT = &h0602
-	'' The following symbols have been renamed:
-	''     #define Shell_GetCachedImageIndex => Shell_GetCachedImageIndex_
-#endif
+#include once "mshtmlc.bi"
 
 #inclib "shell32"
 
 extern "Windows"
-
-type IExtractIconAVtbl as IExtractIconAVtbl_
-type IExtractIconWVtbl as IExtractIconWVtbl_
-type IShellIconOverlayIdentifierVtbl as IShellIconOverlayIdentifierVtbl_
-type IShellIconOverlayManagerVtbl as IShellIconOverlayManagerVtbl_
-type IShellIconOverlayVtbl as IShellIconOverlayVtbl_
-type IShellExecuteHookAVtbl as IShellExecuteHookAVtbl_
-type IShellExecuteHookWVtbl as IShellExecuteHookWVtbl_
-type IURLSearchHookVtbl as IURLSearchHookVtbl_
-type ISearchContextVtbl as ISearchContextVtbl_
-type IURLSearchHook2Vtbl as IURLSearchHook2Vtbl_
-type INewShortcutHookAVtbl as INewShortcutHookAVtbl_
-type INewShortcutHookWVtbl as INewShortcutHookWVtbl_
-type ICopyHookAVtbl as ICopyHookAVtbl_
-type ICopyHookWVtbl as ICopyHookWVtbl_
-
-#if _WIN32_WINNT = &h0400
-	type IFileViewerSiteVtbl as IFileViewerSiteVtbl_
-	type IFileViewerAVtbl as IFileViewerAVtbl_
-	type IFileViewerWVtbl as IFileViewerWVtbl_
-#endif
-
-type IShellDetailsVtbl as IShellDetailsVtbl_
-type IObjMgrVtbl as IObjMgrVtbl_
-type ICurrentWorkingDirectoryVtbl as ICurrentWorkingDirectoryVtbl_
-type IACListVtbl as IACListVtbl_
-type IACList2Vtbl as IACList2Vtbl_
-type IProgressDialogVtbl as IProgressDialogVtbl_
-type IDockingWindowSiteVtbl as IDockingWindowSiteVtbl_
-type IDockingWindowFrameVtbl as IDockingWindowFrameVtbl_
-type IThumbnailCaptureVtbl as IThumbnailCaptureVtbl_
-
-#if _WIN32_WINNT = &h0502
-	type IEnumShellImageStoreVtbl as IEnumShellImageStoreVtbl_
-	type IShellImageStoreVtbl as IShellImageStoreVtbl_
-#endif
-
-type IShellFolderBandVtbl as IShellFolderBandVtbl_
-type IDeskBarClientVtbl as IDeskBarClientVtbl_
-type IColumnProviderVtbl as IColumnProviderVtbl_
-type IShellChangeNotifyVtbl as IShellChangeNotifyVtbl_
-type IQueryInfoVtbl as IQueryInfoVtbl_
-
-#if _WIN32_WINNT = &h0502
-	type IDefViewFrameVtbl as IDefViewFrameVtbl_
-#endif
-
-type IDocViewSiteVtbl as IDocViewSiteVtbl_
-type IInitializeObjectVtbl as IInitializeObjectVtbl_
-type IBanneredBarVtbl as IBanneredBarVtbl_
-type IShellFolderViewCBVtbl as IShellFolderViewCBVtbl_
-type IShellFolderViewVtbl as IShellFolderViewVtbl_
-type INamedPropertyBagVtbl as INamedPropertyBagVtbl_
-
-#if (_WIN32_WINNT = &h0502) or (_WIN32_WINNT = &h0602)
-	type IEnumPrivacyRecords as IEnumPrivacyRecords_
-#endif
 
 #define _SHLOBJ_H_
 
@@ -96,6 +34,8 @@ declare sub SHFree(byval pv as any ptr)
 #define GIL_SHIELD &h200
 #define GIL_FORCENOSHIELD &h400
 
+type IExtractIconAVtbl as IExtractIconAVtbl_
+
 type IExtractIconA field = 1
 	lpVtbl as IExtractIconAVtbl ptr
 end type
@@ -106,6 +46,8 @@ type IExtractIconAVtbl_ field = 1
 end type
 
 type LPEXTRACTICONA as IExtractIconA ptr
+
+type IExtractIconWVtbl as IExtractIconWVtbl_
 
 type IExtractIconW field = 1
 	lpVtbl as IExtractIconWVtbl ptr
@@ -128,6 +70,8 @@ type LPEXTRACTICONW as IExtractIconW ptr
 	#define LPEXTRACTICON LPEXTRACTICONA
 #endif
 
+type IShellIconOverlayIdentifierVtbl as IShellIconOverlayIdentifierVtbl_
+
 type IShellIconOverlayIdentifier field = 1
 	lpVtbl as IShellIconOverlayIdentifierVtbl ptr
 end type
@@ -140,6 +84,8 @@ end type
 
 #define ISIOI_ICONFILE &h1
 #define ISIOI_ICONINDEX &h2
+
+type IShellIconOverlayManagerVtbl as IShellIconOverlayManagerVtbl_
 
 type IShellIconOverlayManager field = 1
 	lpVtbl as IShellIconOverlayManagerVtbl ptr
@@ -159,6 +105,8 @@ end type
 #define SIOM_RESERVED_LINK 1
 #define SIOM_RESERVED_SLOWFILE 2
 #define SIOM_RESERVED_DEFAULT 3
+
+type IShellIconOverlayVtbl as IShellIconOverlayVtbl_
 
 type IShellIconOverlay field = 1
 	lpVtbl as IShellIconOverlayVtbl ptr
@@ -334,6 +282,8 @@ type LPEXP_SZ_LINK as EXP_SZ_LINK ptr
 	#define EXP_PROPERTYSTORAGE_SIG &ha0000009
 #endif
 
+type IShellExecuteHookAVtbl as IShellExecuteHookAVtbl_
+
 type IShellExecuteHookA field = 1
 	lpVtbl as IShellExecuteHookAVtbl ptr
 end type
@@ -341,6 +291,8 @@ end type
 type IShellExecuteHookAVtbl_ field = 1
 	Execute as function(byval This as IShellExecuteHookA ptr, byval pei as LPSHELLEXECUTEINFOA) as HRESULT
 end type
+
+type IShellExecuteHookWVtbl as IShellExecuteHookWVtbl_
 
 type IShellExecuteHookW field = 1
 	lpVtbl as IShellExecuteHookWVtbl ptr
@@ -358,6 +310,8 @@ end type
 	#define IShellExecuteHookVtbl IShellExecuteHookAVtbl
 #endif
 
+type IURLSearchHookVtbl as IURLSearchHookVtbl_
+
 type IURLSearchHook field = 1
 	lpVtbl as IURLSearchHookVtbl ptr
 end type
@@ -365,6 +319,8 @@ end type
 type IURLSearchHookVtbl_ field = 1
 	Translate as function(byval This as IURLSearchHook ptr, byval pwszSearchURL as PWSTR, byval cchBufferSize as DWORD) as HRESULT
 end type
+
+type ISearchContextVtbl as ISearchContextVtbl_
 
 type ISearchContext field = 1
 	lpVtbl as ISearchContextVtbl ptr
@@ -376,6 +332,8 @@ type ISearchContextVtbl_ field = 1
 	GetSearchStyle as function(byval This as ISearchContext ptr, byval pdwSearchStyle as DWORD ptr) as HRESULT
 end type
 
+type IURLSearchHook2Vtbl as IURLSearchHook2Vtbl_
+
 type IURLSearchHook2 field = 1
 	lpVtbl as IURLSearchHook2Vtbl ptr
 end type
@@ -383,6 +341,8 @@ end type
 type IURLSearchHook2Vtbl_ field = 1
 	TranslateWithSearchContext as function(byval This as IURLSearchHook2 ptr, byval pwszSearchURL as PWSTR, byval cchBufferSize as DWORD, byval pSearchContext as ISearchContext ptr) as HRESULT
 end type
+
+type INewShortcutHookAVtbl as INewShortcutHookAVtbl_
 
 type INewShortcutHookA field = 1
 	lpVtbl as INewShortcutHookAVtbl ptr
@@ -399,6 +359,8 @@ type INewShortcutHookAVtbl_ field = 1
 	GetName as function(byval This as INewShortcutHookA ptr, byval pszName as PSTR, byval cchName as long) as HRESULT
 	GetExtension as function(byval This as INewShortcutHookA ptr, byval pszExtension as PSTR, byval cchExtension as long) as HRESULT
 end type
+
+type INewShortcutHookWVtbl as INewShortcutHookWVtbl_
 
 type INewShortcutHookW field = 1
 	lpVtbl as INewShortcutHookWVtbl ptr
@@ -424,6 +386,8 @@ end type
 	#define INewShortcutHookVtbl INewShortcutHookAVtbl
 #endif
 
+type ICopyHookAVtbl as ICopyHookAVtbl_
+
 type ICopyHookA field = 1
 	lpVtbl as ICopyHookAVtbl ptr
 end type
@@ -433,6 +397,8 @@ type ICopyHookAVtbl_ field = 1
 end type
 
 type LPCOPYHOOKA as ICopyHookA ptr
+
+type ICopyHookWVtbl as ICopyHookWVtbl_
 
 type ICopyHookW field = 1
 	lpVtbl as ICopyHookWVtbl ptr
@@ -455,6 +421,8 @@ type LPCOPYHOOKW as ICopyHookW ptr
 #endif
 
 #if _WIN32_WINNT = &h0400
+	type IFileViewerSiteVtbl as IFileViewerSiteVtbl_
+
 	type IFileViewerSite field = 1
 		lpVtbl as IFileViewerSiteVtbl ptr
 	end type
@@ -478,15 +446,17 @@ type LPCOPYHOOKW as ICopyHookW ptr
 
 	type LPFVSHOWINFO as FVSHOWINFO ptr
 
-	type IFileViewerA field = 1
-		lpVtbl as IFileViewerAVtbl ptr
-	end type
-
 	#define FVSIF_RECT &h00000001
 	#define FVSIF_PINNED &h00000002
 	#define FVSIF_NEWFAILED &h08000000
 	#define FVSIF_NEWFILE &h80000000
 	#define FVSIF_CANVIEWIT &h40000000
+
+	type IFileViewerAVtbl as IFileViewerAVtbl_
+
+	type IFileViewerA field = 1
+		lpVtbl as IFileViewerAVtbl ptr
+	end type
 
 	type IFileViewerAVtbl_ field = 1
 		ShowInitialize as function(byval This as IFileViewerA ptr, byval lpfsi as LPFILEVIEWERSITE) as HRESULT
@@ -495,6 +465,8 @@ type LPCOPYHOOKW as ICopyHookW ptr
 	end type
 
 	type LPFILEVIEWERA as IFileViewerA ptr
+
+	type IFileViewerWVtbl as IFileViewerWVtbl_
 
 	type IFileViewerW field = 1
 		lpVtbl as IFileViewerWVtbl ptr
@@ -824,8 +796,6 @@ type BROWSEINFOW as _browseinfoW
 type PBROWSEINFOW as _browseinfoW ptr
 type LPBROWSEINFOW as _browseinfoW ptr
 
-declare function SHBrowseForFolderA(byval lpbi as LPBROWSEINFOA) as LPITEMIDLIST
-
 #ifdef UNICODE
 	#define BROWSEINFO BROWSEINFOW
 	#define PBROWSEINFO PBROWSEINFOW
@@ -866,6 +836,7 @@ declare function SHBrowseForFolderA(byval lpbi as LPBROWSEINFOA) as LPITEMIDLIST
 #define BFFM_SETOKTEXT (WM_USER + 105)
 #define BFFM_SETEXPANDED (WM_USER + 106)
 
+declare function SHBrowseForFolderA(byval lpbi as LPBROWSEINFOA) as LPITEMIDLIST
 declare function SHBrowseForFolderW(byval lpbi as LPBROWSEINFOW) as LPITEMIDLIST
 
 #ifdef UNICODE
@@ -898,6 +869,8 @@ end enum
 
 declare function SHGetDesktopFolder(byval ppshf as IShellFolder ptr ptr) as HRESULT
 
+type IShellDetailsVtbl as IShellDetailsVtbl_
+
 type IShellDetails field = 1
 	lpVtbl as IShellDetailsVtbl ptr
 end type
@@ -906,6 +879,8 @@ type IShellDetailsVtbl_ field = 1
 	GetDetailsOf as function(byval This as IShellDetails ptr, byval pidl as LPCITEMIDLIST, byval iColumn as UINT, byval pDetails as SHELLDETAILS ptr) as HRESULT
 	ColumnClick as function(byval This as IShellDetails ptr, byval iColumn as UINT) as HRESULT
 end type
+
+type IObjMgrVtbl as IObjMgrVtbl_
 
 type IObjMgr field = 1
 	lpVtbl as IObjMgrVtbl ptr
@@ -916,6 +891,8 @@ type IObjMgrVtbl_ field = 1
 	Remove as function(byval This as IObjMgr ptr, byval punk as IUnknown ptr) as HRESULT
 end type
 
+type ICurrentWorkingDirectoryVtbl as ICurrentWorkingDirectoryVtbl_
+
 type ICurrentWorkingDirectory field = 1
 	lpVtbl as ICurrentWorkingDirectoryVtbl ptr
 end type
@@ -924,6 +901,8 @@ type ICurrentWorkingDirectoryVtbl_ field = 1
 	GetDirectory as function(byval This as ICurrentWorkingDirectory ptr, byval pwzPath as PWSTR, byval cchSize as DWORD) as HRESULT
 	SetDirectory as function(byval This as ICurrentWorkingDirectory ptr, byval pwzPath as PCWSTR) as HRESULT
 end type
+
+type IACListVtbl as IACListVtbl_
 
 type IACList field = 1
 	lpVtbl as IACListVtbl ptr
@@ -953,6 +932,8 @@ end enum
 
 type AUTOCOMPLETELISTOPTIONS as _tagAUTOCOMPLETELISTOPTIONS
 
+type IACList2Vtbl as IACList2Vtbl_
+
 type IACList2 field = 1
 	lpVtbl as IACList2Vtbl ptr
 end type
@@ -981,6 +962,8 @@ end type
 	#define PDTIMER_RESUME &h00000003
 #endif
 
+type IProgressDialogVtbl as IProgressDialogVtbl_
+
 type IProgressDialog field = 1
 	lpVtbl as IProgressDialogVtbl ptr
 end type
@@ -997,6 +980,8 @@ type IProgressDialogVtbl_ field = 1
 	SetCancelMsg as function(byval This as IProgressDialog ptr, byval pwzCancelMsg as PCWSTR, byval pvResevered as LPCVOID) as HRESULT
 	Timer as function(byval This as IProgressDialog ptr, byval dwTimerAction as DWORD, byval pvResevered as LPCVOID) as HRESULT
 end type
+
+type IDockingWindowSiteVtbl as IDockingWindowSiteVtbl_
 
 type IDockingWindowSite field = 1
 	lpVtbl as IDockingWindowSiteVtbl ptr
@@ -1015,6 +1000,8 @@ end type
 #define DWFAF_GROUP2 &h4
 #define DWFAF_AUTOHIDE &h10
 
+type IDockingWindowFrameVtbl as IDockingWindowFrameVtbl_
+
 type IDockingWindowFrame field = 1
 	lpVtbl as IDockingWindowFrameVtbl ptr
 end type
@@ -1024,6 +1011,8 @@ type IDockingWindowFrameVtbl_ field = 1
 	RemoveToolbar as function(byval This as IDockingWindowFrame ptr, byval punkSrc as IUnknown ptr, byval dwRemoveFlags as DWORD) as HRESULT
 	FindToolbar as function(byval This as IDockingWindowFrame ptr, byval pwszItem as PCWSTR, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
 end type
+
+type IThumbnailCaptureVtbl as IThumbnailCaptureVtbl_
 
 type IThumbnailCapture field = 1
 	lpVtbl as IThumbnailCaptureVtbl ptr
@@ -1044,6 +1033,8 @@ type LPTHUMBNAILCAPTURE as IThumbnailCapture ptr
 	type ENUMSHELLIMAGESTOREDATA as _EnumImageStoreDATAtag
 	type PENUMSHELLIMAGESTOREDATA as _EnumImageStoreDATAtag ptr
 
+	type IEnumShellImageStoreVtbl as IEnumShellImageStoreVtbl_
+
 	type IEnumShellImageStore field = 1
 		lpVtbl as IEnumShellImageStoreVtbl ptr
 	end type
@@ -1062,6 +1053,8 @@ type LPTHUMBNAILCAPTURE as IThumbnailCapture ptr
 
 	#define SHIMSTCAPFLAG_LOCKABLE &h0001
 	#define SHIMSTCAPFLAG_PURGEABLE &h0002
+
+	type IShellImageStoreVtbl as IShellImageStoreVtbl_
 
 	type IShellImageStore field = 1
 		lpVtbl as IShellImageStoreVtbl ptr
@@ -1126,6 +1119,8 @@ end type
 
 type PBANDINFOSFB as BANDINFOSFB ptr
 
+type IShellFolderBandVtbl as IShellFolderBandVtbl_
+
 type IShellFolderBand field = 1
 	lpVtbl as IShellFolderBandVtbl ptr
 end type
@@ -1139,6 +1134,8 @@ end type
 enum
 	SFBID_PIDLCHANGED
 end enum
+
+type IDeskBarClientVtbl as IDeskBarClientVtbl_
 
 type IDeskBarClient field = 1
 	lpVtbl as IDeskBarClientVtbl ptr
@@ -1202,6 +1199,8 @@ end type
 
 type LPSHCOLUMNDATA as SHCOLUMNDATA ptr
 type LPCSHCOLUMNDATA as const SHCOLUMNDATA ptr
+
+type IColumnProviderVtbl as IColumnProviderVtbl_
 
 type IColumnProvider field = 1
 	lpVtbl as IColumnProviderVtbl ptr
@@ -1458,6 +1457,8 @@ type SHChangeNotifyEntry as _SHChangeNotifyEntry
 
 declare sub SHChangeNotify(byval wEventId as LONG, byval uFlags as UINT, byval dwItem1 as LPCVOID, byval dwItem2 as LPCVOID)
 
+type IShellChangeNotifyVtbl as IShellChangeNotifyVtbl_
+
 type IShellChangeNotify field = 1
 	lpVtbl as IShellChangeNotifyVtbl ptr
 end type
@@ -1465,6 +1466,8 @@ end type
 type IShellChangeNotifyVtbl_ field = 1
 	OnChange as function(byval This as IShellChangeNotify ptr, byval lEvent as LONG, byval pidl1 as LPCITEMIDLIST, byval pidl2 as LPCITEMIDLIST) as HRESULT
 end type
+
+type IQueryInfoVtbl as IQueryInfoVtbl_
 
 type IQueryInfo field = 1
 	lpVtbl as IQueryInfoVtbl ptr
@@ -1755,6 +1758,8 @@ declare function SHAddFromPropSheetExtArray(byval hpsxa as HPSXA, byval lpfnAddP
 declare function SHReplaceFromPropSheetExtArray(byval hpsxa as HPSXA, byval uPageID as UINT, byval lpfnReplaceWith as LPFNADDPROPSHEETPAGE, byval lParam as LPARAM) as UINT
 
 #if _WIN32_WINNT = &h0502
+	type IDefViewFrameVtbl as IDefViewFrameVtbl_
+
 	type IDefViewFrame field = 1
 		lpVtbl as IDefViewFrameVtbl ptr
 	end type
@@ -2026,18 +2031,20 @@ type POPENASINFO as _openasinfo ptr
 #endif
 
 declare function Shell_GetImageLists(byval phiml as HIMAGELIST ptr, byval phimlSmall as HIMAGELIST ptr) as WINBOOL
-declare function Shell_GetCachedImageIndex(byval pwszIconPath as PCWSTR, byval iIconIndex as long, byval uIconFlags as UINT) as long
 
 #if _WIN32_WINNT = &h0602
 	declare function Shell_GetCachedImageIndexA(byval pszIconPath as LPCSTR, byval iIconIndex as long, byval uIconFlags as UINT) as long
 	declare function Shell_GetCachedImageIndexW(byval pszIconPath as LPCWSTR, byval iIconIndex as long, byval uIconFlags as UINT) as long
+	#ifdef UNICODE
+		#define Shell_GetCachedImageIndex Shell_GetCachedImageIndexW
+	#else
+		#define Shell_GetCachedImageIndex Shell_GetCachedImageIndexA
+	#endif
+#else
+	declare function Shell_GetCachedImageIndex(byval pwszIconPath as PCWSTR, byval iIconIndex as long, byval uIconFlags as UINT) as long
 #endif
 
-#if defined(UNICODE) and (_WIN32_WINNT = &h0602)
-	#define Shell_GetCachedImageIndex_ Shell_GetCachedImageIndexW
-#elseif (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
-	#define Shell_GetCachedImageIndex_ Shell_GetCachedImageIndexA
-#endif
+type IDocViewSiteVtbl as IDocViewSiteVtbl_
 
 type IDocViewSite field = 1
 	lpVtbl as IDocViewSiteVtbl ptr
@@ -2101,6 +2108,8 @@ declare function PifMgr_CloseProperties(byval hProps as HANDLE, byval flOpt as U
 declare sub SHSetInstanceExplorer(byval punk as IUnknown ptr)
 declare function IsUserAnAdmin() as WINBOOL
 
+type IInitializeObjectVtbl as IInitializeObjectVtbl_
+
 type IInitializeObject field = 1
 	lpVtbl as IInitializeObjectVtbl ptr
 end type
@@ -2113,6 +2122,8 @@ enum
 	BMICON_LARGE = 0
 	BMICON_SMALL
 end enum
+
+type IBanneredBarVtbl as IBanneredBarVtbl_
 
 type IBanneredBar field = 1
 	lpVtbl as IBanneredBarVtbl ptr
@@ -2127,6 +2138,8 @@ end type
 
 declare function SHShellFolderView_Message(byval hwndMain as HWND, byval uMsg as UINT, byval lParam as LPARAM) as LRESULT
 
+type IShellFolderViewCBVtbl as IShellFolderViewCBVtbl_
+
 type IShellFolderViewCB field = 1
 	lpVtbl as IShellFolderViewCBVtbl ptr
 end type
@@ -2135,15 +2148,15 @@ type IShellFolderViewCBVtbl_ field = 1
 	MessageSFVCB as function(byval This as IShellFolderViewCB ptr, byval uMsg as UINT, byval wParam as WPARAM, byval lParam as LPARAM) as HRESULT
 end type
 
+#define QCMINFO_PLACE_BEFORE 0
+#define QCMINFO_PLACE_AFTER 1
+
 type _QCMINFO_IDMAP_PLACEMENT
 	id as UINT
 	fFlags as UINT
 end type
 
 type QCMINFO_IDMAP_PLACEMENT as _QCMINFO_IDMAP_PLACEMENT
-
-#define QCMINFO_PLACE_BEFORE 0
-#define QCMINFO_PLACE_AFTER 1
 
 type _QCMINFO_IDMAP
 	nMaxIds as UINT
@@ -2249,6 +2262,8 @@ type ITEMSPACING as _ITEMSPACING
 #define SFVS_SELECT_NONE &h0
 #define SFVS_SELECT_ALLITEMS &h1
 #define SFVS_SELECT_INVERT &h2
+
+type IShellFolderViewVtbl as IShellFolderViewVtbl_
 
 type IShellFolderView
 	lpVtbl as IShellFolderViewVtbl ptr
@@ -2650,6 +2665,8 @@ declare function SHPathPrepareForWriteW(byval hwnd as HWND, byval punkEnableModl
 #else
 	#define SHPathPrepareForWrite SHPathPrepareForWriteA
 #endif
+
+type INamedPropertyBagVtbl as INamedPropertyBagVtbl_
 
 type INamedPropertyBag field = 1
 	lpVtbl as INamedPropertyBagVtbl ptr

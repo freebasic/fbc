@@ -52,7 +52,6 @@ extern "C"
 #define MINGW_DDRAW_VERSION 7
 #define MINGW_DDK_H
 #define MINGW_HAS_DDK_H 1
-
 #define _DLL
 #define _MT
 #define _PGLOBAL
@@ -62,7 +61,6 @@ extern "C"
 #define _CRT_INSECURE_DEPRECATE_GLOBALS(_Replacement)
 #define _CRT_MANAGED_HEAP_DEPRECATE
 #define _CRT_OBSOLETE(_NewItem)
-
 #define _ARGMAX 100
 #define _TRUNCATE cuint(-1)
 #define _CRT_glob _dowildcard

@@ -4,53 +4,8 @@
 
 extern "C"
 
-type WINTRUST_FILE_INFO_ as WINTRUST_FILE_INFO__
-type WINTRUST_CATALOG_INFO_ as WINTRUST_CATALOG_INFO__
-type WINTRUST_BLOB_INFO_ as WINTRUST_BLOB_INFO__
-type WINTRUST_SGNR_INFO_ as WINTRUST_SGNR_INFO__
-type WINTRUST_CERT_INFO_ as WINTRUST_CERT_INFO__
-type _CRYPT_PROVIDER_DATA as _CRYPT_PROVIDER_DATA_
-type _CRYPT_PROVIDER_SGNR as _CRYPT_PROVIDER_SGNR_
-type _CRYPT_PROVIDER_PRIVDATA as _CRYPT_PROVIDER_PRIVDATA_
-type _CRYPT_PROVIDER_FUNCTIONS as _CRYPT_PROVIDER_FUNCTIONS_
-type _PROVDATA_SIP as _PROVDATA_SIP_
-type _CRYPT_PROVUI_FUNCS as _CRYPT_PROVUI_FUNCS_
-type _CRYPT_PROVUI_DATA as _CRYPT_PROVUI_DATA_
-type _CRYPT_PROVIDER_CERT as _CRYPT_PROVIDER_CERT_
-type SIP_DISPATCH_INFO_ as SIP_DISPATCH_INFO__
-type SIP_SUBJECTINFO_ as SIP_SUBJECTINFO__
-type SIP_INDIRECT_DATA_ as SIP_INDIRECT_DATA__
-type _CRYPT_PROVIDER_DEFUSAGE as _CRYPT_PROVIDER_DEFUSAGE_
-
 #define WINTRUST_H
 #define WT_DEFINE_ALL_APIS
-
-type _WINTRUST_DATA
-	cbStruct as DWORD
-	pPolicyCallbackData as LPVOID
-	pSIPClientData as LPVOID
-	dwUIChoice as DWORD
-	fdwRevocationChecks as DWORD
-	dwUnionChoice as DWORD
-
-	union
-		pFile as WINTRUST_FILE_INFO_ ptr
-		pCatalog as WINTRUST_CATALOG_INFO_ ptr
-		pBlob as WINTRUST_BLOB_INFO_ ptr
-		pSgnr as WINTRUST_SGNR_INFO_ ptr
-		pCert as WINTRUST_CERT_INFO_ ptr
-	end union
-
-	dwStateAction as DWORD
-	hWVTStateData as HANDLE
-	pwszURLReference as wstring ptr
-	dwProvFlags as DWORD
-	dwUIContext as DWORD
-end type
-
-type WINTRUST_DATA as _WINTRUST_DATA
-type PWINTRUST_DATA as _WINTRUST_DATA ptr
-
 #define WTD_UI_ALL 1
 #define WTD_UI_NONE 2
 #define WTD_UI_NOBAD 3
@@ -82,6 +37,38 @@ type PWINTRUST_DATA as _WINTRUST_DATA ptr
 #define WTD_CACHE_ONLY_URL_RETRIEVAL &h00001000
 #define WTD_UICONTEXT_EXECUTE 0
 #define WTD_UICONTEXT_INSTALL 1
+
+type WINTRUST_CERT_INFO_ as WINTRUST_CERT_INFO__
+type WINTRUST_SGNR_INFO_ as WINTRUST_SGNR_INFO__
+type WINTRUST_BLOB_INFO_ as WINTRUST_BLOB_INFO__
+type WINTRUST_CATALOG_INFO_ as WINTRUST_CATALOG_INFO__
+type WINTRUST_FILE_INFO_ as WINTRUST_FILE_INFO__
+
+type _WINTRUST_DATA
+	cbStruct as DWORD
+	pPolicyCallbackData as LPVOID
+	pSIPClientData as LPVOID
+	dwUIChoice as DWORD
+	fdwRevocationChecks as DWORD
+	dwUnionChoice as DWORD
+
+	union
+		pFile as WINTRUST_FILE_INFO_ ptr
+		pCatalog as WINTRUST_CATALOG_INFO_ ptr
+		pBlob as WINTRUST_BLOB_INFO_ ptr
+		pSgnr as WINTRUST_SGNR_INFO_ ptr
+		pCert as WINTRUST_CERT_INFO_ ptr
+	end union
+
+	dwStateAction as DWORD
+	hWVTStateData as HANDLE
+	pwszURLReference as wstring ptr
+	dwProvFlags as DWORD
+	dwUIContext as DWORD
+end type
+
+type WINTRUST_DATA as _WINTRUST_DATA
+type PWINTRUST_DATA as _WINTRUST_DATA ptr
 
 type WINTRUST_FILE_INFO__
 	cbStruct as DWORD
@@ -206,9 +193,18 @@ type PWINTRUST_CERT_INFO as WINTRUST_CERT_INFO_ ptr
 
 type PFN_CPD_MEM_ALLOC as function(byval cbSize as DWORD) as any ptr
 type PFN_CPD_MEM_FREE as sub(byval pvMem2Free as any ptr)
+
+type _CRYPT_PROVIDER_DATA as _CRYPT_PROVIDER_DATA_
+
 type PFN_CPD_ADD_STORE as function(byval pProvData as _CRYPT_PROVIDER_DATA ptr, byval hStore2Add as HCERTSTORE) as WINBOOL
+
+type _CRYPT_PROVIDER_SGNR as _CRYPT_PROVIDER_SGNR_
+
 type PFN_CPD_ADD_SGNR as function(byval pProvData as _CRYPT_PROVIDER_DATA ptr, byval fCounterSigner as WINBOOL, byval idxSigner as DWORD, byval pSgnr2Add as _CRYPT_PROVIDER_SGNR ptr) as WINBOOL
 type PFN_CPD_ADD_CERT as function(byval pProvData as _CRYPT_PROVIDER_DATA ptr, byval idxSigner as DWORD, byval fCounterSigner as WINBOOL, byval idxCounterSigner as DWORD, byval pCert2Add as PCCERT_CONTEXT) as WINBOOL
+
+type _CRYPT_PROVIDER_PRIVDATA as _CRYPT_PROVIDER_PRIVDATA_
+
 type PFN_CPD_ADD_PRIVDATA as function(byval pProvData as _CRYPT_PROVIDER_DATA ptr, byval pPrivData2Add as _CRYPT_PROVIDER_PRIVDATA ptr) as WINBOOL
 type PFN_PROVIDER_INIT_CALL as function(byval pProvData as _CRYPT_PROVIDER_DATA ptr) as HRESULT
 type PFN_PROVIDER_OBJTRUST_CALL as function(byval pProvData as _CRYPT_PROVIDER_DATA ptr) as HRESULT
@@ -222,6 +218,19 @@ type PFN_PROVIDER_CERTCHKPOLICY_CALL as function(byval pProvData as _CRYPT_PROVI
 #define WVT_OFFSETOF(t, f) cast(ULONG, cast(ULONG_PTR, @cptr(t ptr, 0)->f))
 #define WVT_ISINSTRUCT(structtypedef, structpassedsize, member) iif(WVT_OFFSETOF(structtypedef, member) < structpassedsize, TRUE, FALSE)
 #define WVT_IS_CBSTRUCT_GT_MEMBEROFFSET(structtypedef, structpassedsize, member) WVT_ISINSTRUCT(structtypedef, structpassedsize, member)
+#define CPD_CHOICE_SIP 1
+#define CPD_USE_NT5_CHAIN_FLAG &h80000000
+#define CPD_REVOCATION_CHECK_NONE &h00010000
+#define CPD_REVOCATION_CHECK_END_CERT &h00020000
+#define CPD_REVOCATION_CHECK_CHAIN &h00040000
+#define CPD_REVOCATION_CHECK_CHAIN_EXCLUDE_ROOT &h00080000
+#define CPD_UISTATE_MODE_PROMPT &h00000000
+#define CPD_UISTATE_MODE_BLOCK &h00000001
+#define CPD_UISTATE_MODE_ALLOW &h00000002
+#define CPD_UISTATE_MODE_MASK &h00000003
+
+type _PROVDATA_SIP as _PROVDATA_SIP_
+type _CRYPT_PROVIDER_FUNCTIONS as _CRYPT_PROVIDER_FUNCTIONS_
 
 type _CRYPT_PROVIDER_DATA_
 	cbStruct as DWORD
@@ -264,16 +273,7 @@ end type
 type CRYPT_PROVIDER_DATA as _CRYPT_PROVIDER_DATA
 type PCRYPT_PROVIDER_DATA as _CRYPT_PROVIDER_DATA ptr
 
-#define CPD_CHOICE_SIP 1
-#define CPD_USE_NT5_CHAIN_FLAG &h80000000
-#define CPD_REVOCATION_CHECK_NONE &h00010000
-#define CPD_REVOCATION_CHECK_END_CERT &h00020000
-#define CPD_REVOCATION_CHECK_CHAIN &h00040000
-#define CPD_REVOCATION_CHECK_CHAIN_EXCLUDE_ROOT &h00080000
-#define CPD_UISTATE_MODE_PROMPT &h00000000
-#define CPD_UISTATE_MODE_BLOCK &h00000001
-#define CPD_UISTATE_MODE_ALLOW &h00000002
-#define CPD_UISTATE_MODE_MASK &h00000003
+type _CRYPT_PROVUI_FUNCS as _CRYPT_PROVUI_FUNCS_
 
 type _CRYPT_PROVIDER_FUNCTIONS_
 	cbStruct as DWORD
@@ -297,6 +297,8 @@ end type
 type CRYPT_PROVIDER_FUNCTIONS as _CRYPT_PROVIDER_FUNCTIONS
 type PCRYPT_PROVIDER_FUNCTIONS as _CRYPT_PROVIDER_FUNCTIONS ptr
 type PFN_PROVUI_CALL as function(byval hWndSecurityDialog as HWND, byval pProvData as _CRYPT_PROVIDER_DATA ptr) as WINBOOL
+
+type _CRYPT_PROVUI_DATA as _CRYPT_PROVUI_DATA_
 
 type _CRYPT_PROVUI_FUNCS_
 	cbStruct as DWORD
@@ -326,6 +328,8 @@ type CRYPT_PROVUI_DATA as _CRYPT_PROVUI_DATA
 type PCRYPT_PROVUI_DATA as _CRYPT_PROVUI_DATA ptr
 
 #define SGNR_TYPE_TIMESTAMP &h00000010
+
+type _CRYPT_PROVIDER_CERT as _CRYPT_PROVIDER_CERT_
 
 type _CRYPT_PROVIDER_SGNR_
 	cbStruct as DWORD
@@ -380,6 +384,9 @@ end type
 
 type CRYPT_PROVIDER_PRIVDATA as _CRYPT_PROVIDER_PRIVDATA
 type PCRYPT_PROVIDER_PRIVDATA as _CRYPT_PROVIDER_PRIVDATA ptr
+type SIP_DISPATCH_INFO_ as SIP_DISPATCH_INFO__
+type SIP_SUBJECTINFO_ as SIP_SUBJECTINFO__
+type SIP_INDIRECT_DATA_ as SIP_INDIRECT_DATA__
 
 type _PROVDATA_SIP_
 	cbStruct as DWORD
@@ -419,6 +426,9 @@ end type
 
 type CRYPT_REGISTER_ACTIONID as _CRYPT_REGISTER_ACTIONID
 type PCRYPT_REGISTER_ACTIONID as _CRYPT_REGISTER_ACTIONID ptr
+
+type _CRYPT_PROVIDER_DEFUSAGE as _CRYPT_PROVIDER_DEFUSAGE_
+
 type PFN_ALLOCANDFILLDEFUSAGE as function(byval pszUsageOID as const zstring ptr, byval psDefUsage as _CRYPT_PROVIDER_DEFUSAGE ptr) as WINBOOL
 type PFN_FREEDEFUSAGE as function(byval pszUsageOID as const zstring ptr, byval psDefUsage as _CRYPT_PROVIDER_DEFUSAGE ptr) as WINBOOL
 
@@ -443,14 +453,15 @@ end type
 type CRYPT_PROVIDER_DEFUSAGE as _CRYPT_PROVIDER_DEFUSAGE
 type PCRYPT_PROVIDER_DEFUSAGE as _CRYPT_PROVIDER_DEFUSAGE ptr
 
+#define WT_PROVIDER_DLL_NAME wstr("WINTRUST.DLL")
+#define WT_PROVIDER_CERTTRUST_FUNCTION wstr("WintrustCertificateTrust")
+
 #ifdef __FB_64BIT__
 	declare function WintrustAddActionID(byval pgActionID as GUID ptr, byval fdwFlags as DWORD, byval psProvInfo as CRYPT_REGISTER_ACTIONID ptr) as WINBOOL
 #else
 	declare function WintrustAddActionID stdcall(byval pgActionID as GUID ptr, byval fdwFlags as DWORD, byval psProvInfo as CRYPT_REGISTER_ACTIONID ptr) as WINBOOL
 #endif
 
-#define WT_PROVIDER_DLL_NAME wstr("WINTRUST.DLL")
-#define WT_PROVIDER_CERTTRUST_FUNCTION wstr("WintrustCertificateTrust")
 #define WT_ADD_ACTION_ID_RET_RESULT_FLAG &h1
 
 #ifdef __FB_64BIT__

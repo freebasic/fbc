@@ -12,47 +12,6 @@
 
 extern "Windows"
 
-type IEnumConnections as IEnumConnections_
-type IConnectionPoint as IConnectionPoint_
-type IEnumConnectionPoints as IEnumConnectionPoints_
-type IConnectionPointContainer as IConnectionPointContainer_
-type IClassFactory2 as IClassFactory2_
-type IProvideClassInfo as IProvideClassInfo_
-type IProvideClassInfo2 as IProvideClassInfo2_
-type IProvideMultipleClassInfo as IProvideMultipleClassInfo_
-type IOleControl as IOleControl_
-type IOleControlSite as IOleControlSite_
-type IPropertyPage as IPropertyPage_
-type IPropertyPage2 as IPropertyPage2_
-type IPropertyPageSite as IPropertyPageSite_
-type IPropertyNotifySink as IPropertyNotifySink_
-type ISpecifyPropertyPages as ISpecifyPropertyPages_
-type IPersistMemory as IPersistMemory_
-type IPersistStreamInit as IPersistStreamInit_
-type IPersistPropertyBag as IPersistPropertyBag_
-type ISimpleFrameSite as ISimpleFrameSite_
-type IFont as IFont_
-type IPicture as IPicture_
-type IPicture2 as IPicture2_
-type IFontEventsDisp as IFontEventsDisp_
-type IFontDisp as IFontDisp_
-type IPictureDisp as IPictureDisp_
-type IOleInPlaceObjectWindowless as IOleInPlaceObjectWindowless_
-type IOleInPlaceSiteEx as IOleInPlaceSiteEx_
-type IOleInPlaceSiteWindowless as IOleInPlaceSiteWindowless_
-type IViewObjectEx as IViewObjectEx_
-type IOleUndoUnit as IOleUndoUnit_
-type IOleParentUndoUnit as IOleParentUndoUnit_
-type IEnumOleUndoUnits as IEnumOleUndoUnits_
-type IOleUndoManager as IOleUndoManager_
-type IPointerInactive as IPointerInactive_
-type IObjectWithSite as IObjectWithSite_
-type IPerPropertyBrowsing as IPerPropertyBrowsing_
-type IPropertyBag2 as IPropertyBag2_
-type IPersistPropertyBag2 as IPersistPropertyBag2_
-type IAdviseSinkEx as IAdviseSinkEx_
-type IQuickActivate as IQuickActivate_
-
 #define __ocidl_h__
 #define __IEnumConnections_FWD_DEFINED__
 #define __IConnectionPoint_FWD_DEFINED__
@@ -122,6 +81,8 @@ type READYSTATE as tagREADYSTATE
 
 #define __IEnumConnections_INTERFACE_DEFINED__
 
+type IEnumConnections as IEnumConnections_
+
 type PENUMCONNECTIONS as IEnumConnections ptr
 type LPENUMCONNECTIONS as IEnumConnections ptr
 
@@ -163,10 +124,14 @@ declare function IEnumConnections_Next_Stub(byval This as IEnumConnections ptr, 
 
 #define __IConnectionPoint_INTERFACE_DEFINED__
 
+type IConnectionPoint as IConnectionPoint_
+
 type PCONNECTIONPOINT as IConnectionPoint ptr
 type LPCONNECTIONPOINT as IConnectionPoint ptr
 
 extern IID_IConnectionPoint as const GUID
+
+type IConnectionPointContainer as IConnectionPointContainer_
 
 type IConnectionPointVtbl
 	QueryInterface as function(byval This as IConnectionPoint ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
@@ -195,6 +160,8 @@ declare function IConnectionPoint_EnumConnections_Proxy(byval This as IConnectio
 declare sub IConnectionPoint_EnumConnections_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 
 #define __IEnumConnectionPoints_INTERFACE_DEFINED__
+
+type IEnumConnectionPoints as IEnumConnectionPoints_
 
 type PENUMCONNECTIONPOINTS as IEnumConnectionPoints ptr
 type LPENUMCONNECTIONPOINTS as IEnumConnectionPoints ptr
@@ -252,6 +219,8 @@ declare sub IConnectionPointContainer_FindConnectionPoint_Stub(byval This as IRp
 
 #define __IClassFactory2_INTERFACE_DEFINED__
 
+type IClassFactory2 as IClassFactory2_
+
 type LPCLASSFACTORY2 as IClassFactory2 ptr
 
 type tagLICINFO
@@ -291,6 +260,8 @@ declare function IClassFactory2_CreateInstanceLic_Stub(byval This as IClassFacto
 
 #define __IProvideClassInfo_INTERFACE_DEFINED__
 
+type IProvideClassInfo as IProvideClassInfo_
+
 type LPPROVIDECLASSINFO as IProvideClassInfo ptr
 
 extern IID_IProvideClassInfo as const GUID
@@ -315,6 +286,8 @@ declare function IProvideClassInfo_GetClassInfo_Proxy(byval This as IProvideClas
 declare sub IProvideClassInfo_GetClassInfo_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 
 #define __IProvideClassInfo2_INTERFACE_DEFINED__
+
+type IProvideClassInfo2 as IProvideClassInfo2_
 
 type LPPROVIDECLASSINFO2 as IProvideClassInfo2 ptr
 
@@ -355,6 +328,8 @@ declare sub IProvideClassInfo2_GetGUID_Stub(byval This as IRpcStubBuffer ptr, by
 #define MULTICLASSINFO_GETIIDSOURCE &h8
 #define TIFLAGS_EXTENDDISPATCHONLY &h1
 
+type IProvideMultipleClassInfo as IProvideMultipleClassInfo_
+
 type LPPROVIDEMULTIPLECLASSINFO as IProvideMultipleClassInfo ptr
 
 extern IID_IProvideMultipleClassInfo as const GUID
@@ -385,6 +360,8 @@ declare function IProvideMultipleClassInfo_GetInfoOfIndex_Proxy(byval This as IP
 declare sub IProvideMultipleClassInfo_GetInfoOfIndex_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 
 #define __IOleControl_INTERFACE_DEFINED__
+
+type IOleControl as IOleControl_
 
 type LPOLECONTROL as IOleControl ptr
 
@@ -432,6 +409,8 @@ declare function IOleControl_FreezeEvents_Proxy(byval This as IOleControl ptr, b
 declare sub IOleControl_FreezeEvents_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 
 #define __IOleControlSite_INTERFACE_DEFINED__
+
+type IOleControlSite as IOleControlSite_
 
 type LPOLECONTROLSITE as IOleControlSite ptr
 
@@ -490,6 +469,8 @@ declare sub IOleControlSite_ShowPropertyFrame_Stub(byval This as IRpcStubBuffer 
 
 #define __IPropertyPage_INTERFACE_DEFINED__
 
+type IPropertyPage as IPropertyPage_
+
 type LPPROPERTYPAGE as IPropertyPage ptr
 
 type tagPROPPAGEINFO
@@ -505,6 +486,8 @@ type PROPPAGEINFO as tagPROPPAGEINFO
 type LPPROPPAGEINFO as tagPROPPAGEINFO ptr
 
 extern IID_IPropertyPage as const GUID
+
+type IPropertyPageSite as IPropertyPageSite_
 
 type IPropertyPageVtbl
 	QueryInterface as function(byval This as IPropertyPage ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
@@ -551,6 +534,8 @@ declare function IPropertyPage_TranslateAccelerator_Proxy(byval This as IPropert
 declare sub IPropertyPage_TranslateAccelerator_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 
 #define __IPropertyPage2_INTERFACE_DEFINED__
+
+type IPropertyPage2 as IPropertyPage2_
 
 type LPPROPERTYPAGE2 as IPropertyPage2 ptr
 
@@ -621,6 +606,8 @@ declare sub IPropertyPageSite_TranslateAccelerator_Stub(byval This as IRpcStubBu
 
 #define __IPropertyNotifySink_INTERFACE_DEFINED__
 
+type IPropertyNotifySink as IPropertyNotifySink_
+
 type LPPROPERTYNOTIFYSINK as IPropertyNotifySink ptr
 
 extern IID_IPropertyNotifySink as const GUID
@@ -643,6 +630,8 @@ declare function IPropertyNotifySink_OnRequestEdit_Proxy(byval This as IProperty
 declare sub IPropertyNotifySink_OnRequestEdit_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 
 #define __ISpecifyPropertyPages_INTERFACE_DEFINED__
+
+type ISpecifyPropertyPages as ISpecifyPropertyPages_
 
 type LPSPECIFYPROPERTYPAGES as ISpecifyPropertyPages ptr
 
@@ -671,6 +660,8 @@ declare function ISpecifyPropertyPages_GetPages_Proxy(byval This as ISpecifyProp
 declare sub ISpecifyPropertyPages_GetPages_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 
 #define __IPersistMemory_INTERFACE_DEFINED__
+
+type IPersistMemory as IPersistMemory_
 
 type LPPERSISTMEMORY as IPersistMemory ptr
 
@@ -709,6 +700,8 @@ declare function IPersistMemory_Save_Stub(byval This as IPersistMemory ptr, byva
 
 #define __IPersistStreamInit_INTERFACE_DEFINED__
 
+type IPersistStreamInit as IPersistStreamInit_
+
 type LPPERSISTSTREAMINIT as IPersistStreamInit ptr
 
 extern IID_IPersistStreamInit as const GUID
@@ -742,6 +735,8 @@ declare sub IPersistStreamInit_InitNew_Stub(byval This as IRpcStubBuffer ptr, by
 
 #define __IPersistPropertyBag_INTERFACE_DEFINED__
 
+type IPersistPropertyBag as IPersistPropertyBag_
+
 type LPPERSISTPROPERTYBAG as IPersistPropertyBag ptr
 
 extern IID_IPersistPropertyBag as const GUID
@@ -769,6 +764,8 @@ declare sub IPersistPropertyBag_Save_Stub(byval This as IRpcStubBuffer ptr, byva
 
 #define __ISimpleFrameSite_INTERFACE_DEFINED__
 
+type ISimpleFrameSite as ISimpleFrameSite_
+
 type LPSIMPLEFRAMESITE as ISimpleFrameSite ptr
 
 extern IID_ISimpleFrameSite as const GUID
@@ -792,6 +789,8 @@ declare sub ISimpleFrameSite_PostMessageFilter_Stub(byval This as IRpcStubBuffer
 
 #define __IFont_INTERFACE_DEFINED__
 
+type IFont as IFont_
+
 type LPFONT as IFont ptr
 type TEXTMETRICOLE as TEXTMETRICW
 type LPTEXTMETRICOLE as TEXTMETRICOLE ptr
@@ -803,7 +802,7 @@ type IFontVtbl
 	AddRef as function(byval This as IFont ptr) as ULONG
 	Release as function(byval This as IFont ptr) as ULONG
 	get_Name as function(byval This as IFont ptr, byval pName as BSTR ptr) as HRESULT
-	put_Name as function(byval This as IFont ptr, byval name_ as BSTR) as HRESULT
+	put_Name as function(byval This as IFont ptr, byval name as BSTR) as HRESULT
 	get_Size as function(byval This as IFont ptr, byval pSize as CY ptr) as HRESULT
 	put_Size as function(byval This as IFont ptr, byval size as CY) as HRESULT
 	get_Bold as function(byval This as IFont ptr, byval pBold as WINBOOL ptr) as HRESULT
@@ -834,7 +833,7 @@ end type
 
 declare function IFont_get_Name_Proxy(byval This as IFont ptr, byval pName as BSTR ptr) as HRESULT
 declare sub IFont_get_Name_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-declare function IFont_put_Name_Proxy(byval This as IFont ptr, byval name_ as BSTR) as HRESULT
+declare function IFont_put_Name_Proxy(byval This as IFont ptr, byval name as BSTR) as HRESULT
 declare sub IFont_put_Name_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IFont_get_Size_Proxy(byval This as IFont ptr, byval pSize as CY ptr) as HRESULT
 declare sub IFont_get_Size_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
@@ -882,6 +881,8 @@ declare function IFont_SetHdc_Proxy(byval This as IFont ptr, byval hDC as HDC) a
 declare sub IFont_SetHdc_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 
 #define __IPicture_INTERFACE_DEFINED__
+
+type IPicture as IPicture_
 
 type LPPICTURE as IPicture ptr
 
@@ -955,6 +956,8 @@ declare sub IPicture_get_Attributes_Stub(byval This as IRpcStubBuffer ptr, byval
 
 #define __IPicture2_INTERFACE_DEFINED__
 
+type IPicture2 as IPicture2_
+
 type LPPICTURE2 as IPicture2 ptr
 type HHANDLE as UINT_PTR
 
@@ -1015,6 +1018,8 @@ declare sub IPicture2_get_Attributes_Stub(byval This as IRpcStubBuffer ptr, byva
 
 #define __IFontEventsDisp_INTERFACE_DEFINED__
 
+type IFontEventsDisp as IFontEventsDisp_
+
 type LPFONTEVENTS as IFontEventsDisp ptr
 
 extern IID_IFontEventsDisp as const GUID
@@ -1034,6 +1039,8 @@ type IFontEventsDisp_
 end type
 
 #define __IFontDisp_INTERFACE_DEFINED__
+
+type IFontDisp as IFontDisp_
 
 type LPFONTDISP as IFontDisp ptr
 
@@ -1055,6 +1062,8 @@ end type
 
 #define __IPictureDisp_INTERFACE_DEFINED__
 
+type IPictureDisp as IPictureDisp_
+
 type LPPICTUREDISP as IPictureDisp ptr
 
 extern IID_IPictureDisp as const GUID
@@ -1074,6 +1083,8 @@ type IPictureDisp_
 end type
 
 #define __IOleInPlaceObjectWindowless_INTERFACE_DEFINED__
+
+type IOleInPlaceObjectWindowless as IOleInPlaceObjectWindowless_
 
 type LPOLEINPLACEOBJECTWINDOWLESS as IOleInPlaceObjectWindowless ptr
 
@@ -1103,6 +1114,8 @@ declare function IOleInPlaceObjectWindowless_GetDropTarget_Proxy(byval This as I
 declare sub IOleInPlaceObjectWindowless_GetDropTarget_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 
 #define __IOleInPlaceSiteEx_INTERFACE_DEFINED__
+
+type IOleInPlaceSiteEx as IOleInPlaceSiteEx_
 
 type LPOLEINPLACESITEEX as IOleInPlaceSiteEx ptr
 
@@ -1148,6 +1161,8 @@ declare function IOleInPlaceSiteEx_RequestUIActivate_Proxy(byval This as IOleInP
 declare sub IOleInPlaceSiteEx_RequestUIActivate_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 
 #define __IOleInPlaceSiteWindowless_INTERFACE_DEFINED__
+
+type IOleInPlaceSiteWindowless as IOleInPlaceSiteWindowless_
 
 type LPOLEINPLACESITEWINDOWLESS as IOleInPlaceSiteWindowless ptr
 
@@ -1225,6 +1240,8 @@ declare function IOleInPlaceSiteWindowless_OnDefWindowMessage_Proxy(byval This a
 declare sub IOleInPlaceSiteWindowless_OnDefWindowMessage_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 
 #define __IViewObjectEx_INTERFACE_DEFINED__
+
+type IViewObjectEx as IViewObjectEx_
 
 type LPVIEWOBJECTEX as IViewObjectEx ptr
 
@@ -1325,9 +1342,13 @@ declare sub IViewObjectEx_GetNaturalExtent_Stub(byval This as IRpcStubBuffer ptr
 
 #define __IOleUndoUnit_INTERFACE_DEFINED__
 
+type IOleUndoUnit as IOleUndoUnit_
+
 type LPOLEUNDOUNIT as IOleUndoUnit ptr
 
 extern IID_IOleUndoUnit as const GUID
+
+type IOleUndoManager as IOleUndoManager_
 
 type IOleUndoUnitVtbl
 	QueryInterface as function(byval This as IOleUndoUnit ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
@@ -1353,6 +1374,8 @@ declare function IOleUndoUnit_OnNextAdd_Proxy(byval This as IOleUndoUnit ptr) as
 declare sub IOleUndoUnit_OnNextAdd_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 
 #define __IOleParentUndoUnit_INTERFACE_DEFINED__
+
+type IOleParentUndoUnit as IOleParentUndoUnit_
 
 type LPOLEPARENTUNDOUNIT as IOleParentUndoUnit ptr
 
@@ -1389,6 +1412,8 @@ declare function IOleParentUndoUnit_GetParentState_Proxy(byval This as IOleParen
 declare sub IOleParentUndoUnit_GetParentState_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 
 #define __IEnumOleUndoUnits_INTERFACE_DEFINED__
+
+type IEnumOleUndoUnits as IEnumOleUndoUnits_
 
 type LPENUMOLEUNDOUNITS as IEnumOleUndoUnits ptr
 
@@ -1475,6 +1500,8 @@ declare sub IOleUndoManager_Enable_Stub(byval This as IRpcStubBuffer ptr, byval 
 
 #define __IPointerInactive_INTERFACE_DEFINED__
 
+type IPointerInactive as IPointerInactive_
+
 type LPPOINTERINACTIVE as IPointerInactive ptr
 
 type tagPOINTERINACTIVE as long
@@ -1510,6 +1537,8 @@ declare sub IPointerInactive_OnInactiveSetCursor_Stub(byval This as IRpcStubBuff
 
 #define __IObjectWithSite_INTERFACE_DEFINED__
 
+type IObjectWithSite as IObjectWithSite_
+
 type LPOBJECTWITHSITE as IObjectWithSite ptr
 
 extern IID_IObjectWithSite as const GUID
@@ -1532,6 +1561,8 @@ declare function IObjectWithSite_GetSite_Proxy(byval This as IObjectWithSite ptr
 declare sub IObjectWithSite_GetSite_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 
 #define __IPerPropertyBrowsing_INTERFACE_DEFINED__
+
+type IPerPropertyBrowsing as IPerPropertyBrowsing_
 
 type LPPERPROPERTYBROWSING as IPerPropertyBrowsing ptr
 
@@ -1577,6 +1608,8 @@ declare function IPerPropertyBrowsing_GetPredefinedValue_Proxy(byval This as IPe
 declare sub IPerPropertyBrowsing_GetPredefinedValue_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 
 #define __IPropertyBag2_INTERFACE_DEFINED__
+
+type IPropertyBag2 as IPropertyBag2_
 
 type LPPROPERTYBAG2 as IPropertyBag2 ptr
 
@@ -1634,6 +1667,8 @@ declare sub IPropertyBag2_LoadObject_Stub(byval This as IRpcStubBuffer ptr, byva
 
 #define __IPersistPropertyBag2_INTERFACE_DEFINED__
 
+type IPersistPropertyBag2 as IPersistPropertyBag2_
+
 type LPPERSISTPROPERTYBAG2 as IPersistPropertyBag2 ptr
 
 extern IID_IPersistPropertyBag2 as const GUID
@@ -1664,6 +1699,8 @@ declare sub IPersistPropertyBag2_IsDirty_Stub(byval This as IRpcStubBuffer ptr, 
 
 #define __IAdviseSinkEx_INTERFACE_DEFINED__
 
+type IAdviseSinkEx as IAdviseSinkEx_
+
 type LPADVISESINKEX as IAdviseSinkEx ptr
 
 extern IID_IAdviseSinkEx as const GUID
@@ -1690,6 +1727,8 @@ declare sub IAdviseSinkEx_OnViewStatusChange_Proxy(byval This as IAdviseSinkEx p
 declare function IAdviseSinkEx_OnViewStatusChange_Stub(byval This as IAdviseSinkEx ptr, byval dwViewStatus as DWORD) as HRESULT
 
 #define __IQuickActivate_INTERFACE_DEFINED__
+
+type IQuickActivate as IQuickActivate_
 
 type LPQUICKACTIVATE as IQuickActivate ptr
 
@@ -1771,9 +1810,7 @@ declare function HRGN_UserSize(byval as ULONG ptr, byval as ULONG, byval as HRGN
 declare function HRGN_UserMarshal(byval as ULONG ptr, byval as ubyte ptr, byval as HRGN ptr) as ubyte ptr
 declare function HRGN_UserUnmarshal(byval as ULONG ptr, byval as ubyte ptr, byval as HRGN ptr) as ubyte ptr
 declare sub HRGN_UserFree(byval as ULONG ptr, byval as HRGN ptr)
-declare function HPALETTE_UserSize(byval as ULONG ptr, byval as ULONG, byval as HPALETTE ptr) as ULONG
-declare function HPALETTE_UserMarshal(byval as ULONG ptr, byval as ubyte ptr, byval as HPALETTE ptr) as ubyte ptr
-declare function HPALETTE_UserUnmarshal(byval as ULONG ptr, byval as ubyte ptr, byval as HPALETTE ptr) as ubyte ptr
-declare sub HPALETTE_UserFree(byval as ULONG ptr, byval as HPALETTE ptr)
 
 end extern
+
+#include once "ole-common.bi"

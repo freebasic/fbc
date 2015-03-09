@@ -10,36 +10,6 @@
 
 extern "Windows"
 
-type IXMLDOMImplementation as IXMLDOMImplementation_
-type IXMLDOMNode as IXMLDOMNode_
-type IXMLDOMDocumentFragment as IXMLDOMDocumentFragment_
-type IXMLDOMDocument as IXMLDOMDocument_
-type IXMLDOMNodeList as IXMLDOMNodeList_
-type IXMLDOMNamedNodeMap as IXMLDOMNamedNodeMap_
-type IXMLDOMCharacterData as IXMLDOMCharacterData_
-type IXMLDOMAttribute as IXMLDOMAttribute_
-type IXMLDOMElement as IXMLDOMElement_
-type IXMLDOMText as IXMLDOMText_
-type IXMLDOMComment as IXMLDOMComment_
-type IXMLDOMProcessingInstruction as IXMLDOMProcessingInstruction_
-type IXMLDOMCDATASection as IXMLDOMCDATASection_
-type IXMLDOMDocumentType as IXMLDOMDocumentType_
-type IXMLDOMNotation as IXMLDOMNotation_
-type IXMLDOMEntity as IXMLDOMEntity_
-type IXMLDOMEntityReference as IXMLDOMEntityReference_
-type IXMLDOMParseError as IXMLDOMParseError_
-type IXTLRuntime as IXTLRuntime_
-type XMLDOMDocumentEvents as XMLDOMDocumentEvents_
-type IXMLHttpRequest as IXMLHttpRequest_
-type IXMLDSOControl as IXMLDSOControl_
-type IXMLElementCollection as IXMLElementCollection_
-type IXMLDocument as IXMLDocument_
-type IXMLDocument2 as IXMLDocument2_
-type IXMLElement as IXMLElement_
-type IXMLElement2 as IXMLElement2_
-type IXMLAttribute as IXMLAttribute_
-type IXMLError as IXMLError_
-
 #define __msxml_h__
 #define __IXMLDOMImplementation_FWD_DEFINED__
 #define __IXMLDOMNode_FWD_DEFINED__
@@ -132,6 +102,8 @@ extern LIBID_MSXML as const IID
 
 extern IID_IXMLDOMImplementation as const IID
 
+type IXMLDOMImplementation as IXMLDOMImplementation_
+
 type IXMLDOMImplementationVtbl
 	QueryInterface as function(byval This as IXMLDOMImplementation ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
 	AddRef as function(byval This as IXMLDOMImplementation ptr) as ULONG
@@ -154,6 +126,11 @@ declare sub IXMLDOMImplementation_hasFeature_Stub(byval This as IRpcStubBuffer p
 
 extern IID_IXMLDOMNode as const IID
 
+type IXMLDOMDocument as IXMLDOMDocument_
+type IXMLDOMNamedNodeMap as IXMLDOMNamedNodeMap_
+type IXMLDOMNodeList as IXMLDOMNodeList_
+type IXMLDOMNode as IXMLDOMNode_
+
 type IXMLDOMNodeVtbl
 	QueryInterface as function(byval This as IXMLDOMNode ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
 	AddRef as function(byval This as IXMLDOMNode ptr) as ULONG
@@ -162,10 +139,10 @@ type IXMLDOMNodeVtbl
 	GetTypeInfo as function(byval This as IXMLDOMNode ptr, byval iTInfo as UINT, byval lcid as LCID, byval ppTInfo as ITypeInfo ptr ptr) as HRESULT
 	GetIDsOfNames as function(byval This as IXMLDOMNode ptr, byval riid as const IID const ptr, byval rgszNames as LPOLESTR ptr, byval cNames as UINT, byval lcid as LCID, byval rgDispId as DISPID ptr) as HRESULT
 	Invoke as function(byval This as IXMLDOMNode ptr, byval dispIdMember as DISPID, byval riid as const IID const ptr, byval lcid as LCID, byval wFlags as WORD, byval pDispParams as DISPPARAMS ptr, byval pVarResult as VARIANT ptr, byval pExcepInfo as EXCEPINFO ptr, byval puArgErr as UINT ptr) as HRESULT
-	get_nodeName as function(byval This as IXMLDOMNode ptr, byval name_ as BSTR ptr) as HRESULT
+	get_nodeName as function(byval This as IXMLDOMNode ptr, byval name as BSTR ptr) as HRESULT
 	get_nodeValue as function(byval This as IXMLDOMNode ptr, byval value as VARIANT ptr) as HRESULT
 	put_nodeValue as function(byval This as IXMLDOMNode ptr, byval value as VARIANT) as HRESULT
-	get_nodeType as function(byval This as IXMLDOMNode ptr, byval type_ as DOMNodeType ptr) as HRESULT
+	get_nodeType as function(byval This as IXMLDOMNode ptr, byval type as DOMNodeType ptr) as HRESULT
 	get_parentNode as function(byval This as IXMLDOMNode ptr, byval parent as IXMLDOMNode ptr ptr) as HRESULT
 	get_childNodes as function(byval This as IXMLDOMNode ptr, byval childList as IXMLDOMNodeList ptr ptr) as HRESULT
 	get_firstChild as function(byval This as IXMLDOMNode ptr, byval firstChild as IXMLDOMNode ptr ptr) as HRESULT
@@ -181,8 +158,8 @@ type IXMLDOMNodeVtbl
 	get_ownerDocument as function(byval This as IXMLDOMNode ptr, byval DOMDocument as IXMLDOMDocument ptr ptr) as HRESULT
 	cloneNode as function(byval This as IXMLDOMNode ptr, byval deep as VARIANT_BOOL, byval cloneRoot as IXMLDOMNode ptr ptr) as HRESULT
 	get_nodeTypeString as function(byval This as IXMLDOMNode ptr, byval nodeType as BSTR ptr) as HRESULT
-	get_text as function(byval This as IXMLDOMNode ptr, byval text_ as BSTR ptr) as HRESULT
-	put_text as function(byval This as IXMLDOMNode ptr, byval text_ as BSTR) as HRESULT
+	get_text as function(byval This as IXMLDOMNode ptr, byval text as BSTR ptr) as HRESULT
+	put_text as function(byval This as IXMLDOMNode ptr, byval text as BSTR) as HRESULT
 	get_specified as function(byval This as IXMLDOMNode ptr, byval isSpecified as VARIANT_BOOL ptr) as HRESULT
 	get_definition as function(byval This as IXMLDOMNode ptr, byval definitionNode as IXMLDOMNode ptr ptr) as HRESULT
 	get_nodeTypedValue as function(byval This as IXMLDOMNode ptr, byval typedValue as VARIANT ptr) as HRESULT
@@ -204,13 +181,13 @@ type IXMLDOMNode_
 	lpVtbl as IXMLDOMNodeVtbl ptr
 end type
 
-declare function IXMLDOMNode_get_nodeName_Proxy(byval This as IXMLDOMNode ptr, byval name_ as BSTR ptr) as HRESULT
+declare function IXMLDOMNode_get_nodeName_Proxy(byval This as IXMLDOMNode ptr, byval name as BSTR ptr) as HRESULT
 declare sub IXMLDOMNode_get_nodeName_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IXMLDOMNode_get_nodeValue_Proxy(byval This as IXMLDOMNode ptr, byval value as VARIANT ptr) as HRESULT
 declare sub IXMLDOMNode_get_nodeValue_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IXMLDOMNode_put_nodeValue_Proxy(byval This as IXMLDOMNode ptr, byval value as VARIANT) as HRESULT
 declare sub IXMLDOMNode_put_nodeValue_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IXMLDOMNode_get_nodeType_Proxy(byval This as IXMLDOMNode ptr, byval type_ as DOMNodeType ptr) as HRESULT
+declare function IXMLDOMNode_get_nodeType_Proxy(byval This as IXMLDOMNode ptr, byval type as DOMNodeType ptr) as HRESULT
 declare sub IXMLDOMNode_get_nodeType_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IXMLDOMNode_get_parentNode_Proxy(byval This as IXMLDOMNode ptr, byval parent as IXMLDOMNode ptr ptr) as HRESULT
 declare sub IXMLDOMNode_get_parentNode_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -242,9 +219,9 @@ declare function IXMLDOMNode_cloneNode_Proxy(byval This as IXMLDOMNode ptr, byva
 declare sub IXMLDOMNode_cloneNode_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IXMLDOMNode_get_nodeTypeString_Proxy(byval This as IXMLDOMNode ptr, byval nodeType as BSTR ptr) as HRESULT
 declare sub IXMLDOMNode_get_nodeTypeString_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IXMLDOMNode_get_text_Proxy(byval This as IXMLDOMNode ptr, byval text_ as BSTR ptr) as HRESULT
+declare function IXMLDOMNode_get_text_Proxy(byval This as IXMLDOMNode ptr, byval text as BSTR ptr) as HRESULT
 declare sub IXMLDOMNode_get_text_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IXMLDOMNode_put_text_Proxy(byval This as IXMLDOMNode ptr, byval text_ as BSTR) as HRESULT
+declare function IXMLDOMNode_put_text_Proxy(byval This as IXMLDOMNode ptr, byval text as BSTR) as HRESULT
 declare sub IXMLDOMNode_put_text_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IXMLDOMNode_get_specified_Proxy(byval This as IXMLDOMNode ptr, byval isSpecified as VARIANT_BOOL ptr) as HRESULT
 declare sub IXMLDOMNode_get_specified_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -281,6 +258,8 @@ declare sub IXMLDOMNode_transformNodeToObject_Stub(byval This as IRpcStubBuffer 
 
 extern IID_IXMLDOMDocumentFragment as const IID
 
+type IXMLDOMDocumentFragment as IXMLDOMDocumentFragment_
+
 type IXMLDOMDocumentFragmentVtbl
 	QueryInterface as function(byval This as IXMLDOMDocumentFragment ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
 	AddRef as function(byval This as IXMLDOMDocumentFragment ptr) as ULONG
@@ -289,10 +268,10 @@ type IXMLDOMDocumentFragmentVtbl
 	GetTypeInfo as function(byval This as IXMLDOMDocumentFragment ptr, byval iTInfo as UINT, byval lcid as LCID, byval ppTInfo as ITypeInfo ptr ptr) as HRESULT
 	GetIDsOfNames as function(byval This as IXMLDOMDocumentFragment ptr, byval riid as const IID const ptr, byval rgszNames as LPOLESTR ptr, byval cNames as UINT, byval lcid as LCID, byval rgDispId as DISPID ptr) as HRESULT
 	Invoke as function(byval This as IXMLDOMDocumentFragment ptr, byval dispIdMember as DISPID, byval riid as const IID const ptr, byval lcid as LCID, byval wFlags as WORD, byval pDispParams as DISPPARAMS ptr, byval pVarResult as VARIANT ptr, byval pExcepInfo as EXCEPINFO ptr, byval puArgErr as UINT ptr) as HRESULT
-	get_nodeName as function(byval This as IXMLDOMDocumentFragment ptr, byval name_ as BSTR ptr) as HRESULT
+	get_nodeName as function(byval This as IXMLDOMDocumentFragment ptr, byval name as BSTR ptr) as HRESULT
 	get_nodeValue as function(byval This as IXMLDOMDocumentFragment ptr, byval value as VARIANT ptr) as HRESULT
 	put_nodeValue as function(byval This as IXMLDOMDocumentFragment ptr, byval value as VARIANT) as HRESULT
-	get_nodeType as function(byval This as IXMLDOMDocumentFragment ptr, byval type_ as DOMNodeType ptr) as HRESULT
+	get_nodeType as function(byval This as IXMLDOMDocumentFragment ptr, byval type as DOMNodeType ptr) as HRESULT
 	get_parentNode as function(byval This as IXMLDOMDocumentFragment ptr, byval parent as IXMLDOMNode ptr ptr) as HRESULT
 	get_childNodes as function(byval This as IXMLDOMDocumentFragment ptr, byval childList as IXMLDOMNodeList ptr ptr) as HRESULT
 	get_firstChild as function(byval This as IXMLDOMDocumentFragment ptr, byval firstChild as IXMLDOMNode ptr ptr) as HRESULT
@@ -308,8 +287,8 @@ type IXMLDOMDocumentFragmentVtbl
 	get_ownerDocument as function(byval This as IXMLDOMDocumentFragment ptr, byval DOMDocument as IXMLDOMDocument ptr ptr) as HRESULT
 	cloneNode as function(byval This as IXMLDOMDocumentFragment ptr, byval deep as VARIANT_BOOL, byval cloneRoot as IXMLDOMNode ptr ptr) as HRESULT
 	get_nodeTypeString as function(byval This as IXMLDOMDocumentFragment ptr, byval nodeType as BSTR ptr) as HRESULT
-	get_text as function(byval This as IXMLDOMDocumentFragment ptr, byval text_ as BSTR ptr) as HRESULT
-	put_text as function(byval This as IXMLDOMDocumentFragment ptr, byval text_ as BSTR) as HRESULT
+	get_text as function(byval This as IXMLDOMDocumentFragment ptr, byval text as BSTR ptr) as HRESULT
+	put_text as function(byval This as IXMLDOMDocumentFragment ptr, byval text as BSTR) as HRESULT
 	get_specified as function(byval This as IXMLDOMDocumentFragment ptr, byval isSpecified as VARIANT_BOOL ptr) as HRESULT
 	get_definition as function(byval This as IXMLDOMDocumentFragment ptr, byval definitionNode as IXMLDOMNode ptr ptr) as HRESULT
 	get_nodeTypedValue as function(byval This as IXMLDOMDocumentFragment ptr, byval typedValue as VARIANT ptr) as HRESULT
@@ -335,6 +314,16 @@ end type
 
 extern IID_IXMLDOMDocument as const IID
 
+type IXMLDOMParseError as IXMLDOMParseError_
+type IXMLDOMEntityReference as IXMLDOMEntityReference_
+type IXMLDOMAttribute as IXMLDOMAttribute_
+type IXMLDOMProcessingInstruction as IXMLDOMProcessingInstruction_
+type IXMLDOMCDATASection as IXMLDOMCDATASection_
+type IXMLDOMComment as IXMLDOMComment_
+type IXMLDOMText as IXMLDOMText_
+type IXMLDOMElement as IXMLDOMElement_
+type IXMLDOMDocumentType as IXMLDOMDocumentType_
+
 type IXMLDOMDocumentVtbl
 	QueryInterface as function(byval This as IXMLDOMDocument ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
 	AddRef as function(byval This as IXMLDOMDocument ptr) as ULONG
@@ -343,10 +332,10 @@ type IXMLDOMDocumentVtbl
 	GetTypeInfo as function(byval This as IXMLDOMDocument ptr, byval iTInfo as UINT, byval lcid as LCID, byval ppTInfo as ITypeInfo ptr ptr) as HRESULT
 	GetIDsOfNames as function(byval This as IXMLDOMDocument ptr, byval riid as const IID const ptr, byval rgszNames as LPOLESTR ptr, byval cNames as UINT, byval lcid as LCID, byval rgDispId as DISPID ptr) as HRESULT
 	Invoke as function(byval This as IXMLDOMDocument ptr, byval dispIdMember as DISPID, byval riid as const IID const ptr, byval lcid as LCID, byval wFlags as WORD, byval pDispParams as DISPPARAMS ptr, byval pVarResult as VARIANT ptr, byval pExcepInfo as EXCEPINFO ptr, byval puArgErr as UINT ptr) as HRESULT
-	get_nodeName as function(byval This as IXMLDOMDocument ptr, byval name_ as BSTR ptr) as HRESULT
+	get_nodeName as function(byval This as IXMLDOMDocument ptr, byval name as BSTR ptr) as HRESULT
 	get_nodeValue as function(byval This as IXMLDOMDocument ptr, byval value as VARIANT ptr) as HRESULT
 	put_nodeValue as function(byval This as IXMLDOMDocument ptr, byval value as VARIANT) as HRESULT
-	get_nodeType as function(byval This as IXMLDOMDocument ptr, byval type_ as DOMNodeType ptr) as HRESULT
+	get_nodeType as function(byval This as IXMLDOMDocument ptr, byval type as DOMNodeType ptr) as HRESULT
 	get_parentNode as function(byval This as IXMLDOMDocument ptr, byval parent as IXMLDOMNode ptr ptr) as HRESULT
 	get_childNodes as function(byval This as IXMLDOMDocument ptr, byval childList as IXMLDOMNodeList ptr ptr) as HRESULT
 	get_firstChild as function(byval This as IXMLDOMDocument ptr, byval firstChild as IXMLDOMNode ptr ptr) as HRESULT
@@ -362,8 +351,8 @@ type IXMLDOMDocumentVtbl
 	get_ownerDocument as function(byval This as IXMLDOMDocument ptr, byval DOMDocument as IXMLDOMDocument ptr ptr) as HRESULT
 	cloneNode as function(byval This as IXMLDOMDocument ptr, byval deep as VARIANT_BOOL, byval cloneRoot as IXMLDOMNode ptr ptr) as HRESULT
 	get_nodeTypeString as function(byval This as IXMLDOMDocument ptr, byval nodeType as BSTR ptr) as HRESULT
-	get_text as function(byval This as IXMLDOMDocument ptr, byval text_ as BSTR ptr) as HRESULT
-	put_text as function(byval This as IXMLDOMDocument ptr, byval text_ as BSTR) as HRESULT
+	get_text as function(byval This as IXMLDOMDocument ptr, byval text as BSTR ptr) as HRESULT
+	put_text as function(byval This as IXMLDOMDocument ptr, byval text as BSTR) as HRESULT
 	get_specified as function(byval This as IXMLDOMDocument ptr, byval isSpecified as VARIANT_BOOL ptr) as HRESULT
 	get_definition as function(byval This as IXMLDOMDocument ptr, byval definitionNode as IXMLDOMNode ptr ptr) as HRESULT
 	get_nodeTypedValue as function(byval This as IXMLDOMDocument ptr, byval typedValue as VARIANT ptr) as HRESULT
@@ -385,14 +374,14 @@ type IXMLDOMDocumentVtbl
 	putref_documentElement as function(byval This as IXMLDOMDocument ptr, byval DOMElement as IXMLDOMElement ptr) as HRESULT
 	createElement as function(byval This as IXMLDOMDocument ptr, byval tagName as BSTR, byval element as IXMLDOMElement ptr ptr) as HRESULT
 	createDocumentFragment as function(byval This as IXMLDOMDocument ptr, byval docFrag as IXMLDOMDocumentFragment ptr ptr) as HRESULT
-	createTextNode as function(byval This as IXMLDOMDocument ptr, byval data_ as BSTR, byval text_ as IXMLDOMText ptr ptr) as HRESULT
-	createComment as function(byval This as IXMLDOMDocument ptr, byval data_ as BSTR, byval comment as IXMLDOMComment ptr ptr) as HRESULT
-	createCDATASection as function(byval This as IXMLDOMDocument ptr, byval data_ as BSTR, byval cdata as IXMLDOMCDATASection ptr ptr) as HRESULT
-	createProcessingInstruction as function(byval This as IXMLDOMDocument ptr, byval target as BSTR, byval data_ as BSTR, byval pi as IXMLDOMProcessingInstruction ptr ptr) as HRESULT
-	createAttribute as function(byval This as IXMLDOMDocument ptr, byval name_ as BSTR, byval attribute as IXMLDOMAttribute ptr ptr) as HRESULT
-	createEntityReference as function(byval This as IXMLDOMDocument ptr, byval name_ as BSTR, byval entityRef as IXMLDOMEntityReference ptr ptr) as HRESULT
+	createTextNode as function(byval This as IXMLDOMDocument ptr, byval data as BSTR, byval text as IXMLDOMText ptr ptr) as HRESULT
+	createComment as function(byval This as IXMLDOMDocument ptr, byval data as BSTR, byval comment as IXMLDOMComment ptr ptr) as HRESULT
+	createCDATASection as function(byval This as IXMLDOMDocument ptr, byval data as BSTR, byval cdata as IXMLDOMCDATASection ptr ptr) as HRESULT
+	createProcessingInstruction as function(byval This as IXMLDOMDocument ptr, byval target as BSTR, byval data as BSTR, byval pi as IXMLDOMProcessingInstruction ptr ptr) as HRESULT
+	createAttribute as function(byval This as IXMLDOMDocument ptr, byval name as BSTR, byval attribute as IXMLDOMAttribute ptr ptr) as HRESULT
+	createEntityReference as function(byval This as IXMLDOMDocument ptr, byval name as BSTR, byval entityRef as IXMLDOMEntityReference ptr ptr) as HRESULT
 	getElementsByTagName as function(byval This as IXMLDOMDocument ptr, byval tagName as BSTR, byval resultList as IXMLDOMNodeList ptr ptr) as HRESULT
-	createNode as function(byval This as IXMLDOMDocument ptr, byval Type_ as VARIANT, byval name_ as BSTR, byval namespaceURI as BSTR, byval node as IXMLDOMNode ptr ptr) as HRESULT
+	createNode as function(byval This as IXMLDOMDocument ptr, byval Type as VARIANT, byval name as BSTR, byval namespaceURI as BSTR, byval node as IXMLDOMNode ptr ptr) as HRESULT
 	nodeFromID as function(byval This as IXMLDOMDocument ptr, byval idString as BSTR, byval node as IXMLDOMNode ptr ptr) as HRESULT
 	load as function(byval This as IXMLDOMDocument ptr, byval xmlSource as VARIANT, byval isSuccessful as VARIANT_BOOL ptr) as HRESULT
 	get_readyState as function(byval This as IXMLDOMDocument ptr, byval value as LONG ptr) as HRESULT
@@ -430,21 +419,21 @@ declare function IXMLDOMDocument_createElement_Proxy(byval This as IXMLDOMDocume
 declare sub IXMLDOMDocument_createElement_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IXMLDOMDocument_createDocumentFragment_Proxy(byval This as IXMLDOMDocument ptr, byval docFrag as IXMLDOMDocumentFragment ptr ptr) as HRESULT
 declare sub IXMLDOMDocument_createDocumentFragment_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IXMLDOMDocument_createTextNode_Proxy(byval This as IXMLDOMDocument ptr, byval data_ as BSTR, byval text_ as IXMLDOMText ptr ptr) as HRESULT
+declare function IXMLDOMDocument_createTextNode_Proxy(byval This as IXMLDOMDocument ptr, byval data as BSTR, byval text as IXMLDOMText ptr ptr) as HRESULT
 declare sub IXMLDOMDocument_createTextNode_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IXMLDOMDocument_createComment_Proxy(byval This as IXMLDOMDocument ptr, byval data_ as BSTR, byval comment as IXMLDOMComment ptr ptr) as HRESULT
+declare function IXMLDOMDocument_createComment_Proxy(byval This as IXMLDOMDocument ptr, byval data as BSTR, byval comment as IXMLDOMComment ptr ptr) as HRESULT
 declare sub IXMLDOMDocument_createComment_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IXMLDOMDocument_createCDATASection_Proxy(byval This as IXMLDOMDocument ptr, byval data_ as BSTR, byval cdata as IXMLDOMCDATASection ptr ptr) as HRESULT
+declare function IXMLDOMDocument_createCDATASection_Proxy(byval This as IXMLDOMDocument ptr, byval data as BSTR, byval cdata as IXMLDOMCDATASection ptr ptr) as HRESULT
 declare sub IXMLDOMDocument_createCDATASection_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IXMLDOMDocument_createProcessingInstruction_Proxy(byval This as IXMLDOMDocument ptr, byval target as BSTR, byval data_ as BSTR, byval pi as IXMLDOMProcessingInstruction ptr ptr) as HRESULT
+declare function IXMLDOMDocument_createProcessingInstruction_Proxy(byval This as IXMLDOMDocument ptr, byval target as BSTR, byval data as BSTR, byval pi as IXMLDOMProcessingInstruction ptr ptr) as HRESULT
 declare sub IXMLDOMDocument_createProcessingInstruction_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IXMLDOMDocument_createAttribute_Proxy(byval This as IXMLDOMDocument ptr, byval name_ as BSTR, byval attribute as IXMLDOMAttribute ptr ptr) as HRESULT
+declare function IXMLDOMDocument_createAttribute_Proxy(byval This as IXMLDOMDocument ptr, byval name as BSTR, byval attribute as IXMLDOMAttribute ptr ptr) as HRESULT
 declare sub IXMLDOMDocument_createAttribute_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IXMLDOMDocument_createEntityReference_Proxy(byval This as IXMLDOMDocument ptr, byval name_ as BSTR, byval entityRef as IXMLDOMEntityReference ptr ptr) as HRESULT
+declare function IXMLDOMDocument_createEntityReference_Proxy(byval This as IXMLDOMDocument ptr, byval name as BSTR, byval entityRef as IXMLDOMEntityReference ptr ptr) as HRESULT
 declare sub IXMLDOMDocument_createEntityReference_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IXMLDOMDocument_getElementsByTagName_Proxy(byval This as IXMLDOMDocument ptr, byval tagName as BSTR, byval resultList as IXMLDOMNodeList ptr ptr) as HRESULT
 declare sub IXMLDOMDocument_getElementsByTagName_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IXMLDOMDocument_createNode_Proxy(byval This as IXMLDOMDocument ptr, byval Type_ as VARIANT, byval name_ as BSTR, byval namespaceURI as BSTR, byval node as IXMLDOMNode ptr ptr) as HRESULT
+declare function IXMLDOMDocument_createNode_Proxy(byval This as IXMLDOMDocument ptr, byval Type as VARIANT, byval name as BSTR, byval namespaceURI as BSTR, byval node as IXMLDOMNode ptr ptr) as HRESULT
 declare sub IXMLDOMDocument_createNode_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IXMLDOMDocument_nodeFromID_Proxy(byval This as IXMLDOMDocument ptr, byval idString as BSTR, byval node as IXMLDOMNode ptr ptr) as HRESULT
 declare sub IXMLDOMDocument_nodeFromID_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -531,9 +520,9 @@ type IXMLDOMNamedNodeMapVtbl
 	GetTypeInfo as function(byval This as IXMLDOMNamedNodeMap ptr, byval iTInfo as UINT, byval lcid as LCID, byval ppTInfo as ITypeInfo ptr ptr) as HRESULT
 	GetIDsOfNames as function(byval This as IXMLDOMNamedNodeMap ptr, byval riid as const IID const ptr, byval rgszNames as LPOLESTR ptr, byval cNames as UINT, byval lcid as LCID, byval rgDispId as DISPID ptr) as HRESULT
 	Invoke as function(byval This as IXMLDOMNamedNodeMap ptr, byval dispIdMember as DISPID, byval riid as const IID const ptr, byval lcid as LCID, byval wFlags as WORD, byval pDispParams as DISPPARAMS ptr, byval pVarResult as VARIANT ptr, byval pExcepInfo as EXCEPINFO ptr, byval puArgErr as UINT ptr) as HRESULT
-	getNamedItem as function(byval This as IXMLDOMNamedNodeMap ptr, byval name_ as BSTR, byval namedItem as IXMLDOMNode ptr ptr) as HRESULT
+	getNamedItem as function(byval This as IXMLDOMNamedNodeMap ptr, byval name as BSTR, byval namedItem as IXMLDOMNode ptr ptr) as HRESULT
 	setNamedItem as function(byval This as IXMLDOMNamedNodeMap ptr, byval newItem as IXMLDOMNode ptr, byval nameItem as IXMLDOMNode ptr ptr) as HRESULT
-	removeNamedItem as function(byval This as IXMLDOMNamedNodeMap ptr, byval name_ as BSTR, byval namedItem as IXMLDOMNode ptr ptr) as HRESULT
+	removeNamedItem as function(byval This as IXMLDOMNamedNodeMap ptr, byval name as BSTR, byval namedItem as IXMLDOMNode ptr ptr) as HRESULT
 	get_item as function(byval This as IXMLDOMNamedNodeMap ptr, byval index as LONG, byval listItem as IXMLDOMNode ptr ptr) as HRESULT
 	get_length as function(byval This as IXMLDOMNamedNodeMap ptr, byval listLength as LONG ptr) as HRESULT
 	getQualifiedItem as function(byval This as IXMLDOMNamedNodeMap ptr, byval baseName as BSTR, byval namespaceURI as BSTR, byval qualifiedItem as IXMLDOMNode ptr ptr) as HRESULT
@@ -547,11 +536,11 @@ type IXMLDOMNamedNodeMap_
 	lpVtbl as IXMLDOMNamedNodeMapVtbl ptr
 end type
 
-declare function IXMLDOMNamedNodeMap_getNamedItem_Proxy(byval This as IXMLDOMNamedNodeMap ptr, byval name_ as BSTR, byval namedItem as IXMLDOMNode ptr ptr) as HRESULT
+declare function IXMLDOMNamedNodeMap_getNamedItem_Proxy(byval This as IXMLDOMNamedNodeMap ptr, byval name as BSTR, byval namedItem as IXMLDOMNode ptr ptr) as HRESULT
 declare sub IXMLDOMNamedNodeMap_getNamedItem_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IXMLDOMNamedNodeMap_setNamedItem_Proxy(byval This as IXMLDOMNamedNodeMap ptr, byval newItem as IXMLDOMNode ptr, byval nameItem as IXMLDOMNode ptr ptr) as HRESULT
 declare sub IXMLDOMNamedNodeMap_setNamedItem_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IXMLDOMNamedNodeMap_removeNamedItem_Proxy(byval This as IXMLDOMNamedNodeMap ptr, byval name_ as BSTR, byval namedItem as IXMLDOMNode ptr ptr) as HRESULT
+declare function IXMLDOMNamedNodeMap_removeNamedItem_Proxy(byval This as IXMLDOMNamedNodeMap ptr, byval name as BSTR, byval namedItem as IXMLDOMNode ptr ptr) as HRESULT
 declare sub IXMLDOMNamedNodeMap_removeNamedItem_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IXMLDOMNamedNodeMap_get_item_Proxy(byval This as IXMLDOMNamedNodeMap ptr, byval index as LONG, byval listItem as IXMLDOMNode ptr ptr) as HRESULT
 declare sub IXMLDOMNamedNodeMap_get_item_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -572,6 +561,8 @@ declare sub IXMLDOMNamedNodeMap_get__newEnum_Stub(byval This as IRpcStubBuffer p
 
 extern IID_IXMLDOMCharacterData as const IID
 
+type IXMLDOMCharacterData as IXMLDOMCharacterData_
+
 type IXMLDOMCharacterDataVtbl
 	QueryInterface as function(byval This as IXMLDOMCharacterData ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
 	AddRef as function(byval This as IXMLDOMCharacterData ptr) as ULONG
@@ -580,10 +571,10 @@ type IXMLDOMCharacterDataVtbl
 	GetTypeInfo as function(byval This as IXMLDOMCharacterData ptr, byval iTInfo as UINT, byval lcid as LCID, byval ppTInfo as ITypeInfo ptr ptr) as HRESULT
 	GetIDsOfNames as function(byval This as IXMLDOMCharacterData ptr, byval riid as const IID const ptr, byval rgszNames as LPOLESTR ptr, byval cNames as UINT, byval lcid as LCID, byval rgDispId as DISPID ptr) as HRESULT
 	Invoke as function(byval This as IXMLDOMCharacterData ptr, byval dispIdMember as DISPID, byval riid as const IID const ptr, byval lcid as LCID, byval wFlags as WORD, byval pDispParams as DISPPARAMS ptr, byval pVarResult as VARIANT ptr, byval pExcepInfo as EXCEPINFO ptr, byval puArgErr as UINT ptr) as HRESULT
-	get_nodeName as function(byval This as IXMLDOMCharacterData ptr, byval name_ as BSTR ptr) as HRESULT
+	get_nodeName as function(byval This as IXMLDOMCharacterData ptr, byval name as BSTR ptr) as HRESULT
 	get_nodeValue as function(byval This as IXMLDOMCharacterData ptr, byval value as VARIANT ptr) as HRESULT
 	put_nodeValue as function(byval This as IXMLDOMCharacterData ptr, byval value as VARIANT) as HRESULT
-	get_nodeType as function(byval This as IXMLDOMCharacterData ptr, byval type_ as DOMNodeType ptr) as HRESULT
+	get_nodeType as function(byval This as IXMLDOMCharacterData ptr, byval type as DOMNodeType ptr) as HRESULT
 	get_parentNode as function(byval This as IXMLDOMCharacterData ptr, byval parent as IXMLDOMNode ptr ptr) as HRESULT
 	get_childNodes as function(byval This as IXMLDOMCharacterData ptr, byval childList as IXMLDOMNodeList ptr ptr) as HRESULT
 	get_firstChild as function(byval This as IXMLDOMCharacterData ptr, byval firstChild as IXMLDOMNode ptr ptr) as HRESULT
@@ -599,8 +590,8 @@ type IXMLDOMCharacterDataVtbl
 	get_ownerDocument as function(byval This as IXMLDOMCharacterData ptr, byval DOMDocument as IXMLDOMDocument ptr ptr) as HRESULT
 	cloneNode as function(byval This as IXMLDOMCharacterData ptr, byval deep as VARIANT_BOOL, byval cloneRoot as IXMLDOMNode ptr ptr) as HRESULT
 	get_nodeTypeString as function(byval This as IXMLDOMCharacterData ptr, byval nodeType as BSTR ptr) as HRESULT
-	get_text as function(byval This as IXMLDOMCharacterData ptr, byval text_ as BSTR ptr) as HRESULT
-	put_text as function(byval This as IXMLDOMCharacterData ptr, byval text_ as BSTR) as HRESULT
+	get_text as function(byval This as IXMLDOMCharacterData ptr, byval text as BSTR ptr) as HRESULT
+	put_text as function(byval This as IXMLDOMCharacterData ptr, byval text as BSTR) as HRESULT
 	get_specified as function(byval This as IXMLDOMCharacterData ptr, byval isSpecified as VARIANT_BOOL ptr) as HRESULT
 	get_definition as function(byval This as IXMLDOMCharacterData ptr, byval definitionNode as IXMLDOMNode ptr ptr) as HRESULT
 	get_nodeTypedValue as function(byval This as IXMLDOMCharacterData ptr, byval typedValue as VARIANT ptr) as HRESULT
@@ -616,35 +607,35 @@ type IXMLDOMCharacterDataVtbl
 	get_prefix as function(byval This as IXMLDOMCharacterData ptr, byval prefixString as BSTR ptr) as HRESULT
 	get_baseName as function(byval This as IXMLDOMCharacterData ptr, byval nameString as BSTR ptr) as HRESULT
 	transformNodeToObject as function(byval This as IXMLDOMCharacterData ptr, byval stylesheet as IXMLDOMNode ptr, byval outputObject as VARIANT) as HRESULT
-	get_data as function(byval This as IXMLDOMCharacterData ptr, byval data_ as BSTR ptr) as HRESULT
-	put_data as function(byval This as IXMLDOMCharacterData ptr, byval data_ as BSTR) as HRESULT
+	get_data as function(byval This as IXMLDOMCharacterData ptr, byval data as BSTR ptr) as HRESULT
+	put_data as function(byval This as IXMLDOMCharacterData ptr, byval data as BSTR) as HRESULT
 	get_length as function(byval This as IXMLDOMCharacterData ptr, byval dataLength as LONG ptr) as HRESULT
-	substringData as function(byval This as IXMLDOMCharacterData ptr, byval offset as LONG, byval count as LONG, byval data_ as BSTR ptr) as HRESULT
-	appendData as function(byval This as IXMLDOMCharacterData ptr, byval data_ as BSTR) as HRESULT
-	insertData as function(byval This as IXMLDOMCharacterData ptr, byval offset as LONG, byval data_ as BSTR) as HRESULT
+	substringData as function(byval This as IXMLDOMCharacterData ptr, byval offset as LONG, byval count as LONG, byval data as BSTR ptr) as HRESULT
+	appendData as function(byval This as IXMLDOMCharacterData ptr, byval data as BSTR) as HRESULT
+	insertData as function(byval This as IXMLDOMCharacterData ptr, byval offset as LONG, byval data as BSTR) as HRESULT
 	deleteData as function(byval This as IXMLDOMCharacterData ptr, byval offset as LONG, byval count as LONG) as HRESULT
-	replaceData as function(byval This as IXMLDOMCharacterData ptr, byval offset as LONG, byval count as LONG, byval data_ as BSTR) as HRESULT
+	replaceData as function(byval This as IXMLDOMCharacterData ptr, byval offset as LONG, byval count as LONG, byval data as BSTR) as HRESULT
 end type
 
 type IXMLDOMCharacterData_
 	lpVtbl as IXMLDOMCharacterDataVtbl ptr
 end type
 
-declare function IXMLDOMCharacterData_get_data_Proxy(byval This as IXMLDOMCharacterData ptr, byval data_ as BSTR ptr) as HRESULT
+declare function IXMLDOMCharacterData_get_data_Proxy(byval This as IXMLDOMCharacterData ptr, byval data as BSTR ptr) as HRESULT
 declare sub IXMLDOMCharacterData_get_data_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IXMLDOMCharacterData_put_data_Proxy(byval This as IXMLDOMCharacterData ptr, byval data_ as BSTR) as HRESULT
+declare function IXMLDOMCharacterData_put_data_Proxy(byval This as IXMLDOMCharacterData ptr, byval data as BSTR) as HRESULT
 declare sub IXMLDOMCharacterData_put_data_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IXMLDOMCharacterData_get_length_Proxy(byval This as IXMLDOMCharacterData ptr, byval dataLength as LONG ptr) as HRESULT
 declare sub IXMLDOMCharacterData_get_length_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IXMLDOMCharacterData_substringData_Proxy(byval This as IXMLDOMCharacterData ptr, byval offset as LONG, byval count as LONG, byval data_ as BSTR ptr) as HRESULT
+declare function IXMLDOMCharacterData_substringData_Proxy(byval This as IXMLDOMCharacterData ptr, byval offset as LONG, byval count as LONG, byval data as BSTR ptr) as HRESULT
 declare sub IXMLDOMCharacterData_substringData_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IXMLDOMCharacterData_appendData_Proxy(byval This as IXMLDOMCharacterData ptr, byval data_ as BSTR) as HRESULT
+declare function IXMLDOMCharacterData_appendData_Proxy(byval This as IXMLDOMCharacterData ptr, byval data as BSTR) as HRESULT
 declare sub IXMLDOMCharacterData_appendData_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IXMLDOMCharacterData_insertData_Proxy(byval This as IXMLDOMCharacterData ptr, byval offset as LONG, byval data_ as BSTR) as HRESULT
+declare function IXMLDOMCharacterData_insertData_Proxy(byval This as IXMLDOMCharacterData ptr, byval offset as LONG, byval data as BSTR) as HRESULT
 declare sub IXMLDOMCharacterData_insertData_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IXMLDOMCharacterData_deleteData_Proxy(byval This as IXMLDOMCharacterData ptr, byval offset as LONG, byval count as LONG) as HRESULT
 declare sub IXMLDOMCharacterData_deleteData_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IXMLDOMCharacterData_replaceData_Proxy(byval This as IXMLDOMCharacterData ptr, byval offset as LONG, byval count as LONG, byval data_ as BSTR) as HRESULT
+declare function IXMLDOMCharacterData_replaceData_Proxy(byval This as IXMLDOMCharacterData ptr, byval offset as LONG, byval count as LONG, byval data as BSTR) as HRESULT
 declare sub IXMLDOMCharacterData_replaceData_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 
 #define __IXMLDOMAttribute_INTERFACE_DEFINED__
@@ -659,10 +650,10 @@ type IXMLDOMAttributeVtbl
 	GetTypeInfo as function(byval This as IXMLDOMAttribute ptr, byval iTInfo as UINT, byval lcid as LCID, byval ppTInfo as ITypeInfo ptr ptr) as HRESULT
 	GetIDsOfNames as function(byval This as IXMLDOMAttribute ptr, byval riid as const IID const ptr, byval rgszNames as LPOLESTR ptr, byval cNames as UINT, byval lcid as LCID, byval rgDispId as DISPID ptr) as HRESULT
 	Invoke as function(byval This as IXMLDOMAttribute ptr, byval dispIdMember as DISPID, byval riid as const IID const ptr, byval lcid as LCID, byval wFlags as WORD, byval pDispParams as DISPPARAMS ptr, byval pVarResult as VARIANT ptr, byval pExcepInfo as EXCEPINFO ptr, byval puArgErr as UINT ptr) as HRESULT
-	get_nodeName as function(byval This as IXMLDOMAttribute ptr, byval name_ as BSTR ptr) as HRESULT
+	get_nodeName as function(byval This as IXMLDOMAttribute ptr, byval name as BSTR ptr) as HRESULT
 	get_nodeValue as function(byval This as IXMLDOMAttribute ptr, byval value as VARIANT ptr) as HRESULT
 	put_nodeValue as function(byval This as IXMLDOMAttribute ptr, byval value as VARIANT) as HRESULT
-	get_nodeType as function(byval This as IXMLDOMAttribute ptr, byval type_ as DOMNodeType ptr) as HRESULT
+	get_nodeType as function(byval This as IXMLDOMAttribute ptr, byval type as DOMNodeType ptr) as HRESULT
 	get_parentNode as function(byval This as IXMLDOMAttribute ptr, byval parent as IXMLDOMNode ptr ptr) as HRESULT
 	get_childNodes as function(byval This as IXMLDOMAttribute ptr, byval childList as IXMLDOMNodeList ptr ptr) as HRESULT
 	get_firstChild as function(byval This as IXMLDOMAttribute ptr, byval firstChild as IXMLDOMNode ptr ptr) as HRESULT
@@ -678,8 +669,8 @@ type IXMLDOMAttributeVtbl
 	get_ownerDocument as function(byval This as IXMLDOMAttribute ptr, byval DOMDocument as IXMLDOMDocument ptr ptr) as HRESULT
 	cloneNode as function(byval This as IXMLDOMAttribute ptr, byval deep as VARIANT_BOOL, byval cloneRoot as IXMLDOMNode ptr ptr) as HRESULT
 	get_nodeTypeString as function(byval This as IXMLDOMAttribute ptr, byval nodeType as BSTR ptr) as HRESULT
-	get_text as function(byval This as IXMLDOMAttribute ptr, byval text_ as BSTR ptr) as HRESULT
-	put_text as function(byval This as IXMLDOMAttribute ptr, byval text_ as BSTR) as HRESULT
+	get_text as function(byval This as IXMLDOMAttribute ptr, byval text as BSTR ptr) as HRESULT
+	put_text as function(byval This as IXMLDOMAttribute ptr, byval text as BSTR) as HRESULT
 	get_specified as function(byval This as IXMLDOMAttribute ptr, byval isSpecified as VARIANT_BOOL ptr) as HRESULT
 	get_definition as function(byval This as IXMLDOMAttribute ptr, byval definitionNode as IXMLDOMNode ptr ptr) as HRESULT
 	get_nodeTypedValue as function(byval This as IXMLDOMAttribute ptr, byval typedValue as VARIANT ptr) as HRESULT
@@ -723,10 +714,10 @@ type IXMLDOMElementVtbl
 	GetTypeInfo as function(byval This as IXMLDOMElement ptr, byval iTInfo as UINT, byval lcid as LCID, byval ppTInfo as ITypeInfo ptr ptr) as HRESULT
 	GetIDsOfNames as function(byval This as IXMLDOMElement ptr, byval riid as const IID const ptr, byval rgszNames as LPOLESTR ptr, byval cNames as UINT, byval lcid as LCID, byval rgDispId as DISPID ptr) as HRESULT
 	Invoke as function(byval This as IXMLDOMElement ptr, byval dispIdMember as DISPID, byval riid as const IID const ptr, byval lcid as LCID, byval wFlags as WORD, byval pDispParams as DISPPARAMS ptr, byval pVarResult as VARIANT ptr, byval pExcepInfo as EXCEPINFO ptr, byval puArgErr as UINT ptr) as HRESULT
-	get_nodeName as function(byval This as IXMLDOMElement ptr, byval name_ as BSTR ptr) as HRESULT
+	get_nodeName as function(byval This as IXMLDOMElement ptr, byval name as BSTR ptr) as HRESULT
 	get_nodeValue as function(byval This as IXMLDOMElement ptr, byval value as VARIANT ptr) as HRESULT
 	put_nodeValue as function(byval This as IXMLDOMElement ptr, byval value as VARIANT) as HRESULT
-	get_nodeType as function(byval This as IXMLDOMElement ptr, byval type_ as DOMNodeType ptr) as HRESULT
+	get_nodeType as function(byval This as IXMLDOMElement ptr, byval type as DOMNodeType ptr) as HRESULT
 	get_parentNode as function(byval This as IXMLDOMElement ptr, byval parent as IXMLDOMNode ptr ptr) as HRESULT
 	get_childNodes as function(byval This as IXMLDOMElement ptr, byval childList as IXMLDOMNodeList ptr ptr) as HRESULT
 	get_firstChild as function(byval This as IXMLDOMElement ptr, byval firstChild as IXMLDOMNode ptr ptr) as HRESULT
@@ -742,8 +733,8 @@ type IXMLDOMElementVtbl
 	get_ownerDocument as function(byval This as IXMLDOMElement ptr, byval DOMDocument as IXMLDOMDocument ptr ptr) as HRESULT
 	cloneNode as function(byval This as IXMLDOMElement ptr, byval deep as VARIANT_BOOL, byval cloneRoot as IXMLDOMNode ptr ptr) as HRESULT
 	get_nodeTypeString as function(byval This as IXMLDOMElement ptr, byval nodeType as BSTR ptr) as HRESULT
-	get_text as function(byval This as IXMLDOMElement ptr, byval text_ as BSTR ptr) as HRESULT
-	put_text as function(byval This as IXMLDOMElement ptr, byval text_ as BSTR) as HRESULT
+	get_text as function(byval This as IXMLDOMElement ptr, byval text as BSTR ptr) as HRESULT
+	put_text as function(byval This as IXMLDOMElement ptr, byval text as BSTR) as HRESULT
 	get_specified as function(byval This as IXMLDOMElement ptr, byval isSpecified as VARIANT_BOOL ptr) as HRESULT
 	get_definition as function(byval This as IXMLDOMElement ptr, byval definitionNode as IXMLDOMNode ptr ptr) as HRESULT
 	get_nodeTypedValue as function(byval This as IXMLDOMElement ptr, byval typedValue as VARIANT ptr) as HRESULT
@@ -760,10 +751,10 @@ type IXMLDOMElementVtbl
 	get_baseName as function(byval This as IXMLDOMElement ptr, byval nameString as BSTR ptr) as HRESULT
 	transformNodeToObject as function(byval This as IXMLDOMElement ptr, byval stylesheet as IXMLDOMNode ptr, byval outputObject as VARIANT) as HRESULT
 	get_tagName as function(byval This as IXMLDOMElement ptr, byval tagName as BSTR ptr) as HRESULT
-	getAttribute as function(byval This as IXMLDOMElement ptr, byval name_ as BSTR, byval value as VARIANT ptr) as HRESULT
-	setAttribute as function(byval This as IXMLDOMElement ptr, byval name_ as BSTR, byval value as VARIANT) as HRESULT
-	removeAttribute as function(byval This as IXMLDOMElement ptr, byval name_ as BSTR) as HRESULT
-	getAttributeNode as function(byval This as IXMLDOMElement ptr, byval name_ as BSTR, byval attributeNode as IXMLDOMAttribute ptr ptr) as HRESULT
+	getAttribute as function(byval This as IXMLDOMElement ptr, byval name as BSTR, byval value as VARIANT ptr) as HRESULT
+	setAttribute as function(byval This as IXMLDOMElement ptr, byval name as BSTR, byval value as VARIANT) as HRESULT
+	removeAttribute as function(byval This as IXMLDOMElement ptr, byval name as BSTR) as HRESULT
+	getAttributeNode as function(byval This as IXMLDOMElement ptr, byval name as BSTR, byval attributeNode as IXMLDOMAttribute ptr ptr) as HRESULT
 	setAttributeNode as function(byval This as IXMLDOMElement ptr, byval DOMAttribute as IXMLDOMAttribute ptr, byval attributeNode as IXMLDOMAttribute ptr ptr) as HRESULT
 	removeAttributeNode as function(byval This as IXMLDOMElement ptr, byval DOMAttribute as IXMLDOMAttribute ptr, byval attributeNode as IXMLDOMAttribute ptr ptr) as HRESULT
 	getElementsByTagName as function(byval This as IXMLDOMElement ptr, byval tagName as BSTR, byval resultList as IXMLDOMNodeList ptr ptr) as HRESULT
@@ -776,13 +767,13 @@ end type
 
 declare function IXMLDOMElement_get_tagName_Proxy(byval This as IXMLDOMElement ptr, byval tagName as BSTR ptr) as HRESULT
 declare sub IXMLDOMElement_get_tagName_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IXMLDOMElement_getAttribute_Proxy(byval This as IXMLDOMElement ptr, byval name_ as BSTR, byval value as VARIANT ptr) as HRESULT
+declare function IXMLDOMElement_getAttribute_Proxy(byval This as IXMLDOMElement ptr, byval name as BSTR, byval value as VARIANT ptr) as HRESULT
 declare sub IXMLDOMElement_getAttribute_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IXMLDOMElement_setAttribute_Proxy(byval This as IXMLDOMElement ptr, byval name_ as BSTR, byval value as VARIANT) as HRESULT
+declare function IXMLDOMElement_setAttribute_Proxy(byval This as IXMLDOMElement ptr, byval name as BSTR, byval value as VARIANT) as HRESULT
 declare sub IXMLDOMElement_setAttribute_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IXMLDOMElement_removeAttribute_Proxy(byval This as IXMLDOMElement ptr, byval name_ as BSTR) as HRESULT
+declare function IXMLDOMElement_removeAttribute_Proxy(byval This as IXMLDOMElement ptr, byval name as BSTR) as HRESULT
 declare sub IXMLDOMElement_removeAttribute_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IXMLDOMElement_getAttributeNode_Proxy(byval This as IXMLDOMElement ptr, byval name_ as BSTR, byval attributeNode as IXMLDOMAttribute ptr ptr) as HRESULT
+declare function IXMLDOMElement_getAttributeNode_Proxy(byval This as IXMLDOMElement ptr, byval name as BSTR, byval attributeNode as IXMLDOMAttribute ptr ptr) as HRESULT
 declare sub IXMLDOMElement_getAttributeNode_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IXMLDOMElement_setAttributeNode_Proxy(byval This as IXMLDOMElement ptr, byval DOMAttribute as IXMLDOMAttribute ptr, byval attributeNode as IXMLDOMAttribute ptr ptr) as HRESULT
 declare sub IXMLDOMElement_setAttributeNode_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -805,10 +796,10 @@ type IXMLDOMTextVtbl
 	GetTypeInfo as function(byval This as IXMLDOMText ptr, byval iTInfo as UINT, byval lcid as LCID, byval ppTInfo as ITypeInfo ptr ptr) as HRESULT
 	GetIDsOfNames as function(byval This as IXMLDOMText ptr, byval riid as const IID const ptr, byval rgszNames as LPOLESTR ptr, byval cNames as UINT, byval lcid as LCID, byval rgDispId as DISPID ptr) as HRESULT
 	Invoke as function(byval This as IXMLDOMText ptr, byval dispIdMember as DISPID, byval riid as const IID const ptr, byval lcid as LCID, byval wFlags as WORD, byval pDispParams as DISPPARAMS ptr, byval pVarResult as VARIANT ptr, byval pExcepInfo as EXCEPINFO ptr, byval puArgErr as UINT ptr) as HRESULT
-	get_nodeName as function(byval This as IXMLDOMText ptr, byval name_ as BSTR ptr) as HRESULT
+	get_nodeName as function(byval This as IXMLDOMText ptr, byval name as BSTR ptr) as HRESULT
 	get_nodeValue as function(byval This as IXMLDOMText ptr, byval value as VARIANT ptr) as HRESULT
 	put_nodeValue as function(byval This as IXMLDOMText ptr, byval value as VARIANT) as HRESULT
-	get_nodeType as function(byval This as IXMLDOMText ptr, byval type_ as DOMNodeType ptr) as HRESULT
+	get_nodeType as function(byval This as IXMLDOMText ptr, byval type as DOMNodeType ptr) as HRESULT
 	get_parentNode as function(byval This as IXMLDOMText ptr, byval parent as IXMLDOMNode ptr ptr) as HRESULT
 	get_childNodes as function(byval This as IXMLDOMText ptr, byval childList as IXMLDOMNodeList ptr ptr) as HRESULT
 	get_firstChild as function(byval This as IXMLDOMText ptr, byval firstChild as IXMLDOMNode ptr ptr) as HRESULT
@@ -824,8 +815,8 @@ type IXMLDOMTextVtbl
 	get_ownerDocument as function(byval This as IXMLDOMText ptr, byval DOMDocument as IXMLDOMDocument ptr ptr) as HRESULT
 	cloneNode as function(byval This as IXMLDOMText ptr, byval deep as VARIANT_BOOL, byval cloneRoot as IXMLDOMNode ptr ptr) as HRESULT
 	get_nodeTypeString as function(byval This as IXMLDOMText ptr, byval nodeType as BSTR ptr) as HRESULT
-	get_text as function(byval This as IXMLDOMText ptr, byval text_ as BSTR ptr) as HRESULT
-	put_text as function(byval This as IXMLDOMText ptr, byval text_ as BSTR) as HRESULT
+	get_text as function(byval This as IXMLDOMText ptr, byval text as BSTR ptr) as HRESULT
+	put_text as function(byval This as IXMLDOMText ptr, byval text as BSTR) as HRESULT
 	get_specified as function(byval This as IXMLDOMText ptr, byval isSpecified as VARIANT_BOOL ptr) as HRESULT
 	get_definition as function(byval This as IXMLDOMText ptr, byval definitionNode as IXMLDOMNode ptr ptr) as HRESULT
 	get_nodeTypedValue as function(byval This as IXMLDOMText ptr, byval typedValue as VARIANT ptr) as HRESULT
@@ -841,14 +832,14 @@ type IXMLDOMTextVtbl
 	get_prefix as function(byval This as IXMLDOMText ptr, byval prefixString as BSTR ptr) as HRESULT
 	get_baseName as function(byval This as IXMLDOMText ptr, byval nameString as BSTR ptr) as HRESULT
 	transformNodeToObject as function(byval This as IXMLDOMText ptr, byval stylesheet as IXMLDOMNode ptr, byval outputObject as VARIANT) as HRESULT
-	get_data as function(byval This as IXMLDOMText ptr, byval data_ as BSTR ptr) as HRESULT
-	put_data as function(byval This as IXMLDOMText ptr, byval data_ as BSTR) as HRESULT
+	get_data as function(byval This as IXMLDOMText ptr, byval data as BSTR ptr) as HRESULT
+	put_data as function(byval This as IXMLDOMText ptr, byval data as BSTR) as HRESULT
 	get_length as function(byval This as IXMLDOMText ptr, byval dataLength as LONG ptr) as HRESULT
-	substringData as function(byval This as IXMLDOMText ptr, byval offset as LONG, byval count as LONG, byval data_ as BSTR ptr) as HRESULT
-	appendData as function(byval This as IXMLDOMText ptr, byval data_ as BSTR) as HRESULT
-	insertData as function(byval This as IXMLDOMText ptr, byval offset as LONG, byval data_ as BSTR) as HRESULT
+	substringData as function(byval This as IXMLDOMText ptr, byval offset as LONG, byval count as LONG, byval data as BSTR ptr) as HRESULT
+	appendData as function(byval This as IXMLDOMText ptr, byval data as BSTR) as HRESULT
+	insertData as function(byval This as IXMLDOMText ptr, byval offset as LONG, byval data as BSTR) as HRESULT
 	deleteData as function(byval This as IXMLDOMText ptr, byval offset as LONG, byval count as LONG) as HRESULT
-	replaceData as function(byval This as IXMLDOMText ptr, byval offset as LONG, byval count as LONG, byval data_ as BSTR) as HRESULT
+	replaceData as function(byval This as IXMLDOMText ptr, byval offset as LONG, byval count as LONG, byval data as BSTR) as HRESULT
 	splitText as function(byval This as IXMLDOMText ptr, byval offset as LONG, byval rightHandTextNode as IXMLDOMText ptr ptr) as HRESULT
 end type
 
@@ -871,10 +862,10 @@ type IXMLDOMCommentVtbl
 	GetTypeInfo as function(byval This as IXMLDOMComment ptr, byval iTInfo as UINT, byval lcid as LCID, byval ppTInfo as ITypeInfo ptr ptr) as HRESULT
 	GetIDsOfNames as function(byval This as IXMLDOMComment ptr, byval riid as const IID const ptr, byval rgszNames as LPOLESTR ptr, byval cNames as UINT, byval lcid as LCID, byval rgDispId as DISPID ptr) as HRESULT
 	Invoke as function(byval This as IXMLDOMComment ptr, byval dispIdMember as DISPID, byval riid as const IID const ptr, byval lcid as LCID, byval wFlags as WORD, byval pDispParams as DISPPARAMS ptr, byval pVarResult as VARIANT ptr, byval pExcepInfo as EXCEPINFO ptr, byval puArgErr as UINT ptr) as HRESULT
-	get_nodeName as function(byval This as IXMLDOMComment ptr, byval name_ as BSTR ptr) as HRESULT
+	get_nodeName as function(byval This as IXMLDOMComment ptr, byval name as BSTR ptr) as HRESULT
 	get_nodeValue as function(byval This as IXMLDOMComment ptr, byval value as VARIANT ptr) as HRESULT
 	put_nodeValue as function(byval This as IXMLDOMComment ptr, byval value as VARIANT) as HRESULT
-	get_nodeType as function(byval This as IXMLDOMComment ptr, byval type_ as DOMNodeType ptr) as HRESULT
+	get_nodeType as function(byval This as IXMLDOMComment ptr, byval type as DOMNodeType ptr) as HRESULT
 	get_parentNode as function(byval This as IXMLDOMComment ptr, byval parent as IXMLDOMNode ptr ptr) as HRESULT
 	get_childNodes as function(byval This as IXMLDOMComment ptr, byval childList as IXMLDOMNodeList ptr ptr) as HRESULT
 	get_firstChild as function(byval This as IXMLDOMComment ptr, byval firstChild as IXMLDOMNode ptr ptr) as HRESULT
@@ -890,8 +881,8 @@ type IXMLDOMCommentVtbl
 	get_ownerDocument as function(byval This as IXMLDOMComment ptr, byval DOMDocument as IXMLDOMDocument ptr ptr) as HRESULT
 	cloneNode as function(byval This as IXMLDOMComment ptr, byval deep as VARIANT_BOOL, byval cloneRoot as IXMLDOMNode ptr ptr) as HRESULT
 	get_nodeTypeString as function(byval This as IXMLDOMComment ptr, byval nodeType as BSTR ptr) as HRESULT
-	get_text as function(byval This as IXMLDOMComment ptr, byval text_ as BSTR ptr) as HRESULT
-	put_text as function(byval This as IXMLDOMComment ptr, byval text_ as BSTR) as HRESULT
+	get_text as function(byval This as IXMLDOMComment ptr, byval text as BSTR ptr) as HRESULT
+	put_text as function(byval This as IXMLDOMComment ptr, byval text as BSTR) as HRESULT
 	get_specified as function(byval This as IXMLDOMComment ptr, byval isSpecified as VARIANT_BOOL ptr) as HRESULT
 	get_definition as function(byval This as IXMLDOMComment ptr, byval definitionNode as IXMLDOMNode ptr ptr) as HRESULT
 	get_nodeTypedValue as function(byval This as IXMLDOMComment ptr, byval typedValue as VARIANT ptr) as HRESULT
@@ -907,14 +898,14 @@ type IXMLDOMCommentVtbl
 	get_prefix as function(byval This as IXMLDOMComment ptr, byval prefixString as BSTR ptr) as HRESULT
 	get_baseName as function(byval This as IXMLDOMComment ptr, byval nameString as BSTR ptr) as HRESULT
 	transformNodeToObject as function(byval This as IXMLDOMComment ptr, byval stylesheet as IXMLDOMNode ptr, byval outputObject as VARIANT) as HRESULT
-	get_data as function(byval This as IXMLDOMComment ptr, byval data_ as BSTR ptr) as HRESULT
-	put_data as function(byval This as IXMLDOMComment ptr, byval data_ as BSTR) as HRESULT
+	get_data as function(byval This as IXMLDOMComment ptr, byval data as BSTR ptr) as HRESULT
+	put_data as function(byval This as IXMLDOMComment ptr, byval data as BSTR) as HRESULT
 	get_length as function(byval This as IXMLDOMComment ptr, byval dataLength as LONG ptr) as HRESULT
-	substringData as function(byval This as IXMLDOMComment ptr, byval offset as LONG, byval count as LONG, byval data_ as BSTR ptr) as HRESULT
-	appendData as function(byval This as IXMLDOMComment ptr, byval data_ as BSTR) as HRESULT
-	insertData as function(byval This as IXMLDOMComment ptr, byval offset as LONG, byval data_ as BSTR) as HRESULT
+	substringData as function(byval This as IXMLDOMComment ptr, byval offset as LONG, byval count as LONG, byval data as BSTR ptr) as HRESULT
+	appendData as function(byval This as IXMLDOMComment ptr, byval data as BSTR) as HRESULT
+	insertData as function(byval This as IXMLDOMComment ptr, byval offset as LONG, byval data as BSTR) as HRESULT
 	deleteData as function(byval This as IXMLDOMComment ptr, byval offset as LONG, byval count as LONG) as HRESULT
-	replaceData as function(byval This as IXMLDOMComment ptr, byval offset as LONG, byval count as LONG, byval data_ as BSTR) as HRESULT
+	replaceData as function(byval This as IXMLDOMComment ptr, byval offset as LONG, byval count as LONG, byval data as BSTR) as HRESULT
 end type
 
 type IXMLDOMComment_
@@ -933,10 +924,10 @@ type IXMLDOMProcessingInstructionVtbl
 	GetTypeInfo as function(byval This as IXMLDOMProcessingInstruction ptr, byval iTInfo as UINT, byval lcid as LCID, byval ppTInfo as ITypeInfo ptr ptr) as HRESULT
 	GetIDsOfNames as function(byval This as IXMLDOMProcessingInstruction ptr, byval riid as const IID const ptr, byval rgszNames as LPOLESTR ptr, byval cNames as UINT, byval lcid as LCID, byval rgDispId as DISPID ptr) as HRESULT
 	Invoke as function(byval This as IXMLDOMProcessingInstruction ptr, byval dispIdMember as DISPID, byval riid as const IID const ptr, byval lcid as LCID, byval wFlags as WORD, byval pDispParams as DISPPARAMS ptr, byval pVarResult as VARIANT ptr, byval pExcepInfo as EXCEPINFO ptr, byval puArgErr as UINT ptr) as HRESULT
-	get_nodeName as function(byval This as IXMLDOMProcessingInstruction ptr, byval name_ as BSTR ptr) as HRESULT
+	get_nodeName as function(byval This as IXMLDOMProcessingInstruction ptr, byval name as BSTR ptr) as HRESULT
 	get_nodeValue as function(byval This as IXMLDOMProcessingInstruction ptr, byval value as VARIANT ptr) as HRESULT
 	put_nodeValue as function(byval This as IXMLDOMProcessingInstruction ptr, byval value as VARIANT) as HRESULT
-	get_nodeType as function(byval This as IXMLDOMProcessingInstruction ptr, byval type_ as DOMNodeType ptr) as HRESULT
+	get_nodeType as function(byval This as IXMLDOMProcessingInstruction ptr, byval type as DOMNodeType ptr) as HRESULT
 	get_parentNode as function(byval This as IXMLDOMProcessingInstruction ptr, byval parent as IXMLDOMNode ptr ptr) as HRESULT
 	get_childNodes as function(byval This as IXMLDOMProcessingInstruction ptr, byval childList as IXMLDOMNodeList ptr ptr) as HRESULT
 	get_firstChild as function(byval This as IXMLDOMProcessingInstruction ptr, byval firstChild as IXMLDOMNode ptr ptr) as HRESULT
@@ -952,8 +943,8 @@ type IXMLDOMProcessingInstructionVtbl
 	get_ownerDocument as function(byval This as IXMLDOMProcessingInstruction ptr, byval DOMDocument as IXMLDOMDocument ptr ptr) as HRESULT
 	cloneNode as function(byval This as IXMLDOMProcessingInstruction ptr, byval deep as VARIANT_BOOL, byval cloneRoot as IXMLDOMNode ptr ptr) as HRESULT
 	get_nodeTypeString as function(byval This as IXMLDOMProcessingInstruction ptr, byval nodeType as BSTR ptr) as HRESULT
-	get_text as function(byval This as IXMLDOMProcessingInstruction ptr, byval text_ as BSTR ptr) as HRESULT
-	put_text as function(byval This as IXMLDOMProcessingInstruction ptr, byval text_ as BSTR) as HRESULT
+	get_text as function(byval This as IXMLDOMProcessingInstruction ptr, byval text as BSTR ptr) as HRESULT
+	put_text as function(byval This as IXMLDOMProcessingInstruction ptr, byval text as BSTR) as HRESULT
 	get_specified as function(byval This as IXMLDOMProcessingInstruction ptr, byval isSpecified as VARIANT_BOOL ptr) as HRESULT
 	get_definition as function(byval This as IXMLDOMProcessingInstruction ptr, byval definitionNode as IXMLDOMNode ptr ptr) as HRESULT
 	get_nodeTypedValue as function(byval This as IXMLDOMProcessingInstruction ptr, byval typedValue as VARIANT ptr) as HRESULT
@@ -969,7 +960,7 @@ type IXMLDOMProcessingInstructionVtbl
 	get_prefix as function(byval This as IXMLDOMProcessingInstruction ptr, byval prefixString as BSTR ptr) as HRESULT
 	get_baseName as function(byval This as IXMLDOMProcessingInstruction ptr, byval nameString as BSTR ptr) as HRESULT
 	transformNodeToObject as function(byval This as IXMLDOMProcessingInstruction ptr, byval stylesheet as IXMLDOMNode ptr, byval outputObject as VARIANT) as HRESULT
-	get_target as function(byval This as IXMLDOMProcessingInstruction ptr, byval name_ as BSTR ptr) as HRESULT
+	get_target as function(byval This as IXMLDOMProcessingInstruction ptr, byval name as BSTR ptr) as HRESULT
 	get_data as function(byval This as IXMLDOMProcessingInstruction ptr, byval value as BSTR ptr) as HRESULT
 	put_data as function(byval This as IXMLDOMProcessingInstruction ptr, byval value as BSTR) as HRESULT
 end type
@@ -978,7 +969,7 @@ type IXMLDOMProcessingInstruction_
 	lpVtbl as IXMLDOMProcessingInstructionVtbl ptr
 end type
 
-declare function IXMLDOMProcessingInstruction_get_target_Proxy(byval This as IXMLDOMProcessingInstruction ptr, byval name_ as BSTR ptr) as HRESULT
+declare function IXMLDOMProcessingInstruction_get_target_Proxy(byval This as IXMLDOMProcessingInstruction ptr, byval name as BSTR ptr) as HRESULT
 declare sub IXMLDOMProcessingInstruction_get_target_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IXMLDOMProcessingInstruction_get_data_Proxy(byval This as IXMLDOMProcessingInstruction ptr, byval value as BSTR ptr) as HRESULT
 declare sub IXMLDOMProcessingInstruction_get_data_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -997,10 +988,10 @@ type IXMLDOMCDATASectionVtbl
 	GetTypeInfo as function(byval This as IXMLDOMCDATASection ptr, byval iTInfo as UINT, byval lcid as LCID, byval ppTInfo as ITypeInfo ptr ptr) as HRESULT
 	GetIDsOfNames as function(byval This as IXMLDOMCDATASection ptr, byval riid as const IID const ptr, byval rgszNames as LPOLESTR ptr, byval cNames as UINT, byval lcid as LCID, byval rgDispId as DISPID ptr) as HRESULT
 	Invoke as function(byval This as IXMLDOMCDATASection ptr, byval dispIdMember as DISPID, byval riid as const IID const ptr, byval lcid as LCID, byval wFlags as WORD, byval pDispParams as DISPPARAMS ptr, byval pVarResult as VARIANT ptr, byval pExcepInfo as EXCEPINFO ptr, byval puArgErr as UINT ptr) as HRESULT
-	get_nodeName as function(byval This as IXMLDOMCDATASection ptr, byval name_ as BSTR ptr) as HRESULT
+	get_nodeName as function(byval This as IXMLDOMCDATASection ptr, byval name as BSTR ptr) as HRESULT
 	get_nodeValue as function(byval This as IXMLDOMCDATASection ptr, byval value as VARIANT ptr) as HRESULT
 	put_nodeValue as function(byval This as IXMLDOMCDATASection ptr, byval value as VARIANT) as HRESULT
-	get_nodeType as function(byval This as IXMLDOMCDATASection ptr, byval type_ as DOMNodeType ptr) as HRESULT
+	get_nodeType as function(byval This as IXMLDOMCDATASection ptr, byval type as DOMNodeType ptr) as HRESULT
 	get_parentNode as function(byval This as IXMLDOMCDATASection ptr, byval parent as IXMLDOMNode ptr ptr) as HRESULT
 	get_childNodes as function(byval This as IXMLDOMCDATASection ptr, byval childList as IXMLDOMNodeList ptr ptr) as HRESULT
 	get_firstChild as function(byval This as IXMLDOMCDATASection ptr, byval firstChild as IXMLDOMNode ptr ptr) as HRESULT
@@ -1016,8 +1007,8 @@ type IXMLDOMCDATASectionVtbl
 	get_ownerDocument as function(byval This as IXMLDOMCDATASection ptr, byval DOMDocument as IXMLDOMDocument ptr ptr) as HRESULT
 	cloneNode as function(byval This as IXMLDOMCDATASection ptr, byval deep as VARIANT_BOOL, byval cloneRoot as IXMLDOMNode ptr ptr) as HRESULT
 	get_nodeTypeString as function(byval This as IXMLDOMCDATASection ptr, byval nodeType as BSTR ptr) as HRESULT
-	get_text as function(byval This as IXMLDOMCDATASection ptr, byval text_ as BSTR ptr) as HRESULT
-	put_text as function(byval This as IXMLDOMCDATASection ptr, byval text_ as BSTR) as HRESULT
+	get_text as function(byval This as IXMLDOMCDATASection ptr, byval text as BSTR ptr) as HRESULT
+	put_text as function(byval This as IXMLDOMCDATASection ptr, byval text as BSTR) as HRESULT
 	get_specified as function(byval This as IXMLDOMCDATASection ptr, byval isSpecified as VARIANT_BOOL ptr) as HRESULT
 	get_definition as function(byval This as IXMLDOMCDATASection ptr, byval definitionNode as IXMLDOMNode ptr ptr) as HRESULT
 	get_nodeTypedValue as function(byval This as IXMLDOMCDATASection ptr, byval typedValue as VARIANT ptr) as HRESULT
@@ -1033,14 +1024,14 @@ type IXMLDOMCDATASectionVtbl
 	get_prefix as function(byval This as IXMLDOMCDATASection ptr, byval prefixString as BSTR ptr) as HRESULT
 	get_baseName as function(byval This as IXMLDOMCDATASection ptr, byval nameString as BSTR ptr) as HRESULT
 	transformNodeToObject as function(byval This as IXMLDOMCDATASection ptr, byval stylesheet as IXMLDOMNode ptr, byval outputObject as VARIANT) as HRESULT
-	get_data as function(byval This as IXMLDOMCDATASection ptr, byval data_ as BSTR ptr) as HRESULT
-	put_data as function(byval This as IXMLDOMCDATASection ptr, byval data_ as BSTR) as HRESULT
+	get_data as function(byval This as IXMLDOMCDATASection ptr, byval data as BSTR ptr) as HRESULT
+	put_data as function(byval This as IXMLDOMCDATASection ptr, byval data as BSTR) as HRESULT
 	get_length as function(byval This as IXMLDOMCDATASection ptr, byval dataLength as LONG ptr) as HRESULT
-	substringData as function(byval This as IXMLDOMCDATASection ptr, byval offset as LONG, byval count as LONG, byval data_ as BSTR ptr) as HRESULT
-	appendData as function(byval This as IXMLDOMCDATASection ptr, byval data_ as BSTR) as HRESULT
-	insertData as function(byval This as IXMLDOMCDATASection ptr, byval offset as LONG, byval data_ as BSTR) as HRESULT
+	substringData as function(byval This as IXMLDOMCDATASection ptr, byval offset as LONG, byval count as LONG, byval data as BSTR ptr) as HRESULT
+	appendData as function(byval This as IXMLDOMCDATASection ptr, byval data as BSTR) as HRESULT
+	insertData as function(byval This as IXMLDOMCDATASection ptr, byval offset as LONG, byval data as BSTR) as HRESULT
 	deleteData as function(byval This as IXMLDOMCDATASection ptr, byval offset as LONG, byval count as LONG) as HRESULT
-	replaceData as function(byval This as IXMLDOMCDATASection ptr, byval offset as LONG, byval count as LONG, byval data_ as BSTR) as HRESULT
+	replaceData as function(byval This as IXMLDOMCDATASection ptr, byval offset as LONG, byval count as LONG, byval data as BSTR) as HRESULT
 	splitText as function(byval This as IXMLDOMCDATASection ptr, byval offset as LONG, byval rightHandTextNode as IXMLDOMText ptr ptr) as HRESULT
 end type
 
@@ -1060,10 +1051,10 @@ type IXMLDOMDocumentTypeVtbl
 	GetTypeInfo as function(byval This as IXMLDOMDocumentType ptr, byval iTInfo as UINT, byval lcid as LCID, byval ppTInfo as ITypeInfo ptr ptr) as HRESULT
 	GetIDsOfNames as function(byval This as IXMLDOMDocumentType ptr, byval riid as const IID const ptr, byval rgszNames as LPOLESTR ptr, byval cNames as UINT, byval lcid as LCID, byval rgDispId as DISPID ptr) as HRESULT
 	Invoke as function(byval This as IXMLDOMDocumentType ptr, byval dispIdMember as DISPID, byval riid as const IID const ptr, byval lcid as LCID, byval wFlags as WORD, byval pDispParams as DISPPARAMS ptr, byval pVarResult as VARIANT ptr, byval pExcepInfo as EXCEPINFO ptr, byval puArgErr as UINT ptr) as HRESULT
-	get_nodeName as function(byval This as IXMLDOMDocumentType ptr, byval name_ as BSTR ptr) as HRESULT
+	get_nodeName as function(byval This as IXMLDOMDocumentType ptr, byval name as BSTR ptr) as HRESULT
 	get_nodeValue as function(byval This as IXMLDOMDocumentType ptr, byval value as VARIANT ptr) as HRESULT
 	put_nodeValue as function(byval This as IXMLDOMDocumentType ptr, byval value as VARIANT) as HRESULT
-	get_nodeType as function(byval This as IXMLDOMDocumentType ptr, byval type_ as DOMNodeType ptr) as HRESULT
+	get_nodeType as function(byval This as IXMLDOMDocumentType ptr, byval type as DOMNodeType ptr) as HRESULT
 	get_parentNode as function(byval This as IXMLDOMDocumentType ptr, byval parent as IXMLDOMNode ptr ptr) as HRESULT
 	get_childNodes as function(byval This as IXMLDOMDocumentType ptr, byval childList as IXMLDOMNodeList ptr ptr) as HRESULT
 	get_firstChild as function(byval This as IXMLDOMDocumentType ptr, byval firstChild as IXMLDOMNode ptr ptr) as HRESULT
@@ -1079,8 +1070,8 @@ type IXMLDOMDocumentTypeVtbl
 	get_ownerDocument as function(byval This as IXMLDOMDocumentType ptr, byval DOMDocument as IXMLDOMDocument ptr ptr) as HRESULT
 	cloneNode as function(byval This as IXMLDOMDocumentType ptr, byval deep as VARIANT_BOOL, byval cloneRoot as IXMLDOMNode ptr ptr) as HRESULT
 	get_nodeTypeString as function(byval This as IXMLDOMDocumentType ptr, byval nodeType as BSTR ptr) as HRESULT
-	get_text as function(byval This as IXMLDOMDocumentType ptr, byval text_ as BSTR ptr) as HRESULT
-	put_text as function(byval This as IXMLDOMDocumentType ptr, byval text_ as BSTR) as HRESULT
+	get_text as function(byval This as IXMLDOMDocumentType ptr, byval text as BSTR ptr) as HRESULT
+	put_text as function(byval This as IXMLDOMDocumentType ptr, byval text as BSTR) as HRESULT
 	get_specified as function(byval This as IXMLDOMDocumentType ptr, byval isSpecified as VARIANT_BOOL ptr) as HRESULT
 	get_definition as function(byval This as IXMLDOMDocumentType ptr, byval definitionNode as IXMLDOMNode ptr ptr) as HRESULT
 	get_nodeTypedValue as function(byval This as IXMLDOMDocumentType ptr, byval typedValue as VARIANT ptr) as HRESULT
@@ -1116,6 +1107,8 @@ declare sub IXMLDOMDocumentType_get_notations_Stub(byval This as IRpcStubBuffer 
 
 extern IID_IXMLDOMNotation as const IID
 
+type IXMLDOMNotation as IXMLDOMNotation_
+
 type IXMLDOMNotationVtbl
 	QueryInterface as function(byval This as IXMLDOMNotation ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
 	AddRef as function(byval This as IXMLDOMNotation ptr) as ULONG
@@ -1124,10 +1117,10 @@ type IXMLDOMNotationVtbl
 	GetTypeInfo as function(byval This as IXMLDOMNotation ptr, byval iTInfo as UINT, byval lcid as LCID, byval ppTInfo as ITypeInfo ptr ptr) as HRESULT
 	GetIDsOfNames as function(byval This as IXMLDOMNotation ptr, byval riid as const IID const ptr, byval rgszNames as LPOLESTR ptr, byval cNames as UINT, byval lcid as LCID, byval rgDispId as DISPID ptr) as HRESULT
 	Invoke as function(byval This as IXMLDOMNotation ptr, byval dispIdMember as DISPID, byval riid as const IID const ptr, byval lcid as LCID, byval wFlags as WORD, byval pDispParams as DISPPARAMS ptr, byval pVarResult as VARIANT ptr, byval pExcepInfo as EXCEPINFO ptr, byval puArgErr as UINT ptr) as HRESULT
-	get_nodeName as function(byval This as IXMLDOMNotation ptr, byval name_ as BSTR ptr) as HRESULT
+	get_nodeName as function(byval This as IXMLDOMNotation ptr, byval name as BSTR ptr) as HRESULT
 	get_nodeValue as function(byval This as IXMLDOMNotation ptr, byval value as VARIANT ptr) as HRESULT
 	put_nodeValue as function(byval This as IXMLDOMNotation ptr, byval value as VARIANT) as HRESULT
-	get_nodeType as function(byval This as IXMLDOMNotation ptr, byval type_ as DOMNodeType ptr) as HRESULT
+	get_nodeType as function(byval This as IXMLDOMNotation ptr, byval type as DOMNodeType ptr) as HRESULT
 	get_parentNode as function(byval This as IXMLDOMNotation ptr, byval parent as IXMLDOMNode ptr ptr) as HRESULT
 	get_childNodes as function(byval This as IXMLDOMNotation ptr, byval childList as IXMLDOMNodeList ptr ptr) as HRESULT
 	get_firstChild as function(byval This as IXMLDOMNotation ptr, byval firstChild as IXMLDOMNode ptr ptr) as HRESULT
@@ -1143,8 +1136,8 @@ type IXMLDOMNotationVtbl
 	get_ownerDocument as function(byval This as IXMLDOMNotation ptr, byval DOMDocument as IXMLDOMDocument ptr ptr) as HRESULT
 	cloneNode as function(byval This as IXMLDOMNotation ptr, byval deep as VARIANT_BOOL, byval cloneRoot as IXMLDOMNode ptr ptr) as HRESULT
 	get_nodeTypeString as function(byval This as IXMLDOMNotation ptr, byval nodeType as BSTR ptr) as HRESULT
-	get_text as function(byval This as IXMLDOMNotation ptr, byval text_ as BSTR ptr) as HRESULT
-	put_text as function(byval This as IXMLDOMNotation ptr, byval text_ as BSTR) as HRESULT
+	get_text as function(byval This as IXMLDOMNotation ptr, byval text as BSTR ptr) as HRESULT
+	put_text as function(byval This as IXMLDOMNotation ptr, byval text as BSTR) as HRESULT
 	get_specified as function(byval This as IXMLDOMNotation ptr, byval isSpecified as VARIANT_BOOL ptr) as HRESULT
 	get_definition as function(byval This as IXMLDOMNotation ptr, byval definitionNode as IXMLDOMNode ptr ptr) as HRESULT
 	get_nodeTypedValue as function(byval This as IXMLDOMNotation ptr, byval typedValue as VARIANT ptr) as HRESULT
@@ -1177,6 +1170,8 @@ declare sub IXMLDOMNotation_get_systemId_Stub(byval This as IRpcStubBuffer ptr, 
 
 extern IID_IXMLDOMEntity as const IID
 
+type IXMLDOMEntity as IXMLDOMEntity_
+
 type IXMLDOMEntityVtbl
 	QueryInterface as function(byval This as IXMLDOMEntity ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
 	AddRef as function(byval This as IXMLDOMEntity ptr) as ULONG
@@ -1185,10 +1180,10 @@ type IXMLDOMEntityVtbl
 	GetTypeInfo as function(byval This as IXMLDOMEntity ptr, byval iTInfo as UINT, byval lcid as LCID, byval ppTInfo as ITypeInfo ptr ptr) as HRESULT
 	GetIDsOfNames as function(byval This as IXMLDOMEntity ptr, byval riid as const IID const ptr, byval rgszNames as LPOLESTR ptr, byval cNames as UINT, byval lcid as LCID, byval rgDispId as DISPID ptr) as HRESULT
 	Invoke as function(byval This as IXMLDOMEntity ptr, byval dispIdMember as DISPID, byval riid as const IID const ptr, byval lcid as LCID, byval wFlags as WORD, byval pDispParams as DISPPARAMS ptr, byval pVarResult as VARIANT ptr, byval pExcepInfo as EXCEPINFO ptr, byval puArgErr as UINT ptr) as HRESULT
-	get_nodeName as function(byval This as IXMLDOMEntity ptr, byval name_ as BSTR ptr) as HRESULT
+	get_nodeName as function(byval This as IXMLDOMEntity ptr, byval name as BSTR ptr) as HRESULT
 	get_nodeValue as function(byval This as IXMLDOMEntity ptr, byval value as VARIANT ptr) as HRESULT
 	put_nodeValue as function(byval This as IXMLDOMEntity ptr, byval value as VARIANT) as HRESULT
-	get_nodeType as function(byval This as IXMLDOMEntity ptr, byval type_ as DOMNodeType ptr) as HRESULT
+	get_nodeType as function(byval This as IXMLDOMEntity ptr, byval type as DOMNodeType ptr) as HRESULT
 	get_parentNode as function(byval This as IXMLDOMEntity ptr, byval parent as IXMLDOMNode ptr ptr) as HRESULT
 	get_childNodes as function(byval This as IXMLDOMEntity ptr, byval childList as IXMLDOMNodeList ptr ptr) as HRESULT
 	get_firstChild as function(byval This as IXMLDOMEntity ptr, byval firstChild as IXMLDOMNode ptr ptr) as HRESULT
@@ -1204,8 +1199,8 @@ type IXMLDOMEntityVtbl
 	get_ownerDocument as function(byval This as IXMLDOMEntity ptr, byval DOMDocument as IXMLDOMDocument ptr ptr) as HRESULT
 	cloneNode as function(byval This as IXMLDOMEntity ptr, byval deep as VARIANT_BOOL, byval cloneRoot as IXMLDOMNode ptr ptr) as HRESULT
 	get_nodeTypeString as function(byval This as IXMLDOMEntity ptr, byval nodeType as BSTR ptr) as HRESULT
-	get_text as function(byval This as IXMLDOMEntity ptr, byval text_ as BSTR ptr) as HRESULT
-	put_text as function(byval This as IXMLDOMEntity ptr, byval text_ as BSTR) as HRESULT
+	get_text as function(byval This as IXMLDOMEntity ptr, byval text as BSTR ptr) as HRESULT
+	put_text as function(byval This as IXMLDOMEntity ptr, byval text as BSTR) as HRESULT
 	get_specified as function(byval This as IXMLDOMEntity ptr, byval isSpecified as VARIANT_BOOL ptr) as HRESULT
 	get_definition as function(byval This as IXMLDOMEntity ptr, byval definitionNode as IXMLDOMNode ptr ptr) as HRESULT
 	get_nodeTypedValue as function(byval This as IXMLDOMEntity ptr, byval typedValue as VARIANT ptr) as HRESULT
@@ -1223,7 +1218,7 @@ type IXMLDOMEntityVtbl
 	transformNodeToObject as function(byval This as IXMLDOMEntity ptr, byval stylesheet as IXMLDOMNode ptr, byval outputObject as VARIANT) as HRESULT
 	get_publicId as function(byval This as IXMLDOMEntity ptr, byval publicID as VARIANT ptr) as HRESULT
 	get_systemId as function(byval This as IXMLDOMEntity ptr, byval systemID as VARIANT ptr) as HRESULT
-	get_notationName as function(byval This as IXMLDOMEntity ptr, byval name_ as BSTR ptr) as HRESULT
+	get_notationName as function(byval This as IXMLDOMEntity ptr, byval name as BSTR ptr) as HRESULT
 end type
 
 type IXMLDOMEntity_
@@ -1234,7 +1229,7 @@ declare function IXMLDOMEntity_get_publicId_Proxy(byval This as IXMLDOMEntity pt
 declare sub IXMLDOMEntity_get_publicId_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IXMLDOMEntity_get_systemId_Proxy(byval This as IXMLDOMEntity ptr, byval systemID as VARIANT ptr) as HRESULT
 declare sub IXMLDOMEntity_get_systemId_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IXMLDOMEntity_get_notationName_Proxy(byval This as IXMLDOMEntity ptr, byval name_ as BSTR ptr) as HRESULT
+declare function IXMLDOMEntity_get_notationName_Proxy(byval This as IXMLDOMEntity ptr, byval name as BSTR ptr) as HRESULT
 declare sub IXMLDOMEntity_get_notationName_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 
 #define __IXMLDOMEntityReference_INTERFACE_DEFINED__
@@ -1249,10 +1244,10 @@ type IXMLDOMEntityReferenceVtbl
 	GetTypeInfo as function(byval This as IXMLDOMEntityReference ptr, byval iTInfo as UINT, byval lcid as LCID, byval ppTInfo as ITypeInfo ptr ptr) as HRESULT
 	GetIDsOfNames as function(byval This as IXMLDOMEntityReference ptr, byval riid as const IID const ptr, byval rgszNames as LPOLESTR ptr, byval cNames as UINT, byval lcid as LCID, byval rgDispId as DISPID ptr) as HRESULT
 	Invoke as function(byval This as IXMLDOMEntityReference ptr, byval dispIdMember as DISPID, byval riid as const IID const ptr, byval lcid as LCID, byval wFlags as WORD, byval pDispParams as DISPPARAMS ptr, byval pVarResult as VARIANT ptr, byval pExcepInfo as EXCEPINFO ptr, byval puArgErr as UINT ptr) as HRESULT
-	get_nodeName as function(byval This as IXMLDOMEntityReference ptr, byval name_ as BSTR ptr) as HRESULT
+	get_nodeName as function(byval This as IXMLDOMEntityReference ptr, byval name as BSTR ptr) as HRESULT
 	get_nodeValue as function(byval This as IXMLDOMEntityReference ptr, byval value as VARIANT ptr) as HRESULT
 	put_nodeValue as function(byval This as IXMLDOMEntityReference ptr, byval value as VARIANT) as HRESULT
-	get_nodeType as function(byval This as IXMLDOMEntityReference ptr, byval type_ as DOMNodeType ptr) as HRESULT
+	get_nodeType as function(byval This as IXMLDOMEntityReference ptr, byval type as DOMNodeType ptr) as HRESULT
 	get_parentNode as function(byval This as IXMLDOMEntityReference ptr, byval parent as IXMLDOMNode ptr ptr) as HRESULT
 	get_childNodes as function(byval This as IXMLDOMEntityReference ptr, byval childList as IXMLDOMNodeList ptr ptr) as HRESULT
 	get_firstChild as function(byval This as IXMLDOMEntityReference ptr, byval firstChild as IXMLDOMNode ptr ptr) as HRESULT
@@ -1268,8 +1263,8 @@ type IXMLDOMEntityReferenceVtbl
 	get_ownerDocument as function(byval This as IXMLDOMEntityReference ptr, byval DOMDocument as IXMLDOMDocument ptr ptr) as HRESULT
 	cloneNode as function(byval This as IXMLDOMEntityReference ptr, byval deep as VARIANT_BOOL, byval cloneRoot as IXMLDOMNode ptr ptr) as HRESULT
 	get_nodeTypeString as function(byval This as IXMLDOMEntityReference ptr, byval nodeType as BSTR ptr) as HRESULT
-	get_text as function(byval This as IXMLDOMEntityReference ptr, byval text_ as BSTR ptr) as HRESULT
-	put_text as function(byval This as IXMLDOMEntityReference ptr, byval text_ as BSTR) as HRESULT
+	get_text as function(byval This as IXMLDOMEntityReference ptr, byval text as BSTR ptr) as HRESULT
+	put_text as function(byval This as IXMLDOMEntityReference ptr, byval text as BSTR) as HRESULT
 	get_specified as function(byval This as IXMLDOMEntityReference ptr, byval isSpecified as VARIANT_BOOL ptr) as HRESULT
 	get_definition as function(byval This as IXMLDOMEntityReference ptr, byval definitionNode as IXMLDOMNode ptr ptr) as HRESULT
 	get_nodeTypedValue as function(byval This as IXMLDOMEntityReference ptr, byval typedValue as VARIANT ptr) as HRESULT
@@ -1335,6 +1330,8 @@ declare sub IXMLDOMParseError_get_filepos_Stub(byval This as IRpcStubBuffer ptr,
 
 extern IID_IXTLRuntime as const IID
 
+type IXTLRuntime as IXTLRuntime_
+
 type IXTLRuntimeVtbl
 	QueryInterface as function(byval This as IXTLRuntime ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
 	AddRef as function(byval This as IXTLRuntime ptr) as ULONG
@@ -1343,10 +1340,10 @@ type IXTLRuntimeVtbl
 	GetTypeInfo as function(byval This as IXTLRuntime ptr, byval iTInfo as UINT, byval lcid as LCID, byval ppTInfo as ITypeInfo ptr ptr) as HRESULT
 	GetIDsOfNames as function(byval This as IXTLRuntime ptr, byval riid as const IID const ptr, byval rgszNames as LPOLESTR ptr, byval cNames as UINT, byval lcid as LCID, byval rgDispId as DISPID ptr) as HRESULT
 	Invoke as function(byval This as IXTLRuntime ptr, byval dispIdMember as DISPID, byval riid as const IID const ptr, byval lcid as LCID, byval wFlags as WORD, byval pDispParams as DISPPARAMS ptr, byval pVarResult as VARIANT ptr, byval pExcepInfo as EXCEPINFO ptr, byval puArgErr as UINT ptr) as HRESULT
-	get_nodeName as function(byval This as IXTLRuntime ptr, byval name_ as BSTR ptr) as HRESULT
+	get_nodeName as function(byval This as IXTLRuntime ptr, byval name as BSTR ptr) as HRESULT
 	get_nodeValue as function(byval This as IXTLRuntime ptr, byval value as VARIANT ptr) as HRESULT
 	put_nodeValue as function(byval This as IXTLRuntime ptr, byval value as VARIANT) as HRESULT
-	get_nodeType as function(byval This as IXTLRuntime ptr, byval type_ as DOMNodeType ptr) as HRESULT
+	get_nodeType as function(byval This as IXTLRuntime ptr, byval type as DOMNodeType ptr) as HRESULT
 	get_parentNode as function(byval This as IXTLRuntime ptr, byval parent as IXMLDOMNode ptr ptr) as HRESULT
 	get_childNodes as function(byval This as IXTLRuntime ptr, byval childList as IXMLDOMNodeList ptr ptr) as HRESULT
 	get_firstChild as function(byval This as IXTLRuntime ptr, byval firstChild as IXMLDOMNode ptr ptr) as HRESULT
@@ -1362,8 +1359,8 @@ type IXTLRuntimeVtbl
 	get_ownerDocument as function(byval This as IXTLRuntime ptr, byval DOMDocument as IXMLDOMDocument ptr ptr) as HRESULT
 	cloneNode as function(byval This as IXTLRuntime ptr, byval deep as VARIANT_BOOL, byval cloneRoot as IXMLDOMNode ptr ptr) as HRESULT
 	get_nodeTypeString as function(byval This as IXTLRuntime ptr, byval nodeType as BSTR ptr) as HRESULT
-	get_text as function(byval This as IXTLRuntime ptr, byval text_ as BSTR ptr) as HRESULT
-	put_text as function(byval This as IXTLRuntime ptr, byval text_ as BSTR) as HRESULT
+	get_text as function(byval This as IXTLRuntime ptr, byval text as BSTR ptr) as HRESULT
+	put_text as function(byval This as IXTLRuntime ptr, byval text as BSTR) as HRESULT
 	get_specified as function(byval This as IXTLRuntime ptr, byval isSpecified as VARIANT_BOOL ptr) as HRESULT
 	get_definition as function(byval This as IXTLRuntime ptr, byval definitionNode as IXMLDOMNode ptr ptr) as HRESULT
 	get_nodeTypedValue as function(byval This as IXTLRuntime ptr, byval typedValue as VARIANT ptr) as HRESULT
@@ -1417,6 +1414,8 @@ declare sub IXTLRuntime_formatTime_Stub(byval This as IRpcStubBuffer ptr, byval 
 
 extern DIID_XMLDOMDocumentEvents as const IID
 
+type XMLDOMDocumentEvents as XMLDOMDocumentEvents_
+
 type XMLDOMDocumentEventsVtbl
 	QueryInterface as function(byval This as XMLDOMDocumentEvents ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
 	AddRef as function(byval This as XMLDOMDocumentEvents ptr) as ULONG
@@ -1437,6 +1436,8 @@ extern CLSID_DOMFreeThreadedDocument as const CLSID
 #define __IXMLHttpRequest_INTERFACE_DEFINED__
 
 extern IID_IXMLHttpRequest as const IID
+
+type IXMLHttpRequest as IXMLHttpRequest_
 
 type IXMLHttpRequestVtbl
 	QueryInterface as function(byval This as IXMLHttpRequest ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
@@ -1501,6 +1502,8 @@ extern CLSID_XMLHTTPRequest as const CLSID
 
 extern IID_IXMLDSOControl as const IID
 
+type IXMLDSOControl as IXMLDSOControl_
+
 type IXMLDSOControlVtbl
 	QueryInterface as function(byval This as IXMLDSOControl ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
 	AddRef as function(byval This as IXMLDSOControl ptr) as ULONG
@@ -1537,6 +1540,8 @@ extern CLSID_XMLDSOControl as const CLSID
 
 extern IID_IXMLElementCollection as const IID
 
+type IXMLElementCollection as IXMLElementCollection_
+
 type IXMLElementCollectionVtbl
 	QueryInterface as function(byval This as IXMLElementCollection ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
 	AddRef as function(byval This as IXMLElementCollection ptr) as ULONG
@@ -1567,6 +1572,9 @@ declare sub IXMLElementCollection_item_Stub(byval This as IRpcStubBuffer ptr, by
 #define __IXMLDocument_INTERFACE_DEFINED__
 
 extern IID_IXMLDocument as const IID
+
+type IXMLElement as IXMLElement_
+type IXMLDocument as IXMLDocument_
 
 type IXMLDocumentVtbl
 	QueryInterface as function(byval This as IXMLDocument ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
@@ -1628,6 +1636,9 @@ declare sub IXMLDocument_createElement_Stub(byval This as IRpcStubBuffer ptr, by
 #define __IXMLDocument2_INTERFACE_DEFINED__
 
 extern IID_IXMLDocument2 as const IID
+
+type IXMLElement2 as IXMLElement2_
+type IXMLDocument2 as IXMLDocument2_
 
 type IXMLDocument2Vtbl
 	QueryInterface as function(byval This as IXMLDocument2 ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
@@ -1809,6 +1820,8 @@ declare sub IXMLElement2_get_attributes_Stub(byval This as IRpcStubBuffer ptr, b
 
 extern IID_IXMLAttribute as const IID
 
+type IXMLAttribute as IXMLAttribute_
+
 type IXMLAttributeVtbl
 	QueryInterface as function(byval This as IXMLAttribute ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
 	AddRef as function(byval This as IXMLAttribute ptr) as ULONG
@@ -1833,6 +1846,8 @@ declare sub IXMLAttribute_get_value_Stub(byval This as IRpcStubBuffer ptr, byval
 #define __IXMLError_INTERFACE_DEFINED__
 
 extern IID_IXMLError as const IID
+
+type IXMLError as IXMLError_
 
 type IXMLErrorVtbl
 	QueryInterface as function(byval This as IXMLError ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT

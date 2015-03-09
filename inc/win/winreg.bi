@@ -45,29 +45,29 @@ end type
 
 type PVALCONTEXT as val_context ptr
 
-type pvalueA
+type PVALUEA
 	pv_valuename as LPSTR
 	pv_valuelen as long
 	pv_value_context as LPVOID
 	pv_type as DWORD
 end type
 
-type PPVALUEA as pvalueA ptr
+type PPVALUEA as PVALUEA ptr
 
-type pvalueW
+type PVALUEW
 	pv_valuename as LPWSTR
 	pv_valuelen as long
 	pv_value_context as LPVOID
 	pv_type as DWORD
 end type
 
-type PPVALUEW as pvalueW ptr
+type PPVALUEW as PVALUEW ptr
 
 #ifdef UNICODE
-	type PVALUE as pvalueW
+	type PVALUE as PVALUEW
 	type PPVALUE as PPVALUEW
 #else
-	type PVALUE as pvalueA
+	type PVALUE as PVALUEA
 	type PPVALUE as PPVALUEA
 #endif
 

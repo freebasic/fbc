@@ -1,21 +1,13 @@
 #pragma once
 
-#include once "crt/wchar.bi"
 #include once "_mingw_unicode.bi"
 #include once "_mingw.bi"
 #include once "crt/stdarg.bi"
 #include once "guiddef.bi"
 
-'' The following symbols have been renamed:
-''     typedef INPUT => INPUT_
-''     procedure ToAscii => ToAscii_
-
 #inclib "user32"
 
 extern "Windows"
-
-type tagCREATESTRUCTA as tagCREATESTRUCTA_
-type tagCREATESTRUCTW as tagCREATESTRUCTW_
 
 #define _WINUSER_
 
@@ -110,14 +102,6 @@ type DESKTOPENUMPROCW as NAMEENUMPROCW
 #define ISOLATIONAWARE_NOSTATICIMPORT_MANIFEST_RESOURCE_ID MAKEINTRESOURCE(3)
 #define MINIMUM_RESERVED_MANIFEST_RESOURCE_ID MAKEINTRESOURCE(1)
 #define MAXIMUM_RESERVED_MANIFEST_RESOURCE_ID MAKEINTRESOURCE(16)
-
-#ifdef UNICODE
-	#define wvsprintf wvsprintfW
-	#define wsprintf wsprintfW
-#else
-	#define wvsprintf wvsprintfA
-	#define wsprintf wsprintfA
-#endif
 
 declare function wvsprintfA(byval as LPSTR, byval as LPCSTR, byval arglist as va_list) as long
 declare function wvsprintfW(byval as LPWSTR, byval as LPCWSTR, byval arglist as va_list) as long
@@ -226,6 +210,42 @@ declare function wsprintfW cdecl(byval as LPWSTR, byval as LPCWSTR, ...) as long
 #define VK_INSERT &h2D
 #define VK_DELETE &h2E
 #define VK_HELP &h2F
+#define VK_0 &h30
+#define VK_1 &h31
+#define VK_2 &h32
+#define VK_3 &h33
+#define VK_4 &h34
+#define VK_5 &h35
+#define VK_6 &h36
+#define VK_7 &h37
+#define VK_8 &h38
+#define VK_9 &h39
+#define VK_A &h41
+#define VK_B &h42
+#define VK_C &h43
+#define VK_D &h44
+#define VK_E &h45
+#define VK_F &h46
+#define VK_G &h47
+#define VK_H &h48
+#define VK_I &h49
+#define VK_J &h4A
+#define VK_K &h4B
+#define VK_L &h4C
+#define VK_M &h4D
+#define VK_N &h4E
+#define VK_O &h4F
+#define VK_P &h50
+#define VK_Q &h51
+#define VK_R &h52
+#define VK_S &h53
+#define VK_T &h54
+#define VK_U &h55
+#define VK_V &h56
+#define VK_W &h57
+#define VK_X &h58
+#define VK_Y &h59
+#define VK_Z &h5A
 #define VK_LWIN &h5B
 #define VK_RWIN &h5C
 #define VK_APPS &h5D
@@ -381,6 +401,8 @@ declare function wsprintfW cdecl(byval as LPWSTR, byval as LPCWSTR, ...) as long
 #define HCBT_SYSCOMMAND 8
 #define HCBT_SETFOCUS 9
 
+type tagCREATESTRUCTA as tagCREATESTRUCTA_
+
 type tagCBT_CREATEWNDA
 	lpcs as tagCREATESTRUCTA ptr
 	hwndInsertAfter as HWND
@@ -388,6 +410,8 @@ end type
 
 type CBT_CREATEWNDA as tagCBT_CREATEWNDA
 type LPCBT_CREATEWNDA as tagCBT_CREATEWNDA ptr
+
+type tagCREATESTRUCTW as tagCREATESTRUCTW_
 
 type tagCBT_CREATEWNDW
 	lpcs as tagCREATESTRUCTW ptr
@@ -1218,7 +1242,6 @@ type LPMDINEXTMENU as tagMDINEXTMENU ptr
 	#define PBT_POWERSETTINGCHANGE 32787
 #endif
 
-#define WM_DEVICECHANGE &h0219
 #define WM_MDICREATE &h0220
 #define WM_MDIDESTROY &h0221
 #define WM_MDIACTIVATE &h0222
@@ -1872,19 +1895,7 @@ declare function BroadcastSystemMessageExW(byval flags as DWORD, byval lpInfo as
 declare function BroadcastSystemMessageA(byval flags as DWORD, byval lpInfo as LPDWORD, byval Msg as UINT, byval wParam as WPARAM, byval lParam as LPARAM) as long
 declare function BroadcastSystemMessageW(byval flags as DWORD, byval lpInfo as LPDWORD, byval Msg as UINT, byval wParam as WPARAM, byval lParam as LPARAM) as long
 
-#define BSM_ALLCOMPONENTS &h00000000
-#define BSM_VXDS &h00000001
-#define BSM_NETDRIVER &h00000002
-#define BSM_INSTALLABLEDRIVERS &h00000004
-#define BSM_APPLICATIONS &h00000008
 #define BSM_ALLDESKTOPS &h00000010
-#define BSF_QUERY &h00000001
-#define BSF_IGNORECURRENTTASK &h00000002
-#define BSF_FLUSHDISK &h00000004
-#define BSF_NOHANG &h00000008
-#define BSF_POSTMESSAGE &h00000010
-#define BSF_FORCEIFHUNG &h00000020
-#define BSF_NOTIMEOUTIFNOTHUNG &h00000040
 #define BSF_ALLOWSFW &h00000080
 #define BSF_SENDNOTIFYMESSAGE &h00000100
 #define BSF_RETURNHDESK &h00000200
@@ -1910,20 +1921,7 @@ type PHDEVNOTIFY as HDEVNOTIFY ptr
 	#define GetClassInfo GetClassInfoW
 	#define RegisterClassEx RegisterClassExW
 	#define GetClassInfoEx GetClassInfoExW
-#endif
-
-#if defined(UNICODE) and (((not defined(__FB_64BIT__)) and (_WIN32_WINNT = &h0502)) or (defined(__FB_64BIT__) and ((_WIN32_WINNT = &h0502) or (_WIN32_WINNT = &h0602))))
-	type HPOWERNOTIFY as HANDLE
-	type PHPOWERNOTIFY as HPOWERNOTIFY ptr
-
-	type POWERBROADCAST_SETTING
-		PowerSetting as GUID
-		DataLength as DWORD
-		Data(0 to 0) as UCHAR
-	end type
-
-	type PPOWERBROADCAST_SETTING as POWERBROADCAST_SETTING ptr
-#elseif not defined(UNICODE)
+#elseif (not defined(UNICODE)) and ((_WIN32_WINNT = &h0502) or (_WIN32_WINNT = &h0602))
 	#define RegisterDeviceNotification RegisterDeviceNotificationA
 	#define PostMessage PostMessageA
 	#define PostThreadMessage PostThreadMessageA
@@ -1937,7 +1935,7 @@ type PHDEVNOTIFY as HDEVNOTIFY ptr
 	#define GetClassInfoEx GetClassInfoExA
 #endif
 
-#if ((not defined(__FB_64BIT__)) and defined(UNICODE) and (_WIN32_WINNT = &h0602)) or ((not defined(UNICODE)) and ((_WIN32_WINNT = &h0502) or (_WIN32_WINNT = &h0602)))
+#if (_WIN32_WINNT = &h0502) or (_WIN32_WINNT = &h0602)
 	type HPOWERNOTIFY as HANDLE
 	type PHPOWERNOTIFY as HPOWERNOTIFY ptr
 
@@ -1948,6 +1946,28 @@ type PHDEVNOTIFY as HDEVNOTIFY ptr
 	end type
 
 	type PPOWERBROADCAST_SETTING as POWERBROADCAST_SETTING ptr
+
+	extern GUID_POWERSCHEME_PERSONALITY as const GUID
+	extern GUID_MIN_POWER_SAVINGS as const GUID
+	extern GUID_MAX_POWER_SAVINGS as const GUID
+	extern GUID_TYPICAL_POWER_SAVINGS as const GUID
+	extern GUID_ACDC_POWER_SOURCE as const GUID
+	extern GUID_BATTERY_PERCENTAGE_REMAINING as const GUID
+	extern GUID_IDLE_BACKGROUND_TASK as const GUID
+	extern GUID_SYSTEM_AWAYMODE as const GUID
+	extern GUID_MONITOR_POWER_ON as const GUID
+#elseif (not defined(UNICODE)) and (_WIN32_WINNT = &h0400)
+	#define RegisterDeviceNotification RegisterDeviceNotificationA
+	#define PostMessage PostMessageA
+	#define PostThreadMessage PostThreadMessageA
+	#define PostAppMessage PostAppMessageA
+	#define DefWindowProc DefWindowProcA
+	#define CallWindowProc CallWindowProcA
+	#define RegisterClass RegisterClassA
+	#define UnregisterClass UnregisterClassA
+	#define GetClassInfo GetClassInfoA
+	#define RegisterClassEx RegisterClassExA
+	#define GetClassInfoEx GetClassInfoExA
 #endif
 
 declare function RegisterDeviceNotificationA(byval hRecipient as HANDLE, byval NotificationFilter as LPVOID, byval Flags as DWORD) as HDEVNOTIFY
@@ -2168,13 +2188,7 @@ type LPDLGITEMTEMPLATEW as DLGITEMTEMPLATE ptr
 
 #ifdef UNICODE
 	type LPDLGITEMTEMPLATE as LPDLGITEMTEMPLATEW
-#else
-	type LPDLGITEMTEMPLATE as LPDLGITEMTEMPLATEA
-#endif
 
-declare function CreateDialogParamA(byval hInstance as HINSTANCE, byval lpTemplateName as LPCSTR, byval hWndParent as HWND, byval lpDialogFunc as DLGPROC, byval dwInitParam as LPARAM) as HWND
-
-#ifdef UNICODE
 	#define CreateDialogParam CreateDialogParamW
 	#define CreateDialogIndirectParam CreateDialogIndirectParamW
 	#define CreateDialog CreateDialogW
@@ -2188,6 +2202,8 @@ declare function CreateDialogParamA(byval hInstance as HINSTANCE, byval lpTempla
 	#define SendDlgItemMessage SendDlgItemMessageW
 	#define DefDlgProc DefDlgProcW
 #else
+	type LPDLGITEMTEMPLATE as LPDLGITEMTEMPLATEA
+
 	#define CreateDialogParam CreateDialogParamA
 	#define CreateDialogIndirectParam CreateDialogIndirectParamA
 	#define CreateDialog CreateDialogA
@@ -2202,6 +2218,7 @@ declare function CreateDialogParamA(byval hInstance as HINSTANCE, byval lpTempla
 	#define DefDlgProc DefDlgProcA
 #endif
 
+declare function CreateDialogParamA(byval hInstance as HINSTANCE, byval lpTemplateName as LPCSTR, byval hWndParent as HWND, byval lpDialogFunc as DLGPROC, byval dwInitParam as LPARAM) as HWND
 declare function CreateDialogParamW(byval hInstance as HINSTANCE, byval lpTemplateName as LPCWSTR, byval hWndParent as HWND, byval lpDialogFunc as DLGPROC, byval dwInitParam as LPARAM) as HWND
 declare function CreateDialogIndirectParamA(byval hInstance as HINSTANCE, byval lpTemplate as LPCDLGTEMPLATEA, byval hWndParent as HWND, byval lpDialogFunc as DLGPROC, byval dwInitParam as LPARAM) as HWND
 declare function CreateDialogIndirectParamW(byval hInstance as HINSTANCE, byval lpTemplate as LPCDLGTEMPLATEW, byval hWndParent as HWND, byval lpDialogFunc as DLGPROC, byval dwInitParam as LPARAM) as HWND
@@ -2460,7 +2477,7 @@ type tagINPUT
 	end union
 end type
 
-type INPUT_ as tagINPUT
+type INPUT as tagINPUT
 type PINPUT as tagINPUT ptr
 type LPINPUT as tagINPUT ptr
 
@@ -2921,7 +2938,7 @@ type LPDROPSTRUCT as tagDROPSTRUCT ptr
 #define DO_DROPFILE __MSABI_LONG(&h454C4946)
 #define DO_PRINTFILE __MSABI_LONG(&h544E5250)
 
-declare function DragObject(byval hwndParent as HWND, byval hwndFrom as HWND, byval fmt as UINT, byval data_ as ULONG_PTR, byval hcur as HCURSOR) as DWORD
+declare function DragObject(byval hwndParent as HWND, byval hwndFrom as HWND, byval fmt as UINT, byval data as ULONG_PTR, byval hcur as HCURSOR) as DWORD
 declare function DragDetect(byval hwnd as HWND, byval pt as POINT) as WINBOOL
 declare function DrawIcon(byval hDC as HDC, byval X as long, byval Y as long, byval hIcon as HICON) as WINBOOL
 
@@ -3448,7 +3465,7 @@ declare function DeregisterShellHookWindow(byval hwnd as HWND) as WINBOOL
 declare function EnumWindows(byval lpEnumFunc as WNDENUMPROC, byval lParam as LPARAM) as WINBOOL
 declare function EnumThreadWindows(byval dwThreadId as DWORD, byval lpfn as WNDENUMPROC, byval lParam as LPARAM) as WINBOOL
 
-#define EnumTaskWindows(hTask, lpfn, lParam) EnumThreadWindows(HandleToUlong_(hTask), lpfn, lParam)
+#define EnumTaskWindows(hTask, lpfn, lParam) EnumThreadWindows(HandleToUlong(hTask), lpfn, lParam)
 
 declare function GetClassNameA(byval hWnd as HWND, byval lpClassName as LPSTR, byval nMaxCount as long) as long
 declare function GetClassNameW(byval hWnd as HWND, byval lpClassName as LPWSTR, byval nMaxCount as long) as long
@@ -3685,9 +3702,9 @@ type LPCURSORSHAPE as tagCURSORSHAPE ptr
 	#define LoadImage LoadImageA
 #endif
 
-declare function LoadImageA(byval hInst as HINSTANCE, byval name_ as LPCSTR, byval type_ as UINT, byval cx as long, byval cy as long, byval fuLoad as UINT) as HANDLE
-declare function LoadImageW(byval hInst as HINSTANCE, byval name_ as LPCWSTR, byval type_ as UINT, byval cx as long, byval cy as long, byval fuLoad as UINT) as HANDLE
-declare function CopyImage(byval h as HANDLE, byval type_ as UINT, byval cx as long, byval cy as long, byval flags as UINT) as HANDLE
+declare function LoadImageA(byval hInst as HINSTANCE, byval name as LPCSTR, byval type as UINT, byval cx as long, byval cy as long, byval fuLoad as UINT) as HANDLE
+declare function LoadImageW(byval hInst as HINSTANCE, byval name as LPCWSTR, byval type as UINT, byval cx as long, byval cy as long, byval fuLoad as UINT) as HANDLE
+declare function CopyImage(byval h as HANDLE, byval type as UINT, byval cx as long, byval cy as long, byval flags as UINT) as HANDLE
 
 #define DI_MASK &h0001
 #define DI_IMAGE &h0002
@@ -5549,7 +5566,7 @@ type RAWHID as tagRAWHID
 type PRAWHID as tagRAWHID ptr
 type LPRAWHID as tagRAWHID ptr
 
-union __tagRAWINPUT_data
+union tagRAWINPUT_data
 	mouse as RAWMOUSE
 	keyboard as RAWKEYBOARD
 	hid as RAWHID
@@ -5557,7 +5574,7 @@ end union
 
 type tagRAWINPUT
 	header as RAWINPUTHEADER
-	data as __tagRAWINPUT_data
+	data as tagRAWINPUT_data
 end type
 
 type RAWINPUT as tagRAWINPUT

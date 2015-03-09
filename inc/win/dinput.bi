@@ -7,26 +7,7 @@
 
 extern "Windows"
 
-type IDirectInputEffectVtbl as IDirectInputEffectVtbl_
-type IDirectInputDeviceAVtbl as IDirectInputDeviceAVtbl_
-type IDirectInputDeviceWVtbl as IDirectInputDeviceWVtbl_
-type IDirectInputDevice2AVtbl as IDirectInputDevice2AVtbl_
-type IDirectInputDevice2WVtbl as IDirectInputDevice2WVtbl_
-type IDirectInputDevice7AVtbl as IDirectInputDevice7AVtbl_
-type IDirectInputDevice7WVtbl as IDirectInputDevice7WVtbl_
-type IDirectInputDevice8AVtbl as IDirectInputDevice8AVtbl_
-type IDirectInputDevice8WVtbl as IDirectInputDevice8WVtbl_
-type IDirectInputAVtbl as IDirectInputAVtbl_
-type IDirectInputWVtbl as IDirectInputWVtbl_
-type IDirectInput2AVtbl as IDirectInput2AVtbl_
-type IDirectInput2WVtbl as IDirectInput2WVtbl_
-type IDirectInput7AVtbl as IDirectInput7AVtbl_
-type IDirectInput7WVtbl as IDirectInput7WVtbl_
-type IDirectInput8AVtbl as IDirectInput8AVtbl_
-type IDirectInput8WVtbl as IDirectInput8WVtbl_
-
 #define __DINPUT_INCLUDED__
-#define COM_NO_WINDOWS_H
 #define DIRECTINPUT_VERSION &h0800
 
 extern CLSID_DirectInput as const GUID
@@ -392,7 +373,7 @@ type DIDEVICEOBJECTINSTANCEA
 	wUsage as WORD
 	dwDimension as DWORD
 	wExponent as WORD
-	wReserved as WORD
+	wEffects as WORD
 end type
 
 type LPDIDEVICEOBJECTINSTANCEA as DIDEVICEOBJECTINSTANCEA ptr
@@ -413,7 +394,7 @@ type DIDEVICEOBJECTINSTANCEW
 	wUsage as WORD
 	dwDimension as DWORD
 	wExponent as WORD
-	wReserved as WORD
+	wEffects as WORD
 end type
 
 type LPDIDEVICEOBJECTINSTANCEW as DIDEVICEOBJECTINSTANCEW ptr
@@ -1403,10 +1384,6 @@ type LPCDIACTIONFORMATW as const DIACTIONFORMATW ptr
 #define DICD_DEFAULT &h00000000
 #define DICD_EDIT &h00000001
 
-type D3DCOLOR as DWORD
-
-#define D3DCOLOR_DEFINED
-
 type _DICOLORSET
 	dwSize as DWORD
 	cTextFore as D3DCOLOR
@@ -1556,6 +1533,8 @@ type LPCDIDEVICEIMAGEINFOHEADERW as const DIDEVICEIMAGEINFOHEADERW ptr
 	type LPCDIDEVICEIMAGEINFOHEADER as LPCDIDEVICEIMAGEINFOHEADERA
 #endif
 
+type IDirectInputEffectVtbl as IDirectInputEffectVtbl_
+
 type IDirectInputEffect
 	lpVtbl as IDirectInputEffectVtbl ptr
 end type
@@ -1590,6 +1569,8 @@ end type
 #define IDirectInputEffect_Unload(p) (p)->lpVtbl->Unload(p)
 #define IDirectInputEffect_Escape(p, a) (p)->lpVtbl->Escape(p, a)
 
+type IDirectInputDeviceAVtbl as IDirectInputDeviceAVtbl_
+
 type IDirectInputDeviceA
 	lpVtbl as IDirectInputDeviceAVtbl ptr
 end type
@@ -1614,6 +1595,8 @@ type IDirectInputDeviceAVtbl_
 	RunControlPanel as function(byval This as IDirectInputDeviceA ptr, byval hwndOwner as HWND, byval dwFlags as DWORD) as HRESULT
 	Initialize as function(byval This as IDirectInputDeviceA ptr, byval hinst as HINSTANCE, byval dwVersion as DWORD, byval rguid as const GUID const ptr) as HRESULT
 end type
+
+type IDirectInputDeviceWVtbl as IDirectInputDeviceWVtbl_
 
 type IDirectInputDeviceW
 	lpVtbl as IDirectInputDeviceWVtbl ptr
@@ -1659,6 +1642,8 @@ end type
 #define IDirectInputDevice_RunControlPanel(p, a, b) (p)->lpVtbl->RunControlPanel(p, a, b)
 #define IDirectInputDevice_Initialize(p, a, b, c) (p)->lpVtbl->Initialize(p, a, b, c)
 
+type IDirectInputDevice2AVtbl as IDirectInputDevice2AVtbl_
+
 type IDirectInputDevice2A
 	lpVtbl as IDirectInputDevice2AVtbl ptr
 end type
@@ -1692,6 +1677,8 @@ type IDirectInputDevice2AVtbl_
 	Poll as function(byval This as IDirectInputDevice2A ptr) as HRESULT
 	SendDeviceData as function(byval This as IDirectInputDevice2A ptr, byval cbObjectData as DWORD, byval rgdod as LPCDIDEVICEOBJECTDATA, byval pdwInOut as LPDWORD, byval fl as DWORD) as HRESULT
 end type
+
+type IDirectInputDevice2WVtbl as IDirectInputDevice2WVtbl_
 
 type IDirectInputDevice2W
 	lpVtbl as IDirectInputDevice2WVtbl ptr
@@ -1755,6 +1742,8 @@ end type
 #define IDirectInputDevice2_Poll(p) (p)->lpVtbl->Poll(p)
 #define IDirectInputDevice2_SendDeviceData(p, a, b, c, d) (p)->lpVtbl->SendDeviceData(p, a, b, c, d)
 
+type IDirectInputDevice7AVtbl as IDirectInputDevice7AVtbl_
+
 type IDirectInputDevice7A
 	lpVtbl as IDirectInputDevice7AVtbl ptr
 end type
@@ -1790,6 +1779,8 @@ type IDirectInputDevice7AVtbl_
 	EnumEffectsInFile as function(byval This as IDirectInputDevice7A ptr, byval lpszFileName as LPCSTR, byval pec as LPDIENUMEFFECTSINFILECALLBACK, byval pvRef as LPVOID, byval dwFlags as DWORD) as HRESULT
 	WriteEffectToFile as function(byval This as IDirectInputDevice7A ptr, byval lpszFileName as LPCSTR, byval dwEntries as DWORD, byval rgDiFileEft as LPDIFILEEFFECT, byval dwFlags as DWORD) as HRESULT
 end type
+
+type IDirectInputDevice7WVtbl as IDirectInputDevice7WVtbl_
 
 type IDirectInputDevice7W
 	lpVtbl as IDirectInputDevice7WVtbl ptr
@@ -1857,6 +1848,8 @@ end type
 #define IDirectInputDevice7_EnumEffectsInFile(p, a, b, c, d) (p)->lpVtbl->EnumEffectsInFile(p, a, b, c, d)
 #define IDirectInputDevice7_WriteEffectToFile(p, a, b, c, d) (p)->lpVtbl->WriteEffectToFile(p, a, b, c, d)
 
+type IDirectInputDevice8AVtbl as IDirectInputDevice8AVtbl_
+
 type IDirectInputDevice8A
 	lpVtbl as IDirectInputDevice8AVtbl ptr
 end type
@@ -1895,6 +1888,8 @@ type IDirectInputDevice8AVtbl_
 	SetActionMap as function(byval This as IDirectInputDevice8A ptr, byval lpdiaf as LPDIACTIONFORMATA, byval lpszUserName as LPCSTR, byval dwFlags as DWORD) as HRESULT
 	GetImageInfo as function(byval This as IDirectInputDevice8A ptr, byval lpdiDevImageInfoHeader as LPDIDEVICEIMAGEINFOHEADERA) as HRESULT
 end type
+
+type IDirectInputDevice8WVtbl as IDirectInputDevice8WVtbl_
 
 type IDirectInputDevice8W
 	lpVtbl as IDirectInputDevice8WVtbl ptr
@@ -2000,6 +1995,8 @@ extern c_dfDIKeyboard as const DIDATAFORMAT
 extern c_dfDIJoystick as const DIDATAFORMAT
 extern c_dfDIJoystick2 as const DIDATAFORMAT
 
+type IDirectInputAVtbl as IDirectInputAVtbl_
+
 type IDirectInputA
 	lpVtbl as IDirectInputAVtbl ptr
 end type
@@ -2014,6 +2011,8 @@ type IDirectInputAVtbl_
 	RunControlPanel as function(byval This as IDirectInputA ptr, byval hwndOwner as HWND, byval dwFlags as DWORD) as HRESULT
 	Initialize as function(byval This as IDirectInputA ptr, byval hinst as HINSTANCE, byval dwVersion as DWORD) as HRESULT
 end type
+
+type IDirectInputWVtbl as IDirectInputWVtbl_
 
 type IDirectInputW
 	lpVtbl as IDirectInputWVtbl ptr
@@ -2039,6 +2038,8 @@ end type
 #define IDirectInput_RunControlPanel(p, a, b) (p)->lpVtbl->RunControlPanel(p, a, b)
 #define IDirectInput_Initialize(p, a, b) (p)->lpVtbl->Initialize(p, a, b)
 
+type IDirectInput2AVtbl as IDirectInput2AVtbl_
+
 type IDirectInput2A
 	lpVtbl as IDirectInput2AVtbl ptr
 end type
@@ -2054,6 +2055,8 @@ type IDirectInput2AVtbl_
 	Initialize as function(byval This as IDirectInput2A ptr, byval hinst as HINSTANCE, byval dwVersion as DWORD) as HRESULT
 	FindDevice as function(byval This as IDirectInput2A ptr, byval rguid as const GUID const ptr, byval pszName as LPCSTR, byval pguidInstance as LPGUID) as HRESULT
 end type
+
+type IDirectInput2WVtbl as IDirectInput2WVtbl_
 
 type IDirectInput2W
 	lpVtbl as IDirectInput2WVtbl ptr
@@ -2081,6 +2084,8 @@ end type
 #define IDirectInput2_Initialize(p, a, b) (p)->lpVtbl->Initialize(p, a, b)
 #define IDirectInput2_FindDevice(p, a, b, c) (p)->lpVtbl->FindDevice(p, a, b, c)
 
+type IDirectInput7AVtbl as IDirectInput7AVtbl_
+
 type IDirectInput7A
 	lpVtbl as IDirectInput7AVtbl ptr
 end type
@@ -2097,6 +2102,8 @@ type IDirectInput7AVtbl_
 	FindDevice as function(byval This as IDirectInput7A ptr, byval rguid as const GUID const ptr, byval pszName as LPCSTR, byval pguidInstance as LPGUID) as HRESULT
 	CreateDeviceEx as function(byval This as IDirectInput7A ptr, byval rguid as const GUID const ptr, byval riid as const IID const ptr, byval pvOut as LPVOID ptr, byval lpUnknownOuter as LPUNKNOWN) as HRESULT
 end type
+
+type IDirectInput7WVtbl as IDirectInput7WVtbl_
 
 type IDirectInput7W
 	lpVtbl as IDirectInput7WVtbl ptr
@@ -2126,6 +2133,8 @@ end type
 #define IDirectInput7_FindDevice(p, a, b, c) (p)->lpVtbl->FindDevice(p, a, b, c)
 #define IDirectInput7_CreateDeviceEx(p, a, b, c, d) (p)->lpVtbl->CreateDeviceEx(p, a, b, c, d)
 
+type IDirectInput8AVtbl as IDirectInput8AVtbl_
+
 type IDirectInput8A
 	lpVtbl as IDirectInput8AVtbl ptr
 end type
@@ -2143,6 +2152,8 @@ type IDirectInput8AVtbl_
 	EnumDevicesBySemantics as function(byval This as IDirectInput8A ptr, byval ptszUserName as LPCSTR, byval lpdiActionFormat as LPDIACTIONFORMATA, byval lpCallback as LPDIENUMDEVICESBYSEMANTICSCBA, byval pvRef as LPVOID, byval dwFlags as DWORD) as HRESULT
 	ConfigureDevices as function(byval This as IDirectInput8A ptr, byval lpdiCallback as LPDICONFIGUREDEVICESCALLBACK, byval lpdiCDParams as LPDICONFIGUREDEVICESPARAMSA, byval dwFlags as DWORD, byval pvRefData as LPVOID) as HRESULT
 end type
+
+type IDirectInput8WVtbl as IDirectInput8WVtbl_
 
 type IDirectInput8W
 	lpVtbl as IDirectInput8WVtbl ptr
