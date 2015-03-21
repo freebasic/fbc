@@ -14,6 +14,7 @@ Version 1.02.0
 - #761: crt/mem.bi for mem*() functions, separated from crt/string.bi, to allow them to be used together with windows.bi without running into conflicts between crt/string.bi and win/shlwapi.bi
 - Bindings (new/updated, including 64bit support):
 	FastCGI 2.4.1-SNAP-0311112127
+	Windows API, based on MinGW-w64's headers; DDK not updated yet; for GdiPlus only the flat C API is updated, not the C++ part.
 
 [fixed]
 - Potential bad code generation for dynamic array field copying

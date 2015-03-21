@@ -1,14 +1,10 @@
-''
-''
-'' lzexpand -- header translated with help of SWIG FB wrapper
-''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
-''
-''
-#ifndef __win_lzexpand_bi__
-#define __win_lzexpand_bi__
+#pragma once
 
+#include once "_mingw_unicode.bi"
+
+extern "Windows"
+
+#define _LZEXPAND_
 #define LZERROR_BADINHANDLE (-1)
 #define LZERROR_BADOUTHANDLE (-2)
 #define LZERROR_READ (-3)
@@ -18,21 +14,25 @@
 #define LZERROR_BADVALUE (-7)
 #define LZERROR_UNKNOWNALG (-8)
 
-declare function CopyLZFile alias "CopyLZFile" (byval as INT_, byval as INT_) as LONG
-declare sub LZClose alias "LZClose" (byval as INT_)
-declare function LZCopy alias "LZCopy" (byval as INT_, byval as INT_) as LONG
-declare sub LZDone alias "LZDone" ()
-declare function LZInit alias "LZInit" (byval as INT_) as INT_
-declare function LZRead alias "LZRead" (byval as INT_, byval as LPSTR, byval as INT_) as INT_
-declare function LZSeek alias "LZSeek" (byval as INT_, byval as LONG, byval as INT_) as LONG
-declare function LZStart alias "LZStart" () as INT_
-
 #ifdef UNICODE
-declare function LZOpenFile alias "LZOpenFileW" (byval as LPWSTR, byval as LPOFSTRUCT, byval as WORD) as INT_
-declare function GetExpandedName alias "GetExpandedNameW" (byval as LPWSTR, byval as LPWSTR) as INT_
-#else ''UNICODE
-declare function LZOpenFile alias "LZOpenFileA" (byval as LPSTR, byval as LPOFSTRUCT, byval as WORD) as INT_
-declare function GetExpandedName alias "GetExpandedNameA" (byval as LPSTR, byval as LPSTR) as INT_
-#endif ''UNICODE
-
+	#define GetExpandedName GetExpandedNameW
+	#define LZOpenFile LZOpenFileW
+#else
+	#define GetExpandedName GetExpandedNameA
+	#define LZOpenFile LZOpenFileA
 #endif
+
+declare function LZStart() as INT_
+declare sub LZDone()
+declare function CopyLZFile(byval as INT_, byval as INT_) as LONG
+declare function LZCopy(byval as INT_, byval as INT_) as LONG
+declare function LZInit(byval as INT_) as INT_
+declare function GetExpandedNameA(byval as LPSTR, byval as LPSTR) as INT_
+declare function GetExpandedNameW(byval as LPWSTR, byval as LPWSTR) as INT_
+declare function LZOpenFileA(byval as LPSTR, byval as LPOFSTRUCT, byval as WORD) as INT_
+declare function LZOpenFileW(byval as LPWSTR, byval as LPOFSTRUCT, byval as WORD) as INT_
+declare function LZSeek(byval as INT_, byval as LONG, byval as INT_) as LONG
+declare function LZRead(byval as INT_, byval as LPSTR, byval as INT_) as INT_
+declare sub LZClose(byval as INT_)
+
+end extern

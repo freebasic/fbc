@@ -21,10 +21,10 @@ declare sub luaL_checkversion_(byval L as lua_State ptr, byval ver as lua_Number
 
 declare function luaL_getmetafield(byval L as lua_State ptr, byval obj as long, byval e as const zstring ptr) as long
 declare function luaL_callmeta(byval L as lua_State ptr, byval obj as long, byval e as const zstring ptr) as long
-declare function luaL_tolstring(byval L as lua_State ptr, byval idx as long, byval len_ as uinteger ptr) as const zstring ptr
+declare function luaL_tolstring(byval L as lua_State ptr, byval idx as long, byval len as uinteger ptr) as const zstring ptr
 declare function luaL_argerror(byval L as lua_State ptr, byval numarg as long, byval extramsg as const zstring ptr) as long
-declare function luaL_checklstring(byval L as lua_State ptr, byval numArg as long, byval l_ as uinteger ptr) as const zstring ptr
-declare function luaL_optlstring(byval L as lua_State ptr, byval numArg as long, byval def as const zstring ptr, byval l_ as uinteger ptr) as const zstring ptr
+declare function luaL_checklstring(byval L as lua_State ptr, byval numArg as long, byval l as uinteger ptr) as const zstring ptr
+declare function luaL_optlstring(byval L as lua_State ptr, byval numArg as long, byval def as const zstring ptr, byval l as uinteger ptr) as const zstring ptr
 declare function luaL_checknumber(byval L as lua_State ptr, byval numArg as long) as lua_Number
 declare function luaL_optnumber(byval L as lua_State ptr, byval nArg as long, byval def as lua_Number) as lua_Number
 declare function luaL_checkinteger(byval L as lua_State ptr, byval numArg as long) as lua_Integer
@@ -53,12 +53,12 @@ declare function luaL_loadfilex(byval L as lua_State ptr, byval filename as cons
 
 #define luaL_loadfile(L, f) luaL_loadfilex(L, f, NULL)
 
-declare function luaL_loadbufferx(byval L as lua_State ptr, byval buff as const zstring ptr, byval sz as uinteger, byval name_ as const zstring ptr, byval mode as const zstring ptr) as long
+declare function luaL_loadbufferx(byval L as lua_State ptr, byval buff as const zstring ptr, byval sz as uinteger, byval name as const zstring ptr, byval mode as const zstring ptr) as long
 declare function luaL_loadstring(byval L as lua_State ptr, byval s as const zstring ptr) as long
 declare function luaL_newstate() as lua_State ptr
 declare function luaL_len(byval L as lua_State ptr, byval idx as long) as long
 declare function luaL_gsub(byval L as lua_State ptr, byval s as const zstring ptr, byval p as const zstring ptr, byval r as const zstring ptr) as const zstring ptr
-declare sub luaL_setfuncs(byval L as lua_State ptr, byval l_ as const luaL_Reg ptr, byval nup as long)
+declare sub luaL_setfuncs(byval L as lua_State ptr, byval l as const luaL_Reg ptr, byval nup as long)
 declare function luaL_getsubtable(byval L as lua_State ptr, byval idx as long, byval fname as const zstring ptr) as long
 declare sub luaL_traceback(byval L as lua_State ptr, byval L1 as lua_State ptr, byval msg as const zstring ptr, byval level as long)
 declare sub luaL_requiref(byval L as lua_State ptr, byval modname as const zstring ptr, byval openf as lua_CFunction, byval glb as long)
@@ -128,7 +128,7 @@ type luaL_Stream
 end type
 
 declare sub luaL_pushmodule(byval L as lua_State ptr, byval modname as const zstring ptr, byval sizehint as long)
-declare sub luaL_openlib(byval L as lua_State ptr, byval libname as const zstring ptr, byval l_ as const luaL_Reg ptr, byval nup as long)
+declare sub luaL_openlib(byval L as lua_State ptr, byval libname as const zstring ptr, byval l as const luaL_Reg ptr, byval nup as long)
 
 #define luaL_register(L, n, l_) luaL_openlib(L, (n), (l_), 0)
 

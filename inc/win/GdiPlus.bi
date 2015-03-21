@@ -1,3 +1,9 @@
+#ifdef __FB_64BIT__
+
+#include "gdiplus-c.bi"
+
+#else
+
 ''
 ''
 '' GdiPlus -- header translated with help of SWIG FB wrapper
@@ -33,5 +39,7 @@ type UINT16 as ushort
 #include once "win/GdiplusFlat.bi"
 
 end namespace
+
+#endif
 
 #endif

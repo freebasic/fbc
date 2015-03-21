@@ -1,66 +1,127 @@
-''
-''
-'' aclapi -- header translated with help of SWIG FB wrapper
-''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
-''
-''
-#ifndef __win_aclapi_bi__
-#define __win_aclapi_bi__
+#pragma once
 
+#include once "winapifamily.bi"
+#include once "_mingw_unicode.bi"
 #include once "windows.bi"
-#include once "win/accctrl.bi"
+#include once "accctrl.bi"
 
 #inclib "advapi32"
 
-declare function GetSecurityInfo alias "GetSecurityInfo" (byval as HANDLE, byval as SE_OBJECT_TYPE, byval as SECURITY_INFORMATION, byval as PSID ptr, byval as PSID ptr, byval as PACL ptr, byval as PACL ptr, byval as PSECURITY_DESCRIPTOR ptr) as DWORD
-declare function SetSecurityInfo alias "SetSecurityInfo" (byval as HANDLE, byval as SE_OBJECT_TYPE, byval as SECURITY_INFORMATION, byval as PSID, byval as PSID, byval as PACL, byval as PACL) as DWORD
+extern "Windows"
+
+#define __ACCESS_CONTROL_API__
+
+type FN_PROGRESS as sub cdecl(byval pObjectName as LPWSTR, byval Status as DWORD, byval pInvokeSetting as PPROG_INVOKE_SETTING, byval Args as PVOID, byval SecuritySet as WINBOOL)
 
 #ifdef UNICODE
-declare sub BuildExplicitAccessWithName alias "BuildExplicitAccessWithNameW" (byval as PEXPLICIT_ACCESS_W, byval as LPWSTR, byval as DWORD, byval as ACCESS_MODE, byval as DWORD)
-declare function BuildSecurityDescriptor alias "BuildSecurityDescriptorW" (byval as PTRUSTEE_W, byval as PTRUSTEE_W, byval as ULONG, byval as PEXPLICIT_ACCESS_W, byval as ULONG, byval as PEXPLICIT_ACCESS_W, byval as PSECURITY_DESCRIPTOR, byval as PULONG, byval as PSECURITY_DESCRIPTOR ptr) as DWORD
-declare sub BuildTrusteeWithName alias "BuildTrusteeWithNameW" (byval as PTRUSTEE_W, byval as LPWSTR)
-declare sub BuildTrusteeWithObjectsAndName alias "BuildTrusteeWithObjectsAndNameW" (byval as PTRUSTEE_W, byval as POBJECTS_AND_NAME_W, byval as SE_OBJECT_TYPE, byval as LPWSTR, byval as LPWSTR, byval as LPWSTR)
-declare sub BuildTrusteeWithObjectsAndSid alias "BuildTrusteeWithObjectsAndSidW" (byval as PTRUSTEE_W, byval as POBJECTS_AND_SID, byval as GUID ptr, byval as GUID ptr, byval as PSID)
-declare sub BuildTrusteeWithSid alias "BuildTrusteeWithSidW" (byval as PTRUSTEE_W, byval as PSID)
-declare function GetAuditedPermissionsFromAcl alias "GetAuditedPermissionsFromAclW" (byval as PACL, byval as PTRUSTEE_W, byval as PACCESS_MASK, byval as PACCESS_MASK) as DWORD
-declare function GetEffectiveRightsFromAcl alias "GetEffectiveRightsFromAclW" (byval as PACL, byval as PTRUSTEE_W, byval as PACCESS_MASK) as DWORD
-declare function GetExplicitEntriesFromAcl alias "GetExplicitEntriesFromAclW" (byval as PACL, byval as PULONG, byval as PEXPLICIT_ACCESS_W ptr) as DWORD
-declare function GetNamedSecurityInfo alias "GetNamedSecurityInfoW" (byval as LPWSTR, byval as SE_OBJECT_TYPE, byval as SECURITY_INFORMATION, byval as PSID ptr, byval as PSID ptr, byval as PACL ptr, byval as PACL ptr, byval as PSECURITY_DESCRIPTOR ptr) as DWORD
-declare function GetTrusteeForm alias "GetTrusteeFormW" (byval as PTRUSTEE_W) as TRUSTEE_FORM
-declare function GetTrusteeName alias "GetTrusteeNameW" (byval as PTRUSTEE_W) as LPWSTR
-declare function GetTrusteeType alias "GetTrusteeTypeW" (byval as PTRUSTEE_W) as TRUSTEE_TYPE
-declare function LookupSecurityDescriptorParts alias "LookupSecurityDescriptorPartsW" (byval as PTRUSTEE_W ptr, byval as PTRUSTEE_W ptr, byval as PULONG, byval as PEXPLICIT_ACCESS_W ptr, byval as PULONG, byval as PEXPLICIT_ACCESS_W ptr, byval as PSECURITY_DESCRIPTOR) as DWORD
-declare function SetEntriesInAcl alias "SetEntriesInAclW" (byval as ULONG, byval as PEXPLICIT_ACCESS_W, byval as PACL, byval as PACL ptr) as DWORD
-declare function SetNamedSecurityInfo alias "SetNamedSecurityInfoW" (byval as LPWSTR, byval as SE_OBJECT_TYPE, byval as SECURITY_INFORMATION, byval as PSID, byval as PSID, byval as PACL, byval as PACL) as DWORD
-declare sub BuildImpersonateExplicitAccessWithName alias "BuildImpersonateExplicitAccessWithNameW" (byval as PEXPLICIT_ACCESS_W, byval as LPWSTR, byval as PTRUSTEE_W, byval as DWORD, byval as ACCESS_MODE, byval as DWORD)
-declare sub BuildImpersonateTrustee alias "BuildImpersonateTrusteeW" (byval as PTRUSTEE_W, byval as PTRUSTEE_W)
-declare function GetMultipleTrustee alias "GetMultipleTrusteeW" (byval as PTRUSTEE_W) as PTRUSTEE_W
-declare function GetMultipleTrusteeOperation alias "GetMultipleTrusteeOperationW" (byval as PTRUSTEE_W) as MULTIPLE_TRUSTEE_OPERATION
-
-#else ''UNICODE
-declare sub BuildExplicitAccessWithName alias "BuildExplicitAccessWithNameA" (byval as PEXPLICIT_ACCESS_A, byval as LPSTR, byval as DWORD, byval as ACCESS_MODE, byval as DWORD)
-declare function BuildSecurityDescriptor alias "BuildSecurityDescriptorA" (byval as PTRUSTEE_A, byval as PTRUSTEE_A, byval as ULONG, byval as PEXPLICIT_ACCESS_A, byval as ULONG, byval as PEXPLICIT_ACCESS_A, byval as PSECURITY_DESCRIPTOR, byval as PULONG, byval as PSECURITY_DESCRIPTOR ptr) as DWORD
-declare sub BuildTrusteeWithName alias "BuildTrusteeWithNameA" (byval as PTRUSTEE_A, byval as LPSTR)
-declare sub BuildTrusteeWithObjectsAndName alias "BuildTrusteeWithObjectsAndNameA" (byval as PTRUSTEE_A, byval as POBJECTS_AND_NAME_A, byval as SE_OBJECT_TYPE, byval as LPSTR, byval as LPSTR, byval as LPSTR)
-declare sub BuildTrusteeWithObjectsAndSid alias "BuildTrusteeWithObjectsAndSidA" (byval as PTRUSTEE_A, byval as POBJECTS_AND_SID, byval as GUID ptr, byval as GUID ptr, byval as PSID)
-declare sub BuildTrusteeWithSid alias "BuildTrusteeWithSidA" (byval as PTRUSTEE_A, byval as PSID)
-declare function GetAuditedPermissionsFromAcl alias "GetAuditedPermissionsFromAclA" (byval as PACL, byval as PTRUSTEE_A, byval as PACCESS_MASK, byval as PACCESS_MASK) as DWORD
-declare function GetEffectiveRightsFromAcl alias "GetEffectiveRightsFromAclA" (byval as PACL, byval as PTRUSTEE_A, byval as PACCESS_MASK) as DWORD
-declare function GetExplicitEntriesFromAcl alias "GetExplicitEntriesFromAclA" (byval as PACL, byval as PULONG, byval as PEXPLICIT_ACCESS_A ptr) as DWORD
-declare function GetNamedSecurityInfo alias "GetNamedSecurityInfoA" (byval as LPSTR, byval as SE_OBJECT_TYPE, byval as SECURITY_INFORMATION, byval as PSID ptr, byval as PSID ptr, byval as PACL ptr, byval as PACL ptr, byval as PSECURITY_DESCRIPTOR ptr) as DWORD
-declare function GetTrusteeForm alias "GetTrusteeFormA" (byval as PTRUSTEE_A) as TRUSTEE_FORM
-declare function GetTrusteeName alias "GetTrusteeNameA" (byval as PTRUSTEE_A) as LPSTR
-declare function GetTrusteeType alias "GetTrusteeTypeA" (byval as PTRUSTEE_A) as TRUSTEE_TYPE
-declare function LookupSecurityDescriptorParts alias "LookupSecurityDescriptorPartsA" (byval as PTRUSTEE_A ptr, byval as PTRUSTEE_A ptr, byval as PULONG, byval as PEXPLICIT_ACCESS_A ptr, byval as PULONG, byval as PEXPLICIT_ACCESS_A ptr, byval as PSECURITY_DESCRIPTOR) as DWORD
-declare function SetEntriesInAcl alias "SetEntriesInAclA" (byval as ULONG, byval as PEXPLICIT_ACCESS_A, byval as PACL, byval as PACL ptr) as DWORD
-declare function SetNamedSecurityInfo alias "SetNamedSecurityInfoA" (byval as LPSTR, byval as SE_OBJECT_TYPE, byval as SECURITY_INFORMATION, byval as PSID, byval as PSID, byval as PACL, byval as PACL) as DWORD
-declare sub BuildImpersonateExplicitAccessWithName alias "BuildImpersonateExplicitAccessWithNameA" (byval as PEXPLICIT_ACCESS_A, byval as LPSTR, byval as PTRUSTEE_A, byval as DWORD, byval as ACCESS_MODE, byval as DWORD)
-declare sub BuildImpersonateTrustee alias "BuildImpersonateTrusteeA" (byval as PTRUSTEE_A, byval as PTRUSTEE_A)
-declare function GetMultipleTrustee alias "GetMultipleTrusteeA" (byval as PTRUSTEE_A) as PTRUSTEE_A
-declare function GetMultipleTrusteeOperation alias "GetMultipleTrusteeOperationA" (byval as PTRUSTEE_A) as MULTIPLE_TRUSTEE_OPERATION
-
-#endif ''UNICODE
-
+	#define SetEntriesInAcl SetEntriesInAclW
+	#define GetExplicitEntriesFromAcl GetExplicitEntriesFromAclW
+	#define GetEffectiveRightsFromAcl GetEffectiveRightsFromAclW
+	#define GetAuditedPermissionsFromAcl GetAuditedPermissionsFromAclW
+	#define GetNamedSecurityInfo GetNamedSecurityInfoW
+	#define SetNamedSecurityInfo SetNamedSecurityInfoW
+	#define GetInheritanceSource GetInheritanceSourceW
+	#define TreeResetNamedSecurityInfo TreeResetNamedSecurityInfoW
+	#define BuildSecurityDescriptor BuildSecurityDescriptorW
+	#define LookupSecurityDescriptorParts LookupSecurityDescriptorPartsW
+	#define BuildExplicitAccessWithName BuildExplicitAccessWithNameW
+	#define BuildImpersonateExplicitAccessWithName BuildImpersonateExplicitAccessWithNameW
+	#define BuildTrusteeWithName BuildTrusteeWithNameW
+	#define BuildImpersonateTrustee BuildImpersonateTrusteeW
+	#define BuildTrusteeWithSid BuildTrusteeWithSidW
+	#define BuildTrusteeWithObjectsAndSid BuildTrusteeWithObjectsAndSidW
+	#define BuildTrusteeWithObjectsAndName BuildTrusteeWithObjectsAndNameW
+	#define GetTrusteeName GetTrusteeNameW
+	#define GetTrusteeType GetTrusteeTypeW
+	#define GetTrusteeForm GetTrusteeFormW
+	#define GetMultipleTrusteeOperation GetMultipleTrusteeOperationW
+	#define GetMultipleTrustee GetMultipleTrusteeW
 #endif
+
+#if defined(UNICODE) and (_WIN32_WINNT = &h0602)
+	#define TreeSetNamedSecurityInfo TreeSetNamedSecurityInfoW
+#elseif not defined(UNICODE)
+	#define SetEntriesInAcl SetEntriesInAclA
+	#define GetExplicitEntriesFromAcl GetExplicitEntriesFromAclA
+	#define GetEffectiveRightsFromAcl GetEffectiveRightsFromAclA
+	#define GetAuditedPermissionsFromAcl GetAuditedPermissionsFromAclA
+	#define GetNamedSecurityInfo GetNamedSecurityInfoA
+	#define SetNamedSecurityInfo SetNamedSecurityInfoA
+	#define GetInheritanceSource GetInheritanceSourceA
+	#define TreeResetNamedSecurityInfo TreeResetNamedSecurityInfoA
+	#define BuildSecurityDescriptor BuildSecurityDescriptorA
+	#define LookupSecurityDescriptorParts LookupSecurityDescriptorPartsA
+	#define BuildExplicitAccessWithName BuildExplicitAccessWithNameA
+	#define BuildImpersonateExplicitAccessWithName BuildImpersonateExplicitAccessWithNameA
+	#define BuildTrusteeWithName BuildTrusteeWithNameA
+	#define BuildImpersonateTrustee BuildImpersonateTrusteeA
+	#define BuildTrusteeWithSid BuildTrusteeWithSidA
+	#define BuildTrusteeWithObjectsAndSid BuildTrusteeWithObjectsAndSidA
+	#define BuildTrusteeWithObjectsAndName BuildTrusteeWithObjectsAndNameA
+	#define GetTrusteeName GetTrusteeNameA
+	#define GetTrusteeType GetTrusteeTypeA
+	#define GetTrusteeForm GetTrusteeFormA
+	#define GetMultipleTrusteeOperation GetMultipleTrusteeOperationA
+	#define GetMultipleTrustee GetMultipleTrusteeA
+#endif
+
+#if (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
+	#define TreeSetNamedSecurityInfo TreeSetNamedSecurityInfoA
+#endif
+
+#define AccProvInit(err)
+
+declare function SetEntriesInAclA(byval cCountOfExplicitEntries as ULONG, byval pListOfExplicitEntries as PEXPLICIT_ACCESS_A, byval OldAcl as PACL, byval NewAcl as PACL ptr) as DWORD
+declare function SetEntriesInAclW(byval cCountOfExplicitEntries as ULONG, byval pListOfExplicitEntries as PEXPLICIT_ACCESS_W, byval OldAcl as PACL, byval NewAcl as PACL ptr) as DWORD
+declare function GetExplicitEntriesFromAclA(byval pacl as PACL, byval pcCountOfExplicitEntries as PULONG, byval pListOfExplicitEntries as PEXPLICIT_ACCESS_A ptr) as DWORD
+declare function GetExplicitEntriesFromAclW(byval pacl as PACL, byval pcCountOfExplicitEntries as PULONG, byval pListOfExplicitEntries as PEXPLICIT_ACCESS_W ptr) as DWORD
+declare function GetEffectiveRightsFromAclA(byval pacl as PACL, byval pTrustee as PTRUSTEE_A, byval pAccessRights as PACCESS_MASK) as DWORD
+declare function GetEffectiveRightsFromAclW(byval pacl as PACL, byval pTrustee as PTRUSTEE_W, byval pAccessRights as PACCESS_MASK) as DWORD
+declare function GetAuditedPermissionsFromAclA(byval pacl as PACL, byval pTrustee as PTRUSTEE_A, byval pSuccessfulAuditedRights as PACCESS_MASK, byval pFailedAuditRights as PACCESS_MASK) as DWORD
+declare function GetAuditedPermissionsFromAclW(byval pacl as PACL, byval pTrustee as PTRUSTEE_W, byval pSuccessfulAuditedRights as PACCESS_MASK, byval pFailedAuditRights as PACCESS_MASK) as DWORD
+declare function GetNamedSecurityInfoA(byval pObjectName as LPCSTR, byval ObjectType as SE_OBJECT_TYPE, byval SecurityInfo as SECURITY_INFORMATION, byval ppsidOwner as PSID ptr, byval ppsidGroup as PSID ptr, byval ppDacl as PACL ptr, byval ppSacl as PACL ptr, byval ppSecurityDescriptor as PSECURITY_DESCRIPTOR ptr) as DWORD
+declare function GetNamedSecurityInfoW(byval pObjectName as LPCWSTR, byval ObjectType as SE_OBJECT_TYPE, byval SecurityInfo as SECURITY_INFORMATION, byval ppsidOwner as PSID ptr, byval ppsidGroup as PSID ptr, byval ppDacl as PACL ptr, byval ppSacl as PACL ptr, byval ppSecurityDescriptor as PSECURITY_DESCRIPTOR ptr) as DWORD
+declare function GetSecurityInfo(byval handle as HANDLE, byval ObjectType as SE_OBJECT_TYPE, byval SecurityInfo as SECURITY_INFORMATION, byval ppsidOwner as PSID ptr, byval ppsidGroup as PSID ptr, byval ppDacl as PACL ptr, byval ppSacl as PACL ptr, byval ppSecurityDescriptor as PSECURITY_DESCRIPTOR ptr) as DWORD
+declare function SetNamedSecurityInfoA(byval pObjectName as LPSTR, byval ObjectType as SE_OBJECT_TYPE, byval SecurityInfo as SECURITY_INFORMATION, byval psidOwner as PSID, byval psidGroup as PSID, byval pDacl as PACL, byval pSacl as PACL) as DWORD
+declare function SetNamedSecurityInfoW(byval pObjectName as LPWSTR, byval ObjectType as SE_OBJECT_TYPE, byval SecurityInfo as SECURITY_INFORMATION, byval psidOwner as PSID, byval psidGroup as PSID, byval pDacl as PACL, byval pSacl as PACL) as DWORD
+declare function SetSecurityInfo(byval handle as HANDLE, byval ObjectType as SE_OBJECT_TYPE, byval SecurityInfo as SECURITY_INFORMATION, byval psidOwner as PSID, byval psidGroup as PSID, byval pDacl as PACL, byval pSacl as PACL) as DWORD
+declare function GetInheritanceSourceA(byval pObjectName as LPSTR, byval ObjectType as SE_OBJECT_TYPE, byval SecurityInfo as SECURITY_INFORMATION, byval Container as WINBOOL, byval pObjectClassGuids as GUID ptr ptr, byval GuidCount as DWORD, byval pAcl as PACL, byval pfnArray as PFN_OBJECT_MGR_FUNCTS, byval pGenericMapping as PGENERIC_MAPPING, byval pInheritArray as PINHERITED_FROMA) as DWORD
+declare function GetInheritanceSourceW(byval pObjectName as LPWSTR, byval ObjectType as SE_OBJECT_TYPE, byval SecurityInfo as SECURITY_INFORMATION, byval Container as WINBOOL, byval pObjectClassGuids as GUID ptr ptr, byval GuidCount as DWORD, byval pAcl as PACL, byval pfnArray as PFN_OBJECT_MGR_FUNCTS, byval pGenericMapping as PGENERIC_MAPPING, byval pInheritArray as PINHERITED_FROMW) as DWORD
+declare function FreeInheritedFromArray(byval pInheritArray as PINHERITED_FROMW, byval AceCnt as USHORT, byval pfnArray as PFN_OBJECT_MGR_FUNCTS) as DWORD
+declare function TreeResetNamedSecurityInfoA(byval pObjectName as LPSTR, byval ObjectType as SE_OBJECT_TYPE, byval SecurityInfo as SECURITY_INFORMATION, byval pOwner as PSID, byval pGroup as PSID, byval pDacl as PACL, byval pSacl as PACL, byval KeepExplicit as WINBOOL, byval fnProgress as FN_PROGRESS, byval ProgressInvokeSetting as PROG_INVOKE_SETTING, byval Args as PVOID) as DWORD
+declare function TreeResetNamedSecurityInfoW(byval pObjectName as LPWSTR, byval ObjectType as SE_OBJECT_TYPE, byval SecurityInfo as SECURITY_INFORMATION, byval pOwner as PSID, byval pGroup as PSID, byval pDacl as PACL, byval pSacl as PACL, byval KeepExplicit as WINBOOL, byval fnProgress as FN_PROGRESS, byval ProgressInvokeSetting as PROG_INVOKE_SETTING, byval Args as PVOID) as DWORD
+declare function BuildSecurityDescriptorA(byval pOwner as PTRUSTEE_A, byval pGroup as PTRUSTEE_A, byval cCountOfAccessEntries as ULONG, byval pListOfAccessEntries as PEXPLICIT_ACCESS_A, byval cCountOfAuditEntries as ULONG, byval pListOfAuditEntries as PEXPLICIT_ACCESS_A, byval pOldSD as PSECURITY_DESCRIPTOR, byval pSizeNewSD as PULONG, byval pNewSD as PSECURITY_DESCRIPTOR ptr) as DWORD
+declare function BuildSecurityDescriptorW(byval pOwner as PTRUSTEE_W, byval pGroup as PTRUSTEE_W, byval cCountOfAccessEntries as ULONG, byval pListOfAccessEntries as PEXPLICIT_ACCESS_W, byval cCountOfAuditEntries as ULONG, byval pListOfAuditEntries as PEXPLICIT_ACCESS_W, byval pOldSD as PSECURITY_DESCRIPTOR, byval pSizeNewSD as PULONG, byval pNewSD as PSECURITY_DESCRIPTOR ptr) as DWORD
+declare function LookupSecurityDescriptorPartsA(byval ppOwner as PTRUSTEE_A ptr, byval ppGroup as PTRUSTEE_A ptr, byval pcCountOfAccessEntries as PULONG, byval ppListOfAccessEntries as PEXPLICIT_ACCESS_A ptr, byval pcCountOfAuditEntries as PULONG, byval ppListOfAuditEntries as PEXPLICIT_ACCESS_A ptr, byval pSD as PSECURITY_DESCRIPTOR) as DWORD
+declare function LookupSecurityDescriptorPartsW(byval ppOwner as PTRUSTEE_W ptr, byval ppGroup as PTRUSTEE_W ptr, byval pcCountOfAccessEntries as PULONG, byval ppListOfAccessEntries as PEXPLICIT_ACCESS_W ptr, byval pcCountOfAuditEntries as PULONG, byval ppListOfAuditEntries as PEXPLICIT_ACCESS_W ptr, byval pSD as PSECURITY_DESCRIPTOR) as DWORD
+declare sub BuildExplicitAccessWithNameA(byval pExplicitAccess as PEXPLICIT_ACCESS_A, byval pTrusteeName as LPSTR, byval AccessPermissions as DWORD, byval AccessMode as ACCESS_MODE, byval Inheritance as DWORD)
+declare sub BuildExplicitAccessWithNameW(byval pExplicitAccess as PEXPLICIT_ACCESS_W, byval pTrusteeName as LPWSTR, byval AccessPermissions as DWORD, byval AccessMode as ACCESS_MODE, byval Inheritance as DWORD)
+declare sub BuildImpersonateExplicitAccessWithNameA(byval pExplicitAccess as PEXPLICIT_ACCESS_A, byval pTrusteeName as LPSTR, byval pTrustee as PTRUSTEE_A, byval AccessPermissions as DWORD, byval AccessMode as ACCESS_MODE, byval Inheritance as DWORD)
+declare sub BuildImpersonateExplicitAccessWithNameW(byval pExplicitAccess as PEXPLICIT_ACCESS_W, byval pTrusteeName as LPWSTR, byval pTrustee as PTRUSTEE_W, byval AccessPermissions as DWORD, byval AccessMode as ACCESS_MODE, byval Inheritance as DWORD)
+declare sub BuildTrusteeWithNameA(byval pTrustee as PTRUSTEE_A, byval pName as LPSTR)
+declare sub BuildTrusteeWithNameW(byval pTrustee as PTRUSTEE_W, byval pName as LPWSTR)
+declare sub BuildImpersonateTrusteeA(byval pTrustee as PTRUSTEE_A, byval pImpersonateTrustee as PTRUSTEE_A)
+declare sub BuildImpersonateTrusteeW(byval pTrustee as PTRUSTEE_W, byval pImpersonateTrustee as PTRUSTEE_W)
+declare sub BuildTrusteeWithSidA(byval pTrustee as PTRUSTEE_A, byval pSid as PSID)
+declare sub BuildTrusteeWithSidW(byval pTrustee as PTRUSTEE_W, byval pSid as PSID)
+declare sub BuildTrusteeWithObjectsAndSidA(byval pTrustee as PTRUSTEE_A, byval pObjSid as POBJECTS_AND_SID, byval pObjectGuid as GUID ptr, byval pInheritedObjectGuid as GUID ptr, byval pSid as PSID)
+declare sub BuildTrusteeWithObjectsAndSidW(byval pTrustee as PTRUSTEE_W, byval pObjSid as POBJECTS_AND_SID, byval pObjectGuid as GUID ptr, byval pInheritedObjectGuid as GUID ptr, byval pSid as PSID)
+declare sub BuildTrusteeWithObjectsAndNameA(byval pTrustee as PTRUSTEE_A, byval pObjName as POBJECTS_AND_NAME_A, byval ObjectType as SE_OBJECT_TYPE, byval ObjectTypeName as LPSTR, byval InheritedObjectTypeName as LPSTR, byval Name as LPSTR)
+declare sub BuildTrusteeWithObjectsAndNameW(byval pTrustee as PTRUSTEE_W, byval pObjName as POBJECTS_AND_NAME_W, byval ObjectType as SE_OBJECT_TYPE, byval ObjectTypeName as LPWSTR, byval InheritedObjectTypeName as LPWSTR, byval Name as LPWSTR)
+declare function GetTrusteeNameA(byval pTrustee as PTRUSTEE_A) as LPSTR
+declare function GetTrusteeNameW(byval pTrustee as PTRUSTEE_W) as LPWSTR
+declare function GetTrusteeTypeA(byval pTrustee as PTRUSTEE_A) as TRUSTEE_TYPE
+declare function GetTrusteeTypeW(byval pTrustee as PTRUSTEE_W) as TRUSTEE_TYPE
+declare function GetTrusteeFormA(byval pTrustee as PTRUSTEE_A) as TRUSTEE_FORM
+declare function GetTrusteeFormW(byval pTrustee as PTRUSTEE_W) as TRUSTEE_FORM
+declare function GetMultipleTrusteeOperationA(byval pTrustee as PTRUSTEE_A) as MULTIPLE_TRUSTEE_OPERATION
+declare function GetMultipleTrusteeOperationW(byval pTrustee as PTRUSTEE_W) as MULTIPLE_TRUSTEE_OPERATION
+declare function GetMultipleTrusteeA(byval pTrustee as PTRUSTEE_A) as PTRUSTEE_A
+declare function GetMultipleTrusteeW(byval pTrustee as PTRUSTEE_W) as PTRUSTEE_W
+
+#if _WIN32_WINNT = &h0602
+	declare function TreeSetNamedSecurityInfoA(byval pObjectName as LPSTR, byval ObjectType as SE_OBJECT_TYPE, byval SecurityInfo as SECURITY_INFORMATION, byval pOwner as PSID, byval pGroup as PSID, byval pDacl as PACL, byval pSacl as PACL, byval dwAction as DWORD, byval fnProgress as FN_PROGRESS, byval ProgressInvokeSetting as PROG_INVOKE_SETTING, byval Args as PVOID) as DWORD
+	declare function TreeSetNamedSecurityInfoW(byval pObjectName as LPWSTR, byval ObjectType as SE_OBJECT_TYPE, byval SecurityInfo as SECURITY_INFORMATION, byval pOwner as PSID, byval pGroup as PSID, byval pDacl as PACL, byval pSacl as PACL, byval dwAction as DWORD, byval fnProgress as FN_PROGRESS, byval ProgressInvokeSetting as PROG_INVOKE_SETTING, byval Args as PVOID) as DWORD
+#endif
+
+end extern

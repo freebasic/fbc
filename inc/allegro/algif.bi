@@ -5,8 +5,6 @@
 
 extern "C"
 
-type GIF_FRAME as GIF_FRAME_
-
 #define _GIF_H_
 #define DAT_GIF DAT_ID(asc("G"), asc("I"), asc("F"), asc(" "))
 
@@ -14,6 +12,8 @@ type GIF_PALETTE
 	colors_count as long
 	colors(0 to 255) as RGB
 end type
+
+type GIF_FRAME as GIF_FRAME_
 
 type GIF_ANIMATION
 	width as long

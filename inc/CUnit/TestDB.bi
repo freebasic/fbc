@@ -2,9 +2,7 @@
 
 #include once "crt/setjmp.bi"
 #include once "CUnit.bi"
-
-'' The following symbols have been renamed:
-''     #define CU_ADD_TEST => CU_ADD_TEST_
+#include once "CUError.bi"
 
 extern "C"
 
@@ -62,7 +60,7 @@ declare function CU_set_suite_name(byval pSuite as CU_pSuite, byval strNewName a
 declare function CU_set_suite_initfunc(byval pSuite as CU_pSuite, byval pNewInit as CU_InitializeFunc) as CU_ErrorCode
 declare function CU_set_suite_cleanupfunc(byval pSuite as CU_pSuite, byval pNewClean as CU_CleanupFunc) as CU_ErrorCode
 declare function CU_get_suite(byval strName as const zstring ptr) as CU_pSuite
-declare function CU_get_suite_at_pos(byval pos_ as ulong) as CU_pSuite
+declare function CU_get_suite_at_pos(byval pos as ulong) as CU_pSuite
 declare function CU_get_suite_pos(byval pSuite as CU_pSuite) as ulong
 declare function CU_get_suite_pos_by_name(byval strName as const zstring ptr) as ulong
 declare function CU_add_test(byval pSuite as CU_pSuite, byval strName as const zstring ptr, byval pTestFunc as CU_TestFunc) as CU_pTest
@@ -70,7 +68,7 @@ declare function CU_set_test_active(byval pTest as CU_pTest, byval fNewActive as
 declare function CU_set_test_name(byval pTest as CU_pTest, byval strNewName as const zstring ptr) as CU_ErrorCode
 declare function CU_set_test_func(byval pTest as CU_pTest, byval pNewFunc as CU_TestFunc) as CU_ErrorCode
 declare function CU_get_test(byval pSuite as CU_pSuite, byval strName as const zstring ptr) as CU_pTest
-declare function CU_get_test_at_pos(byval pSuite as CU_pSuite, byval pos_ as ulong) as CU_pTest
+declare function CU_get_test_at_pos(byval pSuite as CU_pSuite, byval pos as ulong) as CU_pTest
 declare function CU_get_test_pos(byval pSuite as CU_pSuite, byval pTest as CU_pTest) as ulong
 declare function CU_get_test_pos_by_name(byval pSuite as CU_pSuite, byval strName as const zstring ptr) as ulong
 

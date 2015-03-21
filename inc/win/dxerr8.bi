@@ -1,25 +1,32 @@
-''
-''
-'' dxerr8 -- header translated with help of SWIG FB wrapper
-''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
-''
-''
-#ifndef __win_dxerr8_bi__
-#define __win_dxerr8_bi__
+#pragma once
+
+#include once "_mingw_unicode.bi"
 
 #inclib "dxerr8"
 
+extern "Windows"
+
+#define __WINE_DXERR8_H
+
+declare function DXGetErrorString8A(byval hr as HRESULT) as const zstring ptr
+declare function DXGetErrorString8W(byval hr as HRESULT) as const wstring ptr
+
 #ifdef UNICODE
-declare function DXGetErrorString8 alias "DXGetErrorString8W" (byval as HRESULT) as WCHAR ptr
-declare function DXGetErrorDescription8 alias "DXGetErrorDescription8W" (byval as HRESULT) as WCHAR ptr
-declare function DXTrace alias "DXTraceW" (byval as zstring ptr, byval as DWORD, byval as HRESULT, byval as WCHAR ptr, byval as BOOL) as HRESULT
-
+	#define DXGetErrorString8 DXGetErrorString8W
 #else
-declare function DXGetErrorString8 alias "DXGetErrorString8A" (byval as HRESULT) as zstring ptr
-declare function DXGetErrorDescription8 alias "DXGetErrorDescription8A" (byval as HRESULT) as zstring ptr
-declare function DXTrace alias "DXTraceA" (byval as zstring ptr, byval as DWORD, byval as HRESULT, byval as zstring ptr, byval as BOOL) as HRESULT
+	#define DXGetErrorString8 DXGetErrorString8A
 #endif
 
+declare function DXGetErrorDescription8A(byval hr as HRESULT) as const zstring ptr
+declare function DXGetErrorDescription8W(byval hr as HRESULT) as const wstring ptr
+
+#ifdef UNICODE
+	#define DXGetErrorDescription8 DXGetErrorDescription8W
+#else
+	#define DXGetErrorDescription8 DXGetErrorDescription8A
 #endif
+
+declare function DXTraceA(byval strFile as const zstring ptr, byval dwLine as DWORD, byval hr as HRESULT, byval strMsg as const zstring ptr, byval bPopMsgBox as WINBOOL) as HRESULT
+declare function DXTraceW(byval strFile as const zstring ptr, byval dwLine as DWORD, byval hr as HRESULT, byval strMsg as const wstring ptr, byval bPopMsgBox as WINBOOL) as HRESULT
+
+end extern

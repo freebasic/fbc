@@ -15,30 +15,6 @@
 
 extern "C"
 
-type ALLEGRO_BITMAP as ALLEGRO_BITMAP_
-type ALLEGRO_PATH as ALLEGRO_PATH_
-type ALLEGRO_FILE as ALLEGRO_FILE_
-type ALLEGRO_CONFIG as ALLEGRO_CONFIG_
-type ALLEGRO_CONFIG_SECTION as ALLEGRO_CONFIG_SECTION_
-type ALLEGRO_CONFIG_ENTRY as ALLEGRO_CONFIG_ENTRY_
-type ALLEGRO_DISPLAY as ALLEGRO_DISPLAY_
-type ALLEGRO_JOYSTICK as ALLEGRO_JOYSTICK_
-type ALLEGRO_KEYBOARD as ALLEGRO_KEYBOARD_
-type ALLEGRO_MOUSE as ALLEGRO_MOUSE_
-type ALLEGRO_TIMER as ALLEGRO_TIMER_
-type ALLEGRO_USER_EVENT_DESCRIPTOR as ALLEGRO_USER_EVENT_DESCRIPTOR_
-type ALLEGRO_EVENT_QUEUE as ALLEGRO_EVENT_QUEUE_
-type ALLEGRO_FS_INTERFACE as ALLEGRO_FS_INTERFACE_
-type ALLEGRO_MOUSE_CURSOR as ALLEGRO_MOUSE_CURSOR_
-type ALLEGRO_SYSTEM as ALLEGRO_SYSTEM_
-type ALLEGRO_THREAD as ALLEGRO_THREAD_
-type ALLEGRO_MUTEX as ALLEGRO_MUTEX_
-type ALLEGRO_COND as ALLEGRO_COND_
-
-#ifdef __FB_WIN32__
-	type ALLEGRO_JOYSTICK_DRIVER as ALLEGRO_JOYSTICK_DRIVER_
-#endif
-
 #define __al_included_allegro5_allegro_h
 #define __al_included_allegro5_base_h
 
@@ -151,10 +127,10 @@ declare function al_map_rgb(byval r as ubyte, byval g as ubyte, byval b as ubyte
 declare function al_map_rgba(byval r as ubyte, byval g as ubyte, byval b as ubyte, byval a as ubyte) as ALLEGRO_COLOR
 declare function al_map_rgb_f(byval r as single, byval g as single, byval b as single) as ALLEGRO_COLOR
 declare function al_map_rgba_f(byval r as single, byval g as single, byval b as single, byval a as single) as ALLEGRO_COLOR
-declare sub al_unmap_rgb(byval color_ as ALLEGRO_COLOR, byval r as ubyte ptr, byval g as ubyte ptr, byval b as ubyte ptr)
-declare sub al_unmap_rgba(byval color_ as ALLEGRO_COLOR, byval r as ubyte ptr, byval g as ubyte ptr, byval b as ubyte ptr, byval a as ubyte ptr)
-declare sub al_unmap_rgb_f(byval color_ as ALLEGRO_COLOR, byval r as single ptr, byval g as single ptr, byval b as single ptr)
-declare sub al_unmap_rgba_f(byval color_ as ALLEGRO_COLOR, byval r as single ptr, byval g as single ptr, byval b as single ptr, byval a as single ptr)
+declare sub al_unmap_rgb(byval color as ALLEGRO_COLOR, byval r as ubyte ptr, byval g as ubyte ptr, byval b as ubyte ptr)
+declare sub al_unmap_rgba(byval color as ALLEGRO_COLOR, byval r as ubyte ptr, byval g as ubyte ptr, byval b as ubyte ptr, byval a as ubyte ptr)
+declare sub al_unmap_rgb_f(byval color as ALLEGRO_COLOR, byval r as single ptr, byval g as single ptr, byval b as single ptr)
+declare sub al_unmap_rgba_f(byval color as ALLEGRO_COLOR, byval r as single ptr, byval g as single ptr, byval b as single ptr, byval a as single ptr)
 declare function al_get_pixel_size(byval format as long) as long
 declare function al_get_pixel_format_bits(byval format as long) as long
 
@@ -177,17 +153,18 @@ declare sub al_set_new_bitmap_flags(byval flags as long)
 declare function al_get_new_bitmap_format() as long
 declare function al_get_new_bitmap_flags() as long
 declare sub al_add_new_bitmap_flag(byval flag as long)
+type ALLEGRO_BITMAP as ALLEGRO_BITMAP_
 declare function al_get_bitmap_width(byval bitmap as ALLEGRO_BITMAP ptr) as long
 declare function al_get_bitmap_height(byval bitmap as ALLEGRO_BITMAP ptr) as long
 declare function al_get_bitmap_format(byval bitmap as ALLEGRO_BITMAP ptr) as long
 declare function al_get_bitmap_flags(byval bitmap as ALLEGRO_BITMAP ptr) as long
 declare function al_create_bitmap(byval w as long, byval h as long) as ALLEGRO_BITMAP ptr
 declare sub al_destroy_bitmap(byval bitmap as ALLEGRO_BITMAP ptr)
-declare sub al_put_pixel(byval x as long, byval y as long, byval color_ as ALLEGRO_COLOR)
-declare sub al_put_blended_pixel(byval x as long, byval y as long, byval color_ as ALLEGRO_COLOR)
+declare sub al_put_pixel(byval x as long, byval y as long, byval color as ALLEGRO_COLOR)
+declare sub al_put_blended_pixel(byval x as long, byval y as long, byval color as ALLEGRO_COLOR)
 declare function al_get_pixel(byval bitmap as ALLEGRO_BITMAP ptr, byval x as long, byval y as long) as ALLEGRO_COLOR
 declare sub al_convert_mask_to_alpha(byval bitmap as ALLEGRO_BITMAP ptr, byval mask_color as ALLEGRO_COLOR)
-declare sub al_set_clipping_rectangle(byval x as long, byval y as long, byval width_ as long, byval height as long)
+declare sub al_set_clipping_rectangle(byval x as long, byval y as long, byval width as long, byval height as long)
 declare sub al_reset_clipping_rectangle()
 declare sub al_get_clipping_rectangle(byval x as long ptr, byval y as long ptr, byval w as long ptr, byval h as long ptr)
 declare function al_create_sub_bitmap(byval parent as ALLEGRO_BITMAP ptr, byval x as long, byval y as long, byval w as long, byval h as long) as ALLEGRO_BITMAP ptr
@@ -226,8 +203,9 @@ declare sub al_draw_tinted_scaled_rotated_bitmap_region(byval bitmap as ALLEGRO_
 	#define ALLEGRO_NATIVE_DRIVE_SEP asc(!"\0")
 #endif
 
-declare function al_create_path(byval str_ as const zstring ptr) as ALLEGRO_PATH ptr
-declare function al_create_path_for_directory(byval str_ as const zstring ptr) as ALLEGRO_PATH ptr
+type ALLEGRO_PATH as ALLEGRO_PATH_
+declare function al_create_path(byval str as const zstring ptr) as ALLEGRO_PATH ptr
+declare function al_create_path_for_directory(byval str as const zstring ptr) as ALLEGRO_PATH ptr
 declare function al_clone_path(byval path as const ALLEGRO_PATH ptr) as ALLEGRO_PATH ptr
 declare function al_get_path_num_components(byval path as const ALLEGRO_PATH ptr) as long
 declare function al_get_path_component(byval path as const ALLEGRO_PATH ptr, byval i as long) as const zstring ptr
@@ -279,20 +257,20 @@ declare function al_ref_ustr(byval info as ALLEGRO_USTR_INFO ptr, byval us as co
 declare function al_ustr_size(byval us as const ALLEGRO_USTR ptr) as uinteger
 declare function al_ustr_length(byval us as const ALLEGRO_USTR ptr) as uinteger
 declare function al_ustr_offset(byval us as const ALLEGRO_USTR ptr, byval index as long) as long
-declare function al_ustr_next(byval us as const ALLEGRO_USTR ptr, byval pos_ as long ptr) as byte
-declare function al_ustr_prev(byval us as const ALLEGRO_USTR ptr, byval pos_ as long ptr) as byte
-declare function al_ustr_get(byval us as const ALLEGRO_USTR ptr, byval pos_ as long) as long
-declare function al_ustr_get_next(byval us as const ALLEGRO_USTR ptr, byval pos_ as long ptr) as long
-declare function al_ustr_prev_get(byval us as const ALLEGRO_USTR ptr, byval pos_ as long ptr) as long
-declare function al_ustr_insert(byval us1 as ALLEGRO_USTR ptr, byval pos_ as long, byval us2 as const ALLEGRO_USTR ptr) as byte
-declare function al_ustr_insert_cstr(byval us as ALLEGRO_USTR ptr, byval pos_ as long, byval us2 as const zstring ptr) as byte
-declare function al_ustr_insert_chr(byval us as ALLEGRO_USTR ptr, byval pos_ as long, byval c as long) as uinteger
+declare function al_ustr_next(byval us as const ALLEGRO_USTR ptr, byval pos as long ptr) as byte
+declare function al_ustr_prev(byval us as const ALLEGRO_USTR ptr, byval pos as long ptr) as byte
+declare function al_ustr_get(byval us as const ALLEGRO_USTR ptr, byval pos as long) as long
+declare function al_ustr_get_next(byval us as const ALLEGRO_USTR ptr, byval pos as long ptr) as long
+declare function al_ustr_prev_get(byval us as const ALLEGRO_USTR ptr, byval pos as long ptr) as long
+declare function al_ustr_insert(byval us1 as ALLEGRO_USTR ptr, byval pos as long, byval us2 as const ALLEGRO_USTR ptr) as byte
+declare function al_ustr_insert_cstr(byval us as ALLEGRO_USTR ptr, byval pos as long, byval us2 as const zstring ptr) as byte
+declare function al_ustr_insert_chr(byval us as ALLEGRO_USTR ptr, byval pos as long, byval c as long) as uinteger
 declare function al_ustr_append(byval us1 as ALLEGRO_USTR ptr, byval us2 as const ALLEGRO_USTR ptr) as byte
 declare function al_ustr_append_cstr(byval us as ALLEGRO_USTR ptr, byval s as const zstring ptr) as byte
 declare function al_ustr_append_chr(byval us as ALLEGRO_USTR ptr, byval c as long) as uinteger
 declare function al_ustr_appendf(byval us as ALLEGRO_USTR ptr, byval fmt as const zstring ptr, ...) as byte
 declare function al_ustr_vappendf(byval us as ALLEGRO_USTR ptr, byval fmt as const zstring ptr, byval ap as va_list) as byte
-declare function al_ustr_remove_chr(byval us as ALLEGRO_USTR ptr, byval pos_ as long) as byte
+declare function al_ustr_remove_chr(byval us as ALLEGRO_USTR ptr, byval pos as long) as byte
 declare function al_ustr_remove_range(byval us as ALLEGRO_USTR ptr, byval start_pos as long, byval end_pos as long) as byte
 declare function al_ustr_truncate(byval us as ALLEGRO_USTR ptr, byval start_pos as long) as byte
 declare function al_ustr_ltrim_ws(byval us as ALLEGRO_USTR ptr) as byte
@@ -301,7 +279,7 @@ declare function al_ustr_trim_ws(byval us as ALLEGRO_USTR ptr) as byte
 declare function al_ustr_assign(byval us1 as ALLEGRO_USTR ptr, byval us2 as const ALLEGRO_USTR ptr) as byte
 declare function al_ustr_assign_substr(byval us1 as ALLEGRO_USTR ptr, byval us2 as const ALLEGRO_USTR ptr, byval start_pos as long, byval end_pos as long) as byte
 declare function al_ustr_assign_cstr(byval us1 as ALLEGRO_USTR ptr, byval s as const zstring ptr) as byte
-declare function al_ustr_set_chr(byval us as ALLEGRO_USTR ptr, byval pos_ as long, byval c as long) as uinteger
+declare function al_ustr_set_chr(byval us as ALLEGRO_USTR ptr, byval pos as long, byval c as long) as uinteger
 declare function al_ustr_replace_range(byval us1 as ALLEGRO_USTR ptr, byval start_pos1 as long, byval end_pos1 as long, byval us2 as const ALLEGRO_USTR ptr) as byte
 declare function al_ustr_find_chr(byval us as const ALLEGRO_USTR ptr, byval start_pos as long, byval c as long) as long
 declare function al_ustr_rfind_chr(byval us as const ALLEGRO_USTR ptr, byval start_pos as long, byval c as long) as long
@@ -330,11 +308,13 @@ declare function al_ustr_encode_utf16(byval us as const ALLEGRO_USTR ptr, byval 
 declare function al_utf16_width(byval c as long) as uinteger
 declare function al_utf16_encode(byval s as ushort ptr, byval c as long) as uinteger
 
+type ALLEGRO_FILE as ALLEGRO_FILE_
+
 type ALLEGRO_FILE_INTERFACE
 	fi_fopen as function(byval path as const zstring ptr, byval mode as const zstring ptr) as any ptr
 	fi_fclose as sub(byval handle as ALLEGRO_FILE ptr)
-	fi_fread as function(byval f as ALLEGRO_FILE ptr, byval ptr_ as any ptr, byval size as uinteger) as uinteger
-	fi_fwrite as function(byval f as ALLEGRO_FILE ptr, byval ptr_ as const any ptr, byval size as uinteger) as uinteger
+	fi_fread as function(byval f as ALLEGRO_FILE ptr, byval ptr as any ptr, byval size as uinteger) as uinteger
+	fi_fwrite as function(byval f as ALLEGRO_FILE ptr, byval ptr as const any ptr, byval size as uinteger) as uinteger
 	fi_fflush as function(byval f as ALLEGRO_FILE ptr) as byte
 	fi_ftell as function(byval f as ALLEGRO_FILE ptr) as longint
 	fi_fseek as function(byval f as ALLEGRO_FILE ptr, byval offset as longint, byval whence as long) as byte
@@ -356,8 +336,8 @@ declare function al_fopen(byval path as const zstring ptr, byval mode as const z
 declare function al_fopen_interface(byval vt as const ALLEGRO_FILE_INTERFACE ptr, byval path as const zstring ptr, byval mode as const zstring ptr) as ALLEGRO_FILE ptr
 declare function al_create_file_handle(byval vt as const ALLEGRO_FILE_INTERFACE ptr, byval userdata as any ptr) as ALLEGRO_FILE ptr
 declare sub al_fclose(byval f as ALLEGRO_FILE ptr)
-declare function al_fread(byval f as ALLEGRO_FILE ptr, byval ptr_ as any ptr, byval size as uinteger) as uinteger
-declare function al_fwrite(byval f as ALLEGRO_FILE ptr, byval ptr_ as const any ptr, byval size as uinteger) as uinteger
+declare function al_fread(byval f as ALLEGRO_FILE ptr, byval ptr as any ptr, byval size as uinteger) as uinteger
+declare function al_fwrite(byval f as ALLEGRO_FILE ptr, byval ptr as const any ptr, byval size as uinteger) as uinteger
 declare function al_fflush(byval f as ALLEGRO_FILE ptr) as byte
 declare function al_ftell(byval f as ALLEGRO_FILE ptr) as longint
 declare function al_fseek(byval f as ALLEGRO_FILE ptr, byval offset as longint, byval whence as long) as byte
@@ -417,7 +397,7 @@ type ALLEGRO_LOCKED_REGION
 end type
 
 declare function al_lock_bitmap(byval bitmap as ALLEGRO_BITMAP ptr, byval format as long, byval flags as long) as ALLEGRO_LOCKED_REGION ptr
-declare function al_lock_bitmap_region(byval bitmap as ALLEGRO_BITMAP ptr, byval x as long, byval y as long, byval width_ as long, byval height as long, byval format as long, byval flags as long) as ALLEGRO_LOCKED_REGION ptr
+declare function al_lock_bitmap_region(byval bitmap as ALLEGRO_BITMAP ptr, byval x as long, byval y as long, byval width as long, byval height as long, byval format as long, byval flags as long) as ALLEGRO_LOCKED_REGION ptr
 declare sub al_unlock_bitmap(byval bitmap as ALLEGRO_BITMAP ptr)
 declare function al_is_bitmap_locked(byval bitmap as ALLEGRO_BITMAP ptr) as byte
 
@@ -451,8 +431,9 @@ declare sub al_get_separate_blender(byval op as long ptr, byval source as long p
 
 #define __al_included_allegro5_config_h
 
+type ALLEGRO_CONFIG as ALLEGRO_CONFIG_
 declare function al_create_config() as ALLEGRO_CONFIG ptr
-declare sub al_add_config_section(byval config as ALLEGRO_CONFIG ptr, byval name_ as const zstring ptr)
+declare sub al_add_config_section(byval config as ALLEGRO_CONFIG ptr, byval name as const zstring ptr)
 declare sub al_set_config_value(byval config as ALLEGRO_CONFIG ptr, byval section as const zstring ptr, byval key as const zstring ptr, byval value as const zstring ptr)
 declare sub al_add_config_comment(byval config as ALLEGRO_CONFIG ptr, byval section as const zstring ptr, byval comment as const zstring ptr)
 declare function al_get_config_value(byval config as const ALLEGRO_CONFIG ptr, byval section as const zstring ptr, byval key as const zstring ptr) as const zstring ptr
@@ -463,14 +444,16 @@ declare function al_save_config_file_f(byval file as ALLEGRO_FILE ptr, byval con
 declare sub al_merge_config_into(byval master as ALLEGRO_CONFIG ptr, byval add as const ALLEGRO_CONFIG ptr)
 declare function al_merge_config(byval cfg1 as const ALLEGRO_CONFIG ptr, byval cfg2 as const ALLEGRO_CONFIG ptr) as ALLEGRO_CONFIG ptr
 declare sub al_destroy_config(byval config as ALLEGRO_CONFIG ptr)
+type ALLEGRO_CONFIG_SECTION as ALLEGRO_CONFIG_SECTION_
 declare function al_get_first_config_section(byval config as const ALLEGRO_CONFIG ptr, byval iterator as ALLEGRO_CONFIG_SECTION ptr ptr) as const zstring ptr
 declare function al_get_next_config_section(byval iterator as ALLEGRO_CONFIG_SECTION ptr ptr) as const zstring ptr
+type ALLEGRO_CONFIG_ENTRY as ALLEGRO_CONFIG_ENTRY_
 declare function al_get_first_config_entry(byval config as const ALLEGRO_CONFIG ptr, byval section as const zstring ptr, byval iterator as ALLEGRO_CONFIG_ENTRY ptr ptr) as const zstring ptr
 declare function al_get_next_config_entry(byval iterator as ALLEGRO_CONFIG_ENTRY ptr ptr) as const zstring ptr
 
 #define __al_included_allegro5_debug_h
 
-declare function _al_trace_prefix(byval channel as const zstring ptr, byval level as long, byval file as const zstring ptr, byval line_ as long, byval function_ as const zstring ptr) as byte
+declare function _al_trace_prefix(byval channel as const zstring ptr, byval level as long, byval file as const zstring ptr, byval line as long, byval function as const zstring ptr) as byte
 declare sub _al_trace_suffix(byval msg as const zstring ptr, ...)
 
 #define ALLEGRO_TRACE_CHANNEL_LEVEL(channel, x) iif(1, cast(any, 0), _al_trace_suffix)
@@ -481,9 +464,9 @@ declare sub _al_trace_suffix(byval msg as const zstring ptr, ...)
 #define ALLEGRO_WARN ALLEGRO_TRACE_LEVEL(2)
 #define ALLEGRO_ERROR ALLEGRO_TRACE_LEVEL(3)
 
-extern _AL_DLL _al_user_assert_handler as sub(byval expr as const zstring ptr, byval file as const zstring ptr, byval line_ as long, byval func as const zstring ptr)
+extern _AL_DLL _al_user_assert_handler as sub(byval expr as const zstring ptr, byval file as const zstring ptr, byval line as long, byval func as const zstring ptr)
 
-declare sub al_register_assert_handler(byval handler as sub(byval expr as const zstring ptr, byval file as const zstring ptr, byval line_ as long, byval func as const zstring ptr))
+declare sub al_register_assert_handler(byval handler as sub(byval expr as const zstring ptr, byval file as const zstring ptr, byval line as long, byval func as const zstring ptr))
 
 #define __al_included_allegro5_display_h
 #define __al_included_allegro5_events_h
@@ -528,6 +511,8 @@ type ALLEGRO_ANY_EVENT
 	timestamp as double
 end type
 
+type ALLEGRO_DISPLAY as ALLEGRO_DISPLAY_
+
 type ALLEGRO_DISPLAY_EVENT
 	as ALLEGRO_EVENT_TYPE type
 	source as ALLEGRO_DISPLAY ptr
@@ -538,6 +523,8 @@ type ALLEGRO_DISPLAY_EVENT
 	height as long
 	orientation as long
 end type
+
+type ALLEGRO_JOYSTICK as ALLEGRO_JOYSTICK_
 
 type ALLEGRO_JOYSTICK_EVENT
 	as ALLEGRO_EVENT_TYPE type
@@ -550,6 +537,8 @@ type ALLEGRO_JOYSTICK_EVENT
 	button as long
 end type
 
+type ALLEGRO_KEYBOARD as ALLEGRO_KEYBOARD_
+
 type ALLEGRO_KEYBOARD_EVENT
 	as ALLEGRO_EVENT_TYPE type
 	source as ALLEGRO_KEYBOARD ptr
@@ -560,6 +549,8 @@ type ALLEGRO_KEYBOARD_EVENT
 	modifiers as ulong
 	repeat as byte
 end type
+
+type ALLEGRO_MOUSE as ALLEGRO_MOUSE_
 
 type ALLEGRO_MOUSE_EVENT
 	as ALLEGRO_EVENT_TYPE type
@@ -578,6 +569,8 @@ type ALLEGRO_MOUSE_EVENT
 	pressure as single
 end type
 
+type ALLEGRO_TIMER as ALLEGRO_TIMER_
+
 type ALLEGRO_TIMER_EVENT
 	as ALLEGRO_EVENT_TYPE type
 	source as ALLEGRO_TIMER ptr
@@ -585,6 +578,8 @@ type ALLEGRO_TIMER_EVENT
 	count as longint
 	error as double
 end type
+
+type ALLEGRO_USER_EVENT_DESCRIPTOR as ALLEGRO_USER_EVENT_DESCRIPTOR_
 
 type ALLEGRO_USER_EVENT
 	as ALLEGRO_EVENT_TYPE type
@@ -612,8 +607,9 @@ declare sub al_init_user_event_source(byval as ALLEGRO_EVENT_SOURCE ptr)
 declare sub al_destroy_user_event_source(byval as ALLEGRO_EVENT_SOURCE ptr)
 declare function al_emit_user_event(byval as ALLEGRO_EVENT_SOURCE ptr, byval as ALLEGRO_EVENT ptr, byval dtor as sub(byval as ALLEGRO_USER_EVENT ptr)) as byte
 declare sub al_unref_user_event(byval as ALLEGRO_USER_EVENT ptr)
-declare sub al_set_event_source_data(byval as ALLEGRO_EVENT_SOURCE ptr, byval data_ as integer)
+declare sub al_set_event_source_data(byval as ALLEGRO_EVENT_SOURCE ptr, byval data as integer)
 declare function al_get_event_source_data(byval as const ALLEGRO_EVENT_SOURCE ptr) as integer
+type ALLEGRO_EVENT_QUEUE as ALLEGRO_EVENT_QUEUE_
 declare function al_create_event_queue() as ALLEGRO_EVENT_QUEUE ptr
 declare sub al_destroy_event_queue(byval as ALLEGRO_EVENT_QUEUE ptr)
 declare sub al_register_event_source(byval as ALLEGRO_EVENT_QUEUE ptr, byval as ALLEGRO_EVENT_SOURCE ptr)
@@ -713,9 +709,9 @@ declare sub al_set_target_backbuffer(byval display as ALLEGRO_DISPLAY ptr)
 declare function al_get_backbuffer(byval display as ALLEGRO_DISPLAY ptr) as ALLEGRO_BITMAP ptr
 declare function al_get_target_bitmap() as ALLEGRO_BITMAP ptr
 declare function al_acknowledge_resize(byval display as ALLEGRO_DISPLAY ptr) as byte
-declare function al_resize_display(byval display as ALLEGRO_DISPLAY ptr, byval width_ as long, byval height as long) as byte
+declare function al_resize_display(byval display as ALLEGRO_DISPLAY ptr, byval width as long, byval height as long) as byte
 declare sub al_flip_display()
-declare sub al_update_display_region(byval x as long, byval y as long, byval width_ as long, byval height as long)
+declare sub al_update_display_region(byval x as long, byval y as long, byval width as long, byval height as long)
 declare function al_is_compatible_bitmap(byval bitmap as ALLEGRO_BITMAP ptr) as byte
 declare function al_wait_for_vsync() as byte
 declare function al_get_display_event_source(byval display as ALLEGRO_DISPLAY ptr) as ALLEGRO_EVENT_SOURCE ptr
@@ -728,17 +724,17 @@ declare sub al_get_new_window_position(byval x as long ptr, byval y as long ptr)
 declare sub al_set_window_position(byval display as ALLEGRO_DISPLAY ptr, byval x as long, byval y as long)
 declare sub al_get_window_position(byval display as ALLEGRO_DISPLAY ptr, byval x as long ptr, byval y as long ptr)
 declare sub al_set_window_title(byval display as ALLEGRO_DISPLAY ptr, byval title as const zstring ptr)
-declare sub al_set_new_display_option(byval option_ as long, byval value as long, byval importance as long)
-declare function al_get_new_display_option(byval option_ as long, byval importance as long ptr) as long
+declare sub al_set_new_display_option(byval option as long, byval value as long, byval importance as long)
+declare function al_get_new_display_option(byval option as long, byval importance as long ptr) as long
 declare sub al_reset_new_display_options()
-declare function al_get_display_option(byval display as ALLEGRO_DISPLAY ptr, byval option_ as long) as long
+declare function al_get_display_option(byval display as ALLEGRO_DISPLAY ptr, byval option as long) as long
 declare sub al_hold_bitmap_drawing(byval hold as byte)
 declare function al_is_bitmap_drawing_held() as byte
 
 #define __al_included_allegro5_drawing_h
 
-declare sub al_clear_to_color(byval color_ as ALLEGRO_COLOR)
-declare sub al_draw_pixel(byval x as single, byval y as single, byval color_ as ALLEGRO_COLOR)
+declare sub al_clear_to_color(byval color as ALLEGRO_COLOR)
+declare sub al_draw_pixel(byval x as single, byval y as single, byval color as ALLEGRO_COLOR)
 
 #define __al_included_allegro5_error_h
 
@@ -785,6 +781,8 @@ declare function al_fixacos(byval x as al_fixed) as al_fixed
 declare function al_fixasin(byval x as al_fixed) as al_fixed
 
 #define __al_included_allegro5_fshook_h
+
+type ALLEGRO_FS_INTERFACE as ALLEGRO_FS_INTERFACE_
 
 type ALLEGRO_FS_ENTRY
 	vtable as const ALLEGRO_FS_INTERFACE ptr
@@ -866,12 +864,12 @@ declare function al_get_display_mode(byval index as long, byval mode as ALLEGRO_
 #define _AL_MAX_JOYSTICK_STICKS 8
 #define _AL_MAX_JOYSTICK_BUTTONS 32
 
-type __ALLEGRO_JOYSTICK_STATE_stick
+type ALLEGRO_JOYSTICK_STATE_stick
 	axis(0 to 2) as single
 end type
 
 type ALLEGRO_JOYSTICK_STATE
-	stick(0 to 7) as __ALLEGRO_JOYSTICK_STATE_stick
+	stick(0 to 7) as ALLEGRO_JOYSTICK_STATE_stick
 	button(0 to 31) as long
 end type
 
@@ -1066,10 +1064,10 @@ extern _AL_DLL _al_key_led_flag as byte
 #define __al_included_allegro5_memory_h
 
 type ALLEGRO_MEMORY_INTERFACE
-	mi_malloc as function(byval n as uinteger, byval line_ as long, byval file as const zstring ptr, byval func as const zstring ptr) as any ptr
-	mi_free as sub(byval ptr_ as any ptr, byval line_ as long, byval file as const zstring ptr, byval func as const zstring ptr)
-	mi_realloc as function(byval ptr_ as any ptr, byval n as uinteger, byval line_ as long, byval file as const zstring ptr, byval func as const zstring ptr) as any ptr
-	mi_calloc as function(byval count as uinteger, byval n as uinteger, byval line_ as long, byval file as const zstring ptr, byval func as const zstring ptr) as any ptr
+	mi_malloc as function(byval n as uinteger, byval line as long, byval file as const zstring ptr, byval func as const zstring ptr) as any ptr
+	mi_free as sub(byval ptr as any ptr, byval line as long, byval file as const zstring ptr, byval func as const zstring ptr)
+	mi_realloc as function(byval ptr as any ptr, byval n as uinteger, byval line as long, byval file as const zstring ptr, byval func as const zstring ptr) as any ptr
+	mi_calloc as function(byval count as uinteger, byval n as uinteger, byval line as long, byval file as const zstring ptr, byval func as const zstring ptr) as any ptr
 end type
 
 declare sub al_set_memory_interface(byval iface as ALLEGRO_MEMORY_INTERFACE ptr)
@@ -1079,10 +1077,10 @@ declare sub al_set_memory_interface(byval iface as ALLEGRO_MEMORY_INTERFACE ptr)
 #define al_realloc(p, n) al_realloc_with_context((p), (n), __LINE__, __FILE__, __func__)
 #define al_calloc(c, n) al_calloc_with_context((c), (n), __LINE__, __FILE__, __func__)
 
-declare function al_malloc_with_context(byval n as uinteger, byval line_ as long, byval file as const zstring ptr, byval func as const zstring ptr) as any ptr
-declare sub al_free_with_context(byval ptr_ as any ptr, byval line_ as long, byval file as const zstring ptr, byval func as const zstring ptr)
-declare function al_realloc_with_context(byval ptr_ as any ptr, byval n as uinteger, byval line_ as long, byval file as const zstring ptr, byval func as const zstring ptr) as any ptr
-declare function al_calloc_with_context(byval count as uinteger, byval n as uinteger, byval line_ as long, byval file as const zstring ptr, byval func as const zstring ptr) as any ptr
+declare function al_malloc_with_context(byval n as uinteger, byval line as long, byval file as const zstring ptr, byval func as const zstring ptr) as any ptr
+declare sub al_free_with_context(byval ptr as any ptr, byval line as long, byval file as const zstring ptr, byval func as const zstring ptr)
+declare function al_realloc_with_context(byval ptr as any ptr, byval n as uinteger, byval line as long, byval file as const zstring ptr, byval func as const zstring ptr) as any ptr
+declare function al_calloc_with_context(byval count as uinteger, byval n as uinteger, byval line as long, byval file as const zstring ptr, byval func as const zstring ptr) as any ptr
 
 #define __al_included_allegro5_monitor_h
 
@@ -1158,6 +1156,7 @@ enum
 	ALLEGRO_NUM_SYSTEM_MOUSE_CURSORS
 end enum
 
+type ALLEGRO_MOUSE_CURSOR as ALLEGRO_MOUSE_CURSOR_
 declare function al_create_mouse_cursor(byval sprite as ALLEGRO_BITMAP ptr, byval xfocus as long, byval yfocus as long) as ALLEGRO_MOUSE_CURSOR ptr
 declare sub al_destroy_mouse_cursor(byval as ALLEGRO_MOUSE_CURSOR ptr)
 declare function al_set_mouse_cursor(byval display as ALLEGRO_DISPLAY ptr, byval cursor as ALLEGRO_MOUSE_CURSOR ptr) as byte
@@ -1171,6 +1170,7 @@ declare function al_hide_mouse_cursor(byval display as ALLEGRO_DISPLAY ptr) as b
 declare function al_install_system(byval version as long, byval atexit_ptr as function(byval as sub()) as long) as byte
 declare sub al_uninstall_system()
 declare function al_is_system_installed() as byte
+type ALLEGRO_SYSTEM as ALLEGRO_SYSTEM_
 declare function al_get_system_driver() as ALLEGRO_SYSTEM ptr
 declare function al_get_system_config() as ALLEGRO_CONFIG ptr
 
@@ -1195,6 +1195,7 @@ declare function al_inhibit_screensaver(byval inhibit as byte) as byte
 
 #define __al_included_allegro5_threads_h
 
+type ALLEGRO_THREAD as ALLEGRO_THREAD_
 declare function al_create_thread(byval proc as function(byval thread as ALLEGRO_THREAD ptr, byval arg as any ptr) as any ptr, byval arg as any ptr) as ALLEGRO_THREAD ptr
 declare sub al_start_thread(byval outer as ALLEGRO_THREAD ptr)
 declare sub al_join_thread(byval outer as ALLEGRO_THREAD ptr, byval ret_value as any ptr ptr)
@@ -1202,11 +1203,13 @@ declare sub al_set_thread_should_stop(byval outer as ALLEGRO_THREAD ptr)
 declare function al_get_thread_should_stop(byval outer as ALLEGRO_THREAD ptr) as byte
 declare sub al_destroy_thread(byval thread as ALLEGRO_THREAD ptr)
 declare sub al_run_detached_thread(byval proc as function(byval arg as any ptr) as any ptr, byval arg as any ptr)
+type ALLEGRO_MUTEX as ALLEGRO_MUTEX_
 declare function al_create_mutex() as ALLEGRO_MUTEX ptr
 declare function al_create_mutex_recursive() as ALLEGRO_MUTEX ptr
 declare sub al_lock_mutex(byval mutex as ALLEGRO_MUTEX ptr)
 declare sub al_unlock_mutex(byval mutex as ALLEGRO_MUTEX ptr)
 declare sub al_destroy_mutex(byval mutex as ALLEGRO_MUTEX ptr)
+type ALLEGRO_COND as ALLEGRO_COND_
 declare function al_create_cond() as ALLEGRO_COND ptr
 declare sub al_destroy_cond(byval cond as ALLEGRO_COND ptr)
 declare sub al_wait_cond(byval cond as ALLEGRO_COND ptr, byval mutex as ALLEGRO_MUTEX ptr)
@@ -1221,16 +1224,16 @@ declare sub al_signal_cond(byval cond as ALLEGRO_COND ptr)
 #define ALLEGRO_BPM_TO_SECS(x) (60.0 / (x))
 
 declare function al_create_timer(byval speed_secs as double) as ALLEGRO_TIMER ptr
-declare sub al_destroy_timer(byval timer_ as ALLEGRO_TIMER ptr)
-declare sub al_start_timer(byval timer_ as ALLEGRO_TIMER ptr)
-declare sub al_stop_timer(byval timer_ as ALLEGRO_TIMER ptr)
-declare function al_get_timer_started(byval timer_ as const ALLEGRO_TIMER ptr) as byte
-declare function al_get_timer_speed(byval timer_ as const ALLEGRO_TIMER ptr) as double
-declare sub al_set_timer_speed(byval timer_ as ALLEGRO_TIMER ptr, byval speed_secs as double)
-declare function al_get_timer_count(byval timer_ as const ALLEGRO_TIMER ptr) as longint
-declare sub al_set_timer_count(byval timer_ as ALLEGRO_TIMER ptr, byval count as longint)
-declare sub al_add_timer_count(byval timer_ as ALLEGRO_TIMER ptr, byval diff as longint)
-declare function al_get_timer_event_source(byval timer_ as ALLEGRO_TIMER ptr) as ALLEGRO_EVENT_SOURCE ptr
+declare sub al_destroy_timer(byval timer as ALLEGRO_TIMER ptr)
+declare sub al_start_timer(byval timer as ALLEGRO_TIMER ptr)
+declare sub al_stop_timer(byval timer as ALLEGRO_TIMER ptr)
+declare function al_get_timer_started(byval timer as const ALLEGRO_TIMER ptr) as byte
+declare function al_get_timer_speed(byval timer as const ALLEGRO_TIMER ptr) as double
+declare sub al_set_timer_speed(byval timer as ALLEGRO_TIMER ptr, byval speed_secs as double)
+declare function al_get_timer_count(byval timer as const ALLEGRO_TIMER ptr) as longint
+declare sub al_set_timer_count(byval timer as ALLEGRO_TIMER ptr, byval count as longint)
+declare sub al_add_timer_count(byval timer as ALLEGRO_TIMER ptr, byval diff as longint)
+declare function al_get_timer_event_source(byval timer as ALLEGRO_TIMER ptr) as ALLEGRO_EVENT_SOURCE ptr
 
 #define __al_included_allegro5_tls_h
 

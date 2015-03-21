@@ -6,9 +6,6 @@
 #include once "TestDB.bi"
 #include once "TestRun.bi"
 
-'' The following symbols have been renamed:
-''     #define CU_TEST => CU_TEST_
-
 #define CUNIT_CUNIT_H_SEEN
 #define CU_VERSION "2.1-3"
 #define CU_MAX_TEST_NAME_LENGTH 256

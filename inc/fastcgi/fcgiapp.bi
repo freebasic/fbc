@@ -5,8 +5,6 @@
 
 extern "C"
 
-type Params as Params_
-
 #define _FCGIAPP_H
 #define FCGX_UNSUPPORTED_VERSION (-2)
 #define FCGX_PROTOCOL_ERROR (-3)
@@ -30,6 +28,8 @@ end type
 type FCGX_ParamArray as zstring ptr ptr
 
 #define FCGI_FAIL_ACCEPT_ON_INTR 1
+
+type Params as Params_
 
 type FCGX_Request
 	requestId as long
@@ -55,20 +55,20 @@ declare function FCGX_OpenSocket(byval path as const zstring ptr, byval backlog 
 declare function FCGX_InitRequest(byval request as FCGX_Request ptr, byval sock as long, byval flags as long) as long
 declare function FCGX_Accept_r(byval request as FCGX_Request ptr) as long
 declare sub FCGX_Finish_r(byval request as FCGX_Request ptr)
-declare sub FCGX_Free(byval request as FCGX_Request ptr, byval close_ as long)
-declare function FCGX_Accept(byval in as FCGX_Stream ptr ptr, byval out_ as FCGX_Stream ptr ptr, byval err_ as FCGX_Stream ptr ptr, byval envp as FCGX_ParamArray ptr) as long
+declare sub FCGX_Free(byval request as FCGX_Request ptr, byval close as long)
+declare function FCGX_Accept(byval in as FCGX_Stream ptr ptr, byval out as FCGX_Stream ptr ptr, byval err as FCGX_Stream ptr ptr, byval envp as FCGX_ParamArray ptr) as long
 declare sub FCGX_Finish()
 declare function FCGX_StartFilterData(byval stream as FCGX_Stream ptr) as long
 declare sub FCGX_SetExitStatus(byval status as long, byval stream as FCGX_Stream ptr)
-declare function FCGX_GetParam(byval name_ as const zstring ptr, byval envp as FCGX_ParamArray) as zstring ptr
+declare function FCGX_GetParam(byval name as const zstring ptr, byval envp as FCGX_ParamArray) as zstring ptr
 declare function FCGX_GetChar(byval stream as FCGX_Stream ptr) as long
 declare function FCGX_UnGetChar(byval c as long, byval stream as FCGX_Stream ptr) as long
-declare function FCGX_GetStr(byval str_ as zstring ptr, byval n as long, byval stream as FCGX_Stream ptr) as long
-declare function FCGX_GetLine(byval str_ as zstring ptr, byval n as long, byval stream as FCGX_Stream ptr) as zstring ptr
+declare function FCGX_GetStr(byval str as zstring ptr, byval n as long, byval stream as FCGX_Stream ptr) as long
+declare function FCGX_GetLine(byval str as zstring ptr, byval n as long, byval stream as FCGX_Stream ptr) as zstring ptr
 declare function FCGX_HasSeenEOF(byval stream as FCGX_Stream ptr) as long
 declare function FCGX_PutChar(byval c as long, byval stream as FCGX_Stream ptr) as long
-declare function FCGX_PutStr(byval str_ as const zstring ptr, byval n as long, byval stream as FCGX_Stream ptr) as long
-declare function FCGX_PutS(byval str_ as const zstring ptr, byval stream as FCGX_Stream ptr) as long
+declare function FCGX_PutStr(byval str as const zstring ptr, byval n as long, byval stream as FCGX_Stream ptr) as long
+declare function FCGX_PutS(byval str as const zstring ptr, byval stream as FCGX_Stream ptr) as long
 declare function FCGX_FPrintF(byval stream as FCGX_Stream ptr, byval format as const zstring ptr, ...) as long
 declare function FCGX_VFPrintF(byval stream as FCGX_Stream ptr, byval format as const zstring ptr, byval arg as va_list) as long
 declare function FCGX_FFlush(byval stream as FCGX_Stream ptr) as long

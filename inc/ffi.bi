@@ -46,33 +46,30 @@ type ffi_sarg as integer
 type ffi_abi as long
 enum
 	FFI_FIRST_ABI = 0
-
 	#if defined(__FB_WIN32__) and defined(__FB_64BIT__)
 		FFI_WIN64
+		FFI_LAST_ABI
+		FFI_DEFAULT_ABI = FFI_WIN64
 	#elseif defined(__FB_WIN32__)
 		FFI_SYSV
 		FFI_STDCALL
 		FFI_THISCALL
 		FFI_FASTCALL
 		FFI_MS_CDECL
-	#elseif defined(__FB_64BIT__)
-		FFI_SYSV
+		FFI_LAST_ABI
+		FFI_DEFAULT_ABI = FFI_SYSV
 	#else
 		FFI_SYSV
 		FFI_UNIX64
 		FFI_THISCALL
 		FFI_FASTCALL
 		FFI_STDCALL
-	#endif
-
-	FFI_LAST_ABI
-
-	#if defined(__FB_WIN32__) and defined(__FB_64BIT__)
-		FFI_DEFAULT_ABI = FFI_WIN64
-	#elseif not defined(__FB_64BIT__)
-		FFI_DEFAULT_ABI = FFI_SYSV
-	#else
-		FFI_DEFAULT_ABI = FFI_UNIX64
+		FFI_LAST_ABI
+		#ifdef __FB_64BIT__
+			FFI_DEFAULT_ABI = FFI_UNIX64
+		#else
+			FFI_DEFAULT_ABI = FFI_SYSV
+		#endif
 	#endif
 end enum
 

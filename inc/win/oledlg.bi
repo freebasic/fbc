@@ -1,35 +1,23 @@
-''
-''
-'' oledlg -- header translated with help of SWIG FB wrapper
-''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
-''
-''
-#ifndef __win_oledlg_bi__
-#define __win_oledlg_bi__
+#pragma once
+
+#include once "_mingw_unicode.bi"
+#include once "windows.bi"
+#include once "shellapi.bi"
+#include once "commdlg.bi"
+#include once "ole2.bi"
+#include once "dlgs.bi"
+#include once "prsht.bi"
 
 #inclib "oledlg"
 
-#include once "windows.bi"
-#include once "win/shellapi.bi"
-#include once "win/commdlg.bi"
-#include once "win/ole2.bi"
-#include once "win/dlgs.bi"
-#include once "win/prsht.bi"
+extern "Windows"
 
-#define PS_MAXLINKTYPES 8
-#define OLESTDDELIM $"\"
-#define SZOLEUI_MSG_HELP "OLEUI_MSG_HELP"
-#define SZOLEUI_MSG_ENDDIALOG "OLEUI_MSG_ENDDIALOG"
-#define SZOLEUI_MSG_BROWSE "OLEUI_MSG_BROWSE"
-#define SZOLEUI_MSG_CHANGEICON "OLEUI_MSG_CHANGEICON"
-#define SZOLEUI_MSG_CLOSEBUSYDIALOG "OLEUI_MSG_CLOSEBUSYDIALOG"
-#define SZOLEUI_MSG_CONVERT "OLEUI_MSG_CONVERT"
-#define SZOLEUI_MSG_CHANGESOURCE "OLEUI_MSG_CHANGESOURCE"
-#define SZOLEUI_MSG_ADDCONTROL "OLEUI_MSG_ADDCONTROL"
-#define SZOLEUI_MSG_BROWSE_OFN "OLEUI_MSG_BROWSE_OFN"
-#define PROP_HWND_CHGICONDLG "HWND_CIDLG"
+#define _OLEDLG_H_
+
+#ifdef UNICODE
+	#define _UNICODE
+#endif
+
 #define IDC_OLEUIHELP 99
 #define IDC_IO_CREATENEW 2100
 #define IDC_IO_CREATEFROMFILE 2101
@@ -143,6 +131,12 @@
 #define IDD_GNRLPROPS 1100
 #define IDD_VIEWPROPS 1101
 #define IDD_LINKPROPS 1102
+#define IDD_CONVERT4 1103
+#define IDD_CONVERTONLY4 1104
+#define IDD_EDITLINKS4 1105
+#define IDD_GNRLPROPS4 1106
+#define IDD_LINKPROPS4 1107
+#define IDD_PASTESPECIAL4 1108
 #define IDD_CANNOTUPDATELINK 1008
 #define IDD_LINKSOURCEUNAVAILABLE 1020
 #define IDD_SERVERNOTFOUND 1023
@@ -151,6 +145,28 @@
 #define IDD_LINKTYPECHANGEDW 1022
 #define IDD_SERVERNOTREGA 1025
 #define IDD_LINKTYPECHANGEDA 1026
+
+#ifdef UNICODE
+	#define IDD_SERVERNOTREG IDD_SERVERNOTREGW
+	#define IDD_LINKTYPECHANGED IDD_LINKTYPECHANGEDW
+#else
+	#define IDD_SERVERNOTREG IDD_SERVERNOTREGA
+	#define IDD_LINKTYPECHANGED IDD_LINKTYPECHANGEDA
+#endif
+
+#define OLESTDDELIM __TEXT(!"\\")
+
+type LPFNOLEUIHOOK as function(byval as HWND, byval as UINT, byval as WPARAM, byval as LPARAM) as UINT
+
+#define SZOLEUI_MSG_HELP __TEXT("OLEUI_MSG_HELP")
+#define SZOLEUI_MSG_ENDDIALOG __TEXT("OLEUI_MSG_ENDDIALOG")
+#define SZOLEUI_MSG_BROWSE __TEXT("OLEUI_MSG_BROWSE")
+#define SZOLEUI_MSG_CHANGEICON __TEXT("OLEUI_MSG_CHANGEICON")
+#define SZOLEUI_MSG_CLOSEBUSYDIALOG __TEXT("OLEUI_MSG_CLOSEBUSYDIALOG")
+#define SZOLEUI_MSG_CONVERT __TEXT("OLEUI_MSG_CONVERT")
+#define SZOLEUI_MSG_CHANGESOURCE __TEXT("OLEUI_MSG_CHANGESOURCE")
+#define SZOLEUI_MSG_ADDCONTROL __TEXT("OLEUI_MSG_ADDCONTROL")
+#define SZOLEUI_MSG_BROWSE_OFN __TEXT("OLEUI_MSG_BROWSE_OFN")
 #define ID_BROWSE_CHANGEICON 1
 #define ID_BROWSE_INSERTFILE 2
 #define ID_BROWSE_ADDCONTROL 3
@@ -160,6 +176,7 @@
 #define OLEUI_OK 1
 #define OLEUI_CANCEL 2
 #define OLEUI_ERR_STANDARDMIN 100
+#define OLEUI_ERR_OLEMEMALLOC 100
 #define OLEUI_ERR_STRUCTURENULL 101
 #define OLEUI_ERR_STRUCTUREINVALID 102
 #define OLEUI_ERR_CBSTRUCTINCORRECT 103
@@ -175,130 +192,18 @@
 #define OLEUI_ERR_LOCALMEMALLOC 113
 #define OLEUI_ERR_GLOBALMEMALLOC 114
 #define OLEUI_ERR_LOADSTRING 115
-#define OLEUI_ERR_OLEMEMALLOC 116
 #define OLEUI_ERR_STANDARDMAX 116
-#define OPF_OBJECTISLINK 1
-#define OPF_NOFILLDEFAULT 2
-#define OPF_SHOWHELP 4
-#define OPF_DISABLECONVERT 8
-#define OLEUI_OPERR_SUBPROPNULL 116
-#define OLEUI_OPERR_SUBPROPINVALID (116+1)
-#define OLEUI_OPERR_PROPSHEETNULL (116+2)
-#define OLEUI_OPERR_PROPSHEETINVALID (116+3)
-#define OLEUI_OPERR_SUPPROP (116+4)
-#define OLEUI_OPERR_PROPSINVALID (116+5)
-#define OLEUI_OPERR_PAGESINCORRECT (116+6)
-#define OLEUI_OPERR_INVALIDPAGES (116+7)
-#define OLEUI_OPERR_NOTSUPPORTED (116+8)
-#define OLEUI_OPERR_DLGPROCNOTNULL (116+9)
-#define OLEUI_OPERR_LPARAMNOTZERO (116+10)
-#define OLEUI_GPERR_STRINGINVALID (116+11)
-#define OLEUI_GPERR_CLASSIDINVALID (116+12)
-#define OLEUI_GPERR_LPCLSIDEXCLUDEINVALID (116+13)
-#define OLEUI_GPERR_CBFORMATINVALID (116+14)
-#define OLEUI_VPERR_METAPICTINVALID (116+15)
-#define OLEUI_VPERR_DVASPECTINVALID (116+16)
-#define OLEUI_LPERR_LINKCNTRNULL (116+17)
-#define OLEUI_LPERR_LINKCNTRINVALID (116+18)
-#define OLEUI_OPERR_PROPERTYSHEET (116+19)
-#define OLEUI_OPERR_OBJINFOINVALID (116+20)
-#define OLEUI_OPERR_LINKINFOINVALID (116+21)
-#define OLEUI_QUERY_GETCLASSID 65280
-#define OLEUI_QUERY_LINKBROKEN 65281
-#define IOF_SHOWHELP 1
-#define IOF_SELECTCREATENEW 2
-#define IOF_SELECTCREATEFROMFILE 4
-#define IOF_CHECKLINK 8
-#define IOF_CHECKDISPLAYASICON 16
-#define IOF_CREATENEWOBJECT 32
-#define IOF_CREATEFILEOBJECT 64
-#define IOF_CREATELINKOBJECT 128
-#define IOF_DISABLELINK 256
-#define IOF_VERIFYSERVERSEXIST 512
-#define IOF_DISABLEDISPLAYASICON 1024
-#define IOF_HIDECHANGEICON 2048
-#define IOF_SHOWINSERTCONTROL 4096
-#define IOF_SELECTCREATECONTROL 8192
-#define OLEUI_IOERR_LPSZFILEINVALID 116
-#define OLEUI_IOERR_LPSZLABELINVALID (116+1)
-#define OLEUI_IOERR_HICONINVALID (116+2)
-#define OLEUI_IOERR_LPFORMATETCINVALID (116+3)
-#define OLEUI_IOERR_PPVOBJINVALID (116+4)
-#define OLEUI_IOERR_LPIOLECLIENTSITEINVALID (116+5)
-#define OLEUI_IOERR_LPISTORAGEINVALID (116+6)
-#define OLEUI_IOERR_SCODEHASERROR (116+7)
-#define OLEUI_IOERR_LPCLSIDEXCLUDEINVALID (116+8)
-#define OLEUI_IOERR_CCHFILEINVALID (116+9)
-#define PSF_SHOWHELP 1
-#define PSF_SELECTPASTE 2
-#define PSF_SELECTPASTELINK 4
-#define PSF_CHECKDISPLAYASICON 8
-#define PSF_DISABLEDISPLAYASICON 16
-#define PSF_HIDECHANGEICON 32
-#define PSF_STAYONCLIPBOARDCHANGE 64
-#define PSF_NOREFRESHDATAOBJECT 128
-#define OLEUI_IOERR_SRCDATAOBJECTINVALID 116
-#define OLEUI_IOERR_ARRPASTEENTRIESINVALID (116+1)
-#define OLEUI_IOERR_ARRLINKTYPESINVALID (116+2)
-#define OLEUI_PSERR_CLIPBOARDCHANGED (116+3)
-#define OLEUI_PSERR_GETCLIPBOARDFAILED (116+4)
-#define OLEUI_ELERR_LINKCNTRNULL 116
-#define OLEUI_ELERR_LINKCNTRINVALID (116+1)
-#define ELF_SHOWHELP 1
-#define ELF_DISABLEUPDATENOW 2
-#define ELF_DISABLEOPENSOURCE 4
-#define ELF_DISABLECHANGESOURCE 8
-#define ELF_DISABLECANCELLINK 16
-#define CIF_SHOWHELP 1
-#define CIF_SELECTCURRENT 2
-#define CIF_SELECTDEFAULT 4
-#define CIF_SELECTFROMFILE 8
-#define CIF_USEICONEXE 16
-#define OLEUI_CIERR_MUSTHAVECLSID 116
-#define OLEUI_CIERR_MUSTHAVECURRENTMETAFILE (116+1)
-#define OLEUI_CIERR_SZICONEXEINVALID (116+2)
-#define CF_SHOWHELPBUTTON 1
-#define CF_SETCONVERTDEFAULT 2
-#define CF_SETACTIVATEDEFAULT 4
-#define CF_SELECTCONVERTTO 8
-#define CF_SELECTACTIVATEAS 16
-#define CF_DISABLEDISPLAYASICON 32
-#define CF_DISABLEACTIVATEAS 64
-#define CF_HIDECHANGEICON 128
-#define CF_CONVERTONLY 256
-#define OLEUI_CTERR_CLASSIDINVALID (116+1)
-#define OLEUI_CTERR_DVASPECTINVALID (116+2)
-#define OLEUI_CTERR_CBFORMATINVALID (116+3)
-#define OLEUI_CTERR_HMETAPICTINVALID (116+4)
-#define OLEUI_CTERR_STRINGINVALID (116+5)
-#define BZ_DISABLECANCELBUTTON 1
-#define BZ_DISABLESWITCHTOBUTTON 2
-#define BZ_DISABLERETRYBUTTON 4
-#define BZ_NOTRESPONDINGDIALOG 8
-#define OLEUI_BZERR_HTASKINVALID 116
-#define OLEUI_BZ_SWITCHTOSELECTED (116+1)
-#define OLEUI_BZ_RETRYSELECTED (116+2)
-#define OLEUI_BZ_CALLUNBLOCKED (116+3)
-#define CSF_SHOWHELP 1
-#define CSF_VALIDSOURCE 2
-#define CSF_ONLYGETSOURCE 4
-#define CSF_EXPLORER 8
-#define OLEUI_CSERR_LINKCNTRNULL 116
-#define OLEUI_CSERR_LINKCNTRINVALID (116+1)
-#define OLEUI_CSERR_FROMNOTNULL (116+2)
-#define OLEUI_CSERR_TONOTNULL (116+3)
-#define OLEUI_CSERR_SOURCENULL (116+4)
-#define OLEUI_CSERR_SOURCEINVALID (116+5)
-#define OLEUI_CSERR_SOURCEPARSERROR (116+6)
-#define OLEUI_CSERR_SOURCEPARSEERROR (116+7)
-#define VPF_SELECTRELATIVE 1
-#define VPF_DISABLERELATIVE 2
-#define VPF_DISABLESCALE 4
 
-type LPFNOLEUIHOOK as function(byval as HWND, byval as UINT, byval as WPARAM, byval as LPARAM) as UINT
+declare function OleUIAddVerbMenuW(byval lpOleObj as LPOLEOBJECT, byval lpszShortType as LPCWSTR, byval hMenu as HMENU, byval uPos as UINT, byval uIDVerbMin as UINT, byval uIDVerbMax as UINT, byval bAddConvert as WINBOOL, byval idConvert as UINT, byval lphMenu as HMENU ptr) as WINBOOL
+declare function OleUIAddVerbMenuA(byval lpOleObj as LPOLEOBJECT, byval lpszShortType as LPCSTR, byval hMenu as HMENU, byval uPos as UINT, byval uIDVerbMin as UINT, byval uIDVerbMax as UINT, byval bAddConvert as WINBOOL, byval idConvert as UINT, byval lphMenu as HMENU ptr) as WINBOOL
 
 #ifdef UNICODE
-type OLEUIINSERTOBJECTW
+	#define OleUIAddVerbMenu OleUIAddVerbMenuW
+#else
+	#define OleUIAddVerbMenu OleUIAddVerbMenuA
+#endif
+
+type tagOLEUIINSERTOBJECTW
 	cbStruct as DWORD
 	dwFlags as DWORD
 	hWndOwner as HWND
@@ -318,18 +223,16 @@ type OLEUIINSERTOBJECTW
 	lpFormatEtc as LPFORMATETC
 	lpIOleClientSite as LPOLECLIENTSITE
 	lpIStorage as LPSTORAGE
-	ppvObj as PVOID ptr
+	ppvObj as LPVOID ptr
 	sc as SCODE
 	hMetaPict as HGLOBAL
 end type
 
-type POLEUIINSERTOBJECTW as OLEUIINSERTOBJECTW ptr
-type LPOLEUIINSERTOBJECTW as OLEUIINSERTOBJECTW ptr
+type OLEUIINSERTOBJECTW as tagOLEUIINSERTOBJECTW
+type POLEUIINSERTOBJECTW as tagOLEUIINSERTOBJECTW ptr
+type LPOLEUIINSERTOBJECTW as tagOLEUIINSERTOBJECTW ptr
 
-declare function OleUIInsertObject alias "OleUIInsertObjectW" (byval as LPOLEUIINSERTOBJECTW) as UINT
-
-#else
-type OLEUIINSERTOBJECTA
+type tagOLEUIINSERTOBJECTA
 	cbStruct as DWORD
 	dwFlags as DWORD
 	hWndOwner as HWND
@@ -349,34 +252,76 @@ type OLEUIINSERTOBJECTA
 	lpFormatEtc as LPFORMATETC
 	lpIOleClientSite as LPOLECLIENTSITE
 	lpIStorage as LPSTORAGE
-	ppvObj as PVOID ptr
+	ppvObj as LPVOID ptr
 	sc as SCODE
 	hMetaPict as HGLOBAL
 end type
 
-type POLEUIINSERTOBJECTA as OLEUIINSERTOBJECTA ptr
-type LPOLEUIINSERTOBJECTA as OLEUIINSERTOBJECTA ptr
+type OLEUIINSERTOBJECTA as tagOLEUIINSERTOBJECTA
+type POLEUIINSERTOBJECTA as tagOLEUIINSERTOBJECTA ptr
+type LPOLEUIINSERTOBJECTA as tagOLEUIINSERTOBJECTA ptr
 
-declare function OleUIInsertObject alias "OleUIInsertObjectA" (byval as LPOLEUIINSERTOBJECTA) as UINT
+declare function OleUIInsertObjectW(byval as LPOLEUIINSERTOBJECTW) as UINT
+declare function OleUIInsertObjectA(byval as LPOLEUIINSERTOBJECTA) as UINT
+
+#ifdef UNICODE
+	type tagOLEUIINSERTOBJECT as tagOLEUIINSERTOBJECTW
+	type OLEUIINSERTOBJECT as OLEUIINSERTOBJECTW
+	type POLEUIINSERTOBJECT as POLEUIINSERTOBJECTW
+	type LPOLEUIINSERTOBJECT as LPOLEUIINSERTOBJECTW
+	declare function OleUIInsertObject alias "OleUIInsertObjectW"(byval as LPOLEUIINSERTOBJECTW) as UINT
+#else
+	type tagOLEUIINSERTOBJECT as tagOLEUIINSERTOBJECTA
+	type OLEUIINSERTOBJECT as OLEUIINSERTOBJECTA
+	type POLEUIINSERTOBJECT as POLEUIINSERTOBJECTA
+	type LPOLEUIINSERTOBJECT as LPOLEUIINSERTOBJECTA
+	declare function OleUIInsertObject alias "OleUIInsertObjectA"(byval as LPOLEUIINSERTOBJECTA) as UINT
 #endif
 
-enum OLEUIPASTEFLAG
-	OLEUIPASTE_PASTEONLY
-	OLEUIPASTE_LINKTYPE1
-	OLEUIPASTE_LINKTYPE2
+#define IOF_SHOWHELP __MSABI_LONG(&h00000001)
+#define IOF_SELECTCREATENEW __MSABI_LONG(&h00000002)
+#define IOF_SELECTCREATEFROMFILE __MSABI_LONG(&h00000004)
+#define IOF_CHECKLINK __MSABI_LONG(&h00000008)
+#define IOF_CHECKDISPLAYASICON __MSABI_LONG(&h00000010)
+#define IOF_CREATENEWOBJECT __MSABI_LONG(&h00000020)
+#define IOF_CREATEFILEOBJECT __MSABI_LONG(&h00000040)
+#define IOF_CREATELINKOBJECT __MSABI_LONG(&h00000080)
+#define IOF_DISABLELINK __MSABI_LONG(&h00000100)
+#define IOF_VERIFYSERVERSEXIST __MSABI_LONG(&h00000200)
+#define IOF_DISABLEDISPLAYASICON __MSABI_LONG(&h00000400)
+#define IOF_HIDECHANGEICON __MSABI_LONG(&h00000800)
+#define IOF_SHOWINSERTCONTROL __MSABI_LONG(&h00001000)
+#define IOF_SELECTCREATECONTROL __MSABI_LONG(&h00002000)
+#define OLEUI_IOERR_LPSZFILEINVALID (OLEUI_ERR_STANDARDMAX + 0)
+#define OLEUI_IOERR_LPSZLABELINVALID (OLEUI_ERR_STANDARDMAX + 1)
+#define OLEUI_IOERR_HICONINVALID (OLEUI_ERR_STANDARDMAX + 2)
+#define OLEUI_IOERR_LPFORMATETCINVALID (OLEUI_ERR_STANDARDMAX + 3)
+#define OLEUI_IOERR_PPVOBJINVALID (OLEUI_ERR_STANDARDMAX + 4)
+#define OLEUI_IOERR_LPIOLECLIENTSITEINVALID (OLEUI_ERR_STANDARDMAX + 5)
+#define OLEUI_IOERR_LPISTORAGEINVALID (OLEUI_ERR_STANDARDMAX + 6)
+#define OLEUI_IOERR_SCODEHASERROR (OLEUI_ERR_STANDARDMAX + 7)
+#define OLEUI_IOERR_LPCLSIDEXCLUDEINVALID (OLEUI_ERR_STANDARDMAX + 8)
+#define OLEUI_IOERR_CCHFILEINVALID (OLEUI_ERR_STANDARDMAX + 9)
+
+type tagOLEUIPASTEFLAG as long
+enum
+	OLEUIPASTE_ENABLEICON = 2048
+	OLEUIPASTE_PASTEONLY = 0
+	OLEUIPASTE_PASTE = 512
+	OLEUIPASTE_LINKANYTYPE = 1024
+	OLEUIPASTE_LINKTYPE1 = 1
+	OLEUIPASTE_LINKTYPE2 = 2
 	OLEUIPASTE_LINKTYPE3 = 4
 	OLEUIPASTE_LINKTYPE4 = 8
 	OLEUIPASTE_LINKTYPE5 = 16
 	OLEUIPASTE_LINKTYPE6 = 32
 	OLEUIPASTE_LINKTYPE7 = 64
 	OLEUIPASTE_LINKTYPE8 = 128
-	OLEUIPASTE_PASTE = 512
-	OLEUIPASTE_LINKANYTYPE = 1024
-	OLEUIPASTE_ENABLEICON = 2048
 end enum
 
-#ifdef UNICODE
-type OLEUIPASTEENTRYW
+type OLEUIPASTEFLAG as tagOLEUIPASTEFLAG
+
+type tagOLEUIPASTEENTRYW
 	fmtetc as FORMATETC
 	lpstrFormatName as LPCWSTR
 	lpstrResultText as LPCWSTR
@@ -384,11 +329,11 @@ type OLEUIPASTEENTRYW
 	dwScratchSpace as DWORD
 end type
 
-type POLEUIPASTEENTRYW as OLEUIPASTEENTRYW ptr
-type LPOLEUIPASTEENTRYW as OLEUIPASTEENTRYW ptr
+type OLEUIPASTEENTRYW as tagOLEUIPASTEENTRYW
+type POLEUIPASTEENTRYW as tagOLEUIPASTEENTRYW ptr
+type LPOLEUIPASTEENTRYW as tagOLEUIPASTEENTRYW ptr
 
-#else
-type OLEUIPASTEENTRYA
+type tagOLEUIPASTEENTRYA
 	fmtetc as FORMATETC
 	lpstrFormatName as LPCSTR
 	lpstrResultText as LPCSTR
@@ -396,12 +341,25 @@ type OLEUIPASTEENTRYA
 	dwScratchSpace as DWORD
 end type
 
-type POLEUIPASTEENTRYA as OLEUIPASTEENTRYA ptr
-type LPOLEUIPASTEENTRYA as OLEUIPASTEENTRYA ptr
-#endif
+type OLEUIPASTEENTRYA as tagOLEUIPASTEENTRYA
+type POLEUIPASTEENTRYA as tagOLEUIPASTEENTRYA ptr
+type LPOLEUIPASTEENTRYA as tagOLEUIPASTEENTRYA ptr
 
 #ifdef UNICODE
-type OLEUIPASTESPECIALW
+	#define tagOLEUIPASTEENTRY tagOLEUIPASTEENTRYW
+	#define OLEUIPASTEENTRY OLEUIPASTEENTRYW
+	#define POLEUIPASTEENTRY POLEUIPASTEENTRYW
+	#define LPOLEUIPASTEENTRY LPOLEUIPASTEENTRYW
+#else
+	#define tagOLEUIPASTEENTRY tagOLEUIPASTEENTRYA
+	#define OLEUIPASTEENTRY OLEUIPASTEENTRYA
+	#define POLEUIPASTEENTRY POLEUIPASTEENTRYA
+	#define LPOLEUIPASTEENTRY LPOLEUIPASTEENTRYA
+#endif
+
+#define PS_MAXLINKTYPES 8
+
+type tagOLEUIPASTESPECIALW
 	cbStruct as DWORD
 	dwFlags as DWORD
 	hWndOwner as HWND
@@ -413,22 +371,22 @@ type OLEUIPASTESPECIALW
 	hResource as HRSRC
 	lpSrcDataObj as LPDATAOBJECT
 	arrPasteEntries as LPOLEUIPASTEENTRYW
-	cPasteEntries as integer
+	cPasteEntries as long
 	arrLinkTypes as UINT ptr
-	cLinkTypes as integer
+	cLinkTypes as long
 	cClsidExclude as UINT
 	lpClsidExclude as LPCLSID
-	nSelectedIndex as integer
-	fLink as BOOL
+	nSelectedIndex as long
+	fLink as WINBOOL
 	hMetaPict as HGLOBAL
 	sizel as SIZEL
 end type
 
-type POLEUIPASTESPECIALW as OLEUIPASTESPECIALW ptr
-type LPOLEUIPASTESPECIALW as OLEUIPASTESPECIALW ptr
+type OLEUIPASTESPECIALW as tagOLEUIPASTESPECIALW
+type POLEUIPASTESPECIALW as tagOLEUIPASTESPECIALW ptr
+type LPOLEUIPASTESPECIALW as tagOLEUIPASTESPECIALW ptr
 
-#else
-type OLEUIPASTESPECIALA
+type tagOLEUIPASTESPECIALA
 	cbStruct as DWORD
 	dwFlags as DWORD
 	hWndOwner as HWND
@@ -440,70 +398,111 @@ type OLEUIPASTESPECIALA
 	hResource as HRSRC
 	lpSrcDataObj as LPDATAOBJECT
 	arrPasteEntries as LPOLEUIPASTEENTRYA
-	cPasteEntries as integer
+	cPasteEntries as long
 	arrLinkTypes as UINT ptr
-	cLinkTypes as integer
+	cLinkTypes as long
 	cClsidExclude as UINT
 	lpClsidExclude as LPCLSID
-	nSelectedIndex as integer
-	fLink as BOOL
+	nSelectedIndex as long
+	fLink as WINBOOL
 	hMetaPict as HGLOBAL
 	sizel as SIZEL
 end type
 
-type POLEUIPASTESPECIALA as OLEUIPASTESPECIALA ptr
-type LPOLEUIPASTESPECIALA as OLEUIPASTESPECIALA ptr
-#endif
+type OLEUIPASTESPECIALA as tagOLEUIPASTESPECIALA
+type POLEUIPASTESPECIALA as tagOLEUIPASTESPECIALA ptr
+type LPOLEUIPASTESPECIALA as tagOLEUIPASTESPECIALA ptr
 
 #ifdef UNICODE
-type IOleUILinkContainerWVtbl_ as IOleUILinkContainerWVtbl
+	type tagOLEUIPASTESPECIAL as tagOLEUIPASTESPECIALW
+	type OLEUIPASTESPECIAL as OLEUIPASTESPECIALW
+	type POLEUIPASTESPECIAL as POLEUIPASTESPECIALW
+	type LPOLEUIPASTESPECIAL as LPOLEUIPASTESPECIALW
+#else
+	type tagOLEUIPASTESPECIAL as tagOLEUIPASTESPECIALA
+	type OLEUIPASTESPECIAL as OLEUIPASTESPECIALA
+	type POLEUIPASTESPECIAL as POLEUIPASTESPECIALA
+	type LPOLEUIPASTESPECIAL as LPOLEUIPASTESPECIALA
+#endif
+
+declare function OleUIPasteSpecialW(byval as LPOLEUIPASTESPECIALW) as UINT
+declare function OleUIPasteSpecialA(byval as LPOLEUIPASTESPECIALA) as UINT
+
+#ifdef UNICODE
+	declare function OleUIPasteSpecial alias "OleUIPasteSpecialW"(byval as LPOLEUIPASTESPECIALW) as UINT
+#else
+	declare function OleUIPasteSpecial alias "OleUIPasteSpecialA"(byval as LPOLEUIPASTESPECIALA) as UINT
+#endif
+
+#define PSF_SHOWHELP __MSABI_LONG(&h00000001)
+#define PSF_SELECTPASTE __MSABI_LONG(&h00000002)
+#define PSF_SELECTPASTELINK __MSABI_LONG(&h00000004)
+#define PSF_CHECKDISPLAYASICON __MSABI_LONG(&h00000008)
+#define PSF_DISABLEDISPLAYASICON __MSABI_LONG(&h00000010)
+#define PSF_HIDECHANGEICON __MSABI_LONG(&h00000020)
+#define PSF_STAYONCLIPBOARDCHANGE __MSABI_LONG(&h00000040)
+#define PSF_NOREFRESHDATAOBJECT __MSABI_LONG(&h00000080)
+#define OLEUI_IOERR_SRCDATAOBJECTINVALID (OLEUI_ERR_STANDARDMAX + 0)
+#define OLEUI_IOERR_ARRPASTEENTRIESINVALID (OLEUI_ERR_STANDARDMAX + 1)
+#define OLEUI_IOERR_ARRLINKTYPESINVALID (OLEUI_ERR_STANDARDMAX + 2)
+#define OLEUI_PSERR_CLIPBOARDCHANGED (OLEUI_ERR_STANDARDMAX + 3)
+#define OLEUI_PSERR_GETCLIPBOARDFAILED (OLEUI_ERR_STANDARDMAX + 4)
+
+type IOleUILinkContainerWVtbl as IOleUILinkContainerWVtbl_
 
 type IOleUILinkContainerW
-	lpVtbl as IOleUILinkContainerWVtbl_ ptr
+	lpVtbl as IOleUILinkContainerWVtbl ptr
 end type
 
-type IOleUILinkContainerWVtbl
-	QueryInterface as function(byval as IOleUILinkContainerW ptr, byval as IID ptr, byval as PVOID ptr) as HRESULT
-	AddRef as function(byval as IOleUILinkContainerW ptr) as ULONG
-	Release as function(byval as IOleUILinkContainerW ptr) as ULONG
-	GetNextLink as function(byval as IOleUILinkContainerW ptr, byval as DWORD) as DWORD
-	SetLinkUpdateOptions as function(byval as IOleUILinkContainerW ptr, byval as DWORD, byval as DWORD) as HRESULT
-	GetLinkUpdateOptions as function(byval as IOleUILinkContainerW ptr, byval as DWORD, byval as PDWORD) as HRESULT
-	SetLinkSource as function(byval as IOleUILinkContainerW ptr, byval as DWORD, byval as LPWSTR, byval as ULONG, byval as PULONG, byval as BOOL) as HRESULT
-	GetLinkSource as function(byval as IOleUILinkContainerW ptr, byval as DWORD, byval as LPWSTR ptr, byval as PULONG, byval as LPWSTR ptr, byval as LPWSTR ptr, byval as BOOL ptr, byval as BOOL ptr) as HRESULT
-	OpenLinkSource as function(byval as IOleUILinkContainerW ptr, byval as DWORD) as HRESULT
-	UpdateLink as function(byval as IOleUILinkContainerW ptr, byval as DWORD, byval as BOOL, byval as BOOL) as HRESULT
-	CancelLink as function(byval as IOleUILinkContainerW ptr, byval as DWORD) as HRESULT
+type IOleUILinkContainerWVtbl_
+	QueryInterface as function(byval This as IOleUILinkContainerW ptr, byval riid as const IID const ptr, byval ppvObj as LPVOID ptr) as HRESULT
+	AddRef as function(byval This as IOleUILinkContainerW ptr) as ULONG
+	Release as function(byval This as IOleUILinkContainerW ptr) as ULONG
+	GetNextLink as function(byval This as IOleUILinkContainerW ptr, byval dwLink as DWORD) as DWORD
+	SetLinkUpdateOptions as function(byval This as IOleUILinkContainerW ptr, byval dwLink as DWORD, byval dwUpdateOpt as DWORD) as HRESULT
+	GetLinkUpdateOptions as function(byval This as IOleUILinkContainerW ptr, byval dwLink as DWORD, byval lpdwUpdateOpt as DWORD ptr) as HRESULT
+	SetLinkSource as function(byval This as IOleUILinkContainerW ptr, byval dwLink as DWORD, byval lpszDisplayName as LPWSTR, byval lenFileName as ULONG, byval pchEaten as ULONG ptr, byval fValidateSource as WINBOOL) as HRESULT
+	GetLinkSource as function(byval This as IOleUILinkContainerW ptr, byval dwLink as DWORD, byval lplpszDisplayName as LPWSTR ptr, byval lplenFileName as ULONG ptr, byval lplpszFullLinkType as LPWSTR ptr, byval lplpszShortLinkType as LPWSTR ptr, byval lpfSourceAvailable as WINBOOL ptr, byval lpfIsSelected as WINBOOL ptr) as HRESULT
+	OpenLinkSource as function(byval This as IOleUILinkContainerW ptr, byval dwLink as DWORD) as HRESULT
+	UpdateLink as function(byval This as IOleUILinkContainerW ptr, byval dwLink as DWORD, byval fErrorMessage as WINBOOL, byval fReserved as WINBOOL) as HRESULT
+	CancelLink as function(byval This as IOleUILinkContainerW ptr, byval dwLink as DWORD) as HRESULT
 end type
 
 type LPOLEUILINKCONTAINERW as IOleUILinkContainerW ptr
 
-#else
-type IOleUILinkContainerAVtbl_ as IOleUILinkContainerAVtbl
+type IOleUILinkContainerAVtbl as IOleUILinkContainerAVtbl_
 
 type IOleUILinkContainerA
-	lpVtbl as IOleUILinkContainerAVtbl_ ptr
+	lpVtbl as IOleUILinkContainerAVtbl ptr
 end type
 
-type IOleUILinkContainerAVtbl
-	QueryInterface as function(byval as IOleUILinkContainerA ptr, byval as IID ptr, byval as PVOID ptr) as HRESULT
-	AddRef as function(byval as IOleUILinkContainerA ptr) as ULONG
-	Release as function(byval as IOleUILinkContainerA ptr) as ULONG
-	GetNextLink as function(byval as IOleUILinkContainerA ptr, byval as DWORD) as DWORD
-	SetLinkUpdateOptions as function(byval as IOleUILinkContainerA ptr, byval as DWORD, byval as DWORD) as HRESULT
-	GetLinkUpdateOptions as function(byval as IOleUILinkContainerA ptr, byval as DWORD, byval as PDWORD) as HRESULT
-	SetLinkSource as function(byval as IOleUILinkContainerA ptr, byval as DWORD, byval as LPSTR, byval as ULONG, byval as PULONG, byval as BOOL) as HRESULT
-	GetLinkSource as function(byval as IOleUILinkContainerA ptr, byval as DWORD, byval as LPSTR ptr, byval as PULONG, byval as LPSTR ptr, byval as LPSTR ptr, byval as BOOL ptr, byval as BOOL ptr) as HRESULT
-	OpenLinkSource as function(byval as IOleUILinkContainerA ptr, byval as DWORD) as HRESULT
-	UpdateLink as function(byval as IOleUILinkContainerA ptr, byval as DWORD, byval as BOOL, byval as BOOL) as HRESULT
-	CancelLink as function(byval as IOleUILinkContainerA ptr, byval as DWORD) as HRESULT
+type IOleUILinkContainerAVtbl_
+	QueryInterface as function(byval This as IOleUILinkContainerA ptr, byval riid as const IID const ptr, byval ppvObj as LPVOID ptr) as HRESULT
+	AddRef as function(byval This as IOleUILinkContainerA ptr) as ULONG
+	Release as function(byval This as IOleUILinkContainerA ptr) as ULONG
+	GetNextLink as function(byval This as IOleUILinkContainerA ptr, byval dwLink as DWORD) as DWORD
+	SetLinkUpdateOptions as function(byval This as IOleUILinkContainerA ptr, byval dwLink as DWORD, byval dwUpdateOpt as DWORD) as HRESULT
+	GetLinkUpdateOptions as function(byval This as IOleUILinkContainerA ptr, byval dwLink as DWORD, byval lpdwUpdateOpt as DWORD ptr) as HRESULT
+	SetLinkSource as function(byval This as IOleUILinkContainerA ptr, byval dwLink as DWORD, byval lpszDisplayName as LPSTR, byval lenFileName as ULONG, byval pchEaten as ULONG ptr, byval fValidateSource as WINBOOL) as HRESULT
+	GetLinkSource as function(byval This as IOleUILinkContainerA ptr, byval dwLink as DWORD, byval lplpszDisplayName as LPSTR ptr, byval lplenFileName as ULONG ptr, byval lplpszFullLinkType as LPSTR ptr, byval lplpszShortLinkType as LPSTR ptr, byval lpfSourceAvailable as WINBOOL ptr, byval lpfIsSelected as WINBOOL ptr) as HRESULT
+	OpenLinkSource as function(byval This as IOleUILinkContainerA ptr, byval dwLink as DWORD) as HRESULT
+	UpdateLink as function(byval This as IOleUILinkContainerA ptr, byval dwLink as DWORD, byval fErrorMessage as WINBOOL, byval fReserved as WINBOOL) as HRESULT
+	CancelLink as function(byval This as IOleUILinkContainerA ptr, byval dwLink as DWORD) as HRESULT
 end type
 
 type LPOLEUILINKCONTAINERA as IOleUILinkContainerA ptr
-#endif
 
 #ifdef UNICODE
-type OLEUIEDITLINKSW
+	type IOleUILinkContainer as IOleUILinkContainerW
+	type LPOLEUILINKCONTAINER as LPOLEUILINKCONTAINERW
+	type IOleUILinkContainerVtbl as IOleUILinkContainerWVtbl
+#else
+	type IOleUILinkContainer as IOleUILinkContainerA
+	type LPOLEUILINKCONTAINER as LPOLEUILINKCONTAINERA
+	type IOleUILinkContainerVtbl as IOleUILinkContainerAVtbl
+#endif
+
+type tagOLEUIEDITLINKSW
 	cbStruct as DWORD
 	dwFlags as DWORD
 	hWndOwner as HWND
@@ -516,11 +515,11 @@ type OLEUIEDITLINKSW
 	lpOleUILinkContainer as LPOLEUILINKCONTAINERW
 end type
 
-type POLEUIEDITLINKSW as OLEUIEDITLINKSW ptr
-type LPOLEUIEDITLINKSW as OLEUIEDITLINKSW ptr
+type OLEUIEDITLINKSW as tagOLEUIEDITLINKSW
+type POLEUIEDITLINKSW as tagOLEUIEDITLINKSW ptr
+type LPOLEUIEDITLINKSW as tagOLEUIEDITLINKSW ptr
 
-#else
-type OLEUIEDITLINKSA
+type tagOLEUIEDITLINKSA
 	cbStruct as DWORD
 	dwFlags as DWORD
 	hWndOwner as HWND
@@ -533,12 +532,41 @@ type OLEUIEDITLINKSA
 	lpOleUILinkContainer as LPOLEUILINKCONTAINERA
 end type
 
-type POLEUIEDITLINKSA as OLEUIEDITLINKSA ptr
-type LPOLEUIEDITLINKSA as OLEUIEDITLINKSA ptr
-#endif
+type OLEUIEDITLINKSA as tagOLEUIEDITLINKSA
+type POLEUIEDITLINKSA as tagOLEUIEDITLINKSA ptr
+type LPOLEUIEDITLINKSA as tagOLEUIEDITLINKSA ptr
 
 #ifdef UNICODE
-type OLEUICHANGEICONW
+	type tagOLEUIEDITLINKS as tagOLEUIEDITLINKSW
+	type OLEUIEDITLINKS as OLEUIEDITLINKSW
+	type POLEUIEDITLINKS as POLEUIEDITLINKSW
+	type LPOLEUIEDITLINKS as LPOLEUIEDITLINKSW
+#else
+	type tagOLEUIEDITLINKS as tagOLEUIEDITLINKSA
+	type OLEUIEDITLINKS as OLEUIEDITLINKSA
+	type POLEUIEDITLINKS as POLEUIEDITLINKSA
+	type LPOLEUIEDITLINKS as LPOLEUIEDITLINKSA
+#endif
+
+#define OLEUI_ELERR_LINKCNTRNULL (OLEUI_ERR_STANDARDMAX + 0)
+#define OLEUI_ELERR_LINKCNTRINVALID (OLEUI_ERR_STANDARDMAX + 1)
+
+declare function OleUIEditLinksW(byval as LPOLEUIEDITLINKSW) as UINT
+declare function OleUIEditLinksA(byval as LPOLEUIEDITLINKSA) as UINT
+
+#ifdef UNICODE
+	declare function OleUIEditLinks alias "OleUIEditLinksW"(byval as LPOLEUIEDITLINKSW) as UINT
+#else
+	declare function OleUIEditLinks alias "OleUIEditLinksA"(byval as LPOLEUIEDITLINKSA) as UINT
+#endif
+
+#define ELF_SHOWHELP __MSABI_LONG(&h00000001)
+#define ELF_DISABLEUPDATENOW __MSABI_LONG(&h00000002)
+#define ELF_DISABLEOPENSOURCE __MSABI_LONG(&h00000004)
+#define ELF_DISABLECHANGESOURCE __MSABI_LONG(&h00000008)
+#define ELF_DISABLECANCELLINK __MSABI_LONG(&h00000010)
+
+type tagOLEUICHANGEICONW
 	cbStruct as DWORD
 	dwFlags as DWORD
 	hWndOwner as HWND
@@ -551,14 +579,14 @@ type OLEUICHANGEICONW
 	hMetaPict as HGLOBAL
 	clsid as CLSID
 	szIconExe as wstring * 260
-	cchIconExe as integer
+	cchIconExe as long
 end type
 
-type POLEUICHANGEICONW as OLEUICHANGEICONW ptr
-type LPOLEUICHANGEICONW as OLEUICHANGEICONW ptr
+type OLEUICHANGEICONW as tagOLEUICHANGEICONW
+type POLEUICHANGEICONW as tagOLEUICHANGEICONW ptr
+type LPOLEUICHANGEICONW as tagOLEUICHANGEICONW ptr
 
-#else
-type OLEUICHANGEICONA
+type tagOLEUICHANGEICONA
 	cbStruct as DWORD
 	dwFlags as DWORD
 	hWndOwner as HWND
@@ -571,15 +599,41 @@ type OLEUICHANGEICONA
 	hMetaPict as HGLOBAL
 	clsid as CLSID
 	szIconExe as zstring * 260
-	cchIconExe as integer
+	cchIconExe as long
 end type
 
-type POLEUICHANGEICONA as OLEUICHANGEICONA ptr
-type LPOLEUICHANGEICONA as OLEUICHANGEICONA ptr
-#endif
+type OLEUICHANGEICONA as tagOLEUICHANGEICONA
+type POLEUICHANGEICONA as tagOLEUICHANGEICONA ptr
+type LPOLEUICHANGEICONA as tagOLEUICHANGEICONA ptr
+
+declare function OleUIChangeIconW(byval as LPOLEUICHANGEICONW) as UINT
+declare function OleUIChangeIconA(byval as LPOLEUICHANGEICONA) as UINT
 
 #ifdef UNICODE
-type OLEUICONVERTW
+	type tagOLEUICHANGEICON as tagOLEUICHANGEICONW
+	type OLEUICHANGEICON as OLEUICHANGEICONW
+	type POLEUICHANGEICON as POLEUICHANGEICONW
+	type LPOLEUICHANGEICON as LPOLEUICHANGEICONW
+	declare function OleUIChangeIcon alias "OleUIChangeIconW"(byval as LPOLEUICHANGEICONW) as UINT
+#else
+	type tagOLEUICHANGEICON as tagOLEUICHANGEICONA
+	type OLEUICHANGEICON as OLEUICHANGEICONA
+	type POLEUICHANGEICON as POLEUICHANGEICONA
+	type LPOLEUICHANGEICON as LPOLEUICHANGEICONA
+	declare function OleUIChangeIcon alias "OleUIChangeIconA"(byval as LPOLEUICHANGEICONA) as UINT
+#endif
+
+#define CIF_SHOWHELP __MSABI_LONG(&h00000001)
+#define CIF_SELECTCURRENT __MSABI_LONG(&h00000002)
+#define CIF_SELECTDEFAULT __MSABI_LONG(&h00000004)
+#define CIF_SELECTFROMFILE __MSABI_LONG(&h00000008)
+#define CIF_USEICONEXE __MSABI_LONG(&h00000010)
+#define OLEUI_CIERR_MUSTHAVECLSID (OLEUI_ERR_STANDARDMAX + 0)
+#define OLEUI_CIERR_MUSTHAVECURRENTMETAFILE (OLEUI_ERR_STANDARDMAX + 1)
+#define OLEUI_CIERR_SZICONEXEINVALID (OLEUI_ERR_STANDARDMAX + 2)
+#define PROP_HWND_CHGICONDLG __TEXT("HWND_CIDLG")
+
+type tagOLEUICONVERTW
 	cbStruct as DWORD
 	dwFlags as DWORD
 	hWndOwner as HWND
@@ -595,20 +649,20 @@ type OLEUICONVERTW
 	clsidNew as CLSID
 	dvAspect as DWORD
 	wFormat as WORD
-	fIsLinkedObject as BOOL
+	fIsLinkedObject as WINBOOL
 	hMetaPict as HGLOBAL
 	lpszUserType as LPWSTR
-	fObjectsIconChanged as BOOL
+	fObjectsIconChanged as WINBOOL
 	lpszDefLabel as LPWSTR
 	cClsidExclude as UINT
 	lpClsidExclude as LPCLSID
 end type
 
-type POLEUICONVERTW as OLEUICONVERTW ptr
-type LPOLEUICONVERTW as OLEUICONVERTW ptr
+type OLEUICONVERTW as tagOLEUICONVERTW
+type POLEUICONVERTW as tagOLEUICONVERTW ptr
+type LPOLEUICONVERTW as tagOLEUICONVERTW ptr
 
-#else
-type OLEUICONVERTA
+type tagOLEUICONVERTA
 	cbStruct as DWORD
 	dwFlags as DWORD
 	hWndOwner as HWND
@@ -624,21 +678,51 @@ type OLEUICONVERTA
 	clsidNew as CLSID
 	dvAspect as DWORD
 	wFormat as WORD
-	fIsLinkedObject as BOOL
+	fIsLinkedObject as WINBOOL
 	hMetaPict as HGLOBAL
 	lpszUserType as LPSTR
-	fObjectsIconChanged as BOOL
+	fObjectsIconChanged as WINBOOL
 	lpszDefLabel as LPSTR
 	cClsidExclude as UINT
 	lpClsidExclude as LPCLSID
 end type
 
-type POLEUICONVERTA as OLEUICONVERTA ptr
-type LPOLEUICONVERTA as OLEUICONVERTA ptr
-#endif
+type OLEUICONVERTA as tagOLEUICONVERTA
+type POLEUICONVERTA as tagOLEUICONVERTA ptr
+type LPOLEUICONVERTA as tagOLEUICONVERTA ptr
 
 #ifdef UNICODE
-type OLEUIBUSYW
+	type tagOLEUICONVERT as tagOLEUICONVERTW
+	type OLEUICONVERT as OLEUICONVERTW
+	type POLEUICONVERT as POLEUICONVERTW
+	type LPOLEUICONVERT as LPOLEUICONVERTW
+	declare function OleUIConvert alias "OleUIConvertW"(byval as LPOLEUICONVERTW) as UINT
+#else
+	type tagOLEUICONVERT as tagOLEUICONVERTA
+	type OLEUICONVERT as OLEUICONVERTA
+	type POLEUICONVERT as POLEUICONVERTA
+	type LPOLEUICONVERT as LPOLEUICONVERTA
+	declare function OleUIConvert alias "OleUIConvertA"(byval as LPOLEUICONVERTA) as UINT
+#endif
+
+declare function OleUICanConvertOrActivateAs(byval rClsid as const IID const ptr, byval fIsLinkedObject as WINBOOL, byval wFormat as WORD) as WINBOOL
+
+#define CF_SHOWHELPBUTTON __MSABI_LONG(&h00000001)
+#define CF_SETCONVERTDEFAULT __MSABI_LONG(&h00000002)
+#define CF_SETACTIVATEDEFAULT __MSABI_LONG(&h00000004)
+#define CF_SELECTCONVERTTO __MSABI_LONG(&h00000008)
+#define CF_SELECTACTIVATEAS __MSABI_LONG(&h00000010)
+#define CF_DISABLEDISPLAYASICON __MSABI_LONG(&h00000020)
+#define CF_DISABLEACTIVATEAS __MSABI_LONG(&h00000040)
+#define CF_HIDECHANGEICON __MSABI_LONG(&h00000080)
+#define CF_CONVERTONLY __MSABI_LONG(&h00000100)
+#define OLEUI_CTERR_CLASSIDINVALID (OLEUI_ERR_STANDARDMAX + 1)
+#define OLEUI_CTERR_DVASPECTINVALID (OLEUI_ERR_STANDARDMAX + 2)
+#define OLEUI_CTERR_CBFORMATINVALID (OLEUI_ERR_STANDARDMAX + 3)
+#define OLEUI_CTERR_HMETAPICTINVALID (OLEUI_ERR_STANDARDMAX + 4)
+#define OLEUI_CTERR_STRINGINVALID (OLEUI_ERR_STANDARDMAX + 5)
+
+type tagOLEUIBUSYW
 	cbStruct as DWORD
 	dwFlags as DWORD
 	hWndOwner as HWND
@@ -652,11 +736,11 @@ type OLEUIBUSYW
 	lphWndDialog as HWND ptr
 end type
 
-type POLEUIBUSYW as OLEUIBUSYW ptr
-type LPOLEUIBUSYW as OLEUIBUSYW ptr
+type OLEUIBUSYW as tagOLEUIBUSYW
+type POLEUIBUSYW as tagOLEUIBUSYW ptr
+type LPOLEUIBUSYW as tagOLEUIBUSYW ptr
 
-#else
-type OLEUIBUSYA
+type tagOLEUIBUSYA
 	cbStruct as DWORD
 	dwFlags as DWORD
 	hWndOwner as HWND
@@ -670,12 +754,37 @@ type OLEUIBUSYA
 	lphWndDialog as HWND ptr
 end type
 
-type POLEUIBUSYA as OLEUIBUSYA ptr
-type LPOLEUIBUSYA as OLEUIBUSYA ptr
-#endif
+type OLEUIBUSYA as tagOLEUIBUSYA
+type POLEUIBUSYA as tagOLEUIBUSYA ptr
+type LPOLEUIBUSYA as tagOLEUIBUSYA ptr
+
+declare function OleUIBusyW(byval as LPOLEUIBUSYW) as UINT
+declare function OleUIBusyA(byval as LPOLEUIBUSYA) as UINT
 
 #ifdef UNICODE
-type OLEUICHANGESOURCEW
+	type tagOLEUIBUSY as tagOLEUIBUSYW
+	type OLEUIBUSY as OLEUIBUSYW
+	type POLEUIBUSY as POLEUIBUSYW
+	type LPOLEUIBUSY as LPOLEUIBUSYW
+	declare function OleUIBusy alias "OleUIBusyW"(byval as LPOLEUIBUSYW) as UINT
+#else
+	type tagOLEUIBUSY as tagOLEUIBUSYA
+	type OLEUIBUSY as OLEUIBUSYA
+	type POLEUIBUSY as POLEUIBUSYA
+	type LPOLEUIBUSY as LPOLEUIBUSYA
+	declare function OleUIBusy alias "OleUIBusyA"(byval as LPOLEUIBUSYA) as UINT
+#endif
+
+#define BZ_DISABLECANCELBUTTON __MSABI_LONG(&h00000001)
+#define BZ_DISABLESWITCHTOBUTTON __MSABI_LONG(&h00000002)
+#define BZ_DISABLERETRYBUTTON __MSABI_LONG(&h00000004)
+#define BZ_NOTRESPONDINGDIALOG __MSABI_LONG(&h00000008)
+#define OLEUI_BZERR_HTASKINVALID (OLEUI_ERR_STANDARDMAX + 0)
+#define OLEUI_BZ_SWITCHTOSELECTED (OLEUI_ERR_STANDARDMAX + 1)
+#define OLEUI_BZ_RETRYSELECTED (OLEUI_ERR_STANDARDMAX + 2)
+#define OLEUI_BZ_CALLUNBLOCKED (OLEUI_ERR_STANDARDMAX + 3)
+
+type tagOLEUICHANGESOURCEW
 	cbStruct as DWORD
 	dwFlags as DWORD
 	hWndOwner as HWND
@@ -686,7 +795,7 @@ type OLEUICHANGESOURCEW
 	lpszTemplate as LPCWSTR
 	hResource as HRSRC
 	lpOFN as OPENFILENAMEW ptr
-	dwReserved1(0 to 4-1) as DWORD
+	dwReserved1(0 to 3) as DWORD
 	lpOleUILinkContainer as LPOLEUILINKCONTAINERW
 	dwLink as DWORD
 	lpszDisplayName as LPWSTR
@@ -695,11 +804,11 @@ type OLEUICHANGESOURCEW
 	lpszTo as LPWSTR
 end type
 
-type POLEUICHANGESOURCEW as OLEUICHANGESOURCEW ptr
-type LPOLEUICHANGESOURCEW as OLEUICHANGESOURCEW ptr
+type OLEUICHANGESOURCEW as tagOLEUICHANGESOURCEW
+type POLEUICHANGESOURCEW as tagOLEUICHANGESOURCEW ptr
+type LPOLEUICHANGESOURCEW as tagOLEUICHANGESOURCEW ptr
 
-#else
-type OLEUICHANGESOURCEA
+type tagOLEUICHANGESOURCEA
 	cbStruct as DWORD
 	dwFlags as DWORD
 	hWndOwner as HWND
@@ -710,7 +819,7 @@ type OLEUICHANGESOURCEA
 	lpszTemplate as LPCSTR
 	hResource as HRSRC
 	lpOFN as OPENFILENAMEA ptr
-	dwReserved1(0 to 4-1) as DWORD
+	dwReserved1(0 to 3) as DWORD
 	lpOleUILinkContainer as LPOLEUILINKCONTAINERA
 	dwLink as DWORD
 	lpszDisplayName as LPSTR
@@ -719,197 +828,286 @@ type OLEUICHANGESOURCEA
 	lpszTo as LPSTR
 end type
 
-type POLEUICHANGESOURCEA as OLEUICHANGESOURCEA ptr
-type LPOLEUICHANGESOURCEA as OLEUICHANGESOURCEA ptr
-#endif
+type OLEUICHANGESOURCEA as tagOLEUICHANGESOURCEA
+type POLEUICHANGESOURCEA as tagOLEUICHANGESOURCEA ptr
+type LPOLEUICHANGESOURCEA as tagOLEUICHANGESOURCEA ptr
+
+declare function OleUIChangeSourceW(byval as LPOLEUICHANGESOURCEW) as UINT
+declare function OleUIChangeSourceA(byval as LPOLEUICHANGESOURCEA) as UINT
 
 #ifdef UNICODE
-type IOleUIObjInfoWVtbl_ as IOleUIObjInfoWVtbl
+	type tagOLEUICHANGESOURCE as tagOLEUICHANGESOURCEW
+	type OLEUICHANGESOURCE as OLEUICHANGESOURCEW
+	type POLEUICHANGESOURCE as POLEUICHANGESOURCEW
+	type LPOLEUICHANGESOURCE as LPOLEUICHANGESOURCEW
+	declare function OleUIChangeSource alias "OleUIChangeSourceW"(byval as LPOLEUICHANGESOURCEW) as UINT
+#else
+	type tagOLEUICHANGESOURCE as tagOLEUICHANGESOURCEA
+	type OLEUICHANGESOURCE as OLEUICHANGESOURCEA
+	type POLEUICHANGESOURCE as POLEUICHANGESOURCEA
+	type LPOLEUICHANGESOURCE as LPOLEUICHANGESOURCEA
+	declare function OleUIChangeSource alias "OleUIChangeSourceA"(byval as LPOLEUICHANGESOURCEA) as UINT
+#endif
+
+#define CSF_SHOWHELP __MSABI_LONG(&h00000001)
+#define CSF_VALIDSOURCE __MSABI_LONG(&h00000002)
+#define CSF_ONLYGETSOURCE __MSABI_LONG(&h00000004)
+#define CSF_EXPLORER __MSABI_LONG(&h00000008)
+#define OLEUI_CSERR_LINKCNTRNULL (OLEUI_ERR_STANDARDMAX + 0)
+#define OLEUI_CSERR_LINKCNTRINVALID (OLEUI_ERR_STANDARDMAX + 1)
+#define OLEUI_CSERR_FROMNOTNULL (OLEUI_ERR_STANDARDMAX + 2)
+#define OLEUI_CSERR_TONOTNULL (OLEUI_ERR_STANDARDMAX + 3)
+#define OLEUI_CSERR_SOURCENULL (OLEUI_ERR_STANDARDMAX + 4)
+#define OLEUI_CSERR_SOURCEINVALID (OLEUI_ERR_STANDARDMAX + 5)
+#define OLEUI_CSERR_SOURCEPARSERROR (OLEUI_ERR_STANDARDMAX + 6)
+#define OLEUI_CSERR_SOURCEPARSEERROR (OLEUI_ERR_STANDARDMAX + 6)
+
+type IOleUIObjInfoWVtbl as IOleUIObjInfoWVtbl_
 
 type IOleUIObjInfoW
-	lpVtbl as IOleUIObjInfoWVtbl_ ptr
+	lpVtbl as IOleUIObjInfoWVtbl ptr
 end type
 
-type IOleUIObjInfoWVtbl
-	QueryInterface as function(byval as IOleUIObjInfoW ptr, byval as IID ptr, byval as PVOID ptr) as HRESULT
-	AddRef as function(byval as IOleUIObjInfoW ptr) as ULONG
-	Release as function(byval as IOleUIObjInfoW ptr) as ULONG
-	GetObjectInfo as function(byval as IOleUIObjInfoW ptr, byval as DWORD, byval as PDWORD, byval as LPWSTR ptr, byval as LPWSTR ptr, byval as LPWSTR ptr, byval as LPWSTR ptr) as HRESULT
-	GetConvertInfo as function(byval as IOleUIObjInfoW ptr, byval as DWORD, byval as CLSID ptr, byval as PWORD, byval as CLSID ptr, byval as LPCLSID ptr, byval as UINT ptr) as HRESULT
-	ConvertObject as function(byval as IOleUIObjInfoW ptr, byval as DWORD, byval as CLSID ptr) as HRESULT
-	GetViewInfo as function(byval as IOleUIObjInfoW ptr, byval as DWORD, byval as HGLOBAL ptr, byval as PDWORD, byval as integer ptr) as HRESULT
-	SetViewInfo as function(byval as IOleUIObjInfoW ptr, byval as DWORD, byval as HGLOBAL, byval as DWORD, byval as integer, byval as BOOL) as HRESULT
+type IOleUIObjInfoWVtbl_
+	QueryInterface as function(byval This as IOleUIObjInfoW ptr, byval riid as const IID const ptr, byval ppvObj as LPVOID ptr) as HRESULT
+	AddRef as function(byval This as IOleUIObjInfoW ptr) as ULONG
+	Release as function(byval This as IOleUIObjInfoW ptr) as ULONG
+	GetObjectInfo as function(byval This as IOleUIObjInfoW ptr, byval dwObject as DWORD, byval lpdwObjSize as DWORD ptr, byval lplpszLabel as LPWSTR ptr, byval lplpszType as LPWSTR ptr, byval lplpszShortType as LPWSTR ptr, byval lplpszLocation as LPWSTR ptr) as HRESULT
+	GetConvertInfo as function(byval This as IOleUIObjInfoW ptr, byval dwObject as DWORD, byval lpClassID as CLSID ptr, byval lpwFormat as WORD ptr, byval lpConvertDefaultClassID as CLSID ptr, byval lplpClsidExclude as LPCLSID ptr, byval lpcClsidExclude as UINT ptr) as HRESULT
+	ConvertObject as function(byval This as IOleUIObjInfoW ptr, byval dwObject as DWORD, byval clsidNew as const IID const ptr) as HRESULT
+	GetViewInfo as function(byval This as IOleUIObjInfoW ptr, byval dwObject as DWORD, byval phMetaPict as HGLOBAL ptr, byval pdvAspect as DWORD ptr, byval pnCurrentScale as long ptr) as HRESULT
+	SetViewInfo as function(byval This as IOleUIObjInfoW ptr, byval dwObject as DWORD, byval hMetaPict as HGLOBAL, byval dvAspect as DWORD, byval nCurrentScale as long, byval bRelativeToOrig as WINBOOL) as HRESULT
 end type
 
 type LPOLEUIOBJINFOW as IOleUIObjInfoW ptr
 
-#else
-type IOleUIObjInfoAVtbl_ as IOleUIObjInfoAVtbl
+type IOleUIObjInfoAVtbl as IOleUIObjInfoAVtbl_
 
 type IOleUIObjInfoA
-	lpVtbl as IOleUIObjInfoAVtbl_ ptr
+	lpVtbl as IOleUIObjInfoAVtbl ptr
 end type
 
-type IOleUIObjInfoAVtbl
-	QueryInterface as function(byval as IOleUIObjInfoA ptr, byval as IID ptr, byval as PVOID ptr) as HRESULT
-	AddRef as function(byval as IOleUIObjInfoA ptr) as ULONG
-	Release as function(byval as IOleUIObjInfoA ptr) as ULONG
-	GetObjectInfo as function(byval as IOleUIObjInfoA ptr, byval as DWORD, byval as PDWORD, byval as LPSTR ptr, byval as LPSTR ptr, byval as LPSTR ptr, byval as LPSTR ptr) as HRESULT
-	GetConvertInfo as function(byval as IOleUIObjInfoA ptr, byval as DWORD, byval as CLSID ptr, byval as PWORD, byval as CLSID ptr, byval as LPCLSID ptr, byval as UINT ptr) as HRESULT
-	ConvertObject as function(byval as IOleUIObjInfoA ptr, byval as DWORD, byval as CLSID ptr) as HRESULT
-	GetViewInfo as function(byval as IOleUIObjInfoA ptr, byval as DWORD, byval as HGLOBAL ptr, byval as PDWORD, byval as integer ptr) as HRESULT
-	SetViewInfo as function(byval as IOleUIObjInfoA ptr, byval as DWORD, byval as HGLOBAL, byval as DWORD, byval as integer, byval as BOOL) as HRESULT
+type IOleUIObjInfoAVtbl_
+	QueryInterface as function(byval This as IOleUIObjInfoA ptr, byval riid as const IID const ptr, byval ppvObj as LPVOID ptr) as HRESULT
+	AddRef as function(byval This as IOleUIObjInfoA ptr) as ULONG
+	Release as function(byval This as IOleUIObjInfoA ptr) as ULONG
+	GetObjectInfo as function(byval This as IOleUIObjInfoA ptr, byval dwObject as DWORD, byval lpdwObjSize as DWORD ptr, byval lplpszLabel as LPSTR ptr, byval lplpszType as LPSTR ptr, byval lplpszShortType as LPSTR ptr, byval lplpszLocation as LPSTR ptr) as HRESULT
+	GetConvertInfo as function(byval This as IOleUIObjInfoA ptr, byval dwObject as DWORD, byval lpClassID as CLSID ptr, byval lpwFormat as WORD ptr, byval lpConvertDefaultClassID as CLSID ptr, byval lplpClsidExclude as LPCLSID ptr, byval lpcClsidExclude as UINT ptr) as HRESULT
+	ConvertObject as function(byval This as IOleUIObjInfoA ptr, byval dwObject as DWORD, byval clsidNew as const IID const ptr) as HRESULT
+	GetViewInfo as function(byval This as IOleUIObjInfoA ptr, byval dwObject as DWORD, byval phMetaPict as HGLOBAL ptr, byval pdvAspect as DWORD ptr, byval pnCurrentScale as long ptr) as HRESULT
+	SetViewInfo as function(byval This as IOleUIObjInfoA ptr, byval dwObject as DWORD, byval hMetaPict as HGLOBAL, byval dvAspect as DWORD, byval nCurrentScale as long, byval bRelativeToOrig as WINBOOL) as HRESULT
 end type
 
 type LPOLEUIOBJINFOA as IOleUIObjInfoA ptr
-#endif
 
 #ifdef UNICODE
-type IOleUILinkInfoWVtbl_ as IOleUILinkInfoWVtbl
+	#define IOleUIObjInfo IOleUIObjInfoW
+	#define LPOLEUIOBJINFO LPOLEUIOBJINFOW
+	#define IOleUIObjInfoVtbl IOleUIObjInfoWVtbl
+#else
+	#define IOleUIObjInfo IOleUIObjInfoA
+	#define LPOLEUIOBJINFO LPOLEUIOBJINFOA
+	#define IOleUIObjInfoVtbl IOleUIObjInfoAVtbl
+#endif
+
+type IOleUILinkInfoWVtbl as IOleUILinkInfoWVtbl_
 
 type IOleUILinkInfoW
-	lpVtbl as IOleUILinkInfoWVtbl_ ptr
+	lpVtbl as IOleUILinkInfoWVtbl ptr
 end type
 
-type IOleUILinkInfoWVtbl
-	QueryInterface as function(byval as IOleUILinkInfoW ptr, byval as IID ptr, byval as PVOID ptr) as HRESULT
-	AddRef as function(byval as IOleUILinkInfoW ptr) as ULONG
-	Release as function(byval as IOleUILinkInfoW ptr) as ULONG
-	GetNextLink as function(byval as IOleUILinkInfoW ptr, byval as DWORD) as DWORD
-	SetLinkUpdateOptions as function(byval as IOleUILinkInfoW ptr, byval as DWORD, byval as DWORD) as HRESULT
-	GetLinkUpdateOptions as function(byval as IOleUILinkInfoW ptr, byval as DWORD, byval as DWORD ptr) as HRESULT
-	SetLinkSource as function(byval as IOleUILinkInfoW ptr, byval as DWORD, byval as LPWSTR, byval as ULONG, byval as PULONG, byval as BOOL) as HRESULT
-	GetLinkSource as function(byval as IOleUILinkInfoW ptr, byval as DWORD, byval as LPWSTR ptr, byval as PULONG, byval as LPWSTR ptr, byval as LPWSTR ptr, byval as BOOL ptr, byval as BOOL ptr) as HRESULT
-	OpenLinkSource as function(byval as IOleUILinkInfoW ptr, byval as DWORD) as HRESULT
-	UpdateLink as function(byval as IOleUILinkInfoW ptr, byval as DWORD, byval as BOOL, byval as BOOL) as HRESULT
-	CancelLink as function(byval as IOleUILinkInfoW ptr, byval as DWORD) as HRESULT
-	GetLastUpdate as function(byval as IOleUILinkInfoW ptr, byval as DWORD, byval as FILETIME ptr) as HRESULT
+type IOleUILinkInfoWVtbl_
+	QueryInterface as function(byval This as IOleUILinkInfoW ptr, byval riid as const IID const ptr, byval ppvObj as LPVOID ptr) as HRESULT
+	AddRef as function(byval This as IOleUILinkInfoW ptr) as ULONG
+	Release as function(byval This as IOleUILinkInfoW ptr) as ULONG
+	GetNextLink as function(byval This as IOleUILinkInfoW ptr, byval dwLink as DWORD) as DWORD
+	SetLinkUpdateOptions as function(byval This as IOleUILinkInfoW ptr, byval dwLink as DWORD, byval dwUpdateOpt as DWORD) as HRESULT
+	GetLinkUpdateOptions as function(byval This as IOleUILinkInfoW ptr, byval dwLink as DWORD, byval lpdwUpdateOpt as DWORD ptr) as HRESULT
+	SetLinkSource as function(byval This as IOleUILinkInfoW ptr, byval dwLink as DWORD, byval lpszDisplayName as LPWSTR, byval lenFileName as ULONG, byval pchEaten as ULONG ptr, byval fValidateSource as WINBOOL) as HRESULT
+	GetLinkSource as function(byval This as IOleUILinkInfoW ptr, byval dwLink as DWORD, byval lplpszDisplayName as LPWSTR ptr, byval lplenFileName as ULONG ptr, byval lplpszFullLinkType as LPWSTR ptr, byval lplpszShortLinkType as LPWSTR ptr, byval lpfSourceAvailable as WINBOOL ptr, byval lpfIsSelected as WINBOOL ptr) as HRESULT
+	OpenLinkSource as function(byval This as IOleUILinkInfoW ptr, byval dwLink as DWORD) as HRESULT
+	UpdateLink as function(byval This as IOleUILinkInfoW ptr, byval dwLink as DWORD, byval fErrorMessage as WINBOOL, byval fReserved as WINBOOL) as HRESULT
+	CancelLink as function(byval This as IOleUILinkInfoW ptr, byval dwLink as DWORD) as HRESULT
+	GetLastUpdate as function(byval This as IOleUILinkInfoW ptr, byval dwLink as DWORD, byval lpLastUpdate as FILETIME ptr) as HRESULT
 end type
 
 type LPOLEUILINKINFOW as IOleUILinkInfoW ptr
 
-#else
-type IOleUILinkInfoAVtbl_ as IOleUILinkInfoAVtbl
+type IOleUILinkInfoAVtbl as IOleUILinkInfoAVtbl_
 
 type IOleUILinkInfoA
-	lpVtbl as IOleUILinkInfoAVtbl_ ptr
+	lpVtbl as IOleUILinkInfoAVtbl ptr
 end type
 
-type IOleUILinkInfoAVtbl
-	QueryInterface as function(byval as IOleUILinkInfoA ptr, byval as IID ptr, byval as PVOID ptr) as HRESULT
-	AddRef as function(byval as IOleUILinkInfoA ptr) as ULONG
-	Release as function(byval as IOleUILinkInfoA ptr) as ULONG
-	GetNextLink as function(byval as IOleUILinkInfoA ptr, byval as DWORD) as DWORD
-	SetLinkUpdateOptions as function(byval as IOleUILinkInfoA ptr, byval as DWORD, byval as DWORD) as HRESULT
-	GetLinkUpdateOptions as function(byval as IOleUILinkInfoA ptr, byval as DWORD, byval as DWORD ptr) as HRESULT
-	SetLinkSource as function(byval as IOleUILinkInfoA ptr, byval as DWORD, byval as LPSTR, byval as ULONG, byval as PULONG, byval as BOOL) as HRESULT
-	GetLinkSource as function(byval as IOleUILinkInfoA ptr, byval as DWORD, byval as LPSTR ptr, byval as PULONG, byval as LPSTR ptr, byval as LPSTR ptr, byval as BOOL ptr, byval as BOOL ptr) as HRESULT
-	OpenLinkSource as function(byval as IOleUILinkInfoA ptr, byval as DWORD) as HRESULT
-	UpdateLink as function(byval as IOleUILinkInfoA ptr, byval as DWORD, byval as BOOL, byval as BOOL) as HRESULT
-	CancelLink as function(byval as IOleUILinkInfoA ptr, byval as DWORD) as HRESULT
-	GetLastUpdate as function(byval as IOleUILinkInfoA ptr, byval as DWORD, byval as FILETIME ptr) as HRESULT
+type IOleUILinkInfoAVtbl_
+	QueryInterface as function(byval This as IOleUILinkInfoA ptr, byval riid as const IID const ptr, byval ppvObj as LPVOID ptr) as HRESULT
+	AddRef as function(byval This as IOleUILinkInfoA ptr) as ULONG
+	Release as function(byval This as IOleUILinkInfoA ptr) as ULONG
+	GetNextLink as function(byval This as IOleUILinkInfoA ptr, byval dwLink as DWORD) as DWORD
+	SetLinkUpdateOptions as function(byval This as IOleUILinkInfoA ptr, byval dwLink as DWORD, byval dwUpdateOpt as DWORD) as HRESULT
+	GetLinkUpdateOptions as function(byval This as IOleUILinkInfoA ptr, byval dwLink as DWORD, byval lpdwUpdateOpt as DWORD ptr) as HRESULT
+	SetLinkSource as function(byval This as IOleUILinkInfoA ptr, byval dwLink as DWORD, byval lpszDisplayName as LPSTR, byval lenFileName as ULONG, byval pchEaten as ULONG ptr, byval fValidateSource as WINBOOL) as HRESULT
+	GetLinkSource as function(byval This as IOleUILinkInfoA ptr, byval dwLink as DWORD, byval lplpszDisplayName as LPSTR ptr, byval lplenFileName as ULONG ptr, byval lplpszFullLinkType as LPSTR ptr, byval lplpszShortLinkType as LPSTR ptr, byval lpfSourceAvailable as WINBOOL ptr, byval lpfIsSelected as WINBOOL ptr) as HRESULT
+	OpenLinkSource as function(byval This as IOleUILinkInfoA ptr, byval dwLink as DWORD) as HRESULT
+	UpdateLink as function(byval This as IOleUILinkInfoA ptr, byval dwLink as DWORD, byval fErrorMessage as WINBOOL, byval fReserved as WINBOOL) as HRESULT
+	CancelLink as function(byval This as IOleUILinkInfoA ptr, byval dwLink as DWORD) as HRESULT
+	GetLastUpdate as function(byval This as IOleUILinkInfoA ptr, byval dwLink as DWORD, byval lpLastUpdate as FILETIME ptr) as HRESULT
 end type
 
 type LPOLEUILINKINFOA as IOleUILinkInfoA ptr
-#endif
 
 #ifdef UNICODE
-type OLEUIOBJECTPROPSW_ as OLEUIOBJECTPROPSW
-
-type OLEUIGNRLPROPSW
-	cbStruct as DWORD
-	dwFlags as DWORD
-	dwReserved1(0 to 2-1) as DWORD
-	lpfnHook as LPFNOLEUIHOOK
-	lCustData as LPARAM
-	dwReserved2(0 to 3-1) as DWORD
-	lpOP as OLEUIOBJECTPROPSW_ ptr
-end type
-
-type POLEUIGNRLPROPSW as OLEUIGNRLPROPSW ptr
-type LPOLEUIGNRLPROPSW as OLEUIGNRLPROPSW ptr
-
+	#define IOleUILinkInfo IOleUILinkInfoW
+	#define LPOLEUILINKINFO LPOLEUILINKINFOW
+	#define IOleUILinkInfoVtbl IOleUILinkInfoWVtbl
 #else
-type OLEUIOBJECTPROPSA_ as OLEUIOBJECTPROPSA
-
-type OLEUIGNRLPROPSA
-	cbStruct as DWORD
-	dwFlags as DWORD
-	dwReserved1(0 to 2-1) as DWORD
-	lpfnHook as LPFNOLEUIHOOK
-	lCustData as LPARAM
-	dwReserved2(0 to 3-1) as DWORD
-	lpOP as OLEUIOBJECTPROPSA_ ptr
-end type
-
-type POLEUIGNRLPROPSA as OLEUIGNRLPROPSA ptr
-type LPOLEUIGNRLPROPSA as OLEUIGNRLPROPSA ptr
+	#define IOleUILinkInfo IOleUILinkInfoA
+	#define LPOLEUILINKINFO LPOLEUILINKINFOA
+	#define IOleUILinkInfoVtbl IOleUILinkInfoAVtbl
 #endif
 
-#ifdef UNICODE
-type OLEUIVIEWPROPSW
+type tagOLEUIOBJECTPROPSW as tagOLEUIOBJECTPROPSW_
+
+type tagOLEUIGNRLPROPSW
 	cbStruct as DWORD
 	dwFlags as DWORD
-	dwReserved1(0 to 2-1) as DWORD
+	dwReserved1(0 to 1) as DWORD
 	lpfnHook as LPFNOLEUIHOOK
 	lCustData as LPARAM
-	dwReserved2(0 to 3-1) as DWORD
-	lpOP as OLEUIOBJECTPROPSW_ ptr
-	nScaleMin as integer
-	nScaleMax as integer
+	dwReserved2(0 to 2) as DWORD
+	lpOP as tagOLEUIOBJECTPROPSW ptr
 end type
 
-type POLEUIVIEWPROPSW as OLEUIVIEWPROPSW ptr
-type LPOLEUIVIEWPROPSW as OLEUIVIEWPROPSW ptr
+type OLEUIGNRLPROPSW as tagOLEUIGNRLPROPSW
+type POLEUIGNRLPROPSW as tagOLEUIGNRLPROPSW ptr
+type LPOLEUIGNRLPROPSW as tagOLEUIGNRLPROPSW ptr
 
+type tagOLEUIOBJECTPROPSA as tagOLEUIOBJECTPROPSA_
+
+type tagOLEUIGNRLPROPSA
+	cbStruct as DWORD
+	dwFlags as DWORD
+	dwReserved1(0 to 1) as DWORD
+	lpfnHook as LPFNOLEUIHOOK
+	lCustData as LPARAM
+	dwReserved2(0 to 2) as DWORD
+	lpOP as tagOLEUIOBJECTPROPSA ptr
+end type
+
+type OLEUIGNRLPROPSA as tagOLEUIGNRLPROPSA
+type POLEUIGNRLPROPSA as tagOLEUIGNRLPROPSA ptr
+type LPOLEUIGNRLPROPSA as tagOLEUIGNRLPROPSA ptr
+
+#ifdef UNICODE
+	#define tagOLEUIGNRLPROPS tagOLEUIGNRLPROPSW
+	#define OLEUIGNRLPROPS OLEUIGNRLPROPSW
+	#define POLEUIGNRLPROPS POLEUIGNRLPROPSW
+	#define LPOLEUIGNRLPROPS LPOLEUIGNRLPROPSW
 #else
-type OLEUIVIEWPROPSA
-	cbStruct as DWORD
-	dwFlags as DWORD
-	dwReserved1(0 to 2-1) as DWORD
-	lpfnHook as LPFNOLEUIHOOK
-	lCustData as LPARAM
-	dwReserved2(0 to 3-1) as DWORD
-	lpOP as OLEUIOBJECTPROPSA_ ptr
-	nScaleMin as integer
-	nScaleMax as integer
-end type
-
-type POLEUIVIEWPROPSA as OLEUIVIEWPROPSA ptr
-type LPOLEUIVIEWPROPSA as OLEUIVIEWPROPSA ptr
+	#define tagOLEUIGNRLPROPS tagOLEUIGNRLPROPSA
+	#define OLEUIGNRLPROPS OLEUIGNRLPROPSA
+	#define POLEUIGNRLPROPS POLEUIGNRLPROPSA
+	#define LPOLEUIGNRLPROPS LPOLEUIGNRLPROPSA
 #endif
 
-#ifdef UNICODE
-type OLEUILINKPROPSW
+type tagOLEUIVIEWPROPSW
 	cbStruct as DWORD
 	dwFlags as DWORD
-	dwReserved1(0 to 2-1) as DWORD
+	dwReserved1(0 to 1) as DWORD
 	lpfnHook as LPFNOLEUIHOOK
 	lCustData as LPARAM
-	dwReserved2(0 to 3-1) as DWORD
-	lpOP as OLEUIOBJECTPROPSW_ ptr
+	dwReserved2(0 to 2) as DWORD
+	lpOP as tagOLEUIOBJECTPROPSW ptr
+	nScaleMin as long
+	nScaleMax as long
 end type
 
-type POLEUILINKPROPSW as OLEUILINKPROPSW ptr
-type LPOLEUILINKPROPSW as OLEUILINKPROPSW ptr
+type OLEUIVIEWPROPSW as tagOLEUIVIEWPROPSW
+type POLEUIVIEWPROPSW as tagOLEUIVIEWPROPSW ptr
+type LPOLEUIVIEWPROPSW as tagOLEUIVIEWPROPSW ptr
 
+type tagOLEUIVIEWPROPSA
+	cbStruct as DWORD
+	dwFlags as DWORD
+	dwReserved1(0 to 1) as DWORD
+	lpfnHook as LPFNOLEUIHOOK
+	lCustData as LPARAM
+	dwReserved2(0 to 2) as DWORD
+	lpOP as tagOLEUIOBJECTPROPSA ptr
+	nScaleMin as long
+	nScaleMax as long
+end type
+
+type OLEUIVIEWPROPSA as tagOLEUIVIEWPROPSA
+type POLEUIVIEWPROPSA as tagOLEUIVIEWPROPSA ptr
+type LPOLEUIVIEWPROPSA as tagOLEUIVIEWPROPSA ptr
+
+#ifdef UNICODE
+	#define tagOLEUIVIEWPROPS tagOLEUIVIEWPROPSW
+	#define OLEUIVIEWPROPS OLEUIVIEWPROPSW
+	#define POLEUIVIEWPROPS POLEUIVIEWPROPSW
+	#define LPOLEUIVIEWPROPS LPOLEUIVIEWPROPSW
 #else
-type OLEUILINKPROPSA
-	cbStruct as DWORD
-	dwFlags as DWORD
-	dwReserved1(0 to 2-1) as DWORD
-	lpfnHook as LPFNOLEUIHOOK
-	lCustData as LPARAM
-	dwReserved2(0 to 3-1) as DWORD
-	lpOP as OLEUIOBJECTPROPSA_ ptr
-end type
-
-type POLEUILINKPROPSA as OLEUILINKPROPSA ptr
-type LPOLEUILINKPROPSA as OLEUILINKPROPSA ptr
+	#define tagOLEUIVIEWPROPS tagOLEUIVIEWPROPSA
+	#define OLEUIVIEWPROPS OLEUIVIEWPROPSA
+	#define POLEUIVIEWPROPS POLEUIVIEWPROPSA
+	#define LPOLEUIVIEWPROPS LPOLEUIVIEWPROPSA
 #endif
 
+#define VPF_SELECTRELATIVE __MSABI_LONG(&h00000001)
+#define VPF_DISABLERELATIVE __MSABI_LONG(&h00000002)
+#define VPF_DISABLESCALE __MSABI_LONG(&h00000004)
+
+type tagOLEUILINKPROPSW
+	cbStruct as DWORD
+	dwFlags as DWORD
+	dwReserved1(0 to 1) as DWORD
+	lpfnHook as LPFNOLEUIHOOK
+	lCustData as LPARAM
+	dwReserved2(0 to 2) as DWORD
+	lpOP as tagOLEUIOBJECTPROPSW ptr
+end type
+
+type OLEUILINKPROPSW as tagOLEUILINKPROPSW
+type POLEUILINKPROPSW as tagOLEUILINKPROPSW ptr
+type LPOLEUILINKPROPSW as tagOLEUILINKPROPSW ptr
+
+type tagOLEUILINKPROPSA
+	cbStruct as DWORD
+	dwFlags as DWORD
+	dwReserved1(0 to 1) as DWORD
+	lpfnHook as LPFNOLEUIHOOK
+	lCustData as LPARAM
+	dwReserved2(0 to 2) as DWORD
+	lpOP as tagOLEUIOBJECTPROPSA ptr
+end type
+
+type OLEUILINKPROPSA as tagOLEUILINKPROPSA
+type POLEUILINKPROPSA as tagOLEUILINKPROPSA ptr
+type LPOLEUILINKPROPSA as tagOLEUILINKPROPSA ptr
+
 #ifdef UNICODE
-type OLEUIOBJECTPROPSW
+	#define tagOLEUILINKPROPS tagOLEUILINKPROPSW
+	#define OLEUILINKPROPS OLEUILINKPROPSW
+	#define POLEUILINKPROPS POLEUILINKPROPSW
+	#define LPOLEUILINKPROPS LPOLEUILINKPROPSW
+#else
+	#define tagOLEUILINKPROPS tagOLEUILINKPROPSA
+	#define OLEUILINKPROPS OLEUILINKPROPSA
+	#define POLEUILINKPROPS POLEUILINKPROPSA
+	#define LPOLEUILINKPROPS LPOLEUILINKPROPSA
+#endif
+
+type LPPROPSHEETHEADERW as _PROPSHEETHEADERW ptr
+type LPPROPSHEETHEADERA as _PROPSHEETHEADERA ptr
+
+#ifdef UNICODE
+	#define LPPROPSHEETHEADER LPPROPSHEETHEADERW
+#else
+	#define LPPROPSHEETHEADER LPPROPSHEETHEADERA
+#endif
+
+type tagOLEUIOBJECTPROPSW_
 	cbStruct as DWORD
 	dwFlags as DWORD
 	lpPS as LPPROPSHEETHEADERW
@@ -922,11 +1120,11 @@ type OLEUIOBJECTPROPSW
 	lpLP as LPOLEUILINKPROPSW
 end type
 
-type POLEUIOBJECTPROPSW as OLEUIOBJECTPROPSW ptr
-type LPOLEUIOBJECTPROPSW as OLEUIOBJECTPROPSW ptr
+type OLEUIOBJECTPROPSW as tagOLEUIOBJECTPROPSW
+type POLEUIOBJECTPROPSW as tagOLEUIOBJECTPROPSW ptr
+type LPOLEUIOBJECTPROPSW as tagOLEUIOBJECTPROPSW ptr
 
-#else
-type OLEUIOBJECTPROPSA
+type tagOLEUIOBJECTPROPSA_
 	cbStruct as DWORD
 	dwFlags as DWORD
 	lpPS as LPPROPSHEETHEADERA
@@ -939,129 +1137,72 @@ type OLEUIOBJECTPROPSA
 	lpLP as LPOLEUILINKPROPSA
 end type
 
-type POLEUIOBJECTPROPSA as OLEUIOBJECTPROPSA ptr
-type LPOLEUIOBJECTPROPSA as OLEUIOBJECTPROPSA ptr
-#endif
+type OLEUIOBJECTPROPSA as tagOLEUIOBJECTPROPSA
+type POLEUIOBJECTPROPSA as tagOLEUIOBJECTPROPSA ptr
+type LPOLEUIOBJECTPROPSA as tagOLEUIOBJECTPROPSA ptr
 
-declare function OleUICanConvertOrActivateAs alias "OleUICanConvertOrActivateAs" (byval as CLSID ptr, byval as BOOL, byval as WORD) as BOOL
-
-#ifdef UNICODE
-declare function OleUIAddVerbMenu alias "OleUIAddVerbMenuW" (byval as LPOLEOBJECT, byval as LPCWSTR, byval as HMENU, byval as UINT, byval as UINT, byval as UINT, byval as BOOL, byval as UINT, byval as HMENU ptr) as BOOL
-declare function OleUIBusy alias "OleUIBusyW" (byval as LPOLEUIBUSYW) as UINT
-declare function OleUIChangeIcon alias "OleUIChangeIconW" (byval as LPOLEUICHANGEICONW) as UINT
-declare function OleUIChangeSource alias "OleUIChangeSourceW" (byval as LPOLEUICHANGESOURCEW) as UINT
-declare function OleUIConvert alias "OleUIConvertW" (byval as LPOLEUICONVERTW) as UINT
-declare function OleUIEditLinks alias "OleUIEditLinksW" (byval as LPOLEUIEDITLINKSW) as UINT
-declare function OleUIObjectProperties alias "OleUIObjectPropertiesW" (byval as LPOLEUIOBJECTPROPSW) as UINT
-declare function OleUIPasteSpecial alias "OleUIPasteSpecialW" (byval as LPOLEUIPASTESPECIALW) as UINT
-declare function OleUIPromptUser cdecl alias "OleUIPromptUserW" (byval as integer, byval as HWND, ...) as integer
-declare function OleUIUpdateLinks alias "OleUIUpdateLinksW" (byval as LPOLEUILINKCONTAINERW, byval as HWND, byval as LPWSTR, byval as integer) as BOOL
-
-#else
-declare function OleUIAddVerbMenu alias "OleUIAddVerbMenuA" (byval as LPOLEOBJECT, byval as LPCSTR, byval as HMENU, byval as UINT, byval as UINT, byval as UINT, byval as BOOL, byval as UINT, byval as HMENU ptr) as BOOL
-declare function OleUIBusy alias "OleUIBusyA" (byval as LPOLEUIBUSYA) as UINT
-declare function OleUIChangeIcon alias "OleUIChangeIconA" (byval as LPOLEUICHANGEICONA) as UINT
-declare function OleUIChangeSource alias "OleUIChangeSourceA" (byval as LPOLEUICHANGESOURCEA) as UINT
-declare function OleUIConvert alias "OleUIConvertA" (byval as LPOLEUICONVERTA) as UINT
-declare function OleUIEditLinks alias "OleUIEditLinksA" (byval as LPOLEUIEDITLINKSA) as UINT
-declare function OleUIObjectProperties alias "OleUIObjectPropertiesA" (byval as LPOLEUIOBJECTPROPSA) as UINT
-declare function OleUIPasteSpecial alias "OleUIPasteSpecialA" (byval as LPOLEUIPASTESPECIALA) as UINT
-declare function OleUIPromptUser cdecl alias "OleUIPromptUserA" (byval as integer, byval as HWND, ...) as integer
-declare function OleUIUpdateLinks alias "OleUIUpdateLinksA" (byval as LPOLEUILINKCONTAINERA, byval as HWND, byval as LPSTR, byval as integer) as BOOL
-#endif
+declare function OleUIObjectPropertiesW(byval as LPOLEUIOBJECTPROPSW) as UINT
+declare function OleUIObjectPropertiesA(byval as LPOLEUIOBJECTPROPSA) as UINT
 
 #ifdef UNICODE
-#define IDD_SERVERNOTREG IDD_SERVERNOTREGW
-#define IDD_LINKTYPECHANGED IDD_LINKTYPECHANGEDW
-type OLEUIOBJECTPROPS as OLEUIOBJECTPROPSW
-type POLEUIOBJECTPROPS as POLEUIOBJECTPROPSW
-type LPOLEUIOBJECTPROPS as LPOLEUIOBJECTPROPSW
-type OLEUIINSERTOBJECT as OLEUIINSERTOBJECTW
-type POLEUIINSERTOBJECT as POLEUIINSERTOBJECTW
-type LPOLEUIINSERTOBJECT as LPOLEUIINSERTOBJECTW
-type OLEUIPASTEENTRY as OLEUIPASTEENTRYW
-type POLEUIPASTEENTRY as POLEUIPASTEENTRYW
-type LPOLEUIPASTEENTRY as LPOLEUIPASTEENTRYW
-type OLEUIPASTESPECIAL as OLEUIPASTESPECIALW
-type POLEUIPASTESPECIAL as POLEUIPASTESPECIALW
-type LPOLEUIPASTESPECIAL as LPOLEUIPASTESPECIALW
-type IOleUILinkContainer as IOleUILinkContainerW
-type LPOLEUILINKCONTAINER as LPOLEUILINKCONTAINERW
-type OLEUIEDITLINKS as OLEUIEDITLINKSW
-type POLEUIEDITLINKS as POLEUIEDITLINKSW
-type LPOLEUIEDITLINKS as LPOLEUIEDITLINKSW
-type OLEUICHANGEICON as OLEUICHANGEICONW
-type POLEUICHANGEICON as POLEUICHANGEICONW
-type LPOLEUICHANGEICON as LPOLEUICHANGEICONW
-type OLEUICONVERT as OLEUICONVERTW
-type POLEUICONVERT as POLEUICONVERTW
-type LPOLEUICONVERT as LPOLEUICONVERTW
-type OLEUIBUSY as OLEUIBUSYW
-type POLEUIBUSY as POLEUIBUSYW
-type LPOLEUIBUSY as LPOLEUIBUSYW
-type OLEUICHANGESOURCE as OLEUICHANGESOURCEW
-type POLEUICHANGESOURCE as POLEUICHANGESOURCEW
-type LPOLEUICHANGESOURCE as LPOLEUICHANGESOURCEW
-type IOleUIObjInfo as IOleUIObjInfoW
-type LPOLEUIOBJINFO as LPOLEUIOBJINFOW
-type IOleUILinkInfo as IOleUILinkInfoW
-type IOleUILinkInfoVtbl as IOleUILinkInfoWVtbl
-type LPOLEUILINKINFO as LPOLEUILINKINFOW
-type OLEUIGNRLPROPS as OLEUIGNRLPROPSW
-type POLEUIGNRLPROPS as POLEUIGNRLPROPSW
-type LPOLEUIGNRLPROPS as LPOLEUIGNRLPROPSW
-type OLEUIVIEWPROPS as OLEUIVIEWPROPSW
-type POLEUIVIEWPROPS as POLEUIVIEWPROPSW
-type LPOLEUIVIEWPROPS as LPOLEUIVIEWPROPSW
-type OLEUILINKPROPS as OLEUILINKPROPSW
-type POLEUILINKPROPS as POLEUILINKPROPSW
-type LPOLEUILINKPROPS as LPOLEUILINKPROPSW
+	#define tagOLEUIOBJECTPROPS tagOLEUIOBJECTPROPSW
+	#define OLEUIOBJECTPROPS OLEUIOBJECTPROPSW
+	#define POLEUIOBJECTPROPS POLEUIOBJECTPROPSW
+	#define LPOLEUIOBJECTPROPS LPOLEUIOBJECTPROPSW
+	declare function OleUIObjectProperties alias "OleUIObjectPropertiesW"(byval as LPOLEUIOBJECTPROPSW) as UINT
 #else
-#define IDD_SERVERNOTREG IDD_SERVERNOTREGA
-#define IDD_LINKTYPECHANGED IDD_LINKTYPECHANGEDA
-type OLEUIOBJECTPROPS as OLEUIOBJECTPROPSA
-type POLEUIOBJECTPROPS as POLEUIOBJECTPROPSA
-type LPOLEUIOBJECTPROPS as LPOLEUIOBJECTPROPSA
-type OLEUIINSERTOBJECT as OLEUIINSERTOBJECTA
-type POLEUIINSERTOBJECT as POLEUIINSERTOBJECTA
-type LPOLEUIINSERTOBJECT as LPOLEUIINSERTOBJECTA
-type OLEUIPASTEENTRY as OLEUIPASTEENTRYA
-type POLEUIPASTEENTRY as POLEUIPASTEENTRYA
-type LPOLEUIPASTEENTRY as LPOLEUIPASTEENTRYA
-type OLEUIPASTESPECIAL as OLEUIPASTESPECIALA
-type POLEUIPASTESPECIAL as POLEUIPASTESPECIALA
-type LPOLEUIPASTESPECIAL as LPOLEUIPASTESPECIALA
-type IOleUILinkContainer as IOleUILinkContainerA
-type LPOLEUILINKCONTAINER as LPOLEUILINKCONTAINERA
-type OLEUIEDITLINKS as OLEUIEDITLINKSA
-type POLEUIEDITLINKS as POLEUIEDITLINKSA
-type LPOLEUIEDITLINKS as LPOLEUIEDITLINKSA
-type OLEUICHANGEICON as OLEUICHANGEICONA
-type POLEUICHANGEICON as POLEUICHANGEICONA
-type LPOLEUICHANGEICON as LPOLEUICHANGEICONA
-type OLEUICONVERT as OLEUICONVERTA
-type POLEUICONVERT as POLEUICONVERTA
-type LPOLEUICONVERT as LPOLEUICONVERTA
-type OLEUIBUSY as OLEUIBUSYA
-type POLEUIBUSY as POLEUIBUSYA
-type LPOLEUIBUSY as LPOLEUIBUSYA
-type OLEUICHANGESOURCE as OLEUICHANGESOURCEA
-type POLEUICHANGESOURCE as POLEUICHANGESOURCEA
-type LPOLEUICHANGESOURCE as LPOLEUICHANGESOURCEA
-type IOleUIObjInfo as IOleUIObjInfoA
-type LPOLEUIOBJINFO as LPOLEUIOBJINFOA
-type IOleUILinkInfo as IOleUILinkInfoA
-type IOleUILinkInfoVtbl as IOleUILinkInfoAVtbl
-type LPOLEUILINKINFO as LPOLEUILINKINFOA
-type OLEUIGNRLPROPS as OLEUIGNRLPROPSA
-type POLEUIGNRLPROPS as POLEUIGNRLPROPSA
-type LPOLEUIGNRLPROPS as LPOLEUIGNRLPROPSA
-type OLEUIVIEWPROPS as OLEUIVIEWPROPSA
-type POLEUIVIEWPROPS as POLEUIVIEWPROPSA
-type LPOLEUIVIEWPROPS as LPOLEUIVIEWPROPSA
-type OLEUILINKPROPS as OLEUILINKPROPSA
-type POLEUILINKPROPS as POLEUILINKPROPSA
-type LPOLEUILINKPROPS as LPOLEUILINKPROPSA
+	#define tagOLEUIOBJECTPROPS tagOLEUIOBJECTPROPSA
+	#define OLEUIOBJECTPROPS OLEUIOBJECTPROPSA
+	#define POLEUIOBJECTPROPS POLEUIOBJECTPROPSA
+	#define LPOLEUIOBJECTPROPS LPOLEUIOBJECTPROPSA
+	declare function OleUIObjectProperties alias "OleUIObjectPropertiesA"(byval as LPOLEUIOBJECTPROPSA) as UINT
 #endif
 
+#define OPF_OBJECTISLINK __MSABI_LONG(&h00000001)
+#define OPF_NOFILLDEFAULT __MSABI_LONG(&h00000002)
+#define OPF_SHOWHELP __MSABI_LONG(&h00000004)
+#define OPF_DISABLECONVERT __MSABI_LONG(&h00000008)
+#define OLEUI_OPERR_SUBPROPNULL (OLEUI_ERR_STANDARDMAX + 0)
+#define OLEUI_OPERR_SUBPROPINVALID (OLEUI_ERR_STANDARDMAX + 1)
+#define OLEUI_OPERR_PROPSHEETNULL (OLEUI_ERR_STANDARDMAX + 2)
+#define OLEUI_OPERR_PROPSHEETINVALID (OLEUI_ERR_STANDARDMAX + 3)
+#define OLEUI_OPERR_SUPPROP (OLEUI_ERR_STANDARDMAX + 4)
+#define OLEUI_OPERR_PROPSINVALID (OLEUI_ERR_STANDARDMAX + 5)
+#define OLEUI_OPERR_PAGESINCORRECT (OLEUI_ERR_STANDARDMAX + 6)
+#define OLEUI_OPERR_INVALIDPAGES (OLEUI_ERR_STANDARDMAX + 7)
+#define OLEUI_OPERR_NOTSUPPORTED (OLEUI_ERR_STANDARDMAX + 8)
+#define OLEUI_OPERR_DLGPROCNOTNULL (OLEUI_ERR_STANDARDMAX + 9)
+#define OLEUI_OPERR_LPARAMNOTZERO (OLEUI_ERR_STANDARDMAX + 10)
+#define OLEUI_GPERR_STRINGINVALID (OLEUI_ERR_STANDARDMAX + 11)
+#define OLEUI_GPERR_CLASSIDINVALID (OLEUI_ERR_STANDARDMAX + 12)
+#define OLEUI_GPERR_LPCLSIDEXCLUDEINVALID (OLEUI_ERR_STANDARDMAX + 13)
+#define OLEUI_GPERR_CBFORMATINVALID (OLEUI_ERR_STANDARDMAX + 14)
+#define OLEUI_VPERR_METAPICTINVALID (OLEUI_ERR_STANDARDMAX + 15)
+#define OLEUI_VPERR_DVASPECTINVALID (OLEUI_ERR_STANDARDMAX + 16)
+#define OLEUI_LPERR_LINKCNTRNULL (OLEUI_ERR_STANDARDMAX + 17)
+#define OLEUI_LPERR_LINKCNTRINVALID (OLEUI_ERR_STANDARDMAX + 18)
+#define OLEUI_OPERR_PROPERTYSHEET (OLEUI_ERR_STANDARDMAX + 19)
+#define OLEUI_OPERR_OBJINFOINVALID (OLEUI_ERR_STANDARDMAX + 20)
+#define OLEUI_OPERR_LINKINFOINVALID (OLEUI_ERR_STANDARDMAX + 21)
+#define OLEUI_QUERY_GETCLASSID &hFF00
+#define OLEUI_QUERY_LINKBROKEN &hFF01
+
+declare function OleUIPromptUserW cdecl(byval nTemplate as long, byval hwndParent as HWND, ...) as long
+declare function OleUIPromptUserA cdecl(byval nTemplate as long, byval hwndParent as HWND, ...) as long
+
+#ifdef UNICODE
+	#define OleUIPromptUser OleUIPromptUserW
+#else
+	#define OleUIPromptUser OleUIPromptUserA
 #endif
+
+declare function OleUIUpdateLinksW(byval lpOleUILinkCntr as LPOLEUILINKCONTAINERW, byval hwndParent as HWND, byval lpszTitle as LPWSTR, byval cLinks as long) as WINBOOL
+declare function OleUIUpdateLinksA(byval lpOleUILinkCntr as LPOLEUILINKCONTAINERA, byval hwndParent as HWND, byval lpszTitle as LPSTR, byval cLinks as long) as WINBOOL
+
+#ifdef UNICODE
+	#define OleUIUpdateLinks OleUIUpdateLinksW
+#else
+	#define OleUIUpdateLinks OleUIUpdateLinksA
+#endif
+
+end extern

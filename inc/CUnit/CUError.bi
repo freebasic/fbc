@@ -41,6 +41,6 @@ declare function CU_get_error() as CU_ErrorCode
 declare function CU_get_error_msg() as const zstring ptr
 declare sub CU_set_error_action(byval action as CU_ErrorAction)
 declare function CU_get_error_action() as CU_ErrorAction
-declare sub CU_set_error(byval error_ as CU_ErrorCode)
+declare sub CU_set_error(byval error as CU_ErrorCode)
 
 end extern

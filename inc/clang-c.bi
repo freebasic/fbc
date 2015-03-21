@@ -25,8 +25,8 @@ type CXString
 	private_flags as ulong
 end type
 
-declare function clang_getCString(byval string_ as CXString) as const zstring ptr
-declare sub clang_disposeString(byval string_ as CXString)
+declare function clang_getCString(byval string as CXString) as const zstring ptr
+declare sub clang_disposeString(byval string as CXString)
 
 #define CLANG_C_BUILD_SYSTEM_H
 
@@ -43,8 +43,8 @@ declare sub clang_VirtualFileOverlay_dispose(byval as CXVirtualFileOverlay)
 type CXModuleMapDescriptor as CXModuleMapDescriptorImpl ptr
 
 declare function clang_ModuleMapDescriptor_create(byval options as ulong) as CXModuleMapDescriptor
-declare function clang_ModuleMapDescriptor_setFrameworkModuleName(byval as CXModuleMapDescriptor, byval name_ as const zstring ptr) as CXErrorCode
-declare function clang_ModuleMapDescriptor_setUmbrellaHeader(byval as CXModuleMapDescriptor, byval name_ as const zstring ptr) as CXErrorCode
+declare function clang_ModuleMapDescriptor_setFrameworkModuleName(byval as CXModuleMapDescriptor, byval name as const zstring ptr) as CXErrorCode
+declare function clang_ModuleMapDescriptor_setUmbrellaHeader(byval as CXModuleMapDescriptor, byval name as const zstring ptr) as CXErrorCode
 declare function clang_ModuleMapDescriptor_writeToBuffer(byval as CXModuleMapDescriptor, byval options as ulong, byval out_buffer_ptr as zstring ptr ptr, byval out_buffer_size as ulong ptr) as CXErrorCode
 declare sub clang_ModuleMapDescriptor_dispose(byval as CXModuleMapDescriptor)
 
@@ -120,19 +120,19 @@ end type
 
 declare function clang_getNullLocation() as CXSourceLocation
 declare function clang_equalLocations(byval loc1 as CXSourceLocation, byval loc2 as CXSourceLocation) as ulong
-declare function clang_getLocation(byval tu as CXTranslationUnit, byval file as CXFile, byval line_ as ulong, byval column as ulong) as CXSourceLocation
+declare function clang_getLocation(byval tu as CXTranslationUnit, byval file as CXFile, byval line as ulong, byval column as ulong) as CXSourceLocation
 declare function clang_getLocationForOffset(byval tu as CXTranslationUnit, byval file as CXFile, byval offset as ulong) as CXSourceLocation
 declare function clang_Location_isInSystemHeader(byval location as CXSourceLocation) as long
 declare function clang_Location_isFromMainFile(byval location as CXSourceLocation) as long
 declare function clang_getNullRange() as CXSourceRange
-declare function clang_getRange(byval begin as CXSourceLocation, byval end_ as CXSourceLocation) as CXSourceRange
+declare function clang_getRange(byval begin as CXSourceLocation, byval end as CXSourceLocation) as CXSourceRange
 declare function clang_equalRanges(byval range1 as CXSourceRange, byval range2 as CXSourceRange) as ulong
 declare function clang_Range_isNull(byval range as CXSourceRange) as long
-declare sub clang_getExpansionLocation(byval location as CXSourceLocation, byval file as CXFile ptr, byval line_ as ulong ptr, byval column as ulong ptr, byval offset as ulong ptr)
-declare sub clang_getPresumedLocation(byval location as CXSourceLocation, byval filename as CXString ptr, byval line_ as ulong ptr, byval column as ulong ptr)
-declare sub clang_getInstantiationLocation(byval location as CXSourceLocation, byval file as CXFile ptr, byval line_ as ulong ptr, byval column as ulong ptr, byval offset as ulong ptr)
-declare sub clang_getSpellingLocation(byval location as CXSourceLocation, byval file as CXFile ptr, byval line_ as ulong ptr, byval column as ulong ptr, byval offset as ulong ptr)
-declare sub clang_getFileLocation(byval location as CXSourceLocation, byval file as CXFile ptr, byval line_ as ulong ptr, byval column as ulong ptr, byval offset as ulong ptr)
+declare sub clang_getExpansionLocation(byval location as CXSourceLocation, byval file as CXFile ptr, byval line as ulong ptr, byval column as ulong ptr, byval offset as ulong ptr)
+declare sub clang_getPresumedLocation(byval location as CXSourceLocation, byval filename as CXString ptr, byval line as ulong ptr, byval column as ulong ptr)
+declare sub clang_getInstantiationLocation(byval location as CXSourceLocation, byval file as CXFile ptr, byval line as ulong ptr, byval column as ulong ptr, byval offset as ulong ptr)
+declare sub clang_getSpellingLocation(byval location as CXSourceLocation, byval file as CXFile ptr, byval line as ulong ptr, byval column as ulong ptr, byval offset as ulong ptr)
+declare sub clang_getFileLocation(byval location as CXSourceLocation, byval file as CXFile ptr, byval line as ulong ptr, byval column as ulong ptr, byval offset as ulong ptr)
 declare function clang_getRangeStart(byval range as CXSourceRange) as CXSourceLocation
 declare function clang_getRangeEnd(byval range as CXSourceRange) as CXSourceLocation
 
@@ -167,7 +167,7 @@ enum
 	CXLoadDiag_InvalidFile = 3
 end enum
 
-declare function clang_loadDiagnostics(byval file as const zstring ptr, byval error_ as CXLoadDiag_Error ptr, byval errorString as CXString ptr) as CXDiagnosticSet
+declare function clang_loadDiagnostics(byval file as const zstring ptr, byval error as CXLoadDiag_Error ptr, byval errorString as CXString ptr) as CXDiagnosticSet
 declare sub clang_disposeDiagnosticSet(byval Diags as CXDiagnosticSet)
 declare function clang_getChildDiagnostics(byval D as CXDiagnostic) as CXDiagnosticSet
 declare function clang_getNumDiagnostics(byval Unit as CXTranslationUnit) as ulong
@@ -710,9 +710,9 @@ declare function clang_getCursorUSR(byval as CXCursor) as CXString
 declare function clang_constructUSR_ObjCClass(byval class_name as const zstring ptr) as CXString
 declare function clang_constructUSR_ObjCCategory(byval class_name as const zstring ptr, byval category_name as const zstring ptr) as CXString
 declare function clang_constructUSR_ObjCProtocol(byval protocol_name as const zstring ptr) as CXString
-declare function clang_constructUSR_ObjCIvar(byval name_ as const zstring ptr, byval classUSR as CXString) as CXString
-declare function clang_constructUSR_ObjCMethod(byval name_ as const zstring ptr, byval isInstanceMethod as ulong, byval classUSR as CXString) as CXString
-declare function clang_constructUSR_ObjCProperty(byval property_ as const zstring ptr, byval classUSR as CXString) as CXString
+declare function clang_constructUSR_ObjCIvar(byval name as const zstring ptr, byval classUSR as CXString) as CXString
+declare function clang_constructUSR_ObjCMethod(byval name as const zstring ptr, byval isInstanceMethod as ulong, byval classUSR as CXString) as CXString
+declare function clang_constructUSR_ObjCProperty(byval property as const zstring ptr, byval classUSR as CXString) as CXString
 declare function clang_getCursorSpelling(byval as CXCursor) as CXString
 declare function clang_Cursor_getSpellingNameRange(byval as CXCursor, byval pieceIndex as ulong, byval options as ulong) as CXSourceRange
 declare function clang_getCursorDisplayName(byval as CXCursor) as CXString
@@ -1184,8 +1184,8 @@ end enum
 
 declare function clang_indexSourceFile(byval as CXIndexAction, byval client_data as CXClientData, byval index_callbacks as IndexerCallbacks ptr, byval index_callbacks_size as ulong, byval index_options as ulong, byval source_filename as const zstring ptr, byval command_line_args as const zstring const ptr ptr, byval num_command_line_args as long, byval unsaved_files as CXUnsavedFile ptr, byval num_unsaved_files as ulong, byval out_TU as CXTranslationUnit ptr, byval TU_options as ulong) as long
 declare function clang_indexTranslationUnit(byval as CXIndexAction, byval client_data as CXClientData, byval index_callbacks as IndexerCallbacks ptr, byval index_callbacks_size as ulong, byval index_options as ulong, byval as CXTranslationUnit) as long
-declare sub clang_indexLoc_getFileLocation(byval loc_ as CXIdxLoc, byval indexFile as CXIdxClientFile ptr, byval file as CXFile ptr, byval line_ as ulong ptr, byval column as ulong ptr, byval offset as ulong ptr)
-declare function clang_indexLoc_getCXSourceLocation(byval loc_ as CXIdxLoc) as CXSourceLocation
+declare sub clang_indexLoc_getFileLocation(byval loc as CXIdxLoc, byval indexFile as CXIdxClientFile ptr, byval file as CXFile ptr, byval line as ulong ptr, byval column as ulong ptr, byval offset as ulong ptr)
+declare function clang_indexLoc_getCXSourceLocation(byval loc as CXIdxLoc) as CXSourceLocation
 
 #define CLANG_C_DOCUMENTATION_H
 
