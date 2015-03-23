@@ -7,7 +7,6 @@
 extern "Windows"
 
 #define _OLECTL_H_
-
 extern IID_IPropertyFrame as const GUID
 extern CLSID_CFontPropPage as const GUID
 extern CLSID_CColorPropPage as const GUID
@@ -52,7 +51,6 @@ end type
 
 type OCPFIPARAMS as tagOCPFIPARAMS
 type LPOCPFIPARAMS as tagOCPFIPARAMS ptr
-
 #define FONTSIZE(n) (n##0000, 0)
 
 type tagFONTDESC
@@ -68,7 +66,6 @@ end type
 
 type FONTDESC as tagFONTDESC
 type LPFONTDESC as tagFONTDESC ptr
-
 #define PICTYPE_UNINITIALIZED (-1)
 #define PICTYPE_NONE 0
 #define PICTYPE_BITMAP 1

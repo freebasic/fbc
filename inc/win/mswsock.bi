@@ -37,7 +37,6 @@ extern "Windows"
 #endif
 
 declare function WSARecvEx(byval s as SOCKET, byval buf as zstring ptr, byval len as long, byval flags as long ptr) as long
-
 #define TF_DISCONNECT &h01
 #define TF_REUSE_SOCKET &h02
 #define TF_WRITE_BEHIND &h04
@@ -60,17 +59,11 @@ type LPTRANSMIT_FILE_BUFFERS as _TRANSMIT_FILE_BUFFERS ptr
 declare function TransmitFile(byval hSocket as SOCKET, byval hFile as HANDLE, byval nNumberOfBytesToWrite as DWORD, byval nNumberOfBytesPerSend as DWORD, byval lpOverlapped as LPOVERLAPPED, byval lpTransmitBuffers as LPTRANSMIT_FILE_BUFFERS, byval dwReserved as DWORD) as WINBOOL
 declare function AcceptEx(byval sListenSocket as SOCKET, byval sAcceptSocket as SOCKET, byval lpOutputBuffer as PVOID, byval dwReceiveDataLength as DWORD, byval dwLocalAddressLength as DWORD, byval dwRemoteAddressLength as DWORD, byval lpdwBytesReceived as LPDWORD, byval lpOverlapped as LPOVERLAPPED) as WINBOOL
 declare sub GetAcceptExSockaddrs(byval lpOutputBuffer as PVOID, byval dwReceiveDataLength as DWORD, byval dwLocalAddressLength as DWORD, byval dwRemoteAddressLength as DWORD, byval LocalSockaddr as SOCKADDR ptr ptr, byval LocalSockaddrLength as LPINT, byval RemoteSockaddr as SOCKADDR ptr ptr, byval RemoteSockaddrLength as LPINT)
-
 type LPFN_TRANSMITFILE as function(byval hSocket as SOCKET, byval hFile as HANDLE, byval nNumberOfBytesToWrite as DWORD, byval nNumberOfBytesPerSend as DWORD, byval lpOverlapped as LPOVERLAPPED, byval lpTransmitBuffers as LPTRANSMIT_FILE_BUFFERS, byval dwReserved as DWORD) as WINBOOL
-
 #define WSAID_TRANSMITFILE (&hb5367df0, &hcbac, &h11cf, (&h95, &hca, &h00, &h80, &h5f, &h48, &ha1, &h92))
-
 type LPFN_ACCEPTEX as function(byval sListenSocket as SOCKET, byval sAcceptSocket as SOCKET, byval lpOutputBuffer as PVOID, byval dwReceiveDataLength as DWORD, byval dwLocalAddressLength as DWORD, byval dwRemoteAddressLength as DWORD, byval lpdwBytesReceived as LPDWORD, byval lpOverlapped as LPOVERLAPPED) as WINBOOL
-
 #define WSAID_ACCEPTEX (&hb5367df1, &hcbac, &h11cf, (&h95, &hca, &h00, &h80, &h5f, &h48, &ha1, &h92))
-
 type LPFN_GETACCEPTEXSOCKADDRS as sub(byval lpOutputBuffer as PVOID, byval dwReceiveDataLength as DWORD, byval dwLocalAddressLength as DWORD, byval dwRemoteAddressLength as DWORD, byval LocalSockaddr as SOCKADDR ptr ptr, byval LocalSockaddrLength as LPINT, byval RemoteSockaddr as SOCKADDR ptr ptr, byval RemoteSockaddrLength as LPINT)
-
 #define WSAID_GETACCEPTEXSOCKADDRS (&hb5367df2, &hcbac, &h11cf, (&h95, &hca, &h00, &h80, &h5f, &h48, &ha1, &h92))
 
 type _TRANSMIT_PACKETS_ELEMENT
@@ -99,17 +92,11 @@ type LPTRANSMIT_PACKETS_ELEMENT as _TRANSMIT_PACKETS_ELEMENT ptr
 #define TP_USE_DEFAULT_WORKER TF_USE_DEFAULT_WORKER
 #define TP_USE_SYSTEM_THREAD TF_USE_SYSTEM_THREAD
 #define TP_USE_KERNEL_APC TF_USE_KERNEL_APC
-
 type LPFN_TRANSMITPACKETS as function(byval hSocket as SOCKET, byval lpPacketArray as LPTRANSMIT_PACKETS_ELEMENT, byval nElementCount as DWORD, byval nSendSize as DWORD, byval lpOverlapped as LPOVERLAPPED, byval dwFlags as DWORD) as WINBOOL
-
 #define WSAID_TRANSMITPACKETS (&hd9689da0, &h1f90, &h11d3, (&h99, &h71, &h00, &hc0, &h4f, &h68, &hc8, &h76))
-
 type LPFN_CONNECTEX as function(byval s as SOCKET, byval name as const SOCKADDR ptr, byval namelen as long, byval lpSendBuffer as PVOID, byval dwSendDataLength as DWORD, byval lpdwBytesSent as LPDWORD, byval lpOverlapped as LPOVERLAPPED) as WINBOOL
-
 #define WSAID_CONNECTEX (&h25a207b9, &hddf3, &h4660, (&h8e, &he9, &h76, &he5, &h8c, &h74, &h06, &h3e))
-
 type LPFN_DISCONNECTEX as function(byval s as SOCKET, byval lpOverlapped as LPOVERLAPPED, byval dwFlags as DWORD, byval dwReserved as DWORD) as WINBOOL
-
 #define WSAID_DISCONNECTEX (&h7fda2e11, &h8630, &h436f, (&ha0, &h31, &hf5, &h36, &ha6, &hee, &hc1, &h57))
 #define DE_REUSE_SOCKET TF_REUSE_SOCKET
 #define NLA_NAMESPACE_GUID (&h6642243a, &h3ba8, &h4aa6, (&hba, &ha5, &h2e, &hb, &hd7, &h1f, &hdd, &h83))
@@ -221,9 +208,7 @@ type LPWSACMSGHDR as _WSACMSGHDR ptr
 #define MSG_CTRUNC &h0200
 #define MSG_BCAST &h0400
 #define MSG_MCAST &h0800
-
 type LPFN_WSARECVMSG as function(byval s as SOCKET, byval lpMsg as LPWSAMSG, byval lpdwNumberOfBytesRecvd as LPDWORD, byval lpOverlapped as LPWSAOVERLAPPED, byval lpCompletionRoutine as LPWSAOVERLAPPED_COMPLETION_ROUTINE) as INT_
-
 #define WSAID_WSARECVMSG (&hf689d7c8, &h6f1f, &h436b, (&h8a, &h53, &he5, &h4f, &he3, &h51, &hc3, &h22))
 
 #if _WIN32_WINNT = &h0602
@@ -236,7 +221,6 @@ type LPFN_WSARECVMSG as function(byval s as SOCKET, byval lpMsg as LPWSAMSG, byv
 
 	type LPWSAPOLLDATA as WSAPOLLDATA ptr
 	type LPFN_WSAPOLL as function(byval fdarray as LPWSAPOLLFD, byval nfds as ULONG, byval timeout as INT_) as INT_
-
 	#define WSAID_WSAPOLL (&h18C76F85, &hDC66, &h4964, (&h97, &h2E, &h23, &hC2, &h72, &h38, &h31, &h2B))
 
 	type WSASENDMSG
@@ -249,7 +233,6 @@ type LPFN_WSARECVMSG as function(byval s as SOCKET, byval lpMsg as LPWSAMSG, byv
 
 	type LPWSASENDMSG as WSASENDMSG ptr
 	type LPFN_WSASENDMSG as function(byval s as SOCKET, byval lpMsg as LPWSAMSG, byval dwFlags as DWORD, byval lpNumberOfBytesSent as LPDWORD, byval lpOverlapped as LPWSAOVERLAPPED, byval lpCompletionRoutine as LPWSAOVERLAPPED_COMPLETION_ROUTINE) as INT_
-
 	#define WSAID_WSASENDMSG (&ha441e712, &h754f, &h43ca, (&h84, &ha7, &h0d, &hee, &h44, &hcf, &h60, &h6d))
 #endif
 

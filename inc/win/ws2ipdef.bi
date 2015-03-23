@@ -98,7 +98,6 @@ type GROUP_SOURCE_REQ
 end type
 
 type PGROUP_SOURCE_REQ as GROUP_SOURCE_REQ ptr
-
 #define IPV6_HOPOPTS 1
 #define IPV6_HDRINCL 2
 #define IPV6_UNICAST_HOPS 4

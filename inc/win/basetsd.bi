@@ -21,8 +21,8 @@ extern "C"
 #define FIRMWARE_PTR
 #define POINTER_SIGNED
 #define POINTER_UNSIGNED
-#define SPOINTER_32
-#define UPOINTER_32
+#define SPOINTER_32 POINTER_SIGNED POINTER_32
+#define UPOINTER_32 POINTER_UNSIGNED POINTER_32
 
 type INT8 as byte
 type PINT8 as byte ptr
@@ -56,10 +56,8 @@ type PDWORD32 as ulong ptr
 	type PLONG_PTR as longint ptr
 	type ULONG_PTR as ulongint
 	type PULONG_PTR as ulongint ptr
-
 	#define __int3264 longint
 	#define ADDRESS_TAG_BIT &h40000000000ull
-
 	type SHANDLE_PTR as longint
 	type HANDLE_PTR as ulongint
 	type UHALF_PTR as ulong
@@ -148,10 +146,8 @@ type PDWORD32 as ulong ptr
 	type PLONG_PTR as long ptr
 	type ULONG_PTR as ulong
 	type PULONG_PTR as ulong ptr
-
 	#define __int3264 long
 	#define ADDRESS_TAG_BIT __MSABI_LONG(&h80000000u)
-
 	type UHALF_PTR as ushort
 	type PUHALF_PTR as ushort ptr
 	type HALF_PTR as short

@@ -6,9 +6,7 @@
 extern "Windows"
 
 #define __WINE_DPLAY8_DPADDR_H
-
 type DPNAREFIID as const IID const ptr
-
 #define DPNA_DATATYPE_STRING &h00000001
 #define DPNA_DATATYPE_DWORD &h00000002
 #define DPNA_DATATYPE_GUID &h00000003
@@ -97,18 +95,14 @@ type DPNAREFIID as const IID const ptr
 #define DPNA_BAUD_RATE_56000 56000
 #define DPNA_BAUD_RATE_57600 57600
 #define DPNA_BAUD_RATE_115200 115200
-
 extern CLSID_DirectPlay8Address as const GUID
 extern IID_IDirectPlay8Address as const GUID
-
 type PDIRECTPLAY8ADDRESS as IDirectPlay8Address ptr
 type LPDIRECTPLAY8ADDRESS as IDirectPlay8Address ptr
-
 extern IID_IDirectPlay8AddressIP as const GUID
 
 type PDIRECTPLAY8ADDRESSIP as IDirectPlay8AddressIP ptr
 type LPDIRECTPLAY8ADDRESSIP as IDirectPlay8AddressIP ptr
-
 type IDirectPlay8AddressVtbl as IDirectPlay8AddressVtbl_
 
 type IDirectPlay8Address_
@@ -162,7 +156,6 @@ end type
 #define IDirectPlay8Address_SetDevice(p, a) (p)->lpVtbl->SetDevice(p, a)
 #define IDirectPlay8Address_GetDevice(p, a) (p)->lpVtbl->GetDevice(p, a)
 #define IDirectPlay8Address_BuildFromDirectPlay4Address(p, a, b) (p)->lpVtbl->BuildFromDirectPlay4Address(p, a, b)
-
 type IDirectPlay8AddressIPVtbl as IDirectPlay8AddressIPVtbl_
 
 type IDirectPlay8AddressIP
@@ -190,7 +183,6 @@ end type
 #define IDirectPlay8AddressIP_GetSockAddress(p, a, b) (p)->lpVtbl->GetSockAddress(a, b)
 #define IDirectPlay8AddressIP_GetLocalAddress(p, a, b) (p)->lpVtbl->GetLocalAddress(a, b)
 #define IDirectPlay8AddressIP_GetAddress(p, a, b, c) (p)->lpVtbl->GetAddress(a, b, c)
-
 declare function DirectPlay8AddressCreate(byval pcIID as const GUID ptr, byval ppvInterface as LPVOID ptr, byval pUnknown as IUnknown ptr) as HRESULT
 
 end extern

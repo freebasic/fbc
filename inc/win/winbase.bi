@@ -59,7 +59,6 @@ end type
 
 type OVERLAPPED_ENTRY as _OVERLAPPED_ENTRY
 type LPOVERLAPPED_ENTRY as _OVERLAPPED_ENTRY ptr
-
 #define _SYSTEMTIME_
 
 type _SYSTEMTIME
@@ -129,7 +128,6 @@ enum
 end enum
 
 type FINDEX_INFO_LEVELS as _FINDEX_INFO_LEVELS
-
 #define FIND_FIRST_EX_CASE_SENSITIVE &h00000001
 #define FIND_FIRST_EX_LARGE_FETCH &h00000002
 
@@ -189,7 +187,6 @@ type CRITICAL_SECTION_DEBUG as RTL_CRITICAL_SECTION_DEBUG
 type PCRITICAL_SECTION_DEBUG as PRTL_CRITICAL_SECTION_DEBUG
 type LPCRITICAL_SECTION_DEBUG as PRTL_CRITICAL_SECTION_DEBUG
 type LPOVERLAPPED_COMPLETION_ROUTINE as sub(byval dwErrorCode as DWORD, byval dwNumberOfBytesTransfered as DWORD, byval lpOverlapped as LPOVERLAPPED)
-
 #define LOCKFILE_FAIL_IMMEDIATELY &h1
 #define LOCKFILE_EXCLUSIVE_LOCK &h2
 
@@ -248,7 +245,6 @@ end type
 
 type REASON_CONTEXT as _REASON_CONTEXT
 type PREASON_CONTEXT as _REASON_CONTEXT ptr
-
 #define EXCEPTION_DEBUG_EVENT 1
 #define CREATE_THREAD_DEBUG_EVENT 2
 #define CREATE_PROCESS_DEBUG_EVENT 3
@@ -258,7 +254,6 @@ type PREASON_CONTEXT as _REASON_CONTEXT ptr
 #define UNLOAD_DLL_DEBUG_EVENT 7
 #define OUTPUT_DEBUG_STRING_EVENT 8
 #define RIP_EVENT 9
-
 type PTHREAD_START_ROUTINE as function(byval lpThreadParameter as LPVOID) as DWORD
 type LPTHREAD_START_ROUTINE as PTHREAD_START_ROUTINE
 
@@ -420,9 +415,7 @@ declare function BemCreateContractFrom(byval dllPath as LPCWSTR, byval extension
 declare function BemCopyReference(byval reference as BEM_REFERENCE ptr, byval copiedReference as BEM_REFERENCE ptr ptr) as HRESULT
 declare sub BemFreeReference(byval reference as BEM_REFERENCE ptr)
 declare sub BemFreeContract(byval contract as any ptr)
-
 #define _APISETDEBUG_
-
 declare function IsDebuggerPresent() as WINBOOL
 declare sub OutputDebugStringA(byval lpOutputString as LPCSTR)
 declare sub OutputDebugStringW(byval lpOutputString as LPCWSTR)
@@ -439,12 +432,9 @@ declare function WaitForDebugEvent(byval lpDebugEvent as LPDEBUG_EVENT, byval dw
 declare function DebugActiveProcess(byval dwProcessId as DWORD) as WINBOOL
 declare function DebugActiveProcessStop(byval dwProcessId as DWORD) as WINBOOL
 declare function CheckRemoteDebuggerPresent(byval hProcess as HANDLE, byval pbDebuggerPresent as PBOOL) as WINBOOL
-
 #define _ERRHANDLING_H_
-
 type PTOP_LEVEL_EXCEPTION_FILTER as function(byval ExceptionInfo as _EXCEPTION_POINTERS ptr) as LONG
 type LPTOP_LEVEL_EXCEPTION_FILTER as PTOP_LEVEL_EXCEPTION_FILTER
-
 declare function UnhandledExceptionFilter(byval ExceptionInfo as _EXCEPTION_POINTERS ptr) as LONG
 declare function SetUnhandledExceptionFilter(byval lpTopLevelExceptionFilter as LPTOP_LEVEL_EXCEPTION_FILTER) as LPTOP_LEVEL_EXCEPTION_FILTER
 declare function SetErrorMode(byval uMode as UINT) as UINT
@@ -460,12 +450,10 @@ declare function RemoveVectoredContinueHandler(byval Handle as PVOID) as ULONG
 declare sub RaiseException(byval dwExceptionCode as DWORD, byval dwExceptionFlags as DWORD, byval nNumberOfArguments as DWORD, byval lpArguments as const ULONG_PTR ptr)
 declare function GetLastError() as DWORD
 declare sub SetLastError(byval dwErrCode as DWORD)
-
 #define _FIBERS_H_
 
 #if _WIN32_WINNT = &h0602
 	#define FLS_OUT_OF_INDEXES cast(DWORD, &hffffffff)
-
 	declare function FlsAlloc(byval lpCallback as PFLS_CALLBACK_FUNCTION) as DWORD
 	declare function FlsGetValue(byval dwFlsIndex as DWORD) as PVOID
 	declare function FlsSetValue(byval dwFlsIndex as DWORD, byval lpFlsData as PVOID) as WINBOOL
@@ -579,7 +567,6 @@ declare function GetVolumePathNamesForVolumeNameW(byval lpszVolumeName as LPCWST
 	declare function GetFinalPathNameByHandleA(byval hFile as HANDLE, byval lpszFilePath as LPSTR, byval cchFilePath as DWORD, byval dwFlags as DWORD) as DWORD
 	declare function GetFinalPathNameByHandleW(byval hFile as HANDLE, byval lpszFilePath as LPWSTR, byval cchFilePath as DWORD, byval dwFlags as DWORD) as DWORD
 	declare function GetVolumeInformationByHandleW(byval hFile as HANDLE, byval lpVolumeNameBuffer as LPWSTR, byval nVolumeNameSize as DWORD, byval lpVolumeSerialNumber as LPDWORD, byval lpMaximumComponentLength as LPDWORD, byval lpFileSystemFlags as LPDWORD, byval lpFileSystemNameBuffer as LPWSTR, byval nFileSystemNameSize as DWORD) as WINBOOL
-
 	#define GetFinalPathNameByHandle GetFinalPathNameByHandleW
 #elseif not defined(UNICODE)
 	#define CreateFile CreateFileA
@@ -596,7 +583,6 @@ declare function GetVolumePathNamesForVolumeNameW(byval lpszVolumeName as LPCWST
 	declare function GetFinalPathNameByHandleA(byval hFile as HANDLE, byval lpszFilePath as LPSTR, byval cchFilePath as DWORD, byval dwFlags as DWORD) as DWORD
 	declare function GetFinalPathNameByHandleW(byval hFile as HANDLE, byval lpszFilePath as LPWSTR, byval cchFilePath as DWORD, byval dwFlags as DWORD) as DWORD
 	declare function GetVolumeInformationByHandleW(byval hFile as HANDLE, byval lpVolumeNameBuffer as LPWSTR, byval nVolumeNameSize as DWORD, byval lpVolumeSerialNumber as LPDWORD, byval lpMaximumComponentLength as LPDWORD, byval lpFileSystemFlags as LPDWORD, byval lpFileSystemNameBuffer as LPWSTR, byval nFileSystemNameSize as DWORD) as WINBOOL
-
 	#define GetFinalPathNameByHandle GetFinalPathNameByHandleA
 #endif
 
@@ -684,12 +670,10 @@ declare function WriteFile(byval hFile as HANDLE, byval lpBuffer as LPCVOID, byv
 
 #define _APISETHANDLE_
 #define INVALID_HANDLE_VALUE cast(HANDLE, cast(LONG_PTR, -1))
-
 declare function CloseHandle(byval hObject as HANDLE) as WINBOOL
 declare function DuplicateHandle(byval hSourceProcessHandle as HANDLE, byval hSourceHandle as HANDLE, byval hTargetProcessHandle as HANDLE, byval lpTargetHandle as LPHANDLE, byval dwDesiredAccess as DWORD, byval bInheritHandle as WINBOOL, byval dwOptions as DWORD) as WINBOOL
 declare function GetHandleInformation(byval hObject as HANDLE, byval lpdwFlags as LPDWORD) as WINBOOL
 declare function SetHandleInformation(byval hObject as HANDLE, byval dwMask as DWORD, byval dwFlags as DWORD) as WINBOOL
-
 #define _HEAPAPI_H_
 
 type _HEAP_SUMMARY
@@ -720,9 +704,7 @@ declare function HeapReAlloc(byval hHeap as HANDLE, byval dwFlags as DWORD, byva
 declare function HeapFree(byval hHeap as HANDLE, byval dwFlags as DWORD, byval lpMem as LPVOID) as WINBOOL
 declare function HeapSize(byval hHeap as HANDLE, byval dwFlags as DWORD, byval lpMem as LPCVOID) as SIZE_T_
 declare function GetProcessHeap() as HANDLE
-
 #define _IO_APISET_H_
-
 declare function GetOverlappedResult(byval hFile as HANDLE, byval lpOverlapped as LPOVERLAPPED, byval lpNumberOfBytesTransferred as LPDWORD, byval bWait as WINBOOL) as WINBOOL
 declare function CreateIoCompletionPort(byval FileHandle as HANDLE, byval ExistingCompletionPort as HANDLE, byval CompletionKey as ULONG_PTR, byval NumberOfConcurrentThreads as DWORD) as HANDLE
 declare function GetQueuedCompletionStatus(byval CompletionPort as HANDLE, byval lpNumberOfBytesTransferred as LPDWORD, byval lpCompletionKey as PULONG_PTR, byval lpOverlapped as LPOVERLAPPED ptr, byval dwMilliseconds as DWORD) as WINBOOL
@@ -737,7 +719,6 @@ declare function CancelIo(byval hFile as HANDLE) as WINBOOL
 #endif
 
 declare function GetOverlappedResultEx(byval hFile as HANDLE, byval lpOverlapped as LPOVERLAPPED, byval lpNumberOfBytesTransferred as LPDWORD, byval dwMilliseconds as DWORD, byval bAlertable as WINBOOL) as WINBOOL
-
 #define _INTERLOCKAPI_H_
 
 #ifndef __FB_64BIT__
@@ -747,7 +728,6 @@ declare function GetOverlappedResultEx(byval hFile as HANDLE, byval lpOverlapped
 	declare function InterlockedExchangeAdd(byval Addend as LONG ptr, byval Value as LONG) as LONG
 	declare function InterlockedCompareExchange(byval Destination as LONG ptr, byval Exchange as LONG, byval Comperand as LONG) as LONG
 	declare function InterlockedCompareExchange64(byval Destination as LONGLONG ptr, byval Exchange as LONGLONG, byval Comperand as LONGLONG) as LONGLONG
-
 	#define InterlockedExchangePointer(Target, Value) cast(PVOID, InterlockedExchange(cast(PLONG, (Target)), cast(LONG, cast(LONG_PTR, (Value)))))
 	#define InterlockedExchangePointerNoFence InterlockedExchangePointer
 
@@ -784,14 +764,11 @@ declare function QueryDepthSList(byval ListHead as PSLIST_HEADER) as USHORT
 
 #if _WIN32_WINNT = &h0602
 	#define InterlockedPushListSList InterlockedPushListSListEx
-
 	declare function InterlockedPushListSListEx(byval ListHead as PSLIST_HEADER, byval List as PSLIST_ENTRY, byval ListEnd as PSLIST_ENTRY, byval Count as ULONG) as PSLIST_ENTRY
 #endif
 
 #define _JOBAPISET_H_
-
 declare function IsProcessInJob(byval ProcessHandle as HANDLE, byval JobHandle as HANDLE, byval Result as PBOOL) as WINBOOL
-
 #define _APISETLIBLOADER_
 
 type tagENUMUILANG
@@ -908,7 +885,6 @@ declare function GetModuleHandleExW(byval dwFlags as DWORD, byval lpModuleName a
 declare function DisableThreadLibraryCalls(byval hLibModule as HMODULE) as WINBOOL
 declare function FreeLibrary(byval hLibModule as HMODULE) as WINBOOL
 declare function GetProcAddress(byval hModule as HMODULE, byval lpProcName as LPCSTR) as FARPROC
-
 #define _MEMORYAPI_H_
 
 type _MEMORY_RESOURCE_NOTIFICATION_TYPE as long
@@ -992,7 +968,6 @@ declare function SetSystemFileCacheSize(byval MinimumFileCacheSize as SIZE_T_, b
 #endif
 
 #define _NAMEDPIPE_H_
-
 declare function ImpersonateNamedPipeClient(byval hNamedPipe as HANDLE) as WINBOOL
 declare function CreatePipe(byval hReadPipe as PHANDLE, byval hWritePipe as PHANDLE, byval lpPipeAttributes as LPSECURITY_ATTRIBUTES, byval nSize as DWORD) as WINBOOL
 declare function ConnectNamedPipe(byval hNamedPipe as HANDLE, byval lpOverlapped as LPOVERLAPPED) as WINBOOL
@@ -1015,7 +990,6 @@ declare function WaitNamedPipeW(byval lpNamedPipeName as LPCWSTR, byval nTimeOut
 
 #define _APISETNAMESPACE_
 #define PRIVATE_NAMESPACE_FLAG_DESTROY &h1
-
 declare function CreatePrivateNamespaceW(byval lpPrivateNamespaceAttributes as LPSECURITY_ATTRIBUTES, byval lpBoundaryDescriptor as LPVOID, byval lpAliasPrefix as LPCWSTR) as HANDLE
 declare function OpenPrivateNamespaceW(byval lpBoundaryDescriptor as LPVOID, byval lpAliasPrefix as LPCWSTR) as HANDLE
 
@@ -1032,9 +1006,7 @@ declare function CreateBoundaryDescriptorW(byval Name as LPCWSTR, byval Flags as
 
 declare function AddSIDToBoundaryDescriptor(byval BoundaryDescriptor as HANDLE ptr, byval RequiredSid as PSID) as WINBOOL
 declare sub DeleteBoundaryDescriptor(byval BoundaryDescriptor as HANDLE)
-
 #define _PROCESSENV_
-
 declare function GetEnvironmentStringsA alias "GetEnvironmentStrings"() as LPCH
 declare function GetEnvironmentStringsW() as LPWCH
 declare function SetEnvironmentStringsW(byval NewEnvironment as LPWCH) as WINBOOL
@@ -1171,7 +1143,6 @@ type LPSTARTUPINFOW as _STARTUPINFOW ptr
 
 type PPROC_THREAD_ATTRIBUTE_LIST as _PROC_THREAD_ATTRIBUTE_LIST ptr
 type LPPROC_THREAD_ATTRIBUTE_LIST as _PROC_THREAD_ATTRIBUTE_LIST ptr
-
 declare function QueueUserAPC(byval pfnAPC as PAPCFUNC, byval hThread as HANDLE, byval dwData as ULONG_PTR) as DWORD
 declare function GetProcessTimes(byval hProcess as HANDLE, byval lpCreationTime as LPFILETIME, byval lpExitTime as LPFILETIME, byval lpKernelTime as LPFILETIME, byval lpUserTime as LPFILETIME) as WINBOOL
 declare sub ExitProcess(byval uExitCode as UINT)
@@ -1237,7 +1208,6 @@ declare function CreateProcessAsUserW(byval hToken as HANDLE, byval lpApplicatio
 #if _WIN32_WINNT = &h0602
 	#define PROCESS_AFFINITY_ENABLE_AUTO_UPDATE __MSABI_LONG(&h1u)
 	#define PROC_THREAD_ATTRIBUTE_REPLACE_VALUE &h00000001
-
 	declare function GetProcessIdOfThread(byval Thread as HANDLE) as DWORD
 	declare function InitializeProcThreadAttributeList(byval lpAttributeList as LPPROC_THREAD_ATTRIBUTE_LIST, byval dwAttributeCount as DWORD, byval dwFlags as DWORD, byval lpSize as PSIZE_T) as WINBOOL
 	declare sub DeleteProcThreadAttributeList(byval lpAttributeList as LPPROC_THREAD_ATTRIBUTE_LIST)
@@ -1272,10 +1242,8 @@ declare function IsProcessorFeaturePresent(byval ProcessorFeature as DWORD) as W
 #endif
 
 #define _PROFILEAPI_H_
-
 declare function QueryPerformanceCounter(byval lpPerformanceCount as LARGE_INTEGER ptr) as WINBOOL
 declare function QueryPerformanceFrequency(byval lpFrequency as LARGE_INTEGER ptr) as WINBOOL
-
 #define _APISETREALTIME_
 
 #if _WIN32_WINNT = &h0602
@@ -1293,7 +1261,6 @@ declare function QueryPerformanceFrequency(byval lpFrequency as LARGE_INTEGER pt
 #endif
 
 #define _APISECUREBASE_
-
 declare function AccessCheck(byval pSecurityDescriptor as PSECURITY_DESCRIPTOR, byval ClientToken as HANDLE, byval DesiredAccess as DWORD, byval GenericMapping as PGENERIC_MAPPING, byval PrivilegeSet as PPRIVILEGE_SET, byval PrivilegeSetLength as LPDWORD, byval GrantedAccess as LPDWORD, byval AccessStatus as LPBOOL) as WINBOOL
 declare function AccessCheckAndAuditAlarmW(byval SubsystemName as LPCWSTR, byval HandleId as LPVOID, byval ObjectTypeName as LPWSTR, byval ObjectName as LPWSTR, byval SecurityDescriptor as PSECURITY_DESCRIPTOR, byval DesiredAccess as DWORD, byval GenericMapping as PGENERIC_MAPPING, byval ObjectCreation as WINBOOL, byval GrantedAccess as LPDWORD, byval AccessStatus as LPBOOL, byval pfGenerateOnClose as LPBOOL) as WINBOOL
 
@@ -1586,7 +1553,6 @@ declare function SignalObjectAndWait(byval hObjectToSignal as HANDLE, byval hObj
 
 #if _WIN32_WINNT = &h0602
 	#define CREATE_WAITABLE_TIMER_MANUAL_RESET &h1
-
 	declare function CreateWaitableTimerExW(byval lpTimerAttributes as LPSECURITY_ATTRIBUTES, byval lpTimerName as LPCWSTR, byval dwFlags as DWORD, byval dwDesiredAccess as DWORD) as HANDLE
 #endif
 
@@ -1632,7 +1598,6 @@ end type
 
 type SYSTEM_INFO as _SYSTEM_INFO
 type LPSYSTEM_INFO as _SYSTEM_INFO ptr
-
 declare sub GetSystemTime(byval lpSystemTime as LPSYSTEMTIME)
 declare sub GetSystemTimeAsFileTime(byval lpSystemTimeAsFileTime as LPFILETIME)
 declare sub GetLocalTime(byval lpSystemTime as LPSYSTEMTIME)
@@ -1673,7 +1638,6 @@ enum
 end enum
 
 type COMPUTER_NAME_FORMAT as _COMPUTER_NAME_FORMAT
-
 declare function GlobalMemoryStatusEx(byval lpBuffer as LPMEMORYSTATUSEX) as WINBOOL
 declare function SetLocalTime(byval lpSystemTime as const SYSTEMTIME ptr) as WINBOOL
 declare sub GetSystemInfo(byval lpSystemInfo as LPSYSTEM_INFO)
@@ -1718,7 +1682,6 @@ declare function GetSystemFirmwareTable(byval FirmwareTableProviderSignature as 
 #endif
 
 #define _SYSTEMTOPOLOGY_H_
-
 declare function GetNumaHighestNodeNumber(byval HighestNodeNumber as PULONG) as WINBOOL
 
 #if _WIN32_WINNT = &h0602
@@ -1726,7 +1689,6 @@ declare function GetNumaHighestNodeNumber(byval HighestNodeNumber as PULONG) as 
 #endif
 
 #define _THREADPOOLAPISET_H_
-
 type PTP_WIN32_IO_CALLBACK as sub(byval Instance as PTP_CALLBACK_INSTANCE, byval Context as PVOID, byval Overlapped as PVOID, byval IoResult as ULONG, byval NumberOfBytesTransferred as ULONG_PTR, byval Io as PTP_IO)
 
 #if _WIN32_WINNT = &h0602
@@ -1770,7 +1732,6 @@ type PTP_WIN32_IO_CALLBACK as sub(byval Instance as PTP_CALLBACK_INSTANCE, byval
 #endif
 
 #define _THREADPOOLLEGACYAPISET_H_
-
 declare function QueueUserWorkItem(byval Function as LPTHREAD_START_ROUTINE, byval Context as PVOID, byval Flags as ULONG) as WINBOOL
 declare function UnregisterWaitEx(byval WaitHandle as HANDLE, byval CompletionEvent as HANDLE) as WINBOOL
 declare function CreateTimerQueue() as HANDLE
@@ -1778,17 +1739,13 @@ declare function CreateTimerQueueTimer(byval phNewTimer as PHANDLE, byval TimerQ
 declare function ChangeTimerQueueTimer(byval TimerQueue as HANDLE, byval Timer as HANDLE, byval DueTime as ULONG, byval Period as ULONG) as WINBOOL
 declare function DeleteTimerQueueTimer(byval TimerQueue as HANDLE, byval Timer as HANDLE, byval CompletionEvent as HANDLE) as WINBOOL
 declare function DeleteTimerQueueEx(byval TimerQueue as HANDLE, byval CompletionEvent as HANDLE) as WINBOOL
-
 #define _APISETUTIL_
-
 declare function EncodePointer(byval Ptr as PVOID) as PVOID
 declare function DecodePointer(byval Ptr as PVOID) as PVOID
 declare function EncodeSystemPointer(byval Ptr as PVOID) as PVOID
 declare function DecodeSystemPointer(byval Ptr as PVOID) as PVOID
 declare function Beep_ alias "Beep"(byval dwFreq as DWORD, byval dwDuration as DWORD) as WINBOOL
-
 #define _WOW64APISET_H_
-
 declare function Wow64DisableWow64FsRedirection(byval OldValue as PVOID ptr) as WINBOOL
 declare function Wow64RevertWow64FsRedirection(byval OlValue as PVOID) as WINBOOL
 declare function IsWow64Process(byval hProcess as HANDLE, byval Wow64Process as PBOOL) as WINBOOL
@@ -1876,7 +1833,6 @@ declare function IsWow64Process(byval hProcess as HANDLE, byval Wow64Process as 
 #define SECURITY_VALID_SQOS_FLAGS &h1f0000
 #define FAIL_FAST_GENERATE_EXCEPTION_ADDRESS &h1
 #define FAIL_FAST_NO_HARD_ERROR_DLG &h2
-
 type PFIBER_START_ROUTINE as sub(byval lpFiberParameter as LPVOID)
 type LPFIBER_START_ROUTINE as PFIBER_START_ROUTINE
 
@@ -1975,7 +1931,6 @@ end type
 
 type COMMPROP as _COMMPROP
 type LPCOMMPROP as _COMMPROP ptr
-
 #define COMMPROP_INITIALIZED cast(DWORD, &he73cf52e)
 
 type _COMSTAT
@@ -1993,7 +1948,6 @@ end type
 
 type COMSTAT as _COMSTAT
 type LPCOMSTAT as _COMSTAT ptr
-
 #define DTR_CONTROL_DISABLE &h0
 #define DTR_CONTROL_ENABLE &h1
 #define DTR_CONTROL_HANDSHAKE &h2
@@ -2060,7 +2014,6 @@ end type
 
 type COMMCONFIG as _COMMCONFIG
 type LPCOMMCONFIG as _COMMCONFIG ptr
-
 #define FreeModule(hLibModule) FreeLibrary((hLibModule))
 #define MakeProcInstance(lpProc, hInstance) (lpProc)
 #define FreeProcInstance(lpProc) (lpProc)
@@ -2099,7 +2052,6 @@ end type
 
 type MEMORYSTATUS as _MEMORYSTATUS
 type LPMEMORYSTATUS as _MEMORYSTATUS ptr
-
 #define NUMA_NO_PREFERRED_NODE cast(DWORD, -1)
 #define DEBUG_PROCESS &h1
 #define DEBUG_ONLY_THIS_PROCESS &h2
@@ -2532,9 +2484,7 @@ declare function SetEnvironmentStringsA(byval NewEnvironment as LPCH) as WINBOOL
 #endif
 
 declare sub RaiseFailFastException(byval pExceptionRecord as PEXCEPTION_RECORD, byval pContextRecord as PCONTEXT, byval dwFlags as DWORD)
-
 #define FIBER_FLAG_FLOAT_SWITCH &h1
-
 declare function CreateFiber(byval dwStackSize as SIZE_T_, byval lpStartAddress as LPFIBER_START_ROUTINE, byval lpParameter as LPVOID) as LPVOID
 declare function CreateFiberEx(byval dwStackCommitSize as SIZE_T_, byval dwStackReserveSize as SIZE_T_, byval dwFlags as DWORD, byval lpStartAddress as LPFIBER_START_ROUTINE, byval lpParameter as LPVOID) as LPVOID
 declare sub DeleteFiber(byval lpFiber as LPVOID)
@@ -2581,10 +2531,8 @@ type PROCESS_INFORMATION_CLASS as _PROCESS_INFORMATION_CLASS
 
 	type MEMORY_PRIORITY_INFORMATION as _MEMORY_PRIORITY_INFORMATION
 	type PMEMORY_PRIORITY_INFORMATION as _MEMORY_PRIORITY_INFORMATION ptr
-
 	#define PROCESS_DEP_ENABLE &h00000001
 	#define PROCESS_DEP_DISABLE_ATL_THUNK_EMULATION &h00000002
-
 	declare function SetProcessDEPPolicy(byval dwFlags as DWORD) as WINBOOL
 	declare function GetProcessDEPPolicy(byval hProcess as HANDLE, byval lpFlags as LPDWORD, byval lpPermanent as PBOOL) as WINBOOL
 #endif
@@ -2612,7 +2560,6 @@ declare function SetThreadExecutionState(byval esFlags as EXECUTION_STATE) as EX
 #if _WIN32_WINNT = &h0602
 	#define FILE_SKIP_COMPLETION_PORT_ON_SUCCESS &h1
 	#define FILE_SKIP_SET_EVENT_ON_HANDLE &h2
-
 	declare function SetFileCompletionNotificationModes(byval FileHandle as HANDLE, byval Flags as UCHAR) as WINBOOL
 	declare function SetFileIoOverlappedRange(byval FileHandle as HANDLE, byval OverlappedRangeStart as PUCHAR, byval Length as ULONG) as WINBOOL
 #endif
@@ -2621,7 +2568,6 @@ declare function SetThreadExecutionState(byval esFlags as EXECUTION_STATE) as EX
 #define SEM_NOGPFAULTERRORBOX &h0002
 #define SEM_NOALIGNMENTFAULTEXCEPT &h0004
 #define SEM_NOOPENFILEERRORBOX &h8000
-
 declare function GetThreadErrorMode() as DWORD
 declare function SetThreadErrorMode(byval dwNewMode as DWORD, byval lpOldMode as LPDWORD) as WINBOOL
 
@@ -2634,7 +2580,6 @@ declare function SetThreadErrorMode(byval dwNewMode as DWORD, byval lpOldMode as
 
 declare function DebugSetProcessKillOnExit(byval KillOnExit as WINBOOL) as WINBOOL
 declare function DebugBreakProcess(byval Process as HANDLE) as WINBOOL
-
 #define CRITICAL_SECTION_NO_DEBUG_INFO RTL_CRITICAL_SECTION_FLAG_NO_DEBUG_INFO
 
 type _DEP_SYSTEM_POLICY_TYPE as long
@@ -2647,7 +2592,6 @@ enum
 end enum
 
 type DEP_SYSTEM_POLICY_TYPE as _DEP_SYSTEM_POLICY_TYPE
-
 #define HANDLE_FLAG_INHERIT &h1
 #define HANDLE_FLAG_PROTECT_FROM_CLOSE &h2
 #define HINSTANCE_ERROR 32
@@ -2726,10 +2670,8 @@ declare function FormatMessageW(byval dwFlags as DWORD, byval lpSource as LPCVOI
 #define FORMAT_MESSAGE_FROM_SYSTEM &h00001000
 #define FORMAT_MESSAGE_ARGUMENT_ARRAY &h00002000
 #define FORMAT_MESSAGE_MAX_WIDTH_MASK &h000000ff
-
 type PFE_EXPORT_FUNC as function(byval pbData as PBYTE, byval pvCallbackContext as PVOID, byval ulLength as ULONG) as DWORD
 type PFE_IMPORT_FUNC as function(byval pbData as PBYTE, byval pvCallbackContext as PVOID, byval ulLength as PULONG) as DWORD
-
 #define FILE_ENCRYPTABLE 0
 #define FILE_IS_ENCRYPTED 1
 #define FILE_SYSTEM_ATTR 2
@@ -2821,7 +2763,6 @@ end type
 
 type WIN32_STREAM_ID as _WIN32_STREAM_ID
 type LPWIN32_STREAM_ID as _WIN32_STREAM_ID ptr
-
 #define BACKUP_INVALID &h00000000
 #define BACKUP_DATA &h00000001
 #define BACKUP_EA_DATA &h00000002
@@ -2925,9 +2866,7 @@ declare function LoadLibraryW(byval lpLibFileName as LPCWSTR) as HMODULE
 
 #if _WIN32_WINNT = &h0602
 	declare function LoadPackagedLibrary(byval lpwLibFileName as LPCWSTR, byval Reserved as DWORD) as HMODULE
-
 	#define PROCESS_NAME_NATIVE &h00000001
-
 	declare function QueryFullProcessImageNameA(byval hProcess as HANDLE, byval dwFlags as DWORD, byval lpExeName as LPSTR, byval lpdwSize as PDWORD) as WINBOOL
 	declare function QueryFullProcessImageNameW(byval hProcess as HANDLE, byval dwFlags as DWORD, byval lpExeName as LPWSTR, byval lpdwSize as PDWORD) as WINBOOL
 #endif
@@ -2957,7 +2896,6 @@ declare function LoadLibraryW(byval lpLibFileName as LPCWSTR) as HMODULE
 	end enum
 
 	type PROC_THREAD_ATTRIBUTE_NUM as _PROC_THREAD_ATTRIBUTE_NUM
-
 	#define ProcThreadAttributeValue(Number, Thread, Input, Additive) (((((Number) and PROC_THREAD_ATTRIBUTE_NUMBER) or iif(Thread <> FALSE, PROC_THREAD_ATTRIBUTE_THREAD, 0)) or iif(Input <> FALSE, PROC_THREAD_ATTRIBUTE_INPUT, 0)) or iif(Additive <> FALSE, PROC_THREAD_ATTRIBUTE_ADDITIVE, 0))
 	#define PROC_THREAD_ATTRIBUTE_PARENT_PROCESS ProcThreadAttributeValue(ProcThreadAttributeParentProcess, FALSE, TRUE, FALSE)
 	#define PROC_THREAD_ATTRIBUTE_HANDLE_LIST ProcThreadAttributeValue(ProcThreadAttributeHandleList, FALSE, TRUE, FALSE)
@@ -3017,7 +2955,6 @@ declare function LoadLibraryW(byval lpLibFileName as LPCWSTR) as HMODULE
 #endif
 
 #define ATOM_FLAG_GLOBAL &h2
-
 declare function GetProcessShutdownParameters(byval lpdwLevel as LPDWORD, byval lpdwFlags as LPDWORD) as WINBOOL
 declare sub FatalAppExitA(byval uAction as UINT, byval lpMessageText as LPCSTR)
 declare sub FatalAppExitW(byval uAction as UINT, byval lpMessageText as LPCWSTR)
@@ -3182,10 +3119,8 @@ declare function GetSystemWow64DirectoryW(byval lpBuffer as LPWSTR, byval uSize 
 #endif
 
 declare function Wow64EnableWow64FsRedirection(byval Wow64FsEnableRedirection as BOOLEAN) as BOOLEAN
-
 type PGET_SYSTEM_WOW64_DIRECTORY_A as function(byval lpBuffer as LPSTR, byval uSize as UINT) as UINT
 type PGET_SYSTEM_WOW64_DIRECTORY_W as function(byval lpBuffer as LPWSTR, byval uSize as UINT) as UINT
-
 #define GET_SYSTEM_WOW64_DIRECTORY_NAME_A_A "GetSystemWow64DirectoryA"
 #define GET_SYSTEM_WOW64_DIRECTORY_NAME_A_W wstr("GetSystemWow64DirectoryA")
 #define GET_SYSTEM_WOW64_DIRECTORY_NAME_A_T __TEXT("GetSystemWow64DirectoryA")
@@ -3257,7 +3192,6 @@ declare function CreateDirectoryExW(byval lpTemplateDirectory as LPCWSTR, byval 
 #define DDD_EXACT_MATCH_ON_REMOVE &h00000004
 #define DDD_NO_BROADCAST_SYSTEM &h00000008
 #define DDD_LUID_BROADCAST_DRIVE &h00000010
-
 declare function DefineDosDeviceA(byval dwFlags as DWORD, byval lpDeviceName as LPCSTR, byval lpTargetPath as LPCSTR) as WINBOOL
 declare function QueryDosDeviceA(byval lpDeviceName as LPCSTR, byval lpTargetPath as LPSTR, byval ucchMax as DWORD) as DWORD
 
@@ -3323,7 +3257,6 @@ declare function GetCompressedFileSizeW(byval lpFileName as LPCWSTR, byval lpFil
 #endif
 
 type LPPROGRESS_ROUTINE as function(byval TotalFileSize as LARGE_INTEGER, byval TotalBytesTransferred as LARGE_INTEGER, byval StreamSize as LARGE_INTEGER, byval StreamBytesTransferred as LARGE_INTEGER, byval dwStreamNumber as DWORD, byval dwCallbackReason as DWORD, byval hSourceFile as HANDLE, byval hDestinationFile as HANDLE, byval lpData as LPVOID) as DWORD
-
 declare function CheckNameLegalDOS8Dot3A(byval lpName as LPCSTR, byval lpOemName as LPSTR, byval OemNameSize as DWORD, byval pbNameContainsSpaces as PBOOL, byval pbNameLegal as PBOOL) as WINBOOL
 declare function CheckNameLegalDOS8Dot3W(byval lpName as LPCWSTR, byval lpOemName as LPSTR, byval OemNameSize as DWORD, byval pbNameContainsSpaces as PBOOL, byval pbNameLegal as PBOOL) as WINBOOL
 declare function CopyFileA(byval lpExistingFileName as LPCSTR, byval lpNewFileName as LPCSTR, byval bFailIfExists as WINBOOL) as WINBOOL
@@ -3394,7 +3327,6 @@ declare function CopyFileExW(byval lpExistingFileName as LPCWSTR, byval lpNewFil
 	end enum
 
 	type COPYFILE2_COPY_PHASE as _COPYFILE2_COPY_PHASE
-
 	#define COPYFILE2_MESSAGE_COPY_OFFLOAD __MSABI_LONG(&h00000001)
 
 	type COPYFILE2_MESSAGE_Info_ChunkStarted
@@ -3578,7 +3510,6 @@ end type
 
 type WIN32_FIND_STREAM_DATA as _WIN32_FIND_STREAM_DATA
 type PWIN32_FIND_STREAM_DATA as _WIN32_FIND_STREAM_DATA ptr
-
 declare function FindFirstStreamW(byval lpFileName as LPCWSTR, byval InfoLevel as STREAM_INFO_LEVELS, byval lpFindStreamData as LPVOID, byval dwFlags as DWORD) as HANDLE
 declare function FindNextStreamW(byval hFindStream as HANDLE, byval lpFindStreamData as LPVOID) as WINBOOL
 
@@ -3667,12 +3598,10 @@ end type
 
 type EVENTLOG_FULL_INFORMATION as _EVENTLOG_FULL_INFORMATION
 type LPEVENTLOG_FULL_INFORMATION as _EVENTLOG_FULL_INFORMATION ptr
-
 declare function GetEventLogInformation(byval hEventLog as HANDLE, byval dwInfoLevel as DWORD, byval lpBuffer as LPVOID, byval cbBufSize as DWORD, byval pcbBytesNeeded as LPDWORD) as WINBOOL
 
 #if _WIN32_WINNT = &h0602
 	#define OPERATION_API_VERSION 1
-
 	type OPERATION_ID as ULONG
 
 	type _OPERATION_START_PARAMETERS
@@ -3683,7 +3612,6 @@ declare function GetEventLogInformation(byval hEventLog as HANDLE, byval dwInfoL
 
 	type OPERATION_START_PARAMETERS as _OPERATION_START_PARAMETERS
 	type POPERATION_START_PARAMETERS as _OPERATION_START_PARAMETERS ptr
-
 	#define OPERATION_START_TRACE_CURRENT_THREAD &h1
 
 	type _OPERATION_END_PARAMETERS
@@ -3694,9 +3622,7 @@ declare function GetEventLogInformation(byval hEventLog as HANDLE, byval dwInfoL
 
 	type OPERATION_END_PARAMETERS as _OPERATION_END_PARAMETERS
 	type POPERATION_END_PARAMETERS as _OPERATION_END_PARAMETERS ptr
-
 	#define OPERATION_END_DISCARD &h1
-
 	declare function OperationStart(byval OperationStartParams as OPERATION_START_PARAMETERS ptr) as WINBOOL
 	declare function OperationEnd(byval OperationEndParams as OPERATION_END_PARAMETERS ptr) as WINBOOL
 #endif
@@ -3825,7 +3751,6 @@ declare function SetDefaultCommConfigW(byval lpszName as LPCWSTR, byval lpCC as 
 #endif
 
 #define MAX_COMPUTERNAME_LENGTH 15
-
 declare function GetComputerNameA(byval lpBuffer as LPSTR, byval nSize as LPDWORD) as WINBOOL
 declare function GetComputerNameW(byval lpBuffer as LPWSTR, byval nSize as LPDWORD) as WINBOOL
 declare function SetComputerNameA(byval lpComputerName as LPCSTR) as WINBOOL
@@ -3984,7 +3909,6 @@ end type
 
 type DYNAMIC_TIME_ZONE_INFORMATION as _TIME_DYNAMIC_ZONE_INFORMATION
 type PDYNAMIC_TIME_ZONE_INFORMATION as _TIME_DYNAMIC_ZONE_INFORMATION ptr
-
 declare function SystemTimeToTzSpecificLocalTime(byval lpTimeZoneInformation as const TIME_ZONE_INFORMATION ptr, byval lpUniversalTime as const SYSTEMTIME ptr, byval lpLocalTime as LPSYSTEMTIME) as WINBOOL
 declare function TzSpecificLocalTimeToSystemTime(byval lpTimeZoneInformation as const TIME_ZONE_INFORMATION ptr, byval lpLocalTime as const SYSTEMTIME ptr, byval lpUniversalTime as LPSYSTEMTIME) as WINBOOL
 declare function FileTimeToSystemTime(byval lpFileTime as const FILETIME ptr, byval lpSystemTime as LPSYSTEMTIME) as WINBOOL
@@ -4034,17 +3958,14 @@ end type
 
 type SYSTEM_POWER_STATUS as _SYSTEM_POWER_STATUS
 type LPSYSTEM_POWER_STATUS as _SYSTEM_POWER_STATUS ptr
-
 declare function GetSystemPowerStatus(byval lpSystemPowerStatus as LPSYSTEM_POWER_STATUS) as WINBOOL
 declare function SetSystemPowerState(byval fSuspend as WINBOOL, byval fForce as WINBOOL) as WINBOOL
 
 #if _WIN32_WINNT = &h0602
 	type PBAD_MEMORY_CALLBACK_ROUTINE as sub()
-
 	declare function RegisterBadMemoryNotification(byval Callback as PBAD_MEMORY_CALLBACK_ROUTINE) as PVOID
 	declare function UnregisterBadMemoryNotification(byval RegistrationHandle as PVOID) as WINBOOL
 	declare function GetMemoryErrorHandlingCapabilities(byval Capabilities as PULONG) as WINBOOL
-
 	#define MEHC_PATROL_SCRUBBER_PRESENT &h1
 #endif
 
@@ -4248,9 +4169,7 @@ type PCACTIVATION_CONTEXT_BASIC_INFORMATION as const _ACTIVATION_CONTEXT_BASIC_I
 #define QUERY_ACTCTX_FLAG_ACTCTX_IS_HMODULE &h00000008
 #define QUERY_ACTCTX_FLAG_ACTCTX_IS_ADDRESS &h00000010
 #define QUERY_ACTCTX_FLAG_NO_ADDREF &h80000000
-
 declare function QueryActCtxW(byval dwFlags as DWORD, byval hActCtx as HANDLE, byval pvSubInstance as PVOID, byval ulInfoClass as ULONG, byval pvBuffer as PVOID, byval cbBuffer as SIZE_T_, byval pcbWrittenOrRequired as SIZE_T_ ptr) as WINBOOL
-
 type PQUERYACTCTXW_FUNC as function(byval dwFlags as DWORD, byval hActCtx as HANDLE, byval pvSubInstance as PVOID, byval ulInfoClass as ULONG, byval pvBuffer as PVOID, byval cbBuffer as SIZE_T_, byval pcbWrittenOrRequired as SIZE_T_ ptr) as WINBOOL
 
 declare function WTSGetActiveConsoleSessionId() as DWORD
@@ -4271,7 +4190,6 @@ declare function GetNumaAvailableMemoryNode(byval Node as UCHAR, byval Available
 #endif
 
 type APPLICATION_RECOVERY_CALLBACK as function(byval pvParameter as PVOID) as DWORD
-
 #define RESTART_MAX_CMD_LINE 1024
 #define RESTART_NO_CRASH 1
 #define RESTART_NO_HANG 2
@@ -4448,7 +4366,6 @@ type APPLICATION_RECOVERY_CALLBACK as function(byval pvParameter as PVOID) as DW
 
 	type FILE_ALIGNMENT_INFO as _FILE_ALIGNMENT_INFO
 	type PFILE_ALIGNMENT_INFO as _FILE_ALIGNMENT_INFO ptr
-
 	#define STORAGE_INFO_FLAGS_ALIGNED_DEVICE &h00000001
 	#define STORAGE_INFO_FLAGS_PARTITION_ALIGNED_ON_DEVICE &h00000002
 	#define STORAGE_INFO_OFFSET_UNKNOWN &hffffffff
@@ -4493,7 +4410,6 @@ type APPLICATION_RECOVERY_CALLBACK as function(byval pvParameter as PVOID) as DW
 
 	type FILE_ID_EXTD_DIR_INFO as _FILE_ID_EXTD_DIR_INFO
 	type PFILE_ID_EXTD_DIR_INFO as _FILE_ID_EXTD_DIR_INFO ptr
-
 	#define REMOTE_PROTOCOL_INFO_FLAG_LOOPBACK &h00000001
 	#define REMOTE_PROTOCOL_INFO_FLAG_OFFLINE &h00000002
 	#define REMOTE_PROTOCOL_INFO_FLAG_PERSISTENT_HANDLE &h00000004
@@ -4547,7 +4463,6 @@ type APPLICATION_RECOVERY_CALLBACK as function(byval pvParameter as PVOID) as DW
 
 	type FILE_REMOTE_PROTOCOL_INFO as _FILE_REMOTE_PROTOCOL_INFO
 	type PFILE_REMOTE_PROTOCOL_INFO as _FILE_REMOTE_PROTOCOL_INFO ptr
-
 	declare function GetFileInformationByHandleEx(byval hFile as HANDLE, byval FileInformationClass as FILE_INFO_BY_HANDLE_CLASS, byval lpFileInformation as LPVOID, byval dwBufferSize as DWORD) as WINBOOL
 
 	type _FILE_ID_TYPE as long
@@ -4573,12 +4488,9 @@ type APPLICATION_RECOVERY_CALLBACK as function(byval pvParameter as PVOID) as DW
 	end type
 
 	type LPFILE_ID_DESCRIPTOR as FILE_ID_DESCRIPTOR ptr
-
 	declare function OpenFileById(byval hVolumeHint as HANDLE, byval lpFileId as LPFILE_ID_DESCRIPTOR, byval dwDesiredAccess as DWORD, byval dwShareMode as DWORD, byval lpSecurityAttributes as LPSECURITY_ATTRIBUTES, byval dwFlagsAndAttributes as DWORD) as HANDLE
-
 	#define SYMBOLIC_LINK_FLAG_DIRECTORY &h1
 	#define VALID_SYMBOLIC_LINK_FLAGS SYMBOLIC_LINK_FLAG_DIRECTORY
-
 	declare function CreateSymbolicLinkA(byval lpSymlinkFileName as LPCSTR, byval lpTargetFileName as LPCSTR, byval dwFlags as DWORD) as BOOLEAN
 	declare function CreateSymbolicLinkW(byval lpSymlinkFileName as LPCWSTR, byval lpTargetFileName as LPCWSTR, byval dwFlags as DWORD) as BOOLEAN
 	declare function CreateSymbolicLinkTransactedA(byval lpSymlinkFileName as LPCSTR, byval lpTargetFileName as LPCSTR, byval dwFlags as DWORD, byval hTransaction as HANDLE) as BOOLEAN

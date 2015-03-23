@@ -9,7 +9,6 @@ extern "C"
 #define __REQUIRED_RPCNDR_H_VERSION__ 475
 #define __wtypes_h__
 #define __IWinTypes_INTERFACE_DEFINED__
-
 extern IWinTypes_v0_1_c_ifspec as RPC_IF_HANDLE
 extern IWinTypes_v0_1_s_ifspec as RPC_IF_HANDLE
 
@@ -58,7 +57,6 @@ type tagRemBRUSH
 end type
 
 type RemHBRUSH as tagRemBRUSH
-
 #define _ROTFLAGS_DEFINED
 #define ROTFLAGS_REGISTRATIONKEEPSALIVE &h1
 #define ROTFLAGS_ALLOWANYCLIENT &h2
@@ -104,7 +102,6 @@ end enum
 
 type STATFLAG as tagSTATFLAG
 type HCONTEXT as any ptr
-
 #define WDT_INPROC_CALL &h48746457
 #define WDT_REMOTE_CALL &h52746457
 #define WDT_INPROC64_CALL &h50746457
@@ -263,7 +260,6 @@ type wireHMETAFILE as userHMETAFILE ptr
 type wireHMETAFILEPICT as userHMETAFILEPICT ptr
 type HMETAFILEPICT as any ptr
 type DATE_ as double
-
 #define _tagCY_DEFINED
 #define _CY_DEFINED
 
@@ -304,7 +300,6 @@ type tagDEC
 end type
 
 type DECIMAL as tagDEC
-
 #define DECIMAL_NEG cast(UBYTE, &h80)
 #macro DECIMAL_SETZERO(dec)
 	scope
@@ -313,13 +308,11 @@ type DECIMAL as tagDEC
 		(dec).signscale = 0
 	end scope
 #endmacro
-
 type LPDECIMAL as DECIMAL ptr
 type wireBSTR as FLAGGED_WORD_BLOB ptr
 type BSTR as wstring ptr
 type LPBSTR as BSTR ptr
 type VARIANT_BOOL as short
-
 #define _tagBSTRBLOB_DEFINED
 
 type tagBSTRBLOB
@@ -329,7 +322,6 @@ end type
 
 type BSTRBLOB as tagBSTRBLOB
 type LPBSTRBLOB as tagBSTRBLOB ptr
-
 #define VARIANT_TRUE cast(VARIANT_BOOL, -1)
 #define VARIANT_FALSE cast(VARIANT_BOOL, 0)
 
@@ -340,9 +332,7 @@ type tagCLIPDATA
 end type
 
 type CLIPDATA as tagCLIPDATA
-
 #define CBPCLIPDATA(clipdata) ((clipdata).cbSize - sizeof((clipdata).ulClipFmt))
-
 type VARTYPE as ushort
 
 type VARENUM as long
@@ -402,7 +392,6 @@ enum
 end enum
 
 type PROPID as ULONG
-
 #define PROPERTYKEY_DEFINED
 
 type _tagpropertykey

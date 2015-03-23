@@ -12,32 +12,21 @@ type _GUID
 end type
 
 type GUID as _GUID
-
 #define _GUIDDEF_H_
 #define __LPGUID_DEFINED__
-
 type LPGUID as GUID ptr
-
 #define __LPCGUID_DEFINED__
-
 type LPCGUID as const GUID ptr
-
 #define __IID_DEFINED__
-
 type IID as GUID
 type LPIID as IID ptr
-
 #define IID_NULL GUID_NULL
 #define CLSID_DEFINED
-
 type CLSID as GUID
 type LPCLSID as CLSID ptr
-
 #define CLSID_NULL GUID_NULL
-
 type FMTID as GUID
 type LPFMTID as FMTID ptr
-
 #define FMTID_NULL GUID_NULL
 #define IsEqualFMTID(rfmtid1, rfmtid2) IsEqualGUID(rfmtid1, rfmtid2)
 #define _SYS_GUID_OPERATORS_

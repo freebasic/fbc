@@ -7,7 +7,6 @@
 extern "Windows"
 
 #define _UXTHEME_H_
-
 type HTHEME as HANDLE
 
 #if _WIN32_WINNT = &h0602
@@ -38,7 +37,6 @@ type HTHEME as HANDLE
 	end enum
 
 	type BP_BUFFERFORMAT as _BP_BUFFERFORMAT
-
 	#define BPPF_ERASE &h00000001
 	#define BPPF_NOCLIP &h00000002
 	#define BPPF_NONCLIENT &h00000004
@@ -52,7 +50,6 @@ type HTHEME as HANDLE
 
 	type BP_PAINTPARAMS as _BP_PAINTPARAMS
 	type PBP_PAINTPARAMS as _BP_PAINTPARAMS ptr
-
 	declare function BeginBufferedPaint(byval hdcTarget as HDC, byval prcTarget as const RECT ptr, byval dwFormat as BP_BUFFERFORMAT, byval pPaintParams as BP_PAINTPARAMS ptr, byval phdc as HDC ptr) as HPAINTBUFFER
 	declare function EndBufferedPaint(byval hBufferedPaint as HPAINTBUFFER, byval fUpdateTarget as WINBOOL) as HRESULT
 	declare function GetBufferedPaintTargetRect(byval hBufferedPaint as HPAINTBUFFER, byval prc as RECT ptr) as HRESULT
@@ -89,7 +86,6 @@ type HTHEME as HANDLE
 
 	type BP_ANIMATIONPARAMS as _BP_ANIMATIONPARAMS
 	type PBP_ANIMATIONPARAMS as _BP_ANIMATIONPARAMS ptr
-
 	declare function BeginBufferedAnimation(byval hwnd as HWND, byval hdcTarget as HDC, byval rcTarget as const RECT ptr, byval dwFormat as BP_BUFFERFORMAT, byval pPaintParams as BP_PAINTPARAMS ptr, byval pAnimationParams as BP_ANIMATIONPARAMS ptr, byval phdcFrom as HDC ptr, byval phdcTo as HDC ptr) as HANIMATIONBUFFER
 	declare function EndBufferedAnimation(byval hbpAnimation as HANIMATIONBUFFER, byval fUpdateTarget as WINBOOL) as HRESULT
 	declare function BufferedPaintRenderAnimation(byval hwnd as HWND, byval hdcTarget as HDC) as WINBOOL
@@ -107,13 +103,11 @@ type HTHEME as HANDLE
 	end type
 
 	type PWTA_OPTIONS as WTA_OPTIONS ptr
-
 	#define WTNCA_NODRAWCAPTION &h00000001
 	#define WTNCA_NODRAWICON &h00000002
 	#define WTNCA_NOSYSMENU &h00000004
 	#define WTNCA_NOMIRRORHELP &h00000008
 	#define WTNCA_VALIDBITS (((WTNCA_NODRAWCAPTION or WTNCA_NODRAWICON) or WTNCA_NOSYSMENU) or WTNCA_NOMIRRORHELP)
-
 	declare function SetWindowThemeAttribute(byval hwnd as HWND, byval eAttribute as WINDOWTHEMEATTRIBUTETYPE, byval pvAttribute as PVOID, byval cbAttribute as DWORD) as HRESULT
 
 	private function SetWindowThemeNonClientAttributes cdecl(byval hwnd as HWND, byval dwMask as DWORD, byval dwAttributes as DWORD) as HRESULT
@@ -128,15 +122,12 @@ declare function OpenThemeData(byval hwnd as HWND, byval pszClassList as LPCWSTR
 	#define OTD_FORCE_RECT_SIZING &h00000001
 	#define OTD_NONCLIENT &h00000002
 	#define OTD_VALIDBITS (OTD_FORCE_RECT_SIZING or OTD_NONCLIENT)
-
 	declare function OpenThemeDataEx(byval hwnd as HWND, byval pszClassList as LPCWSTR, byval dwFlags as DWORD) as HTHEME
 #endif
 
 declare function CloseThemeData(byval hTheme as HTHEME) as HRESULT
 declare function DrawThemeBackground(byval hTheme as HTHEME, byval hdc as HDC, byval iPartId as long, byval iStateId as long, byval pRect as const RECT ptr, byval pClipRect as const RECT ptr) as HRESULT
-
 #define DTT_GRAYED &h1
-
 declare function DrawThemeText(byval hTheme as HTHEME, byval hdc as HDC, byval iPartId as long, byval iStateId as long, byval pszText as LPCWSTR, byval iCharCount as long, byval dwTextFlags as DWORD, byval dwTextFlags2 as DWORD, byval pRect as const RECT ptr) as HRESULT
 
 #if _WIN32_WINNT = &h0602
@@ -155,7 +146,6 @@ declare function DrawThemeText(byval hTheme as HTHEME, byval hdc as HDC, byval i
 	#define DTT_CALLBACK (__MSABI_LONG(1u) shl 12)
 	#define DTT_COMPOSITED (__MSABI_LONG(1u) shl 13)
 	#define DTT_VALIDBITS ((((((((((((DTT_TEXTCOLOR or DTT_BORDERCOLOR) or DTT_SHADOWCOLOR) or DTT_SHADOWTYPE) or DTT_SHADOWOFFSET) or DTT_BORDERSIZE) or DTT_FONTPROP) or DTT_COLORPROP) or DTT_STATEID) or DTT_CALCRECT) or DTT_APPLYOVERLAY) or DTT_GLOWSIZE) or DTT_COMPOSITED)
-
 	type DTT_CALLBACK_PROC as function(byval hdc as HDC, byval pszText as LPWSTR, byval cchText as long, byval prc as LPRECT, byval dwFlags as UINT, byval lParam as LPARAM) as long
 
 	type _DTTOPTS
@@ -178,7 +168,6 @@ declare function DrawThemeText(byval hTheme as HTHEME, byval hdc as HDC, byval i
 
 	type DTTOPTS as _DTTOPTS
 	type PDTTOPTS as _DTTOPTS ptr
-
 	declare function DrawThemeTextEx(byval hTheme as HTHEME, byval hdc as HDC, byval iPartId as long, byval iStateId as long, byval pszText as LPCWSTR, byval iCharCount as long, byval dwFlags as DWORD, byval pRect as LPRECT, byval pOptions as const DTTOPTS ptr) as HRESULT
 #endif
 
@@ -232,7 +221,6 @@ end type
 
 type MARGINS as _MARGINS
 type PMARGINS as _MARGINS ptr
-
 declare function GetThemeMargins(byval hTheme as HTHEME, byval hdc as HDC, byval iPartId as long, byval iStateId as long, byval iPropId as long, byval prc as RECT ptr, byval pMargins as MARGINS ptr) as HRESULT
 
 #if (_WIN32_WINNT = &h0400) or (_WIN32_WINNT = &h0502)
@@ -253,7 +241,6 @@ end type
 
 type INTLIST as _INTLIST
 type PINTLIST as _INTLIST ptr
-
 declare function GetThemeIntList(byval hTheme as HTHEME, byval iPartId as long, byval iStateId as long, byval iPropId as long, byval pIntList as INTLIST ptr) as HRESULT
 
 type PROPERTYORIGIN as long
@@ -292,7 +279,6 @@ declare function GetWindowTheme(byval hwnd as HWND) as HTHEME
 
 declare function EnableThemeDialogTexture(byval hwnd as HWND, byval dwFlags as DWORD) as HRESULT
 declare function IsThemeDialogTextureEnabled(byval hwnd as HWND) as WINBOOL
-
 #define STAP_ALLOW_NONCLIENT (1 shl 0)
 #define STAP_ALLOW_CONTROLS (1 shl 1)
 #define STAP_ALLOW_WEBCONTENT (1 shl 2)
@@ -305,7 +291,6 @@ declare function GetCurrentThemeName(byval pszThemeFileName as LPWSTR, byval cch
 #define SZ_THDOCPROP_CANONICALNAME wstr("ThemeName")
 #define SZ_THDOCPROP_TOOLTIP wstr("ToolTip")
 #define SZ_THDOCPROP_AUTHOR wstr("author")
-
 declare function GetThemeDocumentationProperty(byval pszThemeName as LPCWSTR, byval pszPropertyName as LPCWSTR, byval pszValueBuff as LPWSTR, byval cchMaxValChars as long) as HRESULT
 declare function DrawThemeParentBackground(byval hwnd as HWND, byval hdc as HDC, byval prc as RECT ptr) as HRESULT
 
@@ -313,12 +298,10 @@ declare function DrawThemeParentBackground(byval hwnd as HWND, byval hdc as HDC,
 	#define DTPB_WINDOWDC &h00000001
 	#define DTPB_USECTLCOLORSTATIC &h00000002
 	#define DTPB_USEERASEBKGND &h00000004
-
 	declare function DrawThemeParentBackgroundEx(byval hwnd as HWND, byval hdc as HDC, byval dwFlags as DWORD, byval prc as const RECT ptr) as HRESULT
 #endif
 
 declare function EnableTheming(byval fEnable as WINBOOL) as HRESULT
-
 #define DTBG_CLIPRECT &h00000001
 #define DTBG_DRAWSOLID &h00000002
 #define DTBG_OMITBORDER &h00000004
@@ -336,7 +319,6 @@ end type
 
 type DTBGOPTS as _DTBGOPTS
 type PDTBGOPTS as _DTBGOPTS ptr
-
 declare function DrawThemeBackgroundEx(byval hTheme as HTHEME, byval hdc as HDC, byval iPartId as long, byval iStateId as long, byval pRect as const RECT ptr, byval pOptions as const DTBGOPTS ptr) as HRESULT
 
 end extern

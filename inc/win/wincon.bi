@@ -44,7 +44,6 @@ end type
 
 type KEY_EVENT_RECORD as _KEY_EVENT_RECORD
 type PKEY_EVENT_RECORD as _KEY_EVENT_RECORD ptr
-
 #define RIGHT_ALT_PRESSED &h1
 #define LEFT_ALT_PRESSED &h2
 #define RIGHT_CTRL_PRESSED &h4
@@ -71,7 +70,6 @@ end type
 
 type MOUSE_EVENT_RECORD as _MOUSE_EVENT_RECORD
 type PMOUSE_EVENT_RECORD as _MOUSE_EVENT_RECORD ptr
-
 #define FROM_LEFT_1ST_BUTTON_PRESSED &h1
 #define RIGHTMOST_BUTTON_PRESSED &h2
 #define FROM_LEFT_2ND_BUTTON_PRESSED &h4
@@ -121,7 +119,6 @@ end type
 
 type INPUT_RECORD as _INPUT_RECORD
 type PINPUT_RECORD as _INPUT_RECORD ptr
-
 #define KEY_EVENT &h1
 #define MOUSE_EVENT_ &h2
 #define WINDOW_BUFFER_SIZE_EVENT &h4
@@ -140,7 +137,6 @@ end type
 
 type CHAR_INFO as _CHAR_INFO
 type PCHAR_INFO as _CHAR_INFO ptr
-
 #define FOREGROUND_BLUE &h1
 #define FOREGROUND_GREEN &h2
 #define FOREGROUND_RED &h4
@@ -193,15 +189,12 @@ end type
 
 type CONSOLE_SELECTION_INFO as _CONSOLE_SELECTION_INFO
 type PCONSOLE_SELECTION_INFO as _CONSOLE_SELECTION_INFO ptr
-
 #define CONSOLE_NO_SELECTION &h0
 #define CONSOLE_SELECTION_IN_PROGRESS &h1
 #define CONSOLE_SELECTION_NOT_EMPTY &h2
 #define CONSOLE_MOUSE_SELECTION &h4
 #define CONSOLE_MOUSE_DOWN &h8
-
 type PHANDLER_ROUTINE as function(byval CtrlType as DWORD) as WINBOOL
-
 #define CTRL_C_EVENT 0
 #define CTRL_BREAK_EVENT 1
 #define CTRL_CLOSE_EVENT 2
@@ -304,9 +297,7 @@ declare function GenerateConsoleCtrlEvent(byval dwCtrlEvent as DWORD, byval dwPr
 declare function AllocConsole() as WINBOOL
 declare function FreeConsole() as WINBOOL
 declare function AttachConsole(byval dwProcessId as DWORD) as WINBOOL
-
 #define ATTACH_PARENT_PROCESS cast(DWORD, -1)
-
 declare function GetConsoleTitleA(byval lpConsoleTitle as LPSTR, byval nSize as DWORD) as DWORD
 declare function GetConsoleTitleW(byval lpConsoleTitle as LPWSTR, byval nSize as DWORD) as DWORD
 declare function SetConsoleTitleA(byval lpConsoleTitle as LPCSTR) as WINBOOL
@@ -315,23 +306,17 @@ declare function ReadConsoleA(byval hConsoleInput as HANDLE, byval lpBuffer as L
 declare function ReadConsoleW(byval hConsoleInput as HANDLE, byval lpBuffer as LPVOID, byval nNumberOfCharsToRead as DWORD, byval lpNumberOfCharsRead as LPDWORD, byval lpReserved as LPVOID) as WINBOOL
 declare function WriteConsoleA(byval hConsoleOutput as HANDLE, byval lpBuffer as const any ptr, byval nNumberOfCharsToWrite as DWORD, byval lpNumberOfCharsWritten as LPDWORD, byval lpReserved as LPVOID) as WINBOOL
 declare function WriteConsoleW(byval hConsoleOutput as HANDLE, byval lpBuffer as const any ptr, byval nNumberOfCharsToWrite as DWORD, byval lpNumberOfCharsWritten as LPDWORD, byval lpReserved as LPVOID) as WINBOOL
-
 #define CONSOLE_TEXTMODE_BUFFER 1
-
 declare function CreateConsoleScreenBuffer(byval dwDesiredAccess as DWORD, byval dwShareMode as DWORD, byval lpSecurityAttributes as const SECURITY_ATTRIBUTES ptr, byval dwFlags as DWORD, byval lpScreenBufferData as LPVOID) as HANDLE
 declare function GetConsoleCP() as UINT
 declare function SetConsoleCP(byval wCodePageID as UINT) as WINBOOL
 declare function GetConsoleOutputCP() as UINT
 declare function SetConsoleOutputCP(byval wCodePageID as UINT) as WINBOOL
-
 #define CONSOLE_FULLSCREEN 1
 #define CONSOLE_FULLSCREEN_HARDWARE 2
-
 declare function GetConsoleDisplayMode(byval lpModeFlags as LPDWORD) as WINBOOL
-
 #define CONSOLE_FULLSCREEN_MODE 1
 #define CONSOLE_WINDOWED_MODE 2
-
 declare function SetConsoleDisplayMode(byval hConsoleOutput as HANDLE, byval dwFlags as DWORD, byval lpNewScreenBufferDimensions as PCOORD) as WINBOOL
 declare function GetConsoleWindow() as HWND
 declare function GetConsoleProcessList(byval lpdwProcessList as LPDWORD, byval dwProcessCount as DWORD) as DWORD
@@ -394,7 +379,6 @@ end type
 
 type CONSOLE_SCREEN_BUFFER_INFOEX as _CONSOLE_SCREEN_BUFFER_INFOEX
 type PCONSOLE_SCREEN_BUFFER_INFOEX as _CONSOLE_SCREEN_BUFFER_INFOEX ptr
-
 declare function GetConsoleHistoryInfo(byval lpConsoleHistoryInfo as PCONSOLE_HISTORY_INFO) as WINBOOL
 
 #if defined(UNICODE) and (_WIN32_WINNT = &h0602)

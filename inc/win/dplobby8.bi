@@ -129,17 +129,12 @@ end type
 
 type DPL_MESSAGE_SESSION_STATUS as _DPL_MESSAGE_SESSION_STATUS
 type PDPL_MESSAGE_SESSION_STATUS as _DPL_MESSAGE_SESSION_STATUS ptr
-
 extern CLSID_DirectPlay8LobbiedApplication as const GUID
 extern CLSID_DirectPlay8LobbyClient as const GUID
 extern IID_IDirectPlay8LobbiedApplication as const GUID
-
 type PDIRECTPLAY8LOBBIEDAPPLICATION as IDirectPlay8LobbiedApplication ptr
-
 extern IID_IDirectPlay8LobbyClient as const GUID
-
 type PDIRECTPLAY8LOBBYCLIENT as IDirectPlay8LobbyClient ptr
-
 type IDirectPlay8LobbiedApplicationVtbl as IDirectPlay8LobbiedApplicationVtbl_
 
 type IDirectPlay8LobbiedApplication_
@@ -173,7 +168,6 @@ end type
 #define IDirectPlay8LobbiedApplication_Close(p, a) (p)->lpVtbl->Close(p, a)
 #define IDirectPlay8LobbiedApplication_GetConnectionSettings(p, a, b, c, d) (p)->lpVtbl->GetConnectionSettings(p, a, b, c, d)
 #define IDirectPlay8LobbiedApplication_SetConnectionSettings(p, a, b, c) (p)->lpVtbl->SetConnectionSettings(p, a, b, c)
-
 type IDirectPlay8LobbyClientVtbl as IDirectPlay8LobbyClientVtbl_
 
 type IDirectPlay8LobbyClient
@@ -205,7 +199,6 @@ end type
 #define IDirectPlay8LobbyClient_Close(p, a) (p)->lpVtbl->Close(p, a)
 #define IDirectPlay8LobbyClient_GetConnectionSettings(p, a, b, c, d) (p)->lpVtbl->GetConnectionSettings(p, a, b, c, d)
 #define IDirectPlay8LobbyClient_SetConnectionSettings(p, a, b, c) (p)->lpVtbl->SetConnectionSettings(p, a, b, c)
-
 declare function DirectPlay8LobbyCreate(byval pcIID as const GUID ptr, byval ppvInterface as LPVOID ptr, byval pUnknown as IUnknown ptr) as HRESULT
 
 end extern

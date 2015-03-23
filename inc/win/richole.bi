@@ -22,7 +22,6 @@ type _reobject
 end type
 
 type REOBJECT as _reobject
-
 #define REO_GETOBJ_NO_INTERFACES __MSABI_LONG(&h00000000)
 #define REO_GETOBJ_POLEOBJ __MSABI_LONG(&h00000001)
 #define REO_GETOBJ_PSTG __MSABI_LONG(&h00000002)
@@ -52,7 +51,6 @@ type REOBJECT as _reobject
 #define RECO_COPY __MSABI_LONG(&h00000002)
 #define RECO_CUT __MSABI_LONG(&h00000003)
 #define RECO_DRAG __MSABI_LONG(&h00000004)
-
 type IRichEditOleVtbl as IRichEditOleVtbl_
 
 type IRichEditOle
@@ -82,7 +80,6 @@ type IRichEditOleVtbl_
 end type
 
 type LPRICHEDITOLE as IRichEditOle ptr
-
 type IRichEditOleCallbackVtbl as IRichEditOleCallbackVtbl_
 
 type IRichEditOleCallback
@@ -106,7 +103,6 @@ type IRichEditOleCallbackVtbl_
 end type
 
 type LPRICHEDITOLECALLBACK as IRichEditOleCallback ptr
-
 extern IID_IRichEditOle as const GUID
 extern IID_IRichEditOleCallback as const GUID
 

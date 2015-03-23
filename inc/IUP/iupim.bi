@@ -3,7 +3,6 @@
 extern "C"
 
 #define __IUPIM_H
-
 declare function IupLoadImage(byval file_name as const zstring ptr) as Ihandle ptr
 declare function IupSaveImage(byval ih as Ihandle ptr, byval file_name as const zstring ptr, byval format as const zstring ptr) as long
 

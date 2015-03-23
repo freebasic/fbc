@@ -23,7 +23,6 @@ end type
 
 type SI_OBJECT_INFO as _SI_OBJECT_INFO
 type PSI_OBJECT_INFO as _SI_OBJECT_INFO ptr
-
 #define SI_EDIT_PERMS __MSABI_LONG(&h00000000)
 #define SI_EDIT_OWNER __MSABI_LONG(&h00000001)
 #define SI_EDIT_AUDITS __MSABI_LONG(&h00000002)
@@ -74,7 +73,6 @@ end type
 
 type SI_ACCESS as _SI_ACCESS
 type PSI_ACCESS as _SI_ACCESS ptr
-
 #define SI_ACCESS_SPECIFIC __MSABI_LONG(&h00010000)
 #define SI_ACCESS_GENERAL __MSABI_LONG(&h00020000)
 #define SI_ACCESS_CONTAINER __MSABI_LONG(&h00040000)
@@ -117,7 +115,6 @@ enum
 end enum
 
 type SI_PAGE_ACTIVATED as _SI_PAGE_ACTIVATED
-
 #define GET_PAGE_TYPE(X) cast(UINT, (X) and &h0000ffff)
 #define GET_ACTIVATION_TYPE(Y) cast(UINT, ((Y) shr 16) and &h0000ffff)
 #define COMBINE_PAGE_ACTIVATION(X, Y) cast(UINT, ((Y) shl 16) or X)
@@ -127,7 +124,6 @@ type SI_PAGE_ACTIVATED as _SI_PAGE_ACTIVATED
 #define DOBJ_COND_NTACLS __MSABI_LONG(&h00000008)
 #define DOBJ_RIBBON_LAUNCH __MSABI_LONG(&h00000010)
 #define PSPCB_SI_INITDIALOG (WM_USER + 1)
-
 type ISecurityInformationVtbl as ISecurityInformationVtbl_
 
 type ISecurityInformation
@@ -148,7 +144,6 @@ type ISecurityInformationVtbl_
 end type
 
 type LPSECURITYINFO as ISecurityInformation ptr
-
 type ISecurityInformation2Vtbl as ISecurityInformation2Vtbl_
 
 type ISecurityInformation2
@@ -164,7 +159,6 @@ type ISecurityInformation2Vtbl_
 end type
 
 type LPSECURITYINFO2 as ISecurityInformation2 ptr
-
 #define CFSTR_ACLUI_SID_INFO_LIST __TEXT("CFSTR_ACLUI_SID_INFO_LIST")
 
 type _SID_INFO
@@ -184,7 +178,6 @@ end type
 
 type SID_INFO_LIST as _SID_INFO_LIST
 type PSID_INFO_LIST as _SID_INFO_LIST ptr
-
 type IEffectivePermissionVtbl as IEffectivePermissionVtbl_
 
 type IEffectivePermission
@@ -199,7 +192,6 @@ type IEffectivePermissionVtbl_
 end type
 
 type LPEFFECTIVEPERMISSION as IEffectivePermission ptr
-
 type ISecurityObjectTypeInfoVtbl as ISecurityObjectTypeInfoVtbl_
 
 type ISecurityObjectTypeInfo
@@ -244,7 +236,6 @@ type LPSecurityObjectTypeInfo as ISecurityObjectTypeInfo ptr
 
 	type SECURITY_OBJECT as _SECURITY_OBJECT
 	type PSECURITY_OBJECT as _SECURITY_OBJECT ptr
-
 	#define SECURITY_OBJECT_ID_OBJECT_SD 1
 	#define SECURITY_OBJECT_ID_SHARE 2
 	#define SECURITY_OBJECT_ID_CENTRAL_POLICY 3
@@ -259,7 +250,6 @@ type LPSecurityObjectTypeInfo as ISecurityObjectTypeInfo ptr
 
 	type EFFPERM_RESULT_LIST as _EFFPERM_RESULT_LIST
 	type PEFFPERM_RESULT_LIST as _EFFPERM_RESULT_LIST ptr
-
 	type ISecurityInformation4Vtbl as ISecurityInformation4Vtbl_
 
 	type ISecurityInformation4
@@ -274,7 +264,6 @@ type LPSecurityObjectTypeInfo as ISecurityObjectTypeInfo ptr
 	end type
 
 	type LPSECURITYINFO4 as ISecurityInformation4 ptr
-
 	type IEffectivePermission2Vtbl as IEffectivePermission2Vtbl_
 
 	type IEffectivePermission2

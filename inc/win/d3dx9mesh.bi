@@ -6,7 +6,6 @@
 extern "Windows"
 
 #define __WINE_D3DX9MESH_H
-
 extern IID_ID3DXBaseMesh as const GUID
 extern IID_ID3DXMesh as const GUID
 extern IID_ID3DXPMesh as const GUID
@@ -17,7 +16,6 @@ extern IID_ID3DXPRTBuffer as const GUID
 extern IID_ID3DXPRTCompBuffer as const GUID
 extern IID_ID3DXTextureGutterHelper as const GUID
 extern IID_ID3DXPRTEngine as const GUID
-
 #define UNUSED16 &hffff
 #define UNUSED32 &hffffffff
 
@@ -168,9 +166,7 @@ end enum
 
 type D3DXSHGPUSIMOPT as _D3DXSHGPUSIMOPT
 type LPD3DXBASEMESH as ID3DXBaseMesh ptr
-
 type ID3DXMesh as ID3DXMesh_
-
 type LPD3DXMESH as ID3DXMesh ptr
 type LPD3DXPMESH as ID3DXPMesh ptr
 type LPD3DXSPMESH as ID3DXSPMesh ptr
@@ -179,9 +175,7 @@ type LPD3DXPATCHMESH as ID3DXPatchMesh ptr
 type LPD3DXPRTBUFFER as ID3DXPRTBuffer ptr
 type LPD3DXPRTCOMPBUFFER as ID3DXPRTCompBuffer ptr
 type LPD3DXPRTENGINE as ID3DXPRTEngine ptr
-
 type ID3DXTextureGutterHelper as ID3DXTextureGutterHelper_
-
 type LPD3DXTEXTUREGUTTERHELPER as ID3DXTextureGutterHelper ptr
 
 type _D3DXATTRIBUTERANGE
@@ -324,7 +318,6 @@ type XFILECOMPRESSEDANIMATIONSET as _XFILECOMPRESSEDANIMATIONSET
 type LPD3DXUVATLASCB as function(byval complete as single, byval ctx as any ptr) as HRESULT
 type LPD3DXIMTSIGNALCALLBACK as function(byval as const D3DXVECTOR2 ptr, byval as UINT, byval as UINT, byval as any ptr, byval as FLOAT ptr) as HRESULT
 type LPD3DXSHPRTSIMCB as function(byval complete as single, byval ctx as any ptr) as HRESULT
-
 type ID3DXBaseMeshVtbl as ID3DXBaseMeshVtbl_
 
 type ID3DXBaseMesh

@@ -43,9 +43,7 @@ extern "Windows"
 #define __InMemoryPropertyStore_FWD_DEFINED__
 #define __PropertySystem_FWD_DEFINED__
 #define __IInitializeWithFile_INTERFACE_DEFINED__
-
 extern IID_IInitializeWithFile as const GUID
-
 type IInitializeWithFile as IInitializeWithFile_
 
 type IInitializeWithFileVtbl
@@ -61,11 +59,8 @@ end type
 
 declare function IInitializeWithFile_Initialize_Proxy(byval This as IInitializeWithFile ptr, byval pszFilePath as LPCWSTR, byval grfMode as DWORD) as HRESULT
 declare sub IInitializeWithFile_Initialize_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define __IInitializeWithStream_INTERFACE_DEFINED__
-
 extern IID_IInitializeWithStream as const GUID
-
 type IInitializeWithStream as IInitializeWithStream_
 
 type IInitializeWithStreamVtbl
@@ -83,11 +78,8 @@ declare function IInitializeWithStream_RemoteInitialize_Proxy(byval This as IIni
 declare sub IInitializeWithStream_RemoteInitialize_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IInitializeWithStream_Initialize_Proxy(byval This as IInitializeWithStream ptr, byval pstream as IStream ptr, byval grfMode as DWORD) as HRESULT
 declare function IInitializeWithStream_Initialize_Stub(byval This as IInitializeWithStream ptr, byval pstream as IStream ptr, byval grfMode as DWORD) as HRESULT
-
 #define __IPropertyStore_INTERFACE_DEFINED__
-
 extern IID_IPropertyStore as const GUID
-
 type IPropertyStore as IPropertyStore_
 
 type IPropertyStoreVtbl
@@ -115,13 +107,9 @@ declare function IPropertyStore_SetValue_Proxy(byval This as IPropertyStore ptr,
 declare sub IPropertyStore_SetValue_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IPropertyStore_Commit_Proxy(byval This as IPropertyStore ptr) as HRESULT
 declare sub IPropertyStore_Commit_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 type LPPROPERTYSTORE as IPropertyStore ptr
-
 #define __INamedPropertyStore_INTERFACE_DEFINED__
-
 extern IID_INamedPropertyStore as const GUID
-
 type INamedPropertyStore as INamedPropertyStore_
 
 type INamedPropertyStoreVtbl
@@ -163,9 +151,7 @@ enum
 end enum
 
 #define __IObjectWithPropertyKey_INTERFACE_DEFINED__
-
 extern IID_IObjectWithPropertyKey as const GUID
-
 type IObjectWithPropertyKey as IObjectWithPropertyKey_
 
 type IObjectWithPropertyKeyVtbl
@@ -193,9 +179,7 @@ enum
 end enum
 
 #define __IPropertyChange_INTERFACE_DEFINED__
-
 extern IID_IPropertyChange as const GUID
-
 type IPropertyChange as IPropertyChange_
 
 type IPropertyChangeVtbl
@@ -213,11 +197,8 @@ end type
 
 declare function IPropertyChange_ApplyToPropVariant_Proxy(byval This as IPropertyChange ptr, byval propvarIn as const PROPVARIANT const ptr, byval ppropvarOut as PROPVARIANT ptr) as HRESULT
 declare sub IPropertyChange_ApplyToPropVariant_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define __IPropertyChangeArray_INTERFACE_DEFINED__
-
 extern IID_IPropertyChangeArray as const GUID
-
 type IPropertyChangeArray as IPropertyChangeArray_
 
 type IPropertyChangeArrayVtbl
@@ -251,11 +232,8 @@ declare function IPropertyChangeArray_RemoveAt_Proxy(byval This as IPropertyChan
 declare sub IPropertyChangeArray_RemoveAt_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IPropertyChangeArray_IsKeyInArray_Proxy(byval This as IPropertyChangeArray ptr, byval key as const PROPERTYKEY const ptr) as HRESULT
 declare sub IPropertyChangeArray_IsKeyInArray_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define __IPropertyStoreCapabilities_INTERFACE_DEFINED__
-
 extern IID_IPropertyStoreCapabilities as const GUID
-
 type IPropertyStoreCapabilities as IPropertyStoreCapabilities_
 
 type IPropertyStoreCapabilitiesVtbl
@@ -271,7 +249,6 @@ end type
 
 declare function IPropertyStoreCapabilities_IsPropertyWritable_Proxy(byval This as IPropertyStoreCapabilities ptr, byval key as const PROPERTYKEY const ptr) as HRESULT
 declare sub IPropertyStoreCapabilities_IsPropertyWritable_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define __IPropertyStoreCache_INTERFACE_DEFINED__
 
 type PSC_STATE as long
@@ -283,7 +260,6 @@ enum
 end enum
 
 extern IID_IPropertyStoreCache as const GUID
-
 type IPropertyStoreCache as IPropertyStoreCache_
 
 type IPropertyStoreCacheVtbl
@@ -313,7 +289,6 @@ declare function IPropertyStoreCache_SetState_Proxy(byval This as IPropertyStore
 declare sub IPropertyStoreCache_SetState_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IPropertyStoreCache_SetValueAndState_Proxy(byval This as IPropertyStoreCache ptr, byval key as const PROPERTYKEY const ptr, byval ppropvar as const PROPVARIANT ptr, byval state as PSC_STATE) as HRESULT
 declare sub IPropertyStoreCache_SetValueAndState_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define __IPropertyEnumType_INTERFACE_DEFINED__
 
 type PROPENUMTYPE as long
@@ -325,7 +300,6 @@ enum
 end enum
 
 extern IID_IPropertyEnumType as const GUID
-
 type IPropertyEnumType as IPropertyEnumType_
 
 type IPropertyEnumTypeVtbl
@@ -353,11 +327,8 @@ declare function IPropertyEnumType_GetRangeSetValue_Proxy(byval This as IPropert
 declare sub IPropertyEnumType_GetRangeSetValue_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IPropertyEnumType_GetDisplayText_Proxy(byval This as IPropertyEnumType ptr, byval ppszDisplay as LPWSTR ptr) as HRESULT
 declare sub IPropertyEnumType_GetDisplayText_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define __IPropertyEnumType2_INTERFACE_DEFINED__
-
 extern IID_IPropertyEnumType2 as const GUID
-
 type IPropertyEnumType2 as IPropertyEnumType2_
 
 type IPropertyEnumType2Vtbl
@@ -378,11 +349,8 @@ end type
 
 declare function IPropertyEnumType2_GetImageReference_Proxy(byval This as IPropertyEnumType2 ptr, byval ppszImageRes as LPWSTR ptr) as HRESULT
 declare sub IPropertyEnumType2_GetImageReference_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define __IPropertyEnumTypeList_INTERFACE_DEFINED__
-
 extern IID_IPropertyEnumTypeList as const GUID
-
 type IPropertyEnumTypeList as IPropertyEnumTypeList_
 
 type IPropertyEnumTypeListVtbl
@@ -407,7 +375,6 @@ declare function IPropertyEnumTypeList_GetConditionAt_Proxy(byval This as IPrope
 declare sub IPropertyEnumTypeList_GetConditionAt_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IPropertyEnumTypeList_FindMatchingIndex_Proxy(byval This as IPropertyEnumTypeList ptr, byval propvarCmp as const PROPVARIANT const ptr, byval pnIndex as UINT ptr) as HRESULT
 declare sub IPropertyEnumTypeList_FindMatchingIndex_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define __IPropertyDescription_INTERFACE_DEFINED__
 
 type PROPDESC_TYPE_FLAGS as long
@@ -532,7 +499,6 @@ enum
 end enum
 
 extern IID_IPropertyDescription as const GUID
-
 type IPropertyDescription as IPropertyDescription_
 
 type IPropertyDescriptionVtbl
@@ -610,11 +576,8 @@ declare function IPropertyDescription_IsValueCanonical_Proxy(byval This as IProp
 declare sub IPropertyDescription_IsValueCanonical_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IPropertyDescription_CoerceToCanonicalValue_Proxy(byval This as IPropertyDescription ptr, byval ppropvar as PROPVARIANT ptr) as HRESULT
 declare function IPropertyDescription_CoerceToCanonicalValue_Stub(byval This as IPropertyDescription ptr, byval propvar as const PROPVARIANT const ptr, byval ppropvar as PROPVARIANT ptr) as HRESULT
-
 #define __IPropertyDescription2_INTERFACE_DEFINED__
-
 extern IID_IPropertyDescription2 as const GUID
-
 type IPropertyDescription2 as IPropertyDescription2_
 
 type IPropertyDescription2Vtbl
@@ -651,11 +614,8 @@ end type
 
 declare function IPropertyDescription2_GetImageReferenceForValue_Proxy(byval This as IPropertyDescription2 ptr, byval propvar as const PROPVARIANT const ptr, byval ppszImageRes as LPWSTR ptr) as HRESULT
 declare sub IPropertyDescription2_GetImageReferenceForValue_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define __IPropertyDescriptionAliasInfo_INTERFACE_DEFINED__
-
 extern IID_IPropertyDescriptionAliasInfo as const GUID
-
 type IPropertyDescriptionAliasInfo as IPropertyDescriptionAliasInfo_
 
 type IPropertyDescriptionAliasInfoVtbl
@@ -695,7 +655,6 @@ declare function IPropertyDescriptionAliasInfo_GetSortByAlias_Proxy(byval This a
 declare sub IPropertyDescriptionAliasInfo_GetSortByAlias_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IPropertyDescriptionAliasInfo_GetAdditionalSortByAliases_Proxy(byval This as IPropertyDescriptionAliasInfo ptr, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
 declare sub IPropertyDescriptionAliasInfo_GetAdditionalSortByAliases_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define __IPropertyDescriptionSearchInfo_INTERFACE_DEFINED__
 
 type PROPDESC_SEARCHINFO_FLAGS as long
@@ -719,7 +678,6 @@ enum
 end enum
 
 extern IID_IPropertyDescriptionSearchInfo as const GUID
-
 type IPropertyDescriptionSearchInfo as IPropertyDescriptionSearchInfo_
 
 type IPropertyDescriptionSearchInfoVtbl
@@ -765,11 +723,8 @@ declare function IPropertyDescriptionSearchInfo_GetProjectionString_Proxy(byval 
 declare sub IPropertyDescriptionSearchInfo_GetProjectionString_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IPropertyDescriptionSearchInfo_GetMaxSize_Proxy(byval This as IPropertyDescriptionSearchInfo ptr, byval pcbMaxSize as UINT ptr) as HRESULT
 declare sub IPropertyDescriptionSearchInfo_GetMaxSize_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define __IPropertyDescriptionRelatedPropertyInfo_INTERFACE_DEFINED__
-
 extern IID_IPropertyDescriptionRelatedPropertyInfo as const GUID
-
 type IPropertyDescriptionRelatedPropertyInfo as IPropertyDescriptionRelatedPropertyInfo_
 
 type IPropertyDescriptionRelatedPropertyInfoVtbl
@@ -819,9 +774,7 @@ enum
 end enum
 
 #define __IPropertySystem_INTERFACE_DEFINED__
-
 extern IID_IPropertySystem as const GUID
-
 type IPropertySystem as IPropertySystem_
 
 type IPropertySystemVtbl
@@ -861,11 +814,8 @@ declare function IPropertySystem_UnregisterPropertySchema_Proxy(byval This as IP
 declare sub IPropertySystem_UnregisterPropertySchema_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IPropertySystem_RefreshPropertySchema_Proxy(byval This as IPropertySystem ptr) as HRESULT
 declare sub IPropertySystem_RefreshPropertySchema_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define __IPropertyDescriptionList_INTERFACE_DEFINED__
-
 extern IID_IPropertyDescriptionList as const GUID
-
 type IPropertyDescriptionList as IPropertyDescriptionList_
 
 type IPropertyDescriptionListVtbl
@@ -884,11 +834,8 @@ declare function IPropertyDescriptionList_GetCount_Proxy(byval This as IProperty
 declare sub IPropertyDescriptionList_GetCount_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IPropertyDescriptionList_GetAt_Proxy(byval This as IPropertyDescriptionList ptr, byval iElem as UINT, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
 declare sub IPropertyDescriptionList_GetAt_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define __IPropertyStoreFactory_INTERFACE_DEFINED__
-
 extern IID_IPropertyStoreFactory as const GUID
-
 type IPropertyStoreFactory as IPropertyStoreFactory_
 
 type IPropertyStoreFactoryVtbl
@@ -907,11 +854,8 @@ declare function IPropertyStoreFactory_GetPropertyStore_Proxy(byval This as IPro
 declare sub IPropertyStoreFactory_GetPropertyStore_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IPropertyStoreFactory_GetPropertyStoreForKeys_Proxy(byval This as IPropertyStoreFactory ptr, byval rgKeys as const PROPERTYKEY ptr, byval cKeys as UINT, byval flags as GETPROPERTYSTOREFLAGS, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
 declare sub IPropertyStoreFactory_GetPropertyStoreForKeys_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define __IDelayedPropertyStoreFactory_INTERFACE_DEFINED__
-
 extern IID_IDelayedPropertyStoreFactory as const GUID
-
 type IDelayedPropertyStoreFactory as IDelayedPropertyStoreFactory_
 
 type IDelayedPropertyStoreFactoryVtbl
@@ -941,11 +885,8 @@ type PERSIST_SPROPSTORE_FLAGS as long
 type SERIALIZEDPROPSTORAGE as tagSERIALIZEDPROPSTORAGE
 type PUSERIALIZEDPROPSTORAGE as SERIALIZEDPROPSTORAGE ptr
 type PCUSERIALIZEDPROPSTORAGE as const SERIALIZEDPROPSTORAGE ptr
-
 #define __IPersistSerializedPropStorage_INTERFACE_DEFINED__
-
 extern IID_IPersistSerializedPropStorage as const GUID
-
 type IPersistSerializedPropStorage as IPersistSerializedPropStorage_
 
 type IPersistSerializedPropStorageVtbl
@@ -967,11 +908,8 @@ declare function IPersistSerializedPropStorage_SetPropertyStorage_Proxy(byval Th
 declare sub IPersistSerializedPropStorage_SetPropertyStorage_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IPersistSerializedPropStorage_GetPropertyStorage_Proxy(byval This as IPersistSerializedPropStorage ptr, byval ppsps as SERIALIZEDPROPSTORAGE ptr ptr, byval pcb as DWORD ptr) as HRESULT
 declare sub IPersistSerializedPropStorage_GetPropertyStorage_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define __IPersistSerializedPropStorage2_INTERFACE_DEFINED__
-
 extern IID_IPersistSerializedPropStorage2 as const GUID
-
 type IPersistSerializedPropStorage2 as IPersistSerializedPropStorage2_
 
 type IPersistSerializedPropStorage2Vtbl
@@ -993,11 +931,8 @@ declare function IPersistSerializedPropStorage2_GetPropertyStorageSize_Proxy(byv
 declare sub IPersistSerializedPropStorage2_GetPropertyStorageSize_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IPersistSerializedPropStorage2_GetPropertyStorageBuffer_Proxy(byval This as IPersistSerializedPropStorage2 ptr, byval psps as SERIALIZEDPROPSTORAGE ptr, byval cb as DWORD, byval pcbWritten as DWORD ptr) as HRESULT
 declare sub IPersistSerializedPropStorage2_GetPropertyStorageBuffer_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define __IPropertySystemChangeNotify_INTERFACE_DEFINED__
-
 extern IID_IPropertySystemChangeNotify as const GUID
-
 type IPropertySystemChangeNotify as IPropertySystemChangeNotify_
 
 type IPropertySystemChangeNotifyVtbl
@@ -1013,11 +948,8 @@ end type
 
 declare function IPropertySystemChangeNotify_SchemaRefreshed_Proxy(byval This as IPropertySystemChangeNotify ptr) as HRESULT
 declare sub IPropertySystemChangeNotify_SchemaRefreshed_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define __ICreateObject_INTERFACE_DEFINED__
-
 extern IID_ICreateObject as const GUID
-
 type ICreateObject as ICreateObject_
 
 type ICreateObjectVtbl
@@ -1033,7 +965,6 @@ end type
 
 declare function ICreateObject_CreateObject_Proxy(byval This as ICreateObject ptr, byval clsid as const IID const ptr, byval pUnkOuter as IUnknown ptr, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
 declare sub ICreateObject_CreateObject_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define PKEY_PIDSTR_MAX 10
 #define GUIDSTRING_MAX 39
 #define PKEYSTR_MAX ((GUIDSTRING_MAX + 1) + PKEY_PIDSTR_MAX)

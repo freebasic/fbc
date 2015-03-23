@@ -40,7 +40,6 @@ end type
 
 type LOADED_IMAGE as _LOADED_IMAGE
 type PLOADED_IMAGE as _LOADED_IMAGE ptr
-
 #define MAX_SYM_NAME 2000
 
 type _MODLOAD_DATA
@@ -119,7 +118,6 @@ declare function MapFileAndCheckSumW(byval Filename as PCWSTR, byval HeaderSum a
 #define CERT_PE_IMAGE_DIGEST_ALL_IMPORT_INFO &h04
 #define CERT_PE_IMAGE_DIGEST_NON_PE_INFO &h08
 #define CERT_SECTION_TYPE_ANY &hFF
-
 type DIGEST_HANDLE as PVOID
 type DIGEST_FUNCTION as function(byval refdata as DIGEST_HANDLE, byval pData as PBYTE, byval dwLength as DWORD) as WINBOOL
 
@@ -229,13 +227,11 @@ declare function ImageRvaToVa(byval NtHeaders as PIMAGE_NT_HEADERS, byval Base a
 
 	type IMAGE_DEBUG_INFORMATION as _IMAGE_DEBUG_INFORMATION
 	type PIMAGE_DEBUG_INFORMATION as _IMAGE_DEBUG_INFORMATION ptr
-
 	declare function MapDebugInformation(byval FileHandle as HANDLE, byval FileName as PSTR, byval SymbolPath as PSTR, byval ImageBase as DWORD) as PIMAGE_DEBUG_INFORMATION
 	declare function UnmapDebugInformation(byval DebugInfo as PIMAGE_DEBUG_INFORMATION) as WINBOOL
 #endif
 
 type PENUMDIRTREE_CALLBACK as function(byval FilePath as LPCSTR, byval CallerData as PVOID) as WINBOOL
-
 declare function SearchTreeForFile(byval RootPath as PSTR, byval InputPathName as PSTR, byval OutputPathBuffer as PSTR) as WINBOOL
 declare function SearchTreeForFileW(byval RootPath as PWSTR, byval InputPathName as PWSTR, byval OutputPathBuffer as PWSTR) as WINBOOL
 declare function EnumDirTree(byval hProcess as HANDLE, byval RootPath as PSTR, byval InputPathName as PSTR, byval OutputPathBuffer as PSTR, byval Callback as PENUMDIRTREE_CALLBACK, byval CallbackData as PVOID) as WINBOOL
@@ -258,10 +254,8 @@ declare function MakeSureDirectoryPathExists(byval DirPath as PCSTR) as WINBOOL
 #define UNDNAME_NAME_ONLY &h1000
 #define UNDNAME_NO_ARGUMENTS &h2000
 #define UNDNAME_NO_SPECIAL_SYMS &h4000
-
 declare function UnDecorateSymbolName(byval DecoratedName as PCSTR, byval UnDecoratedName as PSTR, byval UndecoratedLength as DWORD, byval Flags as DWORD) as DWORD
 declare function UnDecorateSymbolNameW(byval DecoratedName as PCWSTR, byval UnDecoratedName as PWSTR, byval UndecoratedLength as DWORD, byval Flags as DWORD) as DWORD
-
 #define DBHHEADER_DEBUGDIRS &h1
 #define DBHHEADER_CVMISC &h2
 
@@ -417,7 +411,6 @@ type PREAD_PROCESS_MEMORY_ROUTINE64 as function(byval hProcess as HANDLE, byval 
 type PFUNCTION_TABLE_ACCESS_ROUTINE64 as function(byval hProcess as HANDLE, byval AddrBase as DWORD64) as PVOID
 type PGET_MODULE_BASE_ROUTINE64 as function(byval hProcess as HANDLE, byval Address as DWORD64) as DWORD64
 type PTRANSLATE_ADDRESS_ROUTINE64 as function(byval hProcess as HANDLE, byval hThread as HANDLE, byval lpaddr as LPADDRESS64) as DWORD64
-
 declare function StackWalk64(byval MachineType as DWORD, byval hProcess as HANDLE, byval hThread as HANDLE, byval StackFrame as LPSTACKFRAME64, byval ContextRecord as PVOID, byval ReadMemoryRoutine as PREAD_PROCESS_MEMORY_ROUTINE64, byval FunctionTableAccessRoutine as PFUNCTION_TABLE_ACCESS_ROUTINE64, byval GetModuleBaseRoutine as PGET_MODULE_BASE_ROUTINE64, byval TranslateAddress as PTRANSLATE_ADDRESS_ROUTINE64) as WINBOOL
 
 #ifdef __FB_64BIT__
@@ -431,7 +424,6 @@ declare function StackWalk64(byval MachineType as DWORD, byval hProcess as HANDL
 	type PFUNCTION_TABLE_ACCESS_ROUTINE as function(byval hProcess as HANDLE, byval AddrBase as DWORD) as PVOID
 	type PGET_MODULE_BASE_ROUTINE as function(byval hProcess as HANDLE, byval Address as DWORD) as DWORD
 	type PTRANSLATE_ADDRESS_ROUTINE as function(byval hProcess as HANDLE, byval hThread as HANDLE, byval lpaddr as LPADDRESS) as DWORD
-
 	declare function StackWalk(byval MachineType as DWORD, byval hProcess as HANDLE, byval hThread as HANDLE, byval StackFrame as LPSTACKFRAME, byval ContextRecord as PVOID, byval ReadMemoryRoutine as PREAD_PROCESS_MEMORY_ROUTINE, byval FunctionTableAccessRoutine as PFUNCTION_TABLE_ACCESS_ROUTINE, byval GetModuleBaseRoutine as PGET_MODULE_BASE_ROUTINE, byval TranslateAddress as PTRANSLATE_ADDRESS_ROUTINE) as WINBOOL
 #endif
 
@@ -445,7 +437,6 @@ type API_VERSION
 end type
 
 type LPAPI_VERSION as API_VERSION ptr
-
 declare function ImagehlpApiVersion() as LPAPI_VERSION
 declare function ImagehlpApiVersionEx(byval AppVersion as LPAPI_VERSION) as LPAPI_VERSION
 declare function GetTimestampForLoadedLibrary(byval Module as HMODULE) as DWORD
@@ -687,7 +678,6 @@ end type
 
 type SOURCEFILEW as _SOURCEFILEW
 type PSOURCEFILEW as _SOURCEFILEW ptr
-
 #define CBA_DEFERRED_SYMBOL_LOAD_START &h00000001
 #define CBA_DEFERRED_SYMBOL_LOAD_COMPLETE &h00000002
 #define CBA_DEFERRED_SYMBOL_LOAD_FAILURE &h00000003
@@ -743,7 +733,6 @@ end type
 
 type IMAGEHLP_DEFERRED_SYMBOL_LOAD64 as _IMAGEHLP_DEFERRED_SYMBOL_LOAD64
 type PIMAGEHLP_DEFERRED_SYMBOL_LOAD64 as _IMAGEHLP_DEFERRED_SYMBOL_LOAD64 ptr
-
 #define DSLFLAG_MISMATCHED_PDB &h1
 #define DSLFLAG_MISMATCHED_DBG &h2
 
@@ -821,7 +810,6 @@ end type
 
 type SYMSRV_INDEX_INFOW as _SYMSRV_INDEX_INFOW
 type PSYMSRV_INDEX_INFOW as _SYMSRV_INDEX_INFOW ptr
-
 declare function SymSetParentWindow(byval hwnd as HWND) as WINBOOL
 declare function SymSetHomeDirectory(byval hProcess as HANDLE, byval dir as PCSTR) as PCHAR
 declare function SymSetHomeDirectoryW(byval hProcess as HANDLE, byval dir as PCWSTR) as PCHAR
@@ -865,12 +853,9 @@ declare function SymGetOptions() as DWORD
 declare function SymCleanup(byval hProcess as HANDLE) as WINBOOL
 declare function SymMatchString(byval string as PCSTR, byval expression as PCSTR, byval fCase as WINBOOL) as WINBOOL
 declare function SymMatchStringW(byval string as PCWSTR, byval expression as PCWSTR, byval fCase as WINBOOL) as WINBOOL
-
 type PSYM_ENUMSOURCEFILES_CALLBACK as function(byval pSourceFile as PSOURCEFILE, byval UserContext as PVOID) as WINBOOL
 type PSYM_ENUMSOURCEFILES_CALLBACKW as function(byval pSourceFile as PSOURCEFILEW, byval UserContext as PVOID) as WINBOOL
-
 #define PSYM_ENUMSOURCFILES_CALLBACK PSYM_ENUMSOURCEFILES_CALLBACK
-
 declare function SymEnumSourceFiles(byval hProcess as HANDLE, byval ModBase as ULONG64, byval Mask as PCSTR, byval cbSrcFiles as PSYM_ENUMSOURCEFILES_CALLBACK, byval UserContext as PVOID) as WINBOOL
 declare function SymEnumSourceFilesW(byval hProcess as HANDLE, byval ModBase as ULONG64, byval Mask as PCWSTR, byval cbSrcFiles as PSYM_ENUMSOURCEFILES_CALLBACKW, byval UserContext as PVOID) as WINBOOL
 declare function SymEnumerateModules64(byval hProcess as HANDLE, byval EnumModulesCallback as PSYM_ENUMMODULES_CALLBACK64, byval UserContext as PVOID) as WINBOOL
@@ -1029,9 +1014,7 @@ declare function SymInitializeW(byval hProcess as HANDLE, byval UserSearchPath a
 #endif
 
 declare function SymLoadModule64(byval hProcess as HANDLE, byval hFile as HANDLE, byval ImageName as PSTR, byval ModuleName as PSTR, byval BaseOfDll as DWORD64, byval SizeOfDll as DWORD) as DWORD64
-
 #define SLMFLAG_VIRTUAL &h1
-
 declare function SymLoadModuleEx(byval hProcess as HANDLE, byval hFile as HANDLE, byval ImageName as PCSTR, byval ModuleName as PCSTR, byval BaseOfDll as DWORD64, byval DllSize as DWORD, byval Data as PMODLOAD_DATA, byval Flags as DWORD) as DWORD64
 declare function SymLoadModuleExW(byval hProcess as HANDLE, byval hFile as HANDLE, byval ImageName as PCWSTR, byval ModuleName as PCWSTR, byval BaseOfDll as DWORD64, byval DllSize as DWORD, byval Data as PMODLOAD_DATA, byval Flags as DWORD) as DWORD64
 
@@ -1128,7 +1111,6 @@ end type
 
 type SYMBOL_INFOW as _SYMBOL_INFOW
 type PSYMBOL_INFOW as _SYMBOL_INFOW ptr
-
 #define SYMFLAG_CLR_TOKEN &h00040000
 #define SYMFLAG_CONSTANT &h00000100
 #define SYMFLAG_EXPORT &h00000200
@@ -1180,15 +1162,12 @@ declare function SymFromToken(byval hProcess as HANDLE, byval Base as DWORD64, b
 declare function SymFromTokenW(byval hProcess as HANDLE, byval Base as DWORD64, byval Token as DWORD, byval Symbol as PSYMBOL_INFOW) as WINBOOL
 declare function SymFromName(byval hProcess as HANDLE, byval Name as PCSTR, byval Symbol as PSYMBOL_INFO) as WINBOOL
 declare function SymFromNameW(byval hProcess as HANDLE, byval Name as PCWSTR, byval Symbol as PSYMBOL_INFOW) as WINBOOL
-
 type PSYM_ENUMERATESYMBOLS_CALLBACK as function(byval pSymInfo as PSYMBOL_INFO, byval SymbolSize as ULONG, byval UserContext as PVOID) as WINBOOL
 type PSYM_ENUMERATESYMBOLS_CALLBACKW as function(byval pSymInfo as PSYMBOL_INFOW, byval SymbolSize as ULONG, byval UserContext as PVOID) as WINBOOL
-
 declare function SymEnumSymbols(byval hProcess as HANDLE, byval BaseOfDll as ULONG64, byval Mask as PCSTR, byval EnumSymbolsCallback as PSYM_ENUMERATESYMBOLS_CALLBACK, byval UserContext as PVOID) as WINBOOL
 declare function SymEnumSymbolsW(byval hProcess as HANDLE, byval BaseOfDll as ULONG64, byval Mask as PCWSTR, byval EnumSymbolsCallback as PSYM_ENUMERATESYMBOLS_CALLBACKW, byval UserContext as PVOID) as WINBOOL
 declare function SymEnumSymbolsForAddr(byval hProcess as HANDLE, byval Address as DWORD64, byval EnumSymbolsCallback as PSYM_ENUMERATESYMBOLS_CALLBACK, byval UserContext as PVOID) as WINBOOL
 declare function SymEnumSymbolsForAddrW(byval hProcess as HANDLE, byval Address as DWORD64, byval EnumSymbolsCallback as PSYM_ENUMERATESYMBOLS_CALLBACKW, byval UserContext as PVOID) as WINBOOL
-
 #define SYMENUMFLAG_FULLSRCH 1
 #define SYMENUMFLAG_SPEEDSRCH 2
 
@@ -1232,7 +1211,6 @@ type _TI_FINDCHILDREN_PARAMS
 end type
 
 type TI_FINDCHILDREN_PARAMS as _TI_FINDCHILDREN_PARAMS
-
 declare function SymGetTypeInfo(byval hProcess as HANDLE, byval ModBase as DWORD64, byval TypeId as ULONG, byval GetType as IMAGEHLP_SYMBOL_TYPE_INFO, byval pInfo as PVOID) as WINBOOL
 declare function SymEnumTypes(byval hProcess as HANDLE, byval BaseOfDll as ULONG64, byval EnumSymbolsCallback as PSYM_ENUMERATESYMBOLS_CALLBACK, byval UserContext as PVOID) as WINBOOL
 declare function SymEnumTypesW(byval hProcess as HANDLE, byval BaseOfDll as ULONG64, byval EnumSymbolsCallback as PSYM_ENUMERATESYMBOLS_CALLBACKW, byval UserContext as PVOID) as WINBOOL
@@ -1242,9 +1220,7 @@ declare function SymAddSymbol(byval hProcess as HANDLE, byval BaseOfDll as ULONG
 declare function SymAddSymbolW(byval hProcess as HANDLE, byval BaseOfDll as ULONG64, byval Name as PCWSTR, byval Address as DWORD64, byval Size as DWORD, byval Flags as DWORD) as WINBOOL
 declare function SymDeleteSymbol(byval hProcess as HANDLE, byval BaseOfDll as ULONG64, byval Name as PCSTR, byval Address as DWORD64, byval Flags as DWORD) as WINBOOL
 declare function SymDeleteSymbolW(byval hProcess as HANDLE, byval BaseOfDll as ULONG64, byval Name as PCWSTR, byval Address as DWORD64, byval Flags as DWORD) as WINBOOL
-
 type PDBGHELP_CREATE_USER_DUMP_CALLBACK as function(byval DataType as DWORD, byval Data as PVOID ptr, byval DataLength as LPDWORD, byval UserData as PVOID) as WINBOOL
-
 declare function DbgHelpCreateUserDump(byval FileName as LPCSTR, byval Callback as PDBGHELP_CREATE_USER_DUMP_CALLBACK, byval UserData as PVOID) as WINBOOL
 declare function DbgHelpCreateUserDumpW(byval FileName as LPCWSTR, byval Callback as PDBGHELP_CREATE_USER_DUMP_CALLBACK, byval UserData as PVOID) as WINBOOL
 declare function SymGetSymFromAddr64(byval hProcess as HANDLE, byval qwAddr as DWORD64, byval pdwDisplacement as PDWORD64, byval Symbol as PIMAGEHLP_SYMBOL64) as WINBOOL
@@ -1272,7 +1248,6 @@ declare function SymGetSymFromName64(byval hProcess as HANDLE, byval Name as PCS
 #endif
 
 declare function SymEnumSym(byval hProcess as HANDLE, byval BaseOfDll as ULONG64, byval EnumSymbolsCallback as PSYM_ENUMERATESYMBOLS_CALLBACK, byval UserContext as PVOID) as WINBOOL
-
 #define SYMF_OMAP_GENERATED &h00000001
 #define SYMF_OMAP_MODIFIED &h00000002
 #define SYMF_REGISTER &h00000008
@@ -1300,7 +1275,6 @@ declare function SymEnumSym(byval hProcess as HANDLE, byval BaseOfDll as ULONG64
 #define IMAGEHLP_SYMBOL_INFO_TLSRELATIVE SYMF_TLSREL
 #define MINIDUMP_SIGNATURE asc("PMDM")
 #define MINIDUMP_VERSION 42899
-
 type RVA as DWORD
 type RVA64 as ULONG64
 
@@ -1652,7 +1626,6 @@ end type
 
 type MINIDUMP_UNLOADED_MODULE_LIST as _MINIDUMP_UNLOADED_MODULE_LIST
 type PMINIDUMP_UNLOADED_MODULE_LIST as _MINIDUMP_UNLOADED_MODULE_LIST ptr
-
 #define MINIDUMP_MISC1_PROCESS_ID &h00000001
 #define MINIDUMP_MISC1_PROCESS_TIMES &h00000002
 #define MINIDUMP_MISC1_PROCESSOR_POWER_INFO &h00000004
@@ -1920,7 +1893,6 @@ enum
 end enum
 
 type MINIDUMP_TYPE as _MINIDUMP_TYPE
-
 #define MINIDUMP_THREAD_INFO_ERROR_THREAD &h00000001
 #define MINIDUMP_THREAD_INFO_WRITING_THREAD &h00000002
 #define MINIDUMP_THREAD_INFO_EXITED_THREAD &h00000004
@@ -1971,9 +1943,7 @@ end type
 
 type MINIDUMP_CALLBACK_INFORMATION as _MINIDUMP_CALLBACK_INFORMATION
 type PMINIDUMP_CALLBACK_INFORMATION as _MINIDUMP_CALLBACK_INFORMATION ptr
-
 #define RVA_TO_ADDR(Mapping, Rva) cast(PVOID, cast(ULONG_PTR, (Mapping)) + (Rva))
-
 declare function MiniDumpWriteDump(byval hProcess as HANDLE, byval ProcessId as DWORD, byval hFile as HANDLE, byval DumpType as MINIDUMP_TYPE, byval ExceptionParam as const PMINIDUMP_EXCEPTION_INFORMATION, byval UserStreamParam as const PMINIDUMP_USER_STREAM_INFORMATION, byval CallbackParam as const PMINIDUMP_CALLBACK_INFORMATION) as WINBOOL
 declare function MiniDumpReadDumpStream(byval BaseOfDump as PVOID, byval StreamNumber as ULONG, byval Dir as PMINIDUMP_DIRECTORY ptr, byval StreamPointer as PVOID ptr, byval StreamSize as ULONG ptr) as WINBOOL
 declare function EnumerateLoadedModulesEx(byval hProcess as HANDLE, byval EnumLoadedModulesCallback as PENUMLOADED_MODULES_CALLBACK64, byval UserContext as PVOID) as WINBOOL

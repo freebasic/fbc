@@ -50,10 +50,8 @@ extern "Windows"
 #define __IAutoComplete2_FWD_DEFINED__
 #define __IEnumACString_FWD_DEFINED__
 #define __IAsyncOperation_FWD_DEFINED__
-
 extern __MIDL_itf_shldisp_0000_v0_0_c_ifspec as RPC_IF_HANDLE
 extern __MIDL_itf_shldisp_0000_v0_0_s_ifspec as RPC_IF_HANDLE
-
 #define __Shell32_LIBRARY_DEFINED__
 
 type SearchCommandExecuteErrors as long
@@ -130,11 +128,8 @@ enum
 end enum
 
 extern LIBID_Shell32 as const IID
-
 #define __IFolderViewOC_INTERFACE_DEFINED__
-
 extern IID_IFolderViewOC as const IID
-
 type IFolderViewOC as IFolderViewOC_
 
 type IFolderViewOCVtbl
@@ -154,11 +149,8 @@ end type
 
 declare function IFolderViewOC_SetFolderView_Proxy(byval This as IFolderViewOC ptr, byval pdisp as IDispatch ptr) as HRESULT
 declare sub IFolderViewOC_SetFolderView_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-
 #define __DShellFolderViewEvents_DISPINTERFACE_DEFINED__
-
 extern DIID_DShellFolderViewEvents as const IID
-
 type DShellFolderViewEvents as DShellFolderViewEvents_
 
 type DShellFolderViewEventsVtbl
@@ -176,11 +168,8 @@ type DShellFolderViewEvents_
 end type
 
 extern CLSID_ShellFolderViewOC as const CLSID
-
 #define __DFConstraint_INTERFACE_DEFINED__
-
 extern IID_DFConstraint as const IID
-
 type DFConstraint as DFConstraint_
 
 type DFConstraintVtbl
@@ -203,7 +192,6 @@ declare function DFConstraint_get_Name_Proxy(byval This as DFConstraint ptr, byv
 declare sub DFConstraint_get_Name_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function DFConstraint_get_Value_Proxy(byval This as DFConstraint ptr, byval pv as VARIANT ptr) as HRESULT
 declare sub DFConstraint_get_Value_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-
 #define __ISearchCommandExt_INTERFACE_DEFINED__
 
 type __MIDL_ISearchCommandExt_0001 as long
@@ -213,9 +201,7 @@ enum
 end enum
 
 type SEARCH_FOR_TYPE as __MIDL_ISearchCommandExt_0001
-
 extern IID_ISearchCommandExt as const IID
-
 type ISearchCommandExt as ISearchCommandExt_
 
 type ISearchCommandExtVtbl
@@ -265,15 +251,10 @@ declare function ISearchCommandExt_AddConstraint_Proxy(byval This as ISearchComm
 declare sub ISearchCommandExt_AddConstraint_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function ISearchCommandExt_GetNextConstraint_Proxy(byval This as ISearchCommandExt ptr, byval fReset as VARIANT_BOOL, byval ppdfc as DFConstraint ptr ptr) as HRESULT
 declare sub ISearchCommandExt_GetNextConstraint_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-
 #define __FolderItem_INTERFACE_DEFINED__
-
 type FolderItem as FolderItem_
-
 type LPFOLDERITEM as FolderItem ptr
-
 extern IID_FolderItem as const IID
-
 type FolderItemVerbs as FolderItemVerbs_
 
 type FolderItemVtbl
@@ -341,11 +322,8 @@ declare function FolderItem_Verbs_Proxy(byval This as FolderItem ptr, byval ppfi
 declare sub FolderItem_Verbs_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function FolderItem_InvokeVerb_Proxy(byval This as FolderItem ptr, byval vVerb as VARIANT) as HRESULT
 declare sub FolderItem_InvokeVerb_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-
 #define __FolderItems_INTERFACE_DEFINED__
-
 extern IID_FolderItems as const IID
-
 type FolderItems as FolderItems_
 
 type FolderItemsVtbl
@@ -377,11 +355,8 @@ declare function FolderItems_Item_Proxy(byval This as FolderItems ptr, byval ind
 declare sub FolderItems_Item_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function FolderItems__NewEnum_Proxy(byval This as FolderItems ptr, byval ppunk as IUnknown ptr ptr) as HRESULT
 declare sub FolderItems__NewEnum_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-
 #define __FolderItemVerb_INTERFACE_DEFINED__
-
 extern IID_FolderItemVerb as const IID
-
 type FolderItemVerb as FolderItemVerb_
 
 type FolderItemVerbVtbl
@@ -410,9 +385,7 @@ declare function FolderItemVerb_get_Name_Proxy(byval This as FolderItemVerb ptr,
 declare sub FolderItemVerb_get_Name_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function FolderItemVerb_DoIt_Proxy(byval This as FolderItemVerb ptr) as HRESULT
 declare sub FolderItemVerb_DoIt_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-
 #define __FolderItemVerbs_INTERFACE_DEFINED__
-
 extern IID_FolderItemVerbs as const IID
 
 type FolderItemVerbsVtbl
@@ -444,11 +417,8 @@ declare function FolderItemVerbs_Item_Proxy(byval This as FolderItemVerbs ptr, b
 declare sub FolderItemVerbs_Item_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function FolderItemVerbs__NewEnum_Proxy(byval This as FolderItemVerbs ptr, byval ppunk as IUnknown ptr ptr) as HRESULT
 declare sub FolderItemVerbs__NewEnum_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-
 #define __Folder_INTERFACE_DEFINED__
-
 extern IID_Folder as const IID
-
 type Folder as Folder_
 
 type FolderVtbl
@@ -495,11 +465,8 @@ declare function Folder_CopyHere_Proxy(byval This as Folder ptr, byval vItem as 
 declare sub Folder_CopyHere_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function Folder_GetDetailsOf_Proxy(byval This as Folder ptr, byval vItem as VARIANT, byval iColumn as long, byval pbs as BSTR ptr) as HRESULT
 declare sub Folder_GetDetailsOf_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-
 #define __Folder2_INTERFACE_DEFINED__
-
 extern IID_Folder2 as const IID
-
 type Folder2 as Folder2_
 
 type Folder2Vtbl
@@ -541,11 +508,8 @@ declare function Folder2_get_HaveToShowWebViewBarricade_Proxy(byval This as Fold
 declare sub Folder2_get_HaveToShowWebViewBarricade_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function Folder2_DismissedWebViewBarricade_Proxy(byval This as Folder2 ptr) as HRESULT
 declare sub Folder2_DismissedWebViewBarricade_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-
 #define __Folder3_INTERFACE_DEFINED__
-
 extern IID_Folder3 as const IID
-
 type Folder3 as Folder3_
 
 type Folder3Vtbl
@@ -583,11 +547,8 @@ declare function Folder3_get_ShowWebViewBarricade_Proxy(byval This as Folder3 pt
 declare sub Folder3_get_ShowWebViewBarricade_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function Folder3_put_ShowWebViewBarricade_Proxy(byval This as Folder3 ptr, byval bShowWebViewBarricade as VARIANT_BOOL) as HRESULT
 declare sub Folder3_put_ShowWebViewBarricade_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-
 #define __FolderItem2_INTERFACE_DEFINED__
-
 extern IID_FolderItem2 as const IID
-
 type FolderItem2 as FolderItem2_
 
 type FolderItem2Vtbl
@@ -627,13 +588,9 @@ declare function FolderItem2_InvokeVerbEx_Proxy(byval This as FolderItem2 ptr, b
 declare sub FolderItem2_InvokeVerbEx_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function FolderItem2_ExtendedProperty_Proxy(byval This as FolderItem2 ptr, byval bstrPropName as BSTR, byval pvRet as VARIANT ptr) as HRESULT
 declare sub FolderItem2_ExtendedProperty_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-
 extern CLSID_ShellFolderItem as const CLSID
-
 #define __FolderItems2_INTERFACE_DEFINED__
-
 extern IID_FolderItems2 as const IID
-
 type FolderItems2 as FolderItems2_
 
 type FolderItems2Vtbl
@@ -658,11 +615,8 @@ end type
 
 declare function FolderItems2_InvokeVerbEx_Proxy(byval This as FolderItems2 ptr, byval vVerb as VARIANT, byval vArgs as VARIANT) as HRESULT
 declare sub FolderItems2_InvokeVerbEx_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-
 #define __FolderItems3_INTERFACE_DEFINED__
-
 extern IID_FolderItems3 as const IID
-
 type FolderItems3 as FolderItems3_
 
 type FolderItems3Vtbl
@@ -691,11 +645,8 @@ declare function FolderItems3_Filter_Proxy(byval This as FolderItems3 ptr, byval
 declare sub FolderItems3_Filter_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function FolderItems3_get_Verbs_Proxy(byval This as FolderItems3 ptr, byval ppfic as FolderItemVerbs ptr ptr) as HRESULT
 declare sub FolderItems3_get_Verbs_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-
 #define __IShellLinkDual_INTERFACE_DEFINED__
-
 extern IID_IShellLinkDual as const IID
-
 type IShellLinkDual as IShellLinkDual_
 
 type IShellLinkDualVtbl
@@ -760,11 +711,8 @@ declare function IShellLinkDual_SetIconLocation_Proxy(byval This as IShellLinkDu
 declare sub IShellLinkDual_SetIconLocation_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IShellLinkDual_Save_Proxy(byval This as IShellLinkDual ptr, byval vWhere as VARIANT) as HRESULT
 declare sub IShellLinkDual_Save_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-
 #define __IShellLinkDual2_INTERFACE_DEFINED__
-
 extern IID_IShellLinkDual2 as const IID
-
 type IShellLinkDual2 as IShellLinkDual2_
 
 type IShellLinkDual2Vtbl
@@ -800,13 +748,9 @@ end type
 
 declare function IShellLinkDual2_get_Target_Proxy(byval This as IShellLinkDual2 ptr, byval ppfi as FolderItem ptr ptr) as HRESULT
 declare sub IShellLinkDual2_get_Target_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-
 extern CLSID_ShellLinkObject as const CLSID
-
 #define __IShellFolderViewDual_INTERFACE_DEFINED__
-
 extern IID_IShellFolderViewDual as const IID
-
 type IShellFolderViewDual as IShellFolderViewDual_
 
 type IShellFolderViewDualVtbl
@@ -850,11 +794,8 @@ declare function IShellFolderViewDual_get_Script_Proxy(byval This as IShellFolde
 declare sub IShellFolderViewDual_get_Script_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IShellFolderViewDual_get_ViewOptions_Proxy(byval This as IShellFolderViewDual ptr, byval plViewOptions as long ptr) as HRESULT
 declare sub IShellFolderViewDual_get_ViewOptions_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-
 #define __IShellFolderViewDual2_INTERFACE_DEFINED__
-
 extern IID_IShellFolderViewDual2 as const IID
-
 type IShellFolderViewDual2 as IShellFolderViewDual2_
 
 type IShellFolderViewDual2Vtbl
@@ -889,13 +830,9 @@ declare function IShellFolderViewDual2_put_CurrentViewMode_Proxy(byval This as I
 declare sub IShellFolderViewDual2_put_CurrentViewMode_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IShellFolderViewDual2_SelectItemRelative_Proxy(byval This as IShellFolderViewDual2 ptr, byval iRelative as long) as HRESULT
 declare sub IShellFolderViewDual2_SelectItemRelative_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-
 extern CLSID_ShellFolderView as const CLSID
-
 #define __IShellDispatch_INTERFACE_DEFINED__
-
 extern IID_IShellDispatch as const IID
-
 type IShellDispatch as IShellDispatch_
 
 type IShellDispatchVtbl
@@ -981,11 +918,8 @@ declare function IShellDispatch_RefreshMenu_Proxy(byval This as IShellDispatch p
 declare sub IShellDispatch_RefreshMenu_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IShellDispatch_ControlPanelItem_Proxy(byval This as IShellDispatch ptr, byval szDir as BSTR) as HRESULT
 declare sub IShellDispatch_ControlPanelItem_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-
 #define __IShellDispatch2_INTERFACE_DEFINED__
-
 extern IID_IShellDispatch2 as const IID
-
 type IShellDispatch2 as IShellDispatch2_
 
 type IShellDispatch2Vtbl
@@ -1058,11 +992,8 @@ declare function IShellDispatch2_CanStartStopService_Proxy(byval This as IShellD
 declare sub IShellDispatch2_CanStartStopService_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IShellDispatch2_ShowBrowserBar_Proxy(byval This as IShellDispatch2 ptr, byval bstrClsid as BSTR, byval bShow as VARIANT, byval pSuccess as VARIANT ptr) as HRESULT
 declare sub IShellDispatch2_ShowBrowserBar_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-
 #define __IShellDispatch3_INTERFACE_DEFINED__
-
 extern IID_IShellDispatch3 as const IID
-
 type IShellDispatch3 as IShellDispatch3_
 
 type IShellDispatch3Vtbl
@@ -1120,11 +1051,8 @@ end type
 
 declare function IShellDispatch3_AddToRecent_Proxy(byval This as IShellDispatch3 ptr, byval varFile as VARIANT, byval bstrCategory as BSTR) as HRESULT
 declare sub IShellDispatch3_AddToRecent_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-
 #define __IShellDispatch4_INTERFACE_DEFINED__
-
 extern IID_IShellDispatch4 as const IID
-
 type IShellDispatch4 as IShellDispatch4_
 
 type IShellDispatch4Vtbl
@@ -1196,11 +1124,8 @@ declare sub IShellDispatch4_GetSetting_Stub(byval This as IRpcStubBuffer ptr, by
 extern CLSID_Shell as const CLSID
 extern CLSID_ShellDispatchInproc as const CLSID
 extern CLSID_WebViewFolderContents as const CLSID
-
 #define __DSearchCommandEvents_DISPINTERFACE_DEFINED__
-
 extern DIID_DSearchCommandEvents as const IID
-
 type DSearchCommandEvents as DSearchCommandEvents_
 
 type DSearchCommandEventsVtbl
@@ -1218,11 +1143,8 @@ type DSearchCommandEvents_
 end type
 
 extern CLSID_SearchCommand as const CLSID
-
 #define __IFileSearchBand_INTERFACE_DEFINED__
-
 extern IID_IFileSearchBand as const IID
-
 type IFileSearchBand as IFileSearchBand_
 
 type IFileSearchBandVtbl
@@ -1254,13 +1176,9 @@ declare function IFileSearchBand_get_Scope_Proxy(byval This as IFileSearchBand p
 declare sub IFileSearchBand_get_Scope_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IFileSearchBand_get_QueryFile_Proxy(byval This as IFileSearchBand ptr, byval pvarFile as VARIANT ptr) as HRESULT
 declare sub IFileSearchBand_get_QueryFile_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-
 extern CLSID_FileSearchBand as const CLSID
-
 #define __IWebWizardHost_INTERFACE_DEFINED__
-
 extern IID_IWebWizardHost as const IID
-
 type IWebWizardHost as IWebWizardHost_
 
 type IWebWizardHostVtbl
@@ -1304,11 +1222,8 @@ declare function IWebWizardHost_SetWizardButtons_Proxy(byval This as IWebWizardH
 declare sub IWebWizardHost_SetWizardButtons_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IWebWizardHost_SetHeaderText_Proxy(byval This as IWebWizardHost ptr, byval bstrHeaderTitle as BSTR, byval bstrHeaderSubtitle as BSTR) as HRESULT
 declare sub IWebWizardHost_SetHeaderText_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-
 #define __INewWDEvents_INTERFACE_DEFINED__
-
 extern IID_INewWDEvents as const IID
-
 type INewWDEvents as INewWDEvents_
 
 type INewWDEventsVtbl
@@ -1337,11 +1252,8 @@ end type
 
 declare function INewWDEvents_PassportAuthenticate_Proxy(byval This as INewWDEvents ptr, byval bstrSignInUrl as BSTR, byval pvfAuthenitcated as VARIANT_BOOL ptr) as HRESULT
 declare sub INewWDEvents_PassportAuthenticate_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-
 #define __IPassportClientServices_INTERFACE_DEFINED__
-
 extern IID_IPassportClientServices as const IID
-
 type IPassportClientServices as IPassportClientServices_
 
 type IPassportClientServicesVtbl
@@ -1361,17 +1273,12 @@ end type
 
 declare function IPassportClientServices_MemberExists_Proxy(byval This as IPassportClientServices ptr, byval bstrUser as BSTR, byval bstrPassword as BSTR, byval pvfExists as VARIANT_BOOL ptr) as HRESULT
 declare sub IPassportClientServices_MemberExists_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-
 extern CLSID_PassportClientServices as const CLSID
 extern __MIDL_itf_shldisp_0287_v0_0_c_ifspec as RPC_IF_HANDLE
 extern __MIDL_itf_shldisp_0287_v0_0_s_ifspec as RPC_IF_HANDLE
-
 #define __IAutoComplete_INTERFACE_DEFINED__
-
 type IAutoComplete as IAutoComplete_
-
 type LPAUTOCOMPLETE as IAutoComplete ptr
-
 extern IID_IAutoComplete as const IID
 
 type IAutoCompleteVtbl
@@ -1390,11 +1297,8 @@ declare function IAutoComplete_Init_Proxy(byval This as IAutoComplete ptr, byval
 declare sub IAutoComplete_Init_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IAutoComplete_Enable_Proxy(byval This as IAutoComplete ptr, byval fEnable as WINBOOL) as HRESULT
 declare sub IAutoComplete_Enable_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-
 #define __IAutoComplete2_INTERFACE_DEFINED__
-
 type IAutoComplete2 as IAutoComplete2_
-
 type LPAUTOCOMPLETE2 as IAutoComplete2 ptr
 
 type _tagAUTOCOMPLETEOPTIONS as long
@@ -1410,7 +1314,6 @@ enum
 end enum
 
 type AUTOCOMPLETEOPTIONS as _tagAUTOCOMPLETEOPTIONS
-
 extern IID_IAutoComplete2 as const IID
 
 type IAutoComplete2Vtbl
@@ -1431,14 +1334,11 @@ declare function IAutoComplete2_SetOptions_Proxy(byval This as IAutoComplete2 pt
 declare sub IAutoComplete2_SetOptions_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IAutoComplete2_GetOptions_Proxy(byval This as IAutoComplete2 ptr, byval pdwFlag as DWORD ptr) as HRESULT
 declare sub IAutoComplete2_GetOptions_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-
 extern __MIDL_itf_shldisp_0289_v0_0_c_ifspec as RPC_IF_HANDLE
 extern __MIDL_itf_shldisp_0289_v0_0_s_ifspec as RPC_IF_HANDLE
-
 #define __IEnumACString_INTERFACE_DEFINED__
 
 type IEnumACString as IEnumACString_
-
 type PENUMACSTRING as IEnumACString ptr
 type LPENUMACSTRING as IEnumACString ptr
 
@@ -1450,7 +1350,6 @@ enum
 end enum
 
 type ACENUMOPTION as _tagACENUMOPTION
-
 extern IID_IEnumACString as const IID
 
 type IEnumACStringVtbl
@@ -1476,16 +1375,11 @@ declare function IEnumACString_SetEnumOptions_Proxy(byval This as IEnumACString 
 declare sub IEnumACString_SetEnumOptions_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IEnumACString_GetEnumOptions_Proxy(byval This as IEnumACString ptr, byval pdwOptions as DWORD ptr) as HRESULT
 declare sub IEnumACString_GetEnumOptions_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-
 extern __MIDL_itf_shldisp_0290_v0_0_c_ifspec as RPC_IF_HANDLE
 extern __MIDL_itf_shldisp_0290_v0_0_s_ifspec as RPC_IF_HANDLE
-
 #define __IAsyncOperation_INTERFACE_DEFINED__
-
 type IAsyncOperation as IAsyncOperation_
-
 type LPASYNCOPERATION as IAsyncOperation ptr
-
 extern IID_IAsyncOperation as const IID
 
 type IAsyncOperationVtbl

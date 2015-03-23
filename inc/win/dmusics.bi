@@ -6,24 +6,18 @@ extern "Windows"
 
 #define __WINE_DMUSIC_SOFTWARESYNTH_H
 #define REGSTR_PATH_SOFTWARESYNTHS !"Software\\Microsoft\\DirectMusic\\SoftwareSynths"
-
 extern IID_IDirectMusicSynth as const GUID
 extern IID_IDirectMusicSynth8 as const GUID
 extern IID_IDirectMusicSynthSink as const GUID
 
 type LPDIRECTMUSICSYNTH as IDirectMusicSynth ptr
 type LPDIRECTMUSICSYNTH8 as IDirectMusicSynth8 ptr
-
 type IDirectMusicSynthSink as IDirectMusicSynthSink_
-
 type LPDIRECTMUSICSYNTHSINK as IDirectMusicSynthSink ptr
-
 extern GUID_DMUS_PROP_SetSynthSink as const GUID
 extern GUID_DMUS_PROP_SinkUsesDSound as const GUID
-
 #define REFRESH_F_LASTBUFFER &h1
 #define _DMUS_VOICE_STATE_DEFINED
-
 type DMUS_VOICE_STATE as _DMUS_VOICE_STATE
 type LPDMUS_VOICE_STATE as _DMUS_VOICE_STATE ptr
 
@@ -81,7 +75,6 @@ end type
 #define IDirectMusicSynth_GetChannelPriority(p, a, b, c) (p)->lpVtbl->GetChannelPriority(p, a, b, c)
 #define IDirectMusicSynth_GetFormat(p, a, b) (p)->lpVtbl->GetFormat(p, a, b)
 #define IDirectMusicSynth_GetAppend(p, a) (p)->lpVtbl->GetAppend(p, a)
-
 type IDirectMusicSynth8Vtbl as IDirectMusicSynth8Vtbl_
 
 type IDirectMusicSynth8
@@ -141,7 +134,6 @@ end type
 #define IDirectMusicSynth8_GetVoiceState(p, a, b, c) (p)->lpVtbl->GetVoiceState(p, a, b, c)
 #define IDirectMusicSynth8_Refresh(p, a, b) (p)->lpVtbl->Refresh(p, a, b)
 #define IDirectMusicSynth8_AssignChannelToBuses(p, a, b, c, d) (p)->lpVtbl->AssignChannelToBuses(p, a, b, c, d)
-
 type IDirectMusicSynthSinkVtbl as IDirectMusicSynthSinkVtbl_
 
 type IDirectMusicSynthSink_

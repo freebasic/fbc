@@ -3,7 +3,6 @@
 extern "C"
 
 #define __IUPGLCONTROLS_H
-
 declare function IupGLControlsOpen() as long
 declare function IupGLCanvasBoxv(byval children as Ihandle ptr ptr) as Ihandle ptr
 declare function IupGLCanvasBox(byval child as Ihandle ptr, ...) as Ihandle ptr

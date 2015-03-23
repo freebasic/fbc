@@ -26,7 +26,6 @@ end type
 
 type PIN_ADDR as IN_ADDR ptr
 type LPIN_ADDR as IN_ADDR ptr
-
 #define s_addr S_un.S_addr
 #define s_host S_un.S_un_b.s_b2
 #define s_net S_un.S_un_b.s_b1

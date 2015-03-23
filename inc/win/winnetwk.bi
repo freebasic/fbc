@@ -306,7 +306,6 @@ declare function WNetGetResourceParentA(byval lpNetResource as LPNETRESOURCEA, b
 declare function WNetGetResourceParentW(byval lpNetResource as LPNETRESOURCEW, byval lpBuffer as LPVOID, byval lpcbBuffer as LPDWORD) as DWORD
 declare function WNetGetResourceInformationA(byval lpNetResource as LPNETRESOURCEA, byval lpBuffer as LPVOID, byval lpcbBuffer as LPDWORD, byval lplpSystem as LPSTR ptr) as DWORD
 declare function WNetGetResourceInformationW(byval lpNetResource as LPNETRESOURCEW, byval lpBuffer as LPVOID, byval lpcbBuffer as LPDWORD, byval lplpSystem as LPWSTR ptr) as DWORD
-
 #define UNIVERSAL_NAME_INFO_LEVEL &h00000001
 #define REMOTE_NAME_INFO_LEVEL &h00000002
 
@@ -353,14 +352,12 @@ type LPREMOTE_NAME_INFOW as _REMOTE_NAME_INFOW ptr
 #ifdef UNICODE
 	type REMOTE_NAME_INFO as REMOTE_NAME_INFOW
 	type LPREMOTE_NAME_INFO as LPREMOTE_NAME_INFOW
-
 	#define WNetGetUniversalName WNetGetUniversalNameW
 	#define WNetGetUser WNetGetUserW
 	#define WNetGetProviderName WNetGetProviderNameW
 #else
 	type REMOTE_NAME_INFO as REMOTE_NAME_INFOA
 	type LPREMOTE_NAME_INFO as LPREMOTE_NAME_INFOA
-
 	#define WNetGetUniversalName WNetGetUniversalNameA
 	#define WNetGetUser WNetGetUserA
 	#define WNetGetProviderName WNetGetProviderNameA
@@ -375,7 +372,6 @@ declare function WNetGetUserW(byval lpName as LPCWSTR, byval lpUserName as LPWST
 #define WNFMT_ABBREVIATED &h02
 #define WNFMT_INENUM &h10
 #define WNFMT_CONNECTION &h20
-
 declare function WNetGetProviderNameA(byval dwNetType as DWORD, byval lpProviderName as LPSTR, byval lpBufferSize as LPDWORD) as DWORD
 declare function WNetGetProviderNameW(byval dwNetType as DWORD, byval lpProviderName as LPWSTR, byval lpBufferSize as LPDWORD) as DWORD
 
@@ -392,7 +388,6 @@ end type
 
 type NETINFOSTRUCT as _NETINFOSTRUCT
 type LPNETINFOSTRUCT as _NETINFOSTRUCT ptr
-
 #define NETINFO_DLL16 &h00000001
 #define NETINFO_DISKRED &h00000004
 #define NETINFO_PRINTERRED &h00000008
@@ -405,7 +400,6 @@ type LPNETINFOSTRUCT as _NETINFOSTRUCT ptr
 
 declare function WNetGetNetworkInformationA(byval lpProvider as LPCSTR, byval lpNetInfoStruct as LPNETINFOSTRUCT) as DWORD
 declare function WNetGetNetworkInformationW(byval lpProvider as LPCWSTR, byval lpNetInfoStruct as LPNETINFOSTRUCT) as DWORD
-
 type PFNGETPROFILEPATHA as function(byval pszUsername as LPCSTR, byval pszBuffer as LPSTR, byval cbBuffer as UINT) as UINT
 type PFNGETPROFILEPATHW as function(byval pszUsername as LPCWSTR, byval pszBuffer as LPWSTR, byval cbBuffer as UINT) as UINT
 
@@ -426,7 +420,6 @@ type PFNRECONCILEPROFILEW as function(byval pszCentralFile as LPCWSTR, byval psz
 
 #define RP_LOGON &h01
 #define RP_INIFILE &h02
-
 type PFNPROCESSPOLICIESA as function(byval hwnd as HWND, byval pszPath as LPCSTR, byval pszUsername as LPCSTR, byval pszComputerName as LPCSTR, byval dwFlags as DWORD) as WINBOOL
 type PFNPROCESSPOLICIESW as function(byval hwnd as HWND, byval pszPath as LPCWSTR, byval pszUsername as LPCWSTR, byval pszComputerName as LPCWSTR, byval dwFlags as DWORD) as WINBOOL
 
@@ -446,7 +439,6 @@ type PFNPROCESSPOLICIESW as function(byval hwnd as HWND, byval pszPath as LPCWST
 
 declare function WNetGetLastErrorA(byval lpError as LPDWORD, byval lpErrorBuf as LPSTR, byval nErrorBufSize as DWORD, byval lpNameBuf as LPSTR, byval nNameBufSize as DWORD) as DWORD
 declare function WNetGetLastErrorW(byval lpError as LPDWORD, byval lpErrorBuf as LPWSTR, byval nErrorBufSize as DWORD, byval lpNameBuf as LPWSTR, byval nNameBufSize as DWORD) as DWORD
-
 #define WN_SUCCESS NO_ERROR
 #define WN_NO_ERROR NO_ERROR
 #define WN_NOT_SUPPORTED ERROR_NOT_SUPPORTED
@@ -500,7 +492,6 @@ end type
 
 type NETCONNECTINFOSTRUCT as _NETCONNECTINFOSTRUCT
 type LPNETCONNECTINFOSTRUCT as _NETCONNECTINFOSTRUCT ptr
-
 #define WNCON_FORNETCARD &h00000001
 #define WNCON_NOTROUTED &h00000002
 #define WNCON_SLOWLINK &h00000004

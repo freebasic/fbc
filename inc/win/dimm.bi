@@ -18,10 +18,8 @@ extern "Windows"
 #define __IActiveIME_FWD_DEFINED__
 #define __IActiveIME2_FWD_DEFINED__
 #define __CActiveIMM_FWD_DEFINED__
-
 extern __MIDL_itf_dimm_0000_v0_0_c_ifspec as RPC_IF_HANDLE
 extern __MIDL_itf_dimm_0000_v0_0_s_ifspec as RPC_IF_HANDLE
-
 #define __ActiveIMM_LIBRARY_DEFINED__
 
 union __MIDL___MIDL_itf_dimm_0000_0012_lfFont
@@ -62,13 +60,9 @@ type __MIDL___MIDL_itf_dimm_0000_0014
 end type
 
 type IMEINFO as __MIDL___MIDL_itf_dimm_0000_0014
-
 extern LIBID_ActiveIMM as const IID
-
 #define __IEnumRegisterWordA_INTERFACE_DEFINED__
-
 extern IID_IEnumRegisterWordA as const IID
-
 type IEnumRegisterWordA as IEnumRegisterWordA_
 
 type IEnumRegisterWordAVtbl
@@ -93,11 +87,8 @@ declare function IEnumRegisterWordA_Reset_Proxy(byval This as IEnumRegisterWordA
 declare sub IEnumRegisterWordA_Reset_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IEnumRegisterWordA_Skip_Proxy(byval This as IEnumRegisterWordA ptr, byval ulCount as ULONG) as HRESULT
 declare sub IEnumRegisterWordA_Skip_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-
 #define __IEnumRegisterWordW_INTERFACE_DEFINED__
-
 extern IID_IEnumRegisterWordW as const IID
-
 type IEnumRegisterWordW as IEnumRegisterWordW_
 
 type IEnumRegisterWordWVtbl
@@ -122,11 +113,8 @@ declare function IEnumRegisterWordW_Reset_Proxy(byval This as IEnumRegisterWordW
 declare sub IEnumRegisterWordW_Reset_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IEnumRegisterWordW_Skip_Proxy(byval This as IEnumRegisterWordW ptr, byval ulCount as ULONG) as HRESULT
 declare sub IEnumRegisterWordW_Skip_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-
 #define __IEnumInputContext_INTERFACE_DEFINED__
-
 extern IID_IEnumInputContext as const IID
-
 type IEnumInputContext as IEnumInputContext_
 
 type IEnumInputContextVtbl
@@ -151,11 +139,8 @@ declare function IEnumInputContext_Reset_Proxy(byval This as IEnumInputContext p
 declare sub IEnumInputContext_Reset_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IEnumInputContext_Skip_Proxy(byval This as IEnumInputContext ptr, byval ulCount as ULONG) as HRESULT
 declare sub IEnumInputContext_Skip_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-
 #define __IActiveIMMRegistrar_INTERFACE_DEFINED__
-
 extern IID_IActiveIMMRegistrar as const IID
-
 type IActiveIMMRegistrar as IActiveIMMRegistrar_
 
 type IActiveIMMRegistrarVtbl
@@ -174,11 +159,8 @@ declare function IActiveIMMRegistrar_RegisterIME_Proxy(byval This as IActiveIMMR
 declare sub IActiveIMMRegistrar_RegisterIME_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IActiveIMMRegistrar_UnregisterIME_Proxy(byval This as IActiveIMMRegistrar ptr, byval rclsid as const IID const ptr) as HRESULT
 declare sub IActiveIMMRegistrar_UnregisterIME_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-
 #define __IActiveIMMMessagePumpOwner_INTERFACE_DEFINED__
-
 extern IID_IActiveIMMMessagePumpOwner as const IID
-
 type IActiveIMMMessagePumpOwner as IActiveIMMMessagePumpOwner_
 
 type IActiveIMMMessagePumpOwnerVtbl
@@ -206,11 +188,8 @@ declare function IActiveIMMMessagePumpOwner_Pause_Proxy(byval This as IActiveIMM
 declare sub IActiveIMMMessagePumpOwner_Pause_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IActiveIMMMessagePumpOwner_Resume_Proxy(byval This as IActiveIMMMessagePumpOwner ptr, byval dwCookie as DWORD) as HRESULT
 declare sub IActiveIMMMessagePumpOwner_Resume_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-
 #define __IActiveIMMApp_INTERFACE_DEFINED__
-
 extern IID_IActiveIMMApp as const IID
-
 type IActiveIMMApp as IActiveIMMApp_
 
 type IActiveIMMAppVtbl
@@ -427,11 +406,8 @@ declare function IActiveIMMApp_GetImeMenuItemsW_Proxy(byval This as IActiveIMMAp
 declare sub IActiveIMMApp_GetImeMenuItemsW_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IActiveIMMApp_EnumInputContext_Proxy(byval This as IActiveIMMApp ptr, byval idThread as DWORD, byval ppEnum as IEnumInputContext ptr ptr) as HRESULT
 declare sub IActiveIMMApp_EnumInputContext_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-
 #define __IActiveIMMIME_INTERFACE_DEFINED__
-
 extern IID_IActiveIMMIME as const IID
-
 type IActiveIMMIME as IActiveIMMIME_
 
 type IActiveIMMIMEVtbl
@@ -708,11 +684,8 @@ declare function IActiveIMMIME_SendIMCW_Proxy(byval This as IActiveIMMIME ptr, b
 declare sub IActiveIMMIME_SendIMCW_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IActiveIMMIME_IsSleeping_Proxy(byval This as IActiveIMMIME ptr) as HRESULT
 declare sub IActiveIMMIME_IsSleeping_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-
 #define __IActiveIME_INTERFACE_DEFINED__
-
 extern IID_IActiveIME as const IID
-
 type IActiveIME as IActiveIME_
 
 type IActiveIMEVtbl
@@ -776,11 +749,8 @@ declare function IActiveIME_GetCodePageA_Proxy(byval This as IActiveIME ptr, byv
 declare sub IActiveIME_GetCodePageA_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IActiveIME_GetLangId_Proxy(byval This as IActiveIME ptr, byval plid as LANGID ptr) as HRESULT
 declare sub IActiveIME_GetLangId_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-
 #define __IActiveIME2_INTERFACE_DEFINED__
-
 extern IID_IActiveIME2 as const IID
-
 type IActiveIME2 as IActiveIME2_
 
 type IActiveIME2Vtbl
@@ -816,7 +786,6 @@ declare function IActiveIME2_Sleep_Proxy(byval This as IActiveIME2 ptr) as HRESU
 declare sub IActiveIME2_Sleep_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IActiveIME2_Unsleep_Proxy(byval This as IActiveIME2 ptr, byval fDead as WINBOOL) as HRESULT
 declare sub IActiveIME2_Unsleep_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-
 extern CLSID_CActiveIMM as const CLSID
 
 end extern

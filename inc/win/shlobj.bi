@@ -15,7 +15,6 @@
 extern "Windows"
 
 #define _SHLOBJ_H_
-
 declare function SHGetMalloc(byval ppMalloc as IMalloc ptr ptr) as HRESULT
 declare function SHAlloc(byval cb as SIZE_T_) as any ptr
 declare sub SHFree(byval pv as any ptr)
@@ -33,7 +32,6 @@ declare sub SHFree(byval pv as any ptr)
 #define GIL_DONTCACHE &h10
 #define GIL_SHIELD &h200
 #define GIL_FORCENOSHIELD &h400
-
 type IExtractIconAVtbl as IExtractIconAVtbl_
 
 type IExtractIconA field = 1
@@ -46,7 +44,6 @@ type IExtractIconAVtbl_ field = 1
 end type
 
 type LPEXTRACTICONA as IExtractIconA ptr
-
 type IExtractIconWVtbl as IExtractIconWVtbl_
 
 type IExtractIconW field = 1
@@ -84,7 +81,6 @@ end type
 
 #define ISIOI_ICONFILE &h1
 #define ISIOI_ICONINDEX &h2
-
 type IShellIconOverlayManagerVtbl as IShellIconOverlayManagerVtbl_
 
 type IShellIconOverlayManager field = 1
@@ -105,7 +101,6 @@ end type
 #define SIOM_RESERVED_LINK 1
 #define SIOM_RESERVED_SLOWFILE 2
 #define SIOM_RESERVED_DEFAULT 3
-
 type IShellIconOverlayVtbl as IShellIconOverlayVtbl_
 
 type IShellIconOverlay field = 1
@@ -123,7 +118,6 @@ end type
 #define IDO_SHGIOI_LINK &h0ffffffe
 #define IDO_SHGIOI_SLOWFILE &h0fffffffd
 #define IDO_SHGIOI_DEFAULT &h0fffffffc
-
 declare function SHGetIconOverlayIndexA(byval pszIconPath as LPCSTR, byval iIconIndex as long) as long
 declare function SHGetIconOverlayIndexW(byval pszIconPath as LPCWSTR, byval iIconIndex as long) as long
 
@@ -216,7 +210,6 @@ type NT_CONSOLE_PROPS field = 1
 end type
 
 type LPNT_CONSOLE_PROPS as NT_CONSOLE_PROPS ptr
-
 #define NT_CONSOLE_PROPS_SIG &ha0000002
 
 type NT_FE_CONSOLE_PROPS field = 1
@@ -231,7 +224,6 @@ type NT_FE_CONSOLE_PROPS field = 1
 end type
 
 type LPNT_FE_CONSOLE_PROPS as NT_FE_CONSOLE_PROPS ptr
-
 #define NT_FE_CONSOLE_PROPS_SIG &ha0000004
 
 type EXP_DARWIN_LINK field = 1
@@ -247,7 +239,6 @@ type EXP_DARWIN_LINK field = 1
 end type
 
 type LPEXP_DARWIN_LINK as EXP_DARWIN_LINK ptr
-
 #define EXP_DARWIN_ID_SIG &ha0000006
 #define EXP_SPECIAL_FOLDER_SIG &ha0000005
 
@@ -268,7 +259,6 @@ type EXP_SZ_LINK field = 1
 end type
 
 type LPEXP_SZ_LINK as EXP_SZ_LINK ptr
-
 #define EXP_SZ_LINK_SIG &ha0000001
 #define EXP_SZ_ICON_SIG &ha0000007
 
@@ -397,7 +387,6 @@ type ICopyHookAVtbl_ field = 1
 end type
 
 type LPCOPYHOOKA as ICopyHookA ptr
-
 type ICopyHookWVtbl as ICopyHookWVtbl_
 
 type ICopyHookW field = 1
@@ -445,13 +434,11 @@ type LPCOPYHOOKW as ICopyHookW ptr
 	end type
 
 	type LPFVSHOWINFO as FVSHOWINFO ptr
-
 	#define FVSIF_RECT &h00000001
 	#define FVSIF_PINNED &h00000002
 	#define FVSIF_NEWFAILED &h08000000
 	#define FVSIF_NEWFILE &h80000000
 	#define FVSIF_CANVIEWIT &h40000000
-
 	type IFileViewerAVtbl as IFileViewerAVtbl_
 
 	type IFileViewerA field = 1
@@ -465,7 +452,6 @@ type LPCOPYHOOKW as ICopyHookW ptr
 	end type
 
 	type LPFILEVIEWERA as IFileViewerA ptr
-
 	type IFileViewerWVtbl as IFileViewerWVtbl_
 
 	type IFileViewerW field = 1
@@ -554,7 +540,6 @@ declare function ILCreateFromPathW(byval pszPath as PCWSTR) as LPITEMIDLIST
 #endif
 
 declare function SHILCreateFromPath(byval pszPath as PCWSTR, byval ppidl as LPITEMIDLIST ptr, byval rgfInOut as DWORD ptr) as HRESULT
-
 #define VOID_OFFSET(pv, cb) cptr(any ptr, cptr(UBYTE ptr, (pv)) + (cb))
 #define ILCloneFull ILClone
 #define ILCloneChild ILCloneFirst
@@ -563,7 +548,6 @@ declare function SHILCreateFromPath(byval pszPath as PCWSTR, byval ppidl as LPIT
 #define ILIsAligned(P) ((cast(DWORD_PTR, (P)) and (sizeof(any ptr) - 1)) = 0)
 #define ILIsEmpty(P) (((P) = 0) orelse ((P)->mkid.cb = 0))
 #define ILIsChild(P) (ILIsEmpty(P) orelse ILIsEmpty(ILNext(P)))
-
 declare function ILAppendID(byval pidl as LPITEMIDLIST, byval pmkid as LPCSHITEMID, byval fAppend as WINBOOL) as LPITEMIDLIST
 
 #if _WIN32_WINNT = &h0602
@@ -575,7 +559,6 @@ declare function ILAppendID(byval pidl as LPITEMIDLIST, byval pmkid as LPCSHITEM
 	end enum
 
 	type GPFIDL_FLAGS as long
-
 	declare function SHGetPathFromIDListEx(byval pidl as LPCITEMIDLIST, byval pszPath as PWSTR, byval cchPath as DWORD, byval uOpts as GPFIDL_FLAGS) as WINBOOL
 #endif
 
@@ -603,8 +586,7 @@ declare function SHCreateDirectoryExW(byval hwnd as HWND, byval pszPath as LPCWS
 
 declare function SHOpenFolderAndSelectItems(byval pidlFolder as LPCITEMIDLIST, byval cidl as UINT, byval apidl as LPCITEMIDLIST ptr, byval dwFlags as DWORD) as HRESULT
 declare function SHCreateShellItem(byval pidlParent as LPCITEMIDLIST, byval psfParent as IShellFolder ptr, byval pidl as LPCITEMIDLIST, byval ppsi as IShellItem ptr ptr) as HRESULT
-
-#define REGSTR_PATH_SPECIAL_FOLDERS (REGSTR_PATH_EXPLORER + __TEXT(!"\\Shell Folders"))
+#define REGSTR_PATH_SPECIAL_FOLDERS REGSTR_PATH_EXPLORER __TEXT(!"\\Shell Folders")
 #define CSIDL_DESKTOP &h0000
 #define CSIDL_INTERNET &h0001
 #define CSIDL_PROGRAMS &h0002
@@ -760,7 +742,6 @@ declare function SHGetFolderPathAndSubDirW(byval hwnd as HWND, byval csidl as lo
 	end type
 
 	type LPSHFOLDERCUSTOMSETTINGS as SHFOLDERCUSTOMSETTINGS ptr
-
 	declare function SHGetSetFolderCustomSettings(byval pfcs as LPSHFOLDERCUSTOMSETTINGS, byval pszPath as PCWSTR, byval dwReadWrite as DWORD) as HRESULT
 #endif
 
@@ -835,7 +816,6 @@ type LPBROWSEINFOW as _browseinfoW ptr
 #define BFFM_SETSTATUSTEXTW (WM_USER + 104)
 #define BFFM_SETOKTEXT (WM_USER + 105)
 #define BFFM_SETEXPANDED (WM_USER + 106)
-
 declare function SHBrowseForFolderA(byval lpbi as LPBROWSEINFOA) as LPITEMIDLIST
 declare function SHBrowseForFolderW(byval lpbi as LPBROWSEINFOW) as LPITEMIDLIST
 
@@ -866,9 +846,7 @@ end enum
 #define CMDID_INTSHORTCUTCREATE ISHCUTCMDID_INTSHORTCUTCREATE
 #define STR_PARSE_WITH_PROPERTIES wstr("ParseWithProperties")
 #define STR_PARSE_PARTIAL_IDLIST wstr("ParseOriginalItem")
-
 declare function SHGetDesktopFolder(byval ppshf as IShellFolder ptr ptr) as HRESULT
-
 type IShellDetailsVtbl as IShellDetailsVtbl_
 
 type IShellDetails field = 1
@@ -931,7 +909,6 @@ enum
 end enum
 
 type AUTOCOMPLETELISTOPTIONS as _tagAUTOCOMPLETELISTOPTIONS
-
 type IACList2Vtbl as IACList2Vtbl_
 
 type IACList2 field = 1
@@ -999,7 +976,6 @@ end type
 #define DWFAF_GROUP1 &h2
 #define DWFAF_GROUP2 &h4
 #define DWFAF_AUTOHIDE &h10
-
 type IDockingWindowFrameVtbl as IDockingWindowFrameVtbl_
 
 type IDockingWindowFrame field = 1
@@ -1032,7 +1008,6 @@ type LPTHUMBNAILCAPTURE as IThumbnailCapture ptr
 
 	type ENUMSHELLIMAGESTOREDATA as _EnumImageStoreDATAtag
 	type PENUMSHELLIMAGESTOREDATA as _EnumImageStoreDATAtag ptr
-
 	type IEnumShellImageStoreVtbl as IEnumShellImageStoreVtbl_
 
 	type IEnumShellImageStore field = 1
@@ -1050,10 +1025,8 @@ type LPTHUMBNAILCAPTURE as IThumbnailCapture ptr
 	end type
 
 	type LPENUMSHELLIMAGESTORE as IEnumShellImageStore ptr
-
 	#define SHIMSTCAPFLAG_LOCKABLE &h0001
 	#define SHIMSTCAPFLAG_PURGEABLE &h0002
-
 	type IShellImageStoreVtbl as IShellImageStoreVtbl_
 
 	type IShellImageStore field = 1
@@ -1118,7 +1091,6 @@ type BANDINFOSFB
 end type
 
 type PBANDINFOSFB as BANDINFOSFB ptr
-
 type IShellFolderBandVtbl as IShellFolderBandVtbl_
 
 type IShellFolderBand field = 1
@@ -1186,7 +1158,6 @@ end type
 
 type LPSHCOLUMNINIT as SHCOLUMNINIT ptr
 type LPCSHCOLUMNINIT as const SHCOLUMNINIT ptr
-
 #define SHCDF_UPDATEITEM &h00000001
 
 type SHCOLUMNDATA
@@ -1199,7 +1170,6 @@ end type
 
 type LPSHCOLUMNDATA as SHCOLUMNDATA ptr
 type LPCSHCOLUMNDATA as const SHCOLUMNDATA ptr
-
 type IColumnProviderVtbl as IColumnProviderVtbl_
 
 type IColumnProvider field = 1
@@ -1403,7 +1373,6 @@ type _SHChangeNotifyEntry field = 1
 end type
 
 type SHChangeNotifyEntry as _SHChangeNotifyEntry
-
 #define SHCNRF_InterruptLevel &h0001
 #define SHCNRF_ShellLevel &h0002
 #define SHCNRF_RecursiveInterrupt &h1000
@@ -1456,7 +1425,6 @@ type SHChangeNotifyEntry as _SHChangeNotifyEntry
 #endif
 
 declare sub SHChangeNotify(byval wEventId as LONG, byval uFlags as UINT, byval dwItem1 as LPCVOID, byval dwItem2 as LPCVOID)
-
 type IShellChangeNotifyVtbl as IShellChangeNotifyVtbl_
 
 type IShellChangeNotify field = 1
@@ -1558,7 +1526,6 @@ end type
 
 type SHChangeUpdateImageIDList as _SHChangeUpdateImageIDList
 type LPSHChangeUpdateImageIDList as _SHChangeUpdateImageIDList ptr
-
 declare function SHHandleUpdateImage(byval pidlExtra as LPCITEMIDLIST) as long
 
 type _SHChangeProductKeyAsIDList field = 1
@@ -1569,7 +1536,6 @@ end type
 
 type SHChangeProductKeyAsIDList as _SHChangeProductKeyAsIDList
 type LPSHChangeProductKeyAsIDList as _SHChangeProductKeyAsIDList ptr
-
 declare sub SHUpdateImageA(byval pszHashItem as LPCSTR, byval iIndex as long, byval uFlags as UINT, byval iImageIndex as long)
 declare sub SHUpdateImageW(byval pszHashItem as LPCWSTR, byval iIndex as long, byval uFlags as UINT, byval iImageIndex as long)
 
@@ -1632,7 +1598,6 @@ end type
 
 type SHDESCRIPTIONID as _SHDESCRIPTIONID
 type LPSHDESCRIPTIONID as _SHDESCRIPTIONID ptr
-
 declare function SHGetDataFromIDListA(byval psf as IShellFolder ptr, byval pidl as LPCITEMIDLIST, byval nFormat as long, byval pv as any ptr, byval cb as long) as HRESULT
 declare function SHGetDataFromIDListW(byval psf as IShellFolder ptr, byval pidl as LPCITEMIDLIST, byval nFormat as long, byval pv as any ptr, byval cb as long) as HRESULT
 
@@ -1659,7 +1624,6 @@ declare function SHCoCreateInstance(byval pszCLSID as PCWSTR, byval pclsid as co
 declare function CIDLData_CreateFromIDArray(byval pidlFolder as LPCITEMIDLIST, byval cidl as UINT, byval apidl as LPCITEMIDLIST ptr, byval ppdtobj as IDataObject ptr ptr) as HRESULT
 declare function SHCreateStdEnumFmtEtc(byval cfmt as UINT, byval afmt as const FORMATETC ptr, byval ppenumFormatEtc as IEnumFORMATETC ptr ptr) as HRESULT
 declare function SHDoDragDrop(byval hwnd as HWND, byval pdata as IDataObject ptr, byval pdsrc as IDropSource ptr, byval dwEffect as DWORD, byval pdwEffect as DWORD ptr) as HRESULT
-
 #define NUM_POINTS 3
 
 type AUTO_SCROLL_DATA field = 1
@@ -1695,9 +1659,7 @@ type CABINETSTATE field = 1
 end type
 
 type LPCABINETSTATE as CABINETSTATE ptr
-
 #define CABINETSTATE_VERSION 2
-
 declare function ReadCabinetState(byval pcs as CABINETSTATE ptr, byval cLength as long) as WINBOOL
 declare function WriteCabinetState(byval pcs as CABINETSTATE ptr) as WINBOOL
 declare function PathMakeUniqueName(byval pszUniqueName as PWSTR, byval cchMax as UINT, byval pszTemplate as PCWSTR, byval pszLongPlate as PCWSTR, byval pszDir as PCWSTR) as WINBOOL
@@ -1728,16 +1690,12 @@ declare function IsNetDrive(byval iDrive as long) as long
 #define MM_ADDSEPARATOR __MSABI_LONG(&h00000001)
 #define MM_SUBMENUSHAVEIDS __MSABI_LONG(&h00000002)
 #define MM_DONTREMOVESEPS __MSABI_LONG(&h00000004)
-
 declare function Shell_MergeMenus(byval hmDst as HMENU, byval hmSrc as HMENU, byval uInsert as UINT, byval uIDAdjust as UINT, byval uIDAdjustMax as UINT, byval uFlags as ULONG) as UINT
 declare function SHObjectProperties(byval hwnd as HWND, byval shopObjectType as DWORD, byval pszObjectName as PCWSTR, byval pszPropertyPage as PCWSTR) as WINBOOL
-
 #define SHOP_PRINTERNAME &h00000001
 #define SHOP_FILEPATH &h00000002
 #define SHOP_VOLUMEGUID &h00000004
-
 declare function SHFormatDrive(byval hwnd as HWND, byval drive as UINT, byval fmtID as UINT, byval options as UINT) as DWORD
-
 #define SHFMT_ID_DEFAULT &hffff
 #define SHFMT_OPT_FULL &h0001
 #define SHFMT_OPT_SYSONLY &h0002
@@ -1751,7 +1709,6 @@ type HPSXA__ field = 1
 end type
 
 type HPSXA as HPSXA__ ptr
-
 declare function SHCreatePropSheetExtArray(byval hKey as HKEY, byval pszSubKey as PCWSTR, byval max_iface as UINT) as HPSXA
 declare sub SHDestroyPropSheetExtArray(byval hpsxa as HPSXA)
 declare function SHAddFromPropSheetExtArray(byval hpsxa as HPSXA, byval lpfnAddPage as LPFNADDPROPSHEETPAGE, byval lParam as LPARAM) as UINT
@@ -1975,7 +1932,6 @@ declare function Win32DeleteFile(byval pszPath as PCWSTR) as WINBOOL
 	#define PPCF_NODIRECTORIES &h00000010
 	#define PPCF_FORCEQUALIFY &h00000040
 	#define PPCF_LONGESTPOSSIBLE &h00000080
-
 	declare function PathProcessCommand(byval pszSrc as PCWSTR, byval pszDest as PWSTR, byval cchDest as long, byval dwFlags as DWORD) as LONG
 #endif
 
@@ -2066,7 +2022,6 @@ end type
 #endif
 
 declare function SHValidateUNC(byval hwndOwner as HWND, byval pszFile as PWSTR, byval fConnect as UINT) as WINBOOL
-
 #define OPENPROPS_NONE &h0000
 #define OPENPROPS_INHIBITPIF &h8000
 #define GETPROPS_NONE &h0000
@@ -2107,7 +2062,6 @@ declare function PifMgr_SetProperties(byval hProps as HANDLE, byval pszGroup as 
 declare function PifMgr_CloseProperties(byval hProps as HANDLE, byval flOpt as UINT) as HANDLE
 declare sub SHSetInstanceExplorer(byval punk as IUnknown ptr)
 declare function IsUserAnAdmin() as WINBOOL
-
 type IInitializeObjectVtbl as IInitializeObjectVtbl_
 
 type IInitializeObject field = 1
@@ -2137,7 +2091,6 @@ type IBanneredBarVtbl_ field = 1
 end type
 
 declare function SHShellFolderView_Message(byval hwndMain as HWND, byval uMsg as UINT, byval lParam as LPARAM) as LRESULT
-
 type IShellFolderViewCBVtbl as IShellFolderViewCBVtbl_
 
 type IShellFolderViewCB field = 1
@@ -2175,7 +2128,6 @@ end type
 
 type QCMINFO as _QCMINFO
 type LPQCMINFO as QCMINFO ptr
-
 #define TBIF_APPEND 0
 #define TBIF_PREPEND 1
 #define TBIF_REPLACE 2
@@ -2217,7 +2169,6 @@ type _SFVM_HELPTOPIC_DATA
 end type
 
 type SFVM_HELPTOPIC_DATA as _SFVM_HELPTOPIC_DATA
-
 #define SFVM_MERGEMENU 1
 #define SFVM_INVOKECOMMAND 2
 #define SFVM_GETHELPTEXT 3
@@ -2256,13 +2207,11 @@ type _ITEMSPACING
 end type
 
 type ITEMSPACING as _ITEMSPACING
-
 #define SFVSOC_INVALIDATE_ALL &h00000001
 #define SFVSOC_NOSCROLL LVSICF_NOSCROLL
 #define SFVS_SELECT_NONE &h0
 #define SFVS_SELECT_ALLITEMS &h1
 #define SFVS_SELECT_INVERT &h2
-
 type IShellFolderViewVtbl as IShellFolderViewVtbl_
 
 type IShellFolderView
@@ -2308,11 +2257,8 @@ type _SFV_CREATE
 end type
 
 type SFV_CREATE as _SFV_CREATE
-
 declare function SHCreateShellFolderView(byval pcsfv as const SFV_CREATE ptr, byval ppsv as IShellView ptr ptr) as HRESULT
-
 type LPFNDFMCALLBACK as function(byval psf as IShellFolder ptr, byval hwnd as HWND, byval pdtobj as IDataObject ptr, byval uMsg as UINT, byval wParam as WPARAM, byval lParam as LPARAM) as HRESULT
-
 declare function CDefFolderMenu_Create2(byval pidlFolder as LPCITEMIDLIST, byval hwnd as HWND, byval cidl as UINT, byval apidl as LPCITEMIDLIST ptr, byval psf as IShellFolder ptr, byval pfn as LPFNDFMCALLBACK, byval nKeys as UINT, byval ahkeys as const HKEY ptr, byval ppcm as IContextMenu ptr ptr) as HRESULT
 
 type DEFCONTEXTMENU
@@ -2354,7 +2300,6 @@ type DFMICS
 end type
 
 type PDFMICS as DFMICS ptr
-
 #define DFM_MERGECONTEXTMENU 1
 #define DFM_INVOKECOMMAND 2
 #define DFM_GETHELPTEXT 5
@@ -2384,7 +2329,6 @@ type PDFMICS as DFMICS ptr
 #define DFM_CMD_PASTESPECIAL cast(UINT, -11)
 #define DFM_CMD_MODALPROP cast(UINT, -12)
 #define DFM_CMD_RENAME cast(UINT, -13)
-
 type LPFNVIEWCALLBACK as function(byval psvOuter as IShellView ptr, byval psf as IShellFolder ptr, byval hwndMain as HWND, byval uMsg as UINT, byval wParam as WPARAM, byval lParam as LPARAM) as HRESULT
 
 type _CSFV
@@ -2399,7 +2343,6 @@ end type
 
 type CSFV as _CSFV
 type LPCSFV as _CSFV ptr
-
 #define SFVM_REARRANGE &h00000001
 #define SFVM_ADDOBJECT &h00000003
 #define SFVM_REMOVEOBJECT &h00000006
@@ -2430,7 +2373,6 @@ end type
 type SFV_SETITEMPOS as _SFV_SETITEMPOS
 type LPSFV_SETITEMPOS as SFV_SETITEMPOS ptr
 type PCSFV_SETITEMPOS as const SFV_SETITEMPOS ptr
-
 declare function SHFind_InitMenuPopup(byval hmenu as HMENU, byval hwndOwner as HWND, byval idCmdFirst as UINT, byval idCmdLast as UINT) as IContextMenu ptr
 declare function SHCreateShellFolderViewEx(byval pcsfv as CSFV ptr, byval ppsv as IShellView ptr ptr) as HRESULT
 
@@ -2549,7 +2491,6 @@ type SHELLSTATEW field = 1
 end type
 
 type LPSHELLSTATEW as SHELLSTATEW ptr
-
 #define SHELLSTATEVERSION_IE4 9
 #define SHELLSTATEVERSION_WIN2K 10
 
@@ -2597,7 +2538,6 @@ type SHELLFLAGSTATE field = 1
 end type
 
 type LPSHELLFLAGSTATE as SHELLFLAGSTATE ptr
-
 #define SSF_SHOWALLOBJECTS &h00000001
 #define SSF_SHOWEXTENSIONS &h00000002
 #define SSF_HIDDENFILEEXTS &h00000004
@@ -2648,7 +2588,6 @@ private function IDListContainerIsConsistent cdecl(byval p as LPCITEMIDLIST, byv
 end function
 
 declare function SHParseDisplayName(byval pszName as PCWSTR, byval pbc as IBindCtx ptr, byval ppidl as LPITEMIDLIST ptr, byval sfgaoIn as SFGAOF, byval psfgaoOut as SFGAOF ptr) as HRESULT
-
 #define SHPPFW_NONE &h00000000
 #define SHPPFW_DEFAULT SHPPFW_DIRCREATE
 #define SHPPFW_DIRCREATE &h00000001
@@ -2656,7 +2595,6 @@ declare function SHParseDisplayName(byval pszName as PCWSTR, byval pbc as IBindC
 #define SHPPFW_IGNOREFILENAME &h00000004
 #define SHPPFW_NOWRITECHECK &h00000008
 #define SHPPFW_MEDIACHECKONLY &h00000010
-
 declare function SHPathPrepareForWriteA(byval hwnd as HWND, byval punkEnableModless as IUnknown ptr, byval pszPath as LPCSTR, byval dwFlags as DWORD) as HRESULT
 declare function SHPathPrepareForWriteW(byval hwnd as HWND, byval punkEnableModless as IUnknown ptr, byval pszPath as LPCWSTR, byval dwFlags as DWORD) as HRESULT
 

@@ -84,7 +84,6 @@ declare function OleRegGetUserType(byval clsid as const IID const ptr, byval dwF
 declare function OleRegGetMiscStatus(byval clsid as const IID const ptr, byval dwAspect as DWORD, byval pdwStatus as DWORD ptr) as HRESULT
 declare function OleRegEnumFormatEtc(byval clsid as const IID const ptr, byval dwDirection as DWORD, byval ppenum as LPENUMFORMATETC ptr) as HRESULT
 declare function OleRegEnumVerbs(byval clsid as const IID const ptr, byval ppenum as LPENUMOLEVERB ptr) as HRESULT
-
 type LPOLESTREAM as _OLESTREAM ptr
 
 type _OLESTREAMVTBL
@@ -100,7 +99,6 @@ type _OLESTREAM
 end type
 
 type OLESTREAM as _OLESTREAM
-
 declare function OleConvertOLESTREAMToIStorage(byval lpolestream as LPOLESTREAM, byval pstg as LPSTORAGE, byval ptd as const DVTARGETDEVICE ptr) as HRESULT
 declare function OleConvertIStorageToOLESTREAM(byval pstg as LPSTORAGE, byval lpolestream as LPOLESTREAM) as HRESULT
 declare function GetHGlobalFromILockBytes(byval plkbyt as LPLOCKBYTES, byval phglobal as HGLOBAL ptr) as HRESULT

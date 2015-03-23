@@ -601,7 +601,6 @@ declare function UnlockServiceDatabase(byval ScLock as SC_LOCK) as WINBOOL
 
 	type SERVICE_SID_INFO as _SERVICE_SID_INFO
 	type LPSERVICE_SID_INFO as _SERVICE_SID_INFO ptr
-
 	declare function ControlServiceExA(byval hService as SC_HANDLE, byval dwControl as DWORD, byval dwInfoLevel as DWORD, byval pControlParams as PVOID) as WINBOOL
 	declare function ControlServiceExW(byval hService as SC_HANDLE, byval dwControl as DWORD, byval dwInfoLevel as DWORD, byval pControlParams as PVOID) as WINBOOL
 #endif

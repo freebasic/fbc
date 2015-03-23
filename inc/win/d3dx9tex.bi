@@ -60,7 +60,6 @@ end type
 type D3DXIMAGE_INFO as _D3DXIMAGE_INFO
 type LPD3DXFILL2D as sub(byval out as D3DXVECTOR4 ptr, byval texcoord as const D3DXVECTOR2 ptr, byval texelsize as const D3DXVECTOR2 ptr, byval data as any ptr)
 type LPD3DXFILL3D as sub(byval out as D3DXVECTOR4 ptr, byval texcoord as const D3DXVECTOR3 ptr, byval texelsize as const D3DXVECTOR3 ptr, byval data as any ptr)
-
 declare function D3DXGetImageInfoFromFileA(byval file as const zstring ptr, byval info as D3DXIMAGE_INFO ptr) as HRESULT
 declare function D3DXGetImageInfoFromFileW(byval file as const wstring ptr, byval info as D3DXIMAGE_INFO ptr) as HRESULT
 
@@ -272,10 +271,8 @@ declare function D3DXSaveTextureToFileW(byval destfile as const wstring ptr, byv
 #endif
 
 declare function D3DXFilterTexture(byval texture as IDirect3DBaseTexture9 ptr, byval palette as const PALETTEENTRY ptr, byval srclevel as UINT, byval filter as DWORD) as HRESULT
-
 #define D3DXFilterCubeTexture D3DXFilterTexture
 #define D3DXFilterVolumeTexture D3DXFilterTexture
-
 declare function D3DXFillTexture(byval texture as IDirect3DTexture9 ptr, byval function as LPD3DXFILL2D, byval data as any ptr) as HRESULT
 declare function D3DXFillCubeTexture(byval cube as IDirect3DCubeTexture9 ptr, byval function as LPD3DXFILL3D, byval data as any ptr) as HRESULT
 declare function D3DXFillVolumeTexture(byval volume as IDirect3DVolumeTexture9 ptr, byval function as LPD3DXFILL3D, byval data as any ptr) as HRESULT

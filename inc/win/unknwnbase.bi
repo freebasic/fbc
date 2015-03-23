@@ -7,11 +7,8 @@ extern "Windows"
 #define __AsyncIUnknown_FWD_DEFINED__
 #define __IClassFactory_FWD_DEFINED__
 #define __IUnknown_INTERFACE_DEFINED__
-
 type IUnknown as IUnknown_
-
 type LPUNKNOWN as IUnknown ptr
-
 extern IID_IUnknown as const GUID
 
 type IUnknownVtbl
@@ -30,11 +27,8 @@ declare function IUnknown_AddRef_Proxy(byval This as IUnknown ptr) as ULONG
 declare sub IUnknown_AddRef_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IUnknown_Release_Proxy(byval This as IUnknown ptr) as ULONG
 declare sub IUnknown_Release_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define __AsyncIUnknown_INTERFACE_DEFINED__
-
 extern IID_AsyncIUnknown as const GUID
-
 type AsyncIUnknown as AsyncIUnknown_
 
 type AsyncIUnknownVtbl
@@ -65,13 +59,9 @@ declare function AsyncIUnknown_Begin_Release_Proxy(byval This as AsyncIUnknown p
 declare sub AsyncIUnknown_Begin_Release_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function AsyncIUnknown_Finish_Release_Proxy(byval This as AsyncIUnknown ptr) as ULONG
 declare sub AsyncIUnknown_Finish_Release_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define __IClassFactory_INTERFACE_DEFINED__
-
 type IClassFactory as IClassFactory_
-
 type LPCLASSFACTORY as IClassFactory ptr
-
 extern IID_IClassFactory as const GUID
 
 type IClassFactoryVtbl

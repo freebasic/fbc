@@ -153,7 +153,6 @@ end type
 
 type SecPkgContext_MappedCredAttr as _SecPkgContext_MappedCredAttr
 type PSecPkgContext_MappedCredAttr as _SecPkgContext_MappedCredAttr ptr
-
 #define SSL_SESSION_RECONNECT 1
 
 type _SecPkgContext_SessionInfo
@@ -173,7 +172,6 @@ end type
 
 type SecPkgContext_SessionAppData as _SecPkgContext_SessionAppData
 type PSecPkgContext_SessionAppData as _SecPkgContext_SessionAppData ptr
-
 #define SCH_CRED_V1 &h00000001
 #define SCH_CRED_V2 &h00000002
 #define SCH_CRED_VERSION &h00000002
@@ -201,7 +199,6 @@ end type
 
 type SCHANNEL_CRED as _SCHANNEL_CRED
 type PSCHANNEL_CRED as _SCHANNEL_CRED ptr
-
 #define SCH_CRED_FORMAT_CERT_HASH &h00000001
 #define SCH_CRED_MAX_SUPPORTED_ALGS 256
 #define SCH_CRED_MAX_SUPPORTED_CERTS 100
@@ -215,7 +212,6 @@ end type
 
 type SCHANNEL_CERT_HASH as _SCHANNEL_CERT_HASH
 type PSCHANNEL_CERT_HASH as _SCHANNEL_CERT_HASH ptr
-
 #define SCH_MACHINE_CERT_HASH &h00000001
 #define SCH_CRED_NO_SYSTEM_MAPPER &h00000002
 #define SCH_CRED_NO_SERVERNAME_CHECK &h00000004
@@ -243,7 +239,6 @@ type _SCHANNEL_ALERT_TOKEN
 end type
 
 type SCHANNEL_ALERT_TOKEN as _SCHANNEL_ALERT_TOKEN
-
 #define TLS1_ALERT_WARNING 1
 #define TLS1_ALERT_FATAL 2
 #define TLS1_ALERT_CLOSE_NOTIFY 0
@@ -278,7 +273,6 @@ type _SCHANNEL_SESSION_TOKEN
 end type
 
 type SCHANNEL_SESSION_TOKEN as _SCHANNEL_SESSION_TOKEN
-
 #define CERT_SCHANNEL_IIS_PRIVATE_KEY_PROP_ID (CERT_FIRST_USER_PROP_ID + 0)
 #define CERT_SCHANNEL_IIS_PASSWORD_PROP_ID (CERT_FIRST_USER_PROP_ID + 1)
 #define CERT_SCHANNEL_SGC_CERTIFICATE_PROP_ID (CERT_FIRST_USER_PROP_ID + 2)
@@ -304,13 +298,9 @@ type SCHANNEL_SESSION_TOKEN as _SCHANNEL_SESSION_TOKEN
 #define SP_PROT_NONE 0
 #define SP_PROT_CLIENTS ((((SP_PROT_PCT1_CLIENT or SP_PROT_SSL2_CLIENT) or SP_PROT_SSL3_CLIENT) or SP_PROT_UNI_CLIENT) or SP_PROT_TLS1_CLIENT)
 #define SP_PROT_SERVERS ((((SP_PROT_PCT1_SERVER or SP_PROT_SSL2_SERVER) or SP_PROT_SSL3_SERVER) or SP_PROT_UNI_SERVER) or SP_PROT_TLS1_SERVER)
-
 type SSL_EMPTY_CACHE_FN_A as function(byval pszTargetName as LPSTR, byval dwFlags as DWORD) as WINBOOL
-
 declare function SslEmptyCacheA(byval pszTargetName as LPSTR, byval dwFlags as DWORD) as WINBOOL
-
 type SSL_EMPTY_CACHE_FN_W as function(byval pszTargetName as LPWSTR, byval dwFlags as DWORD) as WINBOOL
-
 declare function SslEmptyCacheW(byval pszTargetName as LPWSTR, byval dwFlags as DWORD) as WINBOOL
 
 #ifdef UNICODE
@@ -331,7 +321,6 @@ end type
 
 type SSL_CREDENTIAL_CERTIFICATE as _SSL_CREDENTIAL_CERTIFICATE
 type PSSL_CREDENTIAL_CERTIFICATE as _SSL_CREDENTIAL_CERTIFICATE ptr
-
 #define SCHANNEL_SECRET_TYPE_CAPI &h00000001
 #define SCHANNEL_SECRET_PRIVKEY &h00000002
 #define SCH_CRED_X509_CERTCHAIN &h00000001
@@ -406,7 +395,6 @@ end type
 
 type X509Certificate as _X509Certificate
 type PX509Certificate as _X509Certificate ptr
-
 declare function SslGenerateKeyPair(byval pCerts as PSSL_CREDENTIAL_CERTIFICATE, byval pszDN as PSTR, byval pszPassword as PSTR, byval Bits as DWORD) as WINBOOL
 declare sub SslGenerateRandomBits(byval pRandomData as PUCHAR, byval cRandomData as LONG)
 declare function SslCrackCertificate(byval pbCertificate as PUCHAR, byval cbCertificate as DWORD, byval dwFlags as DWORD, byval ppCertificate as PX509Certificate ptr) as WINBOOL
@@ -419,7 +407,6 @@ declare sub SslFreeCertificate(byval pCertificate as PX509Certificate)
 #endif
 
 declare function SslGetDefaultIssuers(byval pbIssuers as PBYTE, byval pcbIssuers as DWORD ptr) as WINBOOL
-
 #define SSL_CRACK_CERTIFICATE_NAME __TEXT("SslCrackCertificate")
 #define SSL_FREE_CERTIFICATE_NAME __TEXT("SslFreeCertificate")
 

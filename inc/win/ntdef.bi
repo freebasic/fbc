@@ -47,9 +47,7 @@ type PVOID as any ptr
 type PVOID64 as any ptr
 type HANDLE as PVOID
 type PHANDLE as HANDLE ptr
-
 #define VOID any
-
 type CHAR as zstring
 type INT_ as long
 type UCHAR as ubyte
@@ -72,27 +70,19 @@ type NTSTATUS as LONG
 type PNTSTATUS as NTSTATUS ptr
 type SCHAR as byte
 type PSCHAR as SCHAR ptr
-
 #define _DEF_WINBOOL_
-
 type WINBOOL as long
 type BOOL as long
 type PBOOL as WINBOOL ptr
 type LPBOOL as WINBOOL ptr
-
 #define _HRESULT_DEFINED
-
 type HRESULT as LONG
-
 #define _ULONGLONG_
-
 type LONGLONG as longint
 type PLONGLONG as longint ptr
 type ULONGLONG as ulongint
 type PULONGLONG as ulongint ptr
-
 #define _DWORDLONG_
-
 type DWORDLONG as ULONGLONG
 type PDWORDLONG as ULONGLONG ptr
 type USN as LONGLONG
@@ -111,9 +101,7 @@ type PCSTR as const zstring ptr
 type PZPCSTR as PCSTR ptr
 type PSZ as zstring ptr
 type PCSZ as const zstring ptr
-
 #define __WCHAR_DEFINED
-
 type WCHAR as wstring
 type PWCHAR as wstring ptr
 type LPWCH as wstring ptr
@@ -153,7 +141,6 @@ type QUAD as _QUAD
 type PQUAD as _QUAD ptr
 type UQUAD as _QUAD
 type PUQUAD as _QUAD ptr
-
 #define _LARGE_INTEGER_DEFINED
 
 type _LARGE_INTEGER_u
@@ -219,7 +206,6 @@ type PUNICODE_STRING as _UNICODE_STRING ptr
 #endif
 
 type PCUNICODE_STRING as const UNICODE_STRING ptr
-
 #define UNICODE_NULL cast(wchar_t, 0)
 
 type _CSTRING
@@ -230,7 +216,6 @@ end type
 
 type CSTRING as _CSTRING
 type PCSTRING as _CSTRING ptr
-
 #define ANSI_NULL cbyte(0)
 
 #ifndef __STRING_DEFINED
@@ -355,7 +340,6 @@ enum
 end enum
 
 type WAIT_TYPE as _WAIT_TYPE
-
 #define _LIST_ENTRY_DEFINED
 
 type _LIST_ENTRY
@@ -387,7 +371,6 @@ end type
 
 type SINGLE_LIST_ENTRY as _SINGLE_LIST_ENTRY
 type PSINGLE_LIST_ENTRY as _SINGLE_LIST_ENTRY ptr
-
 #define ___PROCESSOR_NUMBER_DEFINED
 
 type _PROCESSOR_NUMBER
@@ -398,11 +381,8 @@ end type
 
 type PROCESSOR_NUMBER as _PROCESSOR_NUMBER
 type PPROCESSOR_NUMBER as _PROCESSOR_NUMBER ptr
-
 #define __PEXCEPTION_ROUTINE_DEFINED
-
 type PEXCEPTION_ROUTINE as function(byval ExceptionRecord as _EXCEPTION_RECORD ptr, byval EstablisherFrame as PVOID, byval ContextRecord as _CONTEXT ptr, byval DispatcherContext as PVOID) as long
-
 #define ___GROUP_AFFINITY_DEFINED
 
 type _GROUP_AFFINITY
@@ -413,7 +393,6 @@ end type
 
 type GROUP_AFFINITY as _GROUP_AFFINITY
 type PGROUP_AFFINITY as _GROUP_AFFINITY ptr
-
 #define RTL_FIELD_TYPE(type, field) cptr(type ptr, 0)->field
 #define RTL_BITS_OF(sizeOfArg) (sizeof((sizeOfArg)) * 8)
 #define RTL_BITS_OF_FIELD(type, field) RTL_BITS_OF(RTL_FIELD_TYPE(type, field))
@@ -657,7 +636,6 @@ end type
 
 type REPARSE_DATA_BUFFER as _REPARSE_DATA_BUFFER
 type PREPARSE_DATA_BUFFER as _REPARSE_DATA_BUFFER ptr
-
 #define REPARSE_DATA_BUFFER_HEADER_SIZE FIELD_OFFSET(REPARSE_DATA_BUFFER, GenericReparseBuffer)
 
 end extern

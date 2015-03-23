@@ -26,7 +26,6 @@ end type
 
 type OLETARGETDEVICE as _OLETARGETDEVICE
 type LPOLETARGETDEVICE as OLETARGETDEVICE ptr
-
 #define OF_SET &h1
 #define OF_GET &h2
 #define OF_HANDLER &h4
@@ -231,7 +230,6 @@ type _OLESTREAM
 end type
 
 type OLESTREAM as _OLESTREAM
-
 declare function OleDelete(byval as LPOLEOBJECT) as OLESTATUS
 declare function OleRelease(byval as LPOLEOBJECT) as OLESTATUS
 declare function OleSaveToStream(byval as LPOLEOBJECT, byval as LPOLESTREAM) as OLESTATUS
@@ -296,7 +294,6 @@ end enum
 
 type LPOLESERVER as _OLESERVER ptr
 type LPOLESERVERDOC as _OLESERVERDOC ptr
-
 declare function OleRegisterServer(byval as LPCSTR, byval as LPOLESERVER, byval as LHSERVER ptr, byval as HINSTANCE, byval as OLE_SERVER_USE) as OLESTATUS
 declare function OleRevokeServer(byval as LHSERVER) as OLESTATUS
 declare function OleBlockServer(byval as LHSERVER) as OLESTATUS

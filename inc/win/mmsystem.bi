@@ -10,13 +10,10 @@ extern "Windows"
 #define MAXPNAMELEN 32
 #define MAXERRORLENGTH 256
 #define MAX_JOYSTICKOEMVXDNAME 260
-
 type MMVERSION as UINT
 type MMRESULT as UINT
-
 #define _MMRESULT_
 #define DEFINED_LPUINT
-
 type LPUINT as UINT ptr
 
 type mmtime_tag_u_smpte field = 1
@@ -178,7 +175,6 @@ type LPDRVCONFIGINFO as tagDRVCONFIGINFO ptr
 #define DRVCNF_CANCEL &h0000
 #define DRVCNF_OK &h0001
 #define DRVCNF_RESTART &h0002
-
 type DRIVERPROC as function(byval as DWORD_PTR, byval as HDRVR, byval as UINT, byval as LPARAM, byval as LPARAM) as LRESULT
 
 declare function CloseDriver(byval hDriver as HDRVR, byval lParam1 as LPARAM, byval lParam2 as LPARAM) as LRESULT
@@ -200,12 +196,9 @@ declare function DefDriverProc(byval dwDriverIdentifier as DWORD_PTR, byval hdrv
 #define CALLBACK_FUNCTION __MSABI_LONG(&h00030000)
 #define CALLBACK_THREAD CALLBACK_TASK
 #define CALLBACK_EVENT __MSABI_LONG(&h00050000)
-
 type LPDRVCALLBACK as sub(byval hdrvr as HDRVR, byval uMsg as UINT, byval dwUser as DWORD_PTR, byval dw1 as DWORD_PTR, byval dw2 as DWORD_PTR)
 type PDRVCALLBACK as sub(byval hdrvr as HDRVR, byval uMsg as UINT, byval dwUser as DWORD_PTR, byval dw1 as DWORD_PTR, byval dw2 as DWORD_PTR)
-
 #define OutputDebugStr OutputDebugString
-
 declare function sndPlaySoundA(byval pszSound as LPCSTR, byval fuSound as UINT) as WINBOOL
 declare function sndPlaySoundW(byval pszSound as LPCWSTR, byval fuSound as UINT) as WINBOOL
 
@@ -238,7 +231,6 @@ declare function sndPlaySoundW(byval pszSound as LPCWSTR, byval fuSound as UINT)
 #define SND_ALIAS_SYSTEMWELCOME sndAlias(asc("S"), asc("W"))
 #define SND_ALIAS_SYSTEMEXCLAMATION sndAlias(asc("S"), asc("!"))
 #define SND_ALIAS_SYSTEMDEFAULT sndAlias(asc("S"), asc("D"))
-
 declare function PlaySoundA(byval pszSound as LPCSTR, byval hmod as HMODULE, byval fdwSound as DWORD) as WINBOOL
 declare function PlaySoundW(byval pszSound as LPCWSTR, byval hmod as HMODULE, byval fdwSound as DWORD) as WINBOOL
 
@@ -539,7 +531,6 @@ type WAVEFORMAT as waveformat_tag
 type PWAVEFORMAT as waveformat_tag ptr
 type NPWAVEFORMAT as waveformat_tag ptr
 type LPWAVEFORMAT as waveformat_tag ptr
-
 #define WAVE_FORMAT_PCM 1
 
 type pcmwaveformat_tag field = 1
@@ -551,7 +542,6 @@ type PCMWAVEFORMAT as pcmwaveformat_tag
 type PPCMWAVEFORMAT as pcmwaveformat_tag ptr
 type NPPCMWAVEFORMAT as pcmwaveformat_tag ptr
 type LPPCMWAVEFORMAT as pcmwaveformat_tag ptr
-
 #define _WAVEFORMATEX_
 
 type tWAVEFORMATEX field = 1
@@ -676,9 +666,7 @@ type LPHMIDIIN as HMIDIIN ptr
 type LPHMIDIOUT as HMIDIOUT ptr
 type LPHMIDISTRM as HMIDISTRM ptr
 type LPMIDICALLBACK as sub(byval hdrvr as HDRVR, byval uMsg as UINT, byval dwUser as DWORD_PTR, byval dw1 as DWORD_PTR, byval dw2 as DWORD_PTR)
-
 #define MIDIPATCHSIZE 128
-
 type LPPATCHARRAY as WORD ptr
 type LPKEYARRAY as WORD ptr
 
@@ -926,7 +914,6 @@ type midistrmbuffver_tag field = 1
 end type
 
 type MIDISTRMBUFFVER as midistrmbuffver_tag
-
 #define MHDR_DONE &h00000001
 #define MHDR_PREPARED &h00000002
 #define MHDR_INQUEUE &h00000004
@@ -963,7 +950,6 @@ end type
 
 type MIDIPROPTEMPO as midiproptempo_tag
 type LPMIDIPROPTEMPO as midiproptempo_tag ptr
-
 declare function midiOutGetNumDevs() as UINT
 declare function midiStreamOpen(byval phms as LPHMIDISTRM, byval puDeviceID as LPUINT, byval cMidi as DWORD, byval dwCallback as DWORD_PTR, byval dwInstance as DWORD_PTR, byval fdwOpen as DWORD) as MMRESULT
 declare function midiStreamClose(byval hms as HMIDISTRM) as MMRESULT
@@ -1035,7 +1021,6 @@ declare function midiInStop(byval hmi as HMIDIIN) as MMRESULT
 declare function midiInReset(byval hmi as HMIDIIN) as MMRESULT
 declare function midiInGetID(byval hmi as HMIDIIN, byval puDeviceID as LPUINT) as MMRESULT
 declare function midiInMessage(byval hmi as HMIDIIN, byval uMsg as UINT, byval dw1 as DWORD_PTR, byval dw2 as DWORD_PTR) as MMRESULT
-
 #define AUX_MAPPER cast(UINT, -1)
 
 type tagAUXCAPSA field = 1
@@ -1160,7 +1145,6 @@ end type
 
 type HMIXER as HMIXER__ ptr
 type LPHMIXER as HMIXER ptr
-
 #define MIXER_SHORT_NAME_CHARS 16
 #define MIXER_LONG_NAME_CHARS 64
 #define MIXERR_INVALLINE (MIXERR_BASE + 0)
@@ -1179,7 +1163,6 @@ type LPHMIXER as HMIXER ptr
 #define MIXER_OBJECTF_MIDIIN __MSABI_LONG(&h40000000)
 #define MIXER_OBJECTF_HMIDIIN (MIXER_OBJECTF_HANDLE or MIXER_OBJECTF_MIDIIN)
 #define MIXER_OBJECTF_AUX __MSABI_LONG(&h50000000)
-
 declare function mixerGetNumDevs() as UINT
 
 type tagMIXERCAPSA field = 1
@@ -1374,7 +1357,6 @@ type LPMIXERLINEW as tagMIXERLINEW ptr
 #define MIXERLINE_TARGETTYPE_MIDIOUT 3
 #define MIXERLINE_TARGETTYPE_MIDIIN 4
 #define MIXERLINE_TARGETTYPE_AUX 5
-
 declare function mixerGetLineInfoA(byval hmxobj as HMIXEROBJ, byval pmxl as LPMIXERLINEA, byval fdwInfo as DWORD) as MMRESULT
 declare function mixerGetLineInfoW(byval hmxobj as HMIXEROBJ, byval pmxl as LPMIXERLINEW, byval fdwInfo as DWORD) as MMRESULT
 
@@ -1390,7 +1372,6 @@ declare function mixerGetLineInfoW(byval hmxobj as HMIXEROBJ, byval pmxl as LPMI
 #define MIXER_GETLINEINFOF_COMPONENTTYPE __MSABI_LONG(&h00000003)
 #define MIXER_GETLINEINFOF_TARGETTYPE __MSABI_LONG(&h00000004)
 #define MIXER_GETLINEINFOF_QUERYMASK __MSABI_LONG(&h0000000F)
-
 declare function mixerGetID(byval hmxobj as HMIXEROBJ, byval puMxId as UINT ptr, byval fdwId as DWORD) as MMRESULT
 
 union tagMIXERCONTROLA_Bounds field = 1
@@ -1665,7 +1646,6 @@ end type
 type MIXERCONTROLDETAILS_UNSIGNED as tMIXERCONTROLDETAILS_UNSIGNED
 type PMIXERCONTROLDETAILS_UNSIGNED as tMIXERCONTROLDETAILS_UNSIGNED ptr
 type LPMIXERCONTROLDETAILS_UNSIGNED as tMIXERCONTROLDETAILS_UNSIGNED ptr
-
 declare function mixerGetControlDetailsA(byval hmxobj as HMIXEROBJ, byval pmxcd as LPMIXERCONTROLDETAILS, byval fdwDetails as DWORD) as MMRESULT
 declare function mixerGetControlDetailsW(byval hmxobj as HMIXEROBJ, byval pmxcd as LPMIXERCONTROLDETAILS, byval fdwDetails as DWORD) as MMRESULT
 
@@ -1678,18 +1658,14 @@ declare function mixerGetControlDetailsW(byval hmxobj as HMIXEROBJ, byval pmxcd 
 #define MIXER_GETCONTROLDETAILSF_VALUE __MSABI_LONG(&h00000000)
 #define MIXER_GETCONTROLDETAILSF_LISTTEXT __MSABI_LONG(&h00000001)
 #define MIXER_GETCONTROLDETAILSF_QUERYMASK __MSABI_LONG(&h0000000F)
-
 declare function mixerSetControlDetails(byval hmxobj as HMIXEROBJ, byval pmxcd as LPMIXERCONTROLDETAILS, byval fdwDetails as DWORD) as MMRESULT
-
 #define MIXER_SETCONTROLDETAILSF_VALUE __MSABI_LONG(&h00000000)
 #define MIXER_SETCONTROLDETAILSF_CUSTOM __MSABI_LONG(&h00000001)
 #define MIXER_SETCONTROLDETAILSF_QUERYMASK __MSABI_LONG(&h0000000F)
 #define TIMERR_NOERROR 0
 #define TIMERR_NOCANDO (TIMERR_BASE + 1)
 #define TIMERR_STRUCT (TIMERR_BASE + 33)
-
 type LPTIMECALLBACK as sub(byval uTimerID as UINT, byval uMsg as UINT, byval dwUser as DWORD_PTR, byval dw1 as DWORD_PTR, byval dw2 as DWORD_PTR)
-
 #define TIME_ONESHOT &h0000
 #define TIME_PERIODIC &h0001
 #define TIME_CALLBACK_FUNCTION &h0000
@@ -2021,7 +1997,6 @@ declare function joySetThreshold(byval uJoyID as UINT, byval uThreshold as UINT)
 #define MMIOERR_TOOMANYOPENFILES (MMIOERR_BASE + 15)
 #define MMIOERR_INVALIDFILE (MMIOERR_BASE + 16)
 #define CFSEPCHAR asc("+")
-
 type FOURCC as DWORD
 type HPSTR as zstring ptr
 
@@ -2115,7 +2090,6 @@ type LPCMMCKINFO as const MMCKINFO ptr
 #define FOURCC_MEM mmioFOURCC(asc("M"), asc("E"), asc("M"), asc(" "))
 #define MMIO_DEFAULTBUFFER 8192
 #define mmioFOURCC(ch0, ch1, ch2, ch3) MAKEFOURCC(ch0, ch1, ch2, ch3)
-
 declare function mmioStringToFOURCCA(byval sz as LPCSTR, byval uFlags as UINT) as FOURCC
 declare function mmioStringToFOURCCW(byval sz as LPCWSTR, byval uFlags as UINT) as FOURCC
 
@@ -2165,16 +2139,11 @@ declare function mmioSendMessage(byval hmmio as HMMIO, byval uMsg as UINT, byval
 declare function mmioDescend(byval hmmio as HMMIO, byval pmmcki as LPMMCKINFO, byval pmmckiParent as const MMCKINFO ptr, byval fuDescend as UINT) as MMRESULT
 declare function mmioAscend(byval hmmio as HMMIO, byval pmmcki as LPMMCKINFO, byval fuAscend as UINT) as MMRESULT
 declare function mmioCreateChunk(byval hmmio as HMMIO, byval pmmcki as LPMMCKINFO, byval fuCreate as UINT) as MMRESULT
-
 #define _MCIERROR_
-
 type MCIERROR as DWORD
-
 #define _MCIDEVICEID_
-
 type MCIDEVICEID as UINT
 type YIELDPROC as function(byval mciId as MCIDEVICEID, byval dwYieldData as DWORD) as UINT
-
 declare function mciSendCommandA(byval mciId as MCIDEVICEID, byval uMsg as UINT, byval dwParam1 as DWORD_PTR, byval dwParam2 as DWORD_PTR) as MCIERROR
 declare function mciSendCommandW(byval mciId as MCIDEVICEID, byval uMsg as UINT, byval dwParam1 as DWORD_PTR, byval dwParam2 as DWORD_PTR) as MCIERROR
 
@@ -2671,7 +2640,6 @@ end type
 
 type MCI_RECORD_PARMS as tagMCI_RECORD_PARMS
 type LPMCI_RECORD_PARMS as tagMCI_RECORD_PARMS ptr
-
 #define MCI_VD_MODE_PARK (MCI_VD_OFFSET + 1)
 #define MCI_VD_MEDIA_CLV (MCI_VD_OFFSET + 2)
 #define MCI_VD_MEDIA_CAV (MCI_VD_OFFSET + 3)

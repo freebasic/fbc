@@ -6,7 +6,6 @@
 extern "C"
 
 #define __al_included_allegro5_allegro_font_h
-
 type ALLEGRO_FONT_VTABLE as ALLEGRO_FONT_VTABLE_
 
 type ALLEGRO_FONT

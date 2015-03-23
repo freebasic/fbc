@@ -27,9 +27,7 @@ enum
 end enum
 
 type RPC_ASYNC_EVENT as _RPC_ASYNC_EVENT
-
 type _RPC_ASYNC_STATE as _RPC_ASYNC_STATE_
-
 type PFN_RPCNOTIFICATION_ROUTINE as sub(byval pAsync as _RPC_ASYNC_STATE ptr, byval Context as any ptr, byval Event as RPC_ASYNC_EVENT)
 
 type _RPC_ASYNC_STATE_u_APC
@@ -73,7 +71,6 @@ end type
 
 type RPC_ASYNC_STATE as _RPC_ASYNC_STATE
 type PRPC_ASYNC_STATE as _RPC_ASYNC_STATE ptr
-
 #define RPC_C_NOTIFY_ON_SEND_COMPLETE &h1
 #define RPC_C_INFINITE_TIMEOUT INFINITE
 #define RpcAsyncGetCallHandle(pAsync) cast(PRPC_ASYNC_STATE, pAsync)->RuntimeInfo
@@ -98,7 +95,6 @@ enum
 end enum
 
 type ExtendedErrorParamTypes as tagExtendedErrorParamTypes
-
 #define MaxNumberOfEEInfoParams 4
 #define RPC_EEINFO_VERSION 1
 
@@ -124,7 +120,6 @@ type tagRPC_EE_INFO_PARAM
 end type
 
 type RPC_EE_INFO_PARAM as tagRPC_EE_INFO_PARAM
-
 #define EEInfoPreviousRecordsMissing 1
 #define EEInfoNextRecordsMissing 2
 #define EEInfoUseFileTime 4
@@ -158,7 +153,6 @@ type tagRPC_ERROR_ENUM_HANDLE
 end type
 
 type RPC_ERROR_ENUM_HANDLE as tagRPC_ERROR_ENUM_HANDLE
-
 declare function RpcErrorStartEnumeration(byval EnumHandle as RPC_ERROR_ENUM_HANDLE ptr) as RPC_STATUS
 declare function RpcErrorGetNextRecord(byval EnumHandle as RPC_ERROR_ENUM_HANDLE ptr, byval CopyStrings as WINBOOL, byval ErrorInfo as RPC_EXTENDED_ERROR_INFO ptr) as RPC_STATUS
 declare function RpcErrorEndEnumeration(byval EnumHandle as RPC_ERROR_ENUM_HANDLE ptr) as RPC_STATUS
@@ -253,7 +247,6 @@ end union
 
 type RPC_ASYNC_NOTIFICATION_INFO as _RPC_ASYNC_NOTIFICATION_INFO
 type PRPC_ASYNC_NOTIFICATION_INFO as _RPC_ASYNC_NOTIFICATION_INFO ptr
-
 declare function RpcBindingBind(byval pAsync as PRPC_ASYNC_STATE, byval Binding as RPC_BINDING_HANDLE, byval IfSpec as RPC_IF_HANDLE) as RPC_STATUS
 declare function RpcBindingUnbind(byval Binding as RPC_BINDING_HANDLE) as RPC_STATUS
 
@@ -294,7 +287,6 @@ enum
 end enum
 
 type RpcCallClientLocality as _RpcCallClientLocality
-
 declare function RpcServerSubscribeForNotification(byval Binding as RPC_BINDING_HANDLE, byval Notification as DWORD, byval NotificationType as RPC_NOTIFICATION_TYPES, byval NotificationInfo as RPC_ASYNC_NOTIFICATION_INFO ptr) as RPC_STATUS
 declare function RpcServerUnsubscribeForNotification(byval Binding as RPC_BINDING_HANDLE, byval Notification as RPC_NOTIFICATIONS, byval NotificationsQueued as ulong ptr) as RPC_STATUS
 

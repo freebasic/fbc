@@ -9,7 +9,6 @@ extern "Windows"
 
 #define __DINPUT_INCLUDED__
 #define DIRECTINPUT_VERSION &h0800
-
 extern CLSID_DirectInput as const GUID
 extern CLSID_DirectInputDevice as const GUID
 extern CLSID_DirectInput8 as const GUID
@@ -85,82 +84,52 @@ type LPSYSMOUSEA as SysMouseA ptr
 #ifdef UNICODE
 	#define IID_IDirectInput IID_IDirectInputW
 	#define IDirectInput IDirectInputW
-
 	type LPDIRECTINPUT as LPDIRECTINPUTW
-
 	#define IID_IDirectInput2 IID_IDirectInput2W
 	#define IDirectInput2 IDirectInput2W
-
 	type LPDIRECTINPUT2 as LPDIRECTINPUT2W
-
 	#define IID_IDirectInput7 IID_IDirectInput7W
 	#define IDirectInput7 IDirectInput7W
-
 	type LPDIRECTINPUT7 as LPDIRECTINPUT7W
-
 	#define IID_IDirectInput8 IID_IDirectInput8W
 	#define IDirectInput8 IDirectInput8W
-
 	type LPDIRECTINPUT8 as LPDIRECTINPUT8W
-
 	#define IID_IDirectInputDevice IID_IDirectInputDeviceW
 	#define IDirectInputDevice IDirectInputDeviceW
-
 	type LPDIRECTINPUTDEVICE as LPDIRECTINPUTDEVICEW
-
 	#define IID_IDirectInputDevice2 IID_IDirectInputDevice2W
 	#define IDirectInputDevice2 IDirectInputDevice2W
-
 	type LPDIRECTINPUTDEVICE2 as LPDIRECTINPUTDEVICE2W
-
 	#define IID_IDirectInputDevice7 IID_IDirectInputDevice7W
 	#define IDirectInputDevice7 IDirectInputDevice7W
-
 	type LPDIRECTINPUTDEVICE7 as LPDIRECTINPUTDEVICE7W
-
 	#define IID_IDirectInputDevice8 IID_IDirectInputDevice8W
 	#define IDirectInputDevice8 IDirectInputDevice8W
-
 	type LPDIRECTINPUTDEVICE8 as LPDIRECTINPUTDEVICE8W
 #else
 	#define IID_IDirectInput IID_IDirectInputA
 	#define IDirectInput IDirectInputA
-
 	type LPDIRECTINPUT as LPDIRECTINPUTA
-
 	#define IID_IDirectInput2 IID_IDirectInput2A
 	#define IDirectInput2 IDirectInput2A
-
 	type LPDIRECTINPUT2 as LPDIRECTINPUT2A
-
 	#define IID_IDirectInput7 IID_IDirectInput7A
 	#define IDirectInput7 IDirectInput7A
-
 	type LPDIRECTINPUT7 as LPDIRECTINPUT7A
-
 	#define IID_IDirectInput8 IID_IDirectInput8A
 	#define IDirectInput8 IDirectInput8A
-
 	type LPDIRECTINPUT8 as LPDIRECTINPUT8A
-
 	#define IID_IDirectInputDevice IID_IDirectInputDeviceA
 	#define IDirectInputDevice IDirectInputDeviceA
-
 	type LPDIRECTINPUTDEVICE as LPDIRECTINPUTDEVICEA
-
 	#define IID_IDirectInputDevice2 IID_IDirectInputDevice2A
 	#define IDirectInputDevice2 IDirectInputDevice2A
-
 	type LPDIRECTINPUTDEVICE2 as LPDIRECTINPUTDEVICE2A
-
 	#define IID_IDirectInputDevice7 IID_IDirectInputDevice7A
 	#define IDirectInputDevice7 IDirectInputDevice7A
-
 	type LPDIRECTINPUTDEVICE7 as LPDIRECTINPUTDEVICE7A
-
 	#define IID_IDirectInputDevice8 IID_IDirectInputDevice8A
 	#define IDirectInputDevice8 IDirectInputDevice8A
-
 	type LPDIRECTINPUTDEVICE8 as LPDIRECTINPUTDEVICE8A
 #endif
 
@@ -504,7 +473,6 @@ type LPDIENUMDEVICESCALLBACKW as function(byval as LPCDIDEVICEINSTANCEW, byval a
 #define DIEDBSFL_MULTIMICEKEYBOARDS &h00002000
 #define DIEDBSFL_NONGAMINGDEVICES &h00004000
 #define DIEDBSFL_VALID &h00007110
-
 type LPDIENUMDEVICESBYSEMANTICSCBA as function(byval as LPCDIDEVICEINSTANCEA, byval as LPDIRECTINPUTDEVICE8A, byval as DWORD, byval as DWORD, byval as LPVOID) as BOOL
 type LPDIENUMDEVICESBYSEMANTICSCBW as function(byval as LPCDIDEVICEINSTANCEW, byval as LPDIRECTINPUTDEVICE8W, byval as DWORD, byval as DWORD, byval as LPVOID) as BOOL
 
@@ -525,7 +493,6 @@ type LPDIENUMDEVICEOBJECTSCALLBACKW as function(byval as LPCDIDEVICEOBJECTINSTAN
 #endif
 
 type LPDIENUMCREATEDEFFECTOBJECTSCALLBACK as function(byval as LPDIRECTINPUTEFFECT, byval as LPVOID) as BOOL
-
 #define DIK_ESCAPE &h01
 #define DIK_1 &h02
 #define DIK_2 &h03
@@ -777,7 +744,6 @@ end type
 
 type LPDIPROPHEADER as DIPROPHEADER ptr
 type LPCDIPROPHEADER as const DIPROPHEADER ptr
-
 #define DIPH_DEVICE 0
 #define DIPH_BYOFFSET 1
 #define DIPH_BYID 2
@@ -800,7 +766,6 @@ end type
 
 type LPDIPROPRANGE as DIPROPRANGE ptr
 type LPCDIPROPRANGE as const DIPROPRANGE ptr
-
 #define DIPROPRANGE_NOMIN cast(LONG, &h80000000)
 #define DIPROPRANGE_NOMAX cast(LONG, &h7FFFFFFF)
 
@@ -847,7 +812,6 @@ end type
 
 type LPDIPROPPOINTER as DIPROPPOINTER ptr
 type LPCDIPROPPOINTER as const DIPROPPOINTER ptr
-
 #define MAKEDIPROP(prop) cast(REFGUID, prop)
 #define DIPROP_BUFFERSIZE MAKEDIPROP(1)
 #define DIPROP_AXISMODE MAKEDIPROP(2)
@@ -925,7 +889,6 @@ type DIDEVCAPS
 end type
 
 type LPDIDEVCAPS as DIDEVCAPS ptr
-
 #define DIDC_ATTACHED &h00000001
 #define DIDC_POLLEDDEVICE &h00000002
 #define DIDC_EMULATED &h00000004
@@ -1203,7 +1166,6 @@ type DIJOYSTATE2
 end type
 
 type LPDIJOYSTATE2 as DIJOYSTATE2 ptr
-
 #define DIJOFS_X FIELD_OFFSET(DIJOYSTATE, lX)
 #define DIJOFS_Y FIELD_OFFSET(DIJOYSTATE, lY)
 #define DIJOFS_Z FIELD_OFFSET(DIJOYSTATE, lZ)
@@ -1568,7 +1530,6 @@ end type
 #define IDirectInputEffect_Download(p) (p)->lpVtbl->Download(p)
 #define IDirectInputEffect_Unload(p) (p)->lpVtbl->Unload(p)
 #define IDirectInputEffect_Escape(p, a) (p)->lpVtbl->Escape(p, a)
-
 type IDirectInputDeviceAVtbl as IDirectInputDeviceAVtbl_
 
 type IDirectInputDeviceA
@@ -1641,7 +1602,6 @@ end type
 #define IDirectInputDevice_GetDeviceInfo(p, a) (p)->lpVtbl->GetDeviceInfo(p, a)
 #define IDirectInputDevice_RunControlPanel(p, a, b) (p)->lpVtbl->RunControlPanel(p, a, b)
 #define IDirectInputDevice_Initialize(p, a, b, c) (p)->lpVtbl->Initialize(p, a, b, c)
-
 type IDirectInputDevice2AVtbl as IDirectInputDevice2AVtbl_
 
 type IDirectInputDevice2A
@@ -1741,7 +1701,6 @@ end type
 #define IDirectInputDevice2_Escape(p, a) (p)->lpVtbl->Escape(p, a)
 #define IDirectInputDevice2_Poll(p) (p)->lpVtbl->Poll(p)
 #define IDirectInputDevice2_SendDeviceData(p, a, b, c, d) (p)->lpVtbl->SendDeviceData(p, a, b, c, d)
-
 type IDirectInputDevice7AVtbl as IDirectInputDevice7AVtbl_
 
 type IDirectInputDevice7A
@@ -1847,7 +1806,6 @@ end type
 #define IDirectInputDevice7_SendDeviceData(p, a, b, c, d) (p)->lpVtbl->SendDeviceData(p, a, b, c, d)
 #define IDirectInputDevice7_EnumEffectsInFile(p, a, b, c, d) (p)->lpVtbl->EnumEffectsInFile(p, a, b, c, d)
 #define IDirectInputDevice7_WriteEffectToFile(p, a, b, c, d) (p)->lpVtbl->WriteEffectToFile(p, a, b, c, d)
-
 type IDirectInputDevice8AVtbl as IDirectInputDevice8AVtbl_
 
 type IDirectInputDevice8A
@@ -1994,7 +1952,6 @@ extern c_dfDIMouse2 as const DIDATAFORMAT
 extern c_dfDIKeyboard as const DIDATAFORMAT
 extern c_dfDIJoystick as const DIDATAFORMAT
 extern c_dfDIJoystick2 as const DIDATAFORMAT
-
 type IDirectInputAVtbl as IDirectInputAVtbl_
 
 type IDirectInputA
@@ -2037,7 +1994,6 @@ end type
 #define IDirectInput_GetDeviceStatus(p, a) (p)->lpVtbl->GetDeviceStatus(p, a)
 #define IDirectInput_RunControlPanel(p, a, b) (p)->lpVtbl->RunControlPanel(p, a, b)
 #define IDirectInput_Initialize(p, a, b) (p)->lpVtbl->Initialize(p, a, b)
-
 type IDirectInput2AVtbl as IDirectInput2AVtbl_
 
 type IDirectInput2A
@@ -2083,7 +2039,6 @@ end type
 #define IDirectInput2_RunControlPanel(p, a, b) (p)->lpVtbl->RunControlPanel(p, a, b)
 #define IDirectInput2_Initialize(p, a, b) (p)->lpVtbl->Initialize(p, a, b)
 #define IDirectInput2_FindDevice(p, a, b, c) (p)->lpVtbl->FindDevice(p, a, b, c)
-
 type IDirectInput7AVtbl as IDirectInput7AVtbl_
 
 type IDirectInput7A
@@ -2132,7 +2087,6 @@ end type
 #define IDirectInput7_Initialize(p, a, b) (p)->lpVtbl->Initialize(p, a, b)
 #define IDirectInput7_FindDevice(p, a, b, c) (p)->lpVtbl->FindDevice(p, a, b, c)
 #define IDirectInput7_CreateDeviceEx(p, a, b, c, d) (p)->lpVtbl->CreateDeviceEx(p, a, b, c, d)
-
 type IDirectInput8AVtbl as IDirectInput8AVtbl_
 
 type IDirectInput8A
@@ -2184,7 +2138,6 @@ end type
 #define IDirectInput8_FindDevice(p, a, b, c) (p)->lpVtbl->FindDevice(p, a, b, c)
 #define IDirectInput8_EnumDevicesBySemantics(p, a, b, c, d, e) (p)->lpVtbl->EnumDevicesBySemantics(p, a, b, c, d, e)
 #define IDirectInput8_ConfigureDevices(p, a, b, c, d) (p)->lpVtbl->ConfigureDevices(p, a, b, c, d)
-
 declare function DirectInput8Create(byval as HINSTANCE, byval as DWORD, byval as const IID const ptr, byval as LPVOID ptr, byval as LPUNKNOWN) as HRESULT
 
 end extern

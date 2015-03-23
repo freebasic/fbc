@@ -33,10 +33,8 @@ extern "Windows"
 #define __IErrorLog_FWD_DEFINED__
 #define __IPropertyBag_FWD_DEFINED__
 #define __IOleAutomationTypes_INTERFACE_DEFINED__
-
 extern IOleAutomationTypes_v1_0_c_ifspec as RPC_IF_HANDLE
 extern IOleAutomationTypes_v1_0_s_ifspec as RPC_IF_HANDLE
-
 type CURRENCY as CY
 
 type tagSAFEARRAYBOUND
@@ -62,7 +60,6 @@ type _wireSAFEARR_UNKNOWN
 end type
 
 type SAFEARR_UNKNOWN as _wireSAFEARR_UNKNOWN
-
 type IDispatch as IDispatch_
 
 type _wireSAFEARR_DISPATCH
@@ -154,7 +151,6 @@ end type
 
 type SAFEARRAY as tagSAFEARRAY
 type LPSAFEARRAY as SAFEARRAY ptr
-
 #define FADF_AUTO &h1
 #define FADF_STATIC &h2
 #define FADF_EMBEDDED &h4
@@ -174,9 +170,7 @@ type LPSAFEARRAY as SAFEARRAY ptr
 #define __VARIANT_NAME_3
 #define __tagBRECORD
 #define __VARIANT_NAME_4
-
 type VARIANT as tagVARIANT
-
 type IRecordInfo as IRecordInfo_
 
 type tagVARIANT
@@ -246,7 +240,6 @@ end type
 type LPVARIANT as VARIANT ptr
 type VARIANTARG as VARIANT
 type LPVARIANTARG as VARIANT ptr
-
 #define _REFVARIANT_DEFINED
 
 type _wireBRECORD
@@ -330,7 +323,6 @@ enum
 end enum
 
 type TYPEKIND as tagTYPEKIND
-
 type tagARRAYDESC as tagARRAYDESC_
 
 type tagTYPEDESC
@@ -368,7 +360,6 @@ end type
 
 type PARAMDESC as tagPARAMDESC
 type LPPARAMDESC as tagPARAMDESC ptr
-
 #define PARAMFLAG_NONE &h0
 #define PARAMFLAG_FIN &h1
 #define PARAMFLAG_FOUT &h2
@@ -385,7 +376,6 @@ end type
 
 type IDLDESC as tagIDLDESC
 type LPIDLDESC as tagIDLDESC ptr
-
 #define IDLFLAG_NONE PARAMFLAG_NONE
 #define IDLFLAG_FIN PARAMFLAG_FIN
 #define IDLFLAG_FOUT PARAMFLAG_FOUT
@@ -517,7 +507,6 @@ enum
 end enum
 
 type VARKIND as tagVARKIND
-
 #define IMPLTYPEFLAG_FDEFAULT &h1
 #define IMPLTYPEFLAG_FSOURCE &h2
 #define IMPLTYPEFLAG_FRESTRICTED &h4
@@ -622,15 +611,10 @@ end type
 
 type CUSTDATA as tagCUSTDATA
 type LPCUSTDATA as tagCUSTDATA ptr
-
 #define __ICreateTypeInfo_INTERFACE_DEFINED__
-
 type ICreateTypeInfo as ICreateTypeInfo_
-
 type LPCREATETYPEINFO as ICreateTypeInfo ptr
-
 extern IID_ICreateTypeInfo as const GUID
-
 type ITypeInfo as ITypeInfo_
 
 type ICreateTypeInfoVtbl
@@ -712,13 +696,9 @@ declare function ICreateTypeInfo_SetTypeIdldesc_Proxy(byval This as ICreateTypeI
 declare sub ICreateTypeInfo_SetTypeIdldesc_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function ICreateTypeInfo_LayOut_Proxy(byval This as ICreateTypeInfo ptr) as HRESULT
 declare sub ICreateTypeInfo_LayOut_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define __ICreateTypeInfo2_INTERFACE_DEFINED__
-
 type ICreateTypeInfo2 as ICreateTypeInfo2_
-
 type LPCREATETYPEINFO2 as ICreateTypeInfo2 ptr
-
 extern IID_ICreateTypeInfo2 as const GUID
 
 type ICreateTypeInfo2Vtbl
@@ -799,13 +779,9 @@ declare function ICreateTypeInfo2_Invalidate_Proxy(byval This as ICreateTypeInfo
 declare sub ICreateTypeInfo2_Invalidate_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function ICreateTypeInfo2_SetName_Proxy(byval This as ICreateTypeInfo2 ptr, byval szName as LPOLESTR) as HRESULT
 declare sub ICreateTypeInfo2_SetName_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define __ICreateTypeLib_INTERFACE_DEFINED__
-
 type ICreateTypeLib as ICreateTypeLib_
-
 type LPCREATETYPELIB as ICreateTypeLib ptr
-
 extern IID_ICreateTypeLib as const GUID
 
 type ICreateTypeLibVtbl
@@ -848,13 +824,9 @@ declare function ICreateTypeLib_SetLibFlags_Proxy(byval This as ICreateTypeLib p
 declare sub ICreateTypeLib_SetLibFlags_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function ICreateTypeLib_SaveAllChanges_Proxy(byval This as ICreateTypeLib ptr) as HRESULT
 declare sub ICreateTypeLib_SaveAllChanges_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define __ICreateTypeLib2_INTERFACE_DEFINED__
-
 type ICreateTypeLib2 as ICreateTypeLib2_
-
 type LPCREATETYPELIB2 as ICreateTypeLib2 ptr
-
 extern IID_ICreateTypeLib2 as const GUID
 
 type ICreateTypeLib2Vtbl
@@ -889,9 +861,7 @@ declare function ICreateTypeLib2_SetHelpStringContext_Proxy(byval This as ICreat
 declare sub ICreateTypeLib2_SetHelpStringContext_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function ICreateTypeLib2_SetHelpStringDll_Proxy(byval This as ICreateTypeLib2 ptr, byval szFileName as LPOLESTR) as HRESULT
 declare sub ICreateTypeLib2_SetHelpStringDll_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define __IDispatch_INTERFACE_DEFINED__
-
 type LPDISPATCH as IDispatch ptr
 
 #define DISPID_UNKNOWN (-1)
@@ -902,7 +872,6 @@ type LPDISPATCH as IDispatch ptr
 #define DISPID_CONSTRUCTOR (-6)
 #define DISPID_DESTRUCTOR (-7)
 #define DISPID_COLLECT (-8)
-
 extern IID_IDispatch as const GUID
 
 type IDispatchVtbl
@@ -929,13 +898,9 @@ declare function IDispatch_RemoteInvoke_Proxy(byval This as IDispatch ptr, byval
 declare sub IDispatch_RemoteInvoke_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IDispatch_Invoke_Proxy(byval This as IDispatch ptr, byval dispIdMember as DISPID, byval riid as const IID const ptr, byval lcid as LCID, byval wFlags as WORD, byval pDispParams as DISPPARAMS ptr, byval pVarResult as VARIANT ptr, byval pExcepInfo as EXCEPINFO ptr, byval puArgErr as UINT ptr) as HRESULT
 declare function IDispatch_Invoke_Stub(byval This as IDispatch ptr, byval dispIdMember as DISPID, byval riid as const IID const ptr, byval lcid as LCID, byval dwFlags as DWORD, byval pDispParams as DISPPARAMS ptr, byval pVarResult as VARIANT ptr, byval pExcepInfo as EXCEPINFO ptr, byval pArgErr as UINT ptr, byval cVarRef as UINT, byval rgVarRefIdx as UINT ptr, byval rgVarRef as VARIANTARG ptr) as HRESULT
-
 #define __IEnumVARIANT_INTERFACE_DEFINED__
-
 type IEnumVARIANT as IEnumVARIANT_
-
 type LPENUMVARIANT as IEnumVARIANT ptr
-
 extern IID_IEnumVARIANT as const GUID
 
 type IEnumVARIANTVtbl
@@ -962,11 +927,8 @@ declare function IEnumVARIANT_Clone_Proxy(byval This as IEnumVARIANT ptr, byval 
 declare sub IEnumVARIANT_Clone_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IEnumVARIANT_Next_Proxy(byval This as IEnumVARIANT ptr, byval celt as ULONG, byval rgVar as VARIANT ptr, byval pCeltFetched as ULONG ptr) as HRESULT
 declare function IEnumVARIANT_Next_Stub(byval This as IEnumVARIANT ptr, byval celt as ULONG, byval rgVar as VARIANT ptr, byval pCeltFetched as ULONG ptr) as HRESULT
-
 #define __ITypeComp_INTERFACE_DEFINED__
-
 type ITypeComp as ITypeComp_
-
 type LPTYPECOMP as ITypeComp ptr
 
 type tagDESCKIND as long
@@ -989,7 +951,6 @@ end union
 
 type BINDPTR as tagBINDPTR
 type LPBINDPTR as tagBINDPTR ptr
-
 extern IID_ITypeComp as const GUID
 
 type ITypeCompVtbl
@@ -1012,13 +973,9 @@ declare function ITypeComp_Bind_Proxy(byval This as ITypeComp ptr, byval szName 
 declare function ITypeComp_Bind_Stub(byval This as ITypeComp ptr, byval szName as LPOLESTR, byval lHashVal as ULONG, byval wFlags as WORD, byval ppTInfo as ITypeInfo ptr ptr, byval pDescKind as DESCKIND ptr, byval ppFuncDesc as LPFUNCDESC ptr, byval ppVarDesc as LPVARDESC ptr, byval ppTypeComp as ITypeComp ptr ptr, byval pDummy as CLEANLOCALSTORAGE ptr) as HRESULT
 declare function ITypeComp_BindType_Proxy(byval This as ITypeComp ptr, byval szName as LPOLESTR, byval lHashVal as ULONG, byval ppTInfo as ITypeInfo ptr ptr, byval ppTComp as ITypeComp ptr ptr) as HRESULT
 declare function ITypeComp_BindType_Stub(byval This as ITypeComp ptr, byval szName as LPOLESTR, byval lHashVal as ULONG, byval ppTInfo as ITypeInfo ptr ptr) as HRESULT
-
 #define __ITypeInfo_INTERFACE_DEFINED__
-
 type LPTYPEINFO as ITypeInfo ptr
-
 extern IID_ITypeInfo as const GUID
-
 type ITypeLib as ITypeLib_
 
 type ITypeInfoVtbl
@@ -1116,13 +1073,9 @@ declare sub ITypeInfo_ReleaseFuncDesc_Proxy(byval This as ITypeInfo ptr, byval p
 declare function ITypeInfo_ReleaseFuncDesc_Stub(byval This as ITypeInfo ptr) as HRESULT
 declare sub ITypeInfo_ReleaseVarDesc_Proxy(byval This as ITypeInfo ptr, byval pVarDesc as VARDESC ptr)
 declare function ITypeInfo_ReleaseVarDesc_Stub(byval This as ITypeInfo ptr) as HRESULT
-
 #define __ITypeInfo2_INTERFACE_DEFINED__
-
 type ITypeInfo2 as ITypeInfo2_
-
 type LPTYPEINFO2 as ITypeInfo2 ptr
-
 extern IID_ITypeInfo2 as const GUID
 
 type ITypeInfo2Vtbl
@@ -1201,7 +1154,6 @@ declare function ITypeInfo2_GetAllImplTypeCustData_Proxy(byval This as ITypeInfo
 declare sub ITypeInfo2_GetAllImplTypeCustData_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function ITypeInfo2_GetDocumentation2_Proxy(byval This as ITypeInfo2 ptr, byval memid as MEMBERID, byval lcid as LCID, byval pbstrHelpString as BSTR ptr, byval pdwHelpStringContext as DWORD ptr, byval pbstrHelpStringDll as BSTR ptr) as HRESULT
 declare function ITypeInfo2_GetDocumentation2_Stub(byval This as ITypeInfo2 ptr, byval memid as MEMBERID, byval lcid as LCID, byval refPtrFlags as DWORD, byval pbstrHelpString as BSTR ptr, byval pdwHelpStringContext as DWORD ptr, byval pbstrHelpStringDll as BSTR ptr) as HRESULT
-
 #define __ITypeLib_INTERFACE_DEFINED__
 
 type tagSYSKIND as long
@@ -1236,7 +1188,6 @@ end type
 
 type TLIBATTR as tagTLIBATTR
 type LPTLIBATTR as tagTLIBATTR ptr
-
 extern IID_ITypeLib as const GUID
 
 type ITypeLibVtbl
@@ -1291,13 +1242,9 @@ declare function ITypeLib_FindName_Proxy(byval This as ITypeLib ptr, byval szNam
 declare function ITypeLib_FindName_Stub(byval This as ITypeLib ptr, byval szNameBuf as LPOLESTR, byval lHashVal as ULONG, byval ppTInfo as ITypeInfo ptr ptr, byval rgMemId as MEMBERID ptr, byval pcFound as USHORT ptr, byval pBstrLibName as BSTR ptr) as HRESULT
 declare sub ITypeLib_ReleaseTLibAttr_Proxy(byval This as ITypeLib ptr, byval pTLibAttr as TLIBATTR ptr)
 declare function ITypeLib_ReleaseTLibAttr_Stub(byval This as ITypeLib ptr) as HRESULT
-
 #define __ITypeLib2_INTERFACE_DEFINED__
-
 type ITypeLib2 as ITypeLib2_
-
 type LPTYPELIB2 as ITypeLib2 ptr
-
 extern IID_ITypeLib2 as const GUID
 
 type ITypeLib2Vtbl
@@ -1336,11 +1283,8 @@ declare function ITypeLib2_GetLibStatistics_Proxy(byval This as ITypeLib2 ptr, b
 declare function ITypeLib2_GetLibStatistics_Stub(byval This as ITypeLib2 ptr, byval pcUniqueNames as ULONG ptr, byval pcchUniqueNames as ULONG ptr) as HRESULT
 declare function ITypeLib2_GetDocumentation2_Proxy(byval This as ITypeLib2 ptr, byval index as INT_, byval lcid as LCID, byval pbstrHelpString as BSTR ptr, byval pdwHelpStringContext as DWORD ptr, byval pbstrHelpStringDll as BSTR ptr) as HRESULT
 declare function ITypeLib2_GetDocumentation2_Stub(byval This as ITypeLib2 ptr, byval index as INT_, byval lcid as LCID, byval refPtrFlags as DWORD, byval pbstrHelpString as BSTR ptr, byval pdwHelpStringContext as DWORD ptr, byval pbstrHelpStringDll as BSTR ptr) as HRESULT
-
 #define __ITypeChangeEvents_INTERFACE_DEFINED__
-
 type ITypeChangeEvents as ITypeChangeEvents_
-
 type LPTYPECHANGEEVENTS as ITypeChangeEvents ptr
 
 type tagCHANGEKIND as long
@@ -1356,7 +1300,6 @@ enum
 end enum
 
 type CHANGEKIND as tagCHANGEKIND
-
 extern IID_ITypeChangeEvents as const GUID
 
 type ITypeChangeEventsVtbl
@@ -1375,13 +1318,9 @@ declare function ITypeChangeEvents_RequestTypeChange_Proxy(byval This as ITypeCh
 declare sub ITypeChangeEvents_RequestTypeChange_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function ITypeChangeEvents_AfterTypeChange_Proxy(byval This as ITypeChangeEvents ptr, byval changeKind as CHANGEKIND, byval pTInfoAfter as ITypeInfo ptr, byval pStrName as LPOLESTR) as HRESULT
 declare sub ITypeChangeEvents_AfterTypeChange_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define __IErrorInfo_INTERFACE_DEFINED__
-
 type IErrorInfo as IErrorInfo_
-
 type LPERRORINFO as IErrorInfo ptr
-
 extern IID_IErrorInfo as const GUID
 
 type IErrorInfoVtbl
@@ -1409,13 +1348,9 @@ declare function IErrorInfo_GetHelpFile_Proxy(byval This as IErrorInfo ptr, byva
 declare sub IErrorInfo_GetHelpFile_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IErrorInfo_GetHelpContext_Proxy(byval This as IErrorInfo ptr, byval pdwHelpContext as DWORD ptr) as HRESULT
 declare sub IErrorInfo_GetHelpContext_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define __ICreateErrorInfo_INTERFACE_DEFINED__
-
 type ICreateErrorInfo as ICreateErrorInfo_
-
 type LPCREATEERRORINFO as ICreateErrorInfo ptr
-
 extern IID_ICreateErrorInfo as const GUID
 
 type ICreateErrorInfoVtbl
@@ -1443,13 +1378,9 @@ declare function ICreateErrorInfo_SetHelpFile_Proxy(byval This as ICreateErrorIn
 declare sub ICreateErrorInfo_SetHelpFile_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function ICreateErrorInfo_SetHelpContext_Proxy(byval This as ICreateErrorInfo ptr, byval dwHelpContext as DWORD) as HRESULT
 declare sub ICreateErrorInfo_SetHelpContext_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define __ISupportErrorInfo_INTERFACE_DEFINED__
-
 type ISupportErrorInfo as ISupportErrorInfo_
-
 type LPSUPPORTERRORINFO as ISupportErrorInfo ptr
-
 extern IID_ISupportErrorInfo as const GUID
 
 type ISupportErrorInfoVtbl
@@ -1465,11 +1396,8 @@ end type
 
 declare function ISupportErrorInfo_InterfaceSupportsErrorInfo_Proxy(byval This as ISupportErrorInfo ptr, byval riid as const IID const ptr) as HRESULT
 declare sub ISupportErrorInfo_InterfaceSupportsErrorInfo_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define __ITypeFactory_INTERFACE_DEFINED__
-
 extern IID_ITypeFactory as const GUID
-
 type ITypeFactory as ITypeFactory_
 
 type ITypeFactoryVtbl
@@ -1485,11 +1413,8 @@ end type
 
 declare function ITypeFactory_CreateFromTypeInfo_Proxy(byval This as ITypeFactory ptr, byval pTypeInfo as ITypeInfo ptr, byval riid as const IID const ptr, byval ppv as IUnknown ptr ptr) as HRESULT
 declare sub ITypeFactory_CreateFromTypeInfo_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define __ITypeMarshal_INTERFACE_DEFINED__
-
 extern IID_ITypeMarshal as const GUID
-
 type ITypeMarshal as ITypeMarshal_
 
 type ITypeMarshalVtbl
@@ -1514,11 +1439,8 @@ declare function ITypeMarshal_Unmarshal_Proxy(byval This as ITypeMarshal ptr, by
 declare sub ITypeMarshal_Unmarshal_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function ITypeMarshal_Free_Proxy(byval This as ITypeMarshal ptr, byval pvType as PVOID) as HRESULT
 declare sub ITypeMarshal_Free_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define __IRecordInfo_INTERFACE_DEFINED__
-
 type LPRECORDINFO as IRecordInfo ptr
-
 extern IID_IRecordInfo as const GUID
 
 type IRecordInfoVtbl
@@ -1579,13 +1501,9 @@ declare function IRecordInfo_RecordCreateCopy_Proxy(byval This as IRecordInfo pt
 declare sub IRecordInfo_RecordCreateCopy_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IRecordInfo_RecordDestroy_Proxy(byval This as IRecordInfo ptr, byval pvRecord as PVOID) as HRESULT
 declare sub IRecordInfo_RecordDestroy_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define __IErrorLog_INTERFACE_DEFINED__
-
 type IErrorLog as IErrorLog_
-
 type LPERRORLOG as IErrorLog ptr
-
 extern IID_IErrorLog as const GUID
 
 type IErrorLogVtbl
@@ -1601,13 +1519,9 @@ end type
 
 declare function IErrorLog_AddError_Proxy(byval This as IErrorLog ptr, byval pszPropName as LPCOLESTR, byval pExcepInfo as EXCEPINFO ptr) as HRESULT
 declare sub IErrorLog_AddError_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define __IPropertyBag_INTERFACE_DEFINED__
-
 type IPropertyBag as IPropertyBag_
-
 type LPPROPERTYBAG as IPropertyBag ptr
-
 extern IID_IPropertyBag as const GUID
 
 type IPropertyBagVtbl

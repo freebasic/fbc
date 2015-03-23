@@ -26,21 +26,15 @@ extern "Windows"
 #define __IMediaTypeInfo_FWD_DEFINED__
 #define __IPinInfo_FWD_DEFINED__
 #define __IAMStats_FWD_DEFINED__
-
 extern LIBID_QuartzTypeLib as const GUID
 
 type OAFilterState as LONG
 type OAHWND as LONG_PTR
 type OAEVENT as LONG_PTR
-
 #define REFTIME_DEFINED
-
 type REFTIME as DOUBLE
-
 #define __IMediaControl_INTERFACE_DEFINED__
-
 extern IID_IMediaControl as const GUID
-
 type IMediaControl as IMediaControl_
 
 type IMediaControlVtbl
@@ -84,11 +78,8 @@ declare function IMediaControl_get_RegFilterCollection_Proxy(byval This as IMedi
 declare sub IMediaControl_get_RegFilterCollection_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IMediaControl_StopWhenReady_Proxy(byval This as IMediaControl ptr) as HRESULT
 declare sub IMediaControl_StopWhenReady_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define __IAMCollection_INTERFACE_DEFINED__
-
 extern IID_IAMCollection as const GUID
-
 type IAMCollection as IAMCollection_
 
 type IAMCollectionVtbl
@@ -114,11 +105,8 @@ declare function IAMCollection_Item_Proxy(byval This as IAMCollection ptr, byval
 declare sub IAMCollection_Item_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IAMCollection_get__NewEnum_Proxy(byval This as IAMCollection ptr, byval ppUnk as IUnknown ptr ptr) as HRESULT
 declare sub IAMCollection_get__NewEnum_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-
 #define __IMediaEvent_INTERFACE_DEFINED__
-
 extern IID_IMediaEvent as const GUID
-
 type IMediaEvent as IMediaEvent_
 
 type IMediaEventVtbl
@@ -153,11 +141,8 @@ declare function IMediaEvent_RestoreDefaultHandling_Proxy(byval This as IMediaEv
 declare sub IMediaEvent_RestoreDefaultHandling_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IMediaEvent_FreeEventParams_Proxy(byval This as IMediaEvent ptr, byval lEvCode as long, byval lParam1 as LONG_PTR, byval lParam2 as LONG_PTR) as HRESULT
 declare sub IMediaEvent_FreeEventParams_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-
 #define __IMediaEventEx_INTERFACE_DEFINED__
-
 extern IID_IMediaEventEx as const GUID
-
 type IMediaEventEx as IMediaEventEx_
 
 type IMediaEventExVtbl
@@ -189,11 +174,8 @@ declare function IMediaEventEx_SetNotifyFlags_Proxy(byval This as IMediaEventEx 
 declare sub IMediaEventEx_SetNotifyFlags_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IMediaEventEx_GetNotifyFlags_Proxy(byval This as IMediaEventEx ptr, byval lplNoNotifyFlags as long ptr) as HRESULT
 declare sub IMediaEventEx_GetNotifyFlags_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-
 #define __IMediaPosition_INTERFACE_DEFINED__
-
 extern IID_IMediaPosition as const GUID
-
 type IMediaPosition as IMediaPosition_
 
 type IMediaPositionVtbl
@@ -243,11 +225,8 @@ declare function IMediaPosition_CanSeekForward_Proxy(byval This as IMediaPositio
 declare sub IMediaPosition_CanSeekForward_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IMediaPosition_CanSeekBackward_Proxy(byval This as IMediaPosition ptr, byval pCanSeekBackward as LONG ptr) as HRESULT
 declare sub IMediaPosition_CanSeekBackward_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-
 #define __IBasicAudio_INTERFACE_DEFINED__
-
 extern IID_IBasicAudio as const GUID
-
 type IBasicAudio as IBasicAudio_
 
 type IBasicAudioVtbl
@@ -276,11 +255,8 @@ declare function IBasicAudio_put_Balance_Proxy(byval This as IBasicAudio ptr, by
 declare sub IBasicAudio_put_Balance_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IBasicAudio_get_Balance_Proxy(byval This as IBasicAudio ptr, byval plBalance as long ptr) as HRESULT
 declare sub IBasicAudio_get_Balance_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-
 #define __IVideoWindow_INTERFACE_DEFINED__
-
 extern IID_IVideoWindow as const GUID
-
 type IVideoWindow as IVideoWindow_
 
 type IVideoWindowVtbl
@@ -414,11 +390,8 @@ declare function IVideoWindow_HideCursor_Proxy(byval This as IVideoWindow ptr, b
 declare sub IVideoWindow_HideCursor_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IVideoWindow_IsCursorHidden_Proxy(byval This as IVideoWindow ptr, byval CursorHidden as long ptr) as HRESULT
 declare sub IVideoWindow_IsCursorHidden_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-
 #define __IBasicVideo_INTERFACE_DEFINED__
-
 extern IID_IBasicVideo as const GUID
-
 type IBasicVideo as IBasicVideo_
 
 type IBasicVideoVtbl
@@ -531,11 +504,8 @@ declare function IBasicVideo_IsUsingDefaultSource_Proxy(byval This as IBasicVide
 declare sub IBasicVideo_IsUsingDefaultSource_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IBasicVideo_IsUsingDefaultDestination_Proxy(byval This as IBasicVideo ptr) as HRESULT
 declare sub IBasicVideo_IsUsingDefaultDestination_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-
 #define __IBasicVideo2_INTERFACE_DEFINED__
-
 extern IID_IBasicVideo2 as const GUID
-
 type IBasicVideo2 as IBasicVideo2_
 
 type IBasicVideo2Vtbl
@@ -587,11 +557,8 @@ end type
 
 declare function IBasicVideo2_GetPreferredAspectRatio_Proxy(byval This as IBasicVideo2 ptr, byval plAspectX as long ptr, byval plAspectY as long ptr) as HRESULT
 declare sub IBasicVideo2_GetPreferredAspectRatio_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-
 #define __IDeferredCommand_INTERFACE_DEFINED__
-
 extern IID_IDeferredCommand as const GUID
-
 type IDeferredCommand as IDeferredCommand_
 
 type IDeferredCommandVtbl
@@ -616,11 +583,8 @@ declare function IDeferredCommand_Postpone_Proxy(byval This as IDeferredCommand 
 declare sub IDeferredCommand_Postpone_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IDeferredCommand_GetHResult_Proxy(byval This as IDeferredCommand ptr, byval phrResult as HRESULT ptr) as HRESULT
 declare sub IDeferredCommand_GetHResult_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-
 #define __IQueueCommand_INTERFACE_DEFINED__
-
 extern IID_IQueueCommand as const GUID
-
 type IQueueCommand as IQueueCommand_
 
 type IQueueCommandVtbl
@@ -639,13 +603,9 @@ declare function IQueueCommand_InvokeAtStreamTime_Proxy(byval This as IQueueComm
 declare sub IQueueCommand_InvokeAtStreamTime_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IQueueCommand_InvokeAtPresentationTime_Proxy(byval This as IQueueCommand ptr, byval pCmd as IDeferredCommand ptr ptr, byval time as REFTIME, byval iid as GUID ptr, byval dispidMethod as long, byval wFlags as short, byval cArgs as long, byval pDispParams as VARIANT ptr, byval pvarResult as VARIANT ptr, byval puArgErr as short ptr) as HRESULT
 declare sub IQueueCommand_InvokeAtPresentationTime_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-
 extern CLSID_FilgraphManager as const GUID
-
 #define __IFilterInfo_INTERFACE_DEFINED__
-
 extern IID_IFilterInfo as const GUID
-
 type IFilterInfo as IFilterInfo_
 
 type IFilterInfoVtbl
@@ -686,11 +646,8 @@ declare function IFilterInfo_get_Filename_Proxy(byval This as IFilterInfo ptr, b
 declare sub IFilterInfo_get_Filename_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IFilterInfo_put_Filename_Proxy(byval This as IFilterInfo ptr, byval strFilename as BSTR) as HRESULT
 declare sub IFilterInfo_put_Filename_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-
 #define __IRegFilterInfo_INTERFACE_DEFINED__
-
 extern IID_IRegFilterInfo as const GUID
-
 type IRegFilterInfo as IRegFilterInfo_
 
 type IRegFilterInfoVtbl
@@ -713,11 +670,8 @@ declare function IRegFilterInfo_get_Name_Proxy(byval This as IRegFilterInfo ptr,
 declare sub IRegFilterInfo_get_Name_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IRegFilterInfo_Filter_Proxy(byval This as IRegFilterInfo ptr, byval ppUnk as IDispatch ptr ptr) as HRESULT
 declare sub IRegFilterInfo_Filter_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-
 #define __IMediaTypeInfo_INTERFACE_DEFINED__
-
 extern IID_IMediaTypeInfo as const GUID
-
 type IMediaTypeInfo as IMediaTypeInfo_
 
 type IMediaTypeInfoVtbl
@@ -740,11 +694,8 @@ declare function IMediaTypeInfo_get_Type_Proxy(byval This as IMediaTypeInfo ptr,
 declare sub IMediaTypeInfo_get_Type_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IMediaTypeInfo_get_Subtype_Proxy(byval This as IMediaTypeInfo ptr, byval strType as BSTR ptr) as HRESULT
 declare sub IMediaTypeInfo_get_Subtype_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-
 #define __IPinInfo_INTERFACE_DEFINED__
-
 extern IID_IPinInfo as const GUID
-
 type IPinInfo as IPinInfo_
 
 type IPinInfoVtbl
@@ -800,11 +751,8 @@ declare function IPinInfo_Disconnect_Proxy(byval This as IPinInfo ptr) as HRESUL
 declare sub IPinInfo_Disconnect_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IPinInfo_Render_Proxy(byval This as IPinInfo ptr) as HRESULT
 declare sub IPinInfo_Render_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-
 #define __IAMStats_INTERFACE_DEFINED__
-
 extern IID_IAMStats as const GUID
-
 type IAMStats as IAMStats_
 
 type IAMStatsVtbl

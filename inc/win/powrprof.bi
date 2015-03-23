@@ -101,14 +101,12 @@ end type
 
 type POWER_POLICY as _POWER_POLICY
 type PPOWER_POLICY as _POWER_POLICY ptr
-
 #define EnableSysTrayBatteryMeter &h01
 #define EnableMultiBatteryDisplay &h02
 #define EnablePasswordLogon &h04
 #define EnableWakeOnRing &h08
 #define EnableVideoDimDisplay &h10
 #define NEWSCHEME cast(UINT, -1)
-
 type PWRSCHEMESENUMPROC as function(byval as UINT, byval as DWORD, byval as LPTSTR, byval as DWORD, byval as LPTSTR, byval as PPOWER_POLICY, byval as LPARAM) as BOOLEAN
 type PFNNTINITIATEPWRACTION as function(byval as POWER_ACTION, byval as SYSTEM_POWER_STATE, byval as ULONG, byval as BOOLEAN) as BOOLEAN
 
@@ -174,7 +172,6 @@ declare function ValidatePowerPolicies(byval as PGLOBAL_POWER_POLICY, byval as P
 
 	type POWER_DATA_ACCESSOR as _POWER_DATA_ACCESSOR
 	type PPOWER_DATA_ACCESSOR as _POWER_DATA_ACCESSOR ptr
-
 	declare function DevicePowerClose() as BOOLEAN
 	declare function DevicePowerEnumDevices(byval QueryIndex as ULONG, byval QueryInterpretationFlags as ULONG, byval QueryFlags as ULONG, byval pReturnBuffer as PBYTE, byval pBufferSize as PULONG) as BOOLEAN
 	declare function DevicePowerOpen(byval Flags as ULONG) as BOOLEAN
@@ -221,9 +218,7 @@ declare function ValidatePowerPolicies(byval as PGLOBAL_POWER_POLICY, byval as P
 	declare function PowerWritePossibleDescription(byval RootPowerKey as HKEY, byval SubGroupOfPowerSettingsGuid as const GUID ptr, byval PowerSettingGuid as const GUID ptr, byval PossibleSettingIndex as ULONG, byval Buffer as UCHAR ptr, byval BufferSize as DWORD) as DWORD
 	declare function PowerWritePossibleFriendlyName(byval RootPowerKey as HKEY, byval SubGroupOfPowerSettingsGuid as const GUID ptr, byval PowerSettingGuid as const GUID ptr, byval PossibleSettingIndex as ULONG, byval Buffer as UCHAR ptr, byval BufferSize as DWORD) as DWORD
 	declare function PowerWritePossibleValue(byval RootPowerKey as HKEY, byval SubGroupOfPowerSettingsGuid as const GUID ptr, byval PowerSettingGuid as const GUID ptr, byval Type as ULONG, byval PossibleSettingIndex as ULONG, byval Buffer as UCHAR ptr, byval BufferSize as DWORD) as DWORD
-
 	#define POWER_ATTRIBUTE_HIDE 1
-
 	declare function PowerWriteSettingAttributes(byval SubGroupGuid as const GUID ptr, byval PowerSettingGuid as const GUID ptr, byval Attributes as DWORD) as DWORD
 	declare function PowerWriteValueIncrement(byval RootPowerKey as HKEY, byval SubGroupOfPowerSettingsGuid as const GUID ptr, byval PowerSettingGuid as const GUID ptr, byval ValueIncrement as DWORD) as DWORD
 	declare function PowerWriteValueMax(byval RootPowerKey as HKEY, byval SubGroupOfPowerSettingsGuid as const GUID ptr, byval PowerSettingGuid as const GUID ptr, byval ValueMaximum as DWORD) as DWORD
@@ -232,7 +227,6 @@ declare function ValidatePowerPolicies(byval as PGLOBAL_POWER_POLICY, byval as P
 #endif
 
 #define _OVERRIDE_NTSTATUS_
-
 declare function CallNtPowerInformation(byval as POWER_INFORMATION_LEVEL, byval as PVOID, byval as ULONG, byval as PVOID, byval as ULONG) as LONG
 
 end extern

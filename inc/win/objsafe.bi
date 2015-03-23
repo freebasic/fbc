@@ -21,11 +21,8 @@ extern CATID_SafeForScripting as GUID
 extern CATID_SafeForInitializing as GUID
 extern __MIDL_itf_objsafe_0000_v0_0_c_ifspec as RPC_IF_HANDLE
 extern __MIDL_itf_objsafe_0000_v0_0_s_ifspec as RPC_IF_HANDLE
-
 #define __IObjectSafety_INTERFACE_DEFINED__
-
 extern IID_IObjectSafety as const IID
-
 type IObjectSafety as IObjectSafety_
 
 type IObjectSafetyVtbl
@@ -44,9 +41,7 @@ declare function IObjectSafety_GetInterfaceSafetyOptions_Proxy(byval This as IOb
 declare sub IObjectSafety_GetInterfaceSafetyOptions_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IObjectSafety_SetInterfaceSafetyOptions_Proxy(byval This as IObjectSafety ptr, byval riid as const IID const ptr, byval dwOptionSetMask as DWORD, byval dwEnabledOptions as DWORD) as HRESULT
 declare sub IObjectSafety_SetInterfaceSafetyOptions_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-
 type LPOBJECTSAFETY as IObjectSafety ptr
-
 extern __MIDL_itf_objsafe_0009_v0_0_c_ifspec as RPC_IF_HANDLE
 extern __MIDL_itf_objsafe_0009_v0_0_s_ifspec as RPC_IF_HANDLE
 

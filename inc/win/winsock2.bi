@@ -19,9 +19,7 @@ extern "Windows"
 #define INCL_WINSOCK_API_TYPEDEFS 0
 #define WINSOCK_VERSION MAKEWORD(2, 2)
 #define ___WSA_SOCKET_TYPES_H
-
 type SOCKET as UINT_PTR
-
 #define INVALID_SOCKET cast(SOCKET, not 0)
 #define SOCKET_ERROR (-1)
 #define ___WSA_FD_TYPES_H
@@ -76,7 +74,6 @@ declare function __WSAFDIsSet(byval as SOCKET, byval as FD_SET ptr) as long
 
 type PFD_SET as FD_SET ptr
 type LPFD_SET as FD_SET ptr
-
 #define _MINGW_IP_TYPES_H
 #define h_addr h_addr_list[0]
 
@@ -177,7 +174,6 @@ type WSADATA
 end type
 
 type LPWSADATA as WSADATA ptr
-
 #define IOCPARM_MASK &h7f
 #define IOC_VOID &h20000000
 #define IOC_OUT &h40000000
@@ -425,9 +421,7 @@ end type
 #define WSAEVENT HANDLE
 #define LPWSAEVENT LPHANDLE
 #define WSAOVERLAPPED OVERLAPPED
-
 type LPWSAOVERLAPPED as _OVERLAPPED ptr
-
 #define WSA_IO_PENDING ERROR_IO_PENDING
 #define WSA_IO_INCOMPLETE ERROR_IO_INCOMPLETE
 #define WSA_INVALID_HANDLE ERROR_INVALID_HANDLE
@@ -458,16 +452,13 @@ end type
 
 type QOS as _QualityOfService
 type LPQOS as _QualityOfService ptr
-
 #define CF_ACCEPT &h0000
 #define CF_REJECT &h0001
 #define CF_DEFER &h0002
 #define SD_RECEIVE &h00
 #define SD_SEND &h01
 #define SD_BOTH &h02
-
 type GROUP as ulong
-
 #define SG_UNCONSTRAINED_GROUP &h01
 #define SG_CONSTRAINED_GROUP &h02
 
@@ -478,7 +469,6 @@ end type
 
 type WSANETWORKEVENTS as _WSANETWORKEVENTS
 type LPWSANETWORKEVENTS as _WSANETWORKEVENTS ptr
-
 #define MAX_PROTOCOL_CHAIN 7
 #define BASE_PROTOCOL 1
 #define LAYERED_PROTOCOL 0
@@ -490,7 +480,6 @@ end type
 
 type WSAPROTOCOLCHAIN as _WSAPROTOCOLCHAIN
 type LPWSAPROTOCOLCHAIN as _WSAPROTOCOLCHAIN ptr
-
 #define WSAPROTOCOL_LEN 255
 
 type _WSAPROTOCOL_INFOA
@@ -622,7 +611,6 @@ type LPWSAPROTOCOL_INFOW as _WSAPROTOCOL_INFOW ptr
 
 type LPCONDITIONPROC as function(byval lpCallerId as LPWSABUF, byval lpCallerData as LPWSABUF, byval lpSQOS as LPQOS, byval lpGQOS as LPQOS, byval lpCalleeId as LPWSABUF, byval lpCalleeData as LPWSABUF, byval g as GROUP ptr, byval dwCallbackData as DWORD_PTR) as long
 type LPWSAOVERLAPPED_COMPLETION_ROUTINE as sub(byval dwError as DWORD, byval cbTransferred as DWORD, byval lpOverlapped as LPWSAOVERLAPPED, byval dwFlags as DWORD)
-
 #define SIO_NSP_NOTIFY_CHANGE _WSAIOW(IOC_WS2, 25)
 
 type _WSACOMPLETIONTYPE as long
@@ -674,10 +662,8 @@ end type
 type WSACOMPLETION as _WSACOMPLETION
 type PWSACOMPLETION as _WSACOMPLETION ptr
 type LPWSACOMPLETION as _WSACOMPLETION ptr
-
 #define TH_NETDEV &h00000001
 #define TH_TAPI &h00000002
-
 type PSOCKADDR_STORAGE as SOCKADDR_STORAGE ptr
 type LPSOCKADDR_STORAGE as SOCKADDR_STORAGE ptr
 type ADDRESS_FAMILY as u_short

@@ -266,10 +266,8 @@ type png_charpp as zstring ptr ptr
 type png_fixed_point_pp as png_fixed_point ptr ptr
 type png_doublepp as double ptr ptr
 type png_charppp as zstring ptr ptr ptr
-
 #define PNG_LIBPNG_BUILD_TYPE PNG_LIBPNG_BUILD_BASE_TYPE
 #define png_libpng_ver_ png_get_header_ver(NULL)
-
 type png_libpng_version_1_6_14 as zstring ptr
 type png_struct as png_struct_def
 type png_const_structp as const png_struct ptr
@@ -507,24 +505,19 @@ type png_longjmp_ptr as sub(byval as jmp_buf ptr, byval as long)
 #define PNG_FLAG_MNG_EMPTY_PLTE &h01
 #define PNG_FLAG_MNG_FILTER_64 &h04
 #define PNG_ALL_MNG_FEATURES &h05
-
 type png_malloc_ptr as function(byval as png_structp, byval as png_alloc_size_t) as png_voidp
 type png_free_ptr as sub(byval as png_structp, byval as png_voidp)
 
 declare function png_access_version_number() as png_uint_32
 declare sub png_set_sig_bytes(byval png_ptr as png_structrp, byval num_bytes as long)
 declare function png_sig_cmp(byval sig as png_const_bytep, byval start as png_size_t, byval num_to_check as png_size_t) as long
-
 #define png_check_sig(sig, n) (png_sig_cmp((sig), 0, (n)) = 0)
-
 declare function png_create_read_struct(byval user_png_ver as png_const_charp, byval error_ptr as png_voidp, byval error_fn as png_error_ptr, byval warn_fn as png_error_ptr) as png_structp
 declare function png_create_write_struct(byval user_png_ver as png_const_charp, byval error_ptr as png_voidp, byval error_fn as png_error_ptr, byval warn_fn as png_error_ptr) as png_structp
 declare function png_get_compression_buffer_size(byval png_ptr as png_const_structrp) as png_size_t
 declare sub png_set_compression_buffer_size(byval png_ptr as png_structrp, byval size as png_size_t)
 declare function png_set_longjmp_fn(byval png_ptr as png_structrp, byval longjmp_fn as png_longjmp_ptr, byval jmp_buf_size as uinteger) as jmp_buf ptr
-
 #define png_jmpbuf(png_ptr) png_set_longjmp_fn((png_ptr), @longjmp, sizeof(jmp_buf))
-
 declare sub png_longjmp(byval png_ptr as png_const_structrp, byval val as long)
 declare function png_reset_zstream(byval png_ptr as png_structrp) as long
 declare function png_create_read_struct_2(byval user_png_ver as png_const_charp, byval error_ptr as png_voidp, byval error_fn as png_error_ptr, byval warn_fn as png_error_ptr, byval mem_ptr as png_voidp, byval malloc_fn as png_malloc_ptr, byval free_fn as png_free_ptr) as png_structp
@@ -567,10 +560,8 @@ declare sub png_build_grayscale_palette(byval bit_depth as long, byval palette a
 #define PNG_ALPHA_PREMULTIPLIED 1
 #define PNG_ALPHA_OPTIMIZED 2
 #define PNG_ALPHA_BROKEN 3
-
 declare sub png_set_alpha_mode(byval png_ptr as png_structrp, byval mode as long, byval output_gamma as double)
 declare sub png_set_alpha_mode_fixed(byval png_ptr as png_structrp, byval mode as long, byval output_gamma as png_fixed_point)
-
 #define PNG_DEFAULT_sRGB (-1)
 #define PNG_GAMMA_MAC_18 (-2)
 #define PNG_GAMMA_sRGB 220000
@@ -580,10 +571,8 @@ declare sub png_set_strip_alpha(byval png_ptr as png_structrp)
 declare sub png_set_swap_alpha(byval png_ptr as png_structrp)
 declare sub png_set_invert_alpha(byval png_ptr as png_structrp)
 declare sub png_set_filler(byval png_ptr as png_structrp, byval filler as png_uint_32, byval flags as long)
-
 #define PNG_FILLER_BEFORE 0
 #define PNG_FILLER_AFTER 1
-
 declare sub png_set_add_alpha(byval png_ptr as png_structrp, byval filler as png_uint_32, byval flags as long)
 declare sub png_set_swap(byval png_ptr as png_structrp)
 declare sub png_set_packing(byval png_ptr as png_structrp)
@@ -598,14 +587,10 @@ declare sub png_set_background_fixed(byval png_ptr as png_structrp, byval backgr
 #define PNG_BACKGROUND_GAMMA_SCREEN 1
 #define PNG_BACKGROUND_GAMMA_FILE 2
 #define PNG_BACKGROUND_GAMMA_UNIQUE 3
-
 declare sub png_set_scale_16(byval png_ptr as png_structrp)
-
 #define PNG_READ_16_TO_8 SUPPORTED
-
 declare sub png_set_strip_16(byval png_ptr as png_structrp)
 declare sub png_set_quantize(byval png_ptr as png_structrp, byval palette as png_colorp, byval num_palette as long, byval maximum_colors as long, byval histogram as png_const_uint_16p, byval full_quantize as long)
-
 #define PNG_GAMMA_THRESHOLD (PNG_GAMMA_THRESHOLD_FIXED * .00001)
 
 declare sub png_set_gamma(byval png_ptr as png_structrp, byval screen_gamma as double, byval override_file_gamma as double)
@@ -633,9 +618,7 @@ declare sub png_set_crc_action(byval png_ptr as png_structrp, byval crit_action 
 #define PNG_CRC_WARN_USE 3
 #define PNG_CRC_QUIET_USE 4
 #define PNG_CRC_NO_CHANGE 5
-
 declare sub png_set_filter(byval png_ptr as png_structrp, byval method as long, byval filters as long)
-
 #define PNG_NO_FILTERS &h00
 #define PNG_FILTER_NONE &h08
 #define PNG_FILTER_SUB &h10
@@ -649,10 +632,8 @@ declare sub png_set_filter(byval png_ptr as png_structrp, byval method as long, 
 #define PNG_FILTER_VALUE_AVG 3
 #define PNG_FILTER_VALUE_PAETH 4
 #define PNG_FILTER_VALUE_LAST 5
-
 declare sub png_set_filter_heuristics(byval png_ptr as png_structrp, byval heuristic_method as long, byval num_weights as long, byval filter_weights as png_const_doublep, byval filter_costs as png_const_doublep)
 declare sub png_set_filter_heuristics_fixed(byval png_ptr as png_structrp, byval heuristic_method as long, byval num_weights as long, byval filter_weights as png_const_fixed_point_p, byval filter_costs as png_const_fixed_point_p)
-
 #define PNG_FILTER_HEURISTIC_DEFAULT 0
 #define PNG_FILTER_HEURISTIC_UNWEIGHTED 1
 #define PNG_FILTER_HEURISTIC_WEIGHTED 2
@@ -879,7 +860,6 @@ declare sub png_save_uint_16(byval buf as png_bytep, byval i as ulong)
 #define PNG_get_uint_16_(buf) cast(png_uint_16, culng(culng(culng(*(buf)) shl 8) + culng(*((buf) + 1))))
 #define PNG_get_int_32_(buf) cast(png_int_32, iif((*(buf)) and &h80, -cast(png_int_32, (PNG_get_uint_32_(buf) xor cast(clong, &hffffffff)) + 1), cast(png_int_32, PNG_get_uint_32_(buf))))
 #define PNG_IMAGE_VERSION 1
-
 type png_controlp as png_control ptr
 
 type png_image
@@ -895,7 +875,6 @@ type png_image
 end type
 
 type png_imagep as png_image ptr
-
 #define PNG_IMAGE_WARNING 1
 #define PNG_IMAGE_ERROR 2
 #define PNG_IMAGE_FAILED(png_cntrl) (((png_cntrl).warning_or_error and &h03) > 1)
@@ -957,7 +936,6 @@ declare function png_get_palette_max(byval png_ptr as png_const_structp, byval i
 #define PNG_OPTION_INVALID 1
 #define PNG_OPTION_OFF 2
 #define PNG_OPTION_ON 3
-
 declare function png_set_option(byval png_ptr as png_structrp, byval option as long, byval onoff as long) as long
 
 end extern

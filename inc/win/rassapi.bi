@@ -76,7 +76,6 @@ end type
 
 type RAS_PORT_0 as _RAS_PORT_0
 type PRAS_PORT_0 as _RAS_PORT_0 ptr
-
 #define MEDIA_UNKNOWN 0
 #define MEDIA_SERIAL 1
 #define MEDIA_RAS10_SERIAL 2
@@ -88,9 +87,7 @@ type PRAS_PORT_0 as _RAS_PORT_0 ptr
 #define GATEWAY_ACTIVE &h0008
 #define REMOTE_LISTEN &h0010
 #define PORT_MULTILINKED &h0020
-
 type IPADDR as ULONG
-
 #define RAS_IPADDRESSLEN 15
 #define RAS_IPXADDRESSLEN 22
 #define RAS_ATADDRESSLEN 32
@@ -181,7 +178,6 @@ end type
 
 type RAS_PORT_STATISTICS as _RAS_PORT_STATISTICS
 type PRAS_PORT_STATISTICS as _RAS_PORT_STATISTICS ptr
-
 #define RASDOWNLEVEL 10
 #define RASADMIN_35 35
 #define RASADMIN_CURRENT 40
@@ -194,7 +190,6 @@ end type
 
 type RAS_SERVER_0 as _RAS_SERVER_0
 type PRAS_SERVER_0 as _RAS_SERVER_0 ptr
-
 declare function RasAdminServerGetInfo(byval lpszServer as const wstring ptr, byval pRasServer0 as PRAS_SERVER_0) as DWORD
 declare function RasAdminGetUserAccountServer(byval lpszDomain as const wstring ptr, byval lpszServer as const wstring ptr, byval lpszUserAccountServer as LPWSTR) as DWORD
 declare function RasAdminUserGetInfo(byval lpszUserAccountServer as const wstring ptr, byval lpszUser as const wstring ptr, byval pRasUser0 as PRAS_USER_0) as DWORD

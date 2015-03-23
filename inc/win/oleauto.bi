@@ -7,9 +7,7 @@
 extern "Windows"
 
 #define _OLEAUTO_H_
-
 extern IID_StdOle as const IID
-
 #define STDOLE_MAJORVERNUM &h1
 #define STDOLE_MINORVERNUM &h0
 #define STDOLE_LCID &h0000
@@ -73,10 +71,8 @@ declare function VariantChangeTypeEx(byval pvargDest as VARIANTARG ptr, byval pv
 #define VARIANT_CALENDAR_THAI &h20
 #define VARIANT_CALENDAR_GREGORIAN &h40
 #define VARIANT_USE_NLS &h80
-
 declare function VectorFromBstr(byval bstr as BSTR, byval ppsa as SAFEARRAY ptr ptr) as HRESULT
 declare function BstrFromVector(byval psa as SAFEARRAY ptr, byval pbstr as BSTR ptr) as HRESULT
-
 #define VAR_TIMEVALUEONLY cast(DWORD, &h00000001)
 #define VAR_DATEVALUEONLY cast(DWORD, &h00000002)
 #define VAR_VALIDDATE cast(DWORD, &h00000004)
@@ -318,7 +314,6 @@ declare function VarDecFromI1(byval cIn as byte, byval pdecOut as DECIMAL ptr) a
 declare function VarDecFromUI2(byval uiIn as USHORT, byval pdecOut as DECIMAL ptr) as HRESULT
 declare function VarDecFromUI4(byval ulIn as ULONG, byval pdecOut as DECIMAL ptr) as HRESULT
 declare function VarDecFromUI8(byval ui64In as ULONG64, byval pdecOut as DECIMAL ptr) as HRESULT
-
 #define VarUI4FromUI4(in, pOut) scope : *(pOut) = (in) : end scope
 #define VarI4FromI4(in, pOut) scope : *(pOut) = (in) : end scope
 #define VarUI8FromUI8(in, pOut) scope : *(pOut) = (in) : end scope
@@ -497,13 +492,9 @@ declare function VarWeekdayName(byval iWeekday as long, byval fAbbrev as long, b
 declare function VarMonthName(byval iMonth as long, byval fAbbrev as long, byval dwFlags as ULONG, byval pbstrOut as BSTR ptr) as HRESULT
 declare function VarFormatFromTokens(byval pvarIn as LPVARIANT, byval pstrFormat as LPOLESTR, byval pbTokCur as LPBYTE, byval dwFlags as ULONG, byval pbstrOut as BSTR ptr, byval lcid as LCID) as HRESULT
 declare function VarTokenizeFormatString(byval pstrFormat as LPOLESTR, byval rgbTok as LPBYTE, byval cbTok as long, byval iFirstDay as long, byval iFirstWeek as long, byval lcid as LCID, byval pcbActual as long ptr) as HRESULT
-
 #define DEFINED_LPTYPELIB
-
 type LPTYPELIB as ITypeLib ptr
-
 #define DEFINED_DISPID_MEMBERID
-
 type DISPID as LONG
 type MEMBERID as DISPID
 
@@ -514,28 +505,18 @@ type MEMBERID as DISPID
 #define DISPATCH_PROPERTYPUT &h4
 #define DISPATCH_PROPERTYPUTREF &h8
 #define DEFINDE_LPTYPEINFO
-
 type LPTYPEINFO as ITypeInfo ptr
-
 #define DEFINED_LPTYPECOMP
-
 type LPTYPECOMP as ITypeComp ptr
-
 #define DEFINED_LPCREATETYPELIB
-
 type LPCREATETYPELIB as ICreateTypeLib ptr
-
 #define DEFINE_LPCREATETYPEINFO
-
 type LPCREATETYPEINFO as ICreateTypeInfo ptr
-
 declare function LHashValOfNameSysA(byval syskind as SYSKIND, byval lcid as LCID, byval szName as LPCSTR) as ULONG
 declare function LHashValOfNameSys(byval syskind as SYSKIND, byval lcid as LCID, byval szName as const wstring ptr) as ULONG
-
 #define LHashValOfName(lcid, szName) LHashValOfNameSys(SYS_WIN32, lcid, szName)
 #define WHashValOfLHashVal(lhashval) cast(USHORT, &h0000ffff and (lhashval))
 #define IsHashValCompatible(lhashval1, lhashval2) cast(WINBOOL, -((&h00ff0000 and (lhashval1)) = (&h00ff0000 and (lhashval2))))
-
 declare function LoadTypeLib(byval szFile as const wstring ptr, byval pptlib as ITypeLib ptr ptr) as HRESULT
 
 type tagREGKIND as long
@@ -546,7 +527,6 @@ enum
 end enum
 
 type REGKIND as tagREGKIND
-
 #define LOAD_TLB_AS_32BIT &h20
 #define LOAD_TLB_AS_64BIT &h40
 #define MASK_TO_RESET_TLB_BITS (not (LOAD_TLB_AS_32BIT or LOAD_TLB_AS_64BIT))
@@ -558,9 +538,7 @@ declare function RegisterTypeLib(byval ptlib as ITypeLib ptr, byval szFullPath a
 declare function UnRegisterTypeLib(byval libID as const GUID const ptr, byval wVerMajor as WORD, byval wVerMinor as WORD, byval lcid as LCID, byval syskind as SYSKIND) as HRESULT
 declare function CreateTypeLib(byval syskind as SYSKIND, byval szFile as const wstring ptr, byval ppctlib as ICreateTypeLib ptr ptr) as HRESULT
 declare function CreateTypeLib2(byval syskind as SYSKIND, byval szFile as LPCOLESTR, byval ppctlib as ICreateTypeLib2 ptr ptr) as HRESULT
-
 #define DEFINED_LPDISPATCH
-
 type LPDISPATCH as IDispatch ptr
 
 type tagPARAMDATA
@@ -592,17 +570,14 @@ end type
 
 type INTERFACEDATA as tagINTERFACEDATA
 type LPINTERFACEDATA as tagINTERFACEDATA ptr
-
 declare function DispGetParam(byval pdispparams as DISPPARAMS ptr, byval position as UINT, byval vtTarg as VARTYPE, byval pvarResult as VARIANT ptr, byval puArgErr as UINT ptr) as HRESULT
 declare function DispGetIDsOfNames(byval ptinfo as ITypeInfo ptr, byval rgszNames as wstring ptr ptr, byval cNames as UINT, byval rgdispid as DISPID ptr) as HRESULT
 declare function DispInvoke(byval _this as any ptr, byval ptinfo as ITypeInfo ptr, byval dispidMember as DISPID, byval wFlags as WORD, byval pparams as DISPPARAMS ptr, byval pvarResult as VARIANT ptr, byval pexcepinfo as EXCEPINFO ptr, byval puArgErr as UINT ptr) as HRESULT
 declare function CreateDispTypeInfo(byval pidata as INTERFACEDATA ptr, byval lcid as LCID, byval pptinfo as ITypeInfo ptr ptr) as HRESULT
 declare function CreateStdDispatch(byval punkOuter as IUnknown ptr, byval pvThis as any ptr, byval ptinfo as ITypeInfo ptr, byval ppunkStdDisp as IUnknown ptr ptr) as HRESULT
 declare function DispCallFunc(byval pvInstance as any ptr, byval oVft as ULONG_PTR, byval cc as CALLCONV, byval vtReturn as VARTYPE, byval cActuals as UINT, byval prgvt as VARTYPE ptr, byval prgpvarg as VARIANTARG ptr ptr, byval pvargResult as VARIANT ptr) as HRESULT
-
 #define ACTIVEOBJECT_STRONG &h0
 #define ACTIVEOBJECT_WEAK &h1
-
 declare function RegisterActiveObject(byval punk as IUnknown ptr, byval rclsid as const IID const ptr, byval dwFlags as DWORD, byval pdwRegister as DWORD ptr) as HRESULT
 declare function RevokeActiveObject(byval dwRegister as DWORD, byval pvReserved as any ptr) as HRESULT
 declare function GetActiveObject(byval rclsid as const IID const ptr, byval pvReserved as any ptr, byval ppunk as IUnknown ptr ptr) as HRESULT

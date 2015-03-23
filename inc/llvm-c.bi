@@ -11,10 +11,8 @@ extern "C"
 #define LLVM_C_CORE_H
 #define LLVM_C_SUPPORT_H
 #define SUPPORT_DATATYPES_H
-
 type LLVMBool as long
 type LLVMMemoryBufferRef as LLVMOpaqueMemoryBuffer ptr
-
 declare function LLVMLoadLibraryPermanently(byval Filename as const zstring ptr) as LLVMBool
 
 type LLVMContextRef as LLVMOpaqueContext ptr
@@ -274,16 +272,12 @@ end enum
 declare sub LLVMShutdown()
 declare function LLVMCreateMessage(byval Message as const zstring ptr) as zstring ptr
 declare sub LLVMDisposeMessage(byval Message as zstring ptr)
-
 type LLVMFatalErrorHandler as sub(byval Reason as const zstring ptr)
-
 declare sub LLVMInstallFatalErrorHandler(byval Handler as LLVMFatalErrorHandler)
 declare sub LLVMResetFatalErrorHandler()
 declare sub LLVMEnablePrettyStackTrace()
-
 type LLVMDiagnosticHandler as sub(byval as LLVMDiagnosticInfoRef, byval as any ptr)
 type LLVMYieldCallback as sub(byval as LLVMContextRef, byval as any ptr)
-
 declare function LLVMContextCreate() as LLVMContextRef
 declare function LLVMGetGlobalContext() as LLVMContextRef
 declare sub LLVMContextSetDiagnosticHandler(byval C as LLVMContextRef, byval Handler as LLVMDiagnosticHandler, byval DiagnosticContext as any ptr)
@@ -793,24 +787,18 @@ declare function LLVMVerifyModule(byval M as LLVMModuleRef, byval Action as LLVM
 declare function LLVMVerifyFunction(byval Fn as LLVMValueRef, byval Action as LLVMVerifierFailureAction) as LLVMBool
 declare sub LLVMViewFunctionCFG(byval Fn as LLVMValueRef)
 declare sub LLVMViewFunctionCFGOnly(byval Fn as LLVMValueRef)
-
 #define LLVM_C_BITCODEREADER_H
-
 declare function LLVMParseBitcode(byval MemBuf as LLVMMemoryBufferRef, byval OutModule as LLVMModuleRef ptr, byval OutMessage as zstring ptr ptr) as LLVMBool
 declare function LLVMParseBitcodeInContext(byval ContextRef as LLVMContextRef, byval MemBuf as LLVMMemoryBufferRef, byval OutModule as LLVMModuleRef ptr, byval OutMessage as zstring ptr ptr) as LLVMBool
 declare function LLVMGetBitcodeModuleInContext(byval ContextRef as LLVMContextRef, byval MemBuf as LLVMMemoryBufferRef, byval OutM as LLVMModuleRef ptr, byval OutMessage as zstring ptr ptr) as LLVMBool
 declare function LLVMGetBitcodeModule(byval MemBuf as LLVMMemoryBufferRef, byval OutM as LLVMModuleRef ptr, byval OutMessage as zstring ptr ptr) as LLVMBool
 declare function LLVMGetBitcodeModuleProviderInContext(byval ContextRef as LLVMContextRef, byval MemBuf as LLVMMemoryBufferRef, byval OutMP as LLVMModuleProviderRef ptr, byval OutMessage as zstring ptr ptr) as LLVMBool
 declare function LLVMGetBitcodeModuleProvider(byval MemBuf as LLVMMemoryBufferRef, byval OutMP as LLVMModuleProviderRef ptr, byval OutMessage as zstring ptr ptr) as LLVMBool
-
 #define LLVM_C_BITCODEWRITER_H
-
 declare function LLVMWriteBitcodeToFile(byval M as LLVMModuleRef, byval Path as const zstring ptr) as long
 declare function LLVMWriteBitcodeToFD(byval M as LLVMModuleRef, byval FD as long, byval ShouldClose as long, byval Unbuffered as long) as long
 declare function LLVMWriteBitcodeToFileHandle(byval M as LLVMModuleRef, byval Handle as long) as long
-
 #define LLVM_C_DISASSEMBLER_H
-
 type LLVMDisasmContextRef as any ptr
 type LLVMOpInfoCallback as function(byval DisInfo as any ptr, byval PC as ulongint, byval Offset as ulongint, byval Size as ulongint, byval TagType as long, byval TagBuf as any ptr) as long
 
@@ -836,9 +824,7 @@ end type
 #define LLVMDisassembler_VariantKind_ARM64_GOTPAGEOFF 4
 #define LLVMDisassembler_VariantKind_ARM64_TLVP 5
 #define LLVMDisassembler_VariantKind_ARM64_TLVOFF 6
-
 type LLVMSymbolLookupCallback as function(byval DisInfo as any ptr, byval ReferenceValue as ulongint, byval ReferenceType as ulongint ptr, byval ReferencePC as ulongint, byval ReferenceName as const zstring ptr ptr) as const zstring ptr
-
 #define LLVMDisassembler_ReferenceType_InOut_None 0
 #define LLVMDisassembler_ReferenceType_In_Branch 1
 #define LLVMDisassembler_ReferenceType_In_PCrel_Load 2
@@ -866,10 +852,8 @@ declare function LLVMSetDisasmOptions(byval DC as LLVMDisasmContextRef, byval Op
 #define LLVMDisassembler_Option_AsmPrinterVariant 4
 #define LLVMDisassembler_Option_SetInstrComments 8
 #define LLVMDisassembler_Option_PrintLatency 16
-
 declare sub LLVMDisasmDispose(byval DC as LLVMDisasmContextRef)
 declare function LLVMDisasmInstruction(byval DC as LLVMDisasmContextRef, byval Bytes as ubyte ptr, byval BytesSize as ulongint, byval PC as ulongint, byval OutString as zstring ptr, byval OutStringSize as uinteger) as uinteger
-
 #define LLVM_C_EXECUTIONENGINE_H
 #define LLVM_C_TARGET_H
 #define LLVM_CONFIG_H
@@ -921,7 +905,6 @@ end enum
 
 type LLVMTargetDataRef as LLVMOpaqueTargetData ptr
 type LLVMTargetLibraryInfoRef as LLVMOpaqueTargetLibraryInfotData ptr
-
 declare sub LLVMInitializeR600TargetInfo()
 declare sub LLVMInitializeSystemZTargetInfo()
 declare sub LLVMInitializeHexagonTargetInfo()
@@ -1116,9 +1099,7 @@ declare function LLVMPreferredAlignmentOfGlobal(byval TD as LLVMTargetDataRef, b
 declare function LLVMElementAtOffset(byval TD as LLVMTargetDataRef, byval StructTy as LLVMTypeRef, byval Offset as ulongint) as ulong
 declare function LLVMOffsetOfElement(byval TD as LLVMTargetDataRef, byval StructTy as LLVMTypeRef, byval Element as ulong) as ulongint
 declare sub LLVMDisposeTargetData(byval TD as LLVMTargetDataRef)
-
 #define LLVM_C_TARGETMACHINE_H
-
 type LLVMTargetMachineRef as LLVMOpaqueTargetMachine ptr
 type LLVMTargetRef as LLVMTarget ptr
 
@@ -1228,10 +1209,8 @@ type LLVMMemoryManagerAllocateCodeSectionCallback as function(byval Opaque as an
 type LLVMMemoryManagerAllocateDataSectionCallback as function(byval Opaque as any ptr, byval Size as uinteger, byval Alignment as ulong, byval SectionID as ulong, byval SectionName as const zstring ptr, byval IsReadOnly as LLVMBool) as ubyte ptr
 type LLVMMemoryManagerFinalizeMemoryCallback as function(byval Opaque as any ptr, byval ErrMsg as zstring ptr ptr) as LLVMBool
 type LLVMMemoryManagerDestroyCallback as sub(byval Opaque as any ptr)
-
 declare function LLVMCreateSimpleMCJITMemoryManager(byval Opaque as any ptr, byval AllocateCodeSection as LLVMMemoryManagerAllocateCodeSectionCallback, byval AllocateDataSection as LLVMMemoryManagerAllocateDataSectionCallback, byval FinalizeMemory as LLVMMemoryManagerFinalizeMemoryCallback, byval Destroy as LLVMMemoryManagerDestroyCallback) as LLVMMCJITMemoryManagerRef
 declare sub LLVMDisposeMCJITMemoryManager(byval MM as LLVMMCJITMemoryManagerRef)
-
 #define LLVM_C_INITIALIZEPASSES_H
 
 declare sub LLVMInitializeCore(byval R as LLVMPassRegistryRef)
@@ -1246,11 +1225,8 @@ declare sub LLVMInitializeAnalysis(byval R as LLVMPassRegistryRef)
 declare sub LLVMInitializeIPA(byval R as LLVMPassRegistryRef)
 declare sub LLVMInitializeCodeGen(byval R as LLVMPassRegistryRef)
 declare sub LLVMInitializeTarget(byval R as LLVMPassRegistryRef)
-
 #define LLVM_C_IRREADER_H
-
 declare function LLVMParseIRInContext(byval ContextRef as LLVMContextRef, byval MemBuf as LLVMMemoryBufferRef, byval OutM as LLVMModuleRef ptr, byval OutMessage as zstring ptr ptr) as LLVMBool
-
 #define LLVM_C_LINKER_H
 
 type LLVMLinkerMode as long
@@ -1260,9 +1236,7 @@ enum
 end enum
 
 declare function LLVMLinkModules(byval Dest as LLVMModuleRef, byval Src as LLVMModuleRef, byval Mode as LLVMLinkerMode, byval OutMessage as zstring ptr ptr) as LLVMBool
-
 #define LLVM_C_LINKTIMEOPTIMIZER_H
-
 type llvm_lto_t as any ptr
 
 type llvm_lto_status as long
@@ -1280,16 +1254,12 @@ enum
 end enum
 
 type llvm_lto_status_t as llvm_lto_status
-
 declare function llvm_create_optimizer() as llvm_lto_t
 declare sub llvm_destroy_optimizer(byval lto as llvm_lto_t)
 declare function llvm_read_object_file(byval lto as llvm_lto_t, byval input_filename as const zstring ptr) as llvm_lto_status_t
 declare function llvm_optimize_modules(byval lto as llvm_lto_t, byval output_filename as const zstring ptr) as llvm_lto_status_t
-
 #define LLVM_C_LTO_H
-
 type lto_bool_t as byte
-
 #define LTO_API_VERSION 10
 
 type lto_symbol_attributes as long
@@ -1329,7 +1299,6 @@ end enum
 
 type lto_module_t as LLVMOpaqueLTOModule ptr
 type lto_code_gen_t as LLVMOpaqueLTOCodeGenerator ptr
-
 declare function lto_get_version() as const zstring ptr
 declare function lto_get_error_message() as const zstring ptr
 declare function lto_module_is_object_file(byval path as const zstring ptr) as lto_bool_t
@@ -1365,7 +1334,6 @@ enum
 end enum
 
 type lto_diagnostic_handler_t as sub(byval severity as lto_codegen_diagnostic_severity_t, byval diag as const zstring ptr, byval ctxt as any ptr)
-
 declare sub lto_codegen_set_diagnostic_handler(byval as lto_code_gen_t, byval as lto_diagnostic_handler_t, byval as any ptr)
 declare function lto_codegen_create() as lto_code_gen_t
 declare sub lto_codegen_dispose(byval as lto_code_gen_t)
@@ -1381,7 +1349,6 @@ declare function lto_codegen_compile(byval cg as lto_code_gen_t, byval length as
 declare function lto_codegen_compile_to_file(byval cg as lto_code_gen_t, byval name as const zstring ptr ptr) as lto_bool_t
 declare sub lto_codegen_debug_options(byval cg as lto_code_gen_t, byval as const zstring ptr)
 declare sub lto_initialize_disassembler()
-
 #define LLVM_C_OBJECT_H
 
 type LLVMObjectFileRef as LLVMOpaqueObjectFile ptr

@@ -58,10 +58,8 @@ type LPHACMOBJ as HACMOBJ ptr
 #define MM_ACM_OPEN MM_STREAM_OPEN
 #define MM_ACM_CLOSE MM_STREAM_CLOSE
 #define MM_ACM_DONE MM_STREAM_DONE
-
 declare function acmGetVersion() as DWORD
 declare function acmMetrics(byval hao as HACMOBJ, byval uMetric as UINT, byval pMetric as LPVOID) as MMRESULT
-
 #define ACM_METRIC_COUNT_DRIVERS 1
 #define ACM_METRIC_COUNT_CODECS 2
 #define ACM_METRIC_COUNT_CONVERTERS 3
@@ -79,11 +77,8 @@ declare function acmMetrics(byval hao as HACMOBJ, byval uMetric as UINT, byval p
 #define ACM_METRIC_MAX_SIZE_FILTER 51
 #define ACM_METRIC_DRIVER_SUPPORT 100
 #define ACM_METRIC_DRIVER_PRIORITY 101
-
 type ACMDRIVERENUMCB as function(byval hadid as HACMDRIVERID, byval dwInstance as DWORD_PTR, byval fdwSupport as DWORD) as WINBOOL
-
 declare function acmDriverEnum(byval fnCallback as ACMDRIVERENUMCB, byval dwInstance as DWORD_PTR, byval fdwEnum as DWORD) as MMRESULT
-
 #define ACM_DRIVERENUMF_NOLOCAL __MSABI_LONG(&h40000000)
 #define ACM_DRIVERENUMF_DISABLED __MSABI_LONG(&h80000000)
 
@@ -103,7 +98,6 @@ declare function acmDriverAddW(byval phadid as LPHACMDRIVERID, byval hinstModule
 #define ACM_DRIVERADDF_TYPEMASK __MSABI_LONG(&h00000007)
 #define ACM_DRIVERADDF_LOCAL __MSABI_LONG(&h00000000)
 #define ACM_DRIVERADDF_GLOBAL __MSABI_LONG(&h00000008)
-
 type ACMDRIVERPROC as function(byval as DWORD_PTR, byval as HACMDRIVERID, byval as UINT, byval as LPARAM, byval as LPARAM) as LRESULT
 type LPACMDRIVERPROC as ACMDRIVERPROC ptr
 
@@ -117,9 +111,7 @@ declare function acmDriverMessage(byval had as HACMDRIVER, byval uMsg as UINT, b
 #define ACMDM_RESERVED_HIGH (DRV_USER + &h2FFF)
 #define ACMDM_BASE ACMDM_RESERVED_LOW
 #define ACMDM_DRIVER_ABOUT (ACMDM_BASE + 11)
-
 declare function acmDriverPriority(byval hadid as HACMDRIVERID, byval dwPriority as DWORD, byval fdwPriority as DWORD) as MMRESULT
-
 #define ACM_DRIVERPRIORITYF_ENABLE __MSABI_LONG(&h00000001)
 #define ACM_DRIVERPRIORITYF_DISABLE __MSABI_LONG(&h00000002)
 #define ACM_DRIVERPRIORITYF_ABLEMASK __MSABI_LONG(&h00000003)
@@ -197,7 +189,6 @@ type LPACMDRIVERDETAILSW as tACMDRIVERDETAILSW ptr
 #define ACMDRIVERDETAILS_SUPPORTF_ASYNC __MSABI_LONG(&h00000010)
 #define ACMDRIVERDETAILS_SUPPORTF_LOCAL __MSABI_LONG(&h40000000)
 #define ACMDRIVERDETAILS_SUPPORTF_DISABLED __MSABI_LONG(&h80000000)
-
 declare function acmDriverDetailsA(byval hadid as HACMDRIVERID, byval padd as LPACMDRIVERDETAILSA, byval fdwDetails as DWORD) as MMRESULT
 declare function acmDriverDetailsW(byval hadid as HACMDRIVERID, byval padd as LPACMDRIVERDETAILSW, byval fdwDetails as DWORD) as MMRESULT
 
@@ -260,10 +251,8 @@ declare function acmFormatTagDetailsW(byval had as HACMDRIVER, byval paftd as LP
 #define ACM_FORMATTAGDETAILSF_FORMATTAG __MSABI_LONG(&h00000001)
 #define ACM_FORMATTAGDETAILSF_LARGESTSIZE __MSABI_LONG(&h00000002)
 #define ACM_FORMATTAGDETAILSF_QUERYMASK __MSABI_LONG(&h0000000F)
-
 type ACMFORMATTAGENUMCBA as function(byval hadid as HACMDRIVERID, byval paftd as LPACMFORMATTAGDETAILSA, byval dwInstance as DWORD_PTR, byval fdwSupport as DWORD) as WINBOOL
 type ACMFORMATTAGENUMCBW as function(byval hadid as HACMDRIVERID, byval paftd as LPACMFORMATTAGDETAILSW, byval dwInstance as DWORD_PTR, byval fdwSupport as DWORD) as WINBOOL
-
 declare function acmFormatTagEnumA(byval had as HACMDRIVER, byval paftd as LPACMFORMATTAGDETAILSA, byval fnCallback as ACMFORMATTAGENUMCBA, byval dwInstance as DWORD_PTR, byval fdwEnum as DWORD) as MMRESULT
 declare function acmFormatTagEnumW(byval had as HACMDRIVER, byval paftd as LPACMFORMATTAGDETAILSW, byval fnCallback as ACMFORMATTAGENUMCBW, byval dwInstance as DWORD_PTR, byval fdwEnum as DWORD) as MMRESULT
 
@@ -327,10 +316,8 @@ declare function acmFormatDetailsW(byval had as HACMDRIVER, byval pafd as LPACMF
 #define ACM_FORMATDETAILSF_INDEX __MSABI_LONG(&h00000000)
 #define ACM_FORMATDETAILSF_FORMAT __MSABI_LONG(&h00000001)
 #define ACM_FORMATDETAILSF_QUERYMASK __MSABI_LONG(&h0000000F)
-
 type ACMFORMATENUMCBA as function(byval hadid as HACMDRIVERID, byval pafd as LPACMFORMATDETAILSA, byval dwInstance as DWORD_PTR, byval fdwSupport as DWORD) as WINBOOL
 type ACMFORMATENUMCBW as function(byval hadid as HACMDRIVERID, byval pafd as LPACMFORMATDETAILSW, byval dwInstance as DWORD_PTR, byval fdwSupport as DWORD) as WINBOOL
-
 declare function acmFormatEnumA(byval had as HACMDRIVER, byval pafd as LPACMFORMATDETAILSA, byval fnCallback as ACMFORMATENUMCBA, byval dwInstance as DWORD_PTR, byval fdwEnum as DWORD) as MMRESULT
 declare function acmFormatEnumW(byval had as HACMDRIVER, byval pafd as LPACMFORMATDETAILSW, byval fnCallback as ACMFORMATENUMCBW, byval dwInstance as DWORD_PTR, byval fdwEnum as DWORD) as MMRESULT
 
@@ -351,9 +338,7 @@ declare function acmFormatEnumW(byval had as HACMDRIVER, byval pafd as LPACMFORM
 #define ACM_FORMATENUMF_HARDWARE __MSABI_LONG(&h00400000)
 #define ACM_FORMATENUMF_INPUT __MSABI_LONG(&h00800000)
 #define ACM_FORMATENUMF_OUTPUT __MSABI_LONG(&h01000000)
-
 declare function acmFormatSuggest(byval had as HACMDRIVER, byval pwfxSrc as LPWAVEFORMATEX, byval pwfxDst as LPWAVEFORMATEX, byval cbwfxDst as DWORD, byval fdwSuggest as DWORD) as MMRESULT
-
 #define ACM_FORMATSUGGESTF_WFORMATTAG __MSABI_LONG(&h00010000)
 #define ACM_FORMATSUGGESTF_NCHANNELS __MSABI_LONG(&h00020000)
 #define ACM_FORMATSUGGESTF_NSAMPLESPERSEC __MSABI_LONG(&h00040000)
@@ -381,7 +366,6 @@ declare function acmFormatSuggest(byval had as HACMDRIVER, byval pwfxSrc as LPWA
 #define FORMATCHOOSE_FORMATTAG_VERIFY (FORMATCHOOSE_MESSAGE + 0)
 #define FORMATCHOOSE_FORMAT_VERIFY (FORMATCHOOSE_MESSAGE + 1)
 #define FORMATCHOOSE_CUSTOM_VERIFY (FORMATCHOOSE_MESSAGE + 2)
-
 type ACMFORMATCHOOSEHOOKPROCA as function(byval hwnd as HWND, byval uMsg as UINT, byval wParam as WPARAM, byval lParam as LPARAM) as UINT
 type ACMFORMATCHOOSEHOOKPROCW as function(byval hwnd as HWND, byval uMsg as UINT, byval wParam as WPARAM, byval lParam as LPARAM) as UINT
 
@@ -453,7 +437,6 @@ type LPACMFORMATCHOOSEW as tACMFORMATCHOOSEW ptr
 #define ACMFORMATCHOOSE_STYLEF_ENABLETEMPLATEHANDLE __MSABI_LONG(&h00000020)
 #define ACMFORMATCHOOSE_STYLEF_INITTOWFXSTRUCT __MSABI_LONG(&h00000040)
 #define ACMFORMATCHOOSE_STYLEF_CONTEXTHELP __MSABI_LONG(&h00000080)
-
 declare function acmFormatChooseA(byval pafmtc as LPACMFORMATCHOOSEA) as MMRESULT
 declare function acmFormatChooseW(byval pafmtc as LPACMFORMATCHOOSEW) as MMRESULT
 
@@ -516,10 +499,8 @@ declare function acmFilterTagDetailsW(byval had as HACMDRIVER, byval paftd as LP
 #define ACM_FILTERTAGDETAILSF_FILTERTAG __MSABI_LONG(&h00000001)
 #define ACM_FILTERTAGDETAILSF_LARGESTSIZE __MSABI_LONG(&h00000002)
 #define ACM_FILTERTAGDETAILSF_QUERYMASK __MSABI_LONG(&h0000000F)
-
 type ACMFILTERTAGENUMCBA as function(byval hadid as HACMDRIVERID, byval paftd as LPACMFILTERTAGDETAILSA, byval dwInstance as DWORD_PTR, byval fdwSupport as DWORD) as WINBOOL
 type ACMFILTERTAGENUMCBW as function(byval hadid as HACMDRIVERID, byval paftd as LPACMFILTERTAGDETAILSW, byval dwInstance as DWORD_PTR, byval fdwSupport as DWORD) as WINBOOL
-
 declare function acmFilterTagEnumA(byval had as HACMDRIVER, byval paftd as LPACMFILTERTAGDETAILSA, byval fnCallback as ACMFILTERTAGENUMCBA, byval dwInstance as DWORD_PTR, byval fdwEnum as DWORD) as MMRESULT
 declare function acmFilterTagEnumW(byval had as HACMDRIVER, byval paftd as LPACMFILTERTAGDETAILSW, byval fnCallback as ACMFILTERTAGENUMCBW, byval dwInstance as DWORD_PTR, byval fdwEnum as DWORD) as MMRESULT
 
@@ -583,10 +564,8 @@ declare function acmFilterDetailsW(byval had as HACMDRIVER, byval pafd as LPACMF
 #define ACM_FILTERDETAILSF_INDEX __MSABI_LONG(&h00000000)
 #define ACM_FILTERDETAILSF_FILTER __MSABI_LONG(&h00000001)
 #define ACM_FILTERDETAILSF_QUERYMASK __MSABI_LONG(&h0000000F)
-
 type ACMFILTERENUMCBA as function(byval hadid as HACMDRIVERID, byval pafd as LPACMFILTERDETAILSA, byval dwInstance as DWORD_PTR, byval fdwSupport as DWORD) as WINBOOL
 type ACMFILTERENUMCBW as function(byval hadid as HACMDRIVERID, byval pafd as LPACMFILTERDETAILSW, byval dwInstance as DWORD_PTR, byval fdwSupport as DWORD) as WINBOOL
-
 declare function acmFilterEnumA(byval had as HACMDRIVER, byval pafd as LPACMFILTERDETAILSA, byval fnCallback as ACMFILTERENUMCBA, byval dwInstance as DWORD_PTR, byval fdwEnum as DWORD) as MMRESULT
 declare function acmFilterEnumW(byval had as HACMDRIVER, byval pafd as LPACMFILTERDETAILSW, byval fnCallback as ACMFILTERENUMCBW, byval dwInstance as DWORD_PTR, byval fdwEnum as DWORD) as MMRESULT
 
@@ -604,7 +583,6 @@ declare function acmFilterEnumW(byval had as HACMDRIVER, byval pafd as LPACMFILT
 #define FILTERCHOOSE_FILTERTAG_VERIFY (FILTERCHOOSE_MESSAGE + 0)
 #define FILTERCHOOSE_FILTER_VERIFY (FILTERCHOOSE_MESSAGE + 1)
 #define FILTERCHOOSE_CUSTOM_VERIFY (FILTERCHOOSE_MESSAGE + 2)
-
 type ACMFILTERCHOOSEHOOKPROCA as function(byval hwnd as HWND, byval uMsg as UINT, byval wParam as WPARAM, byval lParam as LPARAM) as UINT
 type ACMFILTERCHOOSEHOOKPROCW as function(byval hwnd as HWND, byval uMsg as UINT, byval wParam as WPARAM, byval lParam as LPARAM) as UINT
 
@@ -676,7 +654,6 @@ type LPACMFILTERCHOOSEW as tACMFILTERCHOOSEW ptr
 #define ACMFILTERCHOOSE_STYLEF_ENABLETEMPLATEHANDLE __MSABI_LONG(&h00000020)
 #define ACMFILTERCHOOSE_STYLEF_INITTOFILTERSTRUCT __MSABI_LONG(&h00000040)
 #define ACMFILTERCHOOSE_STYLEF_CONTEXTHELP __MSABI_LONG(&h00000080)
-
 declare function acmFilterChooseA(byval pafltrc as LPACMFILTERCHOOSEA) as MMRESULT
 declare function acmFilterChooseW(byval pafltrc as LPACMFILTERCHOOSEW) as MMRESULT
 
@@ -719,16 +696,12 @@ type LPACMSTREAMHEADER as tACMSTREAMHEADER ptr
 #define ACMSTREAMHEADER_STATUSF_DONE __MSABI_LONG(&h00010000)
 #define ACMSTREAMHEADER_STATUSF_PREPARED __MSABI_LONG(&h00020000)
 #define ACMSTREAMHEADER_STATUSF_INQUEUE __MSABI_LONG(&h00100000)
-
 declare function acmStreamOpen(byval phas as LPHACMSTREAM, byval had as HACMDRIVER, byval pwfxSrc as LPWAVEFORMATEX, byval pwfxDst as LPWAVEFORMATEX, byval pwfltr as LPWAVEFILTER, byval dwCallback as DWORD_PTR, byval dwInstance as DWORD_PTR, byval fdwOpen as DWORD) as MMRESULT
-
 #define ACM_STREAMOPENF_QUERY &h00000001
 #define ACM_STREAMOPENF_ASYNC &h00000002
 #define ACM_STREAMOPENF_NONREALTIME &h00000004
-
 declare function acmStreamClose(byval has as HACMSTREAM, byval fdwClose as DWORD) as MMRESULT
 declare function acmStreamSize(byval has as HACMSTREAM, byval cbInput as DWORD, byval pdwOutputBytes as LPDWORD, byval fdwSize as DWORD) as MMRESULT
-
 #define ACM_STREAMSIZEF_SOURCE __MSABI_LONG(&h00000000)
 #define ACM_STREAMSIZEF_DESTINATION __MSABI_LONG(&h00000001)
 #define ACM_STREAMSIZEF_QUERYMASK __MSABI_LONG(&h0000000F)
@@ -740,7 +713,6 @@ declare function acmStreamConvert(byval has as HACMSTREAM, byval pash as LPACMST
 #define ACM_STREAMCONVERTF_BLOCKALIGN &h00000004
 #define ACM_STREAMCONVERTF_START &h00000010
 #define ACM_STREAMCONVERTF_END &h00000020
-
 declare function acmStreamPrepareHeader(byval has as HACMSTREAM, byval pash as LPACMSTREAMHEADER, byval fdwPrepare as DWORD) as MMRESULT
 declare function acmStreamUnprepareHeader(byval has as HACMSTREAM, byval pash as LPACMSTREAMHEADER, byval fdwUnprepare as DWORD) as MMRESULT
 

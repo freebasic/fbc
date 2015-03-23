@@ -88,9 +88,7 @@ extern "Windows"
 #define ALG_SID_SCHANNEL_ENC_KEY 7
 #define ALG_SID_EXAMPLE 80
 #define ALGIDDEF
-
 type ALG_ID as ulong
-
 #define CALG_MD2 ((ALG_CLASS_HASH or ALG_TYPE_ANY) or ALG_SID_MD2)
 #define CALG_MD4 ((ALG_CLASS_HASH or ALG_TYPE_ANY) or ALG_SID_MD4)
 #define CALG_MD5 ((ALG_CLASS_HASH or ALG_TYPE_ANY) or ALG_SID_MD5)
@@ -138,7 +136,6 @@ type ALG_ID as ulong
 
 #if (_WIN32_WINNT = &h0400) or (_WIN32_WINNT = &h0502)
 	#define __HCRYPTKEY__
-
 	type HCRYPTKEY as ULONG_PTR
 	type HCRYPTPROV as ULONG_PTR
 #else
@@ -147,7 +144,6 @@ type ALG_ID as ulong
 #endif
 
 type HCRYPTHASH as ULONG_PTR
-
 #define CRYPT_VERIFYCONTEXT &hF0000000
 #define CRYPT_NEWKEYSET &h8
 #define CRYPT_DELETEKEYSET &h10
@@ -448,7 +444,6 @@ end type
 
 type SCHANNEL_ALG as _SCHANNEL_ALG
 type PSCHANNEL_ALG as _SCHANNEL_ALG ptr
-
 #define SCHANNEL_MAC_KEY &h0
 #define SCHANNEL_ENC_KEY &h1
 #define INTERNATIONAL_USAGE &h1
@@ -704,7 +699,6 @@ end type
 
 type CRYPT_ALGORITHM_IDENTIFIER as _CRYPT_ALGORITHM_IDENTIFIER
 type PCRYPT_ALGORITHM_IDENTIFIER as _CRYPT_ALGORITHM_IDENTIFIER ptr
-
 #define szOID_RSA "1.2.840.113549"
 #define szOID_PKCS "1.2.840.113549.1"
 #define szOID_RSA_HASH "1.2.840.113549.2"
@@ -887,7 +881,6 @@ end type
 
 type CERT_RDN_ATTR as _CERT_RDN_ATTR
 type PCERT_RDN_ATTR as _CERT_RDN_ATTR ptr
-
 #define szOID_COMMON_NAME "2.5.4.3"
 #define szOID_SUR_NAME "2.5.4.4"
 #define szOID_DEVICE_SERIAL_NUMBER "2.5.4.5"
@@ -993,7 +986,6 @@ end type
 
 type CERT_PUBLIC_KEY_INFO as _CERT_PUBLIC_KEY_INFO
 type PCERT_PUBLIC_KEY_INFO as _CERT_PUBLIC_KEY_INFO ptr
-
 #define CERT_RSA_PUBLIC_KEY_OBJID szOID_RSA_RSA
 #define CERT_DEFAULT_OID_PUBLIC_KEY_SIGN szOID_RSA_RSA
 #define CERT_DEFAULT_OID_PUBLIC_KEY_XCHG szOID_RSA_RSA
@@ -1060,7 +1052,6 @@ end type
 
 type CERT_INFO as _CERT_INFO
 type PCERT_INFO as _CERT_INFO ptr
-
 #define CERT_V1 0
 #define CERT_V2 1
 #define CERT_V3 2
@@ -1100,7 +1091,6 @@ end type
 
 type CRL_INFO as _CRL_INFO
 type PCRL_INFO as _CRL_INFO ptr
-
 #define CRL_V1 0
 #define CRL_V2 1
 
@@ -1114,7 +1104,6 @@ end type
 
 type CERT_REQUEST_INFO as _CERT_REQUEST_INFO
 type PCERT_REQUEST_INFO as _CERT_REQUEST_INFO ptr
-
 #define CERT_REQUEST_V1 0
 
 type _CERT_KEYGEN_REQUEST_INFO
@@ -1125,7 +1114,6 @@ end type
 
 type CERT_KEYGEN_REQUEST_INFO as _CERT_KEYGEN_REQUEST_INFO
 type PCERT_KEYGEN_REQUEST_INFO as _CERT_KEYGEN_REQUEST_INFO ptr
-
 #define CERT_KEYGEN_REQUEST_V1 0
 
 type _CERT_SIGNED_CONTENT_INFO
@@ -1172,7 +1160,6 @@ end type
 
 type CTL_INFO as _CTL_INFO
 type PCTL_INFO as _CTL_INFO ptr
-
 #define CTL_V1 0
 
 type _CRYPT_TIME_STAMP_REQUEST_INFO
@@ -1202,7 +1189,6 @@ end type
 
 type CRYPT_CSP_PROVIDER as _CRYPT_CSP_PROVIDER
 type PCRYPT_CSP_PROVIDER as _CRYPT_CSP_PROVIDER ptr
-
 #define CERT_ENCODING_TYPE_MASK &hffff
 #define CMSG_ENCODING_TYPE_MASK &hffff0000
 #define GET_CERT_ENCODING_TYPE(T) ((T) and CERT_ENCODING_TYPE_MASK)
@@ -1213,9 +1199,7 @@ type PCRYPT_CSP_PROVIDER as _CRYPT_CSP_PROVIDER ptr
 #define X509_NDR_ENCODING &h2
 #define PKCS_7_ASN_ENCODING &h10000
 #define PKCS_7_NDR_ENCODING &h20000
-
 declare function CryptFormatObject(byval dwCertEncodingType as DWORD, byval dwFormatType as DWORD, byval dwFormatStrType as DWORD, byval pFormatStruct as any ptr, byval lpszStructType as LPCSTR, byval pbEncoded as const UBYTE ptr, byval cbEncoded as DWORD, byval pbFormat as any ptr, byval pcbFormat as DWORD ptr) as WINBOOL
-
 #define CRYPT_FORMAT_STR_MULTI_LINE &h1
 #define CRYPT_FORMAT_STR_NO_HEX &h10
 #define CRYPT_FORMAT_SIMPLE &h1
@@ -1228,7 +1212,6 @@ declare function CryptFormatObject(byval dwCertEncodingType as DWORD, byval dwFo
 #define CRYPT_FORMAT_COMMA &h1000
 #define CRYPT_FORMAT_SEMICOLON CRYPT_FORMAT_RDN_SEMICOLON
 #define CRYPT_FORMAT_CRLF CRYPT_FORMAT_RDN_CRLF
-
 type PFN_CRYPT_ALLOC as function(byval cbSize as uinteger) as LPVOID
 type PFN_CRYPT_FREE as sub(byval pv as LPVOID)
 
@@ -1240,10 +1223,8 @@ end type
 
 type CRYPT_ENCODE_PARA as _CRYPT_ENCODE_PARA
 type PCRYPT_ENCODE_PARA as _CRYPT_ENCODE_PARA ptr
-
 declare function CryptEncodeObjectEx(byval dwCertEncodingType as DWORD, byval lpszStructType as LPCSTR, byval pvStructInfo as const any ptr, byval dwFlags as DWORD, byval pEncodePara as PCRYPT_ENCODE_PARA, byval pvEncoded as any ptr, byval pcbEncoded as DWORD ptr) as WINBOOL
 declare function CryptEncodeObject(byval dwCertEncodingType as DWORD, byval lpszStructType as LPCSTR, byval pvStructInfo as const any ptr, byval pbEncoded as UBYTE ptr, byval pcbEncoded as DWORD ptr) as WINBOOL
-
 #define CRYPT_ENCODE_NO_SIGNATURE_BYTE_REVERSAL_FLAG &h8
 #define CRYPT_ENCODE_ALLOC_FLAG &h8000
 #define CRYPT_UNICODE_NAME_ENCODE_ENABLE_T61_UNICODE_FLAG CERT_RDN_ENABLE_T61_UNICODE_FLAG
@@ -1260,10 +1241,8 @@ end type
 
 type CRYPT_DECODE_PARA as _CRYPT_DECODE_PARA
 type PCRYPT_DECODE_PARA as _CRYPT_DECODE_PARA ptr
-
 declare function CryptDecodeObjectEx(byval dwCertEncodingType as DWORD, byval lpszStructType as LPCSTR, byval pbEncoded as const UBYTE ptr, byval cbEncoded as DWORD, byval dwFlags as DWORD, byval pDecodePara as PCRYPT_DECODE_PARA, byval pvStructInfo as any ptr, byval pcbStructInfo as DWORD ptr) as WINBOOL
 declare function CryptDecodeObject(byval dwCertEncodingType as DWORD, byval lpszStructType as LPCSTR, byval pbEncoded as const UBYTE ptr, byval cbEncoded as DWORD, byval dwFlags as DWORD, byval pvStructInfo as any ptr, byval pcbStructInfo as DWORD ptr) as WINBOOL
-
 #define CRYPT_DECODE_NOCOPY_FLAG &h1
 #define CRYPT_DECODE_TO_BE_SIGNED_FLAG &h2
 #define CRYPT_DECODE_SHARE_OID_STRING_FLAG &h4
@@ -1481,7 +1460,6 @@ end type
 
 type CERT_EXTENSIONS as _CERT_EXTENSIONS
 type PCERT_EXTENSIONS as _CERT_EXTENSIONS ptr
-
 #define CERT_UNICODE_RDN_ERR_INDEX_MASK &h3FF
 #define CERT_UNICODE_RDN_ERR_INDEX_SHIFT 22
 #define CERT_UNICODE_ATTR_ERR_INDEX_MASK &h3f
@@ -1517,7 +1495,6 @@ end type
 
 type CERT_KEY_ATTRIBUTES_INFO as _CERT_KEY_ATTRIBUTES_INFO
 type PCERT_KEY_ATTRIBUTES_INFO as _CERT_KEY_ATTRIBUTES_INFO ptr
-
 #define CERT_DIGITAL_SIGNATURE_KEY_USAGE &h80
 #define CERT_NON_REPUDIATION_KEY_USAGE &h40
 #define CERT_KEY_ENCIPHERMENT_KEY_USAGE &h20
@@ -1570,7 +1547,6 @@ end type
 
 type CERT_ALT_NAME_ENTRY as _CERT_ALT_NAME_ENTRY
 type PCERT_ALT_NAME_ENTRY as _CERT_ALT_NAME_ENTRY ptr
-
 #define CERT_ALT_NAME_OTHER_NAME 1
 #define CERT_ALT_NAME_RFC822_NAME 2
 #define CERT_ALT_NAME_DNS_NAME 3
@@ -1588,7 +1564,6 @@ end type
 
 type CERT_ALT_NAME_INFO as _CERT_ALT_NAME_INFO
 type PCERT_ALT_NAME_INFO as _CERT_ALT_NAME_INFO ptr
-
 #define CERT_ALT_NAME_ENTRY_ERR_INDEX_MASK &hFF
 #define CERT_ALT_NAME_ENTRY_ERR_INDEX_SHIFT 16
 #define CERT_ALT_NAME_VALUE_ERR_INDEX_MASK &hffff
@@ -1606,7 +1581,6 @@ end type
 
 type CERT_BASIC_CONSTRAINTS_INFO as _CERT_BASIC_CONSTRAINTS_INFO
 type PCERT_BASIC_CONSTRAINTS_INFO as _CERT_BASIC_CONSTRAINTS_INFO ptr
-
 #define CERT_CA_SUBJECT_FLAG &h80
 #define CERT_END_ENTITY_SUBJECT_FLAG &h40
 
@@ -1756,7 +1730,6 @@ end type
 
 type CERT_AUTHORITY_INFO_ACCESS as _CERT_AUTHORITY_INFO_ACCESS
 type PCERT_AUTHORITY_INFO_ACCESS as _CERT_AUTHORITY_INFO_ACCESS ptr
-
 #define szOID_PKIX_ACC_DESCR "1.3.6.1.5.5.7.48"
 #define szOID_PKIX_OCSP "1.3.6.1.5.5.7.48.1"
 #define szOID_PKIX_CA_ISSUERS "1.3.6.1.5.5.7.48.2"
@@ -1779,7 +1752,6 @@ end type
 
 type CRL_DIST_POINT_NAME as _CRL_DIST_POINT_NAME
 type PCRL_DIST_POINT_NAME as _CRL_DIST_POINT_NAME ptr
-
 #define CRL_DIST_POINT_NO_NAME 0
 #define CRL_DIST_POINT_FULL_NAME 1
 #define CRL_DIST_POINT_ISSUER_RDN_NAME 2
@@ -1792,7 +1764,6 @@ end type
 
 type CRL_DIST_POINT as _CRL_DIST_POINT
 type PCRL_DIST_POINT as _CRL_DIST_POINT ptr
-
 #define CRL_REASON_UNUSED_FLAG &h80
 #define CRL_REASON_KEY_COMPROMISE_FLAG &h40
 #define CRL_REASON_CA_COMPROMISE_FLAG &h20
@@ -1808,7 +1779,6 @@ end type
 
 type CRL_DIST_POINTS_INFO as _CRL_DIST_POINTS_INFO
 type PCRL_DIST_POINTS_INFO as _CRL_DIST_POINTS_INFO ptr
-
 #define CRL_DIST_POINT_ERR_INDEX_MASK &h7F
 #define CRL_DIST_POINT_ERR_INDEX_SHIFT 24
 #define GET_CRL_DIST_POINT_ERR_INDEX(X) ((X shr CRL_DIST_POINT_ERR_INDEX_SHIFT) and CRL_DIST_POINT_ERR_INDEX_MASK)
@@ -1823,7 +1793,6 @@ end type
 
 type CROSS_CERT_DIST_POINTS_INFO as _CROSS_CERT_DIST_POINTS_INFO
 type PCROSS_CERT_DIST_POINTS_INFO as _CROSS_CERT_DIST_POINTS_INFO ptr
-
 #define CROSS_CERT_DIST_POINT_ERR_INDEX_MASK &hFF
 #define CROSS_CERT_DIST_POINT_ERR_INDEX_SHIFT 24
 #define GET_CROSS_CERT_DIST_POINT_ERR_INDEX(X) ((X shr CROSS_CERT_DIST_POINT_ERR_INDEX_SHIFT) and CROSS_CERT_DIST_POINT_ERR_INDEX_MASK)
@@ -1866,7 +1835,6 @@ end type
 
 type CERT_NAME_CONSTRAINTS_INFO as _CERT_NAME_CONSTRAINTS_INFO
 type PCERT_NAME_CONSTRAINTS_INFO as _CERT_NAME_CONSTRAINTS_INFO ptr
-
 #define CERT_EXCLUDED_SUBTREE_BIT __MSABI_LONG(&h80000000)
 #define IS_CERT_EXCLUDED_SUBTREE(X) (0 <> (X and CERT_EXCLUDED_SUBTREE_BIT))
 #define SORTED_CTL_EXT_FLAGS_OFFSET (0 * 4)
@@ -1883,7 +1851,6 @@ end type
 
 type CERT_DSS_PARAMETERS as _CERT_DSS_PARAMETERS
 type PCERT_DSS_PARAMETERS as _CERT_DSS_PARAMETERS ptr
-
 #define CERT_DSS_R_LEN 20
 #define CERT_DSS_S_LEN 20
 #define CERT_DSS_SIGNATURE_LEN (CERT_DSS_R_LEN + CERT_DSS_S_LEN)
@@ -1915,7 +1882,6 @@ end type
 
 type CERT_X942_DH_PARAMETERS as _CERT_X942_DH_PARAMETERS
 type PCERT_X942_DH_PARAMETERS as _CERT_X942_DH_PARAMETERS ptr
-
 #define CRYPT_X942_COUNTER_BYTE_LENGTH 4
 #define CRYPT_X942_KEY_LENGTH_BYTE_LENGTH 4
 #define CRYPT_X942_PUB_INFO_BYTE_LENGTH (512 / 8)
@@ -1938,7 +1904,6 @@ end type
 
 type CRYPT_RC2_CBC_PARAMETERS as _CRYPT_RC2_CBC_PARAMETERS
 type PCRYPT_RC2_CBC_PARAMETERS as _CRYPT_RC2_CBC_PARAMETERS ptr
-
 #define CRYPT_RC2_40BIT_VERSION 160
 #define CRYPT_RC2_56BIT_VERSION 52
 #define CRYPT_RC2_64BIT_VERSION 120
@@ -1959,7 +1924,6 @@ end type
 
 type CRYPT_SMIME_CAPABILITIES as _CRYPT_SMIME_CAPABILITIES
 type PCRYPT_SMIME_CAPABILITIES as _CRYPT_SMIME_CAPABILITIES ptr
-
 #define szOID_VERISIGN_PRIVATE_6_9 "2.16.840.1.113733.1.6.9"
 #define szOID_VERISIGN_ONSITE_JURISDICTION_HASH "2.16.840.1.113733.1.6.11"
 #define szOID_VERISIGN_BITSTRING_6_13 "2.16.840.1.113733.1.6.13"
@@ -2035,7 +1999,6 @@ end type
 
 type CMC_TAGGED_REQUEST as _CMC_TAGGED_REQUEST
 type PCMC_TAGGED_REQUEST as _CMC_TAGGED_REQUEST ptr
-
 #define CMC_TAGGED_CERT_REQUEST_CHOICE 1
 
 type _CMC_TAGGED_CONTENT_INFO
@@ -2104,7 +2067,6 @@ end type
 
 type CMC_STATUS_INFO as _CMC_STATUS_INFO
 type PCMC_STATUS_INFO as _CMC_STATUS_INFO ptr
-
 #define CMC_OTHER_INFO_NO_CHOICE 0
 #define CMC_OTHER_INFO_FAIL_CHOICE 1
 #define CMC_OTHER_INFO_PEND_CHOICE 2
@@ -2186,33 +2148,24 @@ end type
 
 type CRYPT_OID_FUNC_ENTRY as _CRYPT_OID_FUNC_ENTRY
 type PCRYPT_OID_FUNC_ENTRY as _CRYPT_OID_FUNC_ENTRY ptr
-
 #define CRYPT_INSTALL_OID_FUNC_BEFORE_FLAG 1
-
 declare function CryptInstallOIDFunctionAddress(byval hModule as HMODULE, byval dwEncodingType as DWORD, byval pszFuncName as LPCSTR, byval cFuncEntry as DWORD, byval rgFuncEntry as const CRYPT_OID_FUNC_ENTRY ptr, byval dwFlags as DWORD) as WINBOOL
 declare function CryptInitOIDFunctionSet(byval pszFuncName as LPCSTR, byval dwFlags as DWORD) as HCRYPTOIDFUNCSET
 declare function CryptGetOIDFunctionAddress(byval hFuncSet as HCRYPTOIDFUNCSET, byval dwEncodingType as DWORD, byval pszOID as LPCSTR, byval dwFlags as DWORD, byval ppvFuncAddr as any ptr ptr, byval phFuncAddr as HCRYPTOIDFUNCADDR ptr) as WINBOOL
-
 #define CRYPT_GET_INSTALLED_OID_FUNC_FLAG &h1
-
 declare function CryptGetDefaultOIDDllList(byval hFuncSet as HCRYPTOIDFUNCSET, byval dwEncodingType as DWORD, byval pwszDllList as LPWSTR, byval pcchDllList as DWORD ptr) as WINBOOL
 declare function CryptGetDefaultOIDFunctionAddress(byval hFuncSet as HCRYPTOIDFUNCSET, byval dwEncodingType as DWORD, byval pwszDll as LPCWSTR, byval dwFlags as DWORD, byval ppvFuncAddr as any ptr ptr, byval phFuncAddr as HCRYPTOIDFUNCADDR ptr) as WINBOOL
 declare function CryptFreeOIDFunctionAddress(byval hFuncAddr as HCRYPTOIDFUNCADDR, byval dwFlags as DWORD) as WINBOOL
 declare function CryptRegisterOIDFunction(byval dwEncodingType as DWORD, byval pszFuncName as LPCSTR, byval pszOID as LPCSTR, byval pwszDll as LPCWSTR, byval pszOverrideFuncName as LPCSTR) as WINBOOL
 declare function CryptUnregisterOIDFunction(byval dwEncodingType as DWORD, byval pszFuncName as LPCSTR, byval pszOID as LPCSTR) as WINBOOL
 declare function CryptRegisterDefaultOIDFunction(byval dwEncodingType as DWORD, byval pszFuncName as LPCSTR, byval dwIndex as DWORD, byval pwszDll as LPCWSTR) as WINBOOL
-
 #define CRYPT_REGISTER_FIRST_INDEX 0
 #define CRYPT_REGISTER_LAST_INDEX &hFFFFFFFF
-
 declare function CryptUnregisterDefaultOIDFunction(byval dwEncodingType as DWORD, byval pszFuncName as LPCSTR, byval pwszDll as LPCWSTR) as WINBOOL
 declare function CryptSetOIDFunctionValue(byval dwEncodingType as DWORD, byval pszFuncName as LPCSTR, byval pszOID as LPCSTR, byval pwszValueName as LPCWSTR, byval dwValueType as DWORD, byval pbValueData as const UBYTE ptr, byval cbValueData as DWORD) as WINBOOL
 declare function CryptGetOIDFunctionValue(byval dwEncodingType as DWORD, byval pszFuncName as LPCSTR, byval pszOID as LPCSTR, byval pwszValueName as LPCWSTR, byval pdwValueType as DWORD ptr, byval pbValueData as UBYTE ptr, byval pcbValueData as DWORD ptr) as WINBOOL
-
 type PFN_CRYPT_ENUM_OID_FUNC as function(byval dwEncodingType as DWORD, byval pszFuncName as LPCSTR, byval pszOID as LPCSTR, byval cValue as DWORD, byval rgdwValueType as const DWORD ptr, byval rgpwszValueName as const LPCWSTR ptr, byval rgpbValueData as const UBYTE const ptr ptr, byval rgcbValueData as const DWORD ptr, byval pvArg as any ptr) as WINBOOL
-
 declare function CryptEnumOIDFunction(byval dwEncodingType as DWORD, byval pszFuncName as LPCSTR, byval pszOID as LPCSTR, byval dwFlags as DWORD, byval pvArg as any ptr, byval pfnEnumOIDFunc as PFN_CRYPT_ENUM_OID_FUNC) as WINBOOL
-
 #define CRYPT_MATCH_ANY_ENCODING_TYPE &hFFFFFFFF
 
 type _CRYPT_OID_INFO
@@ -2250,30 +2203,20 @@ type PCCRYPT_OID_INFO as const CRYPT_OID_INFO ptr
 #define CRYPT_OID_INHIBIT_SIGNATURE_FORMAT_FLAG &h1
 #define CRYPT_OID_USE_PUBKEY_PARA_FOR_PKCS7_FLAG &h2
 #define CRYPT_OID_NO_NULL_ALGORITHM_PARA_FLAG &h4
-
 declare function CryptFindOIDInfo(byval dwKeyType as DWORD, byval pvKey as any ptr, byval dwGroupId as DWORD) as PCCRYPT_OID_INFO
-
 #define CRYPT_OID_INFO_OID_KEY 1
 #define CRYPT_OID_INFO_NAME_KEY 2
 #define CRYPT_OID_INFO_ALGID_KEY 3
 #define CRYPT_OID_INFO_SIGN_KEY 4
-
 declare function CryptRegisterOIDInfo(byval pInfo as PCCRYPT_OID_INFO, byval dwFlags as DWORD) as WINBOOL
-
 #define CRYPT_INSTALL_OID_INFO_BEFORE_FLAG 1
-
 declare function CryptUnregisterOIDInfo(byval pInfo as PCCRYPT_OID_INFO) as WINBOOL
-
 type PFN_CRYPT_ENUM_OID_INFO as function(byval pInfo as PCCRYPT_OID_INFO, byval pvArg as any ptr) as WINBOOL
-
 declare function CryptEnumOIDInfo(byval dwGroupId as DWORD, byval dwFlags as DWORD, byval pvArg as any ptr, byval pfnEnumOIDInfo as PFN_CRYPT_ENUM_OID_INFO) as WINBOOL
 declare function CryptFindLocalizedName(byval pwszCryptName as LPCWSTR) as LPCWSTR
-
 #define CRYPT_LOCALIZED_NAME_ENCODING_TYPE 0
 #define CRYPT_LOCALIZED_NAME_OID "LocalizedNames"
-
 type HCRYPTMSG as any ptr
-
 #define szOID_PKCS_7_DATA "1.2.840.113549.1.7.1"
 #define szOID_PKCS_7_SIGNED "1.2.840.113549.1.7.2"
 #define szOID_PKCS_7_ENVELOPED "1.2.840.113549.1.7.3"
@@ -2316,7 +2259,6 @@ end type
 
 type CERT_ID as _CERT_ID
 type PCERT_ID as _CERT_ID ptr
-
 #define CERT_ID_ISSUER_SERIAL_NUMBER 1
 #define CERT_ID_KEY_IDENTIFIER 2
 #define CERT_ID_SHA1_HASH 3
@@ -2409,7 +2351,6 @@ end type
 
 type CMSG_KEY_AGREE_RECIPIENT_ENCODE_INFO as _CMSG_KEY_AGREE_RECIPIENT_ENCODE_INFO
 type PCMSG_KEY_AGREE_RECIPIENT_ENCODE_INFO as _CMSG_KEY_AGREE_RECIPIENT_ENCODE_INFO ptr
-
 #define CMSG_KEY_AGREE_EPHEMERAL_KEY_CHOICE 1
 #define CMSG_KEY_AGREE_STATIC_KEY_CHOICE 2
 
@@ -2432,7 +2373,6 @@ end type
 
 type CMSG_MAIL_LIST_RECIPIENT_ENCODE_INFO as _CMSG_MAIL_LIST_RECIPIENT_ENCODE_INFO
 type PCMSG_MAIL_LIST_RECIPIENT_ENCODE_INFO as _CMSG_MAIL_LIST_RECIPIENT_ENCODE_INFO ptr
-
 #define CMSG_MAIL_LIST_HANDLE_KEY_CHOICE 1
 
 type _CMSG_RECIPIENT_ENCODE_INFO
@@ -2464,7 +2404,6 @@ end type
 
 type CMSG_SP3_COMPATIBLE_AUX_INFO as _CMSG_SP3_COMPATIBLE_AUX_INFO
 type PCMSG_SP3_COMPATIBLE_AUX_INFO as _CMSG_SP3_COMPATIBLE_AUX_INFO ptr
-
 #define CMSG_SP3_COMPATIBLE_ENCRYPT_FLAG &h80000000
 
 type _CMSG_RC4_AUX_INFO
@@ -2474,7 +2413,6 @@ end type
 
 type CMSG_RC4_AUX_INFO as _CMSG_RC4_AUX_INFO
 type PCMSG_RC4_AUX_INFO as _CMSG_RC4_AUX_INFO ptr
-
 #define CMSG_RC4_NO_SALT_FLAG &h40000000
 
 type _CMSG_SIGNED_AND_ENVELOPED_ENCODE_INFO
@@ -2505,7 +2443,6 @@ end type
 type CMSG_ENCRYPTED_ENCODE_INFO as _CMSG_ENCRYPTED_ENCODE_INFO
 type PCMSG_ENCRYPTED_ENCODE_INFO as _CMSG_ENCRYPTED_ENCODE_INFO ptr
 type PFN_CMSG_STREAM_OUTPUT as function(byval pvArg as const any ptr, byval pbData as UBYTE ptr, byval cbData as DWORD, byval fFinal as WINBOOL) as WINBOOL
-
 #define CMSG_INDEFINITE_LENGTH &hFFFFFFFF
 
 type _CMSG_STREAM_INFO
@@ -2516,7 +2453,6 @@ end type
 
 type CMSG_STREAM_INFO as _CMSG_STREAM_INFO
 type PCMSG_STREAM_INFO as _CMSG_STREAM_INFO ptr
-
 #define CMSG_BARE_CONTENT_FLAG &h1
 #define CMSG_LENGTH_ONLY_FLAG &h2
 #define CMSG_DETACHED_FLAG &h4
@@ -2653,7 +2589,6 @@ end type
 
 type CMSG_KEY_AGREE_RECIPIENT_INFO as _CMSG_KEY_AGREE_RECIPIENT_INFO
 type PCMSG_KEY_AGREE_RECIPIENT_INFO as _CMSG_KEY_AGREE_RECIPIENT_INFO ptr
-
 #define CMSG_KEY_AGREE_ORIGINATOR_CERT 1
 #define CMSG_KEY_AGREE_ORIGINATOR_PUBLIC_KEY 2
 
@@ -2681,7 +2616,6 @@ end type
 
 type CMSG_CMS_RECIPIENT_INFO as _CMSG_CMS_RECIPIENT_INFO
 type PCMSG_CMS_RECIPIENT_INFO as _CMSG_CMS_RECIPIENT_INFO ptr
-
 #define CMSG_ENVELOPED_RECIPIENT_V0 0
 #define CMSG_ENVELOPED_RECIPIENT_V2 2
 #define CMSG_ENVELOPED_RECIPIENT_V3 3
@@ -2690,9 +2624,7 @@ type PCMSG_CMS_RECIPIENT_INFO as _CMSG_CMS_RECIPIENT_INFO ptr
 #define CMSG_KEY_TRANS_CMS_VERSION CMSG_ENVELOPED_RECIPIENT_V2
 #define CMSG_KEY_AGREE_VERSION CMSG_ENVELOPED_RECIPIENT_V3
 #define CMSG_MAIL_LIST_VERSION CMSG_ENVELOPED_RECIPIENT_V4
-
 declare function CryptMsgControl(byval hCryptMsg as HCRYPTMSG, byval dwFlags as DWORD, byval dwCtrlType as DWORD, byval pvCtrlPara as const any ptr) as WINBOOL
-
 #define CMSG_CTRL_VERIFY_SIGNATURE 1
 #define CMSG_CTRL_DECRYPT 2
 #define CMSG_CTRL_VERIFY_HASH 5
@@ -2722,7 +2654,6 @@ end type
 
 type CMSG_CTRL_VERIFY_SIGNATURE_EX_PARA as _CMSG_CTRL_VERIFY_SIGNATURE_EX_PARA
 type PCMSG_CTRL_VERIFY_SIGNATURE_EX_PARA as _CMSG_CTRL_VERIFY_SIGNATURE_EX_PARA ptr
-
 #define CMSG_VERIFY_SIGNER_PUBKEY 1
 #define CMSG_VERIFY_SIGNER_CERT 2
 #define CMSG_VERIFY_SIGNER_CHAIN 3
@@ -2795,27 +2726,18 @@ end type
 
 type CMSG_CTRL_DEL_SIGNER_UNAUTH_ATTR_PARA as _CMSG_CTRL_DEL_SIGNER_UNAUTH_ATTR_PARA
 type PCMSG_CTRL_DEL_SIGNER_UNAUTH_ATTR_PARA as _CMSG_CTRL_DEL_SIGNER_UNAUTH_ATTR_PARA ptr
-
 declare function CryptMsgVerifyCountersignatureEncoded(byval hCryptProv as HCRYPTPROV, byval dwEncodingType as DWORD, byval pbSignerInfo as PBYTE, byval cbSignerInfo as DWORD, byval pbSignerInfoCountersignature as PBYTE, byval cbSignerInfoCountersignature as DWORD, byval pciCountersigner as PCERT_INFO) as WINBOOL
 declare function CryptMsgVerifyCountersignatureEncodedEx(byval hCryptProv as HCRYPTPROV, byval dwEncodingType as DWORD, byval pbSignerInfo as PBYTE, byval cbSignerInfo as DWORD, byval pbSignerInfoCountersignature as PBYTE, byval cbSignerInfoCountersignature as DWORD, byval dwSignerType as DWORD, byval pvSigner as any ptr, byval dwFlags as DWORD, byval pvReserved as any ptr) as WINBOOL
 declare function CryptMsgCountersign(byval hCryptMsg as HCRYPTMSG, byval dwIndex as DWORD, byval cCountersigners as DWORD, byval rgCountersigners as PCMSG_SIGNER_ENCODE_INFO) as WINBOOL
 declare function CryptMsgCountersignEncoded(byval dwEncodingType as DWORD, byval pbSignerInfo as PBYTE, byval cbSignerInfo as DWORD, byval cCountersigners as DWORD, byval rgCountersigners as PCMSG_SIGNER_ENCODE_INFO, byval pbCountersignature as PBYTE, byval pcbCountersignature as PDWORD) as WINBOOL
-
 type PFN_CMSG_ALLOC as function(byval cb as uinteger) as any ptr
 type PFN_CMSG_FREE as sub(byval pv as any ptr)
-
 #define CMSG_OID_GEN_ENCRYPT_KEY_FUNC "CryptMsgDllGenEncryptKey"
-
 type PFN_CMSG_GEN_ENCRYPT_KEY as function(byval phCryptProv as HCRYPTPROV ptr, byval paiEncrypt as PCRYPT_ALGORITHM_IDENTIFIER, byval pvEncryptAuxInfo as PVOID, byval pPublicKeyInfo as PCERT_PUBLIC_KEY_INFO, byval pfnAlloc as PFN_CMSG_ALLOC, byval phEncryptKey as HCRYPTKEY ptr, byval ppbEncryptParameters as PBYTE ptr, byval pcbEncryptParameters as PDWORD) as WINBOOL
-
 #define CMSG_OID_EXPORT_ENCRYPT_KEY_FUNC "CryptMsgDllExportEncryptKey"
-
 type PFN_CMSG_EXPORT_ENCRYPT_KEY as function(byval hCryptProv as HCRYPTPROV, byval hEncryptKey as HCRYPTKEY, byval pPublicKeyInfo as PCERT_PUBLIC_KEY_INFO, byval pbData as PBYTE, byval pcbData as PDWORD) as WINBOOL
-
 #define CMSG_OID_IMPORT_ENCRYPT_KEY_FUNC "CryptMsgDllImportEncryptKey"
-
 type PFN_CMSG_IMPORT_ENCRYPT_KEY as function(byval hCryptProv as HCRYPTPROV, byval dwKeySpec as DWORD, byval paiEncrypt as PCRYPT_ALGORITHM_IDENTIFIER, byval paiPubKey as PCRYPT_ALGORITHM_IDENTIFIER, byval pbEncodedKey as PBYTE, byval cbEncodedKey as DWORD, byval phEncryptKey as HCRYPTKEY ptr) as WINBOOL
-
 #define CMSG_DEFAULT_INSTALLABLE_FUNC_OID cast(LPCSTR, 1)
 
 type _CMSG_CONTENT_ENCRYPT_INFO
@@ -2834,12 +2756,10 @@ end type
 
 type CMSG_CONTENT_ENCRYPT_INFO as _CMSG_CONTENT_ENCRYPT_INFO
 type PCMSG_CONTENT_ENCRYPT_INFO as _CMSG_CONTENT_ENCRYPT_INFO ptr
-
 #define CMSG_CONTENT_ENCRYPT_PAD_ENCODED_LEN_FLAG &h1
 #define CMSG_CONTENT_ENCRYPT_FREE_PARA_FLAG &h1
 #define CMSG_CONTENT_ENCRYPT_RELEASE_CONTEXT_FLAG &h8000
 #define CMSG_OID_GEN_CONTENT_ENCRYPT_KEY_FUNC "CryptMsgDllGenContentEncryptKey"
-
 type PFN_CMSG_GEN_CONTENT_ENCRYPT_KEY as function(byval pContentEncryptInfo as PCMSG_CONTENT_ENCRYPT_INFO, byval dwFlags as DWORD, byval pvReserved as any ptr) as WINBOOL
 
 type _CMSG_KEY_TRANS_ENCRYPT_INFO
@@ -2852,10 +2772,8 @@ end type
 
 type CMSG_KEY_TRANS_ENCRYPT_INFO as _CMSG_KEY_TRANS_ENCRYPT_INFO
 type PCMSG_KEY_TRANS_ENCRYPT_INFO as _CMSG_KEY_TRANS_ENCRYPT_INFO ptr
-
 #define CMSG_KEY_TRANS_ENCRYPT_FREE_PARA_FLAG &h1
 #define CMSG_OID_EXPORT_KEY_TRANS_FUNC "CryptMsgDllExportKeyTrans"
-
 type PFN_CMSG_EXPORT_KEY_TRANS as function(byval pContentEncryptInfo as PCMSG_CONTENT_ENCRYPT_INFO, byval pKeyTransEncodeInfo as PCMSG_KEY_TRANS_RECIPIENT_ENCODE_INFO, byval pKeyTransEncryptInfo as PCMSG_KEY_TRANS_ENCRYPT_INFO, byval dwFlags as DWORD, byval pvReserved as any ptr) as WINBOOL
 
 type _CMSG_KEY_AGREE_KEY_ENCRYPT_INFO
@@ -2885,14 +2803,12 @@ end type
 
 type CMSG_KEY_AGREE_ENCRYPT_INFO as _CMSG_KEY_AGREE_ENCRYPT_INFO
 type PCMSG_KEY_AGREE_ENCRYPT_INFO as _CMSG_KEY_AGREE_ENCRYPT_INFO ptr
-
 #define CMSG_KEY_AGREE_ENCRYPT_FREE_PARA_FLAG &h1
 #define CMSG_KEY_AGREE_ENCRYPT_FREE_MATERIAL_FLAG &h2
 #define CMSG_KEY_AGREE_ENCRYPT_FREE_PUBKEY_ALG_FLAG &h4
 #define CMSG_KEY_AGREE_ENCRYPT_FREE_PUBKEY_PARA_FLAG &h8
 #define CMSG_KEY_AGREE_ENCRYPT_FREE_PUBKEY_BITS_FLAG &h10
 #define CMSG_OID_EXPORT_KEY_AGREE_FUNC "CryptMsgDllExportKeyAgree"
-
 type PFN_CMSG_EXPORT_KEY_AGREE as function(byval pContentEncryptInfo as PCMSG_CONTENT_ENCRYPT_INFO, byval pKeyAgreeEncodeInfo as PCMSG_KEY_AGREE_RECIPIENT_ENCODE_INFO, byval pKeyAgreeEncryptInfo as PCMSG_KEY_AGREE_ENCRYPT_INFO, byval dwFlags as DWORD, byval pvReserved as any ptr) as WINBOOL
 
 type _CMSG_MAIL_LIST_ENCRYPT_INFO
@@ -2905,22 +2821,14 @@ end type
 
 type CMSG_MAIL_LIST_ENCRYPT_INFO as _CMSG_MAIL_LIST_ENCRYPT_INFO
 type PCMSG_MAIL_LIST_ENCRYPT_INFO as _CMSG_MAIL_LIST_ENCRYPT_INFO ptr
-
 #define CMSG_MAIL_LIST_ENCRYPT_FREE_PARA_FLAG &h1
 #define CMSG_OID_EXPORT_MAIL_LIST_FUNC "CryptMsgDllExportMailList"
-
 type PFN_CMSG_EXPORT_MAIL_LIST as function(byval pContentEncryptInfo as PCMSG_CONTENT_ENCRYPT_INFO, byval pMailListEncodeInfo as PCMSG_MAIL_LIST_RECIPIENT_ENCODE_INFO, byval pMailListEncryptInfo as PCMSG_MAIL_LIST_ENCRYPT_INFO, byval dwFlags as DWORD, byval pvReserved as any ptr) as WINBOOL
-
 #define CMSG_OID_IMPORT_KEY_TRANS_FUNC "CryptMsgDllImportKeyTrans"
-
 type PFN_CMSG_IMPORT_KEY_TRANS as function(byval pContentEncryptionAlgorithm as PCRYPT_ALGORITHM_IDENTIFIER, byval pKeyTransDecryptPara as PCMSG_CTRL_KEY_TRANS_DECRYPT_PARA, byval dwFlags as DWORD, byval pvReserved as any ptr, byval phContentEncryptKey as HCRYPTKEY ptr) as WINBOOL
-
 #define CMSG_OID_IMPORT_KEY_AGREE_FUNC "CryptMsgDllImportKeyAgree"
-
 type PFN_CMSG_IMPORT_KEY_AGREE as function(byval pContentEncryptionAlgorithm as PCRYPT_ALGORITHM_IDENTIFIER, byval pKeyAgreeDecryptPara as PCMSG_CTRL_KEY_AGREE_DECRYPT_PARA, byval dwFlags as DWORD, byval pvReserved as any ptr, byval phContentEncryptKey as HCRYPTKEY ptr) as WINBOOL
-
 #define CMSG_OID_IMPORT_MAIL_LIST_FUNC "CryptMsgDllImportMailList"
-
 type PFN_CMSG_IMPORT_MAIL_LIST as function(byval pContentEncryptionAlgorithm as PCRYPT_ALGORITHM_IDENTIFIER, byval pMailListDecryptPara as PCMSG_CTRL_MAIL_LIST_DECRYPT_PARA, byval dwFlags as DWORD, byval pvReserved as any ptr, byval phContentEncryptKey as HCRYPTKEY ptr) as WINBOOL
 type HCERTSTORE as any ptr
 
@@ -3037,7 +2945,6 @@ end type
 
 type CRYPT_KEY_PROV_INFO as _CRYPT_KEY_PROV_INFO
 type PCRYPT_KEY_PROV_INFO as _CRYPT_KEY_PROV_INFO ptr
-
 #define CERT_SET_KEY_PROV_HANDLE_PROP_ID &h1
 #define CERT_SET_KEY_CONTEXT_PROP_ID &h1
 
@@ -3049,7 +2956,6 @@ end type
 
 type CERT_KEY_CONTEXT as _CERT_KEY_CONTEXT
 type PCERT_KEY_CONTEXT as _CERT_KEY_CONTEXT ptr
-
 #define CERT_STORE_PROV_MSG cast(LPCSTR, 1)
 #define CERT_STORE_PROV_MEMORY cast(LPCSTR, 2)
 #define CERT_STORE_PROV_FILE cast(LPCSTR, 3)
@@ -3128,7 +3034,6 @@ end type
 
 type CERT_SYSTEM_STORE_RELOCATE_PARA as _CERT_SYSTEM_STORE_RELOCATE_PARA
 type PCERT_SYSTEM_STORE_RELOCATE_PARA as _CERT_SYSTEM_STORE_RELOCATE_PARA ptr
-
 #define CERT_SYSTEM_STORE_UNPROTECTED_FLAG &h40000000
 #define CERT_SYSTEM_STORE_LOCATION_MASK &hff0000
 #define CERT_SYSTEM_STORE_LOCATION_SHIFT 16
@@ -3149,9 +3054,9 @@ type PCERT_SYSTEM_STORE_RELOCATE_PARA as _CERT_SYSTEM_STORE_RELOCATE_PARA ptr
 #define CERT_SYSTEM_STORE_LOCAL_MACHINE_GROUP_POLICY (CERT_SYSTEM_STORE_LOCAL_MACHINE_GROUP_POLICY_ID shl CERT_SYSTEM_STORE_LOCATION_SHIFT)
 #define CERT_SYSTEM_STORE_LOCAL_MACHINE_ENTERPRISE (CERT_SYSTEM_STORE_LOCAL_MACHINE_ENTERPRISE_ID shl CERT_SYSTEM_STORE_LOCATION_SHIFT)
 #define CERT_GROUP_POLICY_SYSTEM_STORE_REGPATH wstr(!"Software\\Policies\\Microsoft\\SystemCertificates")
-#define CERT_EFSBLOB_REGPATH (CERT_GROUP_POLICY_SYSTEM_STORE_REGPATH + wstr(!"\\EFS"))
+#define CERT_EFSBLOB_REGPATH CERT_GROUP_POLICY_SYSTEM_STORE_REGPATH wstr(!"\\EFS")
 #define CERT_EFSBLOB_VALUE_NAME wstr("EFSBlob")
-#define CERT_PROT_ROOT_FLAGS_REGPATH (CERT_GROUP_POLICY_SYSTEM_STORE_REGPATH + wstr(!"\\Root\\ProtectedRoots"))
+#define CERT_PROT_ROOT_FLAGS_REGPATH CERT_GROUP_POLICY_SYSTEM_STORE_REGPATH wstr(!"\\Root\\ProtectedRoots")
 #define CERT_PROT_ROOT_FLAGS_VALUE_NAME wstr("Flags")
 #define CERT_PROT_ROOT_DISABLE_CURRENT_USER_FLAG &h1
 #define CERT_PROT_ROOT_INHIBIT_ADD_AT_INIT_FLAG &h2
@@ -3160,9 +3065,9 @@ type PCERT_SYSTEM_STORE_RELOCATE_PARA as _CERT_SYSTEM_STORE_RELOCATE_PARA ptr
 #define CERT_PROT_ROOT_ONLY_LM_GPT_FLAG &h8
 #define CERT_PROT_ROOT_DISABLE_NT_AUTH_REQUIRED_FLAG &h10
 #define CERT_PROT_ROOT_DISABLE_NOT_DEFINED_NAME_CONSTRAINT_FLAG &h20
-#define CERT_TRUST_PUB_SAFER_GROUP_POLICY_REGPATH (CERT_GROUP_POLICY_SYSTEM_STORE_REGPATH + wstr(!"\\TrustedPublisher\\Safer"))
+#define CERT_TRUST_PUB_SAFER_GROUP_POLICY_REGPATH CERT_GROUP_POLICY_SYSTEM_STORE_REGPATH wstr(!"\\TrustedPublisher\\Safer")
 #define CERT_LOCAL_MACHINE_SYSTEM_STORE_REGPATH wstr(!"Software\\Microsoft\\SystemCertificates")
-#define CERT_TRUST_PUB_SAFER_LOCAL_MACHINE_REGPATH (CERT_LOCAL_MACHINE_SYSTEM_STORE_REGPATH + wstr(!"\\TrustedPublisher\\Safer"))
+#define CERT_TRUST_PUB_SAFER_LOCAL_MACHINE_REGPATH CERT_LOCAL_MACHINE_SYSTEM_STORE_REGPATH wstr(!"\\TrustedPublisher\\Safer")
 #define CERT_TRUST_PUB_AUTHENTICODE_FLAGS_VALUE_NAME wstr("AuthenticodeFlags")
 #define CERT_TRUST_PUB_ALLOW_TRUST_MASK &h3
 #define CERT_TRUST_PUB_ALLOW_END_USER_TRUST &h0
@@ -3172,7 +3077,7 @@ type PCERT_SYSTEM_STORE_RELOCATE_PARA as _CERT_SYSTEM_STORE_RELOCATE_PARA ptr
 #define CERT_TRUST_PUB_CHECK_TIMESTAMP_REV_FLAG &h200
 #define CERT_OCM_SUBCOMPONENTS_LOCAL_MACHINE_REGPATH wstr(!"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Setup\\OC Manager\\Subcomponents")
 #define CERT_OCM_SUBCOMPONENTS_ROOT_AUTO_UPDATE_VALUE_NAME wstr("RootAutoUpdate")
-#define CERT_AUTH_ROOT_AUTO_UPDATE_LOCAL_MACHINE_REGPATH (CERT_LOCAL_MACHINE_SYSTEM_STORE_REGPATH + wstr(!"\\AuthRoot\\AutoUpdate"))
+#define CERT_AUTH_ROOT_AUTO_UPDATE_LOCAL_MACHINE_REGPATH CERT_LOCAL_MACHINE_SYSTEM_STORE_REGPATH wstr(!"\\AuthRoot\\AutoUpdate")
 #define CERT_AUTH_ROOT_AUTO_UPDATE_ROOT_DIR_URL_VALUE_NAME wstr("RootDirUrl")
 #define CERT_AUTH_ROOT_AUTO_UPDATE_SYNC_DELTA_TIME_VALUE_NAME wstr("SyncDeltaTime")
 #define CERT_AUTH_ROOT_AUTO_UPDATE_FLAGS_VALUE_NAME wstr("Flags")
@@ -3195,7 +3100,6 @@ end type
 
 type CERT_REGISTRY_STORE_CLIENT_GPT_PARA as _CERT_REGISTRY_STORE_CLIENT_GPT_PARA
 type PCERT_REGISTRY_STORE_CLIENT_GPT_PARA as _CERT_REGISTRY_STORE_CLIENT_GPT_PARA ptr
-
 #define CERT_REGISTRY_STORE_ROAMING_FLAG &h40000
 
 type _CERT_REGISTRY_STORE_ROAMING_PARA
@@ -3205,7 +3109,6 @@ end type
 
 type CERT_REGISTRY_STORE_ROAMING_PARA as _CERT_REGISTRY_STORE_ROAMING_PARA
 type PCERT_REGISTRY_STORE_ROAMING_PARA as _CERT_REGISTRY_STORE_ROAMING_PARA ptr
-
 #define CERT_REGISTRY_STORE_MY_IE_DIRTY_FLAG &h80000
 #define CERT_IE_DIRTY_FLAGS_REGPATH wstr(!"Software\\Microsoft\\Cryptography\\IEDirtyFlags")
 #define CERT_FILE_STORE_COMMIT_ENABLE_FLAG &h10000
@@ -3220,13 +3123,9 @@ end type
 
 type CERT_LDAP_STORE_OPENED_PARA as _CERT_LDAP_STORE_OPENED_PARA
 type PCERT_LDAP_STORE_OPENED_PARA as _CERT_LDAP_STORE_OPENED_PARA ptr
-
 #define CERT_LDAP_STORE_UNBIND_FLAG &h80000
-
 declare function CertOpenStore(byval lpszStoreProvider as LPCSTR, byval dwEncodingType as DWORD, byval hCryptProv as HCRYPTPROV, byval dwFlags as DWORD, byval pvPara as const any ptr) as HCERTSTORE
-
 type HCERTSTOREPROV as any ptr
-
 #define CRYPT_OID_OPEN_STORE_PROV_FUNC "CertDllOpenStoreProv"
 
 type _CERT_STORE_PROV_INFO
@@ -3270,10 +3169,8 @@ type PFN_CERT_DLL_OPEN_STORE_PROV_FUNC as function(byval lpszStoreProvider as LP
 #define CERT_STORE_PROV_FIND_CTL_FUNC 20
 #define CERT_STORE_PROV_FREE_FIND_CTL_FUNC 21
 #define CERT_STORE_PROV_GET_CTL_PROPERTY_FUNC 22
-
 type PFN_CERT_STORE_PROV_CLOSE as sub(byval hStoreProv as HCERTSTOREPROV, byval dwFlags as DWORD)
 type PFN_CERT_STORE_PROV_READ_CERT as function(byval hStoreProv as HCERTSTOREPROV, byval pStoreCertContext as PCCERT_CONTEXT, byval dwFlags as DWORD, byval ppProvCertContext as PCCERT_CONTEXT ptr) as WINBOOL
-
 #define CERT_STORE_PROV_WRITE_ADD_FLAG &h1
 
 type PFN_CERT_STORE_PROV_WRITE_CERT as function(byval hStoreProv as HCERTSTOREPROV, byval pCertContext as PCCERT_CONTEXT, byval dwFlags as DWORD) as WINBOOL
@@ -3310,7 +3207,6 @@ type PFN_CERT_STORE_PROV_GET_CRL_PROPERTY as function(byval hStoreProv as HCERTS
 type PFN_CERT_STORE_PROV_FIND_CTL as function(byval hStoreProv as HCERTSTOREPROV, byval pFindInfo as PCCERT_STORE_PROV_FIND_INFO, byval pPrevCtlContext as PCCTL_CONTEXT, byval dwFlags as DWORD, byval ppvStoreProvFindInfo as any ptr ptr, byval ppProvCtlContext as PCCTL_CONTEXT ptr) as WINBOOL
 type PFN_CERT_STORE_PROV_FREE_FIND_CTL as function(byval hStoreProv as HCERTSTOREPROV, byval pCtlContext as PCCTL_CONTEXT, byval pvStoreProvFindInfo as any ptr, byval dwFlags as DWORD) as WINBOOL
 type PFN_CERT_STORE_PROV_GET_CTL_PROPERTY as function(byval hStoreProv as HCERTSTOREPROV, byval pCtlContext as PCCTL_CONTEXT, byval dwPropId as DWORD, byval dwFlags as DWORD, byval pvData as any ptr, byval pcbData as DWORD ptr) as WINBOOL
-
 declare function CertDuplicateStore(byval hCertStore as HCERTSTORE) as HCERTSTORE
 
 #define CERT_STORE_SAVE_AS_STORE 1
@@ -3320,9 +3216,7 @@ declare function CertDuplicateStore(byval hCertStore as HCERTSTORE) as HCERTSTOR
 #define CERT_STORE_SAVE_TO_FILENAME_A 3
 #define CERT_STORE_SAVE_TO_FILENAME_W 4
 #define CERT_STORE_SAVE_TO_FILENAME CERT_STORE_SAVE_TO_FILENAME_W
-
 declare function CertSaveStore(byval hCertStore as HCERTSTORE, byval dwEncodingType as DWORD, byval dwSaveAs as DWORD, byval dwSaveTo as DWORD, byval pvSaveToPara as any ptr, byval dwFlags as DWORD) as WINBOOL
-
 #define CERT_CLOSE_STORE_FORCE_FLAG &h1
 #define CERT_CLOSE_STORE_CHECK_FLAG &h2
 
@@ -3400,16 +3294,12 @@ declare function CertDuplicateCertificateContext(byval pCertContext as PCCERT_CO
 declare function CertCreateCertificateContext(byval dwCertEncodingType as DWORD, byval pbCertEncoded as const UBYTE ptr, byval cbCertEncoded as DWORD) as PCCERT_CONTEXT
 declare function CertFreeCertificateContext(byval pCertContext as PCCERT_CONTEXT) as WINBOOL
 declare function CertSetCertificateContextProperty(byval pCertContext as PCCERT_CONTEXT, byval dwPropId as DWORD, byval dwFlags as DWORD, byval pvData as const any ptr) as WINBOOL
-
 #define CERT_SET_PROPERTY_IGNORE_PERSIST_ERROR_FLAG &h80000000
 #define CERT_SET_PROPERTY_INHIBIT_PERSIST_FLAG &h40000000
-
 declare function CertGetCertificateContextProperty(byval pCertContext as PCCERT_CONTEXT, byval dwPropId as DWORD, byval pvData as any ptr, byval pcbData as DWORD ptr) as WINBOOL
 declare function CertEnumCertificateContextProperties(byval pCertContext as PCCERT_CONTEXT, byval dwPropId as DWORD) as DWORD
 declare function CertCreateCTLEntryFromCertificateContextProperties(byval pCertContext as PCCERT_CONTEXT, byval cOptAttr as DWORD, byval rgOptAttr as PCRYPT_ATTRIBUTE, byval dwFlags as DWORD, byval pvReserved as any ptr, byval pCtlEntry as PCTL_ENTRY, byval pcbCtlEntry as DWORD ptr) as WINBOOL
-
 #define CTL_ENTRY_FROM_PROP_CHAIN_FLAG &h1
-
 declare function CertSetCertificateContextPropertiesFromCTLEntry(byval pCertContext as PCCERT_CONTEXT, byval pCtlEntry as PCTL_ENTRY, byval dwFlags as DWORD) as WINBOOL
 declare function CertGetCRLFromStore(byval hCertStore as HCERTSTORE, byval pIssuerContext as PCCERT_CONTEXT, byval pPrevCrlContext as PCCRL_CONTEXT, byval pdwFlags as DWORD ptr) as PCCRL_CONTEXT
 declare function CertEnumCRLsInStore(byval hCertStore as HCERTSTORE, byval pPrevCrlContext as PCCRL_CONTEXT) as PCCRL_CONTEXT
@@ -3431,7 +3321,6 @@ end type
 
 type CRL_FIND_ISSUED_FOR_PARA as _CRL_FIND_ISSUED_FOR_PARA
 type PCRL_FIND_ISSUED_FOR_PARA as _CRL_FIND_ISSUED_FOR_PARA ptr
-
 declare function CertDuplicateCRLContext(byval pCrlContext as PCCRL_CONTEXT) as PCCRL_CONTEXT
 declare function CertCreateCRLContext(byval dwCertEncodingType as DWORD, byval pbCrlEncoded as const UBYTE ptr, byval cbCrlEncoded as DWORD) as PCCRL_CONTEXT
 declare function CertFreeCRLContext(byval pCrlContext as PCCRL_CONTEXT) as WINBOOL
@@ -3448,10 +3337,8 @@ declare function CertIsValidCRLForCertificate(byval pCert as PCCERT_CONTEXT, byv
 #define CERT_STORE_ADD_REPLACE_EXISTING_INHERIT_PROPERTIES 5
 #define CERT_STORE_ADD_NEWER 6
 #define CERT_STORE_ADD_NEWER_INHERIT_PROPERTIES 7
-
 declare function CertAddEncodedCertificateToStore(byval hCertStore as HCERTSTORE, byval dwCertEncodingType as DWORD, byval pbCertEncoded as const UBYTE ptr, byval cbCertEncoded as DWORD, byval dwAddDisposition as DWORD, byval ppCertContext as PCCERT_CONTEXT ptr) as WINBOOL
 declare function CertAddCertificateContextToStore(byval hCertStore as HCERTSTORE, byval pCertContext as PCCERT_CONTEXT, byval dwAddDisposition as DWORD, byval ppStoreContext as PCCERT_CONTEXT ptr) as WINBOOL
-
 #define CERT_STORE_CERTIFICATE_CONTEXT 1
 #define CERT_STORE_CRL_CONTEXT 2
 #define CERT_STORE_CTL_CONTEXT 3
@@ -3475,7 +3362,6 @@ declare function CertGetCTLContextProperty(byval pCtlContext as PCCTL_CONTEXT, b
 declare function CertEnumCTLContextProperties(byval pCtlContext as PCCTL_CONTEXT, byval dwPropId as DWORD) as DWORD
 declare function CertEnumCTLsInStore(byval hCertStore as HCERTSTORE, byval pPrevCtlContext as PCCTL_CONTEXT) as PCCTL_CONTEXT
 declare function CertFindSubjectInCTL(byval dwEncodingType as DWORD, byval dwSubjectType as DWORD, byval pvSubject as any ptr, byval pCtlContext as PCCTL_CONTEXT, byval dwFlags as DWORD) as PCTL_ENTRY
-
 #define CTL_ANY_SUBJECT_TYPE 1
 #define CTL_CERT_SUBJECT_TYPE 2
 
@@ -3486,9 +3372,7 @@ end type
 
 type CTL_ANY_SUBJECT_INFO as _CTL_ANY_SUBJECT_INFO
 type PCTL_ANY_SUBJECT_INFO as _CTL_ANY_SUBJECT_INFO ptr
-
 declare function CertFindCTLInStore(byval hCertStore as HCERTSTORE, byval dwMsgAndCertEncodingType as DWORD, byval dwFindFlags as DWORD, byval dwFindType as DWORD, byval pvFindPara as const any ptr, byval pPrevCtlContext as PCCTL_CONTEXT) as PCCTL_CONTEXT
-
 #define CTL_FIND_ANY 0
 #define CTL_FIND_SHA1_HASH 1
 #define CTL_FIND_MD5_HASH 2
@@ -3505,7 +3389,6 @@ end type
 
 type CTL_FIND_USAGE_PARA as _CTL_FIND_USAGE_PARA
 type PCTL_FIND_USAGE_PARA as _CTL_FIND_USAGE_PARA ptr
-
 #define CTL_FIND_NO_LIST_ID_CBDATA &hFFFFFFFF
 #define CTL_FIND_NO_SIGNER_PTR cast(PCERT_INFO, -1)
 #define CTL_FIND_SAME_USAGE_FLAG &h1
@@ -3519,7 +3402,6 @@ end type
 
 type CTL_FIND_SUBJECT_PARA as _CTL_FIND_SUBJECT_PARA
 type PCTL_FIND_SUBJECT_PARA as _CTL_FIND_SUBJECT_PARA ptr
-
 declare function CertAddEncodedCTLToStore(byval hCertStore as HCERTSTORE, byval dwMsgAndCertEncodingType as DWORD, byval pbCtlEncoded as const UBYTE ptr, byval cbCtlEncoded as DWORD, byval dwAddDisposition as DWORD, byval ppCtlContext as PCCTL_CONTEXT ptr) as WINBOOL
 declare function CertAddCTLContextToStore(byval hCertStore as HCERTSTORE, byval pCtlContext as PCCTL_CONTEXT, byval dwAddDisposition as DWORD, byval ppStoreContext as PCCTL_CONTEXT ptr) as WINBOOL
 declare function CertSerializeCTLStoreElement(byval pCtlContext as PCCTL_CONTEXT, byval dwFlags as DWORD, byval pbElement as UBYTE ptr, byval pcbElement as DWORD ptr) as WINBOOL
@@ -3540,7 +3422,6 @@ declare function CertControlStore(byval hCertStore as HCERTSTORE, byval dwFlags 
 #define CERT_STORE_CTRL_COMMIT_FORCE_FLAG &h1
 #define CERT_STORE_CTRL_COMMIT_CLEAR_FLAG &h2
 #define CERT_STORE_LOCALIZED_NAME_PROP_ID &h1000
-
 declare function CertSetStoreProperty(byval hCertStore as HCERTSTORE, byval dwPropId as DWORD, byval dwFlags as DWORD, byval pvData as const any ptr) as WINBOOL
 declare function CertGetStoreProperty(byval hCertStore as HCERTSTORE, byval dwPropId as DWORD, byval pvData as any ptr, byval pcbData as DWORD ptr) as WINBOOL
 
@@ -3552,9 +3433,7 @@ end type
 
 type CERT_CREATE_CONTEXT_PARA as _CERT_CREATE_CONTEXT_PARA
 type PCERT_CREATE_CONTEXT_PARA as _CERT_CREATE_CONTEXT_PARA ptr
-
 declare function CertCreateContext(byval dwContextType as DWORD, byval dwEncodingType as DWORD, byval pbEncoded as const UBYTE ptr, byval cbEncoded as DWORD, byval dwFlags as DWORD, byval pCreatePara as PCERT_CREATE_CONTEXT_PARA) as const any ptr
-
 #define CERT_CREATE_CONTEXT_NOCOPY_FLAG &h1
 #define CERT_CREATE_CONTEXT_SORTED_FLAG &h2
 #define CERT_CREATE_CONTEXT_NO_HCRYPTMSG_FLAG &h4
@@ -3579,7 +3458,6 @@ end type
 
 type CERT_PHYSICAL_STORE_INFO as _CERT_PHYSICAL_STORE_INFO
 type PCERT_PHYSICAL_STORE_INFO as _CERT_PHYSICAL_STORE_INFO ptr
-
 #define CERT_PHYSICAL_STORE_ADD_ENABLE_FLAG &h1
 #define CERT_PHYSICAL_STORE_OPEN_DISABLE_FLAG &h2
 #define CERT_PHYSICAL_STORE_REMOTE_OPEN_DISABLE_FLAG &h4
@@ -3626,16 +3504,11 @@ declare function CryptMsgGetAndVerifySigner(byval hCryptMsg as HCRYPTMSG, byval 
 #define CMSG_TRUSTED_SIGNER_FLAG &h1
 #define CMSG_SIGNER_ONLY_FLAG &h2
 #define CMSG_USE_SIGNER_INDEX_FLAG &h4
-
 declare function CryptMsgSignCTL(byval dwMsgEncodingType as DWORD, byval pbCtlContent as UBYTE ptr, byval cbCtlContent as DWORD, byval pSignInfo as PCMSG_SIGNED_ENCODE_INFO, byval dwFlags as DWORD, byval pbEncoded as UBYTE ptr, byval pcbEncoded as DWORD ptr) as WINBOOL
-
 #define CMSG_CMS_ENCAPSULATED_CTL_FLAG &h8000
-
 declare function CryptMsgEncodeAndSignCTL(byval dwMsgEncodingType as DWORD, byval pCtlInfo as PCTL_INFO, byval pSignInfo as PCMSG_SIGNED_ENCODE_INFO, byval dwFlags as DWORD, byval pbEncoded as UBYTE ptr, byval pcbEncoded as DWORD ptr) as WINBOOL
-
 #define CMSG_ENCODE_SORTED_CTL_FLAG &h1
 #define CMSG_ENCODE_HASHED_SUBJECT_IDENTIFIER_FLAG &h2
-
 declare function CertFindSubjectInSortedCTL(byval pSubjectIdentifier as PCRYPT_DATA_BLOB, byval pCtlContext as PCCTL_CONTEXT, byval dwFlags as DWORD, byval pvReserved as any ptr, byval pEncodedAttributes as PCRYPT_DER_BLOB) as WINBOOL
 declare function CertEnumSubjectInSortedCTL(byval pCtlContext as PCCTL_CONTEXT, byval ppvNextSubject as any ptr ptr, byval pSubjectIdentifier as PCRYPT_DER_BLOB, byval pEncodedAttributes as PCRYPT_DER_BLOB) as WINBOOL
 
@@ -3663,13 +3536,11 @@ end type
 
 type CTL_VERIFY_USAGE_STATUS as _CTL_VERIFY_USAGE_STATUS
 type PCTL_VERIFY_USAGE_STATUS as _CTL_VERIFY_USAGE_STATUS ptr
-
 #define CERT_VERIFY_INHIBIT_CTL_UPDATE_FLAG &h1
 #define CERT_VERIFY_TRUSTED_SIGNERS_FLAG &h2
 #define CERT_VERIFY_NO_TIME_CHECK_FLAG &h4
 #define CERT_VERIFY_ALLOW_MORE_USAGE_FLAG &h8
 #define CERT_VERIFY_UPDATED_CTL_FLAG &h1
-
 declare function CertVerifyCTLUsage(byval dwEncodingType as DWORD, byval dwSubjectType as DWORD, byval pvSubject as any ptr, byval pSubjectUsage as PCTL_USAGE, byval dwFlags as DWORD, byval pVerifyUsagePara as PCTL_VERIFY_USAGE_PARA, byval pVerifyUsageStatus as PCTL_VERIFY_USAGE_STATUS) as WINBOOL
 
 type _CERT_REVOCATION_CRL_INFO
@@ -3706,9 +3577,7 @@ end type
 
 type CERT_REVOCATION_STATUS as _CERT_REVOCATION_STATUS
 type PCERT_REVOCATION_STATUS as _CERT_REVOCATION_STATUS ptr
-
 declare function CertVerifyRevocation(byval dwEncodingType as DWORD, byval dwRevType as DWORD, byval cContext as DWORD, byval rgpvContext as PVOID ptr, byval dwFlags as DWORD, byval pRevPara as PCERT_REVOCATION_PARA, byval pRevStatus as PCERT_REVOCATION_STATUS) as WINBOOL
-
 #define CERT_CONTEXT_REVOCATION_TYPE 1
 #define CERT_VERIFY_REV_CHAIN_FLAG &h1
 #define CERT_VERIFY_CACHE_ONLY_BASED_REVOCATION &h2
@@ -3718,10 +3587,8 @@ declare function CertCompareIntegerBlob(byval pInt1 as PCRYPT_INTEGER_BLOB, byva
 declare function CertCompareCertificate(byval dwCertEncodingType as DWORD, byval pCertId1 as PCERT_INFO, byval pCertId2 as PCERT_INFO) as WINBOOL
 declare function CertCompareCertificateName(byval dwCertEncodingType as DWORD, byval pCertName1 as PCERT_NAME_BLOB, byval pCertName2 as PCERT_NAME_BLOB) as WINBOOL
 declare function CertIsRDNAttrsInCertificateName(byval dwCertEncodingType as DWORD, byval dwFlags as DWORD, byval pCertName as PCERT_NAME_BLOB, byval pRDN as PCERT_RDN) as WINBOOL
-
 #define CERT_UNICODE_IS_RDN_ATTRS_FLAG &h1
 #define CERT_CASE_INSENSITIVE_IS_RDN_ATTRS_FLAG &h2
-
 declare function CertComparePublicKeyInfo(byval dwCertEncodingType as DWORD, byval pPublicKey1 as PCERT_PUBLIC_KEY_INFO, byval pPublicKey2 as PCERT_PUBLIC_KEY_INFO) as WINBOOL
 declare function CertGetPublicKeyLength(byval dwCertEncodingType as DWORD, byval pPublicKey as PCERT_PUBLIC_KEY_INFO) as DWORD
 declare function CryptVerifyCertificateSignature(byval hCryptProv as HCRYPTPROV, byval dwCertEncodingType as DWORD, byval pbEncoded as const UBYTE ptr, byval cbEncoded as DWORD, byval pPublicKey as PCERT_PUBLIC_KEY_INFO) as WINBOOL
@@ -3749,9 +3616,7 @@ declare function CertFindExtension(byval pszObjId as LPCSTR, byval cExtensions a
 declare function CertFindAttribute(byval pszObjId as LPCSTR, byval cAttr as DWORD, byval rgAttr as CRYPT_ATTRIBUTE ptr) as PCRYPT_ATTRIBUTE
 declare function CertFindRDNAttr(byval pszObjId as LPCSTR, byval pName as PCERT_NAME_INFO) as PCERT_RDN_ATTR
 declare function CertGetIntendedKeyUsage(byval dwCertEncodingType as DWORD, byval pCertInfo as PCERT_INFO, byval pbKeyUsage as UBYTE ptr, byval cbKeyUsage as DWORD) as WINBOOL
-
 type HCRYPTDEFAULTCONTEXT as any ptr
-
 declare function CryptInstallDefaultContext(byval hCryptProv as HCRYPTPROV, byval dwDefaultType as DWORD, byval pvDefaultPara as const any ptr, byval dwFlags as DWORD, byval pvReserved as any ptr, byval phDefaultContext as HCRYPTDEFAULTCONTEXT ptr) as WINBOOL
 
 #define CRYPT_DEFAULT_CONTEXT_AUTO_RELEASE_FLAG &h1
@@ -3766,39 +3631,26 @@ end type
 
 type CRYPT_DEFAULT_CONTEXT_MULTI_OID_PARA as _CRYPT_DEFAULT_CONTEXT_MULTI_OID_PARA
 type PCRYPT_DEFAULT_CONTEXT_MULTI_OID_PARA as _CRYPT_DEFAULT_CONTEXT_MULTI_OID_PARA ptr
-
 declare function CryptUninstallDefaultContext(byval hDefaultContext as HCRYPTDEFAULTCONTEXT, byval dwFlags as DWORD, byval pvReserved as any ptr) as WINBOOL
 declare function CryptExportPublicKeyInfo(byval hCryptProv as HCRYPTPROV, byval dwKeySpec as DWORD, byval dwCertEncodingType as DWORD, byval pInfo as PCERT_PUBLIC_KEY_INFO, byval pcbInfo as DWORD ptr) as WINBOOL
-
 #define CRYPT_OID_EXPORT_PUBLIC_KEY_INFO_FUNC "CryptDllExportPublicKeyInfoEx"
-
 declare function CryptExportPublicKeyInfoEx(byval hCryptProv as HCRYPTPROV, byval dwKeySpec as DWORD, byval dwCertEncodingType as DWORD, byval pszPublicKeyObjId as LPSTR, byval dwFlags as DWORD, byval pvAuxInfo as any ptr, byval pInfo as PCERT_PUBLIC_KEY_INFO, byval pcbInfo as DWORD ptr) as WINBOOL
 declare function CryptImportPublicKeyInfo(byval hCryptProv as HCRYPTPROV, byval dwCertEncodingType as DWORD, byval pInfo as PCERT_PUBLIC_KEY_INFO, byval phKey as HCRYPTKEY ptr) as WINBOOL
-
 #define CRYPT_OID_IMPORT_PUBLIC_KEY_INFO_FUNC "CryptDllImportPublicKeyInfoEx"
-
 declare function CryptImportPublicKeyInfoEx(byval hCryptProv as HCRYPTPROV, byval dwCertEncodingType as DWORD, byval pInfo as PCERT_PUBLIC_KEY_INFO, byval aiKeyAlg as ALG_ID, byval dwFlags as DWORD, byval pvAuxInfo as any ptr, byval phKey as HCRYPTKEY ptr) as WINBOOL
 declare function CryptAcquireCertificatePrivateKey(byval pCert as PCCERT_CONTEXT, byval dwFlags as DWORD, byval pvReserved as any ptr, byval phCryptProv as HCRYPTPROV ptr, byval pdwKeySpec as DWORD ptr, byval pfCallerFreeProv as WINBOOL ptr) as WINBOOL
-
 #define CRYPT_ACQUIRE_CACHE_FLAG &h1
 #define CRYPT_ACQUIRE_USE_PROV_INFO_FLAG &h2
 #define CRYPT_ACQUIRE_COMPARE_KEY_FLAG &h4
 #define CRYPT_ACQUIRE_SILENT_FLAG &h40
-
 declare function CryptFindCertificateKeyProvInfo(byval pCert as PCCERT_CONTEXT, byval dwFlags as DWORD, byval pvReserved as any ptr) as WINBOOL
-
 #define CRYPT_FIND_USER_KEYSET_FLAG &h1
 #define CRYPT_FIND_MACHINE_KEYSET_FLAG &h2
 #define CRYPT_FIND_SILENT_KEYSET_FLAG &h40
-
 type PFN_IMPORT_PRIV_KEY_FUNC as function(byval hCryptProv as HCRYPTPROV, byval pPrivateKeyInfo as CRYPT_PRIVATE_KEY_INFO ptr, byval dwFlags as DWORD, byval pvAuxInfo as any ptr) as WINBOOL
-
 #define CRYPT_OID_IMPORT_PRIVATE_KEY_INFO_FUNC "CryptDllImportPrivateKeyInfoEx"
-
 declare function CryptImportPKCS8(byval sImportParams as CRYPT_PKCS8_IMPORT_PARAMS, byval dwFlags as DWORD, byval phCryptProv as HCRYPTPROV ptr, byval pvAuxInfo as any ptr) as WINBOOL
-
 type PFN_EXPORT_PRIV_KEY_FUNC as function(byval hCryptProv as HCRYPTPROV, byval dwKeySpec as DWORD, byval pszPrivateKeyObjId as LPSTR, byval dwFlags as DWORD, byval pvAuxInfo as any ptr, byval pPrivateKeyInfo as CRYPT_PRIVATE_KEY_INFO ptr, byval pcbPrivateKeyBlob as DWORD ptr) as WINBOOL
-
 #define CRYPT_OID_EXPORT_PRIVATE_KEY_INFO_FUNC "CryptDllExportPrivateKeyInfoEx"
 #define CRYPT_DELETE_KEYSET &h1
 
@@ -3855,7 +3707,6 @@ declare function CertGetNameStringW(byval pCertContext as PCCERT_CONTEXT, byval 
 #define CERT_NAME_UPN_TYPE 8
 #define CERT_NAME_ISSUER_FLAG &h1
 #define CERT_NAME_DISABLE_IE4_UTF8_FLAG &h10000
-
 type PFN_CRYPT_GET_SIGNER_CERTIFICATE as function(byval pvGetArg as any ptr, byval dwCertEncodingType as DWORD, byval pSignerId as PCERT_INFO, byval hMsgCertStore as HCERTSTORE) as PCCERT_CONTEXT
 
 type _CRYPT_SIGN_MESSAGE_PARA
@@ -3878,7 +3729,6 @@ end type
 
 type CRYPT_SIGN_MESSAGE_PARA as _CRYPT_SIGN_MESSAGE_PARA
 type PCRYPT_SIGN_MESSAGE_PARA as _CRYPT_SIGN_MESSAGE_PARA ptr
-
 #define CRYPT_MESSAGE_BARE_CONTENT_OUT_FLAG &h1
 #define CRYPT_MESSAGE_ENCAPSULATED_CONTENT_OUT_FLAG &h2
 #define CRYPT_MESSAGE_KEYID_SIGNER_FLAG &h4
@@ -3907,7 +3757,6 @@ end type
 
 type CRYPT_ENCRYPT_MESSAGE_PARA as _CRYPT_ENCRYPT_MESSAGE_PARA
 type PCRYPT_ENCRYPT_MESSAGE_PARA as _CRYPT_ENCRYPT_MESSAGE_PARA ptr
-
 #define CRYPT_MESSAGE_KEYID_RECIPIENT_FLAG &h4
 
 type _CRYPT_DECRYPT_MESSAGE_PARA
@@ -3989,10 +3838,8 @@ end type
 
 type CERT_CHAIN as _CERT_CHAIN
 type PCERT_CHAIN as _CERT_CHAIN ptr
-
 declare function FindCertsByIssuer(byval pCertChains as PCERT_CHAIN, byval pcbCertChains as DWORD ptr, byval pcCertChains as DWORD ptr, byval pbEncodedIssuerName as UBYTE ptr, byval cbEncodedIssuerName as DWORD, byval pwszPurpose as LPCWSTR, byval dwKeySpec as DWORD) as HRESULT
 declare function CryptQueryObject(byval dwObjectType as DWORD, byval pvObject as const any ptr, byval dwExpectedContentTypeFlags as DWORD, byval dwExpectedFormatTypeFlags as DWORD, byval dwFlags as DWORD, byval pdwMsgAndCertEncodingType as DWORD ptr, byval pdwContentType as DWORD ptr, byval pdwFormatType as DWORD ptr, byval phCertStore as HCERTSTORE ptr, byval phMsg as HCRYPTMSG ptr, byval ppvContext as const any ptr ptr) as WINBOOL
-
 #define CERT_QUERY_OBJECT_FILE &h1
 #define CERT_QUERY_OBJECT_BLOB &h2
 #define CERT_QUERY_CONTENT_CERT 1
@@ -4059,7 +3906,6 @@ end type
 
 type CRYPT_CREDENTIALS as _CRYPT_CREDENTIALS
 type PCRYPT_CREDENTIALS as _CRYPT_CREDENTIALS ptr
-
 #define CREDENTIAL_OID_PASSWORD_CREDENTIALS_A cast(LPCSTR, 1)
 #define CREDENTIAL_OID_PASSWORD_CREDENTIALS_W cast(LPCSTR, 2)
 
@@ -4090,14 +3936,12 @@ type PCRYPT_PASSWORD_CREDENTIALSW as _CRYPT_PASSWORD_CREDENTIALSW ptr
 #ifdef UNICODE
 	type CRYPT_PASSWORD_CREDENTIALS as CRYPT_PASSWORD_CREDENTIALSW
 	type PCRYPT_PASSWORD_CREDENTIALS as PCRYPT_PASSWORD_CREDENTIALSW
-
 	#define CryptRetrieveObjectByUrl CryptRetrieveObjectByUrlW
 	#define CryptStringToBinary CryptStringToBinaryW
 	#define CryptBinaryToString CryptBinaryToStringW
 #else
 	type CRYPT_PASSWORD_CREDENTIALS as CRYPT_PASSWORD_CREDENTIALSA
 	type PCRYPT_PASSWORD_CREDENTIALS as PCRYPT_PASSWORD_CREDENTIALSA
-
 	#define CryptRetrieveObjectByUrl CryptRetrieveObjectByUrlA
 	#define CryptStringToBinary CryptStringToBinaryA
 	#define CryptBinaryToString CryptBinaryToStringA
@@ -4105,9 +3949,7 @@ type PCRYPT_PASSWORD_CREDENTIALSW as _CRYPT_PASSWORD_CREDENTIALSW ptr
 
 #define SCHEME_OID_RETRIEVE_ENCODED_OBJECT_FUNC "SchemeDllRetrieveEncodedObject"
 #define SCHEME_OID_RETRIEVE_ENCODED_OBJECTW_FUNC "SchemeDllRetrieveEncodedObjectW"
-
 type PFN_FREE_ENCODED_OBJECT_FUNC as sub(byval pszObjectOid as LPCSTR, byval pObject as PCRYPT_BLOB_ARRAY, byval pvFreeContext as LPVOID)
-
 #define CONTEXT_OID_CREATE_OBJECT_CONTEXT_FUNC "ContextDllCreateObjectContext"
 #define CONTEXT_OID_CERTIFICATE cast(LPCSTR, 1)
 #define CONTEXT_OID_CRL cast(LPCSTR, 2)
@@ -4143,18 +3985,13 @@ end type
 
 type CRYPT_RETRIEVE_AUX_INFO as _CRYPT_RETRIEVE_AUX_INFO
 type PCRYPT_RETRIEVE_AUX_INFO as _CRYPT_RETRIEVE_AUX_INFO ptr
-
 declare function CryptRetrieveObjectByUrlA(byval pszUrl as LPCSTR, byval pszObjectOid as LPCSTR, byval dwRetrievalFlags as DWORD, byval dwTimeout as DWORD, byval ppvObject as LPVOID ptr, byval hAsyncRetrieve as HCRYPTASYNC, byval pCredentials as PCRYPT_CREDENTIALS, byval pvVerify as LPVOID, byval pAuxInfo as PCRYPT_RETRIEVE_AUX_INFO) as WINBOOL
 declare function CryptRetrieveObjectByUrlW(byval pszUrl as LPCWSTR, byval pszObjectOid as LPCSTR, byval dwRetrievalFlags as DWORD, byval dwTimeout as DWORD, byval ppvObject as LPVOID ptr, byval hAsyncRetrieve as HCRYPTASYNC, byval pCredentials as PCRYPT_CREDENTIALS, byval pvVerify as LPVOID, byval pAuxInfo as PCRYPT_RETRIEVE_AUX_INFO) as WINBOOL
-
 type PFN_CRYPT_CANCEL_RETRIEVAL as function(byval dwFlags as DWORD, byval pvArg as any ptr) as WINBOOL
-
 declare function CryptInstallCancelRetrieval(byval pfnCancel as PFN_CRYPT_CANCEL_RETRIEVAL, byval pvArg as const any ptr, byval dwFlags as DWORD, byval pvReserved as any ptr) as WINBOOL
 declare function CryptUninstallCancelRetrieval(byval dwFlags as DWORD, byval pvReserved as any ptr) as WINBOOL
 declare function CryptCancelAsyncRetrieval(byval hAsyncRetrieval as HCRYPTASYNC) as WINBOOL
-
 #define CRYPT_PARAM_ASYNC_RETRIEVAL_COMPLETION cast(LPCSTR, 1)
-
 type PFN_CRYPT_ASYNC_RETRIEVAL_COMPLETION_FUNC as sub(byval pvCompletion as LPVOID, byval dwCompletionCode as DWORD, byval pszUrl as LPCSTR, byval pszObjectOid as LPSTR, byval pvObject as LPVOID)
 
 type _CRYPT_ASYNC_RETRIEVAL_COMPLETION
@@ -4164,11 +4001,8 @@ end type
 
 type CRYPT_ASYNC_RETRIEVAL_COMPLETION as _CRYPT_ASYNC_RETRIEVAL_COMPLETION
 type PCRYPT_ASYNC_RETRIEVAL_COMPLETION as _CRYPT_ASYNC_RETRIEVAL_COMPLETION ptr
-
 #define CRYPT_PARAM_CANCEL_ASYNC_RETRIEVAL cast(LPCSTR, 2)
-
 type PFN_CANCEL_ASYNC_RETRIEVAL_FUNC as function(byval hAsyncRetrieve as HCRYPTASYNC) as WINBOOL
-
 #define CRYPT_GET_URL_FROM_PROPERTY &h1
 #define CRYPT_GET_URL_FROM_EXTENSION &h2
 #define CRYPT_GET_URL_FROM_UNAUTH_ATTRIBUTE &h4
@@ -4191,9 +4025,7 @@ end type
 
 type CRYPT_URL_INFO as _CRYPT_URL_INFO
 type PCRYPT_URL_INFO as _CRYPT_URL_INFO ptr
-
 declare function CryptGetObjectUrl(byval pszUrlOid as LPCSTR, byval pvPara as LPVOID, byval dwFlags as DWORD, byval pUrlArray as PCRYPT_URL_ARRAY, byval pcbUrlArray as DWORD ptr, byval pUrlInfo as PCRYPT_URL_INFO, byval pcbUrlInfo as DWORD ptr, byval pvReserved as LPVOID) as WINBOOL
-
 #define URL_OID_GET_OBJECT_URL_FUNC "UrlDllGetObjectUrl"
 #define URL_OID_CERTIFICATE_ISSUER cast(LPCSTR, 1)
 #define URL_OID_CERTIFICATE_CRL_DIST_POINT cast(LPCSTR, 2)
@@ -4212,7 +4044,6 @@ end type
 type CERT_CRL_CONTEXT_PAIR as _CERT_CRL_CONTEXT_PAIR
 type PCERT_CRL_CONTEXT_PAIR as _CERT_CRL_CONTEXT_PAIR ptr
 type PCCERT_CRL_CONTEXT_PAIR as const CERT_CRL_CONTEXT_PAIR ptr
-
 declare function CryptGetTimeValidObject(byval pszTimeValidOid as LPCSTR, byval pvPara as LPVOID, byval pIssuer as PCCERT_CONTEXT, byval pftValidFor as LPFILETIME, byval dwFlags as DWORD, byval dwTimeout as DWORD, byval ppvObject as LPVOID ptr, byval pCredentials as PCRYPT_CREDENTIALS, byval pvReserved as LPVOID) as WINBOOL
 
 #define TIME_VALID_OID_GET_OBJECT_FUNC "TimeValidDllGetObject"
@@ -4221,9 +4052,7 @@ declare function CryptGetTimeValidObject(byval pszTimeValidOid as LPCSTR, byval 
 #define TIME_VALID_OID_GET_CRL_FROM_CERT cast(LPCSTR, 3)
 #define TIME_VALID_OID_GET_FRESHEST_CRL_FROM_CERT cast(LPCSTR, 4)
 #define TIME_VALID_OID_GET_FRESHEST_CRL_FROM_CRL cast(LPCSTR, 5)
-
 declare function CryptFlushTimeValidObject(byval pszFlushTimeValidOid as LPCSTR, byval pvPara as LPVOID, byval pIssuer as PCCERT_CONTEXT, byval dwFlags as DWORD, byval pvReserved as LPVOID) as WINBOOL
-
 #define TIME_VALID_OID_FLUSH_OBJECT_FUNC "TimeValidDllFlushObject"
 #define TIME_VALID_OID_FLUSH_CTL cast(LPCSTR, 1)
 #define TIME_VALID_OID_FLUSH_CRL cast(LPCSTR, 2)
@@ -4240,7 +4069,6 @@ end type
 
 type CRYPTPROTECT_PROMPTSTRUCT as _CRYPTPROTECT_PROMPTSTRUCT
 type PCRYPTPROTECT_PROMPTSTRUCT as _CRYPTPROTECT_PROMPTSTRUCT ptr
-
 #define CRYPTPROTECT_DEFAULT_PROVIDER (&hdf9d8cd0, &h1501, &h11d1, (&h8c, &h7a, &h00, &hc0, &h4f, &hc2, &h97, &heb))
 #define CRYPTPROTECT_PROMPT_ON_UNPROTECT &h1
 #define CRYPTPROTECT_PROMPT_ON_PROTECT &h2
@@ -4256,10 +4084,8 @@ type PCRYPTPROTECT_PROMPTSTRUCT as _CRYPTPROTECT_PROMPTSTRUCT ptr
 #define CRYPTPROTECT_CRED_REGENERATE &h80
 #define CRYPTPROTECT_FIRST_RESERVED_FLAGVAL &h0FFFFFFF
 #define CRYPTPROTECT_LAST_RESERVED_FLAGVAL &hFFFFFFFF
-
 declare function CryptProtectData(byval pDataIn as DATA_BLOB ptr, byval szDataDescr as LPCWSTR, byval pOptionalEntropy as DATA_BLOB ptr, byval pvReserved as PVOID, byval pPromptStruct as CRYPTPROTECT_PROMPTSTRUCT ptr, byval dwFlags as DWORD, byval pDataOut as DATA_BLOB ptr) as WINBOOL
 declare function CryptUnprotectData(byval pDataIn as DATA_BLOB ptr, byval ppszDataDescr as LPWSTR ptr, byval pOptionalEntropy as DATA_BLOB ptr, byval pvReserved as PVOID, byval pPromptStruct as CRYPTPROTECT_PROMPTSTRUCT ptr, byval dwFlags as DWORD, byval pDataOut as DATA_BLOB ptr) as WINBOOL
-
 #define CRYPTPROTECTMEMORY_BLOCK_SIZE 16
 #define CRYPTPROTECTMEMORY_SAME_PROCESS &h0
 #define CRYPTPROTECTMEMORY_CROSS_PROCESS &h1
@@ -4268,22 +4094,15 @@ declare function CryptUnprotectData(byval pDataIn as DATA_BLOB ptr, byval ppszDa
 declare function CryptProtectMemory(byval pDataIn as LPVOID, byval cbDataIn as DWORD, byval dwFlags as DWORD) as WINBOOL
 declare function CryptUnprotectMemory(byval pDataIn as LPVOID, byval cbDataIn as DWORD, byval dwFlags as DWORD) as WINBOOL
 declare function CertCreateSelfSignCertificate(byval hProv as HCRYPTPROV, byval pSubjectIssuerBlob as PCERT_NAME_BLOB, byval dwFlags as DWORD, byval pKeyProvInfo as PCRYPT_KEY_PROV_INFO, byval pSignatureAlgorithm as PCRYPT_ALGORITHM_IDENTIFIER, byval pStartTime as PSYSTEMTIME, byval pEndTime as PSYSTEMTIME, byval pExtensions as PCERT_EXTENSIONS) as PCCERT_CONTEXT
-
 #define CERT_CREATE_SELFSIGN_NO_SIGN 1
 #define CERT_CREATE_SELFSIGN_NO_KEY_INFO 2
-
 declare function CryptGetKeyIdentifierProperty(byval pKeyIdentifier as const CRYPT_HASH_BLOB ptr, byval dwPropId as DWORD, byval dwFlags as DWORD, byval pwszComputerName as LPCWSTR, byval pvReserved as any ptr, byval pvData as any ptr, byval pcbData as DWORD ptr) as WINBOOL
-
 #define CRYPT_KEYID_MACHINE_FLAG &h20
 #define CRYPT_KEYID_ALLOC_FLAG &h8000
-
 declare function CryptSetKeyIdentifierProperty(byval pKeyIdentifier as const CRYPT_HASH_BLOB ptr, byval dwPropId as DWORD, byval dwFlags as DWORD, byval pwszComputerName as LPCWSTR, byval pvReserved as any ptr, byval pvData as const any ptr) as WINBOOL
-
 #define CRYPT_KEYID_DELETE_FLAG &h10
 #define CRYPT_KEYID_SET_NEW_FLAG &h2000
-
 type PFN_CRYPT_ENUM_KEYID_PROP as function(byval pKeyIdentifier as const CRYPT_HASH_BLOB ptr, byval dwFlags as DWORD, byval pvReserved as any ptr, byval pvArg as any ptr, byval cProp as DWORD, byval rgdwPropId as DWORD ptr, byval rgpvData as any ptr ptr, byval rgcbData as DWORD ptr) as WINBOOL
-
 declare function CryptEnumKeyIdentifierProperties(byval pKeyIdentifier as const CRYPT_HASH_BLOB ptr, byval dwPropId as DWORD, byval dwFlags as DWORD, byval pwszComputerName as LPCWSTR, byval pvReserved as any ptr, byval pvArg as any ptr, byval pfnEnum as PFN_CRYPT_ENUM_KEYID_PROP) as WINBOOL
 declare function CryptCreateKeyIdentifierFromCSP(byval dwCertEncodingType as DWORD, byval pszPubKeyOID as LPCSTR, byval pPubKeyStruc as const PUBLICKEYSTRUC ptr, byval cbPubKeyStruc as DWORD, byval dwFlags as DWORD, byval pvReserved as any ptr, byval pbHash as UBYTE ptr, byval pcbHash as DWORD ptr) as WINBOOL
 
@@ -4297,9 +4116,7 @@ declare function CryptCreateKeyIdentifierFromCSP(byval dwCertEncodingType as DWO
 #define CERT_CHAIN_MAX_AIA_URL_RETRIEVAL_BYTE_COUNT_DEFAULT 100000
 #define CERT_CHAIN_MAX_AIA_URL_RETRIEVAL_CERT_COUNT_VALUE_NAME wstr("MaxAIAUrlRetrievalCertCount")
 #define CERT_CHAIN_MAX_AIA_URL_RETRIEVAL_CERT_COUNT_DEFAULT 10
-
 type HCERTCHAINENGINE as HANDLE
-
 #define HCCE_CURRENT_USER cast(HCERTCHAINENGINE, NULL)
 #define HCCE_LOCAL_MACHINE cast(HCERTCHAINENGINE, &h1)
 #define CERT_CHAIN_CACHE_END_CERT &h1
@@ -4324,7 +4141,6 @@ end type
 
 type CERT_CHAIN_ENGINE_CONFIG as _CERT_CHAIN_ENGINE_CONFIG
 type PCERT_CHAIN_ENGINE_CONFIG as _CERT_CHAIN_ENGINE_CONFIG ptr
-
 declare function CertCreateCertificateChainEngine(byval pConfig as PCERT_CHAIN_ENGINE_CONFIG, byval phChainEngine as HCERTCHAINENGINE ptr) as WINBOOL
 declare sub CertFreeCertificateChainEngine(byval hChainEngine as HCERTCHAINENGINE)
 declare function CertResyncCertificateChainEngine(byval hChainEngine as HCERTCHAINENGINE) as WINBOOL
@@ -4336,7 +4152,6 @@ end type
 
 type CERT_TRUST_STATUS as _CERT_TRUST_STATUS
 type PCERT_TRUST_STATUS as _CERT_TRUST_STATUS ptr
-
 #define CERT_TRUST_NO_ERROR &h0
 #define CERT_TRUST_IS_NOT_TIME_VALID &h1
 #define CERT_TRUST_IS_NOT_TIME_NESTED &h2
@@ -4457,7 +4272,6 @@ end type
 
 type CERT_CHAIN_PARA as _CERT_CHAIN_PARA
 type PCERT_CHAIN_PARA as _CERT_CHAIN_PARA ptr
-
 #define CERT_CHAIN_REVOCATION_CHECK_END_CERT &h10000000
 #define CERT_CHAIN_REVOCATION_CHECK_CHAIN &h20000000
 #define CERT_CHAIN_REVOCATION_CHECK_CHAIN_EXCLUDE_ROOT &h40000000
@@ -4475,7 +4289,6 @@ type PCERT_CHAIN_PARA as _CERT_CHAIN_PARA ptr
 declare function CertGetCertificateChain(byval hChainEngine as HCERTCHAINENGINE, byval pCertContext as PCCERT_CONTEXT, byval pTime as LPFILETIME, byval hAdditionalStore as HCERTSTORE, byval pChainPara as PCERT_CHAIN_PARA, byval dwFlags as DWORD, byval pvReserved as LPVOID, byval ppChainContext as PCCERT_CHAIN_CONTEXT ptr) as WINBOOL
 declare sub CertFreeCertificateChain(byval pChainContext as PCCERT_CHAIN_CONTEXT)
 declare function CertDuplicateCertificateChain(byval pChainContext as PCCERT_CHAIN_CONTEXT) as PCCERT_CHAIN_CONTEXT
-
 #define REVOCATION_OID_CRL_REVOCATION cast(LPCSTR, 1)
 
 type _CRL_REVOCATION_INFO
@@ -4486,11 +4299,8 @@ end type
 
 type CRL_REVOCATION_INFO as _CRL_REVOCATION_INFO
 type PCRL_REVOCATION_INFO as _CRL_REVOCATION_INFO ptr
-
 declare function CertFindChainInStore(byval hCertStore as HCERTSTORE, byval dwCertEncodingType as DWORD, byval dwFindFlags as DWORD, byval dwFindType as DWORD, byval pvFindPara as const any ptr, byval pPrevChainContext as PCCERT_CHAIN_CONTEXT) as PCCERT_CHAIN_CONTEXT
-
 #define CERT_CHAIN_FIND_BY_ISSUER 1
-
 type PFN_CERT_CHAIN_FIND_BY_ISSUER_CALLBACK as function(byval pCert as PCCERT_CONTEXT, byval pvFindArg as any ptr) as WINBOOL
 
 type _CERT_CHAIN_FIND_BY_ISSUER_PARA
@@ -4535,7 +4345,6 @@ end type
 
 type CERT_CHAIN_POLICY_STATUS as _CERT_CHAIN_POLICY_STATUS
 type PCERT_CHAIN_POLICY_STATUS as _CERT_CHAIN_POLICY_STATUS ptr
-
 #define CERT_CHAIN_POLICY_IGNORE_NOT_TIME_VALID_FLAG &h1
 #define CERT_CHAIN_POLICY_IGNORE_CTL_NOT_TIME_VALID_FLAG &h2
 #define CERT_CHAIN_POLICY_IGNORE_NOT_TIME_NESTED_FLAG &h4
@@ -4552,9 +4361,7 @@ type PCERT_CHAIN_POLICY_STATUS as _CERT_CHAIN_POLICY_STATUS ptr
 #define CERT_CHAIN_POLICY_IGNORE_ALL_REV_UNKNOWN_FLAGS (((CERT_CHAIN_POLICY_IGNORE_END_REV_UNKNOWN_FLAG or CERT_CHAIN_POLICY_IGNORE_CTL_SIGNER_REV_UNKNOWN_FLAG) or CERT_CHAIN_POLICY_IGNORE_CA_REV_UNKNOWN_FLAG) or CERT_CHAIN_POLICY_IGNORE_ROOT_REV_UNKNOWN_FLAG)
 #define CERT_CHAIN_POLICY_ALLOW_TESTROOT_FLAG &h8000
 #define CERT_CHAIN_POLICY_TRUST_TESTROOT_FLAG &h4000
-
 declare function CertVerifyCertificateChainPolicy(byval pszPolicyOID as LPCSTR, byval pChainContext as PCCERT_CHAIN_CONTEXT, byval pPolicyPara as PCERT_CHAIN_POLICY_PARA, byval pPolicyStatus as PCERT_CHAIN_POLICY_STATUS) as WINBOOL
-
 #define CRYPT_OID_VERIFY_CERTIFICATE_CHAIN_POLICY_FUNC "CertDllVerifyCertificateChainPolicy"
 #define CERT_CHAIN_POLICY_BASE cast(LPCSTR, 1)
 #define CERT_CHAIN_POLICY_AUTHENTICODE cast(LPCSTR, 2)
@@ -4593,7 +4400,6 @@ end type
 
 type AUTHENTICODE_TS_EXTRA_CERT_CHAIN_POLICY_PARA as _AUTHENTICODE_TS_EXTRA_CERT_CHAIN_POLICY_PARA
 type PAUTHENTICODE_TS_EXTRA_CERT_CHAIN_POLICY_PARA as _AUTHENTICODE_TS_EXTRA_CERT_CHAIN_POLICY_PARA ptr
-
 #define AUTHTYPE_CLIENT 1
 #define AUTHTYPE_SERVER 2
 
@@ -4635,9 +4441,7 @@ declare function CryptBinaryToStringW(byval pbBinary as const UBYTE ptr, byval c
 #define CRYPT_STRING_HEXADDR &ha
 #define CRYPT_STRING_HEXASCIIADDR &hb
 #define CRYPT_STRING_NOCR &h80000000
-
 declare function PFXImportCertStore(byval pPFX as CRYPT_DATA_BLOB ptr, byval szPassword as LPCWSTR, byval dwFlags as DWORD) as HCERTSTORE
-
 #define CRYPT_USER_KEYSET &h1000
 #define PKCS12_IMPORT_RESERVED_MASK &hffff0000
 
@@ -4649,7 +4453,6 @@ declare function PFXExportCertStoreEx(byval hStore as HCERTSTORE, byval pPFX as 
 #define REPORT_NOT_ABLE_TO_EXPORT_PRIVATE_KEY &h2
 #define EXPORT_PRIVATE_KEYS &h4
 #define PKCS12_EXPORT_RESERVED_MASK &hffff0000
-
 declare function PFXExportCertStore(byval hStore as HCERTSTORE, byval pPFX as CRYPT_DATA_BLOB ptr, byval szPassword as LPCWSTR, byval dwFlags as DWORD) as WINBOOL
 
 #if _WIN32_WINNT = &h0602
@@ -4672,19 +4475,13 @@ declare function PFXExportCertStore(byval hStore as HCERTSTORE, byval pPFX as CR
 	type HCERT_SERVER_OCSP_RESPONSE as any ptr
 	type HCRYPTPROV_LEGACY as ULONG_PTR
 	type PFN_CERT_CREATE_CONTEXT_SORT_FUNC as function(byval cbTotalEncoded as DWORD, byval cbRemainEncoded as DWORD, byval cEntry as DWORD, byval pvSort as any ptr) as WINBOOL
-
 	#define CRYPT_OID_EXPORT_PUBLIC_KEY_INFO_EX2_FUNC "CryptDllExportPublicKeyInfoEx2"
-
 	type PFN_CRYPT_EXPORT_PUBLIC_KEY_INFO_EX2_FUNC as function(byval hNCryptKey as NCRYPT_KEY_HANDLE, byval dwCertEncodingType as DWORD, byval pszPublicKeyObjId as LPSTR, byval dwFlags as DWORD, byval pvAuxInfo as any ptr, byval pInfo as PCERT_PUBLIC_KEY_INFO, byval pcbInfo as DWORD ptr) as WINBOOL
-
 	#define CRYPT_OID_EXTRACT_ENCODED_SIGNATURE_PARAMETERS_FUNC "CryptDllExtractEncodedSignatureParameters"
-
 	type PFN_CRYPT_EXTRACT_ENCODED_SIGNATURE_PARAMETERS_FUNC as function(byval dwCertEncodingType as DWORD, byval pSignatureAlgorithm as PCRYPT_ALGORITHM_IDENTIFIER, byval ppvDecodedSignPara as any ptr ptr, byval ppwszCNGHashAlgid as LPWSTR ptr) as WINBOOL
 	type PFN_CRYPT_SIGN_AND_ENCODE_HASH_FUNC as function(byval hKey as NCRYPT_KEY_HANDLE, byval dwCertEncodingType as DWORD, byval pSignatureAlgorithm as PCRYPT_ALGORITHM_IDENTIFIER, byval pvDecodedSignPara as any ptr, byval pwszCNGPubKeyAlgid as LPCWSTR, byval pwszCNGHashAlgid as LPCWSTR, byval pbComputedHash as UBYTE ptr, byval cbComputedHash as DWORD, byval pbSignature as UBYTE ptr, byval pcbSignature as DWORD ptr) as WINBOOL
 	type PFN_CRYPT_VERIFY_ENCODED_SIGNATURE_FUNC as function(byval dwCertEncodingType as DWORD, byval pPubKeyInfo as PCERT_PUBLIC_KEY_INFO, byval pSignatureAlgorithm as PCRYPT_ALGORITHM_IDENTIFIER, byval pvDecodedSignPara as any ptr, byval pwszCNGPubKeyAlgid as LPCWSTR, byval pwszCNGHashAlgid as LPCWSTR, byval pbComputedHash as UBYTE ptr, byval cbComputedHash as DWORD, byval pbSignature as UBYTE ptr, byval cbSignature as DWORD) as WINBOOL
-
 	#define CRYPT_OID_IMPORT_PUBLIC_KEY_INFO_EX2_FUNC "CryptDllImportPublicKeyInfoEx2"
-
 	type PFN_IMPORT_PUBLIC_KEY_INFO_EX2_FUNC as function(byval dwCertEncodingType as DWORD, byval pInfo as PCERT_PUBLIC_KEY_INFO, byval dwFlags as DWORD, byval pvAuxInfo as any ptr, byval phKey as BCRYPT_KEY_HANDLE ptr) as WINBOOL
 
 	type _CERT_HASHED_URL
@@ -4869,9 +4666,7 @@ declare function PFXExportCertStore(byval hStore as HCERTSTORE, byval pPFX as CR
 	type CERT_SERVER_OCSP_RESPONSE_CONTEXT as _CERT_SERVER_OCSP_RESPONSE_CONTEXT
 	type PCERT_SERVER_OCSP_RESPONSE_CONTEXT as _CERT_SERVER_OCSP_RESPONSE_CONTEXT ptr
 	type PCCERT_SERVER_OCSP_RESPONSE_CONTEXT as _CERT_SERVER_OCSP_RESPONSE_CONTEXT ptr
-
 	#define __HCRYPTPROV_OR_NCRYPT_KEY_HANDLE_DEFINED__
-
 	type HCRYPTPROV_OR_NCRYPT_KEY_HANDLE as ULONG_PTR
 
 	type _CMSG_CNG_CONTENT_DECRYPT_INFO
@@ -4918,7 +4713,6 @@ declare function PFXExportCertStore(byval hStore as HCERTSTORE, byval pPFX as CR
 
 	type ROOT_INFO_LUID as _ROOT_INFO_LUID
 	type PROOT_INFO_LUID as _ROOT_INFO_LUID ptr
-
 	declare sub CertAddRefServerOcspResponse(byval hServerOcspResponse as HCERT_SERVER_OCSP_RESPONSE)
 	declare function CertOpenServerOcspResponse(byval pChainContext as PCCERT_CHAIN_CONTEXT, byval dwFlags as DWORD, byval pvReserved as LPVOID) as HCERT_SERVER_OCSP_RESPONSE
 	declare sub CertAddRefServerOcspResponseContext(byval pServerOcspResponseContext as PCCERT_SERVER_OCSP_RESPONSE_CONTEXT)
@@ -4930,7 +4724,6 @@ declare function PFXExportCertStore(byval hStore as HCERTSTORE, byval pPFX as CR
 	type PFN_CMSG_CNG_IMPORT_KEY_TRANS as function(byval pCNGContentDecryptInfo as PCMSG_CNG_CONTENT_DECRYPT_INFO, byval pKeyTransDecryptPara as PCMSG_CTRL_KEY_TRANS_DECRYPT_PARA, byval dwFlags as DWORD, byval pvReserved as any ptr) as WINBOOL
 	type PFN_CMSG_CNG_IMPORT_KEY_AGREE as function(byval pCNGContentDecryptInfo as PCMSG_CNG_CONTENT_DECRYPT_INFO, byval pKeyAgreeDecryptPara as PCMSG_CTRL_KEY_AGREE_DECRYPT_PARA, byval dwFlags as DWORD, byval pvReserved as any ptr) as WINBOOL
 	type PFN_CMSG_CNG_IMPORT_CONTENT_ENCRYPT_KEY as function(byval pCNGContentDecryptInfo as PCMSG_CNG_CONTENT_DECRYPT_INFO, byval dwFlags as DWORD, byval pvReserved as any ptr) as WINBOOL
-
 	#define CMSG_OID_CNG_IMPORT_KEY_TRANS_FUNC "CryptMsgDllCNGImportKeyTrans"
 	#define CRYPT_ECC_CMS_SHARED_INFO_SUPPPUBINFO_BYTE_LENGTH 4
 
@@ -4955,7 +4748,6 @@ declare function PFXExportCertStore(byval hStore as HCERTSTORE, byval pPFX as CR
 
 	type CRYPT_GET_TIME_VALID_OBJECT_EXTRA_INFO as _CRYPT_GET_TIME_VALID_OBJECT_EXTRA_INFO
 	type PCRYPT_GET_TIME_VALID_OBJECT_EXTRA_INFO as _CRYPT_GET_TIME_VALID_OBJECT_EXTRA_INFO ptr
-
 	#define szOID_RSA_MGF1 "1.2.840.113549.1.1.8"
 
 	type _CRYPT_MASK_GEN_ALGORITHM
@@ -4972,7 +4764,6 @@ declare function PFXExportCertStore(byval hStore as HCERTSTORE, byval pPFX as CR
 	end type
 
 	type CRYPT_PKCS12_PBE_PARAMS as _CRYPT_PKCS12_PBE_PARAMS
-
 	#define szOID_RSA_PSPECIFIED "1.2.840.113549.1.1.9"
 
 	type _CRYPT_PSOURCE_ALGORITHM
@@ -5009,7 +4800,6 @@ declare function PFXExportCertStore(byval hStore as HCERTSTORE, byval pPFX as CR
 
 	type CRYPT_SMART_CARD_ROOT_INFO as _CRYPT_SMART_CARD_ROOT_INFO
 	type PCRYPT_SMART_CARD_ROOT_INFO as _CRYPT_SMART_CARD_ROOT_INFO ptr
-
 	#define CRYPTNET_URL_CACHE_DEFAULT_FLUSH 0
 	#define CRYPTNET_URL_CACHE_DISABLE_FLUSH &hFFFFFFFF
 
@@ -5021,7 +4811,6 @@ declare function PFXExportCertStore(byval hStore as HCERTSTORE, byval pPFX as CR
 
 	type CRYPTNET_URL_CACHE_FLUSH_INFO as _CRYPTNET_URL_CACHE_FLUSH_INFO
 	type PCRYPTNET_URL_CACHE_FLUSH_INFO as _CRYPTNET_URL_CACHE_FLUSH_INFO ptr
-
 	#define CRYPTNET_URL_CACHE_PRE_FETCH_NONE 0
 	#define CRYPTNET_URL_CACHE_PRE_FETCH_BLOB 1
 	#define CRYPTNET_URL_CACHE_PRE_FETCH_CRL 2
@@ -5041,7 +4830,6 @@ declare function PFXExportCertStore(byval hStore as HCERTSTORE, byval pPFX as CR
 
 	type CRYPTNET_URL_CACHE_PRE_FETCH_INFO as _CRYPTNET_URL_CACHE_PRE_FETCH_INFO
 	type PCRYPTNET_URL_CACHE_PRE_FETCH_INFO as _CRYPTNET_URL_CACHE_PRE_FETCH_INFO ptr
-
 	#define CRYPTNET_URL_CACHE_RESPONSE_NONE 0
 	#define CRYPTNET_URL_CACHE_RESPONSE_HTTP 1
 	#define CRYPTNET_URL_CACHE_RESPONSE_VALIDATED &h8000
@@ -5133,7 +4921,6 @@ declare function PFXExportCertStore(byval hStore as HCERTSTORE, byval pPFX as CR
 
 	type OCSP_REQUEST_INFO as _OCSP_REQUEST_INFO
 	type POCSP_REQUEST_INFO as _OCSP_REQUEST_INFO ptr
-
 	#define OCSP_SUCCESSFUL_RESPONSE 0
 	#define OCSP_MALFORMED_REQUEST_RESPONSE 1
 	#define OCSP_INTERNAL_ERROR_RESPONSE 2
@@ -5175,11 +4962,9 @@ declare function PFXExportCertStore(byval hStore as HCERTSTORE, byval pPFX as CR
 
 	type OCSP_SIGNED_REQUEST_INFO as _OCSP_SIGNED_REQUEST_INFO
 	type POCSP_SIGNED_REQUEST_INFO as _OCSP_SIGNED_REQUEST_INFO ptr
-
 	declare function CryptHashCertificate2(byval pwszCNGHashAlgid as LPCWSTR, byval dwFlags as DWORD, byval pvReserved as any ptr, byval pbEncoded as UBYTE ptr, byval cbEncoded as DWORD, byval pbComputedHash as UBYTE ptr, byval pcbComputedHash as DWORD ptr) as WINBOOL
 	declare function CryptImportPublicKeyInfoEx2(byval dwCertEncodingType as DWORD, byval pInfo as PCERT_PUBLIC_KEY_INFO, byval dwFlags as DWORD, byval pvAuxInfo as any ptr, byval phKey as BCRYPT_KEY_HANDLE ptr) as WINBOOL
 	declare function CryptUpdateProtectedState(byval pOldSid as PSID, byval pwszOldPassword as LPCWSTR, byval dwFlags as DWORD, byval pdwSuccessCount as DWORD ptr, byval pdwFailureCount as DWORD ptr) as WINBOOL
-
 	#define CERT_BUNDLE_CERTIFICATE 0
 	#define CERT_BUNDLE_CRL 1
 
@@ -5211,7 +4996,6 @@ declare function PFXExportCertStore(byval hStore as HCERTSTORE, byval pPFX as CR
 	type CERT_SELECT_CHAIN_PARA as _CERT_SELECT_CHAIN_PARA
 	type PCERT_SELECT_CHAIN_PARA as _CERT_SELECT_CHAIN_PARA ptr
 	type PCCERT_SELECT_CHAIN_PARA as const CERT_SELECT_CHAIN_PARA ptr
-
 	#define CERT_CHAIN_REVOCATION_CHECK_CACHE_ONLY &h80000000
 
 	type _CERT_SELECT_CRITERIA
@@ -5287,7 +5071,6 @@ declare function PFXExportCertStore(byval hStore as HCERTSTORE, byval pPFX as CR
 
 	type CRYPT_TIMESTAMP_PARA as _CRYPT_TIMESTAMP_PARA
 	type PCRYPT_TIMESTAMP_PARA as _CRYPT_TIMESTAMP_PARA ptr
-
 	#define TIMESTAMP_VERSION 1
 
 	type _CRYPT_TIMESTAMP_CONTEXT
@@ -5309,7 +5092,6 @@ declare function PFXExportCertStore(byval hStore as HCERTSTORE, byval pPFX as CR
 
 	type CRYPT_TIMESTAMP_RESPONSE as _CRYPT_TIMESTAMP_RESPONSE
 	type PCRYPT_TIMESTAMP_RESPONSE as _CRYPT_TIMESTAMP_RESPONSE ptr
-
 	#define TIMESTAMP_STATUS_GRANTED 0
 	#define TIMESTAMP_STATUS_GRANTED_WITH_MODS 1
 	#define TIMESTAMP_STATUS_REJECTED 2
@@ -5328,16 +5110,13 @@ declare function PFXExportCertStore(byval hStore as HCERTSTORE, byval pPFX as CR
 	declare sub CertFreeCertificateChainList(byval prgpSelection as PCCERT_CHAIN_CONTEXT ptr)
 	declare function CertSelectCertificateChains(byval pSelectionContext as LPCGUID, byval dwFlags as DWORD, byval pChainParameters as PCCERT_SELECT_CHAIN_PARA, byval cCriteria as DWORD, byval rgpCriteria as PCCERT_SELECT_CRITERIA, byval hStore as HCERTSTORE, byval pcSelection as PDWORD, byval pprgpSelection as PCCERT_CHAIN_CONTEXT ptr ptr) as WINBOOL
 	declare function CryptExportPublicKeyInfoFromBCryptKeyHandle(byval hBCryptKey as BCRYPT_KEY_HANDLE, byval dwCertEncodingType as DWORD, byval pszPublicKeyObjId as LPSTR, byval dwFlags as DWORD, byval pvAuxInfo as PVOID, byval pInfo as PCERT_PUBLIC_KEY_INFO, byval pcbInfo as DWORD) as WINBOOL
-
 	#define CRYPT_OID_INFO_PUBKEY_ENCRYPT_KEY_FLAG &h40000000
 	#define CRYPT_OID_INFO_PUBKEY_SIGN_KEY_FLAG &h80000000
-
 	declare function CryptRetrieveTimeStamp(byval wszUrl as LPCWSTR, byval dwRetrievalFlags as DWORD, byval dwTimeout as DWORD, byval pszHashId as LPCSTR, byval pPara as const CRYPT_TIMESTAMP_PARA ptr, byval pbData as const UBYTE ptr, byval cbData as DWORD, byval ppTsContext as PCRYPT_TIMESTAMP_CONTEXT ptr, byval ppTsSigner as PCCERT_CONTEXT ptr, byval phStore as HCERTSTORE) as WINBOOL
 
 	#define TIMESTAMP_DONT_HASH_DATA &h00000001
 	#define TIMESTAMP_VERIFY_CONTEXT_SIGNATURE &h00000020
 	#define TIMESTAMP_NO_AUTH_RETRIEVAL &h00020000
-
 	declare function CryptVerifyTimeStampSignature(byval pbTSContentInfo as const UBYTE, byval cbTSContentInfo as DWORD, byval pbData as const DWORD, byval cbData as DWORD, byval hAdditionalStore as HCERTSTORE, byval ppTsContext as PCRYPT_TIMESTAMP_CONTEXT, byval ppTsSigner as PCCERT_CONTEXT ptr, byval phStore as HCERTSTORE ptr) as WINBOOL
 #endif
 

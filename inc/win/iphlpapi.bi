@@ -17,7 +17,6 @@
 extern "Windows"
 
 #define __IPHLPAPI_H__
-
 declare function GetNumberOfInterfaces(byval pdwNumIf as PDWORD) as DWORD
 declare function GetIfEntry(byval pIfRow as PMIB_IFROW) as DWORD
 declare function GetIfTable(byval pIfTable as PMIB_IFTABLE, byval pdwSize as PULONG, byval bOrder as WINBOOL) as DWORD
@@ -49,9 +48,7 @@ declare function DeleteProxyArpEntry(byval dwAddress as DWORD, byval dwMask as D
 declare function SetTcpEntry(byval pTcpRow as PMIB_TCPROW) as DWORD
 declare function GetInterfaceInfo(byval pIfTable as PIP_INTERFACE_INFO, byval dwOutBufLen as PULONG) as DWORD
 declare function GetUniDirectionalAdapterInfo(byval pIPIfInfo as PIP_UNIDIRECTIONAL_ADAPTER_ADDRESS, byval dwOutBufLen as PULONG) as DWORD
-
 #define NhpAllocateAndGetInterfaceInfoFromStack_DEFINED
-
 declare function NhpAllocateAndGetInterfaceInfoFromStack(byval ppTable as IP_INTERFACE_NAME_INFO ptr ptr, byval pdwCount as PDWORD, byval bOrder as WINBOOL, byval hHeap as HANDLE, byval dwFlags as DWORD) as DWORD
 declare function GetBestInterface(byval dwDestAddr as IPAddr, byval pdwBestIfIndex as PDWORD) as DWORD
 declare function GetBestInterfaceEx(byval pDestAddr as SOCKADDR ptr, byval pdwBestIfIndex as PDWORD) as DWORD
@@ -115,7 +112,6 @@ declare function GetOwnerModuleFromUdpEntry(byval pUdpEntry as PMIB_UDPROW_OWNER
 
 	type NET_ADDRESS_INFO as _NET_ADDRESS_INFO
 	type PNET_ADDRESS_INFO as _NET_ADDRESS_INFO ptr
-
 	declare function GetPerTcp6ConnectionEStats(byval Row as PMIB_TCP6ROW, byval EstatsType as TCP_ESTATS_TYPE, byval Rw as PUCHAR, byval RwVersion as ULONG, byval RwSize as ULONG, byval Ros as PUCHAR, byval RosVersion as ULONG, byval RosSize as ULONG, byval Rod as PUCHAR, byval RodVersion as ULONG, byval RodSize as ULONG) as ULONG
 	declare function SetPerTcp6ConnectionEStats(byval Row as PMIB_TCP6ROW, byval EstatsType as TCP_ESTATS_TYPE, byval Rw as PUCHAR, byval RwVersion as ULONG, byval RwSize as ULONG, byval Offset as ULONG) as ULONG
 	declare function SetPerTcpConnectionEStats(byval Row as PMIB_TCPROW, byval EstatsType as TCP_ESTATS_TYPE, byval Rw as PUCHAR, byval RwVersion as ULONG, byval RwSize as ULONG, byval Offset as ULONG) as ULONG

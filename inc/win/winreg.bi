@@ -20,10 +20,8 @@ extern "Windows"
 #define RRF_RT_ANY &h0000ffff
 #define RRF_NOEXPAND &h10000000
 #define RRF_ZEROONFAILURE &h20000000
-
 type REGSAM as ACCESS_MASK
 type LSTATUS as LONG
-
 #define HKEY_CLASSES_ROOT cast(HKEY, cast(ULONG_PTR, cast(LONG, &h80000000)))
 #define HKEY_CURRENT_USER cast(HKEY, cast(ULONG_PTR, cast(LONG, &h80000001)))
 #define HKEY_LOCAL_MACHINE cast(HKEY, cast(ULONG_PTR, cast(LONG, &h80000002)))
@@ -368,7 +366,6 @@ declare function Wow64Win32ApiEntry(byval dwFuncNumber as DWORD, byval dwFlag as
 	#define SHUTDOWN_INSTALL_UPDATES &h00000040
 	#define SHUTDOWN_RESTARTAPPS &h00000080
 	#define SHUTDOWN_HYBRID &h00000200
-
 	declare function InitiateShutdownA(byval lpMachineName as LPSTR, byval lpMessage as LPSTR, byval dwGracePeriod as DWORD, byval dwShutdownFlags as DWORD, byval dwReason as DWORD) as DWORD
 	declare function InitiateShutdownW(byval lpMachineName as LPWSTR, byval lpMessage as LPWSTR, byval dwGracePeriod as DWORD, byval dwShutdownFlags as DWORD, byval dwReason as DWORD) as DWORD
 #endif

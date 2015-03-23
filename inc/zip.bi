@@ -24,41 +24,25 @@ type zip_source as zip_source_
 #define LIBZIP_VERSION_MAJOR 0
 #define LIBZIP_VERSION_MINOR 11
 #define LIBZIP_VERSION_MICRO 0
-
 type zip_int8_t as byte
-
 #define ZIP_INT8_MIN INT8_MIN
 #define ZIP_INT8_MAX INT8_MAX
-
 type zip_uint8_t as ubyte
-
 #define ZIP_UINT8_MAX UINT8_MAX
-
 type zip_int16_t as short
-
 #define ZIP_INT16_MIN INT16_MIN
 #define ZIP_INT16_MAX INT16_MAX
-
 type zip_uint16_t as ushort
-
 #define ZIP_UINT16_MAX UINT16_MAX
-
 type zip_int32_t as long
-
 #define ZIP_INT32_MIN INT32_MIN
 #define ZIP_INT32_MAX INT32_MAX
-
 type zip_uint32_t as ulong
-
 #define ZIP_UINT32_MAX UINT32_MAX
-
 type zip_int64_t as longint
-
 #define ZIP_INT64_MIN INT64_MIN
 #define ZIP_INT64_MAX INT64_MAX
-
 type zip_uint64_t as ulongint
-
 #define ZIP_UINT64_MAX UINT64_MAX
 #define ZIP_CREATE 1
 #define ZIP_EXCL 2
@@ -193,7 +177,6 @@ end type
 
 type zip_flags_t as zip_uint32_t
 type zip_source_callback as function(byval as any ptr, byval as any ptr, byval as zip_uint64_t, byval as zip_source_cmd) as zip_int64_t
-
 declare function zip_add(byval as zip ptr, byval as const zstring ptr, byval as zip_source ptr) as zip_int64_t
 declare function zip_add_dir(byval as zip ptr, byval as const zstring ptr) as zip_int64_t
 declare function zip_get_file_comment(byval as zip ptr, byval as zip_uint64_t, byval as long ptr, byval as long) as const zstring ptr

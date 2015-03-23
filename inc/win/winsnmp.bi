@@ -7,7 +7,6 @@
 extern "Windows"
 
 #define _INC_WINSNMP
-
 type HSNMP_SESSION as HANDLE
 type LPHSNMP_SESSION as HANDLE ptr
 type HSNMP_ENTITY as HANDLE
@@ -63,7 +62,6 @@ type smiCNTR64
 end type
 
 type smiLPCNTR64 as smiCNTR64 ptr
-
 #define ASN_UNIVERSAL &h00
 #define ASN_APPLICATION &h40
 #define ASN_CONTEXT &h80
@@ -106,7 +104,6 @@ end type
 
 type smiLPVALUE as smiVALUE ptr
 type smiLPCVALUE as const smiVALUE ptr
-
 #define MAXOBJIDSIZE 128
 #define MAXOBJIDSTRSIZE 1408
 #define SNMP_PDU_GET ((ASN_CONTEXT or ASN_CONSTRUCTOR) or &h0)
@@ -152,9 +149,7 @@ type smiLPCVALUE as const smiVALUE ptr
 #define SNMPAPI_M2M_SUPPORT 3
 #define SNMPAPI_OFF 0
 #define SNMPAPI_ON 1
-
 type SNMPAPI_STATUS as smiUINT32
-
 #define SNMPAPI_FAILURE 0
 #define SNMPAPI_SUCCESS 1
 #define SNMPAPI_ALLOC_ERROR 2
@@ -200,7 +195,6 @@ end type
 
 type smiLPVENDORINFO as smiVENDORINFO ptr
 type SNMPAPI_CALLBACK as function(byval hSession as HSNMP_SESSION, byval hWnd as HWND, byval wMsg as UINT, byval wParam as WPARAM, byval lParam as LPARAM, byval lpClientData as LPVOID) as SNMPAPI_STATUS
-
 declare function SnmpGetTranslateMode(byval nTranslateMode as smiLPUINT32) as SNMPAPI_STATUS
 declare function SnmpSetTranslateMode(byval nTranslateMode as smiUINT32) as SNMPAPI_STATUS
 declare function SnmpGetRetransmitMode(byval nRetransmitMode as smiLPUINT32) as SNMPAPI_STATUS
@@ -221,13 +215,9 @@ declare function SnmpCreateSession(byval hWnd as HWND, byval wMsg as UINT, byval
 declare function SnmpListen(byval hEntity as HSNMP_ENTITY, byval lStatus as SNMPAPI_STATUS) as SNMPAPI_STATUS
 declare function SnmpCancelMsg(byval session as HSNMP_SESSION, byval reqId as smiINT32) as SNMPAPI_STATUS
 declare function SnmpStartupEx(byval nMajorVersion as smiLPUINT32, byval nMinorVersion as smiLPUINT32, byval nLevel as smiLPUINT32, byval nTranslateMode as smiLPUINT32, byval nRetransmitMode as smiLPUINT32) as SNMPAPI_STATUS
-
 type PFNSNMPSTARTUPEX as function(byval as smiLPUINT32, byval as smiLPUINT32, byval as smiLPUINT32, byval as smiLPUINT32, byval as smiLPUINT32) as SNMPAPI_STATUS
-
 declare function SnmpCleanupEx() as SNMPAPI_STATUS
-
 type PFNSNMPCLEANUPEX as function() as SNMPAPI_STATUS
-
 declare function SnmpStrToEntity(byval session as HSNMP_SESSION, byval string as LPCSTR) as HSNMP_ENTITY
 declare function SnmpEntityToStr(byval entity as HSNMP_ENTITY, byval size as smiUINT32, byval string as LPSTR) as SNMPAPI_STATUS
 declare function SnmpFreeEntity(byval entity as HSNMP_ENTITY) as SNMPAPI_STATUS

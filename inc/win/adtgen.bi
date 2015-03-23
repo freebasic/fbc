@@ -24,7 +24,6 @@ enum
 end enum
 
 type AUDIT_PARAM_TYPE as _AUDIT_PARAM_TYPE
-
 #define AP_ParamTypeBits 8
 #define AP_ParamTypeMask __MSABI_LONG(&hff)
 #define AP_FormatHex (__MSABI_LONG(&h1) shl AP_ParamTypeBits)
@@ -131,8 +130,6 @@ end type
 
 type AUTHZ_AUDIT_EVENT_TYPE_OLD as _AUTHZ_AUDIT_EVENT_TYPE_OLD
 type PAUTHZ_AUDIT_EVENT_TYPE_OLD as AUTHZ_AUDIT_EVENT_TYPE_OLD ptr
-
 #define AUTHZP_WPD_EVENT &h10
-
 type AUDIT_HANDLE as PVOID
 type PAUDIT_HANDLE as PVOID ptr

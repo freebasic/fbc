@@ -342,7 +342,6 @@ end type
 
 type MIB_MULTICASTIPADDRESS_TABLE as _MIB_MULTICASTIPADDRESS_TABLE
 type PMIB_MULTICASTIPADDRESS_TABLE as _MIB_MULTICASTIPADDRESS_TABLE ptr
-
 declare function CancelMibChangeNotify2(byval NotificationHandle as HANDLE) as DWORD
 declare function ConvertInterfaceAliasToLuid(byval InterfaceAlias as const wstring ptr, byval InterfaceLuid as PNET_LUID) as DWORD
 declare function ConvertInterfaceLuidToNameA(byval InterfaceLuid as const NET_LUID ptr, byval InterfaceName as PSTR, byval Length as SIZE_T_) as DWORD
@@ -389,7 +388,6 @@ end enum
 
 type MIB_IF_TABLE_LEVEL as _MIB_IF_TABLE_LEVEL
 type PMIB_IF_TABLE_LEVEL as _MIB_IF_TABLE_LEVEL ptr
-
 declare function GetIfTable2Ex(byval Level as MIB_IF_TABLE_LEVEL, byval Table as PMIB_IF_TABLE2 ptr) as DWORD
 declare function GetInvertedIfStackTable(byval Table as PMIB_INVERTEDIFSTACK_TABLE ptr) as DWORD
 declare function GetIpForwardEntry2(byval Row as PMIB_IPFORWARD_ROW2) as DWORD
@@ -400,26 +398,16 @@ declare function GetIpPathTable(byval Family as ADDRESS_FAMILY, byval Table as P
 declare function GetMulticastIpAddressEntry(byval Row as PMIB_MULTICASTIPADDRESS_ROW) as DWORD
 declare function GetMulticastIpAddressTable(byval Family as ADDRESS_FAMILY, byval Table as PMIB_MULTICASTIPADDRESS_TABLE ptr) as DWORD
 declare function GetTeredoPort(byval Port as USHORT ptr) as DWORD
-
 type PTEREDO_PORT_CHANGE_CALLBACK as sub(byval callerContext as any ptr, byval Port as USHORT, byval type as MIB_NOTIFICATION_TYPE)
-
 declare function NotifyTeredoPortChange(byval Callback as PTEREDO_PORT_CHANGE_CALLBACK, byval CallerContext as PVOID, byval InitialNotification as BOOLEAN, byval NotificationHandle as HANDLE ptr) as DWORD
-
 type PSTABLE_UNICAST_IPADDRESS_TABLE_CALLBACK as sub(byval callerContext as any ptr, byval AddressTable as MIB_UNICASTIPADDRESS_TABLE ptr)
-
 declare function NotifyStableUnicastIpAddressTable(byval Family as ADDRESS_FAMILY, byval Table as PMIB_UNICASTIPADDRESS_TABLE ptr, byval CallerCallback as PSTABLE_UNICAST_IPADDRESS_TABLE_CALLBACK, byval CallerContext as PVOID, byval NotificationHandle as HANDLE ptr) as DWORD
-
 type PUNICAST_IPADDRESS_CHANGE_CALLBACK as sub(byval callerContext as any ptr, byval row as PMIB_UNICASTIPADDRESS_ROW, byval type as MIB_NOTIFICATION_TYPE)
-
 declare function NotifyUnicastIpAddressChange(byval Family as ADDRESS_FAMILY, byval Callback as PUNICAST_IPADDRESS_CHANGE_CALLBACK, byval CallerContext as PVOID, byval InitialNotification as BOOLEAN, byval NotificationHandle as HANDLE ptr) as DWORD
 declare function GetUnicastIpAddressTable(byval Family as ADDRESS_FAMILY, byval Table as PMIB_UNICASTIPADDRESS_TABLE ptr) as DWORD
-
 type PIPINTERFACE_CHANGE_CALLBACK as sub(byval CallerContext as PVOID, byval Row as PMIB_IPINTERFACE_ROW, byval NotificationType as MIB_NOTIFICATION_TYPE)
-
 declare function NotifyIpInterfaceChange(byval Family as ADDRESS_FAMILY, byval Callback as PIPINTERFACE_CHANGE_CALLBACK, byval CallerContext as PVOID, byval InitialNotification as BOOLEAN, byval NotificationHandle as HANDLE ptr) as DWORD
-
 type PIPFORWARD_CHANGE_CALLBACK as LPVOID
-
 declare function NotifyRouteChange2(byval Family as ADDRESS_FAMILY, byval Callback as PIPFORWARD_CHANGE_CALLBACK, byval CallerContext as PVOID, byval InitialNotification as BOOLEAN, byval NotificationHandle as HANDLE ptr) as DWORD
 declare function ResolveIpNetEntry2(byval Row as PMIB_IPNET_ROW2, byval SourceAddress as const SOCKADDR_INET ptr) as DWORD
 declare function SetIpForwardEntry2(byval Route as const MIB_IPFORWARD_ROW2 ptr) as DWORD

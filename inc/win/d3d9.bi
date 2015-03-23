@@ -60,108 +60,65 @@ extern "Windows"
 #define D3DERR_CANNOTPROTECTCONTENT MAKE_D3DHRESULT(2173)
 #define D3DERR_UNSUPPORTEDCRYPTO MAKE_D3DHRESULT(2174)
 #define D3DERR_PRESENT_STATISTICS_DISJOINT MAKE_D3DHRESULT(2180)
-
 extern IID_IDirect3D9 as const GUID
-
 type LPDIRECT3D9 as IDirect3D9 ptr
 type PDIRECT3D9 as IDirect3D9 ptr
-
 extern IID_IDirect3D9Ex as const GUID
-
 type LPDIRECT3D9EX as IDirect3D9Ex ptr
 type PDIRECT3D9EX as IDirect3D9Ex ptr
-
 extern IID_IDirect3DDevice9 as const GUID
-
 type IDirect3DDevice9 as IDirect3DDevice9_
-
 type LPDIRECT3DDEVICE9 as IDirect3DDevice9 ptr
-
 extern IID_IDirect3DDevice9Ex as const GUID
 
 type IDirect3DDevice9Ex as IDirect3DDevice9Ex_
-
 type LPDIRECT3DDEVICE9EX as IDirect3DDevice9Ex ptr
 type PDIRECT3DDEVICE9EX as IDirect3DDevice9Ex ptr
-
 extern IID_IDirect3DResource9 as const GUID
-
 type LPDIRECT3DRESOURCE9 as IDirect3DResource9 ptr
 type PDIRECT3DRESOURCE9 as IDirect3DResource9 ptr
-
 extern IID_IDirect3DVertexBuffer9 as const GUID
-
 type LPDIRECT3DVERTEXBUFFER9 as IDirect3DVertexBuffer9 ptr
 type PDIRECT3DVERTEXBUFFER9 as IDirect3DVertexBuffer9 ptr
-
 extern IID_IDirect3DVolume9 as const GUID
-
 type LPDIRECT3DVOLUME9 as IDirect3DVolume9 ptr
 type PDIRECT3DVOLUME9 as IDirect3DVolume9 ptr
-
 extern IID_IDirect3DSwapChain9 as const GUID
-
 type LPDIRECT3DSWAPCHAIN9 as IDirect3DSwapChain9 ptr
 type PDIRECT3DSWAPCHAIN9 as IDirect3DSwapChain9 ptr
-
 extern IID_IDirect3DSwapChain9Ex as const GUID
-
 type LPDIRECT3DSWAPCHAIN9EX as IDirect3DSwapChain9Ex ptr
 type PDIRECT3DSWAPCHAIN9EX as IDirect3DSwapChain9Ex ptr
-
 extern IID_IDirect3DSurface9 as const GUID
-
 type IDirect3DSurface9 as IDirect3DSurface9_
-
 type LPDIRECT3DSURFACE9 as IDirect3DSurface9 ptr
 type PDIRECT3DSURFACE9 as IDirect3DSurface9 ptr
-
 extern IID_IDirect3DIndexBuffer9 as const GUID
-
 type LPDIRECT3DINDEXBUFFER9 as IDirect3DIndexBuffer9 ptr
 type PDIRECT3DINDEXBUFFER9 as IDirect3DIndexBuffer9 ptr
-
 extern IID_IDirect3DBaseTexture9 as const GUID
-
 type LPDIRECT3DBASETEXTURE9 as IDirect3DBaseTexture9 ptr
 type PDIRECT3DBASETEXTURE9 as IDirect3DBaseTexture9 ptr
-
 extern IID_IDirect3DTexture9 as const GUID
-
 type LPDIRECT3DTEXTURE9 as IDirect3DTexture9 ptr
 type PDIRECT3DTEXTURE9 as IDirect3DTexture9 ptr
-
 extern IID_IDirect3DCubeTexture9 as const GUID
-
 type LPDIRECT3DCUBETEXTURE9 as IDirect3DCubeTexture9 ptr
 type PDIRECT3DCUBETEXTURE9 as IDirect3DCubeTexture9 ptr
-
 extern IID_IDirect3DVolumeTexture9 as const GUID
-
 type LPDIRECT3DVOLUMETEXTURE9 as IDirect3DVolumeTexture9 ptr
 type PDIRECT3DVOLUMETEXTURE9 as IDirect3DVolumeTexture9 ptr
-
 extern IID_IDirect3DVertexDeclaration9 as const GUID
-
 type LPDIRECT3DVERTEXDECLARATION9 as IDirect3DVertexDeclaration9 ptr
-
 extern IID_IDirect3DVertexShader9 as const GUID
-
 type LPDIRECT3DVERTEXSHADER9 as IDirect3DVertexShader9 ptr
-
 extern IID_IDirect3DPixelShader9 as const GUID
-
 type LPDIRECT3DPIXELSHADER9 as IDirect3DPixelShader9 ptr
-
 extern IID_IDirect3DStateBlock9 as const GUID
-
 type LPDIRECT3DSTATEBLOCK9 as IDirect3DStateBlock9 ptr
-
 extern IID_IDirect3DQuery9 as const GUID
-
 type LPDIRECT3DQUERY9 as IDirect3DQuery9 ptr
 type PDIRECT3DQUERY9 as IDirect3DQuery9 ptr
-
 type IDirect3D9Vtbl as IDirect3D9Vtbl_
 
 type IDirect3D9
@@ -205,7 +162,6 @@ end type
 #define IDirect3D9_GetDeviceCaps(p, a, b, c) (p)->lpVtbl->GetDeviceCaps(p, a, b, c)
 #define IDirect3D9_GetAdapterMonitor(p, a) (p)->lpVtbl->GetAdapterMonitor(p, a)
 #define IDirect3D9_CreateDevice(p, a, b, c, d, e, f) (p)->lpVtbl->CreateDevice(p, a, b, c, d, e, f)
-
 type IDirect3D9ExVtbl as IDirect3D9ExVtbl_
 
 type IDirect3D9Ex
@@ -259,7 +215,6 @@ end type
 #define IDirect3D9Ex_GetAdapterDisplayModeEx(p, a, b, c) (p)->lpVtbl->GetAdapterDisplayModeEx(p, a, b, c)
 #define IDirect3D9Ex_CreateDeviceEx(p, a, b, c, d, e, f, g) (p)->lpVtbl->CreateDeviceEx(p, a, b, c, d, e, f, g)
 #define IDirect3D9Ex_GetAdapterLUID(p, a, b) (p)->lpVtbl->GetAdapterLUID(p, a, b)
-
 type IDirect3DVolume9Vtbl as IDirect3DVolume9Vtbl_
 
 type IDirect3DVolume9
@@ -291,7 +246,6 @@ end type
 #define IDirect3DVolume9_GetDesc(p, a) (p)->lpVtbl->GetDesc(p, a)
 #define IDirect3DVolume9_LockBox(p, a, b, c) (p)->lpVtbl->LockBox(p, a, b, c)
 #define IDirect3DVolume9_UnlockBox(p) (p)->lpVtbl->UnlockBox(p)
-
 type IDirect3DSwapChain9Vtbl as IDirect3DSwapChain9Vtbl_
 
 type IDirect3DSwapChain9
@@ -321,7 +275,6 @@ end type
 #define IDirect3DSwapChain9_GetDisplayMode(p, a) (p)->lpVtbl->GetDisplayMode(p, a)
 #define IDirect3DSwapChain9_GetDevice(p, a) (p)->lpVtbl->GetDevice(p, a)
 #define IDirect3DSwapChain9_GetPresentParameters(p, a) (p)->lpVtbl->GetPresentParameters(p, a)
-
 type IDirect3DSwapChain9ExVtbl as IDirect3DSwapChain9ExVtbl_
 
 type IDirect3DSwapChain9Ex
@@ -357,7 +310,6 @@ end type
 #define IDirect3DSwapChain9Ex_GetLastPresentCount(p, a) (p)->lpVtbl->GetLastPresentCount(p, a)
 #define IDirect3DSwapChain9Ex_GetPresentStats(p, a) (p)->lpVtbl->GetPresentStats(p, a)
 #define IDirect3DSwapChain9Ex_GetDisplayModeEx(p, a, b) (p)->lpVtbl->GetDisplayModeEx(p, a, b)
-
 type IDirect3DResource9Vtbl as IDirect3DResource9Vtbl_
 
 type IDirect3DResource9
@@ -389,7 +341,6 @@ end type
 #define IDirect3DResource9_GetPriority(p) (p)->lpVtbl->GetPriority(p)
 #define IDirect3DResource9_PreLoad(p) (p)->lpVtbl->PreLoad(p)
 #define IDirect3DResource9_GetType(p) (p)->lpVtbl->GetType(p)
-
 type IDirect3DSurface9Vtbl as IDirect3DSurface9Vtbl_
 
 type IDirect3DSurface9_
@@ -433,7 +384,6 @@ end type
 #define IDirect3DSurface9_UnlockRect(p) (p)->lpVtbl->UnlockRect(p)
 #define IDirect3DSurface9_GetDC(p, a) (p)->lpVtbl->GetDC(p, a)
 #define IDirect3DSurface9_ReleaseDC(p, a) (p)->lpVtbl->ReleaseDC(p, a)
-
 type IDirect3DVertexBuffer9Vtbl as IDirect3DVertexBuffer9Vtbl_
 
 type IDirect3DVertexBuffer9
@@ -471,7 +421,6 @@ end type
 #define IDirect3DVertexBuffer9_Lock(p, a, b, c, d) (p)->lpVtbl->Lock(p, a, b, c, d)
 #define IDirect3DVertexBuffer9_Unlock(p) (p)->lpVtbl->Unlock(p)
 #define IDirect3DVertexBuffer9_GetDesc(p, a) (p)->lpVtbl->GetDesc(p, a)
-
 type IDirect3DIndexBuffer9Vtbl as IDirect3DIndexBuffer9Vtbl_
 
 type IDirect3DIndexBuffer9
@@ -509,7 +458,6 @@ end type
 #define IDirect3DIndexBuffer9_Lock(p, a, b, c, d) (p)->lpVtbl->Lock(p, a, b, c, d)
 #define IDirect3DIndexBuffer9_Unlock(p) (p)->lpVtbl->Unlock(p)
 #define IDirect3DIndexBuffer9_GetDesc(p, a) (p)->lpVtbl->GetDesc(p, a)
-
 type IDirect3DBaseTexture9Vtbl as IDirect3DBaseTexture9Vtbl_
 
 type IDirect3DBaseTexture9
@@ -553,7 +501,6 @@ end type
 #define IDirect3DBaseTexture9_SetAutoGenFilterType(p, a) (p)->lpVtbl->SetAutoGenFilterType(p, a)
 #define IDirect3DBaseTexture9_GetAutoGenFilterType(p) (p)->lpVtbl->GetAutoGenFilterType(p)
 #define IDirect3DBaseTexture9_GenerateMipSubLevels(p) (p)->lpVtbl->GenerateMipSubLevels(p)
-
 type IDirect3DCubeTexture9Vtbl as IDirect3DCubeTexture9Vtbl_
 
 type IDirect3DCubeTexture9
@@ -607,7 +554,6 @@ end type
 #define IDirect3DCubeTexture9_LockRect(p, a, b, c, d, e) (p)->lpVtbl->LockRect(p, a, b, c, d, e)
 #define IDirect3DCubeTexture9_UnlockRect(p, a, b) (p)->lpVtbl->UnlockRect(p, a, b)
 #define IDirect3DCubeTexture9_AddDirtyRect(p, a, b) (p)->lpVtbl->AddDirtyRect(p, a, b)
-
 type IDirect3DTexture9Vtbl as IDirect3DTexture9Vtbl_
 
 type IDirect3DTexture9
@@ -661,7 +607,6 @@ end type
 #define IDirect3DTexture9_LockRect(p, a, b, c, d) (p)->lpVtbl->LockRect(p, a, b, c, d)
 #define IDirect3DTexture9_UnlockRect(p, a) (p)->lpVtbl->UnlockRect(p, a)
 #define IDirect3DTexture9_AddDirtyRect(p, a) (p)->lpVtbl->AddDirtyRect(p, a)
-
 type IDirect3DVolumeTexture9Vtbl as IDirect3DVolumeTexture9Vtbl_
 
 type IDirect3DVolumeTexture9
@@ -715,7 +660,6 @@ end type
 #define IDirect3DVolumeTexture9_LockBox(p, a, b, c, d) (p)->lpVtbl->LockBox(p, a, b, c, d)
 #define IDirect3DVolumeTexture9_UnlockBox(p, a) (p)->lpVtbl->UnlockBox(p, a)
 #define IDirect3DVolumeTexture9_AddDirtyBox(p, a) (p)->lpVtbl->AddDirtyBox(p, a)
-
 type IDirect3DVertexDeclaration9Vtbl as IDirect3DVertexDeclaration9Vtbl_
 
 type IDirect3DVertexDeclaration9
@@ -735,7 +679,6 @@ end type
 #define IDirect3DVertexDeclaration9_Release(p) (p)->lpVtbl->Release(p)
 #define IDirect3DVertexDeclaration9_GetDevice(p, a) (p)->lpVtbl->GetDevice(p, a)
 #define IDirect3DVertexDeclaration9_GetDeclaration(p, a, b) (p)->lpVtbl->GetDeclaration(p, a, b)
-
 type IDirect3DVertexShader9Vtbl as IDirect3DVertexShader9Vtbl_
 
 type IDirect3DVertexShader9
@@ -755,7 +698,6 @@ end type
 #define IDirect3DVertexShader9_Release(p) (p)->lpVtbl->Release(p)
 #define IDirect3DVertexShader9_GetDevice(p, a) (p)->lpVtbl->GetDevice(p, a)
 #define IDirect3DVertexShader9_GetFunction(p, a, b) (p)->lpVtbl->GetFunction(p, a, b)
-
 type IDirect3DPixelShader9Vtbl as IDirect3DPixelShader9Vtbl_
 
 type IDirect3DPixelShader9
@@ -775,7 +717,6 @@ end type
 #define IDirect3DPixelShader9_Release(p) (p)->lpVtbl->Release(p)
 #define IDirect3DPixelShader9_GetDevice(p, a) (p)->lpVtbl->GetDevice(p, a)
 #define IDirect3DPixelShader9_GetFunction(p, a, b) (p)->lpVtbl->GetFunction(p, a, b)
-
 type IDirect3DStateBlock9Vtbl as IDirect3DStateBlock9Vtbl_
 
 type IDirect3DStateBlock9
@@ -797,7 +738,6 @@ end type
 #define IDirect3DStateBlock9_GetDevice(p, a) (p)->lpVtbl->GetDevice(p, a)
 #define IDirect3DStateBlock9_Capture(p) (p)->lpVtbl->Capture(p)
 #define IDirect3DStateBlock9_Apply(p) (p)->lpVtbl->Apply(p)
-
 type IDirect3DQuery9Vtbl as IDirect3DQuery9Vtbl_
 
 type IDirect3DQuery9
@@ -823,7 +763,6 @@ end type
 #define IDirect3DQuery9_GetDataSize(p) (p)->lpVtbl->GetDataSize(p)
 #define IDirect3DQuery9_Issue(p, a) (p)->lpVtbl->Issue(p, a)
 #define IDirect3DQuery9_GetData(p, a, b, c) (p)->lpVtbl->GetData(p, a, b, c)
-
 type IDirect3DDevice9Vtbl as IDirect3DDevice9Vtbl_
 
 type IDirect3DDevice9_
@@ -1071,7 +1010,6 @@ end type
 #define IDirect3DDevice9_DrawTriPatch(p, a, b, c) (p)->lpVtbl->DrawTriPatch(p, a, b, c)
 #define IDirect3DDevice9_DeletePatch(p, a) (p)->lpVtbl->DeletePatch(p, a)
 #define IDirect3DDevice9_CreateQuery(p, a, b) (p)->lpVtbl->CreateQuery(p, a, b)
-
 type IDirect3DDevice9ExVtbl as IDirect3DDevice9ExVtbl_
 
 type IDirect3DDevice9Ex_

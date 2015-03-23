@@ -13,7 +13,6 @@ end type
 
 type D3DTRANSFORMCAPS as _D3DTRANSFORMCAPS
 type LPD3DTRANSFORMCAPS as _D3DTRANSFORMCAPS ptr
-
 #define D3DTRANSFORMCAPS_CLIP __MSABI_LONG(&h00000001)
 
 type _D3DLIGHTINGCAPS
@@ -25,7 +24,6 @@ end type
 
 type D3DLIGHTINGCAPS as _D3DLIGHTINGCAPS
 type LPD3DLIGHTINGCAPS as _D3DLIGHTINGCAPS ptr
-
 #define D3DLIGHTINGMODEL_RGB &h00000001
 #define D3DLIGHTINGMODEL_MONO &h00000002
 #define D3DLIGHTCAPS_POINT &h00000001
@@ -53,7 +51,6 @@ end type
 
 type D3DPRIMCAPS as _D3dPrimCaps
 type LPD3DPRIMCAPS as _D3dPrimCaps ptr
-
 #define D3DPMISCCAPS_MASKPLANES &h00000001
 #define D3DPMISCCAPS_MASKZ &h00000002
 #define D3DPMISCCAPS_LINEPATTERNREP &h00000004
@@ -206,7 +203,6 @@ end type
 
 type D3DDEVICEDESC as _D3DDeviceDesc
 type LPD3DDEVICEDESC as _D3DDeviceDesc ptr
-
 #define D3DDEVICEDESCSIZE sizeof(D3DDEVICEDESC)
 
 type _D3DDeviceDesc7
@@ -246,7 +242,6 @@ end type
 
 type D3DDEVICEDESC7 as _D3DDeviceDesc7
 type LPD3DDEVICEDESC7 as _D3DDeviceDesc7 ptr
-
 #define D3DDEVICEDESC7SIZE sizeof(D3DDEVICEDESC7)
 #define D3DDD_COLORMODEL &h00000001
 #define D3DDD_DEVCAPS &h00000002
@@ -318,10 +313,8 @@ type LPD3DDEVICEDESC7 as _D3DDeviceDesc7 ptr
 #define D3DVTXPCAPS_DIRECTIONALLIGHTS &h00000008
 #define D3DVTXPCAPS_POSITIONALLIGHTS &h00000010
 #define D3DVTXPCAPS_LOCALVIEWER &h00000020
-
 type LPD3DENUMDEVICESCALLBACK as function(byval guid as GUID ptr, byval description as zstring ptr, byval name as zstring ptr, byval hal_desc as D3DDEVICEDESC ptr, byval hel_desc as D3DDEVICEDESC ptr, byval ctx as any ptr) as HRESULT
 type LPD3DENUMDEVICESCALLBACK7 as function(byval description as zstring ptr, byval name as zstring ptr, byval desc as D3DDEVICEDESC7 ptr, byval ctx as any ptr) as HRESULT
-
 #define D3DFDS_COLORMODEL &h00000001
 #define D3DFDS_GUID &h00000002
 #define D3DFDS_HARDWARE &h00000004
@@ -372,7 +365,6 @@ end type
 
 type D3DEXECUTEBUFFERDESC as _D3DExecuteBufferDesc
 type LPD3DEXECUTEBUFFERDESC as _D3DExecuteBufferDesc ptr
-
 #define D3DDEB_BUFSIZE &h00000001
 #define D3DDEB_CAPS &h00000002
 #define D3DDEB_LPDATA &h00000004

@@ -4,16 +4,12 @@ extern "C"
 
 #define __wtypesbase_h__
 #define __IWinTypesBase_INTERFACE_DEFINED__
-
 extern IWinTypesBase_v0_1_c_ifspec as RPC_IF_HANDLE
 extern IWinTypesBase_v0_1_s_ifspec as RPC_IF_HANDLE
-
 type OLECHAR as wstring
 type LPOLESTR as wstring ptr
 type LPCOLESTR as const wstring ptr
-
 #define OLESTR(str) wstr(str)
-
 type UCHAR as ubyte
 
 type _COAUTHIDENTITY
@@ -52,7 +48,6 @@ enum
 end enum
 
 type MEMCTX as tagMEMCTX
-
 #define _ROTREGFLAGS_DEFINED
 #define ROTREGFLAGS_ALLOWANYCLIENT &h1
 #define _APPIDREGFLAGS_DEFINED
@@ -100,7 +95,6 @@ enum
 end enum
 
 type CLSCTX as tagCLSCTX
-
 #define CLSCTX_VALID_MASK (((((((((((((((((CLSCTX_INPROC_SERVER or CLSCTX_INPROC_HANDLER) or CLSCTX_LOCAL_SERVER) or CLSCTX_INPROC_SERVER16) or CLSCTX_REMOTE_SERVER) or CLSCTX_NO_CODE_DOWNLOAD) or CLSCTX_NO_CUSTOM_MARSHAL) or CLSCTX_ENABLE_CODE_DOWNLOAD) or CLSCTX_NO_FAILURE_LOG) or CLSCTX_DISABLE_AAA) or CLSCTX_ENABLE_AAA) or CLSCTX_FROM_DEFAULT_CONTEXT) or CLSCTX_ACTIVATE_32_BIT_SERVER) or CLSCTX_ACTIVATE_64_BIT_SERVER) or CLSCTX_ENABLE_CLOAKING) or CLSCTX_APPCONTAINER) or CLSCTX_ACTIVATE_AAA_AS_IU) or CLSCTX_PS_DLL)
 
 type tagMSHLFLAGS as long
@@ -197,7 +191,6 @@ type _HYPER_SIZEDARR
 end type
 
 type HYPER_SIZEDARR as _HYPER_SIZEDARR
-
 #define _tagBLOB_DEFINED
 #define _BLOB_DEFINED
 #define _LPBLOB_DEFINED

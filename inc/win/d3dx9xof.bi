@@ -5,20 +5,14 @@
 extern "Windows"
 
 #define __WINE_D3DX9XOF_H
-
 type D3DXF_FILEFORMAT as DWORD
-
 #define D3DXF_FILEFORMAT_BINARY 0
 #define D3DXF_FILEFORMAT_TEXT 1
 #define D3DXF_FILEFORMAT_COMPRESSED 2
-
 type D3DXF_FILESAVEOPTIONS as DWORD
-
 #define D3DXF_FILESAVE_TOFILE &h00
 #define D3DXF_FILESAVE_TOWFILE &h01
-
 type D3DXF_FILELOADOPTIONS as DWORD
-
 #define D3DXF_FILELOAD_FROMFILE &h00
 #define D3DXF_FILELOAD_FROMWFILE &h01
 #define D3DXF_FILELOAD_FROMRESOURCE &h02
@@ -38,7 +32,6 @@ type _D3DXF_FILELOADMEMORY
 end type
 
 type D3DXF_FILELOADMEMORY as _D3DXF_FILELOADMEMORY
-
 extern IID_ID3DXFile as const GUID
 extern IID_ID3DXFileSaveObject as const GUID
 extern IID_ID3DXFileSaveData as const GUID
@@ -46,32 +39,21 @@ extern IID_ID3DXFileEnumObject as const GUID
 extern IID_ID3DXFileData as const GUID
 
 type ID3DXFile as ID3DXFile_
-
 type LPD3DXFILE as ID3DXFile ptr
 type LPLPD3DXFILE as ID3DXFile ptr ptr
-
 type ID3DXFileSaveObject as ID3DXFileSaveObject_
-
 type LPD3DXFILESAVEOBJECT as ID3DXFileSaveObject ptr
 type LPLPD3DXFILESAVEOBJECT as ID3DXFileSaveObject ptr ptr
-
 type ID3DXFileSaveData as ID3DXFileSaveData_
-
 type LPD3DXFILESAVEDATA as ID3DXFileSaveData ptr
 type LPLPD3DXFILESAVEDATA as ID3DXFileSaveData ptr ptr
-
 type ID3DXFileEnumObject as ID3DXFileEnumObject_
-
 type LPD3DXFILEENUMOBJECT as ID3DXFileEnumObject ptr
 type LPLPD3DXFILEENUMOBJECT as ID3DXFileEnumObject ptr ptr
-
 type ID3DXFileData as ID3DXFileData_
-
 type LPD3DXFILEDATA as ID3DXFileData ptr
 type LPLPD3DXFILEDATA as ID3DXFileData ptr ptr
-
 declare function D3DXFileCreate(byval file as ID3DXFile ptr ptr) as HRESULT
-
 type ID3DXFileVtbl as ID3DXFileVtbl_
 
 type ID3DXFile_

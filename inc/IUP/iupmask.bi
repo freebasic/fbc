@@ -3,7 +3,6 @@
 extern "C"
 
 #define __IUP_OLDMASK_H
-
 declare function iupmaskSet(byval h as Ihandle ptr, byval mask as const zstring ptr, byval autofill as long, byval casei as long) as long
 declare function iupmaskSetInt(byval h as Ihandle ptr, byval autofill as long, byval min as long, byval max as long) as long
 declare function iupmaskSetFloat(byval h as Ihandle ptr, byval autofill as long, byval min as single, byval max as single) as long

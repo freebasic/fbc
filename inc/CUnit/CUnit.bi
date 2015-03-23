@@ -15,7 +15,7 @@
 #define CU_MAX(a, b) iif((a) >= (b), (a), (b))
 #define CU_MIN(a, b) iif((a) >= (b), (b), (a))
 #macro CU_PASS(msg)
-		CU_assertImplementation(CU_TRUE, __LINE__, ("CU_PASS(" + #msg) + ")", __FILE__, "", CU_FALSE)
+		CU_assertImplementation(CU_TRUE, __LINE__, "CU_PASS(" #msg ")", __FILE__, "", CU_FALSE)
 #endmacro
 #macro CU_ASSERT(value)
 		CU_assertImplementation((value), __LINE__, #value, __FILE__, "", CU_FALSE)
@@ -30,92 +30,92 @@
 		CU_assertImplementation((value), __LINE__, #value, __FILE__, "", CU_TRUE)
 #endmacro
 #macro CU_FAIL(msg)
-		CU_assertImplementation(CU_FALSE, __LINE__, ("CU_FAIL(" + #msg) + ")", __FILE__, "", CU_FALSE)
+		CU_assertImplementation(CU_FALSE, __LINE__, "CU_FAIL(" #msg ")", __FILE__, "", CU_FALSE)
 #endmacro
 #macro CU_FAIL_FATAL(msg)
-		CU_assertImplementation(CU_FALSE, __LINE__, ("CU_FAIL_FATAL(" + #msg) + ")", __FILE__, "", CU_TRUE)
+		CU_assertImplementation(CU_FALSE, __LINE__, "CU_FAIL_FATAL(" #msg ")", __FILE__, "", CU_TRUE)
 #endmacro
 #macro CU_ASSERT_TRUE(value)
-		CU_assertImplementation((value), __LINE__, ("CU_ASSERT_TRUE(" + #value) + ")", __FILE__, "", CU_FALSE)
+		CU_assertImplementation((value), __LINE__, "CU_ASSERT_TRUE(" #value ")", __FILE__, "", CU_FALSE)
 #endmacro
 #macro CU_ASSERT_TRUE_FATAL(value)
-		CU_assertImplementation((value), __LINE__, ("CU_ASSERT_TRUE_FATAL(" + #value) + ")", __FILE__, "", CU_TRUE)
+		CU_assertImplementation((value), __LINE__, "CU_ASSERT_TRUE_FATAL(" #value ")", __FILE__, "", CU_TRUE)
 #endmacro
 #macro CU_ASSERT_FALSE(value)
-		CU_assertImplementation(-((value) = 0), __LINE__, ("CU_ASSERT_FALSE(" + #value) + ")", __FILE__, "", CU_FALSE)
+		CU_assertImplementation(-((value) = 0), __LINE__, "CU_ASSERT_FALSE(" #value ")", __FILE__, "", CU_FALSE)
 #endmacro
 #macro CU_ASSERT_FALSE_FATAL(value)
-		CU_assertImplementation(-((value) = 0), __LINE__, ("CU_ASSERT_FALSE_FATAL(" + #value) + ")", __FILE__, "", CU_TRUE)
+		CU_assertImplementation(-((value) = 0), __LINE__, "CU_ASSERT_FALSE_FATAL(" #value ")", __FILE__, "", CU_TRUE)
 #endmacro
 #macro CU_ASSERT_EQUAL(actual, expected)
-		CU_assertImplementation(-((actual) = (expected)), __LINE__, ((("CU_ASSERT_EQUAL(" + #actual) + ",") + #expected) + ")", __FILE__, "", CU_FALSE)
+		CU_assertImplementation(-((actual) = (expected)), __LINE__, "CU_ASSERT_EQUAL(" #actual "," #expected ")", __FILE__, "", CU_FALSE)
 #endmacro
 #macro CU_ASSERT_EQUAL_FATAL(actual, expected)
-		CU_assertImplementation(-((actual) = (expected)), __LINE__, ((("CU_ASSERT_EQUAL_FATAL(" + #actual) + ",") + #expected) + ")", __FILE__, "", CU_TRUE)
+		CU_assertImplementation(-((actual) = (expected)), __LINE__, "CU_ASSERT_EQUAL_FATAL(" #actual "," #expected ")", __FILE__, "", CU_TRUE)
 #endmacro
 #macro CU_ASSERT_NOT_EQUAL(actual, expected)
-		CU_assertImplementation(-((actual) <> (expected)), __LINE__, ((("CU_ASSERT_NOT_EQUAL(" + #actual) + ",") + #expected) + ")", __FILE__, "", CU_FALSE)
+		CU_assertImplementation(-((actual) <> (expected)), __LINE__, "CU_ASSERT_NOT_EQUAL(" #actual "," #expected ")", __FILE__, "", CU_FALSE)
 #endmacro
 #macro CU_ASSERT_NOT_EQUAL_FATAL(actual, expected)
-		CU_assertImplementation(-((actual) <> (expected)), __LINE__, ((("CU_ASSERT_NOT_EQUAL_FATAL(" + #actual) + ",") + #expected) + ")", __FILE__, "", CU_TRUE)
+		CU_assertImplementation(-((actual) <> (expected)), __LINE__, "CU_ASSERT_NOT_EQUAL_FATAL(" #actual "," #expected ")", __FILE__, "", CU_TRUE)
 #endmacro
 #macro CU_ASSERT_PTR_EQUAL(actual, expected)
-		CU_assertImplementation(-(cptr(const any ptr, (actual)) = cptr(const any ptr, (expected))), __LINE__, ((("CU_ASSERT_PTR_EQUAL(" + #actual) + ",") + #expected) + ")", __FILE__, "", CU_FALSE)
+		CU_assertImplementation(-(cptr(const any ptr, (actual)) = cptr(const any ptr, (expected))), __LINE__, "CU_ASSERT_PTR_EQUAL(" #actual "," #expected ")", __FILE__, "", CU_FALSE)
 #endmacro
 #macro CU_ASSERT_PTR_EQUAL_FATAL(actual, expected)
-		CU_assertImplementation(-(cptr(const any ptr, (actual)) = cptr(const any ptr, (expected))), __LINE__, ((("CU_ASSERT_PTR_EQUAL_FATAL(" + #actual) + ",") + #expected) + ")", __FILE__, "", CU_TRUE)
+		CU_assertImplementation(-(cptr(const any ptr, (actual)) = cptr(const any ptr, (expected))), __LINE__, "CU_ASSERT_PTR_EQUAL_FATAL(" #actual "," #expected ")", __FILE__, "", CU_TRUE)
 #endmacro
 #macro CU_ASSERT_PTR_NOT_EQUAL(actual, expected)
-		CU_assertImplementation(-(cptr(const any ptr, (actual)) <> cptr(const any ptr, (expected))), __LINE__, ((("CU_ASSERT_PTR_NOT_EQUAL(" + #actual) + ",") + #expected) + ")", __FILE__, "", CU_FALSE)
+		CU_assertImplementation(-(cptr(const any ptr, (actual)) <> cptr(const any ptr, (expected))), __LINE__, "CU_ASSERT_PTR_NOT_EQUAL(" #actual "," #expected ")", __FILE__, "", CU_FALSE)
 #endmacro
 #macro CU_ASSERT_PTR_NOT_EQUAL_FATAL(actual, expected)
-		CU_assertImplementation(-(cptr(const any ptr, (actual)) <> cptr(const any ptr, (expected))), __LINE__, ((("CU_ASSERT_PTR_NOT_EQUAL_FATAL(" + #actual) + ",") + #expected) + ")", __FILE__, "", CU_TRUE)
+		CU_assertImplementation(-(cptr(const any ptr, (actual)) <> cptr(const any ptr, (expected))), __LINE__, "CU_ASSERT_PTR_NOT_EQUAL_FATAL(" #actual "," #expected ")", __FILE__, "", CU_TRUE)
 #endmacro
 #macro CU_ASSERT_PTR_NULL(value)
-		CU_assertImplementation(-(NULL = cptr(const any ptr, (value))), __LINE__, ("CU_ASSERT_PTR_NULL(" + #value) + ")", __FILE__, "", CU_FALSE)
+		CU_assertImplementation(-(NULL = cptr(const any ptr, (value))), __LINE__, "CU_ASSERT_PTR_NULL(" #value ")", __FILE__, "", CU_FALSE)
 #endmacro
 #macro CU_ASSERT_PTR_NULL_FATAL(value)
-		CU_assertImplementation(-(NULL = cptr(const any ptr, (value))), __LINE__, ("CU_ASSERT_PTR_NULL_FATAL(" + #value) + ")", __FILE__, "", CU_TRUE)
+		CU_assertImplementation(-(NULL = cptr(const any ptr, (value))), __LINE__, "CU_ASSERT_PTR_NULL_FATAL(" #value ")", __FILE__, "", CU_TRUE)
 #endmacro
 #macro CU_ASSERT_PTR_NOT_NULL(value)
-		CU_assertImplementation(-(NULL <> cptr(const any ptr, (value))), __LINE__, ("CU_ASSERT_PTR_NOT_NULL(" + #value) + ")", __FILE__, "", CU_FALSE)
+		CU_assertImplementation(-(NULL <> cptr(const any ptr, (value))), __LINE__, "CU_ASSERT_PTR_NOT_NULL(" #value ")", __FILE__, "", CU_FALSE)
 #endmacro
 #macro CU_ASSERT_PTR_NOT_NULL_FATAL(value)
-		CU_assertImplementation(-(NULL <> cptr(const any ptr, (value))), __LINE__, ("CU_ASSERT_PTR_NOT_NULL_FATAL(" + #value) + ")", __FILE__, "", CU_TRUE)
+		CU_assertImplementation(-(NULL <> cptr(const any ptr, (value))), __LINE__, "CU_ASSERT_PTR_NOT_NULL_FATAL(" #value ")", __FILE__, "", CU_TRUE)
 #endmacro
 #macro CU_ASSERT_STRING_EQUAL(actual, expected)
-		CU_assertImplementation(-(strcmp(cptr(const zstring ptr, (actual)), cptr(const zstring ptr, (expected))) = 0), __LINE__, ((("CU_ASSERT_STRING_EQUAL(" + #actual) + ",") + #expected) + ")", __FILE__, "", CU_FALSE)
+		CU_assertImplementation(-(strcmp(cptr(const zstring ptr, (actual)), cptr(const zstring ptr, (expected))) = 0), __LINE__, "CU_ASSERT_STRING_EQUAL(" #actual "," #expected ")", __FILE__, "", CU_FALSE)
 #endmacro
 #macro CU_ASSERT_STRING_EQUAL_FATAL(actual, expected)
-		CU_assertImplementation(-(strcmp(cptr(const zstring ptr, (actual)), cptr(const zstring ptr, (expected))) = 0), __LINE__, ((("CU_ASSERT_STRING_EQUAL_FATAL(" + #actual) + ",") + #expected) + ")", __FILE__, "", CU_TRUE)
+		CU_assertImplementation(-(strcmp(cptr(const zstring ptr, (actual)), cptr(const zstring ptr, (expected))) = 0), __LINE__, "CU_ASSERT_STRING_EQUAL_FATAL(" #actual "," #expected ")", __FILE__, "", CU_TRUE)
 #endmacro
 #macro CU_ASSERT_STRING_NOT_EQUAL(actual, expected)
-		CU_assertImplementation(strcmp(cptr(const zstring ptr, (actual)), cptr(const zstring ptr, (expected))), __LINE__, ((("CU_ASSERT_STRING_NOT_EQUAL(" + #actual) + ",") + #expected) + ")", __FILE__, "", CU_FALSE)
+		CU_assertImplementation(strcmp(cptr(const zstring ptr, (actual)), cptr(const zstring ptr, (expected))), __LINE__, "CU_ASSERT_STRING_NOT_EQUAL(" #actual "," #expected ")", __FILE__, "", CU_FALSE)
 #endmacro
 #macro CU_ASSERT_STRING_NOT_EQUAL_FATAL(actual, expected)
-		CU_assertImplementation(strcmp(cptr(const zstring ptr, (actual)), cptr(const zstring ptr, (expected))), __LINE__, ((("CU_ASSERT_STRING_NOT_EQUAL_FATAL(" + #actual) + ",") + #expected) + ")", __FILE__, "", CU_TRUE)
+		CU_assertImplementation(strcmp(cptr(const zstring ptr, (actual)), cptr(const zstring ptr, (expected))), __LINE__, "CU_ASSERT_STRING_NOT_EQUAL_FATAL(" #actual "," #expected ")", __FILE__, "", CU_TRUE)
 #endmacro
 #macro CU_ASSERT_NSTRING_EQUAL(actual, expected, count)
-		CU_assertImplementation(-(strncmp(cptr(const zstring ptr, (actual)), cptr(const zstring ptr, (expected)), cuint((count))) = 0), __LINE__, ((((("CU_ASSERT_NSTRING_EQUAL(" + #actual) + ",") + #expected) + ",") + #count) + ")", __FILE__, "", CU_FALSE)
+		CU_assertImplementation(-(strncmp(cptr(const zstring ptr, (actual)), cptr(const zstring ptr, (expected)), cuint((count))) = 0), __LINE__, "CU_ASSERT_NSTRING_EQUAL(" #actual "," #expected "," #count ")", __FILE__, "", CU_FALSE)
 #endmacro
 #macro CU_ASSERT_NSTRING_EQUAL_FATAL(actual, expected, count)
-		CU_assertImplementation(-(strncmp(cptr(const zstring ptr, (actual)), cptr(const zstring ptr, (expected)), cuint((count))) = 0), __LINE__, ((((("CU_ASSERT_NSTRING_EQUAL_FATAL(" + #actual) + ",") + #expected) + ",") + #count) + ")", __FILE__, "", CU_TRUE)
+		CU_assertImplementation(-(strncmp(cptr(const zstring ptr, (actual)), cptr(const zstring ptr, (expected)), cuint((count))) = 0), __LINE__, "CU_ASSERT_NSTRING_EQUAL_FATAL(" #actual "," #expected "," #count ")", __FILE__, "", CU_TRUE)
 #endmacro
 #macro CU_ASSERT_NSTRING_NOT_EQUAL(actual, expected, count)
-		CU_assertImplementation(strncmp(cptr(const zstring ptr, (actual)), cptr(const zstring ptr, (expected)), cuint((count))), __LINE__, ((((("CU_ASSERT_NSTRING_NOT_EQUAL(" + #actual) + ",") + #expected) + ",") + #count) + ")", __FILE__, "", CU_FALSE)
+		CU_assertImplementation(strncmp(cptr(const zstring ptr, (actual)), cptr(const zstring ptr, (expected)), cuint((count))), __LINE__, "CU_ASSERT_NSTRING_NOT_EQUAL(" #actual "," #expected "," #count ")", __FILE__, "", CU_FALSE)
 #endmacro
 #macro CU_ASSERT_NSTRING_NOT_EQUAL_FATAL(actual, expected, count)
-		CU_assertImplementation(strncmp(cptr(const zstring ptr, (actual)), cptr(const zstring ptr, (expected)), cuint((count))), __LINE__, ((((("CU_ASSERT_NSTRING_NOT_EQUAL_FATAL(" + #actual) + ",") + #expected) + ",") + #count) + ")", __FILE__, "", CU_TRUE)
+		CU_assertImplementation(strncmp(cptr(const zstring ptr, (actual)), cptr(const zstring ptr, (expected)), cuint((count))), __LINE__, "CU_ASSERT_NSTRING_NOT_EQUAL_FATAL(" #actual "," #expected "," #count ")", __FILE__, "", CU_TRUE)
 #endmacro
 #macro CU_ASSERT_DOUBLE_EQUAL(actual, expected, granularity)
-		CU_assertImplementation(-(fabs(cdbl((actual)) - (expected)) <= fabs(cdbl((granularity)))), __LINE__, ((((("CU_ASSERT_DOUBLE_EQUAL(" + #actual) + ",") + #expected) + ",") + #granularity) + ")", __FILE__, "", CU_FALSE)
+		CU_assertImplementation(-(fabs(cdbl((actual)) - (expected)) <= fabs(cdbl((granularity)))), __LINE__, "CU_ASSERT_DOUBLE_EQUAL(" #actual "," #expected "," #granularity ")", __FILE__, "", CU_FALSE)
 #endmacro
 #macro CU_ASSERT_DOUBLE_EQUAL_FATAL(actual, expected, granularity)
-		CU_assertImplementation(-(fabs(cdbl((actual)) - (expected)) <= fabs(cdbl((granularity)))), __LINE__, ((((("CU_ASSERT_DOUBLE_EQUAL_FATAL(" + #actual) + ",") + #expected) + ",") + #granularity) + ")", __FILE__, "", CU_TRUE)
+		CU_assertImplementation(-(fabs(cdbl((actual)) - (expected)) <= fabs(cdbl((granularity)))), __LINE__, "CU_ASSERT_DOUBLE_EQUAL_FATAL(" #actual "," #expected "," #granularity ")", __FILE__, "", CU_TRUE)
 #endmacro
 #macro CU_ASSERT_DOUBLE_NOT_EQUAL(actual, expected, granularity)
-		CU_assertImplementation(-(fabs(cdbl((actual)) - (expected)) > fabs(cdbl((granularity)))), __LINE__, ((((("CU_ASSERT_DOUBLE_NOT_EQUAL(" + #actual) + ",") + #expected) + ",") + #granularity) + ")", __FILE__, "", CU_FALSE)
+		CU_assertImplementation(-(fabs(cdbl((actual)) - (expected)) > fabs(cdbl((granularity)))), __LINE__, "CU_ASSERT_DOUBLE_NOT_EQUAL(" #actual "," #expected "," #granularity ")", __FILE__, "", CU_FALSE)
 #endmacro
 #macro CU_ASSERT_DOUBLE_NOT_EQUAL_FATAL(actual, expected, granularity)
-		CU_assertImplementation(-(fabs(cdbl((actual)) - (expected)) > fabs(cdbl((granularity)))), __LINE__, ((((("CU_ASSERT_DOUBLE_NOT_EQUAL_FATAL(" + #actual) + ",") + #expected) + ",") + #granularity) + ")", __FILE__, "", CU_TRUE)
+		CU_assertImplementation(-(fabs(cdbl((actual)) - (expected)) > fabs(cdbl((granularity)))), __LINE__, "CU_ASSERT_DOUBLE_NOT_EQUAL_FATAL(" #actual "," #expected "," #granularity ")", __FILE__, "", CU_TRUE)
 #endmacro

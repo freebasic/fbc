@@ -33,7 +33,6 @@ extern "C"
 #define TRUE 1
 #define ERR_ (-1)
 #define OK 0
-
 type bool as ubyte
 type chtype as ulong
 
@@ -109,7 +108,6 @@ end type
 #define BUTTON_MODIFIER_ALT cast(clong, &h10000000)
 #define ALL_MOUSE_EVENTS cast(clong, &h1fffffff)
 #define REPORT_MOUSE_POSITION cast(clong, &h20000000)
-
 type mmask_t as culong
 
 type MEVENT

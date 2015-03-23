@@ -150,7 +150,6 @@ enum
 end enum
 
 type ACCESS_MODE as _ACCESS_MODE
-
 #define NO_INHERITANCE &h0
 #define SUB_OBJECTS_ONLY_INHERIT &h1
 #define SUB_CONTAINERS_ONLY_INHERIT &h2

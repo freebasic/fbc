@@ -10,7 +10,6 @@
 extern "Windows"
 
 #define _WINUSER_
-
 type HDWP as HANDLE
 type MENUTEMPLATEA as any
 type MENUTEMPLATEW as any
@@ -400,7 +399,6 @@ declare function wsprintfW cdecl(byval as LPWSTR, byval as LPCWSTR, ...) as long
 #define HCBT_KEYSKIPPED 7
 #define HCBT_SYSCOMMAND 8
 #define HCBT_SETFOCUS 9
-
 type tagCREATESTRUCTA as tagCREATESTRUCTA_
 
 type tagCBT_CREATEWNDA
@@ -410,7 +408,6 @@ end type
 
 type CBT_CREATEWNDA as tagCBT_CREATEWNDA
 type LPCBT_CREATEWNDA as tagCBT_CREATEWNDA ptr
-
 type tagCREATESTRUCTW as tagCREATESTRUCTW_
 
 type tagCBT_CREATEWNDW
@@ -444,7 +441,6 @@ end type
 
 type WTSSESSION_NOTIFICATION as tagWTSSESSION_NOTIFICATION
 type PWTSSESSION_NOTIFICATION as tagWTSSESSION_NOTIFICATION ptr
-
 #define WTS_CONSOLE_CONNECT &h1
 #define WTS_CONSOLE_DISCONNECT &h2
 #define WTS_REMOTE_CONNECT &h3
@@ -708,10 +704,8 @@ end type
 type MOUSEMOVEPOINT as tagMOUSEMOVEPOINT
 type PMOUSEMOVEPOINT as tagMOUSEMOVEPOINT ptr
 type LPMOUSEMOVEPOINT as tagMOUSEMOVEPOINT ptr
-
 #define GMMP_USE_DISPLAY_POINTS 1
 #define GMMP_USE_HIGH_RESOLUTION_POINTS 2
-
 declare function GetMouseMovePointsEx(byval cbSize as UINT, byval lppt as LPMOUSEMOVEPOINT, byval lpptBuf as LPMOUSEMOVEPOINT, byval nBufPoints as long, byval resolution as DWORD) as long
 
 #define DESKTOP_READOBJECTS __MSABI_LONG(&h0001)
@@ -1361,7 +1355,6 @@ type LPMDINEXTMENU as tagMDINEXTMENU ptr
 
 declare function RegisterWindowMessageA(byval lpString as LPCSTR) as UINT
 declare function RegisterWindowMessageW(byval lpString as LPCWSTR) as UINT
-
 #define SIZE_RESTORED 0
 #define SIZE_MINIMIZED 1
 #define SIZE_MAXIMIZED 2
@@ -1394,7 +1387,6 @@ end type
 
 type NCCALCSIZE_PARAMS as tagNCCALCSIZE_PARAMS
 type LPNCCALCSIZE_PARAMS as tagNCCALCSIZE_PARAMS ptr
-
 #define WVR_ALIGNTOP &h0010
 #define WVR_ALIGNLEFT &h0020
 #define WVR_ALIGNBOTTOM &h0040
@@ -1426,9 +1418,7 @@ end type
 
 type TRACKMOUSEEVENT as tagTRACKMOUSEEVENT
 type LPTRACKMOUSEEVENT as tagTRACKMOUSEEVENT ptr
-
 declare function TrackMouseEvent(byval lpEventTrack as LPTRACKMOUSEEVENT) as WINBOOL
-
 #define WS_OVERLAPPED __MSABI_LONG(&h00000000)
 #define WS_POPUP __MSABI_LONG(&h80000000)
 #define WS_CHILD __MSABI_LONG(&h40000000)
@@ -1532,9 +1522,7 @@ declare function TrackMouseEvent(byval lpEventTrack as LPTRACKMOUSEEVENT) as WIN
 #define BF_ADJUST &h2000
 #define BF_FLAT &h4000
 #define BF_MONO &h8000
-
 declare function DrawEdge(byval hdc as HDC, byval qrc as LPRECT, byval edge as UINT, byval grfFlags as UINT) as WINBOOL
-
 #define DFC_CAPTION 1
 #define DFC_MENU 2
 #define DFC_SCROLL 3
@@ -1570,9 +1558,7 @@ declare function DrawEdge(byval hdc as HDC, byval qrc as LPRECT, byval edge as U
 #define DFCS_ADJUSTRECT &h2000
 #define DFCS_FLAT &h4000
 #define DFCS_MONO &h8000
-
 declare function DrawFrameControl(byval as HDC, byval as LPRECT, byval as UINT, byval as UINT) as WINBOOL
-
 #define DC_ACTIVE &h0001
 #define DC_SMALLCAP &h0002
 #define DC_ICON &h0004
@@ -1580,14 +1566,10 @@ declare function DrawFrameControl(byval as HDC, byval as LPRECT, byval as UINT, 
 #define DC_INBUTTON &h0010
 #define DC_GRADIENT &h0020
 #define DC_BUTTONS &h1000
-
 declare function DrawCaption(byval hwnd as HWND, byval hdc as HDC, byval lprect as const RECT ptr, byval flags as UINT) as WINBOOL
-
 #define IDANI_OPEN 1
 #define IDANI_CAPTION 3
-
 declare function DrawAnimatedRects(byval hwnd as HWND, byval idAni as long, byval lprcFrom as const RECT ptr, byval lprcTo as const RECT ptr) as WINBOOL
-
 #define CF_TEXT 1
 #define CF_BITMAP 2
 #define CF_METAFILEPICT 3
@@ -1721,7 +1703,6 @@ end type
 
 type STYLESTRUCT as tagSTYLESTRUCT
 type LPSTYLESTRUCT as tagSTYLESTRUCT ptr
-
 #define ODT_MENU 1
 #define ODT_LISTBOX 2
 #define ODT_COMBOBOX 3
@@ -1824,10 +1805,8 @@ declare function PeekMessageW(byval lpMsg as LPMSG, byval hWnd as HWND, byval wM
 #define PM_QS_POSTMESSAGE (((QS_POSTMESSAGE or QS_HOTKEY) or QS_TIMER) shl 16)
 #define PM_QS_PAINT (QS_PAINT shl 16)
 #define PM_QS_SENDMESSAGE (QS_SENDMESSAGE shl 16)
-
 declare function RegisterHotKey(byval hWnd as HWND, byval id as long, byval fsModifiers as UINT, byval vk as UINT) as WINBOOL
 declare function UnregisterHotKey(byval hWnd as HWND, byval id as long) as WINBOOL
-
 #define MOD_WIN &h0008
 
 #if _WIN32_WINNT = &h0602
@@ -1901,10 +1880,8 @@ declare function BroadcastSystemMessageW(byval flags as DWORD, byval lpInfo as L
 #define BSF_RETURNHDESK &h00000200
 #define BSF_LUID &h00000400
 #define BROADCAST_QUERY_DENY &h424D5144
-
 type HDEVNOTIFY as PVOID
 type PHDEVNOTIFY as HDEVNOTIFY ptr
-
 #define DEVICE_NOTIFY_WINDOW_HANDLE &h00000000
 #define DEVICE_NOTIFY_SERVICE_HANDLE &h00000001
 #define DEVICE_NOTIFY_ALL_INTERFACE_CLASSES &h00000004
@@ -1946,7 +1923,6 @@ type PHDEVNOTIFY as HDEVNOTIFY ptr
 	end type
 
 	type PPOWERBROADCAST_SETTING as POWERBROADCAST_SETTING ptr
-
 	extern GUID_POWERSCHEME_PERSONALITY as const GUID
 	extern GUID_MIN_POWER_SAVINGS as const GUID
 	extern GUID_MAX_POWER_SAVINGS as const GUID
@@ -2019,10 +1995,8 @@ declare function RegisterClassExA(byval as const WNDCLASSEXA ptr) as ATOM
 declare function RegisterClassExW(byval as const WNDCLASSEXW ptr) as ATOM
 declare function GetClassInfoExA(byval hInstance as HINSTANCE, byval lpszClass as LPCSTR, byval lpwcx as LPWNDCLASSEXA) as WINBOOL
 declare function GetClassInfoExW(byval hInstance as HINSTANCE, byval lpszClass as LPCWSTR, byval lpwcx as LPWNDCLASSEXW) as WINBOOL
-
 #define CW_USEDEFAULT clng(&h80000000)
 #define HWND_DESKTOP cast(HWND, 0)
-
 type PREGISTERCLASSNAMEW as function(byval as LPCWSTR) as BOOLEAN
 
 #ifdef UNICODE
@@ -2035,10 +2009,8 @@ type PREGISTERCLASSNAMEW as function(byval as LPCWSTR) as BOOLEAN
 
 declare function CreateWindowExA(byval dwExStyle as DWORD, byval lpClassName as LPCSTR, byval lpWindowName as LPCSTR, byval dwStyle as DWORD, byval X as long, byval Y as long, byval nWidth as long, byval nHeight as long, byval hWndParent as HWND, byval hMenu as HMENU, byval hInstance as HINSTANCE, byval lpParam as LPVOID) as HWND
 declare function CreateWindowExW(byval dwExStyle as DWORD, byval lpClassName as LPCWSTR, byval lpWindowName as LPCWSTR, byval dwStyle as DWORD, byval X as long, byval Y as long, byval nWidth as long, byval nHeight as long, byval hWndParent as HWND, byval hMenu as HMENU, byval hInstance as HINSTANCE, byval lpParam as LPVOID) as HWND
-
 #define CreateWindowA(lpClassName, lpWindowName, dwStyle, x, y, nWidth, nHeight, hWndParent, hMenu, hInstance, lpParam) CreateWindowExA(cast(DWORD, 0), lpClassName, lpWindowName, dwStyle, x, y, nWidth, nHeight, hWndParent, hMenu, hInstance, lpParam)
 #define CreateWindowW(lpClassName, lpWindowName, dwStyle, x, y, nWidth, nHeight, hWndParent, hMenu, hInstance, lpParam) CreateWindowExW(cast(DWORD, 0), lpClassName, lpWindowName, dwStyle, x, y, nWidth, nHeight, hWndParent, hMenu, hInstance, lpParam)
-
 declare function IsWindow(byval hWnd as HWND) as WINBOOL
 declare function IsMenu(byval hMenu as HMENU) as WINBOOL
 declare function IsChild(byval hWndParent as HWND, byval hWnd as HWND) as WINBOOL
@@ -2062,22 +2034,17 @@ end type
 
 type UPDATELAYEREDWINDOWINFO as tagUPDATELAYEREDWINDOWINFO
 type PUPDATELAYEREDWINDOWINFO as tagUPDATELAYEREDWINDOWINFO ptr
-
 declare function UpdateLayeredWindowIndirect(byval hWnd as HWND, byval pULWInfo as const UPDATELAYEREDWINDOWINFO ptr) as WINBOOL
 declare function GetLayeredWindowAttributes(byval hwnd as HWND, byval pcrKey as COLORREF ptr, byval pbAlpha as UBYTE ptr, byval pdwFlags as DWORD ptr) as WINBOOL
-
 #define PW_CLIENTONLY &h00000001
-
 declare function PrintWindow(byval hwnd as HWND, byval hdcBlt as HDC, byval nFlags as UINT) as WINBOOL
 declare function SetLayeredWindowAttributes(byval hwnd as HWND, byval crKey as COLORREF, byval bAlpha as UBYTE, byval dwFlags as DWORD) as WINBOOL
-
 #define LWA_COLORKEY &h00000001
 #define LWA_ALPHA &h00000002
 #define ULW_COLORKEY &h00000001
 #define ULW_ALPHA &h00000002
 #define ULW_OPAQUE &h00000004
 #define ULW_EX_NORESIZE &h00000008
-
 declare function ShowWindowAsync(byval hWnd as HWND, byval nCmdShow as long) as WINBOOL
 declare function FlashWindow(byval hWnd as HWND, byval bInvert as WINBOOL) as WINBOOL
 
@@ -2090,9 +2057,7 @@ type FLASHWINFO
 end type
 
 type PFLASHWINFO as FLASHWINFO ptr
-
 declare function FlashWindowEx(byval pfwi as PFLASHWINFO) as WINBOOL
-
 #define FLASHW_STOP 0
 #define FLASHW_CAPTION &h00000001
 #define FLASHW_TRAY &h00000002
@@ -2188,7 +2153,6 @@ type LPDLGITEMTEMPLATEW as DLGITEMTEMPLATE ptr
 
 #ifdef UNICODE
 	type LPDLGITEMTEMPLATE as LPDLGITEMTEMPLATEW
-
 	#define CreateDialogParam CreateDialogParamW
 	#define CreateDialogIndirectParam CreateDialogIndirectParamW
 	#define CreateDialog CreateDialogW
@@ -2203,7 +2167,6 @@ type LPDLGITEMTEMPLATEW as DLGITEMTEMPLATE ptr
 	#define DefDlgProc DefDlgProcW
 #else
 	type LPDLGITEMTEMPLATE as LPDLGITEMTEMPLATEA
-
 	#define CreateDialogParam CreateDialogParamA
 	#define CreateDialogIndirectParam CreateDialogIndirectParamA
 	#define CreateDialog CreateDialogA
@@ -2257,7 +2220,6 @@ declare function GetDlgCtrlID(byval hWnd as HWND) as long
 declare function GetDialogBaseUnits() as long
 declare function DefDlgProcA(byval hDlg as HWND, byval Msg as UINT, byval wParam as WPARAM, byval lParam as LPARAM) as LRESULT
 declare function DefDlgProcW(byval hDlg as HWND, byval Msg as UINT, byval wParam as WPARAM, byval lParam as LPARAM) as LRESULT
-
 #define DLGWINDOWEXTRA 30
 
 #ifdef UNICODE
@@ -2410,9 +2372,7 @@ declare function VkKeyScanExW(byval ch as wchar_t, byval dwhkl as HKL) as SHORT
 #define KEYEVENTF_KEYUP &h0002
 #define KEYEVENTF_UNICODE &h0004
 #define KEYEVENTF_SCANCODE &h0008
-
 declare sub keybd_event(byval bVk as UBYTE, byval bScan as UBYTE, byval dwFlags as DWORD, byval dwExtraInfo as ULONG_PTR)
-
 #define MOUSEEVENTF_MOVE &h0001
 #define MOUSEEVENTF_LEFTDOWN &h0002
 #define MOUSEEVENTF_LEFTUP &h0004
@@ -2425,7 +2385,6 @@ declare sub keybd_event(byval bVk as UBYTE, byval bScan as UBYTE, byval dwFlags 
 #define MOUSEEVENTF_WHEEL &h0800
 #define MOUSEEVENTF_VIRTUALDESK &h4000
 #define MOUSEEVENTF_ABSOLUTE &h8000
-
 declare sub mouse_event(byval dwFlags as DWORD, byval dx as DWORD, byval dy as DWORD, byval dwData as DWORD, byval dwExtraInfo as ULONG_PTR)
 
 type tagMOUSEINPUT
@@ -2480,7 +2439,6 @@ end type
 type INPUT as tagINPUT
 type PINPUT as tagINPUT ptr
 type LPINPUT as tagINPUT ptr
-
 declare function SendInput(byval cInputs as UINT, byval pInputs as LPINPUT, byval cbSize as long) as UINT
 
 type tagLASTINPUTINFO
@@ -2563,7 +2521,6 @@ declare function CopyAcceleratorTableW(byval hAccelSrc as HACCEL, byval lpAccelD
 
 declare function TranslateAcceleratorA(byval hWnd as HWND, byval hAccTable as HACCEL, byval lpMsg as LPMSG) as long
 declare function TranslateAcceleratorW(byval hWnd as HWND, byval hAccTable as HACCEL, byval lpMsg as LPMSG) as long
-
 #define SM_CXSCREEN 0
 #define SM_CYSCREEN 1
 #define SM_CXVSCROLL 2
@@ -2711,9 +2668,7 @@ declare function GetMenuStringA(byval hMenu as HMENU, byval uIDItem as UINT, byv
 declare function GetMenuStringW(byval hMenu as HMENU, byval uIDItem as UINT, byval lpString as LPWSTR, byval cchMax as long, byval flags as UINT) as long
 declare function GetMenuState(byval hMenu as HMENU, byval uId as UINT, byval uFlags as UINT) as UINT
 declare function DrawMenuBar(byval hWnd as HWND) as WINBOOL
-
 #define PMB_ACTIVE &h00000001
-
 declare function GetSystemMenu(byval hWnd as HWND, byval bRevert as WINBOOL) as HMENU
 declare function CreateMenu() as HMENU
 declare function CreatePopupMenu() as HMENU
@@ -2747,9 +2702,7 @@ end type
 
 type TPMPARAMS as tagTPMPARAMS
 type LPTPMPARAMS as TPMPARAMS ptr
-
 declare function TrackPopupMenuEx(byval as HMENU, byval as UINT, byval as long, byval as long, byval as HWND, byval as LPTPMPARAMS) as WINBOOL
-
 #define MNS_NOCHECK &h80000000
 #define MNS_MODELESS &h40000000
 #define MNS_DRAGDROP &h20000000
@@ -2780,7 +2733,6 @@ type LPCMENUINFO as const MENUINFO ptr
 declare function GetMenuInfo(byval as HMENU, byval as LPMENUINFO) as WINBOOL
 declare function SetMenuInfo(byval as HMENU, byval as LPCMENUINFO) as WINBOOL
 declare function EndMenu() as WINBOOL
-
 #define MND_CONTINUE 0
 #define MND_ENDMENU 1
 
@@ -2794,7 +2746,6 @@ end type
 
 type MENUGETOBJECTINFO as tagMENUGETOBJECTINFO
 type PMENUGETOBJECTINFO as tagMENUGETOBJECTINFO ptr
-
 #define MNGOF_TOPGAP &h00000001
 #define MNGOF_BOTTOMGAP &h00000002
 #define MNGO_NOINTERFACE &h00000000
@@ -2869,13 +2820,11 @@ type LPCMENUITEMINFOW as const MENUITEMINFOW ptr
 
 #ifdef UNICODE
 	type LPCMENUITEMINFO as LPCMENUITEMINFOW
-
 	#define InsertMenuItem InsertMenuItemW
 	#define GetMenuItemInfo GetMenuItemInfoW
 	#define SetMenuItemInfo SetMenuItemInfoW
 #else
 	type LPCMENUITEMINFO as LPCMENUITEMINFOA
-
 	#define InsertMenuItem InsertMenuItemA
 	#define GetMenuItemInfo GetMenuItemInfoA
 	#define SetMenuItemInfo SetMenuItemInfoA
@@ -2887,10 +2836,8 @@ declare function GetMenuItemInfoA(byval hmenu as HMENU, byval item as UINT, byva
 declare function GetMenuItemInfoW(byval hmenu as HMENU, byval item as UINT, byval fByPosition as WINBOOL, byval lpmii as LPMENUITEMINFOW) as WINBOOL
 declare function SetMenuItemInfoA(byval hmenu as HMENU, byval item as UINT, byval fByPositon as WINBOOL, byval lpmii as LPCMENUITEMINFOA) as WINBOOL
 declare function SetMenuItemInfoW(byval hmenu as HMENU, byval item as UINT, byval fByPositon as WINBOOL, byval lpmii as LPCMENUITEMINFOW) as WINBOOL
-
 #define GMDI_USEDISABLED __MSABI_LONG(&h0001)
 #define GMDI_GOINTOPOPUPS __MSABI_LONG(&h0002)
-
 declare function GetMenuDefaultItem(byval hMenu as HMENU, byval fByPos as UINT, byval gmdiFlags as UINT) as UINT
 declare function SetMenuDefaultItem(byval hMenu as HMENU, byval uItem as UINT, byval fByPos as UINT) as WINBOOL
 declare function GetMenuItemRect(byval hWnd as HWND, byval hMenu as HMENU, byval uItem as UINT, byval lprcItem as LPRECT) as WINBOOL
@@ -3005,7 +2952,6 @@ declare function DrawTextExW(byval hdc as HDC, byval lpchText as LPWSTR, byval c
 
 declare function GrayStringA(byval hDC as HDC, byval hBrush as HBRUSH, byval lpOutputFunc as GRAYSTRINGPROC, byval lpData as LPARAM, byval nCount as long, byval X as long, byval Y as long, byval nWidth as long, byval nHeight as long) as WINBOOL
 declare function GrayStringW(byval hDC as HDC, byval hBrush as HBRUSH, byval lpOutputFunc as GRAYSTRINGPROC, byval lpData as LPARAM, byval nCount as long, byval X as long, byval Y as long, byval nWidth as long, byval nHeight as long) as WINBOOL
-
 #define DST_COMPLEX &h0000
 #define DST_TEXT &h0001
 #define DST_PREFIXTEXT &h0002
@@ -3032,14 +2978,10 @@ declare function PaintDesktop(byval hdc as HDC) as WINBOOL
 declare sub SwitchToThisWindow(byval hwnd as HWND, byval fUnknown as WINBOOL)
 declare function SetForegroundWindow(byval hWnd as HWND) as WINBOOL
 declare function AllowSetForegroundWindow(byval dwProcessId as DWORD) as WINBOOL
-
 #define ASFW_ANY cast(DWORD, -1)
-
 declare function LockSetForegroundWindow(byval uLockCode as UINT) as WINBOOL
-
 #define LSFW_LOCK 1
 #define LSFW_UNLOCK 2
-
 declare function WindowFromDC(byval hDC as HDC) as HWND
 declare function GetDC(byval hWnd as HWND) as HDC
 declare function GetDCEx(byval hWnd as HWND, byval hrgnClip as HRGN, byval flags as DWORD) as HDC
@@ -3152,7 +3094,6 @@ declare function GetClientRect(byval hWnd as HWND, byval lpRect as LPRECT) as WI
 declare function GetWindowRect(byval hWnd as HWND, byval lpRect as LPRECT) as WINBOOL
 declare function AdjustWindowRect(byval lpRect as LPRECT, byval dwStyle as DWORD, byval bMenu as WINBOOL) as WINBOOL
 declare function AdjustWindowRectEx(byval lpRect as LPRECT, byval dwStyle as DWORD, byval bMenu as WINBOOL, byval dwExStyle as DWORD) as WINBOOL
-
 #define HELPINFO_WINDOW &h0001
 #define HELPINFO_MENUITEM &h0002
 
@@ -3167,7 +3108,6 @@ end type
 
 type HELPINFO as tagHELPINFO
 type LPHELPINFO as tagHELPINFO ptr
-
 declare function SetWindowContextHelpId(byval as HWND, byval as DWORD) as WINBOOL
 declare function GetWindowContextHelpId(byval as HWND) as DWORD
 declare function SetMenuContextHelpId(byval as HMENU, byval as DWORD) as WINBOOL
@@ -3223,7 +3163,6 @@ declare function MessageBoxA(byval hWnd as HWND, byval lpText as LPCSTR, byval l
 declare function MessageBoxW(byval hWnd as HWND, byval lpText as LPCWSTR, byval lpCaption as LPCWSTR, byval uType as UINT) as long
 declare function MessageBoxExA(byval hWnd as HWND, byval lpText as LPCSTR, byval lpCaption as LPCSTR, byval uType as UINT, byval wLanguageId as WORD) as long
 declare function MessageBoxExW(byval hWnd as HWND, byval lpText as LPCWSTR, byval lpCaption as LPCWSTR, byval uType as UINT, byval wLanguageId as WORD) as long
-
 type MSGBOXCALLBACK as sub(byval lpHelpInfo as LPHELPINFO)
 
 type tagMSGBOXPARAMSA
@@ -3264,13 +3203,11 @@ type LPMSGBOXPARAMSW as tagMSGBOXPARAMSW ptr
 	type MSGBOXPARAMS as MSGBOXPARAMSW
 	type PMSGBOXPARAMS as PMSGBOXPARAMSW
 	type LPMSGBOXPARAMS as LPMSGBOXPARAMSW
-
 	#define MessageBoxIndirect MessageBoxIndirectW
 #else
 	type MSGBOXPARAMS as MSGBOXPARAMSA
 	type PMSGBOXPARAMS as PMSGBOXPARAMSA
 	type LPMSGBOXPARAMS as LPMSGBOXPARAMSA
-
 	#define MessageBoxIndirect MessageBoxIndirectA
 #endif
 
@@ -3302,9 +3239,7 @@ declare function ChildWindowFromPoint(byval hWndParent as HWND, byval Point as P
 #define CWP_SKIPINVISIBLE &h0001
 #define CWP_SKIPDISABLED &h0002
 #define CWP_SKIPTRANSPARENT &h0004
-
 declare function ChildWindowFromPointEx(byval hwnd as HWND, byval pt as POINT, byval flags as UINT) as HWND
-
 #define CTLCOLOR_MSGBOX 0
 #define CTLCOLOR_EDIT 1
 #define CTLCOLOR_LISTBOX 2
@@ -3464,9 +3399,7 @@ declare function RegisterShellHookWindow(byval hwnd as HWND) as WINBOOL
 declare function DeregisterShellHookWindow(byval hwnd as HWND) as WINBOOL
 declare function EnumWindows(byval lpEnumFunc as WNDENUMPROC, byval lParam as LPARAM) as WINBOOL
 declare function EnumThreadWindows(byval dwThreadId as DWORD, byval lpfn as WNDENUMPROC, byval lParam as LPARAM) as WINBOOL
-
 #define EnumTaskWindows(hTask, lpfn, lParam) EnumThreadWindows(HandleToUlong(hTask), lpfn, lParam)
-
 declare function GetClassNameA(byval hWnd as HWND, byval lpClassName as LPSTR, byval nMaxCount as long) as long
 declare function GetClassNameW(byval hWnd as HWND, byval lpClassName as LPWSTR, byval nMaxCount as long) as long
 declare function GetTopWindow(byval hWnd as HWND) as HWND
@@ -3474,14 +3407,10 @@ declare function GetTopWindow(byval hWnd as HWND) as HWND
 #define GetNextWindow(hWnd, wCmd) GetWindow(hWnd, wCmd)
 #define GetSysModalWindow() NULL
 #define SetSysModalWindow(hWnd) NULL
-
 declare function GetWindowThreadProcessId(byval hWnd as HWND, byval lpdwProcessId as LPDWORD) as DWORD
 declare function IsGUIThread(byval bConvert as WINBOOL) as WINBOOL
-
 #define GetWindowTask(hWnd) cast(HANDLE, cast(DWORD_PTR, GetWindowThreadProcessId(hWnd, NULL)))
-
 declare function GetLastActivePopup(byval hWnd as HWND) as HWND
-
 #define GW_HWNDFIRST 0
 #define GW_HWNDLAST 1
 #define GW_HWNDNEXT 2
@@ -3490,7 +3419,6 @@ declare function GetLastActivePopup(byval hWnd as HWND) as HWND
 #define GW_CHILD 5
 #define GW_ENABLEDPOPUP 6
 #define GW_MAX 6
-
 declare function GetWindow(byval hWnd as HWND, byval uCmd as UINT) as HWND
 
 #ifdef UNICODE
@@ -3554,7 +3482,6 @@ declare function CallNextHookEx(byval hhk as HHOOK, byval nCode as long, byval w
 #define MFS_UNCHECKED MF_UNCHECKED
 #define MFS_UNHILITE MF_UNHILITE
 #define MFS_DEFAULT MF_DEFAULT
-
 declare function CheckMenuRadioItem(byval hmenu as HMENU, byval first as UINT, byval last as UINT, byval check as UINT, byval flags as UINT) as WINBOOL
 
 type MENUITEMTEMPLATEHEADER
@@ -3571,7 +3498,6 @@ type MENUITEMTEMPLATE
 end type
 
 type PMENUITEMTEMPLATE as MENUITEMTEMPLATE ptr
-
 #define MF_END __MSABI_LONG(&h00000080)
 #define SC_SIZE &hF000
 #define SC_MOVE &hF010
@@ -3632,7 +3558,6 @@ declare function DestroyCursor(byval hCursor as HCURSOR) as WINBOOL
 #define IDC_HAND MAKEINTRESOURCE(32649)
 #define IDC_APPSTARTING MAKEINTRESOURCE(32650)
 #define IDC_HELP MAKEINTRESOURCE(32651)
-
 declare function SetSystemCursor(byval hcur as HCURSOR, byval id as DWORD) as WINBOOL
 
 type _ICONINFO
@@ -3677,7 +3602,6 @@ end type
 
 type CURSORSHAPE as tagCURSORSHAPE
 type LPCURSORSHAPE as tagCURSORSHAPE ptr
-
 #define IMAGE_BITMAP 0
 #define IMAGE_ICON 1
 #define IMAGE_CURSOR 2
@@ -4163,7 +4087,6 @@ end type
 type SCROLLINFO as tagSCROLLINFO
 type LPSCROLLINFO as tagSCROLLINFO ptr
 type LPCSCROLLINFO as const SCROLLINFO ptr
-
 declare function SetScrollInfo(byval hwnd as HWND, byval nBar as long, byval lpsi as LPCSCROLLINFO, byval redraw as WINBOOL) as long
 declare function GetScrollInfo(byval hwnd as HWND, byval nBar as long, byval lpsi as LPSCROLLINFO) as WINBOOL
 
@@ -4239,7 +4162,6 @@ declare function CreateMDIWindowA(byval lpClassName as LPCSTR, byval lpWindowNam
 declare function CreateMDIWindowW(byval lpClassName as LPCWSTR, byval lpWindowName as LPCWSTR, byval dwStyle as DWORD, byval X as long, byval Y as long, byval nWidth as long, byval nHeight as long, byval hWndParent as HWND, byval hInstance as HINSTANCE, byval lParam as LPARAM) as HWND
 declare function TileWindows(byval hwndParent as HWND, byval wHow as UINT, byval lpRect as const RECT ptr, byval cKids as UINT, byval lpKids as const HWND ptr) as WORD
 declare function CascadeWindows(byval hwndParent as HWND, byval wHow as UINT, byval lpRect as const RECT ptr, byval cKids as UINT, byval lpKids as const HWND ptr) as WORD
-
 type HELPPOLY as DWORD
 
 type tagMULTIKEYHELPA
@@ -4346,12 +4268,9 @@ type LPHELPWININFOW as tagHELPWININFOW ptr
 
 declare function WinHelpA(byval hWndMain as HWND, byval lpszHelp as LPCSTR, byval uCommand as UINT, byval dwData as ULONG_PTR) as WINBOOL
 declare function WinHelpW(byval hWndMain as HWND, byval lpszHelp as LPCWSTR, byval uCommand as UINT, byval dwData as ULONG_PTR) as WINBOOL
-
 #define GR_GDIOBJECTS 0
 #define GR_USEROBJECTS 1
-
 declare function GetGuiResources(byval hProcess as HANDLE, byval uiFlags as DWORD) as DWORD
-
 #define SPI_GETBEEP &h0001
 #define SPI_SETBEEP &h0002
 #define SPI_GETMOUSE &h0003
@@ -4881,17 +4800,13 @@ declare function ChangeDisplaySettingsA(byval lpDevMode as LPDEVMODEA, byval dwF
 declare function ChangeDisplaySettingsW(byval lpDevMode as LPDEVMODEW, byval dwFlags as DWORD) as LONG
 declare function ChangeDisplaySettingsExA(byval lpszDeviceName as LPCSTR, byval lpDevMode as LPDEVMODEA, byval hwnd as HWND, byval dwflags as DWORD, byval lParam as LPVOID) as LONG
 declare function ChangeDisplaySettingsExW(byval lpszDeviceName as LPCWSTR, byval lpDevMode as LPDEVMODEW, byval hwnd as HWND, byval dwflags as DWORD, byval lParam as LPVOID) as LONG
-
 #define ENUM_CURRENT_SETTINGS cast(DWORD, -1)
 #define ENUM_REGISTRY_SETTINGS cast(DWORD, -2)
-
 declare function EnumDisplaySettingsA(byval lpszDeviceName as LPCSTR, byval iModeNum as DWORD, byval lpDevMode as LPDEVMODEA) as WINBOOL
 declare function EnumDisplaySettingsW(byval lpszDeviceName as LPCWSTR, byval iModeNum as DWORD, byval lpDevMode as LPDEVMODEW) as WINBOOL
 declare function EnumDisplaySettingsExA(byval lpszDeviceName as LPCSTR, byval iModeNum as DWORD, byval lpDevMode as LPDEVMODEA, byval dwFlags as DWORD) as WINBOOL
 declare function EnumDisplaySettingsExW(byval lpszDeviceName as LPCWSTR, byval iModeNum as DWORD, byval lpDevMode as LPDEVMODEW, byval dwFlags as DWORD) as WINBOOL
-
 #define EDS_RAWMODE &h00000002
-
 declare function EnumDisplayDevicesA(byval lpDevice as LPCSTR, byval iDevNum as DWORD, byval lpDisplayDevice as PDISPLAY_DEVICEA, byval dwFlags as DWORD) as WINBOOL
 declare function EnumDisplayDevicesW(byval lpDevice as LPCWSTR, byval iDevNum as DWORD, byval lpDisplayDevice as PDISPLAY_DEVICEW, byval dwFlags as DWORD) as WINBOOL
 
@@ -4915,7 +4830,6 @@ end type
 
 type FILTERKEYS as tagFILTERKEYS
 type LPFILTERKEYS as tagFILTERKEYS ptr
-
 #define FKF_FILTERKEYSON &h00000001
 #define FKF_AVAILABLE &h00000002
 #define FKF_HOTKEYACTIVE &h00000004
@@ -4931,7 +4845,6 @@ end type
 
 type STICKYKEYS as tagSTICKYKEYS
 type LPSTICKYKEYS as tagSTICKYKEYS ptr
-
 #define SKF_STICKYKEYSON &h00000001
 #define SKF_AVAILABLE &h00000002
 #define SKF_HOTKEYACTIVE &h00000004
@@ -4970,7 +4883,6 @@ end type
 
 type MOUSEKEYS as tagMOUSEKEYS
 type LPMOUSEKEYS as tagMOUSEKEYS ptr
-
 #define MKF_MOUSEKEYSON &h00000001
 #define MKF_AVAILABLE &h00000002
 #define MKF_HOTKEYACTIVE &h00000004
@@ -4993,7 +4905,6 @@ end type
 
 type ACCESSTIMEOUT as tagACCESSTIMEOUT
 type LPACCESSTIMEOUT as tagACCESSTIMEOUT ptr
-
 #define ATF_TIMEOUTON &h00000001
 #define ATF_ONOFFFEEDBACK &h00000002
 #define SSGF_NONE 0
@@ -5063,16 +4974,13 @@ end type
 
 type TOGGLEKEYS as tagTOGGLEKEYS
 type LPTOGGLEKEYS as tagTOGGLEKEYS ptr
-
 #define TKF_TOGGLEKEYSON &h00000001
 #define TKF_AVAILABLE &h00000002
 #define TKF_HOTKEYACTIVE &h00000004
 #define TKF_CONFIRMHOTKEY &h00000008
 #define TKF_HOTKEYSOUND &h00000010
 #define TKF_INDICATOR &h00000020
-
 declare sub SetDebugErrorLevel(byval dwLevel as DWORD)
-
 #define SLE_ERROR &h00000001
 #define SLE_MINORERROR &h00000002
 #define SLE_WARNING &h00000003
@@ -5088,7 +4996,6 @@ declare function EndTask(byval hWnd as HWND, byval fShutDown as WINBOOL, byval f
 declare function MonitorFromPoint(byval pt as POINT, byval dwFlags as DWORD) as HMONITOR
 declare function MonitorFromRect(byval lprc as LPCRECT, byval dwFlags as DWORD) as HMONITOR
 declare function MonitorFromWindow(byval hwnd as HWND, byval dwFlags as DWORD) as HMONITOR
-
 #define MONITORINFOF_PRIMARY &h00000001
 
 type tagMONITORINFO
@@ -5136,35 +5043,26 @@ type LPMONITORINFOEXW as tagMONITORINFOEXW ptr
 #ifdef UNICODE
 	type MONITORINFOEX as MONITORINFOEXW
 	type LPMONITORINFOEX as LPMONITORINFOEXW
-
 	#define GetMonitorInfo GetMonitorInfoW
 #else
 	type MONITORINFOEX as MONITORINFOEXA
 	type LPMONITORINFOEX as LPMONITORINFOEXA
-
 	#define GetMonitorInfo GetMonitorInfoA
 #endif
 
 declare function GetMonitorInfoA(byval hMonitor as HMONITOR, byval lpmi as LPMONITORINFO) as WINBOOL
 declare function GetMonitorInfoW(byval hMonitor as HMONITOR, byval lpmi as LPMONITORINFO) as WINBOOL
-
 type MONITORENUMPROC as function(byval as HMONITOR, byval as HDC, byval as LPRECT, byval as LPARAM) as WINBOOL
-
 declare function EnumDisplayMonitors(byval hdc as HDC, byval lprcClip as LPCRECT, byval lpfnEnum as MONITORENUMPROC, byval dwData as LPARAM) as WINBOOL
 declare sub NotifyWinEvent(byval event as DWORD, byval hwnd as HWND, byval idObject as LONG, byval idChild as LONG)
-
 type WINEVENTPROC as sub(byval hWinEventHook as HWINEVENTHOOK, byval event as DWORD, byval hwnd as HWND, byval idObject as LONG, byval idChild as LONG, byval idEventThread as DWORD, byval dwmsEventTime as DWORD)
-
 declare function SetWinEventHook(byval eventMin as DWORD, byval eventMax as DWORD, byval hmodWinEventProc as HMODULE, byval pfnWinEventProc as WINEVENTPROC, byval idProcess as DWORD, byval idThread as DWORD, byval dwFlags as DWORD) as HWINEVENTHOOK
 declare function IsWinEventHookInstalled(byval event as DWORD) as WINBOOL
-
 #define WINEVENT_OUTOFCONTEXT &h0000
 #define WINEVENT_SKIPOWNTHREAD &h0001
 #define WINEVENT_SKIPOWNPROCESS &h0002
 #define WINEVENT_INCONTEXT &h0004
-
 declare function UnhookWinEvent(byval hWinEventHook as HWINEVENTHOOK) as WINBOOL
-
 #define CHILDID_SELF 0
 #define INDEXID_OBJECT 0
 #define INDEXID_CONTAINER 0
@@ -5338,9 +5236,7 @@ end type
 type CURSORINFO as tagCURSORINFO
 type PCURSORINFO as tagCURSORINFO ptr
 type LPCURSORINFO as tagCURSORINFO ptr
-
 #define CURSOR_SHOWING &h00000001
-
 declare function GetCursorInfo(byval pci as PCURSORINFO) as WINBOOL
 
 type tagWINDOWINFO
@@ -5359,9 +5255,7 @@ end type
 type WINDOWINFO as tagWINDOWINFO
 type PWINDOWINFO as tagWINDOWINFO ptr
 type LPWINDOWINFO as tagWINDOWINFO ptr
-
 #define WS_ACTIVECAPTION &h0001
-
 declare function GetWindowInfo(byval hwnd as HWND, byval pwi as PWINDOWINFO) as WINBOOL
 
 type tagTITLEBARINFO
@@ -5373,7 +5267,6 @@ end type
 type TITLEBARINFO as tagTITLEBARINFO
 type PTITLEBARINFO as tagTITLEBARINFO ptr
 type LPTITLEBARINFO as tagTITLEBARINFO ptr
-
 declare function GetTitleBarInfo(byval hwnd as HWND, byval pti as PTITLEBARINFO) as WINBOOL
 
 type tagMENUBARINFO
@@ -5388,7 +5281,6 @@ end type
 type MENUBARINFO as tagMENUBARINFO
 type PMENUBARINFO as tagMENUBARINFO ptr
 type LPMENUBARINFO as tagMENUBARINFO ptr
-
 declare function GetMenuBarInfo(byval hwnd as HWND, byval idObject as LONG, byval idItem as LONG, byval pmbi as PMENUBARINFO) as WINBOOL
 
 type tagSCROLLBARINFO
@@ -5404,7 +5296,6 @@ end type
 type SCROLLBARINFO as tagSCROLLBARINFO
 type PSCROLLBARINFO as tagSCROLLBARINFO ptr
 type LPSCROLLBARINFO as tagSCROLLBARINFO ptr
-
 declare function GetScrollBarInfo(byval hwnd as HWND, byval idObject as LONG, byval psbi as PSCROLLBARINFO) as WINBOOL
 
 type tagCOMBOBOXINFO
@@ -5420,7 +5311,6 @@ end type
 type COMBOBOXINFO as tagCOMBOBOXINFO
 type PCOMBOBOXINFO as tagCOMBOBOXINFO ptr
 type LPCOMBOBOXINFO as tagCOMBOBOXINFO ptr
-
 declare function GetComboBoxInfo(byval hwndCombo as HWND, byval pcbi as PCOMBOBOXINFO) as WINBOOL
 
 #define GA_PARENT 1
@@ -5471,7 +5361,6 @@ type HRAWINPUT__
 end type
 
 type HRAWINPUT as HRAWINPUT__ ptr
-
 #define GET_RAWINPUT_CODE_WPARAM(wParam) ((wParam) and &hff)
 #define RIM_INPUT 0
 #define RIM_INPUTSINK 1
@@ -5590,9 +5479,7 @@ type LPRAWINPUT as tagRAWINPUT ptr
 #define NEXTRAWINPUTBLOCK(ptr) cast(PRAWINPUT, RAWINPUT_ALIGN(cast(ULONG_PTR, cast(PBYTE, (ptr)) + (ptr)->header.dwSize)))
 #define RID_INPUT &h10000003
 #define RID_HEADER &h10000005
-
 declare function GetRawInputData(byval hRawInput as HRAWINPUT, byval uiCommand as UINT, byval pData as LPVOID, byval pcbSize as PUINT, byval cbSizeHeader as UINT) as UINT
-
 #define RIDI_PREPARSEDDATA &h20000005
 #define RIDI_DEVICENAME &h20000007
 #define RIDI_DEVICEINFO &h2000000b
@@ -5719,7 +5606,6 @@ type PCRAWINPUTDEVICE as const RAWINPUTDEVICE ptr
 
 	type TOUCHINPUT as _TOUCHINPUT
 	type PTOUCHINPUT as _TOUCHINPUT ptr
-
 	declare function CloseTouchInputHandle(byval hTouchInput as HANDLE) as WINBOOL
 	declare function GetTouchInputInfo(byval hTouchInput as HANDLE, byval cInputs as UINT, byval pInputs as PTOUCHINPUT, byval cbSize as long) as WINBOOL
 	declare function IsTouchWindow(byval hWnd as HWND, byval pulFlags as PULONG) as WINBOOL
@@ -5737,7 +5623,6 @@ end type
 
 type RAWINPUTDEVICELIST as tagRAWINPUTDEVICELIST
 type PRAWINPUTDEVICELIST as tagRAWINPUTDEVICELIST ptr
-
 declare function GetRawInputDeviceList(byval pRawInputDeviceList as PRAWINPUTDEVICELIST, byval puiNumDevices as PUINT, byval cbSize as UINT) as UINT
 declare function DefRawInputProc(byval paRawInput as PRAWINPUT ptr, byval nInput as INT_, byval cbSizeHeader as UINT) as LRESULT
 
@@ -5795,7 +5680,6 @@ declare function DefRawInputProc(byval paRawInput as PRAWINPUT ptr, byval nInput
 	end type
 
 	type HGESTUREINFO as HGESTUREINFO__ ptr
-
 	#define GID_ROTATE_ANGLE_TO_ARGUMENT(_arg_) cast(USHORT, (((_arg_) + (2.0 * 3.14159265)) / (4.0 * 3.14159265)) * 65535.0)
 	#define GID_ROTATE_ANGLE_FROM_ARGUMENT(_arg_) ((((cdbl((_arg_)) / 65535.0) * 4.0) * 3.14159265) - (2.0 * 3.14159265))
 
@@ -5834,7 +5718,6 @@ declare function DefRawInputProc(byval paRawInput as PRAWINPUT ptr, byval nInput
 
 	type GESTURECONFIG as _GESTURECONFIG
 	type PGESTURECONFIG as _GESTURECONFIG ptr
-
 	declare function SetGestureConfig(byval hwnd as HWND, byval dwReserved as DWORD, byval cIDs as UINT, byval pGestureConfig as PGESTURECONFIG, byval cbSize as UINT) as WINBOOL
 	declare function GetGestureConfig(byval hwnd as HWND, byval dwReserved as DWORD, byval dwFlags as DWORD, byval pcIDs as PUINT, byval pGestureConfig as PGESTURECONFIG, byval cbSize as UINT) as WINBOOL
 	declare function GetGestureInfo(byval hGestureInfo as HGESTUREINFO, byval pGestureInfo as PGESTUREINFO) as WINBOOL

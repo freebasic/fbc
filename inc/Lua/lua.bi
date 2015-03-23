@@ -23,28 +23,16 @@ extern "C"
 	#define LUA_USE_AFORMAT
 	#define LUA_LDIR !"!\\lua\\"
 	#define LUA_CDIR !"!\\"
-
-	#define LUA_PATH_DEFAULT _
-		LUA_LDIR "?.lua;" LUA_LDIR !"?\\init.lua;" _
-		LUA_CDIR "?.lua;" LUA_CDIR !"?\\init.lua;" !".\\?.lua"
-
-	#define LUA_CPATH_DEFAULT _
-		LUA_CDIR "?.dll;" LUA_CDIR  "loadall.dll;" !".\\?.dll"
-
+	#define LUA_PATH_DEFAULT LUA_LDIR "?.lua;" LUA_LDIR !"?\\init.lua;" LUA_CDIR "?.lua;" LUA_CDIR !"?\\init.lua;" !".\\?.lua"
+	#define LUA_CPATH_DEFAULT LUA_CDIR "?.dll;" LUA_CDIR "loadall.dll;" !".\\?.dll"
 	#define LUA_DIRSEP !"\\"
 #else
 	#define LUA_VDIR LUA_VERSION_MAJOR "." LUA_VERSION_MINOR "/"
 	#define LUA_ROOT "/usr/local/"
 	#define LUA_LDIR LUA_ROOT "share/lua/" LUA_VDIR
 	#define LUA_CDIR LUA_ROOT "lib/lua/" LUA_VDIR
-
-	#define LUA_PATH_DEFAULT _
-		LUA_LDIR "?.lua;" LUA_LDIR "?/init.lua;" _
-		LUA_CDIR "?.lua;" LUA_CDIR "?/init.lua;" "./?.lua"
-
-	#define LUA_CPATH_DEFAULT _
-		LUA_CDIR "?.so;" LUA_CDIR "loadall.so;" "./?.so"
-
+	#define LUA_PATH_DEFAULT LUA_LDIR "?.lua;" LUA_LDIR "?/init.lua;" LUA_CDIR "?.lua;" LUA_CDIR "?/init.lua;" "./?.lua"
+	#define LUA_CPATH_DEFAULT LUA_CDIR "?.so;" LUA_CDIR "loadall.so;" "./?.so"
 	#define LUA_DIRSEP "/"
 #endif
 
@@ -136,7 +124,6 @@ type lua_Alloc as function(byval ud as any ptr, byval ptr as any ptr, byval osiz
 type lua_Number as double
 type lua_Integer as integer
 type lua_Unsigned as ulong
-
 extern lua_ident as const zstring * len("$LuaVersion: " LUA_COPYRIGHT " $" "$LuaAuthors: " LUA_AUTHORS " $")
 
 declare function lua_newstate(byval f as lua_Alloc, byval ud as any ptr) as lua_State ptr
@@ -178,9 +165,7 @@ declare function lua_topointer(byval L as lua_State ptr, byval idx as long) as c
 #define LUA_OPMOD 4
 #define LUA_OPPOW 5
 #define LUA_OPUNM 6
-
 declare sub lua_arith(byval L as lua_State ptr, byval op as long)
-
 #define LUA_OPEQ 0
 #define LUA_OPLT 1
 #define LUA_OPLE 2
@@ -218,20 +203,14 @@ declare sub lua_rawsetp(byval L as lua_State ptr, byval idx as long, byval p as 
 declare function lua_setmetatable(byval L as lua_State ptr, byval objindex as long) as long
 declare sub lua_setuservalue(byval L as lua_State ptr, byval idx as long)
 declare sub lua_callk(byval L as lua_State ptr, byval nargs as long, byval nresults as long, byval ctx as long, byval k as lua_CFunction)
-
 #define lua_call(L, n, r) lua_callk(L, (n), (r), 0, NULL)
-
 declare function lua_getctx(byval L as lua_State ptr, byval ctx as long ptr) as long
 declare function lua_pcallk(byval L as lua_State ptr, byval nargs as long, byval nresults as long, byval errfunc as long, byval ctx as long, byval k as lua_CFunction) as long
-
 #define lua_pcall(L, n, r, f) lua_pcallk(L, (n), (r), (f), 0, NULL)
-
 declare function lua_load(byval L as lua_State ptr, byval reader as lua_Reader, byval dt as any ptr, byval chunkname as const zstring ptr, byval mode as const zstring ptr) as long
 declare function lua_dump(byval L as lua_State ptr, byval writer as lua_Writer, byval data as any ptr) as long
 declare function lua_yieldk(byval L as lua_State ptr, byval nresults as long, byval ctx as long, byval k as lua_CFunction) as long
-
 #define lua_yield(L, n) lua_yieldk(L, (n), 0, NULL)
-
 declare function lua_resume(byval L as lua_State ptr, byval from as lua_State ptr, byval narg as long) as long
 declare function lua_status(byval L as lua_State ptr) as long
 
@@ -288,9 +267,7 @@ declare sub lua_setallocf(byval L as lua_State ptr, byval f as lua_Alloc, byval 
 #define LUA_MASKRET (1 shl LUA_HOOKRET)
 #define LUA_MASKLINE (1 shl LUA_HOOKLINE)
 #define LUA_MASKCOUNT (1 shl LUA_HOOKCOUNT)
-
 type lua_Debug as lua_Debug_
-
 type lua_Hook as sub(byval L as lua_State ptr, byval ar as lua_Debug ptr)
 
 declare function lua_getstack(byval L as lua_State ptr, byval level as long, byval ar as lua_Debug ptr) as long

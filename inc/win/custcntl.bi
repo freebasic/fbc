@@ -75,7 +75,6 @@ end type
 
 type CCSTYLEFLAGW as tagCCSTYLEFLAGW
 type LPCCSTYLEFLAGW as tagCCSTYLEFLAGW ptr
-
 #define CCF_NOTEXT &h00000001
 
 type tagCCINFOA

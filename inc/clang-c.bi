@@ -27,21 +27,15 @@ end type
 
 declare function clang_getCString(byval string as CXString) as const zstring ptr
 declare sub clang_disposeString(byval string as CXString)
-
 #define CLANG_C_BUILD_SYSTEM_H
-
 declare function clang_getBuildSessionTimestamp() as ulongint
-
 type CXVirtualFileOverlay as CXVirtualFileOverlayImpl ptr
-
 declare function clang_VirtualFileOverlay_create(byval options as ulong) as CXVirtualFileOverlay
 declare function clang_VirtualFileOverlay_addFileMapping(byval as CXVirtualFileOverlay, byval virtualPath as const zstring ptr, byval realPath as const zstring ptr) as CXErrorCode
 declare function clang_VirtualFileOverlay_setCaseSensitivity(byval as CXVirtualFileOverlay, byval caseSensitive as long) as CXErrorCode
 declare function clang_VirtualFileOverlay_writeToBuffer(byval as CXVirtualFileOverlay, byval options as ulong, byval out_buffer_ptr as zstring ptr ptr, byval out_buffer_size as ulong ptr) as CXErrorCode
 declare sub clang_VirtualFileOverlay_dispose(byval as CXVirtualFileOverlay)
-
 type CXModuleMapDescriptor as CXModuleMapDescriptorImpl ptr
-
 declare function clang_ModuleMapDescriptor_create(byval options as ulong) as CXModuleMapDescriptor
 declare function clang_ModuleMapDescriptor_setFrameworkModuleName(byval as CXModuleMapDescriptor, byval name as const zstring ptr) as CXErrorCode
 declare function clang_ModuleMapDescriptor_setUmbrellaHeader(byval as CXModuleMapDescriptor, byval name as const zstring ptr) as CXErrorCode
@@ -52,7 +46,7 @@ declare sub clang_ModuleMapDescriptor_dispose(byval as CXModuleMapDescriptor)
 #define CINDEX_VERSION_MINOR 27
 #define CINDEX_VERSION_ENCODE(major, minor) (((major) * 10000) + ((minor) * 1))
 #define CINDEX_VERSION CINDEX_VERSION_ENCODE(CINDEX_VERSION_MAJOR, CINDEX_VERSION_MINOR)
-#define CINDEX_VERSION_STRINGIZE_(major, minor) ((#major + ".") + #minor)
+#define CINDEX_VERSION_STRINGIZE_(major, minor) #major "." #minor
 #define CINDEX_VERSION_STRINGIZE(major, minor) CINDEX_VERSION_STRINGIZE_(major, minor)
 #define CINDEX_VERSION_STRING CINDEX_VERSION_STRINGIZE(CINDEX_VERSION_MAJOR, CINDEX_VERSION_MINOR)
 
@@ -93,9 +87,7 @@ end enum
 
 declare sub clang_CXIndex_setGlobalOptions(byval as CXIndex, byval options as ulong)
 declare function clang_CXIndex_getGlobalOptions(byval as CXIndex) as ulong
-
 type CXFile as any ptr
-
 declare function clang_getFileName(byval SFile as CXFile) as CXString
 declare function clang_getFileTime(byval SFile as CXFile) as time_t
 
@@ -155,7 +147,6 @@ end enum
 
 type CXDiagnostic as any ptr
 type CXDiagnosticSet as any ptr
-
 declare function clang_getNumDiagnosticsInSet(byval Diags as CXDiagnosticSet) as ulong
 declare function clang_getDiagnosticInSet(byval Diags as CXDiagnosticSet, byval Index as ulong) as CXDiagnostic
 
@@ -533,9 +524,7 @@ end enum
 
 declare function clang_getCursorLanguage(byval cursor as CXCursor) as CXLanguageKind
 declare function clang_Cursor_getTranslationUnit(byval as CXCursor) as CXTranslationUnit
-
 type CXCursorSet as CXCursorSetImpl ptr
-
 declare function clang_createCXCursorSet() as CXCursorSet
 declare sub clang_disposeCXCursorSet(byval cset as CXCursorSet)
 declare function clang_CXCursorSet_contains(byval cset as CXCursorSet, byval cursor as CXCursor) as ulong
@@ -704,7 +693,6 @@ enum
 end enum
 
 type CXCursorVisitor as function(byval cursor as CXCursor, byval parent as CXCursor, byval client_data as CXClientData) as CXChildVisitResult
-
 declare function clang_visitChildren(byval parent as CXCursor, byval visitor as CXCursorVisitor, byval client_data as CXClientData) as ulong
 declare function clang_getCursorUSR(byval as CXCursor) as CXString
 declare function clang_constructUSR_ObjCClass(byval class_name as const zstring ptr) as CXString
@@ -760,9 +748,7 @@ declare function clang_Cursor_isVariadic(byval C as CXCursor) as ulong
 declare function clang_Cursor_getCommentRange(byval C as CXCursor) as CXSourceRange
 declare function clang_Cursor_getRawCommentText(byval C as CXCursor) as CXString
 declare function clang_Cursor_getBriefCommentText(byval C as CXCursor) as CXString
-
 type CXModule as any ptr
-
 declare function clang_Cursor_getModule(byval C as CXCursor) as CXModule
 declare function clang_getModuleForFile(byval as CXTranslationUnit, byval as CXFile) as CXModule
 declare function clang_Module_getASTFile(byval Module as CXModule) as CXFile
@@ -812,7 +798,6 @@ declare function clang_getCursorKindSpelling(byval Kind as CXCursorKind) as CXSt
 declare sub clang_getDefinitionSpellingAndExtent(byval as CXCursor, byval startBuf as const zstring ptr ptr, byval endBuf as const zstring ptr ptr, byval startLine as ulong ptr, byval startColumn as ulong ptr, byval endLine as ulong ptr, byval endColumn as ulong ptr)
 declare sub clang_enableStackTraces()
 declare sub clang_executeOnThread(byval fn as sub(byval as any ptr), byval user_data as any ptr, byval stack_size as ulong)
-
 type CXCompletionString as any ptr
 
 type CXCompletionResult
@@ -909,13 +894,9 @@ declare function clang_codeCompleteGetContainerUSR(byval Results as CXCodeComple
 declare function clang_codeCompleteGetObjCSelector(byval Results as CXCodeCompleteResults ptr) as CXString
 declare function clang_getClangVersion() as CXString
 declare sub clang_toggleCrashRecovery(byval isEnabled as ulong)
-
 type CXInclusionVisitor as sub(byval included_file as CXFile, byval inclusion_stack as CXSourceLocation ptr, byval include_len as ulong, byval client_data as CXClientData)
-
 declare sub clang_getInclusions(byval tu as CXTranslationUnit, byval visitor as CXInclusionVisitor, byval client_data as CXClientData)
-
 type CXRemapping as any ptr
-
 declare function clang_getRemappings(byval path as const zstring ptr) as CXRemapping
 declare function clang_getRemappingsFromFileList(byval filePaths as const zstring ptr ptr, byval numFiles as ulong) as CXRemapping
 declare function clang_remap_getNumFiles(byval as CXRemapping) as ulong
@@ -942,7 +923,6 @@ end enum
 
 declare function clang_findReferencesInFile(byval cursor as CXCursor, byval file as CXFile, byval visitor as CXCursorAndRangeVisitor) as CXResult
 declare function clang_findIncludesInFile(byval TU as CXTranslationUnit, byval file as CXFile, byval visitor as CXCursorAndRangeVisitor) as CXResult
-
 type CXIdxClientFile as any ptr
 type CXIdxClientEntity as any ptr
 type CXIdxClientContainer as any ptr
@@ -1166,9 +1146,7 @@ declare function clang_index_getClientContainer(byval as const CXIdxContainerInf
 declare sub clang_index_setClientContainer(byval as const CXIdxContainerInfo ptr, byval as CXIdxClientContainer)
 declare function clang_index_getClientEntity(byval as const CXIdxEntityInfo ptr) as CXIdxClientEntity
 declare sub clang_index_setClientEntity(byval as const CXIdxEntityInfo ptr, byval as CXIdxClientEntity)
-
 type CXIndexAction as any ptr
-
 declare function clang_IndexAction_create(byval CIdx as CXIndex) as CXIndexAction
 declare sub clang_IndexAction_dispose(byval as CXIndexAction)
 
@@ -1186,7 +1164,6 @@ declare function clang_indexSourceFile(byval as CXIndexAction, byval client_data
 declare function clang_indexTranslationUnit(byval as CXIndexAction, byval client_data as CXClientData, byval index_callbacks as IndexerCallbacks ptr, byval index_callbacks_size as ulong, byval index_options as ulong, byval as CXTranslationUnit) as long
 declare sub clang_indexLoc_getFileLocation(byval loc as CXIdxLoc, byval indexFile as CXIdxClientFile ptr, byval file as CXFile ptr, byval line as ulong ptr, byval column as ulong ptr, byval offset as ulong ptr)
 declare function clang_indexLoc_getCXSourceLocation(byval loc as CXIdxLoc) as CXSourceLocation
-
 #define CLANG_C_DOCUMENTATION_H
 
 type CXComment
@@ -1261,7 +1238,6 @@ declare function clang_VerbatimLineComment_getText(byval Comment as CXComment) a
 declare function clang_HTMLTagComment_getAsString(byval Comment as CXComment) as CXString
 declare function clang_FullComment_getAsHTML(byval Comment as CXComment) as CXString
 declare function clang_FullComment_getAsXML(byval Comment as CXComment) as CXString
-
 #define CLANG_CXCOMPILATIONDATABASE_H
 
 type CXCompilationDatabase as any ptr

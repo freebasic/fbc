@@ -10,7 +10,6 @@
 extern "Windows"
 
 #define __WINE_D3D_H
-
 extern IID_IDirect3D as const GUID
 extern IID_IDirect3D2 as const GUID
 extern IID_IDirect3D3 as const GUID
@@ -43,60 +42,34 @@ type LPDIRECT3D as IDirect3D ptr
 type LPDIRECT3D2 as IDirect3D2 ptr
 type LPDIRECT3D3 as IDirect3D3 ptr
 type LPDIRECT3D7 as IDirect3D7 ptr
-
 type IDirect3DLight as IDirect3DLight_
-
 type LPDIRECT3DLIGHT as IDirect3DLight ptr
-
 type IDirect3DDevice as IDirect3DDevice_
-
 type LPDIRECT3DDEVICE as IDirect3DDevice ptr
-
 type IDirect3DDevice2 as IDirect3DDevice2_
-
 type LPDIRECT3DDEVICE2 as IDirect3DDevice2 ptr
-
 type IDirect3DDevice3 as IDirect3DDevice3_
-
 type LPDIRECT3DDEVICE3 as IDirect3DDevice3 ptr
-
 type IDirect3DDevice7 as IDirect3DDevice7_
-
 type LPDIRECT3DDEVICE7 as IDirect3DDevice7 ptr
-
 type IDirect3DViewport as IDirect3DViewport_
-
 type LPDIRECT3DVIEWPORT as IDirect3DViewport ptr
-
 type IDirect3DViewport2 as IDirect3DViewport2_
-
 type LPDIRECT3DVIEWPORT2 as IDirect3DViewport2 ptr
-
 type IDirect3DViewport3 as IDirect3DViewport3_
-
 type LPDIRECT3DVIEWPORT3 as IDirect3DViewport3 ptr
-
 type IDirect3DMaterial as IDirect3DMaterial_
-
 type LPDIRECT3DMATERIAL as IDirect3DMaterial ptr
-
 type IDirect3DMaterial2 as IDirect3DMaterial2_
-
 type LPDIRECT3DMATERIAL2 as IDirect3DMaterial2 ptr
-
 type IDirect3DMaterial3 as IDirect3DMaterial3_
-
 type LPDIRECT3DMATERIAL3 as IDirect3DMaterial3 ptr
 type LPDIRECT3DTEXTURE as IDirect3DTexture ptr
 type LPDIRECT3DTEXTURE2 as IDirect3DTexture2 ptr
 type LPDIRECT3DEXECUTEBUFFER as IDirect3DExecuteBuffer ptr
-
 type IDirect3DVertexBuffer as IDirect3DVertexBuffer_
-
 type LPDIRECT3DVERTEXBUFFER as IDirect3DVertexBuffer ptr
-
 type IDirect3DVertexBuffer7 as IDirect3DVertexBuffer7_
-
 type LPDIRECT3DVERTEXBUFFER7 as IDirect3DVertexBuffer7 ptr
 
 #define D3D_OK DD_OK
@@ -190,7 +163,6 @@ type LPDIRECT3DVERTEXBUFFER7 as IDirect3DVertexBuffer7 ptr
 
 type D3DVIEWPORTHANDLE as DWORD
 type LPD3DVIEWPORTHANDLE as DWORD ptr
-
 type IDirect3DVtbl as IDirect3DVtbl_
 
 type IDirect3D
@@ -218,7 +190,6 @@ end type
 #define IDirect3D_CreateMaterial(p, a, b) (p)->lpVtbl->CreateMaterial(p, a, b)
 #define IDirect3D_CreateViewport(p, a, b) (p)->lpVtbl->CreateViewport(p, a, b)
 #define IDirect3D_FindDevice(p, a, b) (p)->lpVtbl->FindDevice(p, a, b)
-
 type IDirect3D2Vtbl as IDirect3D2Vtbl_
 
 type IDirect3D2
@@ -246,7 +217,6 @@ end type
 #define IDirect3D2_CreateViewport(p, a, b) (p)->lpVtbl->CreateViewport(p, a, b)
 #define IDirect3D2_FindDevice(p, a, b) (p)->lpVtbl->FindDevice(p, a, b)
 #define IDirect3D2_CreateDevice(p, a, b, c) (p)->lpVtbl->CreateDevice(p, a, b, c)
-
 type IDirect3D3Vtbl as IDirect3D3Vtbl_
 
 type IDirect3D3
@@ -280,7 +250,6 @@ end type
 #define IDirect3D3_CreateVertexBuffer(p, a, b, c, d) (p)->lpVtbl->CreateVertexBuffer(p, a, b, c, d)
 #define IDirect3D3_EnumZBufferFormats(p, a, b, c) (p)->lpVtbl->EnumZBufferFormats(p, a, b, c)
 #define IDirect3D3_EvictManagedTextures(p) (p)->lpVtbl->EvictManagedTextures(p)
-
 type IDirect3D7Vtbl as IDirect3D7Vtbl_
 
 type IDirect3D7
@@ -306,7 +275,6 @@ end type
 #define IDirect3D7_CreateVertexBuffer(p, a, b, c) (p)->lpVtbl->CreateVertexBuffer(p, a, b, c)
 #define IDirect3D7_EnumZBufferFormats(p, a, b, c) (p)->lpVtbl->EnumZBufferFormats(p, a, b, c)
 #define IDirect3D7_EvictManagedTextures(p) (p)->lpVtbl->EvictManagedTextures(p)
-
 type IDirect3DLightVtbl as IDirect3DLightVtbl_
 
 type IDirect3DLight_
@@ -328,7 +296,6 @@ end type
 #define IDirect3DLight_Initialize(p, a) (p)->lpVtbl->Initialize(p, a)
 #define IDirect3DLight_SetLight(p, a) (p)->lpVtbl->SetLight(p, a)
 #define IDirect3DLight_GetLight(p, a) (p)->lpVtbl->GetLight(p, a)
-
 type IDirect3DMaterialVtbl as IDirect3DMaterialVtbl_
 
 type IDirect3DMaterial_
@@ -356,7 +323,6 @@ end type
 #define IDirect3DMaterial_GetHandle(p, a, b) (p)->lpVtbl->GetHandle(p, a, b)
 #define IDirect3DMaterial_Reserve(p) (p)->lpVtbl->Reserve(p)
 #define IDirect3DMaterial_Unreserve(p) (p)->lpVtbl->Unreserve(p)
-
 type IDirect3DMaterial2Vtbl as IDirect3DMaterial2Vtbl_
 
 type IDirect3DMaterial2_
@@ -378,7 +344,6 @@ end type
 #define IDirect3DMaterial2_SetMaterial(p, a) (p)->lpVtbl->SetMaterial(p, a)
 #define IDirect3DMaterial2_GetMaterial(p, a) (p)->lpVtbl->GetMaterial(p, a)
 #define IDirect3DMaterial2_GetHandle(p, a, b) (p)->lpVtbl->GetHandle(p, a, b)
-
 type IDirect3DMaterial3Vtbl as IDirect3DMaterial3Vtbl_
 
 type IDirect3DMaterial3_
@@ -400,7 +365,6 @@ end type
 #define IDirect3DMaterial3_SetMaterial(p, a) (p)->lpVtbl->SetMaterial(p, a)
 #define IDirect3DMaterial3_GetMaterial(p, a) (p)->lpVtbl->GetMaterial(p, a)
 #define IDirect3DMaterial3_GetHandle(p, a, b) (p)->lpVtbl->GetHandle(p, a, b)
-
 type IDirect3DTextureVtbl as IDirect3DTextureVtbl_
 
 type IDirect3DTexture
@@ -426,7 +390,6 @@ end type
 #define IDirect3DTexture_PaletteChanged(p, a, b) (p)->lpVtbl->PaletteChanged(p, a, b)
 #define IDirect3DTexture_Load(p, a) (p)->lpVtbl->Load(p, a)
 #define IDirect3DTexture_Unload(p) (p)->lpVtbl->Unload(p)
-
 type IDirect3DTexture2Vtbl as IDirect3DTexture2Vtbl_
 
 type IDirect3DTexture2
@@ -448,7 +411,6 @@ end type
 #define IDirect3DTexture2_GetHandle(p, a, b) (p)->lpVtbl->GetHandle(p, a, b)
 #define IDirect3DTexture2_PaletteChanged(p, a, b) (p)->lpVtbl->PaletteChanged(p, a, b)
 #define IDirect3DTexture2_Load(p, a) (p)->lpVtbl->Load(p, a)
-
 type IDirect3DViewportVtbl as IDirect3DViewportVtbl_
 
 type IDirect3DViewport_
@@ -490,7 +452,6 @@ end type
 #define IDirect3DViewport_AddLight(p, a) (p)->lpVtbl->AddLight(p, a)
 #define IDirect3DViewport_DeleteLight(p, a) (p)->lpVtbl->DeleteLight(p, a)
 #define IDirect3DViewport_NextLight(p, a, b, c) (p)->lpVtbl->NextLight(p, a, b, c)
-
 type IDirect3DViewport2Vtbl as IDirect3DViewport2Vtbl_
 
 type IDirect3DViewport2_
@@ -536,7 +497,6 @@ end type
 #define IDirect3DViewport2_NextLight(p, a, b, c) (p)->lpVtbl->NextLight(p, a, b, c)
 #define IDirect3DViewport2_GetViewport2(p, a) (p)->lpVtbl->GetViewport2(p, a)
 #define IDirect3DViewport2_SetViewport2(p, a) (p)->lpVtbl->SetViewport2(p, a)
-
 type IDirect3DViewport3Vtbl as IDirect3DViewport3Vtbl_
 
 type IDirect3DViewport3_
@@ -588,7 +548,6 @@ end type
 #define IDirect3DViewport3_SetBackgroundDepth2(p, a) (p)->lpVtbl->SetBackgroundDepth2(p, a)
 #define IDirect3DViewport3_GetBackgroundDepth2(p, a, b) (p)->lpVtbl->GetBackgroundDepth2(p, a, b)
 #define IDirect3DViewport3_Clear2(p, a, b, c, d, e, f) (p)->lpVtbl->Clear2(p, a, b, c, d, e, f)
-
 type IDirect3DExecuteBufferVtbl as IDirect3DExecuteBufferVtbl_
 
 type IDirect3DExecuteBuffer
@@ -618,7 +577,6 @@ end type
 #define IDirect3DExecuteBuffer_GetExecuteData(p, a) (p)->lpVtbl->GetExecuteData(p, a)
 #define IDirect3DExecuteBuffer_Validate(p, a, b, c, d) (p)->lpVtbl->Validate(p, a, b, c, d)
 #define IDirect3DExecuteBuffer_Optimize(p, a) (p)->lpVtbl->Optimize(p, a)
-
 type IDirect3DDeviceVtbl as IDirect3DDeviceVtbl_
 
 type IDirect3DDevice_
@@ -672,7 +630,6 @@ end type
 #define IDirect3DDevice_BeginScene(p) (p)->lpVtbl->BeginScene(p)
 #define IDirect3DDevice_EndScene(p) (p)->lpVtbl->EndScene(p)
 #define IDirect3DDevice_GetDirect3D(p, a) (p)->lpVtbl->GetDirect3D(p, a)
-
 type IDirect3DDevice2Vtbl as IDirect3DDevice2Vtbl_
 
 type IDirect3DDevice2_
@@ -748,7 +705,6 @@ end type
 #define IDirect3DDevice2_DrawIndexedPrimitive(p, a, b, c, d, e, f, g) (p)->lpVtbl->DrawIndexedPrimitive(p, a, b, c, d, e, f, g)
 #define IDirect3DDevice2_SetClipStatus(p, a) (p)->lpVtbl->SetClipStatus(p, a)
 #define IDirect3DDevice2_GetClipStatus(p, a) (p)->lpVtbl->GetClipStatus(p, a)
-
 type IDirect3DDevice3Vtbl as IDirect3DDevice3Vtbl_
 
 type IDirect3DDevice3_
@@ -842,7 +798,6 @@ end type
 #define IDirect3DDevice3_GetTextureStageState(p, a, b, c) (p)->lpVtbl->GetTextureStageState(p, a, b, c)
 #define IDirect3DDevice3_SetTextureStageState(p, a, b, c) (p)->lpVtbl->SetTextureStageState(p, a, b, c)
 #define IDirect3DDevice3_ValidateDevice(p, a) (p)->lpVtbl->ValidateDevice(p, a)
-
 type IDirect3DDevice7Vtbl as IDirect3DDevice7Vtbl_
 
 type IDirect3DDevice7_
@@ -950,7 +905,6 @@ end type
 #define IDirect3DDevice7_SetClipPlane(p, a, b) (p)->lpVtbl->SetClipPlane(p, a, b)
 #define IDirect3DDevice7_GetClipPlane(p, a, b) (p)->lpVtbl->GetClipPlane(p, a, b)
 #define IDirect3DDevice7_GetInfo(p, a, b, c) (p)->lpVtbl->GetInfo(p, a, b, c)
-
 type IDirect3DVertexBufferVtbl as IDirect3DVertexBufferVtbl_
 
 type IDirect3DVertexBuffer_
@@ -976,7 +930,6 @@ end type
 #define IDirect3DVertexBuffer_ProcessVertices(p, a, b, c, d, e, f, g) (p)->lpVtbl->ProcessVertices(p, a, b, c, d, e, f, g)
 #define IDirect3DVertexBuffer_GetVertexBufferDesc(p, a) (p)->lpVtbl->GetVertexBufferDesc(p, a)
 #define IDirect3DVertexBuffer_Optimize(p, a, b) (p)->lpVtbl->Optimize(p, a, b)
-
 type IDirect3DVertexBuffer7Vtbl as IDirect3DVertexBuffer7Vtbl_
 
 type IDirect3DVertexBuffer7_

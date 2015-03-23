@@ -21,7 +21,6 @@ enum
 end enum
 
 type COINIT as tagCOINIT
-
 #define MARSHALINTERFACE_MIN 500
 #define CWCSTORAGENAME 32
 #define STGM_DIRECT __MSABI_LONG(&h00000000)
@@ -48,9 +47,7 @@ type COINIT as tagCOINIT
 #define STG_TOEND __MSABI_LONG(&hffffffff)
 #define STG_LAYOUT_SEQUENTIAL __MSABI_LONG(&h00000000)
 #define STG_LAYOUT_INTERLEAVED __MSABI_LONG(&h00000001)
-
 type STGFMT as DWORD
-
 #define STGFMT_STORAGE 0
 #define STGFMT_NATIVE 1
 #define STGFMT_FILE 3
@@ -75,7 +72,6 @@ enum
 end enum
 
 type COMSD as tagCOMSD
-
 declare function CoGetSystemSecurityPermissions(byval comSDType as COMSD, byval ppSD as PSECURITY_DESCRIPTOR ptr) as HRESULT
 declare function CoLoadLibrary(byval lpszLibName as LPOLESTR, byval bAutoFree as WINBOOL) as HINSTANCE
 declare sub CoFreeLibrary(byval hInst as HINSTANCE)
@@ -105,7 +101,6 @@ declare function StgSetTimes(byval lpszName as const wstring ptr, byval pctime a
 declare function StgOpenAsyncDocfileOnIFillLockBytes(byval pflb as IFillLockBytes ptr, byval grfMode as DWORD, byval asyncFlags as DWORD, byval ppstgOpen as IStorage ptr ptr) as HRESULT
 declare function StgGetIFillLockBytesOnILockBytes(byval pilb as ILockBytes ptr, byval ppflb as IFillLockBytes ptr ptr) as HRESULT
 declare function StgGetIFillLockBytesOnFile(byval pwcsName as const wstring ptr, byval ppflb as IFillLockBytes ptr ptr) as HRESULT
-
 #define STGOPTIONS_VERSION 2
 
 type tagSTGOPTIONS
@@ -116,7 +111,6 @@ type tagSTGOPTIONS
 end type
 
 type STGOPTIONS as tagSTGOPTIONS
-
 declare function StgCreateStorageEx(byval pwcsName as const wstring ptr, byval grfMode as DWORD, byval stgfmt as DWORD, byval grfAttrs as DWORD, byval pStgOptions as STGOPTIONS ptr, byval pSecurityDescriptor as PSECURITY_DESCRIPTOR, byval riid as const IID const ptr, byval ppObjectOpen as any ptr ptr) as HRESULT
 declare function StgOpenStorageEx(byval pwcsName as const wstring ptr, byval grfMode as DWORD, byval stgfmt as DWORD, byval grfAttrs as DWORD, byval pStgOptions as STGOPTIONS ptr, byval pSecurityDescriptor as PSECURITY_DESCRIPTOR, byval riid as const IID const ptr, byval ppObjectOpen as any ptr ptr) as HRESULT
 declare function BindMoniker(byval pmk as LPMONIKER, byval grfOpt as DWORD, byval iidResult as const IID const ptr, byval ppvResult as LPVOID ptr) as HRESULT

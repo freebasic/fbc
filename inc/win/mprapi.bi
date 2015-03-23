@@ -42,7 +42,6 @@ enum
 end enum
 
 type ROUTER_CONNECTION_STATE as _ROUTER_CONNECTION_STATE
-
 #define MPR_INTERFACE_OUT_OF_RESOURCES &h00000001
 #define MPR_INTERFACE_ADMIN_DISABLED &h00000002
 #define MPR_INTERFACE_CONNECTION_FAILURE &h00000004
@@ -85,7 +84,6 @@ end type
 
 type MPR_INTERFACE_1 as _MPR_INTERFACE_1
 type PMPR_INTERFACE_1 as _MPR_INTERFACE_1 ptr
-
 #define MPR_MaxDeviceType RAS_MaxDeviceType
 #define MPR_MaxPhoneNumber RAS_MaxPhoneNumber
 #define MPR_MaxIpAddress RAS_MaxIpAddress
@@ -304,7 +302,6 @@ end type
 
 type MPR_SERVER_0 as _MPR_SERVER_0
 type PMPR_SERVER_0 as _MPR_SERVER_0 ptr
-
 #define MPR_ENABLE_RAS_ON_DEVICE &h00000001
 #define MPR_ENABLE_ROUTING_ON_DEVICE &h00000002
 
@@ -398,7 +395,6 @@ type _PPP_IPCP_INFO
 end type
 
 type PPP_IPCP_INFO as _PPP_IPCP_INFO
-
 #define PPP_IPCP_VJ &h00000001
 
 type _PPP_IPCP_INFO2
@@ -433,7 +429,6 @@ type _PPP_INFO
 end type
 
 type PPP_INFO as _PPP_INFO
-
 #define RASCCPCA_MPPC &h00000006
 #define RASCCPCA_STAC &h00000005
 #define PPP_CCP_COMPRESSION &h00000001
@@ -452,7 +447,6 @@ type _PPP_CCP_INFO
 end type
 
 type PPP_CCP_INFO as _PPP_CCP_INFO
-
 #define PPP_LCP_PAP &hC023
 #define PPP_LCP_SPAP &hC027
 #define PPP_LCP_CHAP &hC223
@@ -546,7 +540,6 @@ end type
 
 type RAS_CONNECTION_2 as _RAS_CONNECTION_2
 type PRAS_CONNECTION_2 as _RAS_CONNECTION_2 ptr
-
 #define RASPRIV2_DialinPolicy &h1
 
 type _RAS_USER_0
@@ -683,7 +676,6 @@ declare function MprInfoBlockRemove(byval lpHeader as LPVOID, byval dwInfoType a
 declare function MprInfoBlockSet(byval lpHeader as LPVOID, byval dwInfoType as DWORD, byval dwItemSize as DWORD, byval dwItemCount as DWORD, byval lpItemData as LPBYTE, byval lplpNewHeader as LPVOID ptr) as DWORD
 declare function MprInfoBlockFind(byval lpHeader as LPVOID, byval dwInfoType as DWORD, byval lpdwItemSize as LPDWORD, byval lpdwItemCount as LPDWORD, byval lplpItemData as LPBYTE ptr) as DWORD
 declare function MprInfoBlockQuerySize(byval lpHeader as LPVOID) as DWORD
-
 #define MprInfoBlockExists(h, t) (MprInfoBlockFind((h), (t), NULL, NULL, NULL) = NO_ERROR)
 
 #if _WIN32_WINNT = &h0602
@@ -755,7 +747,6 @@ declare function MprInfoBlockQuerySize(byval lpHeader as LPVOID) as DWORD
 
 	type RAS_CONNECTION_3 as _RAS_CONNECTION_3
 	type PRAS_CONNECTION_3 as _RAS_CONNECTION_3 ptr
-
 	declare function MprAdminAcceptNewConnection3(byval pRasConnection0 as RAS_CONNECTION_0 ptr, byval pRasConnection1 as RAS_CONNECTION_1 ptr, byval pRasConnection2 as RAS_CONNECTION_2 ptr, byval pRasConnection3 as RAS_CONNECTION_3 ptr) as WINBOOL
 	declare function MprAdminAcceptReauthentication(byval pRasConnection0 as RAS_CONNECTION_0 ptr, byval pRasConnection1 as RAS_CONNECTION_1 ptr, byval pRasConnection2 as RAS_CONNECTION_2 ptr, byval pRasConnection3 as RAS_CONNECTION_3 ptr) as WINBOOL
 	declare sub MprAdminConnectionHangupNotification3(byval pRasConnection0 as RAS_CONNECTION_0 ptr, byval pRasConnection1 as RAS_CONNECTION_1 ptr, byval pRasConnection2 as RAS_CONNECTION_2 ptr, byval pRasConnection3 as RAS_CONNECTION_3 ptr)
@@ -797,7 +788,6 @@ declare function MprInfoBlockQuerySize(byval lpHeader as LPVOID) as DWORD
 
 	type AUTH_VALIDATION_EX as _AUTH_VALIDATION_EX
 	type PAUTH_VALIDATION_EX as _AUTH_VALIDATION_EX ptr
-
 	#define RAS_FLAGS_PPP_CONNECTION &h00000001
 	#define RAS_FLAGS_MESSENGER_PRESENT &h00000002
 	#define RAS_FLAGS_QUARANTINE_PRESENT &h00000008
@@ -917,7 +907,6 @@ declare function MprInfoBlockQuerySize(byval lpHeader as LPVOID) as DWORD
 
 	type RAS_UPDATE_CONNECTION as _RAS_UPDATE_CONNECTION
 	type PRAS_UPDATE_CONNECTION as _RAS_UPDATE_CONNECTION ptr
-
 	#define MPRAPI_IKEV2_SET_TUNNEL_CONFIG_PARAMS &h01
 
 	type _IKEV2_TUNNEL_CONFIG_PARAMS
@@ -1036,7 +1025,6 @@ declare function MprInfoBlockQuerySize(byval lpHeader as LPVOID) as DWORD
 
 	type MPRAPI_ADMIN_DLL_CALLBACKS as _MPRAPI_ADMIN_DLL_CALLBACKS
 	type PMPRAPI_ADMIN_DLL_CALLBACKS as _MPRAPI_ADMIN_DLL_CALLBACKS ptr
-
 	declare function MprConfigServerSetInfoEx(byval hMprConfig as HANDLE, byval pSetServerConfig as MPR_SERVER_SET_CONFIG_EX ptr) as DWORD
 	declare function MprConfigServerGetInfoEx(byval hMprConfig as HANDLE, byval pServerInfo as MPR_SERVER_EX ptr) as DWORD
 	declare function MprAdminConnectionEnumEx(byval hRasServer as RAS_SERVER_HANDLE, byval pObjectHeader as PMPRAPI_OBJECT_HEADER, byval dwPreferedMaxLen as DWORD, byval lpdwEntriesRead as LPDWORD, byval lpdwTotalEntries as LPDWORD, byval ppRasConn as PRAS_CONNECTION_EX ptr, byval lpdwResumeHandle as LPDWORD) as DWORD

@@ -8,10 +8,8 @@
 extern "Windows"
 
 #define _RASDLG_H_
-
 type RASPBDLGFUNCW as sub(byval as ULONG_PTR, byval as DWORD, byval as LPWSTR, byval as LPVOID)
 type RASPBDLGFUNCA as sub(byval as ULONG_PTR, byval as DWORD, byval as LPSTR, byval as LPVOID)
-
 #define RASPBDEVENT_AddEntry 1
 #define RASPBDEVENT_EditEntry 2
 #define RASPBDEVENT_RemoveEntry 3
@@ -163,7 +161,6 @@ type tagRASDIALDLG field = 4
 end type
 
 #define LPRASDIALDLG RASDIALDLG ptr
-
 type RasCustomDialDlgFn as function(byval hInstDll as HINSTANCE, byval dwFlags as DWORD, byval lpszPhonebook as LPWSTR, byval lpszEntry as LPWSTR, byval lpszPhoneNumber as LPWSTR, byval lpInfo as tagRASDIALDLG ptr, byval pvInfo as PVOID) as WINBOOL
 
 #ifdef UNICODE

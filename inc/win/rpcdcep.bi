@@ -68,7 +68,6 @@ end enum
 #define RPCFLG_HAS_MULTI_SYNTAXES __MSABI_LONG(&h02000000u)
 #define RPCFLG_HAS_CALLBACK __MSABI_LONG(&h04000000u)
 #define RPC_FLAGS_VALID_BIT &h00008000
-
 type RPC_DISPATCH_FUNCTION as sub(byval Message as PRPC_MESSAGE)
 
 type RPC_DISPATCH_TABLE
@@ -86,7 +85,6 @@ end type
 
 type RPC_PROTSEQ_ENDPOINT as _RPC_PROTSEQ_ENDPOINT
 type PRPC_PROTSEQ_ENDPOINT as _RPC_PROTSEQ_ENDPOINT ptr
-
 #define NT351_INTERFACE_SIZE &h40
 #define RPC_INTERFACE_HAS_PIPES &h0001
 
@@ -119,7 +117,6 @@ end type
 
 type RPC_CLIENT_INTERFACE as _RPC_CLIENT_INTERFACE
 type PRPC_CLIENT_INTERFACE as _RPC_CLIENT_INTERFACE ptr
-
 declare function I_RpcNegotiateTransferSyntax(byval Message as RPC_MESSAGE ptr) as RPC_STATUS
 declare function I_RpcGetBuffer(byval Message as RPC_MESSAGE ptr) as RPC_STATUS
 declare function I_RpcGetBufferWithObject(byval Message as RPC_MESSAGE ptr, byval ObjectUuid as UUID ptr) as RPC_STATUS
@@ -129,7 +126,6 @@ declare function I_RpcSend(byval Message as PRPC_MESSAGE) as RPC_STATUS
 declare function I_RpcReceive(byval Message as PRPC_MESSAGE, byval Size as ulong) as RPC_STATUS
 declare function I_RpcFreePipeBuffer(byval Message as RPC_MESSAGE ptr) as RPC_STATUS
 declare function I_RpcReallocPipeBuffer(byval Message as PRPC_MESSAGE, byval NewSize as ulong) as RPC_STATUS
-
 type I_RPC_MUTEX as any ptr
 
 #ifdef UNICODE
@@ -151,9 +147,7 @@ declare function I_RpcAllocate(byval Size as ulong) as any ptr
 declare sub I_RpcFree(byval Object as any ptr)
 declare sub I_RpcPauseExecution(byval Milliseconds as ulong)
 declare function I_RpcGetExtendedError() as RPC_STATUS
-
 type PRPC_RUNDOWN as sub(byval AssociationContext as any ptr)
-
 declare function I_RpcMonitorAssociation(byval Handle as RPC_BINDING_HANDLE, byval RundownRoutine as PRPC_RUNDOWN, byval Context as any ptr) as RPC_STATUS
 declare function I_RpcStopMonitorAssociation(byval Handle as RPC_BINDING_HANDLE) as RPC_STATUS
 declare function I_RpcGetCurrentCallHandle() as RPC_BINDING_HANDLE
@@ -182,7 +176,6 @@ declare function I_RpcServerCheckClientRestriction(byval Context as RPC_BINDING_
 #define TRANSPORT_TYPE_DG &h02
 #define TRANSPORT_TYPE_LPC &h04
 #define TRANSPORT_TYPE_WMSG &h08
-
 declare function I_RpcBindingInqTransportType(byval Binding as RPC_BINDING_HANDLE, byval Type as ulong ptr) as RPC_STATUS
 
 type _RPC_TRANSFER_SYNTAX
@@ -192,7 +185,6 @@ type _RPC_TRANSFER_SYNTAX
 end type
 
 type RPC_TRANSFER_SYNTAX as _RPC_TRANSFER_SYNTAX
-
 declare function I_RpcIfInqTransferSyntaxes(byval RpcIfHandle as RPC_IF_HANDLE, byval TransferSyntaxes as RPC_TRANSFER_SYNTAX ptr, byval TransferSyntaxSize as ulong, byval TransferSyntaxCount as ulong ptr) as RPC_STATUS
 declare function I_UuidCreate(byval Uuid as UUID ptr) as RPC_STATUS
 declare function I_RpcBindingCopy(byval SourceBinding as RPC_BINDING_HANDLE, byval DestinationBinding as RPC_BINDING_HANDLE ptr) as RPC_STATUS
@@ -203,19 +195,15 @@ declare function I_RpcLaunchDatagramReceiveThread(byval pAddress as any ptr) as 
 declare function I_RpcServerRegisterForwardFunction(byval pForwardFunction as function(byval InterfaceId as UUID ptr, byval InterfaceVersion as RPC_VERSION ptr, byval ObjectId as UUID ptr, byval Rpcpro as ubyte ptr, byval ppDestEndpoint as any ptr ptr) as RPC_STATUS) as RPC_STATUS
 declare function I_RpcServerInqAddressChangeFn() as sub(byval arg as any ptr)
 declare function I_RpcServerSetAddressChangeFn(byval pAddressChangeFn as sub(byval arg as any ptr)) as RPC_STATUS
-
 #define RPC_P_ADDR_FORMAT_TCP_IPV4 1
 #define RPC_P_ADDR_FORMAT_TCP_IPV6 2
-
 declare function I_RpcServerInqLocalConnAddress(byval Binding as RPC_BINDING_HANDLE, byval Buffer as any ptr, byval BufferSize as ulong ptr, byval AddressFormat as ulong ptr) as RPC_STATUS
 declare sub I_RpcSessionStrictContextHandle()
 declare function I_RpcTurnOnEEInfoPropagation() as RPC_STATUS
 declare function I_RpcConnectionInqSockBuffSize(byval RecvBuffSize as ulong ptr, byval SendBuffSize as ulong ptr) as RPC_STATUS
 declare function I_RpcConnectionSetSockBuffSize(byval RecvBuffSize as ulong, byval SendBuffSize as ulong) as RPC_STATUS
-
 type RPCLT_PDU_FILTER_FUNC as sub cdecl(byval Buffer as any ptr, byval BufferLength as ulong, byval fDatagram as long)
 type RPC_SETFILTER_FUNC as sub cdecl(byval pfnFilter as RPCLT_PDU_FILTER_FUNC)
-
 declare function I_RpcServerInqTransportType(byval Type as ulong ptr) as RPC_STATUS
 declare function I_RpcMapWin32Status(byval Status as RPC_STATUS) as long
 
@@ -261,10 +249,8 @@ type tagI_RpcProxyCallbackInterface
 end type
 
 type I_RpcProxyCallbackInterface as tagI_RpcProxyCallbackInterface
-
 #define RPC_PROXY_CONNECTION_TYPE_IN_PROXY 0
 #define RPC_PROXY_CONNECTION_TYPE_OUT_PROXY 1
-
 declare function I_RpcProxyNewConnection(byval ConnectionType as ulong, byval ServerAddress as ushort ptr, byval ServerPort as ushort ptr, byval MinConnTimeout as ushort ptr, byval ConnectionParameter as any ptr, byval CallOutState as RDR_CALLOUT_STATE ptr, byval ProxyCallbackInterface as I_RpcProxyCallbackInterface ptr) as RPC_STATUS
 declare function I_RpcReplyToClientWithStatus(byval ConnectionParameter as any ptr, byval RpcStatus as RPC_STATUS) as RPC_STATUS
 declare sub I_RpcRecordCalloutFailure(byval RpcStatus as RPC_STATUS, byval CallOutState as RDR_CALLOUT_STATE ptr, byval DllName as ushort ptr)

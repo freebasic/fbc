@@ -8,12 +8,9 @@
 extern "Windows"
 
 #define _INC_COMMDLG
-
 extern IID_IPrintDialogCallback as const GUID
 extern IID_IPrintDialogServices as const GUID
-
 type LPOFNHOOKPROC as function(byval as HWND, byval as UINT, byval as WPARAM, byval as LPARAM) as UINT_PTR
-
 #define CDSIZEOF_STRUCT(structname, member) (clng(cast(LPBYTE, @cptr(structname ptr, 0)->member) - cast(LPBYTE, cptr(structname ptr, 0))) + sizeof(cptr(structname ptr, 0)->member))
 
 #ifdef __FB_64BIT__
@@ -314,7 +311,6 @@ declare function GetFileTitleW(byval as LPCWSTR, byval as LPWSTR, byval as WORD)
 #define OFN_SHAREFALLTHROUGH 2
 #define OFN_SHARENOWARN 1
 #define OFN_SHAREWARN 0
-
 type LPCCHOOKPROC as function(byval as HWND, byval as UINT, byval as WPARAM, byval as LPARAM) as UINT_PTR
 
 #ifdef __FB_64BIT__
@@ -540,7 +536,6 @@ declare function ChooseColorW(byval as LPCHOOSECOLORW) as WINBOOL
 #define CC_ENABLETEMPLATEHANDLE &h40
 #define CC_SOLIDCOLOR &h80
 #define CC_ANYCOLOR &h100
-
 type LPFRHOOKPROC as function(byval as HWND, byval as UINT, byval as WPARAM, byval as LPARAM) as UINT_PTR
 
 #ifdef __FB_64BIT__
@@ -635,7 +630,6 @@ type LPFINDREPLACEW as tagFINDREPLACEW ptr
 #define FR_HIDEMATCHCASE &h8000
 #define FR_HIDEWHOLEWORD &h10000
 #define FR_RAW &h20000
-
 declare function FindTextA(byval as LPFINDREPLACEA) as HWND
 declare function FindTextW(byval as LPFINDREPLACEW) as HWND
 
@@ -836,7 +830,6 @@ declare function ChooseFontW(byval as LPCHOOSEFONTW) as WINBOOL
 #define CD_LBSELCHANGE 0
 #define CD_LBSELSUB 1
 #define CD_LBSELADD 2
-
 type LPPRINTHOOKPROC as function(byval as HWND, byval as UINT, byval as WPARAM, byval as LPARAM) as UINT_PTR
 type LPSETUPHOOKPROC as function(byval as HWND, byval as UINT, byval as WPARAM, byval as LPARAM) as UINT_PTR
 
@@ -1203,11 +1196,8 @@ declare function PrintDlgExW(byval as LPPRINTDLGEXW) as HRESULT
 
 type DEVNAMES as tagDEVNAMES
 type LPDEVNAMES as tagDEVNAMES ptr
-
 #define DN_DEFAULTPRN &h1
-
 declare function CommDlgExtendedError() as DWORD
-
 #define WM_PSD_PAGESETUPDLG WM_USER
 #define WM_PSD_FULLPAGERECT (WM_USER + 1)
 #define WM_PSD_MINMARGINRECT (WM_USER + 2)
@@ -1215,7 +1205,6 @@ declare function CommDlgExtendedError() as DWORD
 #define WM_PSD_GREEKTEXTRECT (WM_USER + 4)
 #define WM_PSD_ENVSTAMPRECT (WM_USER + 5)
 #define WM_PSD_YAFULLPAGERECT (WM_USER + 6)
-
 type LPPAGEPAINTHOOK as function(byval as HWND, byval as UINT, byval as WPARAM, byval as LPARAM) as UINT_PTR
 type LPPAGESETUPHOOK as function(byval as HWND, byval as UINT, byval as WPARAM, byval as LPARAM) as UINT_PTR
 

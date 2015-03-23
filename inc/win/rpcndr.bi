@@ -35,13 +35,10 @@ extern "Windows"
 
 type cs_byte as ubyte
 type BOOLEAN as ubyte
-
 #define _HYPER_DEFINED
 #define __MIDL_user_allocate_free_DEFINED__
-
 declare function MIDL_user_allocate(byval as SIZE_T_) as any ptr
 declare sub MIDL_user_free(byval as any ptr)
-
 type NDR_CCONTEXT as any ptr
 
 type _NDR_SCONTEXT
@@ -50,10 +47,8 @@ type _NDR_SCONTEXT
 end type
 
 type NDR_SCONTEXT as _NDR_SCONTEXT ptr
-
 #define NDRSContextValue(hContext) (@(hContext)->userContext)
 #define cbNDRContext 20
-
 type NDR_RUNDOWN as sub(byval context as any ptr)
 type NDR_NOTIFY_ROUTINE as sub()
 type NDR_NOTIFY2_ROUTINE as sub(byval flag as BOOLEAN)
@@ -65,7 +60,6 @@ end type
 
 type SCONTEXT_QUEUE as _SCONTEXT_QUEUE
 type PSCONTEXT_QUEUE as _SCONTEXT_QUEUE ptr
-
 declare function NDRCContextBinding(byval CContext as NDR_CCONTEXT) as RPC_BINDING_HANDLE
 declare sub NDRCContextMarshall(byval CContext as NDR_CCONTEXT, byval pBuff as any ptr)
 declare sub NDRCContextUnmarshall(byval pCContext as NDR_CCONTEXT ptr, byval hBinding as RPC_BINDING_HANDLE, byval pBuff as any ptr, byval DataRepresentation as ulong)
@@ -103,16 +97,12 @@ declare sub RpcSsDestroyClientContext(byval ContextHandle as any ptr ptr)
 #define MIDL_ascii_strcpy(target, source) strcpy(target, source)
 #define MIDL_memset(s, c, n) memset(s, c, n)
 #define _ERROR_STATUS_T_DEFINED
-
 type error_status_t as ulong
-
 #define RPC_BAD_STUB_DATA_EXCEPTION_FILTER ((((RpcExceptionCode() = STATUS_ACCESS_VIOLATION) orelse (RpcExceptionCode() = STATUS_DATATYPE_MISALIGNMENT)) orelse (RpcExceptionCode() = RPC_X_BAD_STUB_DATA)) orelse (RpcExceptionCode() = RPC_S_INVALID_BOUND))
 
 type RPC_BUFPTR as ubyte ptr
 type RPC_LENGTH as ulong
-
 type _MIDL_STUB_MESSAGE as _MIDL_STUB_MESSAGE_
-
 type EXPR_EVAL as sub(byval as _MIDL_STUB_MESSAGE ptr)
 type PFORMAT_STRING as const ubyte ptr
 
@@ -137,10 +127,9 @@ end type
 
 type MIDL_SYNTAX_INFO as _MIDL_SYNTAX_INFO
 type PMIDL_SYNTAX_INFO as _MIDL_SYNTAX_INFO ptr
-
-type IRpcChannelBuffer as IRpcChannelBuffer_
-type _FULL_PTR_XLAT_TABLES as _FULL_PTR_XLAT_TABLES_
 type _MIDL_STUB_DESC as _MIDL_STUB_DESC_
+type _FULL_PTR_XLAT_TABLES as _FULL_PTR_XLAT_TABLES_
+type IRpcChannelBuffer as IRpcChannelBuffer_
 type NDR_ALLOC_ALL_NODES_CONTEXT as NDR_ALLOC_ALL_NODES_CONTEXT_
 type NDR_POINTER_QUEUE_STATE as NDR_POINTER_QUEUE_STATE_
 type _NDR_PROC_CONTEXT as _NDR_PROC_CONTEXT_
@@ -262,7 +251,6 @@ type _USER_MARSHAL_ROUTINE_QUADRUPLE
 end type
 
 type USER_MARSHAL_ROUTINE_QUADRUPLE as _USER_MARSHAL_ROUTINE_QUADRUPLE
-
 #define USER_MARSHAL_CB_SIGNATURE asc("USRC")
 
 type _USER_MARSHAL_CB_TYPE as long
@@ -286,7 +274,6 @@ type _USER_MARSHAL_CB
 end type
 
 type USER_MARSHAL_CB as _USER_MARSHAL_CB
-
 #define USER_CALL_CTXT_MASK(f) ((f) and &h00ff)
 #define USER_CALL_AUX_MASK(f) ((f) and &hff00)
 #define GET_USER_DATA_REP(f) ((f) shr 16)
@@ -320,7 +307,6 @@ type CS_TYPE_LOCAL_SIZE_ROUTINE as sub(byval hBinding as RPC_BINDING_HANDLE, byv
 type CS_TYPE_TO_NETCS_ROUTINE as sub(byval hBinding as RPC_BINDING_HANDLE, byval ulNetworkCodeSet as ulong, byval pLocalData as any ptr, byval ulLocalDataLength as ulong, byval pNetworkData as ubyte ptr, byval pulNetworkDataLength as ulong ptr, byval pStatus as error_status_t ptr)
 type CS_TYPE_FROM_NETCS_ROUTINE as sub(byval hBinding as RPC_BINDING_HANDLE, byval ulNetworkCodeSet as ulong, byval pNetworkData as ubyte ptr, byval ulNetworkDataLength as ulong, byval ulLocalBufferSize as ulong, byval pLocalData as any ptr, byval pulLocalDataLength as ulong ptr, byval pStatus as error_status_t ptr)
 type CS_TAG_GETTING_ROUTINE as sub(byval hBinding as RPC_BINDING_HANDLE, byval fServerSide as long, byval pulSendingTag as ulong ptr, byval pulDesiredReceivingTag as ulong ptr, byval pulReceivingTag as ulong ptr, byval pStatus as error_status_t ptr)
-
 declare sub RpcCsGetTags(byval hBinding as RPC_BINDING_HANDLE, byval fServerSide as long, byval pulSendingTag as ulong ptr, byval pulDesiredReceivingTag as ulong ptr, byval pulReceivingTag as ulong ptr, byval pStatus as error_status_t ptr)
 
 type _NDR_CS_SIZE_CONVERT_ROUTINES
@@ -465,7 +451,6 @@ end type
 
 type FULL_PTR_XLAT_TABLES as _FULL_PTR_XLAT_TABLES
 type PFULL_PTR_XLAT_TABLES as _FULL_PTR_XLAT_TABLES ptr
-
 declare function NdrClientGetSupportedSyntaxes(byval pInf as RPC_CLIENT_INTERFACE ptr, byval pCount as ulong ptr, byval pArr as MIDL_SYNTAX_INFO ptr ptr) as RPC_STATUS
 declare function NdrServerGetSupportedSyntaxes(byval pInf as RPC_SERVER_INTERFACE ptr, byval pCount as ulong ptr, byval pArr as MIDL_SYNTAX_INFO ptr ptr, byval pPreferSyntaxIndex as ulong ptr) as RPC_STATUS
 declare sub NdrSimpleTypeMarshall(byval pStubMsg as PMIDL_STUB_MESSAGE, byval pMemory as ubyte ptr, byval FormatChar as ubyte)
@@ -631,9 +616,7 @@ enum
 end enum
 
 declare sub NdrAsyncServerCall(byval pRpcMsg as PRPC_MESSAGE)
-
 type IRpcStubBuffer as IRpcStubBuffer_
-
 declare function NdrAsyncStubCall(byval pThis as IRpcStubBuffer ptr, byval pChannel as IRpcChannelBuffer ptr, byval pRpcMsg as PRPC_MESSAGE, byval pdwStubPhase as ulong ptr) as long
 declare function NdrDcomAsyncStubCall(byval pThis as IRpcStubBuffer ptr, byval pChannel as IRpcChannelBuffer ptr, byval pRpcMsg as PRPC_MESSAGE, byval pdwStubPhase as ulong ptr) as long
 declare function NdrStubCall2(byval pThis as IRpcStubBuffer ptr, byval pChannel as IRpcChannelBuffer ptr, byval pRpcMsg as PRPC_MESSAGE, byval pdwStubPhase as ulong ptr) as long
@@ -655,9 +638,7 @@ declare function NdrSH_Copy(byval pStubMsg as ubyte ptr, byval pPtrInMem as ubyt
 declare sub NdrSH_IfFree(byval pMessage as PMIDL_STUB_MESSAGE, byval pPtr as ubyte ptr)
 declare function NdrSH_StringMarshall(byval pMessage as PMIDL_STUB_MESSAGE, byval pMemory as ubyte ptr, byval Count as ulong, byval Size as long) as RPC_BUFPTR
 declare function NdrSH_StringUnMarshall(byval pMessage as PMIDL_STUB_MESSAGE, byval pMemory as ubyte ptr ptr, byval Size as long) as RPC_BUFPTR
-
 type RPC_SS_THREAD_HANDLE as any ptr
-
 declare function RpcSsAllocate(byval Size as uinteger) as any ptr
 declare sub RpcSsDisableAllocate()
 declare sub RpcSsEnableAllocate()
@@ -714,7 +695,6 @@ type _NDR_USER_MARSHAL_INFO
 end type
 
 type NDR_USER_MARSHAL_INFO as _NDR_USER_MARSHAL_INFO
-
 declare function NdrGetUserMarshalInfo(byval pFlags as ulong ptr, byval InformationLevel as ulong, byval pMarshalInfo as NDR_USER_MARSHAL_INFO ptr) as RPC_STATUS
 declare function NdrCreateServerInterfaceFromStub(byval pStub as IRpcStubBuffer ptr, byval pServerIf as RPC_SERVER_INTERFACE ptr) as RPC_STATUS
 declare function NdrClientCall3 cdecl(byval pProxyInfo as MIDL_STUBLESS_PROXY_INFO ptr, byval nProcNum as ulong, byval pReturnValue as any ptr, ...) as CLIENT_CALL_RETURN

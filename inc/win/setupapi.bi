@@ -18,7 +18,6 @@ extern "Windows"
 #define MAX_SERVICE_NAME_LEN 256
 #define MAX_SUBTITLE_LEN 256
 #define SP_MAX_MACHINENAME_LENGTH (MAX_PATH + 3)
-
 type HINF as PVOID
 
 #ifdef __FB_64BIT__
@@ -118,7 +117,6 @@ type SP_ALTPLATFORM_INFO_V1 as _SP_ALTPLATFORM_INFO_V1
 type PSP_ALTPLATFORM_INFO_V1 as _SP_ALTPLATFORM_INFO_V1 ptr
 type SP_ALTPLATFORM_INFO as SP_ALTPLATFORM_INFO_V2
 type PSP_ALTPLATFORM_INFO as PSP_ALTPLATFORM_INFO_V2
-
 #define SP_ALTPLATFORM_FLAGS_VERSION_RANGE &h0001
 
 #ifdef __FB_64BIT__
@@ -206,7 +204,6 @@ type PSP_ORIGINAL_FILE_INFO_W as _SP_ORIGINAL_FILE_INFO_W ptr
 #define DIRID_COMMON_TEMPLATES 16429
 #define DIRID_COMMON_DOCUMENTS 16430
 #define DIRID_USER &h8000
-
 type PSP_FILE_CALLBACK_A as function(byval Context as PVOID, byval Notification as UINT, byval Param1 as UINT_PTR, byval Param2 as UINT_PTR) as UINT
 type PSP_FILE_CALLBACK_W as function(byval Context as PVOID, byval Notification as UINT, byval Param1 as UINT_PTR, byval Param2 as UINT_PTR) as UINT
 
@@ -588,7 +585,6 @@ type PSP_REGISTER_CONTROL_STATUSW as _SP_REGISTER_CONTROL_STATUSW ptr
 #define SPREG_DLLINSTALL &h00000004
 #define SPREG_TIMEOUT &h00000005
 #define SPREG_UNKNOWN &hFFFFFFFF
-
 type HSPFILEQ as PVOID
 
 #ifdef __FB_64BIT__
@@ -709,14 +705,11 @@ type PSP_DEVINFO_DATA as _SP_DEVINFO_DATA ptr
 
 type SP_DEVICE_INTERFACE_DATA as _SP_DEVICE_INTERFACE_DATA
 type PSP_DEVICE_INTERFACE_DATA as _SP_DEVICE_INTERFACE_DATA ptr
-
 #define SPINT_ACTIVE &h00000001
 #define SPINT_DEFAULT &h00000002
 #define SPINT_REMOVED &h00000004
-
 type SP_INTERFACE_DEVICE_DATA as SP_DEVICE_INTERFACE_DATA
 type PSP_INTERFACE_DEVICE_DATA as PSP_DEVICE_INTERFACE_DATA
-
 #define SPID_ACTIVE SPINT_ACTIVE
 #define SPID_DEFAULT SPINT_DEFAULT
 #define SPID_REMOVED SPINT_REMOVED
@@ -860,7 +853,6 @@ type PSP_DEVINFO_LIST_DETAIL_DATA_W as _SP_DEVINFO_LIST_DETAIL_DATA_W ptr
 #define DIF_UPDATEDRIVER_UI &h00000029
 #define DIF_RESERVED2 &h00000030
 #define DIF_MOVEDEVICE &h0000000E
-
 type DI_FUNCTION as UINT
 
 #ifdef __FB_64BIT__
@@ -1050,7 +1042,6 @@ type PSP_CLASSINSTALL_HEADER as _SP_CLASSINSTALL_HEADER ptr
 
 type SP_ENABLECLASS_PARAMS as _SP_ENABLECLASS_PARAMS
 type PSP_ENABLECLASS_PARAMS as _SP_ENABLECLASS_PARAMS ptr
-
 #define ENABLECLASS_QUERY 0
 #define ENABLECLASS_SUCCESS 1
 #define ENABLECLASS_FAILURE 2
@@ -1098,7 +1089,6 @@ type PSP_PROPCHANGE_PARAMS as _SP_PROPCHANGE_PARAMS ptr
 
 type SP_REMOVEDEVICE_PARAMS as _SP_REMOVEDEVICE_PARAMS
 type PSP_REMOVEDEVICE_PARAMS as _SP_REMOVEDEVICE_PARAMS ptr
-
 #define DI_REMOVEDEVICE_GLOBAL &h00000001
 #define DI_REMOVEDEVICE_CONFIGSPECIFIC &h00000002
 
@@ -1118,7 +1108,6 @@ type PSP_REMOVEDEVICE_PARAMS as _SP_REMOVEDEVICE_PARAMS ptr
 
 type SP_UNREMOVEDEVICE_PARAMS as _SP_UNREMOVEDEVICE_PARAMS
 type PSP_UNREMOVEDEVICE_PARAMS as _SP_UNREMOVEDEVICE_PARAMS ptr
-
 #define DI_UNREMOVEDEVICE_CONFIGSPECIFIC &h00000002
 
 #ifdef __FB_64BIT__
@@ -1191,7 +1180,6 @@ type PDETECT_PROGRESS_NOTIFY as function(byval ProgressNotifyParam as PVOID, byv
 
 type SP_DETECTDEVICE_PARAMS as _SP_DETECTDEVICE_PARAMS
 type PSP_DETECTDEVICE_PARAMS as _SP_DETECTDEVICE_PARAMS ptr
-
 #define MAX_INSTALLWIZARD_DYNAPAGES 20
 
 #ifdef __FB_64BIT__
@@ -1220,7 +1208,6 @@ type PSP_DETECTDEVICE_PARAMS as _SP_DETECTDEVICE_PARAMS ptr
 
 type SP_INSTALLWIZARD_DATA as _SP_INSTALLWIZARD_DATA
 type PSP_INSTALLWIZARD_DATA as _SP_INSTALLWIZARD_DATA ptr
-
 #define NDW_INSTALLFLAG_DIDFACTDEFS &h00000001
 #define NDW_INSTALLFLAG_HARDWAREALLREADYIN &h00000002
 #define NDW_INSTALLFLAG_NEEDRESTART DI_NEEDRESTART
@@ -1563,7 +1550,6 @@ type PSP_DRVINFO_DETAIL_DATA_W as _SP_DRVINFO_DETAIL_DATA_W ptr
 
 type SP_DRVINSTALL_PARAMS as _SP_DRVINSTALL_PARAMS
 type PSP_DRVINSTALL_PARAMS as _SP_DRVINSTALL_PARAMS ptr
-
 #define DNF_DUPDESC &h00000001
 #define DNF_OLDDRIVER &h00000002
 #define DNF_EXCLUDEFROMLIST &h00000004
@@ -1590,7 +1576,6 @@ type PSP_DRVINSTALL_PARAMS as _SP_DRVINSTALL_PARAMS ptr
 #define DRIVER_W9X_SUSPECT_RANK &h0000C000
 #define DRIVER_W9X_SUSPECT_HARDWAREID_RANK &h0000CFFF
 #define DRIVER_W9X_SUSPECT_COMPATID_RANK &h0000FFFF
-
 type PSP_DETSIG_CMPPROC as function(byval DeviceInfoSet as HDEVINFO, byval NewDeviceData as PSP_DEVINFO_DATA, byval ExistingDeviceData as PSP_DEVINFO_DATA, byval CompareContext as PVOID) as DWORD
 
 #ifdef __FB_64BIT__
@@ -1645,7 +1630,6 @@ type PSP_CLASSIMAGELIST_DATA as _SP_CLASSIMAGELIST_DATA ptr
 
 type SP_PROPSHEETPAGE_REQUEST as _SP_PROPSHEETPAGE_REQUEST
 type PSP_PROPSHEETPAGE_REQUEST as _SP_PROPSHEETPAGE_REQUEST ptr
-
 #define SPPSR_SELECT_DEVICE_RESOURCES 1
 #define SPPSR_ENUM_BASIC_DEVICE_PROPERTIES 2
 #define SPPSR_ENUM_ADV_DEVICE_PROPERTIES 3
@@ -1826,10 +1810,8 @@ type PSP_BACKUP_QUEUE_PARAMS as PSP_BACKUP_QUEUE_PARAMS_V2
 #define ERROR_INTERFACE_DEVICE_REMOVED ERROR_DEVICE_INTERFACE_REMOVED
 #define ERROR_NO_SUCH_INTERFACE_DEVICE ERROR_NO_SUCH_DEVICE_INTERFACE
 #define ERROR_NOT_INSTALLED ((APPLICATION_ERROR_MASK or ERROR_SEVERITY_ERROR) or &h1000)
-
 declare function SetupGetInfInformationA(byval InfSpec as LPCVOID, byval SearchControl as DWORD, byval ReturnBuffer as PSP_INF_INFORMATION, byval ReturnBufferSize as DWORD, byval RequiredSize as PDWORD) as WINBOOL
 declare function SetupGetInfInformationW(byval InfSpec as LPCVOID, byval SearchControl as DWORD, byval ReturnBuffer as PSP_INF_INFORMATION, byval ReturnBufferSize as DWORD, byval RequiredSize as PDWORD) as WINBOOL
-
 #define INFINFO_INF_SPEC_IS_HINF 1
 #define INFINFO_INF_NAME_IS_ABSOLUTE 2
 #define INFINFO_DEFAULT_SEARCH 3
@@ -2142,7 +2124,6 @@ declare function SetupSetFileQueueFlags(byval FileQueue as HSPFILEQ, byval FlagM
 
 declare function SetupCopyOEMInfA(byval SourceInfFileName as PCSTR, byval OEMSourceMediaLocation as PCSTR, byval OEMSourceMediaType as DWORD, byval CopyStyle as DWORD, byval DestinationInfFileName as PSTR, byval DestinationInfFileNameSize as DWORD, byval RequiredSize as PDWORD, byval DestinationInfFileNameComponent as PSTR ptr) as WINBOOL
 declare function SetupCopyOEMInfW(byval SourceInfFileName as PCWSTR, byval OEMSourceMediaLocation as PCWSTR, byval OEMSourceMediaType as DWORD, byval CopyStyle as DWORD, byval DestinationInfFileName as PWSTR, byval DestinationInfFileNameSize as DWORD, byval RequiredSize as PDWORD, byval DestinationInfFileNameComponent as PWSTR ptr) as WINBOOL
-
 #define SUOI_FORCEDELETE &h00000001
 
 #ifdef UNICODE
@@ -2158,7 +2139,6 @@ declare function SetupUninstallOEMInfW(byval InfFileName as PCWSTR, byval Flags 
 declare function SetupUninstallNewlyCopiedInfs(byval FileQueue as HSPFILEQ, byval Flags as DWORD, byval Reserved as PVOID) as WINBOOL
 declare function SetupCreateDiskSpaceListA(byval Reserved1 as PVOID, byval Reserved2 as DWORD, byval Flags as UINT) as HDSKSPC
 declare function SetupCreateDiskSpaceListW(byval Reserved1 as PVOID, byval Reserved2 as DWORD, byval Flags as UINT) as HDSKSPC
-
 #define SPDSL_IGNORE_DISK &h00000001
 #define SPDSL_DISALLOW_NEGATIVE_ADJUST &h00000002
 
@@ -2280,7 +2260,6 @@ declare function SetupDefaultQueueCallbackW(byval Context as PVOID, byval Notifi
 
 declare function SetupInstallFromInfSectionA(byval Owner as HWND, byval InfHandle as HINF, byval SectionName as PCSTR, byval Flags as UINT, byval RelativeKeyRoot as HKEY, byval SourceRootPath as PCSTR, byval CopyFlags as UINT, byval MsgHandler as PSP_FILE_CALLBACK_A, byval Context as PVOID, byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA) as WINBOOL
 declare function SetupInstallFromInfSectionW(byval Owner as HWND, byval InfHandle as HINF, byval SectionName as PCWSTR, byval Flags as UINT, byval RelativeKeyRoot as HKEY, byval SourceRootPath as PCWSTR, byval CopyFlags as UINT, byval MsgHandler as PSP_FILE_CALLBACK_W, byval Context as PVOID, byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA) as WINBOOL
-
 #define SPINST_LOGCONFIG &h00000001
 #define SPINST_INIFILES &h00000002
 #define SPINST_REGISTRY &h00000004
@@ -2305,7 +2284,6 @@ declare function SetupInstallFromInfSectionW(byval Owner as HWND, byval InfHandl
 
 declare function SetupInstallFilesFromInfSectionA(byval InfHandle as HINF, byval LayoutInfHandle as HINF, byval FileQueue as HSPFILEQ, byval SectionName as PCSTR, byval SourceRootPath as PCSTR, byval CopyFlags as UINT) as WINBOOL
 declare function SetupInstallFilesFromInfSectionW(byval InfHandle as HINF, byval LayoutInfHandle as HINF, byval FileQueue as HSPFILEQ, byval SectionName as PCWSTR, byval SourceRootPath as PCWSTR, byval CopyFlags as UINT) as WINBOOL
-
 #define SPSVCINST_TAGTOFRONT &h00000001
 #define SPSVCINST_ASSOCSERVICE &h00000002
 #define SPSVCINST_DELETEEVENTLOGENTRY &h00000004
@@ -2321,7 +2299,6 @@ declare function SetupInstallFilesFromInfSectionW(byval InfHandle as HINF, byval
 #define SPFILELOG_FORCENEW &h00000002
 #define SPFILELOG_QUERYONLY &h00000004
 #define SPFILELOG_OEMFILE &h00000001
-
 type HSPFILELOG as PVOID
 
 #ifdef UNICODE
@@ -2372,7 +2349,6 @@ end enum
 
 declare function SetupQueryFileLogA(byval FileLogHandle as HSPFILELOG, byval LogSectionName as PCSTR, byval TargetFilename as PCSTR, byval DesiredInfo as SetupFileLogInfo, byval DataOut as PSTR, byval ReturnBufferSize as DWORD, byval RequiredSize as PDWORD) as WINBOOL
 declare function SetupQueryFileLogW(byval FileLogHandle as HSPFILELOG, byval LogSectionName as PCWSTR, byval TargetFilename as PCWSTR, byval DesiredInfo as SetupFileLogInfo, byval DataOut as PWSTR, byval ReturnBufferSize as DWORD, byval RequiredSize as PDWORD) as WINBOOL
-
 #define LogSeverity DWORD
 #define LogSevInformation &h00000000
 #define LogSevWarning &h00000001
@@ -2441,18 +2417,13 @@ declare function SetupDiDeleteDeviceInfo(byval DeviceInfoSet as HDEVINFO, byval 
 declare function SetupDiEnumDeviceInfo(byval DeviceInfoSet as HDEVINFO, byval MemberIndex as DWORD, byval DeviceInfoData as PSP_DEVINFO_DATA) as WINBOOL
 declare function SetupDiDestroyDeviceInfoList(byval DeviceInfoSet as HDEVINFO) as WINBOOL
 declare function SetupDiEnumDeviceInterfaces(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA, byval InterfaceClassGuid as const GUID ptr, byval MemberIndex as DWORD, byval DeviceInterfaceData as PSP_DEVICE_INTERFACE_DATA) as WINBOOL
-
 #define SetupDiEnumInterfaceDevice SetupDiEnumDeviceInterfaces
-
 declare function SetupDiCreateDeviceInterfaceA(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA, byval InterfaceClassGuid as const GUID ptr, byval ReferenceString as PCSTR, byval CreationFlags as DWORD, byval DeviceInterfaceData as PSP_DEVICE_INTERFACE_DATA) as WINBOOL
 declare function SetupDiCreateDeviceInterfaceW(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA, byval InterfaceClassGuid as const GUID ptr, byval ReferenceString as PCWSTR, byval CreationFlags as DWORD, byval DeviceInterfaceData as PSP_DEVICE_INTERFACE_DATA) as WINBOOL
-
 #define SetupDiCreateInterfaceDeviceW SetupDiCreateDeviceInterfaceW
 #define SetupDiCreateInterfaceDeviceA SetupDiCreateDeviceInterfaceA
-
 declare function SetupDiOpenDeviceInterfaceA(byval DeviceInfoSet as HDEVINFO, byval DevicePath as PCSTR, byval OpenFlags as DWORD, byval DeviceInterfaceData as PSP_DEVICE_INTERFACE_DATA) as WINBOOL
 declare function SetupDiOpenDeviceInterfaceW(byval DeviceInfoSet as HDEVINFO, byval DevicePath as PCWSTR, byval OpenFlags as DWORD, byval DeviceInterfaceData as PSP_DEVICE_INTERFACE_DATA) as WINBOOL
-
 #define SetupDiOpenInterfaceDeviceW SetupDiOpenDeviceInterfaceW
 #define SetupDiOpenInterfaceDeviceA SetupDiOpenDeviceInterfaceA
 
@@ -2475,27 +2446,17 @@ declare function SetupDiOpenDeviceInterfaceW(byval DeviceInfoSet as HDEVINFO, by
 #endif
 
 declare function SetupDiGetDeviceInterfaceAlias(byval DeviceInfoSet as HDEVINFO, byval DeviceInterfaceData as PSP_DEVICE_INTERFACE_DATA, byval AliasInterfaceClassGuid as const GUID ptr, byval AliasDeviceInterfaceData as PSP_DEVICE_INTERFACE_DATA) as WINBOOL
-
 #define SetupDiGetInterfaceDeviceAlias SetupDiGetDeviceInterfaceAlias
-
 declare function SetupDiDeleteDeviceInterfaceData(byval DeviceInfoSet as HDEVINFO, byval DeviceInterfaceData as PSP_DEVICE_INTERFACE_DATA) as WINBOOL
-
 #define SetupDiDeleteInterfaceDeviceData SetupDiDeleteDeviceInterfaceData
-
 declare function SetupDiRemoveDeviceInterface(byval DeviceInfoSet as HDEVINFO, byval DeviceInterfaceData as PSP_DEVICE_INTERFACE_DATA) as WINBOOL
-
 #define SetupDiRemoveInterfaceDevice SetupDiRemoveDeviceInterface
-
 declare function SetupDiGetDeviceInterfaceDetailA(byval DeviceInfoSet as HDEVINFO, byval DeviceInterfaceData as PSP_DEVICE_INTERFACE_DATA, byval DeviceInterfaceDetailData as PSP_DEVICE_INTERFACE_DETAIL_DATA_A, byval DeviceInterfaceDetailDataSize as DWORD, byval RequiredSize as PDWORD, byval DeviceInfoData as PSP_DEVINFO_DATA) as WINBOOL
 declare function SetupDiGetDeviceInterfaceDetailW(byval DeviceInfoSet as HDEVINFO, byval DeviceInterfaceData as PSP_DEVICE_INTERFACE_DATA, byval DeviceInterfaceDetailData as PSP_DEVICE_INTERFACE_DETAIL_DATA_W, byval DeviceInterfaceDetailDataSize as DWORD, byval RequiredSize as PDWORD, byval DeviceInfoData as PSP_DEVINFO_DATA) as WINBOOL
-
 #define SetupDiGetInterfaceDeviceDetailW SetupDiGetDeviceInterfaceDetailW
 #define SetupDiGetInterfaceDeviceDetailA SetupDiGetDeviceInterfaceDetailA
-
 declare function SetupDiInstallDeviceInterfaces(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA) as WINBOOL
-
 #define SetupDiInstallInterfaceDevices SetupDiInstallDeviceInterfaces
-
 declare function SetupDiSetDeviceInterfaceDefault(byval DeviceInfoSet as HDEVINFO, byval DeviceInterfaceData as PSP_DEVICE_INTERFACE_DATA, byval Flags as DWORD, byval Reserved as PVOID) as WINBOOL
 declare function SetupDiRegisterDeviceInfo(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA, byval Flags as DWORD, byval CompareProc as PSP_DETSIG_CMPPROC, byval CompareContext as PVOID, byval DupDeviceInfoData as PSP_DEVINFO_DATA) as WINBOOL
 declare function SetupDiBuildDriverInfoList(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA, byval DriverType as DWORD) as WINBOOL
@@ -2577,22 +2538,16 @@ declare function SetupDiInstallClassW(byval hwndParent as HWND, byval InfFileNam
 declare function SetupDiInstallClassExA(byval hwndParent as HWND, byval InfFileName as PCSTR, byval Flags as DWORD, byval FileQueue as HSPFILEQ, byval InterfaceClassGuid as const GUID ptr, byval Reserved1 as PVOID, byval Reserved2 as PVOID) as WINBOOL
 declare function SetupDiInstallClassExW(byval hwndParent as HWND, byval InfFileName as PCWSTR, byval Flags as DWORD, byval FileQueue as HSPFILEQ, byval InterfaceClassGuid as const GUID ptr, byval Reserved1 as PVOID, byval Reserved2 as PVOID) as WINBOOL
 declare function SetupDiOpenClassRegKey(byval ClassGuid as const GUID ptr, byval samDesired as REGSAM) as HKEY
-
 #define DIOCR_INSTALLER &h00000001
 #define DIOCR_INTERFACE &h00000002
-
 declare function SetupDiOpenClassRegKeyExA(byval ClassGuid as const GUID ptr, byval samDesired as REGSAM, byval Flags as DWORD, byval MachineName as PCSTR, byval Reserved as PVOID) as HKEY
 declare function SetupDiOpenClassRegKeyExW(byval ClassGuid as const GUID ptr, byval samDesired as REGSAM, byval Flags as DWORD, byval MachineName as PCWSTR, byval Reserved as PVOID) as HKEY
 declare function SetupDiCreateDeviceInterfaceRegKeyA(byval DeviceInfoSet as HDEVINFO, byval DeviceInterfaceData as PSP_DEVICE_INTERFACE_DATA, byval Reserved as DWORD, byval samDesired as REGSAM, byval InfHandle as HINF, byval InfSectionName as PCSTR) as HKEY
 declare function SetupDiCreateDeviceInterfaceRegKeyW(byval DeviceInfoSet as HDEVINFO, byval DeviceInterfaceData as PSP_DEVICE_INTERFACE_DATA, byval Reserved as DWORD, byval samDesired as REGSAM, byval InfHandle as HINF, byval InfSectionName as PCWSTR) as HKEY
-
 #define SetupDiCreateInterfaceDeviceRegKeyW SetupDiCreateDeviceInterfaceRegKeyW
 #define SetupDiCreateInterfaceDeviceRegKeyA SetupDiCreateDeviceInterfaceRegKeyA
-
 declare function SetupDiOpenDeviceInterfaceRegKey(byval DeviceInfoSet as HDEVINFO, byval DeviceInterfaceData as PSP_DEVICE_INTERFACE_DATA, byval Reserved as DWORD, byval samDesired as REGSAM) as HKEY
-
 #define SetupDiOpenInterfaceDeviceRegKey SetupDiOpenDeviceInterfaceRegKey
-
 declare function SetupDiDeleteDeviceInterfaceRegKey(byval DeviceInfoSet as HDEVINFO, byval DeviceInterfaceData as PSP_DEVICE_INTERFACE_DATA, byval Reserved as DWORD) as WINBOOL
 
 #define SetupDiDeleteInterfaceDeviceRegKey SetupDiDeleteDeviceInterfaceRegKey
@@ -2738,10 +2693,8 @@ declare function SetupDiDestroyClassImageList(byval ClassImageListData as PSP_CL
 #define DIGCDP_FLAG_ADVANCED &h00000002
 #define DIGCDP_FLAG_REMOTE_BASIC &h00000003
 #define DIGCDP_FLAG_REMOTE_ADVANCED &h00000004
-
 declare function SetupDiGetClassDevPropertySheetsA(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA, byval PropertySheetHeader as LPPROPSHEETHEADERA, byval PropertySheetHeaderPageListSize as DWORD, byval RequiredSize as PDWORD, byval PropertySheetType as DWORD) as WINBOOL
 declare function SetupDiGetClassDevPropertySheetsW(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA, byval PropertySheetHeader as LPPROPSHEETHEADERW, byval PropertySheetHeaderPageListSize as DWORD, byval RequiredSize as PDWORD, byval PropertySheetType as DWORD) as WINBOOL
-
 #define IDI_RESOURCEFIRST 159
 #define IDI_RESOURCE 159
 #define IDI_RESOURCELAST 161
@@ -2768,10 +2721,8 @@ declare function SetupDiGetHwProfileFriendlyNameA(byval HwProfile as DWORD, byva
 declare function SetupDiGetHwProfileFriendlyNameW(byval HwProfile as DWORD, byval FriendlyName as PWSTR, byval FriendlyNameSize as DWORD, byval RequiredSize as PDWORD) as WINBOOL
 declare function SetupDiGetHwProfileFriendlyNameExA(byval HwProfile as DWORD, byval FriendlyName as PSTR, byval FriendlyNameSize as DWORD, byval RequiredSize as PDWORD, byval MachineName as PCSTR, byval Reserved as PVOID) as WINBOOL
 declare function SetupDiGetHwProfileFriendlyNameExW(byval HwProfile as DWORD, byval FriendlyName as PWSTR, byval FriendlyNameSize as DWORD, byval RequiredSize as PDWORD, byval MachineName as PCWSTR, byval Reserved as PVOID) as WINBOOL
-
 #define SPWPT_SELECTDEVICE &h00000001
 #define SPWP_USE_DEVINFO_DATA &h00000001
-
 declare function SetupDiGetWizardPage(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA, byval InstallWizardData as PSP_INSTALLWIZARD_DATA, byval PageType as DWORD, byval Flags as DWORD) as HPROPSHEETPAGE
 declare function SetupDiGetSelectedDevice(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA) as WINBOOL
 declare function SetupDiSetSelectedDevice(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA) as WINBOOL
@@ -2825,14 +2776,12 @@ type PSP_INF_SIGNER_INFO_W as _SP_INF_SIGNER_INFO_W ptr
 #ifdef UNICODE
 	type SP_INF_SIGNER_INFO as SP_INF_SIGNER_INFO_W
 	type PSP_INF_SIGNER_INFO as PSP_INF_SIGNER_INFO_W
-
 	#define SetupVerifyInfFile SetupVerifyInfFileW
 	#define SetupDiGetCustomDeviceProperty SetupDiGetCustomDevicePropertyW
 	#define SetupConfigureWmiFromInfSection SetupConfigureWmiFromInfSectionW
 #else
 	type SP_INF_SIGNER_INFO as SP_INF_SIGNER_INFO_A
 	type PSP_INF_SIGNER_INFO as PSP_INF_SIGNER_INFO_A
-
 	#define SetupVerifyInfFile SetupVerifyInfFileA
 	#define SetupDiGetCustomDeviceProperty SetupDiGetCustomDevicePropertyA
 	#define SetupConfigureWmiFromInfSection SetupConfigureWmiFromInfSectionA
@@ -2840,14 +2789,10 @@ type PSP_INF_SIGNER_INFO_W as _SP_INF_SIGNER_INFO_W ptr
 
 declare function SetupVerifyInfFileA(byval InfName as PCSTR, byval AltPlatformInfo as PSP_ALTPLATFORM_INFO, byval InfSignerInfo as PSP_INF_SIGNER_INFO_A) as WINBOOL
 declare function SetupVerifyInfFileW(byval InfName as PCWSTR, byval AltPlatformInfo as PSP_ALTPLATFORM_INFO, byval InfSignerInfo as PSP_INF_SIGNER_INFO_W) as WINBOOL
-
 #define DICUSTOMDEVPROP_MERGE_MULTISZ &h00000001
-
 declare function SetupDiGetCustomDevicePropertyA(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA, byval CustomPropertyName as PCSTR, byval Flags as DWORD, byval PropertyRegDataType as PDWORD, byval PropertyBuffer as PBYTE, byval PropertyBufferSize as DWORD, byval RequiredSize as PDWORD) as WINBOOL
 declare function SetupDiGetCustomDevicePropertyW(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA, byval CustomPropertyName as PCWSTR, byval Flags as DWORD, byval PropertyRegDataType as PDWORD, byval PropertyBuffer as PBYTE, byval PropertyBufferSize as DWORD, byval RequiredSize as PDWORD) as WINBOOL
-
 #define SCWMI_CLOBBER_SECURITY &h00000001
-
 declare function SetupConfigureWmiFromInfSectionA(byval InfHandle as HINF, byval SectionName as PCSTR, byval Flags as DWORD) as WINBOOL
 declare function SetupConfigureWmiFromInfSectionW(byval InfHandle as HINF, byval SectionName as PCWSTR, byval Flags as DWORD) as WINBOOL
 

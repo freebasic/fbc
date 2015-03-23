@@ -29,9 +29,7 @@ extern "Windows"
 #define __IProtectedModeMenuServices_FWD_DEFINED__
 #define _LPOLEDOCUMENT_DEFINED
 #define __IOleDocument_INTERFACE_DEFINED__
-
 type IOleDocument as IOleDocument_
-
 type LPOLEDOCUMENT as IOleDocument ptr
 
 type __WIDL_docobj_generated_name_00000013 as long
@@ -43,11 +41,9 @@ enum
 end enum
 
 type DOCMISC as __WIDL_docobj_generated_name_00000013
-
 extern IID_IOleDocument as const GUID
-
-type IEnumOleDocumentViews as IEnumOleDocumentViews_
 type IOleDocumentView as IOleDocumentView_
+type IEnumOleDocumentViews as IEnumOleDocumentViews_
 
 type IOleDocumentVtbl
 	QueryInterface as function(byval This as IOleDocument ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
@@ -68,14 +64,10 @@ declare function IOleDocument_GetDocMiscStatus_Proxy(byval This as IOleDocument 
 declare sub IOleDocument_GetDocMiscStatus_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IOleDocument_EnumViews_Proxy(byval This as IOleDocument ptr, byval ppEnum as IEnumOleDocumentViews ptr ptr, byval ppView as IOleDocumentView ptr ptr) as HRESULT
 declare sub IOleDocument_EnumViews_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define _LPOLEDOCUMENTSITE_DEFINED
 #define __IOleDocumentSite_INTERFACE_DEFINED__
-
 type IOleDocumentSite as IOleDocumentSite_
-
 type LPOLEDOCUMENTSITE as IOleDocumentSite ptr
-
 extern IID_IOleDocumentSite as const GUID
 
 type IOleDocumentSiteVtbl
@@ -91,12 +83,9 @@ end type
 
 declare function IOleDocumentSite_ActivateMe_Proxy(byval This as IOleDocumentSite ptr, byval pViewToActivate as IOleDocumentView ptr) as HRESULT
 declare sub IOleDocumentSite_ActivateMe_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define _LPOLEDOCUMENTVIEW_DEFINED
 #define __IOleDocumentView_INTERFACE_DEFINED__
-
 type LPOLEDOCUMENTVIEW as IOleDocumentView ptr
-
 extern IID_IOleDocumentView as const GUID
 
 type IOleDocumentViewVtbl
@@ -148,12 +137,9 @@ declare function IOleDocumentView_ApplyViewState_Proxy(byval This as IOleDocumen
 declare sub IOleDocumentView_ApplyViewState_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IOleDocumentView_Clone_Proxy(byval This as IOleDocumentView ptr, byval pIPSiteNew as IOleInPlaceSite ptr, byval ppViewNew as IOleDocumentView ptr ptr) as HRESULT
 declare sub IOleDocumentView_Clone_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define _LPENUMOLEDOCUMENTVIEWS_DEFINED
 #define __IEnumOleDocumentViews_INTERFACE_DEFINED__
-
 type LPENUMOLEDOCUMENTVIEWS as IEnumOleDocumentViews ptr
-
 extern IID_IEnumOleDocumentViews as const GUID
 
 type IEnumOleDocumentViewsVtbl
@@ -180,14 +166,10 @@ declare function IEnumOleDocumentViews_Clone_Proxy(byval This as IEnumOleDocumen
 declare sub IEnumOleDocumentViews_Clone_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IEnumOleDocumentViews_Next_Proxy(byval This as IEnumOleDocumentViews ptr, byval cViews as ULONG, byval rgpView as IOleDocumentView ptr ptr, byval pcFetched as ULONG ptr) as HRESULT
 declare function IEnumOleDocumentViews_Next_Stub(byval This as IEnumOleDocumentViews ptr, byval cViews as ULONG, byval rgpView as IOleDocumentView ptr ptr, byval pcFetched as ULONG ptr) as HRESULT
-
 #define _LPCONTINUECALLBACK_DEFINED
 #define __IContinueCallback_INTERFACE_DEFINED__
-
 type IContinueCallback as IContinueCallback_
-
 type LPCONTINUECALLBACK as IContinueCallback ptr
-
 extern IID_IContinueCallback as const GUID
 
 type IContinueCallbackVtbl
@@ -206,12 +188,9 @@ declare function IContinueCallback_FContinue_Proxy(byval This as IContinueCallba
 declare sub IContinueCallback_FContinue_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IContinueCallback_FContinuePrinting_Proxy(byval This as IContinueCallback ptr, byval nCntPrinted as LONG, byval nCurPage as LONG, byval pwszPrintStatus as wstring ptr) as HRESULT
 declare sub IContinueCallback_FContinuePrinting_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define _LPPRINT_DEFINED
 #define __IPrint_INTERFACE_DEFINED__
-
 type IPrint as IPrint_
-
 type LPPRINT as IPrint ptr
 
 type __WIDL_docobj_generated_name_00000014 as long
@@ -243,9 +222,7 @@ type tagPAGESET
 end type
 
 type PAGESET as tagPAGESET
-
 #define PAGESET_TOLASTPAGE cast(WORD, -cast(clong, 1))
-
 extern IID_IPrint as const GUID
 
 type IPrintVtbl
@@ -269,12 +246,9 @@ declare function IPrint_RemotePrint_Proxy(byval This as IPrint ptr, byval grfFla
 declare sub IPrint_RemotePrint_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IPrint_Print_Proxy(byval This as IPrint ptr, byval grfFlags as DWORD, byval pptd as DVTARGETDEVICE ptr ptr, byval ppPageSet as PAGESET ptr ptr, byval pstgmOptions as STGMEDIUM ptr, byval pcallback as IContinueCallback ptr, byval nFirstPage as LONG, byval pcPagesPrinted as LONG ptr, byval pnLastPage as LONG ptr) as HRESULT
 declare function IPrint_Print_Stub(byval This as IPrint ptr, byval grfFlags as DWORD, byval pptd as DVTARGETDEVICE ptr ptr, byval pppageset as PAGESET ptr ptr, byval pstgmOptions as RemSTGMEDIUM ptr, byval pcallback as IContinueCallback ptr, byval nFirstPage as LONG, byval pcPagesPrinted as LONG ptr, byval pnLastPage as LONG ptr) as HRESULT
-
 #define _LPOLECOMMANDTARGET_DEFINED
 #define __IOleCommandTarget_INTERFACE_DEFINED__
-
 type IOleCommandTarget as IOleCommandTarget_
-
 type LPOLECOMMANDTARGET as IOleCommandTarget ptr
 
 type OLECMDF as long
@@ -617,13 +591,9 @@ end enum
 #define MSOCMDID_CLEARSELECTION OLECMDID_CLEARSELECTION
 #define MSOCMDID_ZOOM OLECMDID_ZOOM
 #define MSOCMDID_GETZOOMRANGE OLECMDID_GETZOOMRANGE
-
 extern SID_SContainerDispatch as const GUID
-
 #define __IZoomEvents_INTERFACE_DEFINED__
-
 extern IID_IZoomEvents as const GUID
-
 type IZoomEvents as IZoomEvents_
 
 type IZoomEventsVtbl
@@ -639,11 +609,8 @@ end type
 
 declare function IZoomEvents_OnZoomPercentChanged_Proxy(byval This as IZoomEvents ptr, byval ulZoomPercent as ULONG) as HRESULT
 declare sub IZoomEvents_OnZoomPercentChanged_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define __IProtectFocus_INTERFACE_DEFINED__
-
 extern IID_IProtectFocus as const GUID
-
 type IProtectFocus as IProtectFocus_
 
 type IProtectFocusVtbl
@@ -659,13 +626,10 @@ end type
 
 declare function IProtectFocus_AllowFocusChange_Proxy(byval This as IProtectFocus ptr, byval pfAllow as WINBOOL ptr) as HRESULT
 declare sub IProtectFocus_AllowFocusChange_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define SID_SProtectFocus IID_IProtectFocus
 #define _LPPROTECTEDMODEMENUSERVICES_DEFINED
 #define __IProtectedModeMenuServices_INTERFACE_DEFINED__
-
 extern IID_IProtectedModeMenuServices as const GUID
-
 type IProtectedModeMenuServices as IProtectedModeMenuServices_
 
 type IProtectedModeMenuServicesVtbl

@@ -93,14 +93,12 @@ end type
 #ifdef UNICODE
 	#define IUniformResourceLocator IUniformResourceLocatorW
 	#define IUniformResourceLocatorVtbl IUniformResourceLocatorWVtbl
-
 	type PIUniformResourceLocator as IUniformResourceLocatorW ptr
 	type CIUniformResourceLocator as const IUniformResourceLocatorW
 	type PCIUniformResourceLocator as const IUniformResourceLocatorW ptr
 #else
 	#define IUniformResourceLocator IUniformResourceLocatorA
 	#define IUniformResourceLocatorVtbl IUniformResourceLocatorAVtbl
-
 	type PIUniformResourceLocator as IUniformResourceLocatorA ptr
 	type CIUniformResourceLocator as const IUniformResourceLocatorA
 	type PCIUniformResourceLocator as const IUniformResourceLocatorA ptr

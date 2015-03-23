@@ -16,12 +16,9 @@ extern "Windows"
 #define __IEnumCATEGORYINFO_FWD_DEFINED__
 #define __ICatRegister_FWD_DEFINED__
 #define __ICatInformation_FWD_DEFINED__
-
 extern CLSID_StdComponentCategoriesMgr as const CLSID
-
 type CATID as GUID
 type REFCATID as const GUID const ptr
-
 #define IID_IEnumCLSID IID_IEnumGUID
 #define IEnumCLSID IEnumGUID
 #define LPENUMCLSID LPENUMGUID
@@ -47,14 +44,10 @@ extern CATID_PersistsToFile as const CATID
 extern CATID_PersistsToPropertyBag as const CATID
 extern CATID_InternetAware as const CATID
 extern CATID_DesignTimeUIActivatableControl as const CATID
-
 #define _LPENUMGUID_DEFINED
 #define __IEnumGUID_INTERFACE_DEFINED__
-
 type IEnumGUID as IEnumGUID_
-
 type LPENUMGUID as IEnumGUID ptr
-
 extern IID_IEnumGUID as const GUID
 
 type IEnumGUIDVtbl
@@ -81,12 +74,9 @@ declare function IEnumGUID_Clone_Proxy(byval This as IEnumGUID ptr, byval ppenum
 declare sub IEnumGUID_Clone_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IEnumGUID_Next_Proxy(byval This as IEnumGUID ptr, byval celt as ULONG, byval rgelt as GUID ptr, byval pceltFetched as ULONG ptr) as HRESULT
 declare function IEnumGUID_Next_Stub(byval This as IEnumGUID ptr, byval celt as ULONG, byval rgelt as GUID ptr, byval pceltFetched as ULONG ptr) as HRESULT
-
 #define _LPENUMCATEGORYINFO_DEFINED
 #define __IEnumCATEGORYINFO_INTERFACE_DEFINED__
-
 type IEnumCATEGORYINFO as IEnumCATEGORYINFO_
-
 type LPENUMCATEGORYINFO as IEnumCATEGORYINFO ptr
 
 type tagCATEGORYINFO
@@ -97,7 +87,6 @@ end type
 
 type CATEGORYINFO as tagCATEGORYINFO
 type LPCATEGORYINFO as tagCATEGORYINFO ptr
-
 extern IID_IEnumCATEGORYINFO as const GUID
 
 type IEnumCATEGORYINFOVtbl
@@ -122,14 +111,10 @@ declare function IEnumCATEGORYINFO_Reset_Proxy(byval This as IEnumCATEGORYINFO p
 declare sub IEnumCATEGORYINFO_Reset_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IEnumCATEGORYINFO_Clone_Proxy(byval This as IEnumCATEGORYINFO ptr, byval ppenum as IEnumCATEGORYINFO ptr ptr) as HRESULT
 declare sub IEnumCATEGORYINFO_Clone_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define _LPCATREGISTER_DEFINED
 #define __ICatRegister_INTERFACE_DEFINED__
-
 type ICatRegister as ICatRegister_
-
 type LPCATREGISTER as ICatRegister ptr
-
 extern IID_ICatRegister as const GUID
 
 type ICatRegisterVtbl
@@ -160,14 +145,10 @@ declare function ICatRegister_RegisterClassReqCategories_Proxy(byval This as ICa
 declare sub ICatRegister_RegisterClassReqCategories_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function ICatRegister_UnRegisterClassReqCategories_Proxy(byval This as ICatRegister ptr, byval rclsid as const IID const ptr, byval cCategories as ULONG, byval rgcatid as CATID ptr) as HRESULT
 declare sub ICatRegister_UnRegisterClassReqCategories_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define _LPCATINFORMATION_DEFINED
 #define __ICatInformation_INTERFACE_DEFINED__
-
 type ICatInformation as ICatInformation_
-
 type LPCATINFORMATION as ICatInformation ptr
-
 extern IID_ICatInformation as const GUID
 
 type ICatInformationVtbl

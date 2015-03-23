@@ -24,14 +24,12 @@ end type
 
 type VERSIONEDSTREAM as tagVersionedStream
 type LPVERSIONEDSTREAM as tagVersionedStream ptr
-
 #define PROPSETFLAG_DEFAULT 0
 #define PROPSETFLAG_NONSIMPLE 1
 #define PROPSETFLAG_ANSI 2
 #define PROPSETFLAG_UNBUFFERED 4
 #define PROPSETFLAG_CASE_SENSITIVE 8
 #define PROPSET_BEHAVIOR_CASE_SENSITIVE 1
-
 type PROPVARIANT as tagPROPVARIANT
 
 type tagCAC
@@ -190,7 +188,6 @@ type CACLSID as tagCACLSID
 type PROPVAR_PAD1 as WORD
 type PROPVAR_PAD2 as WORD
 type PROPVAR_PAD3 as WORD
-
 #define tag_inner_PROPVARIANT
 
 type tagPROPVARIANT
@@ -282,7 +279,6 @@ type tagPROPVARIANT
 end type
 
 type LPPROPVARIANT as tagPROPVARIANT ptr
-
 #define _REFPROPVARIANT_DEFINED
 #define PID_DICTIONARY &h0
 #define PID_CODEPAGE &h1
@@ -376,7 +372,6 @@ type tagSTATPROPSTG
 end type
 
 type STATPROPSTG as tagSTATPROPSTG
-
 #define PROPSETHDR_OSVER_KIND(dwOSVer) HIWORD((dwOSVer))
 #define PROPSETHDR_OSVER_MAJOR(dwOSVer) LOBYTE(LOWORD((dwOSVer)))
 #define PROPSETHDR_OSVER_MINOR(dwOSVer) HIBYTE(LOWORD((dwOSVer)))
@@ -393,13 +388,10 @@ type tagSTATPROPSETSTG
 end type
 
 type STATPROPSETSTG as tagSTATPROPSETSTG
-
 #define __IPropertyStorage_INTERFACE_DEFINED__
-
 extern IID_IPropertyStorage as const GUID
-
-type IEnumSTATPROPSTG as IEnumSTATPROPSTG_
 type IPropertyStorage as IPropertyStorage_
+type IEnumSTATPROPSTG as IEnumSTATPROPSTG_
 
 type IPropertyStorageVtbl
 	QueryInterface as function(byval This as IPropertyStorage ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
@@ -447,15 +439,10 @@ declare function IPropertyStorage_SetClass_Proxy(byval This as IPropertyStorage 
 declare sub IPropertyStorage_SetClass_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IPropertyStorage_Stat_Proxy(byval This as IPropertyStorage ptr, byval pstatpsstg as STATPROPSETSTG ptr) as HRESULT
 declare sub IPropertyStorage_Stat_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define __IPropertySetStorage_INTERFACE_DEFINED__
-
 type IPropertySetStorage as IPropertySetStorage_
-
 type LPPROPERTYSETSTORAGE as IPropertySetStorage ptr
-
 extern IID_IPropertySetStorage as const GUID
-
 type IEnumSTATPROPSETSTG as IEnumSTATPROPSETSTG_
 
 type IPropertySetStorageVtbl
@@ -480,11 +467,8 @@ declare function IPropertySetStorage_Delete_Proxy(byval This as IPropertySetStor
 declare sub IPropertySetStorage_Delete_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IPropertySetStorage_Enum_Proxy(byval This as IPropertySetStorage ptr, byval ppenum as IEnumSTATPROPSETSTG ptr ptr) as HRESULT
 declare sub IPropertySetStorage_Enum_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define __IEnumSTATPROPSTG_INTERFACE_DEFINED__
-
 type LPENUMSTATPROPSTG as IEnumSTATPROPSTG ptr
-
 extern IID_IEnumSTATPROPSTG as const GUID
 
 type IEnumSTATPROPSTGVtbl
@@ -511,11 +495,8 @@ declare function IEnumSTATPROPSTG_Clone_Proxy(byval This as IEnumSTATPROPSTG ptr
 declare sub IEnumSTATPROPSTG_Clone_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IEnumSTATPROPSTG_Next_Proxy(byval This as IEnumSTATPROPSTG ptr, byval celt as ULONG, byval rgelt as STATPROPSTG ptr, byval pceltFetched as ULONG ptr) as HRESULT
 declare function IEnumSTATPROPSTG_Next_Stub(byval This as IEnumSTATPROPSTG ptr, byval celt as ULONG, byval rgelt as STATPROPSTG ptr, byval pceltFetched as ULONG ptr) as HRESULT
-
 #define __IEnumSTATPROPSETSTG_INTERFACE_DEFINED__
-
 type LPENUMSTATPROPSETSTG as IEnumSTATPROPSETSTG ptr
-
 extern IID_IEnumSTATPROPSETSTG as const GUID
 
 type IEnumSTATPROPSETSTGVtbl
@@ -542,25 +523,18 @@ declare function IEnumSTATPROPSETSTG_Clone_Proxy(byval This as IEnumSTATPROPSETS
 declare sub IEnumSTATPROPSETSTG_Clone_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IEnumSTATPROPSETSTG_Next_Proxy(byval This as IEnumSTATPROPSETSTG ptr, byval celt as ULONG, byval rgelt as STATPROPSETSTG ptr, byval pceltFetched as ULONG ptr) as HRESULT
 declare function IEnumSTATPROPSETSTG_Next_Stub(byval This as IEnumSTATPROPSETSTG ptr, byval celt as ULONG, byval rgelt as STATPROPSETSTG ptr, byval pceltFetched as ULONG ptr) as HRESULT
-
 type LPPROPERTYSTORAGE as IPropertyStorage ptr
-
 declare function PropVariantCopy(byval pvarDest as PROPVARIANT ptr, byval pvarSrc as const PROPVARIANT ptr) as HRESULT
 declare function PropVariantClear(byval pvar as PROPVARIANT ptr) as HRESULT
 declare function FreePropVariantArray(byval cVariants as ULONG, byval rgvars as PROPVARIANT ptr) as HRESULT
-
 #define _PROPVARIANTINIT_DEFINED_
 #define PropVariantInit(pvar) memset((pvar), 0, sizeof(PROPVARIANT))
-
 declare function StgCreatePropStg(byval pUnk as IUnknown ptr, byval fmtid as const IID const ptr, byval pclsid as const CLSID ptr, byval grfFlags as DWORD, byval dwReserved as DWORD, byval ppPropStg as IPropertyStorage ptr ptr) as HRESULT
 declare function StgOpenPropStg(byval pUnk as IUnknown ptr, byval fmtid as const IID const ptr, byval grfFlags as DWORD, byval dwReserved as DWORD, byval ppPropStg as IPropertyStorage ptr ptr) as HRESULT
 declare function StgCreatePropSetStg(byval pStorage as IStorage ptr, byval dwReserved as DWORD, byval ppPropSetStg as IPropertySetStorage ptr ptr) as HRESULT
-
 #define CCH_MAX_PROPSTG_NAME 31
-
 declare function FmtIdToPropStgName(byval pfmtid as const FMTID ptr, byval oszName as LPOLESTR) as HRESULT
 declare function PropStgNameToFmtId(byval oszName as const LPOLESTR, byval pfmtid as FMTID ptr) as HRESULT
-
 #define _SERIALIZEDPROPERTYVALUE_DEFINED_
 
 type tagSERIALIZEDPROPERTYVALUE
@@ -569,7 +543,6 @@ type tagSERIALIZEDPROPERTYVALUE
 end type
 
 type SERIALIZEDPROPERTYVALUE as tagSERIALIZEDPROPERTYVALUE
-
 declare function StgConvertVariantToProperty(byval pvar as const PROPVARIANT ptr, byval CodePage as USHORT, byval pprop as SERIALIZEDPROPERTYVALUE ptr, byval pcb as ULONG ptr, byval pid as PROPID, byval fReserved as BOOLEAN, byval pcIndirect as ULONG ptr) as SERIALIZEDPROPERTYVALUE ptr
 
 end extern

@@ -13,9 +13,7 @@ extern "Windows"
 #define __IObjectArray_FWD_DEFINED__
 #define __IObjectCollection_FWD_DEFINED__
 #define __IObjectArray_INTERFACE_DEFINED__
-
 extern IID_IObjectArray as const GUID
-
 type IObjectArray as IObjectArray_
 
 type IObjectArrayVtbl
@@ -34,11 +32,8 @@ declare function IObjectArray_GetCount_Proxy(byval This as IObjectArray ptr, byv
 declare sub IObjectArray_GetCount_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IObjectArray_GetAt_Proxy(byval This as IObjectArray ptr, byval uiIndex as UINT, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
 declare sub IObjectArray_GetAt_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define __IObjectCollection_INTERFACE_DEFINED__
-
 extern IID_IObjectCollection as const GUID
-
 type IObjectCollection as IObjectCollection_
 
 type IObjectCollectionVtbl

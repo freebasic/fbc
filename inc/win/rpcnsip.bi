@@ -11,7 +11,6 @@ type RPC_IMPORT_CONTEXT_P
 end type
 
 type PRPC_IMPORT_CONTEXT_P as RPC_IMPORT_CONTEXT_P ptr
-
 declare function I_RpcNsGetBuffer(byval Message as PRPC_MESSAGE) as RPC_STATUS
 declare function I_RpcNsSendReceive(byval Message as PRPC_MESSAGE, byval Handle as RPC_BINDING_HANDLE ptr) as RPC_STATUS
 declare sub I_RpcNsRaiseException(byval Message as PRPC_MESSAGE, byval Status as RPC_STATUS)

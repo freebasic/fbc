@@ -76,9 +76,7 @@ extern "C"
 	#define ENUM_CURRENT_SETTINGS (DWORD - 1)
 #elseif defined(__FB_DOS__)
 	#define ALLEGRO_USE_CONSTRUCTOR
-
 	declare sub _unlock_dpmi_data(byval addr as any ptr, byval size as long)
-
 	#define LOCK_DATA(d, s) _go32_dpmi_lock_data(cptr(any ptr, d), s)
 	#define LOCK_CODE(c, s) _go32_dpmi_lock_code(cptr(any ptr, c), s)
 	#define UNLOCK_DATA(d, s) _unlock_dpmi_data(cptr(any ptr, d), s)
@@ -163,15 +161,10 @@ extern "C"
 
 #ifdef __FB_LINUX__
 	declare function _alemu_stricmp(byval s1 as const zstring ptr, byval s2 as const zstring ptr) as long
-
 	#define stricmp _alemu_stricmp
-
 	declare function _alemu_strlwr(byval string as zstring ptr) as zstring ptr
-
 	#define strlwr _alemu_strlwr
-
 	declare function _alemu_strupr(byval string as zstring ptr) as zstring ptr
-
 	#define strupr _alemu_strupr
 #endif
 
@@ -210,7 +203,6 @@ extern "C"
 	#define bmp_read15(addr) (*cptr(ushort ptr, (addr)))
 	#define bmp_read16(addr) (*cptr(ushort ptr, (addr)))
 	#define bmp_read32(addr) (*cptr(ulong ptr, (addr)))
-
 	declare function bmp_read24(byval addr as uinteger) as long
 	declare sub bmp_write24(byval addr as uinteger, byval c as long)
 #endif
@@ -266,8 +258,8 @@ declare function uwidth_max(byval type as long) as long
 #define uconvert_ascii(s, buf) uconvert(s, U_ASCII, buf, U_CURRENT, sizeof((buf)))
 #define uconvert_toascii(s, buf) uconvert(s, U_CURRENT, buf, U_ASCII, sizeof((buf)))
 #define EMPTY_STRING_ !"\0\0\0"
-
-extern _AL_DLL empty_string as zstring * 4
+extern _AL_DLL __empty_string alias "empty_string" as byte
+#define empty_string (*cptr(zstring ptr, @__empty_string))
 extern _AL_DLL ugetc as function(byval s as const zstring ptr) as long
 extern _AL_DLL ugetx as function(byval s as zstring ptr ptr) as long
 extern _AL_DLL ugetxc as function(byval s as const zstring ptr ptr) as long
@@ -346,11 +338,12 @@ declare sub set_config_id(byval section as const zstring ptr, byval name as cons
 declare function list_config_entries(byval section as const zstring ptr, byval names as const zstring ptr ptr ptr) as long
 declare function list_config_sections(byval names as const zstring ptr ptr ptr) as long
 declare sub free_config_entries(byval names as const zstring ptr ptr ptr)
-
 #define ALLEGRO_ERROR_SIZE 256
 
-extern _AL_DLL allegro_id as zstring * len("Allegro " ALLEGRO_VERSION_STR ", " ALLEGRO_PLATFORM_STR)
-extern _AL_DLL allegro_error as zstring * ALLEGRO_ERROR_SIZE
+extern _AL_DLL __allegro_id alias "allegro_id" as byte
+#define allegro_id (*cptr(zstring ptr, @__allegro_id))
+extern _AL_DLL __allegro_error alias "allegro_error" as byte
+#define allegro_error (*cptr(zstring ptr, @__allegro_error))
 
 #define OSTYPE_UNKNOWN 0
 #define OSTYPE_WIN3 AL_ID(asc("W"), asc("I"), asc("N"), asc("3"))
@@ -390,10 +383,8 @@ extern _AL_DLL os_multitasking as long
 #define SYSTEM_AUTODETECT 0
 #define SYSTEM_NONE_ AL_ID(asc("N"), asc("O"), asc("N"), asc("E"))
 #define MAKE_VERSION(a, b, c) ((((a) shl 16) or ((b) shl 8)) or (c))
-
 declare function _install_allegro_version_check(byval system_id as long, byval errno_ptr as long ptr, byval atexit_ptr as function(byval func as sub()) as long, byval version as long) as long
 declare function install_allegro(byval system_id as long, byval errno_ptr as long ptr, byval atexit_ptr as function(byval func as sub()) as long) as long
-
 #define allegro_init() _install_allegro_version_check(SYSTEM_AUTODETECT, @errno, cptr(function cdecl(byval as sub cdecl()) as long, @atexit), MAKE_VERSION(ALLEGRO_VERSION, ALLEGRO_SUB_VERSION, ALLEGRO_WIP_VERSION))
 
 declare sub allegro_exit()
@@ -468,15 +459,16 @@ declare sub check_cpu()
 #define CPU_MODEL_POWERPC_7450 11
 
 #define _AL_CPU_VENDOR_SIZE 32
-extern _AL_DLL cpu_vendor as zstring * _AL_CPU_VENDOR_SIZE
+extern _AL_DLL __cpu_vendor alias "cpu_vendor" as byte
+#define cpu_vendor (*cptr(zstring ptr, @__cpu_vendor))
 extern _AL_DLL cpu_family as long
 extern _AL_DLL cpu_model as long
 extern _AL_DLL cpu_capabilities as long
 
-type GFX_MODE as GFX_MODE_
-type GFX_VTABLE as GFX_VTABLE_
-type RGB as RGB_
 type BITMAP as BITMAP_
+type RGB as RGB_
+type GFX_VTABLE as GFX_VTABLE_
+type GFX_MODE as GFX_MODE_
 
 type SYSTEM_DRIVER
 	id as long
@@ -527,7 +519,6 @@ extern _AL_DLL ___system_driver_list alias "_system_driver_list" as _DRIVER_INFO
 
 #define ALLEGRO_SYSTEM_INL
 #define ALLEGRO_DEBUG_H
-
 declare sub al_assert(byval file as const zstring ptr, byval linenr as long)
 declare sub al_trace(byval msg as const zstring ptr, ...)
 declare sub register_assert_handler(byval handler as function(byval msg as const zstring ptr) as long)
@@ -658,7 +649,6 @@ extern _AL_DLL retrace_count as long
 
 declare sub rest(byval tyme as ulong)
 declare sub rest_callback(byval tyme as ulong, byval callback as sub())
-
 #define ALLEGRO_KEYBOARD_H
 
 type KEYBOARD_DRIVER
@@ -1080,7 +1070,6 @@ declare function save_joystick_data(byval filename as const zstring ptr) as long
 declare function load_joystick_data(byval filename as const zstring ptr) as long
 declare function calibrate_joystick_name(byval n as long) as const zstring ptr
 declare function calibrate_joystick(byval n as long) as long
-
 #define ALLEGRO_PALETTE_H
 
 type RGB_
@@ -1094,7 +1083,6 @@ end type
 #define ALLEGRO_GFX_H
 #define ALLEGRO_3D_H
 #define ALLEGRO_FIXED_H
-
 type fixed as long
 
 extern _AL_DLL fixtorad_r as const fixed
@@ -1148,9 +1136,7 @@ declare function clip3d(byval type as long, byval min_z as fixed, byval max_z as
 declare function clip3d_f(byval type as long, byval min_z as single, byval max_z as single, byval vc as long, byval vtx as const V3D_f ptr ptr, byval vout as V3D_f ptr ptr, byval vtmp as V3D_f ptr ptr, byval out as long ptr) as long
 declare function polygon_z_normal(byval v1 as const V3D ptr, byval v2 as const V3D ptr, byval v3 as const V3D ptr) as fixed
 declare function polygon_z_normal_f(byval v1 as const V3D_f ptr, byval v2 as const V3D_f ptr, byval v3 as const V3D_f ptr) as single
-
-type ZBUFFER as BITMAP_
-
+type ZBUFFER as BITMAP
 declare function create_zbuffer(byval bmp as BITMAP ptr) as ZBUFFER ptr
 declare function create_sub_zbuffer(byval parent as ZBUFFER ptr, byval x as long, byval y as long, byval width as long, byval height as long) as ZBUFFER ptr
 declare sub set_zbuffer(byval zbuf as ZBUFFER ptr)
@@ -1278,8 +1264,8 @@ extern _AL_DLL ___gfx_driver_list alias "_gfx_driver_list" as _DRIVER_INFO
 
 extern _AL_DLL gfx_capabilities as long
 
-type FONT_GLYPH as FONT_GLYPH_
 type RLE_SPRITE as RLE_SPRITE_
+type FONT_GLYPH as FONT_GLYPH_
 
 type GFX_VTABLE_
 	color_depth as long
@@ -1475,10 +1461,8 @@ declare sub vsync()
 #define GFX_TYPE_FULLSCREEN 2
 #define GFX_TYPE_DEFINITE 4
 #define GFX_TYPE_MAGIC 8
-
 declare function get_gfx_mode_type(byval graphics_card as long) as long
 declare function get_gfx_mode() as long
-
 #define SWITCH_NONE 0
 #define SWITCH_PAUSE 1
 #define SWITCH_AMNESIA 2
@@ -1492,14 +1476,10 @@ declare function get_display_switch_mode() as long
 declare function set_display_switch_callback(byval dir as long, byval cb as sub()) as long
 declare sub remove_display_switch_callback(byval cb as sub())
 declare sub lock_bitmap(byval bmp as BITMAP ptr)
-
 #define ALLEGRO_GFX_INL
-
 declare function _default_ds() as long
-
 type _BMP_BANK_SWITCHER as function(byval bmp as BITMAP ptr, byval lyne as long) as uinteger
 type _BMP_UNBANK_SWITCHER as sub(byval bmp as BITMAP ptr)
-
 declare function bmp_write_line(byval bmp as BITMAP ptr, byval lyne as long) as uinteger
 declare function bmp_read_line(byval bmp as BITMAP ptr, byval lyne as long) as uinteger
 declare sub bmp_unwrite_line(byval bmp as BITMAP ptr)
@@ -1523,7 +1503,6 @@ declare function is_inside_bitmap(byval bmp as BITMAP ptr, byval x as long, byva
 declare sub get_clip_rect(byval bitmap as BITMAP ptr, byval x1 as long ptr, byval y_1 as long ptr, byval x2 as long ptr, byval y2 as long ptr)
 declare sub set_clip_state(byval bitmap as BITMAP ptr, byval state as long)
 declare function get_clip_state(byval bitmap as BITMAP ptr) as long
-
 #define ALLEGRO_COLOR_H
 
 extern _AL_DLL black_palette(0 to 255) as RGB
@@ -1589,9 +1568,7 @@ declare sub create_light_table(byval table as COLOR_MAP ptr, byval pal as const 
 declare sub create_trans_table(byval table as COLOR_MAP ptr, byval pal as const RGB ptr, byval r as long, byval g as long, byval b as long, byval callback as sub(byval pos as long))
 declare sub create_color_table(byval table as COLOR_MAP ptr, byval pal as const RGB ptr, byval blend as sub(byval pal as const RGB ptr, byval x as long, byval y as long, byval rgb as RGB ptr), byval callback as sub(byval pos as long))
 declare sub create_blender_table(byval table as COLOR_MAP ptr, byval pal as const RGB ptr, byval callback as sub(byval pos as long))
-
 type BLENDER_FUNC as function(byval x as culong, byval y as culong, byval n as culong) as culong
-
 declare sub set_blender_mode(byval b15 as BLENDER_FUNC, byval b16 as BLENDER_FUNC, byval b24 as BLENDER_FUNC, byval r as long, byval g as long, byval b as long, byval a as long)
 declare sub set_blender_mode_ex(byval b15 as BLENDER_FUNC, byval b16 as BLENDER_FUNC, byval b24 as BLENDER_FUNC, byval b32 as BLENDER_FUNC, byval b15x as BLENDER_FUNC, byval b16x as BLENDER_FUNC, byval b24x as BLENDER_FUNC, byval r as long, byval g as long, byval b as long, byval a as long)
 declare sub set_alpha_blender()
@@ -1627,9 +1604,7 @@ declare function getr_depth(byval color_depth as long, byval c as long) as long
 declare function getg_depth(byval color_depth as long, byval c as long) as long
 declare function getb_depth(byval color_depth as long, byval c as long) as long
 declare function geta_depth(byval color_depth as long, byval c as long) as long
-
 #define ALLEGRO_COLOR_INL
-
 declare function makecol15(byval r as long, byval g as long, byval b as long) as long
 declare function makecol16(byval r as long, byval g as long, byval b as long) as long
 declare function makecol24(byval r as long, byval g as long, byval b as long) as long
@@ -1704,9 +1679,7 @@ declare sub pivot_sprite_lit(byval bmp as BITMAP ptr, byval sprite as BITMAP ptr
 declare sub pivot_sprite_v_flip_lit(byval bmp as BITMAP ptr, byval sprite as BITMAP ptr, byval x as long, byval y as long, byval cx as long, byval cy as long, byval angle as fixed, byval color as long)
 declare sub pivot_scaled_sprite_lit(byval bmp as BITMAP ptr, byval sprite as BITMAP ptr, byval x as long, byval y as long, byval cx as long, byval cy as long, byval angle as fixed, byval scale as fixed, byval color as long)
 declare sub pivot_scaled_sprite_v_flip_lit(byval bmp as BITMAP ptr, byval sprite as BITMAP ptr, byval x as long, byval y as long, byval cx as long, byval cy as long, byval angle as fixed, byval scale as fixed, byval color as long)
-
 #define ALLEGRO_DRAW_INL
-
 declare function getpixel(byval bmp as BITMAP ptr, byval x as long, byval y as long) as long
 declare sub putpixel(byval bmp as BITMAP ptr, byval x as long, byval y as long, byval color as long)
 declare sub _allegro_vline(byval bmp as BITMAP ptr, byval x as long, byval y_1 as long, byval y2 as long, byval color as long)
@@ -1759,7 +1732,6 @@ declare sub _putpixel24(byval bmp as BITMAP ptr, byval x as long, byval y as lon
 declare function _getpixel24(byval bmp as BITMAP ptr, byval x as long, byval y as long) as long
 declare sub _putpixel32(byval bmp as BITMAP ptr, byval x as long, byval y as long, byval color as long)
 declare function _getpixel32(byval bmp as BITMAP ptr, byval x as long, byval y as long) as long
-
 #define ALLEGRO_RLE_H
 
 type RLE_SPRITE_
@@ -1772,23 +1744,16 @@ end type
 
 declare function get_rle_sprite(byval bitmap as BITMAP ptr) as RLE_SPRITE ptr
 declare sub destroy_rle_sprite(byval sprite as RLE_SPRITE ptr)
-
 #define ALLEGRO_RLE_INL
-
 declare sub draw_rle_sprite(byval bmp as BITMAP ptr, byval sprite as const RLE_SPRITE ptr, byval x as long, byval y as long)
 declare sub draw_trans_rle_sprite(byval bmp as BITMAP ptr, byval sprite as const RLE_SPRITE ptr, byval x as long, byval y as long)
 declare sub draw_lit_rle_sprite(byval bmp as BITMAP ptr, byval sprite as const RLE_SPRITE ptr, byval x as long, byval y as long, byval color as long)
-
 #define ALLEGRO_COMPILED_H
-
 type COMPILED_SPRITE as RLE_SPRITE
-
 declare function get_compiled_sprite(byval bitmap as BITMAP ptr, byval planar as long) as COMPILED_SPRITE ptr
 declare sub destroy_compiled_sprite(byval sprite as COMPILED_SPRITE ptr)
 declare sub draw_compiled_sprite(byval bmp as BITMAP ptr, byval sprite as const COMPILED_SPRITE ptr, byval x as long, byval y as long)
-
 #define ALLEGRO_TEXT_H
-
 type FONT as FONT_
 
 extern _AL_DLL font as FONT ptr
@@ -1805,7 +1770,6 @@ declare sub textprintf_justify_ex(byval bmp as BITMAP ptr, byval f as const FONT
 declare function text_length(byval f as const FONT ptr, byval str as const zstring ptr) as long
 declare function text_height(byval f as const FONT ptr) as long
 declare sub destroy_font(byval f as FONT ptr)
-
 #define ALLEGRO_FONT_H
 
 type FONT_GLYPH_
@@ -1868,9 +1832,7 @@ extern _AL_DLL fli_frame as long
 extern _AL_DLL fli_timer as long
 
 #define ALLEGRO_GUI_H
-
 type DIALOG as DIALOG_
-
 type DIALOG_PROC as function(byval msg as long, byval d as DIALOG ptr, byval c as long) as long
 
 type DIALOG_
@@ -2128,9 +2090,7 @@ extern _AL_DLL digi_input_card as long
 declare function detect_digi_driver(byval driver_id as long) as long
 declare function load_sample(byval filename as const zstring ptr) as SAMPLE ptr
 declare function load_wav(byval filename as const zstring ptr) as SAMPLE ptr
-
 type PACKFILE as PACKFILE_
-
 declare function load_wav_pf(byval f as PACKFILE ptr) as SAMPLE ptr
 declare function load_voc(byval filename as const zstring ptr) as SAMPLE ptr
 declare function load_voc_pf(byval f as PACKFILE ptr) as SAMPLE ptr
@@ -2191,7 +2151,6 @@ extern _AL_DLL digi_recorder as sub()
 
 declare sub lock_sample(byval spl as SAMPLE ptr)
 declare sub register_sample_file_type(byval ext as const zstring ptr, byval load as function(byval filename as const zstring ptr) as SAMPLE ptr, byval save as function(byval filename as const zstring ptr, byval spl as SAMPLE ptr) as long)
-
 #define ALLEGRO_STREAM_H
 
 type AUDIOSTREAM
@@ -2307,9 +2266,7 @@ declare function get_mixer_bits() as long
 declare function get_mixer_channels() as long
 declare function get_mixer_voices() as long
 declare function get_mixer_buffer_length() as long
-
 #define ALLEGRO_FILE_H
-
 declare function fix_filename_case(byval path as zstring ptr) as zstring ptr
 declare function fix_filename_slashes(byval path as zstring ptr) as zstring ptr
 declare function canonicalize_filename(byval dest as zstring ptr, byval filename as const zstring ptr, byval size as long) as zstring ptr
@@ -2402,7 +2359,6 @@ type PACKFILE_VTABLE_
 end type
 
 #define uconvert_tofilename(s, buf) uconvert(s, U_CURRENT, buf, get_filename_encoding(), sizeof((buf)))
-
 declare sub set_filename_encoding(byval encoding as long)
 declare function get_filename_encoding() as long
 declare sub packfile_password(byval password as const zstring ptr)
@@ -2430,9 +2386,7 @@ declare function pack_ungetc(byval c as long, byval f as PACKFILE ptr) as long
 declare function pack_fgets(byval p as zstring ptr, byval max as long, byval f as PACKFILE ptr) as zstring ptr
 declare function pack_fputs(byval p as const zstring ptr, byval f as PACKFILE ptr) as long
 declare function pack_get_userdata(byval f as PACKFILE ptr) as any ptr
-
 #define ALLEGRO_LZSS_H
-
 declare function create_lzss_pack_data() as LZSS_PACK_DATA ptr
 declare sub free_lzss_pack_data(byval dat as LZSS_PACK_DATA ptr)
 declare function lzss_write(byval file as PACKFILE ptr, byval dat as LZSS_PACK_DATA ptr, byval size as long, byval buf as ubyte ptr, byval last as long) as long
@@ -2504,9 +2458,7 @@ declare function save_pcx_pf(byval f as PACKFILE ptr, byval bmp as BITMAP ptr, b
 declare function save_tga(byval filename as const zstring ptr, byval bmp as BITMAP ptr, byval pal as const RGB ptr) as long
 declare function save_tga_pf(byval f as PACKFILE ptr, byval bmp as BITMAP ptr, byval pal as const RGB ptr) as long
 declare sub register_bitmap_file_type(byval ext as const zstring ptr, byval load as function(byval filename as const zstring ptr, byval pal as RGB ptr) as BITMAP ptr, byval save as function(byval filename as const zstring ptr, byval bmp as BITMAP ptr, byval pal as const RGB ptr) as long)
-
 #define ALLEGRO_FMATH_H
-
 declare function fixsqrt(byval x as fixed) as fixed
 declare function fixhypot(byval x as fixed, byval y as fixed) as fixed
 declare function fixatan(byval x as fixed) as fixed
@@ -2521,7 +2473,6 @@ extern _AL_DLL ___acos_tbl alias "_acos_tbl" as fixed
 
 #define ALLEGRO_FMATHS_INL
 #define ALLEGRO_USE_C
-
 declare function ftofix(byval x as double) as fixed
 declare function fixtof(byval x as fixed) as double
 declare function fixadd(byval x as fixed, byval y as fixed) as fixed
@@ -2537,7 +2488,6 @@ declare function fixsin(byval x as fixed) as fixed
 declare function fixtan(byval x as fixed) as fixed
 declare function fixacos(byval x as fixed) as fixed
 declare function fixasin(byval x as fixed) as fixed
-
 #define ALLEGRO_MATRIX_H
 
 type MATRIX
@@ -2580,11 +2530,8 @@ declare sub qscale_matrix_f(byval m as MATRIX_f ptr, byval scale as single)
 declare sub matrix_mul(byval m1 as const MATRIX ptr, byval m2 as const MATRIX ptr, byval out as MATRIX ptr)
 declare sub matrix_mul_f(byval m1 as const MATRIX_f ptr, byval m2 as const MATRIX_f ptr, byval out as MATRIX_f ptr)
 declare sub apply_matrix_f(byval m as const MATRIX_f ptr, byval x as single, byval y as single, byval z as single, byval xout as single ptr, byval yout as single ptr, byval zout as single ptr)
-
 #define ALLEGRO_MATRIX_INL
-
 declare sub apply_matrix(byval m as MATRIX ptr, byval x as fixed, byval y as fixed, byval z as fixed, byval xout as fixed ptr, byval yout as fixed ptr, byval zout as fixed ptr)
-
 #define ALLEGRO_QUAT_H
 
 type QUAT
@@ -2632,9 +2579,7 @@ extern _AL_DLL _persp_yoffset_f as single
 declare sub set_projection_viewport(byval x as long, byval y as long, byval w as long, byval h as long)
 declare sub quat_to_matrix(byval q as const QUAT ptr, byval m as MATRIX_f ptr)
 declare sub matrix_to_quat(byval m as const MATRIX_f ptr, byval q as QUAT ptr)
-
 #define ALLEGRO_3DMATHS_INL
-
 declare function dot_product(byval x1 as fixed, byval y_1 as fixed, byval z1 as fixed, byval x2 as fixed, byval y2 as fixed, byval z2 as fixed) as fixed
 declare function dot_product_f(byval x1 as single, byval y_1 as single, byval z1 as single, byval x2 as single, byval y2 as single, byval z2 as single) as single
 declare sub persp_project(byval x as fixed, byval y as fixed, byval z as fixed, byval xout as fixed ptr, byval yout as fixed ptr)
@@ -2678,9 +2623,7 @@ declare sub persp_project_f(byval x as single, byval y as single, byval z as sin
 #define JOY_HAT_DOWN 2
 #define JOY_HAT_RIGHT 3
 #define JOY_HAT_UP 4
-
 declare function initialise_joystick() as long
-
 #define black_pallete black_palette
 #define desktop_pallete desktop_palette
 #define set_pallete set_palette
@@ -2730,9 +2673,7 @@ declare function timer_is_using_retrace() as long
 
 #ifdef __FB_WIN32__
 	declare function _WinMain(byval _main as any ptr, byval hInst as any ptr, byval hPrev as any ptr, byval Cmd as zstring ptr, byval nShow as long) as long
-
 	#define SYSTEM_DIRECTX_ AL_ID(asc("D"), asc("X"), asc(" "), asc(" "))
-
 	extern _AL_DLL system_directx as SYSTEM_DRIVER
 
 	#define TIMER_WIN32_HIGH_PERF AL_ID(asc("W"), asc("3"), asc("2"), asc("H"))
@@ -2766,18 +2707,14 @@ declare function timer_is_using_retrace() as long
 
 	extern _AL_DLL joystick_directx as JOYSTICK_DRIVER
 	extern _AL_DLL joystick_win32 as JOYSTICK_DRIVER
-
 	#define JOYSTICK_DRIVER_DIRECTX ( JOY_TYPE_DIRECTX, @joystick_directx, TRUE ),
 	#define JOYSTICK_DRIVER_WIN32 ( JOY_TYPE_WIN32, @joystick_win32, TRUE ),
 #elseif defined(__FB_LINUX__)
 	extern __crt0_argc as long
 	extern __crt0_argv as zstring ptr ptr
-
 	#define TIMERDRV_UNIX_PTHREADS_ AL_ID(asc("P"), asc("T"), asc("H"), asc("R"))
 	#define TIMERDRV_UNIX_SIGALRM AL_ID(asc("A"), asc("L"), asc("R"), asc("M"))
-
 	extern timerdrv_unix_pthreads as TIMER_DRIVER
-
 	#define DIGI_OSS AL_ID(asc("O"), asc("S"), asc("S"), asc("D"))
 	#define MIDI_OSS AL_ID(asc("O"), asc("S"), asc("S"), asc("M"))
 	#define DIGI_ESD AL_ID(asc("E"), asc("S"), asc("D"), asc("D"))
@@ -2819,20 +2756,14 @@ declare function timer_is_using_retrace() as long
 	extern mousedrv_linux_evdev as MOUSE_DRIVER
 #else
 	#define SYSTEM_DOS_ AL_ID(asc("D"), asc("O"), asc("S"), asc(" "))
-
 	extern system_dos as SYSTEM_DRIVER
 	extern i_love_bill as long
-
 	#define KEYDRV_PCDOS_ AL_ID(asc("P"), asc("C"), asc("K"), asc("B"))
-
 	extern keydrv_pcdos as KEYBOARD_DRIVER
-
 	#define TIMEDRV_FIXED_RATE_ AL_ID(asc("F"), asc("I"), asc("X"), asc("T"))
 	#define TIMEDRV_VARIABLE_RATE_ AL_ID(asc("V"), asc("A"), asc("R"), asc("T"))
-
 	extern timedrv_fixed_rate as TIMER_DRIVER
 	extern timedrv_variable_rate as TIMER_DRIVER
-
 	#define MOUSEDRV_MICKEYS_ AL_ID(asc("M"), asc("I"), asc("C"), asc("K"))
 	#define MOUSEDRV_INT33_ AL_ID(asc("I"), asc("3"), asc("3"), asc(" "))
 	#define MOUSEDRV_POLLING_ AL_ID(asc("P"), asc("O"), asc("L"), asc("L"))
@@ -2939,7 +2870,6 @@ declare function timer_is_using_retrace() as long
 	declare function calibrate_joystick_throttle_min() as long
 	declare function calibrate_joystick_throttle_max() as long
 	declare function calibrate_joystick_hat(byval direction as long) as long
-
 	#define ALLEGRO_GFX_HAS_VGA
 	#define ALLEGRO_GFX_HAS_VBEAF
 	#define GFX_VGA_ AL_ID(asc("V"), asc("G"), asc("A"), asc(" "))
@@ -2976,7 +2906,6 @@ declare function timer_is_using_retrace() as long
 
 #ifdef __FB_DOS__
 	declare sub _set_color(byval index as long, byval p as const RGB ptr)
-
 	#define DIGI_SB10_ AL_ID(asc("S"), asc("B"), asc("1"), asc("0"))
 	#define DIGI_SB15_ AL_ID(asc("S"), asc("B"), asc("1"), asc("5"))
 	#define DIGI_SB20_ AL_ID(asc("S"), asc("B"), asc("2"), asc("0"))
@@ -3015,7 +2944,6 @@ declare function timer_is_using_retrace() as long
 	#define MIDI_DRIVER_ADLIB ( MIDI_OPL3, @midi_opl3, TRUE ), ( MIDI_2XOPL2, @midi_2xopl2, TRUE ), ( MIDI_OPL2, @midi_opl2, TRUE ),
 	#define MIDI_DRIVER_SB_OUT ( MIDI_SB_OUT, @midi_sb_out, FALSE ),
 	#define MIDI_DRIVER_MPU ( MIDI_MPU, @midi_mpu401, FALSE ),
-
 	declare function load_ibk(byval filename as const zstring ptr, byval drums as long) as long
 #endif
 

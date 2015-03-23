@@ -74,7 +74,6 @@ end type
 
 type NAME_BUFFER as _NAME_BUFFER
 type PNAME_BUFFER as _NAME_BUFFER ptr
-
 #define NAME_FLAGS_MASK &h87
 #define GROUP_NAME &h80
 #define UNIQUE_NAME &h00
@@ -105,7 +104,6 @@ end type
 
 type SESSION_BUFFER as _SESSION_BUFFER
 type PSESSION_BUFFER as _SESSION_BUFFER ptr
-
 #define LISTEN_OUTSTANDING &h01
 #define CALL_PENDING &h02
 #define SESSION_ESTABLISHED &h03
@@ -150,7 +148,6 @@ end type
 
 type ACTION_HEADER as _ACTION_HEADER
 type PACTION_HEADER as _ACTION_HEADER ptr
-
 #define ALL_TRANSPORTS !"M\0\0\0"
 #define MS_NBF "MNBF"
 #define NCBCALL &h10
@@ -219,7 +216,6 @@ type PACTION_HEADER as _ACTION_HEADER ptr
 #define NRC_OPENERR &h3f
 #define NRC_SYSTEM &h40
 #define NRC_PENDING &hff
-
 declare function Netbios(byval pncb as PNCB) as UCHAR
 
 end extern

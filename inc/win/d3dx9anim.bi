@@ -5,7 +5,6 @@
 extern "Windows"
 
 #define __WINE_D3DX9ANIM_H
-
 extern IID_ID3DXAnimationSet as const GUID
 extern IID_ID3DXKeyframedAnimationSet as const GUID
 extern IID_ID3DXCompressedAnimationSet as const GUID
@@ -178,7 +177,6 @@ type LPD3DXKEYFRAMEDANIMATIONSET as ID3DXKeyframedAnimationSet ptr
 type LPD3DXCOMPRESSEDANIMATIONSET as ID3DXCompressedAnimationSet ptr
 type LPD3DXANIMATIONCALLBACKHANDLER as ID3DXAnimationCallbackHandler ptr
 type LPD3DXANIMATIONCONTROLLER as ID3DXAnimationController ptr
-
 type ID3DXAllocateHierarchyVtbl as ID3DXAllocateHierarchyVtbl_
 
 type ID3DXAllocateHierarchy

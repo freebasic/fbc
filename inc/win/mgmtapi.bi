@@ -16,7 +16,6 @@ extern "Windows"
 #define SNMP_MGMTAPI_INVALID_SESSION 47
 #define SNMP_MGMTAPI_INVALID_BUFFER 48
 #define MGMCTL_SETAGENTPORT &h01
-
 type LPSNMP_MGR_SESSION as PVOID
 
 declare function SnmpMgrOpen(byval lpAgentAddress as LPSTR, byval lpAgentCommunity as LPSTR, byval nTimeOut as INT_, byval nRetries as INT_) as LPSNMP_MGR_SESSION

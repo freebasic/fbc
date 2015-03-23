@@ -65,7 +65,6 @@ extern "C"
 #define _TRUNCATE cuint(-1)
 #define _CRT_glob _dowildcard
 #define __ANONYMOUS_DEFINED
-
 declare function __mingw_get_crt_info() as const zstring ptr
 
 end extern

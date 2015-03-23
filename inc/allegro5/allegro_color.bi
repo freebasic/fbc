@@ -6,7 +6,6 @@
 extern "C"
 
 #define __al_included_allegro5_allegro_color_h
-
 declare function al_get_allegro_color_version() as ulong
 declare sub al_color_hsv_to_rgb(byval hue as single, byval saturation as single, byval value as single, byval red as single ptr, byval green as single ptr, byval blue as single ptr)
 declare sub al_color_rgb_to_hsl(byval red as single, byval green as single, byval blue as single, byval hue as single ptr, byval saturation as single ptr, byval lightness as single ptr)

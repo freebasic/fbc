@@ -8,9 +8,7 @@
 extern "Windows"
 
 #define __D3DRM_H__
-
 type IDirect3DRM as IDirect3DRM_
-
 type LPDIRECT3DRM as IDirect3DRM ptr
 type LPLPDIRECT3DRM as IDirect3DRM ptr ptr
 
@@ -23,9 +21,7 @@ type LPDIRECT3DRM2 as IDirect3DRM2 ptr
 type LPLPDIRECT3DRM2 as IDirect3DRM2 ptr ptr
 type LPDIRECT3DRM3 as IDirect3DRM3 ptr
 type LPLPDIRECT3DRM3 as IDirect3DRM3 ptr ptr
-
 declare function Direct3DRMCreate(byval d3drm as IDirect3DRM ptr ptr) as HRESULT
-
 type IDirect3DRMVtbl as IDirect3DRMVtbl_
 
 type IDirect3DRM_
@@ -105,7 +101,6 @@ end type
 #define IDirect3DRM_EnumerateObjects(p, a, b) (p)->lpVtbl->EnumerateObjects(p, a, b)
 #define IDirect3DRM_Load(p, a, b, c, d, e, f, g, h, i, j) (p)->lpVtbl->Load(p, a, b, c, d, e, f, g, h, i, j)
 #define IDirect3DRM_Tick(p, a) (p)->lpVtbl->Tick(p, a)
-
 type IDirect3DRM2Vtbl as IDirect3DRM2Vtbl_
 
 type IDirect3DRM2
@@ -187,7 +182,6 @@ end type
 #define IDirect3DRM2_Load(p, a, b, c, d, e, f, g, h, i, j) (p)->lpVtbl->Load(p, a, b, c, d, e, f, g, h, i, j)
 #define IDirect3DRM2_Tick(p, a) (p)->lpVtbl->Tick(p, a)
 #define IDirect3DRM2_CreateProgressiveMesh(p, a) (p)->lpVtbl->CreateProgressiveMesh(p, a)
-
 type IDirect3DRM3Vtbl as IDirect3DRM3Vtbl_
 
 type IDirect3DRM3

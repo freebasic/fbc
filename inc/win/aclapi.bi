@@ -10,7 +10,6 @@
 extern "Windows"
 
 #define __ACCESS_CONTROL_API__
-
 type FN_PROGRESS as sub cdecl(byval pObjectName as LPWSTR, byval Status as DWORD, byval pInvokeSetting as PPROG_INVOKE_SETTING, byval Args as PVOID, byval SecuritySet as WINBOOL)
 
 #ifdef UNICODE
@@ -70,7 +69,6 @@ type FN_PROGRESS as sub cdecl(byval pObjectName as LPWSTR, byval Status as DWORD
 #endif
 
 #define AccProvInit(err)
-
 declare function SetEntriesInAclA(byval cCountOfExplicitEntries as ULONG, byval pListOfExplicitEntries as PEXPLICIT_ACCESS_A, byval OldAcl as PACL, byval NewAcl as PACL ptr) as DWORD
 declare function SetEntriesInAclW(byval cCountOfExplicitEntries as ULONG, byval pListOfExplicitEntries as PEXPLICIT_ACCESS_W, byval OldAcl as PACL, byval NewAcl as PACL ptr) as DWORD
 declare function GetExplicitEntriesFromAclA(byval pacl as PACL, byval pcCountOfExplicitEntries as PULONG, byval pListOfExplicitEntries as PEXPLICIT_ACCESS_A ptr) as DWORD

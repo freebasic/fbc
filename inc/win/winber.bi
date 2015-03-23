@@ -15,16 +15,13 @@ type ber_int_t as long
 type ber_uint_t as ulong
 type ber_len_t as ulong
 type ber_slen_t as long
-
-type BERVAL as BERVAL_
 type BerElement as BerElement_
+type BERVAL as BERVAL_
 
 declare function ber_init(byval pBerVal as BERVAL ptr) as BerElement ptr
 declare sub ber_free(byval pBerElement as BerElement ptr, byval fbuf as INT_)
 declare sub ber_bvfree(byval pBerVal as BERVAL ptr)
-
 type PBERVAL as PBERVAL_
-
 declare sub ber_bvecfree(byval pBerVal as PBERVAL ptr)
 declare function ber_bvdup(byval pBerVal as BERVAL ptr) as BERVAL ptr
 declare function ber_alloc_t(byval options as INT_) as BerElement ptr

@@ -52,11 +52,8 @@ extern "Windows"
 #define __IInitializeSpy_FWD_DEFINED__
 #define __IApartmentShutdown_FWD_DEFINED__
 #define __IMallocSpy_INTERFACE_DEFINED__
-
 type IMallocSpy as IMallocSpy_
-
 type LPMALLOCSPY as IMallocSpy ptr
-
 extern IID_IMallocSpy as const GUID
 
 type IMallocSpyVtbl
@@ -105,11 +102,9 @@ declare sub IMallocSpy_PreHeapMinimize_Proxy(byval This as IMallocSpy ptr)
 declare sub IMallocSpy_PreHeapMinimize_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare sub IMallocSpy_PostHeapMinimize_Proxy(byval This as IMallocSpy ptr)
 declare sub IMallocSpy_PostHeapMinimize_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define __IBindCtx_INTERFACE_DEFINED__
 
 type IBindCtx as IBindCtx_
-
 type LPBC as IBindCtx ptr
 type LPBINDCTX as IBindCtx ptr
 
@@ -159,9 +154,7 @@ enum
 end enum
 
 type BIND_FLAGS as tagBIND_FLAGS
-
 extern IID_IBindCtx as const GUID
-
 type IRunningObjectTable as IRunningObjectTable_
 
 type IBindCtxVtbl
@@ -208,15 +201,10 @@ declare function IBindCtx_SetBindOptions_Proxy(byval This as IBindCtx ptr, byval
 declare function IBindCtx_SetBindOptions_Stub(byval This as IBindCtx ptr, byval pbindopts as BIND_OPTS2 ptr) as HRESULT
 declare function IBindCtx_GetBindOptions_Proxy(byval This as IBindCtx ptr, byval pbindopts as BIND_OPTS ptr) as HRESULT
 declare function IBindCtx_GetBindOptions_Stub(byval This as IBindCtx ptr, byval pbindopts as BIND_OPTS2 ptr) as HRESULT
-
 #define __IEnumMoniker_INTERFACE_DEFINED__
-
 type IEnumMoniker as IEnumMoniker_
-
 type LPENUMMONIKER as IEnumMoniker ptr
-
 extern IID_IEnumMoniker as const GUID
-
 type IMoniker as IMoniker_
 
 type IEnumMonikerVtbl
@@ -243,13 +231,9 @@ declare function IEnumMoniker_Clone_Proxy(byval This as IEnumMoniker ptr, byval 
 declare sub IEnumMoniker_Clone_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IEnumMoniker_Next_Proxy(byval This as IEnumMoniker ptr, byval celt as ULONG, byval rgelt as IMoniker ptr ptr, byval pceltFetched as ULONG ptr) as HRESULT
 declare function IEnumMoniker_Next_Stub(byval This as IEnumMoniker ptr, byval celt as ULONG, byval rgelt as IMoniker ptr ptr, byval pceltFetched as ULONG ptr) as HRESULT
-
 #define __IRunnableObject_INTERFACE_DEFINED__
-
 type IRunnableObject as IRunnableObject_
-
 type LPRUNNABLEOBJECT as IRunnableObject ptr
-
 extern IID_IRunnableObject as const GUID
 
 type IRunnableObjectVtbl
@@ -279,11 +263,8 @@ declare function IRunnableObject_SetContainedObject_Proxy(byval This as IRunnabl
 declare sub IRunnableObject_SetContainedObject_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IRunnableObject_IsRunning_Proxy(byval This as IRunnableObject ptr) as WINBOOL
 declare function IRunnableObject_IsRunning_Stub(byval This as IRunnableObject ptr) as HRESULT
-
 #define __IRunningObjectTable_INTERFACE_DEFINED__
-
 type LPRUNNINGOBJECTTABLE as IRunningObjectTable ptr
-
 extern IID_IRunningObjectTable as const GUID
 
 type IRunningObjectTableVtbl
@@ -317,13 +298,9 @@ declare function IRunningObjectTable_GetTimeOfLastChange_Proxy(byval This as IRu
 declare sub IRunningObjectTable_GetTimeOfLastChange_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IRunningObjectTable_EnumRunning_Proxy(byval This as IRunningObjectTable ptr, byval ppenumMoniker as IEnumMoniker ptr ptr) as HRESULT
 declare sub IRunningObjectTable_EnumRunning_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define __IPersist_INTERFACE_DEFINED__
-
 type IPersist as IPersist_
-
 type LPPERSIST as IPersist ptr
-
 extern IID_IPersist as const GUID
 
 type IPersistVtbl
@@ -339,13 +316,9 @@ end type
 
 declare function IPersist_GetClassID_Proxy(byval This as IPersist ptr, byval pClassID as CLSID ptr) as HRESULT
 declare sub IPersist_GetClassID_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define __IPersistStream_INTERFACE_DEFINED__
-
 type IPersistStream as IPersistStream_
-
 type LPPERSISTSTREAM as IPersistStream ptr
-
 extern IID_IPersistStream as const GUID
 
 type IPersistStreamVtbl
@@ -371,9 +344,7 @@ declare function IPersistStream_Save_Proxy(byval This as IPersistStream ptr, byv
 declare sub IPersistStream_Save_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IPersistStream_GetSizeMax_Proxy(byval This as IPersistStream ptr, byval pcbSize as ULARGE_INTEGER ptr) as HRESULT
 declare sub IPersistStream_GetSizeMax_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define __IMoniker_INTERFACE_DEFINED__
-
 type LPMONIKER as IMoniker ptr
 
 type tagMKSYS as long
@@ -401,7 +372,6 @@ enum
 end enum
 
 type MKRREDUCE as tagMKREDUCE
-
 extern IID_IMoniker as const GUID
 
 type IMonikerVtbl
@@ -468,11 +438,8 @@ declare function IMoniker_BindToObject_Proxy(byval This as IMoniker ptr, byval p
 declare function IMoniker_BindToObject_Stub(byval This as IMoniker ptr, byval pbc as IBindCtx ptr, byval pmkToLeft as IMoniker ptr, byval riidResult as const IID const ptr, byval ppvResult as IUnknown ptr ptr) as HRESULT
 declare function IMoniker_BindToStorage_Proxy(byval This as IMoniker ptr, byval pbc as IBindCtx ptr, byval pmkToLeft as IMoniker ptr, byval riid as const IID const ptr, byval ppvObj as any ptr ptr) as HRESULT
 declare function IMoniker_BindToStorage_Stub(byval This as IMoniker ptr, byval pbc as IBindCtx ptr, byval pmkToLeft as IMoniker ptr, byval riid as const IID const ptr, byval ppvObj as IUnknown ptr ptr) as HRESULT
-
 #define __IROTData_INTERFACE_DEFINED__
-
 extern IID_IROTData as const GUID
-
 type IROTData as IROTData_
 
 type IROTDataVtbl
@@ -488,13 +455,9 @@ end type
 
 declare function IROTData_GetComparisonData_Proxy(byval This as IROTData ptr, byval pbData as ubyte ptr, byval cbMax as ULONG, byval pcbData as ULONG ptr) as HRESULT
 declare sub IROTData_GetComparisonData_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define __IEnumSTATSTG_INTERFACE_DEFINED__
-
 type IEnumSTATSTG as IEnumSTATSTG_
-
 type LPENUMSTATSTG as IEnumSTATSTG ptr
-
 extern IID_IEnumSTATSTG as const GUID
 
 type IEnumSTATSTGVtbl
@@ -521,11 +484,8 @@ declare function IEnumSTATSTG_Clone_Proxy(byval This as IEnumSTATSTG ptr, byval 
 declare sub IEnumSTATSTG_Clone_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IEnumSTATSTG_Next_Proxy(byval This as IEnumSTATSTG ptr, byval celt as ULONG, byval rgelt as STATSTG ptr, byval pceltFetched as ULONG ptr) as HRESULT
 declare function IEnumSTATSTG_Next_Stub(byval This as IEnumSTATSTG ptr, byval celt as ULONG, byval rgelt as STATSTG ptr, byval pceltFetched as ULONG ptr) as HRESULT
-
 #define __IStorage_INTERFACE_DEFINED__
-
 type IStorage as IStorage_
-
 type LPSTORAGE as IStorage ptr
 
 type tagRemSNB
@@ -537,7 +497,6 @@ end type
 type RemSNB as tagRemSNB
 type wireSNB as RemSNB ptr
 type SNB as LPOLESTR ptr
-
 extern IID_IStorage as const GUID
 
 type IStorageVtbl
@@ -601,13 +560,9 @@ declare function IStorage_CopyTo_Proxy(byval This as IStorage ptr, byval ciidExc
 declare function IStorage_CopyTo_Stub(byval This as IStorage ptr, byval ciidExclude as DWORD, byval rgiidExclude as const IID ptr, byval snbExclude as SNB, byval pstgDest as IStorage ptr) as HRESULT
 declare function IStorage_EnumElements_Proxy(byval This as IStorage ptr, byval reserved1 as DWORD, byval reserved2 as any ptr, byval reserved3 as DWORD, byval ppenum as IEnumSTATSTG ptr ptr) as HRESULT
 declare function IStorage_EnumElements_Stub(byval This as IStorage ptr, byval reserved1 as DWORD, byval cbReserved2 as ULONG, byval reserved2 as ubyte ptr, byval reserved3 as DWORD, byval ppenum as IEnumSTATSTG ptr ptr) as HRESULT
-
 #define __IPersistFile_INTERFACE_DEFINED__
-
 type IPersistFile as IPersistFile_
-
 type LPPERSISTFILE as IPersistFile ptr
-
 extern IID_IPersistFile as const GUID
 
 type IPersistFileVtbl
@@ -636,13 +591,9 @@ declare function IPersistFile_SaveCompleted_Proxy(byval This as IPersistFile ptr
 declare sub IPersistFile_SaveCompleted_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IPersistFile_GetCurFile_Proxy(byval This as IPersistFile ptr, byval ppszFileName as LPOLESTR ptr) as HRESULT
 declare sub IPersistFile_GetCurFile_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define __IPersistStorage_INTERFACE_DEFINED__
-
 type IPersistStorage as IPersistStorage_
-
 type LPPERSISTSTORAGE as IPersistStorage ptr
-
 extern IID_IPersistStorage as const GUID
 
 type IPersistStorageVtbl
@@ -674,13 +625,9 @@ declare function IPersistStorage_SaveCompleted_Proxy(byval This as IPersistStora
 declare sub IPersistStorage_SaveCompleted_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IPersistStorage_HandsOffStorage_Proxy(byval This as IPersistStorage ptr) as HRESULT
 declare sub IPersistStorage_HandsOffStorage_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define __ILockBytes_INTERFACE_DEFINED__
-
 type ILockBytes as ILockBytes_
-
 type LPLOCKBYTES as ILockBytes ptr
-
 extern IID_ILockBytes as const GUID
 
 type ILockBytesVtbl
@@ -718,11 +665,8 @@ declare function ILockBytes_ReadAt_Proxy(byval This as ILockBytes ptr, byval ulO
 declare function ILockBytes_ReadAt_Stub(byval This as ILockBytes ptr, byval ulOffset as ULARGE_INTEGER, byval pv as ubyte ptr, byval cb as ULONG, byval pcbRead as ULONG ptr) as HRESULT
 declare function ILockBytes_WriteAt_Proxy(byval This as ILockBytes ptr, byval ulOffset as ULARGE_INTEGER, byval pv as const any ptr, byval cb as ULONG, byval pcbWritten as ULONG ptr) as HRESULT
 declare function ILockBytes_WriteAt_Stub(byval This as ILockBytes ptr, byval ulOffset as ULARGE_INTEGER, byval pv as const ubyte ptr, byval cb as ULONG, byval pcbWritten as ULONG ptr) as HRESULT
-
 #define __IEnumFORMATETC_INTERFACE_DEFINED__
-
 type IEnumFORMATETC as IEnumFORMATETC_
-
 type LPENUMFORMATETC as IEnumFORMATETC ptr
 
 type tagDVTARGETDEVICE
@@ -747,7 +691,6 @@ end type
 
 type FORMATETC as tagFORMATETC
 type LPFORMATETC as tagFORMATETC ptr
-
 extern IID_IEnumFORMATETC as const GUID
 
 type IEnumFORMATETCVtbl
@@ -774,11 +717,8 @@ declare function IEnumFORMATETC_Clone_Proxy(byval This as IEnumFORMATETC ptr, by
 declare sub IEnumFORMATETC_Clone_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IEnumFORMATETC_Next_Proxy(byval This as IEnumFORMATETC ptr, byval celt as ULONG, byval rgelt as FORMATETC ptr, byval pceltFetched as ULONG ptr) as HRESULT
 declare function IEnumFORMATETC_Next_Stub(byval This as IEnumFORMATETC ptr, byval celt as ULONG, byval rgelt as FORMATETC ptr, byval pceltFetched as ULONG ptr) as HRESULT
-
 #define __IEnumSTATDATA_INTERFACE_DEFINED__
-
 type IEnumSTATDATA as IEnumSTATDATA_
-
 type LPENUMSTATDATA as IEnumSTATDATA ptr
 
 type tagADVF as long
@@ -793,7 +733,6 @@ enum
 end enum
 
 type ADVF as tagADVF
-
 type IAdviseSink as IAdviseSink_
 
 type tagSTATDATA
@@ -805,7 +744,6 @@ end type
 
 type STATDATA as tagSTATDATA
 type LPSTATDATA as STATDATA ptr
-
 extern IID_IEnumSTATDATA as const GUID
 
 type IEnumSTATDATAVtbl
@@ -832,13 +770,9 @@ declare function IEnumSTATDATA_Clone_Proxy(byval This as IEnumSTATDATA ptr, byva
 declare sub IEnumSTATDATA_Clone_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IEnumSTATDATA_Next_Proxy(byval This as IEnumSTATDATA ptr, byval celt as ULONG, byval rgelt as STATDATA ptr, byval pceltFetched as ULONG ptr) as HRESULT
 declare function IEnumSTATDATA_Next_Stub(byval This as IEnumSTATDATA ptr, byval celt as ULONG, byval rgelt as STATDATA ptr, byval pceltFetched as ULONG ptr) as HRESULT
-
 #define __IRootStorage_INTERFACE_DEFINED__
-
 type IRootStorage as IRootStorage_
-
 type LPROOTSTORAGE as IRootStorage ptr
-
 extern IID_IRootStorage as const GUID
 
 type IRootStorageVtbl
@@ -854,9 +788,7 @@ end type
 
 declare function IRootStorage_SwitchToFile_Proxy(byval This as IRootStorage ptr, byval pszFile as LPOLESTR) as HRESULT
 declare sub IRootStorage_SwitchToFile_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define __IAdviseSink_INTERFACE_DEFINED__
-
 type LPADVISESINK as IAdviseSink ptr
 
 type tagTYMED as long
@@ -957,7 +889,6 @@ type _FLAG_STGMEDIUM
 end type
 
 type FLAG_STGMEDIUM as _FLAG_STGMEDIUM
-
 extern IID_IAdviseSink as const GUID
 
 type IAdviseSinkVtbl
@@ -995,11 +926,8 @@ declare sub IAdviseSink_OnSave_Proxy(byval This as IAdviseSink ptr)
 declare function IAdviseSink_OnSave_Stub(byval This as IAdviseSink ptr) as HRESULT
 declare sub IAdviseSink_OnClose_Proxy(byval This as IAdviseSink ptr)
 declare function IAdviseSink_OnClose_Stub(byval This as IAdviseSink ptr) as HRESULT
-
 #define __AsyncIAdviseSink_INTERFACE_DEFINED__
-
 extern IID_AsyncIAdviseSink as const GUID
-
 type AsyncIAdviseSink as AsyncIAdviseSink_
 
 type AsyncIAdviseSinkVtbl
@@ -1062,13 +990,9 @@ declare sub AsyncIAdviseSink_Begin_OnClose_Proxy(byval This as IAdviseSink ptr)
 declare function AsyncIAdviseSink_Begin_OnClose_Stub(byval This as IAdviseSink ptr) as HRESULT
 declare sub AsyncIAdviseSink_Finish_OnClose_Proxy(byval This as IAdviseSink ptr)
 declare function AsyncIAdviseSink_Finish_OnClose_Stub(byval This as IAdviseSink ptr) as HRESULT
-
 #define __IAdviseSink2_INTERFACE_DEFINED__
-
 type IAdviseSink2 as IAdviseSink2_
-
 type LPADVISESINK2 as IAdviseSink2 ptr
-
 extern IID_IAdviseSink2 as const GUID
 
 type IAdviseSink2Vtbl
@@ -1091,11 +1015,8 @@ declare function IAdviseSink2_RemoteOnLinkSrcChange_Proxy(byval This as IAdviseS
 declare sub IAdviseSink2_RemoteOnLinkSrcChange_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare sub IAdviseSink2_OnLinkSrcChange_Proxy(byval This as IAdviseSink2 ptr, byval pmk as IMoniker ptr)
 declare function IAdviseSink2_OnLinkSrcChange_Stub(byval This as IAdviseSink2 ptr, byval pmk as IMoniker ptr) as HRESULT
-
 #define __AsyncIAdviseSink2_INTERFACE_DEFINED__
-
 extern IID_AsyncIAdviseSink2 as const GUID
-
 type AsyncIAdviseSink2 as AsyncIAdviseSink2_
 
 type AsyncIAdviseSink2Vtbl
@@ -1128,11 +1049,8 @@ declare sub AsyncIAdviseSink2_Begin_OnLinkSrcChange_Proxy(byval This as IAdviseS
 declare function AsyncIAdviseSink2_Begin_OnLinkSrcChange_Stub(byval This as IAdviseSink2 ptr, byval pmk as IMoniker ptr) as HRESULT
 declare sub AsyncIAdviseSink2_Finish_OnLinkSrcChange_Proxy(byval This as IAdviseSink2 ptr)
 declare function AsyncIAdviseSink2_Finish_OnLinkSrcChange_Stub(byval This as IAdviseSink2 ptr, byval pmk as IMoniker ptr) as HRESULT
-
 #define __IDataObject_INTERFACE_DEFINED__
-
 type IDataObject as IDataObject_
-
 type LPDATAOBJECT as IDataObject ptr
 
 type tagDATADIR as long
@@ -1142,7 +1060,6 @@ enum
 end enum
 
 type DATADIR as tagDATADIR
-
 extern IID_IDataObject as const GUID
 
 type IDataObjectVtbl
@@ -1188,13 +1105,9 @@ declare function IDataObject_GetDataHere_Proxy(byval This as IDataObject ptr, by
 declare function IDataObject_GetDataHere_Stub(byval This as IDataObject ptr, byval pformatetc as FORMATETC ptr, byval pRemoteMedium as STGMEDIUM ptr) as HRESULT
 declare function IDataObject_SetData_Proxy(byval This as IDataObject ptr, byval pformatetc as FORMATETC ptr, byval pmedium as STGMEDIUM ptr, byval fRelease as WINBOOL) as HRESULT
 declare function IDataObject_SetData_Stub(byval This as IDataObject ptr, byval pformatetc as FORMATETC ptr, byval pmedium as FLAG_STGMEDIUM ptr, byval fRelease as WINBOOL) as HRESULT
-
 #define __IDataAdviseHolder_INTERFACE_DEFINED__
-
 type IDataAdviseHolder as IDataAdviseHolder_
-
 type LPDATAADVISEHOLDER as IDataAdviseHolder ptr
-
 extern IID_IDataAdviseHolder as const GUID
 
 type IDataAdviseHolderVtbl
@@ -1219,11 +1132,8 @@ declare function IDataAdviseHolder_EnumAdvise_Proxy(byval This as IDataAdviseHol
 declare sub IDataAdviseHolder_EnumAdvise_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IDataAdviseHolder_SendOnDataChange_Proxy(byval This as IDataAdviseHolder ptr, byval pDataObject as IDataObject ptr, byval dwReserved as DWORD, byval advf as DWORD) as HRESULT
 declare sub IDataAdviseHolder_SendOnDataChange_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define __IMessageFilter_INTERFACE_DEFINED__
-
 type IMessageFilter as IMessageFilter_
-
 type LPMESSAGEFILTER as IMessageFilter ptr
 
 type tagCALLTYPE as long
@@ -1271,7 +1181,6 @@ end type
 
 type INTERFACEINFO as tagINTERFACEINFO
 type LPINTERFACEINFO as tagINTERFACEINFO ptr
-
 extern IID_IMessageFilter as const GUID
 
 type IMessageFilterVtbl
@@ -1302,11 +1211,8 @@ extern FMTID_ImageSummaryInformation as const FMTID
 extern FMTID_AudioSummaryInformation as const FMTID
 extern FMTID_VideoSummaryInformation as const FMTID
 extern FMTID_MediaFileSummaryInformation as const FMTID
-
 #define __IClassActivator_INTERFACE_DEFINED__
-
 extern IID_IClassActivator as const GUID
-
 type IClassActivator as IClassActivator_
 
 type IClassActivatorVtbl
@@ -1322,11 +1228,8 @@ end type
 
 declare function IClassActivator_GetClassObject_Proxy(byval This as IClassActivator ptr, byval rclsid as const IID const ptr, byval dwClassContext as DWORD, byval locale as LCID, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
 declare sub IClassActivator_GetClassObject_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define __IFillLockBytes_INTERFACE_DEFINED__
-
 extern IID_IFillLockBytes as const GUID
-
 type IFillLockBytes as IFillLockBytes_
 
 type IFillLockBytesVtbl
@@ -1355,11 +1258,8 @@ declare function IFillLockBytes_FillAppend_Proxy(byval This as IFillLockBytes pt
 declare function IFillLockBytes_FillAppend_Stub(byval This as IFillLockBytes ptr, byval pv as const ubyte ptr, byval cb as ULONG, byval pcbWritten as ULONG ptr) as HRESULT
 declare function IFillLockBytes_FillAt_Proxy(byval This as IFillLockBytes ptr, byval ulOffset as ULARGE_INTEGER, byval pv as const any ptr, byval cb as ULONG, byval pcbWritten as ULONG ptr) as HRESULT
 declare function IFillLockBytes_FillAt_Stub(byval This as IFillLockBytes ptr, byval ulOffset as ULARGE_INTEGER, byval pv as const ubyte ptr, byval cb as ULONG, byval pcbWritten as ULONG ptr) as HRESULT
-
 #define __IProgressNotify_INTERFACE_DEFINED__
-
 extern IID_IProgressNotify as const GUID
-
 type IProgressNotify as IProgressNotify_
 
 type IProgressNotifyVtbl
@@ -1375,7 +1275,6 @@ end type
 
 declare function IProgressNotify_OnProgress_Proxy(byval This as IProgressNotify ptr, byval dwProgressCurrent as DWORD, byval dwProgressMaximum as DWORD, byval fAccurate as WINBOOL, byval fOwner as WINBOOL) as HRESULT
 declare sub IProgressNotify_OnProgress_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define __ILayoutStorage_INTERFACE_DEFINED__
 
 type tagStorageLayout
@@ -1386,9 +1285,7 @@ type tagStorageLayout
 end type
 
 type StorageLayout as tagStorageLayout
-
 extern IID_ILayoutStorage as const GUID
-
 type ILayoutStorage as ILayoutStorage_
 
 type ILayoutStorageVtbl
@@ -1416,11 +1313,8 @@ declare function ILayoutStorage_ReLayoutDocfile_Proxy(byval This as ILayoutStora
 declare sub ILayoutStorage_ReLayoutDocfile_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function ILayoutStorage_ReLayoutDocfileOnILockBytes_Proxy(byval This as ILayoutStorage ptr, byval pILockBytes as ILockBytes ptr) as HRESULT
 declare sub ILayoutStorage_ReLayoutDocfileOnILockBytes_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define __IBlockingLock_INTERFACE_DEFINED__
-
 extern IID_IBlockingLock as const GUID
-
 type IBlockingLock as IBlockingLock_
 
 type IBlockingLockVtbl
@@ -1439,11 +1333,8 @@ declare function IBlockingLock_Lock_Proxy(byval This as IBlockingLock ptr, byval
 declare sub IBlockingLock_Lock_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IBlockingLock_Unlock_Proxy(byval This as IBlockingLock ptr) as HRESULT
 declare sub IBlockingLock_Unlock_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define __ITimeAndNoticeControl_INTERFACE_DEFINED__
-
 extern IID_ITimeAndNoticeControl as const GUID
-
 type ITimeAndNoticeControl as ITimeAndNoticeControl_
 
 type ITimeAndNoticeControlVtbl
@@ -1459,11 +1350,8 @@ end type
 
 declare function ITimeAndNoticeControl_SuppressChanges_Proxy(byval This as ITimeAndNoticeControl ptr, byval res1 as DWORD, byval res2 as DWORD) as HRESULT
 declare sub ITimeAndNoticeControl_SuppressChanges_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define __IOplockStorage_INTERFACE_DEFINED__
-
 extern IID_IOplockStorage as const GUID
-
 type IOplockStorage as IOplockStorage_
 
 type IOplockStorageVtbl
@@ -1482,11 +1370,8 @@ declare function IOplockStorage_CreateStorageEx_Proxy(byval This as IOplockStora
 declare sub IOplockStorage_CreateStorageEx_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IOplockStorage_OpenStorageEx_Proxy(byval This as IOplockStorage ptr, byval pwcsName as LPCWSTR, byval grfMode as DWORD, byval stgfmt as DWORD, byval grfAttrs as DWORD, byval riid as const IID const ptr, byval ppstgOpen as any ptr ptr) as HRESULT
 declare sub IOplockStorage_OpenStorageEx_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define __IDirectWriterLock_INTERFACE_DEFINED__
-
 extern IID_IDirectWriterLock as const GUID
-
 type IDirectWriterLock as IDirectWriterLock_
 
 type IDirectWriterLockVtbl
@@ -1508,11 +1393,8 @@ declare function IDirectWriterLock_ReleaseWriteAccess_Proxy(byval This as IDirec
 declare sub IDirectWriterLock_ReleaseWriteAccess_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IDirectWriterLock_HaveWriteAccess_Proxy(byval This as IDirectWriterLock ptr) as HRESULT
 declare sub IDirectWriterLock_HaveWriteAccess_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define __IUrlMon_INTERFACE_DEFINED__
-
 extern IID_IUrlMon as const GUID
-
 type IUrlMon as IUrlMon_
 
 type IUrlMonVtbl
@@ -1528,11 +1410,8 @@ end type
 
 declare function IUrlMon_AsyncGetClassBits_Proxy(byval This as IUrlMon ptr, byval rclsid as const IID const ptr, byval pszTYPE as LPCWSTR, byval pszExt as LPCWSTR, byval dwFileVersionMS as DWORD, byval dwFileVersionLS as DWORD, byval pszCodeBase as LPCWSTR, byval pbc as IBindCtx ptr, byval dwClassContext as DWORD, byval riid as const IID const ptr, byval flags as DWORD) as HRESULT
 declare sub IUrlMon_AsyncGetClassBits_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define __IForegroundTransfer_INTERFACE_DEFINED__
-
 extern IID_IForegroundTransfer as const GUID
-
 type IForegroundTransfer as IForegroundTransfer_
 
 type IForegroundTransferVtbl
@@ -1548,11 +1427,8 @@ end type
 
 declare function IForegroundTransfer_AllowForegroundTransfer_Proxy(byval This as IForegroundTransfer ptr, byval lpvReserved as any ptr) as HRESULT
 declare sub IForegroundTransfer_AllowForegroundTransfer_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define __IThumbnailExtractor_INTERFACE_DEFINED__
-
 extern IID_IThumbnailExtractor as const GUID
-
 type IThumbnailExtractor as IThumbnailExtractor_
 
 type IThumbnailExtractorVtbl
@@ -1571,11 +1447,8 @@ declare function IThumbnailExtractor_ExtractThumbnail_Proxy(byval This as IThumb
 declare sub IThumbnailExtractor_ExtractThumbnail_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IThumbnailExtractor_OnFileUpdated_Proxy(byval This as IThumbnailExtractor ptr, byval pStg as IStorage ptr) as HRESULT
 declare sub IThumbnailExtractor_OnFileUpdated_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define __IDummyHICONIncluder_INTERFACE_DEFINED__
-
 extern IID_IDummyHICONIncluder as const GUID
-
 type IDummyHICONIncluder as IDummyHICONIncluder_
 
 type IDummyHICONIncluderVtbl
@@ -1607,11 +1480,8 @@ enum
 end enum
 
 type ShutdownType as tagShutdownType
-
 #define __IProcessLock_INTERFACE_DEFINED__
-
 extern IID_IProcessLock as const GUID
-
 type IProcessLock as IProcessLock_
 
 type IProcessLockVtbl
@@ -1630,11 +1500,8 @@ declare function IProcessLock_AddRefOnProcess_Proxy(byval This as IProcessLock p
 declare sub IProcessLock_AddRefOnProcess_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IProcessLock_ReleaseRefOnProcess_Proxy(byval This as IProcessLock ptr) as ULONG
 declare sub IProcessLock_ReleaseRefOnProcess_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define __ISurrogateService_INTERFACE_DEFINED__
-
 extern IID_ISurrogateService as const GUID
-
 type ISurrogateService as ISurrogateService_
 
 type ISurrogateServiceVtbl
@@ -1662,13 +1529,9 @@ declare function ISurrogateService_CatalogRefresh_Proxy(byval This as ISurrogate
 declare sub ISurrogateService_CatalogRefresh_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function ISurrogateService_ProcessShutdown_Proxy(byval This as ISurrogateService ptr, byval shutdownType as ShutdownType) as HRESULT
 declare sub ISurrogateService_ProcessShutdown_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define __IInitializeSpy_INTERFACE_DEFINED__
-
 type IInitializeSpy as IInitializeSpy_
-
 type LPINITIALIZESPY as IInitializeSpy ptr
-
 extern IID_IInitializeSpy as const GUID
 
 type IInitializeSpyVtbl
@@ -1693,11 +1556,8 @@ declare function IInitializeSpy_PreUninitialize_Proxy(byval This as IInitializeS
 declare sub IInitializeSpy_PreUninitialize_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IInitializeSpy_PostUninitialize_Proxy(byval This as IInitializeSpy ptr, byval dwNewThreadAptRefs as DWORD) as HRESULT
 declare sub IInitializeSpy_PostUninitialize_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define __IApartmentShutdown_INTERFACE_DEFINED__
-
 extern IID_IApartmentShutdown as const GUID
-
 type IApartmentShutdown as IApartmentShutdown_
 
 type IApartmentShutdownVtbl

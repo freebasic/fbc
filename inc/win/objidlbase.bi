@@ -63,15 +63,10 @@ type _COSERVERINFO
 end type
 
 type COSERVERINFO as _COSERVERINFO
-
 #define __IMarshal_INTERFACE_DEFINED__
-
 type IMarshal as IMarshal_
-
 type LPMARSHAL as IMarshal ptr
-
 extern IID_IMarshal as const GUID
-
 type IStream as IStream_
 
 type IMarshalVtbl
@@ -102,11 +97,8 @@ declare function IMarshal_ReleaseMarshalData_Proxy(byval This as IMarshal ptr, b
 declare sub IMarshal_ReleaseMarshalData_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IMarshal_DisconnectObject_Proxy(byval This as IMarshal ptr, byval dwReserved as DWORD) as HRESULT
 declare sub IMarshal_DisconnectObject_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define __INoMarshal_INTERFACE_DEFINED__
-
 extern IID_INoMarshal as const GUID
-
 type INoMarshal as INoMarshal_
 
 type INoMarshalVtbl
@@ -120,9 +112,7 @@ type INoMarshal_
 end type
 
 #define __IAgileObject_INTERFACE_DEFINED__
-
 extern IID_IAgileObject as const GUID
-
 type IAgileObject as IAgileObject_
 
 type IAgileObjectVtbl
@@ -136,11 +126,8 @@ type IAgileObject_
 end type
 
 #define __IMarshal2_INTERFACE_DEFINED__
-
 type IMarshal2 as IMarshal2_
-
 type LPMARSHAL2 as IMarshal2 ptr
-
 extern IID_IMarshal2 as const GUID
 
 type IMarshal2Vtbl
@@ -160,11 +147,8 @@ type IMarshal2_
 end type
 
 #define __IMalloc_INTERFACE_DEFINED__
-
 type IMalloc as IMalloc_
-
 type LPMALLOC as IMalloc ptr
-
 extern IID_IMalloc as const GUID
 
 type IMallocVtbl
@@ -195,13 +179,9 @@ declare function IMalloc_DidAlloc_Proxy(byval This as IMalloc ptr, byval pv as a
 declare sub IMalloc_DidAlloc_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare sub IMalloc_HeapMinimize_Proxy(byval This as IMalloc ptr)
 declare sub IMalloc_HeapMinimize_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define __IStdMarshalInfo_INTERFACE_DEFINED__
-
 type IStdMarshalInfo as IStdMarshalInfo_
-
 type LPSTDMARSHALINFO as IStdMarshalInfo ptr
-
 extern IID_IStdMarshalInfo as const GUID
 
 type IStdMarshalInfoVtbl
@@ -217,11 +197,8 @@ end type
 
 declare function IStdMarshalInfo_GetClassForHandler_Proxy(byval This as IStdMarshalInfo ptr, byval dwDestContext as DWORD, byval pvDestContext as any ptr, byval pClsid as CLSID ptr) as HRESULT
 declare sub IStdMarshalInfo_GetClassForHandler_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define __IExternalConnection_INTERFACE_DEFINED__
-
 type IExternalConnection as IExternalConnection_
-
 type LPEXTERNALCONNECTION as IExternalConnection ptr
 
 type tagEXTCONN as long
@@ -232,7 +209,6 @@ enum
 end enum
 
 type EXTCONN as tagEXTCONN
-
 extern IID_IExternalConnection as const GUID
 
 type IExternalConnectionVtbl
@@ -251,9 +227,7 @@ declare function IExternalConnection_AddConnection_Proxy(byval This as IExternal
 declare sub IExternalConnection_AddConnection_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IExternalConnection_ReleaseConnection_Proxy(byval This as IExternalConnection ptr, byval extconn as DWORD, byval reserved as DWORD, byval fLastReleaseCloses as WINBOOL) as DWORD
 declare sub IExternalConnection_ReleaseConnection_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 type IMultiQI as IMultiQI_
-
 type LPMULTIQI as IMultiQI ptr
 
 type tagMULTI_QI
@@ -263,9 +237,7 @@ type tagMULTI_QI
 end type
 
 type MULTI_QI as tagMULTI_QI
-
 #define __IMultiQI_INTERFACE_DEFINED__
-
 extern IID_IMultiQI as const GUID
 
 type IMultiQIVtbl
@@ -281,11 +253,8 @@ end type
 
 declare function IMultiQI_QueryMultipleInterfaces_Proxy(byval This as IMultiQI ptr, byval cMQIs as ULONG, byval pMQIs as MULTI_QI ptr) as HRESULT
 declare sub IMultiQI_QueryMultipleInterfaces_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define __AsyncIMultiQI_INTERFACE_DEFINED__
-
 extern IID_AsyncIMultiQI as const GUID
-
 type AsyncIMultiQI as AsyncIMultiQI_
 
 type AsyncIMultiQIVtbl
@@ -304,11 +273,8 @@ declare function AsyncIMultiQI_Begin_QueryMultipleInterfaces_Proxy(byval This as
 declare sub AsyncIMultiQI_Begin_QueryMultipleInterfaces_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function AsyncIMultiQI_Finish_QueryMultipleInterfaces_Proxy(byval This as IMultiQI ptr, byval cMQIs as ULONG, byval pMQIs as MULTI_QI ptr) as HRESULT
 declare sub AsyncIMultiQI_Finish_QueryMultipleInterfaces_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define __IInternalUnknown_INTERFACE_DEFINED__
-
 extern IID_IInternalUnknown as const GUID
-
 type IInternalUnknown as IInternalUnknown_
 
 type IInternalUnknownVtbl
@@ -324,13 +290,9 @@ end type
 
 declare function IInternalUnknown_QueryInternalInterface_Proxy(byval This as IInternalUnknown ptr, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
 declare sub IInternalUnknown_QueryInternalInterface_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define __IEnumUnknown_INTERFACE_DEFINED__
-
 type IEnumUnknown as IEnumUnknown_
-
 type LPENUMUNKNOWN as IEnumUnknown ptr
-
 extern IID_IEnumUnknown as const GUID
 
 type IEnumUnknownVtbl
@@ -357,13 +319,9 @@ declare function IEnumUnknown_Clone_Proxy(byval This as IEnumUnknown ptr, byval 
 declare sub IEnumUnknown_Clone_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IEnumUnknown_Next_Proxy(byval This as IEnumUnknown ptr, byval celt as ULONG, byval rgelt as IUnknown ptr ptr, byval pceltFetched as ULONG ptr) as HRESULT
 declare function IEnumUnknown_Next_Stub(byval This as IEnumUnknown ptr, byval celt as ULONG, byval rgelt as IUnknown ptr ptr, byval pceltFetched as ULONG ptr) as HRESULT
-
 #define __IEnumString_INTERFACE_DEFINED__
-
 type IEnumString as IEnumString_
-
 type LPENUMSTRING as IEnumString ptr
-
 extern IID_IEnumString as const GUID
 
 type IEnumStringVtbl
@@ -390,11 +348,8 @@ declare function IEnumString_Clone_Proxy(byval This as IEnumString ptr, byval pp
 declare sub IEnumString_Clone_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IEnumString_Next_Proxy(byval This as IEnumString ptr, byval celt as ULONG, byval rgelt as LPOLESTR ptr, byval pceltFetched as ULONG ptr) as HRESULT
 declare function IEnumString_Next_Stub(byval This as IEnumString ptr, byval celt as ULONG, byval rgelt as LPOLESTR ptr, byval pceltFetched as ULONG ptr) as HRESULT
-
 #define __ISequentialStream_INTERFACE_DEFINED__
-
 extern IID_ISequentialStream as const GUID
-
 type ISequentialStream as ISequentialStream_
 
 type ISequentialStreamVtbl
@@ -417,9 +372,7 @@ declare function ISequentialStream_Read_Proxy(byval This as ISequentialStream pt
 declare function ISequentialStream_Read_Stub(byval This as ISequentialStream ptr, byval pv as ubyte ptr, byval cb as ULONG, byval pcbRead as ULONG ptr) as HRESULT
 declare function ISequentialStream_Write_Proxy(byval This as ISequentialStream ptr, byval pv as const any ptr, byval cb as ULONG, byval pcbWritten as ULONG ptr) as HRESULT
 declare function ISequentialStream_Write_Stub(byval This as ISequentialStream ptr, byval pv as const ubyte ptr, byval cb as ULONG, byval pcbWritten as ULONG ptr) as HRESULT
-
 #define __IStream_INTERFACE_DEFINED__
-
 type LPSTREAM as IStream ptr
 
 type tagSTATSTG
@@ -465,7 +418,6 @@ enum
 end enum
 
 type LOCKTYPE as tagLOCKTYPE
-
 extern IID_IStream as const GUID
 
 type IStreamVtbl
@@ -511,9 +463,7 @@ declare function IStream_Seek_Proxy(byval This as IStream ptr, byval dlibMove as
 declare function IStream_Seek_Stub(byval This as IStream ptr, byval dlibMove as LARGE_INTEGER, byval dwOrigin as DWORD, byval plibNewPosition as ULARGE_INTEGER ptr) as HRESULT
 declare function IStream_CopyTo_Proxy(byval This as IStream ptr, byval pstm as IStream ptr, byval cb as ULARGE_INTEGER, byval pcbRead as ULARGE_INTEGER ptr, byval pcbWritten as ULARGE_INTEGER ptr) as HRESULT
 declare function IStream_CopyTo_Stub(byval This as IStream ptr, byval pstm as IStream ptr, byval cb as ULARGE_INTEGER, byval pcbRead as ULARGE_INTEGER ptr, byval pcbWritten as ULARGE_INTEGER ptr) as HRESULT
-
 #define __IRpcChannelBuffer_INTERFACE_DEFINED__
-
 type RPCOLEDATAREP as ULONG
 
 type tagRPCOLEMESSAGE
@@ -528,7 +478,6 @@ end type
 
 type RPCOLEMESSAGE as tagRPCOLEMESSAGE
 type PRPCOLEMESSAGE as RPCOLEMESSAGE ptr
-
 extern IID_IRpcChannelBuffer as const GUID
 
 type IRpcChannelBufferVtbl
@@ -556,11 +505,8 @@ declare function IRpcChannelBuffer_GetDestCtx_Proxy(byval This as IRpcChannelBuf
 declare sub IRpcChannelBuffer_GetDestCtx_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IRpcChannelBuffer_IsConnected_Proxy(byval This as IRpcChannelBuffer ptr) as HRESULT
 declare sub IRpcChannelBuffer_IsConnected_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define __IRpcChannelBuffer2_INTERFACE_DEFINED__
-
 extern IID_IRpcChannelBuffer2 as const GUID
-
 type IRpcChannelBuffer2 as IRpcChannelBuffer2_
 
 type IRpcChannelBuffer2Vtbl
@@ -581,13 +527,10 @@ end type
 
 declare function IRpcChannelBuffer2_GetProtocolVersion_Proxy(byval This as IRpcChannelBuffer2 ptr, byval pdwVersion as DWORD ptr) as HRESULT
 declare sub IRpcChannelBuffer2_GetProtocolVersion_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define __IAsyncRpcChannelBuffer_INTERFACE_DEFINED__
-
 extern IID_IAsyncRpcChannelBuffer as const GUID
-
-type ISynchronize as ISynchronize_
 type IAsyncRpcChannelBuffer as IAsyncRpcChannelBuffer_
+type ISynchronize as ISynchronize_
 
 type IAsyncRpcChannelBufferVtbl
 	QueryInterface as function(byval This as IAsyncRpcChannelBuffer ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
@@ -614,13 +557,10 @@ declare function IAsyncRpcChannelBuffer_Receive_Proxy(byval This as IAsyncRpcCha
 declare sub IAsyncRpcChannelBuffer_Receive_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IAsyncRpcChannelBuffer_GetDestCtxEx_Proxy(byval This as IAsyncRpcChannelBuffer ptr, byval pMsg as RPCOLEMESSAGE ptr, byval pdwDestContext as DWORD ptr, byval ppvDestContext as any ptr ptr) as HRESULT
 declare sub IAsyncRpcChannelBuffer_GetDestCtxEx_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define __IRpcChannelBuffer3_INTERFACE_DEFINED__
-
 extern IID_IRpcChannelBuffer3 as const GUID
-
-type IAsyncManager as IAsyncManager_
 type IRpcChannelBuffer3 as IRpcChannelBuffer3_
+type IAsyncManager as IAsyncManager_
 
 type IRpcChannelBuffer3Vtbl
 	QueryInterface as function(byval This as IRpcChannelBuffer3 ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
@@ -659,11 +599,8 @@ declare function IRpcChannelBuffer3_GetState_Proxy(byval This as IRpcChannelBuff
 declare sub IRpcChannelBuffer3_GetState_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IRpcChannelBuffer3_RegisterAsync_Proxy(byval This as IRpcChannelBuffer3 ptr, byval pMsg as RPCOLEMESSAGE ptr, byval pAsyncMgr as IAsyncManager ptr) as HRESULT
 declare sub IRpcChannelBuffer3_RegisterAsync_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define __IRpcSyntaxNegotiate_INTERFACE_DEFINED__
-
 extern IID_IRpcSyntaxNegotiate as const GUID
-
 type IRpcSyntaxNegotiate as IRpcSyntaxNegotiate_
 
 type IRpcSyntaxNegotiateVtbl
@@ -679,11 +616,8 @@ end type
 
 declare function IRpcSyntaxNegotiate_NegotiateSyntax_Proxy(byval This as IRpcSyntaxNegotiate ptr, byval pMsg as RPCOLEMESSAGE ptr) as HRESULT
 declare sub IRpcSyntaxNegotiate_NegotiateSyntax_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define __IRpcProxyBuffer_INTERFACE_DEFINED__
-
 extern IID_IRpcProxyBuffer as const GUID
-
 type IRpcProxyBuffer as IRpcProxyBuffer_
 
 type IRpcProxyBufferVtbl
@@ -702,9 +636,7 @@ declare function IRpcProxyBuffer_Connect_Proxy(byval This as IRpcProxyBuffer ptr
 declare sub IRpcProxyBuffer_Connect_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare sub IRpcProxyBuffer_Disconnect_Proxy(byval This as IRpcProxyBuffer ptr)
 declare sub IRpcProxyBuffer_Disconnect_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define __IRpcStubBuffer_INTERFACE_DEFINED__
-
 extern IID_IRpcStubBuffer as const GUID
 
 type IRpcStubBufferVtbl
@@ -738,11 +670,8 @@ declare function IRpcStubBuffer_DebugServerQueryInterface_Proxy(byval This as IR
 declare sub IRpcStubBuffer_DebugServerQueryInterface_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare sub IRpcStubBuffer_DebugServerRelease_Proxy(byval This as IRpcStubBuffer ptr, byval pv as any ptr)
 declare sub IRpcStubBuffer_DebugServerRelease_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define __IPSFactoryBuffer_INTERFACE_DEFINED__
-
 extern IID_IPSFactoryBuffer as const GUID
-
 type IPSFactoryBuffer as IPSFactoryBuffer_
 
 type IPSFactoryBufferVtbl
@@ -772,9 +701,7 @@ type SChannelHookCallInfo
 end type
 
 #define __IChannelHook_INTERFACE_DEFINED__
-
 extern IID_IChannelHook as const GUID
-
 type IChannelHook as IChannelHook_
 
 type IChannelHookVtbl
@@ -805,7 +732,6 @@ declare sub IChannelHook_ServerGetSize_Proxy(byval This as IChannelHook ptr, byv
 declare sub IChannelHook_ServerGetSize_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare sub IChannelHook_ServerFillBuffer_Proxy(byval This as IChannelHook ptr, byval uExtent as const GUID const ptr, byval riid as const IID const ptr, byval pDataSize as ULONG ptr, byval pDataBuffer as any ptr, byval hrFault as HRESULT)
 declare sub IChannelHook_ServerFillBuffer_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define __IClientSecurity_INTERFACE_DEFINED__
 
 type tagSOLE_AUTHENTICATION_SERVICE
@@ -838,7 +764,6 @@ enum
 end enum
 
 type EOLE_AUTHENTICATION_CAPABILITIES as tagEOLE_AUTHENTICATION_CAPABILITIES
-
 #define COLE_DEFAULT_PRINCIPAL cptr(wstring ptr, cast(INT_PTR, -1))
 #define COLE_DEFAULT_AUTHINFO cptr(any ptr, cast(INT_PTR, -1))
 
@@ -858,9 +783,7 @@ end type
 
 type SOLE_AUTHENTICATION_LIST as tagSOLE_AUTHENTICATION_LIST
 type PSOLE_AUTHENTICATION_LIST as tagSOLE_AUTHENTICATION_LIST ptr
-
 extern IID_IClientSecurity as const GUID
-
 type IClientSecurity as IClientSecurity_
 
 type IClientSecurityVtbl
@@ -882,11 +805,8 @@ declare function IClientSecurity_SetBlanket_Proxy(byval This as IClientSecurity 
 declare sub IClientSecurity_SetBlanket_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IClientSecurity_CopyProxy_Proxy(byval This as IClientSecurity ptr, byval pProxy as IUnknown ptr, byval ppCopy as IUnknown ptr ptr) as HRESULT
 declare sub IClientSecurity_CopyProxy_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define __IServerSecurity_INTERFACE_DEFINED__
-
 extern IID_IServerSecurity as const GUID
-
 type IServerSecurity as IServerSecurity_
 
 type IServerSecurityVtbl
@@ -929,11 +849,8 @@ enum
 end enum
 
 type RPCOPT_SERVER_LOCALITY_VALUES as tagRPCOPT_SERVER_LOCALITY_VALUES
-
 #define __IRpcOptions_INTERFACE_DEFINED__
-
 extern IID_IRpcOptions as const GUID
-
 type IRpcOptions as IRpcOptions_
 
 type IRpcOptionsVtbl
@@ -1004,11 +921,8 @@ enum
 end enum
 
 type GLOBALOPT_UNMARSHALING_POLICY_VALUES as tagGLOBALOPT_UNMARSHALING_POLICY_VALUES
-
 #define __IGlobalOptions_INTERFACE_DEFINED__
-
 extern IID_IGlobalOptions as const GUID
-
 type IGlobalOptions as IGlobalOptions_
 
 type IGlobalOptionsVtbl
@@ -1027,13 +941,9 @@ declare function IGlobalOptions_Set_Proxy(byval This as IGlobalOptions ptr, byva
 declare sub IGlobalOptions_Set_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IGlobalOptions_Query_Proxy(byval This as IGlobalOptions ptr, byval dwProperty as GLOBALOPT_PROPERTIES, byval pdwValue as ULONG_PTR ptr) as HRESULT
 declare sub IGlobalOptions_Query_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define __ISurrogate_INTERFACE_DEFINED__
-
 type ISurrogate as ISurrogate_
-
 type LPSURROGATE as ISurrogate ptr
-
 extern IID_ISurrogate as const GUID
 
 type ISurrogateVtbl
@@ -1052,13 +962,9 @@ declare function ISurrogate_LoadDllServer_Proxy(byval This as ISurrogate ptr, by
 declare sub ISurrogate_LoadDllServer_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function ISurrogate_FreeSurrogate_Proxy(byval This as ISurrogate ptr) as HRESULT
 declare sub ISurrogate_FreeSurrogate_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define __IGlobalInterfaceTable_INTERFACE_DEFINED__
-
 type IGlobalInterfaceTable as IGlobalInterfaceTable_
-
 type LPGLOBALINTERFACETABLE as IGlobalInterfaceTable ptr
-
 extern IID_IGlobalInterfaceTable as const GUID
 
 type IGlobalInterfaceTableVtbl
@@ -1080,9 +986,7 @@ declare function IGlobalInterfaceTable_RevokeInterfaceFromGlobal_Proxy(byval Thi
 declare sub IGlobalInterfaceTable_RevokeInterfaceFromGlobal_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IGlobalInterfaceTable_GetInterfaceFromGlobal_Proxy(byval This as IGlobalInterfaceTable ptr, byval dwCookie as DWORD, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
 declare sub IGlobalInterfaceTable_GetInterfaceFromGlobal_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define __ISynchronize_INTERFACE_DEFINED__
-
 extern IID_ISynchronize as const GUID
 
 type ISynchronizeVtbl
@@ -1104,11 +1008,8 @@ declare function ISynchronize_Signal_Proxy(byval This as ISynchronize ptr) as HR
 declare sub ISynchronize_Signal_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function ISynchronize_Reset_Proxy(byval This as ISynchronize ptr) as HRESULT
 declare sub ISynchronize_Reset_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define __ISynchronizeHandle_INTERFACE_DEFINED__
-
 extern IID_ISynchronizeHandle as const GUID
-
 type ISynchronizeHandle as ISynchronizeHandle_
 
 type ISynchronizeHandleVtbl
@@ -1124,11 +1025,8 @@ end type
 
 declare function ISynchronizeHandle_GetHandle_Proxy(byval This as ISynchronizeHandle ptr, byval ph as HANDLE ptr) as HRESULT
 declare sub ISynchronizeHandle_GetHandle_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define __ISynchronizeEvent_INTERFACE_DEFINED__
-
 extern IID_ISynchronizeEvent as const GUID
-
 type ISynchronizeEvent as ISynchronizeEvent_
 
 type ISynchronizeEventVtbl
@@ -1145,11 +1043,8 @@ end type
 
 declare function ISynchronizeEvent_SetEventHandle_Proxy(byval This as ISynchronizeEvent ptr, byval ph as HANDLE ptr) as HRESULT
 declare sub ISynchronizeEvent_SetEventHandle_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define __ISynchronizeContainer_INTERFACE_DEFINED__
-
 extern IID_ISynchronizeContainer as const GUID
-
 type ISynchronizeContainer as ISynchronizeContainer_
 
 type ISynchronizeContainerVtbl
@@ -1168,11 +1063,8 @@ declare function ISynchronizeContainer_AddSynchronize_Proxy(byval This as ISynch
 declare sub ISynchronizeContainer_AddSynchronize_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function ISynchronizeContainer_WaitMultiple_Proxy(byval This as ISynchronizeContainer ptr, byval dwFlags as DWORD, byval dwTimeOut as DWORD, byval ppSync as ISynchronize ptr ptr) as HRESULT
 declare sub ISynchronizeContainer_WaitMultiple_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define __ISynchronizeMutex_INTERFACE_DEFINED__
-
 extern IID_ISynchronizeMutex as const GUID
-
 type ISynchronizeMutex as ISynchronizeMutex_
 
 type ISynchronizeMutexVtbl
@@ -1191,13 +1083,9 @@ end type
 
 declare function ISynchronizeMutex_ReleaseMutex_Proxy(byval This as ISynchronizeMutex ptr) as HRESULT
 declare sub ISynchronizeMutex_ReleaseMutex_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define __ICancelMethodCalls_INTERFACE_DEFINED__
-
 type ICancelMethodCalls as ICancelMethodCalls_
-
 type LPCANCELMETHODCALLS as ICancelMethodCalls ptr
-
 extern IID_ICancelMethodCalls as const GUID
 
 type ICancelMethodCallsVtbl
@@ -1216,7 +1104,6 @@ declare function ICancelMethodCalls_Cancel_Proxy(byval This as ICancelMethodCall
 declare sub ICancelMethodCalls_Cancel_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function ICancelMethodCalls_TestCancel_Proxy(byval This as ICancelMethodCalls ptr) as HRESULT
 declare sub ICancelMethodCalls_TestCancel_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define __IAsyncManager_INTERFACE_DEFINED__
 
 type tagDCOM_CALL_STATE as long
@@ -1227,7 +1114,6 @@ enum
 end enum
 
 type DCOM_CALL_STATE as tagDCOM_CALL_STATE
-
 extern IID_IAsyncManager as const GUID
 
 type IAsyncManagerVtbl
@@ -1249,11 +1135,8 @@ declare function IAsyncManager_GetCallContext_Proxy(byval This as IAsyncManager 
 declare sub IAsyncManager_GetCallContext_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IAsyncManager_GetState_Proxy(byval This as IAsyncManager ptr, byval pulStateFlags as ULONG ptr) as HRESULT
 declare sub IAsyncManager_GetState_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define __ICallFactory_INTERFACE_DEFINED__
-
 extern IID_ICallFactory as const GUID
-
 type ICallFactory as ICallFactory_
 
 type ICallFactoryVtbl
@@ -1269,11 +1152,8 @@ end type
 
 declare function ICallFactory_CreateCall_Proxy(byval This as ICallFactory ptr, byval riid as const IID const ptr, byval pCtrlUnk as IUnknown ptr, byval riid2 as const IID const ptr, byval ppv as IUnknown ptr ptr) as HRESULT
 declare sub ICallFactory_CreateCall_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define __IRpcHelper_INTERFACE_DEFINED__
-
 extern IID_IRpcHelper as const GUID
-
 type IRpcHelper as IRpcHelper_
 
 type IRpcHelperVtbl
@@ -1292,11 +1172,8 @@ declare function IRpcHelper_GetDCOMProtocolVersion_Proxy(byval This as IRpcHelpe
 declare sub IRpcHelper_GetDCOMProtocolVersion_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IRpcHelper_GetIIDFromOBJREF_Proxy(byval This as IRpcHelper ptr, byval pObjRef as any ptr, byval piid as IID ptr ptr) as HRESULT
 declare sub IRpcHelper_GetIIDFromOBJREF_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define __IReleaseMarshalBuffers_INTERFACE_DEFINED__
-
 extern IID_IReleaseMarshalBuffers as const GUID
-
 type IReleaseMarshalBuffers as IReleaseMarshalBuffers_
 
 type IReleaseMarshalBuffersVtbl
@@ -1312,11 +1189,8 @@ end type
 
 declare function IReleaseMarshalBuffers_ReleaseMarshalBuffer_Proxy(byval This as IReleaseMarshalBuffers ptr, byval pMsg as RPCOLEMESSAGE ptr, byval dwFlags as DWORD, byval pChnl as IUnknown ptr) as HRESULT
 declare sub IReleaseMarshalBuffers_ReleaseMarshalBuffer_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define __IWaitMultiple_INTERFACE_DEFINED__
-
 extern IID_IWaitMultiple as const GUID
-
 type IWaitMultiple as IWaitMultiple_
 
 type IWaitMultipleVtbl
@@ -1335,13 +1209,9 @@ declare function IWaitMultiple_WaitMultiple_Proxy(byval This as IWaitMultiple pt
 declare sub IWaitMultiple_WaitMultiple_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IWaitMultiple_AddSynchronize_Proxy(byval This as IWaitMultiple ptr, byval pSync as ISynchronize ptr) as HRESULT
 declare sub IWaitMultiple_AddSynchronize_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define __IAddrTrackingControl_INTERFACE_DEFINED__
-
 type IAddrTrackingControl as IAddrTrackingControl_
-
 type LPADDRTRACKINGCONTROL as IAddrTrackingControl ptr
-
 extern IID_IAddrTrackingControl as const GUID
 
 type IAddrTrackingControlVtbl
@@ -1360,13 +1230,9 @@ declare function IAddrTrackingControl_EnableCOMDynamicAddrTracking_Proxy(byval T
 declare sub IAddrTrackingControl_EnableCOMDynamicAddrTracking_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IAddrTrackingControl_DisableCOMDynamicAddrTracking_Proxy(byval This as IAddrTrackingControl ptr) as HRESULT
 declare sub IAddrTrackingControl_DisableCOMDynamicAddrTracking_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define __IAddrExclusionControl_INTERFACE_DEFINED__
-
 type IAddrExclusionControl as IAddrExclusionControl_
-
 type LPADDREXCLUSIONCONTROL as IAddrExclusionControl ptr
-
 extern IID_IAddrExclusionControl as const GUID
 
 type IAddrExclusionControlVtbl
@@ -1385,11 +1251,8 @@ declare function IAddrExclusionControl_GetCurrentAddrExclusionList_Proxy(byval T
 declare sub IAddrExclusionControl_GetCurrentAddrExclusionList_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IAddrExclusionControl_UpdateAddrExclusionList_Proxy(byval This as IAddrExclusionControl ptr, byval pEnumerator as IUnknown ptr) as HRESULT
 declare sub IAddrExclusionControl_UpdateAddrExclusionList_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define __IPipeByte_INTERFACE_DEFINED__
-
 extern IID_IPipeByte as const GUID
-
 type IPipeByte as IPipeByte_
 
 type IPipeByteVtbl
@@ -1408,11 +1271,8 @@ declare function IPipeByte_Pull_Proxy(byval This as IPipeByte ptr, byval buf as 
 declare sub IPipeByte_Pull_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IPipeByte_Push_Proxy(byval This as IPipeByte ptr, byval buf as UBYTE ptr, byval cSent as ULONG) as HRESULT
 declare sub IPipeByte_Push_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define __IPipeLong_INTERFACE_DEFINED__
-
 extern IID_IPipeLong as const GUID
-
 type IPipeLong as IPipeLong_
 
 type IPipeLongVtbl
@@ -1431,11 +1291,8 @@ declare function IPipeLong_Pull_Proxy(byval This as IPipeLong ptr, byval buf as 
 declare sub IPipeLong_Pull_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IPipeLong_Push_Proxy(byval This as IPipeLong ptr, byval buf as LONG ptr, byval cSent as ULONG) as HRESULT
 declare sub IPipeLong_Push_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define __IPipeDouble_INTERFACE_DEFINED__
-
 extern IID_IPipeDouble as const GUID
-
 type IPipeDouble as IPipeDouble_
 
 type IPipeDoubleVtbl
@@ -1487,11 +1344,8 @@ end enum
 
 type THDTYPE as _THDTYPE
 type APARTMENTID as DWORD
-
 #define __IComThreadingInfo_INTERFACE_DEFINED__
-
 extern IID_IComThreadingInfo as const GUID
-
 type IComThreadingInfo as IComThreadingInfo_
 
 type IComThreadingInfoVtbl
@@ -1516,11 +1370,8 @@ declare function IComThreadingInfo_GetCurrentLogicalThreadId_Proxy(byval This as
 declare sub IComThreadingInfo_GetCurrentLogicalThreadId_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IComThreadingInfo_SetCurrentLogicalThreadId_Proxy(byval This as IComThreadingInfo ptr, byval rguid as const GUID const ptr) as HRESULT
 declare sub IComThreadingInfo_SetCurrentLogicalThreadId_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define __IProcessInitControl_INTERFACE_DEFINED__
-
 extern IID_IProcessInitControl as const GUID
-
 type IProcessInitControl as IProcessInitControl_
 
 type IProcessInitControlVtbl
@@ -1536,11 +1387,8 @@ end type
 
 declare function IProcessInitControl_ResetInitializerTimeout_Proxy(byval This as IProcessInitControl ptr, byval dwSecondsRemaining as DWORD) as HRESULT
 declare sub IProcessInitControl_ResetInitializerTimeout_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define __IFastRundown_INTERFACE_DEFINED__
-
 extern IID_IFastRundown as const GUID
-
 type IFastRundown as IFastRundown_
 
 type IFastRundownVtbl
@@ -1559,9 +1407,7 @@ enum
 end enum
 
 #define __IMarshalingStream_INTERFACE_DEFINED__
-
 extern IID_IMarshalingStream as const GUID
-
 type IMarshalingStream as IMarshalingStream_
 
 type IMarshalingStreamVtbl
@@ -1588,9 +1434,7 @@ end type
 
 declare function IMarshalingStream_GetMarshalingContextAttribute_Proxy(byval This as IMarshalingStream ptr, byval attribute as CO_MARSHALING_CONTEXT_ATTRIBUTES, byval pAttributeValue as ULONG_PTR ptr) as HRESULT
 declare sub IMarshalingStream_GetMarshalingContextAttribute_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 extern IID_ICallbackWithNoReentrancyToApplicationSTA as const GUID
-
 #define _OBJIDLBASE_
 
 end extern

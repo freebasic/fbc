@@ -11,7 +11,6 @@ extern "Windows"
 
 #define __WINE_DMUSIC_PLUGIN_H
 #define DMUS_REGSTR_PATH_TOOLS !"Software\\Microsoft\\DirectMusic\\Tools"
-
 extern CLSID_DirectMusicBandTrack as const GUID
 extern CLSID_DirectMusicChordTrack as const GUID
 extern CLSID_DirectMusicChordMapTrack as const GUID
@@ -51,9 +50,7 @@ type IDirectMusicGraph8 as IDirectMusicGraph
 type LPDIRECTMUSICGRAPH8 as IDirectMusicGraph ptr
 type DMUS_PMSG_ as _DMUS_PMSG
 type MUSIC_TIME_ as LONG
-
 #define DMUS_TRACK_PARAMF_CLOCK &h1
-
 type DMUS_TRACKF_FLAGS as enumDMUS_TRACKF_FLAGS
 
 type enumDMUS_TRACKF_FLAGS as long
@@ -98,7 +95,6 @@ end type
 #define IDirectMusicTool_GetMediaTypes(p, a, b) (p)->lpVtbl->GetMediaTypes(p, a, b)
 #define IDirectMusicTool_ProcessPMsg(p, a, b) (p)->lpVtbl->ProcessPMsg(p, a, b)
 #define IDirectMusicTool_Flush(p, a, b, c) (p)->lpVtbl->Flush(p, a, b, c)
-
 type IDirectMusicTool8Vtbl as IDirectMusicTool8Vtbl_
 
 type IDirectMusicTool8
@@ -128,7 +124,6 @@ end type
 #define IDirectMusicTool8_ProcessPMsg(p, a, b) (p)->lpVtbl->ProcessPMsg(p, a, b)
 #define IDirectMusicTool8_Flush(p, a, b) (p)->lpVtbl->Flush(p, a, b)
 #define IDirectMusicTool8_Clone(p, a) (p)->lpVtbl->Clone(p, a)
-
 type IDirectMusicTrackVtbl as IDirectMusicTrackVtbl_
 
 type IDirectMusicTrack_
@@ -164,7 +159,6 @@ end type
 #define IDirectMusicTrack_AddNotificationType(p, a) (p)->lpVtbl->AddNotificationType(p, a)
 #define IDirectMusicTrack_RemoveNotificationType(p, a) (p)->lpVtbl->RemoveNotificationType(p, a)
 #define IDirectMusicTrack_Clone(p, a, b, c) (p)->lpVtbl->Clone(p, a, b, c)
-
 type IDirectMusicTrack8Vtbl as IDirectMusicTrack8Vtbl_
 
 type IDirectMusicTrack8

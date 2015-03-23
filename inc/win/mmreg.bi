@@ -1734,10 +1734,8 @@ extern "C"
 #define WAVE_FORMAT_DTS2 &h2001
 #define WAVE_FORMAT_EXTENSIBLE &hFFFE
 #define WAVE_FORMAT_DEVELOPMENT &hFFFF
-
 extern KSDATAFORMAT_SUBTYPE_PCM as const GUID
 extern KSDATAFORMAT_SUBTYPE_IEEE_FLOAT as const GUID
-
 #define _WAVEFORMATEXTENSIBLE_
 
 union WAVEFORMATEXTENSIBLE_Samples field = 1
@@ -2212,7 +2210,6 @@ type WAVEFILTER as wavefilter_tag
 type PWAVEFILTER as WAVEFILTER ptr
 type NPWAVEFILTER as WAVEFILTER ptr
 type LPWAVEFILTER as WAVEFILTER ptr
-
 #define WAVE_FILTER_VOLUME &h0001
 
 type wavefilter_volume_tag field = 1
@@ -2224,7 +2221,6 @@ type VOLUMEWAVEFILTER as wavefilter_volume_tag
 type PVOLUMEWAVEFILTER as VOLUMEWAVEFILTER ptr
 type NPVOLUMEWAVEFILTER as VOLUMEWAVEFILTER ptr
 type LPVOLUMEWAVEFILTER as VOLUMEWAVEFILTER ptr
-
 #define WAVE_FILTER_ECHO &h0002
 
 type wavefilter_echo_tag field = 1
@@ -2237,7 +2233,6 @@ type ECHOWAVEFILTER as wavefilter_echo_tag
 type PECHOWAVEFILTER as ECHOWAVEFILTER ptr
 type NPECHOWAVEFILTER as ECHOWAVEFILTER ptr
 type LPECHOWAVEFILTER as ECHOWAVEFILTER ptr
-
 #define RIFFWAVE_inst mmioFOURCC(asc("i"), asc("n"), asc("s"), asc("t"))
 
 type tag_s_RIFFWAVE_inst field = 1
@@ -2251,7 +2246,6 @@ type tag_s_RIFFWAVE_inst field = 1
 end type
 
 type s_RIFFWAVE_inst as tag_s_RIFFWAVE_INST
-
 #define RIFFCPPO mmioFOURCC(asc("C"), asc("P"), asc("P"), asc("O"))
 #define RIFFCPPO_objr mmioFOURCC(asc("o"), asc("b"), asc("j"), asc("r"))
 #define RIFFCPPO_obji mmioFOURCC(asc("o"), asc("b"), asc("j"), asc("i"))
@@ -2274,7 +2268,6 @@ type tagEXBMINFOHEADER field = 1
 end type
 
 type EXBMINFOHEADER as tagEXBMINFOHEADER
-
 #define BICOMP_IBMULTIMOTION mmioFOURCC(asc("U"), asc("L"), asc("T"), asc("I"))
 #define BICOMP_IBMPHOTOMOTION mmioFOURCC(asc("P"), asc("H"), asc("M"), asc("O"))
 #define BICOMP_CREATIVEYUV mmioFOURCC(asc("c"), asc("y"), asc("u"), asc("v"))
@@ -2355,7 +2348,6 @@ type tagJPEGINFOHEADER field = 1
 end type
 
 type JPEGINFOHEADER as tagJPEGINFOHEADER
-
 #define ICTYPE_VIDEO mmioFOURCC(asc("v"), asc("i"), asc("d"), asc("c"))
 #define ICTYPE_AUDIO mmioFOURCC(asc("a"), asc("u"), asc("d"), asc("c"))
 #define FOURCC_RDSP mmioFOURCC(asc("R"), asc("D"), asc("S"), asc("P"))

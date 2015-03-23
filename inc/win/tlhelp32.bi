@@ -6,9 +6,7 @@ extern "Windows"
 
 #define _INC_TOOLHELP32
 #define MAX_MODULE_NAME32 255
-
 declare function CreateToolhelp32Snapshot(byval dwFlags as DWORD, byval th32ProcessID as DWORD) as HANDLE
-
 #define TH32CS_SNAPHEAPLIST &h00000001
 #define TH32CS_SNAPPROCESS &h00000002
 #define TH32CS_SNAPTHREAD &h00000004
@@ -27,10 +25,8 @@ end type
 type HEAPLIST32 as tagHEAPLIST32
 type PHEAPLIST32 as HEAPLIST32 ptr
 type LPHEAPLIST32 as HEAPLIST32 ptr
-
 #define HF32_DEFAULT 1
 #define HF32_SHARED 2
-
 declare function Heap32ListFirst(byval hSnapshot as HANDLE, byval lphl as LPHEAPLIST32) as WINBOOL
 declare function Heap32ListNext(byval hSnapshot as HANDLE, byval lphl as LPHEAPLIST32) as WINBOOL
 
@@ -74,7 +70,6 @@ end type
 type PROCESSENTRY32W as tagPROCESSENTRY32W
 type PPROCESSENTRY32W as PROCESSENTRY32W ptr
 type LPPROCESSENTRY32W as PROCESSENTRY32W ptr
-
 declare function Process32FirstW(byval hSnapshot as HANDLE, byval lppe as LPPROCESSENTRY32W) as WINBOOL
 declare function Process32NextW(byval hSnapshot as HANDLE, byval lppe as LPPROCESSENTRY32W) as WINBOOL
 
@@ -94,7 +89,6 @@ end type
 type PROCESSENTRY32A as tagPROCESSENTRY32A '' alias "PROCESSENTRY32"
 type PPROCESSENTRY32A as PROCESSENTRY32A ptr '' alias "PPROCESSENTRY32"
 type LPPROCESSENTRY32A as PROCESSENTRY32A ptr '' alias "LPPROCESSENTRY32"
-
 declare function Process32FirstA alias "Process32First"(byval hSnapshot as HANDLE, byval lppe as LPPROCESSENTRY32A) as WINBOOL
 declare function Process32NextA alias "Process32Next"(byval hSnapshot as HANDLE, byval lppe as LPPROCESSENTRY32A) as WINBOOL
 
@@ -125,7 +119,6 @@ end type
 type THREADENTRY32 as tagTHREADENTRY32
 type PTHREADENTRY32 as THREADENTRY32 ptr
 type LPTHREADENTRY32 as THREADENTRY32 ptr
-
 declare function Thread32First(byval hSnapshot as HANDLE, byval lpte as LPTHREADENTRY32) as WINBOOL
 declare function Thread32Next(byval hSnapshot as HANDLE, byval lpte as LPTHREADENTRY32) as WINBOOL
 
@@ -145,7 +138,6 @@ end type
 type MODULEENTRY32W as tagMODULEENTRY32W
 type PMODULEENTRY32W as MODULEENTRY32W ptr
 type LPMODULEENTRY32W as MODULEENTRY32W ptr
-
 declare function Module32FirstW(byval hSnapshot as HANDLE, byval lpme as LPMODULEENTRY32W) as WINBOOL
 declare function Module32NextW(byval hSnapshot as HANDLE, byval lpme as LPMODULEENTRY32W) as WINBOOL
 
@@ -165,7 +157,6 @@ end type
 type MODULEENTRY32A as tagMODULEENTRY32A '' alias "MODULEENTRY32"
 type PMODULEENTRY32A as MODULEENTRY32A ptr '' alias "PMODULEENTRY32"
 type LPMODULEENTRY32A as MODULEENTRY32A ptr '' alias "LPMODULEENTRY32"
-
 declare function Module32FirstA alias "Module32First"(byval hSnapshot as HANDLE, byval lpme as LPMODULEENTRY32A) as WINBOOL
 declare function Module32NextA alias "Module32Next"(byval hSnapshot as HANDLE, byval lpme as LPMODULEENTRY32A) as WINBOOL
 

@@ -4,7 +4,6 @@
 ''     typedef PTR => PTR_
 
 #define __SQLTYPES
-
 type SQLCHAR as ubyte
 type SQLSCHAR as byte
 type SQLDATE as ubyte
@@ -63,7 +62,6 @@ type HDBC as any ptr
 type HSTMT as any ptr
 type RETCODE as short
 type SQLHWND as HWND
-
 #define __SQLDATE
 
 type tagDATE_STRUCT
@@ -143,12 +141,9 @@ type tagSQL_INTERVAL_STRUCT
 end type
 
 type SQL_INTERVAL_STRUCT as tagSQL_INTERVAL_STRUCT
-
 #define ODBCINT64 longint
-
 type SQLBIGINT as longint
 type SQLUBIGINT as ulongint
-
 #define SQL_MAX_NUMERIC_LEN 16
 
 type tagSQL_NUMERIC_STRUCT

@@ -14,7 +14,6 @@
 extern "Windows"
 
 #define __WINE_DMUSIC_CORE_H
-
 extern CLSID_DirectMusic as const GUID
 extern CLSID_DirectMusicCollection as const GUID
 extern CLSID_DirectMusicSynth as const GUID
@@ -350,7 +349,6 @@ end type
 #define IDirectMusic_Activate(p, a) (p)->lpVtbl->Activate(p, a)
 #define IDirectMusic_GetDefaultPort(p, a) (p)->lpVtbl->GetDefaultPort(p, a)
 #define IDirectMusic_SetDirectSound(p, a, b) (p)->lpVtbl->SetDirectSound(p, a, b)
-
 type IDirectMusic8Vtbl as IDirectMusic8Vtbl_
 
 type IDirectMusic8
@@ -386,7 +384,6 @@ end type
 #define IDirectMusic8_GetDefaultPort(p, a) (p)->lpVtbl->GetDefaultPort(p, a)
 #define IDirectMusic8_SetDirectSound(p, a, b) (p)->lpVtbl->SetDirectSound(p, a, b)
 #define IDirectMusic8_SetExternalMasterClock(p, a) (p)->lpVtbl->SetExternalMasterClock(p, a)
-
 type IDirectMusicBufferVtbl as IDirectMusicBufferVtbl_
 
 type IDirectMusicBuffer
@@ -428,7 +425,6 @@ end type
 #define IDirectMusicBuffer_GetBufferFormat(p, a) (p)->lpVtbl->GetBufferFormat(p, a)
 #define IDirectMusicBuffer_SetStartTime(p, a) (p)->lpVtbl->SetStartTime(p, a)
 #define IDirectMusicBuffer_SetUsedBytes(p, a) (p)->lpVtbl->SetUsedBytes(p, a)
-
 type IDirectMusicInstrumentVtbl as IDirectMusicInstrumentVtbl_
 
 type IDirectMusicInstrument
@@ -448,7 +444,6 @@ end type
 #define IDirectMusicInstrument_Release(p) (p)->lpVtbl->Release(p)
 #define IDirectMusicInstrument_GetPatch(p, a) (p)->lpVtbl->GetPatch(p, a)
 #define IDirectMusicInstrument_SetPatch(p, a) (p)->lpVtbl->SetPatch(p, a)
-
 type IDirectMusicDownloadedInstrumentVtbl as IDirectMusicDownloadedInstrumentVtbl_
 
 type IDirectMusicDownloadedInstrument
@@ -464,7 +459,6 @@ end type
 #define IDirectMusicDownloadedInstrument_QueryInterface(p, a, b) (p)->lpVtbl->QueryInterface(p, a, b)
 #define IDirectMusicDownloadedInstrument_AddRef(p) (p)->lpVtbl->AddRef(p)
 #define IDirectMusicDownloadedInstrument_Release(p) (p)->lpVtbl->Release(p)
-
 type IDirectMusicCollectionVtbl as IDirectMusicCollectionVtbl_
 
 type IDirectMusicCollection
@@ -484,7 +478,6 @@ end type
 #define IDirectMusicCollection_Release(p) (p)->lpVtbl->Release(p)
 #define IDirectMusicCollection_GetInstrument(p, a, b) (p)->lpVtbl->GetInstrument(p, a, b)
 #define IDirectMusicCollection_EnumInstrument(p, a, b, c, d) (p)->lpVtbl->EnumInstrument(p, a, b, c, d)
-
 type IDirectMusicDownloadVtbl as IDirectMusicDownloadVtbl_
 
 type IDirectMusicDownload
@@ -502,7 +495,6 @@ end type
 #define IDirectMusicDownload_AddRef(p) (p)->lpVtbl->AddRef(p)
 #define IDirectMusicDownload_Release(p) (p)->lpVtbl->Release(p)
 #define IDirectMusicDownload_GetBuffer(p, a, b) (p)->lpVtbl->GetBuffer(p, a, b)
-
 type IDirectMusicPortDownloadVtbl as IDirectMusicPortDownloadVtbl_
 
 type IDirectMusicPortDownload
@@ -530,7 +522,6 @@ end type
 #define IDirectMusicPortDownload_GetAppend(p, a) (p)->lpVtbl->GetAppend(p, a)
 #define IDirectMusicPortDownload_Download(p, a) (p)->lpVtbl->Download(p, a)
 #define IDirectMusicPortDownload_Unload(p, a) (p)->lpVtbl->GetBuffer(p, a)
-
 type IDirectMusicPortVtbl as IDirectMusicPortVtbl_
 
 type IDirectMusicPort
@@ -580,7 +571,6 @@ end type
 #define IDirectMusicPort_GetChannelPriority(p, a, b, c) (p)->lpVtbl->GetChannelPriority(p, a, b, c)
 #define IDirectMusicPort_SetDirectSound(p, a, b) (p)->lpVtbl->SetDirectSound(p, a, b)
 #define IDirectMusicPort_GetFormat(p, a, b, c) (p)->lpVtbl->GetFormat(p, a, b, c)
-
 type IDirectMusicThruVtbl as IDirectMusicThruVtbl_
 
 type IDirectMusicThru

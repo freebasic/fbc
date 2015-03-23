@@ -13,10 +13,8 @@
 #endif
 
 #define __MIDL_USER_DEFINED
-
 type I_RPC_HANDLE as any ptr
 type RPC_STATUS as long
-
 #define RPC_UNICODE_SUPPORTED
 #define RpcExceptionCode() GetExceptionCode()
 #define RpcAbnormalTermination() AbnormalTermination()

@@ -48,7 +48,6 @@ end type
 
 type MODULEINFO as _MODULEINFO
 type LPMODULEINFO as _MODULEINFO ptr
-
 declare function GetModuleInformation(byval hProcess as HANDLE, byval hModule as HMODULE, byval lpmodinfo as LPMODULEINFO, byval cb as DWORD) as WINBOOL
 declare function EmptyWorkingSet(byval hProcess as HANDLE) as WINBOOL
 declare function QueryWorkingSet(byval hProcess as HANDLE, byval pv as PVOID, byval cb as DWORD) as WINBOOL
@@ -62,7 +61,6 @@ end type
 
 type PSAPI_WS_WATCH_INFORMATION as _PSAPI_WS_WATCH_INFORMATION
 type PPSAPI_WS_WATCH_INFORMATION as _PSAPI_WS_WATCH_INFORMATION ptr
-
 declare function GetWsChanges(byval hProcess as HANDLE, byval lpWatchInfo as PPSAPI_WS_WATCH_INFORMATION, byval cb as DWORD) as WINBOOL
 declare function GetMappedFileNameW(byval hProcess as HANDLE, byval lpv as LPVOID, byval lpFilename as LPWSTR, byval nSize as DWORD) as DWORD
 declare function GetMappedFileNameA(byval hProcess as HANDLE, byval lpv as LPVOID, byval lpFilename as LPSTR, byval nSize as DWORD) as DWORD
@@ -104,7 +102,6 @@ end type
 
 type PROCESS_MEMORY_COUNTERS_EX as _PROCESS_MEMORY_COUNTERS_EX
 type PPROCESS_MEMORY_COUNTERS_EX as PROCESS_MEMORY_COUNTERS_EX ptr
-
 declare function GetProcessMemoryInfo(byval Process as HANDLE, byval ppsmemCounters as PPROCESS_MEMORY_COUNTERS, byval cb as DWORD) as WINBOOL
 
 type _PERFORMANCE_INFORMATION
@@ -128,7 +125,6 @@ type PERFORMANCE_INFORMATION as _PERFORMANCE_INFORMATION
 type PPERFORMANCE_INFORMATION as _PERFORMANCE_INFORMATION ptr
 type PERFORMACE_INFORMATION as _PERFORMANCE_INFORMATION
 type PPERFORMACE_INFORMATION as _PERFORMANCE_INFORMATION ptr
-
 declare function GetPerformanceInfo(byval pPerformanceInformation as PPERFORMACE_INFORMATION, byval cb as DWORD) as WINBOOL
 
 type _ENUM_PAGE_FILE_INFORMATION
@@ -157,7 +153,6 @@ end type
 
 type PSAPI_WS_WATCH_INFORMATION_EX as _PSAPI_WS_WATCH_INFORMATION_EX
 type PPSAPI_WS_WATCH_INFORMATION_EX as _PSAPI_WS_WATCH_INFORMATION_EX ptr
-
 declare function GetWsChangesEx(byval hProcess as HANDLE, byval lpWatchInfoEx as PPSAPI_WS_WATCH_INFORMATION_EX, byval cb as DWORD) as WINBOOL
 declare function EnumProcessModulesEx(byval hProcess as HANDLE, byval lphModule as HMODULE ptr, byval cb as DWORD, byval lpcbNeeded as LPDWORD, byval dwFilterFlag as DWORD) as WINBOOL
 

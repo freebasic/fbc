@@ -4,7 +4,6 @@
 #include once "inaddr.bi"
 
 #define IP_EXPORT_INCLUDED 1
-
 type IPAddr as ULONG
 type IPMask as ULONG
 type IP_STATUS as ULONG
@@ -71,7 +70,6 @@ type TCP_RESERVE_PORT_RANGE
 end type
 
 type PTCP_RESERVE_PORT_RANGE as TCP_RESERVE_PORT_RANGE ptr
-
 #define MAX_ADAPTER_NAME 128
 
 type _IP_ADAPTER_INDEX_MAP
@@ -125,7 +123,6 @@ end type
 
 type IPV6_ADDRESS_EX as _IPV6_ADDRESS_EX
 type PIPV6_ADDRESS_EX as _IPV6_ADDRESS_EX ptr
-
 #define IP_STATUS_BASE 11000
 #define IP_SUCCESS 0
 #define IP_BUF_TOO_SMALL (IP_STATUS_BASE + 1)

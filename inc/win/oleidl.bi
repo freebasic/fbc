@@ -36,11 +36,8 @@ extern "Windows"
 #define __IDropSourceNotify_FWD_DEFINED__
 #define __IEnumOLEVERB_FWD_DEFINED__
 #define __IOleAdviseHolder_INTERFACE_DEFINED__
-
 type IOleAdviseHolder as IOleAdviseHolder_
-
 type LPOLEADVISEHOLDER as IOleAdviseHolder ptr
-
 extern IID_IOleAdviseHolder as const GUID
 
 type IOleAdviseHolderVtbl
@@ -71,13 +68,9 @@ declare function IOleAdviseHolder_SendOnSave_Proxy(byval This as IOleAdviseHolde
 declare sub IOleAdviseHolder_SendOnSave_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IOleAdviseHolder_SendOnClose_Proxy(byval This as IOleAdviseHolder ptr) as HRESULT
 declare sub IOleAdviseHolder_SendOnClose_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define __IOleCache_INTERFACE_DEFINED__
-
 type IOleCache as IOleCache_
-
 type LPOLECACHE as IOleCache ptr
-
 extern IID_IOleCache as const GUID
 
 type IOleCacheVtbl
@@ -105,11 +98,8 @@ declare function IOleCache_InitCache_Proxy(byval This as IOleCache ptr, byval pD
 declare sub IOleCache_InitCache_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IOleCache_SetData_Proxy(byval This as IOleCache ptr, byval pformatetc as FORMATETC ptr, byval pmedium as STGMEDIUM ptr, byval fRelease as WINBOOL) as HRESULT
 declare sub IOleCache_SetData_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define __IOleCache2_INTERFACE_DEFINED__
-
 type IOleCache2 as IOleCache2_
-
 type LPOLECACHE2 as IOleCache2 ptr
 
 #define UPDFCACHE_NODATACACHE &h1
@@ -129,7 +119,6 @@ enum
 end enum
 
 type DISCARDCACHE as tagDISCARDCACHE
-
 extern IID_IOleCache2 as const GUID
 
 type IOleCache2Vtbl
@@ -155,13 +144,9 @@ declare function IOleCache2_DiscardCache_Proxy(byval This as IOleCache2 ptr, byv
 declare sub IOleCache2_DiscardCache_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IOleCache2_UpdateCache_Proxy(byval This as IOleCache2 ptr, byval pDataObject as LPDATAOBJECT, byval grfUpdf as DWORD, byval pReserved as LPVOID) as HRESULT
 declare function IOleCache2_UpdateCache_Stub(byval This as IOleCache2 ptr, byval pDataObject as LPDATAOBJECT, byval grfUpdf as DWORD, byval pReserved as LONG_PTR) as HRESULT
-
 #define __IOleCacheControl_INTERFACE_DEFINED__
-
 type IOleCacheControl as IOleCacheControl_
-
 type LPOLECACHECONTROL as IOleCacheControl ptr
-
 extern IID_IOleCacheControl as const GUID
 
 type IOleCacheControlVtbl
@@ -180,13 +165,9 @@ declare function IOleCacheControl_OnRun_Proxy(byval This as IOleCacheControl ptr
 declare sub IOleCacheControl_OnRun_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IOleCacheControl_OnStop_Proxy(byval This as IOleCacheControl ptr) as HRESULT
 declare sub IOleCacheControl_OnStop_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define __IParseDisplayName_INTERFACE_DEFINED__
-
 type IParseDisplayName as IParseDisplayName_
-
 type LPPARSEDISPLAYNAME as IParseDisplayName ptr
-
 extern IID_IParseDisplayName as const GUID
 
 type IParseDisplayNameVtbl
@@ -202,13 +183,9 @@ end type
 
 declare function IParseDisplayName_ParseDisplayName_Proxy(byval This as IParseDisplayName ptr, byval pbc as IBindCtx ptr, byval pszDisplayName as LPOLESTR, byval pchEaten as ULONG ptr, byval ppmkOut as IMoniker ptr ptr) as HRESULT
 declare sub IParseDisplayName_ParseDisplayName_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define __IOleContainer_INTERFACE_DEFINED__
-
 type IOleContainer as IOleContainer_
-
 type LPOLECONTAINER as IOleContainer ptr
-
 extern IID_IOleContainer as const GUID
 
 type IOleContainerVtbl
@@ -228,13 +205,9 @@ declare function IOleContainer_EnumObjects_Proxy(byval This as IOleContainer ptr
 declare sub IOleContainer_EnumObjects_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IOleContainer_LockContainer_Proxy(byval This as IOleContainer ptr, byval fLock as WINBOOL) as HRESULT
 declare sub IOleContainer_LockContainer_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define __IOleClientSite_INTERFACE_DEFINED__
-
 type IOleClientSite as IOleClientSite_
-
 type LPOLECLIENTSITE as IOleClientSite ptr
-
 extern IID_IOleClientSite as const GUID
 
 type IOleClientSiteVtbl
@@ -265,11 +238,8 @@ declare function IOleClientSite_OnShowWindow_Proxy(byval This as IOleClientSite 
 declare sub IOleClientSite_OnShowWindow_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IOleClientSite_RequestNewObjectLayout_Proxy(byval This as IOleClientSite ptr) as HRESULT
 declare sub IOleClientSite_RequestNewObjectLayout_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define __IOleObject_INTERFACE_DEFINED__
-
 type IOleObject as IOleObject_
-
 type LPOLEOBJECT as IOleObject ptr
 
 type tagOLEGETMONIKER as long
@@ -336,9 +306,7 @@ enum
 end enum
 
 type OLECLOSE as tagOLECLOSE
-
 extern IID_IOleObject as const GUID
-
 type IEnumOLEVERB as IEnumOLEVERB_
 
 type IOleObjectVtbl
@@ -414,9 +382,7 @@ declare function IOleObject_GetMiscStatus_Proxy(byval This as IOleObject ptr, by
 declare sub IOleObject_GetMiscStatus_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IOleObject_SetColorScheme_Proxy(byval This as IOleObject ptr, byval pLogpal as LOGPALETTE ptr) as HRESULT
 declare sub IOleObject_SetColorScheme_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define __IOLETypes_INTERFACE_DEFINED__
-
 extern IOLETypes_v0_0_c_ifspec as RPC_IF_HANDLE
 extern IOLETypes_v0_0_s_ifspec as RPC_IF_HANDLE
 
@@ -448,13 +414,9 @@ type LPOBJECTDESCRIPTOR as tagOBJECTDESCRIPTOR ptr
 type LINKSRCDESCRIPTOR as tagOBJECTDESCRIPTOR
 type PLINKSRCDESCRIPTOR as tagOBJECTDESCRIPTOR ptr
 type LPLINKSRCDESCRIPTOR as tagOBJECTDESCRIPTOR ptr
-
 #define __IOleWindow_INTERFACE_DEFINED__
-
 type IOleWindow as IOleWindow_
-
 type LPOLEWINDOW as IOleWindow ptr
-
 extern IID_IOleWindow as const GUID
 
 type IOleWindowVtbl
@@ -473,11 +435,8 @@ declare function IOleWindow_GetWindow_Proxy(byval This as IOleWindow ptr, byval 
 declare sub IOleWindow_GetWindow_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IOleWindow_ContextSensitiveHelp_Proxy(byval This as IOleWindow ptr, byval fEnterMode as WINBOOL) as HRESULT
 declare sub IOleWindow_ContextSensitiveHelp_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define __IOleLink_INTERFACE_DEFINED__
-
 type IOleLink as IOleLink_
-
 type LPOLELINK as IOleLink ptr
 
 type tagOLEUPDATE as long
@@ -496,7 +455,6 @@ enum
 end enum
 
 type OLELINKBIND as tagOLELINKBIND
-
 extern IID_IOleLink as const GUID
 
 type IOleLinkVtbl
@@ -542,11 +500,8 @@ declare function IOleLink_UnbindSource_Proxy(byval This as IOleLink ptr) as HRES
 declare sub IOleLink_UnbindSource_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IOleLink_Update_Proxy(byval This as IOleLink ptr, byval pbc as IBindCtx ptr) as HRESULT
 declare sub IOleLink_Update_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define __IOleItemContainer_INTERFACE_DEFINED__
-
 type IOleItemContainer as IOleItemContainer_
-
 type LPOLEITEMCONTAINER as IOleItemContainer ptr
 
 type tagBINDSPEED as long
@@ -568,7 +523,6 @@ enum
 end enum
 
 type OLECONTF as tagOLECONTF
-
 extern IID_IOleItemContainer as const GUID
 
 type IOleItemContainerVtbl
@@ -593,18 +547,14 @@ declare function IOleItemContainer_GetObjectStorage_Proxy(byval This as IOleItem
 declare sub IOleItemContainer_GetObjectStorage_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IOleItemContainer_IsRunning_Proxy(byval This as IOleItemContainer ptr, byval pszItem as LPOLESTR) as HRESULT
 declare sub IOleItemContainer_IsRunning_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define __IOleInPlaceUIWindow_INTERFACE_DEFINED__
 
 type IOleInPlaceUIWindow as IOleInPlaceUIWindow_
-
 type LPOLEINPLACEUIWINDOW as IOleInPlaceUIWindow ptr
 type BORDERWIDTHS as RECT
 type LPBORDERWIDTHS as LPRECT
 type LPCBORDERWIDTHS as LPCRECT
-
 extern IID_IOleInPlaceUIWindow as const GUID
-
 type IOleInPlaceActiveObject as IOleInPlaceActiveObject_
 
 type IOleInPlaceUIWindowVtbl
@@ -631,11 +581,8 @@ declare function IOleInPlaceUIWindow_SetBorderSpace_Proxy(byval This as IOleInPl
 declare sub IOleInPlaceUIWindow_SetBorderSpace_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IOleInPlaceUIWindow_SetActiveObject_Proxy(byval This as IOleInPlaceUIWindow ptr, byval pActiveObject as IOleInPlaceActiveObject ptr, byval pszObjName as LPCOLESTR) as HRESULT
 declare sub IOleInPlaceUIWindow_SetActiveObject_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define __IOleInPlaceActiveObject_INTERFACE_DEFINED__
-
 type LPOLEINPLACEACTIVEOBJECT as IOleInPlaceActiveObject ptr
-
 extern IID_IOleInPlaceActiveObject as const GUID
 
 type IOleInPlaceActiveObjectVtbl
@@ -669,11 +616,8 @@ declare function IOleInPlaceActiveObject_TranslateAccelerator_Proxy(byval This a
 declare function IOleInPlaceActiveObject_TranslateAccelerator_Stub(byval This as IOleInPlaceActiveObject ptr) as HRESULT
 declare function IOleInPlaceActiveObject_ResizeBorder_Proxy(byval This as IOleInPlaceActiveObject ptr, byval prcBorder as LPCRECT, byval pUIWindow as IOleInPlaceUIWindow ptr, byval fFrameWindow as WINBOOL) as HRESULT
 declare function IOleInPlaceActiveObject_ResizeBorder_Stub(byval This as IOleInPlaceActiveObject ptr, byval prcBorder as LPCRECT, byval riid as const IID const ptr, byval pUIWindow as IOleInPlaceUIWindow ptr, byval fFrameWindow as WINBOOL) as HRESULT
-
 #define __IOleInPlaceFrame_INTERFACE_DEFINED__
-
 type IOleInPlaceFrame as IOleInPlaceFrame_
-
 type LPOLEINPLACEFRAME as IOleInPlaceFrame ptr
 
 type tagOIFI
@@ -694,7 +638,6 @@ end type
 type OLEMENUGROUPWIDTHS as tagOleMenuGroupWidths
 type LPOLEMENUGROUPWIDTHS as tagOleMenuGroupWidths ptr
 type HOLEMENU as HGLOBAL
-
 extern IID_IOleInPlaceFrame as const GUID
 
 type IOleInPlaceFrameVtbl
@@ -731,13 +674,9 @@ declare function IOleInPlaceFrame_EnableModeless_Proxy(byval This as IOleInPlace
 declare sub IOleInPlaceFrame_EnableModeless_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IOleInPlaceFrame_TranslateAccelerator_Proxy(byval This as IOleInPlaceFrame ptr, byval lpmsg as LPMSG, byval wID as WORD) as HRESULT
 declare sub IOleInPlaceFrame_TranslateAccelerator_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define __IOleInPlaceObject_INTERFACE_DEFINED__
-
 type IOleInPlaceObject as IOleInPlaceObject_
-
 type LPOLEINPLACEOBJECT as IOleInPlaceObject ptr
-
 extern IID_IOleInPlaceObject as const GUID
 
 type IOleInPlaceObjectVtbl
@@ -764,13 +703,9 @@ declare function IOleInPlaceObject_SetObjectRects_Proxy(byval This as IOleInPlac
 declare sub IOleInPlaceObject_SetObjectRects_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IOleInPlaceObject_ReactivateAndUndo_Proxy(byval This as IOleInPlaceObject ptr) as HRESULT
 declare sub IOleInPlaceObject_ReactivateAndUndo_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define __IOleInPlaceSite_INTERFACE_DEFINED__
-
 type IOleInPlaceSite as IOleInPlaceSite_
-
 type LPOLEINPLACESITE as IOleInPlaceSite ptr
-
 extern IID_IOleInPlaceSite as const GUID
 
 type IOleInPlaceSiteVtbl
@@ -815,11 +750,8 @@ declare function IOleInPlaceSite_DeactivateAndUndo_Proxy(byval This as IOleInPla
 declare sub IOleInPlaceSite_DeactivateAndUndo_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IOleInPlaceSite_OnPosRectChange_Proxy(byval This as IOleInPlaceSite ptr, byval lprcPosRect as LPCRECT) as HRESULT
 declare sub IOleInPlaceSite_OnPosRectChange_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define __IContinue_INTERFACE_DEFINED__
-
 extern IID_IContinue as const GUID
-
 type IContinue as IContinue_
 
 type IContinueVtbl
@@ -835,13 +767,9 @@ end type
 
 declare function IContinue_FContinue_Proxy(byval This as IContinue ptr) as HRESULT
 declare sub IContinue_FContinue_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define __IViewObject_INTERFACE_DEFINED__
-
 type IViewObject as IViewObject_
-
 type LPVIEWOBJECT as IViewObject ptr
-
 extern IID_IViewObject as const GUID
 
 type IViewObjectVtbl
@@ -880,13 +808,9 @@ declare function IViewObject_Freeze_Proxy(byval This as IViewObject ptr, byval d
 declare function IViewObject_Freeze_Stub(byval This as IViewObject ptr, byval dwDrawAspect as DWORD, byval lindex as LONG, byval pvAspect as ULONG_PTR, byval pdwFreeze as DWORD ptr) as HRESULT
 declare function IViewObject_GetAdvise_Proxy(byval This as IViewObject ptr, byval pAspects as DWORD ptr, byval pAdvf as DWORD ptr, byval ppAdvSink as IAdviseSink ptr ptr) as HRESULT
 declare function IViewObject_GetAdvise_Stub(byval This as IViewObject ptr, byval pAspects as DWORD ptr, byval pAdvf as DWORD ptr, byval ppAdvSink as IAdviseSink ptr ptr) as HRESULT
-
 #define __IViewObject2_INTERFACE_DEFINED__
-
 type IViewObject2 as IViewObject2_
-
 type LPVIEWOBJECT2 as IViewObject2 ptr
-
 extern IID_IViewObject2 as const GUID
 
 type IViewObject2Vtbl
@@ -908,13 +832,9 @@ end type
 
 declare function IViewObject2_GetExtent_Proxy(byval This as IViewObject2 ptr, byval dwDrawAspect as DWORD, byval lindex as LONG, byval ptd as DVTARGETDEVICE ptr, byval lpsizel as LPSIZEL) as HRESULT
 declare sub IViewObject2_GetExtent_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define __IDropSource_INTERFACE_DEFINED__
-
 type IDropSource as IDropSource_
-
 type LPDROPSOURCE as IDropSource ptr
-
 extern IID_IDropSource as const GUID
 
 type IDropSourceVtbl
@@ -933,11 +853,8 @@ declare function IDropSource_QueryContinueDrag_Proxy(byval This as IDropSource p
 declare sub IDropSource_QueryContinueDrag_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IDropSource_GiveFeedback_Proxy(byval This as IDropSource ptr, byval dwEffect as DWORD) as HRESULT
 declare sub IDropSource_GiveFeedback_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define __IDropTarget_INTERFACE_DEFINED__
-
 type IDropTarget as IDropTarget_
-
 type LPDROPTARGET as IDropTarget ptr
 
 #define MK_ALT &h20
@@ -951,7 +868,6 @@ type LPDROPTARGET as IDropTarget ptr
 #define DD_DEFSCROLLINTERVAL 50
 #define DD_DEFDRAGDELAY 200
 #define DD_DEFDRAGMINDIST 2
-
 extern IID_IDropTarget as const GUID
 
 type IDropTargetVtbl
@@ -976,11 +892,8 @@ declare function IDropTarget_DragLeave_Proxy(byval This as IDropTarget ptr) as H
 declare sub IDropTarget_DragLeave_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IDropTarget_Drop_Proxy(byval This as IDropTarget ptr, byval pDataObj as IDataObject ptr, byval grfKeyState as DWORD, byval pt as POINTL, byval pdwEffect as DWORD ptr) as HRESULT
 declare sub IDropTarget_Drop_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define __IDropSourceNotify_INTERFACE_DEFINED__
-
 extern IID_IDropSourceNotify as const GUID
-
 type IDropSourceNotify as IDropSourceNotify_
 
 type IDropSourceNotifyVtbl
@@ -999,9 +912,7 @@ declare function IDropSourceNotify_DragEnterTarget_Proxy(byval This as IDropSour
 declare sub IDropSourceNotify_DragEnterTarget_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IDropSourceNotify_DragLeaveTarget_Proxy(byval This as IDropSourceNotify ptr) as HRESULT
 declare sub IDropSourceNotify_DragLeaveTarget_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define __IEnumOLEVERB_INTERFACE_DEFINED__
-
 type LPENUMOLEVERB as IEnumOLEVERB ptr
 
 type tagOLEVERB
@@ -1021,7 +932,6 @@ enum
 end enum
 
 type OLEVERBATTRIB as tagOLEVERBATTRIB
-
 extern IID_IEnumOLEVERB as const GUID
 
 type IEnumOLEVERBVtbl

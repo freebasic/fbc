@@ -22,7 +22,6 @@ declare function FCGI_Accept() as long
 declare sub FCGI_Finish()
 declare function FCGI_StartFilterData() as long
 declare sub FCGI_SetExitStatus(byval status as long)
-
 #define FCGI_ToFILE(fcgi_file) fcgi_file->stdio_stream
 #define FCGI_ToFcgiStream(fcgi_file) fcgi_file->fcgx_stream
 

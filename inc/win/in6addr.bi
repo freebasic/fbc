@@ -13,7 +13,6 @@ end type
 
 type PIN6_ADDR as IN6_ADDR ptr
 type LPIN6_ADDR as IN6_ADDR ptr
-
 #define in_addr6 in6_addr
 #define _S6_un u
 #define _S6_u8 Byte

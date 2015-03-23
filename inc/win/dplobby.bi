@@ -6,35 +6,22 @@
 extern "Windows"
 
 #define __WINE_DPLOBBY_H
-
 extern CLSID_DirectPlayLobby as const GUID
 extern IID_IDirectPlayLobby as const GUID
-
 type LPDIRECTPLAYLOBBY as IDirectPlayLobby ptr
-
 extern IID_IDirectPlayLobbyA as const GUID
-
 type IDirectPlayLobbyA as IDirectPlayLobby
 type LPDIRECTPLAYLOBBYA as IDirectPlayLobby ptr
-
 extern IID_IDirectPlayLobby2 as const GUID
-
 type LPDIRECTPLAYLOBBY2 as IDirectPlayLobby2 ptr
-
 extern IID_IDirectPlayLobby2A as const GUID
-
 type IDirectPlayLobby2A as IDirectPlayLobby2
 type LPDIRECTPLAYLOBBY2A as IDirectPlayLobby2 ptr
-
 extern IID_IDirectPlayLobby3 as const GUID
-
 type LPDIRECTPLAYLOBBY3 as IDirectPlayLobby3 ptr
-
 extern IID_IDirectPlayLobby3A as const GUID
-
 type IDirectPlayLobby3A as IDirectPlayLobby3
 type LPDIRECTPLAYLOBBY3A as IDirectPlayLobby3 ptr
-
 extern DPLPROPERTY_MessagesSupported as const GUID
 extern DPLPROPERTY_LobbyGuid as const GUID
 extern DPLPROPERTY_PlayerGuid as const GUID
@@ -55,7 +42,6 @@ end type
 
 type DPLDATA_PLAYERSCORE as tagDPLDATA_PLAYERSCORE
 type LPDPLDATA_PLAYERSCORE as tagDPLDATA_PLAYERSCORE ptr
-
 #define DPLMSG_SYSTEM &h00000001
 #define DPLMSG_STANDARD &h00000002
 #define DPLAD_SYSTEM DPLMSG_SYSTEM
@@ -96,7 +82,6 @@ end type
 
 type DPLMSG_SETPROPERTY as tagDPLMSG_SETPROPERTY
 type LPDPLMSG_SETPROPERTY as tagDPLMSG_SETPROPERTY ptr
-
 #define DPL_NOCONFIRMATION 0
 
 type tagDPLMSG_SETPROPERTYRESPONSE
@@ -140,7 +125,6 @@ end type
 
 type DPLMSG_NEWSESSIONHOST as tagDPLMSG_NEWSESSIONHOST
 type LPDPLMSG_NEWSESSIONHOST as tagDPLMSG_NEWSESSIONHOST ptr
-
 extern DPAID_TotalSize as const GUID
 extern DPAID_ServiceProvider as const GUID
 extern DPAID_LobbyProvider as const GUID
@@ -160,7 +144,6 @@ end type
 
 type DPADDRESS as tagDPADDRESS
 type LPDPADDRESS as tagDPADDRESS ptr
-
 #define DPCPA_NOFLOW 0
 #define DPCPA_XONXOFFFLOW 1
 #define DPCPA_RTSFLOW 2
@@ -238,7 +221,6 @@ end type
 
 type DPAPPLICATIONDESC as tagDPAPPLICATIONDESC
 type LPDPAPPLICATIONDESC as tagDPAPPLICATIONDESC ptr
-
 declare function DirectPlayLobbyCreateW(byval as LPGUID, byval as LPDIRECTPLAYLOBBY ptr, byval as IUnknown ptr, byval as LPVOID, byval as DWORD) as HRESULT
 declare function DirectPlayLobbyCreateA(byval as LPGUID, byval as LPDIRECTPLAYLOBBYA ptr, byval as IUnknown ptr, byval as LPVOID, byval as DWORD) as HRESULT
 
@@ -251,7 +233,6 @@ declare function DirectPlayLobbyCreateA(byval as LPGUID, byval as LPDIRECTPLAYLO
 type LPDPENUMADDRESSCALLBACK as function(byval guidDataType as const GUID const ptr, byval dwDataSize as DWORD, byval lpData as LPCVOID, byval lpContext as LPVOID) as WINBOOL
 type LPDPLENUMADDRESSTYPESCALLBACK as function(byval guidDataType as const GUID const ptr, byval lpContext as LPVOID, byval dwFlags as DWORD) as WINBOOL
 type LPDPLENUMLOCALAPPLICATIONSCALLBACK as function(byval lpAppInfo as LPCDPLAPPINFO, byval lpContext as LPVOID, byval dwFlags as DWORD) as WINBOOL
-
 type IDirectPlayLobbyVtbl as IDirectPlayLobbyVtbl_
 
 type IDirectPlayLobby

@@ -5,7 +5,6 @@
 extern "C"
 
 #define __CGUID_H__
-
 extern GUID_NULL as const IID
 extern CATID_MARSHALER as const IID
 extern IID_IRpcChannel as const IID

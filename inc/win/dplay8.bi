@@ -8,7 +8,6 @@
 extern "Windows"
 
 #define __WINE_DPLAY8_H
-
 type PFNDPNMESSAGEHANDLER as function(byval as PVOID, byval as DWORD, byval as PVOID) as HRESULT
 type DPNID as DWORD
 type PDPNID as DWORD ptr
@@ -420,7 +419,6 @@ end type
 
 type DPNMSG_DESTROY_PLAYER as _DPNMSG_DESTROY_PLAYER
 type PDPNMSG_DESTROY_PLAYER as _DPNMSG_DESTROY_PLAYER ptr
-
 type IDirectPlay8Address as IDirectPlay8Address_
 
 type _DPNMSG_ENUM_HOSTS_QUERY
@@ -599,32 +597,21 @@ end type
 
 type DPNMSG_NAT_RESOLVER_QUERY as _DPNMSG_NAT_RESOLVER_QUERY
 type PDPNMSG_NAT_RESOLVER_QUERY as _DPNMSG_NAT_RESOLVER_QUERY ptr
-
 extern CLSID_DirectPlay8Peer as const GUID
 extern CLSID_DirectPlay8Client as const GUID
 extern CLSID_DirectPlay8Server as const GUID
 extern CLSID_DirectPlay8ThreadPool as const GUID
 extern CLSID_DirectPlay8NATResolver as const GUID
 extern IID_IDirectPlay8Peer as const GUID
-
 type PDIRECTPLAY8PEER as IDirectPlay8Peer ptr
-
 extern IID_IDirectPlay8Client as const GUID
-
 type PDIRECTPLAY8CLIENT as IDirectPlay8Client ptr
-
 extern IID_IDirectPlay8Server as const GUID
-
 type PDIRECTPLAY8SERVER as IDirectPlay8Server ptr
-
 extern IID_IDirectPlay8ThreadPool as const GUID
-
 type PDIRECTPLAY8THREADPOOL as IDirectPlay8ThreadPool ptr
-
 extern IID_IDirectPlay8NATResolver as const GUID
-
 type PDIRECTPLAY8NATRESOLVER as IDirectPlay8NATResolver ptr
-
 extern CLSID_DP8SP_IPX as const GUID
 extern CLSID_DP8SP_TCPIP as const GUID
 extern CLSID_DP8SP_SERIAL as const GUID
@@ -632,10 +619,8 @@ extern CLSID_DP8SP_MODEM as const GUID
 extern CLSID_DP8SP_BLUETOOTH as const GUID
 
 type IDirectPlay8LobbiedApplication as IDirectPlay8LobbiedApplication_
-
 type PIDirectPlay8LobbiedApplication as IDirectPlay8LobbiedApplication ptr
 type DNLOBBIEDAPPLICATION as IDirectPlay8LobbiedApplication
-
 type IDirectPlay8ClientVtbl as IDirectPlay8ClientVtbl_
 
 type IDirectPlay8Client
@@ -689,7 +674,6 @@ end type
 #define IDirectPlay8Client_GetSPCaps(p, a, b, c) (p)->lpVtbl->GetSPCaps(p, a, b, c)
 #define IDirectPlay8Client_GetConnectionInfo(p, a, b) (p)->lpVtbl->GetConnectionInfo(p, a, b)
 #define IDirectPlay8Client_RegisterLobby(p, a, b, c) (p)->lpVtbl->RegisterLobby(p, a, b, c)
-
 type IDirectPlay8ServerVtbl as IDirectPlay8ServerVtbl_
 
 type IDirectPlay8Server
@@ -767,7 +751,6 @@ end type
 #define IDirectPlay8Server_GetSPCaps(p, a, b, c) (p)->lpVtbl->GetSPCaps(p, a, b, c)
 #define IDirectPlay8Server_GetConnectionInfo(p, a, b, c) (p)->lpVtbl->GetConnectionInfo(p, a, b, c)
 #define IDirectPlay8Server_RegisterLobby(p, a, b, c) (p)->lpVtbl->RegisterLobby(p, a, b, c)
-
 type IDirectPlay8PeerVtbl as IDirectPlay8PeerVtbl_
 
 type IDirectPlay8Peer
@@ -851,7 +834,6 @@ end type
 #define IDirectPlay8Peer_GetConnectionInfo(p, a, b, c) (p)->lpVtbl->GetConnectionInfo(p, a, b, c)
 #define IDirectPlay8Peer_RegisterLobby(p, a, b, c) (p)->lpVtbl->RegisterLobby(p, a, b, c)
 #define IDirectPlay8Peer_TerminateSession(p, a, b, c) (p)->lpVtbl->TerminateSession(p, a, b, c)
-
 type IDirectPlay8ThreadPoolVtbl as IDirectPlay8ThreadPoolVtbl_
 
 type IDirectPlay8ThreadPool
@@ -877,7 +859,6 @@ end type
 #define IDirectPlay8ThreadPool_GetThreadCount(p, a, b, c) (p)->lpVtbl->GetThreadCount(p, a, b, c)
 #define IDirectPlay8ThreadPool_SetThreadCount(p, a, b, c) (p)->lpVtbl->SetThreadCount(p, a, b, c)
 #define IDirectPlay8ThreadPool_DoWork(p, a, b) (p)->lpVtbl->DoWork(p, a, b)
-
 type IDirectPlay8NATResolverVtbl as IDirectPlay8NATResolverVtbl_
 
 type IDirectPlay8NATResolver
@@ -903,7 +884,6 @@ end type
 #define IDirectPlay8NATResolver_Close(p, a) (p)->lpVtbl->Close(p, a)
 #define IDirectPlay8NATResolver_EnumDevices(p, a, b, c, d) (p)->lpVtbl->EnumDevices(p, a, b, c, d)
 #define IDirectPlay8NATResolver_GetAddresses(p, a, b, c) (p)->lpVtbl->GetAddresses(p, a, b, c)
-
 declare function DirectPlay8Create(byval pcIID as const CLSID ptr, byval ppvInterface as LPVOID ptr, byval pUnknown as IUnknown ptr) as HRESULT
 
 end extern

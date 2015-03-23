@@ -3,7 +3,6 @@
 #include once "dls1.bi"
 
 #define __WINE_DMUSIC_DLS_H
-
 type GCENT as LONG
 type PCENT as LONG
 type PERCENT as LONG

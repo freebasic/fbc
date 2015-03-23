@@ -7,7 +7,6 @@
 extern "C"
 
 #define CUNIT_TESTDB_H_SEEN
-
 type CU_InitializeFunc as function() as long
 type CU_CleanupFunc as function() as long
 type CU_TestFunc as sub()
@@ -49,7 +48,6 @@ type CU_TestRegistry
 end type
 
 type CU_pTestRegistry as CU_TestRegistry ptr
-
 declare function CU_initialize_registry() as CU_ErrorCode
 declare sub CU_cleanup_registry()
 declare function CU_registry_initialized() as long
@@ -71,7 +69,6 @@ declare function CU_get_test(byval pSuite as CU_pSuite, byval strName as const z
 declare function CU_get_test_at_pos(byval pSuite as CU_pSuite, byval pos as ulong) as CU_pTest
 declare function CU_get_test_pos(byval pSuite as CU_pSuite, byval pTest as CU_pTest) as ulong
 declare function CU_get_test_pos_by_name(byval pSuite as CU_pSuite, byval strName as const zstring ptr) as ulong
-
 #define CU_ADD_TEST_(suite, test) CU_add_test(suite, #test, cast(CU_TestFunc, test))
 
 type CU_TestInfo
@@ -91,10 +88,8 @@ type CU_SuiteInfo
 end type
 
 type CU_pSuiteInfo as CU_SuiteInfo ptr
-
 #define CU_TEST_INFO_NULL (NULL, NULL)
 #define CU_SUITE_INFO_NULL (NULL, NULL, NULL, NULL, NULL, NULL)
-
 declare function CU_register_suites(byval suite_info as CU_SuiteInfo ptr) as CU_ErrorCode
 declare function CU_register_nsuites(byval suite_count as long, ...) as CU_ErrorCode
 declare function CU_get_registry() as CU_pTestRegistry

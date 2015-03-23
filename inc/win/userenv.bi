@@ -54,9 +54,7 @@ declare function DestroyEnvironmentBlock(byval lpEnvironment as LPVOID) as WINBO
 declare function ExpandEnvironmentStringsForUserA(byval hToken as HANDLE, byval lpSrc as LPCSTR, byval lpDest as LPSTR, byval dwSize as DWORD) as WINBOOL
 declare function ExpandEnvironmentStringsForUserW(byval hToken as HANDLE, byval lpSrc as LPCWSTR, byval lpDest as LPWSTR, byval dwSize as DWORD) as WINBOOL
 declare function RefreshPolicy(byval bMachine as WINBOOL) as WINBOOL
-
 #define RP_FORCE 1
-
 declare function RefreshPolicyEx(byval bMachine as WINBOOL, byval dwOptions as DWORD) as WINBOOL
 declare function EnterCriticalPolicySection(byval bMachine as WINBOOL) as HANDLE
 declare function LeaveCriticalPolicySection(byval hSection as HANDLE) as WINBOOL
@@ -188,9 +186,7 @@ end type
 type RSOP_TARGET as _RSOP_TARGET
 type PRSOP_TARGET as _RSOP_TARGET ptr
 type PFNGENERATEGROUPPOLICY as function cdecl(byval dwFlags as DWORD, byval pbAbort as WINBOOL ptr, byval pwszSite as wstring ptr, byval pComputerTarget as PRSOP_TARGET, byval pUserTarget as PRSOP_TARGET) as DWORD
-
 #define REGISTRY_EXTENSION_GUID (&h35378EAC, &h683F, &h11D2, &hA8, &h9A, &h00, &hC0, &h4F, &hBB, &hCF, &hA2)
-
 type REFGPEXTENSIONID as GUID ptr
 
 declare function ProcessGroupPolicyCompleted(byval extensionId as REFGPEXTENSIONID, byval pAsyncHandle as ASYNCCOMPLETIONHANDLE, byval dwStatus as DWORD) as DWORD
@@ -221,10 +217,8 @@ end type
 
 type POLICYSETTINGSTATUSINFO as _POLICYSETTINGSTATUSINFO
 type LPPOLICYSETTINGSTATUSINFO as _POLICYSETTINGSTATUSINFO ptr
-
 declare function RsopSetPolicySettingStatus(byval dwFlags as DWORD, byval pServices as IWbemServices ptr, byval pSettingInstance as IWbemClassObject ptr, byval nInfo as DWORD, byval pStatus as POLICYSETTINGSTATUSINFO ptr) as HRESULT
 declare function RsopResetPolicySettingStatus(byval dwFlags as DWORD, byval pServices as IWbemServices ptr, byval pSettingInstance as IWbemClassObject ptr) as HRESULT
-
 #define FLAG_NO_GPO_FILTER &h80000000
 #define FLAG_NO_CSE_INVOKE &h40000000
 #define FLAG_ASSUME_SLOW_LINK &h20000000

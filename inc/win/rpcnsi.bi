@@ -5,9 +5,7 @@
 extern "Windows"
 
 #define __RPCNSI_H__
-
 type RPC_NS_HANDLE as any ptr
-
 #define RPC_C_NS_SYNTAX_DEFAULT 0
 #define RPC_C_NS_SYNTAX_DCE 3
 #define RPC_C_PROFILE_DEFAULT_ELT 0

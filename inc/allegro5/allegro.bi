@@ -64,10 +64,8 @@ extern "C"
 #define ALLEGRO_DATE_STR "2013"
 #define ALLEGRO_DATE 20130616
 #define ALLEGRO_VERSION_INT ((((ALLEGRO_VERSION shl 24) or (ALLEGRO_SUB_VERSION shl 16)) or (ALLEGRO_WIP_VERSION shl 8)) or ALLEGRO_RELEASE_NUMBER)
-
 declare function al_get_allegro_version() as ulong
 declare function al_run_main(byval argc as long, byval argv as zstring ptr ptr, byval as function(byval as long, byval as zstring ptr ptr) as long) as long
-
 #define ALLEGRO_PI 3.14159265358979323846
 #define AL_ID(a, b, c, d) (((((a) shl 24) or ((b) shl 16)) or ((c) shl 8)) or (d))
 #define __al_included_allegro5_altime_h
@@ -80,7 +78,6 @@ end type
 declare function al_get_time() as double
 declare sub al_rest(byval seconds as double)
 declare sub al_init_timeout(byval timeout as ALLEGRO_TIMEOUT ptr, byval seconds as double)
-
 #define __al_included_allegro5_bitmap_h
 #define __al_included_allegro5_color_h
 
@@ -171,7 +168,6 @@ declare function al_create_sub_bitmap(byval parent as ALLEGRO_BITMAP ptr, byval 
 declare function al_is_sub_bitmap(byval bitmap as ALLEGRO_BITMAP ptr) as byte
 declare function al_get_parent_bitmap(byval bitmap as ALLEGRO_BITMAP ptr) as ALLEGRO_BITMAP ptr
 declare function al_clone_bitmap(byval bitmap as ALLEGRO_BITMAP ptr) as ALLEGRO_BITMAP ptr
-
 #define __al_included_allegro5_bitmap_draw_h
 
 enum
@@ -227,12 +223,9 @@ declare function al_get_path_extension(byval path as const ALLEGRO_PATH ptr) as 
 declare function al_set_path_extension(byval path as ALLEGRO_PATH ptr, byval extension as const zstring ptr) as byte
 declare function al_get_path_basename(byval path as const ALLEGRO_PATH ptr) as const zstring ptr
 declare function al_make_path_canonical(byval path as ALLEGRO_PATH ptr) as byte
-
 #define __al_included_allegro5_utf8_h
-
 type ALLEGRO_USTR as _al_tagbstring
 type ALLEGRO_USTR_INFO as _al_tagbstring
-
 #define __al_tagbstring_defined
 
 type _al_tagbstring
@@ -380,7 +373,6 @@ declare function al_load_bitmap(byval filename as const zstring ptr) as ALLEGRO_
 declare function al_load_bitmap_f(byval fp as ALLEGRO_FILE ptr, byval ident as const zstring ptr) as ALLEGRO_BITMAP ptr
 declare function al_save_bitmap(byval filename as const zstring ptr, byval bitmap as ALLEGRO_BITMAP ptr) as byte
 declare function al_save_bitmap_f(byval fp as ALLEGRO_FILE ptr, byval ident as const zstring ptr, byval bitmap as ALLEGRO_BITMAP ptr) as byte
-
 #define __al_included_allegro5_bitmap_lock_h
 
 enum
@@ -400,7 +392,6 @@ declare function al_lock_bitmap(byval bitmap as ALLEGRO_BITMAP ptr, byval format
 declare function al_lock_bitmap_region(byval bitmap as ALLEGRO_BITMAP ptr, byval x as long, byval y as long, byval width as long, byval height as long, byval format as long, byval flags as long) as ALLEGRO_LOCKED_REGION ptr
 declare sub al_unlock_bitmap(byval bitmap as ALLEGRO_BITMAP ptr)
 declare function al_is_bitmap_locked(byval bitmap as ALLEGRO_BITMAP ptr) as byte
-
 #define __al_included_allegro5_blender_h
 
 type ALLEGRO_BLEND_MODE as long
@@ -428,9 +419,7 @@ declare sub al_set_blender(byval op as long, byval source as long, byval dest as
 declare sub al_get_blender(byval op as long ptr, byval source as long ptr, byval dest as long ptr)
 declare sub al_set_separate_blender(byval op as long, byval source as long, byval dest as long, byval alpha_op as long, byval alpha_source as long, byval alpha_dest as long)
 declare sub al_get_separate_blender(byval op as long ptr, byval source as long ptr, byval dest as long ptr, byval alpha_op as long ptr, byval alpha_src as long ptr, byval alpha_dest as long ptr)
-
 #define __al_included_allegro5_config_h
-
 type ALLEGRO_CONFIG as ALLEGRO_CONFIG_
 declare function al_create_config() as ALLEGRO_CONFIG ptr
 declare sub al_add_config_section(byval config as ALLEGRO_CONFIG ptr, byval name as const zstring ptr)
@@ -450,9 +439,7 @@ declare function al_get_next_config_section(byval iterator as ALLEGRO_CONFIG_SEC
 type ALLEGRO_CONFIG_ENTRY as ALLEGRO_CONFIG_ENTRY_
 declare function al_get_first_config_entry(byval config as const ALLEGRO_CONFIG ptr, byval section as const zstring ptr, byval iterator as ALLEGRO_CONFIG_ENTRY ptr ptr) as const zstring ptr
 declare function al_get_next_config_entry(byval iterator as ALLEGRO_CONFIG_ENTRY ptr ptr) as const zstring ptr
-
 #define __al_included_allegro5_debug_h
-
 declare function _al_trace_prefix(byval channel as const zstring ptr, byval level as long, byval file as const zstring ptr, byval line as long, byval function as const zstring ptr) as byte
 declare sub _al_trace_suffix(byval msg as const zstring ptr, ...)
 
@@ -467,10 +454,8 @@ declare sub _al_trace_suffix(byval msg as const zstring ptr, ...)
 extern _AL_DLL _al_user_assert_handler as sub(byval expr as const zstring ptr, byval file as const zstring ptr, byval line as long, byval func as const zstring ptr)
 
 declare sub al_register_assert_handler(byval handler as sub(byval expr as const zstring ptr, byval file as const zstring ptr, byval line as long, byval func as const zstring ptr))
-
 #define __al_included_allegro5_display_h
 #define __al_included_allegro5_events_h
-
 type ALLEGRO_EVENT_TYPE as ulong
 
 enum
@@ -730,26 +715,19 @@ declare sub al_reset_new_display_options()
 declare function al_get_display_option(byval display as ALLEGRO_DISPLAY ptr, byval option as long) as long
 declare sub al_hold_bitmap_drawing(byval hold as byte)
 declare function al_is_bitmap_drawing_held() as byte
-
 #define __al_included_allegro5_drawing_h
-
 declare sub al_clear_to_color(byval color as ALLEGRO_COLOR)
 declare sub al_draw_pixel(byval x as single, byval y as single, byval color as ALLEGRO_COLOR)
-
 #define __al_included_allegro5_error_h
-
 declare function al_get_errno() as long
 declare sub al_set_errno(byval errnum as long)
-
 #define __al_included_allegro5_fixed_h
-
 type al_fixed as long
 
 extern _AL_DLL al_fixtorad_r as const al_fixed
 extern _AL_DLL al_radtofix_r as const al_fixed
 
 #define __al_included_allegro5_fmaths_h
-
 declare function al_fixsqrt(byval x as al_fixed) as al_fixed
 declare function al_fixhypot(byval x as al_fixed, byval y as al_fixed) as al_fixed
 declare function al_fixatan(byval x as al_fixed) as al_fixed
@@ -763,7 +741,6 @@ extern _AL_DLL ___al_fix_tan_tbl alias "_al_fix_tan_tbl" as al_fixed
 extern _AL_DLL ___al_fix_acos_tbl alias "_al_fix_acos_tbl" as al_fixed
 
 #define __al_included_allegro5_inline_fmaths_inl
-
 declare function al_ftofix(byval x as double) as al_fixed
 declare function al_fixtof(byval x as al_fixed) as double
 declare function al_fixadd(byval x as al_fixed, byval y as al_fixed) as al_fixed
@@ -779,9 +756,7 @@ declare function al_fixsin(byval x as al_fixed) as al_fixed
 declare function al_fixtan(byval x as al_fixed) as al_fixed
 declare function al_fixacos(byval x as al_fixed) as al_fixed
 declare function al_fixasin(byval x as al_fixed) as al_fixed
-
 #define __al_included_allegro5_fshook_h
-
 type ALLEGRO_FS_INTERFACE as ALLEGRO_FS_INTERFACE_
 
 type ALLEGRO_FS_ENTRY
@@ -846,7 +821,6 @@ declare function al_open_fs_entry(byval e as ALLEGRO_FS_ENTRY ptr, byval mode as
 declare function al_get_fs_interface() as const ALLEGRO_FS_INTERFACE ptr
 declare sub al_set_fs_interface(byval vtable as const ALLEGRO_FS_INTERFACE ptr)
 declare sub al_set_standard_fs_interface()
-
 #define __al_included_allegro5_fullscreen_mode_h
 
 type ALLEGRO_DISPLAY_MODE
@@ -858,7 +832,6 @@ end type
 
 declare function al_get_num_display_modes() as long
 declare function al_get_display_mode(byval index as long, byval mode as ALLEGRO_DISPLAY_MODE ptr) as ALLEGRO_DISPLAY_MODE ptr
-
 #define __al_included_allegro5_joystick_h
 #define _AL_MAX_JOYSTICK_AXES 3
 #define _AL_MAX_JOYSTICK_STICKS 8
@@ -897,7 +870,6 @@ declare function al_get_joystick_num_buttons(byval as ALLEGRO_JOYSTICK ptr) as l
 declare function al_get_joystick_button_name(byval as ALLEGRO_JOYSTICK ptr, byval buttonn as long) as const zstring ptr
 declare sub al_get_joystick_state(byval as ALLEGRO_JOYSTICK ptr, byval ret_state as ALLEGRO_JOYSTICK_STATE ptr)
 declare function al_get_joystick_event_source() as ALLEGRO_EVENT_SOURCE ptr
-
 #define __al_included_allegro5_keyboard_h
 #define __al_included_allegro5_keycodes_h
 
@@ -1071,7 +1043,6 @@ type ALLEGRO_MEMORY_INTERFACE
 end type
 
 declare sub al_set_memory_interface(byval iface as ALLEGRO_MEMORY_INTERFACE ptr)
-
 #define al_malloc(n) al_malloc_with_context((n), __LINE__, __FILE__, __func__)
 #define al_free(p) al_free_with_context((p), __LINE__, __FILE__, __func__)
 #define al_realloc(p, n) al_realloc_with_context((p), (n), __LINE__, __FILE__, __func__)
@@ -1081,7 +1052,6 @@ declare function al_malloc_with_context(byval n as uinteger, byval line as long,
 declare sub al_free_with_context(byval ptr as any ptr, byval line as long, byval file as const zstring ptr, byval func as const zstring ptr)
 declare function al_realloc_with_context(byval ptr as any ptr, byval n as uinteger, byval line as long, byval file as const zstring ptr, byval func as const zstring ptr) as any ptr
 declare function al_calloc_with_context(byval count as uinteger, byval n as uinteger, byval line as long, byval file as const zstring ptr, byval func as const zstring ptr) as any ptr
-
 #define __al_included_allegro5_monitor_h
 
 type ALLEGRO_MONITOR_INFO
@@ -1097,7 +1067,6 @@ end enum
 
 declare function al_get_num_video_adapters() as long
 declare function al_get_monitor_info(byval adapter as long, byval info as ALLEGRO_MONITOR_INFO ptr) as byte
-
 #define __al_included_allegro5_mouse_h
 #define ALLEGRO_MOUSE_MAX_EXTRA_AXES 4
 
@@ -1128,7 +1097,6 @@ declare function al_get_mouse_cursor_position(byval ret_x as long ptr, byval ret
 declare function al_grab_mouse(byval display as ALLEGRO_DISPLAY ptr) as byte
 declare function al_ungrab_mouse() as byte
 declare function al_get_mouse_event_source() as ALLEGRO_EVENT_SOURCE ptr
-
 #define __al_included_allegro5_mouse_cursor_h
 
 type ALLEGRO_SYSTEM_MOUSE_CURSOR as long
@@ -1163,10 +1131,8 @@ declare function al_set_mouse_cursor(byval display as ALLEGRO_DISPLAY ptr, byval
 declare function al_set_system_mouse_cursor(byval display as ALLEGRO_DISPLAY ptr, byval cursor_id as ALLEGRO_SYSTEM_MOUSE_CURSOR) as byte
 declare function al_show_mouse_cursor(byval display as ALLEGRO_DISPLAY ptr) as byte
 declare function al_hide_mouse_cursor(byval display as ALLEGRO_DISPLAY ptr) as byte
-
 #define __al_included_allegro5_system_h
 #define al_init() al_install_system(ALLEGRO_VERSION_INT, @atexit)
-
 declare function al_install_system(byval version as long, byval atexit_ptr as function(byval as sub()) as long) as byte
 declare sub al_uninstall_system()
 declare function al_is_system_installed() as byte
@@ -1192,9 +1158,7 @@ declare sub al_set_app_name(byval app_name as const zstring ptr)
 declare function al_get_org_name() as const zstring ptr
 declare function al_get_app_name() as const zstring ptr
 declare function al_inhibit_screensaver(byval inhibit as byte) as byte
-
 #define __al_included_allegro5_threads_h
-
 type ALLEGRO_THREAD as ALLEGRO_THREAD_
 declare function al_create_thread(byval proc as function(byval thread as ALLEGRO_THREAD ptr, byval arg as any ptr) as any ptr, byval arg as any ptr) as ALLEGRO_THREAD ptr
 declare sub al_start_thread(byval outer as ALLEGRO_THREAD ptr)
@@ -1234,7 +1198,6 @@ declare function al_get_timer_count(byval timer as const ALLEGRO_TIMER ptr) as l
 declare sub al_set_timer_count(byval timer as ALLEGRO_TIMER ptr, byval count as longint)
 declare sub al_add_timer_count(byval timer as ALLEGRO_TIMER ptr, byval diff as longint)
 declare function al_get_timer_event_source(byval timer as ALLEGRO_TIMER ptr) as ALLEGRO_EVENT_SOURCE ptr
-
 #define __al_included_allegro5_tls_h
 
 type ALLEGRO_STATE_FLAGS as long
@@ -1256,7 +1219,6 @@ end type
 
 declare sub al_store_state(byval state as ALLEGRO_STATE ptr, byval flags as long)
 declare sub al_restore_state(byval state as const ALLEGRO_STATE ptr)
-
 #define __al_included_allegro5_transformations_h
 
 type ALLEGRO_TRANSFORM
@@ -1284,7 +1246,6 @@ declare function al_check_inverse(byval trans as const ALLEGRO_TRANSFORM ptr, by
 
 #ifdef __FB_WIN32__
 	declare function _WinMain(byval _main as any ptr, byval hInst as any ptr, byval hPrev as any ptr, byval Cmd as zstring ptr, byval nShow as long) as long
-
 	#define AL_JOY_TYPE_DIRECTX AL_ID(asc("D"), asc("X"), asc(" "), asc(" "))
 #endif
 

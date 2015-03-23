@@ -17,272 +17,143 @@ extern "C"
 
 #ifdef __FB_64BIT__
 	declare sub __faststorefence()
-
 	#define __INTRINSIC_DEFINED___faststorefence
-
 	declare sub __stosq(byval as ulongint ptr, byval as ulongint, byval as uinteger)
-
 	#define __INTRINSIC_DEFINED___stosq
-
 	declare function _interlockedbittestandset64(byval a as longint ptr, byval b as longint) as ubyte
-
 	#define __INTRINSIC_DEFINED__interlockedbittestandset64
-
 	declare function _interlockedbittestandreset64(byval a as longint ptr, byval b as longint) as ubyte
-
 	#define __INTRINSIC_DEFINED__interlockedbittestandreset64
-
 	declare function _interlockedbittestandcomplement64(byval a as longint ptr, byval b as longint) as ubyte
-
 	#define __INTRINSIC_DEFINED__interlockedbittestandcomplement64
-
 	declare function InterlockedBitTestAndSet64(byval a as longint ptr, byval b as longint) as ubyte
-
 	#define __INTRINSIC_DEFINED_InterlockedBitTestAndSet64
-
 	declare function InterlockedBitTestAndReset64(byval a as longint ptr, byval b as longint) as ubyte
-
 	#define __INTRINSIC_DEFINED_InterlockedBitTestAndReset64
-
 	declare function InterlockedBitTestAndComplement64(byval a as longint ptr, byval b as longint) as ubyte
-
 	#define __INTRINSIC_DEFINED_InterlockedBitTestAndComplement64
-
 	declare function _InterlockedAnd64(byval as longint ptr, byval as longint) as longint
-
 	#define __INTRINSIC_DEFINED__InterlockedAnd64
-
 	declare function _InterlockedOr64(byval as longint ptr, byval as longint) as longint
-
 	#define __INTRINSIC_DEFINED__InterlockedOr64
-
 	declare function _InterlockedXor64(byval as longint ptr, byval as longint) as longint
-
 	#define __INTRINSIC_DEFINED__InterlockedXor64
-
 	declare function _InterlockedIncrement64(byval Addend as longint ptr) as longint
-
 	#define __INTRINSIC_DEFINED__InterlockedIncrement64
-
 	declare function _InterlockedDecrement64(byval Addend as longint ptr) as longint
-
 	#define __INTRINSIC_DEFINED__InterlockedDecrement64
-
 	declare function _InterlockedExchange64(byval Target as longint ptr, byval Value as longint) as longint
-
 	#define __INTRINSIC_DEFINED__InterlockedExchange64
-
 	declare function _InterlockedExchangeAdd64(byval Addend as longint ptr, byval Value as longint) as longint
-
 	#define __INTRINSIC_DEFINED__InterlockedExchangeAdd64
-
 	declare function __readgsbyte(byval Offset as ulong) as ubyte
-
 	#define __INTRINSIC_DEFINED___readgsbyte
-
 	declare function __readgsword(byval Offset as ulong) as ushort
-
 	#define __INTRINSIC_DEFINED___readgsword
-
 	declare function __readgsdword(byval Offset as ulong) as ulong
-
 	#define __INTRINSIC_DEFINED___readgsdword
-
 	declare function __readgsqword(byval Offset as ulong) as ulongint
-
 	#define __INTRINSIC_DEFINED___readgsqword
-
 	declare sub __writegsbyte(byval Offset as ulong, byval Data as ubyte)
-
 	#define __INTRINSIC_DEFINED___writegsbyte
-
 	declare sub __writegsword(byval Offset as ulong, byval Data as ushort)
-
 	#define __INTRINSIC_DEFINED___writegsword
-
 	declare sub __writegsdword(byval Offset as ulong, byval Data as ulong)
-
 	#define __INTRINSIC_DEFINED___writegsdword
-
 	declare sub __writegsqword(byval Offset as ulong, byval Data as ulongint)
-
 	#define __INTRINSIC_DEFINED___writegsqword
-
 	declare function _BitScanForward64(byval Index as ulong ptr, byval Mask as ulongint) as ubyte
-
 	#define __INTRINSIC_DEFINED__BitScanForward64
-
 	declare function _BitScanReverse64(byval Index as ulong ptr, byval Mask as ulongint) as ubyte
-
 	#define __INTRINSIC_DEFINED__BitScanReverse64
-
 	declare function _bittest64(byval a as const longint ptr, byval b as longint) as ubyte
-
 	#define __INTRINSIC_DEFINED__bittest64
-
 	declare function _bittestandset64(byval a as longint ptr, byval b as longint) as ubyte
-
 	#define __INTRINSIC_DEFINED__bittestandset64
-
 	declare function _bittestandreset64(byval a as longint ptr, byval b as longint) as ubyte
-
 	#define __INTRINSIC_DEFINED__bittestandreset64
-
 	declare function _bittestandcomplement64(byval a as longint ptr, byval b as longint) as ubyte
-
 	#define __INTRINSIC_DEFINED__bittestandcomplement64
-
 	declare sub __movsq(byval Dest as ulongint ptr, byval Source as const ulongint ptr, byval Count as uinteger)
-
 	#define __INTRINSIC_DEFINED___movsq
 #endif
 
 declare sub __int2c()
-
 #define __INTRINSIC_DEFINED___int2c
-
 declare sub __stosb(byval as ubyte ptr, byval as ubyte, byval as uinteger)
-
 #define __INTRINSIC_DEFINED___stosb
-
 declare sub __stosw(byval as ushort ptr, byval as ushort, byval as uinteger)
-
 #define __INTRINSIC_DEFINED___stosw
-
 declare sub __stosd(byval as ulong ptr, byval as ulong, byval as uinteger)
-
 #define __INTRINSIC_DEFINED___stosd
-
 declare function _interlockedbittestandset(byval a as long ptr, byval b as long) as ubyte
-
 #define __INTRINSIC_DEFINED__interlockedbittestandset
-
 declare function _interlockedbittestandreset(byval a as long ptr, byval b as long) as ubyte
-
 #define __INTRINSIC_DEFINED__interlockedbittestandreset
-
 declare function _interlockedbittestandcomplement(byval a as long ptr, byval b as long) as ubyte
-
 #define __INTRINSIC_DEFINED__interlockedbittestandcomplement
-
 declare function InterlockedBitTestAndSet(byval a as long ptr, byval b as long) as ubyte
-
 #define __INTRINSIC_DEFINED_InterlockedBitTestAndSet
-
 declare function InterlockedBitTestAndReset(byval a as long ptr, byval b as long) as ubyte
-
 #define __INTRINSIC_DEFINED_InterlockedBitTestAndReset
-
 declare function InterlockedBitTestAndComplement(byval a as long ptr, byval b as long) as ubyte
-
 #define __INTRINSIC_DEFINED_InterlockedBitTestAndComplement
 #define __INTRINSIC_DEFINED__InterlockedAnd
 #define __INTRINSIC_DEFINED__InterlockedOr
 #define __INTRINSIC_DEFINED__InterlockedXor
-
 declare function _InterlockedIncrement16(byval Addend as short ptr) as short
-
 #define __INTRINSIC_DEFINED__InterlockedIncrement16
-
 declare function _InterlockedDecrement16(byval Addend as short ptr) as short
-
 #define __INTRINSIC_DEFINED__InterlockedDecrement16
-
 declare function _InterlockedCompareExchange16(byval Destination as short ptr, byval ExChange as short, byval Comperand as short) as short
-
 #define __INTRINSIC_DEFINED__InterlockedCompareExchange16
-
 declare function _InterlockedExchangeAdd(byval Addend as long ptr, byval Value as long) as long
-
 #define __INTRINSIC_DEFINED__InterlockedExchangeAdd
-
 declare function _InterlockedCompareExchange(byval Destination as long ptr, byval ExChange as long, byval Comperand as long) as long
-
 #define __INTRINSIC_DEFINED__InterlockedCompareExchange
-
 declare function _InterlockedIncrement(byval Addend as long ptr) as long
-
 #define __INTRINSIC_DEFINED__InterlockedIncrement
-
 declare function _InterlockedDecrement(byval Addend as long ptr) as long
-
 #define __INTRINSIC_DEFINED__InterlockedDecrement
-
 declare function _InterlockedExchange(byval Target as long ptr, byval Value as long) as long
-
 #define __INTRINSIC_DEFINED__InterlockedExchange
-
 declare function _InterlockedCompareExchange64(byval Destination as longint ptr, byval ExChange as longint, byval Comperand as longint) as longint
-
 #define __INTRINSIC_DEFINED__InterlockedCompareExchange64
-
 declare function _InterlockedCompareExchangePointer(byval Destination as any ptr ptr, byval ExChange as any ptr, byval Comperand as any ptr) as any ptr
-
 #define __INTRINSIC_DEFINED__InterlockedCompareExchangePointer
-
 declare function _InterlockedExchangePointer(byval Target as any ptr ptr, byval Value as any ptr) as any ptr
-
 #define __INTRINSIC_DEFINED__InterlockedExchangePointer
-
 declare function _BitScanForward(byval Index as ulong ptr, byval Mask as ulong) as ubyte
-
 #define __INTRINSIC_DEFINED__BitScanForward
-
 declare function _BitScanReverse(byval Index as ulong ptr, byval Mask as ulong) as ubyte
-
 #define __INTRINSIC_DEFINED__BitScanReverse
-
 declare function _bittest(byval a as const long ptr, byval b as long) as ubyte
-
 #define __INTRINSIC_DEFINED__bittest
-
 declare function _bittestandset(byval a as long ptr, byval b as long) as ubyte
-
 #define __INTRINSIC_DEFINED__bittestandset
-
 declare function _bittestandreset(byval a as long ptr, byval b as long) as ubyte
-
 #define __INTRINSIC_DEFINED__bittestandreset
-
 declare function _bittestandcomplement(byval a as long ptr, byval b as long) as ubyte
-
 #define __INTRINSIC_DEFINED__bittestandcomplement
-
 declare sub __movsb(byval Destination as ubyte ptr, byval Source as const ubyte ptr, byval Count as uinteger)
-
 #define __INTRINSIC_DEFINED___movsb
-
 declare sub __movsw(byval Dest as ushort ptr, byval Source as const ushort ptr, byval Count as uinteger)
-
 #define __INTRINSIC_DEFINED___movsw
-
 declare sub __movsd(byval Dest as ulong ptr, byval Source as const ulong ptr, byval Count as uinteger)
-
 #define __INTRINSIC_DEFINED___movsd
 
 #ifndef __FB_64BIT__
 	declare function __readfsbyte(byval Offset as ulong) as ubyte
-
 	#define __INTRINSIC_DEFINED___readfsbyte
-
 	declare function __readfsword(byval Offset as ulong) as ushort
-
 	#define __INTRINSIC_DEFINED___readfsword
-
 	declare function __readfsdword(byval Offset as ulong) as ulong
-
 	#define __INTRINSIC_DEFINED___readfsdword
-
 	declare sub __writefsbyte(byval Offset as ulong, byval Data as ubyte)
-
 	#define __INTRINSIC_DEFINED___writefsbyte
-
 	declare sub __writefsword(byval Offset as ulong, byval Data as ushort)
-
 	#define __INTRINSIC_DEFINED___writefsword
-
 	declare sub __writefsdword(byval Offset as ulong, byval Data as ulong)
-
 	#define __INTRINSIC_DEFINED___writefsdword
 #endif
 

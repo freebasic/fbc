@@ -5,7 +5,6 @@
 extern "Windows"
 
 #define _WINDNS_INCLUDED_
-
 type QWORD as ulongint
 type PQWORD as ulongint ptr
 type DNS_STATUS as LONG
@@ -36,7 +35,6 @@ union IP6_ADDRESS
 end union
 
 type PIP6_ADDRESS as IP6_ADDRESS ptr
-
 #define IP6_ADDRESS_STRING_LENGTH 47
 #define IP6_ADDRESS_STRING_BUFFER_LENGTH 48
 #macro INLINE_WORD_FLIP(out, in)
@@ -103,7 +101,6 @@ end type
 
 type DNS_HEADER as _DNS_HEADER
 type PDNS_HEADER as _DNS_HEADER ptr
-
 #define DNS_HEADER_FLAGS(pHead) (*(cast(PWORD, (pHead)) + 1))
 #macro DNS_BYTE_FLIP_HEADER_COUNTS(pHeader)
 	scope
@@ -137,7 +134,6 @@ end type
 
 type DNS_WIRE_RECORD as _DNS_WIRE_RECORD
 type PDNS_WIRE_RECORD as _DNS_WIRE_RECORD ptr
-
 #define DNS_OPCODE_QUERY 0
 #define DNS_OPCODE_IQUERY 1
 #define DNS_OPCODE_SERVER_STATUS 2
@@ -369,7 +365,6 @@ enum
 end enum
 
 #define DNS_CONFIG_FLAG_ALLOC &h00000001
-
 declare function DnsQueryConfig(byval Config as DNS_CONFIG_TYPE, byval Flag as DWORD, byval pwsAdapterName as PWSTR, byval pReserved as PVOID, byval pBuffer as PVOID, byval pBufferLength as PDWORD) as DNS_STATUS
 
 type DNS_A_DATA
@@ -741,7 +736,6 @@ enum
 end enum
 
 type DNS_SECTION as _DnsSection
-
 #define DnsSectionZone DnsSectionQuestion
 #define DnsSectionPrereq DnsSectionAnswer
 #define DnsSectionUpdate DnsSectionAuthority
@@ -882,7 +876,6 @@ end type
 
 type DNS_RRSET as _DnsRRSet
 type PDNS_RRSET as _DnsRRSet ptr
-
 #macro DNS_RRSET_INIT(rrset)
 	scope
 		dim _prrset as PDNS_RRSET = @(rrset)
@@ -914,7 +907,6 @@ enum
 end enum
 
 type DNS_CHARSET as _DNS_CHARSET
-
 declare function DnsRecordCopyEx(byval pRecord as PDNS_RECORD, byval CharSetIn as DNS_CHARSET, byval CharSetOut as DNS_CHARSET) as PDNS_RECORD
 declare function DnsRecordSetCopyEx(byval pRecordSet as PDNS_RECORD, byval CharSetIn as DNS_CHARSET, byval CharSetOut as DNS_CHARSET) as PDNS_RECORD
 
@@ -938,11 +930,8 @@ enum
 end enum
 
 declare sub DnsFree(byval pData as PVOID, byval FreeType as DNS_FREE_TYPE)
-
 #define DnsFreeRecordListDeep DnsFreeRecordList
-
 declare sub DnsRecordListFree(byval pRecordList as PDNS_RECORD, byval FreeType as DNS_FREE_TYPE)
-
 #define DNS_QUERY_STANDARD &h00000000
 #define DNS_QUERY_ACCEPT_TRUNCATED_RESPONSE &h00000001
 #define DNS_QUERY_USE_TCP_ONLY &h00000002
@@ -1016,7 +1005,6 @@ enum
 end enum
 
 type DNS_NAME_FORMAT as _DNS_NAME_FORMAT
-
 declare function DnsValidateName_UTF8 cdecl(byval pszName as LPCSTR, byval Format as DNS_NAME_FORMAT) as DNS_STATUS
 declare function DnsValidateName_W cdecl(byval pwszName as LPCWSTR, byval Format as DNS_NAME_FORMAT) as DNS_STATUS
 declare function DnsValidateName_A cdecl(byval pszName as LPCSTR, byval Format as DNS_NAME_FORMAT) as DNS_STATUS
@@ -1030,7 +1018,6 @@ end type
 
 type DNS_MESSAGE_BUFFER as _DNS_MESSAGE_BUFFER
 type PDNS_MESSAGE_BUFFER as _DNS_MESSAGE_BUFFER ptr
-
 declare function DnsWriteQuestionToBuffer_W(byval pDnsBuffer as PDNS_MESSAGE_BUFFER, byval pdwBufferSize as PDWORD, byval pszName as LPWSTR, byval wType as WORD, byval Xid as WORD, byval fRecursionDesired as WINBOOL) as WINBOOL
 declare function DnsWriteQuestionToBuffer_UTF8(byval pDnsBuffer as PDNS_MESSAGE_BUFFER, byval pdwBufferSize as LPDWORD, byval pszName as LPSTR, byval wType as WORD, byval Xid as WORD, byval fRecursionDesired as WINBOOL) as WINBOOL
 declare function DnsExtractRecordsFromMessage_W(byval pDnsBuffer as PDNS_MESSAGE_BUFFER, byval wMessageLength as WORD, byval ppRecord as PDNS_RECORD ptr) as DNS_STATUS

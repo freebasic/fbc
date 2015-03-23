@@ -13,11 +13,9 @@
 extern "Windows"
 
 #define _INC_VFW
-
 declare function VideoForWindowsVersion() as DWORD
 declare function InitVFW() as LONG
 declare function TermVFW() as LONG
-
 #define MKFOURCC(ch0, ch1, ch2, ch3) (((cast(DWORD, cast(UBYTE, (ch0))) or (cast(DWORD, cast(UBYTE, (ch1))) shl 8)) or (cast(DWORD, cast(UBYTE, (ch2))) shl 16)) or (cast(DWORD, cast(UBYTE, (ch3))) shl 24))
 #define ICVERSION &h0104
 
@@ -26,7 +24,6 @@ type HIC__
 end type
 
 type HIC as HIC__ ptr
-
 #define BI_1632 &h32333631
 #define aviTWOCC(ch0, ch1) (cast(WORD, cast(UBYTE, (ch0))) or (cast(WORD, cast(UBYTE, (ch1))) shl 8))
 #define ICERR_OK __MSABI_LONG(0)
@@ -310,7 +307,6 @@ declare function ICSendMessage(byval hic as HIC, byval msg as UINT, byval dw1 as
 #define ICGetState(hic, pv, cb) ICSendMessage(hic, ICM_GETSTATE, cast(DWORD_PTR, cast(LPVOID, (pv))), cast(DWORD_PTR, (cb)))
 #define ICSetState(hic, pv, cb) ICSendMessage(hic, ICM_SETSTATE, cast(DWORD_PTR, cast(LPVOID, (pv))), cast(DWORD_PTR, (cb)))
 #define ICGetStateSize(hic) cast(DWORD, ICGetState(hic, NULL, 0))
-
 dim shared dwICValue as DWORD
 
 private function ICGetDefaultQuality(byval hic as HIC) as DWORD
@@ -324,9 +320,7 @@ private function ICGetDefaultKeyFrameRate(byval hic as HIC) as DWORD
 end function
 
 #define ICDrawWindow(hic, prc) ICSendMessage(hic, ICM_DRAW_WINDOW, cast(DWORD_PTR, cast(LPVOID, (prc))), sizeof(RECT))
-
 declare function ICCompress cdecl(byval hic as HIC, byval dwFlags as DWORD, byval lpbiOutput as LPBITMAPINFOHEADER, byval lpData as LPVOID, byval lpbiInput as LPBITMAPINFOHEADER, byval lpBits as LPVOID, byval lpckid as LPDWORD, byval lpdwFlags as LPDWORD, byval lFrameNum as LONG, byval dwFrameSize as DWORD, byval dwQuality as DWORD, byval lpbiPrev as LPBITMAPINFOHEADER, byval lpPrev as LPVOID) as DWORD
-
 #define ICCompressBegin(hic, lpbiInput, lpbiOutput) ICSendMessage(hic, ICM_COMPRESS_BEGIN, cast(DWORD_PTR, cast(LPVOID, (lpbiInput))), cast(DWORD_PTR, cast(LPVOID, (lpbiOutput))))
 #define ICCompressQuery(hic, lpbiInput, lpbiOutput) ICSendMessage(hic, ICM_COMPRESS_QUERY, cast(DWORD_PTR, cast(LPVOID, (lpbiInput))), cast(DWORD_PTR, cast(LPVOID, (lpbiOutput))))
 #define ICCompressGetFormat(hic, lpbiInput, lpbiOutput) ICSendMessage(hic, ICM_COMPRESS_GET_FORMAT, cast(DWORD_PTR, cast(LPVOID, (lpbiInput))), cast(DWORD_PTR, cast(LPVOID, (lpbiOutput))))
@@ -334,9 +328,7 @@ declare function ICCompress cdecl(byval hic as HIC, byval dwFlags as DWORD, byva
 #define ICCompressGetSize(hic, lpbiInput, lpbiOutput) cast(DWORD, ICSendMessage(hic, ICM_COMPRESS_GET_SIZE, cast(DWORD_PTR, cast(LPVOID, (lpbiInput))), cast(DWORD_PTR, cast(LPVOID, (lpbiOutput)))))
 #define ICCompressEnd(hic) ICSendMessage(hic, ICM_COMPRESS_END, cast(DWORD_PTR, 0), cast(DWORD_PTR, 0))
 #define ICDECOMPRESS_HURRYUP __MSABI_LONG(&h80000000)
-
 declare function ICDecompress cdecl(byval hic as HIC, byval dwFlags as DWORD, byval lpbiFormat as LPBITMAPINFOHEADER, byval lpData as LPVOID, byval lpbi as LPBITMAPINFOHEADER, byval lpBits as LPVOID) as DWORD
-
 #define ICDecompressBegin(hic, lpbiInput, lpbiOutput) ICSendMessage(hic, ICM_DECOMPRESS_BEGIN, cast(DWORD_PTR, cast(LPVOID, (lpbiInput))), cast(DWORD_PTR, cast(LPVOID, (lpbiOutput))))
 #define ICDecompressQuery(hic, lpbiInput, lpbiOutput) ICSendMessage(hic, ICM_DECOMPRESS_QUERY, cast(DWORD_PTR, cast(LPVOID, (lpbiInput))), cast(DWORD_PTR, cast(LPVOID, (lpbiOutput))))
 #define ICDecompressGetFormat(hic, lpbiInput, lpbiOutput) cast(LONG, ICSendMessage(hic, ICM_DECOMPRESS_GET_FORMAT, cast(DWORD_PTR, cast(LPVOID, (lpbiInput))), cast(DWORD_PTR, cast(LPVOID, (lpbiOutput)))))
@@ -348,14 +340,10 @@ declare function ICDecompress cdecl(byval hic as HIC, byval dwFlags as DWORD, by
 #define ICDRAW_QUERY __MSABI_LONG(&h00000001)
 #define ICDRAW_FULLSCREEN __MSABI_LONG(&h00000002)
 #define ICDRAW_HDC __MSABI_LONG(&h00000004)
-
 declare function ICDrawBegin cdecl(byval hic as HIC, byval dwFlags as DWORD, byval hpal as HPALETTE, byval hwnd as HWND, byval hdc as HDC, byval xDst as long, byval yDst as long, byval dxDst as long, byval dyDst as long, byval lpbi as LPBITMAPINFOHEADER, byval xSrc as long, byval ySrc as long, byval dxSrc as long, byval dySrc as long, byval dwRate as DWORD, byval dwScale as DWORD) as DWORD
-
 #define ICDRAW_HURRYUP __MSABI_LONG(&h80000000)
 #define ICDRAW_UPDATE __MSABI_LONG(&h40000000)
-
 declare function ICDraw cdecl(byval hic as HIC, byval dwFlags as DWORD, byval lpFormat as LPVOID, byval lpData as LPVOID, byval cbData as DWORD, byval lTime as LONG) as DWORD
-
 #define ICDrawQuery(hic, lpbiInput) ICSendMessage(hic, ICM_DRAW_QUERY, cast(DWORD_PTR, cast(LPVOID, (lpbiInput))), cast(DWORD, 0))
 #define ICDrawChangePalette(hic, lpbiInput) ICSendMessage(hic, ICM_DRAW_CHANGEPALETTE, cast(DWORD_PTR, cast(LPVOID, (lpbiInput))), cast(DWORD, 0))
 #define ICGetBuffersWanted(hic, lpdwBuffers) ICSendMessage(hic, ICM_GETBUFFERSWANTED, cast(DWORD_PTR, cast(LPVOID, (lpdwBuffers))), cast(DWORD_PTR, 0))
@@ -397,11 +385,8 @@ type COMPVARS
 end type
 
 type PCOMPVARS as COMPVARS ptr
-
 #define ICMF_COMPVARS_VALID &h00000001
-
 declare function ICCompressorChoose(byval hwnd as HWND, byval uiFlags as UINT, byval pvIn as LPVOID, byval lpData as LPVOID, byval pc as PCOMPVARS, byval lpszTitle as LPSTR) as WINBOOL
-
 #define ICMF_CHOOSE_KEYFRAME &h0001
 #define ICMF_CHOOSE_DATARATE &h0002
 #define ICMF_CHOOSE_PREVIEW &h0004
@@ -411,7 +396,6 @@ declare function ICSeqCompressFrameStart(byval pc as PCOMPVARS, byval lpbiIn as 
 declare sub ICSeqCompressFrameEnd(byval pc as PCOMPVARS)
 declare function ICSeqCompressFrame(byval pc as PCOMPVARS, byval uiFlags as UINT, byval lpBits as LPVOID, byval pfKey as WINBOOL ptr, byval plSize as LONG ptr) as LPVOID
 declare sub ICCompressorFree(byval pc as PCOMPVARS)
-
 type HDRAWDIB as HANDLE
 
 #define DDF_0001 &h0001
@@ -445,9 +429,7 @@ declare function DrawDibStart(byval hdd as HDRAWDIB, byval rate as DWORD) as WIN
 declare function DrawDibStop(byval hdd as HDRAWDIB) as WINBOOL
 declare function DrawDibBegin(byval hdd as HDRAWDIB, byval hdc as HDC, byval dxDst as long, byval dyDst as long, byval lpbi as LPBITMAPINFOHEADER, byval dxSrc as long, byval dySrc as long, byval wFlags as UINT) as WINBOOL
 declare function DrawDibDraw(byval hdd as HDRAWDIB, byval hdc as HDC, byval xDst as long, byval yDst as long, byval dxDst as long, byval dyDst as long, byval lpbi as LPBITMAPINFOHEADER, byval lpBits as LPVOID, byval xSrc as long, byval ySrc as long, byval dxSrc as long, byval dySrc as long, byval wFlags as UINT) as WINBOOL
-
 #define DrawDibUpdate(hdd, hdc, x, y) DrawDibDraw(hdd, hdc, x, y, 0, 0, NULL, NULL, 0, 0, 0, 0, DDF_UPDATE)
-
 declare function DrawDibEnd(byval hdd as HDRAWDIB) as WINBOOL
 
 type DRAWDIBTIME
@@ -461,19 +443,14 @@ type DRAWDIBTIME
 end type
 
 type LPDRAWDIBTIME as DRAWDIBTIME ptr
-
 declare function DrawDibTime(byval hdd as HDRAWDIB, byval lpddtime as LPDRAWDIBTIME) as WINBOOL
-
 #define PD_CAN_DRAW_DIB &h0001
 #define PD_CAN_STRETCHDIB &h0002
 #define PD_STRETCHDIB_1_1_OK &h0004
 #define PD_STRETCHDIB_1_2_OK &h0008
 #define PD_STRETCHDIB_1_N_OK &h0010
-
 declare function DrawDibProfileDisplay(byval lpbi as LPBITMAPINFOHEADER) as LRESULT
-
 type TWOCC as WORD
-
 #define formtypeAVI mmioFOURCC(asc("A"), asc("V"), asc("I"), asc(" "))
 #define listtypeAVIHEADER mmioFOURCC(asc("h"), asc("d"), asc("r"), asc("l"))
 #define ckidAVIMAINHDR mmioFOURCC(asc("a"), asc("v"), asc("i"), asc("h"))
@@ -679,7 +656,6 @@ type LPAVIFILEINFOA as _AVIFILEINFOA ptr
 #define AVIFILECAPS_CANWRITE &h00000002
 #define AVIFILECAPS_ALLKEYFRAMES &h00000010
 #define AVIFILECAPS_NOCOMPRESSION &h00000020
-
 type AVISAVECALLBACK as function(byval as long) as WINBOOL
 
 type AVICOMPRESSOPTIONS
@@ -697,12 +673,10 @@ type AVICOMPRESSOPTIONS
 end type
 
 type LPAVICOMPRESSOPTIONS as AVICOMPRESSOPTIONS ptr
-
 #define AVICOMPRESSF_INTERLEAVE &h00000001
 #define AVICOMPRESSF_DATARATE &h00000002
 #define AVICOMPRESSF_KEYFRAMES &h00000004
 #define AVICOMPRESSF_VALID &h00000008
-
 type IAVIStreamVtbl as IAVIStreamVtbl_
 
 type IAVIStream
@@ -727,7 +701,6 @@ type IAVIStreamVtbl_
 end type
 
 type PAVISTREAM as IAVIStream ptr
-
 type IAVIStreamingVtbl as IAVIStreamingVtbl_
 
 type IAVIStreaming
@@ -743,7 +716,6 @@ type IAVIStreamingVtbl_
 end type
 
 type PAVISTREAMING as IAVIStreaming ptr
-
 type IAVIEditStreamVtbl as IAVIEditStreamVtbl_
 
 type IAVIEditStream
@@ -762,7 +734,6 @@ type IAVIEditStreamVtbl_
 end type
 
 type PAVIEDITSTREAM as IAVIEditStream ptr
-
 type IAVIPersistFileVtbl as IAVIPersistFileVtbl_
 
 type IAVIPersistFile
@@ -774,7 +745,6 @@ type IAVIPersistFileVtbl_
 end type
 
 type PAVIPERSISTFILE as IAVIPersistFile ptr
-
 type IAVIFileVtbl as IAVIFileVtbl_
 
 type IAVIFile
@@ -795,7 +765,6 @@ type IAVIFileVtbl_
 end type
 
 type PAVIFILE as IAVIFile ptr
-
 type IGetFrameVtbl as IGetFrameVtbl_
 
 type IGetFrame
@@ -813,9 +782,7 @@ type IGetFrameVtbl_
 end type
 
 type PGETFRAME as IGetFrame ptr
-
 #define DEFINE_AVIGUID(name, l, w1, w2) DEFINE_GUID(name, l, w1, w2, &hC0, 0, 0, 0, 0, 0, 0, &h46)
-
 extern IID_IAVIFile as const GUID
 extern IID_IAVIStream as const GUID
 extern IID_IAVIStreaming as const GUID
@@ -828,7 +795,6 @@ extern IID_IAVIPersistFile as const GUID
 #endif
 
 extern CLSID_AVIFile as const GUID
-
 #define AVIFILEHANDLER_CANREAD &h0001
 #define AVIFILEHANDLER_CANWRITE &h0002
 #define AVIFILEHANDLER_CANACCEPTNONRGB &h0004
@@ -871,9 +837,7 @@ declare function AVIStreamSetFormat(byval pavi as PAVISTREAM, byval lPos as LONG
 declare function AVIStreamReadData(byval pavi as PAVISTREAM, byval fcc as DWORD, byval lp as LPVOID, byval lpcb as LONG ptr) as HRESULT
 declare function AVIStreamWriteData(byval pavi as PAVISTREAM, byval fcc as DWORD, byval lp as LPVOID, byval cb as LONG) as HRESULT
 declare function AVIStreamRead(byval pavi as PAVISTREAM, byval lStart as LONG, byval lSamples as LONG, byval lpBuffer as LPVOID, byval cbBuffer as LONG, byval plBytes as LONG ptr, byval plSamples as LONG ptr) as HRESULT
-
 #define AVISTREAMREAD_CONVENIENT __MSABI_LONG(-1)
-
 declare function AVIStreamWrite(byval pavi as PAVISTREAM, byval lStart as LONG, byval lSamples as LONG, byval lpBuffer as LPVOID, byval cbBuffer as LONG, byval dwFlags as DWORD, byval plSampWritten as LONG ptr, byval plBytesWritten as LONG ptr) as HRESULT
 declare function AVIStreamStart(byval pavi as PAVISTREAM) as LONG
 declare function AVIStreamLength(byval pavi as PAVISTREAM) as LONG
@@ -1215,7 +1179,6 @@ end type
 
 type HVIDEO as HVIDEO__ ptr
 type LPHVIDEO as HVIDEO ptr
-
 #define DV_ERR_OK 0
 #define DV_ERR_BASE 1
 #define DV_ERR_NONSPECIFIC DV_ERR_BASE
@@ -1563,7 +1526,6 @@ end type
 type CAPTUREPARMS as tagCaptureParms
 type PCAPTUREPARMS as tagCaptureParms ptr
 type LPCAPTUREPARMS as tagCaptureParms ptr
-
 #define AVSTREAMMASTER_AUDIO 0
 #define AVSTREAMMASTER_NONE 1
 
@@ -1593,7 +1555,6 @@ type CAPERRORCALLBACKA as function(byval hWnd as HWND, byval nID as long, byval 
 type CAPVIDEOCALLBACK as function(byval hWnd as HWND, byval lpVHdr as LPVIDEOHDR) as LRESULT
 type CAPWAVECALLBACK as function(byval hWnd as HWND, byval lpWHdr as LPWAVEHDR) as LRESULT
 type CAPCONTROLCALLBACK as function(byval hWnd as HWND, byval nState as long) as LRESULT
-
 #define CONTROLCALLBACK_PREROLL 1
 #define CONTROLCALLBACK_CAPTURING 2
 

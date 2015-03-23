@@ -28,7 +28,6 @@ extern "Windows"
 #define AMDDS_RGB ((AMDDS_RGBOFF or AMDDS_RGBOVR) or AMDDS_RGBFLP)
 #define AMDSS_PRIMARY (AMDDS_DCIPS or AMDDS_PS)
 #define __IDirectDrawVideo_INTERFACE_DEFINED__
-
 type IDirectDrawVideo as IDirectDrawVideo_
 
 type IDirectDrawVideoVtbl
@@ -89,9 +88,7 @@ declare function IDirectDrawVideo_UseWhenFullScreen_Proxy(byval This as IDirectD
 declare sub IDirectDrawVideo_UseWhenFullScreen_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IDirectDrawVideo_WillUseFullScreen_Proxy(byval This as IDirectDrawVideo ptr, byval UseWhenFullScreen as LONG ptr) as HRESULT
 declare sub IDirectDrawVideo_WillUseFullScreen_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define __IQualProp_INTERFACE_DEFINED__
-
 type IQualProp as IQualProp_
 
 type IQualPropVtbl
@@ -122,9 +119,7 @@ declare function IQualProp_get_AvgSyncOffset_Proxy(byval This as IQualProp ptr, 
 declare sub IQualProp_get_AvgSyncOffset_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IQualProp_get_DevSyncOffset_Proxy(byval This as IQualProp ptr, byval piDev as long ptr) as HRESULT
 declare sub IQualProp_get_DevSyncOffset_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define __IFullScreenVideo_INTERFACE_DEFINED__
-
 type IFullScreenVideo as IFullScreenVideo_
 
 type IFullScreenVideoVtbl
@@ -188,9 +183,7 @@ declare function IFullScreenVideo_GetCaption_Proxy(byval This as IFullScreenVide
 declare sub IFullScreenVideo_GetCaption_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IFullScreenVideo_SetDefault_Proxy(byval This as IFullScreenVideo ptr) as HRESULT
 declare sub IFullScreenVideo_SetDefault_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define __IFullScreenVideoEx_INTERFACE_DEFINED__
-
 type IFullScreenVideoEx as IFullScreenVideoEx_
 
 type IFullScreenVideoExVtbl
@@ -232,9 +225,7 @@ declare function IFullScreenVideoEx_KeepPixelAspectRatio_Proxy(byval This as IFu
 declare sub IFullScreenVideoEx_KeepPixelAspectRatio_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IFullScreenVideoEx_IsKeepPixelAspectRatio_Proxy(byval This as IFullScreenVideoEx ptr, byval pKeepAspect as LONG ptr) as HRESULT
 declare sub IFullScreenVideoEx_IsKeepPixelAspectRatio_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define __IBaseVideoMixer_INTERFACE_DEFINED__
-
 type IBaseVideoMixer as IBaseVideoMixer_
 
 type IBaseVideoMixerVtbl
@@ -322,7 +313,6 @@ type tagMPEG1VIDEOINFO
 end type
 
 type MPEG1VIDEOINFO as tagMPEG1VIDEOINFO
-
 #define MAX_SIZE_MPEG1_SEQUENCE_INFO 140
 #define MPEG1_SEQUENCE_INFO(pv) cptr(const UBYTE ptr, (pv)->bSequenceHeader)
 

@@ -47,11 +47,8 @@ enum
 end enum
 
 type CONDITION_OPERATION as tagCONDITION_OPERATION
-
 #define __IRichChunk_INTERFACE_DEFINED__
-
 extern IID_IRichChunk as const GUID
-
 type IRichChunk as IRichChunk_
 
 type IRichChunkVtbl
@@ -69,11 +66,8 @@ declare function IRichChunk_RemoteGetData_Proxy(byval This as IRichChunk ptr, by
 declare sub IRichChunk_RemoteGetData_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IRichChunk_GetData_Proxy(byval This as IRichChunk ptr, byval pFirstPos as ULONG ptr, byval pLength as ULONG ptr, byval ppsz as LPWSTR ptr, byval pValue as PROPVARIANT ptr) as HRESULT
 declare function IRichChunk_GetData_Stub(byval This as IRichChunk ptr, byval pFirstPos as ULONG ptr, byval pLength as ULONG ptr, byval ppsz as LPWSTR ptr, byval pValue as PROPVARIANT ptr) as HRESULT
-
 #define __ICondition_INTERFACE_DEFINED__
-
 extern IID_ICondition as const GUID
-
 type ICondition as ICondition_
 
 type IConditionVtbl
@@ -116,11 +110,8 @@ declare function ICondition_GetComparisonInfo_Proxy(byval This as ICondition ptr
 declare function ICondition_GetComparisonInfo_Stub(byval This as ICondition ptr, byval ppszPropertyName as LPWSTR ptr, byval pcop as CONDITION_OPERATION ptr, byval ppropvar as PROPVARIANT ptr) as HRESULT
 declare function ICondition_GetInputTerms_Proxy(byval This as ICondition ptr, byval ppPropertyTerm as IRichChunk ptr ptr, byval ppOperationTerm as IRichChunk ptr ptr, byval ppValueTerm as IRichChunk ptr ptr) as HRESULT
 declare function ICondition_GetInputTerms_Stub(byval This as ICondition ptr, byval ppPropertyTerm as IRichChunk ptr ptr, byval ppOperationTerm as IRichChunk ptr ptr, byval ppValueTerm as IRichChunk ptr ptr) as HRESULT
-
 #define __ICondition2_INTERFACE_DEFINED__
-
 extern IID_ICondition2 as const GUID
-
 type ICondition2 as ICondition2_
 
 type ICondition2Vtbl

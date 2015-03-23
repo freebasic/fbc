@@ -18,7 +18,6 @@ extern "Windows"
 #define CPL_NEWINQUIRE 8
 #define CPL_STARTWPARMSA 9
 #define CPL_STARTWPARMSW 10
-
 type APPLET_PROC as function(byval hwndCpl as HWND, byval msg as UINT, byval lParam1 as LPARAM, byval lParam2 as LPARAM) as LONG
 
 type tagCPLINFO field = 1
@@ -62,12 +61,10 @@ type LPNEWCPLINFOW as tagNEWCPLINFOW ptr
 #ifdef UNICODE
 	type NEWCPLINFO as NEWCPLINFOW
 	type LPNEWCPLINFO as LPNEWCPLINFOW
-
 	#define CPL_STARTWPARMS CPL_STARTWPARMSW
 #else
 	type NEWCPLINFO as NEWCPLINFOA
 	type LPNEWCPLINFO as LPNEWCPLINFOA
-
 	#define CPL_STARTWPARMS CPL_STARTWPARMSA
 #endif
 

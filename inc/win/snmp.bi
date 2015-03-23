@@ -180,9 +180,7 @@ declare sub SnmpSvcSetLogType(byval nLogType as INT_)
 #define SNMP_OUTPUT_TO_LOGFILE &h2
 #define SNMP_OUTPUT_TO_EVENTLOG &h4
 #define SNMP_OUTPUT_TO_DEBUGGER &h8
-
 declare sub SnmpUtilDbgPrint cdecl(byval nLogLevel as INT_, byval szFormat as LPSTR, ...)
-
 #define SNMPDBG(_x_)
 #define DEFINE_SIZEOF(Array) (sizeof((Array)) / sizeof((Array)[0]))
 #define DEFINE_OID(SubIdArray) (DEFINE_SIZEOF(SubIdArray), (SubIdArray))

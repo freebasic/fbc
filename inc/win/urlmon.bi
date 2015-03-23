@@ -71,7 +71,6 @@ extern "Windows"
 #inclib "uuid"
 
 #define __IBindStatusCallbackMsg_FWD_DEFINED__
-
 extern CLSID_SBS_StdURLMoniker as const IID
 extern CLSID_SBS_HttpProtocol as const IID
 extern CLSID_SBS_FtpProtocol as const IID
@@ -116,14 +115,11 @@ extern IID_IAsyncBindCtx as const IID
 declare function CreateURLMoniker(byval pMkCtx as LPMONIKER, byval szURL as LPCWSTR, byval ppmk as LPMONIKER ptr) as HRESULT
 declare function CreateURLMonikerEx(byval pMkCtx as LPMONIKER, byval szURL as LPCWSTR, byval ppmk as LPMONIKER ptr, byval dwFlags as DWORD) as HRESULT
 declare function GetClassURL(byval szURL as LPCWSTR, byval pClsID as CLSID ptr) as HRESULT
-
 type IBindStatusCallback as IBindStatusCallback_
-
 declare function CreateAsyncBindCtx(byval reserved as DWORD, byval pBSCb as IBindStatusCallback ptr, byval pEFetc as IEnumFORMATETC ptr, byval ppBC as IBindCtx ptr ptr) as HRESULT
 
 #if _WIN32_WINNT = &h0602
 	type IUri as IUri_
-
 	declare function CreateURLMonikerEx2(byval pMkCtx as LPMONIKER, byval pUri as IUri ptr, byval ppmk as LPMONIKER ptr, byval dwFlags as DWORD) as HRESULT
 #endif
 
@@ -141,9 +137,7 @@ declare function GetComponentIDFromCLSSPEC(byval pClassspec as uCLSSPEC ptr, byv
 #define FIEF_FLAG_FORCE_JITUI &h1
 #define FIEF_FLAG_PEEK &h2
 #define FIEF_FLAG_SKIP_INSTALLED_VERSION_CHECK &h4
-
 declare function IsAsyncMoniker(byval pmk as IMoniker ptr) as HRESULT
-
 type IBinding as IBinding_
 
 declare function CreateURLBinding(byval lpszUrl as LPCWSTR, byval pbc as IBindCtx ptr, byval ppBdg as IBinding ptr ptr) as HRESULT
@@ -157,7 +151,6 @@ declare function FindMediaTypeClass(byval pBC as LPBC, byval szType as LPCSTR, b
 declare function UrlMkSetSessionOption(byval dwOption as DWORD, byval pBuffer as LPVOID, byval dwBufferLength as DWORD, byval dwReserved as DWORD) as HRESULT
 declare function UrlMkGetSessionOption(byval dwOption as DWORD, byval pBuffer as LPVOID, byval dwBufferLength as DWORD, byval pdwBufferLengthOut as DWORD ptr, byval dwReserved as DWORD) as HRESULT
 declare function FindMimeFromData(byval pBC as LPBC, byval pwzUrl as LPCWSTR, byval pBuffer as LPVOID, byval cbSize as DWORD, byval pwzMimeProposed as LPCWSTR, byval dwMimeFlags as DWORD, byval ppwzMimeOut as LPWSTR ptr, byval dwReserved as DWORD) as HRESULT
-
 #define FMFD_DEFAULT &h0
 #define FMFD_URLASFILENAME &h1
 
@@ -271,11 +264,8 @@ declare function CompatFlagsFromClsid(byval pclsid as CLSID ptr, byval pdwCompat
 #define INET_E_ERROR_LAST INET_E_BLOCKED_PLUGGABLE_PROTOCOL
 #define _LPPERSISTMONIKER_DEFINED
 #define __IPersistMoniker_INTERFACE_DEFINED__
-
 type IPersistMoniker as IPersistMoniker_
-
 type LPPERSISTMONIKER as IPersistMoniker ptr
-
 extern IID_IPersistMoniker as const GUID
 
 type IPersistMonikerVtbl
@@ -306,12 +296,9 @@ declare function IPersistMoniker_SaveCompleted_Proxy(byval This as IPersistMonik
 declare sub IPersistMoniker_SaveCompleted_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IPersistMoniker_GetCurMoniker_Proxy(byval This as IPersistMoniker ptr, byval ppimkName as IMoniker ptr ptr) as HRESULT
 declare sub IPersistMoniker_GetCurMoniker_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define _LPMONIKERPROP_DEFINED
 #define __IMonikerProp_INTERFACE_DEFINED__
-
 type IMonikerProp as IMonikerProp_
-
 type LPMONIKERPROP as IMonikerProp ptr
 
 type __WIDL_urlmon_generated_name_00000000 as long
@@ -324,7 +311,6 @@ enum
 end enum
 
 type MONIKERPROPERTY as __WIDL_urlmon_generated_name_00000000
-
 extern IID_IMonikerProp as const GUID
 
 type IMonikerPropVtbl
@@ -340,14 +326,10 @@ end type
 
 declare function IMonikerProp_PutProperty_Proxy(byval This as IMonikerProp ptr, byval mkp as MONIKERPROPERTY, byval val as LPCWSTR) as HRESULT
 declare sub IMonikerProp_PutProperty_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define _LPBINDPROTOCOL_DEFINED
 #define __IBindProtocol_INTERFACE_DEFINED__
-
 type IBindProtocol as IBindProtocol_
-
 type LPBINDPROTOCOL as IBindProtocol ptr
-
 extern IID_IBindProtocol as const GUID
 
 type IBindProtocolVtbl
@@ -363,12 +345,9 @@ end type
 
 declare function IBindProtocol_CreateBinding_Proxy(byval This as IBindProtocol ptr, byval szUrl as LPCWSTR, byval pbc as IBindCtx ptr, byval ppb as IBinding ptr ptr) as HRESULT
 declare sub IBindProtocol_CreateBinding_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define _LPBINDING_DEFINED
 #define __IBinding_INTERFACE_DEFINED__
-
 type LPBINDING as IBinding ptr
-
 extern IID_IBinding as const GUID
 
 type IBindingVtbl
@@ -401,10 +380,8 @@ declare function IBinding_RemoteGetBindResult_Proxy(byval This as IBinding ptr, 
 declare sub IBinding_RemoteGetBindResult_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IBinding_GetBindResult_Proxy(byval This as IBinding ptr, byval pclsidProtocol as CLSID ptr, byval pdwResult as DWORD ptr, byval pszResult as LPOLESTR ptr, byval pdwReserved as DWORD ptr) as HRESULT
 declare function IBinding_GetBindResult_Stub(byval This as IBinding ptr, byval pclsidProtocol as CLSID ptr, byval pdwResult as DWORD ptr, byval pszResult as LPOLESTR ptr, byval dwReserved as DWORD) as HRESULT
-
 #define _LPBINDSTATUSCALLBACK_DEFINED
 #define __IBindStatusCallback_INTERFACE_DEFINED__
-
 type LPBINDSTATUSCALLBACK as IBindStatusCallback ptr
 
 type __WIDL_urlmon_generated_name_00000001 as long
@@ -637,7 +614,6 @@ enum
 end enum
 
 type BINDSTATUS as tagBINDSTATUS
-
 extern IID_IBindStatusCallback as const GUID
 
 type IBindStatusCallbackVtbl
@@ -678,12 +654,9 @@ declare function IBindStatusCallback_GetBindInfo_Proxy(byval This as IBindStatus
 declare function IBindStatusCallback_GetBindInfo_Stub(byval This as IBindStatusCallback ptr, byval grfBINDF as DWORD ptr, byval pbindinfo as RemBINDINFO ptr, byval pstgmed as RemSTGMEDIUM ptr) as HRESULT
 declare function IBindStatusCallback_OnDataAvailable_Proxy(byval This as IBindStatusCallback ptr, byval grfBSCF as DWORD, byval dwSize as DWORD, byval pformatetc as FORMATETC ptr, byval pstgmed as STGMEDIUM ptr) as HRESULT
 declare function IBindStatusCallback_OnDataAvailable_Stub(byval This as IBindStatusCallback ptr, byval grfBSCF as DWORD, byval dwSize as DWORD, byval pformatetc as RemFORMATETC ptr, byval pstgmed as RemSTGMEDIUM ptr) as HRESULT
-
 #define _LPBINDSTATUSCALLBACKEX_DEFINED
 #define __IBindStatusCallbackEx_INTERFACE_DEFINED__
-
 type IBindStatusCallbackEx as IBindStatusCallbackEx_
-
 type LPBINDSTATUSCALLBACKEX as IBindStatusCallbackEx ptr
 
 type __WIDL_urlmon_generated_name_00000007 as long
@@ -714,7 +687,6 @@ enum
 end enum
 
 type BINDF2 as __WIDL_urlmon_generated_name_00000007
-
 extern IID_IBindStatusCallbackEx as const GUID
 
 type IBindStatusCallbackExVtbl
@@ -740,14 +712,10 @@ declare function IBindStatusCallbackEx_RemoteGetBindInfoEx_Proxy(byval This as I
 declare sub IBindStatusCallbackEx_RemoteGetBindInfoEx_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IBindStatusCallbackEx_GetBindInfoEx_Proxy(byval This as IBindStatusCallbackEx ptr, byval grfBINDF as DWORD ptr, byval pbindinfo as BINDINFO ptr, byval grfBINDF2 as DWORD ptr, byval pdwReserved as DWORD ptr) as HRESULT
 declare function IBindStatusCallbackEx_GetBindInfoEx_Stub(byval This as IBindStatusCallbackEx ptr, byval grfBINDF as DWORD ptr, byval pbindinfo as RemBINDINFO ptr, byval pstgmed as RemSTGMEDIUM ptr, byval grfBINDF2 as DWORD ptr, byval pdwReserved as DWORD ptr) as HRESULT
-
 #define _LPAUTHENTICATION_DEFINED
 #define __IAuthenticate_INTERFACE_DEFINED__
-
 type IAuthenticate as IAuthenticate_
-
 type LPAUTHENTICATION as IAuthenticate ptr
-
 extern IID_IAuthenticate as const GUID
 
 type IAuthenticateVtbl
@@ -763,12 +731,9 @@ end type
 
 declare function IAuthenticate_Authenticate_Proxy(byval This as IAuthenticate ptr, byval phwnd as HWND ptr, byval pszUsername as LPWSTR ptr, byval pszPassword as LPWSTR ptr) as HRESULT
 declare sub IAuthenticate_Authenticate_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define _LPAUTHENTICATIONEX_DEFINED
 #define __IAuthenticateEx_INTERFACE_DEFINED__
-
 type IAuthenticateEx as IAuthenticateEx_
-
 type LPAUTHENTICATIONEX as IAuthenticateEx ptr
 
 type __WIDL_urlmon_generated_name_00000008 as long
@@ -786,7 +751,6 @@ type _tagAUTHENTICATEINFO
 end type
 
 type AUTHENTICATEINFO as _tagAUTHENTICATEINFO
-
 extern IID_IAuthenticateEx as const GUID
 
 type IAuthenticateExVtbl
@@ -803,14 +767,10 @@ end type
 
 declare function IAuthenticateEx_AuthenticateEx_Proxy(byval This as IAuthenticateEx ptr, byval phwnd as HWND ptr, byval pszUsername as LPWSTR ptr, byval pszPassword as LPWSTR ptr, byval pauthinfo as AUTHENTICATEINFO ptr) as HRESULT
 declare sub IAuthenticateEx_AuthenticateEx_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define _LPHTTPNEGOTIATE_DEFINED
 #define __IHttpNegotiate_INTERFACE_DEFINED__
-
 type IHttpNegotiate as IHttpNegotiate_
-
 type LPHTTPNEGOTIATE as IHttpNegotiate ptr
-
 extern IID_IHttpNegotiate as const GUID
 
 type IHttpNegotiateVtbl
@@ -829,14 +789,10 @@ declare function IHttpNegotiate_BeginningTransaction_Proxy(byval This as IHttpNe
 declare sub IHttpNegotiate_BeginningTransaction_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IHttpNegotiate_OnResponse_Proxy(byval This as IHttpNegotiate ptr, byval dwResponseCode as DWORD, byval szResponseHeaders as LPCWSTR, byval szRequestHeaders as LPCWSTR, byval pszAdditionalRequestHeaders as LPWSTR ptr) as HRESULT
 declare sub IHttpNegotiate_OnResponse_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define _LPHTTPNEGOTIATE2_DEFINED
 #define __IHttpNegotiate2_INTERFACE_DEFINED__
-
 type IHttpNegotiate2 as IHttpNegotiate2_
-
 type LPHTTPNEGOTIATE2 as IHttpNegotiate2 ptr
-
 extern IID_IHttpNegotiate2 as const GUID
 
 type IHttpNegotiate2Vtbl
@@ -854,14 +810,10 @@ end type
 
 declare function IHttpNegotiate2_GetRootSecurityId_Proxy(byval This as IHttpNegotiate2 ptr, byval pbSecurityId as UBYTE ptr, byval pcbSecurityId as DWORD ptr, byval dwReserved as DWORD_PTR) as HRESULT
 declare sub IHttpNegotiate2_GetRootSecurityId_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define _LPHTTPNEGOTIATE3_DEFINED
 #define __IHttpNegotiate3_INTERFACE_DEFINED__
-
 type IHttpNegotiate3 as IHttpNegotiate3_
-
 type LPHTTPNEGOTIATE3 as IHttpNegotiate3 ptr
-
 extern IID_IHttpNegotiate3 as const GUID
 
 type IHttpNegotiate3Vtbl
@@ -880,14 +832,10 @@ end type
 
 declare function IHttpNegotiate3_GetSerializedClientCertContext_Proxy(byval This as IHttpNegotiate3 ptr, byval ppbCert as UBYTE ptr ptr, byval pcbCert as DWORD ptr) as HRESULT
 declare sub IHttpNegotiate3_GetSerializedClientCertContext_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define _LPWININETFILESTREAM_DEFINED
 #define __IWinInetFileStream_INTERFACE_DEFINED__
-
 type IWinInetFileStream as IWinInetFileStream_
-
 type LPWININETFILESTREAM as IWinInetFileStream ptr
-
 extern IID_IWinInetFileStream as const GUID
 
 type IWinInetFileStreamVtbl
@@ -906,14 +854,10 @@ declare function IWinInetFileStream_SetHandleForUnlock_Proxy(byval This as IWinI
 declare sub IWinInetFileStream_SetHandleForUnlock_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IWinInetFileStream_SetDeleteFile_Proxy(byval This as IWinInetFileStream ptr, byval dwReserved as DWORD_PTR) as HRESULT
 declare sub IWinInetFileStream_SetDeleteFile_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define _LPWINDOWFORBINDINGUI_DEFINED
 #define __IWindowForBindingUI_INTERFACE_DEFINED__
-
 type IWindowForBindingUI as IWindowForBindingUI_
-
 type LPWINDOWFORBINDINGUI as IWindowForBindingUI ptr
-
 extern IID_IWindowForBindingUI as const GUID
 
 type IWindowForBindingUIVtbl
@@ -929,12 +873,9 @@ end type
 
 declare function IWindowForBindingUI_GetWindow_Proxy(byval This as IWindowForBindingUI ptr, byval rguidReason as const GUID const ptr, byval phwnd as HWND ptr) as HRESULT
 declare sub IWindowForBindingUI_GetWindow_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define _LPCODEINSTALL_DEFINED
 #define __ICodeInstall_INTERFACE_DEFINED__
-
 type ICodeInstall as ICodeInstall_
-
 type LPCODEINSTALL as ICodeInstall ptr
 
 type __WIDL_urlmon_generated_name_00000009 as long
@@ -952,7 +893,6 @@ enum
 end enum
 
 type CIP_STATUS as __WIDL_urlmon_generated_name_00000009
-
 extern IID_ICodeInstall as const GUID
 
 type ICodeInstallVtbl
@@ -1013,7 +953,6 @@ declare sub ICodeInstall_OnCodeInstallProblem_Stub(byval This as IRpcStubBuffer 
 	end enum
 
 	type Uri_HOST_TYPE as __WIDL_urlmon_generated_name_0000000B
-
 	extern IID_IUri as const GUID
 
 	type IUriVtbl
@@ -1162,9 +1101,7 @@ declare sub ICodeInstall_OnCodeInstallProblem_Stub(byval This as IRpcStubBuffer 
 	#define Uri_ENCODING_RFC ((Uri_ENCODING_USER_INFO_AND_PATH_IS_PERCENT_ENCODED_UTF8 or Uri_ENCODING_HOST_IS_PERCENT_ENCODED_UTF8) or Uri_ENCODING_QUERY_AND_FRAGMENT_IS_PERCENT_ENCODED_UTF8)
 	#define UriBuilder_USE_ORIGINAL_FLAGS &h1
 	#define __IUriContainer_INTERFACE_DEFINED__
-
 	extern IID_IUriContainer as const GUID
-
 	type IUriContainer as IUriContainer_
 
 	type IUriContainerVtbl
@@ -1180,11 +1117,8 @@ declare sub ICodeInstall_OnCodeInstallProblem_Stub(byval This as IRpcStubBuffer 
 
 	declare function IUriContainer_GetIUri_Proxy(byval This as IUriContainer ptr, byval ppIUri as IUri ptr ptr) as HRESULT
 	declare sub IUriContainer_GetIUri_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 	#define __IUriBuilder_INTERFACE_DEFINED__
-
 	extern IID_IUriBuilder as const GUID
-
 	type IUriBuilder as IUriBuilder_
 
 	type IUriBuilderVtbl
@@ -1272,11 +1206,8 @@ declare sub ICodeInstall_OnCodeInstallProblem_Stub(byval This as IRpcStubBuffer 
 	declare sub IUriBuilder_RemoveProperties_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 	declare function IUriBuilder_HasBeenModified_Proxy(byval This as IUriBuilder ptr, byval pfModified as WINBOOL ptr) as HRESULT
 	declare sub IUriBuilder_HasBeenModified_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 	#define __IUriBuilderFactory_INTERFACE_DEFINED__
-
 	extern IID_IUriBuilderFactory as const GUID
-
 	type IUriBuilderFactory as IUriBuilderFactory_
 
 	type IUriBuilderFactoryVtbl
@@ -1300,11 +1231,8 @@ declare sub ICodeInstall_OnCodeInstallProblem_Stub(byval This as IRpcStubBuffer 
 
 #define _LPWININETINFO_DEFINED
 #define __IWinInetInfo_INTERFACE_DEFINED__
-
 type IWinInetInfo as IWinInetInfo_
-
 type LPWININETINFO as IWinInetInfo ptr
-
 extern IID_IWinInetInfo as const GUID
 
 type IWinInetInfoVtbl
@@ -1326,11 +1254,8 @@ declare function IWinInetInfo_QueryOption_Stub(byval This as IWinInetInfo ptr, b
 #define WININETINFO_OPTION_LOCK_HANDLE 65534
 #define _LPHTTPSECURITY_DEFINED
 #define __IHttpSecurity_INTERFACE_DEFINED__
-
 type IHttpSecurity as IHttpSecurity_
-
 type LPHTTPSECURITY as IHttpSecurity ptr
-
 extern IID_IHttpSecurity as const GUID
 
 type IHttpSecurityVtbl
@@ -1347,14 +1272,10 @@ end type
 
 declare function IHttpSecurity_OnSecurityProblem_Proxy(byval This as IHttpSecurity ptr, byval dwProblem as DWORD) as HRESULT
 declare sub IHttpSecurity_OnSecurityProblem_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define _LPWININETHTTPINFO_DEFINED
 #define __IWinInetHttpInfo_INTERFACE_DEFINED__
-
 type IWinInetHttpInfo as IWinInetHttpInfo_
-
 type LPWININETHTTPINFO as IWinInetHttpInfo ptr
-
 extern IID_IWinInetHttpInfo as const GUID
 
 type IWinInetHttpInfoVtbl
@@ -1373,12 +1294,9 @@ declare function IWinInetHttpInfo_RemoteQueryInfo_Proxy(byval This as IWinInetHt
 declare sub IWinInetHttpInfo_RemoteQueryInfo_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IWinInetHttpInfo_QueryInfo_Proxy(byval This as IWinInetHttpInfo ptr, byval dwOption as DWORD, byval pBuffer as LPVOID, byval pcbBuf as DWORD ptr, byval pdwFlags as DWORD ptr, byval pdwReserved as DWORD ptr) as HRESULT
 declare function IWinInetHttpInfo_QueryInfo_Stub(byval This as IWinInetHttpInfo ptr, byval dwOption as DWORD, byval pBuffer as UBYTE ptr, byval pcbBuf as DWORD ptr, byval pdwFlags as DWORD ptr, byval pdwReserved as DWORD ptr) as HRESULT
-
 #define _LPWININETHTTPTIMEOUTS_DEFINED
 #define __IWinInetHttpTimeouts_INTERFACE_DEFINED__
-
 extern IID_IWinInetHttpTimeouts as const GUID
-
 type IWinInetHttpTimeouts as IWinInetHttpTimeouts_
 
 type IWinInetHttpTimeoutsVtbl
@@ -1398,11 +1316,8 @@ declare sub IWinInetHttpTimeouts_GetRequestTimeouts_Stub(byval This as IRpcStubB
 #if _WIN32_WINNT = &h0602
 	#define _LPWININETCACHEHINTS_DEFINED
 	#define __IWinInetCacheHints_INTERFACE_DEFINED__
-
 	type IWinInetCacheHints as IWinInetCacheHints_
-
 	type LPWININETCACHEHINTS as IWinInetCacheHints ptr
-
 	extern IID_IWinInetCacheHints as const GUID
 
 	type IWinInetCacheHintsVtbl
@@ -1418,14 +1333,10 @@ declare sub IWinInetHttpTimeouts_GetRequestTimeouts_Stub(byval This as IRpcStubB
 
 	declare function IWinInetCacheHints_SetCacheExtension_Proxy(byval This as IWinInetCacheHints ptr, byval pwzExt as LPCWSTR, byval pszCacheFile as LPVOID, byval pcbCacheFile as DWORD ptr, byval pdwWinInetError as DWORD ptr, byval pdwReserved as DWORD ptr) as HRESULT
 	declare sub IWinInetCacheHints_SetCacheExtension_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 	#define _LPWININETCACHEHINTS2_DEFINED
 	#define __IWinInetCacheHints2_INTERFACE_DEFINED__
-
 	type IWinInetCacheHints2 as IWinInetCacheHints2_
-
 	type LPWININETCACHEHINTS2 as IWinInetCacheHints2 ptr
-
 	extern IID_IWinInetCacheHints2 as const GUID
 
 	type IWinInetCacheHints2Vtbl
@@ -1447,15 +1358,10 @@ declare sub IWinInetHttpTimeouts_GetRequestTimeouts_Stub(byval This as IRpcStubB
 #define SID_IBindHost IID_IBindHost
 #define SID_SBindHost IID_IBindHost
 #define _LPBINDHOST_DEFINED
-
 extern SID_BindHost as const GUID
-
 #define __IBindHost_INTERFACE_DEFINED__
-
 type IBindHost as IBindHost_
-
 type LPBINDHOST as IBindHost ptr
-
 extern IID_IBindHost as const GUID
 
 type IBindHostVtbl
@@ -1517,14 +1423,10 @@ declare function HlinkGoBack(byval pUnk as IUnknown ptr) as HRESULT
 declare function HlinkGoForward(byval pUnk as IUnknown ptr) as HRESULT
 declare function HlinkNavigateString(byval pUnk as IUnknown ptr, byval szTarget as LPCWSTR) as HRESULT
 declare function HlinkNavigateMoniker(byval pUnk as IUnknown ptr, byval pmkTarget as IMoniker ptr) as HRESULT
-
 #define _LPIINTERNET
 #define __IInternet_INTERFACE_DEFINED__
-
 type IInternet as IInternet_
-
 type LPIINTERNET as IInternet ptr
-
 extern IID_IInternet as const GUID
 
 type IInternetVtbl
@@ -1539,9 +1441,7 @@ end type
 
 #define _LPIINTERNETBINDINFO
 #define __IInternetBindInfo_INTERFACE_DEFINED__
-
 type IInternetBindInfo as IInternetBindInfo_
-
 type LPIINTERNETBINDINFO as IInternetBindInfo ptr
 
 type tagBINDSTRING as long
@@ -1572,7 +1472,6 @@ enum
 end enum
 
 type BINDSTRING as tagBINDSTRING
-
 extern IID_IInternetBindInfo as const GUID
 
 type IInternetBindInfoVtbl
@@ -1591,14 +1490,10 @@ declare function IInternetBindInfo_GetBindInfo_Proxy(byval This as IInternetBind
 declare sub IInternetBindInfo_GetBindInfo_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IInternetBindInfo_GetBindString_Proxy(byval This as IInternetBindInfo ptr, byval ulStringType as ULONG, byval ppwzStr as LPOLESTR ptr, byval cEl as ULONG, byval pcElFetched as ULONG ptr) as HRESULT
 declare sub IInternetBindInfo_GetBindString_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define _LPIINTERNETBINDINFOEX
 #define __IInternetBindInfoEx_INTERFACE_DEFINED__
-
 type IInternetBindInfoEx as IInternetBindInfoEx_
-
 type LPIINTERNETBINDINFOEX as IInternetBindInfoEx ptr
-
 extern IID_IInternetBindInfoEx as const GUID
 
 type IInternetBindInfoExVtbl
@@ -1616,12 +1511,9 @@ end type
 
 declare function IInternetBindInfoEx_GetBindInfoEx_Proxy(byval This as IInternetBindInfoEx ptr, byval grfBINDF as DWORD ptr, byval pbindinfo as BINDINFO ptr, byval grfBINDF2 as DWORD ptr, byval pdwReserved as DWORD ptr) as HRESULT
 declare sub IInternetBindInfoEx_GetBindInfoEx_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define _LPIINTERNETPROTOCOLROOT_DEFINED
 #define __IInternetProtocolRoot_INTERFACE_DEFINED__
-
 type IInternetProtocolRoot as IInternetProtocolRoot_
-
 type LPIINTERNETPROTOCOLROOT as IInternetProtocolRoot ptr
 
 type _tagPI_FLAGS as long
@@ -1661,9 +1553,7 @@ type _tagStartParam
 end type
 
 type StartParam as _tagStartParam
-
 extern IID_IInternetProtocolRoot as const GUID
-
 type IInternetProtocolSink as IInternetProtocolSink_
 
 type IInternetProtocolRootVtbl
@@ -1694,14 +1584,10 @@ declare function IInternetProtocolRoot_Suspend_Proxy(byval This as IInternetProt
 declare sub IInternetProtocolRoot_Suspend_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IInternetProtocolRoot_Resume_Proxy(byval This as IInternetProtocolRoot ptr) as HRESULT
 declare sub IInternetProtocolRoot_Resume_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define _LPIINTERNETPROTOCOL_DEFINED
 #define __IInternetProtocol_INTERFACE_DEFINED__
-
 type IInternetProtocol as IInternetProtocol_
-
 type LPIINTERNETPROTOCOL as IInternetProtocol ptr
-
 extern IID_IInternetProtocol as const GUID
 
 type IInternetProtocolVtbl
@@ -1736,9 +1622,7 @@ declare sub IInternetProtocol_UnlockRequest_Stub(byval This as IRpcStubBuffer pt
 #if _WIN32_WINNT = &h0602
 	#define _LPIINTERNETPROTOCOLEX_DEFINED
 	#define __IInternetProtocolEx_INTERFACE_DEFINED__
-
 	extern IID_IInternetProtocolEx as const GUID
-
 	type IInternetProtocolEx as IInternetProtocolEx_
 
 	type IInternetProtocolExVtbl
@@ -1768,9 +1652,7 @@ declare sub IInternetProtocol_UnlockRequest_Stub(byval This as IRpcStubBuffer pt
 
 #define _LPIINTERNETPROTOCOLSINK_DEFINED
 #define __IInternetProtocolSink_INTERFACE_DEFINED__
-
 type LPIINTERNETPROTOCOLSINK as IInternetProtocolSink ptr
-
 extern IID_IInternetProtocolSink as const GUID
 
 type IInternetProtocolSinkVtbl
@@ -1795,14 +1677,10 @@ declare function IInternetProtocolSink_ReportData_Proxy(byval This as IInternetP
 declare sub IInternetProtocolSink_ReportData_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IInternetProtocolSink_ReportResult_Proxy(byval This as IInternetProtocolSink ptr, byval hrResult as HRESULT, byval dwError as DWORD, byval szResult as LPCWSTR) as HRESULT
 declare sub IInternetProtocolSink_ReportResult_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define _LPIINTERNETPROTOCOLSINKSTACKABLE_DEFINED
 #define __IInternetProtocolSinkStackable_INTERFACE_DEFINED__
-
 type IInternetProtocolSinkStackable as IInternetProtocolSinkStackable_
-
 type LPIINTERNETPROTOCOLSINKStackable as IInternetProtocolSinkStackable ptr
-
 extern IID_IInternetProtocolSinkStackable as const GUID
 
 type IInternetProtocolSinkStackableVtbl
@@ -1824,12 +1702,9 @@ declare function IInternetProtocolSinkStackable_CommitSwitch_Proxy(byval This as
 declare sub IInternetProtocolSinkStackable_CommitSwitch_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IInternetProtocolSinkStackable_RollbackSwitch_Proxy(byval This as IInternetProtocolSinkStackable ptr) as HRESULT
 declare sub IInternetProtocolSinkStackable_RollbackSwitch_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define _LPIINTERNETSESSION_DEFINED
 #define __IInternetSession_INTERFACE_DEFINED__
-
 type IInternetSession as IInternetSession_
-
 type LPIINTERNETSESSION as IInternetSession ptr
 
 type _tagOIBDG_FLAGS as long
@@ -1839,7 +1714,6 @@ enum
 end enum
 
 type OIBDG_FLAGS as _tagOIBDG_FLAGS
-
 extern IID_IInternetSession as const GUID
 
 type IInternetSessionVtbl
@@ -1873,14 +1747,10 @@ declare function IInternetSession_SetSessionOption_Proxy(byval This as IInternet
 declare sub IInternetSession_SetSessionOption_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IInternetSession_GetSessionOption_Proxy(byval This as IInternetSession ptr, byval dwOption as DWORD, byval pBuffer as LPVOID, byval pdwBufferLength as DWORD ptr, byval dwReserved as DWORD) as HRESULT
 declare sub IInternetSession_GetSessionOption_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define _LPIINTERNETTHREADSWITCH_DEFINED
 #define __IInternetThreadSwitch_INTERFACE_DEFINED__
-
 type IInternetThreadSwitch as IInternetThreadSwitch_
-
 type LPIINTERNETTHREADSWITCH as IInternetThreadSwitch ptr
-
 extern IID_IInternetThreadSwitch as const GUID
 
 type IInternetThreadSwitchVtbl
@@ -1899,14 +1769,10 @@ declare function IInternetThreadSwitch_Prepare_Proxy(byval This as IInternetThre
 declare sub IInternetThreadSwitch_Prepare_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IInternetThreadSwitch_Continue_Proxy(byval This as IInternetThreadSwitch ptr) as HRESULT
 declare sub IInternetThreadSwitch_Continue_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define _LPIINTERNETPRIORITY_DEFINED
 #define __IInternetPriority_INTERFACE_DEFINED__
-
 type IInternetPriority as IInternetPriority_
-
 type LPIINTERNETPRIORITY as IInternetPriority ptr
-
 extern IID_IInternetPriority as const GUID
 
 type IInternetPriorityVtbl
@@ -1925,12 +1791,9 @@ declare function IInternetPriority_SetPriority_Proxy(byval This as IInternetPrio
 declare sub IInternetPriority_SetPriority_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IInternetPriority_GetPriority_Proxy(byval This as IInternetPriority ptr, byval pnPriority as LONG ptr) as HRESULT
 declare sub IInternetPriority_GetPriority_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define _LPIINTERNETPROTOCOLINFO_DEFINED
 #define __IInternetProtocolInfo_INTERFACE_DEFINED__
-
 type IInternetProtocolInfo as IInternetProtocolInfo_
-
 type LPIINTERNETPROTOCOLINFO as IInternetProtocolInfo ptr
 
 type _tagPARSEACTION as long
@@ -1987,7 +1850,6 @@ enum
 end enum
 
 type QUERYOPTION as _tagQUERYOPTION
-
 extern IID_IInternetProtocolInfo as const GUID
 
 type IInternetProtocolInfoVtbl
@@ -2062,7 +1924,6 @@ declare sub IInternetProtocolInfo_QueryInfo_Stub(byval This as IRpcStubBuffer pt
 #define IID_IOInetPriority IID_IInternetPriority
 #define IID_IOInetThreadSwitch IID_IInternetThreadSwitch
 #define IID_IOInetProtocolSinkStackable IID_IInternetProtocolSinkStackable
-
 declare function CoInternetParseUrl(byval pwzUrl as LPCWSTR, byval ParseAction as PARSEACTION, byval dwFlags as DWORD, byval pszResult as LPWSTR, byval cchResult as DWORD, byval pcchResult as DWORD ptr, byval dwReserved as DWORD) as HRESULT
 
 #if _WIN32_WINNT = &h0602
@@ -2085,7 +1946,6 @@ declare function AsyncInstallDistributionUnit(byval szDistUnit as LPCWSTR, byval
 
 #if _WIN32_WINNT = &h0602
 	declare function CoInternetGetSecurityUrlEx(byval pUri as IUri ptr, byval ppSecUri as IUri ptr ptr, byval psuAction as PSUACTION, byval dwReserved as DWORD_PTR) as HRESULT
-
 	#define _INTERNETFEATURELIST_DEFINED
 
 	type _tagINTERNETFEATURELIST as long
@@ -2122,7 +1982,6 @@ declare function AsyncInstallDistributionUnit(byval szDistUnit as LPCWSTR, byval
 	end enum
 
 	type INTERNETFEATURELIST as _tagINTERNETFEATURELIST
-
 	#define SET_FEATURE_ON_THREAD &h1
 	#define SET_FEATURE_ON_PROCESS &h2
 	#define SET_FEATURE_IN_REGISTRY &h4
@@ -2139,16 +1998,11 @@ declare function AsyncInstallDistributionUnit(byval szDistUnit as LPCWSTR, byval
 	#define GET_FEATURE_FROM_THREAD_TRUSTED &h20
 	#define GET_FEATURE_FROM_THREAD_INTERNET &h40
 	#define GET_FEATURE_FROM_THREAD_RESTRICTED &h80
-
 	declare function CoInternetSetFeatureEnabled(byval FeatureEntry as INTERNETFEATURELIST, byval dwFlags as DWORD, byval fEnable as WINBOOL) as HRESULT
 	declare function CoInternetIsFeatureEnabled(byval FeatureEntry as INTERNETFEATURELIST, byval dwFlags as DWORD) as HRESULT
-
 	type IInternetSecurityManager as IInternetSecurityManager_
-
 	declare function CoInternetIsFeatureEnabledForUrl(byval FeatureEntry as INTERNETFEATURELIST, byval dwFlags as DWORD, byval szURL as LPCWSTR, byval pSecMgr as IInternetSecurityManager ptr) as HRESULT
-
 	type IInternetSecurityManagerEx2 as IInternetSecurityManagerEx2_
-
 	declare function CoInternetIsFeatureEnabledForIUri(byval FeatureEntry as INTERNETFEATURELIST, byval dwFlags as DWORD, byval pIUri as IUri ptr, byval pSecMgr as IInternetSecurityManagerEx2 ptr) as HRESULT
 	declare function CoInternetIsFeatureZoneElevationEnabled(byval szFromURL as LPCWSTR, byval szToURL as LPCWSTR, byval pSecMgr as IInternetSecurityManager ptr, byval dwFlags as DWORD) as HRESULT
 #endif
@@ -2180,11 +2034,8 @@ declare sub ReleaseBindInfo(byval pbindinfo as BINDINFO ptr)
 #endif
 
 declare function CoInternetCreateSecurityManager(byval pSP as IServiceProvider ptr, byval ppSM as IInternetSecurityManager ptr ptr, byval dwReserved as DWORD) as HRESULT
-
 type IInternetZoneManager as IInternetZoneManager_
-
 declare function CoInternetCreateZoneManager(byval pSP as IServiceProvider ptr, byval ppZM as IInternetZoneManager ptr ptr, byval dwReserved as DWORD) as HRESULT
-
 extern CLSID_InternetSecurityManager as const IID
 extern CLSID_InternetZoneManager as const IID
 
@@ -2202,9 +2053,7 @@ extern CLSID_InternetZoneManager as const IID
 #define SID_SInternetHostSecurityManager IID_IInternetHostSecurityManager
 #define _LPINTERNETSECURITYMGRSITE_DEFINED
 #define __IInternetSecurityMgrSite_INTERFACE_DEFINED__
-
 extern IID_IInternetSecurityMgrSite as const GUID
-
 type IInternetSecurityMgrSite as IInternetSecurityMgrSite_
 
 type IInternetSecurityMgrSiteVtbl
@@ -2280,7 +2129,6 @@ enum
 end enum
 
 type SZM_FLAGS as __WIDL_urlmon_generated_name_0000000E
-
 extern IID_IInternetSecurityManager as const GUID
 
 type IInternetSecurityManagerVtbl
@@ -2321,9 +2169,7 @@ declare sub IInternetSecurityManager_GetZoneMappings_Stub(byval This as IRpcStub
 #if _WIN32_WINNT = &h0602
 	#define _LPINTERNETSECURITYMANANGEREX_DEFINED
 	#define __IInternetSecurityManagerEx_INTERFACE_DEFINED__
-
 	extern IID_IInternetSecurityManagerEx as const GUID
-
 	type IInternetSecurityManagerEx as IInternetSecurityManagerEx_
 
 	type IInternetSecurityManagerExVtbl
@@ -2347,10 +2193,8 @@ declare sub IInternetSecurityManager_GetZoneMappings_Stub(byval This as IRpcStub
 
 	declare function IInternetSecurityManagerEx_ProcessUrlActionEx_Proxy(byval This as IInternetSecurityManagerEx ptr, byval pwszUrl as LPCWSTR, byval dwAction as DWORD, byval pPolicy as UBYTE ptr, byval cbPolicy as DWORD, byval pContext as UBYTE ptr, byval cbContext as DWORD, byval dwFlags as DWORD, byval dwReserved as DWORD, byval pdwOutFlags as DWORD ptr) as HRESULT
 	declare sub IInternetSecurityManagerEx_ProcessUrlActionEx_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 	#define _LPINTERNETSECURITYMANANGEREx2_DEFINED
 	#define __IInternetSecurityManagerEx2_INTERFACE_DEFINED__
-
 	extern IID_IInternetSecurityManagerEx2 as const GUID
 
 	type IInternetSecurityManagerEx2Vtbl
@@ -2384,11 +2228,8 @@ declare sub IInternetSecurityManager_GetZoneMappings_Stub(byval This as IRpcStub
 	declare sub IInternetSecurityManagerEx2_GetSecurityIdEx2_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 	declare function IInternetSecurityManagerEx2_QueryCustomPolicyEx2_Proxy(byval This as IInternetSecurityManagerEx2 ptr, byval pUri as IUri ptr, byval guidKey as const GUID const ptr, byval ppPolicy as UBYTE ptr ptr, byval pcbPolicy as DWORD ptr, byval pContext as UBYTE ptr, byval cbContext as DWORD, byval dwReserved as DWORD_PTR) as HRESULT
 	declare sub IInternetSecurityManagerEx2_QueryCustomPolicyEx2_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 	#define __IZoneIdentifier_INTERFACE_DEFINED__
-
 	extern IID_IZoneIdentifier as const GUID
-
 	type IZoneIdentifier as IZoneIdentifier_
 
 	type IZoneIdentifierVtbl
@@ -2414,9 +2255,7 @@ declare sub IInternetSecurityManager_GetZoneMappings_Stub(byval This as IRpcStub
 
 #define _LPINTERNETHOSTSECURITYMANANGER_DEFINED
 #define __IInternetHostSecurityManager_INTERFACE_DEFINED__
-
 extern IID_IInternetHostSecurityManager as const GUID
-
 type IInternetHostSecurityManager as IInternetHostSecurityManager_
 
 type IInternetHostSecurityManagerVtbl
@@ -2613,7 +2452,6 @@ declare sub IInternetHostSecurityManager_QueryCustomPolicy_Stub(byval This as IR
 
 #define _LPINTERNETZONEMANAGER_DEFINED
 #define __IInternetZoneManager_INTERFACE_DEFINED__
-
 type LPURLZONEMANAGER as IInternetZoneManager ptr
 
 type tagURLZONE as long
@@ -2631,7 +2469,6 @@ enum
 end enum
 
 type URLZONE as tagURLZONE
-
 #define URLZONE_ESC_FLAG &h100
 
 type tagURLTEMPLATE as long
@@ -2693,7 +2530,6 @@ enum
 end enum
 
 type URLZONEREG as _URLZONEREG
-
 extern IID_IInternetZoneManager as const GUID
 
 type IInternetZoneManagerVtbl
@@ -2746,9 +2582,7 @@ declare sub IInternetZoneManager_CopyTemplatePoliciesToZone_Stub(byval This as I
 #if _WIN32_WINNT = &h0602
 	#define _LPINTERNETZONEMANAGEREX_DEFINED
 	#define __IInternetZoneManagerEx_INTERFACE_DEFINED__
-
 	extern IID_IInternetZoneManagerEx as const GUID
-
 	type IInternetZoneManagerEx as IInternetZoneManagerEx_
 
 	type IInternetZoneManagerExVtbl
@@ -2784,9 +2618,7 @@ declare sub IInternetZoneManager_CopyTemplatePoliciesToZone_Stub(byval This as I
 	#define SECURITY_IE_STATE_GREEN &h0
 	#define SECURITY_IE_STATE_RED &h1
 	#define __IInternetZoneManagerEx2_INTERFACE_DEFINED__
-
 	extern IID_IInternetZoneManagerEx2 as const GUID
-
 	type IInternetZoneManagerEx2 as IInternetZoneManagerEx2_
 
 	type IInternetZoneManagerEx2Vtbl
@@ -2828,7 +2660,6 @@ declare sub IInternetZoneManager_CopyTemplatePoliciesToZone_Stub(byval This as I
 #endif
 
 extern CLSID_SoftDistExt as const IID
-
 #define _LPSOFTDISTEXT_DEFINED
 #define SOFTDIST_FLAG_USAGE_EMAIL &h1
 #define SOFTDIST_FLAG_USAGE_PRECACHE &h2
@@ -2869,11 +2700,8 @@ end type
 
 type SOFTDISTINFO as _tagSOFTDISTINFO
 type LPSOFTDISTINFO as _tagSOFTDISTINFO ptr
-
 #define __ISoftDistExt_INTERFACE_DEFINED__
-
 extern IID_ISoftDistExt as const GUID
-
 type ISoftDistExt as ISoftDistExt_
 
 type ISoftDistExtVtbl
@@ -2900,14 +2728,10 @@ declare function ISoftDistExt_AsyncInstallDistributionUnit_Proxy(byval This as I
 declare sub ISoftDistExt_AsyncInstallDistributionUnit_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function GetSoftwareUpdateInfo(byval szDistUnit as LPCWSTR, byval psdi as LPSOFTDISTINFO) as HRESULT
 declare function SetSoftwareUpdateAdvertisementState(byval szDistUnit as LPCWSTR, byval dwAdState as DWORD, byval dwAdvertisedVersionMS as DWORD, byval dwAdvertisedVersionLS as DWORD) as HRESULT
-
 #define _LPCATALOGFILEINFO_DEFINED
 #define __ICatalogFileInfo_INTERFACE_DEFINED__
-
 type ICatalogFileInfo as ICatalogFileInfo_
-
 type LPCATALOGFILEINFO as ICatalogFileInfo ptr
-
 extern IID_ICatalogFileInfo as const GUID
 
 type ICatalogFileInfoVtbl
@@ -2926,14 +2750,10 @@ declare function ICatalogFileInfo_GetCatalogFile_Proxy(byval This as ICatalogFil
 declare sub ICatalogFileInfo_GetCatalogFile_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function ICatalogFileInfo_GetJavaTrust_Proxy(byval This as ICatalogFileInfo ptr, byval ppJavaTrust as any ptr ptr) as HRESULT
 declare sub ICatalogFileInfo_GetJavaTrust_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define _LPDATAFILTER_DEFINED
 #define __IDataFilter_INTERFACE_DEFINED__
-
 type IDataFilter as IDataFilter_
-
 type LPDATAFILTER as IDataFilter ptr
-
 extern IID_IDataFilter as const GUID
 
 type IDataFilterVtbl
@@ -2955,7 +2775,6 @@ declare function IDataFilter_DoDecode_Proxy(byval This as IDataFilter ptr, byval
 declare sub IDataFilter_DoDecode_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IDataFilter_SetEncodingLevel_Proxy(byval This as IDataFilter ptr, byval dwEncLevel as DWORD) as HRESULT
 declare sub IDataFilter_SetEncodingLevel_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define _LPENCODINGFILTERFACTORY_DEFINED
 
 type _tagPROTOCOLFILTERDATA
@@ -2967,11 +2786,8 @@ type _tagPROTOCOLFILTERDATA
 end type
 
 type PROTOCOLFILTERDATA as _tagPROTOCOLFILTERDATA
-
 #define __IEncodingFilterFactory_INTERFACE_DEFINED__
-
 type IEncodingFilterFactory as IEncodingFilterFactory_
-
 type LPENCODINGFILTERFACTORY as IEncodingFilterFactory ptr
 
 type _tagDATAINFO
@@ -2982,7 +2798,6 @@ type _tagDATAINFO
 end type
 
 type DATAINFO as _tagDATAINFO
-
 extern IID_IEncodingFilterFactory as const GUID
 
 type IEncodingFilterFactoryVtbl
@@ -3001,9 +2816,7 @@ declare function IEncodingFilterFactory_FindBestFilter_Proxy(byval This as IEnco
 declare sub IEncodingFilterFactory_FindBestFilter_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IEncodingFilterFactory_GetDefaultFilter_Proxy(byval This as IEncodingFilterFactory ptr, byval pwzCodeIn as LPCWSTR, byval pwzCodeOut as LPCWSTR, byval ppDF as IDataFilter ptr ptr) as HRESULT
 declare sub IEncodingFilterFactory_GetDefaultFilter_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define _HITLOGGING_DEFINED
-
 declare function IsLoggingEnabledA(byval pszUrl as LPCSTR) as WINBOOL
 declare function IsLoggingEnabledW(byval pwszUrl as LPCWSTR) as WINBOOL
 
@@ -3023,9 +2836,7 @@ end type
 
 type HIT_LOGGING_INFO as _tagHIT_LOGGING_INFO
 type LPHIT_LOGGING_INFO as _tagHIT_LOGGING_INFO ptr
-
 declare function WriteHitLogging(byval lpLogginginfo as LPHIT_LOGGING_INFO) as WINBOOL
-
 #define CONFIRMSAFETYACTION_LOADOBJECT &h1
 
 type CONFIRMSAFETY
@@ -3035,14 +2846,10 @@ type CONFIRMSAFETY
 end type
 
 extern GUID_CUSTOM_CONFIRMOBJECTSAFETY as const GUID
-
 #define _LPIWRAPPEDPROTOCOL_DEFINED
 #define __IWrappedProtocol_INTERFACE_DEFINED__
-
 type IWrappedProtocol as IWrappedProtocol_
-
 type LPIWRAPPEDPROTOCOL as IWrappedProtocol ptr
-
 extern IID_IWrappedProtocol as const GUID
 
 type IWrappedProtocolVtbl
@@ -3058,12 +2865,9 @@ end type
 
 declare function IWrappedProtocol_GetWrapperCode_Proxy(byval This as IWrappedProtocol ptr, byval pnCode as LONG ptr, byval dwReserved as DWORD_PTR) as HRESULT
 declare sub IWrappedProtocol_GetWrapperCode_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define _LPGETBINDHANDLE_DEFINED
 #define __IGetBindHandle_INTERFACE_DEFINED__
-
 type IGetBindHandle as IGetBindHandle_
-
 type LPGETBINDHANDLE as IGetBindHandle ptr
 
 type __WIDL_urlmon_generated_name_00000010 as long
@@ -3074,7 +2878,6 @@ enum
 end enum
 
 type BINDHANDLETYPES as __WIDL_urlmon_generated_name_00000010
-
 extern IID_IGetBindHandle as const GUID
 
 type IGetBindHandleVtbl
@@ -3090,7 +2893,6 @@ end type
 
 declare function IGetBindHandle_GetBindHandle_Proxy(byval This as IGetBindHandle ptr, byval enumRequestedHandle as BINDHANDLETYPES, byval pRetHandle as HANDLE ptr) as HRESULT
 declare sub IGetBindHandle_GetBindHandle_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
 #define _XHRPLUGGABLEPROTOCOL_DEFINED
 
 type _tagPROTOCOL_ARGUMENT
@@ -3100,14 +2902,10 @@ end type
 
 type PROTOCOL_ARGUMENT as _tagPROTOCOL_ARGUMENT
 type LPPROTOCOL_ARGUMENT as _tagPROTOCOL_ARGUMENT ptr
-
 #define _LPBINDCALLBACKREDIRECT_DEFINED
 #define __IBindCallbackRedirect_INTERFACE_DEFINED__
-
 type IBindCallbackRedirect as IBindCallbackRedirect_
-
 type LPBINDCALLBACKREDIRECT as IBindCallbackRedirect ptr
-
 extern IID_IBindCallbackRedirect as const GUID
 
 type IBindCallbackRedirectVtbl

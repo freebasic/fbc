@@ -8,41 +8,25 @@
 extern "Windows"
 
 #define __WINE_DPLAY_H
-
 type LPVOIDV as any ptr
-
 extern CLSID_DirectPlay as const GUID
 extern IID_IDirectPlay as const GUID
-
 type LPDIRECTPLAY as IDirectPlay ptr
-
 extern IID_IDirectPlay2 as const GUID
-
 type LPDIRECTPLAY2 as IDirectPlay2 ptr
-
 extern IID_IDirectPlay2A as const GUID
-
 type IDirectPlay2A as IDirectPlay2
 type LPDIRECTPLAY2A as IDirectPlay2 ptr
-
 extern IID_IDirectPlay3 as const GUID
-
 type LPDIRECTPLAY3 as IDirectPlay3 ptr
-
 extern IID_IDirectPlay3A as const GUID
-
 type IDirectPlay3A as IDirectPlay3
 type LPDIRECTPLAY3A as IDirectPlay3 ptr
-
 extern IID_IDirectPlay4 as const GUID
-
 type LPDIRECTPLAY4 as IDirectPlay4 ptr
-
 extern IID_IDirectPlay4A as const GUID
-
 type IDirectPlay4A as IDirectPlay4
 type LPDIRECTPLAY4A as IDirectPlay4 ptr
-
 extern DPSPGUID_IPX as const GUID
 extern DPSPGUID_TCPIP as const GUID
 extern DPSPGUID_SERIAL as const GUID
@@ -117,10 +101,8 @@ extern DPSPGUID_MODEM as const GUID
 #define DPERR_CANTLOADCAPI MAKE_DPHRESULT(2060)
 #define DPERR_NOTLOGGEDIN MAKE_DPHRESULT(2070)
 #define DPERR_LOGONDENIED MAKE_DPHRESULT(2080)
-
 type DPID as DWORD
 type LPDPID as DWORD ptr
-
 #define DPID_SYSMSG 0
 #define DPID_ALLPLAYERS 0
 #define DPID_SERVERPLAYER 1
@@ -159,7 +141,6 @@ end type
 
 type DPNAME as tagDPNAME
 type LPDPNAME as tagDPNAME ptr
-
 #define DPLONGNAMELEN 52
 #define DPSHORTNAMELEN 20
 #define DPSESSIONNAMELEN 32
@@ -247,7 +228,6 @@ end type
 
 type DPLCONNECTION as tagDPLCONNECTION
 type LPDPLCONNECTION as tagDPLCONNECTION ptr
-
 #define DPLCONNECTION_CREATESESSION DPOPEN_CREATE
 #define DPLCONNECTION_JOINSESSION DPOPEN_JOIN
 
@@ -330,9 +310,7 @@ declare function DirectPlayCreate(byval lpGUID as LPGUID, byval lplpDP as LPDIRE
 type LPDPENUMPLAYERSCALLBACK as function(byval dpId as DPID, byval lpFriendlyName as LPSTR, byval lpFormalName as LPSTR, byval dwFlags as DWORD, byval lpContext as LPVOID) as WINBOOL
 type LPDPENUMPLAYERSCALLBACK2 as function(byval dpId as DPID, byval dwPlayerType as DWORD, byval lpName as LPCDPNAME, byval dwFlags as DWORD, byval lpContext as LPVOID) as WINBOOL
 type LPDPENUMSESSIONSCALLBACK2 as function(byval lpThisSD as LPCDPSESSIONDESC2, byval lpdwTimeOut as LPDWORD, byval dwFlags as DWORD, byval lpContext as LPVOID) as WINBOOL
-
 #define DPESC_TIMEDOUT &h00000001
-
 type IDirectPlayVtbl as IDirectPlayVtbl_
 
 type IDirectPlay
@@ -392,7 +370,6 @@ end type
 #define IDirectPlay_SaveSession(p, a) (p)->lpVtbl->SaveSession(p, a)
 #define IDirectPlay_Send(p, a, b, c, d, e) (p)->lpVtbl->Send(p, a, b, c, d, e)
 #define IDirectPlay_SetPlayerName(p, a, b, c) (p)->lpVtbl->SetPlayerName(p, a, b, c)
-
 type IDirectPlay2Vtbl as IDirectPlay2Vtbl_
 
 type IDirectPlay2
@@ -466,7 +443,6 @@ end type
 #define IDirectPlay2_SetPlayerData(p, a, b, c, d) (p)->lpVtbl->SetPlayerData(p, a, b, c, d)
 #define IDirectPlay2_SetPlayerName(p, a, b, c) (p)->lpVtbl->SetPlayerName(p, a, b, c)
 #define IDirectPlay2_SetSessionDesc(p, a, b) (p)->lpVtbl->SetSessionDesc(p, a, b)
-
 type IDirectPlay3Vtbl as IDirectPlay3Vtbl_
 
 type IDirectPlay3
@@ -570,7 +546,6 @@ end type
 #define IDirectPlay3_GetGroupParent(p, a, b) (p)->lpVtbl->GetGroupParent(p, a, b)
 #define IDirectPlay3_GetPlayerAccount(p, a, b, c, d) (p)->lpVtbl->GetPlayerAccount(p, a, b, c, d)
 #define IDirectPlay3_GetPlayerFlags(p, a, b) (p)->lpVtbl->GetPlayerFlags(p, a, b)
-
 type IDirectPlay4Vtbl as IDirectPlay4Vtbl_
 
 type IDirectPlay4

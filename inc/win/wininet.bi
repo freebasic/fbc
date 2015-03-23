@@ -7,7 +7,6 @@
 extern "Windows"
 
 #define _WININET_
-
 type HINTERNET as LPVOID
 type LPHINTERNET as HINTERNET ptr
 type INTERNET_PORT as WORD
@@ -135,7 +134,6 @@ type LPINTERNET_ASYNC_RESULT as INTERNET_ASYNC_RESULT ptr
 #endif
 
 type LPINTERNET_DIAGNOSTIC_SOCKET_INFO as INTERNET_DIAGNOSTIC_SOCKET_INFO ptr
-
 #define IDSI_FLAG_KEEP_ALIVE &h00000001
 #define IDSI_FLAG_SECURE &h00000002
 #define IDSI_FLAG_PROXY &h00000004
@@ -328,7 +326,6 @@ type LPHTTP_VERSION_INFO as HTTP_VERSION_INFO ptr
 #endif
 
 type LPINTERNET_CONNECTED_INFO as INTERNET_CONNECTED_INFO ptr
-
 #define ISO_FORCE_DISCONNECTED &h00000001
 
 #ifdef __FB_64BIT__
@@ -510,18 +507,15 @@ type LPINTERNET_BUFFERSW as _INTERNET_BUFFERSW ptr
 #ifdef UNICODE
 	type INTERNET_BUFFERS as INTERNET_BUFFERSW
 	type LPINTERNET_BUFFERS as LPINTERNET_BUFFERSW
-
 	#define InternetTimeFromSystemTime InternetTimeFromSystemTimeW
 #else
 	type INTERNET_BUFFERS as INTERNET_BUFFERSA
 	type LPINTERNET_BUFFERS as LPINTERNET_BUFFERSA
-
 	declare function InternetTimeFromSystemTime(byval pst as const SYSTEMTIME ptr, byval dwRFC as DWORD, byval lpszTime as LPSTR, byval cbTime as DWORD) as WINBOOL
 #endif
 
 declare function InternetTimeFromSystemTimeA(byval pst as const SYSTEMTIME ptr, byval dwRFC as DWORD, byval lpszTime as LPSTR, byval cbTime as DWORD) as WINBOOL
 declare function InternetTimeFromSystemTimeW(byval pst as const SYSTEMTIME ptr, byval dwRFC as DWORD, byval lpszTime as LPWSTR, byval cbTime as DWORD) as WINBOOL
-
 #define INTERNET_RFC1123_FORMAT 0
 #define INTERNET_RFC1123_BUFSIZE 30
 
@@ -536,7 +530,6 @@ declare function InternetTimeFromSystemTimeW(byval pst as const SYSTEMTIME ptr, 
 	#define InternetCreateUrl InternetCreateUrlA
 	#define InternetCanonicalizeUrl InternetCanonicalizeUrlA
 	#define InternetCombineUrl InternetCombineUrlA
-
 	declare function InternetTimeToSystemTime(byval lpszTime as LPCSTR, byval pst as SYSTEMTIME ptr, byval dwReserved as DWORD) as WINBOOL
 #endif
 
@@ -568,7 +561,6 @@ declare function InternetCombineUrlW(byval lpszBaseUrl as LPCWSTR, byval lpszRel
 
 declare function InternetOpenA(byval lpszAgent as LPCSTR, byval dwAccessType as DWORD, byval lpszProxy as LPCSTR, byval lpszProxyBypass as LPCSTR, byval dwFlags as DWORD) as HINTERNET
 declare function InternetOpenW(byval lpszAgent as LPCWSTR, byval dwAccessType as DWORD, byval lpszProxy as LPCWSTR, byval lpszProxyBypass as LPCWSTR, byval dwFlags as DWORD) as HINTERNET
-
 #define INTERNET_OPEN_TYPE_PRECONFIG 0
 #define INTERNET_OPEN_TYPE_DIRECT 1
 #define INTERNET_OPEN_TYPE_PROXY 3
@@ -780,7 +772,6 @@ declare function InternetUnlockRequestFile(byval hLockRequestInfo as HANDLE) as 
 
 declare function InternetGetLastResponseInfoA(byval lpdwError as LPDWORD, byval lpszBuffer as LPSTR, byval lpdwBufferLength as LPDWORD) as WINBOOL
 declare function InternetGetLastResponseInfoW(byval lpdwError as LPDWORD, byval lpszBuffer as LPWSTR, byval lpdwBufferLength as LPDWORD) as WINBOOL
-
 type INTERNET_STATUS_CALLBACK as sub(byval hInternet as HINTERNET, byval dwContext as DWORD_PTR, byval dwInternetStatus as DWORD, byval lpvStatusInformation as LPVOID, byval dwStatusInformationLength as DWORD)
 type LPINTERNET_STATUS_CALLBACK as INTERNET_STATUS_CALLBACK ptr
 
@@ -792,7 +783,6 @@ type LPINTERNET_STATUS_CALLBACK as INTERNET_STATUS_CALLBACK ptr
 
 declare function InternetSetStatusCallbackA(byval hInternet as HINTERNET, byval lpfnInternetCallback as INTERNET_STATUS_CALLBACK) as INTERNET_STATUS_CALLBACK
 declare function InternetSetStatusCallbackW(byval hInternet as HINTERNET, byval lpfnInternetCallback as INTERNET_STATUS_CALLBACK) as INTERNET_STATUS_CALLBACK
-
 #define INTERNET_STATUS_RESOLVING_NAME 10
 #define INTERNET_STATUS_NAME_RESOLVED 11
 #define INTERNET_STATUS_CONNECTING_TO_SERVER 20
@@ -1327,7 +1317,6 @@ type LPGOPHER_UNKNOWN_ATTRIBUTE_TYPE as GOPHER_UNKNOWN_ATTRIBUTE_TYPE ptr
 #endif
 
 type LPGOPHER_ATTRIBUTE_TYPE as GOPHER_ATTRIBUTE_TYPE ptr
-
 #define MAX_GOPHER_CATEGORY_NAME 128
 #define MAX_GOPHER_ATTRIBUTE_NAME 128
 #define MIN_GOPHER_ATTRIBUTE_LENGTH 256
@@ -1400,9 +1389,7 @@ declare function GopherFindFirstFileA(byval hConnect as HINTERNET, byval lpszLoc
 declare function GopherFindFirstFileW(byval hConnect as HINTERNET, byval lpszLocator as LPCWSTR, byval lpszSearchString as LPCWSTR, byval lpFindData as LPGOPHER_FIND_DATAW, byval dwFlags as DWORD, byval dwContext as DWORD_PTR) as HINTERNET
 declare function GopherOpenFileA(byval hConnect as HINTERNET, byval lpszLocator as LPCSTR, byval lpszView as LPCSTR, byval dwFlags as DWORD, byval dwContext as DWORD_PTR) as HINTERNET
 declare function GopherOpenFileW(byval hConnect as HINTERNET, byval lpszLocator as LPCWSTR, byval lpszView as LPCWSTR, byval dwFlags as DWORD, byval dwContext as DWORD_PTR) as HINTERNET
-
 type GOPHER_ATTRIBUTE_ENUMERATOR as function(byval lpAttributeInfo as LPGOPHER_ATTRIBUTE_TYPE, byval dwError as DWORD) as WINBOOL
-
 declare function GopherGetAttributeA(byval hConnect as HINTERNET, byval lpszLocator as LPCSTR, byval lpszAttributeName as LPCSTR, byval lpBuffer as LPBYTE, byval dwBufferLength as DWORD, byval lpdwCharactersReturned as LPDWORD, byval lpfnEnumerator as GOPHER_ATTRIBUTE_ENUMERATOR, byval dwContext as DWORD_PTR) as WINBOOL
 declare function GopherGetAttributeW(byval hConnect as HINTERNET, byval lpszLocator as LPCWSTR, byval lpszAttributeName as LPCWSTR, byval lpBuffer as LPBYTE, byval dwBufferLength as DWORD, byval lpdwCharactersReturned as LPDWORD, byval lpfnEnumerator as GOPHER_ATTRIBUTE_ENUMERATOR, byval dwContext as DWORD_PTR) as WINBOOL
 
@@ -1644,9 +1631,7 @@ declare function InternetCheckConnectionW(byval lpszUrl as LPCWSTR, byval dwFlag
 #define FLAGS_ERROR_UI_FLAGS_GENERATE_DATA &h04
 #define FLAGS_ERROR_UI_FLAGS_NO_UI &h08
 #define FLAGS_ERROR_UI_SERIALIZE_DIALOGS &h10
-
 declare function InternetAuthNotifyCallback cdecl(byval dwContext as DWORD_PTR, byval dwReturn as DWORD, byval lpReserved as LPVOID) as DWORD
-
 type PFN_AUTH_NOTIFY as function(byval as DWORD_PTR, byval as DWORD, byval as LPVOID) as DWORD
 
 #ifdef __FB_64BIT__
@@ -1976,7 +1961,6 @@ type LPINTERNET_CACHE_GROUP_INFOW as _INTERNET_CACHE_GROUP_INFOW ptr
 #ifdef UNICODE
 	type INTERNET_CACHE_GROUP_INFO as INTERNET_CACHE_GROUP_INFOW
 	type LPINTERNET_CACHE_GROUP_INFO as LPINTERNET_CACHE_GROUP_INFOW
-
 	#define CreateUrlCacheEntry CreateUrlCacheEntryW
 	#define CommitUrlCacheEntry CommitUrlCacheEntryW
 	#define RetrieveUrlCacheEntryFile RetrieveUrlCacheEntryFileW
@@ -1989,7 +1973,6 @@ type LPINTERNET_CACHE_GROUP_INFOW as _INTERNET_CACHE_GROUP_INFOW ptr
 #else
 	type INTERNET_CACHE_GROUP_INFO as INTERNET_CACHE_GROUP_INFOA
 	type LPINTERNET_CACHE_GROUP_INFO as LPINTERNET_CACHE_GROUP_INFOA
-
 	#define CreateUrlCacheEntry CreateUrlCacheEntryA
 	#define CommitUrlCacheEntry CommitUrlCacheEntryA
 	#define RetrieveUrlCacheEntryFile RetrieveUrlCacheEntryFileA
@@ -2060,10 +2043,8 @@ declare function GetUrlCacheEntryInfoExW(byval lpszUrl as LPCWSTR, byval lpCache
 
 declare function SetUrlCacheEntryInfoA(byval lpszUrlName as LPCSTR, byval lpCacheEntryInfo as LPINTERNET_CACHE_ENTRY_INFOA, byval dwFieldControl as DWORD) as WINBOOL
 declare function SetUrlCacheEntryInfoW(byval lpszUrlName as LPCWSTR, byval lpCacheEntryInfo as LPINTERNET_CACHE_ENTRY_INFOW, byval dwFieldControl as DWORD) as WINBOOL
-
 #define INTERNET_CACHE_GROUP_ADD 0
 #define INTERNET_CACHE_GROUP_REMOVE 1
-
 declare function SetUrlCacheEntryGroupA(byval lpszUrlName as LPCSTR, byval dwFlags as DWORD, byval GroupId as GROUPID, byval pbGroupAttributes as LPBYTE, byval cbGroupAttributes as DWORD, byval lpReserved as LPVOID) as WINBOOL
 declare function SetUrlCacheEntryGroupW(byval lpszUrlName as LPCWSTR, byval dwFlags as DWORD, byval GroupId as GROUPID, byval pbGroupAttributes as LPBYTE, byval cbGroupAttributes as DWORD, byval lpReserved as LPVOID) as WINBOOL
 declare function FindFirstUrlCacheEntryExA(byval lpszUrlSearchPattern as LPCSTR, byval dwFlags as DWORD, byval dwFilter as DWORD, byval GroupId as GROUPID, byval lpFirstCacheEntryInfo as LPINTERNET_CACHE_ENTRY_INFOA, byval lpcbEntryInfo as LPDWORD, byval lpGroupAttributes as LPVOID, byval lpcbGroupAttributes as LPDWORD, byval lpReserved as LPVOID) as HANDLE
@@ -2083,9 +2064,7 @@ declare function InternetDialW(byval hwndParent as HWND, byval lpszConnectoid as
 #define INTERNET_DIAL_FORCE_PROMPT &h2000
 #define INTERNET_DIAL_SHOW_OFFLINE &h4000
 #define INTERNET_DIAL_UNATTENDED &h8000
-
 declare function InternetHangUp(byval dwConnection as DWORD_PTR, byval dwReserved as DWORD) as DWORD
-
 #define INTERENT_GOONLINE_REFRESH &h00000001
 #define INTERENT_GOONLINE_MASK &h00000001
 
@@ -2103,7 +2082,6 @@ declare function InternetAutodialHangup(byval dwReserved as DWORD) as WINBOOL
 declare function InternetGetConnectedState(byval lpdwFlags as LPDWORD, byval dwReserved as DWORD) as WINBOOL
 declare function InternetGetConnectedStateExA(byval lpdwFlags as LPDWORD, byval lpszConnectionName as LPSTR, byval dwBufLen as DWORD, byval dwReserved as DWORD) as WINBOOL
 declare function InternetGetConnectedStateExW(byval lpdwFlags as LPDWORD, byval lpszConnectionName as LPWSTR, byval dwBufLen as DWORD, byval dwReserved as DWORD) as WINBOOL
-
 #define PROXY_AUTO_DETECT_TYPE_DHCP 1
 #define PROXY_AUTO_DETECT_TYPE_DNS_A 2
 
@@ -2170,9 +2148,7 @@ declare function CreateMD5SSOHash(byval pszChallengeInfo as PWSTR, byval pwszRea
 #define INTERNET_RAS_INSTALLED &h10
 #define INTERNET_CONNECTION_OFFLINE &h20
 #define INTERNET_CONNECTION_CONFIGURED &h40
-
 type PFN_DIAL_HANDLER as function(byval as HWND, byval as LPCSTR, byval as DWORD, byval as LPDWORD) as DWORD
-
 #define INTERNET_CUSTOMDIAL_CONNECT 0
 #define INTERNET_CUSTOMDIAL_UNATTENDED 1
 #define INTERNET_CUSTOMDIAL_DISCONNECT 2
@@ -2190,15 +2166,12 @@ type PFN_DIAL_HANDLER as function(byval as HWND, byval as LPCSTR, byval as DWORD
 	#define InternetSetPerSiteCookieDecision InternetSetPerSiteCookieDecisionA
 	#define InternetGetPerSiteCookieDecision InternetGetPerSiteCookieDecisionA
 	#define InternetEnumPerSiteCookieDecision InternetEnumPerSiteCookieDecisionA
-
 	declare function InternetSetDialState(byval lpszConnectoid as LPCSTR, byval dwState as DWORD, byval dwReserved as DWORD) as WINBOOL
 #endif
 
 declare function InternetSetDialStateA(byval lpszConnectoid as LPCSTR, byval dwState as DWORD, byval dwReserved as DWORD) as WINBOOL
 declare function InternetSetDialStateW(byval lpszConnectoid as LPCWSTR, byval dwState as DWORD, byval dwReserved as DWORD) as WINBOOL
-
 #define INTERNET_DIALSTATE_DISCONNECTED 1
-
 declare function InternetSetPerSiteCookieDecisionA(byval pchHostName as LPCSTR, byval dwDecision as DWORD) as WINBOOL
 declare function InternetSetPerSiteCookieDecisionW(byval pchHostName as LPCWSTR, byval dwDecision as DWORD) as WINBOOL
 declare function InternetGetPerSiteCookieDecisionA(byval pchHostName as LPCSTR, byval pResult as ulong ptr) as WINBOOL
@@ -2227,7 +2200,6 @@ declare function InternetEnumPerSiteCookieDecisionW(byval pszSiteName as LPWSTR,
 #define PRIVACY_TEMPLATE_MAX PRIVACY_TEMPLATE_LOW
 #define PRIVACY_TYPE_FIRST_PARTY 0
 #define PRIVACY_TYPE_THIRD_PARTY 1
-
 declare function PrivacySetZonePreferenceW(byval dwZone as DWORD, byval dwType as DWORD, byval dwTemplate as DWORD, byval pszPreference as LPCWSTR) as DWORD
 declare function PrivacyGetZonePreferenceW(byval dwZone as DWORD, byval dwType as DWORD, byval pdwTemplate as LPDWORD, byval pszBuffer as LPWSTR, byval pdwBufferLength as LPDWORD) as DWORD
 

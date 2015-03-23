@@ -1,9 +1,7 @@
 #pragma once
 
 #define __IPIFCONS_H__
-
 type IFTYPE as ULONG
-
 #define MIN_IF_TYPE 1
 #define IF_TYPE_OTHER 1
 #define IF_TYPE_REGULAR_1822 2

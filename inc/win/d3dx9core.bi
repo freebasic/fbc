@@ -30,11 +30,8 @@ type LPD3DXFONT as ID3DXFont ptr
 type LPD3DXLINE as ID3DXLine ptr
 type LPD3DXRenderToEnvMap as ID3DXRenderToEnvMap ptr
 type LPD3DXRENDERTOSURFACE as ID3DXRenderToSurface ptr
-
 type ID3DXSprite as ID3DXSprite_
-
 type LPD3DXSPRITE as ID3DXSprite ptr
-
 type ID3DXBufferVtbl as ID3DXBufferVtbl_
 
 type ID3DXBuffer
@@ -212,7 +209,6 @@ type _D3DXRTE_DESC
 end type
 
 type D3DXRTE_DESC as _D3DXRTE_DESC
-
 type ID3DXRenderToEnvMapVtbl as ID3DXRenderToEnvMapVtbl_
 
 type ID3DXRenderToEnvMap
@@ -257,7 +253,6 @@ type _D3DXRTS_DESC
 end type
 
 type D3DXRTS_DESC as _D3DXRTS_DESC
-
 type ID3DXRenderToSurfaceVtbl as ID3DXRenderToSurfaceVtbl_
 
 type ID3DXRenderToSurface
@@ -285,7 +280,6 @@ end type
 #define ID3DXRenderToSurface_EndScene(p, a) (p)->lpVtbl->EndScene(p, a)
 #define ID3DXRenderToSurface_OnLostDevice(p) (p)->lpVtbl->OnLostDevice(p)
 #define ID3DXRenderToSurface_OnResetDevice(p) (p)->lpVtbl->OnResetDevice(p)
-
 type ID3DXSpriteVtbl as ID3DXSpriteVtbl_
 
 type ID3DXSprite_

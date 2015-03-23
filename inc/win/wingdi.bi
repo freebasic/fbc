@@ -202,7 +202,6 @@ end type
 
 type DRAWPATRECT as _DRAWPATRECT
 type PDRAWPATRECT as _DRAWPATRECT ptr
-
 #define NEWFRAME 1
 #define ABORTDOC_ 2
 #define NEXTBAND 3
@@ -305,7 +304,6 @@ end type
 
 type PSINJECTDATA as _PSINJECTDATA
 type PPSINJECTDATA as _PSINJECTDATA ptr
-
 #define PSINJECT_BEGINSTREAM 1
 #define PSINJECT_PSADOBE 2
 #define PSINJECT_PAGESATEND 3
@@ -365,7 +363,6 @@ end type
 
 type PSFEATURE_CUSTPAPER as _PSFEATURE_CUSTPAPER
 type PPSFEATURE_CUSTPAPER as _PSFEATURE_CUSTPAPER ptr
-
 #define PSPROTOCOL_ASCII 0
 #define PSPROTOCOL_BCP 1
 #define PSPROTOCOL_TBCP 2
@@ -448,20 +445,15 @@ end type
 
 type RGBQUAD as tagRGBQUAD
 type LPRGBQUAD as RGBQUAD ptr
-
 #define CS_ENABLE __MSABI_LONG(&h00000001)
 #define CS_DISABLE __MSABI_LONG(&h00000002)
 #define CS_DELETE_TRANSFORM __MSABI_LONG(&h00000003)
 #define LCS_SIGNATURE asc("PSOC")
 #define LCS_sRGB asc("sRGB")
 #define LCS_WINDOWS_COLOR_SPACE asc("Win ")
-
 type LCSCSTYPE as LONG
-
 #define LCS_CALIBRATED_RGB __MSABI_LONG(&h00000000)
-
 type LCSGAMUTMATCH as LONG
-
 #define LCS_GM_BUSINESS __MSABI_LONG(&h00000001)
 #define LCS_GM_GRAPHICS __MSABI_LONG(&h00000002)
 #define LCS_GM_IMAGES __MSABI_LONG(&h00000004)
@@ -629,7 +621,6 @@ end type
 
 type LPBITMAPV5HEADER as BITMAPV5HEADER ptr
 type PBITMAPV5HEADER as BITMAPV5HEADER ptr
-
 #define PROFILE_LINKED asc("LINK")
 #define PROFILE_EMBEDDED asc("MBED")
 #define BI_RGB __MSABI_LONG(0)
@@ -668,7 +659,6 @@ end type
 type BITMAPFILEHEADER as tagBITMAPFILEHEADER
 type LPBITMAPFILEHEADER as tagBITMAPFILEHEADER ptr
 type PBITMAPFILEHEADER as tagBITMAPFILEHEADER ptr
-
 #define MAKEPOINTS(l) (*cptr(POINTS ptr, @(l)))
 
 type tagFONTSIGNATURE
@@ -1050,7 +1040,6 @@ type EXTLOGPEN32 as tagEXTLOGPEN32
 type PEXTLOGPEN32 as tagEXTLOGPEN32 ptr
 type NPEXTLOGPEN32 as tagEXTLOGPEN32 ptr
 type LPEXTLOGPEN32 as tagEXTLOGPEN32 ptr
-
 #define _PALETTEENTRY_DEFINED
 
 type tagPALETTEENTRY
@@ -1063,7 +1052,6 @@ end type
 type PALETTEENTRY as tagPALETTEENTRY
 type PPALETTEENTRY as tagPALETTEENTRY ptr
 type LPPALETTEENTRY as tagPALETTEENTRY ptr
-
 #define _LOGPALETTE_DEFINED
 
 type tagLOGPALETTE
@@ -1076,7 +1064,6 @@ type LOGPALETTE as tagLOGPALETTE
 type PLOGPALETTE as tagLOGPALETTE ptr
 type NPLOGPALETTE as tagLOGPALETTE ptr
 type LPLOGPALETTE as tagLOGPALETTE ptr
-
 #define LF_FACESIZE 32
 
 type tagLOGFONTA
@@ -1310,7 +1297,6 @@ end type
 
 type PANOSE as tagPANOSE
 type LPPANOSE as tagPANOSE ptr
-
 #define PAN_ANY 0
 #define PAN_NO_FIT 1
 #define PAN_FAMILY_TEXT_DISPLAY 2
@@ -2126,7 +2112,6 @@ type RGNDATA as _RGNDATA
 type PRGNDATA as _RGNDATA ptr
 type NPRGNDATA as _RGNDATA ptr
 type LPRGNDATA as _RGNDATA ptr
-
 #define SYSRGN 4
 
 type _ABC
@@ -2312,7 +2297,6 @@ end type
 
 type GLYPHMETRICS as _GLYPHMETRICS
 type LPGLYPHMETRICS as _GLYPHMETRICS ptr
-
 #define GGO_METRICS 0
 #define GGO_BITMAP 1
 #define GGO_NATIVE 2
@@ -2352,7 +2336,6 @@ end type
 
 type TTPOLYGONHEADER as tagTTPOLYGONHEADER
 type LPTTPOLYGONHEADER as tagTTPOLYGONHEADER ptr
-
 #define GCP_DBCS &h0001
 #define GCP_REORDER &h0002
 #define GCP_USEKERNING &h0008
@@ -2435,7 +2418,6 @@ end type
 
 type RASTERIZER_STATUS as _RASTERIZER_STATUS
 type LPRASTERIZER_STATUS as _RASTERIZER_STATUS ptr
-
 #define TT_AVAILABLE &h0001
 #define TT_ENABLED &h0002
 
@@ -2496,7 +2478,6 @@ type LPPIXELFORMATDESCRIPTOR as tagPIXELFORMATDESCRIPTOR ptr
 #define PFD_DEPTH_DONTCARE &h20000000
 #define PFD_DOUBLEBUFFER_DONTCARE &h40000000
 #define PFD_STEREO_DONTCARE &h80000000
-
 type OLDFONTENUMPROCA as function(byval as const LOGFONTA ptr, byval as const TEXTMETRICA ptr, byval as DWORD, byval as LPARAM) as long
 type OLDFONTENUMPROCW as function(byval as const LOGFONTW ptr, byval as const TEXTMETRICW ptr, byval as DWORD, byval as LPARAM) as long
 
@@ -2587,7 +2568,6 @@ declare function DeleteDC(byval hdc as HDC) as WINBOOL
 declare function DeleteMetaFile(byval hmf as HMETAFILE) as WINBOOL
 declare function DeleteObject(byval ho as HGDIOBJ) as WINBOOL
 declare function DescribePixelFormat(byval hdc as HDC, byval iPixelFormat as long, byval nBytes as UINT, byval ppfd as LPPIXELFORMATDESCRIPTOR) as long
-
 type LPFNDEVMODE as function(byval as HWND, byval as HMODULE, byval as LPDEVMODE, byval as LPSTR, byval as LPSTR, byval as LPDEVMODE, byval as LPSTR, byval as UINT) as UINT
 type LPFNDEVCAPS as function(byval as LPSTR, byval as LPSTR, byval as UINT, byval as LPSTR, byval as LPDEVMODE) as DWORD
 
@@ -2805,7 +2785,6 @@ end type
 type GLYPHSET as tagGLYPHSET
 type PGLYPHSET as tagGLYPHSET ptr
 type LPGLYPHSET as tagGLYPHSET ptr
-
 #define GS_8BIT_INDICES &h00000001
 #define GGI_MARK_NONEXISTING_GLYPHS &h0001
 
@@ -2938,13 +2917,11 @@ type LPENUMLOGFONTEXDVW as tagENUMLOGFONTEXDVW ptr
 	type ENUMLOGFONTEXDV as ENUMLOGFONTEXDVW
 	type PENUMLOGFONTEXDV as PENUMLOGFONTEXDVW
 	type LPENUMLOGFONTEXDV as LPENUMLOGFONTEXDVW
-
 	#define CreateFontIndirectEx CreateFontIndirectExW
 #else
 	type ENUMLOGFONTEXDV as ENUMLOGFONTEXDVA
 	type PENUMLOGFONTEXDV as PENUMLOGFONTEXDVA
 	type LPENUMLOGFONTEXDV as LPENUMLOGFONTEXDVA
-
 	#define CreateFontIndirectEx CreateFontIndirectExA
 #endif
 
@@ -2973,14 +2950,12 @@ type LPENUMTEXTMETRICW as tagENUMTEXTMETRICW ptr
 	type ENUMTEXTMETRIC as ENUMTEXTMETRICW
 	type PENUMTEXTMETRIC as PENUMTEXTMETRICW
 	type LPENUMTEXTMETRIC as LPENUMTEXTMETRICW
-
 	#define ResetDC ResetDCW
 	#define RemoveFontResource RemoveFontResourceW
 #else
 	type ENUMTEXTMETRIC as ENUMTEXTMETRICA
 	type PENUMTEXTMETRIC as PENUMTEXTMETRICA
 	type LPENUMTEXTMETRIC as LPENUMTEXTMETRICA
-
 	#define ResetDC ResetDCA
 	#define RemoveFontResource RemoveFontResourceA
 #endif
@@ -3051,7 +3026,6 @@ declare function SetTextColor(byval hdc as HDC, byval color as COLORREF) as COLO
 declare function SetTextAlign(byval hdc as HDC, byval align as UINT) as UINT
 declare function SetTextJustification(byval hdc as HDC, byval extra as long, byval count as long) as WINBOOL
 declare function UpdateColors(byval hdc as HDC) as WINBOOL
-
 type COLOR16 as USHORT
 
 type _TRIVERTEX
@@ -3095,10 +3069,8 @@ end type
 
 type BLENDFUNCTION as _BLENDFUNCTION
 type PBLENDFUNCTION as _BLENDFUNCTION ptr
-
 #define AC_SRC_OVER &h00
 #define AC_SRC_ALPHA &h01
-
 declare function AlphaBlend(byval hdcDest as HDC, byval xoriginDest as long, byval yoriginDest as long, byval wDest as long, byval hDest as long, byval hdcSrc as HDC, byval xoriginSrc as long, byval yoriginSrc as long, byval wSrc as long, byval hSrc as long, byval ftn as BLENDFUNCTION) as WINBOOL
 declare function GdiAlphaBlend(byval hdcDest as HDC, byval xoriginDest as long, byval yoriginDest as long, byval wDest as long, byval hDest as long, byval hdcSrc as HDC, byval xoriginSrc as long, byval yoriginSrc as long, byval wSrc as long, byval hSrc as long, byval ftn as BLENDFUNCTION) as WINBOOL
 declare function TransparentBlt(byval hdcDest as HDC, byval xoriginDest as long, byval yoriginDest as long, byval wDest as long, byval hDest as long, byval hdcSrc as HDC, byval xoriginSrc as long, byval yoriginSrc as long, byval wSrc as long, byval hSrc as long, byval crTransparent as UINT) as WINBOOL
@@ -3108,7 +3080,6 @@ declare function GdiTransparentBlt(byval hdcDest as HDC, byval xoriginDest as lo
 #define GRADIENT_FILL_RECT_V &h00000001
 #define GRADIENT_FILL_TRIANGLE &h00000002
 #define GRADIENT_FILL_OP_FLAG &h000000ff
-
 declare function GradientFill(byval hdc as HDC, byval pVertex as PTRIVERTEX, byval nVertex as ULONG, byval pMesh as PVOID, byval nMesh as ULONG, byval ulMode as ULONG) as WINBOOL
 declare function GdiGradientFill(byval hdc as HDC, byval pVertex as PTRIVERTEX, byval nVertex as ULONG, byval pMesh as PVOID, byval nMesh as ULONG, byval ulMode as ULONG) as WINBOOL
 
@@ -3125,13 +3096,9 @@ declare function GdiGradientFill(byval hdc as HDC, byval pVertex as PTRIVERTEX, 
 #endif
 
 declare function PlayMetaFileRecord(byval hdc as HDC, byval lpHandleTable as LPHANDLETABLE, byval lpMR as LPMETARECORD, byval noObjs as UINT) as WINBOOL
-
 type MFENUMPROC as function(byval hdc as HDC, byval lpht as HANDLETABLE ptr, byval lpMR as METARECORD ptr, byval nObj as long, byval lParam as LPARAM) as long
-
 declare function EnumMetaFile(byval hdc as HDC, byval hmf as HMETAFILE, byval lpProc as MFENUMPROC, byval lParam as LPARAM) as WINBOOL
-
 type ENHMFENUMPROC as function(byval hdc as HDC, byval lpht as HANDLETABLE ptr, byval lpmr as const ENHMETARECORD ptr, byval hHandles as long, byval data as LPARAM) as long
-
 declare function CloseEnhMetaFile(byval hdc as HDC) as HENHMETAFILE
 declare function CopyEnhMetaFileA(byval hEnh as HENHMETAFILE, byval lpFileName as LPCSTR) as HENHMETAFILE
 declare function CopyEnhMetaFileW(byval hEnh as HENHMETAFILE, byval lpFileName as LPCWSTR) as HENHMETAFILE
@@ -3232,7 +3199,6 @@ type LPCOLORADJUSTMENT as tagCOLORADJUSTMENT ptr
 declare function SetColorAdjustment(byval hdc as HDC, byval lpca as const COLORADJUSTMENT ptr) as WINBOOL
 declare function GetColorAdjustment(byval hdc as HDC, byval lpca as LPCOLORADJUSTMENT) as WINBOOL
 declare function CreateHalftonePalette(byval hdc as HDC) as HPALETTE
-
 type ABORTPROC as function(byval as HDC, byval as long) as WINBOOL
 
 type _DOCINFOA
@@ -3339,7 +3305,6 @@ declare function SetBitmapDimensionEx(byval hbm as HBITMAP, byval w as long, byv
 declare function SetBrushOrgEx(byval hdc as HDC, byval x as long, byval y as long, byval lppt as LPPOINT) as WINBOOL
 declare function GetTextFaceA(byval hdc as HDC, byval c as long, byval lpName as LPSTR) as long
 declare function GetTextFaceW(byval hdc as HDC, byval c as long, byval lpName as LPWSTR) as long
-
 #define FONTMAPPER_MAX 10
 
 type tagKERNINGPAIR
@@ -3370,7 +3335,6 @@ declare function GdiGetBatchLimit() as DWORD
 #define ICM_ON 2
 #define ICM_QUERY 3
 #define ICM_DONE_OUTSIDEDC 4
-
 type ICMENUMPROCA as function(byval as LPSTR, byval as LPARAM) as long
 type ICMENUMPROCW as function(byval as LPWSTR, byval as LPARAM) as long
 
@@ -4331,7 +4295,6 @@ end type
 
 type EMRNAMEDESCAPE as tagEMRNAMEDESCAPE
 type PEMRNAMEDESCAPE as tagEMRNAMEDESCAPE ptr
-
 #define SETICMPROFILE_EMBEDED &h00000001
 
 type tagEMRSETICMPROFILE
@@ -4348,7 +4311,6 @@ type EMRSETICMPROFILEA as tagEMRSETICMPROFILE
 type PEMRSETICMPROFILEA as tagEMRSETICMPROFILE ptr
 type EMRSETICMPROFILEW as tagEMRSETICMPROFILE
 type PEMRSETICMPROFILEW as tagEMRSETICMPROFILE ptr
-
 #define CREATECOLORSPACE_EMBEDED &h00000001
 
 type tagEMRCREATECOLORSPACEW
@@ -4362,7 +4324,6 @@ end type
 
 type EMRCREATECOLORSPACEW as tagEMRCREATECOLORSPACEW
 type PEMRCREATECOLORSPACEW as tagEMRCREATECOLORSPACEW ptr
-
 #define COLORMATCHTOTARGET_EMBEDED &h00000001
 
 type tagCOLORMATCHTOTARGET
@@ -4447,7 +4408,6 @@ end type
 
 type EMRTRANSPARENTBLT as tagEMRTRANSPARENTBLT
 type PEMRTRANSPARENTBLT as tagEMRTRANSPARENTBLT ptr
-
 #define GDICOMMENT_IDENTIFIER &h43494447
 #define GDICOMMENT_WINDOWS_METAFILE &h80000001
 #define GDICOMMENT_BEGINGROUP &h00000002
@@ -4495,7 +4455,6 @@ end type
 type GLYPHMETRICSFLOAT as _GLYPHMETRICSFLOAT
 type PGLYPHMETRICSFLOAT as _GLYPHMETRICSFLOAT ptr
 type LPGLYPHMETRICSFLOAT as _GLYPHMETRICSFLOAT ptr
-
 #define WGL_FONT_LINES 0
 #define WGL_FONT_POLYGONS 1
 
@@ -4597,9 +4556,7 @@ end type
 type WGLSWAP as _WGLSWAP
 type PWGLSWAP as _WGLSWAP ptr
 type LPWGLSWAP as _WGLSWAP ptr
-
 #define WGL_SWAPMULTIPLE_MAX 16
-
 declare function wglSwapMultipleBuffers(byval as UINT, byval as const WGLSWAP ptr) as DWORD
 
 end extern

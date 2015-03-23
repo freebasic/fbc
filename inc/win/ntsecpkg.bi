@@ -5,7 +5,6 @@
 extern "Windows"
 
 #define _NTSECPKG_
-
 type PLSA_CLIENT_REQUEST as PVOID ptr
 
 type _LSA_TOKEN_INFORMATION_TYPE as long
@@ -70,7 +69,6 @@ end type
 
 type LSA_DISPATCH_TABLE as _LSA_DISPATCH_TABLE
 type PLSA_DISPATCH_TABLE as _LSA_DISPATCH_TABLE ptr
-
 #define LSA_AP_NAME_INITIALIZE_PACKAGE !"LsaApInitializePackage\0"
 #define LSA_AP_NAME_LOGON_USER !"LsaApLogonUser\0"
 #define LSA_AP_NAME_LOGON_USER_EX !"LsaApLogonUserEx\0"
@@ -86,24 +84,15 @@ type PLSA_AP_CALL_PACKAGE as function(byval ClientRequest as PLSA_CLIENT_REQUEST
 type PLSA_AP_CALL_PACKAGE_PASSTHROUGH as function(byval ClientRequest as PLSA_CLIENT_REQUEST, byval ProtocolSubmitBuffer as PVOID, byval ClientBufferBase as PVOID, byval SubmitBufferLength as ULONG, byval ProtocolReturnBuffer as PVOID ptr, byval ReturnBufferLength as PULONG, byval ProtocolStatus as PNTSTATUS) as NTSTATUS
 type PLSA_AP_LOGON_TERMINATED as sub(byval LogonId as PLUID)
 type PLSA_AP_CALL_PACKAGE_UNTRUSTED as function(byval ClientRequest as PLSA_CLIENT_REQUEST, byval ProtocolSubmitBuffer as PVOID, byval ClientBufferBase as PVOID, byval SubmitBufferLength as ULONG, byval ProtocolReturnBuffer as PVOID ptr, byval ReturnBufferLength as PULONG, byval ProtocolStatus as PNTSTATUS) as NTSTATUS
-
 #define _SAM_CREDENTIAL_UPDATE_DEFINED
-
 type PSAM_CREDENTIAL_UPDATE_NOTIFY_ROUTINE as function cdecl(byval ClearPassword as PUNICODE_STRING, byval OldCredentials as PVOID, byval OldCredentialSize as ULONG, byval UserAccountControl as ULONG, byval UPN as PUNICODE_STRING, byval UserName as PUNICODE_STRING, byval NetbiosDomainName as PUNICODE_STRING, byval DnsDomainName as PUNICODE_STRING, byval NewCredentials as PVOID ptr, byval NewCredentialSize as ULONG ptr) as NTSTATUS
-
 #define SAM_CREDENTIAL_UPDATE_NOTIFY_ROUTINE "CredentialUpdateNotify"
-
 type PSAM_CREDENTIAL_UPDATE_REGISTER_ROUTINE as function cdecl(byval CredentialName as PUNICODE_STRING) as BOOLEAN
-
 #define SAM_CREDENTIAL_UPDATE_REGISTER_ROUTINE "CredentialUpdateRegister"
-
 type PSAM_CREDENTIAL_UPDATE_FREE_ROUTINE as sub cdecl(byval p as PVOID)
-
 #define SAM_CREDENTIAL_UPDATE_FREE_ROUTINE "CredentialUpdateFree"
-
 type SEC_THREAD_START as LPTHREAD_START_ROUTINE
 type SEC_ATTRS as LPSECURITY_ATTRIBUTES
-
 #define SecEqualLuid(L1, L2) ((cast(PLUID, L1)->LowPart = cast(PLUID, L2)->LowPart) andalso (cast(PLUID, L1)->HighPart = cast(PLUID, L2)->HighPart))
 #define SecIsZeroLuid(L1) ((L1->LowPart or L1->HighPart) = 0)
 
@@ -120,7 +109,6 @@ end type
 
 type SECPKG_CLIENT_INFO as _SECPKG_CLIENT_INFO
 type PSECPKG_CLIENT_INFO as _SECPKG_CLIENT_INFO ptr
-
 #define SECPKG_CLIENT_PROCESS_TERMINATED &h01
 #define SECPKG_CLIENT_THREAD_TERMINATED &h02
 
@@ -133,7 +121,6 @@ end type
 
 type SECPKG_CALL_INFO as _SECPKG_CALL_INFO
 type PSECPKG_CALL_INFO as _SECPKG_CALL_INFO ptr
-
 #define SECPKG_CALL_KERNEL_MODE &h00000001
 #define SECPKG_CALL_ANSI &h00000002
 #define SECPKG_CALL_URGENT &h00000004
@@ -163,12 +150,9 @@ end type
 
 type SECPKG_SUPPLEMENTAL_CRED_ARRAY as _SECPKG_SUPPLEMENTAL_CRED_ARRAY
 type PSECPKG_SUPPLEMENTAL_CRED_ARRAY as _SECPKG_SUPPLEMENTAL_CRED_ARRAY ptr
-
 #define SECBUFFER_UNMAPPED &h40000000
 #define SECBUFFER_KERNEL_MAP &h20000000
-
 type PLSA_CALLBACK_FUNCTION as function(byval Argument1 as ULONG_PTR, byval Argument2 as ULONG_PTR, byval InputBuffer as PSecBuffer, byval OutputBuffer as PSecBuffer) as NTSTATUS
-
 #define PRIMARY_CRED_CLEAR_PASSWORD &h1
 #define PRIMARY_CRED_OWF_PASSWORD &h2
 #define PRIMARY_CRED_UPDATE &h4
@@ -196,7 +180,6 @@ end type
 
 type SECPKG_PRIMARY_CRED as _SECPKG_PRIMARY_CRED
 type PSECPKG_PRIMARY_CRED as _SECPKG_PRIMARY_CRED ptr
-
 #define MAX_CRED_SIZE 1024
 #define SECPKG_STATE_ENCRYPTION_PERMITTED &h01
 #define SECPKG_STATE_STRONG_ENCRYPTION_PERMITTED &h02
@@ -258,7 +241,6 @@ end type
 
 type SECPKG_WOW_CLIENT_DLL as _SECPKG_WOW_CLIENT_DLL
 type PSECPKG_WOW_CLIENT_DLL as _SECPKG_WOW_CLIENT_DLL ptr
-
 #define SECPKG_MAX_OID_LENGTH 32
 
 type _SECPKG_SERIALIZED_OID
@@ -293,7 +275,6 @@ end type
 
 type SECPKG_EXTENDED_INFORMATION as _SECPKG_EXTENDED_INFORMATION
 type PSECPKG_EXTENDED_INFORMATION as _SECPKG_EXTENDED_INFORMATION ptr
-
 #define SECPKG_ATTR_SASL_CONTEXT &h00010000
 
 type _SecPkgContext_SaslContext
@@ -302,7 +283,6 @@ end type
 
 type SecPkgContext_SaslContext as _SecPkgContext_SaslContext
 type PSecPkgContext_SaslContext as _SecPkgContext_SaslContext ptr
-
 #define SECPKG_ATTR_THUNK_ALL &h00010000
 #define SECURITY_USER_DATA_DEFINED
 
@@ -317,7 +297,6 @@ type SECURITY_USER_DATA as _SECURITY_USER_DATA
 type PSECURITY_USER_DATA as _SECURITY_USER_DATA ptr
 type SecurityUserData as SECURITY_USER_DATA
 type PSecurityUserData as SECURITY_USER_DATA ptr
-
 #define UNDERSTANDS_LONG_NAMES 1
 #define NO_LONG_NAMES 2
 
@@ -338,7 +317,6 @@ enum
 end enum
 
 type SECPKG_NAME_TYPE as _SECPKG_NAME_TYPE
-
 #define NOTIFIER_FLAG_NEW_THREAD &h00000001
 #define NOTIFIER_FLAG_ONE_SHOT &h00000002
 #define NOTIFIER_FLAG_SECONDS &h80000000
@@ -360,7 +338,6 @@ end type
 
 type SECPKG_EVENT_PACKAGE_CHANGE as _SECPKG_EVENT_PACKAGE_CHANGE
 type PSECPKG_EVENT_PACKAGE_CHANGE as _SECPKG_EVENT_PACKAGE_CHANGE ptr
-
 #define SECPKG_PACKAGE_CHANGE_LOAD 0
 #define SECPKG_PACKAGE_CHANGE_UNLOAD 1
 #define SECPKG_PACKAGE_CHANGE_SELECT 2
@@ -517,7 +494,6 @@ end type
 type SECPKG_DLL_FUNCTIONS as _SECPKG_DLL_FUNCTIONS
 type PSECPKG_DLL_FUNCTIONS as _SECPKG_DLL_FUNCTIONS ptr
 type PLSA_AP_LOGON_USER_EX2 as function cdecl(byval ClientRequest as PLSA_CLIENT_REQUEST, byval LogonType as SECURITY_LOGON_TYPE, byval AuthenticationInformation as PVOID, byval ClientAuthenticationBase as PVOID, byval AuthenticationInformationLength as ULONG, byval ProfileBuffer as PVOID ptr, byval ProfileBufferLength as PULONG, byval LogonId as PLUID, byval SubStatus as PNTSTATUS, byval TokenInformationType as PLSA_TOKEN_INFORMATION_TYPE, byval TokenInformation as PVOID ptr, byval AccountName as PUNICODE_STRING ptr, byval AuthenticatingAuthority as PUNICODE_STRING ptr, byval MachineName as PUNICODE_STRING ptr, byval PrimaryCredentials as PSECPKG_PRIMARY_CRED, byval CachedCredentials as PSECPKG_SUPPLEMENTAL_CRED_ARRAY ptr) as NTSTATUS
-
 #define LSA_AP_NAME_LOGON_USER_EX2 !"LsaApLogonUserEx2\0"
 #define SP_ACCEPT_CREDENTIALS_NAME !"SpAcceptCredentials\0"
 
@@ -608,7 +584,6 @@ end type
 
 type KSEC_LIST_ENTRY as _KSEC_LIST_ENTRY
 type PKSEC_LIST_ENTRY as _KSEC_LIST_ENTRY ptr
-
 #macro KsecInitializeListEntry(Entry, SigValue)
 	cast(PKSEC_LIST_ENTRY, Entry)->List.Flink = NULL
 	cast(PKSEC_LIST_ENTRY, Entry)->List.Blink = NULL
@@ -617,7 +592,6 @@ type PKSEC_LIST_ENTRY as _KSEC_LIST_ENTRY ptr
 	cast(PKSEC_LIST_ENTRY, Entry)->OwningList = NULL
 	cast(PKSEC_LIST_ENTRY, Entry)->Reserved = NULL
 #endmacro
-
 declare function KSecCreateContextList(byval Type as KSEC_CONTEXT_TYPE) as PVOID
 declare sub KSecInsertListEntry(byval List as PVOID, byval Entry as PKSEC_LIST_ENTRY)
 declare function KSecReferenceListEntry(byval Entry as PKSEC_LIST_ENTRY, byval Signature as ULONG, byval RemoveNoRef as BOOLEAN) as NTSTATUS
@@ -666,9 +640,7 @@ end type
 
 type SECPKG_KERNEL_FUNCTION_TABLE as _SECPKG_KERNEL_FUNCTION_TABLE
 type PSECPKG_KERNEL_FUNCTION_TABLE as _SECPKG_KERNEL_FUNCTION_TABLE ptr
-
 declare function KSecRegisterSecurityProvider(byval ProviderName as PSECURITY_STRING, byval Table as PSECPKG_KERNEL_FUNCTION_TABLE) as SECURITY_STATUS
-
 extern KspKernelFunctions as SECPKG_KERNEL_FUNCTIONS
 
 end extern

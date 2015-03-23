@@ -58,10 +58,8 @@ type _xml_error
 end type
 
 type XML_ERROR as _xml_error
-
 extern __MIDL_itf_msxml_0000_v0_0_c_ifspec as RPC_IF_HANDLE
 extern __MIDL_itf_msxml_0000_v0_0_s_ifspec as RPC_IF_HANDLE
-
 #define __MSXML_LIBRARY_DEFINED__
 
 type tagDOMNodeType as long
@@ -95,13 +93,9 @@ enum
 end enum
 
 type XMLELEM_TYPE as tagXMLEMEM_TYPE
-
 extern LIBID_MSXML as const IID
-
 #define __IXMLDOMImplementation_INTERFACE_DEFINED__
-
 extern IID_IXMLDOMImplementation as const IID
-
 type IXMLDOMImplementation as IXMLDOMImplementation_
 
 type IXMLDOMImplementationVtbl
@@ -121,15 +115,12 @@ end type
 
 declare function IXMLDOMImplementation_hasFeature_Proxy(byval This as IXMLDOMImplementation ptr, byval feature as BSTR, byval version as BSTR, byval hasFeature as VARIANT_BOOL ptr) as HRESULT
 declare sub IXMLDOMImplementation_hasFeature_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-
 #define __IXMLDOMNode_INTERFACE_DEFINED__
-
 extern IID_IXMLDOMNode as const IID
-
-type IXMLDOMDocument as IXMLDOMDocument_
-type IXMLDOMNamedNodeMap as IXMLDOMNamedNodeMap_
-type IXMLDOMNodeList as IXMLDOMNodeList_
 type IXMLDOMNode as IXMLDOMNode_
+type IXMLDOMNodeList as IXMLDOMNodeList_
+type IXMLDOMNamedNodeMap as IXMLDOMNamedNodeMap_
+type IXMLDOMDocument as IXMLDOMDocument_
 
 type IXMLDOMNodeVtbl
 	QueryInterface as function(byval This as IXMLDOMNode ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
@@ -253,11 +244,8 @@ declare function IXMLDOMNode_get_baseName_Proxy(byval This as IXMLDOMNode ptr, b
 declare sub IXMLDOMNode_get_baseName_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IXMLDOMNode_transformNodeToObject_Proxy(byval This as IXMLDOMNode ptr, byval stylesheet as IXMLDOMNode ptr, byval outputObject as VARIANT) as HRESULT
 declare sub IXMLDOMNode_transformNodeToObject_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-
 #define __IXMLDOMDocumentFragment_INTERFACE_DEFINED__
-
 extern IID_IXMLDOMDocumentFragment as const IID
-
 type IXMLDOMDocumentFragment as IXMLDOMDocumentFragment_
 
 type IXMLDOMDocumentFragmentVtbl
@@ -311,18 +299,16 @@ type IXMLDOMDocumentFragment_
 end type
 
 #define __IXMLDOMDocument_INTERFACE_DEFINED__
-
 extern IID_IXMLDOMDocument as const IID
-
-type IXMLDOMParseError as IXMLDOMParseError_
-type IXMLDOMEntityReference as IXMLDOMEntityReference_
-type IXMLDOMAttribute as IXMLDOMAttribute_
-type IXMLDOMProcessingInstruction as IXMLDOMProcessingInstruction_
-type IXMLDOMCDATASection as IXMLDOMCDATASection_
-type IXMLDOMComment as IXMLDOMComment_
-type IXMLDOMText as IXMLDOMText_
-type IXMLDOMElement as IXMLDOMElement_
 type IXMLDOMDocumentType as IXMLDOMDocumentType_
+type IXMLDOMElement as IXMLDOMElement_
+type IXMLDOMText as IXMLDOMText_
+type IXMLDOMComment as IXMLDOMComment_
+type IXMLDOMCDATASection as IXMLDOMCDATASection_
+type IXMLDOMProcessingInstruction as IXMLDOMProcessingInstruction_
+type IXMLDOMAttribute as IXMLDOMAttribute_
+type IXMLDOMEntityReference as IXMLDOMEntityReference_
+type IXMLDOMParseError as IXMLDOMParseError_
 
 type IXMLDOMDocumentVtbl
 	QueryInterface as function(byval This as IXMLDOMDocument ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
@@ -473,9 +459,7 @@ declare function IXMLDOMDocument_put_ondataavailable_Proxy(byval This as IXMLDOM
 declare sub IXMLDOMDocument_put_ondataavailable_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IXMLDOMDocument_put_ontransformnode_Proxy(byval This as IXMLDOMDocument ptr, byval ontransformnodeSink as VARIANT) as HRESULT
 declare sub IXMLDOMDocument_put_ontransformnode_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-
 #define __IXMLDOMNodeList_INTERFACE_DEFINED__
-
 extern IID_IXMLDOMNodeList as const IID
 
 type IXMLDOMNodeListVtbl
@@ -507,9 +491,7 @@ declare function IXMLDOMNodeList_reset_Proxy(byval This as IXMLDOMNodeList ptr) 
 declare sub IXMLDOMNodeList_reset_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IXMLDOMNodeList_get__newEnum_Proxy(byval This as IXMLDOMNodeList ptr, byval ppUnk as IUnknown ptr ptr) as HRESULT
 declare sub IXMLDOMNodeList_get__newEnum_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-
 #define __IXMLDOMNamedNodeMap_INTERFACE_DEFINED__
-
 extern IID_IXMLDOMNamedNodeMap as const IID
 
 type IXMLDOMNamedNodeMapVtbl
@@ -556,11 +538,8 @@ declare function IXMLDOMNamedNodeMap_reset_Proxy(byval This as IXMLDOMNamedNodeM
 declare sub IXMLDOMNamedNodeMap_reset_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IXMLDOMNamedNodeMap_get__newEnum_Proxy(byval This as IXMLDOMNamedNodeMap ptr, byval ppUnk as IUnknown ptr ptr) as HRESULT
 declare sub IXMLDOMNamedNodeMap_get__newEnum_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-
 #define __IXMLDOMCharacterData_INTERFACE_DEFINED__
-
 extern IID_IXMLDOMCharacterData as const IID
-
 type IXMLDOMCharacterData as IXMLDOMCharacterData_
 
 type IXMLDOMCharacterDataVtbl
@@ -637,9 +616,7 @@ declare function IXMLDOMCharacterData_deleteData_Proxy(byval This as IXMLDOMChar
 declare sub IXMLDOMCharacterData_deleteData_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IXMLDOMCharacterData_replaceData_Proxy(byval This as IXMLDOMCharacterData ptr, byval offset as LONG, byval count as LONG, byval data as BSTR) as HRESULT
 declare sub IXMLDOMCharacterData_replaceData_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-
 #define __IXMLDOMAttribute_INTERFACE_DEFINED__
-
 extern IID_IXMLDOMAttribute as const IID
 
 type IXMLDOMAttributeVtbl
@@ -701,9 +678,7 @@ declare function IXMLDOMAttribute_get_value_Proxy(byval This as IXMLDOMAttribute
 declare sub IXMLDOMAttribute_get_value_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IXMLDOMAttribute_put_value_Proxy(byval This as IXMLDOMAttribute ptr, byval attributeValue as VARIANT) as HRESULT
 declare sub IXMLDOMAttribute_put_value_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-
 #define __IXMLDOMElement_INTERFACE_DEFINED__
-
 extern IID_IXMLDOMElement as const IID
 
 type IXMLDOMElementVtbl
@@ -783,9 +758,7 @@ declare function IXMLDOMElement_getElementsByTagName_Proxy(byval This as IXMLDOM
 declare sub IXMLDOMElement_getElementsByTagName_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IXMLDOMElement_normalize_Proxy(byval This as IXMLDOMElement ptr) as HRESULT
 declare sub IXMLDOMElement_normalize_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-
 #define __IXMLDOMText_INTERFACE_DEFINED__
-
 extern IID_IXMLDOMText as const IID
 
 type IXMLDOMTextVtbl
@@ -849,9 +822,7 @@ end type
 
 declare function IXMLDOMText_splitText_Proxy(byval This as IXMLDOMText ptr, byval offset as LONG, byval rightHandTextNode as IXMLDOMText ptr ptr) as HRESULT
 declare sub IXMLDOMText_splitText_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-
 #define __IXMLDOMComment_INTERFACE_DEFINED__
-
 extern IID_IXMLDOMComment as const IID
 
 type IXMLDOMCommentVtbl
@@ -913,7 +884,6 @@ type IXMLDOMComment_
 end type
 
 #define __IXMLDOMProcessingInstruction_INTERFACE_DEFINED__
-
 extern IID_IXMLDOMProcessingInstruction as const IID
 
 type IXMLDOMProcessingInstructionVtbl
@@ -975,9 +945,7 @@ declare function IXMLDOMProcessingInstruction_get_data_Proxy(byval This as IXMLD
 declare sub IXMLDOMProcessingInstruction_get_data_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IXMLDOMProcessingInstruction_put_data_Proxy(byval This as IXMLDOMProcessingInstruction ptr, byval value as BSTR) as HRESULT
 declare sub IXMLDOMProcessingInstruction_put_data_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-
 #define __IXMLDOMCDATASection_INTERFACE_DEFINED__
-
 extern IID_IXMLDOMCDATASection as const IID
 
 type IXMLDOMCDATASectionVtbl
@@ -1040,7 +1008,6 @@ type IXMLDOMCDATASection_
 end type
 
 #define __IXMLDOMDocumentType_INTERFACE_DEFINED__
-
 extern IID_IXMLDOMDocumentType as const IID
 
 type IXMLDOMDocumentTypeVtbl
@@ -1102,11 +1069,8 @@ declare function IXMLDOMDocumentType_get_entities_Proxy(byval This as IXMLDOMDoc
 declare sub IXMLDOMDocumentType_get_entities_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IXMLDOMDocumentType_get_notations_Proxy(byval This as IXMLDOMDocumentType ptr, byval notationMap as IXMLDOMNamedNodeMap ptr ptr) as HRESULT
 declare sub IXMLDOMDocumentType_get_notations_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-
 #define __IXMLDOMNotation_INTERFACE_DEFINED__
-
 extern IID_IXMLDOMNotation as const IID
-
 type IXMLDOMNotation as IXMLDOMNotation_
 
 type IXMLDOMNotationVtbl
@@ -1165,11 +1129,8 @@ declare function IXMLDOMNotation_get_publicId_Proxy(byval This as IXMLDOMNotatio
 declare sub IXMLDOMNotation_get_publicId_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IXMLDOMNotation_get_systemId_Proxy(byval This as IXMLDOMNotation ptr, byval systemID as VARIANT ptr) as HRESULT
 declare sub IXMLDOMNotation_get_systemId_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-
 #define __IXMLDOMEntity_INTERFACE_DEFINED__
-
 extern IID_IXMLDOMEntity as const IID
-
 type IXMLDOMEntity as IXMLDOMEntity_
 
 type IXMLDOMEntityVtbl
@@ -1231,9 +1192,7 @@ declare function IXMLDOMEntity_get_systemId_Proxy(byval This as IXMLDOMEntity pt
 declare sub IXMLDOMEntity_get_systemId_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IXMLDOMEntity_get_notationName_Proxy(byval This as IXMLDOMEntity ptr, byval name as BSTR ptr) as HRESULT
 declare sub IXMLDOMEntity_get_notationName_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-
 #define __IXMLDOMEntityReference_INTERFACE_DEFINED__
-
 extern IID_IXMLDOMEntityReference as const IID
 
 type IXMLDOMEntityReferenceVtbl
@@ -1287,7 +1246,6 @@ type IXMLDOMEntityReference_
 end type
 
 #define __IXMLDOMParseError_INTERFACE_DEFINED__
-
 extern IID_IXMLDOMParseError as const IID
 
 type IXMLDOMParseErrorVtbl
@@ -1325,11 +1283,8 @@ declare function IXMLDOMParseError_get_linepos_Proxy(byval This as IXMLDOMParseE
 declare sub IXMLDOMParseError_get_linepos_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IXMLDOMParseError_get_filepos_Proxy(byval This as IXMLDOMParseError ptr, byval filePosition as LONG ptr) as HRESULT
 declare sub IXMLDOMParseError_get_filepos_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-
 #define __IXTLRuntime_INTERFACE_DEFINED__
-
 extern IID_IXTLRuntime as const IID
-
 type IXTLRuntime as IXTLRuntime_
 
 type IXTLRuntimeVtbl
@@ -1409,11 +1364,8 @@ declare function IXTLRuntime_formatDate_Proxy(byval This as IXTLRuntime ptr, byv
 declare sub IXTLRuntime_formatDate_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IXTLRuntime_formatTime_Proxy(byval This as IXTLRuntime ptr, byval varTime as VARIANT, byval bstrFormat as BSTR, byval varDestLocale as VARIANT, byval pbstrFormattedString as BSTR ptr) as HRESULT
 declare sub IXTLRuntime_formatTime_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-
 #define __XMLDOMDocumentEvents_DISPINTERFACE_DEFINED__
-
 extern DIID_XMLDOMDocumentEvents as const IID
-
 type XMLDOMDocumentEvents as XMLDOMDocumentEvents_
 
 type XMLDOMDocumentEventsVtbl
@@ -1432,11 +1384,8 @@ end type
 
 extern CLSID_DOMDocument as const CLSID
 extern CLSID_DOMFreeThreadedDocument as const CLSID
-
 #define __IXMLHttpRequest_INTERFACE_DEFINED__
-
 extern IID_IXMLHttpRequest as const IID
-
 type IXMLHttpRequest as IXMLHttpRequest_
 
 type IXMLHttpRequestVtbl
@@ -1495,13 +1444,9 @@ declare function IXMLHttpRequest_get_readyState_Proxy(byval This as IXMLHttpRequ
 declare sub IXMLHttpRequest_get_readyState_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IXMLHttpRequest_put_onreadystatechange_Proxy(byval This as IXMLHttpRequest ptr, byval pReadyStateSink as IDispatch ptr) as HRESULT
 declare sub IXMLHttpRequest_put_onreadystatechange_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-
 extern CLSID_XMLHTTPRequest as const CLSID
-
 #define __IXMLDSOControl_INTERFACE_DEFINED__
-
 extern IID_IXMLDSOControl as const IID
-
 type IXMLDSOControl as IXMLDSOControl_
 
 type IXMLDSOControlVtbl
@@ -1533,13 +1478,9 @@ declare function IXMLDSOControl_put_JavaDSOCompatible_Proxy(byval This as IXMLDS
 declare sub IXMLDSOControl_put_JavaDSOCompatible_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IXMLDSOControl_get_readyState_Proxy(byval This as IXMLDSOControl ptr, byval state as LONG ptr) as HRESULT
 declare sub IXMLDSOControl_get_readyState_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-
 extern CLSID_XMLDSOControl as const CLSID
-
 #define __IXMLElementCollection_INTERFACE_DEFINED__
-
 extern IID_IXMLElementCollection as const IID
-
 type IXMLElementCollection as IXMLElementCollection_
 
 type IXMLElementCollectionVtbl
@@ -1568,13 +1509,10 @@ declare function IXMLElementCollection_get__newEnum_Proxy(byval This as IXMLElem
 declare sub IXMLElementCollection_get__newEnum_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IXMLElementCollection_item_Proxy(byval This as IXMLElementCollection ptr, byval var1 as VARIANT, byval var2 as VARIANT, byval ppDisp as IDispatch ptr ptr) as HRESULT
 declare sub IXMLElementCollection_item_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-
 #define __IXMLDocument_INTERFACE_DEFINED__
-
 extern IID_IXMLDocument as const IID
-
-type IXMLElement as IXMLElement_
 type IXMLDocument as IXMLDocument_
+type IXMLElement as IXMLElement_
 
 type IXMLDocumentVtbl
 	QueryInterface as function(byval This as IXMLDocument ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
@@ -1632,13 +1570,10 @@ declare function IXMLDocument_get_dtdURL_Proxy(byval This as IXMLDocument ptr, b
 declare sub IXMLDocument_get_dtdURL_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IXMLDocument_createElement_Proxy(byval This as IXMLDocument ptr, byval vType as VARIANT, byval var1 as VARIANT, byval ppElem as IXMLElement ptr ptr) as HRESULT
 declare sub IXMLDocument_createElement_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-
 #define __IXMLDocument2_INTERFACE_DEFINED__
-
 extern IID_IXMLDocument2 as const IID
-
-type IXMLElement2 as IXMLElement2_
 type IXMLDocument2 as IXMLDocument2_
+type IXMLElement2 as IXMLElement2_
 
 type IXMLDocument2Vtbl
 	QueryInterface as function(byval This as IXMLDocument2 ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
@@ -1702,9 +1637,7 @@ declare function IXMLDocument2_get_async_Proxy(byval This as IXMLDocument2 ptr, 
 declare sub IXMLDocument2_get_async_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IXMLDocument2_put_async_Proxy(byval This as IXMLDocument2 ptr, byval f as VARIANT_BOOL) as HRESULT
 declare sub IXMLDocument2_put_async_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-
 #define __IXMLElement_INTERFACE_DEFINED__
-
 extern IID_IXMLElement as const IID
 
 type IXMLElementVtbl
@@ -1757,9 +1690,7 @@ declare function IXMLElement_addChild_Proxy(byval This as IXMLElement ptr, byval
 declare sub IXMLElement_addChild_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IXMLElement_removeChild_Proxy(byval This as IXMLElement ptr, byval pChildElem as IXMLElement ptr) as HRESULT
 declare sub IXMLElement_removeChild_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-
 #define __IXMLElement2_INTERFACE_DEFINED__
-
 extern IID_IXMLElement2 as const IID
 
 type IXMLElement2Vtbl
@@ -1815,11 +1746,8 @@ declare function IXMLElement2_removeChild_Proxy(byval This as IXMLElement2 ptr, 
 declare sub IXMLElement2_removeChild_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IXMLElement2_get_attributes_Proxy(byval This as IXMLElement2 ptr, byval pp as IXMLElementCollection ptr ptr) as HRESULT
 declare sub IXMLElement2_get_attributes_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-
 #define __IXMLAttribute_INTERFACE_DEFINED__
-
 extern IID_IXMLAttribute as const IID
-
 type IXMLAttribute as IXMLAttribute_
 
 type IXMLAttributeVtbl
@@ -1842,11 +1770,8 @@ declare function IXMLAttribute_get_name_Proxy(byval This as IXMLAttribute ptr, b
 declare sub IXMLAttribute_get_name_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IXMLAttribute_get_value_Proxy(byval This as IXMLAttribute ptr, byval v as BSTR ptr) as HRESULT
 declare sub IXMLAttribute_get_value_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-
 #define __IXMLError_INTERFACE_DEFINED__
-
 extern IID_IXMLError as const IID
-
 type IXMLError as IXMLError_
 
 type IXMLErrorVtbl
@@ -1862,7 +1787,6 @@ end type
 
 declare function IXMLError_GetErrorInfo_Proxy(byval This as IXMLError ptr, byval pErrorReturn as XML_ERROR ptr) as HRESULT
 declare sub IXMLError_GetErrorInfo_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-
 extern CLSID_XMLDocument as const CLSID
 
 end extern

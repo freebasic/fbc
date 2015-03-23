@@ -6,17 +6,13 @@
 extern "Windows"
 
 #define __RPCDCE_H__
-
 type RPC_CSTR as ubyte ptr
 type RPC_WSTR as ushort ptr
 type RPC_BINDING_HANDLE as I_RPC_HANDLE
 type handle_t as RPC_BINDING_HANDLE
-
 #define rpc_binding_handle_t RPC_BINDING_HANDLE
 #define UUID_DEFINED
-
 type UUID as GUID
-
 #define uuid_t UUID
 
 type _RPC_BINDING_VECTOR
@@ -25,7 +21,6 @@ type _RPC_BINDING_VECTOR
 end type
 
 type RPC_BINDING_VECTOR as _RPC_BINDING_VECTOR
-
 #define rpc_binding_vector_t RPC_BINDING_VECTOR
 
 type _UUID_VECTOR
@@ -34,11 +29,8 @@ type _UUID_VECTOR
 end type
 
 type UUID_VECTOR as _UUID_VECTOR
-
 #define uuid_vector_t UUID_VECTOR
-
 type RPC_IF_HANDLE as any ptr
-
 #define IFID_DEFINED
 
 type _RPC_IF_ID
@@ -48,7 +40,6 @@ type _RPC_IF_ID
 end type
 
 type RPC_IF_ID as _RPC_IF_ID
-
 #define RPC_C_BINDING_INFINITE_TIMEOUT 10
 #define RPC_C_BINDING_MIN_TIMEOUT 0
 #define RPC_C_BINDING_DEFAULT_TIMEOUT 5
@@ -116,7 +107,6 @@ end type
 
 type RPC_POLICY as _RPC_POLICY
 type PRPC_POLICY as _RPC_POLICY ptr
-
 #define RPC_MGR_EPV any
 
 type RPC_STATS_VECTOR
@@ -247,7 +237,6 @@ declare function RpcServerInqDefaultPrincNameW(byval AuthnSvc as ulong, byval Pr
 declare function RpcEpResolveBinding(byval Binding as RPC_BINDING_HANDLE, byval IfSpec as RPC_IF_HANDLE) as RPC_STATUS
 declare function RpcNsBindingInqEntryNameA(byval Binding as RPC_BINDING_HANDLE, byval EntryNameSyntax as ulong, byval EntryName as RPC_CSTR ptr) as RPC_STATUS
 declare function RpcNsBindingInqEntryNameW(byval Binding as RPC_BINDING_HANDLE, byval EntryNameSyntax as ulong, byval EntryName as RPC_WSTR ptr) as RPC_STATUS
-
 type RPC_AUTH_IDENTITY_HANDLE as any ptr
 type RPC_AUTHZ_HANDLE as any ptr
 
@@ -304,7 +293,6 @@ end type
 
 type RPC_SECURITY_QOS as _RPC_SECURITY_QOS
 type PRPC_SECURITY_QOS as _RPC_SECURITY_QOS ptr
-
 #define _AUTH_IDENTITY_DEFINED
 #define SEC_WINNT_AUTH_IDENTITY_ANSI &h1
 #define SEC_WINNT_AUTH_IDENTITY_UNICODE &h2
@@ -414,7 +402,6 @@ end type
 
 type RPC_SECURITY_QOS_V2_A as _RPC_SECURITY_QOS_V2_A
 type PRPC_SECURITY_QOS_V2_A as _RPC_SECURITY_QOS_V2_A ptr
-
 #define RPC_C_SECURITY_QOS_VERSION_3 __MSABI_LONG(3)
 
 union _RPC_SECURITY_QOS_V3_W_u
@@ -506,9 +493,7 @@ declare function RpcBindingSetAuthInfoW(byval Binding as RPC_BINDING_HANDLE, byv
 declare function RpcBindingSetAuthInfoExW(byval Binding as RPC_BINDING_HANDLE, byval ServerPrincName as RPC_WSTR, byval AuthnLevel as ulong, byval AuthnSvc as ulong, byval AuthIdentity as RPC_AUTH_IDENTITY_HANDLE, byval AuthzSvc as ulong, byval SecurityQOS as RPC_SECURITY_QOS ptr) as RPC_STATUS
 declare function RpcBindingInqAuthInfoExA(byval Binding as RPC_BINDING_HANDLE, byval ServerPrincName as RPC_CSTR ptr, byval AuthnLevel as ulong ptr, byval AuthnSvc as ulong ptr, byval AuthIdentity as RPC_AUTH_IDENTITY_HANDLE ptr, byval AuthzSvc as ulong ptr, byval RpcQosVersion as ulong, byval SecurityQOS as RPC_SECURITY_QOS ptr) as RPC_STATUS
 declare function RpcBindingInqAuthInfoExW(byval Binding as RPC_BINDING_HANDLE, byval ServerPrincName as RPC_WSTR ptr, byval AuthnLevel as ulong ptr, byval AuthnSvc as ulong ptr, byval AuthIdentity as RPC_AUTH_IDENTITY_HANDLE ptr, byval AuthzSvc as ulong ptr, byval RpcQosVersion as ulong, byval SecurityQOS as RPC_SECURITY_QOS ptr) as RPC_STATUS
-
 type RPC_AUTH_KEY_RETRIEVAL_FN as sub(byval Arg as any ptr, byval ServerPrincName as ushort ptr, byval KeyVer as ulong, byval Key as any ptr ptr, byval Status as RPC_STATUS ptr)
-
 declare function RpcServerRegisterAuthInfoA(byval ServerPrincName as RPC_CSTR, byval AuthnSvc as ulong, byval GetKeyFn as RPC_AUTH_KEY_RETRIEVAL_FN, byval Arg as any ptr) as RPC_STATUS
 declare function RpcServerRegisterAuthInfoW(byval ServerPrincName as RPC_WSTR, byval AuthnSvc as ulong, byval GetKeyFn as RPC_AUTH_KEY_RETRIEVAL_FN, byval Arg as any ptr) as RPC_STATUS
 
@@ -554,7 +539,6 @@ type PRPC_CLIENT_INFORMATION1 as RPC_CLIENT_INFORMATION1 ptr
 #endif
 
 #define DCE_C_ERROR_STRING_LEN 256
-
 declare function RpcBindingServerFromClient(byval ClientBinding as RPC_BINDING_HANDLE, byval ServerBinding as RPC_BINDING_HANDLE ptr) as RPC_STATUS
 declare sub RpcRaiseException(byval exception as RPC_STATUS)
 declare function RpcTestCancel() as RPC_STATUS
@@ -579,7 +563,6 @@ declare function RpcEpRegisterW(byval IfSpec as RPC_IF_HANDLE, byval BindingVect
 declare function RpcEpUnregister(byval IfSpec as RPC_IF_HANDLE, byval BindingVector as RPC_BINDING_VECTOR ptr, byval UuidVector as UUID_VECTOR ptr) as RPC_STATUS
 declare function DceErrorInqTextA(byval RpcStatus as RPC_STATUS, byval ErrorText as RPC_CSTR) as RPC_STATUS
 declare function DceErrorInqTextW(byval RpcStatus as RPC_STATUS, byval ErrorText as RPC_WSTR) as RPC_STATUS
-
 type RPC_EP_INQ_HANDLE as I_RPC_HANDLE ptr
 
 #define RPC_C_EP_ALL_ELTS 0
@@ -603,7 +586,6 @@ declare function RpcMgmtEpEltInqDone(byval InquiryContext as RPC_EP_INQ_HANDLE p
 declare function RpcMgmtEpEltInqNextA(byval InquiryContext as RPC_EP_INQ_HANDLE, byval IfId as RPC_IF_ID ptr, byval Binding as RPC_BINDING_HANDLE ptr, byval ObjectUuid as UUID ptr, byval Annotation as RPC_CSTR ptr) as RPC_STATUS
 declare function RpcMgmtEpEltInqNextW(byval InquiryContext as RPC_EP_INQ_HANDLE, byval IfId as RPC_IF_ID ptr, byval Binding as RPC_BINDING_HANDLE ptr, byval ObjectUuid as UUID ptr, byval Annotation as RPC_WSTR ptr) as RPC_STATUS
 declare function RpcMgmtEpUnregister(byval EpBinding as RPC_BINDING_HANDLE, byval IfId as RPC_IF_ID ptr, byval Binding as RPC_BINDING_HANDLE, byval ObjectUuid as UUID ptr) as RPC_STATUS
-
 type RPC_MGMT_AUTHORIZATION_FN as function(byval ClientBinding as RPC_BINDING_HANDLE, byval RequestedMgmtOperation as ulong, byval Status as RPC_STATUS ptr) as long
 
 #define RPC_C_MGMT_INQ_IF_IDS 0
@@ -611,9 +593,7 @@ type RPC_MGMT_AUTHORIZATION_FN as function(byval ClientBinding as RPC_BINDING_HA
 #define RPC_C_MGMT_INQ_STATS 2
 #define RPC_C_MGMT_IS_SERVER_LISTEN 3
 #define RPC_C_MGMT_STOP_SERVER_LISTEN 4
-
 declare function RpcMgmtSetAuthorizationFn(byval AuthorizationFn as RPC_MGMT_AUTHORIZATION_FN) as RPC_STATUS
-
 #define RPC_C_PARM_MAX_PACKET_LENGTH 1
 #define RPC_C_PARM_BUFFER_LENGTH 2
 #define RPC_IF_AUTOLISTEN &h0001
@@ -668,11 +648,9 @@ declare function RpcMgmtSetAuthorizationFn(byval AuthorizationFn as RPC_MGMT_AUT
 
 	type RPC_BINDING_HANDLE_TEMPLATE_V1 as _RPC_BINDING_HANDLE_TEMPLATE
 	type RPC_BINDING_HANDLE_TEMPLATE as _RPC_BINDING_HANDLE_TEMPLATE
-
 	#define RPC_CALL_STATUS_IN_PROGRESS &h01
 	#define RPC_CALL_STATUS_CANCELLED &h02
 	#define RPC_CALL_STATUS_DISCONNECTED &h03
-
 	declare function RpcBindingCreateA(byval Template as RPC_BINDING_HANDLE_TEMPLATE ptr, byval Security as RPC_BINDING_HANDLE_SECURITY ptr, byval Options as RPC_BINDING_HANDLE_OPTIONS ptr, byval Binding as RPC_BINDING_HANDLE ptr) as RPC_STATUS
 	declare function RpcBindingCreateW(byval Template as RPC_BINDING_HANDLE_TEMPLATE ptr, byval Security as RPC_BINDING_HANDLE_SECURITY ptr, byval Options as RPC_BINDING_HANDLE_OPTIONS ptr, byval Binding as RPC_BINDING_HANDLE ptr) as RPC_STATUS
 #endif

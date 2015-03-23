@@ -159,7 +159,6 @@ type LPDRAGINFOW as _DRAGINFOW ptr
 
 type APPBARDATA as _AppBarData
 type PAPPBARDATA as _AppBarData ptr
-
 declare function SHAppBarMessage(byval dwMessage as DWORD, byval pData as PAPPBARDATA) as UINT_PTR
 declare function DoEnvironmentSubstA(byval pszSrc as LPSTR, byval cchSrc as UINT) as DWORD
 declare function DoEnvironmentSubstW(byval pszSrc as LPWSTR, byval cchSrc as UINT) as DWORD
@@ -196,14 +195,11 @@ declare function ExtractIconExW(byval lpszFile as LPCWSTR, byval nIconIndex as l
 #define FOF_WANTNUKEWARNING &h4000
 #define FOF_NORECURSEREPARSE &h8000
 #define FOF_NO_UI (((FOF_SILENT or FOF_NOCONFIRMATION) or FOF_NOERRORUI) or FOF_NOCONFIRMMKDIR)
-
 type FILEOP_FLAGS as WORD
-
 #define PO_DELETE &h0013
 #define PO_RENAME &h0014
 #define PO_PORTCHANGE &h0020
 #define PO_REN_PORT &h0034
-
 type PRINTEROP_FLAGS as WORD
 
 #ifdef __FB_64BIT__
@@ -521,7 +517,6 @@ declare function ShellExecuteExW(byval pExecInfo as SHELLEXECUTEINFOW ptr) as WI
 
 type SHCREATEPROCESSINFOW as _SHCREATEPROCESSINFOW
 type PSHCREATEPROCESSINFOW as _SHCREATEPROCESSINFOW ptr
-
 declare function SHCreateProcessAsUserW(byval pscpi as PSHCREATEPROCESSINFOW) as WINBOOL
 
 #if _WIN32_WINNT = &h0602
@@ -578,11 +573,9 @@ declare function SHCreateProcessAsUserW(byval pscpi as PSHCREATEPROCESSINFOW) as
 
 type SHQUERYRBINFO as _SHQUERYRBINFO
 type LPSHQUERYRBINFO as _SHQUERYRBINFO ptr
-
 #define SHERB_NOCONFIRMATION &h00000001
 #define SHERB_NOPROGRESSUI &h00000002
 #define SHERB_NOSOUND &h00000004
-
 declare function SHQueryRecycleBinA(byval pszRootPath as LPCSTR, byval pSHQueryRBInfo as LPSHQUERYRBINFO) as HRESULT
 declare function SHQueryRecycleBinW(byval pszRootPath as LPCWSTR, byval pSHQueryRBInfo as LPSHQUERYRBINFO) as HRESULT
 
@@ -830,7 +823,6 @@ type PNOTIFYICONDATAW as _NOTIFYICONDATAW ptr
 
 type NOTIFYICONIDENTIFIER as _NOTIFYICONIDENTIFIER
 type PNOTIFYICONIDENTIFIER as _NOTIFYICONIDENTIFIER ptr
-
 declare function Shell_NotifyIconA(byval dwMessage as DWORD, byval lpData as PNOTIFYICONDATAA) as WINBOOL
 declare function Shell_NotifyIconW(byval dwMessage as DWORD, byval lpData as PNOTIFYICONDATAW) as WINBOOL
 
@@ -912,7 +904,6 @@ type SHFILEINFOW as _SHFILEINFOW
 #define SHGFI_USEFILEATTRIBUTES &h000000010
 #define SHGFI_ADDOVERLAYS &h000000020
 #define SHGFI_OVERLAYINDEX &h000000040
-
 declare function SHGetFileInfoA(byval pszPath as LPCSTR, byval dwFileAttributes as DWORD, byval psfi as SHFILEINFOA ptr, byval cbFileInfo as UINT, byval uFlags as UINT) as DWORD_PTR
 declare function SHGetFileInfoW(byval pszPath as LPCWSTR, byval dwFileAttributes as DWORD, byval psfi as SHFILEINFOW ptr, byval cbFileInfo as UINT, byval uFlags as UINT) as DWORD_PTR
 
@@ -942,7 +933,6 @@ declare function SHGetFileInfoW(byval pszPath as LPCWSTR, byval dwFileAttributes
 
 #if _WIN32_WINNT = &h0602
 	type SHSTOCKICONINFO as _SHSTOCKICONINFO
-
 	#define SHGSI_ICONLOCATION 0
 	#define SHGSI_ICON SHGFI_ICON
 	#define SHGSI_SYSICONINDEX SHGFI_SYSICONINDEX
@@ -1051,14 +1041,12 @@ declare function SHGetFileInfoW(byval pszPath as LPCWSTR, byval dwFileAttributes
 	end enum
 
 	#define SIID_INVALID cast(SHSTOCKICONID, -1)
-
 	declare function SHGetStockIconInfo(byval siid as SHSTOCKICONID, byval uFlags as UINT, byval psii as SHSTOCKICONINFO ptr) as HRESULT
 #elseif (not defined(UNICODE)) and ((_WIN32_WINNT = &h0400) or (_WIN32_WINNT = &h0502))
 	#define SHGetFileInfo SHGetFileInfoA
 #endif
 
 #define SHGetDiskFreeSpace SHGetDiskFreeSpaceEx
-
 declare function SHGetDiskFreeSpaceExA(byval pszDirectoryName as LPCSTR, byval pulFreeBytesAvailableToCaller as ULARGE_INTEGER ptr, byval pulTotalNumberOfBytes as ULARGE_INTEGER ptr, byval pulTotalNumberOfFreeBytes as ULARGE_INTEGER ptr) as WINBOOL
 declare function SHGetDiskFreeSpaceExW(byval pszDirectoryName as LPCWSTR, byval pulFreeBytesAvailableToCaller as ULARGE_INTEGER ptr, byval pulTotalNumberOfBytes as ULARGE_INTEGER ptr, byval pulTotalNumberOfFreeBytes as ULARGE_INTEGER ptr) as WINBOOL
 declare function SHGetNewLinkInfoA(byval pszLinkTo as LPCSTR, byval pszDir as LPCSTR, byval pszName as LPSTR, byval pfMustCopy as WINBOOL ptr, byval uFlags as UINT) as WINBOOL
@@ -1093,7 +1081,6 @@ declare function SHGetNewLinkInfoW(byval pszLinkTo as LPCWSTR, byval pszDir as L
 #define PRINTACTION_OPENNETPRN 5
 #define PRINTACTION_DOCUMENTDEFAULTS 6
 #define PRINTACTION_SERVERPROPERTIES 7
-
 declare function SHInvokePrinterCommandA(byval hwnd as HWND, byval uAction as UINT, byval lpBuf1 as LPCSTR, byval lpBuf2 as LPCSTR, byval fModal as WINBOOL) as WINBOOL
 declare function SHInvokePrinterCommandW(byval hwnd as HWND, byval uAction as UINT, byval lpBuf1 as LPCWSTR, byval lpBuf2 as LPCWSTR, byval fModal as WINBOOL) as WINBOOL
 
@@ -1165,11 +1152,9 @@ declare function SHInvokePrinterCommandW(byval hwnd as HWND, byval uAction as UI
 
 declare function SHLoadNonloadedIconOverlayIdentifiers() as HRESULT
 declare function SHIsFileAvailableOffline(byval pwszPath as PCWSTR, byval pdwStatus as DWORD ptr) as HRESULT
-
 #define OFFLINE_STATUS_LOCAL &h0001
 #define OFFLINE_STATUS_REMOTE &h0002
 #define OFFLINE_STATUS_INCOMPLETE &h0004
-
 declare function SHSetLocalizedName(byval pszPath as PCWSTR, byval pszResModule as PCWSTR, byval idsRes as long) as HRESULT
 
 #if _WIN32_WINNT = &h0602
@@ -1217,7 +1202,6 @@ declare function IsLFNDriveW(byval pszPath as LPCWSTR) as WINBOOL
 #if (_WIN32_WINNT = &h0502) or (_WIN32_WINNT = &h0602)
 	declare function SHTestTokenMembership(byval hToken as HANDLE, byval ulRID as ULONG) as WINBOOL
 	declare function SHGetImageList(byval iImageList as long, byval riid as const IID const ptr, byval ppvObj as any ptr ptr) as HRESULT
-
 	#define SHIL_LARGE 0
 	#define SHIL_SMALL 1
 	#define SHIL_EXTRALARGE 2
@@ -1238,9 +1222,7 @@ declare function IsLFNDriveW(byval pszPath as LPCWSTR) as WINBOOL
 
 #if _WIN32_WINNT = &h0602
 	#define WC_NETADDRESS wstr("msctls_netaddress")
-
 	declare function InitNetworkAddressControl() as WINBOOL
-
 	#define NCM_GETADDRESS (WM_USER + 1)
 	#define NetAddr_GetAddress(hwnd, pv) cast(HRESULT, SNDMSG(hwnd, NCM_GETADDRESS, 0, cast(LPARAM, pv)))
 
@@ -1254,14 +1236,12 @@ declare function IsLFNDriveW(byval pszPath as LPCWSTR) as WINBOOL
 
 	type NC_ADDRESS as tagNC_ADDRESS
 	type PNC_ADDRESS as tagNC_ADDRESS ptr
-
 	#define NCM_SETALLOWTYPE (WM_USER + 2)
 	#define NetAddr_SetAllowType(hwnd, addrMask) cast(HRESULT, SNDMSG(hwnd, NCM_SETALLOWTYPE, cast(WPARAM, addrMask), 0))
 	#define NCM_GETALLOWTYPE (WM_USER + 3)
 	#define NetAddr_GetAllowType(hwnd) cast(DWORD, SNDMSG(hwnd, NCM_GETALLOWTYPE, 0, 0))
 	#define NCM_DISPLAYERRORTIP (WM_USER + 4)
 	#define NetAddr_DisplayErrorTip(hwnd) cast(HRESULT, SNDMSG(hwnd, NCM_DISPLAYERRORTIP, 0, 0))
-
 	declare function SHGetDriveMedia(byval pszDrive as PCWSTR, byval pdwMediaContent as DWORD ptr) as HRESULT
 #elseif (not defined(UNICODE)) and (_WIN32_WINNT = &h0400)
 	#define IsLFNDrive IsLFNDriveA

@@ -3,7 +3,6 @@
 extern "C"
 
 #define __IUP_MGLPLOT_H
-
 declare sub IupMglPlotOpen()
 declare function IupMglPlot() as Ihandle ptr
 declare sub IupMglPlotBegin(byval ih as Ihandle ptr, byval dim as long)

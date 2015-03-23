@@ -66,7 +66,6 @@ type D3DXFLOAT16
 end type
 
 type LPD3DXFLOAT16 as D3DXFLOAT16 ptr
-
 declare function D3DXColorAdjustContrast(byval pout as D3DXCOLOR ptr, byval pc as const D3DXCOLOR ptr, byval s as FLOAT) as D3DXCOLOR ptr
 declare function D3DXColorAdjustSaturation(byval pout as D3DXCOLOR ptr, byval pc as const D3DXCOLOR ptr, byval s as FLOAT) as D3DXCOLOR ptr
 declare function D3DXFresnelTerm(byval costheta as FLOAT, byval refractionindex as FLOAT) as FLOAT
@@ -167,11 +166,8 @@ declare function D3DXSHMultiply4(byval out as FLOAT ptr, byval a as const FLOAT 
 declare function D3DXSHRotate(byval out as FLOAT ptr, byval order as UINT, byval matrix as const D3DXMATRIX ptr, byval in as const FLOAT ptr) as FLOAT ptr
 declare function D3DXSHRotateZ(byval out as FLOAT ptr, byval order as UINT, byval angle as FLOAT, byval in as const FLOAT ptr) as FLOAT ptr
 declare function D3DXSHScale(byval out as FLOAT ptr, byval order as UINT, byval a as const FLOAT ptr, byval scale as const FLOAT) as FLOAT ptr
-
 type LPD3DXMATRIXSTACK as ID3DXMatrixStack ptr
-
 extern IID_ID3DXMatrixStack as const GUID
-
 type ID3DXMatrixStackVtbl as ID3DXMatrixStackVtbl_
 
 type ID3DXMatrixStack
@@ -217,7 +213,6 @@ end type
 #define ID3DXMatrixStack_Translate(p, a, b, c) (p)->lpVtbl->Translate(p, a, b, c)
 #define ID3DXMatrixStack_TranslateLocal(p, a, b, c) (p)->lpVtbl->TranslateLocal(p, a, b, c)
 #define ID3DXMatrixStack_GetTop(p) (p)->lpVtbl->GetTop(p)
-
 declare function D3DXCreateMatrixStack(byval flags as DWORD, byval stack as ID3DXMatrixStack ptr ptr) as HRESULT
 
 end extern

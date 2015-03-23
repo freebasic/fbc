@@ -107,7 +107,6 @@ type RECONVERTSTRING as tagRECONVERTSTRING
 type PRECONVERTSTRING as tagRECONVERTSTRING ptr
 type NPRECONVERTSTRING as tagRECONVERTSTRING ptr
 type LPRECONVERTSTRING as tagRECONVERTSTRING ptr
-
 #define STYLE_DESCRIPTION_SIZE 32
 
 type tagSTYLEBUFA
@@ -267,7 +266,6 @@ declare function ImmGetCompositionFontA(byval as HIMC, byval as LPLOGFONTA) as W
 declare function ImmGetCompositionFontW(byval as HIMC, byval as LPLOGFONTW) as WINBOOL
 declare function ImmSetCompositionFontA(byval as HIMC, byval as LPLOGFONTA) as WINBOOL
 declare function ImmSetCompositionFontW(byval as HIMC, byval as LPLOGFONTW) as WINBOOL
-
 type REGISTERWORDENUMPROCA as function(byval as LPCSTR, byval as DWORD, byval as LPCSTR, byval as LPVOID) as long
 type REGISTERWORDENUMPROCW as function(byval as LPCWSTR, byval as DWORD, byval as LPCWSTR, byval as LPVOID) as long
 

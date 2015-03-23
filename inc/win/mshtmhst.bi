@@ -42,29 +42,21 @@ extern "Windows"
 #define HTMLDLG_ALLOWNEXTWINDOW &h400
 #define PRINT_DONTBOTHERUSER &h01
 #define PRINT_WAITFORCOMPLETION &h02
-
 extern CGID_MSHTML as const GUID
-
 #define CMDSETID_Forms3 CGID_MSHTML
 #define SZ_HTML_CLIENTSITE_OBJECTPARAM wstr("{d4db6850-5385-11d0-89e9-00a0c90a90ac}")
 #define __IHTMLWindow2_FWD_DEFINED__
-
 declare function ShowHTMLDialog(byval hwndParent as HWND, byval pMk as IMoniker ptr, byval pvarArgIn as VARIANT ptr, byval pchOptions as wstring ptr, byval pvarArgOut as VARIANT ptr) as HRESULT
 declare function ShowHTMLDialogEx(byval hwndParent as HWND, byval pMk as IMoniker ptr, byval dwDialogFlags as DWORD, byval pvarArgIn as VARIANT ptr, byval pchOptions as wstring ptr, byval pvarArgOut as VARIANT ptr) as HRESULT
-
 type IHTMLWindow2 as IHTMLWindow2_
 
 declare function ShowModelessHTMLDialog(byval hwndParent as HWND, byval pMk as IMoniker ptr, byval pvarArgIn as VARIANT ptr, byval pvarOptions as VARIANT ptr, byval ppWindow as IHTMLWindow2 ptr ptr) as HRESULT
 declare function RunHTMLApplication(byval hinst as HINSTANCE, byval hPrevInst as HINSTANCE, byval szCmdLine as LPSTR, byval nCmdShow as long) as HRESULT
 declare function CreateHTMLPropertyPage(byval pmk as IMoniker ptr, byval ppPP as IPropertyPage ptr ptr) as HRESULT
-
 extern __MIDL_itf_mshtmhst_0000_v0_0_c_ifspec as RPC_IF_HANDLE
 extern __MIDL_itf_mshtmhst_0000_v0_0_s_ifspec as RPC_IF_HANDLE
-
 #define __IHostDialogHelper_INTERFACE_DEFINED__
-
 extern IID_IHostDialogHelper as const IID
-
 type IHostDialogHelper as IHostDialogHelper_
 
 type IHostDialogHelperVtbl
@@ -80,7 +72,6 @@ end type
 
 declare function IHostDialogHelper_ShowHTMLDialog_Proxy(byval This as IHostDialogHelper ptr, byval hwndParent as HWND, byval pMk as IMoniker ptr, byval pvarArgIn as VARIANT ptr, byval pchOptions as wstring ptr, byval pvarArgOut as VARIANT ptr, byval punkHost as IUnknown ptr) as HRESULT
 declare sub IHostDialogHelper_ShowHTMLDialog_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-
 extern CLSID_HostDialogHelper as const GUID
 
 type tagDOCHOSTUITYPE as long
@@ -129,12 +120,9 @@ enum
 end enum
 
 type DOCHOSTUIFLAG as tagDOCHOSTUIFLAG
-
 #define DOCHOSTUIATOM_ENABLE_HIRES _T("TridentEnableHiRes")
-
 extern __MIDL_itf_mshtmhst_0277_v0_0_c_ifspec as RPC_IF_HANDLE
 extern __MIDL_itf_mshtmhst_0277_v0_0_s_ifspec as RPC_IF_HANDLE
-
 #define __IDocHostUIHandler_INTERFACE_DEFINED__
 
 type _DOCHOSTUIINFO
@@ -146,9 +134,7 @@ type _DOCHOSTUIINFO
 end type
 
 type DOCHOSTUIINFO as _DOCHOSTUIINFO
-
 extern IID_IDocHostUIHandler as const IID
-
 type IDocHostUIHandler as IDocHostUIHandler_
 
 type IDocHostUIHandlerVtbl
@@ -206,11 +192,8 @@ declare function IDocHostUIHandler_TranslateUrl_Proxy(byval This as IDocHostUIHa
 declare sub IDocHostUIHandler_TranslateUrl_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IDocHostUIHandler_FilterDataObject_Proxy(byval This as IDocHostUIHandler ptr, byval pDO as IDataObject ptr, byval ppDORet as IDataObject ptr ptr) as HRESULT
 declare sub IDocHostUIHandler_FilterDataObject_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-
 #define __IDocHostUIHandler2_INTERFACE_DEFINED__
-
 extern IID_IDocHostUIHandler2 as const IID
-
 type IDocHostUIHandler2 as IDocHostUIHandler2_
 
 type IDocHostUIHandler2Vtbl
@@ -241,15 +224,11 @@ end type
 
 declare function IDocHostUIHandler2_GetOverrideKeyPath_Proxy(byval This as IDocHostUIHandler2 ptr, byval pchKey as LPOLESTR ptr, byval dw as DWORD) as HRESULT
 declare sub IDocHostUIHandler2_GetOverrideKeyPath_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-
 extern CGID_DocHostCommandHandler as const GUID
 extern __MIDL_itf_mshtmhst_0279_v0_0_c_ifspec as RPC_IF_HANDLE
 extern __MIDL_itf_mshtmhst_0279_v0_0_s_ifspec as RPC_IF_HANDLE
-
 #define __ICustomDoc_INTERFACE_DEFINED__
-
 extern IID_ICustomDoc as const IID
-
 type ICustomDoc as ICustomDoc_
 
 type ICustomDocVtbl
@@ -265,11 +244,8 @@ end type
 
 declare function ICustomDoc_SetUIHandler_Proxy(byval This as ICustomDoc ptr, byval pUIHandler as IDocHostUIHandler ptr) as HRESULT
 declare sub ICustomDoc_SetUIHandler_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-
 #define __IDocHostShowUI_INTERFACE_DEFINED__
-
 extern IID_IDocHostShowUI as const IID
-
 type IDocHostShowUI as IDocHostShowUI_
 
 type IDocHostShowUIVtbl
@@ -288,17 +264,12 @@ declare function IDocHostShowUI_ShowMessage_Proxy(byval This as IDocHostShowUI p
 declare sub IDocHostShowUI_ShowMessage_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IDocHostShowUI_ShowHelp_Proxy(byval This as IDocHostShowUI ptr, byval hwnd as HWND, byval pszHelpFile as LPOLESTR, byval uCommand as UINT, byval dwData as DWORD, byval ptMouse as POINT, byval pDispatchObjectHit as IDispatch ptr) as HRESULT
 declare sub IDocHostShowUI_ShowHelp_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-
 #define IClassFactory3 IClassFactoryEx
 #define IID_IClassFactory3 IID_IClassFactoryEx
-
 extern __MIDL_itf_mshtmhst_0281_v0_0_c_ifspec as RPC_IF_HANDLE
 extern __MIDL_itf_mshtmhst_0281_v0_0_s_ifspec as RPC_IF_HANDLE
-
 #define __IClassFactoryEx_INTERFACE_DEFINED__
-
 extern IID_IClassFactoryEx as const IID
-
 type IClassFactoryEx as IClassFactoryEx_
 
 type IClassFactoryExVtbl
@@ -316,11 +287,8 @@ end type
 
 declare function IClassFactoryEx_CreateInstanceWithContext_Proxy(byval This as IClassFactoryEx ptr, byval punkContext as IUnknown ptr, byval punkOuter as IUnknown ptr, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
 declare sub IClassFactoryEx_CreateInstanceWithContext_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-
 #define __IHTMLOMWindowServices_INTERFACE_DEFINED__
-
 extern IID_IHTMLOMWindowServices as const IID
-
 type IHTMLOMWindowServices as IHTMLOMWindowServices_
 
 type IHTMLOMWindowServicesVtbl
@@ -345,9 +313,7 @@ declare function IHTMLOMWindowServices_resizeTo_Proxy(byval This as IHTMLOMWindo
 declare sub IHTMLOMWindowServices_resizeTo_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IHTMLOMWindowServices_resizeBy_Proxy(byval This as IHTMLOMWindowServices ptr, byval x as LONG, byval y as LONG) as HRESULT
 declare sub IHTMLOMWindowServices_resizeBy_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-
 #define SID_SHTMLOMWindowServices IID_IHTMLOMWindowServices
-
 extern __MIDL_itf_mshtmhst_0283_v0_0_c_ifspec as RPC_IF_HANDLE
 extern __MIDL_itf_mshtmhst_0283_v0_0_s_ifspec as RPC_IF_HANDLE
 

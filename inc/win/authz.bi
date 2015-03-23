@@ -77,7 +77,6 @@ end type
 
 type AUTHZ_ACCESS_REQUEST as _AUTHZ_ACCESS_REQUEST
 type PAUTHZ_ACCESS_REQUEST as _AUTHZ_ACCESS_REQUEST ptr
-
 #define AUTHZ_GENERATE_SUCCESS_AUDIT &h1
 #define AUTHZ_GENERATE_FAILURE_AUDIT &h2
 
@@ -196,7 +195,6 @@ end type
 
 type AUTHZ_SECURITY_ATTRIBUTES_INFORMATION as _AUTHZ_SECURITY_ATTRIBUTES_INFORMATION
 type PAUTHZ_SECURITY_ATTRIBUTES_INFORMATION as _AUTHZ_SECURITY_ATTRIBUTES_INFORMATION ptr
-
 declare function AuthzAccessCheck(byval Flags as DWORD, byval hAuthzClientContext as AUTHZ_CLIENT_CONTEXT_HANDLE, byval pRequest as PAUTHZ_ACCESS_REQUEST, byval hAuditEvent as AUTHZ_AUDIT_EVENT_HANDLE, byval pSecurityDescriptor as PSECURITY_DESCRIPTOR, byval OptionalSecurityDescriptorArray as PSECURITY_DESCRIPTOR ptr, byval OptionalSecurityDescriptorCount as DWORD, byval pReply as PAUTHZ_ACCESS_REPLY, byval phAccessCheckResults as PAUTHZ_ACCESS_CHECK_RESULTS_HANDLE) as WINBOOL
 declare function AuthzCachedAccessCheck(byval Flags as DWORD, byval hAccessCheckResults as AUTHZ_ACCESS_CHECK_RESULTS_HANDLE, byval pRequest as PAUTHZ_ACCESS_REQUEST, byval hAuditEvent as AUTHZ_AUDIT_EVENT_HANDLE, byval pReply as PAUTHZ_ACCESS_REPLY) as WINBOOL
 declare function AuthzOpenObjectAudit(byval Flags as DWORD, byval hAuthzClientContext as AUTHZ_CLIENT_CONTEXT_HANDLE, byval pRequest as PAUTHZ_ACCESS_REQUEST, byval hAuditEvent as AUTHZ_AUDIT_EVENT_HANDLE, byval pSecurityDescriptor as PSECURITY_DESCRIPTOR, byval OptionalSecurityDescriptorArray as PSECURITY_DESCRIPTOR ptr, byval OptionalSecurityDescriptorCount as DWORD, byval pReply as PAUTHZ_ACCESS_REPLY) as WINBOOL
@@ -232,7 +230,6 @@ declare function AuthzInitializeResourceManager(byval Flags as DWORD, byval pfnD
 
 	type AUTHZ_INIT_INFO as _AUTHZ_INIT_INFO
 	type PAUTHZ_INIT_INFO as _AUTHZ_INIT_INFO ptr
-
 	declare function AuthzInitializeResourceManagerEx(byval Flags as DWORD, byval pAuthzInitInfo as PAUTHZ_INIT_INFO, byval phAuthzResourceManager as PAUTHZ_RESOURCE_MANAGER_HANDLE) as WINBOOL
 	declare function AuthzInitializeRemoteResourceManager(byval pRpcInitInfo as PAUTHZ_RPC_INIT_INFO_CLIENT, byval phAuthzResourceManager as PAUTHZ_RESOURCE_MANAGER_HANDLE) as WINBOOL
 #endif
@@ -279,13 +276,11 @@ type AUTHZ_CONTEXT_INFORMATION_CLASS as _AUTHZ_CONTEXT_INFORMATION_CLASS
 
 declare function AuthzGetInformationFromContext(byval hAuthzClientContext as AUTHZ_CLIENT_CONTEXT_HANDLE, byval InfoClass as AUTHZ_CONTEXT_INFORMATION_CLASS, byval BufferSize as DWORD, byval pSizeRequired as PDWORD, byval Buffer as PVOID) as WINBOOL
 declare function AuthzFreeContext(byval hAuthzClientContext as AUTHZ_CLIENT_CONTEXT_HANDLE) as WINBOOL
-
 #define AUTHZ_NO_SUCCESS_AUDIT &h1
 #define AUTHZ_NO_FAILURE_AUDIT &h2
 #define AUTHZ_NO_ALLOC_STRINGS &h4
 #define AUTHZ_WPD_CATEGORY_FLAG &h10
 #define AUTHZ_VALID_OBJECT_ACCESS_AUDIT_FLAGS (((AUTHZ_NO_SUCCESS_AUDIT or AUTHZ_NO_FAILURE_AUDIT) or AUTHZ_NO_ALLOC_STRINGS) or AUTHZ_WPD_CATEGORY_FLAG)
-
 declare function AuthzInitializeObjectAccessAuditEvent cdecl(byval Flags as DWORD, byval hAuditEventType as AUTHZ_AUDIT_EVENT_TYPE_HANDLE, byval szOperationType as PWSTR, byval szObjectType as PWSTR, byval szObjectName as PWSTR, byval szAdditionalInfo as PWSTR, byval phAuditEvent as PAUTHZ_AUDIT_EVENT_HANDLE, byval dwAdditionalParameterCount as DWORD, ...) as WINBOOL
 declare function AuthzInitializeObjectAccessAuditEvent2 cdecl(byval Flags as DWORD, byval hAuditEventType as AUTHZ_AUDIT_EVENT_TYPE_HANDLE, byval szOperationType as PWSTR, byval szObjectType as PWSTR, byval szObjectName as PWSTR, byval szAdditionalInfo as PWSTR, byval szAdditionalInfo2 as PWSTR, byval phAuditEvent as PAUTHZ_AUDIT_EVENT_HANDLE, byval dwAdditionalParameterCount as DWORD, ...) as WINBOOL
 
@@ -299,7 +294,6 @@ enum
 end enum
 
 type AUTHZ_AUDIT_EVENT_INFORMATION_CLASS as _AUTHZ_AUDIT_EVENT_INFORMATION_CLASS
-
 declare function AuthzFreeAuditEvent(byval hAuditEvent as AUTHZ_AUDIT_EVENT_HANDLE) as WINBOOL
 declare function AuthzEvaluateSacl(byval AuthzClientContext as AUTHZ_CLIENT_CONTEXT_HANDLE, byval pRequest as PAUTHZ_ACCESS_REQUEST, byval Sacl as PACL, byval GrantedAccess as ACCESS_MASK, byval AccessGranted as WINBOOL, byval pbGenerateAudit as PBOOL) as WINBOOL
 
@@ -330,9 +324,7 @@ end type
 
 type AUTHZ_SOURCE_SCHEMA_REGISTRATION as _AUTHZ_SOURCE_SCHEMA_REGISTRATION
 type PAUTHZ_SOURCE_SCHEMA_REGISTRATION as _AUTHZ_SOURCE_SCHEMA_REGISTRATION ptr
-
 #define AUTHZ_FLAG_ALLOW_MULTIPLE_SOURCE_INSTANCES &h1
-
 declare function AuthzInstallSecurityEventSource(byval dwFlags as DWORD, byval pRegistration as PAUTHZ_SOURCE_SCHEMA_REGISTRATION) as WINBOOL
 declare function AuthzUninstallSecurityEventSource(byval dwFlags as DWORD, byval szEventSourceName as PCWSTR) as WINBOOL
 declare function AuthzEnumerateSecurityEventSources(byval dwFlags as DWORD, byval Buffer as PAUTHZ_SOURCE_SCHEMA_REGISTRATION, byval pdwCount as PDWORD, byval pdwLength as PDWORD) as WINBOOL

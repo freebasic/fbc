@@ -387,9 +387,7 @@ extern CLSID_TVEFilterStatsProperties as const GUID
 extern CLSID_IVideoEncoderProxy as const GUID
 extern CLSID_ICodecAPIProxy as const GUID
 extern CLSID_IVideoEncoderCodecAPIProxy as const GUID
-
 #define __ENCODER_API_GUIDS__
-
 extern ENCAPIPARAM_BITRATE as const GUID
 extern ENCAPIPARAM_PEAK_BITRATE as const GUID
 extern ENCAPIPARAM_BITRATE_MODE as const GUID
@@ -400,10 +398,8 @@ extern CODECAPI_SETALLDEFAULTS as const GUID
 extern CODECAPI_ALLSETTINGS as const GUID
 extern CODECAPI_SUPPORTSEVENTS as const GUID
 extern CODECAPI_CURRENTCHANGELIST as const GUID
-
 #define MEDIATYPE_NULL GUID_NULL
 #define MEDIASUBTYPE_NULL GUID_NULL
-
 extern MEDIASUBTYPE_None as const GUID
 extern MEDIATYPE_Video as const GUID
 extern MEDIATYPE_Audio as const GUID

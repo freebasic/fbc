@@ -6,10 +6,8 @@ extern "Windows"
 
 #define __BCRYPT_H__
 #define _NTSTATUS_PSDK
-
 type NTSTATUS as LONG
 type PNTSTATUS as LONG ptr
-
 #define BCRYPT_SUCCESS(Status) (cast(NTSTATUS, (Status)) >= 0)
 #define BCRYPT_OBJECT_ALIGNMENT 16
 #define BCRYPT_STRUCT_ALIGNMENT
@@ -173,7 +171,6 @@ end type
 
 type BCryptBufferDesc as _BCryptBufferDesc
 type PBCryptBufferDesc as _BCryptBufferDesc ptr
-
 #define BCRYPT_PUBLIC_KEY_BLOB wstr("PUBLICBLOB")
 #define BCRYPT_PRIVATE_KEY_BLOB wstr("PRIVATEBLOB")
 #define BCRYPT_RSAPUBLIC_BLOB wstr("RSAPUBLICBLOB")
@@ -559,7 +556,6 @@ end type
 
 type CRYPT_PROVIDER_REFS as _CRYPT_PROVIDER_REFS
 type PCRYPT_PROVIDER_REFS as _CRYPT_PROVIDER_REFS ptr
-
 declare function BCryptOpenAlgorithmProvider(byval phAlgorithm as BCRYPT_ALG_HANDLE ptr, byval pszAlgId as LPCWSTR, byval pszImplementation as LPCWSTR, byval dwFlags as ULONG) as NTSTATUS
 declare function BCryptEnumAlgorithms(byval dwAlgOperations as ULONG, byval pAlgCount as ULONG ptr, byval ppAlgList as BCRYPT_ALGORITHM_IDENTIFIER ptr ptr, byval dwFlags as ULONG) as NTSTATUS
 declare function BCryptEnumProviders(byval pszAlgId as LPCWSTR, byval pImplCount as ULONG ptr, byval ppImplList as BCRYPT_PROVIDER_NAME ptr ptr, byval dwFlags as ULONG) as NTSTATUS

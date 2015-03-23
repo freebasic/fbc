@@ -30,7 +30,6 @@ extern "C"
 #define IUP_VERSION "3.11"
 #define IUP_VERSION_NUMBER 311000
 #define IUP_VERSION_DATE "2014/07/28"
-
 type Ihandle as Ihandle_
 type Icallback as function(byval as Ihandle ptr) as long
 
@@ -240,9 +239,7 @@ declare function IupScanf(byval format as const zstring ptr, ...) as long
 declare function IupListDialog(byval type as long, byval title as const zstring ptr, byval size as long, byval list as const zstring ptr ptr, byval op as long, byval max_col as long, byval max_lin as long, byval marks as long ptr) as long
 declare function IupGetText(byval title as const zstring ptr, byval text as zstring ptr) as long
 declare function IupGetColor(byval x as long, byval y as long, byval r as ubyte ptr, byval g as ubyte ptr, byval b as ubyte ptr) as long
-
 type Iparamcb as function(byval dialog as Ihandle ptr, byval param_index as long, byval user_data as any ptr) as long
-
 declare function IupGetParam(byval title as const zstring ptr, byval action as Iparamcb, byval user_data as any ptr, byval format as const zstring ptr, ...) as long
 declare function IupGetParamv(byval title as const zstring ptr, byval action as Iparamcb, byval user_data as any ptr, byval format as const zstring ptr, byval param_count as long, byval param_extra as long, byval param_data as any ptr ptr) as long
 declare function IupLayoutDialog(byval dialog as Ihandle ptr) as Ihandle ptr

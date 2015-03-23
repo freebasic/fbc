@@ -502,7 +502,6 @@ declare function ldap_sasl_bind_sW(byval ExternalHandle as LDAP ptr, byval DistN
 	declare function ldap_simple_bind_s(byval ld as LDAP ptr, byval dn as const PCHAR, byval passwd as const PCHAR) as ULONG
 	declare function ldap_bind(byval ld as LDAP ptr, byval dn as const PCHAR, byval cred as const PCHAR, byval method as ULONG) as ULONG
 	declare function ldap_bind_s(byval ld as LDAP ptr, byval dn as const PCHAR, byval cred as const PCHAR, byval method as ULONG) as ULONG
-
 	#define ldap_sasl_bind ldap_sasl_bindA
 	#define ldap_sasl_bind_s ldap_sasl_bind_sA
 #endif
@@ -600,7 +599,6 @@ declare function ldap_rename_ext_sA(byval ld as LDAP ptr, byval dn as const PCHA
 #else
 	#define ldap_rename ldap_rename_extA
 	#define ldap_rename_s ldap_rename_ext_sA
-
 	declare function ldap_rename_ext(byval ld as LDAP ptr, byval dn as const PCHAR, byval NewRDN as const PCHAR, byval NewParent as const PCHAR, byval DeleteOldRdn as INT_, byval ServerControls as PLDAPControlA ptr, byval ClientControls as PLDAPControlA ptr, byval MessageNumber as ULONG ptr) as ULONG
 	declare function ldap_rename_ext_s(byval ld as LDAP ptr, byval dn as const PCHAR, byval NewRDN as const PCHAR, byval NewParent as const PCHAR, byval DeleteOldRdn as INT_, byval ServerControls as PLDAPControlA ptr, byval ClientControls as PLDAPControlA ptr) as ULONG
 #endif
@@ -674,7 +672,6 @@ declare function ldap_delete_ext_sA(byval ld as LDAP ptr, byval dn as const PCHA
 #endif
 
 declare function ldap_abandon(byval ld as LDAP ptr, byval msgid as ULONG) as ULONG
-
 #define LDAP_MSG_ONE 0
 #define LDAP_MSG_ALL 1
 #define LDAP_MSG_RECEIVED 2
@@ -701,7 +698,6 @@ declare function ldap_free_controlsA(byval Controls as LDAPControlA ptr ptr) as 
 	#define ldap_parse_extended_result ldap_parse_extended_resultW
 #else
 	#define ldap_parse_extended_result ldap_parse_extended_resultA
-
 	declare function ldap_parse_result(byval Connection as LDAP ptr, byval ResultMessage as LDAPMessage ptr, byval ReturnCode as ULONG ptr, byval MatchedDNs as PCHAR ptr, byval ErrorMessage as PCHAR ptr, byval Referrals as PCHAR ptr ptr, byval ServerControls as PLDAPControlA ptr ptr, byval Freeit as BOOLEAN) as ULONG
 	declare function ldap_controls_free(byval Controls as LDAPControlA ptr ptr) as ULONG
 	declare function ldap_control_free(byval Control as LDAPControlA ptr) as ULONG
@@ -727,7 +723,6 @@ type BerElement_
 end type
 
 #define NULLBER cptr(BerElement ptr, 0)
-
 declare function ldap_first_attributeW(byval ld as LDAP ptr, byval entry as LDAPMessage ptr, byval ptr as BerElement ptr ptr) as PWCHAR
 declare function ldap_first_attributeA(byval ld as LDAP ptr, byval entry as LDAPMessage ptr, byval ptr as BerElement ptr ptr) as PCHAR
 
@@ -842,9 +837,7 @@ type LDAP_VERSION_INFO
 end type
 
 type PLDAP_VERSION_INFO as LDAP_VERSION_INFO ptr
-
 declare function ldap_startup(byval version as PLDAP_VERSION_INFO, byval Instance as HANDLE ptr) as ULONG
-
 #define LDAP_API_INFO_VERSION 1
 #define LDAP_API_VERSION 2004
 #define LDAP_VERSION_MIN 2
@@ -908,9 +901,7 @@ declare function ldap_escape_filter_elementA(byval sourceFilterElement as PCHAR,
 #endif
 
 declare function ldap_set_dbg_flags(byval NewFlags as ULONG) as ULONG
-
 type DBGPRINT as function(byval Format as PCH, ...) as ULONG
-
 declare sub ldap_set_dbg_routine(byval DebugPrintRoutine as DBGPRINT)
 declare function LdapUTF8ToUnicode(byval lpSrcStr as LPCSTR, byval cchSrc as long, byval lpDestStr as LPWSTR, byval cchDest as long) as long
 declare function LdapUnicodeToUTF8(byval lpSrcStr as LPCWSTR, byval cchSrc as long, byval lpDestStr as LPSTR, byval cchDest as long) as long
@@ -919,7 +910,6 @@ declare function LdapUnicodeToUTF8(byval lpSrcStr as LPCWSTR, byval cchSrc as lo
 #define LDAP_SERVER_SORT_OID_W wstr("1.2.840.113556.1.4.473")
 #define LDAP_SERVER_RESP_SORT_OID "1.2.840.113556.1.4.474"
 #define LDAP_SERVER_RESP_SORT_OID_W wstr("1.2.840.113556.1.4.474")
-
 type PLDAPSearch as LDAPSearch ptr
 
 type LDAPSortKeyW
@@ -983,7 +973,6 @@ declare function ldap_parse_page_controlA(byval ExternalHandle as PLDAP, byval S
 
 #define LDAP_PAGED_RESULT_OID_STRING "1.2.840.113556.1.4.319"
 #define LDAP_PAGED_RESULT_OID_STRING_W wstr("1.2.840.113556.1.4.319")
-
 declare function ldap_search_init_pageW(byval ExternalHandle as PLDAP, byval DistinguishedName as const PWCHAR, byval ScopeOfSearch as ULONG, byval SearchFilter as const PWCHAR, byval AttributeList as PWCHAR ptr, byval AttributesOnly as ULONG, byval ServerControls as PLDAPControlW ptr, byval ClientControls as PLDAPControlW ptr, byval PageTimeLimit as ULONG, byval TotalSizeLimit as ULONG, byval SortKeys as PLDAPSortKeyW ptr) as PLDAPSearch
 declare function ldap_search_init_pageA(byval ExternalHandle as PLDAP, byval DistinguishedName as const PCHAR, byval ScopeOfSearch as ULONG, byval SearchFilter as const PCHAR, byval AttributeList as PCHAR ptr, byval AttributesOnly as ULONG, byval ServerControls as PLDAPControlA ptr, byval ClientControls as PLDAPControlA ptr, byval PageTimeLimit as ULONG, byval TotalSizeLimit as ULONG, byval SortKeys as PLDAPSortKeyA ptr) as PLDAPSearch
 
@@ -1017,7 +1006,6 @@ type LDAPVLVInfo
 end type
 
 type PLDAPVLVInfo as LDAPVLVInfo ptr
-
 declare function ldap_create_vlv_controlW(byval ExternalHandle as PLDAP, byval VlvInfo as PLDAPVLVInfo, byval IsCritical as UCHAR, byval Control as PLDAPControlW ptr) as INT_
 declare function ldap_create_vlv_controlA(byval ExternalHandle as PLDAP, byval VlvInfo as PLDAPVLVInfo, byval IsCritical as UCHAR, byval Control as PLDAPControlA ptr) as INT_
 declare function ldap_parse_vlv_controlW(byval ExternalHandle as PLDAP, byval Control as PLDAPControlW ptr, byval TargetPos as PULONG, byval ListCount as PULONG, byval Context as PBERVAL ptr, byval ErrCode as PINT) as INT_
@@ -1033,7 +1021,6 @@ declare function ldap_parse_vlv_controlA(byval ExternalHandle as PLDAP, byval Co
 
 #define LDAP_START_TLS_OID "1.3.6.1.4.1.1466.20037"
 #define LDAP_START_TLS_OID_W wstr("1.3.6.1.4.1.1466.20037")
-
 declare function ldap_start_tls_sW(byval ExternalHandle as PLDAP, byval ServerReturnValue as PULONG, byval result as LDAPMessage ptr ptr, byval ServerControls as PLDAPControlW ptr, byval ClientControls as PLDAPControlW ptr) as ULONG
 declare function ldap_start_tls_sA(byval ExternalHandle as PLDAP, byval ServerReturnValue as PULONG, byval result as LDAPMessage ptr ptr, byval ServerControls as PLDAPControlA ptr, byval ClientControls as PLDAPControlA ptr) as ULONG
 declare function ldap_stop_tls_s(byval ExternalHandle as PLDAP) as BOOLEAN
@@ -1046,7 +1033,6 @@ declare function ldap_stop_tls_s(byval ExternalHandle as PLDAP) as BOOLEAN
 
 #define LDAP_TTL_EXTENDED_OP_OID "1.3.6.1.4.1.1466.101.119.1"
 #define LDAP_TTL_EXTENDED_OP_OID_W wstr("1.3.6.1.4.1.1466.101.119.1")
-
 declare function ldap_first_reference(byval ld as LDAP ptr, byval res as LDAPMessage ptr) as LDAPMessage ptr
 declare function ldap_next_reference(byval ld as LDAP ptr, byval entry as LDAPMessage ptr) as LDAPMessage ptr
 declare function ldap_count_references(byval ld as LDAP ptr, byval res as LDAPMessage ptr) as ULONG
@@ -1069,12 +1055,10 @@ declare function ldap_extended_operation_sW(byval ExternalHandle as LDAP ptr, by
 	#define ldap_extended_operation_s ldap_extended_operation_sW
 #else
 	declare function ldap_extended_operation(byval ld as LDAP ptr, byval Oid as const PCHAR, byval Data as BERVAL ptr, byval ServerControls as PLDAPControlA ptr, byval ClientControls as PLDAPControlA ptr, byval MessageNumber as ULONG ptr) as ULONG
-
 	#define ldap_extended_operation_s ldap_extended_operation_sA
 #endif
 
 declare function ldap_close_extended_op(byval ld as LDAP ptr, byval MessageNumber as ULONG) as ULONG
-
 #define LDAP_OPT_REFERRAL_CALLBACK &h70
 
 type LdapReferralCallback
@@ -1086,14 +1070,11 @@ end type
 
 type LDAP_REFERRAL_CALLBACK as LdapReferralCallback
 type PLDAP_REFERRAL_CALLBACK as LdapReferralCallback ptr
-
 declare function LdapGetLastError() as ULONG
 declare function LdapMapErrorToWin32(byval LdapError as ULONG) as ULONG
-
 #define LDAP_OPT_CLIENT_CERTIFICATE &h80
 #define LDAP_OPT_SERVER_CERTIFICATE &h81
 #define LDAP_OPT_REF_DEREF_CONN_PER_MSG &h94
-
 declare function ldap_conn_from_msg(byval PrimaryConn as LDAP ptr, byval res as LDAPMessage ptr) as LDAP ptr
 
 end extern

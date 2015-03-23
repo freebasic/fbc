@@ -465,15 +465,11 @@ enum
 end enum
 
 type WBEMSTATUS as tag_WBEMSTATUS
-
 extern LIBID_WbemClient_v1 as const IID
-
 #define __IWbemClassObject_INTERFACE_DEFINED__
-
 extern IID_IWbemClassObject as const IID
-
-type IWbemQualifierSet as IWbemQualifierSet_
 type IWbemClassObject as IWbemClassObject_
+type IWbemQualifierSet as IWbemQualifierSet_
 
 type IWbemClassObjectVtbl
 	QueryInterface as function(byval This as IWbemClassObject ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
@@ -557,11 +553,8 @@ declare function IWbemClassObject_GetMethodQualifierSet_Proxy(byval This as IWbe
 declare sub IWbemClassObject_GetMethodQualifierSet_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IWbemClassObject_GetMethodOrigin_Proxy(byval This as IWbemClassObject ptr, byval wszMethodName as LPCWSTR, byval pstrClassName as BSTR ptr) as HRESULT
 declare sub IWbemClassObject_GetMethodOrigin_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-
 #define __IWbemObjectAccess_INTERFACE_DEFINED__
-
 extern IID_IWbemObjectAccess as const IID
-
 type IWbemObjectAccess as IWbemObjectAccess_
 
 type IWbemObjectAccessVtbl
@@ -628,9 +621,7 @@ declare function IWbemObjectAccess_Lock_Proxy(byval This as IWbemObjectAccess pt
 declare sub IWbemObjectAccess_Lock_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IWbemObjectAccess_Unlock_Proxy(byval This as IWbemObjectAccess ptr, byval lFlags as long) as HRESULT
 declare sub IWbemObjectAccess_Unlock_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-
 #define __IWbemQualifierSet_INTERFACE_DEFINED__
-
 extern IID_IWbemQualifierSet as const IID
 
 type IWbemQualifierSetVtbl
@@ -664,16 +655,14 @@ declare function IWbemQualifierSet_Next_Proxy(byval This as IWbemQualifierSet pt
 declare sub IWbemQualifierSet_Next_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IWbemQualifierSet_EndEnumeration_Proxy(byval This as IWbemQualifierSet ptr) as HRESULT
 declare sub IWbemQualifierSet_EndEnumeration_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-
 #define __IWbemServices_INTERFACE_DEFINED__
-
 extern IID_IWbemServices as const IID
 
-type IEnumWbemClassObject as IEnumWbemClassObject_
-type IWbemObjectSink as IWbemObjectSink_
-type IWbemCallResult as IWbemCallResult_
-type IWbemContext as IWbemContext_
 type IWbemServices as IWbemServices_
+type IWbemContext as IWbemContext_
+type IWbemCallResult as IWbemCallResult_
+type IWbemObjectSink as IWbemObjectSink_
+type IEnumWbemClassObject as IEnumWbemClassObject_
 
 type IWbemServicesVtbl
 	QueryInterface as function(byval This as IWbemServices ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
@@ -754,11 +743,8 @@ declare function IWbemServices_ExecMethod_Proxy(byval This as IWbemServices ptr,
 declare sub IWbemServices_ExecMethod_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IWbemServices_ExecMethodAsync_Proxy(byval This as IWbemServices ptr, byval strObjectPath as const BSTR, byval strMethodName as const BSTR, byval lFlags as long, byval pCtx as IWbemContext ptr, byval pInParams as IWbemClassObject ptr, byval pResponseHandler as IWbemObjectSink ptr) as HRESULT
 declare sub IWbemServices_ExecMethodAsync_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-
 #define __IWbemLocator_INTERFACE_DEFINED__
-
 extern IID_IWbemLocator as const GUID
-
 type IWbemLocator as IWbemLocator_
 
 type IWbemLocatorVtbl
@@ -774,9 +760,7 @@ end type
 
 declare function IWbemLocator_ConnectServer_Proxy(byval This as IWbemLocator ptr, byval strNetworkResource as const BSTR, byval strUser as const BSTR, byval strPassword as const BSTR, byval strLocale as const BSTR, byval lSecurityFlags as long, byval strAuthority as const BSTR, byval pCtx as IWbemContext ptr, byval ppNamespace as IWbemServices ptr ptr) as HRESULT
 declare sub IWbemLocator_ConnectServer_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-
 #define __IWbemObjectSink_INTERFACE_DEFINED__
-
 extern IID_IWbemObjectSink as const IID
 
 type IWbemObjectSinkVtbl
@@ -795,9 +779,7 @@ declare function IWbemObjectSink_Indicate_Proxy(byval This as IWbemObjectSink pt
 declare sub IWbemObjectSink_Indicate_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IWbemObjectSink_SetStatus_Proxy(byval This as IWbemObjectSink ptr, byval lFlags as long, byval hResult as HRESULT, byval strParam as BSTR, byval pObjParam as IWbemClassObject ptr) as HRESULT
 declare sub IWbemObjectSink_SetStatus_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-
 #define __IEnumWbemClassObject_INTERFACE_DEFINED__
-
 extern IID_IEnumWbemClassObject as const IID
 
 type IEnumWbemClassObjectVtbl
@@ -825,9 +807,7 @@ declare function IEnumWbemClassObject_Clone_Proxy(byval This as IEnumWbemClassOb
 declare sub IEnumWbemClassObject_Clone_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IEnumWbemClassObject_Skip_Proxy(byval This as IEnumWbemClassObject ptr, byval lTimeout as long, byval nCount as ULONG) as HRESULT
 declare sub IEnumWbemClassObject_Skip_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-
 #define __IWbemCallResult_INTERFACE_DEFINED__
-
 extern IID_IWbemCallResult as const IID
 
 type IWbemCallResultVtbl
@@ -852,9 +832,7 @@ declare function IWbemCallResult_GetResultServices_Proxy(byval This as IWbemCall
 declare sub IWbemCallResult_GetResultServices_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IWbemCallResult_GetCallStatus_Proxy(byval This as IWbemCallResult ptr, byval lTimeout as long, byval plStatus as long ptr) as HRESULT
 declare sub IWbemCallResult_GetCallStatus_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-
 #define __IWbemContext_INTERFACE_DEFINED__
-
 extern IID_IWbemContext as const IID
 
 type IWbemContextVtbl
@@ -894,11 +872,8 @@ declare function IWbemContext_DeleteValue_Proxy(byval This as IWbemContext ptr, 
 declare sub IWbemContext_DeleteValue_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IWbemContext_DeleteAll_Proxy(byval This as IWbemContext ptr) as HRESULT
 declare sub IWbemContext_DeleteAll_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-
 #define __IUnsecuredApartment_INTERFACE_DEFINED__
-
 extern IID_IUnsecuredApartment as const IID
-
 type IUnsecuredApartment as IUnsecuredApartment_
 
 type IUnsecuredApartmentVtbl
@@ -914,11 +889,8 @@ end type
 
 declare function IUnsecuredApartment_CreateObjectStub_Proxy(byval This as IUnsecuredApartment ptr, byval pObject as IUnknown ptr, byval ppStub as IUnknown ptr ptr) as HRESULT
 declare sub IUnsecuredApartment_CreateObjectStub_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-
 #define __IWbemUnsecuredApartment_INTERFACE_DEFINED__
-
 extern IID_IWbemUnsecuredApartment as const IID
-
 type IWbemUnsecuredApartment as IWbemUnsecuredApartment_
 
 type IWbemUnsecuredApartmentVtbl
@@ -935,11 +907,8 @@ end type
 
 declare function IWbemUnsecuredApartment_CreateSinkStub_Proxy(byval This as IWbemUnsecuredApartment ptr, byval pSink as IWbemObjectSink ptr, byval dwFlags as DWORD, byval wszReserved as LPCWSTR, byval ppStub as IWbemObjectSink ptr ptr) as HRESULT
 declare sub IWbemUnsecuredApartment_CreateSinkStub_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-
 #define __IWbemStatusCodeText_INTERFACE_DEFINED__
-
 extern IID_IWbemStatusCodeText as const IID
-
 type IWbemStatusCodeText as IWbemStatusCodeText_
 
 type IWbemStatusCodeTextVtbl
@@ -958,11 +927,8 @@ declare function IWbemStatusCodeText_GetErrorCodeText_Proxy(byval This as IWbemS
 declare sub IWbemStatusCodeText_GetErrorCodeText_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IWbemStatusCodeText_GetFacilityCodeText_Proxy(byval This as IWbemStatusCodeText ptr, byval hRes as HRESULT, byval LocaleId as LCID, byval lFlags as long, byval MessageText as BSTR ptr) as HRESULT
 declare sub IWbemStatusCodeText_GetFacilityCodeText_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-
 #define __IWbemBackupRestore_INTERFACE_DEFINED__
-
 extern IID_IWbemBackupRestore as const IID
-
 type IWbemBackupRestore as IWbemBackupRestore_
 
 type IWbemBackupRestoreVtbl
@@ -981,11 +947,8 @@ declare function IWbemBackupRestore_Backup_Proxy(byval This as IWbemBackupRestor
 declare sub IWbemBackupRestore_Backup_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IWbemBackupRestore_Restore_Proxy(byval This as IWbemBackupRestore ptr, byval strRestoreFromFile as LPCWSTR, byval lFlags as long) as HRESULT
 declare sub IWbemBackupRestore_Restore_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-
 #define __IWbemBackupRestoreEx_INTERFACE_DEFINED__
-
 extern IID_IWbemBackupRestoreEx as const IID
-
 type IWbemBackupRestoreEx as IWbemBackupRestoreEx_
 
 type IWbemBackupRestoreExVtbl
@@ -1006,11 +969,8 @@ declare function IWbemBackupRestoreEx_Pause_Proxy(byval This as IWbemBackupResto
 declare sub IWbemBackupRestoreEx_Pause_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IWbemBackupRestoreEx_Resume_Proxy(byval This as IWbemBackupRestoreEx ptr) as HRESULT
 declare sub IWbemBackupRestoreEx_Resume_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-
 #define __IWbemRefresher_INTERFACE_DEFINED__
-
 extern IID_IWbemRefresher as const IID
-
 type IWbemRefresher as IWbemRefresher_
 
 type IWbemRefresherVtbl
@@ -1026,11 +986,8 @@ end type
 
 declare function IWbemRefresher_Refresh_Proxy(byval This as IWbemRefresher ptr, byval lFlags as long) as HRESULT
 declare sub IWbemRefresher_Refresh_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-
 #define __IWbemHiPerfEnum_INTERFACE_DEFINED__
-
 extern IID_IWbemHiPerfEnum as const IID
-
 type IWbemHiPerfEnum as IWbemHiPerfEnum_
 
 type IWbemHiPerfEnumVtbl
@@ -1055,11 +1012,8 @@ declare function IWbemHiPerfEnum_GetObjects_Proxy(byval This as IWbemHiPerfEnum 
 declare sub IWbemHiPerfEnum_GetObjects_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IWbemHiPerfEnum_RemoveAll_Proxy(byval This as IWbemHiPerfEnum ptr, byval lFlags as long) as HRESULT
 declare sub IWbemHiPerfEnum_RemoveAll_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-
 #define __IWbemConfigureRefresher_INTERFACE_DEFINED__
-
 extern IID_IWbemConfigureRefresher as const IID
-
 type IWbemConfigureRefresher as IWbemConfigureRefresher_
 
 type IWbemConfigureRefresherVtbl
@@ -1101,11 +1055,8 @@ extern __MIDL_itf_wbemcli_0000_v0_0_c_ifspec as RPC_IF_HANDLE
 extern __MIDL_itf_wbemcli_0000_v0_0_s_ifspec as RPC_IF_HANDLE
 extern __MIDL_itf_wbemcli_0116_v0_0_c_ifspec as RPC_IF_HANDLE
 extern __MIDL_itf_wbemcli_0116_v0_0_s_ifspec as RPC_IF_HANDLE
-
 #define __IWbemShutdown_INTERFACE_DEFINED__
-
 extern IID_IWbemShutdown as const IID
-
 type IWbemShutdown as IWbemShutdown_
 
 type IWbemShutdownVtbl
@@ -1140,14 +1091,10 @@ enum
 end enum
 
 type WMI_OBJ_TEXT as tag_WMI_OBJ_TEXT
-
 extern __MIDL_itf_wbemcli_0123_v0_0_c_ifspec as RPC_IF_HANDLE
 extern __MIDL_itf_wbemcli_0123_v0_0_s_ifspec as RPC_IF_HANDLE
-
 #define __IWbemObjectTextSrc_INTERFACE_DEFINED__
-
 extern IID_IWbemObjectTextSrc as const IID
-
 type IWbemObjectTextSrc as IWbemObjectTextSrc_
 
 type IWbemObjectTextSrcVtbl
@@ -1199,14 +1146,10 @@ enum
 end enum
 
 type WBEM_CONNECT_OPTIONS as tag_WBEM_CONNECT_OPTIONS
-
 extern __MIDL_itf_wbemcli_0125_v0_0_c_ifspec as RPC_IF_HANDLE
 extern __MIDL_itf_wbemcli_0125_v0_0_s_ifspec as RPC_IF_HANDLE
-
 #define __IMofCompiler_INTERFACE_DEFINED__
-
 extern IID_IMofCompiler as const IID
-
 type IMofCompiler as IMofCompiler_
 
 type IMofCompilerVtbl
@@ -1237,7 +1180,6 @@ enum
 end enum
 
 type WBEM_UNSECAPP_FLAG_TYPE as tag_WBEM_UNSECAPP_FLAG_TYPE
-
 extern __MIDL_itf_wbemcli_0127_v0_0_c_ifspec as RPC_IF_HANDLE
 extern __MIDL_itf_wbemcli_0127_v0_0_s_ifspec as RPC_IF_HANDLE
 
@@ -1248,7 +1190,6 @@ enum
 end enum
 
 type WBEM_INFORMATION_FLAG_TYPE as tag_WBEM_INFORMATION_FLAG_TYPE
-
 extern __MIDL_itf_wbemcli_0128_v0_0_c_ifspec as RPC_IF_HANDLE
 extern __MIDL_itf_wbemcli_0128_v0_0_s_ifspec as RPC_IF_HANDLE
 

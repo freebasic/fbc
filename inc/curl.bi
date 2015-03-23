@@ -68,21 +68,17 @@ type curl_off_t as longint
 #define __CURL_OFF_T_C_HLPR1(Val, Suffix) __CURL_OFF_T_C_HLPR2(Val, Suffix)
 #define CURL_OFF_T_C(Val) __CURL_OFF_T_C_HLPR1(Val, CURL_SUFFIX_CURL_OFF_T)
 #define CURL_OFF_TU_C(Val) __CURL_OFF_T_C_HLPR1(Val, CURL_SUFFIX_CURL_OFF_TU)
-
 type CURL as any
 
 #ifdef __FB_WIN32__
 	type curl_socket_t as SOCKET
-
 	#define CURL_SOCKET_BAD INVALID_SOCKET
 #else
 	type curl_socket_t as long
-
 	#define CURL_SOCKET_BAD (-1)
 #endif
 
 #define curl_socket_typedef
-
 type curl_slist as curl_slist_
 
 type curl_httppost
@@ -108,14 +104,11 @@ end type
 #define HTTPPOST_BUFFER (1 shl 4)
 #define HTTPPOST_PTRBUFFER (1 shl 5)
 #define HTTPPOST_CALLBACK (1 shl 6)
-
 type curl_progress_callback as function(byval clientp as any ptr, byval dltotal as double, byval dlnow as double, byval ultotal as double, byval ulnow as double) as long
 type curl_xferinfo_callback as function(byval clientp as any ptr, byval dltotal as curl_off_t, byval dlnow as curl_off_t, byval ultotal as curl_off_t, byval ulnow as curl_off_t) as long
-
 #define CURL_MAX_WRITE_SIZE 16384
 #define CURL_MAX_HTTP_HEADER (100 * 1024)
 #define CURL_WRITEFUNC_PAUSE &h10000001
-
 type curl_write_callback as function(byval buffer as zstring ptr, byval size as uinteger, byval nitems as uinteger, byval outstream as any ptr) as uinteger
 
 type curlfiletype as long
@@ -167,29 +160,20 @@ end type
 #define CURL_CHUNK_BGN_FUNC_OK 0
 #define CURL_CHUNK_BGN_FUNC_FAIL 1
 #define CURL_CHUNK_BGN_FUNC_SKIP 2
-
 type curl_chunk_bgn_callback as function(byval transfer_info as const any ptr, byval ptr as any ptr, byval remains as long) as clong
-
 #define CURL_CHUNK_END_FUNC_OK 0
 #define CURL_CHUNK_END_FUNC_FAIL 1
-
 type curl_chunk_end_callback as function(byval ptr as any ptr) as clong
-
 #define CURL_FNMATCHFUNC_MATCH 0
 #define CURL_FNMATCHFUNC_NOMATCH 1
 #define CURL_FNMATCHFUNC_FAIL 2
-
 type curl_fnmatch_callback as function(byval ptr as any ptr, byval pattern as const zstring ptr, byval string as const zstring ptr) as long
-
 #define CURL_SEEKFUNC_OK 0
 #define CURL_SEEKFUNC_FAIL 1
 #define CURL_SEEKFUNC_CANTSEEK 2
-
 type curl_seek_callback as function(byval instream as any ptr, byval offset as curl_off_t, byval origin as long) as long
-
 #define CURL_READFUNC_ABORT &h10000000
 #define CURL_READFUNC_PAUSE &h10000001
-
 type curl_read_callback as function(byval buffer as zstring ptr, byval size as uinteger, byval nitems as uinteger, byval instream as any ptr) as uinteger
 
 type curlsocktype as long
@@ -202,7 +186,6 @@ end enum
 #define CURL_SOCKOPT_OK 0
 #define CURL_SOCKOPT_ERROR 1
 #define CURL_SOCKOPT_ALREADY_CONNECTED 2
-
 type curl_sockopt_callback as function(byval clientp as any ptr, byval curlfd as curl_socket_t, byval purpose as curlsocktype) as long
 
 type curl_sockaddr
@@ -386,7 +369,6 @@ end enum
 #define CURLOPT_WRITEHEADER CURLOPT_HEADERDATA
 #define CURLOPT_WRITEINFO CURLOPT_OBSOLETE40
 #define CURLOPT_CLOSEPOLICY CURLOPT_OBSOLETE72
-
 type curl_conv_callback as function(byval buffer as zstring ptr, byval length as uinteger) as CURLcode
 type curl_ssl_ctx_callback as function(byval curl as CURL ptr, byval ssl_ctx as any ptr, byval userptr as any ptr) as CURLcode
 
@@ -884,9 +866,7 @@ enum
 end enum
 
 declare function curl_formadd(byval httppost as curl_httppost ptr ptr, byval last_post as curl_httppost ptr ptr, ...) as CURLFORMcode
-
 type curl_formget_callback as function(byval arg as any ptr, byval buf as const zstring ptr, byval len as uinteger) as uinteger
-
 declare function curl_formget(byval form as curl_httppost ptr, byval arg as any ptr, byval append as curl_formget_callback) as long
 declare sub curl_formfree(byval form as curl_httppost ptr)
 declare function curl_getenv(byval variable as const zstring ptr) as zstring ptr
@@ -1128,9 +1108,7 @@ declare function curl_easy_duphandle(byval curl as CURL ptr) as CURL ptr
 declare sub curl_easy_reset(byval curl as CURL ptr)
 declare function curl_easy_recv(byval curl as CURL ptr, byval buffer as any ptr, byval buflen as uinteger, byval n as uinteger ptr) as CURLcode
 declare function curl_easy_send(byval curl as CURL ptr, byval buffer as const any ptr, byval buflen as uinteger, byval n as uinteger ptr) as CURLcode
-
 #define __CURL_MULTI_H
-
 type CURLM as any
 
 type CURLMcode as long
@@ -1196,16 +1174,13 @@ declare function curl_multi_strerror(byval as CURLMcode) as const zstring ptr
 #define CURL_CSELECT_IN &h01
 #define CURL_CSELECT_OUT &h02
 #define CURL_CSELECT_ERR &h04
-
 type curl_socket_callback as function(byval easy as CURL ptr, byval s as curl_socket_t, byval what as long, byval userp as any ptr, byval socketp as any ptr) as long
 type curl_multi_timer_callback as function(byval multi as CURLM ptr, byval timeout_ms as clong, byval userp as any ptr) as long
 
 declare function curl_multi_socket_ alias "curl_multi_socket"(byval multi_handle as CURLM ptr, byval s as curl_socket_t, byval running_handles as long ptr) as CURLMcode
 declare function curl_multi_socket_action(byval multi_handle as CURLM ptr, byval s as curl_socket_t, byval ev_bitmask as long, byval running_handles as long ptr) as CURLMcode
 declare function curl_multi_socket_all(byval multi_handle as CURLM ptr, byval running_handles as long ptr) as CURLMcode
-
 #define curl_multi_socket(x, y, z) curl_multi_socket_action(x, y, 0, z)
-
 declare function curl_multi_timeout(byval multi_handle as CURLM ptr, byval milliseconds as clong ptr) as CURLMcode
 
 type CURLMoption as long
