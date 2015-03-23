@@ -151,19 +151,19 @@ end type
 
 type SAFEARRAY as tagSAFEARRAY
 type LPSAFEARRAY as SAFEARRAY ptr
-#define FADF_AUTO &h1
-#define FADF_STATIC &h2
-#define FADF_EMBEDDED &h4
-#define FADF_FIXEDSIZE &h10
-#define FADF_RECORD &h20
-#define FADF_HAVEIID &h40
-#define FADF_HAVEVARTYPE &h80
-#define FADF_BSTR &h100
-#define FADF_UNKNOWN &h200
-#define FADF_DISPATCH &h400
-#define FADF_VARIANT &h800
-#define FADF_RESERVED &hf008
-#define _FORCENAMELESSUNION 1
+const FADF_AUTO = &h1
+const FADF_STATIC = &h2
+const FADF_EMBEDDED = &h4
+const FADF_FIXEDSIZE = &h10
+const FADF_RECORD = &h20
+const FADF_HAVEIID = &h40
+const FADF_HAVEVARTYPE = &h80
+const FADF_BSTR = &h100
+const FADF_UNKNOWN = &h200
+const FADF_DISPATCH = &h400
+const FADF_VARIANT = &h800
+const FADF_RESERVED = &hf008
+const _FORCENAMELESSUNION = 1
 #define __tagVARIANT
 #define __VARIANT_NAME_1
 #define __VARIANT_NAME_2
@@ -360,14 +360,14 @@ end type
 
 type PARAMDESC as tagPARAMDESC
 type LPPARAMDESC as tagPARAMDESC ptr
-#define PARAMFLAG_NONE &h0
-#define PARAMFLAG_FIN &h1
-#define PARAMFLAG_FOUT &h2
-#define PARAMFLAG_FLCID &h4
-#define PARAMFLAG_FRETVAL &h8
-#define PARAMFLAG_FOPT &h10
-#define PARAMFLAG_FHASDEFAULT &h20
-#define PARAMFLAG_FHASCUSTDATA &h40
+const PARAMFLAG_NONE = &h0
+const PARAMFLAG_FIN = &h1
+const PARAMFLAG_FOUT = &h2
+const PARAMFLAG_FLCID = &h4
+const PARAMFLAG_FRETVAL = &h8
+const PARAMFLAG_FOPT = &h10
+const PARAMFLAG_FHASDEFAULT = &h20
+const PARAMFLAG_FHASCUSTDATA = &h40
 
 type tagIDLDESC
 	dwReserved as ULONG_PTR
@@ -507,10 +507,10 @@ enum
 end enum
 
 type VARKIND as tagVARKIND
-#define IMPLTYPEFLAG_FDEFAULT &h1
-#define IMPLTYPEFLAG_FSOURCE &h2
-#define IMPLTYPEFLAG_FRESTRICTED &h4
-#define IMPLTYPEFLAG_FDEFAULTVTABLE &h8
+const IMPLTYPEFLAG_FDEFAULT = &h1
+const IMPLTYPEFLAG_FSOURCE = &h2
+const IMPLTYPEFLAG_FRESTRICTED = &h4
+const IMPLTYPEFLAG_FDEFAULTVTABLE = &h8
 
 type tagVARDESC
 	memid as MEMBERID
@@ -864,14 +864,14 @@ declare sub ICreateTypeLib2_SetHelpStringDll_Stub(byval This as IRpcStubBuffer p
 #define __IDispatch_INTERFACE_DEFINED__
 type LPDISPATCH as IDispatch ptr
 
-#define DISPID_UNKNOWN (-1)
-#define DISPID_VALUE 0
-#define DISPID_PROPERTYPUT (-3)
-#define DISPID_NEWENUM (-4)
-#define DISPID_EVALUATE (-5)
-#define DISPID_CONSTRUCTOR (-6)
-#define DISPID_DESTRUCTOR (-7)
-#define DISPID_COLLECT (-8)
+const DISPID_UNKNOWN = -1
+const DISPID_VALUE = 0
+const DISPID_PROPERTYPUT = -3
+const DISPID_NEWENUM = -4
+const DISPID_EVALUATE = -5
+const DISPID_CONSTRUCTOR = -6
+const DISPID_DESTRUCTOR = -7
+const DISPID_COLLECT = -8
 extern IID_IDispatch as const GUID
 
 type IDispatchVtbl

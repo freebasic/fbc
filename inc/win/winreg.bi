@@ -8,18 +8,18 @@
 extern "Windows"
 
 #define _WINREG_
-#define RRF_RT_REG_NONE &h00000001
-#define RRF_RT_REG_SZ &h00000002
-#define RRF_RT_REG_EXPAND_SZ &h00000004
-#define RRF_RT_REG_BINARY &h00000008
-#define RRF_RT_REG_DWORD &h00000010
-#define RRF_RT_REG_MULTI_SZ &h00000020
-#define RRF_RT_REG_QWORD &h00000040
+const RRF_RT_REG_NONE = &h00000001
+const RRF_RT_REG_SZ = &h00000002
+const RRF_RT_REG_EXPAND_SZ = &h00000004
+const RRF_RT_REG_BINARY = &h00000008
+const RRF_RT_REG_DWORD = &h00000010
+const RRF_RT_REG_MULTI_SZ = &h00000020
+const RRF_RT_REG_QWORD = &h00000040
 #define RRF_RT_DWORD (RRF_RT_REG_BINARY or RRF_RT_REG_DWORD)
 #define RRF_RT_QWORD (RRF_RT_REG_BINARY or RRF_RT_REG_QWORD)
-#define RRF_RT_ANY &h0000ffff
-#define RRF_NOEXPAND &h10000000
-#define RRF_ZEROONFAILURE &h20000000
+const RRF_RT_ANY = &h0000ffff
+const RRF_NOEXPAND = &h10000000
+const RRF_ZEROONFAILURE = &h20000000
 type REGSAM as ACCESS_MASK
 type LSTATUS as LONG
 #define HKEY_CLASSES_ROOT cast(HKEY, cast(ULONG_PTR, cast(LONG, &h80000000)))
@@ -31,9 +31,9 @@ type LSTATUS as LONG
 #define HKEY_PERFORMANCE_NLSTEXT cast(HKEY, cast(ULONG_PTR, cast(LONG, &h80000060)))
 #define HKEY_CURRENT_CONFIG cast(HKEY, cast(ULONG_PTR, cast(LONG, &h80000005)))
 #define HKEY_DYN_DATA cast(HKEY, cast(ULONG_PTR, cast(LONG, &h80000006)))
-#define REG_SECURE_CONNECTION 1
+const REG_SECURE_CONNECTION = 1
 #define _PROVIDER_STRUCTS_DEFINED
-#define PROVIDER_KEEPS_VALUE_LENGTH &h1
+const PROVIDER_KEEPS_VALUE_LENGTH = &h1
 
 type val_context
 	valuelen as long
@@ -243,7 +243,7 @@ declare function AbortSystemShutdownW(byval lpMachineName as LPWSTR) as WINBOOL
 #define REASON_UNKNOWN SHTDN_REASON_UNKNOWN
 #define REASON_LEGACY_API SHTDN_REASON_LEGACY_API
 #define REASON_PLANNED_FLAG SHTDN_REASON_FLAG_PLANNED
-#define MAX_SHUTDOWN_TIMEOUT ((((10 * 365) * 24) * 60) * 60)
+const MAX_SHUTDOWN_TIMEOUT = (((10 * 365) * 24) * 60) * 60
 
 #ifdef UNICODE
 	#define InitiateSystemShutdownEx InitiateSystemShutdownExW
@@ -357,15 +357,15 @@ declare function Wow64Win32ApiEntry(byval dwFuncNumber as DWORD, byval dwFlag as
 #endif
 
 #if _WIN32_WINNT = &h0602
-	#define SHUTDOWN_FORCE_OTHERS &h00000001
-	#define SHUTDOWN_FORCE_SELF &h00000002
-	#define SHUTDOWN_RESTART &h00000004
-	#define SHUTDOWN_POWEROFF &h00000008
-	#define SHUTDOWN_NOREBOOT &h00000010
-	#define SHUTDOWN_GRACE_OVERRIDE &h00000020
-	#define SHUTDOWN_INSTALL_UPDATES &h00000040
-	#define SHUTDOWN_RESTARTAPPS &h00000080
-	#define SHUTDOWN_HYBRID &h00000200
+	const SHUTDOWN_FORCE_OTHERS = &h00000001
+	const SHUTDOWN_FORCE_SELF = &h00000002
+	const SHUTDOWN_RESTART = &h00000004
+	const SHUTDOWN_POWEROFF = &h00000008
+	const SHUTDOWN_NOREBOOT = &h00000010
+	const SHUTDOWN_GRACE_OVERRIDE = &h00000020
+	const SHUTDOWN_INSTALL_UPDATES = &h00000040
+	const SHUTDOWN_RESTARTAPPS = &h00000080
+	const SHUTDOWN_HYBRID = &h00000200
 	declare function InitiateShutdownA(byval lpMachineName as LPSTR, byval lpMessage as LPSTR, byval dwGracePeriod as DWORD, byval dwShutdownFlags as DWORD, byval dwReason as DWORD) as DWORD
 	declare function InitiateShutdownW(byval lpMachineName as LPWSTR, byval lpMessage as LPWSTR, byval dwGracePeriod as DWORD, byval dwShutdownFlags as DWORD, byval dwReason as DWORD) as DWORD
 #endif

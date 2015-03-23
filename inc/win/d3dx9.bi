@@ -21,7 +21,7 @@
 #define D3DX_DEFAULT_FLOAT FLT_MAX
 #define D3DX_FROM_FILE cast(UINT, -3)
 #define D3DFMT_FROM_FILE cast(D3DFORMAT, -3)
-#define _FACDD &h876
+const _FACDD = &h876
 #define MAKE_DDHRESULT(code) MAKE_HRESULT(1, _FACDD, code)
 
 type _D3DXERR as long

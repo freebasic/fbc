@@ -1,7 +1,7 @@
 #pragma once
 
 #define SCHEMADEF_H
-#define SCHEMADEF_VERSION 1
+const SCHEMADEF_VERSION = 1
 
 type TMPROPINFO
 	pszName as LPCWSTR

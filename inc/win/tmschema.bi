@@ -3,7 +3,7 @@
 #include once "schemadef.bi"
 
 #define TMSCHEMA_H
-#define THEMEMGR_VERSION 1
+const THEMEMGR_VERSION = 1
 
 type BGTYPE as long
 enum

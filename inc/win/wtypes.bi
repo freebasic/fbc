@@ -9,7 +9,7 @@
 
 extern "C"
 
-#define __REQUIRED_RPCNDR_H_VERSION__ 475
+const __REQUIRED_RPCNDR_H_VERSION__ = 475
 #define __wtypes_h__
 #define __IWinTypes_INTERFACE_DEFINED__
 extern IWinTypes_v0_1_c_ifspec as RPC_IF_HANDLE
@@ -61,10 +61,10 @@ end type
 
 type RemHBRUSH as tagRemBRUSH
 #define _ROTFLAGS_DEFINED
-#define ROTFLAGS_REGISTRATIONKEEPSALIVE &h1
-#define ROTFLAGS_ALLOWANYCLIENT &h2
+const ROTFLAGS_REGISTRATIONKEEPSALIVE = &h1
+const ROTFLAGS_ALLOWANYCLIENT = &h2
 #define _ROT_COMPARE_MAX_DEFINED
-#define ROT_COMPARE_MAX 2048
+const ROT_COMPARE_MAX = 2048
 
 type tagDVASPECT as long
 enum
@@ -105,9 +105,9 @@ end enum
 
 type STATFLAG as tagSTATFLAG
 type HCONTEXT as any ptr
-#define WDT_INPROC_CALL &h48746457
-#define WDT_REMOTE_CALL &h52746457
-#define WDT_INPROC64_CALL &h50746457
+const WDT_INPROC_CALL = &h48746457
+const WDT_REMOTE_CALL = &h52746457
+const WDT_INPROC64_CALL = &h50746457
 
 union _userCLIPFORMAT_u
 	dwValue as DWORD

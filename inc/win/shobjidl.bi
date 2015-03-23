@@ -317,39 +317,39 @@ extern "Windows"
 #define __IInitializeWithWindow_FWD_DEFINED__
 #define __IHandlerInfo_FWD_DEFINED__
 #define __IHandlerActivationHost_FWD_DEFINED__
-#define CMF_NORMAL &h0
-#define CMF_DEFAULTONLY &h1
-#define CMF_VERBSONLY &h2
-#define CMF_EXPLORE &h4
-#define CMF_NOVERBS &h8
-#define CMF_CANRENAME &h10
-#define CMF_NODEFAULT &h20
+const CMF_NORMAL = &h0
+const CMF_DEFAULTONLY = &h1
+const CMF_VERBSONLY = &h2
+const CMF_EXPLORE = &h4
+const CMF_NOVERBS = &h8
+const CMF_CANRENAME = &h10
+const CMF_NODEFAULT = &h20
 
 #if (_WIN32_WINNT = &h0400) or (_WIN32_WINNT = &h0502)
-	#define CMF_INCLUDESTATIC &h40
+	const CMF_INCLUDESTATIC = &h40
 #else
-	#define CMF_ITEMMENU &h80
+	const CMF_ITEMMENU = &h80
 #endif
 
-#define CMF_EXTENDEDVERBS &h100
+const CMF_EXTENDEDVERBS = &h100
 
 #if _WIN32_WINNT = &h0602
-	#define CMF_DISABLEDVERBS &h200
+	const CMF_DISABLEDVERBS = &h200
 #endif
 
-#define CMF_ASYNCVERBSTATE &h400
-#define CMF_OPTIMIZEFORINVOKE &h800
-#define CMF_SYNCCASCADEMENU &h1000
-#define CMF_DONOTPICKDEFAULT &h2000
-#define CMF_RESERVED &hffff0000
-#define GCS_VERBA &h0
-#define GCS_HELPTEXTA &h1
-#define GCS_VALIDATEA &h2
-#define GCS_VERBW &h4
-#define GCS_HELPTEXTW &h5
-#define GCS_VALIDATEW &h6
-#define GCS_VERBICONW &h14
-#define GCS_UNICODE &h4
+const CMF_ASYNCVERBSTATE = &h400
+const CMF_OPTIMIZEFORINVOKE = &h800
+const CMF_SYNCCASCADEMENU = &h1000
+const CMF_DONOTPICKDEFAULT = &h2000
+const CMF_RESERVED = &hffff0000
+const GCS_VERBA = &h0
+const GCS_HELPTEXTA = &h1
+const GCS_VALIDATEA = &h2
+const GCS_VERBW = &h4
+const GCS_HELPTEXTW = &h5
+const GCS_VALIDATEW = &h6
+const GCS_VERBICONW = &h14
+const GCS_UNICODE = &h4
 
 #ifdef UNICODE
 	#define GCS_VERB GCS_VERBW
@@ -396,11 +396,11 @@ extern "Windows"
 	#define CMIC_MASK_NOASYNC SEE_MASK_NOASYNC
 #endif
 
-#define CMIC_MASK_SHIFT_DOWN &h10000000
-#define CMIC_MASK_CONTROL_DOWN &h40000000
+const CMIC_MASK_SHIFT_DOWN = &h10000000
+const CMIC_MASK_CONTROL_DOWN = &h40000000
 #define CMIC_MASK_FLAG_LOG_USAGE SEE_MASK_FLAG_LOG_USAGE
 #define CMIC_MASK_NOZONECHECKS SEE_MASK_NOZONECHECKS
-#define CMIC_MASK_PTINVOKE &h20000000
+const CMIC_MASK_PTINVOKE = &h20000000
 
 type _CMINVOKECOMMANDINFO
 	cbSize as DWORD
@@ -560,11 +560,11 @@ end type
 declare function IPersistFolder_Initialize_Proxy(byval This as IPersistFolder ptr, byval pidl as LPCITEMIDLIST) as HRESULT
 declare sub IPersistFolder_Initialize_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 type LPPERSISTFOLDER as IPersistFolder ptr
-#define IRTIR_TASK_NOT_RUNNING 0
-#define IRTIR_TASK_RUNNING 1
-#define IRTIR_TASK_SUSPENDED 2
-#define IRTIR_TASK_PENDING 3
-#define IRTIR_TASK_FINISHED 4
+const IRTIR_TASK_NOT_RUNNING = 0
+const IRTIR_TASK_RUNNING = 1
+const IRTIR_TASK_SUSPENDED = 2
+const IRTIR_TASK_PENDING = 3
+const IRTIR_TASK_FINISHED = 4
 #define __IRunnableTask_INTERFACE_DEFINED__
 extern IID_IRunnableTask as const GUID
 type IRunnableTask as IRunnableTask_
@@ -597,13 +597,13 @@ declare sub IRunnableTask_IsRunning_Stub(byval This as IRpcStubBuffer ptr, byval
 
 #define TOID_NULL GUID_NULL
 #define ITSAT_DEFAULT_LPARAM cast(DWORD_PTR, -1)
-#define ITSAT_DEFAULT_PRIORITY &h10000000
-#define ITSAT_MAX_PRIORITY &h7fffffff
-#define ITSAT_MIN_PRIORITY &h00000000
-#define ITSSFLAG_COMPLETE_ON_DESTROY &h0
-#define ITSSFLAG_KILL_ON_DESTROY &h1
-#define ITSSFLAG_FLAGS_MASK &h3
-#define ITSS_THREAD_DESTROY_DEFAULT_TIMEOUT (10 * 1000)
+const ITSAT_DEFAULT_PRIORITY = &h10000000
+const ITSAT_MAX_PRIORITY = &h7fffffff
+const ITSAT_MIN_PRIORITY = &h00000000
+const ITSSFLAG_COMPLETE_ON_DESTROY = &h0
+const ITSSFLAG_KILL_ON_DESTROY = &h1
+const ITSSFLAG_FLAGS_MASK = &h3
+const ITSS_THREAD_DESTROY_DEFAULT_TIMEOUT = 10 * 1000
 #define ITSS_THREAD_TERMINATE_TIMEOUT INFINITE
 #define ITSS_THREAD_TIMEOUT_NO_CHANGE (INFINITE - 1)
 #define __IShellTaskScheduler_INTERFACE_DEFINED__
@@ -874,7 +874,7 @@ type SFGAOF as ULONG
 	#define STR_PARSE_SHOW_NET_DIAGNOSTICS_UI wstr("Show network diagnostics UI")
 	#define STR_PARSE_DONT_REQUIRE_VALIDATED_URLS wstr("Do not require validated URLs")
 	#define STR_INTERNETFOLDER_PARSE_ONLY_URLMON_BINDABLE wstr("Validate URL")
-	#define BIND_INTERRUPTABLE &hffffffff
+	const BIND_INTERRUPTABLE = &hffffffff
 	#define STR_BIND_FOLDERS_READ_ONLY wstr("Folders As Read Only")
 	#define STR_BIND_FOLDER_ENUM_MODE wstr("Folder Enum Mode")
 
@@ -1683,11 +1683,11 @@ declare sub IFolderView_SelectAndPositionItems_Stub(byval This as IRpcStubBuffer
 	declare sub IVisualProperties_SetTheme_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 #endif
 
-#define CDBOSC_SETFOCUS &h00000000
-#define CDBOSC_KILLFOCUS &h00000001
-#define CDBOSC_SELCHANGE &h00000002
-#define CDBOSC_RENAME &h00000003
-#define CDBOSC_STATECHANGE &h00000004
+const CDBOSC_SETFOCUS = &h00000000
+const CDBOSC_KILLFOCUS = &h00000001
+const CDBOSC_SELCHANGE = &h00000002
+const CDBOSC_RENAME = &h00000003
+const CDBOSC_STATECHANGE = &h00000004
 #define __ICommDlgBrowser_INTERFACE_DEFINED__
 extern IID_ICommDlgBrowser as const GUID
 type ICommDlgBrowser as ICommDlgBrowser_
@@ -1714,17 +1714,17 @@ declare sub ICommDlgBrowser_IncludeObject_Stub(byval This as IRpcStubBuffer ptr,
 type LPCOMMDLGBROWSER as ICommDlgBrowser ptr
 
 #define SID_SExplorerBrowserFrame IID_ICommDlgBrowser
-#define CDB2N_CONTEXTMENU_DONE &h00000001
-#define CDB2N_CONTEXTMENU_START &h00000002
-#define CDB2GVF_SHOWALLFILES &h1
+const CDB2N_CONTEXTMENU_DONE = &h00000001
+const CDB2N_CONTEXTMENU_START = &h00000002
+const CDB2GVF_SHOWALLFILES = &h1
 
 #if _WIN32_WINNT = &h0602
-	#define CDB2GVF_ISFILESAVE &h2
-	#define CDB2GVF_ALLOWPREVIEWPANE &h4
-	#define CDB2GVF_NOSELECTVERB &h8
-	#define CDB2GVF_NOINCLUDEITEM &h10
-	#define CDB2GVF_ISFOLDERPICKER &h20
-	#define CDB2GVF_ADDSHIELD &h40
+	const CDB2GVF_ISFILESAVE = &h2
+	const CDB2GVF_ALLOWPREVIEWPANE = &h4
+	const CDB2GVF_NOSELECTVERB = &h8
+	const CDB2GVF_NOINCLUDEITEM = &h10
+	const CDB2GVF_ISFOLDERPICKER = &h20
+	const CDB2GVF_ADDSHIELD = &h40
 #endif
 
 #define __ICommDlgBrowser2_INTERFACE_DEFINED__
@@ -1971,50 +1971,50 @@ end type
 
 declare function IShellIcon_GetIconOf_Proxy(byval This as IShellIcon ptr, byval pidl as LPCITEMIDLIST, byval flags as UINT, byval pIconIndex as long ptr) as HRESULT
 declare sub IShellIcon_GetIconOf_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-#define SBSP_DEFBROWSER &h0000
-#define SBSP_SAMEBROWSER &h0001
-#define SBSP_NEWBROWSER &h0002
-#define SBSP_DEFMODE &h0000
-#define SBSP_OPENMODE &h0010
-#define SBSP_EXPLOREMODE &h0020
-#define SBSP_HELPMODE &h0040
-#define SBSP_NOTRANSFERHIST &h0080
-#define SBSP_ABSOLUTE &h0000
-#define SBSP_RELATIVE &h1000
-#define SBSP_PARENT &h2000
-#define SBSP_NAVIGATEBACK &h4000
-#define SBSP_NAVIGATEFORWARD &h8000
-#define SBSP_ALLOW_AUTONAVIGATE &h00010000
+const SBSP_DEFBROWSER = &h0000
+const SBSP_SAMEBROWSER = &h0001
+const SBSP_NEWBROWSER = &h0002
+const SBSP_DEFMODE = &h0000
+const SBSP_OPENMODE = &h0010
+const SBSP_EXPLOREMODE = &h0020
+const SBSP_HELPMODE = &h0040
+const SBSP_NOTRANSFERHIST = &h0080
+const SBSP_ABSOLUTE = &h0000
+const SBSP_RELATIVE = &h1000
+const SBSP_PARENT = &h2000
+const SBSP_NAVIGATEBACK = &h4000
+const SBSP_NAVIGATEFORWARD = &h8000
+const SBSP_ALLOW_AUTONAVIGATE = &h00010000
 
 #if _WIN32_WINNT = &h0602
-	#define SBSP_KEEPSAMETEMPLATE &h00020000
-	#define SBSP_KEEPWORDWHEELTEXT &h00040000
-	#define SBSP_ACTIVATE_NOFOCUS &h00080000
-	#define SBSP_CREATENOHISTORY &h00100000
-	#define SBSP_PLAYNOSOUND &h00200000
-	#define SBSP_CALLERUNTRUSTED &h00800000
-	#define SBSP_TRUSTFIRSTDOWNLOAD &h01000000
-	#define SBSP_UNTRUSTEDFORDOWNLOAD &h02000000
+	const SBSP_KEEPSAMETEMPLATE = &h00020000
+	const SBSP_KEEPWORDWHEELTEXT = &h00040000
+	const SBSP_ACTIVATE_NOFOCUS = &h00080000
+	const SBSP_CREATENOHISTORY = &h00100000
+	const SBSP_PLAYNOSOUND = &h00200000
+	const SBSP_CALLERUNTRUSTED = &h00800000
+	const SBSP_TRUSTFIRSTDOWNLOAD = &h01000000
+	const SBSP_UNTRUSTEDFORDOWNLOAD = &h02000000
 #endif
 
-#define SBSP_NOAUTOSELECT &h04000000
-#define SBSP_WRITENOHISTORY &h08000000
+const SBSP_NOAUTOSELECT = &h04000000
+const SBSP_WRITENOHISTORY = &h08000000
 
 #if _WIN32_WINNT = &h0602
-	#define SBSP_TRUSTEDFORACTIVEX &h10000000
-	#define SBSP_FEEDNAVIGATION &h20000000
+	const SBSP_TRUSTEDFORACTIVEX = &h10000000
+	const SBSP_FEEDNAVIGATION = &h20000000
 #endif
 
-#define SBSP_REDIRECT &h40000000
-#define SBSP_INITIATEDBYHLINKFRAME &h80000000
-#define FCW_STATUS &h0001
-#define FCW_TOOLBAR &h0002
-#define FCW_TREE &h0003
-#define FCW_INTERNETBAR &h0006
-#define FCW_PROGRESS &h0008
-#define FCT_MERGE &h0001
-#define FCT_CONFIGABLE &h0002
-#define FCT_ADDTOEND &h0004
+const SBSP_REDIRECT = &h40000000
+const SBSP_INITIATEDBYHLINKFRAME = &h80000000
+const FCW_STATUS = &h0001
+const FCW_TOOLBAR = &h0002
+const FCW_TREE = &h0003
+const FCW_INTERNETBAR = &h0006
+const FCW_PROGRESS = &h0008
+const FCT_MERGE = &h0001
+const FCT_CONFIGABLE = &h0002
+const FCT_ADDTOEND = &h0004
 type LPTBBUTTONSB as LPTBBUTTON
 #define __IShellBrowser_INTERFACE_DEFINED__
 extern IID_IShellBrowser as const GUID
@@ -3306,31 +3306,31 @@ end type
 
 declare function IHWEventHandler2_HandleEventWithHWND_Proxy(byval This as IHWEventHandler2 ptr, byval pszDeviceID as LPCWSTR, byval pszAltDeviceID as LPCWSTR, byval pszEventType as LPCWSTR, byval hwndOwner as HWND) as HRESULT
 declare sub IHWEventHandler2_HandleEventWithHWND_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-#define ARCONTENT_AUTORUNINF &h00000002
-#define ARCONTENT_AUDIOCD &h00000004
-#define ARCONTENT_DVDMOVIE &h00000008
-#define ARCONTENT_BLANKCD &h00000010
-#define ARCONTENT_BLANKDVD &h00000020
-#define ARCONTENT_UNKNOWNCONTENT &h00000040
-#define ARCONTENT_AUTOPLAYPIX &h00000080
-#define ARCONTENT_AUTOPLAYMUSIC &h00000100
-#define ARCONTENT_AUTOPLAYVIDEO &h00000200
+const ARCONTENT_AUTORUNINF = &h00000002
+const ARCONTENT_AUDIOCD = &h00000004
+const ARCONTENT_DVDMOVIE = &h00000008
+const ARCONTENT_BLANKCD = &h00000010
+const ARCONTENT_BLANKDVD = &h00000020
+const ARCONTENT_UNKNOWNCONTENT = &h00000040
+const ARCONTENT_AUTOPLAYPIX = &h00000080
+const ARCONTENT_AUTOPLAYMUSIC = &h00000100
+const ARCONTENT_AUTOPLAYVIDEO = &h00000200
 
 #if _WIN32_WINNT = &h0602
-	#define ARCONTENT_VCD &h00000400
-	#define ARCONTENT_SVCD &h00000800
-	#define ARCONTENT_DVDAUDIO &h00001000
-	#define ARCONTENT_BLANKBD &h00002000
-	#define ARCONTENT_BLURAY &h00004000
-	#define ARCONTENT_CAMERASTORAGE &h00008000
-	#define ARCONTENT_CUSTOMEVENT &h00010000
-	#define ARCONTENT_NONE &h00000000
-	#define ARCONTENT_MASK &h0001FFFE
-	#define ARCONTENT_PHASE_UNKNOWN &h00000000
-	#define ARCONTENT_PHASE_PRESNIFF &h10000000
-	#define ARCONTENT_PHASE_SNIFFING &h20000000
-	#define ARCONTENT_PHASE_FINAL &h40000000
-	#define ARCONTENT_PHASE_MASK &h70000000
+	const ARCONTENT_VCD = &h00000400
+	const ARCONTENT_SVCD = &h00000800
+	const ARCONTENT_DVDAUDIO = &h00001000
+	const ARCONTENT_BLANKBD = &h00002000
+	const ARCONTENT_BLURAY = &h00004000
+	const ARCONTENT_CAMERASTORAGE = &h00008000
+	const ARCONTENT_CUSTOMEVENT = &h00010000
+	const ARCONTENT_NONE = &h00000000
+	const ARCONTENT_MASK = &h0001FFFE
+	const ARCONTENT_PHASE_UNKNOWN = &h00000000
+	const ARCONTENT_PHASE_PRESNIFF = &h10000000
+	const ARCONTENT_PHASE_SNIFFING = &h20000000
+	const ARCONTENT_PHASE_FINAL = &h40000000
+	const ARCONTENT_PHASE_MASK = &h70000000
 #endif
 
 #define __IQueryCancelAutoPlay_INTERFACE_DEFINED__
@@ -3707,17 +3707,17 @@ declare sub IItemNameLimits_GetMaxLength_Stub(byval This as IRpcStubBuffer ptr, 
 #define IEI_PRIORITY_MAX ITSAT_MAX_PRIORITY
 #define IEI_PRIORITY_MIN ITSAT_MIN_PRIORITY
 #define IEIT_PRIORITY_NORMAL ITSAT_DEFAULT_PRIORITY
-#define IEIFLAG_ASYNC &h0001
-#define IEIFLAG_CACHE &h0002
-#define IEIFLAG_ASPECT &h0004
-#define IEIFLAG_OFFLINE &h0008
-#define IEIFLAG_GLEAM &h0010
-#define IEIFLAG_SCREEN &h0020
-#define IEIFLAG_ORIGSIZE &h0040
-#define IEIFLAG_NOSTAMP &h0080
-#define IEIFLAG_NOBORDER &h0100
-#define IEIFLAG_QUALITY &h0200
-#define IEIFLAG_REFRESH &h0400
+const IEIFLAG_ASYNC = &h0001
+const IEIFLAG_CACHE = &h0002
+const IEIFLAG_ASPECT = &h0004
+const IEIFLAG_OFFLINE = &h0008
+const IEIFLAG_GLEAM = &h0010
+const IEIFLAG_SCREEN = &h0020
+const IEIFLAG_ORIGSIZE = &h0040
+const IEIFLAG_NOSTAMP = &h0080
+const IEIFLAG_NOBORDER = &h0100
+const IEIFLAG_QUALITY = &h0200
+const IEIFLAG_REFRESH = &h0400
 #define __IExtractImage_INTERFACE_DEFINED__
 extern IID_IExtractImage as const GUID
 type IExtractImage as IExtractImage_
@@ -3824,13 +3824,13 @@ declare sub IDockingWindow_CloseDW_Stub(byval This as IRpcStubBuffer ptr, byval 
 declare function IDockingWindow_ResizeBorderDW_Proxy(byval This as IDockingWindow ptr, byval prcBorder as LPCRECT, byval punkToolbarSite as IUnknown ptr, byval fReserved as WINBOOL) as HRESULT
 declare sub IDockingWindow_ResizeBorderDW_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 
-#define DBIM_MINSIZE &h0001
-#define DBIM_MAXSIZE &h0002
-#define DBIM_INTEGRAL &h0004
-#define DBIM_ACTUAL &h0008
-#define DBIM_TITLE &h0010
-#define DBIM_MODEFLAGS &h0020
-#define DBIM_BKCOLOR &h0040
+const DBIM_MINSIZE = &h0001
+const DBIM_MAXSIZE = &h0002
+const DBIM_INTEGRAL = &h0004
+const DBIM_ACTUAL = &h0008
+const DBIM_TITLE = &h0010
+const DBIM_MODEFLAGS = &h0020
+const DBIM_BKCOLOR = &h0040
 
 type DESKBANDINFO
 	dwMask as DWORD
@@ -3843,28 +3843,28 @@ type DESKBANDINFO
 	crBkgnd as COLORREF
 end type
 
-#define DBIMF_NORMAL &h0000
-#define DBIMF_FIXED &h0001
-#define DBIMF_FIXEDBMP &h0004
-#define DBIMF_VARIABLEHEIGHT &h0008
-#define DBIMF_UNDELETEABLE &h0010
-#define DBIMF_DEBOSSED &h0020
-#define DBIMF_BKCOLOR &h0040
-#define DBIMF_USECHEVRON &h0080
-#define DBIMF_BREAK &h0100
-#define DBIMF_ADDTOFRONT &h0200
-#define DBIMF_TOPALIGN &h0400
+const DBIMF_NORMAL = &h0000
+const DBIMF_FIXED = &h0001
+const DBIMF_FIXEDBMP = &h0004
+const DBIMF_VARIABLEHEIGHT = &h0008
+const DBIMF_UNDELETEABLE = &h0010
+const DBIMF_DEBOSSED = &h0020
+const DBIMF_BKCOLOR = &h0040
+const DBIMF_USECHEVRON = &h0080
+const DBIMF_BREAK = &h0100
+const DBIMF_ADDTOFRONT = &h0200
+const DBIMF_TOPALIGN = &h0400
 
 #if _WIN32_WINNT = &h0602
-	#define DBIMF_NOGRIPPER &h0800
-	#define DBIMF_ALWAYSGRIPPER &h1000
-	#define DBIMF_NOMARGINS &h2000
+	const DBIMF_NOGRIPPER = &h0800
+	const DBIMF_ALWAYSGRIPPER = &h1000
+	const DBIMF_NOMARGINS = &h2000
 #endif
 
-#define DBIF_VIEWMODE_NORMAL &h0000
-#define DBIF_VIEWMODE_VERTICAL &h0001
-#define DBIF_VIEWMODE_FLOATING &h0002
-#define DBIF_VIEWMODE_TRANSPARENT &h0004
+const DBIF_VIEWMODE_NORMAL = &h0000
+const DBIF_VIEWMODE_VERTICAL = &h0001
+const DBIF_VIEWMODE_FLOATING = &h0002
+const DBIF_VIEWMODE_TRANSPARENT = &h0004
 
 type tagDESKBANDCID as long
 enum
@@ -4033,7 +4033,7 @@ type THUMBBUTTON
 end type
 
 type LPTHUMBBUTTON as THUMBBUTTON ptr
-#define THBN_CLICKED &h1800
+const THBN_CLICKED = &h1800
 #define __ITaskbarList3_INTERFACE_DEFINED__
 
 type TBPFLAG as long
@@ -4186,8 +4186,8 @@ declare sub ICDBurn_Burn_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChanne
 declare function ICDBurn_HasRecordableDrive_Proxy(byval This as ICDBurn ptr, byval pfHasRecorder as WINBOOL ptr) as HRESULT
 declare sub ICDBurn_HasRecordableDrive_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 
-#define IDD_WIZEXTN_FIRST &h5000
-#define IDD_WIZEXTN_LAST &h5100
+const IDD_WIZEXTN_FIRST = &h5000
+const IDD_WIZEXTN_LAST = &h5100
 #define __IWizardSite_INTERFACE_DEFINED__
 extern IID_IWizardSite as const GUID
 type IWizardSite as IWizardSite_
@@ -4260,16 +4260,16 @@ declare function IWebWizardExtension_SetErrorURL_Proxy(byval This as IWebWizardE
 declare sub IWebWizardExtension_SetErrorURL_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 
 #define SID_WebWizardHost IID_IWebWizardExtension
-#define SHPWHF_NORECOMPRESS &h00000001
-#define SHPWHF_NONETPLACECREATE &h00000002
-#define SHPWHF_NOFILESELECTOR &h00000004
-#define SHPWHF_USEMRU &h00000008
+const SHPWHF_NORECOMPRESS = &h00000001
+const SHPWHF_NONETPLACECREATE = &h00000002
+const SHPWHF_NOFILESELECTOR = &h00000004
+const SHPWHF_USEMRU = &h00000008
 
 #if _WIN32_WINNT = &h0602
-	#define SHPWHF_ANYLOCATION &h00000100
+	const SHPWHF_ANYLOCATION = &h00000100
 #endif
 
-#define SHPWHF_VALIDATEVIAWEBFOLDERS &h00010000
+const SHPWHF_VALIDATEVIAWEBFOLDERS = &h00010000
 #define __IPublishingWizard_INTERFACE_DEFINED__
 extern IID_IPublishingWizard as const GUID
 type IPublishingWizard as IPublishingWizard_
@@ -4597,22 +4597,22 @@ declare function IResultsFolder_AddIDList_Stub(byval This as IResultsFolder ptr,
 	declare function IIOCancelInformation_GetCancelInformation_Proxy(byval This as IIOCancelInformation ptr, byval pdwThreadID as DWORD ptr, byval puMsgCancel as UINT ptr) as HRESULT
 	declare sub IIOCancelInformation_GetCancelInformation_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 
-	#define FOFX_NOSKIPJUNCTIONS &h00010000
-	#define FOFX_PREFERHARDLINK &h00020000
-	#define FOFX_SHOWELEVATIONPROMPT &h00040000
-	#define FOFX_RECYCLEONDELETE &h00080000
-	#define FOFX_EARLYFAILURE &h00100000
-	#define FOFX_PRESERVEFILEEXTENSIONS &h00200000
-	#define FOFX_KEEPNEWERFILE &h00400000
-	#define FOFX_NOCOPYHOOKS &h00800000
-	#define FOFX_NOMINIMIZEBOX &h01000000
-	#define FOFX_MOVEACLSACROSSVOLUMES &h02000000
-	#define FOFX_DONTDISPLAYSOURCEPATH &h04000000
-	#define FOFX_DONTDISPLAYDESTPATH &h08000000
-	#define FOFX_REQUIREELEVATION &h10000000
-	#define FOFX_ADDUNDORECORD &h20000000
-	#define FOFX_COPYASDOWNLOAD &h40000000
-	#define FOFX_DONTDISPLAYLOCATIONS &h80000000
+	const FOFX_NOSKIPJUNCTIONS = &h00010000
+	const FOFX_PREFERHARDLINK = &h00020000
+	const FOFX_SHOWELEVATIONPROMPT = &h00040000
+	const FOFX_RECYCLEONDELETE = &h00080000
+	const FOFX_EARLYFAILURE = &h00100000
+	const FOFX_PRESERVEFILEEXTENSIONS = &h00200000
+	const FOFX_KEEPNEWERFILE = &h00400000
+	const FOFX_NOCOPYHOOKS = &h00800000
+	const FOFX_NOMINIMIZEBOX = &h01000000
+	const FOFX_MOVEACLSACROSSVOLUMES = &h02000000
+	const FOFX_DONTDISPLAYSOURCEPATH = &h04000000
+	const FOFX_DONTDISPLAYDESTPATH = &h08000000
+	const FOFX_REQUIREELEVATION = &h10000000
+	const FOFX_ADDUNDORECORD = &h20000000
+	const FOFX_COPYASDOWNLOAD = &h40000000
+	const FOFX_DONTDISPLAYLOCATIONS = &h80000000
 	#define __IFileOperation_INTERFACE_DEFINED__
 	extern IID_IFileOperation as const GUID
 
@@ -4779,8 +4779,8 @@ enum
 	NSWF_ANY_IMPLIES_ALL = &h8000
 end enum
 
-#define NSWF_ENUMERATE_BEST_EFFORT &h00010000
-#define NSWF_TRAVERSE_ONLY_STORAGE &h00020000
+const NSWF_ENUMERATE_BEST_EFFORT = &h00010000
+const NSWF_TRAVERSE_ONLY_STORAGE = &h00020000
 extern IID_INamespaceWalk as const GUID
 type INamespaceWalk as INamespaceWalk_
 
@@ -4812,7 +4812,7 @@ end sub
 
 #define FreeIDListArrayFull FreeIDListArray
 #define FreeIDListArrayChild FreeIDListArray
-#define ACDD_VISIBLE &h1
+const ACDD_VISIBLE = &h1
 #define __IAutoCompleteDropDown_INTERFACE_DEFINED__
 extern IID_IAutoCompleteDropDown as const GUID
 type IAutoCompleteDropDown as IAutoCompleteDropDown_
@@ -4848,25 +4848,25 @@ enum
 	BSID_BANDREMOVED = 1
 end enum
 
-#define BSIM_STATE &h00000001
-#define BSIM_STYLE &h00000002
-#define BSSF_VISIBLE &h00000001
-#define BSSF_NOTITLE &h00000002
-#define BSSF_UNDELETEABLE &h00001000
-#define BSIS_AUTOGRIPPER &h00000000
-#define BSIS_NOGRIPPER &h00000001
-#define BSIS_ALWAYSGRIPPER &h00000002
-#define BSIS_LEFTALIGN &h00000004
-#define BSIS_SINGLECLICK &h00000008
-#define BSIS_NOCONTEXTMENU &h00000010
-#define BSIS_NODROPTARGET &h00000020
-#define BSIS_NOCAPTION &h00000040
-#define BSIS_PREFERNOLINEBREAK &h00000080
-#define BSIS_LOCKED &h00000100
+const BSIM_STATE = &h00000001
+const BSIM_STYLE = &h00000002
+const BSSF_VISIBLE = &h00000001
+const BSSF_NOTITLE = &h00000002
+const BSSF_UNDELETEABLE = &h00001000
+const BSIS_AUTOGRIPPER = &h00000000
+const BSIS_NOGRIPPER = &h00000001
+const BSIS_ALWAYSGRIPPER = &h00000002
+const BSIS_LEFTALIGN = &h00000004
+const BSIS_SINGLECLICK = &h00000008
+const BSIS_NOCONTEXTMENU = &h00000010
+const BSIS_NODROPTARGET = &h00000020
+const BSIS_NOCAPTION = &h00000040
+const BSIS_PREFERNOLINEBREAK = &h00000080
+const BSIS_LOCKED = &h00000100
 
 #if _WIN32_WINNT = &h0602
-	#define BSIS_PRESERVEORDERDURINGLAYOUT &h00000200
-	#define BSIS_FIXEDORDER &h00000400
+	const BSIS_PRESERVEORDERDURINGLAYOUT = &h00000200
+	const BSIS_FIXEDORDER = &h00000400
 #endif
 
 #define SID_SBandSite IID_IBandSite
@@ -5224,8 +5224,8 @@ type IShellItemFilter as IShellItemFilter_
 		FUT_GENERIC = 2
 	end enum
 
-	#define OF_CAP_CANSWITCHTO &h0001
-	#define OF_CAP_CANCLOSE &h0002
+	const OF_CAP_CANSWITCHTO = &h0001
+	const OF_CAP_CANCLOSE = &h0002
 	#define __IFileIsInUse_INTERFACE_DEFINED__
 	extern IID_IFileIsInUse as const GUID
 	type IFileIsInUse as IFileIsInUse_
@@ -5958,9 +5958,9 @@ declare sub IDelegateFolder_SetItemAlloc_Stub(byval This as IRpcStubBuffer ptr, 
 
 	type SMDATA as tagSMDATA
 	type LPSMDATA as tagSMDATA ptr
-	#define SMDM_SHELLFOLDER &h00000001
-	#define SMDM_HMENU &h00000002
-	#define SMDM_TOOLBAR &h00000004
+	const SMDM_SHELLFOLDER = &h00000001
+	const SMDM_HMENU = &h00000002
+	const SMDM_TOOLBAR = &h00000004
 
 	type tagSMINFO
 		dwMask as DWORD
@@ -6011,39 +6011,39 @@ declare sub IDelegateFolder_SetItemAlloc_Stub(byval This as IRpcStubBuffer ptr, 
 		SMIF_NEW = &h2000
 	end enum
 
-	#define SMC_INITMENU &h00000001
-	#define SMC_CREATE &h00000002
-	#define SMC_EXITMENU &h00000003
-	#define SMC_GETINFO &h00000005
-	#define SMC_GETSFINFO &h00000006
-	#define SMC_GETOBJECT &h00000007
-	#define SMC_GETSFOBJECT &h00000008
-	#define SMC_SFEXEC &h00000009
-	#define SMC_SFSELECTITEM &h0000000A
-	#define SMC_REFRESH &h00000010
-	#define SMC_DEMOTE &h00000011
-	#define SMC_PROMOTE &h00000012
-	#define SMC_DEFAULTICON &h00000016
-	#define SMC_NEWITEM &h00000017
-	#define SMC_CHEVRONEXPAND &h00000019
-	#define SMC_DISPLAYCHEVRONTIP &h0000002A
-	#define SMC_SETSFOBJECT &h0000002D
-	#define SMC_SHCHANGENOTIFY &h0000002E
-	#define SMC_CHEVRONGETTIP &h0000002F
-	#define SMC_SFDDRESTRICTED &h00000030
+	const SMC_INITMENU = &h00000001
+	const SMC_CREATE = &h00000002
+	const SMC_EXITMENU = &h00000003
+	const SMC_GETINFO = &h00000005
+	const SMC_GETSFINFO = &h00000006
+	const SMC_GETOBJECT = &h00000007
+	const SMC_GETSFOBJECT = &h00000008
+	const SMC_SFEXEC = &h00000009
+	const SMC_SFSELECTITEM = &h0000000A
+	const SMC_REFRESH = &h00000010
+	const SMC_DEMOTE = &h00000011
+	const SMC_PROMOTE = &h00000012
+	const SMC_DEFAULTICON = &h00000016
+	const SMC_NEWITEM = &h00000017
+	const SMC_CHEVRONEXPAND = &h00000019
+	const SMC_DISPLAYCHEVRONTIP = &h0000002A
+	const SMC_SETSFOBJECT = &h0000002D
+	const SMC_SHCHANGENOTIFY = &h0000002E
+	const SMC_CHEVRONGETTIP = &h0000002F
+	const SMC_SFDDRESTRICTED = &h00000030
 #endif
 
 #if _WIN32_WINNT = &h0602
-	#define SMC_SFEXEC_MIDDLE &h00000031
-	#define SMC_GETAUTOEXPANDSTATE &h00000041
-	#define SMC_AUTOEXPANDCHANGE &h00000042
-	#define SMC_GETCONTEXTMENUMODIFIER &h00000043
-	#define SMC_GETBKCONTEXTMENU &h00000044
-	#define SMC_OPEN &h00000045
-	#define SMAE_EXPANDED &h00000001
-	#define SMAE_CONTRACTED &h00000002
-	#define SMAE_USER &h00000004
-	#define SMAE_VALID &h00000007
+	const SMC_SFEXEC_MIDDLE = &h00000031
+	const SMC_GETAUTOEXPANDSTATE = &h00000041
+	const SMC_AUTOEXPANDCHANGE = &h00000042
+	const SMC_GETCONTEXTMENUMODIFIER = &h00000043
+	const SMC_GETBKCONTEXTMENU = &h00000044
+	const SMC_OPEN = &h00000045
+	const SMAE_EXPANDED = &h00000001
+	const SMAE_CONTRACTED = &h00000002
+	const SMAE_USER = &h00000004
+	const SMAE_VALID = &h00000007
 #endif
 
 #if (_WIN32_WINNT = &h0502) or (_WIN32_WINNT = &h0602)
@@ -6064,27 +6064,27 @@ declare sub IDelegateFolder_SetItemAlloc_Stub(byval This as IRpcStubBuffer ptr, 
 
 	declare function IShellMenuCallback_CallbackSM_Proxy(byval This as IShellMenuCallback ptr, byval psmd as LPSMDATA, byval uMsg as UINT, byval wParam as WPARAM, byval lParam as LPARAM) as HRESULT
 	declare sub IShellMenuCallback_CallbackSM_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-	#define SMINIT_DEFAULT &h00000000
-	#define SMINIT_RESTRICT_DRAGDROP &h00000002
-	#define SMINIT_TOPLEVEL &h00000004
-	#define SMINIT_CACHED &h00000010
+	const SMINIT_DEFAULT = &h00000000
+	const SMINIT_RESTRICT_DRAGDROP = &h00000002
+	const SMINIT_TOPLEVEL = &h00000004
+	const SMINIT_CACHED = &h00000010
 #endif
 
 #if _WIN32_WINNT = &h0602
-	#define SMINIT_AUTOEXPAND &h00000100
-	#define SMINIT_AUTOTOOLTIP &h00000200
-	#define SMINIT_DROPONCONTAINER &h00000400
+	const SMINIT_AUTOEXPAND = &h00000100
+	const SMINIT_AUTOTOOLTIP = &h00000200
+	const SMINIT_DROPONCONTAINER = &h00000400
 #endif
 
 #if (_WIN32_WINNT = &h0502) or (_WIN32_WINNT = &h0602)
-	#define SMINIT_VERTICAL &h10000000
-	#define SMINIT_HORIZONTAL &h20000000
+	const SMINIT_VERTICAL = &h10000000
+	const SMINIT_HORIZONTAL = &h20000000
 	#define ANCESTORDEFAULT cast(UINT, -1)
-	#define SMSET_TOP &h10000000
-	#define SMSET_BOTTOM &h20000000
-	#define SMSET_DONTOWN &h00000001
-	#define SMINV_REFRESH &h00000001
-	#define SMINV_ID &h00000008
+	const SMSET_TOP = &h10000000
+	const SMSET_BOTTOM = &h20000000
+	const SMSET_DONTOWN = &h00000001
+	const SMINV_REFRESH = &h00000001
+	const SMINV_ID = &h00000008
 	#define __IShellMenu_INTERFACE_DEFINED__
 	extern IID_IShellMenu as const GUID
 	type IShellMenu as IShellMenu_
@@ -6934,7 +6934,7 @@ declare function INameSpaceTreeControlEvents_OnBeforeStateImageChange_Proxy(byva
 declare sub INameSpaceTreeControlEvents_OnBeforeStateImageChange_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function INameSpaceTreeControlEvents_OnGetDefaultIconIndex_Proxy(byval This as INameSpaceTreeControlEvents ptr, byval psi as IShellItem ptr, byval piDefaultIcon as long ptr, byval piOpenIcon as long ptr) as HRESULT
 declare sub INameSpaceTreeControlEvents_OnGetDefaultIconIndex_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-#define NSTCDHPOS_ONTOP (-1)
+const NSTCDHPOS_ONTOP = -1
 #define __INameSpaceTreeControlDropHandler_INTERFACE_DEFINED__
 extern IID_INameSpaceTreeControlDropHandler as const GUID
 type INameSpaceTreeControlDropHandler as INameSpaceTreeControlDropHandler_

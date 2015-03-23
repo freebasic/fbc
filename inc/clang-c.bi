@@ -42,8 +42,8 @@ declare function clang_ModuleMapDescriptor_setUmbrellaHeader(byval as CXModuleMa
 declare function clang_ModuleMapDescriptor_writeToBuffer(byval as CXModuleMapDescriptor, byval options as ulong, byval out_buffer_ptr as zstring ptr ptr, byval out_buffer_size as ulong ptr) as CXErrorCode
 declare sub clang_ModuleMapDescriptor_dispose(byval as CXModuleMapDescriptor)
 
-#define CINDEX_VERSION_MAJOR 0
-#define CINDEX_VERSION_MINOR 27
+const CINDEX_VERSION_MAJOR = 0
+const CINDEX_VERSION_MINOR = 27
 #define CINDEX_VERSION_ENCODE(major, minor) (((major) * 10000) + ((minor) * 1))
 #define CINDEX_VERSION CINDEX_VERSION_ENCODE(CINDEX_VERSION_MAJOR, CINDEX_VERSION_MINOR)
 #define CINDEX_VERSION_STRINGIZE_(major, minor) #major "." #minor

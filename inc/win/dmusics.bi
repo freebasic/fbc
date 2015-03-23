@@ -16,7 +16,7 @@ type IDirectMusicSynthSink as IDirectMusicSynthSink_
 type LPDIRECTMUSICSYNTHSINK as IDirectMusicSynthSink ptr
 extern GUID_DMUS_PROP_SetSynthSink as const GUID
 extern GUID_DMUS_PROP_SinkUsesDSound as const GUID
-#define REFRESH_F_LASTBUFFER &h1
+const REFRESH_F_LASTBUFFER = &h1
 #define _DMUS_VOICE_STATE_DEFINED
 type DMUS_VOICE_STATE as _DMUS_VOICE_STATE
 type LPDMUS_VOICE_STATE as _DMUS_VOICE_STATE ptr

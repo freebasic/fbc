@@ -26,9 +26,9 @@ type PSCARDHANDLE as SCARDHANDLE ptr
 type LPSCARDHANDLE as SCARDHANDLE ptr
 
 #define SCARD_AUTOALLOCATE cast(DWORD, -1)
-#define SCARD_SCOPE_USER 0
-#define SCARD_SCOPE_TERMINAL 1
-#define SCARD_SCOPE_SYSTEM 2
+const SCARD_SCOPE_USER = 0
+const SCARD_SCOPE_TERMINAL = 1
+const SCARD_SCOPE_SYSTEM = 2
 
 declare function SCardEstablishContext(byval dwScope as DWORD, byval pvReserved1 as LPCVOID, byval pvReserved2 as LPCVOID, byval phContext as LPSCARDCONTEXT) as LONG
 declare function SCardReleaseContext(byval hContext as SCARDCONTEXT) as LONG
@@ -38,8 +38,8 @@ declare function SCardIsValidContext(byval hContext as SCARDCONTEXT) as LONG
 #define SCARD_DEFAULT_READERS __TEXT(!"SCard$DefaultReaders\0")
 #define SCARD_LOCAL_READERS __TEXT(!"SCard$LocalReaders\0")
 #define SCARD_SYSTEM_READERS __TEXT(!"SCard$SystemReaders\0")
-#define SCARD_PROVIDER_PRIMARY 1
-#define SCARD_PROVIDER_CSP 2
+const SCARD_PROVIDER_PRIMARY = 1
+const SCARD_PROVIDER_CSP = 2
 
 #ifdef UNICODE
 	#define SCardListReaderGroups SCardListReaderGroupsW
@@ -163,18 +163,18 @@ type LPSCARD_READERSTATEW as SCARD_READERSTATEW ptr
 #define PSCARD_READERSTATE_W PSCARD_READERSTATEW
 #define LPSCARD_READERSTATE_A LPSCARD_READERSTATEA
 #define LPSCARD_READERSTATE_W LPSCARD_READERSTATEW
-#define SCARD_STATE_UNAWARE &h00000000
-#define SCARD_STATE_IGNORE &h00000001
-#define SCARD_STATE_CHANGED &h00000002
-#define SCARD_STATE_UNKNOWN &h00000004
-#define SCARD_STATE_UNAVAILABLE &h00000008
-#define SCARD_STATE_EMPTY &h00000010
-#define SCARD_STATE_PRESENT &h00000020
-#define SCARD_STATE_ATRMATCH &h00000040
-#define SCARD_STATE_EXCLUSIVE &h00000080
-#define SCARD_STATE_INUSE &h00000100
-#define SCARD_STATE_MUTE &h00000200
-#define SCARD_STATE_UNPOWERED &h00000400
+const SCARD_STATE_UNAWARE = &h00000000
+const SCARD_STATE_IGNORE = &h00000001
+const SCARD_STATE_CHANGED = &h00000002
+const SCARD_STATE_UNKNOWN = &h00000004
+const SCARD_STATE_UNAVAILABLE = &h00000008
+const SCARD_STATE_EMPTY = &h00000010
+const SCARD_STATE_PRESENT = &h00000020
+const SCARD_STATE_ATRMATCH = &h00000040
+const SCARD_STATE_EXCLUSIVE = &h00000080
+const SCARD_STATE_INUSE = &h00000100
+const SCARD_STATE_MUTE = &h00000200
+const SCARD_STATE_UNPOWERED = &h00000400
 declare function SCardLocateCardsA(byval hContext as SCARDCONTEXT, byval mszCards as LPCSTR, byval rgReaderStates as LPSCARD_READERSTATEA, byval cReaders as DWORD) as LONG
 declare function SCardLocateCardsW(byval hContext as SCARDCONTEXT, byval mszCards as LPCWSTR, byval rgReaderStates as LPSCARD_READERSTATEW, byval cReaders as DWORD) as LONG
 
@@ -194,13 +194,13 @@ declare function SCardGetStatusChangeA(byval hContext as SCARDCONTEXT, byval dwT
 declare function SCardGetStatusChangeW(byval hContext as SCARDCONTEXT, byval dwTimeout as DWORD, byval rgReaderStates as LPSCARD_READERSTATEW, byval cReaders as DWORD) as LONG
 declare function SCardCancel(byval hContext as SCARDCONTEXT) as LONG
 
-#define SCARD_SHARE_EXCLUSIVE 1
-#define SCARD_SHARE_SHARED 2
-#define SCARD_SHARE_DIRECT 3
-#define SCARD_LEAVE_CARD 0
-#define SCARD_RESET_CARD 1
-#define SCARD_UNPOWER_CARD 2
-#define SCARD_EJECT_CARD 3
+const SCARD_SHARE_EXCLUSIVE = 1
+const SCARD_SHARE_SHARED = 2
+const SCARD_SHARE_DIRECT = 3
+const SCARD_LEAVE_CARD = 0
+const SCARD_RESET_CARD = 1
+const SCARD_UNPOWER_CARD = 2
+const SCARD_EJECT_CARD = 3
 
 declare function SCardConnectA(byval hContext as SCARDCONTEXT, byval szReader as LPCSTR, byval dwShareMode as DWORD, byval dwPreferredProtocols as DWORD, byval phCard as LPSCARDHANDLE, byval pdwActiveProtocol as LPDWORD) as LONG
 declare function SCardConnectW(byval hContext as SCARDCONTEXT, byval szReader as LPCWSTR, byval dwShareMode as DWORD, byval dwPreferredProtocols as DWORD, byval phCard as LPSCARDHANDLE, byval pdwActiveProtocol as LPDWORD) as LONG
@@ -219,11 +219,11 @@ declare function SCardGetAttrib(byval hCard as SCARDHANDLE, byval dwAttrId as DW
 declare function SCardSetAttrib(byval hCard as SCARDHANDLE, byval dwAttrId as DWORD, byval pbAttr as LPCBYTE, byval cbAttrLen as DWORD) as LONG
 
 #define SCardSetReaderCapabilities SCardSetAttrib
-#define SC_DLG_MINIMAL_UI &h01
-#define SC_DLG_NO_UI &h02
-#define SC_DLG_FORCE_UI &h04
-#define SCERR_NOCARDNAME &h4000
-#define SCERR_NOGUIDS &h8000
+const SC_DLG_MINIMAL_UI = &h01
+const SC_DLG_NO_UI = &h02
+const SC_DLG_FORCE_UI = &h04
+const SCERR_NOCARDNAME = &h4000
+const SCERR_NOGUIDS = &h8000
 
 #ifdef UNICODE
 	#define LPOCNCONNPROC LPOCNCONNPROCW

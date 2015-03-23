@@ -9,18 +9,18 @@ extern "C"
 #define LDAP_CLIENT_DEFINED
 
 #ifdef UNICODE
-	#define LDAP_UNICODE 1
+	const LDAP_UNICODE = 1
 #else
-	#define LDAP_UNICODE 0
+	const LDAP_UNICODE = 0
 #endif
 
-#define LDAP_PORT 389
-#define LDAP_SSL_PORT 636
-#define LDAP_GC_PORT 3268
-#define LDAP_SSL_GC_PORT 3269
-#define LDAP_VERSION1 1
-#define LDAP_VERSION2 2
-#define LDAP_VERSION3 3
+const LDAP_PORT = 389
+const LDAP_SSL_PORT = 636
+const LDAP_GC_PORT = 3268
+const LDAP_SSL_GC_PORT = 3269
+const LDAP_VERSION1 = 1
+const LDAP_VERSION2 = 2
+const LDAP_VERSION3 = 3
 #define LDAP_VERSION LDAP_VERSION2
 #define LDAP_BIND_CMD __MSABI_LONG(&h60)
 #define LDAP_UNBIND_CMD __MSABI_LONG(&h42)
@@ -45,8 +45,8 @@ extern "C"
 #define LDAP_RES_REFERRAL __MSABI_LONG(&h73)
 #define LDAP_RES_EXTENDED __MSABI_LONG(&h78)
 #define LDAP_RES_ANY __MSABI_LONG(-1)
-#define LDAP_INVALID_CMD &hff
-#define LDAP_INVALID_RES &hff
+const LDAP_INVALID_CMD = &hff
+const LDAP_INVALID_RES = &hff
 
 type LDAP_RETCODE as long
 enum
@@ -126,27 +126,27 @@ end enum
 #define LDAP_AUTH_SSPI LDAP_AUTH_NEGOTIATE
 #define LDAP_AUTH_DIGEST (LDAP_AUTH_OTHERKIND or &h4000)
 #define LDAP_AUTH_EXTERNAL (LDAP_AUTH_OTHERKIND or &h0020)
-#define LDAP_FILTER_AND &ha0
-#define LDAP_FILTER_OR &ha1
-#define LDAP_FILTER_NOT &ha2
-#define LDAP_FILTER_EQUALITY &ha3
-#define LDAP_FILTER_SUBSTRINGS &ha4
-#define LDAP_FILTER_GE &ha5
-#define LDAP_FILTER_LE &ha6
-#define LDAP_FILTER_PRESENT &h87
-#define LDAP_FILTER_APPROX &ha8
-#define LDAP_FILTER_EXTENSIBLE &ha9
+const LDAP_FILTER_AND = &ha0
+const LDAP_FILTER_OR = &ha1
+const LDAP_FILTER_NOT = &ha2
+const LDAP_FILTER_EQUALITY = &ha3
+const LDAP_FILTER_SUBSTRINGS = &ha4
+const LDAP_FILTER_GE = &ha5
+const LDAP_FILTER_LE = &ha6
+const LDAP_FILTER_PRESENT = &h87
+const LDAP_FILTER_APPROX = &ha8
+const LDAP_FILTER_EXTENSIBLE = &ha9
 #define LDAP_SUBSTRING_INITIAL __MSABI_LONG(&h80)
 #define LDAP_SUBSTRING_ANY __MSABI_LONG(&h81)
 #define LDAP_SUBSTRING_FINAL __MSABI_LONG(&h82)
-#define LDAP_DEREF_NEVER 0
-#define LDAP_DEREF_SEARCHING 1
-#define LDAP_DEREF_FINDING 2
-#define LDAP_DEREF_ALWAYS 3
-#define LDAP_NO_LIMIT 0
-#define LDAP_OPT_DNS &h00000001
-#define LDAP_OPT_CHASE_REFERRALS &h00000002
-#define LDAP_OPT_RETURN_REFS &h00000004
+const LDAP_DEREF_NEVER = 0
+const LDAP_DEREF_SEARCHING = 1
+const LDAP_DEREF_FINDING = 2
+const LDAP_DEREF_ALWAYS = 3
+const LDAP_NO_LIMIT = 0
+const LDAP_OPT_DNS = &h00000001
+const LDAP_OPT_CHASE_REFERRALS = &h00000002
+const LDAP_OPT_RETURN_REFS = &h00000004
 
 #ifdef __FB_64BIT__
 	type ldap_ld_sb
@@ -315,10 +315,10 @@ type PLDAPControlW as LDAPControlW ptr
 
 #define LDAP_CONTROL_REFERRALS_W wstr("1.2.840.113556.1.4.616")
 #define LDAP_CONTROL_REFERRALS "1.2.840.113556.1.4.616"
-#define LDAP_MOD_ADD &h00
-#define LDAP_MOD_DELETE &h01
-#define LDAP_MOD_REPLACE &h02
-#define LDAP_MOD_BVALUES &h80
+const LDAP_MOD_ADD = &h00
+const LDAP_MOD_DELETE = &h01
+const LDAP_MOD_REPLACE = &h02
+const LDAP_MOD_BVALUES = &h80
 
 #ifdef __FB_64BIT__
 	union ldapmodW_mod_vals
@@ -427,55 +427,55 @@ declare function ldap_set_optionW(byval ld as ldap ptr, byval option as long, by
 	#define ldap_set_option ldap_set_optionA
 #endif
 
-#define LDAP_OPT_API_INFO &h00
-#define LDAP_OPT_DESC &h01
-#define LDAP_OPT_DEREF &h02
-#define LDAP_OPT_SIZELIMIT &h03
-#define LDAP_OPT_TIMELIMIT &h04
-#define LDAP_OPT_THREAD_FN_PTRS &h05
-#define LDAP_OPT_REBIND_FN &h06
-#define LDAP_OPT_REBIND_ARG &h07
-#define LDAP_OPT_REFERRALS &h08
-#define LDAP_OPT_RESTART &h09
-#define LDAP_OPT_SSL &h0a
-#define LDAP_OPT_IO_FN_PTRS &h0b
-#define LDAP_OPT_CACHE_FN_PTRS &h0d
-#define LDAP_OPT_CACHE_STRATEGY &h0e
-#define LDAP_OPT_CACHE_ENABLE &h0f
-#define LDAP_OPT_REFERRAL_HOP_LIMIT &h10
-#define LDAP_OPT_PROTOCOL_VERSION &h11
-#define LDAP_OPT_VERSION &h11
-#define LDAP_OPT_API_FEATURE_INFO &h15
-#define LDAP_OPT_HOST_NAME &h30
-#define LDAP_OPT_ERROR_NUMBER &h31
-#define LDAP_OPT_ERROR_STRING &h32
-#define LDAP_OPT_SERVER_ERROR &h33
-#define LDAP_OPT_SERVER_EXT_ERROR &h34
-#define LDAP_OPT_HOST_REACHABLE &h3E
-#define LDAP_OPT_PING_KEEP_ALIVE &h36
-#define LDAP_OPT_PING_WAIT_TIME &h37
-#define LDAP_OPT_PING_LIMIT &h38
-#define LDAP_OPT_DNSDOMAIN_NAME &h3B
-#define LDAP_OPT_GETDSNAME_FLAGS &h3D
-#define LDAP_OPT_PROMPT_CREDENTIALS &h3F
-#define LDAP_OPT_AUTO_RECONNECT &h91
-#define LDAP_OPT_SSPI_FLAGS &h92
-#define LDAP_OPT_SSL_INFO &h93
+const LDAP_OPT_API_INFO = &h00
+const LDAP_OPT_DESC = &h01
+const LDAP_OPT_DEREF = &h02
+const LDAP_OPT_SIZELIMIT = &h03
+const LDAP_OPT_TIMELIMIT = &h04
+const LDAP_OPT_THREAD_FN_PTRS = &h05
+const LDAP_OPT_REBIND_FN = &h06
+const LDAP_OPT_REBIND_ARG = &h07
+const LDAP_OPT_REFERRALS = &h08
+const LDAP_OPT_RESTART = &h09
+const LDAP_OPT_SSL = &h0a
+const LDAP_OPT_IO_FN_PTRS = &h0b
+const LDAP_OPT_CACHE_FN_PTRS = &h0d
+const LDAP_OPT_CACHE_STRATEGY = &h0e
+const LDAP_OPT_CACHE_ENABLE = &h0f
+const LDAP_OPT_REFERRAL_HOP_LIMIT = &h10
+const LDAP_OPT_PROTOCOL_VERSION = &h11
+const LDAP_OPT_VERSION = &h11
+const LDAP_OPT_API_FEATURE_INFO = &h15
+const LDAP_OPT_HOST_NAME = &h30
+const LDAP_OPT_ERROR_NUMBER = &h31
+const LDAP_OPT_ERROR_STRING = &h32
+const LDAP_OPT_SERVER_ERROR = &h33
+const LDAP_OPT_SERVER_EXT_ERROR = &h34
+const LDAP_OPT_HOST_REACHABLE = &h3E
+const LDAP_OPT_PING_KEEP_ALIVE = &h36
+const LDAP_OPT_PING_WAIT_TIME = &h37
+const LDAP_OPT_PING_LIMIT = &h38
+const LDAP_OPT_DNSDOMAIN_NAME = &h3B
+const LDAP_OPT_GETDSNAME_FLAGS = &h3D
+const LDAP_OPT_PROMPT_CREDENTIALS = &h3F
+const LDAP_OPT_AUTO_RECONNECT = &h91
+const LDAP_OPT_SSPI_FLAGS = &h92
+const LDAP_OPT_SSL_INFO = &h93
 #define LDAP_OPT_TLS LDAP_OPT_SSL
 #define LDAP_OPT_TLS_INFO LDAP_OPT_SSL_INFO
-#define LDAP_OPT_SIGN &h95
-#define LDAP_OPT_ENCRYPT &h96
-#define LDAP_OPT_SASL_METHOD &h97
-#define LDAP_OPT_AREC_EXCLUSIVE &h98
-#define LDAP_OPT_SECURITY_CONTEXT &h99
-#define LDAP_OPT_ROOTDSE_CACHE &h9a
-#define LDAP_OPT_TCP_KEEPALIVE &h40
-#define LDAP_OPT_FAST_CONCURRENT_BIND &h41
-#define LDAP_OPT_SEND_TIMEOUT &h42
-#define LDAP_OPT_ON cptr(any ptr, 1)
-#define LDAP_OPT_OFF cptr(any ptr, 0)
-#define LDAP_CHASE_SUBORDINATE_REFERRALS &h00000020
-#define LDAP_CHASE_EXTERNAL_REFERRALS &h00000040
+const LDAP_OPT_SIGN = &h95
+const LDAP_OPT_ENCRYPT = &h96
+const LDAP_OPT_SASL_METHOD = &h97
+const LDAP_OPT_AREC_EXCLUSIVE = &h98
+const LDAP_OPT_SECURITY_CONTEXT = &h99
+const LDAP_OPT_ROOTDSE_CACHE = &h9a
+const LDAP_OPT_TCP_KEEPALIVE = &h40
+const LDAP_OPT_FAST_CONCURRENT_BIND = &h41
+const LDAP_OPT_SEND_TIMEOUT = &h42
+const LDAP_OPT_ON = cptr(any ptr, 1)
+const LDAP_OPT_OFF = cptr(any ptr, 0)
+const LDAP_CHASE_SUBORDINATE_REFERRALS = &h00000020
+const LDAP_CHASE_EXTERNAL_REFERRALS = &h00000040
 
 declare function ldap_simple_bindW(byval ld as LDAP ptr, byval dn as PWCHAR, byval passwd as PWCHAR) as ULONG
 declare function ldap_simple_bindA(byval ld as LDAP ptr, byval dn as PCHAR, byval passwd as PCHAR) as ULONG
@@ -506,9 +506,9 @@ declare function ldap_sasl_bind_sW(byval ExternalHandle as LDAP ptr, byval DistN
 	#define ldap_sasl_bind_s ldap_sasl_bind_sA
 #endif
 
-#define LDAP_SCOPE_BASE &h00
-#define LDAP_SCOPE_ONELEVEL &h01
-#define LDAP_SCOPE_SUBTREE &h02
+const LDAP_SCOPE_BASE = &h00
+const LDAP_SCOPE_ONELEVEL = &h01
+const LDAP_SCOPE_SUBTREE = &h02
 
 declare function ldap_searchW(byval ld as LDAP ptr, byval base as const PWCHAR, byval scope as ULONG, byval filter as const PWCHAR, byval attrs as PWCHAR ptr, byval attrsonly as ULONG) as ULONG
 declare function ldap_searchA(byval ld as LDAP ptr, byval base as const PCHAR, byval scope as ULONG, byval filter as const PCHAR, byval attrs as PCHAR ptr, byval attrsonly as ULONG) as ULONG
@@ -672,9 +672,9 @@ declare function ldap_delete_ext_sA(byval ld as LDAP ptr, byval dn as const PCHA
 #endif
 
 declare function ldap_abandon(byval ld as LDAP ptr, byval msgid as ULONG) as ULONG
-#define LDAP_MSG_ONE 0
-#define LDAP_MSG_ALL 1
-#define LDAP_MSG_RECEIVED 2
+const LDAP_MSG_ONE = 0
+const LDAP_MSG_ALL = 1
+const LDAP_MSG_RECEIVED = 2
 
 declare function ldap_result(byval ld as LDAP ptr, byval msgid as ULONG, byval all as ULONG, byval timeout as l_timeval ptr, byval res as LDAPMessage ptr ptr) as ULONG
 declare function ldap_msgfree(byval res as LDAPMessage ptr) as ULONG
@@ -824,11 +824,11 @@ declare function ldap_ufn2dnA(byval ufn as const PCHAR, byval pDn as PCHAR ptr) 
 	declare function ldap_ufn2dn(byval ufn as const PCHAR, byval pDn as PCHAR ptr) as ULONG
 #endif
 
-#define LBER_USE_DER &h01
-#define LBER_USE_INDEFINITE_LEN &h02
-#define LBER_TRANSLATE_STRINGS &h04
-#define LAPI_MAJOR_VER1 1
-#define LAPI_MINOR_VER1 1
+const LBER_USE_DER = &h01
+const LBER_USE_INDEFINITE_LEN = &h02
+const LBER_TRANSLATE_STRINGS = &h04
+const LAPI_MAJOR_VER1 = 1
+const LAPI_MINOR_VER1 = 1
 
 type LDAP_VERSION_INFO
 	lv_size as ULONG
@@ -838,13 +838,13 @@ end type
 
 type PLDAP_VERSION_INFO as LDAP_VERSION_INFO ptr
 declare function ldap_startup(byval version as PLDAP_VERSION_INFO, byval Instance as HANDLE ptr) as ULONG
-#define LDAP_API_INFO_VERSION 1
-#define LDAP_API_VERSION 2004
-#define LDAP_VERSION_MIN 2
-#define LDAP_VERSION_MAX 3
+const LDAP_API_INFO_VERSION = 1
+const LDAP_API_VERSION = 2004
+const LDAP_VERSION_MIN = 2
+const LDAP_VERSION_MAX = 3
 #define LDAP_VENDOR_NAME "Microsoft Corporation."
 #define LDAP_VENDOR_NAME_W wstr("Microsoft Corporation.")
-#define LDAP_VENDOR_VERSION 510
+const LDAP_VENDOR_VERSION = 510
 
 type LDAPAPIInfoA
 	ldapai_info_version as long
@@ -864,7 +864,7 @@ type LDAPAPIInfoW
 	ldapai_vendor_version as long
 end type
 
-#define LDAP_FEATURE_INFO_VERSION 1
+const LDAP_FEATURE_INFO_VERSION = 1
 
 type ldap_apifeature_infoA
 	ldapaif_info_version as long
@@ -991,8 +991,8 @@ declare function ldap_search_abandon_page(byval ExternalHandle as PLDAP, byval S
 #define LDAP_CONTROL_VLVREQUEST_W wstr("2.16.840.1.113730.3.4.9")
 #define LDAP_CONTROL_VLVRESPONSE "2.16.840.1.113730.3.4.10"
 #define LDAP_CONTROL_VLVRESPONSE_W wstr("2.16.840.1.113730.3.4.10")
-#define LDAP_API_FEATURE_VIRTUAL_LIST_VIEW 1001
-#define LDAP_VLVINFO_VERSION 1
+const LDAP_API_FEATURE_VIRTUAL_LIST_VIEW = 1001
+const LDAP_VLVINFO_VERSION = 1
 
 type LDAPVLVInfo
 	ldvlv_version as long
@@ -1059,7 +1059,7 @@ declare function ldap_extended_operation_sW(byval ExternalHandle as LDAP ptr, by
 #endif
 
 declare function ldap_close_extended_op(byval ld as LDAP ptr, byval MessageNumber as ULONG) as ULONG
-#define LDAP_OPT_REFERRAL_CALLBACK &h70
+const LDAP_OPT_REFERRAL_CALLBACK = &h70
 
 type LdapReferralCallback
 	SizeOfCallbacks as ULONG
@@ -1072,9 +1072,9 @@ type LDAP_REFERRAL_CALLBACK as LdapReferralCallback
 type PLDAP_REFERRAL_CALLBACK as LdapReferralCallback ptr
 declare function LdapGetLastError() as ULONG
 declare function LdapMapErrorToWin32(byval LdapError as ULONG) as ULONG
-#define LDAP_OPT_CLIENT_CERTIFICATE &h80
-#define LDAP_OPT_SERVER_CERTIFICATE &h81
-#define LDAP_OPT_REF_DEREF_CONN_PER_MSG &h94
+const LDAP_OPT_CLIENT_CERTIFICATE = &h80
+const LDAP_OPT_SERVER_CERTIFICATE = &h81
+const LDAP_OPT_REF_DEREF_CONN_PER_MSG = &h94
 declare function ldap_conn_from_msg(byval PrimaryConn as LDAP ptr, byval res as LDAPMessage ptr) as LDAP ptr
 
 end extern

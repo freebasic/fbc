@@ -24,7 +24,7 @@ extern "Windows"
 #define EMBDHLP_INPROC_SERVER __MSABI_LONG(&h0001)
 #define EMBDHLP_CREATENOW __MSABI_LONG(&h00000000)
 #define EMBDHLP_DELAYCREATE __MSABI_LONG(&h00010000)
-#define OLECREATE_LEAVERUNNING &h1
+const OLECREATE_LEAVERUNNING = &h1
 
 declare function OleBuildVersion() as DWORD
 declare function ReadClassStg(byval pStg as LPSTORAGE, byval pclsid as CLSID ptr) as HRESULT

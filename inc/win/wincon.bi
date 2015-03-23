@@ -4,7 +4,7 @@
 #include once "winapifamily.bi"
 
 '' The following symbols have been renamed:
-''     #define MOUSE_EVENT => MOUSE_EVENT_
+''     constant MOUSE_EVENT => MOUSE_EVENT_
 
 extern "Windows"
 
@@ -44,22 +44,22 @@ end type
 
 type KEY_EVENT_RECORD as _KEY_EVENT_RECORD
 type PKEY_EVENT_RECORD as _KEY_EVENT_RECORD ptr
-#define RIGHT_ALT_PRESSED &h1
-#define LEFT_ALT_PRESSED &h2
-#define RIGHT_CTRL_PRESSED &h4
-#define LEFT_CTRL_PRESSED &h8
-#define SHIFT_PRESSED &h10
-#define NUMLOCK_ON &h20
-#define SCROLLLOCK_ON &h40
-#define CAPSLOCK_ON &h80
-#define ENHANCED_KEY &h100
-#define NLS_DBCSCHAR &h10000
-#define NLS_ALPHANUMERIC &h0
-#define NLS_KATAKANA &h20000
-#define NLS_HIRAGANA &h40000
-#define NLS_ROMAN &h400000
-#define NLS_IME_CONVERSION &h800000
-#define NLS_IME_DISABLE &h20000000
+const RIGHT_ALT_PRESSED = &h1
+const LEFT_ALT_PRESSED = &h2
+const RIGHT_CTRL_PRESSED = &h4
+const LEFT_CTRL_PRESSED = &h8
+const SHIFT_PRESSED = &h10
+const NUMLOCK_ON = &h20
+const SCROLLLOCK_ON = &h40
+const CAPSLOCK_ON = &h80
+const ENHANCED_KEY = &h100
+const NLS_DBCSCHAR = &h10000
+const NLS_ALPHANUMERIC = &h0
+const NLS_KATAKANA = &h20000
+const NLS_HIRAGANA = &h40000
+const NLS_ROMAN = &h400000
+const NLS_IME_CONVERSION = &h800000
+const NLS_IME_DISABLE = &h20000000
 
 type _MOUSE_EVENT_RECORD
 	dwMousePosition as COORD
@@ -70,17 +70,17 @@ end type
 
 type MOUSE_EVENT_RECORD as _MOUSE_EVENT_RECORD
 type PMOUSE_EVENT_RECORD as _MOUSE_EVENT_RECORD ptr
-#define FROM_LEFT_1ST_BUTTON_PRESSED &h1
-#define RIGHTMOST_BUTTON_PRESSED &h2
-#define FROM_LEFT_2ND_BUTTON_PRESSED &h4
-#define FROM_LEFT_3RD_BUTTON_PRESSED &h8
-#define FROM_LEFT_4TH_BUTTON_PRESSED &h10
-#define MOUSE_MOVED &h1
-#define DOUBLE_CLICK &h2
-#define MOUSE_WHEELED &h4
+const FROM_LEFT_1ST_BUTTON_PRESSED = &h1
+const RIGHTMOST_BUTTON_PRESSED = &h2
+const FROM_LEFT_2ND_BUTTON_PRESSED = &h4
+const FROM_LEFT_3RD_BUTTON_PRESSED = &h8
+const FROM_LEFT_4TH_BUTTON_PRESSED = &h10
+const MOUSE_MOVED = &h1
+const DOUBLE_CLICK = &h2
+const MOUSE_WHEELED = &h4
 
 #if _WIN32_WINNT = &h0602
-	#define MOUSE_HWHEELED &h8
+	const MOUSE_HWHEELED = &h8
 #endif
 
 type _WINDOW_BUFFER_SIZE_RECORD
@@ -119,11 +119,11 @@ end type
 
 type INPUT_RECORD as _INPUT_RECORD
 type PINPUT_RECORD as _INPUT_RECORD ptr
-#define KEY_EVENT &h1
-#define MOUSE_EVENT_ &h2
-#define WINDOW_BUFFER_SIZE_EVENT &h4
-#define MENU_EVENT &h8
-#define FOCUS_EVENT &h10
+const KEY_EVENT = &h1
+const MOUSE_EVENT_ = &h2
+const WINDOW_BUFFER_SIZE_EVENT = &h4
+const MENU_EVENT = &h8
+const FOCUS_EVENT = &h10
 
 union _CHAR_INFO_Char
 	UnicodeChar as wchar_t
@@ -137,22 +137,22 @@ end type
 
 type CHAR_INFO as _CHAR_INFO
 type PCHAR_INFO as _CHAR_INFO ptr
-#define FOREGROUND_BLUE &h1
-#define FOREGROUND_GREEN &h2
-#define FOREGROUND_RED &h4
-#define FOREGROUND_INTENSITY &h8
-#define BACKGROUND_BLUE &h10
-#define BACKGROUND_GREEN &h20
-#define BACKGROUND_RED &h40
-#define BACKGROUND_INTENSITY &h80
-#define COMMON_LVB_LEADING_BYTE &h100
-#define COMMON_LVB_TRAILING_BYTE &h200
-#define COMMON_LVB_GRID_HORIZONTAL &h400
-#define COMMON_LVB_GRID_LVERTICAL &h800
-#define COMMON_LVB_GRID_RVERTICAL &h1000
-#define COMMON_LVB_REVERSE_VIDEO &h4000
-#define COMMON_LVB_UNDERSCORE &h8000
-#define COMMON_LVB_SBCSDBCS &h300
+const FOREGROUND_BLUE = &h1
+const FOREGROUND_GREEN = &h2
+const FOREGROUND_RED = &h4
+const FOREGROUND_INTENSITY = &h8
+const BACKGROUND_BLUE = &h10
+const BACKGROUND_GREEN = &h20
+const BACKGROUND_RED = &h40
+const BACKGROUND_INTENSITY = &h80
+const COMMON_LVB_LEADING_BYTE = &h100
+const COMMON_LVB_TRAILING_BYTE = &h200
+const COMMON_LVB_GRID_HORIZONTAL = &h400
+const COMMON_LVB_GRID_LVERTICAL = &h800
+const COMMON_LVB_GRID_RVERTICAL = &h1000
+const COMMON_LVB_REVERSE_VIDEO = &h4000
+const COMMON_LVB_UNDERSCORE = &h8000
+const COMMON_LVB_SBCSDBCS = &h300
 
 type _CONSOLE_SCREEN_BUFFER_INFO
 	dwSize as COORD
@@ -189,28 +189,28 @@ end type
 
 type CONSOLE_SELECTION_INFO as _CONSOLE_SELECTION_INFO
 type PCONSOLE_SELECTION_INFO as _CONSOLE_SELECTION_INFO ptr
-#define CONSOLE_NO_SELECTION &h0
-#define CONSOLE_SELECTION_IN_PROGRESS &h1
-#define CONSOLE_SELECTION_NOT_EMPTY &h2
-#define CONSOLE_MOUSE_SELECTION &h4
-#define CONSOLE_MOUSE_DOWN &h8
+const CONSOLE_NO_SELECTION = &h0
+const CONSOLE_SELECTION_IN_PROGRESS = &h1
+const CONSOLE_SELECTION_NOT_EMPTY = &h2
+const CONSOLE_MOUSE_SELECTION = &h4
+const CONSOLE_MOUSE_DOWN = &h8
 type PHANDLER_ROUTINE as function(byval CtrlType as DWORD) as WINBOOL
-#define CTRL_C_EVENT 0
-#define CTRL_BREAK_EVENT 1
-#define CTRL_CLOSE_EVENT 2
-#define CTRL_LOGOFF_EVENT 5
-#define CTRL_SHUTDOWN_EVENT 6
-#define ENABLE_PROCESSED_INPUT &h1
-#define ENABLE_LINE_INPUT &h2
-#define ENABLE_ECHO_INPUT &h4
-#define ENABLE_WINDOW_INPUT &h8
-#define ENABLE_MOUSE_INPUT &h10
-#define ENABLE_INSERT_MODE &h20
-#define ENABLE_QUICK_EDIT_MODE &h40
-#define ENABLE_EXTENDED_FLAGS &h80
-#define ENABLE_AUTO_POSITION &h100
-#define ENABLE_PROCESSED_OUTPUT &h1
-#define ENABLE_WRAP_AT_EOL_OUTPUT &h2
+const CTRL_C_EVENT = 0
+const CTRL_BREAK_EVENT = 1
+const CTRL_CLOSE_EVENT = 2
+const CTRL_LOGOFF_EVENT = 5
+const CTRL_SHUTDOWN_EVENT = 6
+const ENABLE_PROCESSED_INPUT = &h1
+const ENABLE_LINE_INPUT = &h2
+const ENABLE_ECHO_INPUT = &h4
+const ENABLE_WINDOW_INPUT = &h8
+const ENABLE_MOUSE_INPUT = &h10
+const ENABLE_INSERT_MODE = &h20
+const ENABLE_QUICK_EDIT_MODE = &h40
+const ENABLE_EXTENDED_FLAGS = &h80
+const ENABLE_AUTO_POSITION = &h100
+const ENABLE_PROCESSED_OUTPUT = &h1
+const ENABLE_WRAP_AT_EOL_OUTPUT = &h2
 
 #ifdef UNICODE
 	#define PeekConsoleInput PeekConsoleInputW
@@ -306,17 +306,17 @@ declare function ReadConsoleA(byval hConsoleInput as HANDLE, byval lpBuffer as L
 declare function ReadConsoleW(byval hConsoleInput as HANDLE, byval lpBuffer as LPVOID, byval nNumberOfCharsToRead as DWORD, byval lpNumberOfCharsRead as LPDWORD, byval lpReserved as LPVOID) as WINBOOL
 declare function WriteConsoleA(byval hConsoleOutput as HANDLE, byval lpBuffer as const any ptr, byval nNumberOfCharsToWrite as DWORD, byval lpNumberOfCharsWritten as LPDWORD, byval lpReserved as LPVOID) as WINBOOL
 declare function WriteConsoleW(byval hConsoleOutput as HANDLE, byval lpBuffer as const any ptr, byval nNumberOfCharsToWrite as DWORD, byval lpNumberOfCharsWritten as LPDWORD, byval lpReserved as LPVOID) as WINBOOL
-#define CONSOLE_TEXTMODE_BUFFER 1
+const CONSOLE_TEXTMODE_BUFFER = 1
 declare function CreateConsoleScreenBuffer(byval dwDesiredAccess as DWORD, byval dwShareMode as DWORD, byval lpSecurityAttributes as const SECURITY_ATTRIBUTES ptr, byval dwFlags as DWORD, byval lpScreenBufferData as LPVOID) as HANDLE
 declare function GetConsoleCP() as UINT
 declare function SetConsoleCP(byval wCodePageID as UINT) as WINBOOL
 declare function GetConsoleOutputCP() as UINT
 declare function SetConsoleOutputCP(byval wCodePageID as UINT) as WINBOOL
-#define CONSOLE_FULLSCREEN 1
-#define CONSOLE_FULLSCREEN_HARDWARE 2
+const CONSOLE_FULLSCREEN = 1
+const CONSOLE_FULLSCREEN_HARDWARE = 2
 declare function GetConsoleDisplayMode(byval lpModeFlags as LPDWORD) as WINBOOL
-#define CONSOLE_FULLSCREEN_MODE 1
-#define CONSOLE_WINDOWED_MODE 2
+const CONSOLE_FULLSCREEN_MODE = 1
+const CONSOLE_WINDOWED_MODE = 2
 declare function SetConsoleDisplayMode(byval hConsoleOutput as HANDLE, byval dwFlags as DWORD, byval lpNewScreenBufferDimensions as PCOORD) as WINBOOL
 declare function GetConsoleWindow() as HWND
 declare function GetConsoleProcessList(byval lpdwProcessList as LPDWORD, byval dwProcessCount as DWORD) as DWORD

@@ -103,7 +103,7 @@ enum
 end enum
 
 #define GDIP_WMF_RECORD_TO_EMFPLUS(meta) ((meta) or &h10000)
-#define GDIP_EMFPLUS_RECORD_BASE &h4000
+const GDIP_EMFPLUS_RECORD_BASE = &h4000
 
 type EmfPlusRecordType as long
 enum

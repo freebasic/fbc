@@ -3,20 +3,20 @@
 extern "Windows"
 
 #define _INC_SCRNSAVE
-#define IDS_DESCRIPTION 1
-#define ID_APP 100
-#define DLG_SCRNSAVECONFIGURE 2003
-#define idsIsPassword 1000
-#define idsIniFile 1001
-#define idsScreenSaver 1002
-#define idsPassword 1003
-#define idsDifferentPW 1004
-#define idsChangePW 1005
-#define idsBadOldPW 1006
-#define idsAppName 1007
-#define idsNoHelpMemory 1008
-#define idsHelpFile 1009
-#define idsDefKeyword 1010
+const IDS_DESCRIPTION = 1
+const ID_APP = 100
+const DLG_SCRNSAVECONFIGURE = 2003
+const idsIsPassword = 1000
+const idsIniFile = 1001
+const idsScreenSaver = 1002
+const idsPassword = 1003
+const idsDifferentPW = 1004
+const idsChangePW = 1005
+const idsBadOldPW = 1006
+const idsAppName = 1007
+const idsNoHelpMemory = 1008
+const idsHelpFile = 1009
+const idsDefKeyword = 1010
 
 #ifdef UNICODE
 	declare function ScreenSaverProcW(byval hWnd as HWND, byval message as UINT, byval wParam as WPARAM, byval lParam as LPARAM) as LRESULT
@@ -30,10 +30,10 @@ declare function ScreenSaverConfigureDialog(byval hDlg as HWND, byval message as
 declare function RegisterDialogClasses(byval hInst as HANDLE) as WINBOOL
 
 #define WS_GT (WS_GROUP or WS_TABSTOP)
-#define MAXFILELEN 13
-#define TITLEBARNAMELEN 40
-#define APPNAMEBUFFERLEN 40
-#define BUFFLEN 255
+const MAXFILELEN = 13
+const TITLEBARNAMELEN = 40
+const APPNAMEBUFFERLEN = 40
+const BUFFLEN = 255
 
 extern hMainInstance as HINSTANCE
 extern hMainWindow as HWND

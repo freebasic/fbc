@@ -1,7 +1,7 @@
 #pragma once
 
 #define _INC_UDPMIB
-#define ANY_SIZE 1
+const ANY_SIZE = 1
 
 #if _WIN32_WINNT = &h0602
 	type _MIB_UDP6ROW

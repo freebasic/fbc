@@ -3,8 +3,8 @@
 #include once "ipifcons.bi"
 
 #define _INC_IFDEF
-#define IF_MAX_STRING_SIZE 256
-#define IF_MAX_PHYS_ADDRESS_LENGTH 32
+const IF_MAX_STRING_SIZE = 256
+const IF_MAX_PHYS_ADDRESS_LENGTH = 32
 
 type NET_IF_COMPARTMENT_ID as UINT32
 type PNET_IF_COMPARTMENT_ID as UINT32 ptr

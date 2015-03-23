@@ -22,36 +22,36 @@ end type
 
 type INITCOMMONCONTROLSEX as tagINITCOMMONCONTROLSEX
 type LPINITCOMMONCONTROLSEX as tagINITCOMMONCONTROLSEX ptr
-#define ICC_LISTVIEW_CLASSES &h1
-#define ICC_TREEVIEW_CLASSES &h2
-#define ICC_BAR_CLASSES &h4
-#define ICC_TAB_CLASSES &h8
-#define ICC_UPDOWN_CLASS &h10
-#define ICC_PROGRESS_CLASS &h20
-#define ICC_HOTKEY_CLASS &h40
-#define ICC_ANIMATE_CLASS &h80
-#define ICC_WIN95_CLASSES &hff
-#define ICC_DATE_CLASSES &h100
-#define ICC_USEREX_CLASSES &h200
-#define ICC_COOL_CLASSES &h400
-#define ICC_INTERNET_CLASSES &h800
-#define ICC_PAGESCROLLER_CLASS &h1000
-#define ICC_NATIVEFNTCTL_CLASS &h2000
-#define ICC_STANDARD_CLASSES &h4000
-#define ICC_LINK_CLASS &h8000
+const ICC_LISTVIEW_CLASSES = &h1
+const ICC_TREEVIEW_CLASSES = &h2
+const ICC_BAR_CLASSES = &h4
+const ICC_TAB_CLASSES = &h8
+const ICC_UPDOWN_CLASS = &h10
+const ICC_PROGRESS_CLASS = &h20
+const ICC_HOTKEY_CLASS = &h40
+const ICC_ANIMATE_CLASS = &h80
+const ICC_WIN95_CLASSES = &hff
+const ICC_DATE_CLASSES = &h100
+const ICC_USEREX_CLASSES = &h200
+const ICC_COOL_CLASSES = &h400
+const ICC_INTERNET_CLASSES = &h800
+const ICC_PAGESCROLLER_CLASS = &h1000
+const ICC_NATIVEFNTCTL_CLASS = &h2000
+const ICC_STANDARD_CLASSES = &h4000
+const ICC_LINK_CLASS = &h8000
 declare function InitCommonControlsEx(byval as const INITCOMMONCONTROLSEX ptr) as WINBOOL
-#define ODT_HEADER 100
-#define ODT_TAB 101
-#define ODT_LISTVIEW 102
-#define LVM_FIRST &h1000
-#define TV_FIRST &h1100
-#define HDM_FIRST &h1200
-#define TCM_FIRST &h1300
-#define PGM_FIRST &h1400
-#define ECM_FIRST &h1500
-#define BCM_FIRST &h1600
-#define CBM_FIRST &h1700
-#define CCM_FIRST &h2000
+const ODT_HEADER = 100
+const ODT_TAB = 101
+const ODT_LISTVIEW = 102
+const LVM_FIRST = &h1000
+const TV_FIRST = &h1100
+const HDM_FIRST = &h1200
+const TCM_FIRST = &h1300
+const PGM_FIRST = &h1400
+const ECM_FIRST = &h1500
+const BCM_FIRST = &h1600
+const CBM_FIRST = &h1700
+const CCM_FIRST = &h2000
 #define CCM_LAST (CCM_FIRST + &h200)
 #define CCM_SETBKCOLOR (CCM_FIRST + 1)
 #define CCM_SETCOLORSCHEME (CCM_FIRST + 2)
@@ -68,13 +68,13 @@ end type
 
 type COLORSCHEME as tagCOLORSCHEME
 type LPCOLORSCHEME as tagCOLORSCHEME ptr
-#define COMCTL32_VERSION 6
+const COMCTL32_VERSION = 6
 #define CCM_SETVERSION (CCM_FIRST + &h7)
 #define CCM_GETVERSION (CCM_FIRST + &h8)
 #define CCM_SETNOTIFYWINDOW (CCM_FIRST + &h9)
 #define CCM_SETWINDOWTHEME (CCM_FIRST + &hb)
 #define CCM_DPISCALE (CCM_FIRST + &hc)
-#define INFOTIPSIZE 1024
+const INFOTIPSIZE = 1024
 #define HANDLE_WM_NOTIFY(hwnd, wParam, lParam, fn) fn((hwnd), clng((wParam)), cptr(NMHDR ptr, (lParam)))
 #define FORWARD_WM_NOTIFY(hwnd, idFrom, pnmhdr, fn) cast(LRESULT, fn((hwnd), WM_NOTIFY, cast(WPARAM, clng((idFrom))), cast(LPARAM, cptr(NMHDR ptr, (pnmhdr)))))
 #define NM_OUTOFMEMORY (NM_FIRST - 1)
@@ -148,73 +148,73 @@ end type
 
 type NMCHAR as tagNMCHAR
 type LPNMCHAR as tagNMCHAR ptr
-#define NM_FIRST culng(0u - 0u)
-#define NM_LAST culng(0u - 99u)
-#define LVN_FIRST culng(0u - 100u)
-#define LVN_LAST culng(0u - 199u)
-#define HDN_FIRST culng(0u - 300u)
-#define HDN_LAST culng(0u - 399u)
-#define TVN_FIRST culng(0u - 400u)
-#define TVN_LAST culng(0u - 499u)
-#define TTN_FIRST culng(0u - 520u)
-#define TTN_LAST culng(0u - 549u)
-#define TCN_FIRST culng(0u - 550u)
-#define TCN_LAST culng(0u - 580u)
-#define TBN_FIRST culng(0u - 700u)
-#define TBN_LAST culng(0u - 720u)
-#define UDN_FIRST culng(0u - 721)
-#define UDN_LAST culng(0u - 740)
-#define MCN_FIRST culng(0u - 750u)
-#define MCN_LAST culng(0u - 759u)
-#define DTN_FIRST culng(0u - 760u)
-#define DTN_LAST culng(0u - 799u)
-#define CBEN_FIRST culng(0u - 800u)
-#define CBEN_LAST culng(0u - 830u)
-#define RBN_FIRST culng(0u - 831u)
-#define RBN_LAST culng(0u - 859u)
-#define IPN_FIRST culng(0u - 860u)
-#define IPN_LAST culng(0u - 879u)
-#define SBN_FIRST culng(0u - 880u)
-#define SBN_LAST culng(0u - 899u)
-#define PGN_FIRST culng(0u - 900u)
-#define PGN_LAST culng(0u - 950u)
-#define WMN_FIRST culng(0u - 1000u)
-#define WMN_LAST culng(0u - 1200u)
-#define BCN_FIRST culng(0u - 1250u)
-#define BCN_LAST culng(0u - 1350u)
-#define MSGF_COMMCTRL_BEGINDRAG &h4200
-#define MSGF_COMMCTRL_SIZEHEADER &h4201
-#define MSGF_COMMCTRL_DRAGSELECT &h4202
-#define MSGF_COMMCTRL_TOOLBARCUST &h4203
-#define CDRF_DODEFAULT &h0
-#define CDRF_NEWFONT &h2
-#define CDRF_SKIPDEFAULT &h4
-#define CDRF_DOERASE &h8
-#define CDRF_SKIPPOSTPAINT &h100
-#define CDRF_NOTIFYPOSTPAINT &h10
-#define CDRF_NOTIFYITEMDRAW &h20
-#define CDRF_NOTIFYSUBITEMDRAW &h20
-#define CDRF_NOTIFYPOSTERASE &h40
-#define CDDS_PREPAINT &h1
-#define CDDS_POSTPAINT &h2
-#define CDDS_PREERASE &h3
-#define CDDS_POSTERASE &h4
-#define CDDS_ITEM &h10000
+const NM_FIRST = culng(0u - 0u)
+const NM_LAST = culng(0u - 99u)
+const LVN_FIRST = culng(0u - 100u)
+const LVN_LAST = culng(0u - 199u)
+const HDN_FIRST = culng(0u - 300u)
+const HDN_LAST = culng(0u - 399u)
+const TVN_FIRST = culng(0u - 400u)
+const TVN_LAST = culng(0u - 499u)
+const TTN_FIRST = culng(0u - 520u)
+const TTN_LAST = culng(0u - 549u)
+const TCN_FIRST = culng(0u - 550u)
+const TCN_LAST = culng(0u - 580u)
+const TBN_FIRST = culng(0u - 700u)
+const TBN_LAST = culng(0u - 720u)
+const UDN_FIRST = culng(0u - 721)
+const UDN_LAST = culng(0u - 740)
+const MCN_FIRST = culng(0u - 750u)
+const MCN_LAST = culng(0u - 759u)
+const DTN_FIRST = culng(0u - 760u)
+const DTN_LAST = culng(0u - 799u)
+const CBEN_FIRST = culng(0u - 800u)
+const CBEN_LAST = culng(0u - 830u)
+const RBN_FIRST = culng(0u - 831u)
+const RBN_LAST = culng(0u - 859u)
+const IPN_FIRST = culng(0u - 860u)
+const IPN_LAST = culng(0u - 879u)
+const SBN_FIRST = culng(0u - 880u)
+const SBN_LAST = culng(0u - 899u)
+const PGN_FIRST = culng(0u - 900u)
+const PGN_LAST = culng(0u - 950u)
+const WMN_FIRST = culng(0u - 1000u)
+const WMN_LAST = culng(0u - 1200u)
+const BCN_FIRST = culng(0u - 1250u)
+const BCN_LAST = culng(0u - 1350u)
+const MSGF_COMMCTRL_BEGINDRAG = &h4200
+const MSGF_COMMCTRL_SIZEHEADER = &h4201
+const MSGF_COMMCTRL_DRAGSELECT = &h4202
+const MSGF_COMMCTRL_TOOLBARCUST = &h4203
+const CDRF_DODEFAULT = &h0
+const CDRF_NEWFONT = &h2
+const CDRF_SKIPDEFAULT = &h4
+const CDRF_DOERASE = &h8
+const CDRF_SKIPPOSTPAINT = &h100
+const CDRF_NOTIFYPOSTPAINT = &h10
+const CDRF_NOTIFYITEMDRAW = &h20
+const CDRF_NOTIFYSUBITEMDRAW = &h20
+const CDRF_NOTIFYPOSTERASE = &h40
+const CDDS_PREPAINT = &h1
+const CDDS_POSTPAINT = &h2
+const CDDS_PREERASE = &h3
+const CDDS_POSTERASE = &h4
+const CDDS_ITEM = &h10000
 #define CDDS_ITEMPREPAINT (CDDS_ITEM or CDDS_PREPAINT)
 #define CDDS_ITEMPOSTPAINT (CDDS_ITEM or CDDS_POSTPAINT)
 #define CDDS_ITEMPREERASE (CDDS_ITEM or CDDS_PREERASE)
 #define CDDS_ITEMPOSTERASE (CDDS_ITEM or CDDS_POSTERASE)
-#define CDDS_SUBITEM &h20000
-#define CDIS_SELECTED &h1
-#define CDIS_GRAYED &h2
-#define CDIS_DISABLED &h4
-#define CDIS_CHECKED &h8
-#define CDIS_FOCUS &h10
-#define CDIS_DEFAULT &h20
-#define CDIS_HOT &h40
-#define CDIS_MARKED &h80
-#define CDIS_INDETERMINATE &h100
-#define CDIS_SHOWKEYBOARDCUES &h200
+const CDDS_SUBITEM = &h20000
+const CDIS_SELECTED = &h1
+const CDIS_GRAYED = &h2
+const CDIS_DISABLED = &h4
+const CDIS_CHECKED = &h8
+const CDIS_FOCUS = &h10
+const CDIS_DEFAULT = &h20
+const CDIS_HOT = &h40
+const CDIS_MARKED = &h80
+const CDIS_INDETERMINATE = &h100
+const CDIS_SHOWKEYBOARDCUES = &h200
 
 type tagNMCUSTOMDRAWINFO
 	hdr as NMHDR
@@ -263,17 +263,17 @@ end type
 type IMAGELISTDRAWPARAMS as _IMAGELISTDRAWPARAMS
 type LPIMAGELISTDRAWPARAMS as _IMAGELISTDRAWPARAMS ptr
 #define IMAGELISTDRAWPARAMS_V3_SIZE CCSIZEOF_STRUCT(IMAGELISTDRAWPARAMS, dwRop)
-#define ILC_MASK &h1
-#define ILC_COLOR &h0
-#define ILC_COLORDDB &hfe
-#define ILC_COLOR4 &h4
-#define ILC_COLOR8 &h8
-#define ILC_COLOR16 &h10
-#define ILC_COLOR24 &h18
-#define ILC_COLOR32 &h20
-#define ILC_PALETTE &h800
-#define ILC_MIRROR &h2000
-#define ILC_PERITEMMIRROR &h8000
+const ILC_MASK = &h1
+const ILC_COLOR = &h0
+const ILC_COLORDDB = &hfe
+const ILC_COLOR4 = &h4
+const ILC_COLOR8 = &h8
+const ILC_COLOR16 = &h10
+const ILC_COLOR24 = &h18
+const ILC_COLOR32 = &h20
+const ILC_PALETTE = &h800
+const ILC_MIRROR = &h2000
+const ILC_PERITEMMIRROR = &h8000
 
 declare function ImageList_Create(byval cx as long, byval cy as long, byval flags as UINT, byval cInitial as long, byval cGrow as long) as HIMAGELIST
 declare function ImageList_Destroy(byval himl as HIMAGELIST) as WINBOOL
@@ -286,27 +286,27 @@ declare function ImageList_GetBkColor(byval himl as HIMAGELIST) as COLORREF
 declare function ImageList_SetOverlayImage(byval himl as HIMAGELIST, byval iImage as long, byval iOverlay as long) as WINBOOL
 
 #define ImageList_AddIcon(himl, hicon) ImageList_ReplaceIcon(himl, -1, hicon)
-#define ILD_NORMAL &h0
-#define ILD_TRANSPARENT &h1
-#define ILD_MASK &h10
-#define ILD_IMAGE &h20
-#define ILD_ROP &h40
-#define ILD_BLEND25 &h2
-#define ILD_BLEND50 &h4
-#define ILD_OVERLAYMASK &hf00
+const ILD_NORMAL = &h0
+const ILD_TRANSPARENT = &h1
+const ILD_MASK = &h10
+const ILD_IMAGE = &h20
+const ILD_ROP = &h40
+const ILD_BLEND25 = &h2
+const ILD_BLEND50 = &h4
+const ILD_OVERLAYMASK = &hf00
 #define INDEXTOOVERLAYMASK(i) ((i) shl 8)
-#define ILD_PRESERVEALPHA &h1000
-#define ILD_SCALE &h2000
-#define ILD_DPISCALE &h4000
+const ILD_PRESERVEALPHA = &h1000
+const ILD_SCALE = &h2000
+const ILD_DPISCALE = &h4000
 #define ILD_SELECTED ILD_BLEND50
 #define ILD_FOCUS ILD_BLEND25
 #define ILD_BLEND ILD_BLEND50
 #define CLR_HILIGHT CLR_DEFAULT
-#define ILS_NORMAL &h0
-#define ILS_GLOW &h1
-#define ILS_SHADOW &h2
-#define ILS_SATURATE &h4
-#define ILS_ALPHA &h8
+const ILS_NORMAL = &h0
+const ILS_GLOW = &h1
+const ILS_SHADOW = &h2
+const ILS_SATURATE = &h4
+const ILS_ALPHA = &h8
 
 declare function ImageList_Draw(byval himl as HIMAGELIST, byval i as long, byval hdcDst as HDC, byval x as long, byval y as long, byval fStyle as UINT) as WINBOOL
 declare function ImageList_Replace(byval himl as HIMAGELIST, byval i as long, byval hbmImage as HBITMAP, byval hbmMask as HBITMAP) as WINBOOL
@@ -324,8 +324,8 @@ declare function ImageList_LoadImageW(byval hi as HINSTANCE, byval lpbmp as LPCW
 	#define ImageList_LoadImage ImageList_LoadImageA
 #endif
 
-#define ILCF_MOVE &h0
-#define ILCF_SWAP &h1
+const ILCF_MOVE = &h0
+const ILCF_SWAP = &h1
 declare function ImageList_Copy(byval himlDst as HIMAGELIST, byval iDst as long, byval himlSrc as HIMAGELIST, byval iSrc as long, byval uFlags as UINT) as WINBOOL
 declare function ImageList_BeginDrag(byval himlTrack as HIMAGELIST, byval iTrack as long, byval dxHotspot as long, byval dyHotspot as long) as WINBOOL
 declare sub ImageList_EndDrag()
@@ -341,8 +341,8 @@ declare function ImageList_GetDragImage(byval ppt as POINT ptr, byval pptHotspot
 #define ImageList_LoadBitmap(hi, lpbmp, cx, cGrow, crMask) ImageList_LoadImage(hi, lpbmp, cx, cGrow, crMask, IMAGE_BITMAP, 0)
 declare function ImageList_Read(byval pstm as LPSTREAM) as HIMAGELIST
 declare function ImageList_Write(byval himl as HIMAGELIST, byval pstm as LPSTREAM) as WINBOOL
-#define ILP_NORMAL 0
-#define ILP_DOWNLEVEL 1
+const ILP_NORMAL = 0
+const ILP_DOWNLEVEL = 1
 declare function ImageList_ReadEx(byval dwFlags as DWORD, byval pstm as LPSTREAM, byval riid as const IID const ptr, byval ppv as PVOID ptr) as HRESULT
 declare function ImageList_WriteEx(byval himl as HIMAGELIST, byval dwFlags as DWORD, byval pstm as LPSTREAM) as HRESULT
 
@@ -370,24 +370,24 @@ declare function ImageList_Duplicate(byval himl as HIMAGELIST) as HIMAGELIST
 	#define WC_HEADER WC_HEADERA
 #endif
 
-#define HDS_HORZ &h0
-#define HDS_BUTTONS &h2
-#define HDS_HOTTRACK &h4
-#define HDS_HIDDEN &h8
-#define HDS_DRAGDROP &h40
-#define HDS_FULLDRAG &h80
-#define HDS_FILTERBAR &h100
-#define HDS_FLAT &h200
+const HDS_HORZ = &h0
+const HDS_BUTTONS = &h2
+const HDS_HOTTRACK = &h4
+const HDS_HIDDEN = &h8
+const HDS_DRAGDROP = &h40
+const HDS_FULLDRAG = &h80
+const HDS_FILTERBAR = &h100
+const HDS_FLAT = &h200
 
 #if _WIN32_WINNT = &h0602
-	#define HDS_CHECKBOXES &h400
-	#define HDS_NOSIZING &h800
-	#define HDS_OVERFLOW &h1000
+	const HDS_CHECKBOXES = &h400
+	const HDS_NOSIZING = &h800
+	const HDS_OVERFLOW = &h1000
 #endif
 
-#define HDFT_ISSTRING &h0
-#define HDFT_ISNUMBER &h1
-#define HDFT_HASNOVALUE &h8000
+const HDFT_ISSTRING = &h0
+const HDFT_ISNUMBER = &h1
+const HDFT_HASNOVALUE = &h8000
 
 #ifdef UNICODE
 	#define HD_TEXTFILTER HD_TEXTFILTERW
@@ -466,34 +466,34 @@ type LPHDITEMW as _HD_ITEMW ptr
 	#define HDITEM_V1_SIZE HDITEMA_V1_SIZE
 #endif
 
-#define HDI_WIDTH &h1
+const HDI_WIDTH = &h1
 #define HDI_HEIGHT HDI_WIDTH
-#define HDI_TEXT &h2
-#define HDI_FORMAT &h4
-#define HDI_LPARAM &h8
-#define HDI_BITMAP &h10
-#define HDI_IMAGE &h20
-#define HDI_DI_SETITEM &h40
-#define HDI_ORDER &h80
-#define HDI_FILTER &h100
-#define HDF_LEFT &h0
-#define HDF_RIGHT &h1
-#define HDF_CENTER &h2
-#define HDF_JUSTIFYMASK &h3
-#define HDF_RTLREADING &h4
-#define HDF_OWNERDRAW &h8000
-#define HDF_STRING &h4000
-#define HDF_BITMAP &h2000
-#define HDF_BITMAP_ON_RIGHT &h1000
-#define HDF_IMAGE &h800
-#define HDF_SORTUP &h400
-#define HDF_SORTDOWN &h200
+const HDI_TEXT = &h2
+const HDI_FORMAT = &h4
+const HDI_LPARAM = &h8
+const HDI_BITMAP = &h10
+const HDI_IMAGE = &h20
+const HDI_DI_SETITEM = &h40
+const HDI_ORDER = &h80
+const HDI_FILTER = &h100
+const HDF_LEFT = &h0
+const HDF_RIGHT = &h1
+const HDF_CENTER = &h2
+const HDF_JUSTIFYMASK = &h3
+const HDF_RTLREADING = &h4
+const HDF_OWNERDRAW = &h8000
+const HDF_STRING = &h4000
+const HDF_BITMAP = &h2000
+const HDF_BITMAP_ON_RIGHT = &h1000
+const HDF_IMAGE = &h800
+const HDF_SORTUP = &h400
+const HDF_SORTDOWN = &h200
 
 #if _WIN32_WINNT = &h0602
-	#define HDF_CHECKBOX &h40
-	#define HDF_CHECKED &h80
-	#define HDF_FIXEDWIDTH &h100
-	#define HDF_SPLITBUTTON &h1000000
+	const HDF_CHECKBOX = &h40
+	const HDF_CHECKED = &h80
+	const HDF_FIXEDWIDTH = &h100
+	const HDF_SPLITBUTTON = &h1000000
 #endif
 
 #define HDM_GETITEMCOUNT (HDM_FIRST + 0)
@@ -541,16 +541,16 @@ type HDLAYOUT as _HD_LAYOUT
 type LPHDLAYOUT as _HD_LAYOUT ptr
 #define HDM_LAYOUT (HDM_FIRST + 5)
 #define Header_Layout(hwndHD, playout) cast(WINBOOL, SNDMSG((hwndHD), HDM_LAYOUT, 0, cast(LPARAM, cptr(HD_LAYOUT ptr, (playout)))))
-#define HHT_NOWHERE &h1
-#define HHT_ONHEADER &h2
-#define HHT_ONDIVIDER &h4
-#define HHT_ONDIVOPEN &h8
-#define HHT_ONFILTER &h10
-#define HHT_ONFILTERBUTTON &h20
-#define HHT_ABOVE &h100
-#define HHT_BELOW &h200
-#define HHT_TORIGHT &h400
-#define HHT_TOLEFT &h800
+const HHT_NOWHERE = &h1
+const HHT_ONHEADER = &h2
+const HHT_ONDIVIDER = &h4
+const HHT_ONDIVOPEN = &h8
+const HHT_ONFILTER = &h10
+const HHT_ONFILTERBUTTON = &h20
+const HHT_ABOVE = &h100
+const HHT_BELOW = &h200
+const HHT_TORIGHT = &h400
+const HHT_TOLEFT = &h800
 #define HD_HITTESTINFO HDHITTESTINFO
 
 type _HD_HITTESTINFO
@@ -751,32 +751,32 @@ type COLORMAP as _COLORMAP
 type LPCOLORMAP as _COLORMAP ptr
 declare function CreateToolbarEx(byval hwnd as HWND, byval ws as DWORD, byval wID as UINT, byval nBitmaps as long, byval hBMInst as HINSTANCE, byval wBMID as UINT_PTR, byval lpButtons as LPCTBBUTTON, byval iNumButtons as long, byval dxButton as long, byval dyButton as long, byval dxBitmap as long, byval dyBitmap as long, byval uStructSize as UINT) as HWND
 declare function CreateMappedBitmap(byval hInstance as HINSTANCE, byval idBitmap as INT_PTR, byval wFlags as UINT, byval lpColorMap as LPCOLORMAP, byval iNumMaps as long) as HBITMAP
-#define CMB_MASKED &h2
-#define TBSTATE_CHECKED &h1
-#define TBSTATE_PRESSED &h2
-#define TBSTATE_ENABLED &h4
-#define TBSTATE_HIDDEN &h8
-#define TBSTATE_INDETERMINATE &h10
-#define TBSTATE_WRAP &h20
-#define TBSTATE_ELLIPSES &h40
-#define TBSTATE_MARKED &h80
-#define TBSTYLE_BUTTON &h0
-#define TBSTYLE_SEP &h1
-#define TBSTYLE_CHECK &h2
-#define TBSTYLE_GROUP &h4
+const CMB_MASKED = &h2
+const TBSTATE_CHECKED = &h1
+const TBSTATE_PRESSED = &h2
+const TBSTATE_ENABLED = &h4
+const TBSTATE_HIDDEN = &h8
+const TBSTATE_INDETERMINATE = &h10
+const TBSTATE_WRAP = &h20
+const TBSTATE_ELLIPSES = &h40
+const TBSTATE_MARKED = &h80
+const TBSTYLE_BUTTON = &h0
+const TBSTYLE_SEP = &h1
+const TBSTYLE_CHECK = &h2
+const TBSTYLE_GROUP = &h4
 #define TBSTYLE_CHECKGROUP (TBSTYLE_GROUP or TBSTYLE_CHECK)
-#define TBSTYLE_DROPDOWN &h8
-#define TBSTYLE_AUTOSIZE &h10
-#define TBSTYLE_NOPREFIX &h20
-#define TBSTYLE_TOOLTIPS &h100
-#define TBSTYLE_WRAPABLE &h200
-#define TBSTYLE_ALTDRAG &h400
-#define TBSTYLE_FLAT &h800
-#define TBSTYLE_LIST &h1000
-#define TBSTYLE_CUSTOMERASE &h2000
-#define TBSTYLE_REGISTERDROP &h4000
-#define TBSTYLE_TRANSPARENT &h8000
-#define TBSTYLE_EX_DRAWDDARROWS &h1
+const TBSTYLE_DROPDOWN = &h8
+const TBSTYLE_AUTOSIZE = &h10
+const TBSTYLE_NOPREFIX = &h20
+const TBSTYLE_TOOLTIPS = &h100
+const TBSTYLE_WRAPABLE = &h200
+const TBSTYLE_ALTDRAG = &h400
+const TBSTYLE_FLAT = &h800
+const TBSTYLE_LIST = &h1000
+const TBSTYLE_CUSTOMERASE = &h2000
+const TBSTYLE_REGISTERDROP = &h4000
+const TBSTYLE_TRANSPARENT = &h8000
+const TBSTYLE_EX_DRAWDDARROWS = &h1
 #define BTNS_BUTTON TBSTYLE_BUTTON
 #define BTNS_SEP TBSTYLE_SEP
 #define BTNS_CHECK TBSTYLE_CHECK
@@ -785,11 +785,11 @@ declare function CreateMappedBitmap(byval hInstance as HINSTANCE, byval idBitmap
 #define BTNS_DROPDOWN TBSTYLE_DROPDOWN
 #define BTNS_AUTOSIZE TBSTYLE_AUTOSIZE
 #define BTNS_NOPREFIX TBSTYLE_NOPREFIX
-#define BTNS_SHOWTEXT &h40
-#define BTNS_WHOLEDROPDOWN &h80
-#define TBSTYLE_EX_MIXEDBUTTONS &h8
-#define TBSTYLE_EX_HIDECLIPPEDBUTTONS &h10
-#define TBSTYLE_EX_DOUBLEBUFFER &h80
+const BTNS_SHOWTEXT = &h40
+const BTNS_WHOLEDROPDOWN = &h80
+const TBSTYLE_EX_MIXEDBUTTONS = &h8
+const TBSTYLE_EX_HIDECLIPPEDBUTTONS = &h10
+const TBSTYLE_EX_DOUBLEBUFFER = &h80
 
 type _NMTBCUSTOMDRAW
 	nmcd as NMCUSTOMDRAW
@@ -810,13 +810,13 @@ end type
 
 type NMTBCUSTOMDRAW as _NMTBCUSTOMDRAW
 type LPNMTBCUSTOMDRAW as _NMTBCUSTOMDRAW ptr
-#define TBCDRF_NOEDGES &h10000
-#define TBCDRF_HILITEHOTTRACK &h20000
-#define TBCDRF_NOOFFSET &h40000
-#define TBCDRF_NOMARK &h80000
-#define TBCDRF_NOETCHEDEFFECT &h100000
-#define TBCDRF_BLENDICON &h200000
-#define TBCDRF_NOBACKGROUND &h400000
+const TBCDRF_NOEDGES = &h10000
+const TBCDRF_HILITEHOTTRACK = &h20000
+const TBCDRF_NOOFFSET = &h40000
+const TBCDRF_NOMARK = &h80000
+const TBCDRF_NOETCHEDEFFECT = &h100000
+const TBCDRF_BLENDICON = &h200000
+const TBCDRF_NOBACKGROUND = &h400000
 #define TB_ENABLEBUTTON (WM_USER + 1)
 #define TB_CHECKBUTTON (WM_USER + 2)
 #define TB_PRESSBUTTON (WM_USER + 3)
@@ -841,45 +841,45 @@ end type
 type TBADDBITMAP as tagTBADDBITMAP
 type LPTBADDBITMAP as tagTBADDBITMAP ptr
 #define HINST_COMMCTRL cast(HINSTANCE, -1)
-#define IDB_STD_SMALL_COLOR 0
-#define IDB_STD_LARGE_COLOR 1
-#define IDB_VIEW_SMALL_COLOR 4
-#define IDB_VIEW_LARGE_COLOR 5
-#define IDB_HIST_SMALL_COLOR 8
-#define IDB_HIST_LARGE_COLOR 9
-#define STD_CUT 0
-#define STD_COPY 1
-#define STD_PASTE 2
-#define STD_UNDO 3
-#define STD_REDOW 4
-#define STD_DELETE 5
-#define STD_FILENEW 6
-#define STD_FILEOPEN 7
-#define STD_FILESAVE 8
-#define STD_PRINTPRE 9
-#define STD_PROPERTIES 10
-#define STD_HELP 11
-#define STD_FIND 12
-#define STD_REPLACE 13
-#define STD_PRINT 14
-#define VIEW_LARGEICONS 0
-#define VIEW_SMALLICONS 1
-#define VIEW_LIST 2
-#define VIEW_DETAILS 3
-#define VIEW_SORTNAME 4
-#define VIEW_SORTSIZE 5
-#define VIEW_SORTDATE 6
-#define VIEW_SORTTYPE 7
-#define VIEW_PARENTFOLDER 8
-#define VIEW_NETCONNECT 9
-#define VIEW_NETDISCONNECT 10
-#define VIEW_NEWFOLDER 11
-#define VIEW_VIEWMENU 12
-#define HIST_BACK 0
-#define HIST_FORWARD 1
-#define HIST_FAVORITES 2
-#define HIST_ADDTOFAVORITES 3
-#define HIST_VIEWTREE 4
+const IDB_STD_SMALL_COLOR = 0
+const IDB_STD_LARGE_COLOR = 1
+const IDB_VIEW_SMALL_COLOR = 4
+const IDB_VIEW_LARGE_COLOR = 5
+const IDB_HIST_SMALL_COLOR = 8
+const IDB_HIST_LARGE_COLOR = 9
+const STD_CUT = 0
+const STD_COPY = 1
+const STD_PASTE = 2
+const STD_UNDO = 3
+const STD_REDOW = 4
+const STD_DELETE = 5
+const STD_FILENEW = 6
+const STD_FILEOPEN = 7
+const STD_FILESAVE = 8
+const STD_PRINTPRE = 9
+const STD_PROPERTIES = 10
+const STD_HELP = 11
+const STD_FIND = 12
+const STD_REPLACE = 13
+const STD_PRINT = 14
+const VIEW_LARGEICONS = 0
+const VIEW_SMALLICONS = 1
+const VIEW_LIST = 2
+const VIEW_DETAILS = 3
+const VIEW_SORTNAME = 4
+const VIEW_SORTSIZE = 5
+const VIEW_SORTDATE = 6
+const VIEW_SORTTYPE = 7
+const VIEW_PARENTFOLDER = 8
+const VIEW_NETCONNECT = 9
+const VIEW_NETDISCONNECT = 10
+const VIEW_NEWFOLDER = 11
+const VIEW_VIEWMENU = 12
+const HIST_BACK = 0
+const HIST_FORWARD = 1
+const HIST_FAVORITES = 2
+const HIST_ADDTOFAVORITES = 3
+const HIST_VIEWTREE = 4
 #define TB_ADDBUTTONSA (WM_USER + 20)
 #define TB_INSERTBUTTONA (WM_USER + 21)
 #define TB_DELETEBUTTON (WM_USER + 22)
@@ -973,8 +973,8 @@ type TBINSERTMARK
 end type
 
 type LPTBINSERTMARK as TBINSERTMARK ptr
-#define TBIMHT_AFTER &h1
-#define TBIMHT_BACKGROUND &h2
+const TBIMHT_AFTER = &h1
+const TBIMHT_BACKGROUND = &h2
 #define TB_GETINSERTMARK (WM_USER + 79)
 #define TB_SETINSERTMARK (WM_USER + 80)
 #define TB_INSERTMARKHITTEST (WM_USER + 81)
@@ -1007,16 +1007,16 @@ type TBREPLACEBITMAP
 end type
 
 type LPTBREPLACEBITMAP as TBREPLACEBITMAP ptr
-#define TBBF_LARGE &h1
+const TBBF_LARGE = &h1
 #define TB_GETBITMAPFLAGS (WM_USER + 41)
-#define TBIF_IMAGE &h1
-#define TBIF_TEXT &h2
-#define TBIF_STATE &h4
-#define TBIF_STYLE &h8
-#define TBIF_LPARAM &h10
-#define TBIF_COMMAND &h20
-#define TBIF_SIZE &h40
-#define TBIF_BYINDEX &h80000000
+const TBIF_IMAGE = &h1
+const TBIF_TEXT = &h2
+const TBIF_STATE = &h4
+const TBIF_STYLE = &h8
+const TBIF_LPARAM = &h10
+const TBIF_COMMAND = &h20
+const TBIF_SIZE = &h40
+const TBIF_BYINDEX = &h80000000
 
 type TBBUTTONINFOA
 	cbSize as UINT
@@ -1096,9 +1096,9 @@ type LPTBBUTTONINFOW as TBBUTTONINFOW ptr
 #define TB_GETIMAGELISTCOUNT (WM_USER + 98)
 #define TB_GETIDEALSIZE (WM_USER + 99)
 #define TB_TRANSLATEACCELERATOR CCM_TRANSLATEACCELERATOR
-#define TBMF_PAD &h1
-#define TBMF_BARPAD &h2
-#define TBMF_BUTTONSPACING &h4
+const TBMF_PAD = &h1
+const TBMF_BARPAD = &h2
+const TBMF_BUTTONSPACING = &h4
 
 type TBMETRICS
 	cbSize as UINT
@@ -1144,16 +1144,16 @@ end type
 
 type NMTBHOTITEM as tagNMTBHOTITEM
 type LPNMTBHOTITEM as tagNMTBHOTITEM ptr
-#define HICF_OTHER &h0
-#define HICF_MOUSE &h1
-#define HICF_ARROWKEYS &h2
-#define HICF_ACCELERATOR &h4
-#define HICF_DUPACCEL &h8
-#define HICF_ENTERING &h10
-#define HICF_LEAVING &h20
-#define HICF_RESELECT &h40
-#define HICF_LMOUSE &h80
-#define HICF_TOGGLEDROPDOWN &h100
+const HICF_OTHER = &h0
+const HICF_MOUSE = &h1
+const HICF_ARROWKEYS = &h2
+const HICF_ACCELERATOR = &h4
+const HICF_DUPACCEL = &h8
+const HICF_ENTERING = &h10
+const HICF_LEAVING = &h20
+const HICF_RESELECT = &h40
+const HICF_LMOUSE = &h80
+const HICF_TOGGLEDROPDOWN = &h100
 #define TBN_HOTITEMCHANGE culng(TBN_FIRST - 13)
 #define TBN_DRAGOUT culng(TBN_FIRST - 14)
 #define TBN_DELETINGBUTTON culng(TBN_FIRST - 15)
@@ -1170,8 +1170,8 @@ type LPNMTBHOTITEM as tagNMTBHOTITEM ptr
 #define TBN_WRAPACCELERATOR culng(TBN_FIRST - 26)
 #define TBN_DRAGOVER culng(TBN_FIRST - 27)
 #define TBN_MAPACCELERATOR culng(TBN_FIRST - 28)
-#define TBNRF_HIDEHELP &h1
-#define TBNRF_ENDCUSTOMIZE &h2
+const TBNRF_HIDEHELP = &h1
+const TBNRF_ENDCUSTOMIZE = &h2
 
 type tagNMTBSAVE
 	hdr as NMHDR
@@ -1232,9 +1232,9 @@ type LPNMTBGETINFOTIPW as tagNMTBGETINFOTIPW ptr
 	#define LPNMTBGETINFOTIP LPNMTBGETINFOTIPA
 #endif
 
-#define TBNF_IMAGE &h1
-#define TBNF_TEXT &h2
-#define TBNF_DI_SETITEM &h10000000
+const TBNF_IMAGE = &h1
+const TBNF_TEXT = &h2
+const TBNF_DI_SETITEM = &h10000000
 
 type NMTBDISPINFOA
 	hdr as NMHDR
@@ -1270,9 +1270,9 @@ type LPNMTBDISPINFOW as NMTBDISPINFOW ptr
 	#define LPNMTBDISPINFO LPNMTBDISPINFOA
 #endif
 
-#define TBDDRET_DEFAULT 0
-#define TBDDRET_NODEFAULT 1
-#define TBDDRET_TREATPRESSED 2
+const TBDDRET_DEFAULT = 0
+const TBDDRET_NODEFAULT = 1
+const TBDDRET_TREATPRESSED = 2
 
 #ifdef UNICODE
 	#define TBN_GETBUTTONINFO TBN_GETBUTTONINFOW
@@ -1328,15 +1328,15 @@ type LPNMTOOLBARW as tagNMTOOLBARW ptr
 	#define REBARCLASSNAME REBARCLASSNAMEA
 #endif
 
-#define RBIM_IMAGELIST &h1
-#define RBS_TOOLTIPS &h100
-#define RBS_VARHEIGHT &h200
-#define RBS_BANDBORDERS &h400
-#define RBS_FIXEDORDER &h800
-#define RBS_REGISTERDROP &h1000
-#define RBS_AUTOSIZE &h2000
-#define RBS_VERTICALGRIPPER &h4000
-#define RBS_DBLCLKTOGGLE &h8000
+const RBIM_IMAGELIST = &h1
+const RBS_TOOLTIPS = &h100
+const RBS_VARHEIGHT = &h200
+const RBS_BANDBORDERS = &h400
+const RBS_FIXEDORDER = &h800
+const RBS_REGISTERDROP = &h1000
+const RBS_AUTOSIZE = &h2000
+const RBS_VERTICALGRIPPER = &h4000
+const RBS_DBLCLKTOGGLE = &h8000
 
 type tagREBARINFO
 	cbSize as UINT
@@ -1346,30 +1346,30 @@ end type
 
 type REBARINFO as tagREBARINFO
 type LPREBARINFO as tagREBARINFO ptr
-#define RBBS_BREAK &h1
-#define RBBS_FIXEDSIZE &h2
-#define RBBS_CHILDEDGE &h4
-#define RBBS_HIDDEN &h8
-#define RBBS_NOVERT &h10
-#define RBBS_FIXEDBMP &h20
-#define RBBS_VARIABLEHEIGHT &h40
-#define RBBS_GRIPPERALWAYS &h80
-#define RBBS_NOGRIPPER &h100
-#define RBBS_USECHEVRON &h200
-#define RBBS_HIDETITLE &h400
-#define RBBS_TOPALIGN &h800
-#define RBBIM_STYLE &h1
-#define RBBIM_COLORS &h2
-#define RBBIM_TEXT &h4
-#define RBBIM_IMAGE &h8
-#define RBBIM_CHILD &h10
-#define RBBIM_CHILDSIZE &h20
-#define RBBIM_SIZE &h40
-#define RBBIM_BACKGROUND &h80
-#define RBBIM_ID &h100
-#define RBBIM_IDEALSIZE &h200
-#define RBBIM_LPARAM &h400
-#define RBBIM_HEADERSIZE &h800
+const RBBS_BREAK = &h1
+const RBBS_FIXEDSIZE = &h2
+const RBBS_CHILDEDGE = &h4
+const RBBS_HIDDEN = &h8
+const RBBS_NOVERT = &h10
+const RBBS_FIXEDBMP = &h20
+const RBBS_VARIABLEHEIGHT = &h40
+const RBBS_GRIPPERALWAYS = &h80
+const RBBS_NOGRIPPER = &h100
+const RBBS_USECHEVRON = &h200
+const RBBS_HIDETITLE = &h400
+const RBBS_TOPALIGN = &h800
+const RBBIM_STYLE = &h1
+const RBBIM_COLORS = &h2
+const RBBIM_TEXT = &h4
+const RBBIM_IMAGE = &h8
+const RBBIM_CHILD = &h10
+const RBBIM_CHILDSIZE = &h20
+const RBBIM_SIZE = &h40
+const RBBIM_BACKGROUND = &h80
+const RBBIM_ID = &h100
+const RBBIM_IDEALSIZE = &h200
+const RBBIM_LPARAM = &h400
+const RBBIM_HEADERSIZE = &h800
 
 type tagREBARBANDINFOA
 	cbSize as UINT
@@ -1462,7 +1462,7 @@ type LPCREBARBANDINFOW as const REBARBANDINFOW ptr
 #define RB_GETBKCOLOR (WM_USER + 20)
 #define RB_SETTEXTCOLOR (WM_USER + 21)
 #define RB_GETTEXTCOLOR (WM_USER + 22)
-#define RBSTR_CHANGERECT &h1
+const RBSTR_CHANGERECT = &h1
 #define RB_SIZETORECT (WM_USER + 23)
 #define RB_SETCOLORSCHEME CCM_SETCOLORSCHEME
 #define RB_GETCOLORSCHEME CCM_GETCOLORSCHEME
@@ -1536,9 +1536,9 @@ end type
 
 type NMREBAR as tagNMREBAR
 type LPNMREBAR as tagNMREBAR ptr
-#define RBNM_ID &h1
-#define RBNM_STYLE &h2
-#define RBNM_LPARAM &h4
+const RBNM_ID = &h1
+const RBNM_STYLE = &h2
+const RBNM_LPARAM = &h4
 
 type tagNMRBAUTOSIZE
 	hdr as NMHDR
@@ -1561,8 +1561,8 @@ end type
 
 type NMREBARCHEVRON as tagNMREBARCHEVRON
 type LPNMREBARCHEVRON as tagNMREBARCHEVRON ptr
-#define RBAB_AUTOSIZE &h1
-#define RBAB_ADDBAND &h2
+const RBAB_AUTOSIZE = &h1
+const RBAB_ADDBAND = &h2
 
 type tagNMREBARAUTOBREAK
 	hdr as NMHDR
@@ -1576,11 +1576,11 @@ end type
 
 type NMREBARAUTOBREAK as tagNMREBARAUTOBREAK
 type LPNMREBARAUTOBREAK as tagNMREBARAUTOBREAK ptr
-#define RBHT_NOWHERE &h1
-#define RBHT_CAPTION &h2
-#define RBHT_CLIENT &h3
-#define RBHT_GRABBER &h4
-#define RBHT_CHEVRON &h8
+const RBHT_NOWHERE = &h1
+const RBHT_CAPTION = &h2
+const RBHT_CLIENT = &h3
+const RBHT_GRABBER = &h4
+const RBHT_CHEVRON = &h8
 
 type _RB_HITTESTINFO
 	pt as POINT
@@ -1656,29 +1656,29 @@ type LPTTTOOLINFOW as tagTOOLINFOW ptr
 	#define TTTOOLINFO_V1_SIZE TTTOOLINFOA_V1_SIZE
 #endif
 
-#define TTS_ALWAYSTIP &h1
-#define TTS_NOPREFIX &h2
-#define TTS_NOANIMATE &h10
-#define TTS_NOFADE &h20
-#define TTS_BALLOON &h40
-#define TTS_CLOSE &h80
-#define TTF_IDISHWND &h1
-#define TTF_CENTERTIP &h2
-#define TTF_RTLREADING &h4
-#define TTF_SUBCLASS &h10
-#define TTF_TRACK &h20
-#define TTF_ABSOLUTE &h80
-#define TTF_TRANSPARENT &h100
-#define TTF_PARSELINKS &h1000
-#define TTF_DI_SETITEM &h8000
-#define TTDT_AUTOMATIC 0
-#define TTDT_RESHOW 1
-#define TTDT_AUTOPOP 2
-#define TTDT_INITIAL 3
-#define TTI_NONE 0
-#define TTI_INFO 1
-#define TTI_WARNING 2
-#define TTI_ERROR 3
+const TTS_ALWAYSTIP = &h1
+const TTS_NOPREFIX = &h2
+const TTS_NOANIMATE = &h10
+const TTS_NOFADE = &h20
+const TTS_BALLOON = &h40
+const TTS_CLOSE = &h80
+const TTF_IDISHWND = &h1
+const TTF_CENTERTIP = &h2
+const TTF_RTLREADING = &h4
+const TTF_SUBCLASS = &h10
+const TTF_TRACK = &h20
+const TTF_ABSOLUTE = &h80
+const TTF_TRANSPARENT = &h100
+const TTF_PARSELINKS = &h1000
+const TTF_DI_SETITEM = &h8000
+const TTDT_AUTOMATIC = 0
+const TTDT_RESHOW = 1
+const TTDT_AUTOPOP = 2
+const TTDT_INITIAL = 3
+const TTI_NONE = 0
+const TTI_INFO = 1
+const TTI_WARNING = 2
+const TTI_ERROR = 3
 #define TTM_ACTIVATE (WM_USER + 1)
 #define TTM_SETDELAYTIME (WM_USER + 3)
 #define TTM_ADDTOOLA (WM_USER + 4)
@@ -1849,9 +1849,9 @@ type LPNMTTDISPINFOW as tagNMTTDISPINFOW ptr
 	#define NMTTDISPINFO_V1_SIZE NMTTDISPINFOA_V1_SIZE
 #endif
 
-#define SBARS_SIZEGRIP &h100
-#define SBARS_TOOLTIPS &h800
-#define SBT_TOOLTIPS &h800
+const SBARS_SIZEGRIP = &h100
+const SBARS_TOOLTIPS = &h800
+const SBT_TOOLTIPS = &h800
 
 declare sub DrawStatusTextA(byval hDC as HDC, byval lprc as LPCRECT, byval pszText as LPCSTR, byval uFlags as UINT)
 declare sub DrawStatusTextW(byval hDC as HDC, byval lprc as LPCRECT, byval pszText as LPCWSTR, byval uFlags as UINT)
@@ -1911,14 +1911,14 @@ declare function CreateStatusWindowW(byval style as LONG, byval lpszText as LPCW
 #define SB_GETICON (WM_USER + 20)
 #define SB_SETUNICODEFORMAT CCM_SETUNICODEFORMAT
 #define SB_GETUNICODEFORMAT CCM_GETUNICODEFORMAT
-#define SBT_OWNERDRAW &h1000
-#define SBT_NOBORDERS &h100
-#define SBT_POPOUT &h200
-#define SBT_RTLREADING &h400
-#define SBT_NOTABPARSING &h800
+const SBT_OWNERDRAW = &h1000
+const SBT_NOBORDERS = &h100
+const SBT_POPOUT = &h200
+const SBT_RTLREADING = &h400
+const SBT_NOTABPARSING = &h800
 #define SB_SETBKCOLOR CCM_SETBKCOLOR
 #define SBN_SIMPLEMODECHANGE culng(SBN_FIRST - 0)
-#define SB_SIMPLEID &hff
+const SB_SIMPLEID = &hff
 
 declare sub MenuHelp(byval uMsg as UINT, byval wParam as WPARAM, byval lParam as LPARAM, byval hMainMenu as HMENU, byval hInst as HINSTANCE, byval hwndStatus as HWND, byval lpwIDs as UINT ptr)
 declare function ShowHideMenuCtl(byval hWnd as HWND, byval uFlags as UINT_PTR, byval lpInfo as LPINT) as WINBOOL
@@ -1934,21 +1934,21 @@ declare sub GetEffectiveClientRect(byval hWnd as HWND, byval lprc as LPRECT, byv
 	#define TRACKBAR_CLASS TRACKBAR_CLASSA
 #endif
 
-#define TBS_AUTOTICKS &h1
-#define TBS_VERT &h2
-#define TBS_HORZ &h0
-#define TBS_TOP &h4
-#define TBS_BOTTOM &h0
-#define TBS_LEFT &h4
-#define TBS_RIGHT &h0
-#define TBS_BOTH &h8
-#define TBS_NOTICKS &h10
-#define TBS_ENABLESELRANGE &h20
-#define TBS_FIXEDLENGTH &h40
-#define TBS_NOTHUMB &h80
-#define TBS_TOOLTIPS &h100
-#define TBS_REVERSED &h200
-#define TBS_DOWNISLEFT &h400
+const TBS_AUTOTICKS = &h1
+const TBS_VERT = &h2
+const TBS_HORZ = &h0
+const TBS_TOP = &h4
+const TBS_BOTTOM = &h0
+const TBS_LEFT = &h4
+const TBS_RIGHT = &h0
+const TBS_BOTH = &h8
+const TBS_NOTICKS = &h10
+const TBS_ENABLESELRANGE = &h20
+const TBS_FIXEDLENGTH = &h40
+const TBS_NOTHUMB = &h80
+const TBS_TOOLTIPS = &h100
+const TBS_REVERSED = &h200
+const TBS_DOWNISLEFT = &h400
 #define TBM_GETPOS WM_USER
 #define TBM_GETRANGEMIN (WM_USER + 1)
 #define TBM_GETRANGEMAX (WM_USER + 2)
@@ -1980,26 +1980,26 @@ declare sub GetEffectiveClientRect(byval hWnd as HWND, byval lprc as LPRECT, byv
 #define TBM_SETTOOLTIPS (WM_USER + 29)
 #define TBM_GETTOOLTIPS (WM_USER + 30)
 #define TBM_SETTIPSIDE (WM_USER + 31)
-#define TBTS_TOP 0
-#define TBTS_LEFT 1
-#define TBTS_BOTTOM 2
-#define TBTS_RIGHT 3
+const TBTS_TOP = 0
+const TBTS_LEFT = 1
+const TBTS_BOTTOM = 2
+const TBTS_RIGHT = 3
 #define TBM_SETBUDDY (WM_USER + 32)
 #define TBM_GETBUDDY (WM_USER + 33)
 #define TBM_SETUNICODEFORMAT CCM_SETUNICODEFORMAT
 #define TBM_GETUNICODEFORMAT CCM_GETUNICODEFORMAT
-#define TB_LINEUP 0
-#define TB_LINEDOWN 1
-#define TB_PAGEUP 2
-#define TB_PAGEDOWN 3
-#define TB_THUMBPOSITION 4
-#define TB_THUMBTRACK 5
-#define TB_TOP 6
-#define TB_BOTTOM 7
-#define TB_ENDTRACK 8
-#define TBCD_TICS &h1
-#define TBCD_THUMB &h2
-#define TBCD_CHANNEL &h3
+const TB_LINEUP = 0
+const TB_LINEDOWN = 1
+const TB_PAGEUP = 2
+const TB_PAGEDOWN = 3
+const TB_THUMBPOSITION = 4
+const TB_THUMBTRACK = 5
+const TB_TOP = 6
+const TB_BOTTOM = 7
+const TB_ENDTRACK = 8
+const TBCD_TICS = &h1
+const TBCD_THUMB = &h2
+const TBCD_CHANNEL = &h3
 
 type tagDRAGLISTINFO
 	uNotification as UINT
@@ -2013,10 +2013,10 @@ type LPDRAGLISTINFO as tagDRAGLISTINFO ptr
 #define DL_DRAGGING (WM_USER + 134)
 #define DL_DROPPED (WM_USER + 135)
 #define DL_CANCELDRAG (WM_USER + 136)
-#define DL_CURSORSET 0
-#define DL_STOPCURSOR 1
-#define DL_COPYCURSOR 2
-#define DL_MOVECURSOR 3
+const DL_CURSORSET = 0
+const DL_STOPCURSOR = 1
+const DL_COPYCURSOR = 2
+const DL_MOVECURSOR = 3
 #define DRAGLISTMSGSTRING __TEXT("commctrl_DragListMsg")
 
 declare function MakeDragList(byval hLB as HWND) as WINBOOL
@@ -2038,17 +2038,17 @@ end type
 
 type UDACCEL as _UDACCEL
 type LPUDACCEL as _UDACCEL ptr
-#define UD_MAXVAL &h7fff
+const UD_MAXVAL = &h7fff
 #define UD_MINVAL (-UD_MAXVAL)
-#define UDS_WRAP &h1
-#define UDS_SETBUDDYINT &h2
-#define UDS_ALIGNRIGHT &h4
-#define UDS_ALIGNLEFT &h8
-#define UDS_AUTOBUDDY &h10
-#define UDS_ARROWKEYS &h20
-#define UDS_HORZ &h40
-#define UDS_NOTHOUSANDS &h80
-#define UDS_HOTTRACK &h100
+const UDS_WRAP = &h1
+const UDS_SETBUDDYINT = &h2
+const UDS_ALIGNRIGHT = &h4
+const UDS_ALIGNLEFT = &h8
+const UDS_AUTOBUDDY = &h10
+const UDS_ARROWKEYS = &h20
+const UDS_HORZ = &h40
+const UDS_NOTHOUSANDS = &h80
+const UDS_HOTTRACK = &h100
 #define UDM_SETRANGE (WM_USER + 101)
 #define UDM_GETRANGE (WM_USER + 102)
 #define UDM_SETPOS (WM_USER + 103)
@@ -2087,8 +2087,8 @@ type LPNMUPDOWN as _NM_UPDOWN ptr
 	#define PROGRESS_CLASS PROGRESS_CLASSA
 #endif
 
-#define PBS_SMOOTH &h1
-#define PBS_VERTICAL &h4
+const PBS_SMOOTH = &h1
+const PBS_VERTICAL = &h4
 #define PBM_SETRANGE (WM_USER + 1)
 #define PBM_SETPOS (WM_USER + 2)
 #define PBM_DELTAPOS (WM_USER + 3)
@@ -2106,7 +2106,7 @@ type PPBRANGE as PBRANGE ptr
 #define PBM_GETPOS (WM_USER + 8)
 #define PBM_SETBARCOLOR (WM_USER + 9)
 #define PBM_SETBKCOLOR CCM_SETBKCOLOR
-#define PBS_MARQUEE &h8
+const PBS_MARQUEE = &h8
 #define PBM_SETMARQUEE (WM_USER + 10)
 
 #if _WIN32_WINNT = &h0602
@@ -2115,24 +2115,24 @@ type PPBRANGE as PBRANGE ptr
 	#define PBM_GETBARCOLOR (WM_USER + 15)
 	#define PBM_SETSTATE (WM_USER + 16)
 	#define PBM_GETSTATE (WM_USER + 17)
-	#define PBS_SMOOTHREVERSE &h10
-	#define PBST_NORMAL 1
-	#define PBST_ERROR 2
-	#define PBST_PAUSED 3
+	const PBS_SMOOTHREVERSE = &h10
+	const PBST_NORMAL = 1
+	const PBST_ERROR = 2
+	const PBST_PAUSED = 3
 #endif
 
-#define HOTKEYF_SHIFT &h1
-#define HOTKEYF_CONTROL &h2
-#define HOTKEYF_ALT &h4
-#define HOTKEYF_EXT &h8
-#define HKCOMB_NONE &h1
-#define HKCOMB_S &h2
-#define HKCOMB_C &h4
-#define HKCOMB_A &h8
-#define HKCOMB_SC &h10
-#define HKCOMB_SA &h20
-#define HKCOMB_CA &h40
-#define HKCOMB_SCA &h80
+const HOTKEYF_SHIFT = &h1
+const HOTKEYF_CONTROL = &h2
+const HOTKEYF_ALT = &h4
+const HOTKEYF_EXT = &h8
+const HKCOMB_NONE = &h1
+const HKCOMB_S = &h2
+const HKCOMB_C = &h4
+const HKCOMB_A = &h8
+const HKCOMB_SC = &h10
+const HKCOMB_SA = &h20
+const HKCOMB_CA = &h40
+const HKCOMB_SCA = &h80
 #define HKM_SETHOTKEY (WM_USER + 1)
 #define HKM_GETHOTKEY (WM_USER + 2)
 #define HKM_SETRULES (WM_USER + 3)
@@ -2165,28 +2165,28 @@ type PPBRANGE as PBRANGE ptr
 	#define WC_LISTVIEW WC_LISTVIEWA
 #endif
 
-#define LVS_ICON &h0
-#define LVS_REPORT &h1
-#define LVS_SMALLICON &h2
-#define LVS_LIST &h3
-#define LVS_TYPEMASK &h3
-#define LVS_SINGLESEL &h4
-#define LVS_SHOWSELALWAYS &h8
-#define LVS_SORTASCENDING &h10
-#define LVS_SORTDESCENDING &h20
-#define LVS_SHAREIMAGELISTS &h40
-#define LVS_NOLABELWRAP &h80
-#define LVS_AUTOARRANGE &h100
-#define LVS_EDITLABELS &h200
-#define LVS_OWNERDATA &h1000
-#define LVS_NOSCROLL &h2000
-#define LVS_TYPESTYLEMASK &hfc00
-#define LVS_ALIGNTOP &h0
-#define LVS_ALIGNLEFT &h800
-#define LVS_ALIGNMASK &hc00
-#define LVS_OWNERDRAWFIXED &h400
-#define LVS_NOCOLUMNHEADER &h4000
-#define LVS_NOSORTHEADER &h8000
+const LVS_ICON = &h0
+const LVS_REPORT = &h1
+const LVS_SMALLICON = &h2
+const LVS_LIST = &h3
+const LVS_TYPEMASK = &h3
+const LVS_SINGLESEL = &h4
+const LVS_SHOWSELALWAYS = &h8
+const LVS_SORTASCENDING = &h10
+const LVS_SORTDESCENDING = &h20
+const LVS_SHAREIMAGELISTS = &h40
+const LVS_NOLABELWRAP = &h80
+const LVS_AUTOARRANGE = &h100
+const LVS_EDITLABELS = &h200
+const LVS_OWNERDATA = &h1000
+const LVS_NOSCROLL = &h2000
+const LVS_TYPESTYLEMASK = &hfc00
+const LVS_ALIGNTOP = &h0
+const LVS_ALIGNLEFT = &h800
+const LVS_ALIGNMASK = &hc00
+const LVS_OWNERDRAWFIXED = &h400
+const LVS_NOCOLUMNHEADER = &h4000
+const LVS_NOSORTHEADER = &h8000
 #define LVM_SETUNICODEFORMAT CCM_SETUNICODEFORMAT
 #define ListView_SetUnicodeFormat(hwnd, fUnicode) cast(WINBOOL, SNDMSG((hwnd), LVM_SETUNICODEFORMAT, cast(WPARAM, (fUnicode)), 0))
 #define LVM_GETUNICODEFORMAT CCM_GETUNICODEFORMAT
@@ -2197,35 +2197,35 @@ type PPBRANGE as PBRANGE ptr
 #define ListView_SetBkColor(hwnd, clrBk) cast(WINBOOL, SNDMSG((hwnd), LVM_SETBKCOLOR, 0, cast(LPARAM, cast(COLORREF, (clrBk)))))
 #define LVM_GETIMAGELIST (LVM_FIRST + 2)
 #define ListView_GetImageList(hwnd, iImageList) cast(HIMAGELIST, SNDMSG((hwnd), LVM_GETIMAGELIST, cast(WPARAM, cast(INT_, (iImageList))), cast(LPARAM, 0)))
-#define LVSIL_NORMAL 0
-#define LVSIL_SMALL 1
-#define LVSIL_STATE 2
+const LVSIL_NORMAL = 0
+const LVSIL_SMALL = 1
+const LVSIL_STATE = 2
 #define LVM_SETIMAGELIST (LVM_FIRST + 3)
 #define ListView_SetImageList(hwnd, himl, iImageList) cast(HIMAGELIST, SNDMSG((hwnd), LVM_SETIMAGELIST, cast(WPARAM, (iImageList)), cast(LPARAM, cast(HIMAGELIST, (himl)))))
 #define LVM_GETITEMCOUNT (LVM_FIRST + 4)
 #define ListView_GetItemCount(hwnd) clng(SNDMSG((hwnd), LVM_GETITEMCOUNT, cast(WPARAM, 0), cast(LPARAM, 0)))
-#define LVIF_TEXT &h1
-#define LVIF_IMAGE &h2
-#define LVIF_PARAM &h4
-#define LVIF_STATE &h8
-#define LVIF_INDENT &h10
-#define LVIF_NORECOMPUTE &h800
-#define LVIF_GROUPID &h100
-#define LVIF_COLUMNS &h200
-#define LVIS_FOCUSED &h1
-#define LVIS_SELECTED &h2
-#define LVIS_CUT &h4
-#define LVIS_DROPHILITED &h8
-#define LVIS_GLOW &h10
-#define LVIS_ACTIVATING &h20
-#define LVIS_OVERLAYMASK &hf00
-#define LVIS_STATEIMAGEMASK &hF000
+const LVIF_TEXT = &h1
+const LVIF_IMAGE = &h2
+const LVIF_PARAM = &h4
+const LVIF_STATE = &h8
+const LVIF_INDENT = &h10
+const LVIF_NORECOMPUTE = &h800
+const LVIF_GROUPID = &h100
+const LVIF_COLUMNS = &h200
+const LVIS_FOCUSED = &h1
+const LVIS_SELECTED = &h2
+const LVIS_CUT = &h4
+const LVIS_DROPHILITED = &h8
+const LVIS_GLOW = &h10
+const LVIS_ACTIVATING = &h20
+const LVIS_OVERLAYMASK = &hf00
+const LVIS_STATEIMAGEMASK = &hF000
 #define INDEXTOSTATEIMAGEMASK(i) ((i) shl 12)
-#define I_INDENTCALLBACK (-1)
+const I_INDENTCALLBACK = -1
 #define LV_ITEMA LVITEMA
 #define LV_ITEMW LVITEMW
-#define I_GROUPIDCALLBACK (-1)
-#define I_GROUPIDNONE (-2)
+const I_GROUPIDCALLBACK = -1
+const I_GROUPIDNONE = -2
 #define LV_ITEM LVITEM
 #define LVITEMA_V1_SIZE CCSIZEOF_STRUCT(LVITEMA, lParam)
 #define LVITEMW_V1_SIZE CCSIZEOF_STRUCT(LVITEMW, lParam)
@@ -2287,8 +2287,8 @@ type LPLVITEMW as tagLVITEMW ptr
 	#define LPSTR_TEXTCALLBACK LPSTR_TEXTCALLBACKA
 #endif
 
-#define I_IMAGECALLBACK (-1)
-#define I_IMAGENONE (-2)
+const I_IMAGECALLBACK = -1
+const I_IMAGENONE = -2
 #define I_COLUMNSCALLBACK cast(UINT, -1)
 #define LVM_GETITEMA (LVM_FIRST + 5)
 #define LVM_GETITEMW (LVM_FIRST + 75)
@@ -2328,22 +2328,22 @@ type LPLVITEMW as tagLVITEMW ptr
 #define ListView_GetCallbackMask(hwnd) cast(WINBOOL, SNDMSG((hwnd), LVM_GETCALLBACKMASK, 0, 0))
 #define LVM_SETCALLBACKMASK (LVM_FIRST + 11)
 #define ListView_SetCallbackMask(hwnd, mask) cast(WINBOOL, SNDMSG((hwnd), LVM_SETCALLBACKMASK, cast(WPARAM, cast(UINT, (mask))), 0))
-#define LVNI_ALL &h0
-#define LVNI_FOCUSED &h1
-#define LVNI_SELECTED &h2
-#define LVNI_CUT &h4
-#define LVNI_DROPHILITED &h8
-#define LVNI_ABOVE &h100
-#define LVNI_BELOW &h200
-#define LVNI_TOLEFT &h400
-#define LVNI_TORIGHT &h800
+const LVNI_ALL = &h0
+const LVNI_FOCUSED = &h1
+const LVNI_SELECTED = &h2
+const LVNI_CUT = &h4
+const LVNI_DROPHILITED = &h8
+const LVNI_ABOVE = &h100
+const LVNI_BELOW = &h200
+const LVNI_TOLEFT = &h400
+const LVNI_TORIGHT = &h800
 #define LVM_GETNEXTITEM (LVM_FIRST + 12)
 #define ListView_GetNextItem(hwnd, i, flags) clng(SNDMSG((hwnd), LVM_GETNEXTITEM, cast(WPARAM, clng((i))), MAKELPARAM((flags), 0)))
-#define LVFI_PARAM &h1
-#define LVFI_STRING &h2
-#define LVFI_PARTIAL &h8
-#define LVFI_WRAP &h20
-#define LVFI_NEARESTXY &h40
+const LVFI_PARAM = &h1
+const LVFI_STRING = &h2
+const LVFI_PARTIAL = &h8
+const LVFI_WRAP = &h20
+const LVFI_NEARESTXY = &h40
 #define LV_FINDINFOA LVFINDINFOA
 #define LV_FINDINFOW LVFINDINFOW
 #define LV_FINDINFO LVFINDINFO
@@ -2386,10 +2386,10 @@ type LPFINDINFOW as tagLVFINDINFOW ptr
 #endif
 
 #define ListView_FindItem(hwnd, iStart, plvfi) clng(SNDMSG((hwnd), LVM_FINDITEM, cast(WPARAM, clng((iStart))), cast(LPARAM, cptr(const LV_FINDINFO ptr, (plvfi)))))
-#define LVIR_BOUNDS 0
-#define LVIR_ICON 1
-#define LVIR_LABEL 2
-#define LVIR_SELECTBOUNDS 3
+const LVIR_BOUNDS = 0
+const LVIR_ICON = 1
+const LVIR_LABEL = 2
+const LVIR_SELECTBOUNDS = 3
 #define LVM_GETITEMRECT (LVM_FIRST + 14)
 private function ListView_GetItemRect(byval hwnd as HWND, byval i as long, byval prc as RECT ptr, byval code as long) as WINBOOL
 	if prc then
@@ -2411,15 +2411,15 @@ end function
 #endif
 
 #define ListView_GetStringWidth(hwndLV, psz) clng(SNDMSG((hwndLV), LVM_GETSTRINGWIDTH, 0, cast(LPARAM, cast(LPCTSTR, (psz)))))
-#define LVHT_NOWHERE &h1
-#define LVHT_ONITEMICON &h2
-#define LVHT_ONITEMLABEL &h4
-#define LVHT_ONITEMSTATEICON &h8
+const LVHT_NOWHERE = &h1
+const LVHT_ONITEMICON = &h2
+const LVHT_ONITEMLABEL = &h4
+const LVHT_ONITEMSTATEICON = &h8
 #define LVHT_ONITEM ((LVHT_ONITEMICON or LVHT_ONITEMLABEL) or LVHT_ONITEMSTATEICON)
-#define LVHT_ABOVE &h8
-#define LVHT_BELOW &h10
-#define LVHT_TORIGHT &h20
-#define LVHT_TOLEFT &h40
+const LVHT_ABOVE = &h8
+const LVHT_BELOW = &h10
+const LVHT_TORIGHT = &h20
+const LVHT_TOLEFT = &h40
 #define LV_HITTESTINFO LVHITTESTINFO
 #define LVHITTESTINFO_V1_SIZE CCSIZEOF_STRUCT(LVHITTESTINFO, iItem)
 
@@ -2440,10 +2440,10 @@ type LPLVHITTESTINFO as tagLVHITTESTINFO ptr
 #define ListView_Scroll(hwndLV, dx, dy) cast(WINBOOL, SNDMSG((hwndLV), LVM_SCROLL, cast(WPARAM, clng((dx))), cast(LPARAM, clng((dy)))))
 #define LVM_REDRAWITEMS (LVM_FIRST + 21)
 #define ListView_RedrawItems(hwndLV, iFirst, iLast) cast(WINBOOL, SNDMSG((hwndLV), LVM_REDRAWITEMS, cast(WPARAM, clng((iFirst))), cast(LPARAM, clng((iLast)))))
-#define LVA_DEFAULT &h0
-#define LVA_ALIGNLEFT &h1
-#define LVA_ALIGNTOP &h2
-#define LVA_SNAPTOGRID &h5
+const LVA_DEFAULT = &h0
+const LVA_ALIGNLEFT = &h1
+const LVA_ALIGNTOP = &h2
+const LVA_SNAPTOGRID = &h5
 #define LVM_ARRANGE (LVM_FIRST + 22)
 #define ListView_Arrange(hwndLV, code) cast(WINBOOL, SNDMSG((hwndLV), LVM_ARRANGE, cast(WPARAM, cast(UINT, (code))), cast(LPARAM, 0)))
 #define LVM_EDITLABELA (LVM_FIRST + 23)
@@ -2508,36 +2508,36 @@ type LPLVCOLUMNW as tagLVCOLUMNW ptr
 	#define LVCOLUMN_V1_SIZE LVCOLUMNA_V1_SIZE
 #endif
 
-#define LVCF_FMT &h1
-#define LVCF_WIDTH &h2
-#define LVCF_TEXT &h4
-#define LVCF_SUBITEM &h8
-#define LVCF_IMAGE &h10
-#define LVCF_ORDER &h20
+const LVCF_FMT = &h1
+const LVCF_WIDTH = &h2
+const LVCF_TEXT = &h4
+const LVCF_SUBITEM = &h8
+const LVCF_IMAGE = &h10
+const LVCF_ORDER = &h20
 
 #if _WIN32_WINNT = &h0602
-	#define LVCF_MINWIDTH &h40
-	#define LVCF_DEFAULTWIDTH &h80
-	#define LVCF_IDEALWIDTH &h100
+	const LVCF_MINWIDTH = &h40
+	const LVCF_DEFAULTWIDTH = &h80
+	const LVCF_IDEALWIDTH = &h100
 #endif
 
-#define LVCFMT_LEFT &h0
-#define LVCFMT_RIGHT &h1
-#define LVCFMT_CENTER &h2
-#define LVCFMT_JUSTIFYMASK &h3
-#define LVCFMT_IMAGE &h800
-#define LVCFMT_BITMAP_ON_RIGHT &h1000
-#define LVCFMT_COL_HAS_IMAGES &h8000
+const LVCFMT_LEFT = &h0
+const LVCFMT_RIGHT = &h1
+const LVCFMT_CENTER = &h2
+const LVCFMT_JUSTIFYMASK = &h3
+const LVCFMT_IMAGE = &h800
+const LVCFMT_BITMAP_ON_RIGHT = &h1000
+const LVCFMT_COL_HAS_IMAGES = &h8000
 
 #if _WIN32_WINNT = &h0602
-	#define LVCFMT_FIXED_WIDTH &h100
-	#define LVCFMT_NO_DPI_SCALE &h40000
-	#define LVCFMT_FIXED_RATIO &h80000
-	#define LVCFMT_LINE_BREAK &h100000
-	#define LVCFMT_FILL &h200000
-	#define LVCFMT_WRAP &h400000
-	#define LVCFMT_NO_TITLE &h800000
-	#define LVCFMT_SPLITBUTTON &h1000000
+	const LVCFMT_FIXED_WIDTH = &h100
+	const LVCFMT_NO_DPI_SCALE = &h40000
+	const LVCFMT_FIXED_RATIO = &h80000
+	const LVCFMT_LINE_BREAK = &h100000
+	const LVCFMT_FILL = &h200000
+	const LVCFMT_WRAP = &h400000
+	const LVCFMT_NO_TITLE = &h800000
+	const LVCFMT_SPLITBUTTON = &h1000000
 	#define LVCFMT_TILE_PLACEMENTMASK (LVCFMT_LINE_BREAK or LVCFMT_FILL)
 #endif
 
@@ -2575,8 +2575,8 @@ type LPLVCOLUMNW as tagLVCOLUMNW ptr
 #define ListView_DeleteColumn(hwnd, iCol) cast(WINBOOL, SNDMSG((hwnd), LVM_DELETECOLUMN, cast(WPARAM, clng((iCol))), 0))
 #define LVM_GETCOLUMNWIDTH (LVM_FIRST + 29)
 #define ListView_GetColumnWidth(hwnd, iCol) clng(SNDMSG((hwnd), LVM_GETCOLUMNWIDTH, cast(WPARAM, clng((iCol))), 0))
-#define LVSCW_AUTOSIZE (-1)
-#define LVSCW_AUTOSIZE_USEHEADER (-2)
+const LVSCW_AUTOSIZE = -1
+const LVSCW_AUTOSIZE_USEHEADER = -2
 #define LVM_SETCOLUMNWIDTH (LVM_FIRST + 30)
 #define ListView_SetColumnWidth(hwnd, iCol, cx) cast(WINBOOL, SNDMSG((hwnd), LVM_SETCOLUMNWIDTH, cast(WPARAM, clng((iCol))), MAKELPARAM((cx), 0)))
 #define LVM_GETHEADER (LVM_FIRST + 31)
@@ -2649,8 +2649,8 @@ type LPLVCOLUMNW as tagLVCOLUMNW ptr
 		SNDMSG((hwndLV), LVM_SETITEMTEXT, cast(WPARAM, (i)), cast(LPARAM, cptr(LV_ITEM ptr, @_ms_lvi)))
 	end scope
 #endmacro
-#define LVSICF_NOINVALIDATEALL &h1
-#define LVSICF_NOSCROLL &h2
+const LVSICF_NOINVALIDATEALL = &h1
+const LVSICF_NOSCROLL = &h2
 #define LVM_SETITEMCOUNT (LVM_FIRST + 47)
 #define ListView_SetItemCount(hwndLV, cItems) SNDMSG((hwndLV), LVM_SETITEMCOUNT, cast(WPARAM, (cItems)), 0)
 #define ListView_SetItemCountEx(hwndLV, cItems, dwFlags) SNDMSG((hwndLV), LVM_SETITEMCOUNT, cast(WPARAM, (cItems)), cast(LPARAM, (dwFlags)))
@@ -2687,38 +2687,38 @@ type PFNLVCOMPARE as function(byval as LPARAM, byval as LPARAM, byval as LPARAM)
 #define ListView_SetExtendedListViewStyleEx(hwndLV, dwMask, dw) cast(DWORD, SNDMSG((hwndLV), LVM_SETEXTENDEDLISTVIEWSTYLE, dwMask, dw))
 #define LVM_GETEXTENDEDLISTVIEWSTYLE (LVM_FIRST + 55)
 #define ListView_GetExtendedListViewStyle(hwndLV) cast(DWORD, SNDMSG((hwndLV), LVM_GETEXTENDEDLISTVIEWSTYLE, 0, 0))
-#define LVS_EX_GRIDLINES &h1
-#define LVS_EX_SUBITEMIMAGES &h2
-#define LVS_EX_CHECKBOXES &h4
-#define LVS_EX_TRACKSELECT &h8
-#define LVS_EX_HEADERDRAGDROP &h10
-#define LVS_EX_FULLROWSELECT &h20
-#define LVS_EX_ONECLICKACTIVATE &h40
-#define LVS_EX_TWOCLICKACTIVATE &h80
-#define LVS_EX_FLATSB &h100
-#define LVS_EX_REGIONAL &h200
-#define LVS_EX_INFOTIP &h400
-#define LVS_EX_UNDERLINEHOT &h800
-#define LVS_EX_UNDERLINECOLD &h1000
-#define LVS_EX_MULTIWORKAREAS &h2000
-#define LVS_EX_LABELTIP &h4000
-#define LVS_EX_BORDERSELECT &h8000
-#define LVS_EX_DOUBLEBUFFER &h10000
-#define LVS_EX_HIDELABELS &h20000
-#define LVS_EX_SINGLEROW &h40000
-#define LVS_EX_SNAPTOGRID &h80000
-#define LVS_EX_SIMPLESELECT &h100000
+const LVS_EX_GRIDLINES = &h1
+const LVS_EX_SUBITEMIMAGES = &h2
+const LVS_EX_CHECKBOXES = &h4
+const LVS_EX_TRACKSELECT = &h8
+const LVS_EX_HEADERDRAGDROP = &h10
+const LVS_EX_FULLROWSELECT = &h20
+const LVS_EX_ONECLICKACTIVATE = &h40
+const LVS_EX_TWOCLICKACTIVATE = &h80
+const LVS_EX_FLATSB = &h100
+const LVS_EX_REGIONAL = &h200
+const LVS_EX_INFOTIP = &h400
+const LVS_EX_UNDERLINEHOT = &h800
+const LVS_EX_UNDERLINECOLD = &h1000
+const LVS_EX_MULTIWORKAREAS = &h2000
+const LVS_EX_LABELTIP = &h4000
+const LVS_EX_BORDERSELECT = &h8000
+const LVS_EX_DOUBLEBUFFER = &h10000
+const LVS_EX_HIDELABELS = &h20000
+const LVS_EX_SINGLEROW = &h40000
+const LVS_EX_SNAPTOGRID = &h80000
+const LVS_EX_SIMPLESELECT = &h100000
 
 #if _WIN32_WINNT = &h0602
-	#define LVS_EX_JUSTIFYCOLUMNS &h200000
-	#define LVS_EX_TRANSPARENTBKGND &h400000
-	#define LVS_EX_TRANSPARENTSHADOWTEXT &h800000
-	#define LVS_EX_AUTOAUTOARRANGE &h1000000
-	#define LVS_EX_HEADERINALLVIEWS &h2000000
-	#define LVS_EX_AUTOCHECKSELECT &h8000000
-	#define LVS_EX_AUTOSIZECOLUMNS &h10000000
-	#define LVS_EX_COLUMNSNAPPOINTS &h40000000
-	#define LVS_EX_COLUMNOVERFLOW &h80000000
+	const LVS_EX_JUSTIFYCOLUMNS = &h200000
+	const LVS_EX_TRANSPARENTBKGND = &h400000
+	const LVS_EX_TRANSPARENTSHADOWTEXT = &h800000
+	const LVS_EX_AUTOAUTOARRANGE = &h1000000
+	const LVS_EX_HEADERINALLVIEWS = &h2000000
+	const LVS_EX_AUTOCHECKSELECT = &h8000000
+	const LVS_EX_AUTOSIZECOLUMNS = &h10000000
+	const LVS_EX_COLUMNSNAPPOINTS = &h40000000
+	const LVS_EX_COLUMNOVERFLOW = &h80000000
 #endif
 
 #define LVM_GETSUBITEMRECT (LVM_FIRST + 56)
@@ -2745,7 +2745,7 @@ end function
 #define ListView_GetHotCursor(hwnd) cast(HCURSOR, SNDMSG((hwnd), LVM_GETHOTCURSOR, 0, 0))
 #define LVM_APPROXIMATEVIEWRECT (LVM_FIRST + 64)
 #define ListView_ApproximateViewRect(hwnd, iWidth, iHeight, iCount) cast(DWORD, SNDMSG((hwnd), LVM_APPROXIMATEVIEWRECT, iCount, MAKELPARAM(iWidth, iHeight)))
-#define LV_MAX_WORKAREAS 16
+const LV_MAX_WORKAREAS = 16
 #define LVM_SETWORKAREAS (LVM_FIRST + 65)
 #define ListView_SetWorkAreas(hwnd, nWorkAreas, prc) cast(WINBOOL, SNDMSG((hwnd), LVM_SETWORKAREAS, cast(WPARAM, clng((nWorkAreas))), cast(LPARAM, cptr(RECT ptr, (prc)))))
 #define LVM_GETWORKAREAS (LVM_FIRST + 70)
@@ -2790,15 +2790,15 @@ end type
 
 type LVBKIMAGEW as tagLVBKIMAGEW
 type LPLVBKIMAGEW as tagLVBKIMAGEW ptr
-#define LVBKIF_SOURCE_NONE &h0
-#define LVBKIF_SOURCE_HBITMAP &h1
-#define LVBKIF_SOURCE_URL &h2
-#define LVBKIF_SOURCE_MASK &h3
-#define LVBKIF_STYLE_NORMAL &h0
-#define LVBKIF_STYLE_TILE &h10
-#define LVBKIF_STYLE_MASK &h10
-#define LVBKIF_FLAG_TILEOFFSET &h100
-#define LVBKIF_TYPE_WATERMARK &h10000000
+const LVBKIF_SOURCE_NONE = &h0
+const LVBKIF_SOURCE_HBITMAP = &h1
+const LVBKIF_SOURCE_URL = &h2
+const LVBKIF_SOURCE_MASK = &h3
+const LVBKIF_STYLE_NORMAL = &h0
+const LVBKIF_STYLE_TILE = &h10
+const LVBKIF_STYLE_MASK = &h10
+const LVBKIF_FLAG_TILEOFFSET = &h100
+const LVBKIF_TYPE_WATERMARK = &h10000000
 #define LVM_SETBKIMAGEA (LVM_FIRST + 68)
 #define LVM_SETBKIMAGEW (LVM_FIRST + 138)
 #define LVM_GETBKIMAGEA (LVM_FIRST + 69)
@@ -2807,31 +2807,31 @@ type LPLVBKIMAGEW as tagLVBKIMAGEW ptr
 #define ListView_SetSelectedColumn(hwnd, iCol) SNDMSG((hwnd), LVM_SETSELECTEDCOLUMN, cast(WPARAM, iCol), 0)
 #define LVM_SETTILEWIDTH (LVM_FIRST + 141)
 #define ListView_SetTileWidth(hwnd, cpWidth) SNDMSG((hwnd), LVM_SETTILEWIDTH, cast(WPARAM, cpWidth), 0)
-#define LV_VIEW_ICON &h0
-#define LV_VIEW_DETAILS &h1
-#define LV_VIEW_SMALLICON &h2
-#define LV_VIEW_LIST &h3
-#define LV_VIEW_TILE &h4
-#define LV_VIEW_MAX &h4
+const LV_VIEW_ICON = &h0
+const LV_VIEW_DETAILS = &h1
+const LV_VIEW_SMALLICON = &h2
+const LV_VIEW_LIST = &h3
+const LV_VIEW_TILE = &h4
+const LV_VIEW_MAX = &h4
 #define LVM_SETVIEW (LVM_FIRST + 142)
 #define ListView_SetView(hwnd, iView) cast(DWORD, SNDMSG((hwnd), LVM_SETVIEW, cast(WPARAM, cast(DWORD, iView)), 0))
 #define LVM_GETVIEW (LVM_FIRST + 143)
 #define ListView_GetView(hwnd) cast(DWORD, SNDMSG((hwnd), LVM_GETVIEW, 0, 0))
-#define LVGF_NONE &h0
-#define LVGF_HEADER &h1
-#define LVGF_FOOTER &h2
-#define LVGF_STATE &h4
-#define LVGF_ALIGN &h8
-#define LVGF_GROUPID &h10
-#define LVGS_NORMAL &h0
-#define LVGS_COLLAPSED &h1
-#define LVGS_HIDDEN &h2
-#define LVGA_HEADER_LEFT &h1
-#define LVGA_HEADER_CENTER &h2
-#define LVGA_HEADER_RIGHT &h4
-#define LVGA_FOOTER_LEFT &h8
-#define LVGA_FOOTER_CENTER &h10
-#define LVGA_FOOTER_RIGHT &h20
+const LVGF_NONE = &h0
+const LVGF_HEADER = &h1
+const LVGF_FOOTER = &h2
+const LVGF_STATE = &h4
+const LVGF_ALIGN = &h8
+const LVGF_GROUPID = &h10
+const LVGS_NORMAL = &h0
+const LVGS_COLLAPSED = &h1
+const LVGS_HIDDEN = &h2
+const LVGA_HEADER_LEFT = &h1
+const LVGA_HEADER_CENTER = &h2
+const LVGA_HEADER_RIGHT = &h4
+const LVGA_FOOTER_LEFT = &h8
+const LVGA_FOOTER_CENTER = &h10
+const LVGA_FOOTER_RIGHT = &h20
 
 type tagLVGROUP
 	cbSize as UINT
@@ -2860,10 +2860,10 @@ type PLVGROUP as tagLVGROUP ptr
 #define ListView_MoveGroup(hwnd, iGroupId, toIndex) SNDMSG((hwnd), LVM_MOVEGROUP, cast(WPARAM, iGroupId), cast(LPARAM, toIndex))
 #define LVM_MOVEITEMTOGROUP (LVM_FIRST + 154)
 #define ListView_MoveItemToGroup(hwnd, idItemFrom, idGroupTo) SNDMSG((hwnd), LVM_MOVEITEMTOGROUP, cast(WPARAM, idItemFrom), cast(LPARAM, idGroupTo))
-#define LVGMF_NONE &h0
-#define LVGMF_BORDERSIZE &h1
-#define LVGMF_BORDERCOLOR &h2
-#define LVGMF_TEXTCOLOR &h4
+const LVGMF_NONE = &h0
+const LVGMF_BORDERSIZE = &h1
+const LVGMF_BORDERCOLOR = &h2
+const LVGMF_TEXTCOLOR = &h4
 
 type tagLVGROUPMETRICS
 	cbSize as UINT
@@ -2906,13 +2906,13 @@ type PLVINSERTGROUPSORTED as tagLVINSERTGROUPSORTED ptr
 #define ListView_RemoveAllGroups(hwnd) SNDMSG((hwnd), LVM_REMOVEALLGROUPS, 0, 0)
 #define LVM_HASGROUP (LVM_FIRST + 161)
 #define ListView_HasGroup(hwnd, dwGroupId) SNDMSG((hwnd), LVM_HASGROUP, dwGroupId, 0)
-#define LVTVIF_AUTOSIZE &h0
-#define LVTVIF_FIXEDWIDTH &h1
-#define LVTVIF_FIXEDHEIGHT &h2
-#define LVTVIF_FIXEDSIZE &h3
-#define LVTVIM_TILESIZE &h1
-#define LVTVIM_COLUMNS &h2
-#define LVTVIM_LABELMARGIN &h4
+const LVTVIF_AUTOSIZE = &h0
+const LVTVIF_FIXEDWIDTH = &h1
+const LVTVIF_FIXEDHEIGHT = &h2
+const LVTVIF_FIXEDSIZE = &h3
+const LVTVIM_TILESIZE = &h1
+const LVTVIM_COLUMNS = &h2
+const LVTVIM_LABELMARGIN = &h4
 
 type tagLVTILEVIEWINFO
 	cbSize as UINT
@@ -2952,7 +2952,7 @@ type LVINSERTMARK
 end type
 
 type LPLVINSERTMARK as LVINSERTMARK ptr
-#define LVIM_AFTER &h1
+const LVIM_AFTER = &h1
 #define LVM_SETINSERTMARK (LVM_FIRST + 166)
 #define ListView_SetInsertMark(hwnd, lvim) cast(WINBOOL, SNDMSG((hwnd), LVM_SETINSERTMARK, cast(WPARAM, 0), cast(LPARAM, (lvim))))
 #define LVM_GETINSERTMARK (LVM_FIRST + 167)
@@ -3040,9 +3040,9 @@ end type
 
 type NMITEMACTIVATE as tagNMITEMACTIVATE
 type LPNMITEMACTIVATE as tagNMITEMACTIVATE ptr
-#define LVKF_ALT &h1
-#define LVKF_CONTROL &h2
-#define LVKF_SHIFT &h4
+const LVKF_ALT = &h1
+const LVKF_CONTROL = &h2
+const LVKF_SHIFT = &h4
 #define NMLVCUSTOMDRAW_V3_SIZE CCSIZEOF_STRUCT(NMLVCUSTOMDRW, clrTextBk)
 
 type tagNMLVCUSTOMDRAW
@@ -3062,10 +3062,10 @@ end type
 
 type NMLVCUSTOMDRAW as tagNMLVCUSTOMDRAW
 type LPNMLVCUSTOMDRAW as tagNMLVCUSTOMDRAW ptr
-#define LVCDI_ITEM &h0
-#define LVCDI_GROUP &h1
-#define LVCDRF_NOSELECT &h10000
-#define LVCDRF_NOGROUPFRAME &h20000
+const LVCDI_ITEM = &h0
+const LVCDI_GROUP = &h1
+const LVCDRF_NOSELECT = &h10000
+const LVCDRF_NOGROUPFRAME = &h20000
 
 type tagNMLVCACHEHINT
 	hdr as NMHDR
@@ -3172,7 +3172,7 @@ type LPNMLVODSTATECHANGE as tagNMLVODSTATECHANGE ptr
 	#define LVN_SETDISPINFO LVN_SETDISPINFOA
 #endif
 
-#define LVIF_DI_SETITEM &h1000
+const LVIF_DI_SETITEM = &h1000
 #define LV_DISPINFOA NMLVDISPINFOA
 #define LV_DISPINFOW NMLVDISPINFOW
 #define LV_DISPINFO NMLVDISPINFO
@@ -3237,7 +3237,7 @@ end type
 
 type NMLVGETINFOTIPW as tagNMLVGETINFOTIPW
 type LPNMLVGETINFOTIPW as tagNMLVGETINFOTIPW ptr
-#define LVGIT_UNFOLDED &h1
+const LVGIT_UNFOLDED = &h1
 #define LVN_GETINFOTIPA culng(LVN_FIRST - 57)
 #define LVN_GETINFOTIPW culng(LVN_FIRST - 58)
 
@@ -3270,42 +3270,42 @@ type LPNMLVSCROLL as tagNMLVSCROLL ptr
 	#define WC_TREEVIEW WC_TREEVIEWA
 #endif
 
-#define TVS_HASBUTTONS &h1
-#define TVS_HASLINES &h2
-#define TVS_LINESATROOT &h4
-#define TVS_EDITLABELS &h8
-#define TVS_DISABLEDRAGDROP &h10
-#define TVS_SHOWSELALWAYS &h20
-#define TVS_RTLREADING &h40
-#define TVS_NOTOOLTIPS &h80
-#define TVS_CHECKBOXES &h100
-#define TVS_TRACKSELECT &h200
-#define TVS_SINGLEEXPAND &h400
-#define TVS_INFOTIP &h800
-#define TVS_FULLROWSELECT &h1000
-#define TVS_NOSCROLL &h2000
-#define TVS_NONEVENHEIGHT &h4000
-#define TVS_NOHSCROLL &h8000
+const TVS_HASBUTTONS = &h1
+const TVS_HASLINES = &h2
+const TVS_LINESATROOT = &h4
+const TVS_EDITLABELS = &h8
+const TVS_DISABLEDRAGDROP = &h10
+const TVS_SHOWSELALWAYS = &h20
+const TVS_RTLREADING = &h40
+const TVS_NOTOOLTIPS = &h80
+const TVS_CHECKBOXES = &h100
+const TVS_TRACKSELECT = &h200
+const TVS_SINGLEEXPAND = &h400
+const TVS_INFOTIP = &h800
+const TVS_FULLROWSELECT = &h1000
+const TVS_NOSCROLL = &h2000
+const TVS_NONEVENHEIGHT = &h4000
+const TVS_NOHSCROLL = &h8000
 type HTREEITEM as _TREEITEM ptr
-#define TVIF_TEXT &h1
-#define TVIF_IMAGE &h2
-#define TVIF_PARAM &h4
-#define TVIF_STATE &h8
-#define TVIF_HANDLE &h10
-#define TVIF_SELECTEDIMAGE &h20
-#define TVIF_CHILDREN &h40
-#define TVIF_INTEGRAL &h80
-#define TVIS_SELECTED &h2
-#define TVIS_CUT &h4
-#define TVIS_DROPHILITED &h8
-#define TVIS_BOLD &h10
-#define TVIS_EXPANDED &h20
-#define TVIS_EXPANDEDONCE &h40
-#define TVIS_EXPANDPARTIAL &h80
-#define TVIS_OVERLAYMASK &hf00
-#define TVIS_STATEIMAGEMASK &hF000
-#define TVIS_USERMASK &hF000
-#define I_CHILDRENCALLBACK (-1)
+const TVIF_TEXT = &h1
+const TVIF_IMAGE = &h2
+const TVIF_PARAM = &h4
+const TVIF_STATE = &h8
+const TVIF_HANDLE = &h10
+const TVIF_SELECTEDIMAGE = &h20
+const TVIF_CHILDREN = &h40
+const TVIF_INTEGRAL = &h80
+const TVIS_SELECTED = &h2
+const TVIS_CUT = &h4
+const TVIS_DROPHILITED = &h8
+const TVIS_BOLD = &h10
+const TVIS_EXPANDED = &h20
+const TVIS_EXPANDEDONCE = &h40
+const TVIS_EXPANDPARTIAL = &h80
+const TVIS_OVERLAYMASK = &hf00
+const TVIS_STATEIMAGEMASK = &hF000
+const TVIS_USERMASK = &hF000
+const I_CHILDRENCALLBACK = -1
 #define LPTV_ITEMW LPTVITEMW
 #define LPTV_ITEMA LPTVITEMA
 #define TV_ITEMW TVITEMW
@@ -3455,11 +3455,11 @@ type LPTVINSERTSTRUCTW as tagTVINSERTSTRUCTW ptr
 #define TreeView_DeleteAllItems(hwnd) cast(WINBOOL, SNDMSG((hwnd), TVM_DELETEITEM, 0, cast(LPARAM, TVI_ROOT)))
 #define TVM_EXPAND (TV_FIRST + 2)
 #define TreeView_Expand(hwnd, hitem, code) cast(WINBOOL, SNDMSG((hwnd), TVM_EXPAND, cast(WPARAM, (code)), cast(LPARAM, cast(HTREEITEM, (hitem)))))
-#define TVE_COLLAPSE &h1
-#define TVE_EXPAND &h2
-#define TVE_TOGGLE &h3
-#define TVE_EXPANDPARTIAL &h4000
-#define TVE_COLLAPSERESET &h8000
+const TVE_COLLAPSE = &h1
+const TVE_EXPAND = &h2
+const TVE_TOGGLE = &h3
+const TVE_EXPANDPARTIAL = &h4000
+const TVE_COLLAPSERESET = &h8000
 #define TVM_GETITEMRECT (TV_FIRST + 4)
 private function TreeView_GetItemRect(byval hwnd as HWND, byval hitem as HTREEITEM, byval prc as RECT ptr, byval code as long) as WINBOOL
 	*cptr(HTREEITEM ptr, prc) = hitem
@@ -3473,24 +3473,24 @@ end function
 #define TreeView_SetIndent(hwnd, indent) cast(WINBOOL, SNDMSG((hwnd), TVM_SETINDENT, cast(WPARAM, (indent)), 0))
 #define TVM_GETIMAGELIST (TV_FIRST + 8)
 #define TreeView_GetImageList(hwnd, iImage) cast(HIMAGELIST, SNDMSG((hwnd), TVM_GETIMAGELIST, iImage, 0))
-#define TVSIL_NORMAL 0
-#define TVSIL_STATE 2
+const TVSIL_NORMAL = 0
+const TVSIL_STATE = 2
 #define TVM_SETIMAGELIST (TV_FIRST + 9)
 #define TreeView_SetImageList(hwnd, himl, iImage) cast(HIMAGELIST, SNDMSG((hwnd), TVM_SETIMAGELIST, iImage, cast(LPARAM, cast(HIMAGELIST, (himl)))))
 #define TVM_GETNEXTITEM (TV_FIRST + 10)
 #define TreeView_GetNextItem(hwnd, hitem, code) cast(HTREEITEM, SNDMSG((hwnd), TVM_GETNEXTITEM, cast(WPARAM, (code)), cast(LPARAM, cast(HTREEITEM, (hitem)))))
-#define TVGN_ROOT &h0
-#define TVGN_NEXT &h1
-#define TVGN_PREVIOUS &h2
-#define TVGN_PARENT &h3
-#define TVGN_CHILD &h4
-#define TVGN_FIRSTVISIBLE &h5
-#define TVGN_NEXTVISIBLE &h6
-#define TVGN_PREVIOUSVISIBLE &h7
-#define TVGN_DROPHILITE &h8
-#define TVGN_CARET &h9
-#define TVGN_LASTVISIBLE &ha
-#define TVSI_NOSINGLEEXPAND &h8000
+const TVGN_ROOT = &h0
+const TVGN_NEXT = &h1
+const TVGN_PREVIOUS = &h2
+const TVGN_PARENT = &h3
+const TVGN_CHILD = &h4
+const TVGN_FIRSTVISIBLE = &h5
+const TVGN_NEXTVISIBLE = &h6
+const TVGN_PREVIOUSVISIBLE = &h7
+const TVGN_DROPHILITE = &h8
+const TVGN_CARET = &h9
+const TVGN_LASTVISIBLE = &ha
+const TVSI_NOSINGLEEXPAND = &h8000
 #define TreeView_GetChild(hwnd, hitem) TreeView_GetNextItem(hwnd, hitem, TVGN_CHILD)
 #define TreeView_GetNextSibling(hwnd, hitem) TreeView_GetNextItem(hwnd, hitem, TVGN_NEXT)
 #define TreeView_GetPrevSibling(hwnd, hitem) TreeView_GetNextItem(hwnd, hitem, TVGN_PREVIOUS)
@@ -3554,18 +3554,18 @@ end type
 
 type TVHITTESTINFO as tagTVHITTESTINFO
 type LPTVHITTESTINFO as tagTVHITTESTINFO ptr
-#define TVHT_NOWHERE &h1
-#define TVHT_ONITEMICON &h2
-#define TVHT_ONITEMLABEL &h4
+const TVHT_NOWHERE = &h1
+const TVHT_ONITEMICON = &h2
+const TVHT_ONITEMLABEL = &h4
 #define TVHT_ONITEM ((TVHT_ONITEMICON or TVHT_ONITEMLABEL) or TVHT_ONITEMSTATEICON)
-#define TVHT_ONITEMINDENT &h8
-#define TVHT_ONITEMBUTTON &h10
-#define TVHT_ONITEMRIGHT &h20
-#define TVHT_ONITEMSTATEICON &h40
-#define TVHT_ABOVE &h100
-#define TVHT_BELOW &h200
-#define TVHT_TORIGHT &h400
-#define TVHT_TOLEFT &h800
+const TVHT_ONITEMINDENT = &h8
+const TVHT_ONITEMBUTTON = &h10
+const TVHT_ONITEMRIGHT = &h20
+const TVHT_ONITEMSTATEICON = &h40
+const TVHT_ABOVE = &h100
+const TVHT_BELOW = &h200
+const TVHT_TORIGHT = &h400
+const TVHT_TOLEFT = &h800
 #define TVM_CREATEDRAGIMAGE (TV_FIRST + 18)
 #define TreeView_CreateDragImage(hwnd, hitem) cast(HIMAGELIST, SNDMSG((hwnd), TVM_CREATEDRAGIMAGE, 0, cast(LPARAM, cast(HTREEITEM, (hitem)))))
 #define TVM_SORTCHILDREN (TV_FIRST + 19)
@@ -3691,14 +3691,14 @@ type LPNMTREEVIEWW as tagNMTREEVIEWW ptr
 #define TVN_SELCHANGINGW culng(TVN_FIRST - 50)
 #define TVN_SELCHANGEDA culng(TVN_FIRST - 2)
 #define TVN_SELCHANGEDW culng(TVN_FIRST - 51)
-#define TVC_UNKNOWN &h0
-#define TVC_BYMOUSE &h1
-#define TVC_BYKEYBOARD &h2
+const TVC_UNKNOWN = &h0
+const TVC_BYMOUSE = &h1
+const TVC_BYKEYBOARD = &h2
 #define TVN_GETDISPINFOA culng(TVN_FIRST - 3)
 #define TVN_GETDISPINFOW culng(TVN_FIRST - 52)
 #define TVN_SETDISPINFOA culng(TVN_FIRST - 4)
 #define TVN_SETDISPINFOW culng(TVN_FIRST - 53)
-#define TVIF_DI_SETITEM &h1000
+const TVIF_DI_SETITEM = &h1000
 #define TV_DISPINFOA NMTVDISPINFOA
 #define TV_DISPINFOW NMTVDISPINFOW
 #define TV_DISPINFO NMTVDISPINFO
@@ -3780,9 +3780,9 @@ type LPNMTVDISPINFOW as tagTVDISPINFOW ptr
 #define TVN_GETINFOTIPA culng(TVN_FIRST - 13)
 #define TVN_GETINFOTIPW culng(TVN_FIRST - 14)
 #define TVN_SINGLEEXPAND culng(TVN_FIRST - 15)
-#define TVNRET_DEFAULT 0
-#define TVNRET_SKIPOLD 1
-#define TVNRET_SKIPNEW 2
+const TVNRET_DEFAULT = 0
+const TVNRET_SKIPOLD = 1
+const TVNRET_SKIPNEW = 2
 #define TV_KEYDOWN NMTVKEYDOWN
 
 type tagTVKEYDOWN field = 1
@@ -3864,7 +3864,7 @@ type LPNMTVGETINFOTIPW as tagNMTVGETINFOTIPW ptr
 	#define LPNMTVGETINFOTIP LPNMTVGETINFOTIPA
 #endif
 
-#define TVCDRF_NOIMAGES &h10000
+const TVCDRF_NOIMAGES = &h10000
 #define WC_COMBOBOXEXW wstr("ComboBoxEx32")
 #define WC_COMBOBOXEXA "ComboBoxEx32"
 
@@ -3874,13 +3874,13 @@ type LPNMTVGETINFOTIPW as tagNMTVGETINFOTIPW ptr
 	#define WC_COMBOBOXEX WC_COMBOBOXEXA
 #endif
 
-#define CBEIF_TEXT &h1
-#define CBEIF_IMAGE &h2
-#define CBEIF_SELECTEDIMAGE &h4
-#define CBEIF_OVERLAY &h8
-#define CBEIF_INDENT &h10
-#define CBEIF_LPARAM &h20
-#define CBEIF_DI_SETITEM &h10000000
+const CBEIF_TEXT = &h1
+const CBEIF_IMAGE = &h2
+const CBEIF_SELECTEDIMAGE = &h4
+const CBEIF_OVERLAY = &h8
+const CBEIF_INDENT = &h10
+const CBEIF_LPARAM = &h20
+const CBEIF_DI_SETITEM = &h10000000
 
 type tagCOMBOBOXEXITEMA
 	mask as UINT
@@ -3954,11 +3954,11 @@ type PCCOMBOEXITEMW as const COMBOBOXEXITEMW ptr
 #endif
 
 #define CBEM_SETWINDOWTHEME CCM_SETWINDOWTHEME
-#define CBES_EX_NOEDITIMAGE &h1
-#define CBES_EX_NOEDITIMAGEINDENT &h2
-#define CBES_EX_PATHWORDBREAKPROC &h4
-#define CBES_EX_NOSIZELIMIT &h8
-#define CBES_EX_CASESENSITIVE &h10
+const CBES_EX_NOEDITIMAGE = &h1
+const CBES_EX_NOEDITIMAGEINDENT = &h2
+const CBES_EX_PATHWORDBREAKPROC = &h4
+const CBES_EX_NOSIZELIMIT = &h8
+const CBES_EX_CASESENSITIVE = &h10
 
 type NMCOMBOBOXEXA
 	hdr as NMHDR
@@ -4002,11 +4002,11 @@ type PNMCOMBOBOXEXW as NMCOMBOBOXEXW ptr
 	#define CBEN_ENDEDIT CBEN_ENDEDITA
 #endif
 
-#define CBENF_KILLFOCUS 1
-#define CBENF_RETURN 2
-#define CBENF_ESCAPE 3
-#define CBENF_DROPDOWN 4
-#define CBEMAXSTRLEN 260
+const CBENF_KILLFOCUS = 1
+const CBENF_RETURN = 2
+const CBENF_ESCAPE = 3
+const CBENF_DROPDOWN = 4
+const CBEMAXSTRLEN = 260
 
 type NMCBEDRAGBEGINW
 	hdr as NMHDR
@@ -4077,41 +4077,41 @@ type PNMCBEENDEDITA as NMCBEENDEDITA ptr
 	#define WC_TABCONTROL WC_TABCONTROLA
 #endif
 
-#define TCS_SCROLLOPPOSITE &h1
-#define TCS_BOTTOM &h2
-#define TCS_RIGHT &h2
-#define TCS_MULTISELECT &h4
-#define TCS_FLATBUTTONS &h8
-#define TCS_FORCEICONLEFT &h10
-#define TCS_FORCELABELLEFT &h20
-#define TCS_HOTTRACK &h40
-#define TCS_VERTICAL &h80
-#define TCS_TABS &h0
-#define TCS_BUTTONS &h100
-#define TCS_SINGLELINE &h0
-#define TCS_MULTILINE &h200
-#define TCS_RIGHTJUSTIFY &h0
-#define TCS_FIXEDWIDTH &h400
-#define TCS_RAGGEDRIGHT &h800
-#define TCS_FOCUSONBUTTONDOWN &h1000
-#define TCS_OWNERDRAWFIXED &h2000
-#define TCS_TOOLTIPS &h4000
-#define TCS_FOCUSNEVER &h8000
-#define TCS_EX_FLATSEPARATORS &h1
-#define TCS_EX_REGISTERDROP &h2
+const TCS_SCROLLOPPOSITE = &h1
+const TCS_BOTTOM = &h2
+const TCS_RIGHT = &h2
+const TCS_MULTISELECT = &h4
+const TCS_FLATBUTTONS = &h8
+const TCS_FORCEICONLEFT = &h10
+const TCS_FORCELABELLEFT = &h20
+const TCS_HOTTRACK = &h40
+const TCS_VERTICAL = &h80
+const TCS_TABS = &h0
+const TCS_BUTTONS = &h100
+const TCS_SINGLELINE = &h0
+const TCS_MULTILINE = &h200
+const TCS_RIGHTJUSTIFY = &h0
+const TCS_FIXEDWIDTH = &h400
+const TCS_RAGGEDRIGHT = &h800
+const TCS_FOCUSONBUTTONDOWN = &h1000
+const TCS_OWNERDRAWFIXED = &h2000
+const TCS_TOOLTIPS = &h4000
+const TCS_FOCUSNEVER = &h8000
+const TCS_EX_FLATSEPARATORS = &h1
+const TCS_EX_REGISTERDROP = &h2
 #define TCM_GETIMAGELIST (TCM_FIRST + 2)
 #define TabCtrl_GetImageList(hwnd) cast(HIMAGELIST, SNDMSG((hwnd), TCM_GETIMAGELIST, cast(WPARAM, 0), cast(LPARAM, 0)))
 #define TCM_SETIMAGELIST (TCM_FIRST + 3)
 #define TabCtrl_SetImageList(hwnd, himl) cast(HIMAGELIST, SNDMSG((hwnd), TCM_SETIMAGELIST, 0, cast(LPARAM, cast(HIMAGELIST, (himl)))))
 #define TCM_GETITEMCOUNT (TCM_FIRST + 4)
 #define TabCtrl_GetItemCount(hwnd) clng(SNDMSG((hwnd), TCM_GETITEMCOUNT, cast(WPARAM, 0), cast(LPARAM, 0)))
-#define TCIF_TEXT &h1
-#define TCIF_IMAGE &h2
-#define TCIF_RTLREADING &h4
-#define TCIF_PARAM &h8
-#define TCIF_STATE &h10
-#define TCIS_BUTTONPRESSED &h1
-#define TCIS_HIGHLIGHTED &h2
+const TCIF_TEXT = &h1
+const TCIF_IMAGE = &h2
+const TCIF_RTLREADING = &h4
+const TCIF_PARAM = &h8
+const TCIF_STATE = &h10
+const TCIS_BUTTONPRESSED = &h1
+const TCIS_HIGHLIGHTED = &h2
 #define TC_ITEMHEADERA TCITEMHEADERA
 #define TC_ITEMHEADERW TCITEMHEADERW
 #define TC_ITEMHEADER TCITEMHEADER
@@ -4226,9 +4226,9 @@ type LPTCITEMW as tagTCITEMW ptr
 #define TabCtrl_GetCurSel(hwnd) clng(SNDMSG((hwnd), TCM_GETCURSEL, 0, 0))
 #define TCM_SETCURSEL (TCM_FIRST + 12)
 #define TabCtrl_SetCurSel(hwnd, i) clng(SNDMSG((hwnd), TCM_SETCURSEL, cast(WPARAM, (i)), 0))
-#define TCHT_NOWHERE &h1
-#define TCHT_ONITEMICON &h2
-#define TCHT_ONITEMLABEL &h4
+const TCHT_NOWHERE = &h1
+const TCHT_ONITEMICON = &h2
+const TCHT_ONITEMLABEL = &h4
 #define TCHT_ONITEM (TCHT_ONITEMICON or TCHT_ONITEMLABEL)
 #define LPTC_HITTESTINFO LPTCHITTESTINFO
 #define TC_HITTESTINFO TCHITTESTINFO
@@ -4299,10 +4299,10 @@ type NMTCKEYDOWN as tagTCKEYDOWN
 	#define ANIMATE_CLASS ANIMATE_CLASSA
 #endif
 
-#define ACS_CENTER &h1
-#define ACS_TRANSPARENT &h2
-#define ACS_AUTOPLAY &h4
-#define ACS_TIMER &h8
+const ACS_CENTER = &h1
+const ACS_TRANSPARENT = &h2
+const ACS_AUTOPLAY = &h4
+const ACS_TIMER = &h8
 #define ACM_OPENA (WM_USER + 100)
 #define ACM_OPENW (WM_USER + 103)
 
@@ -4314,8 +4314,8 @@ type NMTCKEYDOWN as tagTCKEYDOWN
 
 #define ACM_PLAY (WM_USER + 101)
 #define ACM_STOP (WM_USER + 102)
-#define ACN_START 1
-#define ACN_STOP 2
+const ACN_START = 1
+const ACN_STOP = 2
 #define Animate_Create(hwndP, id, dwStyle, hInstance) CreateWindow(ANIMATE_CLASS, NULL, dwStyle, 0, 0, 0, 0, hwndP, cast(HMENU, (id)), hInstance, NULL)
 #define Animate_Open(hwnd, szName) cast(WINBOOL, SNDMSG(hwnd, ACM_OPEN, 0, cast(LPARAM, cast(LPTSTR, (szName)))))
 #define Animate_OpenEx(hwnd, hInst, szName) cast(WINBOOL, SNDMSG(hwnd, ACM_OPEN, cast(WPARAM, (hInst)), cast(LPARAM, cast(LPTSTR, (szName)))))
@@ -4334,7 +4334,7 @@ type NMTCKEYDOWN as tagTCKEYDOWN
 
 type MONTHDAYSTATE as DWORD
 type LPMONTHDAYSTATE as DWORD ptr
-#define MCM_FIRST &h1000
+const MCM_FIRST = &h1000
 #define MCM_GETCURSEL (MCM_FIRST + 1)
 #define MonthCal_GetCurSel(hmc, pst) cast(WINBOOL, SNDMSG(hmc, MCM_GETCURSEL, 0, cast(LPARAM, (pst))))
 #define MCM_SETCURSEL (MCM_FIRST + 2)
@@ -4357,12 +4357,12 @@ type LPMONTHDAYSTATE as DWORD ptr
 #define MonthCal_SetColor(hmc, iColor, clr) SNDMSG(hmc, MCM_SETCOLOR, iColor, clr)
 #define MCM_GETCOLOR (MCM_FIRST + 11)
 #define MonthCal_GetColor(hmc, iColor) SNDMSG(hmc, MCM_GETCOLOR, iColor, 0)
-#define MCSC_BACKGROUND 0
-#define MCSC_TEXT 1
-#define MCSC_TITLEBK 2
-#define MCSC_TITLETEXT 3
-#define MCSC_MONTHBK 4
-#define MCSC_TRAILINGTEXT 5
+const MCSC_BACKGROUND = 0
+const MCSC_TEXT = 1
+const MCSC_TITLEBK = 2
+const MCSC_TITLETEXT = 3
+const MCSC_MONTHBK = 4
+const MCSC_TRAILINGTEXT = 5
 #define MCM_SETTODAY (MCM_FIRST + 12)
 #define MonthCal_SetToday(hmc, pst) SNDMSG(hmc, MCM_SETTODAY, 0, cast(LPARAM, (pst)))
 #define MCM_GETTODAY (MCM_FIRST + 13)
@@ -4378,12 +4378,12 @@ type MCHITTESTINFO
 end type
 
 type PMCHITTESTINFO as MCHITTESTINFO ptr
-#define MCHT_TITLE &h10000
-#define MCHT_CALENDAR &h20000
-#define MCHT_TODAYLINK &h30000
-#define MCHT_NEXT &h1000000
-#define MCHT_PREV &h2000000
-#define MCHT_NOWHERE &h0
+const MCHT_TITLE = &h10000
+const MCHT_CALENDAR = &h20000
+const MCHT_TODAYLINK = &h30000
+const MCHT_NEXT = &h1000000
+const MCHT_PREV = &h2000000
+const MCHT_NOWHERE = &h0
 #define MCHT_TITLEBK MCHT_TITLE
 #define MCHT_TITLEMONTH (MCHT_TITLE or &h1)
 #define MCHT_TITLEYEAR (MCHT_TITLE or &h2)
@@ -4437,13 +4437,13 @@ type LPNMDAYSTATE as tagNMDAYSTATE ptr
 type NMSELECT as NMSELCHANGE
 type LPNMSELECT as NMSELCHANGE ptr
 #define MCN_SELECT culng(MCN_FIRST + 4)
-#define MCS_DAYSTATE &h1
-#define MCS_MULTISELECT &h2
-#define MCS_WEEKNUMBERS &h4
-#define MCS_NOTODAYCIRCLE &h8
-#define MCS_NOTODAY &h10
-#define GMR_VISIBLE 0
-#define GMR_DAYSTATE 1
+const MCS_DAYSTATE = &h1
+const MCS_MULTISELECT = &h2
+const MCS_WEEKNUMBERS = &h4
+const MCS_NOTODAYCIRCLE = &h8
+const MCS_NOTODAY = &h10
+const GMR_VISIBLE = 0
+const GMR_DAYSTATE = 1
 #define DATETIMEPICK_CLASSW wstr("SysDateTimePick32")
 #define DATETIMEPICK_CLASSA "SysDateTimePick32"
 
@@ -4453,7 +4453,7 @@ type LPNMSELECT as NMSELCHANGE ptr
 	#define DATETIMEPICK_CLASS DATETIMEPICK_CLASSA
 #endif
 
-#define DTM_FIRST &h1000
+const DTM_FIRST = &h1000
 #define DTM_GETSYSTEMTIME (DTM_FIRST + 1)
 #define DateTime_GetSystemtime(hdp, pst) cast(DWORD, SNDMSG(hdp, DTM_GETSYSTEMTIME, 0, cast(LPARAM, (pst))))
 #define DTM_SETSYSTEMTIME (DTM_FIRST + 2)
@@ -4482,14 +4482,14 @@ type LPNMSELECT as NMSELCHANGE ptr
 #define DateTime_SetMonthCalFont(hdp, hfont, fRedraw) SNDMSG(hdp, DTM_SETMCFONT, cast(WPARAM, (hfont)), cast(LPARAM, (fRedraw)))
 #define DTM_GETMCFONT (DTM_FIRST + 10)
 #define DateTime_GetMonthCalFont(hdp) SNDMSG(hdp, DTM_GETMCFONT, 0, 0)
-#define DTS_UPDOWN &h1
-#define DTS_SHOWNONE &h2
-#define DTS_SHORTDATEFORMAT &h0
-#define DTS_LONGDATEFORMAT &h4
-#define DTS_SHORTDATECENTURYFORMAT &hc
-#define DTS_TIMEFORMAT &h9
-#define DTS_APPCANPARSE &h10
-#define DTS_RIGHTALIGN &h20
+const DTS_UPDOWN = &h1
+const DTS_SHOWNONE = &h2
+const DTS_SHORTDATEFORMAT = &h0
+const DTS_LONGDATEFORMAT = &h4
+const DTS_SHORTDATECENTURYFORMAT = &hc
+const DTS_TIMEFORMAT = &h9
+const DTS_APPCANPARSE = &h10
+const DTS_RIGHTALIGN = &h20
 #define DTN_DATETIMECHANGE culng(DTN_FIRST + 1)
 
 type tagNMDATETIMECHANGE
@@ -4634,11 +4634,11 @@ type LPNMDATETIMEFORMATQUERYW as tagNMDATETIMEFORMATQUERYW ptr
 
 #define DTN_DROPDOWN culng(DTN_FIRST + 6)
 #define DTN_CLOSEUP culng(DTN_FIRST + 7)
-#define GDTR_MIN &h1
-#define GDTR_MAX &h2
-#define GDT_ERROR (-1)
-#define GDT_VALID 0
-#define GDT_NONE 1
+const GDTR_MIN = &h1
+const GDTR_MAX = &h2
+const GDT_ERROR = -1
+const GDT_VALID = 0
+const GDT_NONE = 1
 #define IPM_CLEARADDRESS (WM_USER + 100)
 #define IPM_SETADDRESS (WM_USER + 101)
 #define IPM_GETADDRESS (WM_USER + 102)
@@ -4679,17 +4679,17 @@ type LPNMIPADDRESS as tagNMIPADDRESS ptr
 	#define WC_PAGESCROLLER WC_PAGESCROLLERA
 #endif
 
-#define PGS_VERT &h0
-#define PGS_HORZ &h1
-#define PGS_AUTOSCROLL &h2
-#define PGS_DRAGNDROP &h4
-#define PGF_INVISIBLE 0
-#define PGF_NORMAL 1
-#define PGF_GRAYED 2
-#define PGF_DEPRESSED 4
-#define PGF_HOT 8
-#define PGB_TOPORLEFT 0
-#define PGB_BOTTOMORRIGHT 1
+const PGS_VERT = &h0
+const PGS_HORZ = &h1
+const PGS_AUTOSCROLL = &h2
+const PGS_DRAGNDROP = &h4
+const PGF_INVISIBLE = 0
+const PGF_NORMAL = 1
+const PGF_GRAYED = 2
+const PGF_DEPRESSED = 4
+const PGF_HOT = 8
+const PGB_TOPORLEFT = 0
+const PGB_BOTTOMORRIGHT = 1
 #define PGM_SETCHILD (PGM_FIRST + 1)
 #define Pager_SetChild(hwnd, hwndChild) SNDMSG((hwnd), PGM_SETCHILD, 0, cast(LPARAM, (hwndChild)))
 #define PGM_RECALCSIZE (PGM_FIRST + 2)
@@ -4717,13 +4717,13 @@ type LPNMIPADDRESS as tagNMIPADDRESS ptr
 #define PGM_GETDROPTARGET CCM_GETDROPTARGET
 #define Pager_GetDropTarget(hwnd, ppdt) SNDMSG((hwnd), PGM_GETDROPTARGET, 0, cast(LPARAM, (ppdt)))
 #define PGN_SCROLL culng(PGN_FIRST - 1)
-#define PGF_SCROLLUP 1
-#define PGF_SCROLLDOWN 2
-#define PGF_SCROLLLEFT 4
-#define PGF_SCROLLRIGHT 8
-#define PGK_SHIFT 1
-#define PGK_CONTROL 2
-#define PGK_MENU 4
+const PGF_SCROLLUP = 1
+const PGF_SCROLLDOWN = 2
+const PGF_SCROLLLEFT = 4
+const PGF_SCROLLRIGHT = 8
+const PGK_SHIFT = 1
+const PGK_CONTROL = 2
+const PGK_MENU = 4
 
 type NMPGSCROLL field = 1
 	hdr as NMHDR
@@ -4737,8 +4737,8 @@ end type
 
 type LPNMPGSCROLL as NMPGSCROLL ptr
 #define PGN_CALCSIZE culng(PGN_FIRST - 2)
-#define PGF_CALCWIDTH 1
-#define PGF_CALCHEIGHT 2
+const PGF_CALCWIDTH = 1
+const PGF_CALCHEIGHT = 2
 
 type NMPGCALCSIZE
 	hdr as NMHDR
@@ -4768,12 +4768,12 @@ type LPNMPGHOTITEM as tagNMPGHOTITEM ptr
 	#define WC_NATIVEFONTCTL WC_NATIVEFONTCTLA
 #endif
 
-#define NFS_EDIT &h1
-#define NFS_STATIC &h2
-#define NFS_LISTCOMBO &h4
-#define NFS_BUTTON &h8
-#define NFS_ALL &h10
-#define NFS_USEFONTASSOC &h20
+const NFS_EDIT = &h1
+const NFS_STATIC = &h2
+const NFS_LISTCOMBO = &h4
+const NFS_BUTTON = &h8
+const NFS_ALL = &h10
+const NFS_USEFONTASSOC = &h20
 #define WC_BUTTONA "Button"
 #define WC_BUTTONW wstr("Button")
 
@@ -4783,11 +4783,11 @@ type LPNMPGHOTITEM as tagNMPGHOTITEM ptr
 	#define WC_BUTTON WC_BUTTONA
 #endif
 
-#define BUTTON_IMAGELIST_ALIGN_LEFT 0
-#define BUTTON_IMAGELIST_ALIGN_RIGHT 1
-#define BUTTON_IMAGELIST_ALIGN_TOP 2
-#define BUTTON_IMAGELIST_ALIGN_BOTTOM 3
-#define BUTTON_IMAGELIST_ALIGN_CENTER 4
+const BUTTON_IMAGELIST_ALIGN_LEFT = 0
+const BUTTON_IMAGELIST_ALIGN_RIGHT = 1
+const BUTTON_IMAGELIST_ALIGN_TOP = 2
+const BUTTON_IMAGELIST_ALIGN_BOTTOM = 3
+const BUTTON_IMAGELIST_ALIGN_CENTER = 4
 
 type BUTTON_IMAGELIST
 	himl as HIMAGELIST
@@ -4829,20 +4829,20 @@ end type
 type NMBCHOTITEM as tagNMBCHOTITEM
 type LPNMBCHOTITEM as tagNMBCHOTITEM ptr
 #define BCN_HOTITEMCHANGE culng(BCN_FIRST + &h1)
-#define BST_HOT &h200
-#define BS_SPLITBUTTON &hc
-#define BS_DEFSPLITBUTTON &hd
-#define BS_COMMANDLINK &he
-#define BS_DEFCOMMANDLINK &hf
-#define BST_DROPDOWNPUSHED &h400
-#define BCSIF_GLYPH &h1
-#define BCSIF_IMAGE &h2
-#define BCSIF_STYLE &h4
-#define BCSIF_SIZE &h8
-#define BCSS_NOSPLIT &h1
-#define BCSS_STRETCH &h2
-#define BCSS_ALIGNLEFT &h4
-#define BCSS_IMAGE &h8
+const BST_HOT = &h200
+const BS_SPLITBUTTON = &hc
+const BS_DEFSPLITBUTTON = &hd
+const BS_COMMANDLINK = &he
+const BS_DEFCOMMANDLINK = &hf
+const BST_DROPDOWNPUSHED = &h400
+const BCSIF_GLYPH = &h1
+const BCSIF_IMAGE = &h2
+const BCSIF_STYLE = &h4
+const BCSIF_SIZE = &h8
+const BCSS_NOSPLIT = &h1
+const BCSS_STRETCH = &h2
+const BCSS_ALIGNLEFT = &h4
+const BCSS_IMAGE = &h8
 #define BCN_DROPDOWN culng(BCN_FIRST + &h2)
 #define BCCL_NOGLYPH cast(HIMAGELIST, cuint(-1))
 
@@ -4922,19 +4922,19 @@ type PEDITBALLOONTIP as _tagEDITBALLOONTIP ptr
 	#define WC_SCROLLBAR WC_SCROLLBARA
 #endif
 
-#define INVALID_LINK_INDEX (-1)
-#define MAX_LINKID_TEXT 48
+const INVALID_LINK_INDEX = -1
+const MAX_LINKID_TEXT = 48
 #define L_MAX_URL_LENGTH ((2048 + 32) + sizeof("://"))
 #define WC_LINK wstr("SysLink")
-#define LWS_TRANSPARENT &h1
-#define LWS_IGNORERETURN &h2
-#define LIF_ITEMINDEX &h1
-#define LIF_STATE &h2
-#define LIF_ITEMID &h4
-#define LIF_URL &h8
-#define LIS_FOCUSED &h1
-#define LIS_ENABLED &h2
-#define LIS_VISITED &h4
+const LWS_TRANSPARENT = &h1
+const LWS_IGNORERETURN = &h2
+const LIF_ITEMINDEX = &h1
+const LIF_STATE = &h2
+const LIF_ITEMID = &h4
+const LIF_URL = &h8
+const LIS_FOCUSED = &h1
+const LIS_ENABLED = &h2
+const LIS_VISITED = &h4
 
 type tagLITEM
 	mask as UINT
@@ -4969,11 +4969,11 @@ type PNMLINK as tagNMLINK ptr
 #define LM_GETITEM (WM_USER + &h303)
 declare sub InitMUILanguage(byval uiLang as LANGID)
 declare function GetMUILanguage() as LANGID
-#define DA_LAST &h7fffffff
-#define DPA_APPEND &h7fffffff
-#define DPA_ERR (-1)
-#define DSA_APPEND &h7fffffff
-#define DSA_ERR (-1)
+const DA_LAST = &h7fffffff
+const DPA_APPEND = &h7fffffff
+const DPA_ERR = -1
+const DSA_APPEND = &h7fffffff
+const DSA_ERR = -1
 
 type HDSA as _DSA ptr
 type PFNDPAENUMCALLBACK as function(byval p as any ptr, byval pData as any ptr) as long
@@ -4997,9 +4997,9 @@ declare function DPA_GetPtr(byval hdpa as HDPA, byval i as INT_PTR) as PVOID
 type PFNDPACOMPARE as function(byval p1 as any ptr, byval p2 as any ptr, byval lParam as LPARAM) as long
 declare function DPA_Sort(byval hdpa as HDPA, byval pfnCompare as PFNDPACOMPARE, byval lParam as LPARAM) as WINBOOL
 
-#define DPAS_SORTED &h1
-#define DPAS_INSERTBEFORE &h2
-#define DPAS_INSERTAFTER &h4
+const DPAS_SORTED = &h1
+const DPAS_INSERTBEFORE = &h2
+const DPAS_INSERTAFTER = &h4
 declare function DPA_Search(byval hdpa as HDPA, byval pFind as any ptr, byval iStart as long, byval pfnCompare as PFNDPACOMPARE, byval lParam as LPARAM, byval options as UINT) as long
 declare function Str_SetPtrW(byval ppsz as LPWSTR ptr, byval psz as LPCWSTR) as WINBOOL
 
@@ -5024,13 +5024,13 @@ declare function DPA_GetPtrIndex(byval hdpa as HDPA, byval p as const any ptr) a
 #define DPA_AppendPtr(hdpa, pitem) DPA_InsertPtr(hdpa, DA_LAST, pitem)
 #define DPA_FastDeleteLastPtr(hdpa) scope : *cptr(long ptr, (hdpa)) -= 1 : end scope
 #define DPA_FastGetPtr(hdpa, i) DPA_GetPtrPtr(hdpa)[i]
-#define DPAM_SORTED 1
-#define DPAM_NORMAL 2
-#define DPAM_UNION 4
-#define DPAM_INTERSECT 8
-#define DPAMM_MERGE 1
-#define DPAMM_DELETE 2
-#define DPAMM_INSERT 3
+const DPAM_SORTED = 1
+const DPAM_NORMAL = 2
+const DPAM_UNION = 4
+const DPAM_INTERSECT = 8
+const DPAMM_MERGE = 1
+const DPAMM_DELETE = 2
+const DPAMM_INSERT = 3
 declare function _TrackMouseEvent(byval lpEventTrack as LPTRACKMOUSEEVENT) as WINBOOL
 #define WSB_PROP_CYVSCROLL __MSABI_LONG(&h1)
 #define WSB_PROP_CXHSCROLL __MSABI_LONG(&h2)
@@ -5045,9 +5045,9 @@ declare function _TrackMouseEvent(byval lpEventTrack as LPTRACKMOUSEEVENT) as WI
 #define WSB_PROP_WINSTYLE __MSABI_LONG(&h400)
 #define WSB_PROP_PALETTE __MSABI_LONG(&h800)
 #define WSB_PROP_MASK __MSABI_LONG(&hfff)
-#define FSB_FLAT_MODE 2
-#define FSB_ENCARTA_MODE 1
-#define FSB_REGULAR_MODE 0
+const FSB_FLAT_MODE = 2
+const FSB_ENCARTA_MODE = 1
+const FSB_REGULAR_MODE = 0
 
 declare function FlatSB_EnableScrollBar(byval as HWND, byval as long, byval as UINT) as WINBOOL
 declare function FlatSB_ShowScrollBar(byval as HWND, byval code as long, byval as WINBOOL) as WINBOOL

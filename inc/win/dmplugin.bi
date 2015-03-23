@@ -50,7 +50,7 @@ type IDirectMusicGraph8 as IDirectMusicGraph
 type LPDIRECTMUSICGRAPH8 as IDirectMusicGraph ptr
 type DMUS_PMSG_ as _DMUS_PMSG
 type MUSIC_TIME_ as LONG
-#define DMUS_TRACK_PARAMF_CLOCK &h1
+const DMUS_TRACK_PARAMF_CLOCK = &h1
 type DMUS_TRACKF_FLAGS as enumDMUS_TRACKF_FLAGS
 
 type enumDMUS_TRACKF_FLAGS as long

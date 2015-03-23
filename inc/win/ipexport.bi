@@ -3,7 +3,7 @@
 #include once "in6addr.bi"
 #include once "inaddr.bi"
 
-#define IP_EXPORT_INCLUDED 1
+const IP_EXPORT_INCLUDED = 1
 type IPAddr as ULONG
 type IPMask as ULONG
 type IP_STATUS as ULONG
@@ -70,7 +70,7 @@ type TCP_RESERVE_PORT_RANGE
 end type
 
 type PTCP_RESERVE_PORT_RANGE as TCP_RESERVE_PORT_RANGE ptr
-#define MAX_ADAPTER_NAME 128
+const MAX_ADAPTER_NAME = 128
 
 type _IP_ADAPTER_INDEX_MAP
 	Index as ULONG
@@ -123,8 +123,8 @@ end type
 
 type IPV6_ADDRESS_EX as _IPV6_ADDRESS_EX
 type PIPV6_ADDRESS_EX as _IPV6_ADDRESS_EX ptr
-#define IP_STATUS_BASE 11000
-#define IP_SUCCESS 0
+const IP_STATUS_BASE = 11000
+const IP_SUCCESS = 0
 #define IP_BUF_TOO_SMALL (IP_STATUS_BASE + 1)
 #define IP_DEST_NET_UNREACHABLE (IP_STATUS_BASE + 2)
 #define IP_DEST_HOST_UNREACHABLE (IP_STATUS_BASE + 3)
@@ -175,14 +175,14 @@ type PIPV6_ADDRESS_EX as _IPV6_ADDRESS_EX ptr
 #define IP_GENERAL_FAILURE (IP_STATUS_BASE + 50)
 #define MAX_IP_STATUS IP_GENERAL_FAILURE
 #define IP_PENDING (IP_STATUS_BASE + 255)
-#define IP_FLAG_DF &h2
-#define IP_OPT_EOL 0
-#define IP_OPT_NOP 1
-#define IP_OPT_SECURITY &h82
-#define IP_OPT_LSRR &h83
-#define IP_OPT_SSRR &h89
-#define IP_OPT_RR &h7
-#define IP_OPT_TS &h44
-#define IP_OPT_SID &h88
-#define IP_OPT_ROUTER_ALERT &h94
-#define MAX_OPT_SIZE 40
+const IP_FLAG_DF = &h2
+const IP_OPT_EOL = 0
+const IP_OPT_NOP = 1
+const IP_OPT_SECURITY = &h82
+const IP_OPT_LSRR = &h83
+const IP_OPT_SSRR = &h89
+const IP_OPT_RR = &h7
+const IP_OPT_TS = &h44
+const IP_OPT_SID = &h88
+const IP_OPT_ROUTER_ALERT = &h94
+const MAX_OPT_SIZE = 40

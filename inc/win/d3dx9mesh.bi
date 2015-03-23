@@ -16,8 +16,8 @@ extern IID_ID3DXPRTBuffer as const GUID
 extern IID_ID3DXPRTCompBuffer as const GUID
 extern IID_ID3DXTextureGutterHelper as const GUID
 extern IID_ID3DXPRTEngine as const GUID
-#define UNUSED16 &hffff
-#define UNUSED32 &hffffffff
+const UNUSED16 = &hffff
+const UNUSED32 = &hffffffff
 
 type _MAX_FVF_DECL_SIZE as long
 enum

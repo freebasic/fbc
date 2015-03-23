@@ -5,14 +5,14 @@
 extern "Windows"
 
 #define _LZEXPAND_
-#define LZERROR_BADINHANDLE (-1)
-#define LZERROR_BADOUTHANDLE (-2)
-#define LZERROR_READ (-3)
-#define LZERROR_WRITE (-4)
-#define LZERROR_GLOBALLOC (-5)
-#define LZERROR_GLOBLOCK (-6)
-#define LZERROR_BADVALUE (-7)
-#define LZERROR_UNKNOWNALG (-8)
+const LZERROR_BADINHANDLE = -1
+const LZERROR_BADOUTHANDLE = -2
+const LZERROR_READ = -3
+const LZERROR_WRITE = -4
+const LZERROR_GLOBALLOC = -5
+const LZERROR_GLOBLOCK = -6
+const LZERROR_BADVALUE = -7
+const LZERROR_UNKNOWNALG = -8
 
 #ifdef UNICODE
 	#define GetExpandedName GetExpandedNameW

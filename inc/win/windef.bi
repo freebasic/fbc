@@ -20,15 +20,15 @@ type UCHAR as ubyte
 type PUCHAR as UCHAR ptr
 type PSZ as zstring ptr
 
-#define MAX_PATH 260
+const MAX_PATH = 260
 #ifndef NULL
-#define NULL 0
+const NULL = 0
 #endif
 #ifndef FALSE
-#define FALSE 0
+const FALSE = 0
 #endif
 #ifndef TRUE
-#define TRUE 1
+const TRUE = 1
 #endif
 #define _DEF_WINBOOL_
 

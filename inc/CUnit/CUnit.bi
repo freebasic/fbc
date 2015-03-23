@@ -11,10 +11,10 @@
 
 #define CUNIT_CUNIT_H_SEEN
 #define CU_VERSION "2.1-3"
-#define CU_MAX_TEST_NAME_LENGTH 256
-#define CU_MAX_SUITE_NAME_LENGTH 256
-#define CU_TRUE 1
-#define CU_FALSE 0
+const CU_MAX_TEST_NAME_LENGTH = 256
+const CU_MAX_SUITE_NAME_LENGTH = 256
+const CU_TRUE = 1
+const CU_FALSE = 0
 #define CU_MAX(a, b) iif((a) >= (b), (a), (b))
 #define CU_MIN(a, b) iif((a) >= (b), (b), (a))
 #define CU_PASS(msg) CU_assertImplementation(CU_TRUE, __LINE__, "CU_PASS(" #msg ")", __FILE__, "", CU_FALSE)

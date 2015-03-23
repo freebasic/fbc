@@ -5,7 +5,7 @@
 
 extern "Windows"
 
-#define __RPCNDR_H_VERSION__ 475
+const __RPCNDR_H_VERSION__ = 475
 #define __RPCNDR_H__
 #define NDR_CHAR_REP_MASK __MSABI_LONG(&h0000000Fu)
 #define NDR_INT_REP_MASK __MSABI_LONG(&h000000F0u)
@@ -21,17 +21,17 @@ extern "Windows"
 #define NDR_LOCAL_ENDIAN NDR_LITTLE_ENDIAN
 
 #if (_WIN32_WINNT = &h0400) or (_WIN32_WINNT = &h0502)
-	#define TARGET_IS_NT61_OR_LATER 0
-	#define TARGET_IS_NT60_OR_LATER 0
+	const TARGET_IS_NT61_OR_LATER = 0
+	const TARGET_IS_NT60_OR_LATER = 0
 #else
-	#define TARGET_IS_NT61_OR_LATER 1
-	#define TARGET_IS_NT60_OR_LATER 1
+	const TARGET_IS_NT61_OR_LATER = 1
+	const TARGET_IS_NT60_OR_LATER = 1
 #endif
 
-#define TARGET_IS_NT51_OR_LATER 1
-#define TARGET_IS_NT50_OR_LATER 1
-#define TARGET_IS_NT40_OR_LATER 1
-#define TARGET_IS_NT351_OR_WIN95_OR_LATER 1
+const TARGET_IS_NT51_OR_LATER = 1
+const TARGET_IS_NT50_OR_LATER = 1
+const TARGET_IS_NT40_OR_LATER = 1
+const TARGET_IS_NT351_OR_WIN95_OR_LATER = 1
 
 type cs_byte as ubyte
 type BOOLEAN as ubyte
@@ -48,7 +48,7 @@ end type
 
 type NDR_SCONTEXT as _NDR_SCONTEXT ptr
 #define NDRSContextValue(hContext) (@(hContext)->userContext)
-#define cbNDRContext 20
+const cbNDRContext = 20
 type NDR_RUNDOWN as sub(byval context as any ptr)
 type NDR_NOTIFY_ROUTINE as sub()
 type NDR_NOTIFY2_ROUTINE as sub(byval flag as BOOLEAN)
@@ -276,8 +276,8 @@ type USER_MARSHAL_CB as _USER_MARSHAL_CB
 #define USER_CALL_CTXT_MASK(f) ((f) and &h00ff)
 #define USER_CALL_AUX_MASK(f) ((f) and &hff00)
 #define GET_USER_DATA_REP(f) ((f) shr 16)
-#define USER_CALL_IS_ASYNC &h0100
-#define USER_CALL_NEW_CORRELATION_DESC &h0200
+const USER_CALL_IS_ASYNC = &h0100
+const USER_CALL_NEW_CORRELATION_DESC = &h0200
 
 type _MALLOC_FREE_STRUCT
 	pfnAllocate as function(byval as uinteger) as any ptr
@@ -565,18 +565,18 @@ declare sub NdrInterfacePointerFree(byval pStubMsg as PMIDL_STUB_MESSAGE, byval 
 declare sub NdrConvert2(byval pStubMsg as PMIDL_STUB_MESSAGE, byval pFormat as PFORMAT_STRING, byval NumberParams as long)
 declare sub NdrConvert(byval pStubMsg as PMIDL_STUB_MESSAGE, byval pFormat as PFORMAT_STRING)
 
-#define USER_MARSHAL_FC_BYTE 1
-#define USER_MARSHAL_FC_CHAR 2
-#define USER_MARSHAL_FC_SMALL 3
-#define USER_MARSHAL_FC_USMALL 4
-#define USER_MARSHAL_FC_WCHAR 5
-#define USER_MARSHAL_FC_SHORT 6
-#define USER_MARSHAL_FC_USHORT 7
-#define USER_MARSHAL_FC_LONG 8
-#define USER_MARSHAL_FC_ULONG 9
-#define USER_MARSHAL_FC_FLOAT 10
-#define USER_MARSHAL_FC_HYPER 11
-#define USER_MARSHAL_FC_DOUBLE 12
+const USER_MARSHAL_FC_BYTE = 1
+const USER_MARSHAL_FC_CHAR = 2
+const USER_MARSHAL_FC_SMALL = 3
+const USER_MARSHAL_FC_USMALL = 4
+const USER_MARSHAL_FC_WCHAR = 5
+const USER_MARSHAL_FC_SHORT = 6
+const USER_MARSHAL_FC_USHORT = 7
+const USER_MARSHAL_FC_LONG = 8
+const USER_MARSHAL_FC_ULONG = 9
+const USER_MARSHAL_FC_FLOAT = 10
+const USER_MARSHAL_FC_HYPER = 11
+const USER_MARSHAL_FC_DOUBLE = 12
 
 declare function NdrUserMarshalSimpleTypeConvert(byval pFlags as ulong ptr, byval pBuffer as ubyte ptr, byval FormatChar as ubyte) as ubyte ptr
 declare sub NdrClientInitializeNew(byval pRpcMsg as PRPC_MESSAGE, byval pStubMsg as PMIDL_STUB_MESSAGE, byval pStubDescriptor as PMIDL_STUB_DESC, byval ProcNum as ulong)

@@ -26,34 +26,34 @@ extern "C"
 #define __CURL_CURLVER_H
 #define LIBCURL_COPYRIGHT "1996 - 2014 Daniel Stenberg, <daniel@haxx.se>."
 #define LIBCURL_VERSION "7.39.0"
-#define LIBCURL_VERSION_MAJOR 7
-#define LIBCURL_VERSION_MINOR 39
-#define LIBCURL_VERSION_PATCH 0
-#define LIBCURL_VERSION_NUM &h072700
+const LIBCURL_VERSION_MAJOR = 7
+const LIBCURL_VERSION_MINOR = 39
+const LIBCURL_VERSION_PATCH = 0
+const LIBCURL_VERSION_NUM = &h072700
 #define LIBCURL_TIMESTAMP "Wed Nov  5 07:24:58 UTC 2014"
 #define __CURL_CURLBUILD_H
 
 #ifdef __FB_WIN32__
-	#define CURL_SIZEOF_LONG 4
+	const CURL_SIZEOF_LONG = 4
 	#define CURL_FORMAT_CURL_OFF_T "I64d"
 	#define CURL_FORMAT_CURL_OFF_TU "I64u"
 	#define CURL_FORMAT_OFF_T "%I64d"
 #elseif defined(__FB_LINUX__) and defined(__FB_64BIT__)
-	#define CURL_SIZEOF_LONG 8
+	const CURL_SIZEOF_LONG = 8
 	#define CURL_FORMAT_CURL_OFF_T "ld"
 	#define CURL_FORMAT_CURL_OFF_TU "lu"
 	#define CURL_FORMAT_OFF_T "%ld"
 #else
-	#define CURL_SIZEOF_LONG 4
+	const CURL_SIZEOF_LONG = 4
 	#define CURL_FORMAT_CURL_OFF_T "lld"
 	#define CURL_FORMAT_CURL_OFF_TU "llu"
 	#define CURL_FORMAT_OFF_T "%lld"
 #endif
 
-#define CURL_SIZEOF_CURL_OFF_T 8
+const CURL_SIZEOF_CURL_OFF_T = 8
 #define CURL_SUFFIX_CURL_OFF_T LL
 #define CURL_SUFFIX_CURL_OFF_TU ULL
-#define CURL_SIZEOF_CURL_SOCKLEN_T 4
+const CURL_SIZEOF_CURL_SOCKLEN_T = 4
 
 #if defined(__FB_DOS__) or defined(__FB_WIN32__)
 	type curl_socklen_t as long
@@ -75,7 +75,7 @@ type CURL as any
 	#define CURL_SOCKET_BAD INVALID_SOCKET
 #else
 	type curl_socket_t as long
-	#define CURL_SOCKET_BAD (-1)
+	const CURL_SOCKET_BAD = -1
 #endif
 
 #define curl_socket_typedef
@@ -97,18 +97,18 @@ type curl_httppost
 	userp as any ptr
 end type
 
-#define HTTPPOST_FILENAME (1 shl 0)
-#define HTTPPOST_READFILE (1 shl 1)
-#define HTTPPOST_PTRNAME (1 shl 2)
-#define HTTPPOST_PTRCONTENTS (1 shl 3)
-#define HTTPPOST_BUFFER (1 shl 4)
-#define HTTPPOST_PTRBUFFER (1 shl 5)
-#define HTTPPOST_CALLBACK (1 shl 6)
+const HTTPPOST_FILENAME = 1 shl 0
+const HTTPPOST_READFILE = 1 shl 1
+const HTTPPOST_PTRNAME = 1 shl 2
+const HTTPPOST_PTRCONTENTS = 1 shl 3
+const HTTPPOST_BUFFER = 1 shl 4
+const HTTPPOST_PTRBUFFER = 1 shl 5
+const HTTPPOST_CALLBACK = 1 shl 6
 type curl_progress_callback as function(byval clientp as any ptr, byval dltotal as double, byval dlnow as double, byval ultotal as double, byval ulnow as double) as long
 type curl_xferinfo_callback as function(byval clientp as any ptr, byval dltotal as curl_off_t, byval dlnow as curl_off_t, byval ultotal as curl_off_t, byval ulnow as curl_off_t) as long
-#define CURL_MAX_WRITE_SIZE 16384
-#define CURL_MAX_HTTP_HEADER (100 * 1024)
-#define CURL_WRITEFUNC_PAUSE &h10000001
+const CURL_MAX_WRITE_SIZE = 16384
+const CURL_MAX_HTTP_HEADER = 100 * 1024
+const CURL_WRITEFUNC_PAUSE = &h10000001
 type curl_write_callback as function(byval buffer as zstring ptr, byval size as uinteger, byval nitems as uinteger, byval outstream as any ptr) as uinteger
 
 type curlfiletype as long
@@ -124,14 +124,14 @@ enum
 	CURLFILETYPE_UNKNOWN
 end enum
 
-#define CURLFINFOFLAG_KNOWN_FILENAME (1 shl 0)
-#define CURLFINFOFLAG_KNOWN_FILETYPE (1 shl 1)
-#define CURLFINFOFLAG_KNOWN_TIME (1 shl 2)
-#define CURLFINFOFLAG_KNOWN_PERM (1 shl 3)
-#define CURLFINFOFLAG_KNOWN_UID (1 shl 4)
-#define CURLFINFOFLAG_KNOWN_GID (1 shl 5)
-#define CURLFINFOFLAG_KNOWN_SIZE (1 shl 6)
-#define CURLFINFOFLAG_KNOWN_HLINKCOUNT (1 shl 7)
+const CURLFINFOFLAG_KNOWN_FILENAME = 1 shl 0
+const CURLFINFOFLAG_KNOWN_FILETYPE = 1 shl 1
+const CURLFINFOFLAG_KNOWN_TIME = 1 shl 2
+const CURLFINFOFLAG_KNOWN_PERM = 1 shl 3
+const CURLFINFOFLAG_KNOWN_UID = 1 shl 4
+const CURLFINFOFLAG_KNOWN_GID = 1 shl 5
+const CURLFINFOFLAG_KNOWN_SIZE = 1 shl 6
+const CURLFINFOFLAG_KNOWN_HLINKCOUNT = 1 shl 7
 
 type curl_fileinfo_strings
 	time as zstring ptr
@@ -157,23 +157,23 @@ type curl_fileinfo
 	b_used as uinteger
 end type
 
-#define CURL_CHUNK_BGN_FUNC_OK 0
-#define CURL_CHUNK_BGN_FUNC_FAIL 1
-#define CURL_CHUNK_BGN_FUNC_SKIP 2
+const CURL_CHUNK_BGN_FUNC_OK = 0
+const CURL_CHUNK_BGN_FUNC_FAIL = 1
+const CURL_CHUNK_BGN_FUNC_SKIP = 2
 type curl_chunk_bgn_callback as function(byval transfer_info as const any ptr, byval ptr as any ptr, byval remains as long) as clong
-#define CURL_CHUNK_END_FUNC_OK 0
-#define CURL_CHUNK_END_FUNC_FAIL 1
+const CURL_CHUNK_END_FUNC_OK = 0
+const CURL_CHUNK_END_FUNC_FAIL = 1
 type curl_chunk_end_callback as function(byval ptr as any ptr) as clong
-#define CURL_FNMATCHFUNC_MATCH 0
-#define CURL_FNMATCHFUNC_NOMATCH 1
-#define CURL_FNMATCHFUNC_FAIL 2
+const CURL_FNMATCHFUNC_MATCH = 0
+const CURL_FNMATCHFUNC_NOMATCH = 1
+const CURL_FNMATCHFUNC_FAIL = 2
 type curl_fnmatch_callback as function(byval ptr as any ptr, byval pattern as const zstring ptr, byval string as const zstring ptr) as long
-#define CURL_SEEKFUNC_OK 0
-#define CURL_SEEKFUNC_FAIL 1
-#define CURL_SEEKFUNC_CANTSEEK 2
+const CURL_SEEKFUNC_OK = 0
+const CURL_SEEKFUNC_FAIL = 1
+const CURL_SEEKFUNC_CANTSEEK = 2
 type curl_seek_callback as function(byval instream as any ptr, byval offset as curl_off_t, byval origin as long) as long
-#define CURL_READFUNC_ABORT &h10000000
-#define CURL_READFUNC_PAUSE &h10000001
+const CURL_READFUNC_ABORT = &h10000000
+const CURL_READFUNC_PAUSE = &h10000001
 type curl_read_callback as function(byval buffer as zstring ptr, byval size as uinteger, byval nitems as uinteger, byval instream as any ptr) as uinteger
 
 type curlsocktype as long
@@ -183,9 +183,9 @@ enum
 	CURLSOCKTYPE_LAST
 end enum
 
-#define CURL_SOCKOPT_OK 0
-#define CURL_SOCKOPT_ERROR 1
-#define CURL_SOCKOPT_ALREADY_CONNECTED 2
+const CURL_SOCKOPT_OK = 0
+const CURL_SOCKOPT_ERROR = 1
+const CURL_SOCKOPT_ALREADY_CONNECTED = 2
 type curl_sockopt_callback as function(byval clientp as any ptr, byval curlfd as curl_socket_t, byval purpose as curlsocktype) as long
 
 type curl_sockaddr
@@ -363,7 +363,7 @@ end enum
 #define CURLE_FTP_COULDNT_STOR_FILE CURLE_UPLOAD_FAILED
 #define CURLE_FTP_PARTIAL_FILE CURLE_PARTIAL_FILE
 #define CURLE_FTP_BAD_DOWNLOAD_RESUME CURLE_BAD_DOWNLOAD_RESUME
-#define CURLE_ALREADY_COMPLETE 99999
+const CURLE_ALREADY_COMPLETE = 99999
 #define CURLOPT_FILE CURLOPT_WRITEDATA
 #define CURLOPT_INFILE CURLOPT_READDATA
 #define CURLOPT_WRITEHEADER CURLOPT_HEADERDATA
@@ -382,29 +382,29 @@ enum
 	CURLPROXY_SOCKS5_HOSTNAME = 7
 end enum
 
-#define CURLAUTH_NONE cast(culong, 0)
-#define CURLAUTH_BASIC (cast(culong, 1) shl 0)
-#define CURLAUTH_DIGEST (cast(culong, 1) shl 1)
-#define CURLAUTH_NEGOTIATE (cast(culong, 1) shl 2)
+const CURLAUTH_NONE = cast(culong, 0)
+const CURLAUTH_BASIC = cast(culong, 1) shl 0
+const CURLAUTH_DIGEST = cast(culong, 1) shl 1
+const CURLAUTH_NEGOTIATE = cast(culong, 1) shl 2
 #define CURLAUTH_GSSNEGOTIATE CURLAUTH_NEGOTIATE
-#define CURLAUTH_NTLM (cast(culong, 1) shl 3)
-#define CURLAUTH_DIGEST_IE (cast(culong, 1) shl 4)
-#define CURLAUTH_NTLM_WB (cast(culong, 1) shl 5)
-#define CURLAUTH_ONLY (cast(culong, 1) shl 31)
+const CURLAUTH_NTLM = cast(culong, 1) shl 3
+const CURLAUTH_DIGEST_IE = cast(culong, 1) shl 4
+const CURLAUTH_NTLM_WB = cast(culong, 1) shl 5
+const CURLAUTH_ONLY = cast(culong, 1) shl 31
 #define CURLAUTH_ANY (not CURLAUTH_DIGEST_IE)
 #define CURLAUTH_ANYSAFE (not (CURLAUTH_BASIC or CURLAUTH_DIGEST_IE))
-#define CURLSSH_AUTH_ANY (not 0)
-#define CURLSSH_AUTH_NONE 0
-#define CURLSSH_AUTH_PUBLICKEY (1 shl 0)
-#define CURLSSH_AUTH_PASSWORD (1 shl 1)
-#define CURLSSH_AUTH_HOST (1 shl 2)
-#define CURLSSH_AUTH_KEYBOARD (1 shl 3)
-#define CURLSSH_AUTH_AGENT (1 shl 4)
+const CURLSSH_AUTH_ANY = not 0
+const CURLSSH_AUTH_NONE = 0
+const CURLSSH_AUTH_PUBLICKEY = 1 shl 0
+const CURLSSH_AUTH_PASSWORD = 1 shl 1
+const CURLSSH_AUTH_HOST = 1 shl 2
+const CURLSSH_AUTH_KEYBOARD = 1 shl 3
+const CURLSSH_AUTH_AGENT = 1 shl 4
 #define CURLSSH_AUTH_DEFAULT CURLSSH_AUTH_ANY
-#define CURLGSSAPI_DELEGATION_NONE 0
-#define CURLGSSAPI_DELEGATION_POLICY_FLAG (1 shl 0)
-#define CURLGSSAPI_DELEGATION_FLAG (1 shl 1)
-#define CURL_ERROR_SIZE 256
+const CURLGSSAPI_DELEGATION_NONE = 0
+const CURLGSSAPI_DELEGATION_POLICY_FLAG = 1 shl 0
+const CURLGSSAPI_DELEGATION_FLAG = 1 shl 1
+const CURL_ERROR_SIZE = 256
 
 type curl_khtype as long
 enum
@@ -448,7 +448,7 @@ enum
 	CURLUSESSL_LAST
 end enum
 
-#define CURLSSLOPT_ALLOW_BEAST (1 shl 0)
+const CURLSSLOPT_ALLOW_BEAST = 1 shl 0
 #define CURLFTPSSL_NONE CURLUSESSL_NONE
 #define CURLFTPSSL_TRY CURLUSESSL_TRY
 #define CURLFTPSSL_CONTROL CURLUSESSL_CONTROL
@@ -489,39 +489,39 @@ enum
 	CURLFTPMETHOD_LAST
 end enum
 
-#define CURLHEADER_UNIFIED 0
-#define CURLHEADER_SEPARATE (1 shl 0)
-#define CURLPROTO_HTTP (1 shl 0)
-#define CURLPROTO_HTTPS (1 shl 1)
-#define CURLPROTO_FTP (1 shl 2)
-#define CURLPROTO_FTPS (1 shl 3)
-#define CURLPROTO_SCP (1 shl 4)
-#define CURLPROTO_SFTP (1 shl 5)
-#define CURLPROTO_TELNET (1 shl 6)
-#define CURLPROTO_LDAP (1 shl 7)
-#define CURLPROTO_LDAPS (1 shl 8)
-#define CURLPROTO_DICT (1 shl 9)
-#define CURLPROTO_FILE (1 shl 10)
-#define CURLPROTO_TFTP (1 shl 11)
-#define CURLPROTO_IMAP (1 shl 12)
-#define CURLPROTO_IMAPS (1 shl 13)
-#define CURLPROTO_POP3 (1 shl 14)
-#define CURLPROTO_POP3S (1 shl 15)
-#define CURLPROTO_SMTP (1 shl 16)
-#define CURLPROTO_SMTPS (1 shl 17)
-#define CURLPROTO_RTSP (1 shl 18)
-#define CURLPROTO_RTMP (1 shl 19)
-#define CURLPROTO_RTMPT (1 shl 20)
-#define CURLPROTO_RTMPE (1 shl 21)
-#define CURLPROTO_RTMPTE (1 shl 22)
-#define CURLPROTO_RTMPS (1 shl 23)
-#define CURLPROTO_RTMPTS (1 shl 24)
-#define CURLPROTO_GOPHER (1 shl 25)
-#define CURLPROTO_ALL (not 0)
-#define CURLOPTTYPE_LONG 0
-#define CURLOPTTYPE_OBJECTPOINT 10000
-#define CURLOPTTYPE_FUNCTIONPOINT 20000
-#define CURLOPTTYPE_OFF_T 30000
+const CURLHEADER_UNIFIED = 0
+const CURLHEADER_SEPARATE = 1 shl 0
+const CURLPROTO_HTTP = 1 shl 0
+const CURLPROTO_HTTPS = 1 shl 1
+const CURLPROTO_FTP = 1 shl 2
+const CURLPROTO_FTPS = 1 shl 3
+const CURLPROTO_SCP = 1 shl 4
+const CURLPROTO_SFTP = 1 shl 5
+const CURLPROTO_TELNET = 1 shl 6
+const CURLPROTO_LDAP = 1 shl 7
+const CURLPROTO_LDAPS = 1 shl 8
+const CURLPROTO_DICT = 1 shl 9
+const CURLPROTO_FILE = 1 shl 10
+const CURLPROTO_TFTP = 1 shl 11
+const CURLPROTO_IMAP = 1 shl 12
+const CURLPROTO_IMAPS = 1 shl 13
+const CURLPROTO_POP3 = 1 shl 14
+const CURLPROTO_POP3S = 1 shl 15
+const CURLPROTO_SMTP = 1 shl 16
+const CURLPROTO_SMTPS = 1 shl 17
+const CURLPROTO_RTSP = 1 shl 18
+const CURLPROTO_RTMP = 1 shl 19
+const CURLPROTO_RTMPT = 1 shl 20
+const CURLPROTO_RTMPE = 1 shl 21
+const CURLPROTO_RTMPTE = 1 shl 22
+const CURLPROTO_RTMPS = 1 shl 23
+const CURLPROTO_RTMPTS = 1 shl 24
+const CURLPROTO_GOPHER = 1 shl 25
+const CURLPROTO_ALL = not 0
+const CURLOPTTYPE_LONG = 0
+const CURLOPTTYPE_OBJECTPOINT = 10000
+const CURLOPTTYPE_FUNCTIONPOINT = 20000
+const CURLOPTTYPE_OFF_T = 30000
 
 type CURLoption as long
 enum
@@ -749,9 +749,9 @@ end enum
 #define CURLOPT_FTP_SSL CURLOPT_USE_SSL
 #define CURLOPT_SSLCERTPASSWD CURLOPT_KEYPASSWD
 #define CURLOPT_KRB4LEVEL CURLOPT_KRBLEVEL
-#define CURL_IPRESOLVE_WHATEVER 0
-#define CURL_IPRESOLVE_V4 1
-#define CURL_IPRESOLVE_V6 2
+const CURL_IPRESOLVE_WHATEVER = 0
+const CURL_IPRESOLVE_V4 = 1
+const CURL_IPRESOLVE_V6 = 2
 #define CURLOPT_RTSPHEADER CURLOPT_HTTPHEADER
 
 enum
@@ -804,10 +804,10 @@ enum
 	CURL_TLSAUTH_LAST
 end enum
 
-#define CURL_REDIR_GET_ALL 0
-#define CURL_REDIR_POST_301 1
-#define CURL_REDIR_POST_302 2
-#define CURL_REDIR_POST_303 4
+const CURL_REDIR_GET_ALL = 0
+const CURL_REDIR_POST_301 = 1
+const CURL_REDIR_POST_302 = 2
+const CURL_REDIR_POST_303 = 4
 #define CURL_REDIR_POST_ALL ((CURL_REDIR_POST_301 or CURL_REDIR_POST_302) or CURL_REDIR_POST_303)
 
 type curl_TimeCond as long
@@ -914,12 +914,12 @@ type curl_tlssessioninfo
 	internals as any ptr
 end type
 
-#define CURLINFO_STRING &h100000
-#define CURLINFO_LONG &h200000
-#define CURLINFO_DOUBLE &h300000
-#define CURLINFO_SLIST &h400000
-#define CURLINFO_MASK &h0fffff
-#define CURLINFO_TYPEMASK &hf00000
+const CURLINFO_STRING = &h100000
+const CURLINFO_LONG = &h200000
+const CURLINFO_DOUBLE = &h300000
+const CURLINFO_SLIST = &h400000
+const CURLINFO_MASK = &h0fffff
+const CURLINFO_TYPEMASK = &hf00000
 
 type CURLINFO as long
 enum
@@ -983,12 +983,12 @@ enum
 	CURLCLOSEPOLICY_LAST
 end enum
 
-#define CURL_GLOBAL_SSL (1 shl 0)
-#define CURL_GLOBAL_WIN32 (1 shl 1)
+const CURL_GLOBAL_SSL = 1 shl 0
+const CURL_GLOBAL_WIN32 = 1 shl 1
 #define CURL_GLOBAL_ALL (CURL_GLOBAL_SSL or CURL_GLOBAL_WIN32)
-#define CURL_GLOBAL_NOTHING 0
+const CURL_GLOBAL_NOTHING = 0
 #define CURL_GLOBAL_DEFAULT CURL_GLOBAL_ALL
-#define CURL_GLOBAL_ACK_EINTR (1 shl 2)
+const CURL_GLOBAL_ACK_EINTR = 1 shl 2
 
 type curl_lock_data as long
 enum
@@ -1067,34 +1067,34 @@ type curl_version_info_data
 	libssh_version as const zstring ptr
 end type
 
-#define CURL_VERSION_IPV6 (1 shl 0)
-#define CURL_VERSION_KERBEROS4 (1 shl 1)
-#define CURL_VERSION_SSL (1 shl 2)
-#define CURL_VERSION_LIBZ (1 shl 3)
-#define CURL_VERSION_NTLM (1 shl 4)
-#define CURL_VERSION_GSSNEGOTIATE (1 shl 5)
-#define CURL_VERSION_DEBUG (1 shl 6)
-#define CURL_VERSION_ASYNCHDNS (1 shl 7)
-#define CURL_VERSION_SPNEGO (1 shl 8)
-#define CURL_VERSION_LARGEFILE (1 shl 9)
-#define CURL_VERSION_IDN (1 shl 10)
-#define CURL_VERSION_SSPI (1 shl 11)
-#define CURL_VERSION_CONV (1 shl 12)
-#define CURL_VERSION_CURLDEBUG (1 shl 13)
-#define CURL_VERSION_TLSAUTH_SRP (1 shl 14)
-#define CURL_VERSION_NTLM_WB (1 shl 15)
-#define CURL_VERSION_HTTP2 (1 shl 16)
-#define CURL_VERSION_GSSAPI (1 shl 17)
+const CURL_VERSION_IPV6 = 1 shl 0
+const CURL_VERSION_KERBEROS4 = 1 shl 1
+const CURL_VERSION_SSL = 1 shl 2
+const CURL_VERSION_LIBZ = 1 shl 3
+const CURL_VERSION_NTLM = 1 shl 4
+const CURL_VERSION_GSSNEGOTIATE = 1 shl 5
+const CURL_VERSION_DEBUG = 1 shl 6
+const CURL_VERSION_ASYNCHDNS = 1 shl 7
+const CURL_VERSION_SPNEGO = 1 shl 8
+const CURL_VERSION_LARGEFILE = 1 shl 9
+const CURL_VERSION_IDN = 1 shl 10
+const CURL_VERSION_SSPI = 1 shl 11
+const CURL_VERSION_CONV = 1 shl 12
+const CURL_VERSION_CURLDEBUG = 1 shl 13
+const CURL_VERSION_TLSAUTH_SRP = 1 shl 14
+const CURL_VERSION_NTLM_WB = 1 shl 15
+const CURL_VERSION_HTTP2 = 1 shl 16
+const CURL_VERSION_GSSAPI = 1 shl 17
 
 declare function curl_version_info(byval as CURLversion) as curl_version_info_data ptr
 declare function curl_easy_strerror(byval as CURLcode) as const zstring ptr
 declare function curl_share_strerror(byval as CURLSHcode) as const zstring ptr
 declare function curl_easy_pause(byval handle as CURL ptr, byval bitmask as long) as CURLcode
 
-#define CURLPAUSE_RECV (1 shl 0)
-#define CURLPAUSE_RECV_CONT 0
-#define CURLPAUSE_SEND (1 shl 2)
-#define CURLPAUSE_SEND_CONT 0
+const CURLPAUSE_RECV = 1 shl 0
+const CURLPAUSE_RECV_CONT = 0
+const CURLPAUSE_SEND = 1 shl 2
+const CURLPAUSE_SEND_CONT = 0
 #define CURLPAUSE_ALL (CURLPAUSE_RECV or CURLPAUSE_SEND)
 #define CURLPAUSE_CONT (CURLPAUSE_RECV_CONT or CURLPAUSE_SEND_CONT)
 #define __CURL_EASY_H
@@ -1145,9 +1145,9 @@ type CURLMsg
 	data as CURLMsg_data
 end type
 
-#define CURL_WAIT_POLLIN &h0001
-#define CURL_WAIT_POLLPRI &h0002
-#define CURL_WAIT_POLLOUT &h0004
+const CURL_WAIT_POLLIN = &h0001
+const CURL_WAIT_POLLPRI = &h0002
+const CURL_WAIT_POLLOUT = &h0004
 
 type curl_waitfd
 	fd as curl_socket_t
@@ -1165,15 +1165,15 @@ declare function curl_multi_cleanup(byval multi_handle as CURLM ptr) as CURLMcod
 declare function curl_multi_info_read(byval multi_handle as CURLM ptr, byval msgs_in_queue as long ptr) as CURLMsg ptr
 declare function curl_multi_strerror(byval as CURLMcode) as const zstring ptr
 
-#define CURL_POLL_NONE 0
-#define CURL_POLL_IN 1
-#define CURL_POLL_OUT 2
-#define CURL_POLL_INOUT 3
-#define CURL_POLL_REMOVE 4
+const CURL_POLL_NONE = 0
+const CURL_POLL_IN = 1
+const CURL_POLL_OUT = 2
+const CURL_POLL_INOUT = 3
+const CURL_POLL_REMOVE = 4
 #define CURL_SOCKET_TIMEOUT CURL_SOCKET_BAD
-#define CURL_CSELECT_IN &h01
-#define CURL_CSELECT_OUT &h02
-#define CURL_CSELECT_ERR &h04
+const CURL_CSELECT_IN = &h01
+const CURL_CSELECT_OUT = &h02
+const CURL_CSELECT_ERR = &h04
 type curl_socket_callback as function(byval easy as CURL ptr, byval s as curl_socket_t, byval what as long, byval userp as any ptr, byval socketp as any ptr) as long
 type curl_multi_timer_callback as function(byval multi as CURLM ptr, byval timeout_ms as clong, byval userp as any ptr) as long
 

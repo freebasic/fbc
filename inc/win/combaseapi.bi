@@ -125,11 +125,11 @@ declare sub CoFreeUnusedLibrariesEx(byval dwUnloadDelay as DWORD, byval dwReserv
 declare function CoInitializeSecurity(byval pSecDesc as PSECURITY_DESCRIPTOR, byval cAuthSvc as LONG, byval asAuthSvc as SOLE_AUTHENTICATION_SERVICE ptr, byval pReserved1 as any ptr, byval dwAuthnLevel as DWORD, byval dwImpLevel as DWORD, byval pAuthList as any ptr, byval dwCapabilities as DWORD, byval pReserved3 as any ptr) as HRESULT
 declare function CoSwitchCallContext(byval pNewObject as IUnknown ptr, byval ppOldObject as IUnknown ptr ptr) as HRESULT
 
-#define COM_RIGHTS_EXECUTE 1
-#define COM_RIGHTS_EXECUTE_LOCAL 2
-#define COM_RIGHTS_EXECUTE_REMOTE 4
-#define COM_RIGHTS_ACTIVATE_LOCAL 8
-#define COM_RIGHTS_ACTIVATE_REMOTE 16
+const COM_RIGHTS_EXECUTE = 1
+const COM_RIGHTS_EXECUTE_LOCAL = 2
+const COM_RIGHTS_EXECUTE_REMOTE = 4
+const COM_RIGHTS_ACTIVATE_LOCAL = 8
+const COM_RIGHTS_ACTIVATE_REMOTE = 16
 declare function CoCreateInstanceFromApp(byval Clsid as const IID const ptr, byval punkOuter as IUnknown ptr, byval dwClsCtx as DWORD, byval reserved as PVOID, byval dwCount as DWORD, byval pResults as MULTI_QI ptr) as HRESULT
 declare function CoIsHandlerConnected(byval pUnk as LPUNKNOWN) as WINBOOL
 
@@ -184,7 +184,7 @@ type COWAIT_FLAGS as tagCOWAIT_FLAGS
 	end enum
 #endif
 
-#define CWMO_MAX_HANDLES 56
+const CWMO_MAX_HANDLES = 56
 declare function CoGetTreatAsClass(byval clsidOld as const IID const ptr, byval pClsidNew as LPCLSID) as HRESULT
 declare function CoInvalidateRemoteMachineBindings(byval pszMachineName as LPOLESTR) as HRESULT
 type LPFNGETCLASSOBJECT as function(byval as const IID const ptr, byval as const IID const ptr, byval as LPVOID ptr) as HRESULT

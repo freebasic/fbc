@@ -36,28 +36,28 @@ end type
 #define SIO_GET_INTERFACE_LIST_EX _IOR(asc("t"), 126, u_long)
 #define SIO_SET_MULTICAST_FILTER _IOW(asc("t"), 125, u_long)
 #define SIO_GET_MULTICAST_FILTER _IOW(asc("t"), 124 or IOC_IN, u_long)
-#define IP_OPTIONS 1
-#define IP_HDRINCL 2
-#define IP_TOS 3
-#define IP_TTL 4
-#define IP_MULTICAST_IF 9
-#define IP_MULTICAST_TTL 10
-#define IP_MULTICAST_LOOP 11
-#define IP_ADD_MEMBERSHIP 12
-#define IP_DROP_MEMBERSHIP 13
-#define IP_DONTFRAGMENT 14
-#define IP_ADD_SOURCE_MEMBERSHIP 15
-#define IP_DROP_SOURCE_MEMBERSHIP 16
-#define IP_BLOCK_SOURCE 17
-#define IP_UNBLOCK_SOURCE 18
-#define IP_PKTINFO 19
-#define IP_RECEIVE_BROADCAST 22
-#define PROTECTION_LEVEL_UNRESTRICTED 10
-#define PROTECTION_LEVEL_DEFAULT 20
-#define PROTECTION_LEVEL_RESTRICTED 30
-#define UDP_NOCHECKSUM 1
-#define UDP_CHECKSUM_COVERAGE 20
-#define TCP_EXPEDITED_1122 &h0002
+const IP_OPTIONS = 1
+const IP_HDRINCL = 2
+const IP_TOS = 3
+const IP_TTL = 4
+const IP_MULTICAST_IF = 9
+const IP_MULTICAST_TTL = 10
+const IP_MULTICAST_LOOP = 11
+const IP_ADD_MEMBERSHIP = 12
+const IP_DROP_MEMBERSHIP = 13
+const IP_DONTFRAGMENT = 14
+const IP_ADD_SOURCE_MEMBERSHIP = 15
+const IP_DROP_SOURCE_MEMBERSHIP = 16
+const IP_BLOCK_SOURCE = 17
+const IP_UNBLOCK_SOURCE = 18
+const IP_PKTINFO = 19
+const IP_RECEIVE_BROADCAST = 22
+const PROTECTION_LEVEL_UNRESTRICTED = 10
+const PROTECTION_LEVEL_DEFAULT = 20
+const PROTECTION_LEVEL_RESTRICTED = 30
+const UDP_NOCHECKSUM = 1
+const UDP_CHECKSUM_COVERAGE = 20
+const TCP_EXPEDITED_1122 = &h0002
 #define SS_PORT(ssp) cptr(SOCKADDR_IN ptr, (ssp))->sin_port
 #define IN6ADDR_ANY_INIT (0)
 #define IN6ADDR_LOOPBACK_INIT (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1)
@@ -159,11 +159,11 @@ end type
 
 type INTERFACE_INFO_EX as _INTERFACE_INFO_EX
 type LPINTERFACE_INFO_EX as _INTERFACE_INFO_EX ptr
-#define IFF_UP &h00000001
-#define IFF_BROADCAST &h00000002
-#define IFF_LOOPBACK &h00000004
-#define IFF_POINTTOPOINT &h00000008
-#define IFF_MULTICAST &h00000010
+const IFF_UP = &h00000001
+const IFF_BROADCAST = &h00000002
+const IFF_LOOPBACK = &h00000004
+const IFF_POINTTOPOINT = &h00000008
+const IFF_MULTICAST = &h00000010
 
 type IN_PKTINFO
 	ipi_addr as IN_ADDR
@@ -183,7 +183,7 @@ end type
 #define EAI_NONAME WSAHOST_NOT_FOUND
 #define EAI_SERVICE WSATYPE_NOT_FOUND
 #define EAI_SOCKTYPE WSAESOCKTNOSUPPORT
-#define EAI_NODATA 11004
+const EAI_NODATA = 11004
 
 type addrinfo
 	ai_flags as long
@@ -221,15 +221,15 @@ type PADDRINFOW as ADDRINFOW ptr
 #endif
 
 type LPADDRINFO as ADDRINFOA ptr
-#define AI_PASSIVE &h1
+const AI_PASSIVE = &h1
 const AI_CANONNAME = &h2
-#define AI_NUMERICHOST &h4
+const AI_NUMERICHOST = &h4
 
 #if _WIN32_WINNT = &h0602
-	#define AI_ADDRCONFIG &h0400
-	#define AI_NON_AUTHORITATIVE &h04000
-	#define AI_SECURE &h08000
-	#define AI_RETURN_PREFERRED_NAMES &h010000
+	const AI_ADDRCONFIG = &h0400
+	const AI_NON_AUTHORITATIVE = &h04000
+	const AI_SECURE = &h08000
+	const AI_RETURN_PREFERRED_NAMES = &h010000
 #endif
 
 #ifdef UNICODE
@@ -282,18 +282,18 @@ type socklen_t as long
 	#define gai_strerror gai_strerrorA
 #endif
 
-#define GAI_STRERROR_BUFFER_SIZE 1024
+const GAI_STRERROR_BUFFER_SIZE = 1024
 declare function gai_strerrorA(byval as long) as zstring ptr
 declare function gai_strerrorW(byval as long) as wstring ptr
-#define NI_MAXHOST 1025
-#define NI_MAXSERV 32
-#define INET_ADDRSTRLEN 22
-#define INET6_ADDRSTRLEN 65
-#define NI_NOFQDN &h01
-#define NI_NUMERICHOST &h02
-#define NI_NAMEREQD &h04
-#define NI_NUMERICSERV &h08
-#define NI_DGRAM &h10
+const NI_MAXHOST = 1025
+const NI_MAXSERV = 32
+const INET_ADDRSTRLEN = 22
+const INET6_ADDRSTRLEN = 65
+const NI_NOFQDN = &h01
+const NI_NUMERICHOST = &h02
+const NI_NAMEREQD = &h04
+const NI_NUMERICSERV = &h08
+const NI_DGRAM = &h10
 
 #if defined(UNICODE) and (_WIN32_WINNT = &h0602)
 	#define addrinfoEx addrinfoExW

@@ -19,19 +19,19 @@ declare function SHGetMalloc(byval ppMalloc as IMalloc ptr ptr) as HRESULT
 declare function SHAlloc(byval cb as SIZE_T_) as any ptr
 declare sub SHFree(byval pv as any ptr)
 
-#define GIL_OPENICON &h1
-#define GIL_FORSHELL &h2
-#define GIL_ASYNC &h20
-#define GIL_DEFAULTICON &h40
-#define GIL_FORSHORTCUT &h80
-#define GIL_CHECKSHIELD &h200
-#define GIL_SIMULATEDOC &h1
-#define GIL_PERINSTANCE &h2
-#define GIL_PERCLASS &h4
-#define GIL_NOTFILENAME &h8
-#define GIL_DONTCACHE &h10
-#define GIL_SHIELD &h200
-#define GIL_FORCENOSHIELD &h400
+const GIL_OPENICON = &h1
+const GIL_FORSHELL = &h2
+const GIL_ASYNC = &h20
+const GIL_DEFAULTICON = &h40
+const GIL_FORSHORTCUT = &h80
+const GIL_CHECKSHIELD = &h200
+const GIL_SIMULATEDOC = &h1
+const GIL_PERINSTANCE = &h2
+const GIL_PERCLASS = &h4
+const GIL_NOTFILENAME = &h8
+const GIL_DONTCACHE = &h10
+const GIL_SHIELD = &h200
+const GIL_FORCENOSHIELD = &h400
 type IExtractIconAVtbl as IExtractIconAVtbl_
 
 type IExtractIconA field = 1
@@ -79,8 +79,8 @@ type IShellIconOverlayIdentifierVtbl_ field = 1
 	GetPriority as function(byval This as IShellIconOverlayIdentifier ptr, byval pIPriority as long ptr) as HRESULT
 end type
 
-#define ISIOI_ICONFILE &h1
-#define ISIOI_ICONINDEX &h2
+const ISIOI_ICONFILE = &h1
+const ISIOI_ICONINDEX = &h2
 type IShellIconOverlayManagerVtbl as IShellIconOverlayManagerVtbl_
 
 type IShellIconOverlayManager field = 1
@@ -95,12 +95,12 @@ type IShellIconOverlayManagerVtbl_ field = 1
 	OverlayIndexFromImageIndex as function(byval This as IShellIconOverlayManager ptr, byval iImage as long, byval piIndex as long ptr, byval fAdd as WINBOOL) as HRESULT
 end type
 
-#define SIOM_OVERLAYINDEX 1
-#define SIOM_ICONINDEX 2
-#define SIOM_RESERVED_SHARED 0
-#define SIOM_RESERVED_LINK 1
-#define SIOM_RESERVED_SLOWFILE 2
-#define SIOM_RESERVED_DEFAULT 3
+const SIOM_OVERLAYINDEX = 1
+const SIOM_ICONINDEX = 2
+const SIOM_RESERVED_SHARED = 0
+const SIOM_RESERVED_LINK = 1
+const SIOM_RESERVED_SLOWFILE = 2
+const SIOM_RESERVED_DEFAULT = 3
 type IShellIconOverlayVtbl as IShellIconOverlayVtbl_
 
 type IShellIconOverlay field = 1
@@ -112,12 +112,12 @@ type IShellIconOverlayVtbl_ field = 1
 	GetOverlayIconIndex as function(byval This as IShellIconOverlay ptr, byval pidl as LPCITEMIDLIST, byval pIconIndex as long ptr) as HRESULT
 end type
 
-#define OI_DEFAULT &h0
-#define OI_ASYNC &hffffeeee
-#define IDO_SHGIOI_SHARE &h0fffffff
-#define IDO_SHGIOI_LINK &h0ffffffe
-#define IDO_SHGIOI_SLOWFILE &h0fffffffd
-#define IDO_SHGIOI_DEFAULT &h0fffffffc
+const OI_DEFAULT = &h0
+const OI_ASYNC = &hffffeeee
+const IDO_SHGIOI_SHARE = &h0fffffff
+const IDO_SHGIOI_LINK = &h0ffffffe
+const IDO_SHGIOI_SLOWFILE = &h0fffffffd
+const IDO_SHGIOI_DEFAULT = &h0fffffffc
 declare function SHGetIconOverlayIndexA(byval pszIconPath as LPCSTR, byval iIconIndex as long) as long
 declare function SHGetIconOverlayIndexW(byval pszIconPath as LPCWSTR, byval iIconIndex as long) as long
 
@@ -210,7 +210,7 @@ type NT_CONSOLE_PROPS field = 1
 end type
 
 type LPNT_CONSOLE_PROPS as NT_CONSOLE_PROPS ptr
-#define NT_CONSOLE_PROPS_SIG &ha0000002
+const NT_CONSOLE_PROPS_SIG = &ha0000002
 
 type NT_FE_CONSOLE_PROPS field = 1
 	union
@@ -224,7 +224,7 @@ type NT_FE_CONSOLE_PROPS field = 1
 end type
 
 type LPNT_FE_CONSOLE_PROPS as NT_FE_CONSOLE_PROPS ptr
-#define NT_FE_CONSOLE_PROPS_SIG &ha0000004
+const NT_FE_CONSOLE_PROPS_SIG = &ha0000004
 
 type EXP_DARWIN_LINK field = 1
 	union
@@ -239,8 +239,8 @@ type EXP_DARWIN_LINK field = 1
 end type
 
 type LPEXP_DARWIN_LINK as EXP_DARWIN_LINK ptr
-#define EXP_DARWIN_ID_SIG &ha0000006
-#define EXP_SPECIAL_FOLDER_SIG &ha0000005
+const EXP_DARWIN_ID_SIG = &ha0000006
+const EXP_SPECIAL_FOLDER_SIG = &ha0000005
 
 type EXP_SPECIAL_FOLDER field = 1
 	cbSize as DWORD
@@ -259,8 +259,8 @@ type EXP_SZ_LINK field = 1
 end type
 
 type LPEXP_SZ_LINK as EXP_SZ_LINK ptr
-#define EXP_SZ_LINK_SIG &ha0000001
-#define EXP_SZ_ICON_SIG &ha0000007
+const EXP_SZ_LINK_SIG = &ha0000001
+const EXP_SZ_ICON_SIG = &ha0000007
 
 #if _WIN32_WINNT = &h0602
 	type EXP_PROPERTYSTORAGE field = 1
@@ -269,7 +269,7 @@ type LPEXP_SZ_LINK as EXP_SZ_LINK ptr
 		abPropertyStorage(0 to 0) as UBYTE
 	end type
 
-	#define EXP_PROPERTYSTORAGE_SIG &ha0000009
+	const EXP_PROPERTYSTORAGE_SIG = &ha0000009
 #endif
 
 type IShellExecuteHookAVtbl as IShellExecuteHookAVtbl_
@@ -434,11 +434,11 @@ type LPCOPYHOOKW as ICopyHookW ptr
 	end type
 
 	type LPFVSHOWINFO as FVSHOWINFO ptr
-	#define FVSIF_RECT &h00000001
-	#define FVSIF_PINNED &h00000002
-	#define FVSIF_NEWFAILED &h08000000
-	#define FVSIF_NEWFILE &h80000000
-	#define FVSIF_CANVIEWIT &h40000000
+	const FVSIF_RECT = &h00000001
+	const FVSIF_PINNED = &h00000002
+	const FVSIF_NEWFAILED = &h08000000
+	const FVSIF_NEWFILE = &h80000000
+	const FVSIF_CANVIEWIT = &h40000000
 	type IFileViewerAVtbl as IFileViewerAVtbl_
 
 	type IFileViewerA field = 1
@@ -475,12 +475,12 @@ type LPCOPYHOOKW as ICopyHookW ptr
 	#define LPFILEVIEWER LPFILEVIEWERA
 #endif
 
-#define FCIDM_SHVIEWFIRST &h0000
-#define FCIDM_SHVIEWLAST &h7fff
-#define FCIDM_BROWSERFIRST &ha000
-#define FCIDM_BROWSERLAST &hbf00
-#define FCIDM_GLOBALFIRST &h8000
-#define FCIDM_GLOBALLAST &h9fff
+const FCIDM_SHVIEWFIRST = &h0000
+const FCIDM_SHVIEWLAST = &h7fff
+const FCIDM_BROWSERFIRST = &ha000
+const FCIDM_BROWSERLAST = &hbf00
+const FCIDM_GLOBALFIRST = &h8000
+const FCIDM_GLOBALLAST = &h9fff
 #define FCIDM_MENU_FILE (FCIDM_GLOBALFIRST + &h0000)
 #define FCIDM_MENU_EDIT (FCIDM_GLOBALFIRST + &h0040)
 #define FCIDM_MENU_VIEW (FCIDM_GLOBALFIRST + &h0080)
@@ -493,23 +493,23 @@ type LPCOPYHOOKW as ICopyHookW ptr
 #define FCIDM_MENU_FAVORITES (FCIDM_GLOBALFIRST + &h0170)
 #define FCIDM_TOOLBAR (FCIDM_BROWSERFIRST + 0)
 #define FCIDM_STATUS (FCIDM_BROWSERFIRST + 1)
-#define IDC_OFFLINE_HAND 103
+const IDC_OFFLINE_HAND = 103
 
 #if _WIN32_WINNT = &h0602
-	#define IDC_PANTOOL_HAND_OPEN 104
-	#define IDC_PANTOOL_HAND_CLOSED 105
+	const IDC_PANTOOL_HAND_OPEN = 104
+	const IDC_PANTOOL_HAND_CLOSED = 105
 #endif
 
 #define PANE_NONE cast(DWORD, -1)
-#define PANE_ZONE 1
-#define PANE_OFFLINE 2
-#define PANE_PRINTER 3
-#define PANE_SSL 4
-#define PANE_NAVIGATION 5
-#define PANE_PROGRESS 6
+const PANE_ZONE = 1
+const PANE_OFFLINE = 2
+const PANE_PRINTER = 3
+const PANE_SSL = 4
+const PANE_NAVIGATION = 5
+const PANE_PROGRESS = 6
 
 #if (_WIN32_WINNT = &h0502) or (_WIN32_WINNT = &h0602)
-	#define PANE_PRIVACY 7
+	const PANE_PRIVACY = 7
 #endif
 
 declare function ILClone(byval pidl as LPCITEMIDLIST) as LPITEMIDLIST
@@ -577,8 +577,8 @@ declare function SHCreateDirectoryExW(byval hwnd as HWND, byval pszPath as LPCWS
 #endif
 
 #if _WIN32_WINNT = &h0602
-	#define OFASI_EDIT &h0001
-	#define OFASI_OPENDESKTOP &h0002
+	const OFASI_EDIT = &h0001
+	const OFASI_OPENDESKTOP = &h0002
 #elseif (not defined(UNICODE)) and ((_WIN32_WINNT = &h0400) or (_WIN32_WINNT = &h0502))
 	#define SHGetPathFromIDList SHGetPathFromIDListA
 	#define SHCreateDirectoryEx SHCreateDirectoryExA
@@ -587,69 +587,69 @@ declare function SHCreateDirectoryExW(byval hwnd as HWND, byval pszPath as LPCWS
 declare function SHOpenFolderAndSelectItems(byval pidlFolder as LPCITEMIDLIST, byval cidl as UINT, byval apidl as LPCITEMIDLIST ptr, byval dwFlags as DWORD) as HRESULT
 declare function SHCreateShellItem(byval pidlParent as LPCITEMIDLIST, byval psfParent as IShellFolder ptr, byval pidl as LPCITEMIDLIST, byval ppsi as IShellItem ptr ptr) as HRESULT
 #define REGSTR_PATH_SPECIAL_FOLDERS REGSTR_PATH_EXPLORER __TEXT(!"\\Shell Folders")
-#define CSIDL_DESKTOP &h0000
-#define CSIDL_INTERNET &h0001
-#define CSIDL_PROGRAMS &h0002
-#define CSIDL_CONTROLS &h0003
-#define CSIDL_PRINTERS &h0004
-#define CSIDL_PERSONAL &h0005
-#define CSIDL_FAVORITES &h0006
-#define CSIDL_STARTUP &h0007
-#define CSIDL_RECENT &h0008
-#define CSIDL_SENDTO &h0009
-#define CSIDL_BITBUCKET &h000a
-#define CSIDL_STARTMENU &h000b
+const CSIDL_DESKTOP = &h0000
+const CSIDL_INTERNET = &h0001
+const CSIDL_PROGRAMS = &h0002
+const CSIDL_CONTROLS = &h0003
+const CSIDL_PRINTERS = &h0004
+const CSIDL_PERSONAL = &h0005
+const CSIDL_FAVORITES = &h0006
+const CSIDL_STARTUP = &h0007
+const CSIDL_RECENT = &h0008
+const CSIDL_SENDTO = &h0009
+const CSIDL_BITBUCKET = &h000a
+const CSIDL_STARTMENU = &h000b
 #define CSIDL_MYDOCUMENTS CSIDL_PERSONAL
-#define CSIDL_MYMUSIC &h000d
-#define CSIDL_MYVIDEO &h000e
-#define CSIDL_DESKTOPDIRECTORY &h0010
-#define CSIDL_DRIVES &h0011
-#define CSIDL_NETWORK &h0012
-#define CSIDL_NETHOOD &h0013
-#define CSIDL_FONTS &h0014
-#define CSIDL_TEMPLATES &h0015
-#define CSIDL_COMMON_STARTMENU &h0016
-#define CSIDL_COMMON_PROGRAMS &h0017
-#define CSIDL_COMMON_STARTUP &h0018
-#define CSIDL_COMMON_DESKTOPDIRECTORY &h0019
-#define CSIDL_APPDATA &h001a
-#define CSIDL_PRINTHOOD &h001b
-#define CSIDL_LOCAL_APPDATA &h001c
-#define CSIDL_ALTSTARTUP &h001d
-#define CSIDL_COMMON_ALTSTARTUP &h001e
-#define CSIDL_COMMON_FAVORITES &h001f
-#define CSIDL_INTERNET_CACHE &h0020
-#define CSIDL_COOKIES &h0021
-#define CSIDL_HISTORY &h0022
-#define CSIDL_COMMON_APPDATA &h0023
-#define CSIDL_WINDOWS &h0024
-#define CSIDL_SYSTEM &h0025
-#define CSIDL_PROGRAM_FILES &h0026
-#define CSIDL_MYPICTURES &h0027
-#define CSIDL_PROFILE &h0028
-#define CSIDL_SYSTEMX86 &h0029
-#define CSIDL_PROGRAM_FILESX86 &h002a
-#define CSIDL_PROGRAM_FILES_COMMON &h002b
-#define CSIDL_PROGRAM_FILES_COMMONX86 &h002c
-#define CSIDL_COMMON_TEMPLATES &h002d
-#define CSIDL_COMMON_DOCUMENTS &h002e
-#define CSIDL_COMMON_ADMINTOOLS &h002f
-#define CSIDL_ADMINTOOLS &h0030
-#define CSIDL_CONNECTIONS &h0031
-#define CSIDL_COMMON_MUSIC &h0035
-#define CSIDL_COMMON_PICTURES &h0036
-#define CSIDL_COMMON_VIDEO &h0037
-#define CSIDL_RESOURCES &h0038
-#define CSIDL_RESOURCES_LOCALIZED &h0039
-#define CSIDL_COMMON_OEM_LINKS &h003a
-#define CSIDL_CDBURN_AREA &h003b
-#define CSIDL_COMPUTERSNEARME &h003d
-#define CSIDL_FLAG_CREATE &h8000
-#define CSIDL_FLAG_DONT_VERIFY &h4000
-#define CSIDL_FLAG_DONT_UNEXPAND &h2000
-#define CSIDL_FLAG_NO_ALIAS &h1000
-#define CSIDL_FLAG_PER_USER_INIT &h0800
-#define CSIDL_FLAG_MASK &hff00
+const CSIDL_MYMUSIC = &h000d
+const CSIDL_MYVIDEO = &h000e
+const CSIDL_DESKTOPDIRECTORY = &h0010
+const CSIDL_DRIVES = &h0011
+const CSIDL_NETWORK = &h0012
+const CSIDL_NETHOOD = &h0013
+const CSIDL_FONTS = &h0014
+const CSIDL_TEMPLATES = &h0015
+const CSIDL_COMMON_STARTMENU = &h0016
+const CSIDL_COMMON_PROGRAMS = &h0017
+const CSIDL_COMMON_STARTUP = &h0018
+const CSIDL_COMMON_DESKTOPDIRECTORY = &h0019
+const CSIDL_APPDATA = &h001a
+const CSIDL_PRINTHOOD = &h001b
+const CSIDL_LOCAL_APPDATA = &h001c
+const CSIDL_ALTSTARTUP = &h001d
+const CSIDL_COMMON_ALTSTARTUP = &h001e
+const CSIDL_COMMON_FAVORITES = &h001f
+const CSIDL_INTERNET_CACHE = &h0020
+const CSIDL_COOKIES = &h0021
+const CSIDL_HISTORY = &h0022
+const CSIDL_COMMON_APPDATA = &h0023
+const CSIDL_WINDOWS = &h0024
+const CSIDL_SYSTEM = &h0025
+const CSIDL_PROGRAM_FILES = &h0026
+const CSIDL_MYPICTURES = &h0027
+const CSIDL_PROFILE = &h0028
+const CSIDL_SYSTEMX86 = &h0029
+const CSIDL_PROGRAM_FILESX86 = &h002a
+const CSIDL_PROGRAM_FILES_COMMON = &h002b
+const CSIDL_PROGRAM_FILES_COMMONX86 = &h002c
+const CSIDL_COMMON_TEMPLATES = &h002d
+const CSIDL_COMMON_DOCUMENTS = &h002e
+const CSIDL_COMMON_ADMINTOOLS = &h002f
+const CSIDL_ADMINTOOLS = &h0030
+const CSIDL_CONNECTIONS = &h0031
+const CSIDL_COMMON_MUSIC = &h0035
+const CSIDL_COMMON_PICTURES = &h0036
+const CSIDL_COMMON_VIDEO = &h0037
+const CSIDL_RESOURCES = &h0038
+const CSIDL_RESOURCES_LOCALIZED = &h0039
+const CSIDL_COMMON_OEM_LINKS = &h003a
+const CSIDL_CDBURN_AREA = &h003b
+const CSIDL_COMPUTERSNEARME = &h003d
+const CSIDL_FLAG_CREATE = &h8000
+const CSIDL_FLAG_DONT_VERIFY = &h4000
+const CSIDL_FLAG_DONT_UNEXPAND = &h2000
+const CSIDL_FLAG_NO_ALIAS = &h1000
+const CSIDL_FLAG_PER_USER_INIT = &h0800
+const CSIDL_FLAG_MASK = &hff00
 
 declare function SHGetSpecialFolderLocation(byval hwnd as HWND, byval csidl as long, byval ppidl as LPITEMIDLIST ptr) as HRESULT
 declare function SHCloneSpecialIDList(byval hwnd as HWND, byval csidl as long, byval fCreate as WINBOOL) as LPITEMIDLIST
@@ -710,17 +710,17 @@ declare function SHGetFolderPathAndSubDirW(byval hwnd as HWND, byval csidl as lo
 	#define SHGetFolderPathAndSubDir SHGetFolderPathAndSubDirA
 #endif
 
-#define FCS_READ &h00000001
-#define FCS_FORCEWRITE &h00000002
+const FCS_READ = &h00000001
+const FCS_FORCEWRITE = &h00000002
 #define FCS_WRITE (FCS_READ or FCS_FORCEWRITE)
-#define FCS_FLAG_DRAGDROP 2
-#define FCSM_VIEWID &h00000001
-#define FCSM_WEBVIEWTEMPLATE &h00000002
-#define FCSM_INFOTIP &h00000004
-#define FCSM_CLSID &h00000008
-#define FCSM_ICONFILE &h00000010
-#define FCSM_LOGO &h00000020
-#define FCSM_FLAGS &h00000040
+const FCS_FLAG_DRAGDROP = 2
+const FCSM_VIEWID = &h00000001
+const FCSM_WEBVIEWTEMPLATE = &h00000002
+const FCSM_INFOTIP = &h00000004
+const FCSM_CLSID = &h00000008
+const FCSM_ICONFILE = &h00000010
+const FCSM_LOGO = &h00000020
+const FCSM_FLAGS = &h00000040
 
 #if _WIN32_WINNT = &h0602
 	type SHFOLDERCUSTOMSETTINGS
@@ -787,28 +787,28 @@ type LPBROWSEINFOW as _browseinfoW ptr
 	#define LPBROWSEINFO LPBROWSEINFOA
 #endif
 
-#define BIF_RETURNONLYFSDIRS &h00000001
-#define BIF_DONTGOBELOWDOMAIN &h00000002
-#define BIF_STATUSTEXT &h00000004
-#define BIF_RETURNFSANCESTORS &h00000008
-#define BIF_EDITBOX &h00000010
-#define BIF_VALIDATE &h00000020
-#define BIF_NEWDIALOGSTYLE &h00000040
+const BIF_RETURNONLYFSDIRS = &h00000001
+const BIF_DONTGOBELOWDOMAIN = &h00000002
+const BIF_STATUSTEXT = &h00000004
+const BIF_RETURNFSANCESTORS = &h00000008
+const BIF_EDITBOX = &h00000010
+const BIF_VALIDATE = &h00000020
+const BIF_NEWDIALOGSTYLE = &h00000040
 #define BIF_USENEWUI (BIF_NEWDIALOGSTYLE or BIF_EDITBOX)
-#define BIF_BROWSEINCLUDEURLS &h00000080
-#define BIF_UAHINT &h00000100
-#define BIF_NONEWFOLDERBUTTON &h00000200
-#define BIF_NOTRANSLATETARGETS &h00000400
-#define BIF_BROWSEFORCOMPUTER &h00001000
-#define BIF_BROWSEFORPRINTER &h00002000
-#define BIF_BROWSEINCLUDEFILES &h00004000
-#define BIF_SHAREABLE &h00008000
-#define BIF_BROWSEFILEJUNCTIONS &h00010000
-#define BFFM_INITIALIZED 1
-#define BFFM_SELCHANGED 2
-#define BFFM_VALIDATEFAILEDA 3
-#define BFFM_VALIDATEFAILEDW 4
-#define BFFM_IUNKNOWN 5
+const BIF_BROWSEINCLUDEURLS = &h00000080
+const BIF_UAHINT = &h00000100
+const BIF_NONEWFOLDERBUTTON = &h00000200
+const BIF_NOTRANSLATETARGETS = &h00000400
+const BIF_BROWSEFORCOMPUTER = &h00001000
+const BIF_BROWSEFORPRINTER = &h00002000
+const BIF_BROWSEINCLUDEFILES = &h00004000
+const BIF_SHAREABLE = &h00008000
+const BIF_BROWSEFILEJUNCTIONS = &h00010000
+const BFFM_INITIALIZED = 1
+const BFFM_SELCHANGED = 2
+const BFFM_VALIDATEFAILEDA = 3
+const BFFM_VALIDATEFAILEDW = 4
+const BFFM_IUNKNOWN = 5
 #define BFFM_SETSTATUSTEXTA (WM_USER + 100)
 #define BFFM_ENABLEOK (WM_USER + 101)
 #define BFFM_SETSELECTIONA (WM_USER + 102)
@@ -920,23 +920,23 @@ type IACList2Vtbl_ field = 1
 	GetOptions as function(byval This as IACList2 ptr, byval pdwFlag as DWORD ptr) as HRESULT
 end type
 
-#define PROGDLG_NORMAL &h00000000
-#define PROGDLG_MODAL &h00000001
-#define PROGDLG_AUTOTIME &h00000002
-#define PROGDLG_NOTIME &h00000004
-#define PROGDLG_NOMINIMIZE &h00000008
-#define PROGDLG_NOPROGRESSBAR &h00000010
+const PROGDLG_NORMAL = &h00000000
+const PROGDLG_MODAL = &h00000001
+const PROGDLG_AUTOTIME = &h00000002
+const PROGDLG_NOTIME = &h00000004
+const PROGDLG_NOMINIMIZE = &h00000008
+const PROGDLG_NOPROGRESSBAR = &h00000010
 
 #if _WIN32_WINNT = &h0602
-	#define PROGDLG_MARQUEEPROGRESS &h00000020
-	#define PROGDLG_NOCANCEL &h00000040
+	const PROGDLG_MARQUEEPROGRESS = &h00000020
+	const PROGDLG_NOCANCEL = &h00000040
 #endif
 
-#define PDTIMER_RESET &h00000001
+const PDTIMER_RESET = &h00000001
 
 #if _WIN32_WINNT = &h0602
-	#define PDTIMER_PAUSE &h00000002
-	#define PDTIMER_RESUME &h00000003
+	const PDTIMER_PAUSE = &h00000002
+	const PDTIMER_RESUME = &h00000003
 #endif
 
 type IProgressDialogVtbl as IProgressDialogVtbl_
@@ -970,12 +970,12 @@ type IDockingWindowSiteVtbl_ field = 1
 	SetBorderSpaceDW as function(byval This as IDockingWindowSite ptr, byval punkObj as IUnknown ptr, byval pbw as LPCBORDERWIDTHS) as HRESULT
 end type
 
-#define DWFRF_NORMAL &h0000
-#define DWFRF_DELETECONFIGDATA &h0001
-#define DWFAF_HIDDEN &h1
-#define DWFAF_GROUP1 &h2
-#define DWFAF_GROUP2 &h4
-#define DWFAF_AUTOHIDE &h10
+const DWFRF_NORMAL = &h0000
+const DWFRF_DELETECONFIGDATA = &h0001
+const DWFAF_HIDDEN = &h1
+const DWFAF_GROUP1 = &h2
+const DWFAF_GROUP2 = &h4
+const DWFAF_AUTOHIDE = &h10
 type IDockingWindowFrameVtbl as IDockingWindowFrameVtbl_
 
 type IDockingWindowFrame field = 1
@@ -1025,8 +1025,8 @@ type LPTHUMBNAILCAPTURE as IThumbnailCapture ptr
 	end type
 
 	type LPENUMSHELLIMAGESTORE as IEnumShellImageStore ptr
-	#define SHIMSTCAPFLAG_LOCKABLE &h0001
-	#define SHIMSTCAPFLAG_PURGEABLE &h0002
+	const SHIMSTCAPFLAG_LOCKABLE = &h0001
+	const SHIMSTCAPFLAG_PURGEABLE = &h0002
 	type IShellImageStoreVtbl as IShellImageStoreVtbl_
 
 	type IShellImageStore field = 1
@@ -1055,26 +1055,26 @@ type LPTHUMBNAILCAPTURE as IThumbnailCapture ptr
 	type LPSHELLIMAGESTORE as IShellImageStore ptr
 #endif
 
-#define ISFB_MASK_STATE &h00000001
-#define ISFB_MASK_BKCOLOR &h00000002
-#define ISFB_MASK_VIEWMODE &h00000004
-#define ISFB_MASK_SHELLFOLDER &h00000008
-#define ISFB_MASK_IDLIST &h00000010
-#define ISFB_MASK_COLORS &h00000020
-#define ISFB_STATE_DEFAULT &h00000000
-#define ISFB_STATE_DEBOSSED &h00000001
-#define ISFB_STATE_ALLOWRENAME &h00000002
-#define ISFB_STATE_NOSHOWTEXT &h00000004
-#define ISFB_STATE_CHANNELBAR &h00000010
-#define ISFB_STATE_QLINKSMODE &h00000020
-#define ISFB_STATE_FULLOPEN &h00000040
-#define ISFB_STATE_NONAMESORT &h00000080
-#define ISFB_STATE_BTNMINSIZE &h00000100
-#define ISFBVIEWMODE_SMALLICONS &h0001
-#define ISFBVIEWMODE_LARGEICONS &h0002
+const ISFB_MASK_STATE = &h00000001
+const ISFB_MASK_BKCOLOR = &h00000002
+const ISFB_MASK_VIEWMODE = &h00000004
+const ISFB_MASK_SHELLFOLDER = &h00000008
+const ISFB_MASK_IDLIST = &h00000010
+const ISFB_MASK_COLORS = &h00000020
+const ISFB_STATE_DEFAULT = &h00000000
+const ISFB_STATE_DEBOSSED = &h00000001
+const ISFB_STATE_ALLOWRENAME = &h00000002
+const ISFB_STATE_NOSHOWTEXT = &h00000004
+const ISFB_STATE_CHANNELBAR = &h00000010
+const ISFB_STATE_QLINKSMODE = &h00000020
+const ISFB_STATE_FULLOPEN = &h00000040
+const ISFB_STATE_NONAMESORT = &h00000080
+const ISFB_STATE_BTNMINSIZE = &h00000100
+const ISFBVIEWMODE_SMALLICONS = &h0001
+const ISFBVIEWMODE_LARGEICONS = &h0002
 
 #if (_WIN32_WINNT = &h0400) or (_WIN32_WINNT = &h0502)
-	#define ISFBVIEWMODE_LOGOS &h0003
+	const ISFBVIEWMODE_LOGOS = &h0003
 #endif
 
 type BANDINFOSFB
@@ -1120,11 +1120,11 @@ type IDeskBarClientVtbl_ field = 1
 	GetSize as function(byval This as IDeskBarClient ptr, byval dwWhich as DWORD, byval prc as LPRECT) as HRESULT
 end type
 
-#define DBC_GS_IDEAL 0
-#define DBC_GS_SIZEDOWN 1
-#define DBC_HIDE 0
-#define DBC_SHOW 1
-#define DBC_SHOWOBSCURE 2
+const DBC_GS_IDEAL = 0
+const DBC_GS_SIZEDOWN = 1
+const DBC_HIDE = 0
+const DBC_SHOW = 1
+const DBC_SHOWOBSCURE = 2
 
 enum
 	DBCID_EMPTY = 0
@@ -1134,8 +1134,8 @@ enum
 	DBCID_GETBAR = 4
 end enum
 
-#define MAX_COLUMN_NAME_LEN 80
-#define MAX_COLUMN_DESC_LEN 128
+const MAX_COLUMN_NAME_LEN = 80
+const MAX_COLUMN_DESC_LEN = 128
 
 type SHCOLUMNINFO field = 1
 	scid as SHCOLUMNID
@@ -1158,7 +1158,7 @@ end type
 
 type LPSHCOLUMNINIT as SHCOLUMNINIT ptr
 type LPCSHCOLUMNINIT as const SHCOLUMNINIT ptr
-#define SHCDF_UPDATEITEM &h00000001
+const SHCDF_UPDATEITEM = &h00000001
 
 type SHCOLUMNDATA
 	dwFlags as ULONG
@@ -1227,9 +1227,9 @@ end type
 	#define CFSTR_INETURL CFSTR_INETURLA
 #endif
 
-#define DVASPECT_SHORTNAME 2
-#define DVASPECT_COPY 3
-#define DVASPECT_LINK 4
+const DVASPECT_SHORTNAME = 2
+const DVASPECT_COPY = 3
+const DVASPECT_LINK = 4
 
 type _NRESARRAY
 	cItems as UINT
@@ -1373,10 +1373,10 @@ type _SHChangeNotifyEntry field = 1
 end type
 
 type SHChangeNotifyEntry as _SHChangeNotifyEntry
-#define SHCNRF_InterruptLevel &h0001
-#define SHCNRF_ShellLevel &h0002
-#define SHCNRF_RecursiveInterrupt &h1000
-#define SHCNRF_NewDelivery &h8000
+const SHCNRF_InterruptLevel = &h0001
+const SHCNRF_ShellLevel = &h0002
+const SHCNRF_RecursiveInterrupt = &h1000
+const SHCNRF_NewDelivery = &h8000
 #define SHCNE_RENAMEITEM __MSABI_LONG(&h00000001)
 #define SHCNE_CREATE __MSABI_LONG(&h00000002)
 #define SHCNE_DELETE __MSABI_LONG(&h00000004)
@@ -1405,16 +1405,16 @@ type SHChangeNotifyEntry as _SHChangeNotifyEntry
 #define SHCNEE_ORDERCHANGED __MSABI_LONG(2)
 #define SHCNEE_MSI_CHANGE __MSABI_LONG(4)
 #define SHCNEE_MSI_UNINSTALL __MSABI_LONG(5)
-#define SHCNF_IDLIST &h0000
-#define SHCNF_PATHA &h0001
-#define SHCNF_PRINTERA &h0002
-#define SHCNF_DWORD &h0003
-#define SHCNF_PATHW &h0005
-#define SHCNF_PRINTERW &h0006
-#define SHCNF_TYPE &h00ff
-#define SHCNF_FLUSH &h1000
-#define SHCNF_FLUSHNOWAIT &h3000
-#define SHCNF_NOTIFYRECURSIVE &h10000
+const SHCNF_IDLIST = &h0000
+const SHCNF_PATHA = &h0001
+const SHCNF_PRINTERA = &h0002
+const SHCNF_DWORD = &h0003
+const SHCNF_PATHW = &h0005
+const SHCNF_PRINTERW = &h0006
+const SHCNF_TYPE = &h00ff
+const SHCNF_FLUSH = &h1000
+const SHCNF_FLUSHNOWAIT = &h3000
+const SHCNF_NOTIFYRECURSIVE = &h10000
 
 #ifdef UNICODE
 	#define SHCNF_PATH SHCNF_PATHW
@@ -1446,18 +1446,18 @@ type IQueryInfoVtbl_ field = 1
 	GetInfoFlags as function(byval This as IQueryInfo ptr, byval pdwFlags as DWORD ptr) as HRESULT
 end type
 
-#define QITIPF_DEFAULT &h00000000
-#define QITIPF_USENAME &h00000001
-#define QITIPF_LINKNOTARGET &h00000002
-#define QITIPF_LINKUSETARGET &h00000004
-#define QITIPF_USESLOWTIP &h00000008
+const QITIPF_DEFAULT = &h00000000
+const QITIPF_USENAME = &h00000001
+const QITIPF_LINKNOTARGET = &h00000002
+const QITIPF_LINKUSETARGET = &h00000004
+const QITIPF_USESLOWTIP = &h00000008
 
 #if _WIN32_WINNT = &h0602
-	#define QITIPF_SINGLELINE &h00000010
+	const QITIPF_SINGLELINE = &h00000010
 #endif
 
-#define QIF_CACHED &h00000001
-#define QIF_DONTEXPANDFOLDER &h00000002
+const QIF_CACHED = &h00000001
+const QIF_DONTEXPANDFOLDER = &h00000002
 
 type SHARD as long
 enum
@@ -1563,32 +1563,32 @@ declare function SHChangeNotification_Unlock(byval hLock as HANDLE) as WINBOOL
 declare function SHGetRealIDL(byval psf as IShellFolder ptr, byval pidlSimple as LPCITEMIDLIST, byval ppidlReal as LPITEMIDLIST ptr) as HRESULT
 declare function SHGetInstanceExplorer(byval ppunk as IUnknown ptr ptr) as HRESULT
 
-#define SHGDFIL_FINDDATA 1
-#define SHGDFIL_NETRESOURCE 2
-#define SHGDFIL_DESCRIPTIONID 3
-#define SHDID_ROOT_REGITEM 1
-#define SHDID_FS_FILE 2
-#define SHDID_FS_DIRECTORY 3
-#define SHDID_FS_OTHER 4
-#define SHDID_COMPUTER_DRIVE35 5
-#define SHDID_COMPUTER_DRIVE525 6
-#define SHDID_COMPUTER_REMOVABLE 7
-#define SHDID_COMPUTER_FIXED 8
-#define SHDID_COMPUTER_NETDRIVE 9
-#define SHDID_COMPUTER_CDROM 10
-#define SHDID_COMPUTER_RAMDISK 11
-#define SHDID_COMPUTER_OTHER 12
-#define SHDID_NET_DOMAIN 13
-#define SHDID_NET_SERVER 14
-#define SHDID_NET_SHARE 15
-#define SHDID_NET_RESTOFNET 16
-#define SHDID_NET_OTHER 17
-#define SHDID_COMPUTER_IMAGING 18
-#define SHDID_COMPUTER_AUDIO 19
-#define SHDID_COMPUTER_SHAREDDOCS 20
+const SHGDFIL_FINDDATA = 1
+const SHGDFIL_NETRESOURCE = 2
+const SHGDFIL_DESCRIPTIONID = 3
+const SHDID_ROOT_REGITEM = 1
+const SHDID_FS_FILE = 2
+const SHDID_FS_DIRECTORY = 3
+const SHDID_FS_OTHER = 4
+const SHDID_COMPUTER_DRIVE35 = 5
+const SHDID_COMPUTER_DRIVE525 = 6
+const SHDID_COMPUTER_REMOVABLE = 7
+const SHDID_COMPUTER_FIXED = 8
+const SHDID_COMPUTER_NETDRIVE = 9
+const SHDID_COMPUTER_CDROM = 10
+const SHDID_COMPUTER_RAMDISK = 11
+const SHDID_COMPUTER_OTHER = 12
+const SHDID_NET_DOMAIN = 13
+const SHDID_NET_SERVER = 14
+const SHDID_NET_SHARE = 15
+const SHDID_NET_RESTOFNET = 16
+const SHDID_NET_OTHER = 17
+const SHDID_COMPUTER_IMAGING = 18
+const SHDID_COMPUTER_AUDIO = 19
+const SHDID_COMPUTER_SHAREDDOCS = 20
 
 #if _WIN32_WINNT = &h0602
-	#define SHDID_MOBILE_DEVICE 21
+	const SHDID_MOBILE_DEVICE = 21
 #endif
 
 type _SHDESCRIPTIONID
@@ -1607,11 +1607,11 @@ declare function SHGetDataFromIDListW(byval psf as IShellFolder ptr, byval pidl 
 	#define SHGetDataFromIDList SHGetDataFromIDListA
 #endif
 
-#define PRF_VERIFYEXISTS &h1
+const PRF_VERIFYEXISTS = &h1
 #define PRF_TRYPROGRAMEXTENSIONS (&h2 or PRF_VERIFYEXISTS)
-#define PRF_FIRSTDIRDEF &h4
-#define PRF_DONTFINDLNK &h8
-#define PRF_REQUIREABSOLUTE &h10
+const PRF_FIRSTDIRDEF = &h4
+const PRF_DONTFINDLNK = &h8
+const PRF_REQUIREABSOLUTE = &h10
 
 declare function RestartDialog(byval hwnd as HWND, byval pszPrompt as PCWSTR, byval dwReturn as DWORD) as long
 declare function RestartDialogEx(byval hwnd as HWND, byval pszPrompt as PCWSTR, byval dwReturn as DWORD, byval dwReasonCode as DWORD) as long
@@ -1624,7 +1624,7 @@ declare function SHCoCreateInstance(byval pszCLSID as PCWSTR, byval pclsid as co
 declare function CIDLData_CreateFromIDArray(byval pidlFolder as LPCITEMIDLIST, byval cidl as UINT, byval apidl as LPCITEMIDLIST ptr, byval ppdtobj as IDataObject ptr ptr) as HRESULT
 declare function SHCreateStdEnumFmtEtc(byval cfmt as UINT, byval afmt as const FORMATETC ptr, byval ppenumFormatEtc as IEnumFORMATETC ptr ptr) as HRESULT
 declare function SHDoDragDrop(byval hwnd as HWND, byval pdata as IDataObject ptr, byval pdsrc as IDropSource ptr, byval dwEffect as DWORD, byval pdwEffect as DWORD ptr) as HRESULT
-#define NUM_POINTS 3
+const NUM_POINTS = 3
 
 type AUTO_SCROLL_DATA field = 1
 	iNextSample as long
@@ -1659,7 +1659,7 @@ type CABINETSTATE field = 1
 end type
 
 type LPCABINETSTATE as CABINETSTATE ptr
-#define CABINETSTATE_VERSION 2
+const CABINETSTATE_VERSION = 2
 declare function ReadCabinetState(byval pcs as CABINETSTATE ptr, byval cLength as long) as WINBOOL
 declare function WriteCabinetState(byval pcs as CABINETSTATE ptr) as WINBOOL
 declare function PathMakeUniqueName(byval pszUniqueName as PWSTR, byval cchMax as UINT, byval pszTemplate as PCWSTR, byval pszLongPlate as PCWSTR, byval pszDir as PCWSTR) as WINBOOL
@@ -1674,11 +1674,11 @@ declare function PathIsSlowW(byval pszFile as LPCWSTR, byval dwAttr as DWORD) as
 	#define PathIsSlow PathIsSlowA
 #endif
 
-#define PCS_FATAL &h80000000
-#define PCS_REPLACEDCHAR &h00000001
-#define PCS_REMOVEDCHAR &h00000002
-#define PCS_TRUNCATED &h00000004
-#define PCS_PATHTOOLONG &h00000008
+const PCS_FATAL = &h80000000
+const PCS_REPLACEDCHAR = &h00000001
+const PCS_REMOVEDCHAR = &h00000002
+const PCS_TRUNCATED = &h00000004
+const PCS_PATHTOOLONG = &h00000008
 
 declare function PathCleanupSpec(byval pszDir as PCWSTR, byval pszSpec as PWSTR) as long
 declare function PathResolve(byval pszPath as PWSTR, byval dirs as PZPCWSTR, byval fFlags as UINT) as long
@@ -1692,13 +1692,13 @@ declare function IsNetDrive(byval iDrive as long) as long
 #define MM_DONTREMOVESEPS __MSABI_LONG(&h00000004)
 declare function Shell_MergeMenus(byval hmDst as HMENU, byval hmSrc as HMENU, byval uInsert as UINT, byval uIDAdjust as UINT, byval uIDAdjustMax as UINT, byval uFlags as ULONG) as UINT
 declare function SHObjectProperties(byval hwnd as HWND, byval shopObjectType as DWORD, byval pszObjectName as PCWSTR, byval pszPropertyPage as PCWSTR) as WINBOOL
-#define SHOP_PRINTERNAME &h00000001
-#define SHOP_FILEPATH &h00000002
-#define SHOP_VOLUMEGUID &h00000004
+const SHOP_PRINTERNAME = &h00000001
+const SHOP_FILEPATH = &h00000002
+const SHOP_VOLUMEGUID = &h00000004
 declare function SHFormatDrive(byval hwnd as HWND, byval drive as UINT, byval fmtID as UINT, byval options as UINT) as DWORD
-#define SHFMT_ID_DEFAULT &hffff
-#define SHFMT_OPT_FULL &h0001
-#define SHFMT_OPT_SYSONLY &h0002
+const SHFMT_ID_DEFAULT = &hffff
+const SHFMT_OPT_FULL = &h0001
+const SHFMT_OPT_SYSONLY = &h0002
 #define SHFMT_ERROR __MSABI_LONG(&hffffffff)
 #define SHFMT_CANCEL __MSABI_LONG(&hfffffffe)
 #define SHFMT_NOFORMAT __MSABI_LONG(&hfffffffd)
@@ -1927,11 +1927,11 @@ declare function PathYetAnotherMakeUniqueName(byval pszUniqueName as PWSTR, byva
 declare function Win32DeleteFile(byval pszPath as PCWSTR) as WINBOOL
 
 #if (_WIN32_WINNT = &h0400) or (_WIN32_WINNT = &h0502)
-	#define PPCF_ADDQUOTES &h00000001
-	#define PPCF_ADDARGUMENTS &h00000003
-	#define PPCF_NODIRECTORIES &h00000010
-	#define PPCF_FORCEQUALIFY &h00000040
-	#define PPCF_LONGESTPOSSIBLE &h00000080
+	const PPCF_ADDQUOTES = &h00000001
+	const PPCF_ADDARGUMENTS = &h00000003
+	const PPCF_NODIRECTORIES = &h00000010
+	const PPCF_FORCEQUALIFY = &h00000040
+	const PPCF_LONGESTPOSSIBLE = &h00000080
 	declare function PathProcessCommand(byval pszSrc as PCWSTR, byval pszDest as PWSTR, byval cchDest as long, byval dwFlags as DWORD) as LONG
 #endif
 
@@ -2010,32 +2010,32 @@ type IDocViewSiteVtbl_ field = 1
 	OnSetTitle as function(byval This as IDocViewSite ptr, byval pvTitle as VARIANTARG ptr) as HRESULT
 end type
 
-#define VALIDATEUNC_CONNECT &h0001
-#define VALIDATEUNC_NOUI &h0002
-#define VALIDATEUNC_PRINT &h0004
+const VALIDATEUNC_CONNECT = &h0001
+const VALIDATEUNC_NOUI = &h0002
+const VALIDATEUNC_PRINT = &h0004
 
 #if (_WIN32_WINNT = &h0400) or (_WIN32_WINNT = &h0502)
-	#define VALIDATEUNC_VALID &h0007
+	const VALIDATEUNC_VALID = &h0007
 #else
-	#define VALIDATEUNC_PERSIST &h0008
-	#define VALIDATEUNC_VALID &h000f
+	const VALIDATEUNC_PERSIST = &h0008
+	const VALIDATEUNC_VALID = &h000f
 #endif
 
 declare function SHValidateUNC(byval hwndOwner as HWND, byval pszFile as PWSTR, byval fConnect as UINT) as WINBOOL
-#define OPENPROPS_NONE &h0000
-#define OPENPROPS_INHIBITPIF &h8000
-#define GETPROPS_NONE &h0000
-#define SETPROPS_NONE &h0000
-#define CLOSEPROPS_NONE &h0000
-#define CLOSEPROPS_DISCARD &h0001
-#define PIFNAMESIZE 30
-#define PIFSTARTLOCSIZE 63
-#define PIFDEFPATHSIZE 64
-#define PIFPARAMSSIZE 64
-#define PIFSHPROGSIZE 64
-#define PIFSHDATASIZE 64
-#define PIFDEFFILESIZE 80
-#define PIFMAXFILEPATH 260
+const OPENPROPS_NONE = &h0000
+const OPENPROPS_INHIBITPIF = &h8000
+const GETPROPS_NONE = &h0000
+const SETPROPS_NONE = &h0000
+const CLOSEPROPS_NONE = &h0000
+const CLOSEPROPS_DISCARD = &h0001
+const PIFNAMESIZE = 30
+const PIFSTARTLOCSIZE = 63
+const PIFDEFPATHSIZE = 64
+const PIFPARAMSSIZE = 64
+const PIFSHPROGSIZE = 64
+const PIFSHDATASIZE = 64
+const PIFDEFFILESIZE = 80
+const PIFMAXFILEPATH = 260
 
 type PROPPRG field = 1
 	flPrg as WORD
@@ -2101,8 +2101,8 @@ type IShellFolderViewCBVtbl_ field = 1
 	MessageSFVCB as function(byval This as IShellFolderViewCB ptr, byval uMsg as UINT, byval wParam as WPARAM, byval lParam as LPARAM) as HRESULT
 end type
 
-#define QCMINFO_PLACE_BEFORE 0
-#define QCMINFO_PLACE_AFTER 1
+const QCMINFO_PLACE_BEFORE = 0
+const QCMINFO_PLACE_AFTER = 1
 
 type _QCMINFO_IDMAP_PLACEMENT
 	id as UINT
@@ -2128,13 +2128,13 @@ end type
 
 type QCMINFO as _QCMINFO
 type LPQCMINFO as QCMINFO ptr
-#define TBIF_APPEND 0
-#define TBIF_PREPEND 1
-#define TBIF_REPLACE 2
-#define TBIF_DEFAULT &h00000000
-#define TBIF_INTERNETBAR &h00010000
-#define TBIF_STANDARDTOOLBAR &h00020000
-#define TBIF_NOTOOLBAR &h00030000
+const TBIF_APPEND = 0
+const TBIF_PREPEND = 1
+const TBIF_REPLACE = 2
+const TBIF_DEFAULT = &h00000000
+const TBIF_INTERNETBAR = &h00010000
+const TBIF_STANDARDTOOLBAR = &h00020000
+const TBIF_NOTOOLBAR = &h00030000
 
 type _TBINFO
 	cbuttons as UINT
@@ -2169,35 +2169,35 @@ type _SFVM_HELPTOPIC_DATA
 end type
 
 type SFVM_HELPTOPIC_DATA as _SFVM_HELPTOPIC_DATA
-#define SFVM_MERGEMENU 1
-#define SFVM_INVOKECOMMAND 2
-#define SFVM_GETHELPTEXT 3
-#define SFVM_GETTOOLTIPTEXT 4
-#define SFVM_GETBUTTONINFO 5
-#define SFVM_GETBUTTONS 6
-#define SFVM_INITMENUPOPUP 7
-#define SFVM_FSNOTIFY 14
-#define SFVM_WINDOWCREATED 15
-#define SFVM_GETDETAILSOF 23
-#define SFVM_COLUMNCLICK 24
-#define SFVM_QUERYFSNOTIFY 25
-#define SFVM_DEFITEMCOUNT 26
-#define SFVM_DEFVIEWMODE 27
-#define SFVM_UNMERGEMENU 28
-#define SFVM_UPDATESTATUSBAR 31
-#define SFVM_BACKGROUNDENUM 32
-#define SFVM_DIDDRAGDROP 36
-#define SFVM_SETISFV 39
-#define SFVM_THISIDLIST 41
-#define SFVM_ADDPROPERTYPAGES 47
-#define SFVM_BACKGROUNDENUMDONE 48
-#define SFVM_GETNOTIFY 49
-#define SFVM_GETSORTDEFAULTS 53
-#define SFVM_SIZE 57
-#define SFVM_GETZONE 58
-#define SFVM_GETPANE 59
-#define SFVM_GETHELPTOPIC 63
-#define SFVM_GETANIMATION 68
+const SFVM_MERGEMENU = 1
+const SFVM_INVOKECOMMAND = 2
+const SFVM_GETHELPTEXT = 3
+const SFVM_GETTOOLTIPTEXT = 4
+const SFVM_GETBUTTONINFO = 5
+const SFVM_GETBUTTONS = 6
+const SFVM_INITMENUPOPUP = 7
+const SFVM_FSNOTIFY = 14
+const SFVM_WINDOWCREATED = 15
+const SFVM_GETDETAILSOF = 23
+const SFVM_COLUMNCLICK = 24
+const SFVM_QUERYFSNOTIFY = 25
+const SFVM_DEFITEMCOUNT = 26
+const SFVM_DEFVIEWMODE = 27
+const SFVM_UNMERGEMENU = 28
+const SFVM_UPDATESTATUSBAR = 31
+const SFVM_BACKGROUNDENUM = 32
+const SFVM_DIDDRAGDROP = 36
+const SFVM_SETISFV = 39
+const SFVM_THISIDLIST = 41
+const SFVM_ADDPROPERTYPAGES = 47
+const SFVM_BACKGROUNDENUMDONE = 48
+const SFVM_GETNOTIFY = 49
+const SFVM_GETSORTDEFAULTS = 53
+const SFVM_SIZE = 57
+const SFVM_GETZONE = 58
+const SFVM_GETPANE = 59
+const SFVM_GETHELPTOPIC = 63
+const SFVM_GETANIMATION = 68
 
 type _ITEMSPACING
 	cxSmall as long
@@ -2207,11 +2207,11 @@ type _ITEMSPACING
 end type
 
 type ITEMSPACING as _ITEMSPACING
-#define SFVSOC_INVALIDATE_ALL &h00000001
+const SFVSOC_INVALIDATE_ALL = &h00000001
 #define SFVSOC_NOSCROLL LVSICF_NOSCROLL
-#define SFVS_SELECT_NONE &h0
-#define SFVS_SELECT_ALLITEMS &h1
-#define SFVS_SELECT_INVERT &h2
+const SFVS_SELECT_NONE = &h0
+const SFVS_SELECT_ALLITEMS = &h1
+const SFVS_SELECT_INVERT = &h2
 type IShellFolderViewVtbl as IShellFolderViewVtbl_
 
 type IShellFolderView
@@ -2300,22 +2300,22 @@ type DFMICS
 end type
 
 type PDFMICS as DFMICS ptr
-#define DFM_MERGECONTEXTMENU 1
-#define DFM_INVOKECOMMAND 2
-#define DFM_GETHELPTEXT 5
-#define DFM_WM_MEASUREITEM 6
-#define DFM_WM_DRAWITEM 7
-#define DFM_WM_INITMENUPOPUP 8
-#define DFM_VALIDATECMD 9
-#define DFM_MERGECONTEXTMENU_TOP 10
-#define DFM_GETHELPTEXTW 11
-#define DFM_INVOKECOMMANDEX 12
-#define DFM_MAPCOMMANDNAME 13
-#define DFM_GETDEFSTATICID 14
-#define DFM_GETVERBW 15
-#define DFM_GETVERBA 16
-#define DFM_MERGECONTEXTMENU_BOTTOM 17
-#define DFM_MODIFYQCMFLAGS 18
+const DFM_MERGECONTEXTMENU = 1
+const DFM_INVOKECOMMAND = 2
+const DFM_GETHELPTEXT = 5
+const DFM_WM_MEASUREITEM = 6
+const DFM_WM_DRAWITEM = 7
+const DFM_WM_INITMENUPOPUP = 8
+const DFM_VALIDATECMD = 9
+const DFM_MERGECONTEXTMENU_TOP = 10
+const DFM_GETHELPTEXTW = 11
+const DFM_INVOKECOMMANDEX = 12
+const DFM_MAPCOMMANDNAME = 13
+const DFM_GETDEFSTATICID = 14
+const DFM_GETVERBW = 15
+const DFM_GETVERBA = 16
+const DFM_MERGECONTEXTMENU_BOTTOM = 17
+const DFM_MODIFYQCMFLAGS = 18
 #define DFM_CMD_DELETE cast(UINT, -1)
 #define DFM_CMD_MOVE cast(UINT, -2)
 #define DFM_CMD_COPY cast(UINT, -3)
@@ -2343,14 +2343,14 @@ end type
 
 type CSFV as _CSFV
 type LPCSFV as _CSFV ptr
-#define SFVM_REARRANGE &h00000001
-#define SFVM_ADDOBJECT &h00000003
-#define SFVM_REMOVEOBJECT &h00000006
-#define SFVM_UPDATEOBJECT &h00000007
-#define SFVM_GETSELECTEDOBJECTS &h00000009
-#define SFVM_SETITEMPOS &h0000000e
-#define SFVM_SETCLIPBOARD &h00000010
-#define SFVM_SETPOINTS &h00000017
+const SFVM_REARRANGE = &h00000001
+const SFVM_ADDOBJECT = &h00000003
+const SFVM_REMOVEOBJECT = &h00000006
+const SFVM_UPDATEOBJECT = &h00000007
+const SFVM_GETSELECTEDOBJECTS = &h00000009
+const SFVM_SETITEMPOS = &h0000000e
+const SFVM_SETCLIPBOARD = &h00000010
+const SFVM_SETPOINTS = &h00000017
 #define ShellFolderView_ReArrange(_hwnd, _lparam) cast(WINBOOL, SHShellFolderView_Message(_hwnd, SFVM_REARRANGE, _lparam))
 #define ShellFolderView_AddObject(_hwnd, _pidl) cast(LPARAM, SHShellFolderView_Message(_hwnd, SFVM_ADDOBJECT, cast(LPARAM, (_pidl))))
 #define ShellFolderView_RemoveObject(_hwnd, _pidl) cast(LPARAM, SHShellFolderView_Message(_hwnd, SFVM_REMOVEOBJECT, cast(LPARAM, (_pidl))))
@@ -2376,49 +2376,49 @@ type PCSFV_SETITEMPOS as const SFV_SETITEMPOS ptr
 declare function SHFind_InitMenuPopup(byval hmenu as HMENU, byval hwndOwner as HWND, byval idCmdFirst as UINT, byval idCmdLast as UINT) as IContextMenu ptr
 declare function SHCreateShellFolderViewEx(byval pcsfv as CSFV ptr, byval ppsv as IShellView ptr ptr) as HRESULT
 
-#define PID_IS_URL 2
-#define PID_IS_NAME 4
-#define PID_IS_WORKINGDIR 5
-#define PID_IS_HOTKEY 6
-#define PID_IS_SHOWCMD 7
-#define PID_IS_ICONINDEX 8
-#define PID_IS_ICONFILE 9
-#define PID_IS_WHATSNEW 10
-#define PID_IS_AUTHOR 11
-#define PID_IS_DESCRIPTION 12
-#define PID_IS_COMMENT 13
-#define PID_IS_ROAMED 15
-#define PID_INTSITE_WHATSNEW 2
-#define PID_INTSITE_AUTHOR 3
-#define PID_INTSITE_LASTVISIT 4
-#define PID_INTSITE_LASTMOD 5
-#define PID_INTSITE_VISITCOUNT 6
-#define PID_INTSITE_DESCRIPTION 7
-#define PID_INTSITE_COMMENT 8
-#define PID_INTSITE_FLAGS 9
-#define PID_INTSITE_CONTENTLEN 10
-#define PID_INTSITE_CONTENTCODE 11
-#define PID_INTSITE_RECURSE 12
-#define PID_INTSITE_WATCH 13
-#define PID_INTSITE_SUBSCRIPTION 14
-#define PID_INTSITE_URL 15
-#define PID_INTSITE_TITLE 16
-#define PID_INTSITE_CODEPAGE 18
-#define PID_INTSITE_TRACKING 19
-#define PID_INTSITE_ICONINDEX 20
-#define PID_INTSITE_ICONFILE 21
-#define PID_INTSITE_ROAMED 34
-#define PIDISF_RECENTLYCHANGED &h00000001
-#define PIDISF_CACHEDSTICKY &h00000002
-#define PIDISF_CACHEIMAGES &h00000010
-#define PIDISF_FOLLOWALLLINKS &h00000020
-#define PIDISM_GLOBAL 0
-#define PIDISM_WATCH 1
-#define PIDISM_DONTWATCH 2
-#define PIDISR_UP_TO_DATE 0
-#define PIDISR_NEEDS_ADD 1
-#define PIDISR_NEEDS_UPDATE 2
-#define PIDISR_NEEDS_DELETE 3
+const PID_IS_URL = 2
+const PID_IS_NAME = 4
+const PID_IS_WORKINGDIR = 5
+const PID_IS_HOTKEY = 6
+const PID_IS_SHOWCMD = 7
+const PID_IS_ICONINDEX = 8
+const PID_IS_ICONFILE = 9
+const PID_IS_WHATSNEW = 10
+const PID_IS_AUTHOR = 11
+const PID_IS_DESCRIPTION = 12
+const PID_IS_COMMENT = 13
+const PID_IS_ROAMED = 15
+const PID_INTSITE_WHATSNEW = 2
+const PID_INTSITE_AUTHOR = 3
+const PID_INTSITE_LASTVISIT = 4
+const PID_INTSITE_LASTMOD = 5
+const PID_INTSITE_VISITCOUNT = 6
+const PID_INTSITE_DESCRIPTION = 7
+const PID_INTSITE_COMMENT = 8
+const PID_INTSITE_FLAGS = 9
+const PID_INTSITE_CONTENTLEN = 10
+const PID_INTSITE_CONTENTCODE = 11
+const PID_INTSITE_RECURSE = 12
+const PID_INTSITE_WATCH = 13
+const PID_INTSITE_SUBSCRIPTION = 14
+const PID_INTSITE_URL = 15
+const PID_INTSITE_TITLE = 16
+const PID_INTSITE_CODEPAGE = 18
+const PID_INTSITE_TRACKING = 19
+const PID_INTSITE_ICONINDEX = 20
+const PID_INTSITE_ICONFILE = 21
+const PID_INTSITE_ROAMED = 34
+const PIDISF_RECENTLYCHANGED = &h00000001
+const PIDISF_CACHEDSTICKY = &h00000002
+const PIDISF_CACHEIMAGES = &h00000010
+const PIDISF_FOLLOWALLLINKS = &h00000020
+const PIDISM_GLOBAL = 0
+const PIDISM_WATCH = 1
+const PIDISM_DONTWATCH = 2
+const PIDISR_UP_TO_DATE = 0
+const PIDISR_NEEDS_ADD = 1
+const PIDISR_NEEDS_UPDATE = 2
+const PIDISR_NEEDS_DELETE = 3
 
 type SHELLSTATEA field = 1
 	fShowAllObjects : 1 as WINBOOL
@@ -2491,8 +2491,8 @@ type SHELLSTATEW field = 1
 end type
 
 type LPSHELLSTATEW as SHELLSTATEW ptr
-#define SHELLSTATEVERSION_IE4 9
-#define SHELLSTATEVERSION_WIN2K 10
+const SHELLSTATEVERSION_IE4 = 9
+const SHELLSTATEVERSION_WIN2K = 10
 
 #ifdef UNICODE
 	#define SHELLSTATE SHELLSTATEW
@@ -2538,35 +2538,35 @@ type SHELLFLAGSTATE field = 1
 end type
 
 type LPSHELLFLAGSTATE as SHELLFLAGSTATE ptr
-#define SSF_SHOWALLOBJECTS &h00000001
-#define SSF_SHOWEXTENSIONS &h00000002
-#define SSF_HIDDENFILEEXTS &h00000004
-#define SSF_SERVERADMINUI &h00000004
-#define SSF_SHOWCOMPCOLOR &h00000008
-#define SSF_SORTCOLUMNS &h00000010
-#define SSF_SHOWSYSFILES &h00000020
-#define SSF_DOUBLECLICKINWEBVIEW &h00000080
-#define SSF_SHOWATTRIBCOL &h00000100
-#define SSF_DESKTOPHTML &h00000200
-#define SSF_WIN95CLASSIC &h00000400
-#define SSF_DONTPRETTYPATH &h00000800
-#define SSF_SHOWINFOTIP &h00002000
-#define SSF_MAPNETDRVBUTTON &h00001000
-#define SSF_NOCONFIRMRECYCLE &h00008000
-#define SSF_HIDEICONS &h00004000
-#define SSF_FILTER &h00010000
-#define SSF_WEBVIEW &h00020000
-#define SSF_SHOWSUPERHIDDEN &h00040000
-#define SSF_SEPPROCESS &h00080000
-#define SSF_NONETCRAWLING &h00100000
-#define SSF_STARTPANELON &h00200000
-#define SSF_SHOWSTARTPAGE &h00400000
+const SSF_SHOWALLOBJECTS = &h00000001
+const SSF_SHOWEXTENSIONS = &h00000002
+const SSF_HIDDENFILEEXTS = &h00000004
+const SSF_SERVERADMINUI = &h00000004
+const SSF_SHOWCOMPCOLOR = &h00000008
+const SSF_SORTCOLUMNS = &h00000010
+const SSF_SHOWSYSFILES = &h00000020
+const SSF_DOUBLECLICKINWEBVIEW = &h00000080
+const SSF_SHOWATTRIBCOL = &h00000100
+const SSF_DESKTOPHTML = &h00000200
+const SSF_WIN95CLASSIC = &h00000400
+const SSF_DONTPRETTYPATH = &h00000800
+const SSF_SHOWINFOTIP = &h00002000
+const SSF_MAPNETDRVBUTTON = &h00001000
+const SSF_NOCONFIRMRECYCLE = &h00008000
+const SSF_HIDEICONS = &h00004000
+const SSF_FILTER = &h00010000
+const SSF_WEBVIEW = &h00020000
+const SSF_SHOWSUPERHIDDEN = &h00040000
+const SSF_SEPPROCESS = &h00080000
+const SSF_NONETCRAWLING = &h00100000
+const SSF_STARTPANELON = &h00200000
+const SSF_SHOWSTARTPAGE = &h00400000
 
 #if _WIN32_WINNT = &h0602
-	#define SSF_AUTOCHECKSELECT &h00800000
-	#define SSF_ICONSONLY &h01000000
-	#define SSF_SHOWTYPEOVERLAY &h02000000
-	#define SSF_SHOWSTATUSBAR &h04000000
+	const SSF_AUTOCHECKSELECT = &h00800000
+	const SSF_ICONSONLY = &h01000000
+	const SSF_SHOWTYPEOVERLAY = &h02000000
+	const SSF_SHOWSTATUSBAR = &h04000000
 #endif
 
 declare sub SHGetSettings(byval psfs as SHELLFLAGSTATE ptr, byval dwMask as DWORD)
@@ -2588,13 +2588,13 @@ private function IDListContainerIsConsistent cdecl(byval p as LPCITEMIDLIST, byv
 end function
 
 declare function SHParseDisplayName(byval pszName as PCWSTR, byval pbc as IBindCtx ptr, byval ppidl as LPITEMIDLIST ptr, byval sfgaoIn as SFGAOF, byval psfgaoOut as SFGAOF ptr) as HRESULT
-#define SHPPFW_NONE &h00000000
+const SHPPFW_NONE = &h00000000
 #define SHPPFW_DEFAULT SHPPFW_DIRCREATE
-#define SHPPFW_DIRCREATE &h00000001
-#define SHPPFW_ASKDIRCREATE &h00000002
-#define SHPPFW_IGNOREFILENAME &h00000004
-#define SHPPFW_NOWRITECHECK &h00000008
-#define SHPPFW_MEDIACHECKONLY &h00000010
+const SHPPFW_DIRCREATE = &h00000001
+const SHPPFW_ASKDIRCREATE = &h00000002
+const SHPPFW_IGNOREFILENAME = &h00000004
+const SHPPFW_NOWRITECHECK = &h00000008
+const SHPPFW_MEDIACHECKONLY = &h00000010
 declare function SHPathPrepareForWriteA(byval hwnd as HWND, byval punkEnableModless as IUnknown ptr, byval pszPath as LPCSTR, byval dwFlags as DWORD) as HRESULT
 declare function SHPathPrepareForWriteW(byval hwnd as HWND, byval punkEnableModless as IUnknown ptr, byval pszPath as LPCWSTR, byval dwFlags as DWORD) as HRESULT
 

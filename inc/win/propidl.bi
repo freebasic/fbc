@@ -24,12 +24,12 @@ end type
 
 type VERSIONEDSTREAM as tagVersionedStream
 type LPVERSIONEDSTREAM as tagVersionedStream ptr
-#define PROPSETFLAG_DEFAULT 0
-#define PROPSETFLAG_NONSIMPLE 1
-#define PROPSETFLAG_ANSI 2
-#define PROPSETFLAG_UNBUFFERED 4
-#define PROPSETFLAG_CASE_SENSITIVE 8
-#define PROPSET_BEHAVIOR_CASE_SENSITIVE 1
+const PROPSETFLAG_DEFAULT = 0
+const PROPSETFLAG_NONSIMPLE = 1
+const PROPSETFLAG_ANSI = 2
+const PROPSETFLAG_UNBUFFERED = 4
+const PROPSETFLAG_CASE_SENSITIVE = 8
+const PROPSET_BEHAVIOR_CASE_SENSITIVE = 1
 type PROPVARIANT as tagPROPVARIANT
 
 type tagCAC
@@ -280,17 +280,17 @@ end type
 
 type LPPROPVARIANT as tagPROPVARIANT ptr
 #define _REFPROPVARIANT_DEFINED
-#define PID_DICTIONARY &h0
-#define PID_CODEPAGE &h1
-#define PID_FIRST_USABLE &h2
-#define PID_FIRST_NAME_DEFAULT &hfff
-#define PID_LOCALE &h80000000
-#define PID_MODIFY_TIME &h80000001
-#define PID_SECURITY &h80000002
-#define PID_BEHAVIOR &h80000003
-#define PID_ILLEGAL &hffffffff
-#define PID_MIN_READONLY &h80000000
-#define PID_MAX_READONLY &hbfffffff
+const PID_DICTIONARY = &h0
+const PID_CODEPAGE = &h1
+const PID_FIRST_USABLE = &h2
+const PID_FIRST_NAME_DEFAULT = &hfff
+const PID_LOCALE = &h80000000
+const PID_MODIFY_TIME = &h80000001
+const PID_SECURITY = &h80000002
+const PID_BEHAVIOR = &h80000003
+const PID_ILLEGAL = &hffffffff
+const PID_MIN_READONLY = &h80000000
+const PID_MAX_READONLY = &hbfffffff
 #define PIDDI_THUMBNAIL __MSABI_LONG(&h2)
 #define PIDSI_TITLE __MSABI_LONG(&h2)
 #define PIDSI_SUBJECT __MSABI_LONG(&h3)
@@ -310,21 +310,21 @@ type LPPROPVARIANT as tagPROPVARIANT ptr
 #define PIDSI_THUMBNAIL __MSABI_LONG(&h11)
 #define PIDSI_APPNAME __MSABI_LONG(&h12)
 #define PIDSI_DOC_SECURITY __MSABI_LONG(&h13)
-#define PIDDSI_CATEGORY &h00000002
-#define PIDDSI_PRESFORMAT &h00000003
-#define PIDDSI_BYTECOUNT &h00000004
-#define PIDDSI_LINECOUNT &h00000005
-#define PIDDSI_PARCOUNT &h00000006
-#define PIDDSI_SLIDECOUNT &h00000007
-#define PIDDSI_NOTECOUNT &h00000008
-#define PIDDSI_HIDDENCOUNT &h00000009
-#define PIDDSI_MMCLIPCOUNT &h0000000A
-#define PIDDSI_SCALE &h0000000B
-#define PIDDSI_HEADINGPAIR &h0000000C
-#define PIDDSI_DOCPARTS &h0000000D
-#define PIDDSI_MANAGER &h0000000E
-#define PIDDSI_COMPANY &h0000000F
-#define PIDDSI_LINKSDIRTY &h00000010
+const PIDDSI_CATEGORY = &h00000002
+const PIDDSI_PRESFORMAT = &h00000003
+const PIDDSI_BYTECOUNT = &h00000004
+const PIDDSI_LINECOUNT = &h00000005
+const PIDDSI_PARCOUNT = &h00000006
+const PIDDSI_SLIDECOUNT = &h00000007
+const PIDDSI_NOTECOUNT = &h00000008
+const PIDDSI_HIDDENCOUNT = &h00000009
+const PIDDSI_MMCLIPCOUNT = &h0000000A
+const PIDDSI_SCALE = &h0000000B
+const PIDDSI_HEADINGPAIR = &h0000000C
+const PIDDSI_DOCPARTS = &h0000000D
+const PIDDSI_MANAGER = &h0000000E
+const PIDDSI_COMPANY = &h0000000F
+const PIDDSI_LINKSDIRTY = &h00000010
 #define PIDMSI_EDITOR __MSABI_LONG(&h2)
 #define PIDMSI_SUPPLIER __MSABI_LONG(&h3)
 #define PIDMSI_SOURCE __MSABI_LONG(&h4)
@@ -350,9 +350,9 @@ enum
 	PIDMSI_STATUS_OTHER = &h7fff
 end enum
 
-#define PRSPEC_INVALID &hffffffff
-#define PRSPEC_LPWSTR 0
-#define PRSPEC_PROPID 1
+const PRSPEC_INVALID = &hffffffff
+const PRSPEC_LPWSTR = 0
+const PRSPEC_PROPID = 1
 
 type tagPROPSPEC
 	ulKind as ULONG
@@ -375,7 +375,7 @@ type STATPROPSTG as tagSTATPROPSTG
 #define PROPSETHDR_OSVER_KIND(dwOSVer) HIWORD((dwOSVer))
 #define PROPSETHDR_OSVER_MAJOR(dwOSVer) LOBYTE(LOWORD((dwOSVer)))
 #define PROPSETHDR_OSVER_MINOR(dwOSVer) HIBYTE(LOWORD((dwOSVer)))
-#define PROPSETHDR_OSVERSION_UNKNOWN &hffffffff
+const PROPSETHDR_OSVERSION_UNKNOWN = &hffffffff
 
 type tagSTATPROPSETSTG
 	fmtid as FMTID
@@ -532,7 +532,7 @@ declare function FreePropVariantArray(byval cVariants as ULONG, byval rgvars as 
 declare function StgCreatePropStg(byval pUnk as IUnknown ptr, byval fmtid as const IID const ptr, byval pclsid as const CLSID ptr, byval grfFlags as DWORD, byval dwReserved as DWORD, byval ppPropStg as IPropertyStorage ptr ptr) as HRESULT
 declare function StgOpenPropStg(byval pUnk as IUnknown ptr, byval fmtid as const IID const ptr, byval grfFlags as DWORD, byval dwReserved as DWORD, byval ppPropStg as IPropertyStorage ptr ptr) as HRESULT
 declare function StgCreatePropSetStg(byval pStorage as IStorage ptr, byval dwReserved as DWORD, byval ppPropSetStg as IPropertySetStorage ptr ptr) as HRESULT
-#define CCH_MAX_PROPSTG_NAME 31
+const CCH_MAX_PROPSTG_NAME = 31
 declare function FmtIdToPropStgName(byval pfmtid as const FMTID ptr, byval oszName as LPOLESTR) as HRESULT
 declare function PropStgNameToFmtId(byval oszName as const LPOLESTR, byval pfmtid as FMTID ptr) as HRESULT
 #define _SERIALIZEDPROPERTYVALUE_DEFINED_

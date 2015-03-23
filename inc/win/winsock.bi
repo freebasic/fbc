@@ -13,9 +13,9 @@ extern "Windows"
 #define ___WSA_SOCKET_TYPES_H
 type SOCKET as UINT_PTR
 #define INVALID_SOCKET cast(SOCKET, not 0)
-#define SOCKET_ERROR (-1)
+const SOCKET_ERROR = -1
 #define ___WSA_FD_TYPES_H
-#define FD_SETSIZE 64
+const FD_SETSIZE = 64
 
 type FD_SET
 	fd_count as u_int
@@ -140,8 +140,8 @@ type ip_mreq
 end type
 
 #define __MINGW_WSADATA_H
-#define WSADESCRIPTION_LEN 256
-#define WSASYS_STATUS_LEN 128
+const WSADESCRIPTION_LEN = 256
+const WSASYS_STATUS_LEN = 128
 
 type WSADATA
 	wVersion as WORD
@@ -176,10 +176,10 @@ type TRANSMIT_FILE_BUFFERS as _TRANSMIT_FILE_BUFFERS
 type PTRANSMIT_FILE_BUFFERS as _TRANSMIT_FILE_BUFFERS ptr
 type LPTRANSMIT_FILE_BUFFERS as _TRANSMIT_FILE_BUFFERS ptr
 
-#define IOCPARM_MASK &h7f
-#define IOC_VOID &h20000000
-#define IOC_OUT &h40000000
-#define IOC_IN &h80000000
+const IOCPARM_MASK = &h7f
+const IOC_VOID = &h20000000
+const IOC_OUT = &h40000000
+const IOC_IN = &h80000000
 #define IOC_INOUT (IOC_IN or IOC_OUT)
 #define _IO(x, y) ((IOC_VOID or ((x) shl 8)) or (y))
 #define _IOR(x, y, t) (((IOC_OUT or ((cast(__LONG32, sizeof((t))) and IOCPARM_MASK) shl 16)) or ((x) shl 8)) or (y))
@@ -192,140 +192,140 @@ type LPTRANSMIT_FILE_BUFFERS as _TRANSMIT_FILE_BUFFERS ptr
 #define SIOCSLOWAT _IOW(asc("s"), 2, u_long)
 #define SIOCGLOWAT _IOR(asc("s"), 3, u_long)
 #define SIOCATMARK _IOR(asc("s"), 7, u_long)
-#define IPPROTO_IP 0
-#define IPPROTO_ICMP 1
-#define IPPROTO_IGMP 2
-#define IPPROTO_GGP 3
-#define IPPROTO_TCP 6
-#define IPPROTO_PUP 12
-#define IPPROTO_UDP 17
-#define IPPROTO_IDP 22
-#define IPPROTO_ND 77
-#define IPPROTO_RAW 255
-#define IPPROTO_MAX 256
-#define IPPORT_ECHO 7
-#define IPPORT_DISCARD 9
-#define IPPORT_SYSTAT 11
-#define IPPORT_DAYTIME 13
-#define IPPORT_NETSTAT 15
-#define IPPORT_FTP 21
-#define IPPORT_TELNET 23
-#define IPPORT_SMTP 25
-#define IPPORT_TIMESERVER 37
-#define IPPORT_NAMESERVER 42
-#define IPPORT_WHOIS 43
-#define IPPORT_MTP 57
-#define IPPORT_TFTP 69
-#define IPPORT_RJE 77
-#define IPPORT_FINGER 79
-#define IPPORT_TTYLINK 87
-#define IPPORT_SUPDUP 95
-#define IPPORT_EXECSERVER 512
-#define IPPORT_LOGINSERVER 513
-#define IPPORT_CMDSERVER 514
-#define IPPORT_EFSSERVER 520
-#define IPPORT_BIFFUDP 512
-#define IPPORT_WHOSERVER 513
-#define IPPORT_ROUTESERVER 520
-#define IPPORT_RESERVED 1024
-#define IMPLINK_IP 155
-#define IMPLINK_LOWEXPER 156
-#define IMPLINK_HIGHEXPER 158
+const IPPROTO_IP = 0
+const IPPROTO_ICMP = 1
+const IPPROTO_IGMP = 2
+const IPPROTO_GGP = 3
+const IPPROTO_TCP = 6
+const IPPROTO_PUP = 12
+const IPPROTO_UDP = 17
+const IPPROTO_IDP = 22
+const IPPROTO_ND = 77
+const IPPROTO_RAW = 255
+const IPPROTO_MAX = 256
+const IPPORT_ECHO = 7
+const IPPORT_DISCARD = 9
+const IPPORT_SYSTAT = 11
+const IPPORT_DAYTIME = 13
+const IPPORT_NETSTAT = 15
+const IPPORT_FTP = 21
+const IPPORT_TELNET = 23
+const IPPORT_SMTP = 25
+const IPPORT_TIMESERVER = 37
+const IPPORT_NAMESERVER = 42
+const IPPORT_WHOIS = 43
+const IPPORT_MTP = 57
+const IPPORT_TFTP = 69
+const IPPORT_RJE = 77
+const IPPORT_FINGER = 79
+const IPPORT_TTYLINK = 87
+const IPPORT_SUPDUP = 95
+const IPPORT_EXECSERVER = 512
+const IPPORT_LOGINSERVER = 513
+const IPPORT_CMDSERVER = 514
+const IPPORT_EFSSERVER = 520
+const IPPORT_BIFFUDP = 512
+const IPPORT_WHOSERVER = 513
+const IPPORT_ROUTESERVER = 520
+const IPPORT_RESERVED = 1024
+const IMPLINK_IP = 155
+const IMPLINK_LOWEXPER = 156
+const IMPLINK_HIGHEXPER = 158
 #define IN_CLASSA(i) ((cast(__LONG32, (i)) and &h80000000) = 0)
-#define IN_CLASSA_NET &hff000000
-#define IN_CLASSA_NSHIFT 24
-#define IN_CLASSA_HOST &h00ffffff
-#define IN_CLASSA_MAX 128
+const IN_CLASSA_NET = &hff000000
+const IN_CLASSA_NSHIFT = 24
+const IN_CLASSA_HOST = &h00ffffff
+const IN_CLASSA_MAX = 128
 #define IN_CLASSB(i) ((cast(__LONG32, (i)) and &hc0000000) = &h80000000)
-#define IN_CLASSB_NET &hffff0000
-#define IN_CLASSB_NSHIFT 16
-#define IN_CLASSB_HOST &h0000ffff
-#define IN_CLASSB_MAX 65536
+const IN_CLASSB_NET = &hffff0000
+const IN_CLASSB_NSHIFT = 16
+const IN_CLASSB_HOST = &h0000ffff
+const IN_CLASSB_MAX = 65536
 #define IN_CLASSC(i) ((cast(__LONG32, (i)) and &he0000000) = &hc0000000)
-#define IN_CLASSC_NET &hffffff00
-#define IN_CLASSC_NSHIFT 8
-#define IN_CLASSC_HOST &h000000ff
+const IN_CLASSC_NET = &hffffff00
+const IN_CLASSC_NSHIFT = 8
+const IN_CLASSC_HOST = &h000000ff
 #define INADDR_ANY cast(u_long, &h00000000)
-#define INADDR_LOOPBACK &h7f000001
+const INADDR_LOOPBACK = &h7f000001
 #define INADDR_BROADCAST cast(u_long, &hffffffff)
-#define INADDR_NONE &hffffffff
-#define IP_OPTIONS 1
-#define IP_MULTICAST_IF 2
-#define IP_MULTICAST_TTL 3
-#define IP_MULTICAST_LOOP 4
-#define IP_ADD_MEMBERSHIP 5
-#define IP_DROP_MEMBERSHIP 6
-#define IP_TTL 7
-#define IP_TOS 8
-#define IP_DONTFRAGMENT 9
-#define IP_DEFAULT_MULTICAST_TTL 1
-#define IP_DEFAULT_MULTICAST_LOOP 1
-#define IP_MAX_MEMBERSHIPS 20
-#define SOCK_STREAM 1
-#define SOCK_DGRAM 2
-#define SOCK_RAW 3
-#define SOCK_RDM 4
-#define SOCK_SEQPACKET 5
-#define SO_DEBUG &h0001
-#define SO_ACCEPTCONN &h0002
-#define SO_REUSEADDR &h0004
-#define SO_KEEPALIVE &h0008
-#define SO_DONTROUTE &h0010
-#define SO_BROADCAST &h0020
-#define SO_USELOOPBACK &h0040
-#define SO_LINGER &h0080
-#define SO_OOBINLINE &h0100
+const INADDR_NONE = &hffffffff
+const IP_OPTIONS = 1
+const IP_MULTICAST_IF = 2
+const IP_MULTICAST_TTL = 3
+const IP_MULTICAST_LOOP = 4
+const IP_ADD_MEMBERSHIP = 5
+const IP_DROP_MEMBERSHIP = 6
+const IP_TTL = 7
+const IP_TOS = 8
+const IP_DONTFRAGMENT = 9
+const IP_DEFAULT_MULTICAST_TTL = 1
+const IP_DEFAULT_MULTICAST_LOOP = 1
+const IP_MAX_MEMBERSHIPS = 20
+const SOCK_STREAM = 1
+const SOCK_DGRAM = 2
+const SOCK_RAW = 3
+const SOCK_RDM = 4
+const SOCK_SEQPACKET = 5
+const SO_DEBUG = &h0001
+const SO_ACCEPTCONN = &h0002
+const SO_REUSEADDR = &h0004
+const SO_KEEPALIVE = &h0008
+const SO_DONTROUTE = &h0010
+const SO_BROADCAST = &h0020
+const SO_USELOOPBACK = &h0040
+const SO_LINGER = &h0080
+const SO_OOBINLINE = &h0100
 #define SO_DONTLINGER cast(u_int, not SO_LINGER)
-#define SO_SNDBUF &h1001
-#define SO_RCVBUF &h1002
-#define SO_SNDLOWAT &h1003
-#define SO_RCVLOWAT &h1004
-#define SO_SNDTIMEO &h1005
-#define SO_RCVTIMEO &h1006
-#define SO_ERROR &h1007
-#define SO_TYPE &h1008
-#define SO_CONNDATA &h7000
-#define SO_CONNOPT &h7001
-#define SO_DISCDATA &h7002
-#define SO_DISCOPT &h7003
-#define SO_CONNDATALEN &h7004
-#define SO_CONNOPTLEN &h7005
-#define SO_DISCDATALEN &h7006
-#define SO_DISCOPTLEN &h7007
-#define SO_OPENTYPE &h7008
-#define SO_SYNCHRONOUS_ALERT &h10
-#define SO_SYNCHRONOUS_NONALERT &h20
-#define SO_MAXDG &h7009
-#define SO_MAXPATHDG &h700A
-#define SO_UPDATE_ACCEPT_CONTEXT &h700B
-#define SO_CONNECT_TIME &h700C
-#define TCP_NODELAY &h0001
-#define TCP_BSDURGENT &h7000
-#define AF_UNSPEC 0
-#define AF_UNIX 1
-#define AF_INET 2
-#define AF_IMPLINK 3
-#define AF_PUP 4
-#define AF_CHAOS 5
-#define AF_IPX 6
-#define AF_NS 6
-#define AF_ISO 7
+const SO_SNDBUF = &h1001
+const SO_RCVBUF = &h1002
+const SO_SNDLOWAT = &h1003
+const SO_RCVLOWAT = &h1004
+const SO_SNDTIMEO = &h1005
+const SO_RCVTIMEO = &h1006
+const SO_ERROR = &h1007
+const SO_TYPE = &h1008
+const SO_CONNDATA = &h7000
+const SO_CONNOPT = &h7001
+const SO_DISCDATA = &h7002
+const SO_DISCOPT = &h7003
+const SO_CONNDATALEN = &h7004
+const SO_CONNOPTLEN = &h7005
+const SO_DISCDATALEN = &h7006
+const SO_DISCOPTLEN = &h7007
+const SO_OPENTYPE = &h7008
+const SO_SYNCHRONOUS_ALERT = &h10
+const SO_SYNCHRONOUS_NONALERT = &h20
+const SO_MAXDG = &h7009
+const SO_MAXPATHDG = &h700A
+const SO_UPDATE_ACCEPT_CONTEXT = &h700B
+const SO_CONNECT_TIME = &h700C
+const TCP_NODELAY = &h0001
+const TCP_BSDURGENT = &h7000
+const AF_UNSPEC = 0
+const AF_UNIX = 1
+const AF_INET = 2
+const AF_IMPLINK = 3
+const AF_PUP = 4
+const AF_CHAOS = 5
+const AF_IPX = 6
+const AF_NS = 6
+const AF_ISO = 7
 #define AF_OSI AF_ISO
-#define AF_ECMA 8
-#define AF_DATAKIT 9
-#define AF_CCITT 10
-#define AF_SNA 11
-#define AF_DECnet 12
-#define AF_DLI 13
-#define AF_LAT 14
-#define AF_HYLINK 15
-#define AF_APPLETALK 16
-#define AF_NETBIOS 17
-#define AF_VOICEVIEW 18
-#define AF_FIREFOX 19
-#define AF_UNKNOWN1 20
-#define AF_BAN 21
-#define AF_MAX 22
+const AF_ECMA = 8
+const AF_DATAKIT = 9
+const AF_CCITT = 10
+const AF_SNA = 11
+const AF_DECnet = 12
+const AF_DLI = 13
+const AF_LAT = 14
+const AF_HYLINK = 15
+const AF_APPLETALK = 16
+const AF_NETBIOS = 17
+const AF_VOICEVIEW = 18
+const AF_FIREFOX = 19
+const AF_UNKNOWN1 = 20
+const AF_BAN = 21
+const AF_MAX = 22
 #define PF_UNSPEC AF_UNSPEC
 #define PF_UNIX AF_UNIX
 #define PF_INET AF_INET
@@ -350,20 +350,20 @@ type LPTRANSMIT_FILE_BUFFERS as _TRANSMIT_FILE_BUFFERS ptr
 #define PF_UNKNOWN1 AF_UNKNOWN1
 #define PF_BAN AF_BAN
 #define PF_MAX AF_MAX
-#define SOL_SOCKET &hffff
-#define SOMAXCONN 5
-#define MSG_OOB &h1
-#define MSG_PEEK &h2
-#define MSG_DONTROUTE &h4
-#define MSG_MAXIOVLEN 16
-#define MSG_PARTIAL &h8000
-#define MAXGETHOSTSTRUCT 1024
-#define FD_READ &h01
-#define FD_WRITE &h02
-#define FD_OOB &h04
-#define FD_ACCEPT &h08
-#define FD_CONNECT &h10
-#define FD_CLOSE &h20
+const SOL_SOCKET = &hffff
+const SOMAXCONN = 5
+const MSG_OOB = &h1
+const MSG_PEEK = &h2
+const MSG_DONTROUTE = &h4
+const MSG_MAXIOVLEN = 16
+const MSG_PARTIAL = &h8000
+const MAXGETHOSTSTRUCT = 1024
+const FD_READ = &h01
+const FD_WRITE = &h02
+const FD_OOB = &h04
+const FD_ACCEPT = &h08
+const FD_CONNECT = &h10
+const FD_CLOSE = &h20
 #define __WSA_ERR_MACROS_DEFINED
 #define h_errno WSAGetLastError()
 #define HOST_NOT_FOUND WSAHOST_NOT_FOUND
@@ -422,9 +422,9 @@ declare function WSAAsyncSelect(byval s as SOCKET, byval hWnd as HWND, byval wMs
 #define __WINSOCK_WS1_SHARED
 declare function WSARecvEx(byval s as SOCKET, byval buf as zstring ptr, byval len as long, byval flags as long ptr) as long
 
-#define TF_DISCONNECT &h01
-#define TF_REUSE_SOCKET &h02
-#define TF_WRITE_BEHIND &h04
+const TF_DISCONNECT = &h01
+const TF_REUSE_SOCKET = &h02
+const TF_WRITE_BEHIND = &h04
 
 declare function TransmitFile(byval hSocket as SOCKET, byval hFile as HANDLE, byval nNumberOfBytesToWrite as DWORD, byval nNumberOfBytesPerSend as DWORD, byval lpOverlapped as LPOVERLAPPED, byval lpTransmitBuffers as LPTRANSMIT_FILE_BUFFERS, byval dwReserved as DWORD) as WINBOOL
 declare function AcceptEx(byval sListenSocket as SOCKET, byval sAcceptSocket as SOCKET, byval lpOutputBuffer as PVOID, byval dwReceiveDataLength as DWORD, byval dwLocalAddressLength as DWORD, byval dwRemoteAddressLength as DWORD, byval lpdwBytesReceived as LPDWORD, byval lpOverlapped as LPOVERLAPPED) as WINBOOL

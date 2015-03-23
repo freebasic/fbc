@@ -60,14 +60,14 @@ extern "Windows"
 #define __ISeekingPassThru_FWD_DEFINED__
 #define __IAMFilterMiscFlags_FWD_DEFINED__
 #define __IAMGraphBuilderCallback_FWD_DEFINED__
-#define CDEF_CLASS_DEFAULT &h0001
-#define CDEF_BYPASS_CLASS_MANAGER &h0002
-#define CDEF_MERIT_ABOVE_DO_NOT_USE &h0008
-#define CDEF_DEVMON_CMGR_DEVICE &h0010
-#define CDEF_DEVMON_DMO &h0020
-#define CDEF_DEVMON_PNP_DEVICE &h0040
-#define CDEF_DEVMON_FILTER &h0080
-#define CDEF_DEVMON_SELECTIVE_MASK &h00f0
+const CDEF_CLASS_DEFAULT = &h0001
+const CDEF_BYPASS_CLASS_MANAGER = &h0002
+const CDEF_MERIT_ABOVE_DO_NOT_USE = &h0008
+const CDEF_DEVMON_CMGR_DEVICE = &h0010
+const CDEF_DEVMON_DMO = &h0020
+const CDEF_DEVMON_PNP_DEVICE = &h0040
+const CDEF_DEVMON_FILTER = &h0080
+const CDEF_DEVMON_SELECTIVE_MASK = &h00f0
 #define __ICreateDevEnum_INTERFACE_DEFINED__
 extern IID_ICreateDevEnum as const GUID
 type ICreateDevEnum as ICreateDevEnum_
@@ -85,7 +85,7 @@ end type
 
 declare function ICreateDevEnum_CreateClassEnumerator_Proxy(byval This as ICreateDevEnum ptr, byval clsidDeviceClass as const IID const ptr, byval ppEnumMoniker as IEnumMoniker ptr ptr, byval dwFlags as DWORD) as HRESULT
 declare sub ICreateDevEnum_CreateClassEnumerator_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-#define CHARS_IN_GUID 39
+const CHARS_IN_GUID = 39
 
 type _AMMediaType
 	majortype as GUID
@@ -108,8 +108,8 @@ enum
 end enum
 
 type PIN_DIRECTION as _PinDirection
-#define MAX_PIN_NAME 128
-#define MAX_FILTER_NAME 128
+const MAX_PIN_NAME = 128
+const MAX_FILTER_NAME = 128
 #define REFERENCE_TIME_DEFINED
 
 type REFERENCE_TIME as LONGLONG
@@ -557,10 +557,10 @@ declare function IMediaSample2_SetProperties_Proxy(byval This as IMediaSample2 p
 declare sub IMediaSample2_SetProperties_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 type PMEDIASAMPLE2 as IMediaSample2 ptr
 
-#define AM_GBF_PREVFRAMESKIPPED 1
-#define AM_GBF_NOTASYNCPOINT 2
-#define AM_GBF_NOWAIT 4
-#define AM_GBF_NODDSURFACELOCK 8
+const AM_GBF_PREVFRAMESKIPPED = 1
+const AM_GBF_NOTASYNCPOINT = 2
+const AM_GBF_NOWAIT = 4
+const AM_GBF_NODDSURFACELOCK = 8
 #define __IMemAllocator_INTERFACE_DEFINED__
 extern IID_IMemAllocator as const GUID
 type IMemAllocator as IMemAllocator_
@@ -1707,8 +1707,8 @@ declare function IResourceManager_ReleaseFocus_Proxy(byval This as IResourceMana
 declare sub IResourceManager_ReleaseFocus_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 
 #define _IKsPropertySet_
-#define KSPROPERTY_SUPPORT_GET 1
-#define KSPROPERTY_SUPPORT_SET 2
+const KSPROPERTY_SUPPORT_GET = 1
+const KSPROPERTY_SUPPORT_SET = 2
 #define __IKsPropertySet_INTERFACE_DEFINED__
 extern IID_IKsPropertySet as const GUID
 type IKsPropertySet as IKsPropertySet_
@@ -2167,7 +2167,7 @@ declare function IAMDroppedFrames_GetDroppedInfo_Proxy(byval This as IAMDroppedF
 declare sub IAMDroppedFrames_GetDroppedInfo_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IAMDroppedFrames_GetAverageFrameSize_Proxy(byval This as IAMDroppedFrames ptr, byval plAverageSize as LONG ptr) as HRESULT
 declare sub IAMDroppedFrames_GetAverageFrameSize_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#define AMF_AUTOMATICGAIN (-1.0)
+const AMF_AUTOMATICGAIN = -1.0
 extern __MIDL_itf_strmif_0171_v0_0_c_ifspec as RPC_IF_HANDLE
 extern __MIDL_itf_strmif_0171_v0_0_s_ifspec as RPC_IF_HANDLE
 #define __IAMAudioInputMixer_INTERFACE_DEFINED__
@@ -2290,9 +2290,9 @@ enum
 end enum
 
 type TunerInputType as tagTunerInputType
-#define AnalogVideo_NTSC_Mask &h00000007
-#define AnalogVideo_PAL_Mask &h00100FF0
-#define AnalogVideo_SECAM_Mask &h000FF000
+const AnalogVideo_NTSC_Mask = &h00000007
+const AnalogVideo_PAL_Mask = &h00100FF0
+const AnalogVideo_SECAM_Mask = &h000FF000
 
 type __MIDL___MIDL_itf_strmif_0173_0001 as long
 enum
@@ -3747,13 +3747,13 @@ declare sub IMpeg2Demultiplexer_SetOutputPinMediaType_Stub(byval This as IRpcStu
 declare function IMpeg2Demultiplexer_DeleteOutputPin_Proxy(byval This as IMpeg2Demultiplexer ptr, byval pszPinName as LPWSTR) as HRESULT
 declare sub IMpeg2Demultiplexer_DeleteOutputPin_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 
-#define MPEG2_PROGRAM_STREAM_MAP &h00000000
-#define MPEG2_PROGRAM_ELEMENTARY_STREAM &h00000001
-#define MPEG2_PROGRAM_DIRECTORY_PES_PACKET &h00000002
-#define MPEG2_PROGRAM_PACK_HEADER &h00000003
-#define MPEG2_PROGRAM_PES_STREAM &h00000004
-#define MPEG2_PROGRAM_SYSTEM_HEADER &h00000005
-#define SUBSTREAM_FILTER_VAL_NONE &h10000000
+const MPEG2_PROGRAM_STREAM_MAP = &h00000000
+const MPEG2_PROGRAM_ELEMENTARY_STREAM = &h00000001
+const MPEG2_PROGRAM_DIRECTORY_PES_PACKET = &h00000002
+const MPEG2_PROGRAM_PACK_HEADER = &h00000003
+const MPEG2_PROGRAM_PES_STREAM = &h00000004
+const MPEG2_PROGRAM_SYSTEM_HEADER = &h00000005
+const SUBSTREAM_FILTER_VAL_NONE = &h10000000
 
 type __MIDL___MIDL_itf_strmif_0365_0001
 	stream_id as ULONG
@@ -4002,17 +4002,17 @@ enum
 end enum
 
 type VIDEOENCODER_BITRATE_MODE as __MIDL___MIDL_itf_strmif_0374_0001
-#define AM_GETDECODERCAP_QUERY_VMR_SUPPORT &h00000001
-#define VMR_NOTSUPPORTED &h00000000
-#define VMR_SUPPORTED &h00000001
-#define AM_QUERY_DECODER_VMR_SUPPORT &h00000001
-#define AM_QUERY_DECODER_DXVA_1_SUPPORT &h00000002
-#define AM_QUERY_DECODER_DVD_SUPPORT &h00000003
-#define AM_QUERY_DECODER_ATSC_SD_SUPPORT &h00000004
-#define AM_QUERY_DECODER_ATSC_HD_SUPPORT &h00000005
-#define AM_GETDECODERCAP_QUERY_VMR9_SUPPORT &h00000006
-#define DECODER_CAP_NOTSUPPORTED &h00000000
-#define DECODER_CAP_SUPPORTED &h00000001
+const AM_GETDECODERCAP_QUERY_VMR_SUPPORT = &h00000001
+const VMR_NOTSUPPORTED = &h00000000
+const VMR_SUPPORTED = &h00000001
+const AM_QUERY_DECODER_VMR_SUPPORT = &h00000001
+const AM_QUERY_DECODER_DXVA_1_SUPPORT = &h00000002
+const AM_QUERY_DECODER_DVD_SUPPORT = &h00000003
+const AM_QUERY_DECODER_ATSC_SD_SUPPORT = &h00000004
+const AM_QUERY_DECODER_ATSC_HD_SUPPORT = &h00000005
+const AM_GETDECODERCAP_QUERY_VMR9_SUPPORT = &h00000006
+const DECODER_CAP_NOTSUPPORTED = &h00000000
+const DECODER_CAP_SUPPORTED = &h00000001
 extern __MIDL_itf_strmif_0374_v0_0_c_ifspec as RPC_IF_HANDLE
 extern __MIDL_itf_strmif_0374_v0_0_s_ifspec as RPC_IF_HANDLE
 #define __IAMDecoderCaps_INTERFACE_DEFINED__
@@ -4942,11 +4942,11 @@ enum
 	DVD_CharSet_ShiftJIS_Kanji_Roman_Katakana = 4
 end enum
 
-#define DVD_TITLE_MENU &h000
-#define DVD_STREAM_DATA_CURRENT &h800
-#define DVD_STREAM_DATA_VMGM &h400
-#define DVD_STREAM_DATA_VTSM &h401
-#define DVD_DEFAULT_AUDIO_STREAM &h0f
+const DVD_TITLE_MENU = &h000
+const DVD_STREAM_DATA_CURRENT = &h800
+const DVD_STREAM_DATA_VMGM = &h400
+const DVD_STREAM_DATA_VTSM = &h401
+const DVD_DEFAULT_AUDIO_STREAM = &h0f
 
 type tagDVD_DECODER_CAPS
 	dwSize as DWORD
@@ -4964,11 +4964,11 @@ type tagDVD_DECODER_CAPS
 end type
 
 type DVD_DECODER_CAPS as tagDVD_DECODER_CAPS
-#define DVD_AUDIO_CAPS_AC3 &h00000001
-#define DVD_AUDIO_CAPS_MPEG2 &h00000002
-#define DVD_AUDIO_CAPS_LPCM &h00000004
-#define DVD_AUDIO_CAPS_DTS &h00000008
-#define DVD_AUDIO_CAPS_SDDS &h00000010
+const DVD_AUDIO_CAPS_AC3 = &h00000001
+const DVD_AUDIO_CAPS_MPEG2 = &h00000002
+const DVD_AUDIO_CAPS_LPCM = &h00000004
+const DVD_AUDIO_CAPS_DTS = &h00000008
+const DVD_AUDIO_CAPS_SDDS = &h00000010
 extern __MIDL_itf_strmif_0387_v0_0_c_ifspec as RPC_IF_HANDLE
 extern __MIDL_itf_strmif_0387_v0_0_s_ifspec as RPC_IF_HANDLE
 #define __IDvdInfo2_INTERFACE_DEFINED__
@@ -5920,11 +5920,11 @@ end type
 
 type VMRALPHABITMAP as _VMRALPHABITMAP
 type PVMRALPHABITMAP as _VMRALPHABITMAP ptr
-#define VMRBITMAP_DISABLE &h00000001
-#define VMRBITMAP_HDC &h00000002
-#define VMRBITMAP_ENTIREDDS &h00000004
-#define VMRBITMAP_SRCCOLORKEY &h00000008
-#define VMRBITMAP_SRCRECT &h00000010
+const VMRBITMAP_DISABLE = &h00000001
+const VMRBITMAP_HDC = &h00000002
+const VMRBITMAP_ENTIREDDS = &h00000004
+const VMRBITMAP_SRCCOLORKEY = &h00000008
+const VMRBITMAP_SRCRECT = &h00000010
 extern __MIDL_itf_strmif_0406_v0_0_c_ifspec as RPC_IF_HANDLE
 extern __MIDL_itf_strmif_0406_v0_0_s_ifspec as RPC_IF_HANDLE
 #define __IVMRMixerBitmap_INTERFACE_DEFINED__

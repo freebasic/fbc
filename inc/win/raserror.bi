@@ -1,8 +1,8 @@
 #pragma once
 
 #define _RASERROR_H_
-#define RASBASE 600
-#define SUCCESS 0
+const RASBASE = 600
+const SUCCESS = 0
 #define PENDING (RASBASE + 0)
 #define ERROR_INVALID_PORT_HANDLE (RASBASE + 1)
 #define ERROR_PORT_ALREADY_OPEN (RASBASE + 2)

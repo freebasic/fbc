@@ -9,8 +9,8 @@
 extern "Windows"
 
 #define _USERENV_H_
-#define PI_NOUI &h00000001
-#define PI_APPLYPOLICY &h00000002
+const PI_NOUI = &h00000001
+const PI_APPLYPOLICY = &h00000002
 
 #ifdef UNICODE
 	#define LoadUserProfile LoadUserProfileW
@@ -36,9 +36,9 @@ declare function UnloadUserProfile(byval hToken as HANDLE, byval hProfile as HAN
 declare function GetProfilesDirectoryA(byval lpProfilesDir as LPSTR, byval lpcchSize as LPDWORD) as WINBOOL
 declare function GetProfilesDirectoryW(byval lpProfilesDir as LPWSTR, byval lpcchSize as LPDWORD) as WINBOOL
 
-#define PT_TEMPORARY &h00000001
-#define PT_ROAMING &h00000002
-#define PT_MANDATORY &h00000004
+const PT_TEMPORARY = &h00000001
+const PT_ROAMING = &h00000002
+const PT_MANDATORY = &h00000004
 
 declare function GetProfileType(byval dwFlags as DWORD ptr) as WINBOOL
 declare function DeleteProfileA(byval lpSidString as LPCSTR, byval lpProfilePath as LPCSTR, byval lpComputerName as LPCSTR) as WINBOOL
@@ -54,16 +54,16 @@ declare function DestroyEnvironmentBlock(byval lpEnvironment as LPVOID) as WINBO
 declare function ExpandEnvironmentStringsForUserA(byval hToken as HANDLE, byval lpSrc as LPCSTR, byval lpDest as LPSTR, byval dwSize as DWORD) as WINBOOL
 declare function ExpandEnvironmentStringsForUserW(byval hToken as HANDLE, byval lpSrc as LPCWSTR, byval lpDest as LPWSTR, byval dwSize as DWORD) as WINBOOL
 declare function RefreshPolicy(byval bMachine as WINBOOL) as WINBOOL
-#define RP_FORCE 1
+const RP_FORCE = 1
 declare function RefreshPolicyEx(byval bMachine as WINBOOL, byval dwOptions as DWORD) as WINBOOL
 declare function EnterCriticalPolicySection(byval bMachine as WINBOOL) as HANDLE
 declare function LeaveCriticalPolicySection(byval hSection as HANDLE) as WINBOOL
 declare function RegisterGPNotification(byval hEvent as HANDLE, byval bMachine as WINBOOL) as WINBOOL
 declare function UnregisterGPNotification(byval hEvent as HANDLE) as WINBOOL
 
-#define GPC_BLOCK_POLICY &h00000001
-#define GPO_FLAG_DISABLE &h00000001
-#define GPO_FLAG_FORCE &h00000002
+const GPC_BLOCK_POLICY = &h00000001
+const GPO_FLAG_DISABLE = &h00000001
+const GPO_FLAG_FORCE = &h00000002
 
 type _GPO_LINK as long
 enum
@@ -123,9 +123,9 @@ type PGROUP_POLICY_OBJECTW as _GROUP_POLICY_OBJECTW ptr
 	type PGROUP_POLICY_OBJECT as PGROUP_POLICY_OBJECTA
 #endif
 
-#define GPO_LIST_FLAG_MACHINE &h00000001
-#define GPO_LIST_FLAG_SITEONLY &h00000002
-#define GPO_LIST_FLAG_NO_WMIFILTERS &h00000004
+const GPO_LIST_FLAG_MACHINE = &h00000001
+const GPO_LIST_FLAG_SITEONLY = &h00000002
+const GPO_LIST_FLAG_NO_WMIFILTERS = &h00000004
 
 #ifdef UNICODE
 	#define GetGPOList GetGPOListW
@@ -156,17 +156,17 @@ declare function GetAppliedGPOListW(byval dwFlags as DWORD, byval pMachineName a
 #define GP_PERUSERLOCALSETTINGS __TEXT("PerUserLocalSettings")
 #define GP_PROCESSGROUPPOLICY __TEXT("ProcessGroupPolicy")
 #define GP_REQUIRESSUCCESSFULREGISTRY __TEXT("RequiresSuccessfulRegistry")
-#define GPO_INFO_FLAG_MACHINE &h00000001
-#define GPO_INFO_FLAG_BACKGROUND &h00000010
-#define GPO_INFO_FLAG_SLOWLINK &h00000020
-#define GPO_INFO_FLAG_VERBOSE &h00000040
-#define GPO_INFO_FLAG_NOCHANGES &h00000080
-#define GPO_INFO_FLAG_LINKTRANSITION &h00000100
-#define GPO_INFO_FLAG_LOGRSOP_TRANSITION &h00000200
-#define GPO_INFO_FLAG_FORCED_REFRESH &h00000400
-#define GPO_INFO_FLAG_SAFEMODE_BOOT &h00000800
-#define GPO_INFO_FLAG_ASYNC_FOREGROUND &h00001000
-#define GPO_INFO_FLAG_REPORT &h00002000
+const GPO_INFO_FLAG_MACHINE = &h00000001
+const GPO_INFO_FLAG_BACKGROUND = &h00000010
+const GPO_INFO_FLAG_SLOWLINK = &h00000020
+const GPO_INFO_FLAG_VERBOSE = &h00000040
+const GPO_INFO_FLAG_NOCHANGES = &h00000080
+const GPO_INFO_FLAG_LINKTRANSITION = &h00000100
+const GPO_INFO_FLAG_LOGRSOP_TRANSITION = &h00000200
+const GPO_INFO_FLAG_FORCED_REFRESH = &h00000400
+const GPO_INFO_FLAG_SAFEMODE_BOOT = &h00000800
+const GPO_INFO_FLAG_ASYNC_FOREGROUND = &h00001000
+const GPO_INFO_FLAG_REPORT = &h00002000
 
 type ASYNCCOMPLETIONHANDLE as UINT_PTR
 type PFNSTATUSMESSAGECALLBACK as function cdecl(byval bVerbose as WINBOOL, byval lpMessage as LPWSTR) as DWORD
@@ -219,19 +219,19 @@ type POLICYSETTINGSTATUSINFO as _POLICYSETTINGSTATUSINFO
 type LPPOLICYSETTINGSTATUSINFO as _POLICYSETTINGSTATUSINFO ptr
 declare function RsopSetPolicySettingStatus(byval dwFlags as DWORD, byval pServices as IWbemServices ptr, byval pSettingInstance as IWbemClassObject ptr, byval nInfo as DWORD, byval pStatus as POLICYSETTINGSTATUSINFO ptr) as HRESULT
 declare function RsopResetPolicySettingStatus(byval dwFlags as DWORD, byval pServices as IWbemServices ptr, byval pSettingInstance as IWbemClassObject ptr) as HRESULT
-#define FLAG_NO_GPO_FILTER &h80000000
-#define FLAG_NO_CSE_INVOKE &h40000000
-#define FLAG_ASSUME_SLOW_LINK &h20000000
-#define FLAG_LOOPBACK_MERGE &h10000000
-#define FLAG_LOOPBACK_REPLACE &h08000000
-#define FLAG_ASSUME_USER_WQLFILTER_TRUE &h04000000
-#define FLAG_ASSUME_COMP_WQLFILTER_TRUE &h02000000
-#define FLAG_PLANNING_MODE &h01000000
-#define FLAG_NO_USER &h00000001
-#define FLAG_NO_COMPUTER &h00000002
-#define FLAG_FORCE_CREATENAMESPACE &h00000004
-#define RSOP_USER_ACCESS_DENIED &h00000001
-#define RSOP_COMPUTER_ACCESS_DENIED &h00000002
-#define RSOP_TEMPNAMESPACE_EXISTS &h00000004
+const FLAG_NO_GPO_FILTER = &h80000000
+const FLAG_NO_CSE_INVOKE = &h40000000
+const FLAG_ASSUME_SLOW_LINK = &h20000000
+const FLAG_LOOPBACK_MERGE = &h10000000
+const FLAG_LOOPBACK_REPLACE = &h08000000
+const FLAG_ASSUME_USER_WQLFILTER_TRUE = &h04000000
+const FLAG_ASSUME_COMP_WQLFILTER_TRUE = &h02000000
+const FLAG_PLANNING_MODE = &h01000000
+const FLAG_NO_USER = &h00000001
+const FLAG_NO_COMPUTER = &h00000002
+const FLAG_FORCE_CREATENAMESPACE = &h00000004
+const RSOP_USER_ACCESS_DENIED = &h00000001
+const RSOP_COMPUTER_ACCESS_DENIED = &h00000002
+const RSOP_TEMPNAMESPACE_EXISTS = &h00000004
 
 end extern

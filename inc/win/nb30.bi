@@ -3,8 +3,8 @@
 extern "Windows"
 
 #define NCB_INCLUDED
-#define NCBNAMSZ 16
-#define MAX_LANA 254
+const NCBNAMSZ = 16
+const MAX_LANA = 254
 
 type _NCB
 	ncb_command as UCHAR
@@ -74,14 +74,14 @@ end type
 
 type NAME_BUFFER as _NAME_BUFFER
 type PNAME_BUFFER as _NAME_BUFFER ptr
-#define NAME_FLAGS_MASK &h87
-#define GROUP_NAME &h80
-#define UNIQUE_NAME &h00
-#define REGISTERING &h00
-#define REGISTERED &h04
-#define DEREGISTERED &h05
-#define DUPLICATE_ &h06
-#define DUPLICATE_DEREG &h07
+const NAME_FLAGS_MASK = &h87
+const GROUP_NAME = &h80
+const UNIQUE_NAME = &h00
+const REGISTERING = &h00
+const REGISTERED = &h04
+const DEREGISTERED = &h05
+const DUPLICATE = &h06
+const DUPLICATE_DEREG = &h07
 
 type _SESSION_HEADER
 	sess_name as UCHAR
@@ -104,12 +104,12 @@ end type
 
 type SESSION_BUFFER as _SESSION_BUFFER
 type PSESSION_BUFFER as _SESSION_BUFFER ptr
-#define LISTEN_OUTSTANDING &h01
-#define CALL_PENDING &h02
-#define SESSION_ESTABLISHED &h03
-#define HANGUP_PENDING &h04
-#define HANGUP_COMPLETE &h05
-#define SESSION_ABORTED &h06
+const LISTEN_OUTSTANDING = &h01
+const CALL_PENDING = &h02
+const SESSION_ESTABLISHED = &h03
+const HANGUP_PENDING = &h04
+const HANGUP_COMPLETE = &h05
+const SESSION_ABORTED = &h06
 
 type _LANA_ENUM
 	length as UCHAR
@@ -150,72 +150,72 @@ type ACTION_HEADER as _ACTION_HEADER
 type PACTION_HEADER as _ACTION_HEADER ptr
 #define ALL_TRANSPORTS !"M\0\0\0"
 #define MS_NBF "MNBF"
-#define NCBCALL &h10
-#define NCBLISTEN &h11
-#define NCBHANGUP &h12
-#define NCBSEND &h14
-#define NCBRECV &h15
-#define NCBRECVANY &h16
-#define NCBCHAINSEND &h17
-#define NCBDGSEND &h20
-#define NCBDGRECV &h21
-#define NCBDGSENDBC &h22
-#define NCBDGRECVBC &h23
-#define NCBADDNAME &h30
-#define NCBDELNAME &h31
-#define NCBRESET &h32
-#define NCBASTAT &h33
-#define NCBSSTAT &h34
-#define NCBCANCEL &h35
-#define NCBADDGRNAME &h36
-#define NCBENUM &h37
-#define NCBUNLINK &h70
-#define NCBSENDNA &h71
-#define NCBCHAINSENDNA &h72
-#define NCBLANSTALERT &h73
-#define NCBACTION &h77
-#define NCBFINDNAME &h78
-#define NCBTRACE &h79
-#define ASYNCH &h80
-#define NRC_GOODRET &h00
-#define NRC_BUFLEN &h01
-#define NRC_ILLCMD &h03
-#define NRC_CMDTMO &h05
-#define NRC_INCOMP &h06
-#define NRC_BADDR &h07
-#define NRC_SNUMOUT &h08
-#define NRC_NORES &h09
-#define NRC_SCLOSED &h0a
-#define NRC_CMDCAN &h0b
-#define NRC_DUPNAME &h0d
-#define NRC_NAMTFUL &h0e
-#define NRC_ACTSES &h0f
-#define NRC_LOCTFUL &h11
-#define NRC_REMTFUL &h12
-#define NRC_ILLNN &h13
-#define NRC_NOCALL &h14
-#define NRC_NOWILD &h15
-#define NRC_INUSE &h16
-#define NRC_NAMERR &h17
-#define NRC_SABORT &h18
-#define NRC_NAMCONF &h19
-#define NRC_IFBUSY &h21
-#define NRC_TOOMANY &h22
-#define NRC_BRIDGE &h23
-#define NRC_CANOCCR &h24
-#define NRC_CANCEL &h26
-#define NRC_DUPENV &h30
-#define NRC_ENVNOTDEF &h34
-#define NRC_OSRESNOTAV &h35
-#define NRC_MAXAPPS &h36
-#define NRC_NOSAPS &h37
-#define NRC_NORESOURCES &h38
-#define NRC_INVADDRESS &h39
-#define NRC_INVDDID &h3B
-#define NRC_LOCKFAIL &h3C
-#define NRC_OPENERR &h3f
-#define NRC_SYSTEM &h40
-#define NRC_PENDING &hff
+const NCBCALL = &h10
+const NCBLISTEN = &h11
+const NCBHANGUP = &h12
+const NCBSEND = &h14
+const NCBRECV = &h15
+const NCBRECVANY = &h16
+const NCBCHAINSEND = &h17
+const NCBDGSEND = &h20
+const NCBDGRECV = &h21
+const NCBDGSENDBC = &h22
+const NCBDGRECVBC = &h23
+const NCBADDNAME = &h30
+const NCBDELNAME = &h31
+const NCBRESET = &h32
+const NCBASTAT = &h33
+const NCBSSTAT = &h34
+const NCBCANCEL = &h35
+const NCBADDGRNAME = &h36
+const NCBENUM = &h37
+const NCBUNLINK = &h70
+const NCBSENDNA = &h71
+const NCBCHAINSENDNA = &h72
+const NCBLANSTALERT = &h73
+const NCBACTION = &h77
+const NCBFINDNAME = &h78
+const NCBTRACE = &h79
+const ASYNCH = &h80
+const NRC_GOODRET = &h00
+const NRC_BUFLEN = &h01
+const NRC_ILLCMD = &h03
+const NRC_CMDTMO = &h05
+const NRC_INCOMP = &h06
+const NRC_BADDR = &h07
+const NRC_SNUMOUT = &h08
+const NRC_NORES = &h09
+const NRC_SCLOSED = &h0a
+const NRC_CMDCAN = &h0b
+const NRC_DUPNAME = &h0d
+const NRC_NAMTFUL = &h0e
+const NRC_ACTSES = &h0f
+const NRC_LOCTFUL = &h11
+const NRC_REMTFUL = &h12
+const NRC_ILLNN = &h13
+const NRC_NOCALL = &h14
+const NRC_NOWILD = &h15
+const NRC_INUSE = &h16
+const NRC_NAMERR = &h17
+const NRC_SABORT = &h18
+const NRC_NAMCONF = &h19
+const NRC_IFBUSY = &h21
+const NRC_TOOMANY = &h22
+const NRC_BRIDGE = &h23
+const NRC_CANOCCR = &h24
+const NRC_CANCEL = &h26
+const NRC_DUPENV = &h30
+const NRC_ENVNOTDEF = &h34
+const NRC_OSRESNOTAV = &h35
+const NRC_MAXAPPS = &h36
+const NRC_NOSAPS = &h37
+const NRC_NORESOURCES = &h38
+const NRC_INVADDRESS = &h39
+const NRC_INVDDID = &h3B
+const NRC_LOCKFAIL = &h3C
+const NRC_OPENERR = &h3f
+const NRC_SYSTEM = &h40
+const NRC_PENDING = &hff
 declare function Netbios(byval pncb as PNCB) as UCHAR
 
 end extern

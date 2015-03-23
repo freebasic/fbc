@@ -7,17 +7,17 @@ extern "Windows"
 #define _INC_CPL
 #define WM_CPL_LAUNCH (WM_USER + 1000)
 #define WM_CPL_LAUNCHED (WM_USER + 1001)
-#define CPL_DYNAMIC_RES 0
-#define CPL_INIT 1
-#define CPL_GETCOUNT 2
-#define CPL_INQUIRE 3
-#define CPL_SELECT 4
-#define CPL_DBLCLK 5
-#define CPL_STOP 6
-#define CPL_EXIT 7
-#define CPL_NEWINQUIRE 8
-#define CPL_STARTWPARMSA 9
-#define CPL_STARTWPARMSW 10
+const CPL_DYNAMIC_RES = 0
+const CPL_INIT = 1
+const CPL_GETCOUNT = 2
+const CPL_INQUIRE = 3
+const CPL_SELECT = 4
+const CPL_DBLCLK = 5
+const CPL_STOP = 6
+const CPL_EXIT = 7
+const CPL_NEWINQUIRE = 8
+const CPL_STARTWPARMSA = 9
+const CPL_STARTWPARMSW = 10
 type APPLET_PROC as function(byval hwndCpl as HWND, byval msg as UINT, byval lParam1 as LPARAM, byval lParam2 as LPARAM) as LONG
 
 type tagCPLINFO field = 1
@@ -68,6 +68,6 @@ type LPNEWCPLINFOW as tagNEWCPLINFOW ptr
 	#define CPL_STARTWPARMS CPL_STARTWPARMSA
 #endif
 
-#define CPL_SETUP 200
+const CPL_SETUP = 200
 
 end extern

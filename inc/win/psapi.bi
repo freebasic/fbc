@@ -28,9 +28,9 @@ extern "Windows"
 	#define GetProcessImageFileName GetProcessImageFileNameA
 #endif
 
-#define LIST_MODULES_DEFAULT &h0
-#define LIST_MODULES_32BIT &h01
-#define LIST_MODULES_64BIT &h02
+const LIST_MODULES_DEFAULT = &h0
+const LIST_MODULES_32BIT = &h01
+const LIST_MODULES_64BIT = &h02
 #define LIST_MODULES_ALL (LIST_MODULES_32BIT or LIST_MODULES_64BIT)
 
 declare function EnumProcesses(byval lpidProcess as DWORD ptr, byval cb as DWORD, byval cbNeeded as DWORD ptr) as WINBOOL

@@ -45,20 +45,20 @@ enum
 	PROTOCOL_ADDRESS_CHANGE
 end enum
 
-#define RPC_CONTEXT_HANDLE_DEFAULT_GUARD cptr(any ptr, -4083)
+const RPC_CONTEXT_HANDLE_DEFAULT_GUARD = cptr(any ptr, -4083)
 #define RPC_CONTEXT_HANDLE_DEFAULT_FLAGS __MSABI_LONG(&h00000000u)
 #define RPC_CONTEXT_HANDLE_FLAGS __MSABI_LONG(&h30000000u)
 #define RPC_CONTEXT_HANDLE_SERIALIZE __MSABI_LONG(&h10000000u)
 #define RPC_CONTEXT_HANDLE_DONT_SERIALIZE __MSABI_LONG(&h20000000u)
-#define RPC_NCA_FLAGS_DEFAULT &h00000000
-#define RPC_NCA_FLAGS_IDEMPOTENT &h00000001
-#define RPC_NCA_FLAGS_BROADCAST &h00000002
-#define RPC_NCA_FLAGS_MAYBE &h00000004
-#define RPC_BUFFER_COMPLETE &h00001000
-#define RPC_BUFFER_PARTIAL &h00002000
-#define RPC_BUFFER_EXTRA &h00004000
-#define RPC_BUFFER_ASYNC &h00008000
-#define RPC_BUFFER_NONOTIFY &h00010000
+const RPC_NCA_FLAGS_DEFAULT = &h00000000
+const RPC_NCA_FLAGS_IDEMPOTENT = &h00000001
+const RPC_NCA_FLAGS_BROADCAST = &h00000002
+const RPC_NCA_FLAGS_MAYBE = &h00000004
+const RPC_BUFFER_COMPLETE = &h00001000
+const RPC_BUFFER_PARTIAL = &h00002000
+const RPC_BUFFER_EXTRA = &h00004000
+const RPC_BUFFER_ASYNC = &h00008000
+const RPC_BUFFER_NONOTIFY = &h00010000
 #define RPCFLG_MESSAGE __MSABI_LONG(&h01000000u)
 #define RPCFLG_AUTO_COMPLETE __MSABI_LONG(&h08000000u)
 #define RPCFLG_LOCAL_CALL __MSABI_LONG(&h10000000u)
@@ -67,7 +67,7 @@ end enum
 #define RPCFLG_NON_NDR __MSABI_LONG(&h80000000u)
 #define RPCFLG_HAS_MULTI_SYNTAXES __MSABI_LONG(&h02000000u)
 #define RPCFLG_HAS_CALLBACK __MSABI_LONG(&h04000000u)
-#define RPC_FLAGS_VALID_BIT &h00008000
+const RPC_FLAGS_VALID_BIT = &h00008000
 type RPC_DISPATCH_FUNCTION as sub(byval Message as PRPC_MESSAGE)
 
 type RPC_DISPATCH_TABLE
@@ -85,8 +85,8 @@ end type
 
 type RPC_PROTSEQ_ENDPOINT as _RPC_PROTSEQ_ENDPOINT
 type PRPC_PROTSEQ_ENDPOINT as _RPC_PROTSEQ_ENDPOINT ptr
-#define NT351_INTERFACE_SIZE &h40
-#define RPC_INTERFACE_HAS_PIPES &h0001
+const NT351_INTERFACE_SIZE = &h40
+const RPC_INTERFACE_HAS_PIPES = &h0001
 
 type _RPC_SERVER_INTERFACE
 	Length as ulong
@@ -172,10 +172,10 @@ declare function I_RpcBindingInqDynamicEndpointW(byval Binding as RPC_BINDING_HA
 declare function I_RpcBindingInqDynamicEndpointA(byval Binding as RPC_BINDING_HANDLE, byval DynamicEndpoint as RPC_CSTR ptr) as RPC_STATUS
 declare function I_RpcServerCheckClientRestriction(byval Context as RPC_BINDING_HANDLE) as RPC_STATUS
 
-#define TRANSPORT_TYPE_CN &h01
-#define TRANSPORT_TYPE_DG &h02
-#define TRANSPORT_TYPE_LPC &h04
-#define TRANSPORT_TYPE_WMSG &h08
+const TRANSPORT_TYPE_CN = &h01
+const TRANSPORT_TYPE_DG = &h02
+const TRANSPORT_TYPE_LPC = &h04
+const TRANSPORT_TYPE_WMSG = &h08
 declare function I_RpcBindingInqTransportType(byval Binding as RPC_BINDING_HANDLE, byval Type as ulong ptr) as RPC_STATUS
 
 type _RPC_TRANSFER_SYNTAX
@@ -195,8 +195,8 @@ declare function I_RpcLaunchDatagramReceiveThread(byval pAddress as any ptr) as 
 declare function I_RpcServerRegisterForwardFunction(byval pForwardFunction as function(byval InterfaceId as UUID ptr, byval InterfaceVersion as RPC_VERSION ptr, byval ObjectId as UUID ptr, byval Rpcpro as ubyte ptr, byval ppDestEndpoint as any ptr ptr) as RPC_STATUS) as RPC_STATUS
 declare function I_RpcServerInqAddressChangeFn() as sub(byval arg as any ptr)
 declare function I_RpcServerSetAddressChangeFn(byval pAddressChangeFn as sub(byval arg as any ptr)) as RPC_STATUS
-#define RPC_P_ADDR_FORMAT_TCP_IPV4 1
-#define RPC_P_ADDR_FORMAT_TCP_IPV6 2
+const RPC_P_ADDR_FORMAT_TCP_IPV4 = 1
+const RPC_P_ADDR_FORMAT_TCP_IPV6 = 2
 declare function I_RpcServerInqLocalConnAddress(byval Binding as RPC_BINDING_HANDLE, byval Buffer as any ptr, byval BufferSize as ulong ptr, byval AddressFormat as ulong ptr) as RPC_STATUS
 declare sub I_RpcSessionStrictContextHandle()
 declare function I_RpcTurnOnEEInfoPropagation() as RPC_STATUS
@@ -249,8 +249,8 @@ type tagI_RpcProxyCallbackInterface
 end type
 
 type I_RpcProxyCallbackInterface as tagI_RpcProxyCallbackInterface
-#define RPC_PROXY_CONNECTION_TYPE_IN_PROXY 0
-#define RPC_PROXY_CONNECTION_TYPE_OUT_PROXY 1
+const RPC_PROXY_CONNECTION_TYPE_IN_PROXY = 0
+const RPC_PROXY_CONNECTION_TYPE_OUT_PROXY = 1
 declare function I_RpcProxyNewConnection(byval ConnectionType as ulong, byval ServerAddress as ushort ptr, byval ServerPort as ushort ptr, byval MinConnTimeout as ushort ptr, byval ConnectionParameter as any ptr, byval CallOutState as RDR_CALLOUT_STATE ptr, byval ProxyCallbackInterface as I_RpcProxyCallbackInterface ptr) as RPC_STATUS
 declare function I_RpcReplyToClientWithStatus(byval ConnectionParameter as any ptr, byval RpcStatus as RPC_STATUS) as RPC_STATUS
 declare sub I_RpcRecordCalloutFailure(byval RpcStatus as RPC_STATUS, byval CallOutState as RDR_CALLOUT_STATE ptr, byval DllName as ushort ptr)

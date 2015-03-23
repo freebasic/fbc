@@ -73,56 +73,56 @@ end type
 
 type CONVINFO as tagCONVINFO
 type PCONVINFO as tagCONVINFO ptr
-#define XST_NULL 0
-#define XST_INCOMPLETE 1
-#define XST_CONNECTED 2
-#define XST_INIT1 3
-#define XST_INIT2 4
-#define XST_REQSENT 5
-#define XST_DATARCVD 6
-#define XST_POKESENT 7
-#define XST_POKEACKRCVD 8
-#define XST_EXECSENT 9
-#define XST_EXECACKRCVD 10
-#define XST_ADVSENT 11
-#define XST_UNADVSENT 12
-#define XST_ADVACKRCVD 13
-#define XST_UNADVACKRCVD 14
-#define XST_ADVDATASENT 15
-#define XST_ADVDATAACKRCVD 16
-#define CADV_LATEACK &hFFFF
-#define ST_CONNECTED &h0001
-#define ST_ADVISE &h0002
-#define ST_ISLOCAL &h0004
-#define ST_BLOCKED &h0008
-#define ST_CLIENT &h0010
-#define ST_TERMINATED &h0020
-#define ST_INLIST &h0040
-#define ST_BLOCKNEXT &h0080
-#define ST_ISSELF &h0100
-#define DDE_FACK &h8000
-#define DDE_FBUSY &h4000
-#define DDE_FDEFERUPD &h4000
-#define DDE_FACKREQ &h8000
-#define DDE_FRELEASE &h2000
-#define DDE_FREQUESTED &h1000
-#define DDE_FAPPSTATUS &h00ff
-#define DDE_FNOTPROCESSED &h0000
+const XST_NULL = 0
+const XST_INCOMPLETE = 1
+const XST_CONNECTED = 2
+const XST_INIT1 = 3
+const XST_INIT2 = 4
+const XST_REQSENT = 5
+const XST_DATARCVD = 6
+const XST_POKESENT = 7
+const XST_POKEACKRCVD = 8
+const XST_EXECSENT = 9
+const XST_EXECACKRCVD = 10
+const XST_ADVSENT = 11
+const XST_UNADVSENT = 12
+const XST_ADVACKRCVD = 13
+const XST_UNADVACKRCVD = 14
+const XST_ADVDATASENT = 15
+const XST_ADVDATAACKRCVD = 16
+const CADV_LATEACK = &hFFFF
+const ST_CONNECTED = &h0001
+const ST_ADVISE = &h0002
+const ST_ISLOCAL = &h0004
+const ST_BLOCKED = &h0008
+const ST_CLIENT = &h0010
+const ST_TERMINATED = &h0020
+const ST_INLIST = &h0040
+const ST_BLOCKNEXT = &h0080
+const ST_ISSELF = &h0100
+const DDE_FACK = &h8000
+const DDE_FBUSY = &h4000
+const DDE_FDEFERUPD = &h4000
+const DDE_FACKREQ = &h8000
+const DDE_FRELEASE = &h2000
+const DDE_FREQUESTED = &h1000
+const DDE_FAPPSTATUS = &h00ff
+const DDE_FNOTPROCESSED = &h0000
 #define DDE_FACKRESERVED (not ((DDE_FACK or DDE_FBUSY) or DDE_FAPPSTATUS))
 #define DDE_FADVRESERVED (not (DDE_FACKREQ or DDE_FDEFERUPD))
 #define DDE_FDATRESERVED (not ((DDE_FACKREQ or DDE_FRELEASE) or DDE_FREQUESTED))
 #define DDE_FPOKRESERVED (not DDE_FRELEASE)
-#define MSGF_DDEMGR &h8001
-#define CP_WINANSI 1004
-#define CP_WINUNICODE 1200
-#define XTYPF_NOBLOCK &h0002
-#define XTYPF_NODATA &h0004
-#define XTYPF_ACKREQ &h0008
-#define XCLASS_MASK &hFC00
-#define XCLASS_BOOL &h1000
-#define XCLASS_DATA &h2000
-#define XCLASS_FLAGS &h4000
-#define XCLASS_NOTIFICATION &h8000
+const MSGF_DDEMGR = &h8001
+const CP_WINANSI = 1004
+const CP_WINUNICODE = 1200
+const XTYPF_NOBLOCK = &h0002
+const XTYPF_NODATA = &h0004
+const XTYPF_ACKREQ = &h0008
+const XCLASS_MASK = &hFC00
+const XCLASS_BOOL = &h1000
+const XCLASS_DATA = &h2000
+const XCLASS_FLAGS = &h4000
+const XCLASS_NOTIFICATION = &h8000
 #define XTYP_ERROR ((&h0000 or XCLASS_NOTIFICATION) or XTYPF_NOBLOCK)
 #define XTYP_ADVDATA (&h0010 or XCLASS_FLAGS)
 #define XTYP_ADVREQ ((&h0020 or XCLASS_DATA) or XTYPF_NOBLOCK)
@@ -138,10 +138,10 @@ type PCONVINFO as tagCONVINFO ptr
 #define XTYP_DISCONNECT ((&h00C0 or XCLASS_NOTIFICATION) or XTYPF_NOBLOCK)
 #define XTYP_UNREGISTER ((&h00D0 or XCLASS_NOTIFICATION) or XTYPF_NOBLOCK)
 #define XTYP_WILDCONNECT ((&h00E0 or XCLASS_DATA) or XTYPF_NOBLOCK)
-#define XTYP_MASK &h00F0
-#define XTYP_SHIFT 4
-#define TIMEOUT_ASYNC &hFFFFFFFF
-#define QID_SYNC &hFFFFFFFF
+const XTYP_MASK = &h00F0
+const XTYP_SHIFT = 4
+const TIMEOUT_ASYNC = &hFFFFFFFF
+const QID_SYNC = &hFFFFFFFF
 
 #ifdef UNICODE
 	#define CP_WINNEUTRAL CP_WINUNICODE
@@ -168,18 +168,18 @@ type PFNCALLBACK as function(byval wType as UINT, byval wFmt as UINT, byval hCon
 #define CBR_BLOCK cast(HDDEDATA, -1)
 declare function DdeInitializeA(byval pidInst as LPDWORD, byval pfnCallback as PFNCALLBACK, byval afCmd as DWORD, byval ulRes as DWORD) as UINT
 declare function DdeInitializeW(byval pidInst as LPDWORD, byval pfnCallback as PFNCALLBACK, byval afCmd as DWORD, byval ulRes as DWORD) as UINT
-#define CBF_FAIL_SELFCONNECTIONS &h00001000
-#define CBF_FAIL_CONNECTIONS &h00002000
-#define CBF_FAIL_ADVISES &h00004000
-#define CBF_FAIL_EXECUTES &h00008000
-#define CBF_FAIL_POKES &h00010000
-#define CBF_FAIL_REQUESTS &h00020000
-#define CBF_FAIL_ALLSVRXACTIONS &h0003f000
-#define CBF_SKIP_CONNECT_CONFIRMS &h00040000
-#define CBF_SKIP_REGISTRATIONS &h00080000
-#define CBF_SKIP_UNREGISTRATIONS &h00100000
-#define CBF_SKIP_DISCONNECTS &h00200000
-#define CBF_SKIP_ALLNOTIFICATIONS &h003c0000
+const CBF_FAIL_SELFCONNECTIONS = &h00001000
+const CBF_FAIL_CONNECTIONS = &h00002000
+const CBF_FAIL_ADVISES = &h00004000
+const CBF_FAIL_EXECUTES = &h00008000
+const CBF_FAIL_POKES = &h00010000
+const CBF_FAIL_REQUESTS = &h00020000
+const CBF_FAIL_ALLSVRXACTIONS = &h0003f000
+const CBF_SKIP_CONNECT_CONFIRMS = &h00040000
+const CBF_SKIP_REGISTRATIONS = &h00080000
+const CBF_SKIP_UNREGISTRATIONS = &h00100000
+const CBF_SKIP_DISCONNECTS = &h00200000
+const CBF_SKIP_ALLNOTIFICATIONS = &h003c0000
 #define APPCMD_CLIENTONLY __MSABI_LONG(&h00000010)
 #define APPCMD_FILTERINITS __MSABI_LONG(&h00000020)
 #define APPCMD_MASK __MSABI_LONG(&h00000FF0)
@@ -200,14 +200,14 @@ declare function DdePostAdvise(byval idInst as DWORD, byval hszTopic as HSZ, byv
 declare function DdeEnableCallback(byval idInst as DWORD, byval hConv as HCONV, byval wCmd as UINT) as WINBOOL
 declare function DdeImpersonateClient(byval hConv as HCONV) as WINBOOL
 
-#define EC_ENABLEALL 0
+const EC_ENABLEALL = 0
 #define EC_ENABLEONE ST_BLOCKNEXT
 #define EC_DISABLE ST_BLOCKED
-#define EC_QUERYWAITING 2
-#define DNS_REGISTER &h0001
-#define DNS_UNREGISTER &h0002
-#define DNS_FILTERON &h0004
-#define DNS_FILTEROFF &h0008
+const EC_QUERYWAITING = 2
+const DNS_REGISTER = &h0001
+const DNS_UNREGISTER = &h0002
+const DNS_FILTERON = &h0004
+const DNS_FILTEROFF = &h0008
 
 declare function DdeNameService(byval idInst as DWORD, byval hsz1 as HSZ, byval hsz2 as HSZ, byval afCmd as UINT) as HDDEDATA
 declare function DdeClientTransaction(byval pData as LPBYTE, byval cbData as DWORD, byval hConv as HCONV, byval hszItem as HSZ, byval wFmt as UINT, byval wType as UINT, byval dwTimeout as DWORD, byval pdwResult as LPDWORD) as HDDEDATA
@@ -217,30 +217,30 @@ declare function DdeGetData(byval hData as HDDEDATA, byval pDst as LPBYTE, byval
 declare function DdeAccessData(byval hData as HDDEDATA, byval pcbDataSize as LPDWORD) as LPBYTE
 declare function DdeUnaccessData(byval hData as HDDEDATA) as WINBOOL
 declare function DdeFreeDataHandle(byval hData as HDDEDATA) as WINBOOL
-#define HDATA_APPOWNED &h0001
+const HDATA_APPOWNED = &h0001
 declare function DdeGetLastError(byval idInst as DWORD) as UINT
 
-#define DMLERR_NO_ERROR 0
-#define DMLERR_FIRST &h4000
-#define DMLERR_ADVACKTIMEOUT &h4000
-#define DMLERR_BUSY &h4001
-#define DMLERR_DATAACKTIMEOUT &h4002
-#define DMLERR_DLL_NOT_INITIALIZED &h4003
-#define DMLERR_DLL_USAGE &h4004
-#define DMLERR_EXECACKTIMEOUT &h4005
-#define DMLERR_INVALIDPARAMETER &h4006
-#define DMLERR_LOW_MEMORY &h4007
-#define DMLERR_MEMORY_ERROR &h4008
-#define DMLERR_NOTPROCESSED &h4009
-#define DMLERR_NO_CONV_ESTABLISHED &h400a
-#define DMLERR_POKEACKTIMEOUT &h400b
-#define DMLERR_POSTMSG_FAILED &h400c
-#define DMLERR_REENTRANCY &h400d
-#define DMLERR_SERVER_DIED &h400e
-#define DMLERR_SYS_ERROR &h400f
-#define DMLERR_UNADVACKTIMEOUT &h4010
-#define DMLERR_UNFOUND_QUEUE_ID &h4011
-#define DMLERR_LAST &h4011
+const DMLERR_NO_ERROR = 0
+const DMLERR_FIRST = &h4000
+const DMLERR_ADVACKTIMEOUT = &h4000
+const DMLERR_BUSY = &h4001
+const DMLERR_DATAACKTIMEOUT = &h4002
+const DMLERR_DLL_NOT_INITIALIZED = &h4003
+const DMLERR_DLL_USAGE = &h4004
+const DMLERR_EXECACKTIMEOUT = &h4005
+const DMLERR_INVALIDPARAMETER = &h4006
+const DMLERR_LOW_MEMORY = &h4007
+const DMLERR_MEMORY_ERROR = &h4008
+const DMLERR_NOTPROCESSED = &h4009
+const DMLERR_NO_CONV_ESTABLISHED = &h400a
+const DMLERR_POKEACKTIMEOUT = &h400b
+const DMLERR_POSTMSG_FAILED = &h400c
+const DMLERR_REENTRANCY = &h400d
+const DMLERR_SERVER_DIED = &h400e
+const DMLERR_SYS_ERROR = &h400f
+const DMLERR_UNADVACKTIMEOUT = &h4010
+const DMLERR_UNFOUND_QUEUE_ID = &h4011
+const DMLERR_LAST = &h4011
 
 declare function DdeCreateStringHandleA(byval idInst as DWORD, byval psz as LPCSTR, byval iCodePage as long) as HSZ
 declare function DdeCreateStringHandleW(byval idInst as DWORD, byval psz as LPCWSTR, byval iCodePage as long) as HSZ
@@ -335,10 +335,10 @@ type PMONHSZSTRUCTW as tagMONHSZSTRUCTW ptr
 	type PMONHSZSTRUCT as PMONHSZSTRUCTA
 #endif
 
-#define MH_CREATE 1
-#define MH_KEEP 2
-#define MH_DELETE 3
-#define MH_CLEANUP 4
+const MH_CREATE = 1
+const MH_KEEP = 2
+const MH_DELETE = 3
+const MH_CLEANUP = 4
 
 type tagMONERRSTRUCT
 	cb as UINT
@@ -381,16 +381,16 @@ end type
 
 type MONCONVSTRUCT as tagMONCONVSTRUCT
 type PMONCONVSTRUCT as tagMONCONVSTRUCT ptr
-#define MAX_MONITORS 4
+const MAX_MONITORS = 4
 #define APPCLASS_MONITOR __MSABI_LONG(&h00000001)
 #define XTYP_MONITOR ((&h00F0 or XCLASS_NOTIFICATION) or XTYPF_NOBLOCK)
-#define MF_HSZ_INFO &h01000000
-#define MF_SENDMSGS &h02000000
-#define MF_POSTMSGS &h04000000
-#define MF_CALLBACKS &h08000000
-#define MF_ERRORS &h10000000
-#define MF_LINKS &h20000000
-#define MF_CONV &h40000000
-#define MF_MASK &hFF000000
+const MF_HSZ_INFO = &h01000000
+const MF_SENDMSGS = &h02000000
+const MF_POSTMSGS = &h04000000
+const MF_CALLBACKS = &h08000000
+const MF_ERRORS = &h10000000
+const MF_LINKS = &h20000000
+const MF_CONV = &h40000000
+const MF_MASK = &hFF000000
 
 end extern

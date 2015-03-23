@@ -9,14 +9,14 @@
 
 '' The following symbols have been renamed:
 ''     enum constant ZIP_SOURCE_FREE => ZIP_SOURCE_FREE_
-''     #define ZIP_STAT_INDEX => ZIP_STAT_INDEX_
+''     constant ZIP_STAT_INDEX => ZIP_STAT_INDEX_
 
 extern "C"
 
 #define LIBZIP_VERSION "0.11.2"
-#define LIBZIP_VERSION_MAJOR 0
-#define LIBZIP_VERSION_MINOR 11
-#define LIBZIP_VERSION_MICRO 0
+const LIBZIP_VERSION_MAJOR = 0
+const LIBZIP_VERSION_MINOR = 11
+const LIBZIP_VERSION_MICRO = 0
 type zip_int8_t as byte
 #define ZIP_INT8_MIN INT8_MIN
 #define ZIP_INT8_MAX INT8_MAX
@@ -37,101 +37,101 @@ type zip_int64_t as longint
 #define ZIP_INT64_MAX INT64_MAX
 type zip_uint64_t as ulongint
 #define ZIP_UINT64_MAX UINT64_MAX
-#define ZIP_CREATE 1
-#define ZIP_EXCL 2
-#define ZIP_CHECKCONS 4
-#define ZIP_TRUNCATE 8
-#define ZIP_FL_NOCASE 1u
-#define ZIP_FL_NODIR 2u
-#define ZIP_FL_COMPRESSED 4u
-#define ZIP_FL_UNCHANGED 8u
-#define ZIP_FL_RECOMPRESS 16u
-#define ZIP_FL_ENCRYPTED 32u
-#define ZIP_FL_ENC_GUESS 0u
-#define ZIP_FL_ENC_RAW 64u
-#define ZIP_FL_ENC_STRICT 128u
-#define ZIP_FL_LOCAL 256u
-#define ZIP_FL_CENTRAL 512u
-#define ZIP_FL_ENC_UTF_8 2048u
-#define ZIP_FL_ENC_CP437 4096u
-#define ZIP_FL_OVERWRITE 8192u
-#define ZIP_AFL_TORRENT 1u
-#define ZIP_AFL_RDONLY 2u
+const ZIP_CREATE = 1
+const ZIP_EXCL = 2
+const ZIP_CHECKCONS = 4
+const ZIP_TRUNCATE = 8
+const ZIP_FL_NOCASE = 1u
+const ZIP_FL_NODIR = 2u
+const ZIP_FL_COMPRESSED = 4u
+const ZIP_FL_UNCHANGED = 8u
+const ZIP_FL_RECOMPRESS = 16u
+const ZIP_FL_ENCRYPTED = 32u
+const ZIP_FL_ENC_GUESS = 0u
+const ZIP_FL_ENC_RAW = 64u
+const ZIP_FL_ENC_STRICT = 128u
+const ZIP_FL_LOCAL = 256u
+const ZIP_FL_CENTRAL = 512u
+const ZIP_FL_ENC_UTF_8 = 2048u
+const ZIP_FL_ENC_CP437 = 4096u
+const ZIP_FL_OVERWRITE = 8192u
+const ZIP_AFL_TORRENT = 1u
+const ZIP_AFL_RDONLY = 2u
 #define ZIP_EXTRA_FIELD_ALL ZIP_UINT16_MAX
 #define ZIP_EXTRA_FIELD_NEW ZIP_UINT16_MAX
-#define ZIP_CODEC_DECODE 0
-#define ZIP_CODEC_ENCODE 1
-#define ZIP_ER_OK 0
-#define ZIP_ER_MULTIDISK 1
-#define ZIP_ER_RENAME 2
-#define ZIP_ER_CLOSE 3
-#define ZIP_ER_SEEK 4
-#define ZIP_ER_READ 5
-#define ZIP_ER_WRITE 6
-#define ZIP_ER_CRC 7
-#define ZIP_ER_ZIPCLOSED 8
-#define ZIP_ER_NOENT 9
-#define ZIP_ER_EXISTS 10
-#define ZIP_ER_OPEN 11
-#define ZIP_ER_TMPOPEN 12
-#define ZIP_ER_ZLIB 13
-#define ZIP_ER_MEMORY 14
-#define ZIP_ER_CHANGED 15
-#define ZIP_ER_COMPNOTSUPP 16
-#define ZIP_ER_EOF 17
-#define ZIP_ER_INVAL 18
-#define ZIP_ER_NOZIP 19
-#define ZIP_ER_INTERNAL 20
-#define ZIP_ER_INCONS 21
-#define ZIP_ER_REMOVE 22
-#define ZIP_ER_DELETED 23
-#define ZIP_ER_ENCRNOTSUPP 24
-#define ZIP_ER_RDONLY 25
-#define ZIP_ER_NOPASSWD 26
-#define ZIP_ER_WRONGPASSWD 27
-#define ZIP_ET_NONE 0
-#define ZIP_ET_SYS 1
-#define ZIP_ET_ZLIB 2
-#define ZIP_CM_DEFAULT (-1)
-#define ZIP_CM_STORE 0
-#define ZIP_CM_SHRINK 1
-#define ZIP_CM_REDUCE_1 2
-#define ZIP_CM_REDUCE_2 3
-#define ZIP_CM_REDUCE_3 4
-#define ZIP_CM_REDUCE_4 5
-#define ZIP_CM_IMPLODE 6
-#define ZIP_CM_DEFLATE 8
-#define ZIP_CM_DEFLATE64 9
-#define ZIP_CM_PKWARE_IMPLODE 10
-#define ZIP_CM_BZIP2 12
-#define ZIP_CM_LZMA 14
-#define ZIP_CM_TERSE 18
-#define ZIP_CM_LZ77 19
-#define ZIP_CM_WAVPACK 97
-#define ZIP_CM_PPMD 98
-#define ZIP_EM_NONE 0
-#define ZIP_EM_TRAD_PKWARE 1
-#define ZIP_EM_UNKNOWN &hffff
-#define ZIP_OPSYS_DOS &h00u
-#define ZIP_OPSYS_AMIGA &h01u
-#define ZIP_OPSYS_OPENVMS &h02u
-#define ZIP_OPSYS_UNIX &h03u
-#define ZIP_OPSYS_VM_CMS &h04u
-#define ZIP_OPSYS_ATARI_ST &h05u
-#define ZIP_OPSYS_OS_2 &h06u
-#define ZIP_OPSYS_MACINTOSH &h07u
-#define ZIP_OPSYS_Z_SYSTEM &h08u
-#define ZIP_OPSYS_CPM &h09u
-#define ZIP_OPSYS_WINDOWS_NTFS &h0au
-#define ZIP_OPSYS_MVS &h0bu
-#define ZIP_OPSYS_VSE &h0cu
-#define ZIP_OPSYS_ACORN_RISC &h0du
-#define ZIP_OPSYS_VFAT &h0eu
-#define ZIP_OPSYS_ALTERNATE_MVS &h0fu
-#define ZIP_OPSYS_BEOS &h10u
-#define ZIP_OPSYS_TANDEM &h11u
-#define ZIP_OPSYS_OS_400 &h12u
-#define ZIP_OPSYS_OS_X &h13u
+const ZIP_CODEC_DECODE = 0
+const ZIP_CODEC_ENCODE = 1
+const ZIP_ER_OK = 0
+const ZIP_ER_MULTIDISK = 1
+const ZIP_ER_RENAME = 2
+const ZIP_ER_CLOSE = 3
+const ZIP_ER_SEEK = 4
+const ZIP_ER_READ = 5
+const ZIP_ER_WRITE = 6
+const ZIP_ER_CRC = 7
+const ZIP_ER_ZIPCLOSED = 8
+const ZIP_ER_NOENT = 9
+const ZIP_ER_EXISTS = 10
+const ZIP_ER_OPEN = 11
+const ZIP_ER_TMPOPEN = 12
+const ZIP_ER_ZLIB = 13
+const ZIP_ER_MEMORY = 14
+const ZIP_ER_CHANGED = 15
+const ZIP_ER_COMPNOTSUPP = 16
+const ZIP_ER_EOF = 17
+const ZIP_ER_INVAL = 18
+const ZIP_ER_NOZIP = 19
+const ZIP_ER_INTERNAL = 20
+const ZIP_ER_INCONS = 21
+const ZIP_ER_REMOVE = 22
+const ZIP_ER_DELETED = 23
+const ZIP_ER_ENCRNOTSUPP = 24
+const ZIP_ER_RDONLY = 25
+const ZIP_ER_NOPASSWD = 26
+const ZIP_ER_WRONGPASSWD = 27
+const ZIP_ET_NONE = 0
+const ZIP_ET_SYS = 1
+const ZIP_ET_ZLIB = 2
+const ZIP_CM_DEFAULT = -1
+const ZIP_CM_STORE = 0
+const ZIP_CM_SHRINK = 1
+const ZIP_CM_REDUCE_1 = 2
+const ZIP_CM_REDUCE_2 = 3
+const ZIP_CM_REDUCE_3 = 4
+const ZIP_CM_REDUCE_4 = 5
+const ZIP_CM_IMPLODE = 6
+const ZIP_CM_DEFLATE = 8
+const ZIP_CM_DEFLATE64 = 9
+const ZIP_CM_PKWARE_IMPLODE = 10
+const ZIP_CM_BZIP2 = 12
+const ZIP_CM_LZMA = 14
+const ZIP_CM_TERSE = 18
+const ZIP_CM_LZ77 = 19
+const ZIP_CM_WAVPACK = 97
+const ZIP_CM_PPMD = 98
+const ZIP_EM_NONE = 0
+const ZIP_EM_TRAD_PKWARE = 1
+const ZIP_EM_UNKNOWN = &hffff
+const ZIP_OPSYS_DOS = &h00u
+const ZIP_OPSYS_AMIGA = &h01u
+const ZIP_OPSYS_OPENVMS = &h02u
+const ZIP_OPSYS_UNIX = &h03u
+const ZIP_OPSYS_VM_CMS = &h04u
+const ZIP_OPSYS_ATARI_ST = &h05u
+const ZIP_OPSYS_OS_2 = &h06u
+const ZIP_OPSYS_MACINTOSH = &h07u
+const ZIP_OPSYS_Z_SYSTEM = &h08u
+const ZIP_OPSYS_CPM = &h09u
+const ZIP_OPSYS_WINDOWS_NTFS = &h0au
+const ZIP_OPSYS_MVS = &h0bu
+const ZIP_OPSYS_VSE = &h0cu
+const ZIP_OPSYS_ACORN_RISC = &h0du
+const ZIP_OPSYS_VFAT = &h0eu
+const ZIP_OPSYS_ALTERNATE_MVS = &h0fu
+const ZIP_OPSYS_BEOS = &h10u
+const ZIP_OPSYS_TANDEM = &h11u
+const ZIP_OPSYS_OS_400 = &h12u
+const ZIP_OPSYS_OS_X = &h13u
 #define ZIP_OPSYS_DEFAULT ZIP_OPSYS_UNIX
 
 type zip_source_cmd as long
@@ -144,16 +144,16 @@ enum
 	ZIP_SOURCE_FREE_
 end enum
 
-#define ZIP_SOURCE_ERR_LOWER (-2)
-#define ZIP_STAT_NAME &h0001u
-#define ZIP_STAT_INDEX_ &h0002u
-#define ZIP_STAT_SIZE &h0004u
-#define ZIP_STAT_COMP_SIZE &h0008u
-#define ZIP_STAT_MTIME &h0010u
-#define ZIP_STAT_CRC &h0020u
-#define ZIP_STAT_COMP_METHOD &h0040u
-#define ZIP_STAT_ENCRYPTION_METHOD &h0080u
-#define ZIP_STAT_FLAGS &h0100u
+const ZIP_SOURCE_ERR_LOWER = -2
+const ZIP_STAT_NAME = &h0001u
+const ZIP_STAT_INDEX_ = &h0002u
+const ZIP_STAT_SIZE = &h0004u
+const ZIP_STAT_COMP_SIZE = &h0008u
+const ZIP_STAT_MTIME = &h0010u
+const ZIP_STAT_CRC = &h0020u
+const ZIP_STAT_COMP_METHOD = &h0040u
+const ZIP_STAT_ENCRYPTION_METHOD = &h0080u
+const ZIP_STAT_FLAGS = &h0100u
 
 type zip_stat
 	valid as zip_uint64_t

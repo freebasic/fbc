@@ -71,7 +71,7 @@ end type
 
 type RPC_ASYNC_STATE as _RPC_ASYNC_STATE
 type PRPC_ASYNC_STATE as _RPC_ASYNC_STATE ptr
-#define RPC_C_NOTIFY_ON_SEND_COMPLETE &h1
+const RPC_C_NOTIFY_ON_SEND_COMPLETE = &h1
 #define RPC_C_INFINITE_TIMEOUT INFINITE
 #define RpcAsyncGetCallHandle(pAsync) cast(PRPC_ASYNC_STATE, pAsync)->RuntimeInfo
 
@@ -95,8 +95,8 @@ enum
 end enum
 
 type ExtendedErrorParamTypes as tagExtendedErrorParamTypes
-#define MaxNumberOfEEInfoParams 4
-#define RPC_EEINFO_VERSION 1
+const MaxNumberOfEEInfoParams = 4
+const RPC_EEINFO_VERSION = 1
 
 type tagBinaryParam
 	Buffer as any ptr
@@ -120,11 +120,11 @@ type tagRPC_EE_INFO_PARAM
 end type
 
 type RPC_EE_INFO_PARAM as tagRPC_EE_INFO_PARAM
-#define EEInfoPreviousRecordsMissing 1
-#define EEInfoNextRecordsMissing 2
-#define EEInfoUseFileTime 4
-#define EEInfoGCCOM 11
-#define EEInfoGCFRS 12
+const EEInfoPreviousRecordsMissing = 1
+const EEInfoNextRecordsMissing = 2
+const EEInfoUseFileTime = 4
+const EEInfoGCCOM = 11
+const EEInfoGCFRS = 12
 
 union tagRPC_EXTENDED_ERROR_INFO_u
 	SystemTime as SYSTEMTIME
@@ -167,9 +167,9 @@ declare function RpcFreeAuthorizationContext(byval pAuthzClientContext as PVOID 
 declare function RpcSsContextLockExclusive(byval ServerBindingHandle as RPC_BINDING_HANDLE, byval UserContext as PVOID) as RPC_STATUS
 declare function RpcSsContextLockShared(byval ServerBindingHandle as RPC_BINDING_HANDLE, byval UserContext as PVOID) as RPC_STATUS
 
-#define RPC_CALL_ATTRIBUTES_VERSION 1
-#define RPC_QUERY_SERVER_PRINCIPAL_NAME 2
-#define RPC_QUERY_CLIENT_PRINCIPAL_NAME 4
+const RPC_CALL_ATTRIBUTES_VERSION = 1
+const RPC_QUERY_SERVER_PRINCIPAL_NAME = 2
+const RPC_QUERY_CLIENT_PRINCIPAL_NAME = 4
 
 type tagRPC_CALL_ATTRIBUTES_V1_W
 	Version as ulong

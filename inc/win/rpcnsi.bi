@@ -6,15 +6,15 @@ extern "Windows"
 
 #define __RPCNSI_H__
 type RPC_NS_HANDLE as any ptr
-#define RPC_C_NS_SYNTAX_DEFAULT 0
-#define RPC_C_NS_SYNTAX_DCE 3
-#define RPC_C_PROFILE_DEFAULT_ELT 0
-#define RPC_C_PROFILE_ALL_ELT 1
+const RPC_C_NS_SYNTAX_DEFAULT = 0
+const RPC_C_NS_SYNTAX_DCE = 3
+const RPC_C_PROFILE_DEFAULT_ELT = 0
+const RPC_C_PROFILE_ALL_ELT = 1
 #define RPC_C_PROFILE_ALL_ELTS RPC_C_PROFILE_ALL_ELT
-#define RPC_C_PROFILE_MATCH_BY_IF 2
-#define RPC_C_PROFILE_MATCH_BY_MBR 3
-#define RPC_C_PROFILE_MATCH_BY_BOTH 4
-#define RPC_C_NS_DEFAULT_EXP_AGE (-1)
+const RPC_C_PROFILE_MATCH_BY_IF = 2
+const RPC_C_PROFILE_MATCH_BY_MBR = 3
+const RPC_C_PROFILE_MATCH_BY_BOTH = 4
+const RPC_C_NS_DEFAULT_EXP_AGE = -1
 
 declare function RpcNsBindingExportA(byval EntryNameSyntax as ulong, byval EntryName as RPC_CSTR, byval IfSpec as RPC_IF_HANDLE, byval BindingVec as RPC_BINDING_VECTOR ptr, byval ObjectUuidVec as UUID_VECTOR ptr) as RPC_STATUS
 declare function RpcNsBindingUnexportA(byval EntryNameSyntax as ulong, byval EntryName as RPC_CSTR, byval IfSpec as RPC_IF_HANDLE, byval ObjectUuidVec as UUID_VECTOR ptr) as RPC_STATUS

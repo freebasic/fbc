@@ -5,9 +5,9 @@
 extern "Windows"
 
 #define __SQLUCODE
-#define SQL_WCHAR (-8)
-#define SQL_WVARCHAR (-9)
-#define SQL_WLONGVARCHAR (-10)
+const SQL_WCHAR = -8
+const SQL_WVARCHAR = -9
+const SQL_WLONGVARCHAR = -10
 #define SQL_C_WCHAR SQL_WCHAR
 
 #ifdef UNICODE
@@ -16,7 +16,7 @@ extern "Windows"
 	#define SQL_C_TCHAR SQL_C_CHAR
 #endif
 
-#define SQL_SQLSTATE_SIZEW 10
+const SQL_SQLSTATE_SIZEW = 10
 
 #ifdef __FB_64BIT__
 	declare function SQLColAttributeW(byval hstmt as SQLHSTMT, byval iCol as SQLUSMALLINT, byval iField as SQLUSMALLINT, byval pCharAttr as SQLPOINTER, byval cbCharAttrMax as SQLSMALLINT, byval pcbCharAttr as SQLSMALLINT ptr, byval pNumAttr as SQLLEN ptr) as SQLRETURN

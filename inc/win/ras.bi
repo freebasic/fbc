@@ -12,20 +12,20 @@ extern "Windows"
 #define _RAS_H_
 type RASIPV4ADDR as IN_ADDR
 type RASIPV6ADDR as IN6_ADDR
-#define RAS_MaxDeviceType 16
-#define RAS_MaxPhoneNumber 128
-#define RAS_MaxIpAddress 15
-#define RAS_MaxIpxAddress 21
-#define RAS_MaxEntryName 256
-#define RAS_MaxDeviceName 128
+const RAS_MaxDeviceType = 16
+const RAS_MaxPhoneNumber = 128
+const RAS_MaxIpAddress = 15
+const RAS_MaxIpxAddress = 21
+const RAS_MaxEntryName = 256
+const RAS_MaxDeviceName = 128
 #define RAS_MaxCallbackNumber RAS_MaxPhoneNumber
-#define RAS_MaxAreaCode 10
-#define RAS_MaxPadType 32
-#define RAS_MaxX25Address 200
-#define RAS_MaxFacilities 200
-#define RAS_MaxUserData 200
-#define RAS_MaxReplyMessage 1024
-#define RAS_MaxDnsSuffix 256
+const RAS_MaxAreaCode = 10
+const RAS_MaxPadType = 32
+const RAS_MaxX25Address = 200
+const RAS_MaxFacilities = 200
+const RAS_MaxUserData = 200
+const RAS_MaxReplyMessage = 1024
+const RAS_MaxDnsSuffix = 256
 
 type HRASCONN__ field = 4
 	unused as long
@@ -33,8 +33,8 @@ end type
 
 type HRASCONN as HRASCONN__ ptr
 type LPHRASCONN as HRASCONN ptr
-#define RASCF_AllUsers &h00000001
-#define RASCF_GlobalCreds &h00000002
+const RASCF_AllUsers = &h00000001
+const RASCF_GlobalCreds = &h00000002
 #define RASCONNW tagRASCONNW
 
 type tagRASCONNW field = 4
@@ -74,8 +74,8 @@ end type
 #define LPRASCONNW RASCONNW ptr
 #define LPRASCONNA RASCONNA ptr
 #define LPRASCONN RASCONN ptr
-#define RASCS_PAUSED &h1000
-#define RASCS_DONE &h2000
+const RASCS_PAUSED = &h1000
+const RASCS_DONE = &h2000
 type RASCONNSTATE as tagRASCONNSTATE
 
 type tagRASCONNSTATE as long
@@ -209,22 +209,22 @@ type tagRASDIALEXTENSIONS field = 4
 end type
 
 type LPRASDIALEXTENSIONS as RASDIALEXTENSIONS ptr
-#define RDEOPT_UsePrefixSuffix &h00000001
-#define RDEOPT_PausedStates &h00000002
-#define RDEOPT_IgnoreModemSpeaker &h00000004
-#define RDEOPT_SetModemSpeaker &h00000008
-#define RDEOPT_IgnoreSoftwareCompression &h00000010
-#define RDEOPT_SetSoftwareCompression &h00000020
-#define RDEOPT_DisableConnectedUI &h00000040
-#define RDEOPT_DisableReconnectUI &h00000080
-#define RDEOPT_DisableReconnect &h00000100
-#define RDEOPT_NoUser &h00000200
-#define RDEOPT_PauseOnScript &h00000400
-#define RDEOPT_Router &h00000800
-#define RDEOPT_CustomDial &h00001000
-#define RDEOPT_UseCustomScripting &h00002000
-#define REN_User &h00000000
-#define REN_AllUsers &h00000001
+const RDEOPT_UsePrefixSuffix = &h00000001
+const RDEOPT_PausedStates = &h00000002
+const RDEOPT_IgnoreModemSpeaker = &h00000004
+const RDEOPT_SetModemSpeaker = &h00000008
+const RDEOPT_IgnoreSoftwareCompression = &h00000010
+const RDEOPT_SetSoftwareCompression = &h00000020
+const RDEOPT_DisableConnectedUI = &h00000040
+const RDEOPT_DisableReconnectUI = &h00000080
+const RDEOPT_DisableReconnect = &h00000100
+const RDEOPT_NoUser = &h00000200
+const RDEOPT_PauseOnScript = &h00000400
+const RDEOPT_Router = &h00000800
+const RDEOPT_CustomDial = &h00001000
+const RDEOPT_UseCustomScripting = &h00002000
+const REN_User = &h00000000
+const REN_AllUsers = &h00000001
 #define RASENTRYNAMEW tagRASENTRYNAMEW
 
 type tagRASENTRYNAMEW field = 4
@@ -349,7 +349,7 @@ end type
 #define LPRASPPPIPXW RASPPPIPXW ptr
 #define LPRASPPPIPXA RASPPPIPXA ptr
 #define LPRASPPPIPX RASPPPIPX ptr
-#define RASIPO_VJ &h00000001
+const RASIPO_VJ = &h00000001
 #define RASPPPIPW tagRASPPPIPW
 
 type tagRASPPPIPW field = 4
@@ -381,18 +381,18 @@ end type
 #define LPRASPPPIPW RASPPPIPW ptr
 #define LPRASPPPIPA RASPPPIPA ptr
 #define LPRASPPPIP RASPPPIP ptr
-#define RASLCPAP_PAP &hC023
-#define RASLCPAP_SPAP &hC027
-#define RASLCPAP_CHAP &hC223
-#define RASLCPAP_EAP &hC227
-#define RASLCPAD_CHAP_MD5 &h05
-#define RASLCPAD_CHAP_MS &h80
-#define RASLCPAD_CHAP_MSV2 &h81
-#define RASLCPO_PFC &h00000001
-#define RASLCPO_ACFC &h00000002
-#define RASLCPO_SSHF &h00000004
-#define RASLCPO_DES_56 &h00000008
-#define RASLCPO_3_DES &h00000010
+const RASLCPAP_PAP = &hC023
+const RASLCPAP_SPAP = &hC027
+const RASLCPAP_CHAP = &hC223
+const RASLCPAP_EAP = &hC227
+const RASLCPAD_CHAP_MD5 = &h05
+const RASLCPAD_CHAP_MS = &h80
+const RASLCPAD_CHAP_MSV2 = &h81
+const RASLCPO_PFC = &h00000001
+const RASLCPO_ACFC = &h00000002
+const RASLCPO_SSHF = &h00000004
+const RASLCPO_DES_56 = &h00000008
+const RASLCPO_3_DES = &h00000010
 #define RASPPPLCPW tagRASPPPLCPW
 
 type tagRASPPPLCPW field = 4
@@ -467,11 +467,11 @@ end type
 #define LPRASSLIPW RASSLIPW ptr
 #define LPRASSLIPA RASSLIPA ptr
 #define LPRASSLIP RASSLIP ptr
-#define RASCCPO_Compression &h00000001
-#define RASCCPO_HistoryLess &h00000002
-#define RASCCPO_Encryption56bit &h00000010
-#define RASCCPO_Encryption40bit &h00000020
-#define RASCCPO_Encryption128bit &h00000040
+const RASCCPO_Compression = &h00000001
+const RASCCPO_HistoryLess = &h00000002
+const RASCCPO_Encryption56bit = &h00000010
+const RASCCPO_Encryption40bit = &h00000020
+const RASCCPO_Encryption128bit = &h00000040
 #define RASPPPCCP tagRASPPPCCP
 
 type tagRASPPPCCP field = 4
@@ -485,7 +485,7 @@ end type
 
 #define LPRASPPPCCP RASPPPCCP ptr
 #define RASDIALEVENT "RasDialEvent"
-#define WM_RASDIALEVENT &hCCCD
+const WM_RASDIALEVENT = &hCCCD
 
 type RASDIALFUNC as sub(byval as UINT, byval as tagRASCONNSTATE, byval as DWORD)
 type RASDIALFUNC1 as sub(byval as HRASCONN, byval as UINT, byval as tagRASCONNSTATE, byval as DWORD, byval as DWORD)
@@ -537,15 +537,15 @@ type RASIPADDR field = 4
 	d as UBYTE
 end type
 
-#define ET_None 0
-#define ET_Require 1
-#define ET_RequireMax 2
-#define ET_Optional 3
-#define VS_Default 0
-#define VS_PptpOnly 1
-#define VS_PptpFirst 2
-#define VS_L2tpOnly 3
-#define VS_L2tpFirst 4
+const ET_None = 0
+const ET_Require = 1
+const ET_RequireMax = 2
+const ET_Optional = 3
+const VS_Default = 0
+const VS_PptpOnly = 1
+const VS_PptpFirst = 2
+const VS_L2tpOnly = 3
+const VS_L2tpFirst = 4
 #define RASENTRYA tagRASENTRYA
 
 type tagRASENTRYA field = 4
@@ -661,53 +661,53 @@ end type
 #define LPRASENTRYW RASENTRYW ptr
 #define LPRASENTRYA RASENTRYA ptr
 #define LPRASENTRY RASENTRY ptr
-#define RASEO_UseCountryAndAreaCodes &h00000001
-#define RASEO_SpecificIpAddr &h00000002
-#define RASEO_SpecificNameServers &h00000004
-#define RASEO_IpHeaderCompression &h00000008
-#define RASEO_RemoteDefaultGateway &h00000010
-#define RASEO_DisableLcpExtensions &h00000020
-#define RASEO_TerminalBeforeDial &h00000040
-#define RASEO_TerminalAfterDial &h00000080
-#define RASEO_ModemLights &h00000100
-#define RASEO_SwCompression &h00000200
-#define RASEO_RequireEncryptedPw &h00000400
-#define RASEO_RequireMsEncryptedPw &h00000800
-#define RASEO_RequireDataEncryption &h00001000
-#define RASEO_NetworkLogon &h00002000
-#define RASEO_UseLogonCredentials &h00004000
-#define RASEO_PromoteAlternates &h00008000
-#define RASEO_SecureLocalFiles &h00010000
-#define RASEO_RequireEAP &h00020000
-#define RASEO_RequirePAP &h00040000
-#define RASEO_RequireSPAP &h00080000
-#define RASEO_Custom &h00100000
-#define RASEO_PreviewPhoneNumber &h00200000
-#define RASEO_SharedPhoneNumbers &h00800000
-#define RASEO_PreviewUserPw &h01000000
-#define RASEO_PreviewDomain &h02000000
-#define RASEO_ShowDialingProgress &h04000000
-#define RASEO_RequireCHAP &h08000000
-#define RASEO_RequireMsCHAP &h10000000
-#define RASEO_RequireMsCHAP2 &h20000000
-#define RASEO_RequireW95MSCHAP &h40000000
-#define RASEO_CustomScript &h80000000
-#define RASEO2_SecureFileAndPrint &h00000001
-#define RASEO2_SecureClientForMSNet &h00000002
-#define RASEO2_DontNegotiateMultilink &h00000004
-#define RASEO2_DontUseRasCredentials &h00000008
-#define RASEO2_UsePreSharedKey &h00000010
-#define RASEO2_Internet &h00000020
-#define RASEO2_DisableNbtOverIP &h00000040
-#define RASEO2_UseGlobalDeviceSettings &h00000080
-#define RASEO2_ReconnectIfDropped &h00000100
-#define RASEO2_SharePhoneNumbers &h00000200
-#define RASNP_NetBEUI &h00000001
-#define RASNP_Ipx &h00000002
-#define RASNP_Ip &h00000004
-#define RASFP_Ppp &h00000001
-#define RASFP_Slip &h00000002
-#define RASFP_Ras &h00000004
+const RASEO_UseCountryAndAreaCodes = &h00000001
+const RASEO_SpecificIpAddr = &h00000002
+const RASEO_SpecificNameServers = &h00000004
+const RASEO_IpHeaderCompression = &h00000008
+const RASEO_RemoteDefaultGateway = &h00000010
+const RASEO_DisableLcpExtensions = &h00000020
+const RASEO_TerminalBeforeDial = &h00000040
+const RASEO_TerminalAfterDial = &h00000080
+const RASEO_ModemLights = &h00000100
+const RASEO_SwCompression = &h00000200
+const RASEO_RequireEncryptedPw = &h00000400
+const RASEO_RequireMsEncryptedPw = &h00000800
+const RASEO_RequireDataEncryption = &h00001000
+const RASEO_NetworkLogon = &h00002000
+const RASEO_UseLogonCredentials = &h00004000
+const RASEO_PromoteAlternates = &h00008000
+const RASEO_SecureLocalFiles = &h00010000
+const RASEO_RequireEAP = &h00020000
+const RASEO_RequirePAP = &h00040000
+const RASEO_RequireSPAP = &h00080000
+const RASEO_Custom = &h00100000
+const RASEO_PreviewPhoneNumber = &h00200000
+const RASEO_SharedPhoneNumbers = &h00800000
+const RASEO_PreviewUserPw = &h01000000
+const RASEO_PreviewDomain = &h02000000
+const RASEO_ShowDialingProgress = &h04000000
+const RASEO_RequireCHAP = &h08000000
+const RASEO_RequireMsCHAP = &h10000000
+const RASEO_RequireMsCHAP2 = &h20000000
+const RASEO_RequireW95MSCHAP = &h40000000
+const RASEO_CustomScript = &h80000000
+const RASEO2_SecureFileAndPrint = &h00000001
+const RASEO2_SecureClientForMSNet = &h00000002
+const RASEO2_DontNegotiateMultilink = &h00000004
+const RASEO2_DontUseRasCredentials = &h00000008
+const RASEO2_UsePreSharedKey = &h00000010
+const RASEO2_Internet = &h00000020
+const RASEO2_DisableNbtOverIP = &h00000040
+const RASEO2_UseGlobalDeviceSettings = &h00000080
+const RASEO2_ReconnectIfDropped = &h00000100
+const RASEO2_SharePhoneNumbers = &h00000200
+const RASNP_NetBEUI = &h00000001
+const RASNP_Ipx = &h00000002
+const RASNP_Ip = &h00000004
+const RASFP_Ppp = &h00000001
+const RASFP_Slip = &h00000002
+const RASFP_Ras = &h00000004
 #define RASDT_Modem __TEXT("modem")
 #define RASDT_Isdn __TEXT("isdn")
 #define RASDT_X25 __TEXT("x25")
@@ -722,20 +722,20 @@ end type
 #define RASDT_Irda __TEXT("IRDA")
 #define RASDT_Parallel __TEXT("PARALLEL")
 #define RASDT_PPPoE __TEXT("PPPoE")
-#define RASET_Phone 1
-#define RASET_Vpn 2
-#define RASET_Direct 3
-#define RASET_Internet 4
-#define RASET_Broadband 5
+const RASET_Phone = 1
+const RASET_Vpn = 2
+const RASET_Direct = 3
+const RASET_Internet = 4
+const RASET_Broadband = 5
 type ORASADFUNC as function(byval as HWND, byval as LPSTR, byval as DWORD, byval as LPDWORD) as WINBOOL
-#define RASCN_Connection &h00000001
-#define RASCN_Disconnection &h00000002
-#define RASCN_BandwidthAdded &h00000004
-#define RASCN_BandwidthRemoved &h00000008
-#define RASEDM_DialAll 1
-#define RASEDM_DialAsNeeded 2
-#define RASIDS_Disabled &hffffffff
-#define RASIDS_UseGlobalValue 0
+const RASCN_Connection = &h00000001
+const RASCN_Disconnection = &h00000002
+const RASCN_BandwidthAdded = &h00000004
+const RASCN_BandwidthRemoved = &h00000008
+const RASEDM_DialAll = 1
+const RASEDM_DialAsNeeded = 2
+const RASIDS_Disabled = &hffffffff
+const RASIDS_UseGlobalValue = 0
 #define RASADPARAMS tagRASADPARAMS
 
 type tagRASADPARAMS field = 4
@@ -747,7 +747,7 @@ type tagRASADPARAMS field = 4
 end type
 
 #define LPRASADPARAMS RASADPARAMS ptr
-#define RASADFLG_PositionDlg &h00000001
+const RASADFLG_PositionDlg = &h00000001
 type RASADFUNCA as function(byval as LPSTR, byval as LPSTR, byval as tagRASADPARAMS ptr, byval as LPDWORD) as WINBOOL
 type RASADFUNCW as function(byval as LPWSTR, byval as LPWSTR, byval as tagRASADPARAMS ptr, byval as LPDWORD) as WINBOOL
 
@@ -817,13 +817,13 @@ end type
 #define LPRASCREDENTIALSW RASCREDENTIALSW ptr
 #define LPRASCREDENTIALSA RASCREDENTIALSA ptr
 #define LPRASCREDENTIALS RASCREDENTIALS ptr
-#define RASCM_UserName &h00000001
-#define RASCM_Password &h00000002
-#define RASCM_Domain &h00000004
-#define RASCM_DefaultCreds &h00000008
-#define RASCM_PreSharedKey &h00000010
-#define RASCM_ServerPreSharedKey &h00000020
-#define RASCM_DDMPreSharedKey &h00000040
+const RASCM_UserName = &h00000001
+const RASCM_Password = &h00000002
+const RASCM_Domain = &h00000004
+const RASCM_DefaultCreds = &h00000008
+const RASCM_PreSharedKey = &h00000010
+const RASCM_ServerPreSharedKey = &h00000020
+const RASCM_DDMPreSharedKey = &h00000040
 #define RASAUTODIALENTRYA tagRASAUTODIALENTRYA
 
 type tagRASAUTODIALENTRYA field = 4
@@ -851,14 +851,14 @@ end type
 #define LPRASAUTODIALENTRYW RASAUTODIALENTRYW ptr
 #define LPRASAUTODIALENTRYA RASAUTODIALENTRYA ptr
 #define LPRASAUTODIALENTRY RASAUTODIALENTRY ptr
-#define RASADP_DisableConnectionQuery 0
-#define RASADP_LoginSessionDisable 1
-#define RASADP_SavedAddressesLimit 2
-#define RASADP_FailedConnectionTimeout 3
-#define RASADP_ConnectionQueryTimeout 4
-#define RASEAPF_NonInteractive &h00000002
-#define RASEAPF_Logon &h00000004
-#define RASEAPF_Preview &h00000008
+const RASADP_DisableConnectionQuery = 0
+const RASADP_LoginSessionDisable = 1
+const RASADP_SavedAddressesLimit = 2
+const RASADP_FailedConnectionTimeout = 3
+const RASADP_ConnectionQueryTimeout = 4
+const RASEAPF_NonInteractive = &h00000002
+const RASEAPF_Logon = &h00000004
+const RASEAPF_Preview = &h00000008
 #define RASEAPUSERIDENTITYA tagRASEAPUSERIDENTITYA
 
 type tagRASEAPUSERIDENTITYA field = 4
@@ -1005,10 +1005,10 @@ type RasCustomHangUpFn as function(byval hRasConn as HRASCONN) as DWORD
 #endif
 
 type RasCustomDeleteEntryNotifyFn as function(byval lpszPhonebook as LPCWSTR, byval lpszEntry as LPCWSTR, byval dwFlags as DWORD) as DWORD
-#define RCD_SingleUser 0
-#define RCD_AllUsers &h00000001
-#define RCD_Eap &h00000002
-#define RCD_Logon &h00000004
+const RCD_SingleUser = 0
+const RCD_AllUsers = &h00000001
+const RCD_Eap = &h00000002
+const RCD_Logon = &h00000004
 
 declare function RasInvokeEapUI(byval as HRASCONN, byval as DWORD, byval as tagRASDIALEXTENSIONS ptr, byval as HWND) as DWORD
 declare function RasGetLinkStatistics(byval hRasConn as HRASCONN, byval dwSubEntry as DWORD, byval lpStatistics as RAS_STATS ptr) as DWORD

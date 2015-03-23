@@ -5,20 +5,20 @@
 #include once "crt/longdouble.bi"
 
 '' The following symbols have been renamed:
-''     #define JIT_TYPE_VOID => JIT_TYPE_VOID_
-''     #define JIT_TYPE_SBYTE => JIT_TYPE_SBYTE_
-''     #define JIT_TYPE_UBYTE => JIT_TYPE_UBYTE_
-''     #define JIT_TYPE_SHORT => JIT_TYPE_SHORT_
-''     #define JIT_TYPE_USHORT => JIT_TYPE_USHORT_
-''     #define JIT_TYPE_INT => JIT_TYPE_INT_
-''     #define JIT_TYPE_UINT => JIT_TYPE_UINT_
-''     #define JIT_TYPE_NINT => JIT_TYPE_NINT_
-''     #define JIT_TYPE_NUINT => JIT_TYPE_NUINT_
-''     #define JIT_TYPE_LONG => JIT_TYPE_LONG_
-''     #define JIT_TYPE_ULONG => JIT_TYPE_ULONG_
-''     #define JIT_TYPE_FLOAT32 => JIT_TYPE_FLOAT32_
-''     #define JIT_TYPE_FLOAT64 => JIT_TYPE_FLOAT64_
-''     #define JIT_TYPE_NFLOAT => JIT_TYPE_NFLOAT_
+''     constant JIT_TYPE_VOID => JIT_TYPE_VOID_
+''     constant JIT_TYPE_SBYTE => JIT_TYPE_SBYTE_
+''     constant JIT_TYPE_UBYTE => JIT_TYPE_UBYTE_
+''     constant JIT_TYPE_SHORT => JIT_TYPE_SHORT_
+''     constant JIT_TYPE_USHORT => JIT_TYPE_USHORT_
+''     constant JIT_TYPE_INT => JIT_TYPE_INT_
+''     constant JIT_TYPE_UINT => JIT_TYPE_UINT_
+''     constant JIT_TYPE_NINT => JIT_TYPE_NINT_
+''     constant JIT_TYPE_NUINT => JIT_TYPE_NUINT_
+''     constant JIT_TYPE_LONG => JIT_TYPE_LONG_
+''     constant JIT_TYPE_ULONG => JIT_TYPE_ULONG_
+''     constant JIT_TYPE_FLOAT32 => JIT_TYPE_FLOAT32_
+''     constant JIT_TYPE_FLOAT64 => JIT_TYPE_FLOAT64_
+''     constant JIT_TYPE_NFLOAT => JIT_TYPE_NFLOAT_
 
 extern "C"
 
@@ -39,7 +39,7 @@ type jit_float64 as double
 type jit_nfloat as clongdouble
 type jit_ptr as any ptr
 
-#define JIT_NATIVE_INT32 1
+const JIT_NATIVE_INT32 = 1
 #define JIT_NOTHROW
 #define jit_min_int (cast(jit_int, 1) shl ((sizeof(jit_int) * 8) - 1))
 #define jit_max_int cast(jit_int, not jit_min_int)
@@ -58,17 +58,17 @@ type jit_type_t as _jit_type ptr
 type jit_stack_trace_t as jit_stack_trace ptr
 type jit_label_t as jit_nuint
 #define jit_label_undefined cast(jit_label_t, not cast(jit_uint, 0))
-#define JIT_NO_OFFSET culng(not culng(0))
+const JIT_NO_OFFSET = culng(not culng(0))
 type jit_meta_free_func as sub(byval data as any ptr)
 type jit_on_demand_func as function(byval func as jit_function_t) as long
 type jit_on_demand_driver_func as function(byval func as jit_function_t) as any ptr
 
 #define _JIT_CONTEXT_H
 #define _JIT_MEMORY_H
-#define JIT_MEMORY_OK 0
-#define JIT_MEMORY_RESTART 1
-#define JIT_MEMORY_TOO_BIG 2
-#define JIT_MEMORY_ERROR 3
+const JIT_MEMORY_OK = 0
+const JIT_MEMORY_RESTART = 1
+const JIT_MEMORY_TOO_BIG = 2
+const JIT_MEMORY_ERROR = 3
 
 type jit_size_t as ulong
 type jit_memory_context_t as any ptr
@@ -110,12 +110,12 @@ declare function jit_context_get_meta(byval context as jit_context_t, byval type
 declare function jit_context_get_meta_numeric(byval context as jit_context_t, byval type as long) as jit_nuint
 declare sub jit_context_free_meta(byval context as jit_context_t, byval type as long)
 
-#define JIT_OPTION_CACHE_LIMIT 10000
-#define JIT_OPTION_CACHE_PAGE_SIZE 10001
-#define JIT_OPTION_PRE_COMPILE 10002
-#define JIT_OPTION_DONT_FOLD 10003
-#define JIT_OPTION_POSITION_INDEPENDENT 10004
-#define JIT_OPTION_CACHE_MAX_PAGE_FACTOR 10005
+const JIT_OPTION_CACHE_LIMIT = 10000
+const JIT_OPTION_CACHE_PAGE_SIZE = 10001
+const JIT_OPTION_PRE_COMPILE = 10002
+const JIT_OPTION_DONT_FOLD = 10003
+const JIT_OPTION_POSITION_INDEPENDENT = 10004
+const JIT_OPTION_CACHE_MAX_PAGE_FACTOR = 10005
 #define _JIT_APPLY_H
 #define _JIT_TYPE_H
 
@@ -150,51 +150,51 @@ extern jit_type_sys_float as const jit_type_t
 extern jit_type_sys_double as const jit_type_t
 extern jit_type_sys_long_double as const jit_type_t
 
-#define JIT_TYPE_INVALID (-1)
-#define JIT_TYPE_VOID_ 0
-#define JIT_TYPE_SBYTE_ 1
-#define JIT_TYPE_UBYTE_ 2
-#define JIT_TYPE_SHORT_ 3
-#define JIT_TYPE_USHORT_ 4
-#define JIT_TYPE_INT_ 5
-#define JIT_TYPE_UINT_ 6
-#define JIT_TYPE_NINT_ 7
-#define JIT_TYPE_NUINT_ 8
-#define JIT_TYPE_LONG_ 9
-#define JIT_TYPE_ULONG_ 10
-#define JIT_TYPE_FLOAT32_ 11
-#define JIT_TYPE_FLOAT64_ 12
-#define JIT_TYPE_NFLOAT_ 13
+const JIT_TYPE_INVALID = -1
+const JIT_TYPE_VOID_ = 0
+const JIT_TYPE_SBYTE_ = 1
+const JIT_TYPE_UBYTE_ = 2
+const JIT_TYPE_SHORT_ = 3
+const JIT_TYPE_USHORT_ = 4
+const JIT_TYPE_INT_ = 5
+const JIT_TYPE_UINT_ = 6
+const JIT_TYPE_NINT_ = 7
+const JIT_TYPE_NUINT_ = 8
+const JIT_TYPE_LONG_ = 9
+const JIT_TYPE_ULONG_ = 10
+const JIT_TYPE_FLOAT32_ = 11
+const JIT_TYPE_FLOAT64_ = 12
+const JIT_TYPE_NFLOAT_ = 13
 #define JIT_TYPE_MAX_PRIMITIVE JIT_TYPE_NFLOAT_
-#define JIT_TYPE_STRUCT 14
-#define JIT_TYPE_UNION 15
-#define JIT_TYPE_SIGNATURE 16
-#define JIT_TYPE_PTR 17
-#define JIT_TYPE_FIRST_TAGGED 32
-#define JIT_TYPETAG_NAME 10000
-#define JIT_TYPETAG_STRUCT_NAME 10001
-#define JIT_TYPETAG_UNION_NAME 10002
-#define JIT_TYPETAG_ENUM_NAME 10003
-#define JIT_TYPETAG_CONST 10004
-#define JIT_TYPETAG_VOLATILE 10005
-#define JIT_TYPETAG_REFERENCE 10006
-#define JIT_TYPETAG_OUTPUT 10007
-#define JIT_TYPETAG_RESTRICT 10008
-#define JIT_TYPETAG_SYS_BOOL 10009
-#define JIT_TYPETAG_SYS_CHAR 10010
-#define JIT_TYPETAG_SYS_SCHAR 10011
-#define JIT_TYPETAG_SYS_UCHAR 10012
-#define JIT_TYPETAG_SYS_SHORT 10013
-#define JIT_TYPETAG_SYS_USHORT 10014
-#define JIT_TYPETAG_SYS_INT 10015
-#define JIT_TYPETAG_SYS_UINT 10016
-#define JIT_TYPETAG_SYS_LONG 10017
-#define JIT_TYPETAG_SYS_ULONG 10018
-#define JIT_TYPETAG_SYS_LONGLONG 10019
-#define JIT_TYPETAG_SYS_ULONGLONG 10020
-#define JIT_TYPETAG_SYS_FLOAT 10021
-#define JIT_TYPETAG_SYS_DOUBLE 10022
-#define JIT_TYPETAG_SYS_LONGDOUBLE 10023
+const JIT_TYPE_STRUCT = 14
+const JIT_TYPE_UNION = 15
+const JIT_TYPE_SIGNATURE = 16
+const JIT_TYPE_PTR = 17
+const JIT_TYPE_FIRST_TAGGED = 32
+const JIT_TYPETAG_NAME = 10000
+const JIT_TYPETAG_STRUCT_NAME = 10001
+const JIT_TYPETAG_UNION_NAME = 10002
+const JIT_TYPETAG_ENUM_NAME = 10003
+const JIT_TYPETAG_CONST = 10004
+const JIT_TYPETAG_VOLATILE = 10005
+const JIT_TYPETAG_REFERENCE = 10006
+const JIT_TYPETAG_OUTPUT = 10007
+const JIT_TYPETAG_RESTRICT = 10008
+const JIT_TYPETAG_SYS_BOOL = 10009
+const JIT_TYPETAG_SYS_CHAR = 10010
+const JIT_TYPETAG_SYS_SCHAR = 10011
+const JIT_TYPETAG_SYS_UCHAR = 10012
+const JIT_TYPETAG_SYS_SHORT = 10013
+const JIT_TYPETAG_SYS_USHORT = 10014
+const JIT_TYPETAG_SYS_INT = 10015
+const JIT_TYPETAG_SYS_UINT = 10016
+const JIT_TYPETAG_SYS_LONG = 10017
+const JIT_TYPETAG_SYS_ULONG = 10018
+const JIT_TYPETAG_SYS_LONGLONG = 10019
+const JIT_TYPETAG_SYS_ULONGLONG = 10020
+const JIT_TYPETAG_SYS_FLOAT = 10021
+const JIT_TYPETAG_SYS_DOUBLE = 10022
+const JIT_TYPETAG_SYS_LONGDOUBLE = 10023
 
 type jit_abi_t as long
 enum
@@ -221,7 +221,7 @@ declare function jit_type_num_fields(byval type as jit_type_t) as ulong
 declare function jit_type_get_field(byval type as jit_type_t, byval field_index as ulong) as jit_type_t
 declare function jit_type_get_offset(byval type as jit_type_t, byval field_index as ulong) as jit_nuint
 declare function jit_type_get_name(byval type as jit_type_t, byval index as ulong) as const zstring ptr
-#define JIT_INVALID_NAME culng(not culng(0))
+const JIT_INVALID_NAME = culng(not culng(0))
 declare function jit_type_find_name(byval type as jit_type_t, byval name as const zstring ptr) as ulong
 declare function jit_type_num_params(byval type as jit_type_t) as ulong
 declare function jit_type_get_return(byval type as jit_type_t) as jit_type_t
@@ -291,12 +291,12 @@ type jit_debugger_event
 end type
 
 type jit_debugger_event_t as jit_debugger_event
-#define JIT_DEBUGGER_TYPE_QUIT 0
-#define JIT_DEBUGGER_TYPE_HARD_BREAKPOINT 1
-#define JIT_DEBUGGER_TYPE_SOFT_BREAKPOINT 2
-#define JIT_DEBUGGER_TYPE_USER_BREAKPOINT 3
-#define JIT_DEBUGGER_TYPE_ATTACH_THREAD 4
-#define JIT_DEBUGGER_TYPE_DETACH_THREAD 5
+const JIT_DEBUGGER_TYPE_QUIT = 0
+const JIT_DEBUGGER_TYPE_HARD_BREAKPOINT = 1
+const JIT_DEBUGGER_TYPE_SOFT_BREAKPOINT = 2
+const JIT_DEBUGGER_TYPE_USER_BREAKPOINT = 3
+const JIT_DEBUGGER_TYPE_ATTACH_THREAD = 4
+const JIT_DEBUGGER_TYPE_DETACH_THREAD = 5
 
 type jit_debugger_breakpoint_info
 	flags as long
@@ -307,15 +307,15 @@ type jit_debugger_breakpoint_info
 end type
 
 type jit_debugger_breakpoint_info_t as jit_debugger_breakpoint_info ptr
-#define JIT_DEBUGGER_FLAG_THREAD (1 shl 0)
-#define JIT_DEBUGGER_FLAG_FUNCTION (1 shl 1)
-#define JIT_DEBUGGER_FLAG_DATA1 (1 shl 2)
-#define JIT_DEBUGGER_FLAG_DATA2 (1 shl 3)
-#define JIT_DEBUGGER_DATA1_FIRST 10000
-#define JIT_DEBUGGER_DATA1_LINE 10000
-#define JIT_DEBUGGER_DATA1_ENTER 10001
-#define JIT_DEBUGGER_DATA1_LEAVE 10002
-#define JIT_DEBUGGER_DATA1_THROW 10003
+const JIT_DEBUGGER_FLAG_THREAD = 1 shl 0
+const JIT_DEBUGGER_FLAG_FUNCTION = 1 shl 1
+const JIT_DEBUGGER_FLAG_DATA1 = 1 shl 2
+const JIT_DEBUGGER_FLAG_DATA2 = 1 shl 3
+const JIT_DEBUGGER_DATA1_FIRST = 10000
+const JIT_DEBUGGER_DATA1_LINE = 10000
+const JIT_DEBUGGER_DATA1_ENTER = 10001
+const JIT_DEBUGGER_DATA1_LEAVE = 10002
+const JIT_DEBUGGER_DATA1_THROW = 10003
 type jit_debugger_hook_func as sub(byval func as jit_function_t, byval data1 as jit_nint, byval data2 as jit_nint)
 
 declare function jit_debugging_possible() as long
@@ -346,14 +346,14 @@ declare function jit_debugger_set_hook(byval context as jit_context_t, byval hoo
 type jit_readelf_t as jit_readelf ptr
 type jit_writeelf_t as jit_writeelf ptr
 
-#define JIT_READELF_FLAG_FORCE (1 shl 0)
-#define JIT_READELF_FLAG_DEBUG (1 shl 1)
-#define JIT_READELF_OK 0
-#define JIT_READELF_CANNOT_OPEN 1
-#define JIT_READELF_NOT_ELF 2
-#define JIT_READELF_WRONG_ARCH 3
-#define JIT_READELF_BAD_FORMAT 4
-#define JIT_READELF_MEMORY 5
+const JIT_READELF_FLAG_FORCE = 1 shl 0
+const JIT_READELF_FLAG_DEBUG = 1 shl 1
+const JIT_READELF_OK = 0
+const JIT_READELF_CANNOT_OPEN = 1
+const JIT_READELF_NOT_ELF = 2
+const JIT_READELF_WRONG_ARCH = 3
+const JIT_READELF_BAD_FORMAT = 4
+const JIT_READELF_MEMORY = 5
 
 declare function jit_readelf_open(byval readelf as jit_readelf_t ptr, byval filename as const zstring ptr, byval flags as long) as long
 declare sub jit_readelf_close(byval readelf as jit_readelf_t)
@@ -375,18 +375,18 @@ declare function jit_writeelf_add_needed(byval writeelf as jit_writeelf_t, byval
 declare function jit_writeelf_write_section(byval writeelf as jit_writeelf_t, byval name as const zstring ptr, byval type as jit_int, byval buf as const any ptr, byval len as ulong, byval discardable as long) as long
 
 #define _JIT_EXCEPT_H
-#define JIT_RESULT_OK 1
-#define JIT_RESULT_OVERFLOW 0
-#define JIT_RESULT_ARITHMETIC (-1)
-#define JIT_RESULT_DIVISION_BY_ZERO (-2)
-#define JIT_RESULT_COMPILE_ERROR (-3)
-#define JIT_RESULT_OUT_OF_MEMORY (-4)
-#define JIT_RESULT_NULL_REFERENCE (-5)
-#define JIT_RESULT_NULL_FUNCTION (-6)
-#define JIT_RESULT_CALLED_NESTED (-7)
-#define JIT_RESULT_OUT_OF_BOUNDS (-8)
-#define JIT_RESULT_UNDEFINED_LABEL (-9)
-#define JIT_RESULT_MEMORY_FULL (-10000)
+const JIT_RESULT_OK = 1
+const JIT_RESULT_OVERFLOW = 0
+const JIT_RESULT_ARITHMETIC = -1
+const JIT_RESULT_DIVISION_BY_ZERO = -2
+const JIT_RESULT_COMPILE_ERROR = -3
+const JIT_RESULT_OUT_OF_MEMORY = -4
+const JIT_RESULT_NULL_REFERENCE = -5
+const JIT_RESULT_NULL_FUNCTION = -6
+const JIT_RESULT_CALLED_NESTED = -7
+const JIT_RESULT_OUT_OF_BOUNDS = -8
+const JIT_RESULT_UNDEFINED_LABEL = -9
+const JIT_RESULT_MEMORY_FULL = -10000
 type jit_exception_func as function(byval exception_type as long) as any ptr
 
 declare function jit_exception_get_last() as any ptr
@@ -405,8 +405,8 @@ declare function jit_stack_trace_get_offset(byval context as jit_context_t, byva
 declare sub jit_stack_trace_free(byval trace as jit_stack_trace_t)
 
 #define _JIT_FUNCTION_H
-#define JIT_OPTLEVEL_NONE 0
-#define JIT_OPTLEVEL_NORMAL 1
+const JIT_OPTLEVEL_NONE = 0
+const JIT_OPTLEVEL_NORMAL = 1
 
 declare function jit_function_create(byval context as jit_context_t, byval signature as jit_type_t) as jit_function_t
 declare function jit_function_create_nested(byval context as jit_context_t, byval signature as jit_type_t, byval parent as jit_function_t) as jit_function_t
@@ -466,9 +466,9 @@ type jit_insn_iter_t
 	posn as long
 end type
 
-#define JIT_CALL_NOTHROW (1 shl 0)
-#define JIT_CALL_NORETURN (1 shl 1)
-#define JIT_CALL_TAIL (1 shl 2)
+const JIT_CALL_NOTHROW = 1 shl 0
+const JIT_CALL_NORETURN = 1 shl 1
+const JIT_CALL_TAIL = 1 shl 2
 
 declare function jit_insn_get_opcode(byval insn as jit_insn_t) as long
 declare function jit_insn_get_dest(byval insn as jit_insn_t) as jit_value_t
@@ -927,30 +927,30 @@ type jitom_class_t as jitom_class ptr
 type jitom_field_t as jitom_field ptr
 type jitom_method_t as jitom_method ptr
 
-#define JITOM_MODIFIER_ACCESS_MASK &h0007
-#define JITOM_MODIFIER_PUBLIC &h0000
-#define JITOM_MODIFIER_PRIVATE &h0001
-#define JITOM_MODIFIER_PROTECTED &h0002
-#define JITOM_MODIFIER_PACKAGE &h0003
-#define JITOM_MODIFIER_PACKAGE_OR_PROTECTED &h0004
-#define JITOM_MODIFIER_PACKAGE_AND_PROTECTED &h0005
-#define JITOM_MODIFIER_OTHER1 &h0006
-#define JITOM_MODIFIER_OTHER2 &h0007
-#define JITOM_MODIFIER_STATIC &h0008
-#define JITOM_MODIFIER_VIRTUAL &h0010
-#define JITOM_MODIFIER_NEW_SLOT &h0020
-#define JITOM_MODIFIER_ABSTRACT &h0040
-#define JITOM_MODIFIER_LITERAL &h0080
-#define JITOM_MODIFIER_CTOR &h0100
-#define JITOM_MODIFIER_STATIC_CTOR &h0200
-#define JITOM_MODIFIER_DTOR &h0400
-#define JITOM_MODIFIER_INTERFACE &h0800
-#define JITOM_MODIFIER_VALUE &h1000
-#define JITOM_MODIFIER_FINAL &h2000
-#define JITOM_MODIFIER_DELETE &h4000
-#define JITOM_MODIFIER_REFERENCE_COUNTED &h8000
-#define JITOM_TYPETAG_CLASS 11000
-#define JITOM_TYPETAG_VALUE 11001
+const JITOM_MODIFIER_ACCESS_MASK = &h0007
+const JITOM_MODIFIER_PUBLIC = &h0000
+const JITOM_MODIFIER_PRIVATE = &h0001
+const JITOM_MODIFIER_PROTECTED = &h0002
+const JITOM_MODIFIER_PACKAGE = &h0003
+const JITOM_MODIFIER_PACKAGE_OR_PROTECTED = &h0004
+const JITOM_MODIFIER_PACKAGE_AND_PROTECTED = &h0005
+const JITOM_MODIFIER_OTHER1 = &h0006
+const JITOM_MODIFIER_OTHER2 = &h0007
+const JITOM_MODIFIER_STATIC = &h0008
+const JITOM_MODIFIER_VIRTUAL = &h0010
+const JITOM_MODIFIER_NEW_SLOT = &h0020
+const JITOM_MODIFIER_ABSTRACT = &h0040
+const JITOM_MODIFIER_LITERAL = &h0080
+const JITOM_MODIFIER_CTOR = &h0100
+const JITOM_MODIFIER_STATIC_CTOR = &h0200
+const JITOM_MODIFIER_DTOR = &h0400
+const JITOM_MODIFIER_INTERFACE = &h0800
+const JITOM_MODIFIER_VALUE = &h1000
+const JITOM_MODIFIER_FINAL = &h2000
+const JITOM_MODIFIER_DELETE = &h4000
+const JITOM_MODIFIER_REFERENCE_COUNTED = &h8000
+const JITOM_TYPETAG_CLASS = 11000
+const JITOM_TYPETAG_VALUE = 11001
 
 declare sub jitom_destroy_model(byval model as jit_objmodel_t)
 declare function jitom_get_class_by_name(byval model as jit_objmodel_t, byval name as const zstring ptr) as jitom_class_t
@@ -986,446 +986,446 @@ declare function jitom_type_get_model(byval type as jit_type_t) as jit_objmodel_
 declare function jitom_type_get_class(byval type as jit_type_t) as jitom_class_t
 
 #define _JIT_OPCODE_H
-#define JIT_OP_NOP &h0000
-#define JIT_OP_TRUNC_SBYTE &h0001
-#define JIT_OP_TRUNC_UBYTE &h0002
-#define JIT_OP_TRUNC_SHORT &h0003
-#define JIT_OP_TRUNC_USHORT &h0004
-#define JIT_OP_TRUNC_INT &h0005
-#define JIT_OP_TRUNC_UINT &h0006
-#define JIT_OP_CHECK_SBYTE &h0007
-#define JIT_OP_CHECK_UBYTE &h0008
-#define JIT_OP_CHECK_SHORT &h0009
-#define JIT_OP_CHECK_USHORT &h000A
-#define JIT_OP_CHECK_INT &h000B
-#define JIT_OP_CHECK_UINT &h000C
-#define JIT_OP_LOW_WORD &h000D
-#define JIT_OP_EXPAND_INT &h000E
-#define JIT_OP_EXPAND_UINT &h000F
-#define JIT_OP_CHECK_LOW_WORD &h0010
-#define JIT_OP_CHECK_SIGNED_LOW_WORD &h0011
-#define JIT_OP_CHECK_LONG &h0012
-#define JIT_OP_CHECK_ULONG &h0013
-#define JIT_OP_FLOAT32_TO_INT &h0014
-#define JIT_OP_FLOAT32_TO_UINT &h0015
-#define JIT_OP_FLOAT32_TO_LONG &h0016
-#define JIT_OP_FLOAT32_TO_ULONG &h0017
-#define JIT_OP_CHECK_FLOAT32_TO_INT &h0018
-#define JIT_OP_CHECK_FLOAT32_TO_UINT &h0019
-#define JIT_OP_CHECK_FLOAT32_TO_LONG &h001A
-#define JIT_OP_CHECK_FLOAT32_TO_ULONG &h001B
-#define JIT_OP_INT_TO_FLOAT32 &h001C
-#define JIT_OP_UINT_TO_FLOAT32 &h001D
-#define JIT_OP_LONG_TO_FLOAT32 &h001E
-#define JIT_OP_ULONG_TO_FLOAT32 &h001F
-#define JIT_OP_FLOAT32_TO_FLOAT64 &h0020
-#define JIT_OP_FLOAT64_TO_INT &h0021
-#define JIT_OP_FLOAT64_TO_UINT &h0022
-#define JIT_OP_FLOAT64_TO_LONG &h0023
-#define JIT_OP_FLOAT64_TO_ULONG &h0024
-#define JIT_OP_CHECK_FLOAT64_TO_INT &h0025
-#define JIT_OP_CHECK_FLOAT64_TO_UINT &h0026
-#define JIT_OP_CHECK_FLOAT64_TO_LONG &h0027
-#define JIT_OP_CHECK_FLOAT64_TO_ULONG &h0028
-#define JIT_OP_INT_TO_FLOAT64 &h0029
-#define JIT_OP_UINT_TO_FLOAT64 &h002A
-#define JIT_OP_LONG_TO_FLOAT64 &h002B
-#define JIT_OP_ULONG_TO_FLOAT64 &h002C
-#define JIT_OP_FLOAT64_TO_FLOAT32 &h002D
-#define JIT_OP_NFLOAT_TO_INT &h002E
-#define JIT_OP_NFLOAT_TO_UINT &h002F
-#define JIT_OP_NFLOAT_TO_LONG &h0030
-#define JIT_OP_NFLOAT_TO_ULONG &h0031
-#define JIT_OP_CHECK_NFLOAT_TO_INT &h0032
-#define JIT_OP_CHECK_NFLOAT_TO_UINT &h0033
-#define JIT_OP_CHECK_NFLOAT_TO_LONG &h0034
-#define JIT_OP_CHECK_NFLOAT_TO_ULONG &h0035
-#define JIT_OP_INT_TO_NFLOAT &h0036
-#define JIT_OP_UINT_TO_NFLOAT &h0037
-#define JIT_OP_LONG_TO_NFLOAT &h0038
-#define JIT_OP_ULONG_TO_NFLOAT &h0039
-#define JIT_OP_NFLOAT_TO_FLOAT32 &h003A
-#define JIT_OP_NFLOAT_TO_FLOAT64 &h003B
-#define JIT_OP_FLOAT32_TO_NFLOAT &h003C
-#define JIT_OP_FLOAT64_TO_NFLOAT &h003D
-#define JIT_OP_IADD &h003E
-#define JIT_OP_IADD_OVF &h003F
-#define JIT_OP_IADD_OVF_UN &h0040
-#define JIT_OP_ISUB &h0041
-#define JIT_OP_ISUB_OVF &h0042
-#define JIT_OP_ISUB_OVF_UN &h0043
-#define JIT_OP_IMUL &h0044
-#define JIT_OP_IMUL_OVF &h0045
-#define JIT_OP_IMUL_OVF_UN &h0046
-#define JIT_OP_IDIV &h0047
-#define JIT_OP_IDIV_UN &h0048
-#define JIT_OP_IREM &h0049
-#define JIT_OP_IREM_UN &h004A
-#define JIT_OP_INEG &h004B
-#define JIT_OP_LADD &h004C
-#define JIT_OP_LADD_OVF &h004D
-#define JIT_OP_LADD_OVF_UN &h004E
-#define JIT_OP_LSUB &h004F
-#define JIT_OP_LSUB_OVF &h0050
-#define JIT_OP_LSUB_OVF_UN &h0051
-#define JIT_OP_LMUL &h0052
-#define JIT_OP_LMUL_OVF &h0053
-#define JIT_OP_LMUL_OVF_UN &h0054
-#define JIT_OP_LDIV &h0055
-#define JIT_OP_LDIV_UN &h0056
-#define JIT_OP_LREM &h0057
-#define JIT_OP_LREM_UN &h0058
-#define JIT_OP_LNEG &h0059
-#define JIT_OP_FADD &h005A
-#define JIT_OP_FSUB &h005B
-#define JIT_OP_FMUL &h005C
-#define JIT_OP_FDIV &h005D
-#define JIT_OP_FREM &h005E
-#define JIT_OP_FREM_IEEE &h005F
-#define JIT_OP_FNEG &h0060
-#define JIT_OP_DADD &h0061
-#define JIT_OP_DSUB &h0062
-#define JIT_OP_DMUL &h0063
-#define JIT_OP_DDIV &h0064
-#define JIT_OP_DREM &h0065
-#define JIT_OP_DREM_IEEE &h0066
-#define JIT_OP_DNEG &h0067
-#define JIT_OP_NFADD &h0068
-#define JIT_OP_NFSUB &h0069
-#define JIT_OP_NFMUL &h006A
-#define JIT_OP_NFDIV &h006B
-#define JIT_OP_NFREM &h006C
-#define JIT_OP_NFREM_IEEE &h006D
-#define JIT_OP_NFNEG &h006E
-#define JIT_OP_IAND &h006F
-#define JIT_OP_IOR &h0070
-#define JIT_OP_IXOR &h0071
-#define JIT_OP_INOT &h0072
-#define JIT_OP_ISHL &h0073
-#define JIT_OP_ISHR &h0074
-#define JIT_OP_ISHR_UN &h0075
-#define JIT_OP_LAND &h0076
-#define JIT_OP_LOR &h0077
-#define JIT_OP_LXOR &h0078
-#define JIT_OP_LNOT &h0079
-#define JIT_OP_LSHL &h007A
-#define JIT_OP_LSHR &h007B
-#define JIT_OP_LSHR_UN &h007C
-#define JIT_OP_BR &h007D
-#define JIT_OP_BR_IFALSE &h007E
-#define JIT_OP_BR_ITRUE &h007F
-#define JIT_OP_BR_IEQ &h0080
-#define JIT_OP_BR_INE &h0081
-#define JIT_OP_BR_ILT &h0082
-#define JIT_OP_BR_ILT_UN &h0083
-#define JIT_OP_BR_ILE &h0084
-#define JIT_OP_BR_ILE_UN &h0085
-#define JIT_OP_BR_IGT &h0086
-#define JIT_OP_BR_IGT_UN &h0087
-#define JIT_OP_BR_IGE &h0088
-#define JIT_OP_BR_IGE_UN &h0089
-#define JIT_OP_BR_LFALSE &h008A
-#define JIT_OP_BR_LTRUE &h008B
-#define JIT_OP_BR_LEQ &h008C
-#define JIT_OP_BR_LNE &h008D
-#define JIT_OP_BR_LLT &h008E
-#define JIT_OP_BR_LLT_UN &h008F
-#define JIT_OP_BR_LLE &h0090
-#define JIT_OP_BR_LLE_UN &h0091
-#define JIT_OP_BR_LGT &h0092
-#define JIT_OP_BR_LGT_UN &h0093
-#define JIT_OP_BR_LGE &h0094
-#define JIT_OP_BR_LGE_UN &h0095
-#define JIT_OP_BR_FEQ &h0096
-#define JIT_OP_BR_FNE &h0097
-#define JIT_OP_BR_FLT &h0098
-#define JIT_OP_BR_FLE &h0099
-#define JIT_OP_BR_FGT &h009A
-#define JIT_OP_BR_FGE &h009B
-#define JIT_OP_BR_FLT_INV &h009C
-#define JIT_OP_BR_FLE_INV &h009D
-#define JIT_OP_BR_FGT_INV &h009E
-#define JIT_OP_BR_FGE_INV &h009F
-#define JIT_OP_BR_DEQ &h00A0
-#define JIT_OP_BR_DNE &h00A1
-#define JIT_OP_BR_DLT &h00A2
-#define JIT_OP_BR_DLE &h00A3
-#define JIT_OP_BR_DGT &h00A4
-#define JIT_OP_BR_DGE &h00A5
-#define JIT_OP_BR_DLT_INV &h00A6
-#define JIT_OP_BR_DLE_INV &h00A7
-#define JIT_OP_BR_DGT_INV &h00A8
-#define JIT_OP_BR_DGE_INV &h00A9
-#define JIT_OP_BR_NFEQ &h00AA
-#define JIT_OP_BR_NFNE &h00AB
-#define JIT_OP_BR_NFLT &h00AC
-#define JIT_OP_BR_NFLE &h00AD
-#define JIT_OP_BR_NFGT &h00AE
-#define JIT_OP_BR_NFGE &h00AF
-#define JIT_OP_BR_NFLT_INV &h00B0
-#define JIT_OP_BR_NFLE_INV &h00B1
-#define JIT_OP_BR_NFGT_INV &h00B2
-#define JIT_OP_BR_NFGE_INV &h00B3
-#define JIT_OP_ICMP &h00B4
-#define JIT_OP_ICMP_UN &h00B5
-#define JIT_OP_LCMP &h00B6
-#define JIT_OP_LCMP_UN &h00B7
-#define JIT_OP_FCMPL &h00B8
-#define JIT_OP_FCMPG &h00B9
-#define JIT_OP_DCMPL &h00BA
-#define JIT_OP_DCMPG &h00BB
-#define JIT_OP_NFCMPL &h00BC
-#define JIT_OP_NFCMPG &h00BD
-#define JIT_OP_IEQ &h00BE
-#define JIT_OP_INE &h00BF
-#define JIT_OP_ILT &h00C0
-#define JIT_OP_ILT_UN &h00C1
-#define JIT_OP_ILE &h00C2
-#define JIT_OP_ILE_UN &h00C3
-#define JIT_OP_IGT &h00C4
-#define JIT_OP_IGT_UN &h00C5
-#define JIT_OP_IGE &h00C6
-#define JIT_OP_IGE_UN &h00C7
-#define JIT_OP_LEQ &h00C8
-#define JIT_OP_LNE &h00C9
-#define JIT_OP_LLT &h00CA
-#define JIT_OP_LLT_UN &h00CB
-#define JIT_OP_LLE &h00CC
-#define JIT_OP_LLE_UN &h00CD
-#define JIT_OP_LGT &h00CE
-#define JIT_OP_LGT_UN &h00CF
-#define JIT_OP_LGE &h00D0
-#define JIT_OP_LGE_UN &h00D1
-#define JIT_OP_FEQ &h00D2
-#define JIT_OP_FNE &h00D3
-#define JIT_OP_FLT &h00D4
-#define JIT_OP_FLE &h00D5
-#define JIT_OP_FGT &h00D6
-#define JIT_OP_FGE &h00D7
-#define JIT_OP_FLT_INV &h00D8
-#define JIT_OP_FLE_INV &h00D9
-#define JIT_OP_FGT_INV &h00DA
-#define JIT_OP_FGE_INV &h00DB
-#define JIT_OP_DEQ &h00DC
-#define JIT_OP_DNE &h00DD
-#define JIT_OP_DLT &h00DE
-#define JIT_OP_DLE &h00DF
-#define JIT_OP_DGT &h00E0
-#define JIT_OP_DGE &h00E1
-#define JIT_OP_DLT_INV &h00E2
-#define JIT_OP_DLE_INV &h00E3
-#define JIT_OP_DGT_INV &h00E4
-#define JIT_OP_DGE_INV &h00E5
-#define JIT_OP_NFEQ &h00E6
-#define JIT_OP_NFNE &h00E7
-#define JIT_OP_NFLT &h00E8
-#define JIT_OP_NFLE &h00E9
-#define JIT_OP_NFGT &h00EA
-#define JIT_OP_NFGE &h00EB
-#define JIT_OP_NFLT_INV &h00EC
-#define JIT_OP_NFLE_INV &h00ED
-#define JIT_OP_NFGT_INV &h00EE
-#define JIT_OP_NFGE_INV &h00EF
-#define JIT_OP_IS_FNAN &h00F0
-#define JIT_OP_IS_FINF &h00F1
-#define JIT_OP_IS_FFINITE &h00F2
-#define JIT_OP_IS_DNAN &h00F3
-#define JIT_OP_IS_DINF &h00F4
-#define JIT_OP_IS_DFINITE &h00F5
-#define JIT_OP_IS_NFNAN &h00F6
-#define JIT_OP_IS_NFINF &h00F7
-#define JIT_OP_IS_NFFINITE &h00F8
-#define JIT_OP_FACOS &h00F9
-#define JIT_OP_FASIN &h00FA
-#define JIT_OP_FATAN &h00FB
-#define JIT_OP_FATAN2 &h00FC
-#define JIT_OP_FCEIL &h00FD
-#define JIT_OP_FCOS &h00FE
-#define JIT_OP_FCOSH &h00FF
-#define JIT_OP_FEXP &h0100
-#define JIT_OP_FFLOOR &h0101
-#define JIT_OP_FLOG &h0102
-#define JIT_OP_FLOG10 &h0103
-#define JIT_OP_FPOW &h0104
-#define JIT_OP_FRINT &h0105
-#define JIT_OP_FROUND &h0106
-#define JIT_OP_FSIN &h0107
-#define JIT_OP_FSINH &h0108
-#define JIT_OP_FSQRT &h0109
-#define JIT_OP_FTAN &h010A
-#define JIT_OP_FTANH &h010B
-#define JIT_OP_FTRUNC &h010C
-#define JIT_OP_DACOS &h010D
-#define JIT_OP_DASIN &h010E
-#define JIT_OP_DATAN &h010F
-#define JIT_OP_DATAN2 &h0110
-#define JIT_OP_DCEIL &h0111
-#define JIT_OP_DCOS &h0112
-#define JIT_OP_DCOSH &h0113
-#define JIT_OP_DEXP &h0114
-#define JIT_OP_DFLOOR &h0115
-#define JIT_OP_DLOG &h0116
-#define JIT_OP_DLOG10 &h0117
-#define JIT_OP_DPOW &h0118
-#define JIT_OP_DRINT &h0119
-#define JIT_OP_DROUND &h011A
-#define JIT_OP_DSIN &h011B
-#define JIT_OP_DSINH &h011C
-#define JIT_OP_DSQRT &h011D
-#define JIT_OP_DTAN &h011E
-#define JIT_OP_DTANH &h011F
-#define JIT_OP_DTRUNC &h0120
-#define JIT_OP_NFACOS &h0121
-#define JIT_OP_NFASIN &h0122
-#define JIT_OP_NFATAN &h0123
-#define JIT_OP_NFATAN2 &h0124
-#define JIT_OP_NFCEIL &h0125
-#define JIT_OP_NFCOS &h0126
-#define JIT_OP_NFCOSH &h0127
-#define JIT_OP_NFEXP &h0128
-#define JIT_OP_NFFLOOR &h0129
-#define JIT_OP_NFLOG &h012A
-#define JIT_OP_NFLOG10 &h012B
-#define JIT_OP_NFPOW &h012C
-#define JIT_OP_NFRINT &h012D
-#define JIT_OP_NFROUND &h012E
-#define JIT_OP_NFSIN &h012F
-#define JIT_OP_NFSINH &h0130
-#define JIT_OP_NFSQRT &h0131
-#define JIT_OP_NFTAN &h0132
-#define JIT_OP_NFTANH &h0133
-#define JIT_OP_NFTRUNC &h0134
-#define JIT_OP_IABS &h0135
-#define JIT_OP_LABS &h0136
-#define JIT_OP_FABS &h0137
-#define JIT_OP_DABS &h0138
-#define JIT_OP_NFABS &h0139
-#define JIT_OP_IMIN &h013A
-#define JIT_OP_IMIN_UN &h013B
-#define JIT_OP_LMIN &h013C
-#define JIT_OP_LMIN_UN &h013D
-#define JIT_OP_FMIN &h013E
-#define JIT_OP_DMIN &h013F
-#define JIT_OP_NFMIN &h0140
-#define JIT_OP_IMAX &h0141
-#define JIT_OP_IMAX_UN &h0142
-#define JIT_OP_LMAX &h0143
-#define JIT_OP_LMAX_UN &h0144
-#define JIT_OP_FMAX &h0145
-#define JIT_OP_DMAX &h0146
-#define JIT_OP_NFMAX &h0147
-#define JIT_OP_ISIGN &h0148
-#define JIT_OP_LSIGN &h0149
-#define JIT_OP_FSIGN &h014A
-#define JIT_OP_DSIGN &h014B
-#define JIT_OP_NFSIGN &h014C
-#define JIT_OP_CHECK_NULL &h014D
-#define JIT_OP_CALL &h014E
-#define JIT_OP_CALL_TAIL &h014F
-#define JIT_OP_CALL_INDIRECT &h0150
-#define JIT_OP_CALL_INDIRECT_TAIL &h0151
-#define JIT_OP_CALL_VTABLE_PTR &h0152
-#define JIT_OP_CALL_VTABLE_PTR_TAIL &h0153
-#define JIT_OP_CALL_EXTERNAL &h0154
-#define JIT_OP_CALL_EXTERNAL_TAIL &h0155
-#define JIT_OP_RETURN &h0156
-#define JIT_OP_RETURN_INT &h0157
-#define JIT_OP_RETURN_LONG &h0158
-#define JIT_OP_RETURN_FLOAT32 &h0159
-#define JIT_OP_RETURN_FLOAT64 &h015A
-#define JIT_OP_RETURN_NFLOAT &h015B
-#define JIT_OP_RETURN_SMALL_STRUCT &h015C
-#define JIT_OP_SETUP_FOR_NESTED &h015D
-#define JIT_OP_SETUP_FOR_SIBLING &h015E
-#define JIT_OP_IMPORT &h015F
-#define JIT_OP_THROW &h0160
-#define JIT_OP_RETHROW &h0161
-#define JIT_OP_LOAD_PC &h0162
-#define JIT_OP_LOAD_EXCEPTION_PC &h0163
-#define JIT_OP_ENTER_FINALLY &h0164
-#define JIT_OP_LEAVE_FINALLY &h0165
-#define JIT_OP_CALL_FINALLY &h0166
-#define JIT_OP_ENTER_FILTER &h0167
-#define JIT_OP_LEAVE_FILTER &h0168
-#define JIT_OP_CALL_FILTER &h0169
-#define JIT_OP_CALL_FILTER_RETURN &h016A
-#define JIT_OP_ADDRESS_OF_LABEL &h016B
-#define JIT_OP_COPY_LOAD_SBYTE &h016C
-#define JIT_OP_COPY_LOAD_UBYTE &h016D
-#define JIT_OP_COPY_LOAD_SHORT &h016E
-#define JIT_OP_COPY_LOAD_USHORT &h016F
-#define JIT_OP_COPY_INT &h0170
-#define JIT_OP_COPY_LONG &h0171
-#define JIT_OP_COPY_FLOAT32 &h0172
-#define JIT_OP_COPY_FLOAT64 &h0173
-#define JIT_OP_COPY_NFLOAT &h0174
-#define JIT_OP_COPY_STRUCT &h0175
-#define JIT_OP_COPY_STORE_BYTE &h0176
-#define JIT_OP_COPY_STORE_SHORT &h0177
-#define JIT_OP_ADDRESS_OF &h0178
-#define JIT_OP_INCOMING_REG &h0179
-#define JIT_OP_INCOMING_FRAME_POSN &h017A
-#define JIT_OP_OUTGOING_REG &h017B
-#define JIT_OP_OUTGOING_FRAME_POSN &h017C
-#define JIT_OP_RETURN_REG &h017D
-#define JIT_OP_PUSH_INT &h017E
-#define JIT_OP_PUSH_LONG &h017F
-#define JIT_OP_PUSH_FLOAT32 &h0180
-#define JIT_OP_PUSH_FLOAT64 &h0181
-#define JIT_OP_PUSH_NFLOAT &h0182
-#define JIT_OP_PUSH_STRUCT &h0183
-#define JIT_OP_POP_STACK &h0184
-#define JIT_OP_FLUSH_SMALL_STRUCT &h0185
-#define JIT_OP_SET_PARAM_INT &h0186
-#define JIT_OP_SET_PARAM_LONG &h0187
-#define JIT_OP_SET_PARAM_FLOAT32 &h0188
-#define JIT_OP_SET_PARAM_FLOAT64 &h0189
-#define JIT_OP_SET_PARAM_NFLOAT &h018A
-#define JIT_OP_SET_PARAM_STRUCT &h018B
-#define JIT_OP_PUSH_RETURN_AREA_PTR &h018C
-#define JIT_OP_LOAD_RELATIVE_SBYTE &h018D
-#define JIT_OP_LOAD_RELATIVE_UBYTE &h018E
-#define JIT_OP_LOAD_RELATIVE_SHORT &h018F
-#define JIT_OP_LOAD_RELATIVE_USHORT &h0190
-#define JIT_OP_LOAD_RELATIVE_INT &h0191
-#define JIT_OP_LOAD_RELATIVE_LONG &h0192
-#define JIT_OP_LOAD_RELATIVE_FLOAT32 &h0193
-#define JIT_OP_LOAD_RELATIVE_FLOAT64 &h0194
-#define JIT_OP_LOAD_RELATIVE_NFLOAT &h0195
-#define JIT_OP_LOAD_RELATIVE_STRUCT &h0196
-#define JIT_OP_STORE_RELATIVE_BYTE &h0197
-#define JIT_OP_STORE_RELATIVE_SHORT &h0198
-#define JIT_OP_STORE_RELATIVE_INT &h0199
-#define JIT_OP_STORE_RELATIVE_LONG &h019A
-#define JIT_OP_STORE_RELATIVE_FLOAT32 &h019B
-#define JIT_OP_STORE_RELATIVE_FLOAT64 &h019C
-#define JIT_OP_STORE_RELATIVE_NFLOAT &h019D
-#define JIT_OP_STORE_RELATIVE_STRUCT &h019E
-#define JIT_OP_ADD_RELATIVE &h019F
-#define JIT_OP_LOAD_ELEMENT_SBYTE &h01A0
-#define JIT_OP_LOAD_ELEMENT_UBYTE &h01A1
-#define JIT_OP_LOAD_ELEMENT_SHORT &h01A2
-#define JIT_OP_LOAD_ELEMENT_USHORT &h01A3
-#define JIT_OP_LOAD_ELEMENT_INT &h01A4
-#define JIT_OP_LOAD_ELEMENT_LONG &h01A5
-#define JIT_OP_LOAD_ELEMENT_FLOAT32 &h01A6
-#define JIT_OP_LOAD_ELEMENT_FLOAT64 &h01A7
-#define JIT_OP_LOAD_ELEMENT_NFLOAT &h01A8
-#define JIT_OP_STORE_ELEMENT_BYTE &h01A9
-#define JIT_OP_STORE_ELEMENT_SHORT &h01AA
-#define JIT_OP_STORE_ELEMENT_INT &h01AB
-#define JIT_OP_STORE_ELEMENT_LONG &h01AC
-#define JIT_OP_STORE_ELEMENT_FLOAT32 &h01AD
-#define JIT_OP_STORE_ELEMENT_FLOAT64 &h01AE
-#define JIT_OP_STORE_ELEMENT_NFLOAT &h01AF
-#define JIT_OP_MEMCPY &h01B0
-#define JIT_OP_MEMMOVE &h01B1
-#define JIT_OP_MEMSET &h01B2
-#define JIT_OP_ALLOCA &h01B3
-#define JIT_OP_MARK_OFFSET &h01B4
-#define JIT_OP_MARK_BREAKPOINT &h01B5
-#define JIT_OP_JUMP_TABLE &h01B6
-#define JIT_OP_NUM_OPCODES &h01B7
+const JIT_OP_NOP = &h0000
+const JIT_OP_TRUNC_SBYTE = &h0001
+const JIT_OP_TRUNC_UBYTE = &h0002
+const JIT_OP_TRUNC_SHORT = &h0003
+const JIT_OP_TRUNC_USHORT = &h0004
+const JIT_OP_TRUNC_INT = &h0005
+const JIT_OP_TRUNC_UINT = &h0006
+const JIT_OP_CHECK_SBYTE = &h0007
+const JIT_OP_CHECK_UBYTE = &h0008
+const JIT_OP_CHECK_SHORT = &h0009
+const JIT_OP_CHECK_USHORT = &h000A
+const JIT_OP_CHECK_INT = &h000B
+const JIT_OP_CHECK_UINT = &h000C
+const JIT_OP_LOW_WORD = &h000D
+const JIT_OP_EXPAND_INT = &h000E
+const JIT_OP_EXPAND_UINT = &h000F
+const JIT_OP_CHECK_LOW_WORD = &h0010
+const JIT_OP_CHECK_SIGNED_LOW_WORD = &h0011
+const JIT_OP_CHECK_LONG = &h0012
+const JIT_OP_CHECK_ULONG = &h0013
+const JIT_OP_FLOAT32_TO_INT = &h0014
+const JIT_OP_FLOAT32_TO_UINT = &h0015
+const JIT_OP_FLOAT32_TO_LONG = &h0016
+const JIT_OP_FLOAT32_TO_ULONG = &h0017
+const JIT_OP_CHECK_FLOAT32_TO_INT = &h0018
+const JIT_OP_CHECK_FLOAT32_TO_UINT = &h0019
+const JIT_OP_CHECK_FLOAT32_TO_LONG = &h001A
+const JIT_OP_CHECK_FLOAT32_TO_ULONG = &h001B
+const JIT_OP_INT_TO_FLOAT32 = &h001C
+const JIT_OP_UINT_TO_FLOAT32 = &h001D
+const JIT_OP_LONG_TO_FLOAT32 = &h001E
+const JIT_OP_ULONG_TO_FLOAT32 = &h001F
+const JIT_OP_FLOAT32_TO_FLOAT64 = &h0020
+const JIT_OP_FLOAT64_TO_INT = &h0021
+const JIT_OP_FLOAT64_TO_UINT = &h0022
+const JIT_OP_FLOAT64_TO_LONG = &h0023
+const JIT_OP_FLOAT64_TO_ULONG = &h0024
+const JIT_OP_CHECK_FLOAT64_TO_INT = &h0025
+const JIT_OP_CHECK_FLOAT64_TO_UINT = &h0026
+const JIT_OP_CHECK_FLOAT64_TO_LONG = &h0027
+const JIT_OP_CHECK_FLOAT64_TO_ULONG = &h0028
+const JIT_OP_INT_TO_FLOAT64 = &h0029
+const JIT_OP_UINT_TO_FLOAT64 = &h002A
+const JIT_OP_LONG_TO_FLOAT64 = &h002B
+const JIT_OP_ULONG_TO_FLOAT64 = &h002C
+const JIT_OP_FLOAT64_TO_FLOAT32 = &h002D
+const JIT_OP_NFLOAT_TO_INT = &h002E
+const JIT_OP_NFLOAT_TO_UINT = &h002F
+const JIT_OP_NFLOAT_TO_LONG = &h0030
+const JIT_OP_NFLOAT_TO_ULONG = &h0031
+const JIT_OP_CHECK_NFLOAT_TO_INT = &h0032
+const JIT_OP_CHECK_NFLOAT_TO_UINT = &h0033
+const JIT_OP_CHECK_NFLOAT_TO_LONG = &h0034
+const JIT_OP_CHECK_NFLOAT_TO_ULONG = &h0035
+const JIT_OP_INT_TO_NFLOAT = &h0036
+const JIT_OP_UINT_TO_NFLOAT = &h0037
+const JIT_OP_LONG_TO_NFLOAT = &h0038
+const JIT_OP_ULONG_TO_NFLOAT = &h0039
+const JIT_OP_NFLOAT_TO_FLOAT32 = &h003A
+const JIT_OP_NFLOAT_TO_FLOAT64 = &h003B
+const JIT_OP_FLOAT32_TO_NFLOAT = &h003C
+const JIT_OP_FLOAT64_TO_NFLOAT = &h003D
+const JIT_OP_IADD = &h003E
+const JIT_OP_IADD_OVF = &h003F
+const JIT_OP_IADD_OVF_UN = &h0040
+const JIT_OP_ISUB = &h0041
+const JIT_OP_ISUB_OVF = &h0042
+const JIT_OP_ISUB_OVF_UN = &h0043
+const JIT_OP_IMUL = &h0044
+const JIT_OP_IMUL_OVF = &h0045
+const JIT_OP_IMUL_OVF_UN = &h0046
+const JIT_OP_IDIV = &h0047
+const JIT_OP_IDIV_UN = &h0048
+const JIT_OP_IREM = &h0049
+const JIT_OP_IREM_UN = &h004A
+const JIT_OP_INEG = &h004B
+const JIT_OP_LADD = &h004C
+const JIT_OP_LADD_OVF = &h004D
+const JIT_OP_LADD_OVF_UN = &h004E
+const JIT_OP_LSUB = &h004F
+const JIT_OP_LSUB_OVF = &h0050
+const JIT_OP_LSUB_OVF_UN = &h0051
+const JIT_OP_LMUL = &h0052
+const JIT_OP_LMUL_OVF = &h0053
+const JIT_OP_LMUL_OVF_UN = &h0054
+const JIT_OP_LDIV = &h0055
+const JIT_OP_LDIV_UN = &h0056
+const JIT_OP_LREM = &h0057
+const JIT_OP_LREM_UN = &h0058
+const JIT_OP_LNEG = &h0059
+const JIT_OP_FADD = &h005A
+const JIT_OP_FSUB = &h005B
+const JIT_OP_FMUL = &h005C
+const JIT_OP_FDIV = &h005D
+const JIT_OP_FREM = &h005E
+const JIT_OP_FREM_IEEE = &h005F
+const JIT_OP_FNEG = &h0060
+const JIT_OP_DADD = &h0061
+const JIT_OP_DSUB = &h0062
+const JIT_OP_DMUL = &h0063
+const JIT_OP_DDIV = &h0064
+const JIT_OP_DREM = &h0065
+const JIT_OP_DREM_IEEE = &h0066
+const JIT_OP_DNEG = &h0067
+const JIT_OP_NFADD = &h0068
+const JIT_OP_NFSUB = &h0069
+const JIT_OP_NFMUL = &h006A
+const JIT_OP_NFDIV = &h006B
+const JIT_OP_NFREM = &h006C
+const JIT_OP_NFREM_IEEE = &h006D
+const JIT_OP_NFNEG = &h006E
+const JIT_OP_IAND = &h006F
+const JIT_OP_IOR = &h0070
+const JIT_OP_IXOR = &h0071
+const JIT_OP_INOT = &h0072
+const JIT_OP_ISHL = &h0073
+const JIT_OP_ISHR = &h0074
+const JIT_OP_ISHR_UN = &h0075
+const JIT_OP_LAND = &h0076
+const JIT_OP_LOR = &h0077
+const JIT_OP_LXOR = &h0078
+const JIT_OP_LNOT = &h0079
+const JIT_OP_LSHL = &h007A
+const JIT_OP_LSHR = &h007B
+const JIT_OP_LSHR_UN = &h007C
+const JIT_OP_BR = &h007D
+const JIT_OP_BR_IFALSE = &h007E
+const JIT_OP_BR_ITRUE = &h007F
+const JIT_OP_BR_IEQ = &h0080
+const JIT_OP_BR_INE = &h0081
+const JIT_OP_BR_ILT = &h0082
+const JIT_OP_BR_ILT_UN = &h0083
+const JIT_OP_BR_ILE = &h0084
+const JIT_OP_BR_ILE_UN = &h0085
+const JIT_OP_BR_IGT = &h0086
+const JIT_OP_BR_IGT_UN = &h0087
+const JIT_OP_BR_IGE = &h0088
+const JIT_OP_BR_IGE_UN = &h0089
+const JIT_OP_BR_LFALSE = &h008A
+const JIT_OP_BR_LTRUE = &h008B
+const JIT_OP_BR_LEQ = &h008C
+const JIT_OP_BR_LNE = &h008D
+const JIT_OP_BR_LLT = &h008E
+const JIT_OP_BR_LLT_UN = &h008F
+const JIT_OP_BR_LLE = &h0090
+const JIT_OP_BR_LLE_UN = &h0091
+const JIT_OP_BR_LGT = &h0092
+const JIT_OP_BR_LGT_UN = &h0093
+const JIT_OP_BR_LGE = &h0094
+const JIT_OP_BR_LGE_UN = &h0095
+const JIT_OP_BR_FEQ = &h0096
+const JIT_OP_BR_FNE = &h0097
+const JIT_OP_BR_FLT = &h0098
+const JIT_OP_BR_FLE = &h0099
+const JIT_OP_BR_FGT = &h009A
+const JIT_OP_BR_FGE = &h009B
+const JIT_OP_BR_FLT_INV = &h009C
+const JIT_OP_BR_FLE_INV = &h009D
+const JIT_OP_BR_FGT_INV = &h009E
+const JIT_OP_BR_FGE_INV = &h009F
+const JIT_OP_BR_DEQ = &h00A0
+const JIT_OP_BR_DNE = &h00A1
+const JIT_OP_BR_DLT = &h00A2
+const JIT_OP_BR_DLE = &h00A3
+const JIT_OP_BR_DGT = &h00A4
+const JIT_OP_BR_DGE = &h00A5
+const JIT_OP_BR_DLT_INV = &h00A6
+const JIT_OP_BR_DLE_INV = &h00A7
+const JIT_OP_BR_DGT_INV = &h00A8
+const JIT_OP_BR_DGE_INV = &h00A9
+const JIT_OP_BR_NFEQ = &h00AA
+const JIT_OP_BR_NFNE = &h00AB
+const JIT_OP_BR_NFLT = &h00AC
+const JIT_OP_BR_NFLE = &h00AD
+const JIT_OP_BR_NFGT = &h00AE
+const JIT_OP_BR_NFGE = &h00AF
+const JIT_OP_BR_NFLT_INV = &h00B0
+const JIT_OP_BR_NFLE_INV = &h00B1
+const JIT_OP_BR_NFGT_INV = &h00B2
+const JIT_OP_BR_NFGE_INV = &h00B3
+const JIT_OP_ICMP = &h00B4
+const JIT_OP_ICMP_UN = &h00B5
+const JIT_OP_LCMP = &h00B6
+const JIT_OP_LCMP_UN = &h00B7
+const JIT_OP_FCMPL = &h00B8
+const JIT_OP_FCMPG = &h00B9
+const JIT_OP_DCMPL = &h00BA
+const JIT_OP_DCMPG = &h00BB
+const JIT_OP_NFCMPL = &h00BC
+const JIT_OP_NFCMPG = &h00BD
+const JIT_OP_IEQ = &h00BE
+const JIT_OP_INE = &h00BF
+const JIT_OP_ILT = &h00C0
+const JIT_OP_ILT_UN = &h00C1
+const JIT_OP_ILE = &h00C2
+const JIT_OP_ILE_UN = &h00C3
+const JIT_OP_IGT = &h00C4
+const JIT_OP_IGT_UN = &h00C5
+const JIT_OP_IGE = &h00C6
+const JIT_OP_IGE_UN = &h00C7
+const JIT_OP_LEQ = &h00C8
+const JIT_OP_LNE = &h00C9
+const JIT_OP_LLT = &h00CA
+const JIT_OP_LLT_UN = &h00CB
+const JIT_OP_LLE = &h00CC
+const JIT_OP_LLE_UN = &h00CD
+const JIT_OP_LGT = &h00CE
+const JIT_OP_LGT_UN = &h00CF
+const JIT_OP_LGE = &h00D0
+const JIT_OP_LGE_UN = &h00D1
+const JIT_OP_FEQ = &h00D2
+const JIT_OP_FNE = &h00D3
+const JIT_OP_FLT = &h00D4
+const JIT_OP_FLE = &h00D5
+const JIT_OP_FGT = &h00D6
+const JIT_OP_FGE = &h00D7
+const JIT_OP_FLT_INV = &h00D8
+const JIT_OP_FLE_INV = &h00D9
+const JIT_OP_FGT_INV = &h00DA
+const JIT_OP_FGE_INV = &h00DB
+const JIT_OP_DEQ = &h00DC
+const JIT_OP_DNE = &h00DD
+const JIT_OP_DLT = &h00DE
+const JIT_OP_DLE = &h00DF
+const JIT_OP_DGT = &h00E0
+const JIT_OP_DGE = &h00E1
+const JIT_OP_DLT_INV = &h00E2
+const JIT_OP_DLE_INV = &h00E3
+const JIT_OP_DGT_INV = &h00E4
+const JIT_OP_DGE_INV = &h00E5
+const JIT_OP_NFEQ = &h00E6
+const JIT_OP_NFNE = &h00E7
+const JIT_OP_NFLT = &h00E8
+const JIT_OP_NFLE = &h00E9
+const JIT_OP_NFGT = &h00EA
+const JIT_OP_NFGE = &h00EB
+const JIT_OP_NFLT_INV = &h00EC
+const JIT_OP_NFLE_INV = &h00ED
+const JIT_OP_NFGT_INV = &h00EE
+const JIT_OP_NFGE_INV = &h00EF
+const JIT_OP_IS_FNAN = &h00F0
+const JIT_OP_IS_FINF = &h00F1
+const JIT_OP_IS_FFINITE = &h00F2
+const JIT_OP_IS_DNAN = &h00F3
+const JIT_OP_IS_DINF = &h00F4
+const JIT_OP_IS_DFINITE = &h00F5
+const JIT_OP_IS_NFNAN = &h00F6
+const JIT_OP_IS_NFINF = &h00F7
+const JIT_OP_IS_NFFINITE = &h00F8
+const JIT_OP_FACOS = &h00F9
+const JIT_OP_FASIN = &h00FA
+const JIT_OP_FATAN = &h00FB
+const JIT_OP_FATAN2 = &h00FC
+const JIT_OP_FCEIL = &h00FD
+const JIT_OP_FCOS = &h00FE
+const JIT_OP_FCOSH = &h00FF
+const JIT_OP_FEXP = &h0100
+const JIT_OP_FFLOOR = &h0101
+const JIT_OP_FLOG = &h0102
+const JIT_OP_FLOG10 = &h0103
+const JIT_OP_FPOW = &h0104
+const JIT_OP_FRINT = &h0105
+const JIT_OP_FROUND = &h0106
+const JIT_OP_FSIN = &h0107
+const JIT_OP_FSINH = &h0108
+const JIT_OP_FSQRT = &h0109
+const JIT_OP_FTAN = &h010A
+const JIT_OP_FTANH = &h010B
+const JIT_OP_FTRUNC = &h010C
+const JIT_OP_DACOS = &h010D
+const JIT_OP_DASIN = &h010E
+const JIT_OP_DATAN = &h010F
+const JIT_OP_DATAN2 = &h0110
+const JIT_OP_DCEIL = &h0111
+const JIT_OP_DCOS = &h0112
+const JIT_OP_DCOSH = &h0113
+const JIT_OP_DEXP = &h0114
+const JIT_OP_DFLOOR = &h0115
+const JIT_OP_DLOG = &h0116
+const JIT_OP_DLOG10 = &h0117
+const JIT_OP_DPOW = &h0118
+const JIT_OP_DRINT = &h0119
+const JIT_OP_DROUND = &h011A
+const JIT_OP_DSIN = &h011B
+const JIT_OP_DSINH = &h011C
+const JIT_OP_DSQRT = &h011D
+const JIT_OP_DTAN = &h011E
+const JIT_OP_DTANH = &h011F
+const JIT_OP_DTRUNC = &h0120
+const JIT_OP_NFACOS = &h0121
+const JIT_OP_NFASIN = &h0122
+const JIT_OP_NFATAN = &h0123
+const JIT_OP_NFATAN2 = &h0124
+const JIT_OP_NFCEIL = &h0125
+const JIT_OP_NFCOS = &h0126
+const JIT_OP_NFCOSH = &h0127
+const JIT_OP_NFEXP = &h0128
+const JIT_OP_NFFLOOR = &h0129
+const JIT_OP_NFLOG = &h012A
+const JIT_OP_NFLOG10 = &h012B
+const JIT_OP_NFPOW = &h012C
+const JIT_OP_NFRINT = &h012D
+const JIT_OP_NFROUND = &h012E
+const JIT_OP_NFSIN = &h012F
+const JIT_OP_NFSINH = &h0130
+const JIT_OP_NFSQRT = &h0131
+const JIT_OP_NFTAN = &h0132
+const JIT_OP_NFTANH = &h0133
+const JIT_OP_NFTRUNC = &h0134
+const JIT_OP_IABS = &h0135
+const JIT_OP_LABS = &h0136
+const JIT_OP_FABS = &h0137
+const JIT_OP_DABS = &h0138
+const JIT_OP_NFABS = &h0139
+const JIT_OP_IMIN = &h013A
+const JIT_OP_IMIN_UN = &h013B
+const JIT_OP_LMIN = &h013C
+const JIT_OP_LMIN_UN = &h013D
+const JIT_OP_FMIN = &h013E
+const JIT_OP_DMIN = &h013F
+const JIT_OP_NFMIN = &h0140
+const JIT_OP_IMAX = &h0141
+const JIT_OP_IMAX_UN = &h0142
+const JIT_OP_LMAX = &h0143
+const JIT_OP_LMAX_UN = &h0144
+const JIT_OP_FMAX = &h0145
+const JIT_OP_DMAX = &h0146
+const JIT_OP_NFMAX = &h0147
+const JIT_OP_ISIGN = &h0148
+const JIT_OP_LSIGN = &h0149
+const JIT_OP_FSIGN = &h014A
+const JIT_OP_DSIGN = &h014B
+const JIT_OP_NFSIGN = &h014C
+const JIT_OP_CHECK_NULL = &h014D
+const JIT_OP_CALL = &h014E
+const JIT_OP_CALL_TAIL = &h014F
+const JIT_OP_CALL_INDIRECT = &h0150
+const JIT_OP_CALL_INDIRECT_TAIL = &h0151
+const JIT_OP_CALL_VTABLE_PTR = &h0152
+const JIT_OP_CALL_VTABLE_PTR_TAIL = &h0153
+const JIT_OP_CALL_EXTERNAL = &h0154
+const JIT_OP_CALL_EXTERNAL_TAIL = &h0155
+const JIT_OP_RETURN = &h0156
+const JIT_OP_RETURN_INT = &h0157
+const JIT_OP_RETURN_LONG = &h0158
+const JIT_OP_RETURN_FLOAT32 = &h0159
+const JIT_OP_RETURN_FLOAT64 = &h015A
+const JIT_OP_RETURN_NFLOAT = &h015B
+const JIT_OP_RETURN_SMALL_STRUCT = &h015C
+const JIT_OP_SETUP_FOR_NESTED = &h015D
+const JIT_OP_SETUP_FOR_SIBLING = &h015E
+const JIT_OP_IMPORT = &h015F
+const JIT_OP_THROW = &h0160
+const JIT_OP_RETHROW = &h0161
+const JIT_OP_LOAD_PC = &h0162
+const JIT_OP_LOAD_EXCEPTION_PC = &h0163
+const JIT_OP_ENTER_FINALLY = &h0164
+const JIT_OP_LEAVE_FINALLY = &h0165
+const JIT_OP_CALL_FINALLY = &h0166
+const JIT_OP_ENTER_FILTER = &h0167
+const JIT_OP_LEAVE_FILTER = &h0168
+const JIT_OP_CALL_FILTER = &h0169
+const JIT_OP_CALL_FILTER_RETURN = &h016A
+const JIT_OP_ADDRESS_OF_LABEL = &h016B
+const JIT_OP_COPY_LOAD_SBYTE = &h016C
+const JIT_OP_COPY_LOAD_UBYTE = &h016D
+const JIT_OP_COPY_LOAD_SHORT = &h016E
+const JIT_OP_COPY_LOAD_USHORT = &h016F
+const JIT_OP_COPY_INT = &h0170
+const JIT_OP_COPY_LONG = &h0171
+const JIT_OP_COPY_FLOAT32 = &h0172
+const JIT_OP_COPY_FLOAT64 = &h0173
+const JIT_OP_COPY_NFLOAT = &h0174
+const JIT_OP_COPY_STRUCT = &h0175
+const JIT_OP_COPY_STORE_BYTE = &h0176
+const JIT_OP_COPY_STORE_SHORT = &h0177
+const JIT_OP_ADDRESS_OF = &h0178
+const JIT_OP_INCOMING_REG = &h0179
+const JIT_OP_INCOMING_FRAME_POSN = &h017A
+const JIT_OP_OUTGOING_REG = &h017B
+const JIT_OP_OUTGOING_FRAME_POSN = &h017C
+const JIT_OP_RETURN_REG = &h017D
+const JIT_OP_PUSH_INT = &h017E
+const JIT_OP_PUSH_LONG = &h017F
+const JIT_OP_PUSH_FLOAT32 = &h0180
+const JIT_OP_PUSH_FLOAT64 = &h0181
+const JIT_OP_PUSH_NFLOAT = &h0182
+const JIT_OP_PUSH_STRUCT = &h0183
+const JIT_OP_POP_STACK = &h0184
+const JIT_OP_FLUSH_SMALL_STRUCT = &h0185
+const JIT_OP_SET_PARAM_INT = &h0186
+const JIT_OP_SET_PARAM_LONG = &h0187
+const JIT_OP_SET_PARAM_FLOAT32 = &h0188
+const JIT_OP_SET_PARAM_FLOAT64 = &h0189
+const JIT_OP_SET_PARAM_NFLOAT = &h018A
+const JIT_OP_SET_PARAM_STRUCT = &h018B
+const JIT_OP_PUSH_RETURN_AREA_PTR = &h018C
+const JIT_OP_LOAD_RELATIVE_SBYTE = &h018D
+const JIT_OP_LOAD_RELATIVE_UBYTE = &h018E
+const JIT_OP_LOAD_RELATIVE_SHORT = &h018F
+const JIT_OP_LOAD_RELATIVE_USHORT = &h0190
+const JIT_OP_LOAD_RELATIVE_INT = &h0191
+const JIT_OP_LOAD_RELATIVE_LONG = &h0192
+const JIT_OP_LOAD_RELATIVE_FLOAT32 = &h0193
+const JIT_OP_LOAD_RELATIVE_FLOAT64 = &h0194
+const JIT_OP_LOAD_RELATIVE_NFLOAT = &h0195
+const JIT_OP_LOAD_RELATIVE_STRUCT = &h0196
+const JIT_OP_STORE_RELATIVE_BYTE = &h0197
+const JIT_OP_STORE_RELATIVE_SHORT = &h0198
+const JIT_OP_STORE_RELATIVE_INT = &h0199
+const JIT_OP_STORE_RELATIVE_LONG = &h019A
+const JIT_OP_STORE_RELATIVE_FLOAT32 = &h019B
+const JIT_OP_STORE_RELATIVE_FLOAT64 = &h019C
+const JIT_OP_STORE_RELATIVE_NFLOAT = &h019D
+const JIT_OP_STORE_RELATIVE_STRUCT = &h019E
+const JIT_OP_ADD_RELATIVE = &h019F
+const JIT_OP_LOAD_ELEMENT_SBYTE = &h01A0
+const JIT_OP_LOAD_ELEMENT_UBYTE = &h01A1
+const JIT_OP_LOAD_ELEMENT_SHORT = &h01A2
+const JIT_OP_LOAD_ELEMENT_USHORT = &h01A3
+const JIT_OP_LOAD_ELEMENT_INT = &h01A4
+const JIT_OP_LOAD_ELEMENT_LONG = &h01A5
+const JIT_OP_LOAD_ELEMENT_FLOAT32 = &h01A6
+const JIT_OP_LOAD_ELEMENT_FLOAT64 = &h01A7
+const JIT_OP_LOAD_ELEMENT_NFLOAT = &h01A8
+const JIT_OP_STORE_ELEMENT_BYTE = &h01A9
+const JIT_OP_STORE_ELEMENT_SHORT = &h01AA
+const JIT_OP_STORE_ELEMENT_INT = &h01AB
+const JIT_OP_STORE_ELEMENT_LONG = &h01AC
+const JIT_OP_STORE_ELEMENT_FLOAT32 = &h01AD
+const JIT_OP_STORE_ELEMENT_FLOAT64 = &h01AE
+const JIT_OP_STORE_ELEMENT_NFLOAT = &h01AF
+const JIT_OP_MEMCPY = &h01B0
+const JIT_OP_MEMMOVE = &h01B1
+const JIT_OP_MEMSET = &h01B2
+const JIT_OP_ALLOCA = &h01B3
+const JIT_OP_MARK_OFFSET = &h01B4
+const JIT_OP_MARK_BREAKPOINT = &h01B5
+const JIT_OP_JUMP_TABLE = &h01B6
+const JIT_OP_NUM_OPCODES = &h01B7
 type jit_opcode_info_t as jit_opcode_info
 
 type jit_opcode_info
@@ -1433,59 +1433,59 @@ type jit_opcode_info
 	flags as long
 end type
 
-#define JIT_OPCODE_DEST_MASK &h0000000F
-#define JIT_OPCODE_DEST_EMPTY &h00000000
-#define JIT_OPCODE_DEST_INT &h00000001
-#define JIT_OPCODE_DEST_LONG &h00000002
-#define JIT_OPCODE_DEST_FLOAT32 &h00000003
-#define JIT_OPCODE_DEST_FLOAT64 &h00000004
-#define JIT_OPCODE_DEST_NFLOAT &h00000005
-#define JIT_OPCODE_DEST_ANY &h00000006
-#define JIT_OPCODE_SRC1_MASK &h000000F0
-#define JIT_OPCODE_SRC1_EMPTY &h00000000
-#define JIT_OPCODE_SRC1_INT &h00000010
-#define JIT_OPCODE_SRC1_LONG &h00000020
-#define JIT_OPCODE_SRC1_FLOAT32 &h00000030
-#define JIT_OPCODE_SRC1_FLOAT64 &h00000040
-#define JIT_OPCODE_SRC1_NFLOAT &h00000050
-#define JIT_OPCODE_SRC1_ANY &h00000060
-#define JIT_OPCODE_SRC2_MASK &h00000F00
-#define JIT_OPCODE_SRC2_EMPTY &h00000000
-#define JIT_OPCODE_SRC2_INT &h00000100
-#define JIT_OPCODE_SRC2_LONG &h00000200
-#define JIT_OPCODE_SRC2_FLOAT32 &h00000300
-#define JIT_OPCODE_SRC2_FLOAT64 &h00000400
-#define JIT_OPCODE_SRC2_NFLOAT &h00000500
-#define JIT_OPCODE_SRC2_ANY &h00000600
-#define JIT_OPCODE_IS_BRANCH &h00001000
-#define JIT_OPCODE_IS_CALL &h00002000
-#define JIT_OPCODE_IS_CALL_EXTERNAL &h00004000
-#define JIT_OPCODE_IS_REG &h00008000
-#define JIT_OPCODE_IS_ADDROF_LABEL &h00010000
-#define JIT_OPCODE_IS_JUMP_TABLE &h00020000
-#define JIT_OPCODE_OPER_MASK &h01F00000
-#define JIT_OPCODE_OPER_NONE &h00000000
-#define JIT_OPCODE_OPER_ADD &h00100000
-#define JIT_OPCODE_OPER_SUB &h00200000
-#define JIT_OPCODE_OPER_MUL &h00300000
-#define JIT_OPCODE_OPER_DIV &h00400000
-#define JIT_OPCODE_OPER_REM &h00500000
-#define JIT_OPCODE_OPER_NEG &h00600000
-#define JIT_OPCODE_OPER_AND &h00700000
-#define JIT_OPCODE_OPER_OR &h00800000
-#define JIT_OPCODE_OPER_XOR &h00900000
-#define JIT_OPCODE_OPER_NOT &h00A00000
-#define JIT_OPCODE_OPER_EQ &h00B00000
-#define JIT_OPCODE_OPER_NE &h00C00000
-#define JIT_OPCODE_OPER_LT &h00D00000
-#define JIT_OPCODE_OPER_LE &h00E00000
-#define JIT_OPCODE_OPER_GT &h00F00000
-#define JIT_OPCODE_OPER_GE &h01000000
-#define JIT_OPCODE_OPER_SHL &h01100000
-#define JIT_OPCODE_OPER_SHR &h01200000
-#define JIT_OPCODE_OPER_SHR_UN &h01300000
-#define JIT_OPCODE_OPER_COPY &h01400000
-#define JIT_OPCODE_OPER_ADDRESS_OF &h01500000
+const JIT_OPCODE_DEST_MASK = &h0000000F
+const JIT_OPCODE_DEST_EMPTY = &h00000000
+const JIT_OPCODE_DEST_INT = &h00000001
+const JIT_OPCODE_DEST_LONG = &h00000002
+const JIT_OPCODE_DEST_FLOAT32 = &h00000003
+const JIT_OPCODE_DEST_FLOAT64 = &h00000004
+const JIT_OPCODE_DEST_NFLOAT = &h00000005
+const JIT_OPCODE_DEST_ANY = &h00000006
+const JIT_OPCODE_SRC1_MASK = &h000000F0
+const JIT_OPCODE_SRC1_EMPTY = &h00000000
+const JIT_OPCODE_SRC1_INT = &h00000010
+const JIT_OPCODE_SRC1_LONG = &h00000020
+const JIT_OPCODE_SRC1_FLOAT32 = &h00000030
+const JIT_OPCODE_SRC1_FLOAT64 = &h00000040
+const JIT_OPCODE_SRC1_NFLOAT = &h00000050
+const JIT_OPCODE_SRC1_ANY = &h00000060
+const JIT_OPCODE_SRC2_MASK = &h00000F00
+const JIT_OPCODE_SRC2_EMPTY = &h00000000
+const JIT_OPCODE_SRC2_INT = &h00000100
+const JIT_OPCODE_SRC2_LONG = &h00000200
+const JIT_OPCODE_SRC2_FLOAT32 = &h00000300
+const JIT_OPCODE_SRC2_FLOAT64 = &h00000400
+const JIT_OPCODE_SRC2_NFLOAT = &h00000500
+const JIT_OPCODE_SRC2_ANY = &h00000600
+const JIT_OPCODE_IS_BRANCH = &h00001000
+const JIT_OPCODE_IS_CALL = &h00002000
+const JIT_OPCODE_IS_CALL_EXTERNAL = &h00004000
+const JIT_OPCODE_IS_REG = &h00008000
+const JIT_OPCODE_IS_ADDROF_LABEL = &h00010000
+const JIT_OPCODE_IS_JUMP_TABLE = &h00020000
+const JIT_OPCODE_OPER_MASK = &h01F00000
+const JIT_OPCODE_OPER_NONE = &h00000000
+const JIT_OPCODE_OPER_ADD = &h00100000
+const JIT_OPCODE_OPER_SUB = &h00200000
+const JIT_OPCODE_OPER_MUL = &h00300000
+const JIT_OPCODE_OPER_DIV = &h00400000
+const JIT_OPCODE_OPER_REM = &h00500000
+const JIT_OPCODE_OPER_NEG = &h00600000
+const JIT_OPCODE_OPER_AND = &h00700000
+const JIT_OPCODE_OPER_OR = &h00800000
+const JIT_OPCODE_OPER_XOR = &h00900000
+const JIT_OPCODE_OPER_NOT = &h00A00000
+const JIT_OPCODE_OPER_EQ = &h00B00000
+const JIT_OPCODE_OPER_NE = &h00C00000
+const JIT_OPCODE_OPER_LT = &h00D00000
+const JIT_OPCODE_OPER_LE = &h00E00000
+const JIT_OPCODE_OPER_GT = &h00F00000
+const JIT_OPCODE_OPER_GE = &h01000000
+const JIT_OPCODE_OPER_SHL = &h01100000
+const JIT_OPCODE_OPER_SHR = &h01200000
+const JIT_OPCODE_OPER_SHR_UN = &h01300000
+const JIT_OPCODE_OPER_COPY = &h01400000
+const JIT_OPCODE_OPER_ADDRESS_OF = &h01500000
 #define JIT_OPCODE_DEST_PTR JIT_OPCODE_DEST_INT
 #define JIT_OPCODE_SRC1_PTR JIT_OPCODE_SRC1_INT
 #define JIT_OPCODE_SRC2_PTR JIT_OPCODE_SRC2_INT
@@ -1664,7 +1664,7 @@ declare function jit_vmem_protect(byval addr as any ptr, byval size as jit_uint,
 declare function _jit_get_frame_address(byval start as any ptr, byval n as ulong) as any ptr
 
 #define jit_get_frame_address(n) _jit_get_frame_address(jit_get_current_frame(), (n))
-#define JIT_FAST_GET_CURRENT_FRAME 1
+const JIT_FAST_GET_CURRENT_FRAME = 1
 #define jit_get_current_frame() jit_get_frame_address(0)
 declare function _jit_get_next_frame_address(byval frame as any ptr) as any ptr
 #define jit_get_next_frame_address(frame) _jit_get_next_frame_address(frame)

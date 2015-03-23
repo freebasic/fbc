@@ -11,7 +11,7 @@
 #include once "crt/time.bi"
 
 '' The following symbols have been renamed:
-''     #define PNG_LIBPNG_VER => PNG_LIBPNG_VER_
+''     constant PNG_LIBPNG_VER => PNG_LIBPNG_VER_
 ''     #define PNG_READ_TEXT_SUPPORTED => PNG_READ_TEXT_SUPPORTED_
 ''     #define PNG_TEXT_SUPPORTED => PNG_TEXT_SUPPORTED_
 ''     #define PNG_WRITE_TEXT_SUPPORTED => PNG_WRITE_TEXT_SUPPORTED_
@@ -24,22 +24,22 @@ extern "C"
 #define PNG_H
 #define PNG_LIBPNG_VER_STRING "1.6.14"
 #define PNG_HEADER_VERSION_STRING !" libpng version 1.6.14 - October 23, 2014\n"
-#define PNG_LIBPNG_VER_SONUM 16
-#define PNG_LIBPNG_VER_DLLNUM 16
-#define PNG_LIBPNG_VER_MAJOR 1
-#define PNG_LIBPNG_VER_MINOR 6
-#define PNG_LIBPNG_VER_RELEASE 14
-#define PNG_LIBPNG_VER_BUILD 0
-#define PNG_LIBPNG_BUILD_ALPHA 1
-#define PNG_LIBPNG_BUILD_BETA 2
-#define PNG_LIBPNG_BUILD_RC 3
-#define PNG_LIBPNG_BUILD_STABLE 4
-#define PNG_LIBPNG_BUILD_RELEASE_STATUS_MASK 7
-#define PNG_LIBPNG_BUILD_PATCH 8
-#define PNG_LIBPNG_BUILD_PRIVATE 16
-#define PNG_LIBPNG_BUILD_SPECIAL 32
+const PNG_LIBPNG_VER_SONUM = 16
+const PNG_LIBPNG_VER_DLLNUM = 16
+const PNG_LIBPNG_VER_MAJOR = 1
+const PNG_LIBPNG_VER_MINOR = 6
+const PNG_LIBPNG_VER_RELEASE = 14
+const PNG_LIBPNG_VER_BUILD = 0
+const PNG_LIBPNG_BUILD_ALPHA = 1
+const PNG_LIBPNG_BUILD_BETA = 2
+const PNG_LIBPNG_BUILD_RC = 3
+const PNG_LIBPNG_BUILD_STABLE = 4
+const PNG_LIBPNG_BUILD_RELEASE_STATUS_MASK = 7
+const PNG_LIBPNG_BUILD_PATCH = 8
+const PNG_LIBPNG_BUILD_PRIVATE = 16
+const PNG_LIBPNG_BUILD_SPECIAL = 32
 #define PNG_LIBPNG_BUILD_BASE_TYPE PNG_LIBPNG_BUILD_STABLE
-#define PNG_LIBPNG_VER_ 10614
+const PNG_LIBPNG_VER_ = 10614
 #define PNGLCONF_H
 #define PNG_16BIT_SUPPORTED
 #define PNG_ALIGNED_MEMORY_SUPPORTED
@@ -204,26 +204,26 @@ extern "C"
 #define PNG_tIME_SUPPORTED
 #define PNG_tRNS_SUPPORTED
 #define PNG_zTXt_SUPPORTED
-#define PNG_API_RULE 0
-#define PNG_COST_SHIFT 3
-#define PNG_DEFAULT_READ_MACROS 1
-#define PNG_GAMMA_THRESHOLD_FIXED 5000
+const PNG_API_RULE = 0
+const PNG_COST_SHIFT = 3
+const PNG_DEFAULT_READ_MACROS = 1
+const PNG_GAMMA_THRESHOLD_FIXED = 5000
 #define PNG_IDAT_READ_SIZE PNG_ZBUF_SIZE
-#define PNG_INFLATE_BUF_SIZE 1024
-#define PNG_MAX_GAMMA_8 11
-#define PNG_QUANTIZE_BLUE_BITS 5
-#define PNG_QUANTIZE_GREEN_BITS 5
-#define PNG_QUANTIZE_RED_BITS 5
-#define PNG_TEXT_Z_DEFAULT_COMPRESSION (-1)
-#define PNG_TEXT_Z_DEFAULT_STRATEGY 0
-#define PNG_WEIGHT_SHIFT 8
-#define PNG_ZBUF_SIZE 8192
-#define PNG_ZLIB_VERNUM 0
-#define PNG_Z_DEFAULT_COMPRESSION (-1)
-#define PNG_Z_DEFAULT_NOFILTER_STRATEGY 0
-#define PNG_Z_DEFAULT_STRATEGY 1
-#define PNG_sCAL_PRECISION 5
-#define PNG_sRGB_PROFILE_CHECKS 2
+const PNG_INFLATE_BUF_SIZE = 1024
+const PNG_MAX_GAMMA_8 = 11
+const PNG_QUANTIZE_BLUE_BITS = 5
+const PNG_QUANTIZE_GREEN_BITS = 5
+const PNG_QUANTIZE_RED_BITS = 5
+const PNG_TEXT_Z_DEFAULT_COMPRESSION = -1
+const PNG_TEXT_Z_DEFAULT_STRATEGY = 0
+const PNG_WEIGHT_SHIFT = 8
+const PNG_ZBUF_SIZE = 8192
+const PNG_ZLIB_VERNUM = 0
+const PNG_Z_DEFAULT_COMPRESSION = -1
+const PNG_Z_DEFAULT_NOFILTER_STRATEGY = 0
+const PNG_Z_DEFAULT_STRATEGY = 1
+const PNG_sCAL_PRECISION = 5
+const PNG_sRGB_PROFILE_CHECKS = 2
 #define PNGCONF_H
 #define PNG_USE_READ_MACROS
 
@@ -360,13 +360,13 @@ type png_textp as png_text ptr
 type png_const_textp as const png_text ptr
 type png_textpp as png_text ptr ptr
 
-#define PNG_TEXT_COMPRESSION_NONE_WR (-3)
-#define PNG_TEXT_COMPRESSION_zTXt_WR (-2)
-#define PNG_TEXT_COMPRESSION_NONE (-1)
-#define PNG_TEXT_COMPRESSION_zTXt 0
-#define PNG_ITXT_COMPRESSION_NONE 1
-#define PNG_ITXT_COMPRESSION_zTXt 2
-#define PNG_TEXT_COMPRESSION_LAST 3
+const PNG_TEXT_COMPRESSION_NONE_WR = -3
+const PNG_TEXT_COMPRESSION_zTXt_WR = -2
+const PNG_TEXT_COMPRESSION_NONE = -1
+const PNG_TEXT_COMPRESSION_zTXt = 0
+const PNG_ITXT_COMPRESSION_NONE = 1
+const PNG_ITXT_COMPRESSION_zTXt = 2
+const PNG_TEXT_COMPRESSION_LAST = 3
 
 type png_time_struct
 	year as png_uint_16
@@ -394,72 +394,72 @@ type png_unknown_chunkp as png_unknown_chunk ptr
 type png_const_unknown_chunkp as const png_unknown_chunk ptr
 type png_unknown_chunkpp as png_unknown_chunk ptr ptr
 
-#define PNG_HAVE_IHDR &h01
-#define PNG_HAVE_PLTE &h02
-#define PNG_AFTER_IDAT &h08
+const PNG_HAVE_IHDR = &h01
+const PNG_HAVE_PLTE = &h02
+const PNG_AFTER_IDAT = &h08
 #define PNG_UINT_31_MAX cast(png_uint_32, cast(clong, &h7fffffff))
 #define PNG_UINT_32_MAX cast(png_uint_32, -1)
 #define PNG_SIZE_MAX cast(png_size_t, -1)
-#define PNG_FP_1 100000
-#define PNG_FP_HALF 50000
+const PNG_FP_1 = 100000
+const PNG_FP_HALF = 50000
 #define PNG_FP_MAX cast(png_fixed_point, cast(clong, &h7fffffff))
 #define PNG_FP_MIN (-PNG_FP_MAX)
-#define PNG_COLOR_MASK_PALETTE 1
-#define PNG_COLOR_MASK_COLOR 2
-#define PNG_COLOR_MASK_ALPHA 4
-#define PNG_COLOR_TYPE_GRAY 0
+const PNG_COLOR_MASK_PALETTE = 1
+const PNG_COLOR_MASK_COLOR = 2
+const PNG_COLOR_MASK_ALPHA = 4
+const PNG_COLOR_TYPE_GRAY = 0
 #define PNG_COLOR_TYPE_PALETTE (PNG_COLOR_MASK_COLOR or PNG_COLOR_MASK_PALETTE)
 #define PNG_COLOR_TYPE_RGB PNG_COLOR_MASK_COLOR
 #define PNG_COLOR_TYPE_RGB_ALPHA (PNG_COLOR_MASK_COLOR or PNG_COLOR_MASK_ALPHA)
 #define PNG_COLOR_TYPE_GRAY_ALPHA PNG_COLOR_MASK_ALPHA
 #define PNG_COLOR_TYPE_RGBA PNG_COLOR_TYPE_RGB_ALPHA
 #define PNG_COLOR_TYPE_GA PNG_COLOR_TYPE_GRAY_ALPHA
-#define PNG_COMPRESSION_TYPE_BASE 0
+const PNG_COMPRESSION_TYPE_BASE = 0
 #define PNG_COMPRESSION_TYPE_DEFAULT PNG_COMPRESSION_TYPE_BASE
-#define PNG_FILTER_TYPE_BASE 0
-#define PNG_INTRAPIXEL_DIFFERENCING 64
+const PNG_FILTER_TYPE_BASE = 0
+const PNG_INTRAPIXEL_DIFFERENCING = 64
 #define PNG_FILTER_TYPE_DEFAULT PNG_FILTER_TYPE_BASE
-#define PNG_INTERLACE_NONE 0
-#define PNG_INTERLACE_ADAM7 1
-#define PNG_INTERLACE_LAST 2
-#define PNG_OFFSET_PIXEL 0
-#define PNG_OFFSET_MICROMETER 1
-#define PNG_OFFSET_LAST 2
-#define PNG_EQUATION_LINEAR 0
-#define PNG_EQUATION_BASE_E 1
-#define PNG_EQUATION_ARBITRARY 2
-#define PNG_EQUATION_HYPERBOLIC 3
-#define PNG_EQUATION_LAST 4
-#define PNG_SCALE_UNKNOWN 0
-#define PNG_SCALE_METER 1
-#define PNG_SCALE_RADIAN 2
-#define PNG_SCALE_LAST 3
-#define PNG_RESOLUTION_UNKNOWN 0
-#define PNG_RESOLUTION_METER 1
-#define PNG_RESOLUTION_LAST 2
-#define PNG_sRGB_INTENT_PERCEPTUAL 0
-#define PNG_sRGB_INTENT_RELATIVE 1
-#define PNG_sRGB_INTENT_SATURATION 2
-#define PNG_sRGB_INTENT_ABSOLUTE 3
-#define PNG_sRGB_INTENT_LAST 4
-#define PNG_KEYWORD_MAX_LENGTH 79
-#define PNG_MAX_PALETTE_LENGTH 256
-#define PNG_INFO_gAMA &h0001
-#define PNG_INFO_sBIT &h0002
-#define PNG_INFO_cHRM &h0004
-#define PNG_INFO_PLTE &h0008
-#define PNG_INFO_tRNS &h0010
-#define PNG_INFO_bKGD &h0020
-#define PNG_INFO_hIST &h0040
-#define PNG_INFO_pHYs &h0080
-#define PNG_INFO_oFFs &h0100
-#define PNG_INFO_tIME &h0200
-#define PNG_INFO_pCAL &h0400
-#define PNG_INFO_sRGB &h0800
-#define PNG_INFO_iCCP &h1000
-#define PNG_INFO_sPLT &h2000
-#define PNG_INFO_sCAL &h4000
-#define PNG_INFO_IDAT &h8000
+const PNG_INTERLACE_NONE = 0
+const PNG_INTERLACE_ADAM7 = 1
+const PNG_INTERLACE_LAST = 2
+const PNG_OFFSET_PIXEL = 0
+const PNG_OFFSET_MICROMETER = 1
+const PNG_OFFSET_LAST = 2
+const PNG_EQUATION_LINEAR = 0
+const PNG_EQUATION_BASE_E = 1
+const PNG_EQUATION_ARBITRARY = 2
+const PNG_EQUATION_HYPERBOLIC = 3
+const PNG_EQUATION_LAST = 4
+const PNG_SCALE_UNKNOWN = 0
+const PNG_SCALE_METER = 1
+const PNG_SCALE_RADIAN = 2
+const PNG_SCALE_LAST = 3
+const PNG_RESOLUTION_UNKNOWN = 0
+const PNG_RESOLUTION_METER = 1
+const PNG_RESOLUTION_LAST = 2
+const PNG_sRGB_INTENT_PERCEPTUAL = 0
+const PNG_sRGB_INTENT_RELATIVE = 1
+const PNG_sRGB_INTENT_SATURATION = 2
+const PNG_sRGB_INTENT_ABSOLUTE = 3
+const PNG_sRGB_INTENT_LAST = 4
+const PNG_KEYWORD_MAX_LENGTH = 79
+const PNG_MAX_PALETTE_LENGTH = 256
+const PNG_INFO_gAMA = &h0001
+const PNG_INFO_sBIT = &h0002
+const PNG_INFO_cHRM = &h0004
+const PNG_INFO_PLTE = &h0008
+const PNG_INFO_tRNS = &h0010
+const PNG_INFO_bKGD = &h0020
+const PNG_INFO_hIST = &h0040
+const PNG_INFO_pHYs = &h0080
+const PNG_INFO_oFFs = &h0100
+const PNG_INFO_tIME = &h0200
+const PNG_INFO_pCAL = &h0400
+const PNG_INFO_sRGB = &h0800
+const PNG_INFO_iCCP = &h1000
+const PNG_INFO_sPLT = &h2000
+const PNG_INFO_sCAL = &h4000
+const PNG_INFO_IDAT = &h8000
 
 type png_row_info_struct
 	width as png_uint_32
@@ -485,27 +485,27 @@ type png_user_transform_ptr as sub(byval as png_structp, byval as png_row_infop,
 type png_user_chunk_ptr as function(byval as png_structp, byval as png_unknown_chunkp) as long
 type png_longjmp_ptr as sub(byval as jmp_buf ptr, byval as long)
 
-#define PNG_TRANSFORM_IDENTITY &h0000
-#define PNG_TRANSFORM_STRIP_16 &h0001
-#define PNG_TRANSFORM_STRIP_ALPHA &h0002
-#define PNG_TRANSFORM_PACKING &h0004
-#define PNG_TRANSFORM_PACKSWAP &h0008
-#define PNG_TRANSFORM_EXPAND &h0010
-#define PNG_TRANSFORM_INVERT_MONO &h0020
-#define PNG_TRANSFORM_SHIFT &h0040
-#define PNG_TRANSFORM_BGR &h0080
-#define PNG_TRANSFORM_SWAP_ALPHA &h0100
-#define PNG_TRANSFORM_SWAP_ENDIAN &h0200
-#define PNG_TRANSFORM_INVERT_ALPHA &h0400
-#define PNG_TRANSFORM_STRIP_FILLER &h0800
+const PNG_TRANSFORM_IDENTITY = &h0000
+const PNG_TRANSFORM_STRIP_16 = &h0001
+const PNG_TRANSFORM_STRIP_ALPHA = &h0002
+const PNG_TRANSFORM_PACKING = &h0004
+const PNG_TRANSFORM_PACKSWAP = &h0008
+const PNG_TRANSFORM_EXPAND = &h0010
+const PNG_TRANSFORM_INVERT_MONO = &h0020
+const PNG_TRANSFORM_SHIFT = &h0040
+const PNG_TRANSFORM_BGR = &h0080
+const PNG_TRANSFORM_SWAP_ALPHA = &h0100
+const PNG_TRANSFORM_SWAP_ENDIAN = &h0200
+const PNG_TRANSFORM_INVERT_ALPHA = &h0400
+const PNG_TRANSFORM_STRIP_FILLER = &h0800
 #define PNG_TRANSFORM_STRIP_FILLER_BEFORE PNG_TRANSFORM_STRIP_FILLER
-#define PNG_TRANSFORM_STRIP_FILLER_AFTER &h1000
-#define PNG_TRANSFORM_GRAY_TO_RGB &h2000
-#define PNG_TRANSFORM_EXPAND_16 &h4000
-#define PNG_TRANSFORM_SCALE_16 &h8000
-#define PNG_FLAG_MNG_EMPTY_PLTE &h01
-#define PNG_FLAG_MNG_FILTER_64 &h04
-#define PNG_ALL_MNG_FEATURES &h05
+const PNG_TRANSFORM_STRIP_FILLER_AFTER = &h1000
+const PNG_TRANSFORM_GRAY_TO_RGB = &h2000
+const PNG_TRANSFORM_EXPAND_16 = &h4000
+const PNG_TRANSFORM_SCALE_16 = &h8000
+const PNG_FLAG_MNG_EMPTY_PLTE = &h01
+const PNG_FLAG_MNG_FILTER_64 = &h04
+const PNG_ALL_MNG_FEATURES = &h05
 type png_malloc_ptr as function(byval as png_structp, byval as png_alloc_size_t) as png_voidp
 type png_free_ptr as sub(byval as png_structp, byval as png_voidp)
 
@@ -545,35 +545,35 @@ declare sub png_set_expand_16(byval png_ptr as png_structrp)
 declare sub png_set_bgr(byval png_ptr as png_structrp)
 declare sub png_set_gray_to_rgb(byval png_ptr as png_structrp)
 
-#define PNG_ERROR_ACTION_NONE 1
-#define PNG_ERROR_ACTION_WARN 2
-#define PNG_ERROR_ACTION_ERROR 3
-#define PNG_RGB_TO_GRAY_DEFAULT (-1)
+const PNG_ERROR_ACTION_NONE = 1
+const PNG_ERROR_ACTION_WARN = 2
+const PNG_ERROR_ACTION_ERROR = 3
+const PNG_RGB_TO_GRAY_DEFAULT = -1
 
 declare sub png_set_rgb_to_gray(byval png_ptr as png_structrp, byval error_action as long, byval red as double, byval green as double)
 declare sub png_set_rgb_to_gray_fixed(byval png_ptr as png_structrp, byval error_action as long, byval red as png_fixed_point, byval green as png_fixed_point)
 declare function png_get_rgb_to_gray_status(byval png_ptr as png_const_structrp) as png_byte
 declare sub png_build_grayscale_palette(byval bit_depth as long, byval palette as png_colorp)
 
-#define PNG_ALPHA_PNG 0
-#define PNG_ALPHA_STANDARD 1
-#define PNG_ALPHA_ASSOCIATED 1
-#define PNG_ALPHA_PREMULTIPLIED 1
-#define PNG_ALPHA_OPTIMIZED 2
-#define PNG_ALPHA_BROKEN 3
+const PNG_ALPHA_PNG = 0
+const PNG_ALPHA_STANDARD = 1
+const PNG_ALPHA_ASSOCIATED = 1
+const PNG_ALPHA_PREMULTIPLIED = 1
+const PNG_ALPHA_OPTIMIZED = 2
+const PNG_ALPHA_BROKEN = 3
 declare sub png_set_alpha_mode(byval png_ptr as png_structrp, byval mode as long, byval output_gamma as double)
 declare sub png_set_alpha_mode_fixed(byval png_ptr as png_structrp, byval mode as long, byval output_gamma as png_fixed_point)
-#define PNG_DEFAULT_sRGB (-1)
-#define PNG_GAMMA_MAC_18 (-2)
-#define PNG_GAMMA_sRGB 220000
+const PNG_DEFAULT_sRGB = -1
+const PNG_GAMMA_MAC_18 = -2
+const PNG_GAMMA_sRGB = 220000
 #define PNG_GAMMA_LINEAR PNG_FP_1
 
 declare sub png_set_strip_alpha(byval png_ptr as png_structrp)
 declare sub png_set_swap_alpha(byval png_ptr as png_structrp)
 declare sub png_set_invert_alpha(byval png_ptr as png_structrp)
 declare sub png_set_filler(byval png_ptr as png_structrp, byval filler as png_uint_32, byval flags as long)
-#define PNG_FILLER_BEFORE 0
-#define PNG_FILLER_AFTER 1
+const PNG_FILLER_BEFORE = 0
+const PNG_FILLER_AFTER = 1
 declare sub png_set_add_alpha(byval png_ptr as png_structrp, byval filler as png_uint_32, byval flags as long)
 declare sub png_set_swap(byval png_ptr as png_structrp)
 declare sub png_set_packing(byval png_ptr as png_structrp)
@@ -584,10 +584,10 @@ declare sub png_set_invert_mono(byval png_ptr as png_structrp)
 declare sub png_set_background(byval png_ptr as png_structrp, byval background_color as png_const_color_16p, byval background_gamma_code as long, byval need_expand as long, byval background_gamma as double)
 declare sub png_set_background_fixed(byval png_ptr as png_structrp, byval background_color as png_const_color_16p, byval background_gamma_code as long, byval need_expand as long, byval background_gamma as png_fixed_point)
 
-#define PNG_BACKGROUND_GAMMA_UNKNOWN 0
-#define PNG_BACKGROUND_GAMMA_SCREEN 1
-#define PNG_BACKGROUND_GAMMA_FILE 2
-#define PNG_BACKGROUND_GAMMA_UNIQUE 3
+const PNG_BACKGROUND_GAMMA_UNKNOWN = 0
+const PNG_BACKGROUND_GAMMA_SCREEN = 1
+const PNG_BACKGROUND_GAMMA_FILE = 2
+const PNG_BACKGROUND_GAMMA_UNIQUE = 3
 declare sub png_set_scale_16(byval png_ptr as png_structrp)
 #define PNG_READ_16_TO_8 SUPPORTED
 declare sub png_set_strip_16(byval png_ptr as png_structrp)
@@ -613,32 +613,32 @@ declare sub png_destroy_read_struct(byval png_ptr_ptr as png_structpp, byval inf
 declare sub png_destroy_write_struct(byval png_ptr_ptr as png_structpp, byval info_ptr_ptr as png_infopp)
 declare sub png_set_crc_action(byval png_ptr as png_structrp, byval crit_action as long, byval ancil_action as long)
 
-#define PNG_CRC_DEFAULT 0
-#define PNG_CRC_ERROR_QUIT 1
-#define PNG_CRC_WARN_DISCARD 2
-#define PNG_CRC_WARN_USE 3
-#define PNG_CRC_QUIET_USE 4
-#define PNG_CRC_NO_CHANGE 5
+const PNG_CRC_DEFAULT = 0
+const PNG_CRC_ERROR_QUIT = 1
+const PNG_CRC_WARN_DISCARD = 2
+const PNG_CRC_WARN_USE = 3
+const PNG_CRC_QUIET_USE = 4
+const PNG_CRC_NO_CHANGE = 5
 declare sub png_set_filter(byval png_ptr as png_structrp, byval method as long, byval filters as long)
-#define PNG_NO_FILTERS &h00
-#define PNG_FILTER_NONE &h08
-#define PNG_FILTER_SUB &h10
-#define PNG_FILTER_UP &h20
-#define PNG_FILTER_AVG &h40
-#define PNG_FILTER_PAETH &h80
+const PNG_NO_FILTERS = &h00
+const PNG_FILTER_NONE = &h08
+const PNG_FILTER_SUB = &h10
+const PNG_FILTER_UP = &h20
+const PNG_FILTER_AVG = &h40
+const PNG_FILTER_PAETH = &h80
 #define PNG_ALL_FILTERS ((((PNG_FILTER_NONE or PNG_FILTER_SUB) or PNG_FILTER_UP) or PNG_FILTER_AVG) or PNG_FILTER_PAETH)
-#define PNG_FILTER_VALUE_NONE 0
-#define PNG_FILTER_VALUE_SUB 1
-#define PNG_FILTER_VALUE_UP 2
-#define PNG_FILTER_VALUE_AVG 3
-#define PNG_FILTER_VALUE_PAETH 4
-#define PNG_FILTER_VALUE_LAST 5
+const PNG_FILTER_VALUE_NONE = 0
+const PNG_FILTER_VALUE_SUB = 1
+const PNG_FILTER_VALUE_UP = 2
+const PNG_FILTER_VALUE_AVG = 3
+const PNG_FILTER_VALUE_PAETH = 4
+const PNG_FILTER_VALUE_LAST = 5
 declare sub png_set_filter_heuristics(byval png_ptr as png_structrp, byval heuristic_method as long, byval num_weights as long, byval filter_weights as png_const_doublep, byval filter_costs as png_const_doublep)
 declare sub png_set_filter_heuristics_fixed(byval png_ptr as png_structrp, byval heuristic_method as long, byval num_weights as long, byval filter_weights as png_const_fixed_point_p, byval filter_costs as png_const_fixed_point_p)
-#define PNG_FILTER_HEURISTIC_DEFAULT 0
-#define PNG_FILTER_HEURISTIC_UNWEIGHTED 1
-#define PNG_FILTER_HEURISTIC_WEIGHTED 2
-#define PNG_FILTER_HEURISTIC_LAST 3
+const PNG_FILTER_HEURISTIC_DEFAULT = 0
+const PNG_FILTER_HEURISTIC_UNWEIGHTED = 1
+const PNG_FILTER_HEURISTIC_WEIGHTED = 2
+const PNG_FILTER_HEURISTIC_LAST = 3
 
 declare sub png_set_compression_level(byval png_ptr as png_structrp, byval level as long)
 declare sub png_set_compression_mem_level(byval png_ptr as png_structrp, byval mem_level as long)
@@ -681,21 +681,21 @@ declare sub png_free(byval png_ptr as png_const_structrp, byval ptr as png_voidp
 declare sub png_free_data(byval png_ptr as png_const_structrp, byval info_ptr as png_inforp, byval free_me as png_uint_32, byval num as long)
 declare sub png_data_freer(byval png_ptr as png_const_structrp, byval info_ptr as png_inforp, byval freer as long, byval mask as png_uint_32)
 
-#define PNG_DESTROY_WILL_FREE_DATA 1
-#define PNG_SET_WILL_FREE_DATA 1
-#define PNG_USER_WILL_FREE_DATA 2
-#define PNG_FREE_HIST &h0008
-#define PNG_FREE_ICCP &h0010
-#define PNG_FREE_SPLT &h0020
-#define PNG_FREE_ROWS &h0040
-#define PNG_FREE_PCAL &h0080
-#define PNG_FREE_SCAL &h0100
-#define PNG_FREE_UNKN &h0200
-#define PNG_FREE_PLTE &h1000
-#define PNG_FREE_TRNS &h2000
-#define PNG_FREE_TEXT &h4000
-#define PNG_FREE_ALL &h7fff
-#define PNG_FREE_MUL &h4220
+const PNG_DESTROY_WILL_FREE_DATA = 1
+const PNG_SET_WILL_FREE_DATA = 1
+const PNG_USER_WILL_FREE_DATA = 2
+const PNG_FREE_HIST = &h0008
+const PNG_FREE_ICCP = &h0010
+const PNG_FREE_SPLT = &h0020
+const PNG_FREE_ROWS = &h0040
+const PNG_FREE_PCAL = &h0080
+const PNG_FREE_SCAL = &h0100
+const PNG_FREE_UNKN = &h0200
+const PNG_FREE_PLTE = &h1000
+const PNG_FREE_TRNS = &h2000
+const PNG_FREE_TEXT = &h4000
+const PNG_FREE_ALL = &h7fff
+const PNG_FREE_MUL = &h4220
 
 declare function png_malloc_default(byval png_ptr as png_const_structrp, byval size as png_alloc_size_t) as png_voidp
 declare sub png_free_default(byval png_ptr as png_const_structrp, byval ptr as png_voidp)
@@ -789,11 +789,11 @@ declare function png_get_header_version(byval png_ptr as png_const_structrp) as 
 declare function png_get_libpng_ver(byval png_ptr as png_const_structrp) as png_const_charp
 declare function png_permit_mng_features(byval png_ptr as png_structrp, byval mng_features_permitted as png_uint_32) as png_uint_32
 
-#define PNG_HANDLE_CHUNK_AS_DEFAULT 0
-#define PNG_HANDLE_CHUNK_NEVER 1
-#define PNG_HANDLE_CHUNK_IF_SAFE 2
-#define PNG_HANDLE_CHUNK_ALWAYS 3
-#define PNG_HANDLE_CHUNK_LAST 4
+const PNG_HANDLE_CHUNK_AS_DEFAULT = 0
+const PNG_HANDLE_CHUNK_NEVER = 1
+const PNG_HANDLE_CHUNK_IF_SAFE = 2
+const PNG_HANDLE_CHUNK_ALWAYS = 3
+const PNG_HANDLE_CHUNK_LAST = 4
 
 declare sub png_set_user_limits(byval png_ptr as png_structrp, byval user_width_max as png_uint_32, byval user_height_max as png_uint_32)
 declare function png_get_user_width_max(byval png_ptr as png_const_structrp) as png_uint_32
@@ -813,16 +813,16 @@ declare function png_get_pHYs_dpi(byval png_ptr as png_const_structrp, byval inf
 declare function png_get_io_state(byval png_ptr as png_const_structrp) as png_uint_32
 declare function png_get_io_chunk_type(byval png_ptr as png_const_structrp) as png_uint_32
 
-#define PNG_IO_NONE &h0000
-#define PNG_IO_READING &h0001
-#define PNG_IO_WRITING &h0002
-#define PNG_IO_SIGNATURE &h0010
-#define PNG_IO_CHUNK_HDR &h0020
-#define PNG_IO_CHUNK_DATA &h0040
-#define PNG_IO_CHUNK_CRC &h0080
-#define PNG_IO_MASK_OP &h000f
-#define PNG_IO_MASK_LOC &h00f0
-#define PNG_INTERLACE_ADAM7_PASSES 7
+const PNG_IO_NONE = &h0000
+const PNG_IO_READING = &h0001
+const PNG_IO_WRITING = &h0002
+const PNG_IO_SIGNATURE = &h0010
+const PNG_IO_CHUNK_HDR = &h0020
+const PNG_IO_CHUNK_DATA = &h0040
+const PNG_IO_CHUNK_CRC = &h0080
+const PNG_IO_MASK_OP = &h000f
+const PNG_IO_MASK_LOC = &h00f0
+const PNG_INTERLACE_ADAM7_PASSES = 7
 #define PNG_PASS_START_ROW(pass) (((1 and (not (pass))) shl (3 - ((pass) shr 1))) and 7)
 #define PNG_PASS_START_COL(pass) (((1 and (pass)) shl (3 - (((pass) + 1) shr 1))) and 7)
 #define PNG_PASS_ROW_OFFSET(pass) iif((pass) > 2, 8 shr (((pass) - 1) shr 1), 8)
@@ -860,7 +860,7 @@ declare sub png_save_uint_16(byval buf as png_bytep, byval i as ulong)
 #define PNG_get_uint_32_(buf) ((((cast(png_uint_32, *(buf)) shl 24) + (cast(png_uint_32, *((buf) + 1)) shl 16)) + (cast(png_uint_32, *((buf) + 2)) shl 8)) + cast(png_uint_32, *((buf) + 3)))
 #define PNG_get_uint_16_(buf) cast(png_uint_16, culng(culng(culng(*(buf)) shl 8) + culng(*((buf) + 1))))
 #define PNG_get_int_32_(buf) cast(png_int_32, iif((*(buf)) and &h80, -cast(png_int_32, (PNG_get_uint_32_(buf) xor cast(clong, &hffffffff)) + 1), cast(png_int_32, PNG_get_uint_32_(buf))))
-#define PNG_IMAGE_VERSION 1
+const PNG_IMAGE_VERSION = 1
 type png_controlp as png_control ptr
 
 type png_image
@@ -876,16 +876,16 @@ type png_image
 end type
 
 type png_imagep as png_image ptr
-#define PNG_IMAGE_WARNING 1
-#define PNG_IMAGE_ERROR 2
+const PNG_IMAGE_WARNING = 1
+const PNG_IMAGE_ERROR = 2
 #define PNG_IMAGE_FAILED(png_cntrl) (((png_cntrl).warning_or_error and &h03) > 1)
-#define PNG_FORMAT_FLAG_ALPHA &h01u
-#define PNG_FORMAT_FLAG_COLOR &h02u
-#define PNG_FORMAT_FLAG_LINEAR &h04u
-#define PNG_FORMAT_FLAG_COLORMAP &h08u
-#define PNG_FORMAT_FLAG_BGR &h10u
-#define PNG_FORMAT_FLAG_AFIRST &h20u
-#define PNG_FORMAT_GRAY 0
+const PNG_FORMAT_FLAG_ALPHA = &h01u
+const PNG_FORMAT_FLAG_COLOR = &h02u
+const PNG_FORMAT_FLAG_LINEAR = &h04u
+const PNG_FORMAT_FLAG_COLORMAP = &h08u
+const PNG_FORMAT_FLAG_BGR = &h10u
+const PNG_FORMAT_FLAG_AFIRST = &h20u
+const PNG_FORMAT_GRAY = 0
 #define PNG_FORMAT_GA PNG_FORMAT_FLAG_ALPHA
 #define PNG_FORMAT_AG (PNG_FORMAT_GA or PNG_FORMAT_FLAG_AFIRST)
 #define PNG_FORMAT_RGB PNG_FORMAT_FLAG_COLOR
@@ -916,9 +916,9 @@ type png_imagep as png_image ptr
 #define PNG_IMAGE_BUFFER_SIZE(image, row_stride) ((PNG_IMAGE_PIXEL_COMPONENT_SIZE((image).format) * (image).height) * (row_stride))
 #define PNG_IMAGE_SIZE(image) PNG_IMAGE_BUFFER_SIZE(image, PNG_IMAGE_ROW_STRIDE(image))
 #define PNG_IMAGE_COLORMAP_SIZE(image) (PNG_IMAGE_SAMPLE_SIZE((image).format) * (image).colormap_entries)
-#define PNG_IMAGE_FLAG_COLORSPACE_NOT_sRGB &h01
-#define PNG_IMAGE_FLAG_FAST &h02
-#define PNG_IMAGE_FLAG_16BIT_sRGB &h04
+const PNG_IMAGE_FLAG_COLORSPACE_NOT_sRGB = &h01
+const PNG_IMAGE_FLAG_FAST = &h02
+const PNG_IMAGE_FLAG_16BIT_sRGB = &h04
 
 declare function png_image_begin_read_from_file(byval image as png_imagep, byval file_name as const zstring ptr) as long
 declare function png_image_begin_read_from_stdio(byval image as png_imagep, byval file as FILE ptr) as long
@@ -930,13 +930,13 @@ declare function png_image_write_to_stdio(byval image as png_imagep, byval file 
 declare sub png_set_check_for_invalid_index(byval png_ptr as png_structrp, byval allowed as long)
 declare function png_get_palette_max(byval png_ptr as png_const_structp, byval info_ptr as png_const_infop) as long
 
-#define PNG_MAXIMUM_INFLATE_WINDOW 2
-#define PNG_SKIP_sRGB_CHECK_PROFILE 4
-#define PNG_OPTION_NEXT 6
-#define PNG_OPTION_UNSET 0
-#define PNG_OPTION_INVALID 1
-#define PNG_OPTION_OFF 2
-#define PNG_OPTION_ON 3
+const PNG_MAXIMUM_INFLATE_WINDOW = 2
+const PNG_SKIP_sRGB_CHECK_PROFILE = 4
+const PNG_OPTION_NEXT = 6
+const PNG_OPTION_UNSET = 0
+const PNG_OPTION_INVALID = 1
+const PNG_OPTION_OFF = 2
+const PNG_OPTION_ON = 3
 declare function png_set_option(byval png_ptr as png_structrp, byval option as long, byval onoff as long) as long
 
 end extern

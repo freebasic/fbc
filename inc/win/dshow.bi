@@ -18,5 +18,5 @@
 #define AM_NOVTABLE
 #define NO_SHLWAPI_STRFCNS
 #define NUMELMS(array) (sizeof((array)) / sizeof((array)[0]))
-#define OATRUE (-1)
-#define OAFALSE 0
+const OATRUE = -1
+const OAFALSE = 0

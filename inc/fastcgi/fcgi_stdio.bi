@@ -12,7 +12,7 @@
 
 extern "C"
 
-#define _FCGI_STDIO 1
+const _FCGI_STDIO = 1
 
 type FCGI_FILE
 	stdio_stream as FILE ptr

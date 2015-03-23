@@ -57,7 +57,7 @@ type PDWORD32 as ulong ptr
 	type ULONG_PTR as ulongint
 	type PULONG_PTR as ulongint ptr
 	#define __int3264 longint
-	#define ADDRESS_TAG_BIT &h40000000000ull
+	const ADDRESS_TAG_BIT = &h40000000000ull
 	type SHANDLE_PTR as longint
 	type HANDLE_PTR as ulongint
 	type UHALF_PTR as ulong

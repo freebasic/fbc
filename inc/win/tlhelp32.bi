@@ -5,15 +5,15 @@
 extern "Windows"
 
 #define _INC_TOOLHELP32
-#define MAX_MODULE_NAME32 255
+const MAX_MODULE_NAME32 = 255
 declare function CreateToolhelp32Snapshot(byval dwFlags as DWORD, byval th32ProcessID as DWORD) as HANDLE
-#define TH32CS_SNAPHEAPLIST &h00000001
-#define TH32CS_SNAPPROCESS &h00000002
-#define TH32CS_SNAPTHREAD &h00000004
-#define TH32CS_SNAPMODULE &h00000008
-#define TH32CS_SNAPMODULE32 &h00000010
+const TH32CS_SNAPHEAPLIST = &h00000001
+const TH32CS_SNAPPROCESS = &h00000002
+const TH32CS_SNAPTHREAD = &h00000004
+const TH32CS_SNAPMODULE = &h00000008
+const TH32CS_SNAPMODULE32 = &h00000010
 #define TH32CS_SNAPALL (((TH32CS_SNAPHEAPLIST or TH32CS_SNAPPROCESS) or TH32CS_SNAPTHREAD) or TH32CS_SNAPMODULE)
-#define TH32CS_INHERIT &h80000000
+const TH32CS_INHERIT = &h80000000
 
 type tagHEAPLIST32
 	dwSize as SIZE_T_
@@ -25,8 +25,8 @@ end type
 type HEAPLIST32 as tagHEAPLIST32
 type PHEAPLIST32 as HEAPLIST32 ptr
 type LPHEAPLIST32 as HEAPLIST32 ptr
-#define HF32_DEFAULT 1
-#define HF32_SHARED 2
+const HF32_DEFAULT = 1
+const HF32_SHARED = 2
 declare function Heap32ListFirst(byval hSnapshot as HANDLE, byval lphl as LPHEAPLIST32) as WINBOOL
 declare function Heap32ListNext(byval hSnapshot as HANDLE, byval lphl as LPHEAPLIST32) as WINBOOL
 
@@ -46,9 +46,9 @@ type HEAPENTRY32 as tagHEAPENTRY32
 type PHEAPENTRY32 as HEAPENTRY32 ptr
 type LPHEAPENTRY32 as HEAPENTRY32 ptr
 
-#define LF32_FIXED &h00000001
-#define LF32_FREE &h00000002
-#define LF32_MOVEABLE &h00000004
+const LF32_FIXED = &h00000001
+const LF32_FREE = &h00000002
+const LF32_MOVEABLE = &h00000004
 
 declare function Heap32First(byval lphe as LPHEAPENTRY32, byval th32ProcessID as DWORD, byval th32HeapID as ULONG_PTR) as WINBOOL
 declare function Heap32Next(byval lphe as LPHEAPENTRY32) as WINBOOL

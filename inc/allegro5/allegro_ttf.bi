@@ -8,9 +8,9 @@
 extern "C"
 
 #define __al_included_allegro5_allegro_ttf_h
-#define ALLEGRO_TTF_NO_KERNING 1
-#define ALLEGRO_TTF_MONOCHROME 2
-#define ALLEGRO_TTF_NO_AUTOHINT 4
+const ALLEGRO_TTF_NO_KERNING = 1
+const ALLEGRO_TTF_MONOCHROME = 2
+const ALLEGRO_TTF_NO_AUTOHINT = 4
 
 declare function al_load_ttf_font(byval filename as const zstring ptr, byval size as long, byval flags as long) as ALLEGRO_FONT ptr
 declare function al_load_ttf_font_f(byval file as ALLEGRO_FILE ptr, byval filename as const zstring ptr, byval size as long, byval flags as long) as ALLEGRO_FONT ptr

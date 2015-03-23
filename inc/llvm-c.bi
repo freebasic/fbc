@@ -815,43 +815,43 @@ type LLVMOpInfo1
 	VariantKind as ulongint
 end type
 
-#define LLVMDisassembler_VariantKind_None 0
-#define LLVMDisassembler_VariantKind_ARM_HI16 1
-#define LLVMDisassembler_VariantKind_ARM_LO16 2
-#define LLVMDisassembler_VariantKind_ARM64_PAGE 1
-#define LLVMDisassembler_VariantKind_ARM64_PAGEOFF 2
-#define LLVMDisassembler_VariantKind_ARM64_GOTPAGE 3
-#define LLVMDisassembler_VariantKind_ARM64_GOTPAGEOFF 4
-#define LLVMDisassembler_VariantKind_ARM64_TLVP 5
-#define LLVMDisassembler_VariantKind_ARM64_TLVOFF 6
+const LLVMDisassembler_VariantKind_None = 0
+const LLVMDisassembler_VariantKind_ARM_HI16 = 1
+const LLVMDisassembler_VariantKind_ARM_LO16 = 2
+const LLVMDisassembler_VariantKind_ARM64_PAGE = 1
+const LLVMDisassembler_VariantKind_ARM64_PAGEOFF = 2
+const LLVMDisassembler_VariantKind_ARM64_GOTPAGE = 3
+const LLVMDisassembler_VariantKind_ARM64_GOTPAGEOFF = 4
+const LLVMDisassembler_VariantKind_ARM64_TLVP = 5
+const LLVMDisassembler_VariantKind_ARM64_TLVOFF = 6
 type LLVMSymbolLookupCallback as function(byval DisInfo as any ptr, byval ReferenceValue as ulongint, byval ReferenceType as ulongint ptr, byval ReferencePC as ulongint, byval ReferenceName as const zstring ptr ptr) as const zstring ptr
-#define LLVMDisassembler_ReferenceType_InOut_None 0
-#define LLVMDisassembler_ReferenceType_In_Branch 1
-#define LLVMDisassembler_ReferenceType_In_PCrel_Load 2
-#define LLVMDisassembler_ReferenceType_In_ARM64_ADRP &h100000001
-#define LLVMDisassembler_ReferenceType_In_ARM64_ADDXri &h100000002
-#define LLVMDisassembler_ReferenceType_In_ARM64_LDRXui &h100000003
-#define LLVMDisassembler_ReferenceType_In_ARM64_LDRXl &h100000004
-#define LLVMDisassembler_ReferenceType_In_ARM64_ADR &h100000005
-#define LLVMDisassembler_ReferenceType_Out_SymbolStub 1
-#define LLVMDisassembler_ReferenceType_Out_LitPool_SymAddr 2
-#define LLVMDisassembler_ReferenceType_Out_LitPool_CstrAddr 3
-#define LLVMDisassembler_ReferenceType_Out_Objc_CFString_Ref 4
-#define LLVMDisassembler_ReferenceType_Out_Objc_Message 5
-#define LLVMDisassembler_ReferenceType_Out_Objc_Message_Ref 6
-#define LLVMDisassembler_ReferenceType_Out_Objc_Selector_Ref 7
-#define LLVMDisassembler_ReferenceType_Out_Objc_Class_Ref 8
-#define LLVMDisassembler_ReferenceType_DeMangled_Name 9
+const LLVMDisassembler_ReferenceType_InOut_None = 0
+const LLVMDisassembler_ReferenceType_In_Branch = 1
+const LLVMDisassembler_ReferenceType_In_PCrel_Load = 2
+const LLVMDisassembler_ReferenceType_In_ARM64_ADRP = &h100000001
+const LLVMDisassembler_ReferenceType_In_ARM64_ADDXri = &h100000002
+const LLVMDisassembler_ReferenceType_In_ARM64_LDRXui = &h100000003
+const LLVMDisassembler_ReferenceType_In_ARM64_LDRXl = &h100000004
+const LLVMDisassembler_ReferenceType_In_ARM64_ADR = &h100000005
+const LLVMDisassembler_ReferenceType_Out_SymbolStub = 1
+const LLVMDisassembler_ReferenceType_Out_LitPool_SymAddr = 2
+const LLVMDisassembler_ReferenceType_Out_LitPool_CstrAddr = 3
+const LLVMDisassembler_ReferenceType_Out_Objc_CFString_Ref = 4
+const LLVMDisassembler_ReferenceType_Out_Objc_Message = 5
+const LLVMDisassembler_ReferenceType_Out_Objc_Message_Ref = 6
+const LLVMDisassembler_ReferenceType_Out_Objc_Selector_Ref = 7
+const LLVMDisassembler_ReferenceType_Out_Objc_Class_Ref = 8
+const LLVMDisassembler_ReferenceType_DeMangled_Name = 9
 
 declare function LLVMCreateDisasm(byval TripleName as const zstring ptr, byval DisInfo as any ptr, byval TagType as long, byval GetOpInfo as LLVMOpInfoCallback, byval SymbolLookUp as LLVMSymbolLookupCallback) as LLVMDisasmContextRef
 declare function LLVMCreateDisasmCPU(byval Triple as const zstring ptr, byval CPU as const zstring ptr, byval DisInfo as any ptr, byval TagType as long, byval GetOpInfo as LLVMOpInfoCallback, byval SymbolLookUp as LLVMSymbolLookupCallback) as LLVMDisasmContextRef
 declare function LLVMSetDisasmOptions(byval DC as LLVMDisasmContextRef, byval Options as ulongint) as long
 
-#define LLVMDisassembler_Option_UseMarkup 1
-#define LLVMDisassembler_Option_PrintImmHex 2
-#define LLVMDisassembler_Option_AsmPrinterVariant 4
-#define LLVMDisassembler_Option_SetInstrComments 8
-#define LLVMDisassembler_Option_PrintLatency 16
+const LLVMDisassembler_Option_UseMarkup = 1
+const LLVMDisassembler_Option_PrintImmHex = 2
+const LLVMDisassembler_Option_AsmPrinterVariant = 4
+const LLVMDisassembler_Option_SetInstrComments = 8
+const LLVMDisassembler_Option_PrintLatency = 16
 declare sub LLVMDisasmDispose(byval DC as LLVMDisasmContextRef)
 declare function LLVMDisasmInstruction(byval DC as LLVMDisasmContextRef, byval Bytes as ubyte ptr, byval BytesSize as ulongint, byval PC as ulongint, byval OutString as zstring ptr, byval OutStringSize as uinteger) as uinteger
 #define LLVM_C_EXECUTIONENGINE_H
@@ -874,9 +874,9 @@ declare function LLVMDisasmInstruction(byval DC as LLVMDisasmContextRef, byval B
 	#endif
 #endif
 #define LLVM_DOCSDIR "/usr/share/doc/llvm"
-#define LLVM_ENABLE_THREADS 1
+const LLVM_ENABLE_THREADS = 1
 #define LLVM_ETCDIR "/usr/etc/llvm"
-#define LLVM_HAS_ATOMICS 1
+const LLVM_HAS_ATOMICS = 1
 #define LLVM_HOST_TRIPLE LLVM_DEFAULT_TARGET_TRIPLE
 #define LLVM_INCLUDEDIR "/usr/include"
 #define LLVM_INFODIR "/usr/info"
@@ -889,13 +889,13 @@ declare function LLVMDisasmInstruction(byval DC as LLVMDisasmContextRef, byval B
 #define LLVM_NATIVE_TARGETINFO LLVMInitializeX86TargetInfo
 #define LLVM_NATIVE_TARGETMC LLVMInitializeX86TargetMC
 #ifdef __FB_UNIX__
-	#define LLVM_ON_UNIX 1
+	const LLVM_ON_UNIX = 1
 #endif
 #define LLVM_PREFIX "/usr"
-#define LLVM_USE_INTEL_JITEVENTS 0
-#define LLVM_USE_OPROFILE 0
-#define LLVM_VERSION_MAJOR 3
-#define LLVM_VERSION_MINOR 5
+const LLVM_USE_INTEL_JITEVENTS = 0
+const LLVM_USE_OPROFILE = 0
+const LLVM_VERSION_MAJOR = 3
+const LLVM_VERSION_MINOR = 5
 
 type LLVMByteOrdering as long
 enum
@@ -1260,7 +1260,7 @@ declare function llvm_read_object_file(byval lto as llvm_lto_t, byval input_file
 declare function llvm_optimize_modules(byval lto as llvm_lto_t, byval output_filename as const zstring ptr) as llvm_lto_status_t
 #define LLVM_C_LTO_H
 type lto_bool_t as byte
-#define LTO_API_VERSION 10
+const LTO_API_VERSION = 10
 
 type lto_symbol_attributes as long
 enum

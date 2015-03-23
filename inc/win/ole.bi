@@ -11,7 +11,7 @@ extern "Windows"
 #define OT_LINK __MSABI_LONG(1)
 #define OT_EMBEDDED __MSABI_LONG(2)
 #define OT_STATIC __MSABI_LONG(3)
-#define OLEVERB_PRIMARY 0
+const OLEVERB_PRIMARY = 0
 
 type _OLETARGETDEVICE
 	otdDeviceNameOffset as USHORT
@@ -26,9 +26,9 @@ end type
 
 type OLETARGETDEVICE as _OLETARGETDEVICE
 type LPOLETARGETDEVICE as OLETARGETDEVICE ptr
-#define OF_SET &h1
-#define OF_GET &h2
-#define OF_HANDLER &h4
+const OF_SET = &h1
+const OF_GET = &h2
+const OF_HANDLER = &h4
 
 type OLESTATUS as long
 enum

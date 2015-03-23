@@ -57,17 +57,17 @@ extern "C"
 #define bmp_read16(addr) (*cptr(ushort ptr, (addr)))
 #define bmp_read32(addr) (*cptr(ulong ptr, (addr)))
 #define AL_RAND() rand()
-#define ALLEGRO_VERSION 5
-#define ALLEGRO_SUB_VERSION 0
-#define ALLEGRO_WIP_VERSION 10
-#define ALLEGRO_RELEASE_NUMBER 1
+const ALLEGRO_VERSION = 5
+const ALLEGRO_SUB_VERSION = 0
+const ALLEGRO_WIP_VERSION = 10
+const ALLEGRO_RELEASE_NUMBER = 1
 #define ALLEGRO_VERSION_STR "5.0.10"
 #define ALLEGRO_DATE_STR "2013"
-#define ALLEGRO_DATE 20130616
+const ALLEGRO_DATE = 20130616
 #define ALLEGRO_VERSION_INT ((((ALLEGRO_VERSION shl 24) or (ALLEGRO_SUB_VERSION shl 16)) or (ALLEGRO_WIP_VERSION shl 8)) or ALLEGRO_RELEASE_NUMBER)
 declare function al_get_allegro_version() as ulong
 declare function al_run_main(byval argc as long, byval argv as zstring ptr ptr, byval as function(byval as long, byval as zstring ptr ptr) as long) as long
-#define ALLEGRO_PI 3.14159265358979323846
+const ALLEGRO_PI = 3.14159265358979323846
 #define AL_ID(a, b, c, d) (((((a) shl 24) or ((b) shl 16)) or ((c) shl 8)) or (d))
 #define __al_included_allegro5_altime_h
 
@@ -833,9 +833,9 @@ end type
 declare function al_get_num_display_modes() as long
 declare function al_get_display_mode(byval index as long, byval mode as ALLEGRO_DISPLAY_MODE ptr) as ALLEGRO_DISPLAY_MODE ptr
 #define __al_included_allegro5_joystick_h
-#define _AL_MAX_JOYSTICK_AXES 3
-#define _AL_MAX_JOYSTICK_STICKS 8
-#define _AL_MAX_JOYSTICK_BUTTONS 32
+const _AL_MAX_JOYSTICK_AXES = 3
+const _AL_MAX_JOYSTICK_STICKS = 8
+const _AL_MAX_JOYSTICK_BUTTONS = 32
 
 type ALLEGRO_JOYSTICK_STATE_stick
 	axis(0 to 2) as single
@@ -1068,7 +1068,7 @@ end enum
 declare function al_get_num_video_adapters() as long
 declare function al_get_monitor_info(byval adapter as long, byval info as ALLEGRO_MONITOR_INFO ptr) as byte
 #define __al_included_allegro5_mouse_h
-#define ALLEGRO_MOUSE_MAX_EXTRA_AXES 4
+const ALLEGRO_MOUSE_MAX_EXTRA_AXES = 4
 
 type ALLEGRO_MOUSE_STATE
 	x as long

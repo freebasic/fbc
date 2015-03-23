@@ -101,11 +101,11 @@ end type
 
 type POWER_POLICY as _POWER_POLICY
 type PPOWER_POLICY as _POWER_POLICY ptr
-#define EnableSysTrayBatteryMeter &h01
-#define EnableMultiBatteryDisplay &h02
-#define EnablePasswordLogon &h04
-#define EnableWakeOnRing &h08
-#define EnableVideoDimDisplay &h10
+const EnableSysTrayBatteryMeter = &h01
+const EnableMultiBatteryDisplay = &h02
+const EnablePasswordLogon = &h04
+const EnableWakeOnRing = &h08
+const EnableVideoDimDisplay = &h10
 #define NEWSCHEME cast(UINT, -1)
 type PWRSCHEMESENUMPROC as function(byval as UINT, byval as DWORD, byval as LPTSTR, byval as DWORD, byval as LPTSTR, byval as PPOWER_POLICY, byval as LPARAM) as BOOLEAN
 type PFNNTINITIATEPWRACTION as function(byval as POWER_ACTION, byval as SYSTEM_POWER_STATE, byval as ULONG, byval as BOOLEAN) as BOOLEAN
@@ -132,32 +132,32 @@ declare function WriteProcessorPwrScheme(byval as UINT, byval as PMACHINE_PROCES
 declare function ValidatePowerPolicies(byval as PGLOBAL_POWER_POLICY, byval as PPOWER_POLICY) as BOOLEAN
 
 #if _WIN32_WINNT = &h0602
-	#define DEVICEPOWER_HARDWAREID &h80000000
-	#define DEVICEPOWER_FILTER_DEVICES_PRESENT &h20000000
-	#define DEVICEPOWER_AND_OPERATION &h40000000
-	#define DEVICEPOWER_FILTER_WAKEENABLED &h08000000
-	#define DEVICEPOWER_FILTER_ON_NAME &h02000000
-	#define PDCAP_D0_SUPPORTED &h00000001
-	#define PDCAP_D1_SUPPORTED &h00000002
-	#define PDCAP_D2_SUPPORTED &h00000004
-	#define PDCAP_D3_SUPPORTED &h00000008
-	#define PDCAP_S0_SUPPORTED &h00010000
-	#define PDCAP_S1_SUPPORTED &h00020000
-	#define PDCAP_S2_SUPPORTED &h00040000
-	#define PDCAP_S3_SUPPORTED &h00080000
-	#define PDCAP_S4_SUPPORTED &h01000000
-	#define PDCAP_S5_SUPPORTED &h02000000
-	#define PDCAP_WAKE_FROM_D0_SUPPORTED &h00000010
-	#define PDCAP_WAKE_FROM_D1_SUPPORTED &h00000020
-	#define PDCAP_WAKE_FROM_D2_SUPPORTED &h00000040
-	#define PDCAP_WAKE_FROM_D3_SUPPORTED &h00000080
-	#define PDCAP_WAKE_FROM_S0_SUPPORTED &h00100000
-	#define PDCAP_WAKE_FROM_S1_SUPPORTED &h00200000
-	#define PDCAP_WAKE_FROM_S2_SUPPORTED &h00400000
-	#define PDCAP_WAKE_FROM_S3_SUPPORTED &h00800000
-	#define PDCAP_WARM_EJECT_SUPPORTED &h00000100
-	#define DEVICEPOWER_SET_WAKEENABLED &h00000001
-	#define DEVICEPOWER_CLEAR_WAKEENABLED &h00000002
+	const DEVICEPOWER_HARDWAREID = &h80000000
+	const DEVICEPOWER_FILTER_DEVICES_PRESENT = &h20000000
+	const DEVICEPOWER_AND_OPERATION = &h40000000
+	const DEVICEPOWER_FILTER_WAKEENABLED = &h08000000
+	const DEVICEPOWER_FILTER_ON_NAME = &h02000000
+	const PDCAP_D0_SUPPORTED = &h00000001
+	const PDCAP_D1_SUPPORTED = &h00000002
+	const PDCAP_D2_SUPPORTED = &h00000004
+	const PDCAP_D3_SUPPORTED = &h00000008
+	const PDCAP_S0_SUPPORTED = &h00010000
+	const PDCAP_S1_SUPPORTED = &h00020000
+	const PDCAP_S2_SUPPORTED = &h00040000
+	const PDCAP_S3_SUPPORTED = &h00080000
+	const PDCAP_S4_SUPPORTED = &h01000000
+	const PDCAP_S5_SUPPORTED = &h02000000
+	const PDCAP_WAKE_FROM_D0_SUPPORTED = &h00000010
+	const PDCAP_WAKE_FROM_D1_SUPPORTED = &h00000020
+	const PDCAP_WAKE_FROM_D2_SUPPORTED = &h00000040
+	const PDCAP_WAKE_FROM_D3_SUPPORTED = &h00000080
+	const PDCAP_WAKE_FROM_S0_SUPPORTED = &h00100000
+	const PDCAP_WAKE_FROM_S1_SUPPORTED = &h00200000
+	const PDCAP_WAKE_FROM_S2_SUPPORTED = &h00400000
+	const PDCAP_WAKE_FROM_S3_SUPPORTED = &h00800000
+	const PDCAP_WARM_EJECT_SUPPORTED = &h00000100
+	const DEVICEPOWER_SET_WAKEENABLED = &h00000001
+	const DEVICEPOWER_CLEAR_WAKEENABLED = &h00000002
 
 	type _POWER_DATA_ACCESSOR as long
 	enum
@@ -218,7 +218,7 @@ declare function ValidatePowerPolicies(byval as PGLOBAL_POWER_POLICY, byval as P
 	declare function PowerWritePossibleDescription(byval RootPowerKey as HKEY, byval SubGroupOfPowerSettingsGuid as const GUID ptr, byval PowerSettingGuid as const GUID ptr, byval PossibleSettingIndex as ULONG, byval Buffer as UCHAR ptr, byval BufferSize as DWORD) as DWORD
 	declare function PowerWritePossibleFriendlyName(byval RootPowerKey as HKEY, byval SubGroupOfPowerSettingsGuid as const GUID ptr, byval PowerSettingGuid as const GUID ptr, byval PossibleSettingIndex as ULONG, byval Buffer as UCHAR ptr, byval BufferSize as DWORD) as DWORD
 	declare function PowerWritePossibleValue(byval RootPowerKey as HKEY, byval SubGroupOfPowerSettingsGuid as const GUID ptr, byval PowerSettingGuid as const GUID ptr, byval Type as ULONG, byval PossibleSettingIndex as ULONG, byval Buffer as UCHAR ptr, byval BufferSize as DWORD) as DWORD
-	#define POWER_ATTRIBUTE_HIDE 1
+	const POWER_ATTRIBUTE_HIDE = 1
 	declare function PowerWriteSettingAttributes(byval SubGroupGuid as const GUID ptr, byval PowerSettingGuid as const GUID ptr, byval Attributes as DWORD) as DWORD
 	declare function PowerWriteValueIncrement(byval RootPowerKey as HKEY, byval SubGroupOfPowerSettingsGuid as const GUID ptr, byval PowerSettingGuid as const GUID ptr, byval ValueIncrement as DWORD) as DWORD
 	declare function PowerWriteValueMax(byval RootPowerKey as HKEY, byval SubGroupOfPowerSettingsGuid as const GUID ptr, byval PowerSettingGuid as const GUID ptr, byval ValueMaximum as DWORD) as DWORD

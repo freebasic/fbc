@@ -8,12 +8,12 @@ extern "Windows"
 
 #define _OLEAUTO_H_
 extern IID_StdOle as const IID
-#define STDOLE_MAJORVERNUM &h1
-#define STDOLE_MINORVERNUM &h0
-#define STDOLE_LCID &h0000
-#define STDOLE2_MAJORVERNUM &h2
-#define STDOLE2_MINORVERNUM &h0
-#define STDOLE2_LCID &h0000
+const STDOLE_MAJORVERNUM = &h1
+const STDOLE_MINORVERNUM = &h0
+const STDOLE_LCID = &h0000
+const STDOLE2_MAJORVERNUM = &h2
+const STDOLE2_MINORVERNUM = &h0
+const STDOLE2_LCID = &h0000
 
 declare function SysAllocString(byval as const wstring ptr) as BSTR
 declare function SysReAllocString(byval as BSTR ptr, byval as const wstring ptr) as INT_
@@ -63,14 +63,14 @@ declare function VariantCopyInd(byval pvarDest as VARIANT ptr, byval pvargSrc as
 declare function VariantChangeType(byval pvargDest as VARIANTARG ptr, byval pvarSrc as VARIANTARG ptr, byval wFlags as USHORT, byval vt as VARTYPE) as HRESULT
 declare function VariantChangeTypeEx(byval pvargDest as VARIANTARG ptr, byval pvarSrc as VARIANTARG ptr, byval lcid as LCID, byval wFlags as USHORT, byval vt as VARTYPE) as HRESULT
 
-#define VARIANT_NOVALUEPROP &h01
-#define VARIANT_ALPHABOOL &h02
-#define VARIANT_NOUSEROVERRIDE &h04
-#define VARIANT_CALENDAR_HIJRI &h08
-#define VARIANT_LOCALBOOL &h10
-#define VARIANT_CALENDAR_THAI &h20
-#define VARIANT_CALENDAR_GREGORIAN &h40
-#define VARIANT_USE_NLS &h80
+const VARIANT_NOVALUEPROP = &h01
+const VARIANT_ALPHABOOL = &h02
+const VARIANT_NOUSEROVERRIDE = &h04
+const VARIANT_CALENDAR_HIJRI = &h08
+const VARIANT_LOCALBOOL = &h10
+const VARIANT_CALENDAR_THAI = &h20
+const VARIANT_CALENDAR_GREGORIAN = &h40
+const VARIANT_USE_NLS = &h80
 declare function VectorFromBstr(byval bstr as BSTR, byval ppsa as SAFEARRAY ptr ptr) as HRESULT
 declare function BstrFromVector(byval psa as SAFEARRAY ptr, byval pbstr as BSTR ptr) as HRESULT
 #define VAR_TIMEVALUEONLY cast(DWORD, &h00000001)
@@ -80,11 +80,11 @@ declare function BstrFromVector(byval psa as SAFEARRAY ptr, byval pbstr as BSTR 
 #define VAR_LOCALBOOL cast(DWORD, &h00000010)
 #define VAR_FORMAT_NOSUBSTITUTE cast(DWORD, &h00000020)
 #define VAR_FOURDIGITYEARS cast(DWORD, &h00000040)
-#define LOCALE_USE_NLS &h10000000
+const LOCALE_USE_NLS = &h10000000
 #define VAR_CALENDAR_THAI cast(DWORD, &h00000080)
 #define VAR_CALENDAR_GREGORIAN cast(DWORD, &h00000100)
-#define VTDATEGRE_MAX 2958465
-#define VTDATEGRE_MIN (-657434)
+const VTDATEGRE_MAX = 2958465
+const VTDATEGRE_MIN = -657434
 
 declare function VarUI1FromI2(byval sIn as SHORT, byval pbOut as UBYTE ptr) as HRESULT
 declare function VarUI1FromI4(byval lIn as LONG, byval pbOut as UBYTE ptr) as HRESULT
@@ -388,22 +388,22 @@ type NUMPARSE
 	nPwr10 as INT_
 end type
 
-#define NUMPRS_LEADING_WHITE &h0001
-#define NUMPRS_TRAILING_WHITE &h0002
-#define NUMPRS_LEADING_PLUS &h0004
-#define NUMPRS_TRAILING_PLUS &h0008
-#define NUMPRS_LEADING_MINUS &h0010
-#define NUMPRS_TRAILING_MINUS &h0020
-#define NUMPRS_HEX_OCT &h0040
-#define NUMPRS_PARENS &h0080
-#define NUMPRS_DECIMAL &h0100
-#define NUMPRS_THOUSANDS &h0200
-#define NUMPRS_CURRENCY &h0400
-#define NUMPRS_EXPONENT &h0800
-#define NUMPRS_USE_ALL &h1000
-#define NUMPRS_STD &h1FFF
-#define NUMPRS_NEG &h10000
-#define NUMPRS_INEXACT &h20000
+const NUMPRS_LEADING_WHITE = &h0001
+const NUMPRS_TRAILING_WHITE = &h0002
+const NUMPRS_LEADING_PLUS = &h0004
+const NUMPRS_TRAILING_PLUS = &h0008
+const NUMPRS_LEADING_MINUS = &h0010
+const NUMPRS_TRAILING_MINUS = &h0020
+const NUMPRS_HEX_OCT = &h0040
+const NUMPRS_PARENS = &h0080
+const NUMPRS_DECIMAL = &h0100
+const NUMPRS_THOUSANDS = &h0200
+const NUMPRS_CURRENCY = &h0400
+const NUMPRS_EXPONENT = &h0800
+const NUMPRS_USE_ALL = &h1000
+const NUMPRS_STD = &h1FFF
+const NUMPRS_NEG = &h10000
+const NUMPRS_INEXACT = &h20000
 #define VTBIT_I1 (1 shl VT_I1)
 #define VTBIT_UI1 (1 shl VT_UI1)
 #define VTBIT_I2 (1 shl VT_I2)
@@ -468,10 +468,10 @@ declare function VarR8Pow(byval dblLeft as double, byval dblRight as double, byv
 declare function VarR4CmpR8(byval fltLeft as single, byval dblRight as double) as HRESULT
 declare function VarR8Round(byval dblIn as double, byval cDecimals as long, byval pdblResult as double ptr) as HRESULT
 
-#define VARCMP_LT 0
-#define VARCMP_EQ 1
-#define VARCMP_GT 2
-#define VARCMP_NULL 3
+const VARCMP_LT = 0
+const VARCMP_EQ = 1
+const VARCMP_GT = 2
+const VARCMP_NULL = 3
 #define VT_HARDTYPE VT_RESERVED
 
 type UDATE
@@ -499,11 +499,11 @@ type DISPID as LONG
 type MEMBERID as DISPID
 
 #define MEMBERID_NIL DISPID_UNKNOWN
-#define ID_DEFAULTINST (-2)
-#define DISPATCH_METHOD &h1
-#define DISPATCH_PROPERTYGET &h2
-#define DISPATCH_PROPERTYPUT &h4
-#define DISPATCH_PROPERTYPUTREF &h8
+const ID_DEFAULTINST = -2
+const DISPATCH_METHOD = &h1
+const DISPATCH_PROPERTYGET = &h2
+const DISPATCH_PROPERTYPUT = &h4
+const DISPATCH_PROPERTYPUTREF = &h8
 #define DEFINDE_LPTYPEINFO
 type LPTYPEINFO as ITypeInfo ptr
 #define DEFINED_LPTYPECOMP
@@ -527,8 +527,8 @@ enum
 end enum
 
 type REGKIND as tagREGKIND
-#define LOAD_TLB_AS_32BIT &h20
-#define LOAD_TLB_AS_64BIT &h40
+const LOAD_TLB_AS_32BIT = &h20
+const LOAD_TLB_AS_64BIT = &h40
 #define MASK_TO_RESET_TLB_BITS (not (LOAD_TLB_AS_32BIT or LOAD_TLB_AS_64BIT))
 
 declare function LoadTypeLibEx(byval szFile as LPCOLESTR, byval regkind as REGKIND, byval pptlib as ITypeLib ptr ptr) as HRESULT
@@ -576,8 +576,8 @@ declare function DispInvoke(byval _this as any ptr, byval ptinfo as ITypeInfo pt
 declare function CreateDispTypeInfo(byval pidata as INTERFACEDATA ptr, byval lcid as LCID, byval pptinfo as ITypeInfo ptr ptr) as HRESULT
 declare function CreateStdDispatch(byval punkOuter as IUnknown ptr, byval pvThis as any ptr, byval ptinfo as ITypeInfo ptr, byval ppunkStdDisp as IUnknown ptr ptr) as HRESULT
 declare function DispCallFunc(byval pvInstance as any ptr, byval oVft as ULONG_PTR, byval cc as CALLCONV, byval vtReturn as VARTYPE, byval cActuals as UINT, byval prgvt as VARTYPE ptr, byval prgpvarg as VARIANTARG ptr ptr, byval pvargResult as VARIANT ptr) as HRESULT
-#define ACTIVEOBJECT_STRONG &h0
-#define ACTIVEOBJECT_WEAK &h1
+const ACTIVEOBJECT_STRONG = &h0
+const ACTIVEOBJECT_WEAK = &h1
 declare function RegisterActiveObject(byval punk as IUnknown ptr, byval rclsid as const IID const ptr, byval dwFlags as DWORD, byval pdwRegister as DWORD ptr) as HRESULT
 declare function RevokeActiveObject(byval dwRegister as DWORD, byval pvReserved as any ptr) as HRESULT
 declare function GetActiveObject(byval rclsid as const IID const ptr, byval pvReserved as any ptr, byval ppunk as IUnknown ptr ptr) as HRESULT

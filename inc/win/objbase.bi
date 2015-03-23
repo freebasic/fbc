@@ -21,8 +21,8 @@ enum
 end enum
 
 type COINIT as tagCOINIT
-#define MARSHALINTERFACE_MIN 500
-#define CWCSTORAGENAME 32
+const MARSHALINTERFACE_MIN = 500
+const CWCSTORAGENAME = 32
 #define STGM_DIRECT __MSABI_LONG(&h00000000)
 #define STGM_TRANSACTED __MSABI_LONG(&h00010000)
 #define STGM_SIMPLE __MSABI_LONG(&h08000000)
@@ -48,12 +48,12 @@ type COINIT as tagCOINIT
 #define STG_LAYOUT_SEQUENTIAL __MSABI_LONG(&h00000000)
 #define STG_LAYOUT_INTERLEAVED __MSABI_LONG(&h00000001)
 type STGFMT as DWORD
-#define STGFMT_STORAGE 0
-#define STGFMT_NATIVE 1
-#define STGFMT_FILE 3
-#define STGFMT_ANY 4
-#define STGFMT_DOCFILE 5
-#define STGFMT_DOCUMENT 0
+const STGFMT_STORAGE = 0
+const STGFMT_NATIVE = 1
+const STGFMT_FILE = 3
+const STGFMT_ANY = 4
+const STGFMT_DOCFILE = 5
+const STGFMT_DOCUMENT = 0
 
 declare function CoBuildVersion() as DWORD
 declare function CoInitialize(byval pvReserved as LPVOID) as HRESULT
@@ -101,7 +101,7 @@ declare function StgSetTimes(byval lpszName as const wstring ptr, byval pctime a
 declare function StgOpenAsyncDocfileOnIFillLockBytes(byval pflb as IFillLockBytes ptr, byval grfMode as DWORD, byval asyncFlags as DWORD, byval ppstgOpen as IStorage ptr ptr) as HRESULT
 declare function StgGetIFillLockBytesOnILockBytes(byval pilb as ILockBytes ptr, byval ppflb as IFillLockBytes ptr ptr) as HRESULT
 declare function StgGetIFillLockBytesOnFile(byval pwcsName as const wstring ptr, byval ppflb as IFillLockBytes ptr ptr) as HRESULT
-#define STGOPTIONS_VERSION 2
+const STGOPTIONS_VERSION = 2
 
 type tagSTGOPTIONS
 	usVersion as USHORT

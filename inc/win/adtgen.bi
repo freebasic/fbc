@@ -3,8 +3,8 @@
 #include once "winapifamily.bi"
 
 #define _ADTGEN_H
-#define AUDIT_TYPE_LEGACY 1
-#define AUDIT_TYPE_WMI 2
+const AUDIT_TYPE_LEGACY = 1
+const AUDIT_TYPE_WMI = 2
 
 type _AUDIT_PARAM_TYPE as long
 enum
@@ -24,7 +24,7 @@ enum
 end enum
 
 type AUDIT_PARAM_TYPE as _AUDIT_PARAM_TYPE
-#define AP_ParamTypeBits 8
+const AP_ParamTypeBits = 8
 #define AP_ParamTypeMask __MSABI_LONG(&hff)
 #define AP_FormatHex (__MSABI_LONG(&h1) shl AP_ParamTypeBits)
 #define AP_AccessMask (__MSABI_LONG(&h2) shl AP_ParamTypeBits)
@@ -34,13 +34,13 @@ type AUDIT_PARAM_TYPE as _AUDIT_PARAM_TYPE
 #define AP_ClientLogonId (__MSABI_LONG(&h2) shl AP_ParamTypeBits)
 #define ApExtractType(TypeFlags) cast(AUDIT_PARAM_TYPE, TypeFlags and AP_ParamTypeMask)
 #define ApExtractFlags(TypeFlags) (TypeFlags and (not AP_ParamTypeMask))
-#define _AUTHZ_SS_MAXSIZE 128
-#define APF_AuditFailure &h0
-#define APF_AuditSuccess &h1
+const _AUTHZ_SS_MAXSIZE = 128
+const APF_AuditFailure = &h0
+const APF_AuditSuccess = &h1
 #define APF_ValidFlags APF_AuditSuccess
-#define AUTHZ_ALLOW_MULTIPLE_SOURCE_INSTANCES &h1
-#define AUTHZ_MIGRATED_LEGACY_PUBLISHER &h2
-#define AUTHZ_AUDIT_INSTANCE_INFORMATION &h2
+const AUTHZ_ALLOW_MULTIPLE_SOURCE_INSTANCES = &h1
+const AUTHZ_MIGRATED_LEGACY_PUBLISHER = &h2
+const AUTHZ_AUDIT_INSTANCE_INFORMATION = &h2
 
 type _AUDIT_OBJECT_TYPE
 	ObjectType as GUID
@@ -130,6 +130,6 @@ end type
 
 type AUTHZ_AUDIT_EVENT_TYPE_OLD as _AUTHZ_AUDIT_EVENT_TYPE_OLD
 type PAUTHZ_AUDIT_EVENT_TYPE_OLD as AUTHZ_AUDIT_EVENT_TYPE_OLD ptr
-#define AUTHZP_WPD_EVENT &h10
+const AUTHZP_WPD_EVENT = &h10
 type AUDIT_HANDLE as PVOID
 type PAUDIT_HANDLE as PVOID ptr

@@ -41,8 +41,8 @@ declare function luaL_error(byval L as lua_State ptr, byval fmt as const zstring
 declare function luaL_checkoption(byval L as lua_State ptr, byval narg as long, byval def as const zstring ptr, byval lst as const zstring const ptr ptr) as long
 declare function luaL_fileresult(byval L as lua_State ptr, byval stat as long, byval fname as const zstring ptr) as long
 declare function luaL_execresult(byval L as lua_State ptr, byval stat as long) as long
-#define LUA_NOREF (-2)
-#define LUA_REFNIL (-1)
+const LUA_NOREF = -2
+const LUA_REFNIL = -1
 declare function luaL_ref(byval L as lua_State ptr, byval t as long) as long
 declare sub luaL_unref(byval L as lua_State ptr, byval t as long, byval ref as long)
 declare function luaL_loadfilex(byval L as lua_State ptr, byval filename as const zstring ptr, byval mode as const zstring ptr) as long

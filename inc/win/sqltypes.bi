@@ -144,7 +144,7 @@ type SQL_INTERVAL_STRUCT as tagSQL_INTERVAL_STRUCT
 #define ODBCINT64 longint
 type SQLBIGINT as longint
 type SQLUBIGINT as ulongint
-#define SQL_MAX_NUMERIC_LEN 16
+const SQL_MAX_NUMERIC_LEN = 16
 
 type tagSQL_NUMERIC_STRUCT
 	precision as SQLCHAR

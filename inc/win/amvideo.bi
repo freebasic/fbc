@@ -13,16 +13,16 @@ extern "Windows"
 #define __IFullScreenVideo_FWD_DEFINED__
 #define __IFullScreenVideoEx_FWD_DEFINED__
 #define __IBaseVideoMixer_FWD_DEFINED__
-#define AMDDS_NONE &h00
-#define AMDDS_DCIPS &h01
-#define AMDDS_PS &h02
-#define AMDDS_RGBOVR &h04
-#define AMDDS_YUVOVR &h08
-#define AMDDS_RGBOFF &h10
-#define AMDDS_YUVOFF &h20
-#define AMDDS_RGBFLP &h40
-#define AMDDS_YUVFLP &h80
-#define AMDDS_ALL &hFF
+const AMDDS_NONE = &h00
+const AMDDS_DCIPS = &h01
+const AMDDS_PS = &h02
+const AMDDS_RGBOVR = &h04
+const AMDDS_YUVOVR = &h08
+const AMDDS_RGBOFF = &h10
+const AMDDS_YUVOFF = &h20
+const AMDDS_RGBFLP = &h40
+const AMDDS_YUVFLP = &h80
+const AMDDS_ALL = &hFF
 #define AMDDS_DEFAULT AMDDS_ALL
 #define AMDDS_YUV ((AMDDS_YUVOFF or AMDDS_YUVOVR) or AMDDS_YUVFLP)
 #define AMDDS_RGB ((AMDDS_RGBOFF or AMDDS_RGBOVR) or AMDDS_RGBFLP)
@@ -260,15 +260,15 @@ declare sub IBaseVideoMixer_GetClockPeriod_Stub(byval This as IRpcStubBuffer ptr
 declare function IBaseVideoMixer_SetClockPeriod_Proxy(byval This as IBaseVideoMixer ptr, byval bValue as long) as HRESULT
 declare sub IBaseVideoMixer_SetClockPeriod_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 
-#define iPALETTE_COLORS 256
-#define iEGA_COLORS 16
-#define iMASK_COLORS 3
-#define iTRUECOLOR 16
-#define iRED 0
-#define iGREEN 1
-#define iBLUE 2
-#define iPALETTE 8
-#define iMAXBITS 8
+const iPALETTE_COLORS = 256
+const iEGA_COLORS = 16
+const iMASK_COLORS = 3
+const iTRUECOLOR = 16
+const iRED = 0
+const iGREEN = 1
+const iBLUE = 2
+const iPALETTE = 8
+const iMAXBITS = 8
 
 type tag_TRUECOLORINFO
 	dwBitMasks(0 to 2) as DWORD
@@ -313,7 +313,7 @@ type tagMPEG1VIDEOINFO
 end type
 
 type MPEG1VIDEOINFO as tagMPEG1VIDEOINFO
-#define MAX_SIZE_MPEG1_SEQUENCE_INFO 140
+const MAX_SIZE_MPEG1_SEQUENCE_INFO = 140
 #define MPEG1_SEQUENCE_INFO(pv) cptr(const UBYTE ptr, (pv)->bSequenceHeader)
 
 type tagAnalogVideoInfo

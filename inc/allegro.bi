@@ -21,10 +21,10 @@
 ''     #define MID => AL_MID
 ''     #define EMPTY_STRING => EMPTY_STRING_
 ''     #define SYSTEM_NONE => SYSTEM_NONE_
-''     #define MOUSEDRV_NONE => MOUSEDRV_NONE_
-''     #define DRAW_SPRITE_H_FLIP => DRAW_SPRITE_H_FLIP_
-''     #define DRAW_SPRITE_V_FLIP => DRAW_SPRITE_V_FLIP_
-''     #define DRAW_SPRITE_VH_FLIP => DRAW_SPRITE_VH_FLIP_
+''     constant MOUSEDRV_NONE => MOUSEDRV_NONE_
+''     constant DRAW_SPRITE_H_FLIP => DRAW_SPRITE_H_FLIP_
+''     constant DRAW_SPRITE_V_FLIP => DRAW_SPRITE_V_FLIP_
+''     constant DRAW_SPRITE_VH_FLIP => DRAW_SPRITE_VH_FLIP_
 ''     #define MIDI_DIGMID => MIDI_DIGMID_
 ''     #define EOF => EOF_
 ''     #define cpu_fpu => cpu_fpu_
@@ -99,7 +99,7 @@ extern "C"
 #endif
 
 #ifdef __FB_WIN32__
-	#define ALLEGRO_HAVE_STDINT_H 1
+	const ALLEGRO_HAVE_STDINT_H = 1
 #endif
 
 #if defined(__FB_WIN32__) and defined(ALLEGRO_STATICLINK)
@@ -146,7 +146,7 @@ extern "C"
 	#define UNLOCK_DATA(d, s) _unlock_dpmi_data(cptr(any ptr, d), s)
 	#define LOCK_VARIABLE(x) LOCK_DATA(cptr(any ptr, @x), sizeof((x)))
 	#define LOCK_FUNCTION(x) LOCK_CODE(cptr(any ptr, x), cint(x##_end) - cint(x))
-	#define ALLEGRO_LFN 0
+	const ALLEGRO_LFN = 0
 	#define _video_ds() _dos_ds
 	#define bmp_select(bmp) _farsetsel((bmp)->seg)
 	#define bmp_write8(addr, c) _farnspokeb(addr, c)
@@ -202,7 +202,7 @@ extern "C"
 	#define UNLOCK_DATA(d, s)
 	#define LOCK_VARIABLE(x)
 	#define LOCK_FUNCTION(x)
-	#define ALLEGRO_LFN 1
+	const ALLEGRO_LFN = 1
 #endif
 
 #if defined(__FB_DOS__) or defined(__FB_WIN32__)
@@ -213,13 +213,13 @@ extern "C"
 	#define DEVICE_SEPARATOR asc(!"\0")
 #endif
 
-#define FA_RDONLY 1
-#define FA_HIDDEN 2
-#define FA_SYSTEM 4
-#define FA_LABEL 8
-#define FA_DIREC 16
-#define FA_ARCH 32
-#define FA_NONE 0
+const FA_RDONLY = 1
+const FA_HIDDEN = 2
+const FA_SYSTEM = 4
+const FA_LABEL = 8
+const FA_DIREC = 16
+const FA_ARCH = 32
+const FA_NONE = 0
 #define FA_ALL (not FA_NONE)
 
 #ifdef __FB_LINUX__
@@ -275,19 +275,19 @@ extern "C"
 	#define ALLEGRO_NO_COLORCOPY
 #endif
 
-#define ALLEGRO_VERSION 4
-#define ALLEGRO_SUB_VERSION 4
-#define ALLEGRO_WIP_VERSION 2
+const ALLEGRO_VERSION = 4
+const ALLEGRO_SUB_VERSION = 4
+const ALLEGRO_WIP_VERSION = 2
 #define ALLEGRO_VERSION_STR "4.4.2"
 #define ALLEGRO_DATE_STR "2011"
-#define ALLEGRO_DATE 20110519
-#define TRUE (-1)
-#define FALSE 0
+const ALLEGRO_DATE = 20110519
+const TRUE = -1
+const FALSE = 0
 #define MIN(x, y) iif((x) < (y), (x), (y))
 #define MAX(x, y) iif((x) > (y), (x), (y))
 #define AL_MID(x, y, z) iif((x) > (y), iif((y) > (z), (y), iif((x) > (z), (z), (x))), iif((y) > (z), iif((z) > (x), (z), (x)), (y)))
 #define CLAMP(x, y, z) MAX((x), MIN((y), (z)))
-#define AL_PI 3.14159265358979323846
+const AL_PI = 3.14159265358979323846
 #define AL_ID(a, b, c, d) (((((a) shl 24) or ((b) shl 16)) or ((c) shl 8)) or (d))
 
 extern _AL_DLL allegro_errno as long ptr
@@ -399,14 +399,14 @@ declare sub set_config_id(byval section as const zstring ptr, byval name as cons
 declare function list_config_entries(byval section as const zstring ptr, byval names as const zstring ptr ptr ptr) as long
 declare function list_config_sections(byval names as const zstring ptr ptr ptr) as long
 declare sub free_config_entries(byval names as const zstring ptr ptr ptr)
-#define ALLEGRO_ERROR_SIZE 256
+const ALLEGRO_ERROR_SIZE = 256
 
 extern _AL_DLL __allegro_id alias "allegro_id" as byte
 #define allegro_id (*cptr(zstring ptr, @__allegro_id))
 extern _AL_DLL __allegro_error alias "allegro_error" as byte
 #define allegro_error (*cptr(zstring ptr, @__allegro_error))
 
-#define OSTYPE_UNKNOWN 0
+const OSTYPE_UNKNOWN = 0
 #define OSTYPE_WIN3 AL_ID(asc("W"), asc("I"), asc("N"), asc("3"))
 #define OSTYPE_WIN95 AL_ID(asc("W"), asc("9"), asc("5"), asc(" "))
 #define OSTYPE_WIN98 AL_ID(asc("W"), asc("9"), asc("8"), asc(" "))
@@ -441,7 +441,7 @@ extern _AL_DLL os_version as long
 extern _AL_DLL os_revision as long
 extern _AL_DLL os_multitasking as long
 
-#define SYSTEM_AUTODETECT 0
+const SYSTEM_AUTODETECT = 0
 #define SYSTEM_NONE_ AL_ID(asc("N"), asc("O"), asc("N"), asc("E"))
 #define MAKE_VERSION(a, b, c) ((((a) shl 16) or ((b) shl 8)) or (c))
 declare function _install_allegro_version_check(byval system_id as long, byval errno_ptr as long ptr, byval atexit_ptr as function(byval func as sub()) as long, byval version as long) as long
@@ -454,71 +454,71 @@ declare sub get_executable_name(byval output as zstring ptr, byval size as long)
 declare function set_close_button_callback(byval proc as sub()) as long
 declare sub check_cpu()
 
-#define CPU_ID &h0001
-#define CPU_FPU &h0002
-#define CPU_MMX &h0004
-#define CPU_MMXPLUS &h0008
-#define CPU_SSE &h0010
-#define CPU_SSE2 &h0020
-#define CPU_3DNOW &h0040
-#define CPU_ENH3DNOW &h0080
-#define CPU_CMOV &h0100
-#define CPU_AMD64 &h0200
-#define CPU_IA64 &h0400
-#define CPU_SSE3 &h0800
-#define CPU_SSSE3 &h1000
-#define CPU_SSE41 &h2000
-#define CPU_SSE42 &h4000
-#define CPU_FAMILY_UNKNOWN 0
-#define CPU_FAMILY_I386 3
-#define CPU_FAMILY_I486 4
-#define CPU_FAMILY_I586 5
-#define CPU_FAMILY_I686 6
-#define CPU_FAMILY_ITANIUM 7
-#define CPU_FAMILY_EXTENDED 15
-#define CPU_FAMILY_POWERPC 18
-#define CPU_MODEL_I486DX 0
-#define CPU_MODEL_I486DX50 1
-#define CPU_MODEL_I486SX 2
-#define CPU_MODEL_I487SX 3
-#define CPU_MODEL_I486SL 4
-#define CPU_MODEL_I486SX2 5
-#define CPU_MODEL_I486DX2 7
-#define CPU_MODEL_I486DX4 8
-#define CPU_MODEL_PENTIUM 1
-#define CPU_MODEL_PENTIUMP54C 2
-#define CPU_MODEL_PENTIUMOVERDRIVE 3
-#define CPU_MODEL_PENTIUMOVERDRIVEDX4 4
-#define CPU_MODEL_CYRIX 14
-#define CPU_MODEL_UNKNOWN 15
-#define CPU_MODEL_K5 0
-#define CPU_MODEL_K6 6
-#define CPU_MODEL_PENTIUMPROA 0
-#define CPU_MODEL_PENTIUMPRO 1
-#define CPU_MODEL_PENTIUMIIKLAMATH 3
-#define CPU_MODEL_PENTIUMII 5
-#define CPU_MODEL_CELERON 6
-#define CPU_MODEL_PENTIUMIIIKATMAI 7
-#define CPU_MODEL_PENTIUMIIICOPPERMINE 8
-#define CPU_MODEL_PENTIUMIIIMOBILE 9
-#define CPU_MODEL_ATHLON 2
-#define CPU_MODEL_DURON 3
-#define CPU_MODEL_PENTIUMIV 0
-#define CPU_MODEL_XEON 2
-#define CPU_MODEL_ATHLON64 4
-#define CPU_MODEL_OPTERON 5
-#define CPU_MODEL_POWERPC_601 1
-#define CPU_MODEL_POWERPC_602 2
-#define CPU_MODEL_POWERPC_603 3
-#define CPU_MODEL_POWERPC_603e 4
-#define CPU_MODEL_POWERPC_603ev 5
-#define CPU_MODEL_POWERPC_604 6
-#define CPU_MODEL_POWERPC_604e 7
-#define CPU_MODEL_POWERPC_620 8
-#define CPU_MODEL_POWERPC_750 9
-#define CPU_MODEL_POWERPC_7400 10
-#define CPU_MODEL_POWERPC_7450 11
-#define _AL_CPU_VENDOR_SIZE 32
+const CPU_ID = &h0001
+const CPU_FPU = &h0002
+const CPU_MMX = &h0004
+const CPU_MMXPLUS = &h0008
+const CPU_SSE = &h0010
+const CPU_SSE2 = &h0020
+const CPU_3DNOW = &h0040
+const CPU_ENH3DNOW = &h0080
+const CPU_CMOV = &h0100
+const CPU_AMD64 = &h0200
+const CPU_IA64 = &h0400
+const CPU_SSE3 = &h0800
+const CPU_SSSE3 = &h1000
+const CPU_SSE41 = &h2000
+const CPU_SSE42 = &h4000
+const CPU_FAMILY_UNKNOWN = 0
+const CPU_FAMILY_I386 = 3
+const CPU_FAMILY_I486 = 4
+const CPU_FAMILY_I586 = 5
+const CPU_FAMILY_I686 = 6
+const CPU_FAMILY_ITANIUM = 7
+const CPU_FAMILY_EXTENDED = 15
+const CPU_FAMILY_POWERPC = 18
+const CPU_MODEL_I486DX = 0
+const CPU_MODEL_I486DX50 = 1
+const CPU_MODEL_I486SX = 2
+const CPU_MODEL_I487SX = 3
+const CPU_MODEL_I486SL = 4
+const CPU_MODEL_I486SX2 = 5
+const CPU_MODEL_I486DX2 = 7
+const CPU_MODEL_I486DX4 = 8
+const CPU_MODEL_PENTIUM = 1
+const CPU_MODEL_PENTIUMP54C = 2
+const CPU_MODEL_PENTIUMOVERDRIVE = 3
+const CPU_MODEL_PENTIUMOVERDRIVEDX4 = 4
+const CPU_MODEL_CYRIX = 14
+const CPU_MODEL_UNKNOWN = 15
+const CPU_MODEL_K5 = 0
+const CPU_MODEL_K6 = 6
+const CPU_MODEL_PENTIUMPROA = 0
+const CPU_MODEL_PENTIUMPRO = 1
+const CPU_MODEL_PENTIUMIIKLAMATH = 3
+const CPU_MODEL_PENTIUMII = 5
+const CPU_MODEL_CELERON = 6
+const CPU_MODEL_PENTIUMIIIKATMAI = 7
+const CPU_MODEL_PENTIUMIIICOPPERMINE = 8
+const CPU_MODEL_PENTIUMIIIMOBILE = 9
+const CPU_MODEL_ATHLON = 2
+const CPU_MODEL_DURON = 3
+const CPU_MODEL_PENTIUMIV = 0
+const CPU_MODEL_XEON = 2
+const CPU_MODEL_ATHLON64 = 4
+const CPU_MODEL_OPTERON = 5
+const CPU_MODEL_POWERPC_601 = 1
+const CPU_MODEL_POWERPC_602 = 2
+const CPU_MODEL_POWERPC_603 = 3
+const CPU_MODEL_POWERPC_603e = 4
+const CPU_MODEL_POWERPC_603ev = 5
+const CPU_MODEL_POWERPC_604 = 6
+const CPU_MODEL_POWERPC_604e = 7
+const CPU_MODEL_POWERPC_620 = 8
+const CPU_MODEL_POWERPC_750 = 9
+const CPU_MODEL_POWERPC_7400 = 10
+const CPU_MODEL_POWERPC_7450 = 11
+const _AL_CPU_VENDOR_SIZE = 32
 extern _AL_DLL __cpu_vendor alias "cpu_vendor" as byte
 #define cpu_vendor (*cptr(zstring ptr, @__cpu_vendor))
 extern _AL_DLL cpu_family as long
@@ -588,8 +588,8 @@ declare function desktop_color_depth() as long
 declare function get_desktop_resolution(byval width as long ptr, byval height as long ptr) as long
 
 #define ALLEGRO_MOUSE_H
-#define MOUSEDRV_AUTODETECT (-1)
-#define MOUSEDRV_NONE_ 0
+const MOUSEDRV_AUTODETECT = -1
+const MOUSEDRV_NONE_ = 0
 
 type MOUSE_DRIVER
 	id as long
@@ -621,13 +621,13 @@ declare function mouse_needs_poll() as long
 declare sub enable_hardware_cursor()
 declare sub disable_hardware_cursor()
 
-#define MOUSE_CURSOR_NONE 0
-#define MOUSE_CURSOR_ALLEGRO 1
-#define MOUSE_CURSOR_ARROW 2
-#define MOUSE_CURSOR_BUSY 3
-#define MOUSE_CURSOR_QUESTION 4
-#define MOUSE_CURSOR_EDIT 5
-#define AL_NUM_MOUSE_CURSORS 6
+const MOUSE_CURSOR_NONE = 0
+const MOUSE_CURSOR_ALLEGRO = 1
+const MOUSE_CURSOR_ARROW = 2
+const MOUSE_CURSOR_BUSY = 3
+const MOUSE_CURSOR_QUESTION = 4
+const MOUSE_CURSOR_EDIT = 5
+const AL_NUM_MOUSE_CURSORS = 6
 
 extern _AL_DLL mouse_sprite as BITMAP ptr
 extern _AL_DLL mouse_x_focus as long
@@ -640,15 +640,15 @@ extern _AL_DLL mouse_b as long
 extern _AL_DLL mouse_pos as long
 extern _AL_DLL freeze_mouse_flag as long
 
-#define MOUSE_FLAG_MOVE 1
-#define MOUSE_FLAG_LEFT_DOWN 2
-#define MOUSE_FLAG_LEFT_UP 4
-#define MOUSE_FLAG_RIGHT_DOWN 8
-#define MOUSE_FLAG_RIGHT_UP 16
-#define MOUSE_FLAG_MIDDLE_DOWN 32
-#define MOUSE_FLAG_MIDDLE_UP 64
-#define MOUSE_FLAG_MOVE_Z 128
-#define MOUSE_FLAG_MOVE_W 256
+const MOUSE_FLAG_MOVE = 1
+const MOUSE_FLAG_LEFT_DOWN = 2
+const MOUSE_FLAG_LEFT_UP = 4
+const MOUSE_FLAG_RIGHT_DOWN = 8
+const MOUSE_FLAG_RIGHT_UP = 16
+const MOUSE_FLAG_MIDDLE_DOWN = 32
+const MOUSE_FLAG_MIDDLE_UP = 64
+const MOUSE_FLAG_MOVE_Z = 128
+const MOUSE_FLAG_MOVE_W = 256
 
 extern _AL_DLL mouse_callback as sub(byval flags as long)
 
@@ -670,7 +670,7 @@ declare function show_os_cursor(byval cursor as long) as long
 declare function mouse_on_screen() as long
 
 #define ALLEGRO_TIMER_H
-#define TIMERS_PER_SECOND cast(clong, 1193181)
+const TIMERS_PER_SECOND = cast(clong, 1193181)
 #define SECS_TO_TIMER(x) (cast(clong, (x)) * TIMERS_PER_SECOND)
 #define MSEC_TO_TIMER(x) (cast(clong, (x)) * (TIMERS_PER_SECOND / 1000))
 #define BPS_TO_TIMER(x) (TIMERS_PER_SECOND / cast(clong, (x)))
@@ -1052,12 +1052,12 @@ end enum
 #define KEY_CAPSLOCK __allegro_KEY_CAPSLOCK
 #define KEY_MAX __allegro_KEY_MAX
 #define ALLEGRO_JOYSTICK_H
-#define JOY_TYPE_AUTODETECT (-1)
-#define JOY_TYPE_NONE 0
-#define MAX_JOYSTICKS 8
-#define MAX_JOYSTICK_AXIS 3
-#define MAX_JOYSTICK_STICKS 5
-#define MAX_JOYSTICK_BUTTONS 32
+const JOY_TYPE_AUTODETECT = -1
+const JOY_TYPE_NONE = 0
+const MAX_JOYSTICKS = 8
+const MAX_JOYSTICK_AXIS = 3
+const MAX_JOYSTICK_STICKS = 5
+const MAX_JOYSTICK_BUTTONS = 32
 
 type JOYSTICK_AXIS_INFO
 	pos as long
@@ -1086,13 +1086,13 @@ type JOYSTICK_INFO
 	button(0 to 31) as JOYSTICK_BUTTON_INFO
 end type
 
-#define JOYFLAG_DIGITAL 1
-#define JOYFLAG_ANALOGUE 2
-#define JOYFLAG_CALIB_DIGITAL 4
-#define JOYFLAG_CALIB_ANALOGUE 8
-#define JOYFLAG_CALIBRATE 16
-#define JOYFLAG_SIGNED 32
-#define JOYFLAG_UNSIGNED 64
+const JOYFLAG_DIGITAL = 1
+const JOYFLAG_ANALOGUE = 2
+const JOYFLAG_CALIB_DIGITAL = 4
+const JOYFLAG_CALIB_ANALOGUE = 8
+const JOYFLAG_CALIBRATE = 16
+const JOYFLAG_SIGNED = 32
+const JOYFLAG_UNSIGNED = 64
 #define JOYFLAG_ANALOG JOYFLAG_ANALOGUE
 #define JOYFLAG_CALIB_ANALOG JOYFLAG_CALIB_ANALOGUE
 
@@ -1136,7 +1136,7 @@ type RGB_
 	filler as ubyte
 end type
 
-#define PAL_SIZE 256
+const PAL_SIZE = 256
 #define ALLEGRO_GFX_H
 #define ALLEGRO_3D_H
 #define ALLEGRO_FIXED_H
@@ -1163,23 +1163,23 @@ type V3D_f
 	c as long
 end type
 
-#define POLYTYPE_FLAT 0
-#define POLYTYPE_GCOL 1
-#define POLYTYPE_GRGB 2
-#define POLYTYPE_ATEX 3
-#define POLYTYPE_PTEX 4
-#define POLYTYPE_ATEX_MASK 5
-#define POLYTYPE_PTEX_MASK 6
-#define POLYTYPE_ATEX_LIT 7
-#define POLYTYPE_PTEX_LIT 8
-#define POLYTYPE_ATEX_MASK_LIT 9
-#define POLYTYPE_PTEX_MASK_LIT 10
-#define POLYTYPE_ATEX_TRANS 11
-#define POLYTYPE_PTEX_TRANS 12
-#define POLYTYPE_ATEX_MASK_TRANS 13
-#define POLYTYPE_PTEX_MASK_TRANS 14
-#define POLYTYPE_MAX 15
-#define POLYTYPE_ZBUF 16
+const POLYTYPE_FLAT = 0
+const POLYTYPE_GCOL = 1
+const POLYTYPE_GRGB = 2
+const POLYTYPE_ATEX = 3
+const POLYTYPE_PTEX = 4
+const POLYTYPE_ATEX_MASK = 5
+const POLYTYPE_PTEX_MASK = 6
+const POLYTYPE_ATEX_LIT = 7
+const POLYTYPE_PTEX_LIT = 8
+const POLYTYPE_ATEX_MASK_LIT = 9
+const POLYTYPE_PTEX_MASK_LIT = 10
+const POLYTYPE_ATEX_TRANS = 11
+const POLYTYPE_PTEX_TRANS = 12
+const POLYTYPE_ATEX_MASK_TRANS = 13
+const POLYTYPE_PTEX_MASK_TRANS = 14
+const POLYTYPE_MAX = 15
+const POLYTYPE_ZBUF = 16
 
 extern _AL_DLL scene_gap as single
 
@@ -1206,34 +1206,34 @@ declare function scene_polygon3d(byval type as long, byval texture as BITMAP ptr
 declare function scene_polygon3d_f(byval type as long, byval texture as BITMAP ptr, byval vx as long, byval vtx as V3D_f ptr ptr) as long
 declare sub render_scene()
 
-#define GFX_TEXT (-1)
-#define GFX_AUTODETECT 0
-#define GFX_AUTODETECT_FULLSCREEN 1
-#define GFX_AUTODETECT_WINDOWED 2
+const GFX_TEXT = -1
+const GFX_AUTODETECT = 0
+const GFX_AUTODETECT_FULLSCREEN = 1
+const GFX_AUTODETECT_WINDOWED = 2
 #define GFX_SAFE AL_ID(asc("S"), asc("A"), asc("F"), asc("E"))
 #define GFX_NONE AL_ID(asc("N"), asc("O"), asc("N"), asc("E"))
-#define DRAW_SPRITE_NORMAL 0
-#define DRAW_SPRITE_LIT 1
-#define DRAW_SPRITE_TRANS 2
-#define DRAW_SPRITE_NO_FLIP &h0
-#define DRAW_SPRITE_H_FLIP_ &h1
-#define DRAW_SPRITE_V_FLIP_ &h2
-#define DRAW_SPRITE_VH_FLIP_ &h3
-#define blender_mode_none 0
-#define blender_mode_trans 1
-#define blender_mode_add 2
-#define blender_mode_burn 3
-#define blender_mode_color 4
-#define blender_mode_difference 5
-#define blender_mode_dissolve 6
-#define blender_mode_dodge 7
-#define blender_mode_hue 8
-#define blender_mode_invert 9
-#define blender_mode_luminance 10
-#define blender_mode_multiply 11
-#define blender_mode_saturation 12
-#define blender_mode_screen 13
-#define blender_mode_alpha 14
+const DRAW_SPRITE_NORMAL = 0
+const DRAW_SPRITE_LIT = 1
+const DRAW_SPRITE_TRANS = 2
+const DRAW_SPRITE_NO_FLIP = &h0
+const DRAW_SPRITE_H_FLIP_ = &h1
+const DRAW_SPRITE_V_FLIP_ = &h2
+const DRAW_SPRITE_VH_FLIP_ = &h3
+const blender_mode_none = 0
+const blender_mode_trans = 1
+const blender_mode_add = 2
+const blender_mode_burn = 3
+const blender_mode_color = 4
+const blender_mode_difference = 5
+const blender_mode_dissolve = 6
+const blender_mode_dodge = 7
+const blender_mode_hue = 8
+const blender_mode_invert = 9
+const blender_mode_luminance = 10
+const blender_mode_multiply = 11
+const blender_mode_saturation = 12
+const blender_mode_screen = 13
+const blender_mode_alpha = 14
 
 type GFX_MODE_
 	width as long
@@ -1289,33 +1289,33 @@ extern _AL_DLL gfx_driver as GFX_DRIVER ptr
 extern _AL_DLL ___gfx_driver_list alias "_gfx_driver_list" as _DRIVER_INFO
 #define BEGIN_GFX_DRIVER_LIST dim as _DRIVER_INFO _gfx_driver_list(0 to ...) = {
 #define END_GFX_DRIVER_LIST ( 0, NULL, 0 ) }
-#define GFX_CAN_SCROLL &h00000001
-#define GFX_CAN_TRIPLE_BUFFER &h00000002
-#define GFX_HW_CURSOR &h00000004
-#define GFX_HW_HLINE &h00000008
-#define GFX_HW_HLINE_XOR &h00000010
-#define GFX_HW_HLINE_SOLID_PATTERN &h00000020
-#define GFX_HW_HLINE_COPY_PATTERN &h00000040
-#define GFX_HW_FILL &h00000080
-#define GFX_HW_FILL_XOR &h00000100
-#define GFX_HW_FILL_SOLID_PATTERN &h00000200
-#define GFX_HW_FILL_COPY_PATTERN &h00000400
-#define GFX_HW_LINE &h00000800
-#define GFX_HW_LINE_XOR &h00001000
-#define GFX_HW_TRIANGLE &h00002000
-#define GFX_HW_TRIANGLE_XOR &h00004000
-#define GFX_HW_GLYPH &h00008000
-#define GFX_HW_VRAM_BLIT &h00010000
-#define GFX_HW_VRAM_BLIT_MASKED &h00020000
-#define GFX_HW_MEM_BLIT &h00040000
-#define GFX_HW_MEM_BLIT_MASKED &h00080000
-#define GFX_HW_SYS_TO_VRAM_BLIT &h00100000
-#define GFX_HW_SYS_TO_VRAM_BLIT_MASKED &h00200000
-#define GFX_SYSTEM_CURSOR &h00400000
-#define GFX_HW_VRAM_STRETCH_BLIT &h00800000
-#define GFX_HW_VRAM_STRETCH_BLIT_MASKED &h01000000
-#define GFX_HW_SYS_STRETCH_BLIT &h02000000
-#define GFX_HW_SYS_STRETCH_BLIT_MASKED &h04000000
+const GFX_CAN_SCROLL = &h00000001
+const GFX_CAN_TRIPLE_BUFFER = &h00000002
+const GFX_HW_CURSOR = &h00000004
+const GFX_HW_HLINE = &h00000008
+const GFX_HW_HLINE_XOR = &h00000010
+const GFX_HW_HLINE_SOLID_PATTERN = &h00000020
+const GFX_HW_HLINE_COPY_PATTERN = &h00000040
+const GFX_HW_FILL = &h00000080
+const GFX_HW_FILL_XOR = &h00000100
+const GFX_HW_FILL_SOLID_PATTERN = &h00000200
+const GFX_HW_FILL_COPY_PATTERN = &h00000400
+const GFX_HW_LINE = &h00000800
+const GFX_HW_LINE_XOR = &h00001000
+const GFX_HW_TRIANGLE = &h00002000
+const GFX_HW_TRIANGLE_XOR = &h00004000
+const GFX_HW_GLYPH = &h00008000
+const GFX_HW_VRAM_BLIT = &h00010000
+const GFX_HW_VRAM_BLIT_MASKED = &h00020000
+const GFX_HW_MEM_BLIT = &h00040000
+const GFX_HW_MEM_BLIT_MASKED = &h00080000
+const GFX_HW_SYS_TO_VRAM_BLIT = &h00100000
+const GFX_HW_SYS_TO_VRAM_BLIT_MASKED = &h00200000
+const GFX_SYSTEM_CURSOR = &h00400000
+const GFX_HW_VRAM_STRETCH_BLIT = &h00800000
+const GFX_HW_VRAM_STRETCH_BLIT_MASKED = &h01000000
+const GFX_HW_SYS_STRETCH_BLIT = &h02000000
+const GFX_HW_SYS_STRETCH_BLIT_MASKED = &h04000000
 
 extern _AL_DLL gfx_capabilities as long
 
@@ -1428,14 +1428,14 @@ type BITMAP_
 	line(0 to 1 - 1) as ubyte ptr
 end type
 
-#define BMP_ID_VIDEO &h80000000
-#define BMP_ID_SYSTEM &h40000000
-#define BMP_ID_SUB &h20000000
-#define BMP_ID_PLANAR &h10000000
-#define BMP_ID_NOBLIT &h08000000
-#define BMP_ID_LOCKED &h04000000
-#define BMP_ID_AUTOLOCK &h02000000
-#define BMP_ID_MASK &h01FFFFFF
+const BMP_ID_VIDEO = &h80000000
+const BMP_ID_SYSTEM = &h40000000
+const BMP_ID_SUB = &h20000000
+const BMP_ID_PLANAR = &h10000000
+const BMP_ID_NOBLIT = &h08000000
+const BMP_ID_LOCKED = &h04000000
+const BMP_ID_AUTOLOCK = &h02000000
+const BMP_ID_MASK = &h01FFFFFF
 
 extern _AL_DLL screen as BITMAP ptr
 
@@ -1443,34 +1443,34 @@ extern _AL_DLL screen as BITMAP ptr
 #define SCREEN_H iif(gfx_driver, gfx_driver->h, 0)
 #define VIRTUAL_W iif(screen, screen->w, 0)
 #define VIRTUAL_H iif(screen, screen->h, 0)
-#define COLORCONV_NONE 0
-#define COLORCONV_8_TO_15 1
-#define COLORCONV_8_TO_16 2
-#define COLORCONV_8_TO_24 4
-#define COLORCONV_8_TO_32 8
-#define COLORCONV_15_TO_8 &h10
-#define COLORCONV_15_TO_16 &h20
-#define COLORCONV_15_TO_24 &h40
-#define COLORCONV_15_TO_32 &h80
-#define COLORCONV_16_TO_8 &h100
-#define COLORCONV_16_TO_15 &h200
-#define COLORCONV_16_TO_24 &h400
-#define COLORCONV_16_TO_32 &h800
-#define COLORCONV_24_TO_8 &h1000
-#define COLORCONV_24_TO_15 &h2000
-#define COLORCONV_24_TO_16 &h4000
-#define COLORCONV_24_TO_32 &h8000
-#define COLORCONV_32_TO_8 &h10000
-#define COLORCONV_32_TO_15 &h20000
-#define COLORCONV_32_TO_16 &h40000
-#define COLORCONV_32_TO_24 &h80000
-#define COLORCONV_32A_TO_8 &h100000
-#define COLORCONV_32A_TO_15 &h200000
-#define COLORCONV_32A_TO_16 &h400000
-#define COLORCONV_32A_TO_24 &h800000
-#define COLORCONV_DITHER_PAL &h1000000
-#define COLORCONV_DITHER_HI &h2000000
-#define COLORCONV_KEEP_TRANS &h4000000
+const COLORCONV_NONE = 0
+const COLORCONV_8_TO_15 = 1
+const COLORCONV_8_TO_16 = 2
+const COLORCONV_8_TO_24 = 4
+const COLORCONV_8_TO_32 = 8
+const COLORCONV_15_TO_8 = &h10
+const COLORCONV_15_TO_16 = &h20
+const COLORCONV_15_TO_24 = &h40
+const COLORCONV_15_TO_32 = &h80
+const COLORCONV_16_TO_8 = &h100
+const COLORCONV_16_TO_15 = &h200
+const COLORCONV_16_TO_24 = &h400
+const COLORCONV_16_TO_32 = &h800
+const COLORCONV_24_TO_8 = &h1000
+const COLORCONV_24_TO_15 = &h2000
+const COLORCONV_24_TO_16 = &h4000
+const COLORCONV_24_TO_32 = &h8000
+const COLORCONV_32_TO_8 = &h10000
+const COLORCONV_32_TO_15 = &h20000
+const COLORCONV_32_TO_16 = &h40000
+const COLORCONV_32_TO_24 = &h80000
+const COLORCONV_32A_TO_8 = &h100000
+const COLORCONV_32A_TO_15 = &h200000
+const COLORCONV_32A_TO_16 = &h400000
+const COLORCONV_32A_TO_24 = &h800000
+const COLORCONV_DITHER_PAL = &h1000000
+const COLORCONV_DITHER_HI = &h2000000
+const COLORCONV_KEEP_TRANS = &h4000000
 #define COLORCONV_DITHER (COLORCONV_DITHER_PAL or COLORCONV_DITHER_HI)
 #define COLORCONV_EXPAND_256 (((COLORCONV_8_TO_15 or COLORCONV_8_TO_16) or COLORCONV_8_TO_24) or COLORCONV_8_TO_32)
 #define COLORCONV_REDUCE_TO_256 ((((COLORCONV_15_TO_8 or COLORCONV_16_TO_8) or COLORCONV_24_TO_8) or COLORCONV_32_TO_8) or COLORCONV_32A_TO_8)
@@ -1510,20 +1510,20 @@ declare sub add_clip_rect(byval bitmap as BITMAP ptr, byval x1 as long, byval y_
 declare sub clear_bitmap(byval bitmap as BITMAP ptr)
 declare sub vsync()
 
-#define GFX_TYPE_UNKNOWN 0
-#define GFX_TYPE_WINDOWED 1
-#define GFX_TYPE_FULLSCREEN 2
-#define GFX_TYPE_DEFINITE 4
-#define GFX_TYPE_MAGIC 8
+const GFX_TYPE_UNKNOWN = 0
+const GFX_TYPE_WINDOWED = 1
+const GFX_TYPE_FULLSCREEN = 2
+const GFX_TYPE_DEFINITE = 4
+const GFX_TYPE_MAGIC = 8
 declare function get_gfx_mode_type(byval graphics_card as long) as long
 declare function get_gfx_mode() as long
-#define SWITCH_NONE 0
-#define SWITCH_PAUSE 1
-#define SWITCH_AMNESIA 2
-#define SWITCH_BACKGROUND 3
-#define SWITCH_BACKAMNESIA 4
-#define SWITCH_IN 0
-#define SWITCH_OUT 1
+const SWITCH_NONE = 0
+const SWITCH_PAUSE = 1
+const SWITCH_AMNESIA = 2
+const SWITCH_BACKGROUND = 3
+const SWITCH_BACKAMNESIA = 4
+const SWITCH_IN = 0
+const SWITCH_OUT = 1
 
 declare function set_display_switch_mode(byval mode as long) as long
 declare function get_display_switch_mode() as long
@@ -1592,11 +1592,11 @@ extern _AL_DLL ___rgb_scale_5 alias "_rgb_scale_5" as long
 #define _rgb_scale_6(i) ((@___rgb_scale_6)[i])
 extern _AL_DLL ___rgb_scale_6 alias "_rgb_scale_6" as long
 
-#define MASK_COLOR_8 0
-#define MASK_COLOR_15 &h7C1F
-#define MASK_COLOR_16 &hF81F
-#define MASK_COLOR_24 &hFF00FF
-#define MASK_COLOR_32 &hFF00FF
+const MASK_COLOR_8 = 0
+const MASK_COLOR_15 = &h7C1F
+const MASK_COLOR_16 = &hF81F
+const MASK_COLOR_24 = &hFF00FF
+const MASK_COLOR_32 = &hFF00FF
 
 extern _AL_DLL palette_color as long ptr
 
@@ -1686,12 +1686,12 @@ declare function geta32(byval c as long) as long
 #endif
 
 #define ALLEGRO_DRAW_H
-#define DRAW_MODE_SOLID 0
-#define DRAW_MODE_XOR 1
-#define DRAW_MODE_COPY_PATTERN 2
-#define DRAW_MODE_SOLID_PATTERN 3
-#define DRAW_MODE_MASKED_PATTERN 4
-#define DRAW_MODE_TRANS 5
+const DRAW_MODE_SOLID = 0
+const DRAW_MODE_XOR = 1
+const DRAW_MODE_COPY_PATTERN = 2
+const DRAW_MODE_SOLID_PATTERN = 3
+const DRAW_MODE_MASKED_PATTERN = 4
+const DRAW_MODE_TRANS = 5
 
 declare sub drawing_mode(byval mode as long, byval pattern as BITMAP ptr, byval x_anchor as long, byval y_anchor as long)
 declare sub xor_mode(byval on as long)
@@ -1863,10 +1863,10 @@ declare function merge_fonts(byval f1 as FONT ptr, byval f2 as FONT ptr) as FONT
 declare function transpose_font(byval f as FONT ptr, byval drange as long) as long
 
 #define ALLEGRO_FLI_H
-#define FLI_OK 0
-#define FLI_EOF (-1)
-#define FLI_ERROR (-2)
-#define FLI_NOT_OPEN (-3)
+const FLI_OK = 0
+const FLI_EOF = -1
+const FLI_ERROR = -2
+const FLI_NOT_OPEN = -3
 
 declare function play_fli(byval filename as const zstring ptr, byval bmp as BITMAP ptr, byval loop as long, byval callback as function() as long) as long
 declare function play_memory_fli(byval fli_data as any ptr, byval bmp as BITMAP ptr, byval loop as long, byval callback as function() as long) as long
@@ -1951,48 +1951,48 @@ type MENU_PLAYER
 	child as MENU_PLAYER ptr
 end type
 
-#define D_EXIT 1
-#define D_SELECTED 2
-#define D_GOTFOCUS 4
-#define D_GOTMOUSE 8
-#define D_HIDDEN 16
-#define D_DISABLED 32
-#define D_DIRTY 64
-#define D_INTERNAL 128
-#define D_USER 256
-#define D_O_K 0
-#define D_CLOSE 1
-#define D_REDRAW 2
-#define D_REDRAWME 4
-#define D_WANTFOCUS 8
-#define D_USED_CHAR 16
-#define D_REDRAW_ALL 32
-#define D_DONTWANTMOUSE 64
-#define MSG_START 1
-#define MSG_END 2
-#define MSG_DRAW 3
-#define MSG_CLICK 4
-#define MSG_DCLICK 5
-#define MSG_KEY 6
-#define MSG_CHAR 7
-#define MSG_UCHAR 8
-#define MSG_XCHAR 9
-#define MSG_WANTFOCUS 10
-#define MSG_GOTFOCUS 11
-#define MSG_LOSTFOCUS 12
-#define MSG_GOTMOUSE 13
-#define MSG_LOSTMOUSE 14
-#define MSG_IDLE 15
-#define MSG_RADIO 16
-#define MSG_WHEEL 17
-#define MSG_LPRESS 18
-#define MSG_LRELEASE 19
-#define MSG_MPRESS 20
-#define MSG_MRELEASE 21
-#define MSG_RPRESS 22
-#define MSG_RRELEASE 23
-#define MSG_WANTMOUSE 24
-#define MSG_USER 25
+const D_EXIT = 1
+const D_SELECTED = 2
+const D_GOTFOCUS = 4
+const D_GOTMOUSE = 8
+const D_HIDDEN = 16
+const D_DISABLED = 32
+const D_DIRTY = 64
+const D_INTERNAL = 128
+const D_USER = 256
+const D_O_K = 0
+const D_CLOSE = 1
+const D_REDRAW = 2
+const D_REDRAWME = 4
+const D_WANTFOCUS = 8
+const D_USED_CHAR = 16
+const D_REDRAW_ALL = 32
+const D_DONTWANTMOUSE = 64
+const MSG_START = 1
+const MSG_END = 2
+const MSG_DRAW = 3
+const MSG_CLICK = 4
+const MSG_DCLICK = 5
+const MSG_KEY = 6
+const MSG_CHAR = 7
+const MSG_UCHAR = 8
+const MSG_XCHAR = 9
+const MSG_WANTFOCUS = 10
+const MSG_GOTFOCUS = 11
+const MSG_LOSTFOCUS = 12
+const MSG_GOTMOUSE = 13
+const MSG_LOSTMOUSE = 14
+const MSG_IDLE = 15
+const MSG_RADIO = 16
+const MSG_WHEEL = 17
+const MSG_LPRESS = 18
+const MSG_LRELEASE = 19
+const MSG_MPRESS = 20
+const MSG_MRELEASE = 21
+const MSG_RPRESS = 22
+const MSG_RRELEASE = 23
+const MSG_WANTMOUSE = 24
+const MSG_USER = 25
 
 declare function d_yield_proc(byval msg as long, byval d as DIALOG ptr, byval c as long) as long
 declare function d_clear_proc(byval msg as long, byval d as DIALOG ptr, byval c as long) as long
@@ -2064,7 +2064,7 @@ declare function gfx_mode_select_filter(byval card as long ptr, byval w as long 
 
 #define ALLEGRO_SOUND_H
 #define ALLEGRO_DIGI_H
-#define DIGI_VOICES 64
+const DIGI_VOICES = 64
 
 type SAMPLE
 	bits as long
@@ -2078,8 +2078,8 @@ type SAMPLE
 	data as any ptr
 end type
 
-#define DIGI_AUTODETECT (-1)
-#define DIGI_NONE 0
+const DIGI_AUTODETECT = -1
+const DIGI_NONE = 0
 
 type DIGI_DRIVER
 	id as long
@@ -2162,11 +2162,11 @@ declare sub voice_stop(byval voice as long)
 declare sub voice_set_priority(byval voice as long, byval priority as long)
 declare function voice_check(byval voice as long) as SAMPLE ptr
 
-#define PLAYMODE_PLAY 0
-#define PLAYMODE_LOOP 1
-#define PLAYMODE_FORWARD 0
-#define PLAYMODE_BACKWARD 2
-#define PLAYMODE_BIDIR 4
+const PLAYMODE_PLAY = 0
+const PLAYMODE_LOOP = 1
+const PLAYMODE_FORWARD = 0
+const PLAYMODE_BACKWARD = 2
+const PLAYMODE_BIDIR = 4
 
 declare sub voice_set_playmode(byval voice as long, byval playmode as long)
 declare function voice_get_position(byval voice as long) as long
@@ -2187,9 +2187,9 @@ declare sub voice_set_echo(byval voice as long, byval strength as long, byval de
 declare sub voice_set_tremolo(byval voice as long, byval rate as long, byval depth as long)
 declare sub voice_set_vibrato(byval voice as long, byval rate as long, byval depth as long)
 
-#define SOUND_INPUT_MIC 1
-#define SOUND_INPUT_LINE 2
-#define SOUND_INPUT_CD 3
+const SOUND_INPUT_MIC = 1
+const SOUND_INPUT_LINE = 2
+const SOUND_INPUT_CD = 3
 
 declare function get_sound_input_cap_bits() as long
 declare function get_sound_input_cap_stereo() as long
@@ -2222,8 +2222,8 @@ declare function get_audio_stream_buffer(byval stream as AUDIOSTREAM ptr) as any
 declare sub free_audio_stream_buffer(byval stream as AUDIOSTREAM ptr)
 
 #define ALLEGRO_MIDI_H
-#define MIDI_VOICES 64
-#define MIDI_TRACKS 32
+const MIDI_VOICES = 64
+const MIDI_TRACKS = 32
 
 type MIDI_track
 	data as ubyte ptr
@@ -2235,8 +2235,8 @@ type MIDI
 	track(0 to 31) as MIDI_track
 end type
 
-#define MIDI_AUTODETECT (-1)
-#define MIDI_NONE 0
+const MIDI_AUTODETECT = -1
+const MIDI_NONE = 0
 #define MIDI_DIGMID_ AL_ID(asc("D"), asc("I"), asc("G"), asc("I"))
 
 type MIDI_DRIVER
@@ -2359,17 +2359,17 @@ declare sub al_findclose(byval info as al_ffblk ptr)
 #define F_READ_PACKED "rp"
 #define F_WRITE_PACKED "wp"
 #define F_WRITE_NOPACK "w!"
-#define F_BUF_SIZE 4096
-#define F_PACK_MAGIC cast(clong, &h736C6821)
-#define F_NOPACK_MAGIC cast(clong, &h736C682E)
-#define F_EXE_MAGIC cast(clong, &h736C682B)
-#define PACKFILE_FLAG_WRITE 1
-#define PACKFILE_FLAG_PACK 2
-#define PACKFILE_FLAG_CHUNK 4
-#define PACKFILE_FLAG_EOF 8
-#define PACKFILE_FLAG_ERROR 16
-#define PACKFILE_FLAG_OLD_CRYPT 32
-#define PACKFILE_FLAG_EXEDAT 64
+const F_BUF_SIZE = 4096
+const F_PACK_MAGIC = cast(clong, &h736C6821)
+const F_NOPACK_MAGIC = cast(clong, &h736C682E)
+const F_EXE_MAGIC = cast(clong, &h736C682B)
+const PACKFILE_FLAG_WRITE = 1
+const PACKFILE_FLAG_PACK = 2
+const PACKFILE_FLAG_CHUNK = 4
+const PACKFILE_FLAG_EOF = 8
+const PACKFILE_FLAG_ERROR = 16
+const PACKFILE_FLAG_OLD_CRYPT = 32
+const PACKFILE_FLAG_EXEDAT = 64
 type LZSS_PACK_DATA as LZSS_PACK_DATA_
 type LZSS_UNPACK_DATA as LZSS_UNPACK_DATA_
 
@@ -2462,7 +2462,7 @@ declare function lzss_read(byval file as PACKFILE ptr, byval dat as LZSS_UNPACK_
 #define DAT_PALETTE DAT_ID(asc("P"), asc("A"), asc("L"), asc(" "))
 #define DAT_PROPERTY DAT_ID(asc("p"), asc("r"), asc("o"), asc("p"))
 #define DAT_NAME DAT_ID(asc("N"), asc("A"), asc("M"), asc("E"))
-#define DAT_END (-1)
+const DAT_END = -1
 
 type DATAFILE_PROPERTY
 	dat as zstring ptr
@@ -2603,11 +2603,11 @@ declare sub get_vector_rotation_quat(byval q as QUAT ptr, byval x as single, byv
 declare sub apply_quat(byval q as const QUAT ptr, byval x as single, byval y as single, byval z as single, byval xout as single ptr, byval yout as single ptr, byval zout as single ptr)
 declare sub quat_slerp(byval from as const QUAT ptr, byval to as const QUAT ptr, byval t as single, byval out as QUAT ptr, byval how as long)
 
-#define QUAT_SHORT 0
-#define QUAT_LONG 1
-#define QUAT_CW 2
-#define QUAT_CCW 3
-#define QUAT_USER 4
+const QUAT_SHORT = 0
+const QUAT_LONG = 1
+const QUAT_CW = 2
+const QUAT_CCW = 3
+const QUAT_USER = 4
 #define quat_interpolate(from, to, t, out) quat_slerp((from), (to), (t), (out), QUAT_SHORT)
 #define ALLEGRO_3DMATHS_H
 
@@ -2637,8 +2637,8 @@ declare sub persp_project(byval x as fixed, byval y as fixed, byval z as fixed, 
 declare sub persp_project_f(byval x as single, byval y as single, byval z as single, byval xout as single ptr, byval yout as single ptr)
 
 #define ALLEGRO_COMPAT_H
-#define KB_NORMAL 1
-#define KB_EXTENDED 2
+const KB_NORMAL = 1
+const KB_EXTENDED = 2
 #define SEND_MESSAGE object_message
 #define cpu_fpu_ (cpu_capabilities and CPU_FPU)
 #define cpu_mmx_ (cpu_capabilities and CPU_MMX)
@@ -2668,12 +2668,12 @@ declare sub persp_project_f(byval x as single, byval y as single, byval z as sin
 #define joy2_b2 joy[1].button[1].b
 #define joy_throttle joy[0].stick[2].axis[0].pos
 #define joy_hat iif(joy[0].stick[1].axis[0].d1, 1, iif(joy[0].stick[1].axis[0].d2, 3, iif(joy[0].stick[1].axis[1].d1, 4, iif(joy[0].stick[1].axis[1].d2, 2, 0))))
-#define JOY_HAT_CENTRE 0
-#define JOY_HAT_CENTER 0
-#define JOY_HAT_LEFT 1
-#define JOY_HAT_DOWN 2
-#define JOY_HAT_RIGHT 3
-#define JOY_HAT_UP 4
+const JOY_HAT_CENTRE = 0
+const JOY_HAT_CENTER = 0
+const JOY_HAT_LEFT = 1
+const JOY_HAT_DOWN = 2
+const JOY_HAT_RIGHT = 3
+const JOY_HAT_UP = 4
 declare function initialise_joystick() as long
 #define black_pallete black_palette
 #define desktop_pallete desktop_palette
@@ -2689,8 +2689,8 @@ declare function initialise_joystick() as long
 #define generate_332_pallete generate_332_palette
 #define generate_optimised_pallete generate_optimised_palette
 #define fix_filename_path canonicalize_filename
-#define OLD_FILESEL_WIDTH (-1)
-#define OLD_FILESEL_HEIGHT (-1)
+const OLD_FILESEL_WIDTH = -1
+const OLD_FILESEL_HEIGHT = -1
 
 declare function file_select(byval message as const zstring ptr, byval path as zstring ptr, byval ext as const zstring ptr) as long
 declare function for_each_file(byval name as const zstring ptr, byval attrib as long, byval callback as sub(byval filename as const zstring ptr, byval attrib as long, byval param as long), byval param as long) as long

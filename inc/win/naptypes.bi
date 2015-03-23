@@ -3,25 +3,25 @@
 #define _INC_NAPTYPES
 
 #if _WIN32_WINNT = &h0602
-	#define maxSoHAttributeCount &h64
-	#define maxSoHAttributeSize &hFA0
-	#define minNetworkSoHSize &hC
-	#define maxNetworkSoHSize &hFA0
+	const maxSoHAttributeCount = &h64
+	const maxSoHAttributeSize = &hFA0
+	const minNetworkSoHSize = &hC
+	const maxNetworkSoHSize = &hFA0
 	#define maxDwordCountPerSoHAttribute (maxSoHAttributeSize / sizeof(DWORD))
 	#define maxIpv4CountPerSoHAttribute (maxSoHAttributeSize / &h4)
 	#define maxIpv6CountPerSoHAttribute (maxSoHAttributeSize / &h10)
-	#define maxStringLength &h400
+	const maxStringLength = &h400
 	#define maxStringLengthInBytes ((maxStringLength + 1) * sizeof(wchar_t))
-	#define maxSystemHealthEntityCount &h14
-	#define maxEnforcerCount &h14
-	#define maxPrivateDataSize &hC8
-	#define maxConnectionCountPerEnforcer &h14
+	const maxSystemHealthEntityCount = &h14
+	const maxEnforcerCount = &h14
+	const maxPrivateDataSize = &hC8
+	const maxConnectionCountPerEnforcer = &h14
 	#define maxCachedSoHCount ((maxSystemHealthEntityCount * maxEnforcerCount) * maxConnectionCountPerEnforcer)
-	#define freshSoHRequest &h1
-	#define shaFixup &h1
-	#define failureCategoryCount &h5
-	#define ComponentTypeEnforcementClientSoH &h1
-	#define ComponentTypeEnforcementClientRp &h2
+	const freshSoHRequest = &h1
+	const shaFixup = &h1
+	const failureCategoryCount = &h5
+	const ComponentTypeEnforcementClientSoH = &h1
+	const ComponentTypeEnforcementClientRp = &h2
 	#define NAPTypes
 
 	type tagCountedString

@@ -8,7 +8,7 @@
 
 '' The following symbols have been renamed:
 ''     #define NCURSES_BOOL => NCURSES_BOOL_
-''     #define ERR => ERR_
+''     constant ERR => ERR_
 ''     typedef SCREEN => SCREEN_
 ''     typedef WINDOW => WINDOW_
 ''     procedure beep => beep_
@@ -23,26 +23,26 @@
 extern "C"
 
 #define __NCURSES_H
-#define CURSES 1
-#define CURSES_H 1
-#define NCURSES_VERSION_MAJOR 5
-#define NCURSES_VERSION_MINOR 9
-#define NCURSES_VERSION_PATCH 20110404
-#define NCURSES_MOUSE_VERSION 1
-#define NCURSES_DLL_H_incl 1
-#define NCURSES_ENABLE_STDBOOL_H 1
+const CURSES = 1
+const CURSES_H = 1
+const NCURSES_VERSION_MAJOR = 5
+const NCURSES_VERSION_MINOR = 9
+const NCURSES_VERSION_PATCH = 20110404
+const NCURSES_MOUSE_VERSION = 1
+const NCURSES_DLL_H_incl = 1
+const NCURSES_ENABLE_STDBOOL_H = 1
 #define NCURSES_ATTR_T long
 #define NCURSES_COLOR_T short
-#define NCURSES_OPAQUE 0
-#define NCURSES_REENTRANT 0
-#define NCURSES_INTEROP_FUNCS 0
+const NCURSES_OPAQUE = 0
+const NCURSES_REENTRANT = 0
+const NCURSES_INTEROP_FUNCS = 0
 #define NCURSES_SIZE_T short
-#define NCURSES_TPARM_VARARGS 1
+const NCURSES_TPARM_VARARGS = 1
 #define NCURSES_CH_T chtype
 type chtype as culong
 type mmask_t as culong
-#define TRUE 1
-#define FALSE 0
+const TRUE = 1
+const FALSE = 0
 type NCURSES_BOOL as ubyte
 #define NCURSES_BOOL_ bool
 #define NCURSES_CAST(type, value) cast(type, value)
@@ -63,14 +63,14 @@ type NCURSES_BOOL as ubyte
 #define WA_RIGHT A_RIGHT
 #define WA_TOP A_TOP
 #define WA_VERTICAL A_VERTICAL
-#define COLOR_BLACK 0
-#define COLOR_RED 1
-#define COLOR_GREEN 2
-#define COLOR_YELLOW 3
-#define COLOR_BLUE 4
-#define COLOR_MAGENTA 5
-#define COLOR_CYAN 6
-#define COLOR_WHITE 7
+const COLOR_BLACK = 0
+const COLOR_RED = 1
+const COLOR_GREEN = 2
+const COLOR_YELLOW = 3
+const COLOR_BLUE = 4
+const COLOR_MAGENTA = 5
+const COLOR_CYAN = 6
+const COLOR_WHITE = 7
 #define acs_map(i) ((@__acs_map)[i])
 extern __acs_map alias "acs_map" as chtype
 #define NCURSES_ACS(c) (acs_map(cubyte(c)))
@@ -117,17 +117,17 @@ extern __acs_map alias "acs_map" as chtype
 #define ACS_BSBS ACS_HLINE
 #define ACS_SBSB ACS_VLINE
 #define ACS_SSSS ACS_PLUS
-#define ERR_ (-1)
-#define OK 0
-#define _SUBWIN &h01
-#define _ENDLINE &h02
-#define _FULLWIN &h04
-#define _SCROLLWIN &h08
-#define _ISPAD &h10
-#define _HASMOVED &h20
-#define _WRAPPED &h40
-#define _NOCHANGE (-1)
-#define _NEWINDEX (-1)
+const ERR_ = -1
+const OK = 0
+const _SUBWIN = &h01
+const _ENDLINE = &h02
+const _FULLWIN = &h04
+const _SCROLLWIN = &h08
+const _ISPAD = &h10
+const _HASMOVED = &h20
+const _WRAPPED = &h40
+const _NOCHANGE = -1
+const _NEWINDEX = -1
 type WINDOW_ as _win_st
 type attr_t as chtype
 
@@ -333,7 +333,7 @@ declare function putp(byval as const zstring ptr) as long
 declare function tparm(byval as zstring ptr, ...) as zstring ptr
 declare function tiparm(byval as const zstring ptr, ...) as zstring ptr
 #define vid_attr(a, pair, opts) vidattr(a)
-#define NCURSES_EXT_FUNCS 20110404
+const NCURSES_EXT_FUNCS = 20110404
 type NCURSES_WINDOW_CB as function(byval as WINDOW_ ptr, byval as any ptr) as long
 type NCURSES_SCREEN_CB as function(byval as SCREEN_ ptr, byval as any ptr) as long
 declare function is_term_resized(byval as long, byval as long) as byte
@@ -356,12 +356,12 @@ declare function use_window(byval as WINDOW_ ptr, byval as NCURSES_WINDOW_CB, by
 declare function wresize(byval as WINDOW_ ptr, byval as long, byval as long) as long
 declare sub nofilter()
 
-#define NCURSES_SP_FUNCS 0
+const NCURSES_SP_FUNCS = 0
 #define NCURSES_SP_NAME(name) name
 #define NCURSES_SP_OUTC NCURSES_OUTC
-#define NCURSES_ATTR_SHIFT 8
+const NCURSES_ATTR_SHIFT = 8
 #define NCURSES_BITS(mask, shift) ((mask) shl ((shift) + NCURSES_ATTR_SHIFT))
-#define A_NORMAL (cast(culong, 1) - cast(culong, 1))
+const A_NORMAL = cast(culong, 1) - cast(culong, 1)
 #define A_ATTRIBUTES NCURSES_BITS(not (cast(culong, 1) - cast(culong, 1)), 0)
 #define A_CHARTEXT (NCURSES_BITS(cast(culong, 1), 0) - cast(culong, 1))
 #define A_COLOR NCURSES_BITS((cast(culong, 1) shl 8) - cast(culong, 1), 0)
@@ -581,109 +581,109 @@ extern ESCDELAY as long
 extern LINES as long
 extern TABSIZE as long
 
-#define KEY_CODE_YES &o400
-#define KEY_MIN &o401
-#define KEY_BREAK &o401
-#define KEY_SRESET &o530
-#define KEY_RESET &o531
-#define KEY_DOWN &o402
-#define KEY_UP &o403
-#define KEY_LEFT &o404
-#define KEY_RIGHT &o405
-#define KEY_HOME &o406
-#define KEY_BACKSPACE &o407
-#define KEY_F0 &o410
+const KEY_CODE_YES = &o400
+const KEY_MIN = &o401
+const KEY_BREAK = &o401
+const KEY_SRESET = &o530
+const KEY_RESET = &o531
+const KEY_DOWN = &o402
+const KEY_UP = &o403
+const KEY_LEFT = &o404
+const KEY_RIGHT = &o405
+const KEY_HOME = &o406
+const KEY_BACKSPACE = &o407
+const KEY_F0 = &o410
 #define KEY_F(n) (KEY_F0 + (n))
-#define KEY_DL &o510
-#define KEY_IL &o511
-#define KEY_DC &o512
-#define KEY_IC &o513
-#define KEY_EIC &o514
-#define KEY_CLEAR &o515
-#define KEY_EOS &o516
-#define KEY_EOL &o517
-#define KEY_SF &o520
-#define KEY_SR &o521
-#define KEY_NPAGE &o522
-#define KEY_PPAGE &o523
-#define KEY_STAB &o524
-#define KEY_CTAB &o525
-#define KEY_CATAB &o526
-#define KEY_ENTER &o527
-#define KEY_PRINT &o532
-#define KEY_LL &o533
-#define KEY_A1 &o534
-#define KEY_A3 &o535
-#define KEY_B2 &o536
-#define KEY_C1 &o537
-#define KEY_C3 &o540
-#define KEY_BTAB &o541
-#define KEY_BEG &o542
-#define KEY_CANCEL &o543
-#define KEY_CLOSE &o544
-#define KEY_COMMAND &o545
-#define KEY_COPY &o546
-#define KEY_CREATE &o547
-#define KEY_END &o550
-#define KEY_EXIT &o551
-#define KEY_FIND &o552
-#define KEY_HELP &o553
-#define KEY_MARK &o554
-#define KEY_MESSAGE &o555
-#define KEY_MOVE &o556
-#define KEY_NEXT &o557
-#define KEY_OPEN &o560
-#define KEY_OPTIONS &o561
-#define KEY_PREVIOUS &o562
-#define KEY_REDO &o563
-#define KEY_REFERENCE &o564
-#define KEY_REFRESH &o565
-#define KEY_REPLACE &o566
-#define KEY_RESTART &o567
-#define KEY_RESUME &o570
-#define KEY_SAVE &o571
-#define KEY_SBEG &o572
-#define KEY_SCANCEL &o573
-#define KEY_SCOMMAND &o574
-#define KEY_SCOPY &o575
-#define KEY_SCREATE &o576
-#define KEY_SDC &o577
-#define KEY_SDL &o600
-#define KEY_SELECT &o601
-#define KEY_SEND &o602
-#define KEY_SEOL &o603
-#define KEY_SEXIT &o604
-#define KEY_SFIND &o605
-#define KEY_SHELP &o606
-#define KEY_SHOME &o607
-#define KEY_SIC &o610
-#define KEY_SLEFT &o611
-#define KEY_SMESSAGE &o612
-#define KEY_SMOVE &o613
-#define KEY_SNEXT &o614
-#define KEY_SOPTIONS &o615
-#define KEY_SPREVIOUS &o616
-#define KEY_SPRINT &o617
-#define KEY_SREDO &o620
-#define KEY_SREPLACE &o621
-#define KEY_SRIGHT &o622
-#define KEY_SRSUME &o623
-#define KEY_SSAVE &o624
-#define KEY_SSUSPEND &o625
-#define KEY_SUNDO &o626
-#define KEY_SUSPEND &o627
-#define KEY_UNDO &o630
-#define KEY_MOUSE &o631
-#define KEY_RESIZE &o632
-#define KEY_EVENT &o633
-#define KEY_MAX &o777
+const KEY_DL = &o510
+const KEY_IL = &o511
+const KEY_DC = &o512
+const KEY_IC = &o513
+const KEY_EIC = &o514
+const KEY_CLEAR = &o515
+const KEY_EOS = &o516
+const KEY_EOL = &o517
+const KEY_SF = &o520
+const KEY_SR = &o521
+const KEY_NPAGE = &o522
+const KEY_PPAGE = &o523
+const KEY_STAB = &o524
+const KEY_CTAB = &o525
+const KEY_CATAB = &o526
+const KEY_ENTER = &o527
+const KEY_PRINT = &o532
+const KEY_LL = &o533
+const KEY_A1 = &o534
+const KEY_A3 = &o535
+const KEY_B2 = &o536
+const KEY_C1 = &o537
+const KEY_C3 = &o540
+const KEY_BTAB = &o541
+const KEY_BEG = &o542
+const KEY_CANCEL = &o543
+const KEY_CLOSE = &o544
+const KEY_COMMAND = &o545
+const KEY_COPY = &o546
+const KEY_CREATE = &o547
+const KEY_END = &o550
+const KEY_EXIT = &o551
+const KEY_FIND = &o552
+const KEY_HELP = &o553
+const KEY_MARK = &o554
+const KEY_MESSAGE = &o555
+const KEY_MOVE = &o556
+const KEY_NEXT = &o557
+const KEY_OPEN = &o560
+const KEY_OPTIONS = &o561
+const KEY_PREVIOUS = &o562
+const KEY_REDO = &o563
+const KEY_REFERENCE = &o564
+const KEY_REFRESH = &o565
+const KEY_REPLACE = &o566
+const KEY_RESTART = &o567
+const KEY_RESUME = &o570
+const KEY_SAVE = &o571
+const KEY_SBEG = &o572
+const KEY_SCANCEL = &o573
+const KEY_SCOMMAND = &o574
+const KEY_SCOPY = &o575
+const KEY_SCREATE = &o576
+const KEY_SDC = &o577
+const KEY_SDL = &o600
+const KEY_SELECT = &o601
+const KEY_SEND = &o602
+const KEY_SEOL = &o603
+const KEY_SEXIT = &o604
+const KEY_SFIND = &o605
+const KEY_SHELP = &o606
+const KEY_SHOME = &o607
+const KEY_SIC = &o610
+const KEY_SLEFT = &o611
+const KEY_SMESSAGE = &o612
+const KEY_SMOVE = &o613
+const KEY_SNEXT = &o614
+const KEY_SOPTIONS = &o615
+const KEY_SPREVIOUS = &o616
+const KEY_SPRINT = &o617
+const KEY_SREDO = &o620
+const KEY_SREPLACE = &o621
+const KEY_SRIGHT = &o622
+const KEY_SRSUME = &o623
+const KEY_SSAVE = &o624
+const KEY_SSUSPEND = &o625
+const KEY_SUNDO = &o626
+const KEY_SUSPEND = &o627
+const KEY_UNDO = &o630
+const KEY_MOUSE = &o631
+const KEY_RESIZE = &o632
+const KEY_EVENT = &o633
+const KEY_MAX = &o777
 #define NCURSES_MOUSE_MASK(b, m) ((m) shl (((b) - 1) * 6))
-#define NCURSES_BUTTON_RELEASED cast(clong, &o01)
-#define NCURSES_BUTTON_PRESSED cast(clong, &o02)
-#define NCURSES_BUTTON_CLICKED cast(clong, &o04)
-#define NCURSES_DOUBLE_CLICKED cast(clong, &o10)
-#define NCURSES_TRIPLE_CLICKED cast(clong, &o20)
-#define NCURSES_RESERVED_EVENT cast(clong, &o40)
+const NCURSES_BUTTON_RELEASED = cast(clong, &o01)
+const NCURSES_BUTTON_PRESSED = cast(clong, &o02)
+const NCURSES_BUTTON_CLICKED = cast(clong, &o04)
+const NCURSES_DOUBLE_CLICKED = cast(clong, &o10)
+const NCURSES_TRIPLE_CLICKED = cast(clong, &o20)
+const NCURSES_RESERVED_EVENT = cast(clong, &o40)
 #define BUTTON1_RELEASED NCURSES_MOUSE_MASK(1, NCURSES_BUTTON_RELEASED)
 #define BUTTON1_PRESSED NCURSES_MOUSE_MASK(1, NCURSES_BUTTON_PRESSED)
 #define BUTTON1_CLICKED NCURSES_MOUSE_MASK(1, NCURSES_BUTTON_CLICKED)
@@ -752,24 +752,24 @@ declare function _tracechtype2(byval as long, byval as chtype) as zstring ptr
 declare function _tracemouse(byval as const MEVENT ptr) as zstring ptr
 declare sub trace(byval as const ulong)
 
-#define TRACE_DISABLE &h0000
-#define TRACE_TIMES &h0001
-#define TRACE_TPUTS &h0002
-#define TRACE_UPDATE &h0004
-#define TRACE_MOVE &h0008
-#define TRACE_CHARPUT &h0010
-#define TRACE_ORDINARY &h001F
-#define TRACE_CALLS &h0020
-#define TRACE_VIRTPUT &h0040
-#define TRACE_IEVENT &h0080
-#define TRACE_BITS &h0100
-#define TRACE_ICALLS &h0200
-#define TRACE_CCALLS &h0400
-#define TRACE_DATABASE &h0800
-#define TRACE_ATTRS &h1000
-#define TRACE_SHIFT 13
+const TRACE_DISABLE = &h0000
+const TRACE_TIMES = &h0001
+const TRACE_TPUTS = &h0002
+const TRACE_UPDATE = &h0004
+const TRACE_MOVE = &h0008
+const TRACE_CHARPUT = &h0010
+const TRACE_ORDINARY = &h001F
+const TRACE_CALLS = &h0020
+const TRACE_VIRTPUT = &h0040
+const TRACE_IEVENT = &h0080
+const TRACE_BITS = &h0100
+const TRACE_ICALLS = &h0200
+const TRACE_CCALLS = &h0400
+const TRACE_DATABASE = &h0800
+const TRACE_ATTRS = &h1000
+const TRACE_SHIFT = 13
 #define TRACE_MAXIMUM ((1 shl TRACE_SHIFT) - 1)
-#define NCURSES_UNCTRL_H_incl 1
+const NCURSES_UNCTRL_H_incl = 1
 #define NCURSES_VERSION "5.9"
 declare function unctrl(byval as chtype) as zstring ptr
 

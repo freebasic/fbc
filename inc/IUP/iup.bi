@@ -29,7 +29,7 @@ extern "C"
 #define IUP_COPYRIGHT "Copyright (C) 1994-2014 Tecgraf, PUC-Rio."
 #define IUP_DESCRIPTION "Multi-platform toolkit for building graphical user interfaces."
 #define IUP_VERSION "3.11"
-#define IUP_VERSION_NUMBER 311000
+const IUP_VERSION_NUMBER = 311000
 #define IUP_VERSION_DATE "2014/07/28"
 type Ihandle as Ihandle_
 type Icallback as function(byval as Ihandle ptr) as long
@@ -246,21 +246,21 @@ declare function IupGetParamv(byval title as const zstring ptr, byval action as 
 declare function IupLayoutDialog(byval dialog as Ihandle ptr) as Ihandle ptr
 declare function IupElementPropertiesDialog(byval elem as Ihandle ptr) as Ihandle ptr
 
-#define IUP_ERROR 1
-#define IUP_NOERROR 0
-#define IUP_OPENED (-1)
-#define IUP_INVALID (-1)
-#define IUP_INVALID_ID (-10)
-#define IUP_IGNORE (-1)
-#define IUP_DEFAULT (-2)
-#define IUP_CLOSE (-3)
-#define IUP_CONTINUE (-4)
-#define IUP_CENTER &hFFFF
-#define IUP_LEFT &hFFFE
-#define IUP_RIGHT &hFFFD
-#define IUP_MOUSEPOS &hFFFC
-#define IUP_CURRENT &hFFFB
-#define IUP_CENTERPARENT &hFFFA
+const IUP_ERROR = 1
+const IUP_NOERROR = 0
+const IUP_OPENED = -1
+const IUP_INVALID = -1
+const IUP_INVALID_ID = -10
+const IUP_IGNORE = -1
+const IUP_DEFAULT = -2
+const IUP_CLOSE = -3
+const IUP_CONTINUE = -4
+const IUP_CENTER = &hFFFF
+const IUP_LEFT = &hFFFE
+const IUP_RIGHT = &hFFFD
+const IUP_MOUSEPOS = &hFFFC
+const IUP_CURRENT = &hFFFB
+const IUP_CENTERPARENT = &hFFFA
 #define IUP_TOP IUP_LEFT
 #define IUP_BOTTOM IUP_RIGHT
 
@@ -322,10 +322,10 @@ end enum
 #define IUPMASK_EFLOAT IUP_MASK_EFLOAT
 #define IUPMASK_INT IUP_MASK_INT
 #define IUPMASK_UINT IUP_MASK_UINT
-#define IUP_GETPARAM_OK (-1)
-#define IUP_GETPARAM_INIT (-2)
-#define IUP_GETPARAM_CANCEL (-3)
-#define IUP_GETPARAM_HELP (-4)
+const IUP_GETPARAM_OK = -1
+const IUP_GETPARAM_INIT = -2
+const IUP_GETPARAM_CANCEL = -3
+const IUP_GETPARAM_HELP = -4
 
 enum
 	IUP_RECBINARY

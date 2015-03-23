@@ -7,10 +7,10 @@
 extern "C"
 
 #define _FCGIAPP_H
-#define FCGX_UNSUPPORTED_VERSION (-2)
-#define FCGX_PROTOCOL_ERROR (-3)
-#define FCGX_PARAMS_ERROR (-4)
-#define FCGX_CALL_SEQ_ERROR (-5)
+const FCGX_UNSUPPORTED_VERSION = -2
+const FCGX_PROTOCOL_ERROR = -3
+const FCGX_PARAMS_ERROR = -4
+const FCGX_CALL_SEQ_ERROR = -5
 
 type FCGX_Stream
 	rdNext as ubyte ptr
@@ -27,7 +27,7 @@ type FCGX_Stream
 end type
 
 type FCGX_ParamArray as zstring ptr ptr
-#define FCGI_FAIL_ACCEPT_ON_INTR 1
+const FCGI_FAIL_ACCEPT_ON_INTR = 1
 type Params as Params_
 
 type FCGX_Request

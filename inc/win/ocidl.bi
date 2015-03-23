@@ -294,11 +294,11 @@ end type
 declare function IProvideClassInfo2_GetGUID_Proxy(byval This as IProvideClassInfo2 ptr, byval dwGuidKind as DWORD, byval pGUID as GUID ptr) as HRESULT
 declare sub IProvideClassInfo2_GetGUID_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 #define __IProvideMultipleClassInfo_INTERFACE_DEFINED__
-#define MULTICLASSINFO_GETTYPEINFO &h1
-#define MULTICLASSINFO_GETNUMRESERVEDDISPIDS &h2
-#define MULTICLASSINFO_GETIIDPRIMARY &h4
-#define MULTICLASSINFO_GETIIDSOURCE &h8
-#define TIFLAGS_EXTENDDISPATCHONLY &h1
+const MULTICLASSINFO_GETTYPEINFO = &h1
+const MULTICLASSINFO_GETNUMRESERVEDDISPIDS = &h2
+const MULTICLASSINFO_GETIIDPRIMARY = &h4
+const MULTICLASSINFO_GETIIDSOURCE = &h8
+const TIFLAGS_EXTENDDISPATCHONLY = &h1
 type IProvideMultipleClassInfo as IProvideMultipleClassInfo_
 type LPPROVIDEMULTIPLECLASSINFO as IProvideMultipleClassInfo ptr
 extern IID_IProvideMultipleClassInfo as const GUID

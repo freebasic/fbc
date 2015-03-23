@@ -5,23 +5,23 @@
 extern "Windows"
 
 #define _MSWSOCK_
-#define SO_CONNDATA &h7000
-#define SO_CONNOPT &h7001
-#define SO_DISCDATA &h7002
-#define SO_DISCOPT &h7003
-#define SO_CONNDATALEN &h7004
-#define SO_CONNOPTLEN &h7005
-#define SO_DISCDATALEN &h7006
-#define SO_DISCOPTLEN &h7007
-#define SO_OPENTYPE &h7008
-#define SO_SYNCHRONOUS_ALERT &h10
-#define SO_SYNCHRONOUS_NONALERT &h20
-#define SO_MAXDG &h7009
-#define SO_MAXPATHDG &h700A
-#define SO_UPDATE_ACCEPT_CONTEXT &h700B
-#define SO_CONNECT_TIME &h700C
-#define SO_UPDATE_CONNECT_CONTEXT &h7010
-#define TCP_BSDURGENT &h7000
+const SO_CONNDATA = &h7000
+const SO_CONNOPT = &h7001
+const SO_DISCDATA = &h7002
+const SO_DISCOPT = &h7003
+const SO_CONNDATALEN = &h7004
+const SO_CONNOPTLEN = &h7005
+const SO_DISCDATALEN = &h7006
+const SO_DISCOPTLEN = &h7007
+const SO_OPENTYPE = &h7008
+const SO_SYNCHRONOUS_ALERT = &h10
+const SO_SYNCHRONOUS_NONALERT = &h20
+const SO_MAXDG = &h7009
+const SO_MAXPATHDG = &h700A
+const SO_UPDATE_ACCEPT_CONTEXT = &h700B
+const SO_CONNECT_TIME = &h700C
+const SO_UPDATE_CONNECT_CONTEXT = &h7010
+const TCP_BSDURGENT = &h7000
 #define SIO_UDP_CONNRESET _WSAIOW(IOC_VENDOR, 12)
 
 #if _WIN32_WINNT = &h0502
@@ -37,12 +37,12 @@ extern "Windows"
 #endif
 
 declare function WSARecvEx(byval s as SOCKET, byval buf as zstring ptr, byval len as long, byval flags as long ptr) as long
-#define TF_DISCONNECT &h01
-#define TF_REUSE_SOCKET &h02
-#define TF_WRITE_BEHIND &h04
-#define TF_USE_DEFAULT_WORKER &h00
-#define TF_USE_SYSTEM_THREAD &h10
-#define TF_USE_KERNEL_APC &h20
+const TF_DISCONNECT = &h01
+const TF_REUSE_SOCKET = &h02
+const TF_WRITE_BEHIND = &h04
+const TF_USE_DEFAULT_WORKER = &h00
+const TF_USE_SYSTEM_THREAD = &h10
+const TF_USE_KERNEL_APC = &h20
 #define __MINGW_TRANSMIT_FILE_H
 
 type _TRANSMIT_FILE_BUFFERS
@@ -84,9 +84,9 @@ type TRANSMIT_PACKETS_ELEMENT as _TRANSMIT_PACKETS_ELEMENT
 type PTRANSMIT_PACKETS_ELEMENT as _TRANSMIT_PACKETS_ELEMENT ptr
 type LPTRANSMIT_PACKETS_ELEMENT as _TRANSMIT_PACKETS_ELEMENT ptr
 
-#define TP_ELEMENT_MEMORY 1
-#define TP_ELEMENT_FILE 2
-#define TP_ELEMENT_EOP 4
+const TP_ELEMENT_MEMORY = 1
+const TP_ELEMENT_FILE = 2
+const TP_ELEMENT_EOP = 4
 #define TP_DISCONNECT TF_DISCONNECT
 #define TP_REUSE_SOCKET TF_REUSE_SOCKET
 #define TP_USE_DEFAULT_WORKER TF_USE_DEFAULT_WORKER
@@ -101,8 +101,8 @@ type LPFN_DISCONNECTEX as function(byval s as SOCKET, byval lpOverlapped as LPOV
 #define DE_REUSE_SOCKET TF_REUSE_SOCKET
 #define NLA_NAMESPACE_GUID (&h6642243a, &h3ba8, &h4aa6, (&hba, &ha5, &h2e, &hb, &hd7, &h1f, &hdd, &h83))
 #define NLA_SERVICE_CLASS_GUID (&h37e515, &hb5c9, &h4a43, (&hba, &hda, &h8b, &h48, &ha8, &h7a, &hd2, &h39))
-#define NLA_ALLUSERS_NETWORK &h00000001
-#define NLA_FRIENDLY_NAME &h00000002
+const NLA_ALLUSERS_NETWORK = &h00000001
+const NLA_FRIENDLY_NAME = &h00000002
 
 type _NLA_BLOB_DATA_TYPE as long
 enum
@@ -204,10 +204,10 @@ type LPWSACMSGHDR as _WSACMSGHDR ptr
 #define WSA_CMSG_DATA(cmsg) (cptr(u_char ptr, (cmsg)) + WSA_CMSGDATA_ALIGN(sizeof(WSACMSGHDR)))
 #define WSA_CMSG_SPACE(length) WSA_CMSGDATA_ALIGN(sizeof(WSACMSGHDR) + WSA_CMSGHDR_ALIGN(length))
 #define WSA_CMSG_LEN(length) (WSA_CMSGDATA_ALIGN(sizeof(WSACMSGHDR)) + length)
-#define MSG_TRUNC &h0100
-#define MSG_CTRUNC &h0200
-#define MSG_BCAST &h0400
-#define MSG_MCAST &h0800
+const MSG_TRUNC = &h0100
+const MSG_CTRUNC = &h0200
+const MSG_BCAST = &h0400
+const MSG_MCAST = &h0800
 type LPFN_WSARECVMSG as function(byval s as SOCKET, byval lpMsg as LPWSAMSG, byval lpdwNumberOfBytesRecvd as LPDWORD, byval lpOverlapped as LPWSAOVERLAPPED, byval lpCompletionRoutine as LPWSAOVERLAPPED_COMPLETION_ROUTINE) as INT_
 #define WSAID_WSARECVMSG (&hf689d7c8, &h6f1f, &h436b, (&h8a, &h53, &he5, &h4f, &he3, &h51, &hc3, &h22))
 
