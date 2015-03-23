@@ -1,8 +1,8 @@
 #pragma once
 
-#include once "sqltypes.bi"
-
 #inclib "odbc32"
+
+#include once "sqltypes.bi"
 
 extern "Windows"
 

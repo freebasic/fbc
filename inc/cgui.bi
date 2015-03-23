@@ -1,21 +1,173 @@
 #pragma once
+
 #inclib "cgui"
 
 #include once "crt/long.bi"
 #include once "crt/stdio.bi"
 #include once "crt/errno.bi"
 #include once "crt/stdlib.bi"
+#include once "allegro.bi"
 
 '' The following symbols have been renamed:
+''     #define DIR_TOPLEFT => CGUI_DIR_TOPLEFT
+''     #define DIR_RIGHT => CGUI_DIR_RIGHT
+''     #define DIR_LEFT => CGUI_DIR_LEFT
+''     #define DIR_DOWNLEFT => CGUI_DIR_DOWNLEFT
+''     #define DIR_DOWN => CGUI_DIR_DOWN
+''     #define AUTOINDICATOR => CGUI_AUTOINDICATOR
+''     #define ALIGNCENTRE => CGUI_ALIGNCENTRE
+''     #define ALIGNBOTTOM => CGUI_ALIGNBOTTOM
+''     #define ALIGNRIGHT => CGUI_ALIGNRIGHT
+''     #define HORIZONTAL => CGUI_HORIZONTAL
+''     #define VERTICAL => CGUI_VERTICAL
+''     #define FILLSPACE => CGUI_FILLSPACE
+''     #define EQUALWIDTH => CGUI_EQUALWIDTH
+''     #define EQUALHEIGHT => CGUI_EQUALHEIGHT
+''     #define W_SIBLING => CGUI_W_SIBLING
+''     #define W_NOMOVE => CGUI_W_NOMOVE
+''     #define W_FLOATING => CGUI_W_FLOATING
+''     #define W_TOP => CGUI_W_TOP
+''     #define W_BOTTOM => CGUI_W_BOTTOM
+''     #define W_LEFT => CGUI_W_LEFT
+''     #define W_RIGHT => CGUI_W_RIGHT
+''     #define W_CENTRE_H => CGUI_W_CENTRE_H
+''     #define W_CENTRE_V => CGUI_W_CENTRE_V
+''     #define W_CENTRE => CGUI_W_CENTRE
+''     #define ID_DESKTOP => CGUI_ID_DESKTOP
+''     #define R_HORIZONTAL => CGUI_R_HORIZONTAL
+''     #define R_VERTICAL => CGUI_R_VERTICAL
+''     #define TR_SHOWPOS => CGUI_TR_SHOWPOS
+''     #define SL_SCALE => CGUI_SL_SCALE
+''     #define SL_LABEL => CGUI_SL_LABEL
+''     #define SL_STYLE1 => CGUI_SL_STYLE1
+''     #define SL_STYLE2 => CGUI_SL_STYLE2
+''     #define SL_STYLE3 => CGUI_SL_STYLE3
+''     #define TB_FRAMERAISE => CGUI_TB_FRAMERAISE
+''     #define TB_FRAMESINK => CGUI_TB_FRAMESINK
+''     #define TB_PREFORMAT => CGUI_TB_PREFORMAT
+''     #define TB_LINEFEED_ => CGUI_TB_LINEFEED_
+''     #define TB_FIXFONT => CGUI_TB_FIXFONT
+''     #define TB_WHITE => CGUI_TB_WHITE
+''     #define TB_TEXTFILE => CGUI_TB_TEXTFILE
+''     #define TB_FOCUS_END => CGUI_TB_FOCUS_END
+''     #define TERMINATE_EDIT => CGUI_TERMINATE_EDIT
+''     #define FBYTE => CGUI_FBYTE
+''     #define FSHORT => CGUI_FSHORT
+''     #define FINT => CGUI_FINT
+''     #define FLONG => CGUI_FLONG
+''     #define FSTRING => CGUI_FSTRING
+''     #define FPTRSTR => CGUI_FPTRSTR
+''     #define FPOINTS => CGUI_FPOINTS
+''     #define FBPOINTS => CGUI_FBPOINTS
+''     #define FFLOAT => CGUI_FFLOAT
+''     #define FHEX1 => CGUI_FHEX1
+''     #define FHEX2 => CGUI_FHEX2
+''     #define FHEX4 => CGUI_FHEX4
+''     #define FOCT1 => CGUI_FOCT1
+''     #define FOCT2 => CGUI_FOCT2
+''     #define FOCT3 => CGUI_FOCT3
+''     #define FOCT4 => CGUI_FOCT4
+''     #define FNAME => CGUI_FNAME
+''     #define FBLANK0 => CGUI_FBLANK0
+''     #define FUNDEF => CGUI_FUNDEF
+''     #define B_UNDEF_VAL => CGUI_B_UNDEF_VAL
+''     #define S_UNDEF_VAL => CGUI_S_UNDEF_VAL
+''     #define I_UNDEF_VAL => CGUI_I_UNDEF_VAL
+''     #define L_UNDEF_VAL => CGUI_L_UNDEF_VAL
+''     #define P_UNDEF_VAL => CGUI_P_UNDEF_VAL
+''     #define BP_UNDEF_VAL => CGUI_BP_UNDEF_VAL
+''     #define IMAGE_BMP => CGUI_IMAGE_BMP
+''     #define IMAGE_TRANS_BMP => CGUI_IMAGE_TRANS_BMP
+''     #define IMAGE_RLE_SPRITE => CGUI_IMAGE_RLE_SPRITE
+''     #define IMAGE_CMP_SPRITE => CGUI_IMAGE_CMP_SPRITE
+''     #define LEFT_MOUSE => CGUI_LEFT_MOUSE
+''     #define RIGHT_MOUSE => CGUI_RIGHT_MOUSE
+''     #define DD_GRIPPED => CGUI_DD_GRIPPED
+''     #define DD_UNGRIPPED => CGUI_DD_UNGRIPPED
+''     #define DD_SUCCESS => CGUI_DD_SUCCESS
+''     #define DD_OVER_GRIP => CGUI_DD_OVER_GRIP
+''     #define DD_OVER_DROP => CGUI_DD_OVER_DROP
+''     #define DD_END_OVER_DROP => CGUI_DD_END_OVER_DROP
+''     #define SL_OVER => CGUI_SL_OVER
+''     #define SL_OVER_END => CGUI_SL_OVER_END
+''     #define SL_STARTED => CGUI_SL_STARTED
+''     #define SL_PROGRESS => CGUI_SL_PROGRESS
+''     #define SL_STOPPED => CGUI_SL_STOPPED
+''     #define SV_HIDE_LABEL => CGUI_SV_HIDE_LABEL
+''     #define SV_HIDE_ICON => CGUI_SV_HIDE_ICON
+''     #define SV_NO_TOOLTIP => CGUI_SV_NO_TOOLTIP
+''     #define SV_ONLY_BRIEF => CGUI_SV_ONLY_BRIEF
+''     #define SV_ONLY_LONG => CGUI_SV_ONLY_LONG
+''     #define SV_PREFERE_BRIEF => CGUI_SV_PREFERE_BRIEF
+''     #define SV_PREFERE_LONG => CGUI_SV_PREFERE_LONG
 ''     procedure Remove => Remove_
+''     #define CT_BORDER => CGUI_CT_BORDER
+''     #define CT_OBJECT_TABLE => CGUI_CT_OBJECT_TABLE
+''     #define OFF => CGUI_OFF
+''     #define ON => CGUI_ON
+''     #define ROW_STRIKE => CGUI_ROW_STRIKE
+''     #define ROW_UNDERLINE => CGUI_ROW_UNDERLINE
+''     #define ROW_CHECK => CGUI_ROW_CHECK
+''     #define ROW_UNCHECK => CGUI_ROW_UNCHECK
+''     #define COL_RIGHT_ALIGN => CGUI_COL_RIGHT_ALIGN
+''     #define ROW_COLUMN_UNDERLINE => CGUI_ROW_COLUMN_UNDERLINE
+''     #define TR_HIDE_ROOT => CGUI_TR_HIDE_ROOT
+''     #define LIST_COLUMNS_ADJUSTABLE => CGUI_LIST_COLUMNS_ADJUSTABLE
+''     #define LIST_COLUMNS_ADJUSTABLE_KEEP_BOX_WIDTH => CGUI_LIST_COLUMNS_ADJUSTABLE_KEEP_BOX_WIDTH
+''     #define LIST_COLUMNS_DELIMITER => CGUI_LIST_COLUMNS_DELIMITER
+''     #define FS_BROWSE_DAT => CGUI_FS_BROWSE_DAT
+''     #define FS_DISABLE_EDIT_DAT => CGUI_FS_DISABLE_EDIT_DAT
+''     #define FS_WARN_EXISTING_FILE => CGUI_FS_WARN_EXISTING_FILE
+''     #define FS_FORBID_EXISTING_FILE => CGUI_FS_FORBID_EXISTING_FILE
+''     #define FS_REQUIRE_EXISTING_FILE => CGUI_FS_REQUIRE_EXISTING_FILE
+''     #define FS_SELECT_DIR => CGUI_FS_SELECT_DIR
+''     #define FS_DISABLE_CREATE_DIR => CGUI_FS_DISABLE_CREATE_DIR
+''     #define FS_DISABLE_DELETING => CGUI_FS_DISABLE_DELETING
+''     #define FS_DISABLE_COPYING => CGUI_FS_DISABLE_COPYING
+''     #define FS_SHOW_MENU => CGUI_FS_SHOW_MENU
+''     #define FS_NO_SETTINGS_IN_CONFIG => CGUI_FS_NO_SETTINGS_IN_CONFIG
+''     #define FS_MULTIPLE_SELECTION => CGUI_FS_MULTIPLE_SELECTION
+''     #define FS_NO_DRAG_DROP => CGUI_FS_NO_DRAG_DROP
+''     #define FS_DIRECT_SELECT_BY_DOUBLE_CLICK => CGUI_FS_DIRECT_SELECT_BY_DOUBLE_CLICK
+''     #define FS_SAVE_AS => CGUI_FS_SAVE_AS
+''     #define FS_SHOW_DIR_TREE => CGUI_FS_SHOW_DIR_TREE
+''     #define FS_SHOW_DIRS_IN_FILE_VIEW => CGUI_FS_SHOW_DIRS_IN_FILE_VIEW
+''     #define FS_HIDE_LOCATION => CGUI_FS_HIDE_LOCATION
+''     #define FS_HIDE_UP_BUTTON => CGUI_FS_HIDE_UP_BUTTON
+''     #define FS_HIDE_UP_DIRECTORY => CGUI_FS_HIDE_UP_DIRECTORY
+''     #define FS_FILE_FILTER_IS_READ_ONLY => CGUI_FS_FILE_FILTER_IS_READ_ONLY
+''     #define FM_HIDE_FILE_VEW => CGUI_FM_HIDE_FILE_VEW
+''     #define FM_DO_NOT_SHOW_MENU => CGUI_FM_DO_NOT_SHOW_MENU
+''     #define FM_NO_FLOATING => CGUI_FM_NO_FLOATING
+''     #define FM_BROWSE_DAT => CGUI_FM_BROWSE_DAT
+''     #define FM_DISABLE_EDIT_DAT => CGUI_FM_DISABLE_EDIT_DAT
+''     #define FM_DISABLE_CREATE_DIR => CGUI_FM_DISABLE_CREATE_DIR
+''     #define FM_DISABLE_DELETING => CGUI_FM_DISABLE_DELETING
+''     #define FM_DISABLE_COPYING => CGUI_FM_DISABLE_COPYING
+''     #define FM_NO_SETTINGS_IN_CONFIG => CGUI_FM_NO_SETTINGS_IN_CONFIG
+''     #define FM_SHOW_DIR_TREE => CGUI_FM_SHOW_DIR_TREE
+''     #define FM_SHOW_DIRS_IN_FILE_VIEW => CGUI_FM_SHOW_DIRS_IN_FILE_VIEW
+''     #define FM_HIDE_LOCATION => CGUI_FM_HIDE_LOCATION
+''     #define FM_HIDE_UP_BUTTON => CGUI_FM_HIDE_UP_BUTTON
+''     #define FM_HIDE_UP_DIRECTORY => CGUI_FM_HIDE_UP_DIRECTORY
+''     #define CLOCK_SHOW_SECONDS => CGUI_CLOCK_SHOW_SECONDS
+''     #define CLOCK_SHOW_MINUTES => CGUI_CLOCK_SHOW_MINUTES
+''     #define CLOCK_NO_DIALOGUE => CGUI_CLOCK_NO_DIALOGUE
+''     #define CURS_ILLEGAL => CGUI_CURS_ILLEGAL
+''     #define CURS_DRAGGABLE => CGUI_CURS_DRAGGABLE
+''     #define CURS_DRAG_V => CGUI_CURS_DRAG_V
+''     #define CURS_DRAG_H => CGUI_CURS_DRAG_H
+''     #define CURS_CROSS => CGUI_CURS_CROSS
+''     #define CURS_BUSY => CGUI_CURS_BUSY
+''     #define CURS_DEFAULT => CGUI_CURS_DEFAULT
+''     #define NO_VERTICAL => CGUI_NO_VERTICAL
+''     #define NO_HORIZONTAL => CGUI_NO_HORIZONTAL
+''     #define FRAMERAISE => CGUI_FRAMERAISE
+''     #define FRAMESINK => CGUI_FRAMESINK
+''     #define W_NOMODAL => CGUI_W_NOMODAL
+''     #define W_CHILD => CGUI_W_CHILD
 
 extern "C"
-
-#ifndef FONT
-type FONT as FONT_
-type BITMAP as BITMAP_
-type DATAFILE as DATAFILE_
-#endif
 
 #if defined(CGUI_STATICLINK) or ((not defined(CGUI_STATICLINK)) and (defined(__FB_DOS__) or defined(__FB_LINUX__)))
 	#define EXTERNVAR extern
@@ -445,8 +597,7 @@ enum
 	NR_OF_CGUI_COLORS
 end enum
 
-EXTERNVAR cgui_colors(0 to NR_OF_CGUI_COLORS-1) as long
-
+EXTERNVAR cgui_colors(0 to NR_OF_CGUI_COLORS - 1) as long
 declare function CguiSetColor(byval color_name as long, byval r as long, byval g as long, byval b as long) as long
 declare sub NameCase(byval text as zstring ptr)
 declare sub Sound(byval freq as long, byval duration as long)

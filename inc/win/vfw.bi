@@ -1,14 +1,14 @@
 #pragma once
 
-#include once "_mingw_unicode.bi"
-#include once "mmreg.bi"
-#include once "ole2.bi"
-#include once "msacm.bi"
-
 #inclib "avifil32"
 #inclib "avicap32"
 #inclib "uuid"
 #inclib "vfw32"
+
+#include once "_mingw_unicode.bi"
+#include once "mmreg.bi"
+#include once "ole2.bi"
+#include once "msacm.bi"
 
 extern "Windows"
 
@@ -307,6 +307,7 @@ declare function ICSendMessage(byval hic as HIC, byval msg as UINT, byval dw1 as
 #define ICGetState(hic, pv, cb) ICSendMessage(hic, ICM_GETSTATE, cast(DWORD_PTR, cast(LPVOID, (pv))), cast(DWORD_PTR, (cb)))
 #define ICSetState(hic, pv, cb) ICSendMessage(hic, ICM_SETSTATE, cast(DWORD_PTR, cast(LPVOID, (pv))), cast(DWORD_PTR, (cb)))
 #define ICGetStateSize(hic) cast(DWORD, ICGetState(hic, NULL, 0))
+
 dim shared dwICValue as DWORD
 
 private function ICGetDefaultQuality(byval hic as HIC) as DWORD

@@ -1,5 +1,7 @@
 #pragma once
 
+#inclib "kernel32"
+
 #include once "_mingw_unicode.bi"
 #include once "intrin.bi"
 #include once "winapifamily.bi"
@@ -9,8 +11,6 @@
 '' The following symbols have been renamed:
 ''     procedure Sleep => Sleep_
 ''     procedure Beep => Beep_
-
-#inclib "kernel32"
 
 extern "Windows"
 
@@ -1548,7 +1548,7 @@ declare function OpenWaitableTimerW(byval dwDesiredAccess as DWORD, byval bInher
 declare function EnterSynchronizationBarrier(byval lpBarrier as LPSYNCHRONIZATION_BARRIER, byval dwFlags as DWORD) as WINBOOL
 declare function InitializeSynchronizationBarrier(byval lpBarrier as LPSYNCHRONIZATION_BARRIER, byval lTotalThreads as LONG, byval lSpinCount as LONG) as WINBOOL
 declare function DeleteSynchronizationBarrier(byval lpBarrier as LPSYNCHRONIZATION_BARRIER) as WINBOOL
-declare sub Sleep(byval dwMilliseconds as DWORD)
+declare sub Sleep_ alias "Sleep"(byval dwMilliseconds as DWORD)
 declare function SignalObjectAndWait(byval hObjectToSignal as HANDLE, byval hObjectToWaitOn as HANDLE, byval dwMilliseconds as DWORD, byval bAlertable as WINBOOL) as DWORD
 
 #if _WIN32_WINNT = &h0602

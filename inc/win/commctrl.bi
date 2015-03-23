@@ -1,5 +1,7 @@
 #pragma once
 
+#inclib "comctl32"
+
 #include once "_mingw_unicode.bi"
 #include once "prsht.bi"
 #include once "rpc.bi"
@@ -7,8 +9,6 @@
 #include once "wtypesbase.bi"
 #include once "unknwnbase.bi"
 #include once "objidlbase.bi"
-
-#inclib "comctl32"
 
 extern "Windows"
 
@@ -75,8 +75,8 @@ type LPCOLORSCHEME as tagCOLORSCHEME ptr
 #define CCM_SETWINDOWTHEME (CCM_FIRST + &hb)
 #define CCM_DPISCALE (CCM_FIRST + &hc)
 #define INFOTIPSIZE 1024
-#define HANDLE_WM_NOTIFY(hwnd, wParam, lParam, fn) fn(hwnd, clng(wParam), cast(NMHDR ptr, lParam))
-#define FORWARD_WM_NOTIFY(hwnd, idFrom, pnmhdr, fn) cast(LRESULT, fn(hwnd, WM_NOTIFY, cast(WPARAM, clng(idFrom)), cast(LPARAM, cast(NMHDR ptr, pnmhdr))))
+#define HANDLE_WM_NOTIFY(hwnd, wParam, lParam, fn) fn((hwnd), clng((wParam)), cptr(NMHDR ptr, (lParam)))
+#define FORWARD_WM_NOTIFY(hwnd, idFrom, pnmhdr, fn) cast(LRESULT, fn((hwnd), WM_NOTIFY, cast(WPARAM, clng((idFrom))), cast(LPARAM, cptr(NMHDR ptr, (pnmhdr)))))
 #define NM_OUTOFMEMORY (NM_FIRST - 1)
 #define NM_CLICK (NM_FIRST - 2)
 #define NM_DBLCLK (NM_FIRST - 3)
@@ -3449,7 +3449,7 @@ type LPTVINSERTSTRUCTW as tagTVINSERTSTRUCTW ptr
 	#define TVM_INSERTITEM TVM_INSERTITEMA
 #endif
 
-#define TreeView_InsertItem(hwnd, lpis) cast(HTREEITEM, SNDMSG((hwnd), TVM_INSERTITEM, 0, cast(LPARAM, cast(LPTV_INSERTSTRUCT, lpis))))
+#define TreeView_InsertItem(hwnd, lpis) cast(HTREEITEM, SNDMSG((hwnd), TVM_INSERTITEM, 0, cast(LPARAM, cast(LPTV_INSERTSTRUCT, (lpis)))))
 #define TVM_DELETEITEM (TV_FIRST + 1)
 #define TreeView_DeleteItem(hwnd, hitem) cast(WINBOOL, SNDMSG((hwnd), TVM_DELETEITEM, 0, cast(LPARAM, cast(HTREEITEM, (hitem)))))
 #define TreeView_DeleteAllItems(hwnd) cast(WINBOOL, SNDMSG((hwnd), TVM_DELETEITEM, 0, cast(LPARAM, TVI_ROOT)))
@@ -3542,7 +3542,7 @@ end function
 #define TVM_GETVISIBLECOUNT (TV_FIRST + 16)
 #define TreeView_GetVisibleCount(hwnd) cast(UINT, SNDMSG((hwnd), TVM_GETVISIBLECOUNT, 0, 0))
 #define TVM_HITTEST (TV_FIRST + 17)
-#define TreeView_HitTest(hwnd, lpht) cast(HTREEITEM, SNDMSG((hwnd), TVM_HITTEST, 0, cast(LPARAM, cast(LPTV_HITTESTINFO, lpht))))
+#define TreeView_HitTest(hwnd, lpht) cast(HTREEITEM, SNDMSG((hwnd), TVM_HITTEST, 0, cast(LPARAM, cast(LPTV_HITTESTINFO, (lpht)))))
 #define LPTV_HITTESTINFO LPTVHITTESTINFO
 #define TV_HITTESTINFO TVHITTESTINFO
 
@@ -3573,7 +3573,7 @@ type LPTVHITTESTINFO as tagTVHITTESTINFO ptr
 #define TVM_ENSUREVISIBLE (TV_FIRST + 20)
 #define TreeView_EnsureVisible(hwnd, hitem) cast(WINBOOL, SNDMSG((hwnd), TVM_ENSUREVISIBLE, 0, cast(LPARAM, cast(HTREEITEM, (hitem)))))
 #define TVM_SORTCHILDRENCB (TV_FIRST + 21)
-#define TreeView_SortChildrenCB(hwnd, psort, recurse) cast(WINBOOL, SNDMSG((hwnd), TVM_SORTCHILDRENCB, cast(WPARAM, recurse), cast(LPARAM, cast(LPTV_SORTCB, psort))))
+#define TreeView_SortChildrenCB(hwnd, psort, recurse) cast(WINBOOL, SNDMSG((hwnd), TVM_SORTCHILDRENCB, cast(WPARAM, (recurse)), cast(LPARAM, cast(LPTV_SORTCB, (psort)))))
 #define TVM_ENDEDITLABELNOW (TV_FIRST + 22)
 #define TreeView_EndEditLabelNow(hwnd, fCancel) cast(WINBOOL, SNDMSG((hwnd), TVM_ENDEDITLABELNOW, cast(WPARAM, (fCancel)), 0))
 #define TVM_GETISEARCHSTRINGA (TV_FIRST + 23)

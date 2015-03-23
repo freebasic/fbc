@@ -1,10 +1,10 @@
 #pragma once
 
-#include once "crt/long.bi"
-#include once "objbase.bi"
-
 #inclib "ddraw"
 #inclib "dxguid"
+
+#include once "crt/long.bi"
+#include once "objbase.bi"
 
 extern "Windows"
 

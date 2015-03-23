@@ -1,9 +1,9 @@
 #pragma once
 
-#include once "windows.bi"
-
 #inclib "snmpapi"
 #inclib "igmpagnt"
+
+#include once "windows.bi"
 
 extern "Windows"
 

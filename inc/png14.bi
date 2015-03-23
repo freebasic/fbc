@@ -1,4 +1,5 @@
 #pragma once
+
 #inclib "png"
 #inclib "z"
 
@@ -12,10 +13,13 @@
 #include once "crt/time.bi"
 
 '' The following symbols have been renamed:
+''     #define PNG_LIBPNG_VER => PNG_LIBPNG_VER_
 ''     #define PNG_READ_TEXT_SUPPORTED => PNG_READ_TEXT_SUPPORTED_
 ''     #define PNG_TEXT_SUPPORTED => PNG_TEXT_SUPPORTED_
 ''     #define PNG_WRITE_TEXT_SUPPORTED => PNG_WRITE_TEXT_SUPPORTED_
-''     #define png_libpng_ver => png_libpng_ver_
+''     #define png_get_uint_32 => png_get_uint_32_
+''     #define png_get_uint_16 => png_get_uint_16_
+''     #define png_get_int_32 => png_get_int_32_
 
 extern "C"
 
@@ -37,7 +41,7 @@ extern "C"
 #define PNG_LIBPNG_BUILD_PRIVATE 16
 #define PNG_LIBPNG_BUILD_SPECIAL 32
 #define PNG_LIBPNG_BUILD_BASE_TYPE PNG_LIBPNG_BUILD_STABLE
-#define PNG_LIBPNG_VER 10413
+#define PNG_LIBPNG_VER_ 10413
 #define PNGCONF_H
 #define PNG_ZBUF_SIZE 8192
 #define PNG_READ_SUPPORTED
@@ -230,7 +234,7 @@ type png_charppp as zstring ptr ptr ptr
 #define png_snprintf6 snprintf
 type png_alloc_size_t as png_size_t
 #define PNG_LIBPNG_BUILD_TYPE PNG_LIBPNG_BUILD_BASE_TYPE
-#define png_libpng_ver_ png_get_header_ver(NULL)
+#define png_libpng_ver png_get_header_ver(NULL)
 
 type png_color_struct
 	red as png_byte
@@ -936,9 +940,9 @@ declare function png_get_io_chunk_name(byval png_ptr as png_structp) as png_byte
 		(composite) = cast(png_uint_16, ((temp + (temp shr 16)) shr 16))
 	end scope
 #endmacro
-#define png_get_uint_32(buf) ((((cast(png_uint_32, *(buf)) shl 24) + (cast(png_uint_32, *((buf) + 1)) shl 16)) + (cast(png_uint_32, *((buf) + 2)) shl 8)) + cast(png_uint_32, *((buf) + 3)))
-#define png_get_uint_16(buf) cast(png_uint_16, culng(culng(culng(*(buf)) shl 8) + culng(*((buf) + 1))))
-#define png_get_int_32(buf) cast(png_int_32, iif((*(buf)) and &h80, -cast(png_int_32, (png_get_uint_32(buf) xor cast(clong, &hffffffff)) + 1), cast(png_int_32, png_get_uint_32(buf))))
+#define png_get_uint_32_(buf) ((((cast(png_uint_32, *(buf)) shl 24) + (cast(png_uint_32, *((buf) + 1)) shl 16)) + (cast(png_uint_32, *((buf) + 2)) shl 8)) + cast(png_uint_32, *((buf) + 3)))
+#define png_get_uint_16_(buf) cast(png_uint_16, culng(culng(culng(*(buf)) shl 8) + culng(*((buf) + 1))))
+#define png_get_int_32_(buf) cast(png_int_32, iif((*(buf)) and &h80, -cast(png_int_32, (png_get_uint_32_(buf) xor cast(clong, &hffffffff)) + 1), cast(png_int_32, png_get_uint_32_(buf))))
 
 declare function png_get_uint_31(byval png_ptr as png_structp, byval buf as png_bytep) as png_uint_32
 declare sub png_save_uint_32(byval buf as png_bytep, byval i as png_uint_32)

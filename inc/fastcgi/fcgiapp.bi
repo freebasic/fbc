@@ -1,4 +1,5 @@
 #pragma once
+
 #inclib "fcgi"
 
 #include once "crt/stdarg.bi"
@@ -27,7 +28,6 @@ end type
 
 type FCGX_ParamArray as zstring ptr ptr
 #define FCGI_FAIL_ACCEPT_ON_INTR 1
-
 type Params as Params_
 
 type FCGX_Request

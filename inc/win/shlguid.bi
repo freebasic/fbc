@@ -1,14 +1,14 @@
 #pragma once
 
+#inclib "uuid"
+#inclib "shell32"
+
 #include once "winapifamily.bi"
 #include once "_mingw_unicode.bi"
 #include once "isguids.bi"
 #include once "exdisp.bi"
 #include once "shldisp.bi"
 #include once "knownfolders.bi"
-
-#inclib "uuid"
-#inclib "shell32"
 
 extern "C"
 

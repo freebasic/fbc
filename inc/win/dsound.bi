@@ -1,10 +1,10 @@
 #pragma once
 
-#include once "_mingw_unicode.bi"
-#include once "objbase.bi"
-
 #inclib "dsound"
 #inclib "uuid"
+
+#include once "_mingw_unicode.bi"
+#include once "objbase.bi"
 
 extern "Windows"
 

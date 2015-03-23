@@ -1,9 +1,9 @@
 #pragma once
 
+#inclib "setupapi"
+
 #include once "_mingw_unicode.bi"
 #include once "commctrl.bi"
-
-#inclib "setupapi"
 
 extern "Windows"
 

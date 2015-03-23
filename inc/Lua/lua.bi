@@ -1,4 +1,5 @@
 #pragma once
+
 #inclib "lua"
 
 #include once "crt/stdarg.bi"
@@ -40,14 +41,12 @@ extern "C"
 #define LUA_QL(x) "'" x "'"
 #define LUA_QS LUA_QL("%s")
 #define LUA_IDSIZE 60
-
 #macro luai_writestringerror(s, p)
 	scope
 		fprintf(stderr, (s), (p))
 		fflush(stderr)
 	end scope
 #endmacro
-
 #define LUAI_MAXSHORTLEN 40
 #define LUAI_BITSINT 32
 #define LUA_INT32 long
@@ -124,7 +123,8 @@ type lua_Alloc as function(byval ud as any ptr, byval ptr as any ptr, byval osiz
 type lua_Number as double
 type lua_Integer as integer
 type lua_Unsigned as ulong
-extern lua_ident as const zstring * len("$LuaVersion: " LUA_COPYRIGHT " $" "$LuaAuthors: " LUA_AUTHORS " $")
+extern __lua_ident alias "lua_ident" as const byte
+#define lua_ident (*cptr(const zstring ptr, @__lua_ident))
 
 declare function lua_newstate(byval f as lua_Alloc, byval ud as any ptr) as lua_State ptr
 declare sub lua_close(byval L as lua_State ptr)
@@ -282,7 +282,6 @@ declare function lua_sethook(byval L as lua_State ptr, byval func as lua_Hook, b
 declare function lua_gethook(byval L as lua_State ptr) as lua_Hook
 declare function lua_gethookmask(byval L as lua_State ptr) as long
 declare function lua_gethookcount(byval L as lua_State ptr) as long
-
 type CallInfo as CallInfo_
 
 type lua_Debug_

@@ -1,4 +1,5 @@
 #pragma once
+
 #inclib "alleg"
 
 #undef screen
@@ -15,6 +16,69 @@
 #include once "crt/stdlib.bi"
 #include once "crt/time.bi"
 #include once "crt/string.bi"
+
+'' The following symbols have been renamed:
+''     #define MID => AL_MID
+''     #define EMPTY_STRING => EMPTY_STRING_
+''     #define SYSTEM_NONE => SYSTEM_NONE_
+''     #define MOUSEDRV_NONE => MOUSEDRV_NONE_
+''     #define DRAW_SPRITE_H_FLIP => DRAW_SPRITE_H_FLIP_
+''     #define DRAW_SPRITE_V_FLIP => DRAW_SPRITE_V_FLIP_
+''     #define DRAW_SPRITE_VH_FLIP => DRAW_SPRITE_VH_FLIP_
+''     #define MIDI_DIGMID => MIDI_DIGMID_
+''     #define EOF => EOF_
+''     #define cpu_fpu => cpu_fpu_
+''     #define cpu_mmx => cpu_mmx_
+''     #define cpu_3dnow => cpu_3dnow_
+''     #ifdef __FB_WIN32__
+''         #define SYSTEM_DIRECTX => SYSTEM_DIRECTX_
+''         #define GFX_DIRECTX_ACCEL => GFX_DIRECTX_ACCEL_
+''         #define GFX_DIRECTX_SAFE => GFX_DIRECTX_SAFE_
+''         #define GFX_DIRECTX_SOFT => GFX_DIRECTX_SOFT_
+''         #define GFX_DIRECTX_WIN => GFX_DIRECTX_WIN_
+''         #define GFX_DIRECTX_OVL => GFX_DIRECTX_OVL_
+''         #define GFX_GDI => GFX_GDI_
+''     #elseif defined(__FB_LINUX__)
+''         #define TIMERDRV_UNIX_PTHREADS => TIMERDRV_UNIX_PTHREADS_
+''         #define SYSTEM_LINUX => SYSTEM_LINUX_
+''     #else
+''         #define SYSTEM_DOS => SYSTEM_DOS_
+''         #define KEYDRV_PCDOS => KEYDRV_PCDOS_
+''         #define TIMEDRV_FIXED_RATE => TIMEDRV_FIXED_RATE_
+''         #define TIMEDRV_VARIABLE_RATE => TIMEDRV_VARIABLE_RATE_
+''         #define MOUSEDRV_MICKEYS => MOUSEDRV_MICKEYS_
+''         #define MOUSEDRV_INT33 => MOUSEDRV_INT33_
+''         #define MOUSEDRV_POLLING => MOUSEDRV_POLLING_
+''         #define MOUSEDRV_WINNT => MOUSEDRV_WINNT_
+''         #define MOUSEDRV_WIN2K => MOUSEDRV_WIN2K_
+''     #endif
+''     #if defined(__FB_DOS__) or defined(__FB_LINUX__)
+''         #define GFX_VGA => GFX_VGA_
+''         #define GFX_MODEX => GFX_MODEX_
+''         #define GFX_VBEAF => GFX_VBEAF_
+''     #endif
+''     #ifdef __FB_LINUX__
+''         #define MOUSEDRV_LINUX_PS2 => MOUSEDRV_LINUX_PS2_
+''         #define MOUSEDRV_LINUX_IPS2 => MOUSEDRV_LINUX_IPS2_
+''         #define MOUSEDRV_LINUX_GPMDATA => MOUSEDRV_LINUX_GPMDATA_
+''         #define MOUSEDRV_LINUX_MS => MOUSEDRV_LINUX_MS_
+''         #define MOUSEDRV_LINUX_IMS => MOUSEDRV_LINUX_IMS_
+''         #define MOUSEDRV_LINUX_EVDEV => MOUSEDRV_LINUX_EVDEV_
+''     #elseif defined(__FB_DOS__)
+''         #define GFX_XTENDED => GFX_XTENDED_
+''         #define DIGI_SB10 => DIGI_SB10_
+''         #define DIGI_SB15 => DIGI_SB15_
+''         #define DIGI_SB20 => DIGI_SB20_
+''         #define DIGI_SBPRO => DIGI_SBPRO_
+''         #define DIGI_SB16 => DIGI_SB16_
+''         #define DIGI_AUDIODRIVE => DIGI_AUDIODRIVE_
+''         #define DIGI_SOUNDSCAPE => DIGI_SOUNDSCAPE_
+''         #define MIDI_OPL2 => MIDI_OPL2_
+''         #define MIDI_2XOPL2 => MIDI_2XOPL2_
+''         #define MIDI_OPL3 => MIDI_OPL3_
+''         #define MIDI_SB_OUT => MIDI_SB_OUT_
+''         #define MIDI_AWE32 => MIDI_AWE32_
+''     #endif
 
 extern "C"
 
@@ -130,7 +194,6 @@ extern "C"
 		(s) = sin(x)
 	end scope
 #endmacro
-
 #define END_OF_MAIN()
 
 #if defined(__FB_WIN32__) or defined(__FB_LINUX__)
@@ -193,12 +256,10 @@ extern "C"
 
 #if defined(__FB_WIN32__) or defined(__FB_LINUX__)
 	#define bmp_select(bmp)
-
 	#define bmp_write8(addr, c) *cptr(ubyte ptr, (addr)) = (c)
 	#define bmp_write15(addr, c) *cptr(ushort ptr, (addr)) = (c)
 	#define bmp_write16(addr, c) *cptr(ushort ptr, (addr)) = (c)
 	#define bmp_write32(addr, c) *cptr(ulong ptr, (addr)) = (c)
-
 	#define bmp_read8(addr) (*cptr(ubyte ptr, (addr)))
 	#define bmp_read15(addr) (*cptr(ushort ptr, (addr)))
 	#define bmp_read16(addr) (*cptr(ushort ptr, (addr)))
@@ -457,7 +518,6 @@ declare sub check_cpu()
 #define CPU_MODEL_POWERPC_750 9
 #define CPU_MODEL_POWERPC_7400 10
 #define CPU_MODEL_POWERPC_7450 11
-
 #define _AL_CPU_VENDOR_SIZE 32
 extern _AL_DLL __cpu_vendor alias "cpu_vendor" as byte
 #define cpu_vendor (*cptr(zstring ptr, @__cpu_vendor))
@@ -682,7 +742,6 @@ extern _AL_DLL keyboard_ucallback as function(byval key as long, byval scancode 
 extern _AL_DLL keyboard_lowlevel_callback as sub(byval scancode as long)
 
 declare sub install_keyboard_hooks(byval keypressed as function() as long, byval readkey as function() as long)
-
 #define key(i) ((@__key)[i])
 extern _AL_DLL __key alias "key" as byte
 extern _AL_DLL key_shifts as long
@@ -1059,10 +1118,8 @@ extern _AL_DLL joystick_none as JOYSTICK_DRIVER
 extern _AL_DLL joystick_driver as JOYSTICK_DRIVER ptr
 #define _joystick_driver_list(i) ((@___joystick_driver_list)[i])
 extern _AL_DLL ___joystick_driver_list alias "_joystick_driver_list" as _DRIVER_INFO
-
 #define BEGIN_JOYSTICK_DRIVER_LIST dim as _DRIVER_INFO _joystick_driver_list(0 to ...) = {
 #define END_JOYSTICK_DRIVER_LIST ( JOY_TYPE_NONE, @joystick_none, TRUE ), ( 0, NULL, 0 ) }
-
 declare function install_joystick(byval type as long) as long
 declare sub remove_joystick()
 declare function poll_joystick() as long
@@ -1230,10 +1287,8 @@ end type
 extern _AL_DLL gfx_driver as GFX_DRIVER ptr
 #define _gfx_driver_list(i) ((@___gfx_driver_list)[i])
 extern _AL_DLL ___gfx_driver_list alias "_gfx_driver_list" as _DRIVER_INFO
-
 #define BEGIN_GFX_DRIVER_LIST dim as _DRIVER_INFO _gfx_driver_list(0 to ...) = {
 #define END_GFX_DRIVER_LIST ( 0, NULL, 0 ) }
-
 #define GFX_CAN_SCROLL &h00000001
 #define GFX_CAN_TRIPLE_BUFFER &h00000002
 #define GFX_HW_CURSOR &h00000004
@@ -1345,7 +1400,6 @@ end type
 
 #define _vtable_list(i) ((@___vtable_list)[i])
 extern _AL_DLL ___vtable_list alias "_vtable_list" as _VTABLE_INFO
-
 #define BEGIN_COLOR_DEPTH_LIST dim as _VTABLE_INFO _vtable_list(0 to ...) = {
 #define END_COLOR_DEPTH_LIST ( 0, NULL ) }
 #define COLOR_DEPTH_8 ( 8, @__linear_vtable8 ),
@@ -1371,7 +1425,7 @@ type BITMAP_
 	x_ofs as long
 	y_ofs as long
 	seg as long
-	line as ubyte ptr
+	line(0 to 1 - 1) as ubyte ptr
 end type
 
 #define BMP_ID_VIDEO &h80000000
@@ -1739,7 +1793,7 @@ type RLE_SPRITE_
 	h as long
 	color_depth as long
 	size as long
-	dat as byte
+	dat(0 to 1 - 1) as byte
 end type
 
 declare function get_rle_sprite(byval bitmap as BITMAP ptr) as RLE_SPRITE ptr
@@ -1775,7 +1829,7 @@ declare sub destroy_font(byval f as FONT ptr)
 type FONT_GLYPH_
 	w as short
 	h as short
-	dat as ubyte
+	dat(0 to 1 - 1) as ubyte
 end type
 
 type FONT_VTABLE as FONT_VTABLE_
@@ -2078,7 +2132,6 @@ end type
 
 #define _digi_driver_list(i) ((@___digi_driver_list)[i])
 extern _AL_DLL ___digi_driver_list alias "_digi_driver_list" as _DRIVER_INFO
-
 #define BEGIN_DIGI_DRIVER_LIST dim as _DRIVER_INFO _digi_driver_list(0 to ...) = {
 #define END_DIGI_DRIVER_LIST ( 0, NULL, 0 ) }
 
@@ -2216,7 +2269,6 @@ end type
 extern _AL_DLL midi_digmid as MIDI_DRIVER
 #define _midi_driver_list(i) ((@___midi_driver_list)[i])
 extern _AL_DLL ___midi_driver_list alias "_midi_driver_list" as _DRIVER_INFO
-
 #define BEGIN_MIDI_DRIVER_LIST dim as _DRIVER_INFO _midi_driver_list(0 to ...) = {
 #define END_MIDI_DRIVER_LIST ( 0, NULL, 0 ) }
 #define MIDI_DRIVER_DIGMID ( MIDI_DIGMID, @midi_digmid, TRUE ),
@@ -2318,7 +2370,6 @@ declare sub al_findclose(byval info as al_ffblk ptr)
 #define PACKFILE_FLAG_ERROR 16
 #define PACKFILE_FLAG_OLD_CRYPT 32
 #define PACKFILE_FLAG_EXEDAT 64
-
 type LZSS_PACK_DATA as LZSS_PACK_DATA_
 type LZSS_UNPACK_DATA as LZSS_UNPACK_DATA_
 
@@ -2687,14 +2738,12 @@ declare function timer_is_using_retrace() as long
 	#define GFX_DIRECTX_WIN_ AL_ID(asc("D"), asc("X"), asc("W"), asc("N"))
 	#define GFX_DIRECTX_OVL_ AL_ID(asc("D"), asc("X"), asc("O"), asc("V"))
 	#define GFX_GDI_ AL_ID(asc("G"), asc("D"), asc("I"), asc("B"))
-
 	extern _AL_DLL gfx_directx_accel as GFX_DRIVER
 	extern _AL_DLL gfx_directx_safe as GFX_DRIVER
 	extern _AL_DLL gfx_directx_soft as GFX_DRIVER
 	extern _AL_DLL gfx_directx_win as GFX_DRIVER
 	extern _AL_DLL gfx_directx_ovl as GFX_DRIVER
 	extern _AL_DLL gfx_gdi as GFX_DRIVER
-
 	#define GFX_DRIVER_DIRECTX ( GFX_DIRECTX_ACCEL, @gfx_directx_accel, TRUE ), ( GFX_DIRECTX_SOFT, @gfx_directx_soft, TRUE ), ( GFX_DIRECTX_SAFE, @gfx_directx_safe, TRUE ), ( GFX_DIRECTX_WIN, @gfx_directx_win, TRUE ), ( GFX_DIRECTX_OVL, @gfx_directx_ovl, TRUE ), ( GFX_GDI, @gfx_gdi, FALSE ),
 	#define DIGI_DIRECTX(n) AL_ID(asc("D"), asc("X"), asc("A") + (n), asc(" "))
 	#define DIGI_DIRECTAMX(n) AL_ID(asc("A"), asc("X"), asc("A") + (n), asc(" "))
@@ -2704,7 +2753,6 @@ declare function timer_is_using_retrace() as long
 	#define MIDI_WIN32_IN(n) AL_ID(asc("W"), asc("3"), asc("2"), asc("A") + (n))
 	#define JOY_TYPE_DIRECTX AL_ID(asc("D"), asc("X"), asc(" "), asc(" "))
 	#define JOY_TYPE_WIN32 AL_ID(asc("W"), asc("3"), asc("2"), asc(" "))
-
 	extern _AL_DLL joystick_directx as JOYSTICK_DRIVER
 	extern _AL_DLL joystick_win32 as JOYSTICK_DRIVER
 	#define JOYSTICK_DRIVER_DIRECTX ( JOY_TYPE_DIRECTX, @joystick_directx, TRUE ),
@@ -2746,7 +2794,6 @@ declare function timer_is_using_retrace() as long
 	#define MOUSEDRV_LINUX_IMS_ AL_ID(asc("I"), asc("M"), asc("S"), asc(" "))
 	#define MOUSEDRV_LINUX_EVDEV_ AL_ID(asc("E"), asc("V"), asc(" "), asc(" "))
 	#define JOY_TYPE_LINUX_ANALOGUE AL_ID(asc("L"), asc("N"), asc("X"), asc("A"))
-
 	extern system_linux as SYSTEM_DRIVER
 	extern mousedrv_linux_ps2 as MOUSE_DRIVER
 	extern mousedrv_linux_ips2 as MOUSE_DRIVER
@@ -2769,13 +2816,11 @@ declare function timer_is_using_retrace() as long
 	#define MOUSEDRV_POLLING_ AL_ID(asc("P"), asc("O"), asc("L"), asc("L"))
 	#define MOUSEDRV_WINNT_ AL_ID(asc("W"), asc("N"), asc("T"), asc(" "))
 	#define MOUSEDRV_WIN2K_ AL_ID(asc("W"), asc("2"), asc("K"), asc(" "))
-
 	extern mousedrv_mickeys as MOUSE_DRIVER
 	extern mousedrv_int33 as MOUSE_DRIVER
 	extern mousedrv_polling as MOUSE_DRIVER
 	extern mousedrv_winnt as MOUSE_DRIVER
 	extern mousedrv_win2k as MOUSE_DRIVER
-
 	#define JOY_TYPE_STANDARD AL_ID(asc("S"), asc("T"), asc("D"), asc(" "))
 	#define JOY_TYPE_2PADS AL_ID(asc("2"), asc("P"), asc("A"), asc("D"))
 	#define JOY_TYPE_4BUTTON AL_ID(asc("4"), asc("B"), asc("U"), asc("T"))
@@ -2808,7 +2853,6 @@ declare function timer_is_using_retrace() as long
 	#define JOY_TYPE_IFSEGA_PCI AL_ID(asc("S"), asc("E"), asc("G"), asc("P"))
 	#define JOY_TYPE_IFSEGA_PCI_FAST AL_ID(asc("S"), asc("G"), asc("P"), asc("F"))
 	#define JOY_TYPE_WINGWARRIOR AL_ID(asc("W"), asc("W"), asc("A"), asc("R"))
-
 	extern joystick_standard as JOYSTICK_DRIVER
 	extern joystick_2pads as JOYSTICK_DRIVER
 	extern joystick_4button as JOYSTICK_DRIVER
@@ -2841,7 +2885,6 @@ declare function timer_is_using_retrace() as long
 	extern joystick_sg2 as JOYSTICK_DRIVER
 	extern joystick_sg2f as JOYSTICK_DRIVER
 	extern joystick_ww as JOYSTICK_DRIVER
-
 	#define JOYSTICK_DRIVER_STANDARD ( JOY_TYPE_STANDARD, @joystick_standard, TRUE ), ( JOY_TYPE_2PADS, @joystick_2pads, FALSE ), ( JOY_TYPE_4BUTTON, @joystick_4button, FALSE ), ( JOY_TYPE_6BUTTON, @joystick_6button, FALSE ), ( JOY_TYPE_8BUTTON, @joystick_8button, FALSE ), ( JOY_TYPE_FSPRO, @joystick_fspro, FALSE ), ( JOY_TYPE_WINGEX, @joystick_wingex, FALSE ),
 	#define JOYSTICK_DRIVER_SIDEWINDER ( JOY_TYPE_SIDEWINDER, @joystick_sw, TRUE ), ( JOY_TYPE_SIDEWINDER_AG, @joystick_sw_ag, TRUE ), ( JOY_TYPE_SIDEWINDER_PP, @joystick_sw_pp, TRUE ),
 	#define JOYSTICK_DRIVER_GAMEPAD_PRO ( JOY_TYPE_GAMEPAD_PRO, @joystick_gpro, TRUE ),
@@ -2855,7 +2898,6 @@ declare function timer_is_using_retrace() as long
 	#define JOYSTICK_DRIVER_IFSEGA_PCI ( JOY_TYPE_IFSEGA_PCI, @joystick_sg2, FALSE ),
 	#define JOYSTICK_DRIVER_IFSEGA_PCI_FAST ( JOY_TYPE_IFSEGA_PCI_FAST,@joystick_sg2f, FALSE ),
 	#define JOYSTICK_DRIVER_WINGWARRIOR ( JOY_TYPE_WINGWARRIOR, @joystick_ww, TRUE ),
-
 	#define joy_FSPRO_trigger joy_b1
 	#define joy_FSPRO_butleft joy_b2
 	#define joy_FSPRO_butright joy_b3
@@ -2864,7 +2906,6 @@ declare function timer_is_using_retrace() as long
 	#define joy_WINGEX_buttop joy_b2
 	#define joy_WINGEX_butthumb joy_b3
 	#define joy_WINGEX_butmiddle joy_b4
-
 	declare function calibrate_joystick_tl() as long
 	declare function calibrate_joystick_br() as long
 	declare function calibrate_joystick_throttle_min() as long
@@ -2880,7 +2921,6 @@ declare function timer_is_using_retrace() as long
 	#define GFX_VESA3 AL_ID(asc("V"), asc("B"), asc("E"), asc("3"))
 	#define GFX_VBEAF_ AL_ID(asc("V"), asc("B"), asc("A"), asc("F"))
 	#define GFX_XTENDED_ AL_ID(asc("X"), asc("T"), asc("N"), asc("D"))
-
 	extern gfx_vga as GFX_DRIVER
 	extern gfx_modex as GFX_DRIVER
 	extern gfx_vesa_1 as GFX_DRIVER
@@ -2889,7 +2929,6 @@ declare function timer_is_using_retrace() as long
 	extern gfx_vesa_3 as GFX_DRIVER
 	extern gfx_vbeaf as GFX_DRIVER
 	extern gfx_xtended as GFX_DRIVER
-
 	#define GFX_DRIVER_VGA ( GFX_VGA, @gfx_vga, TRUE ),
 	#define GFX_DRIVER_MODEX ( GFX_MODEX, @gfx_modex, TRUE ),
 	#define GFX_DRIVER_VBEAF ( GFX_VBEAF, @gfx_vbeaf, TRUE ),
@@ -2920,7 +2959,6 @@ declare function timer_is_using_retrace() as long
 	#define MIDI_SB_OUT_ AL_ID(asc("S"), asc("B"), asc(" "), asc(" "))
 	#define MIDI_MPU AL_ID(asc("M"), asc("P"), asc("U"), asc(" "))
 	#define MIDI_AWE32_ AL_ID(asc("A"), asc("W"), asc("E"), asc(" "))
-
 	extern digi_sb10 as DIGI_DRIVER
 	extern digi_sb15 as DIGI_DRIVER
 	extern digi_sb20 as DIGI_DRIVER
@@ -2935,7 +2973,6 @@ declare function timer_is_using_retrace() as long
 	extern midi_sb_out as MIDI_DRIVER
 	extern midi_mpu401 as MIDI_DRIVER
 	extern midi_awe32 as MIDI_DRIVER
-
 	#define DIGI_DRIVER_WINSOUNDSYS ( DIGI_WINSOUNDSYS, @digi_wss, FALSE ),
 	#define DIGI_DRIVER_AUDIODRIVE ( DIGI_AUDIODRIVE, @digi_audiodrive, TRUE ),
 	#define DIGI_DRIVER_SOUNDSCAPE ( DIGI_SOUNDSCAPE, @digi_soundscape, TRUE ),

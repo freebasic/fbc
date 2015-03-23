@@ -56,7 +56,6 @@ declare sub luaL_setfuncs(byval L as lua_State ptr, byval l as const luaL_Reg pt
 declare function luaL_getsubtable(byval L as lua_State ptr, byval idx as long, byval fname as const zstring ptr) as long
 declare sub luaL_traceback(byval L as lua_State ptr, byval L1 as lua_State ptr, byval msg as const zstring ptr, byval level as long)
 declare sub luaL_requiref(byval L as lua_State ptr, byval modname as const zstring ptr, byval openf as lua_CFunction, byval glb as long)
-
 #define luaL_newlibtable(L, l_) lua_createtable(L, 0, (ubound(l_) - lbound(l_) + 1) - 1)
 #macro luaL_newlib(L, l_)
 	scope
@@ -91,7 +90,7 @@ type luaL_Buffer
 	size as uinteger
 	n as uinteger
 	L as lua_State ptr
-	initb(0 to LUAL_BUFFERSIZE-1) as byte
+	initb(0 to LUAL_BUFFERSIZE - 1) as byte
 end type
 
 #macro luaL_addchar(B,c)

@@ -4,6 +4,9 @@
 #include once "rpcndr.bi"
 #include once "wtypesbase.bi"
 
+'' The following symbols have been renamed:
+''     typedef DATE => DATE_
+
 extern "C"
 
 #define __REQUIRED_RPCNDR_H_VERSION__ 475

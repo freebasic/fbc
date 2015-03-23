@@ -1,5 +1,7 @@
 #pragma once
 
+#inclib "oledlg"
+
 #include once "_mingw_unicode.bi"
 #include once "windows.bi"
 #include once "shellapi.bi"
@@ -7,8 +9,6 @@
 #include once "ole2.bi"
 #include once "dlgs.bi"
 #include once "prsht.bi"
-
-#inclib "oledlg"
 
 extern "Windows"
 

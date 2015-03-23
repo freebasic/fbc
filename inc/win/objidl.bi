@@ -1,12 +1,12 @@
 #pragma once
 
+#inclib "uuid"
+
 #include once "rpc.bi"
 #include once "rpcndr.bi"
 #include once "windows.bi"
 #include once "wtypes.bi"
 #include once "winapifamily.bi"
-
-#inclib "uuid"
 
 extern "Windows"
 

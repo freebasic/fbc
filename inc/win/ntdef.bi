@@ -228,7 +228,6 @@ end type
 type STRING_ as _STRING
 type PSTRING as _STRING ptr
 #endif
-
 type ANSI_STRING as STRING_
 type PANSI_STRING as PSTRING
 type OEM_STRING as STRING_

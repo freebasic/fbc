@@ -1,5 +1,7 @@
 #pragma once
 
+#inclib "shell32"
+
 #include once "crt/long.bi"
 #include once "winapifamily.bi"
 #include once "_mingw_unicode.bi"
@@ -9,8 +11,6 @@
 #include once "shobjidl.bi"
 #include once "shellapi.bi"
 #include once "mshtmlc.bi"
-
-#inclib "shell32"
 
 extern "Windows"
 
@@ -543,7 +543,7 @@ declare function SHILCreateFromPath(byval pszPath as PCWSTR, byval ppidl as LPIT
 #define VOID_OFFSET(pv, cb) cptr(any ptr, cptr(UBYTE ptr, (pv)) + (cb))
 #define ILCloneFull ILClone
 #define ILCloneChild ILCloneFirst
-#define ILSkip(P, C) cptr(PUIDLIST_RELATIVE, VOID_OFFSET((P), (C)))
+#define ILSkip(P, C) cast(PUIDLIST_RELATIVE, VOID_OFFSET((P), (C)))
 #define ILNext(P) ILSkip(P, (P)->mkid.cb)
 #define ILIsAligned(P) ((cast(DWORD_PTR, (P)) and (sizeof(any ptr) - 1)) = 0)
 #define ILIsEmpty(P) (((P) = 0) orelse ((P)->mkid.cb = 0))

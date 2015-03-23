@@ -1,5 +1,7 @@
 #pragma once
 
+#inclib "strmiids"
+
 #include once "rpc.bi"
 #include once "rpcndr.bi"
 #include once "windows.bi"
@@ -9,8 +11,6 @@
 #include once "oaidl.bi"
 #include once "ocidl.bi"
 #include once "ddraw.bi"
-
-#inclib "strmiids"
 
 extern "Windows"
 

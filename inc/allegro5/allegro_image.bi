@@ -1,4 +1,5 @@
 #pragma once
+
 #inclib "allegro_image"
 
 extern "C"

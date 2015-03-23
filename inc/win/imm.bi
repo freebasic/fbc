@@ -1,8 +1,8 @@
 #pragma once
 
-#include once "_mingw_unicode.bi"
-
 #inclib "imm32"
+
+#include once "_mingw_unicode.bi"
 
 extern "Windows"
 

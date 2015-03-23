@@ -1,5 +1,8 @@
 #pragma once
 
+#inclib "dxguid"
+#inclib "d3dx9d"
+
 #include once "crt/limits.bi"
 #include once "d3d9.bi"
 #include once "d3dx9math.bi"
@@ -11,9 +14,6 @@
 #include once "d3dx9shape.bi"
 #include once "d3dx9anim.bi"
 #include once "d3dx9tex.bi"
-
-#inclib "dxguid"
-#inclib "d3dx9d"
 
 #define __D3DX9_H__
 #define D3DX_DEFAULT cast(UINT, -1)

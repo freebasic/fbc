@@ -1,8 +1,8 @@
 #pragma once
 
-#include once "guiddef.bi"
-
 #inclib "advapi32"
+
+#include once "guiddef.bi"
 
 '' The following symbols have been renamed:
 ''     typedef STRING => STRING_

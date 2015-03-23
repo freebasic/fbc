@@ -1,4 +1,5 @@
 #pragma once
+
 #inclib "curl"
 
 #include once "crt/long.bi"
@@ -61,7 +62,6 @@ extern "C"
 #endif
 
 type curl_off_t as longint
-
 #define __CURL_CURLRULES_H
 #define CURL_ISOCPP
 #define __CURL_OFF_T_C_HLPR2(Val, Suffix) Val##Suffix

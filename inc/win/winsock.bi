@@ -1,11 +1,11 @@
 #pragma once
 
+#inclib "wsock32"
+
 #include once "windows.bi"
 #include once "crt/sys/time.bi"
 #include once "_bsd_types.bi"
 #include once "inaddr.bi"
-
-#inclib "wsock32"
 
 extern "Windows"
 
@@ -45,7 +45,7 @@ declare function __WSAFDIsSet(byval as SOCKET, byval as FD_SET ptr) as long
 		cptr(fd_set ptr, set)->fd_count = 0
 	end scope
 #endmacro
-#define FD_ISSET(fd, set) __WSAFDIsSet(cast(SOCKET, (fd)), cptr(fd_set ptr, (set)))
+#define FD_ISSET(fd, set) __WSAFDIsSet(cast(SOCKET, (fd)), cptr(FD_SET ptr, (set)))
 #define _FD_SET_WINSOCK_DEFINED
 #macro FD_SET_(fd, set)
 	scope
@@ -55,7 +55,6 @@ declare function __WSAFDIsSet(byval as SOCKET, byval as FD_SET ptr) as long
 		end if
 	end scope
 #endmacro
-
 type PFD_SET as FD_SET ptr
 type LPFD_SET as FD_SET ptr
 #define _MINGW_IP_TYPES_H

@@ -1,4 +1,5 @@
 #pragma once
+
 #inclib "jit"
 
 #include once "crt/longdouble.bi"
@@ -1520,19 +1521,16 @@ extern jit_opcodes(0 to 438) as const jit_opcode_info_t
 			f = __f
 		end scope
 	#endmacro
-
 	#macro _JIT_ARCH_GET_NEXT_FRAME(n, f)
 		scope
 			(n) = cptr(any ptr, iif((f), cptr(_jit_arch_frame_t ptr, (f))->next_frame, 0))
 		end scope
 	#endmacro
-
 	#macro _JIT_ARCH_GET_RETURN_ADDRESS(r, f)
 		scope
 			(r) = cptr(any ptr, iif((f), cptr(_jit_arch_frame_t ptr, (f))->return_address, 0))
 		end scope
 	#endmacro
-
 	#macro _JIT_ARCH_GET_CURRENT_RETURN(r)
 		scope
 			dim __frame as any ptr
@@ -1542,7 +1540,6 @@ extern jit_opcodes(0 to 438) as const jit_opcode_info_t
 	#endmacro
 #else
 	#define _JIT_ARCH_X86_H
-
 	#macro _JIT_ARCH_GET_CURRENT_FRAME(f)
 		scope
 			dim __f as any ptr

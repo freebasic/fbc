@@ -1,9 +1,9 @@
 #pragma once
 
+#inclib "imagehlp"
+
 #include once "_mingw_unicode.bi"
 #include once "wintrust.bi"
-
-#inclib "imagehlp"
 
 extern "Windows"
 

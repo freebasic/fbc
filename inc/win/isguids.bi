@@ -1,8 +1,8 @@
 #pragma once
 
-#include once "_mingw_unicode.bi"
-
 #inclib "uuid"
+
+#include once "_mingw_unicode.bi"
 
 extern "C"
 

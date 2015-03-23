@@ -12,6 +12,7 @@
 #include once "guiddef.bi"
 
 '' The following symbols have been renamed:
+''     typedef INT => INT_
 ''     #define DELETE => DELETE__
 
 extern "Windows"

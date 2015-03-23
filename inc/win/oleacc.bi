@@ -1,13 +1,13 @@
 #pragma once
 
+#inclib "oleacc"
+
 #include once "rpc.bi"
 #include once "rpcndr.bi"
 #include once "windows.bi"
 #include once "ole2.bi"
 #include once "oaidl.bi"
 #include once "_mingw_unicode.bi"
-
-#inclib "oleacc"
 
 extern "Windows"
 

@@ -1,9 +1,9 @@
 #pragma once
 
-#include once "ole2.bi"
-
 #inclib "dplayx"
 #inclib "dxguid"
+
+#include once "ole2.bi"
 
 extern "Windows"
 

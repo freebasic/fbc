@@ -1,11 +1,11 @@
 #pragma once
 
+#inclib "user32"
+
 #include once "_mingw_unicode.bi"
 #include once "_mingw.bi"
 #include once "crt/stdarg.bi"
 #include once "guiddef.bi"
-
-#inclib "user32"
 
 extern "Windows"
 
@@ -925,13 +925,13 @@ type MSG as tagMSG
 type PMSG as tagMSG ptr
 type NPMSG as tagMSG ptr
 type LPMSG as tagMSG ptr
-
 #macro POINTSTOPOINT(pt, pts)
 	scope
 		(pt).x = cast(LONG, cast(SHORT, LOWORD(*cptr(LONG ptr, @pts))))
 		(pt).y = cast(LONG, cast(SHORT, HIWORD(*cptr(LONG ptr, @pts))))
 	end scope
 #endmacro
+
 #define POINTTOPOINTS(pt) MAKELONG(cshort((pt).x), cshort((pt).y))
 #define MAKEWPARAM(l, h) cast(WPARAM, cast(DWORD, MAKELONG(l, h)))
 #define MAKELPARAM(l, h) cast(LPARAM, cast(DWORD, MAKELONG(l, h)))

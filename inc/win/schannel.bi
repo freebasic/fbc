@@ -177,7 +177,6 @@ type PSecPkgContext_SessionAppData as _SecPkgContext_SessionAppData ptr
 #define SCH_CRED_VERSION &h00000002
 #define SCH_CRED_V3 &h00000003
 #define SCHANNEL_CRED_VERSION &h00000004
-
 type _HMAPPER as _HMAPPER_
 
 type _SCHANNEL_CRED

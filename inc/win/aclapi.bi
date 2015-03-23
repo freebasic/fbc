@@ -1,11 +1,11 @@
 #pragma once
 
+#inclib "advapi32"
+
 #include once "winapifamily.bi"
 #include once "_mingw_unicode.bi"
 #include once "windows.bi"
 #include once "accctrl.bi"
-
-#inclib "advapi32"
 
 extern "Windows"
 

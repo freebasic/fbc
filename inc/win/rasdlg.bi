@@ -1,9 +1,9 @@
 #pragma once
 
+#inclib "rasdlg"
+
 #include once "_mingw_unicode.bi"
 #include once "ras.bi"
-
-#inclib "rasdlg"
 
 extern "Windows"
 

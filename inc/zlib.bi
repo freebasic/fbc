@@ -1,4 +1,5 @@
 #pragma once
+
 #inclib "z"
 
 #include once "crt/long.bi"

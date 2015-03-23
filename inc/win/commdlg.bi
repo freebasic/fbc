@@ -1,9 +1,9 @@
 #pragma once
 
+#inclib "comdlg32"
+
 #include once "_mingw_unicode.bi"
 #include once "prsht.bi"
-
-#inclib "comdlg32"
 
 extern "Windows"
 

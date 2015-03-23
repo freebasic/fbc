@@ -1,8 +1,8 @@
 #pragma once
 
-#include once "commctrl.bi"
-
 #inclib "uxtheme"
+
+#include once "commctrl.bi"
 
 extern "Windows"
 

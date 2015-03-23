@@ -1,10 +1,10 @@
 #pragma once
 
+#inclib "secur32"
+
 #include once "_mingw_unicode.bi"
 #include once "sspi.bi"
 #include once "secext.bi"
-
-#inclib "secur32"
 
 #define NTLMSP_NAME_A "NTLM"
 #define NTLMSP_NAME wstr("NTLM")

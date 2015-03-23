@@ -1,9 +1,9 @@
 #pragma once
 
+#inclib "advapi32"
+
 #include once "_mingw_unicode.bi"
 #include once "reason.bi"
-
-#inclib "advapi32"
 
 extern "Windows"
 

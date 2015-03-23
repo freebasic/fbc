@@ -1,8 +1,8 @@
 #pragma once
 
-#include once "crt/limits.bi"
-
 #inclib "wsnmp32"
+
+#include once "crt/limits.bi"
 
 extern "Windows"
 

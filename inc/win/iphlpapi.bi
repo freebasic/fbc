@@ -1,5 +1,7 @@
 #pragma once
 
+#inclib "iphlpapi"
+
 #include once "iprtrmib.bi"
 #include once "ipexport.bi"
 #include once "iptypes.bi"
@@ -11,8 +13,6 @@
 #if _WIN32_WINNT = &h0602
 	#include once "windns.bi"
 #endif
-
-#inclib "iphlpapi"
 
 extern "Windows"
 

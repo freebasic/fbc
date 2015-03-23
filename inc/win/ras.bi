@@ -1,11 +1,11 @@
 #pragma once
 
+#inclib "rasapi32"
+
 #include once "_mingw_unicode.bi"
 #include once "inaddr.bi"
 #include once "in6addr.bi"
 #include once "naptypes.bi"
-
-#inclib "rasapi32"
 
 extern "Windows"
 

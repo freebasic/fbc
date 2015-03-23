@@ -1,9 +1,9 @@
 #pragma once
 
+#inclib "version"
+
 #include once "_mingw.bi"
 #include once "_mingw_unicode.bi"
-
-#inclib "version"
 
 extern "Windows"
 

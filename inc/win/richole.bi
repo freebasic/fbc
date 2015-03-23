@@ -1,8 +1,8 @@
 #pragma once
 
-#include once "richedit.bi"
-
 #inclib "uuid"
+
+#include once "richedit.bi"
 
 extern "Windows"
 

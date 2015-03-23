@@ -1,4 +1,5 @@
 #pragma once
+
 #inclib "pdcurses"
 
 #include once "crt/long.bi"
@@ -197,8 +198,6 @@ end type
 	extern import COLORS as long
 	extern import COLOR_PAIRS as long
 	extern import TABSIZE as long
-	extern import acs_map(0 to 128-1) as chtype
-	extern import ttytype as zstring * 128
 #else
 	extern LINES as long
 	extern COLS as long
@@ -209,10 +208,19 @@ end type
 	extern COLORS as long
 	extern COLOR_PAIRS as long
 	extern TABSIZE as long
-	extern acs_map(0 to 128-1) as chtype
-	extern ttytype as zstring * 128
 #endif
 
+#define acs_map(i) ((@__acs_map)[i])
+
+#if defined(__FB_WIN32__) and defined(PDC_DLL_BUILD)
+	extern import __acs_map alias "acs_map" as chtype
+	extern import __ttytype alias "ttytype" as byte
+#else
+	extern __acs_map alias "acs_map" as chtype
+	extern __ttytype alias "ttytype" as byte
+#endif
+
+#define ttytype (*cptr(zstring ptr, @__ttytype))
 #define A_NORMAL cast(chtype, 0)
 #define A_ALTCHARSET cast(chtype, &h00010000)
 #define A_RIGHTLINE cast(chtype, &h00020000)

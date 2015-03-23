@@ -1,4 +1,5 @@
 #pragma once
+
 #inclib "png"
 #inclib "z"
 
@@ -10,10 +11,10 @@
 #include once "crt/stdio.bi"
 
 '' The following symbols have been renamed:
-''     #define PNG_READ_tEXt_SUPPORTED => PNG_READ_tEXt_SUPPORTED_
-''     #define PNG_WRITE_tEXt_SUPPORTED => PNG_WRITE_tEXt_SUPPORTED_
-''     #define PNG_tEXt_SUPPORTED => PNG_tEXt_SUPPORTED_
-''     #define png_libpng_ver => png_libpng_ver_
+''     #define PNG_LIBPNG_VER => PNG_LIBPNG_VER_
+''     #define PNG_READ_TEXT_SUPPORTED => PNG_READ_TEXT_SUPPORTED_
+''     #define PNG_TEXT_SUPPORTED => PNG_TEXT_SUPPORTED_
+''     #define PNG_WRITE_TEXT_SUPPORTED => PNG_WRITE_TEXT_SUPPORTED_
 ''     #define png_get_uint_32 => png_get_uint_32_
 ''     #define png_get_uint_16 => png_get_uint_16_
 ''     #define png_get_int_32 => png_get_int_32_
@@ -38,7 +39,7 @@ extern "C"
 #define PNG_LIBPNG_BUILD_PRIVATE 16
 #define PNG_LIBPNG_BUILD_SPECIAL 32
 #define PNG_LIBPNG_BUILD_BASE_TYPE PNG_LIBPNG_BUILD_STABLE
-#define PNG_LIBPNG_VER 10519
+#define PNG_LIBPNG_VER_ 10519
 #define PNGLCONF_H
 #define PNG_16BIT_SUPPORTED
 #define PNG_ALIGNED_MEMORY_SUPPORTED
@@ -91,7 +92,7 @@ extern "C"
 #define PNG_READ_SUPPORTED
 #define PNG_READ_SWAP_ALPHA_SUPPORTED
 #define PNG_READ_SWAP_SUPPORTED
-#define PNG_READ_TEXT_SUPPORTED
+#define PNG_READ_TEXT_SUPPORTED_
 #define PNG_READ_TRANSFORMS_SUPPORTED
 #define PNG_READ_UNKNOWN_CHUNKS_SUPPORTED
 #define PNG_READ_USER_CHUNKS_SUPPORTED
@@ -120,7 +121,7 @@ extern "C"
 #define PNG_SET_CHUNK_MALLOC_LIMIT_SUPPORTED
 #define PNG_SET_USER_LIMITS_SUPPORTED
 #define PNG_STDIO_SUPPORTED
-#define PNG_TEXT_SUPPORTED
+#define PNG_TEXT_SUPPORTED_
 #define PNG_TIME_RFC1123_SUPPORTED
 #define PNG_UNKNOWN_CHUNKS_SUPPORTED
 #define PNG_USER_CHUNKS_SUPPORTED
@@ -150,7 +151,7 @@ extern "C"
 #define PNG_WRITE_SUPPORTED
 #define PNG_WRITE_SWAP_ALPHA_SUPPORTED
 #define PNG_WRITE_SWAP_SUPPORTED
-#define PNG_WRITE_TEXT_SUPPORTED
+#define PNG_WRITE_TEXT_SUPPORTED_
 #define PNG_WRITE_TRANSFORMS_SUPPORTED
 #define PNG_WRITE_UNKNOWN_CHUNKS_SUPPORTED
 #define PNG_WRITE_USER_TRANSFORM_SUPPORTED
@@ -244,7 +245,7 @@ type png_doublepp as double ptr ptr
 type png_charppp as zstring ptr ptr ptr
 type png_alloc_size_t as png_size_t
 #define PNG_LIBPNG_BUILD_TYPE PNG_LIBPNG_BUILD_BASE_TYPE
-#define png_libpng_ver_ png_get_header_ver(NULL)
+#define png_libpng_ver png_get_header_ver(NULL)
 type png_libpng_version_1_5_19 as zstring ptr
 
 type png_color_struct

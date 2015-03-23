@@ -1,4 +1,5 @@
 #pragma once
+
 #inclib "curses"
 
 #include once "crt/long.bi"
@@ -8,7 +9,7 @@
 '' The following symbols have been renamed:
 ''     #define NCURSES_BOOL => NCURSES_BOOL_
 ''     #define ERR => ERR_
-''     typedef screen => screen_
+''     typedef SCREEN => SCREEN_
 ''     typedef WINDOW => WINDOW_
 ''     procedure beep => beep_
 ''     #define clear => clear_
@@ -17,6 +18,7 @@
 ''     #define slk_attr_off => slk_attr_off_
 ''     #define slk_attr_on => slk_attr_on_
 ''     procedure getmouse => getmouse_
+''     procedure mouse_trafo => mouse_trafo_
 
 extern "C"
 
@@ -69,8 +71,8 @@ type NCURSES_BOOL as ubyte
 #define COLOR_MAGENTA 5
 #define COLOR_CYAN 6
 #define COLOR_WHITE 7
-#define ACS_LEN 128
-extern acs_map(0 to ACS_LEN-1) as chtype
+#define acs_map(i) ((@__acs_map)[i])
+extern __acs_map alias "acs_map" as chtype
 #define NCURSES_ACS(c) (acs_map(cubyte(c)))
 #define ACS_ULCORNER NCURSES_ACS(asc("l"))
 #define ACS_LLCORNER NCURSES_ACS(asc("m"))
@@ -182,8 +184,8 @@ declare function curs_set(byval as long) as long
 declare function def_prog_mode() as long
 declare function def_shell_mode() as long
 declare function delay_output(byval as long) as long
-type screen_ as screen__
-declare sub delscreen(byval as screen_ ptr)
+type SCREEN_ as SCREEN__
+declare sub delscreen(byval as SCREEN_ ptr)
 declare function delwin(byval as WINDOW_ ptr) as long
 declare function derwin(byval as WINDOW_ ptr, byval as long, byval as long, byval as long, byval as long) as WINDOW_ ptr
 declare function doupdate() as long
@@ -224,7 +226,7 @@ declare function mvwprintw(byval as WINDOW_ ptr, byval as long, byval as long, b
 declare function mvwscanw(byval as WINDOW_ ptr, byval as long, byval as long, byval as zstring ptr, ...) as long
 declare function napms(byval as long) as long
 declare function newpad(byval as long, byval as long) as WINDOW_ ptr
-declare function newterm(byval as zstring ptr, byval as FILE ptr, byval as FILE ptr) as screen_ ptr
+declare function newterm(byval as zstring ptr, byval as FILE ptr, byval as FILE ptr) as SCREEN_ ptr
 declare function newwin(byval as long, byval as long, byval as long, byval as long) as WINDOW_ ptr
 declare function nl() as long
 declare function nocbreak() as long
@@ -255,7 +257,7 @@ declare function scr_init(byval as const zstring ptr) as long
 declare function scrollok(byval as WINDOW_ ptr, byval as byte) as long
 declare function scr_restore(byval as const zstring ptr) as long
 declare function scr_set(byval as const zstring ptr) as long
-declare function set_term(byval as screen_ ptr) as screen_ ptr
+declare function set_term(byval as SCREEN_ ptr) as SCREEN_ ptr
 declare function slk_attroff(byval as const chtype) as long
 declare function slk_attr_off(byval as const attr_t, byval as any ptr) as long
 declare function slk_attron(byval as const chtype) as long
@@ -333,7 +335,7 @@ declare function tiparm(byval as const zstring ptr, ...) as zstring ptr
 #define vid_attr(a, pair, opts) vidattr(a)
 #define NCURSES_EXT_FUNCS 20110404
 type NCURSES_WINDOW_CB as function(byval as WINDOW_ ptr, byval as any ptr) as long
-type NCURSES_SCREEN_CB as function(byval as screen_ ptr, byval as any ptr) as long
+type NCURSES_SCREEN_CB as function(byval as SCREEN_ ptr, byval as any ptr) as long
 declare function is_term_resized(byval as long, byval as long) as byte
 declare function keybound(byval as long, byval as long) as zstring ptr
 declare function curses_version() as const zstring ptr
@@ -349,7 +351,7 @@ declare function set_tabsize(byval as long) as long
 declare function use_default_colors() as long
 declare function use_extended_names(byval as byte) as long
 declare function use_legacy_coding(byval as long) as long
-declare function use_screen(byval as screen_ ptr, byval as NCURSES_SCREEN_CB, byval as any ptr) as long
+declare function use_screen(byval as SCREEN_ ptr, byval as NCURSES_SCREEN_CB, byval as any ptr) as long
 declare function use_window(byval as WINDOW_ ptr, byval as NCURSES_WINDOW_CB, byval as any ptr) as long
 declare function wresize(byval as WINDOW_ ptr, byval as long, byval as long) as long
 declare sub nofilter()
@@ -570,10 +572,8 @@ end function
 extern curscr as WINDOW_ ptr
 extern newscr as WINDOW_ ptr
 extern stdscr as WINDOW_ ptr
-
-#define NAMESIZE 256
-extern ttytype as zstring * NAMESIZE
-
+extern __ttytype alias "ttytype" as byte
+#define ttytype (*cptr(zstring ptr, @__ttytype))
 extern COLORS as long
 extern COLOR_PAIRS as long
 extern COLS as long

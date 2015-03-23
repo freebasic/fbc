@@ -1,8 +1,8 @@
 #pragma once
 
-#include once "schnlsp.bi"
-
 #inclib "wldap32"
+
+#include once "schnlsp.bi"
 
 extern "C"
 

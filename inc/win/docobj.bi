@@ -1,5 +1,7 @@
 #pragma once
 
+#inclib "uuid"
+
 #include once "crt/long.bi"
 #include once "rpc.bi"
 #include once "rpcndr.bi"
@@ -11,8 +13,6 @@
 #include once "oaidl.bi"
 #include once "servprov.bi"
 #include once "winapifamily.bi"
-
-#inclib "uuid"
 
 extern "Windows"
 

@@ -1,9 +1,9 @@
 #pragma once
 
+#inclib "winspool"
+
 #include once "_mingw_unicode.bi"
 #include once "prsht.bi"
-
-#inclib "winspool"
 
 extern "Windows"
 

@@ -1,13 +1,13 @@
 #pragma once
 
+#inclib "dxguid"
+#inclib "d3d9"
+
 #include once "crt/stdlib.bi"
 #include once "objbase.bi"
 #include once "windows.bi"
 #include once "d3d9types.bi"
 #include once "d3d9caps.bi"
-
-#inclib "dxguid"
-#inclib "d3d9"
 
 extern "Windows"
 

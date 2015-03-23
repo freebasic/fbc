@@ -1,9 +1,9 @@
 #pragma once
 
+#inclib "shell32"
+
 #include once "winapifamily.bi"
 #include once "_mingw_unicode.bi"
-
-#inclib "shell32"
 
 extern "Windows"
 
@@ -1225,7 +1225,6 @@ declare function IsLFNDriveW(byval pszPath as LPCWSTR) as WINBOOL
 	declare function InitNetworkAddressControl() as WINBOOL
 	#define NCM_GETADDRESS (WM_USER + 1)
 	#define NetAddr_GetAddress(hwnd, pv) cast(HRESULT, SNDMSG(hwnd, NCM_GETADDRESS, 0, cast(LPARAM, pv)))
-
 	type NET_ADDRESS_INFO_ as NET_ADDRESS_INFO__
 
 	type tagNC_ADDRESS

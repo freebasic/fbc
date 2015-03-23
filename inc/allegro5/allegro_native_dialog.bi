@@ -1,4 +1,5 @@
 #pragma once
+
 #inclib "allegro_dialog"
 
 #include once "allegro5/allegro.bi"

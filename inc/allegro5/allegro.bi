@@ -1,4 +1,5 @@
 #pragma once
+
 #inclib "allegro"
 
 #include once "crt/errno.bi"
@@ -300,7 +301,6 @@ declare function al_ustr_size_utf16(byval us as const ALLEGRO_USTR ptr) as uinte
 declare function al_ustr_encode_utf16(byval us as const ALLEGRO_USTR ptr, byval s as ushort ptr, byval n as uinteger) as uinteger
 declare function al_utf16_width(byval c as long) as uinteger
 declare function al_utf16_encode(byval s as ushort ptr, byval c as long) as uinteger
-
 type ALLEGRO_FILE as ALLEGRO_FILE_
 
 type ALLEGRO_FILE_INTERFACE

@@ -5,6 +5,7 @@
 #include once "basetsd.bi"
 
 '' The following symbols have been renamed:
+''     typedef BYTE => UBYTE
 ''     typedef INT => INT_
 
 extern "Windows"

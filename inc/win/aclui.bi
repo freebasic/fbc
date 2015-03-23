@@ -1,12 +1,12 @@
 #pragma once
 
+#inclib "aclui"
+
 #include once "winapifamily.bi"
 #include once "objbase.bi"
 #include once "commctrl.bi"
 #include once "accctrl.bi"
 #include once "authz.bi"
-
-#inclib "aclui"
 
 extern "Windows"
 

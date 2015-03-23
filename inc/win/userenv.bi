@@ -1,10 +1,10 @@
 #pragma once
 
+#inclib "userenv"
+
 #include once "_mingw_unicode.bi"
 #include once "wbemcli.bi"
 #include once "profinfo.bi"
-
-#inclib "userenv"
 
 extern "Windows"
 

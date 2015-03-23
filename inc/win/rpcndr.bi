@@ -70,7 +70,6 @@ declare sub NDRSContextMarshall2(byval BindingHandle as RPC_BINDING_HANDLE, byva
 declare function NDRSContextUnmarshallEx(byval BindingHandle as RPC_BINDING_HANDLE, byval pBuff as any ptr, byval DataRepresentation as ulong) as NDR_SCONTEXT
 declare function NDRSContextUnmarshall2(byval BindingHandle as RPC_BINDING_HANDLE, byval pBuff as any ptr, byval DataRepresentation as ulong, byval CtxGuard as any ptr, byval Flags as ulong) as NDR_SCONTEXT
 declare sub RpcSsDestroyClientContext(byval ContextHandle as any ptr ptr)
-
 #macro byte_from_ndr(source, target)
 	scope
 		*(target) = **cptr(byte ptr ptr, @(source)->Buffer)
@@ -127,11 +126,11 @@ end type
 
 type MIDL_SYNTAX_INFO as _MIDL_SYNTAX_INFO
 type PMIDL_SYNTAX_INFO as _MIDL_SYNTAX_INFO ptr
+type NDR_ALLOC_ALL_NODES_CONTEXT as NDR_ALLOC_ALL_NODES_CONTEXT_
+type NDR_POINTER_QUEUE_STATE as NDR_POINTER_QUEUE_STATE_
 type _MIDL_STUB_DESC as _MIDL_STUB_DESC_
 type _FULL_PTR_XLAT_TABLES as _FULL_PTR_XLAT_TABLES_
 type IRpcChannelBuffer as IRpcChannelBuffer_
-type NDR_ALLOC_ALL_NODES_CONTEXT as NDR_ALLOC_ALL_NODES_CONTEXT_
-type NDR_POINTER_QUEUE_STATE as NDR_POINTER_QUEUE_STATE_
 type _NDR_PROC_CONTEXT as _NDR_PROC_CONTEXT_
 
 type _MIDL_STUB_MESSAGE_

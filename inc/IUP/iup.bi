@@ -1,6 +1,7 @@
 #pragma once
 
 #inclib "iup"
+
 #ifdef __FB_WIN32__
 	#inclib "gdi32"
 	#inclib "user32"

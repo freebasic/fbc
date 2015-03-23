@@ -1,9 +1,9 @@
 #pragma once
 
+#inclib "uuid"
+
 #include once "crt/long.bi"
 #include once "objbase.bi"
-
-#inclib "uuid"
 
 extern "Windows"
 
@@ -812,7 +812,7 @@ end type
 
 type LPDIPROPPOINTER as DIPROPPOINTER ptr
 type LPCDIPROPPOINTER as const DIPROPPOINTER ptr
-#define MAKEDIPROP(prop) cast(REFGUID, prop)
+#define MAKEDIPROP(prop) cast(REFGUID, (prop))
 #define DIPROP_BUFFERSIZE MAKEDIPROP(1)
 #define DIPROP_AXISMODE MAKEDIPROP(2)
 #define DIPROPAXISMODE_ABS 0

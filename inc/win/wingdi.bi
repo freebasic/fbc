@@ -1,22 +1,22 @@
 #pragma once
 
+#inclib "gdi32"
+
 #include once "winapifamily.bi"
 #include once "_mingw_unicode.bi"
 
 '' The following symbols have been renamed:
 ''     #define ERROR => ERROR_
-''     #define RGB => BGR
-''     #define STRETCHBLT => STRETCHBLT_
-''     #define STARTDOC => STARTDOC_
-''     #define EXTTEXTOUT => EXTTEXTOUT_
-''     #define ENDDOC => ENDDOC_
 ''     #define ABORTDOC => ABORTDOC_
 ''     #define SETABORTPROC => SETABORTPROC_
+''     #define STARTDOC => STARTDOC_
+''     #define ENDDOC => ENDDOC_
 ''     #define SETMITERLIMIT => SETMITERLIMIT_
+''     #define EXTTEXTOUT => EXTTEXTOUT_
+''     #define STRETCHBLT => STRETCHBLT_
+''     #define RGB => BGR
 ''     #define BITSPIXEL => BITSPIXEL_
 ''     #define PLANES => PLANES_
-
-#inclib "gdi32"
 
 extern "Windows"
 

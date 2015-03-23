@@ -1,8 +1,8 @@
 #pragma once
 
-#include once "ocidl.bi"
-
 #inclib "oleaut32"
+
+#include once "ocidl.bi"
 
 extern "Windows"
 
