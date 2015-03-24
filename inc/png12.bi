@@ -21,13 +21,13 @@
 extern "C"
 
 #define PNG_H
-#define PNG_LIBPNG_VER_STRING "1.2.51"
-#define PNG_HEADER_VERSION_STRING !" libpng version 1.2.51 - February 6, 2014\n"
+#define PNG_LIBPNG_VER_STRING "1.2.53"
+#define PNG_HEADER_VERSION_STRING !" libpng version 1.2.53 - February 26, 2015\n"
 const PNG_LIBPNG_VER_SONUM = 0
 const PNG_LIBPNG_VER_DLLNUM = 13
 const PNG_LIBPNG_VER_MAJOR = 1
 const PNG_LIBPNG_VER_MINOR = 2
-const PNG_LIBPNG_VER_RELEASE = 51
+const PNG_LIBPNG_VER_RELEASE = 53
 const PNG_LIBPNG_VER_BUILD = 0
 const PNG_LIBPNG_BUILD_ALPHA = 1
 const PNG_LIBPNG_BUILD_BETA = 2
@@ -38,7 +38,7 @@ const PNG_LIBPNG_BUILD_PATCH = 8
 const PNG_LIBPNG_BUILD_PRIVATE = 16
 const PNG_LIBPNG_BUILD_SPECIAL = 32
 #define PNG_LIBPNG_BUILD_BASE_TYPE PNG_LIBPNG_BUILD_STABLE
-const PNG_LIBPNG_VER_ = 10251
+const PNG_LIBPNG_VER_ = 10253
 #define PNGCONF_H
 #define PNG_1_2_X
 const PNG_WARN_UNINITIALIZED_ROW = 1
@@ -112,7 +112,7 @@ const PNG_ZBUF_SIZE = 8192
 const PNG_USER_WIDTH_MAX = cast(clong, 1000000)
 const PNG_USER_HEIGHT_MAX = cast(clong, 1000000)
 const PNG_USER_CHUNK_CACHE_MAX = 32765
-const PNG_USER_CHUNK_MALLOC_MAX = 0
+const PNG_USER_CHUNK_MALLOC_MAX = 8000000
 const PNG_LITERAL_SHARP = &h23
 const PNG_LITERAL_LEFT_SQUARE_BRACKET = &h5b
 const PNG_LITERAL_RIGHT_SQUARE_BRACKET = &h5d
@@ -680,7 +680,7 @@ type png_struct_def
 	chunkdata as png_charp
 end type
 
-type version_1_2_51 as png_structp
+type version_1_2_53 as png_structp
 type png_structpp as png_struct ptr ptr
 declare function png_access_version_number() as png_uint_32
 declare sub png_set_sig_bytes(byval png_ptr as png_structp, byval num_bytes as long)

@@ -22,13 +22,13 @@
 extern "C"
 
 #define PNG_H
-#define PNG_LIBPNG_VER_STRING "1.5.19"
-#define PNG_HEADER_VERSION_STRING !" libpng version 1.5.19 - August 21, 2014\n"
+#define PNG_LIBPNG_VER_STRING "1.5.21"
+#define PNG_HEADER_VERSION_STRING !" libpng version 1.5.21 - December 22, 2014\n"
 const PNG_LIBPNG_VER_SONUM = 15
 const PNG_LIBPNG_VER_DLLNUM = 15
 const PNG_LIBPNG_VER_MAJOR = 1
 const PNG_LIBPNG_VER_MINOR = 5
-const PNG_LIBPNG_VER_RELEASE = 19
+const PNG_LIBPNG_VER_RELEASE = 21
 const PNG_LIBPNG_VER_BUILD = 0
 const PNG_LIBPNG_BUILD_ALPHA = 1
 const PNG_LIBPNG_BUILD_BETA = 2
@@ -39,7 +39,7 @@ const PNG_LIBPNG_BUILD_PATCH = 8
 const PNG_LIBPNG_BUILD_PRIVATE = 16
 const PNG_LIBPNG_BUILD_SPECIAL = 32
 #define PNG_LIBPNG_BUILD_BASE_TYPE PNG_LIBPNG_BUILD_STABLE
-const PNG_LIBPNG_VER_ = 10519
+const PNG_LIBPNG_VER_ = 10521
 #define PNGLCONF_H
 #define PNG_16BIT_SUPPORTED
 #define PNG_ALIGNED_MEMORY_SUPPORTED
@@ -246,7 +246,7 @@ type png_charppp as zstring ptr ptr ptr
 type png_alloc_size_t as png_size_t
 #define PNG_LIBPNG_BUILD_TYPE PNG_LIBPNG_BUILD_BASE_TYPE
 #define png_libpng_ver png_get_header_ver(NULL)
-type png_libpng_version_1_5_19 as zstring ptr
+type png_libpng_version_1_5_21 as zstring ptr
 
 type png_color_struct
 	red as png_byte

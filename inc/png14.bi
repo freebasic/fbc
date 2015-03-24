@@ -24,13 +24,13 @@
 extern "C"
 
 #define PNG_H
-#define PNG_LIBPNG_VER_STRING "1.4.13"
-#define PNG_HEADER_VERSION_STRING !" libpng version 1.4.13 - February 6, 2014\n"
+#define PNG_LIBPNG_VER_STRING "1.4.16"
+#define PNG_HEADER_VERSION_STRING !" libpng version 1.4.16 - March 19, 2015\n"
 const PNG_LIBPNG_VER_SONUM = 14
 const PNG_LIBPNG_VER_DLLNUM = 14
 const PNG_LIBPNG_VER_MAJOR = 1
 const PNG_LIBPNG_VER_MINOR = 4
-const PNG_LIBPNG_VER_RELEASE = 13
+const PNG_LIBPNG_VER_RELEASE = 16
 const PNG_LIBPNG_VER_BUILD = 0
 const PNG_LIBPNG_BUILD_ALPHA = 1
 const PNG_LIBPNG_BUILD_BETA = 2
@@ -41,7 +41,7 @@ const PNG_LIBPNG_BUILD_PATCH = 8
 const PNG_LIBPNG_BUILD_PRIVATE = 16
 const PNG_LIBPNG_BUILD_SPECIAL = 32
 #define PNG_LIBPNG_BUILD_BASE_TYPE PNG_LIBPNG_BUILD_STABLE
-const PNG_LIBPNG_VER_ = 10413
+const PNG_LIBPNG_VER_ = 10416
 #define PNGCONF_H
 const PNG_ZBUF_SIZE = 8192
 #define PNG_READ_SUPPORTED
@@ -115,7 +115,7 @@ const PNG_GAMMA_THRESHOLD = 0.05
 const PNG_USER_WIDTH_MAX = cast(clong, 1000000)
 const PNG_USER_HEIGHT_MAX = cast(clong, 1000000)
 const PNG_USER_CHUNK_CACHE_MAX = 32767
-const PNG_USER_CHUNK_MALLOC_MAX = 0
+const PNG_USER_CHUNK_MALLOC_MAX = 8000000
 #define PNG_IO_STATE_SUPPORTED
 const PNG_LITERAL_SHARP = &h23
 const PNG_LITERAL_LEFT_SQUARE_BRACKET = &h5b
@@ -670,7 +670,7 @@ type png_struct_def
 	io_state as png_uint_32
 end type
 
-type version_1_4_13 as png_structp
+type version_1_4_16 as png_structp
 type png_structpp as png_struct ptr ptr
 declare function png_access_version_number() as png_uint_32
 declare sub png_set_sig_bytes(byval png_ptr as png_structp, byval num_bytes as long)
@@ -940,7 +940,7 @@ const PNG_IO_MASK_LOC = &h00f0
 		(composite) = cast(png_uint_16, ((temp + (temp shr 16)) shr 16))
 	end scope
 #endmacro
-#define png_get_uint_32_(buf) ((((cast(png_uint_32, *(buf)) shl 24) + (cast(png_uint_32, *((buf) + 1)) shl 16)) + (cast(png_uint_32, *((buf) + 2)) shl 8)) + cast(png_uint_32, *((buf) + 3)))
+#define png_get_uint_32_(buf) ((((cast(png_uint_32, (*(buf)) and &hff) shl 24) + (cast(png_uint_32, (*((buf) + 1)) and &hff) shl 16)) + (cast(png_uint_32, (*((buf) + 2)) and &hff) shl 8)) + cast(png_uint_32, (*((buf) + 3)) and &hff))
 #define png_get_uint_16_(buf) cast(png_uint_16, culng(culng(culng(*(buf)) shl 8) + culng(*((buf) + 1))))
 #define png_get_int_32_(buf) cast(png_int_32, iif((*(buf)) and &h80, -cast(png_int_32, (png_get_uint_32_(buf) xor cast(clong, &hffffffff)) + 1), cast(png_int_32, png_get_uint_32_(buf))))
 
