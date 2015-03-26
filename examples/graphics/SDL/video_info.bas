@@ -4,7 +4,7 @@
 
 #include  "SDL\SDL.bi"
 
-	Dim Video As SDL_VideoInfo Ptr
+	Dim Video As const SDL_VideoInfo Ptr
 
 	' Startup SDL
 	If ( SDL_Init( SDL_INIT_VIDEO ) = -1) Then

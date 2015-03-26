@@ -13,7 +13,7 @@ declare sub blitImage _
 
 	dim freeImg as SDL_Surface ptr, basicImg as SDL_Surface ptr, horseImg as SDL_Surface ptr
 
-	dim version as SDL_version ptr
+	dim version as const SDL_version ptr
 	version = IMG_Linked_Version()
 
 	' display the version number of the SDL_image being used
