@@ -1,13 +1,11 @@
-''
-''
-'' WidgetNode -- header translated with help of SWIG FB wrapper
-''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
-''
-''
-#ifndef __WidgetNode_bi__
-#define __WidgetNode_bi__
+#pragma once
+
+#include once "X11/Intrinsic.bi"
+#include once "X11/Xfuncproto.bi"
+
+extern "C"
+
+#define _XmuWidgetNode_h
 
 type _XmuWidgetNode
 	label as zstring ptr
@@ -17,7 +15,7 @@ type _XmuWidgetNode
 	siblings as _XmuWidgetNode ptr
 	lowered_label as zstring ptr
 	lowered_classname as zstring ptr
-	have_resources as Bool
+	have_resources as long
 	resources as XtResourceList
 	resourcewn as _XmuWidgetNode ptr ptr
 	nresources as Cardinal
@@ -28,8 +26,13 @@ type _XmuWidgetNode
 end type
 
 type XmuWidgetNode as _XmuWidgetNode
+#define XmuWnClass(wn) (wn)->widget_class_ptr[0]
+#define XmuWnClassname(wn) XmuWnClass(wn)->core_class.class_name
+#define XmuWnSuperclass(wn) XmuWnClass(wn)->core_class.superclass
 
-declare sub XmuWnFetchResources cdecl alias "XmuWnFetchResources" (byval node as XmuWidgetNode ptr, byval toplevel as Widget, byval topnode as XmuWidgetNode ptr)
-declare function XmuWnCountOwnedResources cdecl alias "XmuWnCountOwnedResources" (byval node as XmuWidgetNode ptr, byval ownernode as XmuWidgetNode ptr, byval constraints as Bool) as integer
+declare sub XmuWnInitializeNodes(byval nodearray as XmuWidgetNode ptr, byval nnodes as long)
+declare sub XmuWnFetchResources(byval node as XmuWidgetNode ptr, byval toplevel as Widget, byval topnode as XmuWidgetNode ptr)
+declare function XmuWnCountOwnedResources(byval node as XmuWidgetNode ptr, byval ownernode as XmuWidgetNode ptr, byval constraints as long) as long
+declare function XmuWnNameToNode(byval nodelist as XmuWidgetNode ptr, byval nnodes as long, byval name as const zstring ptr) as XmuWidgetNode ptr
 
-#endif
+end extern

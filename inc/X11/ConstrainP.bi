@@ -1,13 +1,17 @@
-''
-''
-'' ConstrainP -- header translated with help of SWIG FB wrapper
-''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
-''
-''
-#ifndef __ConstrainP_bi__
-#define __ConstrainP_bi__
+#pragma once
+
+#include once "crt/long.bi"
+#include once "X11/Constraint.bi"
+
+extern "C"
+
+#define _XtConstraintP_h
+
+type _ConstraintPart
+	mumble as XtPointer
+end type
+
+type ConstraintPart as _ConstraintPart
 
 type _ConstraintRec
 	core as CorePart
@@ -33,7 +37,7 @@ type ConstraintClassPart as _ConstraintClassPart
 type ConstraintClassExtensionRec
 	next_extension as XtPointer
 	record_type as XrmQuark
-	version as integer
+	version as clong
 	record_size as Cardinal
 	get_values_hook as XtArgsProc
 end type
@@ -47,7 +51,7 @@ type _ConstraintClassRec
 end type
 
 type ConstraintClassRec as _ConstraintClassRec
+extern constraintClassRec as ConstraintClassRec
+const XtConstraintExtensionVersion = cast(clong, 1)
 
-#define XtConstraintExtensionVersion 1L
-
-#endif
+end extern

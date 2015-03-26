@@ -1,12 +1,10 @@
-''
-''
-'' SysUtil -- header translated with help of SWIG FB wrapper
-''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
-''
-''
-#ifndef __SysUtil_bi__
-#define __SysUtil_bi__
+#pragma once
 
-#endif
+#include once "X11/Xfuncproto.bi"
+
+extern "C"
+
+#define _SYSUTIL_H_
+declare function XmuGetHostname(byval buf_return as zstring ptr, byval maxlen as long) as long
+
+end extern

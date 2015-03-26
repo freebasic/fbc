@@ -1,12 +1,8 @@
-''
-''
-'' Xwinsock -- header translated with help of SWIG FB wrapper
-''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
-''
-''
-#ifndef __Xwinsock_bi__
-#define __Xwinsock_bi__
+#pragma once
 
+#ifdef __FB_WIN32__
+	#include once "win/winsock2.bi"
+
+	#define _NO_BOOL_TYPEDEF
+	#define wBOOL WINBOOL
 #endif

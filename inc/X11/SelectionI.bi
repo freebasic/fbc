@@ -1,59 +1,57 @@
-''
-''
-'' SelectionI -- header translated with help of SWIG FB wrapper
-''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
-''
-''
-#ifndef __SelectionI_bi__
-#define __SelectionI_bi__
+#pragma once
 
+#include once "crt/long.bi"
+#include once "Intrinsic.bi"
+
+'' The following symbols have been renamed:
+''     typedef Select => Select_
+
+#define _XtselectionI_h
 type Request as _RequestRec ptr
-type Select as _SelectRec ptr
+type Select_ as _SelectRec ptr
 
 type _RequestRec
-	ctx as Select
+	ctx as Select_
 	widget as Widget
 	requestor as Window
-	property as Atom
-	target as Atom
-	type as Atom
-	format as integer
+	property as XAtom
+	target as XAtom
+	as XAtom type
+	format as long
 	value as XtPointer
-	bytelength as uinteger
-	offset as uinteger
+	bytelength as culong
+	offset as culong
 	timeout as XtIntervalId
 	event as XSelectionRequestEvent
-	allSent as Boolean
+	allSent as byte
 end type
 
 type RequestRec as _RequestRec
 
 type SelectionPropRec
-	prop as Atom
-	avail as Boolean
+	prop as XAtom
+	avail as byte
 end type
 
 type SelectionProp as SelectionPropRec ptr
 
 type PropListRec
 	dpy as Display ptr
-	incr_atom as Atom
-	indirect_atom as Atom
-	timestamp_atom as Atom
-	propCount as integer
+	incr_atom as XAtom
+	indirect_atom as XAtom
+	timestamp_atom as XAtom
+	propCount as long
 	list as SelectionProp
 end type
 
 type PropList as PropListRec ptr
 
 type _SelectRec
-	selection as Atom
+	selection as XAtom
 	dpy as Display ptr
 	widget as Widget
 	time as Time
-	serial as uinteger
+	serial as culong
 	convert as XtConvertSelectionProc
 	loses as XtLoseSelectionProc
 	notify as XtSelectionDoneProc
@@ -61,24 +59,24 @@ type _SelectRec
 	owner_closure as XtPointer
 	prop_list as PropList
 	req as Request
-	ref_count as integer
-	incremental:1 as uinteger
-	free_when_done:1 as uinteger
-	was_disowned:1 as uinteger
+	ref_count as long
+	incremental : 1 as ulong
+	free_when_done : 1 as ulong
+	was_disowned : 1 as ulong
 end type
 
 type SelectRec as _SelectRec
 
 type _ParamRec
-	selection as Atom
-	param as Atom
+	selection as XAtom
+	param as XAtom
 end type
 
 type ParamRec as _ParamRec
 type Param as _ParamRec ptr
 
 type _ParamInfoRec
-	count as uinteger
+	count as ulong
 	paramlist as Param
 end type
 
@@ -86,21 +84,21 @@ type ParamInfoRec as _ParamInfoRec
 type ParamInfo as _ParamInfoRec ptr
 
 type _QueuedRequestRec
-	selection as Atom
-	target as Atom
-	param as Atom
+	selection as XAtom
+	target as XAtom
+	param as XAtom
 	callback as XtSelectionCallbackProc
 	closure as XtPointer
 	time as Time
-	incremental as Boolean
+	incremental as byte
 end type
 
 type QueuedRequestRec as _QueuedRequestRec
 type QueuedRequest as _QueuedRequestRec ptr
 
 type _QueuedRequestInfoRec
-	count as integer
-	selections as Atom ptr
+	count as long
+	selections as XAtom ptr
 	requests as QueuedRequest ptr
 end type
 
@@ -110,33 +108,34 @@ type QueuedRequestInfo as _QueuedRequestInfoRec ptr
 type CallBackInfoRec
 	callbacks as XtSelectionCallbackProc ptr
 	req_closure as XtPointer ptr
-	property as Atom
-	target as Atom ptr
-	type as Atom
-	format as integer
+	property as XAtom
+	target as XAtom ptr
+	as XAtom type
+	format as long
 	value as zstring ptr
-	bytelength as integer
-	offset as integer
+	bytelength as long
+	offset as long
 	timeout as XtIntervalId
 	proc as XtEventHandler
 	widget as Widget
 	time as Time
-	ctx as Select
-	incremental as Boolean ptr
-	current as integer
+	ctx as Select_
+	incremental as zstring ptr
+	current as long
 end type
 
 type CallBackInfo as CallBackInfoRec ptr
 
 type IndirectPair
-	target as Atom
-	property as Atom
+	target as XAtom
+	property as XAtom
 end type
 
-#define IndirectPairWordSize 2
+const IndirectPairWordSize = 2
 
 type RequestWindowRec
-	active_transfer_count as integer
+	active_transfer_count as long
 end type
 
-#endif
+#define MAX_SELECTION_INCR(dpy) (iif(65536 < XMaxRequestSize(dpy), 65536 shl 2, XMaxRequestSize(dpy) shl 2) - 100)
+#define MATCH_SELECT(event, info) ((((event->time = info->time) andalso (event->requestor = XtWindow(info->widget))) andalso (event->selection = info->ctx->selection)) andalso (event->target = (*info->target)))

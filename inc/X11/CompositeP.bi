@@ -1,13 +1,21 @@
-''
-''
-'' CompositeP -- header translated with help of SWIG FB wrapper
-''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
-''
-''
-#ifndef __CompositeP_bi__
-#define __CompositeP_bi__
+#pragma once
+
+#include once "crt/long.bi"
+#include once "X11/Composite.bi"
+
+extern "C"
+
+#define _XtCompositeP_h
+
+type _CompositePart
+	children as WidgetList
+	num_children as Cardinal
+	num_slots as Cardinal
+	insert_position as XtOrderProc
+end type
+
+type CompositePart as _CompositePart
+type CompositePtr as _CompositePart ptr
 
 type _CompositeRec
 	core as CorePart
@@ -30,10 +38,10 @@ type CompositePartPtr as _CompositeClassPart ptr
 type CompositeClassExtensionRec
 	next_extension as XtPointer
 	record_type as XrmQuark
-	version as integer
+	version as clong
 	record_size as Cardinal
-	accepts_objects as Boolean
-	allows_change_managed_set as Boolean
+	accepts_objects as byte
+	allows_change_managed_set as byte
 end type
 
 type CompositeClassExtension as CompositeClassExtensionRec ptr
@@ -44,7 +52,11 @@ type _CompositeClassRec
 end type
 
 type CompositeClassRec as _CompositeClassRec
+extern compositeClassRec as CompositeClassRec
+const XtCompositeExtensionVersion = cast(clong, 2)
+#define XtInheritGeometryManager cast(XtGeometryHandler, _XtInherit)
+#define XtInheritChangeManaged cast(XtWidgetProc, _XtInherit)
+#define XtInheritInsertChild cast(XtWidgetProc, _XtInherit)
+#define XtInheritDeleteChild cast(XtWidgetProc, _XtInherit)
 
-#define XtCompositeExtensionVersion 2L
-
-#endif
+end extern

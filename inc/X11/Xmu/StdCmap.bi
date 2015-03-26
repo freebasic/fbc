@@ -1,20 +1,19 @@
-''
-''
-'' StdCmap -- header translated with help of SWIG FB wrapper
-''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
-''
-''
-#ifndef __StdCmap_bi__
-#define __StdCmap_bi__
+#pragma once
 
-declare sub XmuDeleteStandardColormap cdecl alias "XmuDeleteStandardColormap" (byval dpy as Display ptr, byval screen as integer, byval property as Atom)
-declare function XmuGetColormapAllocation cdecl alias "XmuGetColormapAllocation" (byval vinfo as XVisualInfo ptr, byval property as Atom, byval red_max_return as uinteger ptr, byval green_max_return as uinteger ptr, byval blue_max_return as uinteger ptr) as Status
-declare function XmuLookupStandardColormap cdecl alias "XmuLookupStandardColormap" (byval dpy as Display ptr, byval screen as integer, byval visualid as VisualID, byval depth as uinteger, byval property as Atom, byval replace as Bool, byval retain as Bool) as Status
-declare function XmuStandardColormap cdecl alias "XmuStandardColormap" (byval dpy as Display ptr, byval screen as integer, byval visualid as VisualID, byval depth as uinteger, byval property as Atom, byval cmap as Colormap, byval red_max as uinteger, byval green_max as uinteger, byval blue_max as uinteger) as XStandardColormap ptr
-declare function XmuVisualStandardColormaps cdecl alias "XmuVisualStandardColormaps" (byval dpy as Display ptr, byval screen as integer, byval visualid as VisualID, byval depth as uinteger, byval replace as Bool, byval retain as Bool) as Status
-declare function XmuDistinguishableColors cdecl alias "XmuDistinguishableColors" (byval colors as XColor ptr, byval count as integer) as Bool
-declare function XmuDistinguishablePixels cdecl alias "XmuDistinguishablePixels" (byval dpy as Display ptr, byval cmap as Colormap, byval pixels as uinteger ptr, byval count as integer) as Bool
+#include once "crt/long.bi"
+#include once "X11/Xfuncproto.bi"
 
-#endif
+extern "C"
+
+#define _XMU_STDCMAP_H_
+declare function XmuAllStandardColormaps(byval dpy as Display ptr) as long
+declare function XmuCreateColormap(byval dpy as Display ptr, byval colormap as XStandardColormap ptr) as long
+declare sub XmuDeleteStandardColormap(byval dpy as Display ptr, byval screen as long, byval property as XAtom)
+declare function XmuGetColormapAllocation(byval vinfo as XVisualInfo ptr, byval property as XAtom, byval red_max_return as culong ptr, byval green_max_return as culong ptr, byval blue_max_return as culong ptr) as long
+declare function XmuLookupStandardColormap(byval dpy as Display ptr, byval screen as long, byval visualid as VisualID, byval depth as ulong, byval property as XAtom, byval replace as long, byval retain as long) as long
+declare function XmuStandardColormap(byval dpy as Display ptr, byval screen as long, byval visualid as VisualID, byval depth as ulong, byval property as XAtom, byval cmap as Colormap, byval red_max as culong, byval green_max as culong, byval blue_max as culong) as XStandardColormap ptr
+declare function XmuVisualStandardColormaps(byval dpy as Display ptr, byval screen as long, byval visualid as VisualID, byval depth as ulong, byval replace as long, byval retain as long) as long
+declare function XmuDistinguishableColors(byval colors as XColor ptr, byval count as long) as long
+declare function XmuDistinguishablePixels(byval dpy as Display ptr, byval cmap as Colormap, byval pixels as culong ptr, byval count as long) as long
+
+end extern

@@ -1,33 +1,34 @@
-''
-''
-'' Xft -- header translated with help of SWIG FB wrapper
-''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
-''
-''
-#ifndef __Xft_bi__
-#define __Xft_bi__
+#pragma once
 
-#define XFT_MAJOR 2
-#define XFT_MINOR 1
-#define XFT_REVISION 13
-#define XFT_VERSION ((2*10000) +(1*100) +(13))
-#define XftVersion ((2*10000) +(1*100) +(13))
+#include once "crt/long.bi"
+#include once "crt/stdarg.bi"
+#include once "freetype2/freetype.bi"
+#include once "fontconfig/fontconfig.bi"
+#include once "X11/extensions/Xrender.bi"
+#include once "X11/Xfuncproto.bi"
+#include once "X11/Xft/XftCompat.bi"
+
+extern "C"
+
+#define _XFT_H_
+const XFT_MAJOR = 2
+const XFT_MINOR = 3
+const XFT_REVISION = 2
+#define XFT_VERSION (((XFT_MAJOR * 10000) + (XFT_MINOR * 100)) + XFT_REVISION)
+#define XftVersion XFT_VERSION
 #define XFT_CORE "core"
 #define XFT_RENDER "render"
 #define XFT_XLFD "xlfd"
 #define XFT_MAX_GLYPH_MEMORY "maxglyphmemory"
 #define XFT_MAX_UNREF_FONTS "maxunreffonts"
-extern _XftFTlibrary alias "_XftFTlibrary" as FT_Library
-
+extern _XftFTlibrary as FT_Library
 type XftFontInfo as _XftFontInfo
 
 type _XftFont
-	ascent as integer
-	descent as integer
-	height as integer
-	max_advance_width as integer
+	ascent as long
+	descent as long
+	height as long
+	max_advance_width as long
 	charset as FcCharSet ptr
 	pattern as FcPattern ptr
 end type
@@ -36,7 +37,7 @@ type XftFont as _XftFont
 type XftDraw as _XftDraw
 
 type _XftColor
-	pixel as uinteger
+	pixel as culong
 	color as XRenderColor
 end type
 
@@ -75,39 +76,82 @@ type _XftGlyphFontSpec
 end type
 
 type XftGlyphFontSpec as _XftGlyphFontSpec
+declare function XftColorAllocName(byval dpy as Display ptr, byval visual as const Visual ptr, byval cmap as Colormap, byval name as const zstring ptr, byval result as XftColor ptr) as long
+declare function XftColorAllocValue(byval dpy as Display ptr, byval visual as Visual ptr, byval cmap as Colormap, byval color as const XRenderColor ptr, byval result as XftColor ptr) as long
+declare sub XftColorFree(byval dpy as Display ptr, byval visual as Visual ptr, byval cmap as Colormap, byval color as XftColor ptr)
+declare function XftDefaultHasRender(byval dpy as Display ptr) as long
+declare function XftDefaultSet(byval dpy as Display ptr, byval defaults as FcPattern ptr) as long
+declare sub XftDefaultSubstitute(byval dpy as Display ptr, byval screen as long, byval pattern as FcPattern ptr)
+declare function XftDrawCreate(byval dpy as Display ptr, byval drawable as Drawable, byval visual as Visual ptr, byval colormap as Colormap) as XftDraw ptr
+declare function XftDrawCreateBitmap(byval dpy as Display ptr, byval bitmap as Pixmap) as XftDraw ptr
+declare function XftDrawCreateAlpha(byval dpy as Display ptr, byval pixmap as Pixmap, byval depth as long) as XftDraw ptr
+declare sub XftDrawChange(byval draw as XftDraw ptr, byval drawable as Drawable)
+declare function XftDrawDisplay(byval draw as XftDraw ptr) as Display ptr
+declare function XftDrawDrawable(byval draw as XftDraw ptr) as Drawable
+declare function XftDrawColormap(byval draw as XftDraw ptr) as Colormap
+declare function XftDrawVisual(byval draw as XftDraw ptr) as Visual ptr
+declare sub XftDrawDestroy(byval draw as XftDraw ptr)
+declare function XftDrawPicture(byval draw as XftDraw ptr) as Picture
+declare function XftDrawSrcPicture(byval draw as XftDraw ptr, byval color as const XftColor ptr) as Picture
+declare sub XftDrawGlyphs(byval draw as XftDraw ptr, byval color as const XftColor ptr, byval pub as XftFont ptr, byval x as long, byval y as long, byval glyphs as const FT_UInt ptr, byval nglyphs as long)
+declare sub XftDrawString8(byval draw as XftDraw ptr, byval color as const XftColor ptr, byval pub as XftFont ptr, byval x as long, byval y as long, byval string as const FcChar8 ptr, byval len as long)
+declare sub XftDrawString16(byval draw as XftDraw ptr, byval color as const XftColor ptr, byval pub as XftFont ptr, byval x as long, byval y as long, byval string as const FcChar16 ptr, byval len as long)
+declare sub XftDrawString32(byval draw as XftDraw ptr, byval color as const XftColor ptr, byval pub as XftFont ptr, byval x as long, byval y as long, byval string as const FcChar32 ptr, byval len as long)
+declare sub XftDrawStringUtf8(byval draw as XftDraw ptr, byval color as const XftColor ptr, byval pub as XftFont ptr, byval x as long, byval y as long, byval string as const FcChar8 ptr, byval len as long)
+declare sub XftDrawStringUtf16(byval draw as XftDraw ptr, byval color as const XftColor ptr, byval pub as XftFont ptr, byval x as long, byval y as long, byval string as const FcChar8 ptr, byval endian as FcEndian, byval len as long)
+declare sub XftDrawCharSpec(byval draw as XftDraw ptr, byval color as const XftColor ptr, byval pub as XftFont ptr, byval chars as const XftCharSpec ptr, byval len as long)
+declare sub XftDrawCharFontSpec(byval draw as XftDraw ptr, byval color as const XftColor ptr, byval chars as const XftCharFontSpec ptr, byval len as long)
+declare sub XftDrawGlyphSpec(byval draw as XftDraw ptr, byval color as const XftColor ptr, byval pub as XftFont ptr, byval glyphs as const XftGlyphSpec ptr, byval len as long)
+declare sub XftDrawGlyphFontSpec(byval draw as XftDraw ptr, byval color as const XftColor ptr, byval glyphs as const XftGlyphFontSpec ptr, byval len as long)
+declare sub XftDrawRect(byval draw as XftDraw ptr, byval color as const XftColor ptr, byval x as long, byval y as long, byval width as ulong, byval height as ulong)
+declare function XftDrawSetClip(byval draw as XftDraw ptr, byval r as Region) as long
+declare function XftDrawSetClipRectangles(byval draw as XftDraw ptr, byval xOrigin as long, byval yOrigin as long, byval rects as const XRectangle ptr, byval n as long) as long
+declare sub XftDrawSetSubwindowMode(byval draw as XftDraw ptr, byval mode as long)
+declare sub XftGlyphExtents(byval dpy as Display ptr, byval pub as XftFont ptr, byval glyphs as const FT_UInt ptr, byval nglyphs as long, byval extents as XGlyphInfo ptr)
+declare sub XftTextExtents8(byval dpy as Display ptr, byval pub as XftFont ptr, byval string as const FcChar8 ptr, byval len as long, byval extents as XGlyphInfo ptr)
+declare sub XftTextExtents16(byval dpy as Display ptr, byval pub as XftFont ptr, byval string as const FcChar16 ptr, byval len as long, byval extents as XGlyphInfo ptr)
+declare sub XftTextExtents32(byval dpy as Display ptr, byval pub as XftFont ptr, byval string as const FcChar32 ptr, byval len as long, byval extents as XGlyphInfo ptr)
+declare sub XftTextExtentsUtf8(byval dpy as Display ptr, byval pub as XftFont ptr, byval string as const FcChar8 ptr, byval len as long, byval extents as XGlyphInfo ptr)
+declare sub XftTextExtentsUtf16(byval dpy as Display ptr, byval pub as XftFont ptr, byval string as const FcChar8 ptr, byval endian as FcEndian, byval len as long, byval extents as XGlyphInfo ptr)
+declare function XftFontMatch(byval dpy as Display ptr, byval screen as long, byval pattern as const FcPattern ptr, byval result as FcResult ptr) as FcPattern ptr
+declare function XftFontOpen(byval dpy as Display ptr, byval screen as long, ...) as XftFont ptr
+declare function XftFontOpenName(byval dpy as Display ptr, byval screen as long, byval name as const zstring ptr) as XftFont ptr
+declare function XftFontOpenXlfd(byval dpy as Display ptr, byval screen as long, byval xlfd as const zstring ptr) as XftFont ptr
+declare function XftLockFace(byval pub as XftFont ptr) as FT_Face
+declare sub XftUnlockFace(byval pub as XftFont ptr)
+declare function XftFontInfoCreate(byval dpy as Display ptr, byval pattern as const FcPattern ptr) as XftFontInfo ptr
+declare sub XftFontInfoDestroy(byval dpy as Display ptr, byval fi as XftFontInfo ptr)
+declare function XftFontInfoHash(byval fi as const XftFontInfo ptr) as FcChar32
+declare function XftFontInfoEqual(byval a as const XftFontInfo ptr, byval b as const XftFontInfo ptr) as FcBool
+declare function XftFontOpenInfo(byval dpy as Display ptr, byval pattern as FcPattern ptr, byval fi as XftFontInfo ptr) as XftFont ptr
+declare function XftFontOpenPattern(byval dpy as Display ptr, byval pattern as FcPattern ptr) as XftFont ptr
+declare function XftFontCopy(byval dpy as Display ptr, byval pub as XftFont ptr) as XftFont ptr
+declare sub XftFontClose(byval dpy as Display ptr, byval pub as XftFont ptr)
+declare function XftInitFtLibrary() as FcBool
+declare sub XftFontLoadGlyphs(byval dpy as Display ptr, byval pub as XftFont ptr, byval need_bitmaps as FcBool, byval glyphs as const FT_UInt ptr, byval nglyph as long)
+declare sub XftFontUnloadGlyphs(byval dpy as Display ptr, byval pub as XftFont ptr, byval glyphs as const FT_UInt ptr, byval nglyph as long)
+const XFT_NMISSING = 256
+declare function XftFontCheckGlyph(byval dpy as Display ptr, byval pub as XftFont ptr, byval need_bitmaps as FcBool, byval glyph as FT_UInt, byval missing as FT_UInt ptr, byval nmissing as long ptr) as FcBool
+declare function XftCharExists(byval dpy as Display ptr, byval pub as XftFont ptr, byval ucs4 as FcChar32) as FcBool
+declare function XftCharIndex(byval dpy as Display ptr, byval pub as XftFont ptr, byval ucs4 as FcChar32) as FT_UInt
+declare function XftInit(byval config as const zstring ptr) as FcBool
+declare function XftGetVersion() as long
+declare function XftListFonts(byval dpy as Display ptr, byval screen as long, ...) as FcFontSet ptr
+declare function XftNameParse(byval name as const zstring ptr) as FcPattern ptr
+declare sub XftGlyphRender(byval dpy as Display ptr, byval op as long, byval src as Picture, byval pub as XftFont ptr, byval dst as Picture, byval srcx as long, byval srcy as long, byval x as long, byval y as long, byval glyphs as const FT_UInt ptr, byval nglyphs as long)
+declare sub XftGlyphSpecRender(byval dpy as Display ptr, byval op as long, byval src as Picture, byval pub as XftFont ptr, byval dst as Picture, byval srcx as long, byval srcy as long, byval glyphs as const XftGlyphSpec ptr, byval nglyphs as long)
+declare sub XftCharSpecRender(byval dpy as Display ptr, byval op as long, byval src as Picture, byval pub as XftFont ptr, byval dst as Picture, byval srcx as long, byval srcy as long, byval chars as const XftCharSpec ptr, byval len as long)
+declare sub XftGlyphFontSpecRender(byval dpy as Display ptr, byval op as long, byval src as Picture, byval dst as Picture, byval srcx as long, byval srcy as long, byval glyphs as const XftGlyphFontSpec ptr, byval nglyphs as long)
+declare sub XftCharFontSpecRender(byval dpy as Display ptr, byval op as long, byval src as Picture, byval dst as Picture, byval srcx as long, byval srcy as long, byval chars as const XftCharFontSpec ptr, byval len as long)
+declare sub XftTextRender8(byval dpy as Display ptr, byval op as long, byval src as Picture, byval pub as XftFont ptr, byval dst as Picture, byval srcx as long, byval srcy as long, byval x as long, byval y as long, byval string as const FcChar8 ptr, byval len as long)
+declare sub XftTextRender16(byval dpy as Display ptr, byval op as long, byval src as Picture, byval pub as XftFont ptr, byval dst as Picture, byval srcx as long, byval srcy as long, byval x as long, byval y as long, byval string as const FcChar16 ptr, byval len as long)
+declare sub XftTextRender16BE(byval dpy as Display ptr, byval op as long, byval src as Picture, byval pub as XftFont ptr, byval dst as Picture, byval srcx as long, byval srcy as long, byval x as long, byval y as long, byval string as const FcChar8 ptr, byval len as long)
+declare sub XftTextRender16LE(byval dpy as Display ptr, byval op as long, byval src as Picture, byval pub as XftFont ptr, byval dst as Picture, byval srcx as long, byval srcy as long, byval x as long, byval y as long, byval string as const FcChar8 ptr, byval len as long)
+declare sub XftTextRender32(byval dpy as Display ptr, byval op as long, byval src as Picture, byval pub as XftFont ptr, byval dst as Picture, byval srcx as long, byval srcy as long, byval x as long, byval y as long, byval string as const FcChar32 ptr, byval len as long)
+declare sub XftTextRender32BE(byval dpy as Display ptr, byval op as long, byval src as Picture, byval pub as XftFont ptr, byval dst as Picture, byval srcx as long, byval srcy as long, byval x as long, byval y as long, byval string as const FcChar8 ptr, byval len as long)
+declare sub XftTextRender32LE(byval dpy as Display ptr, byval op as long, byval src as Picture, byval pub as XftFont ptr, byval dst as Picture, byval srcx as long, byval srcy as long, byval x as long, byval y as long, byval string as const FcChar8 ptr, byval len as long)
+declare sub XftTextRenderUtf8(byval dpy as Display ptr, byval op as long, byval src as Picture, byval pub as XftFont ptr, byval dst as Picture, byval srcx as long, byval srcy as long, byval x as long, byval y as long, byval string as const FcChar8 ptr, byval len as long)
+declare sub XftTextRenderUtf16(byval dpy as Display ptr, byval op as long, byval src as Picture, byval pub as XftFont ptr, byval dst as Picture, byval srcx as long, byval srcy as long, byval x as long, byval y as long, byval string as const FcChar8 ptr, byval endian as FcEndian, byval len as long)
+declare function XftXlfdParse(byval xlfd_orig as const zstring ptr, byval ignore_scalable as long, byval complete as long) as FcPattern ptr
 
-declare sub XftColorFree cdecl alias "XftColorFree" (byval dpy as Display ptr, byval visual as Visual ptr, byval cmap as Colormap, byval color as XftColor ptr)
-declare function XftDefaultHasRender cdecl alias "XftDefaultHasRender" (byval dpy as Display ptr) as Bool
-declare function XftDefaultSet cdecl alias "XftDefaultSet" (byval dpy as Display ptr, byval defaults as FcPattern ptr) as Bool
-declare sub XftDefaultSubstitute cdecl alias "XftDefaultSubstitute" (byval dpy as Display ptr, byval screen as integer, byval pattern as FcPattern ptr)
-declare function XftDrawCreate cdecl alias "XftDrawCreate" (byval dpy as Display ptr, byval drawable as Drawable, byval visual as Visual ptr, byval colormap as Colormap) as XftDraw ptr
-declare function XftDrawCreateBitmap cdecl alias "XftDrawCreateBitmap" (byval dpy as Display ptr, byval bitmap as Pixmap) as XftDraw ptr
-declare function XftDrawCreateAlpha cdecl alias "XftDrawCreateAlpha" (byval dpy as Display ptr, byval pixmap as Pixmap, byval depth as integer) as XftDraw ptr
-declare sub XftDrawChange cdecl alias "XftDrawChange" (byval draw as XftDraw ptr, byval drawable as Drawable)
-declare function XftDrawDisplay cdecl alias "XftDrawDisplay" (byval draw as XftDraw ptr) as Display ptr
-declare function XftDrawDrawable cdecl alias "XftDrawDrawable" (byval draw as XftDraw ptr) as Drawable
-declare function XftDrawColormap cdecl alias "XftDrawColormap" (byval draw as XftDraw ptr) as Colormap
-declare function XftDrawVisual cdecl alias "XftDrawVisual" (byval draw as XftDraw ptr) as Visual ptr
-declare sub XftDrawDestroy cdecl alias "XftDrawDestroy" (byval draw as XftDraw ptr)
-declare function XftDrawPicture cdecl alias "XftDrawPicture" (byval draw as XftDraw ptr) as Picture
-declare function XftDrawSetClip cdecl alias "XftDrawSetClip" (byval draw as XftDraw ptr, byval r as Region) as Bool
-declare sub XftDrawSetSubwindowMode cdecl alias "XftDrawSetSubwindowMode" (byval draw as XftDraw ptr, byval mode as integer)
-declare function XftFontOpen cdecl alias "XftFontOpen" (byval dpy as Display ptr, byval screen as integer, ...) as XftFont ptr
-declare function XftLockFace cdecl alias "XftLockFace" (byval pub as XftFont ptr) as FT_Face
-declare sub XftUnlockFace cdecl alias "XftUnlockFace" (byval pub as XftFont ptr)
-declare sub XftFontInfoDestroy cdecl alias "XftFontInfoDestroy" (byval dpy as Display ptr, byval fi as XftFontInfo ptr)
-declare function XftFontOpenInfo cdecl alias "XftFontOpenInfo" (byval dpy as Display ptr, byval pattern as FcPattern ptr, byval fi as XftFontInfo ptr) as XftFont ptr
-declare function XftFontOpenPattern cdecl alias "XftFontOpenPattern" (byval dpy as Display ptr, byval pattern as FcPattern ptr) as XftFont ptr
-declare function XftFontCopy cdecl alias "XftFontCopy" (byval dpy as Display ptr, byval pub as XftFont ptr) as XftFont ptr
-declare sub XftFontClose cdecl alias "XftFontClose" (byval dpy as Display ptr, byval pub as XftFont ptr)
-declare function XftInitFtLibrary cdecl alias "XftInitFtLibrary" () as FcBool
-
-#define XFT_NMISSING 256
-
-declare function XftFontCheckGlyph cdecl alias "XftFontCheckGlyph" (byval dpy as Display ptr, byval pub as XftFont ptr, byval need_bitmaps as FcBool, byval glyph as FT_UInt, byval missing as FT_UInt ptr, byval nmissing as integer ptr) as FcBool
-declare function XftCharExists cdecl alias "XftCharExists" (byval dpy as Display ptr, byval pub as XftFont ptr, byval ucs4 as FcChar32) as FcBool
-declare function XftCharIndex cdecl alias "XftCharIndex" (byval dpy as Display ptr, byval pub as XftFont ptr, byval ucs4 as FcChar32) as FT_UInt
-declare function XftGetVersion cdecl alias "XftGetVersion" () as integer
-declare function XftListFonts cdecl alias "XftListFonts" (byval dpy as Display ptr, byval screen as integer, ...) as FcFontSet ptr
-
-#endif
+end extern

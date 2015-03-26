@@ -1,15 +1,5 @@
-''
-''
-'' XlibConf -- header translated with help of SWIG FB wrapper
-''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
-''
-''
-#ifndef __XlibConf_bi__
-#define __XlibConf_bi__
+#pragma once
 
-#define XTHREADS 1
-#define XUSE_MTSAFE_API 1
-
-#endif
+#define _XLIBCONF_H_
+const XTHREADS = 1
+const XUSE_MTSAFE_API = 1

@@ -1,21 +1,20 @@
-''
-''
-'' ResourceI -- header translated with help of SWIG FB wrapper
-''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
-''
-''
-#ifndef __ResourceI_bi__
-#define __ResourceI_bi__
+#pragma once
 
-declare sub _XtResourceDependencies cdecl alias "_XtResourceDependencies" (byval as WidgetClass)
-declare sub _XtConstraintResDependencies cdecl alias "_XtConstraintResDependencies" (byval as ConstraintWidgetClass)
-declare function _XtGetResources cdecl alias "_XtGetResources" (byval as Widget, byval as ArgList, byval as Cardinal, byval as XtTypedArgList, byval as Cardinal ptr) as XtCacheRef ptr
-declare sub _XtCopyFromParent cdecl alias "_XtCopyFromParent" (byval as Widget, byval as integer, byval as XrmValue ptr)
-declare sub _XtCopyToArg cdecl alias "_XtCopyToArg" (byval src as zstring ptr, byval dst as XtArgVal ptr, byval size as uinteger)
-declare sub _XtCopyFromArg cdecl alias "_XtCopyFromArg" (byval src as XtArgVal, byval dst as zstring ptr, byval size as uinteger)
-declare function _XtCreateIndirectionTable cdecl alias "_XtCreateIndirectionTable" (byval resources as XtResourceList, byval num_resources as Cardinal) as XrmResourceList ptr
-declare sub _XtResourceListInitialize cdecl alias "_XtResourceListInitialize" ()
+extern "C"
 
-#endif
+#define _XtresourceI_h
+#define StringToQuark(string) XrmStringToQuark(string)
+#define StringToName(string) XrmStringToName(string)
+#define StringToClass(string) XrmStringToClass(string)
+
+declare sub _XtDependencies(byval as XtResourceList ptr, byval as Cardinal ptr, byval as XrmResourceList ptr, byval as Cardinal, byval as Cardinal)
+declare sub _XtResourceDependencies(byval as WidgetClass)
+declare sub _XtConstraintResDependencies(byval as ConstraintWidgetClass)
+declare function _XtGetResources(byval as Widget, byval as ArgList, byval as Cardinal, byval as XtTypedArgList, byval as Cardinal ptr) as XtCacheRef ptr
+declare sub _XtCopyFromParent(byval as Widget, byval as long, byval as XrmValue ptr)
+declare sub _XtCopyToArg(byval src as zstring ptr, byval dst as XtArgVal ptr, byval size as ulong)
+declare sub _XtCopyFromArg(byval src as XtArgVal, byval dst as zstring ptr, byval size as ulong)
+declare function _XtCreateIndirectionTable(byval resources as XtResourceList, byval num_resources as Cardinal) as XrmResourceList ptr
+declare sub _XtResourceListInitialize()
+
+end extern

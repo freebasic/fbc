@@ -1,22 +1,28 @@
-''
-''
-'' PassivGraI -- header translated with help of SWIG FB wrapper
-''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
-''
-''
-#ifndef __PassivGraI_bi__
-#define __PassivGraI_bi__
+#pragma once
+
+extern "C"
+
+#define _PDI_h_
+
+type XtGrabList as _XtGrabRec ptr
+
+type XtServerGrabType as long
+enum
+	XtNoServerGrab
+	XtPassiveServerGrab
+	XtActiveServerGrab
+	XtPseudoPassiveServerGrab
+	XtPseudoActiveServerGrab
+end enum
 
 type _XtServerGrabRec
 	next as _XtServerGrabRec ptr
 	widget as Widget
-	ownerEvents:1 as uinteger
-	pointerMode:1 as uinteger
-	keyboardMode:1 as uinteger
-	hasExt:1 as uinteger
-	confineToIsWidgetWin:1 as uinteger
+	ownerEvents : 1 as ulong
+	pointerMode : 1 as ulong
+	keyboardMode : 1 as ulong
+	hasExt : 1 as ulong
+	confineToIsWidgetWin : 1 as ulong
 	keybut as KeyCode
 	modifiers as ushort
 	eventMask as ushort
@@ -34,6 +40,7 @@ end type
 
 type XtServerGrabExtRec as _XtGrabExtRec
 type XtServerGrabExtPtr as _XtGrabExtRec ptr
+#define GRABEXT(p) cast(XtServerGrabExtPtr, (p) + 1)
 
 type _XtDeviceRec
 	grab as XtServerGrabRec
@@ -42,25 +49,23 @@ end type
 
 type XtDeviceRec as _XtDeviceRec
 type XtDevice as _XtDeviceRec ptr
-
-#define XtMyAncestor 0
-#define XtMyDescendant 1
-#define XtMyCousin 2
-#define XtMySelf 3
-#define XtUnrelated 4
-
-type XtGeneology as byte
+const XtMyAncestor = 0
+const XtMyDescendant = 1
+const XtMyCousin = 2
+const XtMySelf = 3
+const XtUnrelated = 4
+type XtGeneology as zstring
 
 type XtPerWidgetInputRec
 	focusKid as Widget
 	keyList as XtServerGrabPtr
 	ptrList as XtServerGrabPtr
 	queryEventDescendant as Widget
-	map_handler_added:1 as uinteger
-	realize_handler_added:1 as uinteger
-	active_handler_added:1 as uinteger
-	haveFocus:1 as uinteger
-	focalPoint as XtGeneology
+	map_handler_added : 1 as ulong
+	realize_handler_added : 1 as ulong
+	active_handler_added : 1 as ulong
+	haveFocus : 1 as ulong
+	focalPoint as byte
 end type
 
 type XtPerWidgetInput as XtPerWidgetInputRec ptr
@@ -71,21 +76,25 @@ type XtPerDisplayInputRec
 	pointer as XtDeviceRec
 	activatingKey as KeyCode
 	trace as Widget ptr
-	traceDepth as integer
-	traceMax as integer
+	traceDepth as long
+	traceMax as long
 	focusWidget as Widget
 end type
 
-type XtPerDisplayInputRec as any
 type XtPerDisplayInput as XtPerDisplayInputRec ptr
+#define IsServerGrab(g) ((g = XtPassiveServerGrab) orelse (g = XtActiveServerGrab))
+#define IsAnyGrab(g) (((g = XtPassiveServerGrab) orelse (g = XtActiveServerGrab)) orelse (g = XtPseudoPassiveServerGrab))
+#define IsEitherPassiveGrab(g) ((g = XtPassiveServerGrab) orelse (g = XtPseudoPassiveServerGrab))
+#define IsPseudoGrab(g) (g = XtPseudoPassiveServerGrab)
 
-declare sub _XtDestroyServerGrabs cdecl alias "_XtDestroyServerGrabs" (byval as Widget, byval as XtPointer, byval as XtPointer)
-declare function _XtGetPerWidgetInput cdecl alias "_XtGetPerWidgetInput" (byval as Widget, byval as _XtBoolean) as XtPerWidgetInput
-declare function _XtCheckServerGrabsOnWidget cdecl alias "_XtCheckServerGrabsOnWidget" (byval as XEvent ptr, byval as Widget, byval as _XtBoolean) as XtServerGrabPtr
-declare sub _XtFreePerWidgetInput cdecl alias "_XtFreePerWidgetInput" (byval as Widget, byval as XtPerWidgetInput)
-declare function _XtProcessKeyboardEvent cdecl alias "_XtProcessKeyboardEvent" (byval as XKeyEvent ptr, byval as Widget, byval as XtPerDisplayInput) as Widget
-declare function _XtProcessPointerEvent cdecl alias "_XtProcessPointerEvent" (byval as XButtonEvent ptr, byval as Widget, byval as XtPerDisplayInput) as Widget
-declare sub _XtRegisterPassiveGrabs cdecl alias "_XtRegisterPassiveGrabs" (byval as Widget)
-declare sub _XtClearAncestorCache cdecl alias "_XtClearAncestorCache" (byval as Widget)
+declare sub _XtDestroyServerGrabs(byval as Widget, byval as XtPointer, byval as XtPointer)
+declare function _XtGetPerWidgetInput(byval as Widget, byval as byte) as XtPerWidgetInput
+declare function _XtCheckServerGrabsOnWidget(byval as XEvent ptr, byval as Widget, byval as byte) as XtServerGrabPtr
+#define _XtGetGrabList(pdi) (@(pdi)->grabList)
+declare sub _XtFreePerWidgetInput(byval as Widget, byval as XtPerWidgetInput)
+declare function _XtProcessKeyboardEvent(byval as XKeyEvent ptr, byval as Widget, byval as XtPerDisplayInput) as Widget
+declare function _XtProcessPointerEvent(byval as XButtonEvent ptr, byval as Widget, byval as XtPerDisplayInput) as Widget
+declare sub _XtRegisterPassiveGrabs(byval as Widget)
+declare sub _XtClearAncestorCache(byval as Widget)
 
-#endif
+end extern

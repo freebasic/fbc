@@ -1,14 +1,13 @@
-''
-''
-'' WinUtil -- header translated with help of SWIG FB wrapper
-''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
-''
-''
-#ifndef __WinUtil_bi__
-#define __WinUtil_bi__
+#pragma once
 
-declare function XmuScreenOfWindow cdecl alias "XmuScreenOfWindow" (byval dpy as Display ptr, byval w as Window) as Screen ptr
+#include once "X11/Xutil.bi"
+#include once "X11/Xfuncproto.bi"
 
-#endif
+extern "C"
+
+#define _XMU_WINDOWUTIL_H_
+declare function XmuClientWindow(byval dpy as Display ptr, byval win as Window) as Window
+declare function XmuUpdateMapHints(byval dpy as Display ptr, byval win as Window, byval hints as XSizeHints ptr) as long
+declare function XmuScreenOfWindow(byval dpy as Display ptr, byval w as Window) as Screen ptr
+
+end extern

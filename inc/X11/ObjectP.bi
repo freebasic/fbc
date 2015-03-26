@@ -1,13 +1,23 @@
-''
-''
-'' ObjectP -- header translated with help of SWIG FB wrapper
-''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
-''
-''
-#ifndef __ObjectP_bi__
-#define __ObjectP_bi__
+#pragma once
+
+#include once "crt/long.bi"
+#include once "X11/Object.bi"
+
+extern "C"
+
+#define _Xt_ObjectP_h_
+
+type _ObjectPart
+	self as Widget
+	widget_class as WidgetClass
+	parent as Widget
+	xrm_name as XrmName
+	being_destroyed as byte
+	destroy_callbacks as XtCallbackList
+	constraints as XtPointer
+end type
+
+type ObjectPart as _ObjectPart
 
 type _ObjectRec
 	object as ObjectPart
@@ -17,7 +27,7 @@ type ObjectRec as _ObjectRec
 
 type _ObjectClassPart
 	superclass as WidgetClass
-	class_name as String
+	class_name as String_
 	widget_size as Cardinal
 	class_initialize as XtProc
 	class_part_initialize as XtWidgetClassProc
@@ -30,10 +40,10 @@ type _ObjectClassPart
 	resources as XtResourceList
 	num_resources as Cardinal
 	xrm_class as XrmClass
-	obj4 as Boolean
+	obj4 as byte
 	obj5 as XtEnum
-	obj6 as Boolean
-	obj7 as Boolean
+	obj6 as byte
+	obj7 as byte
 	destroy as XtWidgetProc
 	obj8 as XtProc
 	obj9 as XtProc
@@ -44,7 +54,7 @@ type _ObjectClassPart
 	obj11 as XtProc
 	version as XtVersionType
 	callback_private as XtPointer
-	obj12 as String
+	obj12 as String_
 	obj13 as XtProc
 	obj14 as XtProc
 	extension as XtPointer
@@ -55,7 +65,7 @@ type ObjectClassPart as _ObjectClassPart
 type ObjectClassExtensionRec
 	next_extension as XtPointer
 	record_type as XrmQuark
-	version as integer
+	version as clong
 	record_size as Cardinal
 	allocate as XtAllocateProc
 	deallocate as XtDeallocateProc
@@ -68,7 +78,9 @@ type _ObjectClassRec
 end type
 
 type ObjectClassRec as _ObjectClassRec
+extern objectClassRec as ObjectClassRec
+const XtObjectExtensionVersion = cast(clong, 1)
+#define XtInheritAllocate cast(XtAllocateProc, _XtInherit)
+#define XtInheritDeallocate cast(XtDeallocateProc, _XtInherit)
 
-#define XtObjectExtensionVersion 1L
-
-#endif
+end extern

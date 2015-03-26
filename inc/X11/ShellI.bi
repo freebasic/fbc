@@ -1,12 +1,10 @@
-''
-''
-'' ShellI -- header translated with help of SWIG FB wrapper
-''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
-''
-''
-#ifndef __ShellI_bi__
-#define __ShellI_bi__
+#pragma once
 
-#endif
+#include once "X11/Xfuncproto.bi"
+
+extern "C"
+
+#define _XtShellInternal_h
+declare sub _XtShellGetCoordinates(byval widget as Widget, byval x as Position ptr, byval y as Position ptr)
+
+end extern

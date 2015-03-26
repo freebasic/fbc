@@ -1,13 +1,10 @@
-''
-''
-'' XKBgeom -- header translated with help of SWIG FB wrapper
-''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
-''
-''
-#ifndef __XKBgeom_bi__
-#define __XKBgeom_bi__
+#pragma once
+
+#include once "X11/extensions/XKBstr.bi"
+
+extern "C"
+
+#define _XKBGEOM_H_
 
 type _XkbProperty
 	name as zstring ptr
@@ -18,7 +15,7 @@ type XkbPropertyRec as _XkbProperty
 type XkbPropertyPtr as _XkbProperty ptr
 
 type _XkbColor
-	pixel as uinteger
+	pixel as ulong
 	spec as zstring ptr
 end type
 
@@ -42,6 +39,8 @@ end type
 
 type XkbBoundsRec as _XkbBounds
 type XkbBoundsPtr as _XkbBounds ptr
+#define XkbBoundsWidth(b) ((b)->x2 - (b)->x1)
+#define XkbBoundsHeight(b) ((b)->y2 - (b)->y1)
 
 type _XkbOutline
 	num_points as ushort
@@ -54,7 +53,7 @@ type XkbOutlineRec as _XkbOutline
 type XkbOutlinePtr as _XkbOutline ptr
 
 type _XkbShape
-	name as Atom
+	name as XAtom
 	num_outlines as ushort
 	sz_outlines as ushort
 	outlines as XkbOutlinePtr
@@ -65,10 +64,11 @@ end type
 
 type XkbShapeRec as _XkbShape
 type XkbShapePtr as _XkbShape ptr
+#define XkbOutlineIndex(s, o) clng((o) - (@(s)->outlines[0]))
 
 type _XkbShapeDoodad
-	name as Atom
-	type as ubyte
+	name as XAtom
+	as ubyte type
 	priority as ubyte
 	top as short
 	left as short
@@ -79,10 +79,22 @@ end type
 
 type XkbShapeDoodadRec as _XkbShapeDoodad
 type XkbShapeDoodadPtr as _XkbShapeDoodad ptr
+#define XkbShapeDoodadColor(g, d) (@(g)->colors[(d)->color_ndx])
+#define XkbShapeDoodadShape(g, d) (@(g)->shapes[(d)->shape_ndx])
+#macro XkbSetShapeDoodadColor(g, d, c)
+	scope
+		(d)->color_ndx = (c) - @(g)->colors[0]
+	end scope
+#endmacro
+#macro XkbSetShapeDoodadShape(g, d, s)
+	scope
+		(d)->shape_ndx = (s) - @(g)->shapes[0]
+	end scope
+#endmacro
 
 type _XkbTextDoodad
-	name as Atom
-	type as ubyte
+	name as XAtom
+	as ubyte type
 	priority as ubyte
 	top as short
 	left as short
@@ -96,10 +108,16 @@ end type
 
 type XkbTextDoodadRec as _XkbTextDoodad
 type XkbTextDoodadPtr as _XkbTextDoodad ptr
+#define XkbTextDoodadColor(g, d) (@(g)->colors[(d)->color_ndx])
+#macro XkbSetTextDoodadColor(g, d, c)
+	scope
+		(d)->color_ndx = (c) - @(g)->colors[0]
+	end scope
+#endmacro
 
 type _XkbIndicatorDoodad
-	name as Atom
-	type as ubyte
+	name as XAtom
+	as ubyte type
 	priority as ubyte
 	top as short
 	left as short
@@ -111,10 +129,28 @@ end type
 
 type XkbIndicatorDoodadRec as _XkbIndicatorDoodad
 type XkbIndicatorDoodadPtr as _XkbIndicatorDoodad ptr
+#define XkbIndicatorDoodadShape(g, d) (@(g)->shapes[(d)->shape_ndx])
+#define XkbIndicatorDoodadOnColor(g, d) (@(g)->colors[(d)->on_color_ndx])
+#define XkbIndicatorDoodadOffColor(g, d) (@(g)->colors[(d)->off_color_ndx])
+#macro XkbSetIndicatorDoodadOnColor(g, d, c)
+	scope
+		(d)->on_color_ndx = (c) - @(g)->colors[0]
+	end scope
+#endmacro
+#macro XkbSetIndicatorDoodadOffColor(g, d, c)
+	scope
+		(d)->off_color_ndx = (c) - @(g)->colors[0]
+	end scope
+#endmacro
+#macro XkbSetIndicatorDoodadShape(g, d, s)
+	scope
+		(d)->shape_ndx = (s) - @(g)->shapes[0]
+	end scope
+#endmacro
 
 type _XkbLogoDoodad
-	name as Atom
-	type as ubyte
+	name as XAtom
+	as ubyte type
 	priority as ubyte
 	top as short
 	left as short
@@ -126,10 +162,22 @@ end type
 
 type XkbLogoDoodadRec as _XkbLogoDoodad
 type XkbLogoDoodadPtr as _XkbLogoDoodad ptr
+#define XkbLogoDoodadColor(g, d) (@(g)->colors[(d)->color_ndx])
+#define XkbLogoDoodadShape(g, d) (@(g)->shapes[(d)->shape_ndx])
+#macro XkbSetLogoDoodadColor(g, d, c)
+	scope
+		(d)->color_ndx = (c) - @(g)->colors[0]
+	end scope
+#endmacro
+#macro XkbSetLogoDoodadShape(g, d, s)
+	scope
+		(d)->shape_ndx = (s) - @(g)->shapes[0]
+	end scope
+#endmacro
 
 type _XkbAnyDoodad
-	name as Atom
-	type as ubyte
+	name as XAtom
+	as ubyte type
 	priority as ubyte
 	top as short
 	left as short
@@ -149,13 +197,12 @@ end union
 
 type XkbDoodadRec as _XkbDoodad
 type XkbDoodadPtr as _XkbDoodad ptr
-
-#define XkbUnknownDoodad 0
-#define XkbOutlineDoodad 1
-#define XkbSolidDoodad 2
-#define XkbTextDoodad 3
-#define XkbIndicatorDoodad 4
-#define XkbLogoDoodad 5
+const XkbUnknownDoodad = 0
+const XkbOutlineDoodad = 1
+const XkbSolidDoodad = 2
+const XkbTextDoodad = 3
+const XkbIndicatorDoodad = 4
+const XkbLogoDoodad = 5
 
 type _XkbKey
 	name as XkbKeyNameRec
@@ -166,22 +213,35 @@ end type
 
 type XkbKeyRec as _XkbKey
 type XkbKeyPtr as _XkbKey ptr
+#define XkbKeyShape(g, k) (@(g)->shapes[(k)->shape_ndx])
+#define XkbKeyColor(g, k) (@(g)->colors[(k)->color_ndx])
+#macro XkbSetKeyShape(g, k, s)
+	scope
+		(k)->shape_ndx = (s) - @(g)->shapes[0]
+	end scope
+#endmacro
+#macro XkbSetKeyColor(g, k, c)
+	scope
+		(k)->color_ndx = (c) - @(g)->colors[0]
+	end scope
+#endmacro
 
 type _XkbRow
 	top as short
 	left as short
 	num_keys as ushort
 	sz_keys as ushort
-	vertical as integer
+	vertical as long
 	keys as XkbKeyPtr
 	bounds as XkbBoundsRec
 end type
 
 type XkbRowRec as _XkbRow
 type XkbRowPtr as _XkbRow ptr
+type _XkbOverlay as _XkbOverlay_
 
 type _XkbSection
-	name as Atom
+	name as XAtom
 	priority as ubyte
 	top as short
 	left as short
@@ -221,8 +281,8 @@ end type
 type XkbOverlayRowRec as _XkbOverlayRow
 type XkbOverlayRowPtr as _XkbOverlayRow ptr
 
-type _XkbOverlay
-	name as Atom
+type _XkbOverlay_
+	name as XAtom
 	section_under as XkbSectionPtr
 	num_rows as ushort
 	sz_rows as ushort
@@ -234,7 +294,7 @@ type XkbOverlayRec as _XkbOverlay
 type XkbOverlayPtr as _XkbOverlay ptr
 
 type _XkbGeometry
-	name as Atom
+	name as XAtom
 	width_mm as ushort
 	height_mm as ushort
 	label_font as zstring ptr
@@ -261,17 +321,17 @@ type _XkbGeometry
 end type
 
 type XkbGeometryRec as _XkbGeometry
-
-#define XkbGeomPropertiesMask (1 shl 0)
-#define XkbGeomColorsMask (1 shl 1)
-#define XkbGeomShapesMask (1 shl 2)
-#define XkbGeomSectionsMask (1 shl 3)
-#define XkbGeomDoodadsMask (1 shl 4)
-#define XkbGeomKeyAliasesMask (1 shl 5)
-#define XkbGeomAllMask (&h3f)
+#define XkbGeomColorIndex(g, c) clng((c) - (@(g)->colors[0]))
+const XkbGeomPropertiesMask = 1 shl 0
+const XkbGeomColorsMask = 1 shl 1
+const XkbGeomShapesMask = 1 shl 2
+const XkbGeomSectionsMask = 1 shl 3
+const XkbGeomDoodadsMask = 1 shl 4
+const XkbGeomKeyAliasesMask = 1 shl 5
+const XkbGeomAllMask = &h3f
 
 type _XkbGeometrySizes
-	which as uinteger
+	which as ulong
 	num_properties as ushort
 	num_colors as ushort
 	num_shapes as ushort
@@ -282,54 +342,54 @@ end type
 
 type XkbGeometrySizesRec as _XkbGeometrySizes
 type XkbGeometrySizesPtr as _XkbGeometrySizes ptr
+declare function XkbAddGeomProperty(byval as XkbGeometryPtr, byval as zstring ptr, byval as zstring ptr) as XkbPropertyPtr
+declare function XkbAddGeomKeyAlias(byval as XkbGeometryPtr, byval as zstring ptr, byval as zstring ptr) as XkbKeyAliasPtr
+declare function XkbAddGeomColor(byval as XkbGeometryPtr, byval as zstring ptr, byval as ulong) as XkbColorPtr
+declare function XkbAddGeomOutline(byval as XkbShapePtr, byval as long) as XkbOutlinePtr
+declare function XkbAddGeomShape(byval as XkbGeometryPtr, byval as XAtom, byval as long) as XkbShapePtr
+declare function XkbAddGeomKey(byval as XkbRowPtr) as XkbKeyPtr
+declare function XkbAddGeomRow(byval as XkbSectionPtr, byval as long) as XkbRowPtr
+declare function XkbAddGeomSection(byval as XkbGeometryPtr, byval as XAtom, byval as long, byval as long, byval as long) as XkbSectionPtr
+declare function XkbAddGeomOverlay(byval as XkbSectionPtr, byval as XAtom, byval as long) as XkbOverlayPtr
+declare function XkbAddGeomOverlayRow(byval as XkbOverlayPtr, byval as long, byval as long) as XkbOverlayRowPtr
+declare function XkbAddGeomOverlayKey(byval as XkbOverlayPtr, byval as XkbOverlayRowPtr, byval as zstring ptr, byval as zstring ptr) as XkbOverlayKeyPtr
+declare function XkbAddGeomDoodad(byval as XkbGeometryPtr, byval as XkbSectionPtr, byval as XAtom) as XkbDoodadPtr
+declare sub XkbFreeGeomKeyAliases(byval as XkbGeometryPtr, byval as long, byval as long, byval as long)
+declare sub XkbFreeGeomColors(byval as XkbGeometryPtr, byval as long, byval as long, byval as long)
+declare sub XkbFreeGeomDoodads(byval as XkbDoodadPtr, byval as long, byval as long)
+declare sub XkbFreeGeomProperties(byval as XkbGeometryPtr, byval as long, byval as long, byval as long)
+declare sub XkbFreeGeomOverlayKeys(byval as XkbOverlayRowPtr, byval as long, byval as long, byval as long)
+declare sub XkbFreeGeomOverlayRows(byval as XkbOverlayPtr, byval as long, byval as long, byval as long)
+declare sub XkbFreeGeomOverlays(byval as XkbSectionPtr, byval as long, byval as long, byval as long)
+declare sub XkbFreeGeomKeys(byval as XkbRowPtr, byval as long, byval as long, byval as long)
+declare sub XkbFreeGeomRows(byval as XkbSectionPtr, byval as long, byval as long, byval as long)
+declare sub XkbFreeGeomSections(byval as XkbGeometryPtr, byval as long, byval as long, byval as long)
+declare sub XkbFreeGeomPoints(byval as XkbOutlinePtr, byval as long, byval as long, byval as long)
+declare sub XkbFreeGeomOutlines(byval as XkbShapePtr, byval as long, byval as long, byval as long)
+declare sub XkbFreeGeomShapes(byval as XkbGeometryPtr, byval as long, byval as long, byval as long)
+declare sub XkbFreeGeometry(byval as XkbGeometryPtr, byval as ulong, byval as long)
+declare function XkbAllocGeomProps(byval as XkbGeometryPtr, byval as long) as long
+declare function XkbAllocGeomKeyAliases(byval as XkbGeometryPtr, byval as long) as long
+declare function XkbAllocGeomColors(byval as XkbGeometryPtr, byval as long) as long
+declare function XkbAllocGeomShapes(byval as XkbGeometryPtr, byval as long) as long
+declare function XkbAllocGeomSections(byval as XkbGeometryPtr, byval as long) as long
+declare function XkbAllocGeomOverlays(byval as XkbSectionPtr, byval as long) as long
+declare function XkbAllocGeomOverlayRows(byval as XkbOverlayPtr, byval as long) as long
+declare function XkbAllocGeomOverlayKeys(byval as XkbOverlayRowPtr, byval as long) as long
+declare function XkbAllocGeomDoodads(byval as XkbGeometryPtr, byval as long) as long
+declare function XkbAllocGeomSectionDoodads(byval as XkbSectionPtr, byval as long) as long
+declare function XkbAllocGeomOutlines(byval as XkbShapePtr, byval as long) as long
+declare function XkbAllocGeomRows(byval as XkbSectionPtr, byval as long) as long
+declare function XkbAllocGeomPoints(byval as XkbOutlinePtr, byval as long) as long
+declare function XkbAllocGeomKeys(byval as XkbRowPtr, byval as long) as long
+declare function XkbAllocGeometry(byval as XkbDescPtr, byval as XkbGeometrySizesPtr) as long
+declare function XkbSetGeometry(byval as Display ptr, byval as ulong, byval as XkbGeometryPtr) as long
+declare function XkbComputeShapeTop(byval as XkbShapePtr, byval as XkbBoundsPtr) as long
+declare function XkbComputeShapeBounds(byval as XkbShapePtr) as long
+declare function XkbComputeRowBounds(byval as XkbGeometryPtr, byval as XkbSectionPtr, byval as XkbRowPtr) as long
+declare function XkbComputeSectionBounds(byval as XkbGeometryPtr, byval as XkbSectionPtr) as long
+declare function XkbFindOverlayForKey(byval as XkbGeometryPtr, byval as XkbSectionPtr, byval as zstring ptr) as zstring ptr
+declare function XkbGetGeometry(byval as Display ptr, byval as XkbDescPtr) as long
+declare function XkbGetNamedGeometry(byval as Display ptr, byval as XkbDescPtr, byval as XAtom) as long
 
-declare function XkbAddGeomKeyAlias cdecl alias "XkbAddGeomKeyAlias" (byval as XkbGeometryPtr, byval as zstring ptr, byval as zstring ptr) as XkbKeyAliasPtr
-declare function XkbAddGeomColor cdecl alias "XkbAddGeomColor" (byval as XkbGeometryPtr, byval as zstring ptr, byval as uinteger) as XkbColorPtr
-declare function XkbAddGeomOutline cdecl alias "XkbAddGeomOutline" (byval as XkbShapePtr, byval as integer) as XkbOutlinePtr
-declare function XkbAddGeomShape cdecl alias "XkbAddGeomShape" (byval as XkbGeometryPtr, byval as Atom, byval as integer) as XkbShapePtr
-declare function XkbAddGeomKey cdecl alias "XkbAddGeomKey" (byval as XkbRowPtr) as XkbKeyPtr
-declare function XkbAddGeomRow cdecl alias "XkbAddGeomRow" (byval as XkbSectionPtr, byval as integer) as XkbRowPtr
-declare function XkbAddGeomSection cdecl alias "XkbAddGeomSection" (byval as XkbGeometryPtr, byval as Atom, byval as integer, byval as integer, byval as integer) as XkbSectionPtr
-declare function XkbAddGeomOverlay cdecl alias "XkbAddGeomOverlay" (byval as XkbSectionPtr, byval as Atom, byval as integer) as XkbOverlayPtr
-declare function XkbAddGeomOverlayRow cdecl alias "XkbAddGeomOverlayRow" (byval as XkbOverlayPtr, byval as integer, byval as integer) as XkbOverlayRowPtr
-declare function XkbAddGeomOverlayKey cdecl alias "XkbAddGeomOverlayKey" (byval as XkbOverlayPtr, byval as XkbOverlayRowPtr, byval as zstring ptr, byval as zstring ptr) as XkbOverlayKeyPtr
-declare function XkbAddGeomDoodad cdecl alias "XkbAddGeomDoodad" (byval as XkbGeometryPtr, byval as XkbSectionPtr, byval as Atom) as XkbDoodadPtr
-declare sub XkbFreeGeomKeyAliases cdecl alias "XkbFreeGeomKeyAliases" (byval as XkbGeometryPtr, byval as integer, byval as integer, byval as Bool)
-declare sub XkbFreeGeomColors cdecl alias "XkbFreeGeomColors" (byval as XkbGeometryPtr, byval as integer, byval as integer, byval as Bool)
-declare sub XkbFreeGeomDoodads cdecl alias "XkbFreeGeomDoodads" (byval as XkbDoodadPtr, byval as integer, byval as Bool)
-declare sub XkbFreeGeomProperties cdecl alias "XkbFreeGeomProperties" (byval as XkbGeometryPtr, byval as integer, byval as integer, byval as Bool)
-declare sub XkbFreeGeomOverlayKeys cdecl alias "XkbFreeGeomOverlayKeys" (byval as XkbOverlayRowPtr, byval as integer, byval as integer, byval as Bool)
-declare sub XkbFreeGeomOverlayRows cdecl alias "XkbFreeGeomOverlayRows" (byval as XkbOverlayPtr, byval as integer, byval as integer, byval as Bool)
-declare sub XkbFreeGeomOverlays cdecl alias "XkbFreeGeomOverlays" (byval as XkbSectionPtr, byval as integer, byval as integer, byval as Bool)
-declare sub XkbFreeGeomKeys cdecl alias "XkbFreeGeomKeys" (byval as XkbRowPtr, byval as integer, byval as integer, byval as Bool)
-declare sub XkbFreeGeomRows cdecl alias "XkbFreeGeomRows" (byval as XkbSectionPtr, byval as integer, byval as integer, byval as Bool)
-declare sub XkbFreeGeomSections cdecl alias "XkbFreeGeomSections" (byval as XkbGeometryPtr, byval as integer, byval as integer, byval as Bool)
-declare sub XkbFreeGeomPoints cdecl alias "XkbFreeGeomPoints" (byval as XkbOutlinePtr, byval as integer, byval as integer, byval as Bool)
-declare sub XkbFreeGeomOutlines cdecl alias "XkbFreeGeomOutlines" (byval as XkbShapePtr, byval as integer, byval as integer, byval as Bool)
-declare sub XkbFreeGeomShapes cdecl alias "XkbFreeGeomShapes" (byval as XkbGeometryPtr, byval as integer, byval as integer, byval as Bool)
-declare sub XkbFreeGeometry cdecl alias "XkbFreeGeometry" (byval as XkbGeometryPtr, byval as uinteger, byval as Bool)
-declare function XkbAllocGeomProps cdecl alias "XkbAllocGeomProps" (byval as XkbGeometryPtr, byval as integer) as Status
-declare function XkbAllocGeomKeyAliases cdecl alias "XkbAllocGeomKeyAliases" (byval as XkbGeometryPtr, byval as integer) as Status
-declare function XkbAllocGeomColors cdecl alias "XkbAllocGeomColors" (byval as XkbGeometryPtr, byval as integer) as Status
-declare function XkbAllocGeomShapes cdecl alias "XkbAllocGeomShapes" (byval as XkbGeometryPtr, byval as integer) as Status
-declare function XkbAllocGeomSections cdecl alias "XkbAllocGeomSections" (byval as XkbGeometryPtr, byval as integer) as Status
-declare function XkbAllocGeomOverlays cdecl alias "XkbAllocGeomOverlays" (byval as XkbSectionPtr, byval as integer) as Status
-declare function XkbAllocGeomOverlayRows cdecl alias "XkbAllocGeomOverlayRows" (byval as XkbOverlayPtr, byval as integer) as Status
-declare function XkbAllocGeomOverlayKeys cdecl alias "XkbAllocGeomOverlayKeys" (byval as XkbOverlayRowPtr, byval as integer) as Status
-declare function XkbAllocGeomDoodads cdecl alias "XkbAllocGeomDoodads" (byval as XkbGeometryPtr, byval as integer) as Status
-declare function XkbAllocGeomSectionDoodads cdecl alias "XkbAllocGeomSectionDoodads" (byval as XkbSectionPtr, byval as integer) as Status
-declare function XkbAllocGeomOutlines cdecl alias "XkbAllocGeomOutlines" (byval as XkbShapePtr, byval as integer) as Status
-declare function XkbAllocGeomRows cdecl alias "XkbAllocGeomRows" (byval as XkbSectionPtr, byval as integer) as Status
-declare function XkbAllocGeomPoints cdecl alias "XkbAllocGeomPoints" (byval as XkbOutlinePtr, byval as integer) as Status
-declare function XkbAllocGeomKeys cdecl alias "XkbAllocGeomKeys" (byval as XkbRowPtr, byval as integer) as Status
-declare function XkbAllocGeometry cdecl alias "XkbAllocGeometry" (byval as XkbDescPtr, byval as XkbGeometrySizesPtr) as Status
-declare function XkbSetGeometry cdecl alias "XkbSetGeometry" (byval as Display ptr, byval as uinteger, byval as XkbGeometryPtr) as Status
-declare function XkbComputeShapeTop cdecl alias "XkbComputeShapeTop" (byval as XkbShapePtr, byval as XkbBoundsPtr) as Bool
-declare function XkbComputeShapeBounds cdecl alias "XkbComputeShapeBounds" (byval as XkbShapePtr) as Bool
-declare function XkbComputeRowBounds cdecl alias "XkbComputeRowBounds" (byval as XkbGeometryPtr, byval as XkbSectionPtr, byval as XkbRowPtr) as Bool
-declare function XkbComputeSectionBounds cdecl alias "XkbComputeSectionBounds" (byval as XkbGeometryPtr, byval as XkbSectionPtr) as Bool
-declare function XkbFindOverlayForKey cdecl alias "XkbFindOverlayForKey" (byval as XkbGeometryPtr, byval as XkbSectionPtr, byval as zstring ptr) as zstring ptr
-declare function XkbGetGeometry cdecl alias "XkbGetGeometry" (byval as Display ptr, byval as XkbDescPtr) as Status
-declare function XkbGetNamedGeometry cdecl alias "XkbGetNamedGeometry" (byval as Display ptr, byval as XkbDescPtr, byval as Atom) as Status
-
-#endif
+end extern

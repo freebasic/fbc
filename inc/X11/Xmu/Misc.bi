@@ -1,14 +1,4 @@
-''
-''
-'' Misc -- header translated with help of SWIG FB wrapper
-''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
-''
-''
-#ifndef __Misc_bi__
-#define __Misc_bi__
+#pragma once
 
-#define MAXDIMENSION ((1 shl 31) -1)
-
-#endif
+#define _Xmu_Misc_h
+const MAXDIMENSION = (1 shl 31) - 1

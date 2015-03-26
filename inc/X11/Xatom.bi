@@ -1,14 +1,72 @@
-''
-''
-'' Xatom -- header translated with help of SWIG FB wrapper
-''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
-''
-''
-#ifndef __Xatom_bi__
-#define __Xatom_bi__
+#pragma once
 
-#define XATOM_H 1
-
-#endif
+const XATOM_H = 1
+#define XA_PRIMARY cast(XAtom, 1)
+#define XA_SECONDARY cast(XAtom, 2)
+#define XA_ARC cast(XAtom, 3)
+#define XA_ATOM cast(XAtom, 4)
+#define XA_BITMAP cast(XAtom, 5)
+#define XA_CARDINAL cast(XAtom, 6)
+#define XA_COLORMAP cast(XAtom, 7)
+#define XA_CURSOR cast(XAtom, 8)
+#define XA_CUT_BUFFER0 cast(XAtom, 9)
+#define XA_CUT_BUFFER1 cast(XAtom, 10)
+#define XA_CUT_BUFFER2 cast(XAtom, 11)
+#define XA_CUT_BUFFER3 cast(XAtom, 12)
+#define XA_CUT_BUFFER4 cast(XAtom, 13)
+#define XA_CUT_BUFFER5 cast(XAtom, 14)
+#define XA_CUT_BUFFER6 cast(XAtom, 15)
+#define XA_CUT_BUFFER7 cast(XAtom, 16)
+#define XA_DRAWABLE cast(XAtom, 17)
+#define XA_FONT cast(XAtom, 18)
+#define XA_INTEGER cast(XAtom, 19)
+#define XA_PIXMAP cast(XAtom, 20)
+#define XA_POINT cast(XAtom, 21)
+#define XA_RECTANGLE cast(XAtom, 22)
+#define XA_RESOURCE_MANAGER cast(XAtom, 23)
+#define XA_RGB_COLOR_MAP cast(XAtom, 24)
+#define XA_RGB_BEST_MAP cast(XAtom, 25)
+#define XA_RGB_BLUE_MAP cast(XAtom, 26)
+#define XA_RGB_DEFAULT_MAP cast(XAtom, 27)
+#define XA_RGB_GRAY_MAP cast(XAtom, 28)
+#define XA_RGB_GREEN_MAP cast(XAtom, 29)
+#define XA_RGB_RED_MAP cast(XAtom, 30)
+#define XA_STRING cast(XAtom, 31)
+#define XA_VISUALID cast(XAtom, 32)
+#define XA_WINDOW cast(XAtom, 33)
+#define XA_WM_COMMAND cast(XAtom, 34)
+#define XA_WM_HINTS cast(XAtom, 35)
+#define XA_WM_CLIENT_MACHINE cast(XAtom, 36)
+#define XA_WM_ICON_NAME cast(XAtom, 37)
+#define XA_WM_ICON_SIZE cast(XAtom, 38)
+#define XA_WM_NAME cast(XAtom, 39)
+#define XA_WM_NORMAL_HINTS cast(XAtom, 40)
+#define XA_WM_SIZE_HINTS cast(XAtom, 41)
+#define XA_WM_ZOOM_HINTS cast(XAtom, 42)
+#define XA_MIN_SPACE cast(XAtom, 43)
+#define XA_NORM_SPACE cast(XAtom, 44)
+#define XA_MAX_SPACE cast(XAtom, 45)
+#define XA_END_SPACE cast(XAtom, 46)
+#define XA_SUPERSCRIPT_X cast(XAtom, 47)
+#define XA_SUPERSCRIPT_Y cast(XAtom, 48)
+#define XA_SUBSCRIPT_X cast(XAtom, 49)
+#define XA_SUBSCRIPT_Y cast(XAtom, 50)
+#define XA_UNDERLINE_POSITION cast(XAtom, 51)
+#define XA_UNDERLINE_THICKNESS cast(XAtom, 52)
+#define XA_STRIKEOUT_ASCENT cast(XAtom, 53)
+#define XA_STRIKEOUT_DESCENT cast(XAtom, 54)
+#define XA_ITALIC_ANGLE cast(XAtom, 55)
+#define XA_X_HEIGHT cast(XAtom, 56)
+#define XA_QUAD_WIDTH cast(XAtom, 57)
+#define XA_WEIGHT cast(XAtom, 58)
+#define XA_POINT_SIZE cast(XAtom, 59)
+#define XA_RESOLUTION cast(XAtom, 60)
+#define XA_COPYRIGHT cast(XAtom, 61)
+#define XA_NOTICE cast(XAtom, 62)
+#define XA_FONT_NAME cast(XAtom, 63)
+#define XA_FAMILY_NAME cast(XAtom, 64)
+#define XA_FULL_NAME cast(XAtom, 65)
+#define XA_CAP_HEIGHT cast(XAtom, 66)
+#define XA_WM_CLASS cast(XAtom, 67)
+#define XA_WM_TRANSIENT_FOR cast(XAtom, 68)
+#define XA_LAST_PREDEFINED cast(XAtom, 68)

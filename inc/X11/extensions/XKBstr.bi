@@ -1,13 +1,17 @@
-''
-''
-'' XKBstr -- header translated with help of SWIG FB wrapper
-''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
-''
-''
-#ifndef __XKBstr_bi__
-#define __XKBstr_bi__
+#pragma once
+
+#include once "crt/long.bi"
+#include once "X11/extensions/XKB.bi"
+
+#define _XKBSTR_H_
+#define XkbCharToInt(v) iif((v) and &h80, clng((v) or (not &hff)), clng((v) and &h7f))
+#macro XkbIntTo2Chars(i, h, l)
+	scope
+		(h) = (i shr 8) and &hff
+		(l) = (i) and &hff
+	end scope
+#endmacro
+#define Xkb2CharsToInt(h, l) cshort(((h) shl 8) or (l))
 
 type _XkbStateRec
 	group as ubyte
@@ -28,6 +32,12 @@ end type
 
 type XkbStateRec as _XkbStateRec
 type XkbStatePtr as _XkbStateRec ptr
+#define XkbModLocks(s) (s)->locked_mods
+#define XkbStateMods(s) (((s)->base_mods or (s)->latched_mods) or XkbModLocks(s))
+#define XkbGroupLock(s) (s)->locked_group
+#define XkbStateGroup(s) (((s)->base_group + (s)->latched_group) + XkbGroupLock(s))
+#define XkbStateFieldFromRec(s) XkbBuildCoreState((s)->lookup_mods, (s)->group)
+#define XkbGrabStateFromRec(s) XkbBuildCoreState((s)->grab_mods, (s)->group)
 
 type _XkbMods
 	mask as ubyte
@@ -39,7 +49,7 @@ type XkbModsRec as _XkbMods
 type XkbModsPtr as _XkbMods ptr
 
 type _XkbKTMapEntry
-	active as Bool
+	active as long
 	level as ubyte
 	mods as XkbModsRec
 end type
@@ -53,31 +63,36 @@ type _XkbKeyType
 	map_count as ubyte
 	map as XkbKTMapEntryPtr
 	preserve as XkbModsPtr
-	name as Atom
-	level_names as Atom ptr
+	name as XAtom
+	level_names as XAtom ptr
 end type
 
 type XkbKeyTypeRec as _XkbKeyType
 type XkbKeyTypePtr as _XkbKeyType ptr
+#define XkbNumGroups(g) ((g) and &h0f)
+#define XkbOutOfRangeGroupInfo(g) ((g) and &hf0)
+#define XkbOutOfRangeGroupAction(g) ((g) and &hc0)
+#define XkbOutOfRangeGroupNumber(g) (((g) and &h30) shr 4)
+#define XkbSetGroupInfo(g, w, n) ((((w) and &hc0) or (((n) and 3) shl 4)) or ((g) and &h0f))
+#define XkbSetNumGroups(g, n) (((g) and &hf0) or ((n) and &h0f))
 
 type _XkbBehavior
-	type as ubyte
+	as ubyte type
 	data as ubyte
 end type
 
 type XkbBehavior as _XkbBehavior
-
-#define XkbAnyActionDataSize 7
+const XkbAnyActionDataSize = 7
 
 type _XkbAnyAction
-	type as ubyte
-	data(0 to 7-1) as ubyte
+	as ubyte type
+	data(0 to 6) as ubyte
 end type
 
 type XkbAnyAction as _XkbAnyAction
 
 type _XkbModAction
-	type as ubyte
+	as ubyte type
 	flags as ubyte
 	mask as ubyte
 	real_mods as ubyte
@@ -86,17 +101,30 @@ type _XkbModAction
 end type
 
 type XkbModAction as _XkbModAction
+#define XkbModActionVMods(a) cshort(((a)->vmods1 shl 8) or (a)->vmods2)
+#macro XkbSetModActionVMods(a, v)
+	scope
+		(a)->vmods1 = ((v) shr 8) and &hff
+		(a)->vmods2 = (v) and &hff
+	end scope
+#endmacro
 
 type _XkbGroupAction
-	type as ubyte
+	as ubyte type
 	flags as ubyte
 	group_XXX as byte
 end type
 
 type XkbGroupAction as _XkbGroupAction
+#define XkbSAGroup(a) XkbCharToInt((a)->group_XXX)
+#macro XkbSASetGroup(a, g)
+	scope
+		(a)->group_XXX = (g)
+	end scope
+#endmacro
 
 type _XkbISOAction
-	type as ubyte
+	as ubyte type
 	flags as ubyte
 	mask as ubyte
 	real_mods as ubyte
@@ -109,7 +137,7 @@ end type
 type XkbISOAction as _XkbISOAction
 
 type _XkbPtrAction
-	type as ubyte
+	as ubyte type
 	flags as ubyte
 	high_XXX as ubyte
 	low_XXX as ubyte
@@ -118,9 +146,13 @@ type _XkbPtrAction
 end type
 
 type XkbPtrAction as _XkbPtrAction
+#define XkbPtrActionX(a) Xkb2CharsToInt((a)->high_XXX, (a)->low_XXX)
+#define XkbPtrActionY(a) Xkb2CharsToInt((a)->high_YYY, (a)->low_YYY)
+#define XkbSetPtrActionX(a, x) XkbIntTo2Chars(x, (a)->high_XXX, (a)->low_XXX)
+#define XkbSetPtrActionY(a, y) XkbIntTo2Chars(y, (a)->high_YYY, (a)->low_YYY)
 
 type _XkbPtrBtnAction
-	type as ubyte
+	as ubyte type
 	flags as ubyte
 	count as ubyte
 	button as ubyte
@@ -129,24 +161,36 @@ end type
 type XkbPtrBtnAction as _XkbPtrBtnAction
 
 type _XkbPtrDfltAction
-	type as ubyte
+	as ubyte type
 	flags as ubyte
 	affect as ubyte
 	valueXXX as byte
 end type
 
 type XkbPtrDfltAction as _XkbPtrDfltAction
+#define XkbSAPtrDfltValue(a) XkbCharToInt((a)->valueXXX)
+#macro XkbSASetPtrDfltValue(a, c)
+	scope
+		(a)->valueXXX = (c) and &hff
+	end scope
+#endmacro
 
 type _XkbSwitchScreenAction
-	type as ubyte
+	as ubyte type
 	flags as ubyte
 	screenXXX as byte
 end type
 
 type XkbSwitchScreenAction as _XkbSwitchScreenAction
+#define XkbSAScreen(a) XkbCharToInt((a)->screenXXX)
+#macro XkbSASetScreen(a, s)
+	scope
+		(a)->screenXXX = (s) and &hff
+	end scope
+#endmacro
 
 type _XkbCtrlsAction
-	type as ubyte
+	as ubyte type
 	flags as ubyte
 	ctrls3 as ubyte
 	ctrls2 as ubyte
@@ -155,17 +199,26 @@ type _XkbCtrlsAction
 end type
 
 type XkbCtrlsAction as _XkbCtrlsAction
+#macro XkbActionSetCtrls(a, c)
+	scope
+		(a)->ctrls3 = ((c) shr 24) and &hff
+		(a)->ctrls2 = ((c) shr 16) and &hff
+		(a)->ctrls1 = ((c) shr 8) and &hff
+		(a)->ctrls0 = (c) and &hff
+	end scope
+#endmacro
+#define XkbActionCtrls(a) culng(culng(culng(culng(culng((a)->ctrls3) shl 24) or culng(culng((a)->ctrls2) shl 16)) or culng(culng((a)->ctrls1) shl 8)) or culng((a)->ctrls0))
 
 type _XkbMessageAction
-	type as ubyte
+	as ubyte type
 	flags as ubyte
-	message(0 to 6-1) as ubyte
+	message(0 to 5) as ubyte
 end type
 
 type XkbMessageAction as _XkbMessageAction
 
 type _XkbRedirectKeyAction
-	type as ubyte
+	as ubyte type
 	new_key as ubyte
 	mods_mask as ubyte
 	mods as ubyte
@@ -176,9 +229,23 @@ type _XkbRedirectKeyAction
 end type
 
 type XkbRedirectKeyAction as _XkbRedirectKeyAction
+#define XkbSARedirectVMods(a) culng(culng(culng((a)->vmods1) shl 8) or culng((a)->vmods0))
+#macro XkbSARedirectSetVMods(a, m)
+	scope
+		(a)->vmods_mask1 = ((m) shr 8) and &hff
+		(a)->vmods_mask0 = (m) and &hff
+	end scope
+#endmacro
+#define XkbSARedirectVModsMask(a) culng(culng(culng((a)->vmods_mask1) shl 8) or culng((a)->vmods_mask0))
+#macro XkbSARedirectSetVModsMask(a, m)
+	scope
+		(a)->vmods_mask1 = ((m) shr 8) and &hff
+		(a)->vmods_mask0 = (m) and &hff
+	end scope
+#endmacro
 
 type _XkbDeviceBtnAction
-	type as ubyte
+	as ubyte type
 	flags as ubyte
 	count as ubyte
 	button as ubyte
@@ -188,7 +255,7 @@ end type
 type XkbDeviceBtnAction as _XkbDeviceBtnAction
 
 type _XkbDeviceValuatorAction
-	type as ubyte
+	as ubyte type
 	device as ubyte
 	v1_what as ubyte
 	v1_ndx as ubyte
@@ -214,7 +281,7 @@ union _XkbAction
 	redirect as XkbRedirectKeyAction
 	devbtn as XkbDeviceBtnAction
 	devval as XkbDeviceValuatorAction
-	type as ubyte
+	as ubyte type
 end union
 
 type XkbAction as _XkbAction
@@ -225,7 +292,7 @@ type _XkbControls
 	groups_wrap as ubyte
 	internal as XkbModsRec
 	ignore_lock as XkbModsRec
-	enabled_ctrls as uinteger
+	enabled_ctrls as ulong
 	repeat_delay as ushort
 	repeat_interval as ushort
 	slow_keys_delay as ushort
@@ -239,13 +306,16 @@ type _XkbControls
 	ax_timeout as ushort
 	axt_opts_mask as ushort
 	axt_opts_values as ushort
-	axt_ctrls_mask as uinteger
-	axt_ctrls_values as uinteger
-	per_key_repeat(0 to XkbPerKeyBitArraySize-1) as ubyte
+	axt_ctrls_mask as ulong
+	axt_ctrls_values as ulong
+	per_key_repeat(0 to ((255 + 1) / 8) - 1) as ubyte
 end type
 
 type XkbControlsRec as _XkbControls
 type XkbControlsPtr as _XkbControls ptr
+#define XkbAX_AnyFeedback(c) ((c)->enabled_ctrls and XkbAccessXFeedbackMask)
+#define XkbAX_NeedOption(c, w) ((c)->ax_options and (w))
+#define XkbAX_NeedFeedback(c, w) (XkbAX_AnyFeedback(c) andalso XkbAX_NeedOption(c, w))
 
 type _XkbServerMapRec
 	num_acts as ushort
@@ -254,15 +324,16 @@ type _XkbServerMapRec
 	behaviors as XkbBehavior ptr
 	key_acts as ushort ptr
 	explicit as ubyte ptr
-	vmods(0 to XkbNumVirtualMods-1) as ubyte
+	vmods(0 to 15) as ubyte
 	vmodmap as ushort ptr
 end type
 
 type XkbServerMapRec as _XkbServerMapRec
 type XkbServerMapPtr as _XkbServerMapRec ptr
+#define XkbSMKeyActionsPtr(m, k) (@(m)->acts[(m)->key_acts[k]])
 
 type _XkbSymMapRec
-	kt_index(0 to XkbNumKbdGroups-1) as ubyte
+	kt_index(0 to 3) as ubyte
 	group_info as ubyte
 	width as ubyte
 	offset as ushort
@@ -284,6 +355,15 @@ end type
 
 type XkbClientMapRec as _XkbClientMapRec
 type XkbClientMapPtr as _XkbClientMapRec ptr
+#define XkbCMKeyGroupInfo(m, k) (m)->key_sym_map[k].group_info
+#define XkbCMKeyNumGroups(m, k) XkbNumGroups((m)->key_sym_map[k].group_info)
+#define XkbCMKeyGroupWidth(m, k, g) XkbCMKeyType(m, k, g)->num_levels
+#define XkbCMKeyGroupsWidth(m, k) (m)->key_sym_map[k].width
+#define XkbCMKeyTypeIndex(m, k, g) (m)->key_sym_map[k].kt_index[(g and &h3)]
+#define XkbCMKeyType(m, k, g) (@(m)->types[XkbCMKeyTypeIndex(m, k, g)])
+#define XkbCMKeyNumSyms(m, k) (XkbCMKeyGroupsWidth(m, k) * XkbCMKeyNumGroups(m, k))
+#define XkbCMKeySymsOffset(m, k) (m)->key_sym_map[k].offset
+#define XkbCMKeySymsPtr(m, k) (@(m)->syms[XkbCMKeySymsOffset(m, k)])
 
 type _XkbSymInterpretRec
 	sym as KeySym
@@ -299,7 +379,7 @@ type XkbSymInterpretPtr as _XkbSymInterpretRec ptr
 
 type _XkbCompatMapRec
 	sym_interpret as XkbSymInterpretPtr
-	groups(0 to XkbNumKbdGroups-1) as XkbModsRec
+	groups(0 to 3) as XkbModsRec
 	num_si as ushort
 	size_si as ushort
 end type
@@ -313,48 +393,50 @@ type _XkbIndicatorMapRec
 	groups as ubyte
 	which_mods as ubyte
 	mods as XkbModsRec
-	ctrls as uinteger
+	ctrls as ulong
 end type
 
 type XkbIndicatorMapRec as _XkbIndicatorMapRec
 type XkbIndicatorMapPtr as _XkbIndicatorMapRec ptr
+#define XkbIM_IsAuto(i) ((((i)->flags and XkbIM_NoAutomatic) = 0) andalso ((((i)->which_groups andalso (i)->groups) orelse ((i)->which_mods andalso (i)->mods.mask)) orelse (i)->ctrls))
+#define XkbIM_InUse(i) ((((i)->flags orelse (i)->which_groups) orelse (i)->which_mods) orelse (i)->ctrls)
 
 type _XkbIndicatorRec
-	phys_indicators as uinteger
-	maps(0 to XkbNumIndicators-1) as XkbIndicatorMapRec
+	phys_indicators as culong
+	maps(0 to 31) as XkbIndicatorMapRec
 end type
 
 type XkbIndicatorRec as _XkbIndicatorRec
 type XkbIndicatorPtr as _XkbIndicatorRec ptr
 
 type _XkbKeyNameRec
-	name as zstring * XkbKeyNameLength
+	name as zstring * 4
 end type
 
 type XkbKeyNameRec as _XkbKeyNameRec
 type XkbKeyNamePtr as _XkbKeyNameRec ptr
 
 type _XkbKeyAliasRec
-	real as zstring * XkbKeyNameLength
-	alias as zstring * XkbKeyNameLength
+	real as zstring * 4
+	alias as zstring * 4
 end type
 
 type XkbKeyAliasRec as _XkbKeyAliasRec
 type XkbKeyAliasPtr as _XkbKeyAliasRec ptr
 
 type _XkbNamesRec
-	keycodes as Atom
-	geometry as Atom
-	symbols as Atom
-	types as Atom
-	compat as Atom
-	vmods(0 to XkbNumVirtualMods-1) as Atom
-	indicators(0 to XkbNumIndicators-1) as Atom
-	groups(0 to XkbNumKbdGroups-1) as Atom
+	keycodes as XAtom
+	geometry as XAtom
+	symbols as XAtom
+	types as XAtom
+	compat as XAtom
+	vmods(0 to 15) as XAtom
+	indicators(0 to 31) as XAtom
+	groups(0 to 3) as XAtom
 	keys as XkbKeyNamePtr
 	key_aliases as XkbKeyAliasPtr
-	radio_groups as Atom ptr
-	phys_symbols as Atom
+	radio_groups as XAtom ptr
+	phys_symbols as XAtom
 	num_keys as ubyte
 	num_key_aliases as ubyte
 	num_rg as ushort
@@ -381,6 +463,23 @@ end type
 
 type XkbDescRec as _XkbDesc
 type XkbDescPtr as _XkbDesc ptr
+#define XkbKeyKeyTypeIndex(d, k, g) XkbCMKeyTypeIndex((d)->map, k, g)
+#define XkbKeyKeyType(d, k, g) XkbCMKeyType((d)->map, k, g)
+#define XkbKeyGroupWidth(d, k, g) XkbCMKeyGroupWidth((d)->map, k, g)
+#define XkbKeyGroupsWidth(d, k) XkbCMKeyGroupsWidth((d)->map, k)
+#define XkbKeyGroupInfo(d, k) XkbCMKeyGroupInfo((d)->map, (k))
+#define XkbKeyNumGroups(d, k) XkbCMKeyNumGroups((d)->map, (k))
+#define XkbKeyNumSyms(d, k) XkbCMKeyNumSyms((d)->map, (k))
+#define XkbKeySymsPtr(d, k) XkbCMKeySymsPtr((d)->map, (k))
+#define XkbKeySym(d, k, n) XkbKeySymsPtr(d, k)[n]
+#define XkbKeySymEntry(d, k, sl, g) XkbKeySym(d, k, (XkbKeyGroupsWidth(d, k) * (g)) + (sl))
+#define XkbKeyAction(d, k, n) iif(XkbKeyHasActions(d, k), @XkbKeyActionsPtr(d, k)[n], NULL)
+#define XkbKeyActionEntry(d, k, sl, g) iif(XkbKeyHasActions(d, k), XkbKeyAction(d, k, (XkbKeyGroupsWidth(d, k) * (g)) + (sl)), NULL)
+#define XkbKeyHasActions(d, k) ((d)->server->key_acts[k] <> 0)
+#define XkbKeyNumActions(d, k) iif(XkbKeyHasActions(d, k), XkbKeyNumSyms(d, k), 1)
+#define XkbKeyActionsPtr(d, k) XkbSMKeyActionsPtr((d)->server, k)
+#define XkbKeycodeInRange(d, k) (((k) >= (d)->min_key_code) andalso ((k) <= (d)->max_key_code))
+#define XkbNumKeys(d) (((d)->max_key_code - (d)->min_key_code) + 1)
 
 type _XkbMapChanges
 	changed as ushort
@@ -408,24 +507,24 @@ type XkbMapChangesRec as _XkbMapChanges
 type XkbMapChangesPtr as _XkbMapChanges ptr
 
 type _XkbControlsChanges
-	changed_ctrls as uinteger
-	enabled_ctrls_changes as uinteger
-	num_groups_changed as Bool
+	changed_ctrls as ulong
+	enabled_ctrls_changes as ulong
+	num_groups_changed as long
 end type
 
 type XkbControlsChangesRec as _XkbControlsChanges
 type XkbControlsChangesPtr as _XkbControlsChanges ptr
 
 type _XkbIndicatorChanges
-	state_changes as uinteger
-	map_changes as uinteger
+	state_changes as ulong
+	map_changes as ulong
 end type
 
 type XkbIndicatorChangesRec as _XkbIndicatorChanges
 type XkbIndicatorChangesPtr as _XkbIndicatorChanges ptr
 
 type _XkbNameChanges
-	changed as uinteger
+	changed as ulong
 	first_type as ubyte
 	num_types as ubyte
 	first_lvl as ubyte
@@ -435,7 +534,7 @@ type _XkbNameChanges
 	first_key as ubyte
 	num_keys as ubyte
 	changed_vmods as ushort
-	changed_indicators as uinteger
+	changed_indicators as culong
 	changed_groups as ubyte
 end type
 
@@ -485,12 +584,12 @@ type XkbComponentNameRec as _XkbComponentName
 type XkbComponentNamePtr as _XkbComponentName ptr
 
 type _XkbComponentList
-	num_keymaps as integer
-	num_keycodes as integer
-	num_types as integer
-	num_compat as integer
-	num_symbols as integer
-	num_geometry as integer
+	num_keymaps as long
+	num_keycodes as long
+	num_types as long
+	num_compat as long
+	num_symbols as long
+	num_geometry as long
 	keymaps as XkbComponentNamePtr
 	keycodes as XkbComponentNamePtr
 	types as XkbComponentNamePtr
@@ -505,12 +604,12 @@ type XkbComponentListPtr as _XkbComponentList ptr
 type _XkbDeviceLedInfo
 	led_class as ushort
 	led_id as ushort
-	phys_indicators as uinteger
-	maps_present as uinteger
-	names_present as uinteger
-	state as uinteger
-	names(0 to XkbNumIndicators-1) as Atom
-	maps(0 to XkbNumIndicators-1) as XkbIndicatorMapRec
+	phys_indicators as ulong
+	maps_present as ulong
+	names_present as ulong
+	state as ulong
+	names(0 to 31) as XAtom
+	maps(0 to 31) as XkbIndicatorMapRec
 end type
 
 type XkbDeviceLedInfoRec as _XkbDeviceLedInfo
@@ -518,9 +617,9 @@ type XkbDeviceLedInfoPtr as _XkbDeviceLedInfo ptr
 
 type _XkbDeviceInfo
 	name as zstring ptr
-	type as Atom
+	as XAtom type
 	device_spec as ushort
-	has_own_state as Bool
+	has_own_state as long
 	supported as ushort
 	unsupported as ushort
 	num_btns as ushort
@@ -534,11 +633,14 @@ end type
 
 type XkbDeviceInfoRec as _XkbDeviceInfo
 type XkbDeviceInfoPtr as _XkbDeviceInfo ptr
+#define XkbXI_DevHasBtnActs(d) (((d)->num_btns > 0) andalso ((d)->btn_acts <> NULL))
+#define XkbXI_LegalDevBtn(d, b) (XkbXI_DevHasBtnActs(d) andalso ((b) < (d)->num_btns))
+#define XkbXI_DevHasLeds(d) (((d)->num_leds > 0) andalso ((d)->leds <> NULL))
 
 type _XkbDeviceLedChanges
 	led_class as ushort
 	led_id as ushort
-	defined as uinteger
+	defined as ulong
 	next as _XkbDeviceLedChanges ptr
 end type
 
@@ -546,7 +648,7 @@ type XkbDeviceLedChangesRec as _XkbDeviceLedChanges
 type XkbDeviceLedChangesPtr as _XkbDeviceLedChanges ptr
 
 type _XkbDeviceChanges
-	changed as uinteger
+	changed as ulong
 	first_btn as ushort
 	num_btns as ushort
 	leds as XkbDeviceLedChangesRec
@@ -554,5 +656,3 @@ end type
 
 type XkbDeviceChangesRec as _XkbDeviceChanges
 type XkbDeviceChangesPtr as _XkbDeviceChanges ptr
-
-#endif

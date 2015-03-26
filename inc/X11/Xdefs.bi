@@ -1,25 +1,22 @@
-''
-''
-'' Xdefs -- header translated with help of SWIG FB wrapper
-''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
-''
-''
-#ifndef __Xdefs_bi__
-#define __Xdefs_bi__
+#pragma once
 
-type Atom as uinteger
-type Bool as integer
-type pointer as any ptr
+#include once "crt/long.bi"
+
+'' The following symbols have been renamed:
+''     typedef pointer => pointer_
+
+extern "C"
+
+#define _XDEFS_H
+#define _XTYPEDEF_POINTER
+type pointer_ as any ptr
 type ClientPtr as _Client ptr
-type XID as uinteger
-type Mask as uinteger
+#define _XTYPEDEF_CLIENTPTR
+#define _XTYPEDEF_FONTPTR
 type FontPtr as _Font ptr
-type Font as XID
-type FSID as uinteger
+type FSID as culong
 type AccContext as FSID
 type OSTimePtr as timeval ptr ptr
-type BlockHandlerProcPtr as sub cdecl(byval as pointer, byval as OSTimePtr, byval as pointer)
+type BlockHandlerProcPtr as sub(byval as any ptr, byval as OSTimePtr, byval as any ptr)
 
-#endif
+end extern

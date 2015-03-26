@@ -1,14 +1,14 @@
-''
-''
-'' Xos_r -- header translated with help of SWIG FB wrapper
-''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
-''
-''
-#ifndef __Xos_r_bi__
-#define __Xos_r_bi__
+#pragma once
 
-#define X_LINE_MAX 2048
+#include once "X11/Xos.bi"
+#include once "X11/Xfuncs.bi"
 
+#ifdef __FB_LINUX__
+	#include once "crt/limits.bi"
+#endif
+
+#define _XOS_R_H_
+
+#ifdef __FB_LINUX__
+	const X_LINE_MAX = 2048
 #endif

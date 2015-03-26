@@ -1,16 +1,13 @@
-''
-''
-'' Initer -- header translated with help of SWIG FB wrapper
-''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
-''
-''
-#ifndef __Initer_bi__
-#define __Initer_bi__
+#pragma once
 
-type XmuInitializerProc as sub cdecl(byval as XtAppContext, byval as XPointer)
+#include once "X11/Intrinsic.bi"
+#include once "X11/Xfuncproto.bi"
 
-declare sub XmuAddInitializer cdecl alias "XmuAddInitializer" (byval func as XmuInitializerProc, byval data as XPointer)
+extern "C"
 
-#endif
+#define _XMU_INITER_H_
+type XmuInitializerProc as sub(byval app_context as XtAppContext, byval data as XPointer)
+declare sub XmuCallInitializers(byval app_context as XtAppContext)
+declare sub XmuAddInitializer(byval func as XmuInitializerProc, byval data as XPointer)
+
+end extern

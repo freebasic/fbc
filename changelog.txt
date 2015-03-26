@@ -17,6 +17,7 @@ Version 1.02.0
 	FastCGI 2.4.1-SNAP-0311112127
 	Windows API, based on MinGW-w64's headers; DDK not updated yet; for GdiPlus only the flat C API is updated, not the C++ part.
 	libpng 1.2.53, 1.4.16, 1.5.21, 1.6.16
+	X11, based on current X.org packages
 
 [fixed]
 - Potential bad code generation for dynamic array field copying

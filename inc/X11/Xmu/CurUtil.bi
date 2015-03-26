@@ -1,12 +1,10 @@
-''
-''
-'' CurUtil -- header translated with help of SWIG FB wrapper
-''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
-''
-''
-#ifndef __CurUtil_bi__
-#define __CurUtil_bi__
+#pragma once
 
-#endif
+#include once "X11/Xfuncproto.bi"
+
+extern "C"
+
+#define _XMU_CURUTIL_H_
+declare function XmuCursorNameToIndex(byval name as const zstring ptr) as long
+
+end extern

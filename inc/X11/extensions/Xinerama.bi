@@ -1,23 +1,22 @@
-''
-''
-'' Xinerama -- header translated with help of SWIG FB wrapper
-''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
-''
-''
-#ifndef __Xinerama_bi__
-#define __Xinerama_bi__
+#pragma once
+
+#include once "X11/Xlib.bi"
+
+extern "C"
+
+#define _Xinerama_h
 
 type XineramaScreenInfo
-	screen_number as integer
+	screen_number as long
 	x_org as short
 	y_org as short
 	width as short
 	height as short
 end type
 
-declare function XineramaIsActive cdecl alias "XineramaIsActive" (byval dpy as Display ptr) as Bool
-declare function XineramaQueryScreens cdecl alias "XineramaQueryScreens" (byval dpy as Display ptr, byval number as integer ptr) as XineramaScreenInfo ptr
+declare function XineramaQueryExtension(byval dpy as Display ptr, byval event_base as long ptr, byval error_base as long ptr) as long
+declare function XineramaQueryVersion(byval dpy as Display ptr, byval major_versionp as long ptr, byval minor_versionp as long ptr) as long
+declare function XineramaIsActive(byval dpy as Display ptr) as long
+declare function XineramaQueryScreens(byval dpy as Display ptr, byval number as long ptr) as XineramaScreenInfo ptr
 
-#endif
+end extern

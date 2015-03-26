@@ -1,54 +1,42 @@
-''
-''
-'' XShm -- header translated with help of SWIG FB wrapper
-''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
-''
-''
-#ifndef __XShm_bi__
-#define __XShm_bi__
+#pragma once
 
-#define X_ShmQueryVersion 0
-#define X_ShmAttach 1
-#define X_ShmDetach 2
-#define X_ShmPutImage 3
-#define X_ShmGetImage 4
-#define X_ShmCreatePixmap 5
-#define ShmCompletion 0
-#define ShmNumberEvents (0+1)
-#define BadShmSeg 0
-#define ShmNumberErrors (0+1)
+#include once "crt/long.bi"
+#include once "X11/Xfuncproto.bi"
+#include once "X11/extensions/shm.bi"
 
-type ShmSeg as uinteger
+extern "C"
+
+#define _XSHM_H_
+type ShmSeg as culong
 
 type XShmCompletionEvent
-	type as integer
-	serial as uinteger
-	send_event as Bool
+	as long type
+	serial as culong
+	send_event as long
 	display as Display ptr
 	drawable as Drawable
-	major_code as integer
-	minor_code as integer
+	major_code as long
+	minor_code as long
 	shmseg as ShmSeg
-	offset as uinteger
+	offset as culong
 end type
 
 type XShmSegmentInfo
 	shmseg as ShmSeg
-	shmid as integer
+	shmid as long
 	shmaddr as zstring ptr
-	readOnly as Bool
+	readOnly as long
 end type
 
-declare function XShmGetEventBase cdecl alias "XShmGetEventBase" (byval as Display ptr) as integer
-declare function XShmQueryVersion cdecl alias "XShmQueryVersion" (byval as Display ptr, byval as integer ptr, byval as integer ptr, byval as Bool ptr) as Bool
-declare function XShmPixmapFormat cdecl alias "XShmPixmapFormat" (byval as Display ptr) as integer
-declare function XShmAttach cdecl alias "XShmAttach" (byval as Display ptr, byval as XShmSegmentInfo ptr) as Status
-declare function XShmDetach cdecl alias "XShmDetach" (byval as Display ptr, byval as XShmSegmentInfo ptr) as Status
-declare function XShmPutImage cdecl alias "XShmPutImage" (byval as Display ptr, byval as Drawable, byval as GC, byval as XImage ptr, byval as integer, byval as integer, byval as integer, byval as integer, byval as uinteger, byval as uinteger, byval as Bool) as Status
-declare function XShmGetImage cdecl alias "XShmGetImage" (byval as Display ptr, byval as Drawable, byval as XImage ptr, byval as integer, byval as integer, byval as uinteger) as Status
-declare function XShmCreateImage cdecl alias "XShmCreateImage" (byval as Display ptr, byval as Visual ptr, byval as uinteger, byval as integer, byval as zstring ptr, byval as XShmSegmentInfo ptr, byval as uinteger, byval as uinteger) as XImage ptr
-declare function XShmCreatePixmap cdecl alias "XShmCreatePixmap" (byval as Display ptr, byval as Drawable, byval as zstring ptr, byval as XShmSegmentInfo ptr, byval as uinteger, byval as uinteger, byval as uinteger) as Pixmap
+declare function XShmQueryExtension(byval as Display ptr) as long
+declare function XShmGetEventBase(byval as Display ptr) as long
+declare function XShmQueryVersion(byval as Display ptr, byval as long ptr, byval as long ptr, byval as long ptr) as long
+declare function XShmPixmapFormat(byval as Display ptr) as long
+declare function XShmAttach(byval as Display ptr, byval as XShmSegmentInfo ptr) as long
+declare function XShmDetach(byval as Display ptr, byval as XShmSegmentInfo ptr) as long
+declare function XShmPutImage(byval as Display ptr, byval as Drawable, byval as GC, byval as XImage ptr, byval as long, byval as long, byval as long, byval as long, byval as ulong, byval as ulong, byval as long) as long
+declare function XShmGetImage(byval as Display ptr, byval as Drawable, byval as XImage ptr, byval as long, byval as long, byval as culong) as long
+declare function XShmCreateImage(byval as Display ptr, byval as Visual ptr, byval as ulong, byval as long, byval as zstring ptr, byval as XShmSegmentInfo ptr, byval as ulong, byval as ulong) as XImage ptr
+declare function XShmCreatePixmap(byval as Display ptr, byval as Drawable, byval as zstring ptr, byval as XShmSegmentInfo ptr, byval as ulong, byval as ulong, byval as ulong) as Pixmap
 
-#endif
+end extern

@@ -1,12 +1,12 @@
-''
-''
-'' StdSel -- header translated with help of SWIG FB wrapper
-''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
-''
-''
-#ifndef __StdSel_bi__
-#define __StdSel_bi__
+#pragma once
 
-#endif
+#include once "crt/long.bi"
+#include once "X11/Intrinsic.bi"
+#include once "X11/Xfuncproto.bi"
+
+extern "C"
+
+#define _XMU_SELECTION_H_
+declare function XmuConvertStandardSelection(byval w as Widget, byval timev as Time, byval selection as XAtom ptr, byval target as XAtom ptr, byval type_return as XAtom ptr, byval value_return as XPointer ptr, byval length_return as culong ptr, byval format_return as long ptr) as byte
+
+end extern

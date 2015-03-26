@@ -1,27 +1,22 @@
-''
-''
-'' xpm -- header translated with help of SWIG FB wrapper
-''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
-''
-''
-#ifndef __xpm_bi__
-#define __xpm_bi__
+#pragma once
 
-#define XpmFormat 3
-#define XpmVersion 4
-#define XpmRevision 11
-#define XpmIncludeVersion ((3*100+4)*100+11)
+#include once "crt/long.bi"
+#include once "X11/Xlib.bi"
+#include once "X11/Xutil.bi"
 
-type Pixel as uinteger
+extern "C"
 
-#define XpmColorError 1
-#define XpmSuccess 0
-#define XpmOpenFailed -1
-#define XpmFileInvalid -2
-#define XpmNoMemory -3
-#define XpmColorFailed -4
+#define XPM_h
+const XpmFormat = 3
+const XpmVersion = 4
+const XpmRevision = 11
+#define XpmIncludeVersion ((((XpmFormat * 100) + XpmVersion) * 100) + XpmRevision)
+const XpmColorError = 1
+const XpmSuccess = 0
+const XpmOpenFailed = -1
+const XpmFileInvalid = -2
+const XpmNoMemory = -3
+const XpmColorFailed = -4
 
 type XpmColorSymbol
 	name as zstring ptr
@@ -31,8 +26,8 @@ end type
 
 type XpmExtension
 	name as zstring ptr
-	nlines as uinteger
-	lines as byte ptr ptr
+	nlines as ulong
+	lines as zstring ptr ptr
 end type
 
 type XpmColor
@@ -45,147 +40,155 @@ type XpmColor
 end type
 
 type XpmImage
-	width as uinteger
-	height as uinteger
-	cpp as uinteger
-	ncolors as uinteger
+	width as ulong
+	height as ulong
+	cpp as ulong
+	ncolors as ulong
 	colorTable as XpmColor ptr
-	data as uinteger ptr
+	data as ulong ptr
 end type
 
 type XpmInfo
-	valuemask as uinteger
+	valuemask as culong
 	hints_cmt as zstring ptr
 	colors_cmt as zstring ptr
 	pixels_cmt as zstring ptr
-	x_hotspot as uinteger
-	y_hotspot as uinteger
-	nextensions as uinteger
+	x_hotspot as ulong
+	y_hotspot as ulong
+	nextensions as ulong
 	extensions as XpmExtension ptr
 end type
 
-type XpmAllocColorFunc as function cdecl(byval as Display ptr, byval as Colormap, byval as zstring ptr, byval as XColor ptr, byval as any ptr) as integer
-type XpmFreeColorsFunc as function cdecl(byval as Display ptr, byval as Colormap, byval as Pixel ptr, byval as integer, byval as any ptr) as integer
+type XpmAllocColorFunc as function(byval as Display ptr, byval as Colormap, byval as zstring ptr, byval as XColor ptr, byval as any ptr) as long
+type XpmFreeColorsFunc as function(byval as Display ptr, byval as Colormap, byval as Pixel ptr, byval as long, byval as any ptr) as long
 
 type XpmAttributes
-	valuemask as uinteger
+	valuemask as culong
 	visual as Visual ptr
 	colormap as Colormap
-	depth as uinteger
-	width as uinteger
-	height as uinteger
-	x_hotspot as uinteger
-	y_hotspot as uinteger
-	cpp as uinteger
+	depth as ulong
+	width as ulong
+	height as ulong
+	x_hotspot as ulong
+	y_hotspot as ulong
+	cpp as ulong
 	pixels as Pixel ptr
-	npixels as uinteger
+	npixels as ulong
 	colorsymbols as XpmColorSymbol ptr
-	numsymbols as uinteger
+	numsymbols as ulong
 	rgb_fname as zstring ptr
-	nextensions as uinteger
+	nextensions as ulong
 	extensions as XpmExtension ptr
-	ncolors as uinteger
+	ncolors as ulong
 	colorTable as XpmColor ptr
 	hints_cmt as zstring ptr
 	colors_cmt as zstring ptr
 	pixels_cmt as zstring ptr
-	mask_pixel as uinteger
-	exactColors as Bool
-	closeness as uinteger
-	red_closeness as uinteger
-	green_closeness as uinteger
-	blue_closeness as uinteger
-	color_key as integer
+	mask_pixel as ulong
+	exactColors as long
+	closeness as ulong
+	red_closeness as ulong
+	green_closeness as ulong
+	blue_closeness as ulong
+	color_key as long
 	alloc_pixels as Pixel ptr
-	nalloc_pixels as integer
-	alloc_close_colors as Bool
-	bitmap_format as integer
+	nalloc_pixels as long
+	alloc_close_colors as long
+	bitmap_format as long
 	alloc_color as XpmAllocColorFunc
 	free_colors as XpmFreeColorsFunc
 	color_closure as any ptr
 end type
 
-#define XpmVisual (1L shl 0)
-#define XpmColormap (1L shl 1)
-#define XpmDepth (1L shl 2)
-#define XpmSize (1L shl 3)
-#define XpmHotspot (1L shl 4)
-#define XpmCharsPerPixel (1L shl 5)
-#define XpmColorSymbols (1L shl 6)
-#define XpmRgbFilename (1L shl 7)
-#define XpmInfos (1L shl 8)
-#define XpmReturnInfos (1L shl 8)
-#define XpmReturnPixels (1L shl 9)
-#define XpmExtensions (1L shl 10)
-#define XpmReturnExtensions (1L shl 10)
-#define XpmExactColors (1L shl 11)
-#define XpmCloseness (1L shl 12)
-#define XpmRGBCloseness (1L shl 13)
-#define XpmColorKey (1L shl 14)
-#define XpmColorTable (1L shl 15)
-#define XpmReturnColorTable (1L shl 15)
-#define XpmReturnAllocPixels (1L shl 16)
-#define XpmAllocCloseColors (1L shl 17)
-#define XpmBitmapFormat (1L shl 18)
-#define XpmAllocColor (1L shl 19)
-#define XpmFreeColors (1L shl 20)
-#define XpmColorClosure (1L shl 21)
-#define XpmComments (1L shl 8)
-#define XpmReturnComments (1L shl 8)
-#define XpmUndefPixel &h80000000
-#define XPM_MONO 2
-#define XPM_GREY4 3
-#define XPM_GRAY4 3
-#define XPM_GREY 4
-#define XPM_GRAY 4
-#define XPM_COLOR 5
+const XpmVisual = cast(clong, 1) shl 0
+const XpmColormap = cast(clong, 1) shl 1
+const XpmDepth = cast(clong, 1) shl 2
+const XpmSize = cast(clong, 1) shl 3
+const XpmHotspot = cast(clong, 1) shl 4
+const XpmCharsPerPixel = cast(clong, 1) shl 5
+const XpmColorSymbols = cast(clong, 1) shl 6
+const XpmRgbFilename = cast(clong, 1) shl 7
+const XpmInfos = cast(clong, 1) shl 8
+#define XpmReturnInfos XpmInfos
+const XpmReturnPixels = cast(clong, 1) shl 9
+const XpmExtensions = cast(clong, 1) shl 10
+#define XpmReturnExtensions XpmExtensions
+const XpmExactColors = cast(clong, 1) shl 11
+const XpmCloseness = cast(clong, 1) shl 12
+const XpmRGBCloseness = cast(clong, 1) shl 13
+const XpmColorKey = cast(clong, 1) shl 14
+const XpmColorTable = cast(clong, 1) shl 15
+#define XpmReturnColorTable XpmColorTable
+const XpmReturnAllocPixels = cast(clong, 1) shl 16
+const XpmAllocCloseColors = cast(clong, 1) shl 17
+const XpmBitmapFormat = cast(clong, 1) shl 18
+const XpmAllocColor = cast(clong, 1) shl 19
+const XpmFreeColors = cast(clong, 1) shl 20
+const XpmColorClosure = cast(clong, 1) shl 21
+#define XpmComments XpmInfos
+#define XpmReturnComments XpmComments
+const XpmUndefPixel = &h80000000
+const XPM_MONO = 2
+const XPM_GREY4 = 3
+const XPM_GRAY4 = 3
+const XPM_GREY = 4
+const XPM_GRAY = 4
+const XPM_COLOR = 5
 
-declare function XpmCreateDataFromPixmap cdecl alias "XpmCreateDataFromPixmap" (byval display as Display ptr, byval data_return as byte ptr ptr ptr, byval pixmap as Pixmap, byval shapemask as Pixmap, byval attributes as XpmAttributes ptr) as integer
-declare function XpmReadFileToPixmap cdecl alias "XpmReadFileToPixmap" (byval display as Display ptr, byval d as Drawable, byval filename as zstring ptr, byval pixmap_return as Pixmap ptr, byval shapemask_return as Pixmap ptr, byval attributes as XpmAttributes ptr) as integer
-declare function XpmWriteFileFromPixmap cdecl alias "XpmWriteFileFromPixmap" (byval display as Display ptr, byval filename as zstring ptr, byval pixmap as Pixmap, byval shapemask as Pixmap, byval attributes as XpmAttributes ptr) as integer
-declare function XpmCreateImageFromData cdecl alias "XpmCreateImageFromData" (byval display as Display ptr, byval data as byte ptr ptr, byval image_return as XImage ptr ptr, byval shapemask_return as XImage ptr ptr, byval attributes as XpmAttributes ptr) as integer
-declare function XpmCreateDataFromImage cdecl alias "XpmCreateDataFromImage" (byval display as Display ptr, byval data_return as byte ptr ptr ptr, byval image as XImage ptr, byval shapeimage as XImage ptr, byval attributes as XpmAttributes ptr) as integer
-declare function XpmReadFileToImage cdecl alias "XpmReadFileToImage" (byval display as Display ptr, byval filename as zstring ptr, byval image_return as XImage ptr ptr, byval shapeimage_return as XImage ptr ptr, byval attributes as XpmAttributes ptr) as integer
-declare function XpmWriteFileFromImage cdecl alias "XpmWriteFileFromImage" (byval display as Display ptr, byval filename as zstring ptr, byval image as XImage ptr, byval shapeimage as XImage ptr, byval attributes as XpmAttributes ptr) as integer
-declare function XpmCreateImageFromBuffer cdecl alias "XpmCreateImageFromBuffer" (byval display as Display ptr, byval buffer as zstring ptr, byval image_return as XImage ptr ptr, byval shapemask_return as XImage ptr ptr, byval attributes as XpmAttributes ptr) as integer
-declare function XpmCreatePixmapFromBuffer cdecl alias "XpmCreatePixmapFromBuffer" (byval display as Display ptr, byval d as Drawable, byval buffer as zstring ptr, byval pixmap_return as Pixmap ptr, byval shapemask_return as Pixmap ptr, byval attributes as XpmAttributes ptr) as integer
-declare function XpmCreateBufferFromImage cdecl alias "XpmCreateBufferFromImage" (byval display as Display ptr, byval buffer_return as byte ptr ptr, byval image as XImage ptr, byval shapeimage as XImage ptr, byval attributes as XpmAttributes ptr) as integer
-declare function XpmCreateBufferFromPixmap cdecl alias "XpmCreateBufferFromPixmap" (byval display as Display ptr, byval buffer_return as byte ptr ptr, byval pixmap as Pixmap, byval shapemask as Pixmap, byval attributes as XpmAttributes ptr) as integer
-declare function XpmReadFileToBuffer cdecl alias "XpmReadFileToBuffer" (byval filename as zstring ptr, byval buffer_return as byte ptr ptr) as integer
-declare function XpmWriteFileFromBuffer cdecl alias "XpmWriteFileFromBuffer" (byval filename as zstring ptr, byval buffer as zstring ptr) as integer
-declare function XpmReadFileToData cdecl alias "XpmReadFileToData" (byval filename as zstring ptr, byval data_return as byte ptr ptr ptr) as integer
-declare function XpmWriteFileFromData cdecl alias "XpmWriteFileFromData" (byval filename as zstring ptr, byval data as byte ptr ptr) as integer
-declare function XpmAttributesSize cdecl alias "XpmAttributesSize" () as integer
-declare sub XpmFreeAttributes cdecl alias "XpmFreeAttributes" (byval attributes as XpmAttributes ptr)
-declare sub XpmFreeExtensions cdecl alias "XpmFreeExtensions" (byval extensions as XpmExtension ptr, byval nextensions as integer)
-declare sub XpmFreeXpmImage cdecl alias "XpmFreeXpmImage" (byval image as XpmImage ptr)
-declare sub XpmFreeXpmInfo cdecl alias "XpmFreeXpmInfo" (byval info as XpmInfo ptr)
-declare function XpmGetErrorString cdecl alias "XpmGetErrorString" (byval errcode as integer) as zstring ptr
-declare function XpmLibraryVersion cdecl alias "XpmLibraryVersion" () as integer
-declare function XpmReadFileToXpmImage cdecl alias "XpmReadFileToXpmImage" (byval filename as zstring ptr, byval image as XpmImage ptr, byval info as XpmInfo ptr) as integer
-declare function XpmWriteFileFromXpmImage cdecl alias "XpmWriteFileFromXpmImage" (byval filename as zstring ptr, byval image as XpmImage ptr, byval info as XpmInfo ptr) as integer
-declare function XpmCreatePixmapFromXpmImage cdecl alias "XpmCreatePixmapFromXpmImage" (byval display as Display ptr, byval d as Drawable, byval image as XpmImage ptr, byval pixmap_return as Pixmap ptr, byval shapemask_return as Pixmap ptr, byval attributes as XpmAttributes ptr) as integer
-declare function XpmCreateImageFromXpmImage cdecl alias "XpmCreateImageFromXpmImage" (byval display as Display ptr, byval image as XpmImage ptr, byval image_return as XImage ptr ptr, byval shapeimage_return as XImage ptr ptr, byval attributes as XpmAttributes ptr) as integer
-declare function XpmCreateXpmImageFromImage cdecl alias "XpmCreateXpmImageFromImage" (byval display as Display ptr, byval image as XImage ptr, byval shapeimage as XImage ptr, byval xpmimage as XpmImage ptr, byval attributes as XpmAttributes ptr) as integer
-declare function XpmCreateXpmImageFromPixmap cdecl alias "XpmCreateXpmImageFromPixmap" (byval display as Display ptr, byval pixmap as Pixmap, byval shapemask as Pixmap, byval xpmimage as XpmImage ptr, byval attributes as XpmAttributes ptr) as integer
-declare function XpmCreateDataFromXpmImage cdecl alias "XpmCreateDataFromXpmImage" (byval data_return as byte ptr ptr ptr, byval image as XpmImage ptr, byval info as XpmInfo ptr) as integer
-declare function XpmCreateXpmImageFromData cdecl alias "XpmCreateXpmImageFromData" (byval data as byte ptr ptr, byval image as XpmImage ptr, byval info as XpmInfo ptr) as integer
-declare function XpmCreateXpmImageFromBuffer cdecl alias "XpmCreateXpmImageFromBuffer" (byval buffer as zstring ptr, byval image as XpmImage ptr, byval info as XpmInfo ptr) as integer
-declare function XpmCreateBufferFromXpmImage cdecl alias "XpmCreateBufferFromXpmImage" (byval buffer_return as byte ptr ptr, byval image as XpmImage ptr, byval info as XpmInfo ptr) as integer
-declare function XpmGetParseError cdecl alias "XpmGetParseError" (byval filename as zstring ptr, byval linenum_return as integer ptr, byval charnum_return as integer ptr) as integer
-declare sub XpmFree cdecl alias "XpmFree" (byval ptr as any ptr)
+declare function XpmCreatePixmapFromData(byval display as Display ptr, byval d as Drawable, byval data as zstring ptr ptr, byval pixmap_return as Pixmap ptr, byval shapemask_return as Pixmap ptr, byval attributes as XpmAttributes ptr) as long
+declare function XpmCreateDataFromPixmap(byval display as Display ptr, byval data_return as zstring ptr ptr ptr, byval pixmap as Pixmap, byval shapemask as Pixmap, byval attributes as XpmAttributes ptr) as long
+declare function XpmReadFileToPixmap(byval display as Display ptr, byval d as Drawable, byval filename as const zstring ptr, byval pixmap_return as Pixmap ptr, byval shapemask_return as Pixmap ptr, byval attributes as XpmAttributes ptr) as long
+declare function XpmWriteFileFromPixmap(byval display as Display ptr, byval filename as const zstring ptr, byval pixmap as Pixmap, byval shapemask as Pixmap, byval attributes as XpmAttributes ptr) as long
+declare function XpmCreateImageFromData(byval display as Display ptr, byval data as zstring ptr ptr, byval image_return as XImage ptr ptr, byval shapemask_return as XImage ptr ptr, byval attributes as XpmAttributes ptr) as long
+declare function XpmCreateDataFromImage(byval display as Display ptr, byval data_return as zstring ptr ptr ptr, byval image as XImage ptr, byval shapeimage as XImage ptr, byval attributes as XpmAttributes ptr) as long
+declare function XpmReadFileToImage(byval display as Display ptr, byval filename as const zstring ptr, byval image_return as XImage ptr ptr, byval shapeimage_return as XImage ptr ptr, byval attributes as XpmAttributes ptr) as long
+declare function XpmWriteFileFromImage(byval display as Display ptr, byval filename as const zstring ptr, byval image as XImage ptr, byval shapeimage as XImage ptr, byval attributes as XpmAttributes ptr) as long
+declare function XpmCreateImageFromBuffer(byval display as Display ptr, byval buffer as zstring ptr, byval image_return as XImage ptr ptr, byval shapemask_return as XImage ptr ptr, byval attributes as XpmAttributes ptr) as long
+declare function XpmCreatePixmapFromBuffer(byval display as Display ptr, byval d as Drawable, byval buffer as zstring ptr, byval pixmap_return as Pixmap ptr, byval shapemask_return as Pixmap ptr, byval attributes as XpmAttributes ptr) as long
+declare function XpmCreateBufferFromImage(byval display as Display ptr, byval buffer_return as zstring ptr ptr, byval image as XImage ptr, byval shapeimage as XImage ptr, byval attributes as XpmAttributes ptr) as long
+declare function XpmCreateBufferFromPixmap(byval display as Display ptr, byval buffer_return as zstring ptr ptr, byval pixmap as Pixmap, byval shapemask as Pixmap, byval attributes as XpmAttributes ptr) as long
+declare function XpmReadFileToBuffer(byval filename as const zstring ptr, byval buffer_return as zstring ptr ptr) as long
+declare function XpmWriteFileFromBuffer(byval filename as const zstring ptr, byval buffer as zstring ptr) as long
+declare function XpmReadFileToData(byval filename as const zstring ptr, byval data_return as zstring ptr ptr ptr) as long
+declare function XpmWriteFileFromData(byval filename as const zstring ptr, byval data as zstring ptr ptr) as long
+declare function XpmAttributesSize() as long
+declare sub XpmFreeAttributes(byval attributes as XpmAttributes ptr)
+declare sub XpmFreeExtensions(byval extensions as XpmExtension ptr, byval nextensions as long)
+declare sub XpmFreeXpmImage(byval image as XpmImage ptr)
+declare sub XpmFreeXpmInfo(byval info as XpmInfo ptr)
+declare function XpmGetErrorString(byval errcode as long) as zstring ptr
+declare function XpmLibraryVersion() as long
+declare function XpmReadFileToXpmImage(byval filename as const zstring ptr, byval image as XpmImage ptr, byval info as XpmInfo ptr) as long
+declare function XpmWriteFileFromXpmImage(byval filename as const zstring ptr, byval image as XpmImage ptr, byval info as XpmInfo ptr) as long
+declare function XpmCreatePixmapFromXpmImage(byval display as Display ptr, byval d as Drawable, byval image as XpmImage ptr, byval pixmap_return as Pixmap ptr, byval shapemask_return as Pixmap ptr, byval attributes as XpmAttributes ptr) as long
+declare function XpmCreateImageFromXpmImage(byval display as Display ptr, byval image as XpmImage ptr, byval image_return as XImage ptr ptr, byval shapeimage_return as XImage ptr ptr, byval attributes as XpmAttributes ptr) as long
+declare function XpmCreateXpmImageFromImage(byval display as Display ptr, byval image as XImage ptr, byval shapeimage as XImage ptr, byval xpmimage as XpmImage ptr, byval attributes as XpmAttributes ptr) as long
+declare function XpmCreateXpmImageFromPixmap(byval display as Display ptr, byval pixmap as Pixmap, byval shapemask as Pixmap, byval xpmimage as XpmImage ptr, byval attributes as XpmAttributes ptr) as long
+declare function XpmCreateDataFromXpmImage(byval data_return as zstring ptr ptr ptr, byval image as XpmImage ptr, byval info as XpmInfo ptr) as long
+declare function XpmCreateXpmImageFromData(byval data as zstring ptr ptr, byval image as XpmImage ptr, byval info as XpmInfo ptr) as long
+declare function XpmCreateXpmImageFromBuffer(byval buffer as zstring ptr, byval image as XpmImage ptr, byval info as XpmInfo ptr) as long
+declare function XpmCreateBufferFromXpmImage(byval buffer_return as zstring ptr ptr, byval image as XpmImage ptr, byval info as XpmInfo ptr) as long
+declare function XpmGetParseError(byval filename as zstring ptr, byval linenum_return as long ptr, byval charnum_return as long ptr) as long
+declare sub XpmFree(byval ptr as any ptr)
 
-#define XpmPixmapColorError 1
-#define XpmPixmapSuccess 0
-#define XpmPixmapOpenFailed -1
-#define XpmPixmapFileInvalid -2
-#define XpmPixmapNoMemory -3
-#define XpmPixmapColorFailed -4
-#define PixmapColorError 1
-#define PixmapSuccess 0
-#define PixmapOpenFailed -1
-#define PixmapFileInvalid -2
-#define PixmapNoMemory -3
-#define PixmapColorFailed -4
+#define XpmPixmapColorError XpmColorError
+#define XpmPixmapSuccess XpmSuccess
+#define XpmPixmapOpenFailed XpmOpenFailed
+#define XpmPixmapFileInvalid XpmFileInvalid
+#define XpmPixmapNoMemory XpmNoMemory
+#define XpmPixmapColorFailed XpmColorFailed
+#define XpmReadPixmapFile(dpy, d, file, pix, mask, att) XpmReadFileToPixmap(dpy, d, file, pix, mask, att)
+#define XpmWritePixmapFile(dpy, file, pix, mask, att) XpmWriteFileFromPixmap(dpy, file, pix, mask, att)
+#define PixmapColorError XpmColorError
+#define PixmapSuccess XpmSuccess
+#define PixmapOpenFailed XpmOpenFailed
+#define PixmapFileInvalid XpmFileInvalid
+#define PixmapNoMemory XpmNoMemory
+#define PixmapColorFailed XpmColorFailed
+#define ColorSymbol XpmColorSymbol
+#define XReadPixmapFile(dpy, d, file, pix, mask, att) XpmReadFileToPixmap(dpy, d, file, pix, mask, att)
+#define XWritePixmapFile(dpy, file, pix, mask, att) XpmWriteFileFromPixmap(dpy, file, pix, mask, att)
+#define XCreatePixmapFromData(dpy, d, data, pix, mask, att) XpmCreatePixmapFromData(dpy, d, data, pix, mask, att)
+#define XCreateDataFromPixmap(dpy, data, pix, mask, att) XpmCreateDataFromPixmap(dpy, data, pix, mask, att)
 
-#endif
+end extern

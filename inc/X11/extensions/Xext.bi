@@ -1,15 +1,14 @@
-''
-''
-'' Xext -- header translated with help of SWIG FB wrapper
-''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
-''
-''
-#ifndef __Xext_bi__
-#define __Xext_bi__
+#pragma once
 
+#include once "X11/Xfuncproto.bi"
+
+extern "C"
+
+#define _XEXT_H_
+type XextErrorHandler as function(byval as Display ptr, byval as const zstring ptr, byval as const zstring ptr) as long
+declare function XSetExtensionErrorHandler(byval as XextErrorHandler) as XextErrorHandler
+declare function XMissingExtension(byval as Display ptr, byval as const zstring ptr) as long
 #define X_EXTENSION_UNKNOWN "unknown"
 #define X_EXTENSION_MISSING "missing"
 
-#endif
+end extern

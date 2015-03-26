@@ -1,32 +1,35 @@
-''
-''
-'' lbxzlib -- header translated with help of SWIG FB wrapper
-''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
-''
-''
-#ifndef __lbxzlib_bi__
-#define __lbxzlib_bi__
+#pragma once
 
+extern "C"
+
+#define _ZLIB_H_
 #define ZLIB_STRCOMP_OPT "XC-ZLIB"
-#define ZLIB_STRCOMP_OPT_LEN 7
-#define ZLIB_PACKET_HDRLEN 2
-#define ZLIB_MAX_DATALEN &hfff
-#define ZLIB_MAX_PLAIN 270
-#define ZLIB_MAX_OUTLEN (270 shl 1)
-#define ZLIB_COMPRESS_FLAG &h80
-#define ZLIB_DATALEN_MASK &h0f
+const ZLIB_STRCOMP_OPT_LEN = 7
+const ZLIB_PACKET_HDRLEN = 2
+const ZLIB_MAX_DATALEN = &hfff
+const ZLIB_MAX_PLAIN = 270
+#define ZLIB_MAX_OUTLEN (ZLIB_MAX_PLAIN shl 1)
+const ZLIB_COMPRESS_FLAG = &h80
+const ZLIB_DATALEN_MASK = &h0f
+#macro ZLIB_PUT_PKTHDR(p, len, compflag)
+	scope
+		(p)[0] = (culng(len) shr 8) or iif(compflag, ZLIB_COMPRESS_FLAG, 0)
+		(p)[1] = (len) and &hff
+	end scope
+#endmacro
+#define ZLIB_GET_DATALEN(p) culng(culng(culng((p)[0] and ZLIB_DATALEN_MASK) shl 8) or culng((p)[1]))
+#define ZLIB_COMPRESSED(p) ((p)[0] and ZLIB_COMPRESS_FLAG)
+declare function ZlibInit(byval fd as long, byval level as long) as any ptr
+type ZlibInfo as ZlibInfo_
 
-declare function ZlibInit cdecl alias "ZlibInit" (byval fd as integer, byval level as integer) as any ptr
-declare sub ZlibFree cdecl alias "ZlibFree" (byval comp as ZlibInfo ptr)
-declare function ZlibFlush cdecl alias "ZlibFlush" (byval fd as integer) as integer
-declare function ZlibStuffInput cdecl alias "ZlibStuffInput" (byval fd as integer, byval buffer as ubyte ptr, byval buflen as integer) as integer
-declare sub ZlibCompressOn cdecl alias "ZlibCompressOn" (byval fd as integer)
-declare sub ZlibCompressOff cdecl alias "ZlibCompressOff" (byval fd as integer)
-declare function ZlibWrite cdecl alias "ZlibWrite" (byval fd as integer, byval buffer as ubyte ptr, byval buflen as integer) as integer
-declare function ZlibWriteV cdecl alias "ZlibWriteV" (byval fd as integer, byval iov as iovec ptr, byval iovcnt as integer) as integer
-declare function ZlibRead cdecl alias "ZlibRead" (byval fd as integer, byval buffer as ubyte ptr, byval buflen as integer) as integer
-declare function ZlibInputAvail cdecl alias "ZlibInputAvail" (byval fd as integer) as integer
+declare sub ZlibFree(byval comp as ZlibInfo ptr)
+declare function ZlibFlush(byval fd as long) as long
+declare function ZlibStuffInput(byval fd as long, byval buffer as ubyte ptr, byval buflen as long) as long
+declare sub ZlibCompressOn(byval fd as long)
+declare sub ZlibCompressOff(byval fd as long)
+declare function ZlibWrite(byval fd as long, byval buffer as ubyte ptr, byval buflen as long) as long
+declare function ZlibWriteV(byval fd as long, byval iov as iovec ptr, byval iovcnt as long) as long
+declare function ZlibRead(byval fd as long, byval buffer as ubyte ptr, byval buflen as long) as long
+declare function ZlibInputAvail(byval fd as long) as long
 
-#endif
+end extern

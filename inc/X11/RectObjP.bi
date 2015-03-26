@@ -1,13 +1,24 @@
-''
-''
-'' RectObjP -- header translated with help of SWIG FB wrapper
-''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
-''
-''
-#ifndef __RectObjP_bi__
-#define __RectObjP_bi__
+#pragma once
+
+#include once "X11/RectObj.bi"
+#include once "X11/ObjectP.bi"
+
+extern "C"
+
+#define _Xt_RectObjP_h_
+
+type _RectObjPart
+	x as Position
+	y as Position
+	width as Dimension
+	height as Dimension
+	border_width as Dimension
+	managed as byte
+	sensitive as byte
+	ancestor_sensitive as byte
+end type
+
+type RectObjPart as _RectObjPart
 
 type _RectObjRec
 	object as ObjectPart
@@ -18,7 +29,7 @@ type RectObjRec as _RectObjRec
 
 type _RectObjClassPart
 	superclass as WidgetClass
-	class_name as String
+	class_name as String_
 	widget_size as Cardinal
 	class_initialize as XtProc
 	class_part_initialize as XtWidgetClassProc
@@ -31,10 +42,10 @@ type _RectObjClassPart
 	resources as XtResourceList
 	num_resources as Cardinal
 	xrm_class as XrmClass
-	rect4 as Boolean
+	rect4 as byte
 	rect5 as XtEnum
-	rect6 as Boolean
-	rect7 as Boolean
+	rect6 as byte
+	rect7 as byte
 	destroy as XtWidgetProc
 	resize as XtWidgetProc
 	expose as XtExposeProc
@@ -45,7 +56,7 @@ type _RectObjClassPart
 	rect9 as XtProc
 	version as XtVersionType
 	callback_private as XtPointer
-	rect10 as String
+	rect10 as String_
 	query_geometry as XtGeometryHandler
 	rect11 as XtProc
 	extension as XtPointer
@@ -58,5 +69,6 @@ type _RectObjClassRec
 end type
 
 type RectObjClassRec as _RectObjClassRec
+extern rectObjClassRec as RectObjClassRec
 
-#endif
+end extern

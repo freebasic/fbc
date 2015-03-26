@@ -1,38 +1,44 @@
-''
-''
-'' lbximage -- header translated with help of SWIG FB wrapper
-''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
-''
-''
-#ifndef __lbximage_bi__
-#define __lbximage_bi__
+#pragma once
 
-#define LBX_MAX_DEPTHS 5
+#include once "X11/Xfuncproto.bi"
+
+extern "C"
+
+#define _LBX_IMAGE_H_
+
+type _LbxBitmapCompMethod
+	methodName as zstring ptr
+	inited as long
+	methodOpCode as long
+	compInit as function() as long
+	compFunc as function(byval as ubyte ptr, byval as ubyte ptr, byval as long, byval as long, byval as long, byval as long, byval as long, byval as long ptr) as long
+	decompFunc as function(byval as ubyte ptr, byval as ubyte ptr, byval as long, byval as long, byval as long, byval as long) as long
+end type
+
+type LbxBitmapCompMethod as _LbxBitmapCompMethod
+const LBX_MAX_DEPTHS = 5
 
 type _LbxPixmapCompMethod
 	methodName as zstring ptr
-	formatMask as uinteger
-	depthCount as integer
-	depths(0 to 5-1) as integer
-	inited as integer
-	methodOpCode as integer
-	compInit as function cdecl() as integer
-	compFunc as function cdecl(byval as zstring ptr, byval as zstring ptr, byval as integer, byval as integer, byval as integer, byval as integer, byval as integer, byval as integer ptr) as integer
-	decompFunc as function cdecl(byval as zstring ptr, byval as zstring ptr, byval as integer, byval as integer) as integer
+	formatMask as ulong
+	depthCount as long
+	depths(0 to 4) as long
+	inited as long
+	methodOpCode as long
+	compInit as function() as long
+	compFunc as function(byval as zstring ptr, byval as zstring ptr, byval as long, byval as long, byval as long, byval as long, byval as long, byval as long ptr) as long
+	decompFunc as function(byval as zstring ptr, byval as zstring ptr, byval as long, byval as long) as long
 end type
 
 type LbxPixmapCompMethod as _LbxPixmapCompMethod
+declare function LbxImageEncodePackBits(byval as zstring ptr, byval as zstring ptr, byval as long, byval as long, byval as long, byval as long, byval as long, byval as long ptr) as long
+declare function LbxImageEncodeFaxG42D(byval as ubyte ptr, byval as ubyte ptr, byval as long, byval as long, byval as long, byval as long, byval as long, byval as long ptr) as long
+declare function LbxImageDecodePackBits(byval as zstring ptr, byval as zstring ptr, byval as long, byval as long) as long
+declare function LbxImageDecodeFaxG42D(byval as ubyte ptr, byval as ubyte ptr, byval as long, byval as long, byval as long, byval as long) as long
 
-declare function LbxImageEncodePackBits cdecl alias "LbxImageEncodePackBits" (byval as zstring ptr, byval as zstring ptr, byval as integer, byval as integer, byval as integer, byval as integer, byval as integer, byval as integer ptr) as integer
-declare function LbxImageEncodeFaxG42D cdecl alias "LbxImageEncodeFaxG42D" (byval as ubyte ptr, byval as ubyte ptr, byval as integer, byval as integer, byval as integer, byval as integer, byval as integer, byval as integer ptr) as integer
-declare function LbxImageDecodePackBits cdecl alias "LbxImageDecodePackBits" (byval as zstring ptr, byval as zstring ptr, byval as integer, byval as integer) as integer
-declare function LbxImageDecodeFaxG42D cdecl alias "LbxImageDecodeFaxG42D" (byval as ubyte ptr, byval as ubyte ptr, byval as integer, byval as integer, byval as integer, byval as integer) as integer
+const LBX_IMAGE_COMPRESS_SUCCESS = 0
+const LBX_IMAGE_COMPRESS_NO_SUPPORT = 1
+const LBX_IMAGE_COMPRESS_BAD_MALLOC = 2
+const LBX_IMAGE_COMPRESS_NOT_WORTH_IT = 3
 
-#define LBX_IMAGE_COMPRESS_SUCCESS 0
-#define LBX_IMAGE_COMPRESS_NO_SUPPORT 1
-#define LBX_IMAGE_COMPRESS_BAD_MALLOC 2
-#define LBX_IMAGE_COMPRESS_NOT_WORTH_IT 3
-
-#endif
+end extern

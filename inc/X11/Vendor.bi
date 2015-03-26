@@ -1,14 +1,11 @@
-''
-''
-'' Vendor -- header translated with help of SWIG FB wrapper
-''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
-''
-''
-#ifndef __Vendor_bi__
-#define __Vendor_bi__
+#pragma once
 
+#include once "X11/Intrinsic.bi"
+
+extern "C"
+
+#define _XtVendor_h
 type VendorShellWidgetClass as _VendorShellClassRec ptr
+extern vendorShellWidgetClass as WidgetClass
 
-#endif
+end extern

@@ -1,99 +1,89 @@
-''
-''
-'' HPkeysym -- header translated with help of SWIG FB wrapper
-''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
-''
-''
-#ifndef __HPkeysym_bi__
-#define __HPkeysym_bi__
+#pragma once
 
-#define hpXK_ClearLine &h1000FF6F
-#define hpXK_InsertLine &h1000FF70
-#define hpXK_DeleteLine &h1000FF71
-#define hpXK_InsertChar &h1000FF72
-#define hpXK_DeleteChar &h1000FF73
-#define hpXK_BackTab &h1000FF74
-#define hpXK_KP_BackTab &h1000FF75
-#define hpXK_Modelock1 &h1000FF48
-#define hpXK_Modelock2 &h1000FF49
-#define hpXK_Reset &h1000FF6C
-#define hpXK_System &h1000FF6D
-#define hpXK_User &h1000FF6E
-#define hpXK_mute_acute &h100000A8
-#define hpXK_mute_grave &h100000A9
-#define hpXK_mute_asciicircum &h100000AA
-#define hpXK_mute_diaeresis &h100000AB
-#define hpXK_mute_asciitilde &h100000AC
-#define hpXK_lira &h100000AF
-#define hpXK_guilder &h100000BE
-#define hpXK_Ydiaeresis &h100000EE
-#define hpXK_IO &h100000EE
-#define hpXK_longminus &h100000F6
-#define hpXK_block &h100000FC
-#define osfXK_Copy &h1004FF02
-#define osfXK_Cut &h1004FF03
-#define osfXK_Paste &h1004FF04
-#define osfXK_BackTab &h1004FF07
-#define osfXK_BackSpace &h1004FF08
-#define osfXK_Clear &h1004FF0B
-#define osfXK_Escape &h1004FF1B
-#define osfXK_AddMode &h1004FF31
-#define osfXK_PrimaryPaste &h1004FF32
-#define osfXK_QuickPaste &h1004FF33
-#define osfXK_PageLeft &h1004FF40
-#define osfXK_PageUp &h1004FF41
-#define osfXK_PageDown &h1004FF42
-#define osfXK_PageRight &h1004FF43
-#define osfXK_Activate &h1004FF44
-#define osfXK_MenuBar &h1004FF45
-#define osfXK_Left &h1004FF51
-#define osfXK_Up &h1004FF52
-#define osfXK_Right &h1004FF53
-#define osfXK_Down &h1004FF54
-#define osfXK_EndLine &h1004FF57
-#define osfXK_BeginLine &h1004FF58
-#define osfXK_EndData &h1004FF59
-#define osfXK_BeginData &h1004FF5A
-#define osfXK_PrevMenu &h1004FF5B
-#define osfXK_NextMenu &h1004FF5C
-#define osfXK_PrevField &h1004FF5D
-#define osfXK_NextField &h1004FF5E
-#define osfXK_Select &h1004FF60
-#define osfXK_Insert &h1004FF63
-#define osfXK_Undo &h1004FF65
-#define osfXK_Menu &h1004FF67
-#define osfXK_Cancel &h1004FF69
-#define osfXK_Help &h1004FF6A
-#define osfXK_SelectAll &h1004FF71
-#define osfXK_DeselectAll &h1004FF72
-#define osfXK_Reselect &h1004FF73
-#define osfXK_Extend &h1004FF74
-#define osfXK_Restore &h1004FF78
-#define osfXK_Delete &h1004FFFF
-#define XK_Reset &h1000FF6C
-#define XK_System &h1000FF6D
-#define XK_User &h1000FF6E
-#define XK_ClearLine &h1000FF6F
-#define XK_InsertLine &h1000FF70
-#define XK_DeleteLine &h1000FF71
-#define XK_InsertChar &h1000FF72
-#define XK_DeleteChar &h1000FF73
-#define XK_BackTab &h1000FF74
-#define XK_KP_BackTab &h1000FF75
-#define XK_Ext16bit_L &h1000FF76
-#define XK_Ext16bit_R &h1000FF77
-#define XK_mute_acute &h100000a8
-#define XK_mute_grave &h100000a9
-#define XK_mute_asciicircum &h100000aa
-#define XK_mute_diaeresis &h100000ab
-#define XK_mute_asciitilde &h100000ac
-#define XK_lira &h100000af
-#define XK_guilder &h10000&be
-#define XK_Ydiaeresis &h100000ee
-#define XK_IO &h100000ee
-#define XK_longminus &h100000f6
-#define XK_block &h100000fc
-
-#endif
+#define _HPKEYSYM
+const hpXK_ClearLine = &h1000FF6F
+const hpXK_InsertLine = &h1000FF70
+const hpXK_DeleteLine = &h1000FF71
+const hpXK_InsertChar = &h1000FF72
+const hpXK_DeleteChar = &h1000FF73
+const hpXK_BackTab = &h1000FF74
+const hpXK_KP_BackTab = &h1000FF75
+const hpXK_Modelock1 = &h1000FF48
+const hpXK_Modelock2 = &h1000FF49
+const hpXK_Reset = &h1000FF6C
+const hpXK_System = &h1000FF6D
+const hpXK_User = &h1000FF6E
+const hpXK_mute_acute = &h100000A8
+const hpXK_mute_grave = &h100000A9
+const hpXK_mute_asciicircum = &h100000AA
+const hpXK_mute_diaeresis = &h100000AB
+const hpXK_mute_asciitilde = &h100000AC
+const hpXK_lira = &h100000AF
+const hpXK_guilder = &h100000BE
+const hpXK_Ydiaeresis = &h100000EE
+const hpXK_IO = &h100000EE
+const hpXK_longminus = &h100000F6
+const hpXK_block = &h100000FC
+#define _OSF_Keysyms
+const osfXK_Copy = &h1004FF02
+const osfXK_Cut = &h1004FF03
+const osfXK_Paste = &h1004FF04
+const osfXK_BackTab = &h1004FF07
+const osfXK_BackSpace = &h1004FF08
+const osfXK_Clear = &h1004FF0B
+const osfXK_Escape = &h1004FF1B
+const osfXK_AddMode = &h1004FF31
+const osfXK_PrimaryPaste = &h1004FF32
+const osfXK_QuickPaste = &h1004FF33
+const osfXK_PageLeft = &h1004FF40
+const osfXK_PageUp = &h1004FF41
+const osfXK_PageDown = &h1004FF42
+const osfXK_PageRight = &h1004FF43
+const osfXK_Activate = &h1004FF44
+const osfXK_MenuBar = &h1004FF45
+const osfXK_Left = &h1004FF51
+const osfXK_Up = &h1004FF52
+const osfXK_Right = &h1004FF53
+const osfXK_Down = &h1004FF54
+const osfXK_EndLine = &h1004FF57
+const osfXK_BeginLine = &h1004FF58
+const osfXK_EndData = &h1004FF59
+const osfXK_BeginData = &h1004FF5A
+const osfXK_PrevMenu = &h1004FF5B
+const osfXK_NextMenu = &h1004FF5C
+const osfXK_PrevField = &h1004FF5D
+const osfXK_NextField = &h1004FF5E
+const osfXK_Select = &h1004FF60
+const osfXK_Insert = &h1004FF63
+const osfXK_Undo = &h1004FF65
+const osfXK_Menu = &h1004FF67
+const osfXK_Cancel = &h1004FF69
+const osfXK_Help = &h1004FF6A
+const osfXK_SelectAll = &h1004FF71
+const osfXK_DeselectAll = &h1004FF72
+const osfXK_Reselect = &h1004FF73
+const osfXK_Extend = &h1004FF74
+const osfXK_Restore = &h1004FF78
+const osfXK_Delete = &h1004FFFF
+const XK_Reset = &h1000FF6C
+const XK_System = &h1000FF6D
+const XK_User = &h1000FF6E
+const XK_ClearLine = &h1000FF6F
+const XK_InsertLine = &h1000FF70
+const XK_DeleteLine = &h1000FF71
+const XK_InsertChar = &h1000FF72
+const XK_DeleteChar = &h1000FF73
+const XK_BackTab = &h1000FF74
+const XK_KP_BackTab = &h1000FF75
+const XK_Ext16bit_L = &h1000FF76
+const XK_Ext16bit_R = &h1000FF77
+const XK_mute_acute = &h100000a8
+const XK_mute_grave = &h100000a9
+const XK_mute_asciicircum = &h100000aa
+const XK_mute_diaeresis = &h100000ab
+const XK_mute_asciitilde = &h100000ac
+const XK_lira = &h100000af
+const XK_guilder = &h100000be
+const XK_IO = &h100000ee
+const XK_longminus = &h100000f6
+const XK_block = &h100000fc

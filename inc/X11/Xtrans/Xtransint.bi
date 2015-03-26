@@ -1,67 +1,85 @@
-''
-''
-'' Xtransint -- header translated with help of SWIG FB wrapper
-''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
-''
-''
-#ifndef __Xtransint_bi__
-#define __Xtransint_bi__
+#pragma once
 
-#define XTRANSDEBUG 1
+#include once "Xtrans.bi"
+#include once "crt/errno.bi"
 
-type _XtransConnInfo
+#ifdef __FB_WIN32__
+	#include once "crt/limits.bi"
+#else
+	#include once "crt/sys/socket.bi"
+	#include once "crt/netinet/in.bi"
+	#include once "crt/arpa/inet.bi"
+#endif
+
+#include once "crt/stddef.bi"
+
+extern "C"
+
+#define _XTRANSINT_H_
+
+#ifdef __FB_WIN32__
+	#define _WILLWINSOCK_
+	#define ESET(val) WSASetLastError(val)
+	#define EGET() WSAGetLastError()
+#else
+	#define ESET(val) scope : errno = val : end scope
+	#define EGET() errno
+#endif
+
+type _Xtransport as _Xtransport_
+type _XtransConnFd as _XtransConnFd_
+
+type _XtransConnInfo_
 	transptr as _Xtransport ptr
-	index as integer
+	index as long
 	priv as zstring ptr
-	flags as integer
-	fd as integer
+	flags as long
+	fd as long
 	port as zstring ptr
-	family as integer
+	family as long
 	addr as zstring ptr
-	addrlen as integer
+	addrlen as long
 	peeraddr as zstring ptr
-	peeraddrlen as integer
+	peeraddrlen as long
+	recv_fds as _XtransConnFd ptr
+	send_fds as _XtransConnFd ptr
 end type
 
-#define XTRANS_OPEN_COTS_CLIENT 1
-#define XTRANS_OPEN_COTS_SERVER 2
-#define XTRANS_OPEN_CLTS_CLIENT 3
-#define XTRANS_OPEN_CLTS_SERVER 4
+const XTRANS_OPEN_COTS_CLIENT = 1
+const XTRANS_OPEN_COTS_SERVER = 2
+const XTRANS_OPEN_CLTS_CLIENT = 3
+const XTRANS_OPEN_CLTS_SERVER = 4
 
-type _Xtransport
-	TransName as zstring ptr
-	flags as integer
-	SetOption as function cdecl(byval as XtransConnInfo, byval as integer, byval as integer) as integer
-	BytesReadable as function cdecl(byval as XtransConnInfo, byval as BytesReadable_t ptr) as integer
-	Read as function cdecl(byval as XtransConnInfo, byval as zstring ptr, byval as integer) as integer
-	Write as function cdecl(byval as XtransConnInfo, byval as zstring ptr, byval as integer) as integer
-	Readv as function cdecl(byval as XtransConnInfo, byval as iovec ptr, byval as integer) as integer
-	Writev as function cdecl(byval as XtransConnInfo, byval as iovec ptr, byval as integer) as integer
-	Disconnect as function cdecl(byval as XtransConnInfo) as integer
-	Close as function cdecl(byval as XtransConnInfo) as integer
-	CloseForCloning as function cdecl(byval as XtransConnInfo) as integer
+type _Xtransport_
+	TransName as const zstring ptr
+	flags as long
+	SetOption as function(byval as XtransConnInfo, byval as long, byval as long) as long
+	BytesReadable as function(byval as XtransConnInfo, byval as BytesReadable_t ptr) as long
+	Read as function(byval as XtransConnInfo, byval as zstring ptr, byval as long) as long
+	Write as function(byval as XtransConnInfo, byval as zstring ptr, byval as long) as long
+	Readv as function(byval as XtransConnInfo, byval as iovec ptr, byval as long) as long
+	Writev as function(byval as XtransConnInfo, byval as iovec ptr, byval as long) as long
+	Disconnect as function(byval as XtransConnInfo) as long
+	Close as function(byval as XtransConnInfo) as long
+	CloseForCloning as function(byval as XtransConnInfo) as long
 end type
 
 type Xtransport as _Xtransport
 
 type _Xtransport_table
 	transport as Xtransport ptr
-	transport_id as integer
+	transport_id as long
 end type
 
 type Xtransport_table as _Xtransport_table
+const TRANS_ALIAS = 1 shl 0
+const TRANS_LOCAL = 1 shl 1
+const TRANS_DISABLED = 1 shl 2
+const TRANS_NOLISTEN = 1 shl 3
+const TRANS_NOUNLINK = 1 shl 4
+const TRANS_ABSTRACT = 1 shl 5
+const TRANS_NOXAUTH = 1 shl 6
+const TRANS_RECEIVED = 1 shl 7
+#define TRANS_KEEPFLAGS (TRANS_NOUNLINK or TRANS_ABSTRACT)
 
-#define TRANS_ALIAS (1 shl 0)
-#define TRANS_LOCAL (1 shl 1)
-#define TRANS_DISABLED (1 shl 2)
-#define TRANS_NOLISTEN (1 shl 3)
-#define TRANS_NOUNLINK (1 shl 4)
-#define TRANS_ABSTRACT (1 shl 5)
-#define TRANS_NOXAUTH (1 shl 6)
-#define TRANS_KEEPFLAGS ((1 shl 4) or (1 shl 5))
-
-declare function is_numeric cdecl alias "is_numeric" (byval as zstring ptr) as integer
-
-#endif
+end extern

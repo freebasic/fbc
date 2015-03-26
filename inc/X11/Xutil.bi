@@ -1,90 +1,98 @@
-''
-''
-'' Xutil -- header translated with help of SWIG FB wrapper
-''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
-''
-''
-#ifndef __Xutil_bi__
-#define __Xutil_bi__
+#pragma once
 
-#define NoValue &h0000
-#define XValue &h0001
-#define YValue &h0002
-#define WidthValue &h0004
-#define HeightValue &h0008
-#define AllValues &h000F
-#define XNegative &h0010
-#define YNegative &h0020
+#include once "crt/long.bi"
+#include once "X11/Xlib.bi"
+#include once "X11/keysym.bi"
 
-type XSizeHints
-	flags as integer
-	x as integer
-	y as integer
-	width as integer
-	height as integer
-	min_width as integer
-	min_height as integer
-	max_width as integer
-	max_height as integer
-	width_inc as integer
-	height_inc as integer
-	win_gravity as integer
+extern "C"
+
+#define _X11_XUTIL_H_
+const NoValue = &h0000
+const XValue = &h0001
+const YValue = &h0002
+const WidthValue = &h0004
+const HeightValue = &h0008
+const AllValues = &h000F
+const XNegative = &h0010
+const YNegative = &h0020
+
+type XSizeHints_min_aspect
+	x as long
+	y as long
 end type
 
-#define USPosition (1L shl 0)
-#define USSize (1L shl 1)
-#define PPosition (1L shl 2)
-#define PSize (1L shl 3)
-#define PMinSize (1L shl 4)
-#define PMaxSize (1L shl 5)
-#define PResizeInc (1L shl 6)
-#define PAspect (1L shl 7)
-#define PBaseSize (1L shl 8)
-#define PWinGravity (1L shl 9)
-#define PAllHints ((1L shl 2) or (1L shl 3) or (1L shl 4) or (1L shl 5) or (1L shl 6) or (1L shl 7))
+type XSizeHints
+	flags as clong
+	x as long
+	y as long
+	width as long
+	height as long
+	min_width as long
+	min_height as long
+	max_width as long
+	max_height as long
+	width_inc as long
+	height_inc as long
+	min_aspect as XSizeHints_min_aspect
+	max_aspect as XSizeHints_min_aspect
+	base_width as long
+	base_height as long
+	win_gravity as long
+end type
+
+const USPosition = cast(clong, 1) shl 0
+const USSize = cast(clong, 1) shl 1
+const PPosition = cast(clong, 1) shl 2
+const PSize = cast(clong, 1) shl 3
+const PMinSize = cast(clong, 1) shl 4
+const PMaxSize = cast(clong, 1) shl 5
+const PResizeInc = cast(clong, 1) shl 6
+const PAspect = cast(clong, 1) shl 7
+const PBaseSize = cast(clong, 1) shl 8
+const PWinGravity = cast(clong, 1) shl 9
+#define PAllHints (((((PPosition or PSize) or PMinSize) or PMaxSize) or PResizeInc) or PAspect)
 
 type XWMHints
-	flags as integer
-	input as Bool
-	initial_state as integer
+	flags as clong
+	input as long
+	initial_state as long
 	icon_pixmap as Pixmap
 	icon_window as Window
-	icon_x as integer
-	icon_y as integer
+	icon_x as long
+	icon_y as long
 	icon_mask as Pixmap
 	window_group as XID
 end type
 
-#define InputHint (1L shl 0)
-#define StateHint (1L shl 1)
-#define IconPixmapHint (1L shl 2)
-#define IconWindowHint (1L shl 3)
-#define IconPositionHint (1L shl 4)
-#define IconMaskHint (1L shl 5)
-#define WindowGroupHint (1L shl 6)
-#define AllHints ((1L shl 0) or (1L shl 1) or (1L shl 2) or (1L shl 3) or (1L shl 4) or (1L shl 5) or (1L shl 6))
-#define XUrgencyHint (1L shl 8)
-#define WithdrawnState 0
-#define NormalState 1
-#define IconicState 3
-#define DontCareState 0
-#define ZoomState 2
-#define InactiveState 4
+const InputHint = cast(clong, 1) shl 0
+const StateHint = cast(clong, 1) shl 1
+const IconPixmapHint = cast(clong, 1) shl 2
+const IconWindowHint = cast(clong, 1) shl 3
+const IconPositionHint = cast(clong, 1) shl 4
+const IconMaskHint = cast(clong, 1) shl 5
+const WindowGroupHint = cast(clong, 1) shl 6
+#define AllHints ((((((InputHint or StateHint) or IconPixmapHint) or IconWindowHint) or IconPositionHint) or IconMaskHint) or WindowGroupHint)
+const XUrgencyHint = cast(clong, 1) shl 8
+const WithdrawnState = 0
+const NormalState = 1
+const IconicState = 3
+const DontCareState = 0
+const ZoomState = 2
+const InactiveState = 4
 
 type XTextProperty
 	value as ubyte ptr
-	encoding as Atom
-	format as integer
-	nitems as uinteger
+	encoding as XAtom
+	format as long
+	nitems as culong
 end type
 
-#define XNoMemory -1
-#define XLocaleNotSupported -2
-#define XConverterNotFound -3
+const XNoMemory = -1
+const XLocaleNotSupported = -2
+const XConverterNotFound = -3
 
-enum XICCEncodingStyle
+type XICCEncodingStyle as long
+enum
 	XStringStyle
 	XCompoundTextStyle
 	XTextStyle
@@ -92,14 +100,13 @@ enum XICCEncodingStyle
 	XUTF8StringStyle
 end enum
 
-
 type XIconSize
-	min_width as integer
-	min_height as integer
-	max_width as integer
-	max_height as integer
-	width_inc as integer
-	height_inc as integer
+	min_width as long
+	min_height as long
+	max_width as long
+	max_height as long
+	width_inc as long
+	height_inc as long
 end type
 
 type XClassHint
@@ -107,131 +114,150 @@ type XClassHint
 	res_class as zstring ptr
 end type
 
+#define XDestroyImage(ximage) ((ximage)->f.destroy_image((ximage)))
+#define XGetPixel(ximage, x, y) ((ximage)->f.get_pixel((ximage), (x), (y)))
+#define XPutPixel(ximage, x, y, pixel) ((ximage)->f.put_pixel((ximage), (x), (y), (pixel)))
+#define XSubImage(ximage, x, y, width, height) ((ximage)->f.sub_image((ximage), (x), (y), (width), (height)))
+#define XAddPixel(ximage, value) ((ximage)->f.add_pixel((ximage), (value)))
+
 type _XComposeStatus
 	compose_ptr as XPointer
-	chars_matched as integer
+	chars_matched as long
 end type
 
 type XComposeStatus as _XComposeStatus
+#define IsKeypadKey(keysym) ((cast(KeySym, (keysym)) >= XK_KP_Space) andalso (cast(KeySym, (keysym)) <= XK_KP_Equal))
+#define IsPrivateKeypadKey(keysym) ((cast(KeySym, (keysym)) >= &h11000000) andalso (cast(KeySym, (keysym)) <= &h1100FFFF))
+#define IsCursorKey(keysym) ((cast(KeySym, (keysym)) >= XK_Home) andalso (cast(KeySym, (keysym)) < XK_Select))
+#define IsPFKey(keysym) ((cast(KeySym, (keysym)) >= XK_KP_F1) andalso (cast(KeySym, (keysym)) <= XK_KP_F4))
+#define IsFunctionKey(keysym) ((cast(KeySym, (keysym)) >= XK_F1) andalso (cast(KeySym, (keysym)) <= XK_F35))
+#define IsMiscFunctionKey(keysym) ((cast(KeySym, (keysym)) >= XK_Select) andalso (cast(KeySym, (keysym)) <= XK_Break))
+#define IsModifierKey(keysym) (((((cast(KeySym, (keysym)) >= XK_Shift_L) andalso (cast(KeySym, (keysym)) <= XK_Hyper_R)) orelse ((cast(KeySym, (keysym)) >= XK_ISO_Lock) andalso (cast(KeySym, (keysym)) <= XK_ISO_Level5_Lock))) orelse (cast(KeySym, (keysym)) = XK_Mode_switch)) orelse (cast(KeySym, (keysym)) = XK_Num_Lock))
 type Region as _XRegion ptr
-
-#define RectangleOut 0
-#define RectangleIn 1
-#define RectanglePart 2
+const RectangleOut = 0
+const RectangleIn = 1
+const RectanglePart = 2
 
 type XVisualInfo
 	visual as Visual ptr
 	visualid as VisualID
-	screen as integer
-	depth as integer
-	class as integer
-	red_mask as uinteger
-	green_mask as uinteger
-	blue_mask as uinteger
-	colormap_size as integer
-	bits_per_rgb as integer
+	screen as long
+	depth as long
+	class as long
+	red_mask as culong
+	green_mask as culong
+	blue_mask as culong
+	colormap_size as long
+	bits_per_rgb as long
 end type
 
-#define VisualNoMask &h0
-#define VisualIDMask &h1
-#define VisualScreenMask &h2
-#define VisualDepthMask &h4
-#define VisualClassMask &h8
-#define VisualRedMaskMask &h10
-#define VisualGreenMaskMask &h20
-#define VisualBlueMaskMask &h40
-#define VisualColormapSizeMask &h80
-#define VisualBitsPerRGBMask &h100
-#define VisualAllMask &h1FF
+const VisualNoMask = &h0
+const VisualIDMask = &h1
+const VisualScreenMask = &h2
+const VisualDepthMask = &h4
+const VisualClassMask = &h8
+const VisualRedMaskMask = &h10
+const VisualGreenMaskMask = &h20
+const VisualBlueMaskMask = &h40
+const VisualColormapSizeMask = &h80
+const VisualBitsPerRGBMask = &h100
+const VisualAllMask = &h1FF
 
 type XStandardColormap
 	colormap as Colormap
-	red_max as uinteger
-	red_mult as uinteger
-	green_max as uinteger
-	green_mult as uinteger
-	blue_max as uinteger
-	blue_mult as uinteger
-	base_pixel as uinteger
+	red_max as culong
+	red_mult as culong
+	green_max as culong
+	green_mult as culong
+	blue_max as culong
+	blue_mult as culong
+	base_pixel as culong
 	visualid as VisualID
 	killid as XID
 end type
 
-#define BitmapSuccess 0
-#define BitmapOpenFailed 1
-#define BitmapFileInvalid 2
-#define BitmapNoMemory 3
-#define XCSUCCESS 0
-#define XCNOMEM 1
-#define XCNOENT 2
+#define ReleaseByFreeingColormap cast(XID, cast(clong, 1))
+const BitmapSuccess = 0
+const BitmapOpenFailed = 1
+const BitmapFileInvalid = 2
+const BitmapNoMemory = 3
+const XCSUCCESS = 0
+const XCNOMEM = 1
+const XCNOENT = 2
+type XContext as long
+#define XUniqueContext() cast(XContext, XrmUniqueQuark())
+#define XStringToContext(string) cast(XContext, XrmStringToQuark(string))
 
-type XContext as integer
+declare function XAllocClassHint() as XClassHint ptr
+declare function XAllocIconSize() as XIconSize ptr
+declare function XAllocSizeHints() as XSizeHints ptr
+declare function XAllocStandardColormap() as XStandardColormap ptr
+declare function XAllocWMHints() as XWMHints ptr
+declare function XClipBox(byval as Region, byval as XRectangle ptr) as long
+declare function XCreateRegion() as Region
+declare function XDefaultString() as const zstring ptr
+declare function XDeleteContext(byval as Display ptr, byval as XID, byval as XContext) as long
+declare function XDestroyRegion(byval as Region) as long
+declare function XEmptyRegion(byval as Region) as long
+declare function XEqualRegion(byval as Region, byval as Region) as long
+declare function XFindContext(byval as Display ptr, byval as XID, byval as XContext, byval as XPointer ptr) as long
+declare function XGetClassHint(byval as Display ptr, byval as Window, byval as XClassHint ptr) as long
+declare function XGetIconSizes(byval as Display ptr, byval as Window, byval as XIconSize ptr ptr, byval as long ptr) as long
+declare function XGetNormalHints(byval as Display ptr, byval as Window, byval as XSizeHints ptr) as long
+declare function XGetRGBColormaps(byval as Display ptr, byval as Window, byval as XStandardColormap ptr ptr, byval as long ptr, byval as XAtom) as long
+declare function XGetSizeHints(byval as Display ptr, byval as Window, byval as XSizeHints ptr, byval as XAtom) as long
+declare function XGetStandardColormap(byval as Display ptr, byval as Window, byval as XStandardColormap ptr, byval as XAtom) as long
+declare function XGetTextProperty(byval as Display ptr, byval as Window, byval as XTextProperty ptr, byval as XAtom) as long
+declare function XGetVisualInfo(byval as Display ptr, byval as clong, byval as XVisualInfo ptr, byval as long ptr) as XVisualInfo ptr
+declare function XGetWMClientMachine(byval as Display ptr, byval as Window, byval as XTextProperty ptr) as long
+declare function XGetWMHints(byval as Display ptr, byval as Window) as XWMHints ptr
+declare function XGetWMIconName(byval as Display ptr, byval as Window, byval as XTextProperty ptr) as long
+declare function XGetWMName(byval as Display ptr, byval as Window, byval as XTextProperty ptr) as long
+declare function XGetWMNormalHints(byval as Display ptr, byval as Window, byval as XSizeHints ptr, byval as clong ptr) as long
+declare function XGetWMSizeHints(byval as Display ptr, byval as Window, byval as XSizeHints ptr, byval as clong ptr, byval as XAtom) as long
+declare function XGetZoomHints(byval as Display ptr, byval as Window, byval as XSizeHints ptr) as long
+declare function XIntersectRegion(byval as Region, byval as Region, byval as Region) as long
+declare sub XConvertCase(byval as KeySym, byval as KeySym ptr, byval as KeySym ptr)
+declare function XLookupString(byval as XKeyEvent ptr, byval as zstring ptr, byval as long, byval as KeySym ptr, byval as XComposeStatus ptr) as long
+declare function XMatchVisualInfo(byval as Display ptr, byval as long, byval as long, byval as long, byval as XVisualInfo ptr) as long
+declare function XOffsetRegion(byval as Region, byval as long, byval as long) as long
+declare function XPointInRegion(byval as Region, byval as long, byval as long) as long
+declare function XPolygonRegion(byval as XPoint ptr, byval as long, byval as long) as Region
+declare function XRectInRegion(byval as Region, byval as long, byval as long, byval as ulong, byval as ulong) as long
+declare function XSaveContext(byval as Display ptr, byval as XID, byval as XContext, byval as const zstring ptr) as long
+declare function XSetClassHint(byval as Display ptr, byval as Window, byval as XClassHint ptr) as long
+declare function XSetIconSizes(byval as Display ptr, byval as Window, byval as XIconSize ptr, byval as long) as long
+declare function XSetNormalHints(byval as Display ptr, byval as Window, byval as XSizeHints ptr) as long
+declare sub XSetRGBColormaps(byval as Display ptr, byval as Window, byval as XStandardColormap ptr, byval as long, byval as XAtom)
+declare function XSetSizeHints(byval as Display ptr, byval as Window, byval as XSizeHints ptr, byval as XAtom) as long
+declare function XSetStandardProperties(byval as Display ptr, byval as Window, byval as const zstring ptr, byval as const zstring ptr, byval as Pixmap, byval as zstring ptr ptr, byval as long, byval as XSizeHints ptr) as long
+declare sub XSetTextProperty(byval as Display ptr, byval as Window, byval as XTextProperty ptr, byval as XAtom)
+declare sub XSetWMClientMachine(byval as Display ptr, byval as Window, byval as XTextProperty ptr)
+declare function XSetWMHints(byval as Display ptr, byval as Window, byval as XWMHints ptr) as long
+declare sub XSetWMIconName(byval as Display ptr, byval as Window, byval as XTextProperty ptr)
+declare sub XSetWMName(byval as Display ptr, byval as Window, byval as XTextProperty ptr)
+declare sub XSetWMNormalHints(byval as Display ptr, byval as Window, byval as XSizeHints ptr)
+declare sub XSetWMProperties(byval as Display ptr, byval as Window, byval as XTextProperty ptr, byval as XTextProperty ptr, byval as zstring ptr ptr, byval as long, byval as XSizeHints ptr, byval as XWMHints ptr, byval as XClassHint ptr)
+declare sub XmbSetWMProperties(byval as Display ptr, byval as Window, byval as const zstring ptr, byval as const zstring ptr, byval as zstring ptr ptr, byval as long, byval as XSizeHints ptr, byval as XWMHints ptr, byval as XClassHint ptr)
+declare sub Xutf8SetWMProperties(byval as Display ptr, byval as Window, byval as const zstring ptr, byval as const zstring ptr, byval as zstring ptr ptr, byval as long, byval as XSizeHints ptr, byval as XWMHints ptr, byval as XClassHint ptr)
+declare sub XSetWMSizeHints(byval as Display ptr, byval as Window, byval as XSizeHints ptr, byval as XAtom)
+declare function XSetRegion(byval as Display ptr, byval as GC, byval as Region) as long
+declare sub XSetStandardColormap(byval as Display ptr, byval as Window, byval as XStandardColormap ptr, byval as XAtom)
+declare function XSetZoomHints(byval as Display ptr, byval as Window, byval as XSizeHints ptr) as long
+declare function XShrinkRegion(byval as Region, byval as long, byval as long) as long
+declare function XStringListToTextProperty(byval as zstring ptr ptr, byval as long, byval as XTextProperty ptr) as long
+declare function XSubtractRegion(byval as Region, byval as Region, byval as Region) as long
+declare function XmbTextListToTextProperty(byval display as Display ptr, byval list as zstring ptr ptr, byval count as long, byval style as XICCEncodingStyle, byval text_prop_return as XTextProperty ptr) as long
+declare function XwcTextListToTextProperty(byval display as Display ptr, byval list as wstring ptr ptr, byval count as long, byval style as XICCEncodingStyle, byval text_prop_return as XTextProperty ptr) as long
+declare function Xutf8TextListToTextProperty(byval display as Display ptr, byval list as zstring ptr ptr, byval count as long, byval style as XICCEncodingStyle, byval text_prop_return as XTextProperty ptr) as long
+declare sub XwcFreeStringList(byval list as wstring ptr ptr)
+declare function XTextPropertyToStringList(byval as XTextProperty ptr, byval as zstring ptr ptr ptr, byval as long ptr) as long
+declare function XmbTextPropertyToTextList(byval display as Display ptr, byval text_prop as const XTextProperty ptr, byval list_return as zstring ptr ptr ptr, byval count_return as long ptr) as long
+declare function XwcTextPropertyToTextList(byval display as Display ptr, byval text_prop as const XTextProperty ptr, byval list_return as wstring ptr ptr ptr, byval count_return as long ptr) as long
+declare function Xutf8TextPropertyToTextList(byval display as Display ptr, byval text_prop as const XTextProperty ptr, byval list_return as zstring ptr ptr ptr, byval count_return as long ptr) as long
+declare function XUnionRectWithRegion(byval as XRectangle ptr, byval as Region, byval as Region) as long
+declare function XUnionRegion(byval as Region, byval as Region, byval as Region) as long
+declare function XWMGeometry(byval as Display ptr, byval as long, byval as const zstring ptr, byval as const zstring ptr, byval as ulong, byval as XSizeHints ptr, byval as long ptr, byval as long ptr, byval as long ptr, byval as long ptr, byval as long ptr) as long
+declare function XXorRegion(byval as Region, byval as Region, byval as Region) as long
 
-declare function XAllocClassHint cdecl alias "XAllocClassHint" () as XClassHint ptr
-declare function XAllocIconSize cdecl alias "XAllocIconSize" () as XIconSize ptr
-declare function XAllocSizeHints cdecl alias "XAllocSizeHints" () as XSizeHints ptr
-declare function XAllocStandardColormap cdecl alias "XAllocStandardColormap" () as XStandardColormap ptr
-declare function XAllocWMHints cdecl alias "XAllocWMHints" () as XWMHints ptr
-declare function XClipBox cdecl alias "XClipBox" (byval as Region, byval as XRectangle ptr) as integer
-declare function XCreateRegion cdecl alias "XCreateRegion" () as Region
-declare function XDefaultString cdecl alias "XDefaultString" () as zstring ptr
-declare function XDeleteContext cdecl alias "XDeleteContext" (byval as Display ptr, byval as XID, byval as XContext) as integer
-declare function XDestroyRegion cdecl alias "XDestroyRegion" (byval as Region) as integer
-declare function XEmptyRegion cdecl alias "XEmptyRegion" (byval as Region) as integer
-declare function XEqualRegion cdecl alias "XEqualRegion" (byval as Region, byval as Region) as integer
-declare function XFindContext cdecl alias "XFindContext" (byval as Display ptr, byval as XID, byval as XContext, byval as XPointer ptr) as integer
-declare function XGetClassHint cdecl alias "XGetClassHint" (byval as Display ptr, byval as Window, byval as XClassHint ptr) as Status
-declare function XGetIconSizes cdecl alias "XGetIconSizes" (byval as Display ptr, byval as Window, byval as XIconSize ptr ptr, byval as integer ptr) as Status
-declare function XGetNormalHints cdecl alias "XGetNormalHints" (byval as Display ptr, byval as Window, byval as XSizeHints ptr) as Status
-declare function XGetRGBColormaps cdecl alias "XGetRGBColormaps" (byval as Display ptr, byval as Window, byval as XStandardColormap ptr ptr, byval as integer ptr, byval as Atom) as Status
-declare function XGetSizeHints cdecl alias "XGetSizeHints" (byval as Display ptr, byval as Window, byval as XSizeHints ptr, byval as Atom) as Status
-declare function XGetStandardColormap cdecl alias "XGetStandardColormap" (byval as Display ptr, byval as Window, byval as XStandardColormap ptr, byval as Atom) as Status
-declare function XGetTextProperty cdecl alias "XGetTextProperty" (byval as Display ptr, byval as Window, byval as XTextProperty ptr, byval as Atom) as Status
-declare function XGetVisualInfo cdecl alias "XGetVisualInfo" (byval as Display ptr, byval as integer, byval as XVisualInfo ptr, byval as integer ptr) as XVisualInfo ptr
-declare function XGetWMClientMachine cdecl alias "XGetWMClientMachine" (byval as Display ptr, byval as Window, byval as XTextProperty ptr) as Status
-declare function XGetWMHints cdecl alias "XGetWMHints" (byval as Display ptr, byval as Window) as XWMHints ptr
-declare function XGetWMIconName cdecl alias "XGetWMIconName" (byval as Display ptr, byval as Window, byval as XTextProperty ptr) as Status
-declare function XGetWMName cdecl alias "XGetWMName" (byval as Display ptr, byval as Window, byval as XTextProperty ptr) as Status
-declare function XGetWMNormalHints cdecl alias "XGetWMNormalHints" (byval as Display ptr, byval as Window, byval as XSizeHints ptr, byval as integer ptr) as Status
-declare function XGetWMSizeHints cdecl alias "XGetWMSizeHints" (byval as Display ptr, byval as Window, byval as XSizeHints ptr, byval as integer ptr, byval as Atom) as Status
-declare function XGetZoomHints cdecl alias "XGetZoomHints" (byval as Display ptr, byval as Window, byval as XSizeHints ptr) as Status
-declare function XIntersectRegion cdecl alias "XIntersectRegion" (byval as Region, byval as Region, byval as Region) as integer
-declare sub XConvertCase cdecl alias "XConvertCase" (byval as KeySym, byval as KeySym ptr, byval as KeySym ptr)
-declare function XLookupString cdecl alias "XLookupString" (byval as XKeyEvent ptr, byval as zstring ptr, byval as integer, byval as KeySym ptr, byval as XComposeStatus ptr) as integer
-declare function XMatchVisualInfo cdecl alias "XMatchVisualInfo" (byval as Display ptr, byval as integer, byval as integer, byval as integer, byval as XVisualInfo ptr) as Status
-declare function XOffsetRegion cdecl alias "XOffsetRegion" (byval as Region, byval as integer, byval as integer) as integer
-declare function XPointInRegion cdecl alias "XPointInRegion" (byval as Region, byval as integer, byval as integer) as Bool
-declare function XPolygonRegion cdecl alias "XPolygonRegion" (byval as XPoint ptr, byval as integer, byval as integer) as Region
-declare function XRectInRegion cdecl alias "XRectInRegion" (byval as Region, byval as integer, byval as integer, byval as uinteger, byval as uinteger) as integer
-declare function XSetClassHint cdecl alias "XSetClassHint" (byval as Display ptr, byval as Window, byval as XClassHint ptr) as integer
-declare function XSetIconSizes cdecl alias "XSetIconSizes" (byval as Display ptr, byval as Window, byval as XIconSize ptr, byval as integer) as integer
-declare function XSetNormalHints cdecl alias "XSetNormalHints" (byval as Display ptr, byval as Window, byval as XSizeHints ptr) as integer
-declare sub XSetRGBColormaps cdecl alias "XSetRGBColormaps" (byval as Display ptr, byval as Window, byval as XStandardColormap ptr, byval as integer, byval as Atom)
-declare function XSetSizeHints cdecl alias "XSetSizeHints" (byval as Display ptr, byval as Window, byval as XSizeHints ptr, byval as Atom) as integer
-declare sub XSetTextProperty cdecl alias "XSetTextProperty" (byval as Display ptr, byval as Window, byval as XTextProperty ptr, byval as Atom)
-declare sub XSetWMClientMachine cdecl alias "XSetWMClientMachine" (byval as Display ptr, byval as Window, byval as XTextProperty ptr)
-declare function XSetWMHints cdecl alias "XSetWMHints" (byval as Display ptr, byval as Window, byval as XWMHints ptr) as integer
-declare sub XSetWMIconName cdecl alias "XSetWMIconName" (byval as Display ptr, byval as Window, byval as XTextProperty ptr)
-declare sub XSetWMName cdecl alias "XSetWMName" (byval as Display ptr, byval as Window, byval as XTextProperty ptr)
-declare sub XSetWMNormalHints cdecl alias "XSetWMNormalHints" (byval as Display ptr, byval as Window, byval as XSizeHints ptr)
-declare sub XSetWMProperties cdecl alias "XSetWMProperties" (byval as Display ptr, byval as Window, byval as XTextProperty ptr, byval as XTextProperty ptr, byval as byte ptr ptr, byval as integer, byval as XSizeHints ptr, byval as XWMHints ptr, byval as XClassHint ptr)
-declare sub XSetWMSizeHints cdecl alias "XSetWMSizeHints" (byval as Display ptr, byval as Window, byval as XSizeHints ptr, byval as Atom)
-declare function XSetRegion cdecl alias "XSetRegion" (byval as Display ptr, byval as GC, byval as Region) as integer
-declare sub XSetStandardColormap cdecl alias "XSetStandardColormap" (byval as Display ptr, byval as Window, byval as XStandardColormap ptr, byval as Atom)
-declare function XSetZoomHints cdecl alias "XSetZoomHints" (byval as Display ptr, byval as Window, byval as XSizeHints ptr) as integer
-declare function XShrinkRegion cdecl alias "XShrinkRegion" (byval as Region, byval as integer, byval as integer) as integer
-declare function XStringListToTextProperty cdecl alias "XStringListToTextProperty" (byval as byte ptr ptr, byval as integer, byval as XTextProperty ptr) as Status
-declare function XSubtractRegion cdecl alias "XSubtractRegion" (byval as Region, byval as Region, byval as Region) as integer
-declare function XmbTextListToTextProperty cdecl alias "XmbTextListToTextProperty" (byval display as Display ptr, byval list as byte ptr ptr, byval count as integer, byval style as XICCEncodingStyle, byval text_prop_return as XTextProperty ptr) as integer
-declare function XwcTextListToTextProperty cdecl alias "XwcTextListToTextProperty" (byval display as Display ptr, byval list as wchar_t ptr ptr, byval count as integer, byval style as XICCEncodingStyle, byval text_prop_return as XTextProperty ptr) as integer
-declare function Xutf8TextListToTextProperty cdecl alias "Xutf8TextListToTextProperty" (byval display as Display ptr, byval list as byte ptr ptr, byval count as integer, byval style as XICCEncodingStyle, byval text_prop_return as XTextProperty ptr) as integer
-declare sub XwcFreeStringList cdecl alias "XwcFreeStringList" (byval list as wchar_t ptr ptr)
-declare function XTextPropertyToStringList cdecl alias "XTextPropertyToStringList" (byval as XTextProperty ptr, byval as byte ptr ptr ptr, byval as integer ptr) as Status
-declare function XmbTextPropertyToTextList cdecl alias "XmbTextPropertyToTextList" (byval display as Display ptr, byval text_prop as XTextProperty ptr, byval list_return as byte ptr ptr ptr, byval count_return as integer ptr) as integer
-declare function XwcTextPropertyToTextList cdecl alias "XwcTextPropertyToTextList" (byval display as Display ptr, byval text_prop as XTextProperty ptr, byval list_return as wchar_t ptr ptr ptr, byval count_return as integer ptr) as integer
-declare function Xutf8TextPropertyToTextList cdecl alias "Xutf8TextPropertyToTextList" (byval display as Display ptr, byval text_prop as XTextProperty ptr, byval list_return as byte ptr ptr ptr, byval count_return as integer ptr) as integer
-declare function XUnionRectWithRegion cdecl alias "XUnionRectWithRegion" (byval as XRectangle ptr, byval as Region, byval as Region) as integer
-declare function XUnionRegion cdecl alias "XUnionRegion" (byval as Region, byval as Region, byval as Region) as integer
-declare function XXorRegion cdecl alias "XXorRegion" (byval as Region, byval as Region, byval as Region) as integer
-
-#endif
+end extern
