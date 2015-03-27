@@ -1,111 +1,114 @@
-''
-''
-'' SDL_net -- header translated with help of SWIG FB wrapper
-''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
-''
-''
-#ifndef __SDL_net_bi__
-#define __SDL_net_bi__
+#pragma once
 
 #inclib "SDL_net"
 
 #ifdef __FB_WIN32__
-#inclib "ws2_32"
-#inclib "iphlpapi"
+	#inclib "ws2_32"
+	#inclib "iphlpapi"
 #endif
 
 #include once "SDL.bi"
-#include once "SDL_endian.bi"
-#include once "begin_code.bi"
+
+'' The following symbols have been renamed:
+''     procedure SDLNet_Write16 => SDLNet_Write16_
+''     procedure SDLNet_Write32 => SDLNet_Write32_
+''     procedure SDLNet_Read16 => SDLNet_Read16_
+''     procedure SDLNet_Read32 => SDLNet_Read32_
+
+extern "C"
+
+#define _SDL_NET_H
+const SDL_NET_MAJOR_VERSION = 1
+const SDL_NET_MINOR_VERSION = 2
+const SDL_NET_PATCHLEVEL = 8
+#macro SDL_NET_VERSION(X)
+	scope
+		(X)->major = SDL_NET_MAJOR_VERSION
+		(X)->minor = SDL_NET_MINOR_VERSION
+		(X)->patch = SDL_NET_PATCHLEVEL
+	end scope
+#endmacro
+
+declare function SDLNet_Linked_Version() as const SDL_version ptr
+declare function SDLNet_Init() as long
+declare sub SDLNet_Quit()
 
 type IPaddress
 	host as Uint32
 	port as Uint16
 end type
 
-#ifndef INADDR_ANY
-# define INADDR_ANY	&h00000000
-#endif
-#ifndef INADDR_NONE
-# define INADDR_NONE &hFFFFFFFF
-#endif
-#ifndef INADDR_BROADCAST
-# define INADDR_BROADCAST &hFFFFFFFF
-#endif
+const INADDR_ANY = &h00000000
+const INADDR_NONE = &hFFFFFFFF
+const INADDR_LOOPBACK = &h7f000001
+const INADDR_BROADCAST = &hFFFFFFFF
 
+declare function SDLNet_ResolveHost(byval address as IPaddress ptr, byval host as const zstring ptr, byval port as Uint16) as long
+declare function SDLNet_ResolveIP(byval ip as const IPaddress ptr) as const zstring ptr
+declare function SDLNet_GetLocalAddresses(byval addresses as IPaddress ptr, byval maxcount as long) as long
 type TCPsocket as _TCPsocket ptr
-
-#define SDLNET_MAX_UDPCHANNELS 32
-#define SDLNET_MAX_UDPADDRESSES 4
-
+declare function SDLNet_TCP_Open(byval ip as IPaddress ptr) as TCPsocket
+declare function SDLNet_TCP_Accept(byval server as TCPsocket) as TCPsocket
+declare function SDLNet_TCP_GetPeerAddress(byval sock as TCPsocket) as IPaddress ptr
+declare function SDLNet_TCP_Send(byval sock as TCPsocket, byval data as const any ptr, byval len as long) as long
+declare function SDLNet_TCP_Recv(byval sock as TCPsocket, byval data as any ptr, byval maxlen as long) as long
+declare sub SDLNet_TCP_Close(byval sock as TCPsocket)
+const SDLNET_MAX_UDPCHANNELS = 32
+const SDLNET_MAX_UDPADDRESSES = 4
 type UDPsocket as _UDPsocket ptr
 
 type UDPpacket
-	channel as integer
+	channel as long
 	data as Uint8 ptr
-	len as integer
-	maxlen as integer
-	status as integer
+	len as long
+	maxlen as long
+	status as long
 	address as IPaddress
 end type
 
+declare function SDLNet_AllocPacket(byval size as long) as UDPpacket ptr
+declare function SDLNet_ResizePacket(byval packet as UDPpacket ptr, byval newsize as long) as long
+declare sub SDLNet_FreePacket(byval packet as UDPpacket ptr)
+declare function SDLNet_AllocPacketV(byval howmany as long, byval size as long) as UDPpacket ptr ptr
+declare sub SDLNet_FreePacketV(byval packetV as UDPpacket ptr ptr)
+declare function SDLNet_UDP_Open(byval port as Uint16) as UDPsocket
+declare sub SDLNet_UDP_SetPacketLoss(byval sock as UDPsocket, byval percent as long)
+declare function SDLNet_UDP_Bind(byval sock as UDPsocket, byval channel as long, byval address as const IPaddress ptr) as long
+declare sub SDLNet_UDP_Unbind(byval sock as UDPsocket, byval channel as long)
+declare function SDLNet_UDP_GetPeerAddress(byval sock as UDPsocket, byval channel as long) as IPaddress ptr
+declare function SDLNet_UDP_SendV(byval sock as UDPsocket, byval packets as UDPpacket ptr ptr, byval npackets as long) as long
+declare function SDLNet_UDP_Send(byval sock as UDPsocket, byval channel as long, byval packet as UDPpacket ptr) as long
+declare function SDLNet_UDP_RecvV(byval sock as UDPsocket, byval packets as UDPpacket ptr ptr) as long
+declare function SDLNet_UDP_Recv(byval sock as UDPsocket, byval packet as UDPpacket ptr) as long
+declare sub SDLNet_UDP_Close(byval sock as UDPsocket)
 type SDLNet_SocketSet as _SDLNet_SocketSet ptr
 
-type SDLNet_TGenericSocket
-	ready as integer
+type _SDLNet_GenericSocket
+	ready as long
 end type
 
-type SDLNet_GenericSocket as SDLNet_TGenericSocket ptr
+type SDLNet_GenericSocket as _SDLNet_GenericSocket ptr
+declare function SDLNet_AllocSocketSet(byval maxsockets as long) as SDLNet_SocketSet
+#define SDLNet_TCP_AddSocket(set, sock) SDLNet_AddSocket(set, SDL_reinterpret_cast(SDLNet_GenericSocket, sock))
+#define SDLNet_UDP_AddSocket(set, sock) SDLNet_AddSocket(set, SDL_reinterpret_cast(SDLNet_GenericSocket, sock))
+declare function SDLNet_AddSocket(byval set as SDLNet_SocketSet, byval sock as SDLNet_GenericSocket) as long
+#define SDLNet_TCP_DelSocket(set, sock) SDLNet_DelSocket(set, SDL_reinterpret_cast(SDLNet_GenericSocket, sock))
+#define SDLNet_UDP_DelSocket(set, sock) SDLNet_DelSocket(set, SDL_reinterpret_cast(SDLNet_GenericSocket, sock))
+declare function SDLNet_DelSocket(byval set as SDLNet_SocketSet, byval sock as SDLNet_GenericSocket) as long
+declare function SDLNet_CheckSockets(byval set as SDLNet_SocketSet, byval timeout as Uint32) as long
+#define SDLNet_SocketReady(sock) ((sock <> NULL) andalso SDL_reinterpret_cast(SDLNet_GenericSocket, sock)->ready)
+declare sub SDLNet_FreeSocketSet(byval set as SDLNet_SocketSet)
+declare sub SDLNet_Write16_ alias "SDLNet_Write16"(byval value as Uint16, byval area as any ptr)
+declare sub SDLNet_Write32_ alias "SDLNet_Write32"(byval value as Uint32, byval area as any ptr)
+declare function SDLNet_Read16_ alias "SDLNet_Read16"(byval area as any ptr) as Uint16
+declare function SDLNet_Read32_ alias "SDLNet_Read32"(byval area as any ptr) as Uint32
 
-extern "c"
-declare function SDLNet_Init () as integer
-declare sub SDLNet_Quit ()
-declare function SDLNet_ResolveHost (byval address as IPaddress ptr, byval host as zstring ptr, byval port as Uint16) as integer
-declare function SDLNet_ResolveIP (byval ip as IPaddress ptr) as zstring ptr
-declare function SDLNet_TCP_Open (byval ip as IPaddress ptr) as TCPsocket
-declare function SDLNet_TCP_Accept (byval server as TCPsocket) as TCPsocket
-declare function SDLNet_TCP_GetPeerAddress (byval sock as TCPsocket) as IPaddress ptr
-declare function SDLNet_TCP_Send (byval sock as TCPsocket, byval data as any ptr, byval len as integer) as integer
-declare function SDLNet_TCP_Recv (byval sock as TCPsocket, byval data as any ptr, byval maxlen as integer) as integer
-declare sub SDLNet_TCP_Close (byval sock as TCPsocket)
-declare function SDLNet_AllocPacket (byval size as integer) as UDPpacket ptr
-declare function SDLNet_ResizePacket (byval packet as UDPpacket ptr, byval newsize as integer) as integer
-declare sub SDLNet_FreePacket (byval packet as UDPpacket ptr)
-declare function SDLNet_AllocPacketV (byval howmany as integer, byval size as integer) as UDPpacket ptr ptr
-declare sub SDLNet_FreePacketV (byval packetV as UDPpacket ptr ptr)
-declare function SDLNet_UDP_Open (byval port as Uint16) as UDPsocket
-declare function SDLNet_UDP_Bind (byval sock as UDPsocket, byval channel as integer, byval address as IPaddress ptr) as integer
-declare sub SDLNet_UDP_Unbind (byval sock as UDPsocket, byval channel as integer)
-declare function SDLNet_UDP_GetPeerAddress (byval sock as UDPsocket, byval channel as integer) as IPaddress ptr
-declare function SDLNet_UDP_SendV (byval sock as UDPsocket, byval packets as UDPpacket ptr ptr, byval npackets as integer) as integer
-declare function SDLNet_UDP_Send (byval sock as UDPsocket, byval channel as integer, byval packet as UDPpacket ptr) as integer
-declare function SDLNet_UDP_RecvV (byval sock as UDPsocket, byval packets as UDPpacket ptr ptr) as integer
-declare function SDLNet_UDP_Recv (byval sock as UDPsocket, byval packet as UDPpacket ptr) as integer
-declare sub SDLNet_UDP_Close (byval sock as UDPsocket)
-declare function SDLNet_AllocSocketSet (byval maxsockets as integer) as SDLNet_SocketSet
-declare function SDLNet_AddSocket (byval set as SDLNet_SocketSet, byval sock as SDLNet_GenericSocket) as integer
-declare function SDLNet_DelSocket (byval set as SDLNet_SocketSet, byval sock as SDLNet_GenericSocket) as integer
-declare function SDLNet_CheckSockets (byval set as SDLNet_SocketSet, byval timeout as Uint32) as integer
-declare sub SDLNet_FreeSocketSet (byval set as SDLNet_SocketSet)
-declare sub SDLNet_Write16 (byval value as Uint16, byval area as any ptr)
-declare sub SDLNet_Write32 (byval value as Uint32, byval area as any ptr)
-declare function SDLNet_Read16 (byval area as any ptr) as Uint16
-declare function SDLNet_Read32 (byval area as any ptr) as Uint32
+#define SDLNet_SetError SDL_SetError
+#define SDLNet_GetError SDL_GetError
+const SDL_DATA_ALIGNED = 0
+#define SDLNet_Write16(value, areap) scope : *cptr(Uint16 ptr, areap) = SDL_SwapBE16(value) : end scope
+#define SDLNet_Write32(value, areap) scope : *cptr(Uint32 ptr, areap) = SDL_SwapBE32(value) : end scope
+#define SDLNet_Read16(areap) SDL_SwapBE16(*cptr(Uint16 ptr, areap))
+#define SDLNet_Read32(areap) SDL_SwapBE32(*cptr(Uint32 ptr, areap))
+
 end extern
-
-#define SDLNet_TCP_AddSocket(set, sock) SDLNet_AddSocket(set, cptr(SDLNet_GenericSocket,sock))
-#define SDLNet_UDP_AddSocket(set, sock) SDLNet_AddSocket(set, cptr(SDLNet_GenericSocket,sock))
-#define SDLNet_TCP_DelSocket(set, sock) SDLNet_DelSocket(set, cptr(SDLNet_GenericSocket,sock))
-#define SDLNet_UDP_DelSocket(set, sock) SDLNet_DelSocket(set, cptr(SDLNet_GenericSocket,sock))
-#define SDLNet_SocketReady(sock) iif( sock <> NULL, cptr(SDLNet_GenericSocket, sock)->ready = 1, 0 )
-
-#define SDLNet_SetError	SDL_SetError
-#define SDLNet_GetError	SDL_GetError
-
-#define SDL_DATA_ALIGNED 0
-
-#include once "close_code.bi"
-
-#endif
