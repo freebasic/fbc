@@ -28,9 +28,9 @@ declare function __WSAFDIsSet(byval as SOCKET, byval as FD_SET ptr) as long
 	scope
 		dim __i as u_int
 		while __i < cptr(fd_set ptr, set)->fd_count
-			if cptr(fd_set ptr, set)->fd_array[__i] = fd then
+			if cptr(fd_set ptr, set)->fd_array(__i) = fd then
 				while __i < cptr(fd_set ptr, set)->fd_count - 1
-					cptr(fd_set ptr, set)->fd_array[__i] = cptr(fd_set ptr, set)->fd_array[__i + 1]
+					cptr(fd_set ptr, set)->fd_array(__i) = cptr(fd_set ptr, set)->fd_array(__i + 1)
 					__i += 1
 				wend
 				cptr(fd_set ptr, set)->fd_count -= 1
@@ -50,7 +50,7 @@ declare function __WSAFDIsSet(byval as SOCKET, byval as FD_SET ptr) as long
 #macro FD_SET_(fd, set)
 	scope
 		if cptr(fd_set ptr, set)->fd_count < FD_SETSIZE then
-			cptr(fd_set ptr, set)->fd_array[cptr(fd_set ptr, set)->fd_count] = (fd)
+			cptr(fd_set ptr, set)->fd_array(cptr(fd_set ptr, set)->fd_count) = (fd)
 			cptr(fd_set ptr, set)->fd_count += 1
 		end if
 	end scope
