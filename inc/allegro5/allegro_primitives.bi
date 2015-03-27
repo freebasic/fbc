@@ -70,7 +70,7 @@ declare sub al_draw_line(byval x1 as single, byval y1 as single, byval x2 as sin
 declare sub al_draw_triangle(byval x1 as single, byval y1 as single, byval x2 as single, byval y2 as single, byval x3 as single, byval y3 as single, byval color as ALLEGRO_COLOR, byval thickness as single)
 declare sub al_draw_rectangle(byval x1 as single, byval y1 as single, byval x2 as single, byval y2 as single, byval color as ALLEGRO_COLOR, byval thickness as single)
 declare sub al_draw_rounded_rectangle(byval x1 as single, byval y1 as single, byval x2 as single, byval y2 as single, byval rx as single, byval ry as single, byval color as ALLEGRO_COLOR, byval thickness as single)
-declare sub al_calculate_arc(byval dest as single ptr, byval stride as long, byval cx as single, byval cy as single, byval rx as single, byval ry as single, byval start_theta as single, byval delta_theta as single, byval thickness as single, byval num_segments as long)
+declare sub al_calculate_arc(byval dest as single ptr, byval stride as long, byval cx as single, byval cy as single, byval rx as single, byval ry as single, byval start_theta as single, byval delta_theta as single, byval thickness as single, byval num_points as long)
 declare sub al_draw_circle(byval cx as single, byval cy as single, byval r as single, byval color as ALLEGRO_COLOR, byval thickness as single)
 declare sub al_draw_ellipse(byval cx as single, byval cy as single, byval rx as single, byval ry as single, byval color as ALLEGRO_COLOR, byval thickness as single)
 declare sub al_draw_arc(byval cx as single, byval cy as single, byval r as single, byval start_theta as single, byval delta_theta as single, byval color as ALLEGRO_COLOR, byval thickness as single)
