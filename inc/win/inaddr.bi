@@ -17,7 +17,7 @@ end type
 union in_addr_S_un
 	S_un_b as in_addr_S_un_S_un_b
 	S_un_w as in_addr_S_un_S_un_w
-	S_addr as u_long
+	S_addr_ as u_long
 end union
 
 type IN_ADDR
@@ -26,6 +26,7 @@ end type
 
 type PIN_ADDR as IN_ADDR ptr
 type LPIN_ADDR as IN_ADDR ptr
+#define s_addr S_un.S_addr_
 #define s_host S_un.S_un_b.s_b2
 #define s_net S_un.S_un_b.s_b1
 #define s_imp S_un.S_un_w.s_w2
