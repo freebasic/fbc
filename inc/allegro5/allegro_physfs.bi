@@ -1,6 +1,12 @@
 #pragma once
 
-#inclib "allegro_physfs"
+#if defined(__FB_WIN32__) and defined(ALLEGRO_STATICLINK)
+	#inclib "allegro_physfs-5.0.10-static-md"
+#elseif defined(__FB_WIN32__) and (not defined(ALLEGRO_STATICLINK))
+	#inclib "allegro_physfs-5.0.10-md"
+#else
+	#inclib "allegro_physfs"
+#endif
 
 #include once "allegro5/allegro.bi"
 

@@ -1,6 +1,12 @@
 #pragma once
 
-#inclib "allegro_memfile"
+#if defined(__FB_WIN32__) and defined(ALLEGRO_STATICLINK)
+	#inclib "allegro_memfile-5.0.10-static-md"
+#elseif defined(__FB_WIN32__) and (not defined(ALLEGRO_STATICLINK))
+	#inclib "allegro_memfile-5.0.10-md"
+#else
+	#inclib "allegro_memfile"
+#endif
 
 #include once "allegro5/allegro.bi"
 

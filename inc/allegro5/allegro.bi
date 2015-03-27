@@ -1,6 +1,12 @@
 #pragma once
 
-#inclib "allegro"
+#if defined(__FB_WIN32__) and defined(ALLEGRO_STATICLINK)
+	#inclib "allegro-5.0.10-static-md"
+#elseif defined(__FB_WIN32__) and (not defined(ALLEGRO_STATICLINK))
+	#inclib "allegro-5.0.10-md"
+#else
+	#inclib "allegro"
+#endif
 
 #include once "crt/errno.bi"
 #include once "crt/limits.bi"
