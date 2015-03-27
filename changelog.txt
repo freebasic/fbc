@@ -20,6 +20,7 @@ Version 1.02.0
 	X11, based on current X.org packages
 	SDL1: SDL 1.2.15, SDL_image 1.2.12, SDL_mixer 1.2.12, SDL_net 1.2.8, SDL_ttf 2.0.11, SDL_gfx 2.0.13
 	SDL2: SDL2 2.0.3, SDL2_image 2.0.0, SDL2_mixer 2.0.0, SDL2_net 2.0.0, SDL2_ttf 2.0.12, SDL2_gfx 1.0.1
+	GNU libiconv 1.14
 
 [fixed]
 - Potential bad code generation for dynamic array field copying
