@@ -20,7 +20,9 @@ type UCHAR as ubyte
 type PUCHAR as UCHAR ptr
 type PSZ as zstring ptr
 
+#ifndef MAX_PATH
 const MAX_PATH = 260
+#endif
 #ifndef NULL
 const NULL = 0
 #endif
