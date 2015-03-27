@@ -7,6 +7,228 @@
 #define __WINE_DMUSIC_FILEFORMATS_H
 #define COM_NO_WINDOWS_H
 #define DMUS_FOURCC_GUID_CHUNK mmioFOURCC(asc("g"), asc("u"), asc("i"), asc("d"))
+#define DMUS_FOURCC_INFO_LIST mmioFOURCC(asc("I"), asc("N"), asc("F"), asc("O"))
+#define DMUS_FOURCC_UNFO_LIST mmioFOURCC(asc("U"), asc("N"), asc("F"), asc("O"))
+#define DMUS_FOURCC_UNAM_CHUNK mmioFOURCC(asc("U"), asc("N"), asc("A"), asc("M"))
+#define DMUS_FOURCC_UART_CHUNK mmioFOURCC(asc("U"), asc("A"), asc("R"), asc("T"))
+#define DMUS_FOURCC_UCOP_CHUNK mmioFOURCC(asc("U"), asc("C"), asc("O"), asc("P"))
+#define DMUS_FOURCC_USBJ_CHUNK mmioFOURCC(asc("U"), asc("S"), asc("B"), asc("J"))
+#define DMUS_FOURCC_UCMT_CHUNK mmioFOURCC(asc("U"), asc("C"), asc("M"), asc("T"))
+#define DMUS_FOURCC_CATEGORY_CHUNK mmioFOURCC(asc("c"), asc("a"), asc("t"), asc("g"))
+#define DMUS_FOURCC_VERSION_CHUNK mmioFOURCC(asc("v"), asc("e"), asc("r"), asc("s"))
+#define DMUS_FOURCC_AUDIOPATH_FORM mmioFOURCC(asc("D"), asc("M"), asc("A"), asc("P"))
+#define DMUS_FOURCC_PORTCONFIGS_LIST mmioFOURCC(asc("p"), asc("c"), asc("s"), asc("l"))
+#define DMUS_FOURCC_PORTCONFIG_LIST mmioFOURCC(asc("p"), asc("c"), asc("f"), asc("l"))
+#define DMUS_FOURCC_PORTCONFIG_ITEM mmioFOURCC(asc("p"), asc("c"), asc("f"), asc("h"))
+#define DMUS_FOURCC_PORTPARAMS_ITEM mmioFOURCC(asc("p"), asc("p"), asc("r"), asc("h"))
+#define DMUS_FOURCC_DSBUFFER_LIST mmioFOURCC(asc("d"), asc("b"), asc("f"), asc("l"))
+#define DMUS_FOURCC_DSBUFFATTR_ITEM mmioFOURCC(asc("d"), asc("d"), asc("a"), asc("h"))
+#define DMUS_FOURCC_PCHANNELS_LIST mmioFOURCC(asc("p"), asc("c"), asc("h"), asc("l"))
+#define DMUS_FOURCC_PCHANNELS_ITEM mmioFOURCC(asc("p"), asc("c"), asc("h"), asc("h"))
+#define DMUS_FOURCC_BAND_FORM mmioFOURCC(asc("D"), asc("M"), asc("B"), asc("D"))
+#define DMUS_FOURCC_INSTRUMENTS_LIST mmioFOURCC(asc("l"), asc("b"), asc("i"), asc("l"))
+#define DMUS_FOURCC_INSTRUMENT_LIST mmioFOURCC(asc("l"), asc("b"), asc("i"), asc("n"))
+#define DMUS_FOURCC_INSTRUMENT_CHUNK mmioFOURCC(asc("b"), asc("i"), asc("n"), asc("s"))
+#define DMUS_FOURCC_CHORDMAP_FORM mmioFOURCC(asc("D"), asc("M"), asc("P"), asc("R"))
+#define DMUS_FOURCC_IOCHORDMAP_CHUNK mmioFOURCC(asc("p"), asc("e"), asc("r"), asc("h"))
+#define DMUS_FOURCC_SUBCHORD_CHUNK mmioFOURCC(asc("c"), asc("h"), asc("d"), asc("t"))
+#define DMUS_FOURCC_CHORDENTRY_CHUNK mmioFOURCC(asc("c"), asc("h"), asc("e"), asc("h"))
+#define DMUS_FOURCC_SUBCHORDID_CHUNK mmioFOURCC(asc("s"), asc("b"), asc("c"), asc("n"))
+#define DMUS_FOURCC_IONEXTCHORD_CHUNK mmioFOURCC(asc("n"), asc("c"), asc("r"), asc("d"))
+#define DMUS_FOURCC_NEXTCHORDSEQ_CHUNK mmioFOURCC(asc("n"), asc("c"), asc("s"), asc("q"))
+#define DMUS_FOURCC_IOSIGNPOST_CHUNK mmioFOURCC(asc("s"), asc("p"), asc("s"), asc("h"))
+#define DMUS_FOURCC_CHORDNAME_CHUNK mmioFOURCC(asc("I"), asc("N"), asc("A"), asc("M"))
+#define DMUS_FOURCC_CHORDENTRY_LIST mmioFOURCC(asc("c"), asc("h"), asc("o"), asc("e"))
+#define DMUS_FOURCC_CHORDMAP_LIST mmioFOURCC(asc("c"), asc("m"), asc("a"), asc("p"))
+#define DMUS_FOURCC_CHORD_LIST mmioFOURCC(asc("c"), asc("h"), asc("r"), asc("d"))
+#define DMUS_FOURCC_CHORDPALETTE_LIST mmioFOURCC(asc("c"), asc("h"), asc("p"), asc("l"))
+#define DMUS_FOURCC_CADENCE_LIST mmioFOURCC(asc("c"), asc("a"), asc("d"), asc("e"))
+#define DMUS_FOURCC_SIGNPOSTITEM_LIST mmioFOURCC(asc("s"), asc("p"), asc("s"), asc("t"))
+#define DMUS_FOURCC_SIGNPOST_LIST mmioFOURCC(asc("s"), asc("p"), asc("s"), asc("q"))
+#define DMUS_FOURCC_CONTAINER_FORM mmioFOURCC(asc("D"), asc("M"), asc("C"), asc("N"))
+#define DMUS_FOURCC_CONTAINER_CHUNK mmioFOURCC(asc("c"), asc("o"), asc("n"), asc("h"))
+#define DMUS_FOURCC_CONTAINED_ALIAS_CHUNK mmioFOURCC(asc("c"), asc("o"), asc("b"), asc("a"))
+#define DMUS_FOURCC_CONTAINED_OBJECT_CHUNK mmioFOURCC(asc("c"), asc("o"), asc("b"), asc("h"))
+#define DMUS_FOURCC_CONTAINED_OBJECTS_LIST mmioFOURCC(asc("c"), asc("o"), asc("s"), asc("l"))
+#define DMUS_FOURCC_CONTAINED_OBJECT_LIST mmioFOURCC(asc("c"), asc("o"), asc("b"), asc("l"))
+#define DMUS_FOURCC_DSBC_FORM mmioFOURCC(asc("D"), asc("S"), asc("B"), asc("C"))
+#define DMUS_FOURCC_DSBD_CHUNK mmioFOURCC(asc("d"), asc("s"), asc("b"), asc("d"))
+#define DMUS_FOURCC_BSID_CHUNK mmioFOURCC(asc("b"), asc("s"), asc("i"), asc("d"))
+#define DMUS_FOURCC_DS3D_CHUNK mmioFOURCC(asc("d"), asc("s"), asc("3"), asc("d"))
+#define DMUS_FOURCC_DSBC_LIST mmioFOURCC(asc("f"), asc("x"), asc("l"), asc("s"))
+#define DMUS_FOURCC_DSFX_FORM mmioFOURCC(asc("D"), asc("S"), asc("F"), asc("X"))
+#define DMUS_FOURCC_DSFX_CHUNK mmioFOURCC(asc("f"), asc("x"), asc("h"), asc("r"))
+#define DMUS_FOURCC_DSFX_DATA mmioFOURCC(asc("d"), asc("a"), asc("t"), asc("a"))
+#define DMUS_FOURCC_REF_LIST mmioFOURCC(asc("D"), asc("M"), asc("R"), asc("F"))
+#define DMUS_FOURCC_REF_CHUNK mmioFOURCC(asc("r"), asc("e"), asc("f"), asc("h"))
+#define DMUS_FOURCC_DATE_CHUNK mmioFOURCC(asc("d"), asc("a"), asc("t"), asc("e"))
+#define DMUS_FOURCC_NAME_CHUNK mmioFOURCC(asc("n"), asc("a"), asc("m"), asc("e"))
+#define DMUS_FOURCC_FILE_CHUNK mmioFOURCC(asc("f"), asc("i"), asc("l"), asc("e"))
+#define DMUS_FOURCC_SCRIPT_FORM mmioFOURCC(asc("D"), asc("M"), asc("S"), asc("C"))
+#define DMUS_FOURCC_SCRIPT_CHUNK mmioFOURCC(asc("s"), asc("c"), asc("h"), asc("d"))
+#define DMUS_FOURCC_SCRIPTVERSION_CHUNK mmioFOURCC(asc("s"), asc("c"), asc("v"), asc("e"))
+#define DMUS_FOURCC_SCRIPTLANGUAGE_CHUNK mmioFOURCC(asc("s"), asc("c"), asc("l"), asc("a"))
+#define DMUS_FOURCC_SCRIPTSOURCE_CHUNK mmioFOURCC(asc("s"), asc("c"), asc("s"), asc("r"))
+#define DMUS_FOURCC_SEGMENT_FORM mmioFOURCC(asc("D"), asc("M"), asc("S"), asc("G"))
+#define DMUS_FOURCC_SEGMENT_CHUNK mmioFOURCC(asc("s"), asc("e"), asc("g"), asc("h"))
+#define DMUS_FOURCC_TRACK_LIST mmioFOURCC(asc("t"), asc("r"), asc("k"), asc("l"))
+#define DMUS_FOURCC_STYLE_FORM mmioFOURCC(asc("D"), asc("M"), asc("S"), asc("T"))
+#define DMUS_FOURCC_STYLE_CHUNK mmioFOURCC(asc("s"), asc("t"), asc("y"), asc("h"))
+#define DMUS_FOURCC_PART_LIST mmioFOURCC(asc("p"), asc("a"), asc("r"), asc("t"))
+#define DMUS_FOURCC_PART_CHUNK mmioFOURCC(asc("p"), asc("r"), asc("t"), asc("h"))
+#define DMUS_FOURCC_NOTE_CHUNK mmioFOURCC(asc("n"), asc("o"), asc("t"), asc("e"))
+#define DMUS_FOURCC_CURVE_CHUNK mmioFOURCC(asc("c"), asc("r"), asc("v"), asc("e"))
+#define DMUS_FOURCC_MARKER_CHUNK mmioFOURCC(asc("m"), asc("r"), asc("k"), asc("r"))
+#define DMUS_FOURCC_RESOLUTION_CHUNK mmioFOURCC(asc("r"), asc("s"), asc("l"), asc("n"))
+#define DMUS_FOURCC_ANTICIPATION_CHUNK mmioFOURCC(asc("a"), asc("n"), asc("p"), asc("n"))
+#define DMUS_FOURCC_PATTERN_LIST mmioFOURCC(asc("p"), asc("t"), asc("t"), asc("n"))
+#define DMUS_FOURCC_PATTERN_CHUNK mmioFOURCC(asc("p"), asc("t"), asc("n"), asc("h"))
+#define DMUS_FOURCC_RHYTHM_CHUNK mmioFOURCC(asc("r"), asc("h"), asc("t"), asc("m"))
+#define DMUS_FOURCC_PARTREF_LIST mmioFOURCC(asc("p"), asc("r"), asc("e"), asc("f"))
+#define DMUS_FOURCC_PARTREF_CHUNK mmioFOURCC(asc("p"), asc("r"), asc("f"), asc("c"))
+#define DMUS_FOURCC_STYLE_PERS_REF_LIST mmioFOURCC(asc("p"), asc("r"), asc("r"), asc("f"))
+#define DMUS_FOURCC_MOTIFSETTINGS_CHUNK mmioFOURCC(asc("m"), asc("t"), asc("f"), asc("s"))
+#define DMUS_FOURCC_TOOL_FORM mmioFOURCC(asc("D"), asc("M"), asc("T"), asc("L"))
+#define DMUS_FOURCC_TOOL_CHUNK mmioFOURCC(asc("t"), asc("o"), asc("l"), asc("h"))
+#define DMUS_FOURCC_TOOLGRAPH_FORM mmioFOURCC(asc("D"), asc("M"), asc("T"), asc("G"))
+#define DMUS_FOURCC_TOOL_LIST mmioFOURCC(asc("t"), asc("o"), asc("l"), asc("l"))
+#define DMUS_FOURCC_TRACK_FORM mmioFOURCC(asc("D"), asc("M"), asc("T"), asc("K"))
+#define DMUS_FOURCC_TRACK_CHUNK mmioFOURCC(asc("t"), asc("r"), asc("k"), asc("h"))
+#define DMUS_FOURCC_TRACK_EXTRAS_CHUNK mmioFOURCC(asc("t"), asc("r"), asc("k"), asc("x"))
+#define DMUS_FOURCC_BANDTRACK_FORM mmioFOURCC(asc("D"), asc("M"), asc("B"), asc("T"))
+#define DMUS_FOURCC_BANDTRACK_CHUNK mmioFOURCC(asc("b"), asc("d"), asc("t"), asc("h"))
+#define DMUS_FOURCC_BANDS_LIST mmioFOURCC(asc("l"), asc("b"), asc("d"), asc("l"))
+#define DMUS_FOURCC_BAND_LIST mmioFOURCC(asc("l"), asc("b"), asc("n"), asc("d"))
+#define DMUS_FOURCC_BANDITEM_CHUNK mmioFOURCC(asc("b"), asc("d"), asc("i"), asc("h"))
+#define DMUS_FOURCC_BANDITEM_CHUNK2 mmioFOURCC(asc("b"), asc("d"), asc("2"), asc("h"))
+#define DMUS_FOURCC_CHORDTRACK_LIST mmioFOURCC(asc("c"), asc("o"), asc("r"), asc("d"))
+#define DMUS_FOURCC_CHORDTRACKHEADER_CHUNK mmioFOURCC(asc("c"), asc("r"), asc("d"), asc("h"))
+#define DMUS_FOURCC_CHORDTRACKBODY_CHUNK mmioFOURCC(asc("c"), asc("r"), asc("d"), asc("b"))
+#define DMUS_FOURCC_PERS_TRACK_LIST mmioFOURCC(asc("p"), asc("f"), asc("t"), asc("r"))
+#define DMUS_FOURCC_PERS_REF_LIST mmioFOURCC(asc("p"), asc("f"), asc("r"), asc("f"))
+#define DMUS_FOURCC_TIME_STAMP_CHUNK mmioFOURCC(asc("s"), asc("t"), asc("m"), asc("p"))
+#define DMUS_FOURCC_COMMANDTRACK_CHUNK mmioFOURCC(asc("c"), asc("m"), asc("n"), asc("d"))
+#define DMUS_FOURCC_LYRICSTRACK_LIST mmioFOURCC(asc("l"), asc("y"), asc("r"), asc("t"))
+#define DMUS_FOURCC_LYRICSTRACKEVENTS_LIST mmioFOURCC(asc("l"), asc("y"), asc("r"), asc("l"))
+#define DMUS_FOURCC_LYRICSTRACKEVENT_LIST mmioFOURCC(asc("l"), asc("y"), asc("r"), asc("e"))
+#define DMUS_FOURCC_LYRICSTRACKEVENTHEADER_CHUNK mmioFOURCC(asc("l"), asc("y"), asc("r"), asc("h"))
+#define DMUS_FOURCC_LYRICSTRACKEVENTTEXT_CHUNK mmioFOURCC(asc("l"), asc("y"), asc("r"), asc("n"))
+#define DMUS_FOURCC_MARKERTRACK_LIST mmioFOURCC(asc("M"), asc("A"), asc("R"), asc("K"))
+#define DMUS_FOURCC_VALIDSTART_CHUNK mmioFOURCC(asc("v"), asc("a"), asc("l"), asc("s"))
+#define DMUS_FOURCC_PLAYMARKER_CHUNK mmioFOURCC(asc("p"), asc("l"), asc("a"), asc("y"))
+#define DMUS_FOURCC_MUTE_CHUNK mmioFOURCC(asc("m"), asc("u"), asc("t"), asc("e"))
+#define DMUS_FOURCC_PARAMCONTROLTRACK_TRACK_LIST mmioFOURCC(asc("p"), asc("r"), asc("m"), asc("t"))
+#define DMUS_FOURCC_PARAMCONTROLTRACK_OBJECT_LIST mmioFOURCC(asc("p"), asc("r"), asc("o"), asc("l"))
+#define DMUS_FOURCC_PARAMCONTROLTRACK_OBJECT_CHUNK mmioFOURCC(asc("p"), asc("r"), asc("o"), asc("h"))
+#define DMUS_FOURCC_PARAMCONTROLTRACK_PARAM_LIST mmioFOURCC(asc("p"), asc("r"), asc("p"), asc("l"))
+#define DMUS_FOURCC_PARAMCONTROLTRACK_PARAM_CHUNK mmioFOURCC(asc("p"), asc("r"), asc("p"), asc("h"))
+#define DMUS_FOURCC_PARAMCONTROLTRACK_CURVES_CHUNK mmioFOURCC(asc("p"), asc("r"), asc("c"), asc("c"))
+#define DMUS_FOURCC_PATTERN_FORM mmioFOURCC(asc("D"), asc("M"), asc("P"), asc("T"))
+#define DMUS_FOURCC_SCRIPTTRACK_LIST mmioFOURCC(asc("s"), asc("c"), asc("r"), asc("t"))
+#define DMUS_FOURCC_SCRIPTTRACKEVENTS_LIST mmioFOURCC(asc("s"), asc("c"), asc("r"), asc("l"))
+#define DMUS_FOURCC_SCRIPTTRACKEVENT_LIST mmioFOURCC(asc("s"), asc("c"), asc("r"), asc("e"))
+#define DMUS_FOURCC_SCRIPTTRACKEVENTHEADER_CHUNK mmioFOURCC(asc("s"), asc("c"), asc("r"), asc("h"))
+#define DMUS_FOURCC_SCRIPTTRACKEVENTNAME_CHUNK mmioFOURCC(asc("s"), asc("c"), asc("r"), asc("n"))
+#define DMUS_FOURCC_SEGTRACK_LIST mmioFOURCC(asc("s"), asc("e"), asc("g"), asc("t"))
+#define DMUS_FOURCC_SEGTRACK_CHUNK mmioFOURCC(asc("s"), asc("g"), asc("t"), asc("h"))
+#define DMUS_FOURCC_SEGMENTS_LIST mmioFOURCC(asc("l"), asc("s"), asc("g"), asc("l"))
+#define DMUS_FOURCC_SEGMENT_LIST mmioFOURCC(asc("l"), asc("s"), asc("e"), asc("g"))
+#define DMUS_FOURCC_SEGMENTITEM_CHUNK mmioFOURCC(asc("s"), asc("g"), asc("i"), asc("h"))
+#define DMUS_FOURCC_SEGMENTITEMNAME_CHUNK mmioFOURCC(asc("s"), asc("n"), asc("a"), asc("m"))
+#define DMUS_FOURCC_SEQ_TRACK mmioFOURCC(asc("s"), asc("e"), asc("q"), asc("t"))
+#define DMUS_FOURCC_SEQ_LIST mmioFOURCC(asc("e"), asc("v"), asc("t"), asc("l"))
+#define DMUS_FOURCC_CURVE_LIST mmioFOURCC(asc("c"), asc("u"), asc("r"), asc("l"))
+#define DMUS_FOURCC_SIGNPOST_TRACK_CHUNK mmioFOURCC(asc("s"), asc("g"), asc("n"), asc("p"))
+#define DMUS_FOURCC_STYLE_TRACK_LIST mmioFOURCC(asc("s"), asc("t"), asc("t"), asc("r"))
+#define DMUS_FOURCC_STYLE_REF_LIST mmioFOURCC(asc("s"), asc("t"), asc("r"), asc("f"))
+#define DMUS_FOURCC_SYSEX_TRACK mmioFOURCC(asc("s"), asc("y"), asc("e"), asc("x"))
+#define DMUS_FOURCC_TEMPO_TRACK mmioFOURCC(asc("t"), asc("e"), asc("t"), asc("r"))
+#define DMUS_FOURCC_TIMESIGNATURE_TRACK mmioFOURCC(asc("t"), asc("i"), asc("m"), asc("s"))
+#define DMUS_FOURCC_TIMESIGTRACK_LIST mmioFOURCC(asc("T"), asc("I"), asc("M"), asc("S"))
+#define DMUS_FOURCC_TIMESIG_CHUNK DMUS_FOURCC_TIMESIGNATURE_TRACK
+#define DMUS_FOURCC_WAVETRACK_LIST mmioFOURCC(asc("w"), asc("a"), asc("v"), asc("t"))
+#define DMUS_FOURCC_WAVETRACK_CHUNK mmioFOURCC(asc("w"), asc("a"), asc("t"), asc("h"))
+#define DMUS_FOURCC_WAVEPART_LIST mmioFOURCC(asc("w"), asc("a"), asc("v"), asc("p"))
+#define DMUS_FOURCC_WAVEPART_CHUNK mmioFOURCC(asc("w"), asc("a"), asc("p"), asc("h"))
+#define DMUS_FOURCC_WAVEITEM_LIST mmioFOURCC(asc("w"), asc("a"), asc("v"), asc("i"))
+#define DMUS_FOURCC_WAVE_LIST mmioFOURCC(asc("w"), asc("a"), asc("v"), asc("e"))
+#define DMUS_FOURCC_WAVEITEM_CHUNK mmioFOURCC(asc("w"), asc("a"), asc("i"), asc("h"))
+#define DMUS_FOURCC_WAVEHEADER_CHUNK mmioFOURCC(asc("w"), asc("a"), asc("v"), asc("h"))
+const DMUS_BUFFERF_SHARED = &h1
+const DMUS_BUFFERF_DEFINED = &h2
+const DMUS_BUFFERF_MIXIN = &h8
+const DMUS_CHORDMAPF_VERSION8 = &h1
+const DMUS_CONTAINED_OBJF_KEEP = &h1
+const DMUS_CONTAINER_NOLOADS = &h2
+const DMUS_IO_INST_PATCH = &h0001
+const DMUS_IO_INST_BANKSELECT = &h0002
+const DMUS_IO_INST_ASSIGN_PATCH = &h0008
+const DMUS_IO_INST_NOTERANGES = &h0010
+const DMUS_IO_INST_PAN = &h0020
+const DMUS_IO_INST_VOLUME = &h0040
+const DMUS_IO_INST_TRANSPOSE = &h0080
+const DMUS_IO_INST_GM = &h0100
+const DMUS_IO_INST_GS = &h0200
+const DMUS_IO_INST_XG = &h0400
+const DMUS_IO_INST_CHANNEL_PRIORITY = &h0800
+const DMUS_IO_INST_USE_DEFAULT_GM_SET = &h1000
+const DMUS_IO_INST_PITCHBENDRANGE = &h2000
+const DMUS_IO_SCRIPTTRACKF_PREPARE = &h1
+const DMUS_IO_SCRIPTTRACKF_QUEUE = &h2
+const DMUS_IO_SCRIPTTRACKF_ATTIME = &h4
+const DMUS_MARKERF_START = &h1
+const DMUS_MARKERF_STOP = &h2
+const DMUS_MARKERF_CHORD_ALIGN = &h4
+const DMUS_PATTERNF_PERSIST_CONTROL = &h1
+const DMUS_PARTF_USE_MARKERS = &h1
+const DMUS_PARTF_ALIGN_CHORDS = &h2
+const DMUS_PORTCONFIGF_DRUMSON10 = &h1
+const DMUS_PORTCONFIGF_USEDEFAULT = &h2
+const DMUS_SCRIPTIOF_LOAD_ALL_CONTENT = &h1
+const DMUS_SCRIPTIOF_DOWNLOAD_ALL_SEGMENTS = &h2
+const DMUS_SEGIOF_REFLENGTH = &h1
+const DMUS_SEGIOF_CLOCKTIME = &h2
+const DMUS_SEGMENTTRACKF_MOTIF = &h1
+const DMUS_SONG_MAXSEGID = &h7FFFFFFF
+const DMUS_SONG_ANYSEG = &h80000000
+const DMUS_SONG_NOSEG = &hFFFFFFFF
+const DMUS_SONG_NOFROMSEG = &h80000001
+const DMUS_SIGNPOSTF_A = &h0001
+const DMUS_SIGNPOSTF_B = &h0002
+const DMUS_SIGNPOSTF_C = &h0004
+const DMUS_SIGNPOSTF_D = &h0008
+const DMUS_SIGNPOSTF_E = &h0010
+const DMUS_SIGNPOSTF_F = &h0020
+const DMUS_SIGNPOSTF_1 = &h0100
+const DMUS_SIGNPOSTF_2 = &h0200
+const DMUS_SIGNPOSTF_3 = &h0400
+const DMUS_SIGNPOSTF_4 = &h0800
+const DMUS_SIGNPOSTF_5 = &h1000
+const DMUS_SIGNPOSTF_6 = &h2000
+const DMUS_SIGNPOSTF_7 = &h4000
+const DMUS_SIGNPOSTF_CADENCE = &h8000
+#define DMUS_SIGNPOSTF_LETTER (((((DMUS_SIGNPOSTF_A or DMUS_SIGNPOSTF_B) or DMUS_SIGNPOSTF_C) or DMUS_SIGNPOSTF_D) or DMUS_SIGNPOSTF_E) or DMUS_SIGNPOSTF_F)
+#define DMUS_SIGNPOSTF_ROOT ((((((DMUS_SIGNPOSTF_1 or DMUS_SIGNPOSTF_2) or DMUS_SIGNPOSTF_3) or DMUS_SIGNPOSTF_4) or DMUS_SIGNPOSTF_5) or DMUS_SIGNPOSTF_6) or DMUS_SIGNPOSTF_7)
+const DMUS_SPOSTCADENCEF_1 = &h2
+const DMUS_SPOSTCADENCEF_2 = &h4
+const DMUS_VARIATIONF_MAJOR = &h0000007F
+const DMUS_VARIATIONF_MINOR = &h00003F80
+const DMUS_VARIATIONF_OTHER = &h001FC000
+const DMUS_VARIATIONF_ROOT_SCALE = &h00200000
+const DMUS_VARIATIONF_ROOT_FLAT = &h00400000
+const DMUS_VARIATIONF_ROOT_SHARP = &h00800000
+const DMUS_VARIATIONF_TYPE_TRIAD = &h01000000
+const DMUS_VARIATIONF_TYPE_6AND7 = &h02000000
+const DMUS_VARIATIONF_TYPE_COMPLEX = &h04000000
+const DMUS_VARIATIONF_DEST_TO1 = &h08000000
+const DMUS_VARIATIONF_DEST_TO5 = &h10000000
+const DMUS_VARIATIONF_DEST_OTHER = &h40000000
+const DMUS_VARIATIONF_MODES = &hE0000000
+const DMUS_VARIATIONF_MODES_EX = &h20000000 or &h80000000
+const DMUS_VARIATIONF_IMA25_MODE = &h00000000
+const DMUS_VARIATIONF_DMUS_MODE = &h20000000
+const DMUS_WAVETRACKF_SYNC_VAR = &h1
+const DMUS_WAVETRACKF_PERSIST_CONTROL = &h2
 
 type DMUS_VARIATIONT_TYPES as enumDMUS_VARIATIONT_TYPES
 type DMUS_EMBELLISHT_TYPES as enumDMUS_EMBELLISHT_TYPES
