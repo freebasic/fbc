@@ -13,7 +13,6 @@
 #include once "GL/glu.bi"
 #include once "GL/glfw.bi"
 
-#define NULL 0
 #define FALSE 0
 #define TRUE not FALSE
 

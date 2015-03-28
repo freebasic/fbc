@@ -12,8 +12,6 @@
 #define TRUE -1
 #endif
 
-#define NULL 0
-
 type MOUSECTX
 	xpos		as integer
 	ypos		as integer
