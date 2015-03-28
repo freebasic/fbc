@@ -14,7 +14,7 @@
 #include once "GL/glfw.bi"
 
 #define FALSE 0
-#define TRUE not FALSE
+#define TRUE (-1)
 
 #ifndef PI
 #define PI 3.14159265358979323846
