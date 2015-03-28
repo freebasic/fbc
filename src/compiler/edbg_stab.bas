@@ -207,7 +207,7 @@ end sub
 sub edbgEmitHeader( byval filename as zstring ptr )
 	dim as string lname
 
-	if( env.clopt.debug = FALSE ) then
+	if( env.clopt.debuginfo = FALSE ) then
 		exit sub
 	end if
 
@@ -247,7 +247,7 @@ end sub
 sub edbgEmitFooter( ) static
 	dim as string lname
 
-	if( env.clopt.debug = FALSE ) then
+	if( env.clopt.debuginfo = FALSE ) then
 		exit sub
 	end if
 
@@ -269,7 +269,7 @@ sub edbgLineBegin _
 		byval pos_ as integer _
 	)
 
-    if( env.clopt.debug = FALSE ) then
+	if( env.clopt.debuginfo = FALSE ) then
     	exit sub
     end if
 
@@ -299,7 +299,7 @@ sub edbgLineEnd _
 		byval pos_ as integer _
 	)
 
-    if( env.clopt.debug = FALSE ) then
+	if( env.clopt.debuginfo = FALSE ) then
     	exit sub
     end if
 
@@ -324,7 +324,7 @@ sub edbgEmitLine _
 
     dim as zstring ptr s
 
-	if( env.clopt.debug = FALSE ) then
+	if( env.clopt.debuginfo = FALSE ) then
 		exit sub
 	end if
 
@@ -352,7 +352,7 @@ sub edbgEmitLineFlush _
 		byval label as FBSYMBOL ptr _
 	) static
 
-	if( env.clopt.debug = FALSE ) then
+	if( env.clopt.debuginfo = FALSE ) then
 		exit sub
 	end if
 
@@ -371,7 +371,7 @@ sub edbgScopeBegin _
 
 	'' called by ir->ast
 
-    if( env.clopt.debug = FALSE ) then
+	if( env.clopt.debuginfo = FALSE ) then
     	exit sub
     end if
 
@@ -388,7 +388,7 @@ sub edbgScopeEnd _
 
 	'' called by ir->ast
 
-    if( env.clopt.debug = FALSE ) then
+	if( env.clopt.debuginfo = FALSE ) then
     	exit sub
     end if
 
@@ -403,7 +403,7 @@ sub edbgEmitScopeINI _
 		byval s as FBSYMBOL ptr _
 	) static
 
-    if( env.clopt.debug = FALSE ) then
+	if( env.clopt.debuginfo = FALSE ) then
     	exit sub
     end if
 
@@ -417,7 +417,7 @@ sub edbgEmitScopeEND _
 		byval s as FBSYMBOL ptr _
 	) static
 
-    if( env.clopt.debug = FALSE ) then
+	if( env.clopt.debuginfo = FALSE ) then
     	exit sub
     end if
 
@@ -483,7 +483,7 @@ sub edbgEmitProcHeader _
 
     dim as string desc, procname
 
-	if( env.clopt.debug = FALSE ) then
+	if( env.clopt.debuginfo = FALSE ) then
 		exit sub
 	end if
 
@@ -627,7 +627,7 @@ sub edbgEmitProcFooter _
 
     dim as string procname, lname
 
-	if( env.clopt.debug = FALSE ) then
+	if( env.clopt.debuginfo = FALSE ) then
 		exit sub
 	end if
 
@@ -889,7 +889,7 @@ sub edbgEmitGlobalVar _
 	dim as integer t = any, attrib = any
 	dim as string desc
 
-	if( env.clopt.debug = FALSE ) then
+	if( env.clopt.debuginfo = FALSE ) then
 		exit sub
 	end if
 
@@ -952,7 +952,7 @@ sub edbgEmitLocalVar _
 	dim as integer t = any
 	dim as string desc, value
 
-	if( env.clopt.debug = FALSE ) then
+	if( env.clopt.debuginfo = FALSE ) then
 		exit sub
 	end if
 
@@ -992,7 +992,7 @@ end sub
 sub edbgEmitProcArg( byval sym as FBSYMBOL ptr )
 	dim as string desc
 
-	if( env.clopt.debug = FALSE ) then
+	if( env.clopt.debuginfo = FALSE ) then
 		exit sub
 	end if
 

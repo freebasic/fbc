@@ -892,7 +892,7 @@ private function _emitBegin( ) as integer
 		builtins(i).used = FALSE
 	next
 
-	if( env.clopt.debug ) then
+	if( env.clopt.debuginfo ) then
 		_emitDBG( AST_OP_DBG_LINEINI, NULL, 0 )
 	end if
 

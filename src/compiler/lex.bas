@@ -191,7 +191,7 @@ private function hReadChar _
 		end if
 
 		'' update current line text (if not parsing an inc file)
-		if( env.clopt.debug ) then
+		if( env.clopt.debuginfo ) then
 			if( env.includerec = 0 ) then
 				if( lex.insidemacro = FALSE ) then
 					lex.insidemacro = TRUE
@@ -249,7 +249,7 @@ private function hReadChar _
 		end if
 
 		'' update current line text (if not parsing an inc file)
-		if( env.clopt.debug ) then
+		if( env.clopt.debuginfo ) then
 			if( env.includerec = 0 ) then
 				if( lex.insidemacro ) then
 					lex.insidemacro = FALSE
