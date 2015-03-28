@@ -207,7 +207,7 @@ const GLUT_CURSOR_INHERIT = 100
 const GLUT_CURSOR_NONE = 101
 const GLUT_CURSOR_FULL_CROSSHAIR = 102
 
-declare sub glutInit(byval argcp as long ptr, byval argv as zstring ptr ptr)
+declare sub glutInit(byref argcp as long, byref argv as zstring ptr)
 declare sub glutInitDisplayMode(byval mode as ulong)
 declare sub glutInitDisplayString(byval string as const zstring ptr)
 declare sub glutInitWindowPosition(byval x as long, byval y as long)
