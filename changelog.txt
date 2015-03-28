@@ -26,7 +26,7 @@ Version 1.02.0
 	fontconfig 2.11.1
 	Allegro 5.0.11
 	TRE 0.8.0 as tre/tre.bi and tre/regex.bi. For backwards-compatibility, the "plain" regex.bi still exists, but now just redirects to tre/regex.bi.
-	OpenGL, based on Mesa-3D 10.5.1 headers
+	OpenGL, based on Mesa-3D 10.5.1 (GL/mesa/*) and MinGW-w64 3.3.0 (GL/windows/*). GL/gl.bi & co use the Windows OpenGL binding on Win32/Win64, and the Mesa binding elsewhere.
 	GLUT 3.7
 	GLFW 2.7.9 (GL/glfw.bi), 3.1.1 (GLFW/glfw3.bi)
 	freeglut 3.0.0
