@@ -12,7 +12,11 @@
 #include once "GL/gl.bi"
 #include once "GL/glu.bi"
 
-extern "C"
+#ifdef __FB_WIN32__
+	extern "Windows"
+#else
+	extern "C"
+#endif
 
 #define __glut_h__
 
@@ -240,7 +244,7 @@ declare sub glutPostOverlayRedisplay()
 declare sub glutPostWindowOverlayRedisplay(byval win as long)
 declare sub glutShowOverlay()
 declare sub glutHideOverlay()
-declare function glutCreateMenu(byval as sub(byval as long)) as long
+declare function glutCreateMenu(byval as sub cdecl(byval as long)) as long
 declare sub glutDestroyMenu(byval menu as long)
 declare function glutGetMenu() as long
 declare sub glutSetMenu(byval menu as long)
@@ -251,31 +255,31 @@ declare sub glutChangeToSubMenu(byval item as long, byval label as const zstring
 declare sub glutRemoveMenuItem(byval item as long)
 declare sub glutAttachMenu(byval button as long)
 declare sub glutDetachMenu(byval button as long)
-declare sub glutDisplayFunc(byval func as sub())
-declare sub glutReshapeFunc(byval func as sub(byval width as long, byval height as long))
-declare sub glutKeyboardFunc(byval func as sub(byval key as ubyte, byval x as long, byval y as long))
-declare sub glutMouseFunc(byval func as sub(byval button as long, byval state as long, byval x as long, byval y as long))
-declare sub glutMotionFunc(byval func as sub(byval x as long, byval y as long))
-declare sub glutPassiveMotionFunc(byval func as sub(byval x as long, byval y as long))
-declare sub glutEntryFunc(byval func as sub(byval state as long))
-declare sub glutVisibilityFunc(byval func as sub(byval state as long))
-declare sub glutIdleFunc(byval func as sub())
-declare sub glutTimerFunc(byval millis as ulong, byval func as sub(byval value as long), byval value as long)
-declare sub glutMenuStateFunc(byval func as sub(byval state as long))
-declare sub glutSpecialFunc(byval func as sub(byval key as long, byval x as long, byval y as long))
-declare sub glutSpaceballMotionFunc(byval func as sub(byval x as long, byval y as long, byval z as long))
-declare sub glutSpaceballRotateFunc(byval func as sub(byval x as long, byval y as long, byval z as long))
-declare sub glutSpaceballButtonFunc(byval func as sub(byval button as long, byval state as long))
-declare sub glutButtonBoxFunc(byval func as sub(byval button as long, byval state as long))
-declare sub glutDialsFunc(byval func as sub(byval dial as long, byval value as long))
-declare sub glutTabletMotionFunc(byval func as sub(byval x as long, byval y as long))
-declare sub glutTabletButtonFunc(byval func as sub(byval button as long, byval state as long, byval x as long, byval y as long))
-declare sub glutMenuStatusFunc(byval func as sub(byval status as long, byval x as long, byval y as long))
-declare sub glutOverlayDisplayFunc(byval func as sub())
-declare sub glutWindowStatusFunc(byval func as sub(byval state as long))
-declare sub glutKeyboardUpFunc(byval func as sub(byval key as ubyte, byval x as long, byval y as long))
-declare sub glutSpecialUpFunc(byval func as sub(byval key as long, byval x as long, byval y as long))
-declare sub glutJoystickFunc(byval func as sub(byval buttonMask as ulong, byval x as long, byval y as long, byval z as long), byval pollInterval as long)
+declare sub glutDisplayFunc(byval func as sub cdecl())
+declare sub glutReshapeFunc(byval func as sub cdecl(byval width as long, byval height as long))
+declare sub glutKeyboardFunc(byval func as sub cdecl(byval key as ubyte, byval x as long, byval y as long))
+declare sub glutMouseFunc(byval func as sub cdecl(byval button as long, byval state as long, byval x as long, byval y as long))
+declare sub glutMotionFunc(byval func as sub cdecl(byval x as long, byval y as long))
+declare sub glutPassiveMotionFunc(byval func as sub cdecl(byval x as long, byval y as long))
+declare sub glutEntryFunc(byval func as sub cdecl(byval state as long))
+declare sub glutVisibilityFunc(byval func as sub cdecl(byval state as long))
+declare sub glutIdleFunc(byval func as sub cdecl())
+declare sub glutTimerFunc(byval millis as ulong, byval func as sub cdecl(byval value as long), byval value as long)
+declare sub glutMenuStateFunc(byval func as sub cdecl(byval state as long))
+declare sub glutSpecialFunc(byval func as sub cdecl(byval key as long, byval x as long, byval y as long))
+declare sub glutSpaceballMotionFunc(byval func as sub cdecl(byval x as long, byval y as long, byval z as long))
+declare sub glutSpaceballRotateFunc(byval func as sub cdecl(byval x as long, byval y as long, byval z as long))
+declare sub glutSpaceballButtonFunc(byval func as sub cdecl(byval button as long, byval state as long))
+declare sub glutButtonBoxFunc(byval func as sub cdecl(byval button as long, byval state as long))
+declare sub glutDialsFunc(byval func as sub cdecl(byval dial as long, byval value as long))
+declare sub glutTabletMotionFunc(byval func as sub cdecl(byval x as long, byval y as long))
+declare sub glutTabletButtonFunc(byval func as sub cdecl(byval button as long, byval state as long, byval x as long, byval y as long))
+declare sub glutMenuStatusFunc(byval func as sub cdecl(byval status as long, byval x as long, byval y as long))
+declare sub glutOverlayDisplayFunc(byval func as sub cdecl())
+declare sub glutWindowStatusFunc(byval func as sub cdecl(byval state as long))
+declare sub glutKeyboardUpFunc(byval func as sub cdecl(byval key as ubyte, byval x as long, byval y as long))
+declare sub glutSpecialUpFunc(byval func as sub cdecl(byval key as long, byval x as long, byval y as long))
+declare sub glutJoystickFunc(byval func as sub cdecl(byval buttonMask as ulong, byval x as long, byval y as long, byval z as long), byval pollInterval as long)
 declare sub glutSetColor(byval as long, byval red as GLfloat, byval green as GLfloat, byval blue as GLfloat)
 declare function glutGetColor(byval ndx as long, byval component as long) as GLfloat
 declare sub glutCopyColormap(byval win as long)
