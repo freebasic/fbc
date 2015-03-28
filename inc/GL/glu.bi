@@ -1,288 +1,245 @@
-/'
-** License Applicability. Except to the extent portions of this file are
-** made subject to an alternative license as permitted in the SGI Free
-** Software License B, Version 1.1 (the "License"), the contents of this
-** file are subject only to the provisions of the License. You may not use
-** this file except in compliance with the License. You may obtain a copy
-** of the License at Silicon Graphics, Inc., attn: Legal Services, 1600
-** Amphitheatre Parkway, Mountain View, CA 94043-1351, or at:
-**
-** http://oss.sgi.com/projects/FreeB
-**
-** Note that, as provided in the License, the Software is distributed on an
-** "AS IS" basis, with ALL EXPRESS AND IMPLIED WARRANTIES AND CONDITIONS
-** DISCLAIMED, INCLUDING, WITHOUT LIMITATION, ANY IMPLIED WARRANTIES AND
-** CONDITIONS OF MERCHANTABILITY, SATISFACTORY QUALITY, FITNESS FOR A
-** PARTICULAR PURPOSE, AND NON-INFRINGEMENT.
-**
-** Original Code. The Original Code is: OpenGL Sample Implementation,
-** Version 1.2.1, released January 26, 2000, developed by Silicon Graphics,
-** Inc. The Original Code is Copyright (c) 1991-2000 Silicon Graphics, Inc.
-** Copyright in any portions created by third parties is as indicated
-** elsewhere herein. All Rights Reserved.
-**
-** Additional Notice Provisions: This software was created using the
-** OpenGL(R) version 1.2.1 Sample Implementation published by SGI, but has
-** not been independently verified as being compliant with the OpenGL(R)
-** version 1.2.1 Specification.
-'/
-
-#Ifndef __glu_bi__
-#define __glu_bi__
-
-#Include Once "GL/gl.bi"
-
-#If Defined(__FB_WIN32__) Or Defined(__FB_CYGWIN__)
-Extern "Windows"
-#ElseIf Defined(__FB_UNIX__)
-Extern "C"
-#Else
-Extern "C"
-#EndIf
+#pragma once
 
 #ifdef __FB_WIN32__
-#Inclib "glu32"
-#elseif defined(__FB_LINUX__)
-#Inclib "GLU"
+	#inclib "glu32"
 #elseif defined(__FB_DOS__)
-#Inclib "glu"
-#EndIf
+	#inclib "glu"
+#else
+	#inclib "GLU"
+#endif
 
-/'***********************************************************'/
+#include once "GL/gl.bi"
 
-/' Boolean '/
-#define GLU_FALSE                          0
-#define GLU_TRUE                           1
+#ifdef __FB_WIN32__
+	extern "Windows"
+#else
+	extern "C"
+#endif
 
-/' Version '/
-#define GLU_VERSION_1_1                    1
-#define GLU_VERSION_1_2                    1
+#define __glu_h__
+const GLU_EXT_object_space_tess = 1
+const GLU_EXT_nurbs_tessellator = 1
+const GLU_FALSE = 0
+const GLU_TRUE = 1
+const GLU_VERSION_1_1 = 1
+const GLU_VERSION_1_2 = 1
+const GLU_VERSION_1_3 = 1
+const GLU_VERSION = 100800
+const GLU_EXTENSIONS = 100801
+const GLU_INVALID_ENUM = 100900
+const GLU_INVALID_VALUE = 100901
+const GLU_OUT_OF_MEMORY = 100902
+const GLU_INCOMPATIBLE_GL_VERSION = 100903
+const GLU_INVALID_OPERATION = 100904
+const GLU_OUTLINE_POLYGON = 100240
+const GLU_OUTLINE_PATCH = 100241
+const GLU_NURBS_ERROR = 100103
+const GLU_ERROR = 100103
+const GLU_NURBS_BEGIN = 100164
+const GLU_NURBS_BEGIN_EXT = 100164
+const GLU_NURBS_VERTEX = 100165
+const GLU_NURBS_VERTEX_EXT = 100165
+const GLU_NURBS_NORMAL = 100166
+const GLU_NURBS_NORMAL_EXT = 100166
+const GLU_NURBS_COLOR = 100167
+const GLU_NURBS_COLOR_EXT = 100167
+const GLU_NURBS_TEXTURE_COORD = 100168
+const GLU_NURBS_TEX_COORD_EXT = 100168
+const GLU_NURBS_END = 100169
+const GLU_NURBS_END_EXT = 100169
+const GLU_NURBS_BEGIN_DATA = 100170
+const GLU_NURBS_BEGIN_DATA_EXT = 100170
+const GLU_NURBS_VERTEX_DATA = 100171
+const GLU_NURBS_VERTEX_DATA_EXT = 100171
+const GLU_NURBS_NORMAL_DATA = 100172
+const GLU_NURBS_NORMAL_DATA_EXT = 100172
+const GLU_NURBS_COLOR_DATA = 100173
+const GLU_NURBS_COLOR_DATA_EXT = 100173
+const GLU_NURBS_TEXTURE_COORD_DATA = 100174
+const GLU_NURBS_TEX_COORD_DATA_EXT = 100174
+const GLU_NURBS_END_DATA = 100175
+const GLU_NURBS_END_DATA_EXT = 100175
+const GLU_NURBS_ERROR1 = 100251
+const GLU_NURBS_ERROR2 = 100252
+const GLU_NURBS_ERROR3 = 100253
+const GLU_NURBS_ERROR4 = 100254
+const GLU_NURBS_ERROR5 = 100255
+const GLU_NURBS_ERROR6 = 100256
+const GLU_NURBS_ERROR7 = 100257
+const GLU_NURBS_ERROR8 = 100258
+const GLU_NURBS_ERROR9 = 100259
+const GLU_NURBS_ERROR10 = 100260
+const GLU_NURBS_ERROR11 = 100261
+const GLU_NURBS_ERROR12 = 100262
+const GLU_NURBS_ERROR13 = 100263
+const GLU_NURBS_ERROR14 = 100264
+const GLU_NURBS_ERROR15 = 100265
+const GLU_NURBS_ERROR16 = 100266
+const GLU_NURBS_ERROR17 = 100267
+const GLU_NURBS_ERROR18 = 100268
+const GLU_NURBS_ERROR19 = 100269
+const GLU_NURBS_ERROR20 = 100270
+const GLU_NURBS_ERROR21 = 100271
+const GLU_NURBS_ERROR22 = 100272
+const GLU_NURBS_ERROR23 = 100273
+const GLU_NURBS_ERROR24 = 100274
+const GLU_NURBS_ERROR25 = 100275
+const GLU_NURBS_ERROR26 = 100276
+const GLU_NURBS_ERROR27 = 100277
+const GLU_NURBS_ERROR28 = 100278
+const GLU_NURBS_ERROR29 = 100279
+const GLU_NURBS_ERROR30 = 100280
+const GLU_NURBS_ERROR31 = 100281
+const GLU_NURBS_ERROR32 = 100282
+const GLU_NURBS_ERROR33 = 100283
+const GLU_NURBS_ERROR34 = 100284
+const GLU_NURBS_ERROR35 = 100285
+const GLU_NURBS_ERROR36 = 100286
+const GLU_NURBS_ERROR37 = 100287
+const GLU_AUTO_LOAD_MATRIX = 100200
+const GLU_CULLING = 100201
+const GLU_SAMPLING_TOLERANCE = 100203
+const GLU_DISPLAY_MODE = 100204
+const GLU_PARAMETRIC_TOLERANCE = 100202
+const GLU_SAMPLING_METHOD = 100205
+const GLU_U_STEP = 100206
+const GLU_V_STEP = 100207
+const GLU_NURBS_MODE = 100160
+const GLU_NURBS_MODE_EXT = 100160
+const GLU_NURBS_TESSELLATOR = 100161
+const GLU_NURBS_TESSELLATOR_EXT = 100161
+const GLU_NURBS_RENDERER = 100162
+const GLU_NURBS_RENDERER_EXT = 100162
+const GLU_OBJECT_PARAMETRIC_ERROR = 100208
+const GLU_OBJECT_PARAMETRIC_ERROR_EXT = 100208
+const GLU_OBJECT_PATH_LENGTH = 100209
+const GLU_OBJECT_PATH_LENGTH_EXT = 100209
+const GLU_PATH_LENGTH = 100215
+const GLU_PARAMETRIC_ERROR = 100216
+const GLU_DOMAIN_DISTANCE = 100217
+const GLU_MAP1_TRIM_2 = 100210
+const GLU_MAP1_TRIM_3 = 100211
+const GLU_POINT = 100010
+const GLU_LINE = 100011
+const GLU_FILL = 100012
+const GLU_SILHOUETTE = 100013
+const GLU_SMOOTH = 100000
+const GLU_FLAT = 100001
+const GLU_NONE = 100002
+const GLU_OUTSIDE = 100020
+const GLU_INSIDE = 100021
+const GLU_TESS_BEGIN = 100100
+const GLU_BEGIN = 100100
+const GLU_TESS_VERTEX = 100101
+const GLU_VERTEX = 100101
+const GLU_TESS_END = 100102
+const GLU_END = 100102
+const GLU_TESS_ERROR = 100103
+const GLU_TESS_EDGE_FLAG = 100104
+const GLU_EDGE_FLAG = 100104
+const GLU_TESS_COMBINE = 100105
+const GLU_TESS_BEGIN_DATA = 100106
+const GLU_TESS_VERTEX_DATA = 100107
+const GLU_TESS_END_DATA = 100108
+const GLU_TESS_ERROR_DATA = 100109
+const GLU_TESS_EDGE_FLAG_DATA = 100110
+const GLU_TESS_COMBINE_DATA = 100111
+const GLU_CW = 100120
+const GLU_CCW = 100121
+const GLU_INTERIOR = 100122
+const GLU_EXTERIOR = 100123
+const GLU_UNKNOWN = 100124
+const GLU_TESS_WINDING_RULE = 100140
+const GLU_TESS_BOUNDARY_ONLY = 100141
+const GLU_TESS_TOLERANCE = 100142
+const GLU_TESS_ERROR1 = 100151
+const GLU_TESS_ERROR2 = 100152
+const GLU_TESS_ERROR3 = 100153
+const GLU_TESS_ERROR4 = 100154
+const GLU_TESS_ERROR5 = 100155
+const GLU_TESS_ERROR6 = 100156
+const GLU_TESS_ERROR7 = 100157
+const GLU_TESS_ERROR8 = 100158
+const GLU_TESS_MISSING_BEGIN_POLYGON = 100151
+const GLU_TESS_MISSING_BEGIN_CONTOUR = 100152
+const GLU_TESS_MISSING_END_POLYGON = 100153
+const GLU_TESS_MISSING_END_CONTOUR = 100154
+const GLU_TESS_COORD_TOO_LARGE = 100155
+const GLU_TESS_NEED_COMBINE_CALLBACK = 100156
+const GLU_TESS_WINDING_ODD = 100130
+const GLU_TESS_WINDING_NONZERO = 100131
+const GLU_TESS_WINDING_POSITIVE = 100132
+const GLU_TESS_WINDING_NEGATIVE = 100133
+const GLU_TESS_WINDING_ABS_GEQ_TWO = 100134
 
-/' StringName '/
-#define GLU_VERSION                        100800
-#define GLU_EXTENSIONS                     100801
+type GLUnurbs as GLUnurbs_
+type GLUnurbsObj as GLUnurbs
+type GLUquadric as GLUquadric_
+type GLUquadricObj as GLUquadric
+type GLUtesselator as GLUtesselator_
+type GLUtesselatorObj as GLUtesselator
+type GLUtriangulatorObj as GLUtesselator
+const GLU_TESS_MAX_COORD = 1.0e150
+type _GLUfuncptr as sub()
 
-/' ErrorCode '/
-#define GLU_INVALID_ENUM                   100900
-#define GLU_INVALID_VALUE                  100901
-#define GLU_OUT_OF_MEMORY                  100902
-#define GLU_INVALID_OPERATION              100904
+declare sub gluBeginCurve(byval nurb as GLUnurbs ptr)
+declare sub gluBeginPolygon(byval tess as GLUtesselator ptr)
+declare sub gluBeginSurface(byval nurb as GLUnurbs ptr)
+declare sub gluBeginTrim(byval nurb as GLUnurbs ptr)
+declare function gluBuild1DMipmapLevels(byval target as GLenum, byval internalFormat as GLint, byval width as GLsizei, byval format as GLenum, byval type as GLenum, byval level as GLint, byval base as GLint, byval max as GLint, byval data as const any ptr) as GLint
+declare function gluBuild1DMipmaps(byval target as GLenum, byval internalFormat as GLint, byval width as GLsizei, byval format as GLenum, byval type as GLenum, byval data as const any ptr) as GLint
+declare function gluBuild2DMipmapLevels(byval target as GLenum, byval internalFormat as GLint, byval width as GLsizei, byval height as GLsizei, byval format as GLenum, byval type as GLenum, byval level as GLint, byval base as GLint, byval max as GLint, byval data as const any ptr) as GLint
+declare function gluBuild2DMipmaps(byval target as GLenum, byval internalFormat as GLint, byval width as GLsizei, byval height as GLsizei, byval format as GLenum, byval type as GLenum, byval data as const any ptr) as GLint
+declare function gluBuild3DMipmapLevels(byval target as GLenum, byval internalFormat as GLint, byval width as GLsizei, byval height as GLsizei, byval depth as GLsizei, byval format as GLenum, byval type as GLenum, byval level as GLint, byval base as GLint, byval max as GLint, byval data as const any ptr) as GLint
+declare function gluBuild3DMipmaps(byval target as GLenum, byval internalFormat as GLint, byval width as GLsizei, byval height as GLsizei, byval depth as GLsizei, byval format as GLenum, byval type as GLenum, byval data as const any ptr) as GLint
+declare function gluCheckExtension(byval extName as const GLubyte ptr, byval extString as const GLubyte ptr) as GLboolean
+declare sub gluCylinder(byval quad as GLUquadric ptr, byval base as GLdouble, byval top as GLdouble, byval height as GLdouble, byval slices as GLint, byval stacks as GLint)
+declare sub gluDeleteNurbsRenderer(byval nurb as GLUnurbs ptr)
+declare sub gluDeleteQuadric(byval quad as GLUquadric ptr)
+declare sub gluDeleteTess(byval tess as GLUtesselator ptr)
+declare sub gluDisk(byval quad as GLUquadric ptr, byval inner as GLdouble, byval outer as GLdouble, byval slices as GLint, byval loops as GLint)
+declare sub gluEndCurve(byval nurb as GLUnurbs ptr)
+declare sub gluEndPolygon(byval tess as GLUtesselator ptr)
+declare sub gluEndSurface(byval nurb as GLUnurbs ptr)
+declare sub gluEndTrim(byval nurb as GLUnurbs ptr)
+declare function gluErrorString(byval error as GLenum) as const GLubyte ptr
+declare sub gluGetNurbsProperty(byval nurb as GLUnurbs ptr, byval property as GLenum, byval data as GLfloat ptr)
+declare function gluGetString(byval name as GLenum) as const GLubyte ptr
+declare sub gluGetTessProperty(byval tess as GLUtesselator ptr, byval which as GLenum, byval data as GLdouble ptr)
+declare sub gluLoadSamplingMatrices(byval nurb as GLUnurbs ptr, byval model as const GLfloat ptr, byval perspective as const GLfloat ptr, byval view as const GLint ptr)
+declare sub gluLookAt(byval eyeX as GLdouble, byval eyeY as GLdouble, byval eyeZ as GLdouble, byval centerX as GLdouble, byval centerY as GLdouble, byval centerZ as GLdouble, byval upX as GLdouble, byval upY as GLdouble, byval upZ as GLdouble)
+declare function gluNewNurbsRenderer() as GLUnurbs ptr
+declare function gluNewQuadric() as GLUquadric ptr
+declare function gluNewTess() as GLUtesselator ptr
+declare sub gluNextContour(byval tess as GLUtesselator ptr, byval type as GLenum)
+declare sub gluNurbsCallback(byval nurb as GLUnurbs ptr, byval which as GLenum, byval CallBackFunc as _GLUfuncptr)
+declare sub gluNurbsCallbackData(byval nurb as GLUnurbs ptr, byval userData as GLvoid ptr)
+declare sub gluNurbsCallbackDataEXT(byval nurb as GLUnurbs ptr, byval userData as GLvoid ptr)
+declare sub gluNurbsCurve(byval nurb as GLUnurbs ptr, byval knotCount as GLint, byval knots as GLfloat ptr, byval stride as GLint, byval control as GLfloat ptr, byval order as GLint, byval type as GLenum)
+declare sub gluNurbsProperty(byval nurb as GLUnurbs ptr, byval property as GLenum, byval value as GLfloat)
+declare sub gluNurbsSurface(byval nurb as GLUnurbs ptr, byval sKnotCount as GLint, byval sKnots as GLfloat ptr, byval tKnotCount as GLint, byval tKnots as GLfloat ptr, byval sStride as GLint, byval tStride as GLint, byval control as GLfloat ptr, byval sOrder as GLint, byval tOrder as GLint, byval type as GLenum)
+declare sub gluOrtho2D(byval left as GLdouble, byval right as GLdouble, byval bottom as GLdouble, byval top as GLdouble)
+declare sub gluPartialDisk(byval quad as GLUquadric ptr, byval inner as GLdouble, byval outer as GLdouble, byval slices as GLint, byval loops as GLint, byval start as GLdouble, byval sweep as GLdouble)
+declare sub gluPerspective(byval fovy as GLdouble, byval aspect as GLdouble, byval zNear as GLdouble, byval zFar as GLdouble)
+declare sub gluPickMatrix(byval x as GLdouble, byval y as GLdouble, byval delX as GLdouble, byval delY as GLdouble, byval viewport as GLint ptr)
+declare function gluProject(byval objX as GLdouble, byval objY as GLdouble, byval objZ as GLdouble, byval model as const GLdouble ptr, byval proj as const GLdouble ptr, byval view as const GLint ptr, byval winX as GLdouble ptr, byval winY as GLdouble ptr, byval winZ as GLdouble ptr) as GLint
+declare sub gluPwlCurve(byval nurb as GLUnurbs ptr, byval count as GLint, byval data as GLfloat ptr, byval stride as GLint, byval type as GLenum)
+declare sub gluQuadricCallback(byval quad as GLUquadric ptr, byval which as GLenum, byval CallBackFunc as _GLUfuncptr)
+declare sub gluQuadricDrawStyle(byval quad as GLUquadric ptr, byval draw as GLenum)
+declare sub gluQuadricNormals(byval quad as GLUquadric ptr, byval normal as GLenum)
+declare sub gluQuadricOrientation(byval quad as GLUquadric ptr, byval orientation as GLenum)
+declare sub gluQuadricTexture(byval quad as GLUquadric ptr, byval texture as GLboolean)
+declare function gluScaleImage(byval format as GLenum, byval wIn as GLsizei, byval hIn as GLsizei, byval typeIn as GLenum, byval dataIn as const any ptr, byval wOut as GLsizei, byval hOut as GLsizei, byval typeOut as GLenum, byval dataOut as GLvoid ptr) as GLint
+declare sub gluSphere(byval quad as GLUquadric ptr, byval radius as GLdouble, byval slices as GLint, byval stacks as GLint)
+declare sub gluTessBeginContour(byval tess as GLUtesselator ptr)
+declare sub gluTessBeginPolygon(byval tess as GLUtesselator ptr, byval data as GLvoid ptr)
+declare sub gluTessCallback(byval tess as GLUtesselator ptr, byval which as GLenum, byval CallBackFunc as _GLUfuncptr)
+declare sub gluTessEndContour(byval tess as GLUtesselator ptr)
+declare sub gluTessEndPolygon(byval tess as GLUtesselator ptr)
+declare sub gluTessNormal(byval tess as GLUtesselator ptr, byval valueX as GLdouble, byval valueY as GLdouble, byval valueZ as GLdouble)
+declare sub gluTessProperty(byval tess as GLUtesselator ptr, byval which as GLenum, byval data as GLdouble)
+declare sub gluTessVertex(byval tess as GLUtesselator ptr, byval location as GLdouble ptr, byval data as GLvoid ptr)
+declare function gluUnProject(byval winX as GLdouble, byval winY as GLdouble, byval winZ as GLdouble, byval model as const GLdouble ptr, byval proj as const GLdouble ptr, byval view as const GLint ptr, byval objX as GLdouble ptr, byval objY as GLdouble ptr, byval objZ as GLdouble ptr) as GLint
+declare function gluUnProject4(byval winX as GLdouble, byval winY as GLdouble, byval winZ as GLdouble, byval clipW as GLdouble, byval model as const GLdouble ptr, byval proj as const GLdouble ptr, byval view as const GLint ptr, byval nearVal as GLdouble, byval farVal as GLdouble, byval objX as GLdouble ptr, byval objY as GLdouble ptr, byval objZ as GLdouble ptr, byval objW as GLdouble ptr) as GLint
 
-/' NurbsDisplay '/
-/'      GLU_FILL '/
-#define GLU_OUTLINE_POLYGON                100240
-#define GLU_OUTLINE_PATCH                  100241
-
-/' NurbsError '/
-#define GLU_NURBS_ERROR1                   100251
-#define GLU_NURBS_ERROR2                   100252
-#define GLU_NURBS_ERROR3                   100253
-#define GLU_NURBS_ERROR4                   100254
-#define GLU_NURBS_ERROR5                   100255
-#define GLU_NURBS_ERROR6                   100256
-#define GLU_NURBS_ERROR7                   100257
-#define GLU_NURBS_ERROR8                   100258
-#define GLU_NURBS_ERROR9                   100259
-#define GLU_NURBS_ERROR10                  100260
-#define GLU_NURBS_ERROR11                  100261
-#define GLU_NURBS_ERROR12                  100262
-#define GLU_NURBS_ERROR13                  100263
-#define GLU_NURBS_ERROR14                  100264
-#define GLU_NURBS_ERROR15                  100265
-#define GLU_NURBS_ERROR16                  100266
-#define GLU_NURBS_ERROR17                  100267
-#define GLU_NURBS_ERROR18                  100268
-#define GLU_NURBS_ERROR19                  100269
-#define GLU_NURBS_ERROR20                  100270
-#define GLU_NURBS_ERROR21                  100271
-#define GLU_NURBS_ERROR22                  100272
-#define GLU_NURBS_ERROR23                  100273
-#define GLU_NURBS_ERROR24                  100274
-#define GLU_NURBS_ERROR25                  100275
-#define GLU_NURBS_ERROR26                  100276
-#define GLU_NURBS_ERROR27                  100277
-#define GLU_NURBS_ERROR28                  100278
-#define GLU_NURBS_ERROR29                  100279
-#define GLU_NURBS_ERROR30                  100280
-#define GLU_NURBS_ERROR31                  100281
-#define GLU_NURBS_ERROR32                  100282
-#define GLU_NURBS_ERROR33                  100283
-#define GLU_NURBS_ERROR34                  100284
-#define GLU_NURBS_ERROR35                  100285
-#define GLU_NURBS_ERROR36                  100286
-#define GLU_NURBS_ERROR37                  100287
-
-/' NurbsProperty '/
-#define GLU_AUTO_LOAD_MATRIX               100200
-#define GLU_CULLING                        100201
-#define GLU_SAMPLING_TOLERANCE             100203
-#define GLU_DISPLAY_MODE                   100204
-#define GLU_PARAMETRIC_TOLERANCE           100202
-#define GLU_SAMPLING_METHOD                100205
-#define GLU_U_STEP                         100206
-#define GLU_V_STEP                         100207
-
-/' NurbsSampling '/
-#define GLU_PATH_LENGTH                    100215
-#define GLU_PARAMETRIC_ERROR               100216
-#define GLU_DOMAIN_DISTANCE                100217
-
-/' NurbsTrim '/
-#define GLU_MAP1_TRIM_2                    100210
-#define GLU_MAP1_TRIM_3                    100211
-
-/' QuadricDrawStyle '/
-#define GLU_POINT                          100010
-#define GLU_LINE                           100011
-#define GLU_FILL                           100012
-#define GLU_SILHOUETTE                     100013
-
-/' QuadricCallback '/
-#define GLU_ERROR                          100103
-
-/' QuadricNormal '/
-#define GLU_SMOOTH                         100000
-#define GLU_FLAT                           100001
-#define GLU_NONE                           100002
-
-/' QuadricOrientation '/
-#define GLU_OUTSIDE                        100020
-#define GLU_INSIDE                         100021
-
-/' TessCallback '/
-#define GLU_TESS_BEGIN                     100100
-#define GLU_BEGIN                          100100
-#define GLU_TESS_VERTEX                    100101
-#define GLU_VERTEX                         100101
-#define GLU_TESS_END                       100102
-#define GLU_END                            100102
-#define GLU_TESS_ERROR                     100103
-#define GLU_TESS_EDGE_FLAG                 100104
-#define GLU_EDGE_FLAG                      100104
-#define GLU_TESS_COMBINE                   100105
-#define GLU_TESS_BEGIN_DATA                100106
-#define GLU_TESS_VERTEX_DATA               100107
-#define GLU_TESS_END_DATA                  100108
-#define GLU_TESS_ERROR_DATA                100109
-#define GLU_TESS_EDGE_FLAG_DATA            100110
-#define GLU_TESS_COMBINE_DATA              100111
-
-/' TessContour '/
-#define GLU_CW                             100120
-#define GLU_CCW                            100121
-#define GLU_INTERIOR                       100122
-#define GLU_EXTERIOR                       100123
-#define GLU_UNKNOWN                        100124
-
-/' TessProperty '/
-#define GLU_TESS_WINDING_RULE              100140
-#define GLU_TESS_BOUNDARY_ONLY             100141
-#define GLU_TESS_TOLERANCE                 100142
-
-/' TessError '/
-#define GLU_TESS_ERROR1                    100151
-#define GLU_TESS_ERROR2                    100152
-#define GLU_TESS_ERROR3                    100153
-#define GLU_TESS_ERROR4                    100154
-#define GLU_TESS_ERROR5                    100155
-#define GLU_TESS_ERROR6                    100156
-#define GLU_TESS_ERROR7                    100157
-#define GLU_TESS_ERROR8                    100158
-#define GLU_TESS_MISSING_BEGIN_POLYGON     100151
-#define GLU_TESS_MISSING_BEGIN_CONTOUR     100152
-#define GLU_TESS_MISSING_END_POLYGON       100153
-#define GLU_TESS_MISSING_END_CONTOUR       100154
-#define GLU_TESS_COORD_TOO_LARGE           100155
-#define GLU_TESS_NEED_COMBINE_CALLBACK     100156
-
-/' TessWinding '/
-#define GLU_TESS_WINDING_ODD               100130
-#define GLU_TESS_WINDING_NONZERO           100131
-#define GLU_TESS_WINDING_POSITIVE          100132
-#define GLU_TESS_WINDING_NEGATIVE          100133
-#define GLU_TESS_WINDING_ABS_GEQ_TWO       100134
-
-/' Obsolete. For compatibility with previous Sun OpenGL versions '/
-#define GLU_INCOMPATIBLE_GL_VERSION        100903
-
-
-/'***********************************************************'/
-
-
-Type As Any GLUnurbs
-Type As Any GLUquadric
-Type As Any GLUtesselator
-
-Type As GLUnurbs GLUnurbsObj
-Type As GLUquadric GLUquadricObj
-Type As GLUtesselator GLUtesselatorObj
-Type As GLUtesselator GLUtriangulatorObj
-
-#define GLU_TESS_MAX_COORD 1.0e150
-
-/' Internal convenience typedefs '/
-Type As Any Ptr _GLUfuncptr
-
-Declare Sub gluBeginCurve(ByVal nurb As GLUnurbs Ptr)
-Declare Sub gluBeginPolygon(ByVal tess As GLUtesselator Ptr)
-Declare Sub gluBeginSurface(ByVal nurb As GLUnurbs Ptr)
-Declare Sub gluBeginTrim(ByVal nurb As GLUnurbs Ptr)
-Declare Function gluBuild1DMipmaps(ByVal target As GLenum, ByVal internalFormat As GLint, ByVal Width As GLsizei, ByVal Format As GLenum, ByVal Type As GLenum, ByVal Data As Any Ptr) As GLint
-Declare Function gluBuild2DMipmaps(ByVal target As GLenum, ByVal internalFormat As GLint, ByVal Width As GLsizei, ByVal height As GLsizei, ByVal Format As GLenum, ByVal Type As GLenum, ByVal Data As Any Ptr) As GLint
-Declare Sub gluCylinder(ByVal quad As GLUquadric Ptr, ByVal base As GLdouble, ByVal top As GLdouble, ByVal height As GLdouble, ByVal slices As GLint, ByVal stacks As GLint)
-Declare Sub gluDeleteNurbsRenderer(ByVal nurb As GLUnurbs Ptr)
-Declare Sub gluDeleteQuadric(ByVal quad As GLUquadric Ptr)
-Declare Sub gluDeleteTess(ByVal tess As GLUtesselator Ptr)
-Declare Sub gluDisk(ByVal quad As GLUquadric Ptr, ByVal inner As GLdouble, ByVal outer As GLdouble, ByVal slices As GLint, ByVal loops As GLint)
-Declare Sub gluEndCurve(ByVal nurb As GLUnurbs Ptr)
-Declare Sub gluEndPolygon(ByVal tess As GLUtesselator Ptr)
-Declare Sub gluEndSurface(ByVal nurb As GLUnurbs Ptr)
-Declare Sub gluEndTrim(ByVal nurb As GLUnurbs Ptr)
-Declare Function gluErrorString(ByVal Error As GLenum) As ZString Ptr
-Declare Function gluErrorUnicodeStringEXT(ByVal Error As GLenum) As WString Ptr
-Declare Sub gluGetNurbsProperty(ByVal nurb As GLUnurbs Ptr, ByVal Property As GLenum, ByVal Data As GLfloat Ptr)
-Declare Function gluGetString(ByVal Name As GLenum) As ZString Ptr
-Declare Sub gluGetTessProperty(ByVal tess As GLUtesselator Ptr, ByVal which As GLenum, ByVal Data As GLdouble Ptr)
-Declare Sub gluLoadSamplingMatrices(ByVal nurb As GLUnurbs Ptr, ByVal model As GLfloat Ptr, ByVal perspective As GLfloat Ptr, ByVal View As GLint Ptr)
-Declare Sub gluLookAt(ByVal eyeX As GLdouble, ByVal eyeY As GLdouble, ByVal eyeZ As GLdouble, ByVal centerX As GLdouble, ByVal centerY As GLdouble, ByVal centerZ As GLdouble, ByVal upX As GLdouble, ByVal upY As GLdouble, ByVal upZ As GLdouble)
-Declare Function gluNewNurbsRenderer() As GLUnurbs Ptr
-Declare Function gluNewQuadric() As GLUquadric Ptr
-Declare Function gluNewTess() As GLUtesselator Ptr
-Declare Sub gluNextContour(ByVal tess As GLUtesselator Ptr, ByVal Type As GLenum)
-Declare Sub gluNurbsCallback(ByVal nurb As GLUnurbs Ptr, ByVal which As GLenum, ByVal CallBackFunc As _GLUfuncptr)
-Declare Sub gluNurbsCurve(ByVal nurb As GLUnurbs Ptr, ByVal knotCount As GLint, ByVal knots As GLfloat Ptr, ByVal stride As GLint, ByVal control As GLfloat Ptr, ByVal order As GLint, ByVal Type As GLenum)
-Declare Sub gluNurbsProperty(ByVal nurb As GLUnurbs Ptr, ByVal Property As GLenum, ByVal value As GLfloat)
-Declare Sub gluNurbsSurface(ByVal nurb As GLUnurbs Ptr, ByVal sKnotCount As GLint, ByVal sKnots As GLfloat Ptr, ByVal tKnotCount As GLint, ByVal tKnots As GLfloat Ptr, ByVal sStride As GLint, ByVal tStride As GLint, ByVal control As GLfloat Ptr, ByVal sOrder As GLint, ByVal tOrder As GLint, ByVal Type As GLenum)
-Declare Sub gluOrtho2D(ByVal Left As GLdouble, ByVal Right As GLdouble, ByVal bottom As GLdouble, ByVal top As GLdouble)
-Declare Sub gluPartialDisk(ByVal quad As GLUquadric Ptr, ByVal inner As GLdouble, ByVal outer As GLdouble, ByVal slices As GLint, ByVal loops As GLint, ByVal start As GLdouble, ByVal sweep As GLdouble)
-Declare Sub gluPerspective(ByVal fovy As GLdouble, ByVal aspect As GLdouble, ByVal zNear As GLdouble, ByVal zFar As GLdouble)
-Declare Sub gluPickMatrix(ByVal x As GLdouble, ByVal y As GLdouble, ByVal delX As GLdouble, ByVal delY As GLdouble, ByVal viewport As GLint Ptr)
-Declare Function gluProject(ByVal objX As GLdouble, ByVal objY As GLdouble, ByVal objZ As GLdouble, ByVal model As GLdouble Ptr, ByVal proj As GLdouble Ptr, ByVal View As GLint Ptr, ByVal winX As GLdouble Ptr, ByVal winY As GLdouble Ptr, ByVal winZ As GLdouble Ptr) As GLint
-Declare Sub gluPwlCurve(ByVal nurb As GLUnurbs Ptr, ByVal count As GLint, ByVal Data As GLfloat Ptr, ByVal stride As GLint, ByVal Type As GLenum)
-Declare Sub gluQuadricCallback(ByVal quad As GLUquadric Ptr, ByVal which As GLenum, ByVal CallBackFunc As _GLUfuncptr)
-Declare Sub gluQuadricDrawStyle(ByVal quad As GLUquadric Ptr, ByVal Draw As GLenum)
-Declare Sub gluQuadricNormals(ByVal quad As GLUquadric Ptr, ByVal normal As GLenum)
-Declare Sub gluQuadricOrientation(ByVal quad As GLUquadric Ptr, ByVal orientation As GLenum)
-Declare Sub gluQuadricTexture(ByVal quad As GLUquadric Ptr, ByVal texture As GLboolean)
-Declare Function gluScaleImage(ByVal Format As GLenum, ByVal wIn As GLsizei, ByVal hIn As GLsizei, ByVal typeIn As GLenum, ByVal dataIn As Any Ptr, ByVal wOut As GLsizei, ByVal hOut As GLsizei, ByVal typeOut As GLenum, ByVal dataOut As GLvoid Ptr) As GLint
-Declare Sub gluSphere(ByVal quad As GLUquadric Ptr, ByVal radius As GLdouble, ByVal slices As GLint, ByVal stacks As GLint)
-Declare Sub gluTessBeginContour(ByVal tess As GLUtesselator Ptr)
-Declare Sub gluTessBeginPolygon(ByVal tess As GLUtesselator Ptr, ByVal Data As GLvoid Ptr)
-Declare Sub gluTessCallback(ByVal tess As GLUtesselator Ptr, ByVal which As GLenum, ByVal CallBackFunc As _GLUfuncptr)
-Declare Sub gluTessEndContour(ByVal tess As GLUtesselator Ptr)
-Declare Sub gluTessEndPolygon(ByVal tess As GLUtesselator Ptr)
-Declare Sub gluTessNormal(ByVal tess As GLUtesselator Ptr, ByVal valueX As GLdouble, ByVal valueY As GLdouble, ByVal valueZ As GLdouble)
-Declare Sub gluTessProperty(ByVal tess As GLUtesselator Ptr, ByVal which As GLenum, ByVal Data As GLdouble)
-Declare Sub gluTessVertex(ByVal tess As GLUtesselator Ptr, ByVal location As GLdouble Ptr, ByVal Data As GLvoid Ptr)
-Declare Function gluUnProject(ByVal winX As GLdouble, ByVal winY As GLdouble, ByVal winZ As GLdouble, ByVal model As GLdouble Ptr, ByVal proj As GLdouble Ptr, ByVal View As GLint Ptr, ByVal objX As GLdouble Ptr, ByVal objY As GLdouble Ptr, ByVal objZ As GLdouble Ptr) As GLint
-Declare Function gluUnProject4(ByVal winX As GLdouble, ByVal winY As GLdouble, ByVal winZ As GLdouble, ByVal clipW As GLdouble, ByVal model As GLdouble Ptr, ByVal proj As GLdouble Ptr, ByVal View As GLint Ptr, ByVal nearVal As GLdouble, ByVal farVal As GLdouble, ByVal objX As GLdouble Ptr, ByVal objY As GLdouble Ptr, ByVal objZ As GLdouble Ptr, ByVal objW As GLdouble Ptr) As GLint
-
-#Ifdef UNICODE
-#define gluErrorStringWIN gluErrorUnicodeStringEXT
-#Else
-#define gluErrorStringWIN gluErrorString
-#EndIf
-
-End Extern
-
-#EndIf /' __glu_bi__ '/
+end extern
