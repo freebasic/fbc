@@ -69,7 +69,7 @@ enum FB_COMPOPT
 	FB_COMPOPT_FORCELANG            '' boolean: TRUE if -forcelang was specified
 
 	'' debugging/error checking
-	FB_COMPOPT_DEBUG                '' boolean: -g
+	FB_COMPOPT_DEBUGINFO            '' boolean: debugging info (affects code generation)
 	FB_COMPOPT_ERRORCHECK           '' boolean: runtime error checks
 	FB_COMPOPT_RESUMEERROR          '' boolean: RESUME support
 	FB_COMPOPT_EXTRAERRCHECK        '' boolean: NULL pointer/array bounds checks
@@ -239,7 +239,7 @@ type FBCMMLINEOPT
 	forcelang       as integer              '' TRUE if -forcelang was specified
 
 	'' debugging/error checking
-	debug           as integer              '' true = add debug info (default = false)
+	debuginfo       as integer              '' true = add debug info (default = false)
 	errorcheck      as integer              '' enable runtime error checks?
 	resumeerr       as integer              '' enable RESUME support?
 	extraerrchk     as integer              '' enable NULL pointer/array bounds checks?
