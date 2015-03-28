@@ -103,7 +103,7 @@ private function hDefOutObj_cb ( ) as string
 end function
 
 private function hDefDebug_cb ( ) as string
-	function = str( env.clopt.debuginfo )
+	function = str( env.clopt.assertions )
 end function
 
 private function hDefErr_cb ( ) as string

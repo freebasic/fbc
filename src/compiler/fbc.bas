@@ -1604,6 +1604,7 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 
 	case OPT_G
 		fbSetOption( FB_COMPOPT_DEBUGINFO, TRUE )
+		fbSetOption( FB_COMPOPT_ASSERTIONS, TRUE )
 
 	case OPT_GEN
 		select case( lcase( arg ) )
