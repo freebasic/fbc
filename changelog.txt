@@ -28,6 +28,7 @@ Version 1.02.0
 	TRE 0.8.0 as tre/tre.bi and tre/regex.bi. For backwards-compatibility, the "plain" regex.bi still exists, but now just redirects to tre/regex.bi.
 	OpenGL, based on Mesa-3D 10.5.1 headers
 	GLUT 3.7
+	GLFW 2.7.9 (GL/glfw.bi), 3.1.1 (GLFW/glfw3.bi)
 
 [fixed]
 - Potential bad code generation for dynamic array field copying
