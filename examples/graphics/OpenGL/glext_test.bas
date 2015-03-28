@@ -41,8 +41,8 @@ declare sub shutdown ()
 	
 	dim shared TexID(1) as uinteger		'our Texture Objects
 
-	dim shared glActiveTextureARB as PFNGLACTIVETEXTUREARBPROC
-	dim shared glMultiTexCoord2iARB as PFNGLMULTITEXCOORD2IARBPROC
+	dim shared glActiveTextureARB_ as PFNGLACTIVETEXTUREARBPROC
+	dim shared glMultiTexCoord2iARB_ as PFNGLMULTITEXCOORD2IARBPROC
 
 	main( )
 
@@ -81,11 +81,11 @@ sub initGL
 		shutdown		
 	end if
 
-	glActiveTextureARB = cast(PFNGLACTIVETEXTUREARBPROC, glfwGetProcAddress( "glActiveTextureARB" ))
-	glMultiTexCoord2iARB = cast(PFNGLMULTITEXCOORD2IARBPROC, glfwGetProcAddress( "glMultiTexCoord2iARB" ))
+	glActiveTextureARB_ = cast(PFNGLACTIVETEXTUREARBPROC, glfwGetProcAddress( "glActiveTextureARB" ))
+	glMultiTexCoord2iARB_ = cast(PFNGLMULTITEXCOORD2IARBPROC, glfwGetProcAddress( "glMultiTexCoord2iARB" ))
 
 	'shouldn't be necessary, but can't be too careful
-	if (glActiveTextureARB = NULL) or (glMultiTexCoord2iARB = NULL) then 
+	if (glActiveTextureARB_ = NULL) or (glMultiTexCoord2iARB_ = NULL) then 
 		shutdown
 	end if
 			
@@ -96,7 +96,7 @@ sub initGL
 
     glGenTextures 2, @TexID(0)
 
-	glActiveTextureARB(GL_TEXTURE0_ARB)
+	glActiveTextureARB_(GL_TEXTURE0_ARB)
 	glBindTexture GL_TEXTURE_2D, TexID(0)
 	'make a simple checked pattern
 	i=0
@@ -117,7 +117,7 @@ sub initGL
     glTexImage2D GL_TEXTURE_2D, 0, 1, 128, 128, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, @Img(0)
 	glEnable GL_TEXTURE_2D
 
-	glActiveTextureARB(GL_TEXTURE1_ARB)
+	glActiveTextureARB_(GL_TEXTURE1_ARB)
 	glBindTexture GL_TEXTURE_2D, TexID(1)
 	'build a 2D attenuation map
 	i=0
@@ -230,19 +230,19 @@ sub renderScene
 		glBegin GL_QUADS
 			'first texture unit may use standard TexCoord call
 			glTexCoord2i 0, 0	
-			glMultiTexCoord2iARB(GL_TEXTURE1_ARB, 0, 0)
+			glMultiTexCoord2iARB_(GL_TEXTURE1_ARB, 0, 0)
 			glVertex2i -3, -3
 			
 			glTexCoord2i 1, 0
-			glMultiTexCoord2iARB(GL_TEXTURE1_ARB, 1, 0)
+			glMultiTexCoord2iARB_(GL_TEXTURE1_ARB, 1, 0)
 			glVertex2i  3, -3
 			
 			glTexCoord2i 1, 1
-			glMultiTexCoord2iARB(GL_TEXTURE1_ARB, 1, 1)
+			glMultiTexCoord2iARB_(GL_TEXTURE1_ARB, 1, 1)
 			glVertex2i  3, 3
 			
 			glTexCoord2i 0, 1
-			glMultiTexCoord2iARB(GL_TEXTURE1_ARB, 0, 1)
+			glMultiTexCoord2iARB_(GL_TEXTURE1_ARB, 0, 1)
 			glVertex2i -3, 3
 		glEnd    
 	glPopMatrix            
