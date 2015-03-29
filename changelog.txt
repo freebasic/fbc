@@ -31,6 +31,7 @@ Version 1.02.0
 	GLFW 2.7.9 (GL/glfw.bi), 3.1.1 (GLFW/glfw3.bi)
 	freeglut 3.0.0
 	Cairo 1.14.2
+	FreeType 2.5.5
 
 [fixed]
 - Potential bad code generation for dynamic array field copying
