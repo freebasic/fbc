@@ -403,19 +403,39 @@ end type
 				( -1 ) _
 			} _
 		), _
-		/' #define OFFSETOF(type_,field_) cint( @cast( type_ ptr, 0 )->field_ ) '/ _
+		/' #define OFFSETOF(type_,field_) cint( clng( @cast( type_ ptr, 0 )->field_ ) )
+		   32bit -lang qb: the @ produces a pointer, which must be cast to a 32 bit Long,
+		   before it can be casted to the 16 bit Short (a.k.a. Integer) '/ _
 		( _
-			@"__OFFSETOF", FB_RTL_OPT_NONE, _
+			@"__OFFSETOF", FB_RTL_OPT_32BIT, _
 			2, _
 			{ _
 				@"T", @"F" _
 			}, _
 			{ _
-				( FB_DEFTOK_TYPE_TEX, @"cint( @__cast( " ), _
+				( FB_DEFTOK_TYPE_TEX, @"cint( clng( @__cast( " ), _
 				( FB_DEFTOK_TYPE_PARAM, cast( any ptr, 0 ) ), _
 				( FB_DEFTOK_TYPE_TEX, @" __ptr, 0 )->" ), _
 				( FB_DEFTOK_TYPE_PARAM, cast( any ptr, 1 ) ), _
-				( FB_DEFTOK_TYPE_TEX, @" )" ), _
+				( FB_DEFTOK_TYPE_TEX, @" ) )" ), _
+				( -1 ) _
+			} _
+		), _
+		/' #define OFFSETOF(type_,field_) cint( __clngint( @cast( type_ ptr, 0 )->field_ ) )
+		   64bit -lang qb: the @ produces a pointer, which must be cast to a 64 bit __LongInt,
+		   before it can be casted to the 16 bit Short (a.k.a. Integer) '/ _
+		( _
+			@"__OFFSETOF", FB_RTL_OPT_64BIT, _
+			2, _
+			{ _
+				@"T", @"F" _
+			}, _
+			{ _
+				( FB_DEFTOK_TYPE_TEX, @"cint( clngint( @__cast( " ), _
+				( FB_DEFTOK_TYPE_PARAM, cast( any ptr, 0 ) ), _
+				( FB_DEFTOK_TYPE_TEX, @" __ptr, 0 )->" ), _
+				( FB_DEFTOK_TYPE_PARAM, cast( any ptr, 1 ) ), _
+				( FB_DEFTOK_TYPE_TEX, @" ) )" ), _
 				( -1 ) _
 			} _
 		), _
