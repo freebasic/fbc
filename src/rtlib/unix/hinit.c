@@ -163,10 +163,6 @@ void fb_hRecheckCursorPos( void )
  */
 void fb_hRecheckConsoleSize( int requery_cursorpos )
 {
-	unsigned char *char_buffer, *attr_buffer;
-	struct winsize win;
-	int r, c, w, h;
-
 	if( __fb_console_resized == FALSE )
 		return;
 
@@ -183,27 +179,37 @@ void fb_hRecheckConsoleSize( int requery_cursorpos )
 
 	__fb_console_resized = FALSE;
 
-	win.ws_row = 0xFFFF;
+	/* Try to query the terminal size */
+	/* Try TIOCGWINSZ */
+	struct winsize win = { 0, 0, 0, 0 };
 	ioctl( STDOUT_FILENO, TIOCGWINSZ, &win );
-	if (win.ws_row == 0xFFFF) {
 #ifdef HOST_LINUX
+	if( win.ws_row == 0 || win.ws_col == 0 ) {
+		/* Try an escape sequence */
+		int r, c;
 		if( fb_hTermQuery( SEQ_QUERY_WINDOW, &r, &c ) ) {
 			win.ws_row = r;
 			win.ws_col = c;
 		}
-		else
+	}
 #endif
-		{
-			win.ws_row = 25;
-			win.ws_col = 80;
-		}
+
+	/* Fallback to defaults if all above queries failed */
+	/* Besides probably being correct, this also means we don't have to
+	   handle the case of unknown terminal size all over the rtlib code.
+	   For example, fb_ConReadLine() assumes that fb_GetSize() returns
+	   non-zero rows/columns. */
+	if( win.ws_row == 0 || win.ws_col == 0 ) {
+		win.ws_row = 25;
+		win.ws_col = 80;
 	}
 
-	char_buffer = calloc(1, win.ws_row * win.ws_col * 2);
-	attr_buffer = char_buffer + (win.ws_row * win.ws_col);
+	unsigned char *char_buffer = calloc(1, win.ws_row * win.ws_col * 2);
+	unsigned char *attr_buffer = char_buffer + (win.ws_row * win.ws_col);
 	if (__fb_con.char_buffer) {
-		h = (__fb_con.h < win.ws_row) ? __fb_con.h : win.ws_row;
-		w = (__fb_con.w < win.ws_col) ? __fb_con.w : win.ws_col;
+		int h = (__fb_con.h < win.ws_row) ? __fb_con.h : win.ws_row;
+		int w = (__fb_con.w < win.ws_col) ? __fb_con.w : win.ws_col;
+		int r;
 		for (r = 0; r < h; r++) {
 			memcpy(char_buffer + (r * win.ws_col), __fb_con.char_buffer + (r * __fb_con.w), w);
 			memcpy(attr_buffer + (r * win.ws_col), __fb_con.attr_buffer + (r * __fb_con.w), w);

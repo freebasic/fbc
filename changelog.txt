@@ -50,6 +50,7 @@ Version 1.02.0
 - Compiler directory layout: The non-standalone (Linux-style) DOS build now uses include/freebas/ and lib/freebas/ if running on DOS, instead of when compiling for DOS. This allows cross-compiling from Linux (or others) to DOS to work again: If on Linux, fbc -target dos will now use the normal include/freebasic/ and lib/freebasic/ directories of the Linux compiler, instead of requiring the 8.3-compatible directories.
 - Extern variables were allowed to have mismatching fixed-length string lengths in declaration and definition
 - 0.90.0 regression: In -lang qb, using __offsetof() caused a compiler error
+- Unix rtlib: division-by-zero crash on console I/O commands such as Input, if the terminal size couldn't be queried
 
 
 Version 1.01.0
