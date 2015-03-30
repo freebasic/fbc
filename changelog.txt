@@ -51,6 +51,7 @@ Version 1.02.0
 - Extern variables were allowed to have mismatching fixed-length string lengths in declaration and definition
 - 0.90.0 regression: In -lang qb, using __offsetof() caused a compiler error
 - Unix rtlib: division-by-zero crash on console I/O commands such as Input, if the terminal size couldn't be queried
+- Unix rtlib: memory leak in X11 keyboard input handling initialization
 
 
 Version 1.01.0

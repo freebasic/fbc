@@ -579,7 +579,7 @@ int fb_hX11Init(char *title, int w, int h, int depth, int refresh_rate, int flag
 		__fb_gfx->refresh_rate = fb_x11.refresh_rate;
 	}
 
-	fb_hInitX11KeycodeToScancodeTb( fb_x11.display, XDisplayKeycodes, XGetKeyboardMapping );
+	fb_hInitX11KeycodeToScancodeTb( fb_x11.display, XDisplayKeycodes, XGetKeyboardMapping, XFree );
 
 	if (flags & DRIVER_FULLSCREEN) {
 		mouse_on = TRUE;

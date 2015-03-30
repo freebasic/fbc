@@ -24,11 +24,12 @@ typedef struct {
     XQUERYKEYMAP QueryKeymap;
     XDISPLAYKEYCODES DisplayKeycodes;
     XGETKEYBOARDMAPPING GetKeyboardMapping;
+    XFREE Free;
 } X_FUNCS;
 
 static Display *display;
 static FB_DYLIB xlib = NULL;
-static X_FUNCS X = { NULL, NULL, NULL, NULL, NULL };
+static X_FUNCS X = { NULL, NULL, NULL, NULL, NULL, NULL };
 #endif
 
 static pid_t main_pid;
@@ -236,7 +237,7 @@ static int keyboard_init(void)
 {
 #ifndef DISABLE_X11
 	const char *funcs[] = {
-		"XOpenDisplay", "XCloseDisplay", "XQueryKeymap", "XDisplayKeycodes", "XGetKeyboardMapping", NULL
+		"XOpenDisplay", "XCloseDisplay", "XQueryKeymap", "XDisplayKeycodes", "XGetKeyboardMapping", "XFree", NULL
 	};
 #endif
 	struct termios term;
@@ -276,7 +277,7 @@ static int keyboard_init(void)
 		if (!display)
 			return -1;
 
-		fb_hInitX11KeycodeToScancodeTb( display, X.DisplayKeycodes, X.GetKeyboardMapping );
+		fb_hInitX11KeycodeToScancodeTb( display, X.DisplayKeycodes, X.GetKeyboardMapping, X.Free );
 
 		fb_hXTermInitFocus();
 		__fb_con.keyboard_handler = keyboard_x11_handler;
