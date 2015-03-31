@@ -75,6 +75,9 @@ void fb_hRtExit( void )
 	/* os-dep termination */
 	fb_hEnd( 0 );
 
+	/* Free main thread's TLS contexts */
+	fb_TlsFreeCtxTb( );
+
 #ifdef ENABLE_MT
 	fb_TlsExit( );
 #endif

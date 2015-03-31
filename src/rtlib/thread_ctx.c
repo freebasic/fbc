@@ -47,7 +47,8 @@ FBCALL void fb_TlsDelCtx( int index )
 	if( ctx != NULL ) {
 		if( index == FB_TLSKEY_GFX ) {
 			/* gfxlib2's TLS context is a special case: it stores
-			   some malloc'ed data, so it requires extra clean-up.
+			   some malloc'ed data that stays alive forever, so it
+			   so it requires extra clean-up when the thread exits.
 			   see also gfxlib2's fb_hGetContext() */
 			free( ((FB_GFXCTX *)ctx)->line );
 		}
@@ -76,12 +77,9 @@ void fb_TlsInit( void )
 
 void fb_TlsExit( void )
 {
-	/* free thread local storage plus the keys */
+	/* free thread local storage keys */
 	int i;
 	for( i = 0; i < FB_TLSKEYS; i++ ) {
-		fb_TlsDelCtx( i );
-
-		/* del key/index */
 		FB_TLSFREE( __fb_tls_ctxtb[i] );
 	}
 }

@@ -53,7 +53,7 @@ Version 1.02.0
 - -lang qb's __offsetof() won't truncate the offset to 16 bit anymore
 - Unix rtlib: division-by-zero crash on console I/O commands such as Input, if the terminal size couldn't be queried
 - Unix rtlib: memory leak in X11 keyboard input handling initialization
-- gfxlib2: memory leak of thread-specific data
+- rtlib/gfxlib2: memory leaks of internal thread-specific data (gfxlib's TLS data when using the thread-safe (mt) FB runtime, and all TLS data of the main thread when using the normal (non-mt) FB runtime)
 
 
 Version 1.01.0
