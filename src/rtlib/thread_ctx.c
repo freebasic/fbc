@@ -2,6 +2,7 @@
 
 #include "fb.h"
 #include "fb_private_thread.h"
+#include "fb_gfx_private.h"
 
 #if defined ENABLE_MT && defined HOST_UNIX
 	#define FB_TLSENTRY           pthread_key_t
@@ -25,6 +26,7 @@
 
 static FB_TLSENTRY __fb_tls_ctxtb[FB_TLSKEYS];
 
+/* Retrieve or create new TLS context for given key */
 FBCALL void *fb_TlsGetCtx( int index, size_t len )
 {
 	void *ctx = (void *)FB_TLSGET( __fb_tls_ctxtb[index] );
@@ -43,6 +45,12 @@ FBCALL void fb_TlsDelCtx( int index )
 
 	/* free mem block if any */
 	if( ctx != NULL ) {
+		if( index == FB_TLSKEY_GFX ) {
+			/* gfxlib2's TLS context is a special case: it stores
+			   some malloc'ed data, so it requires extra clean-up.
+			   see also gfxlib2's fb_hGetContext() */
+			free( ((FB_GFXCTX *)ctx)->line );
+		}
 		free( ctx );
 		FB_TLSSET( __fb_tls_ctxtb[index], NULL );
 	}
