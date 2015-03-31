@@ -558,6 +558,12 @@ void fb_hEnd( int unused )
 	}
 	pthread_mutex_destroy(&__fb_bg_mutex);
 
+	if (__fb_con.char_buffer) {
+		free(__fb_con.char_buffer);
+		__fb_con.char_buffer = NULL;
+		__fb_con.attr_buffer = NULL;
+	}
+
 #ifdef ENABLE_MT
 	/* Release multithreading support resources */
 	pthread_mutex_destroy(&__fb_global_mutex);
