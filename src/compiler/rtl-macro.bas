@@ -431,7 +431,7 @@ end type
 				@"T", @"F" _
 			}, _
 			{ _
-				( FB_DEFTOK_TYPE_TEX, @"cint( clngint( @__cast( " ), _
+				( FB_DEFTOK_TYPE_TEX, @"cint( __clngint( @__cast( " ), _
 				( FB_DEFTOK_TYPE_PARAM, cast( any ptr, 0 ) ), _
 				( FB_DEFTOK_TYPE_TEX, @" __ptr, 0 )->" ), _
 				( FB_DEFTOK_TYPE_PARAM, cast( any ptr, 1 ) ), _
