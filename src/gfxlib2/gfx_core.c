@@ -35,9 +35,7 @@ void fb_hPostEvent_code_end(void) { }
 /* Caller is expected to hold FB_GRAPHICSLOCK() */
 FB_GFXCTX *fb_hGetContext(void)
 {
-	FB_GFXCTX *context;
-
-	context = (FB_GFXCTX *)fb_TlsGetCtx(FB_TLSKEY_GFX, sizeof(FB_GFXCTX));
+	FB_GFXCTX *context = FB_TLSGETCTX(GFX);
 
 	if ((__fb_gfx) && (context->id != __fb_gfx->id)) {
 		/* context has to be initialized; default to screen */
