@@ -2,8 +2,6 @@
 
 #include "fb.h"
 
-void fb_DevScrnInit_Screen( void );
-
 static FB_FILE_HOOKS hooks_dev_scrn = {
     fb_DevScrnEof,
     fb_DevScrnClose,

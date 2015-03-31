@@ -48,6 +48,8 @@ typedef struct {
 } DEV_SCRN_INFO;
 
        void         fb_DevScrnInit              ( void );
+       void         fb_DevScrnInit_Screen       ( void );
+       void         fb_DevScrnEnd               ( void );
        void         fb_DevScrnInit_NoOpen       ( void );
        void         fb_DevScrnInit_Write        ( void );
        void         fb_DevScrnInit_WriteWstr    ( void );
