@@ -63,7 +63,7 @@ SUB bloat_pad_class_init CDECL(BYVAL clas AS BloatPadClass PTR)
   G_OBJECT_CLASS(clas)->finalize = @bloat_pad_finalize
 
   G_APPLICATION_CLASS(clas)->activate = @bloat_pad_activate
-  G_APPLICATION_CLASS(clas)->open_ = @bloat_pad_open
+  G_APPLICATION_CLASS(clas)->open = @bloat_pad_open
 END SUB
 
 FUNCTION bloat_pad_new () AS BloatPad PTR
