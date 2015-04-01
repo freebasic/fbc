@@ -75,7 +75,7 @@ void fb_hRtExit( void )
 	/* os-dep termination */
 	fb_hEnd( 0 );
 
-	fb_DevScrnEnd( );
+	fb_DevScrnEnd( FB_HANDLE_SCREEN );
 
 	/* Free main thread's TLS contexts */
 	fb_TlsFreeCtxTb( );

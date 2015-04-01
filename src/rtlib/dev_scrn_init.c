@@ -17,11 +17,11 @@ void fb_DevScrnInit_Screen( void )
     FB_HANDLE_SCREEN->width = cols;
 }
 
-void fb_DevScrnEnd( void )
+void fb_DevScrnEnd( FB_FILE *handle )
 {
-	if( FB_HANDLE_SCREEN->opaque ) {
-		free( FB_HANDLE_SCREEN->opaque );
-		FB_HANDLE_SCREEN->opaque = NULL;
+	if( handle->opaque ) {
+		free( handle->opaque );
+		handle->opaque = NULL;
 	}
 }
 
