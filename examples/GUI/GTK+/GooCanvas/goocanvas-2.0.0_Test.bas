@@ -56,7 +56,7 @@ VAR rect_item = goo_canvas_rect_new (root, 100, 100, 400, 400, _
                                      NULL)
 
 VAR text_item = goo_canvas_text_new (root, "Hello FB users", 300, 300, -1, _
-                                     GTK_ANCHOR_CENTER, _
+                                     GOO_CANVAS_ANCHOR_CENTER, _
                                      "font", "Sans 24", _
                                      NULL)
 goo_canvas_item_rotate (text_item, -45, 300, 300)
