@@ -36,6 +36,7 @@ Version 1.02.0
 	GLib 2.42.2
 	Pango 1.36.8
 	ATK 2.14.0
+	gdk-pixbuf 2.30.8
 
 [fixed]
 - Potential bad code generation for dynamic array field copying
