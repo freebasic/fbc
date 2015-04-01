@@ -38,6 +38,7 @@ Version 1.02.0
 	ATK 2.14.0
 	gdk-pixbuf 2.30.8
 	GTK+ 2.24.27, 3.14.10
+	GtkGLExt 1.2.0
 
 [fixed]
 - Potential bad code generation for dynamic array field copying
