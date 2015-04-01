@@ -52,8 +52,8 @@ SUB bloat_pad_activate CDECL(BYVAL app AS GApplication PTR)
   new_window (app, NULL)
 END SUB
 
-SUB bloat_pad_finalize CDECL(BYVAL object AS GObject PTR)
-  G_OBJECT_CLASS (bloat_pad_parent_class)->finalize (object)
+SUB bloat_pad_finalize CDECL(BYVAL obj AS GObject PTR)
+  G_OBJECT_CLASS (bloat_pad_parent_class)->finalize (obj)
 END SUB
 
 SUB bloat_pad_init CDECL(BYVAL app AS BloatPad PTR)

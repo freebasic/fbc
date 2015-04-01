@@ -7,7 +7,7 @@
 #DEFINE __FB_GTK3__
 #include once "gtk/gtk.bi"
 
-Sub show_date Cdecl (Byval object As GObject Ptr, Byval user_data As gpointer )
+Sub show_date Cdecl (Byval obj As GObject Ptr, Byval user_data As gpointer )
 
     Dim As guint cal_year, cal_month, cal_day
 
@@ -20,7 +20,7 @@ Sub show_date Cdecl (Byval object As GObject Ptr, Byval user_data As gpointer )
 
 End Sub
 
-Sub select_font Cdecl (Byval object As GObject Ptr, Byval user_data As gpointer )
+Sub select_font Cdecl (Byval obj As GObject Ptr, Byval user_data As gpointer )
 
     VAR dialog = gtk_font_selection_dialog_new( "Font selection")
 
