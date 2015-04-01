@@ -1,140 +1,60 @@
-' This is file glib.bi
-' (FreeBasic binding for PangaCairo library version 1.30.1)
-'
-' translated with help of h_2_bi.bas by
-' Thomas[ dot ]Freiherr[ at ]gmx[ dot ]net.
-'
-' Licence:
-' (C) 2011-2012 Thomas[ dot ]Freiherr[ at ]gmx[ dot ]net
-'
-' This library binding is free software; you can redistribute it
-' and/or modify it under the terms of the GNU Lesser General Public
-' License as published by the Free Software Foundation; either
-' version 2 of the License, or (at your option) ANY later version.
-'
-' This binding is distributed in the hope that it will be useful,
-' but WITHOUT ANY WARRANTY; without even the implied warranty of
-' MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-' Lesser General Public License for more details, refer to:
-' http://www.gnu.org/licenses/lgpl.html
-'
-'
-' Original license text:
-'
-'/* Pango
- '* pangocairo.h:
- '*
- '* Copyright (C) 1999, 2004 Red Hat, Inc.
- '*
- '* This library is free software; you can redistribute it and/or
- '* modify it under the terms of the GNU Library General Public
- '* License as published by the Free Software Foundation; either
- '* version 2 of the License, or (at your option) any later version.
- '*
- '* This library is distributed in the hope that it will be useful,
- '* but WITHOUT ANY WARRANTY; without even the implied warranty of
- '* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.   See the GNU
- '* Library General Public License for more details.
- '*
- '* You should have received a copy of the GNU Library General Public
- '* License along with this library; if not, write to the
- '* Free Software Foundation, Inc., 59 Temple Place - Suite 330,
- '* Boston, MA 02111-1307, USA.
- '*/
+#pragma once
 
-#IFDEF __FB_WIN32__
-#PRAGMA push(msbitfields)
-#ENDIF
+#inclib "pangocairo-1.0"
 
-#INCLIB "pangocairo-1.0"
+#include once "pango/pango.bi"
+#include once "cairo/cairo.bi"
 
-EXTERN "C" ' (h_2_bi -P_oCD option)
+#ifdef __FB_WIN32__
+#pragma push(msbitfields)
+#endif
 
-#IFNDEF __PANGOCAIRO_H__
-#DEFINE __PANGOCAIRO_H__
-#INCLUDE ONCE "pango/pango.bi" '__HEADERS__: pango/pango.h
-#INCLUDE ONCE "cairo/cairo.bi" '__HEADERS__: cairo.h
+extern "C"
 
-TYPE PangoCairoFont AS _PangoCairoFont
+#define __PANGOCAIRO_H__
+type PangoCairoFont as _PangoCairoFont
+#define PANGO_TYPE_CAIRO_FONT pango_cairo_font_get_type()
+#define PANGO_CAIRO_FONT(object) G_TYPE_CHECK_INSTANCE_CAST((object), PANGO_TYPE_CAIRO_FONT, PangoCairoFont)
+#define PANGO_IS_CAIRO_FONT(object) G_TYPE_CHECK_INSTANCE_TYPE((object), PANGO_TYPE_CAIRO_FONT)
+type PangoCairoFontMap as _PangoCairoFontMap
+#define PANGO_TYPE_CAIRO_FONT_MAP pango_cairo_font_map_get_type()
+#define PANGO_CAIRO_FONT_MAP(object) G_TYPE_CHECK_INSTANCE_CAST((object), PANGO_TYPE_CAIRO_FONT_MAP, PangoCairoFontMap)
+#define PANGO_IS_CAIRO_FONT_MAP(object) G_TYPE_CHECK_INSTANCE_TYPE((object), PANGO_TYPE_CAIRO_FONT_MAP)
+type PangoCairoShapeRendererFunc as sub(byval cr as cairo_t ptr, byval attr as PangoAttrShape ptr, byval do_path as gboolean, byval data as gpointer)
 
-#DEFINE PANGO_TYPE_CAIRO_FONT (pango_cairo_font_get_type ())
-#DEFINE PANGO_CAIRO_FONT(object) (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_CAIRO_FONT, PangoCairoFont))
-#DEFINE PANGO_IS_CAIRO_FONT(object) (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_TYPE_CAIRO_FONT))
+declare function pango_cairo_font_map_get_type() as GType
+declare function pango_cairo_font_map_new() as PangoFontMap ptr
+declare function pango_cairo_font_map_new_for_font_type(byval fonttype as cairo_font_type_t) as PangoFontMap ptr
+declare function pango_cairo_font_map_get_default() as PangoFontMap ptr
+declare sub pango_cairo_font_map_set_default(byval fontmap as PangoCairoFontMap ptr)
+declare function pango_cairo_font_map_get_font_type(byval fontmap as PangoCairoFontMap ptr) as cairo_font_type_t
+declare sub pango_cairo_font_map_set_resolution(byval fontmap as PangoCairoFontMap ptr, byval dpi as double)
+declare function pango_cairo_font_map_get_resolution(byval fontmap as PangoCairoFontMap ptr) as double
+declare function pango_cairo_font_map_create_context(byval fontmap as PangoCairoFontMap ptr) as PangoContext ptr
+declare function pango_cairo_font_get_type() as GType
+declare function pango_cairo_font_get_scaled_font(byval font as PangoCairoFont ptr) as cairo_scaled_font_t ptr
+declare sub pango_cairo_update_context(byval cr as cairo_t ptr, byval context as PangoContext ptr)
+declare sub pango_cairo_context_set_font_options(byval context as PangoContext ptr, byval options as const cairo_font_options_t ptr)
+declare function pango_cairo_context_get_font_options(byval context as PangoContext ptr) as const cairo_font_options_t ptr
+declare sub pango_cairo_context_set_resolution(byval context as PangoContext ptr, byval dpi as double)
+declare function pango_cairo_context_get_resolution(byval context as PangoContext ptr) as double
+declare sub pango_cairo_context_set_shape_renderer(byval context as PangoContext ptr, byval func as PangoCairoShapeRendererFunc, byval data as gpointer, byval dnotify as GDestroyNotify)
+declare function pango_cairo_context_get_shape_renderer(byval context as PangoContext ptr, byval data as gpointer ptr) as PangoCairoShapeRendererFunc
+declare function pango_cairo_create_context(byval cr as cairo_t ptr) as PangoContext ptr
+declare function pango_cairo_create_layout(byval cr as cairo_t ptr) as PangoLayout ptr
+declare sub pango_cairo_update_layout(byval cr as cairo_t ptr, byval layout as PangoLayout ptr)
+declare sub pango_cairo_show_glyph_string(byval cr as cairo_t ptr, byval font as PangoFont ptr, byval glyphs as PangoGlyphString ptr)
+declare sub pango_cairo_show_glyph_item(byval cr as cairo_t ptr, byval text as const zstring ptr, byval glyph_item as PangoGlyphItem ptr)
+declare sub pango_cairo_show_layout_line(byval cr as cairo_t ptr, byval line as PangoLayoutLine ptr)
+declare sub pango_cairo_show_layout(byval cr as cairo_t ptr, byval layout as PangoLayout ptr)
+declare sub pango_cairo_show_error_underline(byval cr as cairo_t ptr, byval x as double, byval y as double, byval width as double, byval height as double)
+declare sub pango_cairo_glyph_string_path(byval cr as cairo_t ptr, byval font as PangoFont ptr, byval glyphs as PangoGlyphString ptr)
+declare sub pango_cairo_layout_line_path(byval cr as cairo_t ptr, byval line as PangoLayoutLine ptr)
+declare sub pango_cairo_layout_path(byval cr as cairo_t ptr, byval layout as PangoLayout ptr)
+declare sub pango_cairo_error_underline_path(byval cr as cairo_t ptr, byval x as double, byval y as double, byval width as double, byval height as double)
 
-TYPE PangoCairoFontMap AS _PangoCairoFontMap
+end extern
 
-#DEFINE PANGO_TYPE_CAIRO_FONT_MAP (pango_cairo_font_map_get_type ())
-#DEFINE PANGO_CAIRO_FONT_MAP(object) (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_CAIRO_FONT_MAP, PangoCairoFontMap))
-#DEFINE PANGO_IS_CAIRO_FONT_MAP(object) (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_TYPE_CAIRO_FONT_MAP))
-
-TYPE PangoCairoShapeRendererFunc AS SUB(BYVAL AS cairo_t PTR, BYVAL AS PangoAttrShape PTR, BYVAL AS gboolean, BYVAL AS gpointer)
-
-DECLARE FUNCTION pango_cairo_font_map_get_type() AS GType
-DECLARE FUNCTION pango_cairo_font_map_new() AS PangoFontMap PTR
-DECLARE FUNCTION pango_cairo_font_map_new_for_font_type(BYVAL AS cairo_font_type_t) AS PangoFontMap PTR
-DECLARE FUNCTION pango_cairo_font_map_get_default() AS PangoFontMap PTR
-DECLARE SUB pango_cairo_font_map_set_default(BYVAL AS PangoCairoFontMap PTR)
-DECLARE FUNCTION pango_cairo_font_map_get_font_type(BYVAL AS PangoCairoFontMap PTR) AS cairo_font_type_t
-DECLARE SUB pango_cairo_font_map_set_resolution(BYVAL AS PangoCairoFontMap PTR, BYVAL AS DOUBLE)
-DECLARE FUNCTION pango_cairo_font_map_get_resolution(BYVAL AS PangoCairoFontMap PTR) AS DOUBLE
-
-#IFNDEF PANGO_DISABLE_DEPRECATED
-
-DECLARE FUNCTION pango_cairo_font_map_create_context(BYVAL AS PangoCairoFontMap PTR) AS PangoContext PTR
-
-#ENDIF ' PANGO_DISABLE_DEPRECATED
-
-DECLARE FUNCTION pango_cairo_font_get_type() AS GType
-DECLARE FUNCTION pango_cairo_font_get_scaled_font(BYVAL AS PangoCairoFont PTR) AS cairo_scaled_font_t PTR
-DECLARE SUB pango_cairo_update_context(BYVAL AS cairo_t PTR, BYVAL AS PangoContext PTR)
-DECLARE SUB pango_cairo_context_set_font_options(BYVAL AS PangoContext PTR, BYVAL AS CONST cairo_font_options_t PTR)
-DECLARE FUNCTION pango_cairo_context_get_font_options(BYVAL AS PangoContext PTR) AS CONST cairo_font_options_t PTR
-DECLARE SUB pango_cairo_context_set_resolution(BYVAL AS PangoContext PTR, BYVAL AS DOUBLE)
-DECLARE FUNCTION pango_cairo_context_get_resolution(BYVAL AS PangoContext PTR) AS DOUBLE
-DECLARE SUB pango_cairo_context_set_shape_renderer(BYVAL AS PangoContext PTR, BYVAL AS PangoCairoShapeRendererFunc, BYVAL AS gpointer, BYVAL AS GDestroyNotify)
-DECLARE FUNCTION pango_cairo_context_get_shape_renderer(BYVAL AS PangoContext PTR, BYVAL AS gpointer PTR) AS PangoCairoShapeRendererFunc
-DECLARE FUNCTION pango_cairo_create_context(BYVAL AS cairo_t PTR) AS PangoContext PTR
-DECLARE FUNCTION pango_cairo_create_layout(BYVAL AS cairo_t PTR) AS PangoLayout PTR
-DECLARE SUB pango_cairo_update_layout(BYVAL AS cairo_t PTR, BYVAL AS PangoLayout PTR)
-DECLARE SUB pango_cairo_show_glyph_string(BYVAL AS cairo_t PTR, BYVAL AS PangoFont PTR, BYVAL AS PangoGlyphString PTR)
-DECLARE SUB pango_cairo_show_glyph_item(BYVAL AS cairo_t PTR, BYVAL AS CONST ZSTRING PTR, BYVAL AS PangoGlyphItem PTR)
-DECLARE SUB pango_cairo_show_layout_line(BYVAL AS cairo_t PTR, BYVAL AS PangoLayoutLine PTR)
-DECLARE SUB pango_cairo_show_layout(BYVAL AS cairo_t PTR, BYVAL AS PangoLayout PTR)
-DECLARE SUB pango_cairo_show_error_underline(BYVAL AS cairo_t PTR, BYVAL AS DOUBLE, BYVAL AS DOUBLE, BYVAL AS DOUBLE, BYVAL AS DOUBLE)
-DECLARE SUB pango_cairo_glyph_string_path(BYVAL AS cairo_t PTR, BYVAL AS PangoFont PTR, BYVAL AS PangoGlyphString PTR)
-DECLARE SUB pango_cairo_layout_line_path(BYVAL AS cairo_t PTR, BYVAL AS PangoLayoutLine PTR)
-DECLARE SUB pango_cairo_layout_path(BYVAL AS cairo_t PTR, BYVAL AS PangoLayout PTR)
-DECLARE SUB pango_cairo_error_underline_path(BYVAL AS cairo_t PTR, BYVAL AS DOUBLE, BYVAL AS DOUBLE, BYVAL AS DOUBLE, BYVAL AS DOUBLE)
-
-#ENDIF ' __PANGOCAIRO_H__
-
-END EXTERN ' (h_2_bi -P_oCD option)
-
-#IFDEF __FB_WIN32__
-#PRAGMA pop(msbitfields)
-#ENDIF
-
-' Translated at 12-08-19 14:38:59, by h_2_bi (version 0.2.2.1,
-' released under GPLv3 by Thomas[ dot ]Freiherr{ at }gmx[ dot ]net)
-
-'   Protocol: PANGOCAIRO-1.30.1.bi
-' Parameters: PANGOCAIRO-1.30.1
-'                                  Process time [s]: 0.03385302342940122
-'                                  Bytes translated: 4309
-'                                      Maximum deep: 1
-'                                SUB/FUNCTION names: 31
-'                                mangled TYPE names: 0
-'                                        files done: 1
-' pango-1.30.1/pango/pangocairo.h
-'                                      files missed: 0
-'                                       __FOLDERS__: 2
-' pango-1.30.1/pango/
-' pango-1.30.1/
-'                                        __MACROS__: 4
-' 1: #define G_BEGIN_DECLS
-' 1: #define G_END_DECLS
-' 2: #define G_GNUC_CONST
-' 1: #define G_DEPRECATED_FOR(f)
-'                                       __HEADERS__: 0
-'                                         __TYPES__: 0
-'                                     __POST_REPS__: 0
+#ifdef __FB_WIN32__
+#pragma pop(msbitfields)
+#endif
