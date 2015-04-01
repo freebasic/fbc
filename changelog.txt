@@ -61,6 +61,7 @@ Version 1.02.0
 - Unix rtlib: division-by-zero crash on console I/O commands such as Input, if the terminal size couldn't be queried
 - Unix rtlib: memory leak in X11 keyboard input handling initialization
 - rtlib/gfxlib2: memory leaks of internal thread-specific data (gfxlib's TLS data when using the thread-safe (mt) FB runtime, and all TLS data of the main thread when using the normal (non-mt) FB runtime)
+- rtlib: When using Open Scrn, there could be a dangling pointer bug in the internal screen file handle
 
 
 Version 1.01.0
