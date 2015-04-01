@@ -660,8 +660,8 @@ declare function hPorts_cb _
 		), _
 		/' function screenset cdecl _
 			( _
-				byval work_page as integer = -1, _
-				byval visible_page as integer = -1 _
+				byval work_page as long = -1, _
+				byval visible_page as long = -1 _
 			) as long '/ _
 		( _
 			@"screenset", @"fb_GfxPageSet", _
