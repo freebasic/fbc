@@ -1,195 +1,278 @@
-' This is file glib.bi
-' (FreeBasic binding for GLib library version 2.32.4)
-'
-' translated with help of h_2_bi.bas by
-' Thomas[ dot ]Freiherr[ at ]gmx[ dot ]net.
-'
-' Licence:
-' (C) 2011-2012 Thomas[ dot ]Freiherr[ at ]gmx[ dot ]net
-' See file glib.bi for further information.
+#pragma once
 
-#IFNDEF __GLIB_H_INSIDE__
-#ERROR "glibconfig.bi: Only <glib.bi> can be included directly."
-#ENDIF ' __GLIB_H_INSIDE__
+#if defined(__FB_LINUX__) and defined(__FB_64BIT__)
+	#include once "crt/long.bi"
+#endif
 
-#IFNDEF __G_LIBCONFIG_H__
-#DEFINE __G_LIBCONFIG_H__
+#include once "crt/limits.bi"
 
-#INCLUDE ONCE "crt/limits.bi" '__HEADERS__: limits.h
+#define __GLIBCONFIG_H__
+#define GLIB_HAVE_ALLOCA_H
+#define GLIB_USING_SYSTEM_PRINTF
+#define G_MINFLOAT FLT_MIN
+#define G_MAXFLOAT FLT_MAX
+#define G_MINDOUBLE DBL_MIN
+#define G_MAXDOUBLE DBL_MAX
+#define G_MINSHORT SHRT_MIN
+#define G_MAXSHORT SHRT_MAX
+#define G_MAXUSHORT USHRT_MAX
+#define G_MININT INT_MIN
+#define G_MAXINT INT_MAX
+#define G_MAXUINT UINT_MAX
+#define G_MINLONG LONG_MIN
+#define G_MAXLONG LONG_MAX
+#define G_MAXULONG ULONG_MAX
 
-#IF DEFINED(__FB_UNIX__)
-#DEFINE GLIB_HAVE_ALLOCA_H
-#DEFINE GLIB_HAVE_SYS_POLL_H
-#DEFINE GLIB_USING_SYSTEM_PRINTF
-#ENDIF
+type gint8 as byte
+type guint8 as ubyte
+type gint16 as short
+type guint16 as ushort
 
-#IFNDEF FLT_MIN
-#DEFINE FLT_MIN CVS(MKI(&b00000000000000000000000000000001))
-#ENDIF
-#IFNDEF FLT_MAX
-#DEFINE FLT_MAX CVS(MKI(&b01111111011111111111111111111111))
-#ENDIF
-#IFNDEF DBL_MIN
-#DEFINE DBL_MIN CVD(MKLONGINT(&b0000000000000000000000000000000000000000000000000000000000000001))
-#ENDIF
-#IFNDEF DBL_MAX
-#DEFINE DBL_MAX CVD(MKLONGINT(&b0111111111101111111111111111111111111111111111111111111111111111))
-#ENDIF
+#define G_GINT16_MODIFIER "h"
+#define G_GINT16_FORMAT "hi"
+#define G_GUINT16_FORMAT "hu"
+type gint32 as long
+type guint32 as ulong
+#define G_GINT32_MODIFIER ""
+#define G_GINT32_FORMAT "i"
+#define G_GUINT32_FORMAT "u"
+const G_HAVE_GINT64 = 1
 
-#DEFINE G_MINFLOAT FLT_MIN
-#DEFINE G_MAXFLOAT FLT_MAX
-#DEFINE G_MINDOUBLE DBL_MIN
-#DEFINE G_MAXDOUBLE DBL_MAX
-#DEFINE G_MINSHORT SHRT_MIN
-#DEFINE G_MAXSHORT SHRT_MAX
-#DEFINE G_MAXUSHORT USHRT_MAX
-#DEFINE G_MININT INT_MIN
-#DEFINE G_MAXINT INT_MAX
-#DEFINE G_MAXUINT UINT_MAX
-#DEFINE G_MINLONG LONG_MIN
-#DEFINE G_MAXLONG LONG_MAX
-#DEFINE G_MAXULONG ULONG_MAX
+#if (defined(__FB_LINUX__) and (not defined(__FB_64BIT__))) or defined(__FB_WIN32__)
+	type gint64 as longint
+	type guint64 as ulongint
+	#define G_GINT64_CONSTANT(val) val##LL
+	#define G_GUINT64_CONSTANT(val) val##ULL
+#endif
 
-TYPE gint8 AS BYTE
-TYPE guint8 AS UBYTE
-TYPE gint16 AS SHORT
-TYPE guint16 AS USHORT
+#ifdef __FB_WIN32__
+	#define G_GINT64_MODIFIER "I64"
+	#define G_GINT64_FORMAT "I64i"
+	#define G_GUINT64_FORMAT "I64u"
+#elseif defined(__FB_LINUX__) and defined(__FB_64BIT__)
+	type gint64 as clong
+	type guint64 as culong
+	#define G_GINT64_CONSTANT(val) val##L
+	#define G_GUINT64_CONSTANT(val) val##UL
+	#define G_GINT64_MODIFIER "l"
+	#define G_GINT64_FORMAT "li"
+	#define G_GUINT64_FORMAT "lu"
+#endif
 
-#DEFINE G_GINT16_MODIFIER !"h"
-#DEFINE G_GINT16_FORMAT !"hi"
-#DEFINE G_GUINT16_FORMAT !"hu"
+#ifdef __FB_64BIT__
+	const GLIB_SIZEOF_VOID_P = 8
+#elseif defined(__FB_LINUX__) and (not defined(__FB_64BIT__))
+	#define G_GINT64_MODIFIER "ll"
+	#define G_GINT64_FORMAT "lli"
+	#define G_GUINT64_FORMAT "llu"
+#endif
 
-TYPE gint32 AS INTEGER
-TYPE guint32 AS UINTEGER
+#ifndef __FB_64BIT__
+	const GLIB_SIZEOF_VOID_P = 4
+#endif
 
-#DEFINE G_GINT32_MODIFIER !""
-#DEFINE G_GINT32_FORMAT !"i"
-#DEFINE G_GUINT32_FORMAT !"u"
-#DEFINE G_HAVE_GINT64 1
+#if (defined(__FB_LINUX__) and (not defined(__FB_64BIT__))) or defined(__FB_WIN32__)
+	const GLIB_SIZEOF_LONG = 4
+#else
+	const GLIB_SIZEOF_LONG = 8
+#endif
 
-TYPE gint64 AS LONGINT
-TYPE guint64 AS ULONGINT
+#ifdef __FB_64BIT__
+	const GLIB_SIZEOF_SIZE_T = 8
+#endif
 
-#DEFINE G_GINT64_CONSTANT(val) (val##LL)
-#DEFINE G_GUINT64_CONSTANT(val) (val##ULL)
-#DEFINE G_GINT64_MODIFIER !"ll"
-#DEFINE G_GINT64_FORMAT !"lli"
-#DEFINE G_GUINT64_FORMAT !"llu"
-#DEFINE GLIB_SIZEOF_VOID_P 4
-#DEFINE GLIB_SIZEOF_LONG 4
-#DEFINE GLIB_SIZEOF_SIZE_T 4
+#if defined(__FB_WIN32__) and defined(__FB_64BIT__)
+	type gssize as longint
+	type gsize as ulongint
+	#define G_GSIZE_MODIFIER "I64"
+	#define G_GSSIZE_MODIFIER "I64"
+	#define G_GSIZE_FORMAT "I64u"
+	#define G_GSSIZE_FORMAT "I64d"
+	#define G_MAXSIZE G_MAXUINT64
+	#define G_MINSSIZE G_MININT64
+	#define G_MAXSSIZE G_MAXINT64
+#elseif not defined(__FB_64BIT__)
+	const GLIB_SIZEOF_SIZE_T = 4
+#endif
 
-TYPE gssize AS INTEGER
-TYPE gsize AS UINTEGER
+#if defined(__FB_LINUX__) and (not defined(__FB_64BIT__))
+	const GLIB_SIZEOF_SSIZE_T = 4
+#endif
 
-#DEFINE G_GSIZE_MODIFIER !""
-#DEFINE G_GSSIZE_FORMAT !"i"
-#DEFINE G_GSIZE_FORMAT !"u"
-#DEFINE G_MAXSIZE G_MAXUINT
-#DEFINE G_MINSSIZE G_MININT
-#DEFINE G_MAXSSIZE G_MAXINT
+#ifndef __FB_64BIT__
+	type gssize as long
+	type gsize as ulong
+	#define G_GSIZE_MODIFIER ""
+	#define G_GSSIZE_MODIFIER ""
+	#define G_GSIZE_FORMAT "u"
+	#define G_GSSIZE_FORMAT "i"
+	#define G_MAXSIZE G_MAXUINT
+	#define G_MINSSIZE G_MININT
+	#define G_MAXSSIZE G_MAXINT
+#elseif defined(__FB_LINUX__) and defined(__FB_64BIT__)
+	const GLIB_SIZEOF_SSIZE_T = 8
+	type gssize as clong
+	type gsize as culong
+	#define G_GSIZE_MODIFIER "l"
+	#define G_GSSIZE_MODIFIER "l"
+	#define G_GSIZE_FORMAT "lu"
+	#define G_GSSIZE_FORMAT "li"
+	#define G_MAXSIZE G_MAXULONG
+	#define G_MINSSIZE G_MINLONG
+	#define G_MAXSSIZE G_MAXLONG
+#endif
 
-TYPE goffset AS gint64
+type goffset as gint64
+#define G_MINOFFSET G_MININT64
+#define G_MAXOFFSET G_MAXINT64
+#define G_GOFFSET_MODIFIER G_GINT64_MODIFIER
+#define G_GOFFSET_FORMAT G_GINT64_FORMAT
+#define G_GOFFSET_CONSTANT(val) G_GINT64_CONSTANT(val)
 
-#DEFINE G_MINOFFSET G_MININT64
-#DEFINE G_MAXOFFSET G_MAXINT64
-#DEFINE G_GOFFSET_MODIFIER G_GINT64_MODIFIER
-#DEFINE G_GOFFSET_FORMAT G_GINT64_FORMAT
-#DEFINE G_GOFFSET_CONSTANT(val) G_GINT64_CONSTANT(val)
-#DEFINE GPOINTER_TO_INT(p) CAST(gint, p)
-#DEFINE GPOINTER_TO_UINT(p) CAST(guint, p)
-#DEFINE GINT_TO_POINTER(i) CAST(gpointer, CAST(gint, i))
-#DEFINE GUINT_TO_POINTER(u) CAST(gpointer, CAST(guint, u))
+#if defined(__FB_WIN32__) and defined(__FB_64BIT__)
+	#define GPOINTER_TO_INT(p) cast(gint, cast(gint64, (p)))
+	#define GPOINTER_TO_UINT(p) cast(guint, cast(guint64, (p)))
+	#define GINT_TO_POINTER(i) cast(gpointer, cast(gint64, (i)))
+	#define GUINT_TO_POINTER(u) cast(gpointer, cast(guint64, (u)))
+	type gintptr as longint
+	type guintptr as ulongint
+	#define G_GINTPTR_MODIFIER "I64"
+	#define G_GINTPTR_FORMAT "I64i"
+	#define G_GUINTPTR_FORMAT "I64u"
+#elseif defined(__FB_WIN32__) and (not defined(__FB_64BIT__))
+	#define GPOINTER_TO_INT(p) cast(gint, (p))
+	#define GPOINTER_TO_UINT(p) cast(guint, (p))
+	#define GINT_TO_POINTER(i) cast(gpointer, (i))
+	#define GUINT_TO_POINTER(u) cast(gpointer, (u))
+#elseif defined(__FB_LINUX__) and (not defined(__FB_64BIT__))
+	#define GPOINTER_TO_INT(p) cast(gint, cast(gint, (p)))
+	#define GPOINTER_TO_UINT(p) cast(guint, cast(guint, (p)))
+	#define GINT_TO_POINTER(i) cast(gpointer, cast(gint, (i)))
+	#define GUINT_TO_POINTER(u) cast(gpointer, cast(guint, (u)))
+#endif
 
-TYPE gintptr AS INTEGER
-TYPE guintptr AS UINTEGER
+#ifndef __FB_64BIT__
+	type gintptr as long
+	type guintptr as ulong
+	#define G_GINTPTR_MODIFIER ""
+	#define G_GINTPTR_FORMAT "i"
+	#define G_GUINTPTR_FORMAT "u"
+#elseif defined(__FB_LINUX__) and defined(__FB_64BIT__)
+	#define GPOINTER_TO_INT(p) cast(gint, cast(glong, (p)))
+	#define GPOINTER_TO_UINT(p) cast(guint, cast(gulong, (p)))
+	#define GINT_TO_POINTER(i) cast(gpointer, cast(glong, (i)))
+	#define GUINT_TO_POINTER(u) cast(gpointer, cast(gulong, (u)))
+	type gintptr as clong
+	type guintptr as culong
+	#define G_GINTPTR_MODIFIER "l"
+	#define G_GINTPTR_FORMAT "li"
+	#define G_GUINTPTR_FORMAT "lu"
+#endif
 
-#DEFINE G_GINTPTR_MODIFIER !""
-#DEFINE G_GINTPTR_FORMAT !"i"
-#DEFINE G_GUINTPTR_FORMAT !"u"
+#define g_memmove(dest, src, len) memmove((dest), (src), (len))
+const GLIB_MAJOR_VERSION = 2
+const GLIB_MINOR_VERSION = 42
+const GLIB_MICRO_VERSION = 2
 
-#DEFINE g_memmove(dest,src,len) memmove ((dest), (src), (len))
+#ifdef __FB_WIN32__
+	#define G_OS_WIN32
+	#define G_PLATFORM_WIN32
+#else
+	#define G_OS_UNIX
+#endif
 
-#DEFINE GLIB_MAJOR_VERSION 2
-#DEFINE GLIB_MINOR_VERSION 32
-#DEFINE GLIB_MICRO_VERSION 4
+#define G_VA_COPY va_copy
 
-#IF DEFINED(__FB_UNIX__)
- #DEFINE G_OS_UNIX
-#ELSE
- #DEFINE G_OS_WIN32
- #DEFINE G_PLATFORM_WIN32
-#ENDIF
+#if defined(__FB_LINUX__) and defined(__FB_64BIT__)
+	const G_VA_COPY_AS_ARRAY = 1
+#endif
 
-#DEFINE G_VA_COPY va_copy
+const G_HAVE_ISO_VARARGS = 1
+const G_HAVE_GNUC_VARARGS = 1
+const G_HAVE_GROWING_STACK = 0
 
-#IF __FB_VERSION__ >= "0.22"
-#DEFINE G_HAVE_GNUC_VARARGS 1
-#ENDIF
+#ifdef __FB_WIN32__
+	#define G_GNUC_INTERNAL
+#else
+	const G_HAVE_GNUC_VISIBILITY = 1
+#endif
 
-#DEFINE G_GNUC_INTERNAL
-#DEFINE G_THREADS_ENABLED
+#define G_THREADS_ENABLED
 
-#IF DEFINED(__FB_UNIX__)
- #DEFINE G_THREADS_IMPL_POSIX
- #DEFINE G_HAVE_GROWING_STACK 1
-#ELSE
- #DEFINE G_THREADS_IMPL_WIN32
-#ENDIF
+#ifdef __FB_WIN32__
+	#define G_THREADS_IMPL_WIN32
+#else
+	#define G_THREADS_IMPL_POSIX
+#endif
 
-#DEFINE G_ATOMIC_LOCK_FREE
-#DEFINE GINT16_TO_LE(val) CAST(gint16, (val))
-#DEFINE GUINT16_TO_LE(val) CAST(guint16, (val))
-#DEFINE GINT16_TO_BE(val) CAST(gint16, GUINT16_SWAP_LE_BE (val))
-#DEFINE GUINT16_TO_BE(val) (GUINT16_SWAP_LE_BE (val))
-#DEFINE GINT32_TO_LE(val) CAST(gint32, (val))
-#DEFINE GUINT32_TO_LE(val) CAST(guint32, (val))
-#DEFINE GINT32_TO_BE(val) CAST(gint32, GUINT32_SWAP_LE_BE (val))
-#DEFINE GUINT32_TO_BE(val) (GUINT32_SWAP_LE_BE (val))
-#DEFINE GINT64_TO_LE(val) CAST(gint64, (val))
-#DEFINE GUINT64_TO_LE(val) CAST(guint64, (val))
-#DEFINE GINT64_TO_BE(val) CAST(gint64, GUINT64_SWAP_LE_BE (val))
-#DEFINE GUINT64_TO_BE(val) (GUINT64_SWAP_LE_BE (val))
-#DEFINE GLONG_TO_LE(val) CAST(glong, GINT32_TO_LE (val))
-#DEFINE GULONG_TO_LE(val) CAST(gulong, GUINT32_TO_LE (val))
-#DEFINE GLONG_TO_BE(val) CAST(glong, GINT32_TO_BE (val))
-#DEFINE GULONG_TO_BE(val) CAST(gulong, GUINT32_TO_BE (val))
-#DEFINE GINT_TO_LE(val) CAST(gint, GINT32_TO_LE (val))
-#DEFINE GUINT_TO_LE(val) CAST(guint, GUINT32_TO_LE (val))
-#DEFINE GINT_TO_BE(val) CAST(gint, GINT32_TO_BE (val))
-#DEFINE GUINT_TO_BE(val) CAST(guint, GUINT32_TO_BE (val))
-#DEFINE GSIZE_TO_LE(val) CAST(gsize, GUINT32_TO_LE (val))
-#DEFINE GSSIZE_TO_LE(val) CAST(gssize, GINT32_TO_LE (val))
-#DEFINE GSIZE_TO_BE(val) CAST(gsize, GUINT32_TO_BE (val))
-#DEFINE GSSIZE_TO_BE(val) CAST(gssize, GINT32_TO_BE (val))
+#define G_ATOMIC_LOCK_FREE
+#define GINT16_TO_LE(val) cast(gint16, (val))
+#define GUINT16_TO_LE(val) cast(guint16, (val))
+#define GINT16_TO_BE(val) cast(gint16, GUINT16_SWAP_LE_BE(val))
+#define GUINT16_TO_BE(val) GUINT16_SWAP_LE_BE(val)
+#define GINT32_TO_LE(val) cast(gint32, (val))
+#define GUINT32_TO_LE(val) cast(guint32, (val))
+#define GINT32_TO_BE(val) cast(gint32, GUINT32_SWAP_LE_BE(val))
+#define GUINT32_TO_BE(val) GUINT32_SWAP_LE_BE(val)
+#define GINT64_TO_LE(val) cast(gint64, (val))
+#define GUINT64_TO_LE(val) cast(guint64, (val))
+#define GINT64_TO_BE(val) cast(gint64, GUINT64_SWAP_LE_BE(val))
+#define GUINT64_TO_BE(val) GUINT64_SWAP_LE_BE(val)
 
-#IFDEF __FB_BIGENDIAN__
-#DEFINE G_BYTE_ORDER G_BIG_ENDIAN
-#ELSE
-#DEFINE G_BYTE_ORDER G_LITTLE_ENDIAN
-#ENDIF
+#if (defined(__FB_LINUX__) and (not defined(__FB_64BIT__))) or defined(__FB_WIN32__)
+	#define GLONG_TO_LE(val) cast(glong, GINT32_TO_LE(val))
+	#define GULONG_TO_LE(val) cast(gulong, GUINT32_TO_LE(val))
+	#define GLONG_TO_BE(val) cast(glong, GINT32_TO_BE(val))
+	#define GULONG_TO_BE(val) cast(gulong, GUINT32_TO_BE(val))
+#else
+	#define GLONG_TO_LE(val) cast(glong, GINT64_TO_LE(val))
+	#define GULONG_TO_LE(val) cast(gulong, GUINT64_TO_LE(val))
+	#define GLONG_TO_BE(val) cast(glong, GINT64_TO_BE(val))
+	#define GULONG_TO_BE(val) cast(gulong, GUINT64_TO_BE(val))
+#endif
 
-#DEFINE GLIB_SYSDEF_POLLIN =1
-#DEFINE GLIB_SYSDEF_POLLOUT =4
-#DEFINE GLIB_SYSDEF_POLLPRI =2
-#DEFINE GLIB_SYSDEF_POLLHUP =16
-#DEFINE GLIB_SYSDEF_POLLERR =8
-#DEFINE GLIB_SYSDEF_POLLNVAL =32
+#define GINT_TO_LE(val) cast(gint, GINT32_TO_LE(val))
+#define GUINT_TO_LE(val) cast(guint, GUINT32_TO_LE(val))
+#define GINT_TO_BE(val) cast(gint, GINT32_TO_BE(val))
+#define GUINT_TO_BE(val) cast(guint, GUINT32_TO_BE(val))
 
-#IF DEFINED(__FB_UNIX__)
- #DEFINE G_MODULE_SUFFIX !"so"
- #DEFINE GLIB_SYSDEF_AF_INET6 10
-#ELSE
- #DEFINE G_MODULE_SUFFIX !"dll"
- #DEFINE GLIB_SYSDEF_AF_INET6 23
-#ENDIF
+#ifdef __FB_64BIT__
+	#define GSIZE_TO_LE(val) cast(gsize, GUINT64_TO_LE(val))
+	#define GSSIZE_TO_LE(val) cast(gssize, GINT64_TO_LE(val))
+	#define GSIZE_TO_BE(val) cast(gsize, GUINT64_TO_BE(val))
+	#define GSSIZE_TO_BE(val) cast(gssize, GINT64_TO_BE(val))
+#else
+	#define GSIZE_TO_LE(val) cast(gsize, GUINT32_TO_LE(val))
+	#define GSSIZE_TO_LE(val) cast(gssize, GINT32_TO_LE(val))
+	#define GSIZE_TO_BE(val) cast(gsize, GUINT32_TO_BE(val))
+	#define GSSIZE_TO_BE(val) cast(gssize, GINT32_TO_BE(val))
+#endif
 
-TYPE GPid AS INTEGER
+#define G_BYTE_ORDER G_LITTLE_ENDIAN
+#define GLIB_SYSDEF_POLLIN =1
+#define GLIB_SYSDEF_POLLOUT =4
+#define GLIB_SYSDEF_POLLPRI =2
+#define GLIB_SYSDEF_POLLHUP =16
+#define GLIB_SYSDEF_POLLERR =8
+#define GLIB_SYSDEF_POLLNVAL =32
 
-#DEFINE GLIB_SYSDEF_AF_UNIX 1
-#DEFINE GLIB_SYSDEF_AF_INET 2
-#DEFINE GLIB_SYSDEF_MSG_OOB 1
-#DEFINE GLIB_SYSDEF_MSG_PEEK 2
-#DEFINE GLIB_SYSDEF_MSG_DONTROUTE 4
+#ifdef __FB_WIN32__
+	#define G_MODULE_SUFFIX "dll"
+	type GPid as any ptr
+#else
+	#define G_MODULE_SUFFIX "so"
+	type GPid as long
+#endif
 
-#ENDIF ' __G_LIBCONFIG_H__
+const GLIB_SYSDEF_AF_UNIX = 1
+const GLIB_SYSDEF_AF_INET = 2
+
+#ifdef __FB_WIN32__
+	const GLIB_SYSDEF_AF_INET6 = 23
+#else
+	const GLIB_SYSDEF_AF_INET6 = 10
+#endif
+
+const GLIB_SYSDEF_MSG_OOB = 1
+const GLIB_SYSDEF_MSG_PEEK = 2
+const GLIB_SYSDEF_MSG_DONTROUTE = 4
