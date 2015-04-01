@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="ISREDIRECTED"}}----
-Checking whether stdin or stdout is redirected to a file or not
+Checks whether stdin or stdout is redirected to a file
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **""IsRedirected""** ( [[KeyPgByval byval]] //is_input// [[KeyPgAs as]] [[KeyPgLong long]] = 0 ) [[KeyPgAs as]] [[KeyPgLong long]]
@@ -16,8 +16,8 @@ Checking whether stdin or stdout is redirected to a file or not
 	Returns non-zero (##-1##) if stdin or stdout is redirected, otherwise returns zero (##0##).
 
 {{fbdoc item="desc"}}
-	**""IsRedirected""** checks whether stdin or stdout is redirected to a file or not.
-
+	**""IsRedirected""** checks whether stdin or stdout is redirected to a file, instead of being connected to the console/terminal as usual.
+	
 	If ##//is_input//## is equal to non-zero (##-1##), **""IsRedirected""** checks stdin.
 	If ##//is_input//## is equal to zero (##0##), **""IsRedirected""** checks stdout.
 

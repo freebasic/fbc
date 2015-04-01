@@ -2,7 +2,7 @@
 Gets the position of the next read/write operation for a file or device
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Seek** ( [[KeyPgByval byval]] //filenum// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgLongint longint]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Seek** ( [[KeyPgByval byval]] //filenum// [[KeyPgAs as]] [[KeyPgLong long]] ) [[KeyPgAs as]] [[KeyPgLongint longint]]
 ##
 {{fbdoc item="param"}}
 	##//filenum//##

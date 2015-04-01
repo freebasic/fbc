@@ -2,7 +2,7 @@
 Gets a [[ProPgDates Date Serial]] for the specified hours, minutes, and seconds
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **""TimeSerial""** ( [[KeyPgByval byval]] //hour// [[KeyPgAs as]] [[KeyPgInteger integer]], [[KeyPgByval byval]] //minute// [[KeyPgAs as]] [[KeyPgInteger integer]], [[KeyPgByval byval]] //second// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgDouble double]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **""TimeSerial""** ( [[KeyPgByval byval]] //hour// [[KeyPgAs as]] [[KeyPgLong long]], [[KeyPgByval byval]] //minute// [[KeyPgAs as]] [[KeyPgLong long]], [[KeyPgByval byval]] //second// [[KeyPgAs as]] [[KeyPgLong long]] ) [[KeyPgAs as]] [[KeyPgDouble double]]
 ##
 {{fbdoc item="usage"}}##
 	#include "vbcompat.bi"

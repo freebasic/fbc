@@ -4,6 +4,7 @@ Universal utility library most commonly used with [[ExtLibgtk GTK+]] and GNOME. 
 Website: http://developer.gnome.org/glib/
 Platforms supported: Linux, ""Win32""
 Headers to include: glib.bi
+Version: 2.42.2
 Examples: in examples/misc/glib/
 
 {{fbdoc item="back" value="ExtLibTOC|External Library Table of Contents"}}

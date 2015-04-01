@@ -2,7 +2,7 @@
 Exchanges the values of two variables
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Swap**  ([[KeyPgByref byref]] //a// [[KeyPgAs as]] [[KeyPgAny any]], [[KeyPgByref byref]] //b// [[KeyPgAs as]] [[KeyPgAny any]] )
+	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Swap**  ( [[KeyPgByref byref]] //a// [[KeyPgAs as]] [[KeyPgAny any]], [[KeyPgByref byref]] //b// [[KeyPgAs as]] [[KeyPgAny any]] )
 ##
 {{fbdoc item="param"}}
 	##//a//##

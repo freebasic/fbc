@@ -2,7 +2,7 @@
 Gets the number of day of the week from a [[ProPgDates Date Serial]]
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Weekday** ( [[KeyPgByval byval]] //serial// [[KeyPgAs as]] [[KeyPgDouble double]] , [[KeyPgByval byval]] //firstdayofweek// [[KeyPgAs as]] [[KeyPgInteger integer]] = fbusesystem ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Weekday** ( [[KeyPgByval byval]] //serial// [[KeyPgAs as]] [[KeyPgDouble double]] , [[KeyPgByval byval]] //firstdayofweek// [[KeyPgAs as]] [[KeyPgLong long]] = fbusesystem ) [[KeyPgAs as]] [[KeyPgLong long]]
 ##
 {{fbdoc item="usage"}}##
 	#include "vbcompat.bi"

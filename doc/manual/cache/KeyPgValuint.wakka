@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="VALUINT"}}----
-Converts a string to an integer number
+Converts a string to an unsigned 32bit integer
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Valuint** [[KeyPgOverload overload]] ( [[KeyPgByref byref]] //strnum// [[KeyPgAs as]] [[KeyPgConstQualifier const]] [[KeyPgString string]] ) [[KeyPgAs as]] [[KeyPgUlong ulong]]

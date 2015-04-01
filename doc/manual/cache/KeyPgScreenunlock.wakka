@@ -2,7 +2,7 @@
 Unlocks work page's framebuffer
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Screenunlock** ( [[KeyPgByval byval]] //startline// [[KeyPgAs as]] [[KeyPgInteger integer]] = -1, [[KeyPgByval byval]] //endline// [[KeyPgAs as]] [[KeyPgInteger integer]] = -1 )
+	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Screenunlock** ( [[KeyPgByval byval]] //startline// [[KeyPgAs as]] [[KeyPgLong long]] = -1, [[KeyPgByval byval]] //endline// [[KeyPgAs as]] [[KeyPgLong long]] = -1 )
 ##
 {{fbdoc item="usage"}}##
 	**Screenunlock** [ //start_line// ] [, //end_line// ]

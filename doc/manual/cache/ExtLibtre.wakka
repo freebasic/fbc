@@ -3,8 +3,8 @@ Lightweight, robust, and efficient POSIX compliant regexp matching library
 
 Website: http://laurikari.net/tre/
 Platforms supported: ""Win32"", Linux
-Headers to include: regex.bi
-Header version: from 2006
+Headers to include: tre/tre.bi, tre/regex.bi
+Header version: 0.8.0
 Examples: in examples/regex/TRE/
 
 {{fbdoc item="back" value="ExtLibTOC|External Library Table of Contents"}}

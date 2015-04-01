@@ -3,8 +3,8 @@ Open extension to CGI that provides high performance without the limitations of 
 
 Website: http://www.fastcgi.com
 Platforms supported: ""Win32"", Linux
-Headers to include: fastcgi/fastcgi.bi
-Header version: from 2005
+Headers to include: fastcgi/fastcgi.bi, fastcgi/fcgiapp.bi, fastcgi/fcgi_stdio.bi
+Header version: 2.4.1-SNAP-0311112127
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/libraries/fastcgi.bas"}}%%(freebasic)

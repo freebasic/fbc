@@ -72,6 +72,8 @@ git diff
 			- Linux/BSD standalone: ##""FreeBASIC-x.xx.x-target-standalone""##
 			- Windows/DOS normal (""MinGW/DJGPP-style"" packages): ##""fbc-x.xx.x-target""##
 		
+		- ##FBPACKSUFFIX## makefile variable: Suffix string that will be appended to the package name (and the toplevel directory in the archive).
+		
 		- ##FBMANIFEST## makefile variable: Manifest file name without path or extension. The defaults are the same as for ##FBPACKAGE##, except without the ##-x.xx.x## version number part.
 		
 		

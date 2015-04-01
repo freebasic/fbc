@@ -3,7 +3,7 @@ Reads a number of wide-characters from console or file
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Winput**( [[KeyPgByval byval]] //num// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgString wstring]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Winput**( [[KeyPgByval byval]] //num// [[KeyPgAs as]] [[KeyPgInteger integer]], [[KeyPgByval byval]] //filenum// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0 ) [[KeyPgAs as]] [[KeyPgString wstring]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Winput**( [[KeyPgByval byval]] //num// [[KeyPgAs as]] [[KeyPgInteger integer]], [[KeyPgByval byval]] //filenum// [[KeyPgAs as]] [[KeyPgLong long]] = 0 ) [[KeyPgAs as]] [[KeyPgString wstring]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Winput**( //num// [, [#]//filenum// } )

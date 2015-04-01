@@ -2,9 +2,9 @@
 Writes data from a buffer to a file
 
 {{fbdoc item="syntax"}}##
-	**Put** #//filenum// [[KeyPgAs As]] [[KeyPgInteger integer]], [//position// [[KeyPgAs As]] [[KeyPgLongint longint]]], //data// [[KeyPgAs As]] [[KeyPgAny Any]] [, //amount// [[KeyPgAs As]] [[KeyPgInteger Integer]]]
-	**Put** #//filenum// [[KeyPgAs As]] [[KeyPgInteger Integer]], [//position// [[KeyPgAs As]] [[KeyPgLongint longint]]], //data// [[KeyPgAs As]] [[KeyPgString String]]
-	**Put** #//filenum// [[KeyPgAs As]] [[KeyPgInteger Integer]], [//position// [[KeyPgAs As]] [[KeyPgLongint longint]]], //data()// [[KeyPgAs As]] [[KeyPgAny Any]]
+	**Put** #//filenum// [[KeyPgAs As]] [[KeyPgLong long]], [//position// [[KeyPgAs As]] [[KeyPgLongint longint]]], //data// [[KeyPgAs As]] [[KeyPgAny Any]] [, //amount// [[KeyPgAs As]] [[KeyPgUinteger Uinteger]]]
+	**Put** #//filenum// [[KeyPgAs As]] [[KeyPgLong long]], [//position// [[KeyPgAs As]] [[KeyPgLongint longint]]], //data// [[KeyPgAs As]] [[KeyPgString String]]
+	**Put** #//filenum// [[KeyPgAs As]] [[KeyPgLong long]], [//position// [[KeyPgAs As]] [[KeyPgLongint longint]]], //data()// [[KeyPgAs As]] [[KeyPgAny Any]]
 ##
 {{fbdoc item="usage"}}##
 	**Put** #//filenum//, //position//, //data// [, //amount//]

@@ -2,7 +2,7 @@
 Seeds the random number generator
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Randomize** ( [[KeyPgByval byval]] //seed// [[KeyPgAs as]] [[KeyPgDouble double]] = -1.0,  [[KeyPgByval byval]] //algorithm// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0 )
+	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Randomize** ( [[KeyPgByval byval]] //seed// [[KeyPgAs as]] [[KeyPgDouble double]] = -1.0,  [[KeyPgByval byval]] //algorithm// [[KeyPgAs as]] [[KeyPgLong long]] = 0 )
 ##
 {{fbdoc item="usage"}}##
 	**Randomize** [ //seed// ][, //algorithm// ]
@@ -11,7 +11,7 @@ Seeds the random number generator
 	##//seed//##
 		A ##[[KeyPgDouble double]]## seed value for the random number generator.  If omitted, a value based on ##[[KeyPgTimer Timer]]## will be used instead.
 	##//algorithm//##
-		An ##[[KeyPgInteger integer]]## value to select the algorithm used.  If omitted, the default algorithm for the current [[CompilerDialects language dialect]] is used.
+		An integer value to select the algorithm. If omitted, the default algorithm for the current [[CompilerDialects language dialect]] is used.
 
 {{fbdoc item="desc"}}
 	Sets the random seed that helps ##[[KeyPgRnd Rnd]]## generate random numbers, and selects the algorithm to use. Valid values for ##//algorithm//## are:

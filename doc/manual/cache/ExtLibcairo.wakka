@@ -4,7 +4,7 @@
 Website: http://www.cairographics.org
 Platforms supported: ""Win32"", Linux
 Headers to include: cairo/cairo.bi
-Header version: 1.2.6
+Header version: 1.14.2
 Examples: yes, in examples/graphics/cairo/
 
 {{fbdoc item="ex"}}

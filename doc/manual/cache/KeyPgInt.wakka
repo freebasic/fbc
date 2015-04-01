@@ -2,6 +2,7 @@
 Returns the floor of a number
 
 {{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Int** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgSingle single]] ) [[KeyPgAs as]] [[KeyPgSingle single]]
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Int** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgDouble double]] ) [[KeyPgAs as]] [[KeyPgDouble double]]
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Int** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Int** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgUinteger uinteger]] ) [[KeyPgAs as]] [[KeyPgUinteger uinteger]]

@@ -18,7 +18,7 @@ Sets or gets the number of rows and columns of the display
 		device name to apply to
 
 {{fbdoc item="ret"}}
-	Returns a 32 bit ##[[KeyPgInteger Integer]]## where the [[KeyPgHiword high word]] is the number of rows and the [[KeyPgLoWord low word]] is the number of columns currently set.
+	Returns a 32 bit ##[[KeyPgLong Long]]## where the [[KeyPgHiword high word]] is the number of rows and the [[KeyPgLoWord low word]] is the number of columns currently set.
 
 {{fbdoc item="desc"}}
 	Sets the maximum number of columns of characters of an output device (console, printer or text file). If text sent to the device reaches the width an automatic carriage return is generated.

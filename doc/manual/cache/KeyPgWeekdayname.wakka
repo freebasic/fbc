@@ -2,7 +2,7 @@
 Gets the name of a week day from its integral representation
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **""WeekdayName""** ( [[KeyPgByval byval]] //weekday// [[KeyPgAs as]] [[KeyPgInteger integer]], [[KeyPgByval byval]] //abbreviate// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0, [[KeyPgByval byval]] //firstdayofweek// [[KeyPgAs as]] [[KeyPgInteger integer]] = fbUseSystem ) [[KeyPgAs as]] [[KeyPgString string]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **""WeekdayName""** ( [[KeyPgByval byval]] //weekday// [[KeyPgAs as]] , [[KeyPgByval byval]] //abbreviate// [[KeyPgAs as]] [[KeyPgLong long]] = 0, [[KeyPgByval byval]] //firstdayofweek// [[KeyPgAs as]] [[KeyPgLong long]] = fbUseSystem ) [[KeyPgAs as]] [[KeyPgString string]]
 ##
 {{fbdoc item="usage"}}##
 	#include "vbcompat.bi"

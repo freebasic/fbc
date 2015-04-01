@@ -12,8 +12,10 @@ Alphabetical listing of keywords, macros and procedures.
 {{anchor name="underscore"}}{{fbdoc item="section" value="_"}}
 	- {{fbdoc item="keyword" value="KeyPgDddate|__DATE__"}}
 	- {{fbdoc item="keyword" value="KeyPgDddateiso|__DATE_ISO__"}}
+	- {{fbdoc item="keyword" value="KeyPgDdfb64bit|__FB_64BIT__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfbargc|__FB_ARGC__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfbargv|__FB_ARGV__"}}
+	- {{fbdoc item="keyword" value="KeyPgDdfbarm|__FB_ARM__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdFBBackend|__FB_BACKEND__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdFBBigEndian|__FB_BIGENDIAN__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdFBBuildDate|__FB_BUILD_DATE__"}}

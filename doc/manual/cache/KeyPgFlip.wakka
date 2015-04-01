@@ -2,7 +2,7 @@
 Changes the current video display page
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Flip** ( [[KeyPgByval byval]] //frompage// [[KeyPgAs as]] [[KeyPgInteger integer]] = -1, [[KeyPgByval byval]] //topage// [[KeyPgAs as]] [[KeyPgInteger integer]] = -1 )
+	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Flip** ( [[KeyPgByval byval]] //frompage// [[KeyPgAs as]] [[KeyPgLong long]] = -1, [[KeyPgByval byval]] //topage// [[KeyPgAs as]] [[KeyPgLong long]] = -1 )
 ##
 {{fbdoc item="usage"}}##
 	**Flip** [ //frompage// ] [, //topage// ]

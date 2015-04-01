@@ -2,7 +2,7 @@
 Initializes a graphics mode by specifying horizontal and vertical resolution
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Screenres** ( [[KeyPgByval byval]] //width// [[KeyPgAs as]] [[KeyPgInteger integer]], [[KeyPgByval byval]] //height// [[KeyPgAs as]] [[KeyPgInteger integer]], [[KeyPgByval byval]] //depth// [[KeyPgAs as]] [[KeyPgInteger integer]] = 8, [[KeyPgByval byval]] //num_pages// [[KeyPgAs as]] [[KeyPgInteger integer]] = 1, [[KeyPgByval byval]] //flags// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0, [[KeyPgByval byval]] //refresh_rate// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0 ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Screenres** ( [[KeyPgByval byval]] //width// [[KeyPgAs as]] [[KeyPgLong long]], [[KeyPgByval byval]] //height// [[KeyPgAs as]] [[KeyPgLong long]], [[KeyPgByval byval]] //depth// [[KeyPgAs as]] [[KeyPgLong long]] = 8, [[KeyPgByval byval]] //num_pages// [[KeyPgAs as]] [[KeyPgLong long]] = 1, [[KeyPgByval byval]] //flags// [[KeyPgAs as]] [[KeyPgLong long]] = 0, [[KeyPgByval byval]] //refresh_rate// [[KeyPgAs as]] [[KeyPgLong long]] = 0 ) [[KeyPgAs as]] [[KeyPgLong long]]
  ##
 
 {{fbdoc item="usage"}}##

@@ -3,8 +3,8 @@ GLFW is a helper library that can be used to create OpenGL applications. It allo
 
 Website: http://www.glfw.org/
 Platforms supported: ""Win32"", Linux
-Headers to include: GL/glfw.bi
-Header version: 2.7.2
+Headers to include: GL/glfw.bi, GLFW/glfw3.bi
+Header version: 2.7.9, 3.1.1
 Examples: in ""examples/graphics/OpenGL/""
 
 {{fbdoc item="back" value="ExtLibTOC|External Library Table of Contents"}}

@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="VALLNG"}}----
-Converts a string to a long integer
+Converts a string to a 64bit integer
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Vallng** [[KeyPgOverload overload]] ( [[KeyPgByref byref]] //strnum// [[KeyPgAs as]] [[KeyPgConstQualifier const]] [[KeyPgString string]] ) [[KeyPgAs as]] [[KeyPgLongint longint]]

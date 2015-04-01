@@ -300,13 +300,13 @@ List of ""FreeBASIC"" keywords sorted by the function they perform.
 	- {{fbdoc item="keyword" value="KeyPgPeek|PEEK"}}
 	- {{fbdoc item="keyword" value="KeyPgPoke|POKE"}}
 	- {{fbdoc item="keyword" value="KeyPgReallocate|REALLOCATE"}}
-<<>>
+
 {{fbdoc item="section" value="Meta Commands"}}
 	- {{fbdoc item="keyword" value="KeyPgMetaDynamic|$DYNAMIC"}}
 	- {{fbdoc item="keyword" value="KeyPgMetaStatic|$STATIC"}}
 	- {{fbdoc item="keyword" value="KeyPgMetaInclude|$INCLUDE"}}
 	- {{fbdoc item="keyword" value="KeyPgMetaLang|$LANG"}}
-
+<<>>
 {{fbdoc item="section" value="Miscellaneous"}}
 	- {{fbdoc item="keyword" value="KeyPgAsm|ASM"}}
 	- {{fbdoc item="keyword" value="KeyPgData|DATA"}}
@@ -389,8 +389,10 @@ List of ""FreeBASIC"" keywords sorted by the function they perform.
 {{fbdoc item="section" value="Predefined symbols"}}
 	- {{fbdoc item="keyword" value="KeyPgDddate|__DATE__"}} 
 	- {{fbdoc item="keyword" value="KeyPgDddateiso|__DATE_ISO__"}} 
+	- {{fbdoc item="keyword" value="KeyPgDdfb64bit|__FB_64BIT__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfbargc|__FB_ARGC__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfbargv|__FB_ARGV__"}}
+	- {{fbdoc item="keyword" value="KeyPgDdfbarm|__FB_ARM__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdFBBigEndian|__FB_BIGENDIAN__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdFBBuildDate|__FB_BUILD_DATE__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfbcygwin|__FB_CYGWIN__"}}

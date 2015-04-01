@@ -4,6 +4,6 @@ Just like [[ExtLibGLUT GLUT]], freeglut is a helper library that can be used to 
 Website: http://freeglut.sourceforge.net/
 Platforms supported: ""Win32"", Linux
 Headers to include: GL/freeglut.bi
-Header version: 2.6.0
+Header version: 3.0.0
 
 {{fbdoc item="back" value="ExtLibTOC|External Library Table of Contents"}}

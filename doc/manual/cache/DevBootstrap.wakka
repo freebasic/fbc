@@ -4,9 +4,6 @@ fbc is written in FB itself, so you need a working fbc to build a new fbc. How t
 
 {{fbdoc item="section" value="Bootstrapping by precompiling the compiler sources"}}
 
-	1) On the target system, compile FB's rtlib/gfxlib2 using the native C compiler as usual:
-	%%make rtlib gfxlib2%%
-	
 	1) On Linux or ""Win32"" (or another system where you have a working fbc), use the existing fbc to cross-compile ##src/compiler/*.bas## into ##*.asm## (-gen gas, x86 only) or ##*.c## (-gen gcc, works for every target) files compatible to the target system:
 	%%fbc -e -m fbc src/compiler/*.bas -r -target <mytargetos> -arch <mytargetarch>
 		
@@ -16,7 +13,10 @@ x86 Win32 -> x86_64 FreeBSD: -target freebsd -arch x86_64
 x86 Linux -> ARM Linux: -target arm-linux-gnueabihf, or just -arch armv6
 %%
 	
-	1) Take the produced ##.asm## or ##.c## files to the target system, and use the target system's native tools build the final fbc executable:
+	1) On the target system, compile FB's rtlib/gfxlib2 using the native C compiler as usual:
+	%%make rtlib gfxlib2%%
+	
+	1) Take the ##.asm## or ##.c## files (produced in the first step) to the target system, and use the target system's native tools to build the final fbc executable:
 	 
 	
 		- If you produced ##.asm## files, take them to the target system, and assemble them into ##*.o## object files using the target system's native assembler, and then link everything into a new fbc executable:
@@ -27,7 +27,7 @@ done
 gcc -o fbc lib/freebasic/<mytargetarch>/fbrt0.o src/compiler/*.o -Llib/freebasic/<mytargetarch> -lfb -lncurses -lm -pthread%%
 		
 		- If you produced ##.c## files, take them to the target system, and compile them into a new fbc executable:
-		%%gcc -o fbc lib/freebasic/<mytargetarch>/fbrt0.o src/compiler/*.c -Llib/freebasic/<mytargetarch> -lfb -lncurses -lm -pthread%%
+		%%gcc -o fbc -nostdinc -Wall -Wno-unused-label -Wno-unused-function -Wno-unused-variable -Wno-unused-but-set-variable -Wno-main -fno-strict-aliasing -frounding-math lib/freebasic/<mytargetarch>/fbrt0.o src/compiler/*.c -Llib/freebasic/<mytargetarch> -lfb -lncurses -lm -pthread%%
 
 {{fbdoc item="subsect" value="Additional notes & tips"}}
 	- The new fbc and the new rtlib/gfxlib2 must be built from the same version of FB source code, otherwise there can be incompatibility issues. The compiler version should always match the version of rtlib/gfxlib2 in its ##lib/## directory.

@@ -2,14 +2,14 @@
 Checks to see if the end of an open file has been reached
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Eof** ( [[KeyPgByval byval]] //filenum// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Eof** ( [[KeyPgByval byval]] //filenum// [[KeyPgAs as]] [[KeyPgLong long]] ) [[KeyPgAs as]] [[KeyPgLong long]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Eof**( //filenum// )
 ##
 {{fbdoc item="param"}}
 	##//filenum//##
-		An ##[[KeyPgInteger integer]]## file number of an open file.
+		File number of an open file.
 
 {{fbdoc item="ret"}}
 	Returns true (-1) if end-of-file has been reached, zero (0) otherwise.

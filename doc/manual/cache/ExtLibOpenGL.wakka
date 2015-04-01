@@ -12,7 +12,7 @@ Windows ""OpenGL"": http://msdn.microsoft.com/en-us/library/dd374278.aspx
 
 Platforms supported: ""Win32"", Linux
 Headers to include: GL/gl.bi
-Header version: from January 2012
+Header version: Mesa-3D 10.5.1, MinGW-w64 3.3.0
 Examples: yes, in ""examples/graphics/OpenGL/""
 
 {{fbdoc item="back" value="ExtLibTOC|External Library Table of Contents"}}
