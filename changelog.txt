@@ -35,6 +35,7 @@ Version 1.02.0
 	FreeType 2.5.5
 	GLib 2.42.2
 	Pango 1.36.8
+	ATK 2.14.0
 
 [fixed]
 - Potential bad code generation for dynamic array field copying
