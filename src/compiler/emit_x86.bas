@@ -907,8 +907,6 @@ private sub hWriteHeader( ) static
 
 	''
 	emitWriteStr( ".intel_syntax noprefix", TRUE )
-    emitWriteStr( "" )
-    hCOMMENT( env.inf.name + "' compilation started at " + time + " (" + FB_SIGN + ")" )
 
 end sub
 
