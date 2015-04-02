@@ -986,8 +986,6 @@ sub fbCompile _
 		byval ismain as integer _
 	)
 
-	dim as double tmr
-
 	env.inf.name = *infname
 	hReplaceSlash( env.inf.name, asc( FB_HOST_PATHDIV ) )
 	env.inf.incfile	= NULL
@@ -1033,15 +1031,11 @@ sub fbCompile _
 
 	fbMainBegin( )
 
-	tmr = timer( )
-
 	fbParsePreDefines()
 	fbParsePreIncludes()
 	if (fbShouldContinue()) then
 		cProgram()
 	end if
-
-	tmr = timer( ) - tmr
 
 	fbMainEnd( )
 
@@ -1055,7 +1049,7 @@ sub fbCompile _
 	end if
 
 	'' save
-	irEmitEnd( tmr )
+	irEmitEnd( )
 
 	if( env.ppfile_num > 0 ) then
 		close #env.ppfile_num

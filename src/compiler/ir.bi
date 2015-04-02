@@ -100,10 +100,7 @@ type IR_VTBL
 	( _
 	) as integer
 
-	emitEnd as sub _
-	( _
-		byval tottime as double _
-	)
+	emitEnd as sub( )
 
 	getOptionValue as function _
 	( _
@@ -507,7 +504,7 @@ declare function vregDump( byval v as IRVREG ptr ) as string
 
 #define irEmitBegin() ir.vtbl.emitBegin( )
 
-#define irEmitEnd(tottime) ir.vtbl.emitEnd( tottime )
+#define irEmitEnd( ) ir.vtbl.emitEnd( )
 
 #define irEmitPROCBEGIN(proc, initlabel) ir.vtbl.emitProcBegin( proc, initlabel )
 

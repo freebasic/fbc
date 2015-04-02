@@ -188,13 +188,8 @@ private function _emitBegin _
 end function
 
 '':::::
-private sub _emitEnd _
-	( _
-		byval tottime as double _
-	)
-
-	emitClose( tottime )
-
+private sub _emitEnd( )
+	emitClose( )
 end sub
 
 '':::::

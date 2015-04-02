@@ -280,10 +280,7 @@ type EMIT_VTBL
 	( _
 	) as integer
 
-	close as sub _
-	( _
-		byval tottime as double _
-	)
+	close as sub( )
 
 	isKeyword as function _
 	( _
@@ -858,7 +855,7 @@ declare sub emitFlush _
 
 #define emitOpen( ) emit.vtbl.open( )
 
-#define emitClose( tottime ) emit.vtbl.close( tottime )
+#define emitClose( ) emit.vtbl.close( )
 
 #define emitProcBegin( proc ) emit.vtbl.procBegin( proc )
 

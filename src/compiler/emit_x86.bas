@@ -6390,12 +6390,7 @@ private function _open _
 end function
 
 '':::::
-private sub _close _
-	( _
-		byval tottime as double _
-	)
-
-	hCOMMENT( env.inf.name + "' compilation took " + str( tottime ) + " secs" )
+private sub _close( )
 
 	'' Close any STABS #include block (and return to the toplevel .bas
 	'' file name) before emitting the global vars

@@ -852,9 +852,6 @@ private function _emitBegin( ) as integer
 		_emitDBG( AST_OP_DBG_LINEINI, NULL, 0 )
 	end if
 
-	hWriteLine( "; Compilation of " + env.inf.name + " started at " + time( ) + " on " + date( ) )
-	hWriteLine( "" )
-
 	if( fbIs64bit( ) ) then
 		hWriteLine( "%FBSTRING = type { i8*, i64, i64 }" )
 	else
@@ -866,7 +863,7 @@ private function _emitBegin( ) as integer
 	function = TRUE
 end function
 
-private sub _emitEnd( byval tottime as double )
+private sub _emitEnd( )
 	'' Append global declarations to the header section.
 	'' This must be done during _emitEnd() instead of _emitBegin() because
 	'' _emitBegin() is called even before any input code is parsed.
@@ -900,9 +897,6 @@ private sub _emitEnd( byval tottime as double )
 	end if
 
 	ctx.section = SECTION_FOOT
-
-	hWriteLine( "" )
-	hWriteLine( "; Total compilation time: " & tottime & " seconds. " )
 
 	' flush all sections to file
 	if( put( #env.outf.num, , ctx.head_txt ) <> 0 ) then
