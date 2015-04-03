@@ -50,6 +50,18 @@ static void fb_hDoExit( void )
 static void * priorityhDoInit __attribute__((section(".ctors.65435,"), used)) = fb_hDoInit;
 static void * priorityhDoExit __attribute__((section(".dtors.65435,"), used)) = fb_hDoExit;
 
+/* custom segment names? */
+static void * priorityhDoInit __attribute__((section("__CTORS,.ctors.65435"), used)) = fb_hDoInit;
+static void * priorityhDoExit __attribute__((section("__DTORS,.dtors.65435"), used)) = fb_hDoExit;
+
+/* put into __DATA segment? like other global vars? */
+static void * priorityhDoInit __attribute__((section("__DATA,.ctors.65435"), used)) = fb_hDoInit;
+static void * priorityhDoExit __attribute__((section("__DATA,.dtors.65435"), used)) = fb_hDoExit;
+
+/* unnamed segment? probably not allowed by clang? */
+static void * priorityhDoInit __attribute__((section(",.ctors.65435"), used)) = fb_hDoInit;
+static void * priorityhDoExit __attribute__((section(",.dtors.65435"), used)) = fb_hDoExit;
+
 #else
 
 static void * priorityhDoInit __attribute__((section(".ctors.65435"), used)) = fb_hDoInit;
