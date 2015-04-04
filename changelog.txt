@@ -41,6 +41,7 @@ Version 1.02.0
 	gdk-pixbuf 2.30.8
 	GTK+ 2.24.27, 3.14.10
 	GtkGLExt 1.2.0
+- The FB makefile now supports "make bootstrap-dist" and "make bootstrap" commands. The former allows packaging the FB sources together with precompiled fbc sources, and the latter allows building FB using those precompiled fbc sources, which is useful on systems that don't have a working fbc yet.
 
 [fixed]
 - Potential bad code generation for dynamic array field copying

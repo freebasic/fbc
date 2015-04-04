@@ -64,6 +64,9 @@
 #   warning-tests
 #   clean-tests
 #
+#   bootstrap-dist  Create source package with precompiled fbc sources
+#   bootstrap       Build fbc from the precompiled sources (only if precompiled sources exist)
+#
 # makefile configuration:
 #   FB[C|L]FLAGS     to set -g -exx etc. for the compiler build and/or link
 #   CFLAGS           same for the rtlib and gfxlib2 build
@@ -124,6 +127,7 @@ CFLAGS := -Wfatal-errors -O2
 # Avoid gcc exception handling bloat
 CFLAGS += -fno-exceptions -fno-unwind-tables -fno-asynchronous-unwind-tables
 FBFLAGS := -maxerr 1
+AS = $(TARGET_PREFIX)as
 AR = $(TARGET_PREFIX)ar
 CC = $(TARGET_PREFIX)gcc
 prefix := /usr/local
@@ -488,6 +492,7 @@ ifndef V
   QUIET_LINK  = @echo "LINK $@";
   QUIET_CC    = @echo "CC $@";
   QUIET_CPPAS = @echo "CPPAS $@";
+  QUIET_AS    = @echo "AS $@";
   QUIET_AR    = @echo "AR $@";
   QUIET       = @
 endif
@@ -1055,3 +1060,84 @@ mingw-libs:
 
 endif
 endif
+
+#
+# Precompile the compiler sources into .asm/.c files and put them into a
+# bootstrap/ directory, then package the source tree including the bootstrap/
+# sources. This package can then be distributed, and people can do
+# "make bootstrap" to build an fbc from the precompiled sources.
+#
+# The precompiled sources should be compatible to the rtlib in the same source
+# tree, so that it's safe to link the bootstrapped fbc against it. This way
+# there's no need to worry about choosing the right rtlib when bootstrapping
+# fbc -- it's just always possible to use the version from the same source tree.
+#
+FBBOOTSTRAPTITLE := $(FBSOURCETITLE)-bootstrap
+.PHONY: bootstrap-dist
+bootstrap-dist:
+	# Precompile fbc sources for various targets
+	rm -rf bootstrap
+	mkdir -p bootstrap/dos
+	mkdir -p bootstrap/linux-x86
+	mkdir -p bootstrap/linux-x86_64
+	mkdir -p bootstrap/win32
+	mkdir -p bootstrap/win64
+	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v -target dos          && mv src/compiler/*.asm bootstrap/dos
+	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v -target linux-x86    && mv src/compiler/*.asm bootstrap/linux-x86
+	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v -target linux-x86_64 && mv src/compiler/*.c   bootstrap/linux-x86_64
+	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v -target win32        && mv src/compiler/*.asm bootstrap/win32
+	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v -target win64        && mv src/compiler/*.c   bootstrap/win64
+
+	# Ensure to have LFs regardless of host system (LFs will probably on
+	# DOS/Win32, but CRLFs could cause issues on Linux)
+	dos2unix bootstrap/dos/*
+	dos2unix bootstrap/linux-x86/*
+	dos2unix bootstrap/linux-x86_64/*
+	dos2unix bootstrap/win32/*
+	dos2unix bootstrap/win64/*
+
+	# Package FB sources (similar to our "gitdist" command), and add the bootstrap/ directory
+	# Making a .tar.xz should be good enough for now.
+	git -c core.autocrlf=false archive --format tar --prefix "$(FBBOOTSTRAPTITLE)/" HEAD | tar xf -
+	mv bootstrap $(FBBOOTSTRAPTITLE)
+	tar -cJf "$(FBBOOTSTRAPTITLE).tar.xz" "$(FBBOOTSTRAPTITLE)"
+	rm -rf "$(FBBOOTSTRAPTITLE)"
+
+#
+# Build the fbc[.exe] binary from the precompiled sources in the bootstrap/
+# directory.
+#
+BOOTSTRAP_FBC := bootstrap/fbc$(EXEEXT)
+.PHONY: bootstrap
+bootstrap: rtlib gfxlib2 $(BOOTSTRAP_FBC)
+	mkdir -p bin
+	cp $(BOOTSTRAP_FBC) $(FBC_EXE)
+
+ifeq ($(TARGET_ARCH),x86)
+  # x86: .asm => .o (using the same assembler options as fbc)
+  BOOTSTRAP_OBJ = $(patsubst %.asm,%.o,$(sort $(wildcard bootstrap/$(FBTARGET)/*.asm)))
+  $(BOOTSTRAP_OBJ): %.o: %.asm
+	$(QUIET_AS)$(AS) --strip-local-absolute $< -o $@
+else
+  # x86_64 etc.: .c => .o (using the same gcc options as fbc -gen gcc)
+  BOOTSTRAP_CFLAGS := -nostdinc
+  BOOTSTRAP_CFLAGS += -Wall -Wno-unused-label -Wno-unused-function -Wno-unused-variable
+  BOOTSTRAP_CFLAGS += -Wno-unused-but-set-variable -Wno-main
+  BOOTSTRAP_CFLAGS += -fno-strict-aliasing -frounding-math
+  BOOTSTRAP_CFLAGS += -Wfatal-errors
+  BOOTSTRAP_OBJ := $(patsubst %.c,%.o,$(sort $(wildcard bootstrap/$(FBTARGET)/*.c)))
+  $(BOOTSTRAP_OBJ): %.o: %.c
+	$(QUIET_CC)$(CC) -c $(BOOTSTRAP_CFLAGS) $< -o $@
+endif
+
+# Use gcc to link fbc from the bootstrap .o's
+# (assuming the rtlib was built already)
+ifneq ($(filter darwin freebsd linux netbsd openbsd solaris,$(TARGET_OS)),)
+  BOOTSTRAP_LIBS := -lncurses -lm -pthread
+endif
+$(BOOTSTRAP_FBC): $(BOOTSTRAP_OBJ)
+	$(QUIET_LINK)$(CC) -o $@ $(libdir)/fbrt0.o bootstrap/$(FBTARGET)/*.o $(libdir)/libfb.a $(BOOTSTRAP_LIBS)
+
+.PHONY: clean-bootstrap
+clean-bootstrap:
+	rm -f $(BOOTSTRAP_FBC) bootstrap/$(FBTARGET)/*.o
