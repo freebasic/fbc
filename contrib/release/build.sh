@@ -110,8 +110,8 @@ function get_mingww64_toolchain() {
 	arch="$2"
 
 	gccversion=4.9.2
-	dir=Toolchains%20targetting%20Win64/Personal%20Builds/mingw-builds/$gccversion/threads-win32/sjlj/
-	file=$arch-$gccversion-release-win32-sjlj-rt_v3-rev1.7z
+	dir=Toolchains%20targetting%20Win$bits/Personal%20Builds/mingw-builds/$gccversion/threads-win32/sjlj/
+	file=$arch-$gccversion-release-win32-sjlj-rt_v4-rev2.7z
 
 	mkdir -p ../input/MinGW-w64
 	download "../input/MinGW-w64/$file" \
