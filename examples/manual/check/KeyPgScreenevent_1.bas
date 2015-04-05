@@ -7,20 +7,20 @@
 '' --------
 
 Type EVENT Field = 1
-	Type As Integer
+	Type As Long
 	Union
 		Type
-			scancode As Integer
-			ascii As Integer
+			scancode As Long
+			ascii As Long
 		End Type
 		Type
-			x As Integer
-			y As Integer
-			dx As Integer
-			dy As Integer
+			x As Long
+			y As Long
+			dx As Long
+			dy As Long
 		End Type
-		button As Integer
-		z As Integer
-		w As Integer
+		button As Long
+		z As Long
+		w As Long
 	End Union
 End Type

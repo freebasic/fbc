@@ -13,7 +13,7 @@ Const NULL As Any Ptr = 0
 
 Function bmp_load( ByRef filename As Const String ) As Any Ptr
 
-	Dim As Integer filenum, bmpwidth, bmpheight
+	Dim As Long filenum, bmpwidth, bmpheight
 	Dim As Any Ptr img
 
 	'' open BMP file

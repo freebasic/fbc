@@ -7,10 +7,10 @@
 '' --------
 
 Sub f
-	'' static variables are initialized to 0 by default
-	Static i As Integer
-	i += 1
-	Print "Number of times called: " & i
+	'' times called is initially 0
+	Static timesCalled As Integer = 0
+	timesCalled += 1
+	Print "Number of times called: " & timesCalled
 End Sub
 
 '' the static variable in f() retains its value between
