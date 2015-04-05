@@ -7,9 +7,9 @@ Opens an external process' standard input (//stdin//) or output (//stdout//) str
 	**Open Pipe** //shell_command// **For** **[[KeyPgBinary Binary]]** //access_type// [**#**]//filenumber//
 ##
 {{fbdoc item="usage"}}##
-	//result// = **Open Pipe**( //command//, **For** {**[[KeyPgInputfilemode Input]]**|**[[KeyPgOutput Output]]**}, **As** //filenumber// )
+	//result// = **Open Pipe**( //command//[,] **For** {**[[KeyPgInputfilemode Input]]**|**[[KeyPgOutput Output]]**}[,] **As** //filenumber// )
 		##//or,//##
-	//result// = **Open Pipe**( //command//, **For** **[[KeyPgBinary Binary]]**, //access_type//, **As** //filenumber// )
+	//result// = **Open Pipe**( //command//[,] **For** **[[KeyPgBinary Binary]]**[,] //access_type//[,] **As** //filenumber// )
 		##//(or in the QB-like syntax,)//##
 	**Open Pipe** //filename// **For** {**[[KeyPgInputfilemode Input]]**|**[[KeyPgOutput Output]]**} **As** //filenumber//
 		##//(or,)//##

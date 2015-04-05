@@ -5,7 +5,7 @@ Opens a serial port for input and output
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Open Com** ( byref //options// [[KeyPgAs as]] [[KeyPgString string]], **AS** //filenum// [[KeyPgAs as]] [[KeyPgLong long]] ) [[KeyPgAs as]] [[KeyPgLong long]]
 ##
 {{fbdoc item="usage"}}##
-	//result// = **Open Com**( //options//, **AS**[#] //filenum// )
+	//result// = **Open Com**( //options//[,] **AS**[#] //filenum// )
 ##
 {{fbdoc item="param"}}
 	##//options//##

@@ -7,7 +7,7 @@ Opens the console's standard input (//stdin//) or output (//stdout//) streams fo
 	**Open Cons** **For** [[KeyPgOutput Output]] **As** [**#**]//filenumber//
 ##
 {{fbdoc item="usage"}}##
-	//result// = **Open Cons**( [**For** {**[[KeyPgInputfilemode Input]]**|**[[KeyPgOutput Output]]**},] **As** //filenumber// )
+	//result// = **Open Cons**( [**For** {**[[KeyPgInputfilemode Input]]**|**[[KeyPgOutput Output]]**}[,]] **As** //filenumber// )
 		##//(or using the QB-like syntax//,)##
 	**Open Cons** [**For** {**[[KeyPgInputfilemode Input]]**|**[[KeyPgOutput Output]]**}] **As** //filenumber//
 ##

@@ -7,7 +7,7 @@ Opens both the standard input (//stdin//) and standard error (//stderr//) stream
 {{fbdoc item="usage"}}##
 	**Open Err** [for //mode//] as [#]//filenum//
 		//or//
-	//result// = **Open Err**( [for //mode//] as [#]//filenum// )
+	//result// = **Open Err**( [for //mode//[,]] as [#]//filenum// )
 ##
 {{fbdoc item="param"}}
 	##//mode//##
