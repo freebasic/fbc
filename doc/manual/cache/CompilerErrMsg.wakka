@@ -307,57 +307,60 @@ During the program compilation three types of errors can arise:
 	- //260 VIRTUAL used on non-member procedure//
 	- //261 Invalid initializer//
 	- //262 Objects with default [con|de]structors or methods are only allowed in the module level//
-	- //263 Symbol not a CLASS, ENUM, TYPE or UNION type//
-	- //264 Too many elements//
-	- //265 Only data members supported//
-	- //266 UNIONs are not allowed//
-	- //267 Arrays are not allowed//
-	- //268 COMMON variables cannot be object instances of CLASS/TYPE's with cons/destructors//
-	- //269 Cloning operators (LET, Copy constructors) can't take a byval arg of the parent's type//
-	- //270 Local symbols can't be referenced//
-	- //271 Expected 'PTR' or 'POINTER'//
-	- //272 Too many levels of pointer indirection//
-	- //273 Dynamic arrays can't be const//
-	- //274 Const UDT cannot invoke non-const method//
-	- //275 Elements must be empty for strings and arrays//
-	- //276 GOSUB disabled, use 'OPTION GOSUB' to enable//
-	- //277 Invalid -lang//
-	- //278 Can't use ANY as initializer in array with ellipsis bound//
-	- //279 Must have initializer with array with ellipsis bound//
-	- //280 Can't use ... as lower bound//
-	- //281 FOR/NEXT variable name mismatch//
-	- //282 Selected option requires an SSE FPU mode//
-	- //283 Expected relational operator ( =, >, <, <>, <=, >= )//
-	- //284 Unsupported statement in -gen gcc mode//
-	- //285 Too many labels//
-	- //286 Unsupported function//
-	- //287 Expected sub//
-	- //288 Expected '#ENDIF'//
-	- //289 Resource file given for target system that does not support them//
-	- //290 -o <file> option without corresponding input file//
-	- //291 Not extending a TYPE/UNION (a TYPE/UNION can only extend other TYPEs/UNIONs)//
-	- //292 Illegal outside a CLASS, TYPE or UNION method//
-	- //293 CLASS, TYPE or UNION not derived//
-	- //294 CLASS, TYPE or UNION has no constructor//
-	- //295 Symbol type has no Run-Time Type Info (RTTI)//
-	- //296 Types have no hierarchical relation//
-	- //297 Expected a CLASS, TYPE or UNION symbol type//
-	- //298 Casting derived UDT pointer from incompatible pointer type//
-	- //299 Casting derived UDT pointer from unrelated UDT pointer type//
-	- //300 Casting derived UDT pointer to incompatible pointer type//
-	- //301 Casting derived UDT pointer to unrelated UDT pointer type//
-	- //302 ALIAS name string is empty//
-	- //303 LIB name string is empty//
-	- //304 UDT has unimplemented abstract methods//
-	- //305 Non-virtual call to ABSTRACT method//
-	- //306 #ASSERT condition failed//
-	- //307 Expected '>'//
-	- //308 Invalid size//
-	- //309 ALIAS name here is different from ALIAS given in DECLARE prototype//
-	- //310 vararg parameters are only allowed in CDECL procedures//
-	- //311 the first parameter in a procedure may not be vararg//
-	- //312 CONST used on constructor (not needed)//
-	- //313 CONST used on destructor (not needed)//
+	- //263 Static member variable in nested UDT (only allowed in toplevel UDTs)//
+	- //264 Symbol not a CLASS, ENUM, TYPE or UNION type//
+	- //265 Too many elements//
+	- //266 Only data members supported//
+	- //267 UNIONs are not allowed//
+	- //268 Arrays are not allowed//
+	- //269 COMMON variables cannot be object instances of CLASS/TYPE's with cons/destructors//
+	- //270 Cloning operators (LET, Copy constructors) can't take a byval arg of the parent's type//
+	- //271 Local symbols can't be referenced//
+	- //272 Expected 'PTR' or 'POINTER'//
+	- //273 Too many levels of pointer indirection//
+	- //274 Dynamic arrays can't be const//
+	- //275 Const UDT cannot invoke non-const method//
+	- //276 Elements must be empty for strings and arrays//
+	- //277 GOSUB disabled, use 'OPTION GOSUB' to enable//
+	- //278 Invalid -lang//
+	- //279 Can't use ANY as initializer in array with ellipsis bound//
+	- //280 Must have initializer with array with ellipsis bound//
+	- //281 Can't use ... as lower bound//
+	- //282 FOR/NEXT variable name mismatch//
+	- //283 Selected option requires an SSE FPU mode//
+	- //284 Expected relational operator ( =, >, <, <>, <=, >= )//
+	- //285 Unsupported statement in -gen gcc mode//
+	- //286 Too many labels//
+	- //287 Unsupported function//
+	- //288 Expected sub//
+	- //289 Expected '#ENDIF'//
+	- //290 Resource file given for target system that does not support them//
+	- //291 -o <file> option without corresponding input file//
+	- //292 Not extending a TYPE/UNION (a TYPE/UNION can only extend other TYPEs/UNIONs)//
+	- //293 Illegal outside a CLASS, TYPE or UNION method//
+	- //294 CLASS, TYPE or UNION not derived//
+	- //295 CLASS, TYPE or UNION has no constructor//
+	- //296 Symbol type has no Run-Time Type Info (RTTI)//
+	- //297 Types have no hierarchical relation//
+	- //298 Expected a CLASS, TYPE or UNION symbol type//
+	- //299 Casting derived UDT pointer from incompatible pointer type//
+	- //300 Casting derived UDT pointer from unrelated UDT pointer type//
+	- //301 Casting derived UDT pointer to incompatible pointer type//
+	- //302 Casting derived UDT pointer to unrelated UDT pointer type//
+	- //303 ALIAS name string is empty//
+	- //304 LIB name string is empty//
+	- //305 UDT has unimplemented abstract methods//
+	- //306 Non-virtual call to ABSTRACT method//
+	- //307 #ASSERT condition failed//
+	- //308 Expected '>'//
+	- //309 Invalid size//
+	- //310 ALIAS name here is different from ALIAS given in DECLARE prototype//
+	- //311 vararg parameters are only allowed in CDECL procedures//
+	- //312 the first parameter in a procedure may not be vararg//
+	- //313 CONST used on constructor (not needed)//
+	- //314 CONST used on destructor (not needed)//
+	- //315 Byref function result not set//
+	- //316 Function result assignment outside of the function//
 
 ==Third party programs errors==
 	These errors occur after the source has been compiled into assembler, they come from the auxiliary programs FB requires to compile a source into an executable: the linker, the assembler and (for Windows programs) the resource compiler.
