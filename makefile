@@ -745,182 +745,169 @@ ifndef FBMANIFEST
   FBMANIFEST := $(subst -$(FBVERSION),,$(FBPACKAGE))
 endif
 
+packbin := $(patsubst $(prefix)%,$(FBPACKAGE)%,$(prefixbindir))
+packinc := $(patsubst $(prefix)%,$(FBPACKAGE)%,$(prefixincdir))
+packlib := $(patsubst $(prefix)%,$(FBPACKAGE)%,$(prefixlibdir))
+
 .PHONY: bindist
 bindist:
 	# Extra directory in which we'll put together the binary release package
 	# (needed anyways to avoid tarbombs)
-	mkdir -p $(FBPACKAGE)/bin $(FBPACKAGE)/lib
+	mkdir -p $(packbin) $(packinc) $(packlib)
 
-	# Binaries from the build dir: fbc[.exe] or bin/fbc[.exe], bin/ and lib/
-	# (we're expecting bin/ and lib/ to be filled with the proper external
-	# binaries already in case of standalone setups)
+	# Copy fbc, binutils etc. (standalone), includes, libs (including the
+	# non-FB ones for standalone)
+	cp $(FBC_EXE) $(packbin)
+	cp -r $(rootdir)inc/* $(packinc)
   ifdef ENABLE_STANDALONE
-	cp -R bin/$(FBTARGET) $(FBPACKAGE)/bin
-	cp -R lib/$(FBTARGET) $(FBPACKAGE)/lib
-	cp $(FBC_EXE) $(FBPACKAGE)
+	cp bin/$(FBTARGET)/* $(packbin)
+	cp lib/$(FBTARGET)/*.a lib/$(FBTARGET)/*.o $(packlib)
   else
-	mkdir -p $(FBPACKAGE)/lib/freebasic
-	cp $(FBC_EXE) $(FBPACKAGE)/bin
-	cp -R lib/freebasic/$(FBTARGET) $(FBPACKAGE)/lib/freebasic
+	cp $(RTL_LIBS) $(GFX_LIBS) $(packlib)
   endif
 
-	# Remove lib/win32/*.def stuff. We have it in the source tree (not in
-	# build dir if separate though) but don't want to include it into the
-	# binary release packages.
-	cd $(FBPACKAGE) && rm -rf lib/win32/*.def lib/win32/makefile lib/fbextra.x
-	rmdir $(FBPACKAGE)/lib/win32 || true
-
-	# Includes: inc/, include/freebasic/ or include/freebas/
-	cp -R $(rootdir)inc $(FBPACKAGE)
   ifeq ($(TARGET_OS),dos)
-	rm -r $(FBPACKAGE)/inc/AL
-	rm -r $(FBPACKAGE)/inc/allegro5
-	rm -r $(FBPACKAGE)/inc/atk
-	rm -r $(FBPACKAGE)/inc/bass.bi
-	rm -r $(FBPACKAGE)/inc/bassmod.bi
-	rm -r $(FBPACKAGE)/inc/cairo
-	rm -r $(FBPACKAGE)/inc/cd
-	rm -r $(FBPACKAGE)/inc/chipmunk
-	rm -r $(FBPACKAGE)/inc/crt/arpa
-	rm -r $(FBPACKAGE)/inc/crt/bits
-	rm -r $(FBPACKAGE)/inc/crt/linux
-	rm -r $(FBPACKAGE)/inc/crt/netdb.bi
-	rm -r $(FBPACKAGE)/inc/crt/netinet/in.bi
-	rm -r $(FBPACKAGE)/inc/crt/netinet/linux/in.bi
-	rm -r $(FBPACKAGE)/inc/crt/sys/linux
-	rm -r $(FBPACKAGE)/inc/crt/sys/socket.bi
-	rm -r $(FBPACKAGE)/inc/crt/sys/win32
-	rm -r $(FBPACKAGE)/inc/crt/win32
-	rm -r $(FBPACKAGE)/inc/curses/ncurses.bi
-	rm -r $(FBPACKAGE)/inc/disphelper
-	rm -r $(FBPACKAGE)/inc/fastcgi
-	rm -r $(FBPACKAGE)/inc/ffi.bi
-	rm -r $(FBPACKAGE)/inc/flite
-	rm -r $(FBPACKAGE)/inc/fmod.bi
-	rm -r $(FBPACKAGE)/inc/fontconfig
-	rm -r $(FBPACKAGE)/inc/FreeImage.bi
-	rm -r $(FBPACKAGE)/inc/freetype2
-	rm -r $(FBPACKAGE)/inc/gdk*
-	rm -r $(FBPACKAGE)/inc/gio
-	rm -r $(FBPACKAGE)/inc/GL
-	rm -r $(FBPACKAGE)/inc/glade
-	rm -r $(FBPACKAGE)/inc/glib*
-	rm -r $(FBPACKAGE)/inc/gmodule.bi
-	rm -r $(FBPACKAGE)/inc/goocanvas.bi
-	rm -r $(FBPACKAGE)/inc/gtk*
-	rm -r $(FBPACKAGE)/inc/im
-	rm -r $(FBPACKAGE)/inc/IUP*
-	rm -r $(FBPACKAGE)/inc/japi*
-	rm -r $(FBPACKAGE)/inc/jni.bi
-	rm -r $(FBPACKAGE)/inc/json*
-	rm -r $(FBPACKAGE)/inc/libart_lgpl
-	rm -r $(FBPACKAGE)/inc/MediaInfo*
-	rm -r $(FBPACKAGE)/inc/modplug.bi
-	rm -r $(FBPACKAGE)/inc/mpg123.bi
-	rm -r $(FBPACKAGE)/inc/mysql
-	rm -r $(FBPACKAGE)/inc/Newton.bi
-	rm -r $(FBPACKAGE)/inc/ode
-	rm -r $(FBPACKAGE)/inc/ogg
-	rm -r $(FBPACKAGE)/inc/pango
-	rm -r $(FBPACKAGE)/inc/pdflib.bi
-	rm -r $(FBPACKAGE)/inc/portaudio.bi
-	rm -r $(FBPACKAGE)/inc/postgresql
-	rm -r $(FBPACKAGE)/inc/SDL
-	rm -r $(FBPACKAGE)/inc/SDL2
-	rm -r $(FBPACKAGE)/inc/sndfile.bi
-	rm -r $(FBPACKAGE)/inc/spidermonkey
-	rm -r $(FBPACKAGE)/inc/uuid.bi
-	rm -r $(FBPACKAGE)/inc/vlc
-	rm -r $(FBPACKAGE)/inc/vorbis
-	rm -r $(FBPACKAGE)/inc/win
-	rm -r $(FBPACKAGE)/inc/windows.bi
-	rm -r $(FBPACKAGE)/inc/wx-c
-	rm -r $(FBPACKAGE)/inc/X11
-	rm -r $(FBPACKAGE)/inc/xmp.bi
-	rm -r $(FBPACKAGE)/inc/zmq
+	rm -r $(packinc)AL
+	rm -r $(packinc)allegro5
+	rm -r $(packinc)atk
+	rm -r $(packinc)bass.bi
+	rm -r $(packinc)bassmod.bi
+	rm -r $(packinc)cairo
+	rm -r $(packinc)cd
+	rm -r $(packinc)chipmunk
+	rm -r $(packinc)crt/arpa
+	rm -r $(packinc)crt/bits
+	rm -r $(packinc)crt/linux
+	rm -r $(packinc)crt/netdb.bi
+	rm -r $(packinc)crt/netinet/in.bi
+	rm -r $(packinc)crt/netinet/linux/in.bi
+	rm -r $(packinc)crt/sys/linux
+	rm -r $(packinc)crt/sys/socket.bi
+	rm -r $(packinc)crt/sys/win32
+	rm -r $(packinc)crt/win32
+	rm -r $(packinc)curses/ncurses.bi
+	rm -r $(packinc)disphelper
+	rm -r $(packinc)fastcgi
+	rm -r $(packinc)ffi.bi
+	rm -r $(packinc)flite
+	rm -r $(packinc)fmod.bi
+	rm -r $(packinc)fontconfig
+	rm -r $(packinc)FreeImage.bi
+	rm -r $(packinc)freetype2
+	rm -r $(packinc)gdk*
+	rm -r $(packinc)gio
+	rm -r $(packinc)GL
+	rm -r $(packinc)glade
+	rm -r $(packinc)glib*
+	rm -r $(packinc)gmodule.bi
+	rm -r $(packinc)goocanvas.bi
+	rm -r $(packinc)gtk*
+	rm -r $(packinc)im
+	rm -r $(packinc)IUP*
+	rm -r $(packinc)japi*
+	rm -r $(packinc)jni.bi
+	rm -r $(packinc)json*
+	rm -r $(packinc)libart_lgpl
+	rm -r $(packinc)MediaInfo*
+	rm -r $(packinc)modplug.bi
+	rm -r $(packinc)mpg123.bi
+	rm -r $(packinc)mysql
+	rm -r $(packinc)Newton.bi
+	rm -r $(packinc)ode
+	rm -r $(packinc)ogg
+	rm -r $(packinc)pango
+	rm -r $(packinc)pdflib.bi
+	rm -r $(packinc)portaudio.bi
+	rm -r $(packinc)postgresql
+	rm -r $(packinc)SDL
+	rm -r $(packinc)SDL2
+	rm -r $(packinc)sndfile.bi
+	rm -r $(packinc)spidermonkey
+	rm -r $(packinc)uuid.bi
+	rm -r $(packinc)vlc
+	rm -r $(packinc)vorbis
+	rm -r $(packinc)win
+	rm -r $(packinc)windows.bi
+	rm -r $(packinc)wx-c
+	rm -r $(packinc)X11
+	rm -r $(packinc)xmp.bi
+	rm -r $(packinc)zmq
   endif
+
   ifeq ($(TARGET_ARCH),x86_64)
 	# Exclude headers which don't support 64bit yet
-	rm -r $(FBPACKAGE)/inc/AL
-	rm -r $(FBPACKAGE)/inc/aspell.bi
-	rm -r $(FBPACKAGE)/inc/bass.bi
-	rm -r $(FBPACKAGE)/inc/bassmod.bi
-	rm -r $(FBPACKAGE)/inc/bfd
-	rm -r $(FBPACKAGE)/inc/bfd.bi
-	rm -r $(FBPACKAGE)/inc/big_int
-	rm -r $(FBPACKAGE)/inc/bzlib.bi
-	rm -r $(FBPACKAGE)/inc/caca0.bi
-	rm -r $(FBPACKAGE)/inc/caca.bi
-	rm -r $(FBPACKAGE)/inc/cd
-	rm -r $(FBPACKAGE)/inc/cgi-util.bi
-	rm -r $(FBPACKAGE)/inc/chipmunk
-	rm -r $(FBPACKAGE)/inc/cryptlib.bi
-	rm -r $(FBPACKAGE)/inc/dislin.bi
-	rm -r $(FBPACKAGE)/inc/disphelper
-	rm -r $(FBPACKAGE)/inc/dos
-	rm -r $(FBPACKAGE)/inc/expat.bi
-	rm -r $(FBPACKAGE)/inc/flite
-	rm -r $(FBPACKAGE)/inc/FreeImage.bi
-	rm -r $(FBPACKAGE)/inc/gd.bi
-	rm -r $(FBPACKAGE)/inc/gdbm.bi
-	rm -r $(FBPACKAGE)/inc/gdsl
-	rm -r $(FBPACKAGE)/inc/gettext-po.bi
-	rm -r $(FBPACKAGE)/inc/gif_lib.bi
-	rm -r $(FBPACKAGE)/inc/glade
-	rm -r $(FBPACKAGE)/inc/gmp.bi
-	rm -r $(FBPACKAGE)/inc/goocanvas.bi
-	rm -r $(FBPACKAGE)/inc/grx
-	rm -r $(FBPACKAGE)/inc/gsl
-	rm -r $(FBPACKAGE)/inc/IL
-	rm -r $(FBPACKAGE)/inc/im
-	rm -r $(FBPACKAGE)/inc/japi.bi
-	rm -r $(FBPACKAGE)/inc/jni.bi
-	rm -r $(FBPACKAGE)/inc/jpeglib.bi
-	rm -r $(FBPACKAGE)/inc/jpgalleg.bi
-	rm -r $(FBPACKAGE)/inc/json-c
-	rm -r $(FBPACKAGE)/inc/libart_lgpl
-	rm -r $(FBPACKAGE)/inc/libintl.bi
-	rm -r $(FBPACKAGE)/inc/libxml
-	rm -r $(FBPACKAGE)/inc/libxslt
-	rm -r $(FBPACKAGE)/inc/lzma.bi
-	rm -r $(FBPACKAGE)/inc/lzo
-	rm -r $(FBPACKAGE)/inc/MediaInfo.bi
-	rm -r $(FBPACKAGE)/inc/modplug.bi
-	rm -r $(FBPACKAGE)/inc/mpg123.bi
-	rm -r $(FBPACKAGE)/inc/mxml.bi
-	rm -r $(FBPACKAGE)/inc/mysql
-	rm -r $(FBPACKAGE)/inc/Newton.bi
-	rm -r $(FBPACKAGE)/inc/ode
-	rm -r $(FBPACKAGE)/inc/ogg
-	rm -r $(FBPACKAGE)/inc/pcre16.bi
-	rm -r $(FBPACKAGE)/inc/pcre.bi
-	rm -r $(FBPACKAGE)/inc/pcreposix.bi
-	rm -r $(FBPACKAGE)/inc/pdflib.bi
-	rm -r $(FBPACKAGE)/inc/portaudio.bi
-	rm -r $(FBPACKAGE)/inc/postgresql
-	rm -r $(FBPACKAGE)/inc/quicklz.bi
-	rm -r $(FBPACKAGE)/inc/sndfile.bi
-	rm -r $(FBPACKAGE)/inc/spidermonkey
-	rm -r $(FBPACKAGE)/inc/sqlite2.bi
-	rm -r $(FBPACKAGE)/inc/sqlite3.bi
-	rm -r $(FBPACKAGE)/inc/sqlite3ext.bi
-	rm -r $(FBPACKAGE)/inc/tinyptc.bi
-	rm -r $(FBPACKAGE)/inc/uuid.bi
-	rm -r $(FBPACKAGE)/inc/vlc
-	rm -r $(FBPACKAGE)/inc/vorbis
-	rm -r $(FBPACKAGE)/inc/win/ddk
-	rm -r $(FBPACKAGE)/inc/win/rc
-	rm -r $(FBPACKAGE)/inc/wx-c
-	rm -r $(FBPACKAGE)/inc/xmp.bi
-	rm -r $(FBPACKAGE)/inc/zmq
-  endif
-  ifndef ENABLE_STANDALONE
-	mkdir -p $(FBPACKAGE)/include
-    ifeq ($(TARGET_OS),dos)
-	mv $(FBPACKAGE)/inc $(FBPACKAGE)/include/freebas
-    else
-	mv $(FBPACKAGE)/inc $(FBPACKAGE)/include/freebasic
-    endif
+	rm -r $(packinc)AL
+	rm -r $(packinc)aspell.bi
+	rm -r $(packinc)bass.bi
+	rm -r $(packinc)bassmod.bi
+	rm -r $(packinc)bfd
+	rm -r $(packinc)bfd.bi
+	rm -r $(packinc)big_int
+	rm -r $(packinc)bzlib.bi
+	rm -r $(packinc)caca0.bi
+	rm -r $(packinc)caca.bi
+	rm -r $(packinc)cd
+	rm -r $(packinc)cgi-util.bi
+	rm -r $(packinc)chipmunk
+	rm -r $(packinc)cryptlib.bi
+	rm -r $(packinc)dislin.bi
+	rm -r $(packinc)disphelper
+	rm -r $(packinc)dos
+	rm -r $(packinc)expat.bi
+	rm -r $(packinc)flite
+	rm -r $(packinc)FreeImage.bi
+	rm -r $(packinc)gd.bi
+	rm -r $(packinc)gdbm.bi
+	rm -r $(packinc)gdsl
+	rm -r $(packinc)gettext-po.bi
+	rm -r $(packinc)gif_lib.bi
+	rm -r $(packinc)glade
+	rm -r $(packinc)gmp.bi
+	rm -r $(packinc)goocanvas.bi
+	rm -r $(packinc)grx
+	rm -r $(packinc)gsl
+	rm -r $(packinc)IL
+	rm -r $(packinc)im
+	rm -r $(packinc)japi.bi
+	rm -r $(packinc)jni.bi
+	rm -r $(packinc)jpeglib.bi
+	rm -r $(packinc)jpgalleg.bi
+	rm -r $(packinc)json-c
+	rm -r $(packinc)libart_lgpl
+	rm -r $(packinc)libintl.bi
+	rm -r $(packinc)libxml
+	rm -r $(packinc)libxslt
+	rm -r $(packinc)lzma.bi
+	rm -r $(packinc)lzo
+	rm -r $(packinc)MediaInfo.bi
+	rm -r $(packinc)modplug.bi
+	rm -r $(packinc)mpg123.bi
+	rm -r $(packinc)mxml.bi
+	rm -r $(packinc)mysql
+	rm -r $(packinc)Newton.bi
+	rm -r $(packinc)ode
+	rm -r $(packinc)ogg
+	rm -r $(packinc)pcre16.bi
+	rm -r $(packinc)pcre.bi
+	rm -r $(packinc)pcreposix.bi
+	rm -r $(packinc)pdflib.bi
+	rm -r $(packinc)portaudio.bi
+	rm -r $(packinc)postgresql
+	rm -r $(packinc)quicklz.bi
+	rm -r $(packinc)sndfile.bi
+	rm -r $(packinc)spidermonkey
+	rm -r $(packinc)sqlite2.bi
+	rm -r $(packinc)sqlite3.bi
+	rm -r $(packinc)sqlite3ext.bi
+	rm -r $(packinc)tinyptc.bi
+	rm -r $(packinc)uuid.bi
+	rm -r $(packinc)vlc
+	rm -r $(packinc)vorbis
+	rm -r $(packinc)win/ddk
+	rm -r $(packinc)win/rc
+	rm -r $(packinc)wx-c
+	rm -r $(packinc)xmp.bi
+	rm -r $(packinc)zmq
   endif
 
   ifndef DISABLE_DOCS
