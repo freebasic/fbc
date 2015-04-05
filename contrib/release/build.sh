@@ -206,7 +206,7 @@ win64)
 	;;
 esac
 
-bootfb_title=FreeBASIC-1.00.0-$fbtarget
+bootfb_title=FreeBASIC-1.01.0-$fbtarget
 
 case $fbtarget in
 linux*)
