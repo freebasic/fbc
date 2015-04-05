@@ -764,6 +764,7 @@ bindist:
 	cp -R $(rootdir)inc $(FBPACKAGE)
   ifeq ($(TARGET_OS),dos)
 	rm -r $(FBPACKAGE)/inc/AL
+	rm -r $(FBPACKAGE)/inc/allegro5
 	rm -r $(FBPACKAGE)/inc/atk
 	rm -r $(FBPACKAGE)/inc/bass.bi
 	rm -r $(FBPACKAGE)/inc/bassmod.bi
@@ -783,8 +784,10 @@ bindist:
 	rm -r $(FBPACKAGE)/inc/curses/ncurses.bi
 	rm -r $(FBPACKAGE)/inc/disphelper
 	rm -r $(FBPACKAGE)/inc/fastcgi
+	rm -r $(FBPACKAGE)/inc/ffi.bi
 	rm -r $(FBPACKAGE)/inc/flite
 	rm -r $(FBPACKAGE)/inc/fmod.bi
+	rm -r $(FBPACKAGE)/inc/fontconfig
 	rm -r $(FBPACKAGE)/inc/FreeImage.bi
 	rm -r $(FBPACKAGE)/inc/freetype2
 	rm -r $(FBPACKAGE)/inc/gdk*
@@ -813,6 +816,7 @@ bindist:
 	rm -r $(FBPACKAGE)/inc/portaudio.bi
 	rm -r $(FBPACKAGE)/inc/postgresql
 	rm -r $(FBPACKAGE)/inc/SDL
+	rm -r $(FBPACKAGE)/inc/SDL2
 	rm -r $(FBPACKAGE)/inc/sndfile.bi
 	rm -r $(FBPACKAGE)/inc/spidermonkey
 	rm -r $(FBPACKAGE)/inc/uuid.bi
@@ -829,7 +833,6 @@ bindist:
 	# Exclude headers which don't support 64bit yet
 	rm -r $(FBPACKAGE)/inc/AL
 	rm -r $(FBPACKAGE)/inc/aspell.bi
-	rm -r $(FBPACKAGE)/inc/atk
 	rm -r $(FBPACKAGE)/inc/bass.bi
 	rm -r $(FBPACKAGE)/inc/bassmod.bi
 	rm -r $(FBPACKAGE)/inc/bfd
@@ -838,7 +841,6 @@ bindist:
 	rm -r $(FBPACKAGE)/inc/bzlib.bi
 	rm -r $(FBPACKAGE)/inc/caca0.bi
 	rm -r $(FBPACKAGE)/inc/caca.bi
-	rm -r $(FBPACKAGE)/inc/cairo
 	rm -r $(FBPACKAGE)/inc/cd
 	rm -r $(FBPACKAGE)/inc/cgi-util.bi
 	rm -r $(FBPACKAGE)/inc/chipmunk
@@ -847,30 +849,18 @@ bindist:
 	rm -r $(FBPACKAGE)/inc/disphelper
 	rm -r $(FBPACKAGE)/inc/dos
 	rm -r $(FBPACKAGE)/inc/expat.bi
-	rm -r $(FBPACKAGE)/inc/fastcgi
 	rm -r $(FBPACKAGE)/inc/flite
 	rm -r $(FBPACKAGE)/inc/FreeImage.bi
-	rm -r $(FBPACKAGE)/inc/freetype2
 	rm -r $(FBPACKAGE)/inc/gd.bi
 	rm -r $(FBPACKAGE)/inc/gdbm.bi
-	rm -r $(FBPACKAGE)/inc/gdk
-	rm -r $(FBPACKAGE)/inc/gdk-pixbuf
 	rm -r $(FBPACKAGE)/inc/gdsl
 	rm -r $(FBPACKAGE)/inc/gettext-po.bi
 	rm -r $(FBPACKAGE)/inc/gif_lib.bi
-	rm -r $(FBPACKAGE)/inc/gio
-	rm -r $(FBPACKAGE)/inc/GL
 	rm -r $(FBPACKAGE)/inc/glade
-	rm -r $(FBPACKAGE)/inc/glib.bi
-	rm -r $(FBPACKAGE)/inc/glibconfig.bi
-	rm -r $(FBPACKAGE)/inc/glib-object.bi
-	rm -r $(FBPACKAGE)/inc/gmodule.bi
 	rm -r $(FBPACKAGE)/inc/gmp.bi
 	rm -r $(FBPACKAGE)/inc/goocanvas.bi
 	rm -r $(FBPACKAGE)/inc/grx
 	rm -r $(FBPACKAGE)/inc/gsl
-	rm -r $(FBPACKAGE)/inc/gtk
-	rm -r $(FBPACKAGE)/inc/gtkgl
 	rm -r $(FBPACKAGE)/inc/IL
 	rm -r $(FBPACKAGE)/inc/im
 	rm -r $(FBPACKAGE)/inc/japi.bi
@@ -892,7 +882,6 @@ bindist:
 	rm -r $(FBPACKAGE)/inc/Newton.bi
 	rm -r $(FBPACKAGE)/inc/ode
 	rm -r $(FBPACKAGE)/inc/ogg
-	rm -r $(FBPACKAGE)/inc/pango
 	rm -r $(FBPACKAGE)/inc/pcre16.bi
 	rm -r $(FBPACKAGE)/inc/pcre.bi
 	rm -r $(FBPACKAGE)/inc/pcreposix.bi
@@ -900,8 +889,6 @@ bindist:
 	rm -r $(FBPACKAGE)/inc/portaudio.bi
 	rm -r $(FBPACKAGE)/inc/postgresql
 	rm -r $(FBPACKAGE)/inc/quicklz.bi
-	rm -r $(FBPACKAGE)/inc/regex.bi
-	rm -r $(FBPACKAGE)/inc/SDL
 	rm -r $(FBPACKAGE)/inc/sndfile.bi
 	rm -r $(FBPACKAGE)/inc/spidermonkey
 	rm -r $(FBPACKAGE)/inc/sqlite2.bi
@@ -914,7 +901,6 @@ bindist:
 	rm -r $(FBPACKAGE)/inc/win/ddk
 	rm -r $(FBPACKAGE)/inc/win/rc
 	rm -r $(FBPACKAGE)/inc/wx-c
-	rm -r $(FBPACKAGE)/inc/X11
 	rm -r $(FBPACKAGE)/inc/xmp.bi
 	rm -r $(FBPACKAGE)/inc/zmq
   endif
