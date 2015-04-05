@@ -338,6 +338,7 @@ ifdef ENABLE_STANDALONE
   FBCNEW_EXE  := fbc-new$(EXEEXT)
   libdir         := lib/$(libsubdir)
   PREFIX_FBC_EXE := $(prefix)/fbc$(EXEEXT)
+  prefixbindir   := $(prefix)
   prefixincdir   := $(prefix)/inc
   prefixlibdir   := $(prefix)/lib/$(libsubdir)
 else
@@ -512,7 +513,7 @@ $(libfbgfxpicobjdir) \
 $(libfbgfxmtobjdir) \
 $(libfbgfxmtpicobjdir) \
 $(djgpplibcobjdir) \
-bin $(libdir) $(prefixbindir) $(prefixincdir) $(prefixlibdir):
+bin $(libdir):
 	mkdir -p $@
 
 ################################################################################
@@ -618,17 +619,21 @@ $(LIBFBGFXMTPIC_C): $(libfbgfxmtpicobjdir)/%.o: %.c $(LIBFBGFX_H)
 .PHONY: install install-compiler install-includes install-rtlib install-gfxlib2
 install:        install-compiler install-includes install-rtlib install-gfxlib2
 
-install-compiler: $(prefixbindir)
+install-compiler:
+	mkdir -p $(prefixbindir)
 	$(INSTALL_PROGRAM) $(FBC_EXE) $(PREFIX_FBC_EXE)
 
-install-includes: $(prefixincdir)
+install-includes:
+	mkdir -p $(prefixincdir)
 	cp -r $(rootdir)inc/* $(prefixincdir)
 
-install-rtlib: $(prefixlibdir)
-	$(INSTALL_FILE) $(RTL_LIBS) $(prefixlibdir)/
+install-rtlib:
+	mkdir -p $(prefixlibdir)
+	$(INSTALL_FILE) $(RTL_LIBS) $(prefixlibdir)
 
-install-gfxlib2: $(prefix)/lib $(prefixlibdir)
-	$(INSTALL_FILE) $(GFX_LIBS) $(prefixlibdir)/
+install-gfxlib2:
+	mkdir -p $(prefixlibdir)
+	$(INSTALL_FILE) $(GFX_LIBS) $(prefixlibdir)
 
 ################################################################################
 
