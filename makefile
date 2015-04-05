@@ -760,8 +760,9 @@ bindist:
 	cp $(FBC_EXE) $(packbin)
 	cp -r $(rootdir)inc/* $(packinc)
   ifdef ENABLE_STANDALONE
-	cp bin/$(FBTARGET)/* $(packbin)
-	cp lib/$(FBTARGET)/*.a lib/$(FBTARGET)/*.o $(packlib)
+	mkdir -p $(FBPACKAGE)/bin/$(FBTARGET)
+	cp bin/$(FBTARGET)/* $(FBPACKAGE)/bin/$(FBTARGET)
+	cp lib/$(FBTARGET)/*.a lib/$(FBTARGET)/*.o lib/$(FBTARGET)/*.x $(packlib)
   else
 	cp $(RTL_LIBS) $(GFX_LIBS) $(packlib)
   endif
