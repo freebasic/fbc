@@ -744,14 +744,19 @@ endif
 bindist:
 	# Extra directory in which we'll put together the binary release package
 	# (needed anyways to avoid tarbombs)
-	mkdir $(FBPACKAGE)
+	mkdir -p $(FBPACKAGE)/bin $(FBPACKAGE)/lib
 
 	# Binaries from the build dir: fbc[.exe] or bin/fbc[.exe], bin/ and lib/
 	# (we're expecting bin/ and lib/ to be filled with the proper external
 	# binaries already in case of standalone setups)
-	cp -R bin lib $(FBPACKAGE)
   ifdef ENABLE_STANDALONE
+	cp -R bin/$(FBTARGET) $(FBPACKAGE)/bin
+	cp -R lib/$(FBTARGET) $(FBPACKAGE)/lib
 	cp $(FBC_EXE) $(FBPACKAGE)
+  else
+	mkdir -p $(FBPACKAGE)/lib/freebasic
+	cp $(FBC_EXE) $(FBPACKAGE)/bin
+	cp -R lib/freebasic/$(FBTARGET) $(FBPACKAGE)/lib/freebasic
   endif
 
 	# Remove lib/win32/*.def stuff. We have it in the source tree (not in
