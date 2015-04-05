@@ -246,8 +246,11 @@ examples/manual/debug/assert.bas
 examples/manual/debug/assertwarn.bas
 examples/manual/debug/stop.bas
 examples/manual/defines/date.bas
+examples/manual/defines/fb64bit.bas
 examples/manual/defines/fbargc.bas
 examples/manual/defines/fbargv.bas
+examples/manual/defines/fbarm.bas
+examples/manual/defines/fbasm.bas
 examples/manual/defines/fbbigendian.bas
 examples/manual/defines/fbbuilddate.bas
 examples/manual/defines/fbcygwin.bas
@@ -526,6 +529,7 @@ examples/manual/module/extern2.bas
 examples/manual/module/import.bas
 examples/manual/module/mydll.c
 examples/manual/module/namespace.bas
+examples/manual/module/opts.bas
 examples/manual/module/sub-private.bas
 examples/manual/module/sub-public.bas
 examples/manual/module/using.bas
@@ -993,17 +997,6 @@ inc/Lua/lualib.bi
 inc/allegro.bi
 inc/allegro/algif.bi
 inc/allegro/alpng.bi
-inc/allegro5/allegro.bi
-inc/allegro5/allegro_acodec.bi
-inc/allegro5/allegro_audio.bi
-inc/allegro5/allegro_color.bi
-inc/allegro5/allegro_font.bi
-inc/allegro5/allegro_image.bi
-inc/allegro5/allegro_memfile.bi
-inc/allegro5/allegro_native_dialog.bi
-inc/allegro5/allegro_physfs.bi
-inc/allegro5/allegro_primitives.bi
-inc/allegro5/allegro_ttf.bi
 inc/aspell.bi
 inc/bfd.bi
 inc/bfd/bfd-216.bi
@@ -1045,6 +1038,7 @@ inc/crt/long.bi
 inc/crt/longdouble.bi
 inc/crt/malloc.bi
 inc/crt/math.bi
+inc/crt/mem.bi
 inc/crt/process.bi
 inc/crt/setjmp.bi
 inc/crt/stdarg.bi
@@ -1089,7 +1083,6 @@ inc/expat.bi
 inc/fbgfx.bi
 inc/fbio.bi
 inc/fbthread.bi
-inc/ffi.bi
 inc/file.bi
 inc/gd.bi
 inc/gdbm.bi
@@ -1331,6 +1324,7 @@ inc/gsl/gsl_wavelet2d.bi
 inc/jit.bi
 inc/jpeglib.bi
 inc/jpgalleg.bi
+inc/libiconv.bi
 inc/libintl.bi
 inc/libxml/HTMLparser.bi
 inc/libxml/HTMLtree.bi
@@ -1424,6 +1418,8 @@ inc/sqlite3.bi
 inc/sqlite3ext.bi
 inc/string.bi
 inc/tinyptc.bi
+inc/tre/regex.bi
+inc/tre/tre.bi
 inc/utf_conv.bi
 inc/vbcompat.bi
 inc/zip.bi
