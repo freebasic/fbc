@@ -294,7 +294,7 @@ echo.
 
 echo bootstrapping normal fbc:
 cd fbc
-make FBC=../FreeBASIC-1.00.0-dos/fbc.exe
+make FBC=../$bootfb_title/fbc.exe
 if ERRORLEVEL 1 exit /b
 make install
 if ERRORLEVEL 1 exit /b
