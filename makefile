@@ -778,10 +778,14 @@ bindist:
 	rm -r $(packinc)/chipmunk
 	rm -r $(packinc)/crt/arpa
 	rm -r $(packinc)/crt/bits
+	rm -r $(packinc)/crt/iconv.bi
 	rm -r $(packinc)/crt/linux
 	rm -r $(packinc)/crt/netdb.bi
 	rm -r $(packinc)/crt/netinet/in.bi
 	rm -r $(packinc)/crt/netinet/linux/in.bi
+	rm -r $(packinc)/crt/pthread.bi
+	rm -r $(packinc)/crt/regex.bi
+	rm -r $(packinc)/crt/sched.bi
 	rm -r $(packinc)/crt/sys/linux
 	rm -r $(packinc)/crt/sys/socket.bi
 	rm -r $(packinc)/crt/sys/win32
