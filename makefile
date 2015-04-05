@@ -798,6 +798,7 @@ bindist:
 	rm -r $(packinc)/gdk*
 	rm -r $(packinc)/gio
 	rm -r $(packinc)/GL
+	rm -r $(packinc)/GLFW
 	rm -r $(packinc)/glade
 	rm -r $(packinc)/glib*
 	rm -r $(packinc)/gmodule.bi
